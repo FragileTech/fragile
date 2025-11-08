@@ -1,0 +1,835 @@
+{
+  "document_id": "01_fragile_gas_framework",
+  "stage": "directives",
+  "directive_type": "lemma",
+  "generated_at": "2025-11-08T17:07:43.174146+00:00",
+  "count": 33,
+  "items": [
+    {
+      "directive_type": "lemma",
+      "label": "lem-borel-image-of-the-projected-swarm-space",
+      "title": "Borel image of the projected swarm space",
+      "start_line": 462,
+      "end_line": 471,
+      "header_lines": [
+        463
+      ],
+      "content_start": 464,
+      "content_end": 470,
+      "content": "464: :::{prf:lemma} Borel image of the projected swarm space\n465: :label: lem-borel-image-of-the-projected-swarm-space\n466: Let $(\\mathcal X,d_{\\mathcal X})$ be Polish and $\\varphi:\\mathcal X\\to\\mathcal Y$ continuous. If $\\mathcal X$ is $\\sigma$‑compact and $\\Sigma_N\\subset(\\mathcal X\\times\\{0,1\\})^N$ is Borel, then the projected image\n467: \n468: $$\n469: \\widehat{\\Phi}(\\Sigma_N):=\\{((\\varphi(x_i),s_i))_{i=1}^N : ((x_i,s_i))\\in\\Sigma_N\\}\\subset (\\mathcal Y\\times\\{0,1\\})^N\n470: $$",
+      "metadata": {
+        "label": "lem-borel-image-of-the-projected-swarm-space"
+      },
+      "section": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
+      "raw_directive": "462: #### 1.6.2 Borel image and completion of the working space\n463: \n464: :::{prf:lemma} Borel image of the projected swarm space\n465: :label: lem-borel-image-of-the-projected-swarm-space\n466: Let $(\\mathcal X,d_{\\mathcal X})$ be Polish and $\\varphi:\\mathcal X\\to\\mathcal Y$ continuous. If $\\mathcal X$ is $\\sigma$‑compact and $\\Sigma_N\\subset(\\mathcal X\\times\\{0,1\\})^N$ is Borel, then the projected image\n467: \n468: $$\n469: \\widehat{\\Phi}(\\Sigma_N):=\\{((\\varphi(x_i),s_i))_{i=1}^N : ((x_i,s_i))\\in\\Sigma_N\\}\\subset (\\mathcal Y\\times\\{0,1\\})^N\n470: $$\n471: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
+        "section_id": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-polishness-and-w2",
+      "title": "Polishness of the quotient state space and $W_2$",
+      "start_line": 488,
+      "end_line": 492,
+      "header_lines": [
+        489
+      ],
+      "content_start": 491,
+      "content_end": 491,
+      "content": "491: :label: lem-polishness-and-w2",
+      "metadata": {
+        "label": "lem-polishness-and-w2"
+      },
+      "section": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
+      "raw_directive": "488: #### 1.7.1 Polishness and $W_2$ well‑posedness (on the quotient)\n489: \n490: :::{prf:lemma} Polishness of the quotient state space and $W_2$\n491: :label: lem-polishness-and-w2\n492: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
+        "section_id": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "proof-lem-validation-of-the-heat-kernel",
+      "title": "Validation of the Heat Kernel",
+      "start_line": 1130,
+      "end_line": 1139,
+      "header_lines": [
+        1131,
+        1134
+      ],
+      "content_start": 1132,
+      "content_end": 1138,
+      "content": "1132: :label: lem-validation-of-the-heat-kernel\n1133: If the state space $(\\mathcal{X}, d_{\\mathcal{X}}, \\mu)$ is a Polish metric measure space with a canonical heat kernel $p_t(x, \\cdot)$ that has a uniformly bounded second moment, then defining the perturbation noise measure as $\\mathcal{P}_\\sigma(x, \\cdot) := p_{\\sigma^2}(x, \\cdot)$ satisfies the required axioms, provided the boundary of the valid set $\\mathcal{X}_{\\mathrm{valid}}$ is sufficiently regular.\n1134: :::{prf:proof}\n1135: :label: proof-lem-validation-of-the-heat-kernel\n1136: **Proof.**\n1137: 1.  **Axiom of Bounded Second Moment of Perturbation ([](#def-axiom-bounded-second-moment-perturbation)):** The definition of the state space requires that the heat kernel has a uniformly bounded second moment, i.e., $\\sup_{x \\in \\mathcal{X}} \\mathbb{E}_{x' \\sim p_t(x, \\cdot)} [ d_{\\mathcal{Y}}(\\varphi(x'), \\varphi(x))^2 ] \\le M_{\\text{pert}}^2$. This directly satisfies the axiom.\n1138: 2.  **Axiom of Boundary Regularity ([](#axiom-boundary-regularity)):** The death probability is given by the function $P(s_{\\text{out}}=0 | x) = \\int_{\\mathcal{X} \\setminus \\mathcal{X}_{\\mathrm{valid}}} p_{\\sigma^2}(x, dx')$. This is the convolution of the indicator function of the invalid set with the heat kernel. For non-pathological boundaries (e.g., boundaries that are not space-filling curves), the heat kernel is a well-known smoothing operator. Standard results in analysis show that the convolution of a smooth kernel with an indicator function results in a continuous function. For heat kernels specifically, the resulting function $P$ is smooth and therefore locally Hölder continuous. Global Hölder continuity follows on compact subsets of $\\mathcal X$ by a finite subcover argument.",
+      "metadata": {
+        "label": "proof-lem-validation-of-the-heat-kernel"
+      },
+      "section": "## 5. Algorithmic Noise Measures",
+      "raw_directive": "1130: #### 5.2.1 Lemma: Validation of the Heat Kernel\n1131: :::{prf:lemma} Validation of the Heat Kernel\n1132: :label: lem-validation-of-the-heat-kernel\n1133: If the state space $(\\mathcal{X}, d_{\\mathcal{X}}, \\mu)$ is a Polish metric measure space with a canonical heat kernel $p_t(x, \\cdot)$ that has a uniformly bounded second moment, then defining the perturbation noise measure as $\\mathcal{P}_\\sigma(x, \\cdot) := p_{\\sigma^2}(x, \\cdot)$ satisfies the required axioms, provided the boundary of the valid set $\\mathcal{X}_{\\mathrm{valid}}$ is sufficiently regular.\n1134: :::{prf:proof}\n1135: :label: proof-lem-validation-of-the-heat-kernel\n1136: **Proof.**\n1137: 1.  **Axiom of Bounded Second Moment of Perturbation ([](#def-axiom-bounded-second-moment-perturbation)):** The definition of the state space requires that the heat kernel has a uniformly bounded second moment, i.e., $\\sup_{x \\in \\mathcal{X}} \\mathbb{E}_{x' \\sim p_t(x, \\cdot)} [ d_{\\mathcal{Y}}(\\varphi(x'), \\varphi(x))^2 ] \\le M_{\\text{pert}}^2$. This directly satisfies the axiom.\n1138: 2.  **Axiom of Boundary Regularity ([](#axiom-boundary-regularity)):** The death probability is given by the function $P(s_{\\text{out}}=0 | x) = \\int_{\\mathcal{X} \\setminus \\mathcal{X}_{\\mathrm{valid}}} p_{\\sigma^2}(x, dx')$. This is the convolution of the indicator function of the invalid set with the heat kernel. For non-pathological boundaries (e.g., boundaries that are not space-filling curves), the heat kernel is a well-known smoothing operator. Standard results in analysis show that the convolution of a smooth kernel with an indicator function results in a continuous function. For heat kernels specifically, the resulting function $P$ is smooth and therefore locally Hölder continuous. Global Hölder continuity follows on compact subsets of $\\mathcal X$ by a finite subcover argument.\n1139: **Q.E.D.**",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. Algorithmic Noise Measures"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-validation-of-the-uniform-ball-measure",
+      "title": "Validation of the Uniform Ball Measure",
+      "start_line": 1149,
+      "end_line": 1157,
+      "header_lines": [
+        1150
+      ],
+      "content_start": 1151,
+      "content_end": 1156,
+      "content": "1151: :label: lem-validation-of-the-uniform-ball-measure\n1152: Let the noise measure $\\mathcal{P}_\\sigma(x, \\cdot)$ be defined as the uniform probability measure over a ball of radius $\\sigma$ centered at $x$ in the state space $\\mathcal{X}$. This measure satisfies the required axioms, provided the boundary of the valid set is sufficiently regular. In particular, the death‑probability map is continuous under mild assumptions; to claim a global Lipschitz modulus with respect to $d_{\\text{Disp},\\mathcal{Y}}$, assume $\\mathcal{X}_{\\mathrm{valid}}$ has Lipschitz boundary or finite perimeter so that boundary layer estimates apply. In that case one obtains an explicit bound of the form\n1153: \n1154: $$\n1155: L_{\\text{death}}\\;\\le\\; \\frac{C_{\\text{perim}}}{\\sigma},\n1156: $$",
+      "metadata": {
+        "label": "lem-validation-of-the-uniform-ball-measure"
+      },
+      "section": "## 5. Algorithmic Noise Measures",
+      "raw_directive": "1149: #### 5.2.2 Lemma: Validation of the Uniform Ball Measure\n1150: :::{prf:lemma} Validation of the Uniform Ball Measure\n1151: :label: lem-validation-of-the-uniform-ball-measure\n1152: Let the noise measure $\\mathcal{P}_\\sigma(x, \\cdot)$ be defined as the uniform probability measure over a ball of radius $\\sigma$ centered at $x$ in the state space $\\mathcal{X}$. This measure satisfies the required axioms, provided the boundary of the valid set is sufficiently regular. In particular, the death‑probability map is continuous under mild assumptions; to claim a global Lipschitz modulus with respect to $d_{\\text{Disp},\\mathcal{Y}}$, assume $\\mathcal{X}_{\\mathrm{valid}}$ has Lipschitz boundary or finite perimeter so that boundary layer estimates apply. In that case one obtains an explicit bound of the form\n1153: \n1154: $$\n1155: L_{\\text{death}}\\;\\le\\; \\frac{C_{\\text{perim}}}{\\sigma},\n1156: $$\n1157: where $C_{\\text{perim}}$ depends on the perimeter (surface measure) of $\\partial\\mathcal{X}_{\\mathrm{valid}}$ in the algorithmic metric.",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. Algorithmic Noise Measures"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-boundary-uniform-ball",
+      "title": "Uniform‑ball death probability is Lipschitz under finite perimeter",
+      "start_line": 1175,
+      "end_line": 1190,
+      "header_lines": [
+        1176
+      ],
+      "content_start": 1177,
+      "content_end": 1189,
+      "content": "1177: :label: lem-boundary-uniform-ball\n1178: Let $E=\\mathcal{X}_{\\mathrm{invalid}}\\subset\\mathcal X$ have finite perimeter (BV boundary) and let $\\mathcal P_\\sigma(x,\\cdot)$ be the uniform law on $B(x,\\sigma)$. Define\n1179: $$\n1180: \n1181: P_\\sigma(x)\\;:=\\;\\mathcal P_\\sigma(x, E)\\;=\\;\\frac{1}{\\mathrm{Vol}(B_\\sigma)}\\int \\mathbb 1_E(y)\\,\\mathbb 1_{B_\\sigma}(y-x)\\,\\mathrm dy.\n1182: \n1183: $$\n1184: Then there exists a constant $C_d>0$ depending only on the dimension such that for all $x,y\\in\\mathcal X$,\n1185: $$\n1186: \n1187: |P_\\sigma(x)-P_\\sigma(y)|\\;\\le\\; C_d\\,\\frac{\\mathrm{Per}(E)}{\\sigma}\\, d_{\\mathcal X}(x,y).\n1188: \n1189: $$",
+      "metadata": {
+        "label": "lem-boundary-uniform-ball"
+      },
+      "section": "## 5. Algorithmic Noise Measures",
+      "raw_directive": "1175: #### 5.2.3 Lemma: BV/perimeter Lipschitz bound for uniform‑ball death probability\n1176: :::{prf:lemma} Uniform‑ball death probability is Lipschitz under finite perimeter\n1177: :label: lem-boundary-uniform-ball\n1178: Let $E=\\mathcal{X}_{\\mathrm{invalid}}\\subset\\mathcal X$ have finite perimeter (BV boundary) and let $\\mathcal P_\\sigma(x,\\cdot)$ be the uniform law on $B(x,\\sigma)$. Define\n1179: $$\n1180: \n1181: P_\\sigma(x)\\;:=\\;\\mathcal P_\\sigma(x, E)\\;=\\;\\frac{1}{\\mathrm{Vol}(B_\\sigma)}\\int \\mathbb 1_E(y)\\,\\mathbb 1_{B_\\sigma}(y-x)\\,\\mathrm dy.\n1182: \n1183: $$\n1184: Then there exists a constant $C_d>0$ depending only on the dimension such that for all $x,y\\in\\mathcal X$,\n1185: $$\n1186: \n1187: |P_\\sigma(x)-P_\\sigma(y)|\\;\\le\\; C_d\\,\\frac{\\mathrm{Per}(E)}{\\sigma}\\, d_{\\mathcal X}(x,y).\n1188: \n1189: $$\n1190: If $\\varphi$ is $L_\\varphi$‑Lipschitz and distances are measured in the algorithmic space, the bound becomes $L_{\\text{death}}\\le C_d (\\mathrm{Per}(\\varphi(E))/\\sigma)\\,L_\\varphi$.",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. Algorithmic Noise Measures"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-boundary-heat-kernel",
+      "title": "Heat‑kernel death probability is Lipschitz with constant $\\lesssim 1/\\sigma$",
+      "start_line": 1201,
+      "end_line": 1210,
+      "header_lines": [
+        1202
+      ],
+      "content_start": 1203,
+      "content_end": 1209,
+      "content": "1203: :label: lem-boundary-heat-kernel\n1204: Let $E=\\mathcal{X}_{\\mathrm{invalid}}\\subset\\mathcal X$ have finite perimeter and let $p_{\\sigma^2}$ be the heat kernel at scale $\\sigma$. Define $P_\\sigma(x)=\\int \\chi_E(y)\\,p_{\\sigma^2}(x,\\mathrm dy)$. Then\n1205: $$\n1206: \n1207: |P_\\sigma(x)-P_\\sigma(y)|\\;\\le\\; C_d'\\,\\frac{\\mathrm{Per}(E)}{\\sigma}\\, d_{\\mathcal X}(x,y),\n1208: \n1209: $$",
+      "metadata": {
+        "label": "lem-boundary-heat-kernel"
+      },
+      "section": "## 5. Algorithmic Noise Measures",
+      "raw_directive": "1201: #### 5.2.4 Lemma: Heat‑kernel Lipschitz bound via BV smoothing\n1202: :::{prf:lemma} Heat‑kernel death probability is Lipschitz with constant $\\lesssim 1/\\sigma$\n1203: :label: lem-boundary-heat-kernel\n1204: Let $E=\\mathcal{X}_{\\mathrm{invalid}}\\subset\\mathcal X$ have finite perimeter and let $p_{\\sigma^2}$ be the heat kernel at scale $\\sigma$. Define $P_\\sigma(x)=\\int \\chi_E(y)\\,p_{\\sigma^2}(x,\\mathrm dy)$. Then\n1205: $$\n1206: \n1207: |P_\\sigma(x)-P_\\sigma(y)|\\;\\le\\; C_d'\\,\\frac{\\mathrm{Per}(E)}{\\sigma}\\, d_{\\mathcal X}(x,y),\n1208: \n1209: $$\n1210: with a constant $C_d'$ depending on dimension. Consequently $L_{\\text{death}}\\lesssim (\\mathrm{Per}(\\varphi(E))/\\sigma)\\,L_\\varphi$ in the algorithmic metric.",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. Algorithmic Noise Measures"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-empirical-moments-lipschitz",
+      "title": "Empirical moments are Lipschitz in L2",
+      "start_line": 1317,
+      "end_line": 1334,
+      "header_lines": [
+        1318
+      ],
+      "content_start": 1320,
+      "content_end": 1333,
+      "content": "1320: \n1321: Let $\\mathbf v\\in\\mathbb R^k$ collect the values of the $k=|\\mathcal A(\\mathcal S)|$ alive walkers. Consider the empirical mean and second raw moment\n1322: \n1323: $$\n1324: \\mu(\\mathbf v) = \\frac{1}{k}\\sum_{i=1}^k v_i,\\qquad m_2(\\mathbf v) = \\frac{1}{k}\\sum_{i=1}^k v_i^{\\,2}.\n1325: $$\n1326: \n1327: Assume $|v_i|\\le V_{\\max}$ for all $i$. Then, with respect to the L2 norm on $\\mathbb R^k$,\n1328: \n1329: $$\n1330: |\\mu(\\mathbf v_1)-\\mu(\\mathbf v_2)|\\;\\le\\; \\frac{1}{\\sqrt{k}}\\,\\|\\mathbf v_1-\\mathbf v_2\\|_2,\\qquad\n1331: |m_2(\\mathbf v_1)-m_2(\\mathbf v_2)|\\;\\le\\; \\frac{2 V_{\\max}}{\\sqrt{k}}\\,\\|\\mathbf v_1-\\mathbf v_2\\|_2.\n1332: $$\n1333: ",
+      "metadata": {
+        "label": "lem-empirical-moments-lipschitz"
+      },
+      "section": "## 7. Swarm Measuring",
+      "raw_directive": "1317: ##### 7.2.2.1 Lemma: Lipschitz constants for empirical moments (mean and second moment)\n1318: :::{prf:lemma} Empirical moments are Lipschitz in L2\n1319: :label: lem-empirical-moments-lipschitz\n1320: \n1321: Let $\\mathbf v\\in\\mathbb R^k$ collect the values of the $k=|\\mathcal A(\\mathcal S)|$ alive walkers. Consider the empirical mean and second raw moment\n1322: \n1323: $$\n1324: \\mu(\\mathbf v) = \\frac{1}{k}\\sum_{i=1}^k v_i,\\qquad m_2(\\mathbf v) = \\frac{1}{k}\\sum_{i=1}^k v_i^{\\,2}.\n1325: $$\n1326: \n1327: Assume $|v_i|\\le V_{\\max}$ for all $i$. Then, with respect to the L2 norm on $\\mathbb R^k$,\n1328: \n1329: $$\n1330: |\\mu(\\mathbf v_1)-\\mu(\\mathbf v_2)|\\;\\le\\; \\frac{1}{\\sqrt{k}}\\,\\|\\mathbf v_1-\\mathbf v_2\\|_2,\\qquad\n1331: |m_2(\\mathbf v_1)-m_2(\\mathbf v_2)|\\;\\le\\; \\frac{2 V_{\\max}}{\\sqrt{k}}\\,\\|\\mathbf v_1-\\mathbf v_2\\|_2.\n1332: $$\n1333: \n1334: In particular, for the empirical aggregator we may take $L_{\\mu,M}=1/\\sqrt{k}$ and $L_{m_2,M}=2V_{\\max}/\\sqrt{k}$.",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 7,
+        "chapter_file": "chapter_7.json",
+        "section_id": "## 7. Swarm Measuring"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-empirical-aggregator-properties",
+      "title": "Axiomatic Properties of the Empirical Measure Aggregator",
+      "start_line": 1348,
+      "end_line": 1363,
+      "header_lines": [
+        1349
+      ],
+      "content_start": 1350,
+      "content_end": 1362,
+      "content": "1350: :label: lem-empirical-aggregator-properties\n1351: Let the aggregation operator $M$ be defined such that for any swarm state $\\mathcal{S}$ with alive set $\\mathcal{A}(\\mathcal{S})$ of size $k = |\\mathcal{A}(\\mathcal{S})| \\ge 1$, and any raw value vector $\\mathbf{v}$, it produces the discrete empirical measure:\n1352: \n1353: $$\n1354: M(\\mathcal{S}, \\mathbf{v}) = \\frac{1}{k} \\sum_{i \\in \\mathcal{A}(\\mathcal{S})} \\delta_{v_i}\n1355: $$\n1356: \n1357: :::{note}\n1358: **Breaking down this formula**:\n1359: - $k = |\\mathcal{A}(\\mathcal{S})|$ is the number of alive walkers\n1360: - $\\delta_{v_i}$ is a \"spike\" (Dirac delta) at value $v_i$ - it puts all probability mass exactly at that point\n1361: - The sum creates a collection of spikes, one for each alive walker's value\n1362: - The $\\frac{1}{k}$ factor gives each walker equal weight",
+      "metadata": {
+        "label": "lem-empirical-aggregator-properties"
+      },
+      "section": "## 7. Swarm Measuring",
+      "raw_directive": "1348: The most fundamental aggregation operator is one that produces the standard empirical measure of the raw values from the alive set. We now formally prove that this operator satisfies the axiomatic requirements of [](#def-swarm-aggregation-operator-axiomatic) and derive its specific continuity constants and growth exponents.\n1349: :::{prf:lemma} Axiomatic Properties of the Empirical Measure Aggregator\n1350: :label: lem-empirical-aggregator-properties\n1351: Let the aggregation operator $M$ be defined such that for any swarm state $\\mathcal{S}$ with alive set $\\mathcal{A}(\\mathcal{S})$ of size $k = |\\mathcal{A}(\\mathcal{S})| \\ge 1$, and any raw value vector $\\mathbf{v}$, it produces the discrete empirical measure:\n1352: \n1353: $$\n1354: M(\\mathcal{S}, \\mathbf{v}) = \\frac{1}{k} \\sum_{i \\in \\mathcal{A}(\\mathcal{S})} \\delta_{v_i}\n1355: $$\n1356: \n1357: :::{note}\n1358: **Breaking down this formula**:\n1359: - $k = |\\mathcal{A}(\\mathcal{S})|$ is the number of alive walkers\n1360: - $\\delta_{v_i}$ is a \"spike\" (Dirac delta) at value $v_i$ - it puts all probability mass exactly at that point\n1361: - The sum creates a collection of spikes, one for each alive walker's value\n1362: - The $\\frac{1}{k}$ factor gives each walker equal weight\n1363: **Result**: A probability distribution that treats each alive walker's measurement as equally important. This is the foundation for computing means, variances, and other statistics!",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 7,
+        "chapter_file": "chapter_7.json",
+        "section_id": "## 7. Swarm Measuring"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-set-difference-bound",
+      "title": "Bound on the Error from Companion Set Change",
+      "start_line": 1520,
+      "end_line": 1529,
+      "header_lines": [
+        1521
+      ],
+      "content_start": 1522,
+      "content_end": 1528,
+      "content": "1522: :label: lem-set-difference-bound\n1523: Let $S_1$ and $S_2$ be two companion support sets, with $|S_1| > 0$. Let $f_j = f(x_j)$ be a real-valued function bounded by a constant $M_f$ such that $|f_j| \\le M_f$ for all $j$.\n1524: The absolute difference between the sums over these two sets, normalized by the initial set size $|S_1|$, is bounded by the size of the symmetric difference between the sets, $|S_1 \\Delta S_2|$.\n1525: $$\n1526: \n1527: \\left| \\frac{1}{|S_1|} \\sum_{j \\in S_1} f_j - \\frac{1}{|S_1|} \\sum_{j \\in S_2} f_j \\right| \\le \\frac{M_f}{|S_1|} |S_1 \\Delta S_2|\n1528: ",
+      "metadata": {
+        "label": "lem-set-difference-bound"
+      },
+      "section": "## 8. Companion Selection",
+      "raw_directive": "1520: This lemma bounds the component of the error that arises purely from the change in the set of companions, holding the normalization constant fixed.\n1521: :::{prf:lemma} Bound on the Error from Companion Set Change\n1522: :label: lem-set-difference-bound\n1523: Let $S_1$ and $S_2$ be two companion support sets, with $|S_1| > 0$. Let $f_j = f(x_j)$ be a real-valued function bounded by a constant $M_f$ such that $|f_j| \\le M_f$ for all $j$.\n1524: The absolute difference between the sums over these two sets, normalized by the initial set size $|S_1|$, is bounded by the size of the symmetric difference between the sets, $|S_1 \\Delta S_2|$.\n1525: $$\n1526: \n1527: \\left| \\frac{1}{|S_1|} \\sum_{j \\in S_1} f_j - \\frac{1}{|S_1|} \\sum_{j \\in S_2} f_j \\right| \\le \\frac{M_f}{|S_1|} |S_1 \\Delta S_2|\n1528: \n1529: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 8,
+        "chapter_file": "chapter_8.json",
+        "section_id": "## 8. Companion Selection"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-normalization-difference-bound",
+      "title": "Bound on the Error from Normalization Change",
+      "start_line": 1550,
+      "end_line": 1559,
+      "header_lines": [
+        1551
+      ],
+      "content_start": 1552,
+      "content_end": 1558,
+      "content": "1552: :label: lem-normalization-difference-bound\n1553: Let $S_1$ and $S_2$ be two companion support sets, with $|S_1|, |S_2| > 0$. Let $f_j = f(x_j)$ be a real-valued function bounded by a constant $M_f$.\n1554: The absolute difference between two sums over the *same* set $S_2$, but with different normalization constants, is bounded by the absolute difference in the set sizes.\n1555: $$\n1556: \n1557: \\left| \\frac{1}{|S_1|} \\sum_{j \\in S_2} f_j - \\frac{1}{|S_2|} \\sum_{j \\in S_2} f_j \\right| \\le \\frac{M_f}{|S_1|} \\big||S_1| - |S_2|\\big|\n1558: ",
+      "metadata": {
+        "label": "lem-normalization-difference-bound"
+      },
+      "section": "## 8. Companion Selection",
+      "raw_directive": "1550: This lemma bounds the component of the error that arises from changing the normalization constants, from $1/|S_1|$ to $1/|S_2|$, while holding the summation set fixed.\n1551: :::{prf:lemma} Bound on the Error from Normalization Change\n1552: :label: lem-normalization-difference-bound\n1553: Let $S_1$ and $S_2$ be two companion support sets, with $|S_1|, |S_2| > 0$. Let $f_j = f(x_j)$ be a real-valued function bounded by a constant $M_f$.\n1554: The absolute difference between two sums over the *same* set $S_2$, but with different normalization constants, is bounded by the absolute difference in the set sizes.\n1555: $$\n1556: \n1557: \\left| \\frac{1}{|S_1|} \\sum_{j \\in S_2} f_j - \\frac{1}{|S_2|} \\sum_{j \\in S_2} f_j \\right| \\le \\frac{M_f}{|S_1|} \\big||S_1| - |S_2|\\big|\n1558: \n1559: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 8,
+        "chapter_file": "chapter_8.json",
+        "section_id": "## 8. Companion Selection"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-cubic-patch-uniqueness",
+      "title": "Existence and Uniqueness of the Smooth Rescale Patch",
+      "start_line": 1693,
+      "end_line": 1696,
+      "header_lines": [
+        1694
+      ],
+      "content_start": 1695,
+      "content_end": 1695,
+      "content": "1695: :label: lem-cubic-patch-uniqueness",
+      "metadata": {
+        "label": "lem-cubic-patch-uniqueness"
+      },
+      "section": "## 9. Rescale Transformation",
+      "raw_directive": "1693: The construction of the $Smooth Piecewise Rescale Function$ relies on the existence of a unique cubic polynomial that seamlessly connects the logarithmic and constant segments. The following lemma provides the formal proof that such a polynomial is always uniquely determined by the specified boundary conditions.\n1694: :::{prf:lemma} Existence and Uniqueness of the Smooth Rescale Patch\n1695: :label: lem-cubic-patch-uniqueness\n1696: For any $z_max > 1$, there exists a unique cubic polynomial $P(z)$ that satisfies the four $C¹$ boundary conditions specified in [](#def-asymmetric-rescale-function).",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 9,
+        "chapter_file": "chapter_9.json",
+        "section_id": "## 9. Rescale Transformation"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-cubic-patch-coefficients",
+      "title": "Explicit Coefficients of the Smooth Rescale Patch",
+      "start_line": 1743,
+      "end_line": 1756,
+      "header_lines": [
+        1744
+      ],
+      "content_start": 1745,
+      "content_end": 1755,
+      "content": "1745: :label: lem-cubic-patch-coefficients\n1746: Let the cubic polynomial patch $P(z)$ be defined on the interval $[z_{\\max}-1, z_{\\max}]$. Let this interval be normalized by the variable $s = z - (z_{\\max}-1)$, such that $z \\in [z_{\\max}-1, z_{\\max}]$ corresponds to $s \\in [0, 1]$. In this normalized coordinate system, the polynomial can be written as:\n1747: $$\n1748: \n1749: P(z(s)) = Q(s) = As^3 + Bs^2 + Cs + D\n1750: \n1751: $$\n1752: The four coefficients, $A, B, C, D$, are uniquely determined by the boundary conditions and the parameter $z_{\\max} > 1$:\n1753: *   $A = \\frac{1}{z_{\\max}} - 2\\log\\left(1 + \\frac{1}{z_{\\max}}\\right)$\n1754: *   $B = 3\\log\\left(1 + \\frac{1}{z_{\\max}}\\right) - \\frac{2}{z_{\\max}}$\n1755: *   $C = \\frac{1}{z_{\\max}}$",
+      "metadata": {
+        "label": "lem-cubic-patch-coefficients"
+      },
+      "section": "## 9. Rescale Transformation",
+      "raw_directive": "1743: To analyze the properties of the derivative of the polynomial patch $P(z)$, we must first find its explicit coefficients. While [](#lem-cubic-patch-uniqueness) guarantees their existence and uniqueness, the following lemma provides their exact form in terms of the single governing parameter, $z_{\\max}$.\n1744: :::{prf:lemma} Explicit Coefficients of the Smooth Rescale Patch\n1745: :label: lem-cubic-patch-coefficients\n1746: Let the cubic polynomial patch $P(z)$ be defined on the interval $[z_{\\max}-1, z_{\\max}]$. Let this interval be normalized by the variable $s = z - (z_{\\max}-1)$, such that $z \\in [z_{\\max}-1, z_{\\max}]$ corresponds to $s \\in [0, 1]$. In this normalized coordinate system, the polynomial can be written as:\n1747: $$\n1748: \n1749: P(z(s)) = Q(s) = As^3 + Bs^2 + Cs + D\n1750: \n1751: $$\n1752: The four coefficients, $A, B, C, D$, are uniquely determined by the boundary conditions and the parameter $z_{\\max} > 1$:\n1753: *   $A = \\frac{1}{z_{\\max}} - 2\\log\\left(1 + \\frac{1}{z_{\\max}}\\right)$\n1754: *   $B = 3\\log\\left(1 + \\frac{1}{z_{\\max}}\\right) - \\frac{2}{z_{\\max}}$\n1755: *   $C = \\frac{1}{z_{\\max}}$\n1756: *   $D = \\log(z_{\\max}) + 1$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 9,
+        "chapter_file": "chapter_9.json",
+        "section_id": "## 9. Rescale Transformation"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-cubic-patch-derivative",
+      "title": "Explicit Form of the Polynomial Patch Derivative",
+      "start_line": 1798,
+      "end_line": 1806,
+      "header_lines": [
+        1799
+      ],
+      "content_start": 1800,
+      "content_end": 1805,
+      "content": "1800: :label: lem-cubic-patch-derivative\n1801: Let $P(z)$ be the cubic polynomial patch on the interval $[z_{\\max}-1, z_{\\max}]$, and let $s = z - (z_{\\max}-1)$ be the normalized coordinate on $[0, 1]$. The first derivative of the polynomial, $P'(z)$, is a quadratic function of the normalized coordinate $s$, given by:\n1802: $$\n1803: \n1804: P'(z(s)) = 3\\left(\\frac{1}{z_{\\max}} - 2\\log\\left(1 + \\frac{1}{z_{\\max}}\\right)\\right)s^2 + 2\\left(3\\log\\left(1 + \\frac{1}{z_{\\max}}\\right) - \\frac{2}{z_{\\max}}\\right)s + \\frac{1}{z_{\\max}}\n1805: ",
+      "metadata": {
+        "label": "lem-cubic-patch-derivative"
+      },
+      "section": "## 9. Rescale Transformation",
+      "raw_directive": "1798: Having derived the explicit coefficients for the cubic polynomial patch, we can now define the exact functional form of its first derivative. This isolates the quadratic function whose bounds we must analyze to establish the global Lipschitz continuity of the complete rescale function.\n1799: :::{prf:lemma} Explicit Form of the Polynomial Patch Derivative\n1800: :label: lem-cubic-patch-derivative\n1801: Let $P(z)$ be the cubic polynomial patch on the interval $[z_{\\max}-1, z_{\\max}]$, and let $s = z - (z_{\\max}-1)$ be the normalized coordinate on $[0, 1]$. The first derivative of the polynomial, $P'(z)$, is a quadratic function of the normalized coordinate $s$, given by:\n1802: $$\n1803: \n1804: P'(z(s)) = 3\\left(\\frac{1}{z_{\\max}} - 2\\log\\left(1 + \\frac{1}{z_{\\max}}\\right)\\right)s^2 + 2\\left(3\\log\\left(1 + \\frac{1}{z_{\\max}}\\right) - \\frac{2}{z_{\\max}}\\right)s + \\frac{1}{z_{\\max}}\n1805: \n1806: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 9,
+        "chapter_file": "chapter_9.json",
+        "section_id": "## 9. Rescale Transformation"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-polynomial-patch-monotonicity",
+      "title": "Monotonicity of the Polynomial Patch",
+      "start_line": 1836,
+      "end_line": 1839,
+      "header_lines": [
+        1837
+      ],
+      "content_start": 1838,
+      "content_end": 1838,
+      "content": "1838: :label: lem-polynomial-patch-monotonicity",
+      "metadata": {
+        "label": "lem-polynomial-patch-monotonicity"
+      },
+      "section": "## 9. Rescale Transformation",
+      "raw_directive": "1836: ##### 8.2.2.4 Lemma: Monotonicity of the Polynomial Patch (Fritsch–Carlson/Hyman)\n1837: :::{prf:lemma} Monotonicity of the Polynomial Patch\n1838: :label: lem-polynomial-patch-monotonicity\n1839: Let $z_0=z_{\\max}-1$, $z_1=z_{\\max}$, $y_0=\\log(z_{\\max})+1$, $y_1=\\log(1+z_{\\max})+1$, and endpoint slopes $m_0=P'(z_0)=1/z_{\\max}$, $m_1=P'(z_1)=0$. Set the secant $\\Delta:=(y_1-y_0)/(z_1-z_0)=\\log(1+1/z_{\\max})>0$. Then the Hermite cubic $P$ on $[z_0,z_1]$ with $(y_0,m_0),(y_1,m_1)$ is monotonically non‑decreasing.",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 9,
+        "chapter_file": "chapter_9.json",
+        "section_id": "## 9. Rescale Transformation"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-cubic-patch-derivative-bounds",
+      "title": "Bounds on the Polynomial Patch Derivative",
+      "start_line": 1850,
+      "end_line": 1864,
+      "header_lines": [
+        1851
+      ],
+      "content_start": 1852,
+      "content_end": 1863,
+      "content": "1852: :label: lem-cubic-patch-derivative-bounds\n1853: Let $P'(z(s))$ be the derivative of the cubic patch on the interval $s \\in [0, 1]$, as defined in [](#lem-cubic-patch-derivative). This derivative is uniformly bounded on its domain for any choice of $z_{\\max} > 1$. Specifically, it satisfies:\n1854: $$\n1855: \n1856: 0 \\le P'(z(s)) \\le L_P\n1857: \n1858: $$\n1859: where $L_P$ is a constant slightly greater than 1, given by:\n1860: $$\n1861: \n1862: L_P = 1 + \\frac{(3\\log(2)-2)^2}{3(2\\log(2)-1)} \\approx 1.0054\n1863: ",
+      "metadata": {
+        "label": "lem-cubic-patch-derivative-bounds"
+      },
+      "section": "## 9. Rescale Transformation",
+      "raw_directive": "1850: ##### 8.2.2.5 Lemma: Bounds on the Polynomial Patch Derivative\n1851: :::{prf:lemma} Bounds on the Polynomial Patch Derivative\n1852: :label: lem-cubic-patch-derivative-bounds\n1853: Let $P'(z(s))$ be the derivative of the cubic patch on the interval $s \\in [0, 1]$, as defined in [](#lem-cubic-patch-derivative). This derivative is uniformly bounded on its domain for any choice of $z_{\\max} > 1$. Specifically, it satisfies:\n1854: $$\n1855: \n1856: 0 \\le P'(z(s)) \\le L_P\n1857: \n1858: $$\n1859: where $L_P$ is a constant slightly greater than 1, given by:\n1860: $$\n1861: \n1862: L_P = 1 + \\frac{(3\\log(2)-2)^2}{3(2\\log(2)-1)} \\approx 1.0054\n1863: \n1864: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 9,
+        "chapter_file": "chapter_9.json",
+        "section_id": "## 9. Rescale Transformation"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-rescale-monotonicity",
+      "title": "Monotonicity of the Smooth Rescale Function",
+      "start_line": 1928,
+      "end_line": 1931,
+      "header_lines": [
+        1929
+      ],
+      "content_start": 1930,
+      "content_end": 1930,
+      "content": "1930: :label: lem-rescale-monotonicity",
+      "metadata": {
+        "label": "lem-rescale-monotonicity"
+      },
+      "section": "## 9. Rescale Transformation",
+      "raw_directive": "1928: A critical property of the rescale function $g_A(z)$ is that it must be monotonically non-decreasing. This ensures that a higher standardized score always results in a higher (or equal) rescaled value, preserving the intended ordering of walker potentials. The following lemma formalizes this property for the entire function.\n1929: :::{prf:lemma} Monotonicity of the Smooth Rescale Function\n1930: :label: lem-rescale-monotonicity\n1931: The $Smooth Piecewise Rescale Function$ $g_A(z)$ is monotonically non-decreasing on $ℝ$.",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 9,
+        "chapter_file": "chapter_9.json",
+        "section_id": "## 9. Rescale Transformation"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-lipschitz-constant-of-the-patched-standardization",
+      "title": "Lipschitz constant of the patched standardization",
+      "start_line": 1995,
+      "end_line": 2004,
+      "header_lines": [
+        1996
+      ],
+      "content_start": 1997,
+      "content_end": 2003,
+      "content": "1997: :label: lem-lipschitz-constant-of-the-patched-standardization\n1998: Let $z=\\sigma\\'_{\\text{reg}}(\\cdot)$ denote the patched standardization of raw values with variance floor $\\varepsilon_{\\text{std}}>0$, and let $g_A$ be the piecewise rescale in §8.2.2. Then $g_A\\circ z$ is globally Lipschitz. In particular, if the variance functional of the chosen aggregator is $L_{\\mathrm{var}}$‑Lipschitz (see §8.2.2.10), then\n1999: $$\n2000: \n2001: L_{g_A\\circ z}\\;\\le\\; L_{g_A}\\cdot L_{z},\\qquad L_{g_A}\\le \\max\\{L_P,1\\},\\quad L_{z}\\le L_{\\sigma\\'_{\\text{reg}}}\\,L_{\\mathrm{var}}.\n2002: \n2003: $$",
+      "metadata": {
+        "label": "lem-lipschitz-constant-of-the-patched-standardization"
+      },
+      "section": "## 9. Rescale Transformation",
+      "raw_directive": "1995: ##### 8.2.2.8 Global Lipschitz bound for the standardized map\n1996: :::{prf:lemma} Lipschitz constant of the patched standardization\n1997: :label: lem-lipschitz-constant-of-the-patched-standardization\n1998: Let $z=\\sigma\\'_{\\text{reg}}(\\cdot)$ denote the patched standardization of raw values with variance floor $\\varepsilon_{\\text{std}}>0$, and let $g_A$ be the piecewise rescale in §8.2.2. Then $g_A\\circ z$ is globally Lipschitz. In particular, if the variance functional of the chosen aggregator is $L_{\\mathrm{var}}$‑Lipschitz (see §8.2.2.10), then\n1999: $$\n2000: \n2001: L_{g_A\\circ z}\\;\\le\\; L_{g_A}\\cdot L_{z},\\qquad L_{g_A}\\le \\max\\{L_P,1\\},\\quad L_{z}\\le L_{\\sigma\\'_{\\text{reg}}}\\,L_{\\mathrm{var}}.\n2002: \n2003: $$\n2004: Here $L_P=\\|P'\\|_\\infty$ is the uniform derivative bound from [](#lem-cubic-patch-derivative-bounds). The factor $L_{\\sigma\\'_{\\text{reg}}}$ is the global Lipschitz constant of the regularized standard deviation, provided by [](#lem-sigma-patch-derivative-bound).",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 9,
+        "chapter_file": "chapter_9.json",
+        "section_id": "## 9. Rescale Transformation"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-sigma-patch-derivative-bound",
+      "title": "Derivative bound for \\sigma\\'_{\\text{reg}}",
+      "start_line": 2006,
+      "end_line": 2015,
+      "header_lines": [
+        2007
+      ],
+      "content_start": 2008,
+      "content_end": 2014,
+      "content": "2008: :label: lem-sigma-patch-derivative-bound\n2009: Let $\\sigma\\'_{\\text{reg}}(V) = \\sqrt{V + \\sigma'^2_{\\min}}$ be the regularized standard deviation from [](#def-statistical-properties-measurement), where $\\sigma'_{\\min} = \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2}$. Its global derivative bound is:\n2010: $$\n2011: \n2012: L_{\\sigma\\'_{\\text{reg}}}=\\sup_{V\\ge 0}\\big|\\,(\\sigma\\'_{\\text{reg}})'(V)\\,\\big|= \\frac{1}{2\\sigma'_{\\min}} = \\frac{1}{2\\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2}}\n2013: \n2014: $$",
+      "metadata": {
+        "label": "lem-sigma-patch-derivative-bound"
+      },
+      "section": "## 9. Rescale Transformation",
+      "raw_directive": "2006: ##### 8.2.2.9 Lemma: Patched standard deviation derivative bound\n2007: :::{prf:lemma} Derivative bound for \\sigma\\'_{\\text{reg}}\n2008: :label: lem-sigma-patch-derivative-bound\n2009: Let $\\sigma\\'_{\\text{reg}}(V) = \\sqrt{V + \\sigma'^2_{\\min}}$ be the regularized standard deviation from [](#def-statistical-properties-measurement), where $\\sigma'_{\\min} = \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2}$. Its global derivative bound is:\n2010: $$\n2011: \n2012: L_{\\sigma\\'_{\\text{reg}}}=\\sup_{V\\ge 0}\\big|\\,(\\sigma\\'_{\\text{reg}})'(V)\\,\\big|= \\frac{1}{2\\sigma'_{\\min}} = \\frac{1}{2\\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2}}\n2013: \n2014: $$\n2015: as established in [](#lem-sigma-reg-derivative-bounds).",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 9,
+        "chapter_file": "chapter_9.json",
+        "section_id": "## 9. Rescale Transformation"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-lipschitz-bound-for-the-variance-functional",
+      "title": "Lipschitz bound for the variance functional",
+      "start_line": 2017,
+      "end_line": 2026,
+      "header_lines": [
+        2018
+      ],
+      "content_start": 2019,
+      "content_end": 2025,
+      "content": "2019: :label: lem-lipschitz-bound-for-the-variance-functional\n2020: Let $\\mu(\\mathbf v)$ and $m_2(\\mathbf v)$ denote, respectively, the (aggregator) mean and second raw moment computed from a value vector $\\mathbf v\\in\\mathbb{R}^k$ over the alive set. Assume the moment maps are Lipschitz in $\\mathbf v$ with constants $L_{\\mu,M}$ and $L_{m_2,M}$ as in §6.2.1, and suppose $|v_i|\\le V_{\\max}$. Define the variance functional $\\mathrm{Var}(\\mathbf v):=m_2(\\mathbf v) - \\mu(\\mathbf v)^2$. Then, for all $\\mathbf v_1,\\mathbf v_2$,\n2021: $$\n2022: \n2023: \\big|\\,\\mathrm{Var}(\\mathbf v_1)-\\mathrm{Var}(\\mathbf v_2)\\,\\big|\\;\\le\\;\\Big( L_{m_2,M}\\; +\\; 2 V_{\\max}\\,L_{\\mu,M}\\Big)\\,\\|\\mathbf v_1-\\mathbf v_2\\|_2.\n2024: \n2025: $$",
+      "metadata": {
+        "label": "lem-lipschitz-bound-for-the-variance-functional"
+      },
+      "section": "## 9. Rescale Transformation",
+      "raw_directive": "2017: ##### 8.2.2.10 Lemma: Lipschitz constant of the empirical variance\n2018: :::{prf:lemma} Lipschitz bound for the variance functional\n2019: :label: lem-lipschitz-bound-for-the-variance-functional\n2020: Let $\\mu(\\mathbf v)$ and $m_2(\\mathbf v)$ denote, respectively, the (aggregator) mean and second raw moment computed from a value vector $\\mathbf v\\in\\mathbb{R}^k$ over the alive set. Assume the moment maps are Lipschitz in $\\mathbf v$ with constants $L_{\\mu,M}$ and $L_{m_2,M}$ as in §6.2.1, and suppose $|v_i|\\le V_{\\max}$. Define the variance functional $\\mathrm{Var}(\\mathbf v):=m_2(\\mathbf v) - \\mu(\\mathbf v)^2$. Then, for all $\\mathbf v_1,\\mathbf v_2$,\n2021: $$\n2022: \n2023: \\big|\\,\\mathrm{Var}(\\mathbf v_1)-\\mathrm{Var}(\\mathbf v_2)\\,\\big|\\;\\le\\;\\Big( L_{m_2,M}\\; +\\; 2 V_{\\max}\\,L_{\\mu,M}\\Big)\\,\\|\\mathbf v_1-\\mathbf v_2\\|_2.\n2024: \n2025: $$\n2026: In particular, the variance functional is $L_{\\mathrm{var}}$‑Lipschitz with $L_{\\mathrm{var}}:=L_{m_2,M}+2 V_{\\max} L_{\\mu,M}$.",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 9,
+        "chapter_file": "chapter_9.json",
+        "section_id": "## 9. Rescale Transformation"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-single-walker-positional-error",
+      "title": "Bound on Single-Walker Error from Positional Change",
+      "start_line": 2173,
+      "end_line": 2182,
+      "header_lines": [
+        2174
+      ],
+      "content_start": 2175,
+      "content_end": 2181,
+      "content": "2175: :label: lem-single-walker-positional-error\n2176: Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. For a given walker $i$ that is alive in swarm $\\mathcal{S}_1$ ($s_{1,i}=1$), let $\\mathbb{C}_i(\\mathcal{S}_1)$ be its companion selection measure.\n2177: The absolute error in its expected distance due to the positional displacement of the walkers between the two states, evaluated over the fixed companion set from $\\mathcal{S}_1$, is bounded by the sum of its own displacement and the average displacement of its potential companions.\n2178: $$\n2179: \n2180: \\left| \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\text{alg}}(x_{1,i}, x_{1,c}) \\right] - \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\text{alg}}(x_{2,i}, x_{2,c}) \\right] \\right| \\le d_{\\text{alg}}(x_{1,i}, x_{2,i}) + \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\text{alg}}(x_{1,c}, x_{2,c}) \\right]\n2181: ",
+      "metadata": {
+        "label": "lem-single-walker-positional-error"
+      },
+      "section": "## 11. Distance-to-Companion Measurement",
+      "raw_directive": "2173: #### 10.2.1 Lemma: Bound on Single-Walker Error from Positional Change\n2174: :::{prf:lemma} Bound on Single-Walker Error from Positional Change\n2175: :label: lem-single-walker-positional-error\n2176: Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. For a given walker $i$ that is alive in swarm $\\mathcal{S}_1$ ($s_{1,i}=1$), let $\\mathbb{C}_i(\\mathcal{S}_1)$ be its companion selection measure.\n2177: The absolute error in its expected distance due to the positional displacement of the walkers between the two states, evaluated over the fixed companion set from $\\mathcal{S}_1$, is bounded by the sum of its own displacement and the average displacement of its potential companions.\n2178: $$\n2179: \n2180: \\left| \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\text{alg}}(x_{1,i}, x_{1,c}) \\right] - \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\text{alg}}(x_{2,i}, x_{2,c}) \\right] \\right| \\le d_{\\text{alg}}(x_{1,i}, x_{2,i}) + \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\text{alg}}(x_{1,c}, x_{2,c}) \\right]\n2181: \n2182: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 11,
+        "chapter_file": "chapter_11.json",
+        "section_id": "## 11. Distance-to-Companion Measurement"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-single-walker-structural-error",
+      "title": "Bound on Single-Walker Error from Structural Change",
+      "start_line": 2216,
+      "end_line": 2226,
+      "header_lines": [
+        2217
+      ],
+      "content_start": 2218,
+      "content_end": 2225,
+      "content": "2218: :label: lem-single-walker-structural-error\n2219: Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states with alive sets $\\mathcal{A}_1$ and $\\mathcal{A}_2$. Let walker $i$ be alive in both swarms ($i \\in \\mathcal{A}_1 \\cap \\mathcal{A}_2$), and let the initial swarm have at least two alive walkers, $k_1=|\\mathcal{A}_1| \\ge 2$. Let the walker positions $\\mathbf{x}_2$ from the second swarm be fixed for the analysis. Let $n_c$ be the total number of status changes in the swarm.\n2220: The absolute error in the expected distance for walker $i$ due to the change in the companion selection measure is bounded by:\n2221: $$\n2222: \n2223: \\left| \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\text{alg}}(x_{2,i}, x_{2,c}) \\right] - \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_2)} \\left[ d_{\\text{alg}}(x_{2,i}, x_{2,c}) \\right] \\right| \\le \\frac{2 D_{\\mathcal{Y}}}{k_1 - 1} \\cdot n_c\n2224: \n2225: $$",
+      "metadata": {
+        "label": "lem-single-walker-structural-error"
+      },
+      "section": "## 11. Distance-to-Companion Measurement",
+      "raw_directive": "2216: #### 10.2.2 Lemma: Bound on Single-Walker Error from Structural Change\n2217: :::{prf:lemma} Bound on Single-Walker Error from Structural Change\n2218: :label: lem-single-walker-structural-error\n2219: Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states with alive sets $\\mathcal{A}_1$ and $\\mathcal{A}_2$. Let walker $i$ be alive in both swarms ($i \\in \\mathcal{A}_1 \\cap \\mathcal{A}_2$), and let the initial swarm have at least two alive walkers, $k_1=|\\mathcal{A}_1| \\ge 2$. Let the walker positions $\\mathbf{x}_2$ from the second swarm be fixed for the analysis. Let $n_c$ be the total number of status changes in the swarm.\n2220: The absolute error in the expected distance for walker $i$ due to the change in the companion selection measure is bounded by:\n2221: $$\n2222: \n2223: \\left| \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\text{alg}}(x_{2,i}, x_{2,c}) \\right] - \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_2)} \\left[ d_{\\text{alg}}(x_{2,i}, x_{2,c}) \\right] \\right| \\le \\frac{2 D_{\\mathcal{Y}}}{k_1 - 1} \\cdot n_c\n2224: \n2225: $$\n2226: where $D_{\\mathcal{Y}}$ is the diameter of the algorithmic space.",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 11,
+        "chapter_file": "chapter_11.json",
+        "section_id": "## 11. Distance-to-Companion Measurement"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-single-walker-own-status-error",
+      "title": "Bound on Single-Walker Error from Own Status Change",
+      "start_line": 2248,
+      "end_line": 2256,
+      "header_lines": [
+        2249
+      ],
+      "content_start": 2250,
+      "content_end": 2255,
+      "content": "2250: :label: lem-single-walker-own-status-error\n2251: Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. For any walker $i$ whose survival status changes ($s_{1,i} \\neq s_{2,i}$), the absolute difference in its expected raw distance measurement is bounded by the diameter of the algorithmic space, $D_{\\mathcal{Y}}$.\n2252: $$\n2253: \n2254: \\left| \\mathbb{E}[d_i(\\mathcal{S}_1)] - \\mathbb{E}[d_i(\\mathcal{S}_2)] \\right| \\le D_{\\mathcal{Y}}\n2255: ",
+      "metadata": {
+        "label": "lem-single-walker-own-status-error"
+      },
+      "section": "## 11. Distance-to-Companion Measurement",
+      "raw_directive": "2248: #### 10.2.3 Lemma: Bound on Single-Walker Error from Own Status Change\n2249: :::{prf:lemma} Bound on Single-Walker Error from Own Status Change\n2250: :label: lem-single-walker-own-status-error\n2251: Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. For any walker $i$ whose survival status changes ($s_{1,i} \\neq s_{2,i}$), the absolute difference in its expected raw distance measurement is bounded by the diameter of the algorithmic space, $D_{\\mathcal{Y}}$.\n2252: $$\n2253: \n2254: \\left| \\mathbb{E}[d_i(\\mathcal{S}_1)] - \\mathbb{E}[d_i(\\mathcal{S}_2)] \\right| \\le D_{\\mathcal{Y}}\n2255: \n2256: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 11,
+        "chapter_file": "chapter_11.json",
+        "section_id": "## 11. Distance-to-Companion Measurement"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-total-squared-error-unstable",
+      "title": "Bound on the Total Squared Error for Unstable Walkers",
+      "start_line": 2282,
+      "end_line": 2291,
+      "header_lines": [
+        2283
+      ],
+      "content_start": 2284,
+      "content_end": 2290,
+      "content": "2284: :label: lem-total-squared-error-unstable\n2285: Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. The total squared error in the expected raw distance from the set of unstable walkers, $\\mathcal{A}_{\\text{unstable}}$, is bounded by the total number of status changes:\n2286: $$\n2287: \n2288: \\sum_{i \\in \\mathcal{A}_{\\text{unstable}}} \\big|\\mathbb{E}[d_i(\\mathcal{S}_1)] - \\mathbb{E}[d_i(\\mathcal{S}_2)]\\big|^2 \\le D_{\\mathcal{Y}}^2 \\sum_{j=1}^N (s_{1,j} - s_{2,j})^2,\n2289: \n2290: $$",
+      "metadata": {
+        "label": "lem-total-squared-error-unstable"
+      },
+      "section": "## 11. Distance-to-Companion Measurement",
+      "raw_directive": "2282: #### 10.2.5 Lemma: Bound on the Total Squared Error for Unstable Walkers\n2283: :::{prf:lemma} Bound on the Total Squared Error for Unstable Walkers\n2284: :label: lem-total-squared-error-unstable\n2285: Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. The total squared error in the expected raw distance from the set of unstable walkers, $\\mathcal{A}_{\\text{unstable}}$, is bounded by the total number of status changes:\n2286: $$\n2287: \n2288: \\sum_{i \\in \\mathcal{A}_{\\text{unstable}}} \\big|\\mathbb{E}[d_i(\\mathcal{S}_1)] - \\mathbb{E}[d_i(\\mathcal{S}_2)]\\big|^2 \\le D_{\\mathcal{Y}}^2 \\sum_{j=1}^N (s_{1,j} - s_{2,j})^2,\n2289: \n2290: $$\n2291: where $D_{\\mathcal{Y}}$ is the diameter of the algorithmic space.",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 11,
+        "chapter_file": "chapter_11.json",
+        "section_id": "## 11. Distance-to-Companion Measurement"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-total-squared-error-stable",
+      "title": "Bound on the Total Squared Error for Stable Walkers",
+      "start_line": 2301,
+      "end_line": 2309,
+      "header_lines": [
+        2302
+      ],
+      "content_start": 2303,
+      "content_end": 2308,
+      "content": "2303: :label: lem-total-squared-error-stable\n2304: Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states with $|\\mathcal{A}(\\mathcal{S}_1)|=k_1 \\ge 2$. The total squared error in the expected raw distance from the set of stable walkers, $\\mathcal{A}_{\\text{stable}} = \\mathcal{A}(\\mathcal{S}_1) \\cap \\mathcal{A}(\\mathcal{S}_2)$, is bounded as follows:\n2305: $$\n2306: \n2307: \\sum_{i \\in \\mathcal{A}_{\\text{stable}}} |\\mathbb{E}[d_i(\\mathcal{S}_1)] - \\mathbb{E}[d_i(\\mathcal{S}_2)]|^2 \\le 12 \\cdot \\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) + \\frac{8 k_1 D_{\\mathcal{Y}}^2}{(k_1 - 1)^2} \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)^2\n2308: ",
+      "metadata": {
+        "label": "lem-total-squared-error-stable"
+      },
+      "section": "## 11. Distance-to-Companion Measurement",
+      "raw_directive": "2301: #### 10.2.6. Lemma: Bound on the Total Squared Error for Stable Walkers\n2302: :::{prf:lemma} Bound on the Total Squared Error for Stable Walkers\n2303: :label: lem-total-squared-error-stable\n2304: Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states with $|\\mathcal{A}(\\mathcal{S}_1)|=k_1 \\ge 2$. The total squared error in the expected raw distance from the set of stable walkers, $\\mathcal{A}_{\\text{stable}} = \\mathcal{A}(\\mathcal{S}_1) \\cap \\mathcal{A}(\\mathcal{S}_2)$, is bounded as follows:\n2305: $$\n2306: \n2307: \\sum_{i \\in \\mathcal{A}_{\\text{stable}}} |\\mathbb{E}[d_i(\\mathcal{S}_1)] - \\mathbb{E}[d_i(\\mathcal{S}_2)]|^2 \\le 12 \\cdot \\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) + \\frac{8 k_1 D_{\\mathcal{Y}}^2}{(k_1 - 1)^2} \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)^2\n2308: \n2309: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 11,
+        "chapter_file": "chapter_11.json",
+        "section_id": "## 11. Distance-to-Companion Measurement"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-stats-value-continuity",
+      "title": "Value Continuity of Statistical Properties",
+      "start_line": 2881,
+      "end_line": 2901,
+      "header_lines": [
+        2882
+      ],
+      "content_start": 2883,
+      "content_end": 2900,
+      "content": "2883: (\\sigma'_{\text{reg}})'''(V) = \n2884: rac{3}{8}(V + \\sigma'^2_{\\min})^{-5/2}\n2885: $$\n2886: \n2887: Since $V \\ge 0$, the maximum magnitude of each derivative occurs at $V = 0$, yielding the stated bounds. The general form follows from the pattern of alternating signs and double factorials in the $n$-th derivative of $(V + \\sigma'^2_{\\min})^{1/2}$.\n2888: **Q.E.D.**\n2889: :::\n2890: #### 11.1.3 Continuity of Statistical Properties\n2891: The stability of the standardization operator hinges on the continuity of the measured mean ($\\mu_{\\mathcal{A}}$) and the regularized standard deviation ($\\sigma'_{\\mathcal{A}}$). These properties are not fundamental axioms themselves but are instead consequences of the axiomatic properties of the chosen **Swarm Aggregation Operator** $M$ ([](#def-swarm-aggregation-operator-axiomatic)) and the Lipschitz continuity of the new **Regularized Standard Deviation Function** ([](#def-statistical-properties-measurement)). The following lemmas formally derive the continuity bounds for $\\mu_{\\mathcal{A}}$ and $\\sigma'_{\\mathcal{A}}$ with respect to both changes in the raw value vector and changes in the swarm's structure.\n2892: :::{prf:lemma} Value Continuity of Statistical Properties\n2893: :label: lem-stats-value-continuity\n2894: Let $\\mathcal{S}$ be a fixed swarm state with alive set $\\mathcal{A}$ of size $k = |\\mathcal{A}| \\geq 1$. Let $\\mathbf{v}_1$ and $\\mathbf{v}_2$ be two raw value vectors, with components bounded by $V_{\\max}$. The mean $\\mu(\\mathcal{S}, \\mathbf{v})$ and regularized standard deviation $\\sigma'(\\mathcal{S}, \\mathbf{v})$ are Lipschitz continuous with respect to the raw value vector $\\mathbf{v}$.\n2895: \n2896: $$\n2897: |\\mu(\\mathcal{S}, \\mathbf{v}_1) - \\mu(\\mathcal{S}, \\mathbf{v}_2)| \\le L_{\\mu,M}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2\n2898: $$\n2899: \n2900: $$",
+      "metadata": {
+        "label": "lem-stats-value-continuity"
+      },
+      "section": "## 12. Standardization pipeline",
+      "raw_directive": "2881: \n2882: $$\n2883: (\\sigma'_{\text{reg}})'''(V) = \n2884: rac{3}{8}(V + \\sigma'^2_{\\min})^{-5/2}\n2885: $$\n2886: \n2887: Since $V \\ge 0$, the maximum magnitude of each derivative occurs at $V = 0$, yielding the stated bounds. The general form follows from the pattern of alternating signs and double factorials in the $n$-th derivative of $(V + \\sigma'^2_{\\min})^{1/2}$.\n2888: **Q.E.D.**\n2889: :::\n2890: #### 11.1.3 Continuity of Statistical Properties\n2891: The stability of the standardization operator hinges on the continuity of the measured mean ($\\mu_{\\mathcal{A}}$) and the regularized standard deviation ($\\sigma'_{\\mathcal{A}}$). These properties are not fundamental axioms themselves but are instead consequences of the axiomatic properties of the chosen **Swarm Aggregation Operator** $M$ ([](#def-swarm-aggregation-operator-axiomatic)) and the Lipschitz continuity of the new **Regularized Standard Deviation Function** ([](#def-statistical-properties-measurement)). The following lemmas formally derive the continuity bounds for $\\mu_{\\mathcal{A}}$ and $\\sigma'_{\\mathcal{A}}$ with respect to both changes in the raw value vector and changes in the swarm's structure.\n2892: :::{prf:lemma} Value Continuity of Statistical Properties\n2893: :label: lem-stats-value-continuity\n2894: Let $\\mathcal{S}$ be a fixed swarm state with alive set $\\mathcal{A}$ of size $k = |\\mathcal{A}| \\geq 1$. Let $\\mathbf{v}_1$ and $\\mathbf{v}_2$ be two raw value vectors, with components bounded by $V_{\\max}$. The mean $\\mu(\\mathcal{S}, \\mathbf{v})$ and regularized standard deviation $\\sigma'(\\mathcal{S}, \\mathbf{v})$ are Lipschitz continuous with respect to the raw value vector $\\mathbf{v}$.\n2895: \n2896: $$\n2897: |\\mu(\\mathcal{S}, \\mathbf{v}_1) - \\mu(\\mathcal{S}, \\mathbf{v}_2)| \\le L_{\\mu,M}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2\n2898: $$\n2899: \n2900: $$\n2901: |\\sigma'(\\mathcal{S}, \\mathbf{v}_1) - \\sigma'(\\mathcal{S}, \\mathbf{v}_2)| \\le L_{\\sigma',M}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 12,
+        "chapter_file": "chapter_12.json",
+        "section_id": "## 12. Standardization pipeline"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-stats-structural-continuity",
+      "title": "Structural Continuity of Statistical Properties",
+      "start_line": 2914,
+      "end_line": 2933,
+      "header_lines": [
+        2915
+      ],
+      "content_start": 2916,
+      "content_end": 2932,
+      "content": "2916: The bound for the mean $\\mu$ is a direct application of the axiom in [](#def-swarm-aggregation-operator-axiomatic). The bound for $\\sigma'$ is derived by composition. $\\sigma'(\\mathcal{S}, \\mathbf{v})$ is the composition of the variance function $\\text{Var}(\\mathbf{v}) = m_2(\\mathcal{S}, \\mathbf{v}) - \\mu(\\mathcal{S}, \\mathbf{v})^2$ and the smoothed function $\\sigma\\'_{\\text{reg}}(V)$.\n2917: 1.  **Lipschitz Constant of $\\sigma\\'_{\\text{reg}}(V)$:** The function $\\sigma\\'_{\\text{reg}}(V) = \\sqrt{V + \\sigma'^2_{\\min}}$ is infinitely differentiable. Its first derivative is $(\\sigma\\'_{\\text{reg}})'(V) = \\frac{1}{2\\sqrt{V + \\sigma'^2_{\\min}}}$, which is maximized at $V = 0$. Therefore, its global Lipschitz constant is $L_{\\sigma\\'_{\\text{reg}}} = \\frac{1}{2\\sigma'_{\\min}}$, a finite, positive constant.\n2918: 2.  **Lipschitz Constant of the Variance:** The change in variance is $|\\text{Var}(\\mathbf{v}_1) - \\text{Var}(\\mathbf{v}_2)| = |(m_2(\\mathbf{v}_1) - \\mu(\\mathbf{v}_1)^2)- (m_2(\\mathbf{v}_2) - \\mu(\\mathbf{v}_2)^2)|$. By the triangle inequality, this is $\\leq |m_2(\\mathbf{v}_1) - m_2(\\mathbf{v}_2)| + |\\mu(\\mathbf{v}_1)^2 - \\mu(\\mathbf{v}_2)^2|$.\n2919:     *   The first term is bounded by $L_{m_2,M}(\\mathcal{S}) \\|\\mathbf{v}_1-\\mathbf{v}_2\\|_2$.\n2920:     *   The second term, $|\\mu_1-\\mu_2||\\mu_1+\\mu_2|$, is bounded by $(L_{\\mu,M}(\\mathcal{S})\\|\\mathbf{v}_1-\\mathbf{v}_2\\|_2)(2V_{\\max})$.\n2921:     *   Thus, the Lipschitz constant for the variance, $L_{\\text{Var}}$, is bounded by $L_{m_2,M}(\\mathcal{S}) + 2V_{\\max} L_{\\mu,M}(\\mathcal{S})$.\n2922: 3.  **Chain Rule for Lipschitz Functions:** The Lipschitz constant of the composition is bounded by the product of the individual Lipschitz constants, $L(\\sigma\\'_{\\text{reg}} \\circ \\text{Var}) \\le L_{\\sigma\\'_{\\text{reg}}} \\cdot L_{\\text{Var}}$, which yields the expression for $L_{\\sigma',M}$.\n2923: **Q.E.D.**\n2924: :::\n2925: :::{prf:lemma} Structural Continuity of Statistical Properties\n2926: :label: lem-stats-structural-continuity\n2927: Let $\\mathbf{v}$ be a fixed raw value vector. Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. The mean $\\mu(\\mathcal{S}, \\mathbf{v})$ and regularized standard deviation $\\sigma'(\\mathcal{S}, \\mathbf{v})$ are continuous with respect to changes in the swarm structure.\n2928: \n2929: $$\n2930: |\\mu(\\mathcal{S}_1, \\mathbf{v}) - \\mu(\\mathcal{S}_2, \\mathbf{v})| \\le L_{\\mu,S}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot \\|\\mathbf{s}_1 - \\mathbf{s}_2\\|_2^2\n2931: $$\n2932: ",
+      "metadata": {
+        "label": "lem-stats-structural-continuity"
+      },
+      "section": "## 12. Standardization pipeline",
+      "raw_directive": "2914: :label: proof-lem-stats-value-continuity\n2915: **Proof.**\n2916: The bound for the mean $\\mu$ is a direct application of the axiom in [](#def-swarm-aggregation-operator-axiomatic). The bound for $\\sigma'$ is derived by composition. $\\sigma'(\\mathcal{S}, \\mathbf{v})$ is the composition of the variance function $\\text{Var}(\\mathbf{v}) = m_2(\\mathcal{S}, \\mathbf{v}) - \\mu(\\mathcal{S}, \\mathbf{v})^2$ and the smoothed function $\\sigma\\'_{\\text{reg}}(V)$.\n2917: 1.  **Lipschitz Constant of $\\sigma\\'_{\\text{reg}}(V)$:** The function $\\sigma\\'_{\\text{reg}}(V) = \\sqrt{V + \\sigma'^2_{\\min}}$ is infinitely differentiable. Its first derivative is $(\\sigma\\'_{\\text{reg}})'(V) = \\frac{1}{2\\sqrt{V + \\sigma'^2_{\\min}}}$, which is maximized at $V = 0$. Therefore, its global Lipschitz constant is $L_{\\sigma\\'_{\\text{reg}}} = \\frac{1}{2\\sigma'_{\\min}}$, a finite, positive constant.\n2918: 2.  **Lipschitz Constant of the Variance:** The change in variance is $|\\text{Var}(\\mathbf{v}_1) - \\text{Var}(\\mathbf{v}_2)| = |(m_2(\\mathbf{v}_1) - \\mu(\\mathbf{v}_1)^2)- (m_2(\\mathbf{v}_2) - \\mu(\\mathbf{v}_2)^2)|$. By the triangle inequality, this is $\\leq |m_2(\\mathbf{v}_1) - m_2(\\mathbf{v}_2)| + |\\mu(\\mathbf{v}_1)^2 - \\mu(\\mathbf{v}_2)^2|$.\n2919:     *   The first term is bounded by $L_{m_2,M}(\\mathcal{S}) \\|\\mathbf{v}_1-\\mathbf{v}_2\\|_2$.\n2920:     *   The second term, $|\\mu_1-\\mu_2||\\mu_1+\\mu_2|$, is bounded by $(L_{\\mu,M}(\\mathcal{S})\\|\\mathbf{v}_1-\\mathbf{v}_2\\|_2)(2V_{\\max})$.\n2921:     *   Thus, the Lipschitz constant for the variance, $L_{\\text{Var}}$, is bounded by $L_{m_2,M}(\\mathcal{S}) + 2V_{\\max} L_{\\mu,M}(\\mathcal{S})$.\n2922: 3.  **Chain Rule for Lipschitz Functions:** The Lipschitz constant of the composition is bounded by the product of the individual Lipschitz constants, $L(\\sigma\\'_{\\text{reg}} \\circ \\text{Var}) \\le L_{\\sigma\\'_{\\text{reg}}} \\cdot L_{\\text{Var}}$, which yields the expression for $L_{\\sigma',M}$.\n2923: **Q.E.D.**\n2924: :::\n2925: :::{prf:lemma} Structural Continuity of Statistical Properties\n2926: :label: lem-stats-structural-continuity\n2927: Let $\\mathbf{v}$ be a fixed raw value vector. Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. The mean $\\mu(\\mathcal{S}, \\mathbf{v})$ and regularized standard deviation $\\sigma'(\\mathcal{S}, \\mathbf{v})$ are continuous with respect to changes in the swarm structure.\n2928: \n2929: $$\n2930: |\\mu(\\mathcal{S}_1, \\mathbf{v}) - \\mu(\\mathcal{S}_2, \\mathbf{v})| \\le L_{\\mu,S}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot \\|\\mathbf{s}_1 - \\mathbf{s}_2\\|_2^2\n2931: $$\n2932: \n2933: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 12,
+        "chapter_file": "chapter_12.json",
+        "section_id": "## 12. Standardization pipeline"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-sub-lipschitz-value-error-decomposition",
+      "title": "Algebraic Decomposition of the Value Error",
+      "start_line": 3473,
+      "end_line": 3511,
+      "header_lines": [
+        3474
+      ],
+      "content_start": 3475,
+      "content_end": 3510,
+      "content": "3475: \n3476: \\| \\mathbf{z}_1 - \\mathbf{z}_2 \\|_2^2 \\le 2 \\| \\mathbf{z}_1 - \\mathbf{z}_{\\text{inter}} \\|_2^2 + 2 \\| \\mathbf{z}_{\\text{inter}} - \\mathbf{z}_2 \\|_2^2\n3477: \n3478: $$\n3479: The first term on the right-hand side is the squared Value Error, $E_V^2$, as it arises from the change $v_1 → v_2$ for a fixed structure $S_1$. The second term is the squared Structural Error, $E_S^2$, as it arises from the change $S_1 → S_2$ for a fixed value vector $v_2$. This completes the decomposition.\n3480: **Q.E.D.**\n3481: :::\n3482: #### 11.3.2 Sub-Lemma: Algebraic Decomposition of the Value Error\n3483: To bound the squared value error, $E_V^2$, we first perform a purely algebraic decomposition of the error vector $\\Deltaz = z(S, v_1, M) - z(S, v_2, M)$ for a fixed swarm state **S**. This decomposition isolates the different sources of error: the direct change in the raw values, the change in the computed mean, and the change in the computed standard deviation.\n3484: :::{prf:lemma} Algebraic Decomposition of the Value Error\n3485: :label: lem-sub-lipschitz-value-error-decomposition\n3486: Let **S** be a fixed swarm state with alive set **A** of size **k**. Let $v_1$ and $v_2$ be two raw value vectors for the alive set. Let $(\\mu_1, \\sigma'_1)$ and $(\\mu_2, \\sigma'_2)$ be the corresponding statistical properties, and let $z_1$ and $z_2$ be the corresponding standardized vectors.\n3487: The total value error vector, $\\Deltaz = z_1 - z_2$, can be expressed as the sum of three components:\n3488: $$\n3489: \n3490: \\Delta\\mathbf{z} = \\Delta_{\\text{direct}} + \\Delta_{\\text{mean}} + \\Delta_{\\text{denom}}\n3491: \n3492: $$\n3493: where:\n3494: 1.  **The Direct Shift ($\\Delta_{\\text{direct}}$):** The error from the change in the raw value vector itself, scaled by the initial standard deviation.\n3495: $$\n3496: \n3497:     \\Delta_{\\text{direct}} := \\frac{\\mathbf{v}_1 - \\mathbf{v}_2}{\\sigma'_1}\n3498: \n3499: \n3500: $$\n3501: 2.  **The Mean Shift ($\\Delta_mean$):** The error from the change in the aggregator's computed mean, applied uniformly to all walkers.\n3502: $$\n3503: \n3504:     \\Delta_{\\text{mean}} := \\frac{\\mu_2 - \\mu_1}{\\sigma'_1} \\cdot \\mathbf{1}\n3505: \n3506: \n3507: $$\n3508: where $**1**$ is a k-dimensional vector of ones.\n3509: 3.  **The Denominator Shift ($\\Delta_denom$):** The error from the change in the regularized standard deviation, which rescales the second standardized vector.\n3510: $$",
+      "metadata": {
+        "label": "lem-sub-lipschitz-value-error-decomposition"
+      },
+      "section": "## 12. Standardization pipeline",
+      "raw_directive": "3473: The total squared error is bounded using the elementary inequality $\\|A+B\\|_2^2 \\leq 2(\\|A\\|_2^2 + \\|B\\|_2^2)$:\n3474: $$\n3475: \n3476: \\| \\mathbf{z}_1 - \\mathbf{z}_2 \\|_2^2 \\le 2 \\| \\mathbf{z}_1 - \\mathbf{z}_{\\text{inter}} \\|_2^2 + 2 \\| \\mathbf{z}_{\\text{inter}} - \\mathbf{z}_2 \\|_2^2\n3477: \n3478: $$\n3479: The first term on the right-hand side is the squared Value Error, $E_V^2$, as it arises from the change $v_1 → v_2$ for a fixed structure $S_1$. The second term is the squared Structural Error, $E_S^2$, as it arises from the change $S_1 → S_2$ for a fixed value vector $v_2$. This completes the decomposition.\n3480: **Q.E.D.**\n3481: :::\n3482: #### 11.3.2 Sub-Lemma: Algebraic Decomposition of the Value Error\n3483: To bound the squared value error, $E_V^2$, we first perform a purely algebraic decomposition of the error vector $\\Deltaz = z(S, v_1, M) - z(S, v_2, M)$ for a fixed swarm state **S**. This decomposition isolates the different sources of error: the direct change in the raw values, the change in the computed mean, and the change in the computed standard deviation.\n3484: :::{prf:lemma} Algebraic Decomposition of the Value Error\n3485: :label: lem-sub-lipschitz-value-error-decomposition\n3486: Let **S** be a fixed swarm state with alive set **A** of size **k**. Let $v_1$ and $v_2$ be two raw value vectors for the alive set. Let $(\\mu_1, \\sigma'_1)$ and $(\\mu_2, \\sigma'_2)$ be the corresponding statistical properties, and let $z_1$ and $z_2$ be the corresponding standardized vectors.\n3487: The total value error vector, $\\Deltaz = z_1 - z_2$, can be expressed as the sum of three components:\n3488: $$\n3489: \n3490: \\Delta\\mathbf{z} = \\Delta_{\\text{direct}} + \\Delta_{\\text{mean}} + \\Delta_{\\text{denom}}\n3491: \n3492: $$\n3493: where:\n3494: 1.  **The Direct Shift ($\\Delta_{\\text{direct}}$):** The error from the change in the raw value vector itself, scaled by the initial standard deviation.\n3495: $$\n3496: \n3497:     \\Delta_{\\text{direct}} := \\frac{\\mathbf{v}_1 - \\mathbf{v}_2}{\\sigma'_1}\n3498: \n3499: \n3500: $$\n3501: 2.  **The Mean Shift ($\\Delta_mean$):** The error from the change in the aggregator's computed mean, applied uniformly to all walkers.\n3502: $$\n3503: \n3504:     \\Delta_{\\text{mean}} := \\frac{\\mu_2 - \\mu_1}{\\sigma'_1} \\cdot \\mathbf{1}\n3505: \n3506: \n3507: $$\n3508: where $**1**$ is a k-dimensional vector of ones.\n3509: 3.  **The Denominator Shift ($\\Delta_denom$):** The error from the change in the regularized standard deviation, which rescales the second standardized vector.\n3510: $$\n3511: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 12,
+        "chapter_file": "chapter_12.json",
+        "section_id": "## 12. Standardization pipeline"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-sub-potential-unstable-error-mean-square",
+      "title": "Bounding the Expected Error from Unstable Walkers",
+      "start_line": 3871,
+      "end_line": 3881,
+      "header_lines": [
+        3872
+      ],
+      "content_start": 3874,
+      "content_end": 3880,
+      "content": "3874: \n3875: \\|\\mathbf{V}_1 - \\mathbf{V}_2\\|_2^2 = \\sum_{i \\in \\mathcal{A}_{\\text{unstable}}} |V_{1,i} - V_{2,i}|^2 + \\sum_{i \\in \\mathcal{A}_{\\text{stable}}} |V_{1,i} - V_{2,i}|^2\n3876: \n3877: $$\n3878: We take the expectation of both sides. By linearity of expectation, the total expected squared error is the sum of the expected squared errors over these two partitions. We define the first term as the expected error from unstable walkers, $E^2_{\\text{unstable,ms}}$, and the second term as the expected error from stable walkers, $E^2_{\\text{stable,ms}}$. The subsequent lemmas provide bounds for these terms.\n3879: **Q.E.D.**\n3880: :::",
+      "metadata": {
+        "label": "lem-sub-potential-unstable-error-mean-square"
+      },
+      "section": "## 13. Fitness potential operator",
+      "raw_directive": "3871: **Proof.**\n3872: We decompose the total squared error $\\|\\mathbf{V}_1 - \\mathbf{V}_2\\|_2^2$ into contributions from two disjoint sets of walker indices: the unstable set $\\mathcal{A}_{\\text{unstable}} = \\mathcal{A}_1 \\Delta \\mathcal{A}_2$ and the stable set $\\mathcal{A}_{\\text{stable}} = \\mathcal{A}_1 \\cap \\mathcal{A}_2$. Because the sets are disjoint, the error vectors are orthogonal, and the total squared norm is the sum of the squared norms of the error over each set.\n3873: $$\n3874: \n3875: \\|\\mathbf{V}_1 - \\mathbf{V}_2\\|_2^2 = \\sum_{i \\in \\mathcal{A}_{\\text{unstable}}} |V_{1,i} - V_{2,i}|^2 + \\sum_{i \\in \\mathcal{A}_{\\text{stable}}} |V_{1,i} - V_{2,i}|^2\n3876: \n3877: $$\n3878: We take the expectation of both sides. By linearity of expectation, the total expected squared error is the sum of the expected squared errors over these two partitions. We define the first term as the expected error from unstable walkers, $E^2_{\\text{unstable,ms}}$, and the second term as the expected error from stable walkers, $E^2_{\\text{stable,ms}}$. The subsequent lemmas provide bounds for these terms.\n3879: **Q.E.D.**\n3880: :::\n3881: #### 12.2.4. Sub-Lemma: Bounding the Expected Error from Unstable Walkers",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 13,
+        "chapter_file": "chapter_13.json",
+        "section_id": "## 13. Fitness potential operator"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-sub-perturbation-positional-bound-reproof",
+      "title": "Bounding the Output Positional Displacement",
+      "start_line": 4041,
+      "end_line": 4050,
+      "header_lines": [
+        4042
+      ],
+      "content_start": 4043,
+      "content_end": 4049,
+      "content": "4043: \n4044: M_{\\text{pert}}^2 \\ge \\sup_{x_{\\text{in}} \\in \\mathcal{X}} \\mathbb{E}[Y]\n4045: \n4046: $$\n4047: *   **Framework Application:** This axiom provides a uniform bound on the *mean* of the random displacement. The *fluctuations* around this mean are bounded via **McDiarmid’s inequality** for functions of independent inputs (Assumption A), applied to the average of per‑walker squared displacements. Bounded differences hold with constants $c_i=D_{\\mathcal{Y}}^2/N$ since each term lies in $[0,D_{\\mathcal{Y}}^2]$ (finite diameter). No further variance assumptions are required. See Boucheron–Lugosi–Massart (Appendix B).\n4048: *   **Failure Mode Analysis:** If this axiom is violated (i.e., if the supremum is infinite), walkers could be displaced by an infinite amount on average, making the operator's behavior unpredictable and breaking the continuity guarantees.\n4049: :::",
+      "metadata": {
+        "label": "lem-sub-perturbation-positional-bound-reproof"
+      },
+      "section": "## 14. The Perturbation Operator",
+      "raw_directive": "4041: *   **Condition:** For any starting position $x_{\\text{in}} \\in \\mathcal{X}$, let the random variable for the squared displacement be $Y := d_{\\mathcal{Y}}(\\varphi(x_{\\text{out}}), \\varphi(x_{\\text{in}}))^2$ where $x_{\\text{out}} \\sim \\mathcal{P}_\\sigma(x_{\\text{in}}, \\cdot)$. The constant must satisfy:\n4042: $$\n4043: \n4044: M_{\\text{pert}}^2 \\ge \\sup_{x_{\\text{in}} \\in \\mathcal{X}} \\mathbb{E}[Y]\n4045: \n4046: $$\n4047: *   **Framework Application:** This axiom provides a uniform bound on the *mean* of the random displacement. The *fluctuations* around this mean are bounded via **McDiarmid’s inequality** for functions of independent inputs (Assumption A), applied to the average of per‑walker squared displacements. Bounded differences hold with constants $c_i=D_{\\mathcal{Y}}^2/N$ since each term lies in $[0,D_{\\mathcal{Y}}^2]$ (finite diameter). No further variance assumptions are required. See Boucheron–Lugosi–Massart (Appendix B).\n4048: *   **Failure Mode Analysis:** If this axiom is violated (i.e., if the supremum is infinite), walkers could be displaced by an infinite amount on average, making the operator's behavior unpredictable and breaking the continuity guarantees.\n4049: :::\n4050: #### 13.2.2. Bounding the Output Positional Displacement",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 14,
+        "chapter_file": "chapter_14.json",
+        "section_id": "## 14. The Perturbation Operator"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-bounded-differences-favg",
+      "title": "Bounded differences for $f_{\\text{avg}}$",
+      "start_line": 4075,
+      "end_line": 4079,
+      "header_lines": [
+        4076
+      ],
+      "content_start": 4078,
+      "content_end": 4078,
+      "content": "4078: For clarity, we analyze the normalized functional",
+      "metadata": {
+        "label": "lem-bounded-differences-favg"
+      },
+      "section": "## 14. The Perturbation Operator",
+      "raw_directive": "4075: #### 13.2.3. Concentration Inequality for Total Perturbation-Induced Displacement\n4076: The algebraic bound from the previous section shows that the final positional displacement depends on the random variable $\\Delta_{\\text{pert}}^2(\\mathcal{S})$. To establish a probabilistic continuity bound, we must find a high-probability bound for this random variable. The term $\\Delta_{\\text{pert}}^2(\\mathcal{S})$ is a sum of the **N** random squared displacements of each walker, which are statistically independent for a fixed initial state $\\mathcal{S}$. This allows us to apply a concentration inequality for functions of independent random variables to bound its deviation from its expected value. We will use McDiarmid's Inequality.\n4077: ##### 13.2.3.0. Inputs and Lipschitz constants for McDiarmid\n4078: For clarity, we analyze the normalized functional\n4079: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 14,
+        "chapter_file": "chapter_14.json",
+        "section_id": "## 14. The Perturbation Operator"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-sub-probabilistic-bound-perturbation-displacement-reproof",
+      "title": "Probabilistic Bound on Total Perturbation-Induced Displacement",
+      "start_line": 4097,
+      "end_line": 4106,
+      "header_lines": [
+        4098
+      ],
+      "content_start": 4099,
+      "content_end": 4105,
+      "content": "4099: $$\n4100: Then for any $t > 0$, the probability that the function's value deviates from its expected value by more than $t$ is bounded by:\n4101: $$\n4102: \n4103: P(|f(X_1, \\dots, X_N) - \\mathbb{E}[f(X_1, \\dots, X_N)]| \\ge t) \\le 2\\exp\\left(\\frac{-2t^2}{\\sum_{i=1}^N c_i^2}\\right)\n4104: \n4105: $$",
+      "metadata": {
+        "label": "lem-sub-probabilistic-bound-perturbation-displacement-reproof"
+      },
+      "section": "## 14. The Perturbation Operator",
+      "raw_directive": "4097: \\sup_{x_1, \\dots, x_N, x'_i} |f(x_1, \\dots, x_i, \\dots, x_N) - f(x_1, \\dots, x'_i, \\dots, x_N)| \\le c_i\n4098: \n4099: $$\n4100: Then for any $t > 0$, the probability that the function's value deviates from its expected value by more than $t$ is bounded by:\n4101: $$\n4102: \n4103: P(|f(X_1, \\dots, X_N) - \\mathbb{E}[f(X_1, \\dots, X_N)]| \\ge t) \\le 2\\exp\\left(\\frac{-2t^2}{\\sum_{i=1}^N c_i^2}\\right)\n4104: \n4105: $$\n4106: :::",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 14,
+        "chapter_file": "chapter_14.json",
+        "section_id": "## 14. The Perturbation Operator"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-cloning-probability-lipschitz",
+      "title": "Lipschitz Continuity of the Conditional Cloning Probability Function (case split)",
+      "start_line": 4381,
+      "end_line": 4402,
+      "header_lines": [
+        4382
+      ],
+      "content_start": 4383,
+      "content_end": 4401,
+      "content": "4383: The **Conditional Cloning Probability Function**, denoted $\\pi: \\mathbb{R}_{\\ge 0} \\times \\mathbb{R}_{\\ge 0} \\to [0, 1]$, maps the fitness potential of a companion ($v_c$) and a primary walker ($v_i$) to the probability that the \"Clone\" action is selected.\n4384: Given that the score is $S(v_c, v_i)$ and the threshold is $T_{\\text{clone}} \\sim \\text{Uniform}(0, p_{\\max})$, the probability is:\n4385: $$\n4386: \n4387: \\pi(v_c, v_i) := P(S(v_c, v_i) > T_{\\text{clone}}) = \\min\\left(1, \\max\\left(0, \\frac{S(v_c, v_i)}{p_{\\max}}\\right)\\right)\n4388: \n4389: $$\n4390: This function effectively clips the normalized score to the valid probability range $[0, 1]$.\n4391: :::\n4392: :::{prf:lemma} Lipschitz Continuity of the Conditional Cloning Probability Function (case split)\n4393: :label: lem-cloning-probability-lipschitz\n4394: The **Conditional Cloning Probability Function** $\\pi(v_c, v_i)$ is Lipschitz continuous with respect to its two inputs. For any two pairs of potentials $(v_{c1}, v_{i1})$ and $(v_{c2}, v_{i2})$:\n4395: $$\n4396: \n4397: |\\pi(v_{c1}, v_{i1}) - \\pi(v_{c2}, v_{i2})| \\le L_{\\pi,c}|v_{c1} - v_{c2}| + L_{\\pi,i}|v_{i1} - v_{i2}|\n4398: \n4399: $$\n4400: where the **Cloning Probability Lipschitz Constants** can be chosen uniformly over both alive and dead walkers by the worst‑case (dead‑walker) bounds:\n4401: *   **Companion Potential Lipschitz Constant ($L_{\\pi,c}$):**",
+      "metadata": {
+        "label": "lem-cloning-probability-lipschitz"
+      },
+      "section": "## 16. The Cloning Transition Measure",
+      "raw_directive": "4381: :::{prf:definition} The Conditional Cloning Probability Function\n4382: :label: def-cloning-probability-function\n4383: The **Conditional Cloning Probability Function**, denoted $\\pi: \\mathbb{R}_{\\ge 0} \\times \\mathbb{R}_{\\ge 0} \\to [0, 1]$, maps the fitness potential of a companion ($v_c$) and a primary walker ($v_i$) to the probability that the \"Clone\" action is selected.\n4384: Given that the score is $S(v_c, v_i)$ and the threshold is $T_{\\text{clone}} \\sim \\text{Uniform}(0, p_{\\max})$, the probability is:\n4385: $$\n4386: \n4387: \\pi(v_c, v_i) := P(S(v_c, v_i) > T_{\\text{clone}}) = \\min\\left(1, \\max\\left(0, \\frac{S(v_c, v_i)}{p_{\\max}}\\right)\\right)\n4388: \n4389: $$\n4390: This function effectively clips the normalized score to the valid probability range $[0, 1]$.\n4391: :::\n4392: :::{prf:lemma} Lipschitz Continuity of the Conditional Cloning Probability Function (case split)\n4393: :label: lem-cloning-probability-lipschitz\n4394: The **Conditional Cloning Probability Function** $\\pi(v_c, v_i)$ is Lipschitz continuous with respect to its two inputs. For any two pairs of potentials $(v_{c1}, v_{i1})$ and $(v_{c2}, v_{i2})$:\n4395: $$\n4396: \n4397: |\\pi(v_{c1}, v_{i1}) - \\pi(v_{c2}, v_{i2})| \\le L_{\\pi,c}|v_{c1} - v_{c2}| + L_{\\pi,i}|v_{i1} - v_{i2}|\n4398: \n4399: $$\n4400: where the **Cloning Probability Lipschitz Constants** can be chosen uniformly over both alive and dead walkers by the worst‑case (dead‑walker) bounds:\n4401: *   **Companion Potential Lipschitz Constant ($L_{\\pi,c}$):**\n4402: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 16,
+        "chapter_file": "chapter_16.json",
+        "section_id": "## 16. The Cloning Transition Measure"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-sub-bound-sum-total-cloning-probs",
+      "title": "Bounding the Sum of Total Cloning Probabilities",
+      "start_line": 4589,
+      "end_line": 4603,
+      "header_lines": [
+        4590
+      ],
+      "content_start": 4592,
+      "content_end": 4602,
+      "content": "4592:     \\mathbb{E}[d_{\\text{out}}^2] \\le \\left(3 + \\frac{3D_{\\mathcal{Y}}^2 C_P}{N}\\right)V_{\\text{in}} + \\left(\\frac{3D_{\\mathcal{Y}}^2 H_P}{N}\\right)\\sqrt{V_{\\text{in}}} + \\frac{3D_{\\mathcal{Y}}^2 K_P}{N}\n4593: \n4594: \n4595: $$\n4596: This expression is of the required form $C_L V + C_H sqrt(V) + K$. By inspection, we can identify the coefficients $C_{\\text{clone},L}$, $C_{\\text{clone},H}$, and $K_{\\text{clone}}$ from this final expression. This completes the proof.\n4597: **Q.E.D.**\n4598: :::\n4599: ##### 15.2.8.3. Sub-Lemma: Bounding the Sum of Total Cloning Probabilities\n4600: :::{prf:lemma} Bounding the Sum of Total Cloning Probabilities\n4601: :label: lem-sub-bound-sum-total-cloning-probs\n4602: ",
+      "metadata": {
+        "label": "lem-sub-bound-sum-total-cloning-probs"
+      },
+      "section": "## 16. The Cloning Transition Measure",
+      "raw_directive": "4589: Finally, we divide by **N** to get the bound on the expected output squared metric, $\\mathbb{E}[d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}'_1, \\mathcal{S}'_2)^2]$:\n4590: $$\n4591: \n4592:     \\mathbb{E}[d_{\\text{out}}^2] \\le \\left(3 + \\frac{3D_{\\mathcal{Y}}^2 C_P}{N}\\right)V_{\\text{in}} + \\left(\\frac{3D_{\\mathcal{Y}}^2 H_P}{N}\\right)\\sqrt{V_{\\text{in}}} + \\frac{3D_{\\mathcal{Y}}^2 K_P}{N}\n4593: \n4594: \n4595: $$\n4596: This expression is of the required form $C_L V + C_H sqrt(V) + K$. By inspection, we can identify the coefficients $C_{\\text{clone},L}$, $C_{\\text{clone},H}$, and $K_{\\text{clone}}$ from this final expression. This completes the proof.\n4597: **Q.E.D.**\n4598: :::\n4599: ##### 15.2.8.3. Sub-Lemma: Bounding the Sum of Total Cloning Probabilities\n4600: :::{prf:lemma} Bounding the Sum of Total Cloning Probabilities\n4601: :label: lem-sub-bound-sum-total-cloning-probs\n4602: \n4603: Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states. Let $V_{\\text{in}} := d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)^2$ be the initial squared displacement.",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 16,
+        "chapter_file": "chapter_16.json",
+        "section_id": "## 16. The Cloning Transition Measure"
+      }
+    }
+  ]
+}

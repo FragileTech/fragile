@@ -1,0 +1,93 @@
+{
+  "chapter_index": 8,
+  "section_id": "## Appendix B: Effective Spatial Dynamics via Kramers-Smoluchowski Reduction",
+  "directive_count": 5,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-kramers-smoluchowski-standard",
+      "title": "Effective Spatial SDE in High-Friction Limit",
+      "start_line": 1008,
+      "end_line": 1033,
+      "header_lines": [
+        1009
+      ],
+      "content_start": 1011,
+      "content_end": 1032,
+      "content": "1011: :label: thm-kramers-smoluchowski-standard\n1012: \n1013: Consider the Stratonovich Langevin system:\n1014: \n1015: $$\n1016: \\begin{aligned}\n1017: dx &= v \\, dt \\\\\n1018: dv &= [-\\nabla U_{\\text{eff}}(x) - \\gamma v] dt + \\sqrt{2\\gamma T} \\, g(x)^{-1/2} \\circ dW\n1019: \\end{aligned}\n1020: $$\n1021: \n1022: In the high-friction limit $\\gamma \\gg 1$, the effective spatial dynamics is governed by the **Stratonovich SDE**:\n1023: \n1024: $$\n1025: dx = -\\frac{1}{\\gamma} \\nabla U_{\\text{eff}} \\, dt + \\sqrt{\\frac{2T}{\\gamma}} g(x)^{-1/2} \\circ dW + O(\\gamma^{-2})\n1026: $$\n1027: \n1028: The spatial marginal density $\\rho_s(x, t) := \\int \\rho(x, v, t) dv$ satisfies the **spatial Fokker-Planck equation**:\n1029: \n1030: $$\n1031: \\frac{\\partial \\rho_s}{\\partial t} = \\nabla \\cdot \\left[\\frac{T}{\\gamma} g(x)^{-1} \\nabla \\rho_s + \\frac{1}{\\gamma} \\rho_s \\nabla U_{\\text{eff}}\\right] + O(\\gamma^{-2})\n1032: $$",
+      "metadata": {
+        "label": "thm-kramers-smoluchowski-standard"
+      },
+      "section": "## Appendix B: Effective Spatial Dynamics via Kramers-Smoluchowski Reduction",
+      "raw_directive": "1008: ## Appendix B: Effective Spatial Dynamics via Kramers-Smoluchowski Reduction\n1009: \n1010: :::{prf:theorem} Effective Spatial SDE in High-Friction Limit\n1011: :label: thm-kramers-smoluchowski-standard\n1012: \n1013: Consider the Stratonovich Langevin system:\n1014: \n1015: $$\n1016: \\begin{aligned}\n1017: dx &= v \\, dt \\\\\n1018: dv &= [-\\nabla U_{\\text{eff}}(x) - \\gamma v] dt + \\sqrt{2\\gamma T} \\, g(x)^{-1/2} \\circ dW\n1019: \\end{aligned}\n1020: $$\n1021: \n1022: In the high-friction limit $\\gamma \\gg 1$, the effective spatial dynamics is governed by the **Stratonovich SDE**:\n1023: \n1024: $$\n1025: dx = -\\frac{1}{\\gamma} \\nabla U_{\\text{eff}} \\, dt + \\sqrt{\\frac{2T}{\\gamma}} g(x)^{-1/2} \\circ dW + O(\\gamma^{-2})\n1026: $$\n1027: \n1028: The spatial marginal density $\\rho_s(x, t) := \\int \\rho(x, v, t) dv$ satisfies the **spatial Fokker-Planck equation**:\n1029: \n1030: $$\n1031: \\frac{\\partial \\rho_s}{\\partial t} = \\nabla \\cdot \\left[\\frac{T}{\\gamma} g(x)^{-1} \\nabla \\rho_s + \\frac{1}{\\gamma} \\rho_s \\nabla U_{\\text{eff}}\\right] + O(\\gamma^{-2})\n1032: $$\n1033: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-28",
+      "title": null,
+      "start_line": 1035,
+      "end_line": 1051,
+      "header_lines": [],
+      "content_start": 1036,
+      "content_end": 1050,
+      "content": "1036: \n1037: :::{prf:proof}\n1038: This is a **standard result** from the theory of multiscale stochastic dynamics. The proof uses the Chapman-Enskog expansion method to average over fast velocity degrees of freedom in the high-friction regime.\n1039: \n1040: **Reference:** Pavliotis, G.A. (2014), *Stochastic Processes and Applications: Diffusion Processes, the Fokker-Planck and Langevin Equations*, Springer, **Theorem 7.6.1** (pp. 231-235).\n1041: \n1042: **Outline of the standard proof:**\n1043: \n1044: 1. **Timescale separation**: In the limit $\\gamma \\gg 1$, velocities equilibrate on timescale $\\tau_v \\sim O(\\gamma^{-1})$ while spatial diffusion occurs on timescale $\\tau_x \\sim O(\\gamma)$.\n1045: \n1046: 2. **Chapman-Enskog expansion**: The phase-space distribution is expanded as $\\rho(x, v, t) = \\rho_s(x, t) M_x(v) [1 + O(\\gamma^{-1})]$ where $M_x(v)$ is the local velocity equilibrium with covariance determined by $g(x)$.\n1047: \n1048: 3. **Effective spatial FPE**: Integrating the phase-space Fokker-Planck equation over velocities and using the expansion yields the stated spatial FPE.\n1049: \n1050: 4. **Stratonovich preservation**: The key observation is that the **Wong-Zakai correction term** $(T/(2\\gamma)) g^{-1} \\nabla \\log \\det g$ appears in the effective drift, which is the signature of Stratonovich calculus. This term arises from the position-dependence of the diffusion matrix $D(x) = (T/\\gamma) g(x)^{-1}$.",
+      "metadata": {},
+      "section": "## Appendix B: Effective Spatial Dynamics via Kramers-Smoluchowski Reduction",
+      "raw_directive": "1035: :::\n1036: \n1037: :::{prf:proof}\n1038: This is a **standard result** from the theory of multiscale stochastic dynamics. The proof uses the Chapman-Enskog expansion method to average over fast velocity degrees of freedom in the high-friction regime.\n1039: \n1040: **Reference:** Pavliotis, G.A. (2014), *Stochastic Processes and Applications: Diffusion Processes, the Fokker-Planck and Langevin Equations*, Springer, **Theorem 7.6.1** (pp. 231-235).\n1041: \n1042: **Outline of the standard proof:**\n1043: \n1044: 1. **Timescale separation**: In the limit $\\gamma \\gg 1$, velocities equilibrate on timescale $\\tau_v \\sim O(\\gamma^{-1})$ while spatial diffusion occurs on timescale $\\tau_x \\sim O(\\gamma)$.\n1045: \n1046: 2. **Chapman-Enskog expansion**: The phase-space distribution is expanded as $\\rho(x, v, t) = \\rho_s(x, t) M_x(v) [1 + O(\\gamma^{-1})]$ where $M_x(v)$ is the local velocity equilibrium with covariance determined by $g(x)$.\n1047: \n1048: 3. **Effective spatial FPE**: Integrating the phase-space Fokker-Planck equation over velocities and using the expansion yields the stated spatial FPE.\n1049: \n1050: 4. **Stratonovich preservation**: The key observation is that the **Wong-Zakai correction term** $(T/(2\\gamma)) g^{-1} \\nabla \\log \\det g$ appears in the effective drift, which is the signature of Stratonovich calculus. This term arises from the position-dependence of the diffusion matrix $D(x) = (T/\\gamma) g(x)^{-1}$.\n1051: "
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-spatial-sde-stationary",
+      "title": "Stationary Distribution of Effective Spatial SDE",
+      "start_line": 1053,
+      "end_line": 1063,
+      "header_lines": [
+        1054
+      ],
+      "content_start": 1056,
+      "content_end": 1062,
+      "content": "1056: :label: prop-spatial-sde-stationary\n1057: \n1058: The stationary distribution of the effective spatial SDE (Theorem {prf:ref}`thm-kramers-smoluchowski-standard`) is:\n1059: \n1060: $$\n1061: \\rho_{\\text{st}}(x) = \\frac{1}{Z} \\sqrt{\\det g(x)} \\exp\\left(-\\frac{U_{\\text{eff}}(x)}{T}\\right)\n1062: $$",
+      "metadata": {
+        "label": "prop-spatial-sde-stationary"
+      },
+      "section": "## Appendix B: Effective Spatial Dynamics via Kramers-Smoluchowski Reduction",
+      "raw_directive": "1053: :::\n1054: \n1055: :::{prf:proposition} Stationary Distribution of Effective Spatial SDE\n1056: :label: prop-spatial-sde-stationary\n1057: \n1058: The stationary distribution of the effective spatial SDE (Theorem {prf:ref}`thm-kramers-smoluchowski-standard`) is:\n1059: \n1060: $$\n1061: \\rho_{\\text{st}}(x) = \\frac{1}{Z} \\sqrt{\\det g(x)} \\exp\\left(-\\frac{U_{\\text{eff}}(x)}{T}\\right)\n1062: $$\n1063: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-58",
+      "title": null,
+      "start_line": 1065,
+      "end_line": 1105,
+      "header_lines": [],
+      "content_start": 1066,
+      "content_end": 1104,
+      "content": "1066: \n1067: :::{prf:proof}\n1068: **Direct verification via zero-flux condition:**\n1069: \n1070: The stationary distribution satisfies $\\partial_t \\rho_{\\text{st}} = 0$, which requires zero probability flux:\n1071: \n1072: $$\n1073: \\mathbf{J} := \\frac{T}{\\gamma} g^{-1} \\nabla \\rho_s + \\frac{1}{\\gamma} \\rho_s \\nabla U_{\\text{eff}} = 0\n1074: $$\n1075: \n1076: Dividing by $\\rho_s (T/\\gamma)$ and rearranging:\n1077: \n1078: $$\n1079: g^{-1} \\nabla \\log \\rho_s = -\\frac{1}{T} \\nabla U_{\\text{eff}}\n1080: $$\n1081: \n1082: **Trial solution:** Let $\\rho_s = C \\sqrt{\\det g} \\exp(-U_{\\text{eff}}/T)$. Then:\n1083: \n1084: $$\n1085: \\nabla \\log \\rho_s = \\frac{1}{2} \\nabla \\log \\det g - \\frac{1}{T} \\nabla U_{\\text{eff}}\n1086: $$\n1087: \n1088: Substituting into the zero-flux condition:\n1089: \n1090: $$\n1091: g^{-1} \\left[\\frac{1}{2} \\nabla \\log \\det g - \\frac{1}{T} \\nabla U_{\\text{eff}}\\right] \\stackrel{?}{=} -\\frac{1}{T} \\nabla U_{\\text{eff}}\n1092: $$\n1093: \n1094: $$\n1095: \\frac{1}{2} g^{-1} \\nabla \\log \\det g - \\frac{1}{T} g^{-1} \\nabla U_{\\text{eff}} \\stackrel{?}{=} -\\frac{1}{T} \\nabla U_{\\text{eff}}\n1096: $$\n1097: \n1098: This is satisfied if $g^{-1} \\nabla \\log \\det g = 0$ **in the Stratonovich interpretation**, where the diffusion matrix $D = (T/\\gamma) g^{-1}$ generates the correct drift correction.\n1099: \n1100: **Equivalently**, by Graham's Theorem (Theorem {prf:ref}`thm-stratonovich-stationary-general`), the stationary distribution of a Stratonovich SDE with drift $b = -D \\nabla U$ and diffusion $D(x)$ is:\n1101: \n1102: $$\n1103: \\rho_{\\text{st}} \\propto (\\det D)^{-1/2} e^{-U} = \\sqrt{\\det g} \\, e^{-U_{\\text{eff}}/T}\n1104: $$",
+      "metadata": {},
+      "section": "## Appendix B: Effective Spatial Dynamics via Kramers-Smoluchowski Reduction",
+      "raw_directive": "1065: :::\n1066: \n1067: :::{prf:proof}\n1068: **Direct verification via zero-flux condition:**\n1069: \n1070: The stationary distribution satisfies $\\partial_t \\rho_{\\text{st}} = 0$, which requires zero probability flux:\n1071: \n1072: $$\n1073: \\mathbf{J} := \\frac{T}{\\gamma} g^{-1} \\nabla \\rho_s + \\frac{1}{\\gamma} \\rho_s \\nabla U_{\\text{eff}} = 0\n1074: $$\n1075: \n1076: Dividing by $\\rho_s (T/\\gamma)$ and rearranging:\n1077: \n1078: $$\n1079: g^{-1} \\nabla \\log \\rho_s = -\\frac{1}{T} \\nabla U_{\\text{eff}}\n1080: $$\n1081: \n1082: **Trial solution:** Let $\\rho_s = C \\sqrt{\\det g} \\exp(-U_{\\text{eff}}/T)$. Then:\n1083: \n1084: $$\n1085: \\nabla \\log \\rho_s = \\frac{1}{2} \\nabla \\log \\det g - \\frac{1}{T} \\nabla U_{\\text{eff}}\n1086: $$\n1087: \n1088: Substituting into the zero-flux condition:\n1089: \n1090: $$\n1091: g^{-1} \\left[\\frac{1}{2} \\nabla \\log \\det g - \\frac{1}{T} \\nabla U_{\\text{eff}}\\right] \\stackrel{?}{=} -\\frac{1}{T} \\nabla U_{\\text{eff}}\n1092: $$\n1093: \n1094: $$\n1095: \\frac{1}{2} g^{-1} \\nabla \\log \\det g - \\frac{1}{T} g^{-1} \\nabla U_{\\text{eff}} \\stackrel{?}{=} -\\frac{1}{T} \\nabla U_{\\text{eff}}\n1096: $$\n1097: \n1098: This is satisfied if $g^{-1} \\nabla \\log \\det g = 0$ **in the Stratonovich interpretation**, where the diffusion matrix $D = (T/\\gamma) g^{-1}$ generates the correct drift correction.\n1099: \n1100: **Equivalently**, by Graham's Theorem (Theorem {prf:ref}`thm-stratonovich-stationary-general`), the stationary distribution of a Stratonovich SDE with drift $b = -D \\nabla U$ and diffusion $D(x)$ is:\n1101: \n1102: $$\n1103: \\rho_{\\text{st}} \\propto (\\det D)^{-1/2} e^{-U} = \\sqrt{\\det g} \\, e^{-U_{\\text{eff}}/T}\n1104: $$\n1105: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-kramers-adaptive-gas",
+      "title": "Why This Matters for the Adaptive Gas",
+      "start_line": 1107,
+      "end_line": 1119,
+      "header_lines": [
+        1108
+      ],
+      "content_start": 1110,
+      "content_end": 1118,
+      "content": "1110: :label: rem-kramers-adaptive-gas\n1111: \n1112: The Kramers-Smoluchowski reduction shows that:\n1113: \n1114: 1. **Effective potential**: Cloning modifies $U(x) \\to U_{\\text{eff}}(x) = U(x) - \\epsilon_F V_{\\text{fit}}(x)$, which appears in the spatial SDE drift.\n1115: \n1116: 2. **Stratonovich preservation**: Starting from Stratonovich Langevin dynamics, the effective spatial dynamics is also Stratonovich, ensuring the $\\sqrt{\\det g}$ factor in the stationary distribution.\n1117: \n1118: 3. **Geometric consistency**: The position-dependent diffusion $D(x) = (T/\\gamma) g(x)^{-1}$ ensures walkers sample according to Riemannian volume.",
+      "metadata": {
+        "label": "rem-kramers-adaptive-gas"
+      },
+      "section": "## Appendix B: Effective Spatial Dynamics via Kramers-Smoluchowski Reduction",
+      "raw_directive": "1107: :::\n1108: \n1109: :::{prf:remark} Why This Matters for the Adaptive Gas\n1110: :label: rem-kramers-adaptive-gas\n1111: \n1112: The Kramers-Smoluchowski reduction shows that:\n1113: \n1114: 1. **Effective potential**: Cloning modifies $U(x) \\to U_{\\text{eff}}(x) = U(x) - \\epsilon_F V_{\\text{fit}}(x)$, which appears in the spatial SDE drift.\n1115: \n1116: 2. **Stratonovich preservation**: Starting from Stratonovich Langevin dynamics, the effective spatial dynamics is also Stratonovich, ensuring the $\\sqrt{\\det g}$ factor in the stationary distribution.\n1117: \n1118: 3. **Geometric consistency**: The position-dependent diffusion $D(x) = (T/\\gamma) g(x)^{-1}$ ensures walkers sample according to Riemannian volume.\n1119: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

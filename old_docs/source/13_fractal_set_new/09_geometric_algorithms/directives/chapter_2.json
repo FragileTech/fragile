@@ -1,0 +1,47 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 2. IG Fundamental Cycles",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-ig-cycles",
+      "title": "IG Edges Close Fundamental Cycles",
+      "start_line": 258,
+      "end_line": 285,
+      "header_lines": [
+        259
+      ],
+      "content_start": 261,
+      "content_end": 284,
+      "content": "261: :label: thm-ig-cycles\n262: \n263: **Assumption:** CST is a rooted spanning tree (single common ancestor)\n264: \n265: **Claim:** For IG graph with $k$ edges $E_{\\text{IG}} = \\{e_1, \\ldots, e_k\\}$:\n266: \n267: 1. Each IG edge $e_i = (e_a \\sim e_b)$ closes exactly one fundamental cycle $C(e_i)$\n268: 2. The cycles $\\{C(e_1), \\ldots, C(e_k)\\}$ form a complete basis for the cycle space\n269: \n270: **Construction:** For IG edge $e_i = (e_a \\sim e_b)$:\n271: \n272: $$\n273: C(e_i) := e_i \\cup P_{\\text{CST}}(e_a, e_b)\n274: $$\n275: \n276: where $P_{\\text{CST}}(e_a, e_b)$ is the unique path from $e_a$ to $e_b$ in the CST tree.\n277: \n278: **Proof:**\n279: \n280: *Part 1 (Unique path):* CST is tree \u2192 unique path between any two vertices\n281: \n282: *Part 2 (Closed cycle):* $e_i$ connects $e_a \\to e_b$ (IG), $P_{\\text{CST}}$ connects $e_b \\to e_a$ (CST) \u2192 closed loop\n283: \n284: *Part 3 (Linear independence):* Each $C(e_i)$ contains IG edge $e_i$, no other cycle contains $e_i$ \u2192 independent",
+      "metadata": {
+        "label": "thm-ig-cycles"
+      },
+      "section": "## 2. IG Fundamental Cycles",
+      "raw_directive": "258: ### 2.1. Cycle Basis Construction\n259: \n260: :::{prf:theorem} IG Edges Close Fundamental Cycles\n261: :label: thm-ig-cycles\n262: \n263: **Assumption:** CST is a rooted spanning tree (single common ancestor)\n264: \n265: **Claim:** For IG graph with $k$ edges $E_{\\text{IG}} = \\{e_1, \\ldots, e_k\\}$:\n266: \n267: 1. Each IG edge $e_i = (e_a \\sim e_b)$ closes exactly one fundamental cycle $C(e_i)$\n268: 2. The cycles $\\{C(e_1), \\ldots, C(e_k)\\}$ form a complete basis for the cycle space\n269: \n270: **Construction:** For IG edge $e_i = (e_a \\sim e_b)$:\n271: \n272: $$\n273: C(e_i) := e_i \\cup P_{\\text{CST}}(e_a, e_b)\n274: $$\n275: \n276: where $P_{\\text{CST}}(e_a, e_b)$ is the unique path from $e_a$ to $e_b$ in the CST tree.\n277: \n278: **Proof:**\n279: \n280: *Part 1 (Unique path):* CST is tree \u2192 unique path between any two vertices\n281: \n282: *Part 2 (Closed cycle):* $e_i$ connects $e_a \\to e_b$ (IG), $P_{\\text{CST}}$ connects $e_b \\to e_a$ (CST) \u2192 closed loop\n283: \n284: *Part 3 (Linear independence):* Each $C(e_i)$ contains IG edge $e_i$, no other cycle contains $e_i$ \u2192 independent\n285: "
+    },
+    {
+      "directive_type": "algorithm",
+      "label": "alg-fundamental-cycle",
+      "title": "Find Fundamental Cycle from IG Edge",
+      "start_line": 291,
+      "end_line": 346,
+      "header_lines": [
+        292
+      ],
+      "content_start": 294,
+      "content_end": 345,
+      "content": "294: :label: alg-fundamental-cycle\n295: \n296: **Input:**\n297: - IG edge $e = (e_a \\sim e_b)$\n298: - CST as adjacency list `cst[episode] = parent_episode`\n299: - Root episode $e_{\\text{root}}$\n300: \n301: **Output:** Ordered cycle vertices $C(e) = [e_a, \\ldots, e_{\\text{LCA}}, \\ldots, e_b]$\n302: \n303: **Procedure:**\n304: \n305: 1. **Find Lowest Common Ancestor (LCA):**\n306: \n307:    ```python\n308:    def find_lca(e_a, e_b, cst):\n309:        # Trace paths to root\n310:        path_a = trace_to_root(e_a, cst)\n311:        path_b = trace_to_root(e_b, cst)\n312: \n313:        # Find first common vertex\n314:        ancestors_a = set(path_a)\n315:        for vertex in path_b:\n316:            if vertex in ancestors_a:\n317:                return vertex\n318:    ```\n319: \n320: 2. **Build upward path** $P_{\\text{up}}(e_a, e_{\\text{LCA}})$:\n321: \n322:    ```python\n323:    def path_to_ancestor(start, ancestor, cst):\n324:        path = [start]\n325:        current = start\n326:        while current != ancestor:\n327:            current = cst[current]  # Parent\n328:            path.append(current)\n329:        return path\n330:    ```\n331: \n332: 3. **Build downward path** $P_{\\text{down}}(e_{\\text{LCA}}, e_b)$:\n333: \n334:    Same as step 2, then reverse\n335: \n336: 4. **Concatenate:**\n337: \n338:    ```python\n339:    cycle = path_to_ancestor(e_a, lca, cst)[:-1]  # Exclude LCA\n340:    cycle.append(lca)\n341:    cycle.extend(reversed(path_to_ancestor(e_b, lca, cst)[:-1]))\n342:    return cycle\n343:    ```\n344: \n345: **Complexity:**",
+      "metadata": {
+        "label": "alg-fundamental-cycle"
+      },
+      "section": "## 2. IG Fundamental Cycles",
+      "raw_directive": "291: ### 2.2. Algorithm for Finding Fundamental Cycles\n292: \n293: :::{prf:algorithm} Find Fundamental Cycle from IG Edge\n294: :label: alg-fundamental-cycle\n295: \n296: **Input:**\n297: - IG edge $e = (e_a \\sim e_b)$\n298: - CST as adjacency list `cst[episode] = parent_episode`\n299: - Root episode $e_{\\text{root}}$\n300: \n301: **Output:** Ordered cycle vertices $C(e) = [e_a, \\ldots, e_{\\text{LCA}}, \\ldots, e_b]$\n302: \n303: **Procedure:**\n304: \n305: 1. **Find Lowest Common Ancestor (LCA):**\n306: \n307:    ```python\n308:    def find_lca(e_a, e_b, cst):\n309:        # Trace paths to root\n310:        path_a = trace_to_root(e_a, cst)\n311:        path_b = trace_to_root(e_b, cst)\n312: \n313:        # Find first common vertex\n314:        ancestors_a = set(path_a)\n315:        for vertex in path_b:\n316:            if vertex in ancestors_a:\n317:                return vertex\n318:    ```\n319: \n320: 2. **Build upward path** $P_{\\text{up}}(e_a, e_{\\text{LCA}})$:\n321: \n322:    ```python\n323:    def path_to_ancestor(start, ancestor, cst):\n324:        path = [start]\n325:        current = start\n326:        while current != ancestor:\n327:            current = cst[current]  # Parent\n328:            path.append(current)\n329:        return path\n330:    ```\n331: \n332: 3. **Build downward path** $P_{\\text{down}}(e_{\\text{LCA}}, e_b)$:\n333: \n334:    Same as step 2, then reverse\n335: \n336: 4. **Concatenate:**\n337: \n338:    ```python\n339:    cycle = path_to_ancestor(e_a, lca, cst)[:-1]  # Exclude LCA\n340:    cycle.append(lca)\n341:    cycle.extend(reversed(path_to_ancestor(e_b, lca, cst)[:-1]))\n342:    return cycle\n343:    ```\n344: \n345: **Complexity:**\n346: - Without preprocessing: $O(h)$ where $h$ is tree height"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

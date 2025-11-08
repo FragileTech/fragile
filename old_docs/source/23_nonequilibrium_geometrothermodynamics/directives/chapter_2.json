@@ -1,0 +1,147 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 2. Onsager-Machlup Action Functional",
+  "directive_count": 8,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-onsager-machlup-action",
+      "title": "Onsager-Machlup Action for Fragile Gas",
+      "start_line": 581,
+      "end_line": 619,
+      "header_lines": [
+        582
+      ],
+      "content_start": 584,
+      "content_end": 618,
+      "content": "584: :label: thm-onsager-machlup-action\n585: \n586: Let $\\gamma(t) = (x(t), v(t))$ be a path in $\\mathcal{P}$. The **Onsager-Machlup action functional** for the kinetic operator is:\n587: \n588: $$\n589: S_{\\text{OM}}[\\gamma] = \\int_0^T L_{\\text{OM}}(x_t, v_t, \\dot{x}_t, \\dot{v}_t) dt\n590: $$\n591: \n592: where the **Onsager-Machlup Lagrangian** is defined on paths satisfying the kinematic constraint $\\dot{x}(t) = v(t)$:\n593: \n594: $$\n595: L_{\\text{OM}}(x, v, \\dot{v}) = \\frac{1}{4\\gamma T} \\left\\| \\dot{v} + \\nabla U_{\\text{eff}}(x) + \\gamma v \\right\\|^2 + \\frac{\\gamma d_{\\text{space}}}{2}\n596: $$\n597: \n598: **Terms:**\n599: \n600: 1. **Velocity Action Density:**\n601: \n602: $$\n603: \\frac{1}{4\\gamma T} \\left\\| \\dot{v} + \\nabla U_{\\text{eff}}(x) + \\gamma v \\right\\|^2 = \\frac{1}{4\\sigma_v^2} \\left\\| \\dot{v} + \\nabla U_{\\text{eff}}(x) + \\gamma v \\right\\|^2\n604: $$\n605: \n606: where we used $T = \\sigma_v^2/\\gamma$. This coefficient arises from the noise amplitude $\\sqrt{2\\gamma T}$ in the SDE.\n607: \n608: Measures deviation from the deterministic Langevin trajectory.\n609: \n610: 2. **Divergence Correction:**\n611: \n612: $$\n613: \\Phi = \\frac{\\gamma d_{\\text{space}}}{2}\n614: $$\n615: \n616: Arises from It\u00f4-Stratonovich correction. This is a constant correction term from the friction's divergence (does not affect extremal paths).\n617: \n618: **Kinematic Constraint:**",
+      "metadata": {
+        "label": "thm-onsager-machlup-action"
+      },
+      "section": "## 2. Onsager-Machlup Action Functional",
+      "raw_directive": "581: We derive $S_{\\text{OM}}$ using Girsanov's theorem (modern formulation of OM theory).\n582: \n583: :::{prf:theorem} Onsager-Machlup Action for Fragile Gas\n584: :label: thm-onsager-machlup-action\n585: \n586: Let $\\gamma(t) = (x(t), v(t))$ be a path in $\\mathcal{P}$. The **Onsager-Machlup action functional** for the kinetic operator is:\n587: \n588: $$\n589: S_{\\text{OM}}[\\gamma] = \\int_0^T L_{\\text{OM}}(x_t, v_t, \\dot{x}_t, \\dot{v}_t) dt\n590: $$\n591: \n592: where the **Onsager-Machlup Lagrangian** is defined on paths satisfying the kinematic constraint $\\dot{x}(t) = v(t)$:\n593: \n594: $$\n595: L_{\\text{OM}}(x, v, \\dot{v}) = \\frac{1}{4\\gamma T} \\left\\| \\dot{v} + \\nabla U_{\\text{eff}}(x) + \\gamma v \\right\\|^2 + \\frac{\\gamma d_{\\text{space}}}{2}\n596: $$\n597: \n598: **Terms:**\n599: \n600: 1. **Velocity Action Density:**\n601: \n602: $$\n603: \\frac{1}{4\\gamma T} \\left\\| \\dot{v} + \\nabla U_{\\text{eff}}(x) + \\gamma v \\right\\|^2 = \\frac{1}{4\\sigma_v^2} \\left\\| \\dot{v} + \\nabla U_{\\text{eff}}(x) + \\gamma v \\right\\|^2\n604: $$\n605: \n606: where we used $T = \\sigma_v^2/\\gamma$. This coefficient arises from the noise amplitude $\\sqrt{2\\gamma T}$ in the SDE.\n607: \n608: Measures deviation from the deterministic Langevin trajectory.\n609: \n610: 2. **Divergence Correction:**\n611: \n612: $$\n613: \\Phi = \\frac{\\gamma d_{\\text{space}}}{2}\n614: $$\n615: \n616: Arises from It\u00f4-Stratonovich correction. This is a constant correction term from the friction's divergence (does not affect extremal paths).\n617: \n618: **Kinematic Constraint:**\n619: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-86",
+      "title": null,
+      "start_line": 621,
+      "end_line": 680,
+      "header_lines": [],
+      "content_start": 623,
+      "content_end": 679,
+      "content": "623: :::{prf:proof}\n624: \n625: **Step 1: Apply Girsanov's theorem.**\n626: \n627: The Girsanov theorem (\u00d8ksendal 2003, Theorem 8.6.6) states that if $dX_t = b(X_t) dt + dW_t$ has drift $b$, then the law $\\mathbb{P}_b$ relative to Wiener measure $\\mathcal{W}$ is:\n628: \n629: $$\n630: \\frac{d\\mathbb{P}_b}{d\\mathcal{W}} = \\exp\\left(\\int_0^T b(X_t) \\circ dW_t - \\frac{1}{2}\\int_0^T \\|b(X_t)\\|^2 dt\\right)\n631: $$\n632: \n633: where $\\circ$ denotes Stratonovich integral.\n634: \n635: **Step 2: Identify the drift term.**\n636: \n637: For the velocity equation:\n638: \n639: $$\n640: dv_t = \\underbrace{(F(x_t) - \\gamma v_t)}_{=: b(x_t, v_t)} dt + \\sqrt{2\\gamma T} \\, dW_t\n641: $$\n642: \n643: Rescaling Brownian motion: $dW_t = \\sqrt{2\\gamma T} \\, d\\tilde{W}_t$ where $\\tilde{W}_t$ is standard. Then:\n644: \n645: $$\n646: dv_t = b(x_t, v_t) dt + d\\tilde{W}_t\n647: $$\n648: \n649: **Step 3: Compute Radon-Nikodym derivative.**\n650: \n651: $$\n652: \\frac{d\\mathbb{P}}{d\\mathcal{W}} = \\exp\\left(\\int_0^T \\frac{b(x_t, v_t)}{\\sqrt{2\\gamma T}} \\circ d\\tilde{W}_t - \\frac{1}{4\\gamma T}\\int_0^T \\|b(x_t, v_t)\\|^2 dt\\right)\n653: $$\n654: \n655: **Step 4: Convert to path integral.**\n656: \n657: Using the Stratonovich integral identity:\n658: \n659: $$\n660: \\int_0^T b \\circ dW = \\int_0^T b \\, dW + \\frac{1}{2}\\int_0^T (\\nabla \\cdot b) dt\n661: $$\n662: \n663: and the definition of $dW = \\lim_{\\Delta t \\to 0} (W_{t+\\Delta t} - W_t) \\approx \\sqrt{\\Delta t} \\, \\xi$ where $\\xi \\sim \\mathcal{N}(0,I)$, we recover the OM action.\n664: \n665: The rigorous derivation via Freidlin-Wentzell large deviation theory yields the same result (see Freidlin & Wentzell 2012, Chapter 3).\n666: \n667: **Step 5: Divergence correction.**\n668: \n669: The term $\\Phi = -\\frac{1}{2}\\text{div}(b)$ appears from the It\u00f4-Stratonovich conversion. For the drift on the full phase space $(x,v)$, we have $b(x, v) = (v, F(x) - \\gamma v)$, giving:\n670: \n671: $$\n672: \\text{div}_{(x,v)}(b) = \\nabla_x \\cdot v + \\nabla_v \\cdot (F(x) - \\gamma v) = 0 - \\gamma d_{\\text{space}} = -\\gamma d_{\\text{space}}\n673: $$\n674: \n675: since $F(x)$ is independent of $v$. Therefore:\n676: \n677: $$\n678: \\Phi(x, v) = -\\frac{1}{2}\\text{div}(b) = \\frac{\\gamma d_{\\text{space}}}{2}\n679: $$",
+      "metadata": {},
+      "section": "## 2. Onsager-Machlup Action Functional",
+      "raw_directive": "621: :::\n622: \n623: :::{prf:proof}\n624: \n625: **Step 1: Apply Girsanov's theorem.**\n626: \n627: The Girsanov theorem (\u00d8ksendal 2003, Theorem 8.6.6) states that if $dX_t = b(X_t) dt + dW_t$ has drift $b$, then the law $\\mathbb{P}_b$ relative to Wiener measure $\\mathcal{W}$ is:\n628: \n629: $$\n630: \\frac{d\\mathbb{P}_b}{d\\mathcal{W}} = \\exp\\left(\\int_0^T b(X_t) \\circ dW_t - \\frac{1}{2}\\int_0^T \\|b(X_t)\\|^2 dt\\right)\n631: $$\n632: \n633: where $\\circ$ denotes Stratonovich integral.\n634: \n635: **Step 2: Identify the drift term.**\n636: \n637: For the velocity equation:\n638: \n639: $$\n640: dv_t = \\underbrace{(F(x_t) - \\gamma v_t)}_{=: b(x_t, v_t)} dt + \\sqrt{2\\gamma T} \\, dW_t\n641: $$\n642: \n643: Rescaling Brownian motion: $dW_t = \\sqrt{2\\gamma T} \\, d\\tilde{W}_t$ where $\\tilde{W}_t$ is standard. Then:\n644: \n645: $$\n646: dv_t = b(x_t, v_t) dt + d\\tilde{W}_t\n647: $$\n648: \n649: **Step 3: Compute Radon-Nikodym derivative.**\n650: \n651: $$\n652: \\frac{d\\mathbb{P}}{d\\mathcal{W}} = \\exp\\left(\\int_0^T \\frac{b(x_t, v_t)}{\\sqrt{2\\gamma T}} \\circ d\\tilde{W}_t - \\frac{1}{4\\gamma T}\\int_0^T \\|b(x_t, v_t)\\|^2 dt\\right)\n653: $$\n654: \n655: **Step 4: Convert to path integral.**\n656: \n657: Using the Stratonovich integral identity:\n658: \n659: $$\n660: \\int_0^T b \\circ dW = \\int_0^T b \\, dW + \\frac{1}{2}\\int_0^T (\\nabla \\cdot b) dt\n661: $$\n662: \n663: and the definition of $dW = \\lim_{\\Delta t \\to 0} (W_{t+\\Delta t} - W_t) \\approx \\sqrt{\\Delta t} \\, \\xi$ where $\\xi \\sim \\mathcal{N}(0,I)$, we recover the OM action.\n664: \n665: The rigorous derivation via Freidlin-Wentzell large deviation theory yields the same result (see Freidlin & Wentzell 2012, Chapter 3).\n666: \n667: **Step 5: Divergence correction.**\n668: \n669: The term $\\Phi = -\\frac{1}{2}\\text{div}(b)$ appears from the It\u00f4-Stratonovich conversion. For the drift on the full phase space $(x,v)$, we have $b(x, v) = (v, F(x) - \\gamma v)$, giving:\n670: \n671: $$\n672: \\text{div}_{(x,v)}(b) = \\nabla_x \\cdot v + \\nabla_v \\cdot (F(x) - \\gamma v) = 0 - \\gamma d_{\\text{space}} = -\\gamma d_{\\text{space}}\n673: $$\n674: \n675: since $F(x)$ is independent of $v$. Therefore:\n676: \n677: $$\n678: \\Phi(x, v) = -\\frac{1}{2}\\text{div}(b) = \\frac{\\gamma d_{\\text{space}}}{2}\n679: $$\n680: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-147",
+      "title": "Comparison to Classical Mechanics",
+      "start_line": 682,
+      "end_line": 690,
+      "header_lines": [],
+      "content_start": 683,
+      "content_end": 689,
+      "content": "683: \n684: :::{prf:remark} Comparison to Classical Mechanics\n685: The Onsager-Machlup action resembles the classical action $S_{\\text{classical}} = \\int L(\\dot{q}, q) dt$, but with crucial differences:\n686: \n687: 1. **Stochastic term**: $\\|\\dot{v} - F + \\gamma v\\|^2 / (2\\sigma_v^2)$ penalizes deviations from drift\n688: 2. **Temperature scaling**: Noise strength $\\sigma_v^2$ plays the role of $\\hbar$ in quantum path integrals\n689: 3. **Dissipation**: Friction $\\gamma v$ breaks time-reversal symmetry",
+      "metadata": {},
+      "section": "## 2. Onsager-Machlup Action Functional",
+      "raw_directive": "682: :::\n683: \n684: :::{prf:remark} Comparison to Classical Mechanics\n685: The Onsager-Machlup action resembles the classical action $S_{\\text{classical}} = \\int L(\\dot{q}, q) dt$, but with crucial differences:\n686: \n687: 1. **Stochastic term**: $\\|\\dot{v} - F + \\gamma v\\|^2 / (2\\sigma_v^2)$ penalizes deviations from drift\n688: 2. **Temperature scaling**: Noise strength $\\sigma_v^2$ plays the role of $\\hbar$ in quantum path integrals\n689: 3. **Dissipation**: Friction $\\gamma v$ breaks time-reversal symmetry\n690: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-reduced-om-action",
+      "title": "Reduced Onsager-Machlup Action",
+      "start_line": 696,
+      "end_line": 722,
+      "header_lines": [
+        697
+      ],
+      "content_start": 699,
+      "content_end": 721,
+      "content": "699: :label: def-reduced-om-action\n700: \n701: For the Fragile Gas with constant friction $\\gamma$, isotropic noise, and force $F = -\\nabla U_{\\text{eff}}$, the action simplifies to (dropping the constant $\\frac{\\gamma d_{\\text{space}} T}{2}$ which doesn't affect extremal paths):\n702: \n703: $$\n704: S_{\\text{OM}}[\\gamma] = \\frac{1}{4\\sigma_v^2} \\int_0^T \\left\\| \\dot{v}_t + \\nabla U_{\\text{eff}}(x_t) + \\gamma v_t \\right\\|^2 dt\n705: $$\n706: \n707: defined on paths satisfying the kinematic constraint $\\dot{x}_t = v_t$.\n708: \n709: **Lagrangian Formulation:**\n710: \n711: $$\n712: L(x, v, \\dot{v}) = \\frac{1}{4\\sigma_v^2} \\|\\dot{v} + \\nabla U_{\\text{eff}}(x) + \\gamma v\\|^2\n713: $$\n714: \n715: **Effective Temperature:**\n716: \n717: Recalling $T = \\sigma_v^2 / \\gamma$ (Chapter 4), the action can be written:\n718: \n719: $$\n720: S_{\\text{OM}}[\\gamma] = \\frac{1}{4\\gamma T} \\int_0^T \\left\\| \\dot{v}_t + \\nabla U_{\\text{eff}}(x_t) + \\gamma v_t \\right\\|^2 dt\n721: $$",
+      "metadata": {
+        "label": "def-reduced-om-action"
+      },
+      "section": "## 2. Onsager-Machlup Action Functional",
+      "raw_directive": "696: For practical computations, we simplify under standard assumptions.\n697: \n698: :::{prf:definition} Reduced Onsager-Machlup Action\n699: :label: def-reduced-om-action\n700: \n701: For the Fragile Gas with constant friction $\\gamma$, isotropic noise, and force $F = -\\nabla U_{\\text{eff}}$, the action simplifies to (dropping the constant $\\frac{\\gamma d_{\\text{space}} T}{2}$ which doesn't affect extremal paths):\n702: \n703: $$\n704: S_{\\text{OM}}[\\gamma] = \\frac{1}{4\\sigma_v^2} \\int_0^T \\left\\| \\dot{v}_t + \\nabla U_{\\text{eff}}(x_t) + \\gamma v_t \\right\\|^2 dt\n705: $$\n706: \n707: defined on paths satisfying the kinematic constraint $\\dot{x}_t = v_t$.\n708: \n709: **Lagrangian Formulation:**\n710: \n711: $$\n712: L(x, v, \\dot{v}) = \\frac{1}{4\\sigma_v^2} \\|\\dot{v} + \\nabla U_{\\text{eff}}(x) + \\gamma v\\|^2\n713: $$\n714: \n715: **Effective Temperature:**\n716: \n717: Recalling $T = \\sigma_v^2 / \\gamma$ (Chapter 4), the action can be written:\n718: \n719: $$\n720: S_{\\text{OM}}[\\gamma] = \\frac{1}{4\\gamma T} \\int_0^T \\left\\| \\dot{v}_t + \\nabla U_{\\text{eff}}(x_t) + \\gamma v_t \\right\\|^2 dt\n721: $$\n722: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-freidlin-wentzell-ldp",
+      "title": "Freidlin-Wentzell Large Deviation Principle",
+      "start_line": 728,
+      "end_line": 773,
+      "header_lines": [
+        729
+      ],
+      "content_start": 731,
+      "content_end": 772,
+      "content": "731: :label: thm-freidlin-wentzell-ldp\n732: \n733: Consider the Langevin SDE for velocities:\n734: \n735: $$\n736: dv_t = F(x_t, v_t) dt + \\sqrt{\\epsilon} \\, dW_t\n737: $$\n738: \n739: where $F(x, v) = -\\nabla U_{\\text{eff}}(x) - \\gamma v$ and $\\epsilon = 2\\gamma T = 2\\sigma_v^2$ is the noise strength.\n740: \n741: As $\\epsilon \\to 0$, the law $\\mathbb{P}_\\epsilon$ of the solution satisfies a **large deviation principle** with rate function $I[\\gamma]$:\n742: \n743: $$\n744: \\mathbb{P}_\\epsilon(\\gamma \\in A) \\asymp \\exp\\left(-\\frac{1}{\\epsilon} \\inf_{\\gamma' \\in A} I[\\gamma']\\right)\n745: $$\n746: \n747: The **Freidlin-Wentzell rate function** is:\n748: \n749: $$\n750: I[\\gamma] = \\frac{1}{2}\\int_0^T \\|\\dot{v}_t - F(x_t, v_t)\\|^2 dt\n751: $$\n752: \n753: **Connection to Onsager-Machlup Action:**\n754: \n755: The Onsager-Machlup action {prf:ref}`def-reduced-om-action` is:\n756: \n757: $$\n758: S_{\\text{OM}}[\\gamma] = \\frac{1}{4\\gamma T}\\int_0^T \\|\\dot{v}_t + \\nabla U_{\\text{eff}}(x_t) + \\gamma v_t\\|^2 dt = \\frac{1}{\\epsilon} I[\\gamma]\n759: $$\n760: \n761: Therefore, the LDP can be written in terms of $S_{\\text{OM}}$:\n762: \n763: $$\n764: \\mathbb{P}_\\epsilon(\\gamma \\in A) \\asymp \\exp\\left(-\\inf_{\\gamma' \\in A} S_{\\text{OM}}[\\gamma']\\right)\n765: $$\n766: \n767: **Interpretation:**\n768: \n769: - The rate function $I[\\gamma]$ is the **Freidlin-Wentzell functional** (units: $[\\text{length}]^2$)\n770: - The action $S_{\\text{OM}}[\\gamma] = I[\\gamma]/\\epsilon$ is **dimensionless** (natural logarithm of probability)\n771: - Paths with $I[\\gamma] = 0$ (equivalently $S_{\\text{OM}} = 0$) are solutions to the deterministic ODE $\\dot{v} = F$ (most probable)\n772: - Paths with $I[\\gamma] > 0$ are exponentially suppressed: $\\mathbb{P}_\\epsilon \\sim e^{-I/\\epsilon} = e^{-S_{\\text{OM}}}$",
+      "metadata": {
+        "label": "thm-freidlin-wentzell-ldp"
+      },
+      "section": "## 2. Onsager-Machlup Action Functional",
+      "raw_directive": "728: The Onsager-Machlup action is rigorously justified by **Freidlin-Wentzell large deviation theory**.\n729: \n730: :::{prf:theorem} Freidlin-Wentzell Large Deviation Principle\n731: :label: thm-freidlin-wentzell-ldp\n732: \n733: Consider the Langevin SDE for velocities:\n734: \n735: $$\n736: dv_t = F(x_t, v_t) dt + \\sqrt{\\epsilon} \\, dW_t\n737: $$\n738: \n739: where $F(x, v) = -\\nabla U_{\\text{eff}}(x) - \\gamma v$ and $\\epsilon = 2\\gamma T = 2\\sigma_v^2$ is the noise strength.\n740: \n741: As $\\epsilon \\to 0$, the law $\\mathbb{P}_\\epsilon$ of the solution satisfies a **large deviation principle** with rate function $I[\\gamma]$:\n742: \n743: $$\n744: \\mathbb{P}_\\epsilon(\\gamma \\in A) \\asymp \\exp\\left(-\\frac{1}{\\epsilon} \\inf_{\\gamma' \\in A} I[\\gamma']\\right)\n745: $$\n746: \n747: The **Freidlin-Wentzell rate function** is:\n748: \n749: $$\n750: I[\\gamma] = \\frac{1}{2}\\int_0^T \\|\\dot{v}_t - F(x_t, v_t)\\|^2 dt\n751: $$\n752: \n753: **Connection to Onsager-Machlup Action:**\n754: \n755: The Onsager-Machlup action {prf:ref}`def-reduced-om-action` is:\n756: \n757: $$\n758: S_{\\text{OM}}[\\gamma] = \\frac{1}{4\\gamma T}\\int_0^T \\|\\dot{v}_t + \\nabla U_{\\text{eff}}(x_t) + \\gamma v_t\\|^2 dt = \\frac{1}{\\epsilon} I[\\gamma]\n759: $$\n760: \n761: Therefore, the LDP can be written in terms of $S_{\\text{OM}}$:\n762: \n763: $$\n764: \\mathbb{P}_\\epsilon(\\gamma \\in A) \\asymp \\exp\\left(-\\inf_{\\gamma' \\in A} S_{\\text{OM}}[\\gamma']\\right)\n765: $$\n766: \n767: **Interpretation:**\n768: \n769: - The rate function $I[\\gamma]$ is the **Freidlin-Wentzell functional** (units: $[\\text{length}]^2$)\n770: - The action $S_{\\text{OM}}[\\gamma] = I[\\gamma]/\\epsilon$ is **dimensionless** (natural logarithm of probability)\n771: - Paths with $I[\\gamma] = 0$ (equivalently $S_{\\text{OM}} = 0$) are solutions to the deterministic ODE $\\dot{v} = F$ (most probable)\n772: - Paths with $I[\\gamma] > 0$ are exponentially suppressed: $\\mathbb{P}_\\epsilon \\sim e^{-I/\\epsilon} = e^{-S_{\\text{OM}}}$\n773: "
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-most-probable-paths",
+      "title": "Most Probable Paths",
+      "start_line": 775,
+      "end_line": 785,
+      "header_lines": [
+        776
+      ],
+      "content_start": 778,
+      "content_end": 784,
+      "content": "778: :label: cor-most-probable-paths\n779: \n780: The most probable paths (as $\\epsilon \\to 0$) are those minimizing the action $S_{\\text{OM}}[\\gamma]$, i.e., solutions to the Euler-Lagrange equations:\n781: \n782: $$\n783: \\frac{d}{dt}\\frac{\\partial L}{\\partial \\dot{v}} - \\frac{\\partial L}{\\partial v} = 0\n784: $$",
+      "metadata": {
+        "label": "cor-most-probable-paths"
+      },
+      "section": "## 2. Onsager-Machlup Action Functional",
+      "raw_directive": "775: :::\n776: \n777: :::{prf:corollary} Most Probable Paths\n778: :label: cor-most-probable-paths\n779: \n780: The most probable paths (as $\\epsilon \\to 0$) are those minimizing the action $S_{\\text{OM}}[\\gamma]$, i.e., solutions to the Euler-Lagrange equations:\n781: \n782: $$\n783: \\frac{d}{dt}\\frac{\\partial L}{\\partial \\dot{v}} - \\frac{\\partial L}{\\partial v} = 0\n784: $$\n785: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-path-measure",
+      "title": "Path Measure",
+      "start_line": 791,
+      "end_line": 829,
+      "header_lines": [
+        792
+      ],
+      "content_start": 794,
+      "content_end": 828,
+      "content": "794: :label: def-path-measure\n795: \n796: The **path measure** $\\mathbb{P}_{\\text{path}}$ on $\\mathcal{P}$ induced by the Onsager-Machlup action is:\n797: \n798: $$\n799: d\\mathbb{P}_{\\text{path}}[\\gamma] = \\frac{1}{Z_{\\text{path}}} e^{-S_{\\text{OM}}[\\gamma]} \\, \\mathcal{D}[\\gamma]\n800: $$\n801: \n802: where:\n803: \n804: 1. $\\mathcal{D}[\\gamma]$ is the Wiener measure (base reference measure)\n805: 2. $S_{\\text{OM}}[\\gamma]$ is the **dimensionless** Onsager-Machlup action (see remark below)\n806: 3. $Z_{\\text{path}}$ is the **path partition function**:\n807: \n808: $$\n809: Z_{\\text{path}} = \\int_{\\mathcal{P}} e^{-S_{\\text{OM}}[\\gamma]} \\, \\mathcal{D}[\\gamma]\n810: $$\n811: \n812: **Boundary Conditions:**\n813: \n814: For fixed endpoints $(x_0, v_0)$ and $(x_T, v_T)$:\n815: \n816: $$\n817: Z_{\\text{path}}(x_0, v_0; x_T, v_T) = \\int_{\\mathcal{P}_{x_0 \\to x_T}} e^{-S_{\\text{OM}}[\\gamma]} \\, \\mathcal{D}[\\gamma]\n818: $$\n819: \n820: where $\\mathcal{P}_{x_0 \\to x_T}$ denotes paths with fixed boundary conditions.\n821: \n822: :::{note}\n823: **Dimensional Analysis of the Action:** With the convention $m = 1$ (dimensionless mass), the action $S_{\\text{OM}}$ is dimensionless:\n824: \n825: - Energy (temperature $T$): $[T] = [v^2] = L^2 T^{-2}$\n826: - Friction: $[\\gamma] = T^{-1}$\n827: - Lagrangian: $[L_{\\text{OM}}] = \\frac{1}{[\\gamma][T]} \\cdot [v\u0307^2] = \\frac{1}{T^{-1} \\cdot L^2 T^{-2}} \\cdot L^2 T^{-4} = T^{-1}$\n828: - Action: $[S_{\\text{OM}}] = [L_{\\text{OM}}] \\cdot [t] = T^{-1} \\cdot T = 1$ (dimensionless) \u2713",
+      "metadata": {
+        "label": "def-path-measure"
+      },
+      "section": "## 2. Onsager-Machlup Action Functional",
+      "raw_directive": "791: The action functional defines a probability measure on path space.\n792: \n793: :::{prf:definition} Path Measure\n794: :label: def-path-measure\n795: \n796: The **path measure** $\\mathbb{P}_{\\text{path}}$ on $\\mathcal{P}$ induced by the Onsager-Machlup action is:\n797: \n798: $$\n799: d\\mathbb{P}_{\\text{path}}[\\gamma] = \\frac{1}{Z_{\\text{path}}} e^{-S_{\\text{OM}}[\\gamma]} \\, \\mathcal{D}[\\gamma]\n800: $$\n801: \n802: where:\n803: \n804: 1. $\\mathcal{D}[\\gamma]$ is the Wiener measure (base reference measure)\n805: 2. $S_{\\text{OM}}[\\gamma]$ is the **dimensionless** Onsager-Machlup action (see remark below)\n806: 3. $Z_{\\text{path}}$ is the **path partition function**:\n807: \n808: $$\n809: Z_{\\text{path}} = \\int_{\\mathcal{P}} e^{-S_{\\text{OM}}[\\gamma]} \\, \\mathcal{D}[\\gamma]\n810: $$\n811: \n812: **Boundary Conditions:**\n813: \n814: For fixed endpoints $(x_0, v_0)$ and $(x_T, v_T)$:\n815: \n816: $$\n817: Z_{\\text{path}}(x_0, v_0; x_T, v_T) = \\int_{\\mathcal{P}_{x_0 \\to x_T}} e^{-S_{\\text{OM}}[\\gamma]} \\, \\mathcal{D}[\\gamma]\n818: $$\n819: \n820: where $\\mathcal{P}_{x_0 \\to x_T}$ denotes paths with fixed boundary conditions.\n821: \n822: :::{note}\n823: **Dimensional Analysis of the Action:** With the convention $m = 1$ (dimensionless mass), the action $S_{\\text{OM}}$ is dimensionless:\n824: \n825: - Energy (temperature $T$): $[T] = [v^2] = L^2 T^{-2}$\n826: - Friction: $[\\gamma] = T^{-1}$\n827: - Lagrangian: $[L_{\\text{OM}}] = \\frac{1}{[\\gamma][T]} \\cdot [v\u0307^2] = \\frac{1}{T^{-1} \\cdot L^2 T^{-2}} \\cdot L^2 T^{-4} = T^{-1}$\n828: - Action: $[S_{\\text{OM}}] = [L_{\\text{OM}}] \\cdot [t] = T^{-1} \\cdot T = 1$ (dimensionless) \u2713\n829: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-path-partition-transition-kernel",
+      "title": "Path Partition Function and Transition Kernel",
+      "start_line": 832,
+      "end_line": 848,
+      "header_lines": [
+        833
+      ],
+      "content_start": 835,
+      "content_end": 847,
+      "content": "835: :label: thm-path-partition-transition-kernel\n836: \n837: The path partition function $Z_{\\text{path}}(x_0, v_0; x_T, v_T; T)$ equals the transition probability density:\n838: \n839: $$\n840: p_T(x_0, v_0; x_T, v_T) = Z_{\\text{path}}(x_0, v_0; x_T, v_T)\n841: $$\n842: \n843: This is the fundamental solution to the Fokker-Planck equation:\n844: \n845: $$\n846: \\frac{\\partial p}{\\partial t} = -\\nabla \\cdot (v p) + \\nabla_v \\cdot \\left[(F - \\gamma v) p + \\frac{\\sigma_v^2}{2}\\nabla_v p\\right]\n847: $$",
+      "metadata": {
+        "label": "thm-path-partition-transition-kernel"
+      },
+      "section": "## 2. Onsager-Machlup Action Functional",
+      "raw_directive": "832: :::\n833: \n834: :::{prf:theorem} Path Partition Function and Transition Kernel\n835: :label: thm-path-partition-transition-kernel\n836: \n837: The path partition function $Z_{\\text{path}}(x_0, v_0; x_T, v_T; T)$ equals the transition probability density:\n838: \n839: $$\n840: p_T(x_0, v_0; x_T, v_T) = Z_{\\text{path}}(x_0, v_0; x_T, v_T)\n841: $$\n842: \n843: This is the fundamental solution to the Fokker-Planck equation:\n844: \n845: $$\n846: \\frac{\\partial p}{\\partial t} = -\\nabla \\cdot (v p) + \\nabla_v \\cdot \\left[(F - \\gamma v) p + \\frac{\\sigma_v^2}{2}\\nabla_v p\\right]\n847: $$\n848: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

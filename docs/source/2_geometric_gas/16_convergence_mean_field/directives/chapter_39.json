@@ -1,0 +1,47 @@
+{
+  "chapter_index": 39,
+  "section_id": "## 2. Explicit Convergence Rate Formula",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-alpha-net-explicit",
+      "title": "Mean-Field Convergence Rate (Explicit)",
+      "start_line": 5167,
+      "end_line": 5185,
+      "header_lines": [
+        5168
+      ],
+      "content_start": 5170,
+      "content_end": 5184,
+      "content": "5170: :label: thm-alpha-net-explicit\n5171: \n5172: The mean-field convergence rate as a function of simulation parameters is:\n5173: \n5174: $$\n5175: \\begin{aligned}\n5176: \\alpha_{\\text{net}}(\\tau, \\gamma, \\sigma, \\lambda_{\\text{revive}}, \\kappa_{\\max}, L_U) \\approx \\frac{1}{2} \\Bigg[\n5177: &\\frac{\\gamma \\sigma^2}{1 + \\gamma/\\lambda_{\\min} + \\lambda_{\\text{revive}}/(M_\\infty \\gamma)} \\\\\n5178: &- \\frac{2\\gamma}{\\sigma^2} \\left(\\sqrt{\\frac{\\kappa_{\\max}}{\\sigma^2}} + \\sqrt{\\frac{L_U}{\\gamma}} + \\gamma\\right) \\sigma\\tau\\sqrt{2d} \\\\\n5179: &- \\frac{2\\gamma L_U^3}{\\sigma^4(1 + \\gamma/\\lambda_{\\min})} \\\\\n5180: &- (C_{\\nabla x} + \\gamma) \\sqrt{2d\\sigma^2/\\gamma} \\\\\n5181: &- 2\\kappa_{\\max} - \\frac{\\kappa_0(\\lambda_{\\text{revive}} + \\kappa_0)^2}{\\lambda_{\\text{revive}}^2}\n5182: \\Bigg]\n5183: \\end{aligned}\n5184: ",
+      "metadata": {
+        "label": "thm-alpha-net-explicit"
+      },
+      "section": "## 2. Explicit Convergence Rate Formula",
+      "raw_directive": "5167: Substituting the expressions from Section 1:\n5168: \n5169: :::{prf:theorem} Mean-Field Convergence Rate (Explicit)\n5170: :label: thm-alpha-net-explicit\n5171: \n5172: The mean-field convergence rate as a function of simulation parameters is:\n5173: \n5174: $$\n5175: \\begin{aligned}\n5176: \\alpha_{\\text{net}}(\\tau, \\gamma, \\sigma, \\lambda_{\\text{revive}}, \\kappa_{\\max}, L_U) \\approx \\frac{1}{2} \\Bigg[\n5177: &\\frac{\\gamma \\sigma^2}{1 + \\gamma/\\lambda_{\\min} + \\lambda_{\\text{revive}}/(M_\\infty \\gamma)} \\\\\n5178: &- \\frac{2\\gamma}{\\sigma^2} \\left(\\sqrt{\\frac{\\kappa_{\\max}}{\\sigma^2}} + \\sqrt{\\frac{L_U}{\\gamma}} + \\gamma\\right) \\sigma\\tau\\sqrt{2d} \\\\\n5179: &- \\frac{2\\gamma L_U^3}{\\sigma^4(1 + \\gamma/\\lambda_{\\min})} \\\\\n5180: &- (C_{\\nabla x} + \\gamma) \\sqrt{2d\\sigma^2/\\gamma} \\\\\n5181: &- 2\\kappa_{\\max} - \\frac{\\kappa_0(\\lambda_{\\text{revive}} + \\kappa_0)^2}{\\lambda_{\\text{revive}}^2}\n5182: \\Bigg]\n5183: \\end{aligned}\n5184: \n5185: $$"
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-optimal-parameter-scaling",
+      "title": "Optimal Parameter Scaling",
+      "start_line": 5260,
+      "end_line": 5282,
+      "header_lines": [
+        5261
+      ],
+      "content_start": 5263,
+      "content_end": 5281,
+      "content": "5263: :label: thm-optimal-parameter-scaling\n5264: \n5265: For a landscape with Lipschitz constant $L_U$ and minimum Hessian eigenvalue $\\lambda_{\\min}$, the optimal parameter scaling is:\n5266: \n5267: $$\n5268: \\begin{aligned}\n5269: \\gamma^* &\\sim L_U^{3/7} \\\\\n5270: \\sigma^* &\\sim L_U^{9/14} \\\\\n5271: \\tau^* &\\sim L_U^{-12/7} \\\\\n5272: \\lambda_{\\text{revive}}^* &\\sim \\kappa_{\\max}\n5273: \\end{aligned}\n5274: \n5275: $$\n5276: \n5277: yielding convergence rate:\n5278: \n5279: $$\n5280: \\alpha_{\\text{net}}^* \\sim \\gamma^* \\sim L_U^{3/7}\n5281: ",
+      "metadata": {
+        "label": "thm-optimal-parameter-scaling"
+      },
+      "section": "## 2. Explicit Convergence Rate Formula",
+      "raw_directive": "5260: This balances killing and revival, minimizing the dead/alive ratio fluctuations.\n5261: \n5262: :::{prf:theorem} Optimal Parameter Scaling\n5263: :label: thm-optimal-parameter-scaling\n5264: \n5265: For a landscape with Lipschitz constant $L_U$ and minimum Hessian eigenvalue $\\lambda_{\\min}$, the optimal parameter scaling is:\n5266: \n5267: $$\n5268: \\begin{aligned}\n5269: \\gamma^* &\\sim L_U^{3/7} \\\\\n5270: \\sigma^* &\\sim L_U^{9/14} \\\\\n5271: \\tau^* &\\sim L_U^{-12/7} \\\\\n5272: \\lambda_{\\text{revive}}^* &\\sim \\kappa_{\\max}\n5273: \\end{aligned}\n5274: \n5275: $$\n5276: \n5277: yielding convergence rate:\n5278: \n5279: $$\n5280: \\alpha_{\\text{net}}^* \\sim \\gamma^* \\sim L_U^{3/7}\n5281: \n5282: $$"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

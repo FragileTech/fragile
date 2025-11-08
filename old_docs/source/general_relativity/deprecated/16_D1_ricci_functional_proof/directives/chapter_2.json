@@ -1,0 +1,29 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 2. Regge Calculus and Continuum Limit",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-regge-convergence",
+      "title": "Regge Calculus Convergence (Standard Result)",
+      "start_line": 91,
+      "end_line": 108,
+      "header_lines": [
+        92
+      ],
+      "content_start": 94,
+      "content_end": 107,
+      "content": "94: :label: thm-regge-convergence\n95: \n96: Let $(M, g)$ be a smooth Riemannian manifold. Let $\\mathcal{T}_N$ be a sequence of triangulations (or Voronoi tessellations) of $M$ with mesh size $\\delta_N \\to 0$ as $N \\to \\infty$.\n97: \n98: Define the **deficit angle** $\\theta_e$ on each edge (or plaquette) $e$ of the tessellation. Then:\n99: \n100: $$\n101: \\lim_{\\delta_N \\to 0} \\frac{\\text{(deficit angle sum around point)}}{\\text{(local volume)}} = R_{\\mu\\nu}[g]\n102: $$\n103: \n104: where $R_{\\mu\\nu}[g]$ is the Ricci curvature tensor of the smooth metric $g$.\n105: \n106: **References**:\n107: - Regge, T. (1961). \"General relativity without coordinates\". *Nuovo Cimento* **19**, 558-571.",
+      "metadata": {
+        "label": "thm-regge-convergence"
+      },
+      "section": "## 2. Regge Calculus and Continuum Limit",
+      "raw_directive": "91: The connection between discrete geometry (scutoids) and continuum geometry (Riemannian metric) is rigorously established by **Regge calculus**, a formulation of general relativity on piecewise-flat simplicial complexes.\n92: \n93: :::{prf:theorem} Regge Calculus Convergence (Standard Result)\n94: :label: thm-regge-convergence\n95: \n96: Let $(M, g)$ be a smooth Riemannian manifold. Let $\\mathcal{T}_N$ be a sequence of triangulations (or Voronoi tessellations) of $M$ with mesh size $\\delta_N \\to 0$ as $N \\to \\infty$.\n97: \n98: Define the **deficit angle** $\\theta_e$ on each edge (or plaquette) $e$ of the tessellation. Then:\n99: \n100: $$\n101: \\lim_{\\delta_N \\to 0} \\frac{\\text{(deficit angle sum around point)}}{\\text{(local volume)}} = R_{\\mu\\nu}[g]\n102: $$\n103: \n104: where $R_{\\mu\\nu}[g]$ is the Ricci curvature tensor of the smooth metric $g$.\n105: \n106: **References**:\n107: - Regge, T. (1961). \"General relativity without coordinates\". *Nuovo Cimento* **19**, 558-571.\n108: - Cheeger, J., M\u00fcller, W., Schrader, R. (1984). \"On the curvature of piecewise flat spaces\". *Comm. Math. Phys.* **92**, 405-454."
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

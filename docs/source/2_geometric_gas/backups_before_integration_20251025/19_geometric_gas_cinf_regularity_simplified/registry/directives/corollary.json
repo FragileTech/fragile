@@ -1,0 +1,109 @@
+{
+  "document_id": "19_geometric_gas_cinf_regularity_simplified",
+  "stage": "directives",
+  "directive_type": "corollary",
+  "generated_at": "2025-11-08T17:07:43.281494+00:00",
+  "count": 4,
+  "items": [
+    {
+      "directive_type": "corollary",
+      "label": "cor-derivatives-continuous-cinf",
+      "title": "Continuity of All Derivatives",
+      "start_line": 723,
+      "end_line": 729,
+      "header_lines": [
+        724
+      ],
+      "content_start": 726,
+      "content_end": 728,
+      "content": "726: :label: cor-derivatives-continuous-cinf\n727: \n728: All derivatives ∇^m V_fit (m ≥ 1) are continuous functions of (x_i, S, ρ).",
+      "metadata": {
+        "label": "cor-derivatives-continuous-cinf"
+      },
+      "section": "## 6. Main Theorem: C∞ Regularity",
+      "raw_directive": "723: :::\n724: \n725: :::{prf:corollary} Continuity of All Derivatives\n726: :label: cor-derivatives-continuous-cinf\n727: \n728: All derivatives ∇^m V_fit (m ≥ 1) are continuous functions of (x_i, S, ρ).\n729: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "19_geometric_gas_cinf_regularity_simplified",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## 6. Main Theorem: C∞ Regularity"
+      }
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-compact-bounds-cinf",
+      "title": "Uniform Bounds on Compact Sets",
+      "start_line": 731,
+      "end_line": 743,
+      "header_lines": [
+        732
+      ],
+      "content_start": 734,
+      "content_end": 742,
+      "content": "734: :label: cor-compact-bounds-cinf\n735: \n736: For any compact K ⊆ X and any ρ_min ≤ ρ ≤ ρ_max:\n737: \n738: $$\n739: \\sup_{x_i \\in K, S, \\rho \\in [\\rho_{\\min}, \\rho_{\\max}]} \\|\\nabla^m V_{\\text{fit}}\\| \\leq C(K, \\rho_{\\min}, \\rho_{\\max}, m) < \\infty\n740: $$\n741: \n742: k-uniform and N-uniform.",
+      "metadata": {
+        "label": "cor-compact-bounds-cinf"
+      },
+      "section": "## 6. Main Theorem: C∞ Regularity",
+      "raw_directive": "731: :::\n732: \n733: :::{prf:corollary} Uniform Bounds on Compact Sets\n734: :label: cor-compact-bounds-cinf\n735: \n736: For any compact K ⊆ X and any ρ_min ≤ ρ ≤ ρ_max:\n737: \n738: $$\n739: \\sup_{x_i \\in K, S, \\rho \\in [\\rho_{\\min}, \\rho_{\\max}]} \\|\\nabla^m V_{\\text{fit}}\\| \\leq C(K, \\rho_{\\min}, \\rho_{\\max}, m) < \\infty\n740: $$\n741: \n742: k-uniform and N-uniform.\n743: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "19_geometric_gas_cinf_regularity_simplified",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## 6. Main Theorem: C∞ Regularity"
+      }
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-instantaneous-smoothing-cinf",
+      "title": "Instantaneous Smoothing",
+      "start_line": 883,
+      "end_line": 889,
+      "header_lines": [
+        884
+      ],
+      "content_start": 886,
+      "content_end": 888,
+      "content": "886: :label: cor-instantaneous-smoothing-cinf\n887: \n888: For any initial distribution μ_0 (possibly singular, e.g., δ_{w_0}), the time-evolved distribution μ_t = e^{tL} μ_0 has a C∞ density for all t > 0.",
+      "metadata": {
+        "label": "cor-instantaneous-smoothing-cinf"
+      },
+      "section": "## 9. Hypoellipticity and Smooth Transition Densities",
+      "raw_directive": "883: :::\n884: \n885: :::{prf:corollary} Instantaneous Smoothing\n886: :label: cor-instantaneous-smoothing-cinf\n887: \n888: For any initial distribution μ_0 (possibly singular, e.g., δ_{w_0}), the time-evolved distribution μ_t = e^{tL} μ_0 has a C∞ density for all t > 0.\n889: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "19_geometric_gas_cinf_regularity_simplified",
+        "chapter_index": 9,
+        "chapter_file": "chapter_9.json",
+        "section_id": "## 9. Hypoellipticity and Smooth Transition Densities"
+      }
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-wasserstein-convergence-cinf",
+      "title": "Exponential Convergence in Wasserstein Distance",
+      "start_line": 930,
+      "end_line": 940,
+      "header_lines": [
+        931
+      ],
+      "content_start": 933,
+      "content_end": 939,
+      "content": "933: :label: cor-wasserstein-convergence-cinf\n934: \n935: Under {prf:ref}`prop-talagrand-cinf` hypotheses:\n936: \n937: $$\n938: W_2(\\mu_t, \\pi_{\\text{QSD}}) \\leq e^{-\\lambda_{\\text{Tal}} t / 2} W_2(\\mu_0, \\pi_{\\text{QSD}})\n939: $$",
+      "metadata": {
+        "label": "cor-wasserstein-convergence-cinf"
+      },
+      "section": "## 10. Advanced Functional Inequalities (Conditional Results)",
+      "raw_directive": "930: :::\n931: \n932: :::{prf:corollary} Exponential Convergence in Wasserstein Distance\n933: :label: cor-wasserstein-convergence-cinf\n934: \n935: Under {prf:ref}`prop-talagrand-cinf` hypotheses:\n936: \n937: $$\n938: W_2(\\mu_t, \\pi_{\\text{QSD}}) \\leq e^{-\\lambda_{\\text{Tal}} t / 2} W_2(\\mu_0, \\pi_{\\text{QSD}})\n939: $$\n940: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "19_geometric_gas_cinf_regularity_simplified",
+        "chapter_index": 10,
+        "chapter_file": "chapter_10.json",
+        "section_id": "## 10. Advanced Functional Inequalities (Conditional Results)"
+      }
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 2. Gauge-Invariant Observables and Functions",
+  "directive_count": 3,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-gauge-invariant-function",
+      "title": "Gauge-Invariant Function",
+      "start_line": 202,
+      "end_line": 220,
+      "header_lines": [
+        203
+      ],
+      "content_start": 205,
+      "content_end": 219,
+      "content": "205: :label: def-gauge-invariant-function\n206: \n207: A function $f: \\Sigma_N \\to \\mathbb{R}$ is **gauge-invariant** (or **$S_N$-invariant**) if:\n208: \n209: $$\n210: f(\\sigma \\cdot \\mathcal{S}) = f(\\mathcal{S})\n211: \n212: $$\n213: \n214: for all $\\sigma \\in S_N$ and $\\mathcal{S} \\in \\Sigma_N$.\n215: \n216: The space of gauge-invariant functions is:\n217: \n218: $$\n219: C(\\Sigma_N)^{S_N} = \\{f \\in C(\\Sigma_N) : f \\text{ is } S_N\\text{-invariant}\\}",
+      "metadata": {
+        "label": "def-gauge-invariant-function"
+      },
+      "section": "## 2. Gauge-Invariant Observables and Functions",
+      "raw_directive": "202: To work rigorously with the orbifold, we must characterize which functions descend to the quotient.\n203: \n204: :::{prf:definition} Gauge-Invariant Function\n205: :label: def-gauge-invariant-function\n206: \n207: A function $f: \\Sigma_N \\to \\mathbb{R}$ is **gauge-invariant** (or **$S_N$-invariant**) if:\n208: \n209: $$\n210: f(\\sigma \\cdot \\mathcal{S}) = f(\\mathcal{S})\n211: \n212: $$\n213: \n214: for all $\\sigma \\in S_N$ and $\\mathcal{S} \\in \\Sigma_N$.\n215: \n216: The space of gauge-invariant functions is:\n217: \n218: $$\n219: C(\\Sigma_N)^{S_N} = \\{f \\in C(\\Sigma_N) : f \\text{ is } S_N\\text{-invariant}\\}\n220: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-descent-theorem",
+      "title": "Descent to Configuration Space",
+      "start_line": 222,
+      "end_line": 235,
+      "header_lines": [
+        223
+      ],
+      "content_start": 225,
+      "content_end": 234,
+      "content": "225: :label: thm-descent-theorem\n226: \n227: There is a bijective correspondence:\n228: \n229: $$\n230: C(\\mathcal{M}_{\\text{config}}) \\xleftrightarrow{1:1} C(\\Sigma_N)^{S_N}\n231: \n232: $$\n233: \n234: given by:",
+      "metadata": {
+        "label": "thm-descent-theorem"
+      },
+      "section": "## 2. Gauge-Invariant Observables and Functions",
+      "raw_directive": "222: :::\n223: \n224: :::{prf:theorem} Descent to Configuration Space\n225: :label: thm-descent-theorem\n226: \n227: There is a bijective correspondence:\n228: \n229: $$\n230: C(\\mathcal{M}_{\\text{config}}) \\xleftrightarrow{1:1} C(\\Sigma_N)^{S_N}\n231: \n232: $$\n233: \n234: given by:\n235: - **Pull-back**: $\\bar{f} \\mapsto f = \\bar{f} \\circ \\pi_G$"
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-38",
+      "title": null,
+      "start_line": 237,
+      "end_line": 252,
+      "header_lines": [],
+      "content_start": 238,
+      "content_end": 251,
+      "content": "238: \n239: :::{prf:proof}\n240: **Well-definedness of descent**: If $f$ is $S_N$-invariant and $[\\mathcal{S}] = [\\mathcal{S}']$, then $\\mathcal{S}' = \\sigma \\cdot \\mathcal{S}$ for some $\\sigma \\in S_N$, so:\n241: \n242: $$\n243: f(\\mathcal{S}') = f(\\sigma \\cdot \\mathcal{S}) = f(\\mathcal{S})\n244: \n245: $$\n246: \n247: Thus $\\bar{f}$ is well-defined on orbits.\n248: \n249: **Injectivity**: If $\\bar{f}_1 = \\bar{f}_2$, then $f_1(\\mathcal{S}) = \\bar{f}_1([\\mathcal{S}]) = \\bar{f}_2([\\mathcal{S}]) = f_2(\\mathcal{S})$.\n250: \n251: **Surjectivity**: Any $\\bar{f} \\in C(\\mathcal{M}_{\\text{config}})$ pulls back to an $S_N$-invariant function $f = \\bar{f} \\circ \\pi_G$.",
+      "metadata": {},
+      "section": "## 2. Gauge-Invariant Observables and Functions",
+      "raw_directive": "237: :::\n238: \n239: :::{prf:proof}\n240: **Well-definedness of descent**: If $f$ is $S_N$-invariant and $[\\mathcal{S}] = [\\mathcal{S}']$, then $\\mathcal{S}' = \\sigma \\cdot \\mathcal{S}$ for some $\\sigma \\in S_N$, so:\n241: \n242: $$\n243: f(\\mathcal{S}') = f(\\sigma \\cdot \\mathcal{S}) = f(\\mathcal{S})\n244: \n245: $$\n246: \n247: Thus $\\bar{f}$ is well-defined on orbits.\n248: \n249: **Injectivity**: If $\\bar{f}_1 = \\bar{f}_2$, then $f_1(\\mathcal{S}) = \\bar{f}_1([\\mathcal{S}]) = \\bar{f}_2([\\mathcal{S}]) = f_2(\\mathcal{S})$.\n250: \n251: **Surjectivity**: Any $\\bar{f} \\in C(\\mathcal{M}_{\\text{config}})$ pulls back to an $S_N$-invariant function $f = \\bar{f} \\circ \\pi_G$.\n252: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

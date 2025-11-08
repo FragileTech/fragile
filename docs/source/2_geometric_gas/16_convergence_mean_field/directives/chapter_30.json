@@ -1,0 +1,29 @@
+{
+  "chapter_index": 30,
+  "section_id": "## 4. Bounding the Jump Expansion",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "lemma",
+      "label": "lem-entropy-l1-bound",
+      "title": "Entropy $L^1$ Bound",
+      "start_line": 4453,
+      "end_line": 4464,
+      "header_lines": [
+        4454
+      ],
+      "content_start": 4456,
+      "content_end": 4463,
+      "content": "4456: :label: lem-entropy-l1-bound\n4457: \n4458: For any $\\rho, \\rho_\\infty \\in \\mathcal{P}(\\Omega)$:\n4459: \n4460: $$\n4461: \\int \\rho \\left|\\log \\frac{\\rho}{\\rho_\\infty}\\right| \\le 2 D_{\\text{KL}}(\\rho \\| \\rho_\\infty) + C_{\\text{const}}\n4462: \n4463: $$",
+      "metadata": {
+        "label": "lem-entropy-l1-bound"
+      },
+      "section": "## 4. Bounding the Jump Expansion",
+      "raw_directive": "4453: **Lemma (Entropy moment bound)**:\n4454: \n4455: :::{prf:lemma} Entropy $L^1$ Bound\n4456: :label: lem-entropy-l1-bound\n4457: \n4458: For any $\\rho, \\rho_\\infty \\in \\mathcal{P}(\\Omega)$:\n4459: \n4460: $$\n4461: \\int \\rho \\left|\\log \\frac{\\rho}{\\rho_\\infty}\\right| \\le 2 D_{\\text{KL}}(\\rho \\| \\rho_\\infty) + C_{\\text{const}}\n4462: \n4463: $$\n4464: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

@@ -1,8 +1,117 @@
 {
   "chapter_index": 1,
-  "section_id": "## Introduction",
-  "directive_count": 0,
-  "hints": [],
+  "section_id": "## 1. Foundations of the Mean-Field Model",
+  "directive_count": 6,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-mean-field-phase-space",
+      "title": "Phase Space",
+      "start_line": 37,
+      "end_line": 48,
+      "header_lines": [
+        38
+      ],
+      "content_start": 40,
+      "content_end": 47,
+      "content": "40: :label: def-mean-field-phase-space\n41: \n42: Let $X_{\\text{valid}} \\subset \\mathbb{R}^d$ be the bounded, convex domain with a $C^2$ boundary, and let $V_{\\text{alg}} := \\{v \\in \\mathbb{R}^d : \\|v\\| \\le V_{\\text{alg}}\\}$ be the closed ball of allowed velocities, as defined in the Euclidean Gas specification (*Chapter 2, Sec. 1.1*).\n43: \n44: The single-particle **phase space**, denoted $\\Omega$, is the Cartesian product of the valid position and velocity domains:\n45: \n46: $$\n47: \\Omega := X_{\\text{valid}} \\times V_{\\text{alg}}",
+      "metadata": {
+        "label": "def-mean-field-phase-space"
+      },
+      "section": "## 1. Foundations of the Mean-Field Model",
+      "raw_directive": "37: The single-particle **phase space** defines the complete set of possible kinematic states\u2014position and velocity\u2014that a particle can occupy. Its properties are not arbitrary but are a direct, faithful translation of the constraints imposed on the walkers in the discrete Euclidean Gas algorithm.\n38: \n39: :::{prf:definition} Phase Space\n40: :label: def-mean-field-phase-space\n41: \n42: Let $X_{\\text{valid}} \\subset \\mathbb{R}^d$ be the bounded, convex domain with a $C^2$ boundary, and let $V_{\\text{alg}} := \\{v \\in \\mathbb{R}^d : \\|v\\| \\le V_{\\text{alg}}\\}$ be the closed ball of allowed velocities, as defined in the Euclidean Gas specification (*Chapter 2, Sec. 1.1*).\n43: \n44: The single-particle **phase space**, denoted $\\Omega$, is the Cartesian product of the valid position and velocity domains:\n45: \n46: $$\n47: \\Omega := X_{\\text{valid}} \\times V_{\\text{alg}}\n48: $$"
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-phase-space-density",
+      "title": "Phase-Space Density",
+      "start_line": 59,
+      "end_line": 79,
+      "header_lines": [
+        60
+      ],
+      "content_start": 62,
+      "content_end": 78,
+      "content": "62: :label: def-phase-space-density\n63: \n64: The state of the swarm's **alive population** at time $t \\ge 0$ is described by the **phase-space sub-probability density** $f: [0, \\infty) \\times \\Omega \\to [0, \\infty)$. For any time $t$, $f(t, \\cdot, \\cdot)$ is a function on the phase space such that for any measurable subset $A \\subseteq \\Omega$, the mass of alive walkers in $A$ is given by the integral:\n65: \n66: $$\n67: \\text{Alive mass in } A = \\int_A f(t, z) dz.\n68: $$\n69: \n70: Just as integrating a city's population density over a neighborhood gives the number of people living there, integrating $f$ over a region of phase space gives the fraction of alive walkers expected to be in that region.\n71: \n72: The integral of this density gives the total mass of alive walkers, $m_a(t)$:\n73: \n74: $$\n75: m_a(t) := \\int_{\\Omega} f(t,x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v \\le 1\n76: $$\n77: \n78: The mass of dead walkers is then given by $m_d(t) = 1 - m_a(t)$. The evolution of the system will be described by a coupled system for $f(t,z)$ and $m_d(t)$ that conserves the total mass $m_a(t) + m_d(t) = 1$.",
+      "metadata": {
+        "label": "def-phase-space-density"
+      },
+      "section": "## 1. Foundations of the Mean-Field Model",
+      "raw_directive": "59: With the arena defined, we can now introduce the central object of our analysis. Instead of tracking individual walkers, we track the continuous density of the probability cloud, $f(t,x,v)$. A high value of $f$ at a point $(t,x,v)$ signifies a high concentration of probability mass, meaning it is more likely to find a particle with that position and velocity at that time.\n60: \n61: :::{prf:definition} Phase-Space Density\n62: :label: def-phase-space-density\n63: \n64: The state of the swarm's **alive population** at time $t \\ge 0$ is described by the **phase-space sub-probability density** $f: [0, \\infty) \\times \\Omega \\to [0, \\infty)$. For any time $t$, $f(t, \\cdot, \\cdot)$ is a function on the phase space such that for any measurable subset $A \\subseteq \\Omega$, the mass of alive walkers in $A$ is given by the integral:\n65: \n66: $$\n67: \\text{Alive mass in } A = \\int_A f(t, z) dz.\n68: $$\n69: \n70: Just as integrating a city's population density over a neighborhood gives the number of people living there, integrating $f$ over a region of phase space gives the fraction of alive walkers expected to be in that region.\n71: \n72: The integral of this density gives the total mass of alive walkers, $m_a(t)$:\n73: \n74: $$\n75: m_a(t) := \\int_{\\Omega} f(t,x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v \\le 1\n76: $$\n77: \n78: The mass of dead walkers is then given by $m_d(t) = 1 - m_a(t)$. The evolution of the system will be described by a coupled system for $f(t,z)$ and $m_d(t)$ that conserves the total mass $m_a(t) + m_d(t) = 1$.\n79: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-mean-field-moments",
+      "title": "Mean-Field Statistical Moments",
+      "start_line": 114,
+      "end_line": 140,
+      "header_lines": [
+        115
+      ],
+      "content_start": 117,
+      "content_end": 139,
+      "content": "117: :label: def-mean-field-moments\n118: \n119: Let $f(t, \\cdot)$ be the phase-space density at time $t$, with total alive mass $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$. The statistical moments required for the standardization pipeline are defined as the following **functionals** of $f$. The notation $\\mu[f]$ emphasizes that these are numbers that depend on the entire *shape* of the function $f$.\n120: \n121: The moments are computed with respect to the **normalized density of the alive population**, which is $f(t,z) / m_a(t)$. This normalization is critical for ensuring the mean-field model is a faithful limit of the N-particle system, where statistics are computed by averaging over the $k$ alive walkers.\n122: \n123: *   **Reward Moments:** The mean reward, $\\mu_R[f]$, is computed as the expected value over the normalized alive population:\n124: \n125:     $$\n126:     \\mu_R[f](t) := \\int_{\\Omega} R(z) \\frac{f(t,z)}{m_a(t)}\\,\\mathrm dz\n127:     $$\n128: \n129:     $$\n130:     \\sigma_R^2[f](t) := \\int_{\\Omega} \\bigl(R(z) - \\mu_R[f](t)\\bigr)^2 \\frac{f(t,z)}{m_a(t)}\\,\\mathrm dz\n131:     $$\n132: \n133: *   **Distance Moments:** The mean distance is the expectation of the distance between two particles drawn independently from the normalized alive population:\n134: \n135:     $$\n136:     \\mu_D[f](t) := \\iint_{\\Omega \\times \\Omega} d_{\\mathcal{Y}}(\\varphi(z), \\varphi(z')) \\frac{f(t,z)}{m_a(t)} \\frac{f(t,z')}{m_a(t)}\\,\\mathrm dz\\,\\mathrm dz'\n137:     $$\n138: \n139:     $$",
+      "metadata": {
+        "label": "def-mean-field-moments"
+      },
+      "section": "## 1. Foundations of the Mean-Field Model",
+      "raw_directive": "114: In the N-particle system, measurements are aggregated by computing empirical statistics over the finite set of alive walkers. In the mean-field limit, these discrete sums are replaced by integrals over the phase-space density $f$.\n115: \n116: :::{prf:definition} Mean-Field Statistical Moments\n117: :label: def-mean-field-moments\n118: \n119: Let $f(t, \\cdot)$ be the phase-space density at time $t$, with total alive mass $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$. The statistical moments required for the standardization pipeline are defined as the following **functionals** of $f$. The notation $\\mu[f]$ emphasizes that these are numbers that depend on the entire *shape* of the function $f$.\n120: \n121: The moments are computed with respect to the **normalized density of the alive population**, which is $f(t,z) / m_a(t)$. This normalization is critical for ensuring the mean-field model is a faithful limit of the N-particle system, where statistics are computed by averaging over the $k$ alive walkers.\n122: \n123: *   **Reward Moments:** The mean reward, $\\mu_R[f]$, is computed as the expected value over the normalized alive population:\n124: \n125:     $$\n126:     \\mu_R[f](t) := \\int_{\\Omega} R(z) \\frac{f(t,z)}{m_a(t)}\\,\\mathrm dz\n127:     $$\n128: \n129:     $$\n130:     \\sigma_R^2[f](t) := \\int_{\\Omega} \\bigl(R(z) - \\mu_R[f](t)\\bigr)^2 \\frac{f(t,z)}{m_a(t)}\\,\\mathrm dz\n131:     $$\n132: \n133: *   **Distance Moments:** The mean distance is the expectation of the distance between two particles drawn independently from the normalized alive population:\n134: \n135:     $$\n136:     \\mu_D[f](t) := \\iint_{\\Omega \\times \\Omega} d_{\\mathcal{Y}}(\\varphi(z), \\varphi(z')) \\frac{f(t,z)}{m_a(t)} \\frac{f(t,z')}{m_a(t)}\\,\\mathrm dz\\,\\mathrm dz'\n137:     $$\n138: \n139:     $$\n140:     \\sigma_D^2[f](t) := \\iint_{\\Omega \\times \\Omega} \\bigl(d_{\\mathcal{Y}}(\\varphi(z), \\varphi(z')) - \\mu_D[f](t)\\bigr)^2 \\frac{f(t,z)}{m_a(t)} \\frac{f(t,z')}{m_a(t)}\\,\\mathrm dz\\,\\mathrm dz'"
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-mean-field-patched-std",
+      "title": "Mean-Field Regularized Standard Deviation",
+      "start_line": 174,
+      "end_line": 183,
+      "header_lines": [
+        175
+      ],
+      "content_start": 177,
+      "content_end": 182,
+      "content": "177: :label: def-mean-field-patched-std\n178: \n179: The **Mean-Field Regularized Standard Deviations** are functionals of the density $f$, obtained by applying the `Regularized Standard Deviation` function from the abstract framework (*Chapter 1, Def. 11.1.2*) to the mean-field variance functionals:\n180: \n181: $$\n182: \\widehat{\\sigma}_R[f](t) := \\sigma\\'_{\\text{reg}}(\\sigma_R^2[f](t)), \\qquad \\widehat{\\sigma}_D[f](t) := \\sigma\\'_{\\text{reg}}(\\sigma_D^2[f](t))",
+      "metadata": {
+        "label": "def-mean-field-patched-std"
+      },
+      "section": "## 1. Foundations of the Mean-Field Model",
+      "raw_directive": "174: To ensure the numerical stability and continuity guarantees of the N-particle algorithm are preserved, we must prevent the denominators in the standardization from approaching zero, especially when the swarm is highly converged (i.e., when the true variance $\\sigma^2[f]$ is close to zero). We achieve this by translating the exact same regularized standard deviation mechanism from `Chapter 1` to the mean-field level.\n175: \n176: :::{prf:definition} Mean-Field Regularized Standard Deviation\n177: :label: def-mean-field-patched-std\n178: \n179: The **Mean-Field Regularized Standard Deviations** are functionals of the density $f$, obtained by applying the `Regularized Standard Deviation` function from the abstract framework (*Chapter 1, Def. 11.1.2*) to the mean-field variance functionals:\n180: \n181: $$\n182: \\widehat{\\sigma}_R[f](t) := \\sigma\\'_{\\text{reg}}(\\sigma_R^2[f](t)), \\qquad \\widehat{\\sigma}_D[f](t) := \\sigma\\'_{\\text{reg}}(\\sigma_D^2[f](t))\n183: $$"
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-mean-field-z-scores",
+      "title": "Mean-Field Z-Scores",
+      "start_line": 191,
+      "end_line": 200,
+      "header_lines": [
+        192
+      ],
+      "content_start": 194,
+      "content_end": 199,
+      "content": "194: :label: def-mean-field-z-scores\n195: \n196: For a particle at state $z$ and a potential companion at state $z_c$, the mean-field Z-scores at time $t$ are defined using the density-dependent functionals derived in Section 1.2:\n197: \n198: $$\n199: \\widetilde{r}[f](z,t) := \\frac{R(z) - \\mu_R[f](t)}{\\widehat{\\sigma}_R[f](t)}, \\qquad \\widetilde{d}[f](z,z_c,t) := \\frac{d_{\\mathcal{Y}}(\\varphi(z),\\varphi(z_c)) - \\mu_D[f](t)}{\\widehat{\\sigma}_D[f](t)}",
+      "metadata": {
+        "label": "def-mean-field-z-scores"
+      },
+      "section": "## 1. Foundations of the Mean-Field Model",
+      "raw_directive": "191: We construct this potential in two steps, mirroring the discrete algorithm. First, we define the mean-field Z-scores, which standardize the raw measurements using the global, density-dependent moments. Second, we combine these scores to form the final, non-linear fitness potential.\n192: \n193: :::{prf:definition} Mean-Field Z-Scores\n194: :label: def-mean-field-z-scores\n195: \n196: For a particle at state $z$ and a potential companion at state $z_c$, the mean-field Z-scores at time $t$ are defined using the density-dependent functionals derived in Section 1.2:\n197: \n198: $$\n199: \\widetilde{r}[f](z,t) := \\frac{R(z) - \\mu_R[f](t)}{\\widehat{\\sigma}_R[f](t)}, \\qquad \\widetilde{d}[f](z,z_c,t) := \\frac{d_{\\mathcal{Y}}(\\varphi(z),\\varphi(z_c)) - \\mu_D[f](t)}{\\widehat{\\sigma}_D[f](t)}\n200: $$"
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-mean-field-fitness-potential",
+      "title": "Mean-Field Fitness Potential",
+      "start_line": 204,
+      "end_line": 213,
+      "header_lines": [
+        205
+      ],
+      "content_start": 207,
+      "content_end": 212,
+      "content": "207: :label: def-mean-field-fitness-potential\n208: \n209: The **Mean-Field Fitness Potential**, denoted $V[f](z, z_c, t)$, is a functional of the density $f$ that determines the fitness of a particle at state $z$ relative to a companion at $z_c$. It is constructed by applying the canonical `Rescale Transformation` $g_A$ (*Chapter 1, Sec. 8*) to the mean-field Z-scores:\n210: \n211: $$\n212: V[f](z,z_c,t) := \\left(g_A(\\widetilde{d}[f](z,z_c,t)) + \\eta\\right)^{\\beta} \\cdot \\left(g_A(\\widetilde{r}[f](z,t)) + \\eta\\right)^{\\alpha}",
+      "metadata": {
+        "label": "def-mean-field-fitness-potential"
+      },
+      "section": "## 1. Foundations of the Mean-Field Model",
+      "raw_directive": "204: The final fitness potential combines the contributions from the reward and diversity channels multiplicatively. This structure allows the algorithm to balance the drive for high rewards (exploitation) with the need to maintain diversity (exploration). The potential is a **functional** of the density $f$, denoted $V[f]$, to emphasize that its value at a single point $(z,z_c)$ depends on the global shape of the entire probability distribution.\n205: \n206: :::{prf:definition} Mean-Field Fitness Potential\n207: :label: def-mean-field-fitness-potential\n208: \n209: The **Mean-Field Fitness Potential**, denoted $V[f](z, z_c, t)$, is a functional of the density $f$ that determines the fitness of a particle at state $z$ relative to a companion at $z_c$. It is constructed by applying the canonical `Rescale Transformation` $g_A$ (*Chapter 1, Sec. 8*) to the mean-field Z-scores:\n210: \n211: $$\n212: V[f](z,z_c,t) := \\left(g_A(\\widetilde{d}[f](z,z_c,t)) + \\eta\\right)^{\\beta} \\cdot \\left(g_A(\\widetilde{r}[f](z,t)) + \\eta\\right)^{\\alpha}\n213: $$"
+    }
+  ],
   "validation": {
     "ok": true,
     "errors": []

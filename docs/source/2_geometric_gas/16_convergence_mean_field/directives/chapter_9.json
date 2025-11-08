@@ -1,0 +1,29 @@
+{
+  "chapter_index": 9,
+  "section_id": "## 4. Counterexample Search and Failure Modes",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "observation",
+      "label": "rem-observation-revival-rate-constraint",
+      "title": "Revival Rate Constraint",
+      "start_line": 1088,
+      "end_line": 1096,
+      "header_lines": [
+        1089
+      ],
+      "content_start": 1091,
+      "content_end": 1095,
+      "content": "1091: :label: rem-observation-revival-rate-constraint\n1092: \n1093: In the two-state model, KL-non-expansiveness requires $\\lambda_{\\text{revive}} \\le 1$.\n1094: \n1095: **Physical interpretation**: Revival rate must not exceed the death rate (on average) for stability.",
+      "metadata": {
+        "label": "rem-observation-revival-rate-constraint"
+      },
+      "section": "## 4. Counterexample Search and Failure Modes",
+      "raw_directive": "1088: **Conclusion**: If $\\lambda \\le 1$, contraction holds. If $\\lambda > 1$, expansion!\n1089: \n1090: :::{prf:observation} Revival Rate Constraint\n1091: :label: rem-observation-revival-rate-constraint\n1092: \n1093: In the two-state model, KL-non-expansiveness requires $\\lambda_{\\text{revive}} \\le 1$.\n1094: \n1095: **Physical interpretation**: Revival rate must not exceed the death rate (on average) for stability.\n1096: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

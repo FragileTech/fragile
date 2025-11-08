@@ -1,0 +1,134 @@
+{
+  "document_id": "04_rigorous_gauge_symmetry_emergence",
+  "stage": "directives",
+  "directive_type": "theorem",
+  "generated_at": "2025-11-08T17:07:43.310283+00:00",
+  "count": 5,
+  "items": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-cg-gell-mann-decomposition",
+      "title": "Gell-Mann Decomposition",
+      "start_line": 119,
+      "end_line": 135,
+      "header_lines": [
+        120
+      ],
+      "content_start": 122,
+      "content_end": 134,
+      "content": "122: :label: thm-cg-gell-mann-decomposition\n123: \n124: The traceless tensor $T_i^{\\text{traceless}}$ can be uniquely decomposed in the **Gell-Mann basis** $\\{\\lambda^a\\}_{a=1}^{8}$ of $\\mathfrak{su}(3)$:\n125: \n126: $$\n127: T_i^{\\text{traceless}} = \\sum_{a=1}^{8} \\varphi_i^a \\cdot \\lambda^a\n128: $$\n129: \n130: where $\\varphi_i^a \\in \\mathbb{R}$ are the **SU(3) color phases** for walker $i$, and $\\{\\lambda^a\\}$ are the standard Gell-Mann matrices.\n131: \n132: The coefficients are given by:\n133: \n134: $$",
+      "metadata": {
+        "label": "thm-cg-gell-mann-decomposition"
+      },
+      "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "raw_directive": "119: :::\n120: \n121: :::{prf:theorem} Gell-Mann Decomposition\n122: :label: thm-cg-gell-mann-decomposition\n123: \n124: The traceless tensor $T_i^{\\text{traceless}}$ can be uniquely decomposed in the **Gell-Mann basis** $\\{\\lambda^a\\}_{a=1}^{8}$ of $\\mathfrak{su}(3)$:\n125: \n126: $$\n127: T_i^{\\text{traceless}} = \\sum_{a=1}^{8} \\varphi_i^a \\cdot \\lambda^a\n128: $$\n129: \n130: where $\\varphi_i^a \\in \\mathbb{R}$ are the **SU(3) color phases** for walker $i$, and $\\{\\lambda^a\\}$ are the standard Gell-Mann matrices.\n131: \n132: The coefficients are given by:\n133: \n134: $$\n135: \\varphi_i^a = \\frac{1}{2} \\text{Tr}(T_i^{\\text{traceless}} \\cdot \\lambda^a)",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "04_rigorous_gauge_symmetry_emergence",
+        "chapter_index": 0,
+        "chapter_file": "chapter_0.json",
+        "section_id": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-cg-complete-gauge-group",
+      "title": "Complete Gauge Group Emergence",
+      "start_line": 514,
+      "end_line": 538,
+      "header_lines": [
+        515
+      ],
+      "content_start": 517,
+      "content_end": 537,
+      "content": "517: :label: thm-cg-complete-gauge-group\n518: \n519: The Crystalline Gas algorithm ({prf:ref}`def-cg-dynamics`) naturally generates the gauge group:\n520: \n521: $$\n522: G_{\\text{gauge}} = \\text{SU}(3)_c \\times \\text{SU}(2)_L \\times \\text{U}(1)_Y\n523: $$\n524: \n525: with gauge fields constructed as follows:\n526: \n527: | Gauge Group | Field Components | Algorithmic Origin | Degrees of Freedom |\n528: |-------------|------------------|-------------------|-------------------|\n529: | SU(3)_c | $A_{\\mu}^a$, $a=1,\\ldots,8$ | $(F \\otimes p)_{\\text{traceless}}$ | 8 gluons |\n530: | SU(2)_L | $W_{\\mu}^a$, $a=1,2,3$ | $S_{\\text{ascent}} \\cdot \\hat{r}^a$ | W^±, Z (before mixing) |\n531: | U(1)_Y | $A_{\\mu}^{(Y)}$ | $\\Phi(x)$ | Hypercharge boson B |\n532: \n533: The complete gauge potential is:\n534: \n535: $$\n536: \\mathcal{A}_{\\mu} = \\sum_{a=1}^{8} A_{\\mu}^a \\lambda^a + \\sum_{a=1}^{3} W_{\\mu}^a \\tau^a + A_{\\mu}^{(Y)} Y\n537: $$",
+      "metadata": {
+        "label": "thm-cg-complete-gauge-group"
+      },
+      "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "raw_directive": "514: ### 4.5 Gauge Field Summary and Complete Gauge Group\n515: \n516: :::{prf:theorem} Complete Gauge Group Emergence\n517: :label: thm-cg-complete-gauge-group\n518: \n519: The Crystalline Gas algorithm ({prf:ref}`def-cg-dynamics`) naturally generates the gauge group:\n520: \n521: $$\n522: G_{\\text{gauge}} = \\text{SU}(3)_c \\times \\text{SU}(2)_L \\times \\text{U}(1)_Y\n523: $$\n524: \n525: with gauge fields constructed as follows:\n526: \n527: | Gauge Group | Field Components | Algorithmic Origin | Degrees of Freedom |\n528: |-------------|------------------|-------------------|-------------------|\n529: | SU(3)_c | $A_{\\mu}^a$, $a=1,\\ldots,8$ | $(F \\otimes p)_{\\text{traceless}}$ | 8 gluons |\n530: | SU(2)_L | $W_{\\mu}^a$, $a=1,2,3$ | $S_{\\text{ascent}} \\cdot \\hat{r}^a$ | W^±, Z (before mixing) |\n531: | U(1)_Y | $A_{\\mu}^{(Y)}$ | $\\Phi(x)$ | Hypercharge boson B |\n532: \n533: The complete gauge potential is:\n534: \n535: $$\n536: \\mathcal{A}_{\\mu} = \\sum_{a=1}^{8} A_{\\mu}^a \\lambda^a + \\sum_{a=1}^{3} W_{\\mu}^a \\tau^a + A_{\\mu}^{(Y)} Y\n537: $$\n538: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "04_rigorous_gauge_symmetry_emergence",
+        "chapter_index": 0,
+        "chapter_file": "chapter_0.json",
+        "section_id": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-cg-gauge-covariance",
+      "title": "Gauge Covariance of Crystalline Gas Fields",
+      "start_line": 602,
+      "end_line": 623,
+      "header_lines": [
+        603
+      ],
+      "content_start": 605,
+      "content_end": 622,
+      "content": "605: :label: thm-cg-gauge-covariance\n606: \n607: The gauge fields constructed in {prf:ref}`thm-cg-complete-gauge-group` transform correctly under local gauge transformations:\n608: \n609: **SU(3)_c:**\n610: $$\n611: \\mathcal{A}_{\\mu}^{\\text{color}} \\to U_3 \\mathcal{A}_{\\mu}^{\\text{color}} U_3^{\\dagger} + \\frac{i}{g_s} U_3 (\\partial_{\\mu} U_3^{\\dagger})\n612: $$\n613: \n614: **SU(2)_L:**\n615: $$\n616: \\mathcal{W}_{\\mu} \\to U_2 \\mathcal{W}_{\\mu} U_2^{\\dagger} + \\frac{i}{g_2} U_2 (\\partial_{\\mu} U_2^{\\dagger})\n617: $$\n618: \n619: **U(1)_Y:**\n620: $$\n621: A_{\\mu}^{(Y)} \\to A_{\\mu}^{(Y)} + \\frac{1}{g_1} \\partial_{\\mu} \\alpha\n622: $$",
+      "metadata": {
+        "label": "thm-cg-gauge-covariance"
+      },
+      "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "raw_directive": "602: :::\n603: \n604: :::{prf:theorem} Gauge Covariance of Crystalline Gas Fields\n605: :label: thm-cg-gauge-covariance\n606: \n607: The gauge fields constructed in {prf:ref}`thm-cg-complete-gauge-group` transform correctly under local gauge transformations:\n608: \n609: **SU(3)_c:**\n610: $$\n611: \\mathcal{A}_{\\mu}^{\\text{color}} \\to U_3 \\mathcal{A}_{\\mu}^{\\text{color}} U_3^{\\dagger} + \\frac{i}{g_s} U_3 (\\partial_{\\mu} U_3^{\\dagger})\n612: $$\n613: \n614: **SU(2)_L:**\n615: $$\n616: \\mathcal{W}_{\\mu} \\to U_2 \\mathcal{W}_{\\mu} U_2^{\\dagger} + \\frac{i}{g_2} U_2 (\\partial_{\\mu} U_2^{\\dagger})\n617: $$\n618: \n619: **U(1)_Y:**\n620: $$\n621: A_{\\mu}^{(Y)} \\to A_{\\mu}^{(Y)} + \\frac{1}{g_1} \\partial_{\\mu} \\alpha\n622: $$\n623: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "04_rigorous_gauge_symmetry_emergence",
+        "chapter_index": 0,
+        "chapter_file": "chapter_0.json",
+        "section_id": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-cg-noether-current-vanishes",
+      "title": "Noether Current Vanishes at QSD",
+      "start_line": 751,
+      "end_line": 767,
+      "header_lines": [
+        752
+      ],
+      "content_start": 754,
+      "content_end": 766,
+      "content": "754: :label: thm-cg-noether-current-vanishes\n755: \n756: The **Noether current** associated with the gauge symmetries, defined as:\n757: \n758: $$\n759: J_{\\mu}(\\mathcal{S}) := \\sum_{i=1}^N v_i^{\\mu} \\otimes (T^a_{\\text{color}} + T^a_{\\text{weak}} + Y)\n760: $$\n761: \n762: has vanishing expectation value under the quasi-stationary distribution $\\pi_{\\text{QSD}}$:\n763: \n764: $$\n765: \\mathbb{E}_{\\pi_{\\text{QSD}}}[J_{\\mu}] = 0\n766: $$",
+      "metadata": {
+        "label": "thm-cg-noether-current-vanishes"
+      },
+      "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "raw_directive": "751: :::\n752: \n753: :::{prf:theorem} Noether Current Vanishes at QSD\n754: :label: thm-cg-noether-current-vanishes\n755: \n756: The **Noether current** associated with the gauge symmetries, defined as:\n757: \n758: $$\n759: J_{\\mu}(\\mathcal{S}) := \\sum_{i=1}^N v_i^{\\mu} \\otimes (T^a_{\\text{color}} + T^a_{\\text{weak}} + Y)\n760: $$\n761: \n762: has vanishing expectation value under the quasi-stationary distribution $\\pi_{\\text{QSD}}$:\n763: \n764: $$\n765: \\mathbb{E}_{\\pi_{\\text{QSD}}}[J_{\\mu}] = 0\n766: $$\n767: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "04_rigorous_gauge_symmetry_emergence",
+        "chapter_index": 0,
+        "chapter_file": "chapter_0.json",
+        "section_id": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-cg-gauge-theory-emergence-main",
+      "title": "Complete Gauge Theory Emergence (Main Result of Section 4)",
+      "start_line": 855,
+      "end_line": 874,
+      "header_lines": [
+        856
+      ],
+      "content_start": 858,
+      "content_end": 873,
+      "content": "858: :label: thm-cg-gauge-theory-emergence-main\n859: \n860: The Crystalline Gas algorithm ({prf:ref}`def-cg-dynamics`) with fitness landscape satisfying {prf:ref}`def-cg-fitness-landscape` naturally generates a pure SU(3)_c × SU(2)_L × U(1)_Y Yang-Mills theory at equilibrium through the following mappings:\n861: \n862: | **Algorithmic Structure** | **Gauge Theory Interpretation** | **Mathematical Construction** |\n863: |---------------------------|--------------------------------|-------------------------------|\n864: | Force-momentum tensor $F \\otimes p$ | 8 gluon fields (SU(3)_c) | $A_{\\mu}^a = \\partial_{\\mu} \\varphi^a$ where $(F \\otimes p)_{\\text{traceless}} = \\sum_a \\varphi^a \\lambda^a$ |\n865: | Companion direction $\\hat{r}$ | 3 weak bosons (SU(2)_L) | $W_{\\mu}^a = \\partial_{\\mu}(S_{\\text{ascent}} \\cdot \\hat{r}^a)$ |\n866: | Fitness value $\\Phi(x)$ | Hypercharge boson (U(1)_Y) | $A_{\\mu}^{(Y)} = \\partial_{\\mu} \\Phi$ |\n867: | Geometric ascent | Weak interactions | $S_{\\text{ascent}} > 0$ for left-handed fermions |\n868: | Local fitness optimum | Right-handed fermions | $S_{\\text{ascent}} \\leq 0$ decouples from SU(2)_L |\n869: | Velocity $v_i$ | Matter current | $J_{\\mu} = \\sum_i v_i^{\\mu} \\otimes \\text{charges}$ |\n870: | QSD equilibrium | Pure gauge vacuum | $\\langle J_{\\mu} \\rangle_{\\text{QSD}} = 0$ |\n871: \n872: The construction is:\n873: - **Mathematically rigorous:** Every gauge field is explicitly defined from algorithmic quantities",
+      "metadata": {
+        "label": "thm-cg-gauge-theory-emergence-main"
+      },
+      "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "raw_directive": "855: ### 4.8 Summary: From Algorithm to Gauge Theory\n856: \n857: :::{prf:theorem} Complete Gauge Theory Emergence (Main Result of Section 4)\n858: :label: thm-cg-gauge-theory-emergence-main\n859: \n860: The Crystalline Gas algorithm ({prf:ref}`def-cg-dynamics`) with fitness landscape satisfying {prf:ref}`def-cg-fitness-landscape` naturally generates a pure SU(3)_c × SU(2)_L × U(1)_Y Yang-Mills theory at equilibrium through the following mappings:\n861: \n862: | **Algorithmic Structure** | **Gauge Theory Interpretation** | **Mathematical Construction** |\n863: |---------------------------|--------------------------------|-------------------------------|\n864: | Force-momentum tensor $F \\otimes p$ | 8 gluon fields (SU(3)_c) | $A_{\\mu}^a = \\partial_{\\mu} \\varphi^a$ where $(F \\otimes p)_{\\text{traceless}} = \\sum_a \\varphi^a \\lambda^a$ |\n865: | Companion direction $\\hat{r}$ | 3 weak bosons (SU(2)_L) | $W_{\\mu}^a = \\partial_{\\mu}(S_{\\text{ascent}} \\cdot \\hat{r}^a)$ |\n866: | Fitness value $\\Phi(x)$ | Hypercharge boson (U(1)_Y) | $A_{\\mu}^{(Y)} = \\partial_{\\mu} \\Phi$ |\n867: | Geometric ascent | Weak interactions | $S_{\\text{ascent}} > 0$ for left-handed fermions |\n868: | Local fitness optimum | Right-handed fermions | $S_{\\text{ascent}} \\leq 0$ decouples from SU(2)_L |\n869: | Velocity $v_i$ | Matter current | $J_{\\mu} = \\sum_i v_i^{\\mu} \\otimes \\text{charges}$ |\n870: | QSD equilibrium | Pure gauge vacuum | $\\langle J_{\\mu} \\rangle_{\\text{QSD}} = 0$ |\n871: \n872: The construction is:\n873: - **Mathematically rigorous:** Every gauge field is explicitly defined from algorithmic quantities\n874: - **Gauge-covariant:** Transformation laws verified in {prf:ref}`thm-cg-gauge-covariance`",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "04_rigorous_gauge_symmetry_emergence",
+        "chapter_index": 0,
+        "chapter_file": "chapter_0.json",
+        "section_id": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics"
+      }
+    }
+  ]
+}

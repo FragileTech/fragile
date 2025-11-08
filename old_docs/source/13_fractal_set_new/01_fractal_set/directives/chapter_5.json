@@ -1,0 +1,29 @@
+{
+  "chapter_index": 5,
+  "section_id": "## 6. Spinor Encoding and Covariance",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "proposition",
+      "label": "prop-frame-independence",
+      "title": "Frame Independence of the Fractal Set",
+      "start_line": 596,
+      "end_line": 619,
+      "header_lines": [
+        597
+      ],
+      "content_start": 599,
+      "content_end": 618,
+      "content": "599: :label: prop-frame-independence\n600: \n601: Let $\\mathcal{F} = (\\mathcal{N}, E_{\\text{CST}} \\cup E_{\\text{IG}})$ be the Fractal Set. Under a coordinate transformation $x \\mapsto x' = R(x)$ with $R \\in \\text{SO}(d)$:\n602: \n603: 1. **Node scalars** are invariant:\n604:    $$\n605:    \\Phi'(n) = \\Phi(n), \\quad E'_{\\text{kin}}(n) = E_{\\text{kin}}(n), \\quad \\text{etc.}\n606:    $$\n607: \n608: 2. **Edge spinors** transform covariantly:\n609:    $$\n610:    \\psi'_v = S(R) \\psi_v, \\quad \\psi'_{\\mathbf{F}} = S(R) \\psi_{\\mathbf{F}}, \\quad \\text{etc.}\n611:    $$\n612: \n613:    where $S: \\text{SO}(d) \\to \\text{Spin}(d)$ is the spinor representation.\n614: \n615: 3. **Physical observables** (derived from spinors) are invariant:\n616:    $$\n617:    \\|\\mathbf{F}_{\\text{total}}\\|' = \\|\\mathbf{F}_{\\text{total}}\\|, \\quad \\theta'_{\\text{deflection}} = \\theta_{\\text{deflection}}\n618:    $$",
+      "metadata": {
+        "label": "prop-frame-independence"
+      },
+      "section": "## 6. Spinor Encoding and Covariance",
+      "raw_directive": "596: ### 6.2. Covariance Verification\n597: \n598: :::{prf:proposition} Frame Independence of the Fractal Set\n599: :label: prop-frame-independence\n600: \n601: Let $\\mathcal{F} = (\\mathcal{N}, E_{\\text{CST}} \\cup E_{\\text{IG}})$ be the Fractal Set. Under a coordinate transformation $x \\mapsto x' = R(x)$ with $R \\in \\text{SO}(d)$:\n602: \n603: 1. **Node scalars** are invariant:\n604:    $$\n605:    \\Phi'(n) = \\Phi(n), \\quad E'_{\\text{kin}}(n) = E_{\\text{kin}}(n), \\quad \\text{etc.}\n606:    $$\n607: \n608: 2. **Edge spinors** transform covariantly:\n609:    $$\n610:    \\psi'_v = S(R) \\psi_v, \\quad \\psi'_{\\mathbf{F}} = S(R) \\psi_{\\mathbf{F}}, \\quad \\text{etc.}\n611:    $$\n612: \n613:    where $S: \\text{SO}(d) \\to \\text{Spin}(d)$ is the spinor representation.\n614: \n615: 3. **Physical observables** (derived from spinors) are invariant:\n616:    $$\n617:    \\|\\mathbf{F}_{\\text{total}}\\|' = \\|\\mathbf{F}_{\\text{total}}\\|, \\quad \\theta'_{\\text{deflection}} = \\theta_{\\text{deflection}}\n618:    $$\n619: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

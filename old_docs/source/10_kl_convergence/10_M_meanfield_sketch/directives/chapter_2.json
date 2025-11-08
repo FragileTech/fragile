@@ -1,0 +1,29 @@
+{
+  "chapter_index": 2,
+  "section_id": "## Lemma Statement",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "lemma",
+      "label": "lem-mean-field-cloning-sketch",
+      "title": "Entropy Dissipation Under Cloning (Mean-Field Sketch)",
+      "start_line": 37,
+      "end_line": 73,
+      "header_lines": [
+        38
+      ],
+      "content_start": 40,
+      "content_end": 72,
+      "content": "40: :label: lem-mean-field-cloning-sketch\n41: \n42: **Hypotheses:**\n43: \n44: 1. $\\mu, \\pi$ are probability measures on $\\Omega = X_{\\text{valid}} \\times V_{\\text{alg}} \\subset \\mathbb{R}^{2d}$ with smooth densities:\n45:    - $\\rho_\\mu, \\rho_\\pi \\in C^2(\\Omega)$\n46:    - $\\rho_\\mu, \\rho_\\pi > 0$ on $\\Omega$ (strictly positive)\n47: \n48: 2. $\\pi = \\pi_{\\text{QSD}}$ is log-concave (Axiom 3.5):\n49:    $$\\rho_\\pi(z) = \\exp(-V_{\\text{QSD}}(z))$$\n50:    for convex $V_{\\text{QSD}}$\n51: \n52: 3. $T_{\\text{clone}}: \\mathcal{P}(\\Omega) \\to \\mathcal{P}(\\Omega)$ is the mean-field cloning operator with:\n53:    - Generator: $S[\\rho] = S_{\\text{src}}[\\rho] - S_{\\text{sink}}[\\rho]$\n54:    - Post-cloning noise variance: $\\delta^2$\n55:    - Cloning probability: $P_{\\text{clone}}(V_i, V_j) = \\min(1, V_j/V_i) \\cdot \\lambda_{\\text{clone}}$\n56: \n57: 4. **Fitness-QSD Anti-Correlation**:\n58:    $$\\log V[z] = -\\lambda_{\\text{corr}} V_{\\text{QSD}}(z) + \\log V_0$$\n59:    for $\\lambda_{\\text{corr}} > 0$\n60: \n61: 5. **Regularity bounds**:\n62:    - $0 < \\rho_{\\min} \\leq \\rho_\\mu(z) \\leq \\rho_{\\max} < \\infty$\n63:    - $0 < V_{\\min} \\leq V[z] \\leq V_{\\max} < \\infty$\n64: \n65: **Conclusion (Conjectured):**\n66: \n67: For $\\mu' = T_{\\text{clone}} \\# \\mu$ with infinitesimal time step $\\tau$:\n68: \n69: $$\n70: D_{\\text{KL}}(\\mu' \\| \\pi) - D_{\\text{KL}}(\\mu \\| \\pi) \\leq -\\tau \\beta \\, D_{\\text{KL}}(\\mu \\| \\pi) + C_{\\text{ent}} + O(\\tau^2)\n71: $$\n72: ",
+      "metadata": {
+        "label": "lem-mean-field-cloning-sketch"
+      },
+      "section": "## Lemma Statement",
+      "raw_directive": "37: ## Lemma Statement\n38: \n39: :::{prf:lemma} Entropy Dissipation Under Cloning (Mean-Field Sketch)\n40: :label: lem-mean-field-cloning-sketch\n41: \n42: **Hypotheses:**\n43: \n44: 1. $\\mu, \\pi$ are probability measures on $\\Omega = X_{\\text{valid}} \\times V_{\\text{alg}} \\subset \\mathbb{R}^{2d}$ with smooth densities:\n45:    - $\\rho_\\mu, \\rho_\\pi \\in C^2(\\Omega)$\n46:    - $\\rho_\\mu, \\rho_\\pi > 0$ on $\\Omega$ (strictly positive)\n47: \n48: 2. $\\pi = \\pi_{\\text{QSD}}$ is log-concave (Axiom 3.5):\n49:    $$\\rho_\\pi(z) = \\exp(-V_{\\text{QSD}}(z))$$\n50:    for convex $V_{\\text{QSD}}$\n51: \n52: 3. $T_{\\text{clone}}: \\mathcal{P}(\\Omega) \\to \\mathcal{P}(\\Omega)$ is the mean-field cloning operator with:\n53:    - Generator: $S[\\rho] = S_{\\text{src}}[\\rho] - S_{\\text{sink}}[\\rho]$\n54:    - Post-cloning noise variance: $\\delta^2$\n55:    - Cloning probability: $P_{\\text{clone}}(V_i, V_j) = \\min(1, V_j/V_i) \\cdot \\lambda_{\\text{clone}}$\n56: \n57: 4. **Fitness-QSD Anti-Correlation**:\n58:    $$\\log V[z] = -\\lambda_{\\text{corr}} V_{\\text{QSD}}(z) + \\log V_0$$\n59:    for $\\lambda_{\\text{corr}} > 0$\n60: \n61: 5. **Regularity bounds**:\n62:    - $0 < \\rho_{\\min} \\leq \\rho_\\mu(z) \\leq \\rho_{\\max} < \\infty$\n63:    - $0 < V_{\\min} \\leq V[z] \\leq V_{\\max} < \\infty$\n64: \n65: **Conclusion (Conjectured):**\n66: \n67: For $\\mu' = T_{\\text{clone}} \\# \\mu$ with infinitesimal time step $\\tau$:\n68: \n69: $$\n70: D_{\\text{KL}}(\\mu' \\| \\pi) - D_{\\text{KL}}(\\mu \\| \\pi) \\leq -\\tau \\beta \\, D_{\\text{KL}}(\\mu \\| \\pi) + C_{\\text{ent}} + O(\\tau^2)\n71: $$\n72: \n73: where $\\beta > 0$ (contraction rate) and $C_{\\text{ent}} < 0$ (favorable entropy term) depend on the parameters."
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

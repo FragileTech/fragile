@@ -1,0 +1,34 @@
+{
+  "document_id": "20_geometric_gas_cinf_regularity_full",
+  "stage": "directives",
+  "directive_type": "conjecture",
+  "generated_at": "2025-11-08T17:07:43.286243+00:00",
+  "count": 1,
+  "items": [
+    {
+      "directive_type": "conjecture",
+      "label": "conj-lsi-companion-dependent-full",
+      "title": "LSI for Companion-Dependent Geometric Gas",
+      "start_line": 4952,
+      "end_line": 4967,
+      "header_lines": [
+        4953
+      ],
+      "content_start": 4955,
+      "content_end": 4966,
+      "content": "4955: :label: conj-lsi-companion-dependent-full\n4956: \n4957: We conjecture that under the assumptions of {prf:ref}`thm-main-complete-cinf-geometric-gas-full`, the Geometric Gas satisfies a **Logarithmic Sobolev Inequality** with constant $\\alpha > 0$:\n4958: \n4959: $$\n4960: \\text{Ent}_\\mu(\\rho) \\leq \\frac{1}{\\alpha} \\mathcal{E}(\\rho, \\rho)\n4961: \n4962: $$\n4963: \n4964: where:\n4965: - $\\text{Ent}_\\mu(\\rho) = \\int \\rho \\log(\\rho/\\mu) d\\mu$ (relative entropy)\n4966: - $\\mathcal{E}(\\rho, \\rho) = -\\int \\rho \\mathcal{L}_{\\text{geo}} \\log \\rho \\, d\\mu$ (Dirichlet form)",
+      "metadata": {
+        "label": "conj-lsi-companion-dependent-full"
+      },
+      "section": "## 15. Logarithmic Sobolev Inequality",
+      "raw_directive": "4952: ## 15. Logarithmic Sobolev Inequality\n4953: \n4954: :::{prf:conjecture} LSI for Companion-Dependent Geometric Gas\n4955: :label: conj-lsi-companion-dependent-full\n4956: \n4957: We conjecture that under the assumptions of {prf:ref}`thm-main-complete-cinf-geometric-gas-full`, the Geometric Gas satisfies a **Logarithmic Sobolev Inequality** with constant $\\alpha > 0$:\n4958: \n4959: $$\n4960: \\text{Ent}_\\mu(\\rho) \\leq \\frac{1}{\\alpha} \\mathcal{E}(\\rho, \\rho)\n4961: \n4962: $$\n4963: \n4964: where:\n4965: - $\\text{Ent}_\\mu(\\rho) = \\int \\rho \\log(\\rho/\\mu) d\\mu$ (relative entropy)\n4966: - $\\mathcal{E}(\\rho, \\rho) = -\\int \\rho \\mathcal{L}_{\\text{geo}} \\log \\rho \\, d\\mu$ (Dirichlet form)\n4967: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "20_geometric_gas_cinf_regularity_full",
+        "chapter_index": 25,
+        "chapter_file": "chapter_25.json",
+        "section_id": "## 15. Logarithmic Sobolev Inequality"
+      }
+    }
+  ]
+}

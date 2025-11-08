@@ -1,0 +1,29 @@
+{
+  "chapter_index": 11,
+  "section_id": "## Appendix E: Higher-Order Corrections from Adaptive Forces",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-adaptive-qsd-app",
+      "title": "Adaptive Forces at QSD",
+      "start_line": 2824,
+      "end_line": 2842,
+      "header_lines": [
+        2825
+      ],
+      "content_start": 2827,
+      "content_end": 2841,
+      "content": "2827: :label: thm-adaptive-qsd-app\n2828: \n2829: At the quasi-stationary distribution, the adaptive force contributions satisfy:\n2830: \n2831: 1. **No bulk flow**: $u^i_{\\text{QSD}} = O(\\varepsilon_F)$\n2832: 2. **Detailed balance**: $\\rho_{\\text{QSD}}(x) \\propto \\exp\\left(-\\frac{U(x) + \\varepsilon_F V_{\\text{fit}}[\\rho_{\\text{QSD}}](x)}{k_B T_{\\text{eff}}}\\right)$ to first order\n2833: 3. **Vanishing source**: $J^\\nu_{\\text{adapt}}[\\mu_{\\text{QSD}}] = 0$ since $\\partial \\rho_{\\text{QSD}}/\\partial t = 0$\n2834: 4. **Anisotropic stress**: $T_{ij} = m\\rho \\frac{k_B T_{\\text{eff}}}{m} \\left[\\delta^{ij} + \\varepsilon_F \\Delta G^{ij}(x) + O(\\varepsilon_F^2)\\right]$\n2835: \n2836: **Consequence**: At leading order in $\\varepsilon_F$:\n2837: \n2838: $$\n2839: T_{\\mu\\nu}[\\mu_{\\text{QSD}}] = m\\rho \\frac{k_B T_{\\text{eff}}}{m} g_{\\mu\\nu} + O(\\varepsilon_F)\n2840: \n2841: $$",
+      "metadata": {
+        "label": "thm-adaptive-qsd-app"
+      },
+      "section": "## Appendix E: Higher-Order Corrections from Adaptive Forces",
+      "raw_directive": "2824: ### E.4. QSD Equilibrium Analysis\n2825: \n2826: :::{prf:theorem} Adaptive Forces at QSD\n2827: :label: thm-adaptive-qsd-app\n2828: \n2829: At the quasi-stationary distribution, the adaptive force contributions satisfy:\n2830: \n2831: 1. **No bulk flow**: $u^i_{\\text{QSD}} = O(\\varepsilon_F)$\n2832: 2. **Detailed balance**: $\\rho_{\\text{QSD}}(x) \\propto \\exp\\left(-\\frac{U(x) + \\varepsilon_F V_{\\text{fit}}[\\rho_{\\text{QSD}}](x)}{k_B T_{\\text{eff}}}\\right)$ to first order\n2833: 3. **Vanishing source**: $J^\\nu_{\\text{adapt}}[\\mu_{\\text{QSD}}] = 0$ since $\\partial \\rho_{\\text{QSD}}/\\partial t = 0$\n2834: 4. **Anisotropic stress**: $T_{ij} = m\\rho \\frac{k_B T_{\\text{eff}}}{m} \\left[\\delta^{ij} + \\varepsilon_F \\Delta G^{ij}(x) + O(\\varepsilon_F^2)\\right]$\n2835: \n2836: **Consequence**: At leading order in $\\varepsilon_F$:\n2837: \n2838: $$\n2839: T_{\\mu\\nu}[\\mu_{\\text{QSD}}] = m\\rho \\frac{k_B T_{\\text{eff}}}{m} g_{\\mu\\nu} + O(\\varepsilon_F)\n2840: \n2841: $$\n2842: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

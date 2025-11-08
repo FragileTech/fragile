@@ -1,0 +1,65 @@
+{
+  "chapter_index": 25,
+  "section_id": "## 15. Logarithmic Sobolev Inequality",
+  "directive_count": 3,
+  "hints": [
+    {
+      "directive_type": "conjecture",
+      "label": "conj-lsi-companion-dependent-full",
+      "title": "LSI for Companion-Dependent Geometric Gas",
+      "start_line": 4988,
+      "end_line": 5003,
+      "header_lines": [
+        4989
+      ],
+      "content_start": 4991,
+      "content_end": 5002,
+      "content": "4991: :label: conj-lsi-companion-dependent-full\n4992: \n4993: We conjecture that under the assumptions of {prf:ref}`thm-main-complete-cinf-geometric-gas-full`, the Geometric Gas satisfies a **Logarithmic Sobolev Inequality** with constant $\\alpha > 0$:\n4994: \n4995: $$\n4996: \\text{Ent}_\\mu(\\rho) \\leq \\frac{1}{\\alpha} \\mathcal{E}(\\rho, \\rho)\n4997: \n4998: $$\n4999: \n5000: where:\n5001: - $\\text{Ent}_\\mu(\\rho) = \\int \\rho \\log(\\rho/\\mu) d\\mu$ (relative entropy)\n5002: - $\\mathcal{E}(\\rho, \\rho) = -\\int \\rho \\mathcal{L}_{\\text{geo}} \\log \\rho \\, d\\mu$ (Dirichlet form)",
+      "metadata": {
+        "label": "conj-lsi-companion-dependent-full"
+      },
+      "section": "## 15. Logarithmic Sobolev Inequality",
+      "raw_directive": "4988: ## 15. Logarithmic Sobolev Inequality\n4989: \n4990: :::{prf:conjecture} LSI for Companion-Dependent Geometric Gas\n4991: :label: conj-lsi-companion-dependent-full\n4992: \n4993: We conjecture that under the assumptions of {prf:ref}`thm-main-complete-cinf-geometric-gas-full`, the Geometric Gas satisfies a **Logarithmic Sobolev Inequality** with constant $\\alpha > 0$:\n4994: \n4995: $$\n4996: \\text{Ent}_\\mu(\\rho) \\leq \\frac{1}{\\alpha} \\mathcal{E}(\\rho, \\rho)\n4997: \n4998: $$\n4999: \n5000: where:\n5001: - $\\text{Ent}_\\mu(\\rho) = \\int \\rho \\log(\\rho/\\mu) d\\mu$ (relative entropy)\n5002: - $\\mathcal{E}(\\rho, \\rho) = -\\int \\rho \\mathcal{L}_{\\text{geo}} \\log \\rho \\, d\\mu$ (Dirichlet form)\n5003: "
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-exponential-qsd-companion-dependent-full",
+      "title": "Exponential Convergence to QSD (Conditional)",
+      "start_line": 5058,
+      "end_line": 5071,
+      "header_lines": [
+        5059
+      ],
+      "content_start": 5061,
+      "content_end": 5070,
+      "content": "5061: :label: cor-exponential-qsd-companion-dependent-full\n5062: \n5063: **If** {prf:ref}`conj-lsi-companion-dependent-full` holds, then the Geometric Gas with companion-dependent fitness converges exponentially to its unique quasi-stationary distribution:\n5064: \n5065: $$\n5066: \\|\\rho_t - \\nu_{\\text{QSD}}\\|_{L^2(\\mu)} \\leq e^{-\\lambda_{\\text{gap}} t} \\|\\rho_0 - \\nu_{\\text{QSD}}\\|_{L^2(\\mu)}\n5067: \n5068: $$\n5069: \n5070: where $\\lambda_{\\text{gap}} \\geq \\alpha > 0$ is the **spectral gap**, independent of $N$ and $k$.",
+      "metadata": {
+        "label": "cor-exponential-qsd-companion-dependent-full"
+      },
+      "section": "## 15. Logarithmic Sobolev Inequality",
+      "raw_directive": "5058: :::\n5059: \n5060: :::{prf:corollary} Exponential Convergence to QSD (Conditional)\n5061: :label: cor-exponential-qsd-companion-dependent-full\n5062: \n5063: **If** {prf:ref}`conj-lsi-companion-dependent-full` holds, then the Geometric Gas with companion-dependent fitness converges exponentially to its unique quasi-stationary distribution:\n5064: \n5065: $$\n5066: \\|\\rho_t - \\nu_{\\text{QSD}}\\|_{L^2(\\mu)} \\leq e^{-\\lambda_{\\text{gap}} t} \\|\\rho_0 - \\nu_{\\text{QSD}}\\|_{L^2(\\mu)}\n5067: \n5068: $$\n5069: \n5070: where $\\lambda_{\\text{gap}} \\geq \\alpha > 0$ is the **spectral gap**, independent of $N$ and $k$.\n5071: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-cor-exponential-qsd-companion-dependent-full",
+      "title": null,
+      "start_line": 5073,
+      "end_line": 5077,
+      "header_lines": [
+        5074
+      ],
+      "content_start": 5076,
+      "content_end": 5076,
+      "content": "5076: :label: proof-cor-exponential-qsd-companion-dependent-full",
+      "metadata": {
+        "label": "proof-cor-exponential-qsd-companion-dependent-full"
+      },
+      "section": "## 15. Logarithmic Sobolev Inequality",
+      "raw_directive": "5073: :::\n5074: \n5075: :::{prf:proof}\n5076: :label: proof-cor-exponential-qsd-companion-dependent-full\n5077: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

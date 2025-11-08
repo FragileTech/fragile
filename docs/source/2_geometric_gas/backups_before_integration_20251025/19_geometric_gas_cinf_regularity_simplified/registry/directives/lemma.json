@@ -1,0 +1,109 @@
+{
+  "document_id": "19_geometric_gas_cinf_regularity_simplified",
+  "stage": "directives",
+  "directive_type": "lemma",
+  "generated_at": "2025-11-08T17:07:43.282334+00:00",
+  "count": 4,
+  "items": [
+    {
+      "directive_type": "lemma",
+      "label": "lem-telescoping-all-orders-cinf",
+      "title": "Telescoping Identity at All Orders",
+      "start_line": 429,
+      "end_line": 447,
+      "header_lines": [
+        430
+      ],
+      "content_start": 432,
+      "content_end": 446,
+      "content": "432: :label: lem-telescoping-all-orders-cinf\n433: \n434: The normalized localization weights satisfy:\n435: \n436: $$\n437: \\sum_{j \\in A_k} \\nabla^m_{x_i} w_{ij}(\\rho) = 0 \\quad \\text{for all } m \\geq 1\n438: $$\n439: \n440: for all walker positions, swarm configurations, ρ > 0, and derivative orders m.\n441: \n442: **Proof**: The normalization ∑_{j ∈ A_k} w_ij(ρ) = 1 holds identically for all x_i ∈ X as a function of x_i. Since the sum is over a **finite set** A_k and each w_ij(ρ) is C∞ in x_i (Assumption {prf:ref}`assump-cinf-primitives`), differentiation and summation commute:\n443: \n444: $$\n445: \\nabla^m_{x_i} \\left(\\sum_{j \\in A_k} w_{ij}(\\rho)\\right) = \\sum_{j \\in A_k} \\nabla^m_{x_i} w_{ij}(\\rho) = \\nabla^m_{x_i}(1) = 0\n446: $$",
+      "metadata": {
+        "label": "lem-telescoping-all-orders-cinf"
+      },
+      "section": "## 5. Inductive Step: From C^m to C^{m+1}",
+      "raw_directive": "429: We now prove the inductive step: assuming V_fit ∈ C^m with bound K_{V,m}(ρ), we prove V_fit ∈ C^{m+1} with bound K_{V,m+1}(ρ).\n430: \n431: :::{prf:lemma} Telescoping Identity at All Orders\n432: :label: lem-telescoping-all-orders-cinf\n433: \n434: The normalized localization weights satisfy:\n435: \n436: $$\n437: \\sum_{j \\in A_k} \\nabla^m_{x_i} w_{ij}(\\rho) = 0 \\quad \\text{for all } m \\geq 1\n438: $$\n439: \n440: for all walker positions, swarm configurations, ρ > 0, and derivative orders m.\n441: \n442: **Proof**: The normalization ∑_{j ∈ A_k} w_ij(ρ) = 1 holds identically for all x_i ∈ X as a function of x_i. Since the sum is over a **finite set** A_k and each w_ij(ρ) is C∞ in x_i (Assumption {prf:ref}`assump-cinf-primitives`), differentiation and summation commute:\n443: \n444: $$\n445: \\nabla^m_{x_i} \\left(\\sum_{j \\in A_k} w_{ij}(\\rho)\\right) = \\sum_{j \\in A_k} \\nabla^m_{x_i} w_{ij}(\\rho) = \\nabla^m_{x_i}(1) = 0\n446: $$\n447: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "19_geometric_gas_cinf_regularity_simplified",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. Inductive Step: From C^m to C^{m+1}"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-mean-cinf-inductive",
+      "title": "C^{m+1} Regularity of Localized Mean",
+      "start_line": 449,
+      "end_line": 487,
+      "header_lines": [
+        450
+      ],
+      "content_start": 452,
+      "content_end": 486,
+      "content": "452: :label: lem-mean-cinf-inductive\n453: \n454: Assume weights w_ij(ρ) are C^{m+1} in x_i with ||∇^{m+1} w_ij|| ≤ W_{m+1}(ρ). Then the localized mean μ_ρ[f_k, x_i] is C^{m+1} with:\n455: \n456: $$\n457: \\|\\nabla^{m+1}_{x_i} \\mu_\\rho\\| \\leq W_{m+1}(\\rho) \\cdot \\text{diam}(d)\n458: $$\n459: \n460: independent of k and N, where diam(d) = sup_{x,y ∈ X} |d(x) - d(y)| < ∞.\n461: \n462: **Proof**: For the simplified model where d depends only on x_j (not x_i for j ≠ i):\n463: \n464: $$\n465: \\mu_\\rho = \\sum_{j \\in A_k} w_{ij}(\\rho) \\cdot d(x_j)\n466: $$\n467: \n468: Differentiating (m+1) times:\n469: \n470: $$\n471: \\nabla^{m+1}_{x_i} \\mu_\\rho = \\sum_{j \\in A_k} \\nabla^{m+1}_{x_i} w_{ij}(\\rho) \\cdot d(x_j)\n472: $$\n473: \n474: (Terms with ∇_{x_i} d(x_j) vanish for j ≠ i in the simplified model.)\n475: \n476: Apply telescoping ({prf:ref}`lem-telescoping-all-orders-cinf`):\n477: \n478: $$\n479: = \\sum_{j \\in A_k} \\nabla^{m+1} w_{ij} \\cdot (d(x_j) - \\mu_\\rho)\n480: $$\n481: \n482: Taking norms:\n483: \n484: $$\n485: \\|\\nabla^{m+1} \\mu_\\rho\\| \\leq \\sum_j \\|\\nabla^{m+1} w_{ij}\\| \\cdot |d(x_j) - \\mu_\\rho| \\leq W_{m+1}(\\rho) \\cdot \\text{diam}(d)\n486: $$",
+      "metadata": {
+        "label": "lem-mean-cinf-inductive"
+      },
+      "section": "## 5. Inductive Step: From C^m to C^{m+1}",
+      "raw_directive": "449: :::\n450: \n451: :::{prf:lemma} C^{m+1} Regularity of Localized Mean\n452: :label: lem-mean-cinf-inductive\n453: \n454: Assume weights w_ij(ρ) are C^{m+1} in x_i with ||∇^{m+1} w_ij|| ≤ W_{m+1}(ρ). Then the localized mean μ_ρ[f_k, x_i] is C^{m+1} with:\n455: \n456: $$\n457: \\|\\nabla^{m+1}_{x_i} \\mu_\\rho\\| \\leq W_{m+1}(\\rho) \\cdot \\text{diam}(d)\n458: $$\n459: \n460: independent of k and N, where diam(d) = sup_{x,y ∈ X} |d(x) - d(y)| < ∞.\n461: \n462: **Proof**: For the simplified model where d depends only on x_j (not x_i for j ≠ i):\n463: \n464: $$\n465: \\mu_\\rho = \\sum_{j \\in A_k} w_{ij}(\\rho) \\cdot d(x_j)\n466: $$\n467: \n468: Differentiating (m+1) times:\n469: \n470: $$\n471: \\nabla^{m+1}_{x_i} \\mu_\\rho = \\sum_{j \\in A_k} \\nabla^{m+1}_{x_i} w_{ij}(\\rho) \\cdot d(x_j)\n472: $$\n473: \n474: (Terms with ∇_{x_i} d(x_j) vanish for j ≠ i in the simplified model.)\n475: \n476: Apply telescoping ({prf:ref}`lem-telescoping-all-orders-cinf`):\n477: \n478: $$\n479: = \\sum_{j \\in A_k} \\nabla^{m+1} w_{ij} \\cdot (d(x_j) - \\mu_\\rho)\n480: $$\n481: \n482: Taking norms:\n483: \n484: $$\n485: \\|\\nabla^{m+1} \\mu_\\rho\\| \\leq \\sum_j \\|\\nabla^{m+1} w_{ij}\\| \\cdot |d(x_j) - \\mu_\\rho| \\leq W_{m+1}(\\rho) \\cdot \\text{diam}(d)\n486: $$\n487: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "19_geometric_gas_cinf_regularity_simplified",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. Inductive Step: From C^m to C^{m+1}"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-variance-cinf-inductive",
+      "title": "C^{m+1} Regularity of Localized Variance",
+      "start_line": 489,
+      "end_line": 507,
+      "header_lines": [
+        490
+      ],
+      "content_start": 492,
+      "content_end": 506,
+      "content": "492: :label: lem-variance-cinf-inductive\n493: \n494: Under the same assumptions, σ²_ρ[f_k, x_i] is C^{m+1} with:\n495: \n496: $$\n497: \\|\\nabla^{m+1}_{x_i} \\sigma^2_\\rho\\| \\leq C_{\\text{var},m+1}(\\rho) \\cdot (\\text{diam}(d))^2\n498: $$\n499: \n500: where C_{var,m+1}(ρ) = O(W_{m+1}(ρ) + products of lower-order weight derivatives).\n501: \n502: **Proof sketch**: The variance σ²_ρ = ∑_j w_ij · (d(x_j) - μ_ρ)² involves products. Leibniz rule for (m+1)-th derivative yields terms like ∇^p w_ij · ∇^q((d - μ_ρ)²) for p + q = m+1. The highest-order term:\n503: \n504: $$\n505: \\nabla^{m+1} \\sigma^2_\\rho \\sim \\sum_j \\nabla^{m+1} w_{ij} \\cdot (d(x_j) - \\mu_\\rho)^2 + \\text{lower-order}\n506: $$",
+      "metadata": {
+        "label": "lem-variance-cinf-inductive"
+      },
+      "section": "## 5. Inductive Step: From C^m to C^{m+1}",
+      "raw_directive": "489: :::\n490: \n491: :::{prf:lemma} C^{m+1} Regularity of Localized Variance\n492: :label: lem-variance-cinf-inductive\n493: \n494: Under the same assumptions, σ²_ρ[f_k, x_i] is C^{m+1} with:\n495: \n496: $$\n497: \\|\\nabla^{m+1}_{x_i} \\sigma^2_\\rho\\| \\leq C_{\\text{var},m+1}(\\rho) \\cdot (\\text{diam}(d))^2\n498: $$\n499: \n500: where C_{var,m+1}(ρ) = O(W_{m+1}(ρ) + products of lower-order weight derivatives).\n501: \n502: **Proof sketch**: The variance σ²_ρ = ∑_j w_ij · (d(x_j) - μ_ρ)² involves products. Leibniz rule for (m+1)-th derivative yields terms like ∇^p w_ij · ∇^q((d - μ_ρ)²) for p + q = m+1. The highest-order term:\n503: \n504: $$\n505: \\nabla^{m+1} \\sigma^2_\\rho \\sim \\sum_j \\nabla^{m+1} w_{ij} \\cdot (d(x_j) - \\mu_\\rho)^2 + \\text{lower-order}\n506: $$\n507: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "19_geometric_gas_cinf_regularity_simplified",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. Inductive Step: From C^m to C^{m+1}"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-z-score-cinf-inductive",
+      "title": "C^{m+1} Regularity of Z-Score",
+      "start_line": 509,
+      "end_line": 527,
+      "header_lines": [
+        510
+      ],
+      "content_start": 512,
+      "content_end": 526,
+      "content": "512: :label: lem-z-score-cinf-inductive\n513: \n514: Assume μ_ρ, σ²_ρ ∈ C^{m+1} and σ'_reg ∈ C∞ with σ'_reg ≥ ε_σ > 0. Then Z_ρ = (d(x_i) - μ_ρ) / σ'_reg(σ²_ρ) is C^{m+1} with:\n515: \n516: $$\n517: \\|\\nabla^{m+1}_{x_i} Z_\\rho\\| \\leq K_{Z,m+1}(\\rho)\n518: $$\n519: \n520: where K_{Z,m+1}(ρ) depends on C_d^{(m+1)}, ||∇^{m+1} μ_ρ||, ||∇^{m+1} σ²_ρ||, and bounds on σ'_reg and its derivatives.\n521: \n522: **Proof sketch**: Z_ρ = u/v where u = d(x_i) - μ_ρ, v = σ'_reg(σ²_ρ). Generalized quotient rule (Leibniz for division) yields:\n523: \n524: $$\n525: \\nabla^{m+1} Z_\\rho = \\sum \\text{(products of numerator/denominator derivatives up to order m+1)}\n526: $$",
+      "metadata": {
+        "label": "lem-z-score-cinf-inductive"
+      },
+      "section": "## 5. Inductive Step: From C^m to C^{m+1}",
+      "raw_directive": "509: :::\n510: \n511: :::{prf:lemma} C^{m+1} Regularity of Z-Score\n512: :label: lem-z-score-cinf-inductive\n513: \n514: Assume μ_ρ, σ²_ρ ∈ C^{m+1} and σ'_reg ∈ C∞ with σ'_reg ≥ ε_σ > 0. Then Z_ρ = (d(x_i) - μ_ρ) / σ'_reg(σ²_ρ) is C^{m+1} with:\n515: \n516: $$\n517: \\|\\nabla^{m+1}_{x_i} Z_\\rho\\| \\leq K_{Z,m+1}(\\rho)\n518: $$\n519: \n520: where K_{Z,m+1}(ρ) depends on C_d^{(m+1)}, ||∇^{m+1} μ_ρ||, ||∇^{m+1} σ²_ρ||, and bounds on σ'_reg and its derivatives.\n521: \n522: **Proof sketch**: Z_ρ = u/v where u = d(x_i) - μ_ρ, v = σ'_reg(σ²_ρ). Generalized quotient rule (Leibniz for division) yields:\n523: \n524: $$\n525: \\nabla^{m+1} Z_\\rho = \\sum \\text{(products of numerator/denominator derivatives up to order m+1)}\n526: $$\n527: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "19_geometric_gas_cinf_regularity_simplified",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. Inductive Step: From C^m to C^{m+1}"
+      }
+    }
+  ]
+}

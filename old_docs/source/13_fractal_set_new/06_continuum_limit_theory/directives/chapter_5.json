@@ -1,0 +1,29 @@
+{
+  "chapter_index": 5,
+  "section_id": "## 5. Error Bounds and Convergence Rates",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-explicit-convergence-rate",
+      "title": "Explicit Convergence Rate",
+      "start_line": 618,
+      "end_line": 639,
+      "header_lines": [
+        619
+      ],
+      "content_start": 621,
+      "content_end": 638,
+      "content": "621: :label: thm-explicit-convergence-rate\n622: \n623: Under regularity conditions (Assumption 3.2.2), for any smooth function $\\phi \\in C^2(\\mathcal{X})$:\n624: \n625: $$\n626: \\left\\| \\Delta_{\\mathcal{F}_N} f_\\phi - \\Delta_g \\phi \\right\\|_{L^2(\\mu)} \\leq C(\\mathcal{X}, g, T) \\|\\phi\\|_{C^2} \\cdot N^{-1/4}\n627: $$\n628: \n629: with probability at least $1 - \\delta$ for $C = C(\\delta)$.\n630: \n631: **Component-wise breakdown**:\n632: \n633: | **Error Source** | **Rate** | **Condition** |\n634: |------------------|----------|---------------|\n635: | QSD convergence | $O(N^{-1/4})$ | Hypocoercivity (Ch 11) |\n636: | Finite sampling | $O(N^{-1/4})$ | Optimal bandwidth $\\epsilon \\sim N^{-1/(2d)}$ |\n637: | Bandwidth bias | $O(\\epsilon^2) = O(N^{-1/d})$ | Smoothness assumption |\n638: | Velocity thermalization | $O(e^{-c\\gamma t})$ | Fast friction limit |",
+      "metadata": {
+        "label": "thm-explicit-convergence-rate"
+      },
+      "section": "## 5. Error Bounds and Convergence Rates",
+      "raw_directive": "618: ### 5.2. Convergence Rate Summary\n619: \n620: :::{prf:theorem} Explicit Convergence Rate\n621: :label: thm-explicit-convergence-rate\n622: \n623: Under regularity conditions (Assumption 3.2.2), for any smooth function $\\phi \\in C^2(\\mathcal{X})$:\n624: \n625: $$\n626: \\left\\| \\Delta_{\\mathcal{F}_N} f_\\phi - \\Delta_g \\phi \\right\\|_{L^2(\\mu)} \\leq C(\\mathcal{X}, g, T) \\|\\phi\\|_{C^2} \\cdot N^{-1/4}\n627: $$\n628: \n629: with probability at least $1 - \\delta$ for $C = C(\\delta)$.\n630: \n631: **Component-wise breakdown**:\n632: \n633: | **Error Source** | **Rate** | **Condition** |\n634: |------------------|----------|---------------|\n635: | QSD convergence | $O(N^{-1/4})$ | Hypocoercivity (Ch 11) |\n636: | Finite sampling | $O(N^{-1/4})$ | Optimal bandwidth $\\epsilon \\sim N^{-1/(2d)}$ |\n637: | Bandwidth bias | $O(\\epsilon^2) = O(N^{-1/d})$ | Smoothness assumption |\n638: | Velocity thermalization | $O(e^{-c\\gamma t})$ | Fast friction limit |\n639: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

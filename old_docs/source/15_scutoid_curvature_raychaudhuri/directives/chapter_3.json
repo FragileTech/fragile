@@ -1,0 +1,155 @@
+{
+  "chapter_index": 3,
+  "section_id": "## Section 2: Curvature from Connection",
+  "directive_count": 8,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-riemann-classical",
+      "title": "Riemann Curvature Tensor (Classical)",
+      "start_line": 269,
+      "end_line": 284,
+      "header_lines": [
+        270
+      ],
+      "content_start": 272,
+      "content_end": 283,
+      "content": "272: :label: def-riemann-classical\n273: \n274: The **Riemann curvature tensor** $R^a_{bcd}$ is defined by the commutator of covariant derivatives acting on a vector field $V^a$:\n275: \n276: $$\n277: [\\nabla_c, \\nabla_d] V^a = R^a_{bcd} V^b\n278: $$\n279: \n280: where $\\nabla_c$ denotes covariant derivative with respect to coordinate $x^c$. In terms of Christoffel symbols:\n281: \n282: $$\n283: R^a_{bcd} = \\frac{\\partial \\Gamma^a_{bd}}{\\partial x^c} - \\frac{\\partial \\Gamma^a_{bc}}{\\partial x^d} + \\Gamma^a_{ec} \\Gamma^e_{bd} - \\Gamma^a_{ed} \\Gamma^e_{bc}",
+      "metadata": {
+        "label": "def-riemann-classical"
+      },
+      "section": "## Section 2: Curvature from Connection",
+      "raw_directive": "269: We now construct the **Riemann curvature tensor** from the affine connection defined in Section 1. The Riemann tensor measures the **failure of parallel transport** around closed loops\u2014a fundamental signature of curved space.\n270: \n271: :::{prf:definition} Riemann Curvature Tensor (Classical)\n272: :label: def-riemann-classical\n273: \n274: The **Riemann curvature tensor** $R^a_{bcd}$ is defined by the commutator of covariant derivatives acting on a vector field $V^a$:\n275: \n276: $$\n277: [\\nabla_c, \\nabla_d] V^a = R^a_{bcd} V^b\n278: $$\n279: \n280: where $\\nabla_c$ denotes covariant derivative with respect to coordinate $x^c$. In terms of Christoffel symbols:\n281: \n282: $$\n283: R^a_{bcd} = \\frac{\\partial \\Gamma^a_{bd}}{\\partial x^c} - \\frac{\\partial \\Gamma^a_{bc}}{\\partial x^d} + \\Gamma^a_{ec} \\Gamma^e_{bd} - \\Gamma^a_{ed} \\Gamma^e_{bc}\n284: $$"
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-scutoid-plaquette",
+      "title": "Scutoid Plaquette",
+      "start_line": 301,
+      "end_line": 328,
+      "header_lines": [
+        302
+      ],
+      "content_start": 304,
+      "content_end": 327,
+      "content": "304: :label: def-scutoid-plaquette\n305: \n306: Let $\\mathcal{C}_i$ be a scutoid cell with parent $j$ at time $t$ and child $i$ at time $t + \\Delta t$. For a shared neighbor $k \\in \\mathcal{N}_{\\text{shared}}$, the **scutoid plaquette** $\\Pi_{i,k}$ is the closed quadrilateral in spacetime with vertices:\n307: \n308: $$\n309: \\begin{aligned}\n310: p_1 &= (x_j(t), t) && \\text{(parent position)} \\\\\n311: p_2 &= (x_j(t) + \\delta x_{\\text{edge}}(t), t) && \\text{(point on } \\Gamma_{j,k}(t)) \\\\\n312: p_3 &= (\\phi_k(p_2), t + \\Delta t) && \\text{(corresponding point on } \\Gamma_{i,k}(t + \\Delta t)) \\\\\n313: p_4 &= (x_i(t + \\Delta t), t + \\Delta t) && \\text{(child position)}\n314: \\end{aligned}\n315: $$\n316: \n317: and edges:\n318: 1. $p_1 \\to p_2$: Boundary segment in $\\Gamma_{j,k}(t)$\n319: 2. $p_2 \\to p_3$: Geodesic ruling (time evolution)\n320: 3. $p_3 \\to p_4$: Boundary segment in $\\Gamma_{i,k}(t + \\Delta t)$\n321: 4. $p_4 \\to p_1$: Walker trajectory (parent to child via cloning)\n322: \n323: The **area** of the plaquette is:\n324: \n325: $$\n326: A_{\\Pi_{i,k}} = \\|\\delta x_{\\text{edge}}(t)\\| \\cdot \\|x_i(t + \\Delta t) - x_j(t)\\|\n327: $$",
+      "metadata": {
+        "label": "def-scutoid-plaquette"
+      },
+      "section": "## Section 2: Curvature from Connection",
+      "raw_directive": "301: 4. A boundary segment $\\Gamma_{j,k}(t)$ at time $t$ (closing the loop)\n302: \n303: :::{prf:definition} Scutoid Plaquette\n304: :label: def-scutoid-plaquette\n305: \n306: Let $\\mathcal{C}_i$ be a scutoid cell with parent $j$ at time $t$ and child $i$ at time $t + \\Delta t$. For a shared neighbor $k \\in \\mathcal{N}_{\\text{shared}}$, the **scutoid plaquette** $\\Pi_{i,k}$ is the closed quadrilateral in spacetime with vertices:\n307: \n308: $$\n309: \\begin{aligned}\n310: p_1 &= (x_j(t), t) && \\text{(parent position)} \\\\\n311: p_2 &= (x_j(t) + \\delta x_{\\text{edge}}(t), t) && \\text{(point on } \\Gamma_{j,k}(t)) \\\\\n312: p_3 &= (\\phi_k(p_2), t + \\Delta t) && \\text{(corresponding point on } \\Gamma_{i,k}(t + \\Delta t)) \\\\\n313: p_4 &= (x_i(t + \\Delta t), t + \\Delta t) && \\text{(child position)}\n314: \\end{aligned}\n315: $$\n316: \n317: and edges:\n318: 1. $p_1 \\to p_2$: Boundary segment in $\\Gamma_{j,k}(t)$\n319: 2. $p_2 \\to p_3$: Geodesic ruling (time evolution)\n320: 3. $p_3 \\to p_4$: Boundary segment in $\\Gamma_{i,k}(t + \\Delta t)$\n321: 4. $p_4 \\to p_1$: Walker trajectory (parent to child via cloning)\n322: \n323: The **area** of the plaquette is:\n324: \n325: $$\n326: A_{\\Pi_{i,k}} = \\|\\delta x_{\\text{edge}}(t)\\| \\cdot \\|x_i(t + \\Delta t) - x_j(t)\\|\n327: $$\n328: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-discrete-stokes-plaquette",
+      "title": "Discrete Stokes' Theorem for Plaquette Holonomy",
+      "start_line": 332,
+      "end_line": 348,
+      "header_lines": [
+        333
+      ],
+      "content_start": 335,
+      "content_end": 347,
+      "content": "335: :label: lem-discrete-stokes-plaquette\n336: \n337: For a scutoid plaquette with four vertices $p_1, p_2, p_3, p_4$ and edge displacement vectors $\\delta x_1, \\delta x_2, \\delta x_3, \\delta x_4$, the sum of position-displacement cross-products is:\n338: \n339: $$\n340: \\sum_{i=1}^4 \\Delta x_i^d \\delta x_i^b = \\epsilon^{db} T^d T^b A_{\\Pi} + O(A_{\\Pi}^{3/2})\n341: $$\n342: \n343: where:\n344: - $\\Delta x_i^d = x_i^d - x_0^d$ is the displacement of vertex $i$ from the plaquette center $x_0$\n345: - $T^d$ and $T^b$ are the tangent vectors spanning the plaquette (one spatial, one temporal)\n346: - $\\epsilon^{db}$ is the antisymmetric tensor (Levi-Civita symbol)\n347: - $A_{\\Pi}$ is the plaquette area",
+      "metadata": {
+        "label": "lem-discrete-stokes-plaquette"
+      },
+      "section": "## Section 2: Curvature from Connection",
+      "raw_directive": "332: **Geometric Picture**: A plaquette is a \"tile\" on the surface of a scutoid face. If space were flat, the four edges would form a perfect parallelogram. In curved space, the quadrilateral has **excess angle** (the sum of interior angles differs from $2\\pi$), and this excess is proportional to the Riemann tensor.\n333: \n334: :::{prf:lemma} Discrete Stokes' Theorem for Plaquette Holonomy\n335: :label: lem-discrete-stokes-plaquette\n336: \n337: For a scutoid plaquette with four vertices $p_1, p_2, p_3, p_4$ and edge displacement vectors $\\delta x_1, \\delta x_2, \\delta x_3, \\delta x_4$, the sum of position-displacement cross-products is:\n338: \n339: $$\n340: \\sum_{i=1}^4 \\Delta x_i^d \\delta x_i^b = \\epsilon^{db} T^d T^b A_{\\Pi} + O(A_{\\Pi}^{3/2})\n341: $$\n342: \n343: where:\n344: - $\\Delta x_i^d = x_i^d - x_0^d$ is the displacement of vertex $i$ from the plaquette center $x_0$\n345: - $T^d$ and $T^b$ are the tangent vectors spanning the plaquette (one spatial, one temporal)\n346: - $\\epsilon^{db}$ is the antisymmetric tensor (Levi-Civita symbol)\n347: - $A_{\\Pi}$ is the plaquette area\n348: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-riemann-scutoid-dictionary",
+      "title": "Riemann-Scutoid Dictionary (Crown Jewel 1)",
+      "start_line": 436,
+      "end_line": 454,
+      "header_lines": [
+        437
+      ],
+      "content_start": 439,
+      "content_end": 453,
+      "content": "439: :label: thm-riemann-scutoid-dictionary\n440: \n441: The Riemann curvature tensor can be computed from the holonomy around scutoid plaquettes. Specifically, let $V^a$ be a vector parallel-transported around the plaquette $\\Pi_{i,k}$ with tangent directions $T^c$ and $T^d$ (the two independent edge directions). The vector returns to its starting point rotated by:\n442: \n443: $$\n444: \\Delta V^a = R^a_{bcd}(x_j(t)) V^b T^c T^d A_{\\Pi_{i,k}} + O(\\Delta t^2, \\|\\delta x_{\\text{edge}}\\|^2)\n445: $$\n446: \n447: where $R^a_{bcd}(x_j(t))$ is the Riemann tensor evaluated at the parent position $x_j(t)$, and $A_{\\Pi_{i,k}}$ is the area of the plaquette.\n448: \n449: Equivalently, the Riemann tensor is:\n450: \n451: $$\n452: R^a_{bcd}(x) = \\lim_{\\substack{A_{\\Pi} \\to 0 \\\\ \\Pi \\ni x}} \\frac{\\Delta V^a}{V^b T^c T^d A_{\\Pi}}\n453: $$",
+      "metadata": {
+        "label": "thm-riemann-scutoid-dictionary"
+      },
+      "section": "## Section 2: Curvature from Connection",
+      "raw_directive": "436: **Remark (Connection to Continuous Stokes)**: In the continuous limit, the discrete sum $\\sum_i$ becomes a line integral $\\oint_{\\partial \\Pi}$, and the cross-product $\\Delta x \\delta x$ becomes the differential form $dx^d \\wedge dx^b$. The factor $\\epsilon^{db}$ ensures the correct orientation.\n437: \n438: :::{prf:theorem} Riemann-Scutoid Dictionary (Crown Jewel 1)\n439: :label: thm-riemann-scutoid-dictionary\n440: \n441: The Riemann curvature tensor can be computed from the holonomy around scutoid plaquettes. Specifically, let $V^a$ be a vector parallel-transported around the plaquette $\\Pi_{i,k}$ with tangent directions $T^c$ and $T^d$ (the two independent edge directions). The vector returns to its starting point rotated by:\n442: \n443: $$\n444: \\Delta V^a = R^a_{bcd}(x_j(t)) V^b T^c T^d A_{\\Pi_{i,k}} + O(\\Delta t^2, \\|\\delta x_{\\text{edge}}\\|^2)\n445: $$\n446: \n447: where $R^a_{bcd}(x_j(t))$ is the Riemann tensor evaluated at the parent position $x_j(t)$, and $A_{\\Pi_{i,k}}$ is the area of the plaquette.\n448: \n449: Equivalently, the Riemann tensor is:\n450: \n451: $$\n452: R^a_{bcd}(x) = \\lim_{\\substack{A_{\\Pi} \\to 0 \\\\ \\Pi \\ni x}} \\frac{\\Delta V^a}{V^b T^c T^d A_{\\Pi}}\n453: $$\n454: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-ricci-scalar",
+      "title": "Ricci Tensor and Scalar Curvature",
+      "start_line": 557,
+      "end_line": 572,
+      "header_lines": [
+        558
+      ],
+      "content_start": 560,
+      "content_end": 571,
+      "content": "560: :label: def-ricci-scalar\n561: \n562: The **Ricci curvature tensor** is the trace of the Riemann tensor over the first and third indices:\n563: \n564: $$\n565: R_{ac} = R^b_{abc} = g^{bd} R_{dbac}\n566: $$\n567: \n568: The **Ricci scalar** (scalar curvature) is the trace of the Ricci tensor:\n569: \n570: $$\n571: R = g^{ac} R_{ac}",
+      "metadata": {
+        "label": "def-ricci-scalar"
+      },
+      "section": "## Section 2: Curvature from Connection",
+      "raw_directive": "557: The Riemann tensor has $d^4$ components (in $d$ spatial dimensions), which is too many to interpret directly. We extract physically meaningful information by taking **traces**.\n558: \n559: :::{prf:definition} Ricci Tensor and Scalar Curvature\n560: :label: def-ricci-scalar\n561: \n562: The **Ricci curvature tensor** is the trace of the Riemann tensor over the first and third indices:\n563: \n564: $$\n565: R_{ac} = R^b_{abc} = g^{bd} R_{dbac}\n566: $$\n567: \n568: The **Ricci scalar** (scalar curvature) is the trace of the Ricci tensor:\n569: \n570: $$\n571: R = g^{ac} R_{ac}\n572: $$"
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-ricci-from-deformation",
+      "title": "Ricci Tensor from Edge Deformation",
+      "start_line": 579,
+      "end_line": 589,
+      "header_lines": [
+        580
+      ],
+      "content_start": 582,
+      "content_end": 588,
+      "content": "582: :label: prop-ricci-from-deformation\n583: \n584: The Ricci tensor for the emergent metric can be computed from the edge deformation tensor (Definition {prf:ref}`def-edge-deformation`):\n585: \n586: $$\n587: R_{ac} \\Delta t = \\frac{1}{|\\mathcal{N}_{\\text{shared}}|} \\sum_{k \\in \\mathcal{N}_{\\text{shared}}} \\int_{\\Gamma_{j,k}(t)} \\left( D_{ac}(s) - \\frac{1}{d} \\text{tr}(D) \\, g_{ac} \\right) ds\n588: $$",
+      "metadata": {
+        "label": "prop-ricci-from-deformation"
+      },
+      "section": "## Section 2: Curvature from Connection",
+      "raw_directive": "579: - In general relativity: $R_{\\mu\\nu} - \\frac{1}{2}g_{\\mu\\nu}R = 8\\pi G T_{\\mu\\nu}$ (Einstein field equation)\n580: \n581: :::{prf:proposition} Ricci Tensor from Edge Deformation\n582: :label: prop-ricci-from-deformation\n583: \n584: The Ricci tensor for the emergent metric can be computed from the edge deformation tensor (Definition {prf:ref}`def-edge-deformation`):\n585: \n586: $$\n587: R_{ac} \\Delta t = \\frac{1}{|\\mathcal{N}_{\\text{shared}}|} \\sum_{k \\in \\mathcal{N}_{\\text{shared}}} \\int_{\\Gamma_{j,k}(t)} \\left( D_{ac}(s) - \\frac{1}{d} \\text{tr}(D) \\, g_{ac} \\right) ds\n588: $$\n589: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-sectional-curvature",
+      "title": "Sectional Curvature",
+      "start_line": 676,
+      "end_line": 686,
+      "header_lines": [
+        677
+      ],
+      "content_start": 679,
+      "content_end": 685,
+      "content": "679: :label: def-sectional-curvature\n680: \n681: Let $\\Pi$ be a 2-dimensional plane in the tangent space $T_x \\mathcal{X}$ spanned by orthonormal vectors $u^a$ and $v^b$. The **sectional curvature** of $\\Pi$ is:\n682: \n683: $$\n684: K(u, v) = R_{abcd} u^a v^b u^c v^d\n685: $$",
+      "metadata": {
+        "label": "def-sectional-curvature"
+      },
+      "section": "## Section 2: Curvature from Connection",
+      "raw_directive": "676: For 2D surfaces embedded in 3D space (or 2D slices of higher-dimensional manifolds), the Riemann tensor reduces to a single scalar: the **Gaussian curvature**.\n677: \n678: :::{prf:definition} Sectional Curvature\n679: :label: def-sectional-curvature\n680: \n681: Let $\\Pi$ be a 2-dimensional plane in the tangent space $T_x \\mathcal{X}$ spanned by orthonormal vectors $u^a$ and $v^b$. The **sectional curvature** of $\\Pi$ is:\n682: \n683: $$\n684: K(u, v) = R_{abcd} u^a v^b u^c v^d\n685: $$\n686: "
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-gaussian-from-scutoid",
+      "title": "Gaussian Curvature from Scutoid Triangulation",
+      "start_line": 690,
+      "end_line": 700,
+      "header_lines": [
+        691
+      ],
+      "content_start": 693,
+      "content_end": 699,
+      "content": "693: :label: prop-gaussian-from-scutoid\n694: \n695: For a 2D slice of the scutoid tessellation, the Gaussian curvature at a vertex $x_i$ can be computed from the **angle defect**:\n696: \n697: $$\n698: K(x_i) = \\frac{1}{A_i} \\left( 2\\pi - \\sum_{k \\in \\mathcal{N}_i} \\theta_k \\right)\n699: $$",
+      "metadata": {
+        "label": "prop-gaussian-from-scutoid"
+      },
+      "section": "## Section 2: Curvature from Connection",
+      "raw_directive": "690: **Geometric Meaning**: The sectional curvature measures how much geodesic triangles on the 2D plane $\\Pi$ deviate from Euclidean triangles. For a sphere of radius $r$: $K = 1/r^2$ (positive). For a hyperbolic plane: $K = -1/r^2$ (negative).\n691: \n692: :::{prf:proposition} Gaussian Curvature from Scutoid Triangulation\n693: :label: prop-gaussian-from-scutoid\n694: \n695: For a 2D slice of the scutoid tessellation, the Gaussian curvature at a vertex $x_i$ can be computed from the **angle defect**:\n696: \n697: $$\n698: K(x_i) = \\frac{1}{A_i} \\left( 2\\pi - \\sum_{k \\in \\mathcal{N}_i} \\theta_k \\right)\n699: $$\n700: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

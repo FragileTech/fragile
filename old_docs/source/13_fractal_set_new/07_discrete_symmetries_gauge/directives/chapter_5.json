@@ -1,0 +1,129 @@
+{
+  "chapter_index": 5,
+  "section_id": "## 5. Conservation Laws from Discrete Symmetries",
+  "directive_count": 7,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-graph-conserved-quantities-discrete-sym",
+      "title": "Graph-Theoretic Conserved Quantities",
+      "start_line": 756,
+      "end_line": 790,
+      "header_lines": [
+        757
+      ],
+      "content_start": 759,
+      "content_end": 789,
+      "content": "759: :label: def-graph-conserved-quantities-discrete-sym\n760: \n761: A functional $Q : \\mathcal{F}_t \\to \\mathbb{R}$ is **conserved** if:\n762: \n763: $$\n764: \\mathbb{E}[Q(\\mathcal{F}_{t+\\Delta t}) \\mid \\mathcal{F}_t] = Q(\\mathcal{F}_t)\n765: $$\n766: \n767: for all timesteps $t$.\n768: \n769: **Examples of conserved graph quantities**:\n770: \n771: 1. **Total episode count in a time slice**:\n772: \n773:    $$\n774:    N_{\\text{alive}}(t) = |\\mathcal{A}(t)| = |\\{e \\in \\mathcal{E} : t^{\\rm b}_e \\leq t < t^{\\rm d}_e\\}|\n775:    $$\n776: \n777: 2. **Causal order**:\n778: \n779:    $$\n780:    \\text{Order}(\\mathcal{F}) = \\{(e_i, e_j) : e_i \\prec e_j\\}\n781:    $$\n782: \n783:    The partial order $\\prec$ is **monotonically increasing**: once $e_i \\prec e_j$, this relation persists.\n784: \n785: 3. **Total edge count** (CST + IG):\n786: \n787:    $$\n788:    E_{\\text{total}}(t) = |E_{\\text{CST}}| + |E_{\\text{IG}}|\n789:    $$",
+      "metadata": {
+        "label": "def-graph-conserved-quantities-discrete-sym"
+      },
+      "section": "## 5. Conservation Laws from Discrete Symmetries",
+      "raw_directive": "756: ## 5. Conservation Laws from Discrete Symmetries\n757: \n758: :::{prf:definition} Graph-Theoretic Conserved Quantities\n759: :label: def-graph-conserved-quantities-discrete-sym\n760: \n761: A functional $Q : \\mathcal{F}_t \\to \\mathbb{R}$ is **conserved** if:\n762: \n763: $$\n764: \\mathbb{E}[Q(\\mathcal{F}_{t+\\Delta t}) \\mid \\mathcal{F}_t] = Q(\\mathcal{F}_t)\n765: $$\n766: \n767: for all timesteps $t$.\n768: \n769: **Examples of conserved graph quantities**:\n770: \n771: 1. **Total episode count in a time slice**:\n772: \n773:    $$\n774:    N_{\\text{alive}}(t) = |\\mathcal{A}(t)| = |\\{e \\in \\mathcal{E} : t^{\\rm b}_e \\leq t < t^{\\rm d}_e\\}|\n775:    $$\n776: \n777: 2. **Causal order**:\n778: \n779:    $$\n780:    \\text{Order}(\\mathcal{F}) = \\{(e_i, e_j) : e_i \\prec e_j\\}\n781:    $$\n782: \n783:    The partial order $\\prec$ is **monotonically increasing**: once $e_i \\prec e_j$, this relation persists.\n784: \n785: 3. **Total edge count** (CST + IG):\n786: \n787:    $$\n788:    E_{\\text{total}}(t) = |E_{\\text{CST}}| + |E_{\\text{IG}}|\n789:    $$\n790: "
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-episode-count-conservation-discrete-sym",
+      "title": "Episode Count Conservation",
+      "start_line": 792,
+      "end_line": 802,
+      "header_lines": [
+        793
+      ],
+      "content_start": 795,
+      "content_end": 801,
+      "content": "795: :label: prop-episode-count-conservation-discrete-sym\n796: \n797: At each timestep $t$, the number of alive episodes equals the number of walkers:\n798: \n799: $$\n800: |\\mathcal{A}(t)| = N\n801: $$",
+      "metadata": {
+        "label": "prop-episode-count-conservation-discrete-sym"
+      },
+      "section": "## 5. Conservation Laws from Discrete Symmetries",
+      "raw_directive": "792: :::\n793: \n794: :::{prf:proposition} Episode Count Conservation\n795: :label: prop-episode-count-conservation-discrete-sym\n796: \n797: At each timestep $t$, the number of alive episodes equals the number of walkers:\n798: \n799: $$\n800: |\\mathcal{A}(t)| = N\n801: $$\n802: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-49",
+      "title": null,
+      "start_line": 804,
+      "end_line": 806,
+      "header_lines": [],
+      "content_start": 805,
+      "content_end": 805,
+      "content": "805: ",
+      "metadata": {},
+      "section": "## 5. Conservation Laws from Discrete Symmetries",
+      "raw_directive": "804: :::\n805: \n806: :::{prf:proof}"
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-edge-growth-bound-discrete-sym",
+      "title": "Edge Growth Bound",
+      "start_line": 808,
+      "end_line": 832,
+      "header_lines": [
+        809
+      ],
+      "content_start": 811,
+      "content_end": 831,
+      "content": "811: :label: prop-edge-growth-bound-discrete-sym\n812: \n813: The rate of edge creation in the Fractal Set is bounded by:\n814: \n815: $$\n816: \\frac{d}{dt} |E_{\\text{CST}} \\cup E_{\\text{IG}}| \\leq C_{\\text{clone}} N + C_{\\text{select}} N^2\n817: $$\n818: \n819: where:\n820: - $C_{\\text{clone}}$: Cloning rate per walker (CST edges)\n821: - $C_{\\text{select}}$: Selection coupling rate (IG edges)\n822: \n823: **CST edges**:\n824: \n825: $$\n826: \\frac{d}{dt} |E_{\\text{CST}}| \\leq C_{\\text{clone}} N\n827: $$\n828: \n829: **IG edges**:\n830: \n831: $$",
+      "metadata": {
+        "label": "prop-edge-growth-bound-discrete-sym"
+      },
+      "section": "## 5. Conservation Laws from Discrete Symmetries",
+      "raw_directive": "808: :::\n809: \n810: :::{prf:proposition} Edge Growth Bound\n811: :label: prop-edge-growth-bound-discrete-sym\n812: \n813: The rate of edge creation in the Fractal Set is bounded by:\n814: \n815: $$\n816: \\frac{d}{dt} |E_{\\text{CST}} \\cup E_{\\text{IG}}| \\leq C_{\\text{clone}} N + C_{\\text{select}} N^2\n817: $$\n818: \n819: where:\n820: - $C_{\\text{clone}}$: Cloning rate per walker (CST edges)\n821: - $C_{\\text{select}}$: Selection coupling rate (IG edges)\n822: \n823: **CST edges**:\n824: \n825: $$\n826: \\frac{d}{dt} |E_{\\text{CST}}| \\leq C_{\\text{clone}} N\n827: $$\n828: \n829: **IG edges**:\n830: \n831: $$\n832: \\frac{d}{dt} |E_{\\text{IG}}| \\leq C_{\\text{select}} \\binom{N}{2} \\sim C_{\\text{select}} N^2"
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-79",
+      "title": null,
+      "start_line": 834,
+      "end_line": 840,
+      "header_lines": [],
+      "content_start": 835,
+      "content_end": 839,
+      "content": "835: \n836: :::{prf:proof}\n837: **CST edges**: Each cloning event creates one parent \u2192 child edge. Maximum cloning rate is $N$ events per timestep.\n838: \n839: **IG edges**: Each cloning event creates a complete graph on the alive set $\\mathcal{A}(t)$. Number of edges in a clique of size $N$ is $\\binom{N}{2} = O(N^2)$.",
+      "metadata": {},
+      "section": "## 5. Conservation Laws from Discrete Symmetries",
+      "raw_directive": "834: :::\n835: \n836: :::{prf:proof}\n837: **CST edges**: Each cloning event creates one parent \u2192 child edge. Maximum cloning rate is $N$ events per timestep.\n838: \n839: **IG edges**: Each cloning event creates a complete graph on the alive set $\\mathcal{A}(t)$. Number of edges in a clique of size $N$ is $\\binom{N}{2} = O(N^2)$.\n840: "
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-noether-correspondence-discrete-sym",
+      "title": "Correspondence between Discrete Symmetries and Conserved Quantities",
+      "start_line": 842,
+      "end_line": 863,
+      "header_lines": [
+        843
+      ],
+      "content_start": 845,
+      "content_end": 862,
+      "content": "845: :label: prop-noether-correspondence-discrete-sym\n846: \n847: Each discrete symmetry of the Fractal Set has a corresponding conserved or quasi-conserved quantity, in analogy with Noether's theorem for continuous symmetries.\n848: \n849: | **Symmetry** | **Conserved Quantity** | **Justification** |\n850: |--------------|------------------------|-------------------|\n851: | Episode permutation $S_{|\\mathcal{E}|}$ | Graph isomorphism class | {prf:ref}`thm-discrete-permutation-invariance-discrete-sym`: All graph functionals are invariant under relabeling |\n852: | Translation $T_a$ | Center of mass of spatial embedding | {prf:ref}`thm-discrete-translation-equivariance-discrete-sym`: Translation equivariance implies $\\mathbb{E}[\\Phi_{\\text{COM}}(\\mathcal{F}_{t+\\Delta t})] = \\mathbb{E}[\\Phi_{\\text{COM}}(\\mathcal{F}_t)] + a$ |\n853: | Rotation $SO(d)$ | Angular momentum (if velocity included) | {prf:ref}`cor-discrete-rotational-equivariance-discrete-sym`: Rotational equivariance implies conservation of total angular momentum about the origin |\n854: | Time-translation | Episode count per time slice | {prf:ref}`prop-episode-count-conservation-discrete-sym`: Exactly $N$ alive episodes at each timestep |\n855: \n856: **Heuristic arguments**:\n857: \n858: 1. **Translation**: Define the center of mass as $\\Phi_{\\text{COM}}(\\mathcal{F}) = \\frac{1}{|\\mathcal{E}|} \\sum_{e \\in \\mathcal{E}} \\Phi(e)$. Translation equivariance of the dynamics ensures this quantity shifts by exactly $a$ under $T_a$, implying conservation of the center of mass in the comoving frame.\n859: \n860: 2. **Rotation**: If velocity is included in the embedding, define total angular momentum as $L(\\mathcal{F}) = \\sum_{e \\in \\mathcal{E}} \\Phi(e) \\times v_e$. Rotational equivariance implies this quantity is conserved (up to dissipation from friction).\n861: \n862: 3. **Time-translation**: The population regulation mechanism ({prf:ref}`prop-episode-count-conservation-discrete-sym`) ensures exactly $N$ episodes are alive at each time, a discrete analogue of probability conservation.",
+      "metadata": {
+        "label": "prop-noether-correspondence-discrete-sym"
+      },
+      "section": "## 5. Conservation Laws from Discrete Symmetries",
+      "raw_directive": "842: :::\n843: \n844: :::{prf:proposition} Correspondence between Discrete Symmetries and Conserved Quantities\n845: :label: prop-noether-correspondence-discrete-sym\n846: \n847: Each discrete symmetry of the Fractal Set has a corresponding conserved or quasi-conserved quantity, in analogy with Noether's theorem for continuous symmetries.\n848: \n849: | **Symmetry** | **Conserved Quantity** | **Justification** |\n850: |--------------|------------------------|-------------------|\n851: | Episode permutation $S_{|\\mathcal{E}|}$ | Graph isomorphism class | {prf:ref}`thm-discrete-permutation-invariance-discrete-sym`: All graph functionals are invariant under relabeling |\n852: | Translation $T_a$ | Center of mass of spatial embedding | {prf:ref}`thm-discrete-translation-equivariance-discrete-sym`: Translation equivariance implies $\\mathbb{E}[\\Phi_{\\text{COM}}(\\mathcal{F}_{t+\\Delta t})] = \\mathbb{E}[\\Phi_{\\text{COM}}(\\mathcal{F}_t)] + a$ |\n853: | Rotation $SO(d)$ | Angular momentum (if velocity included) | {prf:ref}`cor-discrete-rotational-equivariance-discrete-sym`: Rotational equivariance implies conservation of total angular momentum about the origin |\n854: | Time-translation | Episode count per time slice | {prf:ref}`prop-episode-count-conservation-discrete-sym`: Exactly $N$ alive episodes at each timestep |\n855: \n856: **Heuristic arguments**:\n857: \n858: 1. **Translation**: Define the center of mass as $\\Phi_{\\text{COM}}(\\mathcal{F}) = \\frac{1}{|\\mathcal{E}|} \\sum_{e \\in \\mathcal{E}} \\Phi(e)$. Translation equivariance of the dynamics ensures this quantity shifts by exactly $a$ under $T_a$, implying conservation of the center of mass in the comoving frame.\n859: \n860: 2. **Rotation**: If velocity is included in the embedding, define total angular momentum as $L(\\mathcal{F}) = \\sum_{e \\in \\mathcal{E}} \\Phi(e) \\times v_e$. Rotational equivariance implies this quantity is conserved (up to dissipation from friction).\n861: \n862: 3. **Time-translation**: The population regulation mechanism ({prf:ref}`prop-episode-count-conservation-discrete-sym`) ensures exactly $N$ episodes are alive at each time, a discrete analogue of probability conservation.\n863: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-110",
+      "title": "Comparison to Continuous Conservation Laws",
+      "start_line": 865,
+      "end_line": 878,
+      "header_lines": [
+        866
+      ],
+      "content_start": 868,
+      "content_end": 877,
+      "content": "868: :class: note\n869: \n870: **Chapter 9 (Continuous)** vs **This Chapter (Discrete)**:\n871: \n872: | Quantity | Continuous (Ch 9) | Discrete (This Ch) |\n873: |----------|-------------------|-------------------|\n874: | Walker count | $N_{\\text{alive}}(t) = N$ | $\\|\\mathcal{A}(t)\\| = N$ |\n875: | Total probability | $\\int \\mathcal{P}_t(d\\mathcal{S}) = 1$ | $\\sum_{e \\in \\mathcal{E}} P(e \\text{ alive at } t) = 1$ |\n876: | Angular momentum | $\\langle L(t) \\rangle = \\langle L(0) \\rangle e^{-\\gamma t}$ | No direct analogue (velocity not in CST) |\n877: | Energy | Non-conserved (dissipative) | Edge count grows (information accumulation) |",
+      "metadata": {
+        "class": "note"
+      },
+      "section": "## 5. Conservation Laws from Discrete Symmetries",
+      "raw_directive": "865: :::\n866: \n867: :::{prf:remark} Comparison to Continuous Conservation Laws\n868: :class: note\n869: \n870: **Chapter 9 (Continuous)** vs **This Chapter (Discrete)**:\n871: \n872: | Quantity | Continuous (Ch 9) | Discrete (This Ch) |\n873: |----------|-------------------|-------------------|\n874: | Walker count | $N_{\\text{alive}}(t) = N$ | $\\|\\mathcal{A}(t)\\| = N$ |\n875: | Total probability | $\\int \\mathcal{P}_t(d\\mathcal{S}) = 1$ | $\\sum_{e \\in \\mathcal{E}} P(e \\text{ alive at } t) = 1$ |\n876: | Angular momentum | $\\langle L(t) \\rangle = \\langle L(0) \\rangle e^{-\\gamma t}$ | No direct analogue (velocity not in CST) |\n877: | Energy | Non-conserved (dissipative) | Edge count grows (information accumulation) |\n878: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "chapter_index": 9,
+  "section_id": "## Part 7: Computational Algorithms",
+  "directive_count": 3,
+  "hints": [
+    {
+      "directive_type": "algorithm",
+      "label": "alg-central-charge-extraction",
+      "title": "Central Charge Extraction from Swarm Trajectories",
+      "start_line": 3946,
+      "end_line": 3997,
+      "header_lines": [
+        3947
+      ],
+      "content_start": 3949,
+      "content_end": 3996,
+      "content": "3949: :label: alg-central-charge-extraction\n3950: \n3951: **Input:**\n3952: - Swarm trajectory $\\{S(t_1), \\ldots, S(t_M)\\}$ sampled from QSD\n3953: - Regularization parameter $\\epsilon$ (typically $\\epsilon \\sim N^{-1/2}$)\n3954: - Separation scale $\\delta z$ for OPE analysis\n3955: \n3956: **Step 1: Compute Empirical Stress-Energy Tensor**\n3957: \n3958: For each snapshot $S(t)$, compute $\\hat{T}_{zz}(w)$ at a grid of points $w \\in \\mathcal{X}$:\n3959: \n3960: $$\n3961: \\hat{T}_{zz}(w) = \\sum_{i \\in \\mathcal{A}(S)} v_{iz}^2 \\rho_\\epsilon(w - z_i)\n3962: $$\n3963: \n3964: where $v_{iz} = v_{ix} - i v_{iy}$ and $\\rho_\\epsilon$ is the Gaussian regularization kernel.\n3965: \n3966: **Step 2: Compute Two-Point Correlator**\n3967: \n3968: For pairs of points $(w_1, w_2)$ with separation $|w_1 - w_2| = \\delta z$:\n3969: \n3970: $$\n3971: C_2(\\delta z) = \\frac{1}{M \\cdot N_{\\text{pairs}}} \\sum_{t} \\sum_{\\text{pairs}} \\hat{T}_{zz}(w_1, t) \\hat{T}_{zz}(w_2, t)\n3972: $$\n3973: \n3974: **Step 3: Fit to CFT Form**\n3975: \n3976: The CFT prediction is:\n3977: \n3978: $$\n3979: C_2(\\delta z) \\sim \\frac{c/2}{(\\delta z)^4} + \\frac{A}{(\\delta z)^2} + B\n3980: $$\n3981: \n3982: Perform a non-linear least-squares fit to extract coefficients $(c, A, B)$.\n3983: \n3984: **Step 4: Extract Central Charge**\n3985: \n3986: $$\n3987: c_{\\text{measured}} = 2 \\cdot \\text{coefficient of } (\\delta z)^{-4}\n3988: $$\n3989: \n3990: **Step 5: Error Estimation**\n3991: \n3992: Bootstrap over time samples to estimate uncertainty:\n3993: \n3994: $$\n3995: \\sigma_c = \\text{std}\\left(\\{c_{\\text{boot}}^{(k)}\\}_{k=1}^{N_{\\text{boot}}}\\right)\n3996: $$",
+      "metadata": {
+        "label": "alg-central-charge-extraction"
+      },
+      "section": "## Part 7: Computational Algorithms",
+      "raw_directive": "3946: Building on {prf:ref}`thm-swarm-central-charge`, here's a complete algorithm for extracting $c$ from swarm data:\n3947: \n3948: :::{prf:algorithm} Central Charge Extraction from Swarm Trajectories\n3949: :label: alg-central-charge-extraction\n3950: \n3951: **Input:**\n3952: - Swarm trajectory $\\{S(t_1), \\ldots, S(t_M)\\}$ sampled from QSD\n3953: - Regularization parameter $\\epsilon$ (typically $\\epsilon \\sim N^{-1/2}$)\n3954: - Separation scale $\\delta z$ for OPE analysis\n3955: \n3956: **Step 1: Compute Empirical Stress-Energy Tensor**\n3957: \n3958: For each snapshot $S(t)$, compute $\\hat{T}_{zz}(w)$ at a grid of points $w \\in \\mathcal{X}$:\n3959: \n3960: $$\n3961: \\hat{T}_{zz}(w) = \\sum_{i \\in \\mathcal{A}(S)} v_{iz}^2 \\rho_\\epsilon(w - z_i)\n3962: $$\n3963: \n3964: where $v_{iz} = v_{ix} - i v_{iy}$ and $\\rho_\\epsilon$ is the Gaussian regularization kernel.\n3965: \n3966: **Step 2: Compute Two-Point Correlator**\n3967: \n3968: For pairs of points $(w_1, w_2)$ with separation $|w_1 - w_2| = \\delta z$:\n3969: \n3970: $$\n3971: C_2(\\delta z) = \\frac{1}{M \\cdot N_{\\text{pairs}}} \\sum_{t} \\sum_{\\text{pairs}} \\hat{T}_{zz}(w_1, t) \\hat{T}_{zz}(w_2, t)\n3972: $$\n3973: \n3974: **Step 3: Fit to CFT Form**\n3975: \n3976: The CFT prediction is:\n3977: \n3978: $$\n3979: C_2(\\delta z) \\sim \\frac{c/2}{(\\delta z)^4} + \\frac{A}{(\\delta z)^2} + B\n3980: $$\n3981: \n3982: Perform a non-linear least-squares fit to extract coefficients $(c, A, B)$.\n3983: \n3984: **Step 4: Extract Central Charge**\n3985: \n3986: $$\n3987: c_{\\text{measured}} = 2 \\cdot \\text{coefficient of } (\\delta z)^{-4}\n3988: $$\n3989: \n3990: **Step 5: Error Estimation**\n3991: \n3992: Bootstrap over time samples to estimate uncertainty:\n3993: \n3994: $$\n3995: \\sigma_c = \\text{std}\\left(\\{c_{\\text{boot}}^{(k)}\\}_{k=1}^{N_{\\text{boot}}}\\right)\n3996: $$\n3997: "
+    },
+    {
+      "directive_type": "algorithm",
+      "label": "alg-ward-identity-verification",
+      "title": "Ward Identity Verification",
+      "start_line": 4033,
+      "end_line": 4080,
+      "header_lines": [
+        4034
+      ],
+      "content_start": 4036,
+      "content_end": 4079,
+      "content": "4036: :label: alg-ward-identity-verification\n4037: \n4038: **Input:**\n4039: - Swarm observable $\\mathcal{O}(z)$ (e.g., particle density $\\rho(z)$)\n4040: - Conformal map $f: z \\to w = f(z)$\n4041: - Swarm trajectory data\n4042: \n4043: **Step 1: Compute Correlator in Original Coordinates**\n4044: \n4045: For pairs of points $(z_1, z_2)$:\n4046: \n4047: $$\n4048: C_{zz}(z_1, z_2) = \\langle \\mathcal{O}(z_1) \\mathcal{O}(z_2) \\rangle_{\\text{QSD}}\n4049: $$\n4050: \n4051: **Step 2: Transform to New Coordinates**\n4052: \n4053: Map points: $w_i = f(z_i)$\n4054: \n4055: Compute Jacobian factors: $J_i = |f'(z_i)|^{2h}$ where $h$ is the conformal weight\n4056: \n4057: **Step 3: Compute Correlator in Transformed Coordinates**\n4058: \n4059: $$\n4060: C_{ww}(w_1, w_2) = \\langle \\mathcal{O}(w_1) \\mathcal{O}(w_2) \\rangle_{\\text{QSD}}\n4061: $$\n4062: \n4063: **Step 4: Test Ward Identity**\n4064: \n4065: Check if:\n4066: \n4067: $$\n4068: \\frac{C_{ww}(w_1, w_2)}{J_1 J_2} \\stackrel{?}{\\approx} C_{zz}(z_1, z_2)\n4069: $$\n4070: \n4071: Compute relative error:\n4072: \n4073: $$\n4074: \\text{Error} = \\left|\\frac{C_{ww}/(J_1 J_2) - C_{zz}}{C_{zz}}\\right|\n4075: $$\n4076: \n4077: **Step 5: Statistical Test**\n4078: \n4079: Repeat for many pairs and test $H_0$: Error $\\le$ tolerance (e.g., 10%)",
+      "metadata": {
+        "label": "alg-ward-identity-verification"
+      },
+      "section": "## Part 7: Computational Algorithms",
+      "raw_directive": "4033: To test {prf:ref}`thm-swarm-ward-identities`, we verify that correlation functions transform correctly under conformal maps:\n4034: \n4035: :::{prf:algorithm} Ward Identity Verification\n4036: :label: alg-ward-identity-verification\n4037: \n4038: **Input:**\n4039: - Swarm observable $\\mathcal{O}(z)$ (e.g., particle density $\\rho(z)$)\n4040: - Conformal map $f: z \\to w = f(z)$\n4041: - Swarm trajectory data\n4042: \n4043: **Step 1: Compute Correlator in Original Coordinates**\n4044: \n4045: For pairs of points $(z_1, z_2)$:\n4046: \n4047: $$\n4048: C_{zz}(z_1, z_2) = \\langle \\mathcal{O}(z_1) \\mathcal{O}(z_2) \\rangle_{\\text{QSD}}\n4049: $$\n4050: \n4051: **Step 2: Transform to New Coordinates**\n4052: \n4053: Map points: $w_i = f(z_i)$\n4054: \n4055: Compute Jacobian factors: $J_i = |f'(z_i)|^{2h}$ where $h$ is the conformal weight\n4056: \n4057: **Step 3: Compute Correlator in Transformed Coordinates**\n4058: \n4059: $$\n4060: C_{ww}(w_1, w_2) = \\langle \\mathcal{O}(w_1) \\mathcal{O}(w_2) \\rangle_{\\text{QSD}}\n4061: $$\n4062: \n4063: **Step 4: Test Ward Identity**\n4064: \n4065: Check if:\n4066: \n4067: $$\n4068: \\frac{C_{ww}(w_1, w_2)}{J_1 J_2} \\stackrel{?}{\\approx} C_{zz}(z_1, z_2)\n4069: $$\n4070: \n4071: Compute relative error:\n4072: \n4073: $$\n4074: \\text{Error} = \\left|\\frac{C_{ww}/(J_1 J_2) - C_{zz}}{C_{zz}}\\right|\n4075: $$\n4076: \n4077: **Step 5: Statistical Test**\n4078: \n4079: Repeat for many pairs and test $H_0$: Error $\\le$ tolerance (e.g., 10%)\n4080: "
+    },
+    {
+      "directive_type": "algorithm",
+      "label": "alg-trace-anomaly-extended",
+      "title": "Trace Anomaly Coefficient (Extended)",
+      "start_line": 4114,
+      "end_line": 4169,
+      "header_lines": [
+        4115
+      ],
+      "content_start": 4117,
+      "content_end": 4168,
+      "content": "4117: :label: alg-trace-anomaly-extended\n4118: \n4119: **Step 1: Compute Trace and Ricci at Each Point**\n4120: \n4121: For each snapshot and grid point $(x, t)$:\n4122: \n4123: 1. Compute metric: $g_{\\mu\\nu}(x, t)$ from local fitness Hessian\n4124: 2. Compute Ricci: $R(x, t)$ using Regge calculus (see [curvature.md](curvature.md))\n4125: 3. Compute stress-energy: $\\hat{T}_{\\mu\\nu}(x, t)$ from walker velocities\n4126: 4. Compute trace: $\\text{Tr}(x, t) = g^{\\mu\\nu}(x, t) \\hat{T}_{\\mu\\nu}(x, t)$\n4127: \n4128: **Step 2: Binning by Ricci Value**\n4129: \n4130: Create bins: $R_1, R_2, \\ldots, R_K$ covering the range $[\\min R, \\max R]$\n4131: \n4132: For each bin $k$, compute:\n4133: \n4134: $$\n4135: \\langle \\text{Tr} \\rangle_{R_k} = \\frac{1}{|B_k|} \\sum_{(x,t) \\in B_k} \\text{Tr}(x, t)\n4136: $$\n4137: \n4138: where $B_k = \\{(x, t) : R(x, t) \\in [R_k - \\Delta R/2, R_k + \\Delta R/2]\\}$\n4139: \n4140: **Step 3: Weighted Linear Regression**\n4141: \n4142: Fit model:\n4143: \n4144: $$\n4145: \\langle \\text{Tr} \\rangle_R = a_0 + a_1 R + a_2 R^2\n4146: $$\n4147: \n4148: with weights $w_k = |B_k|$ (bin size). Include $R^2$ term to capture non-linearities.\n4149: \n4150: **Step 4: Extract Anomaly Coefficient**\n4151: \n4152: $$\n4153: \\beta_{\\text{measured}} = a_1\n4154: $$\n4155: \n4156: **Step 5: Compare with Theory**\n4157: \n4158: Compute theoretical prediction:\n4159: \n4160: $$\n4161: \\beta_{\\text{theory}} = \\frac{c_{\\text{measured}}}{12}\n4162: $$\n4163: \n4164: Test consistency:\n4165: \n4166: $$\n4167: |\\beta_{\\text{measured}} - \\beta_{\\text{theory}}| \\stackrel{?}{<} 2\\sigma_\\beta\n4168: $$",
+      "metadata": {
+        "label": "alg-trace-anomaly-extended"
+      },
+      "section": "## Part 7: Computational Algorithms",
+      "raw_directive": "4114: Implementation of {prf:ref}`alg-trace-anomaly-measurement` with additional details:\n4115: \n4116: :::{prf:algorithm} Trace Anomaly Coefficient (Extended)\n4117: :label: alg-trace-anomaly-extended\n4118: \n4119: **Step 1: Compute Trace and Ricci at Each Point**\n4120: \n4121: For each snapshot and grid point $(x, t)$:\n4122: \n4123: 1. Compute metric: $g_{\\mu\\nu}(x, t)$ from local fitness Hessian\n4124: 2. Compute Ricci: $R(x, t)$ using Regge calculus (see [curvature.md](curvature.md))\n4125: 3. Compute stress-energy: $\\hat{T}_{\\mu\\nu}(x, t)$ from walker velocities\n4126: 4. Compute trace: $\\text{Tr}(x, t) = g^{\\mu\\nu}(x, t) \\hat{T}_{\\mu\\nu}(x, t)$\n4127: \n4128: **Step 2: Binning by Ricci Value**\n4129: \n4130: Create bins: $R_1, R_2, \\ldots, R_K$ covering the range $[\\min R, \\max R]$\n4131: \n4132: For each bin $k$, compute:\n4133: \n4134: $$\n4135: \\langle \\text{Tr} \\rangle_{R_k} = \\frac{1}{|B_k|} \\sum_{(x,t) \\in B_k} \\text{Tr}(x, t)\n4136: $$\n4137: \n4138: where $B_k = \\{(x, t) : R(x, t) \\in [R_k - \\Delta R/2, R_k + \\Delta R/2]\\}$\n4139: \n4140: **Step 3: Weighted Linear Regression**\n4141: \n4142: Fit model:\n4143: \n4144: $$\n4145: \\langle \\text{Tr} \\rangle_R = a_0 + a_1 R + a_2 R^2\n4146: $$\n4147: \n4148: with weights $w_k = |B_k|$ (bin size). Include $R^2$ term to capture non-linearities.\n4149: \n4150: **Step 4: Extract Anomaly Coefficient**\n4151: \n4152: $$\n4153: \\beta_{\\text{measured}} = a_1\n4154: $$\n4155: \n4156: **Step 5: Compare with Theory**\n4157: \n4158: Compute theoretical prediction:\n4159: \n4160: $$\n4161: \\beta_{\\text{theory}} = \\frac{c_{\\text{measured}}}{12}\n4162: $$\n4163: \n4164: Test consistency:\n4165: \n4166: $$\n4167: |\\beta_{\\text{measured}} - \\beta_{\\text{theory}}| \\stackrel{?}{<} 2\\sigma_\\beta\n4168: $$\n4169: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

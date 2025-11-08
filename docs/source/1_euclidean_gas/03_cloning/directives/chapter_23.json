@@ -1,0 +1,119 @@
+{
+  "chapter_index": 23,
+  "section_id": "## 11.2. The Boundary Barrier and Fitness Gradient",
+  "directive_count": 6,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-boundary-potential-recall",
+      "title": "Boundary Potential Component (Recall)",
+      "start_line": 7047,
+      "end_line": 7065,
+      "header_lines": [
+        7048
+      ],
+      "content_start": 7050,
+      "content_end": 7064,
+      "content": "7050: :label: def-boundary-potential-recall\n7051: \n7052: From Definition 3.3.1, the boundary potential is:\n7053: \n7054: $$\n7055: W_b(S_1, S_2) := \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_1)} \\varphi_{\\text{barrier}}(x_{1,i}) + \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_2)} \\varphi_{\\text{barrier}}(x_{2,i})\n7056: $$\n7057: \n7058: where $\\varphi_{\\text{barrier}}: \\mathcal{X}_{\\text{valid}} \\to \\mathbb{R}_{\\geq 0}$ is the smooth barrier function satisfying:\n7059: \n7060: 1. **Interior safety:** $\\varphi_{\\text{barrier}}(x) = 0$ for $x$ in the safe interior region (distance $> \\delta_{\\text{safe}}$ from boundary)\n7061: \n7062: 2. **Boundary growth:** $\\varphi_{\\text{barrier}}(x) \\to \\infty$ as $x \\to \\partial \\mathcal{X}_{\\text{valid}}$\n7063: \n7064: 3. **Smoothness:** $\\varphi_{\\text{barrier}} \\in C^2(\\mathcal{X}_{\\text{valid}})$ with bounded derivatives in the interior",
+      "metadata": {
+        "label": "def-boundary-potential-recall"
+      },
+      "section": "## 11.2. The Boundary Barrier and Fitness Gradient",
+      "raw_directive": "7047: ### 11.2.1. The Barrier Function\n7048: \n7049: :::{prf:definition} Boundary Potential Component (Recall)\n7050: :label: def-boundary-potential-recall\n7051: \n7052: From Definition 3.3.1, the boundary potential is:\n7053: \n7054: $$\n7055: W_b(S_1, S_2) := \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_1)} \\varphi_{\\text{barrier}}(x_{1,i}) + \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_2)} \\varphi_{\\text{barrier}}(x_{2,i})\n7056: $$\n7057: \n7058: where $\\varphi_{\\text{barrier}}: \\mathcal{X}_{\\text{valid}} \\to \\mathbb{R}_{\\geq 0}$ is the smooth barrier function satisfying:\n7059: \n7060: 1. **Interior safety:** $\\varphi_{\\text{barrier}}(x) = 0$ for $x$ in the safe interior region (distance $> \\delta_{\\text{safe}}$ from boundary)\n7061: \n7062: 2. **Boundary growth:** $\\varphi_{\\text{barrier}}(x) \\to \\infty$ as $x \\to \\partial \\mathcal{X}_{\\text{valid}}$\n7063: \n7064: 3. **Smoothness:** $\\varphi_{\\text{barrier}} \\in C^2(\\mathcal{X}_{\\text{valid}})$ with bounded derivatives in the interior\n7065: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-barrier-geometric-penalty",
+      "title": "Barrier Function as Geometric Penalty",
+      "start_line": 7067,
+      "end_line": 7079,
+      "header_lines": [
+        7068
+      ],
+      "content_start": 7070,
+      "content_end": 7078,
+      "content": "7070: :label: rem-barrier-geometric-penalty\n7071: \n7072: The barrier function creates a \"soft wall\" around the boundary:\n7073: \n7074: - **Far from boundary** ($d(x, \\partial \\mathcal{X}_{\\text{valid}}) > \\delta_{\\text{safe}}$): No penalty, $\\varphi_{\\text{barrier}}(x) = 0$\n7075: \n7076: - **Near boundary** ($d(x, \\partial \\mathcal{X}_{\\text{valid}}) \\leq \\delta_{\\text{safe}}$): Penalty increases, reducing fitness\n7077: \n7078: - **At boundary:** Infinite penalty (though walkers at the boundary are dead, so this limit is never realized for alive walkers)",
+      "metadata": {
+        "label": "rem-barrier-geometric-penalty"
+      },
+      "section": "## 11.2. The Boundary Barrier and Fitness Gradient",
+      "raw_directive": "7067: :::\n7068: \n7069: :::{prf:remark} Barrier Function as Geometric Penalty\n7070: :label: rem-barrier-geometric-penalty\n7071: \n7072: The barrier function creates a \"soft wall\" around the boundary:\n7073: \n7074: - **Far from boundary** ($d(x, \\partial \\mathcal{X}_{\\text{valid}}) > \\delta_{\\text{safe}}$): No penalty, $\\varphi_{\\text{barrier}}(x) = 0$\n7075: \n7076: - **Near boundary** ($d(x, \\partial \\mathcal{X}_{\\text{valid}}) \\leq \\delta_{\\text{safe}}$): Penalty increases, reducing fitness\n7077: \n7078: - **At boundary:** Infinite penalty (though walkers at the boundary are dead, so this limit is never realized for alive walkers)\n7079: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-fitness-gradient-boundary",
+      "title": "Fitness Gradient from Boundary Proximity",
+      "start_line": 7091,
+      "end_line": 7107,
+      "header_lines": [
+        7092
+      ],
+      "content_start": 7094,
+      "content_end": 7106,
+      "content": "7094: :label: lem-fitness-gradient-boundary\n7095: \n7096: Consider two walkers $i$ and $j$ with similar positions and velocities, except that walker $i$ is closer to the boundary than walker $j$. Specifically, let:\n7097: \n7098: $$\n7099: \\varphi_{\\text{barrier}}(x_i) - \\varphi_{\\text{barrier}}(x_j) = \\Delta_{\\text{barrier}} > 0\n7100: $$\n7101: \n7102: Then, under the fitness evaluation pipeline (Chapter 5), walker $i$ has systematically lower fitness potential:\n7103: \n7104: $$\n7105: V_{\\text{fit},i} \\leq V_{\\text{fit},j} - f(\\Delta_{\\text{barrier}})\n7106: $$",
+      "metadata": {
+        "label": "lem-fitness-gradient-boundary"
+      },
+      "section": "## 11.2. The Boundary Barrier and Fitness Gradient",
+      "raw_directive": "7091: This raw reward feeds into the fitness potential calculation, so walkers near the boundary have systematically lower fitness.\n7092: \n7093: :::{prf:lemma} Fitness Gradient from Boundary Proximity\n7094: :label: lem-fitness-gradient-boundary\n7095: \n7096: Consider two walkers $i$ and $j$ with similar positions and velocities, except that walker $i$ is closer to the boundary than walker $j$. Specifically, let:\n7097: \n7098: $$\n7099: \\varphi_{\\text{barrier}}(x_i) - \\varphi_{\\text{barrier}}(x_j) = \\Delta_{\\text{barrier}} > 0\n7100: $$\n7101: \n7102: Then, under the fitness evaluation pipeline (Chapter 5), walker $i$ has systematically lower fitness potential:\n7103: \n7104: $$\n7105: V_{\\text{fit},i} \\leq V_{\\text{fit},j} - f(\\Delta_{\\text{barrier}})\n7106: $$\n7107: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-lem-fitness-gradient-boundary",
+      "title": null,
+      "start_line": 7109,
+      "end_line": 7249,
+      "header_lines": [
+        7110
+      ],
+      "content_start": 7111,
+      "content_end": 7248,
+      "content": "7111: :::{prf:proof}\n7112: :label: proof-lem-fitness-gradient-boundary\n7113: **Proof.**\n7114: \n7115: The proof traces the boundary-induced fitness difference through each stage of the measurement and fitness evaluation pipeline defined in Chapter 5, demonstrating that the ordering is preserved and quantifying the resulting gap.\n7116: \n7117: **Step 1: Raw reward difference.**\n7118: \n7119: The raw reward for walker $i$ is defined as (from Section 5.6):\n7120: \n7121: $$\n7122: r_i = R_{\\text{pos}}(x_i) - c_{v\\_reg} \\|v_i\\|^2 - \\varphi_{\\text{barrier}}(x_i)\n7123: $$\n7124: \n7125: where $R_{\\text{pos}}(x_i)$ is the positional reward component and $\\varphi_{\\text{barrier}}(x_i)$ is the boundary barrier penalty.\n7126: \n7127: For walkers $i$ and $j$ with similar positions and velocities (so $R_{\\text{pos}}(x_i) \\approx R_{\\text{pos}}(x_j)$ and $\\|v_i\\| \\approx \\|v_j\\|$), but with walker $i$ closer to the boundary ($\\varphi_{\\text{barrier}}(x_i) > \\varphi_{\\text{barrier}}(x_j)$), the raw reward difference is:\n7128: \n7129: $$\n7130: \\begin{aligned}\n7131: r_i - r_j &= \\left[R_{\\text{pos}}(x_i) - c_{v\\_reg} \\|v_i\\|^2 - \\varphi_{\\text{barrier}}(x_i)\\right] - \\left[R_{\\text{pos}}(x_j) - c_{v\\_reg} \\|v_j\\|^2 - \\varphi_{\\text{barrier}}(x_j)\\right] \\\\\n7132: &\\approx -\\left[\\varphi_{\\text{barrier}}(x_i) - \\varphi_{\\text{barrier}}(x_j)\\right] \\\\\n7133: &= -\\Delta_{\\text{barrier}} < 0\n7134: \\end{aligned}\n7135: $$\n7136: \n7137: Thus, walker $i$ has strictly lower raw reward than walker $j$.\n7138: \n7139: **Step 2: Floor addition preserves ordering.**\n7140: \n7141: The fitness potential construction adds a positive floor $\\eta > 0$ to ensure all values are positive:\n7142: \n7143: $$\n7144: \\tilde{r}_i = r_i + \\eta, \\quad \\tilde{r}_j = r_j + \\eta\n7145: $$\n7146: \n7147: Since adding a constant preserves ordering:\n7148: \n7149: $$\n7150: \\tilde{r}_i - \\tilde{r}_j = (r_i + \\eta) - (r_j + \\eta) = r_i - r_j = -\\Delta_{\\text{barrier}} < 0\n7151: $$\n7152: \n7153: Therefore, $\\tilde{r}_i < \\tilde{r}_j$.\n7154: \n7155: **Step 3: Z-score standardization preserves ordering.**\n7156: \n7157: The standardized Z-scores are computed as (from Section 5.3):\n7158: \n7159: $$\n7160: z_{r,i} = \\frac{\\tilde{r}_i - \\mu_{\\tilde{r}}}{\\sigma'_{\\tilde{r}}}, \\quad z_{r,j} = \\frac{\\tilde{r}_j - \\mu_{\\tilde{r}}}{\\sigma'_{\\tilde{r}}}\n7161: $$\n7162: \n7163: where $\\mu_{\\tilde{r}}$ is the mean and $\\sigma'_{\\tilde{r}} > 0$ is the patched standard deviation (strictly positive by definition).\n7164: \n7165: Since $\\tilde{r}_i < \\tilde{r}_j$ and we're dividing by the same positive quantity:\n7166: \n7167: $$\n7168: z_{r,i} = \\frac{\\tilde{r}_i - \\mu_{\\tilde{r}}}{\\sigma'_{\\tilde{r}}} < \\frac{\\tilde{r}_j - \\mu_{\\tilde{r}}}{\\sigma'_{\\tilde{r}}} = z_{r,j}\n7169: $$\n7170: \n7171: The ordering is preserved: $z_{r,i} < z_{r,j}$.\n7172: \n7173: **Step 4: Fitness potential computation.**\n7174: \n7175: The fitness potential is computed as (from Section 5.7):\n7176: \n7177: $$\n7178: V_{\\text{fit},i} = (\\alpha z_{d,i} + \\beta z_{r,i} + \\eta)^{\\alpha+\\beta}\n7179: $$\n7180: \n7181: where $\\alpha, \\beta > 0$ are the weighting exponents and $\\eta > 0$ ensures positivity of the argument.\n7182: \n7183: Assuming walkers $i$ and $j$ have similar diversity measurements (i.e., $z_{d,i} \\approx z_{d,j}$), the fitness potentials satisfy:\n7184: \n7185: $$\n7186: \\begin{aligned}\n7187: V_{\\text{fit},i} &= (\\alpha z_{d,i} + \\beta z_{r,i} + \\eta)^{\\alpha+\\beta} \\\\\n7188: V_{\\text{fit},j} &= (\\alpha z_{d,j} + \\beta z_{r,j} + \\eta)^{\\alpha+\\beta}\n7189: \\end{aligned}\n7190: $$\n7191: \n7192: Since $z_{r,i} < z_{r,j}$ and $z_{d,i} \\approx z_{d,j}$:\n7193: \n7194: $$\n7195: \\alpha z_{d,i} + \\beta z_{r,i} + \\eta < \\alpha z_{d,j} + \\beta z_{r,j} + \\eta\n7196: $$\n7197: \n7198: The function $f(x) = x^{\\alpha+\\beta}$ is strictly increasing for $x > 0$ and $\\alpha + \\beta > 0$. Therefore:\n7199: \n7200: $$\n7201: V_{\\text{fit},i} < V_{\\text{fit},j}\n7202: $$\n7203: \n7204: **Step 5: Quantifying the fitness gap $f(\\Delta_{\\text{barrier}})$.**\n7205: \n7206: To obtain an explicit lower bound on the fitness gap, we use the mean value theorem. Let:\n7207: \n7208: $$\n7209: u_i := \\alpha z_{d,i} + \\beta z_{r,i} + \\eta, \\quad u_j := \\alpha z_{d,j} + \\beta z_{r,j} + \\eta\n7210: $$\n7211: \n7212: By the mean value theorem, there exists $\\xi \\in (u_i, u_j)$ such that:\n7213: \n7214: $$\n7215: V_{\\text{fit},j} - V_{\\text{fit},i} = (u_j - u_i) \\cdot (\\alpha + \\beta) \\xi^{\\alpha + \\beta - 1}\n7216: $$\n7217: \n7218: The difference in arguments is:\n7219: \n7220: $$\n7221: u_j - u_i = \\beta(z_{r,j} - z_{r,i}) + \\alpha(z_{d,j} - z_{d,i}) \\approx \\beta(z_{r,j} - z_{r,i}) = \\frac{\\beta}{\\sigma'_{\\tilde{r}}}(\\tilde{r}_j - \\tilde{r}_i) = \\frac{\\beta \\Delta_{\\text{barrier}}}{\\sigma'_{\\tilde{r}}}\n7222: $$\n7223: \n7224: Since $u_i, u_j > \\eta > 0$ (by construction), we have $\\xi > \\eta$. The derivative term is bounded below:\n7225: \n7226: $$\n7227: (\\alpha + \\beta) \\xi^{\\alpha + \\beta - 1} \\geq (\\alpha + \\beta) \\eta^{\\alpha + \\beta - 1} > 0\n7228: $$\n7229: \n7230: Therefore, the fitness gap satisfies:\n7231: \n7232: $$\n7233: V_{\\text{fit},j} - V_{\\text{fit},i} \\geq \\frac{\\beta \\Delta_{\\text{barrier}}}{\\sigma'_{\\tilde{r}}} \\cdot (\\alpha + \\beta) \\eta^{\\alpha + \\beta - 1} =: f(\\Delta_{\\text{barrier}})\n7234: $$\n7235: \n7236: **Step 6: N-uniformity of the fitness gap function.**\n7237: \n7238: The function $f(\\Delta) = c_{\\beta} \\Delta$ where:\n7239: \n7240: $$\n7241: c_{\\beta} := \\frac{\\beta (\\alpha + \\beta)}{\\sigma'_{\\max}} \\eta^{\\alpha + \\beta - 1}\n7242: $$\n7243: \n7244: is a positive constant independent of $N$. Here $\\sigma'_{\\max}$ is an upper bound on the patched standard deviation (which exists by the boundedness axioms). The fitness gap scales linearly with the barrier difference, with a proportionality constant determined by the algorithm's reward sensitivity parameter $\\beta$ and the standardization scaling.\n7245: \n7246: **Conclusion:**\n7247: \n7248: The boundary proximity creates a systematic fitness deficit: walker $i$ (closer to boundary) has fitness potential at least $f(\\Delta_{\\text{barrier}})$ lower than walker $j$ (farther from boundary), where $f$ is a positive, N-uniform, monotonically increasing function of the barrier difference.",
+      "metadata": {
+        "label": "proof-lem-fitness-gradient-boundary"
+      },
+      "section": "## 11.2. The Boundary Barrier and Fitness Gradient",
+      "raw_directive": "7109: :::\n7110: \n7111: :::{prf:proof}\n7112: :label: proof-lem-fitness-gradient-boundary\n7113: **Proof.**\n7114: \n7115: The proof traces the boundary-induced fitness difference through each stage of the measurement and fitness evaluation pipeline defined in Chapter 5, demonstrating that the ordering is preserved and quantifying the resulting gap.\n7116: \n7117: **Step 1: Raw reward difference.**\n7118: \n7119: The raw reward for walker $i$ is defined as (from Section 5.6):\n7120: \n7121: $$\n7122: r_i = R_{\\text{pos}}(x_i) - c_{v\\_reg} \\|v_i\\|^2 - \\varphi_{\\text{barrier}}(x_i)\n7123: $$\n7124: \n7125: where $R_{\\text{pos}}(x_i)$ is the positional reward component and $\\varphi_{\\text{barrier}}(x_i)$ is the boundary barrier penalty.\n7126: \n7127: For walkers $i$ and $j$ with similar positions and velocities (so $R_{\\text{pos}}(x_i) \\approx R_{\\text{pos}}(x_j)$ and $\\|v_i\\| \\approx \\|v_j\\|$), but with walker $i$ closer to the boundary ($\\varphi_{\\text{barrier}}(x_i) > \\varphi_{\\text{barrier}}(x_j)$), the raw reward difference is:\n7128: \n7129: $$\n7130: \\begin{aligned}\n7131: r_i - r_j &= \\left[R_{\\text{pos}}(x_i) - c_{v\\_reg} \\|v_i\\|^2 - \\varphi_{\\text{barrier}}(x_i)\\right] - \\left[R_{\\text{pos}}(x_j) - c_{v\\_reg} \\|v_j\\|^2 - \\varphi_{\\text{barrier}}(x_j)\\right] \\\\\n7132: &\\approx -\\left[\\varphi_{\\text{barrier}}(x_i) - \\varphi_{\\text{barrier}}(x_j)\\right] \\\\\n7133: &= -\\Delta_{\\text{barrier}} < 0\n7134: \\end{aligned}\n7135: $$\n7136: \n7137: Thus, walker $i$ has strictly lower raw reward than walker $j$.\n7138: \n7139: **Step 2: Floor addition preserves ordering.**\n7140: \n7141: The fitness potential construction adds a positive floor $\\eta > 0$ to ensure all values are positive:\n7142: \n7143: $$\n7144: \\tilde{r}_i = r_i + \\eta, \\quad \\tilde{r}_j = r_j + \\eta\n7145: $$\n7146: \n7147: Since adding a constant preserves ordering:\n7148: \n7149: $$\n7150: \\tilde{r}_i - \\tilde{r}_j = (r_i + \\eta) - (r_j + \\eta) = r_i - r_j = -\\Delta_{\\text{barrier}} < 0\n7151: $$\n7152: \n7153: Therefore, $\\tilde{r}_i < \\tilde{r}_j$.\n7154: \n7155: **Step 3: Z-score standardization preserves ordering.**\n7156: \n7157: The standardized Z-scores are computed as (from Section 5.3):\n7158: \n7159: $$\n7160: z_{r,i} = \\frac{\\tilde{r}_i - \\mu_{\\tilde{r}}}{\\sigma'_{\\tilde{r}}}, \\quad z_{r,j} = \\frac{\\tilde{r}_j - \\mu_{\\tilde{r}}}{\\sigma'_{\\tilde{r}}}\n7161: $$\n7162: \n7163: where $\\mu_{\\tilde{r}}$ is the mean and $\\sigma'_{\\tilde{r}} > 0$ is the patched standard deviation (strictly positive by definition).\n7164: \n7165: Since $\\tilde{r}_i < \\tilde{r}_j$ and we're dividing by the same positive quantity:\n7166: \n7167: $$\n7168: z_{r,i} = \\frac{\\tilde{r}_i - \\mu_{\\tilde{r}}}{\\sigma'_{\\tilde{r}}} < \\frac{\\tilde{r}_j - \\mu_{\\tilde{r}}}{\\sigma'_{\\tilde{r}}} = z_{r,j}\n7169: $$\n7170: \n7171: The ordering is preserved: $z_{r,i} < z_{r,j}$.\n7172: \n7173: **Step 4: Fitness potential computation.**\n7174: \n7175: The fitness potential is computed as (from Section 5.7):\n7176: \n7177: $$\n7178: V_{\\text{fit},i} = (\\alpha z_{d,i} + \\beta z_{r,i} + \\eta)^{\\alpha+\\beta}\n7179: $$\n7180: \n7181: where $\\alpha, \\beta > 0$ are the weighting exponents and $\\eta > 0$ ensures positivity of the argument.\n7182: \n7183: Assuming walkers $i$ and $j$ have similar diversity measurements (i.e., $z_{d,i} \\approx z_{d,j}$), the fitness potentials satisfy:\n7184: \n7185: $$\n7186: \\begin{aligned}\n7187: V_{\\text{fit},i} &= (\\alpha z_{d,i} + \\beta z_{r,i} + \\eta)^{\\alpha+\\beta} \\\\\n7188: V_{\\text{fit},j} &= (\\alpha z_{d,j} + \\beta z_{r,j} + \\eta)^{\\alpha+\\beta}\n7189: \\end{aligned}\n7190: $$\n7191: \n7192: Since $z_{r,i} < z_{r,j}$ and $z_{d,i} \\approx z_{d,j}$:\n7193: \n7194: $$\n7195: \\alpha z_{d,i} + \\beta z_{r,i} + \\eta < \\alpha z_{d,j} + \\beta z_{r,j} + \\eta\n7196: $$\n7197: \n7198: The function $f(x) = x^{\\alpha+\\beta}$ is strictly increasing for $x > 0$ and $\\alpha + \\beta > 0$. Therefore:\n7199: \n7200: $$\n7201: V_{\\text{fit},i} < V_{\\text{fit},j}\n7202: $$\n7203: \n7204: **Step 5: Quantifying the fitness gap $f(\\Delta_{\\text{barrier}})$.**\n7205: \n7206: To obtain an explicit lower bound on the fitness gap, we use the mean value theorem. Let:\n7207: \n7208: $$\n7209: u_i := \\alpha z_{d,i} + \\beta z_{r,i} + \\eta, \\quad u_j := \\alpha z_{d,j} + \\beta z_{r,j} + \\eta\n7210: $$\n7211: \n7212: By the mean value theorem, there exists $\\xi \\in (u_i, u_j)$ such that:\n7213: \n7214: $$\n7215: V_{\\text{fit},j} - V_{\\text{fit},i} = (u_j - u_i) \\cdot (\\alpha + \\beta) \\xi^{\\alpha + \\beta - 1}\n7216: $$\n7217: \n7218: The difference in arguments is:\n7219: \n7220: $$\n7221: u_j - u_i = \\beta(z_{r,j} - z_{r,i}) + \\alpha(z_{d,j} - z_{d,i}) \\approx \\beta(z_{r,j} - z_{r,i}) = \\frac{\\beta}{\\sigma'_{\\tilde{r}}}(\\tilde{r}_j - \\tilde{r}_i) = \\frac{\\beta \\Delta_{\\text{barrier}}}{\\sigma'_{\\tilde{r}}}\n7222: $$\n7223: \n7224: Since $u_i, u_j > \\eta > 0$ (by construction), we have $\\xi > \\eta$. The derivative term is bounded below:\n7225: \n7226: $$\n7227: (\\alpha + \\beta) \\xi^{\\alpha + \\beta - 1} \\geq (\\alpha + \\beta) \\eta^{\\alpha + \\beta - 1} > 0\n7228: $$\n7229: \n7230: Therefore, the fitness gap satisfies:\n7231: \n7232: $$\n7233: V_{\\text{fit},j} - V_{\\text{fit},i} \\geq \\frac{\\beta \\Delta_{\\text{barrier}}}{\\sigma'_{\\tilde{r}}} \\cdot (\\alpha + \\beta) \\eta^{\\alpha + \\beta - 1} =: f(\\Delta_{\\text{barrier}})\n7234: $$\n7235: \n7236: **Step 6: N-uniformity of the fitness gap function.**\n7237: \n7238: The function $f(\\Delta) = c_{\\beta} \\Delta$ where:\n7239: \n7240: $$\n7241: c_{\\beta} := \\frac{\\beta (\\alpha + \\beta)}{\\sigma'_{\\max}} \\eta^{\\alpha + \\beta - 1}\n7242: $$\n7243: \n7244: is a positive constant independent of $N$. Here $\\sigma'_{\\max}$ is an upper bound on the patched standard deviation (which exists by the boundedness axioms). The fitness gap scales linearly with the barrier difference, with a proportionality constant determined by the algorithm's reward sensitivity parameter $\\beta$ and the standardization scaling.\n7245: \n7246: **Conclusion:**\n7247: \n7248: The boundary proximity creates a systematic fitness deficit: walker $i$ (closer to boundary) has fitness potential at least $f(\\Delta_{\\text{barrier}})$ lower than walker $j$ (farther from boundary), where $f$ is a positive, N-uniform, monotonically increasing function of the barrier difference.\n7249: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-boundary-exposed-set",
+      "title": "The Boundary-Exposed Set",
+      "start_line": 7255,
+      "end_line": 7272,
+      "header_lines": [
+        7256
+      ],
+      "content_start": 7258,
+      "content_end": 7271,
+      "content": "7258: :label: def-boundary-exposed-set\n7259: \n7260: For a swarm $S$ and a threshold $\\phi_{\\text{thresh}} > 0$, the **boundary-exposed set** is:\n7261: \n7262: $$\n7263: \\mathcal{E}_{\\text{boundary}}(S) := \\{i \\in \\mathcal{A}(S) : \\varphi_{\\text{barrier}}(x_i) > \\phi_{\\text{thresh}}\\}\n7264: $$\n7265: \n7266: These are alive walkers whose barrier penalty exceeds the threshold, indicating dangerous proximity to the boundary.\n7267: \n7268: The **boundary-exposed mass** is:\n7269: \n7270: $$\n7271: M_{\\text{boundary}}(S) := \\frac{1}{N} \\sum_{i \\in \\mathcal{E}_{\\text{boundary}}(S)} \\varphi_{\\text{barrier}}(x_i)",
+      "metadata": {
+        "label": "def-boundary-exposed-set"
+      },
+      "section": "## 11.2. The Boundary Barrier and Fitness Gradient",
+      "raw_directive": "7255: We now formalize the set of walkers that are in danger due to boundary proximity.\n7256: \n7257: :::{prf:definition} The Boundary-Exposed Set\n7258: :label: def-boundary-exposed-set\n7259: \n7260: For a swarm $S$ and a threshold $\\phi_{\\text{thresh}} > 0$, the **boundary-exposed set** is:\n7261: \n7262: $$\n7263: \\mathcal{E}_{\\text{boundary}}(S) := \\{i \\in \\mathcal{A}(S) : \\varphi_{\\text{barrier}}(x_i) > \\phi_{\\text{thresh}}\\}\n7264: $$\n7265: \n7266: These are alive walkers whose barrier penalty exceeds the threshold, indicating dangerous proximity to the boundary.\n7267: \n7268: The **boundary-exposed mass** is:\n7269: \n7270: $$\n7271: M_{\\text{boundary}}(S) := \\frac{1}{N} \\sum_{i \\in \\mathcal{E}_{\\text{boundary}}(S)} \\varphi_{\\text{barrier}}(x_i)\n7272: $$"
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-boundary-mass-relationship",
+      "title": "Relationship to Total Boundary Potential",
+      "start_line": 7274,
+      "end_line": 7284,
+      "header_lines": [
+        7275
+      ],
+      "content_start": 7277,
+      "content_end": 7283,
+      "content": "7277: :label: rem-boundary-mass-relationship\n7278: \n7279: If all walkers outside the exposed set have $\\varphi_{\\text{barrier}}(x_i) \\leq \\phi_{\\text{thresh}}$, then:\n7280: \n7281: $$\n7282: W_b(S_k) = \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_k)} \\varphi_{\\text{barrier}}(x_i) \\leq M_{\\text{boundary}}(S_k) + \\frac{k_{\\text{alive}}}{N} \\phi_{\\text{thresh}}\n7283: $$",
+      "metadata": {
+        "label": "rem-boundary-mass-relationship"
+      },
+      "section": "## 11.2. The Boundary Barrier and Fitness Gradient",
+      "raw_directive": "7274: :::\n7275: \n7276: :::{prf:remark} Relationship to Total Boundary Potential\n7277: :label: rem-boundary-mass-relationship\n7278: \n7279: If all walkers outside the exposed set have $\\varphi_{\\text{barrier}}(x_i) \\leq \\phi_{\\text{thresh}}$, then:\n7280: \n7281: $$\n7282: W_b(S_k) = \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_k)} \\varphi_{\\text{barrier}}(x_i) \\leq M_{\\text{boundary}}(S_k) + \\frac{k_{\\text{alive}}}{N} \\phi_{\\text{thresh}}\n7283: $$\n7284: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

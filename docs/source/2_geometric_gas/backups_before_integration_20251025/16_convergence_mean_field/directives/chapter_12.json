@@ -1,0 +1,47 @@
+{
+  "chapter_index": 12,
+  "section_id": "## 7. Gemini's Expert Analysis and Verification",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-revival-kl-expansive",
+      "title": "Revival Operator is KL-Expansive (VERIFIED)",
+      "start_line": 960,
+      "end_line": 970,
+      "header_lines": [
+        961
+      ],
+      "content_start": 963,
+      "content_end": 969,
+      "content": "963: :label: thm-revival-kl-expansive\n964: \n965: The mean-field revival operator $\\mathcal{R}[\\rho, m_d]$ **increases** the KL-divergence to the invariant measure $\\pi$:\n966: \n967: $$\n968: \\frac{d}{dt} D_{\\text{KL}}(\\rho \\| \\pi) \\Big|_{\\text{revival}} > 0 \\quad \\text{for all } \\rho \\neq \\pi, \\, m_d > 0\n969: $$",
+      "metadata": {
+        "label": "thm-revival-kl-expansive"
+      },
+      "section": "## 7. Gemini's Expert Analysis and Verification",
+      "raw_directive": "960: **Conclusion**: Since $D_{\\text{KL}} \\ge 0$, $\\lambda > 0$, $m_d > 0$, and $\\|\\rho\\|_{L^1} > 0$, the entropy production is **strictly positive**.\n961: \n962: :::{prf:theorem} Revival Operator is KL-Expansive (VERIFIED)\n963: :label: thm-revival-kl-expansive\n964: \n965: The mean-field revival operator $\\mathcal{R}[\\rho, m_d]$ **increases** the KL-divergence to the invariant measure $\\pi$:\n966: \n967: $$\n968: \\frac{d}{dt} D_{\\text{KL}}(\\rho \\| \\pi) \\Big|_{\\text{revival}} > 0 \\quad \\text{for all } \\rho \\neq \\pi, \\, m_d > 0\n969: $$\n970: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-joint-not-contractive",
+      "title": "Joint Jump Operator NOT Unconditionally Contractive (VERIFIED)",
+      "start_line": 984,
+      "end_line": 988,
+      "header_lines": [
+        985
+      ],
+      "content_start": 987,
+      "content_end": 987,
+      "content": "987: :label: thm-joint-not-contractive",
+      "metadata": {
+        "label": "thm-joint-not-contractive"
+      },
+      "section": "## 7. Gemini's Expert Analysis and Verification",
+      "raw_directive": "984: - **Negative** when $\\|\\rho\\|_{L^1} > \\frac{\\lambda}{\\lambda + \\kappa}$ (contractive above equilibrium)\n985: \n986: :::{prf:theorem} Joint Jump Operator NOT Unconditionally Contractive (VERIFIED)\n987: :label: thm-joint-not-contractive\n988: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

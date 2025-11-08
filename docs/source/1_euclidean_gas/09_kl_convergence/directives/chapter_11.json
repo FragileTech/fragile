@@ -1,0 +1,101 @@
+{
+  "chapter_index": 11,
+  "section_id": "## 6. KL-Divergence Convergence",
+  "directive_count": 5,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-lsi-implies-kl-convergence",
+      "title": "Exponential KL-Convergence via LSI",
+      "start_line": 1862,
+      "end_line": 1872,
+      "header_lines": [
+        1863
+      ],
+      "content_start": 1865,
+      "content_end": 1871,
+      "content": "1865: :label: thm-lsi-implies-kl-convergence\n1866: \n1867: If a Markov kernel $K$ with invariant measure $\\pi$ satisfies a discrete-time LSI with constant $C_{\\text{LSI}}$, then for any initial distribution $\\mu_0$:\n1868: \n1869: $$\n1870: D_{\\text{KL}}(\\mu_t \\| \\pi) \\le e^{-t/C_{\\text{LSI}}} D_{\\text{KL}}(\\mu_0 \\| \\pi)\n1871: $$",
+      "metadata": {
+        "label": "thm-lsi-implies-kl-convergence"
+      },
+      "section": "## 6. KL-Divergence Convergence",
+      "raw_directive": "1862: ### 6.1. From LSI to Exponential Convergence\n1863: \n1864: :::{prf:theorem} Exponential KL-Convergence via LSI\n1865: :label: thm-lsi-implies-kl-convergence\n1866: \n1867: If a Markov kernel $K$ with invariant measure $\\pi$ satisfies a discrete-time LSI with constant $C_{\\text{LSI}}$, then for any initial distribution $\\mu_0$:\n1868: \n1869: $$\n1870: D_{\\text{KL}}(\\mu_t \\| \\pi) \\le e^{-t/C_{\\text{LSI}}} D_{\\text{KL}}(\\mu_0 \\| \\pi)\n1871: $$\n1872: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-lsi-implies-kl-convergence",
+      "title": null,
+      "start_line": 1874,
+      "end_line": 1894,
+      "header_lines": [
+        1875
+      ],
+      "content_start": 1876,
+      "content_end": 1893,
+      "content": "1876: :::{prf:proof}\n1877: :label: proof-lsi-implies-kl-convergence\n1878: **Step 1: Entropy contraction via LSI**\n1879: \n1880: Let $\\rho_t = d\\mu_t/d\\pi$ be the Radon-Nikodym derivative. The LSI states:\n1881: \n1882: $$\n1883: \\text{Ent}_{\\pi}(\\rho_{t+1}) \\le e^{-1/C_{\\text{LSI}}} \\text{Ent}_{\\pi}(\\rho_t)\n1884: $$\n1885: \n1886: But $\\text{Ent}_{\\pi}(\\rho_t) = D_{\\text{KL}}(\\mu_t \\| \\pi)$.\n1887: \n1888: **Step 2: Iteration**\n1889: \n1890: Applying the LSI recursively:\n1891: \n1892: $$\n1893: D_{\\text{KL}}(\\mu_t \\| \\pi) \\le e^{-t/C_{\\text{LSI}}} D_{\\text{KL}}(\\mu_0 \\| \\pi)",
+      "metadata": {
+        "label": "proof-lsi-implies-kl-convergence"
+      },
+      "section": "## 6. KL-Divergence Convergence",
+      "raw_directive": "1874: :::\n1875: \n1876: :::{prf:proof}\n1877: :label: proof-lsi-implies-kl-convergence\n1878: **Step 1: Entropy contraction via LSI**\n1879: \n1880: Let $\\rho_t = d\\mu_t/d\\pi$ be the Radon-Nikodym derivative. The LSI states:\n1881: \n1882: $$\n1883: \\text{Ent}_{\\pi}(\\rho_{t+1}) \\le e^{-1/C_{\\text{LSI}}} \\text{Ent}_{\\pi}(\\rho_t)\n1884: $$\n1885: \n1886: But $\\text{Ent}_{\\pi}(\\rho_t) = D_{\\text{KL}}(\\mu_t \\| \\pi)$.\n1887: \n1888: **Step 2: Iteration**\n1889: \n1890: Applying the LSI recursively:\n1891: \n1892: $$\n1893: D_{\\text{KL}}(\\mu_t \\| \\pi) \\le e^{-t/C_{\\text{LSI}}} D_{\\text{KL}}(\\mu_0 \\| \\pi)\n1894: $$"
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-main-kl-final",
+      "title": "KL-Convergence of the Euclidean Gas (Main Result)",
+      "start_line": 1900,
+      "end_line": 1922,
+      "header_lines": [
+        1901
+      ],
+      "content_start": 1903,
+      "content_end": 1921,
+      "content": "1903: :label: thm-main-kl-final\n1904: \n1905: For the N-particle Euclidean Gas with parameters satisfying the Foster-Lyapunov conditions of Theorem 8.1 in [06_convergence](06_convergence), the Markov chain\n1906: \n1907: $$\n1908: S_{t+1} = \\Psi_{\\text{total}}(S_t) = (\\Psi_{\\text{kin}}(\\tau) \\circ \\Psi_{\\text{clone}})(S_t)\n1909: $$\n1910: \n1911: converges exponentially fast to the quasi-stationary distribution $\\pi_{\\text{QSD}}$ in relative entropy:\n1912: \n1913: $$\n1914: D_{\\text{KL}}(\\mu_t \\| \\pi_{\\text{QSD}}) \\le e^{-t/C_{\\text{LSI}}} D_{\\text{KL}}(\\mu_0 \\| \\pi_{\\text{QSD}})\n1915: $$\n1916: \n1917: with LSI constant:\n1918: \n1919: $$\n1920: C_{\\text{LSI}} = O\\left(\\frac{1}{\\min(\\gamma, \\kappa_{\\text{conf}}) \\cdot \\kappa_x}\\right)\n1921: $$",
+      "metadata": {
+        "label": "thm-main-kl-final"
+      },
+      "section": "## 6. KL-Divergence Convergence",
+      "raw_directive": "1900: Combining Theorem {prf:ref}`thm-main-lsi-composition` and Theorem {prf:ref}`thm-lsi-implies-kl-convergence`:\n1901: \n1902: :::{prf:theorem} KL-Convergence of the Euclidean Gas (Main Result)\n1903: :label: thm-main-kl-final\n1904: \n1905: For the N-particle Euclidean Gas with parameters satisfying the Foster-Lyapunov conditions of Theorem 8.1 in [06_convergence](06_convergence), the Markov chain\n1906: \n1907: $$\n1908: S_{t+1} = \\Psi_{\\text{total}}(S_t) = (\\Psi_{\\text{kin}}(\\tau) \\circ \\Psi_{\\text{clone}})(S_t)\n1909: $$\n1910: \n1911: converges exponentially fast to the quasi-stationary distribution $\\pi_{\\text{QSD}}$ in relative entropy:\n1912: \n1913: $$\n1914: D_{\\text{KL}}(\\mu_t \\| \\pi_{\\text{QSD}}) \\le e^{-t/C_{\\text{LSI}}} D_{\\text{KL}}(\\mu_0 \\| \\pi_{\\text{QSD}})\n1915: $$\n1916: \n1917: with LSI constant:\n1918: \n1919: $$\n1920: C_{\\text{LSI}} = O\\left(\\frac{1}{\\min(\\gamma, \\kappa_{\\text{conf}}) \\cdot \\kappa_x}\\right)\n1921: $$\n1922: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-main-kl-final",
+      "title": null,
+      "start_line": 1924,
+      "end_line": 1930,
+      "header_lines": [
+        1925
+      ],
+      "content_start": 1926,
+      "content_end": 1929,
+      "content": "1926: :::{prf:proof}\n1927: :label: proof-main-kl-final\n1928: Direct application of:\n1929: 1. Corollary {prf:ref}`cor-quantitative-lsi-final` (explicit LSI constant)",
+      "metadata": {
+        "label": "proof-main-kl-final"
+      },
+      "section": "## 6. KL-Divergence Convergence",
+      "raw_directive": "1924: :::\n1925: \n1926: :::{prf:proof}\n1927: :label: proof-main-kl-final\n1928: Direct application of:\n1929: 1. Corollary {prf:ref}`cor-quantitative-lsi-final` (explicit LSI constant)\n1930: 2. Theorem {prf:ref}`thm-lsi-implies-kl-convergence` (LSI implies KL-convergence)"
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-kl-tv-comparison",
+      "title": "Relationship Between KL and TV Convergence Rates",
+      "start_line": 1934,
+      "end_line": 1952,
+      "header_lines": [
+        1935
+      ],
+      "content_start": 1937,
+      "content_end": 1951,
+      "content": "1937: :label: rem-kl-tv-comparison\n1938: \n1939: The Foster-Lyapunov proof establishes TV convergence with rate $\\lambda_{\\text{TV}}$. The KL convergence rate is:\n1940: \n1941: $$\n1942: \\lambda_{\\text{KL}} = \\frac{1}{C_{\\text{LSI}}} = \\Theta(\\gamma \\kappa_{\\text{conf}} \\kappa_x)\n1943: $$\n1944: \n1945: **Relationship:**\n1946: - KL-convergence **implies** TV-convergence via Pinsker's inequality: $\\|P_t - \\pi\\|_{\\text{TV}} \\le \\sqrt{D_{\\text{KL}}(P_t \\| \\pi)/2}$\n1947: - The rates may differ: typically $\\lambda_{\\text{KL}} \\le \\lambda_{\\text{TV}}$ (KL is stronger, may be slower)\n1948: - For this system, both are $O(\\gamma \\kappa_{\\text{conf}})$, suggesting **matched rates**\n1949: \n1950: **Additional information from KL-convergence:**\n1951: - Gaussian tail bounds via Herbst argument",
+      "metadata": {
+        "label": "rem-kl-tv-comparison"
+      },
+      "section": "## 6. KL-Divergence Convergence",
+      "raw_directive": "1934: ### 6.3. Comparison with Foster-Lyapunov Result\n1935: \n1936: :::{prf:remark} Relationship Between KL and TV Convergence Rates\n1937: :label: rem-kl-tv-comparison\n1938: \n1939: The Foster-Lyapunov proof establishes TV convergence with rate $\\lambda_{\\text{TV}}$. The KL convergence rate is:\n1940: \n1941: $$\n1942: \\lambda_{\\text{KL}} = \\frac{1}{C_{\\text{LSI}}} = \\Theta(\\gamma \\kappa_{\\text{conf}} \\kappa_x)\n1943: $$\n1944: \n1945: **Relationship:**\n1946: - KL-convergence **implies** TV-convergence via Pinsker's inequality: $\\|P_t - \\pi\\|_{\\text{TV}} \\le \\sqrt{D_{\\text{KL}}(P_t \\| \\pi)/2}$\n1947: - The rates may differ: typically $\\lambda_{\\text{KL}} \\le \\lambda_{\\text{TV}}$ (KL is stronger, may be slower)\n1948: - For this system, both are $O(\\gamma \\kappa_{\\text{conf}})$, suggesting **matched rates**\n1949: \n1950: **Additional information from KL-convergence:**\n1951: - Gaussian tail bounds via Herbst argument\n1952: - Concentration of measure around the QSD"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

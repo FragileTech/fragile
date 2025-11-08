@@ -1,0 +1,61 @@
+{
+  "chapter_index": 2,
+  "section_id": "## II. Bipartite Hilbert Space Factorization",
+  "directive_count": 3,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-ig-bipartition",
+      "title": "Spatial Bipartition of IG",
+      "start_line": 125,
+      "end_line": 159,
+      "header_lines": [
+        126
+      ],
+      "content_start": 128,
+      "content_end": 158,
+      "content": "128: :label: def-ig-bipartition\n129: \n130: Let $A \\subset \\mathcal{X}$ be a spatial region with boundary $\\partial A$ (the horizon $H$).\n131: \n132: **Partition walkers** by position:\n133: - $A$-walkers: Those with $x_i \\in A$\n134: - $A^c$-walkers: Those with $x_i \\in A^c = \\mathcal{X} \\setminus A$\n135: \n136: For a state $|N; x_1, v_1, \\ldots, x_N, v_N\\rangle$, let:\n137: - $N_A = |\\{i : x_i \\in A\\}|$ (number in $A$)\n138: - $N_{A^c} = N - N_A$ (number in $A^c$)\n139: \n140: **Hilbert space factorization**:\n141: \n142: $$\n143: \\mathcal{H}_N \\cong \\bigoplus_{N_A=0}^N \\mathcal{H}_{N_A}^A \\otimes \\mathcal{H}_{N - N_A}^{A^c}\n144: $$\n145: \n146: where:\n147: - $\\mathcal{H}_{N_A}^A = L^2(A^{N_A} \\times \\mathcal{V}^{N_A}) / S_{N_A}$\n148: - $\\mathcal{H}_{N_{A^c}}^{A^c} = L^2((A^c)^{N_{A^c}} \\times \\mathcal{V}^{N_{A^c}}) / S_{N_{A^c}}$\n149: \n150: **Full Fock space factorization**:\n151: \n152: $$\n153: \\mathcal{H}_{\\text{IG}} \\cong \\mathcal{H}_A \\otimes \\mathcal{H}_{A^c}\n154: $$\n155: \n156: where:\n157: \n158: $$",
+      "metadata": {
+        "label": "def-ig-bipartition"
+      },
+      "section": "## II. Bipartite Hilbert Space Factorization",
+      "raw_directive": "125: **Goal**: Factorize $\\mathcal{H}_{\\text{IG}}$ into region $A$ and complement $A^c$.\n126: \n127: :::{prf:definition} Spatial Bipartition of IG\n128: :label: def-ig-bipartition\n129: \n130: Let $A \\subset \\mathcal{X}$ be a spatial region with boundary $\\partial A$ (the horizon $H$).\n131: \n132: **Partition walkers** by position:\n133: - $A$-walkers: Those with $x_i \\in A$\n134: - $A^c$-walkers: Those with $x_i \\in A^c = \\mathcal{X} \\setminus A$\n135: \n136: For a state $|N; x_1, v_1, \\ldots, x_N, v_N\\rangle$, let:\n137: - $N_A = |\\{i : x_i \\in A\\}|$ (number in $A$)\n138: - $N_{A^c} = N - N_A$ (number in $A^c$)\n139: \n140: **Hilbert space factorization**:\n141: \n142: $$\n143: \\mathcal{H}_N \\cong \\bigoplus_{N_A=0}^N \\mathcal{H}_{N_A}^A \\otimes \\mathcal{H}_{N - N_A}^{A^c}\n144: $$\n145: \n146: where:\n147: - $\\mathcal{H}_{N_A}^A = L^2(A^{N_A} \\times \\mathcal{V}^{N_A}) / S_{N_A}$\n148: - $\\mathcal{H}_{N_{A^c}}^{A^c} = L^2((A^c)^{N_{A^c}} \\times \\mathcal{V}^{N_{A^c}}) / S_{N_{A^c}}$\n149: \n150: **Full Fock space factorization**:\n151: \n152: $$\n153: \\mathcal{H}_{\\text{IG}} \\cong \\mathcal{H}_A \\otimes \\mathcal{H}_{A^c}\n154: $$\n155: \n156: where:\n157: \n158: $$\n159: \\mathcal{H}_A = \\bigoplus_{N_A=0}^\\infty \\mathcal{H}_{N_A}^A, \\quad \\mathcal{H}_{A^c} = \\bigoplus_{N_{A^c}=0}^\\infty \\mathcal{H}_{N_{A^c}}^{A^c}"
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-jump-hamiltonian-boundary",
+      "title": "Jump Hamiltonian Localization",
+      "start_line": 167,
+      "end_line": 182,
+      "header_lines": [
+        168
+      ],
+      "content_start": 170,
+      "content_end": 181,
+      "content": "170: :label: lem-jump-hamiltonian-boundary\n171: \n172: The jump Hamiltonian has the structure:\n173: \n174: $$\n175: \\mathcal{H}_{\\text{jump}} = \\mathcal{H}_A + \\mathcal{H}_{A^c} + \\mathcal{H}_{\\text{boundary}}\n176: $$\n177: \n178: where:\n179: - $\\mathcal{H}_A$: Terms with $x, y \\in A$ (internal to $A$)\n180: - $\\mathcal{H}_{A^c}$: Terms with $x, y \\in A^c$ (internal to $A^c$)\n181: - $\\mathcal{H}_{\\text{boundary}}$: Terms with $x \\in \\partial A, y$ spans bulk (crossing boundary)",
+      "metadata": {
+        "label": "lem-jump-hamiltonian-boundary"
+      },
+      "section": "## II. Bipartite Hilbert Space Factorization",
+      "raw_directive": "167: **Key observation**: The jump Hamiltonian $\\mathcal{H}_{\\text{jump}}$ measures correlations precisely at the boundary $\\partial A$.\n168: \n169: :::{prf:lemma} Jump Hamiltonian Localization\n170: :label: lem-jump-hamiltonian-boundary\n171: \n172: The jump Hamiltonian has the structure:\n173: \n174: $$\n175: \\mathcal{H}_{\\text{jump}} = \\mathcal{H}_A + \\mathcal{H}_{A^c} + \\mathcal{H}_{\\text{boundary}}\n176: $$\n177: \n178: where:\n179: - $\\mathcal{H}_A$: Terms with $x, y \\in A$ (internal to $A$)\n180: - $\\mathcal{H}_{A^c}$: Terms with $x, y \\in A^c$ (internal to $A^c$)\n181: - $\\mathcal{H}_{\\text{boundary}}$: Terms with $x \\in \\partial A, y$ spans bulk (crossing boundary)\n182: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-64",
+      "title": null,
+      "start_line": 184,
+      "end_line": 202,
+      "header_lines": [],
+      "content_start": 185,
+      "content_end": 201,
+      "content": "185: \n186: :::{prf:proof}\n187: Split the double integral:\n188: \n189: $$\n190: \\mathcal{H}_{\\text{jump}} = \\int_{\\partial A} dx \\int_{\\mathbb{R}^d} dy \\, K_\\varepsilon(x, y) \\rho(x) \\rho(y) F(\\Phi(x) - \\Phi(y))\n191: $$\n192: \n193: where $F(z) = e^{z/2} - 1 - z/2$.\n194: \n195: Since $x \\in \\partial A$ (the horizon) and $y$ ranges over all of $\\mathbb{R}^d$, the integral naturally splits:\n196: - $y \\in A$: Correlations from boundary into $A$\n197: - $y \\in A^c$: Correlations from boundary into $A^c$\n198: \n199: For Gaussian kernel, $K_\\varepsilon(x, y) \\sim \\exp(-\\|x-y\\|^2/(2\\varepsilon_c^2))$ decays exponentially, so only terms with $\\|x - y\\| \\lesssim \\varepsilon_c$ contribute significantly.\n200: \n201: **Boundary dominance**: When $x \\in \\partial A$ and $\\varepsilon_c$ is the correlation length scale, the kernel connects points within distance $\\varepsilon_c$ of the boundary, which includes points on both sides of $\\partial A$.",
+      "metadata": {},
+      "section": "## II. Bipartite Hilbert Space Factorization",
+      "raw_directive": "184: :::\n185: \n186: :::{prf:proof}\n187: Split the double integral:\n188: \n189: $$\n190: \\mathcal{H}_{\\text{jump}} = \\int_{\\partial A} dx \\int_{\\mathbb{R}^d} dy \\, K_\\varepsilon(x, y) \\rho(x) \\rho(y) F(\\Phi(x) - \\Phi(y))\n191: $$\n192: \n193: where $F(z) = e^{z/2} - 1 - z/2$.\n194: \n195: Since $x \\in \\partial A$ (the horizon) and $y$ ranges over all of $\\mathbb{R}^d$, the integral naturally splits:\n196: - $y \\in A$: Correlations from boundary into $A$\n197: - $y \\in A^c$: Correlations from boundary into $A^c$\n198: \n199: For Gaussian kernel, $K_\\varepsilon(x, y) \\sim \\exp(-\\|x-y\\|^2/(2\\varepsilon_c^2))$ decays exponentially, so only terms with $\\|x - y\\| \\lesssim \\varepsilon_c$ contribute significantly.\n200: \n201: **Boundary dominance**: When $x \\in \\partial A$ and $\\varepsilon_c$ is the correlation length scale, the kernel connects points within distance $\\varepsilon_c$ of the boundary, which includes points on both sides of $\\partial A$.\n202: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

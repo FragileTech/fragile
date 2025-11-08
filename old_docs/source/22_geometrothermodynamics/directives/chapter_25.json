@@ -1,0 +1,79 @@
+{
+  "chapter_index": 25,
+  "section_id": "## 7.3 Application to Fractal Set Quantum Field Theory",
+  "directive_count": 4,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-yang-mills-qsd-fractal",
+      "title": "Yang-Mills QSD on Fractal Set",
+      "start_line": 3405,
+      "end_line": 3423,
+      "header_lines": [
+        3406
+      ],
+      "content_start": 3408,
+      "content_end": 3422,
+      "content": "3408: :label: def-yang-mills-qsd-fractal\n3409: \n3410: On the Fractal Set lattice $\\Lambda_{\\text{fractal}}$, the Yang-Mills quantum canonical ensemble is:\n3411: \n3412: $$\n3413: \\hat{\\rho}_{\\text{YM}} = \\frac{1}{Z} \\exp\\left(-\\beta \\hat{H}_{\\text{YM}}\\right)\n3414: $$\n3415: \n3416: where:\n3417: \n3418: $$\n3419: \\hat{H}_{\\text{YM}} = \\sum_{p \\in \\Lambda_{\\text{fractal}}} \\text{Tr}(F_{\\mu\\nu}(p) F^{\\mu\\nu}(p)) + \\sum_{\\ell \\in \\Lambda_{\\text{fractal}}} m^2 \\text{Tr}(A_\\mu(\\ell) A^\\mu(\\ell))\n3420: $$\n3421: \n3422: is the lattice Yang-Mills Hamiltonian with dynamical mass $m$ (Chapter 13, Theorem 13.5.1).",
+      "metadata": {
+        "label": "def-yang-mills-qsd-fractal"
+      },
+      "section": "## 7.3 Application to Fractal Set Quantum Field Theory",
+      "raw_directive": "3405: The Fragile Gas framework on the Fractal Set lattice (Chapter 13) implements a **discrete quantum field theory**. The geometrothermodynamic machinery applies directly.\n3406: \n3407: :::{prf:definition} Yang-Mills QSD on Fractal Set\n3408: :label: def-yang-mills-qsd-fractal\n3409: \n3410: On the Fractal Set lattice $\\Lambda_{\\text{fractal}}$, the Yang-Mills quantum canonical ensemble is:\n3411: \n3412: $$\n3413: \\hat{\\rho}_{\\text{YM}} = \\frac{1}{Z} \\exp\\left(-\\beta \\hat{H}_{\\text{YM}}\\right)\n3414: $$\n3415: \n3416: where:\n3417: \n3418: $$\n3419: \\hat{H}_{\\text{YM}} = \\sum_{p \\in \\Lambda_{\\text{fractal}}} \\text{Tr}(F_{\\mu\\nu}(p) F^{\\mu\\nu}(p)) + \\sum_{\\ell \\in \\Lambda_{\\text{fractal}}} m^2 \\text{Tr}(A_\\mu(\\ell) A^\\mu(\\ell))\n3420: $$\n3421: \n3422: is the lattice Yang-Mills Hamiltonian with dynamical mass $m$ (Chapter 13, Theorem 13.5.1).\n3423: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-quantum-ruppeiner-yang-mills",
+      "title": "Quantum Ruppeiner Metric for Yang-Mills",
+      "start_line": 3425,
+      "end_line": 3442,
+      "header_lines": [
+        3426
+      ],
+      "content_start": 3428,
+      "content_end": 3441,
+      "content": "3428: :label: thm-quantum-ruppeiner-yang-mills\n3429: \n3430: The Ruppeiner metric on the Yang-Mills QSD manifold exhibits temperature-dependent behavior controlled by the **mass gap** $\\Delta_{\\text{YM}}$:\n3431: \n3432: $$\n3433: g_R^{\\beta\\beta} = \\text{Var}(\\hat{H}_{\\text{YM}}) \\sim \\Delta_{\\text{YM}}^2 \\cdot e^{-\\beta \\Delta_{\\text{YM}}}\n3434: $$\n3435: \n3436: **Regime analysis**:\n3437: - **Low temperature** ($\\beta \\Delta_{\\text{YM}} \\gg 1$): Exponential suppression $e^{-\\beta\\Delta} \\to 0$\n3438: - **Critical regime** ($\\beta \\Delta_{\\text{YM}} \\sim O(1)$): Maximum curvature $\\sim \\Delta_{\\text{YM}}^2$\n3439: - **High temperature** ($\\beta \\Delta_{\\text{YM}} \\ll 1$): Classical limit $\\sim \\Delta_{\\text{YM}}^2 (1 - \\beta \\Delta_{\\text{YM}})$\n3440: \n3441: **Physical meaning**: The Ruppeiner curvature peaks at $\\beta \\sim 1/\\Delta_{\\text{YM}}$ (i.e., $T \\sim \\Delta_{\\text{YM}}/k_B$), providing a thermodynamic signature of the mass gap.",
+      "metadata": {
+        "label": "thm-quantum-ruppeiner-yang-mills"
+      },
+      "section": "## 7.3 Application to Fractal Set Quantum Field Theory",
+      "raw_directive": "3425: :::\n3426: \n3427: :::{prf:theorem} Quantum Ruppeiner Metric for Yang-Mills\n3428: :label: thm-quantum-ruppeiner-yang-mills\n3429: \n3430: The Ruppeiner metric on the Yang-Mills QSD manifold exhibits temperature-dependent behavior controlled by the **mass gap** $\\Delta_{\\text{YM}}$:\n3431: \n3432: $$\n3433: g_R^{\\beta\\beta} = \\text{Var}(\\hat{H}_{\\text{YM}}) \\sim \\Delta_{\\text{YM}}^2 \\cdot e^{-\\beta \\Delta_{\\text{YM}}}\n3434: $$\n3435: \n3436: **Regime analysis**:\n3437: - **Low temperature** ($\\beta \\Delta_{\\text{YM}} \\gg 1$): Exponential suppression $e^{-\\beta\\Delta} \\to 0$\n3438: - **Critical regime** ($\\beta \\Delta_{\\text{YM}} \\sim O(1)$): Maximum curvature $\\sim \\Delta_{\\text{YM}}^2$\n3439: - **High temperature** ($\\beta \\Delta_{\\text{YM}} \\ll 1$): Classical limit $\\sim \\Delta_{\\text{YM}}^2 (1 - \\beta \\Delta_{\\text{YM}})$\n3440: \n3441: **Physical meaning**: The Ruppeiner curvature peaks at $\\beta \\sim 1/\\Delta_{\\text{YM}}$ (i.e., $T \\sim \\Delta_{\\text{YM}}/k_B$), providing a thermodynamic signature of the mass gap.\n3442: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-42",
+      "title": null,
+      "start_line": 3444,
+      "end_line": 3481,
+      "header_lines": [],
+      "content_start": 3446,
+      "content_end": 3480,
+      "content": "3446: :::{prf:proof}\n3447: \n3448: **Step 1**: Variance and spectral gap.\n3449: \n3450: The variance of the Hamiltonian is:\n3451: \n3452: $$\n3453: \\text{Var}(\\hat{H}_{\\text{YM}}) = \\sum_n p_n (E_n - \\langle E \\rangle)^2\n3454: $$\n3455: \n3456: where $p_n = e^{-\\beta E_n} / Z$ are the Boltzmann weights for energy levels $E_n$.\n3457: \n3458: **Step 2**: Mass gap dominance.\n3459: \n3460: At low temperature $\\beta \\gg 1$, the dominant contribution comes from the ground state $E_0$ and first excited state $E_1$:\n3461: \n3462: $$\n3463: \\text{Var}(\\hat{H}) \\approx (E_1 - E_0)^2 \\cdot \\frac{e^{-\\beta E_0} e^{-\\beta E_1}}{Z^2} \\sim \\Delta_{\\text{YM}}^2 \\cdot e^{-\\beta \\Delta_{\\text{YM}}}\n3464: $$\n3465: \n3466: where $\\Delta_{\\text{YM}} = E_1 - E_0$ is the mass gap.\n3467: \n3468: **Step 3**: Ruppeiner metric and mass gap dependence.\n3469: \n3470: $$\n3471: g_R^{\\beta\\beta} = \\text{Var}(\\hat{H}) \\sim \\Delta_{\\text{YM}}^2 e^{-\\beta \\Delta_{\\text{YM}}}\n3472: $$\n3473: \n3474: **Regime analysis**:\n3475: \n3476: 1. **Low temperature** ($\\beta \\Delta_{\\text{YM}} \\gg 1$): System frozen in ground state, variance exponentially suppressed\n3477: 2. **Critical regime** ($\\beta \\Delta_{\\text{YM}} \\sim O(1)$): Exponential factor $e^{-O(1)} \\sim O(1)$, giving maximum curvature $\\sim \\Delta_{\\text{YM}}^2$\n3478: 3. **High temperature** ($\\beta \\Delta_{\\text{YM}} \\ll 1$): Expand $e^{-x} \\approx 1 - x$, giving $\\text{Var}(\\hat{H}) \\sim \\Delta_{\\text{YM}}^2(1 - \\beta \\Delta_{\\text{YM}})$\n3479: \n3480: **Physical interpretation**: The Ruppeiner curvature **peaks** at $\\beta \\sim 1/\\Delta_{\\text{YM}}$ (i.e., $T \\sim \\Delta_{\\text{YM}}/k_B$), where thermal fluctuations are maximally sensitive to the spectral gap. This provides a thermodynamic fingerprint of the mass gap.",
+      "metadata": {},
+      "section": "## 7.3 Application to Fractal Set Quantum Field Theory",
+      "raw_directive": "3444: :::\n3445: \n3446: :::{prf:proof}\n3447: \n3448: **Step 1**: Variance and spectral gap.\n3449: \n3450: The variance of the Hamiltonian is:\n3451: \n3452: $$\n3453: \\text{Var}(\\hat{H}_{\\text{YM}}) = \\sum_n p_n (E_n - \\langle E \\rangle)^2\n3454: $$\n3455: \n3456: where $p_n = e^{-\\beta E_n} / Z$ are the Boltzmann weights for energy levels $E_n$.\n3457: \n3458: **Step 2**: Mass gap dominance.\n3459: \n3460: At low temperature $\\beta \\gg 1$, the dominant contribution comes from the ground state $E_0$ and first excited state $E_1$:\n3461: \n3462: $$\n3463: \\text{Var}(\\hat{H}) \\approx (E_1 - E_0)^2 \\cdot \\frac{e^{-\\beta E_0} e^{-\\beta E_1}}{Z^2} \\sim \\Delta_{\\text{YM}}^2 \\cdot e^{-\\beta \\Delta_{\\text{YM}}}\n3464: $$\n3465: \n3466: where $\\Delta_{\\text{YM}} = E_1 - E_0$ is the mass gap.\n3467: \n3468: **Step 3**: Ruppeiner metric and mass gap dependence.\n3469: \n3470: $$\n3471: g_R^{\\beta\\beta} = \\text{Var}(\\hat{H}) \\sim \\Delta_{\\text{YM}}^2 e^{-\\beta \\Delta_{\\text{YM}}}\n3472: $$\n3473: \n3474: **Regime analysis**:\n3475: \n3476: 1. **Low temperature** ($\\beta \\Delta_{\\text{YM}} \\gg 1$): System frozen in ground state, variance exponentially suppressed\n3477: 2. **Critical regime** ($\\beta \\Delta_{\\text{YM}} \\sim O(1)$): Exponential factor $e^{-O(1)} \\sim O(1)$, giving maximum curvature $\\sim \\Delta_{\\text{YM}}^2$\n3478: 3. **High temperature** ($\\beta \\Delta_{\\text{YM}} \\ll 1$): Expand $e^{-x} \\approx 1 - x$, giving $\\text{Var}(\\hat{H}) \\sim \\Delta_{\\text{YM}}^2(1 - \\beta \\Delta_{\\text{YM}})$\n3479: \n3480: **Physical interpretation**: The Ruppeiner curvature **peaks** at $\\beta \\sim 1/\\Delta_{\\text{YM}}$ (i.e., $T \\sim \\Delta_{\\text{YM}}/k_B$), where thermal fluctuations are maximally sensitive to the spectral gap. This provides a thermodynamic fingerprint of the mass gap.\n3481: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-81",
+      "title": "Computational Strategy",
+      "start_line": 3483,
+      "end_line": 3494,
+      "header_lines": [
+        3484
+      ],
+      "content_start": 3486,
+      "content_end": 3493,
+      "content": "3486: :class: tip\n3487: \n3488: **Algorithmic construction**:\n3489: 1. Run the Fragile Gas on gauge field configuration space (Chapter 13, Algorithm 13.6.1)\n3490: 2. Collect QSD samples $\\{\\{A_\\mu^{(k)}\\}\\}_{k=1}^N$ (gauge field configurations)\n3491: 3. Compute quantum observables: $\\langle \\hat{H} \\rangle$, $\\langle \\hat{H}^2 \\rangle$ via path integral Monte Carlo\n3492: 4. Estimate $g_R^{\\beta\\beta} = \\langle \\hat{H}^2 \\rangle - \\langle \\hat{H} \\rangle^2$ (variance)\n3493: 5. Monitor curvature to detect confinement-deconfinement transition",
+      "metadata": {
+        "class": "tip"
+      },
+      "section": "## 7.3 Application to Fractal Set Quantum Field Theory",
+      "raw_directive": "3483: :::\n3484: \n3485: :::{prf:remark} Computational Strategy\n3486: :class: tip\n3487: \n3488: **Algorithmic construction**:\n3489: 1. Run the Fragile Gas on gauge field configuration space (Chapter 13, Algorithm 13.6.1)\n3490: 2. Collect QSD samples $\\{\\{A_\\mu^{(k)}\\}\\}_{k=1}^N$ (gauge field configurations)\n3491: 3. Compute quantum observables: $\\langle \\hat{H} \\rangle$, $\\langle \\hat{H}^2 \\rangle$ via path integral Monte Carlo\n3492: 4. Estimate $g_R^{\\beta\\beta} = \\langle \\hat{H}^2 \\rangle - \\langle \\hat{H} \\rangle^2$ (variance)\n3493: 5. Monitor curvature to detect confinement-deconfinement transition\n3494: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

@@ -1,0 +1,173 @@
+{
+  "chapter_index": 7,
+  "section_id": "## 7. Fixed Points, Lumpability, and Criticality",
+  "directive_count": 9,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-strong-lumpability",
+      "title": "Strong Lumpability",
+      "start_line": 1254,
+      "end_line": 1267,
+      "header_lines": [
+        1255
+      ],
+      "content_start": 1257,
+      "content_end": 1266,
+      "content": "1257: :label: def-strong-lumpability\n1258: \n1259: A partition $\\{\\Sigma_1, \\Sigma_2, \\ldots, \\Sigma_m\\}$ of the micro-state space $\\Omega$ is **strongly lumpable** with respect to the transition kernel $\\mathbb{P}$ if:\n1260: \n1261: $$\n1262: \\mathbb{P}(z, \\Sigma_j) = \\mathbb{P}(z', \\Sigma_j) \\quad \\text{for all } z, z' \\in \\Sigma_i, \\, \\text{all } i, j\n1263: \n1264: $$\n1265: \n1266: **Interpretation:** The transition probabilities between partition classes depend only on the classes, not the specific states within them.",
+      "metadata": {
+        "label": "def-strong-lumpability"
+      },
+      "section": "## 7. Fixed Points, Lumpability, and Criticality",
+      "raw_directive": "1254: It is crucial to distinguish **lumpability** (a property of a single Markov chain) from **RG fixed points** (a property of a sequence of chains under iterated coarse-graining).\n1255: \n1256: :::{prf:definition} Strong Lumpability\n1257: :label: def-strong-lumpability\n1258: \n1259: A partition $\\{\\Sigma_1, \\Sigma_2, \\ldots, \\Sigma_m\\}$ of the micro-state space $\\Omega$ is **strongly lumpable** with respect to the transition kernel $\\mathbb{P}$ if:\n1260: \n1261: $$\n1262: \\mathbb{P}(z, \\Sigma_j) = \\mathbb{P}(z', \\Sigma_j) \\quad \\text{for all } z, z' \\in \\Sigma_i, \\, \\text{all } i, j\n1263: \n1264: $$\n1265: \n1266: **Interpretation:** The transition probabilities between partition classes depend only on the classes, not the specific states within them.\n1267: "
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-closure-implies-lumpability",
+      "title": "Computational Closure Implies Lumpability",
+      "start_line": 1269,
+      "end_line": 1291,
+      "header_lines": [
+        1270
+      ],
+      "content_start": 1272,
+      "content_end": 1290,
+      "content": "1272: :label: prop-closure-implies-lumpability\n1273: \n1274: If the block-spin transformation $\\mathcal{R}_b$ satisfies computational closure, then the partition induced by the projection $\\pi: \\Sigma_\\varepsilon \\to \\tilde{\\Sigma}_\\varepsilon$ is strongly lumpable.\n1275: \n1276: **Proof:**\n1277: \n1278: **Step 1:** By computational closure, the diagram commutes:\n1279: \n1280: $$\n1281: \\pi \\circ T_\\varepsilon = \\tilde{T}_\\varepsilon \\circ \\pi\n1282: \n1283: $$\n1284: \n1285: **Step 2:** This means that for any micro causal states $\\sigma, \\sigma' \\in \\pi^{-1}(\\tilde{\\sigma})$ (same macro causal state):\n1286: \n1287: $$\n1288: \\pi(T_\\varepsilon(\\sigma, a)) = \\tilde{T}_\\varepsilon(\\pi(\\sigma), \\mathcal{R}_b(a)) = \\tilde{T}_\\varepsilon(\\pi(\\sigma'), \\mathcal{R}_b(a)) = \\pi(T_\\varepsilon(\\sigma', a))\n1289: \n1290: $$",
+      "metadata": {
+        "label": "prop-closure-implies-lumpability"
+      },
+      "section": "## 7. Fixed Points, Lumpability, and Criticality",
+      "raw_directive": "1269: :::\n1270: \n1271: :::{prf:proposition} Computational Closure Implies Lumpability\n1272: :label: prop-closure-implies-lumpability\n1273: \n1274: If the block-spin transformation $\\mathcal{R}_b$ satisfies computational closure, then the partition induced by the projection $\\pi: \\Sigma_\\varepsilon \\to \\tilde{\\Sigma}_\\varepsilon$ is strongly lumpable.\n1275: \n1276: **Proof:**\n1277: \n1278: **Step 1:** By computational closure, the diagram commutes:\n1279: \n1280: $$\n1281: \\pi \\circ T_\\varepsilon = \\tilde{T}_\\varepsilon \\circ \\pi\n1282: \n1283: $$\n1284: \n1285: **Step 2:** This means that for any micro causal states $\\sigma, \\sigma' \\in \\pi^{-1}(\\tilde{\\sigma})$ (same macro causal state):\n1286: \n1287: $$\n1288: \\pi(T_\\varepsilon(\\sigma, a)) = \\tilde{T}_\\varepsilon(\\pi(\\sigma), \\mathcal{R}_b(a)) = \\tilde{T}_\\varepsilon(\\pi(\\sigma'), \\mathcal{R}_b(a)) = \\pi(T_\\varepsilon(\\sigma', a))\n1289: \n1290: $$\n1291: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-rg-fixed-point",
+      "title": "RG Fixed Point",
+      "start_line": 1297,
+      "end_line": 1315,
+      "header_lines": [
+        1298
+      ],
+      "content_start": 1300,
+      "content_end": 1314,
+      "content": "1300: :label: def-rg-fixed-point\n1301: \n1302: A parameter value $g^* \\in \\mathcal{G}$ is an **RG fixed point** if:\n1303: \n1304: $$\n1305: \\mathcal{RG}_b(g^*) = g^* \\quad \\text{for all } b > 1\n1306: \n1307: $$\n1308: \n1309: Equivalently, the beta function vanishes:\n1310: \n1311: $$\n1312: \\beta(g^*) = 0\n1313: \n1314: $$",
+      "metadata": {
+        "label": "def-rg-fixed-point"
+      },
+      "section": "## 7. Fixed Points, Lumpability, and Criticality",
+      "raw_directive": "1297: ### 7.2. RG Fixed Points\n1298: \n1299: :::{prf:definition} RG Fixed Point\n1300: :label: def-rg-fixed-point\n1301: \n1302: A parameter value $g^* \\in \\mathcal{G}$ is an **RG fixed point** if:\n1303: \n1304: $$\n1305: \\mathcal{RG}_b(g^*) = g^* \\quad \\text{for all } b > 1\n1306: \n1307: $$\n1308: \n1309: Equivalently, the beta function vanishes:\n1310: \n1311: $$\n1312: \\beta(g^*) = 0\n1313: \n1314: $$\n1315: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-fixed-points-epsilon-machine-isomorphism",
+      "title": "Fixed Points as Parameter Invariance",
+      "start_line": 1317,
+      "end_line": 1347,
+      "header_lines": [
+        1318
+      ],
+      "content_start": 1320,
+      "content_end": 1346,
+      "content": "1320: :label: thm-fixed-points-epsilon-machine-isomorphism\n1321: \n1322: $g^*$ is an RG fixed point if and only if the macro-\u03b5-machine belongs to the same parametric family as the micro-\u03b5-machine with the same parameters:\n1323: \n1324: $$\n1325: (\\tilde{\\Sigma}_\\varepsilon, \\tilde{T}_\\varepsilon) = (\\Sigma_\\varepsilon(g^*), T_\\varepsilon(g^*))\n1326: \n1327: $$\n1328: \n1329: **Crucially:** This does **not** mean the state spaces are identical or that the projection $\\pi: \\Sigma_\\varepsilon \\to \\tilde{\\Sigma}_\\varepsilon$ is bijective. The macro-\u03b5-machine typically has **fewer states** than the micro-\u03b5-machine (information is shed during coarse-graining). The equality refers to the **parametric structure** of the transition probabilities, not the state space cardinality.\n1330: \n1331: **Proof:**\n1332: \n1333: **Step 1 (\u21d2):** Suppose $g^*$ is an RG fixed point, i.e., $\\mathcal{RG}_b(g^*) = g^*$.\n1334: \n1335: **Step 2:** By definition of the RG transformation (Definition {prf:ref}`def-parametrized-epsilon-machine` and Theorem {prf:ref}`thm-rg-flow-epsilon-machine`), $\\mathcal{RG}_b(g)$ is defined such that the macro-\u03b5-machine equals $(\\Sigma_\\varepsilon(g'), T_\\varepsilon(g'))$ where $g' = \\mathcal{RG}_b(g)$.\n1336: \n1337: **Step 3:** At the fixed point, $g' = g^*$, hence:\n1338: \n1339: $$\n1340: (\\tilde{\\Sigma}_\\varepsilon, \\tilde{T}_\\varepsilon) = (\\Sigma_\\varepsilon(g^*), T_\\varepsilon(g^*))\n1341: \n1342: $$\n1343: \n1344: The macro-machine has the same parametric form as the micro-machine.\n1345: \n1346: **Step 4 (\u21d0):** Suppose the macro-\u03b5-machine has the same parametric form as the micro-machine with parameters $g^*$.",
+      "metadata": {
+        "label": "thm-fixed-points-epsilon-machine-isomorphism"
+      },
+      "section": "## 7. Fixed Points, Lumpability, and Criticality",
+      "raw_directive": "1317: :::\n1318: \n1319: :::{prf:theorem} Fixed Points as Parameter Invariance\n1320: :label: thm-fixed-points-epsilon-machine-isomorphism\n1321: \n1322: $g^*$ is an RG fixed point if and only if the macro-\u03b5-machine belongs to the same parametric family as the micro-\u03b5-machine with the same parameters:\n1323: \n1324: $$\n1325: (\\tilde{\\Sigma}_\\varepsilon, \\tilde{T}_\\varepsilon) = (\\Sigma_\\varepsilon(g^*), T_\\varepsilon(g^*))\n1326: \n1327: $$\n1328: \n1329: **Crucially:** This does **not** mean the state spaces are identical or that the projection $\\pi: \\Sigma_\\varepsilon \\to \\tilde{\\Sigma}_\\varepsilon$ is bijective. The macro-\u03b5-machine typically has **fewer states** than the micro-\u03b5-machine (information is shed during coarse-graining). The equality refers to the **parametric structure** of the transition probabilities, not the state space cardinality.\n1330: \n1331: **Proof:**\n1332: \n1333: **Step 1 (\u21d2):** Suppose $g^*$ is an RG fixed point, i.e., $\\mathcal{RG}_b(g^*) = g^*$.\n1334: \n1335: **Step 2:** By definition of the RG transformation (Definition {prf:ref}`def-parametrized-epsilon-machine` and Theorem {prf:ref}`thm-rg-flow-epsilon-machine`), $\\mathcal{RG}_b(g)$ is defined such that the macro-\u03b5-machine equals $(\\Sigma_\\varepsilon(g'), T_\\varepsilon(g'))$ where $g' = \\mathcal{RG}_b(g)$.\n1336: \n1337: **Step 3:** At the fixed point, $g' = g^*$, hence:\n1338: \n1339: $$\n1340: (\\tilde{\\Sigma}_\\varepsilon, \\tilde{T}_\\varepsilon) = (\\Sigma_\\varepsilon(g^*), T_\\varepsilon(g^*))\n1341: \n1342: $$\n1343: \n1344: The macro-machine has the same parametric form as the micro-machine.\n1345: \n1346: **Step 4 (\u21d0):** Suppose the macro-\u03b5-machine has the same parametric form as the micro-machine with parameters $g^*$.\n1347: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-100",
+      "title": "Projection Map at Fixed Points",
+      "start_line": 1349,
+      "end_line": 1375,
+      "header_lines": [
+        1350
+      ],
+      "content_start": 1352,
+      "content_end": 1374,
+      "content": "1352: :class: warning\n1353: \n1354: **Critical clarification:** Even at a fixed point, the projection map $\\pi: \\Sigma_\\varepsilon(g^*) \\to \\tilde{\\Sigma}_\\varepsilon(g^*)$ is generally **not** bijective.\n1355: \n1356: **Reason:** Coarse-graining aggregates micro-causal states into macro-causal states. Many micro-histories that differ in fine details map to the same macro-history. This information loss is irreversible.\n1357: \n1358: **Example:** Consider the free field theory ($g = 0$). Individual particle trajectories are coarse-grained into block-averaged fields. The macro-\u03b5-machine describes the evolution of block variables, which has far fewer states than the micro-machine tracking individual particles.\n1359: \n1360: **What is preserved:** The **functional form** of the transition probabilities. If the micro-kernel is:\n1361: \n1362: $$\n1363: T_\\varepsilon(\\sigma' \\mid \\sigma; g^*) = f(\\sigma, \\sigma'; g^*)\n1364: \n1365: $$\n1366: \n1367: for some function $f$, then the macro-kernel has the same functional form:\n1368: \n1369: $$\n1370: \\tilde{T}_\\varepsilon(\\tilde{\\sigma}' \\mid \\tilde{\\sigma}; g^*) = f(\\tilde{\\sigma}, \\tilde{\\sigma}'; g^*)\n1371: \n1372: $$\n1373: \n1374: (same function $f$, same parameters $g^*$, different state spaces).",
+      "metadata": {
+        "class": "warning"
+      },
+      "section": "## 7. Fixed Points, Lumpability, and Criticality",
+      "raw_directive": "1349: :::\n1350: \n1351: :::{prf:remark} Projection Map at Fixed Points\n1352: :class: warning\n1353: \n1354: **Critical clarification:** Even at a fixed point, the projection map $\\pi: \\Sigma_\\varepsilon(g^*) \\to \\tilde{\\Sigma}_\\varepsilon(g^*)$ is generally **not** bijective.\n1355: \n1356: **Reason:** Coarse-graining aggregates micro-causal states into macro-causal states. Many micro-histories that differ in fine details map to the same macro-history. This information loss is irreversible.\n1357: \n1358: **Example:** Consider the free field theory ($g = 0$). Individual particle trajectories are coarse-grained into block-averaged fields. The macro-\u03b5-machine describes the evolution of block variables, which has far fewer states than the micro-machine tracking individual particles.\n1359: \n1360: **What is preserved:** The **functional form** of the transition probabilities. If the micro-kernel is:\n1361: \n1362: $$\n1363: T_\\varepsilon(\\sigma' \\mid \\sigma; g^*) = f(\\sigma, \\sigma'; g^*)\n1364: \n1365: $$\n1366: \n1367: for some function $f$, then the macro-kernel has the same functional form:\n1368: \n1369: $$\n1370: \\tilde{T}_\\varepsilon(\\tilde{\\sigma}' \\mid \\tilde{\\sigma}; g^*) = f(\\tilde{\\sigma}, \\tilde{\\sigma}'; g^*)\n1371: \n1372: $$\n1373: \n1374: (same function $f$, same parameters $g^*$, different state spaces).\n1375: "
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-asymptotic-freedom-trivial-fixed-point",
+      "title": "Asymptotic Freedom and Trivial Fixed Point",
+      "start_line": 1377,
+      "end_line": 1387,
+      "header_lines": [
+        1378
+      ],
+      "content_start": 1380,
+      "content_end": 1386,
+      "content": "1380: :label: cor-asymptotic-freedom-trivial-fixed-point\n1381: \n1382: For the Fractal Gas gauge theory with $N_f < 11N_c/2$, the beta function satisfies $\\beta(g) < 0$ for $g > 0$. This implies:\n1383: \n1384: 1. **Trivial UV fixed point:** $g^* = 0$ is the unique fixed point in the ultraviolet (short distances).\n1385: 2. **Asymptotic freedom:** $g(a) \\to 0$ as $a \\to 0$.\n1386: 3. **\u03b5-machine interpretation:** As we coarse-grain to shorter distances (finer lattice), the \u03b5-machine approaches a **free theory** (no interactions), which is scale-invariant.",
+      "metadata": {
+        "label": "cor-asymptotic-freedom-trivial-fixed-point"
+      },
+      "section": "## 7. Fixed Points, Lumpability, and Criticality",
+      "raw_directive": "1377: :::\n1378: \n1379: :::{prf:corollary} Asymptotic Freedom and Trivial Fixed Point\n1380: :label: cor-asymptotic-freedom-trivial-fixed-point\n1381: \n1382: For the Fractal Gas gauge theory with $N_f < 11N_c/2$, the beta function satisfies $\\beta(g) < 0$ for $g > 0$. This implies:\n1383: \n1384: 1. **Trivial UV fixed point:** $g^* = 0$ is the unique fixed point in the ultraviolet (short distances).\n1385: 2. **Asymptotic freedom:** $g(a) \\to 0$ as $a \\to 0$.\n1386: 3. **\u03b5-machine interpretation:** As we coarse-grain to shorter distances (finer lattice), the \u03b5-machine approaches a **free theory** (no interactions), which is scale-invariant.\n1387: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-basin-of-attraction",
+      "title": "Basin of Attraction",
+      "start_line": 1391,
+      "end_line": 1402,
+      "header_lines": [
+        1392
+      ],
+      "content_start": 1394,
+      "content_end": 1401,
+      "content": "1394: :label: def-basin-of-attraction\n1395: \n1396: The **basin of attraction** of a fixed point $g^*$ is the set of parameters that flow to $g^*$ under iterated RG:\n1397: \n1398: $$\n1399: \\mathcal{B}(g^*) := \\left\\{ g \\in \\mathcal{G} : \\lim_{n \\to \\infty} \\mathcal{RG}_b^n(g) = g^* \\right\\}\n1400: \n1401: $$",
+      "metadata": {
+        "label": "def-basin-of-attraction"
+      },
+      "section": "## 7. Fixed Points, Lumpability, and Criticality",
+      "raw_directive": "1391: ### 7.3. Universality Classes\n1392: \n1393: :::{prf:definition} Basin of Attraction\n1394: :label: def-basin-of-attraction\n1395: \n1396: The **basin of attraction** of a fixed point $g^*$ is the set of parameters that flow to $g^*$ under iterated RG:\n1397: \n1398: $$\n1399: \\mathcal{B}(g^*) := \\left\\{ g \\in \\mathcal{G} : \\lim_{n \\to \\infty} \\mathcal{RG}_b^n(g) = g^* \\right\\}\n1400: \n1401: $$\n1402: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-universality-class",
+      "title": "Universality Class",
+      "start_line": 1404,
+      "end_line": 1412,
+      "header_lines": [
+        1405
+      ],
+      "content_start": 1407,
+      "content_end": 1411,
+      "content": "1407: :label: def-universality-class\n1408: \n1409: A **universality class** is a basin of attraction $\\mathcal{B}(g^*)$ plus the equivalence class of all \u03b5-machines that flow to the same fixed-point \u03b5-machine.\n1410: \n1411: **Physical interpretation:** All theories in the same universality class exhibit the same **long-distance physics** (same critical exponents, same symmetries) despite differing microscopic details.",
+      "metadata": {
+        "label": "def-universality-class"
+      },
+      "section": "## 7. Fixed Points, Lumpability, and Criticality",
+      "raw_directive": "1404: :::\n1405: \n1406: :::{prf:definition} Universality Class\n1407: :label: def-universality-class\n1408: \n1409: A **universality class** is a basin of attraction $\\mathcal{B}(g^*)$ plus the equivalence class of all \u03b5-machines that flow to the same fixed-point \u03b5-machine.\n1410: \n1411: **Physical interpretation:** All theories in the same universality class exhibit the same **long-distance physics** (same critical exponents, same symmetries) despite differing microscopic details.\n1412: "
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-closure-universality",
+      "title": "Closure and Universality",
+      "start_line": 1414,
+      "end_line": 1420,
+      "header_lines": [
+        1415
+      ],
+      "content_start": 1417,
+      "content_end": 1419,
+      "content": "1417: :label: prop-closure-universality\n1418: \n1419: Two theories $g_1, g_2$ are in the same universality class if and only if their \u03b5-machines, under repeated computational closure (iterated RG flow), converge to isomorphic \u03b5-machines.",
+      "metadata": {
+        "label": "prop-closure-universality"
+      },
+      "section": "## 7. Fixed Points, Lumpability, and Criticality",
+      "raw_directive": "1414: :::\n1415: \n1416: :::{prf:proposition} Closure and Universality\n1417: :label: prop-closure-universality\n1418: \n1419: Two theories $g_1, g_2$ are in the same universality class if and only if their \u03b5-machines, under repeated computational closure (iterated RG flow), converge to isomorphic \u03b5-machines.\n1420: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "chapter_index": 1,
+  "section_id": "## 1. Emergent 4D Lorentzian Spacetime",
+  "directive_count": 5,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-emergent-3d",
+      "title": "Emergent 3D Spatial Structure from Fitness Optimization",
+      "start_line": 37,
+      "end_line": 58,
+      "header_lines": [
+        38
+      ],
+      "content_start": 40,
+      "content_end": 57,
+      "content": "40: :label: thm-emergent-3d\n41: \n42: Consider the Adaptive Gas on a state space $\\mathcal{X} \\subset \\mathbb{R}^d$ with a fitness function $f: \\mathcal{X} \\to \\mathbb{R}$ that has a **3-dimensional critical manifold**:\n43: \n44: $$\n45: \\mathcal{M}_{\\text{crit}} = \\{x \\in \\mathcal{X} : \\nabla f(x) = 0, \\, \\text{rank}(\\nabla^2 f(x)) = d - 3\\}\n46: $$\n47: \n48: **Assumption**: The fitness landscape is constructed such that:\n49: 1. $\\mathcal{M}_{\\text{crit}}$ is a smooth 3-dimensional submanifold\n50: 2. The Hessian $\\nabla^2 f(x)$ has $(d-3)$ eigenvalues $\\lambda_i \\gg 1$ (strong confinement)\n51: 3. The remaining 3 eigenvalues $\\lambda_{d-2}, \\lambda_{d-1}, \\lambda_d = O(1)$ (free directions)\n52: \n53: **Result**: As the algorithm converges to QSD, the empirical measure concentrates on $\\mathcal{M}_{\\text{crit}}$:\n54: \n55: $$\n56: \\lim_{t \\to \\infty} \\int_{\\mathcal{X} \\setminus \\mathcal{M}_{\\text{crit}}} d\\mu_t^{\\text{QSD}} = 0\n57: $$",
+      "metadata": {
+        "label": "thm-emergent-3d"
+      },
+      "section": "## 1. Emergent 4D Lorentzian Spacetime",
+      "raw_directive": "37: ### 1.2. Strategy: Dimensional Reduction via Fitness Landscape\n38: \n39: :::{prf:theorem} Emergent 3D Spatial Structure from Fitness Optimization\n40: :label: thm-emergent-3d\n41: \n42: Consider the Adaptive Gas on a state space $\\mathcal{X} \\subset \\mathbb{R}^d$ with a fitness function $f: \\mathcal{X} \\to \\mathbb{R}$ that has a **3-dimensional critical manifold**:\n43: \n44: $$\n45: \\mathcal{M}_{\\text{crit}} = \\{x \\in \\mathcal{X} : \\nabla f(x) = 0, \\, \\text{rank}(\\nabla^2 f(x)) = d - 3\\}\n46: $$\n47: \n48: **Assumption**: The fitness landscape is constructed such that:\n49: 1. $\\mathcal{M}_{\\text{crit}}$ is a smooth 3-dimensional submanifold\n50: 2. The Hessian $\\nabla^2 f(x)$ has $(d-3)$ eigenvalues $\\lambda_i \\gg 1$ (strong confinement)\n51: 3. The remaining 3 eigenvalues $\\lambda_{d-2}, \\lambda_{d-1}, \\lambda_d = O(1)$ (free directions)\n52: \n53: **Result**: As the algorithm converges to QSD, the empirical measure concentrates on $\\mathcal{M}_{\\text{crit}}$:\n54: \n55: $$\n56: \\lim_{t \\to \\infty} \\int_{\\mathcal{X} \\setminus \\mathcal{M}_{\\text{crit}}} d\\mu_t^{\\text{QSD}} = 0\n57: $$\n58: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-38",
+      "title": null,
+      "start_line": 60,
+      "end_line": 98,
+      "header_lines": [],
+      "content_start": 61,
+      "content_end": 97,
+      "content": "61: \n62: :::{prf:proof}\n63: **Step 1: Confining potential from Hessian.**\n64: \n65: The fitness potential $V_{\\text{fit}}[f_k, \\rho](x)$ constructed via the measurement function satisfies (from {doc}`07_adaptative_gas.md`):\n66: \n67: $$\n68: \\nabla^2 V_{\\text{fit}} = H(x, S)\n69: $$\n70: \n71: With $(d-3)$ large eigenvalues, the potential acts as a **harmonic trap** in $(d-3)$ directions:\n72: \n73: $$\n74: V_{\\text{fit}}(x) \\approx V_0 + \\frac{1}{2} \\sum_{i=1}^{d-3} \\lambda_i (x_i - x_i^*)^2 + O(x_{\\parallel}^2)\n75: $$\n76: \n77: where $x_{\\perp} = (x_1, \\ldots, x_{d-3})$ are transverse modes and $x_{\\parallel} = (x_{d-2}, x_{d-1}, x_d)$ are parallel modes.\n78: \n79: **Step 2: Exponential concentration.**\n80: \n81: From the LSI (Theorem {prf:ref}`thm-lsi-adaptive-gas` in {doc}`10_kl_convergence/10_kl_convergence.md`), the QSD satisfies:\n82: \n83: $$\n84: \\mu^{\\text{QSD}}(x_{\\perp}) \\propto \\exp\\left(-\\frac{\\sum_{i=1}^{d-3} \\lambda_i (x_i - x_i^*)^2}{2T_{\\text{eff}}}\\right)\n85: $$\n86: \n87: For $\\lambda_i \\gg T_{\\text{eff}}$, the measure concentrates in a region of width $\\sigma_{\\perp} \\sim \\sqrt{T_{\\text{eff}}/\\lambda_i} \\to 0$.\n88: \n89: **Step 3: Adiabatic elimination.**\n90: \n91: The transverse modes relax on timescale $\\tau_{\\perp} \\sim 1/\\lambda_i \\ll \\tau_{\\parallel} \\sim 1$. By adiabatic elimination:\n92: \n93: $$\n94: x_{\\perp}(t) \\approx x_{\\perp}^* + O(\\epsilon), \\quad \\epsilon = \\sqrt{T_{\\text{eff}}/\\lambda_i}\n95: $$\n96: \n97: **Step 4: Effective 3D dynamics.**",
+      "metadata": {},
+      "section": "## 1. Emergent 4D Lorentzian Spacetime",
+      "raw_directive": "60: :::\n61: \n62: :::{prf:proof}\n63: **Step 1: Confining potential from Hessian.**\n64: \n65: The fitness potential $V_{\\text{fit}}[f_k, \\rho](x)$ constructed via the measurement function satisfies (from {doc}`07_adaptative_gas.md`):\n66: \n67: $$\n68: \\nabla^2 V_{\\text{fit}} = H(x, S)\n69: $$\n70: \n71: With $(d-3)$ large eigenvalues, the potential acts as a **harmonic trap** in $(d-3)$ directions:\n72: \n73: $$\n74: V_{\\text{fit}}(x) \\approx V_0 + \\frac{1}{2} \\sum_{i=1}^{d-3} \\lambda_i (x_i - x_i^*)^2 + O(x_{\\parallel}^2)\n75: $$\n76: \n77: where $x_{\\perp} = (x_1, \\ldots, x_{d-3})$ are transverse modes and $x_{\\parallel} = (x_{d-2}, x_{d-1}, x_d)$ are parallel modes.\n78: \n79: **Step 2: Exponential concentration.**\n80: \n81: From the LSI (Theorem {prf:ref}`thm-lsi-adaptive-gas` in {doc}`10_kl_convergence/10_kl_convergence.md`), the QSD satisfies:\n82: \n83: $$\n84: \\mu^{\\text{QSD}}(x_{\\perp}) \\propto \\exp\\left(-\\frac{\\sum_{i=1}^{d-3} \\lambda_i (x_i - x_i^*)^2}{2T_{\\text{eff}}}\\right)\n85: $$\n86: \n87: For $\\lambda_i \\gg T_{\\text{eff}}$, the measure concentrates in a region of width $\\sigma_{\\perp} \\sim \\sqrt{T_{\\text{eff}}/\\lambda_i} \\to 0$.\n88: \n89: **Step 3: Adiabatic elimination.**\n90: \n91: The transverse modes relax on timescale $\\tau_{\\perp} \\sim 1/\\lambda_i \\ll \\tau_{\\parallel} \\sim 1$. By adiabatic elimination:\n92: \n93: $$\n94: x_{\\perp}(t) \\approx x_{\\perp}^* + O(\\epsilon), \\quad \\epsilon = \\sqrt{T_{\\text{eff}}/\\lambda_i}\n95: $$\n96: \n97: **Step 4: Effective 3D dynamics.**\n98: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-emergent-lorentz",
+      "title": "Emergent Lorentz Invariance in Continuum Limit",
+      "start_line": 118,
+      "end_line": 141,
+      "header_lines": [
+        119
+      ],
+      "content_start": 121,
+      "content_end": 140,
+      "content": "121: :label: thm-emergent-lorentz\n122: \n123: Consider the continuum limit $\\tau \\to 0$ with the rescaling:\n124: \n125: $$\n126: \\epsilon_c(\\tau) \\sim \\sqrt{\\tau}, \\quad c_{\\text{eff}} := \\frac{\\epsilon_c}{\\tau} = \\text{constant}\n127: $$\n128: \n129: Define the **effective light cone** in the Fractal Set:\n130: \n131: $$\n132: \\mathcal{C}(e) = \\{e' \\in \\mathcal{E} : d_{\\text{CST}}(e, e') \\leq c_{\\text{eff}} \\cdot \\Delta t(e, e')\\}\n133: $$\n134: \n135: where $d_{\\text{CST}}$ is the spatial distance on CST and $\\Delta t$ is the temporal separation.\n136: \n137: **Claim**: In the continuum limit, $\\mathcal{C}(e)$ converges to the **relativistic light cone** with Lorentzian metric:\n138: \n139: $$\n140: ds^2 = -c_{\\text{eff}}^2 dt^2 + dx^2 + dy^2 + dz^2",
+      "metadata": {
+        "label": "thm-emergent-lorentz"
+      },
+      "section": "## 1. Emergent 4D Lorentzian Spacetime",
+      "raw_directive": "118: ### 1.3. Lorentzian Signature from Relativistic Kinematics\n119: \n120: :::{prf:theorem} Emergent Lorentz Invariance in Continuum Limit\n121: :label: thm-emergent-lorentz\n122: \n123: Consider the continuum limit $\\tau \\to 0$ with the rescaling:\n124: \n125: $$\n126: \\epsilon_c(\\tau) \\sim \\sqrt{\\tau}, \\quad c_{\\text{eff}} := \\frac{\\epsilon_c}{\\tau} = \\text{constant}\n127: $$\n128: \n129: Define the **effective light cone** in the Fractal Set:\n130: \n131: $$\n132: \\mathcal{C}(e) = \\{e' \\in \\mathcal{E} : d_{\\text{CST}}(e, e') \\leq c_{\\text{eff}} \\cdot \\Delta t(e, e')\\}\n133: $$\n134: \n135: where $d_{\\text{CST}}$ is the spatial distance on CST and $\\Delta t$ is the temporal separation.\n136: \n137: **Claim**: In the continuum limit, $\\mathcal{C}(e)$ converges to the **relativistic light cone** with Lorentzian metric:\n138: \n139: $$\n140: ds^2 = -c_{\\text{eff}}^2 dt^2 + dx^2 + dy^2 + dz^2\n141: $$"
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-121",
+      "title": null,
+      "start_line": 143,
+      "end_line": 221,
+      "header_lines": [],
+      "content_start": 144,
+      "content_end": 220,
+      "content": "144: \n145: :::{prf:proof}\n146: **Step 1: Cloning causality structure.**\n147: \n148: From {doc}`13_fractal_set/13_A_fractal_set.md`, the cloning kernel is:\n149: \n150: $$\n151: P_{\\text{clone}}(i \\to j) \\propto \\exp\\left(-\\frac{d_{\\text{alg}}^2(i,j)}{2\\epsilon_c^2}\\right)\n152: $$\n153: \n154: For a walker at position $x_i$ to clone a walker at $x_j$ after time $\\tau$, we need:\n155: \n156: $$\n157: d_{\\text{alg}}^2(i,j) = \\|x_i - x_j\\|^2 + \\lambda_v \\|v_i - v_j\\|^2 \\lesssim \\epsilon_c^2\n158: $$\n159: \n160: **Step 2: Spatial reach in time $\\tau$.**\n161: \n162: With velocity $v$, the spatial displacement in time $\\tau$ is:\n163: \n164: $$\n165: \\Delta x \\sim v \\tau\n166: $$\n167: \n168: For cloning to occur, we need:\n169: \n170: $$\n171: \\|\\Delta x\\|^2 \\lesssim \\epsilon_c^2 \\implies v \\lesssim \\frac{\\epsilon_c}{\\tau} = c_{\\text{eff}}\n172: $$\n173: \n174: **This is a speed limit**: cloning interactions cannot propagate faster than $c_{\\text{eff}}$.\n175: \n176: **Step 3: Light cone structure.**\n177: \n178: Define the **causal future** of episode $e$:\n179: \n180: $$\n181: J^+(e) = \\{e' : e \\to e' \\text{ in CST or connected via IG}\\}\n182: $$\n183: \n184: From the cloning causality, if $e'$ is in $J^+(e)$, then:\n185: \n186: $$\n187: \\|x_{e'} - x_e\\| \\leq c_{\\text{eff}} \\cdot (t_{e'} - t_e)\n188: $$\n189: \n190: This defines a **light cone** with slope $c_{\\text{eff}}$.\n191: \n192: **Step 4: Lorentzian metric from cloning action.**\n193: \n194: From {doc}`14_yang_mills_noether.md` \u00a79.2, the action for cloning is:\n195: \n196: $$\n197: S_{\\text{clone}} = \\frac{m \\epsilon_c^2}{2\\tau} = \\frac{m c_{\\text{eff}}^2 \\tau}{2}\n198: $$\n199: \n200: The invariant interval is:\n201: \n202: $$\n203: \\Delta s^2 = -c_{\\text{eff}}^2 \\Delta t^2 + \\Delta x^2\n204: $$\n205: \n206: For timelike separated events ($\\Delta s^2 < 0$), cloning can occur. For spacelike ($\\Delta s^2 > 0$), cloning is suppressed by $\\exp(-\\Delta s^2/(2c_{\\text{eff}}^2 \\tau))$.\n207: \n208: **Step 5: Lorentz transformations.**\n209: \n210: Consider a boost with velocity $v$ along the $x$-axis. Under this transformation:\n211: \n212: $$\n213: t' = \\gamma(t - vx/c_{\\text{eff}}^2), \\quad x' = \\gamma(x - vt)\n214: $$\n215: \n216: The cloning probability transforms covariantly:\n217: \n218: $$\n219: P_{\\text{clone}}(i \\to j) = \\exp\\left(-\\frac{\\Delta s^2}{2c_{\\text{eff}}^2 \\tau}\\right)\n220: $$",
+      "metadata": {},
+      "section": "## 1. Emergent 4D Lorentzian Spacetime",
+      "raw_directive": "143: :::\n144: \n145: :::{prf:proof}\n146: **Step 1: Cloning causality structure.**\n147: \n148: From {doc}`13_fractal_set/13_A_fractal_set.md`, the cloning kernel is:\n149: \n150: $$\n151: P_{\\text{clone}}(i \\to j) \\propto \\exp\\left(-\\frac{d_{\\text{alg}}^2(i,j)}{2\\epsilon_c^2}\\right)\n152: $$\n153: \n154: For a walker at position $x_i$ to clone a walker at $x_j$ after time $\\tau$, we need:\n155: \n156: $$\n157: d_{\\text{alg}}^2(i,j) = \\|x_i - x_j\\|^2 + \\lambda_v \\|v_i - v_j\\|^2 \\lesssim \\epsilon_c^2\n158: $$\n159: \n160: **Step 2: Spatial reach in time $\\tau$.**\n161: \n162: With velocity $v$, the spatial displacement in time $\\tau$ is:\n163: \n164: $$\n165: \\Delta x \\sim v \\tau\n166: $$\n167: \n168: For cloning to occur, we need:\n169: \n170: $$\n171: \\|\\Delta x\\|^2 \\lesssim \\epsilon_c^2 \\implies v \\lesssim \\frac{\\epsilon_c}{\\tau} = c_{\\text{eff}}\n172: $$\n173: \n174: **This is a speed limit**: cloning interactions cannot propagate faster than $c_{\\text{eff}}$.\n175: \n176: **Step 3: Light cone structure.**\n177: \n178: Define the **causal future** of episode $e$:\n179: \n180: $$\n181: J^+(e) = \\{e' : e \\to e' \\text{ in CST or connected via IG}\\}\n182: $$\n183: \n184: From the cloning causality, if $e'$ is in $J^+(e)$, then:\n185: \n186: $$\n187: \\|x_{e'} - x_e\\| \\leq c_{\\text{eff}} \\cdot (t_{e'} - t_e)\n188: $$\n189: \n190: This defines a **light cone** with slope $c_{\\text{eff}}$.\n191: \n192: **Step 4: Lorentzian metric from cloning action.**\n193: \n194: From {doc}`14_yang_mills_noether.md` \u00a79.2, the action for cloning is:\n195: \n196: $$\n197: S_{\\text{clone}} = \\frac{m \\epsilon_c^2}{2\\tau} = \\frac{m c_{\\text{eff}}^2 \\tau}{2}\n198: $$\n199: \n200: The invariant interval is:\n201: \n202: $$\n203: \\Delta s^2 = -c_{\\text{eff}}^2 \\Delta t^2 + \\Delta x^2\n204: $$\n205: \n206: For timelike separated events ($\\Delta s^2 < 0$), cloning can occur. For spacelike ($\\Delta s^2 > 0$), cloning is suppressed by $\\exp(-\\Delta s^2/(2c_{\\text{eff}}^2 \\tau))$.\n207: \n208: **Step 5: Lorentz transformations.**\n209: \n210: Consider a boost with velocity $v$ along the $x$-axis. Under this transformation:\n211: \n212: $$\n213: t' = \\gamma(t - vx/c_{\\text{eff}}^2), \\quad x' = \\gamma(x - vt)\n214: $$\n215: \n216: The cloning probability transforms covariantly:\n217: \n218: $$\n219: P_{\\text{clone}}(i \\to j) = \\exp\\left(-\\frac{\\Delta s^2}{2c_{\\text{eff}}^2 \\tau}\\right)\n220: $$\n221: "
+    },
+    {
+      "directive_type": "conjecture",
+      "label": "conj-relativistic-gas",
+      "title": "Relativistic Adaptive Gas",
+      "start_line": 245,
+      "end_line": 268,
+      "header_lines": [
+        246
+      ],
+      "content_start": 248,
+      "content_end": 267,
+      "content": "248: :label: conj-relativistic-gas\n249: \n250: To obtain a Lorentz-invariant theory, modify the kinetic operator to **relativistic Langevin dynamics**:\n251: \n252: $$\n253: m \\frac{dv}{dt} = -\\gamma v + F(x) + \\sqrt{2\\gamma T} \\eta(t)\n254: $$\n255: \n256: Replace with:\n257: \n258: $$\n259: \\frac{dp^\\mu}{d\\tau} = F^\\mu(x) - \\gamma p^\\mu + \\sqrt{2\\gamma T} \\eta^\\mu(\\tau)\n260: $$\n261: \n262: where $p^\\mu = m \\gamma_v v^\\mu$ is the relativistic 4-momentum, $\\gamma_v = 1/\\sqrt{1 - v^2/c^2}$, and $\\tau$ is proper time.\n263: \n264: **Claim**: This modification preserves:\n265: 1. Uniform ellipticity (diffusion tensor in 4-momentum space)\n266: 2. Spectral gap (hypocoercivity still applies)\n267: 3. All convergence theorems",
+      "metadata": {
+        "label": "conj-relativistic-gas"
+      },
+      "section": "## 1. Emergent 4D Lorentzian Spacetime",
+      "raw_directive": "245: ### 1.4. Path to Full Lorentz Invariance\n246: \n247: :::{prf:conjecture} Relativistic Adaptive Gas\n248: :label: conj-relativistic-gas\n249: \n250: To obtain a Lorentz-invariant theory, modify the kinetic operator to **relativistic Langevin dynamics**:\n251: \n252: $$\n253: m \\frac{dv}{dt} = -\\gamma v + F(x) + \\sqrt{2\\gamma T} \\eta(t)\n254: $$\n255: \n256: Replace with:\n257: \n258: $$\n259: \\frac{dp^\\mu}{d\\tau} = F^\\mu(x) - \\gamma p^\\mu + \\sqrt{2\\gamma T} \\eta^\\mu(\\tau)\n260: $$\n261: \n262: where $p^\\mu = m \\gamma_v v^\\mu$ is the relativistic 4-momentum, $\\gamma_v = 1/\\sqrt{1 - v^2/c^2}$, and $\\tau$ is proper time.\n263: \n264: **Claim**: This modification preserves:\n265: 1. Uniform ellipticity (diffusion tensor in 4-momentum space)\n266: 2. Spectral gap (hypocoercivity still applies)\n267: 3. All convergence theorems\n268: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

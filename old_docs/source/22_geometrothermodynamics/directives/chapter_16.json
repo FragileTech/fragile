@@ -1,0 +1,79 @@
+{
+  "chapter_index": 16,
+  "section_id": "## 5.4 Information-Geometric Interpretation: Bregman Divergence",
+  "directive_count": 4,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-bregman-divergence",
+      "title": "Bregman Divergence",
+      "start_line": 2710,
+      "end_line": 2722,
+      "header_lines": [
+        2711
+      ],
+      "content_start": 2713,
+      "content_end": 2721,
+      "content": "2713: :label: def-bregman-divergence\n2714: \n2715: For a strictly convex function $\\phi: \\mathcal{X} \\to \\mathbb{R}$, the **Bregman divergence** is:\n2716: \n2717: $$\n2718: D_\\phi(x \\| y) := \\phi(x) - \\phi(y) - \\langle \\nabla \\phi(y), x - y \\rangle\n2719: $$\n2720: \n2721: This measures the difference between $\\phi(x)$ and its first-order Taylor approximation around $y$.",
+      "metadata": {
+        "label": "def-bregman-divergence"
+      },
+      "section": "## 5.4 Information-Geometric Interpretation: Bregman Divergence",
+      "raw_directive": "2710: The Weinhold metric has a deep connection to information geometry through Bregman divergences.\n2711: \n2712: :::{prf:definition} Bregman Divergence\n2713: :label: def-bregman-divergence\n2714: \n2715: For a strictly convex function $\\phi: \\mathcal{X} \\to \\mathbb{R}$, the **Bregman divergence** is:\n2716: \n2717: $$\n2718: D_\\phi(x \\| y) := \\phi(x) - \\phi(y) - \\langle \\nabla \\phi(y), x - y \\rangle\n2719: $$\n2720: \n2721: This measures the difference between $\\phi(x)$ and its first-order Taylor approximation around $y$.\n2722: "
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-weinhold-bregman",
+      "title": "Weinhold Metric as Bregman Hessian",
+      "start_line": 2724,
+      "end_line": 2740,
+      "header_lines": [
+        2725
+      ],
+      "content_start": 2727,
+      "content_end": 2739,
+      "content": "2727: :label: prop-weinhold-bregman\n2728: \n2729: The Weinhold metric is the Hessian of the Bregman generating function:\n2730: \n2731: $$\n2732: g_W^{ij} = \\frac{\\partial^2 U}{\\partial S^i \\partial S^j}\n2733: $$\n2734: \n2735: corresponds to the Bregman divergence:\n2736: \n2737: $$\n2738: D_U(S \\| S_0) = U(S) - U(S_0) - \\sum_i \\frac{\\partial U}{\\partial S^i}\\Big|_{S_0} (S^i - S_0^i)\n2739: $$",
+      "metadata": {
+        "label": "prop-weinhold-bregman"
+      },
+      "section": "## 5.4 Information-Geometric Interpretation: Bregman Divergence",
+      "raw_directive": "2724: :::\n2725: \n2726: :::{prf:proposition} Weinhold Metric as Bregman Hessian\n2727: :label: prop-weinhold-bregman\n2728: \n2729: The Weinhold metric is the Hessian of the Bregman generating function:\n2730: \n2731: $$\n2732: g_W^{ij} = \\frac{\\partial^2 U}{\\partial S^i \\partial S^j}\n2733: $$\n2734: \n2735: corresponds to the Bregman divergence:\n2736: \n2737: $$\n2738: D_U(S \\| S_0) = U(S) - U(S_0) - \\sum_i \\frac{\\partial U}{\\partial S^i}\\Big|_{S_0} (S^i - S_0^i)\n2739: $$\n2740: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-35",
+      "title": null,
+      "start_line": 2742,
+      "end_line": 2766,
+      "header_lines": [],
+      "content_start": 2744,
+      "content_end": 2765,
+      "content": "2744: :::{prf:proof}\n2745: \n2746: **Step 1**: Expand $D_U(S \\| S_0)$ to second order.\n2747: \n2748: $$\n2749: \\begin{align}\n2750: D_U(S \\| S_0) &= U(S) - U(S_0) - \\nabla U(S_0) \\cdot (S - S_0) \\\\\n2751: &= \\frac{1}{2}(S - S_0)^T \\cdot \\nabla^2 U(S_0) \\cdot (S - S_0) + O(|S - S_0|^3)\n2752: \\end{align}\n2753: $$\n2754: \n2755: **Step 2**: Identify the metric.\n2756: \n2757: The Hessian $\\nabla^2 U = g_W$ is the metric tensor. Therefore, for infinitesimal separations:\n2758: \n2759: $$\n2760: D_U(S \\| S_0) \\approx \\frac{1}{2} ds^2\n2761: $$\n2762: \n2763: where $ds^2 = g_W^{ij} dS^i dS^j$ is the line element of the Weinhold metric.\n2764: \n2765: **Step 3**: Connection to thermodynamics.",
+      "metadata": {},
+      "section": "## 5.4 Information-Geometric Interpretation: Bregman Divergence",
+      "raw_directive": "2742: :::\n2743: \n2744: :::{prf:proof}\n2745: \n2746: **Step 1**: Expand $D_U(S \\| S_0)$ to second order.\n2747: \n2748: $$\n2749: \\begin{align}\n2750: D_U(S \\| S_0) &= U(S) - U(S_0) - \\nabla U(S_0) \\cdot (S - S_0) \\\\\n2751: &= \\frac{1}{2}(S - S_0)^T \\cdot \\nabla^2 U(S_0) \\cdot (S - S_0) + O(|S - S_0|^3)\n2752: \\end{align}\n2753: $$\n2754: \n2755: **Step 2**: Identify the metric.\n2756: \n2757: The Hessian $\\nabla^2 U = g_W$ is the metric tensor. Therefore, for infinitesimal separations:\n2758: \n2759: $$\n2760: D_U(S \\| S_0) \\approx \\frac{1}{2} ds^2\n2761: $$\n2762: \n2763: where $ds^2 = g_W^{ij} dS^i dS^j$ is the line element of the Weinhold metric.\n2764: \n2765: **Step 3**: Connection to thermodynamics.\n2766: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-61",
+      "title": "Comparison to Fisher Information",
+      "start_line": 2768,
+      "end_line": 2780,
+      "header_lines": [
+        2769
+      ],
+      "content_start": 2771,
+      "content_end": 2779,
+      "content": "2771: :class: note\n2772: \n2773: **Ruppeiner metric**: Derived from Fisher information, inherently tied to statistical fluctuations\n2774: - Natural for stochastic systems (Fragile Gas!)\n2775: - Connects to KL-divergence rate\n2776: \n2777: **Weinhold metric**: Derived from Bregman divergence, tied to energy fluctuations\n2778: - Natural for deterministic thermodynamics\n2779: - Connects to irreversible work",
+      "metadata": {
+        "class": "note"
+      },
+      "section": "## 5.4 Information-Geometric Interpretation: Bregman Divergence",
+      "raw_directive": "2768: :::\n2769: \n2770: :::{prf:remark} Comparison to Fisher Information\n2771: :class: note\n2772: \n2773: **Ruppeiner metric**: Derived from Fisher information, inherently tied to statistical fluctuations\n2774: - Natural for stochastic systems (Fragile Gas!)\n2775: - Connects to KL-divergence rate\n2776: \n2777: **Weinhold metric**: Derived from Bregman divergence, tied to energy fluctuations\n2778: - Natural for deterministic thermodynamics\n2779: - Connects to irreversible work\n2780: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

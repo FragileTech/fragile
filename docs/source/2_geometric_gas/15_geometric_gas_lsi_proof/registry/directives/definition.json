@@ -1,0 +1,59 @@
+{
+  "document_id": "15_geometric_gas_lsi_proof",
+  "stage": "directives",
+  "directive_type": "definition",
+  "generated_at": "2025-11-08T17:07:43.255216+00:00",
+  "count": 2,
+  "items": [
+    {
+      "directive_type": "definition",
+      "label": "def-qsd-adaptive",
+      "title": "Quasi-Stationary Distribution (QSD)",
+      "start_line": 323,
+      "end_line": 332,
+      "header_lines": [
+        324
+      ],
+      "content_start": 326,
+      "content_end": 331,
+      "content": "326: :label: def-qsd-adaptive\n327: \n328: A probability measure $\\pi_N$ on $\\Sigma_N$ is a **quasi-stationary distribution** for the Geometric Gas if:\n329: \n330: 1. **Invariance:** $\\mathcal{L}^* \\pi_N = 0$ (where $\\mathcal{L}^*$ is the adjoint in $L^2(\\Sigma_N, \\text{vol})$)\n331: 2. **Ergodicity:** $\\pi_N$ is the unique such invariant measure",
+      "metadata": {
+        "label": "def-qsd-adaptive"
+      },
+      "section": "## 3. Mathematical Preliminaries",
+      "raw_directive": "323: ### 3.3. The Quasi-Stationary Distribution (QSD)\n324: \n325: :::{prf:definition} Quasi-Stationary Distribution (QSD)\n326: :label: def-qsd-adaptive\n327: \n328: A probability measure $\\pi_N$ on $\\Sigma_N$ is a **quasi-stationary distribution** for the Geometric Gas if:\n329: \n330: 1. **Invariance:** $\\mathcal{L}^* \\pi_N = 0$ (where $\\mathcal{L}^*$ is the adjoint in $L^2(\\Sigma_N, \\text{vol})$)\n331: 2. **Ergodicity:** $\\pi_N$ is the unique such invariant measure\n332: 3. **Attraction:** For any initial $\\mu_0 \\in \\mathcal{P}(\\Sigma_N)$, $\\mu_t \\to \\pi_N$ as $t \\to \\infty$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "15_geometric_gas_lsi_proof",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 3. Mathematical Preliminaries"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-lsi-adaptive",
+      "title": "Log-Sobolev Inequality",
+      "start_line": 344,
+      "end_line": 357,
+      "header_lines": [
+        345
+      ],
+      "content_start": 347,
+      "content_end": 356,
+      "content": "347: :label: def-lsi-adaptive\n348: \n349: A probability measure $\\mu$ on $\\Sigma_N$ satisfies a **Log-Sobolev Inequality** with constant $C_{\\text{LSI}} > 0$ if, for all smooth $f: \\Sigma_N \\to \\mathbb{R}_+$ with $\\int f^2 d\\mu = 1$:\n350: \n351: $$\n352: \\text{Ent}_\\mu(f^2) \\leq C_{\\text{LSI}} \\int \\Gamma_{\\Sigma_{\\text{reg}}}(f, f) \\, d\\mu\n353: $$\n354: \n355: where:\n356: - **Entropy functional:** $\\text{Ent}_\\mu(f^2) := \\int f^2 \\log(f^2) d\\mu$",
+      "metadata": {
+        "label": "def-lsi-adaptive"
+      },
+      "section": "## 3. Mathematical Preliminaries",
+      "raw_directive": "344: ### 3.4. Log-Sobolev Inequality (LSI)\n345: \n346: :::{prf:definition} Log-Sobolev Inequality\n347: :label: def-lsi-adaptive\n348: \n349: A probability measure $\\mu$ on $\\Sigma_N$ satisfies a **Log-Sobolev Inequality** with constant $C_{\\text{LSI}} > 0$ if, for all smooth $f: \\Sigma_N \\to \\mathbb{R}_+$ with $\\int f^2 d\\mu = 1$:\n350: \n351: $$\n352: \\text{Ent}_\\mu(f^2) \\leq C_{\\text{LSI}} \\int \\Gamma_{\\Sigma_{\\text{reg}}}(f, f) \\, d\\mu\n353: $$\n354: \n355: where:\n356: - **Entropy functional:** $\\text{Ent}_\\mu(f^2) := \\int f^2 \\log(f^2) d\\mu$\n357: - **Carré du champ operator:** $\\Gamma_{\\Sigma_{\\text{reg}}}(f, f) := \\frac{1}{2} \\sum_{i=1}^N \\|\\Sigma_{\\text{reg}}(x_i, S) \\nabla_{v_i} f\\|^2$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "15_geometric_gas_lsi_proof",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 3. Mathematical Preliminaries"
+      }
+    }
+  ]
+}

@@ -1,0 +1,139 @@
+{
+  "chapter_index": 12,
+  "section_id": "## 6. Structure of Localization Weights",
+  "directive_count": 8,
+  "hints": [
+    {
+      "directive_type": "lemma",
+      "label": "lem-gaussian-kernel-derivatives-full",
+      "title": "Gaussian Kernel Derivatives",
+      "start_line": 3027,
+      "end_line": 3040,
+      "header_lines": [
+        3028
+      ],
+      "content_start": 3030,
+      "content_end": 3039,
+      "content": "3030: :label: lem-gaussian-kernel-derivatives-full\n3031: \n3032: The Gaussian kernel $K_\\rho(i,j) = \\exp(-d_{\\text{alg}}^2(i,j)/(2\\rho^2))$ satisfies:\n3033: \n3034: For derivative order $n \\geq 1$:\n3035: \n3036: $$\n3037: \\|\\nabla^n_{x_i} K_\\rho(i,j)\\| \\leq C_{K,n} \\cdot \\rho^{-n} \\cdot K_\\rho(i,j)\n3038: \n3039: $$",
+      "metadata": {
+        "label": "lem-gaussian-kernel-derivatives-full"
+      },
+      "section": "## 6. Structure of Localization Weights",
+      "raw_directive": "3027: ### 6.1 Derivative Bounds for Localization Kernel\n3028: \n3029: :::{prf:lemma} Gaussian Kernel Derivatives\n3030: :label: lem-gaussian-kernel-derivatives-full\n3031: \n3032: The Gaussian kernel $K_\\rho(i,j) = \\exp(-d_{\\text{alg}}^2(i,j)/(2\\rho^2))$ satisfies:\n3033: \n3034: For derivative order $n \\geq 1$:\n3035: \n3036: $$\n3037: \\|\\nabla^n_{x_i} K_\\rho(i,j)\\| \\leq C_{K,n} \\cdot \\rho^{-n} \\cdot K_\\rho(i,j)\n3038: \n3039: $$\n3040: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-30",
+      "title": null,
+      "start_line": 3042,
+      "end_line": 3058,
+      "header_lines": [],
+      "content_start": 3043,
+      "content_end": 3057,
+      "content": "3043: \n3044: :::{prf:proof}\n3045: By Fa\u00e0 di Bruno formula for $\\nabla^n e^{-d^2/(2\\rho^2)}$:\n3046: \n3047: $$\n3048: \\nabla^n_{x_i} K_\\rho(i,j) = K_\\rho(i,j) \\cdot P_n\\left(\\frac{d_{\\text{alg}}(i,j)}{\\rho}, \\frac{\\nabla d_{\\text{alg}}(i,j)}{d_{\\text{alg}}}, \\ldots, \\frac{\\nabla^n d_{\\text{alg}}(i,j)}{d_{\\text{alg}}}\\right)\n3049: \n3050: $$\n3051: \n3052: where $P_n$ is a polynomial (Hermite polynomial) of degree $n$ with coefficients $\\mathcal{O}(n!)$.\n3053: \n3054: Using $\\|\\nabla^k d_{\\text{alg}}\\| \\leq C_{d,k} d_{\\text{alg}}^{1-k}$:\n3055: \n3056: $$\n3057: \\|\\nabla^n K_\\rho\\| \\leq C_{K,n} \\cdot \\rho^{-n} \\cdot K_\\rho",
+      "metadata": {},
+      "section": "## 6. Structure of Localization Weights",
+      "raw_directive": "3042: :::\n3043: \n3044: :::{prf:proof}\n3045: By Fa\u00e0 di Bruno formula for $\\nabla^n e^{-d^2/(2\\rho^2)}$:\n3046: \n3047: $$\n3048: \\nabla^n_{x_i} K_\\rho(i,j) = K_\\rho(i,j) \\cdot P_n\\left(\\frac{d_{\\text{alg}}(i,j)}{\\rho}, \\frac{\\nabla d_{\\text{alg}}(i,j)}{d_{\\text{alg}}}, \\ldots, \\frac{\\nabla^n d_{\\text{alg}}(i,j)}{d_{\\text{alg}}}\\right)\n3049: \n3050: $$\n3051: \n3052: where $P_n$ is a polynomial (Hermite polynomial) of degree $n$ with coefficients $\\mathcal{O}(n!)$.\n3053: \n3054: Using $\\|\\nabla^k d_{\\text{alg}}\\| \\leq C_{d,k} d_{\\text{alg}}^{1-k}$:\n3055: \n3056: $$\n3057: \\|\\nabla^n K_\\rho\\| \\leq C_{K,n} \\cdot \\rho^{-n} \\cdot K_\\rho\n3058: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-localization-weight-derivatives-full",
+      "title": "Localization Weight Derivatives",
+      "start_line": 3062,
+      "end_line": 3073,
+      "header_lines": [
+        3063
+      ],
+      "content_start": 3065,
+      "content_end": 3072,
+      "content": "3065: :label: lem-localization-weight-derivatives-full\n3066: \n3067: The localization weights $w_{ij}(\\rho) = K_\\rho(i,j) / Z_i(\\rho)$ satisfy:\n3068: \n3069: $$\n3070: \\|\\nabla^n_{x_i} w_{ij}(\\rho)\\| \\leq C_{w,n} \\cdot \\rho^{-n}\n3071: \n3072: $$",
+      "metadata": {
+        "label": "lem-localization-weight-derivatives-full"
+      },
+      "section": "## 6. Structure of Localization Weights",
+      "raw_directive": "3062: ### 6.2 Localization Weights: Quotient Rule Analysis\n3063: \n3064: :::{prf:lemma} Localization Weight Derivatives\n3065: :label: lem-localization-weight-derivatives-full\n3066: \n3067: The localization weights $w_{ij}(\\rho) = K_\\rho(i,j) / Z_i(\\rho)$ satisfy:\n3068: \n3069: $$\n3070: \\|\\nabla^n_{x_i} w_{ij}(\\rho)\\| \\leq C_{w,n} \\cdot \\rho^{-n}\n3071: \n3072: $$\n3073: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-63",
+      "title": null,
+      "start_line": 3075,
+      "end_line": 3160,
+      "header_lines": [],
+      "content_start": 3076,
+      "content_end": 3159,
+      "content": "3076: \n3077: :::{prf:proof}\n3078: **Step 1: Partition function bounds.**\n3079: \n3080: By {prf:ref}`lem-companion-availability-enforcement`:\n3081: \n3082: $$\n3083: Z_i(\\rho) \\geq \\exp\\left(-\\frac{R_{\\max}^2}{2\\rho^2}\\right) = Z_{\\min}(\\rho) > 0\n3084: \n3085: $$\n3086: \n3087: and\n3088: \n3089: $$\n3090: Z_i(\\rho) \\leq k \\cdot 1 = k\n3091: \n3092: $$\n3093: \n3094: **Step 2: Quotient rule for $n$-th derivative.**\n3095: \n3096: By the generalized quotient rule (Fa\u00e0 di Bruno for $f/g$):\n3097: \n3098: $$\n3099: \\nabla^n \\left(\\frac{K_\\rho(i,j)}{Z_i}\\right) = \\sum_{\\text{partitions}} \\frac{(\\text{products of } \\nabla^{k} K_\\rho) \\cdot (\\text{products of } \\nabla^\\ell Z_i)}{Z_i^{\\text{(partition dependent)}}}\n3100: \n3101: $$\n3102: \n3103: **Step 3: Bounding each term with k-uniform estimates.**\n3104: \n3105: To establish k-uniformity, we apply the sum-to-integral lemma.\n3106: \n3107: **Bound for $\\|\\nabla^\\ell Z_i\\|$:**\n3108: \n3109: Apply Lemma {prf:ref}`lem-sum-to-integral-bound-full` with $f(x_j, v_j) = \\nabla^\\ell K_\\rho(i,j)$:\n3110: \n3111: $$\n3112: \\begin{aligned}\n3113: \\|\\nabla^\\ell Z_i\\| &= \\left\\|\\nabla^\\ell \\sum_{m \\in \\mathcal{A}} K_\\rho(i,m)\\right\\| \\\\\n3114: &= \\left\\|\\sum_{m \\in \\mathcal{A}} \\nabla^\\ell K_\\rho(i,m)\\right\\| \\\\\n3115: &\\leq \\rho_{\\max} \\int_{\\mathcal{X} \\times \\mathbb{R}^d} \\|\\nabla^\\ell K_\\rho(i,y)\\| \\, dy\\,dv\n3116: \\end{aligned}\n3117: \n3118: $$\n3119: \n3120: From Lemma {prf:ref}`lem-gaussian-kernel-derivatives-full`, we have $\\|\\nabla^\\ell K_\\rho\\| \\leq C_{K,\\ell} \\rho^{-\\ell} K_\\rho$, so:\n3121: \n3122: $$\n3123: \\|\\nabla^\\ell Z_i\\| \\leq \\rho_{\\max} \\cdot C_{K,\\ell} \\rho^{-\\ell} \\cdot \\int K_\\rho(i,y) \\, dy\\,dv = \\rho_{\\max} \\cdot C_{K,\\ell} \\rho^{-\\ell} \\cdot (2\\pi\\rho^2)^d C_\\lambda\n3124: \n3125: $$\n3126: \n3127: Define:\n3128: \n3129: $$\n3130: C'_{K,\\ell}(\\rho) := \\rho_{\\max} \\cdot C_{K,\\ell} \\cdot (2\\pi)^d C_\\lambda \\cdot \\rho^{2d-\\ell}\n3131: \n3132: $$\n3133: \n3134: This is **k-independent** - it depends only on \u03c1_max (from density assumption), \u03c1 (localization scale), and d (dimension).\n3135: \n3136: **Updated quotient bound:**\n3137: \n3138: Using:\n3139: - $\\|\\nabla^k K_\\rho(i,j)\\| \\leq C_{K,k} \\rho^{-k} K_\\rho(i,j)$\n3140: - $\\|\\nabla^\\ell Z_i\\| \\leq C'_{K,\\ell}(\\rho) = \\rho_{\\max} C_{K,\\ell} (2\\pi)^d C_\\lambda \\rho^{2d-\\ell}$ (k-independent!)\n3141: - $1/Z_i \\leq 1/Z_{\\min}(\\rho) = \\mathcal{O}(1)$\n3142: \n3143: The generalized quotient rule gives:\n3144: \n3145: $$\n3146: \\|\\nabla^n w_{ij}\\| \\leq C_{w,n}(\\rho) \\cdot \\rho^{-n}\n3147: \n3148: $$\n3149: \n3150: where $C_{w,n}(\\rho)$ depends on \u03c1, \u03c1_max, d but is **k-uniform** (independent of k and N).\n3151: \n3152: **Step 4: Explicit constant dependence.**\n3153: \n3154: The constant $C_{w,n}(\\rho)$ arises from the Fa\u00e0 di Bruno formula for the quotient and scales as:\n3155: \n3156: $$\n3157: C_{w,n}(\\rho) = \\mathcal{O}(n! \\cdot \\rho_{\\max} \\cdot \\rho^{2d} \\cdot Z_{\\min}^{-n})\n3158: \n3159: $$",
+      "metadata": {},
+      "section": "## 6. Structure of Localization Weights",
+      "raw_directive": "3075: :::\n3076: \n3077: :::{prf:proof}\n3078: **Step 1: Partition function bounds.**\n3079: \n3080: By {prf:ref}`lem-companion-availability-enforcement`:\n3081: \n3082: $$\n3083: Z_i(\\rho) \\geq \\exp\\left(-\\frac{R_{\\max}^2}{2\\rho^2}\\right) = Z_{\\min}(\\rho) > 0\n3084: \n3085: $$\n3086: \n3087: and\n3088: \n3089: $$\n3090: Z_i(\\rho) \\leq k \\cdot 1 = k\n3091: \n3092: $$\n3093: \n3094: **Step 2: Quotient rule for $n$-th derivative.**\n3095: \n3096: By the generalized quotient rule (Fa\u00e0 di Bruno for $f/g$):\n3097: \n3098: $$\n3099: \\nabla^n \\left(\\frac{K_\\rho(i,j)}{Z_i}\\right) = \\sum_{\\text{partitions}} \\frac{(\\text{products of } \\nabla^{k} K_\\rho) \\cdot (\\text{products of } \\nabla^\\ell Z_i)}{Z_i^{\\text{(partition dependent)}}}\n3100: \n3101: $$\n3102: \n3103: **Step 3: Bounding each term with k-uniform estimates.**\n3104: \n3105: To establish k-uniformity, we apply the sum-to-integral lemma.\n3106: \n3107: **Bound for $\\|\\nabla^\\ell Z_i\\|$:**\n3108: \n3109: Apply Lemma {prf:ref}`lem-sum-to-integral-bound-full` with $f(x_j, v_j) = \\nabla^\\ell K_\\rho(i,j)$:\n3110: \n3111: $$\n3112: \\begin{aligned}\n3113: \\|\\nabla^\\ell Z_i\\| &= \\left\\|\\nabla^\\ell \\sum_{m \\in \\mathcal{A}} K_\\rho(i,m)\\right\\| \\\\\n3114: &= \\left\\|\\sum_{m \\in \\mathcal{A}} \\nabla^\\ell K_\\rho(i,m)\\right\\| \\\\\n3115: &\\leq \\rho_{\\max} \\int_{\\mathcal{X} \\times \\mathbb{R}^d} \\|\\nabla^\\ell K_\\rho(i,y)\\| \\, dy\\,dv\n3116: \\end{aligned}\n3117: \n3118: $$\n3119: \n3120: From Lemma {prf:ref}`lem-gaussian-kernel-derivatives-full`, we have $\\|\\nabla^\\ell K_\\rho\\| \\leq C_{K,\\ell} \\rho^{-\\ell} K_\\rho$, so:\n3121: \n3122: $$\n3123: \\|\\nabla^\\ell Z_i\\| \\leq \\rho_{\\max} \\cdot C_{K,\\ell} \\rho^{-\\ell} \\cdot \\int K_\\rho(i,y) \\, dy\\,dv = \\rho_{\\max} \\cdot C_{K,\\ell} \\rho^{-\\ell} \\cdot (2\\pi\\rho^2)^d C_\\lambda\n3124: \n3125: $$\n3126: \n3127: Define:\n3128: \n3129: $$\n3130: C'_{K,\\ell}(\\rho) := \\rho_{\\max} \\cdot C_{K,\\ell} \\cdot (2\\pi)^d C_\\lambda \\cdot \\rho^{2d-\\ell}\n3131: \n3132: $$\n3133: \n3134: This is **k-independent** - it depends only on \u03c1_max (from density assumption), \u03c1 (localization scale), and d (dimension).\n3135: \n3136: **Updated quotient bound:**\n3137: \n3138: Using:\n3139: - $\\|\\nabla^k K_\\rho(i,j)\\| \\leq C_{K,k} \\rho^{-k} K_\\rho(i,j)$\n3140: - $\\|\\nabla^\\ell Z_i\\| \\leq C'_{K,\\ell}(\\rho) = \\rho_{\\max} C_{K,\\ell} (2\\pi)^d C_\\lambda \\rho^{2d-\\ell}$ (k-independent!)\n3141: - $1/Z_i \\leq 1/Z_{\\min}(\\rho) = \\mathcal{O}(1)$\n3142: \n3143: The generalized quotient rule gives:\n3144: \n3145: $$\n3146: \\|\\nabla^n w_{ij}\\| \\leq C_{w,n}(\\rho) \\cdot \\rho^{-n}\n3147: \n3148: $$\n3149: \n3150: where $C_{w,n}(\\rho)$ depends on \u03c1, \u03c1_max, d but is **k-uniform** (independent of k and N).\n3151: \n3152: **Step 4: Explicit constant dependence.**\n3153: \n3154: The constant $C_{w,n}(\\rho)$ arises from the Fa\u00e0 di Bruno formula for the quotient and scales as:\n3155: \n3156: $$\n3157: C_{w,n}(\\rho) = \\mathcal{O}(n! \\cdot \\rho_{\\max} \\cdot \\rho^{2d} \\cdot Z_{\\min}^{-n})\n3158: \n3159: $$\n3160: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-telescoping-localization-weights-full",
+      "title": "Telescoping for Localization Weights",
+      "start_line": 3164,
+      "end_line": 3173,
+      "header_lines": [
+        3165
+      ],
+      "content_start": 3167,
+      "content_end": 3172,
+      "content": "3167: :label: lem-telescoping-localization-weights-full\n3168: \n3169: For walker $i$ and any derivative order $n \\geq 1$:\n3170: \n3171: $$\n3172: \\sum_{j \\in \\mathcal{A}} \\nabla^n_{x_i} w_{ij}(\\rho) = 0",
+      "metadata": {
+        "label": "lem-telescoping-localization-weights-full"
+      },
+      "section": "## 6. Structure of Localization Weights",
+      "raw_directive": "3164: ### 6.3 Telescoping Identity for Smooth Weights\n3165: \n3166: :::{prf:lemma} Telescoping for Localization Weights\n3167: :label: lem-telescoping-localization-weights-full\n3168: \n3169: For walker $i$ and any derivative order $n \\geq 1$:\n3170: \n3171: $$\n3172: \\sum_{j \\in \\mathcal{A}} \\nabla^n_{x_i} w_{ij}(\\rho) = 0\n3173: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-163",
+      "title": null,
+      "start_line": 3175,
+      "end_line": 3189,
+      "header_lines": [],
+      "content_start": 3176,
+      "content_end": 3188,
+      "content": "3176: \n3177: :::{prf:proof}\n3178: The normalization $\\sum_{j \\in \\mathcal{A}} w_{ij}(\\rho) = 1$ holds identically for all $(x_i, v_i)$.\n3179: \n3180: Differentiating $n$ times:\n3181: \n3182: $$\n3183: \\nabla^n_{x_i} \\left(\\sum_{j \\in \\mathcal{A}} w_{ij}(\\rho)\\right) = \\sum_{j \\in \\mathcal{A}} \\nabla^n_{x_i} w_{ij}(\\rho) = \\nabla^n_{x_i} (1) = 0\n3184: \n3185: $$\n3186: \n3187: The interchange of sum and differentiation is justified because:\n3188: - The alive set $\\mathcal{A}$ is **fixed** (independent of $x_i$)",
+      "metadata": {},
+      "section": "## 6. Structure of Localization Weights",
+      "raw_directive": "3175: :::\n3176: \n3177: :::{prf:proof}\n3178: The normalization $\\sum_{j \\in \\mathcal{A}} w_{ij}(\\rho) = 1$ holds identically for all $(x_i, v_i)$.\n3179: \n3180: Differentiating $n$ times:\n3181: \n3182: $$\n3183: \\nabla^n_{x_i} \\left(\\sum_{j \\in \\mathcal{A}} w_{ij}(\\rho)\\right) = \\sum_{j \\in \\mathcal{A}} \\nabla^n_{x_i} w_{ij}(\\rho) = \\nabla^n_{x_i} (1) = 0\n3184: \n3185: $$\n3186: \n3187: The interchange of sum and differentiation is justified because:\n3188: - The alive set $\\mathcal{A}$ is **fixed** (independent of $x_i$)\n3189: - Each $w_{ij}$ is C^\u221e"
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-k-uniformity-telescoping-full",
+      "title": "k-Uniformity via Telescoping Cancellation",
+      "start_line": 3197,
+      "end_line": 3212,
+      "header_lines": [
+        3198
+      ],
+      "content_start": 3200,
+      "content_end": 3211,
+      "content": "3200: :label: thm-k-uniformity-telescoping-full\n3201: \n3202: For the localized mean $\\mu_\\rho^{(i)} = \\sum_{j \\in \\mathcal{A}} w_{ij}(\\rho) \\cdot d_j$, the $m$-th derivative satisfies:\n3203: \n3204: $$\n3205: \\|\\nabla^m_{x_i} \\mu_\\rho^{(i)}\\| \\leq C_m(\\rho, \\varepsilon_c, \\varepsilon_d, d) \\cdot m!\n3206: \n3207: $$\n3208: \n3209: where $C_m$ is **independent of $k$** (the number of alive walkers).\n3210: \n3211: **Key mechanism**: Although the sum contains $k$ terms, the telescoping identity ensures that the $k$ dependence cancels in the derivative.",
+      "metadata": {
+        "label": "thm-k-uniformity-telescoping-full"
+      },
+      "section": "## 6. Structure of Localization Weights",
+      "raw_directive": "3197: We now show explicitly how the telescoping identity controls $j$-summations at $\\rho$-scale (localization weights $w_{ij}$) to yield k-uniform bounds. Note: This addresses the $j$-sum only; the $\\ell$-sum from softmax (scale $\\varepsilon_c$) is handled separately via derivative locality (\u00a77.1).\n3198: \n3199: :::{prf:theorem} k-Uniformity via Telescoping Cancellation\n3200: :label: thm-k-uniformity-telescoping-full\n3201: \n3202: For the localized mean $\\mu_\\rho^{(i)} = \\sum_{j \\in \\mathcal{A}} w_{ij}(\\rho) \\cdot d_j$, the $m$-th derivative satisfies:\n3203: \n3204: $$\n3205: \\|\\nabla^m_{x_i} \\mu_\\rho^{(i)}\\| \\leq C_m(\\rho, \\varepsilon_c, \\varepsilon_d, d) \\cdot m!\n3206: \n3207: $$\n3208: \n3209: where $C_m$ is **independent of $k$** (the number of alive walkers).\n3210: \n3211: **Key mechanism**: Although the sum contains $k$ terms, the telescoping identity ensures that the $k$ dependence cancels in the derivative.\n3212: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-202",
+      "title": null,
+      "start_line": 3214,
+      "end_line": 3295,
+      "header_lines": [],
+      "content_start": 3215,
+      "content_end": 3294,
+      "content": "3215: \n3216: :::{prf:proof}\n3217: **Step 1: Naive expansion suggests k-dependence.**\n3218: \n3219: The first derivative is:\n3220: \n3221: $$\n3222: \\nabla_{x_i} \\mu_\\rho^{(i)} = \\sum_{j \\in \\mathcal{A}} [\\nabla w_{ij} \\cdot d_j + w_{ij} \\cdot \\nabla d_j]\n3223: \n3224: $$\n3225: \n3226: **Naive bound**: Each term is $O(1)$, and there are $k$ terms, suggesting $\\|\\nabla \\mu_\\rho\\| = O(k)$. This would destroy k-uniformity!\n3227: \n3228: **Step 2: Telescoping eliminates the k-dependence.**\n3229: \n3230: Separate the sum into two parts:\n3231: \n3232: $$\n3233: \\begin{aligned}\n3234: \\nabla_{x_i} \\mu_\\rho^{(i)} &= \\sum_j (\\nabla w_{ij}) \\cdot d_j + \\sum_j w_{ij} \\cdot (\\nabla d_j) \\\\\n3235: &= \\sum_j (\\nabla w_{ij}) \\cdot d_j + \\sum_j w_{ij} \\cdot (\\nabla d_j) \\quad \\text{(*)\n3236: }\n3237: \\end{aligned}\n3238: \n3239: $$\n3240: \n3241: For the first term, use the **mean subtraction trick**:\n3242: \n3243: $$\n3244: \\sum_j (\\nabla w_{ij}) \\cdot d_j = \\sum_j (\\nabla w_{ij}) \\cdot (d_j - \\bar{d})\n3245: \n3246: $$\n3247: \n3248: where $\\bar{d} = \\frac{1}{k}\\sum_j d_j$ is the arithmetic mean. This is valid because:\n3249: \n3250: $$\n3251: \\sum_j (\\nabla w_{ij}) \\cdot \\bar{d} = \\bar{d} \\cdot \\sum_j \\nabla w_{ij} = \\bar{d} \\cdot 0 = 0\n3252: \n3253: $$\n3254: \n3255: by the telescoping identity {prf:ref}`lem-telescoping-localization-weights-full`.\n3256: \n3257: **Step 3: Bound using centered deviations.**\n3258: \n3259: Now each term is centered:\n3260: \n3261: $$\n3262: \\left\\|\\sum_j (\\nabla w_{ij}) \\cdot (d_j - \\bar{d})\\right\\| \\leq \\sum_j \\|\\nabla w_{ij}\\| \\cdot |d_j - \\bar{d}|\n3263: \n3264: $$\n3265: \n3266: By exponential decay of localization kernel $K_\\rho(i,j)$ (scale $\\rho$), only $k_{\\text{eff}}^{(\\rho)} = O(\\rho_{\\max} \\rho^{2d})$ walkers contribute significantly to $\\nabla w_{ij}$. For these walkers, $|d_j - \\bar{d}| \\leq \\text{diam}(\\mathcal{X})$ is bounded.\n3267: \n3268: Therefore:\n3269: \n3270: $$\n3271: \\left\\|\\sum_j (\\nabla w_{ij}) \\cdot (d_j - \\bar{d})\\right\\| \\leq k_{\\text{eff}}^{(\\rho)} \\cdot C_{\\nabla w} \\cdot \\text{diam}(\\mathcal{X}) = O(1)\n3272: \n3273: $$\n3274: \n3275: where $k_{\\text{eff}}^{(\\rho)}$ is **k-uniform** (depends only on $\\rho_{\\max}, \\rho, d$, but NOT on $k$).\n3276: \n3277: **Step 4: Higher derivatives by induction.**\n3278: \n3279: For $m \\geq 2$, apply Leibniz rule:\n3280: \n3281: $$\n3282: \\nabla^m \\mu_\\rho^{(i)} = \\sum_{j \\in \\mathcal{A}} \\sum_{\\alpha + \\beta = m} \\binom{m}{\\alpha} (\\nabla^\\alpha w_{ij}) \\cdot (\\nabla^\\beta d_j)\n3283: \n3284: $$\n3285: \n3286: Terms with $\\alpha \\geq 1$ use telescoping: $\\sum_j \\nabla^\\alpha w_{ij} = 0$, so we can subtract any constant (e.g., the mean of $\\nabla^\\beta d_j$).\n3287: \n3288: Terms with $\\alpha = 0$ give: $\\sum_j w_{ij} \\cdot \\nabla^m d_j$. Each term $\\nabla^m d_j$ is k-uniform by:\n3289: - **For $j \\neq i$**: Lemma {prf:ref}`lem-companion-measurement-derivatives-full` (derivative locality)\n3290: - **For $j = i$**: Lemma {prf:ref}`lem-self-measurement-derivatives-full` (sum-to-integral bound)\n3291: \n3292: Since localization weights $w_{ij}$ have k-uniform bounds (Lemma {prf:ref}`lem-localization-weight-derivatives-full`) and the sum has $k$ terms with exponential decay (only $k_{\\text{eff}}^{(\\rho)}$ contribute significantly), the product $\\sum_j w_{ij} \\cdot \\nabla^m d_j$ is k-uniform.\n3293: \n3294: By induction and combinatorial counting (Fa\u00e0 di Bruno), the total bound grows as $C_m m!$ (Gevrey-1) with $C_m$ independent of $k$.",
+      "metadata": {},
+      "section": "## 6. Structure of Localization Weights",
+      "raw_directive": "3214: :::\n3215: \n3216: :::{prf:proof}\n3217: **Step 1: Naive expansion suggests k-dependence.**\n3218: \n3219: The first derivative is:\n3220: \n3221: $$\n3222: \\nabla_{x_i} \\mu_\\rho^{(i)} = \\sum_{j \\in \\mathcal{A}} [\\nabla w_{ij} \\cdot d_j + w_{ij} \\cdot \\nabla d_j]\n3223: \n3224: $$\n3225: \n3226: **Naive bound**: Each term is $O(1)$, and there are $k$ terms, suggesting $\\|\\nabla \\mu_\\rho\\| = O(k)$. This would destroy k-uniformity!\n3227: \n3228: **Step 2: Telescoping eliminates the k-dependence.**\n3229: \n3230: Separate the sum into two parts:\n3231: \n3232: $$\n3233: \\begin{aligned}\n3234: \\nabla_{x_i} \\mu_\\rho^{(i)} &= \\sum_j (\\nabla w_{ij}) \\cdot d_j + \\sum_j w_{ij} \\cdot (\\nabla d_j) \\\\\n3235: &= \\sum_j (\\nabla w_{ij}) \\cdot d_j + \\sum_j w_{ij} \\cdot (\\nabla d_j) \\quad \\text{(*)\n3236: }\n3237: \\end{aligned}\n3238: \n3239: $$\n3240: \n3241: For the first term, use the **mean subtraction trick**:\n3242: \n3243: $$\n3244: \\sum_j (\\nabla w_{ij}) \\cdot d_j = \\sum_j (\\nabla w_{ij}) \\cdot (d_j - \\bar{d})\n3245: \n3246: $$\n3247: \n3248: where $\\bar{d} = \\frac{1}{k}\\sum_j d_j$ is the arithmetic mean. This is valid because:\n3249: \n3250: $$\n3251: \\sum_j (\\nabla w_{ij}) \\cdot \\bar{d} = \\bar{d} \\cdot \\sum_j \\nabla w_{ij} = \\bar{d} \\cdot 0 = 0\n3252: \n3253: $$\n3254: \n3255: by the telescoping identity {prf:ref}`lem-telescoping-localization-weights-full`.\n3256: \n3257: **Step 3: Bound using centered deviations.**\n3258: \n3259: Now each term is centered:\n3260: \n3261: $$\n3262: \\left\\|\\sum_j (\\nabla w_{ij}) \\cdot (d_j - \\bar{d})\\right\\| \\leq \\sum_j \\|\\nabla w_{ij}\\| \\cdot |d_j - \\bar{d}|\n3263: \n3264: $$\n3265: \n3266: By exponential decay of localization kernel $K_\\rho(i,j)$ (scale $\\rho$), only $k_{\\text{eff}}^{(\\rho)} = O(\\rho_{\\max} \\rho^{2d})$ walkers contribute significantly to $\\nabla w_{ij}$. For these walkers, $|d_j - \\bar{d}| \\leq \\text{diam}(\\mathcal{X})$ is bounded.\n3267: \n3268: Therefore:\n3269: \n3270: $$\n3271: \\left\\|\\sum_j (\\nabla w_{ij}) \\cdot (d_j - \\bar{d})\\right\\| \\leq k_{\\text{eff}}^{(\\rho)} \\cdot C_{\\nabla w} \\cdot \\text{diam}(\\mathcal{X}) = O(1)\n3272: \n3273: $$\n3274: \n3275: where $k_{\\text{eff}}^{(\\rho)}$ is **k-uniform** (depends only on $\\rho_{\\max}, \\rho, d$, but NOT on $k$).\n3276: \n3277: **Step 4: Higher derivatives by induction.**\n3278: \n3279: For $m \\geq 2$, apply Leibniz rule:\n3280: \n3281: $$\n3282: \\nabla^m \\mu_\\rho^{(i)} = \\sum_{j \\in \\mathcal{A}} \\sum_{\\alpha + \\beta = m} \\binom{m}{\\alpha} (\\nabla^\\alpha w_{ij}) \\cdot (\\nabla^\\beta d_j)\n3283: \n3284: $$\n3285: \n3286: Terms with $\\alpha \\geq 1$ use telescoping: $\\sum_j \\nabla^\\alpha w_{ij} = 0$, so we can subtract any constant (e.g., the mean of $\\nabla^\\beta d_j$).\n3287: \n3288: Terms with $\\alpha = 0$ give: $\\sum_j w_{ij} \\cdot \\nabla^m d_j$. Each term $\\nabla^m d_j$ is k-uniform by:\n3289: - **For $j \\neq i$**: Lemma {prf:ref}`lem-companion-measurement-derivatives-full` (derivative locality)\n3290: - **For $j = i$**: Lemma {prf:ref}`lem-self-measurement-derivatives-full` (sum-to-integral bound)\n3291: \n3292: Since localization weights $w_{ij}$ have k-uniform bounds (Lemma {prf:ref}`lem-localization-weight-derivatives-full`) and the sum has $k$ terms with exponential decay (only $k_{\\text{eff}}^{(\\rho)}$ contribute significantly), the product $\\sum_j w_{ij} \\cdot \\nabla^m d_j$ is k-uniform.\n3293: \n3294: By induction and combinatorial counting (Fa\u00e0 di Bruno), the total bound grows as $C_m m!$ (Gevrey-1) with $C_m$ independent of $k$.\n3295: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

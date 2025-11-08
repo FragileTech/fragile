@@ -1,0 +1,237 @@
+{
+  "chapter_index": 4,
+  "section_id": "## 4. Riemannian Geometry of Path Space",
+  "directive_count": 13,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-path-space-metric",
+      "title": "Path Space Riemannian Metric",
+      "start_line": 1169,
+      "end_line": 1198,
+      "header_lines": [
+        1170
+      ],
+      "content_start": 1172,
+      "content_end": 1197,
+      "content": "1172: :label: def-path-space-metric\n1173: \n1174: The **Riemannian metric** $g_{\\mathcal{P}}$ on path space $\\mathcal{P}$ at a path $\\gamma$ is defined by the Hessian of the action:\n1175: \n1176: $$\n1177: g_{\\mathcal{P}}[\\gamma](h_1, h_2) := D^2 S[\\gamma](h_1, h_2)\n1178: $$\n1179: \n1180: for $h_1, h_2 \\in T_\\gamma \\mathcal{P} = H$ (Cameron-Martin space).\n1181: \n1182: **Explicit Formula:**\n1183: \n1184: $$\n1185: g_{\\mathcal{P}}[\\gamma](h_1, h_2) = \\int_0^T \\langle h_1(t), \\mathcal{G}(t) h_2(t) \\rangle_{\\mathcal{M}} dt\n1186: $$\n1187: \n1188: where $\\mathcal{G}(t)$ is the Hessian operator:\n1189: \n1190: $$\n1191: \\mathcal{G}(t) = \\begin{pmatrix}\n1192: \\nabla_x^2 L(x_t, v_t, \\dot{v}_t) & \\nabla_x \\nabla_v L \\\\\n1193: \\nabla_v \\nabla_x L & \\nabla_v^2 L\n1194: \\end{pmatrix}\n1195: $$\n1196: \n1197: **Non-degeneracy:**",
+      "metadata": {
+        "label": "def-path-space-metric"
+      },
+      "section": "## 4. Riemannian Geometry of Path Space",
+      "raw_directive": "1169: The second variation of the action defines a Riemannian metric on path space.\n1170: \n1171: :::{prf:definition} Path Space Riemannian Metric\n1172: :label: def-path-space-metric\n1173: \n1174: The **Riemannian metric** $g_{\\mathcal{P}}$ on path space $\\mathcal{P}$ at a path $\\gamma$ is defined by the Hessian of the action:\n1175: \n1176: $$\n1177: g_{\\mathcal{P}}[\\gamma](h_1, h_2) := D^2 S[\\gamma](h_1, h_2)\n1178: $$\n1179: \n1180: for $h_1, h_2 \\in T_\\gamma \\mathcal{P} = H$ (Cameron-Martin space).\n1181: \n1182: **Explicit Formula:**\n1183: \n1184: $$\n1185: g_{\\mathcal{P}}[\\gamma](h_1, h_2) = \\int_0^T \\langle h_1(t), \\mathcal{G}(t) h_2(t) \\rangle_{\\mathcal{M}} dt\n1186: $$\n1187: \n1188: where $\\mathcal{G}(t)$ is the Hessian operator:\n1189: \n1190: $$\n1191: \\mathcal{G}(t) = \\begin{pmatrix}\n1192: \\nabla_x^2 L(x_t, v_t, \\dot{v}_t) & \\nabla_x \\nabla_v L \\\\\n1193: \\nabla_v \\nabla_x L & \\nabla_v^2 L\n1194: \\end{pmatrix}\n1195: $$\n1196: \n1197: **Non-degeneracy:**\n1198: "
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-metric-from-om-action",
+      "title": "Metric from Onsager-Machlup Action (Respecting Kinematic Constraint)",
+      "start_line": 1200,
+      "end_line": 1273,
+      "header_lines": [
+        1201
+      ],
+      "content_start": 1203,
+      "content_end": 1272,
+      "content": "1203: :label: prop-metric-from-om-action\n1204: \n1205: For the Fragile Gas Onsager-Machlup action {prf:ref}`def-reduced-om-action`, the path space metric is the **second functional derivative** (Hessian) of the action, properly accounting for the kinematic constraint $\\dot{x} = v$.\n1206: \n1207: **Key Insight:**\n1208: \n1209: Perturbations $h = (h_x, h_v)$ in the Cameron-Martin space must respect the linearized kinematic constraint:\n1210: \n1211: $$\n1212: \\dot{h}_x(t) = h_v(t) \\quad \\text{for almost every } t \\in [0,T]\n1213: $$\n1214: \n1215: This means the tangent space consists of pairs $(h_x, \\dot{h}_x)$, and we can parameterize perturbations by $h_x$ alone.\n1216: \n1217: **Derivation:**\n1218: \n1219: The Lagrangian is:\n1220: \n1221: $$\n1222: L(x, v, \\dot{v}) = \\frac{1}{4\\gamma T} \\|\\dot{v} + \\nabla U_{\\text{eff}}(x) + \\gamma v\\|^2\n1223: $$\n1224: \n1225: Substitute the constraint $v = \\dot{x}$ and $\\dot{v} = \\ddot{x}$ to obtain the **reduced action**:\n1226: \n1227: $$\n1228: S[x] = \\frac{1}{4\\gamma T}\\int_0^T \\|\\ddot{x}_t + \\nabla U_{\\text{eff}}(x_t) + \\gamma \\dot{x}_t\\|^2 dt\n1229: $$\n1230: \n1231: This is now a functional of the position path $x(t)$ alone.\n1232: \n1233: **Second Variation:**\n1234: \n1235: For a perturbation $x \\to x + \\epsilon h_x$ with $h_x(0) = h_x(T) = 0$, expand to second order:\n1236: \n1237: $$\n1238: D^2 S[x](h_x, h_x) = \\frac{1}{2\\gamma T}\\int_0^T \\|\\ddot{h}_x + \\nabla^2 U_{\\text{eff}}(x_t) \\dot{h}_x + \\gamma \\dot{h}_x + (\\nabla^2 U_{\\text{eff}}(x_t)) h_x\\|^2 dt\n1239: $$\n1240: \n1241: Along an **extremal path** where $\\ddot{x} + \\nabla U_{\\text{eff}}(x) + \\gamma \\dot{x} = 0$, simplify:\n1242: \n1243: $$\n1244: D^2 S[x](h_x, h_x) = \\frac{1}{2\\gamma T}\\int_0^T \\|\\ddot{h}_x + \\gamma \\dot{h}_x + (\\nabla^2 U_{\\text{eff}}(x_t)) h_x\\|^2 dt\n1245: $$\n1246: \n1247: Expanding the norm:\n1248: \n1249: $$\n1250: g_{\\mathcal{P}}(h_x, h_x) = \\frac{1}{2\\gamma T}\\int_0^T \\left[ \\|\\ddot{h}_x\\|^2 + \\gamma^2 \\|\\dot{h}_x\\|^2 + h_x^T (\\nabla^2 U_{\\text{eff}})^2 h_x + 2\\gamma \\langle \\ddot{h}_x, \\dot{h}_x \\rangle + \\cdots \\right] dt\n1251: $$\n1252: \n1253: After integration by parts (using $h_x(0) = h_x(T) = 0$ and $\\dot{h}_x(0) = \\dot{h}_x(T) = 0$):\n1254: \n1255: $$\n1256: g_{\\mathcal{P}}(h_x, h_x) = \\frac{1}{2\\gamma T}\\int_0^T \\left[ \\|\\ddot{h}_x\\|^2 + \\gamma^2 \\|\\dot{h}_x\\|^2 + h_x^T (\\nabla^2 U_{\\text{eff}})^2 h_x + 2\\gamma\\langle \\ddot{h}_x, \\dot{h}_x \\rangle + 2\\langle \\ddot{h}_x, (\\nabla^2 U_{\\text{eff}}) h_x \\rangle + 2\\gamma \\langle \\dot{h}_x, (\\nabla^2 U_{\\text{eff}}) h_x \\rangle \\right] dt\n1257: $$\n1258: \n1259: **Simplified Form for Operator Analysis:**\n1260: \n1261: Define the **linearized Langevin operator**:\n1262: \n1263: $$\n1264: \\mathcal{L} h_x := \\ddot{h}_x + \\gamma \\dot{h}_x + (\\nabla^2 U_{\\text{eff}}(x_t)) h_x\n1265: $$\n1266: \n1267: Then:\n1268: \n1269: $$\n1270: g_{\\mathcal{P}}(h_x, h_x) = \\frac{1}{2\\gamma T}\\int_0^T \\|\\mathcal{L} h_x\\|^2 dt\n1271: $$\n1272: ",
+      "metadata": {
+        "label": "prop-metric-from-om-action"
+      },
+      "section": "## 4. Riemannian Geometry of Path Space",
+      "raw_directive": "1200: :::\n1201: \n1202: :::{prf:proposition} Metric from Onsager-Machlup Action (Respecting Kinematic Constraint)\n1203: :label: prop-metric-from-om-action\n1204: \n1205: For the Fragile Gas Onsager-Machlup action {prf:ref}`def-reduced-om-action`, the path space metric is the **second functional derivative** (Hessian) of the action, properly accounting for the kinematic constraint $\\dot{x} = v$.\n1206: \n1207: **Key Insight:**\n1208: \n1209: Perturbations $h = (h_x, h_v)$ in the Cameron-Martin space must respect the linearized kinematic constraint:\n1210: \n1211: $$\n1212: \\dot{h}_x(t) = h_v(t) \\quad \\text{for almost every } t \\in [0,T]\n1213: $$\n1214: \n1215: This means the tangent space consists of pairs $(h_x, \\dot{h}_x)$, and we can parameterize perturbations by $h_x$ alone.\n1216: \n1217: **Derivation:**\n1218: \n1219: The Lagrangian is:\n1220: \n1221: $$\n1222: L(x, v, \\dot{v}) = \\frac{1}{4\\gamma T} \\|\\dot{v} + \\nabla U_{\\text{eff}}(x) + \\gamma v\\|^2\n1223: $$\n1224: \n1225: Substitute the constraint $v = \\dot{x}$ and $\\dot{v} = \\ddot{x}$ to obtain the **reduced action**:\n1226: \n1227: $$\n1228: S[x] = \\frac{1}{4\\gamma T}\\int_0^T \\|\\ddot{x}_t + \\nabla U_{\\text{eff}}(x_t) + \\gamma \\dot{x}_t\\|^2 dt\n1229: $$\n1230: \n1231: This is now a functional of the position path $x(t)$ alone.\n1232: \n1233: **Second Variation:**\n1234: \n1235: For a perturbation $x \\to x + \\epsilon h_x$ with $h_x(0) = h_x(T) = 0$, expand to second order:\n1236: \n1237: $$\n1238: D^2 S[x](h_x, h_x) = \\frac{1}{2\\gamma T}\\int_0^T \\|\\ddot{h}_x + \\nabla^2 U_{\\text{eff}}(x_t) \\dot{h}_x + \\gamma \\dot{h}_x + (\\nabla^2 U_{\\text{eff}}(x_t)) h_x\\|^2 dt\n1239: $$\n1240: \n1241: Along an **extremal path** where $\\ddot{x} + \\nabla U_{\\text{eff}}(x) + \\gamma \\dot{x} = 0$, simplify:\n1242: \n1243: $$\n1244: D^2 S[x](h_x, h_x) = \\frac{1}{2\\gamma T}\\int_0^T \\|\\ddot{h}_x + \\gamma \\dot{h}_x + (\\nabla^2 U_{\\text{eff}}(x_t)) h_x\\|^2 dt\n1245: $$\n1246: \n1247: Expanding the norm:\n1248: \n1249: $$\n1250: g_{\\mathcal{P}}(h_x, h_x) = \\frac{1}{2\\gamma T}\\int_0^T \\left[ \\|\\ddot{h}_x\\|^2 + \\gamma^2 \\|\\dot{h}_x\\|^2 + h_x^T (\\nabla^2 U_{\\text{eff}})^2 h_x + 2\\gamma \\langle \\ddot{h}_x, \\dot{h}_x \\rangle + \\cdots \\right] dt\n1251: $$\n1252: \n1253: After integration by parts (using $h_x(0) = h_x(T) = 0$ and $\\dot{h}_x(0) = \\dot{h}_x(T) = 0$):\n1254: \n1255: $$\n1256: g_{\\mathcal{P}}(h_x, h_x) = \\frac{1}{2\\gamma T}\\int_0^T \\left[ \\|\\ddot{h}_x\\|^2 + \\gamma^2 \\|\\dot{h}_x\\|^2 + h_x^T (\\nabla^2 U_{\\text{eff}})^2 h_x + 2\\gamma\\langle \\ddot{h}_x, \\dot{h}_x \\rangle + 2\\langle \\ddot{h}_x, (\\nabla^2 U_{\\text{eff}}) h_x \\rangle + 2\\gamma \\langle \\dot{h}_x, (\\nabla^2 U_{\\text{eff}}) h_x \\rangle \\right] dt\n1257: $$\n1258: \n1259: **Simplified Form for Operator Analysis:**\n1260: \n1261: Define the **linearized Langevin operator**:\n1262: \n1263: $$\n1264: \\mathcal{L} h_x := \\ddot{h}_x + \\gamma \\dot{h}_x + (\\nabla^2 U_{\\text{eff}}(x_t)) h_x\n1265: $$\n1266: \n1267: Then:\n1268: \n1269: $$\n1270: g_{\\mathcal{P}}(h_x, h_x) = \\frac{1}{2\\gamma T}\\int_0^T \\|\\mathcal{L} h_x\\|^2 dt\n1271: $$\n1272: \n1273: :::{note}"
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-riemannian-metric-convex",
+      "title": "Riemannian Metric Under Convexity",
+      "start_line": 1276,
+      "end_line": 1378,
+      "header_lines": [
+        1277
+      ],
+      "content_start": 1279,
+      "content_end": 1377,
+      "content": "1279: :label: thm-riemannian-metric-convex\n1280: \n1281: If the effective potential $U_{\\text{eff}}$ is **strictly convex**, i.e.,\n1282: \n1283: $$\n1284: \\nabla^2 U_{\\text{eff}}(x) \\succeq \\epsilon I \\quad \\text{for some } \\epsilon > 0 \\text{ and all } x \\in \\mathcal{X}\n1285: $$\n1286: \n1287: then the path space metric $g_{\\mathcal{P}}$ is **positive-definite**, and $(\\mathcal{P}, g_{\\mathcal{P}})$ is a **Riemannian manifold**.\n1288: \n1289: **Proof:**\n1290: \n1291: By {prf:ref}`prop-metric-from-om-action`, the metric in terms of the linearized Langevin operator $\\mathcal{L} h_x = \\ddot{h}_x + \\gamma \\dot{h}_x + (\\nabla^2 U_{\\text{eff}}) h_x$ is:\n1292: \n1293: $$\n1294: g_{\\mathcal{P}}(h_x, h_x) = \\frac{1}{2\\gamma T}\\int_0^T \\|\\mathcal{L} h_x\\|^2 dt\n1295: $$\n1296: \n1297: We must show that for any non-zero $h_x \\in W^{2,2}_0([0,T], \\mathbb{R}^d)$ (i.e., $h_x(0) = h_x(T) = 0$ and $\\int |\\ddot{h}_x|^2 dt < \\infty$), we have $g_{\\mathcal{P}}(h_x, h_x) > 0$.\n1298: \n1299: **Step 1: Assume g = 0 for contradiction.**\n1300: \n1301: Suppose $g_{\\mathcal{P}}(h_x, h_x) = 0$ for some $h_x \\neq 0$. Then:\n1302: \n1303: $$\n1304: \\mathcal{L} h_x(t) = \\ddot{h}_x + \\gamma \\dot{h}_x + (\\nabla^2 U_{\\text{eff}}(x_t)) h_x = 0 \\quad \\text{a.e. on } [0,T]\n1305: $$\n1306: \n1307: **Step 2: Multiply by $h_x$ and integrate.**\n1308: \n1309: $$\n1310: \\int_0^T \\langle \\mathcal{L} h_x, h_x \\rangle dt = \\int_0^T \\left[\\langle \\ddot{h}_x, h_x \\rangle + \\gamma \\langle \\dot{h}_x, h_x \\rangle + \\langle (\\nabla^2 U_{\\text{eff}}) h_x, h_x \\rangle \\right] dt = 0\n1311: $$\n1312: \n1313: **Step 3: Integration by parts.**\n1314: \n1315: For the first term:\n1316: \n1317: $$\n1318: \\int_0^T \\langle \\ddot{h}_x, h_x \\rangle dt = \\underbrace{[\\langle \\dot{h}_x, h_x \\rangle]_0^T}_{=0} - \\int_0^T \\|\\dot{h}_x\\|^2 dt = -\\int_0^T \\|\\dot{h}_x\\|^2 dt\n1319: $$\n1320: \n1321: For the second term:\n1322: \n1323: $$\n1324: \\gamma \\int_0^T \\langle \\dot{h}_x, h_x \\rangle dt = \\frac{\\gamma}{2} \\underbrace{[\\|h_x\\|^2]_0^T}_{=0} = 0\n1325: $$\n1326: \n1327: For the third term, by strict convexity:\n1328: \n1329: $$\n1330: \\int_0^T \\langle (\\nabla^2 U_{\\text{eff}}(x_t)) h_x, h_x \\rangle dt \\geq \\epsilon \\int_0^T \\|h_x\\|^2 dt\n1331: $$\n1332: \n1333: **Step 4: Combine inequalities.**\n1334: \n1335: Substituting into Step 2:\n1336: \n1337: $$\n1338: -\\int_0^T \\|\\dot{h}_x\\|^2 dt + 0 + \\epsilon \\int_0^T \\|h_x\\|^2 dt \\leq 0\n1339: $$\n1340: \n1341: This gives:\n1342: \n1343: $$\n1344: \\epsilon \\int_0^T \\|h_x\\|^2 dt \\leq \\int_0^T \\|\\dot{h}_x\\|^2 dt\n1345: $$\n1346: \n1347: **Step 5: Apply Poincar\u00e9 inequality.**\n1348: \n1349: For functions $h_x \\in W^{1,2}_0([0,T], \\mathbb{R}^d)$ (zero at boundaries), the Poincar\u00e9 inequality states:\n1350: \n1351: $$\n1352: \\int_0^T \\|h_x\\|^2 dt \\leq C_P \\int_0^T \\|\\dot{h}_x\\|^2 dt\n1353: $$\n1354: \n1355: where $C_P = T^2/\\pi^2$ is the Poincar\u00e9 constant for the interval $[0,T]$.\n1356: \n1357: **Step 6: Contradiction.**\n1358: \n1359: From Step 4, if $\\mathcal{L} h_x = 0$, then:\n1360: \n1361: $$\n1362: \\epsilon \\int \\|h_x\\|^2 dt \\leq \\int \\|\\dot{h}_x\\|^2 dt\n1363: $$\n1364: \n1365: But the Poincar\u00e9 inequality gives:\n1366: \n1367: $$\n1368: \\int \\|\\dot{h}_x\\|^2 dt \\geq \\frac{1}{C_P} \\int \\|h_x\\|^2 dt = \\frac{\\pi^2}{T^2} \\int \\|h_x\\|^2 dt\n1369: $$\n1370: \n1371: Combining:\n1372: \n1373: $$\n1374: \\epsilon \\int \\|h_x\\|^2 dt \\leq \\int \\|\\dot{h}_x\\|^2 dt \\quad \\text{and} \\quad \\int \\|\\dot{h}_x\\|^2 dt < \\infty\n1375: $$\n1376: \n1377: For $\\mathcal{L} h_x = 0$ to hold with $h_x(0) = h_x(T) = 0$, we need the only solution to be $h_x \\equiv 0$. This is guaranteed when the operator $-\\frac{d^2}{dt^2} - \\gamma \\frac{d}{dt} - \\nabla^2 U_{\\text{eff}}$ is **coercive** on $W^{2,2}_0$. Under strict convexity ($\\epsilon > 0$) and positive damping ($\\gamma > 0$), the operator is indeed coercive, forcing $h_x \\equiv 0$, which contradicts $h_x \\neq 0$.",
+      "metadata": {
+        "label": "thm-riemannian-metric-convex"
+      },
+      "section": "## 4. Riemannian Geometry of Path Space",
+      "raw_directive": "1276: :::\n1277: \n1278: :::{prf:theorem} Riemannian Metric Under Convexity\n1279: :label: thm-riemannian-metric-convex\n1280: \n1281: If the effective potential $U_{\\text{eff}}$ is **strictly convex**, i.e.,\n1282: \n1283: $$\n1284: \\nabla^2 U_{\\text{eff}}(x) \\succeq \\epsilon I \\quad \\text{for some } \\epsilon > 0 \\text{ and all } x \\in \\mathcal{X}\n1285: $$\n1286: \n1287: then the path space metric $g_{\\mathcal{P}}$ is **positive-definite**, and $(\\mathcal{P}, g_{\\mathcal{P}})$ is a **Riemannian manifold**.\n1288: \n1289: **Proof:**\n1290: \n1291: By {prf:ref}`prop-metric-from-om-action`, the metric in terms of the linearized Langevin operator $\\mathcal{L} h_x = \\ddot{h}_x + \\gamma \\dot{h}_x + (\\nabla^2 U_{\\text{eff}}) h_x$ is:\n1292: \n1293: $$\n1294: g_{\\mathcal{P}}(h_x, h_x) = \\frac{1}{2\\gamma T}\\int_0^T \\|\\mathcal{L} h_x\\|^2 dt\n1295: $$\n1296: \n1297: We must show that for any non-zero $h_x \\in W^{2,2}_0([0,T], \\mathbb{R}^d)$ (i.e., $h_x(0) = h_x(T) = 0$ and $\\int |\\ddot{h}_x|^2 dt < \\infty$), we have $g_{\\mathcal{P}}(h_x, h_x) > 0$.\n1298: \n1299: **Step 1: Assume g = 0 for contradiction.**\n1300: \n1301: Suppose $g_{\\mathcal{P}}(h_x, h_x) = 0$ for some $h_x \\neq 0$. Then:\n1302: \n1303: $$\n1304: \\mathcal{L} h_x(t) = \\ddot{h}_x + \\gamma \\dot{h}_x + (\\nabla^2 U_{\\text{eff}}(x_t)) h_x = 0 \\quad \\text{a.e. on } [0,T]\n1305: $$\n1306: \n1307: **Step 2: Multiply by $h_x$ and integrate.**\n1308: \n1309: $$\n1310: \\int_0^T \\langle \\mathcal{L} h_x, h_x \\rangle dt = \\int_0^T \\left[\\langle \\ddot{h}_x, h_x \\rangle + \\gamma \\langle \\dot{h}_x, h_x \\rangle + \\langle (\\nabla^2 U_{\\text{eff}}) h_x, h_x \\rangle \\right] dt = 0\n1311: $$\n1312: \n1313: **Step 3: Integration by parts.**\n1314: \n1315: For the first term:\n1316: \n1317: $$\n1318: \\int_0^T \\langle \\ddot{h}_x, h_x \\rangle dt = \\underbrace{[\\langle \\dot{h}_x, h_x \\rangle]_0^T}_{=0} - \\int_0^T \\|\\dot{h}_x\\|^2 dt = -\\int_0^T \\|\\dot{h}_x\\|^2 dt\n1319: $$\n1320: \n1321: For the second term:\n1322: \n1323: $$\n1324: \\gamma \\int_0^T \\langle \\dot{h}_x, h_x \\rangle dt = \\frac{\\gamma}{2} \\underbrace{[\\|h_x\\|^2]_0^T}_{=0} = 0\n1325: $$\n1326: \n1327: For the third term, by strict convexity:\n1328: \n1329: $$\n1330: \\int_0^T \\langle (\\nabla^2 U_{\\text{eff}}(x_t)) h_x, h_x \\rangle dt \\geq \\epsilon \\int_0^T \\|h_x\\|^2 dt\n1331: $$\n1332: \n1333: **Step 4: Combine inequalities.**\n1334: \n1335: Substituting into Step 2:\n1336: \n1337: $$\n1338: -\\int_0^T \\|\\dot{h}_x\\|^2 dt + 0 + \\epsilon \\int_0^T \\|h_x\\|^2 dt \\leq 0\n1339: $$\n1340: \n1341: This gives:\n1342: \n1343: $$\n1344: \\epsilon \\int_0^T \\|h_x\\|^2 dt \\leq \\int_0^T \\|\\dot{h}_x\\|^2 dt\n1345: $$\n1346: \n1347: **Step 5: Apply Poincar\u00e9 inequality.**\n1348: \n1349: For functions $h_x \\in W^{1,2}_0([0,T], \\mathbb{R}^d)$ (zero at boundaries), the Poincar\u00e9 inequality states:\n1350: \n1351: $$\n1352: \\int_0^T \\|h_x\\|^2 dt \\leq C_P \\int_0^T \\|\\dot{h}_x\\|^2 dt\n1353: $$\n1354: \n1355: where $C_P = T^2/\\pi^2$ is the Poincar\u00e9 constant for the interval $[0,T]$.\n1356: \n1357: **Step 6: Contradiction.**\n1358: \n1359: From Step 4, if $\\mathcal{L} h_x = 0$, then:\n1360: \n1361: $$\n1362: \\epsilon \\int \\|h_x\\|^2 dt \\leq \\int \\|\\dot{h}_x\\|^2 dt\n1363: $$\n1364: \n1365: But the Poincar\u00e9 inequality gives:\n1366: \n1367: $$\n1368: \\int \\|\\dot{h}_x\\|^2 dt \\geq \\frac{1}{C_P} \\int \\|h_x\\|^2 dt = \\frac{\\pi^2}{T^2} \\int \\|h_x\\|^2 dt\n1369: $$\n1370: \n1371: Combining:\n1372: \n1373: $$\n1374: \\epsilon \\int \\|h_x\\|^2 dt \\leq \\int \\|\\dot{h}_x\\|^2 dt \\quad \\text{and} \\quad \\int \\|\\dot{h}_x\\|^2 dt < \\infty\n1375: $$\n1376: \n1377: For $\\mathcal{L} h_x = 0$ to hold with $h_x(0) = h_x(T) = 0$, we need the only solution to be $h_x \\equiv 0$. This is guaranteed when the operator $-\\frac{d^2}{dt^2} - \\gamma \\frac{d}{dt} - \\nabla^2 U_{\\text{eff}}$ is **coercive** on $W^{2,2}_0$. Under strict convexity ($\\epsilon > 0$) and positive damping ($\\gamma > 0$), the operator is indeed coercive, forcing $h_x \\equiv 0$, which contradicts $h_x \\neq 0$.\n1378: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-degenerate-metric-nonconvex",
+      "title": "Degenerate Metric for Non-Convex Potentials",
+      "start_line": 1380,
+      "end_line": 1422,
+      "header_lines": [
+        1381
+      ],
+      "content_start": 1383,
+      "content_end": 1421,
+      "content": "1383: :label: thm-degenerate-metric-nonconvex\n1384: \n1385: If $U_{\\text{eff}}$ is **non-convex**, the path space metric $g_{\\mathcal{P}}$ is **positive semi-definite** (not strictly positive-definite), and can become **nearly degenerate** in the sense that the metric norm can be made arbitrarily small along certain perturbations.\n1386: \n1387: Specifically, if there exists $x_0 \\in \\mathcal{X}$ and direction $\\xi \\in \\mathbb{R}^d$ with $\\xi^T \\nabla^2 U_{\\text{eff}}(x_0) \\xi < 0$, then for any $\\epsilon > 0$, there exist non-zero perturbations $h_x \\in W^{2,2}_0$ with $g_{\\mathcal{P}}(h_x, h_x) < \\epsilon \\|h_x\\|_{W^{2,2}}^2$. Whether exact zero modes exist (metric degeneracy) depends on whether the linearized operator $\\mathcal{L}$ admits non-trivial Dirichlet eigenfunctions on the finite interval $[0,T]$.\n1388: \n1389: **Proof:**\n1390: \n1391: By {prf:ref}`prop-metric-from-om-action`, the metric is:\n1392: \n1393: $$\n1394: g_{\\mathcal{P}}(h_x, h_x) = \\frac{1}{2\\gamma T}\\int_0^T \\|\\mathcal{L} h_x\\|^2 dt \\geq 0\n1395: $$\n1396: \n1397: where $\\mathcal{L} h_x = \\ddot{h}_x + \\gamma \\dot{h}_x + (\\nabla^2 U_{\\text{eff}}(x_t)) h_x$. Since this is an integral of a squared norm, it is **always non-negative**.\n1398: \n1399: The metric has $g_{\\mathcal{P}}(h_x, h_x) = 0$ if and only if:\n1400: \n1401: $$\n1402: \\mathcal{L} h_x(t) = 0 \\quad \\text{for almost every } t \\in [0,T]\n1403: $$\n1404: \n1405: **Existence of Zero Modes:** For non-convex potentials with $\\nabla^2 U_{\\text{eff}}$ having negative eigenvalues, the operator $\\mathcal{L}$ can have non-trivial solutions to $\\mathcal{L} h_x = 0$ with boundary conditions $h_x(0) = h_x(T) = 0$.\n1406: \n1407: Consider a path passing through a saddle point $x_0$ where $\\nabla^2 U_{\\text{eff}}(x_0)$ has a negative eigenvalue $\\lambda < 0$ in direction $\\xi$. The characteristic equation:\n1408: \n1409: $$\n1410: r^2 + \\gamma r + \\lambda = 0\n1411: $$\n1412: \n1413: has solutions:\n1414: \n1415: $$\n1416: r_{\\pm} = \\frac{-\\gamma \\pm \\sqrt{\\gamma^2 + 4|\\lambda|}}{2}\n1417: $$\n1418: \n1419: giving one positive and one negative real root: $r_+ > 0 > r_-$. A localized perturbation $h_x(t) = \\phi(t) e^{r_+ t} \\xi$ (where $\\phi$ is a smooth cut-off function with $\\phi(0) = \\phi(T) = 0$) approximately satisfies $\\mathcal{L} h_x \\approx 0$ near the saddle point, representing an **unstable mode**.\n1420: \n1421: By adjusting the cut-off to make boundary conditions exact, one can construct perturbations $h_x \\neq 0$ with $g_{\\mathcal{P}}(h_x, h_x)$ arbitrarily small (though strictly zero requires solving the boundary-value problem exactly, which may not always have solutions for finite $T$).",
+      "metadata": {
+        "label": "thm-degenerate-metric-nonconvex"
+      },
+      "section": "## 4. Riemannian Geometry of Path Space",
+      "raw_directive": "1380: :::\n1381: \n1382: :::{prf:theorem} Degenerate Metric for Non-Convex Potentials\n1383: :label: thm-degenerate-metric-nonconvex\n1384: \n1385: If $U_{\\text{eff}}$ is **non-convex**, the path space metric $g_{\\mathcal{P}}$ is **positive semi-definite** (not strictly positive-definite), and can become **nearly degenerate** in the sense that the metric norm can be made arbitrarily small along certain perturbations.\n1386: \n1387: Specifically, if there exists $x_0 \\in \\mathcal{X}$ and direction $\\xi \\in \\mathbb{R}^d$ with $\\xi^T \\nabla^2 U_{\\text{eff}}(x_0) \\xi < 0$, then for any $\\epsilon > 0$, there exist non-zero perturbations $h_x \\in W^{2,2}_0$ with $g_{\\mathcal{P}}(h_x, h_x) < \\epsilon \\|h_x\\|_{W^{2,2}}^2$. Whether exact zero modes exist (metric degeneracy) depends on whether the linearized operator $\\mathcal{L}$ admits non-trivial Dirichlet eigenfunctions on the finite interval $[0,T]$.\n1388: \n1389: **Proof:**\n1390: \n1391: By {prf:ref}`prop-metric-from-om-action`, the metric is:\n1392: \n1393: $$\n1394: g_{\\mathcal{P}}(h_x, h_x) = \\frac{1}{2\\gamma T}\\int_0^T \\|\\mathcal{L} h_x\\|^2 dt \\geq 0\n1395: $$\n1396: \n1397: where $\\mathcal{L} h_x = \\ddot{h}_x + \\gamma \\dot{h}_x + (\\nabla^2 U_{\\text{eff}}(x_t)) h_x$. Since this is an integral of a squared norm, it is **always non-negative**.\n1398: \n1399: The metric has $g_{\\mathcal{P}}(h_x, h_x) = 0$ if and only if:\n1400: \n1401: $$\n1402: \\mathcal{L} h_x(t) = 0 \\quad \\text{for almost every } t \\in [0,T]\n1403: $$\n1404: \n1405: **Existence of Zero Modes:** For non-convex potentials with $\\nabla^2 U_{\\text{eff}}$ having negative eigenvalues, the operator $\\mathcal{L}$ can have non-trivial solutions to $\\mathcal{L} h_x = 0$ with boundary conditions $h_x(0) = h_x(T) = 0$.\n1406: \n1407: Consider a path passing through a saddle point $x_0$ where $\\nabla^2 U_{\\text{eff}}(x_0)$ has a negative eigenvalue $\\lambda < 0$ in direction $\\xi$. The characteristic equation:\n1408: \n1409: $$\n1410: r^2 + \\gamma r + \\lambda = 0\n1411: $$\n1412: \n1413: has solutions:\n1414: \n1415: $$\n1416: r_{\\pm} = \\frac{-\\gamma \\pm \\sqrt{\\gamma^2 + 4|\\lambda|}}{2}\n1417: $$\n1418: \n1419: giving one positive and one negative real root: $r_+ > 0 > r_-$. A localized perturbation $h_x(t) = \\phi(t) e^{r_+ t} \\xi$ (where $\\phi$ is a smooth cut-off function with $\\phi(0) = \\phi(T) = 0$) approximately satisfies $\\mathcal{L} h_x \\approx 0$ near the saddle point, representing an **unstable mode**.\n1420: \n1421: By adjusting the cut-off to make boundary conditions exact, one can construct perturbations $h_x \\neq 0$ with $g_{\\mathcal{P}}(h_x, h_x)$ arbitrarily small (though strictly zero requires solving the boundary-value problem exactly, which may not always have solutions for finite $T$).\n1422: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-metric-degeneracy",
+      "title": "Physical Interpretation of Degeneracy",
+      "start_line": 1424,
+      "end_line": 1438,
+      "header_lines": [
+        1425
+      ],
+      "content_start": 1427,
+      "content_end": 1437,
+      "content": "1427: :label: rem-metric-degeneracy\n1428: \n1429: The degeneracy (or near-degeneracy) of the path space metric for non-convex potentials has important physical consequences:\n1430: \n1431: 1. **Multiple Transition Paths:** When $g_{\\mathcal{P}}(h_x, h_x) = 0$ for $h_x \\neq 0$, there exist infinitesimally close paths with the same action, indicating multiple local minima of the action functional.\n1432: \n1433: 2. **Jacobi Fields:** Zero modes $h_x$ satisfying $\\mathcal{L} h_x = 0$ are **Jacobi fields** indicating conjugate points where the path becomes unstable.\n1434: \n1435: 3. **Rare Events:** Near saddle points, the metric degeneracy corresponds to the existence of multiple rare-event transition paths (instantons) with comparable probabilities.\n1436: \n1437: 4. **Metastability:** The presence of zero modes signals metastable states separated by energy barriers, where the system can transition via different pathways.",
+      "metadata": {
+        "label": "rem-metric-degeneracy"
+      },
+      "section": "## 4. Riemannian Geometry of Path Space",
+      "raw_directive": "1424: :::\n1425: \n1426: :::{prf:remark} Physical Interpretation of Degeneracy\n1427: :label: rem-metric-degeneracy\n1428: \n1429: The degeneracy (or near-degeneracy) of the path space metric for non-convex potentials has important physical consequences:\n1430: \n1431: 1. **Multiple Transition Paths:** When $g_{\\mathcal{P}}(h_x, h_x) = 0$ for $h_x \\neq 0$, there exist infinitesimally close paths with the same action, indicating multiple local minima of the action functional.\n1432: \n1433: 2. **Jacobi Fields:** Zero modes $h_x$ satisfying $\\mathcal{L} h_x = 0$ are **Jacobi fields** indicating conjugate points where the path becomes unstable.\n1434: \n1435: 3. **Rare Events:** Near saddle points, the metric degeneracy corresponds to the existence of multiple rare-event transition paths (instantons) with comparable probabilities.\n1436: \n1437: 4. **Metastability:** The presence of zero modes signals metastable states separated by energy barriers, where the system can transition via different pathways.\n1438: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-309",
+      "title": "Non-Convex Potentials and Degenerate Geometry",
+      "start_line": 1473,
+      "end_line": 1490,
+      "header_lines": [],
+      "content_start": 1474,
+      "content_end": 1489,
+      "content": "1474: \n1475: :::{prf:remark} Non-Convex Potentials and Degenerate Geometry\n1476: For general non-convex potentials (e.g., double-well, multiscale landscapes), neither strict convexity nor uniform lower bounds on $\\nabla^2 U_{\\text{eff}}$ hold globally. In such cases:\n1477: \n1478: **Degenerate Semi-Riemannian Structure:**\n1479: \n1480: The path space metric is **positive semi-definite but nearly degenerate** (or exactly degenerate when zero modes exist). The metric remains non-negative everywhere, but can have arbitrarily small eigenvalues along unstable directions. Geodesics are still well-defined as critical points of the action, but they are **extremal paths** (stationary points) rather than necessarily **minimal paths**.\n1481: \n1482: **Stability Interpretation:**\n1483: \n1484: - Regions where $g_{\\mathcal{P}} \\succ 0$: Strictly positive-definite (stable path neighborhoods)\n1485: - Regions where $g_{\\mathcal{P}}$ has small eigenvalues: Nearly degenerate (multiple competing transition paths with similar action)\n1486: \n1487: **Conjugate Points:**\n1488: \n1489: The near-degeneracy of $g_{\\mathcal{P}}$ signals the appearance of conjugate points (see {prf:ref}`thm-conjugate-points-saddles`), indicating path instability and multiplicity of transition mechanisms. Zero eigenvalues correspond to Jacobi fields along unstable directions.",
+      "metadata": {},
+      "section": "## 4. Riemannian Geometry of Path Space",
+      "raw_directive": "1473: :::\n1474: \n1475: :::{prf:remark} Non-Convex Potentials and Degenerate Geometry\n1476: For general non-convex potentials (e.g., double-well, multiscale landscapes), neither strict convexity nor uniform lower bounds on $\\nabla^2 U_{\\text{eff}}$ hold globally. In such cases:\n1477: \n1478: **Degenerate Semi-Riemannian Structure:**\n1479: \n1480: The path space metric is **positive semi-definite but nearly degenerate** (or exactly degenerate when zero modes exist). The metric remains non-negative everywhere, but can have arbitrarily small eigenvalues along unstable directions. Geodesics are still well-defined as critical points of the action, but they are **extremal paths** (stationary points) rather than necessarily **minimal paths**.\n1481: \n1482: **Stability Interpretation:**\n1483: \n1484: - Regions where $g_{\\mathcal{P}} \\succ 0$: Strictly positive-definite (stable path neighborhoods)\n1485: - Regions where $g_{\\mathcal{P}}$ has small eigenvalues: Nearly degenerate (multiple competing transition paths with similar action)\n1486: \n1487: **Conjugate Points:**\n1488: \n1489: The near-degeneracy of $g_{\\mathcal{P}}$ signals the appearance of conjugate points (see {prf:ref}`thm-conjugate-points-saddles`), indicating path instability and multiplicity of transition mechanisms. Zero eigenvalues correspond to Jacobi fields along unstable directions.\n1490: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-path-space-geodesics",
+      "title": "Geodesics in Path Space",
+      "start_line": 1494,
+      "end_line": 1508,
+      "header_lines": [
+        1495
+      ],
+      "content_start": 1497,
+      "content_end": 1507,
+      "content": "1497: :label: def-path-space-geodesics\n1498: \n1499: A **geodesic** in path space $(\\mathcal{P}, g_{\\mathcal{P}})$ is a path $\\Gamma: [0,1] \\to \\mathcal{P}$ (a path of paths!) such that:\n1500: \n1501: $$\n1502: \\nabla_{\\mathcal{P},\\dot{\\Gamma}} \\dot{\\Gamma} = 0\n1503: $$\n1504: \n1505: where $\\nabla_{\\mathcal{P}}$ is the Levi-Civita connection on $\\mathcal{P}$ and $\\dot{\\Gamma} = \\frac{d\\Gamma}{ds}$ is the tangent vector.\n1506: \n1507: **Interpretation:**",
+      "metadata": {
+        "label": "def-path-space-geodesics"
+      },
+      "section": "## 4. Riemannian Geometry of Path Space",
+      "raw_directive": "1494: ### 4.2. Geodesics in Path Space\n1495: \n1496: :::{prf:definition} Geodesics in Path Space\n1497: :label: def-path-space-geodesics\n1498: \n1499: A **geodesic** in path space $(\\mathcal{P}, g_{\\mathcal{P}})$ is a path $\\Gamma: [0,1] \\to \\mathcal{P}$ (a path of paths!) such that:\n1500: \n1501: $$\n1502: \\nabla_{\\mathcal{P},\\dot{\\Gamma}} \\dot{\\Gamma} = 0\n1503: $$\n1504: \n1505: where $\\nabla_{\\mathcal{P}}$ is the Levi-Civita connection on $\\mathcal{P}$ and $\\dot{\\Gamma} = \\frac{d\\Gamma}{ds}$ is the tangent vector.\n1506: \n1507: **Interpretation:**\n1508: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-geodesics-action-minimizing",
+      "title": "Geodesics as Action-Minimizing Paths",
+      "start_line": 1510,
+      "end_line": 1532,
+      "header_lines": [
+        1511
+      ],
+      "content_start": 1513,
+      "content_end": 1531,
+      "content": "1513: :label: thm-geodesics-action-minimizing\n1514: \n1515: In the path space $(\\mathcal{P}, g_{\\mathcal{P}})$ defined by the Onsager-Machlup action, geodesics connecting $\\gamma_0, \\gamma_1 \\in \\mathcal{P}$ are solutions to:\n1516: \n1517: $$\n1518: \\min_{\\Gamma: \\gamma_0 \\to \\gamma_1} \\int_0^1 \\sqrt{g_{\\mathcal{P}}[\\Gamma(s)](\\dot{\\Gamma}(s), \\dot{\\Gamma}(s))} \\, ds\n1519: $$\n1520: \n1521: These geodesics satisfy the geodesic equation:\n1522: \n1523: $$\n1524: \\ddot{\\Gamma}^i(s) + \\Gamma_{jk}^i[\\Gamma(s)] \\dot{\\Gamma}^j(s) \\dot{\\Gamma}^k(s) = 0\n1525: $$\n1526: \n1527: where $\\Gamma_{jk}^i$ are the Christoffel symbols of $g_{\\mathcal{P}}$.\n1528: \n1529: **Physical Meaning:**\n1530: \n1531: Geodesics represent the most probable **continuous family** of stochastic trajectories connecting two realizations. This is relevant for:",
+      "metadata": {
+        "label": "thm-geodesics-action-minimizing"
+      },
+      "section": "## 4. Riemannian Geometry of Path Space",
+      "raw_directive": "1510: :::\n1511: \n1512: :::{prf:theorem} Geodesics as Action-Minimizing Paths\n1513: :label: thm-geodesics-action-minimizing\n1514: \n1515: In the path space $(\\mathcal{P}, g_{\\mathcal{P}})$ defined by the Onsager-Machlup action, geodesics connecting $\\gamma_0, \\gamma_1 \\in \\mathcal{P}$ are solutions to:\n1516: \n1517: $$\n1518: \\min_{\\Gamma: \\gamma_0 \\to \\gamma_1} \\int_0^1 \\sqrt{g_{\\mathcal{P}}[\\Gamma(s)](\\dot{\\Gamma}(s), \\dot{\\Gamma}(s))} \\, ds\n1519: $$\n1520: \n1521: These geodesics satisfy the geodesic equation:\n1522: \n1523: $$\n1524: \\ddot{\\Gamma}^i(s) + \\Gamma_{jk}^i[\\Gamma(s)] \\dot{\\Gamma}^j(s) \\dot{\\Gamma}^k(s) = 0\n1525: $$\n1526: \n1527: where $\\Gamma_{jk}^i$ are the Christoffel symbols of $g_{\\mathcal{P}}$.\n1528: \n1529: **Physical Meaning:**\n1530: \n1531: Geodesics represent the most probable **continuous family** of stochastic trajectories connecting two realizations. This is relevant for:\n1532: - Path sampling (replica exchange Monte Carlo on path space)"
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-path-space-curvature",
+      "title": "Riemann Curvature Tensor of Path Space",
+      "start_line": 1536,
+      "end_line": 1560,
+      "header_lines": [
+        1537
+      ],
+      "content_start": 1539,
+      "content_end": 1559,
+      "content": "1539: :label: def-path-space-curvature\n1540: \n1541: The **Riemann curvature tensor** of $(\\mathcal{P}, g_{\\mathcal{P}})$ is:\n1542: \n1543: $$\n1544: R_{\\mathcal{P}}(h_1, h_2)h_3 := \\nabla_{\\mathcal{P},h_1} \\nabla_{\\mathcal{P},h_2} h_3 - \\nabla_{\\mathcal{P},h_2} \\nabla_{\\mathcal{P},h_1} h_3 - \\nabla_{\\mathcal{P},[h_1, h_2]} h_3\n1545: $$\n1546: \n1547: for $h_i \\in H$ (tangent vectors).\n1548: \n1549: **Sectional Curvature:**\n1550: \n1551: $$\n1552: K_{\\mathcal{P}}(h_1, h_2) = \\frac{g_{\\mathcal{P}}(R_{\\mathcal{P}}(h_1, h_2)h_2, h_1)}{g_{\\mathcal{P}}(h_1, h_1) g_{\\mathcal{P}}(h_2, h_2) - g_{\\mathcal{P}}(h_1, h_2)^2}\n1553: $$\n1554: \n1555: **Scalar Curvature:**\n1556: \n1557: $$\n1558: R_{\\mathcal{P}} = \\sum_{i,j} K_{\\mathcal{P}}(e_i, e_j)\n1559: $$",
+      "metadata": {
+        "label": "def-path-space-curvature"
+      },
+      "section": "## 4. Riemannian Geometry of Path Space",
+      "raw_directive": "1536: ### 4.3. Curvature of Path Space\n1537: \n1538: :::{prf:definition} Riemann Curvature Tensor of Path Space\n1539: :label: def-path-space-curvature\n1540: \n1541: The **Riemann curvature tensor** of $(\\mathcal{P}, g_{\\mathcal{P}})$ is:\n1542: \n1543: $$\n1544: R_{\\mathcal{P}}(h_1, h_2)h_3 := \\nabla_{\\mathcal{P},h_1} \\nabla_{\\mathcal{P},h_2} h_3 - \\nabla_{\\mathcal{P},h_2} \\nabla_{\\mathcal{P},h_1} h_3 - \\nabla_{\\mathcal{P},[h_1, h_2]} h_3\n1545: $$\n1546: \n1547: for $h_i \\in H$ (tangent vectors).\n1548: \n1549: **Sectional Curvature:**\n1550: \n1551: $$\n1552: K_{\\mathcal{P}}(h_1, h_2) = \\frac{g_{\\mathcal{P}}(R_{\\mathcal{P}}(h_1, h_2)h_2, h_1)}{g_{\\mathcal{P}}(h_1, h_1) g_{\\mathcal{P}}(h_2, h_2) - g_{\\mathcal{P}}(h_1, h_2)^2}\n1553: $$\n1554: \n1555: **Scalar Curvature:**\n1556: \n1557: $$\n1558: R_{\\mathcal{P}} = \\sum_{i,j} K_{\\mathcal{P}}(e_i, e_j)\n1559: $$\n1560: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-path-curvature-fluctuations",
+      "title": "Path Space Curvature and Thermodynamic Fluctuations",
+      "start_line": 1562,
+      "end_line": 1584,
+      "header_lines": [
+        1563
+      ],
+      "content_start": 1565,
+      "content_end": 1583,
+      "content": "1565: :label: thm-path-curvature-fluctuations\n1566: \n1567: The sectional curvature $K_{\\mathcal{P}}$ of path space encodes **correlations of thermodynamic fluctuations**:\n1568: \n1569: $$\n1570: K_{\\mathcal{P}}(h_1, h_2) \\propto \\langle \\delta Q[h_1] \\delta Q[h_2] \\rangle - \\langle \\delta Q[h_1] \\rangle \\langle \\delta Q[h_2] \\rangle\n1571: $$\n1572: \n1573: where $\\delta Q[h]$ is the fluctuation in heat dissipation along perturbation $h$.\n1574: \n1575: **Positive Curvature:**\n1576: \n1577: $K_{\\mathcal{P}} > 0$ indicates **anti-correlated fluctuations** (stabilizing).\n1578: \n1579: **Negative Curvature:**\n1580: \n1581: $K_{\\mathcal{P}} < 0$ indicates **correlated fluctuations** (destabilizing, enhances rare events).\n1582: \n1583: **Connection to Phase Transitions:**",
+      "metadata": {
+        "label": "thm-path-curvature-fluctuations"
+      },
+      "section": "## 4. Riemannian Geometry of Path Space",
+      "raw_directive": "1562: :::\n1563: \n1564: :::{prf:theorem} Path Space Curvature and Thermodynamic Fluctuations\n1565: :label: thm-path-curvature-fluctuations\n1566: \n1567: The sectional curvature $K_{\\mathcal{P}}$ of path space encodes **correlations of thermodynamic fluctuations**:\n1568: \n1569: $$\n1570: K_{\\mathcal{P}}(h_1, h_2) \\propto \\langle \\delta Q[h_1] \\delta Q[h_2] \\rangle - \\langle \\delta Q[h_1] \\rangle \\langle \\delta Q[h_2] \\rangle\n1571: $$\n1572: \n1573: where $\\delta Q[h]$ is the fluctuation in heat dissipation along perturbation $h$.\n1574: \n1575: **Positive Curvature:**\n1576: \n1577: $K_{\\mathcal{P}} > 0$ indicates **anti-correlated fluctuations** (stabilizing).\n1578: \n1579: **Negative Curvature:**\n1580: \n1581: $K_{\\mathcal{P}} < 0$ indicates **correlated fluctuations** (destabilizing, enhances rare events).\n1582: \n1583: **Connection to Phase Transitions:**\n1584: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-422",
+      "title": "(Sketch)",
+      "start_line": 1586,
+      "end_line": 1605,
+      "header_lines": [],
+      "content_start": 1588,
+      "content_end": 1604,
+      "content": "1588: :::{prf:proof} (Sketch)\n1589: \n1590: **Step 1:** The curvature arises from the third variation of the action:\n1591: \n1592: $$\n1593: R_{\\mathcal{P}}(h_1, h_2) \\sim D^3 S[\\gamma](h_1, h_2, \\cdot)\n1594: $$\n1595: \n1596: **Step 2:** Heat dissipation $Q[\\gamma] = \\int_0^T \\gamma \\|v_t\\|^2 dt$ depends on the path. Its fluctuation is:\n1597: \n1598: $$\n1599: \\delta Q[h] = \\int_0^T 2\\gamma \\langle v_t, h_v(t) \\rangle dt\n1600: $$\n1601: \n1602: **Step 3:** The covariance $\\langle \\delta Q[h_1] \\delta Q[h_2] \\rangle$ is computed via Wick's theorem for Gaussian path integrals, yielding an integral involving $\\mathcal{G}^{-1}$ (inverse Hessian).\n1603: \n1604: **Step 4:** By the Gauss-Codazzi equation, this covariance equals the curvature tensor contracted appropriately.",
+      "metadata": {},
+      "section": "## 4. Riemannian Geometry of Path Space",
+      "raw_directive": "1586: :::\n1587: \n1588: :::{prf:proof} (Sketch)\n1589: \n1590: **Step 1:** The curvature arises from the third variation of the action:\n1591: \n1592: $$\n1593: R_{\\mathcal{P}}(h_1, h_2) \\sim D^3 S[\\gamma](h_1, h_2, \\cdot)\n1594: $$\n1595: \n1596: **Step 2:** Heat dissipation $Q[\\gamma] = \\int_0^T \\gamma \\|v_t\\|^2 dt$ depends on the path. Its fluctuation is:\n1597: \n1598: $$\n1599: \\delta Q[h] = \\int_0^T 2\\gamma \\langle v_t, h_v(t) \\rangle dt\n1600: $$\n1601: \n1602: **Step 3:** The covariance $\\langle \\delta Q[h_1] \\delta Q[h_2] \\rangle$ is computed via Wick's theorem for Gaussian path integrals, yielding an integral involving $\\mathcal{G}^{-1}$ (inverse Hessian).\n1603: \n1604: **Step 4:** By the Gauss-Codazzi equation, this covariance equals the curvature tensor contracted appropriately.\n1605: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-jacobi-field",
+      "title": "Jacobi Field",
+      "start_line": 1609,
+      "end_line": 1628,
+      "header_lines": [
+        1610
+      ],
+      "content_start": 1612,
+      "content_end": 1627,
+      "content": "1612: :label: def-jacobi-field\n1613: \n1614: A **Jacobi field** along an extremal path $\\gamma$ is a vector field $J(t) \\in T_{\\gamma(t)}\\mathcal{M}$ satisfying the **Jacobi equation**:\n1615: \n1616: $$\n1617: \\frac{D^2 J}{dt^2} + R_{\\mathcal{M}}(\\dot{\\gamma}, J)\\dot{\\gamma} = 0\n1618: $$\n1619: \n1620: where $R_{\\mathcal{M}}$ is the Riemann curvature tensor of the underlying manifold $\\mathcal{M}$.\n1621: \n1622: **Boundary Conditions:**\n1623: \n1624: - $J(0) = 0$, $J(T) = 0$: Solutions indicate **conjugate points** (path instability)\n1625: - $J(0) = 0$, $\\dot{J}(0) = v_0$: Initial velocity $v_0$ determines the Jacobi field\n1626: \n1627: **Physical Interpretation:**",
+      "metadata": {
+        "label": "def-jacobi-field"
+      },
+      "section": "## 4. Riemannian Geometry of Path Space",
+      "raw_directive": "1609: ### 4.4. Jacobi Fields and Path Instabilities\n1610: \n1611: :::{prf:definition} Jacobi Field\n1612: :label: def-jacobi-field\n1613: \n1614: A **Jacobi field** along an extremal path $\\gamma$ is a vector field $J(t) \\in T_{\\gamma(t)}\\mathcal{M}$ satisfying the **Jacobi equation**:\n1615: \n1616: $$\n1617: \\frac{D^2 J}{dt^2} + R_{\\mathcal{M}}(\\dot{\\gamma}, J)\\dot{\\gamma} = 0\n1618: $$\n1619: \n1620: where $R_{\\mathcal{M}}$ is the Riemann curvature tensor of the underlying manifold $\\mathcal{M}$.\n1621: \n1622: **Boundary Conditions:**\n1623: \n1624: - $J(0) = 0$, $J(T) = 0$: Solutions indicate **conjugate points** (path instability)\n1625: - $J(0) = 0$, $\\dot{J}(0) = v_0$: Initial velocity $v_0$ determines the Jacobi field\n1626: \n1627: **Physical Interpretation:**\n1628: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-conjugate-points-saddles",
+      "title": "Conjugate Points and Action Saddle Points",
+      "start_line": 1630,
+      "end_line": 1647,
+      "header_lines": [
+        1631
+      ],
+      "content_start": 1633,
+      "content_end": 1646,
+      "content": "1633: :label: thm-conjugate-points-saddles\n1634: \n1635: If a conjugate point exists at time $t^* \\in (0, T]$ along the extremal path $\\gamma$, then $\\gamma$ is **not** a strict local minimum of the action. Instead, it is a saddle point.\n1636: \n1637: **Consequence:**\n1638: \n1639: For $T > t^*$, multiple local minima of the action exist, corresponding to different transition paths. This is the hallmark of **metastability** in stochastic dynamics.\n1640: \n1641: **Application to Fragile Gas:**\n1642: \n1643: Conjugate points appear when:\n1644: 1. The potential $U(x)$ has negative curvature regions (saddle points)\n1645: 2. The friction $\\gamma$ is weak (underdamped limit)\n1646: 3. The trajectory passes near a barrier",
+      "metadata": {
+        "label": "thm-conjugate-points-saddles"
+      },
+      "section": "## 4. Riemannian Geometry of Path Space",
+      "raw_directive": "1630: :::\n1631: \n1632: :::{prf:theorem} Conjugate Points and Action Saddle Points\n1633: :label: thm-conjugate-points-saddles\n1634: \n1635: If a conjugate point exists at time $t^* \\in (0, T]$ along the extremal path $\\gamma$, then $\\gamma$ is **not** a strict local minimum of the action. Instead, it is a saddle point.\n1636: \n1637: **Consequence:**\n1638: \n1639: For $T > t^*$, multiple local minima of the action exist, corresponding to different transition paths. This is the hallmark of **metastability** in stochastic dynamics.\n1640: \n1641: **Application to Fragile Gas:**\n1642: \n1643: Conjugate points appear when:\n1644: 1. The potential $U(x)$ has negative curvature regions (saddle points)\n1645: 2. The friction $\\gamma$ is weak (underdamped limit)\n1646: 3. The trajectory passes near a barrier\n1647: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

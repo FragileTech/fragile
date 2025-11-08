@@ -1,0 +1,47 @@
+{
+  "chapter_index": 6,
+  "section_id": "## Step 4: Discrete-Time LSI Formulation",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-discrete-dirichlet",
+      "title": "Discrete Dirichlet Form",
+      "start_line": 315,
+      "end_line": 325,
+      "header_lines": [
+        316
+      ],
+      "content_start": 318,
+      "content_end": 324,
+      "content": "318: :label: def-discrete-dirichlet\n319: \n320: For a Markov operator $\\Psi$ with stationary distribution $\\pi$, define the discrete Dirichlet form:\n321: \n322: $$\n323: \\mathcal{E}_{\\Psi}(f, f) := \\mathbb{E}_\\pi[(f - \\Psi f)^2]\n324: $$",
+      "metadata": {
+        "label": "def-discrete-dirichlet"
+      },
+      "section": "## Step 4: Discrete-Time LSI Formulation",
+      "raw_directive": "315: ## Step 4: Discrete-Time LSI Formulation\n316: \n317: :::{prf:definition} Discrete Dirichlet Form\n318: :label: def-discrete-dirichlet\n319: \n320: For a Markov operator $\\Psi$ with stationary distribution $\\pi$, define the discrete Dirichlet form:\n321: \n322: $$\n323: \\mathcal{E}_{\\Psi}(f, f) := \\mathbb{E}_\\pi[(f - \\Psi f)^2]\n324: $$\n325: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-discrete-lsi-hybrid",
+      "title": "Discrete-Time LSI",
+      "start_line": 327,
+      "end_line": 345,
+      "header_lines": [
+        328
+      ],
+      "content_start": 330,
+      "content_end": 344,
+      "content": "330: :label: thm-discrete-lsi-hybrid\n331: \n332: If a Markov operator $\\Psi$ satisfies the contraction:\n333: \n334: $$\n335: D_{\\text{KL}}(\\Psi \\# \\mu \\| \\pi) \\leq (1 - \\epsilon) D_{\\text{KL}}(\\mu \\| \\pi) + C\n336: $$\n337: \n338: for some $\\epsilon > 0$, then $\\Psi$ satisfies a discrete-time Log-Sobolev inequality:\n339: \n340: $$\n341: D_{\\text{KL}}(\\mu \\| \\pi) \\leq \\frac{1}{\\epsilon} \\text{Ent}_\\pi[\\mu] + \\frac{C}{\\epsilon}\n342: $$\n343: \n344: where $\\text{Ent}_\\pi[\\mu]$ is the relative entropy production.",
+      "metadata": {
+        "label": "thm-discrete-lsi-hybrid"
+      },
+      "section": "## Step 4: Discrete-Time LSI Formulation",
+      "raw_directive": "327: :::\n328: \n329: :::{prf:theorem} Discrete-Time LSI\n330: :label: thm-discrete-lsi-hybrid\n331: \n332: If a Markov operator $\\Psi$ satisfies the contraction:\n333: \n334: $$\n335: D_{\\text{KL}}(\\Psi \\# \\mu \\| \\pi) \\leq (1 - \\epsilon) D_{\\text{KL}}(\\mu \\| \\pi) + C\n336: $$\n337: \n338: for some $\\epsilon > 0$, then $\\Psi$ satisfies a discrete-time Log-Sobolev inequality:\n339: \n340: $$\n341: D_{\\text{KL}}(\\mu \\| \\pi) \\leq \\frac{1}{\\epsilon} \\text{Ent}_\\pi[\\mu] + \\frac{C}{\\epsilon}\n342: $$\n343: \n344: where $\\text{Ent}_\\pi[\\mu]$ is the relative entropy production.\n345: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

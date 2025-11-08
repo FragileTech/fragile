@@ -1,0 +1,155 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 2. Preliminaries: \u03b5-Machines, \u03c5-Machines, and Closure Types",
+  "directive_count": 8,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-stochastic-process-histories",
+      "title": "Stochastic Process and Histories",
+      "start_line": 108,
+      "end_line": 118,
+      "header_lines": [
+        109
+      ],
+      "content_start": 111,
+      "content_end": 117,
+      "content": "111: :label: def-stochastic-process-histories\n112: \n113: A **discrete-time stochastic process** $\\{X_t\\}_{t \\in \\mathbb{Z}}$ with values in a finite alphabet $\\mathcal{A}$ is characterized by:\n114: \n115: - **Past at time $t$**: $\\overleftarrow{X}_t = \\ldots X_{t-2} X_{t-1}$ (semi-infinite sequence)\n116: - **Future from time $t$**: $\\overrightarrow{X}_t = X_t X_{t+1} X_{t+2} \\ldots$ (semi-infinite sequence)\n117: - **Joint distribution**: $P(\\overleftarrow{X}_t, \\overrightarrow{X}_t)$ characterizes the process",
+      "metadata": {
+        "label": "def-stochastic-process-histories"
+      },
+      "section": "## 2. Preliminaries: \u03b5-Machines, \u03c5-Machines, and Closure Types",
+      "raw_directive": "108: ### 2.1. Background: Computational Mechanics\n109: \n110: :::{prf:definition} Stochastic Process and Histories\n111: :label: def-stochastic-process-histories\n112: \n113: A **discrete-time stochastic process** $\\{X_t\\}_{t \\in \\mathbb{Z}}$ with values in a finite alphabet $\\mathcal{A}$ is characterized by:\n114: \n115: - **Past at time $t$**: $\\overleftarrow{X}_t = \\ldots X_{t-2} X_{t-1}$ (semi-infinite sequence)\n116: - **Future from time $t$**: $\\overrightarrow{X}_t = X_t X_{t+1} X_{t+2} \\ldots$ (semi-infinite sequence)\n117: - **Joint distribution**: $P(\\overleftarrow{X}_t, \\overrightarrow{X}_t)$ characterizes the process\n118: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-causal-states-epsilon-machine",
+      "title": "Causal States and \u03b5-Machines",
+      "start_line": 120,
+      "end_line": 137,
+      "header_lines": [
+        121
+      ],
+      "content_start": 123,
+      "content_end": 136,
+      "content": "123: :label: def-causal-states-epsilon-machine\n124: \n125: **Causal equivalence:** Two pasts $\\overleftarrow{x}$ and $\\overleftarrow{x}'$ are **causally equivalent** (denoted $\\overleftarrow{x} \\sim_\\varepsilon \\overleftarrow{x}'$) if they induce identical conditional distributions over futures:\n126: \n127: $$\n128: P(\\overrightarrow{X} \\mid \\overleftarrow{X} = \\overleftarrow{x}) = P(\\overrightarrow{X} \\mid \\overleftarrow{X} = \\overleftarrow{x}')\n129: \n130: $$\n131: \n132: **Causal state:** The equivalence class $[\\overleftarrow{x}]_\\varepsilon$ is a **causal state** $\\sigma \\in \\Sigma_\\varepsilon$.\n133: \n134: **\u03b5-machine:** The pair $(\\Sigma_\\varepsilon, T_\\varepsilon)$ where:\n135: - $\\Sigma_\\varepsilon$ is the set of causal states\n136: - $T_\\varepsilon: \\Sigma_\\varepsilon \\times \\mathcal{A} \\to \\text{Dist}(\\Sigma_\\varepsilon)$ is the transition function",
+      "metadata": {
+        "label": "def-causal-states-epsilon-machine"
+      },
+      "section": "## 2. Preliminaries: \u03b5-Machines, \u03c5-Machines, and Closure Types",
+      "raw_directive": "120: :::\n121: \n122: :::{prf:definition} Causal States and \u03b5-Machines\n123: :label: def-causal-states-epsilon-machine\n124: \n125: **Causal equivalence:** Two pasts $\\overleftarrow{x}$ and $\\overleftarrow{x}'$ are **causally equivalent** (denoted $\\overleftarrow{x} \\sim_\\varepsilon \\overleftarrow{x}'$) if they induce identical conditional distributions over futures:\n126: \n127: $$\n128: P(\\overrightarrow{X} \\mid \\overleftarrow{X} = \\overleftarrow{x}) = P(\\overrightarrow{X} \\mid \\overleftarrow{X} = \\overleftarrow{x}')\n129: \n130: $$\n131: \n132: **Causal state:** The equivalence class $[\\overleftarrow{x}]_\\varepsilon$ is a **causal state** $\\sigma \\in \\Sigma_\\varepsilon$.\n133: \n134: **\u03b5-machine:** The pair $(\\Sigma_\\varepsilon, T_\\varepsilon)$ where:\n135: - $\\Sigma_\\varepsilon$ is the set of causal states\n136: - $T_\\varepsilon: \\Sigma_\\varepsilon \\times \\mathcal{A} \\to \\text{Dist}(\\Sigma_\\varepsilon)$ is the transition function\n137: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-coarse-graining-map",
+      "title": "Coarse-Graining Maps and Macro-Processes",
+      "start_line": 139,
+      "end_line": 147,
+      "header_lines": [
+        140
+      ],
+      "content_start": 142,
+      "content_end": 146,
+      "content": "142: :label: def-coarse-graining-map\n143: \n144: A **coarse-graining map** $f: \\mathcal{A} \\to \\mathcal{B}$ maps microscopic observables to macroscopic observables.\n145: \n146: The **induced macro-process** is $Y_t = f(X_t)$.",
+      "metadata": {
+        "label": "def-coarse-graining-map"
+      },
+      "section": "## 2. Preliminaries: \u03b5-Machines, \u03c5-Machines, and Closure Types",
+      "raw_directive": "139: :::\n140: \n141: :::{prf:definition} Coarse-Graining Maps and Macro-Processes\n142: :label: def-coarse-graining-map\n143: \n144: A **coarse-graining map** $f: \\mathcal{A} \\to \\mathcal{B}$ maps microscopic observables to macroscopic observables.\n145: \n146: The **induced macro-process** is $Y_t = f(X_t)$.\n147: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-information-closure",
+      "title": "Information Closure",
+      "start_line": 151,
+      "end_line": 164,
+      "header_lines": [
+        152
+      ],
+      "content_start": 154,
+      "content_end": 163,
+      "content": "154: :label: def-information-closure\n155: \n156: A coarse-graining $f: X \\to Y$ satisfies **information closure** if the macroscopic process $Y$ is as predictable from its own past as from the microscopic past:\n157: \n158: $$\n159: I(\\overrightarrow{Y}_t ; \\overleftarrow{Y}_t) = I(\\overrightarrow{Y}_t ; \\overleftarrow{X}_t)\n160: \n161: $$\n162: \n163: where $I(A;B)$ is the mutual information.",
+      "metadata": {
+        "label": "def-information-closure"
+      },
+      "section": "## 2. Preliminaries: \u03b5-Machines, \u03c5-Machines, and Closure Types",
+      "raw_directive": "151: ### 2.2. Closure Types\n152: \n153: :::{prf:definition} Information Closure\n154: :label: def-information-closure\n155: \n156: A coarse-graining $f: X \\to Y$ satisfies **information closure** if the macroscopic process $Y$ is as predictable from its own past as from the microscopic past:\n157: \n158: $$\n159: I(\\overrightarrow{Y}_t ; \\overleftarrow{Y}_t) = I(\\overrightarrow{Y}_t ; \\overleftarrow{X}_t)\n160: \n161: $$\n162: \n163: where $I(A;B)$ is the mutual information.\n164: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-computational-closure",
+      "title": "Computational Closure",
+      "start_line": 166,
+      "end_line": 186,
+      "header_lines": [
+        167
+      ],
+      "content_start": 169,
+      "content_end": 185,
+      "content": "169: :label: def-computational-closure\n170: \n171: A coarse-graining $f: X \\to Y$ satisfies **computational closure** if the macro-\u03b5-machine can be obtained by coarse-graining the micro-\u03b5-machine.\n172: \n173: Formally, there exists a projection $\\pi: \\Sigma_\\varepsilon^{(X)} \\to \\Sigma_\\varepsilon^{(Y)}$ such that:\n174: \n175: $$\n176: \\pi([\\overleftarrow{x}]_\\varepsilon^{(X)}) = [f(\\overleftarrow{x})]_\\varepsilon^{(Y)}\n177: \n178: $$\n179: \n180: and the transition dynamics commute:\n181: \n182: $$\n183: T_\\varepsilon^{(Y)}(\\pi(\\sigma), y) = \\pi(T_\\varepsilon^{(X)}(\\sigma, f^{-1}(y)))\n184: \n185: $$",
+      "metadata": {
+        "label": "def-computational-closure"
+      },
+      "section": "## 2. Preliminaries: \u03b5-Machines, \u03c5-Machines, and Closure Types",
+      "raw_directive": "166: :::\n167: \n168: :::{prf:definition} Computational Closure\n169: :label: def-computational-closure\n170: \n171: A coarse-graining $f: X \\to Y$ satisfies **computational closure** if the macro-\u03b5-machine can be obtained by coarse-graining the micro-\u03b5-machine.\n172: \n173: Formally, there exists a projection $\\pi: \\Sigma_\\varepsilon^{(X)} \\to \\Sigma_\\varepsilon^{(Y)}$ such that:\n174: \n175: $$\n176: \\pi([\\overleftarrow{x}]_\\varepsilon^{(X)}) = [f(\\overleftarrow{x})]_\\varepsilon^{(Y)}\n177: \n178: $$\n179: \n180: and the transition dynamics commute:\n181: \n182: $$\n183: T_\\varepsilon^{(Y)}(\\pi(\\sigma), y) = \\pi(T_\\varepsilon^{(X)}(\\sigma, f^{-1}(y)))\n184: \n185: $$\n186: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-causal-closure",
+      "title": "Causal Closure",
+      "start_line": 188,
+      "end_line": 206,
+      "header_lines": [
+        189
+      ],
+      "content_start": 191,
+      "content_end": 205,
+      "content": "191: :label: def-causal-closure\n192: \n193: Define the **\u03c5-machine** $(\\Sigma_\\upsilon, T_\\upsilon)$ whose states partition micro-pasts by their induced macro-futures:\n194: \n195: $$\n196: \\overleftarrow{x} \\sim_\\upsilon \\overleftarrow{x}' \\iff P(\\overrightarrow{Y} \\mid \\overleftarrow{X} = \\overleftarrow{x}) = P(\\overrightarrow{Y} \\mid \\overleftarrow{X} = \\overleftarrow{x}')\n197: \n198: $$\n199: \n200: A coarse-graining satisfies **causal closure** if:\n201: \n202: $$\n203: \\Sigma_\\varepsilon^{(Y)} = \\Sigma_\\upsilon\n204: \n205: $$",
+      "metadata": {
+        "label": "def-causal-closure"
+      },
+      "section": "## 2. Preliminaries: \u03b5-Machines, \u03c5-Machines, and Closure Types",
+      "raw_directive": "188: :::\n189: \n190: :::{prf:definition} Causal Closure\n191: :label: def-causal-closure\n192: \n193: Define the **\u03c5-machine** $(\\Sigma_\\upsilon, T_\\upsilon)$ whose states partition micro-pasts by their induced macro-futures:\n194: \n195: $$\n196: \\overleftarrow{x} \\sim_\\upsilon \\overleftarrow{x}' \\iff P(\\overrightarrow{Y} \\mid \\overleftarrow{X} = \\overleftarrow{x}) = P(\\overrightarrow{Y} \\mid \\overleftarrow{X} = \\overleftarrow{x}')\n197: \n198: $$\n199: \n200: A coarse-graining satisfies **causal closure** if:\n201: \n202: $$\n203: \\Sigma_\\varepsilon^{(Y)} = \\Sigma_\\upsilon\n204: \n205: $$\n206: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-closure-equivalence",
+      "title": "Equivalence of Closure Types",
+      "start_line": 208,
+      "end_line": 226,
+      "header_lines": [
+        209
+      ],
+      "content_start": 211,
+      "content_end": 225,
+      "content": "211: :label: thm-closure-equivalence\n212: \n213: (Ortega et al., 2024, Theorem 1)\n214: \n215: For any coarse-graining $f: X \\to Y$:\n216: \n217: $$\n218: \\text{Information Closure} \\iff \\text{Causal Closure}\n219: \n220: $$\n221: \n222: Furthermore (Theorem 2), for **spatial coarse-grainings** (where $f$ aggregates spatially local variables):\n223: \n224: $$\n225: \\text{Information Closure} \\implies \\text{Computational Closure}",
+      "metadata": {
+        "label": "thm-closure-equivalence"
+      },
+      "section": "## 2. Preliminaries: \u03b5-Machines, \u03c5-Machines, and Closure Types",
+      "raw_directive": "208: :::\n209: \n210: :::{prf:theorem} Equivalence of Closure Types\n211: :label: thm-closure-equivalence\n212: \n213: (Ortega et al., 2024, Theorem 1)\n214: \n215: For any coarse-graining $f: X \\to Y$:\n216: \n217: $$\n218: \\text{Information Closure} \\iff \\text{Causal Closure}\n219: \n220: $$\n221: \n222: Furthermore (Theorem 2), for **spatial coarse-grainings** (where $f$ aggregates spatially local variables):\n223: \n224: $$\n225: \\text{Information Closure} \\implies \\text{Computational Closure}\n226: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-123",
+      "title": "Lumpability Connection",
+      "start_line": 228,
+      "end_line": 236,
+      "header_lines": [
+        229
+      ],
+      "content_start": 231,
+      "content_end": 235,
+      "content": "231: :class: note\n232: \n233: Computational closure is closely related to **lumpability** in Markov chain theory (Kemeny & Snell, 1976). A partition of states is **strongly lumpable** if the transition probabilities depend only on the partition classes, not the specific states.\n234: \n235: **Key distinction:** Lumpability is a property of a single Markov chain with respect to a partition. Computational closure is a property of a *sequence* of Markov chains under iterated coarse-graining (the RG flow).",
+      "metadata": {
+        "class": "note"
+      },
+      "section": "## 2. Preliminaries: \u03b5-Machines, \u03c5-Machines, and Closure Types",
+      "raw_directive": "228: :::\n229: \n230: :::{prf:remark} Lumpability Connection\n231: :class: note\n232: \n233: Computational closure is closely related to **lumpability** in Markov chain theory (Kemeny & Snell, 1976). A partition of states is **strongly lumpable** if the transition probabilities depend only on the partition classes, not the specific states.\n234: \n235: **Key distinction:** Lumpability is a property of a single Markov chain with respect to a partition. Computational closure is a property of a *sequence* of Markov chains under iterated coarse-graining (the RG flow).\n236: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

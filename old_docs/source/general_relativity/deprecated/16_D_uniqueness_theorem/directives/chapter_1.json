@@ -1,0 +1,29 @@
+{
+  "chapter_index": 1,
+  "section_id": "## 1. Lovelock's Theorem",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-lovelock-uniqueness",
+      "title": "Lovelock's Theorem",
+      "start_line": 14,
+      "end_line": 30,
+      "header_lines": [
+        15
+      ],
+      "content_start": 17,
+      "content_end": 29,
+      "content": "17: :label: thm-lovelock-uniqueness\n18: \n19: In a 4-dimensional spacetime $(M, g_{\\mu\\nu})$, the **Einstein tensor**\n20: \n21: $$\n22: G_{\\mu\\nu} := R_{\\mu\\nu} - \\frac{1}{2}R g_{\\mu\\nu}\n23: $$\n24: \n25: is the unique symmetric rank-2 tensor satisfying:\n26: \n27: 1. **Metric dependence**: $G_{\\mu\\nu}[g]$ depends only on the metric $g_{\\mu\\nu}$ and its derivatives up to second order\n28: 2. **Linearity in second derivatives**: $G_{\\mu\\nu}$ is linear in $\\partial^2 g$\n29: 3. **Divergence-free**: $\\nabla_\\mu G^{\\mu\\nu} = 0$ identically (Bianchi identity)",
+      "metadata": {
+        "label": "thm-lovelock-uniqueness"
+      },
+      "section": "## 1. Lovelock's Theorem",
+      "raw_directive": "14: We begin with the fundamental uniqueness result from differential geometry:\n15: \n16: :::{prf:theorem} Lovelock's Theorem\n17: :label: thm-lovelock-uniqueness\n18: \n19: In a 4-dimensional spacetime $(M, g_{\\mu\\nu})$, the **Einstein tensor**\n20: \n21: $$\n22: G_{\\mu\\nu} := R_{\\mu\\nu} - \\frac{1}{2}R g_{\\mu\\nu}\n23: $$\n24: \n25: is the unique symmetric rank-2 tensor satisfying:\n26: \n27: 1. **Metric dependence**: $G_{\\mu\\nu}[g]$ depends only on the metric $g_{\\mu\\nu}$ and its derivatives up to second order\n28: 2. **Linearity in second derivatives**: $G_{\\mu\\nu}$ is linear in $\\partial^2 g$\n29: 3. **Divergence-free**: $\\nabla_\\mu G^{\\mu\\nu} = 0$ identically (Bianchi identity)\n30: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

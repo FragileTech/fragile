@@ -1,0 +1,107 @@
+{
+  "chapter_index": 15,
+  "section_id": "## Appendix A: Supporting Theorems",
+  "directive_count": 6,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-qsd-spatial-riemannian-volume",
+      "title": "QSD Spatial Marginal is Riemannian Volume Measure",
+      "start_line": 3990,
+      "end_line": 4008,
+      "header_lines": [
+        3991
+      ],
+      "content_start": 3993,
+      "content_end": 4007,
+      "content": "3993: :label: thm-qsd-spatial-riemannian-volume\n3994: \n3995: Consider the Geometric Gas SDE from `11_geometric_gas.md` with state space $\\mathcal{X} \\times \\mathbb{R}^d$ and quasi-stationary distribution $\\pi_{\\text{QSD}}$.\n3996: \n3997: The **spatial marginal** of the QSD (integrating out velocities) is:\n3998: \n3999: $$\n4000: \\rho_{\\text{spatial}}(x) = \\int_{\\mathbb{R}^d} \\pi_{\\text{QSD}}(x, v) \\, dv \\propto \\sqrt{\\det g(x)} \\, \\exp\\left( -\\frac{U_{\\text{eff}}(x)}{T} \\right)\n4001: $$\n4002: \n4003: where:\n4004: - $g(x) = D(x)^{-1}$ is the emergent Riemannian metric (inverse diffusion tensor)\n4005: - $D(x) = \\Sigma_{\\text{reg}}(x) \\Sigma_{\\text{reg}}(x)^T$ is the position-dependent diffusion tensor\n4006: - $U_{\\text{eff}}(x) = U(x) + T \\log Z_{\\text{kin}}$ is the effective potential (confining + entropic)\n4007: - $T = 1/\\gamma$ is the effective temperature",
+      "metadata": {
+        "label": "thm-qsd-spatial-riemannian-volume"
+      },
+      "section": "## Appendix A: Supporting Theorems",
+      "raw_directive": "3990: This foundational result explains why the spatial marginal of the QSD naturally encodes Riemannian geometry.\n3991: \n3992: :::{prf:theorem} QSD Spatial Marginal is Riemannian Volume Measure\n3993: :label: thm-qsd-spatial-riemannian-volume\n3994: \n3995: Consider the Geometric Gas SDE from `11_geometric_gas.md` with state space $\\mathcal{X} \\times \\mathbb{R}^d$ and quasi-stationary distribution $\\pi_{\\text{QSD}}$.\n3996: \n3997: The **spatial marginal** of the QSD (integrating out velocities) is:\n3998: \n3999: $$\n4000: \\rho_{\\text{spatial}}(x) = \\int_{\\mathbb{R}^d} \\pi_{\\text{QSD}}(x, v) \\, dv \\propto \\sqrt{\\det g(x)} \\, \\exp\\left( -\\frac{U_{\\text{eff}}(x)}{T} \\right)\n4001: $$\n4002: \n4003: where:\n4004: - $g(x) = D(x)^{-1}$ is the emergent Riemannian metric (inverse diffusion tensor)\n4005: - $D(x) = \\Sigma_{\\text{reg}}(x) \\Sigma_{\\text{reg}}(x)^T$ is the position-dependent diffusion tensor\n4006: - $U_{\\text{eff}}(x) = U(x) + T \\log Z_{\\text{kin}}$ is the effective potential (confining + entropic)\n4007: - $T = 1/\\gamma$ is the effective temperature\n4008: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-27",
+      "title": null,
+      "start_line": 4010,
+      "end_line": 4072,
+      "header_lines": [],
+      "content_start": 4011,
+      "content_end": 4071,
+      "content": "4011: \n4012: :::{prf:proof}\n4013: **Step 1: Stratonovich SDE Form**\n4014: \n4015: The Geometric Gas Langevin dynamics (Chapter 1.4, Definition {prf:ref}`def-d-kinetic-operator-adaptive`) is:\n4016: \n4017: $$\n4018: dx_i = v_i \\, dt, \\quad dv_i = \\mathbf{F}_{\\text{total}}(x_i, v_i) \\, dt + \\Sigma_{\\text{reg}}(x_i) \\circ dW_i - \\gamma v_i \\, dt\n4019: $$\n4020: \n4021: The $\\circ dW_i$ notation indicates **Stratonovich interpretation** of the stochastic integral.\n4022: \n4023: **Step 2: Stationary Distribution for Stratonovich Langevin**\n4024: \n4025: For a Stratonovich Langevin equation:\n4026: \n4027: $$\n4028: dX = b(X) \\, dt + \\sigma(X) \\circ dW\n4029: $$\n4030: \n4031: the stationary distribution satisfies the **Stratonovich Fokker-Planck equation** (Graham, 1977):\n4032: \n4033: $$\n4034: 0 = -\\nabla \\cdot (b \\rho) + \\frac{1}{2} \\nabla \\cdot \\nabla \\cdot (D \\rho)\n4035: $$\n4036: \n4037: where $D = \\sigma \\sigma^T$ is the diffusion tensor.\n4038: \n4039: By detailed balance, the stationary density is:\n4040: \n4041: $$\n4042: \\rho \\propto (\\det D)^{-1/2} \\exp\\left( -\\int_0^x b \\cdot dX / T \\right)\n4043: $$\n4044: \n4045: For our system with $b = -\\nabla U_{\\text{eff}}$ (after velocity marginalization):\n4046: \n4047: $$\n4048: \\rho \\propto (\\det D)^{-1/2} e^{-U_{\\text{eff}}/T} = \\sqrt{\\det g} \\, e^{-U_{\\text{eff}}/T}\n4049: $$\n4050: \n4051: **Step 3: Comparison with It\u00f4 Interpretation**\n4052: \n4053: If we incorrectly used **It\u00f4 calculus**, the stationary distribution would be:\n4054: \n4055: $$\n4056: \\rho_{\\text{It\u00f4}} \\propto e^{-U_{\\text{eff}}/T}\n4057: $$\n4058: \n4059: **missing** the $\\sqrt{\\det g}$ factor.\n4060: \n4061: **Step 4: Velocity Marginalization**\n4062: \n4063: The full QSD on $(x, v)$ space factors (approximately, after fast velocity thermalization) as:\n4064: \n4065: $$\n4066: \\pi_{\\text{QSD}}(x, v) \\approx \\rho_{\\text{spatial}}(x) \\cdot \\rho_{\\text{Maxwell}}(v \\mid x)\n4067: $$\n4068: \n4069: where $\\rho_{\\text{Maxwell}}(v \\mid x)$ is the Maxwell-Boltzmann distribution at temperature $T = 1/\\gamma$.\n4070: \n4071: Integrating out velocities yields the spatial marginal stated in the theorem.",
+      "metadata": {},
+      "section": "## Appendix A: Supporting Theorems",
+      "raw_directive": "4010: :::\n4011: \n4012: :::{prf:proof}\n4013: **Step 1: Stratonovich SDE Form**\n4014: \n4015: The Geometric Gas Langevin dynamics (Chapter 1.4, Definition {prf:ref}`def-d-kinetic-operator-adaptive`) is:\n4016: \n4017: $$\n4018: dx_i = v_i \\, dt, \\quad dv_i = \\mathbf{F}_{\\text{total}}(x_i, v_i) \\, dt + \\Sigma_{\\text{reg}}(x_i) \\circ dW_i - \\gamma v_i \\, dt\n4019: $$\n4020: \n4021: The $\\circ dW_i$ notation indicates **Stratonovich interpretation** of the stochastic integral.\n4022: \n4023: **Step 2: Stationary Distribution for Stratonovich Langevin**\n4024: \n4025: For a Stratonovich Langevin equation:\n4026: \n4027: $$\n4028: dX = b(X) \\, dt + \\sigma(X) \\circ dW\n4029: $$\n4030: \n4031: the stationary distribution satisfies the **Stratonovich Fokker-Planck equation** (Graham, 1977):\n4032: \n4033: $$\n4034: 0 = -\\nabla \\cdot (b \\rho) + \\frac{1}{2} \\nabla \\cdot \\nabla \\cdot (D \\rho)\n4035: $$\n4036: \n4037: where $D = \\sigma \\sigma^T$ is the diffusion tensor.\n4038: \n4039: By detailed balance, the stationary density is:\n4040: \n4041: $$\n4042: \\rho \\propto (\\det D)^{-1/2} \\exp\\left( -\\int_0^x b \\cdot dX / T \\right)\n4043: $$\n4044: \n4045: For our system with $b = -\\nabla U_{\\text{eff}}$ (after velocity marginalization):\n4046: \n4047: $$\n4048: \\rho \\propto (\\det D)^{-1/2} e^{-U_{\\text{eff}}/T} = \\sqrt{\\det g} \\, e^{-U_{\\text{eff}}/T}\n4049: $$\n4050: \n4051: **Step 3: Comparison with It\u00f4 Interpretation**\n4052: \n4053: If we incorrectly used **It\u00f4 calculus**, the stationary distribution would be:\n4054: \n4055: $$\n4056: \\rho_{\\text{It\u00f4}} \\propto e^{-U_{\\text{eff}}/T}\n4057: $$\n4058: \n4059: **missing** the $\\sqrt{\\det g}$ factor.\n4060: \n4061: **Step 4: Velocity Marginalization**\n4062: \n4063: The full QSD on $(x, v)$ space factors (approximately, after fast velocity thermalization) as:\n4064: \n4065: $$\n4066: \\pi_{\\text{QSD}}(x, v) \\approx \\rho_{\\text{spatial}}(x) \\cdot \\rho_{\\text{Maxwell}}(v \\mid x)\n4067: $$\n4068: \n4069: where $\\rho_{\\text{Maxwell}}(v \\mid x)$ is the Maxwell-Boltzmann distribution at temperature $T = 1/\\gamma$.\n4070: \n4071: Integrating out velocities yields the spatial marginal stated in the theorem.\n4072: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-velocity-marginalization",
+      "title": "Fast Velocity Thermalization Justifies Annealed Approximation",
+      "start_line": 4088,
+      "end_line": 4104,
+      "header_lines": [
+        4089
+      ],
+      "content_start": 4091,
+      "content_end": 4103,
+      "content": "4091: :label: lem-velocity-marginalization\n4092: \n4093: Consider the full Langevin dynamics on phase space $(x, v) \\in \\mathcal{X} \\times \\mathbb{R}^d$. Under the assumptions of geometric ergodicity (Chapter 4), there is a **timescale separation**:\n4094: \n4095: $$\n4096: \\tau_v \\ll \\tau_x\n4097: $$\n4098: \n4099: where:\n4100: - $\\tau_v \\sim \\gamma^{-1}$: Velocity thermalization time\n4101: - $\\tau_x \\sim \\epsilon_c^{-2}$: Spatial exploration time (diffusion)\n4102: \n4103: with $\\epsilon_c = \\sqrt{T/\\gamma}$ the thermal coherence length.",
+      "metadata": {
+        "label": "lem-velocity-marginalization"
+      },
+      "section": "## Appendix A: Supporting Theorems",
+      "raw_directive": "4088: This lemma justifies treating velocities as thermalized on the timescale of spatial dynamics.\n4089: \n4090: :::{prf:lemma} Fast Velocity Thermalization Justifies Annealed Approximation\n4091: :label: lem-velocity-marginalization\n4092: \n4093: Consider the full Langevin dynamics on phase space $(x, v) \\in \\mathcal{X} \\times \\mathbb{R}^d$. Under the assumptions of geometric ergodicity (Chapter 4), there is a **timescale separation**:\n4094: \n4095: $$\n4096: \\tau_v \\ll \\tau_x\n4097: $$\n4098: \n4099: where:\n4100: - $\\tau_v \\sim \\gamma^{-1}$: Velocity thermalization time\n4101: - $\\tau_x \\sim \\epsilon_c^{-2}$: Spatial exploration time (diffusion)\n4102: \n4103: with $\\epsilon_c = \\sqrt{T/\\gamma}$ the thermal coherence length.\n4104: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-123",
+      "title": null,
+      "start_line": 4106,
+      "end_line": 4136,
+      "header_lines": [],
+      "content_start": 4107,
+      "content_end": 4135,
+      "content": "4107: \n4108: :::{prf:proof}\n4109: **Velocity Relaxation Rate**\n4110: \n4111: From the kinetic operator with friction coefficient $\\gamma$, velocities relax exponentially:\n4112: \n4113: $$\n4114: \\langle v(t) v(0) \\rangle \\sim e^{-\\gamma t}\n4115: $$\n4116: \n4117: Thus $\\tau_v = \\gamma^{-1}$.\n4118: \n4119: **Spatial Diffusion Time**\n4120: \n4121: The effective diffusion coefficient for positions is $D_{\\text{eff}} \\sim T/\\gamma = \\gamma^{-1} \\cdot T$. For a characteristic length scale $L$, the diffusion time is:\n4122: \n4123: $$\n4124: \\tau_x \\sim \\frac{L^2}{D_{\\text{eff}}} = \\frac{L^2 \\gamma}{T}\n4125: $$\n4126: \n4127: Taking $L = \\epsilon_c = \\sqrt{T/\\gamma}$, we get $\\tau_x \\sim \\gamma^{-1}$.\n4128: \n4129: **Separation Ratio**\n4130: \n4131: For typical parameters with $\\gamma \\gg T/L^2$, we have:\n4132: \n4133: $$\n4134: \\frac{\\tau_v}{\\tau_x} = \\frac{T}{\\gamma L^2} \\ll 1\n4135: $$",
+      "metadata": {},
+      "section": "## Appendix A: Supporting Theorems",
+      "raw_directive": "4106: :::\n4107: \n4108: :::{prf:proof}\n4109: **Velocity Relaxation Rate**\n4110: \n4111: From the kinetic operator with friction coefficient $\\gamma$, velocities relax exponentially:\n4112: \n4113: $$\n4114: \\langle v(t) v(0) \\rangle \\sim e^{-\\gamma t}\n4115: $$\n4116: \n4117: Thus $\\tau_v = \\gamma^{-1}$.\n4118: \n4119: **Spatial Diffusion Time**\n4120: \n4121: The effective diffusion coefficient for positions is $D_{\\text{eff}} \\sim T/\\gamma = \\gamma^{-1} \\cdot T$. For a characteristic length scale $L$, the diffusion time is:\n4122: \n4123: $$\n4124: \\tau_x \\sim \\frac{L^2}{D_{\\text{eff}}} = \\frac{L^2 \\gamma}{T}\n4125: $$\n4126: \n4127: Taking $L = \\epsilon_c = \\sqrt{T/\\gamma}$, we get $\\tau_x \\sim \\gamma^{-1}$.\n4128: \n4129: **Separation Ratio**\n4130: \n4131: For typical parameters with $\\gamma \\gg T/L^2$, we have:\n4132: \n4133: $$\n4134: \\frac{\\tau_v}{\\tau_x} = \\frac{T}{\\gamma L^2} \\ll 1\n4135: $$\n4136: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-companion-bias-riemannian",
+      "title": "Continuum Limit via Saddle-Point Approximation",
+      "start_line": 4142,
+      "end_line": 4160,
+      "header_lines": [
+        4143
+      ],
+      "content_start": 4145,
+      "content_end": 4159,
+      "content": "4145: :label: lem-companion-bias-riemannian\n4146: \n4147: In the continuum limit $N \\to \\infty$ with the QSD spatial marginal given by Theorem {prf:ref}`thm-qsd-spatial-riemannian-volume`, the companion selection dynamics satisfy:\n4148: \n4149: $$\n4150: g(X) = \\prod_{i=1}^N \\sqrt{\\det g(x_i)} \\cdot \\left(1 + O(1/\\sqrt{N})\\right)\n4151: $$\n4152: \n4153: where $g(x)$ is the Riemannian metric tensor on the state space.\n4154: \n4155: **Consequence**: The corrected stationary distribution reduces to:\n4156: \n4157: $$\n4158: \\pi'(X) = \\frac{1}{Z'} \\prod_{i=1}^N \\left[\\sqrt{\\det g(x_i)} \\exp\\left(-\\beta H_{\\text{eff}}(x_i, v_i)\\right)\\right]\n4159: $$",
+      "metadata": {
+        "label": "lem-companion-bias-riemannian"
+      },
+      "section": "## Appendix A: Supporting Theorems",
+      "raw_directive": "4142: This lemma connects the microscopic companion selection mechanism to the macroscopic Riemannian measure.\n4143: \n4144: :::{prf:lemma} Continuum Limit via Saddle-Point Approximation\n4145: :label: lem-companion-bias-riemannian\n4146: \n4147: In the continuum limit $N \\to \\infty$ with the QSD spatial marginal given by Theorem {prf:ref}`thm-qsd-spatial-riemannian-volume`, the companion selection dynamics satisfy:\n4148: \n4149: $$\n4150: g(X) = \\prod_{i=1}^N \\sqrt{\\det g(x_i)} \\cdot \\left(1 + O(1/\\sqrt{N})\\right)\n4151: $$\n4152: \n4153: where $g(x)$ is the Riemannian metric tensor on the state space.\n4154: \n4155: **Consequence**: The corrected stationary distribution reduces to:\n4156: \n4157: $$\n4158: \\pi'(X) = \\frac{1}{Z'} \\prod_{i=1}^N \\left[\\sqrt{\\det g(x_i)} \\exp\\left(-\\beta H_{\\text{eff}}(x_i, v_i)\\right)\\right]\n4159: $$\n4160: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-179",
+      "title": null,
+      "start_line": 4162,
+      "end_line": 4172,
+      "header_lines": [],
+      "content_start": 4163,
+      "content_end": 4171,
+      "content": "4163: \n4164: :::{prf:proof}\n4165: The companion selection mechanism introduces a bias factor in the transition probabilities. In the large-$N$ limit, by saddle-point approximation, this bias function factorizes as:\n4166: \n4167: $$\n4168: g(X) = \\exp\\left( \\sum_{i=1}^N \\log \\sqrt{\\det g(x_i)} + O(1/\\sqrt{N}) \\right) = \\prod_{i=1}^N \\sqrt{\\det g(x_i)} \\cdot \\left(1 + O(1/\\sqrt{N})\\right)\n4169: $$\n4170: \n4171: Combining with the bare stationary distribution $\\propto \\prod_i e^{-\\beta H_{\\text{eff}}(x_i, v_i)}$ yields the stated Riemannian Gibbs form.",
+      "metadata": {},
+      "section": "## Appendix A: Supporting Theorems",
+      "raw_directive": "4162: :::\n4163: \n4164: :::{prf:proof}\n4165: The companion selection mechanism introduces a bias factor in the transition probabilities. In the large-$N$ limit, by saddle-point approximation, this bias function factorizes as:\n4166: \n4167: $$\n4168: g(X) = \\exp\\left( \\sum_{i=1}^N \\log \\sqrt{\\det g(x_i)} + O(1/\\sqrt{N}) \\right) = \\prod_{i=1}^N \\sqrt{\\det g(x_i)} \\cdot \\left(1 + O(1/\\sqrt{N})\\right)\n4169: $$\n4170: \n4171: Combining with the bare stationary distribution $\\propto \\prod_i e^{-\\beta H_{\\text{eff}}(x_i, v_i)}$ yields the stated Riemannian Gibbs form.\n4172: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

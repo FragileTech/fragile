@@ -1,0 +1,47 @@
+{
+  "chapter_index": 8,
+  "section_id": "## 8. Main C\u2074 Regularity Theorem",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-c4-regularity",
+      "title": "C\u2074 Regularity of Fitness Potential (Simplified Position-Dependent Model)",
+      "start_line": 859,
+      "end_line": 885,
+      "header_lines": [
+        860
+      ],
+      "content_start": 862,
+      "content_end": 884,
+      "content": "862: :label: thm-c4-regularity\n863: \n864: **Scope**: This theorem applies to the simplified fitness model where $d: \\mathcal{X} \\to \\mathbb{R}$ depends only on walker position (see Warning {ref}`warn-scope-simplified-model`).\n865: \n866: Under Assumptions {prf:ref}`assump-c4-measurement`, {prf:ref}`assump-c4-kernel`, {prf:ref}`assump-c4-rescale`, and {prf:ref}`assump-c4-regularized-std`,\n867: the fitness potential $V_{\\text{fit}}[f_k, \\rho](x_i) = g_A(Z_\\rho[f_k, d, x_i])$ is C\u2074 with:\n868: \n869: $$\n870: \\|\\nabla^4_{x_i} V_{\\text{fit}}\\| \\le K_{V,4}(\\rho) < \\infty\n871: \n872: $$\n873: \n874: for all $k \\in \\{1, \\ldots, N\\}$ and $N \\ge 1$, where:\n875: \n876: $$\n877: \\boxed{\n878: \\begin{align}\n879: K_{V,4}(\\rho) := \\,&L_{g^{(4)}_A} \\cdot (K_{Z,1}(\\rho))^4 + 6 L_{g'''_A} \\cdot (K_{Z,1}(\\rho))^2 \\cdot K_{Z,2}(\\rho) \\\\\n880: &+ 3 L_{g''_A} \\cdot (K_{Z,2}(\\rho))^2 + 4 L_{g''_A} \\cdot K_{Z,1}(\\rho) \\cdot K_{Z,3}(\\rho) + L_{g'_A} \\cdot K_{Z,4}(\\rho)\n881: \\end{align}\n882: }\n883: \n884: $$",
+      "metadata": {
+        "label": "thm-c4-regularity"
+      },
+      "section": "## 8. Main C\u2074 Regularity Theorem",
+      "raw_directive": "859: ## 8. Main C\u2074 Regularity Theorem\n860: \n861: :::{prf:theorem} C\u2074 Regularity of Fitness Potential (Simplified Position-Dependent Model)\n862: :label: thm-c4-regularity\n863: \n864: **Scope**: This theorem applies to the simplified fitness model where $d: \\mathcal{X} \\to \\mathbb{R}$ depends only on walker position (see Warning {ref}`warn-scope-simplified-model`).\n865: \n866: Under Assumptions {prf:ref}`assump-c4-measurement`, {prf:ref}`assump-c4-kernel`, {prf:ref}`assump-c4-rescale`, and {prf:ref}`assump-c4-regularized-std`,\n867: the fitness potential $V_{\\text{fit}}[f_k, \\rho](x_i) = g_A(Z_\\rho[f_k, d, x_i])$ is C\u2074 with:\n868: \n869: $$\n870: \\|\\nabla^4_{x_i} V_{\\text{fit}}\\| \\le K_{V,4}(\\rho) < \\infty\n871: \n872: $$\n873: \n874: for all $k \\in \\{1, \\ldots, N\\}$ and $N \\ge 1$, where:\n875: \n876: $$\n877: \\boxed{\n878: \\begin{align}\n879: K_{V,4}(\\rho) := \\,&L_{g^{(4)}_A} \\cdot (K_{Z,1}(\\rho))^4 + 6 L_{g'''_A} \\cdot (K_{Z,1}(\\rho))^2 \\cdot K_{Z,2}(\\rho) \\\\\n880: &+ 3 L_{g''_A} \\cdot (K_{Z,2}(\\rho))^2 + 4 L_{g''_A} \\cdot K_{Z,1}(\\rho) \\cdot K_{Z,3}(\\rho) + L_{g'_A} \\cdot K_{Z,4}(\\rho)\n881: \\end{align}\n882: }\n883: \n884: $$\n885: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-thm-c4-regularity",
+      "title": null,
+      "start_line": 887,
+      "end_line": 899,
+      "header_lines": [
+        888
+      ],
+      "content_start": 890,
+      "content_end": 898,
+      "content": "890: :label: proof-thm-c4-regularity\n891: \n892: **Step 1:** Apply fourth-order chain rule (Fa\u00e0 di Bruno formula) to $V_{\\text{fit}} = g_A \\circ Z_\\rho$.\n893: \n894: **Step 2:** Bound each of the 5 terms using assumptions on $g_A$ and bounds on $Z_\\rho$ derivatives.\n895: \n896: **Step 3:** All $K_{Z,m}(\\rho)$ bounds are k-uniform via telescoping identities.\n897: \n898: **Step 4:** Continuity follows from composition of continuous functions.",
+      "metadata": {
+        "label": "proof-thm-c4-regularity"
+      },
+      "section": "## 8. Main C\u2074 Regularity Theorem",
+      "raw_directive": "887: :::\n888: \n889: :::{prf:proof}\n890: :label: proof-thm-c4-regularity\n891: \n892: **Step 1:** Apply fourth-order chain rule (Fa\u00e0 di Bruno formula) to $V_{\\text{fit}} = g_A \\circ Z_\\rho$.\n893: \n894: **Step 2:** Bound each of the 5 terms using assumptions on $g_A$ and bounds on $Z_\\rho$ derivatives.\n895: \n896: **Step 3:** All $K_{Z,m}(\\rho)$ bounds are k-uniform via telescoping identities.\n897: \n898: **Step 4:** Continuity follows from composition of continuous functions.\n899: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

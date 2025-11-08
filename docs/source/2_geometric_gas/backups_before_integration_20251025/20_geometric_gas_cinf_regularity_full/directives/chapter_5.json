@@ -1,0 +1,147 @@
+{
+  "chapter_index": 5,
+  "section_id": "## 3. Smooth Phase-Space Clustering",
+  "directive_count": 8,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-smooth-phase-space-partition-full",
+      "title": "Smooth Phase-Space Partition",
+      "start_line": 1128,
+      "end_line": 1157,
+      "header_lines": [
+        1129
+      ],
+      "content_start": 1131,
+      "content_end": 1156,
+      "content": "1131: :label: def-smooth-phase-space-partition-full\n1132: \n1133: Fix a clustering scale $\\varepsilon_c > 0$ and cluster centers $\\{(y_m, u_m)\\}_{m=1}^M$ in phase space.\n1134: \n1135: A **smooth partition of unity** is a collection of functions $\\{\\psi_m : \\mathcal{X} \\times \\mathbb{R}^d \\to [0,1]\\}_{m=1}^M$ satisfying:\n1136: \n1137: 1. **Partition identity**:\n1138: \n1139: $$\n1140: \\sum_{m=1}^M \\psi_m(x, v) = 1 \\quad \\text{for all } (x, v) \\in \\mathcal{X} \\times \\mathbb{R}^d\n1141: \n1142: $$\n1143: \n1144: 2. **Smoothness**: Each $\\psi_m \\in C^\\infty$ with bounded derivatives:\n1145: \n1146: $$\n1147: \\|\\nabla^n \\psi_m\\|_\\infty \\leq C_{\\psi,n} \\cdot \\varepsilon_c^{-n} \\quad \\text{for all } n \\geq 0\n1148: \n1149: $$\n1150: \n1151: 3. **Localization**: Each $\\psi_m$ has support concentrated near cluster $m$:\n1152: \n1153: $$\n1154: \\psi_m(x, v) = 0 \\quad \\text{when } d_{\\text{alg}}((x,v), (y_m, u_m)) > 2\\varepsilon_c\n1155: \n1156: $$",
+      "metadata": {
+        "label": "def-smooth-phase-space-partition-full"
+      },
+      "section": "## 3. Smooth Phase-Space Clustering",
+      "raw_directive": "1128: We construct a **smooth partition of unity** on phase space that avoids the discontinuity problems of hard clustering.\n1129: \n1130: :::{prf:definition} Smooth Phase-Space Partition\n1131: :label: def-smooth-phase-space-partition-full\n1132: \n1133: Fix a clustering scale $\\varepsilon_c > 0$ and cluster centers $\\{(y_m, u_m)\\}_{m=1}^M$ in phase space.\n1134: \n1135: A **smooth partition of unity** is a collection of functions $\\{\\psi_m : \\mathcal{X} \\times \\mathbb{R}^d \\to [0,1]\\}_{m=1}^M$ satisfying:\n1136: \n1137: 1. **Partition identity**:\n1138: \n1139: $$\n1140: \\sum_{m=1}^M \\psi_m(x, v) = 1 \\quad \\text{for all } (x, v) \\in \\mathcal{X} \\times \\mathbb{R}^d\n1141: \n1142: $$\n1143: \n1144: 2. **Smoothness**: Each $\\psi_m \\in C^\\infty$ with bounded derivatives:\n1145: \n1146: $$\n1147: \\|\\nabla^n \\psi_m\\|_\\infty \\leq C_{\\psi,n} \\cdot \\varepsilon_c^{-n} \\quad \\text{for all } n \\geq 0\n1148: \n1149: $$\n1150: \n1151: 3. **Localization**: Each $\\psi_m$ has support concentrated near cluster $m$:\n1152: \n1153: $$\n1154: \\psi_m(x, v) = 0 \\quad \\text{when } d_{\\text{alg}}((x,v), (y_m, u_m)) > 2\\varepsilon_c\n1155: \n1156: $$\n1157: "
+    },
+    {
+      "directive_type": "construction",
+      "label": "const-mollified-partition-full",
+      "title": "Mollified Partition via Smooth Cutoffs",
+      "start_line": 1159,
+      "end_line": 1205,
+      "header_lines": [
+        1160
+      ],
+      "content_start": 1162,
+      "content_end": 1204,
+      "content": "1162: :label: const-mollified-partition-full\n1163: \n1164: We construct $\\psi_m$ using **smooth bump functions**:\n1165: \n1166: **Step 1: Smooth cutoff function.**\n1167: \n1168: Define $\\phi: \\mathbb{R}_{\\geq 0} \\to [0,1]$ by:\n1169: \n1170: $$\n1171: \\phi(r) = \\begin{cases}\n1172: \\exp\\left(-\\frac{1}{1 - (r/R)^2}\\right) & \\text{if } r < R \\\\\n1173: 0 & \\text{if } r \\geq R\n1174: \\end{cases}\n1175: \n1176: $$\n1177: \n1178: This is C^\u221e with compact support $[0, R]$ and $\\phi(r) = 1$ near $r = 0$.\n1179: \n1180: **Step 2: Localized bump functions.**\n1181: \n1182: For cluster $m$ with center $(y_m, u_m)$, define:\n1183: \n1184: $$\n1185: \\tilde{\\psi}_m(x, v) = \\phi\\left(d_{\\text{alg}}((x,v), (y_m, u_m)) / (2\\varepsilon_c)\\right)\n1186: \n1187: $$\n1188: \n1189: This satisfies:\n1190: - $\\tilde{\\psi}_m \\in C^\\infty$ (composition of smooth functions)\n1191: - $\\text{supp}(\\tilde{\\psi}_m) \\subset B((y_m, u_m), 2\\varepsilon_c)$ (compact support)\n1192: - $\\tilde{\\psi}_m \\geq \\exp(-1)$ on $B((y_m, u_m), \\varepsilon_c)$ (positive core)\n1193: \n1194: **Step 3: Normalization to partition of unity.**\n1195: \n1196: Define:\n1197: \n1198: $$\n1199: \\psi_m(x, v) = \\frac{\\tilde{\\psi}_m(x, v)}{\\sum_{m'=1}^M \\tilde{\\psi}_{m'}(x, v)}\n1200: \n1201: $$\n1202: \n1203: By construction:\n1204: - $\\sum_{m=1}^M \\psi_m = 1$ (partition identity)",
+      "metadata": {
+        "label": "const-mollified-partition-full"
+      },
+      "section": "## 3. Smooth Phase-Space Clustering",
+      "raw_directive": "1159: :::\n1160: \n1161: :::{prf:construction} Mollified Partition via Smooth Cutoffs\n1162: :label: const-mollified-partition-full\n1163: \n1164: We construct $\\psi_m$ using **smooth bump functions**:\n1165: \n1166: **Step 1: Smooth cutoff function.**\n1167: \n1168: Define $\\phi: \\mathbb{R}_{\\geq 0} \\to [0,1]$ by:\n1169: \n1170: $$\n1171: \\phi(r) = \\begin{cases}\n1172: \\exp\\left(-\\frac{1}{1 - (r/R)^2}\\right) & \\text{if } r < R \\\\\n1173: 0 & \\text{if } r \\geq R\n1174: \\end{cases}\n1175: \n1176: $$\n1177: \n1178: This is C^\u221e with compact support $[0, R]$ and $\\phi(r) = 1$ near $r = 0$.\n1179: \n1180: **Step 2: Localized bump functions.**\n1181: \n1182: For cluster $m$ with center $(y_m, u_m)$, define:\n1183: \n1184: $$\n1185: \\tilde{\\psi}_m(x, v) = \\phi\\left(d_{\\text{alg}}((x,v), (y_m, u_m)) / (2\\varepsilon_c)\\right)\n1186: \n1187: $$\n1188: \n1189: This satisfies:\n1190: - $\\tilde{\\psi}_m \\in C^\\infty$ (composition of smooth functions)\n1191: - $\\text{supp}(\\tilde{\\psi}_m) \\subset B((y_m, u_m), 2\\varepsilon_c)$ (compact support)\n1192: - $\\tilde{\\psi}_m \\geq \\exp(-1)$ on $B((y_m, u_m), \\varepsilon_c)$ (positive core)\n1193: \n1194: **Step 3: Normalization to partition of unity.**\n1195: \n1196: Define:\n1197: \n1198: $$\n1199: \\psi_m(x, v) = \\frac{\\tilde{\\psi}_m(x, v)}{\\sum_{m'=1}^M \\tilde{\\psi}_{m'}(x, v)}\n1200: \n1201: $$\n1202: \n1203: By construction:\n1204: - $\\sum_{m=1}^M \\psi_m = 1$ (partition identity)\n1205: - Each $\\psi_m \\in C^\\infty$ (quotient of smooth functions with non-vanishing denominator)"
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-partition-derivative-bounds-full",
+      "title": "Derivative Bounds for Partition Functions",
+      "start_line": 1207,
+      "end_line": 1218,
+      "header_lines": [
+        1208
+      ],
+      "content_start": 1210,
+      "content_end": 1217,
+      "content": "1210: :label: lem-partition-derivative-bounds-full\n1211: \n1212: The partition functions $\\psi_m$ satisfy:\n1213: \n1214: $$\n1215: \\|\\nabla^n \\psi_m\\|_\\infty \\leq C_{\\psi,n} \\cdot \\varepsilon_c^{-n}\n1216: \n1217: $$",
+      "metadata": {
+        "label": "lem-partition-derivative-bounds-full"
+      },
+      "section": "## 3. Smooth Phase-Space Clustering",
+      "raw_directive": "1207: :::\n1208: \n1209: :::{prf:lemma} Derivative Bounds for Partition Functions\n1210: :label: lem-partition-derivative-bounds-full\n1211: \n1212: The partition functions $\\psi_m$ satisfy:\n1213: \n1214: $$\n1215: \\|\\nabla^n \\psi_m\\|_\\infty \\leq C_{\\psi,n} \\cdot \\varepsilon_c^{-n}\n1216: \n1217: $$\n1218: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-97",
+      "title": null,
+      "start_line": 1220,
+      "end_line": 1262,
+      "header_lines": [],
+      "content_start": 1221,
+      "content_end": 1261,
+      "content": "1221: \n1222: :::{prf:proof}\n1223: **Step 1: Derivatives of the bump function.**\n1224: \n1225: For the smooth cutoff $\\phi(r)$, standard calculus gives:\n1226: \n1227: $$\n1228: |\\phi^{(n)}(r)| \\leq C_\\phi \\cdot n! \\cdot R^{-n}\n1229: \n1230: $$\n1231: \n1232: where $C_\\phi$ is a universal constant (Gevrey-1 bounds for smooth compactly supported functions).\n1233: \n1234: **Step 2: Chain rule for $\\tilde{\\psi}_m$.**\n1235: \n1236: Since $\\tilde{\\psi}_m(x,v) = \\phi(d_{\\text{alg}}((x,v), (y_m, u_m)) / (2\\varepsilon_c))$, by Fa\u00e0 di Bruno formula:\n1237: \n1238: $$\n1239: \\|\\nabla^n \\tilde{\\psi}_m\\|_\\infty \\leq C'_\\phi \\cdot n! \\cdot (2\\varepsilon_c)^{-n}\n1240: \n1241: $$\n1242: \n1243: (using $\\|\\nabla^j d_{\\text{alg}}\\|_\\infty = \\mathcal{O}(1)$ for $j \\geq 1$ - see Lemma {prf:ref}`lem-dalg-derivative-bounds-full`).\n1244: \n1245: **Step 3: Quotient rule for $\\psi_m$.**\n1246: \n1247: The normalized partition function:\n1248: \n1249: $$\n1250: \\psi_m = \\frac{\\tilde{\\psi}_m}{\\sum_{m'} \\tilde{\\psi}_{m'}}\n1251: \n1252: $$\n1253: \n1254: By quotient rule, with denominator bounded below by $1$ (sum of at least one non-zero $\\tilde{\\psi}_{m'}$):\n1255: \n1256: $$\n1257: \\|\\nabla^n \\psi_m\\|_\\infty \\leq C_{\\psi,n} \\cdot \\varepsilon_c^{-n}\n1258: \n1259: $$\n1260: \n1261: where $C_{\\psi,n} = \\mathcal{O}(n!)$ absorbs the combinatorial factors from the quotient rule.",
+      "metadata": {},
+      "section": "## 3. Smooth Phase-Space Clustering",
+      "raw_directive": "1220: :::\n1221: \n1222: :::{prf:proof}\n1223: **Step 1: Derivatives of the bump function.**\n1224: \n1225: For the smooth cutoff $\\phi(r)$, standard calculus gives:\n1226: \n1227: $$\n1228: |\\phi^{(n)}(r)| \\leq C_\\phi \\cdot n! \\cdot R^{-n}\n1229: \n1230: $$\n1231: \n1232: where $C_\\phi$ is a universal constant (Gevrey-1 bounds for smooth compactly supported functions).\n1233: \n1234: **Step 2: Chain rule for $\\tilde{\\psi}_m$.**\n1235: \n1236: Since $\\tilde{\\psi}_m(x,v) = \\phi(d_{\\text{alg}}((x,v), (y_m, u_m)) / (2\\varepsilon_c))$, by Fa\u00e0 di Bruno formula:\n1237: \n1238: $$\n1239: \\|\\nabla^n \\tilde{\\psi}_m\\|_\\infty \\leq C'_\\phi \\cdot n! \\cdot (2\\varepsilon_c)^{-n}\n1240: \n1241: $$\n1242: \n1243: (using $\\|\\nabla^j d_{\\text{alg}}\\|_\\infty = \\mathcal{O}(1)$ for $j \\geq 1$ - see Lemma {prf:ref}`lem-dalg-derivative-bounds-full`).\n1244: \n1245: **Step 3: Quotient rule for $\\psi_m$.**\n1246: \n1247: The normalized partition function:\n1248: \n1249: $$\n1250: \\psi_m = \\frac{\\tilde{\\psi}_m}{\\sum_{m'} \\tilde{\\psi}_{m'}}\n1251: \n1252: $$\n1253: \n1254: By quotient rule, with denominator bounded below by $1$ (sum of at least one non-zero $\\tilde{\\psi}_{m'}$):\n1255: \n1256: $$\n1257: \\|\\nabla^n \\psi_m\\|_\\infty \\leq C_{\\psi,n} \\cdot \\varepsilon_c^{-n}\n1258: \n1259: $$\n1260: \n1261: where $C_{\\psi,n} = \\mathcal{O}(n!)$ absorbs the combinatorial factors from the quotient rule.\n1262: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-soft-cluster-membership-full",
+      "title": "Soft Cluster Membership Weights",
+      "start_line": 1266,
+      "end_line": 1280,
+      "header_lines": [
+        1267
+      ],
+      "content_start": 1269,
+      "content_end": 1279,
+      "content": "1269: :label: def-soft-cluster-membership-full\n1270: \n1271: For walker $j \\in \\mathcal{A}$, define its **soft membership** in cluster $m$ as:\n1272: \n1273: $$\n1274: \\alpha_{j,m} = \\psi_m(x_j, v_j) \\in [0, 1]\n1275: \n1276: $$\n1277: \n1278: This satisfies:\n1279: - $\\sum_{m=1}^M \\alpha_{j,m} = 1$ (walker belongs to all clusters with fractional weights)",
+      "metadata": {
+        "label": "def-soft-cluster-membership-full"
+      },
+      "section": "## 3. Smooth Phase-Space Clustering",
+      "raw_directive": "1266: ### 3.2 Cluster Assignment via Soft Membership\n1267: \n1268: :::{prf:definition} Soft Cluster Membership Weights\n1269: :label: def-soft-cluster-membership-full\n1270: \n1271: For walker $j \\in \\mathcal{A}$, define its **soft membership** in cluster $m$ as:\n1272: \n1273: $$\n1274: \\alpha_{j,m} = \\psi_m(x_j, v_j) \\in [0, 1]\n1275: \n1276: $$\n1277: \n1278: This satisfies:\n1279: - $\\sum_{m=1}^M \\alpha_{j,m} = 1$ (walker belongs to all clusters with fractional weights)\n1280: - $\\alpha_{j,m} \\geq 1/2$ if $d_{\\text{alg}}(j, m) \\leq \\varepsilon_c/2$ (strong membership near center)"
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-effective-cluster-population-full",
+      "title": "Effective Cluster Population",
+      "start_line": 1286,
+      "end_line": 1297,
+      "header_lines": [
+        1287
+      ],
+      "content_start": 1289,
+      "content_end": 1296,
+      "content": "1289: :label: def-effective-cluster-population-full\n1290: \n1291: The **effective number of walkers** in cluster $m$ is:\n1292: \n1293: $$\n1294: k_m^{\\text{eff}} = \\sum_{j \\in \\mathcal{A}} \\alpha_{j,m} = \\sum_{j \\in \\mathcal{A}} \\psi_m(x_j, v_j)\n1295: \n1296: $$",
+      "metadata": {
+        "label": "def-effective-cluster-population-full"
+      },
+      "section": "## 3. Smooth Phase-Space Clustering",
+      "raw_directive": "1286: ### 3.3 Effective Cluster Size\n1287: \n1288: :::{prf:definition} Effective Cluster Population\n1289: :label: def-effective-cluster-population-full\n1290: \n1291: The **effective number of walkers** in cluster $m$ is:\n1292: \n1293: $$\n1294: k_m^{\\text{eff}} = \\sum_{j \\in \\mathcal{A}} \\alpha_{j,m} = \\sum_{j \\in \\mathcal{A}} \\psi_m(x_j, v_j)\n1295: \n1296: $$\n1297: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-effective-cluster-size-bounds-full",
+      "title": "Bounds on Effective Cluster Size",
+      "start_line": 1299,
+      "end_line": 1317,
+      "header_lines": [
+        1300
+      ],
+      "content_start": 1302,
+      "content_end": 1316,
+      "content": "1302: :label: lem-effective-cluster-size-bounds-full\n1303: \n1304: Under {prf:ref}`assump-uniform-density-full`:\n1305: \n1306: $$\n1307: k_m^{\\text{eff}} \\leq \\rho_{\\max} \\cdot \\text{Vol}(B(y_m, 2\\varepsilon_c)) = C_{\\text{vol}} \\cdot \\rho_{\\max} \\cdot \\varepsilon_c^{2d}\n1308: \n1309: $$\n1310: \n1311: where $C_{\\text{vol}}$ is the volume constant for phase-space balls.\n1312: \n1313: Moreover, the total effective population sums to $k$:\n1314: \n1315: $$\n1316: \\sum_{m=1}^M k_m^{\\text{eff}} = \\sum_{m=1}^M \\sum_{j \\in \\mathcal{A}} \\psi_m(x_j, v_j) = \\sum_{j \\in \\mathcal{A}} \\underbrace{\\sum_{m=1}^M \\psi_m(x_j, v_j)}_{= 1} = k",
+      "metadata": {
+        "label": "lem-effective-cluster-size-bounds-full"
+      },
+      "section": "## 3. Smooth Phase-Space Clustering",
+      "raw_directive": "1299: :::\n1300: \n1301: :::{prf:lemma} Bounds on Effective Cluster Size\n1302: :label: lem-effective-cluster-size-bounds-full\n1303: \n1304: Under {prf:ref}`assump-uniform-density-full`:\n1305: \n1306: $$\n1307: k_m^{\\text{eff}} \\leq \\rho_{\\max} \\cdot \\text{Vol}(B(y_m, 2\\varepsilon_c)) = C_{\\text{vol}} \\cdot \\rho_{\\max} \\cdot \\varepsilon_c^{2d}\n1308: \n1309: $$\n1310: \n1311: where $C_{\\text{vol}}$ is the volume constant for phase-space balls.\n1312: \n1313: Moreover, the total effective population sums to $k$:\n1314: \n1315: $$\n1316: \\sum_{m=1}^M k_m^{\\text{eff}} = \\sum_{m=1}^M \\sum_{j \\in \\mathcal{A}} \\psi_m(x_j, v_j) = \\sum_{j \\in \\mathcal{A}} \\underbrace{\\sum_{m=1}^M \\psi_m(x_j, v_j)}_{= 1} = k\n1317: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-196",
+      "title": null,
+      "start_line": 1319,
+      "end_line": 1357,
+      "header_lines": [],
+      "content_start": 1320,
+      "content_end": 1356,
+      "content": "1320: \n1321: :::{prf:proof}\n1322: This lemma establishes uniform bounds on the effective cluster size using density bounds and geometric measure theory.\n1323: \n1324: **Part 1: Upper bound via density and support**\n1325: \n1326: From {prf:ref}`def-effective-cluster-population-full`, $k_m^{\\text{eff}} = \\sum_{j \\in \\mathcal{A}} \\psi_m(x_j, v_j)$. Since $\\psi_m$ has support only within distance $2\\varepsilon_c$ of cluster center $(y_m, u_m)$, only walkers in the phase-space ball $B(y_m, 2\\varepsilon_c)$ contribute.\n1327: \n1328: Under the uniform density bound {prf:ref}`assump-uniform-density-full`, the number of walkers in any ball $B$ satisfies:\n1329: \n1330: $$\n1331: \\#\\{j : (x_j, v_j) \\in B\\} \\leq \\rho_{\\max} \\cdot \\text{Vol}(B)\n1332: \n1333: $$\n1334: \n1335: The phase-space has dimension $2d$ (position + velocity), so:\n1336: \n1337: $$\n1338: \\text{Vol}(B(y_m, 2\\varepsilon_c)) = \\frac{\\pi^d}{d!} (2\\varepsilon_c)^{2d} = C_{\\text{vol}} \\cdot \\varepsilon_c^{2d}\n1339: \n1340: $$\n1341: \n1342: where $C_{\\text{vol}} = 2^{2d} \\pi^d / d!$. Therefore:\n1343: \n1344: $$\n1345: k_m^{\\text{eff}} \\leq \\rho_{\\max} \\cdot C_{\\text{vol}} \\cdot \\varepsilon_c^{2d}\n1346: \n1347: $$\n1348: \n1349: **Part 2: Total population conservation**\n1350: \n1351: The partition functions satisfy $\\sum_{m=1}^M \\psi_m(x, v) = 1$ (partition of unity). Summing over all clusters:\n1352: \n1353: $$\n1354: \\sum_{m=1}^M k_m^{\\text{eff}} = \\sum_{m=1}^M \\sum_{j \\in \\mathcal{A}} \\psi_m(x_j, v_j) = \\sum_{j \\in \\mathcal{A}} \\sum_{m=1}^M \\psi_m(x_j, v_j) = \\sum_{j \\in \\mathcal{A}} 1 = k\n1355: \n1356: $$",
+      "metadata": {},
+      "section": "## 3. Smooth Phase-Space Clustering",
+      "raw_directive": "1319: :::\n1320: \n1321: :::{prf:proof}\n1322: This lemma establishes uniform bounds on the effective cluster size using density bounds and geometric measure theory.\n1323: \n1324: **Part 1: Upper bound via density and support**\n1325: \n1326: From {prf:ref}`def-effective-cluster-population-full`, $k_m^{\\text{eff}} = \\sum_{j \\in \\mathcal{A}} \\psi_m(x_j, v_j)$. Since $\\psi_m$ has support only within distance $2\\varepsilon_c$ of cluster center $(y_m, u_m)$, only walkers in the phase-space ball $B(y_m, 2\\varepsilon_c)$ contribute.\n1327: \n1328: Under the uniform density bound {prf:ref}`assump-uniform-density-full`, the number of walkers in any ball $B$ satisfies:\n1329: \n1330: $$\n1331: \\#\\{j : (x_j, v_j) \\in B\\} \\leq \\rho_{\\max} \\cdot \\text{Vol}(B)\n1332: \n1333: $$\n1334: \n1335: The phase-space has dimension $2d$ (position + velocity), so:\n1336: \n1337: $$\n1338: \\text{Vol}(B(y_m, 2\\varepsilon_c)) = \\frac{\\pi^d}{d!} (2\\varepsilon_c)^{2d} = C_{\\text{vol}} \\cdot \\varepsilon_c^{2d}\n1339: \n1340: $$\n1341: \n1342: where $C_{\\text{vol}} = 2^{2d} \\pi^d / d!$. Therefore:\n1343: \n1344: $$\n1345: k_m^{\\text{eff}} \\leq \\rho_{\\max} \\cdot C_{\\text{vol}} \\cdot \\varepsilon_c^{2d}\n1346: \n1347: $$\n1348: \n1349: **Part 2: Total population conservation**\n1350: \n1351: The partition functions satisfy $\\sum_{m=1}^M \\psi_m(x, v) = 1$ (partition of unity). Summing over all clusters:\n1352: \n1353: $$\n1354: \\sum_{m=1}^M k_m^{\\text{eff}} = \\sum_{m=1}^M \\sum_{j \\in \\mathcal{A}} \\psi_m(x_j, v_j) = \\sum_{j \\in \\mathcal{A}} \\sum_{m=1}^M \\psi_m(x_j, v_j) = \\sum_{j \\in \\mathcal{A}} 1 = k\n1355: \n1356: $$\n1357: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

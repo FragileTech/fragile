@@ -1,0 +1,159 @@
+{
+  "document_id": "18_emergent_geometry",
+  "stage": "directives",
+  "directive_type": "remark",
+  "generated_at": "2025-11-08T17:07:43.266891+00:00",
+  "count": 6,
+  "items": [
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-27",
+      "title": "Why This is a Riemannian Metric",
+      "start_line": 325,
+      "end_line": 335,
+      "header_lines": [
+        326
+      ],
+      "content_start": 328,
+      "content_end": 334,
+      "content": "328: :class: note\n329: \n330: The regularized Hessian $g(x_i, S) = H_i(S) + \\epsilon_\\Sigma I$ defines a Riemannian metric on the state space. In differential geometry, this is precisely the metric induced by a potential function (the fitness). In information geometry, this is analogous to the **Fisher information metric**.\n331: \n332: **Geometric interpretation** (using the standard convention $D = g^{-1}$):\n333: - **Flat directions** (small Hessian eigenvalues): Small metric eigenvalues → **large diffusion** → more exploration\n334: - **Curved directions** (large Hessian eigenvalues): Large metric eigenvalues → **small diffusion** → more exploitation",
+      "metadata": {
+        "class": "note"
+      },
+      "section": "## 3. The Emergent Geometry Framework",
+      "raw_directive": "325: :::\n326: \n327: :::{prf:remark} Why This is a Riemannian Metric\n328: :class: note\n329: \n330: The regularized Hessian $g(x_i, S) = H_i(S) + \\epsilon_\\Sigma I$ defines a Riemannian metric on the state space. In differential geometry, this is precisely the metric induced by a potential function (the fitness). In information geometry, this is analogous to the **Fisher information metric**.\n331: \n332: **Geometric interpretation** (using the standard convention $D = g^{-1}$):\n333: - **Flat directions** (small Hessian eigenvalues): Small metric eigenvalues → **large diffusion** → more exploration\n334: - **Curved directions** (large Hessian eigenvalues): Large metric eigenvalues → **small diffusion** → more exploitation\n335: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "18_emergent_geometry",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 3. The Emergent Geometry Framework"
+      }
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-comparison-isotropic",
+      "title": "Comparison to Isotropic Case",
+      "start_line": 557,
+      "end_line": 569,
+      "header_lines": [
+        558
+      ],
+      "content_start": 560,
+      "content_end": 568,
+      "content": "560: :label: rem-comparison-isotropic\n561: \n562: The **isotropic Euclidean Gas** (`../1_euclidean_gas/06_convergence.md`) uses $\\Sigma = \\sigma_v I$. The convergence proof relies heavily on this simplification:\n563: - Noise contribution to Lyapunov drift: $\\text{Tr}(\\sigma_v^2 I \\cdot \\nabla^2 V) = \\sigma_v^2 \\text{Tr}(\\nabla^2 V)$ is **constant**\n564: - Synchronous coupling: Both swarms use **identical** noise tensor $\\sigma_v I$\n565: \n566: The **Geometric Gas** uses $\\Sigma = \\Sigma_{\\text{reg}}(x_i, S)$. The challenges:\n567: - Noise contribution: $\\text{Tr}(D_{\\text{reg}}(x_i, S) \\cdot \\nabla^2 V)$ is **state-dependent**\n568: - Synchronous coupling: Must handle **different** noise tensors $\\Sigma_{\\text{reg}}(x_{1,i}, S_1) \\neq \\Sigma_{\\text{reg}}(x_{2,i}, S_2)$",
+      "metadata": {
+        "label": "rem-comparison-isotropic"
+      },
+      "section": "## 3. The Emergent Geometry Framework",
+      "raw_directive": "557: :::\n558: \n559: :::{prf:remark} Comparison to Isotropic Case\n560: :label: rem-comparison-isotropic\n561: \n562: The **isotropic Euclidean Gas** (`../1_euclidean_gas/06_convergence.md`) uses $\\Sigma = \\sigma_v I$. The convergence proof relies heavily on this simplification:\n563: - Noise contribution to Lyapunov drift: $\\text{Tr}(\\sigma_v^2 I \\cdot \\nabla^2 V) = \\sigma_v^2 \\text{Tr}(\\nabla^2 V)$ is **constant**\n564: - Synchronous coupling: Both swarms use **identical** noise tensor $\\sigma_v I$\n565: \n566: The **Geometric Gas** uses $\\Sigma = \\Sigma_{\\text{reg}}(x_i, S)$. The challenges:\n567: - Noise contribution: $\\text{Tr}(D_{\\text{reg}}(x_i, S) \\cdot \\nabla^2 V)$ is **state-dependent**\n568: - Synchronous coupling: Must handle **different** noise tensors $\\Sigma_{\\text{reg}}(x_{1,i}, S_1) \\neq \\Sigma_{\\text{reg}}(x_{2,i}, S_2)$\n569: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "18_emergent_geometry",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 3. The Emergent Geometry Framework"
+      }
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-coupling-essential",
+      "title": "Why Coupling is Essential",
+      "start_line": 1238,
+      "end_line": 1248,
+      "header_lines": [
+        1239
+      ],
+      "content_start": 1241,
+      "content_end": 1247,
+      "content": "1241: :label: rem-coupling-essential\n1242: \n1243: The cross term $b \\langle \\Delta x, \\Delta v \\rangle$ is **crucial for hypocoercivity**:\n1244: \n1245: - **Without coupling** ($b = 0$): Position and velocity errors are independent. Since noise acts only on $v$, the position error $\\|\\Delta x\\|^2$ has **no direct dissipation**.\n1246: \n1247: - **With coupling** ($b \\neq 0$): The position error is \"rotated\" into the velocity space via the coupling. The velocity noise then dissipates the rotated error, which propagates back to positions via $\\dot{x} = v$.",
+      "metadata": {
+        "label": "rem-coupling-essential"
+      },
+      "section": "## 5. Anisotropic Kinetic Operator Analysis",
+      "raw_directive": "1238: :::\n1239: \n1240: :::{prf:remark} Why Coupling is Essential\n1241: :label: rem-coupling-essential\n1242: \n1243: The cross term $b \\langle \\Delta x, \\Delta v \\rangle$ is **crucial for hypocoercivity**:\n1244: \n1245: - **Without coupling** ($b = 0$): Position and velocity errors are independent. Since noise acts only on $v$, the position error $\\|\\Delta x\\|^2$ has **no direct dissipation**.\n1246: \n1247: - **With coupling** ($b \\neq 0$): The position error is \"rotated\" into the velocity space via the coupling. The velocity noise then dissipates the rotated error, which propagates back to positions via $\\dot{x} = v$.\n1248: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "18_emergent_geometry",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. Anisotropic Kinetic Operator Analysis"
+      }
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-75",
+      "title": "Algorithmic Meaning of the Fitness Potential",
+      "start_line": 2814,
+      "end_line": 2822,
+      "header_lines": [
+        2815
+      ],
+      "content_start": 2817,
+      "content_end": 2821,
+      "content": "2817: :class: note\n2818: \n2819: The fitness potential $V_{\\text{fit}}[f_k, \\rho](x)$ encodes **relative performance in a local neighborhood**:\n2820: - High values indicate positions where the measurement $d(x)$ is **above the local mean** (good regions)\n2821: - Low values indicate positions **below the local mean** (poor regions)",
+      "metadata": {
+        "class": "note"
+      },
+      "section": "## 11. Explicit Derivation of the Emergent Metric from Algorithmic Parameters",
+      "raw_directive": "2814: :::\n2815: \n2816: :::{prf:remark} Algorithmic Meaning of the Fitness Potential\n2817: :class: note\n2818: \n2819: The fitness potential $V_{\\text{fit}}[f_k, \\rho](x)$ encodes **relative performance in a local neighborhood**:\n2820: - High values indicate positions where the measurement $d(x)$ is **above the local mean** (good regions)\n2821: - Low values indicate positions **below the local mean** (poor regions)\n2822: - The Z-score normalization makes this **scale-invariant**: fitness depends on relative position, not absolute measurement values",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "18_emergent_geometry",
+        "chapter_index": 11,
+        "chapter_file": "chapter_11.json",
+        "section_id": "## 11. Explicit Derivation of the Emergent Metric from Algorithmic Parameters"
+      }
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-240",
+      "title": "Geometric Interpretation of the Hessian Terms",
+      "start_line": 2979,
+      "end_line": 2995,
+      "header_lines": [
+        2980
+      ],
+      "content_start": 2982,
+      "content_end": 2994,
+      "content": "2982: :class: note\n2983: \n2984: The two terms in the Hessian have distinct geometric meanings:\n2985: \n2986: **1. Rank-1 Term (Outer Product):** $g''_A(Z) \\, \\nabla_x Z \\otimes \\nabla_x Z$\n2987: - Dominant when the rescale function has high curvature ($g''_A$ large)\n2988: - Aligned with the **gradient direction** of the fitness landscape\n2989: - Creates **anisotropy along level sets**: high curvature perpendicular to level sets\n2990: \n2991: **2. Full Hessian Term:** $g'_A(Z) \\, \\nabla^2_x Z$\n2992: - Captures the **intrinsic curvature** of the Z-score manifold\n2993: - Depends on second derivatives of the measurement function $d(x)$\n2994: - Reflects the **geometry of the problem**, not just the fitness magnitude",
+      "metadata": {
+        "class": "note"
+      },
+      "section": "## 11. Explicit Derivation of the Emergent Metric from Algorithmic Parameters",
+      "raw_directive": "2979: :::\n2980: \n2981: :::{prf:remark} Geometric Interpretation of the Hessian Terms\n2982: :class: note\n2983: \n2984: The two terms in the Hessian have distinct geometric meanings:\n2985: \n2986: **1. Rank-1 Term (Outer Product):** $g''_A(Z) \\, \\nabla_x Z \\otimes \\nabla_x Z$\n2987: - Dominant when the rescale function has high curvature ($g''_A$ large)\n2988: - Aligned with the **gradient direction** of the fitness landscape\n2989: - Creates **anisotropy along level sets**: high curvature perpendicular to level sets\n2990: \n2991: **2. Full Hessian Term:** $g'_A(Z) \\, \\nabla^2_x Z$\n2992: - Captures the **intrinsic curvature** of the Z-score manifold\n2993: - Depends on second derivatives of the measurement function $d(x)$\n2994: - Reflects the **geometry of the problem**, not just the fitness magnitude\n2995: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "18_emergent_geometry",
+        "chapter_index": 11,
+        "chapter_file": "chapter_11.json",
+        "section_id": "## 11. Explicit Derivation of the Emergent Metric from Algorithmic Parameters"
+      }
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-459",
+      "title": "Algorithmic Control of Ellipticity",
+      "start_line": 3198,
+      "end_line": 3228,
+      "header_lines": [
+        3199
+      ],
+      "content_start": 3201,
+      "content_end": 3227,
+      "content": "3201: :class: important\n3202: \n3203: The ellipticity bounds are **fully controlled by algorithmic parameters**:\n3204: \n3205: **1. Regularization Parameter $\\epsilon_\\Sigma$:**\n3206: - **Lower bound:** $c_{\\min}(\\rho) = \\epsilon_\\Sigma - \\Lambda_-(\\rho)$\n3207: - Larger $\\epsilon_\\Sigma$ → stronger regularization → more isotropic diffusion\n3208: - Must satisfy $\\epsilon_\\Sigma > \\Lambda_-(\\rho)$ for positive definiteness\n3209: \n3210: **2. Localization Scale $\\rho$:**\n3211: - Affects $H_{\\max}(\\rho)$ through the $O(1/\\rho)$ moment correction terms\n3212: - Smaller $\\rho$ → tighter localization → larger $H_{\\max}(\\rho)$ → wider ellipticity gap\n3213: - Larger $\\rho$ → global averaging → more stable $H$ → narrower ellipticity gap\n3214: \n3215: **3. Variance Regularization $\\kappa_{\\text{var,min}}$:**\n3216: - Appears in denominator of Hessian bound\n3217: - Larger $\\kappa_{\\text{var,min}}$ → smaller $H_{\\max}(\\rho)$ → better conditioning\n3218: \n3219: **4. Measurement Regularity $(d'_{\\max}, d''_{\\max})$:**\n3220: - Smoother measurement functions → smaller Hessian bounds\n3221: - Choice of $d$ (reward, diversity, etc.) directly affects geometry\n3222: \n3223: **5. Rescale Function $(g_A, g'_{\\max}, g''_{\\max})$:**\n3224: - Bounds on derivatives control curvature amplification\n3225: - Saturating rescales (e.g., sigmoid) naturally bound curvature\n3226: \n3227: The convergence rate depends on $c_{\\min}(\\rho)$ (see Chapter 5), so there is a **design tradeoff**:",
+      "metadata": {
+        "class": "important"
+      },
+      "section": "## 11. Explicit Derivation of the Emergent Metric from Algorithmic Parameters",
+      "raw_directive": "3198: :::\n3199: \n3200: :::{prf:remark} Algorithmic Control of Ellipticity\n3201: :class: important\n3202: \n3203: The ellipticity bounds are **fully controlled by algorithmic parameters**:\n3204: \n3205: **1. Regularization Parameter $\\epsilon_\\Sigma$:**\n3206: - **Lower bound:** $c_{\\min}(\\rho) = \\epsilon_\\Sigma - \\Lambda_-(\\rho)$\n3207: - Larger $\\epsilon_\\Sigma$ → stronger regularization → more isotropic diffusion\n3208: - Must satisfy $\\epsilon_\\Sigma > \\Lambda_-(\\rho)$ for positive definiteness\n3209: \n3210: **2. Localization Scale $\\rho$:**\n3211: - Affects $H_{\\max}(\\rho)$ through the $O(1/\\rho)$ moment correction terms\n3212: - Smaller $\\rho$ → tighter localization → larger $H_{\\max}(\\rho)$ → wider ellipticity gap\n3213: - Larger $\\rho$ → global averaging → more stable $H$ → narrower ellipticity gap\n3214: \n3215: **3. Variance Regularization $\\kappa_{\\text{var,min}}$:**\n3216: - Appears in denominator of Hessian bound\n3217: - Larger $\\kappa_{\\text{var,min}}$ → smaller $H_{\\max}(\\rho)$ → better conditioning\n3218: \n3219: **4. Measurement Regularity $(d'_{\\max}, d''_{\\max})$:**\n3220: - Smoother measurement functions → smaller Hessian bounds\n3221: - Choice of $d$ (reward, diversity, etc.) directly affects geometry\n3222: \n3223: **5. Rescale Function $(g_A, g'_{\\max}, g''_{\\max})$:**\n3224: - Bounds on derivatives control curvature amplification\n3225: - Saturating rescales (e.g., sigmoid) naturally bound curvature\n3226: \n3227: The convergence rate depends on $c_{\\min}(\\rho)$ (see Chapter 5), so there is a **design tradeoff**:\n3228: - **Large $\\epsilon_\\Sigma$:** Strong convergence guarantees, but less geometric adaptation",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "18_emergent_geometry",
+        "chapter_index": 11,
+        "chapter_file": "chapter_11.json",
+        "section_id": "## 11. Explicit Derivation of the Emergent Metric from Algorithmic Parameters"
+      }
+    }
+  ]
+}

@@ -1,0 +1,293 @@
+{
+  "chapter_index": 8,
+  "section_id": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+  "directive_count": 17,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-os-reflection-operator",
+      "title": "Euclidean Reflection Operator",
+      "start_line": 2197,
+      "end_line": 2213,
+      "header_lines": [
+        2198
+      ],
+      "content_start": 2200,
+      "content_end": 2212,
+      "content": "2200: :label: def-os-reflection-operator\n2201: \n2202: For a coordinate direction $\\mu \\in \\{0, 1, 2, 3\\}$, the **reflection operator** $\\theta_\\mu: \\mathbb{R}^4 \\to \\mathbb{R}^4$ is defined by:\n2203: \n2204: $$\n2205: \\theta_\\mu(x^0, x^1, x^2, x^3) := (x^0, \\ldots, -x^\\mu, \\ldots, x^3)\n2206: $$\n2207: \n2208: For the **time direction** (choosing $\\mu = 0$), we write:\n2209: \n2210: $$\n2211: \\theta(x^0, \\vec{x}) := (-x^0, \\vec{x})\n2212: $$",
+      "metadata": {
+        "label": "def-os-reflection-operator"
+      },
+      "section": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+      "raw_directive": "2197: #### Preliminary Definitions\n2198: \n2199: :::{prf:definition} Euclidean Reflection Operator\n2200: :label: def-os-reflection-operator\n2201: \n2202: For a coordinate direction $\\mu \\in \\{0, 1, 2, 3\\}$, the **reflection operator** $\\theta_\\mu: \\mathbb{R}^4 \\to \\mathbb{R}^4$ is defined by:\n2203: \n2204: $$\n2205: \\theta_\\mu(x^0, x^1, x^2, x^3) := (x^0, \\ldots, -x^\\mu, \\ldots, x^3)\n2206: $$\n2207: \n2208: For the **time direction** (choosing $\\mu = 0$), we write:\n2209: \n2210: $$\n2211: \\theta(x^0, \\vec{x}) := (-x^0, \\vec{x})\n2212: $$\n2213: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-os-half-space",
+      "title": "Half-Space and Test Functions",
+      "start_line": 2215,
+      "end_line": 2225,
+      "header_lines": [
+        2216
+      ],
+      "content_start": 2218,
+      "content_end": 2224,
+      "content": "2218: :label: def-os-half-space\n2219: \n2220: The **time-positive half-space** is:\n2221: \n2222: $$\n2223: \\mathcal{H}_+ := \\{x \\in \\mathbb{R}^4 : x^0 \\geq 0\\}\n2224: $$",
+      "metadata": {
+        "label": "def-os-half-space"
+      },
+      "section": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+      "raw_directive": "2215: :::\n2216: \n2217: :::{prf:definition} Half-Space and Test Functions\n2218: :label: def-os-half-space\n2219: \n2220: The **time-positive half-space** is:\n2221: \n2222: $$\n2223: \\mathcal{H}_+ := \\{x \\in \\mathbb{R}^4 : x^0 \\geq 0\\}\n2224: $$\n2225: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-os2-reflection-positivity",
+      "title": "Reflection Positivity for Crystalline Gas",
+      "start_line": 2229,
+      "end_line": 2239,
+      "header_lines": [
+        2230
+      ],
+      "content_start": 2232,
+      "content_end": 2238,
+      "content": "2232: :label: thm-os2-reflection-positivity\n2233: \n2234: The Crystalline Gas with gradient-based ascent ({prf:ref}`def-cg-ascent-operator`) satisfies the Osterwalder-Schrader reflection positivity axiom (OS2):\n2235: \n2236: $$\n2237: \\langle f, \\theta f \\rangle_{\\pi_{\\text{QSD}}} \\geq 0 \\quad \\forall f \\in \\mathcal{S}(\\mathcal{H}_+)\n2238: $$",
+      "metadata": {
+        "label": "thm-os2-reflection-positivity"
+      },
+      "section": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+      "raw_directive": "2229: #### Main Result\n2230: \n2231: :::{prf:theorem} Reflection Positivity for Crystalline Gas\n2232: :label: thm-os2-reflection-positivity\n2233: \n2234: The Crystalline Gas with gradient-based ascent ({prf:ref}`def-cg-ascent-operator`) satisfies the Osterwalder-Schrader reflection positivity axiom (OS2):\n2235: \n2236: $$\n2237: \\langle f, \\theta f \\rangle_{\\pi_{\\text{QSD}}} \\geq 0 \\quad \\forall f \\in \\mathcal{S}(\\mathcal{H}_+)\n2238: $$\n2239: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-67",
+      "title": null,
+      "start_line": 2241,
+      "end_line": 2313,
+      "header_lines": [],
+      "content_start": 2243,
+      "content_end": 2312,
+      "content": "2243: :::{prf:proof}\n2244: \n2245: We prove OS2 by decomposing the Crystalline Gas dynamics $\\Psi_{\\text{CG}} = \\Psi_{\\text{thermal}} \\circ \\Psi_{\\text{ascent}}$ and verifying reflection positivity for each component.\n2246: \n2247: **Step 1: Thermal Operator is Reflection-Positive**\n2248: \n2249: The thermal operator ({prf:ref}`def-cg-thermal-operator`) updates walkers via:\n2250: \n2251: $$\n2252: \\begin{aligned}\n2253: x_i(t + \\Delta t) &= x_i' + \\sqrt{\\Delta t} \\sigma_x \\Sigma_{\\text{reg}}(x_i') \\xi_i^{(x)} \\\\\n2254: v_i(t + \\Delta t) &= c_1 v_i' + c_2 \\xi_i^{(v)}\n2255: \\end{aligned}\n2256: $$\n2257: \n2258: with $\\xi_i^{(x)}, \\xi_i^{(v)} \\sim \\mathcal{N}(0, I_d)$ independent Gaussian noise.\n2259: \n2260: Gaussian measures are reflection-positive by the Minlos theorem. For time reflection $\\theta: (t,\\vec{x},v) \\mapsto (-t, \\vec{x}, v)$:\n2261: \n2262: 1. Position noise is isotropic in space, invariant under $\\theta$\n2263: 2. Velocity OU dynamics: $v \\mapsto c_1 v + c_2 \\xi$ is Gaussian, reflection-positive\n2264: 3. Independence of noise terms preserves positivity\n2265: \n2266: Therefore $\\langle f, \\theta f \\rangle_{\\Psi_{\\text{thermal}}} \\geq 0$ for all $f \\in \\mathcal{S}(\\mathcal{H}_+)$.\n2267: \n2268: **Step 2: Gradient-Based Ascent Operator is Reflection-Positive**\n2269: \n2270: The geometric ascent operator ({prf:ref}`def-cg-ascent-operator`) is a **gradient flow** on the collective fitness potential:\n2271: \n2272: $$\n2273: x_i' = x_i + \\eta \\cdot g(x_i) \\cdot \\nabla_{x_i} \\Psi(x)\n2274: $$\n2275: \n2276: where:\n2277: - $\\Psi(x) = \\frac{1}{\\beta}\\log\\sum_{j=1}^N e^{\\beta\\Phi(x_j)}$ is the log-sum-exp collective potential\n2278: - $g(x_i) = (-H_{\\Phi}(x_i) + \\varepsilon_{\\text{reg}} I)^{-1}$ is the emergent Riemannian metric\n2279: - $\\nabla_{x_i} \\Psi = p_i \\nabla\\Phi(x_i)$ with $p_i = \\frac{e^{\\beta\\Phi(x_i)}}{\\sum_k e^{\\beta\\Phi(x_k)}}$\n2280: \n2281: **Key properties ensuring reflection positivity**:\n2282: \n2283: 1. **Smoothness**: The drift $b_i(x) := g(x_i) \\nabla_{x_i} \\Psi$ is $C^{\\infty}$\n2284:    - $\\Phi$ is smooth by assumption (Axiom {prf:ref}`ax-fitness-regularity`)\n2285:    - $H_{\\Phi}$ is smooth (second derivatives of $\\Phi$)\n2286:    - $g = (-H_{\\Phi} + \\varepsilon I)^{-1}$ is smooth (by strong ellipticity: $-H_{\\Phi} + \\varepsilon I \\succ \\varepsilon I \\succ 0$)\n2287:    - $\\nabla \\Psi$ is smooth (composition of smooth functions)\n2288: \n2289: 2. **Positive Definiteness**: The metric $g \\succ 0$ everywhere\n2290:    - $-H_{\\Phi} \\succeq \\kappa I$ (Axiom {prf:ref}`ax-fitness-strong-concavity`)\n2291:    - Therefore $-H_{\\Phi} + \\varepsilon I \\succeq (\\kappa + \\varepsilon) I \\succ 0$\n2292:    - Inverse of positive definite matrix is positive definite\n2293: \n2294: 3. **Reflection Invariance**: For rotationally symmetric $\\Phi$ (i.e., $\\Phi(\\theta x) = \\Phi(x)$ under time reflection $\\theta: (t, \\vec{x}) \\mapsto (-t, \\vec{x})$):\n2295:    - $\\nabla \\Phi(\\theta x) = \\theta \\nabla \\Phi(x)$ (gradient transforms covariantly)\n2296:    - $H_{\\Phi}(\\theta x) = \\theta H_{\\Phi}(x) \\theta^T$ (Hessian is a (0,2)-tensor)\n2297:    - Therefore $g(\\theta x) = g(x)$ (metric is reflection-invariant)\n2298:    - The collective potential $\\Psi$ is reflection-invariant: $\\Psi(\\theta x) = \\Psi(x)$\n2299:    - Hence the drift transforms as: $b_i(\\theta x) = \\theta b_i(x)$\n2300: \n2301: 4. **Gradient Structure**: The drift is the gradient of a scalar potential $\\Psi$\n2302:    - Gradient flows are **reversible** under time reflection\n2303:    - The generator $L = \\sum_i [\\text{tr}(g(x_i)\\nabla_{x_i}^2) + g(x_i)\\nabla_{x_i}\\Psi \\cdot \\nabla_{x_i}]$ is **self-adjoint** with respect to the invariant measure\n2304:    - Self-adjoint generators satisfy reflection positivity by Nelson's axioms (Nelson 1973)\n2305: \n2306: By the **Osterwalder-Schrader transfer matrix formalism** (Theorem 3.2, Osterwalder-Schrader 1973), a smooth reflection-invariant gradient flow with positive-definite diffusion satisfies:\n2307: \n2308: $$\n2309: \\langle f, \\theta f \\rangle_{\\pi_{\\text{QSD}}} \\geq 0 \\quad \\forall f \\in \\mathcal{S}(\\mathcal{H}_+)\n2310: $$\n2311: \n2312: **Step 3: Composition Preserves Reflection Positivity**",
+      "metadata": {},
+      "section": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+      "raw_directive": "2241: :::\n2242: \n2243: :::{prf:proof}\n2244: \n2245: We prove OS2 by decomposing the Crystalline Gas dynamics $\\Psi_{\\text{CG}} = \\Psi_{\\text{thermal}} \\circ \\Psi_{\\text{ascent}}$ and verifying reflection positivity for each component.\n2246: \n2247: **Step 1: Thermal Operator is Reflection-Positive**\n2248: \n2249: The thermal operator ({prf:ref}`def-cg-thermal-operator`) updates walkers via:\n2250: \n2251: $$\n2252: \\begin{aligned}\n2253: x_i(t + \\Delta t) &= x_i' + \\sqrt{\\Delta t} \\sigma_x \\Sigma_{\\text{reg}}(x_i') \\xi_i^{(x)} \\\\\n2254: v_i(t + \\Delta t) &= c_1 v_i' + c_2 \\xi_i^{(v)}\n2255: \\end{aligned}\n2256: $$\n2257: \n2258: with $\\xi_i^{(x)}, \\xi_i^{(v)} \\sim \\mathcal{N}(0, I_d)$ independent Gaussian noise.\n2259: \n2260: Gaussian measures are reflection-positive by the Minlos theorem. For time reflection $\\theta: (t,\\vec{x},v) \\mapsto (-t, \\vec{x}, v)$:\n2261: \n2262: 1. Position noise is isotropic in space, invariant under $\\theta$\n2263: 2. Velocity OU dynamics: $v \\mapsto c_1 v + c_2 \\xi$ is Gaussian, reflection-positive\n2264: 3. Independence of noise terms preserves positivity\n2265: \n2266: Therefore $\\langle f, \\theta f \\rangle_{\\Psi_{\\text{thermal}}} \\geq 0$ for all $f \\in \\mathcal{S}(\\mathcal{H}_+)$.\n2267: \n2268: **Step 2: Gradient-Based Ascent Operator is Reflection-Positive**\n2269: \n2270: The geometric ascent operator ({prf:ref}`def-cg-ascent-operator`) is a **gradient flow** on the collective fitness potential:\n2271: \n2272: $$\n2273: x_i' = x_i + \\eta \\cdot g(x_i) \\cdot \\nabla_{x_i} \\Psi(x)\n2274: $$\n2275: \n2276: where:\n2277: - $\\Psi(x) = \\frac{1}{\\beta}\\log\\sum_{j=1}^N e^{\\beta\\Phi(x_j)}$ is the log-sum-exp collective potential\n2278: - $g(x_i) = (-H_{\\Phi}(x_i) + \\varepsilon_{\\text{reg}} I)^{-1}$ is the emergent Riemannian metric\n2279: - $\\nabla_{x_i} \\Psi = p_i \\nabla\\Phi(x_i)$ with $p_i = \\frac{e^{\\beta\\Phi(x_i)}}{\\sum_k e^{\\beta\\Phi(x_k)}}$\n2280: \n2281: **Key properties ensuring reflection positivity**:\n2282: \n2283: 1. **Smoothness**: The drift $b_i(x) := g(x_i) \\nabla_{x_i} \\Psi$ is $C^{\\infty}$\n2284:    - $\\Phi$ is smooth by assumption (Axiom {prf:ref}`ax-fitness-regularity`)\n2285:    - $H_{\\Phi}$ is smooth (second derivatives of $\\Phi$)\n2286:    - $g = (-H_{\\Phi} + \\varepsilon I)^{-1}$ is smooth (by strong ellipticity: $-H_{\\Phi} + \\varepsilon I \\succ \\varepsilon I \\succ 0$)\n2287:    - $\\nabla \\Psi$ is smooth (composition of smooth functions)\n2288: \n2289: 2. **Positive Definiteness**: The metric $g \\succ 0$ everywhere\n2290:    - $-H_{\\Phi} \\succeq \\kappa I$ (Axiom {prf:ref}`ax-fitness-strong-concavity`)\n2291:    - Therefore $-H_{\\Phi} + \\varepsilon I \\succeq (\\kappa + \\varepsilon) I \\succ 0$\n2292:    - Inverse of positive definite matrix is positive definite\n2293: \n2294: 3. **Reflection Invariance**: For rotationally symmetric $\\Phi$ (i.e., $\\Phi(\\theta x) = \\Phi(x)$ under time reflection $\\theta: (t, \\vec{x}) \\mapsto (-t, \\vec{x})$):\n2295:    - $\\nabla \\Phi(\\theta x) = \\theta \\nabla \\Phi(x)$ (gradient transforms covariantly)\n2296:    - $H_{\\Phi}(\\theta x) = \\theta H_{\\Phi}(x) \\theta^T$ (Hessian is a (0,2)-tensor)\n2297:    - Therefore $g(\\theta x) = g(x)$ (metric is reflection-invariant)\n2298:    - The collective potential $\\Psi$ is reflection-invariant: $\\Psi(\\theta x) = \\Psi(x)$\n2299:    - Hence the drift transforms as: $b_i(\\theta x) = \\theta b_i(x)$\n2300: \n2301: 4. **Gradient Structure**: The drift is the gradient of a scalar potential $\\Psi$\n2302:    - Gradient flows are **reversible** under time reflection\n2303:    - The generator $L = \\sum_i [\\text{tr}(g(x_i)\\nabla_{x_i}^2) + g(x_i)\\nabla_{x_i}\\Psi \\cdot \\nabla_{x_i}]$ is **self-adjoint** with respect to the invariant measure\n2304:    - Self-adjoint generators satisfy reflection positivity by Nelson's axioms (Nelson 1973)\n2305: \n2306: By the **Osterwalder-Schrader transfer matrix formalism** (Theorem 3.2, Osterwalder-Schrader 1973), a smooth reflection-invariant gradient flow with positive-definite diffusion satisfies:\n2307: \n2308: $$\n2309: \\langle f, \\theta f \\rangle_{\\pi_{\\text{QSD}}} \\geq 0 \\quad \\forall f \\in \\mathcal{S}(\\mathcal{H}_+)\n2310: $$\n2311: \n2312: **Step 3: Composition Preserves Reflection Positivity**\n2313: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-os4-axiom",
+      "title": "OS4 Axiom (Clustering)",
+      "start_line": 2325,
+      "end_line": 2343,
+      "header_lines": [
+        2326
+      ],
+      "content_start": 2328,
+      "content_end": 2342,
+      "content": "2328: :label: def-os4-axiom\n2329: \n2330: **(Osterwalder-Schrader 1973, Axiom OS4)**\n2331: \n2332: The Schwinger functions (Euclidean correlation functions) satisfy **exponential clustering**: for any gauge-invariant observables $\\mathcal{O}_1, \\mathcal{O}_2$ supported on regions separated by distance $R$:\n2333: \n2334: $$\n2335: \\left| \\langle \\mathcal{O}_1 \\mathcal{O}_2 \\rangle_{\\pi} - \\langle \\mathcal{O}_1 \\rangle_{\\pi} \\langle \\mathcal{O}_2 \\rangle_{\\pi} \\right| \\leq C_{\\mathcal{O}_1, \\mathcal{O}_2} \\cdot e^{-m_{\\text{gap}} R}\n2336: $$\n2337: \n2338: where:\n2339: - $\\pi$ is the invariant measure (QSD for Crystalline Gas)\n2340: - $R = \\inf\\{d(x,y) : x \\in \\text{supp}(\\mathcal{O}_1), y \\in \\text{supp}(\\mathcal{O}_2)\\}$ is the separation distance\n2341: - $m_{\\text{gap}} > 0$ is the **mass gap** (correlation length)\n2342: - $C_{\\mathcal{O}_1, \\mathcal{O}_2} < \\infty$ depends on the observables but not on $R$",
+      "metadata": {
+        "label": "def-os4-axiom"
+      },
+      "section": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+      "raw_directive": "2325: #### 8.3.1 OS4 Axiom Statement\n2326: \n2327: :::{prf:definition} OS4 Axiom (Clustering)\n2328: :label: def-os4-axiom\n2329: \n2330: **(Osterwalder-Schrader 1973, Axiom OS4)**\n2331: \n2332: The Schwinger functions (Euclidean correlation functions) satisfy **exponential clustering**: for any gauge-invariant observables $\\mathcal{O}_1, \\mathcal{O}_2$ supported on regions separated by distance $R$:\n2333: \n2334: $$\n2335: \\left| \\langle \\mathcal{O}_1 \\mathcal{O}_2 \\rangle_{\\pi} - \\langle \\mathcal{O}_1 \\rangle_{\\pi} \\langle \\mathcal{O}_2 \\rangle_{\\pi} \\right| \\leq C_{\\mathcal{O}_1, \\mathcal{O}_2} \\cdot e^{-m_{\\text{gap}} R}\n2336: $$\n2337: \n2338: where:\n2339: - $\\pi$ is the invariant measure (QSD for Crystalline Gas)\n2340: - $R = \\inf\\{d(x,y) : x \\in \\text{supp}(\\mathcal{O}_1), y \\in \\text{supp}(\\mathcal{O}_2)\\}$ is the separation distance\n2341: - $m_{\\text{gap}} > 0$ is the **mass gap** (correlation length)\n2342: - $C_{\\mathcal{O}_1, \\mathcal{O}_2} < \\infty$ depends on the observables but not on $R$\n2343: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-spectral-gap-implies-decay",
+      "title": "Spectral Gap Implies Exponential Correlation Decay",
+      "start_line": 2349,
+      "end_line": 2387,
+      "header_lines": [
+        2350
+      ],
+      "content_start": 2352,
+      "content_end": 2386,
+      "content": "2352: :label: thm-spectral-gap-implies-decay\n2353: \n2354: Let $P$ be a Markov operator on a state space $X$ with invariant measure $\\pi$ and spectral gap $\\lambda_{\\text{gap}} > 0$ (as defined in {prf:ref}`def-spectral-gap`).\n2355: \n2356: **Then** for any observables $f, g : X \\to \\mathbb{R}$ with zero mean under $\\pi$ (i.e., $\\langle f \\rangle_{\\pi} = \\langle g \\rangle_{\\pi} = 0$), the time-correlation function decays exponentially:\n2357: \n2358: $$\n2359: \\left| \\langle f, P^n g \\rangle_{\\pi} \\right| \\leq e^{-\\lambda_{\\text{gap}} n} \\|f\\|_{L^2(\\pi)} \\|g\\|_{L^2(\\pi)}\n2360: $$\n2361: \n2362: where $P^n$ is the $n$-step Markov operator.\n2363: \n2364: **Proof**: This is a standard consequence of the spectral gap. The generator $L = P - I$ has eigenvalues $0 = \\mu_0 > \\mu_1 \\geq \\mu_2 \\geq \\ldots$, with $|\\mu_1| \\leq 1 - \\lambda_{\\text{gap}}$. Expanding $g$ in the eigenbasis of $L$:\n2365: \n2366: $$\n2367: g = \\langle g \\rangle_{\\pi} + \\sum_{k=1}^{\\infty} c_k \\phi_k\n2368: $$\n2369: \n2370: where $\\phi_k$ are eigenfunctions with $P \\phi_k = (1 + \\mu_k) \\phi_k$. Then:\n2371: \n2372: $$\n2373: P^n g = \\langle g \\rangle_{\\pi} + \\sum_{k=1}^{\\infty} c_k (1 + \\mu_k)^n \\phi_k\n2374: $$\n2375: \n2376: Since $f$ has zero mean, $\\langle f, \\mathbf{1} \\rangle_{\\pi} = 0$, so:\n2377: \n2378: $$\n2379: \\langle f, P^n g \\rangle_{\\pi} = \\sum_{k=1}^{\\infty} c_k (1 + \\mu_k)^n \\langle f, \\phi_k \\rangle_{\\pi}\n2380: $$\n2381: \n2382: Using $|1 + \\mu_k| \\leq 1 - \\lambda_{\\text{gap}} < 1$ and Cauchy-Schwarz:\n2383: \n2384: $$\n2385: \\left| \\langle f, P^n g \\rangle_{\\pi} \\right| \\leq (1 - \\lambda_{\\text{gap}})^n \\sum_{k=1}^{\\infty} |c_k| |\\langle f, \\phi_k \\rangle_{\\pi}| \\leq e^{-\\lambda_{\\text{gap}} n} \\|f\\|_{L^2} \\|g\\|_{L^2}\n2386: $$",
+      "metadata": {
+        "label": "thm-spectral-gap-implies-decay"
+      },
+      "section": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+      "raw_directive": "2349: We now rigorously derive OS4 from the spectral gap proven in Theorem {prf:ref}`thm-cg-spectral-gap`.\n2350: \n2351: :::{prf:theorem} Spectral Gap Implies Exponential Correlation Decay\n2352: :label: thm-spectral-gap-implies-decay\n2353: \n2354: Let $P$ be a Markov operator on a state space $X$ with invariant measure $\\pi$ and spectral gap $\\lambda_{\\text{gap}} > 0$ (as defined in {prf:ref}`def-spectral-gap`).\n2355: \n2356: **Then** for any observables $f, g : X \\to \\mathbb{R}$ with zero mean under $\\pi$ (i.e., $\\langle f \\rangle_{\\pi} = \\langle g \\rangle_{\\pi} = 0$), the time-correlation function decays exponentially:\n2357: \n2358: $$\n2359: \\left| \\langle f, P^n g \\rangle_{\\pi} \\right| \\leq e^{-\\lambda_{\\text{gap}} n} \\|f\\|_{L^2(\\pi)} \\|g\\|_{L^2(\\pi)}\n2360: $$\n2361: \n2362: where $P^n$ is the $n$-step Markov operator.\n2363: \n2364: **Proof**: This is a standard consequence of the spectral gap. The generator $L = P - I$ has eigenvalues $0 = \\mu_0 > \\mu_1 \\geq \\mu_2 \\geq \\ldots$, with $|\\mu_1| \\leq 1 - \\lambda_{\\text{gap}}$. Expanding $g$ in the eigenbasis of $L$:\n2365: \n2366: $$\n2367: g = \\langle g \\rangle_{\\pi} + \\sum_{k=1}^{\\infty} c_k \\phi_k\n2368: $$\n2369: \n2370: where $\\phi_k$ are eigenfunctions with $P \\phi_k = (1 + \\mu_k) \\phi_k$. Then:\n2371: \n2372: $$\n2373: P^n g = \\langle g \\rangle_{\\pi} + \\sum_{k=1}^{\\infty} c_k (1 + \\mu_k)^n \\phi_k\n2374: $$\n2375: \n2376: Since $f$ has zero mean, $\\langle f, \\mathbf{1} \\rangle_{\\pi} = 0$, so:\n2377: \n2378: $$\n2379: \\langle f, P^n g \\rangle_{\\pi} = \\sum_{k=1}^{\\infty} c_k (1 + \\mu_k)^n \\langle f, \\phi_k \\rangle_{\\pi}\n2380: $$\n2381: \n2382: Using $|1 + \\mu_k| \\leq 1 - \\lambda_{\\text{gap}} < 1$ and Cauchy-Schwarz:\n2383: \n2384: $$\n2385: \\left| \\langle f, P^n g \\rangle_{\\pi} \\right| \\leq (1 - \\lambda_{\\text{gap}})^n \\sum_{k=1}^{\\infty} |c_k| |\\langle f, \\phi_k \\rangle_{\\pi}| \\leq e^{-\\lambda_{\\text{gap}} n} \\|f\\|_{L^2} \\|g\\|_{L^2}\n2386: $$\n2387: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-cg-lieb-robinson",
+      "title": "Lieb-Robinson Bound for Crystalline Gas",
+      "start_line": 2393,
+      "end_line": 2415,
+      "header_lines": [
+        2394
+      ],
+      "content_start": 2396,
+      "content_end": 2414,
+      "content": "2396: :label: lem-cg-lieb-robinson\n2397: \n2398: For Crystalline Gas dynamics, observables $\\mathcal{O}_1, \\mathcal{O}_2$ supported on regions $\\Lambda_1, \\Lambda_2$ separated by distance $R$ satisfy:\n2399: \n2400: $$\n2401: \\left| \\langle \\mathcal{O}_1(t) \\mathcal{O}_2(0) \\rangle - \\langle \\mathcal{O}_1(t) \\rangle \\langle \\mathcal{O}_2(0) \\rangle \\right| \\leq C_{\\mathcal{O}} \\|\\mathcal{O}_1\\| \\|\\mathcal{O}_2\\| \\cdot e^{-\\mu(R - v_{\\max} t)}\n2402: $$\n2403: \n2404: where:\n2405: - $v_{\\max} = \\|\\mathbb{E}_{\\pi}[v]\\|_{\\infty} + 3\\sigma_v$ is the maximum velocity (mean + 3 std deviations)\n2406: - $\\mu > 0$ is an effective decay rate\n2407: - $t$ is the time evolution\n2408: \n2409: **Proof Sketch**: Information propagates at finite velocity in the Crystalline Gas:\n2410: 1. Walkers have velocities $v_i \\sim \\mathcal{N}(0, \\sigma_v^2 I_d)$ under $\\pi_{\\text{QSD}}$ (from {prf:ref}`thm-ou-spectral-gap`)\n2411: 2. Position updates: $x_i(t+\\Delta t) = x_i(t) + v_i \\Delta t + O(\\sigma_x \\sqrt{\\Delta t})$\n2412: 3. Maximum propagation speed: $v_{\\max} \\sim \\sigma_v \\sqrt{d}$ (typical velocity magnitude)\n2413: 4. For regions separated by $R$, observables $\\mathcal{O}_1$ and $\\mathcal{O}_2$ are **causally disconnected** for times $t < R/v_{\\max}$\n2414: 5. Beyond the light cone $R > v_{\\max} t$, correlations decay exponentially due to stochastic noise",
+      "metadata": {
+        "label": "lem-cg-lieb-robinson"
+      },
+      "section": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+      "raw_directive": "2393: To connect temporal decay (from the spectral gap) to spatial decay (required by OS4), we use the **velocity-mediated information propagation** in the Crystalline Gas.\n2394: \n2395: :::{prf:lemma} Lieb-Robinson Bound for Crystalline Gas\n2396: :label: lem-cg-lieb-robinson\n2397: \n2398: For Crystalline Gas dynamics, observables $\\mathcal{O}_1, \\mathcal{O}_2$ supported on regions $\\Lambda_1, \\Lambda_2$ separated by distance $R$ satisfy:\n2399: \n2400: $$\n2401: \\left| \\langle \\mathcal{O}_1(t) \\mathcal{O}_2(0) \\rangle - \\langle \\mathcal{O}_1(t) \\rangle \\langle \\mathcal{O}_2(0) \\rangle \\right| \\leq C_{\\mathcal{O}} \\|\\mathcal{O}_1\\| \\|\\mathcal{O}_2\\| \\cdot e^{-\\mu(R - v_{\\max} t)}\n2402: $$\n2403: \n2404: where:\n2405: - $v_{\\max} = \\|\\mathbb{E}_{\\pi}[v]\\|_{\\infty} + 3\\sigma_v$ is the maximum velocity (mean + 3 std deviations)\n2406: - $\\mu > 0$ is an effective decay rate\n2407: - $t$ is the time evolution\n2408: \n2409: **Proof Sketch**: Information propagates at finite velocity in the Crystalline Gas:\n2410: 1. Walkers have velocities $v_i \\sim \\mathcal{N}(0, \\sigma_v^2 I_d)$ under $\\pi_{\\text{QSD}}$ (from {prf:ref}`thm-ou-spectral-gap`)\n2411: 2. Position updates: $x_i(t+\\Delta t) = x_i(t) + v_i \\Delta t + O(\\sigma_x \\sqrt{\\Delta t})$\n2412: 3. Maximum propagation speed: $v_{\\max} \\sim \\sigma_v \\sqrt{d}$ (typical velocity magnitude)\n2413: 4. For regions separated by $R$, observables $\\mathcal{O}_1$ and $\\mathcal{O}_2$ are **causally disconnected** for times $t < R/v_{\\max}$\n2414: 5. Beyond the light cone $R > v_{\\max} t$, correlations decay exponentially due to stochastic noise\n2415: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-os4-clustering",
+      "title": "OS4 Clustering for Crystalline Gas",
+      "start_line": 2417,
+      "end_line": 2435,
+      "header_lines": [
+        2418
+      ],
+      "content_start": 2420,
+      "content_end": 2434,
+      "content": "2420: :label: thm-os4-clustering\n2421: \n2422: The Crystalline Gas gauge theory satisfies the **OS4 clustering axiom** ({prf:ref}`def-os4-axiom`) with mass gap:\n2423: \n2424: $$\n2425: m_{\\text{gap}} \\geq c_{\\text{LR}} \\cdot \\lambda_{\\text{gap}}\n2426: $$\n2427: \n2428: where $c_{\\text{LR}} = \\min\\left(\\frac{1}{2v_{\\max}}, \\frac{\\mu}{2}\\right) > 0$ depends on the velocity distribution and Lieb-Robinson bound parameters.\n2429: \n2430: **Explicitly**:\n2431: \n2432: $$\n2433: m_{\\text{gap}} \\geq \\frac{c_{\\text{LR}}}{2v_{\\max}} \\cdot \\lambda_0 = \\frac{c_{\\text{LR}}}{2v_{\\max}} \\left( \\frac{\\kappa \\eta}{2} \\wedge \\frac{\\sigma_x^2}{2d} \\wedge \\gamma_{\\text{fric}} \\right)\n2434: $$",
+      "metadata": {
+        "label": "thm-os4-clustering"
+      },
+      "section": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+      "raw_directive": "2417: :::\n2418: \n2419: :::{prf:theorem} OS4 Clustering for Crystalline Gas\n2420: :label: thm-os4-clustering\n2421: \n2422: The Crystalline Gas gauge theory satisfies the **OS4 clustering axiom** ({prf:ref}`def-os4-axiom`) with mass gap:\n2423: \n2424: $$\n2425: m_{\\text{gap}} \\geq c_{\\text{LR}} \\cdot \\lambda_{\\text{gap}}\n2426: $$\n2427: \n2428: where $c_{\\text{LR}} = \\min\\left(\\frac{1}{2v_{\\max}}, \\frac{\\mu}{2}\\right) > 0$ depends on the velocity distribution and Lieb-Robinson bound parameters.\n2429: \n2430: **Explicitly**:\n2431: \n2432: $$\n2433: m_{\\text{gap}} \\geq \\frac{c_{\\text{LR}}}{2v_{\\max}} \\cdot \\lambda_0 = \\frac{c_{\\text{LR}}}{2v_{\\max}} \\left( \\frac{\\kappa \\eta}{2} \\wedge \\frac{\\sigma_x^2}{2d} \\wedge \\gamma_{\\text{fric}} \\right)\n2434: $$\n2435: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-263",
+      "title": null,
+      "start_line": 2437,
+      "end_line": 2511,
+      "header_lines": [],
+      "content_start": 2439,
+      "content_end": 2510,
+      "content": "2439: :::{prf:proof}\n2440: \n2441: We verify the OS4 clustering condition for gauge-invariant observables.\n2442: \n2443: **Step 1: Gauge-Invariant Observables**\n2444: \n2445: Consider gauge-invariant observables $\\mathcal{O}_1, \\mathcal{O}_2$ supported on regions $\\Lambda_1, \\Lambda_2$ separated by distance $R$. Examples:\n2446: - Wilson loops: $W_{\\mathcal{C}_1}, W_{\\mathcal{C}_2}$ for loops in different regions\n2447: - Field strength magnitudes: $\\|\\mathbf{F}_1\\|^2, \\|\\mathbf{F}_2\\|^2$\n2448: - Plaquette variables: Products of link variables\n2449: \n2450: **Step 2: Temporal Decorrelation**\n2451: \n2452: From Theorem {prf:ref}`thm-spectral-gap-implies-decay` with spectral gap $\\lambda_{\\text{gap}} = \\lambda_0$ (from {prf:ref}`thm-cg-spectral-gap`), time-separated correlations decay:\n2453: \n2454: $$\n2455: \\left| \\langle \\mathcal{O}_1(t) \\mathcal{O}_2(0) \\rangle_{\\pi} - \\langle \\mathcal{O}_1 \\rangle_{\\pi} \\langle \\mathcal{O}_2 \\rangle_{\\pi} \\right| \\leq C e^{-\\lambda_0 t} \\|\\mathcal{O}_1\\| \\|\\mathcal{O}_2\\|\n2456: $$\n2457: \n2458: **Step 3: Spatial to Temporal Conversion**\n2459: \n2460: From Lemma {prf:ref}`lem-cg-lieb-robinson`, observables at spatial separation $R$ are causally disconnected for times $t < R / v_{\\max}$. The optimal decorrelation time is:\n2461: \n2462: $$\n2463: t^* = \\frac{R}{v_{\\max}}\n2464: $$\n2465: \n2466: At this time, both temporal and spatial decay contribute.\n2467: \n2468: **Step 4: Combine Decays**\n2469: \n2470: The connected correlation function satisfies:\n2471: \n2472: $$\n2473: \\begin{aligned}\n2474: &\\left| \\langle \\mathcal{O}_1 \\mathcal{O}_2 \\rangle_{\\pi} - \\langle \\mathcal{O}_1 \\rangle_{\\pi} \\langle \\mathcal{O}_2 \\rangle_{\\pi} \\right| \\\\\n2475: &\\leq \\left| \\langle \\mathcal{O}_1(t^*) \\mathcal{O}_2(0) \\rangle_{\\pi} - \\langle \\mathcal{O}_1 \\rangle_{\\pi} \\langle \\mathcal{O}_2 \\rangle_{\\pi} \\right| + O(e^{-\\mu R}) \\\\\n2476: &\\leq C e^{-\\lambda_0 t^*} + O(e^{-\\mu R}) \\\\\n2477: &= C e^{-\\lambda_0 R / v_{\\max}} + O(e^{-\\mu R}) \\\\\n2478: &\\leq C' e^{-m_{\\text{gap}} R}\n2479: \\end{aligned}\n2480: $$\n2481: \n2482: where we define:\n2483: \n2484: $$\n2485: m_{\\text{gap}} := \\frac{\\lambda_0}{v_{\\max}} \\wedge \\mu > 0\n2486: $$\n2487: \n2488: **Step 5: Estimate $v_{\\max}$**\n2489: \n2490: From the OU equilibrium (Theorem {prf:ref}`thm-ou-spectral-gap`), velocities are Gaussian: $v_i \\sim \\mathcal{N}(0, \\sigma_v^2 I_d)$.\n2491: \n2492: The typical velocity magnitude is:\n2493: \n2494: $$\n2495: v_{\\text{typ}} = \\sigma_v \\sqrt{d}\n2496: $$\n2497: \n2498: Taking a conservative bound (99.7% confidence for Gaussian):\n2499: \n2500: $$\n2501: v_{\\max} = 3 \\sigma_v \\sqrt{d}\n2502: $$\n2503: \n2504: Thus:\n2505: \n2506: $$\n2507: m_{\\text{gap}} \\geq \\frac{\\lambda_0}{3 \\sigma_v \\sqrt{d}} = \\frac{1}{3 \\sigma_v \\sqrt{d}} \\left( \\frac{\\kappa \\eta}{2} \\wedge \\frac{\\sigma_x^2}{2d} \\wedge \\gamma_{\\text{fric}} \\right)\n2508: $$\n2509: \n2510: **Step 6: Conclusion**",
+      "metadata": {},
+      "section": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+      "raw_directive": "2437: :::\n2438: \n2439: :::{prf:proof}\n2440: \n2441: We verify the OS4 clustering condition for gauge-invariant observables.\n2442: \n2443: **Step 1: Gauge-Invariant Observables**\n2444: \n2445: Consider gauge-invariant observables $\\mathcal{O}_1, \\mathcal{O}_2$ supported on regions $\\Lambda_1, \\Lambda_2$ separated by distance $R$. Examples:\n2446: - Wilson loops: $W_{\\mathcal{C}_1}, W_{\\mathcal{C}_2}$ for loops in different regions\n2447: - Field strength magnitudes: $\\|\\mathbf{F}_1\\|^2, \\|\\mathbf{F}_2\\|^2$\n2448: - Plaquette variables: Products of link variables\n2449: \n2450: **Step 2: Temporal Decorrelation**\n2451: \n2452: From Theorem {prf:ref}`thm-spectral-gap-implies-decay` with spectral gap $\\lambda_{\\text{gap}} = \\lambda_0$ (from {prf:ref}`thm-cg-spectral-gap`), time-separated correlations decay:\n2453: \n2454: $$\n2455: \\left| \\langle \\mathcal{O}_1(t) \\mathcal{O}_2(0) \\rangle_{\\pi} - \\langle \\mathcal{O}_1 \\rangle_{\\pi} \\langle \\mathcal{O}_2 \\rangle_{\\pi} \\right| \\leq C e^{-\\lambda_0 t} \\|\\mathcal{O}_1\\| \\|\\mathcal{O}_2\\|\n2456: $$\n2457: \n2458: **Step 3: Spatial to Temporal Conversion**\n2459: \n2460: From Lemma {prf:ref}`lem-cg-lieb-robinson`, observables at spatial separation $R$ are causally disconnected for times $t < R / v_{\\max}$. The optimal decorrelation time is:\n2461: \n2462: $$\n2463: t^* = \\frac{R}{v_{\\max}}\n2464: $$\n2465: \n2466: At this time, both temporal and spatial decay contribute.\n2467: \n2468: **Step 4: Combine Decays**\n2469: \n2470: The connected correlation function satisfies:\n2471: \n2472: $$\n2473: \\begin{aligned}\n2474: &\\left| \\langle \\mathcal{O}_1 \\mathcal{O}_2 \\rangle_{\\pi} - \\langle \\mathcal{O}_1 \\rangle_{\\pi} \\langle \\mathcal{O}_2 \\rangle_{\\pi} \\right| \\\\\n2475: &\\leq \\left| \\langle \\mathcal{O}_1(t^*) \\mathcal{O}_2(0) \\rangle_{\\pi} - \\langle \\mathcal{O}_1 \\rangle_{\\pi} \\langle \\mathcal{O}_2 \\rangle_{\\pi} \\right| + O(e^{-\\mu R}) \\\\\n2476: &\\leq C e^{-\\lambda_0 t^*} + O(e^{-\\mu R}) \\\\\n2477: &= C e^{-\\lambda_0 R / v_{\\max}} + O(e^{-\\mu R}) \\\\\n2478: &\\leq C' e^{-m_{\\text{gap}} R}\n2479: \\end{aligned}\n2480: $$\n2481: \n2482: where we define:\n2483: \n2484: $$\n2485: m_{\\text{gap}} := \\frac{\\lambda_0}{v_{\\max}} \\wedge \\mu > 0\n2486: $$\n2487: \n2488: **Step 5: Estimate $v_{\\max}$**\n2489: \n2490: From the OU equilibrium (Theorem {prf:ref}`thm-ou-spectral-gap`), velocities are Gaussian: $v_i \\sim \\mathcal{N}(0, \\sigma_v^2 I_d)$.\n2491: \n2492: The typical velocity magnitude is:\n2493: \n2494: $$\n2495: v_{\\text{typ}} = \\sigma_v \\sqrt{d}\n2496: $$\n2497: \n2498: Taking a conservative bound (99.7% confidence for Gaussian):\n2499: \n2500: $$\n2501: v_{\\max} = 3 \\sigma_v \\sqrt{d}\n2502: $$\n2503: \n2504: Thus:\n2505: \n2506: $$\n2507: m_{\\text{gap}} \\geq \\frac{\\lambda_0}{3 \\sigma_v \\sqrt{d}} = \\frac{1}{3 \\sigma_v \\sqrt{d}} \\left( \\frac{\\kappa \\eta}{2} \\wedge \\frac{\\sigma_x^2}{2d} \\wedge \\gamma_{\\text{fric}} \\right)\n2508: $$\n2509: \n2510: **Step 6: Conclusion**\n2511: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-os0-regularity",
+      "title": "OS0: Regularity Axiom",
+      "start_line": 2533,
+      "end_line": 2537,
+      "header_lines": [
+        2534
+      ],
+      "content_start": 2536,
+      "content_end": 2536,
+      "content": "2536: :label: thm-os0-regularity",
+      "metadata": {
+        "label": "thm-os0-regularity"
+      },
+      "section": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+      "raw_directive": "2533: The remaining three axioms follow more directly from the algorithmic construction.\n2534: \n2535: :::{prf:theorem} OS0: Regularity Axiom\n2536: :label: thm-os0-regularity\n2537: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-365",
+      "title": null,
+      "start_line": 2539,
+      "end_line": 2559,
+      "header_lines": [],
+      "content_start": 2540,
+      "content_end": 2558,
+      "content": "2540: \n2541: :::{prf:proof}\n2542: With the edge-centric SU(3) framework ({prf:ref}`def-cg-link-variables`), the gauge field is represented by link variables $U_{ij} \\in \\text{SU}(3)$, which are **automatically bounded** as unitary matrices: $\\|U_{ij}\\| = 1$.\n2543: \n2544: The color observable $|\\Psi_i\\rangle = F_i^{\\text{matter}} + i p_i$ ({prf:ref}`def-cg-color-observable`) is bounded because:\n2545: 1. Matter forces $F_i^{\\text{matter}}$ are bounded by $\\eta D_{\\max} / \\lambda_{\\min}$ (from Axiom 1.1, 1.2 and {prf:ref}`def-cg-matter-force`)\n2546: 2. Momenta $p_i$ are bounded by $C_p D_{\\max}$\n2547: \n2548: The Schwinger functions $\\mathcal{S}_n$ are constructed from expectation values of link variable products at QSD:\n2549: \n2550: $$\n2551: \\mathcal{S}_n(x_1, \\ldots, x_n) = \\langle \\text{Tr}(U_{i_1 j_1}) \\cdots \\text{Tr}(U_{i_n j_n}) \\rangle_{\\pi_{\\text{QSD}}}\n2552: $$\n2553: \n2554: Since $|\\text{Tr}(U_{ij})| \\leq 3$ for all $U_{ij} \\in \\text{SU}(3)$, we have:\n2555: \n2556: $$\n2557: |\\mathcal{S}_n| \\leq 3^n < \\infty\n2558: $$",
+      "metadata": {},
+      "section": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+      "raw_directive": "2539: :::\n2540: \n2541: :::{prf:proof}\n2542: With the edge-centric SU(3) framework ({prf:ref}`def-cg-link-variables`), the gauge field is represented by link variables $U_{ij} \\in \\text{SU}(3)$, which are **automatically bounded** as unitary matrices: $\\|U_{ij}\\| = 1$.\n2543: \n2544: The color observable $|\\Psi_i\\rangle = F_i^{\\text{matter}} + i p_i$ ({prf:ref}`def-cg-color-observable`) is bounded because:\n2545: 1. Matter forces $F_i^{\\text{matter}}$ are bounded by $\\eta D_{\\max} / \\lambda_{\\min}$ (from Axiom 1.1, 1.2 and {prf:ref}`def-cg-matter-force`)\n2546: 2. Momenta $p_i$ are bounded by $C_p D_{\\max}$\n2547: \n2548: The Schwinger functions $\\mathcal{S}_n$ are constructed from expectation values of link variable products at QSD:\n2549: \n2550: $$\n2551: \\mathcal{S}_n(x_1, \\ldots, x_n) = \\langle \\text{Tr}(U_{i_1 j_1}) \\cdots \\text{Tr}(U_{i_n j_n}) \\rangle_{\\pi_{\\text{QSD}}}\n2552: $$\n2553: \n2554: Since $|\\text{Tr}(U_{ij})| \\leq 3$ for all $U_{ij} \\in \\text{SU}(3)$, we have:\n2555: \n2556: $$\n2557: |\\mathcal{S}_n| \\leq 3^n < \\infty\n2558: $$\n2559: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-os1-euclidean-invariance",
+      "title": "OS1: Euclidean Invariance",
+      "start_line": 2561,
+      "end_line": 2569,
+      "header_lines": [
+        2562
+      ],
+      "content_start": 2564,
+      "content_end": 2568,
+      "content": "2564: :label: thm-os1-euclidean-invariance\n2565: \n2566: Assuming the fitness potential $\\Phi$ is rotationally invariant ($\\Phi(Rx) = \\Phi(x)$ for $R \\in \\text{SO}(4)$), the QSD satisfies:\n2567: \n2568: $$",
+      "metadata": {
+        "label": "thm-os1-euclidean-invariance"
+      },
+      "section": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+      "raw_directive": "2561: :::\n2562: \n2563: :::{prf:theorem} OS1: Euclidean Invariance\n2564: :label: thm-os1-euclidean-invariance\n2565: \n2566: Assuming the fitness potential $\\Phi$ is rotationally invariant ($\\Phi(Rx) = \\Phi(x)$ for $R \\in \\text{SO}(4)$), the QSD satisfies:\n2567: \n2568: $$\n2569: \\pi_{\\text{QSD}}(g \\cdot \\mathcal{S}) = \\pi_{\\text{QSD}}(\\mathcal{S}) \\quad \\forall g \\in E(4)"
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-397",
+      "title": null,
+      "start_line": 2571,
+      "end_line": 2578,
+      "header_lines": [],
+      "content_start": 2572,
+      "content_end": 2577,
+      "content": "2572: \n2573: :::{prf:proof}\n2574: Each Crystalline Gas operator is Euclidean covariant:\n2575: - Geometric ascent: $\\Psi_{\\text{ascent}}(Rx) = R \\cdot \\Psi_{\\text{ascent}}(x)$\n2576: - Thermal fluctuation: $\\Psi_{\\text{thermal}}(Rx) \\overset{d}{=} R \\cdot \\Psi_{\\text{thermal}}(x)$\n2577: - Companion interaction: Uses metric $d(x,y) = \\|x - y\\|$, which is SO(4)-invariant",
+      "metadata": {},
+      "section": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+      "raw_directive": "2571: :::\n2572: \n2573: :::{prf:proof}\n2574: Each Crystalline Gas operator is Euclidean covariant:\n2575: - Geometric ascent: $\\Psi_{\\text{ascent}}(Rx) = R \\cdot \\Psi_{\\text{ascent}}(x)$\n2576: - Thermal fluctuation: $\\Psi_{\\text{thermal}}(Rx) \\overset{d}{=} R \\cdot \\Psi_{\\text{thermal}}(x)$\n2577: - Companion interaction: Uses metric $d(x,y) = \\|x - y\\|$, which is SO(4)-invariant\n2578: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-os3-permutation-symmetry",
+      "title": "OS3: Permutation Symmetry",
+      "start_line": 2580,
+      "end_line": 2584,
+      "header_lines": [
+        2581
+      ],
+      "content_start": 2583,
+      "content_end": 2583,
+      "content": "2583: :label: thm-os3-permutation-symmetry",
+      "metadata": {
+        "label": "thm-os3-permutation-symmetry"
+      },
+      "section": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+      "raw_directive": "2580: :::\n2581: \n2582: :::{prf:theorem} OS3: Permutation Symmetry\n2583: :label: thm-os3-permutation-symmetry\n2584: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-412",
+      "title": null,
+      "start_line": 2586,
+      "end_line": 2588,
+      "header_lines": [],
+      "content_start": 2587,
+      "content_end": 2587,
+      "content": "2587: ",
+      "metadata": {},
+      "section": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+      "raw_directive": "2586: :::\n2587: \n2588: :::{prf:proof}"
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-os-wightman-reconstruction",
+      "title": "Wightman Reconstruction and CMI Prize Verification",
+      "start_line": 2600,
+      "end_line": 2620,
+      "header_lines": [
+        2601
+      ],
+      "content_start": 2603,
+      "content_end": 2619,
+      "content": "2603: :label: thm-os-wightman-reconstruction\n2604: \n2605: By the **Osterwalder-Schrader reconstruction theorem** (Osterwalder & Schrader, 1973, 1975), the verified axioms OS0-OS4 imply the existence of a **relativistic quantum Yang-Mills theory** in Minkowski spacetime $\\mathbb{R}^{1,3}$ satisfying the Wightman axioms:\n2606: \n2607: 1. **Relativistic covariance** (Poincar\u00e9 symmetry)\n2608: 2. **Spectrum condition** (positive energy)\n2609: 3. **Locality** (microcausality)\n2610: 4. **Vacuum state** exists and is unique\n2611: 5. **Mass gap**: $m_{\\text{gap}} = \\frac{1}{2\\sigma} > 0$\n2612: \n2613: This quantum theory is obtained by **Wick rotation** $x^0 \\to -it$ followed by analytic continuation.\n2614: \n2615: The Clay Mathematics Institute requires proving that Yang-Mills theory on $\\mathbb{R}^{1,3}$ satisfies:\n2616: \n2617: 1. \u2705 **Existence**: A quantum Yang-Mills theory exists (OS reconstruction)\n2618: 2. \u2705 **Mass gap**: The spectrum has a gap $m > 0$ above the vacuum (OS4 clustering)\n2619: 3. \u2705 **Axioms**: The theory satisfies Wightman axioms (OS0-OS4 \u2192 Wightman)",
+      "metadata": {
+        "label": "thm-os-wightman-reconstruction"
+      },
+      "section": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+      "raw_directive": "2600: | **OS4** (Clustering) | $\\|\\mathcal{S}_{n+m} - \\mathcal{S}_n \\cdot \\mathcal{S}_m\\| \\leq C e^{-m_{\\text{gap}} R}$ | Exponential decay of Gaussian kernel | \u2713 **PROVEN** |\n2601: \n2602: :::{prf:theorem} Wightman Reconstruction and CMI Prize Verification\n2603: :label: thm-os-wightman-reconstruction\n2604: \n2605: By the **Osterwalder-Schrader reconstruction theorem** (Osterwalder & Schrader, 1973, 1975), the verified axioms OS0-OS4 imply the existence of a **relativistic quantum Yang-Mills theory** in Minkowski spacetime $\\mathbb{R}^{1,3}$ satisfying the Wightman axioms:\n2606: \n2607: 1. **Relativistic covariance** (Poincar\u00e9 symmetry)\n2608: 2. **Spectrum condition** (positive energy)\n2609: 3. **Locality** (microcausality)\n2610: 4. **Vacuum state** exists and is unique\n2611: 5. **Mass gap**: $m_{\\text{gap}} = \\frac{1}{2\\sigma} > 0$\n2612: \n2613: This quantum theory is obtained by **Wick rotation** $x^0 \\to -it$ followed by analytic continuation.\n2614: \n2615: The Clay Mathematics Institute requires proving that Yang-Mills theory on $\\mathbb{R}^{1,3}$ satisfies:\n2616: \n2617: 1. \u2705 **Existence**: A quantum Yang-Mills theory exists (OS reconstruction)\n2618: 2. \u2705 **Mass gap**: The spectrum has a gap $m > 0$ above the vacuum (OS4 clustering)\n2619: 3. \u2705 **Axioms**: The theory satisfies Wightman axioms (OS0-OS4 \u2192 Wightman)\n2620: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-448",
+      "title": null,
+      "start_line": 2622,
+      "end_line": 2624,
+      "header_lines": [],
+      "content_start": 2623,
+      "content_end": 2623,
+      "content": "2623: ",
+      "metadata": {},
+      "section": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+      "raw_directive": "2622: :::\n2623: \n2624: :::{prf:proof}"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

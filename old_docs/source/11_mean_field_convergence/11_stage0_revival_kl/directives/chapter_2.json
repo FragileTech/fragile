@@ -1,0 +1,65 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 2. Analysis of the Finite-N to Mean-Field Transition",
+  "directive_count": 3,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-finite-n-lsi-preservation",
+      "title": "Finite-N LSI Preservation (Proven)",
+      "start_line": 179,
+      "end_line": 199,
+      "header_lines": [
+        180
+      ],
+      "content_start": 182,
+      "content_end": 198,
+      "content": "182: :label: thm-finite-n-lsi-preservation\n183: \n184: The N-particle cloning operator $\\Psi_{\\text{clone}}: \\Sigma_N \\to \\Sigma_N$ **preserves the LSI** with controlled constant degradation. Specifically, if a distribution $\\mu$ on $\\Sigma_N$ satisfies:\n185: \n186: $$\n187: D_{\\text{KL}}(\\mu \\| \\pi) \\le C_{\\text{LSI}} \\cdot I(\\mu \\| \\pi)\n188: $$\n189: \n190: then the push-forward $\\Psi_{\\text{clone}}^* \\mu$ satisfies:\n191: \n192: $$\n193: D_{\\text{KL}}(\\Psi_{\\text{clone}}^* \\mu \\| \\Psi_{\\text{clone}}^* \\pi) \\le C'_{\\text{LSI}} \\cdot I(\\Psi_{\\text{clone}}^* \\mu \\| \\Psi_{\\text{clone}}^* \\pi)\n194: $$\n195: \n196: where $C'_{\\text{LSI}} = C_{\\text{LSI}} \\cdot (1 + O(\\delta^2))$ for cloning noise variance $\\delta^2$.\n197: \n198: **Key mechanism**: The cloning operator introduces small Gaussian noise ($\\delta \\xi$) when copying walkers, which regularizes the Fisher information and prevents LSI constant blow-up.",
+      "metadata": {
+        "label": "thm-finite-n-lsi-preservation"
+      },
+      "section": "## 2. Analysis of the Finite-N to Mean-Field Transition",
+      "raw_directive": "179: From [10_kl_convergence.md](10_kl_convergence.md), the finite-N cloning operator $\\Psi_{\\text{clone}}$ satisfies:\n180: \n181: :::{prf:theorem} Finite-N LSI Preservation (Proven)\n182: :label: thm-finite-n-lsi-preservation\n183: \n184: The N-particle cloning operator $\\Psi_{\\text{clone}}: \\Sigma_N \\to \\Sigma_N$ **preserves the LSI** with controlled constant degradation. Specifically, if a distribution $\\mu$ on $\\Sigma_N$ satisfies:\n185: \n186: $$\n187: D_{\\text{KL}}(\\mu \\| \\pi) \\le C_{\\text{LSI}} \\cdot I(\\mu \\| \\pi)\n188: $$\n189: \n190: then the push-forward $\\Psi_{\\text{clone}}^* \\mu$ satisfies:\n191: \n192: $$\n193: D_{\\text{KL}}(\\Psi_{\\text{clone}}^* \\mu \\| \\Psi_{\\text{clone}}^* \\pi) \\le C'_{\\text{LSI}} \\cdot I(\\Psi_{\\text{clone}}^* \\mu \\| \\Psi_{\\text{clone}}^* \\pi)\n194: $$\n195: \n196: where $C'_{\\text{LSI}} = C_{\\text{LSI}} \\cdot (1 + O(\\delta^2))$ for cloning noise variance $\\delta^2$.\n197: \n198: **Key mechanism**: The cloning operator introduces small Gaussian noise ($\\delta \\xi$) when copying walkers, which regularizes the Fisher information and prevents LSI constant blow-up.\n199: "
+    },
+    {
+      "directive_type": "problem",
+      "label": "prob-finite-n-vs-mean-field",
+      "title": "Critical Differences Between Finite-N and Mean-Field",
+      "start_line": 213,
+      "end_line": 225,
+      "header_lines": [
+        214
+      ],
+      "content_start": 216,
+      "content_end": 224,
+      "content": "216: :label: prob-finite-n-vs-mean-field\n217: \n218: | Aspect | Finite-N Cloning | Mean-Field Revival | Implication |\n219: |:-------|:-----------------|:-------------------|:------------|\n220: | **Dimensionality** | Finite $(Nd)$ | Infinite (function space) | Compactness arguments may fail |\n221: | **Noise** | Explicit $\\delta \\xi$ noise | No explicit noise in $\\mathcal{R}$ | Fisher information regularization unclear |\n222: | **Nonlinearity** | Linear in empirical measure | Nonlinear (division by $\\\\|\\rho\\\\|_{L^1}$) | May create singularities |\n223: | **Discreteness** | Discrete selection among N walkers | Continuous sampling from $\\rho$ | Combinatorial structure lost |\n224: | **Companion selection** | Finite sample ($j \\in \\mathcal{A}$) | Integral over $\\rho$ | Correlations differ |",
+      "metadata": {
+        "label": "prob-finite-n-vs-mean-field"
+      },
+      "section": "## 2. Analysis of the Finite-N to Mean-Field Transition",
+      "raw_directive": "213: **Potential issues**:\n214: \n215: :::{prf:problem} Critical Differences Between Finite-N and Mean-Field\n216: :label: prob-finite-n-vs-mean-field\n217: \n218: | Aspect | Finite-N Cloning | Mean-Field Revival | Implication |\n219: |:-------|:-----------------|:-------------------|:------------|\n220: | **Dimensionality** | Finite $(Nd)$ | Infinite (function space) | Compactness arguments may fail |\n221: | **Noise** | Explicit $\\delta \\xi$ noise | No explicit noise in $\\mathcal{R}$ | Fisher information regularization unclear |\n222: | **Nonlinearity** | Linear in empirical measure | Nonlinear (division by $\\\\|\\rho\\\\|_{L^1}$) | May create singularities |\n223: | **Discreteness** | Discrete selection among N walkers | Continuous sampling from $\\rho$ | Combinatorial structure lost |\n224: | **Companion selection** | Finite sample ($j \\in \\mathcal{A}$) | Integral over $\\rho$ | Correlations differ |\n225: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-data-processing",
+      "title": "Data Processing Inequality (Standard Result)",
+      "start_line": 239,
+      "end_line": 251,
+      "header_lines": [
+        240
+      ],
+      "content_start": 242,
+      "content_end": 250,
+      "content": "242: :label: thm-data-processing\n243: \n244: For any Markov kernel $K: \\mathcal{X} \\to \\mathcal{P}(\\mathcal{Y})$:\n245: \n246: $$\n247: D_{\\text{KL}}(K \\rho \\| K \\sigma) \\le D_{\\text{KL}}(\\rho \\| \\sigma)\n248: $$\n249: \n250: where $K\\rho(y) = \\int K(x \\to y) \\rho(x) dx$ is the push-forward.",
+      "metadata": {
+        "label": "thm-data-processing"
+      },
+      "section": "## 2. Analysis of the Finite-N to Mean-Field Transition",
+      "raw_directive": "239: This is analogous to updating a prior $\\rho$ by conditioning on the event \"walker survives.\" Bayesian updates are known to be KL-contractive:\n240: \n241: :::{prf:theorem} Data Processing Inequality (Standard Result)\n242: :label: thm-data-processing\n243: \n244: For any Markov kernel $K: \\mathcal{X} \\to \\mathcal{P}(\\mathcal{Y})$:\n245: \n246: $$\n247: D_{\\text{KL}}(K \\rho \\| K \\sigma) \\le D_{\\text{KL}}(\\rho \\| \\sigma)\n248: $$\n249: \n250: where $K\\rho(y) = \\int K(x \\to y) \\rho(x) dx$ is the push-forward.\n251: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

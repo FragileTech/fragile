@@ -1,0 +1,29 @@
+{
+  "chapter_index": 5,
+  "section_id": "## 5. QSD Equilibrium Analysis",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-adaptive-qsd",
+      "title": "Adaptive Forces at QSD",
+      "start_line": 194,
+      "end_line": 232,
+      "header_lines": [
+        195
+      ],
+      "content_start": 197,
+      "content_end": 231,
+      "content": "197: :label: thm-adaptive-qsd\n198: \n199: At the quasi-stationary distribution $\\mu_{\\text{QSD}}$, the adaptive force contributions satisfy:\n200: \n201: 1. **No bulk flow**: The mean velocity vanishes to leading order:\n202:    $$\n203:    u^i_{\\text{QSD}} = \\frac{\\varepsilon_F}{\\gamma} \\nabla^i V_{\\text{fit}}[\\rho_{\\text{QSD}}] = O(\\varepsilon_F)\n204:    $$\n205: \n206: 2. **Stationary solution**: The QSD density $\\rho_{\\text{QSD}}(x)$ is the unique solution to the zero-flux condition:\n207:    $$\n208:    \\rho \\nabla (U + \\varepsilon_F V_{\\text{fit}}[\\rho]) = \\frac{k_B T}{m} \\nabla \\rho\n209:    $$\n210:    which implicitly defines $\\rho_{\\text{QSD}}$ as a functional of the self-consistent potential.\n211: \n212: 3. **Vanishing source**: $J^\\nu_{\\text{adapt}}[\\mu_{\\text{QSD}}] = 0$ since $\\partial \\rho_{\\text{QSD}}/\\partial t = 0$.\n213: \n214: 4. **Anisotropic stress**: The diffusion tensor creates anisotropic stress:\n215:    $$\n216:    T_{ij} = m\\rho \\frac{k_B T_{\\text{eff}}}{m} \\left[\\delta^{ij} + \\varepsilon_F \\Delta G^{ij}(x) + O(\\varepsilon_F^2)\\right]\n217:    $$\n218:    where $\\Delta G^{ij} = G_{\\text{reg}}^{ij} - (\\text{tr } G_{\\text{reg}}/d) \\delta^{ij}$ is the traceless part.\n219: \n220: **Consequence**: At leading order in $\\varepsilon_F$, the stress-energy tensor is:\n221: \n222: $$\n223: T_{\\mu\\nu}[\\mu_{\\text{QSD}}] = m\\rho \\frac{k_B T_{\\text{eff}}}{m} g_{\\mu\\nu} + O(\\varepsilon_F)\n224: $$\n225: \n226: The Einstein equations remain:\n227: \n228: $$\n229: G_{\\mu\\nu} = 8\\pi G T_{\\mu\\nu}\n230: $$\n231: ",
+      "metadata": {
+        "label": "thm-adaptive-qsd"
+      },
+      "section": "## 5. QSD Equilibrium Analysis",
+      "raw_directive": "194: At the quasi-stationary distribution, several simplifications occur:\n195: \n196: :::{prf:theorem} Adaptive Forces at QSD\n197: :label: thm-adaptive-qsd\n198: \n199: At the quasi-stationary distribution $\\mu_{\\text{QSD}}$, the adaptive force contributions satisfy:\n200: \n201: 1. **No bulk flow**: The mean velocity vanishes to leading order:\n202:    $$\n203:    u^i_{\\text{QSD}} = \\frac{\\varepsilon_F}{\\gamma} \\nabla^i V_{\\text{fit}}[\\rho_{\\text{QSD}}] = O(\\varepsilon_F)\n204:    $$\n205: \n206: 2. **Stationary solution**: The QSD density $\\rho_{\\text{QSD}}(x)$ is the unique solution to the zero-flux condition:\n207:    $$\n208:    \\rho \\nabla (U + \\varepsilon_F V_{\\text{fit}}[\\rho]) = \\frac{k_B T}{m} \\nabla \\rho\n209:    $$\n210:    which implicitly defines $\\rho_{\\text{QSD}}$ as a functional of the self-consistent potential.\n211: \n212: 3. **Vanishing source**: $J^\\nu_{\\text{adapt}}[\\mu_{\\text{QSD}}] = 0$ since $\\partial \\rho_{\\text{QSD}}/\\partial t = 0$.\n213: \n214: 4. **Anisotropic stress**: The diffusion tensor creates anisotropic stress:\n215:    $$\n216:    T_{ij} = m\\rho \\frac{k_B T_{\\text{eff}}}{m} \\left[\\delta^{ij} + \\varepsilon_F \\Delta G^{ij}(x) + O(\\varepsilon_F^2)\\right]\n217:    $$\n218:    where $\\Delta G^{ij} = G_{\\text{reg}}^{ij} - (\\text{tr } G_{\\text{reg}}/d) \\delta^{ij}$ is the traceless part.\n219: \n220: **Consequence**: At leading order in $\\varepsilon_F$, the stress-energy tensor is:\n221: \n222: $$\n223: T_{\\mu\\nu}[\\mu_{\\text{QSD}}] = m\\rho \\frac{k_B T_{\\text{eff}}}{m} g_{\\mu\\nu} + O(\\varepsilon_F)\n224: $$\n225: \n226: The Einstein equations remain:\n227: \n228: $$\n229: G_{\\mu\\nu} = 8\\pi G T_{\\mu\\nu}\n230: $$\n231: \n232: with corrections suppressed by $\\varepsilon_F$."
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

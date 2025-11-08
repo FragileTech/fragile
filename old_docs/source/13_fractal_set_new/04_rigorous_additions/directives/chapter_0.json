@@ -1,0 +1,215 @@
+{
+  "chapter_index": 0,
+  "section_id": "## 1. Graph Laplacian Convergence: Complete Proof",
+  "directive_count": 12,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-graph-laplacian-convergence-complete",
+      "title": "Graph Laplacian Convergence to Laplace-Beltrami",
+      "start_line": 35,
+      "end_line": 72,
+      "header_lines": [
+        36
+      ],
+      "content_start": 38,
+      "content_end": 71,
+      "content": "38: :label: thm-graph-laplacian-convergence-complete\n39: \n40: Let $\\mathcal{F}_N$ be the Fractal Set with $N$ total nodes (episodes). Let $f_\\phi: \\mathcal{E}_N \\to \\mathbb{R}$ be a smooth test function on episodes induced by $\\phi: \\mathcal{X} \\to \\mathbb{R}$ via $f_\\phi(e) = \\phi(x_e)$ where $x_e$ is the spatial location of episode $e$.\n41: \n42: Define the **graph Laplacian** on the Fractal Set as:\n43: \n44: $$\n45: (\\Delta_{\\mathcal{F}_N} f)(e_i) := \\frac{1}{d_i} \\sum_{e_j \\sim e_i} w_{ij} \\left( \\frac{f(e_j) - f(e_i)}{\\|x_j - x_i\\|^2} \\right)\n46: $$\n47: \n48: where:\n49: - $e_j \\sim e_i$ denotes IG neighbors (episodes connected by IG edges)\n50: - $w_{ij}$ are IG edge weights (see \u00a72.1)\n51: - $d_i = \\sum_{e_j \\sim e_i} w_{ij}$ is the weighted degree\n52: \n53: Let $(\\mathcal{X}, g)$ be the emergent Riemannian manifold with metric $g$ and let $\\mu$ be the QSD spatial marginal. Then as $N \\to \\infty$:\n54: \n55: $$\n56: \\frac{1}{N} \\sum_{e \\in \\mathcal{E}_N} (\\Delta_{\\mathcal{F}_N} f_\\phi)(e) \\xrightarrow{p} \\int_{\\mathcal{X}} (\\Delta_g \\phi)(x) \\, d\\mu(x)\n57: $$\n58: \n59: where $\\Delta_g$ is the Laplace-Beltrami operator:\n60: \n61: $$\n62: \\Delta_g \\phi = \\frac{1}{\\sqrt{\\det g}} \\partial_i \\left( \\sqrt{\\det g} \\, g^{ij} \\partial_j \\phi \\right)\n63: $$\n64: \n65: **Convergence rate:** With probability at least $1 - \\delta$:\n66: \n67: $$\n68: \\left| \\frac{1}{N} \\sum_{e \\in \\mathcal{E}_N} (\\Delta_{\\mathcal{F}_N} f_\\phi)(e) - \\int_{\\mathcal{X}} (\\Delta_g \\phi)(x) \\, d\\mu(x) \\right| \\leq C(\\phi) \\cdot N^{-1/4} \\log(1/\\delta)\n69: $$\n70: \n71: for a constant $C(\\phi)$ depending on smoothness of $\\phi$.",
+      "metadata": {
+        "label": "thm-graph-laplacian-convergence-complete"
+      },
+      "section": "## 1. Graph Laplacian Convergence: Complete Proof",
+      "raw_directive": "35: ### 1.2. Main Convergence Theorem\n36: \n37: :::{prf:theorem} Graph Laplacian Convergence to Laplace-Beltrami\n38: :label: thm-graph-laplacian-convergence-complete\n39: \n40: Let $\\mathcal{F}_N$ be the Fractal Set with $N$ total nodes (episodes). Let $f_\\phi: \\mathcal{E}_N \\to \\mathbb{R}$ be a smooth test function on episodes induced by $\\phi: \\mathcal{X} \\to \\mathbb{R}$ via $f_\\phi(e) = \\phi(x_e)$ where $x_e$ is the spatial location of episode $e$.\n41: \n42: Define the **graph Laplacian** on the Fractal Set as:\n43: \n44: $$\n45: (\\Delta_{\\mathcal{F}_N} f)(e_i) := \\frac{1}{d_i} \\sum_{e_j \\sim e_i} w_{ij} \\left( \\frac{f(e_j) - f(e_i)}{\\|x_j - x_i\\|^2} \\right)\n46: $$\n47: \n48: where:\n49: - $e_j \\sim e_i$ denotes IG neighbors (episodes connected by IG edges)\n50: - $w_{ij}$ are IG edge weights (see \u00a72.1)\n51: - $d_i = \\sum_{e_j \\sim e_i} w_{ij}$ is the weighted degree\n52: \n53: Let $(\\mathcal{X}, g)$ be the emergent Riemannian manifold with metric $g$ and let $\\mu$ be the QSD spatial marginal. Then as $N \\to \\infty$:\n54: \n55: $$\n56: \\frac{1}{N} \\sum_{e \\in \\mathcal{E}_N} (\\Delta_{\\mathcal{F}_N} f_\\phi)(e) \\xrightarrow{p} \\int_{\\mathcal{X}} (\\Delta_g \\phi)(x) \\, d\\mu(x)\n57: $$\n58: \n59: where $\\Delta_g$ is the Laplace-Beltrami operator:\n60: \n61: $$\n62: \\Delta_g \\phi = \\frac{1}{\\sqrt{\\det g}} \\partial_i \\left( \\sqrt{\\det g} \\, g^{ij} \\partial_j \\phi \\right)\n63: $$\n64: \n65: **Convergence rate:** With probability at least $1 - \\delta$:\n66: \n67: $$\n68: \\left| \\frac{1}{N} \\sum_{e \\in \\mathcal{E}_N} (\\Delta_{\\mathcal{F}_N} f_\\phi)(e) - \\int_{\\mathcal{X}} (\\Delta_g \\phi)(x) \\, d\\mu(x) \\right| \\leq C(\\phi) \\cdot N^{-1/4} \\log(1/\\delta)\n69: $$\n70: \n71: for a constant $C(\\phi)$ depending on smoothness of $\\phi$.\n72: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-50",
+      "title": null,
+      "start_line": 74,
+      "end_line": 112,
+      "header_lines": [],
+      "content_start": 75,
+      "content_end": 111,
+      "content": "75: \n76: :::{prf:proof}\n77: The proof proceeds in three major steps, each proven rigorously in separate documents:\n78: \n79: **Step 1: QSD Spatial Marginal Equals Riemannian Volume**\n80: \n81: Establish that episodes sample from the spatial manifold according to:\n82: \n83: $$\n84: d\\mu(x) \\propto \\sqrt{\\det g(x)} \\, e^{-U_{\\text{eff}}(x)/T} \\, dx\n85: $$\n86: \n87: This is **Lemma 1.3.1** below (Theorem `thm-main-result-final` in `qsd_stratonovich_final.md`).\n88: \n89: **Step 2: Velocity Marginalization and Annealed Approximation**\n90: \n91: Show that on the timescale of spatial exploration, velocities thermalize rapidly, justifying the annealed kernel:\n92: \n93: $$\n94: W(x_i, x_j) = C_v \\exp\\left( -\\frac{\\|x_i - x_j\\|^2}{2\\epsilon^2} \\right)\n95: $$\n96: \n97: This is **Lemma 1.3.2** below (from `velocity_marginalization_rigorous.md`).\n98: \n99: **Step 3: Covariance Matrix Converges to Inverse Metric**\n100: \n101: Prove that the local covariance matrix of IG edge displacements converges to the inverse metric:\n102: \n103: $$\n104: \\Sigma_i := \\frac{\\sum_{e_j \\in \\mathcal{N}_{\\epsilon}(e_i)} w_{ij} \\Delta x_{ij} \\Delta x_{ij}^T}{\\sum_{e_j \\in \\mathcal{N}_{\\epsilon}(e_i)} w_{ij}} \\xrightarrow{a.s.} g(x_i)^{-1}\n105: $$\n106: \n107: This is **Lemma 1.3.3** below (Theorem `thm-covariance-convergence-rigorous` in `covariance_convergence_rigorous_proof.md`).\n108: \n109: **Step 4: Apply Belkin-Niyogi Theorem**\n110: \n111: With Steps 1-3 established, the standard graph Laplacian convergence theorem (Belkin & Niyogi, 2008) applies directly. The rate $O(N^{-1/4})$ comes from concentration inequalities for kernel density estimation on manifolds.",
+      "metadata": {},
+      "section": "## 1. Graph Laplacian Convergence: Complete Proof",
+      "raw_directive": "74: :::\n75: \n76: :::{prf:proof}\n77: The proof proceeds in three major steps, each proven rigorously in separate documents:\n78: \n79: **Step 1: QSD Spatial Marginal Equals Riemannian Volume**\n80: \n81: Establish that episodes sample from the spatial manifold according to:\n82: \n83: $$\n84: d\\mu(x) \\propto \\sqrt{\\det g(x)} \\, e^{-U_{\\text{eff}}(x)/T} \\, dx\n85: $$\n86: \n87: This is **Lemma 1.3.1** below (Theorem `thm-main-result-final` in `qsd_stratonovich_final.md`).\n88: \n89: **Step 2: Velocity Marginalization and Annealed Approximation**\n90: \n91: Show that on the timescale of spatial exploration, velocities thermalize rapidly, justifying the annealed kernel:\n92: \n93: $$\n94: W(x_i, x_j) = C_v \\exp\\left( -\\frac{\\|x_i - x_j\\|^2}{2\\epsilon^2} \\right)\n95: $$\n96: \n97: This is **Lemma 1.3.2** below (from `velocity_marginalization_rigorous.md`).\n98: \n99: **Step 3: Covariance Matrix Converges to Inverse Metric**\n100: \n101: Prove that the local covariance matrix of IG edge displacements converges to the inverse metric:\n102: \n103: $$\n104: \\Sigma_i := \\frac{\\sum_{e_j \\in \\mathcal{N}_{\\epsilon}(e_i)} w_{ij} \\Delta x_{ij} \\Delta x_{ij}^T}{\\sum_{e_j \\in \\mathcal{N}_{\\epsilon}(e_i)} w_{ij}} \\xrightarrow{a.s.} g(x_i)^{-1}\n105: $$\n106: \n107: This is **Lemma 1.3.3** below (Theorem `thm-covariance-convergence-rigorous` in `covariance_convergence_rigorous_proof.md`).\n108: \n109: **Step 4: Apply Belkin-Niyogi Theorem**\n110: \n111: With Steps 1-3 established, the standard graph Laplacian convergence theorem (Belkin & Niyogi, 2008) applies directly. The rate $O(N^{-1/4})$ comes from concentration inequalities for kernel density estimation on manifolds.\n112: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-qsd-spatial-riemannian-volume",
+      "title": "QSD Spatial Marginal is Riemannian Volume Measure",
+      "start_line": 120,
+      "end_line": 140,
+      "header_lines": [
+        121
+      ],
+      "content_start": 123,
+      "content_end": 139,
+      "content": "123: :label: thm-qsd-spatial-riemannian-volume\n124: \n125: Consider the Adaptive Gas SDE from {doc}`../07_adaptative_gas.md` with state space $\\mathcal{X} \\times \\mathbb{R}^d$ and quasi-stationary distribution $\\pi_{\\text{QSD}}$.\n126: \n127: The **spatial marginal** of the QSD (integrating out velocities) is:\n128: \n129: $$\n130: \\rho_{\\text{spatial}}(x) = \\int_{\\mathbb{R}^d} \\pi_{\\text{QSD}}(x, v) \\, dv \\propto \\sqrt{\\det g(x)} \\, \\exp\\left( -\\frac{U_{\\text{eff}}(x)}{T} \\right)\n131: $$\n132: \n133: where:\n134: - $g(x) = D(x)^{-1}$ is the emergent Riemannian metric (inverse diffusion tensor)\n135: - $D(x) = \\Sigma_{\\text{reg}}(x) \\Sigma_{\\text{reg}}(x)^T$ is the position-dependent diffusion tensor\n136: - $U_{\\text{eff}}(x) = U(x) + T \\log Z_{\\text{kin}}$ is the effective potential (confining + entropic)\n137: - $T = 1/\\gamma$ is the effective temperature\n138: \n139: **Critical insight:** The $\\sqrt{\\det g(x)}$ factor arises because the Langevin SDE in Chapter 07 uses **Stratonovich calculus**, not It\u00f4 calculus.",
+      "metadata": {
+        "label": "thm-qsd-spatial-riemannian-volume"
+      },
+      "section": "## 1. Graph Laplacian Convergence: Complete Proof",
+      "raw_directive": "120: This is the **foundational result** explaining why the Fractal Set naturally encodes Riemannian geometry.\n121: \n122: :::{prf:theorem} QSD Spatial Marginal is Riemannian Volume Measure\n123: :label: thm-qsd-spatial-riemannian-volume\n124: \n125: Consider the Adaptive Gas SDE from {doc}`../07_adaptative_gas.md` with state space $\\mathcal{X} \\times \\mathbb{R}^d$ and quasi-stationary distribution $\\pi_{\\text{QSD}}$.\n126: \n127: The **spatial marginal** of the QSD (integrating out velocities) is:\n128: \n129: $$\n130: \\rho_{\\text{spatial}}(x) = \\int_{\\mathbb{R}^d} \\pi_{\\text{QSD}}(x, v) \\, dv \\propto \\sqrt{\\det g(x)} \\, \\exp\\left( -\\frac{U_{\\text{eff}}(x)}{T} \\right)\n131: $$\n132: \n133: where:\n134: - $g(x) = D(x)^{-1}$ is the emergent Riemannian metric (inverse diffusion tensor)\n135: - $D(x) = \\Sigma_{\\text{reg}}(x) \\Sigma_{\\text{reg}}(x)^T$ is the position-dependent diffusion tensor\n136: - $U_{\\text{eff}}(x) = U(x) + T \\log Z_{\\text{kin}}$ is the effective potential (confining + entropic)\n137: - $T = 1/\\gamma$ is the effective temperature\n138: \n139: **Critical insight:** The $\\sqrt{\\det g(x)}$ factor arises because the Langevin SDE in Chapter 07 uses **Stratonovich calculus**, not It\u00f4 calculus.\n140: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-118",
+      "title": null,
+      "start_line": 142,
+      "end_line": 204,
+      "header_lines": [],
+      "content_start": 143,
+      "content_end": 203,
+      "content": "143: \n144: :::{prf:proof}\n145: **Step 1: Stratonovich SDE Form**\n146: \n147: The Adaptive Gas Langevin dynamics (Chapter 07, equation 07-334) is:\n148: \n149: $$\n150: dx_i = v_i \\, dt, \\quad dv_i = \\mathbf{F}_{\\text{total}}(x_i, v_i) \\, dt + \\Sigma_{\\text{reg}}(x_i) \\circ dW_i - \\gamma v_i \\, dt\n151: $$\n152: \n153: The $\\circ dW_i$ notation indicates **Stratonovich interpretation** of the stochastic integral.\n154: \n155: **Step 2: Stationary Distribution for Stratonovich Langevin**\n156: \n157: For a Stratonovich Langevin equation:\n158: \n159: $$\n160: dX = b(X) \\, dt + \\sigma(X) \\circ dW\n161: $$\n162: \n163: the stationary distribution satisfies the **Stratonovich Fokker-Planck equation** (Graham, 1977):\n164: \n165: $$\n166: 0 = -\\nabla \\cdot (b \\rho) + \\frac{1}{2} \\nabla \\cdot \\nabla \\cdot (D \\rho)\n167: $$\n168: \n169: where $D = \\sigma \\sigma^T$ is the diffusion tensor.\n170: \n171: By detailed balance, the stationary density is:\n172: \n173: $$\n174: \\rho \\propto (\\det D)^{-1/2} \\exp\\left( -\\int_0^x b \\cdot dX / T \\right)\n175: $$\n176: \n177: For our system with $b = -\\nabla U_{\\text{eff}}$ (after velocity marginalization, see below):\n178: \n179: $$\n180: \\rho \\propto (\\det D)^{-1/2} e^{-U_{\\text{eff}}/T} = \\sqrt{\\det g} \\, e^{-U_{\\text{eff}}/T}\n181: $$\n182: \n183: **Step 3: Comparison with It\u00f4 Interpretation**\n184: \n185: If we incorrectly used **It\u00f4 calculus**, the stationary distribution would be:\n186: \n187: $$\n188: \\rho_{\\text{It\u00f4}} \\propto e^{-U_{\\text{eff}}/T}\n189: $$\n190: \n191: **missing** the $\\sqrt{\\det g}$ factor. This was the source of confusion in earlier attempts (see `kramers_smoluchowski_rigorous.md`).\n192: \n193: **Step 4: Velocity Marginalization**\n194: \n195: The full QSD on $(x, v)$ space factors (approximately, after fast velocity thermalization) as:\n196: \n197: $$\n198: \\pi_{\\text{QSD}}(x, v) \\approx \\rho_{\\text{spatial}}(x) \\cdot \\rho_{\\text{Maxwell}}(v \\mid x)\n199: $$\n200: \n201: where $\\rho_{\\text{Maxwell}}(v \\mid x)$ is the Maxwell-Boltzmann distribution at temperature $T = 1/\\gamma$.\n202: \n203: Integrating out velocities yields the spatial marginal stated in the theorem.",
+      "metadata": {},
+      "section": "## 1. Graph Laplacian Convergence: Complete Proof",
+      "raw_directive": "142: :::\n143: \n144: :::{prf:proof}\n145: **Step 1: Stratonovich SDE Form**\n146: \n147: The Adaptive Gas Langevin dynamics (Chapter 07, equation 07-334) is:\n148: \n149: $$\n150: dx_i = v_i \\, dt, \\quad dv_i = \\mathbf{F}_{\\text{total}}(x_i, v_i) \\, dt + \\Sigma_{\\text{reg}}(x_i) \\circ dW_i - \\gamma v_i \\, dt\n151: $$\n152: \n153: The $\\circ dW_i$ notation indicates **Stratonovich interpretation** of the stochastic integral.\n154: \n155: **Step 2: Stationary Distribution for Stratonovich Langevin**\n156: \n157: For a Stratonovich Langevin equation:\n158: \n159: $$\n160: dX = b(X) \\, dt + \\sigma(X) \\circ dW\n161: $$\n162: \n163: the stationary distribution satisfies the **Stratonovich Fokker-Planck equation** (Graham, 1977):\n164: \n165: $$\n166: 0 = -\\nabla \\cdot (b \\rho) + \\frac{1}{2} \\nabla \\cdot \\nabla \\cdot (D \\rho)\n167: $$\n168: \n169: where $D = \\sigma \\sigma^T$ is the diffusion tensor.\n170: \n171: By detailed balance, the stationary density is:\n172: \n173: $$\n174: \\rho \\propto (\\det D)^{-1/2} \\exp\\left( -\\int_0^x b \\cdot dX / T \\right)\n175: $$\n176: \n177: For our system with $b = -\\nabla U_{\\text{eff}}$ (after velocity marginalization, see below):\n178: \n179: $$\n180: \\rho \\propto (\\det D)^{-1/2} e^{-U_{\\text{eff}}/T} = \\sqrt{\\det g} \\, e^{-U_{\\text{eff}}/T}\n181: $$\n182: \n183: **Step 3: Comparison with It\u00f4 Interpretation**\n184: \n185: If we incorrectly used **It\u00f4 calculus**, the stationary distribution would be:\n186: \n187: $$\n188: \\rho_{\\text{It\u00f4}} \\propto e^{-U_{\\text{eff}}/T}\n189: $$\n190: \n191: **missing** the $\\sqrt{\\det g}$ factor. This was the source of confusion in earlier attempts (see `kramers_smoluchowski_rigorous.md`).\n192: \n193: **Step 4: Velocity Marginalization**\n194: \n195: The full QSD on $(x, v)$ space factors (approximately, after fast velocity thermalization) as:\n196: \n197: $$\n198: \\pi_{\\text{QSD}}(x, v) \\approx \\rho_{\\text{spatial}}(x) \\cdot \\rho_{\\text{Maxwell}}(v \\mid x)\n199: $$\n200: \n201: where $\\rho_{\\text{Maxwell}}(v \\mid x)$ is the Maxwell-Boltzmann distribution at temperature $T = 1/\\gamma$.\n202: \n203: Integrating out velocities yields the spatial marginal stated in the theorem.\n204: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-velocity-marginalization",
+      "title": "Fast Velocity Thermalization Justifies Annealed Approximation",
+      "start_line": 220,
+      "end_line": 242,
+      "header_lines": [
+        221
+      ],
+      "content_start": 223,
+      "content_end": 241,
+      "content": "223: :label: lem-velocity-marginalization\n224: \n225: Consider the full Langevin dynamics on phase space $(x, v) \\in \\mathcal{X} \\times \\mathbb{R}^d$. Under the assumptions of Chapter 04 (geometric ergodicity of kinetic operator), there is a **timescale separation**:\n226: \n227: $$\n228: \\tau_v \\ll \\tau_x\n229: $$\n230: \n231: where:\n232: - $\\tau_v \\sim \\gamma^{-1}$: Velocity thermalization time\n233: - $\\tau_x \\sim \\epsilon_c^{-2}$: Spatial exploration time (diffusion)\n234: \n235: with $\\epsilon_c = \\sqrt{T/\\gamma}$ the thermal coherence length.\n236: \n237: **Consequence:** On the timescale of spatial diffusion, velocities are effectively in thermal equilibrium at each position $x$. This justifies the **annealed approximation** where IG edge weights (which depend on temporal overlap) can be approximated by a position-dependent kernel:\n238: \n239: $$\n240: W(x_i, x_j) = C_v \\exp\\left( -\\frac{\\|x_i - x_j\\|^2}{2\\epsilon_c^2} \\right)\n241: $$",
+      "metadata": {
+        "label": "lem-velocity-marginalization"
+      },
+      "section": "## 1. Graph Laplacian Convergence: Complete Proof",
+      "raw_directive": "220: #### 1.3.2. Velocity Marginalization and Timescale Separation\n221: \n222: :::{prf:lemma} Fast Velocity Thermalization Justifies Annealed Approximation\n223: :label: lem-velocity-marginalization\n224: \n225: Consider the full Langevin dynamics on phase space $(x, v) \\in \\mathcal{X} \\times \\mathbb{R}^d$. Under the assumptions of Chapter 04 (geometric ergodicity of kinetic operator), there is a **timescale separation**:\n226: \n227: $$\n228: \\tau_v \\ll \\tau_x\n229: $$\n230: \n231: where:\n232: - $\\tau_v \\sim \\gamma^{-1}$: Velocity thermalization time\n233: - $\\tau_x \\sim \\epsilon_c^{-2}$: Spatial exploration time (diffusion)\n234: \n235: with $\\epsilon_c = \\sqrt{T/\\gamma}$ the thermal coherence length.\n236: \n237: **Consequence:** On the timescale of spatial diffusion, velocities are effectively in thermal equilibrium at each position $x$. This justifies the **annealed approximation** where IG edge weights (which depend on temporal overlap) can be approximated by a position-dependent kernel:\n238: \n239: $$\n240: W(x_i, x_j) = C_v \\exp\\left( -\\frac{\\|x_i - x_j\\|^2}{2\\epsilon_c^2} \\right)\n241: $$\n242: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-220",
+      "title": null,
+      "start_line": 244,
+      "end_line": 298,
+      "header_lines": [],
+      "content_start": 245,
+      "content_end": 297,
+      "content": "245: \n246: :::{prf:proof}\n247: **Step 1: Velocity Relaxation Rate**\n248: \n249: From the O-step in BAOAB ({prf:ref}`def-baoab-kernel` in {doc}`02_computational_equivalence.md`):\n250: \n251: $$\n252: v^{(2)} = e^{-\\gamma \\Delta t} v^{(1)} + \\sqrt{\\frac{T}{\\gamma}(1 - e^{-2\\gamma \\Delta t})} \\, \\xi\n253: $$\n254: \n255: The velocity autocorrelation decays as:\n256: \n257: $$\n258: \\langle v(t) \\cdot v(0) \\rangle \\sim e^{-\\gamma t}\n259: $$\n260: \n261: giving thermalization time $\\tau_v \\sim \\gamma^{-1}$.\n262: \n263: **Step 2: Spatial Diffusion Rate**\n264: \n265: After velocity marginalization, the effective spatial dynamics follow overdamped Langevin:\n266: \n267: $$\n268: dx = -D(x) \\nabla U_{\\text{eff}}(x) \\, dt + \\sqrt{2D(x)} \\, dW\n269: $$\n270: \n271: with diffusion constant $D(x) \\sim T/\\gamma$. The time to diffuse distance $L$ is:\n272: \n273: $$\n274: \\tau_{\\text{diff}}(L) \\sim \\frac{L^2}{D} \\sim \\frac{L^2 \\gamma}{T}\n275: $$\n276: \n277: For the thermal coherence length $\\epsilon_c = \\sqrt{T/\\gamma}$:\n278: \n279: $$\n280: \\tau_x \\sim \\frac{\\epsilon_c^2 \\gamma}{T} = 1\n281: $$\n282: \n283: **Step 3: Timescale Ratio**\n284: \n285: $$\n286: \\frac{\\tau_v}{\\tau_x} \\sim \\gamma^{-1} \\ll 1 \\quad \\text{for } \\gamma \\gg 1\n287: $$\n288: \n289: In typical Fragile Gas parameters, $\\gamma \\in [1, 10]$, so the separation holds.\n290: \n291: **Step 4: Annealed Kernel**\n292: \n293: Given fast velocity equilibration, the probability that episode $i$ at position $x_i$ has episode $j$ at $x_j$ as IG neighbor (diversity or cloning companion) depends on:\n294: 1. Spatial proximity (weighted by $W(x_i, x_j)$)\n295: 2. Temporal overlap (fraction of time both alive)\n296: \n297: For long-lived episodes, temporal overlap $\\to 1$, leaving only spatial kernel.",
+      "metadata": {},
+      "section": "## 1. Graph Laplacian Convergence: Complete Proof",
+      "raw_directive": "244: :::\n245: \n246: :::{prf:proof}\n247: **Step 1: Velocity Relaxation Rate**\n248: \n249: From the O-step in BAOAB ({prf:ref}`def-baoab-kernel` in {doc}`02_computational_equivalence.md`):\n250: \n251: $$\n252: v^{(2)} = e^{-\\gamma \\Delta t} v^{(1)} + \\sqrt{\\frac{T}{\\gamma}(1 - e^{-2\\gamma \\Delta t})} \\, \\xi\n253: $$\n254: \n255: The velocity autocorrelation decays as:\n256: \n257: $$\n258: \\langle v(t) \\cdot v(0) \\rangle \\sim e^{-\\gamma t}\n259: $$\n260: \n261: giving thermalization time $\\tau_v \\sim \\gamma^{-1}$.\n262: \n263: **Step 2: Spatial Diffusion Rate**\n264: \n265: After velocity marginalization, the effective spatial dynamics follow overdamped Langevin:\n266: \n267: $$\n268: dx = -D(x) \\nabla U_{\\text{eff}}(x) \\, dt + \\sqrt{2D(x)} \\, dW\n269: $$\n270: \n271: with diffusion constant $D(x) \\sim T/\\gamma$. The time to diffuse distance $L$ is:\n272: \n273: $$\n274: \\tau_{\\text{diff}}(L) \\sim \\frac{L^2}{D} \\sim \\frac{L^2 \\gamma}{T}\n275: $$\n276: \n277: For the thermal coherence length $\\epsilon_c = \\sqrt{T/\\gamma}$:\n278: \n279: $$\n280: \\tau_x \\sim \\frac{\\epsilon_c^2 \\gamma}{T} = 1\n281: $$\n282: \n283: **Step 3: Timescale Ratio**\n284: \n285: $$\n286: \\frac{\\tau_v}{\\tau_x} \\sim \\gamma^{-1} \\ll 1 \\quad \\text{for } \\gamma \\gg 1\n287: $$\n288: \n289: In typical Fragile Gas parameters, $\\gamma \\in [1, 10]$, so the separation holds.\n290: \n291: **Step 4: Annealed Kernel**\n292: \n293: Given fast velocity equilibration, the probability that episode $i$ at position $x_i$ has episode $j$ at $x_j$ as IG neighbor (diversity or cloning companion) depends on:\n294: 1. Spatial proximity (weighted by $W(x_i, x_j)$)\n295: 2. Temporal overlap (fraction of time both alive)\n296: \n297: For long-lived episodes, temporal overlap $\\to 1$, leaving only spatial kernel.\n298: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-five-step-proof-strategy",
+      "title": "Pedagogical Strategy",
+      "start_line": 300,
+      "end_line": 314,
+      "header_lines": [
+        301
+      ],
+      "content_start": 303,
+      "content_end": 313,
+      "content": "303: :label: rem-five-step-proof-strategy\n304: \n305: The document `velocity_marginalization_rigorous.md` presents an excellent **5-step pedagogical structure** for understanding graph Laplacian convergence:\n306: \n307: 1. **Timescale separation** (this lemma)\n308: 2. **Annealed kernel** (explicit Gaussian form)\n309: 3. **Sampling = Riemannian volume** ({prf:ref}`thm-qsd-spatial-riemannian-volume`)\n310: 4. **Belkin-Niyogi theorem** (standard graph Laplacian convergence)\n311: 5. **Final assembly** (combine all pieces)\n312: \n313: This structure is recommended for teaching this material.",
+      "metadata": {
+        "label": "rem-five-step-proof-strategy"
+      },
+      "section": "## 1. Graph Laplacian Convergence: Complete Proof",
+      "raw_directive": "300: :::\n301: \n302: :::{prf:remark} Pedagogical Strategy\n303: :label: rem-five-step-proof-strategy\n304: \n305: The document `velocity_marginalization_rigorous.md` presents an excellent **5-step pedagogical structure** for understanding graph Laplacian convergence:\n306: \n307: 1. **Timescale separation** (this lemma)\n308: 2. **Annealed kernel** (explicit Gaussian form)\n309: 3. **Sampling = Riemannian volume** ({prf:ref}`thm-qsd-spatial-riemannian-volume`)\n310: 4. **Belkin-Niyogi theorem** (standard graph Laplacian convergence)\n311: 5. **Final assembly** (combine all pieces)\n312: \n313: This structure is recommended for teaching this material.\n314: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-covariance-convergence-rigorous",
+      "title": "Local Covariance Converges to Inverse Metric Tensor",
+      "start_line": 320,
+      "end_line": 349,
+      "header_lines": [
+        321
+      ],
+      "content_start": 323,
+      "content_end": 348,
+      "content": "323: :label: thm-covariance-convergence-rigorous\n324: \n325: Let $e_i$ be an episode at position $x_i \\in \\mathcal{X}$. Define the **local covariance matrix** from IG edge displacements:\n326: \n327: $$\n328: \\Sigma_i := \\frac{\\sum_{e_j \\in \\mathcal{N}_{\\epsilon}(e_i)} w_{ij} \\Delta x_{ij} \\Delta x_{ij}^T}{\\sum_{e_j \\in \\mathcal{N}_{\\epsilon}(e_i)} w_{ij}}\n329: $$\n330: \n331: where:\n332: - $\\mathcal{N}_{\\epsilon}(e_i) = \\{e_j : \\|x_j - x_i\\| < \\epsilon\\}$ is the $\\epsilon$-neighborhood\n333: - $w_{ij}$ are IG edge weights (see \u00a72.1)\n334: - $\\Delta x_{ij} = x_j - x_i$\n335: \n336: Let $g(x_i)$ be the Riemannian metric at $x_i$ (inverse of diffusion tensor $D(x_i)$). Then as $N \\to \\infty$ and $\\epsilon \\to 0$ (with $N_{\\text{local}} := |\\\\mathcal{N}_{\\epsilon}(e_i)| \\to \\infty$):\n337: \n338: $$\n339: \\Sigma_i \\xrightarrow{a.s.} \\epsilon^2 g(x_i)^{-1}\n340: $$\n341: \n342: **Convergence rate:** For bounded geometry assumptions:\n343: \n344: $$\n345: \\mathbb{E}\\left[ \\|\\Sigma_i - \\epsilon^2 g(x_i)^{-1}\\|_F \\right] \\leq C \\left( \\epsilon + N_{\\text{local}}^{-1/2} \\right)\n346: $$\n347: \n348: where $\\|\\cdot\\|_F$ is the Frobenius norm.",
+      "metadata": {
+        "label": "thm-covariance-convergence-rigorous"
+      },
+      "section": "## 1. Graph Laplacian Convergence: Complete Proof",
+      "raw_directive": "320: This is the most **technically demanding** lemma, providing the rigorous connection between discrete graph structure and continuous Riemannian geometry.\n321: \n322: :::{prf:theorem} Local Covariance Converges to Inverse Metric Tensor\n323: :label: thm-covariance-convergence-rigorous\n324: \n325: Let $e_i$ be an episode at position $x_i \\in \\mathcal{X}$. Define the **local covariance matrix** from IG edge displacements:\n326: \n327: $$\n328: \\Sigma_i := \\frac{\\sum_{e_j \\in \\mathcal{N}_{\\epsilon}(e_i)} w_{ij} \\Delta x_{ij} \\Delta x_{ij}^T}{\\sum_{e_j \\in \\mathcal{N}_{\\epsilon}(e_i)} w_{ij}}\n329: $$\n330: \n331: where:\n332: - $\\mathcal{N}_{\\epsilon}(e_i) = \\{e_j : \\|x_j - x_i\\| < \\epsilon\\}$ is the $\\epsilon$-neighborhood\n333: - $w_{ij}$ are IG edge weights (see \u00a72.1)\n334: - $\\Delta x_{ij} = x_j - x_i$\n335: \n336: Let $g(x_i)$ be the Riemannian metric at $x_i$ (inverse of diffusion tensor $D(x_i)$). Then as $N \\to \\infty$ and $\\epsilon \\to 0$ (with $N_{\\text{local}} := |\\\\mathcal{N}_{\\epsilon}(e_i)| \\to \\infty$):\n337: \n338: $$\n339: \\Sigma_i \\xrightarrow{a.s.} \\epsilon^2 g(x_i)^{-1}\n340: $$\n341: \n342: **Convergence rate:** For bounded geometry assumptions:\n343: \n344: $$\n345: \\mathbb{E}\\left[ \\|\\Sigma_i - \\epsilon^2 g(x_i)^{-1}\\|_F \\right] \\leq C \\left( \\epsilon + N_{\\text{local}}^{-1/2} \\right)\n346: $$\n347: \n348: where $\\|\\cdot\\|_F$ is the Frobenius norm.\n349: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "lem-sum-to-integral-episodes",
+      "title": null,
+      "start_line": 351,
+      "end_line": 368,
+      "header_lines": [
+        357
+      ],
+      "content_start": 352,
+      "content_end": 367,
+      "content": "352: \n353: :::{prf:proof}\n354: The proof proceeds in four steps, rigorously establishing the continuum limit.\n355: \n356: **Step 1: Sum-to-Integral Approximation**\n357: \n358: :::{prf:lemma} Riemann Sum Convergence for Episodes\n359: :label: lem-sum-to-integral-episodes\n360: \n361: For any continuous function $h: \\mathcal{X} \\to \\mathbb{R}$:\n362: \n363: $$\n364: \\frac{1}{N_{\\text{local}}} \\sum_{e_j \\in \\mathcal{N}_{\\epsilon}(e_i)} h(x_j) \\xrightarrow{N \\to \\infty} \\int_{B_{\\epsilon}(x_i)} h(x) \\, \\rho_{\\text{spatial}}(x) \\, dx / \\int_{B_{\\epsilon}(x_i)} \\rho_{\\text{spatial}}(x) \\, dx\n365: $$\n366: \n367: where $B_{\\epsilon}(x_i)$ is the $\\epsilon$-ball centered at $x_i$.",
+      "metadata": {
+        "label": "lem-sum-to-integral-episodes"
+      },
+      "section": "## 1. Graph Laplacian Convergence: Complete Proof",
+      "raw_directive": "351: :::\n352: \n353: :::{prf:proof}\n354: The proof proceeds in four steps, rigorously establishing the continuum limit.\n355: \n356: **Step 1: Sum-to-Integral Approximation**\n357: \n358: :::{prf:lemma} Riemann Sum Convergence for Episodes\n359: :label: lem-sum-to-integral-episodes\n360: \n361: For any continuous function $h: \\mathcal{X} \\to \\mathbb{R}$:\n362: \n363: $$\n364: \\frac{1}{N_{\\text{local}}} \\sum_{e_j \\in \\mathcal{N}_{\\epsilon}(e_i)} h(x_j) \\xrightarrow{N \\to \\infty} \\int_{B_{\\epsilon}(x_i)} h(x) \\, \\rho_{\\text{spatial}}(x) \\, dx / \\int_{B_{\\epsilon}(x_i)} \\rho_{\\text{spatial}}(x) \\, dx\n365: $$\n366: \n367: where $B_{\\epsilon}(x_i)$ is the $\\epsilon$-ball centered at $x_i$.\n368: "
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-continuum-covariance-integral",
+      "title": "Continuum Covariance Formula",
+      "start_line": 372,
+      "end_line": 384,
+      "header_lines": [
+        373
+      ],
+      "content_start": 375,
+      "content_end": 383,
+      "content": "375: :label: prop-continuum-covariance-integral\n376: \n377: The continuum limit of the covariance sum is:\n378: \n379: $$\n380: \\Sigma(\\epsilon) := \\frac{\\int_{B_{\\epsilon}(x_0)} w(x - x_0) \\, (x - x_0)(x - x_0)^T \\, \\rho(x) \\, dx}{\\int_{B_{\\epsilon}(x_0)} w(x - x_0) \\, \\rho(x) \\, dx}\n381: $$\n382: \n383: where $w(x - x_0) = \\exp(-\\|x - x_0\\|^2 / (2\\epsilon_c^2))$ is the annealed kernel weight.",
+      "metadata": {
+        "label": "prop-continuum-covariance-integral"
+      },
+      "section": "## 1. Graph Laplacian Convergence: Complete Proof",
+      "raw_directive": "372: **Step 2: Continuum Covariance Integral**\n373: \n374: :::{prf:proposition} Continuum Covariance Formula\n375: :label: prop-continuum-covariance-integral\n376: \n377: The continuum limit of the covariance sum is:\n378: \n379: $$\n380: \\Sigma(\\epsilon) := \\frac{\\int_{B_{\\epsilon}(x_0)} w(x - x_0) \\, (x - x_0)(x - x_0)^T \\, \\rho(x) \\, dx}{\\int_{B_{\\epsilon}(x_0)} w(x - x_0) \\, \\rho(x) \\, dx}\n381: $$\n382: \n383: where $w(x - x_0) = \\exp(-\\|x - x_0\\|^2 / (2\\epsilon_c^2))$ is the annealed kernel weight.\n384: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-gaussian-covariance-curved",
+      "title": "Gaussian Covariance in Riemannian Normal Coordinates",
+      "start_line": 388,
+      "end_line": 415,
+      "header_lines": [
+        389
+      ],
+      "content_start": 391,
+      "content_end": 414,
+      "content": "391: :label: lem-gaussian-covariance-curved\n392: \n393: In Riemannian normal coordinates centered at $x_0$ with metric $g_{ij}(x_0) + O(\\|x - x_0\\|^2)$:\n394: \n395: $$\n396: \\Sigma(\\epsilon) = \\epsilon^2 g(x_0)^{-1} + O(\\epsilon^3)\n397: $$\n398: \n399: **Proof sketch:**\n400: 1. Change to normal coordinates $y = \\exp_{x_0}^{-1}(x)$\n401: 2. Metric becomes $g_{ij}(y) = \\delta_{ij} + O(\\|y\\|^2)$\n402: 3. Volume measure becomes $\\sqrt{\\det g(y)} = 1 + O(\\|y\\|^2)$\n403: 4. Integral reduces to Gaussian moment:\n404: \n405: $$\n406: \\Sigma(\\epsilon) \\approx \\int_{B_{\\epsilon}(0)} w(\\|y\\|) \\, y y^T \\, dy / \\int_{B_{\\epsilon}(0)} w(\\|y\\|) \\, dy\n407: $$\n408: \n409: 5. For Gaussian weight $w(\\|y\\|) = \\exp(-\\|y\\|^2 / (2\\epsilon_c^2))$:\n410: \n411: $$\n412: \\int y_i y_j \\, e^{-\\|y\\|^2 / (2\\epsilon_c^2)} \\, dy = \\delta_{ij} \\cdot \\epsilon_c^2 \\cdot (\\text{const})\n413: $$\n414: ",
+      "metadata": {
+        "label": "lem-gaussian-covariance-curved"
+      },
+      "section": "## 1. Graph Laplacian Convergence: Complete Proof",
+      "raw_directive": "388: **Step 3: Taylor Expansion in Curved Space**\n389: \n390: :::{prf:lemma} Gaussian Covariance in Riemannian Normal Coordinates\n391: :label: lem-gaussian-covariance-curved\n392: \n393: In Riemannian normal coordinates centered at $x_0$ with metric $g_{ij}(x_0) + O(\\|x - x_0\\|^2)$:\n394: \n395: $$\n396: \\Sigma(\\epsilon) = \\epsilon^2 g(x_0)^{-1} + O(\\epsilon^3)\n397: $$\n398: \n399: **Proof sketch:**\n400: 1. Change to normal coordinates $y = \\exp_{x_0}^{-1}(x)$\n401: 2. Metric becomes $g_{ij}(y) = \\delta_{ij} + O(\\|y\\|^2)$\n402: 3. Volume measure becomes $\\sqrt{\\det g(y)} = 1 + O(\\|y\\|^2)$\n403: 4. Integral reduces to Gaussian moment:\n404: \n405: $$\n406: \\Sigma(\\epsilon) \\approx \\int_{B_{\\epsilon}(0)} w(\\|y\\|) \\, y y^T \\, dy / \\int_{B_{\\epsilon}(0)} w(\\|y\\|) \\, dy\n407: $$\n408: \n409: 5. For Gaussian weight $w(\\|y\\|) = \\exp(-\\|y\\|^2 / (2\\epsilon_c^2))$:\n410: \n411: $$\n412: \\int y_i y_j \\, e^{-\\|y\\|^2 / (2\\epsilon_c^2)} \\, dy = \\delta_{ij} \\cdot \\epsilon_c^2 \\cdot (\\text{const})\n413: $$\n414: \n415: 6. Rescaling by $\\epsilon$ gives $\\Sigma(\\epsilon) = \\epsilon^2 I + O(\\epsilon^3)$"
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-diffusion-from-fokker-planck",
+      "title": "Diffusion Tensor from Fokker-Planck",
+      "start_line": 419,
+      "end_line": 431,
+      "header_lines": [
+        420
+      ],
+      "content_start": 422,
+      "content_end": 430,
+      "content": "422: :label: prop-diffusion-from-fokker-planck\n423: \n424: The diffusion tensor $D(x)$ in the Fokker-Planck equation for spatial marginal is related to $\\Sigma_{\\text{reg}}$ by:\n425: \n426: $$\n427: D(x) = \\Sigma_{\\text{reg}}(x) \\Sigma_{\\text{reg}}(x)^T\n428: $$\n429: \n430: and satisfies $D(x) = g(x)^{-1}$ up to a constant factor.",
+      "metadata": {
+        "label": "prop-diffusion-from-fokker-planck"
+      },
+      "section": "## 1. Graph Laplacian Convergence: Complete Proof",
+      "raw_directive": "419: **Step 4: Identification with Diffusion Tensor**\n420: \n421: :::{prf:proposition} Diffusion Tensor from Fokker-Planck\n422: :label: prop-diffusion-from-fokker-planck\n423: \n424: The diffusion tensor $D(x)$ in the Fokker-Planck equation for spatial marginal is related to $\\Sigma_{\\text{reg}}$ by:\n425: \n426: $$\n427: D(x) = \\Sigma_{\\text{reg}}(x) \\Sigma_{\\text{reg}}(x)^T\n428: $$\n429: \n430: and satisfies $D(x) = g(x)^{-1}$ up to a constant factor.\n431: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

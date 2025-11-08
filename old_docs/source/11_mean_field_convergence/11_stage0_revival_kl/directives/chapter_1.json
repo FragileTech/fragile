@@ -1,0 +1,47 @@
+{
+  "chapter_index": 1,
+  "section_id": "## 1. Rigorous Formulation of the Mean-Field Revival Operator",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-revival-operator-formal",
+      "title": "Mean-Field Revival Operator (Formal)",
+      "start_line": 101,
+      "end_line": 118,
+      "header_lines": [
+        102
+      ],
+      "content_start": 104,
+      "content_end": 117,
+      "content": "104: :label: def-revival-operator-formal\n105: \n106: The **revival operator** $\\mathcal{R}: \\mathcal{P}(\\Omega) \\times [0,1] \\to \\mathcal{M}^+(\\Omega)$ (where $\\mathcal{M}^+$ denotes non-negative measures) is defined by:\n107: \n108: $$\n109: \\mathcal{R}[\\rho, m_d](x,v) := \\lambda_{\\text{revive}} \\cdot m_d \\cdot \\frac{\\rho(x,v)}{\\|\\rho\\|_{L^1}}\n110: $$\n111: \n112: where $\\|\\rho\\|_{L^1} = \\int_\\Omega \\rho(x,v) \\, dx dv$ is the total alive mass.\n113: \n114: **Properties**:\n115: 1. **Mass injection**: $\\int_\\Omega \\mathcal{R}[\\rho, m_d] = \\lambda_{\\text{revive}} m_d$ (transfers mass from dead to alive)\n116: 2. **Proportionality**: Revival samples proportionally to current alive density\n117: 3. **Normalization**: The factor $1/\\|\\rho\\|_{L^1}$ ensures the distribution shape is preserved",
+      "metadata": {
+        "label": "def-revival-operator-formal"
+      },
+      "section": "## 1. Rigorous Formulation of the Mean-Field Revival Operator",
+      "raw_directive": "101: ### 1.2. Revival Operator Definition\n102: \n103: :::{prf:definition} Mean-Field Revival Operator (Formal)\n104: :label: def-revival-operator-formal\n105: \n106: The **revival operator** $\\mathcal{R}: \\mathcal{P}(\\Omega) \\times [0,1] \\to \\mathcal{M}^+(\\Omega)$ (where $\\mathcal{M}^+$ denotes non-negative measures) is defined by:\n107: \n108: $$\n109: \\mathcal{R}[\\rho, m_d](x,v) := \\lambda_{\\text{revive}} \\cdot m_d \\cdot \\frac{\\rho(x,v)}{\\|\\rho\\|_{L^1}}\n110: $$\n111: \n112: where $\\|\\rho\\|_{L^1} = \\int_\\Omega \\rho(x,v) \\, dx dv$ is the total alive mass.\n113: \n114: **Properties**:\n115: 1. **Mass injection**: $\\int_\\Omega \\mathcal{R}[\\rho, m_d] = \\lambda_{\\text{revive}} m_d$ (transfers mass from dead to alive)\n116: 2. **Proportionality**: Revival samples proportionally to current alive density\n117: 3. **Normalization**: The factor $1/\\|\\rho\\|_{L^1}$ ensures the distribution shape is preserved\n118: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-combined-jump-operator",
+      "title": "Combined Jump Operator",
+      "start_line": 137,
+      "end_line": 152,
+      "header_lines": [
+        138
+      ],
+      "content_start": 140,
+      "content_end": 151,
+      "content": "140: :label: def-combined-jump-operator\n141: \n142: Define the **jump operator** $\\mathcal{J}: \\mathcal{P}(\\Omega) \\to \\mathcal{P}(\\Omega)$ that acts over a small time interval $\\Delta t$:\n143: \n144: $$\n145: \\mathcal{J}(\\rho) := (1 - \\int_\\Omega \\kappa_{\\text{kill}} \\rho \\cdot \\Delta t) \\cdot \\frac{\\rho - \\kappa_{\\text{kill}} \\rho \\cdot \\Delta t}{\\text{(normalization)}} + \\mathcal{R}[\\rho, m_d] \\cdot \\Delta t\n146: $$\n147: \n148: This operator:\n149: 1. **Removes mass** via killing: $\\rho \\mapsto \\rho - \\kappa_{\\text{kill}} \\rho \\cdot \\Delta t$\n150: 2. **Adds mass** via revival: Injects $\\mathcal{R}[\\rho, m_d] \\cdot \\Delta t$\n151: 3. **Conserves total mass**: $\\int \\mathcal{J}(\\rho) = \\int \\rho$ (in the two-population model)",
+      "metadata": {
+        "label": "def-combined-jump-operator"
+      },
+      "section": "## 1. Rigorous Formulation of the Mean-Field Revival Operator",
+      "raw_directive": "137: For the discrete-time analysis, we consider the **composed** operator that handles both killing and revival in one time step $\\Delta t$:\n138: \n139: :::{prf:definition} Combined Jump Operator\n140: :label: def-combined-jump-operator\n141: \n142: Define the **jump operator** $\\mathcal{J}: \\mathcal{P}(\\Omega) \\to \\mathcal{P}(\\Omega)$ that acts over a small time interval $\\Delta t$:\n143: \n144: $$\n145: \\mathcal{J}(\\rho) := (1 - \\int_\\Omega \\kappa_{\\text{kill}} \\rho \\cdot \\Delta t) \\cdot \\frac{\\rho - \\kappa_{\\text{kill}} \\rho \\cdot \\Delta t}{\\text{(normalization)}} + \\mathcal{R}[\\rho, m_d] \\cdot \\Delta t\n146: $$\n147: \n148: This operator:\n149: 1. **Removes mass** via killing: $\\rho \\mapsto \\rho - \\kappa_{\\text{kill}} \\rho \\cdot \\Delta t$\n150: 2. **Adds mass** via revival: Injects $\\mathcal{R}[\\rho, m_d] \\cdot \\Delta t$\n151: 3. **Conserves total mass**: $\\int \\mathcal{J}(\\rho) = \\int \\rho$ (in the two-population model)\n152: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

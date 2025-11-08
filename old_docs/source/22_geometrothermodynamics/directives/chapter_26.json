@@ -1,0 +1,29 @@
+{
+  "chapter_index": 26,
+  "section_id": "## 8.1 Complete Algorithmic Pipeline",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "algorithm",
+      "label": "alg-end-to-end-geometrothermodynamics",
+      "title": "End-to-End Geometrothermodynamic Analysis",
+      "start_line": 3506,
+      "end_line": 3550,
+      "header_lines": [
+        3507
+      ],
+      "content_start": 3509,
+      "content_end": 3549,
+      "content": "3509: :label: alg-end-to-end-geometrothermodynamics\n3510: \n3511: **Input:** Initial Fragile Gas configuration, thermodynamic parameters $\\theta_0 = (T_0, V_0, N_0)$, target accuracy $\\epsilon$\n3512: \n3513: **Output:** Ruppeiner/Weinhold metrics, scalar curvature, phase transition diagnostics\n3514: \n3515: **Step 1: QSD Convergence**\n3516: - Run Euclidean Gas or Adaptive Gas until QSD convergence (Chapter 4)\n3517: - Monitor KL-divergence rate (Chapter 10)\n3518: - Collect $N \\sim \\epsilon^{-(d+4)/2}$ samples (from convergence analysis)\n3519: \n3520: **Step 2: Fisher Information Matrix**\n3521: - Use Algorithm {prf:ref}`alg-fisher-matrix-estimation` with KDE bandwidth $h = N^{-1/(d+4)}$\n3522: - Apply finite difference perturbations with $\\delta = N^{-1/(d+4)}$\n3523: - Estimate $\\hat{g}_{\\text{Fisher}}(\\theta_0)$ with error $O(N^{-2/(d+4)})$\n3524: \n3525: **Step 3: Coordinate Transformation**\n3526: - Compute Jacobian $J = \\partial(U, V, N) / \\partial(\\beta, V, N)$\n3527: - Pullback: $\\hat{g}_R = J^T \\hat{g}_{\\text{Fisher}} J$ (Theorem {prf:ref}`thm-ruppeiner-fisher-connection`)\n3528: - Validate via Algorithm {prf:ref}`alg-ruppeiner-validation`\n3529: \n3530: **Step 4: Dual Metrics**\n3531: - Weinhold metric: $\\hat{g}_W = \\hat{T} \\cdot \\hat{g}_R$ (Theorem {prf:ref}`thm-weinhold-ruppeiner-conformal`)\n3532: - Check conformal equivalence: $|\\hat{g}_W / \\hat{g}_R - T| < \\epsilon_{\\text{conf}}$\n3533: \n3534: **Step 5: Curvature Estimation**\n3535: - Use Algorithm {prf:ref}`alg-ruppeiner-curvature` with importance reweighting\n3536: - Compute Christoffel symbols via finite differences\n3537: - Calculate scalar curvature $\\hat{R}_{\\text{Rupp}}$ with error $O(N^{-2/(d+4)})$\n3538: \n3539: **Step 6: Phase Transition Detection**\n3540: - Track $\\hat{R}(T)$ over temperature range\n3541: - Identify peaks/divergences indicating criticality (Theorem {prf:ref}`thm-ruppeiner-curvature-phase-transition`)\n3542: - Compare to known phase transitions (if available)\n3543: \n3544: **Step 7: Diagnostics and Reporting**\n3545: - Effective sample size from importance weights\n3546: - Convergence plots: metric vs. $N$, curvature vs. $T$\n3547: - Uncertainty quantification via bootstrap\n3548: \n3549: **Complexity:** $O(N \\cdot d^3)$ for Steps 1-3, $O(5N \\cdot d^3)$ for Step 5 (5 QSD runs)",
+      "metadata": {
+        "label": "alg-end-to-end-geometrothermodynamics"
+      },
+      "section": "## 8.1 Complete Algorithmic Pipeline",
+      "raw_directive": "3506: The geometrothermodynamic framework provides a **fully algorithmic** pathway from Fragile Gas samples to thermodynamic curvature:\n3507: \n3508: :::{prf:algorithm} End-to-End Geometrothermodynamic Analysis\n3509: :label: alg-end-to-end-geometrothermodynamics\n3510: \n3511: **Input:** Initial Fragile Gas configuration, thermodynamic parameters $\\theta_0 = (T_0, V_0, N_0)$, target accuracy $\\epsilon$\n3512: \n3513: **Output:** Ruppeiner/Weinhold metrics, scalar curvature, phase transition diagnostics\n3514: \n3515: **Step 1: QSD Convergence**\n3516: - Run Euclidean Gas or Adaptive Gas until QSD convergence (Chapter 4)\n3517: - Monitor KL-divergence rate (Chapter 10)\n3518: - Collect $N \\sim \\epsilon^{-(d+4)/2}$ samples (from convergence analysis)\n3519: \n3520: **Step 2: Fisher Information Matrix**\n3521: - Use Algorithm {prf:ref}`alg-fisher-matrix-estimation` with KDE bandwidth $h = N^{-1/(d+4)}$\n3522: - Apply finite difference perturbations with $\\delta = N^{-1/(d+4)}$\n3523: - Estimate $\\hat{g}_{\\text{Fisher}}(\\theta_0)$ with error $O(N^{-2/(d+4)})$\n3524: \n3525: **Step 3: Coordinate Transformation**\n3526: - Compute Jacobian $J = \\partial(U, V, N) / \\partial(\\beta, V, N)$\n3527: - Pullback: $\\hat{g}_R = J^T \\hat{g}_{\\text{Fisher}} J$ (Theorem {prf:ref}`thm-ruppeiner-fisher-connection`)\n3528: - Validate via Algorithm {prf:ref}`alg-ruppeiner-validation`\n3529: \n3530: **Step 4: Dual Metrics**\n3531: - Weinhold metric: $\\hat{g}_W = \\hat{T} \\cdot \\hat{g}_R$ (Theorem {prf:ref}`thm-weinhold-ruppeiner-conformal`)\n3532: - Check conformal equivalence: $|\\hat{g}_W / \\hat{g}_R - T| < \\epsilon_{\\text{conf}}$\n3533: \n3534: **Step 5: Curvature Estimation**\n3535: - Use Algorithm {prf:ref}`alg-ruppeiner-curvature` with importance reweighting\n3536: - Compute Christoffel symbols via finite differences\n3537: - Calculate scalar curvature $\\hat{R}_{\\text{Rupp}}$ with error $O(N^{-2/(d+4)})$\n3538: \n3539: **Step 6: Phase Transition Detection**\n3540: - Track $\\hat{R}(T)$ over temperature range\n3541: - Identify peaks/divergences indicating criticality (Theorem {prf:ref}`thm-ruppeiner-curvature-phase-transition`)\n3542: - Compare to known phase transitions (if available)\n3543: \n3544: **Step 7: Diagnostics and Reporting**\n3545: - Effective sample size from importance weights\n3546: - Convergence plots: metric vs. $N$, curvature vs. $T$\n3547: - Uncertainty quantification via bootstrap\n3548: \n3549: **Complexity:** $O(N \\cdot d^3)$ for Steps 1-3, $O(5N \\cdot d^3)$ for Step 5 (5 QSD runs)\n3550: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

@@ -1,0 +1,283 @@
+{
+  "chapter_index": 3,
+  "section_id": "## 3. Emergent Manifold Symmetries",
+  "directive_count": 16,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-emergent-manifold-fixed",
+      "title": "Emergent Manifold at Fixed Swarm State",
+      "start_line": 553,
+      "end_line": 569,
+      "header_lines": [
+        554
+      ],
+      "content_start": 556,
+      "content_end": 568,
+      "content": "556: :label: def-emergent-manifold-fixed\n557: \n558: For a fixed swarm configuration $S = \\{(x_i, v_i, s_i)\\}$, the **emergent manifold** at walker $i$ is the Riemannian manifold:\n559: \n560: $$\n561: (\\mathcal{X}, g_i(x)) := (\\mathcal{X}, H_i(x, S) + \\epsilon_\\Sigma I)\n562: \n563: $$\n564: \n565: where $x \\in \\mathcal{X}$ is the position variable and $S$ is held fixed.\n566: \n567: The metric defines:\n568: - **Geodesic distance**: The length-minimizing curves in $(\\mathcal{X}, g_i)$",
+      "metadata": {
+        "label": "def-emergent-manifold-fixed"
+      },
+      "section": "## 3. Emergent Manifold Symmetries",
+      "raw_directive": "553: The adaptive diffusion tensor $D_{\\text{reg}}(x, S) = (H(x, S) + \\epsilon_\\Sigma I)^{-1}$ defines a **state-dependent Riemannian manifold**.\n554: \n555: :::{prf:definition} Emergent Manifold at Fixed Swarm State\n556: :label: def-emergent-manifold-fixed\n557: \n558: For a fixed swarm configuration $S = \\{(x_i, v_i, s_i)\\}$, the **emergent manifold** at walker $i$ is the Riemannian manifold:\n559: \n560: $$\n561: (\\mathcal{X}, g_i(x)) := (\\mathcal{X}, H_i(x, S) + \\epsilon_\\Sigma I)\n562: \n563: $$\n564: \n565: where $x \\in \\mathcal{X}$ is the position variable and $S$ is held fixed.\n566: \n567: The metric defines:\n568: - **Geodesic distance**: The length-minimizing curves in $(\\mathcal{X}, g_i)$\n569: - **Volume form**: $dV_g = \\sqrt{\\det g_i(x)} \\, dx$"
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-23",
+      "title": "Time-Dependent Manifold",
+      "start_line": 571,
+      "end_line": 577,
+      "header_lines": [
+        572
+      ],
+      "content_start": 574,
+      "content_end": 576,
+      "content": "574: :class: note\n575: \n576: As the swarm evolves, $S_t$ changes, hence the metric $g(x, S_t)$ evolves in time. The emergent manifold is **time-dependent**: the geometry adapts to the current swarm configuration.",
+      "metadata": {
+        "class": "note"
+      },
+      "section": "## 3. Emergent Manifold Symmetries",
+      "raw_directive": "571: :::\n572: \n573: :::{prf:remark} Time-Dependent Manifold\n574: :class: note\n575: \n576: As the swarm evolves, $S_t$ changes, hence the metric $g(x, S_t)$ evolves in time. The emergent manifold is **time-dependent**: the geometry adapts to the current swarm configuration.\n577: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-emergent-isometries",
+      "title": "Emergent Isometries for Euclidean Transformations",
+      "start_line": 581,
+      "end_line": 604,
+      "header_lines": [
+        582
+      ],
+      "content_start": 584,
+      "content_end": 603,
+      "content": "584: :label: thm-emergent-isometries\n585: \n586: Suppose the fitness potential $V_{\\text{fit}}(x, v, S)$ is invariant under a **Euclidean isometry** $\\Phi: \\mathcal{X} \\to \\mathcal{X}$ (i.e., an affine transformation preserving the Euclidean metric: translations, rotations, reflections):\n587: \n588: $$\n589: V_{\\text{fit}}(\\Phi(x), \\Phi_L(v), \\Phi_*(S)) = V_{\\text{fit}}(x, v, S)\n590: \n591: $$\n592: \n593: where:\n594: - $\\Phi(x) = Lx + b$ with $L \\in O(d)$ (orthogonal matrix) and $b \\in \\mathbb{R}^d$\n595: - $\\Phi_L(v) = Lv$ (velocity transforms with the linear part)\n596: - $\\Phi_*(S) = \\{(\\Phi(x_i), \\Phi_L(v_i), s_i)\\}$ is the push-forward of the swarm\n597: \n598: Then $\\Phi$ is an **isometry** of the emergent metric:\n599: \n600: $$\n601: \\Phi^* g(x, S) = g(\\Phi(x), \\Phi_*(S))\n602: \n603: $$",
+      "metadata": {
+        "label": "thm-emergent-isometries"
+      },
+      "section": "## 3. Emergent Manifold Symmetries",
+      "raw_directive": "581: ### 3.2. Riemannian Isometries\n582: \n583: :::{prf:theorem} Emergent Isometries for Euclidean Transformations\n584: :label: thm-emergent-isometries\n585: \n586: Suppose the fitness potential $V_{\\text{fit}}(x, v, S)$ is invariant under a **Euclidean isometry** $\\Phi: \\mathcal{X} \\to \\mathcal{X}$ (i.e., an affine transformation preserving the Euclidean metric: translations, rotations, reflections):\n587: \n588: $$\n589: V_{\\text{fit}}(\\Phi(x), \\Phi_L(v), \\Phi_*(S)) = V_{\\text{fit}}(x, v, S)\n590: \n591: $$\n592: \n593: where:\n594: - $\\Phi(x) = Lx + b$ with $L \\in O(d)$ (orthogonal matrix) and $b \\in \\mathbb{R}^d$\n595: - $\\Phi_L(v) = Lv$ (velocity transforms with the linear part)\n596: - $\\Phi_*(S) = \\{(\\Phi(x_i), \\Phi_L(v_i), s_i)\\}$ is the push-forward of the swarm\n597: \n598: Then $\\Phi$ is an **isometry** of the emergent metric:\n599: \n600: $$\n601: \\Phi^* g(x, S) = g(\\Phi(x), \\Phi_*(S))\n602: \n603: $$\n604: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-58",
+      "title": null,
+      "start_line": 606,
+      "end_line": 695,
+      "header_lines": [],
+      "content_start": 607,
+      "content_end": 694,
+      "content": "607: \n608: :::{prf:proof}\n609: We prove that Euclidean isometries preserving the fitness potential are also isometries of the emergent metric.\n610: \n611: **Step 1: Jacobian of Euclidean isometry**\n612: \n613: For $\\Phi(x) = Lx + b$ with $L \\in O(d)$ (orthogonal), the Jacobian is constant:\n614: \n615: $$\n616: D\\Phi(x) = L\n617: \n618: $$\n619: \n620: Since $L$ is orthogonal: $L^T L = I$.\n621: \n622: **Step 2: Transformation of Hessian**\n623: \n624: The emergent metric is:\n625: \n626: $$\n627: g(x, S) = \\nabla^2_x V_{\\text{fit}}(x, v, S) + \\epsilon_\\Sigma I\n628: \n629: $$\n630: \n631: For a function $V: \\mathbb{R}^d \\to \\mathbb{R}$, the Hessian transforms under an affine map $\\Phi(x) = Lx + b$ as:\n632: \n633: $$\n634: \\nabla^2_x V(\\Phi(x)) = L^T [\\nabla^2_y V(y)]_{y=Lx+b} L\n635: \n636: $$\n637: \n638: where the gradient and Hessian on the right are with respect to the $y$ variable.\n639: \n640: **Step 3: Invariance condition**\n641: \n642: By assumption, $V_{\\text{fit}}(\\Phi(x), \\Phi_L(v), \\Phi_*(S)) = V_{\\text{fit}}(x, v, S)$.\n643: \n644: Define $\\tilde{V}(x) = V_{\\text{fit}}(\\Phi(x), \\Phi_L(v), \\Phi_*(S))$. Then:\n645: \n646: $$\n647: \\nabla^2_x \\tilde{V}(x) = L^T \\nabla^2_y V_{\\text{fit}}(y, \\Phi_L(v), \\Phi_*(S))\\Big|_{y=Lx+b} L\n648: \n649: $$\n650: \n651: But by invariance, $\\tilde{V}(x) = V_{\\text{fit}}(x, v, S)$, so:\n652: \n653: $$\n654: \\nabla^2_x V_{\\text{fit}}(x, v, S) = L^T \\nabla^2_y V_{\\text{fit}}(y, \\Phi_L(v), \\Phi_*(S))\\Big|_{y=Lx+b} L\n655: \n656: $$\n657: \n658: Setting $y = Lx + b = \\Phi(x)$:\n659: \n660: $$\n661: \\nabla^2_x V_{\\text{fit}}(x, v, S) = L^T \\nabla^2_{\\Phi(x)} V_{\\text{fit}}(\\Phi(x), \\Phi_L(v), \\Phi_*(S)) L\n662: \n663: $$\n664: \n665: **Step 4: Pull-back of metric**\n666: \n667: The pull-back of the metric tensor by $\\Phi$ is:\n668: \n669: $$\n670: (\\Phi^* g)(\\Phi(x), \\Phi_*(S)) = L^T g(\\Phi(x), \\Phi_*(S)) L\n671: \n672: $$\n673: \n674: Using the result from Step 3:\n675: \n676: $$\n677: (\\Phi^* g)(\\Phi(x), \\Phi_*(S)) = L^T [\\nabla^2 V(\\Phi(x), \\Phi_L(v), \\Phi_*(S)) + \\epsilon_\\Sigma I] L\n678: \n679: $$\n680: \n681: $$\n682: = L^T \\nabla^2 V(\\Phi(x), \\Phi_L(v), \\Phi_*(S)) L + \\epsilon_\\Sigma L^T L\n683: \n684: $$\n685: \n686: $$\n687: = \\nabla^2 V(x, v, S) + \\epsilon_\\Sigma I \\quad \\text{(by invariance and } L^T L = I \\text{)}\n688: \n689: $$\n690: \n691: $$\n692: = g(x, S)\n693: \n694: $$",
+      "metadata": {},
+      "section": "## 3. Emergent Manifold Symmetries",
+      "raw_directive": "606: :::\n607: \n608: :::{prf:proof}\n609: We prove that Euclidean isometries preserving the fitness potential are also isometries of the emergent metric.\n610: \n611: **Step 1: Jacobian of Euclidean isometry**\n612: \n613: For $\\Phi(x) = Lx + b$ with $L \\in O(d)$ (orthogonal), the Jacobian is constant:\n614: \n615: $$\n616: D\\Phi(x) = L\n617: \n618: $$\n619: \n620: Since $L$ is orthogonal: $L^T L = I$.\n621: \n622: **Step 2: Transformation of Hessian**\n623: \n624: The emergent metric is:\n625: \n626: $$\n627: g(x, S) = \\nabla^2_x V_{\\text{fit}}(x, v, S) + \\epsilon_\\Sigma I\n628: \n629: $$\n630: \n631: For a function $V: \\mathbb{R}^d \\to \\mathbb{R}$, the Hessian transforms under an affine map $\\Phi(x) = Lx + b$ as:\n632: \n633: $$\n634: \\nabla^2_x V(\\Phi(x)) = L^T [\\nabla^2_y V(y)]_{y=Lx+b} L\n635: \n636: $$\n637: \n638: where the gradient and Hessian on the right are with respect to the $y$ variable.\n639: \n640: **Step 3: Invariance condition**\n641: \n642: By assumption, $V_{\\text{fit}}(\\Phi(x), \\Phi_L(v), \\Phi_*(S)) = V_{\\text{fit}}(x, v, S)$.\n643: \n644: Define $\\tilde{V}(x) = V_{\\text{fit}}(\\Phi(x), \\Phi_L(v), \\Phi_*(S))$. Then:\n645: \n646: $$\n647: \\nabla^2_x \\tilde{V}(x) = L^T \\nabla^2_y V_{\\text{fit}}(y, \\Phi_L(v), \\Phi_*(S))\\Big|_{y=Lx+b} L\n648: \n649: $$\n650: \n651: But by invariance, $\\tilde{V}(x) = V_{\\text{fit}}(x, v, S)$, so:\n652: \n653: $$\n654: \\nabla^2_x V_{\\text{fit}}(x, v, S) = L^T \\nabla^2_y V_{\\text{fit}}(y, \\Phi_L(v), \\Phi_*(S))\\Big|_{y=Lx+b} L\n655: \n656: $$\n657: \n658: Setting $y = Lx + b = \\Phi(x)$:\n659: \n660: $$\n661: \\nabla^2_x V_{\\text{fit}}(x, v, S) = L^T \\nabla^2_{\\Phi(x)} V_{\\text{fit}}(\\Phi(x), \\Phi_L(v), \\Phi_*(S)) L\n662: \n663: $$\n664: \n665: **Step 4: Pull-back of metric**\n666: \n667: The pull-back of the metric tensor by $\\Phi$ is:\n668: \n669: $$\n670: (\\Phi^* g)(\\Phi(x), \\Phi_*(S)) = L^T g(\\Phi(x), \\Phi_*(S)) L\n671: \n672: $$\n673: \n674: Using the result from Step 3:\n675: \n676: $$\n677: (\\Phi^* g)(\\Phi(x), \\Phi_*(S)) = L^T [\\nabla^2 V(\\Phi(x), \\Phi_L(v), \\Phi_*(S)) + \\epsilon_\\Sigma I] L\n678: \n679: $$\n680: \n681: $$\n682: = L^T \\nabla^2 V(\\Phi(x), \\Phi_L(v), \\Phi_*(S)) L + \\epsilon_\\Sigma L^T L\n683: \n684: $$\n685: \n686: $$\n687: = \\nabla^2 V(x, v, S) + \\epsilon_\\Sigma I \\quad \\text{(by invariance and } L^T L = I \\text{)}\n688: \n689: $$\n690: \n691: $$\n692: = g(x, S)\n693: \n694: $$\n695: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-149",
+      "title": "Extension to General Diffeomorphisms",
+      "start_line": 697,
+      "end_line": 716,
+      "header_lines": [
+        698
+      ],
+      "content_start": 700,
+      "content_end": 715,
+      "content": "700: :class: note\n701: \n702: **Open question**: Can this theorem be extended to **general diffeomorphisms** beyond Euclidean isometries?\n703: \n704: For a general smooth map $\\Phi$, the condition $(D\\Phi)^T D\\Phi = I$ does not hold. The Hessian transformation becomes:\n705: \n706: $$\n707: \\nabla^2 V(\\Phi(x)) = L^T \\nabla^2 V(y)|_{y=\\Phi(x)} L + \\text{(second-order correction terms)}\n708: \n709: $$\n710: \n711: involving second derivatives of $\\Phi$ (the Christoffel symbols of the transformation).\n712: \n713: A sufficient condition for $\\Phi$ to be an isometry would be:\n714: 1. $V(\\Phi(x), \\Phi_*(S)) = V(x, S)$ (fitness invariance)\n715: 2. $D\\Phi$ preserves the metric: $(D\\Phi)^T D\\Phi = g^{-1}$ (conformal condition)",
+      "metadata": {
+        "class": "note"
+      },
+      "section": "## 3. Emergent Manifold Symmetries",
+      "raw_directive": "697: :::\n698: \n699: :::{prf:remark} Extension to General Diffeomorphisms\n700: :class: note\n701: \n702: **Open question**: Can this theorem be extended to **general diffeomorphisms** beyond Euclidean isometries?\n703: \n704: For a general smooth map $\\Phi$, the condition $(D\\Phi)^T D\\Phi = I$ does not hold. The Hessian transformation becomes:\n705: \n706: $$\n707: \\nabla^2 V(\\Phi(x)) = L^T \\nabla^2 V(y)|_{y=\\Phi(x)} L + \\text{(second-order correction terms)}\n708: \n709: $$\n710: \n711: involving second derivatives of $\\Phi$ (the Christoffel symbols of the transformation).\n712: \n713: A sufficient condition for $\\Phi$ to be an isometry would be:\n714: 1. $V(\\Phi(x), \\Phi_*(S)) = V(x, S)$ (fitness invariance)\n715: 2. $D\\Phi$ preserves the metric: $(D\\Phi)^T D\\Phi = g^{-1}$ (conformal condition)\n716: "
+    },
+    {
+      "directive_type": "example",
+      "label": "unlabeled-example-170",
+      "title": "Radial Symmetry Induces Spherical Geometry",
+      "start_line": 718,
+      "end_line": 731,
+      "header_lines": [
+        719
+      ],
+      "content_start": 721,
+      "content_end": 730,
+      "content": "721: :class: tip\n722: \n723: For a radially symmetric fitness $V_{\\text{fit}}(x, v, S) = f(\\|x\\|, v, S)$, the emergent metric is also radially symmetric:\n724: \n725: $$\n726: g(x, S) = g_r(\\|x\\|, S) \\frac{x x^T}{\\|x\\|^2} + g_\\perp(\\|x\\|, S) \\left(I - \\frac{x x^T}{\\|x\\|^2}\\right)\n727: \n728: $$\n729: \n730: where $g_r$ and $g_\\perp$ are the radial and tangential components.",
+      "metadata": {
+        "class": "tip"
+      },
+      "section": "## 3. Emergent Manifold Symmetries",
+      "raw_directive": "718: :::\n719: \n720: :::{prf:example} Radial Symmetry Induces Spherical Geometry\n721: :class: tip\n722: \n723: For a radially symmetric fitness $V_{\\text{fit}}(x, v, S) = f(\\|x\\|, v, S)$, the emergent metric is also radially symmetric:\n724: \n725: $$\n726: g(x, S) = g_r(\\|x\\|, S) \\frac{x x^T}{\\|x\\|^2} + g_\\perp(\\|x\\|, S) \\left(I - \\frac{x x^T}{\\|x\\|^2}\\right)\n727: \n728: $$\n729: \n730: where $g_r$ and $g_\\perp$ are the radial and tangential components.\n731: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-geodesic-invariance",
+      "title": "Geodesic Invariance Under Isometries",
+      "start_line": 735,
+      "end_line": 748,
+      "header_lines": [
+        736
+      ],
+      "content_start": 738,
+      "content_end": 747,
+      "content": "738: :label: thm-geodesic-invariance\n739: \n740: Let $\\Phi: \\mathcal{X} \\to \\mathcal{X}$ be an isometry of the emergent metric $g(x, S)$ (as in Theorem {prf:ref}`thm-emergent-isometries`). If $\\gamma(t)$ is a geodesic of $(\\mathcal{X}, g(\\cdot, S))$, then $\\Phi(\\gamma(t))$ is also a geodesic.\n741: \n742: Furthermore, the **geodesic length** is preserved:\n743: \n744: $$\n745: L_g(\\Phi(\\gamma)) = L_g(\\gamma)\n746: \n747: $$",
+      "metadata": {
+        "label": "thm-geodesic-invariance"
+      },
+      "section": "## 3. Emergent Manifold Symmetries",
+      "raw_directive": "735: ### 3.3. Geodesic Preservation\n736: \n737: :::{prf:theorem} Geodesic Invariance Under Isometries\n738: :label: thm-geodesic-invariance\n739: \n740: Let $\\Phi: \\mathcal{X} \\to \\mathcal{X}$ be an isometry of the emergent metric $g(x, S)$ (as in Theorem {prf:ref}`thm-emergent-isometries`). If $\\gamma(t)$ is a geodesic of $(\\mathcal{X}, g(\\cdot, S))$, then $\\Phi(\\gamma(t))$ is also a geodesic.\n741: \n742: Furthermore, the **geodesic length** is preserved:\n743: \n744: $$\n745: L_g(\\Phi(\\gamma)) = L_g(\\gamma)\n746: \n747: $$\n748: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-202",
+      "title": null,
+      "start_line": 750,
+      "end_line": 784,
+      "header_lines": [],
+      "content_start": 751,
+      "content_end": 783,
+      "content": "751: \n752: :::{prf:proof}\n753: **Geodesic equation**: A curve $\\gamma(t)$ is a geodesic if it satisfies:\n754: \n755: $$\n756: \\nabla_{\\dot{\\gamma}} \\dot{\\gamma} = 0\n757: \n758: $$\n759: \n760: where $\\nabla$ is the Levi-Civita connection of $g$.\n761: \n762: **Isometry property**: Since $\\Phi^* g = g$, the connection transforms as:\n763: \n764: $$\n765: \\Phi^* \\nabla = \\nabla\n766: \n767: $$\n768: \n769: Therefore:\n770: \n771: $$\n772: \\nabla_{d\\Phi(\\dot{\\gamma})} d\\Phi(\\dot{\\gamma}) = d\\Phi(\\nabla_{\\dot{\\gamma}} \\dot{\\gamma}) = 0\n773: \n774: $$\n775: \n776: Hence $\\Phi(\\gamma)$ is a geodesic.\n777: \n778: **Length preservation**: The metric tensor pulls back as $\\Phi^* g = g$, so:\n779: \n780: $$\n781: g(\\Phi(\\gamma(t)))(d\\Phi(\\dot{\\gamma}(t)), d\\Phi(\\dot{\\gamma}(t))) = (\\Phi^* g)(\\gamma(t))(\\dot{\\gamma}(t), \\dot{\\gamma}(t)) = g(\\gamma(t))(\\dot{\\gamma}(t), \\dot{\\gamma}(t))\n782: \n783: $$",
+      "metadata": {},
+      "section": "## 3. Emergent Manifold Symmetries",
+      "raw_directive": "750: :::\n751: \n752: :::{prf:proof}\n753: **Geodesic equation**: A curve $\\gamma(t)$ is a geodesic if it satisfies:\n754: \n755: $$\n756: \\nabla_{\\dot{\\gamma}} \\dot{\\gamma} = 0\n757: \n758: $$\n759: \n760: where $\\nabla$ is the Levi-Civita connection of $g$.\n761: \n762: **Isometry property**: Since $\\Phi^* g = g$, the connection transforms as:\n763: \n764: $$\n765: \\Phi^* \\nabla = \\nabla\n766: \n767: $$\n768: \n769: Therefore:\n770: \n771: $$\n772: \\nabla_{d\\Phi(\\dot{\\gamma})} d\\Phi(\\dot{\\gamma}) = d\\Phi(\\nabla_{\\dot{\\gamma}} \\dot{\\gamma}) = 0\n773: \n774: $$\n775: \n776: Hence $\\Phi(\\gamma)$ is a geodesic.\n777: \n778: **Length preservation**: The metric tensor pulls back as $\\Phi^* g = g$, so:\n779: \n780: $$\n781: g(\\Phi(\\gamma(t)))(d\\Phi(\\dot{\\gamma}(t)), d\\Phi(\\dot{\\gamma}(t))) = (\\Phi^* g)(\\gamma(t))(\\dot{\\gamma}(t), \\dot{\\gamma}(t)) = g(\\gamma(t))(\\dot{\\gamma}(t), \\dot{\\gamma}(t))\n782: \n783: $$\n784: "
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-geodesic-distance-symmetry",
+      "title": "Symmetry of Geodesic Distance",
+      "start_line": 786,
+      "end_line": 797,
+      "header_lines": [
+        787
+      ],
+      "content_start": 789,
+      "content_end": 796,
+      "content": "789: :label: cor-geodesic-distance-symmetry\n790: \n791: If $\\Phi$ is an isometry, then the geodesic distance function is equivariant:\n792: \n793: $$\n794: d_g(\\Phi(x), \\Phi(y)) = d_g(x, y)\n795: \n796: $$",
+      "metadata": {
+        "label": "cor-geodesic-distance-symmetry"
+      },
+      "section": "## 3. Emergent Manifold Symmetries",
+      "raw_directive": "786: :::\n787: \n788: :::{prf:corollary} Symmetry of Geodesic Distance\n789: :label: cor-geodesic-distance-symmetry\n790: \n791: If $\\Phi$ is an isometry, then the geodesic distance function is equivariant:\n792: \n793: $$\n794: d_g(\\Phi(x), \\Phi(y)) = d_g(x, y)\n795: \n796: $$\n797: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-emergent-curvature",
+      "title": "Emergent Riemann Curvature",
+      "start_line": 803,
+      "end_line": 819,
+      "header_lines": [
+        804
+      ],
+      "content_start": 806,
+      "content_end": 818,
+      "content": "806: :label: def-emergent-curvature\n807: \n808: The **Riemann curvature tensor** of $(\\mathcal{X}, g(x, S))$ is:\n809: \n810: $$\n811: R(X, Y)Z = \\nabla_X \\nabla_Y Z - \\nabla_Y \\nabla_X Z - \\nabla_{[X,Y]} Z\n812: \n813: $$\n814: \n815: The **sectional curvature** in the 2-plane spanned by orthonormal vectors $u, v$ is:\n816: \n817: $$\n818: K(u, v) = \\frac{g(R(u, v)v, u)}{g(u, u) g(v, v) - g(u, v)^2}",
+      "metadata": {
+        "label": "def-emergent-curvature"
+      },
+      "section": "## 3. Emergent Manifold Symmetries",
+      "raw_directive": "803: The **Riemann curvature tensor** of the emergent manifold encodes higher-order geometric information.\n804: \n805: :::{prf:definition} Emergent Riemann Curvature\n806: :label: def-emergent-curvature\n807: \n808: The **Riemann curvature tensor** of $(\\mathcal{X}, g(x, S))$ is:\n809: \n810: $$\n811: R(X, Y)Z = \\nabla_X \\nabla_Y Z - \\nabla_Y \\nabla_X Z - \\nabla_{[X,Y]} Z\n812: \n813: $$\n814: \n815: The **sectional curvature** in the 2-plane spanned by orthonormal vectors $u, v$ is:\n816: \n817: $$\n818: K(u, v) = \\frac{g(R(u, v)v, u)}{g(u, u) g(v, v) - g(u, v)^2}\n819: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-curvature-symmetries",
+      "title": "Curvature-Adapted Symmetries",
+      "start_line": 821,
+      "end_line": 834,
+      "header_lines": [
+        822
+      ],
+      "content_start": 824,
+      "content_end": 833,
+      "content": "824: :label: thm-curvature-symmetries\n825: \n826: Suppose the fitness potential is a function of the Ricci curvature:\n827: \n828: $$\n829: V_{\\text{fit}}(x, v, S) = F(\\text{Ric}_g(x, S), v)\n830: \n831: $$\n832: \n833: where $\\text{Ric}_g = \\text{tr}(R)$ is the Ricci curvature of the emergent metric.",
+      "metadata": {
+        "label": "thm-curvature-symmetries"
+      },
+      "section": "## 3. Emergent Manifold Symmetries",
+      "raw_directive": "821: :::\n822: \n823: :::{prf:theorem} Curvature-Adapted Symmetries\n824: :label: thm-curvature-symmetries\n825: \n826: Suppose the fitness potential is a function of the Ricci curvature:\n827: \n828: $$\n829: V_{\\text{fit}}(x, v, S) = F(\\text{Ric}_g(x, S), v)\n830: \n831: $$\n832: \n833: where $\\text{Ric}_g = \\text{tr}(R)$ is the Ricci curvature of the emergent metric.\n834: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-288",
+      "title": null,
+      "start_line": 836,
+      "end_line": 852,
+      "header_lines": [],
+      "content_start": 837,
+      "content_end": 851,
+      "content": "837: \n838: :::{prf:proof}\n839: The Ricci curvature is a **diffeomorphism-invariant** tensor:\n840: \n841: $$\n842: \\text{Ric}_{\\Phi^* g}(\\Phi(x)) = \\Phi^* \\text{Ric}_g(x)\n843: \n844: $$\n845: \n846: If $V_{\\text{fit}}$ depends only on $\\text{Ric}_g$, then:\n847: \n848: $$\n849: V_{\\text{fit}}(\\Phi(x), v, \\Phi_*(S)) = F(\\text{Ric}_g(\\Phi(x), \\Phi_*(S)), v) = F(\\Phi^* \\text{Ric}_g(x, S), v) = F(\\text{Ric}_g(x, S), v) = V_{\\text{fit}}(x, v, S)\n850: \n851: $$",
+      "metadata": {},
+      "section": "## 3. Emergent Manifold Symmetries",
+      "raw_directive": "836: :::\n837: \n838: :::{prf:proof}\n839: The Ricci curvature is a **diffeomorphism-invariant** tensor:\n840: \n841: $$\n842: \\text{Ric}_{\\Phi^* g}(\\Phi(x)) = \\Phi^* \\text{Ric}_g(x)\n843: \n844: $$\n845: \n846: If $V_{\\text{fit}}$ depends only on $\\text{Ric}_g$, then:\n847: \n848: $$\n849: V_{\\text{fit}}(\\Phi(x), v, \\Phi_*(S)) = F(\\text{Ric}_g(\\Phi(x), \\Phi_*(S)), v) = F(\\Phi^* \\text{Ric}_g(x, S), v) = F(\\text{Ric}_g(x, S), v) = V_{\\text{fit}}(x, v, S)\n850: \n851: $$\n852: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-306",
+      "title": "Physical Interpretation: Ricci Flow Analogy",
+      "start_line": 854,
+      "end_line": 864,
+      "header_lines": [
+        855
+      ],
+      "content_start": 857,
+      "content_end": 863,
+      "content": "857: :class: important\n858: \n859: The Ricci curvature governs the **volume growth rate** of geodesic balls. High Ricci curvature indicates regions where the manifold is \"pinching\" (volume grows slowly), while low/negative curvature indicates \"spreading\" (volume grows rapidly).\n860: \n861: In the Adaptive Gas:\n862: - **High curvature** (high fitness Hessian) \u2192 Small diffusion \u2192 Exploitation\n863: - **Low curvature** (flat fitness landscape) \u2192 Large diffusion \u2192 Exploration",
+      "metadata": {
+        "class": "important"
+      },
+      "section": "## 3. Emergent Manifold Symmetries",
+      "raw_directive": "854: :::\n855: \n856: :::{prf:remark} Physical Interpretation: Ricci Flow Analogy\n857: :class: important\n858: \n859: The Ricci curvature governs the **volume growth rate** of geodesic balls. High Ricci curvature indicates regions where the manifold is \"pinching\" (volume grows slowly), while low/negative curvature indicates \"spreading\" (volume grows rapidly).\n860: \n861: In the Adaptive Gas:\n862: - **High curvature** (high fitness Hessian) \u2192 Small diffusion \u2192 Exploitation\n863: - **Low curvature** (flat fitness landscape) \u2192 Large diffusion \u2192 Exploration\n864: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-fisher-geometry",
+      "title": "Fisher-Rao Geometry Embedding",
+      "start_line": 870,
+      "end_line": 890,
+      "header_lines": [
+        871
+      ],
+      "content_start": 873,
+      "content_end": 889,
+      "content": "873: :label: thm-fisher-geometry\n874: \n875: Suppose the fitness potential arises from a **statistical model** $p_\\theta(r)$ with parameter $\\theta = x \\in \\mathcal{X}$. Define:\n876: \n877: $$\n878: V_{\\text{fit}}(x) = -\\log p_x(r_{\\text{obs}})\n879: \n880: $$\n881: \n882: where $r_{\\text{obs}}$ is an observed reward.\n883: \n884: Then the Hessian $H(x) = \\nabla^2_x V_{\\text{fit}}(x)$ is the **Fisher information matrix**:\n885: \n886: $$\n887: H_{ij}(x) = \\mathbb{E}_{r \\sim p_x}\\left[\\frac{\\partial \\log p_x(r)}{\\partial x_i} \\frac{\\partial \\log p_x(r)}{\\partial x_j}\\right]\n888: \n889: $$",
+      "metadata": {
+        "label": "thm-fisher-geometry"
+      },
+      "section": "## 3. Emergent Manifold Symmetries",
+      "raw_directive": "870: The emergent metric has a natural interpretation in **information geometry**.\n871: \n872: :::{prf:theorem} Fisher-Rao Geometry Embedding\n873: :label: thm-fisher-geometry\n874: \n875: Suppose the fitness potential arises from a **statistical model** $p_\\theta(r)$ with parameter $\\theta = x \\in \\mathcal{X}$. Define:\n876: \n877: $$\n878: V_{\\text{fit}}(x) = -\\log p_x(r_{\\text{obs}})\n879: \n880: $$\n881: \n882: where $r_{\\text{obs}}$ is an observed reward.\n883: \n884: Then the Hessian $H(x) = \\nabla^2_x V_{\\text{fit}}(x)$ is the **Fisher information matrix**:\n885: \n886: $$\n887: H_{ij}(x) = \\mathbb{E}_{r \\sim p_x}\\left[\\frac{\\partial \\log p_x(r)}{\\partial x_i} \\frac{\\partial \\log p_x(r)}{\\partial x_j}\\right]\n888: \n889: $$\n890: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-344",
+      "title": null,
+      "start_line": 892,
+      "end_line": 931,
+      "header_lines": [],
+      "content_start": 893,
+      "content_end": 930,
+      "content": "893: \n894: :::{prf:proof}\n895: **Fisher information definition**: For a parametric family $p_\\theta$, the Fisher information is:\n896: \n897: $$\n898: I_{ij}(\\theta) = \\mathbb{E}_{x \\sim p_\\theta}\\left[\\frac{\\partial \\log p_\\theta(x)}{\\partial \\theta_i} \\frac{\\partial \\log p_\\theta(x)}{\\partial \\theta_j}\\right]\n899: \n900: $$\n901: \n902: **Negative log-likelihood**: If $V(\\theta) = -\\log p_\\theta(x_{\\text{obs}})$, then:\n903: \n904: $$\n905: \\nabla V(\\theta) = -\\frac{\\nabla p_\\theta(x_{\\text{obs}})}{p_\\theta(x_{\\text{obs}})}\n906: \n907: $$\n908: \n909: The Hessian is:\n910: \n911: $$\n912: \\nabla^2 V(\\theta) = -\\frac{\\nabla^2 p_\\theta(x_{\\text{obs}})}{p_\\theta(x_{\\text{obs}})} + \\frac{(\\nabla p_\\theta(x_{\\text{obs}}))(\\nabla p_\\theta(x_{\\text{obs}}))^T}{p_\\theta(x_{\\text{obs}})^2}\n913: \n914: $$\n915: \n916: Taking expectation over $x_{\\text{obs}} \\sim p_\\theta$ and using $\\mathbb{E}[\\nabla^2 \\log p] = -I$ (for regular families), recovers the Fisher information.\n917: \n918: **Natural gradient**: The natural gradient is defined as:\n919: \n920: $$\n921: \\nabla_{\\text{nat}} V = I^{-1} \\nabla V\n922: \n923: $$\n924: \n925: The regularized metric $g = I + \\epsilon_\\Sigma I$ gives:\n926: \n927: $$\n928: \\nabla_{\\text{nat}} V \\approx (I + \\epsilon_\\Sigma I)^{-1} \\nabla V\n929: \n930: $$",
+      "metadata": {},
+      "section": "## 3. Emergent Manifold Symmetries",
+      "raw_directive": "892: :::\n893: \n894: :::{prf:proof}\n895: **Fisher information definition**: For a parametric family $p_\\theta$, the Fisher information is:\n896: \n897: $$\n898: I_{ij}(\\theta) = \\mathbb{E}_{x \\sim p_\\theta}\\left[\\frac{\\partial \\log p_\\theta(x)}{\\partial \\theta_i} \\frac{\\partial \\log p_\\theta(x)}{\\partial \\theta_j}\\right]\n899: \n900: $$\n901: \n902: **Negative log-likelihood**: If $V(\\theta) = -\\log p_\\theta(x_{\\text{obs}})$, then:\n903: \n904: $$\n905: \\nabla V(\\theta) = -\\frac{\\nabla p_\\theta(x_{\\text{obs}})}{p_\\theta(x_{\\text{obs}})}\n906: \n907: $$\n908: \n909: The Hessian is:\n910: \n911: $$\n912: \\nabla^2 V(\\theta) = -\\frac{\\nabla^2 p_\\theta(x_{\\text{obs}})}{p_\\theta(x_{\\text{obs}})} + \\frac{(\\nabla p_\\theta(x_{\\text{obs}}))(\\nabla p_\\theta(x_{\\text{obs}}))^T}{p_\\theta(x_{\\text{obs}})^2}\n913: \n914: $$\n915: \n916: Taking expectation over $x_{\\text{obs}} \\sim p_\\theta$ and using $\\mathbb{E}[\\nabla^2 \\log p] = -I$ (for regular families), recovers the Fisher information.\n917: \n918: **Natural gradient**: The natural gradient is defined as:\n919: \n920: $$\n921: \\nabla_{\\text{nat}} V = I^{-1} \\nabla V\n922: \n923: $$\n924: \n925: The regularized metric $g = I + \\epsilon_\\Sigma I$ gives:\n926: \n927: $$\n928: \\nabla_{\\text{nat}} V \\approx (I + \\epsilon_\\Sigma I)^{-1} \\nabla V\n929: \n930: $$\n931: "
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-statistical-symmetries",
+      "title": "Symmetries of Statistical Models",
+      "start_line": 933,
+      "end_line": 944,
+      "header_lines": [
+        934
+      ],
+      "content_start": 936,
+      "content_end": 943,
+      "content": "936: :label: cor-statistical-symmetries\n937: \n938: If the parametric family $p_\\theta$ has a **sufficient statistic** $T(x)$ that is invariant under a group $G$:\n939: \n940: $$\n941: T(gx) = T(x) \\quad \\forall g \\in G\n942: \n943: $$",
+      "metadata": {
+        "label": "cor-statistical-symmetries"
+      },
+      "section": "## 3. Emergent Manifold Symmetries",
+      "raw_directive": "933: :::\n934: \n935: :::{prf:corollary} Symmetries of Statistical Models\n936: :label: cor-statistical-symmetries\n937: \n938: If the parametric family $p_\\theta$ has a **sufficient statistic** $T(x)$ that is invariant under a group $G$:\n939: \n940: $$\n941: T(gx) = T(x) \\quad \\forall g \\in G\n942: \n943: $$\n944: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

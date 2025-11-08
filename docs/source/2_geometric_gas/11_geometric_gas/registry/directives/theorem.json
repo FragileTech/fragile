@@ -1,0 +1,309 @@
+{
+  "document_id": "11_geometric_gas",
+  "stage": "directives",
+  "directive_type": "theorem",
+  "generated_at": "2025-11-08T17:07:43.241122+00:00",
+  "count": 12,
+  "items": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-ueph",
+      "title": "k-Uniform Ellipticity of the Regularized Metric",
+      "start_line": 650,
+      "end_line": 692,
+      "header_lines": [
+        651
+      ],
+      "content_start": 653,
+      "content_end": 691,
+      "content": "653: :label: thm-ueph\n654: \n655: For the Geometric Viscous Fluid Model with regularization parameter $\\epsilon_\\Sigma$ satisfying:\n656: \n657: $$\n658: \\epsilon_\\Sigma > H_{\\max}(\\rho)\n659: \n660: $$\n661: \n662: where $H_{\\max}(\\rho)$ is the **k-uniform** (and thus **N-uniform**) bound on $\\|H(S)\\|$ from Appendix A, Theorem {prf:ref}`thm-c2-regularity`, the regularized metric\n663: \n664: $$\n665: G_{\\text{reg}}(S) = \\left( H(S) + \\epsilon_\\Sigma I \\right)^{-1}\n666: \n667: $$\n668: \n669: is uniformly elliptic with **k-uniform** (and thus **N-uniform**) ellipticity constants:\n670: \n671: $$\n672: c_{\\min}(\\rho) = \\frac{1}{H_{\\max}(\\rho) + \\epsilon_\\Sigma}, \\quad c_{\\max}(\\rho) = \\frac{1}{\\epsilon_\\Sigma - H_{\\max}(\\rho)}\n673: \n674: $$\n675: \n676: such that:\n677: \n678: $$\n679: c_{\\min}(\\rho) I \\preceq G_{\\text{reg}}(S) \\preceq c_{\\max}(\\rho) I\n680: \n681: $$\n682: \n683: for all $S \\in \\Sigma_N$, **all k** (alive walker counts), and **all N** (total swarm sizes).\n684: \n685: Equivalently, the eigenvalues of $G_{\\text{reg}}(S)$ satisfy:\n686: \n687: $$\n688: \\lambda_i(G_{\\text{reg}}(S)) \\in [c_{\\min}(\\rho), c_{\\max}(\\rho)] \\quad \\forall i \\in \\{1, \\ldots, d\\}, \\, \\forall S \\in \\Sigma_N, \\, \\forall k, \\, \\forall N \\in \\mathbb{N}\n689: \n690: $$\n691: ",
+      "metadata": {
+        "label": "thm-ueph"
+      },
+      "section": "## 4. Uniform Ellipticity and Well-Posedness",
+      "raw_directive": "650: ### 4.1. Main Theorem: Uniform Ellipticity by Construction\n651: \n652: :::{prf:theorem} k-Uniform Ellipticity of the Regularized Metric\n653: :label: thm-ueph\n654: \n655: For the Geometric Viscous Fluid Model with regularization parameter $\\epsilon_\\Sigma$ satisfying:\n656: \n657: $$\n658: \\epsilon_\\Sigma > H_{\\max}(\\rho)\n659: \n660: $$\n661: \n662: where $H_{\\max}(\\rho)$ is the **k-uniform** (and thus **N-uniform**) bound on $\\|H(S)\\|$ from Appendix A, Theorem {prf:ref}`thm-c2-regularity`, the regularized metric\n663: \n664: $$\n665: G_{\\text{reg}}(S) = \\left( H(S) + \\epsilon_\\Sigma I \\right)^{-1}\n666: \n667: $$\n668: \n669: is uniformly elliptic with **k-uniform** (and thus **N-uniform**) ellipticity constants:\n670: \n671: $$\n672: c_{\\min}(\\rho) = \\frac{1}{H_{\\max}(\\rho) + \\epsilon_\\Sigma}, \\quad c_{\\max}(\\rho) = \\frac{1}{\\epsilon_\\Sigma - H_{\\max}(\\rho)}\n673: \n674: $$\n675: \n676: such that:\n677: \n678: $$\n679: c_{\\min}(\\rho) I \\preceq G_{\\text{reg}}(S) \\preceq c_{\\max}(\\rho) I\n680: \n681: $$\n682: \n683: for all $S \\in \\Sigma_N$, **all k** (alive walker counts), and **all N** (total swarm sizes).\n684: \n685: Equivalently, the eigenvalues of $G_{\\text{reg}}(S)$ satisfy:\n686: \n687: $$\n688: \\lambda_i(G_{\\text{reg}}(S)) \\in [c_{\\min}(\\rho), c_{\\max}(\\rho)] \\quad \\forall i \\in \\{1, \\ldots, d\\}, \\, \\forall S \\in \\Sigma_N, \\, \\forall k, \\, \\forall N \\in \\mathbb{N}\n689: \n690: $$\n691: \n692: **Critical Property:** Since $H_{\\max}(\\rho)$ is independent of k (and thus of N) by Theorem {prf:ref}`thm-c2-regularity`, the ellipticity constants depend only on ρ and $\\epsilon_\\Sigma$, not on the alive walker count or swarm size. This ensures the adaptive diffusion remains well-conditioned for arbitrarily large swarms.",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## 4. Uniform Ellipticity and Well-Posedness"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-backbone-convergence",
+      "title": "Geometric Ergodicity of the Backbone",
+      "start_line": 1117,
+      "end_line": 1135,
+      "header_lines": [
+        1118
+      ],
+      "content_start": 1120,
+      "content_end": 1134,
+      "content": "1120: :label: thm-backbone-convergence\n1121: \n1122: The backbone system, composed with the cloning operator $\\Psi_{\\text{clone}}$, satisfies a discrete-time Foster-Lyapunov drift condition. There exist constants $\\kappa_{\\text{backbone}} > 0$ and $C_{\\text{backbone}} < \\infty$ such that:\n1123: \n1124: $$\n1125: \\mathbb{E}[V_{\\text{total}}(S_{k+1}) \\mid S_k] \\le (1 - \\kappa_{\\text{backbone}}) V_{\\text{total}}(S_k) + C_{\\text{backbone}}\n1126: \n1127: $$\n1128: \n1129: for all $k \\ge 0$, where $V_{\\text{total}}$ is the composite Lyapunov function:\n1130: \n1131: $$\n1132: V_{\\text{total}}(S) = \\alpha_x V_{\\text{Var},x}(S) + \\alpha_v V_{\\text{Var},v}(S) + \\alpha_D V_{\\text{Mean},D}(S) + \\alpha_R V_{\\text{Mean},R}(S)\n1133: \n1134: $$",
+      "metadata": {
+        "label": "thm-backbone-convergence"
+      },
+      "section": "## 5. The Stable Backbone System",
+      "raw_directive": "1117: The convergence of the backbone system has been rigorously established in the companion documents. We summarize the key result here.\n1118: \n1119: :::{prf:theorem} Geometric Ergodicity of the Backbone\n1120: :label: thm-backbone-convergence\n1121: \n1122: The backbone system, composed with the cloning operator $\\Psi_{\\text{clone}}$, satisfies a discrete-time Foster-Lyapunov drift condition. There exist constants $\\kappa_{\\text{backbone}} > 0$ and $C_{\\text{backbone}} < \\infty$ such that:\n1123: \n1124: $$\n1125: \\mathbb{E}[V_{\\text{total}}(S_{k+1}) \\mid S_k] \\le (1 - \\kappa_{\\text{backbone}}) V_{\\text{total}}(S_k) + C_{\\text{backbone}}\n1126: \n1127: $$\n1128: \n1129: for all $k \\ge 0$, where $V_{\\text{total}}$ is the composite Lyapunov function:\n1130: \n1131: $$\n1132: V_{\\text{total}}(S) = \\alpha_x V_{\\text{Var},x}(S) + \\alpha_v V_{\\text{Var},v}(S) + \\alpha_D V_{\\text{Mean},D}(S) + \\alpha_R V_{\\text{Mean},R}(S)\n1133: \n1134: $$\n1135: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 7,
+        "chapter_file": "chapter_7.json",
+        "section_id": "## 5. The Stable Backbone System"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-strat-chain",
+      "title": "Stratonovich Chain Rule for Lyapunov Functions",
+      "start_line": 1241,
+      "end_line": 1279,
+      "header_lines": [
+        1242
+      ],
+      "content_start": 1244,
+      "content_end": 1278,
+      "content": "1244: :label: thm-strat-chain\n1245: \n1246: Let $V: \\Sigma_N \\to \\mathbb{R}$ be a $C^2$ function of the swarm state $S = \\{(x_1, v_1), \\ldots, (x_N, v_N)\\}$, and suppose $S_t$ evolves according to the Stratonovich SDE:\n1247: \n1248: $$\n1249: \\begin{aligned}\n1250: dx_i &= v_i \\, dt \\\\\n1251: dv_i &= b_i(S) \\, dt + \\Sigma_{\\text{reg}}(x_i, S) \\circ dW_i\n1252: \\end{aligned}\n1253: \n1254: $$\n1255: \n1256: where $b_i(S)$ is the total drift (including all forces and friction).\n1257: \n1258: Then the evolution of $V(S_t)$ is governed by:\n1259: \n1260: $$\n1261: dV = A(S_t) \\, dt + B(S_t) \\circ dW_t\n1262: \n1263: $$\n1264: \n1265: where the **Stratonovich drift** is:\n1266: \n1267: $$\n1268: A(S_t) = \\sum_{i=1}^N \\left[ \\langle \\nabla_{x_i} V, v_i \\rangle + \\langle \\nabla_{v_i} V, b_i(S) \\rangle \\right] + \\frac{1}{2} \\sum_{i=1}^N \\sum_{j=1}^d \\left( \\sigma_{ij} \\cdot \\nabla_{v_i} \\right) \\left( \\sigma_{ij} \\cdot \\nabla_{v_i} V \\right)\n1269: \n1270: $$\n1271: \n1272: where $\\sigma_{ij}$ is the $j$-th column of $\\Sigma_{\\text{reg}}(x_i, S)$, and the operator $(\\sigma_{ij} \\cdot \\nabla_{v_i})$ denotes the directional derivative in the direction $\\sigma_{ij}$.\n1273: \n1274: The stochastic term is:\n1275: \n1276: $$\n1277: B(S_t) \\circ dW_t = \\sum_{i=1}^N \\sum_{j=1}^d \\langle \\nabla_{v_i} V, \\sigma_{ij}(S) \\rangle \\circ dW_i^{(j)}\n1278: ",
+      "metadata": {
+        "label": "thm-strat-chain"
+      },
+      "section": "## 5.4. The Stratonovich Chain Rule and Drift Calculation",
+      "raw_directive": "1241: :::\n1242: \n1243: :::{prf:theorem} Stratonovich Chain Rule for Lyapunov Functions\n1244: :label: thm-strat-chain\n1245: \n1246: Let $V: \\Sigma_N \\to \\mathbb{R}$ be a $C^2$ function of the swarm state $S = \\{(x_1, v_1), \\ldots, (x_N, v_N)\\}$, and suppose $S_t$ evolves according to the Stratonovich SDE:\n1247: \n1248: $$\n1249: \\begin{aligned}\n1250: dx_i &= v_i \\, dt \\\\\n1251: dv_i &= b_i(S) \\, dt + \\Sigma_{\\text{reg}}(x_i, S) \\circ dW_i\n1252: \\end{aligned}\n1253: \n1254: $$\n1255: \n1256: where $b_i(S)$ is the total drift (including all forces and friction).\n1257: \n1258: Then the evolution of $V(S_t)$ is governed by:\n1259: \n1260: $$\n1261: dV = A(S_t) \\, dt + B(S_t) \\circ dW_t\n1262: \n1263: $$\n1264: \n1265: where the **Stratonovich drift** is:\n1266: \n1267: $$\n1268: A(S_t) = \\sum_{i=1}^N \\left[ \\langle \\nabla_{x_i} V, v_i \\rangle + \\langle \\nabla_{v_i} V, b_i(S) \\rangle \\right] + \\frac{1}{2} \\sum_{i=1}^N \\sum_{j=1}^d \\left( \\sigma_{ij} \\cdot \\nabla_{v_i} \\right) \\left( \\sigma_{ij} \\cdot \\nabla_{v_i} V \\right)\n1269: \n1270: $$\n1271: \n1272: where $\\sigma_{ij}$ is the $j$-th column of $\\Sigma_{\\text{reg}}(x_i, S)$, and the operator $(\\sigma_{ij} \\cdot \\nabla_{v_i})$ denotes the directional derivative in the direction $\\sigma_{ij}$.\n1273: \n1274: The stochastic term is:\n1275: \n1276: $$\n1277: B(S_t) \\circ dW_t = \\sum_{i=1}^N \\sum_{j=1}^d \\langle \\nabla_{v_i} V, \\sigma_{ij}(S) \\rangle \\circ dW_i^{(j)}\n1278: \n1279: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 8,
+        "chapter_file": "chapter_8.json",
+        "section_id": "## 5.4. The Stratonovich Chain Rule and Drift Calculation"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-fl-drift-adaptive",
+      "title": "Foster-Lyapunov Drift for the ρ-Localized Geometric Viscous Fluid Model",
+      "start_line": 1688,
+      "end_line": 1726,
+      "header_lines": [
+        1689
+      ],
+      "content_start": 1691,
+      "content_end": 1725,
+      "content": "1691: :label: thm-fl-drift-adaptive\n1692: \n1693: For the Geometric Viscous Fluid Model with localization scale ρ > 0, there exist **ρ-dependent critical parameters** $\\epsilon_F^*(\\rho) > 0$ and $\\nu^*(\\rho) > 0$ such that for all $0 \\le \\epsilon_F < \\epsilon_F^*(\\rho)$ and $0 \\le \\nu < \\nu^*(\\rho)$, the system satisfies a discrete-time Foster-Lyapunov drift condition:\n1694: \n1695: $$\n1696: \\mathbb{E}[V_{\\text{total}}(S_{k+1}) \\mid S_k] \\le (1 - \\kappa_{\\text{total}}(\\rho)) V_{\\text{total}}(S_k) + C_{\\text{total}}(\\rho)\n1697: \n1698: $$\n1699: \n1700: for all $k \\ge 0$, where:\n1701: \n1702: $$\n1703: \\kappa_{\\text{total}}(\\rho) = \\kappa_{\\text{backbone}} - \\epsilon_F K_F(\\rho) > 0\n1704: \n1705: $$\n1706: \n1707: $$\n1708: C_{\\text{total}}(\\rho) = C_{\\text{backbone}} + C_{\\text{diff}}(\\rho) + \\epsilon_F K_F(\\rho) < \\infty\n1709: \n1710: $$\n1711: \n1712: **Critical Stability Threshold:**\n1713: \n1714: $$\n1715: \\epsilon_F^*(\\rho) := \\frac{\\kappa_{\\text{backbone}} - C_{\\text{diff,1}}(\\rho)}{2 K_F(\\rho)}\n1716: \n1717: $$\n1718: \n1719: where $C_{\\text{diff,1}}(\\rho)$ captures the ρ-dependent diffusion perturbation contribution to the drift coefficient.\n1720: \n1721: **Interpretation:**\n1722: - For any fixed ρ > 0, the critical threshold $\\epsilon_F^*(\\rho)$ is strictly positive\n1723: - Smaller ρ (more local adaptation) → potentially larger $K_F(\\rho)$ → smaller $\\epsilon_F^*(\\rho)$ → more restrictive stability condition\n1724: - Larger ρ (more global statistics) → smaller $K_F(\\rho)$ → larger $\\epsilon_F^*(\\rho)$ → as ρ → ∞, recovers the backbone threshold\n1725: - The convergence rate $\\kappa_{\\text{total}}(\\rho)$ depends on both εF and ρ, allowing tuning of the exploration-exploitation tradeoff",
+      "metadata": {
+        "label": "thm-fl-drift-adaptive"
+      },
+      "section": "## 7. Foster-Lyapunov Drift for the Full Adaptive System",
+      "raw_directive": "1688: ### 7.1. Main Theorem\n1689: \n1690: :::{prf:theorem} Foster-Lyapunov Drift for the ρ-Localized Geometric Viscous Fluid Model\n1691: :label: thm-fl-drift-adaptive\n1692: \n1693: For the Geometric Viscous Fluid Model with localization scale ρ > 0, there exist **ρ-dependent critical parameters** $\\epsilon_F^*(\\rho) > 0$ and $\\nu^*(\\rho) > 0$ such that for all $0 \\le \\epsilon_F < \\epsilon_F^*(\\rho)$ and $0 \\le \\nu < \\nu^*(\\rho)$, the system satisfies a discrete-time Foster-Lyapunov drift condition:\n1694: \n1695: $$\n1696: \\mathbb{E}[V_{\\text{total}}(S_{k+1}) \\mid S_k] \\le (1 - \\kappa_{\\text{total}}(\\rho)) V_{\\text{total}}(S_k) + C_{\\text{total}}(\\rho)\n1697: \n1698: $$\n1699: \n1700: for all $k \\ge 0$, where:\n1701: \n1702: $$\n1703: \\kappa_{\\text{total}}(\\rho) = \\kappa_{\\text{backbone}} - \\epsilon_F K_F(\\rho) > 0\n1704: \n1705: $$\n1706: \n1707: $$\n1708: C_{\\text{total}}(\\rho) = C_{\\text{backbone}} + C_{\\text{diff}}(\\rho) + \\epsilon_F K_F(\\rho) < \\infty\n1709: \n1710: $$\n1711: \n1712: **Critical Stability Threshold:**\n1713: \n1714: $$\n1715: \\epsilon_F^*(\\rho) := \\frac{\\kappa_{\\text{backbone}} - C_{\\text{diff,1}}(\\rho)}{2 K_F(\\rho)}\n1716: \n1717: $$\n1718: \n1719: where $C_{\\text{diff,1}}(\\rho)$ captures the ρ-dependent diffusion perturbation contribution to the drift coefficient.\n1720: \n1721: **Interpretation:**\n1722: - For any fixed ρ > 0, the critical threshold $\\epsilon_F^*(\\rho)$ is strictly positive\n1723: - Smaller ρ (more local adaptation) → potentially larger $K_F(\\rho)$ → smaller $\\epsilon_F^*(\\rho)$ → more restrictive stability condition\n1724: - Larger ρ (more global statistics) → smaller $K_F(\\rho)$ → larger $\\epsilon_F^*(\\rho)$ → as ρ → ∞, recovers the backbone threshold\n1725: - The convergence rate $\\kappa_{\\text{total}}(\\rho)$ depends on both εF and ρ, allowing tuning of the exploration-exploitation tradeoff\n1726: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 10,
+        "chapter_file": "chapter_10.json",
+        "section_id": "## 7. Foster-Lyapunov Drift for the Full Adaptive System"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-lsi-adaptive-gas",
+      "title": "N-Uniform Log-Sobolev Inequality for the Geometric Viscous Fluid Model",
+      "start_line": 2059,
+      "end_line": 2079,
+      "header_lines": [
+        2060
+      ],
+      "content_start": 2062,
+      "content_end": 2078,
+      "content": "2062: :label: thm-lsi-adaptive-gas\n2063: \n2064: Let $\\nu_N^{\\text{QSD}}$ be the unique quasi-stationary distribution of the N-particle Geometric Viscous Fluid Model with parameters satisfying the conditions of Theorem [](#thm-fl-drift-adaptive) (sufficiently small $\\epsilon_F$, arbitrary $\\nu > 0$, and regularization $\\epsilon_\\Sigma > H_{\\max}$).\n2065: \n2066: There exists a constant $C_{\\text{LSI}}(\\rho) > 0$, **independent of the number of walkers $N$**, such that for every sufficiently smooth function $f$ on the N-particle state space:\n2067: \n2068: $$\n2069: \\text{Ent}_{\\nu_N^{\\text{QSD}}}(f^2) \\le C_{\\text{LSI}}(\\rho) \\int \\Gamma_N(f) \\, d\\nu_N^{\\text{QSD}}\n2070: \n2071: $$\n2072: \n2073: The constant $C_{\\text{LSI}}(\\rho)$ depends only on:\n2074: - The convexity constant $\\kappa_{\\text{conf}}$ of the confining potential (Axiom [](#ax:confining-potential-hybrid))\n2075: - The uniform ellipticity bounds $c_{\\min}(\\rho)$ and $c_{\\max}(\\rho)$ from Theorem [](#thm-ueph) (N-uniform)\n2076: - The localization radius $\\rho$ and algorithm parameters $(\\gamma, \\epsilon_\\Sigma, \\epsilon_F)$\n2077: \n2078: and **not** on $N$, the swarm state $S$, or the viscous coupling strength $\\nu$ (which can be arbitrarily large).",
+      "metadata": {
+        "label": "thm-lsi-adaptive-gas"
+      },
+      "section": "## 8. The Logarithmic Sobolev Inequality: A Conjectured Strengthening",
+      "raw_directive": "2059: We are now ready to state the main result of this chapter.\n2060: \n2061: :::{prf:theorem} N-Uniform Log-Sobolev Inequality for the Geometric Viscous Fluid Model\n2062: :label: thm-lsi-adaptive-gas\n2063: \n2064: Let $\\nu_N^{\\text{QSD}}$ be the unique quasi-stationary distribution of the N-particle Geometric Viscous Fluid Model with parameters satisfying the conditions of Theorem [](#thm-fl-drift-adaptive) (sufficiently small $\\epsilon_F$, arbitrary $\\nu > 0$, and regularization $\\epsilon_\\Sigma > H_{\\max}$).\n2065: \n2066: There exists a constant $C_{\\text{LSI}}(\\rho) > 0$, **independent of the number of walkers $N$**, such that for every sufficiently smooth function $f$ on the N-particle state space:\n2067: \n2068: $$\n2069: \\text{Ent}_{\\nu_N^{\\text{QSD}}}(f^2) \\le C_{\\text{LSI}}(\\rho) \\int \\Gamma_N(f) \\, d\\nu_N^{\\text{QSD}}\n2070: \n2071: $$\n2072: \n2073: The constant $C_{\\text{LSI}}(\\rho)$ depends only on:\n2074: - The convexity constant $\\kappa_{\\text{conf}}$ of the confining potential (Axiom [](#ax:confining-potential-hybrid))\n2075: - The uniform ellipticity bounds $c_{\\min}(\\rho)$ and $c_{\\max}(\\rho)$ from Theorem [](#thm-ueph) (N-uniform)\n2076: - The localization radius $\\rho$ and algorithm parameters $(\\gamma, \\epsilon_\\Sigma, \\epsilon_F)$\n2077: \n2078: and **not** on $N$, the swarm state $S$, or the viscous coupling strength $\\nu$ (which can be arbitrarily large).\n2079: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 11,
+        "chapter_file": "chapter_11.json",
+        "section_id": "## 8. The Logarithmic Sobolev Inequality: A Conjectured Strengthening"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-qsd-existence",
+      "title": "Existence and Uniqueness of the QSD",
+      "start_line": 2346,
+      "end_line": 2359,
+      "header_lines": [
+        2347
+      ],
+      "content_start": 2349,
+      "content_end": 2358,
+      "content": "2349: :label: thm-qsd-existence\n2350: \n2351: The Geometric Viscous Fluid Model, composed with the cloning operator $\\Psi_{\\text{clone}}$, admits a unique Quasi-Stationary Distribution (QSD) $\\pi_{\\text{QSD}}$ on the phase space $\\mathcal{X} \\times \\mathbb{R}^d$.\n2352: \n2353: Moreover, for any initial distribution $\\mu_0$, the law of the swarm at time $t$ converges exponentially fast to $\\pi_{\\text{QSD}}$ in total variation:\n2354: \n2355: $$\n2356: \\|\\mu_t - \\pi_{\\text{QSD}}\\|_{\\text{TV}} \\le C_{\\text{TV}} (1 - \\kappa_{\\text{total}})^t\n2357: \n2358: $$",
+      "metadata": {
+        "label": "thm-qsd-existence"
+      },
+      "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "raw_directive": "2346: ### 9.1. Theorem: Geometric Ergodicity and the QSD\n2347: \n2348: :::{prf:theorem} Existence and Uniqueness of the QSD\n2349: :label: thm-qsd-existence\n2350: \n2351: The Geometric Viscous Fluid Model, composed with the cloning operator $\\Psi_{\\text{clone}}$, admits a unique Quasi-Stationary Distribution (QSD) $\\pi_{\\text{QSD}}$ on the phase space $\\mathcal{X} \\times \\mathbb{R}^d$.\n2352: \n2353: Moreover, for any initial distribution $\\mu_0$, the law of the swarm at time $t$ converges exponentially fast to $\\pi_{\\text{QSD}}$ in total variation:\n2354: \n2355: $$\n2356: \\|\\mu_t - \\pi_{\\text{QSD}}\\|_{\\text{TV}} \\le C_{\\text{TV}} (1 - \\kappa_{\\text{total}})^t\n2357: \n2358: $$\n2359: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 12,
+        "chapter_file": "chapter_12.json",
+        "section_id": "## 9. Main Convergence Theorems and Physical Interpretation"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-lsi-mean-field",
+      "title": "Logarithmic Sobolev Inequality for the Mean-Field Generator",
+      "start_line": 2461,
+      "end_line": 2476,
+      "header_lines": [
+        2462
+      ],
+      "content_start": 2464,
+      "content_end": 2475,
+      "content": "2464: :label: thm-lsi-mean-field\n2465: \n2466: For the mean-field limit of the Geometric Viscous Fluid Model (as $N \\to \\infty$), the mean-field generator $\\mathcal{L}_{\\text{MF}}$ satisfies a logarithmic Sobolev inequality with respect to its unique stationary state $\\rho_{\\text{QSD}}$. There exists a constant $\\lambda_{\\text{LSI}} > 0$ such that for all probability densities $f \\in H^1_w(\\mathcal{X} \\times \\mathbb{R}^d)$:\n2467: \n2468: $$\n2469: \\text{Ent}_{\\rho_{\\text{QSD}}}(f) \\le \\frac{1}{2\\lambda_{\\text{LSI}}} D(f)\n2470: \n2471: $$\n2472: \n2473: where:\n2474: - $\\text{Ent}_{\\rho}(f) := \\int f \\log(f / \\rho) \\, dx \\, dv$ is the relative entropy.\n2475: - $D(f) := -\\int (\\mathcal{L}_{\\text{MF}} f) \\log(f / \\rho_{\\text{QSD}}) \\, dx \\, dv$ is the entropy dissipation (Fisher information).",
+      "metadata": {
+        "label": "thm-lsi-mean-field"
+      },
+      "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "raw_directive": "2461: The natural next question is: **Does the LSI survive in the mean-field limit as $N \\to \\infty$?** This section discusses this open problem.\n2462: \n2463: :::{prf:theorem} Logarithmic Sobolev Inequality for the Mean-Field Generator\n2464: :label: thm-lsi-mean-field\n2465: \n2466: For the mean-field limit of the Geometric Viscous Fluid Model (as $N \\to \\infty$), the mean-field generator $\\mathcal{L}_{\\text{MF}}$ satisfies a logarithmic Sobolev inequality with respect to its unique stationary state $\\rho_{\\text{QSD}}$. There exists a constant $\\lambda_{\\text{LSI}} > 0$ such that for all probability densities $f \\in H^1_w(\\mathcal{X} \\times \\mathbb{R}^d)$:\n2467: \n2468: $$\n2469: \\text{Ent}_{\\rho_{\\text{QSD}}}(f) \\le \\frac{1}{2\\lambda_{\\text{LSI}}} D(f)\n2470: \n2471: $$\n2472: \n2473: where:\n2474: - $\\text{Ent}_{\\rho}(f) := \\int f \\log(f / \\rho) \\, dx \\, dv$ is the relative entropy.\n2475: - $D(f) := -\\int (\\mathcal{L}_{\\text{MF}} f) \\log(f / \\rho_{\\text{QSD}}) \\, dx \\, dv$ is the entropy dissipation (Fisher information).\n2476: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 12,
+        "chapter_file": "chapter_12.json",
+        "section_id": "## 9. Main Convergence Theorems and Physical Interpretation"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-c1-regularity",
+      "title": "C¹ Regularity and k-Uniform Gradient Bound",
+      "start_line": 3271,
+      "end_line": 3375,
+      "header_lines": [
+        3272
+      ],
+      "content_start": 3274,
+      "content_end": 3374,
+      "content": "3274: :label: thm-c1-regularity\n3275: \n3276: The ρ-localized fitness potential $V_{\\text{fit}}[f_k, \\rho](x_i) = g_A(Z_\\rho[f_k, d, x_i])$ is C¹ in $x_i$ with gradient satisfying:\n3277: \n3278: $$\n3279: \\|\\nabla_{x_i} V_{\\text{fit}}[f_k, \\rho](x_i)\\| \\le F_{\\text{adapt,max}}(\\rho)\n3280: \n3281: $$\n3282: \n3283: where:\n3284: \n3285: $$\n3286: F_{\\text{adapt,max}}(\\rho) = L_{g_A} \\cdot \\left[ \\frac{2d'_{\\max}}{\\sigma\\'_{\\min}} \\left(1 + \\frac{2d_{\\max} C_{\\nabla K}(\\rho)}{\\rho d'_{\\max}}\\right) + \\frac{4d_{\\max}^2 L_{\\sigma\\'_{\\text{reg}}}}{\\sigma'^2_{\\min,\\text{bound}}} \\cdot C_{\\mu,V}(\\rho) \\right]\n3287: \n3288: $$\n3289: \n3290: with the **N-uniform** bound on variance derivative:\n3291: \n3292: $$\n3293: C_{\\mu,V}(\\rho) = 2d'_{\\max} \\left(d_{\\max} + d'_{\\max}\\right) + 4d_{\\max}^2 \\frac{C_{\\nabla K}(\\rho)}{\\rho}\n3294: \n3295: $$\n3296: \n3297: **Proof:**\n3298: \n3299: **Step 1: Chain Rule Decomposition.**\n3300: \n3301: By the chain rule:\n3302: \n3303: $$\n3304: \\nabla_{x_i} V_{\\text{fit}}^{(i)} = g'_A(Z_\\rho^{(i)}) \\cdot \\nabla_{x_i} Z_\\rho^{(i)}\n3305: \n3306: $$\n3307: \n3308: **Step 2: Gradient of the Z-Score.**\n3309: \n3310: The Z-score is $Z_\\rho^{(i)} = (d(x_i) - \\mu_\\rho^{(i)}) / \\sigma'_\\rho^{(i)}$. By the quotient rule:\n3311: \n3312: $$\n3313: \\nabla_{x_i} Z_\\rho^{(i)} = \\frac{1}{\\sigma'_\\rho^{(i)}} \\left[ \\nabla_{x_i} d(x_i) - \\nabla_{x_i} \\mu_\\rho^{(i)} \\right] - \\frac{d(x_i) - \\mu_\\rho^{(i)}}{(\\sigma'_\\rho^{(i)})^2} \\nabla_{x_i} \\sigma'_\\rho^{(i)}\n3314: \n3315: $$\n3316: \n3317: **Step 3: Gradient of the Regularized Standard Deviation.**\n3318: \n3319: The regularized standard deviation is $\\sigma'_\\rho^{(i)} = \\sigma\\'_{\\text{reg}}(V_\\rho^{(i)})$. By the chain rule:\n3320: \n3321: $$\n3322: \\nabla_{x_i} \\sigma'_\\rho^{(i)} = (\\sigma\\'_{\\text{reg}})'(V_\\rho^{(i)}) \\cdot \\nabla_{x_i} V_\\rho^{(i)}\n3323: \n3324: $$\n3325: \n3326: where $|(\\sigma\\'_{\\text{reg}})'(V)| \\le L_{\\sigma\\'_{\\text{reg}}}$ is the global Lipschitz constant from `01_fractal_gas_framework.md`.\n3327: \n3328: **Step 4: k-Uniform Gradient of the Localized Variance.**\n3329: \n3330: The variance is $V_\\rho^{(i)} = \\sum_{j \\in A_k} w_{ij} d(x_j)^2 - (\\mu_\\rho^{(i)})^2$. Differentiating:\n3331: \n3332: $$\n3333: \\nabla_{x_i} V_\\rho^{(i)} = 2d(x_i) \\nabla_{x_i} d(x_i) \\cdot w_{ii} + \\sum_{j \\in A_k} d(x_j)^2 \\nabla_{x_i} w_{ij} - 2\\mu_\\rho^{(i)} \\nabla_{x_i} \\mu_\\rho^{(i)}\n3334: \n3335: $$\n3336: \n3337: Applying the **telescoping property** $\\sum_{j \\in A_k} \\nabla w_{ij} = 0$:\n3338: \n3339: $$\n3340: \\sum_{j \\in A_k} d(x_j)^2 \\nabla w_{ij} = \\sum_{j \\in A_k} [d(x_j)^2 - (\\mu_\\rho^{(i)})^2] \\nabla w_{ij}\n3341: \n3342: $$\n3343: \n3344: For alive walkers in the ρ-neighborhood, $|d(x_j)| \\le d_{\\max}$, so $|d(x_j)^2 - (\\mu_\\rho^{(i)})^2| \\le 2d_{\\max}^2$. Using the **k-uniform bound** on $\\|\\nabla w_{ij}\\|$ and only $k_{\\text{eff}}(\\rho) = O(1)$ contributing:\n3345: \n3346: $$\n3347: \\left\\|\\sum_{j \\in A_k} [d(x_j)^2 - (\\mu_\\rho^{(i)})^2] \\nabla w_{ij}\\right\\| \\le 2d_{\\max}^2 \\cdot \\frac{2C_{\\nabla K}(\\rho)}{\\rho} \\cdot k_{\\text{eff}} \\le \\frac{4d_{\\max}^2 C_{\\nabla K}(\\rho)}{\\rho}\n3348: \n3349: $$\n3350: \n3351: Similarly, using Lemma {prf:ref}`lem-mean-first-derivative`:\n3352: \n3353: $$\n3354: \\|\\nabla_{x_i} V_\\rho^{(i)}\\| \\le 2d_{\\max} d'_{\\max} + \\frac{4d_{\\max}^2 C_{\\nabla K}(\\rho)}{\\rho} + 2d_{\\max} \\left(d'_{\\max} + \\frac{4d_{\\max} C_{\\nabla K}}{\\rho}\\right) = C_{\\mu,V}(\\rho)\n3355: \n3356: $$\n3357: \n3358: which is **uniform in k** (and thus in N).\n3359: \n3360: **Step 5: Combining the k-Uniform Bounds.**\n3361: \n3362: Substituting back into Step 2 using the k-uniform bounds from Lemma {prf:ref}`lem-mean-first-derivative`:\n3363: \n3364: $$\n3365: \\|\\nabla_{x_i} Z_\\rho^{(i)}\\| \\le \\frac{1}{\\sigma\\'_{\\min}} \\left[ d'_{\\max} + d'_{\\max} + \\frac{4d_{\\max} C_{\\nabla K}}{\\rho} \\right] + \\frac{2d_{\\max}}{\\sigma'^2_{\\min,\\text{bound}}} L_{\\sigma\\'_{\\text{reg}}} C_{\\mu,V}(\\rho)\n3366: \n3367: $$\n3368: \n3369: Finally, from Step 1:\n3370: \n3371: $$\n3372: \\|\\nabla_{x_i} V_{\\text{fit}}^{(i)}\\| \\le L_{g_A} \\cdot \\|\\nabla Z_\\rho\\|\n3373: \n3374: $$",
+      "metadata": {
+        "label": "thm-c1-regularity"
+      },
+      "section": "## Appendix A: Regularity of the ρ-Localized Fitness Potential",
+      "raw_directive": "3271: ### A.3. Theorem A.1: Uniform C¹ Bound on the Fitness Potential\n3272: \n3273: :::{prf:theorem} C¹ Regularity and k-Uniform Gradient Bound\n3274: :label: thm-c1-regularity\n3275: \n3276: The ρ-localized fitness potential $V_{\\text{fit}}[f_k, \\rho](x_i) = g_A(Z_\\rho[f_k, d, x_i])$ is C¹ in $x_i$ with gradient satisfying:\n3277: \n3278: $$\n3279: \\|\\nabla_{x_i} V_{\\text{fit}}[f_k, \\rho](x_i)\\| \\le F_{\\text{adapt,max}}(\\rho)\n3280: \n3281: $$\n3282: \n3283: where:\n3284: \n3285: $$\n3286: F_{\\text{adapt,max}}(\\rho) = L_{g_A} \\cdot \\left[ \\frac{2d'_{\\max}}{\\sigma\\'_{\\min}} \\left(1 + \\frac{2d_{\\max} C_{\\nabla K}(\\rho)}{\\rho d'_{\\max}}\\right) + \\frac{4d_{\\max}^2 L_{\\sigma\\'_{\\text{reg}}}}{\\sigma'^2_{\\min,\\text{bound}}} \\cdot C_{\\mu,V}(\\rho) \\right]\n3287: \n3288: $$\n3289: \n3290: with the **N-uniform** bound on variance derivative:\n3291: \n3292: $$\n3293: C_{\\mu,V}(\\rho) = 2d'_{\\max} \\left(d_{\\max} + d'_{\\max}\\right) + 4d_{\\max}^2 \\frac{C_{\\nabla K}(\\rho)}{\\rho}\n3294: \n3295: $$\n3296: \n3297: **Proof:**\n3298: \n3299: **Step 1: Chain Rule Decomposition.**\n3300: \n3301: By the chain rule:\n3302: \n3303: $$\n3304: \\nabla_{x_i} V_{\\text{fit}}^{(i)} = g'_A(Z_\\rho^{(i)}) \\cdot \\nabla_{x_i} Z_\\rho^{(i)}\n3305: \n3306: $$\n3307: \n3308: **Step 2: Gradient of the Z-Score.**\n3309: \n3310: The Z-score is $Z_\\rho^{(i)} = (d(x_i) - \\mu_\\rho^{(i)}) / \\sigma'_\\rho^{(i)}$. By the quotient rule:\n3311: \n3312: $$\n3313: \\nabla_{x_i} Z_\\rho^{(i)} = \\frac{1}{\\sigma'_\\rho^{(i)}} \\left[ \\nabla_{x_i} d(x_i) - \\nabla_{x_i} \\mu_\\rho^{(i)} \\right] - \\frac{d(x_i) - \\mu_\\rho^{(i)}}{(\\sigma'_\\rho^{(i)})^2} \\nabla_{x_i} \\sigma'_\\rho^{(i)}\n3314: \n3315: $$\n3316: \n3317: **Step 3: Gradient of the Regularized Standard Deviation.**\n3318: \n3319: The regularized standard deviation is $\\sigma'_\\rho^{(i)} = \\sigma\\'_{\\text{reg}}(V_\\rho^{(i)})$. By the chain rule:\n3320: \n3321: $$\n3322: \\nabla_{x_i} \\sigma'_\\rho^{(i)} = (\\sigma\\'_{\\text{reg}})'(V_\\rho^{(i)}) \\cdot \\nabla_{x_i} V_\\rho^{(i)}\n3323: \n3324: $$\n3325: \n3326: where $|(\\sigma\\'_{\\text{reg}})'(V)| \\le L_{\\sigma\\'_{\\text{reg}}}$ is the global Lipschitz constant from `01_fractal_gas_framework.md`.\n3327: \n3328: **Step 4: k-Uniform Gradient of the Localized Variance.**\n3329: \n3330: The variance is $V_\\rho^{(i)} = \\sum_{j \\in A_k} w_{ij} d(x_j)^2 - (\\mu_\\rho^{(i)})^2$. Differentiating:\n3331: \n3332: $$\n3333: \\nabla_{x_i} V_\\rho^{(i)} = 2d(x_i) \\nabla_{x_i} d(x_i) \\cdot w_{ii} + \\sum_{j \\in A_k} d(x_j)^2 \\nabla_{x_i} w_{ij} - 2\\mu_\\rho^{(i)} \\nabla_{x_i} \\mu_\\rho^{(i)}\n3334: \n3335: $$\n3336: \n3337: Applying the **telescoping property** $\\sum_{j \\in A_k} \\nabla w_{ij} = 0$:\n3338: \n3339: $$\n3340: \\sum_{j \\in A_k} d(x_j)^2 \\nabla w_{ij} = \\sum_{j \\in A_k} [d(x_j)^2 - (\\mu_\\rho^{(i)})^2] \\nabla w_{ij}\n3341: \n3342: $$\n3343: \n3344: For alive walkers in the ρ-neighborhood, $|d(x_j)| \\le d_{\\max}$, so $|d(x_j)^2 - (\\mu_\\rho^{(i)})^2| \\le 2d_{\\max}^2$. Using the **k-uniform bound** on $\\|\\nabla w_{ij}\\|$ and only $k_{\\text{eff}}(\\rho) = O(1)$ contributing:\n3345: \n3346: $$\n3347: \\left\\|\\sum_{j \\in A_k} [d(x_j)^2 - (\\mu_\\rho^{(i)})^2] \\nabla w_{ij}\\right\\| \\le 2d_{\\max}^2 \\cdot \\frac{2C_{\\nabla K}(\\rho)}{\\rho} \\cdot k_{\\text{eff}} \\le \\frac{4d_{\\max}^2 C_{\\nabla K}(\\rho)}{\\rho}\n3348: \n3349: $$\n3350: \n3351: Similarly, using Lemma {prf:ref}`lem-mean-first-derivative`:\n3352: \n3353: $$\n3354: \\|\\nabla_{x_i} V_\\rho^{(i)}\\| \\le 2d_{\\max} d'_{\\max} + \\frac{4d_{\\max}^2 C_{\\nabla K}(\\rho)}{\\rho} + 2d_{\\max} \\left(d'_{\\max} + \\frac{4d_{\\max} C_{\\nabla K}}{\\rho}\\right) = C_{\\mu,V}(\\rho)\n3355: \n3356: $$\n3357: \n3358: which is **uniform in k** (and thus in N).\n3359: \n3360: **Step 5: Combining the k-Uniform Bounds.**\n3361: \n3362: Substituting back into Step 2 using the k-uniform bounds from Lemma {prf:ref}`lem-mean-first-derivative`:\n3363: \n3364: $$\n3365: \\|\\nabla_{x_i} Z_\\rho^{(i)}\\| \\le \\frac{1}{\\sigma\\'_{\\min}} \\left[ d'_{\\max} + d'_{\\max} + \\frac{4d_{\\max} C_{\\nabla K}}{\\rho} \\right] + \\frac{2d_{\\max}}{\\sigma'^2_{\\min,\\text{bound}}} L_{\\sigma\\'_{\\text{reg}}} C_{\\mu,V}(\\rho)\n3366: \n3367: $$\n3368: \n3369: Finally, from Step 1:\n3370: \n3371: $$\n3372: \\|\\nabla_{x_i} V_{\\text{fit}}^{(i)}\\| \\le L_{g_A} \\cdot \\|\\nabla Z_\\rho\\|\n3373: \n3374: $$\n3375: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 14,
+        "chapter_file": "chapter_14.json",
+        "section_id": "## Appendix A: Regularity of the ρ-Localized Fitness Potential"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-c2-regularity",
+      "title": "C² Regularity and k-Uniform Hessian Bound",
+      "start_line": 3396,
+      "end_line": 3505,
+      "header_lines": [
+        3397
+      ],
+      "content_start": 3399,
+      "content_end": 3504,
+      "content": "3399: :label: thm-c2-regularity\n3400: \n3401: The ρ-localized fitness potential $V_{\\text{fit}}[f_k, \\rho](x_i)$ is C² in $x_i$ with Hessian satisfying:\n3402: \n3403: $$\n3404: \\|\\nabla^2_{x_i} V_{\\text{fit}}[f_k, \\rho](x_i)\\| \\le H_{\\max}(\\rho)\n3405: \n3406: $$\n3407: \n3408: where $H_{\\max}(\\rho)$ is a **k-uniform** (and thus **N-uniform**) ρ-dependent constant given by:\n3409: \n3410: $$\n3411: H_{\\max}(\\rho) = L_{g''_A} \\|\\nabla Z_\\rho\\|^2_{\\max}(\\rho) + L_{g_A} \\|\\nabla^2 Z_\\rho\\|_{\\max}(\\rho)\n3412: \n3413: $$\n3414: \n3415: with:\n3416: - $\\|\\nabla Z_\\rho\\|_{\\max}(\\rho) = F_{\\text{adapt,max}}(\\rho) / L_{g_A}$ from Theorem {prf:ref}`thm-c1-regularity` (k-uniform)\n3417: - $\\|\\nabla^2 Z_\\rho\\|_{\\max}(\\rho)$ is the **k-uniform** bound on the Hessian of the Z-score (derived below)\n3418: \n3419: **k-Uniform Explicit Bound:** For the Gaussian kernel with bounded measurements, using the **telescoping property** of normalized weights over alive walkers, $H_{\\max}(\\rho) = O(1/\\rho^2)$ and is **independent of k** (and thus of N).\n3420: \n3421: **Proof:**\n3422: \n3423: **Step 1: Second Chain Rule Application.**\n3424: \n3425: Differentiating $\\nabla V_{\\text{fit}} = g'_A(Z_\\rho) \\nabla Z_\\rho$ using the product rule:\n3426: \n3427: $$\n3428: \\nabla^2 V_{\\text{fit}} = g''_A(Z_\\rho) (\\nabla Z_\\rho) \\otimes (\\nabla Z_\\rho) + g'_A(Z_\\rho) \\nabla^2 Z_\\rho\n3429: \n3430: $$\n3431: \n3432: **Step 2: Hessian of the Z-Score (The Technical Core).**\n3433: \n3434: This is the most technically demanding part. The Z-score is $Z_\\rho = (d(x_i) - \\mu_\\rho) / \\sigma'_\\rho$. Differentiating the quotient rule expression from Theorem {prf:ref}`thm-c1-regularity`:\n3435: \n3436: $$\n3437: \\begin{aligned}\n3438: \\nabla^2 Z_\\rho &= \\frac{1}{\\sigma'_\\rho} \\left[ \\nabla^2 d(x_i) - \\nabla^2 \\mu_\\rho \\right] \\\\\n3439: &\\quad - \\frac{1}{(\\sigma'_\\rho)^2} \\left[ (\\nabla d - \\nabla \\mu_\\rho) \\otimes \\nabla \\sigma'_\\rho + \\nabla \\sigma'_\\rho \\otimes (\\nabla d - \\nabla \\mu_\\rho) \\right] \\\\\n3440: &\\quad - \\frac{d(x_i) - \\mu_\\rho}{(\\sigma'_\\rho)^2} \\nabla^2 \\sigma'_\\rho \\\\\n3441: &\\quad + \\frac{2(d(x_i) - \\mu_\\rho)}{(\\sigma'_\\rho)^3} \\nabla \\sigma'_\\rho \\otimes \\nabla \\sigma'_\\rho\n3442: \\end{aligned}\n3443: \n3444: $$\n3445: \n3446: **Step 3: Hessian of the Regularized Standard Deviation.**\n3447: \n3448: $$\n3449: \\nabla^2 \\sigma'_\\rho = (\\sigma\\'_{\\text{reg}})''(V_\\rho) (\\nabla V_\\rho) \\otimes (\\nabla V_\\rho) + (\\sigma\\'_{\\text{reg}})'(V_\\rho) \\nabla^2 V_\\rho\n3450: \n3451: $$\n3452: \n3453: where $|(\\sigma\\'_{\\text{reg}})''(V)| \\le L_{\\sigma''_{\\text{patch}}}$ (bounded by the properties of the cubic polynomial patch).\n3454: \n3455: **Step 4: k-Uniform Hessian of the Localized Variance.**\n3456: \n3457: Differentiating $\\nabla V_\\rho = 2d(x_i) \\nabla d(x_i) w_{ii} + \\sum_{j \\in A_k} d(x_j)^2 \\nabla w_{ij} - 2\\mu_\\rho \\nabla \\mu_\\rho$:\n3458: \n3459: $$\n3460: \\begin{aligned}\n3461: \\nabla^2 V_\\rho &= 2(\\nabla d) \\otimes (\\nabla d) w_{ii} + 2d(x_i) \\nabla^2 d(x_i) w_{ii} + 4d(x_i) (\\nabla d) \\otimes (\\nabla w_{ii}) \\\\\n3462: &\\quad + \\sum_{j \\in A_k} d(x_j)^2 \\nabla^2 w_{ij} - 2(\\nabla \\mu_\\rho) \\otimes (\\nabla \\mu_\\rho) - 2\\mu_\\rho \\nabla^2 \\mu_\\rho\n3463: \\end{aligned}\n3464: \n3465: $$\n3466: \n3467: **Key k-Uniformity Step:** Apply the **telescoping property** $\\sum_{j \\in A_k} \\nabla^2 w_{ij} = 0$ to the sum:\n3468: \n3469: $$\n3470: \\sum_{j \\in A_k} d(x_j)^2 \\nabla^2 w_{ij} = \\sum_{j \\in A_k} [d(x_j)^2 - (\\mu_\\rho^{(i)})^2] \\nabla^2 w_{ij}\n3471: \n3472: $$\n3473: \n3474: For alive walkers in the ρ-neighborhood, $|d(x_j)^2 - (\\mu_\\rho^{(i)})^2| \\le 2d_{\\max}^2$. Using $\\|\\nabla^2 w_{ij}\\| \\le C_w(\\rho) = O(1/\\rho^2)$ and only $k_{\\text{eff}}(\\rho) = O(1)$ alive walkers contributing:\n3475: \n3476: $$\n3477: \\left\\|\\sum_{j \\in A_k} [d(x_j)^2 - (\\mu_\\rho^{(i)})^2] \\nabla^2 w_{ij}\\right\\| \\le 2d_{\\max}^2 \\cdot C_w(\\rho) \\cdot k_{\\text{eff}} = O\\left(\\frac{d_{\\max}^2}{\\rho^2}\\right)\n3478: \n3479: $$\n3480: \n3481: Applying the **k-uniform bounds** from Lemmas {prf:ref}`lem-mean-first-derivative` and {prf:ref}`lem-mean-second-derivative`:\n3482: \n3483: $$\n3484: \\|\\nabla^2 V_\\rho\\| \\le C_{\\mu^2,V}(\\rho) := 2d'^2_{\\max} + 2d_{\\max} d''_{\\max} + \\frac{8d_{\\max} d'_{\\max} C_{\\nabla K}}{\\rho} + \\frac{2d^2_{\\max} C_w(\\rho)}{\\rho^2} + C_{\\text{product terms}}\n3485: \n3486: $$\n3487: \n3488: where $C_{\\text{product terms}} = O(1/\\rho)$ involves **k-uniform** products of $\\nabla \\mu_\\rho$ and $\\nabla^2 \\mu_\\rho$. The bound is **uniform in k** (and thus in N) with $C_{\\mu^2,V}(\\rho) = O(1/\\rho^2)$.\n3489: \n3490: **Step 5: Assembling the k-Uniform Bounds.**\n3491: \n3492: Substituting the **k-uniform bounds** from Steps 3 and 4 into Step 2, and then into Step 1, yields:\n3493: \n3494: $$\n3495: \\|\\nabla^2 V_{\\text{fit}}\\| \\le L_{g''_A} \\|\\nabla Z_\\rho\\|^2 + L_{g_A} \\|\\nabla^2 Z_\\rho\\|\n3496: \n3497: $$\n3498: \n3499: Using the k-uniform bounds on $\\nabla Z_\\rho$ (Theorem {prf:ref}`thm-c1-regularity`) and the analysis above showing $\\|\\nabla^2 Z_\\rho\\| = O(1/\\rho^2)$ uniformly in k and N:\n3500: \n3501: $$\n3502: H_{\\max}(\\rho) \\le C_H \\left( \\frac{1}{\\sigma'^2_{\\min} \\rho^2} + \\frac{1}{\\sigma'_{\\min} \\rho^2} \\right) = O\\left(\\frac{1}{\\rho^2}\\right)\n3503: \n3504: $$",
+      "metadata": {
+        "label": "thm-c2-regularity"
+      },
+      "section": "## Appendix A: Regularity of the ρ-Localized Fitness Potential",
+      "raw_directive": "3396: ### A.4. Theorem A.2: Uniform C² Bound on the Fitness Potential\n3397: \n3398: :::{prf:theorem} C² Regularity and k-Uniform Hessian Bound\n3399: :label: thm-c2-regularity\n3400: \n3401: The ρ-localized fitness potential $V_{\\text{fit}}[f_k, \\rho](x_i)$ is C² in $x_i$ with Hessian satisfying:\n3402: \n3403: $$\n3404: \\|\\nabla^2_{x_i} V_{\\text{fit}}[f_k, \\rho](x_i)\\| \\le H_{\\max}(\\rho)\n3405: \n3406: $$\n3407: \n3408: where $H_{\\max}(\\rho)$ is a **k-uniform** (and thus **N-uniform**) ρ-dependent constant given by:\n3409: \n3410: $$\n3411: H_{\\max}(\\rho) = L_{g''_A} \\|\\nabla Z_\\rho\\|^2_{\\max}(\\rho) + L_{g_A} \\|\\nabla^2 Z_\\rho\\|_{\\max}(\\rho)\n3412: \n3413: $$\n3414: \n3415: with:\n3416: - $\\|\\nabla Z_\\rho\\|_{\\max}(\\rho) = F_{\\text{adapt,max}}(\\rho) / L_{g_A}$ from Theorem {prf:ref}`thm-c1-regularity` (k-uniform)\n3417: - $\\|\\nabla^2 Z_\\rho\\|_{\\max}(\\rho)$ is the **k-uniform** bound on the Hessian of the Z-score (derived below)\n3418: \n3419: **k-Uniform Explicit Bound:** For the Gaussian kernel with bounded measurements, using the **telescoping property** of normalized weights over alive walkers, $H_{\\max}(\\rho) = O(1/\\rho^2)$ and is **independent of k** (and thus of N).\n3420: \n3421: **Proof:**\n3422: \n3423: **Step 1: Second Chain Rule Application.**\n3424: \n3425: Differentiating $\\nabla V_{\\text{fit}} = g'_A(Z_\\rho) \\nabla Z_\\rho$ using the product rule:\n3426: \n3427: $$\n3428: \\nabla^2 V_{\\text{fit}} = g''_A(Z_\\rho) (\\nabla Z_\\rho) \\otimes (\\nabla Z_\\rho) + g'_A(Z_\\rho) \\nabla^2 Z_\\rho\n3429: \n3430: $$\n3431: \n3432: **Step 2: Hessian of the Z-Score (The Technical Core).**\n3433: \n3434: This is the most technically demanding part. The Z-score is $Z_\\rho = (d(x_i) - \\mu_\\rho) / \\sigma'_\\rho$. Differentiating the quotient rule expression from Theorem {prf:ref}`thm-c1-regularity`:\n3435: \n3436: $$\n3437: \\begin{aligned}\n3438: \\nabla^2 Z_\\rho &= \\frac{1}{\\sigma'_\\rho} \\left[ \\nabla^2 d(x_i) - \\nabla^2 \\mu_\\rho \\right] \\\\\n3439: &\\quad - \\frac{1}{(\\sigma'_\\rho)^2} \\left[ (\\nabla d - \\nabla \\mu_\\rho) \\otimes \\nabla \\sigma'_\\rho + \\nabla \\sigma'_\\rho \\otimes (\\nabla d - \\nabla \\mu_\\rho) \\right] \\\\\n3440: &\\quad - \\frac{d(x_i) - \\mu_\\rho}{(\\sigma'_\\rho)^2} \\nabla^2 \\sigma'_\\rho \\\\\n3441: &\\quad + \\frac{2(d(x_i) - \\mu_\\rho)}{(\\sigma'_\\rho)^3} \\nabla \\sigma'_\\rho \\otimes \\nabla \\sigma'_\\rho\n3442: \\end{aligned}\n3443: \n3444: $$\n3445: \n3446: **Step 3: Hessian of the Regularized Standard Deviation.**\n3447: \n3448: $$\n3449: \\nabla^2 \\sigma'_\\rho = (\\sigma\\'_{\\text{reg}})''(V_\\rho) (\\nabla V_\\rho) \\otimes (\\nabla V_\\rho) + (\\sigma\\'_{\\text{reg}})'(V_\\rho) \\nabla^2 V_\\rho\n3450: \n3451: $$\n3452: \n3453: where $|(\\sigma\\'_{\\text{reg}})''(V)| \\le L_{\\sigma''_{\\text{patch}}}$ (bounded by the properties of the cubic polynomial patch).\n3454: \n3455: **Step 4: k-Uniform Hessian of the Localized Variance.**\n3456: \n3457: Differentiating $\\nabla V_\\rho = 2d(x_i) \\nabla d(x_i) w_{ii} + \\sum_{j \\in A_k} d(x_j)^2 \\nabla w_{ij} - 2\\mu_\\rho \\nabla \\mu_\\rho$:\n3458: \n3459: $$\n3460: \\begin{aligned}\n3461: \\nabla^2 V_\\rho &= 2(\\nabla d) \\otimes (\\nabla d) w_{ii} + 2d(x_i) \\nabla^2 d(x_i) w_{ii} + 4d(x_i) (\\nabla d) \\otimes (\\nabla w_{ii}) \\\\\n3462: &\\quad + \\sum_{j \\in A_k} d(x_j)^2 \\nabla^2 w_{ij} - 2(\\nabla \\mu_\\rho) \\otimes (\\nabla \\mu_\\rho) - 2\\mu_\\rho \\nabla^2 \\mu_\\rho\n3463: \\end{aligned}\n3464: \n3465: $$\n3466: \n3467: **Key k-Uniformity Step:** Apply the **telescoping property** $\\sum_{j \\in A_k} \\nabla^2 w_{ij} = 0$ to the sum:\n3468: \n3469: $$\n3470: \\sum_{j \\in A_k} d(x_j)^2 \\nabla^2 w_{ij} = \\sum_{j \\in A_k} [d(x_j)^2 - (\\mu_\\rho^{(i)})^2] \\nabla^2 w_{ij}\n3471: \n3472: $$\n3473: \n3474: For alive walkers in the ρ-neighborhood, $|d(x_j)^2 - (\\mu_\\rho^{(i)})^2| \\le 2d_{\\max}^2$. Using $\\|\\nabla^2 w_{ij}\\| \\le C_w(\\rho) = O(1/\\rho^2)$ and only $k_{\\text{eff}}(\\rho) = O(1)$ alive walkers contributing:\n3475: \n3476: $$\n3477: \\left\\|\\sum_{j \\in A_k} [d(x_j)^2 - (\\mu_\\rho^{(i)})^2] \\nabla^2 w_{ij}\\right\\| \\le 2d_{\\max}^2 \\cdot C_w(\\rho) \\cdot k_{\\text{eff}} = O\\left(\\frac{d_{\\max}^2}{\\rho^2}\\right)\n3478: \n3479: $$\n3480: \n3481: Applying the **k-uniform bounds** from Lemmas {prf:ref}`lem-mean-first-derivative` and {prf:ref}`lem-mean-second-derivative`:\n3482: \n3483: $$\n3484: \\|\\nabla^2 V_\\rho\\| \\le C_{\\mu^2,V}(\\rho) := 2d'^2_{\\max} + 2d_{\\max} d''_{\\max} + \\frac{8d_{\\max} d'_{\\max} C_{\\nabla K}}{\\rho} + \\frac{2d^2_{\\max} C_w(\\rho)}{\\rho^2} + C_{\\text{product terms}}\n3485: \n3486: $$\n3487: \n3488: where $C_{\\text{product terms}} = O(1/\\rho)$ involves **k-uniform** products of $\\nabla \\mu_\\rho$ and $\\nabla^2 \\mu_\\rho$. The bound is **uniform in k** (and thus in N) with $C_{\\mu^2,V}(\\rho) = O(1/\\rho^2)$.\n3489: \n3490: **Step 5: Assembling the k-Uniform Bounds.**\n3491: \n3492: Substituting the **k-uniform bounds** from Steps 3 and 4 into Step 2, and then into Step 1, yields:\n3493: \n3494: $$\n3495: \\|\\nabla^2 V_{\\text{fit}}\\| \\le L_{g''_A} \\|\\nabla Z_\\rho\\|^2 + L_{g_A} \\|\\nabla^2 Z_\\rho\\|\n3496: \n3497: $$\n3498: \n3499: Using the k-uniform bounds on $\\nabla Z_\\rho$ (Theorem {prf:ref}`thm-c1-regularity`) and the analysis above showing $\\|\\nabla^2 Z_\\rho\\| = O(1/\\rho^2)$ uniformly in k and N:\n3500: \n3501: $$\n3502: H_{\\max}(\\rho) \\le C_H \\left( \\frac{1}{\\sigma'^2_{\\min} \\rho^2} + \\frac{1}{\\sigma'_{\\min} \\rho^2} \\right) = O\\left(\\frac{1}{\\rho^2}\\right)\n3503: \n3504: $$\n3505: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 14,
+        "chapter_file": "chapter_14.json",
+        "section_id": "## Appendix A: Regularity of the ρ-Localized Fitness Potential"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-signal-generation-adaptive",
+      "title": "Signal Generation for the Adaptive Model",
+      "start_line": 3602,
+      "end_line": 3622,
+      "header_lines": [
+        3603
+      ],
+      "content_start": 3605,
+      "content_end": 3621,
+      "content": "3605: :label: thm-signal-generation-adaptive\n3606: \n3607: For the adaptive model with ρ-localized measurements, the Signal Generation Hypothesis holds identically to the backbone model:\n3608: \n3609: **Statement:** If the structural variance satisfies $\\text{Var}(x) > R^2$ for sufficiently large $R$, then the raw pairwise distance measurements satisfy:\n3610: \n3611: $$\n3612: \\mathbb{E}[\\text{Var}(d)] > \\kappa_{\\text{meas}} > 0\n3613: \n3614: $$\n3615: \n3616: where $\\kappa_{\\text{meas}}$ is a positive constant independent of $N$, $\\rho$, and the swarm state $S$.\n3617: \n3618: **Proof:** This result follows directly from Theorem 7.2.1 of `03_cloning.md`. The proof relies only on:\n3619: 1. The variance-to-diversity geometric partition (Chapter 6 of `03_cloning.md`)\n3620: 2. The properties of the pairing algorithm\n3621: 3. The raw distance measurements $d_i = \\|x_i - x_{\\text{pair}(i)}\\|$",
+      "metadata": {
+        "label": "thm-signal-generation-adaptive"
+      },
+      "section": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model",
+      "raw_directive": "3602: ### B.2. Hypothesis 1: Signal Generation (Geometry-Based)\n3603: \n3604: :::{prf:theorem} Signal Generation for the Adaptive Model\n3605: :label: thm-signal-generation-adaptive\n3606: \n3607: For the adaptive model with ρ-localized measurements, the Signal Generation Hypothesis holds identically to the backbone model:\n3608: \n3609: **Statement:** If the structural variance satisfies $\\text{Var}(x) > R^2$ for sufficiently large $R$, then the raw pairwise distance measurements satisfy:\n3610: \n3611: $$\n3612: \\mathbb{E}[\\text{Var}(d)] > \\kappa_{\\text{meas}} > 0\n3613: \n3614: $$\n3615: \n3616: where $\\kappa_{\\text{meas}}$ is a positive constant independent of $N$, $\\rho$, and the swarm state $S$.\n3617: \n3618: **Proof:** This result follows directly from Theorem 7.2.1 of `03_cloning.md`. The proof relies only on:\n3619: 1. The variance-to-diversity geometric partition (Chapter 6 of `03_cloning.md`)\n3620: 2. The properties of the pairing algorithm\n3621: 3. The raw distance measurements $d_i = \\|x_i - x_{\\text{pair}(i)}\\|$\n3622: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 15,
+        "chapter_file": "chapter_15.json",
+        "section_id": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-stability-condition-rho",
+      "title": "ρ-Dependent Stability Condition for Intelligent Targeting",
+      "start_line": 4016,
+      "end_line": 4040,
+      "header_lines": [
+        4017
+      ],
+      "content_start": 4019,
+      "content_end": 4039,
+      "content": "4019: :label: thm-stability-condition-rho\n4020: \n4021: For the adaptive model with localization scale ρ > 0, the Intelligent Targeting Hypothesis is satisfied if the system parameters satisfy:\n4022: \n4023: $$\n4024: \\kappa_{d',\\text{mean}}(\\epsilon, \\rho) > \\kappa_{r',\\text{mean,adv}}(\\rho)\n4025: \n4026: $$\n4027: \n4028: This condition ensures that the corrective diversity signal dominates the adversarial reward bias, guaranteeing that high-error walkers are reliably identified as low-fitness.\n4029: \n4030: **Explicit Form:** Substituting the expressions from Propositions {prf:ref}`prop-diversity-signal-rho` and {prf:ref}`prop-reward-bias-rho`:\n4031: \n4032: $$\n4033: \\log g_A\\left( \\frac{\\kappa_{\\text{rescaled}}(\\kappa_{\\text{meas}}, \\rho)}{2} \\right) > \\kappa_{r',\\text{mean,adv}}(\\rho) + \\log(A)\n4034: \n4035: $$\n4036: \n4037: **Interpretation:**\n4038: - The left side is the **corrective signal strength**, which depends on ρ through the signal propagation constant $\\kappa_{\\text{rescaled}}(\\kappa_{\\text{meas}}, \\rho)$\n4039: - The right side is the **adversarial bias**, which also depends on ρ through the local reward statistics",
+      "metadata": {
+        "label": "thm-stability-condition-rho"
+      },
+      "section": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model",
+      "raw_directive": "4016: #### B.4.4. The ρ-Dependent Stability Condition\n4017: \n4018: :::{prf:theorem} ρ-Dependent Stability Condition for Intelligent Targeting\n4019: :label: thm-stability-condition-rho\n4020: \n4021: For the adaptive model with localization scale ρ > 0, the Intelligent Targeting Hypothesis is satisfied if the system parameters satisfy:\n4022: \n4023: $$\n4024: \\kappa_{d',\\text{mean}}(\\epsilon, \\rho) > \\kappa_{r',\\text{mean,adv}}(\\rho)\n4025: \n4026: $$\n4027: \n4028: This condition ensures that the corrective diversity signal dominates the adversarial reward bias, guaranteeing that high-error walkers are reliably identified as low-fitness.\n4029: \n4030: **Explicit Form:** Substituting the expressions from Propositions {prf:ref}`prop-diversity-signal-rho` and {prf:ref}`prop-reward-bias-rho`:\n4031: \n4032: $$\n4033: \\log g_A\\left( \\frac{\\kappa_{\\text{rescaled}}(\\kappa_{\\text{meas}}, \\rho)}{2} \\right) > \\kappa_{r',\\text{mean,adv}}(\\rho) + \\log(A)\n4034: \n4035: $$\n4036: \n4037: **Interpretation:**\n4038: - The left side is the **corrective signal strength**, which depends on ρ through the signal propagation constant $\\kappa_{\\text{rescaled}}(\\kappa_{\\text{meas}}, \\rho)$\n4039: - The right side is the **adversarial bias**, which also depends on ρ through the local reward statistics\n4040: - For any fixed ρ > 0, both sides are finite positive constants",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 15,
+        "chapter_file": "chapter_15.json",
+        "section_id": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-keystone-adaptive",
+      "title": "Keystone Lemma for the ρ-Localized Adaptive Model",
+      "start_line": 4046,
+      "end_line": 4067,
+      "header_lines": [
+        4047
+      ],
+      "content_start": 4049,
+      "content_end": 4066,
+      "content": "4049: :label: thm-keystone-adaptive\n4050: \n4051: For the adaptive model with localization scale ρ > 0 satisfying the ρ-Dependent Stability Condition (Theorem {prf:ref}`thm-stability-condition-rho`), the **N-Uniform Quantitative Keystone Lemma** from `03_cloning.md` (Theorem 8.1) holds:\n4052: \n4053: $$\n4054: \\frac{1}{N} \\sum_{i \\in I_{11}} (p_{1,i} + p_{2,i}) \\|\\Delta \\delta_{x,i}\\|^2 \\ge \\chi(\\epsilon, \\rho) \\cdot V_{\\text{struct}}(S) - g_{\\max}(\\epsilon, \\rho)\n4055: \n4056: $$\n4057: \n4058: where:\n4059: - $\\chi(\\epsilon, \\rho) > 0$ is the **ρ-dependent structural reduction coefficient**\n4060: - $g_{\\max}(\\epsilon, \\rho)$ is the **ρ-dependent geometric negligibility bound**\n4061: - Both constants are uniform in $N$ and depend continuously on ρ\n4062: \n4063: **Proof:** Direct application of Theorem 8.1 from `03_cloning.md`. All three hypotheses have been verified:\n4064: 1. Signal Generation (Theorem {prf:ref}`thm-signal-generation-adaptive`) ✓\n4065: 2. Signal Integrity (Lemma {prf:ref}`lem-raw-to-rescaled-gap-rho`) ✓\n4066: 3. Intelligent Targeting (Theorem {prf:ref}`thm-stability-condition-rho`) ✓",
+      "metadata": {
+        "label": "thm-keystone-adaptive"
+      },
+      "section": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model",
+      "raw_directive": "4046: Having verified all three hypotheses, we can now state the main result of this chapter.\n4047: \n4048: :::{prf:theorem} Keystone Lemma for the ρ-Localized Adaptive Model\n4049: :label: thm-keystone-adaptive\n4050: \n4051: For the adaptive model with localization scale ρ > 0 satisfying the ρ-Dependent Stability Condition (Theorem {prf:ref}`thm-stability-condition-rho`), the **N-Uniform Quantitative Keystone Lemma** from `03_cloning.md` (Theorem 8.1) holds:\n4052: \n4053: $$\n4054: \\frac{1}{N} \\sum_{i \\in I_{11}} (p_{1,i} + p_{2,i}) \\|\\Delta \\delta_{x,i}\\|^2 \\ge \\chi(\\epsilon, \\rho) \\cdot V_{\\text{struct}}(S) - g_{\\max}(\\epsilon, \\rho)\n4055: \n4056: $$\n4057: \n4058: where:\n4059: - $\\chi(\\epsilon, \\rho) > 0$ is the **ρ-dependent structural reduction coefficient**\n4060: - $g_{\\max}(\\epsilon, \\rho)$ is the **ρ-dependent geometric negligibility bound**\n4061: - Both constants are uniform in $N$ and depend continuously on ρ\n4062: \n4063: **Proof:** Direct application of Theorem 8.1 from `03_cloning.md`. All three hypotheses have been verified:\n4064: 1. Signal Generation (Theorem {prf:ref}`thm-signal-generation-adaptive`) ✓\n4065: 2. Signal Integrity (Lemma {prf:ref}`lem-raw-to-rescaled-gap-rho`) ✓\n4066: 3. Intelligent Targeting (Theorem {prf:ref}`thm-stability-condition-rho`) ✓\n4067: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 15,
+        "chapter_file": "chapter_15.json",
+        "section_id": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model"
+      }
+    }
+  ]
+}

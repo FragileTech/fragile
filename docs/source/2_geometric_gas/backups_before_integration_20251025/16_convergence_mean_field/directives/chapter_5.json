@@ -1,0 +1,29 @@
+{
+  "chapter_index": 5,
+  "section_id": "## 0. Executive Summary",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "problem",
+      "label": "prob-revival-kl-mean-field",
+      "title": "Main Research Question",
+      "start_line": 358,
+      "end_line": 380,
+      "header_lines": [
+        359
+      ],
+      "content_start": 361,
+      "content_end": 379,
+      "content": "361: :label: prob-revival-kl-mean-field\n362: \n363: Let $\\mathcal{R}[\\rho, m_d]$ be the mean-field revival operator defined in [05_mean_field.md](../1_euclidean_gas/07_mean_field.md):\n364: \n365: $$\n366: \\mathcal{R}[\\rho, m_d](x,v) = \\lambda_{\\text{revive}} \\cdot m_d \\cdot \\frac{\\rho(x,v)}{\\int_\\Omega \\rho}\n367: $$\n368: \n369: where $m_d = 1 - \\int_\\Omega \\rho$ is the dead mass and $\\lambda_{\\text{revive}}$ is the revival rate.\n370: \n371: **Question**: Is $\\mathcal{R}$ **KL-non-expansive**? That is, does it satisfy:\n372: \n373: $$\n374: D_{\\text{KL}}(\\mathcal{R}(\\rho) \\| \\mathcal{R}(\\sigma)) \\le D_{\\text{KL}}(\\rho \\| \\sigma)\n375: $$\n376: \n377: for all alive densities $\\rho, \\sigma \\in \\mathcal{P}(\\Omega)$ with $\\int \\rho = \\int \\sigma < 1$?\n378: \n379: **Status**: **RESOLVED** - See Section 7 and Stage 2",
+      "metadata": {
+        "label": "prob-revival-kl-mean-field"
+      },
+      "section": "## 0. Executive Summary",
+      "raw_directive": "358: ### 0.1. The Central Question\n359: \n360: :::{prf:problem} Main Research Question\n361: :label: prob-revival-kl-mean-field\n362: \n363: Let $\\mathcal{R}[\\rho, m_d]$ be the mean-field revival operator defined in [05_mean_field.md](../1_euclidean_gas/07_mean_field.md):\n364: \n365: $$\n366: \\mathcal{R}[\\rho, m_d](x,v) = \\lambda_{\\text{revive}} \\cdot m_d \\cdot \\frac{\\rho(x,v)}{\\int_\\Omega \\rho}\n367: $$\n368: \n369: where $m_d = 1 - \\int_\\Omega \\rho$ is the dead mass and $\\lambda_{\\text{revive}}$ is the revival rate.\n370: \n371: **Question**: Is $\\mathcal{R}$ **KL-non-expansive**? That is, does it satisfy:\n372: \n373: $$\n374: D_{\\text{KL}}(\\mathcal{R}(\\rho) \\| \\mathcal{R}(\\sigma)) \\le D_{\\text{KL}}(\\rho \\| \\sigma)\n375: $$\n376: \n377: for all alive densities $\\rho, \\sigma \\in \\mathcal{P}(\\Omega)$ with $\\int \\rho = \\int \\sigma < 1$?\n378: \n379: **Status**: **RESOLVED** - See Section 7 and Stage 2\n380: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

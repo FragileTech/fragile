@@ -1,0 +1,134 @@
+{
+  "document_id": "08_propagation_chaos",
+  "stage": "directives",
+  "directive_type": "remark",
+  "generated_at": "2025-11-08T17:07:43.208208+00:00",
+  "count": 5,
+  "items": [
+    {
+      "directive_type": "remark",
+      "label": "rem-qsd-vs-true-stationarity",
+      "title": "QSD Stationarity vs. True Stationarity",
+      "start_line": 527,
+      "end_line": 540,
+      "header_lines": [
+        528
+      ],
+      "content_start": 530,
+      "content_end": 539,
+      "content": "530: :label: rem-qsd-vs-true-stationarity\n531: \n532: For a finite N-particle system, the Quasi-Stationary Distribution $\\nu_N^{QSD}$ satisfies a **modified stationarity condition** that accounts for the non-zero probability of eventual extinction. For any test function $\\Phi: \\Sigma_N \\to \\mathbb{R}$:\n533: \n534: $$\n535: \\mathbb{E}_{\\nu_N^{QSD}}[\\mathcal{L}_N \\Phi] = -\\lambda_N \\mathbb{E}_{\\nu_N^{QSD}}[\\Phi]\n536: \n537: $$\n538: \n539: where $\\lambda_N > 0$ is the **extinction rate** (also called the survival rate or quasi-stationary eigenvalue). This rate characterizes how quickly the conditioned process escapes from the quasi-stationary state toward the absorbing boundary.",
+      "metadata": {
+        "label": "rem-qsd-vs-true-stationarity"
+      },
+      "section": "## **4. Identification of the Limit Point**",
+      "raw_directive": "527: #### **The QSD Stationarity Condition with Extinction Rate**\n528: \n529: :::{prf:remark} QSD Stationarity vs. True Stationarity\n530: :label: rem-qsd-vs-true-stationarity\n531: \n532: For a finite N-particle system, the Quasi-Stationary Distribution $\\nu_N^{QSD}$ satisfies a **modified stationarity condition** that accounts for the non-zero probability of eventual extinction. For any test function $\\Phi: \\Sigma_N \\to \\mathbb{R}$:\n533: \n534: $$\n535: \\mathbb{E}_{\\nu_N^{QSD}}[\\mathcal{L}_N \\Phi] = -\\lambda_N \\mathbb{E}_{\\nu_N^{QSD}}[\\Phi]\n536: \n537: $$\n538: \n539: where $\\lambda_N > 0$ is the **extinction rate** (also called the survival rate or quasi-stationary eigenvalue). This rate characterizes how quickly the conditioned process escapes from the quasi-stationary state toward the absorbing boundary.\n540: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "08_propagation_chaos",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## **4. Identification of the Limit Point**"
+      }
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-extinction-rate-physical-interpretation",
+      "title": "Physical Interpretation",
+      "start_line": 674,
+      "end_line": 677,
+      "header_lines": [
+        675
+      ],
+      "content_start": 676,
+      "content_end": 676,
+      "content": "676: :::{prf:remark} Physical Interpretation",
+      "metadata": {
+        "label": "rem-extinction-rate-physical-interpretation"
+      },
+      "section": "## **4. Identification of the Limit Point**",
+      "raw_directive": "674: :::\n675: \n676: :::{prf:remark} Physical Interpretation\n677: :label: rem-extinction-rate-physical-interpretation",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "08_propagation_chaos",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## **4. Identification of the Limit Point**"
+      }
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-uniqueness-completeness-constraint-set",
+      "title": "Completeness of the Constraint Set $\\mathcal{P}$",
+      "start_line": 897,
+      "end_line": 909,
+      "header_lines": [
+        898
+      ],
+      "content_start": 900,
+      "content_end": 908,
+      "content": "900: :label: rem-uniqueness-completeness-constraint-set\n901: \n902: The space $\\mathcal{P}$ is a closed subset of the Banach space $H^1_w(\\Omega)$, hence complete. This follows from:\n903: \n904: 1. **Non-negativity**: The set $\\{\\rho \\in H^1_w : \\rho \\ge 0 \\text{ a.e.}\\}$ is closed because if $\\rho_n \\to \\rho$ in $H^1_w$, then $\\rho_n \\to \\rho$ in $L^2_w$, and a subsequence converges almost everywhere. The limit of non-negative functions is non-negative a.e.\n905: \n906: 2. **Normalization**: The set $\\{\\rho \\in H^1_w : \\int \\rho = 1\\}$ is closed because the functional $\\rho \\mapsto \\int \\rho dz$ is continuous with respect to the $H^1_w$ norm (by Sobolev embedding $H^1_w \\hookrightarrow L^1$).\n907: \n908: 3. **Intersection of closed sets**: $\\mathcal{P}$ is the intersection of these two closed sets, hence closed.",
+      "metadata": {
+        "label": "rem-uniqueness-completeness-constraint-set"
+      },
+      "section": "## **5. Uniqueness of the Weak Solution via Contraction Mapping**",
+      "raw_directive": "897: $$\n898: \n899: :::{prf:remark} Completeness of the Constraint Set $\\mathcal{P}$\n900: :label: rem-uniqueness-completeness-constraint-set\n901: \n902: The space $\\mathcal{P}$ is a closed subset of the Banach space $H^1_w(\\Omega)$, hence complete. This follows from:\n903: \n904: 1. **Non-negativity**: The set $\\{\\rho \\in H^1_w : \\rho \\ge 0 \\text{ a.e.}\\}$ is closed because if $\\rho_n \\to \\rho$ in $H^1_w$, then $\\rho_n \\to \\rho$ in $L^2_w$, and a subsequence converges almost everywhere. The limit of non-negative functions is non-negative a.e.\n905: \n906: 2. **Normalization**: The set $\\{\\rho \\in H^1_w : \\int \\rho = 1\\}$ is closed because the functional $\\rho \\mapsto \\int \\rho dz$ is continuous with respect to the $H^1_w$ norm (by Sobolev embedding $H^1_w \\hookrightarrow L^1$).\n907: \n908: 3. **Intersection of closed sets**: $\\mathcal{P}$ is the intersection of these two closed sets, hence closed.\n909: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "08_propagation_chaos",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## **5. Uniqueness of the Weak Solution via Contraction Mapping**"
+      }
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-uniqueness-proof-technique",
+      "title": null,
+      "start_line": 1892,
+      "end_line": 1901,
+      "header_lines": [
+        1893
+      ],
+      "content_start": 1894,
+      "content_end": 1900,
+      "content": "1894: :::{prf:remark}\n1895: :label: rem-uniqueness-proof-technique\n1896: The proof structure demonstrates a powerful technique in nonlinear analysis: when global Lipschitz continuity fails, we can still prove uniqueness by:\n1897: \n1898: 1. **Proving a priori bounds**: Any fixed point must lie in a bounded ball (Lemma [](#lem-uniqueness-fixed-point-boundedness))\n1899: 2. **Local contraction**: The operator is a contraction on this bounded ball (Theorem [](#thm-uniqueness-contraction-solution-operator))\n1900: 3. **Bootstrapping to global uniqueness**: Since all fixed points lie in the ball, local uniqueness implies global uniqueness",
+      "metadata": {
+        "label": "rem-uniqueness-proof-technique"
+      },
+      "section": "## **5. Uniqueness of the Weak Solution via Contraction Mapping**",
+      "raw_directive": "1892: :::\n1893: \n1894: :::{prf:remark}\n1895: :label: rem-uniqueness-proof-technique\n1896: The proof structure demonstrates a powerful technique in nonlinear analysis: when global Lipschitz continuity fails, we can still prove uniqueness by:\n1897: \n1898: 1. **Proving a priori bounds**: Any fixed point must lie in a bounded ball (Lemma [](#lem-uniqueness-fixed-point-boundedness))\n1899: 2. **Local contraction**: The operator is a contraction on this bounded ball (Theorem [](#thm-uniqueness-contraction-solution-operator))\n1900: 3. **Bootstrapping to global uniqueness**: Since all fixed points lie in the ball, local uniqueness implies global uniqueness\n1901: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "08_propagation_chaos",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## **5. Uniqueness of the Weak Solution via Contraction Mapping**"
+      }
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-uniqueness-algorithm-connection",
+      "title": null,
+      "start_line": 1903,
+      "end_line": 1913,
+      "header_lines": [
+        1904
+      ],
+      "content_start": 1905,
+      "content_end": 1912,
+      "content": "1905: :::{prf:remark}\n1906: :label: rem-uniqueness-algorithm-connection\n1907: This uniqueness proof reveals a deep connection between the algorithm's design parameters and the mathematical well-posedness of the model. The condition\n1908: \n1909: $$\n1910: \\sigma_v^2 > \\frac{(C_S + C_B)(1 + R^*) + L_c + C}{\\gamma}\n1911: \n1912: $$",
+      "metadata": {
+        "label": "rem-uniqueness-algorithm-connection"
+      },
+      "section": "## **5. Uniqueness of the Weak Solution via Contraction Mapping**",
+      "raw_directive": "1903: :::\n1904: \n1905: :::{prf:remark}\n1906: :label: rem-uniqueness-algorithm-connection\n1907: This uniqueness proof reveals a deep connection between the algorithm's design parameters and the mathematical well-posedness of the model. The condition\n1908: \n1909: $$\n1910: \\sigma_v^2 > \\frac{(C_S + C_B)(1 + R^*) + L_c + C}{\\gamma}\n1911: \n1912: $$\n1913: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "08_propagation_chaos",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## **5. Uniqueness of the Weak Solution via Contraction Mapping**"
+      }
+    }
+  ]
+}

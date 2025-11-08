@@ -1,0 +1,139 @@
+{
+  "chapter_index": 6,
+  "section_id": "## 4. Exponential Locality and Effective Interactions",
+  "directive_count": 8,
+  "hints": [
+    {
+      "directive_type": "lemma",
+      "label": "lem-softmax-tail-corrected-full",
+      "title": "Softmax Tail Bound",
+      "start_line": 1365,
+      "end_line": 1376,
+      "header_lines": [
+        1366
+      ],
+      "content_start": 1368,
+      "content_end": 1375,
+      "content": "1368: :label: lem-softmax-tail-corrected-full\n1369: \n1370: Under {prf:ref}`lem-companion-availability-enforcement`, for walker $i \\in \\mathcal{A}$ with companion $c(i)$ selected via softmax:\n1371: \n1372: $$\n1373: \\mathbb{P}(d_{\\text{alg}}(i, c(i)) > R \\mid \\mathcal{F}_t) \\leq k \\cdot \\exp\\left(-\\frac{R^2 - R_{\\max}^2}{2\\varepsilon_c^2}\\right)\n1374: \n1375: $$",
+      "metadata": {
+        "label": "lem-softmax-tail-corrected-full"
+      },
+      "section": "## 4. Exponential Locality and Effective Interactions",
+      "raw_directive": "1365: ### 4.1 Softmax Concentration Bounds\n1366: \n1367: :::{prf:lemma} Softmax Tail Bound\n1368: :label: lem-softmax-tail-corrected-full\n1369: \n1370: Under {prf:ref}`lem-companion-availability-enforcement`, for walker $i \\in \\mathcal{A}$ with companion $c(i)$ selected via softmax:\n1371: \n1372: $$\n1373: \\mathbb{P}(d_{\\text{alg}}(i, c(i)) > R \\mid \\mathcal{F}_t) \\leq k \\cdot \\exp\\left(-\\frac{R^2 - R_{\\max}^2}{2\\varepsilon_c^2}\\right)\n1374: \n1375: $$\n1376: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-16",
+      "title": null,
+      "start_line": 1378,
+      "end_line": 1405,
+      "header_lines": [],
+      "content_start": 1379,
+      "content_end": 1404,
+      "content": "1379: \n1380: :::{prf:proof}\n1381: **Step 1: Partition function lower bound.**\n1382: \n1383: By {prf:ref}`lem-companion-availability-enforcement`, there exists $\\ell^* \\in \\mathcal{A} \\setminus \\{i\\}$ with $d_{\\text{alg}}(i, \\ell^*) \\leq R_{\\max}$.\n1384: \n1385: Therefore:\n1386: \n1387: $$\n1388: Z_i = \\sum_{\\ell \\in \\mathcal{A} \\setminus \\{i\\}} \\exp\\left(-\\frac{d_{\\text{alg}}^2(i,\\ell)}{2\\varepsilon_c^2}\\right) \\geq \\exp\\left(-\\frac{R_{\\max}^2}{2\\varepsilon_c^2}\\right) = \\exp\\left(-\\frac{C_{\\text{comp}}^2}{2}\\right) =: Z_{\\min} > 0\n1389: \n1390: $$\n1391: \n1392: **Step 2: Tail probability.**\n1393: \n1394: For $R > R_{\\max}$:\n1395: \n1396: $$\n1397: \\begin{aligned}\n1398: \\mathbb{P}(d_{\\text{alg}}(i,c(i)) > R)\n1399: &= \\sum_{\\ell : d(i,\\ell) > R} \\frac{\\exp(-d^2(i,\\ell)/(2\\varepsilon_c^2))}{Z_i} \\\\\n1400: &\\leq \\frac{k \\cdot \\exp(-R^2/(2\\varepsilon_c^2))}{Z_{\\min}} \\\\\n1401: &= k \\cdot \\exp\\left(-\\frac{R^2 - R_{\\max}^2}{2\\varepsilon_c^2}\\right)\n1402: \\end{aligned}\n1403: \n1404: $$",
+      "metadata": {},
+      "section": "## 4. Exponential Locality and Effective Interactions",
+      "raw_directive": "1378: :::\n1379: \n1380: :::{prf:proof}\n1381: **Step 1: Partition function lower bound.**\n1382: \n1383: By {prf:ref}`lem-companion-availability-enforcement`, there exists $\\ell^* \\in \\mathcal{A} \\setminus \\{i\\}$ with $d_{\\text{alg}}(i, \\ell^*) \\leq R_{\\max}$.\n1384: \n1385: Therefore:\n1386: \n1387: $$\n1388: Z_i = \\sum_{\\ell \\in \\mathcal{A} \\setminus \\{i\\}} \\exp\\left(-\\frac{d_{\\text{alg}}^2(i,\\ell)}{2\\varepsilon_c^2}\\right) \\geq \\exp\\left(-\\frac{R_{\\max}^2}{2\\varepsilon_c^2}\\right) = \\exp\\left(-\\frac{C_{\\text{comp}}^2}{2}\\right) =: Z_{\\min} > 0\n1389: \n1390: $$\n1391: \n1392: **Step 2: Tail probability.**\n1393: \n1394: For $R > R_{\\max}$:\n1395: \n1396: $$\n1397: \\begin{aligned}\n1398: \\mathbb{P}(d_{\\text{alg}}(i,c(i)) > R)\n1399: &= \\sum_{\\ell : d(i,\\ell) > R} \\frac{\\exp(-d^2(i,\\ell)/(2\\varepsilon_c^2))}{Z_i} \\\\\n1400: &\\leq \\frac{k \\cdot \\exp(-R^2/(2\\varepsilon_c^2))}{Z_{\\min}} \\\\\n1401: &= k \\cdot \\exp\\left(-\\frac{R^2 - R_{\\max}^2}{2\\varepsilon_c^2}\\right)\n1402: \\end{aligned}\n1403: \n1404: $$\n1405: "
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-effective-interaction-radius-full",
+      "title": "Effective Interaction Radius",
+      "start_line": 1407,
+      "end_line": 1425,
+      "header_lines": [
+        1408
+      ],
+      "content_start": 1410,
+      "content_end": 1424,
+      "content": "1410: :label: cor-effective-interaction-radius-full\n1411: \n1412: Define the **effective interaction radius** by setting the tail probability to $\\delta = 1/k$:\n1413: \n1414: $$\n1415: R_{\\text{eff}} = \\sqrt{R_{\\max}^2 + 2\\varepsilon_c^2 \\log(k^2)} = \\varepsilon_c \\sqrt{C_{\\text{comp}}^2 + 2\\log(k^2)}\n1416: \n1417: $$\n1418: \n1419: Then:\n1420: \n1421: $$\n1422: \\mathbb{P}(d_{\\text{alg}}(i, c(i)) > R_{\\text{eff}}) \\leq \\frac{1}{k}\n1423: \n1424: $$",
+      "metadata": {
+        "label": "cor-effective-interaction-radius-full"
+      },
+      "section": "## 4. Exponential Locality and Effective Interactions",
+      "raw_directive": "1407: :::\n1408: \n1409: :::{prf:corollary} Effective Interaction Radius\n1410: :label: cor-effective-interaction-radius-full\n1411: \n1412: Define the **effective interaction radius** by setting the tail probability to $\\delta = 1/k$:\n1413: \n1414: $$\n1415: R_{\\text{eff}} = \\sqrt{R_{\\max}^2 + 2\\varepsilon_c^2 \\log(k^2)} = \\varepsilon_c \\sqrt{C_{\\text{comp}}^2 + 2\\log(k^2)}\n1416: \n1417: $$\n1418: \n1419: Then:\n1420: \n1421: $$\n1422: \\mathbb{P}(d_{\\text{alg}}(i, c(i)) > R_{\\text{eff}}) \\leq \\frac{1}{k}\n1423: \n1424: $$\n1425: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-65",
+      "title": null,
+      "start_line": 1427,
+      "end_line": 1436,
+      "header_lines": [],
+      "content_start": 1428,
+      "content_end": 1435,
+      "content": "1428: \n1429: :::{prf:proof}\n1430: Set the tail bound from {prf:ref}`lem-softmax-tail-corrected-full` equal to $1/k$:\n1431: \n1432: $$\n1433: k \\cdot \\exp\\left(-\\frac{R_{\\text{eff}}^2 - R_{\\max}^2}{2\\varepsilon_c^2}\\right) = \\frac{1}{k}\n1434: \n1435: $$",
+      "metadata": {},
+      "section": "## 4. Exponential Locality and Effective Interactions",
+      "raw_directive": "1427: :::\n1428: \n1429: :::{prf:proof}\n1430: Set the tail bound from {prf:ref}`lem-softmax-tail-corrected-full` equal to $1/k$:\n1431: \n1432: $$\n1433: k \\cdot \\exp\\left(-\\frac{R_{\\text{eff}}^2 - R_{\\max}^2}{2\\varepsilon_c^2}\\right) = \\frac{1}{k}\n1434: \n1435: $$\n1436: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-effective-companion-count-corrected-full",
+      "title": "Effective Companion Count",
+      "start_line": 1440,
+      "end_line": 1458,
+      "header_lines": [
+        1441
+      ],
+      "content_start": 1443,
+      "content_end": 1457,
+      "content": "1443: :label: lem-effective-companion-count-corrected-full\n1444: \n1445: Under {prf:ref}`assump-uniform-density-full`, the effective number of companions within $R_{\\text{eff}}$ is:\n1446: \n1447: $$\n1448: k_{\\text{eff}}(i) := \\sum_{\\ell \\in \\mathcal{A} \\setminus \\{i\\}} \\mathbb{1}_{d_{\\text{alg}}(i,\\ell) \\leq R_{\\text{eff}}} \\leq \\rho_{\\max} \\cdot C_{\\text{vol}} \\cdot R_{\\text{eff}}^{2d}\n1449: \n1450: $$\n1451: \n1452: Substituting $R_{\\text{eff}} = \\mathcal{O}(\\varepsilon_c \\sqrt{\\log k})$:\n1453: \n1454: $$\n1455: k_{\\text{eff}}(i) = \\mathcal{O}(\\varepsilon_c^{2d} \\cdot (\\log k)^d)\n1456: \n1457: $$",
+      "metadata": {
+        "label": "lem-effective-companion-count-corrected-full"
+      },
+      "section": "## 4. Exponential Locality and Effective Interactions",
+      "raw_directive": "1440: ### 4.2 Effective Number of Interacting Companions\n1441: \n1442: :::{prf:lemma} Effective Companion Count\n1443: :label: lem-effective-companion-count-corrected-full\n1444: \n1445: Under {prf:ref}`assump-uniform-density-full`, the effective number of companions within $R_{\\text{eff}}$ is:\n1446: \n1447: $$\n1448: k_{\\text{eff}}(i) := \\sum_{\\ell \\in \\mathcal{A} \\setminus \\{i\\}} \\mathbb{1}_{d_{\\text{alg}}(i,\\ell) \\leq R_{\\text{eff}}} \\leq \\rho_{\\max} \\cdot C_{\\text{vol}} \\cdot R_{\\text{eff}}^{2d}\n1449: \n1450: $$\n1451: \n1452: Substituting $R_{\\text{eff}} = \\mathcal{O}(\\varepsilon_c \\sqrt{\\log k})$:\n1453: \n1454: $$\n1455: k_{\\text{eff}}(i) = \\mathcal{O}(\\varepsilon_c^{2d} \\cdot (\\log k)^d)\n1456: \n1457: $$\n1458: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-98",
+      "title": null,
+      "start_line": 1460,
+      "end_line": 1462,
+      "header_lines": [],
+      "content_start": 1461,
+      "content_end": 1461,
+      "content": "1461: ",
+      "metadata": {},
+      "section": "## 4. Exponential Locality and Effective Interactions",
+      "raw_directive": "1460: :::\n1461: \n1462: :::{prf:proof}"
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-softmax-derivative-locality-full",
+      "title": "Exponential Locality of Softmax Derivatives",
+      "start_line": 1474,
+      "end_line": 1487,
+      "header_lines": [
+        1475
+      ],
+      "content_start": 1477,
+      "content_end": 1486,
+      "content": "1477: :label: lem-softmax-derivative-locality-full\n1478: \n1479: For the softmax companion selection with temperature $\\varepsilon_c$, all derivatives of the companion probability satisfy:\n1480: \n1481: $$\n1482: \\left|\\nabla^\\alpha_{x_i} P(c(j) = \\ell \\mid \\mathcal{F}_t)\\right| \\leq C_{|\\alpha|} \\cdot \\varepsilon_c^{-2|\\alpha|} \\cdot P(c(j) = \\ell \\mid \\mathcal{F}_t) \\cdot \\exp\\left(-\\frac{d_{\\text{alg}}^2(j, \\ell)}{4\\varepsilon_c^2}\\right)\n1483: \n1484: $$\n1485: \n1486: where $C_{|\\alpha|} = O(|\\alpha|!)$ (Gevrey-1 growth) and the bound is **k-uniform**.",
+      "metadata": {
+        "label": "lem-softmax-derivative-locality-full"
+      },
+      "section": "## 4. Exponential Locality and Effective Interactions",
+      "raw_directive": "1474: The previous sections established exponential concentration for the **probabilities** $P(c(i) = \\ell)$. We now prove that **derivatives** of these probabilities also decay exponentially.\n1475: \n1476: :::{prf:lemma} Exponential Locality of Softmax Derivatives\n1477: :label: lem-softmax-derivative-locality-full\n1478: \n1479: For the softmax companion selection with temperature $\\varepsilon_c$, all derivatives of the companion probability satisfy:\n1480: \n1481: $$\n1482: \\left|\\nabla^\\alpha_{x_i} P(c(j) = \\ell \\mid \\mathcal{F}_t)\\right| \\leq C_{|\\alpha|} \\cdot \\varepsilon_c^{-2|\\alpha|} \\cdot P(c(j) = \\ell \\mid \\mathcal{F}_t) \\cdot \\exp\\left(-\\frac{d_{\\text{alg}}^2(j, \\ell)}{4\\varepsilon_c^2}\\right)\n1483: \n1484: $$\n1485: \n1486: where $C_{|\\alpha|} = O(|\\alpha|!)$ (Gevrey-1 growth) and the bound is **k-uniform**.\n1487: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-127",
+      "title": null,
+      "start_line": 1489,
+      "end_line": 1561,
+      "header_lines": [],
+      "content_start": 1490,
+      "content_end": 1560,
+      "content": "1490: \n1491: :::{prf:proof}\n1492: **Step 1: Structure of softmax probability.**\n1493: \n1494: $$\n1495: P(c(j) = \\ell) = \\frac{\\exp(-d_{\\text{alg}}^2(j,\\ell)/(2\\varepsilon_c^2))}{\\sum_{\\ell' \\in \\mathcal{A} \\setminus \\{j\\}} \\exp(-d_{\\text{alg}}^2(j,\\ell')/(2\\varepsilon_c^2))} =: \\frac{K_j^\\ell}{Z_j}\n1496: \n1497: $$\n1498: \n1499: where $K_j^\\ell = \\exp(-d_{\\text{alg}}^2(j,\\ell)/(2\\varepsilon_c^2))$ and $Z_j = \\sum_{\\ell'} K_j^{\\ell'}$.\n1500: \n1501: **Step 2: First derivative via quotient rule.**\n1502: \n1503: $$\n1504: \\nabla_{x_i} P(c(j) = \\ell) = \\frac{(\\nabla_{x_i} K_j^\\ell) \\cdot Z_j - K_j^\\ell \\cdot (\\nabla_{x_i} Z_j)}{Z_j^2}\n1505: \n1506: $$\n1507: \n1508: For the Gaussian kernel:\n1509: \n1510: $$\n1511: \\nabla_{x_i} K_j^\\ell = K_j^\\ell \\cdot \\nabla_{x_i} \\left(-\\frac{d_{\\text{alg}}^2(j,\\ell)}{2\\varepsilon_c^2}\\right) = -\\frac{K_j^\\ell}{\\varepsilon_c^2} \\cdot d_{\\text{alg}}(j,\\ell) \\cdot \\nabla_{x_i} d_{\\text{alg}}(j,\\ell)\n1512: \n1513: $$\n1514: \n1515: By {prf:ref}`lem-dalg-derivative-bounds-full`, $\\|\\nabla_{x_i} d_{\\text{alg}}(j,\\ell)\\| \\leq 1$. Therefore:\n1516: \n1517: $$\n1518: \\|\\nabla_{x_i} K_j^\\ell\\| \\leq \\frac{d_{\\text{alg}}(j,\\ell)}{\\varepsilon_c^2} \\cdot K_j^\\ell \\leq \\frac{1}{\\varepsilon_c} \\cdot K_j^\\ell\n1519: \n1520: $$\n1521: \n1522: (using $d_{\\text{alg}}/\\varepsilon_c \\ll 1$ for effective contributors).\n1523: \n1524: **Step 3: Partition function derivative.**\n1525: \n1526: $$\n1527: \\nabla_{x_i} Z_j = \\sum_{\\ell' \\neq j} \\nabla_{x_i} K_j^{\\ell'} = -\\frac{1}{\\varepsilon_c^2} \\sum_{\\ell'} K_j^{\\ell'} \\cdot d_{\\text{alg}}(j,\\ell') \\cdot \\nabla_{x_i} d_{\\text{alg}}(j,\\ell')\n1528: \n1529: $$\n1530: \n1531: **Key observation**: If $i = j$ or $i = \\ell$, the derivative acts directly on the exponential. If $i \\neq j, \\ell$, the derivative couples through the N-body softmax structure. However, by exponential concentration:\n1532: \n1533: $$\n1534: \\|\\nabla_{x_i} Z_j\\| \\leq \\frac{k_{\\text{eff}}^{(\\varepsilon_c)}}{\\varepsilon_c^2} \\cdot Z_j \\leq \\frac{C_{\\text{eff}}}{\\varepsilon_c^2} \\cdot Z_j\n1535: \n1536: $$\n1537: \n1538: where $k_{\\text{eff}}^{(\\varepsilon_c)} = O(\\rho_{\\max} \\varepsilon_c^{2d} (\\log k)^d)$ grows logarithmically with $k$.\n1539: \n1540: **Step 4: Assemble first derivative bound.**\n1541: \n1542: $$\n1543: |\\nabla_{x_i} P(c(j) = \\ell)| \\leq \\frac{|\\nabla K_j^\\ell| \\cdot Z_j + K_j^\\ell \\cdot |\\nabla Z_j|}{Z_j^2} \\leq \\frac{C_1}{\\varepsilon_c^2} \\cdot P(c(j) = \\ell)\n1544: \n1545: $$\n1546: \n1547: where $C_1 = O(1 + k_{\\text{eff}}^{(\\varepsilon_c)})$ contains the $(\\log k)^d$ factor, which is **absorbed into higher-order Gevrey-1 constants** (see \u00a77.1 for how derivative locality prevents this from affecting k-uniformity).\n1548: \n1549: **Step 5: Higher derivatives by induction.**\n1550: \n1551: For $|\\alpha| \\geq 2$, apply Fa\u00e0 di Bruno formula to $\\nabla^\\alpha \\log P = \\nabla^\\alpha (\\log K_j^\\ell - \\log Z_j)$. Each term has structure:\n1552: \n1553: $$\n1554: \\nabla^\\alpha K_j^\\ell = K_j^\\ell \\cdot \\text{(polynomial of degree } |\\alpha| \\text{ in } d_{\\text{alg}}, \\nabla d_{\\text{alg}}, \\ldots)\n1555: \n1556: $$\n1557: \n1558: By {prf:ref}`lem-dalg-derivative-bounds-full`, $\\|\\nabla^m d_{\\text{alg}}\\| \\leq C_m \\varepsilon_d^{1-m}$. For $\\varepsilon_d \\ll \\varepsilon_c$ (typical), the dominant factor is $\\varepsilon_c^{-2|\\alpha|}$ from repeated differentiation of the exponential.\n1559: \n1560: Exponential decay: The softmax structure ensures that walkers with $d_{\\text{alg}}(j,\\ell) > R_{\\text{eff}}$ contribute $\\exp(-R_{\\text{eff}}^2/(2\\varepsilon_c^2))$ to probabilities and $\\exp(-R_{\\text{eff}}^2/(4\\varepsilon_c^2))$ to derivatives (from quotient rule cancellations). This provides the claimed **double exponential suppression** for distant walkers.",
+      "metadata": {},
+      "section": "## 4. Exponential Locality and Effective Interactions",
+      "raw_directive": "1489: :::\n1490: \n1491: :::{prf:proof}\n1492: **Step 1: Structure of softmax probability.**\n1493: \n1494: $$\n1495: P(c(j) = \\ell) = \\frac{\\exp(-d_{\\text{alg}}^2(j,\\ell)/(2\\varepsilon_c^2))}{\\sum_{\\ell' \\in \\mathcal{A} \\setminus \\{j\\}} \\exp(-d_{\\text{alg}}^2(j,\\ell')/(2\\varepsilon_c^2))} =: \\frac{K_j^\\ell}{Z_j}\n1496: \n1497: $$\n1498: \n1499: where $K_j^\\ell = \\exp(-d_{\\text{alg}}^2(j,\\ell)/(2\\varepsilon_c^2))$ and $Z_j = \\sum_{\\ell'} K_j^{\\ell'}$.\n1500: \n1501: **Step 2: First derivative via quotient rule.**\n1502: \n1503: $$\n1504: \\nabla_{x_i} P(c(j) = \\ell) = \\frac{(\\nabla_{x_i} K_j^\\ell) \\cdot Z_j - K_j^\\ell \\cdot (\\nabla_{x_i} Z_j)}{Z_j^2}\n1505: \n1506: $$\n1507: \n1508: For the Gaussian kernel:\n1509: \n1510: $$\n1511: \\nabla_{x_i} K_j^\\ell = K_j^\\ell \\cdot \\nabla_{x_i} \\left(-\\frac{d_{\\text{alg}}^2(j,\\ell)}{2\\varepsilon_c^2}\\right) = -\\frac{K_j^\\ell}{\\varepsilon_c^2} \\cdot d_{\\text{alg}}(j,\\ell) \\cdot \\nabla_{x_i} d_{\\text{alg}}(j,\\ell)\n1512: \n1513: $$\n1514: \n1515: By {prf:ref}`lem-dalg-derivative-bounds-full`, $\\|\\nabla_{x_i} d_{\\text{alg}}(j,\\ell)\\| \\leq 1$. Therefore:\n1516: \n1517: $$\n1518: \\|\\nabla_{x_i} K_j^\\ell\\| \\leq \\frac{d_{\\text{alg}}(j,\\ell)}{\\varepsilon_c^2} \\cdot K_j^\\ell \\leq \\frac{1}{\\varepsilon_c} \\cdot K_j^\\ell\n1519: \n1520: $$\n1521: \n1522: (using $d_{\\text{alg}}/\\varepsilon_c \\ll 1$ for effective contributors).\n1523: \n1524: **Step 3: Partition function derivative.**\n1525: \n1526: $$\n1527: \\nabla_{x_i} Z_j = \\sum_{\\ell' \\neq j} \\nabla_{x_i} K_j^{\\ell'} = -\\frac{1}{\\varepsilon_c^2} \\sum_{\\ell'} K_j^{\\ell'} \\cdot d_{\\text{alg}}(j,\\ell') \\cdot \\nabla_{x_i} d_{\\text{alg}}(j,\\ell')\n1528: \n1529: $$\n1530: \n1531: **Key observation**: If $i = j$ or $i = \\ell$, the derivative acts directly on the exponential. If $i \\neq j, \\ell$, the derivative couples through the N-body softmax structure. However, by exponential concentration:\n1532: \n1533: $$\n1534: \\|\\nabla_{x_i} Z_j\\| \\leq \\frac{k_{\\text{eff}}^{(\\varepsilon_c)}}{\\varepsilon_c^2} \\cdot Z_j \\leq \\frac{C_{\\text{eff}}}{\\varepsilon_c^2} \\cdot Z_j\n1535: \n1536: $$\n1537: \n1538: where $k_{\\text{eff}}^{(\\varepsilon_c)} = O(\\rho_{\\max} \\varepsilon_c^{2d} (\\log k)^d)$ grows logarithmically with $k$.\n1539: \n1540: **Step 4: Assemble first derivative bound.**\n1541: \n1542: $$\n1543: |\\nabla_{x_i} P(c(j) = \\ell)| \\leq \\frac{|\\nabla K_j^\\ell| \\cdot Z_j + K_j^\\ell \\cdot |\\nabla Z_j|}{Z_j^2} \\leq \\frac{C_1}{\\varepsilon_c^2} \\cdot P(c(j) = \\ell)\n1544: \n1545: $$\n1546: \n1547: where $C_1 = O(1 + k_{\\text{eff}}^{(\\varepsilon_c)})$ contains the $(\\log k)^d$ factor, which is **absorbed into higher-order Gevrey-1 constants** (see \u00a77.1 for how derivative locality prevents this from affecting k-uniformity).\n1548: \n1549: **Step 5: Higher derivatives by induction.**\n1550: \n1551: For $|\\alpha| \\geq 2$, apply Fa\u00e0 di Bruno formula to $\\nabla^\\alpha \\log P = \\nabla^\\alpha (\\log K_j^\\ell - \\log Z_j)$. Each term has structure:\n1552: \n1553: $$\n1554: \\nabla^\\alpha K_j^\\ell = K_j^\\ell \\cdot \\text{(polynomial of degree } |\\alpha| \\text{ in } d_{\\text{alg}}, \\nabla d_{\\text{alg}}, \\ldots)\n1555: \n1556: $$\n1557: \n1558: By {prf:ref}`lem-dalg-derivative-bounds-full`, $\\|\\nabla^m d_{\\text{alg}}\\| \\leq C_m \\varepsilon_d^{1-m}$. For $\\varepsilon_d \\ll \\varepsilon_c$ (typical), the dominant factor is $\\varepsilon_c^{-2|\\alpha|}$ from repeated differentiation of the exponential.\n1559: \n1560: Exponential decay: The softmax structure ensures that walkers with $d_{\\text{alg}}(j,\\ell) > R_{\\text{eff}}$ contribute $\\exp(-R_{\\text{eff}}^2/(2\\varepsilon_c^2))$ to probabilities and $\\exp(-R_{\\text{eff}}^2/(4\\varepsilon_c^2))$ to derivatives (from quotient rule cancellations). This provides the claimed **double exponential suppression** for distant walkers.\n1561: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

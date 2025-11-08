@@ -1,0 +1,65 @@
+{
+  "chapter_index": 10,
+  "section_id": "## 8. Discussion and Extensions",
+  "directive_count": 3,
+  "hints": [
+    {
+      "directive_type": "remark",
+      "label": "rem-bombelli-sorkin-comparison",
+      "title": "Relation to Bombelli-Sorkin Results",
+      "start_line": 1834,
+      "end_line": 1867,
+      "header_lines": [
+        1835
+      ],
+      "content_start": 1837,
+      "content_end": 1866,
+      "content": "1837: :label: rem-bombelli-sorkin-comparison\n1838: \n1839: **Classical result** (Bombelli et al., 1987; Sorkin, 2003):\n1840: \n1841: For **Poisson-sprinkled causal sets** on Lorentzian manifolds with **uniform sprinkling density**:\n1842: \n1843: $$\n1844: |\\gamma_A| \\to \\text{Area}(\\partial A_{\\min}) \\times (\\text{const})\n1845: $$\n1846: \n1847: **Our result** ({prf:ref}`thm-antichain-surface-main` - corrected):\n1848: \n1849: For **Fragile Gas causal spacetime tree** with **QSD density** $\\rho_{\\text{spatial}}(x) \\propto \\sqrt{\\det g(x)} e^{-U_{\\text{eff}}/T}$:\n1850: \n1851: $$\n1852: |\\gamma_A| \\to C_d N^{(d-1)/d} \\int_{\\partial A_{\\min}} \\left[\\rho_{\\text{spatial}}(x)\\right]^{(d-1)/d} \\, d\\Sigma(x)\n1853: $$\n1854: \n1855: **Key differences**:\n1856: \n1857: 1. **Dimensional correctness**: Scaling is $N^{(d-1)/d}$ (surface-like), not $N$ (volume-like)\n1858: 2. **Non-uniform density**: QSD naturally incorporates $\\sqrt{\\det g}$ via Stratonovich calculus, with fractional power $(d-1)/d$\n1859: 3. **Dynamical geometry**: Metric $g(x)$ emerges from algorithm (not fixed background)\n1860: 4. **Interaction-dependent**: Fitness potential $U_{\\text{eff}}$ modulates density\n1861: \n1862: **Consistency check**: In the limit $U_{\\text{eff}} \\to \\text{const}$ and $g \\to I$ (flat Euclidean space), with uniform $\\rho_0$:\n1863: \n1864: $$\n1865: |\\gamma_A| \\to C_d \\rho_0^{(d-1)/d} N^{(d-1)/d} \\, \\text{Area}(\\partial A_{\\min})\n1866: $$",
+      "metadata": {
+        "label": "rem-bombelli-sorkin-comparison"
+      },
+      "section": "## 8. Discussion and Extensions",
+      "raw_directive": "1834: ### 8.1. Comparison with Causal Set Literature\n1835: \n1836: :::{prf:remark} Relation to Bombelli-Sorkin Results\n1837: :label: rem-bombelli-sorkin-comparison\n1838: \n1839: **Classical result** (Bombelli et al., 1987; Sorkin, 2003):\n1840: \n1841: For **Poisson-sprinkled causal sets** on Lorentzian manifolds with **uniform sprinkling density**:\n1842: \n1843: $$\n1844: |\\gamma_A| \\to \\text{Area}(\\partial A_{\\min}) \\times (\\text{const})\n1845: $$\n1846: \n1847: **Our result** ({prf:ref}`thm-antichain-surface-main` - corrected):\n1848: \n1849: For **Fragile Gas causal spacetime tree** with **QSD density** $\\rho_{\\text{spatial}}(x) \\propto \\sqrt{\\det g(x)} e^{-U_{\\text{eff}}/T}$:\n1850: \n1851: $$\n1852: |\\gamma_A| \\to C_d N^{(d-1)/d} \\int_{\\partial A_{\\min}} \\left[\\rho_{\\text{spatial}}(x)\\right]^{(d-1)/d} \\, d\\Sigma(x)\n1853: $$\n1854: \n1855: **Key differences**:\n1856: \n1857: 1. **Dimensional correctness**: Scaling is $N^{(d-1)/d}$ (surface-like), not $N$ (volume-like)\n1858: 2. **Non-uniform density**: QSD naturally incorporates $\\sqrt{\\det g}$ via Stratonovich calculus, with fractional power $(d-1)/d$\n1859: 3. **Dynamical geometry**: Metric $g(x)$ emerges from algorithm (not fixed background)\n1860: 4. **Interaction-dependent**: Fitness potential $U_{\\text{eff}}$ modulates density\n1861: \n1862: **Consistency check**: In the limit $U_{\\text{eff}} \\to \\text{const}$ and $g \\to I$ (flat Euclidean space), with uniform $\\rho_0$:\n1863: \n1864: $$\n1865: |\\gamma_A| \\to C_d \\rho_0^{(d-1)/d} N^{(d-1)/d} \\, \\text{Area}(\\partial A_{\\min})\n1866: $$\n1867: "
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-area-law-varying-fitness",
+      "title": "Area Law for Non-Uniform Fitness",
+      "start_line": 1871,
+      "end_line": 1891,
+      "header_lines": [
+        1872
+      ],
+      "content_start": 1874,
+      "content_end": 1890,
+      "content": "1874: :label: prop-area-law-varying-fitness\n1875: \n1876: For spatially varying fitness $V_{\\text{fit}}(x)$, the area law becomes:\n1877: \n1878: $$\n1879: S_{\\text{IG}}(A) = \\alpha \\int_{\\partial A_{\\min}} e^{-U_{\\text{eff}}(x)/T} \\, d\\Sigma_g(x)\n1880: $$\n1881: \n1882: where $\\alpha$ is a constant determined by the algorithm parameters.\n1883: \n1884: **Physical interpretation**: The effective area is **reduced** in high-fitness regions (low $U_{\\text{eff}}$), where the swarm naturally explores more efficiently.\n1885: \n1886: **Connection to holography**: This suggests a **position-dependent gravitational constant**:\n1887: \n1888: $$\n1889: \\frac{1}{G_N(x)} \\propto e^{-U_{\\text{eff}}(x)/T}\n1890: $$",
+      "metadata": {
+        "label": "prop-area-law-varying-fitness"
+      },
+      "section": "## 8. Discussion and Extensions",
+      "raw_directive": "1871: ### 8.2. Varying Fitness Generalization\n1872: \n1873: :::{prf:proposition} Area Law for Non-Uniform Fitness\n1874: :label: prop-area-law-varying-fitness\n1875: \n1876: For spatially varying fitness $V_{\\text{fit}}(x)$, the area law becomes:\n1877: \n1878: $$\n1879: S_{\\text{IG}}(A) = \\alpha \\int_{\\partial A_{\\min}} e^{-U_{\\text{eff}}(x)/T} \\, d\\Sigma_g(x)\n1880: $$\n1881: \n1882: where $\\alpha$ is a constant determined by the algorithm parameters.\n1883: \n1884: **Physical interpretation**: The effective area is **reduced** in high-fitness regions (low $U_{\\text{eff}}$), where the swarm naturally explores more efficiently.\n1885: \n1886: **Connection to holography**: This suggests a **position-dependent gravitational constant**:\n1887: \n1888: $$\n1889: \\frac{1}{G_N(x)} \\propto e^{-U_{\\text{eff}}(x)/T}\n1890: $$\n1891: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-error-bound-tightness",
+      "title": "Tightness of $O(N^{-1/d})$ Bound",
+      "start_line": 1895,
+      "end_line": 1906,
+      "header_lines": [
+        1896
+      ],
+      "content_start": 1898,
+      "content_end": 1905,
+      "content": "1898: :label: rem-error-bound-tightness\n1899: \n1900: The error bound $O(N^{-1/d})$ in {prf:ref}`thm-antichain-surface-main` is **optimal** for Voronoi-based discretizations:\n1901: \n1902: - Lower bound from Voronoi cell size: $\\Omega(N^{-1/d})$\n1903: - Upper bound from concentration inequalities: $O(N^{-1/d})$\n1904: \n1905: **Matching bounds** \u21d2 The theorem is **rate-optimal**.",
+      "metadata": {
+        "label": "rem-error-bound-tightness"
+      },
+      "section": "## 8. Discussion and Extensions",
+      "raw_directive": "1895: ### 8.3. Error Bound Optimality\n1896: \n1897: :::{prf:remark} Tightness of $O(N^{-1/d})$ Bound\n1898: :label: rem-error-bound-tightness\n1899: \n1900: The error bound $O(N^{-1/d})$ in {prf:ref}`thm-antichain-surface-main` is **optimal** for Voronoi-based discretizations:\n1901: \n1902: - Lower bound from Voronoi cell size: $\\Omega(N^{-1/d})$\n1903: - Upper bound from concentration inequalities: $O(N^{-1/d})$\n1904: \n1905: **Matching bounds** \u21d2 The theorem is **rate-optimal**.\n1906: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

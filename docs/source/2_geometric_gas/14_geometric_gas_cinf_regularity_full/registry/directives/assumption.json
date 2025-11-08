@@ -1,0 +1,59 @@
+{
+  "document_id": "14_geometric_gas_cinf_regularity_full",
+  "stage": "directives",
+  "directive_type": "assumption",
+  "generated_at": "2025-11-08T17:07:43.250032+00:00",
+  "count": 2,
+  "items": [
+    {
+      "directive_type": "assumption",
+      "label": "assump-uniform-density-full",
+      "title": "Uniform Density Bound",
+      "start_line": 855,
+      "end_line": 877,
+      "header_lines": [
+        856
+      ],
+      "content_start": 858,
+      "content_end": 876,
+      "content": "858: :label: assump-uniform-density-full\n859: \n860: The phase-space density of alive walkers in the quasi-stationary distribution is uniformly bounded:\n861: \n862: $$\n863: \\rho_{\\text{phase}}^{\\text{QSD}}(x,v) \\leq \\rho_{\\max}^* < \\infty\n864: \n865: $$\n866: \n867: where $\\rho_{\\max}^*$ is the self-consistent density bound guaranteed to exist by the Fixed-Point Theorem {prf:ref}`verif-density-bound-consistency-full`.\n868: \n869: **Status**: This assumption is now justified and non-circular. The value $\\rho_{\\max}^*$ is a characteristic of the system parameters ($\\gamma, T, \\varepsilon_c, \\rho$, etc.) but is independent of the number of walkers $k$ or the specific configuration, making it a k-uniform bound.\n870: \n871: **Consequence for walker distributions**: The uniform density bound ensures the number of walkers in any phase-space ball of radius $r$ is bounded:\n872: \n873: $$\n874: \\#\\{j \\in \\mathcal{A} : d_{\\text{alg}}(i,j) \\leq r\\} \\leq \\rho_{\\max}^* \\cdot \\text{Vol}(B(0, r)) = \\mathcal{O}(r^{2d})\n875: \n876: $$",
+      "metadata": {
+        "label": "assump-uniform-density-full"
+      },
+      "section": "## 2. Companion Selection Mechanisms: Framework Context",
+      "raw_directive": "855: \n856: \n857: :::{prf:assumption} Uniform Density Bound\n858: :label: assump-uniform-density-full\n859: \n860: The phase-space density of alive walkers in the quasi-stationary distribution is uniformly bounded:\n861: \n862: $$\n863: \\rho_{\\text{phase}}^{\\text{QSD}}(x,v) \\leq \\rho_{\\max}^* < \\infty\n864: \n865: $$\n866: \n867: where $\\rho_{\\max}^*$ is the self-consistent density bound guaranteed to exist by the Fixed-Point Theorem {prf:ref}`verif-density-bound-consistency-full`.\n868: \n869: **Status**: This assumption is now justified and non-circular. The value $\\rho_{\\max}^*$ is a characteristic of the system parameters ($\\gamma, T, \\varepsilon_c, \\rho$, etc.) but is independent of the number of walkers $k$ or the specific configuration, making it a k-uniform bound.\n870: \n871: **Consequence for walker distributions**: The uniform density bound ensures the number of walkers in any phase-space ball of radius $r$ is bounded:\n872: \n873: $$\n874: \\#\\{j \\in \\mathcal{A} : d_{\\text{alg}}(i,j) \\leq r\\} \\leq \\rho_{\\max}^* \\cdot \\text{Vol}(B(0, r)) = \\mathcal{O}(r^{2d})\n875: \n876: $$\n877: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "14_geometric_gas_cinf_regularity_full",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. Companion Selection Mechanisms: Framework Context"
+      }
+    },
+    {
+      "directive_type": "assumption",
+      "label": "assump-rescale-function-cinf-full",
+      "title": "Rescale Function C^∞ Regularity",
+      "start_line": 4525,
+      "end_line": 4543,
+      "header_lines": [
+        4526
+      ],
+      "content_start": 4528,
+      "content_end": 4542,
+      "content": "4528: :label: assump-rescale-function-cinf-full\n4529: \n4530: The rescale function $g_A: \\mathbb{R} \\to [0, A]$ is C^∞ with **globally bounded derivatives**:\n4531: \n4532: For all $m \\geq 1$:\n4533: \n4534: $$\n4535: \\|g_A^{(m)}\\|_\\infty := \\sup_{z \\in \\mathbb{R}} |g_A^{(m)}(z)| \\leq L_{g,m} < \\infty\n4536: \n4537: $$\n4538: \n4539: where $L_{g,m} = \\mathcal{O}(m!)$ (Gevrey-1 growth).\n4540: \n4541: **Examples**:\n4542: 1. **Sigmoid**: $g_A(z) = A / (1 + e^{-z})$ has all derivatives globally bounded",
+      "metadata": {
+        "label": "assump-rescale-function-cinf-full"
+      },
+      "section": "## 12. Fitness Potential: Composition with Rescale Function",
+      "raw_directive": "4525: ### 12.1 Assumptions on Rescale Function\n4526: \n4527: :::{prf:assumption} Rescale Function C^∞ Regularity\n4528: :label: assump-rescale-function-cinf-full\n4529: \n4530: The rescale function $g_A: \\mathbb{R} \\to [0, A]$ is C^∞ with **globally bounded derivatives**:\n4531: \n4532: For all $m \\geq 1$:\n4533: \n4534: $$\n4535: \\|g_A^{(m)}\\|_\\infty := \\sup_{z \\in \\mathbb{R}} |g_A^{(m)}(z)| \\leq L_{g,m} < \\infty\n4536: \n4537: $$\n4538: \n4539: where $L_{g,m} = \\mathcal{O}(m!)$ (Gevrey-1 growth).\n4540: \n4541: **Examples**:\n4542: 1. **Sigmoid**: $g_A(z) = A / (1 + e^{-z})$ has all derivatives globally bounded\n4543: 2. **Tanh-based**: $g_A(z) = A(1 + \\tanh(z))/2$ has all derivatives globally bounded",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "14_geometric_gas_cinf_regularity_full",
+        "chapter_index": 21,
+        "chapter_file": "chapter_21.json",
+        "section_id": "## 12. Fitness Potential: Composition with Rescale Function"
+      }
+    }
+  ]
+}

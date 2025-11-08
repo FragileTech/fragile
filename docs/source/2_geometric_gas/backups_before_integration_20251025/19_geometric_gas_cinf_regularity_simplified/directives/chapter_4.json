@@ -1,0 +1,101 @@
+{
+  "chapter_index": 4,
+  "section_id": "## 4. Base Cases: C\u00b9, C\u00b2, C\u00b3, C\u2074 Regularity (Established Results)",
+  "directive_count": 5,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-c1-established-cinf",
+      "title": "C\u00b9 Regularity (Previously Proven)",
+      "start_line": 367,
+      "end_line": 373,
+      "header_lines": [
+        368
+      ],
+      "content_start": 370,
+      "content_end": 372,
+      "content": "370: :label: thm-c1-established-cinf\n371: \n372: **Source**: [11_geometric_gas.md](11_geometric_gas.md), Appendix A, Theorem A.1",
+      "metadata": {
+        "label": "thm-c1-established-cinf"
+      },
+      "section": "## 4. Base Cases: C\u00b9, C\u00b2, C\u00b3, C\u2074 Regularity (Established Results)",
+      "raw_directive": "367: The first four derivative orders are proven in prior documents. We cite them without reproving.\n368: \n369: :::{prf:theorem} C\u00b9 Regularity (Previously Proven)\n370: :label: thm-c1-established-cinf\n371: \n372: **Source**: [11_geometric_gas.md](11_geometric_gas.md), Appendix A, Theorem A.1\n373: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-c2-established-cinf",
+      "title": "C\u00b2 Regularity (Previously Proven)",
+      "start_line": 375,
+      "end_line": 381,
+      "header_lines": [
+        376
+      ],
+      "content_start": 378,
+      "content_end": 380,
+      "content": "378: :label: thm-c2-established-cinf\n379: \n380: **Source**: [11_geometric_gas.md](11_geometric_gas.md), Appendix A, Theorem A.2",
+      "metadata": {
+        "label": "thm-c2-established-cinf"
+      },
+      "section": "## 4. Base Cases: C\u00b9, C\u00b2, C\u00b3, C\u2074 Regularity (Established Results)",
+      "raw_directive": "375: :::\n376: \n377: :::{prf:theorem} C\u00b2 Regularity (Previously Proven)\n378: :label: thm-c2-established-cinf\n379: \n380: **Source**: [11_geometric_gas.md](11_geometric_gas.md), Appendix A, Theorem A.2\n381: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-c3-established-cinf",
+      "title": "C\u00b3 Regularity (Previously Proven)",
+      "start_line": 383,
+      "end_line": 391,
+      "header_lines": [
+        384
+      ],
+      "content_start": 386,
+      "content_end": 390,
+      "content": "386: :label: thm-c3-established-cinf\n387: \n388: **Source**: [13_geometric_gas_c3_regularity.md](13_geometric_gas_c3_regularity.md), Theorem 8.1\n389: \n390: V_fit is three times continuously differentiable with ||\u2207\u00b3_{x_i} V_fit|| \u2264 K_{V,3}(\u03c1) = O(\u03c1^{-3}), k-uniform and N-uniform.",
+      "metadata": {
+        "label": "thm-c3-established-cinf"
+      },
+      "section": "## 4. Base Cases: C\u00b9, C\u00b2, C\u00b3, C\u2074 Regularity (Established Results)",
+      "raw_directive": "383: :::\n384: \n385: :::{prf:theorem} C\u00b3 Regularity (Previously Proven)\n386: :label: thm-c3-established-cinf\n387: \n388: **Source**: [13_geometric_gas_c3_regularity.md](13_geometric_gas_c3_regularity.md), Theorem 8.1\n389: \n390: V_fit is three times continuously differentiable with ||\u2207\u00b3_{x_i} V_fit|| \u2264 K_{V,3}(\u03c1) = O(\u03c1^{-3}), k-uniform and N-uniform.\n391: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-c4-established-cinf",
+      "title": "C\u2074 Regularity (Previously Proven)",
+      "start_line": 393,
+      "end_line": 401,
+      "header_lines": [
+        394
+      ],
+      "content_start": 396,
+      "content_end": 400,
+      "content": "396: :label: thm-c4-established-cinf\n397: \n398: **Source**: [14_geometric_gas_c4_regularity.md](14_geometric_gas_c4_regularity.md), Theorem 5.1\n399: \n400: V_fit is four times continuously differentiable with ||\u2207\u2074_{x_i} V_fit|| \u2264 K_{V,4}(\u03c1) = O(\u03c1^{-4}), k-uniform and N-uniform.",
+      "metadata": {
+        "label": "thm-c4-established-cinf"
+      },
+      "section": "## 4. Base Cases: C\u00b9, C\u00b2, C\u00b3, C\u2074 Regularity (Established Results)",
+      "raw_directive": "393: :::\n394: \n395: :::{prf:theorem} C\u2074 Regularity (Previously Proven)\n396: :label: thm-c4-established-cinf\n397: \n398: **Source**: [14_geometric_gas_c4_regularity.md](14_geometric_gas_c4_regularity.md), Theorem 5.1\n399: \n400: V_fit is four times continuously differentiable with ||\u2207\u2074_{x_i} V_fit|| \u2264 K_{V,4}(\u03c1) = O(\u03c1^{-4}), k-uniform and N-uniform.\n401: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rmk-k-uniformity-mechanism-cinf",
+      "title": "k-Uniformity Mechanism",
+      "start_line": 403,
+      "end_line": 421,
+      "header_lines": [
+        404
+      ],
+      "content_start": 406,
+      "content_end": 420,
+      "content": "406: :label: rmk-k-uniformity-mechanism-cinf\n407: \n408: The k-uniformity proven in C\u00b3 ([13_geometric_gas_c3_regularity.md](13_geometric_gas_c3_regularity.md) \u00a7 5.2, Lemmas 5.2-5.3) and C\u2074 ([14_geometric_gas_c4_regularity.md](14_geometric_gas_c4_regularity.md) \u00a7 5, Lemmas 5.1-5.2) relies on the telescoping identity:\n409: \n410: $$\n411: \\sum_{j \\in A_k} \\nabla^m w_{ij}(\\rho) = 0 \\quad \\text{for all } m \\geq 1\n412: $$\n413: \n414: This follows from differentiating \u2211_j w_ij = 1 identically. The consequence is that sums like \u2211_j \u2207^m w_ij \u00b7 d(x_j) can be rewritten as **centered sums**:\n415: \n416: $$\n417: \\sum_j \\nabla^m w_{ij} \\cdot d(x_j) = \\sum_j \\nabla^m w_{ij} \\cdot (d(x_j) - \\mu_\\rho)\n418: $$\n419: \n420: Since |d(x_j) - \u03bc_\u03c1| \u2264 diam(d) is uniformly bounded (X is compact), the sum scales as O(||\u2207^m w_ij||), not O(k \u00b7 ||\u2207^m w_ij||). This prevents linear growth in k and ensures k-uniformity.",
+      "metadata": {
+        "label": "rmk-k-uniformity-mechanism-cinf"
+      },
+      "section": "## 4. Base Cases: C\u00b9, C\u00b2, C\u00b3, C\u2074 Regularity (Established Results)",
+      "raw_directive": "403: :::\n404: \n405: :::{prf:remark} k-Uniformity Mechanism\n406: :label: rmk-k-uniformity-mechanism-cinf\n407: \n408: The k-uniformity proven in C\u00b3 ([13_geometric_gas_c3_regularity.md](13_geometric_gas_c3_regularity.md) \u00a7 5.2, Lemmas 5.2-5.3) and C\u2074 ([14_geometric_gas_c4_regularity.md](14_geometric_gas_c4_regularity.md) \u00a7 5, Lemmas 5.1-5.2) relies on the telescoping identity:\n409: \n410: $$\n411: \\sum_{j \\in A_k} \\nabla^m w_{ij}(\\rho) = 0 \\quad \\text{for all } m \\geq 1\n412: $$\n413: \n414: This follows from differentiating \u2211_j w_ij = 1 identically. The consequence is that sums like \u2211_j \u2207^m w_ij \u00b7 d(x_j) can be rewritten as **centered sums**:\n415: \n416: $$\n417: \\sum_j \\nabla^m w_{ij} \\cdot d(x_j) = \\sum_j \\nabla^m w_{ij} \\cdot (d(x_j) - \\mu_\\rho)\n418: $$\n419: \n420: Since |d(x_j) - \u03bc_\u03c1| \u2264 diam(d) is uniformly bounded (X is compact), the sum scales as O(||\u2207^m w_ij||), not O(k \u00b7 ||\u2207^m w_ij||). This prevents linear growth in k and ensures k-uniformity.\n421: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

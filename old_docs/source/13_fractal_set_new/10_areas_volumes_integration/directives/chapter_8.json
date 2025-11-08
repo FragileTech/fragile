@@ -1,0 +1,47 @@
+{
+  "chapter_index": 8,
+  "section_id": "## 9. Numerical Stability and Best Practices",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "remark",
+      "label": "rem-numerical-stability-volumes",
+      "title": "Handling Numerical Issues",
+      "start_line": 1515,
+      "end_line": 1558,
+      "header_lines": [
+        1516
+      ],
+      "content_start": 1518,
+      "content_end": 1557,
+      "content": "1518: :label: rem-numerical-stability-volumes\n1519: \n1520: **Problem 1: Nearly degenerate simplices**\n1521: \n1522: If vertices are nearly collinear (2D) or coplanar (3D), Gram determinant $\\det G \\approx 0$, leading to:\n1523: - Large relative error in $\\sqrt{\\det G}$\n1524: - Cancellation errors\n1525: \n1526: **Solution:** Check condition number:\n1527: \n1528: $$\n1529: \\kappa(G) := \\frac{\\lambda_{\\max}(G)}{\\lambda_{\\min}(G)}\n1530: $$\n1531: \n1532: If $\\kappa(G) > 10^6$, either:\n1533: - Skip simplex (contributes negligibly)\n1534: - Subdivide into smaller simplices\n1535: - Use higher-precision arithmetic\n1536: \n1537: **Problem 2: Metric tensor not positive definite**\n1538: \n1539: If $g(x)$ has negative eigenvalues (numerical error):\n1540: \n1541: **Solution:** Regularize:\n1542: \n1543: $$\n1544: g_{\\text{reg}}(x) := g(x) + \\epsilon_{\\text{reg}} I\n1545: $$\n1546: \n1547: with $\\epsilon_{\\text{reg}} = 10^{-6} \\cdot \\text{Tr}[g(x)] / d$.\n1548: \n1549: **Problem 3: Large dynamic range**\n1550: \n1551: If $\\det g(x)$ varies by many orders of magnitude:\n1552: \n1553: **Solution:** Use log-sum-exp trick:\n1554: \n1555: $$\n1556: \\log \\left( \\sum_i V_i \\right) = \\log \\left( \\sum_i e^{\\log V_i} \\right)\n1557: $$",
+      "metadata": {
+        "label": "rem-numerical-stability-volumes"
+      },
+      "section": "## 9. Numerical Stability and Best Practices",
+      "raw_directive": "1515: ### 9.1. Regularization for Ill-Conditioned Metrics\n1516: \n1517: :::{prf:remark} Handling Numerical Issues\n1518: :label: rem-numerical-stability-volumes\n1519: \n1520: **Problem 1: Nearly degenerate simplices**\n1521: \n1522: If vertices are nearly collinear (2D) or coplanar (3D), Gram determinant $\\det G \\approx 0$, leading to:\n1523: - Large relative error in $\\sqrt{\\det G}$\n1524: - Cancellation errors\n1525: \n1526: **Solution:** Check condition number:\n1527: \n1528: $$\n1529: \\kappa(G) := \\frac{\\lambda_{\\max}(G)}{\\lambda_{\\min}(G)}\n1530: $$\n1531: \n1532: If $\\kappa(G) > 10^6$, either:\n1533: - Skip simplex (contributes negligibly)\n1534: - Subdivide into smaller simplices\n1535: - Use higher-precision arithmetic\n1536: \n1537: **Problem 2: Metric tensor not positive definite**\n1538: \n1539: If $g(x)$ has negative eigenvalues (numerical error):\n1540: \n1541: **Solution:** Regularize:\n1542: \n1543: $$\n1544: g_{\\text{reg}}(x) := g(x) + \\epsilon_{\\text{reg}} I\n1545: $$\n1546: \n1547: with $\\epsilon_{\\text{reg}} = 10^{-6} \\cdot \\text{Tr}[g(x)] / d$.\n1548: \n1549: **Problem 3: Large dynamic range**\n1550: \n1551: If $\\det g(x)$ varies by many orders of magnitude:\n1552: \n1553: **Solution:** Use log-sum-exp trick:\n1554: \n1555: $$\n1556: \\log \\left( \\sum_i V_i \\right) = \\log \\left( \\sum_i e^{\\log V_i} \\right)\n1557: $$\n1558: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-volume-validation",
+      "title": "Sanity Checks for Volume Computations",
+      "start_line": 1562,
+      "end_line": 1602,
+      "header_lines": [
+        1563
+      ],
+      "content_start": 1565,
+      "content_end": 1601,
+      "content": "1565: :label: rem-volume-validation\n1566: \n1567: **Test 1: Flat space recovery**\n1568: \n1569: For $g = I$ (identity), Riemannian volumes should equal Euclidean volumes.\n1570: \n1571: **Test 2: Scaling invariance**\n1572: \n1573: For uniform scaling $g \\to \\lambda^2 g$:\n1574: \n1575: $$\n1576: V_{\\lambda^2 g}(\\Sigma) = \\lambda^k V_g(\\Sigma)\n1577: $$\n1578: \n1579: where $k$ is dimension of $\\Sigma$.\n1580: \n1581: **Test 3: Additivity**\n1582: \n1583: For disjoint regions $\\Sigma_1 \\cap \\Sigma_2 = \\emptyset$:\n1584: \n1585: $$\n1586: V_g(\\Sigma_1 \\cup \\Sigma_2) = V_g(\\Sigma_1) + V_g(\\Sigma_2)\n1587: $$\n1588: \n1589: **Test 4: Monotonicity with respect to metric**\n1590: \n1591: If $g_1(x) \\geq g_2(x)$ (in Loewner order), then:\n1592: \n1593: $$\n1594: V_{g_1}(\\Sigma) \\geq V_{g_2}(\\Sigma)\n1595: $$\n1596: \n1597: **Test 5: Convergence under refinement**\n1598: \n1599: As mesh size $h \\to 0$, computed volume should converge:\n1600: \n1601: $$",
+      "metadata": {
+        "label": "rem-volume-validation"
+      },
+      "section": "## 9. Numerical Stability and Best Practices",
+      "raw_directive": "1562: ### 8.2. Validation Tests\n1563: \n1564: :::{prf:remark} Sanity Checks for Volume Computations\n1565: :label: rem-volume-validation\n1566: \n1567: **Test 1: Flat space recovery**\n1568: \n1569: For $g = I$ (identity), Riemannian volumes should equal Euclidean volumes.\n1570: \n1571: **Test 2: Scaling invariance**\n1572: \n1573: For uniform scaling $g \\to \\lambda^2 g$:\n1574: \n1575: $$\n1576: V_{\\lambda^2 g}(\\Sigma) = \\lambda^k V_g(\\Sigma)\n1577: $$\n1578: \n1579: where $k$ is dimension of $\\Sigma$.\n1580: \n1581: **Test 3: Additivity**\n1582: \n1583: For disjoint regions $\\Sigma_1 \\cap \\Sigma_2 = \\emptyset$:\n1584: \n1585: $$\n1586: V_g(\\Sigma_1 \\cup \\Sigma_2) = V_g(\\Sigma_1) + V_g(\\Sigma_2)\n1587: $$\n1588: \n1589: **Test 4: Monotonicity with respect to metric**\n1590: \n1591: If $g_1(x) \\geq g_2(x)$ (in Loewner order), then:\n1592: \n1593: $$\n1594: V_{g_1}(\\Sigma) \\geq V_{g_2}(\\Sigma)\n1595: $$\n1596: \n1597: **Test 5: Convergence under refinement**\n1598: \n1599: As mesh size $h \\to 0$, computed volume should converge:\n1600: \n1601: $$\n1602: \\lim_{h \\to 0} V_g^{(h)}(\\Sigma) = V_g(\\Sigma)"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

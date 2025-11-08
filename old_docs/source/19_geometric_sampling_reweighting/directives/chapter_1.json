@@ -1,0 +1,97 @@
+{
+  "chapter_index": 1,
+  "section_id": "## Part I: Importance Sampling for Geometric Analysis",
+  "directive_count": 5,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-importance-weight-geometric",
+      "title": "Importance Weight for Geometric Analysis",
+      "start_line": 109,
+      "end_line": 127,
+      "header_lines": [
+        110
+      ],
+      "content_start": 112,
+      "content_end": 126,
+      "content": "112: :label: def-importance-weight-geometric\n113: \n114: For samples $\\{x_i\\}_{i=1}^N$ from the QSD, the importance weight for computing expectations over the uniform geometric measure is:\n115: \n116: $$\n117: w(x_i) = \\exp\\left(\\frac{U_{\\text{eff}}(x_i)}{T}\\right) = \\exp\\left(\\frac{U(x_i) - \\epsilon_F V_{\\text{fit}}(x_i, S)}{T}\\right)\n118: \n119: $$\n120: \n121: The self-normalized estimator for observable $O(x)$ is:\n122: \n123: $$\n124: \\mathbb{E}_{\\text{target}}[O] \\approx \\hat{I}_N := \\frac{\\sum_{i=1}^N w(x_i) O(x_i)}{\\sum_{i=1}^N w(x_i)}\n125: \n126: $$",
+      "metadata": {
+        "label": "def-importance-weight-geometric"
+      },
+      "section": "## Part I: Importance Sampling for Geometric Analysis",
+      "raw_directive": "109: The normalization constant cancels in the self-normalized estimator, yielding:\n110: \n111: :::{prf:definition} Importance Weight for Geometric Analysis\n112: :label: def-importance-weight-geometric\n113: \n114: For samples $\\{x_i\\}_{i=1}^N$ from the QSD, the importance weight for computing expectations over the uniform geometric measure is:\n115: \n116: $$\n117: w(x_i) = \\exp\\left(\\frac{U_{\\text{eff}}(x_i)}{T}\\right) = \\exp\\left(\\frac{U(x_i) - \\epsilon_F V_{\\text{fit}}(x_i, S)}{T}\\right)\n118: \n119: $$\n120: \n121: The self-normalized estimator for observable $O(x)$ is:\n122: \n123: $$\n124: \\mathbb{E}_{\\text{target}}[O] \\approx \\hat{I}_N := \\frac{\\sum_{i=1}^N w(x_i) O(x_i)}{\\sum_{i=1}^N w(x_i)}\n125: \n126: $$\n127: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-reweighting-error-bound",
+      "title": "Asymptotic Error Bound for Reweighted Geometric Observables",
+      "start_line": 137,
+      "end_line": 169,
+      "header_lines": [
+        138
+      ],
+      "content_start": 140,
+      "content_end": 168,
+      "content": "140: :label: thm-reweighting-error-bound\n141: \n142: Let $\\hat{I}_N$ be the self-normalized importance sampling estimator from {prf:ref}`def-importance-weight-geometric` with $N$ samples from the QSD. As $N \\to \\infty$, the error distribution is asymptotically Gaussian:\n143: \n144: $$\n145: \\sqrt{N}(\\hat{I}_N - I) \\xrightarrow{d} \\mathcal{N}(0, \\sigma^2_{\\text{eff}})\n146: \n147: $$\n148: \n149: where $I = \\mathbb{E}_{\\text{target}}[O]$ is the true value and:\n150: \n151: $$\n152: \\sigma^2_{\\text{eff}} = \\frac{\\text{Var}_{\\text{QSD}}(w(x) O(x))}{(\\mathbb{E}_{\\text{QSD}}[w(x)])^2}\n153: \n154: $$\n155: \n156: This provides a $(1-\\alpha_{\\text{conf}})$ confidence interval:\n157: \n158: $$\n159: \\hat{I}_N \\pm z_{\\alpha_{\\text{conf}}/2} \\frac{\\hat{\\sigma}_{\\text{eff}}}{\\sqrt{N}}\n160: \n161: $$\n162: \n163: where $z_{\\alpha_{\\text{conf}}/2}$ is the critical value from the standard normal (e.g., 1.96 for 95% confidence) and $\\hat{\\sigma}^2_{\\text{eff}}$ is the empirical variance:\n164: \n165: $$\n166: \\hat{\\sigma}^2_{\\text{eff}} = \\frac{\\frac{1}{N} \\sum_{i=1}^N (w_i O_i - \\overline{wO})^2}{(\\frac{1}{N} \\sum_i w_i)^2}\n167: \n168: $$",
+      "metadata": {
+        "label": "thm-reweighting-error-bound"
+      },
+      "section": "## Part I: Importance Sampling for Geometric Analysis",
+      "raw_directive": "137: The precision of $\\hat{I}_N$ is governed by the variance of the weights.\n138: \n139: :::{prf:theorem} Asymptotic Error Bound for Reweighted Geometric Observables\n140: :label: thm-reweighting-error-bound\n141: \n142: Let $\\hat{I}_N$ be the self-normalized importance sampling estimator from {prf:ref}`def-importance-weight-geometric` with $N$ samples from the QSD. As $N \\to \\infty$, the error distribution is asymptotically Gaussian:\n143: \n144: $$\n145: \\sqrt{N}(\\hat{I}_N - I) \\xrightarrow{d} \\mathcal{N}(0, \\sigma^2_{\\text{eff}})\n146: \n147: $$\n148: \n149: where $I = \\mathbb{E}_{\\text{target}}[O]$ is the true value and:\n150: \n151: $$\n152: \\sigma^2_{\\text{eff}} = \\frac{\\text{Var}_{\\text{QSD}}(w(x) O(x))}{(\\mathbb{E}_{\\text{QSD}}[w(x)])^2}\n153: \n154: $$\n155: \n156: This provides a $(1-\\alpha_{\\text{conf}})$ confidence interval:\n157: \n158: $$\n159: \\hat{I}_N \\pm z_{\\alpha_{\\text{conf}}/2} \\frac{\\hat{\\sigma}_{\\text{eff}}}{\\sqrt{N}}\n160: \n161: $$\n162: \n163: where $z_{\\alpha_{\\text{conf}}/2}$ is the critical value from the standard normal (e.g., 1.96 for 95% confidence) and $\\hat{\\sigma}^2_{\\text{eff}}$ is the empirical variance:\n164: \n165: $$\n166: \\hat{\\sigma}^2_{\\text{eff}} = \\frac{\\frac{1}{N} \\sum_{i=1}^N (w_i O_i - \\overline{wO})^2}{(\\frac{1}{N} \\sum_i w_i)^2}\n167: \n168: $$\n169: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-123",
+      "title": null,
+      "start_line": 171,
+      "end_line": 221,
+      "header_lines": [],
+      "content_start": 172,
+      "content_end": 220,
+      "content": "172: \n173: :::{prf:proof}\n174: We derive the asymptotic distribution using the Delta method for ratio estimators.\n175: \n176: **Step 1: Define auxiliary sums.** Let:\n177: \n178: $$\n179: S_N = \\frac{1}{N} \\sum_{i=1}^N w(x_i) O(x_i), \\quad W_N = \\frac{1}{N} \\sum_{i=1}^N w(x_i)\n180: \n181: $$\n182: \n183: The self-normalized estimator is $\\hat{I}_N = S_N / W_N$.\n184: \n185: **Step 2: Apply CLT to individual sums.** By the Central Limit Theorem, as $N \\to \\infty$:\n186: \n187: $$\n188: \\sqrt{N} \\begin{pmatrix} S_N - \\mathbb{E}_{\\text{QSD}}[wO] \\\\ W_N - \\mathbb{E}_{\\text{QSD}}[w] \\end{pmatrix} \\xrightarrow{d} \\mathcal{N}\\left(0, \\begin{pmatrix} \\text{Var}_{\\text{QSD}}(wO) & \\text{Cov}_{\\text{QSD}}(wO, w) \\\\ \\text{Cov}_{\\text{QSD}}(wO, w) & \\text{Var}_{\\text{QSD}}(w) \\end{pmatrix}\\right)\n189: \n190: $$\n191: \n192: **Step 3: Apply Delta method to ratio.** Define $g(s, w) = s/w$. The Delta method (Taylor expansion around means) gives:\n193: \n194: $$\n195: \\sqrt{N}(\\hat{I}_N - I) = \\sqrt{N} \\left( \\frac{S_N}{W_N} - \\frac{\\mathbb{E}[wO]}{\\mathbb{E}[w]} \\right) \\xrightarrow{d} \\mathcal{N}(0, \\sigma^2_{\\text{eff}})\n196: \n197: $$\n198: \n199: where (using $\\nabla g = (1/w, -s/w^2)$ evaluated at $(s, w) = (\\mathbb{E}[wO], \\mathbb{E}[w])$):\n200: \n201: $$\n202: \\sigma^2_{\\text{eff}} = \\frac{1}{(\\mathbb{E}[w])^2} \\left( \\text{Var}(wO) - 2I \\text{Cov}(wO, w) + I^2 \\text{Var}(w) \\right)\n203: \n204: $$\n205: \n206: **Step 4: Simplify using definition of variance.** Note that:\n207: \n208: $$\n209: \\text{Var}(wO) - 2I \\text{Cov}(wO, w) + I^2 \\text{Var}(w) = \\text{Var}(wO - Iw) = \\text{Var}(w(O - I))\n210: \n211: $$\n212: \n213: Therefore:\n214: \n215: $$\n216: \\sigma^2_{\\text{eff}} = \\frac{\\text{Var}_{\\text{QSD}}(w(O - I))}{(\\mathbb{E}_{\\text{QSD}}[w])^2} = \\frac{\\text{Var}_{\\text{QSD}}(wO)}{(\\mathbb{E}_{\\text{QSD}}[w])^2}\n217: \n218: $$\n219: \n220: where the second equality uses $\\mathbb{E}_{\\text{QSD}}[w(O - I)] = \\mathbb{E}_{\\text{target}}[O] - I \\cdot \\frac{\\mathbb{E}_{\\text{QSD}}[w]}{\\mathbb{E}_{\\text{QSD}}[w]} = 0$.",
+      "metadata": {},
+      "section": "## Part I: Importance Sampling for Geometric Analysis",
+      "raw_directive": "171: :::\n172: \n173: :::{prf:proof}\n174: We derive the asymptotic distribution using the Delta method for ratio estimators.\n175: \n176: **Step 1: Define auxiliary sums.** Let:\n177: \n178: $$\n179: S_N = \\frac{1}{N} \\sum_{i=1}^N w(x_i) O(x_i), \\quad W_N = \\frac{1}{N} \\sum_{i=1}^N w(x_i)\n180: \n181: $$\n182: \n183: The self-normalized estimator is $\\hat{I}_N = S_N / W_N$.\n184: \n185: **Step 2: Apply CLT to individual sums.** By the Central Limit Theorem, as $N \\to \\infty$:\n186: \n187: $$\n188: \\sqrt{N} \\begin{pmatrix} S_N - \\mathbb{E}_{\\text{QSD}}[wO] \\\\ W_N - \\mathbb{E}_{\\text{QSD}}[w] \\end{pmatrix} \\xrightarrow{d} \\mathcal{N}\\left(0, \\begin{pmatrix} \\text{Var}_{\\text{QSD}}(wO) & \\text{Cov}_{\\text{QSD}}(wO, w) \\\\ \\text{Cov}_{\\text{QSD}}(wO, w) & \\text{Var}_{\\text{QSD}}(w) \\end{pmatrix}\\right)\n189: \n190: $$\n191: \n192: **Step 3: Apply Delta method to ratio.** Define $g(s, w) = s/w$. The Delta method (Taylor expansion around means) gives:\n193: \n194: $$\n195: \\sqrt{N}(\\hat{I}_N - I) = \\sqrt{N} \\left( \\frac{S_N}{W_N} - \\frac{\\mathbb{E}[wO]}{\\mathbb{E}[w]} \\right) \\xrightarrow{d} \\mathcal{N}(0, \\sigma^2_{\\text{eff}})\n196: \n197: $$\n198: \n199: where (using $\\nabla g = (1/w, -s/w^2)$ evaluated at $(s, w) = (\\mathbb{E}[wO], \\mathbb{E}[w])$):\n200: \n201: $$\n202: \\sigma^2_{\\text{eff}} = \\frac{1}{(\\mathbb{E}[w])^2} \\left( \\text{Var}(wO) - 2I \\text{Cov}(wO, w) + I^2 \\text{Var}(w) \\right)\n203: \n204: $$\n205: \n206: **Step 4: Simplify using definition of variance.** Note that:\n207: \n208: $$\n209: \\text{Var}(wO) - 2I \\text{Cov}(wO, w) + I^2 \\text{Var}(w) = \\text{Var}(wO - Iw) = \\text{Var}(w(O - I))\n210: \n211: $$\n212: \n213: Therefore:\n214: \n215: $$\n216: \\sigma^2_{\\text{eff}} = \\frac{\\text{Var}_{\\text{QSD}}(w(O - I))}{(\\mathbb{E}_{\\text{QSD}}[w])^2} = \\frac{\\text{Var}_{\\text{QSD}}(wO)}{(\\mathbb{E}_{\\text{QSD}}[w])^2}\n217: \n218: $$\n219: \n220: where the second equality uses $\\mathbb{E}_{\\text{QSD}}[w(O - I)] = \\mathbb{E}_{\\text{target}}[O] - I \\cdot \\frac{\\mathbb{E}_{\\text{QSD}}[w]}{\\mathbb{E}_{\\text{QSD}}[w]} = 0$.\n221: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-ess-geometric",
+      "title": "Effective Sample Size",
+      "start_line": 250,
+      "end_line": 268,
+      "header_lines": [
+        251
+      ],
+      "content_start": 253,
+      "content_end": 267,
+      "content": "253: :label: def-ess-geometric\n254: \n255: The **Effective Sample Size (ESS)** of an importance sampling estimate from $N$ samples quantifies the number of independent uniform samples that would yield equivalent statistical power. It is defined as:\n256: \n257: $$\n258: \\text{ESS} = \\frac{(\\sum_{i=1}^N w_i)^2}{\\sum_{i=1}^N w_i^2} = \\frac{N}{1 + \\text{CV}^2(w)}\n259: \n260: $$\n261: \n262: where $\\text{CV}^2(w) = \\text{Var}(w) / \\mathbb{E}[w]^2$ is the squared coefficient of variation of the normalized weights.\n263: \n264: **Interpretation:**\n265: - $\\text{ESS} \\approx N$: Weights nearly uniform, reweighted estimate highly reliable\n266: - $\\text{ESS} \\ll N$: Weights highly skewed, few samples dominate, estimate unreliable\n267: - **Rule of Thumb:** Require $\\text{ESS} > N/10$ for acceptable reliability, ideally $\\text{ESS} > 100$",
+      "metadata": {
+        "label": "def-ess-geometric"
+      },
+      "section": "## Part I: Importance Sampling for Geometric Analysis",
+      "raw_directive": "250: #### 2.3. Effective Sample Size (ESS)\n251: \n252: :::{prf:definition} Effective Sample Size\n253: :label: def-ess-geometric\n254: \n255: The **Effective Sample Size (ESS)** of an importance sampling estimate from $N$ samples quantifies the number of independent uniform samples that would yield equivalent statistical power. It is defined as:\n256: \n257: $$\n258: \\text{ESS} = \\frac{(\\sum_{i=1}^N w_i)^2}{\\sum_{i=1}^N w_i^2} = \\frac{N}{1 + \\text{CV}^2(w)}\n259: \n260: $$\n261: \n262: where $\\text{CV}^2(w) = \\text{Var}(w) / \\mathbb{E}[w]^2$ is the squared coefficient of variation of the normalized weights.\n263: \n264: **Interpretation:**\n265: - $\\text{ESS} \\approx N$: Weights nearly uniform, reweighted estimate highly reliable\n266: - $\\text{ESS} \\ll N$: Weights highly skewed, few samples dominate, estimate unreliable\n267: - **Rule of Thumb:** Require $\\text{ESS} > N/10$ for acceptable reliability, ideally $\\text{ESS} > 100$\n268: "
+    },
+    {
+      "directive_type": "algorithm",
+      "label": "alg-ess-parameter-tuning",
+      "title": "ESS-Guided Parameter Tuning",
+      "start_line": 274,
+      "end_line": 296,
+      "header_lines": [
+        275
+      ],
+      "content_start": 277,
+      "content_end": 295,
+      "content": "277: :label: alg-ess-parameter-tuning\n278: \n279: **Goal:** Tune $(\u03b1, \u03b2, T)$ to balance optimization efficiency and geometric analysis reliability.\n280: \n281: **Procedure:**\n282: \n283: 1. **Run Optimizer**: Execute Fragile Gas with initial parameters $(\u03b1_0, \u03b2_0, T_0)$ until QSD convergence\n284: 2. **Compute ESS Diagnostic**:\n285:    - Extract positions $\\{x_i\\}_{i=1}^N$ from final swarm state\n286:    - Compute weights $w_i = \\exp(U_{\\text{eff}}(x_i)/T)$\n287:    - Calculate $\\text{ESS} = (\\sum w_i)^2 / \\sum w_i^2$\n288: 3. **Assess Quality**:\n289:    - If $\\text{ESS} > N/10$: Proceed with reweighted geometric analysis. Estimated error $\\approx \\hat{\\sigma}_{\\text{eff}}/\\sqrt{\\text{ESS}}$\n290:    - If $\\text{ESS} < N/10$: Variance too high, estimates unreliable\n291: 4. **Remediate** (if needed):\n292:    - **Primary:** Increase diversity channel $\u03b2 \\to \u03b2 + \\Delta \u03b2$. Directly enforces broader sampling\n293:    - **Secondary:** Increase temperature $T \\to T + \\Delta T$ (via $\u03c3_v^2 \\uparrow$ or $\u03b3 \\downarrow$). Flattens QSD globally\n294:    - **Tertiary:** Increase swarm size $N \\to 2N$. Brute-force improvement (costly)\n295: 5. **Iterate**: Repeat from Step 1 with updated parameters until $\\text{ESS}$ threshold met",
+      "metadata": {
+        "label": "alg-ess-parameter-tuning"
+      },
+      "section": "## Part I: Importance Sampling for Geometric Analysis",
+      "raw_directive": "274: #### 2.4. Practical Workflow for Controlled Reweighting\n275: \n276: :::{prf:algorithm} ESS-Guided Parameter Tuning\n277: :label: alg-ess-parameter-tuning\n278: \n279: **Goal:** Tune $(\u03b1, \u03b2, T)$ to balance optimization efficiency and geometric analysis reliability.\n280: \n281: **Procedure:**\n282: \n283: 1. **Run Optimizer**: Execute Fragile Gas with initial parameters $(\u03b1_0, \u03b2_0, T_0)$ until QSD convergence\n284: 2. **Compute ESS Diagnostic**:\n285:    - Extract positions $\\{x_i\\}_{i=1}^N$ from final swarm state\n286:    - Compute weights $w_i = \\exp(U_{\\text{eff}}(x_i)/T)$\n287:    - Calculate $\\text{ESS} = (\\sum w_i)^2 / \\sum w_i^2$\n288: 3. **Assess Quality**:\n289:    - If $\\text{ESS} > N/10$: Proceed with reweighted geometric analysis. Estimated error $\\approx \\hat{\\sigma}_{\\text{eff}}/\\sqrt{\\text{ESS}}$\n290:    - If $\\text{ESS} < N/10$: Variance too high, estimates unreliable\n291: 4. **Remediate** (if needed):\n292:    - **Primary:** Increase diversity channel $\u03b2 \\to \u03b2 + \\Delta \u03b2$. Directly enforces broader sampling\n293:    - **Secondary:** Increase temperature $T \\to T + \\Delta T$ (via $\u03c3_v^2 \\uparrow$ or $\u03b3 \\downarrow$). Flattens QSD globally\n294:    - **Tertiary:** Increase swarm size $N \\to 2N$. Brute-force improvement (costly)\n295: 5. **Iterate**: Repeat from Step 1 with updated parameters until $\\text{ESS}$ threshold met\n296: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

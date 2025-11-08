@@ -1,0 +1,125 @@
+{
+  "chapter_index": 15,
+  "section_id": "## 13. Corrected Mass Gap Proof (Fixing Issue #2)",
+  "directive_count": 7,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-hamiltonian-ground-state",
+      "title": "Hamiltonian Ground State Uniqueness",
+      "start_line": 2063,
+      "end_line": 2080,
+      "header_lines": [
+        2064
+      ],
+      "content_start": 2066,
+      "content_end": 2079,
+      "content": "2066: :label: thm-hamiltonian-ground-state\n2067: \n2068: The Hamiltonian $H$ from Theorem {prf:ref}`thm-lindbladian-corrected`:\n2069: \n2070: $$\n2071: H = \\int dx \\, dv \\, \\psi^\\dagger(x, v) \\left[-\\frac{\\hbar^2}{2m}\\nabla_x^2 + U(x) + \\frac{1}{2}m v^2\\right] \\psi(x, v)\n2072: $$\n2073: \n2074: has a **unique ground state** $|0\\rangle$ (vacuum) with energy $E_0 = 0$ (after normal ordering).\n2075: \n2076: **Proof**: The Hamiltonian is the sum of:\n2077: 1. Kinetic energy: $\\geq 0$ (positive operator)\n2078: 2. Potential energy: $U(x) \\geq -C$ (coercive from {doc}`04_convergence.md`)\n2079: 3. Velocity energy: $\\geq 0$ (positive operator)",
+      "metadata": {
+        "label": "thm-hamiltonian-ground-state"
+      },
+      "section": "## 13. Corrected Mass Gap Proof (Fixing Issue #2)",
+      "raw_directive": "2063: ### 13.1. Hamiltonian Spectral Analysis\n2064: \n2065: :::{prf:theorem} Hamiltonian Ground State Uniqueness\n2066: :label: thm-hamiltonian-ground-state\n2067: \n2068: The Hamiltonian $H$ from Theorem {prf:ref}`thm-lindbladian-corrected`:\n2069: \n2070: $$\n2071: H = \\int dx \\, dv \\, \\psi^\\dagger(x, v) \\left[-\\frac{\\hbar^2}{2m}\\nabla_x^2 + U(x) + \\frac{1}{2}m v^2\\right] \\psi(x, v)\n2072: $$\n2073: \n2074: has a **unique ground state** $|0\\rangle$ (vacuum) with energy $E_0 = 0$ (after normal ordering).\n2075: \n2076: **Proof**: The Hamiltonian is the sum of:\n2077: 1. Kinetic energy: $\\geq 0$ (positive operator)\n2078: 2. Potential energy: $U(x) \\geq -C$ (coercive from {doc}`04_convergence.md`)\n2079: 3. Velocity energy: $\\geq 0$ (positive operator)\n2080: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-hamiltonian-mass-gap",
+      "title": "Hamiltonian Mass Gap from QSD Spectral Gap",
+      "start_line": 2082,
+      "end_line": 2100,
+      "header_lines": [
+        2083
+      ],
+      "content_start": 2085,
+      "content_end": 2099,
+      "content": "2085: :label: thm-hamiltonian-mass-gap\n2086: \n2087: The Hamiltonian $H$ has a **mass gap**:\n2088: \n2089: $$\n2090: \\Delta_H := \\inf(\\text{Spec}(H|_{\\mathcal{H}_1}) - E_0) > 0\n2091: $$\n2092: \n2093: where $\\mathcal{H}_1$ is the one-particle sector.\n2094: \n2095: **Relation to classical spectral gap**: The mass gap is related to the spectral gap $\\lambda_{\\text{gap}}$ of the classical generator via:\n2096: \n2097: $$\n2098: \\Delta_H = \\lambda_{\\text{gap}} \\hbar_{\\text{eff}}\n2099: $$",
+      "metadata": {
+        "label": "thm-hamiltonian-mass-gap"
+      },
+      "section": "## 13. Corrected Mass Gap Proof (Fixing Issue #2)",
+      "raw_directive": "2082: :::\n2083: \n2084: :::{prf:theorem} Hamiltonian Mass Gap from QSD Spectral Gap\n2085: :label: thm-hamiltonian-mass-gap\n2086: \n2087: The Hamiltonian $H$ has a **mass gap**:\n2088: \n2089: $$\n2090: \\Delta_H := \\inf(\\text{Spec}(H|_{\\mathcal{H}_1}) - E_0) > 0\n2091: $$\n2092: \n2093: where $\\mathcal{H}_1$ is the one-particle sector.\n2094: \n2095: **Relation to classical spectral gap**: The mass gap is related to the spectral gap $\\lambda_{\\text{gap}}$ of the classical generator via:\n2096: \n2097: $$\n2098: \\Delta_H = \\lambda_{\\text{gap}} \\hbar_{\\text{eff}}\n2099: $$\n2100: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-44",
+      "title": null,
+      "start_line": 2102,
+      "end_line": 2134,
+      "header_lines": [],
+      "content_start": 2103,
+      "content_end": 2133,
+      "content": "2103: \n2104: :::{prf:proof}\n2105: **Step 1: Single-particle Hamiltonian.**\n2106: \n2107: In the one-particle sector $\\mathcal{H}_1 = L^2(\\mathcal{X} \\times \\mathcal{V})$, the Hamiltonian reduces to:\n2108: \n2109: $$\n2110: H_1 = -\\frac{\\hbar^2}{2m}\\nabla_x^2 + U(x) + \\frac{1}{2}m v^2 - \\gamma v \\cdot \\nabla_v + \\gamma D_{\\text{reg}} \\nabla_v^2\n2111: $$\n2112: \n2113: This is exactly the generator of the **underdamped Langevin dynamics** from {doc}`04_convergence.md`.\n2114: \n2115: **Step 2: Spectral gap of Langevin generator.**\n2116: \n2117: From {doc}`08_emergent_geometry.md`, Theorem 2.1, the generator has spectral gap:\n2118: \n2119: $$\n2120: \\lambda_{\\text{gap}} \\geq \\kappa_{\\text{total}} = O(\\min\\{\\gamma, c_{\\min}(\\rho), \\kappa_{\\text{conf}}\\}) > 0\n2121: $$\n2122: \n2123: **Step 3: Dimensional restoration.**\n2124: \n2125: The classical generator has dimension $[T]^{-1}$ (inverse time). To get energy, we multiply by $\\hbar_{\\text{eff}}$:\n2126: \n2127: $$\n2128: \\Delta_H = \\lambda_{\\text{gap}} \\cdot \\hbar_{\\text{eff}}\n2129: $$\n2130: \n2131: where $\\hbar_{\\text{eff}} = m\\epsilon_c^2/\\tau$ has dimension $[M][L]^2[T]^{-1}$ (action \u2192 energy when multiplied by inverse time).\n2132: \n2133: **Step 4: Multi-particle sectors.**",
+      "metadata": {},
+      "section": "## 13. Corrected Mass Gap Proof (Fixing Issue #2)",
+      "raw_directive": "2102: :::\n2103: \n2104: :::{prf:proof}\n2105: **Step 1: Single-particle Hamiltonian.**\n2106: \n2107: In the one-particle sector $\\mathcal{H}_1 = L^2(\\mathcal{X} \\times \\mathcal{V})$, the Hamiltonian reduces to:\n2108: \n2109: $$\n2110: H_1 = -\\frac{\\hbar^2}{2m}\\nabla_x^2 + U(x) + \\frac{1}{2}m v^2 - \\gamma v \\cdot \\nabla_v + \\gamma D_{\\text{reg}} \\nabla_v^2\n2111: $$\n2112: \n2113: This is exactly the generator of the **underdamped Langevin dynamics** from {doc}`04_convergence.md`.\n2114: \n2115: **Step 2: Spectral gap of Langevin generator.**\n2116: \n2117: From {doc}`08_emergent_geometry.md`, Theorem 2.1, the generator has spectral gap:\n2118: \n2119: $$\n2120: \\lambda_{\\text{gap}} \\geq \\kappa_{\\text{total}} = O(\\min\\{\\gamma, c_{\\min}(\\rho), \\kappa_{\\text{conf}}\\}) > 0\n2121: $$\n2122: \n2123: **Step 3: Dimensional restoration.**\n2124: \n2125: The classical generator has dimension $[T]^{-1}$ (inverse time). To get energy, we multiply by $\\hbar_{\\text{eff}}$:\n2126: \n2127: $$\n2128: \\Delta_H = \\lambda_{\\text{gap}} \\cdot \\hbar_{\\text{eff}}\n2129: $$\n2130: \n2131: where $\\hbar_{\\text{eff}} = m\\epsilon_c^2/\\tau$ has dimension $[M][L]^2[T]^{-1}$ (action \u2192 energy when multiplied by inverse time).\n2132: \n2133: **Step 4: Multi-particle sectors.**\n2134: "
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-discrete-spectrum-hamiltonian",
+      "title": "Discrete Spectrum",
+      "start_line": 2136,
+      "end_line": 2146,
+      "header_lines": [
+        2137
+      ],
+      "content_start": 2139,
+      "content_end": 2145,
+      "content": "2139: :label: cor-discrete-spectrum-hamiltonian\n2140: \n2141: The Hamiltonian $H$ has **discrete spectrum** in the low-energy regime:\n2142: \n2143: $$\n2144: \\text{Spec}(H) = \\{0, \\Delta_H, 2\\Delta_H, \\ldots\\} + \\text{continuous spectrum}\n2145: $$",
+      "metadata": {
+        "label": "cor-discrete-spectrum-hamiltonian"
+      },
+      "section": "## 13. Corrected Mass Gap Proof (Fixing Issue #2)",
+      "raw_directive": "2136: :::\n2137: \n2138: :::{prf:corollary} Discrete Spectrum\n2139: :label: cor-discrete-spectrum-hamiltonian\n2140: \n2141: The Hamiltonian $H$ has **discrete spectrum** in the low-energy regime:\n2142: \n2143: $$\n2144: \\text{Spec}(H) = \\{0, \\Delta_H, 2\\Delta_H, \\ldots\\} + \\text{continuous spectrum}\n2145: $$\n2146: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-90",
+      "title": null,
+      "start_line": 2148,
+      "end_line": 2176,
+      "header_lines": [],
+      "content_start": 2149,
+      "content_end": 2175,
+      "content": "2149: \n2150: :::{prf:proof}\n2151: **Step 1: Fock space decomposition.**\n2152: \n2153: $$\n2154: \\mathcal{H} = \\bigoplus_{n=0}^\\infty \\mathcal{H}_n\n2155: $$\n2156: \n2157: Each $n$-particle sector has Hamiltonian:\n2158: \n2159: $$\n2160: H_n = \\sum_{i=1}^n h_i + V_{\\text{int}}\n2161: $$\n2162: \n2163: where $h_i$ is the single-particle Hamiltonian and $V_{\\text{int}}$ are interactions.\n2164: \n2165: **Step 2: Non-interacting case.**\n2166: \n2167: For weak interactions, the spectrum is approximately:\n2168: \n2169: $$\n2170: E_n \\approx n \\Delta_H\n2171: $$\n2172: \n2173: giving discrete levels with gap $\\Delta_H$.\n2174: \n2175: **Step 3: Interaction corrections.**",
+      "metadata": {},
+      "section": "## 13. Corrected Mass Gap Proof (Fixing Issue #2)",
+      "raw_directive": "2148: :::\n2149: \n2150: :::{prf:proof}\n2151: **Step 1: Fock space decomposition.**\n2152: \n2153: $$\n2154: \\mathcal{H} = \\bigoplus_{n=0}^\\infty \\mathcal{H}_n\n2155: $$\n2156: \n2157: Each $n$-particle sector has Hamiltonian:\n2158: \n2159: $$\n2160: H_n = \\sum_{i=1}^n h_i + V_{\\text{int}}\n2161: $$\n2162: \n2163: where $h_i$ is the single-particle Hamiltonian and $V_{\\text{int}}$ are interactions.\n2164: \n2165: **Step 2: Non-interacting case.**\n2166: \n2167: For weak interactions, the spectrum is approximately:\n2168: \n2169: $$\n2170: E_n \\approx n \\Delta_H\n2171: $$\n2172: \n2173: giving discrete levels with gap $\\Delta_H$.\n2174: \n2175: **Step 3: Interaction corrections.**\n2176: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-mass-gap-continuum-survival",
+      "title": "Mass Gap Survival in Continuum Limit",
+      "start_line": 2180,
+      "end_line": 2195,
+      "header_lines": [
+        2181
+      ],
+      "content_start": 2183,
+      "content_end": 2194,
+      "content": "2183: :label: thm-mass-gap-continuum-survival\n2184: \n2185: The mass gap survives the continuum limit $\\tau \\to 0$ with the renormalization from {doc}`14_yang_mills_noether.md` \u00a79.10:\n2186: \n2187: $$\n2188: \\epsilon_c(\\tau) \\sim \\sqrt{\\tau}, \\quad \\rho(\\tau) \\sim \\sqrt{\\tau}, \\quad \\gamma(\\tau) \\sim \\frac{1}{\\tau}\n2189: $$\n2190: \n2191: The physical mass gap remains finite:\n2192: \n2193: $$\n2194: \\Delta_{H, \\text{phys}} = \\lambda_{\\text{gap}} \\hbar_{\\text{eff}} = \\lambda_{\\text{gap}} \\frac{m\\epsilon_c^2}{\\tau} \\sim \\lambda_{\\text{gap}} \\frac{m\\tau}{\\tau} = \\lambda_{\\text{gap}} m = O(1)",
+      "metadata": {
+        "label": "thm-mass-gap-continuum-survival"
+      },
+      "section": "## 13. Corrected Mass Gap Proof (Fixing Issue #2)",
+      "raw_directive": "2180: ### 13.2. Continuum Limit of Mass Gap\n2181: \n2182: :::{prf:theorem} Mass Gap Survival in Continuum Limit\n2183: :label: thm-mass-gap-continuum-survival\n2184: \n2185: The mass gap survives the continuum limit $\\tau \\to 0$ with the renormalization from {doc}`14_yang_mills_noether.md` \u00a79.10:\n2186: \n2187: $$\n2188: \\epsilon_c(\\tau) \\sim \\sqrt{\\tau}, \\quad \\rho(\\tau) \\sim \\sqrt{\\tau}, \\quad \\gamma(\\tau) \\sim \\frac{1}{\\tau}\n2189: $$\n2190: \n2191: The physical mass gap remains finite:\n2192: \n2193: $$\n2194: \\Delta_{H, \\text{phys}} = \\lambda_{\\text{gap}} \\hbar_{\\text{eff}} = \\lambda_{\\text{gap}} \\frac{m\\epsilon_c^2}{\\tau} \\sim \\lambda_{\\text{gap}} \\frac{m\\tau}{\\tau} = \\lambda_{\\text{gap}} m = O(1)\n2195: $$"
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-139",
+      "title": null,
+      "start_line": 2197,
+      "end_line": 2219,
+      "header_lines": [],
+      "content_start": 2198,
+      "content_end": 2218,
+      "content": "2198: \n2199: :::{prf:proof}\n2200: **Step 1: Spectral gap scaling.**\n2201: \n2202: From the renormalization:\n2203: \n2204: $$\n2205: \\lambda_{\\text{gap}} = O(\\gamma) \\sim \\frac{1}{\\tau}\n2206: $$\n2207: \n2208: **Step 2: Effective Planck constant scaling.**\n2209: \n2210: $$\n2211: \\hbar_{\\text{eff}} = \\frac{m\\epsilon_c^2}{\\tau} \\sim \\frac{m\\tau}{\\tau} = m\n2212: $$\n2213: \n2214: **Step 3: Mass gap.**\n2215: \n2216: $$\n2217: \\Delta_H = \\lambda_{\\text{gap}} \\hbar_{\\text{eff}} \\sim \\frac{1}{\\tau} \\cdot m \\cdot \\tau = m\n2218: $$",
+      "metadata": {},
+      "section": "## 13. Corrected Mass Gap Proof (Fixing Issue #2)",
+      "raw_directive": "2197: :::\n2198: \n2199: :::{prf:proof}\n2200: **Step 1: Spectral gap scaling.**\n2201: \n2202: From the renormalization:\n2203: \n2204: $$\n2205: \\lambda_{\\text{gap}} = O(\\gamma) \\sim \\frac{1}{\\tau}\n2206: $$\n2207: \n2208: **Step 2: Effective Planck constant scaling.**\n2209: \n2210: $$\n2211: \\hbar_{\\text{eff}} = \\frac{m\\epsilon_c^2}{\\tau} \\sim \\frac{m\\tau}{\\tau} = m\n2212: $$\n2213: \n2214: **Step 3: Mass gap.**\n2215: \n2216: $$\n2217: \\Delta_H = \\lambda_{\\text{gap}} \\hbar_{\\text{eff}} \\sim \\frac{1}{\\tau} \\cdot m \\cdot \\tau = m\n2218: $$\n2219: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

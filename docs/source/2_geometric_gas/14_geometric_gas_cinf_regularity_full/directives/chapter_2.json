@@ -1,0 +1,47 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 1. Introduction",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-effective-counts-two-scales",
+      "title": "Effective Interaction Counts (Two Scales)",
+      "start_line": 145,
+      "end_line": 201,
+      "header_lines": [
+        146
+      ],
+      "content_start": 148,
+      "content_end": 200,
+      "content": "148: :label: def-effective-counts-two-scales\n149: \n150: **1. Softmax Effective Companions** (scale $\\varepsilon_c$):\n151: \n152: $$\n153: k_{\\text{eff}}^{(\\varepsilon_c)}(i) := \\left|\\left\\{\\ell \\in \\mathcal{A} : d_{\\text{alg}}(i,\\ell) \\leq R_{\\text{eff}}^{(\\varepsilon_c)}\\right\\}\\right|\n154: \n155: $$\n156: \n157: where:\n158: \n159: $$\n160: R_{\\text{eff}}^{(\\varepsilon_c)} = \\varepsilon_c \\sqrt{C_{\\text{comp}}^2 + 2\\log(k^2)}\n161: \n162: $$\n163: \n164: **Scaling**:\n165: \n166: $$\n167: k_{\\text{eff}}^{(\\varepsilon_c)}(i) = O(\\rho_{\\max} \\cdot \\varepsilon_c^{2d} \\cdot (\\log k)^d)\n168: \n169: $$\n170: \n171: **Properties**:\n172: - Grows logarithmically with $k$\n173: - NOT k-uniform\n174: - Controls softmax companion sums over $\\ell$\n175: \n176: **2. Localization Effective Neighbors** (scale $\\rho$):\n177: \n178: $$\n179: k_{\\text{eff}}^{(\\rho)}(i) := \\left|\\left\\{j \\in \\mathcal{A} : d_{\\text{alg}}(i,j) \\leq R_{\\text{eff}}^{(\\rho)}\\right\\}\\right|\n180: \n181: $$\n182: \n183: where:\n184: \n185: $$\n186: R_{\\text{eff}}^{(\\rho)} = C_\\rho \\cdot \\rho\n187: \n188: $$\n189: \n190: for some constant $C_\\rho$ independent of $k$.\n191: \n192: **Scaling**:\n193: \n194: $$\n195: k_{\\text{eff}}^{(\\rho)}(i) = O(\\rho_{\\max} \\cdot \\rho^{2d})\n196: \n197: $$\n198: \n199: **Properties**:\n200: - Independent of $k$",
+      "metadata": {
+        "label": "def-effective-counts-two-scales"
+      },
+      "section": "## 1. Introduction",
+      "raw_directive": "145: The Geometric Gas fitness potential involves **two distinct spatial scales** with separate effective interaction counts. It is crucial to distinguish these to understand which bounds are k-uniform.\n146: \n147: :::{prf:definition} Effective Interaction Counts (Two Scales)\n148: :label: def-effective-counts-two-scales\n149: \n150: **1. Softmax Effective Companions** (scale $\\varepsilon_c$):\n151: \n152: $$\n153: k_{\\text{eff}}^{(\\varepsilon_c)}(i) := \\left|\\left\\{\\ell \\in \\mathcal{A} : d_{\\text{alg}}(i,\\ell) \\leq R_{\\text{eff}}^{(\\varepsilon_c)}\\right\\}\\right|\n154: \n155: $$\n156: \n157: where:\n158: \n159: $$\n160: R_{\\text{eff}}^{(\\varepsilon_c)} = \\varepsilon_c \\sqrt{C_{\\text{comp}}^2 + 2\\log(k^2)}\n161: \n162: $$\n163: \n164: **Scaling**:\n165: \n166: $$\n167: k_{\\text{eff}}^{(\\varepsilon_c)}(i) = O(\\rho_{\\max} \\cdot \\varepsilon_c^{2d} \\cdot (\\log k)^d)\n168: \n169: $$\n170: \n171: **Properties**:\n172: - Grows logarithmically with $k$\n173: - NOT k-uniform\n174: - Controls softmax companion sums over $\\ell$\n175: \n176: **2. Localization Effective Neighbors** (scale $\\rho$):\n177: \n178: $$\n179: k_{\\text{eff}}^{(\\rho)}(i) := \\left|\\left\\{j \\in \\mathcal{A} : d_{\\text{alg}}(i,j) \\leq R_{\\text{eff}}^{(\\rho)}\\right\\}\\right|\n180: \n181: $$\n182: \n183: where:\n184: \n185: $$\n186: R_{\\text{eff}}^{(\\rho)} = C_\\rho \\cdot \\rho\n187: \n188: $$\n189: \n190: for some constant $C_\\rho$ independent of $k$.\n191: \n192: **Scaling**:\n193: \n194: $$\n195: k_{\\text{eff}}^{(\\rho)}(i) = O(\\rho_{\\max} \\cdot \\rho^{2d})\n196: \n197: $$\n198: \n199: **Properties**:\n200: - Independent of $k$\n201: - **k-uniform** \u2713"
+    },
+    {
+      "directive_type": "notation",
+      "label": "notation-keff-superscripts",
+      "title": "k_eff Superscript Convention",
+      "start_line": 203,
+      "end_line": 213,
+      "header_lines": [
+        204
+      ],
+      "content_start": 206,
+      "content_end": 212,
+      "content": "206: :label: notation-keff-superscripts\n207: \n208: When we write \"$k_{\\text{eff}}$\" without superscript, the scale should be clear from context:\n209: - If discussing softmax, companion selection, or measurements $d_j$: assume $k_{\\text{eff}}^{(\\varepsilon_c)}$\n210: - If discussing localization weights $w_{ij}$, localized moments $\\mu_\\rho, \\sigma_\\rho$: assume $k_{\\text{eff}}^{(\\rho)}$\n211: \n212: For clarity in proofs, **always use superscript notation** $k_{\\text{eff}}^{(\\varepsilon_c)}$ or $k_{\\text{eff}}^{(\\rho)}$.",
+      "metadata": {
+        "label": "notation-keff-superscripts"
+      },
+      "section": "## 1. Introduction",
+      "raw_directive": "203: :::\n204: \n205: :::{prf:notation} k_eff Superscript Convention\n206: :label: notation-keff-superscripts\n207: \n208: When we write \"$k_{\\text{eff}}$\" without superscript, the scale should be clear from context:\n209: - If discussing softmax, companion selection, or measurements $d_j$: assume $k_{\\text{eff}}^{(\\varepsilon_c)}$\n210: - If discussing localization weights $w_{ij}$, localized moments $\\mu_\\rho, \\sigma_\\rho$: assume $k_{\\text{eff}}^{(\\rho)}$\n211: \n212: For clarity in proofs, **always use superscript notation** $k_{\\text{eff}}^{(\\varepsilon_c)}$ or $k_{\\text{eff}}^{(\\rho)}$.\n213: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

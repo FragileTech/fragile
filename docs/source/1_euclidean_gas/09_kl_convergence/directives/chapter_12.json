@@ -1,0 +1,65 @@
+{
+  "chapter_index": 12,
+  "section_id": "## 7. Extension to the Adaptive Model",
+  "directive_count": 3,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-lsi-perturbation",
+      "title": "LSI Stability Under Bounded Perturbations",
+      "start_line": 1964,
+      "end_line": 1979,
+      "header_lines": [
+        1965
+      ],
+      "content_start": 1967,
+      "content_end": 1978,
+      "content": "1967: :label: thm-lsi-perturbation\n1968: \n1969: If the backbone generator $\\mathcal{L}_0$ satisfies an LSI with constant $C_0$, and the perturbed generator is $\\mathcal{L}_\\epsilon = \\mathcal{L}_0 + \\epsilon \\mathcal{V}$ where $\\mathcal{V}$ is a bounded operator with:\n1970: \n1971: $$\n1972: \\|\\mathcal{V} f\\|_{L^2(\\pi)} \\le K \\|f\\|_{H^1(\\pi)}\n1973: $$\n1974: \n1975: then for $\\epsilon < \\epsilon^* = 1/(2KC_0)$, the perturbed generator satisfies an LSI with constant:\n1976: \n1977: $$\n1978: C_\\epsilon \\le \\frac{C_0}{1 - 2\\epsilon K C_0}",
+      "metadata": {
+        "label": "thm-lsi-perturbation"
+      },
+      "section": "## 7. Extension to the Adaptive Model",
+      "raw_directive": "1964: - Anisotropic diffusion $\\Sigma_{\\text{reg}}(x, S)$\n1965: \n1966: :::{prf:theorem} LSI Stability Under Bounded Perturbations\n1967: :label: thm-lsi-perturbation\n1968: \n1969: If the backbone generator $\\mathcal{L}_0$ satisfies an LSI with constant $C_0$, and the perturbed generator is $\\mathcal{L}_\\epsilon = \\mathcal{L}_0 + \\epsilon \\mathcal{V}$ where $\\mathcal{V}$ is a bounded operator with:\n1970: \n1971: $$\n1972: \\|\\mathcal{V} f\\|_{L^2(\\pi)} \\le K \\|f\\|_{H^1(\\pi)}\n1973: $$\n1974: \n1975: then for $\\epsilon < \\epsilon^* = 1/(2KC_0)$, the perturbed generator satisfies an LSI with constant:\n1976: \n1977: $$\n1978: C_\\epsilon \\le \\frac{C_0}{1 - 2\\epsilon K C_0}\n1979: $$"
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-lsi-perturbation",
+      "title": null,
+      "start_line": 1981,
+      "end_line": 1990,
+      "header_lines": [
+        1982
+      ],
+      "content_start": 1983,
+      "content_end": 1989,
+      "content": "1983: :::{prf:proof}\n1984: :label: proof-lsi-perturbation\n1985: Standard perturbation theory for functional inequalities. The key is that the adaptive terms are **bounded** (see Axiom 3.5 in [11_geometric_gas](../2_geometric_gas/11_geometric_gas)(../2_geometric_gas/11_geometric_gas)):\n1986: \n1987: $$\n1988: \\|\\mathbf{F}_{\\text{adapt}}\\| \\le F_{\\text{adapt,max}}(\\rho)\n1989: $$",
+      "metadata": {
+        "label": "proof-lsi-perturbation"
+      },
+      "section": "## 7. Extension to the Adaptive Model",
+      "raw_directive": "1981: :::\n1982: \n1983: :::{prf:proof}\n1984: :label: proof-lsi-perturbation\n1985: Standard perturbation theory for functional inequalities. The key is that the adaptive terms are **bounded** (see Axiom 3.5 in [11_geometric_gas](../2_geometric_gas/11_geometric_gas)(../2_geometric_gas/11_geometric_gas)):\n1986: \n1987: $$\n1988: \\|\\mathbf{F}_{\\text{adapt}}\\| \\le F_{\\text{adapt,max}}(\\rho)\n1989: $$\n1990: "
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-adaptive-lsi",
+      "title": "LSI for the \u03c1-Localized Geometric Gas",
+      "start_line": 1994,
+      "end_line": 2011,
+      "header_lines": [
+        1995
+      ],
+      "content_start": 1997,
+      "content_end": 2010,
+      "content": "1997: :label: cor-adaptive-lsi\n1998: \n1999: For the geometric gas with localization scale $\\rho > 0$, the LSI constant depends on $\\rho$ via:\n2000: \n2001: $$\n2002: C_{\\text{LSI}}(\\rho) \\le \\frac{C_{\\text{LSI}}^{\\text{backbone}}}{1 - \\epsilon_F \\cdot C_{\\text{adapt}}(\\rho)}\n2003: $$\n2004: \n2005: where $C_{\\text{adapt}}(\\rho) = O(F_{\\text{adapt,max}}(\\rho) / \\kappa_x)$ quantifies the perturbation strength.\n2006: \n2007: **Critical threshold:** Stability requires:\n2008: \n2009: $$\n2010: \\epsilon_F < \\epsilon_F^*(\\rho) = \\frac{1}{C_{\\text{adapt}}(\\rho)}",
+      "metadata": {
+        "label": "cor-adaptive-lsi"
+      },
+      "section": "## 7. Extension to the Adaptive Model",
+      "raw_directive": "1994: ### 7.2. \u03c1-Dependent LSI Constants\n1995: \n1996: :::{prf:corollary} LSI for the \u03c1-Localized Geometric Gas\n1997: :label: cor-adaptive-lsi\n1998: \n1999: For the geometric gas with localization scale $\\rho > 0$, the LSI constant depends on $\\rho$ via:\n2000: \n2001: $$\n2002: C_{\\text{LSI}}(\\rho) \\le \\frac{C_{\\text{LSI}}^{\\text{backbone}}}{1 - \\epsilon_F \\cdot C_{\\text{adapt}}(\\rho)}\n2003: $$\n2004: \n2005: where $C_{\\text{adapt}}(\\rho) = O(F_{\\text{adapt,max}}(\\rho) / \\kappa_x)$ quantifies the perturbation strength.\n2006: \n2007: **Critical threshold:** Stability requires:\n2008: \n2009: $$\n2010: \\epsilon_F < \\epsilon_F^*(\\rho) = \\frac{1}{C_{\\text{adapt}}(\\rho)}\n2011: $$"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

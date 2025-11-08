@@ -1,0 +1,43 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 2. Lemma 1: Voronoi Cell Diameter Scaling",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "lemma",
+      "label": "lem-voronoi-diameter-scaling",
+      "title": "Voronoi Cell Size Scales as $O(N^{-1/d})$",
+      "start_line": 113,
+      "end_line": 131,
+      "header_lines": [
+        114
+      ],
+      "content_start": 116,
+      "content_end": 130,
+      "content": "116: :label: lem-voronoi-diameter-scaling\n117: \n118: At QSD with $N$ walkers uniformly distributed according to $\\rho_{\\text{spatial}}(x)$, the typical Voronoi cell diameter scales as:\n119: \n120: $$\n121: \\text{diam}(\\text{Vor}_i) = O(N^{-1/d})\n122: $$\n123: \n124: with high probability as $N \\to \\infty$.\n125: \n126: **Precise statement**: For any $\\epsilon > 0$, there exists $N_0$ such that for all $N \\geq N_0$:\n127: \n128: $$\n129: \\mathbb{P}\\left[ \\max_{i \\in \\mathcal{A}} \\text{diam}(\\text{Vor}_i) > C N^{-1/d} \\right] < \\epsilon\n130: $$",
+      "metadata": {
+        "label": "lem-voronoi-diameter-scaling"
+      },
+      "section": "## 2. Lemma 1: Voronoi Cell Diameter Scaling",
+      "raw_directive": "113: ## 2. Lemma 1: Voronoi Cell Diameter Scaling\n114: \n115: :::{prf:lemma} Voronoi Cell Size Scales as $O(N^{-1/d})$\n116: :label: lem-voronoi-diameter-scaling\n117: \n118: At QSD with $N$ walkers uniformly distributed according to $\\rho_{\\text{spatial}}(x)$, the typical Voronoi cell diameter scales as:\n119: \n120: $$\n121: \\text{diam}(\\text{Vor}_i) = O(N^{-1/d})\n122: $$\n123: \n124: with high probability as $N \\to \\infty$.\n125: \n126: **Precise statement**: For any $\\epsilon > 0$, there exists $N_0$ such that for all $N \\geq N_0$:\n127: \n128: $$\n129: \\mathbb{P}\\left[ \\max_{i \\in \\mathcal{A}} \\text{diam}(\\text{Vor}_i) > C N^{-1/d} \\right] < \\epsilon\n130: $$\n131: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-21",
+      "title": null,
+      "start_line": 133,
+      "end_line": 167,
+      "header_lines": [],
+      "content_start": 134,
+      "content_end": 166,
+      "content": "134: \n135: :::{prf:proof}\n136: This is a standard result from **spatial point process theory** (see Baddeley, Rubak & Turner, 2015, *Spatial Point Patterns*).\n137: \n138: **Step 1: Volume of typical cell**\n139: \n140: Each walker occupies approximately equal volume (by Voronoi tessellation properties):\n141: \n142: $$\n143: \\mathbb{E}[\\text{Vol}(\\text{Vor}_i)] \\approx \\frac{\\text{Vol}(\\mathcal{X}_{\\text{valid}})}{N}\n144: $$\n145: \n146: For a $d$-dimensional region, volume scales as diameter to the $d$-th power:\n147: \n148: $$\n149: \\text{Vol}(\\text{Vor}_i) \\sim \\text{diam}(\\text{Vor}_i)^d\n150: $$\n151: \n152: **Step 2: Diameter estimate**\n153: \n154: Combining:\n155: \n156: $$\n157: \\text{diam}(\\text{Vor}_i)^d \\sim \\frac{1}{N} \\quad \\Rightarrow \\quad \\text{diam}(\\text{Vor}_i) \\sim N^{-1/d}\n158: $$\n159: \n160: **Step 3: Concentration inequality**\n161: \n162: For i.i.d. samples from $\\rho_{\\text{spatial}}$, classical concentration results (Penrose, 2003, *Random Geometric Graphs*) show:\n163: \n164: $$\n165: \\mathbb{P}\\left[ |\\text{diam}(\\text{Vor}_i) - \\mathbb{E}[\\text{diam}]| > \\delta \\right] \\le C e^{-c N \\delta^d}\n166: $$",
+      "metadata": {},
+      "section": "## 2. Lemma 1: Voronoi Cell Diameter Scaling",
+      "raw_directive": "133: :::\n134: \n135: :::{prf:proof}\n136: This is a standard result from **spatial point process theory** (see Baddeley, Rubak & Turner, 2015, *Spatial Point Patterns*).\n137: \n138: **Step 1: Volume of typical cell**\n139: \n140: Each walker occupies approximately equal volume (by Voronoi tessellation properties):\n141: \n142: $$\n143: \\mathbb{E}[\\text{Vol}(\\text{Vor}_i)] \\approx \\frac{\\text{Vol}(\\mathcal{X}_{\\text{valid}})}{N}\n144: $$\n145: \n146: For a $d$-dimensional region, volume scales as diameter to the $d$-th power:\n147: \n148: $$\n149: \\text{Vol}(\\text{Vor}_i) \\sim \\text{diam}(\\text{Vor}_i)^d\n150: $$\n151: \n152: **Step 2: Diameter estimate**\n153: \n154: Combining:\n155: \n156: $$\n157: \\text{diam}(\\text{Vor}_i)^d \\sim \\frac{1}{N} \\quad \\Rightarrow \\quad \\text{diam}(\\text{Vor}_i) \\sim N^{-1/d}\n158: $$\n159: \n160: **Step 3: Concentration inequality**\n161: \n162: For i.i.d. samples from $\\rho_{\\text{spatial}}$, classical concentration results (Penrose, 2003, *Random Geometric Graphs*) show:\n163: \n164: $$\n165: \\mathbb{P}\\left[ |\\text{diam}(\\text{Vor}_i) - \\mathbb{E}[\\text{diam}]| > \\delta \\right] \\le C e^{-c N \\delta^d}\n166: $$\n167: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

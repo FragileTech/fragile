@@ -242,7 +242,9 @@ def extract_jupyter_directives(
 # =============================================================================
 
 
-def split_into_sections(markdown_text: str, file_path: str = "unknown") -> list[DocumentSection]:
+def split_into_sections(
+    markdown_text: str, file_path: str = "unknown", heading_scope: str | None = "##"
+) -> list[DocumentSection]:
     """
     Split markdown document into sections by headings.
 
@@ -263,6 +265,10 @@ def split_into_sections(markdown_text: str, file_path: str = "unknown") -> list[
     Args:
         markdown_text: The full markdown document
         file_path: Path to the document (for metadata)
+        heading_scope: Optional heading string (e.g., "##", "###") that selects which
+            heading depth starts a new section. Subheadings (with more '#') are kept
+            inside the parent section. When ``None`` (default), every heading level
+            starts a new section (legacy behavior).
 
     Returns:
         List of DocumentSection objects
@@ -289,6 +295,14 @@ def split_into_sections(markdown_text: str, file_path: str = "unknown") -> list[
     # Pattern for markdown headings: # Title or ## Title or ### Title
     heading_pattern = r"^(#{1,6})\s+(.+)$"
 
+    target_level: int | None = None
+    if heading_scope is not None:
+        if not heading_scope or any(ch != "#" for ch in heading_scope):
+            raise ValueError("heading_scope must be a non-empty string of '#' characters")
+        target_level = len(heading_scope)
+        if not 1 <= target_level <= 6:
+            raise ValueError("heading_scope must have between 1 and 6 '#' characters")
+
     # Track current section
     current_section = None
     current_start = 0
@@ -298,8 +312,9 @@ def split_into_sections(markdown_text: str, file_path: str = "unknown") -> list[
         match = re.match(heading_pattern, line)
 
         if match:
-            # Save previous section if exists
-            if current_section is not None:
+            level = len(match.group(1))
+
+            if current_section is not None and (target_level is None or level <= target_level):
                 content = "\n".join(current_lines).strip()
                 directives = extract_jupyter_directives(content, current_section["section_id"])
                 sections.append(
@@ -313,9 +328,14 @@ def split_into_sections(markdown_text: str, file_path: str = "unknown") -> list[
                         directives=directives,
                     )
                 )
+                current_section = None
+                current_lines = []
 
-            # Start new section
-            level = len(match.group(1))
+            if target_level is not None and level != target_level:
+                if level > target_level and current_section is not None:
+                    current_lines.append(line)
+                continue
+
             title = match.group(2).strip()
             section_id = generate_section_id(title, i)
 
@@ -366,11 +386,11 @@ def generate_section_id(title: str, line_number: int) -> str:
 
     Examples:
         >>> generate_section_id("Chapter 1: Introduction", 0)
-        '�1-introduction'
+        '1-introduction'
         >>> generate_section_id("Main Results", 42)
         'main-results'
         >>> generate_section_id("Section 2.1: Preliminaries", 100)
-        '�2.1-preliminaries'
+        '2.1-preliminaries'
     """
     # Extract section number if present (e.g., "1", "2.1", "3.4.2")
     number_match = re.match(r"^(?:Chapter|Section)?\s*([0-9.]+)", title, re.IGNORECASE)
@@ -383,7 +403,7 @@ def generate_section_id(title: str, line_number: int) -> str:
         )
         # Generate ID
         slug = re.sub(r"[^a-z0-9]+", "-", title_without_number.lower()).strip("-")
-        return f"�{number}-{slug}"
+        return f"{number}-{slug}"
     # No number, just slugify the title
     return re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
 

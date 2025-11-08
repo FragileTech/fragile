@@ -1,0 +1,43 @@
+{
+  "chapter_index": 8,
+  "section_id": "## 6. Sum Over Matching",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "proposition",
+      "label": "prop-matching-conditional-contraction",
+      "title": "Matching-Conditional Contraction",
+      "start_line": 2067,
+      "end_line": 2077,
+      "header_lines": [
+        2068
+      ],
+      "content_start": 2070,
+      "content_end": 2076,
+      "content": "2070: :label: prop-matching-conditional-contraction\n2071: \n2072: For a fixed matching $M$:\n2073: \n2074: $$\n2075: \\mathbb{E}[W_2^2(\\mu_{S_1'}, \\mu_{S_2'}) \\mid M, S_1, S_2] \\leq \\gamma_{\\text{pair}} W_2^2(\\mu_{S_1}, \\mu_{S_2}) + C_{\\text{pair}}\n2076: $$",
+      "metadata": {
+        "label": "prop-matching-conditional-contraction"
+      },
+      "section": "## 6. Sum Over Matching",
+      "raw_directive": "2067: ### 6.2. Linearity of Expectation\n2068: \n2069: :::{prf:proposition} Matching-Conditional Contraction\n2070: :label: prop-matching-conditional-contraction\n2071: \n2072: For a fixed matching $M$:\n2073: \n2074: $$\n2075: \\mathbb{E}[W_2^2(\\mu_{S_1'}, \\mu_{S_2'}) \\mid M, S_1, S_2] \\leq \\gamma_{\\text{pair}} W_2^2(\\mu_{S_1}, \\mu_{S_2}) + C_{\\text{pair}}\n2076: $$\n2077: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-33",
+      "title": null,
+      "start_line": 2079,
+      "end_line": 2092,
+      "header_lines": [],
+      "content_start": 2080,
+      "content_end": 2091,
+      "content": "2080: \n2081: :::{prf:proof}\n2082: By linearity of expectation:\n2083: \n2084: $$\n2085: \\begin{aligned}\n2086: \\mathbb{E}\\left[\\frac{1}{N} \\sum_{i=1}^N \\|x'_{1,i} - x'_{2,i}\\|^2 \\mid M\\right] &= \\frac{1}{N} \\sum_{k=1}^{N/2} \\mathbb{E}[\\|x'_{1,i_k} - x'_{2,i_k}\\|^2 + \\|x'_{1,j_k} - x'_{2,j_k}\\|^2 \\mid M] \\\\\n2087: &\\leq \\frac{1}{N} \\sum_{k=1}^{N/2} [\\gamma_{\\text{pair}}(\\|x_{1,i_k} - x_{2,i_k}\\|^2 + \\|x_{1,j_k} - x_{2,j_k}\\|^2) + C_{\\text{pair}}] \\\\\n2088: &= \\gamma_{\\text{pair}} \\cdot \\frac{1}{N} \\sum_{i=1}^N \\|x_{1,i} - x_{2,i}\\|^2 + C_{\\text{pair}} \\\\\n2089: &= \\gamma_{\\text{pair}} W_2^2(\\mu_{S_1}, \\mu_{S_2}) + C_{\\text{pair}}\n2090: \\end{aligned}\n2091: $$",
+      "metadata": {},
+      "section": "## 6. Sum Over Matching",
+      "raw_directive": "2079: :::\n2080: \n2081: :::{prf:proof}\n2082: By linearity of expectation:\n2083: \n2084: $$\n2085: \\begin{aligned}\n2086: \\mathbb{E}\\left[\\frac{1}{N} \\sum_{i=1}^N \\|x'_{1,i} - x'_{2,i}\\|^2 \\mid M\\right] &= \\frac{1}{N} \\sum_{k=1}^{N/2} \\mathbb{E}[\\|x'_{1,i_k} - x'_{2,i_k}\\|^2 + \\|x'_{1,j_k} - x'_{2,j_k}\\|^2 \\mid M] \\\\\n2087: &\\leq \\frac{1}{N} \\sum_{k=1}^{N/2} [\\gamma_{\\text{pair}}(\\|x_{1,i_k} - x_{2,i_k}\\|^2 + \\|x_{1,j_k} - x_{2,j_k}\\|^2) + C_{\\text{pair}}] \\\\\n2088: &= \\gamma_{\\text{pair}} \\cdot \\frac{1}{N} \\sum_{i=1}^N \\|x_{1,i} - x_{2,i}\\|^2 + C_{\\text{pair}} \\\\\n2089: &= \\gamma_{\\text{pair}} W_2^2(\\mu_{S_1}, \\mu_{S_2}) + C_{\\text{pair}}\n2090: \\end{aligned}\n2091: $$\n2092: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

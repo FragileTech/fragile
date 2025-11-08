@@ -1,0 +1,84 @@
+{
+  "document_id": "12_quantitative_error_bounds",
+  "stage": "directives",
+  "directive_type": "remark",
+  "generated_at": "2025-11-08T17:07:43.230194+00:00",
+  "count": 3,
+  "items": [
+    {
+      "directive_type": "remark",
+      "label": "rem-rate-interpretation",
+      "title": "Rate Interpretation",
+      "start_line": 2528,
+      "end_line": 2560,
+      "header_lines": [
+        2529
+      ],
+      "content_start": 2531,
+      "content_end": 2559,
+      "content": "2531: :label: rem-rate-interpretation\n2532: \n2533: The total error bound reveals two competing sources:\n2534: \n2535: 1. **Statistical error** ($O(1/\\sqrt{N})$): From finite-sample approximation of the mean-field limit\n2536:    - Dominant for small $N$ (e.g., $N = 100 \\Rightarrow$ error $\\approx 0.1 C_{\\text{MF}}$)\n2537:    - Reduced by increasing swarm size\n2538:    - Intrinsic to particle approximations (cannot be eliminated)\n2539: \n2540: 2. **Discretization error** ($O(\\Delta t)$): From operator splitting and time discretization\n2541:    - Dominant for coarse time steps\n2542:    - Reduced by decreasing $\\Delta t$\n2543:    - First-order due to non-commutativity $[\\mathcal{L}_{\\text{Langevin}}, \\mathcal{L}_{\\text{clone}}] \\neq 0$\n2544: \n2545: **Balanced regime**: To achieve overall error $\\varepsilon$, balance the two terms:\n2546: \n2547: $$\n2548: \\frac{C_{\\text{MF}}}{\\sqrt{N}} \\approx C_{\\text{discrete}} \\Delta t \\approx \\frac{\\varepsilon}{2}\n2549: $$\n2550: \n2551: This gives the scaling relationship:\n2552: \n2553: $$\n2554: \\Delta t \\sim \\frac{1}{\\sqrt{N}}\n2555: $$\n2556: \n2557: **Example**: For $\\varepsilon = 0.01$ and $C_{\\text{MF}} \\approx C_{\\text{discrete}} \\approx 1$:\n2558: - Choose $N = 10^4$ walkers $\\Rightarrow$ statistical error $\\approx 0.01$\n2559: - Choose $\\Delta t = 0.01$ $\\Rightarrow$ discretization error $\\approx 0.01$",
+      "metadata": {
+        "label": "rem-rate-interpretation"
+      },
+      "section": "## Part IV: Total Error Bound",
+      "raw_directive": "2528: ### Interpretation and Practical Implications\n2529: \n2530: :::{prf:remark} Rate Interpretation\n2531: :label: rem-rate-interpretation\n2532: \n2533: The total error bound reveals two competing sources:\n2534: \n2535: 1. **Statistical error** ($O(1/\\sqrt{N})$): From finite-sample approximation of the mean-field limit\n2536:    - Dominant for small $N$ (e.g., $N = 100 \\Rightarrow$ error $\\approx 0.1 C_{\\text{MF}}$)\n2537:    - Reduced by increasing swarm size\n2538:    - Intrinsic to particle approximations (cannot be eliminated)\n2539: \n2540: 2. **Discretization error** ($O(\\Delta t)$): From operator splitting and time discretization\n2541:    - Dominant for coarse time steps\n2542:    - Reduced by decreasing $\\Delta t$\n2543:    - First-order due to non-commutativity $[\\mathcal{L}_{\\text{Langevin}}, \\mathcal{L}_{\\text{clone}}] \\neq 0$\n2544: \n2545: **Balanced regime**: To achieve overall error $\\varepsilon$, balance the two terms:\n2546: \n2547: $$\n2548: \\frac{C_{\\text{MF}}}{\\sqrt{N}} \\approx C_{\\text{discrete}} \\Delta t \\approx \\frac{\\varepsilon}{2}\n2549: $$\n2550: \n2551: This gives the scaling relationship:\n2552: \n2553: $$\n2554: \\Delta t \\sim \\frac{1}{\\sqrt{N}}\n2555: $$\n2556: \n2557: **Example**: For $\\varepsilon = 0.01$ and $C_{\\text{MF}} \\approx C_{\\text{discrete}} \\approx 1$:\n2558: - Choose $N = 10^4$ walkers $\\Rightarrow$ statistical error $\\approx 0.01$\n2559: - Choose $\\Delta t = 0.01$ $\\Rightarrow$ discretization error $\\approx 0.01$\n2560: - Total error $\\approx 0.02$ (factor of 2 from triangle inequality)",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "12_quantitative_error_bounds",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## Part IV: Total Error Bound"
+      }
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-higher-order-splitting",
+      "title": "Higher-Order Splitting Methods",
+      "start_line": 2562,
+      "end_line": 2601,
+      "header_lines": [
+        2563
+      ],
+      "content_start": 2565,
+      "content_end": 2600,
+      "content": "2565: :label: rem-higher-order-splitting\n2566: \n2567: Can we further reduce the discretization error $O(\\Delta t)$ using higher-order splitting methods?\n2568: \n2569: **General principle:** For ergodic systems with a unique invariant measure, the relationship between local and global errors is:\n2570: - A symmetric integrator with local weak error $O((\\Delta t)^{p+1})$ for even $p$\n2571: - Produces an invariant measure error of $O((\\Delta t)^p)$\n2572: \n2573: This is proven via the Poisson equation argument in Part III ({prf:ref}`thm-error-propagation`): roughly, one derivative is lost when integrating local errors over infinite time.\n2574: \n2575: **Strang splitting** (second-order symmetric):\n2576: \n2577: $$\n2578: \\mathcal{T}^{\\Delta t}_{\\text{Strang}} = \\mathcal{T}_{\\text{Langevin}}^{\\Delta t/2} \\circ \\mathcal{T}_{\\text{clone}}^{\\Delta t} \\circ \\mathcal{T}_{\\text{Langevin}}^{\\Delta t/2}\n2579: $$\n2580: \n2581: This is symmetric and achieves:\n2582: - **Local weak error**: $O((\\Delta t)^3)$ (second-order method with $p=2$)\n2583: - **Global invariant measure error**: $O((\\Delta t)^2)$ (applying the general principle)\n2584: \n2585: Therefore, Strang splitting improves the discretization term to:\n2586: \n2587: $$\n2588: C_{\\text{discrete}}^{(2)} (\\Delta t)^2\n2589: $$\n2590: \n2591: where $C_{\\text{discrete}}^{(2)}$ is typically larger than $C_{\\text{discrete}}$ due to higher-order commutator contributions, but the $(\\Delta t)^2$ dependence makes it substantially smaller for reasonable time steps.\n2592: \n2593: **Practical assessment:**\n2594: - For $\\Delta t = 0.01$ and constants $C_{\\text{discrete}} \\approx C_{\\text{discrete}}^{(2)} \\approx 1$:\n2595:   - First-order (Lie): discretization error $\\sim 0.01$\n2596:   - Second-order (Strang): discretization error $\\sim 0.0001$\n2597: - For large $N$ (e.g., $N = 10^4$): mean-field error $\\sim 0.01$\n2598: - **Trade-off**: Strang splitting can reduce discretization error below the mean-field error, but this requires smaller $\\Delta t$ or provides benefit only when $N$ is very large\n2599: - **Recommendation**: For moderate $N$ (e.g., $N \\lesssim 10^4$), simple Lie splitting suffices. For very large $N$ where mean-field error becomes small, Strang splitting can provide meaningful improvement\n2600: ",
+      "metadata": {
+        "label": "rem-higher-order-splitting"
+      },
+      "section": "## Part IV: Total Error Bound",
+      "raw_directive": "2562: :::\n2563: \n2564: :::{prf:remark} Higher-Order Splitting Methods\n2565: :label: rem-higher-order-splitting\n2566: \n2567: Can we further reduce the discretization error $O(\\Delta t)$ using higher-order splitting methods?\n2568: \n2569: **General principle:** For ergodic systems with a unique invariant measure, the relationship between local and global errors is:\n2570: - A symmetric integrator with local weak error $O((\\Delta t)^{p+1})$ for even $p$\n2571: - Produces an invariant measure error of $O((\\Delta t)^p)$\n2572: \n2573: This is proven via the Poisson equation argument in Part III ({prf:ref}`thm-error-propagation`): roughly, one derivative is lost when integrating local errors over infinite time.\n2574: \n2575: **Strang splitting** (second-order symmetric):\n2576: \n2577: $$\n2578: \\mathcal{T}^{\\Delta t}_{\\text{Strang}} = \\mathcal{T}_{\\text{Langevin}}^{\\Delta t/2} \\circ \\mathcal{T}_{\\text{clone}}^{\\Delta t} \\circ \\mathcal{T}_{\\text{Langevin}}^{\\Delta t/2}\n2579: $$\n2580: \n2581: This is symmetric and achieves:\n2582: - **Local weak error**: $O((\\Delta t)^3)$ (second-order method with $p=2$)\n2583: - **Global invariant measure error**: $O((\\Delta t)^2)$ (applying the general principle)\n2584: \n2585: Therefore, Strang splitting improves the discretization term to:\n2586: \n2587: $$\n2588: C_{\\text{discrete}}^{(2)} (\\Delta t)^2\n2589: $$\n2590: \n2591: where $C_{\\text{discrete}}^{(2)}$ is typically larger than $C_{\\text{discrete}}$ due to higher-order commutator contributions, but the $(\\Delta t)^2$ dependence makes it substantially smaller for reasonable time steps.\n2592: \n2593: **Practical assessment:**\n2594: - For $\\Delta t = 0.01$ and constants $C_{\\text{discrete}} \\approx C_{\\text{discrete}}^{(2)} \\approx 1$:\n2595:   - First-order (Lie): discretization error $\\sim 0.01$\n2596:   - Second-order (Strang): discretization error $\\sim 0.0001$\n2597: - For large $N$ (e.g., $N = 10^4$): mean-field error $\\sim 0.01$\n2598: - **Trade-off**: Strang splitting can reduce discretization error below the mean-field error, but this requires smaller $\\Delta t$ or provides benefit only when $N$ is very large\n2599: - **Recommendation**: For moderate $N$ (e.g., $N \\lesssim 10^4$), simple Lie splitting suffices. For very large $N$ where mean-field error becomes small, Strang splitting can provide meaningful improvement\n2600: \n2601: **Cost**: Strang splitting requires splitting the BAOAB step and increases computational overhead by ~50%.",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "12_quantitative_error_bounds",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## Part IV: Total Error Bound"
+      }
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-optimality-mean-field-rate",
+      "title": "Optimality of the Mean-Field Rate",
+      "start_line": 2603,
+      "end_line": 2620,
+      "header_lines": [
+        2604
+      ],
+      "content_start": 2606,
+      "content_end": 2619,
+      "content": "2606: :label: rem-optimality-mean-field-rate\n2607: \n2608: The $O(1/\\sqrt{N})$ rate is **optimal** for empirical measure convergence in mean-field particle systems.\n2609: \n2610: **Why?** This is the rate of the **Central Limit Theorem**:\n2611: \n2612: $$\n2613: \\sqrt{N} (\\bar{\\mu}_N - \\rho_0) \\xrightarrow{d} \\mathcal{N}(0, \\Sigma)\n2614: $$\n2615: \n2616: where $\\Sigma$ is the covariance operator of the limiting Gaussian process.\n2617: \n2618: **Implication**: No particle method can achieve better than $O(1/\\sqrt{N})$ convergence without additional structure (e.g., multilevel methods, variance reduction).\n2619: ",
+      "metadata": {
+        "label": "rem-optimality-mean-field-rate"
+      },
+      "section": "## Part IV: Total Error Bound",
+      "raw_directive": "2603: :::\n2604: \n2605: :::{prf:remark} Optimality of the Mean-Field Rate\n2606: :label: rem-optimality-mean-field-rate\n2607: \n2608: The $O(1/\\sqrt{N})$ rate is **optimal** for empirical measure convergence in mean-field particle systems.\n2609: \n2610: **Why?** This is the rate of the **Central Limit Theorem**:\n2611: \n2612: $$\n2613: \\sqrt{N} (\\bar{\\mu}_N - \\rho_0) \\xrightarrow{d} \\mathcal{N}(0, \\Sigma)\n2614: $$\n2615: \n2616: where $\\Sigma$ is the covariance operator of the limiting Gaussian process.\n2617: \n2618: **Implication**: No particle method can achieve better than $O(1/\\sqrt{N})$ convergence without additional structure (e.g., multilevel methods, variance reduction).\n2619: \n2620: **Reference**: Sznitman (1991), \"Topics in propagation of chaos\" - Section 6 on optimal rates.",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "12_quantitative_error_bounds",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## Part IV: Total Error Bound"
+      }
+    }
+  ]
+}

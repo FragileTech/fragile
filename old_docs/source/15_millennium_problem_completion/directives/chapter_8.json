@@ -1,0 +1,93 @@
+{
+  "chapter_index": 8,
+  "section_id": "## 7. Full Spectrum Mass Gap",
+  "directive_count": 5,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-transfer-operator",
+      "title": "Transfer Operator and Excited States",
+      "start_line": 1085,
+      "end_line": 1113,
+      "header_lines": [
+        1086
+      ],
+      "content_start": 1088,
+      "content_end": 1112,
+      "content": "1088: :label: def-transfer-operator\n1089: \n1090: The **transfer operator** for the Adaptive Gas is:\n1091: \n1092: $$\n1093: (\\mathcal{T}_t f)(x,v) = \\mathbb{E}_{x,v}[f(x_t, v_t)]\n1094: $$\n1095: \n1096: where $\\mathbb{E}_{x,v}$ is expectation conditioned on initial state $(x_0, v_0) = (x, v)$.\n1097: \n1098: **Eigenvalue problem**:\n1099: \n1100: $$\n1101: \\mathcal{T}_t f_n = e^{-\\lambda_n t} f_n\n1102: $$\n1103: \n1104: The eigenvalues $\\{\\lambda_n\\}$ form the **spectrum** of the generator:\n1105: \n1106: $$\n1107: \\text{Spec}(\\mathcal{L}) = \\{\\lambda_0 = 0, \\lambda_1, \\lambda_2, \\ldots\\}\n1108: $$\n1109: \n1110: with $0 = \\lambda_0 < \\lambda_1 \\leq \\lambda_2 \\leq \\cdots$.\n1111: \n1112: **Ground state**: $f_0 = \\mu^{\\text{QSD}}$ (the QSD itself).",
+      "metadata": {
+        "label": "def-transfer-operator"
+      },
+      "section": "## 7. Full Spectrum Mass Gap",
+      "raw_directive": "1085: ### 7.2. Strategy: Spectral Analysis of Transfer Operator\n1086: \n1087: :::{prf:definition} Transfer Operator and Excited States\n1088: :label: def-transfer-operator\n1089: \n1090: The **transfer operator** for the Adaptive Gas is:\n1091: \n1092: $$\n1093: (\\mathcal{T}_t f)(x,v) = \\mathbb{E}_{x,v}[f(x_t, v_t)]\n1094: $$\n1095: \n1096: where $\\mathbb{E}_{x,v}$ is expectation conditioned on initial state $(x_0, v_0) = (x, v)$.\n1097: \n1098: **Eigenvalue problem**:\n1099: \n1100: $$\n1101: \\mathcal{T}_t f_n = e^{-\\lambda_n t} f_n\n1102: $$\n1103: \n1104: The eigenvalues $\\{\\lambda_n\\}$ form the **spectrum** of the generator:\n1105: \n1106: $$\n1107: \\text{Spec}(\\mathcal{L}) = \\{\\lambda_0 = 0, \\lambda_1, \\lambda_2, \\ldots\\}\n1108: $$\n1109: \n1110: with $0 = \\lambda_0 < \\lambda_1 \\leq \\lambda_2 \\leq \\cdots$.\n1111: \n1112: **Ground state**: $f_0 = \\mu^{\\text{QSD}}$ (the QSD itself).\n1113: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-full-spectrum-gap",
+      "title": "Spectral Gap for Full Spectrum",
+      "start_line": 1115,
+      "end_line": 1133,
+      "header_lines": [
+        1116
+      ],
+      "content_start": 1118,
+      "content_end": 1132,
+      "content": "1118: :label: thm-full-spectrum-gap\n1119: \n1120: Under the uniform ellipticity condition (Theorem {prf:ref}`thm-uniform-ellipticity` in {doc}`08_emergent_geometry.md`), the generator $\\mathcal{L}$ has a **spectral gap** for the full spectrum:\n1121: \n1122: $$\n1123: \\lambda_1 \\geq \\kappa_{\\text{total}} > 0\n1124: $$\n1125: \n1126: where $\\kappa_{\\text{total}} = O(\\min\\{\\gamma, c_{\\min}(\\rho), \\kappa_{\\text{conf}}\\})$.\n1127: \n1128: **Result**: The mass gap for the first excited state is:\n1129: \n1130: $$\n1131: \\Delta = \\lambda_1 \\cdot \\hbar_{\\text{eff}} = \\kappa_{\\text{total}} \\cdot \\frac{m\\epsilon_c^2}{\\tau}\n1132: $$",
+      "metadata": {
+        "label": "thm-full-spectrum-gap"
+      },
+      "section": "## 7. Full Spectrum Mass Gap",
+      "raw_directive": "1115: :::\n1116: \n1117: :::{prf:theorem} Spectral Gap for Full Spectrum\n1118: :label: thm-full-spectrum-gap\n1119: \n1120: Under the uniform ellipticity condition (Theorem {prf:ref}`thm-uniform-ellipticity` in {doc}`08_emergent_geometry.md`), the generator $\\mathcal{L}$ has a **spectral gap** for the full spectrum:\n1121: \n1122: $$\n1123: \\lambda_1 \\geq \\kappa_{\\text{total}} > 0\n1124: $$\n1125: \n1126: where $\\kappa_{\\text{total}} = O(\\min\\{\\gamma, c_{\\min}(\\rho), \\kappa_{\\text{conf}}\\})$.\n1127: \n1128: **Result**: The mass gap for the first excited state is:\n1129: \n1130: $$\n1131: \\Delta = \\lambda_1 \\cdot \\hbar_{\\text{eff}} = \\kappa_{\\text{total}} \\cdot \\frac{m\\epsilon_c^2}{\\tau}\n1132: $$\n1133: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-63",
+      "title": null,
+      "start_line": 1135,
+      "end_line": 1197,
+      "header_lines": [],
+      "content_start": 1136,
+      "content_end": 1196,
+      "content": "1136: \n1137: :::{prf:proof}\n1138: **Step 1: Coercive Lyapunov function.**\n1139: \n1140: From {doc}`08_emergent_geometry.md`, we have a Lyapunov function:\n1141: \n1142: $$\n1143: V_{\\text{total}}(x,v,S) = V_x(x) + \\lambda_v V_v(v) + V_B(S)\n1144: $$\n1145: \n1146: satisfying the drift inequality:\n1147: \n1148: $$\n1149: \\mathcal{L} V_{\\text{total}} \\leq -\\kappa_{\\text{total}} V_{\\text{total}} + C_{\\text{total}}\n1150: $$\n1151: \n1152: **Step 2: Poincar\u00e9 inequality.**\n1153: \n1154: The drift inequality implies a **Poincar\u00e9 inequality** for functions orthogonal to QSD:\n1155: \n1156: $$\n1157: \\text{Var}_{\\mu^{\\text{QSD}}}(f) \\leq \\frac{1}{\\lambda_1} \\int |\\nabla f|^2 \\, d\\mu^{\\text{QSD}}\n1158: $$\n1159: \n1160: where $\\lambda_1^{-1}$ is the Poincar\u00e9 constant.\n1161: \n1162: From the drift inequality, we have:\n1163: \n1164: $$\n1165: \\lambda_1 \\geq \\kappa_{\\text{total}}\n1166: $$\n1167: \n1168: **Step 3: Excited state masses.**\n1169: \n1170: Each eigenfunction $f_n$ corresponds to an **excitation** of the QSD. In QFT language, these are **glueball states** (bound states of gauge fields).\n1171: \n1172: The energy of excitation $n$ is:\n1173: \n1174: $$\n1175: E_n - E_0 = \\lambda_n \\hbar_{\\text{eff}}\n1176: $$\n1177: \n1178: The mass gap is:\n1179: \n1180: $$\n1181: \\Delta = (E_1 - E_0) = \\lambda_1 \\hbar_{\\text{eff}} \\geq \\kappa_{\\text{total}} \\cdot \\frac{m\\epsilon_c^2}{\\tau}\n1182: $$\n1183: \n1184: **Step 4: Continuum limit.**\n1185: \n1186: With the rescaling from {doc}`14_yang_mills_noether.md` \u00a79.10:\n1187: \n1188: $$\n1189: \\gamma(\\tau) \\sim \\frac{1}{\\tau}, \\quad \\epsilon_c(\\tau) \\sim \\sqrt{\\tau}\n1190: $$\n1191: \n1192: we get:\n1193: \n1194: $$\n1195: \\Delta(\\tau) = \\kappa_{\\text{total}}(\\tau) \\cdot \\frac{m\\epsilon_c^2}{\\tau} \\sim \\frac{1}{\\tau} \\cdot \\frac{m\\tau}{\\tau} = m = \\text{constant}\n1196: $$",
+      "metadata": {},
+      "section": "## 7. Full Spectrum Mass Gap",
+      "raw_directive": "1135: :::\n1136: \n1137: :::{prf:proof}\n1138: **Step 1: Coercive Lyapunov function.**\n1139: \n1140: From {doc}`08_emergent_geometry.md`, we have a Lyapunov function:\n1141: \n1142: $$\n1143: V_{\\text{total}}(x,v,S) = V_x(x) + \\lambda_v V_v(v) + V_B(S)\n1144: $$\n1145: \n1146: satisfying the drift inequality:\n1147: \n1148: $$\n1149: \\mathcal{L} V_{\\text{total}} \\leq -\\kappa_{\\text{total}} V_{\\text{total}} + C_{\\text{total}}\n1150: $$\n1151: \n1152: **Step 2: Poincar\u00e9 inequality.**\n1153: \n1154: The drift inequality implies a **Poincar\u00e9 inequality** for functions orthogonal to QSD:\n1155: \n1156: $$\n1157: \\text{Var}_{\\mu^{\\text{QSD}}}(f) \\leq \\frac{1}{\\lambda_1} \\int |\\nabla f|^2 \\, d\\mu^{\\text{QSD}}\n1158: $$\n1159: \n1160: where $\\lambda_1^{-1}$ is the Poincar\u00e9 constant.\n1161: \n1162: From the drift inequality, we have:\n1163: \n1164: $$\n1165: \\lambda_1 \\geq \\kappa_{\\text{total}}\n1166: $$\n1167: \n1168: **Step 3: Excited state masses.**\n1169: \n1170: Each eigenfunction $f_n$ corresponds to an **excitation** of the QSD. In QFT language, these are **glueball states** (bound states of gauge fields).\n1171: \n1172: The energy of excitation $n$ is:\n1173: \n1174: $$\n1175: E_n - E_0 = \\lambda_n \\hbar_{\\text{eff}}\n1176: $$\n1177: \n1178: The mass gap is:\n1179: \n1180: $$\n1181: \\Delta = (E_1 - E_0) = \\lambda_1 \\hbar_{\\text{eff}} \\geq \\kappa_{\\text{total}} \\cdot \\frac{m\\epsilon_c^2}{\\tau}\n1182: $$\n1183: \n1184: **Step 4: Continuum limit.**\n1185: \n1186: With the rescaling from {doc}`14_yang_mills_noether.md` \u00a79.10:\n1187: \n1188: $$\n1189: \\gamma(\\tau) \\sim \\frac{1}{\\tau}, \\quad \\epsilon_c(\\tau) \\sim \\sqrt{\\tau}\n1190: $$\n1191: \n1192: we get:\n1193: \n1194: $$\n1195: \\Delta(\\tau) = \\kappa_{\\text{total}}(\\tau) \\cdot \\frac{m\\epsilon_c^2}{\\tau} \\sim \\frac{1}{\\tau} \\cdot \\frac{m\\tau}{\\tau} = m = \\text{constant}\n1196: $$\n1197: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-no-accumulation",
+      "title": "No Accumulation of Spectrum at Zero",
+      "start_line": 1199,
+      "end_line": 1205,
+      "header_lines": [
+        1200
+      ],
+      "content_start": 1202,
+      "content_end": 1204,
+      "content": "1202: :label: thm-no-accumulation\n1203: \n1204: The spectrum of $\\mathcal{L}$ is **discrete** in the regime $\\lambda < \\Lambda_{\\text{max}}$ for some finite $\\Lambda_{\\text{max}}$, with no accumulation points except possibly at infinity.",
+      "metadata": {
+        "label": "thm-no-accumulation"
+      },
+      "section": "## 7. Full Spectrum Mass Gap",
+      "raw_directive": "1199: :::\n1200: \n1201: :::{prf:theorem} No Accumulation of Spectrum at Zero\n1202: :label: thm-no-accumulation\n1203: \n1204: The spectrum of $\\mathcal{L}$ is **discrete** in the regime $\\lambda < \\Lambda_{\\text{max}}$ for some finite $\\Lambda_{\\text{max}}$, with no accumulation points except possibly at infinity.\n1205: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-135",
+      "title": null,
+      "start_line": 1207,
+      "end_line": 1245,
+      "header_lines": [],
+      "content_start": 1208,
+      "content_end": 1244,
+      "content": "1208: \n1209: :::{prf:proof}\n1210: **Step 1: Compact resolvent.**\n1211: \n1212: The operator $\\mathcal{L}$ acts on the weighted $L^2$ space:\n1213: \n1214: $$\n1215: L^2(\\mu^{\\text{QSD}}) = \\{f : \\int |f|^2 d\\mu^{\\text{QSD}} < \\infty\\}\n1216: $$\n1217: \n1218: From the Lyapunov function analysis, $\\mathcal{L}$ has a **compact resolvent**:\n1219: \n1220: $$\n1221: (\\mathcal{L} - \\lambda)^{-1} : L^2 \\to L^2 \\text{ is compact for } \\lambda < 0\n1222: $$\n1223: \n1224: **Step 2: Spectral theorem for compact operators.**\n1225: \n1226: By the spectral theorem, a self-adjoint operator with compact resolvent has **discrete spectrum** with no accumulation points except at infinity.\n1227: \n1228: **Step 3: Exponential gaps.**\n1229: \n1230: From the hypocoercivity analysis, the spectrum satisfies:\n1231: \n1232: $$\n1233: \\lambda_{n+1} - \\lambda_n \\geq \\kappa_{\\min} > 0\n1234: $$\n1235: \n1236: for some uniform constant $\\kappa_{\\min}$ (at least for low-lying states).\n1237: \n1238: **Step 4: No massless modes.**\n1239: \n1240: The only zero eigenvalue is $\\lambda_0 = 0$ (the QSD). All other eigenvalues are bounded away from zero:\n1241: \n1242: $$\n1243: \\lambda_n \\geq \\lambda_1 \\geq \\kappa_{\\text{total}} > 0 \\quad \\forall n \\geq 1\n1244: $$",
+      "metadata": {},
+      "section": "## 7. Full Spectrum Mass Gap",
+      "raw_directive": "1207: :::\n1208: \n1209: :::{prf:proof}\n1210: **Step 1: Compact resolvent.**\n1211: \n1212: The operator $\\mathcal{L}$ acts on the weighted $L^2$ space:\n1213: \n1214: $$\n1215: L^2(\\mu^{\\text{QSD}}) = \\{f : \\int |f|^2 d\\mu^{\\text{QSD}} < \\infty\\}\n1216: $$\n1217: \n1218: From the Lyapunov function analysis, $\\mathcal{L}$ has a **compact resolvent**:\n1219: \n1220: $$\n1221: (\\mathcal{L} - \\lambda)^{-1} : L^2 \\to L^2 \\text{ is compact for } \\lambda < 0\n1222: $$\n1223: \n1224: **Step 2: Spectral theorem for compact operators.**\n1225: \n1226: By the spectral theorem, a self-adjoint operator with compact resolvent has **discrete spectrum** with no accumulation points except at infinity.\n1227: \n1228: **Step 3: Exponential gaps.**\n1229: \n1230: From the hypocoercivity analysis, the spectrum satisfies:\n1231: \n1232: $$\n1233: \\lambda_{n+1} - \\lambda_n \\geq \\kappa_{\\min} > 0\n1234: $$\n1235: \n1236: for some uniform constant $\\kappa_{\\min}$ (at least for low-lying states).\n1237: \n1238: **Step 4: No massless modes.**\n1239: \n1240: The only zero eigenvalue is $\\lambda_0 = 0$ (the QSD). All other eigenvalues are bounded away from zero:\n1241: \n1242: $$\n1243: \\lambda_n \\geq \\lambda_1 \\geq \\kappa_{\\text{total}} > 0 \\quad \\forall n \\geq 1\n1244: $$\n1245: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

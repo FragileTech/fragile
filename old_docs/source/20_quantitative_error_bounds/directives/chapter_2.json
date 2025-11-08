@@ -1,0 +1,65 @@
+{
+  "chapter_index": 2,
+  "section_id": "## Part II: Time Discretization Error Bounds",
+  "directive_count": 3,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-time-discretization-error-target",
+      "title": "Time Discretization Error for Invariant Measure (Target)",
+      "start_line": 172,
+      "end_line": 184,
+      "header_lines": [
+        173
+      ],
+      "content_start": 175,
+      "content_end": 183,
+      "content": "175: :label: thm-time-discretization-error-target\n176: \n177: Let $\\nu_N^{\\text{cont}}$ be the quasi-stationary distribution of the continuous-time Langevin dynamics and let $\\nu_N^{\\Delta t}$ be the QSD of the discrete-time BAOAB chain with step size $\\Delta t$. For any observable $\\phi \\in C^4$, we have:\n178: \n179: $$\n180: \\left| \\mathbb{E}_{\\nu_N^{\\Delta t}} [\\phi] - \\mathbb{E}_{\\nu_N^{\\text{cont}}} [\\phi] \\right| \\leq C_{\\text{disc}} \\cdot \\|\\phi\\|_{C^4} \\cdot (\\Delta t)^2\n181: $$\n182: \n183: where $C_{\\text{disc}}$ depends on $\\gamma$, $\\sigma$, and the energy bounds.",
+      "metadata": {
+        "label": "thm-time-discretization-error-target"
+      },
+      "section": "## Part II: Time Discretization Error Bounds",
+      "raw_directive": "172: Quantify the error introduced by the discrete-time BAOAB integrator compared to the continuous-time Langevin dynamics.\n173: \n174: :::{prf:theorem} Time Discretization Error for Invariant Measure (Target)\n175: :label: thm-time-discretization-error-target\n176: \n177: Let $\\nu_N^{\\text{cont}}$ be the quasi-stationary distribution of the continuous-time Langevin dynamics and let $\\nu_N^{\\Delta t}$ be the QSD of the discrete-time BAOAB chain with step size $\\Delta t$. For any observable $\\phi \\in C^4$, we have:\n178: \n179: $$\n180: \\left| \\mathbb{E}_{\\nu_N^{\\Delta t}} [\\phi] - \\mathbb{E}_{\\nu_N^{\\text{cont}}} [\\phi] \\right| \\leq C_{\\text{disc}} \\cdot \\|\\phi\\|_{C^4} \\cdot (\\Delta t)^2\n181: $$\n182: \n183: where $C_{\\text{disc}}$ depends on $\\gamma$, $\\sigma$, and the energy bounds.\n184: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-baoab-weak-error",
+      "title": "BAOAB Weak Error",
+      "start_line": 194,
+      "end_line": 204,
+      "header_lines": [
+        195
+      ],
+      "content_start": 197,
+      "content_end": 203,
+      "content": "197: :label: lem-baoab-weak-error\n198: \n199: The BAOAB integrator for the overdamped Langevin equation satisfies:\n200: \n201: $$\n202: \\mathbb{E}[\\phi(Z_k)] = \\mathbb{E}[\\phi(Z(k\\Delta t))] + O((\\Delta t)^2)\n203: $$",
+      "metadata": {
+        "label": "lem-baoab-weak-error"
+      },
+      "section": "## Part II: Time Discretization Error Bounds",
+      "raw_directive": "194: **Key Lemma** (to prove):\n195: \n196: :::{prf:lemma} BAOAB Weak Error\n197: :label: lem-baoab-weak-error\n198: \n199: The BAOAB integrator for the overdamped Langevin equation satisfies:\n200: \n201: $$\n202: \\mathbb{E}[\\phi(Z_k)] = \\mathbb{E}[\\phi(Z(k\\Delta t))] + O((\\Delta t)^2)\n203: $$\n204: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-baoab-invariant-measure-error",
+      "title": "BAOAB Invariant Measure Error",
+      "start_line": 221,
+      "end_line": 233,
+      "header_lines": [
+        222
+      ],
+      "content_start": 224,
+      "content_end": 232,
+      "content": "224: :label: lem-baoab-invariant-measure-error\n225: \n226: Let $\\nu^{\\text{cont}}$ be the invariant measure of the continuous-time Langevin dynamics and let $\\nu^{\\Delta t}$ be the invariant measure of the BAOAB chain. For Lipschitz observables $\\phi$ with constant $L_\\phi$:\n227: \n228: $$\n229: \\left| \\mathbb{E}_{\\nu^{\\Delta t}} [\\phi] - \\mathbb{E}_{\\nu^{\\text{cont}}} [\\phi] \\right| \\leq C_{\\text{inv}} \\cdot L_\\phi \\cdot \\Delta t\n230: $$\n231: \n232: where $C_{\\text{inv}}$ depends on $\\gamma$, $\\sigma$, $\\|U\\|_{C^4}$, and moment bounds.",
+      "metadata": {
+        "label": "lem-baoab-invariant-measure-error"
+      },
+      "section": "## Part II: Time Discretization Error Bounds",
+      "raw_directive": "221: **Key Lemma** (to prove):\n222: \n223: :::{prf:lemma} BAOAB Invariant Measure Error\n224: :label: lem-baoab-invariant-measure-error\n225: \n226: Let $\\nu^{\\text{cont}}$ be the invariant measure of the continuous-time Langevin dynamics and let $\\nu^{\\Delta t}$ be the invariant measure of the BAOAB chain. For Lipschitz observables $\\phi$ with constant $L_\\phi$:\n227: \n228: $$\n229: \\left| \\mathbb{E}_{\\nu^{\\Delta t}} [\\phi] - \\mathbb{E}_{\\nu^{\\text{cont}}} [\\phi] \\right| \\leq C_{\\text{inv}} \\cdot L_\\phi \\cdot \\Delta t\n230: $$\n231: \n232: where $C_{\\text{inv}}$ depends on $\\gamma$, $\\sigma$, $\\|U\\|_{C^4}$, and moment bounds.\n233: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

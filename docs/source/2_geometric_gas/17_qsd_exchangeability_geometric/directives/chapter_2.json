@@ -1,0 +1,47 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 2. Conditional Velocity Distribution with Viscous Coupling",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "lemma",
+      "label": "lem-conditional-multivariate-gaussian-geometric",
+      "title": "Conditional Velocity Distribution - Multivariate Gaussian (Geometric Gas)",
+      "start_line": 39,
+      "end_line": 57,
+      "header_lines": [
+        40
+      ],
+      "content_start": 42,
+      "content_end": 56,
+      "content": "42: :label: lem-conditional-multivariate-gaussian-geometric\n43: \n44: For the QSD $\\pi_N$ of the Geometric Gas, the conditional distribution of velocities given positions is a **multivariate Gaussian** (not a product):\n45: \n46: $$\n47: \\pi_N(\\mathbf{v} | \\mathbf{x}) = \\mathcal{N}(0, \\Sigma_{\\mathbf{v}}(\\mathbf{x}))\n48: $$\n49: \n50: where the covariance matrix $\\Sigma_{\\mathbf{v}}(\\mathbf{x}) \\in \\mathbb{R}^{3N \\times 3N}$ is the solution to the continuous Lyapunov equation:\n51: \n52: $$\n53: A(\\mathbf{x}) \\Sigma_{\\mathbf{v}}(\\mathbf{x}) + \\Sigma_{\\mathbf{v}}(\\mathbf{x}) A(\\mathbf{x})^T = B(\\mathbf{x}) B(\\mathbf{x})^T\n54: $$\n55: \n56: where:",
+      "metadata": {
+        "label": "lem-conditional-multivariate-gaussian-geometric"
+      },
+      "section": "## 2. Conditional Velocity Distribution with Viscous Coupling",
+      "raw_directive": "39: ### 2.1. Multivariate Gaussian Structure\n40: \n41: :::{prf:lemma} Conditional Velocity Distribution - Multivariate Gaussian (Geometric Gas)\n42: :label: lem-conditional-multivariate-gaussian-geometric\n43: \n44: For the QSD $\\pi_N$ of the Geometric Gas, the conditional distribution of velocities given positions is a **multivariate Gaussian** (not a product):\n45: \n46: $$\n47: \\pi_N(\\mathbf{v} | \\mathbf{x}) = \\mathcal{N}(0, \\Sigma_{\\mathbf{v}}(\\mathbf{x}))\n48: $$\n49: \n50: where the covariance matrix $\\Sigma_{\\mathbf{v}}(\\mathbf{x}) \\in \\mathbb{R}^{3N \\times 3N}$ is the solution to the continuous Lyapunov equation:\n51: \n52: $$\n53: A(\\mathbf{x}) \\Sigma_{\\mathbf{v}}(\\mathbf{x}) + \\Sigma_{\\mathbf{v}}(\\mathbf{x}) A(\\mathbf{x})^T = B(\\mathbf{x}) B(\\mathbf{x})^T\n54: $$\n55: \n56: where:\n57: - $A(\\mathbf{x}) = \\gamma I_{3N} + \\nu \\mathcal{L}_{\\text{norm}}(\\mathbf{x}) \\otimes I_3$ is the drift matrix (friction + viscous coupling)"
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-lem-conditional-multivariate-gaussian-geometric",
+      "title": null,
+      "start_line": 59,
+      "end_line": 99,
+      "header_lines": [
+        60
+      ],
+      "content_start": 61,
+      "content_end": 98,
+      "content": "61: :::{prf:proof}\n62: :label: proof-lem-conditional-multivariate-gaussian-geometric\n63: Consider the velocity dynamics with positions fixed at $\\mathbf{x}$. In vector form with $\\mathbf{V} = (v_1, \\ldots, v_N) \\in \\mathbb{R}^{3N}$:\n64: \n65: $$\n66: d\\mathbf{V} = -A(\\mathbf{x}) \\mathbf{V} \\, dt + B(\\mathbf{x}) d\\mathbf{W}\n67: $$\n68: \n69: **Structure of $A(\\mathbf{x})$:**\n70: The drift matrix has the form:\n71: \n72: $$\n73: A(\\mathbf{x}) = \\gamma I_{3N} + \\nu \\mathcal{L}_{\\text{norm}}(\\mathbf{x}) \\otimes I_3\n74: $$\n75: \n76: where:\n77: - $\\gamma I_{3N}$ is friction (scalar times identity)\n78: - $\\mathcal{L}_{\\text{norm}}(\\mathbf{x})$ is the normalized graph Laplacian: $\\mathcal{L}_{\\text{norm},ij} = \\delta_{ij} - K(x_i-x_j)/\\deg(i)$ for $i \\neq j$\n79: - $\\otimes I_3$ indicates the Laplacian acts on particle indices, with each velocity component treated identically\n80: \n81: **Structure of $B(\\mathbf{x})$:**\n82: The noise matrix is block diagonal:\n83: \n84: $$\n85: B(\\mathbf{x}) = \\begin{pmatrix}\n86: \\Sigma_{\\text{reg}}(x_1, \\mathbf{x}) & 0 & \\cdots & 0 \\\\\n87: 0 & \\Sigma_{\\text{reg}}(x_2, \\mathbf{x}) & \\cdots & 0 \\\\\n88: \\vdots & \\vdots & \\ddots & \\vdots \\\\\n89: 0 & 0 & \\cdots & \\Sigma_{\\text{reg}}(x_N, \\mathbf{x})\n90: \\end{pmatrix}\n91: $$\n92: \n93: **Stationary distribution:**\n94: This is a linear SDE with constant coefficients (for fixed $\\mathbf{x}$). The stationary distribution is Gaussian $\\mathcal{N}(0, \\Sigma_{\\mathbf{v}}(\\mathbf{x}))$ where the covariance solves the continuous Lyapunov equation (standard result from stochastic analysis):\n95: \n96: $$\n97: A(\\mathbf{x}) \\Sigma_{\\mathbf{v}}(\\mathbf{x}) + \\Sigma_{\\mathbf{v}}(\\mathbf{x}) A(\\mathbf{x})^T = B(\\mathbf{x}) B(\\mathbf{x})^T\n98: $$",
+      "metadata": {
+        "label": "proof-lem-conditional-multivariate-gaussian-geometric"
+      },
+      "section": "## 2. Conditional Velocity Distribution with Viscous Coupling",
+      "raw_directive": "59: :::\n60: \n61: :::{prf:proof}\n62: :label: proof-lem-conditional-multivariate-gaussian-geometric\n63: Consider the velocity dynamics with positions fixed at $\\mathbf{x}$. In vector form with $\\mathbf{V} = (v_1, \\ldots, v_N) \\in \\mathbb{R}^{3N}$:\n64: \n65: $$\n66: d\\mathbf{V} = -A(\\mathbf{x}) \\mathbf{V} \\, dt + B(\\mathbf{x}) d\\mathbf{W}\n67: $$\n68: \n69: **Structure of $A(\\mathbf{x})$:**\n70: The drift matrix has the form:\n71: \n72: $$\n73: A(\\mathbf{x}) = \\gamma I_{3N} + \\nu \\mathcal{L}_{\\text{norm}}(\\mathbf{x}) \\otimes I_3\n74: $$\n75: \n76: where:\n77: - $\\gamma I_{3N}$ is friction (scalar times identity)\n78: - $\\mathcal{L}_{\\text{norm}}(\\mathbf{x})$ is the normalized graph Laplacian: $\\mathcal{L}_{\\text{norm},ij} = \\delta_{ij} - K(x_i-x_j)/\\deg(i)$ for $i \\neq j$\n79: - $\\otimes I_3$ indicates the Laplacian acts on particle indices, with each velocity component treated identically\n80: \n81: **Structure of $B(\\mathbf{x})$:**\n82: The noise matrix is block diagonal:\n83: \n84: $$\n85: B(\\mathbf{x}) = \\begin{pmatrix}\n86: \\Sigma_{\\text{reg}}(x_1, \\mathbf{x}) & 0 & \\cdots & 0 \\\\\n87: 0 & \\Sigma_{\\text{reg}}(x_2, \\mathbf{x}) & \\cdots & 0 \\\\\n88: \\vdots & \\vdots & \\ddots & \\vdots \\\\\n89: 0 & 0 & \\cdots & \\Sigma_{\\text{reg}}(x_N, \\mathbf{x})\n90: \\end{pmatrix}\n91: $$\n92: \n93: **Stationary distribution:**\n94: This is a linear SDE with constant coefficients (for fixed $\\mathbf{x}$). The stationary distribution is Gaussian $\\mathcal{N}(0, \\Sigma_{\\mathbf{v}}(\\mathbf{x}))$ where the covariance solves the continuous Lyapunov equation (standard result from stochastic analysis):\n95: \n96: $$\n97: A(\\mathbf{x}) \\Sigma_{\\mathbf{v}}(\\mathbf{x}) + \\Sigma_{\\mathbf{v}}(\\mathbf{x}) A(\\mathbf{x})^T = B(\\mathbf{x}) B(\\mathbf{x})^T\n98: $$\n99: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

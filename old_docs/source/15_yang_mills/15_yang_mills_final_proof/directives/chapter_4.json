@@ -1,0 +1,197 @@
+{
+  "chapter_index": 4,
+  "section_id": "## 4. Yang-Mills Theory and Mass Gap",
+  "directive_count": 11,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-yang-mills-hamiltonian-aqft",
+      "title": "Yang-Mills Hamiltonian from Noether Current",
+      "start_line": 1849,
+      "end_line": 1865,
+      "header_lines": [
+        1850
+      ],
+      "content_start": 1852,
+      "content_end": 1864,
+      "content": "1852: :label: thm-yang-mills-hamiltonian-aqft\n1853: \n1854: The pure Yang-Mills Hamiltonian on the Fractal Set is:\n1855: \n1856: $$\n1857: H_{\\text{YM}} = \\int_{\\mathcal{F}} \\left( \\frac{1}{2} |\\mathbf{E}_a|^2 + \\frac{1}{2g^2} |\\mathbf{B}_a|^2 \\right) d\\mu_{\\mathcal{F}}\n1858: $$\n1859: \n1860: where:\n1861: - $\\mathbf{E}_a$ is the canonical color-electric field (SU(3) gauge group index $a = 1, \\ldots, 8$)\n1862: - $\\mathbf{B}_a$ is the color-magnetic field\n1863: - $g$ is the Yang-Mills coupling constant\n1864: - $d\\mu_{\\mathcal{F}} = \\sqrt{\\det g(x)} \\, d^3x$ is the Riemannian measure on the Fractal Set",
+      "metadata": {
+        "label": "thm-yang-mills-hamiltonian-aqft"
+      },
+      "section": "## 4. Yang-Mills Theory and Mass Gap",
+      "raw_directive": "1849: #### 20.10.1. Yang-Mills Hamiltonian from Gauge Currents\n1850: \n1851: :::{prf:theorem} Yang-Mills Hamiltonian from Noether Current\n1852: :label: thm-yang-mills-hamiltonian-aqft\n1853: \n1854: The pure Yang-Mills Hamiltonian on the Fractal Set is:\n1855: \n1856: $$\n1857: H_{\\text{YM}} = \\int_{\\mathcal{F}} \\left( \\frac{1}{2} |\\mathbf{E}_a|^2 + \\frac{1}{2g^2} |\\mathbf{B}_a|^2 \\right) d\\mu_{\\mathcal{F}}\n1858: $$\n1859: \n1860: where:\n1861: - $\\mathbf{E}_a$ is the canonical color-electric field (SU(3) gauge group index $a = 1, \\ldots, 8$)\n1862: - $\\mathbf{B}_a$ is the color-magnetic field\n1863: - $g$ is the Yang-Mills coupling constant\n1864: - $d\\mu_{\\mathcal{F}} = \\sqrt{\\det g(x)} \\, d^3x$ is the Riemannian measure on the Fractal Set\n1865: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-25",
+      "title": null,
+      "start_line": 1867,
+      "end_line": 1924,
+      "header_lines": [],
+      "content_start": 1869,
+      "content_end": 1923,
+      "content": "1869: :::{prf:proof}\n1870: \n1871: The derivation follows the standard Legendre transform from the Yang-Mills Lagrangian, combined with the continuum limit of the lattice theory.\n1872: \n1873: **Step 1: Yang-Mills Lagrangian**\n1874: \n1875: The pure SU(3) Yang-Mills Lagrangian density is:\n1876: \n1877: $$\n1878: \\mathcal{L}_{\\text{YM}} = -\\frac{1}{4g^2} F_{\\mu\\nu}^{(a)} F^{(a),\\mu\\nu}\n1879: $$\n1880: \n1881: where $F_{\\mu\\nu}^a = \\partial_\\mu A_\\nu^a - \\partial_\\nu A_\\mu^a + g f_{abc} A_\\mu^b A_\\nu^c$ is the field strength tensor, with $f_{abc}$ the SU(3) structure constants and $g$ the Yang-Mills coupling.\n1882: \n1883: **Step 2: Define canonical fields**\n1884: \n1885: The **canonical electric field** (conjugate momentum) is:\n1886: \n1887: $$\n1888: E_i^{(a)} := \\frac{\\partial \\mathcal{L}_{\\text{YM}}}{\\partial \\dot{A}_i^{(a)}} = -\\frac{1}{g^2} F^{(a),0i}\n1889: $$\n1890: \n1891: The **magnetic field** is:\n1892: \n1893: $$\n1894: B_i^{(a)} := \\frac{1}{2} \\epsilon_{ijk} F_{jk}^{(a)}\n1895: $$\n1896: \n1897: **Step 3: Hamiltonian density via Legendre transform**\n1898: \n1899: $$\n1900: \\mathcal{H}_{\\text{YM}} = E_i^{(a)} \\dot{A}_i^{(a)} - \\mathcal{L}_{\\text{YM}} = \\frac{1}{2g^2} \\sum_{a=1}^8 \\left( g^2 E_i^{(a)} E_i^{(a)} + B_i^{(a)} B_i^{(a)} \\right)\n1901: $$\n1902: \n1903: Simplifying:\n1904: \n1905: $$\n1906: \\mathcal{H}_{\\text{YM}} = \\frac{1}{2} \\sum_{a=1}^8 \\left( |E^{(a)}|^2 + \\frac{1}{g^2} |B^{(a)}|^2 \\right)\n1907: $$\n1908: \n1909: **Step 4: Continuum Hamiltonian with Riemannian measure**\n1910: \n1911: Integrating over space with the Riemannian measure $d\\mu_{\\mathcal{F}} = \\sqrt{\\det g(x)} \\, d^3x$:\n1912: \n1913: $$\n1914: H_{\\text{YM}} = \\int_{\\mathcal{F}} \\mathcal{H}_{\\text{YM}} \\, d\\mu_{\\mathcal{F}} = \\int_{\\mathcal{F}} \\left( \\frac{1}{2} |\\mathbf{E}_a|^2 + \\frac{1}{2g^2} |\\mathbf{B}_a|^2 \\right) \\sqrt{\\det g} \\, d^3x\n1915: $$\n1916: \n1917: **Step 5: Connection to lattice theory**\n1918: \n1919: The connection to the discrete Fractal Set lattice is through the lattice QFT framework in \u00a720.10.1b:\n1920: - Lattice gauge theory with SU(3) holonomies on edges\n1921: - Wilson action on irregular Scutoid plaquettes\n1922: - QSD provides emergent Riemannian metric structure\n1923: - Full continuum limit is future work (requires weak measure convergence proofs)",
+      "metadata": {},
+      "section": "## 4. Yang-Mills Theory and Mass Gap",
+      "raw_directive": "1867: :::\n1868: \n1869: :::{prf:proof}\n1870: \n1871: The derivation follows the standard Legendre transform from the Yang-Mills Lagrangian, combined with the continuum limit of the lattice theory.\n1872: \n1873: **Step 1: Yang-Mills Lagrangian**\n1874: \n1875: The pure SU(3) Yang-Mills Lagrangian density is:\n1876: \n1877: $$\n1878: \\mathcal{L}_{\\text{YM}} = -\\frac{1}{4g^2} F_{\\mu\\nu}^{(a)} F^{(a),\\mu\\nu}\n1879: $$\n1880: \n1881: where $F_{\\mu\\nu}^a = \\partial_\\mu A_\\nu^a - \\partial_\\nu A_\\mu^a + g f_{abc} A_\\mu^b A_\\nu^c$ is the field strength tensor, with $f_{abc}$ the SU(3) structure constants and $g$ the Yang-Mills coupling.\n1882: \n1883: **Step 2: Define canonical fields**\n1884: \n1885: The **canonical electric field** (conjugate momentum) is:\n1886: \n1887: $$\n1888: E_i^{(a)} := \\frac{\\partial \\mathcal{L}_{\\text{YM}}}{\\partial \\dot{A}_i^{(a)}} = -\\frac{1}{g^2} F^{(a),0i}\n1889: $$\n1890: \n1891: The **magnetic field** is:\n1892: \n1893: $$\n1894: B_i^{(a)} := \\frac{1}{2} \\epsilon_{ijk} F_{jk}^{(a)}\n1895: $$\n1896: \n1897: **Step 3: Hamiltonian density via Legendre transform**\n1898: \n1899: $$\n1900: \\mathcal{H}_{\\text{YM}} = E_i^{(a)} \\dot{A}_i^{(a)} - \\mathcal{L}_{\\text{YM}} = \\frac{1}{2g^2} \\sum_{a=1}^8 \\left( g^2 E_i^{(a)} E_i^{(a)} + B_i^{(a)} B_i^{(a)} \\right)\n1901: $$\n1902: \n1903: Simplifying:\n1904: \n1905: $$\n1906: \\mathcal{H}_{\\text{YM}} = \\frac{1}{2} \\sum_{a=1}^8 \\left( |E^{(a)}|^2 + \\frac{1}{g^2} |B^{(a)}|^2 \\right)\n1907: $$\n1908: \n1909: **Step 4: Continuum Hamiltonian with Riemannian measure**\n1910: \n1911: Integrating over space with the Riemannian measure $d\\mu_{\\mathcal{F}} = \\sqrt{\\det g(x)} \\, d^3x$:\n1912: \n1913: $$\n1914: H_{\\text{YM}} = \\int_{\\mathcal{F}} \\mathcal{H}_{\\text{YM}} \\, d\\mu_{\\mathcal{F}} = \\int_{\\mathcal{F}} \\left( \\frac{1}{2} |\\mathbf{E}_a|^2 + \\frac{1}{2g^2} |\\mathbf{B}_a|^2 \\right) \\sqrt{\\det g} \\, d^3x\n1915: $$\n1916: \n1917: **Step 5: Connection to lattice theory**\n1918: \n1919: The connection to the discrete Fractal Set lattice is through the lattice QFT framework in \u00a720.10.1b:\n1920: - Lattice gauge theory with SU(3) holonomies on edges\n1921: - Wilson action on irregular Scutoid plaquettes\n1922: - QSD provides emergent Riemannian metric structure\n1923: - Full continuum limit is future work (requires weak measure convergence proofs)\n1924: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-lattice-qft-foundation",
+      "title": "Lattice QFT on Irregular Fractal Set",
+      "start_line": 1930,
+      "end_line": 1950,
+      "header_lines": [
+        1931
+      ],
+      "content_start": 1933,
+      "content_end": 1949,
+      "content": "1933: :label: rem-lattice-qft-foundation\n1934: \n1935: The Fractal Set provides a **dynamically generated, irregular lattice** for quantum field theory:\n1936: \n1937: **Lattice structure**:\n1938: 1. **Nodes**: Walker positions $\\{x_i(t)\\}_{i \\in \\mathcal{A}_t}$ at quasi-stationary distribution\n1939: 2. **Edges**: Delaunay triangulation edges (gauge field links)\n1940: 3. **Plaquettes**: Scutoid tessellation faces (Wilson loops)\n1941: 4. **Metric**: Emergent Riemannian metric $g(x)$ from fitness landscape\n1942: \n1943: **Key distinction from regular lattices**: The Fractal Set is NOT a hypercubic lattice with fixed spacing $a$. It is an irregular, curved lattice that adapts to the geometry of the problem.\n1944: \n1945: **Lattice gauge theory formulation**: The proper lattice Yang-Mills theory on the Fractal Set uses:\n1946: - **Gauge variables**: SU(3) holonomies $U_{ij} \\in SU(3)$ on edges (parallel transport)\n1947: - **Electric field**: Conjugate momentum to connection (Lie algebra valued)\n1948: - **Wilson action**: $S = \\sum_{\\square} \\text{Tr}[1 - U_{\\square}]$ on irregular plaquettes\n1949: - **Continuum limit**: Requires rigorous proof of weak measure convergence",
+      "metadata": {
+        "label": "rem-lattice-qft-foundation"
+      },
+      "section": "## 4. Yang-Mills Theory and Mass Gap",
+      "raw_directive": "1930: The Yang-Mills Hamiltonian derived in \u00a720.10.1 describes the continuum theory. The connection to the discrete Fractal Set lattice is established through the lattice QFT framework.\n1931: \n1932: :::{prf:remark} Lattice QFT on Irregular Fractal Set\n1933: :label: rem-lattice-qft-foundation\n1934: \n1935: The Fractal Set provides a **dynamically generated, irregular lattice** for quantum field theory:\n1936: \n1937: **Lattice structure**:\n1938: 1. **Nodes**: Walker positions $\\{x_i(t)\\}_{i \\in \\mathcal{A}_t}$ at quasi-stationary distribution\n1939: 2. **Edges**: Delaunay triangulation edges (gauge field links)\n1940: 3. **Plaquettes**: Scutoid tessellation faces (Wilson loops)\n1941: 4. **Metric**: Emergent Riemannian metric $g(x)$ from fitness landscape\n1942: \n1943: **Key distinction from regular lattices**: The Fractal Set is NOT a hypercubic lattice with fixed spacing $a$. It is an irregular, curved lattice that adapts to the geometry of the problem.\n1944: \n1945: **Lattice gauge theory formulation**: The proper lattice Yang-Mills theory on the Fractal Set uses:\n1946: - **Gauge variables**: SU(3) holonomies $U_{ij} \\in SU(3)$ on edges (parallel transport)\n1947: - **Electric field**: Conjugate momentum to connection (Lie algebra valued)\n1948: - **Wilson action**: $S = \\sum_{\\square} \\text{Tr}[1 - U_{\\square}]$ on irregular plaquettes\n1949: - **Continuum limit**: Requires rigorous proof of weak measure convergence\n1950: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-continuum-limit-strategy",
+      "title": "Continuum Limit Strategy (Future Work)",
+      "start_line": 1952,
+      "end_line": 1971,
+      "header_lines": [
+        1953
+      ],
+      "content_start": 1955,
+      "content_end": 1970,
+      "content": "1955: :label: thm-continuum-limit-strategy\n1956: \n1957: The rigorous continuum limit of the Yang-Mills Hamiltonian from the irregular Fractal Set lattice requires:\n1958: \n1959: 1. **Gauge-invariant formulation**: Use link variables $U_e \\in SU(3)$ (holonomies)\n1960: 2. **Wilson action on irregular lattice**: Define plaquette action on Scutoid faces\n1961: 3. **Weak convergence of measures**: Prove discrete measure \u2192 Riemannian measure\n1962: 4. **Error bounds**: Explicit $|H_{\\text{lattice}}(N) - H_{\\text{continuum}}| \\leq C/N^\\beta$\n1963: \n1964: This is a significant mathematical undertaking involving:\n1965: - Lattice gauge theory on irregular, curved lattices\n1966: - Discrete exterior calculus on Scutoid tessellations\n1967: - Measure-theoretic convergence (beyond Gromov-Hausdorff)\n1968: - Regge calculus for curvature on irregular simplicial complexes\n1969: \n1970: **Status**: Formulation and preliminary results in framework documents. Full rigorous proof is **future work**.",
+      "metadata": {
+        "label": "thm-continuum-limit-strategy"
+      },
+      "section": "## 4. Yang-Mills Theory and Mass Gap",
+      "raw_directive": "1952: :::\n1953: \n1954: :::{prf:theorem} Continuum Limit Strategy (Future Work)\n1955: :label: thm-continuum-limit-strategy\n1956: \n1957: The rigorous continuum limit of the Yang-Mills Hamiltonian from the irregular Fractal Set lattice requires:\n1958: \n1959: 1. **Gauge-invariant formulation**: Use link variables $U_e \\in SU(3)$ (holonomies)\n1960: 2. **Wilson action on irregular lattice**: Define plaquette action on Scutoid faces\n1961: 3. **Weak convergence of measures**: Prove discrete measure \u2192 Riemannian measure\n1962: 4. **Error bounds**: Explicit $|H_{\\text{lattice}}(N) - H_{\\text{continuum}}| \\leq C/N^\\beta$\n1963: \n1964: This is a significant mathematical undertaking involving:\n1965: - Lattice gauge theory on irregular, curved lattices\n1966: - Discrete exterior calculus on Scutoid tessellations\n1967: - Measure-theoretic convergence (beyond Gromov-Hausdorff)\n1968: - Regge calculus for curvature on irregular simplicial complexes\n1969: \n1970: **Status**: Formulation and preliminary results in framework documents. Full rigorous proof is **future work**.\n1971: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-asymmetric-coupling",
+      "title": "Asymmetric Coupling in Yang-Mills",
+      "start_line": 1994,
+      "end_line": 2018,
+      "header_lines": [
+        1995
+      ],
+      "content_start": 1997,
+      "content_end": 2017,
+      "content": "1997: :label: rem-asymmetric-coupling\n1998: \n1999: The Yang-Mills Hamiltonian has **asymmetric coupling** by design:\n2000: \n2001: $$\n2002: H_{\\text{YM}} = \\int d^3x \\left[ \\frac{1}{2} |\\mathcal{E}_a|^2 + \\frac{1}{2g^2} |\\mathcal{B}_a|^2 \\right]\n2003: $$\n2004: \n2005: **Physical origin**:\n2006: 1. **Electric field $\\mathcal{E}_a$**: Canonical momentum conjugate to gauge potential $A_a^\\mu$\n2007:    - Kinetic energy: $(1/2) \\int |\\mathcal{E}|^2$\n2008:    - No explicit $g$ in prefactor (canonical structure)\n2009: \n2010: 2. **Magnetic field $\\mathcal{B}_a$**: Non-Abelian field strength $F_{\\mu\\nu}^a$\n2011:    - Potential energy from action: $S = -(1/(4g^2)) \\int F_{\\mu\\nu} F^{\\mu\\nu}$\n2012:    - Factor $1/g^2$ from action\n2013: \n2014: **Standard references**:\n2015: - Peskin & Schroeder, \"An Introduction to Quantum Field Theory\", \u00a715.2 (eq. 15.21)\n2016: - Srednicki, \"Quantum Field Theory\", \u00a793\n2017: - Montvay & M\u00fcnster, \"Quantum Fields on a Lattice\", \u00a74.2",
+      "metadata": {
+        "label": "rem-asymmetric-coupling"
+      },
+      "section": "## 4. Yang-Mills Theory and Mass Gap",
+      "raw_directive": "1994: :::\n1995: \n1996: :::{prf:remark} Asymmetric Coupling in Yang-Mills\n1997: :label: rem-asymmetric-coupling\n1998: \n1999: The Yang-Mills Hamiltonian has **asymmetric coupling** by design:\n2000: \n2001: $$\n2002: H_{\\text{YM}} = \\int d^3x \\left[ \\frac{1}{2} |\\mathcal{E}_a|^2 + \\frac{1}{2g^2} |\\mathcal{B}_a|^2 \\right]\n2003: $$\n2004: \n2005: **Physical origin**:\n2006: 1. **Electric field $\\mathcal{E}_a$**: Canonical momentum conjugate to gauge potential $A_a^\\mu$\n2007:    - Kinetic energy: $(1/2) \\int |\\mathcal{E}|^2$\n2008:    - No explicit $g$ in prefactor (canonical structure)\n2009: \n2010: 2. **Magnetic field $\\mathcal{B}_a$**: Non-Abelian field strength $F_{\\mu\\nu}^a$\n2011:    - Potential energy from action: $S = -(1/(4g^2)) \\int F_{\\mu\\nu} F^{\\mu\\nu}$\n2012:    - Factor $1/g^2$ from action\n2013: \n2014: **Standard references**:\n2015: - Peskin & Schroeder, \"An Introduction to Quantum Field Theory\", \u00a715.2 (eq. 15.21)\n2016: - Srednicki, \"Quantum Field Theory\", \u00a793\n2017: - Montvay & M\u00fcnster, \"Quantum Fields on a Lattice\", \u00a74.2\n2018: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-mass-gap-aqft",
+      "title": "Yang-Mills Mass Gap in AQFT Framework",
+      "start_line": 2022,
+      "end_line": 2038,
+      "header_lines": [
+        2023
+      ],
+      "content_start": 2025,
+      "content_end": 2037,
+      "content": "2025: :label: thm-mass-gap-aqft\n2026: \n2027: The spectrum of $H_{\\text{YM}}$ has a mass gap:\n2028: \n2029: $$\n2030: \\Delta_{\\text{YM}} = \\inf \\{\\lambda > 0 \\mid \\lambda \\in \\text{spectrum}(H_{\\text{YM}})\\setminus\\{0\\}\\} > 0\n2031: $$\n2032: \n2033: Moreover, the mass gap scales with the spectral gap of the kinetic operator:\n2034: \n2035: $$\n2036: \\Delta_{\\text{YM}} \\geq c_0 \\cdot \\lambda_{\\text{gap}} \\cdot \\hbar_{\\text{eff}}\n2037: $$",
+      "metadata": {
+        "label": "thm-mass-gap-aqft"
+      },
+      "section": "## 4. Yang-Mills Theory and Mass Gap",
+      "raw_directive": "2022: #### 20.10.2. Mass Gap from Confinement\n2023: \n2024: :::{prf:theorem} Yang-Mills Mass Gap in AQFT Framework\n2025: :label: thm-mass-gap-aqft\n2026: \n2027: The spectrum of $H_{\\text{YM}}$ has a mass gap:\n2028: \n2029: $$\n2030: \\Delta_{\\text{YM}} = \\inf \\{\\lambda > 0 \\mid \\lambda \\in \\text{spectrum}(H_{\\text{YM}})\\setminus\\{0\\}\\} > 0\n2031: $$\n2032: \n2033: Moreover, the mass gap scales with the spectral gap of the kinetic operator:\n2034: \n2035: $$\n2036: \\Delta_{\\text{YM}} \\geq c_0 \\cdot \\lambda_{\\text{gap}} \\cdot \\hbar_{\\text{eff}}\n2037: $$\n2038: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-198",
+      "title": null,
+      "start_line": 2040,
+      "end_line": 2089,
+      "header_lines": [],
+      "content_start": 2042,
+      "content_end": 2088,
+      "content": "2042: :::{prf:proof}\n2043: \n2044: The proof combines three key results from the framework:\n2045: \n2046: **Step 1: Spectral gap of kinetic operator**\n2047: \n2048: From {doc}`04_convergence.md` Theorem 4.3.1 (Hypocoercivity), the kinetic operator has spectral gap:\n2049: \n2050: $$\n2051: \\lambda_{\\text{gap}} = \\inf\\{\\lambda > 0 \\mid \\lambda \\in \\text{spectrum}(\\mathcal{L}_{\\text{kin}}) \\setminus \\{0\\}\\} > 0\n2052: $$\n2053: \n2054: This gap is **N-uniform** (independent of particle number).\n2055: \n2056: **Step 2: Wilson loop area law**\n2057: \n2058: From {doc}`13_fractal_set_new/12_holography.md`, the Wilson loop satisfies:\n2059: \n2060: $$\n2061: \\langle W_{\\mathcal{C}}[\\mathcal{F}] \\rangle_{\\text{QSD}} = \\exp\\left(-\\sigma \\cdot \\text{Area}(\\mathcal{C})\\right)\n2062: $$\n2063: \n2064: where the string tension is:\n2065: \n2066: $$\n2067: \\sigma = c_1 \\cdot \\frac{\\lambda_{\\text{gap}}}{\\epsilon_c^2}\n2068: $$\n2069: \n2070: with $c_1 > 0$ a geometric constant and $\\epsilon_c$ the cloning noise scale.\n2071: \n2072: **Step 3: String tension implies mass gap**\n2073: \n2074: The Wilson loop area law is the **defining characteristic of confinement** in Yang-Mills theory (see Greensite 2011, \"An Introduction to the Confinement Problem\").\n2075: \n2076: For a confining theory, the lowest glueball mass (mass gap) satisfies:\n2077: \n2078: $$\n2079: m_{\\text{glueball}} \\sim \\sqrt{\\sigma}\n2080: $$\n2081: \n2082: Therefore:\n2083: \n2084: $$\n2085: \\Delta_{\\text{YM}} \\geq c_2 \\sqrt{\\sigma} = c_2 \\sqrt{c_1} \\cdot \\frac{\\sqrt{\\lambda_{\\text{gap}}}}{\\epsilon_c} = c_0 \\cdot \\lambda_{\\text{gap}} \\cdot \\hbar_{\\text{eff}}\n2086: $$\n2087: \n2088: where we identify $\\hbar_{\\text{eff}} = \\sqrt{\\lambda_{\\text{gap}}}/\\epsilon_c$ and $c_0 = c_2\\sqrt{c_1}$.",
+      "metadata": {},
+      "section": "## 4. Yang-Mills Theory and Mass Gap",
+      "raw_directive": "2040: :::\n2041: \n2042: :::{prf:proof}\n2043: \n2044: The proof combines three key results from the framework:\n2045: \n2046: **Step 1: Spectral gap of kinetic operator**\n2047: \n2048: From {doc}`04_convergence.md` Theorem 4.3.1 (Hypocoercivity), the kinetic operator has spectral gap:\n2049: \n2050: $$\n2051: \\lambda_{\\text{gap}} = \\inf\\{\\lambda > 0 \\mid \\lambda \\in \\text{spectrum}(\\mathcal{L}_{\\text{kin}}) \\setminus \\{0\\}\\} > 0\n2052: $$\n2053: \n2054: This gap is **N-uniform** (independent of particle number).\n2055: \n2056: **Step 2: Wilson loop area law**\n2057: \n2058: From {doc}`13_fractal_set_new/12_holography.md`, the Wilson loop satisfies:\n2059: \n2060: $$\n2061: \\langle W_{\\mathcal{C}}[\\mathcal{F}] \\rangle_{\\text{QSD}} = \\exp\\left(-\\sigma \\cdot \\text{Area}(\\mathcal{C})\\right)\n2062: $$\n2063: \n2064: where the string tension is:\n2065: \n2066: $$\n2067: \\sigma = c_1 \\cdot \\frac{\\lambda_{\\text{gap}}}{\\epsilon_c^2}\n2068: $$\n2069: \n2070: with $c_1 > 0$ a geometric constant and $\\epsilon_c$ the cloning noise scale.\n2071: \n2072: **Step 3: String tension implies mass gap**\n2073: \n2074: The Wilson loop area law is the **defining characteristic of confinement** in Yang-Mills theory (see Greensite 2011, \"An Introduction to the Confinement Problem\").\n2075: \n2076: For a confining theory, the lowest glueball mass (mass gap) satisfies:\n2077: \n2078: $$\n2079: m_{\\text{glueball}} \\sim \\sqrt{\\sigma}\n2080: $$\n2081: \n2082: Therefore:\n2083: \n2084: $$\n2085: \\Delta_{\\text{YM}} \\geq c_2 \\sqrt{\\sigma} = c_2 \\sqrt{c_1} \\cdot \\frac{\\sqrt{\\lambda_{\\text{gap}}}}{\\epsilon_c} = c_0 \\cdot \\lambda_{\\text{gap}} \\cdot \\hbar_{\\text{eff}}\n2086: $$\n2087: \n2088: where we identify $\\hbar_{\\text{eff}} = \\sqrt{\\lambda_{\\text{gap}}}/\\epsilon_c$ and $c_0 = c_2\\sqrt{c_1}$.\n2089: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-249",
+      "title": "Clay Institute Requirements",
+      "start_line": 2091,
+      "end_line": 2102,
+      "header_lines": [
+        2092
+      ],
+      "content_start": 2094,
+      "content_end": 2101,
+      "content": "2094: :class: important\n2095: \n2096: The Clay Mathematics Institute problem statement requires proving that:\n2097: \n2098: 1. \u2713 **Quantum Yang-Mills theory exists**: Haag-Kastler axioms HK1-HK5 satisfied\n2099: 2. \u2713 **Mass gap exists**: $\\Delta_{\\text{YM}} > 0$ proven via confinement\n2100: 3. \u2713 **UV safety**: Continuum limit exists (uniform ellipticity, {doc}`14_yang_mills_noether.md` \u00a79.4)\n2101: 4. \u2713 **SU(3) gauge group**: Color symmetry structure from {doc}`13_fractal_set_new/07_discrete_symmetries_gauge.md`",
+      "metadata": {
+        "class": "important"
+      },
+      "section": "## 4. Yang-Mills Theory and Mass Gap",
+      "raw_directive": "2091: :::\n2092: \n2093: :::{prf:remark} Clay Institute Requirements\n2094: :class: important\n2095: \n2096: The Clay Mathematics Institute problem statement requires proving that:\n2097: \n2098: 1. \u2713 **Quantum Yang-Mills theory exists**: Haag-Kastler axioms HK1-HK5 satisfied\n2099: 2. \u2713 **Mass gap exists**: $\\Delta_{\\text{YM}} > 0$ proven via confinement\n2100: 3. \u2713 **UV safety**: Continuum limit exists (uniform ellipticity, {doc}`14_yang_mills_noether.md` \u00a79.4)\n2101: 4. \u2713 **SU(3) gauge group**: Color symmetry structure from {doc}`13_fractal_set_new/07_discrete_symmetries_gauge.md`\n2102: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-fragile-yang-mills-emergence",
+      "title": "Constructive Existence of Yang-Mills Theory",
+      "start_line": 2106,
+      "end_line": 2110,
+      "header_lines": [
+        2107
+      ],
+      "content_start": 2109,
+      "content_end": 2109,
+      "content": "2109: :label: thm-fragile-yang-mills-emergence",
+      "metadata": {
+        "label": "thm-fragile-yang-mills-emergence"
+      },
+      "section": "## 4. Yang-Mills Theory and Mass Gap",
+      "raw_directive": "2106: #### 20.10.3. Emergence of Yang-Mills Theory from Fragile QFT\n2107: \n2108: :::{prf:theorem} Constructive Existence of Yang-Mills Theory\n2109: :label: thm-fragile-yang-mills-emergence\n2110: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-270",
+      "title": null,
+      "start_line": 2112,
+      "end_line": 2142,
+      "header_lines": [],
+      "content_start": 2114,
+      "content_end": 2141,
+      "content": "2114: :::{prf:proof}\n2115: \n2116: We establish that the Fragile QFT is a physical realization of Yang-Mills theory by verifying all defining properties:\n2117: \n2118: **Property 1: Hilbert space structure**\n2119: - YM: Fock space over $L^2(\\mathbb{R}^3, \\mathfrak{su}(3))$\n2120: - Fragile: Fock space over $L^2(\\mathcal{F}, \\mathbb{C})$ with SU(3) gauge structure ({prf:ref}`def-fock-space`)\n2121: - \u2713 Lattice QFT formulation in {doc}`13_fractal_set_new/08_lattice_qft_framework.md` (continuum limit: future work)\n2122: \n2123: **Property 2: Gauge symmetry**\n2124: - YM: Local SU(3) gauge transformations\n2125: - Fragile: SU(3)_color from companion amplitude phases ({prf:ref}`thm-hk3-covariance-proof`)\n2126: - \u2713 Isomorphic gauge groups\n2127: \n2128: **Property 3: Hamiltonian**\n2129: - YM: $H_{\\text{YM}} = \\int \\left( \\frac{1}{2}|\\mathbf{E}_a|^2 + \\frac{1}{2g^2}|\\mathbf{B}_a|^2 \\right) d^3x$\n2130: - Fragile: {prf:ref}`thm-yang-mills-hamiltonian-aqft`\n2131: - \u2713 Identical functional form with correct asymmetric coupling\n2132: \n2133: **Property 4: Confinement and mass gap**\n2134: - YM: Area law for Wilson loops, glueball spectrum with gap\n2135: - Fragile: Area law proven ({doc}`13_fractal_set_new/12_holography.md`), mass gap proven ({prf:ref}`thm-mass-gap-aqft`)\n2136: - \u2713 Same physical behavior\n2137: \n2138: **Property 5: AQFT axioms**\n2139: - YM: Haag-Kastler axioms expected to hold (not rigorously proven in continuum)\n2140: - Fragile: All five axioms rigorously proven (\u00a720.7-20.9)\n2141: - \u2713 Fragile provides constructive proof",
+      "metadata": {},
+      "section": "## 4. Yang-Mills Theory and Mass Gap",
+      "raw_directive": "2112: :::\n2113: \n2114: :::{prf:proof}\n2115: \n2116: We establish that the Fragile QFT is a physical realization of Yang-Mills theory by verifying all defining properties:\n2117: \n2118: **Property 1: Hilbert space structure**\n2119: - YM: Fock space over $L^2(\\mathbb{R}^3, \\mathfrak{su}(3))$\n2120: - Fragile: Fock space over $L^2(\\mathcal{F}, \\mathbb{C})$ with SU(3) gauge structure ({prf:ref}`def-fock-space`)\n2121: - \u2713 Lattice QFT formulation in {doc}`13_fractal_set_new/08_lattice_qft_framework.md` (continuum limit: future work)\n2122: \n2123: **Property 2: Gauge symmetry**\n2124: - YM: Local SU(3) gauge transformations\n2125: - Fragile: SU(3)_color from companion amplitude phases ({prf:ref}`thm-hk3-covariance-proof`)\n2126: - \u2713 Isomorphic gauge groups\n2127: \n2128: **Property 3: Hamiltonian**\n2129: - YM: $H_{\\text{YM}} = \\int \\left( \\frac{1}{2}|\\mathbf{E}_a|^2 + \\frac{1}{2g^2}|\\mathbf{B}_a|^2 \\right) d^3x$\n2130: - Fragile: {prf:ref}`thm-yang-mills-hamiltonian-aqft`\n2131: - \u2713 Identical functional form with correct asymmetric coupling\n2132: \n2133: **Property 4: Confinement and mass gap**\n2134: - YM: Area law for Wilson loops, glueball spectrum with gap\n2135: - Fragile: Area law proven ({doc}`13_fractal_set_new/12_holography.md`), mass gap proven ({prf:ref}`thm-mass-gap-aqft`)\n2136: - \u2713 Same physical behavior\n2137: \n2138: **Property 5: AQFT axioms**\n2139: - YM: Haag-Kastler axioms expected to hold (not rigorously proven in continuum)\n2140: - Fragile: All five axioms rigorously proven (\u00a720.7-20.9)\n2141: - \u2713 Fragile provides constructive proof\n2142: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-302",
+      "title": "Existence vs Uniqueness",
+      "start_line": 2144,
+      "end_line": 2150,
+      "header_lines": [
+        2145
+      ],
+      "content_start": 2147,
+      "content_end": 2149,
+      "content": "2147: :class: note\n2148: \n2149: This theorem proves the **existence** of a quantum Yang-Mills theory satisfying the required properties. It does NOT prove **uniqueness** - i.e., that this is the only possible realization within the Haag-Kastler framework.",
+      "metadata": {
+        "class": "note"
+      },
+      "section": "## 4. Yang-Mills Theory and Mass Gap",
+      "raw_directive": "2144: :::\n2145: \n2146: :::{prf:remark} Existence vs Uniqueness\n2147: :class: note\n2148: \n2149: This theorem proves the **existence** of a quantum Yang-Mills theory satisfying the required properties. It does NOT prove **uniqueness** - i.e., that this is the only possible realization within the Haag-Kastler framework.\n2150: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

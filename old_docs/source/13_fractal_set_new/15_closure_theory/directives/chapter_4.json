@@ -1,0 +1,191 @@
+{
+  "chapter_index": 4,
+  "section_id": "## 4. The Renormalization Channel",
+  "directive_count": 10,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-block-partition",
+      "title": "Block Partition",
+      "start_line": 505,
+      "end_line": 523,
+      "header_lines": [
+        506
+      ],
+      "content_start": 508,
+      "content_end": 522,
+      "content": "508: :label: def-block-partition\n509: \n510: Given lattice spacing $a$ and block size $b > 1$, partition $\\mathcal{X}$ into hypercubes:\n511: \n512: $$\n513: \\mathcal{X} = \\bigcup_{\\alpha \\in \\mathcal{B}} B_\\alpha\n514: \n515: $$\n516: \n517: where each block $B_\\alpha$ has side length $ba$ and is indexed by $\\alpha \\in \\mathcal{B}$ (the block lattice).\n518: \n519: For each block $B_\\alpha$, define the **micro-episode set**:\n520: \n521: $$\n522: \\mathcal{E}_\\alpha := \\{e \\in \\mathcal{E} : x_e \\in B_\\alpha\\}",
+      "metadata": {
+        "label": "def-block-partition"
+      },
+      "section": "## 4. The Renormalization Channel",
+      "raw_directive": "505: Recall the block-spin transformation from [08_lattice_qft_framework.md](08_lattice_qft_framework.md) \u00a7 9.5.1:\n506: \n507: :::{prf:definition} Block Partition\n508: :label: def-block-partition\n509: \n510: Given lattice spacing $a$ and block size $b > 1$, partition $\\mathcal{X}$ into hypercubes:\n511: \n512: $$\n513: \\mathcal{X} = \\bigcup_{\\alpha \\in \\mathcal{B}} B_\\alpha\n514: \n515: $$\n516: \n517: where each block $B_\\alpha$ has side length $ba$ and is indexed by $\\alpha \\in \\mathcal{B}$ (the block lattice).\n518: \n519: For each block $B_\\alpha$, define the **micro-episode set**:\n520: \n521: $$\n522: \\mathcal{E}_\\alpha := \\{e \\in \\mathcal{E} : x_e \\in B_\\alpha\\}\n523: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-renormalization-channel-spatial",
+      "title": "Renormalization Channel (Spatial Averaging)",
+      "start_line": 525,
+      "end_line": 562,
+      "header_lines": [
+        526
+      ],
+      "content_start": 528,
+      "content_end": 561,
+      "content": "528: :label: def-renormalization-channel-spatial\n529: \n530: The **renormalization map** $\\mathcal{R}_b: \\Omega \\to \\tilde{\\Omega}$ is a **deterministic** measurable function that maps micro-configurations to macro-configurations via block averaging.\n531: \n532: **Micro-state:** $Z = (X, V, \\mathcal{I}) \\in \\Omega$ (full swarm configuration at lattice spacing $a$)\n533: \n534: **Macro-state:** $\\tilde{Z} = (\\tilde{X}, \\tilde{V}, \\tilde{\\mathcal{I}}) \\in \\tilde{\\Omega}$ (coarse-grained swarm configuration at lattice spacing $ba$)\n535: \n536: **Deterministic averaging rule:**\n537: \n538: For each block $\\alpha \\in \\mathcal{B}$, the macro-position and macro-velocity are **uniquely determined** by:\n539: \n540: $$\n541: \\tilde{x}_\\alpha = \\frac{1}{|B_\\alpha|} \\sum_{e_i \\in \\mathcal{E}_\\alpha} x_i\n542: \n543: $$\n544: \n545: $$\n546: \\tilde{v}_\\alpha = \\frac{1}{|B_\\alpha|} \\sum_{e_i \\in \\mathcal{E}_\\alpha} v_i\n547: \n548: $$\n549: \n550: where $|B_\\alpha| = |\\mathcal{E}_\\alpha|$ is the number of episodes in block $\\alpha$.\n551: \n552: **Key property:** $\\mathcal{R}_b$ is a **function**, not a stochastic channel. Given a micro-configuration $Z$, the macro-configuration $\\tilde{Z} = \\mathcal{R}_b(Z)$ is **uniquely determined**.\n553: \n554: **Induced partition:** The map $\\mathcal{R}_b$ induces a partition of the micro-state space:\n555: \n556: $$\n557: \\Omega = \\bigcup_{\\tilde{z} \\in \\tilde{\\Omega}} \\mathcal{R}_b^{-1}(\\tilde{z})\n558: \n559: $$\n560: \n561: where $\\mathcal{R}_b^{-1}(\\tilde{z}) := \\{z \\in \\Omega : \\mathcal{R}_b(z) = \\tilde{z}\\}$ is the **pre-image** (well-defined for deterministic maps).",
+      "metadata": {
+        "label": "def-renormalization-channel-spatial"
+      },
+      "section": "## 4. The Renormalization Channel",
+      "raw_directive": "525: :::\n526: \n527: :::{prf:definition} Renormalization Channel (Spatial Averaging)\n528: :label: def-renormalization-channel-spatial\n529: \n530: The **renormalization map** $\\mathcal{R}_b: \\Omega \\to \\tilde{\\Omega}$ is a **deterministic** measurable function that maps micro-configurations to macro-configurations via block averaging.\n531: \n532: **Micro-state:** $Z = (X, V, \\mathcal{I}) \\in \\Omega$ (full swarm configuration at lattice spacing $a$)\n533: \n534: **Macro-state:** $\\tilde{Z} = (\\tilde{X}, \\tilde{V}, \\tilde{\\mathcal{I}}) \\in \\tilde{\\Omega}$ (coarse-grained swarm configuration at lattice spacing $ba$)\n535: \n536: **Deterministic averaging rule:**\n537: \n538: For each block $\\alpha \\in \\mathcal{B}$, the macro-position and macro-velocity are **uniquely determined** by:\n539: \n540: $$\n541: \\tilde{x}_\\alpha = \\frac{1}{|B_\\alpha|} \\sum_{e_i \\in \\mathcal{E}_\\alpha} x_i\n542: \n543: $$\n544: \n545: $$\n546: \\tilde{v}_\\alpha = \\frac{1}{|B_\\alpha|} \\sum_{e_i \\in \\mathcal{E}_\\alpha} v_i\n547: \n548: $$\n549: \n550: where $|B_\\alpha| = |\\mathcal{E}_\\alpha|$ is the number of episodes in block $\\alpha$.\n551: \n552: **Key property:** $\\mathcal{R}_b$ is a **function**, not a stochastic channel. Given a micro-configuration $Z$, the macro-configuration $\\tilde{Z} = \\mathcal{R}_b(Z)$ is **uniquely determined**.\n553: \n554: **Induced partition:** The map $\\mathcal{R}_b$ induces a partition of the micro-state space:\n555: \n556: $$\n557: \\Omega = \\bigcup_{\\tilde{z} \\in \\tilde{\\Omega}} \\mathcal{R}_b^{-1}(\\tilde{z})\n558: \n559: $$\n560: \n561: where $\\mathcal{R}_b^{-1}(\\tilde{z}) := \\{z \\in \\Omega : \\mathcal{R}_b(z) = \\tilde{z}\\}$ is the **pre-image** (well-defined for deterministic maps).\n562: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-66",
+      "title": "Why Deterministic Coarse-Graining?",
+      "start_line": 564,
+      "end_line": 578,
+      "header_lines": [
+        565
+      ],
+      "content_start": 567,
+      "content_end": 577,
+      "content": "567: :class: note\n568: \n569: **Advantage of deterministic maps:**\n570: \n571: 1. **Classical lumpability theory applies**: Kemeny & Snell's results (Theorem 6.3.2) require partitions, i.e., deterministic coarse-grainings.\n572: \n573: 2. **Well-defined pre-images**: The notation $\\mathcal{R}_b^{-1}(\\tilde{z})$ has clear mathematical meaning.\n574: \n575: 3. **Standard RG practice**: Wilson-Kadanoff block-spin transformations are deterministic averages, not stochastic samples.\n576: \n577: 4. **Physical clarity**: The macro-state is the actual block average, not a random variable conditioned on it.",
+      "metadata": {
+        "class": "note"
+      },
+      "section": "## 4. The Renormalization Channel",
+      "raw_directive": "564: :::\n565: \n566: :::{prf:remark} Why Deterministic Coarse-Graining?\n567: :class: note\n568: \n569: **Advantage of deterministic maps:**\n570: \n571: 1. **Classical lumpability theory applies**: Kemeny & Snell's results (Theorem 6.3.2) require partitions, i.e., deterministic coarse-grainings.\n572: \n573: 2. **Well-defined pre-images**: The notation $\\mathcal{R}_b^{-1}(\\tilde{z})$ has clear mathematical meaning.\n574: \n575: 3. **Standard RG practice**: Wilson-Kadanoff block-spin transformations are deterministic averages, not stochastic samples.\n576: \n577: 4. **Physical clarity**: The macro-state is the actual block average, not a random variable conditioned on it.\n578: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-ig-renormalization",
+      "title": "IG Renormalization Rule",
+      "start_line": 584,
+      "end_line": 613,
+      "header_lines": [
+        585
+      ],
+      "content_start": 587,
+      "content_end": 612,
+      "content": "587: :label: def-ig-renormalization\n588: \n589: Given two blocks $\\alpha, \\beta \\in \\mathcal{B}$, the **macro-IG edge weight** is:\n590: \n591: $$\n592: \\tilde{w}_{\\alpha\\beta} := \\sum_{i \\in \\mathcal{E}_\\alpha} \\sum_{j \\in \\mathcal{E}_\\beta} w_{ij}\n593: \n594: $$\n595: \n596: (sum of all micro-IG edges connecting episodes in $\\alpha$ to episodes in $\\beta$).\n597: \n598: **Normalized form:**\n599: \n600: $$\n601: \\tilde{w}_{\\alpha\\beta}^{\\text{norm}} = \\frac{\\tilde{w}_{\\alpha\\beta}}{|B_\\alpha| \\cdot |B_\\beta|}\n602: \n603: $$\n604: \n605: (average edge weight per pair).\n606: \n607: **Channel specification:** The macro-IG adjacency is deterministic given the micro-IG:\n608: \n609: $$\n610: P(\\tilde{\\mathcal{I}} \\mid \\mathcal{I}) = \\delta_{\\tilde{\\mathcal{I}} = f_{\\text{IG}}(\\mathcal{I})}\n611: \n612: $$",
+      "metadata": {
+        "label": "def-ig-renormalization"
+      },
+      "section": "## 4. The Renormalization Channel",
+      "raw_directive": "584: The IG must also be coarse-grained. This is non-trivial because IG edges connect individual episodes, not blocks.\n585: \n586: :::{prf:definition} IG Renormalization Rule\n587: :label: def-ig-renormalization\n588: \n589: Given two blocks $\\alpha, \\beta \\in \\mathcal{B}$, the **macro-IG edge weight** is:\n590: \n591: $$\n592: \\tilde{w}_{\\alpha\\beta} := \\sum_{i \\in \\mathcal{E}_\\alpha} \\sum_{j \\in \\mathcal{E}_\\beta} w_{ij}\n593: \n594: $$\n595: \n596: (sum of all micro-IG edges connecting episodes in $\\alpha$ to episodes in $\\beta$).\n597: \n598: **Normalized form:**\n599: \n600: $$\n601: \\tilde{w}_{\\alpha\\beta}^{\\text{norm}} = \\frac{\\tilde{w}_{\\alpha\\beta}}{|B_\\alpha| \\cdot |B_\\beta|}\n602: \n603: $$\n604: \n605: (average edge weight per pair).\n606: \n607: **Channel specification:** The macro-IG adjacency is deterministic given the micro-IG:\n608: \n609: $$\n610: P(\\tilde{\\mathcal{I}} \\mid \\mathcal{I}) = \\delta_{\\tilde{\\mathcal{I}} = f_{\\text{IG}}(\\mathcal{I})}\n611: \n612: $$\n613: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-117",
+      "title": "Choice of IG Coarse-Graining",
+      "start_line": 615,
+      "end_line": 626,
+      "header_lines": [
+        616
+      ],
+      "content_start": 618,
+      "content_end": 625,
+      "content": "618: :class: warning\n619: \n620: The choice between summed and normalized IG weights has physical consequences:\n621: \n622: 1. **Summed** $\\tilde{w}_{\\alpha\\beta}$: Preserves total coupling strength. Relevant if IG represents energy or interaction strength.\n623: 2. **Normalized** $\\tilde{w}_{\\alpha\\beta}^{\\text{norm}}$: Preserves correlation strength per pair. Relevant if IG represents entanglement or mutual information.\n624: \n625: For gauge theory applications (\u00a7 9), the **summed** form is more natural because the Wilson action involves sums over plaquettes. However, this is a modeling choice that should be validated by comparing continuum limit predictions.",
+      "metadata": {
+        "class": "warning"
+      },
+      "section": "## 4. The Renormalization Channel",
+      "raw_directive": "615: :::\n616: \n617: :::{prf:remark} Choice of IG Coarse-Graining\n618: :class: warning\n619: \n620: The choice between summed and normalized IG weights has physical consequences:\n621: \n622: 1. **Summed** $\\tilde{w}_{\\alpha\\beta}$: Preserves total coupling strength. Relevant if IG represents energy or interaction strength.\n623: 2. **Normalized** $\\tilde{w}_{\\alpha\\beta}^{\\text{norm}}$: Preserves correlation strength per pair. Relevant if IG represents entanglement or mutual information.\n624: \n625: For gauge theory applications (\u00a7 9), the **summed** form is more natural because the Wilson action involves sums over plaquettes. However, this is a modeling choice that should be validated by comparing continuum limit predictions.\n626: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-complete-renormalization-channel",
+      "title": "Complete Renormalization Map",
+      "start_line": 630,
+      "end_line": 662,
+      "header_lines": [
+        631
+      ],
+      "content_start": 633,
+      "content_end": 661,
+      "content": "633: :label: def-complete-renormalization-channel\n634: \n635: The complete renormalization map $\\mathcal{R}_b: \\Omega \\to \\tilde{\\Omega}$ is the deterministic function:\n636: \n637: $$\n638: \\mathcal{R}_b(Z) = (\\tilde{X}, \\tilde{V}, \\tilde{\\mathcal{I}})\n639: \n640: $$\n641: \n642: where:\n643: \n644: - $\\tilde{X} = (\\tilde{x}_\\alpha)_{\\alpha \\in \\mathcal{B}}$ with $\\tilde{x}_\\alpha$ given by Definition {prf:ref}`def-renormalization-channel-spatial`\n645: - $\\tilde{V} = (\\tilde{v}_\\alpha)_{\\alpha \\in \\mathcal{B}}$ with $\\tilde{v}_\\alpha$ given by Definition {prf:ref}`def-renormalization-channel-spatial`\n646: - $\\tilde{\\mathcal{I}} = f_{\\text{IG}}(\\mathcal{I})$ given by Definition {prf:ref}`def-ig-renormalization`\n647: \n648: **Properties:**\n649: \n650: 1. **Deterministic push-forward:** $\\mathcal{R}_b$ maps probability measures via:\n651: \n652:    $$\n653:    (\\mathcal{R}_b \\mu)(A) = \\mu(\\mathcal{R}_b^{-1}(A)) = \\mu(\\{z \\in \\Omega : \\mathcal{R}_b(z) \\in A\\})\n654: \n655:    $$\n656: \n657:    This is the standard push-forward for deterministic measurable maps.\n658: \n659: 2. **Locality:** The map factors over blocks: $\\tilde{x}_\\alpha$ depends only on $\\{x_i : e_i \\in \\mathcal{E}_\\alpha\\}$.\n660: \n661: 3. **Many-to-one:** $\\mathcal{R}_b$ is generally not invertible (many micro-states map to the same macro-state), but pre-images $\\mathcal{R}_b^{-1}(\\tilde{z})$ are well-defined sets.",
+      "metadata": {
+        "label": "def-complete-renormalization-channel"
+      },
+      "section": "## 4. The Renormalization Channel",
+      "raw_directive": "630: ### 4.3. Full Channel Definition\n631: \n632: :::{prf:definition} Complete Renormalization Map\n633: :label: def-complete-renormalization-channel\n634: \n635: The complete renormalization map $\\mathcal{R}_b: \\Omega \\to \\tilde{\\Omega}$ is the deterministic function:\n636: \n637: $$\n638: \\mathcal{R}_b(Z) = (\\tilde{X}, \\tilde{V}, \\tilde{\\mathcal{I}})\n639: \n640: $$\n641: \n642: where:\n643: \n644: - $\\tilde{X} = (\\tilde{x}_\\alpha)_{\\alpha \\in \\mathcal{B}}$ with $\\tilde{x}_\\alpha$ given by Definition {prf:ref}`def-renormalization-channel-spatial`\n645: - $\\tilde{V} = (\\tilde{v}_\\alpha)_{\\alpha \\in \\mathcal{B}}$ with $\\tilde{v}_\\alpha$ given by Definition {prf:ref}`def-renormalization-channel-spatial`\n646: - $\\tilde{\\mathcal{I}} = f_{\\text{IG}}(\\mathcal{I})$ given by Definition {prf:ref}`def-ig-renormalization`\n647: \n648: **Properties:**\n649: \n650: 1. **Deterministic push-forward:** $\\mathcal{R}_b$ maps probability measures via:\n651: \n652:    $$\n653:    (\\mathcal{R}_b \\mu)(A) = \\mu(\\mathcal{R}_b^{-1}(A)) = \\mu(\\{z \\in \\Omega : \\mathcal{R}_b(z) \\in A\\})\n654: \n655:    $$\n656: \n657:    This is the standard push-forward for deterministic measurable maps.\n658: \n659: 2. **Locality:** The map factors over blocks: $\\tilde{x}_\\alpha$ depends only on $\\{x_i : e_i \\in \\mathcal{E}_\\alpha\\}$.\n660: \n661: 3. **Many-to-one:** $\\mathcal{R}_b$ is generally not invertible (many micro-states map to the same macro-state), but pre-images $\\mathcal{R}_b^{-1}(\\tilde{z})$ are well-defined sets.\n662: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-strong-lumpability-preliminary",
+      "title": "Strong Lumpability (Kemeny & Snell, 1976)",
+      "start_line": 664,
+      "end_line": 679,
+      "header_lines": [
+        665
+      ],
+      "content_start": 667,
+      "content_end": 678,
+      "content": "667: :label: def-strong-lumpability-preliminary\n668: \n669: A partition $\\mathcal{P} = \\{\\tilde{Z}_1, \\tilde{Z}_2, \\ldots, \\tilde{Z}_M\\}$ of the micro-state space $\\Omega$ is **strongly lumpable** with respect to the transition kernel $\\mathbb{P}$ if:\n670: \n671: $$\n672: \\mathbb{P}(z, \\tilde{Z}_j) = \\mathbb{P}(z', \\tilde{Z}_j) \\quad \\text{for all } z, z' \\in \\tilde{Z}_i, \\, \\text{all } i, j \\in \\{1, \\ldots, M\\}\n673: \n674: $$\n675: \n676: where $\\mathbb{P}(z, \\tilde{Z}_j) := \\int_{\\tilde{Z}_j} \\mathbb{P}(z, dz')$ is the total transition probability from state $z$ to partition class $\\tilde{Z}_j$.\n677: \n678: **Interpretation:** Transition probabilities between partition classes depend only on the classes, not on the specific micro-states within each class.",
+      "metadata": {
+        "label": "def-strong-lumpability-preliminary"
+      },
+      "section": "## 4. The Renormalization Channel",
+      "raw_directive": "664: :::\n665: \n666: :::{prf:definition} Strong Lumpability (Kemeny & Snell, 1976)\n667: :label: def-strong-lumpability-preliminary\n668: \n669: A partition $\\mathcal{P} = \\{\\tilde{Z}_1, \\tilde{Z}_2, \\ldots, \\tilde{Z}_M\\}$ of the micro-state space $\\Omega$ is **strongly lumpable** with respect to the transition kernel $\\mathbb{P}$ if:\n670: \n671: $$\n672: \\mathbb{P}(z, \\tilde{Z}_j) = \\mathbb{P}(z', \\tilde{Z}_j) \\quad \\text{for all } z, z' \\in \\tilde{Z}_i, \\, \\text{all } i, j \\in \\{1, \\ldots, M\\}\n673: \n674: $$\n675: \n676: where $\\mathbb{P}(z, \\tilde{Z}_j) := \\int_{\\tilde{Z}_j} \\mathbb{P}(z, dz')$ is the total transition probability from state $z$ to partition class $\\tilde{Z}_j$.\n677: \n678: **Interpretation:** Transition probabilities between partition classes depend only on the classes, not on the specific micro-states within each class.\n679: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-channel-induces-macro-chain",
+      "title": "Macro-Chain Markovity from Lumpability",
+      "start_line": 681,
+      "end_line": 725,
+      "header_lines": [
+        682
+      ],
+      "content_start": 684,
+      "content_end": 724,
+      "content": "684: :label: thm-channel-induces-macro-chain\n685: \n686: **Statement:** The macro-process $\\{\\tilde{Z}_k\\}$ defined by $\\tilde{Z}_k = \\mathcal{R}_b(Z_k)$ is a Markov chain **if and only if** the partition of $\\Omega$ induced by the channel $\\mathcal{R}_b$ is strongly lumpable with respect to $\\mathbb{P}$.\n687: \n688: **Proof:**\n689: \n690: **Part 1 (Necessity):** Suppose $\\{\\tilde{Z}_k\\}$ is Markovian. We must show strong lumpability.\n691: \n692: **Step 1:** For $\\{\\tilde{Z}_k\\}$ to be Markov, we need:\n693: \n694: $$\n695: P(\\tilde{Z}_{k+1} \\mid \\tilde{Z}_k, \\tilde{Z}_{k-1}, \\ldots) = P(\\tilde{Z}_{k+1} \\mid \\tilde{Z}_k)\n696: \n697: $$\n698: \n699: **Step 2:** The macro-transition probability must be well-defined as a function of $\\tilde{Z}_k$ alone:\n700: \n701: $$\n702: P(\\tilde{Z}_{k+1} = \\tilde{z}' \\mid \\tilde{Z}_k = \\tilde{z}) = \\int_{z \\in \\mathcal{R}_b^{-1}(\\tilde{z})} \\int_{z' \\in \\mathcal{R}_b^{-1}(\\tilde{z}')} \\mathbb{P}(z, dz') \\cdot P(Z_k = z \\mid \\tilde{Z}_k = \\tilde{z})\n703: \n704: $$\n705: \n706: **Step 3:** For this to be independent of the specific micro-state $z \\in \\mathcal{R}_b^{-1}(\\tilde{z})$, we need:\n707: \n708: $$\n709: \\int_{z' \\in \\mathcal{R}_b^{-1}(\\tilde{z}')} \\mathbb{P}(z, dz') = \\int_{z' \\in \\mathcal{R}_b^{-1}(\\tilde{z}')} \\mathbb{P}(z'', dz')\n710: \n711: $$\n712: \n713: for all $z, z'' \\in \\mathcal{R}_b^{-1}(\\tilde{z})$. This is precisely the strong lumpability condition.\n714: \n715: **Part 2 (Sufficiency):** Suppose strong lumpability holds. We must show $\\{\\tilde{Z}_k\\}$ is Markov.\n716: \n717: **Step 4:** By strong lumpability, define the lumped kernel:\n718: \n719: $$\n720: \\tilde{\\mathbb{P}}(\\tilde{z}_i, \\tilde{z}_j) := \\mathbb{P}(z, \\mathcal{R}_b^{-1}(\\tilde{z}_j))\n721: \n722: $$\n723: \n724: for any $z \\in \\mathcal{R}_b^{-1}(\\tilde{z}_i)$ (well-defined by lumpability).",
+      "metadata": {
+        "label": "thm-channel-induces-macro-chain"
+      },
+      "section": "## 4. The Renormalization Channel",
+      "raw_directive": "681: :::\n682: \n683: :::{prf:theorem} Macro-Chain Markovity from Lumpability\n684: :label: thm-channel-induces-macro-chain\n685: \n686: **Statement:** The macro-process $\\{\\tilde{Z}_k\\}$ defined by $\\tilde{Z}_k = \\mathcal{R}_b(Z_k)$ is a Markov chain **if and only if** the partition of $\\Omega$ induced by the channel $\\mathcal{R}_b$ is strongly lumpable with respect to $\\mathbb{P}$.\n687: \n688: **Proof:**\n689: \n690: **Part 1 (Necessity):** Suppose $\\{\\tilde{Z}_k\\}$ is Markovian. We must show strong lumpability.\n691: \n692: **Step 1:** For $\\{\\tilde{Z}_k\\}$ to be Markov, we need:\n693: \n694: $$\n695: P(\\tilde{Z}_{k+1} \\mid \\tilde{Z}_k, \\tilde{Z}_{k-1}, \\ldots) = P(\\tilde{Z}_{k+1} \\mid \\tilde{Z}_k)\n696: \n697: $$\n698: \n699: **Step 2:** The macro-transition probability must be well-defined as a function of $\\tilde{Z}_k$ alone:\n700: \n701: $$\n702: P(\\tilde{Z}_{k+1} = \\tilde{z}' \\mid \\tilde{Z}_k = \\tilde{z}) = \\int_{z \\in \\mathcal{R}_b^{-1}(\\tilde{z})} \\int_{z' \\in \\mathcal{R}_b^{-1}(\\tilde{z}')} \\mathbb{P}(z, dz') \\cdot P(Z_k = z \\mid \\tilde{Z}_k = \\tilde{z})\n703: \n704: $$\n705: \n706: **Step 3:** For this to be independent of the specific micro-state $z \\in \\mathcal{R}_b^{-1}(\\tilde{z})$, we need:\n707: \n708: $$\n709: \\int_{z' \\in \\mathcal{R}_b^{-1}(\\tilde{z}')} \\mathbb{P}(z, dz') = \\int_{z' \\in \\mathcal{R}_b^{-1}(\\tilde{z}')} \\mathbb{P}(z'', dz')\n710: \n711: $$\n712: \n713: for all $z, z'' \\in \\mathcal{R}_b^{-1}(\\tilde{z})$. This is precisely the strong lumpability condition.\n714: \n715: **Part 2 (Sufficiency):** Suppose strong lumpability holds. We must show $\\{\\tilde{Z}_k\\}$ is Markov.\n716: \n717: **Step 4:** By strong lumpability, define the lumped kernel:\n718: \n719: $$\n720: \\tilde{\\mathbb{P}}(\\tilde{z}_i, \\tilde{z}_j) := \\mathbb{P}(z, \\mathcal{R}_b^{-1}(\\tilde{z}_j))\n721: \n722: $$\n723: \n724: for any $z \\in \\mathcal{R}_b^{-1}(\\tilde{z}_i)$ (well-defined by lumpability).\n725: "
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-conditional-markovity",
+      "title": "Conditional Markovity",
+      "start_line": 727,
+      "end_line": 740,
+      "header_lines": [
+        728
+      ],
+      "content_start": 730,
+      "content_end": 739,
+      "content": "730: :label: cor-conditional-markovity\n731: \n732: **Statement:** The macro-process $\\{\\tilde{Z}_k\\}$ is Markovian if computational closure holds (to be defined in \u00a75.2).\n733: \n734: **Justification:** We will prove in Proposition {prf:ref}`prop-closure-implies-lumpability` (\u00a77.1) that computational closure implies strong lumpability. Therefore, by Theorem {prf:ref}`thm-channel-induces-macro-chain`, the macro-chain is Markovian.\n735: \n736: **Logical structure:** This document proceeds as follows:\n737: 1. **Assume** (as the central thesis) that the RG transformation satisfies computational closure\n738: 2. **Prove** (Proposition 7.1) that this implies strong lumpability\n739: 3. **Conclude** (here) that the macro-process is therefore Markovian",
+      "metadata": {
+        "label": "cor-conditional-markovity"
+      },
+      "section": "## 4. The Renormalization Channel",
+      "raw_directive": "727: :::\n728: \n729: :::{prf:corollary} Conditional Markovity\n730: :label: cor-conditional-markovity\n731: \n732: **Statement:** The macro-process $\\{\\tilde{Z}_k\\}$ is Markovian if computational closure holds (to be defined in \u00a75.2).\n733: \n734: **Justification:** We will prove in Proposition {prf:ref}`prop-closure-implies-lumpability` (\u00a77.1) that computational closure implies strong lumpability. Therefore, by Theorem {prf:ref}`thm-channel-induces-macro-chain`, the macro-chain is Markovian.\n735: \n736: **Logical structure:** This document proceeds as follows:\n737: 1. **Assume** (as the central thesis) that the RG transformation satisfies computational closure\n738: 2. **Prove** (Proposition 7.1) that this implies strong lumpability\n739: 3. **Conclude** (here) that the macro-process is therefore Markovian\n740: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-244",
+      "title": "Status of Lumpability",
+      "start_line": 742,
+      "end_line": 760,
+      "header_lines": [
+        743
+      ],
+      "content_start": 745,
+      "content_end": 759,
+      "content": "745: :class: warning\n746: \n747: **Critical assumption:** We have **not yet proven** that the block-spin channel $\\mathcal{R}_b$ induces a strongly lumpable partition. This is the main technical gap in the current framework.\n748: \n749: **Two paths forward:**\n750: \n751: 1. **Assume computational closure a priori** (as we do here), then prove it implies lumpability (Proposition 7.1). This makes the argument logically consistent but circular.\n752: \n753: 2. **Prove lumpability directly** from the block-spin transformation's structure. This would require showing that for all $z, z' \\in \\mathcal{R}_b^{-1}(\\tilde{z})$ (all micro-configurations mapping to the same macro-configuration), the BAOAB transition probabilities satisfy:\n754: \n755:    $$\n756:    \\int_{\\mathcal{R}_b^{-1}(\\tilde{z}')} \\mathbb{P}(z, dz'') = \\int_{\\mathcal{R}_b^{-1}(\\tilde{z}')} \\mathbb{P}(z', dz'')\n757:    $$\n758: \n759:    This is technically challenging and left to future work.",
+      "metadata": {
+        "class": "warning"
+      },
+      "section": "## 4. The Renormalization Channel",
+      "raw_directive": "742: :::\n743: \n744: :::{prf:remark} Status of Lumpability\n745: :class: warning\n746: \n747: **Critical assumption:** We have **not yet proven** that the block-spin channel $\\mathcal{R}_b$ induces a strongly lumpable partition. This is the main technical gap in the current framework.\n748: \n749: **Two paths forward:**\n750: \n751: 1. **Assume computational closure a priori** (as we do here), then prove it implies lumpability (Proposition 7.1). This makes the argument logically consistent but circular.\n752: \n753: 2. **Prove lumpability directly** from the block-spin transformation's structure. This would require showing that for all $z, z' \\in \\mathcal{R}_b^{-1}(\\tilde{z})$ (all micro-configurations mapping to the same macro-configuration), the BAOAB transition probabilities satisfy:\n754: \n755:    $$\n756:    \\int_{\\mathcal{R}_b^{-1}(\\tilde{z}')} \\mathbb{P}(z, dz'') = \\int_{\\mathcal{R}_b^{-1}(\\tilde{z}')} \\mathbb{P}(z', dz'')\n757:    $$\n758: \n759:    This is technically challenging and left to future work.\n760: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

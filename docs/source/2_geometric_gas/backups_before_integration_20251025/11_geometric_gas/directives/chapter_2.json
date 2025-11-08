@@ -1,0 +1,83 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 1. The Unified Measurement Pipeline",
+  "directive_count": 4,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-localization-kernel",
+      "title": "Localization Kernel",
+      "start_line": 155,
+      "end_line": 177,
+      "header_lines": [
+        156
+      ],
+      "content_start": 158,
+      "content_end": 176,
+      "content": "158: :label: def-localization-kernel\n159: \n160: For a localization scale $\\rho > 0$, the **localization kernel** $K_\\rho: \\mathcal{X} \\times \\mathcal{X} \\to [0, 1]$ is a smooth, non-negative function satisfying:\n161: \n162: 1. **Normalization:** $\\int_{\\mathcal{X}} K_\\rho(x, x') \\, dx' = 1$ for all $x \\in \\mathcal{X}$\n163: \n164: 2. **Locality:** $K_\\rho(x, x') \\to 0$ rapidly as $\\|x - x'\\| \\gg \\rho$\n165: \n166: 3. **Symmetry:** $K_\\rho(x, x') = K_\\rho(x', x)$\n167: \n168: 4. **Limit Behavior:**\n169:    - As $\\rho \\to 0$: $K_\\rho(x, x') \\to \\delta(x - x')$ (hyper-local)\n170:    - As $\\rho \\to \\infty$: $K_\\rho(x, x') \\to 1/|\\mathcal{X}|$ (global)\n171: \n172: **Standard Example:** The Gaussian kernel\n173: \n174: $$\n175: K_\\rho(x, x') := \\frac{1}{Z_\\rho(x)} \\exp\\left(-\\frac{\\|x - x'\\|^2}{2\\rho^2}\\right)\n176: $$",
+      "metadata": {
+        "label": "def-localization-kernel"
+      },
+      "section": "## 1. The Unified Measurement Pipeline",
+      "raw_directive": "155: ### 1.0.2. The Localization Kernel\n156: \n157: :::{prf:definition} Localization Kernel\n158: :label: def-localization-kernel\n159: \n160: For a localization scale $\\rho > 0$, the **localization kernel** $K_\\rho: \\mathcal{X} \\times \\mathcal{X} \\to [0, 1]$ is a smooth, non-negative function satisfying:\n161: \n162: 1. **Normalization:** $\\int_{\\mathcal{X}} K_\\rho(x, x') \\, dx' = 1$ for all $x \\in \\mathcal{X}$\n163: \n164: 2. **Locality:** $K_\\rho(x, x') \\to 0$ rapidly as $\\|x - x'\\| \\gg \\rho$\n165: \n166: 3. **Symmetry:** $K_\\rho(x, x') = K_\\rho(x', x)$\n167: \n168: 4. **Limit Behavior:**\n169:    - As $\\rho \\to 0$: $K_\\rho(x, x') \\to \\delta(x - x')$ (hyper-local)\n170:    - As $\\rho \\to \\infty$: $K_\\rho(x, x') \\to 1/|\\mathcal{X}|$ (global)\n171: \n172: **Standard Example:** The Gaussian kernel\n173: \n174: $$\n175: K_\\rho(x, x') := \\frac{1}{Z_\\rho(x)} \\exp\\left(-\\frac{\\|x - x'\\|^2}{2\\rho^2}\\right)\n176: $$\n177: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-localized-mean-field-moments",
+      "title": "Localized Mean-Field Moments",
+      "start_line": 190,
+      "end_line": 236,
+      "header_lines": [
+        191
+      ],
+      "content_start": 193,
+      "content_end": 235,
+      "content": "193: :label: def-localized-mean-field-moments\n194: \n195: For a probability distribution $f \\in \\mathcal{P}(\\mathcal{X} \\times \\mathbb{R}^d)$, measurement function $d: \\mathcal{X} \\to \\mathbb{R}$, and reference point $x \\in \\mathcal{X}$, the **\u03c1-localized statistical moments** are:\n196: \n197: **Localized Mean:**\n198: \n199: $$\n200: \\mu_\\rho[f, d, x] := \\int_{\\mathcal{X} \\times \\mathbb{R}^d} K_\\rho(x, x') \\, d(x') \\, f(x', v) \\, dx' \\, dv\n201: $$\n202: \n203: **Localized Variance:**\n204: \n205: $$\n206: \\sigma^2_\\rho[f, d, x] := \\int_{\\mathcal{X} \\times \\mathbb{R}^d} K_\\rho(x, x') \\, [d(x') - \\mu_\\rho[f, d, x]]^2 \\, f(x', v) \\, dx' \\, dv\n207: $$\n208: \n209: **For the N-Particle System:** The full swarm state consists of N walkers, but only the **alive walker set** $A_k \\subseteq \\{1, \\ldots, N\\}$ with $|A_k| = k$ participates in the statistical measurements and adaptive dynamics. We define:\n210: \n211: **Full Empirical Measure (all walkers, including dead):**\n212: \n213: $$\n214: f_N := \\frac{1}{N} \\sum_{i=1}^N \\delta_{(x_i, v_i)}\n215: $$\n216: \n217: This measure describes the complete N-particle state but is **not used** for computing adaptive statistics.\n218: \n219: **Alive-Walker Empirical Measure (only alive walkers):**\n220: \n221: $$\n222: f_k := \\frac{1}{k} \\sum_{i \\in A_k} \\delta_{(x_i, v_i)}\n223: $$\n224: \n225: This is the measure used for **all** statistical moments, fitness potentials, and adaptive forces. Substituting $f_k$ into the integral definitions above yields the discrete forms:\n226: \n227: $$\n228: \\mu_\\rho[f_k, d, x_i] = \\sum_{j \\in A_k} w_{ij}(\\rho) \\, d(x_j), \\quad w_{ij}(\\rho) := \\frac{K_\\rho(x_i, x_j)}{\\sum_{\\ell \\in A_k} K_\\rho(x_i, x_\\ell)}\n229: $$\n230: \n231: $$\n232: \\sigma^2_\\rho[f_k, d, x_i] = \\sum_{j \\in A_k} w_{ij}(\\rho) \\, [d(x_j) - \\mu_\\rho[f_k, d, x_i]]^2\n233: $$\n234: \n235: where $w_{ij}(\\rho)$ are the normalized localization weights. The normalization $\\sum_{\\ell \\in A_k} K_\\rho(x_i, x_\\ell)$ ensures $\\sum_{j \\in A_k} w_{ij}(\\rho) = 1$, making $\\mu_\\rho$ a convex combination over the alive swarm.",
+      "metadata": {
+        "label": "def-localized-mean-field-moments"
+      },
+      "section": "## 1. The Unified Measurement Pipeline",
+      "raw_directive": "190: ### 1.0.3. Unified Localized Statistical Moments\n191: \n192: :::{prf:definition} Localized Mean-Field Moments\n193: :label: def-localized-mean-field-moments\n194: \n195: For a probability distribution $f \\in \\mathcal{P}(\\mathcal{X} \\times \\mathbb{R}^d)$, measurement function $d: \\mathcal{X} \\to \\mathbb{R}$, and reference point $x \\in \\mathcal{X}$, the **\u03c1-localized statistical moments** are:\n196: \n197: **Localized Mean:**\n198: \n199: $$\n200: \\mu_\\rho[f, d, x] := \\int_{\\mathcal{X} \\times \\mathbb{R}^d} K_\\rho(x, x') \\, d(x') \\, f(x', v) \\, dx' \\, dv\n201: $$\n202: \n203: **Localized Variance:**\n204: \n205: $$\n206: \\sigma^2_\\rho[f, d, x] := \\int_{\\mathcal{X} \\times \\mathbb{R}^d} K_\\rho(x, x') \\, [d(x') - \\mu_\\rho[f, d, x]]^2 \\, f(x', v) \\, dx' \\, dv\n207: $$\n208: \n209: **For the N-Particle System:** The full swarm state consists of N walkers, but only the **alive walker set** $A_k \\subseteq \\{1, \\ldots, N\\}$ with $|A_k| = k$ participates in the statistical measurements and adaptive dynamics. We define:\n210: \n211: **Full Empirical Measure (all walkers, including dead):**\n212: \n213: $$\n214: f_N := \\frac{1}{N} \\sum_{i=1}^N \\delta_{(x_i, v_i)}\n215: $$\n216: \n217: This measure describes the complete N-particle state but is **not used** for computing adaptive statistics.\n218: \n219: **Alive-Walker Empirical Measure (only alive walkers):**\n220: \n221: $$\n222: f_k := \\frac{1}{k} \\sum_{i \\in A_k} \\delta_{(x_i, v_i)}\n223: $$\n224: \n225: This is the measure used for **all** statistical moments, fitness potentials, and adaptive forces. Substituting $f_k$ into the integral definitions above yields the discrete forms:\n226: \n227: $$\n228: \\mu_\\rho[f_k, d, x_i] = \\sum_{j \\in A_k} w_{ij}(\\rho) \\, d(x_j), \\quad w_{ij}(\\rho) := \\frac{K_\\rho(x_i, x_j)}{\\sum_{\\ell \\in A_k} K_\\rho(x_i, x_\\ell)}\n229: $$\n230: \n231: $$\n232: \\sigma^2_\\rho[f_k, d, x_i] = \\sum_{j \\in A_k} w_{ij}(\\rho) \\, [d(x_j) - \\mu_\\rho[f_k, d, x_i]]^2\n233: $$\n234: \n235: where $w_{ij}(\\rho)$ are the normalized localization weights. The normalization $\\sum_{\\ell \\in A_k} K_\\rho(x_i, x_\\ell)$ ensures $\\sum_{j \\in A_k} w_{ij}(\\rho) = 1$, making $\\mu_\\rho$ a convex combination over the alive swarm.\n236: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-unified-z-score",
+      "title": "Unified Localized Z-Score",
+      "start_line": 271,
+      "end_line": 304,
+      "header_lines": [
+        272
+      ],
+      "content_start": 274,
+      "content_end": 303,
+      "content": "274: :label: def-unified-z-score\n275: \n276: The **unified \u03c1-dependent Z-score** combines spatial localization with numerical regularization in three steps:\n277: \n278: **Step 1: Localized Standard Deviation**\n279: \n280: $$\n281: \\sigma_\\rho[f, d, x] := \\sqrt{\\sigma^2_\\rho[f, d, x]}\n282: $$\n283: \n284: **Step 2: Numerical Regularization (C\u00b9 Smoothing)**\n285: \n286: $$\n287: \\sigma'_\\rho[f, d, x] := \\sigma'_{\\text{reg}}(\\sigma^2_\\rho[f, d, x])\n288: $$\n289: \n290: where $\\sigma'_{\\text{reg}}: \\mathbb{R}_{\\ge 0} \\to \\mathbb{R}_{>0}$ is the **C^\u221e regularized standard deviation function** from `01_fractal_gas_framework.md` (Definition `def-statistical-properties-measurement`). This function is defined as $\\sigma'_{\\text{reg}}(V) = \\sqrt{V + \\sigma'^2_{\\min}}$, ensuring:\n291: - **C^\u221e regularity**: $\\sigma'_{\\text{reg}}$ is infinitely differentiable everywhere\n292: - **Positive lower bound**: $\\sigma'_{\\text{reg}}(V) \\ge \\sigma'_{\\min} > 0$ for all $V \\ge 0$\n293: - **Global Lipschitz**: $|(\\sigma'_{\\text{reg}})'(V)| \\le L_{\\sigma'_{\\text{reg}}} = \\frac{1}{2\\sigma'_{\\min}}$ for all $V \\ge 0$\n294: \n295: **Step 3: Z-Score Construction**\n296: \n297: $$\n298: Z_\\rho[f, d, x] := \\frac{d(x) - \\mu_\\rho[f, d, x]}{\\sigma'_\\rho[f, d, x]}\n299: $$\n300: \n301: **Properties:**\n302: - **Boundedness:** If $d$ is bounded, then $Z_\\rho$ is uniformly bounded across all $f, x, \\rho$.\n303: - **Well-posedness:** The regularization ensures $Z_\\rho$ is always defined and finite.",
+      "metadata": {
+        "label": "def-unified-z-score"
+      },
+      "section": "## 1. The Unified Measurement Pipeline",
+      "raw_directive": "271: ### 1.0.4. The Unified Z-Score with Regularization\n272: \n273: :::{prf:definition} Unified Localized Z-Score\n274: :label: def-unified-z-score\n275: \n276: The **unified \u03c1-dependent Z-score** combines spatial localization with numerical regularization in three steps:\n277: \n278: **Step 1: Localized Standard Deviation**\n279: \n280: $$\n281: \\sigma_\\rho[f, d, x] := \\sqrt{\\sigma^2_\\rho[f, d, x]}\n282: $$\n283: \n284: **Step 2: Numerical Regularization (C\u00b9 Smoothing)**\n285: \n286: $$\n287: \\sigma'_\\rho[f, d, x] := \\sigma'_{\\text{reg}}(\\sigma^2_\\rho[f, d, x])\n288: $$\n289: \n290: where $\\sigma'_{\\text{reg}}: \\mathbb{R}_{\\ge 0} \\to \\mathbb{R}_{>0}$ is the **C^\u221e regularized standard deviation function** from `01_fractal_gas_framework.md` (Definition `def-statistical-properties-measurement`). This function is defined as $\\sigma'_{\\text{reg}}(V) = \\sqrt{V + \\sigma'^2_{\\min}}$, ensuring:\n291: - **C^\u221e regularity**: $\\sigma'_{\\text{reg}}$ is infinitely differentiable everywhere\n292: - **Positive lower bound**: $\\sigma'_{\\text{reg}}(V) \\ge \\sigma'_{\\min} > 0$ for all $V \\ge 0$\n293: - **Global Lipschitz**: $|(\\sigma'_{\\text{reg}})'(V)| \\le L_{\\sigma'_{\\text{reg}}} = \\frac{1}{2\\sigma'_{\\min}}$ for all $V \\ge 0$\n294: \n295: **Step 3: Z-Score Construction**\n296: \n297: $$\n298: Z_\\rho[f, d, x] := \\frac{d(x) - \\mu_\\rho[f, d, x]}{\\sigma'_\\rho[f, d, x]}\n299: $$\n300: \n301: **Properties:**\n302: - **Boundedness:** If $d$ is bounded, then $Z_\\rho$ is uniformly bounded across all $f, x, \\rho$.\n303: - **Well-posedness:** The regularization ensures $Z_\\rho$ is always defined and finite.\n304: - **Localization:** For finite \u03c1, the Z-score measures relative quality compared to the *local neighborhood*."
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-limiting-regimes",
+      "title": "Limiting Behavior of the Unified Pipeline",
+      "start_line": 308,
+      "end_line": 346,
+      "header_lines": [
+        309
+      ],
+      "content_start": 311,
+      "content_end": 345,
+      "content": "311: :label: prop-limiting-regimes\n312: \n313: The \u03c1-parameterized framework interpolates between two well-understood regimes:\n314: \n315: **1. Global Backbone Regime (\u03c1 \u2192 \u221e):**\n316: \n317: For the N-particle system with alive walker set $A_k$:\n318: \n319: $$\n320: \\lim_{\\rho \\to \\infty} w_{ij}(\\rho) = \\frac{1}{k} \\quad \\text{for all } i, j \\in A_k\n321: $$\n322: \n323: $$\n324: \\lim_{\\rho \\to \\infty} \\mu_\\rho[f_k, d, x_i] = \\frac{1}{k}\\sum_{j \\in A_k} d(x_j) =: \\mu[f_k, d]\n325: $$\n326: \n327: $$\n328: \\lim_{\\rho \\to \\infty} \\sigma^2_\\rho[f_k, d, x_i] = \\frac{1}{k}\\sum_{j \\in A_k} [d(x_j) - \\mu[f_k, d]]^2 =: \\sigma^2[f_k, d]\n329: $$\n330: \n331: In this limit, all alive walkers use identical **k-normalized global statistics**, and the fitness potential becomes position-independent in its statistical weights. This **exactly recovers the backbone model** from `03_cloning.md` and `04_convergence.md`, which uses the empirical distribution over $A_k$ only.\n332: \n333: **2. Hyper-Local Regime (\u03c1 \u2192 0):**\n334: \n335: $$\n336: \\lim_{\\rho \\to 0} K_\\rho(x, x') = \\delta(x - x')\n337: $$\n338: \n339: In this limit, the moments become point evaluations (up to the nearest neighbor in the discrete case), and the fitness potential responds purely to infinitesimal local structure. This is the regime required for Hessian-based geometric adaptation.\n340: \n341: **3. Intermediate Regime (0 < \u03c1 < \u221e):**\n342: \n343: For finite \u03c1, the pipeline balances local geometric sensitivity with statistical robustness. The optimal choice of \u03c1 trades off:\n344: - **Smaller \u03c1:** More sensitive to local structure, but higher variance in moment estimates\n345: - **Larger \u03c1:** More statistically robust, but loses geometric localization",
+      "metadata": {
+        "label": "prop-limiting-regimes"
+      },
+      "section": "## 1. The Unified Measurement Pipeline",
+      "raw_directive": "308: ### 1.0.5. Analysis of Limiting Regimes\n309: \n310: :::{prf:proposition} Limiting Behavior of the Unified Pipeline\n311: :label: prop-limiting-regimes\n312: \n313: The \u03c1-parameterized framework interpolates between two well-understood regimes:\n314: \n315: **1. Global Backbone Regime (\u03c1 \u2192 \u221e):**\n316: \n317: For the N-particle system with alive walker set $A_k$:\n318: \n319: $$\n320: \\lim_{\\rho \\to \\infty} w_{ij}(\\rho) = \\frac{1}{k} \\quad \\text{for all } i, j \\in A_k\n321: $$\n322: \n323: $$\n324: \\lim_{\\rho \\to \\infty} \\mu_\\rho[f_k, d, x_i] = \\frac{1}{k}\\sum_{j \\in A_k} d(x_j) =: \\mu[f_k, d]\n325: $$\n326: \n327: $$\n328: \\lim_{\\rho \\to \\infty} \\sigma^2_\\rho[f_k, d, x_i] = \\frac{1}{k}\\sum_{j \\in A_k} [d(x_j) - \\mu[f_k, d]]^2 =: \\sigma^2[f_k, d]\n329: $$\n330: \n331: In this limit, all alive walkers use identical **k-normalized global statistics**, and the fitness potential becomes position-independent in its statistical weights. This **exactly recovers the backbone model** from `03_cloning.md` and `04_convergence.md`, which uses the empirical distribution over $A_k$ only.\n332: \n333: **2. Hyper-Local Regime (\u03c1 \u2192 0):**\n334: \n335: $$\n336: \\lim_{\\rho \\to 0} K_\\rho(x, x') = \\delta(x - x')\n337: $$\n338: \n339: In this limit, the moments become point evaluations (up to the nearest neighbor in the discrete case), and the fitness potential responds purely to infinitesimal local structure. This is the regime required for Hessian-based geometric adaptation.\n340: \n341: **3. Intermediate Regime (0 < \u03c1 < \u221e):**\n342: \n343: For finite \u03c1, the pipeline balances local geometric sensitivity with statistical robustness. The optimal choice of \u03c1 trades off:\n344: - **Smaller \u03c1:** More sensitive to local structure, but higher variance in moment estimates\n345: - **Larger \u03c1:** More statistically robust, but loses geometric localization\n346: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

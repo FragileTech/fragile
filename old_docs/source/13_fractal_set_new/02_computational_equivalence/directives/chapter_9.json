@@ -1,0 +1,29 @@
+{
+  "chapter_index": 9,
+  "section_id": "## 8. Summary and Practical Implications",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-complete-fidelity",
+      "title": "Complete Convergence Fidelity",
+      "start_line": 2155,
+      "end_line": 2169,
+      "header_lines": [
+        2156
+      ],
+      "content_start": 2158,
+      "content_end": 2168,
+      "content": "2158: :label: thm-complete-fidelity\n2159: \n2160: The Fractal Set $\\mathcal{F} = (\\mathcal{N}, E_{\\text{CST}} \\cup E_{\\text{IG}})$ is the path history of a **geometrically ergodic discrete-time Markov chain**. Specifically:\n2161: \n2162: **1. Information:** {prf:ref}`thm-fractal-set-reconstruction` proves the Fractal Set contains complete SDE data (reconstruction).\n2163: \n2164: **2. Dynamics:** {prf:ref}`thm-fractal-set-ergodicity` proves the generator is geometrically ergodic (convergence).\n2165: \n2166: **3. Fidelity:** {prf:ref}`thm-weak-convergence-invariant` proves the discrete invariant measure approximates the continuous QSD.\n2167: \n2168: **Combined:** The Fractal Set is a **faithful discrete representation** of the Adaptive Gas SDE, inheriting all convergence guarantees.",
+      "metadata": {
+        "label": "thm-complete-fidelity"
+      },
+      "section": "## 8. Summary and Practical Implications",
+      "raw_directive": "2155: ### 8.1. What We Have Proven\n2156: \n2157: :::{prf:theorem} Complete Convergence Fidelity\n2158: :label: thm-complete-fidelity\n2159: \n2160: The Fractal Set $\\mathcal{F} = (\\mathcal{N}, E_{\\text{CST}} \\cup E_{\\text{IG}})$ is the path history of a **geometrically ergodic discrete-time Markov chain**. Specifically:\n2161: \n2162: **1. Information:** {prf:ref}`thm-fractal-set-reconstruction` proves the Fractal Set contains complete SDE data (reconstruction).\n2163: \n2164: **2. Dynamics:** {prf:ref}`thm-fractal-set-ergodicity` proves the generator is geometrically ergodic (convergence).\n2165: \n2166: **3. Fidelity:** {prf:ref}`thm-weak-convergence-invariant` proves the discrete invariant measure approximates the continuous QSD.\n2167: \n2168: **Combined:** The Fractal Set is a **faithful discrete representation** of the Adaptive Gas SDE, inheriting all convergence guarantees.\n2169: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

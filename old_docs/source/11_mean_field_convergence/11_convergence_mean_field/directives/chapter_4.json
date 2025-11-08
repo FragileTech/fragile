@@ -1,0 +1,83 @@
+{
+  "chapter_index": 4,
+  "section_id": "## 4. Open Problems and Critical Unknowns",
+  "directive_count": 4,
+  "hints": [
+    {
+      "directive_type": "problem",
+      "label": "prob-mean-field-qsd-regularity",
+      "title": "Problem 1: Regularity of Mean-Field QSD",
+      "start_line": 474,
+      "end_line": 485,
+      "header_lines": [
+        475
+      ],
+      "content_start": 477,
+      "content_end": 484,
+      "content": "477: :label: prob-mean-field-qsd-regularity\n478: \n479: **Question**: Does $\\rho_\\infty$ satisfy:\n480: 1. $\\rho_\\infty \\in C^k(\\Omega)$ for $k \\ge 2$?\n481: 2. $\\int (|x|^p + |v|^p) \\rho_\\infty < \\infty$ for all $p$?\n482: 3. $I(\\rho_\\infty | \\rho_{\\text{ref}}) < \\infty$?\n483: \n484: **Current status**: Existence/uniqueness proven ([06_propagation_chaos.md](06_propagation_chaos.md)), regularity not established.",
+      "metadata": {
+        "label": "prob-mean-field-qsd-regularity"
+      },
+      "section": "## 4. Open Problems and Critical Unknowns",
+      "raw_directive": "474: Success depends on resolving these:\n475: \n476: :::{prf:problem} Problem 1: Regularity of Mean-Field QSD\n477: :label: prob-mean-field-qsd-regularity\n478: \n479: **Question**: Does $\\rho_\\infty$ satisfy:\n480: 1. $\\rho_\\infty \\in C^k(\\Omega)$ for $k \\ge 2$?\n481: 2. $\\int (|x|^p + |v|^p) \\rho_\\infty < \\infty$ for all $p$?\n482: 3. $I(\\rho_\\infty | \\rho_{\\text{ref}}) < \\infty$?\n483: \n484: **Current status**: Existence/uniqueness proven ([06_propagation_chaos.md](06_propagation_chaos.md)), regularity not established.\n485: "
+    },
+    {
+      "directive_type": "problem",
+      "label": "prob-revival-kl",
+      "title": "Problem 2: KL-Properties of Revival Operator",
+      "start_line": 487,
+      "end_line": 497,
+      "header_lines": [
+        488
+      ],
+      "content_start": 490,
+      "content_end": 496,
+      "content": "490: :label: prob-revival-kl\n491: \n492: **Question**: Is $\\mathcal{R}$ KL-non-expansive?\n493: \n494: **Current status**: Finite-N cloning preserves LSI ([10_kl_convergence.md](10_kl_convergence.md)). Mean-field analog unknown.\n495: \n496: **Approach**: Model $\\mathcal{R}$ as optimal transport or Bayes update.",
+      "metadata": {
+        "label": "prob-revival-kl"
+      },
+      "section": "## 4. Open Problems and Critical Unknowns",
+      "raw_directive": "487: :::\n488: \n489: :::{prf:problem} Problem 2: KL-Properties of Revival Operator\n490: :label: prob-revival-kl\n491: \n492: **Question**: Is $\\mathcal{R}$ KL-non-expansive?\n493: \n494: **Current status**: Finite-N cloning preserves LSI ([10_kl_convergence.md](10_kl_convergence.md)). Mean-field analog unknown.\n495: \n496: **Approach**: Model $\\mathcal{R}$ as optimal transport or Bayes update.\n497: "
+    },
+    {
+      "directive_type": "problem",
+      "label": "prob-adaptive-ellipticity-mean-field",
+      "title": "Problem 3: Uniform Ellipticity of Adaptive Diffusion",
+      "start_line": 499,
+      "end_line": 511,
+      "header_lines": [
+        500
+      ],
+      "content_start": 502,
+      "content_end": 510,
+      "content": "502: :label: prob-adaptive-ellipticity-mean-field\n503: \n504: **Question**: Along trajectories $\\rho_t$, does $\\Sigma_{\\text{reg}}[\\rho_t]$ remain uniformly elliptic?\n505: \n506: $$\n507: c_{\\min} I \\preceq (\\nabla^2 V_{\\text{fit}}[\\rho_t] + \\epsilon_\\Sigma I)^{-1} \\preceq c_{\\max} I\n508: $$\n509: \n510: **Current status**: Finite-N uniform ellipticity by construction. Mean-field requires PDE-based proof.",
+      "metadata": {
+        "label": "prob-adaptive-ellipticity-mean-field"
+      },
+      "section": "## 4. Open Problems and Critical Unknowns",
+      "raw_directive": "499: :::\n500: \n501: :::{prf:problem} Problem 3: Uniform Ellipticity of Adaptive Diffusion\n502: :label: prob-adaptive-ellipticity-mean-field\n503: \n504: **Question**: Along trajectories $\\rho_t$, does $\\Sigma_{\\text{reg}}[\\rho_t]$ remain uniformly elliptic?\n505: \n506: $$\n507: c_{\\min} I \\preceq (\\nabla^2 V_{\\text{fit}}[\\rho_t] + \\epsilon_\\Sigma I)^{-1} \\preceq c_{\\max} I\n508: $$\n509: \n510: **Current status**: Finite-N uniform ellipticity by construction. Mean-field requires PDE-based proof.\n511: "
+    },
+    {
+      "directive_type": "problem",
+      "label": "prob-n-uniform-lsi",
+      "title": "Problem 4: N-Uniformity of LSI Constants",
+      "start_line": 513,
+      "end_line": 527,
+      "header_lines": [
+        514
+      ],
+      "content_start": 516,
+      "content_end": 526,
+      "content": "516: :label: prob-n-uniform-lsi\n517: \n518: **Question**: Does the finite-N LSI constant from [10_kl_convergence.md](10_kl_convergence.md) remain bounded as $N \\to \\infty$?\n519: \n520: $$\n521: \\sup_{N \\ge 2} C_{\\text{LSI}}^{(N)} < \\infty\n522: $$\n523: \n524: **Why it matters**: If yes, could prove mean-field LSI directly by passing to limit (Strategy F). Much cleaner proof.\n525: \n526: **Current status**: Unknown. N-uniform LSI is rare but would be ideal.",
+      "metadata": {
+        "label": "prob-n-uniform-lsi"
+      },
+      "section": "## 4. Open Problems and Critical Unknowns",
+      "raw_directive": "513: :::\n514: \n515: :::{prf:problem} Problem 4: N-Uniformity of LSI Constants\n516: :label: prob-n-uniform-lsi\n517: \n518: **Question**: Does the finite-N LSI constant from [10_kl_convergence.md](10_kl_convergence.md) remain bounded as $N \\to \\infty$?\n519: \n520: $$\n521: \\sup_{N \\ge 2} C_{\\text{LSI}}^{(N)} < \\infty\n522: $$\n523: \n524: **Why it matters**: If yes, could prove mean-field LSI directly by passing to limit (Strategy F). Much cleaner proof.\n525: \n526: **Current status**: Unknown. N-uniform LSI is rare but would be ideal.\n527: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

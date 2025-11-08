@@ -1,0 +1,61 @@
+{
+  "chapter_index": 9,
+  "section_id": "## A.5 Simplification for Separable Parametrizations",
+  "directive_count": 3,
+  "hints": [
+    {
+      "directive_type": "proposition",
+      "label": "prop-statistical-orthogonality-appendix",
+      "title": "Statistical Orthogonality of Spatial and Kinetic Scores",
+      "start_line": 2158,
+      "end_line": 2178,
+      "header_lines": [
+        2159
+      ],
+      "content_start": 2161,
+      "content_end": 2177,
+      "content": "2161: :label: prop-statistical-orthogonality-appendix\n2162: \n2163: Consider the canonical ensemble with QSD density:\n2164: \n2165: $$\n2166: \\rho_{\\text{QSD}}(x, v; \\theta) = \\frac{1}{Z(\\theta)} \\sqrt{\\det g(x)} \\exp(-\\beta H_{\\text{eff}}(x, v))\n2167: $$\n2168: \n2169: where $H_{\\text{eff}}(x, v) = U(x) + \\frac{1}{2}v^T M v$ is **separable** into spatial and kinetic parts.\n2170: \n2171: Let:\n2172: - $s_i = g^{ab} H_{ab,i}$ where $H_{ab} = \\partial^2 U / \\partial x^a \\partial x^b$ (spatial score)\n2173: - $k_j = \\beta_j H_{\\text{eff}}$ (kinetic score)\n2174: \n2175: If parameter $\\theta^i$ controls **only spatial properties** (e.g., $V$, $N$) such that $\\beta_i = 0$, and parameter $\\theta^j$ controls **only temperature** such that $\\partial g_{ab}/\\partial \\theta^j = 0$, then:\n2176: \n2177: $$",
+      "metadata": {
+        "label": "prop-statistical-orthogonality-appendix"
+      },
+      "section": "## A.5 Simplification for Separable Parametrizations",
+      "raw_directive": "2158: The covariance form from A.4.1 can be further simplified when the parametrization separates spatial and kinetic degrees of freedom. We now prove this rigorously.\n2159: \n2160: :::{prf:proposition} Statistical Orthogonality of Spatial and Kinetic Scores\n2161: :label: prop-statistical-orthogonality-appendix\n2162: \n2163: Consider the canonical ensemble with QSD density:\n2164: \n2165: $$\n2166: \\rho_{\\text{QSD}}(x, v; \\theta) = \\frac{1}{Z(\\theta)} \\sqrt{\\det g(x)} \\exp(-\\beta H_{\\text{eff}}(x, v))\n2167: $$\n2168: \n2169: where $H_{\\text{eff}}(x, v) = U(x) + \\frac{1}{2}v^T M v$ is **separable** into spatial and kinetic parts.\n2170: \n2171: Let:\n2172: - $s_i = g^{ab} H_{ab,i}$ where $H_{ab} = \\partial^2 U / \\partial x^a \\partial x^b$ (spatial score)\n2173: - $k_j = \\beta_j H_{\\text{eff}}$ (kinetic score)\n2174: \n2175: If parameter $\\theta^i$ controls **only spatial properties** (e.g., $V$, $N$) such that $\\beta_i = 0$, and parameter $\\theta^j$ controls **only temperature** such that $\\partial g_{ab}/\\partial \\theta^j = 0$, then:\n2176: \n2177: $$\n2178: \\text{Cov}(s_i, k_j) = 0"
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-25",
+      "title": null,
+      "start_line": 2180,
+      "end_line": 2256,
+      "header_lines": [],
+      "content_start": 2182,
+      "content_end": 2255,
+      "content": "2182: :::{prf:proof}\n2183: \n2184: **Step 1: Factorization of the QSD.**\n2185: \n2186: For separable $H_{\\text{eff}}$, the QSD factorizes as:\n2187: \n2188: $$\n2189: \\rho_{\\text{QSD}}(x, v; \\theta) = \\rho_{\\text{spatial}}(x; V, N) \\cdot \\rho_{\\text{kinetic}}(v; \\beta)\n2190: $$\n2191: \n2192: where:\n2193: \n2194: $$\n2195: \\begin{align}\n2196: \\rho_{\\text{spatial}}(x; V, N) &= \\frac{\\sqrt{\\det g(x)} e^{-\\beta U(x)}}{Z_{\\text{spatial}}(V, N, \\beta)} \\\\\n2197: \\rho_{\\text{kinetic}}(v; \\beta) &= \\frac{e^{-\\beta v^T M v / 2}}{Z_{\\text{kinetic}}(\\beta)}\n2198: \\end{align}\n2199: $$\n2200: \n2201: **Step 2: Compute expectations.**\n2202: \n2203: For $\\theta^i$ controlling spatial properties ($\\beta_i = 0$):\n2204: \n2205: $$\n2206: s_i = g^{ab}(x) H_{ab,i}(x) \\quad \\text{(depends only on } x \\text{)}\n2207: $$\n2208: \n2209: For $\\theta^j = \\beta$:\n2210: \n2211: $$\n2212: k_j = H_{\\text{eff}}(x, v) = U(x) + \\frac{1}{2}v^T M v\n2213: $$\n2214: \n2215: **Step 3: Factorize the covariance.**\n2216: \n2217: $$\n2218: \\begin{align}\n2219: \\text{Cov}(s_i, k_j) &= \\mathbb{E}[s_i k_j] - \\mathbb{E}[s_i]\\mathbb{E}[k_j] \\\\\n2220: &= \\mathbb{E}[s_i(x) \\cdot (U(x) + \\tfrac{1}{2}v^T M v)] - \\mathbb{E}[s_i(x)] \\mathbb{E}[U(x) + \\tfrac{1}{2}v^T M v]\n2221: \\end{align}\n2222: $$\n2223: \n2224: Using the factorized measure $\\rho = \\rho_{\\text{spatial}} \\cdot \\rho_{\\text{kinetic}}$:\n2225: \n2226: $$\n2227: \\begin{align}\n2228: \\mathbb{E}[s_i \\cdot U] &= \\int s_i(x) U(x) \\rho_{\\text{spatial}}(x) dx \\\\\n2229: \\mathbb{E}[s_i \\cdot v^T M v] &= \\int s_i(x) \\rho_{\\text{spatial}}(x) dx \\cdot \\int \\tfrac{1}{2}v^T M v \\, \\rho_{\\text{kinetic}}(v) dv \\\\\n2230: &= \\mathbb{E}_{\\text{spatial}}[s_i] \\cdot \\mathbb{E}_{\\text{kinetic}}[v^T M v]\n2231: \\end{align}\n2232: $$\n2233: \n2234: **Step 4: Simplify.**\n2235: \n2236: $$\n2237: \\begin{align}\n2238: \\text{Cov}(s_i, k_j) &= \\mathbb{E}_{\\text{spatial}}[s_i U] + \\mathbb{E}_{\\text{spatial}}[s_i] \\mathbb{E}_{\\text{kinetic}}[v^T M v] \\\\\n2239: &\\quad - \\mathbb{E}_{\\text{spatial}}[s_i] \\left(\\mathbb{E}_{\\text{spatial}}[U] + \\mathbb{E}_{\\text{kinetic}}[v^T M v]\\right) \\\\\n2240: &= \\mathbb{E}_{\\text{spatial}}[s_i U] - \\mathbb{E}_{\\text{spatial}}[s_i] \\mathbb{E}_{\\text{spatial}}[U] \\\\\n2241: &= \\text{Cov}_{\\text{spatial}}(s_i, U)\n2242: \\end{align}\n2243: $$\n2244: \n2245: **Step 5: Apply orthogonality for distinct parameter types.**\n2246: \n2247: When $\\theta^i$ controls geometry (via $g_{ab}$) and $\\theta^j = \\beta$ controls only temperature:\n2248: - $s_i$ depends on spatial derivatives of $U$ through $g^{ab} \\partial^2 U / \\partial x^a \\partial x^b$\n2249: - For generic potentials $U$, spatial Hessian derivatives are uncorrelated with $U$ itself under the weighted measure\n2250: \n2251: More precisely, for the **canonical parametrization** where $\\theta^i = V$ (volume):\n2252: \n2253: $$\n2254: s_i = g^{ab} \\frac{\\partial^2 U}{\\partial x^a \\partial x^b} \\cdot \\frac{\\partial}{\\partial V}\n2255: $$",
+      "metadata": {},
+      "section": "## A.5 Simplification for Separable Parametrizations",
+      "raw_directive": "2180: :::\n2181: \n2182: :::{prf:proof}\n2183: \n2184: **Step 1: Factorization of the QSD.**\n2185: \n2186: For separable $H_{\\text{eff}}$, the QSD factorizes as:\n2187: \n2188: $$\n2189: \\rho_{\\text{QSD}}(x, v; \\theta) = \\rho_{\\text{spatial}}(x; V, N) \\cdot \\rho_{\\text{kinetic}}(v; \\beta)\n2190: $$\n2191: \n2192: where:\n2193: \n2194: $$\n2195: \\begin{align}\n2196: \\rho_{\\text{spatial}}(x; V, N) &= \\frac{\\sqrt{\\det g(x)} e^{-\\beta U(x)}}{Z_{\\text{spatial}}(V, N, \\beta)} \\\\\n2197: \\rho_{\\text{kinetic}}(v; \\beta) &= \\frac{e^{-\\beta v^T M v / 2}}{Z_{\\text{kinetic}}(\\beta)}\n2198: \\end{align}\n2199: $$\n2200: \n2201: **Step 2: Compute expectations.**\n2202: \n2203: For $\\theta^i$ controlling spatial properties ($\\beta_i = 0$):\n2204: \n2205: $$\n2206: s_i = g^{ab}(x) H_{ab,i}(x) \\quad \\text{(depends only on } x \\text{)}\n2207: $$\n2208: \n2209: For $\\theta^j = \\beta$:\n2210: \n2211: $$\n2212: k_j = H_{\\text{eff}}(x, v) = U(x) + \\frac{1}{2}v^T M v\n2213: $$\n2214: \n2215: **Step 3: Factorize the covariance.**\n2216: \n2217: $$\n2218: \\begin{align}\n2219: \\text{Cov}(s_i, k_j) &= \\mathbb{E}[s_i k_j] - \\mathbb{E}[s_i]\\mathbb{E}[k_j] \\\\\n2220: &= \\mathbb{E}[s_i(x) \\cdot (U(x) + \\tfrac{1}{2}v^T M v)] - \\mathbb{E}[s_i(x)] \\mathbb{E}[U(x) + \\tfrac{1}{2}v^T M v]\n2221: \\end{align}\n2222: $$\n2223: \n2224: Using the factorized measure $\\rho = \\rho_{\\text{spatial}} \\cdot \\rho_{\\text{kinetic}}$:\n2225: \n2226: $$\n2227: \\begin{align}\n2228: \\mathbb{E}[s_i \\cdot U] &= \\int s_i(x) U(x) \\rho_{\\text{spatial}}(x) dx \\\\\n2229: \\mathbb{E}[s_i \\cdot v^T M v] &= \\int s_i(x) \\rho_{\\text{spatial}}(x) dx \\cdot \\int \\tfrac{1}{2}v^T M v \\, \\rho_{\\text{kinetic}}(v) dv \\\\\n2230: &= \\mathbb{E}_{\\text{spatial}}[s_i] \\cdot \\mathbb{E}_{\\text{kinetic}}[v^T M v]\n2231: \\end{align}\n2232: $$\n2233: \n2234: **Step 4: Simplify.**\n2235: \n2236: $$\n2237: \\begin{align}\n2238: \\text{Cov}(s_i, k_j) &= \\mathbb{E}_{\\text{spatial}}[s_i U] + \\mathbb{E}_{\\text{spatial}}[s_i] \\mathbb{E}_{\\text{kinetic}}[v^T M v] \\\\\n2239: &\\quad - \\mathbb{E}_{\\text{spatial}}[s_i] \\left(\\mathbb{E}_{\\text{spatial}}[U] + \\mathbb{E}_{\\text{kinetic}}[v^T M v]\\right) \\\\\n2240: &= \\mathbb{E}_{\\text{spatial}}[s_i U] - \\mathbb{E}_{\\text{spatial}}[s_i] \\mathbb{E}_{\\text{spatial}}[U] \\\\\n2241: &= \\text{Cov}_{\\text{spatial}}(s_i, U)\n2242: \\end{align}\n2243: $$\n2244: \n2245: **Step 5: Apply orthogonality for distinct parameter types.**\n2246: \n2247: When $\\theta^i$ controls geometry (via $g_{ab}$) and $\\theta^j = \\beta$ controls only temperature:\n2248: - $s_i$ depends on spatial derivatives of $U$ through $g^{ab} \\partial^2 U / \\partial x^a \\partial x^b$\n2249: - For generic potentials $U$, spatial Hessian derivatives are uncorrelated with $U$ itself under the weighted measure\n2250: \n2251: More precisely, for the **canonical parametrization** where $\\theta^i = V$ (volume):\n2252: \n2253: $$\n2254: s_i = g^{ab} \\frac{\\partial^2 U}{\\partial x^a \\partial x^b} \\cdot \\frac{\\partial}{\\partial V}\n2255: $$\n2256: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-103",
+      "title": "Practical Implications",
+      "start_line": 2258,
+      "end_line": 2276,
+      "header_lines": [
+        2259
+      ],
+      "content_start": 2261,
+      "content_end": 2275,
+      "content": "2261: :class: tip\n2262: \n2263: The vanishing cross-covariance means the Fisher information metric is **block-diagonal**:\n2264: \n2265: $$\n2266: g_{\\text{Fisher}} = \\begin{pmatrix}\n2267: g_{\\text{Fisher}}^{\\beta\\beta} & 0 & 0 \\\\\n2268: 0 & g_{\\text{Fisher}}^{VV} & g_{\\text{Fisher}}^{VN} \\\\\n2269: 0 & g_{\\text{Fisher}}^{NV} & g_{\\text{Fisher}}^{NN}\n2270: \\end{pmatrix}\n2271: $$\n2272: \n2273: with:\n2274: - $g^{\\beta\\beta} = \\text{Var}(H_{\\text{eff}}) = T^2 C_V$ (pure kinetic)\n2275: - $g^{VV}, g^{VN}, g^{NN}$ (pure spatial)",
+      "metadata": {
+        "class": "tip"
+      },
+      "section": "## A.5 Simplification for Separable Parametrizations",
+      "raw_directive": "2258: :::\n2259: \n2260: :::{prf:remark} Practical Implications\n2261: :class: tip\n2262: \n2263: The vanishing cross-covariance means the Fisher information metric is **block-diagonal**:\n2264: \n2265: $$\n2266: g_{\\text{Fisher}} = \\begin{pmatrix}\n2267: g_{\\text{Fisher}}^{\\beta\\beta} & 0 & 0 \\\\\n2268: 0 & g_{\\text{Fisher}}^{VV} & g_{\\text{Fisher}}^{VN} \\\\\n2269: 0 & g_{\\text{Fisher}}^{NV} & g_{\\text{Fisher}}^{NN}\n2270: \\end{pmatrix}\n2271: $$\n2272: \n2273: with:\n2274: - $g^{\\beta\\beta} = \\text{Var}(H_{\\text{eff}}) = T^2 C_V$ (pure kinetic)\n2275: - $g^{VV}, g^{VN}, g^{NN}$ (pure spatial)\n2276: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

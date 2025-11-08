@@ -1,0 +1,47 @@
+{
+  "chapter_index": 4,
+  "section_id": "## Proof of Theorem 2: Finite-N Mass Gap",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "proof",
+      "label": "lem-shape-regularity",
+      "title": "Proof Sketch of {prf:ref}`thm-finite-n-mass-gap`",
+      "start_line": 789,
+      "end_line": 802,
+      "header_lines": [
+        794
+      ],
+      "content_start": 791,
+      "content_end": 801,
+      "content": "791: :::{prf:proof} Proof Sketch of {prf:ref}`thm-finite-n-mass-gap`\n792: \n793: **Step 1: Shape-Regularity of the Delaunay Lattice**\n794: \n795: :::{prf:lemma} Shape-Regularity with High Probability\n796: :label: lem-shape-regularity\n797: \n798: Under the equilibrium measure $\\mu_{\\text{inv}}$, the Delaunay triangulation satisfies the following geometric properties with probability $\\geq 1 - Ce^{-cN}$ for some constants $C, c > 0$:\n799: \n800: 1. **Bounded coordination**: Each node has at most $K$ neighbors, where $K$ depends only on $r_0, R_{\\text{cut}}$\n801: 2. **Edge length bounds**: All edges satisfy $r_{\\min} \\leq \\|x_i - x_j\\| \\leq R_{\\text{cut}}$",
+      "metadata": {
+        "label": "lem-shape-regularity"
+      },
+      "section": "## Proof of Theorem 2: Finite-N Mass Gap",
+      "raw_directive": "789: 3. Choose parameters in the proven confining regime\n790: \n791: :::{prf:proof} Proof Sketch of {prf:ref}`thm-finite-n-mass-gap`\n792: \n793: **Step 1: Shape-Regularity of the Delaunay Lattice**\n794: \n795: :::{prf:lemma} Shape-Regularity with High Probability\n796: :label: lem-shape-regularity\n797: \n798: Under the equilibrium measure $\\mu_{\\text{inv}}$, the Delaunay triangulation satisfies the following geometric properties with probability $\\geq 1 - Ce^{-cN}$ for some constants $C, c > 0$:\n799: \n800: 1. **Bounded coordination**: Each node has at most $K$ neighbors, where $K$ depends only on $r_0, R_{\\text{cut}}$\n801: 2. **Edge length bounds**: All edges satisfy $r_{\\min} \\leq \\|x_i - x_j\\| \\leq R_{\\text{cut}}$\n802: 3. **Simplex shape regularity**: All 4-simplices have aspect ratio (ratio of circumradius to inradius) bounded by a constant $\\rho_{\\max}$"
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-strong-coupling-random",
+      "title": "Strong-Coupling Mass Gap for Shape-Regular Random Lattices",
+      "start_line": 827,
+      "end_line": 846,
+      "header_lines": [
+        828
+      ],
+      "content_start": 830,
+      "content_end": 845,
+      "content": "830: :label: lem-strong-coupling-random\n831: \n832: **Sketch: expansion into full proof in progress (estimated 30-50 pages)**\n833: \n834: Consider an ensemble of lattices with the following properties:\n835: - Bounded coordination $K$\n836: - Edge lengths in $[r_{\\min}, R_{\\text{cut}}]$\n837: - Simplex aspect ratio $\\leq \\rho_{\\max}$\n838: - Plaquette area $\\geq A_{\\min}$\n839: \n840: Then there exists a critical coupling $\\beta_c = \\beta_c(K, r_{\\min}, R_{\\text{cut}}, \\rho_{\\max}, A_{\\min}) > 0$ such that for all $\\beta_{\\text{gauge}} < \\beta_c$, the ensemble-averaged Wilson loop observables satisfy:\n841: \n842: $$\n843: \\mathbb{E}_{\\text{lattice}}\\left[\\langle W_C \\rangle_{\\text{gauge}}\\right] \\leq e^{-\\Delta_{\\text{eff}} \\cdot \\text{Area}(C)}\n844: \n845: $$",
+      "metadata": {
+        "label": "lem-strong-coupling-random"
+      },
+      "section": "## Proof of Theorem 2: Finite-N Mass Gap",
+      "raw_directive": "827: With shape-regularity established, we can now extend Wilson's theorem.\n828: \n829: :::{prf:lemma} Strong-Coupling Mass Gap for Shape-Regular Random Lattices\n830: :label: lem-strong-coupling-random\n831: \n832: **Sketch: expansion into full proof in progress (estimated 30-50 pages)**\n833: \n834: Consider an ensemble of lattices with the following properties:\n835: - Bounded coordination $K$\n836: - Edge lengths in $[r_{\\min}, R_{\\text{cut}}]$\n837: - Simplex aspect ratio $\\leq \\rho_{\\max}$\n838: - Plaquette area $\\geq A_{\\min}$\n839: \n840: Then there exists a critical coupling $\\beta_c = \\beta_c(K, r_{\\min}, R_{\\text{cut}}, \\rho_{\\max}, A_{\\min}) > 0$ such that for all $\\beta_{\\text{gauge}} < \\beta_c$, the ensemble-averaged Wilson loop observables satisfy:\n841: \n842: $$\n843: \\mathbb{E}_{\\text{lattice}}\\left[\\langle W_C \\rangle_{\\text{gauge}}\\right] \\leq e^{-\\Delta_{\\text{eff}} \\cdot \\text{Area}(C)}\n844: \n845: $$\n846: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

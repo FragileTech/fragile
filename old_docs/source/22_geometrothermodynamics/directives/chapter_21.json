@@ -1,0 +1,61 @@
+{
+  "chapter_index": 21,
+  "section_id": "## 6.4 Algorithmic Curvature Estimation",
+  "directive_count": 3,
+  "hints": [
+    {
+      "directive_type": "algorithm",
+      "label": "alg-ruppeiner-curvature",
+      "title": "Ruppeiner Curvature from QSD Samples",
+      "start_line": 3084,
+      "end_line": 3115,
+      "header_lines": [
+        3085
+      ],
+      "content_start": 3087,
+      "content_end": 3114,
+      "content": "3087: :label: alg-ruppeiner-curvature\n3088: \n3089: **Input:** $N$ samples $\\{(x_k, v_k)\\}_{k=1}^N$ from QSD, thermodynamic point $(T_0, V_0, N_0)$\n3090: \n3091: **Output:** Estimated scalar curvature $\\hat{R}_{\\text{Rupp}}$\n3092: \n3093: 1. **Compute metric at base point**: Use Algorithm {prf:ref}`alg-ruppeiner-metric-construction` to get $\\hat{g}_R(T_0, V_0, N_0)$\n3094: \n3095: 2. **Compute metric at nearby points**: For perturbations $\\Delta T, \\Delta V$:\n3096:    - Run QSD sampling at $(T_0 + \\Delta T, V_0, N_0)$ \u2192 get $\\hat{g}_R^{(T+)}$\n3097:    - Run QSD sampling at $(T_0 - \\Delta T, V_0, N_0)$ \u2192 get $\\hat{g}_R^{(T-)}$\n3098:    - Run QSD sampling at $(T_0, V_0 + \\Delta V, N_0)$ \u2192 get $\\hat{g}_R^{(V+)}$\n3099:    - Run QSD sampling at $(T_0, V_0 - \\Delta V, N_0)$ \u2192 get $\\hat{g}_R^{(V-)}$\n3100: \n3101: 3. **Finite difference Christoffel symbols**:\n3102:    $$\n3103:    \\Gamma^T_{TT} \\approx \\frac{1}{2}g_R^{TT} \\frac{g_R^{(T+)}_{TT} - g_R^{(T-)}_{TT}}{2\\Delta T}\n3104:    $$\n3105:    (and similarly for other components)\n3106: \n3107: 4. **Compute curvature**:\n3108:    $$\n3109:    \\hat{R}_{\\text{Rupp}} = -\\frac{1}{\\det \\hat{g}_R}\\left[\\text{sum of Christoffel derivatives}\\right]\n3110:    $$\n3111: \n3112: 5. **Return** $\\hat{R}_{\\text{Rupp}}$\n3113: \n3114: **Complexity:** $O(5N)$ for 5 independent QSD runs (base + 4 perturbations), plus curvature calculation overhead $O(1)$.",
+      "metadata": {
+        "label": "alg-ruppeiner-curvature"
+      },
+      "section": "## 6.4 Algorithmic Curvature Estimation",
+      "raw_directive": "3084: Given samples from the QSD, we can estimate the Ruppeiner scalar curvature.\n3085: \n3086: :::{prf:algorithm} Ruppeiner Curvature from QSD Samples\n3087: :label: alg-ruppeiner-curvature\n3088: \n3089: **Input:** $N$ samples $\\{(x_k, v_k)\\}_{k=1}^N$ from QSD, thermodynamic point $(T_0, V_0, N_0)$\n3090: \n3091: **Output:** Estimated scalar curvature $\\hat{R}_{\\text{Rupp}}$\n3092: \n3093: 1. **Compute metric at base point**: Use Algorithm {prf:ref}`alg-ruppeiner-metric-construction` to get $\\hat{g}_R(T_0, V_0, N_0)$\n3094: \n3095: 2. **Compute metric at nearby points**: For perturbations $\\Delta T, \\Delta V$:\n3096:    - Run QSD sampling at $(T_0 + \\Delta T, V_0, N_0)$ \u2192 get $\\hat{g}_R^{(T+)}$\n3097:    - Run QSD sampling at $(T_0 - \\Delta T, V_0, N_0)$ \u2192 get $\\hat{g}_R^{(T-)}$\n3098:    - Run QSD sampling at $(T_0, V_0 + \\Delta V, N_0)$ \u2192 get $\\hat{g}_R^{(V+)}$\n3099:    - Run QSD sampling at $(T_0, V_0 - \\Delta V, N_0)$ \u2192 get $\\hat{g}_R^{(V-)}$\n3100: \n3101: 3. **Finite difference Christoffel symbols**:\n3102:    $$\n3103:    \\Gamma^T_{TT} \\approx \\frac{1}{2}g_R^{TT} \\frac{g_R^{(T+)}_{TT} - g_R^{(T-)}_{TT}}{2\\Delta T}\n3104:    $$\n3105:    (and similarly for other components)\n3106: \n3107: 4. **Compute curvature**:\n3108:    $$\n3109:    \\hat{R}_{\\text{Rupp}} = -\\frac{1}{\\det \\hat{g}_R}\\left[\\text{sum of Christoffel derivatives}\\right]\n3110:    $$\n3111: \n3112: 5. **Return** $\\hat{R}_{\\text{Rupp}}$\n3113: \n3114: **Complexity:** $O(5N)$ for 5 independent QSD runs (base + 4 perturbations), plus curvature calculation overhead $O(1)$.\n3115: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-curvature-estimation-error",
+      "title": "Curvature Estimation Error",
+      "start_line": 3117,
+      "end_line": 3133,
+      "header_lines": [
+        3118
+      ],
+      "content_start": 3120,
+      "content_end": 3132,
+      "content": "3120: :label: thm-curvature-estimation-error\n3121: \n3122: The curvature estimator converges as:\n3123: \n3124: $$\n3125: \\mathbb{E}[|\\hat{R}_{\\text{Rupp}} - R_{\\text{Rupp}}|] = O\\left(N^{-2/(d+4)}\\right) + O(\\Delta T^2) + O(\\Delta V^2)\n3126: $$\n3127: \n3128: with optimal choice $\\Delta T \\sim N^{-1/(d+4)}$, giving overall rate:\n3129: \n3130: $$\n3131: \\mathbb{E}[|\\hat{R}_{\\text{Rupp}} - R_{\\text{Rupp}}|] = O\\left(N^{-2/(d+4)}\\right)\n3132: $$",
+      "metadata": {
+        "label": "thm-curvature-estimation-error"
+      },
+      "section": "## 6.4 Algorithmic Curvature Estimation",
+      "raw_directive": "3117: :::\n3118: \n3119: :::{prf:theorem} Curvature Estimation Error\n3120: :label: thm-curvature-estimation-error\n3121: \n3122: The curvature estimator converges as:\n3123: \n3124: $$\n3125: \\mathbb{E}[|\\hat{R}_{\\text{Rupp}} - R_{\\text{Rupp}}|] = O\\left(N^{-2/(d+4)}\\right) + O(\\Delta T^2) + O(\\Delta V^2)\n3126: $$\n3127: \n3128: with optimal choice $\\Delta T \\sim N^{-1/(d+4)}$, giving overall rate:\n3129: \n3130: $$\n3131: \\mathbb{E}[|\\hat{R}_{\\text{Rupp}} - R_{\\text{Rupp}}|] = O\\left(N^{-2/(d+4)}\\right)\n3132: $$\n3133: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-54",
+      "title": null,
+      "start_line": 3135,
+      "end_line": 3180,
+      "header_lines": [],
+      "content_start": 3137,
+      "content_end": 3179,
+      "content": "3137: :::{prf:proof}\n3138: \n3139: **Step 1:** Metric error propagation.\n3140: \n3141: From Theorem {prf:ref}`thm-ruppeiner-convergence`, each metric estimate has error $O(N^{-2/(d+4)})$.\n3142: \n3143: **Step 2:** Finite difference error.\n3144: \n3145: The Christoffel symbols involve first derivatives of the metric:\n3146: \n3147: $$\n3148: \\Gamma^k_{ij} \\sim \\frac{\\partial g_{ij}}{\\partial x^k}\n3149: $$\n3150: \n3151: Finite differences introduce truncation error:\n3152: \n3153: $$\n3154: \\frac{g(x + \\Delta x) - g(x - \\Delta x)}{2\\Delta x} = g'(x) + O(\\Delta x^2)\n3155: $$\n3156: \n3157: **Step 3:** Curvature formula sensitivity.\n3158: \n3159: The curvature involves second derivatives, so errors compound:\n3160: \n3161: $$\n3162: R \\sim \\frac{\\partial^2 g}{\\partial x^2} \\sim \\frac{g(x+\\Delta x) - 2g(x) + g(x-\\Delta x)}{\\Delta x^2}\n3163: $$\n3164: \n3165: This gives truncation error $O(\\Delta x^2)$ and statistical error $O(N^{-2/(d+4)}) / \\Delta x^2$.\n3166: \n3167: **Step 4:** Optimize $\\Delta x$.\n3168: \n3169: Minimizing total error $N^{-2/(d+4)} / \\Delta x^2 + \\Delta x^2$ gives:\n3170: \n3171: $$\n3172: \\Delta x \\sim N^{-1/(d+4)}\n3173: $$\n3174: \n3175: Substituting back:\n3176: \n3177: $$\n3178: \\text{Error} = O\\left(\\frac{N^{-2/(d+4)}}{N^{-2/(d+4)}}\\right) + O(N^{-2/(d+4)}) = O(N^{-2/(d+4)})\n3179: $$",
+      "metadata": {},
+      "section": "## 6.4 Algorithmic Curvature Estimation",
+      "raw_directive": "3135: :::\n3136: \n3137: :::{prf:proof}\n3138: \n3139: **Step 1:** Metric error propagation.\n3140: \n3141: From Theorem {prf:ref}`thm-ruppeiner-convergence`, each metric estimate has error $O(N^{-2/(d+4)})$.\n3142: \n3143: **Step 2:** Finite difference error.\n3144: \n3145: The Christoffel symbols involve first derivatives of the metric:\n3146: \n3147: $$\n3148: \\Gamma^k_{ij} \\sim \\frac{\\partial g_{ij}}{\\partial x^k}\n3149: $$\n3150: \n3151: Finite differences introduce truncation error:\n3152: \n3153: $$\n3154: \\frac{g(x + \\Delta x) - g(x - \\Delta x)}{2\\Delta x} = g'(x) + O(\\Delta x^2)\n3155: $$\n3156: \n3157: **Step 3:** Curvature formula sensitivity.\n3158: \n3159: The curvature involves second derivatives, so errors compound:\n3160: \n3161: $$\n3162: R \\sim \\frac{\\partial^2 g}{\\partial x^2} \\sim \\frac{g(x+\\Delta x) - 2g(x) + g(x-\\Delta x)}{\\Delta x^2}\n3163: $$\n3164: \n3165: This gives truncation error $O(\\Delta x^2)$ and statistical error $O(N^{-2/(d+4)}) / \\Delta x^2$.\n3166: \n3167: **Step 4:** Optimize $\\Delta x$.\n3168: \n3169: Minimizing total error $N^{-2/(d+4)} / \\Delta x^2 + \\Delta x^2$ gives:\n3170: \n3171: $$\n3172: \\Delta x \\sim N^{-1/(d+4)}\n3173: $$\n3174: \n3175: Substituting back:\n3176: \n3177: $$\n3178: \\text{Error} = O\\left(\\frac{N^{-2/(d+4)}}{N^{-2/(d+4)}}\\right) + O(N^{-2/(d+4)}) = O(N^{-2/(d+4)})\n3179: $$\n3180: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

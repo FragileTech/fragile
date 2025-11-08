@@ -1,0 +1,197 @@
+{
+  "chapter_index": 1,
+  "section_id": "## 1. The Configuration Space as an Orbifold",
+  "directive_count": 11,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-gauge-group-rigorous",
+      "title": "Gauge Group",
+      "start_line": 39,
+      "end_line": 57,
+      "header_lines": [
+        40
+      ],
+      "content_start": 42,
+      "content_end": 56,
+      "content": "42: :label: def-gauge-group-rigorous\n43: \n44: The **gauge group** for the Adaptive Gas is the symmetric group:\n45: \n46: $$\n47: G = S_N\n48: \n49: $$\n50: \n51: acting on the swarm state space $\\Sigma_N = (\\mathcal{X} \\times \\mathcal{V} \\times \\{0,1\\})^N$ by:\n52: \n53: $$\n54: \\sigma \\cdot (w_1, \\ldots, w_N) = (w_{\\sigma(1)}, \\ldots, w_{\\sigma(N)})\n55: \n56: $$",
+      "metadata": {
+        "label": "def-gauge-group-rigorous"
+      },
+      "section": "## 1. The Configuration Space as an Orbifold",
+      "raw_directive": "39: We begin by establishing the rigorous mathematical framework for gauge redundancies.\n40: \n41: :::{prf:definition} Gauge Group\n42: :label: def-gauge-group-rigorous\n43: \n44: The **gauge group** for the Adaptive Gas is the symmetric group:\n45: \n46: $$\n47: G = S_N\n48: \n49: $$\n50: \n51: acting on the swarm state space $\\Sigma_N = (\\mathcal{X} \\times \\mathcal{V} \\times \\{0,1\\})^N$ by:\n52: \n53: $$\n54: \\sigma \\cdot (w_1, \\ldots, w_N) = (w_{\\sigma(1)}, \\ldots, w_{\\sigma(N)})\n55: \n56: $$\n57: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-config-space-rigorous",
+      "title": "Gauge Orbit and Configuration Space",
+      "start_line": 59,
+      "end_line": 77,
+      "header_lines": [
+        60
+      ],
+      "content_start": 62,
+      "content_end": 76,
+      "content": "62: :label: def-config-space-rigorous\n63: \n64: For $\\mathcal{S} \\in \\Sigma_N$, the **gauge orbit** is:\n65: \n66: $$\n67: [\\mathcal{S}]_G = \\{\\sigma \\cdot \\mathcal{S} : \\sigma \\in S_N\\}\n68: \n69: $$\n70: \n71: The **configuration space** is the orbit space:\n72: \n73: $$\n74: \\mathcal{M}_{\\text{config}} = \\Sigma_N / S_N = \\{[\\mathcal{S}]_G : \\mathcal{S} \\in \\Sigma_N\\}\n75: \n76: $$",
+      "metadata": {
+        "label": "def-config-space-rigorous"
+      },
+      "section": "## 1. The Configuration Space as an Orbifold",
+      "raw_directive": "59: :::\n60: \n61: :::{prf:definition} Gauge Orbit and Configuration Space\n62: :label: def-config-space-rigorous\n63: \n64: For $\\mathcal{S} \\in \\Sigma_N$, the **gauge orbit** is:\n65: \n66: $$\n67: [\\mathcal{S}]_G = \\{\\sigma \\cdot \\mathcal{S} : \\sigma \\in S_N\\}\n68: \n69: $$\n70: \n71: The **configuration space** is the orbit space:\n72: \n73: $$\n74: \\mathcal{M}_{\\text{config}} = \\Sigma_N / S_N = \\{[\\mathcal{S}]_G : \\mathcal{S} \\in \\Sigma_N\\}\n75: \n76: $$\n77: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-stabilizer",
+      "title": "Stabilizer Subgroup",
+      "start_line": 83,
+      "end_line": 94,
+      "header_lines": [
+        84
+      ],
+      "content_start": 86,
+      "content_end": 93,
+      "content": "86: :label: def-stabilizer\n87: \n88: For $\\mathcal{S} = (w_1, \\ldots, w_N) \\in \\Sigma_N$, the **stabilizer subgroup** is:\n89: \n90: $$\n91: \\text{Stab}_{S_N}(\\mathcal{S}) = \\{\\sigma \\in S_N : \\sigma \\cdot \\mathcal{S} = \\mathcal{S}\\}\n92: \n93: $$",
+      "metadata": {
+        "label": "def-stabilizer"
+      },
+      "section": "## 1. The Configuration Space as an Orbifold",
+      "raw_directive": "83: The action of $S_N$ is not free, necessitating an orbifold structure.\n84: \n85: :::{prf:definition} Stabilizer Subgroup\n86: :label: def-stabilizer\n87: \n88: For $\\mathcal{S} = (w_1, \\ldots, w_N) \\in \\Sigma_N$, the **stabilizer subgroup** is:\n89: \n90: $$\n91: \\text{Stab}_{S_N}(\\mathcal{S}) = \\{\\sigma \\in S_N : \\sigma \\cdot \\mathcal{S} = \\mathcal{S}\\}\n92: \n93: $$\n94: "
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-stabilizer-structure",
+      "title": "Structure of Stabilizers",
+      "start_line": 96,
+      "end_line": 116,
+      "header_lines": [
+        97
+      ],
+      "content_start": 99,
+      "content_end": 115,
+      "content": "99: :label: prop-stabilizer-structure\n100: \n101: Let $\\mathcal{S} = (w_1, \\ldots, w_N)$ and partition $\\{1, \\ldots, N\\}$ into equivalence classes:\n102: \n103: $$\n104: \\{1, \\ldots, N\\} = I_1 \\sqcup I_2 \\sqcup \\cdots \\sqcup I_m\n105: \n106: $$\n107: \n108: where $i, j \\in I_k$ if and only if $w_i = w_j$.\n109: \n110: Then:\n111: \n112: $$\n113: \\text{Stab}_{S_N}(\\mathcal{S}) \\cong S_{|I_1|} \\times S_{|I_2|} \\times \\cdots \\times S_{|I_m|}\n114: \n115: $$",
+      "metadata": {
+        "label": "prop-stabilizer-structure"
+      },
+      "section": "## 1. The Configuration Space as an Orbifold",
+      "raw_directive": "96: :::\n97: \n98: :::{prf:proposition} Structure of Stabilizers\n99: :label: prop-stabilizer-structure\n100: \n101: Let $\\mathcal{S} = (w_1, \\ldots, w_N)$ and partition $\\{1, \\ldots, N\\}$ into equivalence classes:\n102: \n103: $$\n104: \\{1, \\ldots, N\\} = I_1 \\sqcup I_2 \\sqcup \\cdots \\sqcup I_m\n105: \n106: $$\n107: \n108: where $i, j \\in I_k$ if and only if $w_i = w_j$.\n109: \n110: Then:\n111: \n112: $$\n113: \\text{Stab}_{S_N}(\\mathcal{S}) \\cong S_{|I_1|} \\times S_{|I_2|} \\times \\cdots \\times S_{|I_m|}\n114: \n115: $$\n116: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-84",
+      "title": null,
+      "start_line": 118,
+      "end_line": 120,
+      "header_lines": [],
+      "content_start": 119,
+      "content_end": 119,
+      "content": "119: ",
+      "metadata": {},
+      "section": "## 1. The Configuration Space as an Orbifold",
+      "raw_directive": "118: :::\n119: \n120: :::{prf:proof}"
+    },
+    {
+      "directive_type": "example",
+      "label": "unlabeled-example-88",
+      "title": "Stabilizers for Degenerate Configurations",
+      "start_line": 122,
+      "end_line": 136,
+      "header_lines": [
+        123
+      ],
+      "content_start": 125,
+      "content_end": 135,
+      "content": "125: :class: tip\n126: \n127: **Case 1**: All walkers distinct ($w_i \\neq w_j$ for $i \\neq j$)\n128: - Partition: $I_k = \\{k\\}$ for all $k$\n129: - Stabilizer: $\\text{Stab}(\\mathcal{S}) = S_1 \\times \\cdots \\times S_1 = \\{e\\}$ (trivial)\n130: \n131: **Case 2**: Two walkers identical ($w_1 = w_2$, rest distinct)\n132: - Partition: $I_1 = \\{1, 2\\}, I_k = \\{k\\}$ for $k \\geq 3$\n133: - Stabilizer: $\\text{Stab}(\\mathcal{S}) \\cong S_2 \\times S_1 \\times \\cdots \\cong \\mathbb{Z}/2\\mathbb{Z}$\n134: \n135: **Case 3**: All walkers identical ($w_i = w$ for all $i$)",
+      "metadata": {
+        "class": "tip"
+      },
+      "section": "## 1. The Configuration Space as an Orbifold",
+      "raw_directive": "122: :::\n123: \n124: :::{prf:example} Stabilizers for Degenerate Configurations\n125: :class: tip\n126: \n127: **Case 1**: All walkers distinct ($w_i \\neq w_j$ for $i \\neq j$)\n128: - Partition: $I_k = \\{k\\}$ for all $k$\n129: - Stabilizer: $\\text{Stab}(\\mathcal{S}) = S_1 \\times \\cdots \\times S_1 = \\{e\\}$ (trivial)\n130: \n131: **Case 2**: Two walkers identical ($w_1 = w_2$, rest distinct)\n132: - Partition: $I_1 = \\{1, 2\\}, I_k = \\{k\\}$ for $k \\geq 3$\n133: - Stabilizer: $\\text{Stab}(\\mathcal{S}) \\cong S_2 \\times S_1 \\times \\cdots \\cong \\mathbb{Z}/2\\mathbb{Z}$\n134: \n135: **Case 3**: All walkers identical ($w_i = w$ for all $i$)\n136: - Partition: $I_1 = \\{1, \\ldots, N\\}$"
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-generic-locus",
+      "title": "Generic and Singular Loci",
+      "start_line": 140,
+      "end_line": 156,
+      "header_lines": [
+        141
+      ],
+      "content_start": 143,
+      "content_end": 155,
+      "content": "143: :label: def-generic-locus\n144: \n145: The **generic locus** is:\n146: \n147: $$\n148: \\Sigma_N^{\\text{gen}} = \\{\\mathcal{S} \\in \\Sigma_N : w_i \\neq w_j \\text{ for all } i \\neq j\\}\n149: \n150: $$\n151: \n152: The **singular locus** is its complement:\n153: \n154: $$\n155: \\Sigma_N^{\\text{sing}} = \\Sigma_N \\setminus \\Sigma_N^{\\text{gen}}",
+      "metadata": {
+        "label": "def-generic-locus"
+      },
+      "section": "## 1. The Configuration Space as an Orbifold",
+      "raw_directive": "140: ### 1.3. The Generic Locus\n141: \n142: :::{prf:definition} Generic and Singular Loci\n143: :label: def-generic-locus\n144: \n145: The **generic locus** is:\n146: \n147: $$\n148: \\Sigma_N^{\\text{gen}} = \\{\\mathcal{S} \\in \\Sigma_N : w_i \\neq w_j \\text{ for all } i \\neq j\\}\n149: \n150: $$\n151: \n152: The **singular locus** is its complement:\n153: \n154: $$\n155: \\Sigma_N^{\\text{sing}} = \\Sigma_N \\setminus \\Sigma_N^{\\text{gen}}\n156: "
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-generic-locus-topology",
+      "title": "Topological Properties of the Generic Locus",
+      "start_line": 158,
+      "end_line": 164,
+      "header_lines": [
+        159
+      ],
+      "content_start": 161,
+      "content_end": 163,
+      "content": "161: :label: prop-generic-locus-topology\n162: \n163: 1. $\\Sigma_N^{\\text{gen}}$ is **open and dense** in $\\Sigma_N$",
+      "metadata": {
+        "label": "prop-generic-locus-topology"
+      },
+      "section": "## 1. The Configuration Space as an Orbifold",
+      "raw_directive": "158: :::\n159: \n160: :::{prf:proposition} Topological Properties of the Generic Locus\n161: :label: prop-generic-locus-topology\n162: \n163: 1. $\\Sigma_N^{\\text{gen}}$ is **open and dense** in $\\Sigma_N$\n164: 2. $\\Sigma_N^{\\text{sing}}$ is **closed** with empty interior"
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-132",
+      "title": null,
+      "start_line": 166,
+      "end_line": 172,
+      "header_lines": [],
+      "content_start": 167,
+      "content_end": 171,
+      "content": "167: \n168: :::{prf:proof}\n169: **Openness**: The condition \"$w_i \\neq w_j$\" is equivalent to $\\|(x_i, v_i) - (x_j, v_j)\\| > 0$, which is an open condition in the product topology. The intersection of finitely many open sets is open.\n170: \n171: **Density**: For any $\\mathcal{S} \\in \\Sigma_N^{\\text{sing}}$ and $\\epsilon > 0$, we can perturb the positions/velocities by $\\delta < \\epsilon$ to make all states distinct, giving a point in $\\Sigma_N^{\\text{gen}}$.",
+      "metadata": {},
+      "section": "## 1. The Configuration Space as an Orbifold",
+      "raw_directive": "166: :::\n167: \n168: :::{prf:proof}\n169: **Openness**: The condition \"$w_i \\neq w_j$\" is equivalent to $\\|(x_i, v_i) - (x_j, v_j)\\| > 0$, which is an open condition in the product topology. The intersection of finitely many open sets is open.\n170: \n171: **Density**: For any $\\mathcal{S} \\in \\Sigma_N^{\\text{sing}}$ and $\\epsilon > 0$, we can perturb the positions/velocities by $\\delta < \\epsilon$ to make all states distinct, giving a point in $\\Sigma_N^{\\text{gen}}$.\n172: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-config-orbifold",
+      "title": "Configuration Space as Orbifold",
+      "start_line": 176,
+      "end_line": 184,
+      "header_lines": [
+        177
+      ],
+      "content_start": 179,
+      "content_end": 183,
+      "content": "179: :label: thm-config-orbifold\n180: \n181: The configuration space $\\mathcal{M}_{\\text{config}} = \\Sigma_N / S_N$ is a **smooth orbifold** of dimension $2Nd$, with:\n182: \n183: 1. **Generic part**: $\\mathcal{M}_{\\text{config}}^{\\text{gen}} = \\Sigma_N^{\\text{gen}} / S_N$ is a smooth manifold",
+      "metadata": {
+        "label": "thm-config-orbifold"
+      },
+      "section": "## 1. The Configuration Space as an Orbifold",
+      "raw_directive": "176: ### 1.4. Orbifold Structure Theorem\n177: \n178: :::{prf:theorem} Configuration Space as Orbifold\n179: :label: thm-config-orbifold\n180: \n181: The configuration space $\\mathcal{M}_{\\text{config}} = \\Sigma_N / S_N$ is a **smooth orbifold** of dimension $2Nd$, with:\n182: \n183: 1. **Generic part**: $\\mathcal{M}_{\\text{config}}^{\\text{gen}} = \\Sigma_N^{\\text{gen}} / S_N$ is a smooth manifold\n184: 2. **Singular part**: Points in $\\mathcal{M}_{\\text{config}}^{\\text{sing}} = \\Sigma_N^{\\text{sing}} / S_N$ have non-trivial **orbifold groups** (stabilizers)"
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-152",
+      "title": null,
+      "start_line": 186,
+      "end_line": 194,
+      "header_lines": [],
+      "content_start": 187,
+      "content_end": 193,
+      "content": "187: \n188: :::{prf:proof}\n189: **Dimension**: Since $S_N$ is discrete ($\\dim(S_N) = 0$ as a Lie group), the quotient has the same dimension as the total space: $\\dim(\\mathcal{M}_{\\text{config}}) = \\dim(\\Sigma_N) = 2Nd$.\n190: \n191: **Orbifold structure**: By standard orbifold theory, the quotient of a manifold by a discrete group action is an orbifold. The orbifold structure group at $[\\mathcal{S}] \\in \\mathcal{M}_{\\text{config}}$ is isomorphic to $\\text{Stab}_{S_N}(\\mathcal{S})$.\n192: \n193: **Generic part is manifold**: On $\\Sigma_N^{\\text{gen}}$, the action is free, so the quotient is a smooth manifold (by the quotient manifold theorem for free actions).",
+      "metadata": {},
+      "section": "## 1. The Configuration Space as an Orbifold",
+      "raw_directive": "186: :::\n187: \n188: :::{prf:proof}\n189: **Dimension**: Since $S_N$ is discrete ($\\dim(S_N) = 0$ as a Lie group), the quotient has the same dimension as the total space: $\\dim(\\mathcal{M}_{\\text{config}}) = \\dim(\\Sigma_N) = 2Nd$.\n190: \n191: **Orbifold structure**: By standard orbifold theory, the quotient of a manifold by a discrete group action is an orbifold. The orbifold structure group at $[\\mathcal{S}] \\in \\mathcal{M}_{\\text{config}}$ is isomorphic to $\\text{Stab}_{S_N}(\\mathcal{S})$.\n192: \n193: **Generic part is manifold**: On $\\Sigma_N^{\\text{gen}}$, the action is free, so the quotient is a smooth manifold (by the quotient manifold theorem for free actions).\n194: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

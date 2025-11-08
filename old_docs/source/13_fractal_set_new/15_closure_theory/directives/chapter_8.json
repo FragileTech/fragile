@@ -1,0 +1,101 @@
+{
+  "chapter_index": 8,
+  "section_id": "## 8. \u03c5-Machines and Minimal Macroscopic Distinctions",
+  "directive_count": 5,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-upsilon-machine-fractal-set",
+      "title": "\u03c5-Machine for Fractal Set",
+      "start_line": 1432,
+      "end_line": 1447,
+      "header_lines": [
+        1433
+      ],
+      "content_start": 1435,
+      "content_end": 1446,
+      "content": "1435: :label: def-upsilon-machine-fractal-set\n1436: \n1437: Given the micro-process $\\{Z_k\\}$ and the macro-coarse-graining $\\{\\tilde{Z}_k\\} = \\{\\mathcal{R}_b(Z_k)\\}$, define \u03c5-equivalence:\n1438: \n1439: $$\n1440: z \\sim_\\upsilon z' \\iff P(\\overrightarrow{\\tilde{Z}} \\mid Z = z) = P(\\overrightarrow{\\tilde{Z}} \\mid Z = z')\n1441: \n1442: $$\n1443: \n1444: Two micro-states are \u03c5-equivalent if they lead to identical conditional distributions over **macro-futures**.\n1445: \n1446: The **\u03c5-machine** is $(\\Sigma_\\upsilon, T_\\upsilon)$ where:",
+      "metadata": {
+        "label": "def-upsilon-machine-fractal-set"
+      },
+      "section": "## 8. \u03c5-Machines and Minimal Macroscopic Distinctions",
+      "raw_directive": "1432: Recall that \u03c5-machines identify the minimal distinctions in microscopic histories that matter for predicting macroscopic futures.\n1433: \n1434: :::{prf:definition} \u03c5-Machine for Fractal Set\n1435: :label: def-upsilon-machine-fractal-set\n1436: \n1437: Given the micro-process $\\{Z_k\\}$ and the macro-coarse-graining $\\{\\tilde{Z}_k\\} = \\{\\mathcal{R}_b(Z_k)\\}$, define \u03c5-equivalence:\n1438: \n1439: $$\n1440: z \\sim_\\upsilon z' \\iff P(\\overrightarrow{\\tilde{Z}} \\mid Z = z) = P(\\overrightarrow{\\tilde{Z}} \\mid Z = z')\n1441: \n1442: $$\n1443: \n1444: Two micro-states are \u03c5-equivalent if they lead to identical conditional distributions over **macro-futures**.\n1445: \n1446: The **\u03c5-machine** is $(\\Sigma_\\upsilon, T_\\upsilon)$ where:\n1447: - $\\Sigma_\\upsilon = \\{[\\overleftarrow{z}]_\\upsilon : \\overleftarrow{z} \\in \\text{micro-pasts}\\}$ is the set of \u03c5-states"
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-causal-closure-upsilon-machine",
+      "title": "Causal Closure via \u03c5-Machine",
+      "start_line": 1449,
+      "end_line": 1462,
+      "header_lines": [
+        1450
+      ],
+      "content_start": 1452,
+      "content_end": 1461,
+      "content": "1452: :label: thm-causal-closure-upsilon-machine\n1453: \n1454: The coarse-graining $\\mathcal{R}_b$ satisfies **causal closure** (Definition {prf:ref}`def-causal-closure`) if and only if:\n1455: \n1456: $$\n1457: \\Sigma_\\upsilon = \\tilde{\\Sigma}_\\varepsilon\n1458: \n1459: $$\n1460: \n1461: (the \u03c5-machine equals the macro-\u03b5-machine).",
+      "metadata": {
+        "label": "thm-causal-closure-upsilon-machine"
+      },
+      "section": "## 8. \u03c5-Machines and Minimal Macroscopic Distinctions",
+      "raw_directive": "1449: :::\n1450: \n1451: :::{prf:theorem} Causal Closure via \u03c5-Machine\n1452: :label: thm-causal-closure-upsilon-machine\n1453: \n1454: The coarse-graining $\\mathcal{R}_b$ satisfies **causal closure** (Definition {prf:ref}`def-causal-closure`) if and only if:\n1455: \n1456: $$\n1457: \\Sigma_\\upsilon = \\tilde{\\Sigma}_\\varepsilon\n1458: \n1459: $$\n1460: \n1461: (the \u03c5-machine equals the macro-\u03b5-machine).\n1462: "
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-ig-homotopy-classes",
+      "title": "IG Homotopy Classes",
+      "start_line": 1468,
+      "end_line": 1476,
+      "header_lines": [
+        1469
+      ],
+      "content_start": 1471,
+      "content_end": 1475,
+      "content": "1471: :label: prop-ig-homotopy-classes\n1472: \n1473: Two micro-states $z, z'$ can have identical $(x, v)$ but different IG neighborhoods $\\mathcal{N}_{\\text{IG}}(z) \\neq \\mathcal{N}_{\\text{IG}}(z')$. These lead to different \u03c5-states if the IG structure affects the macro-future.\n1474: \n1475: **Homotopy class perspective:** The \u03c5-machine refines the causal states by the **homotopy class** of IG connections. Two states are in the same \u03c5-state only if their IG neighborhoods are topologically equivalent (same connectivity pattern).",
+      "metadata": {
+        "label": "prop-ig-homotopy-classes"
+      },
+      "section": "## 8. \u03c5-Machines and Minimal Macroscopic Distinctions",
+      "raw_directive": "1468: The IG (quantum correlations) plays a crucial role in defining \u03c5-states.\n1469: \n1470: :::{prf:proposition} IG Homotopy Classes\n1471: :label: prop-ig-homotopy-classes\n1472: \n1473: Two micro-states $z, z'$ can have identical $(x, v)$ but different IG neighborhoods $\\mathcal{N}_{\\text{IG}}(z) \\neq \\mathcal{N}_{\\text{IG}}(z')$. These lead to different \u03c5-states if the IG structure affects the macro-future.\n1474: \n1475: **Homotopy class perspective:** The \u03c5-machine refines the causal states by the **homotopy class** of IG connections. Two states are in the same \u03c5-state only if their IG neighborhoods are topologically equivalent (same connectivity pattern).\n1476: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-upsilon-machine-minimality",
+      "title": "\u03c5-Machine Minimality",
+      "start_line": 1482,
+      "end_line": 1497,
+      "header_lines": [
+        1483
+      ],
+      "content_start": 1485,
+      "content_end": 1496,
+      "content": "1485: :label: thm-upsilon-machine-minimality\n1486: \n1487: The \u03c5-machine $(\\Sigma_\\upsilon, T_\\upsilon)$ is the **minimal refinement** of the micro-\u03b5-machine that predicts the macro-future.\n1488: \n1489: Formally, for any other partition $\\mathcal{P}$ of micro-states such that:\n1490: \n1491: $$\n1492: P(\\overrightarrow{\\tilde{Z}} \\mid [\\overleftarrow{z}]_{\\mathcal{P}}) = P(\\overrightarrow{\\tilde{Z}} \\mid Z = z)\n1493: \n1494: $$\n1495: \n1496: we have $|\\Sigma_\\upsilon| \\leq |\\mathcal{P}|$ (the \u03c5-machine has fewer or equal states).",
+      "metadata": {
+        "label": "thm-upsilon-machine-minimality"
+      },
+      "section": "## 8. \u03c5-Machines and Minimal Macroscopic Distinctions",
+      "raw_directive": "1482: ### 8.3. Minimality and Mutual Information\n1483: \n1484: :::{prf:theorem} \u03c5-Machine Minimality\n1485: :label: thm-upsilon-machine-minimality\n1486: \n1487: The \u03c5-machine $(\\Sigma_\\upsilon, T_\\upsilon)$ is the **minimal refinement** of the micro-\u03b5-machine that predicts the macro-future.\n1488: \n1489: Formally, for any other partition $\\mathcal{P}$ of micro-states such that:\n1490: \n1491: $$\n1492: P(\\overrightarrow{\\tilde{Z}} \\mid [\\overleftarrow{z}]_{\\mathcal{P}}) = P(\\overrightarrow{\\tilde{Z}} \\mid Z = z)\n1493: \n1494: $$\n1495: \n1496: we have $|\\Sigma_\\upsilon| \\leq |\\mathcal{P}|$ (the \u03c5-machine has fewer or equal states).\n1497: "
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-mutual-information-characterization",
+      "title": "Mutual Information Characterization",
+      "start_line": 1499,
+      "end_line": 1512,
+      "header_lines": [
+        1500
+      ],
+      "content_start": 1502,
+      "content_end": 1511,
+      "content": "1502: :label: cor-mutual-information-characterization\n1503: \n1504: The statistical complexity of the \u03c5-machine is:\n1505: \n1506: $$\n1507: C_\\upsilon = I(\\overleftarrow{Z} ; \\overrightarrow{\\tilde{Z}}) - I(\\overleftarrow{\\tilde{Z}} ; \\overrightarrow{\\tilde{Z}})\n1508: \n1509: $$\n1510: \n1511: **Interpretation:** $C_\\upsilon$ measures the information in the micro-past that is relevant for the macro-future but not captured by the macro-past. This quantifies the \"hidden variables\" that closure theory aims to minimize.",
+      "metadata": {
+        "label": "cor-mutual-information-characterization"
+      },
+      "section": "## 8. \u03c5-Machines and Minimal Macroscopic Distinctions",
+      "raw_directive": "1499: :::\n1500: \n1501: :::{prf:corollary} Mutual Information Characterization\n1502: :label: cor-mutual-information-characterization\n1503: \n1504: The statistical complexity of the \u03c5-machine is:\n1505: \n1506: $$\n1507: C_\\upsilon = I(\\overleftarrow{Z} ; \\overrightarrow{\\tilde{Z}}) - I(\\overleftarrow{\\tilde{Z}} ; \\overrightarrow{\\tilde{Z}})\n1508: \n1509: $$\n1510: \n1511: **Interpretation:** $C_\\upsilon$ measures the information in the micro-past that is relevant for the macro-future but not captured by the macro-past. This quantifies the \"hidden variables\" that closure theory aims to minimize.\n1512: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

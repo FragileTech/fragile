@@ -1,0 +1,309 @@
+{
+  "document_id": "14_geometric_gas_cinf_regularity_full",
+  "stage": "directives",
+  "directive_type": "theorem",
+  "generated_at": "2025-11-08T17:07:43.254053+00:00",
+  "count": 12,
+  "items": [
+    {
+      "directive_type": "theorem",
+      "label": "verif-density-bound-consistency-full",
+      "title": "Self-Consistent Density Bound via Banach Fixed Point",
+      "start_line": 705,
+      "end_line": 745,
+      "header_lines": [
+        706
+      ],
+      "content_start": 708,
+      "content_end": 744,
+      "content": "708: :label: verif-density-bound-consistency-full\n709: \n710: Let $\\rho_{\\max}$ denote the phase-space density bound from Assumption {prf:ref}`assump-uniform-density-full`.\n711: \n712: From {prf:ref}`doc-13-geometric-gas-c3-regularity`, there exist positive constants $L_0$ and $C_{\\nabla V}$ (depending only on $\\varepsilon_d$, $\\varepsilon_c$, $\\eta_{\\min}$, and $\\text{diam}(\\mathcal{X} \\times V)$) such that the Lipschitz constant of the fitness drift satisfies:\n713: \n714: $$\n715: L_V(\\rho_{\\max}) \\leq L_0 + C_{\\nabla V} \\rho_{\\max}\n716: \n717: $$\n718: \n719: Lemma {prf:ref}`lem-fokker-planck-density-bound-conservative-full` yields constants $A_0, A_1 > 0$ (set by $\\gamma$, $T$, $V_{\\max}$, and $\\text{Vol}(\\mathcal{X})$) with:\n720: \n721: $$\n722: C_{\\text{FK}}(L_V) \\leq A_0 + A_1 L_V\n723: \n724: $$\n725: \n726: and Lemma {prf:ref}`lem-qsd-density-bound-with-cloning-full` supplies $C_{\\text{QSD}}>0$.\n727: \n728: Define the map $T : [0,\\rho_{\\text{upper}}] \\to [0,\\rho_{\\text{upper}}]$ by:\n729: \n730: $$\n731: T(\\rho) := C_{\\text{QSD}}\\left(A_0 + A_1\\left(L_0 + C_{\\nabla V}\\rho\\right)\\right) =: \\beta_0 + \\beta_1 \\rho\n732: \n733: $$\n734: \n735: where $\\beta_0 = C_{\\text{QSD}}(A_0 + A_1 L_0)$ and $\\beta_1 = C_{\\text{QSD}} A_1 C_{\\nabla V}$.\n736: \n737: **If** $\\beta_1 < 1$ (the Keystone parameter regime guarantees this because $A_1$ is $O((\\gamma T)^{-1})$ while $C_{\\nabla V}$ depends only on bounded geometric constants), **then** $T$ is a contraction on:\n738: \n739: $$\n740: [0,\\rho_{\\text{upper}}], \\qquad \\rho_{\\text{upper}} := \\frac{\\beta_0}{1-\\beta_1}\n741: \n742: $$\n743: \n744: Consequently, there exists a unique fixed point $\\rho_{\\max}^* \\in [0,\\rho_{\\text{upper}}]$ with $\\rho_{\\max}^* = T(\\rho_{\\max}^*)$.",
+      "metadata": {
+        "label": "verif-density-bound-consistency-full"
+      },
+      "section": "## 2. Companion Selection Mechanisms: Framework Context",
+      "raw_directive": "705: :::\n706: \n707: :::{prf:theorem} Self-Consistent Density Bound via Banach Fixed Point\n708: :label: verif-density-bound-consistency-full\n709: \n710: Let $\\rho_{\\max}$ denote the phase-space density bound from Assumption {prf:ref}`assump-uniform-density-full`.\n711: \n712: From {prf:ref}`doc-13-geometric-gas-c3-regularity`, there exist positive constants $L_0$ and $C_{\\nabla V}$ (depending only on $\\varepsilon_d$, $\\varepsilon_c$, $\\eta_{\\min}$, and $\\text{diam}(\\mathcal{X} \\times V)$) such that the Lipschitz constant of the fitness drift satisfies:\n713: \n714: $$\n715: L_V(\\rho_{\\max}) \\leq L_0 + C_{\\nabla V} \\rho_{\\max}\n716: \n717: $$\n718: \n719: Lemma {prf:ref}`lem-fokker-planck-density-bound-conservative-full` yields constants $A_0, A_1 > 0$ (set by $\\gamma$, $T$, $V_{\\max}$, and $\\text{Vol}(\\mathcal{X})$) with:\n720: \n721: $$\n722: C_{\\text{FK}}(L_V) \\leq A_0 + A_1 L_V\n723: \n724: $$\n725: \n726: and Lemma {prf:ref}`lem-qsd-density-bound-with-cloning-full` supplies $C_{\\text{QSD}}>0$.\n727: \n728: Define the map $T : [0,\\rho_{\\text{upper}}] \\to [0,\\rho_{\\text{upper}}]$ by:\n729: \n730: $$\n731: T(\\rho) := C_{\\text{QSD}}\\left(A_0 + A_1\\left(L_0 + C_{\\nabla V}\\rho\\right)\\right) =: \\beta_0 + \\beta_1 \\rho\n732: \n733: $$\n734: \n735: where $\\beta_0 = C_{\\text{QSD}}(A_0 + A_1 L_0)$ and $\\beta_1 = C_{\\text{QSD}} A_1 C_{\\nabla V}$.\n736: \n737: **If** $\\beta_1 < 1$ (the Keystone parameter regime guarantees this because $A_1$ is $O((\\gamma T)^{-1})$ while $C_{\\nabla V}$ depends only on bounded geometric constants), **then** $T$ is a contraction on:\n738: \n739: $$\n740: [0,\\rho_{\\text{upper}}], \\qquad \\rho_{\\text{upper}} := \\frac{\\beta_0}{1-\\beta_1}\n741: \n742: $$\n743: \n744: Consequently, there exists a unique fixed point $\\rho_{\\max}^* \\in [0,\\rho_{\\text{upper}}]$ with $\\rho_{\\max}^* = T(\\rho_{\\max}^*)$.\n745: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "14_geometric_gas_cinf_regularity_full",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. Companion Selection Mechanisms: Framework Context"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-diversity-pairing-measurement-regularity",
+      "title": "C^∞ Regularity with K-Uniform Bounds (Diversity Pairing)",
+      "start_line": 2423,
+      "end_line": 2434,
+      "header_lines": [
+        2424
+      ],
+      "content_start": 2426,
+      "content_end": 2433,
+      "content": "2426: :label: thm-diversity-pairing-measurement-regularity\n2427: \n2428: Using the diversity pairing mechanism (either idealized or sequential greedy), the expected measurement satisfies:\n2429: \n2430: $$\n2431: \\|\\nabla^m \\bar{d}_i\\|_{\\infty} \\leq C_m(\\varepsilon_d, d, \\rho_{\\max}) \\cdot m! \\cdot \\varepsilon_d^{-2m}\n2432: \n2433: $$",
+      "metadata": {
+        "label": "thm-diversity-pairing-measurement-regularity"
+      },
+      "section": "## 5.6 Diversity Pairing Mechanism Analysis",
+      "raw_directive": "2423: ### 5.6.3 C^∞ Regularity of Diversity Pairing Measurements\n2424: \n2425: :::{prf:theorem} C^∞ Regularity with K-Uniform Bounds (Diversity Pairing)\n2426: :label: thm-diversity-pairing-measurement-regularity\n2427: \n2428: Using the diversity pairing mechanism (either idealized or sequential greedy), the expected measurement satisfies:\n2429: \n2430: $$\n2431: \\|\\nabla^m \\bar{d}_i\\|_{\\infty} \\leq C_m(\\varepsilon_d, d, \\rho_{\\max}) \\cdot m! \\cdot \\varepsilon_d^{-2m}\n2432: \n2433: $$\n2434: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "14_geometric_gas_cinf_regularity_full",
+        "chapter_index": 9,
+        "chapter_file": "chapter_9.json",
+        "section_id": "## 5.6 Diversity Pairing Mechanism Analysis"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-statistical-equivalence-companion-mechanisms",
+      "title": "Qualitative Statistical Equivalence of Companion Mechanisms",
+      "start_line": 2841,
+      "end_line": 2867,
+      "header_lines": [
+        2842
+      ],
+      "content_start": 2844,
+      "content_end": 2866,
+      "content": "2844: :label: thm-statistical-equivalence-companion-mechanisms\n2845: \n2846: Let $\\Delta_j(S) := \\mathbb{E}_{\\text{softmax}}[d_j | S] - \\mathbb{E}_{\\text{pair}}[d_j | S]$.\n2847: \n2848: Under Assumption {prf:ref}`assump-uniform-density-full` and Lemma {prf:ref}`lem-companion-availability-enforcement`, the following hold for every configuration $S$ and walker $j$:\n2849: \n2850: 1. **Uniform boundedness**:\n2851: \n2852: $$\n2853: |\\Delta_j(S)| \\leq D_{\\max} := \\text{diam}(\\mathcal{X} \\times V)\n2854: \n2855: $$\n2856: \n2857: 2. **Gevrey-1 regularity with identical parameter dependence**:\n2858: \n2859: $$\n2860: \\|\\nabla^m \\Delta_j\\| \\leq \\left(C_{d,m}^{(\\text{soft})} + C_{d,m}^{(\\text{pair})}\\right) m! \\max(\\rho^{-m}, \\varepsilon_d^{1-m})\n2861: \n2862: $$\n2863: \n2864: where $C_{d,m}^{(\\text{soft})}$ (resp. $C_{d,m}^{(\\text{pair})}$) are the k-uniform constants from Lemma {prf:ref}`lem-derivatives-companion-distance-full` and Theorem {prf:ref}`thm-diversity-pairing-measurement-regularity`.\n2865: \n2866: 3. **Implementation-independence**: Every downstream quantity computed from $d_j$ (localized means, variances, Z-scores, and $V_{\\text{fit}}$) retains the same derivative bounds whether softmax or diversity pairing is used, because the entire pipeline depends on $d_j$ only through sums of the form $\\sum_j w_{ij}(\\rho) d_j$ with $\\sum_j w_{ij} = 1$.",
+      "metadata": {
+        "label": "thm-statistical-equivalence-companion-mechanisms"
+      },
+      "section": "## 5.7 Statistical Equivalence and Unified Regularity Theorem",
+      "raw_directive": "2841: ### 5.7.2 Qualitative Statistical Equivalence\n2842: \n2843: :::{prf:theorem} Qualitative Statistical Equivalence of Companion Mechanisms\n2844: :label: thm-statistical-equivalence-companion-mechanisms\n2845: \n2846: Let $\\Delta_j(S) := \\mathbb{E}_{\\text{softmax}}[d_j | S] - \\mathbb{E}_{\\text{pair}}[d_j | S]$.\n2847: \n2848: Under Assumption {prf:ref}`assump-uniform-density-full` and Lemma {prf:ref}`lem-companion-availability-enforcement`, the following hold for every configuration $S$ and walker $j$:\n2849: \n2850: 1. **Uniform boundedness**:\n2851: \n2852: $$\n2853: |\\Delta_j(S)| \\leq D_{\\max} := \\text{diam}(\\mathcal{X} \\times V)\n2854: \n2855: $$\n2856: \n2857: 2. **Gevrey-1 regularity with identical parameter dependence**:\n2858: \n2859: $$\n2860: \\|\\nabla^m \\Delta_j\\| \\leq \\left(C_{d,m}^{(\\text{soft})} + C_{d,m}^{(\\text{pair})}\\right) m! \\max(\\rho^{-m}, \\varepsilon_d^{1-m})\n2861: \n2862: $$\n2863: \n2864: where $C_{d,m}^{(\\text{soft})}$ (resp. $C_{d,m}^{(\\text{pair})}$) are the k-uniform constants from Lemma {prf:ref}`lem-derivatives-companion-distance-full` and Theorem {prf:ref}`thm-diversity-pairing-measurement-regularity`.\n2865: \n2866: 3. **Implementation-independence**: Every downstream quantity computed from $d_j$ (localized means, variances, Z-scores, and $V_{\\text{fit}}$) retains the same derivative bounds whether softmax or diversity pairing is used, because the entire pipeline depends on $d_j$ only through sums of the form $\\sum_j w_{ij}(\\rho) d_j$ with $\\sum_j w_{ij} = 1$.\n2867: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "14_geometric_gas_cinf_regularity_full",
+        "chapter_index": 10,
+        "chapter_file": "chapter_10.json",
+        "section_id": "## 5.7 Statistical Equivalence and Unified Regularity Theorem"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-unified-cinf-regularity-both-mechanisms",
+      "title": "C^∞ Regularity of Companion-Dependent Fitness Potential (Both Mechanisms)",
+      "start_line": 2902,
+      "end_line": 2931,
+      "header_lines": [
+        2903
+      ],
+      "content_start": 2905,
+      "content_end": 2930,
+      "content": "2905: :label: thm-unified-cinf-regularity-both-mechanisms\n2906: \n2907: Under the framework assumptions (kinetic regularization providing density bound, companion availability, regularization parameters $\\varepsilon_d, \\varepsilon_c > 0$), the fitness potential:\n2908: \n2909: $$\n2910: V_{\\text{fit}}(x_i, v_i) = g_A\\left(Z_\\rho\\left(\\mu_\\rho^{(i)}, \\sigma_\\rho^{2(i)}\\right)\\right)\n2911: \n2912: $$\n2913: \n2914: computed with **either** companion selection mechanism (independent softmax or diversity pairing) is **C^∞** for all $(x_i, v_i) \\in \\mathcal{X} \\times \\mathbb{R}^d$.\n2915: \n2916: **Derivative Bounds** (k-uniform Gevrey-1): For all $m \\geq 0$:\n2917: \n2918: $$\n2919: \\|\\nabla^m_{x_i, v_i} V_{\\text{fit}}\\|_\\infty \\leq C_{V,m} \\cdot \\max(\\rho^{-m}, \\varepsilon_d^{1-m}, \\eta_{\\min}^{1-m})\n2920: \n2921: $$\n2922: \n2923: where $C_{V,m} = \\mathcal{O}(m!)$ (Gevrey-1) is **k-uniform** (independent of swarm size $k$ or $N$) and depends only on:\n2924: - Algorithmic parameters: $\\rho$ (localization scale), $\\varepsilon_c$ (companion selection temperature), $\\varepsilon_d$ (distance regularization), $\\eta_{\\min}$ (variance regularization—see §12.3 for derivation from quotient rule in $\\sigma'_\\rho = \\sqrt{\\sigma_\\rho^2 + \\eta^2}$)\n2925: - Dimension: $d$\n2926: - Density bound: $\\rho_{\\max}$ (derived from kinetic dynamics)\n2927: \n2928: **Mechanism Equivalence**:\n2929: - **Regularity class**: IDENTICAL - Both mechanisms achieve C^∞ with k-uniform Gevrey-1 bounds\n2930: - **Quantitative difference**: $\\|V_{\\text{fit}}^{\\text{soft}} - V_{\\text{fit}}^{\\text{pair}}\\| = O(k^{-1} \\log^{d+1/2} k)$",
+      "metadata": {
+        "label": "thm-unified-cinf-regularity-both-mechanisms"
+      },
+      "section": "## 5.7 Statistical Equivalence and Unified Regularity Theorem",
+      "raw_directive": "2902: ### 5.7.3 Unified Main Theorem\n2903: \n2904: :::{prf:theorem} C^∞ Regularity of Companion-Dependent Fitness Potential (Both Mechanisms)\n2905: :label: thm-unified-cinf-regularity-both-mechanisms\n2906: \n2907: Under the framework assumptions (kinetic regularization providing density bound, companion availability, regularization parameters $\\varepsilon_d, \\varepsilon_c > 0$), the fitness potential:\n2908: \n2909: $$\n2910: V_{\\text{fit}}(x_i, v_i) = g_A\\left(Z_\\rho\\left(\\mu_\\rho^{(i)}, \\sigma_\\rho^{2(i)}\\right)\\right)\n2911: \n2912: $$\n2913: \n2914: computed with **either** companion selection mechanism (independent softmax or diversity pairing) is **C^∞** for all $(x_i, v_i) \\in \\mathcal{X} \\times \\mathbb{R}^d$.\n2915: \n2916: **Derivative Bounds** (k-uniform Gevrey-1): For all $m \\geq 0$:\n2917: \n2918: $$\n2919: \\|\\nabla^m_{x_i, v_i} V_{\\text{fit}}\\|_\\infty \\leq C_{V,m} \\cdot \\max(\\rho^{-m}, \\varepsilon_d^{1-m}, \\eta_{\\min}^{1-m})\n2920: \n2921: $$\n2922: \n2923: where $C_{V,m} = \\mathcal{O}(m!)$ (Gevrey-1) is **k-uniform** (independent of swarm size $k$ or $N$) and depends only on:\n2924: - Algorithmic parameters: $\\rho$ (localization scale), $\\varepsilon_c$ (companion selection temperature), $\\varepsilon_d$ (distance regularization), $\\eta_{\\min}$ (variance regularization—see §12.3 for derivation from quotient rule in $\\sigma'_\\rho = \\sqrt{\\sigma_\\rho^2 + \\eta^2}$)\n2925: - Dimension: $d$\n2926: - Density bound: $\\rho_{\\max}$ (derived from kinetic dynamics)\n2927: \n2928: **Mechanism Equivalence**:\n2929: - **Regularity class**: IDENTICAL - Both mechanisms achieve C^∞ with k-uniform Gevrey-1 bounds\n2930: - **Quantitative difference**: $\\|V_{\\text{fit}}^{\\text{soft}} - V_{\\text{fit}}^{\\text{pair}}\\| = O(k^{-1} \\log^{d+1/2} k)$\n2931:   - **Practical significance**: Depends on dimension $d$ (see §5.7.2 for dimension-dependent assessment)",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "14_geometric_gas_cinf_regularity_full",
+        "chapter_index": 10,
+        "chapter_file": "chapter_10.json",
+        "section_id": "## 5.7 Statistical Equivalence and Unified Regularity Theorem"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-k-uniformity-telescoping-full",
+      "title": "k-Uniformity via Telescoping Cancellation",
+      "start_line": 3172,
+      "end_line": 3187,
+      "header_lines": [
+        3173
+      ],
+      "content_start": 3175,
+      "content_end": 3186,
+      "content": "3175: :label: thm-k-uniformity-telescoping-full\n3176: \n3177: For the localized mean $\\mu_\\rho^{(i)} = \\sum_{j \\in \\mathcal{A}} w_{ij}(\\rho) \\cdot d_j$, the $m$-th derivative satisfies:\n3178: \n3179: $$\n3180: \\|\\nabla^m_{x_i} \\mu_\\rho^{(i)}\\| \\leq C_m(\\rho, \\varepsilon_c, \\varepsilon_d, d) \\cdot m!\n3181: \n3182: $$\n3183: \n3184: where $C_m$ is **independent of $k$** (the number of alive walkers).\n3185: \n3186: **Key mechanism**: Although the sum contains $k$ terms, the telescoping identity ensures that the $k$ dependence cancels in the derivative.",
+      "metadata": {
+        "label": "thm-k-uniformity-telescoping-full"
+      },
+      "section": "## 6. Structure of Localization Weights",
+      "raw_directive": "3172: We now show explicitly how the telescoping identity controls $j$-summations at $\\rho$-scale (localization weights $w_{ij}$) to yield k-uniform bounds. Note: This addresses the $j$-sum only; the $\\ell$-sum from softmax (scale $\\varepsilon_c$) is handled separately via derivative locality (§7.1).\n3173: \n3174: :::{prf:theorem} k-Uniformity via Telescoping Cancellation\n3175: :label: thm-k-uniformity-telescoping-full\n3176: \n3177: For the localized mean $\\mu_\\rho^{(i)} = \\sum_{j \\in \\mathcal{A}} w_{ij}(\\rho) \\cdot d_j$, the $m$-th derivative satisfies:\n3178: \n3179: $$\n3180: \\|\\nabla^m_{x_i} \\mu_\\rho^{(i)}\\| \\leq C_m(\\rho, \\varepsilon_c, \\varepsilon_d, d) \\cdot m!\n3181: \n3182: $$\n3183: \n3184: where $C_m$ is **independent of $k$** (the number of alive walkers).\n3185: \n3186: **Key mechanism**: Although the sum contains $k$ terms, the telescoping identity ensures that the $k$ dependence cancels in the derivative.\n3187: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "14_geometric_gas_cinf_regularity_full",
+        "chapter_index": 12,
+        "chapter_file": "chapter_12.json",
+        "section_id": "## 6. Structure of Localization Weights"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-cluster-localized-derivative-bounds-full",
+      "title": "Cluster-Localized Derivative Bounds",
+      "start_line": 3319,
+      "end_line": 3332,
+      "header_lines": [
+        3320
+      ],
+      "content_start": 3322,
+      "content_end": 3331,
+      "content": "3322: :label: thm-cluster-localized-derivative-bounds-full\n3323: \n3324: Using the smooth partition $\\{\\psi_m\\}$ from {prf:ref}`def-smooth-phase-space-partition-full`, the derivative $\\partial d_j / \\partial x_i$ satisfies:\n3325: \n3326: $$\n3327: \\left\\|\\frac{\\partial d_j}{\\partial x_i}\\right\\| \\leq \\sum_{m,m'=1}^M \\psi_m(x_i, v_i) \\cdot \\psi_{m'}(x_j, v_j) \\cdot C_{i \\leftrightarrow j}^{(m,m')}\n3328: \n3329: $$\n3330: \n3331: where:",
+      "metadata": {
+        "label": "thm-cluster-localized-derivative-bounds-full"
+      },
+      "section": "## 7. Companion-Dependent Measurements: Handling N-Body Coupling",
+      "raw_directive": "3319: The key to controlling this N-body coupling is the **smooth clustering framework**:\n3320: \n3321: :::{prf:theorem} Cluster-Localized Derivative Bounds\n3322: :label: thm-cluster-localized-derivative-bounds-full\n3323: \n3324: Using the smooth partition $\\{\\psi_m\\}$ from {prf:ref}`def-smooth-phase-space-partition-full`, the derivative $\\partial d_j / \\partial x_i$ satisfies:\n3325: \n3326: $$\n3327: \\left\\|\\frac{\\partial d_j}{\\partial x_i}\\right\\| \\leq \\sum_{m,m'=1}^M \\psi_m(x_i, v_i) \\cdot \\psi_{m'}(x_j, v_j) \\cdot C_{i \\leftrightarrow j}^{(m,m')}\n3328: \n3329: $$\n3330: \n3331: where:\n3332: - **Intra-cluster coupling** ($m = m'$): $C_{i \\leftrightarrow j}^{(m,m)} = \\mathcal{O}(1)$ when $d_{\\text{alg}}(i,j) \\leq 2\\varepsilon_c$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "14_geometric_gas_cinf_regularity_full",
+        "chapter_index": 13,
+        "chapter_file": "chapter_13.json",
+        "section_id": "## 7. Companion-Dependent Measurements: Handling N-Body Coupling"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-mth-derivative-localized-variance-full",
+      "title": "m-th Derivative of Localized Variance",
+      "start_line": 3942,
+      "end_line": 3953,
+      "header_lines": [
+        3943
+      ],
+      "content_start": 3945,
+      "content_end": 3952,
+      "content": "3945: :label: thm-mth-derivative-localized-variance-full\n3946: \n3947: For derivative order $m \\geq 1$:\n3948: \n3949: $$\n3950: \\|\\nabla^m_{x_i} \\sigma_\\rho^{2(i)}\\| \\leq C_{\\sigma^2,m}(\\rho) \\cdot \\rho^{-m}\n3951: \n3952: $$",
+      "metadata": {
+        "label": "thm-mth-derivative-localized-variance-full"
+      },
+      "section": "## 9. Localized Variance: Full Derivative Analysis",
+      "raw_directive": "3942: ### 9.2 Inductive Analysis for Higher Derivatives\n3943: \n3944: :::{prf:theorem} m-th Derivative of Localized Variance\n3945: :label: thm-mth-derivative-localized-variance-full\n3946: \n3947: For derivative order $m \\geq 1$:\n3948: \n3949: $$\n3950: \\|\\nabla^m_{x_i} \\sigma_\\rho^{2(i)}\\| \\leq C_{\\sigma^2,m}(\\rho) \\cdot \\rho^{-m}\n3951: \n3952: $$\n3953: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "14_geometric_gas_cinf_regularity_full",
+        "chapter_index": 16,
+        "chapter_file": "chapter_16.json",
+        "section_id": "## 9. Localized Variance: Full Derivative Analysis"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-cinf-regularity-zscore-full",
+      "title": "C^∞ Regularity of Z-Score",
+      "start_line": 4402,
+      "end_line": 4415,
+      "header_lines": [
+        4403
+      ],
+      "content_start": 4405,
+      "content_end": 4414,
+      "content": "4405: :label: thm-cinf-regularity-zscore-full\n4406: \n4407: The Z-score $Z_\\rho^{(i)}$ is C^∞ with respect to $(x_i, v_i)$ with derivative bounds:\n4408: \n4409: For $m \\geq 1$:\n4410: \n4411: $$\n4412: \\|\\nabla^m Z_\\rho^{(i)}\\| \\leq C_{Z,m}(\\rho) \\cdot \\rho^{-m}\n4413: \n4414: $$",
+      "metadata": {
+        "label": "thm-cinf-regularity-zscore-full"
+      },
+      "section": "## 11. Z-Score: Quotient Rule Analysis",
+      "raw_directive": "4402: ### 11.1 C^∞ Regularity of Z-Score\n4403: \n4404: :::{prf:theorem} C^∞ Regularity of Z-Score\n4405: :label: thm-cinf-regularity-zscore-full\n4406: \n4407: The Z-score $Z_\\rho^{(i)}$ is C^∞ with respect to $(x_i, v_i)$ with derivative bounds:\n4408: \n4409: For $m \\geq 1$:\n4410: \n4411: $$\n4412: \\|\\nabla^m Z_\\rho^{(i)}\\| \\leq C_{Z,m}(\\rho) \\cdot \\rho^{-m}\n4413: \n4414: $$\n4415: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "14_geometric_gas_cinf_regularity_full",
+        "chapter_index": 19,
+        "chapter_file": "chapter_19.json",
+        "section_id": "## 11. Z-Score: Quotient Rule Analysis"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-main-cinf-regularity-fitness-potential-full",
+      "title": "C^∞ Regularity of Fitness Potential (Main Result)",
+      "start_line": 4547,
+      "end_line": 4592,
+      "header_lines": [
+        4548
+      ],
+      "content_start": 4550,
+      "content_end": 4591,
+      "content": "4550: :label: thm-main-cinf-regularity-fitness-potential-full\n4551: \n4552: The fitness potential:\n4553: \n4554: $$\n4555: V_{\\text{fit}}(x_i, v_i) = g_A(Z_\\rho^{(i)})\n4556: \n4557: $$\n4558: \n4559: is **C^∞** with respect to $(x_i, v_i)$ for all walkers $i \\in \\mathcal{A}$.\n4560: \n4561: Moreover, for all derivative orders $m \\geq 1$:\n4562: \n4563: $$\n4564: \\|\\nabla^m V_{\\text{fit}}\\|_\\infty \\leq C_{V,m}(d, \\rho, \\varepsilon_c, \\eta_{\\min}) \\cdot \\max(\\rho^{-m}, \\varepsilon_d^{1-m})\n4565: \n4566: $$\n4567: \n4568: where:\n4569: \n4570: $$\n4571: C_{V,m}(d, \\rho, \\varepsilon_c, \\eta_{\\min}) = \\mathcal{O}(m! \\cdot d^m \\cdot \\rho^{2dm} \\cdot \\eta_{\\min}^{-(2m+1)} \\cdot L_{g,m})\n4572: \n4573: $$\n4574: \n4575: is **independent of $k$, $N$, and walker index $i$** (k-uniform, N-uniform).\n4576: \n4577: **Note on parameter separation**: The $\\varepsilon_d$ dependence appears exclusively in the outer $\\max(\\rho^{-m}, \\varepsilon_d^{1-m})$ term, not in $C_{V,m}$, to avoid redundancy. This clean separation reflects that $\\varepsilon_d$ controls the dominant scaling regime while $C_{V,m}$ captures combinatorial and geometric factors.\n4578: \n4579: For typical parameters where $\\varepsilon_d \\ll \\varepsilon_c$ and $m \\geq 2$, the $\\varepsilon_d^{1-m}$ term dominates, giving:\n4580: \n4581: $$\n4582: \\|\\nabla^m V_{\\text{fit}}\\|_\\infty \\leq C_{V,m} \\cdot \\varepsilon_d^{1-m}\n4583: \n4584: $$\n4585: \n4586: The constant exhibits **Gevrey-1 growth**: $C_{V,m} = \\mathcal{O}(m!)$ with explicit dependence on:\n4587: - Dimension $d$ (polynomial)\n4588: - Regularization parameters $\\varepsilon_d$, $\\eta_{\\min}$ (inverse scaling for uniform bounds)\n4589: - Localization scale $\\rho$ (exponential locality)\n4590: \n4591: The $\\varepsilon_d^{1-m}$ factor enters through companion derivatives ({prf:ref}`lem-companion-measurement-derivatives-full`), making distance regularization the bottleneck for high-order derivative bounds.",
+      "metadata": {
+        "label": "thm-main-cinf-regularity-fitness-potential-full"
+      },
+      "section": "## 12. Fitness Potential: Composition with Rescale Function",
+      "raw_directive": "4547: ### 12.2 Final Composition: Chain Rule\n4548: \n4549: :::{prf:theorem} C^∞ Regularity of Fitness Potential (Main Result)\n4550: :label: thm-main-cinf-regularity-fitness-potential-full\n4551: \n4552: The fitness potential:\n4553: \n4554: $$\n4555: V_{\\text{fit}}(x_i, v_i) = g_A(Z_\\rho^{(i)})\n4556: \n4557: $$\n4558: \n4559: is **C^∞** with respect to $(x_i, v_i)$ for all walkers $i \\in \\mathcal{A}$.\n4560: \n4561: Moreover, for all derivative orders $m \\geq 1$:\n4562: \n4563: $$\n4564: \\|\\nabla^m V_{\\text{fit}}\\|_\\infty \\leq C_{V,m}(d, \\rho, \\varepsilon_c, \\eta_{\\min}) \\cdot \\max(\\rho^{-m}, \\varepsilon_d^{1-m})\n4565: \n4566: $$\n4567: \n4568: where:\n4569: \n4570: $$\n4571: C_{V,m}(d, \\rho, \\varepsilon_c, \\eta_{\\min}) = \\mathcal{O}(m! \\cdot d^m \\cdot \\rho^{2dm} \\cdot \\eta_{\\min}^{-(2m+1)} \\cdot L_{g,m})\n4572: \n4573: $$\n4574: \n4575: is **independent of $k$, $N$, and walker index $i$** (k-uniform, N-uniform).\n4576: \n4577: **Note on parameter separation**: The $\\varepsilon_d$ dependence appears exclusively in the outer $\\max(\\rho^{-m}, \\varepsilon_d^{1-m})$ term, not in $C_{V,m}$, to avoid redundancy. This clean separation reflects that $\\varepsilon_d$ controls the dominant scaling regime while $C_{V,m}$ captures combinatorial and geometric factors.\n4578: \n4579: For typical parameters where $\\varepsilon_d \\ll \\varepsilon_c$ and $m \\geq 2$, the $\\varepsilon_d^{1-m}$ term dominates, giving:\n4580: \n4581: $$\n4582: \\|\\nabla^m V_{\\text{fit}}\\|_\\infty \\leq C_{V,m} \\cdot \\varepsilon_d^{1-m}\n4583: \n4584: $$\n4585: \n4586: The constant exhibits **Gevrey-1 growth**: $C_{V,m} = \\mathcal{O}(m!)$ with explicit dependence on:\n4587: - Dimension $d$ (polynomial)\n4588: - Regularization parameters $\\varepsilon_d$, $\\eta_{\\min}$ (inverse scaling for uniform bounds)\n4589: - Localization scale $\\rho$ (exponential locality)\n4590: \n4591: The $\\varepsilon_d^{1-m}$ factor enters through companion derivatives ({prf:ref}`lem-companion-measurement-derivatives-full`), making distance regularization the bottleneck for high-order derivative bounds.\n4592: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "14_geometric_gas_cinf_regularity_full",
+        "chapter_index": 21,
+        "chapter_file": "chapter_21.json",
+        "section_id": "## 12. Fitness Potential: Composition with Rescale Function"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-main-complete-cinf-geometric-gas-full",
+      "title": "C^∞ Regularity of Geometric Gas with Companion-Dependent Fitness (Complete)",
+      "start_line": 4798,
+      "end_line": 4864,
+      "header_lines": [
+        4799
+      ],
+      "content_start": 4801,
+      "content_end": 4863,
+      "content": "4801: :label: thm-main-complete-cinf-geometric-gas-full\n4802: \n4803: Consider the Geometric Gas algorithm with **regularized** companion-dependent measurements:\n4804: \n4805: $$\n4806: d_j = d_{\\text{alg}}(j, c(j)) = \\sqrt{\\|x_j - x_{c(j)}\\|^2 + \\lambda_{\\text{alg}} \\|v_j - v_{c(j)}\\|^2 + \\varepsilon_d^2}\n4807: \n4808: $$\n4809: \n4810: where:\n4811: - $\\varepsilon_d > 0$ is the **distance regularization parameter** (eliminates singularity at walker collisions)\n4812: - Companions $c(j) \\in \\mathcal{A} \\setminus \\{j\\}$ are selected via softmax:\n4813: \n4814: $$\n4815: \\mathbb{P}(c(j) = \\ell) = \\frac{\\exp(-d_{\\text{alg}}^2(j,\\ell)/(2\\varepsilon_c^2))}{\\sum_{\\ell' \\in \\mathcal{A} \\setminus \\{j\\}} \\exp(-d_{\\text{alg}}^2(j,\\ell')/(2\\varepsilon_c^2))}\n4816: \n4817: $$\n4818: \n4819: Under the framework assumptions:\n4820: - {prf:ref}`lem-companion-availability-enforcement` (minimum companion within $\\mathcal{O}(\\varepsilon_c)$)\n4821: - {prf:ref}`assump-uniform-density-full` (bounded phase-space density)\n4822: - {prf:ref}`assump-rescale-function-cinf-full` (C^∞ rescale function)\n4823: \n4824: The **complete fitness potential**:\n4825: \n4826: $$\n4827: V_{\\text{fit}}(x_i, v_i) = g_A\\left(\\frac{d_i - \\mu_\\rho^{(i)}}{\\sigma'_\\rho(i)}\\right)\n4828: \n4829: $$\n4830: \n4831: where:\n4832: - $\\mu_\\rho^{(i)} = \\sum_{j} w_{ij}(\\rho) d_j$ (localized mean)\n4833: - $\\sigma'_\\rho(i) = \\sqrt{\\sum_j w_{ij}(\\rho)(d_j - \\mu_\\rho)^2 + \\eta_{\\min}^2}$ (regularized std dev)\n4834: - $w_{ij}(\\rho) = \\exp(-d_{\\text{alg}}^2(i,j)/(2\\rho^2)) / Z_i(\\rho)$ (localization weights)\n4835: \n4836: is **infinitely differentiable** (C^∞) with respect to $(x_i, v_i)$ for all walkers $i \\in \\mathcal{A}$.\n4837: \n4838: **Derivative Bounds**: For all $m \\geq 1$:\n4839: \n4840: $$\n4841: \\|\\nabla^m V_{\\text{fit}}\\|_\\infty \\leq C_{\\text{Gev}}^m \\cdot m! \\cdot \\rho_{\\max}^{m} \\cdot \\rho^{2dm} \\cdot \\eta_{\\min}^{-(2m+1)} \\cdot \\max(\\rho^{-m}, \\varepsilon_d^{1-m})\n4842: \n4843: $$\n4844: \n4845: where:\n4846: - $C_{\\text{Gev}}$ depends only on $d$, $\\lambda_{\\text{alg}}$, and the C^∞ norms of $g_A$\n4847: - $\\rho_{\\max}$ is the self-consistent density bound from Theorem {prf:ref}`verif-density-bound-consistency-full`\n4848: - The constants grow factorially with $m$ (Gevrey-1 classification)\n4849: - Polynomial growth $\\rho^{2dm}$ from localization and $\\rho_{\\max}^m$ from density bound\n4850: - Inverse polynomial growth $\\eta_{\\min}^{-(2m+1)}$ from Z-score denominator regularization\n4851: - The $\\max(\\rho^{-m}, \\varepsilon_d^{1-m})$ term: for $m \\geq 2$, typically $\\varepsilon_d^{1-m}$ dominates (distance regularization bottleneck)\n4852: \n4853: **Parameter dependencies exhibit**:\n4854: - **Factorial growth** in derivative order $m$ (Gevrey-1)\n4855: - **Polynomial growth** in dimension via $\\rho^{2dm}$ (exponential locality)\n4856: - **Inverse super-polynomial growth** in $\\eta_{\\min}^{-(2m+1)}$ (Z-score regularization)\n4857: - **Inverse polynomial growth** in $\\varepsilon_d^{1-m}$ for $m \\geq 2$ (distance regularization)\n4858: \n4859: The constant is **independent of** (uniformity properties):\n4860: 1. Total swarm size $N$ (N-uniformity: bounds do not grow with total swarm population)\n4861: 2. Number of alive walkers $k = |\\mathcal{A}|$ (k-uniformity: independent of how many walkers remain alive)\n4862: 3. Walker index $i$ (permutation invariance: all walkers treated symmetrically)\n4863: 4. Walker configurations (uniform over state space: bounds hold regardless of walker positions)",
+      "metadata": {
+        "label": "thm-main-complete-cinf-geometric-gas-full"
+      },
+      "section": "## 13. Main Theorem: Complete Statement",
+      "raw_directive": "4798: We now state the complete main theorem, synthesizing all previous results.\n4799: \n4800: :::{prf:theorem} C^∞ Regularity of Geometric Gas with Companion-Dependent Fitness (Complete)\n4801: :label: thm-main-complete-cinf-geometric-gas-full\n4802: \n4803: Consider the Geometric Gas algorithm with **regularized** companion-dependent measurements:\n4804: \n4805: $$\n4806: d_j = d_{\\text{alg}}(j, c(j)) = \\sqrt{\\|x_j - x_{c(j)}\\|^2 + \\lambda_{\\text{alg}} \\|v_j - v_{c(j)}\\|^2 + \\varepsilon_d^2}\n4807: \n4808: $$\n4809: \n4810: where:\n4811: - $\\varepsilon_d > 0$ is the **distance regularization parameter** (eliminates singularity at walker collisions)\n4812: - Companions $c(j) \\in \\mathcal{A} \\setminus \\{j\\}$ are selected via softmax:\n4813: \n4814: $$\n4815: \\mathbb{P}(c(j) = \\ell) = \\frac{\\exp(-d_{\\text{alg}}^2(j,\\ell)/(2\\varepsilon_c^2))}{\\sum_{\\ell' \\in \\mathcal{A} \\setminus \\{j\\}} \\exp(-d_{\\text{alg}}^2(j,\\ell')/(2\\varepsilon_c^2))}\n4816: \n4817: $$\n4818: \n4819: Under the framework assumptions:\n4820: - {prf:ref}`lem-companion-availability-enforcement` (minimum companion within $\\mathcal{O}(\\varepsilon_c)$)\n4821: - {prf:ref}`assump-uniform-density-full` (bounded phase-space density)\n4822: - {prf:ref}`assump-rescale-function-cinf-full` (C^∞ rescale function)\n4823: \n4824: The **complete fitness potential**:\n4825: \n4826: $$\n4827: V_{\\text{fit}}(x_i, v_i) = g_A\\left(\\frac{d_i - \\mu_\\rho^{(i)}}{\\sigma'_\\rho(i)}\\right)\n4828: \n4829: $$\n4830: \n4831: where:\n4832: - $\\mu_\\rho^{(i)} = \\sum_{j} w_{ij}(\\rho) d_j$ (localized mean)\n4833: - $\\sigma'_\\rho(i) = \\sqrt{\\sum_j w_{ij}(\\rho)(d_j - \\mu_\\rho)^2 + \\eta_{\\min}^2}$ (regularized std dev)\n4834: - $w_{ij}(\\rho) = \\exp(-d_{\\text{alg}}^2(i,j)/(2\\rho^2)) / Z_i(\\rho)$ (localization weights)\n4835: \n4836: is **infinitely differentiable** (C^∞) with respect to $(x_i, v_i)$ for all walkers $i \\in \\mathcal{A}$.\n4837: \n4838: **Derivative Bounds**: For all $m \\geq 1$:\n4839: \n4840: $$\n4841: \\|\\nabla^m V_{\\text{fit}}\\|_\\infty \\leq C_{\\text{Gev}}^m \\cdot m! \\cdot \\rho_{\\max}^{m} \\cdot \\rho^{2dm} \\cdot \\eta_{\\min}^{-(2m+1)} \\cdot \\max(\\rho^{-m}, \\varepsilon_d^{1-m})\n4842: \n4843: $$\n4844: \n4845: where:\n4846: - $C_{\\text{Gev}}$ depends only on $d$, $\\lambda_{\\text{alg}}$, and the C^∞ norms of $g_A$\n4847: - $\\rho_{\\max}$ is the self-consistent density bound from Theorem {prf:ref}`verif-density-bound-consistency-full`\n4848: - The constants grow factorially with $m$ (Gevrey-1 classification)\n4849: - Polynomial growth $\\rho^{2dm}$ from localization and $\\rho_{\\max}^m$ from density bound\n4850: - Inverse polynomial growth $\\eta_{\\min}^{-(2m+1)}$ from Z-score denominator regularization\n4851: - The $\\max(\\rho^{-m}, \\varepsilon_d^{1-m})$ term: for $m \\geq 2$, typically $\\varepsilon_d^{1-m}$ dominates (distance regularization bottleneck)\n4852: \n4853: **Parameter dependencies exhibit**:\n4854: - **Factorial growth** in derivative order $m$ (Gevrey-1)\n4855: - **Polynomial growth** in dimension via $\\rho^{2dm}$ (exponential locality)\n4856: - **Inverse super-polynomial growth** in $\\eta_{\\min}^{-(2m+1)}$ (Z-score regularization)\n4857: - **Inverse polynomial growth** in $\\varepsilon_d^{1-m}$ for $m \\geq 2$ (distance regularization)\n4858: \n4859: The constant is **independent of** (uniformity properties):\n4860: 1. Total swarm size $N$ (N-uniformity: bounds do not grow with total swarm population)\n4861: 2. Number of alive walkers $k = |\\mathcal{A}|$ (k-uniformity: independent of how many walkers remain alive)\n4862: 3. Walker index $i$ (permutation invariance: all walkers treated symmetrically)\n4863: 4. Walker configurations (uniform over state space: bounds hold regardless of walker positions)\n4864: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "14_geometric_gas_cinf_regularity_full",
+        "chapter_index": 22,
+        "chapter_file": "chapter_22.json",
+        "section_id": "## 13. Main Theorem: Complete Statement"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-hypoellipticity-companion-dependent-full",
+      "title": "Hypoellipticity with Companion-Dependent Fitness",
+      "start_line": 4909,
+      "end_line": 4922,
+      "header_lines": [
+        4910
+      ],
+      "content_start": 4912,
+      "content_end": 4921,
+      "content": "4912: :label: thm-hypoellipticity-companion-dependent-full\n4913: \n4914: The Geometric Gas generator:\n4915: \n4916: $$\n4917: \\mathcal{L}_{\\text{geo}} = \\sum_{i=1}^k \\left[v_i \\cdot \\nabla_{x_i} - \\nabla_{x_i} U(x_i) \\cdot \\nabla_{v_i} - \\gamma v_i \\cdot \\nabla_{v_i} + \\frac{\\sigma^2}{2} \\Delta_{v_i} - \\varepsilon_F \\nabla_{x_i} V_{\\text{fit}}(x_i, v_i) \\cdot \\nabla_{v_i}\\right]\n4918: \n4919: $$\n4920: \n4921: is **hypoelliptic** in the sense of Hörmander.",
+      "metadata": {
+        "label": "thm-hypoellipticity-companion-dependent-full"
+      },
+      "section": "## 14. Hypoellipticity of the Geometric Gas Generator",
+      "raw_directive": "4909: The C^∞ regularity of $V_{\\text{fit}}$ has profound implications for the spectral properties of the Geometric Gas Langevin operator.\n4910: \n4911: :::{prf:theorem} Hypoellipticity with Companion-Dependent Fitness\n4912: :label: thm-hypoellipticity-companion-dependent-full\n4913: \n4914: The Geometric Gas generator:\n4915: \n4916: $$\n4917: \\mathcal{L}_{\\text{geo}} = \\sum_{i=1}^k \\left[v_i \\cdot \\nabla_{x_i} - \\nabla_{x_i} U(x_i) \\cdot \\nabla_{v_i} - \\gamma v_i \\cdot \\nabla_{v_i} + \\frac{\\sigma^2}{2} \\Delta_{v_i} - \\varepsilon_F \\nabla_{x_i} V_{\\text{fit}}(x_i, v_i) \\cdot \\nabla_{v_i}\\right]\n4918: \n4919: $$\n4920: \n4921: is **hypoelliptic** in the sense of Hörmander.\n4922: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "14_geometric_gas_cinf_regularity_full",
+        "chapter_index": 24,
+        "chapter_file": "chapter_24.json",
+        "section_id": "## 14. Hypoellipticity of the Geometric Gas Generator"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-faa-di-bruno-appendix",
+      "title": "Faà di Bruno Formula for Higher-Order Chain Rule",
+      "start_line": 5288,
+      "end_line": 5304,
+      "header_lines": [
+        5289
+      ],
+      "content_start": 5291,
+      "content_end": 5303,
+      "content": "5291: :label: thm-faa-di-bruno-appendix\n5292: \n5293: For smooth functions $f: \\mathbb{R} \\to \\mathbb{R}$ and $g: \\mathbb{R}^d \\to \\mathbb{R}$, the $m$-th derivative of the composition $h = f \\circ g$ is:\n5294: \n5295: $$\n5296: \\nabla^m h(x) = \\sum_{\\pi \\in \\mathcal{P}_m} f^{(|\\pi|)}(g(x)) \\cdot B_\\pi(\\nabla g(x), \\nabla^2 g(x), \\ldots, \\nabla^m g(x))\n5297: \n5298: $$\n5299: \n5300: where:\n5301: - $\\mathcal{P}_m$ is the set of all partitions of $\\{1, 2, \\ldots, m\\}$\n5302: - $|\\pi|$ is the number of blocks in partition $\\pi$\n5303: - $B_\\pi$ is the **Bell polynomial** associated with partition $\\pi$",
+      "metadata": {
+        "label": "thm-faa-di-bruno-appendix"
+      },
+      "section": "## Appendix A: Combinatorial Proof of Gevrey-1 Bounds via Faà di Bruno Formula",
+      "raw_directive": "5288: ### A.1 Statement of the Faà di Bruno Formula\n5289: \n5290: :::{prf:theorem} Faà di Bruno Formula for Higher-Order Chain Rule\n5291: :label: thm-faa-di-bruno-appendix\n5292: \n5293: For smooth functions $f: \\mathbb{R} \\to \\mathbb{R}$ and $g: \\mathbb{R}^d \\to \\mathbb{R}$, the $m$-th derivative of the composition $h = f \\circ g$ is:\n5294: \n5295: $$\n5296: \\nabla^m h(x) = \\sum_{\\pi \\in \\mathcal{P}_m} f^{(|\\pi|)}(g(x)) \\cdot B_\\pi(\\nabla g(x), \\nabla^2 g(x), \\ldots, \\nabla^m g(x))\n5297: \n5298: $$\n5299: \n5300: where:\n5301: - $\\mathcal{P}_m$ is the set of all partitions of $\\{1, 2, \\ldots, m\\}$\n5302: - $|\\pi|$ is the number of blocks in partition $\\pi$\n5303: - $B_\\pi$ is the **Bell polynomial** associated with partition $\\pi$\n5304: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "14_geometric_gas_cinf_regularity_full",
+        "chapter_index": 29,
+        "chapter_file": "chapter_29.json",
+        "section_id": "## Appendix A: Combinatorial Proof of Gevrey-1 Bounds via Faà di Bruno Formula"
+      }
+    }
+  ]
+}

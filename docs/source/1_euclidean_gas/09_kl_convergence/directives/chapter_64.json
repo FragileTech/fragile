@@ -1,0 +1,29 @@
+{
+  "chapter_index": 64,
+  "section_id": "## Step 3: Composition via Existing Theorem",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-composition-reference",
+      "title": "Composition of LSI Operators (Reference)",
+      "start_line": 4069,
+      "end_line": 4086,
+      "header_lines": [
+        4070
+      ],
+      "content_start": 4072,
+      "content_end": 4085,
+      "content": "4072: :label: thm-composition-reference\n4073: \n4074: If $\\Psi_1$ and $\\Psi_2$ are Markov operators on $\\mathcal{P}(\\Omega)$ satisfying:\n4075: \n4076: 1. $D_{\\text{KL}}(\\Psi_1 \\# \\mu \\| \\pi) \\leq (1 - \\alpha_1 \\tau) D_{\\text{KL}}(\\mu \\| \\pi) + C_1$\n4077: 2. $D_{\\text{KL}}(\\Psi_2 \\# \\nu \\| \\pi) \\leq (1 - \\alpha_2 \\tau) D_{\\text{KL}}(\\nu \\| \\pi) + C_2$\n4078: \n4079: Then the composition $\\Psi_{\\text{total}} = \\Psi_2 \\circ \\Psi_1$ satisfies:\n4080: \n4081: $$\n4082: D_{\\text{KL}}(\\Psi_{\\text{total}} \\# \\mu \\| \\pi) \\leq [1 - \\tau(\\alpha_1 + \\alpha_2)] D_{\\text{KL}}(\\mu \\| \\pi) + C_1 + C_2 + O(\\tau^2)\n4083: $$\n4084: \n4085: **Proof**: See Theorem 6.3 (Composition Theorem, lines 1148-1215) of [09_kl_convergence](09_kl_convergence).",
+      "metadata": {
+        "label": "thm-composition-reference"
+      },
+      "section": "## Step 3: Composition via Existing Theorem",
+      "raw_directive": "4069: ## Step 3: Composition via Existing Theorem\n4070: \n4071: :::{prf:theorem} Composition of LSI Operators (Reference)\n4072: :label: thm-composition-reference\n4073: \n4074: If $\\Psi_1$ and $\\Psi_2$ are Markov operators on $\\mathcal{P}(\\Omega)$ satisfying:\n4075: \n4076: 1. $D_{\\text{KL}}(\\Psi_1 \\# \\mu \\| \\pi) \\leq (1 - \\alpha_1 \\tau) D_{\\text{KL}}(\\mu \\| \\pi) + C_1$\n4077: 2. $D_{\\text{KL}}(\\Psi_2 \\# \\nu \\| \\pi) \\leq (1 - \\alpha_2 \\tau) D_{\\text{KL}}(\\nu \\| \\pi) + C_2$\n4078: \n4079: Then the composition $\\Psi_{\\text{total}} = \\Psi_2 \\circ \\Psi_1$ satisfies:\n4080: \n4081: $$\n4082: D_{\\text{KL}}(\\Psi_{\\text{total}} \\# \\mu \\| \\pi) \\leq [1 - \\tau(\\alpha_1 + \\alpha_2)] D_{\\text{KL}}(\\mu \\| \\pi) + C_1 + C_2 + O(\\tau^2)\n4083: $$\n4084: \n4085: **Proof**: See Theorem 6.3 (Composition Theorem, lines 1148-1215) of [09_kl_convergence](09_kl_convergence).\n4086: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

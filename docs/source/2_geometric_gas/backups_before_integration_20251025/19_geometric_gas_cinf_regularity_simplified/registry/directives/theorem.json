@@ -1,0 +1,259 @@
+{
+  "document_id": "19_geometric_gas_cinf_regularity_simplified",
+  "stage": "directives",
+  "directive_type": "theorem",
+  "generated_at": "2025-11-08T17:07:43.283488+00:00",
+  "count": 10,
+  "items": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-faa-di-bruno-cinf",
+      "title": "Faà di Bruno Formula (Multivariate)",
+      "start_line": 304,
+      "end_line": 326,
+      "header_lines": [
+        305
+      ],
+      "content_start": 307,
+      "content_end": 325,
+      "content": "307: :label: thm-faa-di-bruno-cinf\n308: \n309: For f: ℝ → ℝ and g: ℝ^d → ℝ smooth, the m-th derivative of h(x) = f(g(x)) is:\n310: \n311: $$\n312: \\nabla^m h(x) = \\sum_{p=1}^{m} f^{(p)}(g(x)) \\cdot B_{m,p}[\\nabla g, \\nabla^2 g, \\ldots, \\nabla^{m-p+1} g]\n313: $$\n314: \n315: where B_{m,p} is the **complete Bell polynomial**:\n316: \n317: $$\n318: B_{m,p} = \\sum_{\\substack{k_1 + 2k_2 + \\cdots = m \\\\ k_1 + k_2 + \\cdots = p}} \\frac{m!}{k_1! k_2! \\cdots} \\prod_{j=1}^{m-p+1} \\left(\\frac{\\nabla^j g}{j!}\\right)^{k_j}\n319: $$\n320: \n321: **Norm bound**: If ||∇^j g|| ≤ M_j, then:\n322: \n323: $$\n324: \\|B_{m,p}\\| \\leq C_{\\text{Bell}}(m, p) \\cdot \\prod_{j=1}^{m-p+1} M_j^{k_j}\n325: $$",
+      "metadata": {
+        "label": "thm-faa-di-bruno-cinf"
+      },
+      "section": "## 2. Mathematical Framework and Notation",
+      "raw_directive": "304: ### 2.3. Faà di Bruno Formula for Arbitrary Order\n305: \n306: :::{prf:theorem} Faà di Bruno Formula (Multivariate)\n307: :label: thm-faa-di-bruno-cinf\n308: \n309: For f: ℝ → ℝ and g: ℝ^d → ℝ smooth, the m-th derivative of h(x) = f(g(x)) is:\n310: \n311: $$\n312: \\nabla^m h(x) = \\sum_{p=1}^{m} f^{(p)}(g(x)) \\cdot B_{m,p}[\\nabla g, \\nabla^2 g, \\ldots, \\nabla^{m-p+1} g]\n313: $$\n314: \n315: where B_{m,p} is the **complete Bell polynomial**:\n316: \n317: $$\n318: B_{m,p} = \\sum_{\\substack{k_1 + 2k_2 + \\cdots = m \\\\ k_1 + k_2 + \\cdots = p}} \\frac{m!}{k_1! k_2! \\cdots} \\prod_{j=1}^{m-p+1} \\left(\\frac{\\nabla^j g}{j!}\\right)^{k_j}\n319: $$\n320: \n321: **Norm bound**: If ||∇^j g|| ≤ M_j, then:\n322: \n323: $$\n324: \\|B_{m,p}\\| \\leq C_{\\text{Bell}}(m, p) \\cdot \\prod_{j=1}^{m-p+1} M_j^{k_j}\n325: $$\n326: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "19_geometric_gas_cinf_regularity_simplified",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
+        "section_id": "## 2. Mathematical Framework and Notation"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-c1-established-cinf",
+      "title": "C¹ Regularity (Previously Proven)",
+      "start_line": 367,
+      "end_line": 373,
+      "header_lines": [
+        368
+      ],
+      "content_start": 370,
+      "content_end": 372,
+      "content": "370: :label: thm-c1-established-cinf\n371: \n372: **Source**: [11_geometric_gas.md](11_geometric_gas.md), Appendix A, Theorem A.1",
+      "metadata": {
+        "label": "thm-c1-established-cinf"
+      },
+      "section": "## 4. Base Cases: C¹, C², C³, C⁴ Regularity (Established Results)",
+      "raw_directive": "367: The first four derivative orders are proven in prior documents. We cite them without reproving.\n368: \n369: :::{prf:theorem} C¹ Regularity (Previously Proven)\n370: :label: thm-c1-established-cinf\n371: \n372: **Source**: [11_geometric_gas.md](11_geometric_gas.md), Appendix A, Theorem A.1\n373: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "19_geometric_gas_cinf_regularity_simplified",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 4. Base Cases: C¹, C², C³, C⁴ Regularity (Established Results)"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-c2-established-cinf",
+      "title": "C² Regularity (Previously Proven)",
+      "start_line": 375,
+      "end_line": 381,
+      "header_lines": [
+        376
+      ],
+      "content_start": 378,
+      "content_end": 380,
+      "content": "378: :label: thm-c2-established-cinf\n379: \n380: **Source**: [11_geometric_gas.md](11_geometric_gas.md), Appendix A, Theorem A.2",
+      "metadata": {
+        "label": "thm-c2-established-cinf"
+      },
+      "section": "## 4. Base Cases: C¹, C², C³, C⁴ Regularity (Established Results)",
+      "raw_directive": "375: :::\n376: \n377: :::{prf:theorem} C² Regularity (Previously Proven)\n378: :label: thm-c2-established-cinf\n379: \n380: **Source**: [11_geometric_gas.md](11_geometric_gas.md), Appendix A, Theorem A.2\n381: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "19_geometric_gas_cinf_regularity_simplified",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 4. Base Cases: C¹, C², C³, C⁴ Regularity (Established Results)"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-c3-established-cinf",
+      "title": "C³ Regularity (Previously Proven)",
+      "start_line": 383,
+      "end_line": 391,
+      "header_lines": [
+        384
+      ],
+      "content_start": 386,
+      "content_end": 390,
+      "content": "386: :label: thm-c3-established-cinf\n387: \n388: **Source**: [13_geometric_gas_c3_regularity.md](13_geometric_gas_c3_regularity.md), Theorem 8.1\n389: \n390: V_fit is three times continuously differentiable with ||∇³_{x_i} V_fit|| ≤ K_{V,3}(ρ) = O(ρ^{-3}), k-uniform and N-uniform.",
+      "metadata": {
+        "label": "thm-c3-established-cinf"
+      },
+      "section": "## 4. Base Cases: C¹, C², C³, C⁴ Regularity (Established Results)",
+      "raw_directive": "383: :::\n384: \n385: :::{prf:theorem} C³ Regularity (Previously Proven)\n386: :label: thm-c3-established-cinf\n387: \n388: **Source**: [13_geometric_gas_c3_regularity.md](13_geometric_gas_c3_regularity.md), Theorem 8.1\n389: \n390: V_fit is three times continuously differentiable with ||∇³_{x_i} V_fit|| ≤ K_{V,3}(ρ) = O(ρ^{-3}), k-uniform and N-uniform.\n391: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "19_geometric_gas_cinf_regularity_simplified",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 4. Base Cases: C¹, C², C³, C⁴ Regularity (Established Results)"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-c4-established-cinf",
+      "title": "C⁴ Regularity (Previously Proven)",
+      "start_line": 393,
+      "end_line": 401,
+      "header_lines": [
+        394
+      ],
+      "content_start": 396,
+      "content_end": 400,
+      "content": "396: :label: thm-c4-established-cinf\n397: \n398: **Source**: [14_geometric_gas_c4_regularity.md](14_geometric_gas_c4_regularity.md), Theorem 5.1\n399: \n400: V_fit is four times continuously differentiable with ||∇⁴_{x_i} V_fit|| ≤ K_{V,4}(ρ) = O(ρ^{-4}), k-uniform and N-uniform.",
+      "metadata": {
+        "label": "thm-c4-established-cinf"
+      },
+      "section": "## 4. Base Cases: C¹, C², C³, C⁴ Regularity (Established Results)",
+      "raw_directive": "393: :::\n394: \n395: :::{prf:theorem} C⁴ Regularity (Previously Proven)\n396: :label: thm-c4-established-cinf\n397: \n398: **Source**: [14_geometric_gas_c4_regularity.md](14_geometric_gas_c4_regularity.md), Theorem 5.1\n399: \n400: V_fit is four times continuously differentiable with ||∇⁴_{x_i} V_fit|| ≤ K_{V,4}(ρ) = O(ρ^{-4}), k-uniform and N-uniform.\n401: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "19_geometric_gas_cinf_regularity_simplified",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 4. Base Cases: C¹, C², C³, C⁴ Regularity (Established Results)"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-inductive-step-cinf",
+      "title": "Inductive Step: C^{m+1} Regularity from C^m",
+      "start_line": 529,
+      "end_line": 674,
+      "header_lines": [
+        530
+      ],
+      "content_start": 532,
+      "content_end": 673,
+      "content": "532: :label: thm-inductive-step-cinf\n533: \n534: **Hypothesis**: Assume for some m ≥ 4 that V_fit ∈ C^m with:\n535: \n536: $$\n537: \\|\\nabla^m_{x_i} V_{\\text{fit}}\\| \\leq K_{V,m}(\\rho) < \\infty\n538: $$\n539: \n540: independent of k and N.\n541: \n542: **Conclusion**: Then V_fit ∈ C^{m+1} with:\n543: \n544: $$\n545: \\|\\nabla^{m+1}_{x_i} V_{\\text{fit}}\\| \\leq K_{V,m+1}(\\rho) < \\infty\n546: $$\n547: \n548: also k-uniform and N-uniform, where:\n549: \n550: $$\n551: K_{V,m+1}(\\rho) = O((m+1)! \\cdot \\rho^{-(m+1)})\n552: $$\n553: \n554: **Proof**:\n555: \n556: **Step 1: Apply Faà di Bruno formula.** Since V_fit = g_A ∘ Z_ρ:\n557: \n558: $$\n559: \\nabla^{m+1} V_{\\text{fit}} = \\sum_{p=1}^{m+1} g_A^{(p)}(Z_\\rho) \\cdot B_{m+1,p}[\\nabla Z_\\rho, \\nabla^2 Z_\\rho, \\ldots, \\nabla^{m+2-p} Z_\\rho]\n560: $$\n561: \n562: **Step 2: Bound outer derivative.** By Assumption {prf:ref}`assump-cinf-primitives`, |g_A^{(p)}(z)| ≤ C_{g,p} for all z, p ≥ 1.\n563: \n564: **Step 3: Bound Faà di Bruno polynomials.** By Lemmas {prf:ref}`lem-mean-cinf-inductive`, {prf:ref}`lem-variance-cinf-inductive`, {prf:ref}`lem-z-score-cinf-inductive`, the Z-score derivatives satisfy:\n565: \n566: $$\n567: \\|\\nabla^j Z_\\rho\\| \\leq K_{Z,j}(\\rho) \\quad \\text{for } j \\in \\{1, \\ldots, m+2-p\\}\n568: $$\n569: \n570: The Faà di Bruno polynomial:\n571: \n572: $$\n573: \\|B_{m+1,p}\\| \\leq C_{\\text{Bell}}(m+1, p) \\cdot \\prod_{j=1}^{m+2-p} K_{Z,j}(\\rho)^{k_j}\n574: $$\n575: \n576: where C_Bell(m+1, p) ≤ (m+1)! and the product is over partition indices k_j satisfying ∑ j k_j = m+1, ∑ k_j = p.\n577: \n578: **Step 4: Trace the scaling (Strengthened Analysis).**\n579: \n580: This step requires careful tracking of how the factorial growth propagates through the composition chain. We follow the pattern established in [13_geometric_gas_c3_regularity.md](13_geometric_gas_c3_regularity.md) § 6-7 and [14_geometric_gas_c4_regularity.md](14_geometric_gas_c4_regularity.md) § 4-5, extended to arbitrary order.\n581: \n582: **Sub-step 4a: Weight derivative scaling.** The normalized weights w_ij(ρ) = K_ij / (∑_ℓ K_iℓ) have derivatives bounded by Gaussian kernel derivatives. For the Gaussian K_ρ(r) = exp(-r²/(2ρ²)):\n583: \n584: $$\n585: \\left\\|\\frac{d^j}{dr^j} K_\\rho(r)\\right\\| = \\left\\|H_j\\left(\\frac{r}{\\rho}\\right) \\cdot \\rho^{-j} \\cdot K_\\rho(r)\\right\\| \\leq C_{\\text{Herm}} \\cdot j! \\cdot \\rho^{-j} \\cdot e^{-r^2/(4\\rho^2)}\n586: $$\n587: \n588: where H_j are Hermite polynomials with |H_j(y)| · e^{-y²/2} ≤ C_Herm · √(j!) (Cramér's bound). Propagating through the quotient structure of w_ij via the generalized Leibniz rule:\n589: \n590: $$\n591: \\|\\nabla^j w_{ij}\\| \\leq W_j(\\rho) = O(j! \\cdot \\rho^{-j})\n592: $$\n593: \n594: **Sub-step 4b: Moment derivative scaling.** By Lemmas {prf:ref}`lem-mean-cinf-inductive` and {prf:ref}`lem-variance-cinf-inductive`, using the telescoping mechanism:\n595: \n596: $$\n597: \\begin{aligned}\n598: \\|\\nabla^j \\mu_\\rho\\| &\\leq W_j(\\rho) \\cdot \\text{diam}(d) = O(j! \\cdot \\rho^{-j}) \\\\\n599: \\|\\nabla^j \\sigma^2_\\rho\\| &\\leq C_{var,j}(\\rho) \\cdot (\\text{diam}(d))^2 = O(j! \\cdot \\rho^{-j})\n600: \\end{aligned}\n601: $$\n602: \n603: The key is that the telescoping identity prevents accumulation of k factors, preserving the factorial scaling.\n604: \n605: **Sub-step 4c: Z-score derivative scaling via quotient rule.** The Z-score Z_ρ = (d(x_i) - μ_ρ) / σ'_reg(σ²_ρ) is a quotient. The j-th derivative involves the generalized quotient rule (Faà di Bruno for reciprocal composition):\n606: \n607: $$\n608: \\nabla^j Z_\\rho = \\sum \\text{(products of } \\nabla^p u, \\nabla^q v \\text{ with } p + q \\leq j \\text{)}\n609: $$\n610: \n611: where u = d - μ_ρ, v = σ'_reg(σ²_ρ). Each term in the sum involves:\n612: - Numerator derivatives: ||∇^p u|| ≤ max(C_d^{(p)}, O(p! · ρ^{-p})) = O(p! · ρ^{-p})\n613: - Denominator derivatives: ||∇^q v|| involves chain rule on σ'_reg(σ²_ρ), bounded by O(q! · ρ^{-q}) (since σ'_reg ∈ C∞ with bounded derivatives and σ²_ρ has factorial scaling)\n614: - Division by v^{q'+1} where v ≥ ε_σ > 0\n615: \n616: The combinatorial sum over partitions yields:\n617: \n618: $$\n619: K_{Z,j}(\\rho) = O(j! \\cdot \\rho^{-j})\n620: $$\n621: \n622: The crucial observation is that the quotient rule does **not introduce super-factorial growth** (e.g., (j!)²) because:\n623: 1. The number of terms in the j-th derivative quotient rule is polynomial in j (not factorial)\n624: 2. Each term is a product of at most O(j) factors, each bounded by O(j! · ρ^{-j})\n625: 3. The product of sub-factorials (e.g., p! · (j-p)!) is bounded by j! up to polynomial factors (verified by Stirling's approximation)\n626: \n627: **Sub-step 4d: Faà di Bruno product scaling.** The Bell polynomial B_{m+1,p} involves products:\n628: \n629: $$\n630: \\prod_{j=1}^{m+2-p} K_{Z,j}(\\rho)^{k_j} = \\prod_{j=1}^{m+2-p} [C_j \\cdot j! \\cdot \\rho^{-j}]^{k_j}\n631: $$\n632: \n633: where ∑ j k_j = m+1 (partition constraint). The exponent sum in the ρ factor is:\n634: \n635: $$\n636: \\sum_{j=1}^{m+2-p} (-j) \\cdot k_j = -(m+1)\n637: $$\n638: \n639: For the factorial product:\n640: \n641: $$\n642: \\prod_{j=1}^{m+2-p} (j!)^{k_j} \\leq (m+1)! \\cdot \\text{(combinatorial factor)}\n643: $$\n644: \n645: The combinatorial factor arises from the multinomial structure and is bounded by C_Bell(m+1, p) ≤ (m+1)! (Bell number bound). Thus:\n646: \n647: $$\n648: \\|B_{m+1,p}\\| \\cdot \\prod K_{Z,j}^{k_j} = O((m+1)! \\cdot (m+1)! \\cdot \\rho^{-(m+1)}) = O((m+1)!^2 \\cdot \\rho^{-(m+1)})\n649: $$\n650: \n651: However, this appears to give *squared* factorial growth! The resolution is that the **telescoping mechanism** built into the centered moment identities (Lemmas {prf:ref}`lem-mean-cinf-inductive`, {prf:ref}`lem-variance-cinf-inductive`) already accounts for one factor of the combinatorial growth. The actual bound is:\n652: \n653: $$\n654: K_{V,m+1}(\\rho) = O((m+1)! \\cdot \\rho^{-(m+1)})\n655: $$\n656: \n657: with a constant that may grow polynomially in m but not factorially.\n658: \n659: **Rigorous justification**: The C³ and C⁴ documents verify this scaling explicitly for m = 3, 4 by computing all terms. The inductive pattern is:\n660: - C³ ([13_geometric_gas_c3_regularity.md](13_geometric_gas_c3_regularity.md) Theorem 8.1): K_{V,3}(ρ) ≤ C_3 · 3! · ρ^{-3} where C_3 = O(1)\n661: - C⁴ ([14_geometric_gas_c4_regularity.md](14_geometric_gas_c4_regularity.md) Theorem 5.1): K_{V,4}(ρ) ≤ C_4 · 4! · ρ^{-4} where C_4 = O(1)\n662: \n663: The constants C_m may grow polynomially (e.g., C_m = O(m^α) for some α > 0), but not factorially. This is sufficient for Gevrey-1 classification.\n664: \n665: **Step 5: Sum over p and conclude.** Combining:\n666: \n667: $$\n668: \\|\\nabla^{m+1} V_{\\text{fit}}\\| \\leq \\sum_{p=1}^{m+1} C_{g,p} \\cdot C_{\\text{Bell}}(m+1, p) \\cdot O((m+1)! \\cdot \\rho^{-(m+1)})\n669: $$\n670: \n671: $$\n672: \\leq C(m+1) \\cdot (m+1)! \\cdot \\rho^{-(m+1)}\n673: $$",
+      "metadata": {
+        "label": "thm-inductive-step-cinf"
+      },
+      "section": "## 5. Inductive Step: From C^m to C^{m+1}",
+      "raw_directive": "529: :::\n530: \n531: :::{prf:theorem} Inductive Step: C^{m+1} Regularity from C^m\n532: :label: thm-inductive-step-cinf\n533: \n534: **Hypothesis**: Assume for some m ≥ 4 that V_fit ∈ C^m with:\n535: \n536: $$\n537: \\|\\nabla^m_{x_i} V_{\\text{fit}}\\| \\leq K_{V,m}(\\rho) < \\infty\n538: $$\n539: \n540: independent of k and N.\n541: \n542: **Conclusion**: Then V_fit ∈ C^{m+1} with:\n543: \n544: $$\n545: \\|\\nabla^{m+1}_{x_i} V_{\\text{fit}}\\| \\leq K_{V,m+1}(\\rho) < \\infty\n546: $$\n547: \n548: also k-uniform and N-uniform, where:\n549: \n550: $$\n551: K_{V,m+1}(\\rho) = O((m+1)! \\cdot \\rho^{-(m+1)})\n552: $$\n553: \n554: **Proof**:\n555: \n556: **Step 1: Apply Faà di Bruno formula.** Since V_fit = g_A ∘ Z_ρ:\n557: \n558: $$\n559: \\nabla^{m+1} V_{\\text{fit}} = \\sum_{p=1}^{m+1} g_A^{(p)}(Z_\\rho) \\cdot B_{m+1,p}[\\nabla Z_\\rho, \\nabla^2 Z_\\rho, \\ldots, \\nabla^{m+2-p} Z_\\rho]\n560: $$\n561: \n562: **Step 2: Bound outer derivative.** By Assumption {prf:ref}`assump-cinf-primitives`, |g_A^{(p)}(z)| ≤ C_{g,p} for all z, p ≥ 1.\n563: \n564: **Step 3: Bound Faà di Bruno polynomials.** By Lemmas {prf:ref}`lem-mean-cinf-inductive`, {prf:ref}`lem-variance-cinf-inductive`, {prf:ref}`lem-z-score-cinf-inductive`, the Z-score derivatives satisfy:\n565: \n566: $$\n567: \\|\\nabla^j Z_\\rho\\| \\leq K_{Z,j}(\\rho) \\quad \\text{for } j \\in \\{1, \\ldots, m+2-p\\}\n568: $$\n569: \n570: The Faà di Bruno polynomial:\n571: \n572: $$\n573: \\|B_{m+1,p}\\| \\leq C_{\\text{Bell}}(m+1, p) \\cdot \\prod_{j=1}^{m+2-p} K_{Z,j}(\\rho)^{k_j}\n574: $$\n575: \n576: where C_Bell(m+1, p) ≤ (m+1)! and the product is over partition indices k_j satisfying ∑ j k_j = m+1, ∑ k_j = p.\n577: \n578: **Step 4: Trace the scaling (Strengthened Analysis).**\n579: \n580: This step requires careful tracking of how the factorial growth propagates through the composition chain. We follow the pattern established in [13_geometric_gas_c3_regularity.md](13_geometric_gas_c3_regularity.md) § 6-7 and [14_geometric_gas_c4_regularity.md](14_geometric_gas_c4_regularity.md) § 4-5, extended to arbitrary order.\n581: \n582: **Sub-step 4a: Weight derivative scaling.** The normalized weights w_ij(ρ) = K_ij / (∑_ℓ K_iℓ) have derivatives bounded by Gaussian kernel derivatives. For the Gaussian K_ρ(r) = exp(-r²/(2ρ²)):\n583: \n584: $$\n585: \\left\\|\\frac{d^j}{dr^j} K_\\rho(r)\\right\\| = \\left\\|H_j\\left(\\frac{r}{\\rho}\\right) \\cdot \\rho^{-j} \\cdot K_\\rho(r)\\right\\| \\leq C_{\\text{Herm}} \\cdot j! \\cdot \\rho^{-j} \\cdot e^{-r^2/(4\\rho^2)}\n586: $$\n587: \n588: where H_j are Hermite polynomials with |H_j(y)| · e^{-y²/2} ≤ C_Herm · √(j!) (Cramér's bound). Propagating through the quotient structure of w_ij via the generalized Leibniz rule:\n589: \n590: $$\n591: \\|\\nabla^j w_{ij}\\| \\leq W_j(\\rho) = O(j! \\cdot \\rho^{-j})\n592: $$\n593: \n594: **Sub-step 4b: Moment derivative scaling.** By Lemmas {prf:ref}`lem-mean-cinf-inductive` and {prf:ref}`lem-variance-cinf-inductive`, using the telescoping mechanism:\n595: \n596: $$\n597: \\begin{aligned}\n598: \\|\\nabla^j \\mu_\\rho\\| &\\leq W_j(\\rho) \\cdot \\text{diam}(d) = O(j! \\cdot \\rho^{-j}) \\\\\n599: \\|\\nabla^j \\sigma^2_\\rho\\| &\\leq C_{var,j}(\\rho) \\cdot (\\text{diam}(d))^2 = O(j! \\cdot \\rho^{-j})\n600: \\end{aligned}\n601: $$\n602: \n603: The key is that the telescoping identity prevents accumulation of k factors, preserving the factorial scaling.\n604: \n605: **Sub-step 4c: Z-score derivative scaling via quotient rule.** The Z-score Z_ρ = (d(x_i) - μ_ρ) / σ'_reg(σ²_ρ) is a quotient. The j-th derivative involves the generalized quotient rule (Faà di Bruno for reciprocal composition):\n606: \n607: $$\n608: \\nabla^j Z_\\rho = \\sum \\text{(products of } \\nabla^p u, \\nabla^q v \\text{ with } p + q \\leq j \\text{)}\n609: $$\n610: \n611: where u = d - μ_ρ, v = σ'_reg(σ²_ρ). Each term in the sum involves:\n612: - Numerator derivatives: ||∇^p u|| ≤ max(C_d^{(p)}, O(p! · ρ^{-p})) = O(p! · ρ^{-p})\n613: - Denominator derivatives: ||∇^q v|| involves chain rule on σ'_reg(σ²_ρ), bounded by O(q! · ρ^{-q}) (since σ'_reg ∈ C∞ with bounded derivatives and σ²_ρ has factorial scaling)\n614: - Division by v^{q'+1} where v ≥ ε_σ > 0\n615: \n616: The combinatorial sum over partitions yields:\n617: \n618: $$\n619: K_{Z,j}(\\rho) = O(j! \\cdot \\rho^{-j})\n620: $$\n621: \n622: The crucial observation is that the quotient rule does **not introduce super-factorial growth** (e.g., (j!)²) because:\n623: 1. The number of terms in the j-th derivative quotient rule is polynomial in j (not factorial)\n624: 2. Each term is a product of at most O(j) factors, each bounded by O(j! · ρ^{-j})\n625: 3. The product of sub-factorials (e.g., p! · (j-p)!) is bounded by j! up to polynomial factors (verified by Stirling's approximation)\n626: \n627: **Sub-step 4d: Faà di Bruno product scaling.** The Bell polynomial B_{m+1,p} involves products:\n628: \n629: $$\n630: \\prod_{j=1}^{m+2-p} K_{Z,j}(\\rho)^{k_j} = \\prod_{j=1}^{m+2-p} [C_j \\cdot j! \\cdot \\rho^{-j}]^{k_j}\n631: $$\n632: \n633: where ∑ j k_j = m+1 (partition constraint). The exponent sum in the ρ factor is:\n634: \n635: $$\n636: \\sum_{j=1}^{m+2-p} (-j) \\cdot k_j = -(m+1)\n637: $$\n638: \n639: For the factorial product:\n640: \n641: $$\n642: \\prod_{j=1}^{m+2-p} (j!)^{k_j} \\leq (m+1)! \\cdot \\text{(combinatorial factor)}\n643: $$\n644: \n645: The combinatorial factor arises from the multinomial structure and is bounded by C_Bell(m+1, p) ≤ (m+1)! (Bell number bound). Thus:\n646: \n647: $$\n648: \\|B_{m+1,p}\\| \\cdot \\prod K_{Z,j}^{k_j} = O((m+1)! \\cdot (m+1)! \\cdot \\rho^{-(m+1)}) = O((m+1)!^2 \\cdot \\rho^{-(m+1)})\n649: $$\n650: \n651: However, this appears to give *squared* factorial growth! The resolution is that the **telescoping mechanism** built into the centered moment identities (Lemmas {prf:ref}`lem-mean-cinf-inductive`, {prf:ref}`lem-variance-cinf-inductive`) already accounts for one factor of the combinatorial growth. The actual bound is:\n652: \n653: $$\n654: K_{V,m+1}(\\rho) = O((m+1)! \\cdot \\rho^{-(m+1)})\n655: $$\n656: \n657: with a constant that may grow polynomially in m but not factorially.\n658: \n659: **Rigorous justification**: The C³ and C⁴ documents verify this scaling explicitly for m = 3, 4 by computing all terms. The inductive pattern is:\n660: - C³ ([13_geometric_gas_c3_regularity.md](13_geometric_gas_c3_regularity.md) Theorem 8.1): K_{V,3}(ρ) ≤ C_3 · 3! · ρ^{-3} where C_3 = O(1)\n661: - C⁴ ([14_geometric_gas_c4_regularity.md](14_geometric_gas_c4_regularity.md) Theorem 5.1): K_{V,4}(ρ) ≤ C_4 · 4! · ρ^{-4} where C_4 = O(1)\n662: \n663: The constants C_m may grow polynomially (e.g., C_m = O(m^α) for some α > 0), but not factorially. This is sufficient for Gevrey-1 classification.\n664: \n665: **Step 5: Sum over p and conclude.** Combining:\n666: \n667: $$\n668: \\|\\nabla^{m+1} V_{\\text{fit}}\\| \\leq \\sum_{p=1}^{m+1} C_{g,p} \\cdot C_{\\text{Bell}}(m+1, p) \\cdot O((m+1)! \\cdot \\rho^{-(m+1)})\n669: $$\n670: \n671: $$\n672: \\leq C(m+1) \\cdot (m+1)! \\cdot \\rho^{-(m+1)}\n673: $$\n674: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "19_geometric_gas_cinf_regularity_simplified",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. Inductive Step: From C^m to C^{m+1}"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-cinf-regularity",
+      "title": "C∞ Regularity of the Fitness Potential",
+      "start_line": 695,
+      "end_line": 721,
+      "header_lines": [
+        696
+      ],
+      "content_start": 698,
+      "content_end": 720,
+      "content": "698: :label: thm-cinf-regularity\n699: \n700: Under Assumption {prf:ref}`assump-cinf-primitives` (C∞ regularity of primitives), the ρ-localized fitness potential V_fit[f_k, ρ](x_i) is **infinitely differentiable** (smooth) with **k-uniform** and **N-uniform** bounds:\n701: \n702: $$\n703: \\|\\nabla^m_{x_i} V_{\\text{fit}}[f_k, \\rho](x_i)\\| \\leq K_{V,m}(\\rho) < \\infty \\quad \\forall m \\geq 1\n704: $$\n705: \n706: for all k ∈ {1, ..., N}, all N ≥ 1, all ρ > 0, and all swarm configurations S.\n707: \n708: Moreover, the bounds exhibit **Gevrey-1 scaling**:\n709: \n710: $$\n711: K_{V,m}(\\rho) = O(m! \\cdot \\rho^{-m}) \\quad \\text{as } \\rho \\to 0\n712: $$\n713: \n714: with proportionality constant C(ρ_0) depending on ρ_0 but independent of m, k, N for ρ ≤ ρ_0.\n715: \n716: **Proof**:\n717: \n718: **Base cases**: Theorems {prf:ref}`thm-c1-established-cinf` through {prf:ref}`thm-c4-established-cinf` establish V_fit ∈ C^m for m ∈ {1, 2, 3, 4} with K_{V,m}(ρ) = O(ρ^{-m}).\n719: \n720: **Inductive step**: Theorem {prf:ref}`thm-inductive-step-cinf` proves C^m → C^{m+1} for all m ≥ 4 with K_{V,m+1}(ρ) = O((m+1)! · ρ^{-(m+1)}).",
+      "metadata": {
+        "label": "thm-cinf-regularity"
+      },
+      "section": "## 6. Main Theorem: C∞ Regularity",
+      "raw_directive": "695: Combining base cases and inductive step:\n696: \n697: :::{prf:theorem} C∞ Regularity of the Fitness Potential\n698: :label: thm-cinf-regularity\n699: \n700: Under Assumption {prf:ref}`assump-cinf-primitives` (C∞ regularity of primitives), the ρ-localized fitness potential V_fit[f_k, ρ](x_i) is **infinitely differentiable** (smooth) with **k-uniform** and **N-uniform** bounds:\n701: \n702: $$\n703: \\|\\nabla^m_{x_i} V_{\\text{fit}}[f_k, \\rho](x_i)\\| \\leq K_{V,m}(\\rho) < \\infty \\quad \\forall m \\geq 1\n704: $$\n705: \n706: for all k ∈ {1, ..., N}, all N ≥ 1, all ρ > 0, and all swarm configurations S.\n707: \n708: Moreover, the bounds exhibit **Gevrey-1 scaling**:\n709: \n710: $$\n711: K_{V,m}(\\rho) = O(m! \\cdot \\rho^{-m}) \\quad \\text{as } \\rho \\to 0\n712: $$\n713: \n714: with proportionality constant C(ρ_0) depending on ρ_0 but independent of m, k, N for ρ ≤ ρ_0.\n715: \n716: **Proof**:\n717: \n718: **Base cases**: Theorems {prf:ref}`thm-c1-established-cinf` through {prf:ref}`thm-c4-established-cinf` establish V_fit ∈ C^m for m ∈ {1, 2, 3, 4} with K_{V,m}(ρ) = O(ρ^{-m}).\n719: \n720: **Inductive step**: Theorem {prf:ref}`thm-inductive-step-cinf` proves C^m → C^{m+1} for all m ≥ 4 with K_{V,m+1}(ρ) = O((m+1)! · ρ^{-(m+1)}).\n721: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "19_geometric_gas_cinf_regularity_simplified",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## 6. Main Theorem: C∞ Regularity"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-gevrey-1-cinf",
+      "title": "Gevrey-1 Regularity of the Fitness Potential",
+      "start_line": 765,
+      "end_line": 789,
+      "header_lines": [
+        766
+      ],
+      "content_start": 768,
+      "content_end": 788,
+      "content": "768: :label: thm-gevrey-1-cinf\n769: \n770: V_fit[f_k, ρ](x_i) belongs to **Gevrey class G¹** for each fixed ρ > 0 and swarm configuration S. For any compact K ⊆ X and any ρ ∈ (0, ρ_0]:\n771: \n772: $$\n773: \\sup_{x_i \\in K} \\|\\nabla^m V_{\\text{fit}}\\| \\leq C_K(\\rho_0) \\cdot \\left(\\frac{A_K(\\rho_0)}{\\rho}\\right)^m \\cdot m!\n774: $$\n775: \n776: where A_K(ρ_0) is **independent of m**, confirming Gevrey-1 classification with s = 1.\n777: \n778: **Proof**: From Theorem {prf:ref}`thm-cinf-regularity`:\n779: \n780: $$\n781: K_{V,m}(\\rho) = C_{\\text{Gevrey}}(\\rho_0) \\cdot \\rho_0^{-m} \\cdot m!\n782: $$\n783: \n784: for ρ ≤ ρ_0. Set C_K = C_Gevrey, A_K = ρ_0^{-1}:\n785: \n786: $$\n787: \\|\\nabla^m V_{\\text{fit}}\\| \\leq C_K \\cdot A_K^m \\cdot m!\n788: $$",
+      "metadata": {
+        "label": "thm-gevrey-1-cinf"
+      },
+      "section": "## 7. Gevrey-1 Classification",
+      "raw_directive": "765: :::\n766: \n767: :::{prf:theorem} Gevrey-1 Regularity of the Fitness Potential\n768: :label: thm-gevrey-1-cinf\n769: \n770: V_fit[f_k, ρ](x_i) belongs to **Gevrey class G¹** for each fixed ρ > 0 and swarm configuration S. For any compact K ⊆ X and any ρ ∈ (0, ρ_0]:\n771: \n772: $$\n773: \\sup_{x_i \\in K} \\|\\nabla^m V_{\\text{fit}}\\| \\leq C_K(\\rho_0) \\cdot \\left(\\frac{A_K(\\rho_0)}{\\rho}\\right)^m \\cdot m!\n774: $$\n775: \n776: where A_K(ρ_0) is **independent of m**, confirming Gevrey-1 classification with s = 1.\n777: \n778: **Proof**: From Theorem {prf:ref}`thm-cinf-regularity`:\n779: \n780: $$\n781: K_{V,m}(\\rho) = C_{\\text{Gevrey}}(\\rho_0) \\cdot \\rho_0^{-m} \\cdot m!\n782: $$\n783: \n784: for ρ ≤ ρ_0. Set C_K = C_Gevrey, A_K = ρ_0^{-1}:\n785: \n786: $$\n787: \\|\\nabla^m V_{\\text{fit}}\\| \\leq C_K \\cdot A_K^m \\cdot m!\n788: $$\n789: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "19_geometric_gas_cinf_regularity_simplified",
+        "chapter_index": 7,
+        "chapter_file": "chapter_7.json",
+        "section_id": "## 7. Gevrey-1 Classification"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-essential-self-adjoint-cinf",
+      "title": "Essential Self-Adjointness (Conditional)",
+      "start_line": 840,
+      "end_line": 861,
+      "header_lines": [
+        841
+      ],
+      "content_start": 843,
+      "content_end": 860,
+      "content": "843: :label: thm-essential-self-adjoint-cinf\n844: \n845: Assume:\n846: 1. V_fit ∈ C∞(X) (Theorem {prf:ref}`thm-cinf-regularity`)\n847: 2. U ∈ C∞(X) with lim_{||x|| → ∞} U(x) = +∞ (confining)\n848: 3. V_total = U + ε_F V_fit satisfies liminf_{||x|| → ∞} V_total(x) / ||x||² > 0\n849: \n850: Then the generator L is **essentially self-adjoint** on C_c^∞(X × ℝ^d).\n851: \n852: **Implication**:\n853: - Unique time evolution: e^{tL} uniquely determined\n854: - Spectral theorem applies: L admits spectral decomposition\n855: - No pathological behaviors\n856: \n857: **Proof outline**: Apply Segal-Nelson theorem for Schrödinger-type operators:\n858: 1. C_c^∞ dense in L² (true for ℝ^d)\n859: 2. L symmetric on C_c^∞ (integration by parts requires C∞ coefficients - verified by our theorem)\n860: 3. V_total grows at most quadratically (ensures semiboundedness)",
+      "metadata": {
+        "label": "thm-essential-self-adjoint-cinf"
+      },
+      "section": "## 8. Spectral Implications: Essential Self-Adjointness",
+      "raw_directive": "840: :::\n841: \n842: :::{prf:theorem} Essential Self-Adjointness (Conditional)\n843: :label: thm-essential-self-adjoint-cinf\n844: \n845: Assume:\n846: 1. V_fit ∈ C∞(X) (Theorem {prf:ref}`thm-cinf-regularity`)\n847: 2. U ∈ C∞(X) with lim_{||x|| → ∞} U(x) = +∞ (confining)\n848: 3. V_total = U + ε_F V_fit satisfies liminf_{||x|| → ∞} V_total(x) / ||x||² > 0\n849: \n850: Then the generator L is **essentially self-adjoint** on C_c^∞(X × ℝ^d).\n851: \n852: **Implication**:\n853: - Unique time evolution: e^{tL} uniquely determined\n854: - Spectral theorem applies: L admits spectral decomposition\n855: - No pathological behaviors\n856: \n857: **Proof outline**: Apply Segal-Nelson theorem for Schrödinger-type operators:\n858: 1. C_c^∞ dense in L² (true for ℝ^d)\n859: 2. L symmetric on C_c^∞ (integration by parts requires C∞ coefficients - verified by our theorem)\n860: 3. V_total grows at most quadratically (ensures semiboundedness)\n861: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "19_geometric_gas_cinf_regularity_simplified",
+        "chapter_index": 8,
+        "chapter_file": "chapter_8.json",
+        "section_id": "## 8. Spectral Implications: Essential Self-Adjointness"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-hypoellipticity-cinf",
+      "title": "Hypoellipticity via Hörmander's Criterion",
+      "start_line": 867,
+      "end_line": 881,
+      "header_lines": [
+        868
+      ],
+      "content_start": 870,
+      "content_end": 880,
+      "content": "870: :label: thm-hypoellipticity-cinf\n871: \n872: The adaptive Langevin generator L (Definition {prf:ref}`def-adaptive-generator-cinf`) is **hypoelliptic**: for all t > 0, the transition density p_t(w, w') is C∞ in both arguments.\n873: \n874: **Hörmander's condition**: L = ∑_i Y_i² + Y_0 where:\n875: - Y_i = ∂_{v_i} (thermal noise directions)\n876: - Y_0 = v · ∇_x - (∇V_total + γv) · ∇_v (drift)\n877: \n878: The Lie bracket [Y_0, Y_i] = ∂_{x_i} (position derivative) is independent of thermal noise. The Lie algebra spans the full tangent space T(X × ℝ^d), satisfying Hörmander's bracket condition.\n879: \n880: **Conclusion**: By Hörmander's theorem (Hörmander, Acta Math. 1967), L is hypoelliptic, and p_t(w, w') ∈ C∞ for t > 0.",
+      "metadata": {
+        "label": "thm-hypoellipticity-cinf"
+      },
+      "section": "## 9. Hypoellipticity and Smooth Transition Densities",
+      "raw_directive": "867: ## 9. Hypoellipticity and Smooth Transition Densities\n868: \n869: :::{prf:theorem} Hypoellipticity via Hörmander's Criterion\n870: :label: thm-hypoellipticity-cinf\n871: \n872: The adaptive Langevin generator L (Definition {prf:ref}`def-adaptive-generator-cinf`) is **hypoelliptic**: for all t > 0, the transition density p_t(w, w') is C∞ in both arguments.\n873: \n874: **Hörmander's condition**: L = ∑_i Y_i² + Y_0 where:\n875: - Y_i = ∂_{v_i} (thermal noise directions)\n876: - Y_0 = v · ∇_x - (∇V_total + γv) · ∇_v (drift)\n877: \n878: The Lie bracket [Y_0, Y_i] = ∂_{x_i} (position derivative) is independent of thermal noise. The Lie algebra spans the full tangent space T(X × ℝ^d), satisfying Hörmander's bracket condition.\n879: \n880: **Conclusion**: By Hörmander's theorem (Hörmander, Acta Math. 1967), L is hypoelliptic, and p_t(w, w') ∈ C∞ for t > 0.\n881: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "19_geometric_gas_cinf_regularity_simplified",
+        "chapter_index": 9,
+        "chapter_file": "chapter_9.json",
+        "section_id": "## 9. Hypoellipticity and Smooth Transition Densities"
+      }
+    }
+  ]
+}

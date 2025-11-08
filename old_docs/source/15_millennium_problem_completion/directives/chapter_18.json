@@ -1,0 +1,175 @@
+{
+  "chapter_index": 18,
+  "section_id": "## 15. Lorentz Invariance from Order-Invariant Causal Structure",
+  "directive_count": 10,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-order-invariance-lorentz-qft",
+      "title": "Order-Invariant QFT Observables are Lorentz-Invariant",
+      "start_line": 2517,
+      "end_line": 2529,
+      "header_lines": [
+        2518
+      ],
+      "content_start": 2520,
+      "content_end": 2528,
+      "content": "2520: :label: thm-order-invariance-lorentz-qft\n2521: \n2522: Let $F$ be a functional on the Fractal Set that is **order-invariant**:\n2523: \n2524: $$\n2525: F(\\mathcal{F}) = F(\\mathcal{F}') \\quad \\text{if } \\prec_{\\text{CST}} \\text{ is the same}\n2526: $$\n2527: \n2528: (i.e., $F$ depends only on causal structure, not on coordinates, embeddings, or foliation).",
+      "metadata": {
+        "label": "thm-order-invariance-lorentz-qft"
+      },
+      "section": "## 15. Lorentz Invariance from Order-Invariant Causal Structure",
+      "raw_directive": "2517: From {doc}`13_fractal_set_new/07_discrete_symmetries_gauge.md`, Theorem 4.1 (Order-Invariance Implies Lorentz Invariance):\n2518: \n2519: :::{prf:theorem} Order-Invariant QFT Observables are Lorentz-Invariant\n2520: :label: thm-order-invariance-lorentz-qft\n2521: \n2522: Let $F$ be a functional on the Fractal Set that is **order-invariant**:\n2523: \n2524: $$\n2525: F(\\mathcal{F}) = F(\\mathcal{F}') \\quad \\text{if } \\prec_{\\text{CST}} \\text{ is the same}\n2526: $$\n2527: \n2528: (i.e., $F$ depends only on causal structure, not on coordinates, embeddings, or foliation).\n2529: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-35",
+      "title": null,
+      "start_line": 2531,
+      "end_line": 2597,
+      "header_lines": [],
+      "content_start": 2532,
+      "content_end": 2596,
+      "content": "2532: \n2533: :::{prf:proof}\n2534: **Step 1: Discrete causal structure is coordinate-free.**\n2535: \n2536: The causal order $e_i \\prec_{\\text{CST}} e_j$ is defined by:\n2537: \n2538: $$\n2539: t_i < t_j \\quad \\text{and} \\quad d_{\\mathcal{X}}(x_i, x_j) < c_{\\text{eff}}(t_j - t_i)\n2540: $$\n2541: \n2542: This is equivalent to \"$e_j$ is in the future light cone of $e_i$\" in the Lorentzian manifold $(M, g_{\\mu\\nu})$ with metric:\n2543: \n2544: $$\n2545: ds^2 = -c_{\\text{eff}}^2 dt^2 + g_{ij}(x) dx^i dx^j\n2546: $$\n2547: \n2548: where $g(x) = H(x) + \\epsilon_\\Sigma I$ is the emergent Riemannian metric.\n2549: \n2550: **Step 2: Lorentz transformations preserve causal structure.**\n2551: \n2552: A Lorentz transformation $\\Lambda \\in SO(1,3)$ maps:\n2553: \n2554: $$\n2555: (t, x) \\to (\\Lambda^0_\\mu x^\\mu, \\Lambda^i_\\mu x^\\mu)\n2556: $$\n2557: \n2558: For timelike or null separated events, the **causal order is preserved**:\n2559: \n2560: $$\n2561: x \\prec y \\quad \\iff \\quad \\Lambda x \\prec \\Lambda y\n2562: $$\n2563: \n2564: This is the defining property of the **chronological order** in Lorentzian geometry.\n2565: \n2566: **Step 3: Order-invariant functionals only depend on causal structure.**\n2567: \n2568: If $F$ is order-invariant, then:\n2569: \n2570: $$\n2571: F(\\mathcal{F}) = G(\\prec_{\\text{CST}})\n2572: $$\n2573: \n2574: for some functional $G$ of the partial order alone.\n2575: \n2576: **Step 4: Continuum limit inherits causal structure.**\n2577: \n2578: From {doc}`13_fractal_set_new/02_computational_equivalence.md`, the Fractal Set converges to the continuum QFT in the limit $N \\to \\infty$:\n2579: \n2580: - Episodes \u2192 spacetime events\n2581: - Causal order $\\prec_{\\text{CST}}$ \u2192 light cone ordering $\\prec$\n2582: - Propagation of chaos: $O(1/\\sqrt{N})$ convergence\n2583: \n2584: The continuum observable $\\hat{F}$ is the limit of $F_N$ as $N \\to \\infty$.\n2585: \n2586: **Step 5: Lorentz invariance of continuum observable.**\n2587: \n2588: Since $F_N$ depends only on $\\prec_{\\text{CST}}$ for all $N$, the limit $\\hat{F}$ depends only on the continuum causal structure $\\prec$.\n2589: \n2590: But Lorentz transformations **preserve** causal structure:\n2591: \n2592: $$\n2593: \\hat{F}(\\Lambda \\mathcal{F}) = \\hat{F}(G(\\Lambda \\prec)) = \\hat{F}(G(\\prec)) = \\hat{F}(\\mathcal{F})\n2594: $$\n2595: \n2596: where we used $\\Lambda \\prec = \\prec$ (causal order is Lorentz-invariant).",
+      "metadata": {},
+      "section": "## 15. Lorentz Invariance from Order-Invariant Causal Structure",
+      "raw_directive": "2531: :::\n2532: \n2533: :::{prf:proof}\n2534: **Step 1: Discrete causal structure is coordinate-free.**\n2535: \n2536: The causal order $e_i \\prec_{\\text{CST}} e_j$ is defined by:\n2537: \n2538: $$\n2539: t_i < t_j \\quad \\text{and} \\quad d_{\\mathcal{X}}(x_i, x_j) < c_{\\text{eff}}(t_j - t_i)\n2540: $$\n2541: \n2542: This is equivalent to \"$e_j$ is in the future light cone of $e_i$\" in the Lorentzian manifold $(M, g_{\\mu\\nu})$ with metric:\n2543: \n2544: $$\n2545: ds^2 = -c_{\\text{eff}}^2 dt^2 + g_{ij}(x) dx^i dx^j\n2546: $$\n2547: \n2548: where $g(x) = H(x) + \\epsilon_\\Sigma I$ is the emergent Riemannian metric.\n2549: \n2550: **Step 2: Lorentz transformations preserve causal structure.**\n2551: \n2552: A Lorentz transformation $\\Lambda \\in SO(1,3)$ maps:\n2553: \n2554: $$\n2555: (t, x) \\to (\\Lambda^0_\\mu x^\\mu, \\Lambda^i_\\mu x^\\mu)\n2556: $$\n2557: \n2558: For timelike or null separated events, the **causal order is preserved**:\n2559: \n2560: $$\n2561: x \\prec y \\quad \\iff \\quad \\Lambda x \\prec \\Lambda y\n2562: $$\n2563: \n2564: This is the defining property of the **chronological order** in Lorentzian geometry.\n2565: \n2566: **Step 3: Order-invariant functionals only depend on causal structure.**\n2567: \n2568: If $F$ is order-invariant, then:\n2569: \n2570: $$\n2571: F(\\mathcal{F}) = G(\\prec_{\\text{CST}})\n2572: $$\n2573: \n2574: for some functional $G$ of the partial order alone.\n2575: \n2576: **Step 4: Continuum limit inherits causal structure.**\n2577: \n2578: From {doc}`13_fractal_set_new/02_computational_equivalence.md`, the Fractal Set converges to the continuum QFT in the limit $N \\to \\infty$:\n2579: \n2580: - Episodes \u2192 spacetime events\n2581: - Causal order $\\prec_{\\text{CST}}$ \u2192 light cone ordering $\\prec$\n2582: - Propagation of chaos: $O(1/\\sqrt{N})$ convergence\n2583: \n2584: The continuum observable $\\hat{F}$ is the limit of $F_N$ as $N \\to \\infty$.\n2585: \n2586: **Step 5: Lorentz invariance of continuum observable.**\n2587: \n2588: Since $F_N$ depends only on $\\prec_{\\text{CST}}$ for all $N$, the limit $\\hat{F}$ depends only on the continuum causal structure $\\prec$.\n2589: \n2590: But Lorentz transformations **preserve** causal structure:\n2591: \n2592: $$\n2593: \\hat{F}(\\Lambda \\mathcal{F}) = \\hat{F}(G(\\Lambda \\prec)) = \\hat{F}(G(\\prec)) = \\hat{F}(\\mathcal{F})\n2594: $$\n2595: \n2596: where we used $\\Lambda \\prec = \\prec$ (causal order is Lorentz-invariant).\n2597: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-field-operators-order-invariant",
+      "title": "QFT Field Operators Depend Only on Causal Structure",
+      "start_line": 2603,
+      "end_line": 2607,
+      "header_lines": [
+        2604
+      ],
+      "content_start": 2606,
+      "content_end": 2606,
+      "content": "2606: :label: thm-field-operators-order-invariant",
+      "metadata": {
+        "label": "thm-field-operators-order-invariant"
+      },
+      "section": "## 15. Lorentz Invariance from Order-Invariant Causal Structure",
+      "raw_directive": "2603: Now we verify that the field operators $\\psi(x,v), \\psi^\\dagger(x,v)$ from \u00a712 are constructed from order-invariant data.\n2604: \n2605: :::{prf:theorem} QFT Field Operators Depend Only on Causal Structure\n2606: :label: thm-field-operators-order-invariant\n2607: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-113",
+      "title": null,
+      "start_line": 2609,
+      "end_line": 2656,
+      "header_lines": [],
+      "content_start": 2610,
+      "content_end": 2655,
+      "content": "2610: \n2611: :::{prf:proof}\n2612: **Step 1: Episode creation/annihilation operators.**\n2613: \n2614: From \u00a712 (corrected Fock space), the field operators are:\n2615: \n2616: $$\n2617: \\psi^\\dagger(x,v) = \\lim_{N \\to \\infty} \\frac{1}{\\sqrt{N}} \\sum_{e \\in \\mathcal{E}} \\delta(x - x_e) \\delta(v - v_e) \\, a^\\dagger_e\n2618: $$\n2619: \n2620: where $a^\\dagger_e$ creates an episode $e = (t_e, x_e, v_e, r_e, s_e)$.\n2621: \n2622: **Step 2: Episodes are labeled by causal position.**\n2623: \n2624: An episode $e$ is uniquely identified by:\n2625: - Its position $(t_e, x_e)$ in spacetime\n2626: - Its velocity $v_e$\n2627: - Its causal relationships $\\{e' : e' \\prec e\\}$ and $\\{e' : e \\prec e'\\}$\n2628: \n2629: These are **order-invariant data** (depend only on $\\prec_{\\text{CST}}$, not on choice of coordinates).\n2630: \n2631: **Step 3: Field operators are local in spacetime.**\n2632: \n2633: The field operator $\\psi^\\dagger(x,v)$ creates a particle at spacetime point $(t,x)$ with velocity $v$. This is a **local** operation:\n2634: \n2635: $$\n2636: \\psi^\\dagger(x,v) = \\sum_{\\substack{e \\in \\mathcal{E} \\\\ (t_e, x_e) = (t,x) \\\\ v_e = v}} a^\\dagger_e\n2637: $$\n2638: \n2639: The support of $\\psi^\\dagger(x,v)$ is the set of episodes at spacetime point $(t,x)$.\n2640: \n2641: **Step 4: Spacetime points are intrinsic (embedding-independent).**\n2642: \n2643: In the continuum limit, the Fractal Set $(E, \\prec_{\\text{CST}})$ **determines** the Lorentzian manifold $(M, g_{\\mu\\nu})$ up to conformal factor (Theorem 5.1 in {doc}`13_fractal_set_new/11_causal_sets.md`, d'Alembertian reconstruction).\n2644: \n2645: The spacetime point $(t,x)$ is an **intrinsic property** of the causal set\u2014it's the limit of the episode's position in the discrete approximation.\n2646: \n2647: **Step 5: Field operators are order-invariant.**\n2648: \n2649: Since $(t,x)$ and $v$ are intrinsic to the causal structure:\n2650: \n2651: $$\n2652: \\psi^\\dagger(x,v) = \\psi^\\dagger_{\\text{intrinsic}}(\\text{causal data})\n2653: $$\n2654: \n2655: Any diffeomorphism (including Lorentz transformation) that preserves $\\prec$ will preserve $\\psi^\\dagger$.",
+      "metadata": {},
+      "section": "## 15. Lorentz Invariance from Order-Invariant Causal Structure",
+      "raw_directive": "2609: :::\n2610: \n2611: :::{prf:proof}\n2612: **Step 1: Episode creation/annihilation operators.**\n2613: \n2614: From \u00a712 (corrected Fock space), the field operators are:\n2615: \n2616: $$\n2617: \\psi^\\dagger(x,v) = \\lim_{N \\to \\infty} \\frac{1}{\\sqrt{N}} \\sum_{e \\in \\mathcal{E}} \\delta(x - x_e) \\delta(v - v_e) \\, a^\\dagger_e\n2618: $$\n2619: \n2620: where $a^\\dagger_e$ creates an episode $e = (t_e, x_e, v_e, r_e, s_e)$.\n2621: \n2622: **Step 2: Episodes are labeled by causal position.**\n2623: \n2624: An episode $e$ is uniquely identified by:\n2625: - Its position $(t_e, x_e)$ in spacetime\n2626: - Its velocity $v_e$\n2627: - Its causal relationships $\\{e' : e' \\prec e\\}$ and $\\{e' : e \\prec e'\\}$\n2628: \n2629: These are **order-invariant data** (depend only on $\\prec_{\\text{CST}}$, not on choice of coordinates).\n2630: \n2631: **Step 3: Field operators are local in spacetime.**\n2632: \n2633: The field operator $\\psi^\\dagger(x,v)$ creates a particle at spacetime point $(t,x)$ with velocity $v$. This is a **local** operation:\n2634: \n2635: $$\n2636: \\psi^\\dagger(x,v) = \\sum_{\\substack{e \\in \\mathcal{E} \\\\ (t_e, x_e) = (t,x) \\\\ v_e = v}} a^\\dagger_e\n2637: $$\n2638: \n2639: The support of $\\psi^\\dagger(x,v)$ is the set of episodes at spacetime point $(t,x)$.\n2640: \n2641: **Step 4: Spacetime points are intrinsic (embedding-independent).**\n2642: \n2643: In the continuum limit, the Fractal Set $(E, \\prec_{\\text{CST}})$ **determines** the Lorentzian manifold $(M, g_{\\mu\\nu})$ up to conformal factor (Theorem 5.1 in {doc}`13_fractal_set_new/11_causal_sets.md`, d'Alembertian reconstruction).\n2644: \n2645: The spacetime point $(t,x)$ is an **intrinsic property** of the causal set\u2014it's the limit of the episode's position in the discrete approximation.\n2646: \n2647: **Step 5: Field operators are order-invariant.**\n2648: \n2649: Since $(t,x)$ and $v$ are intrinsic to the causal structure:\n2650: \n2651: $$\n2652: \\psi^\\dagger(x,v) = \\psi^\\dagger_{\\text{intrinsic}}(\\text{causal data})\n2653: $$\n2654: \n2655: Any diffeomorphism (including Lorentz transformation) that preserves $\\prec$ will preserve $\\psi^\\dagger$.\n2656: "
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-observables-lorentz-invariant",
+      "title": "All Physical Observables are Lorentz-Invariant",
+      "start_line": 2664,
+      "end_line": 2668,
+      "header_lines": [
+        2665
+      ],
+      "content_start": 2667,
+      "content_end": 2667,
+      "content": "2667: :label: cor-observables-lorentz-invariant",
+      "metadata": {
+        "label": "cor-observables-lorentz-invariant"
+      },
+      "section": "## 15. Lorentz Invariance from Order-Invariant Causal Structure",
+      "raw_directive": "2664: ### 15.3. QFT Observables are Order-Invariant\n2665: \n2666: :::{prf:corollary} All Physical Observables are Lorentz-Invariant\n2667: :label: cor-observables-lorentz-invariant\n2668: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-174",
+      "title": null,
+      "start_line": 2670,
+      "end_line": 2730,
+      "header_lines": [],
+      "content_start": 2671,
+      "content_end": 2729,
+      "content": "2671: \n2672: :::{prf:proof}\n2673: **Step 1: Observables are built from field operators.**\n2674: \n2675: A physical observable $\\hat{O}$ is a polynomial in $\\psi, \\psi^\\dagger$ and their derivatives:\n2676: \n2677: $$\n2678: \\hat{O} = \\int dx dv \\, O(x, v, \\psi, \\psi^\\dagger, \\partial_\\mu \\psi, \\ldots)\n2679: $$\n2680: \n2681: Examples:\n2682: - **Particle number**: $\\hat{N} = \\int dx dv \\, \\psi^\\dagger(x,v) \\psi(x,v)$\n2683: - **Energy-momentum**: $\\hat{p}^\\mu = \\int dx dv \\, \\psi^\\dagger(x,v) (-i\\partial^\\mu) \\psi(x,v)$\n2684: - **Field strength**: $\\hat{F}_{\\mu\\nu} = \\partial_\\mu A_\\nu - \\partial_\\nu A_\\mu$ (from Noether current)\n2685: \n2686: **Step 2: Derivatives are order-invariant.**\n2687: \n2688: The derivative $\\partial_\\mu \\psi$ is defined via the **discrete difference** on the Fractal Set:\n2689: \n2690: $$\n2691: \\partial_\\mu \\psi(e) = \\lim_{\\delta \\to 0} \\frac{\\psi(e') - \\psi(e)}{\\delta}\n2692: $$\n2693: \n2694: where $e' \\succ e$ is the \"nearest neighbor in the $\\mu$ direction.\"\n2695: \n2696: This limit is **coordinate-independent** because:\n2697: 1. The causal order $e \\prec e'$ is intrinsic\n2698: 2. The Lorentzian distance $\\delta = |s^2|$ where $s^2 = g_{\\mu\\nu}(x' - x)^\\mu (x' - x)^\\nu$ is intrinsic (determined by causal set, Theorem 5.1 in 11_causal_sets.md)\n2699: \n2700: **Step 3: Integration measure is Lorentz-invariant.**\n2701: \n2702: The integration measure $dx dv$ in the continuum comes from the **Lorentzian volume measure**:\n2703: \n2704: $$\n2705: dV = \\sqrt{-\\det g} \\, d^4 x\n2706: $$\n2707: \n2708: From {doc}`13_fractal_set_new/11_causal_sets.md`, Theorem 2.1 (QSD Sampling = Adaptive Sprinkling):\n2709: \n2710: $$\n2711: \\rho_{\\text{episode}}(x) = \\sqrt{\\det g(x)} \\, \\psi(x)\n2712: $$\n2713: \n2714: The factor $\\sqrt{\\det g}$ is the Riemannian volume element, which becomes $\\sqrt{-\\det g_{\\mu\\nu}}$ in the Lorentzian case.\n2715: \n2716: This is **manifestly Lorentz-invariant** because it's the natural volume measure on $(M, g_{\\mu\\nu})$.\n2717: \n2718: **Step 4: Observables are order-invariant functionals.**\n2719: \n2720: Combining Steps 1-3:\n2721: - Field operators are order-invariant (Theorem {prf:ref}`thm-field-operators-order-invariant`)\n2722: - Derivatives are order-invariant\n2723: - Integration measure is order-invariant\n2724: \n2725: Therefore, any observable $\\hat{O}$ is an order-invariant functional.\n2726: \n2727: **Step 5: Lorentz invariance follows.**\n2728: \n2729: By Theorem {prf:ref}`thm-order-invariance-lorentz-qft`, order-invariant functionals are Lorentz-invariant in the continuum limit.",
+      "metadata": {},
+      "section": "## 15. Lorentz Invariance from Order-Invariant Causal Structure",
+      "raw_directive": "2670: :::\n2671: \n2672: :::{prf:proof}\n2673: **Step 1: Observables are built from field operators.**\n2674: \n2675: A physical observable $\\hat{O}$ is a polynomial in $\\psi, \\psi^\\dagger$ and their derivatives:\n2676: \n2677: $$\n2678: \\hat{O} = \\int dx dv \\, O(x, v, \\psi, \\psi^\\dagger, \\partial_\\mu \\psi, \\ldots)\n2679: $$\n2680: \n2681: Examples:\n2682: - **Particle number**: $\\hat{N} = \\int dx dv \\, \\psi^\\dagger(x,v) \\psi(x,v)$\n2683: - **Energy-momentum**: $\\hat{p}^\\mu = \\int dx dv \\, \\psi^\\dagger(x,v) (-i\\partial^\\mu) \\psi(x,v)$\n2684: - **Field strength**: $\\hat{F}_{\\mu\\nu} = \\partial_\\mu A_\\nu - \\partial_\\nu A_\\mu$ (from Noether current)\n2685: \n2686: **Step 2: Derivatives are order-invariant.**\n2687: \n2688: The derivative $\\partial_\\mu \\psi$ is defined via the **discrete difference** on the Fractal Set:\n2689: \n2690: $$\n2691: \\partial_\\mu \\psi(e) = \\lim_{\\delta \\to 0} \\frac{\\psi(e') - \\psi(e)}{\\delta}\n2692: $$\n2693: \n2694: where $e' \\succ e$ is the \"nearest neighbor in the $\\mu$ direction.\"\n2695: \n2696: This limit is **coordinate-independent** because:\n2697: 1. The causal order $e \\prec e'$ is intrinsic\n2698: 2. The Lorentzian distance $\\delta = |s^2|$ where $s^2 = g_{\\mu\\nu}(x' - x)^\\mu (x' - x)^\\nu$ is intrinsic (determined by causal set, Theorem 5.1 in 11_causal_sets.md)\n2699: \n2700: **Step 3: Integration measure is Lorentz-invariant.**\n2701: \n2702: The integration measure $dx dv$ in the continuum comes from the **Lorentzian volume measure**:\n2703: \n2704: $$\n2705: dV = \\sqrt{-\\det g} \\, d^4 x\n2706: $$\n2707: \n2708: From {doc}`13_fractal_set_new/11_causal_sets.md`, Theorem 2.1 (QSD Sampling = Adaptive Sprinkling):\n2709: \n2710: $$\n2711: \\rho_{\\text{episode}}(x) = \\sqrt{\\det g(x)} \\, \\psi(x)\n2712: $$\n2713: \n2714: The factor $\\sqrt{\\det g}$ is the Riemannian volume element, which becomes $\\sqrt{-\\det g_{\\mu\\nu}}$ in the Lorentzian case.\n2715: \n2716: This is **manifestly Lorentz-invariant** because it's the natural volume measure on $(M, g_{\\mu\\nu})$.\n2717: \n2718: **Step 4: Observables are order-invariant functionals.**\n2719: \n2720: Combining Steps 1-3:\n2721: - Field operators are order-invariant (Theorem {prf:ref}`thm-field-operators-order-invariant`)\n2722: - Derivatives are order-invariant\n2723: - Integration measure is order-invariant\n2724: \n2725: Therefore, any observable $\\hat{O}$ is an order-invariant functional.\n2726: \n2727: **Step 5: Lorentz invariance follows.**\n2728: \n2729: By Theorem {prf:ref}`thm-order-invariance-lorentz-qft`, order-invariant functionals are Lorentz-invariant in the continuum limit.\n2730: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-poincare-covariance-satisfied",
+      "title": "Poincar\u00e9 Covariance from Causal Set Structure",
+      "start_line": 2734,
+      "end_line": 2744,
+      "header_lines": [
+        2735
+      ],
+      "content_start": 2737,
+      "content_end": 2743,
+      "content": "2737: :label: thm-poincare-covariance-satisfied\n2738: \n2739: The field operators $\\psi(x,v), \\psi^\\dagger(x,v)$ satisfy **Poincar\u00e9 covariance**:\n2740: \n2741: $$\n2742: U(\\Lambda, a) \\psi(x,v) U(\\Lambda, a)^{-1} = \\psi(\\Lambda x + a, \\Lambda v)\n2743: $$",
+      "metadata": {
+        "label": "thm-poincare-covariance-satisfied"
+      },
+      "section": "## 15. Lorentz Invariance from Order-Invariant Causal Structure",
+      "raw_directive": "2734: ### 15.4. Wightman Axiom W3 (Poincar\u00e9 Covariance) is Satisfied\n2735: \n2736: :::{prf:theorem} Poincar\u00e9 Covariance from Causal Set Structure\n2737: :label: thm-poincare-covariance-satisfied\n2738: \n2739: The field operators $\\psi(x,v), \\psi^\\dagger(x,v)$ satisfy **Poincar\u00e9 covariance**:\n2740: \n2741: $$\n2742: U(\\Lambda, a) \\psi(x,v) U(\\Lambda, a)^{-1} = \\psi(\\Lambda x + a, \\Lambda v)\n2743: $$\n2744: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-250",
+      "title": null,
+      "start_line": 2746,
+      "end_line": 2810,
+      "header_lines": [],
+      "content_start": 2747,
+      "content_end": 2809,
+      "content": "2747: \n2748: :::{prf:proof}\n2749: **Step 1: Poincar\u00e9 group preserves causal structure.**\n2750: \n2751: A Poincar\u00e9 transformation $(\\Lambda, a) \\in ISO(1,3)$ consists of:\n2752: - Lorentz transformation $\\Lambda \\in SO(1,3)$\n2753: - Translation $a \\in \\mathbb{R}^4$\n2754: \n2755: Both preserve the causal order:\n2756: \n2757: $$\n2758: e_i \\prec e_j \\quad \\iff \\quad (\\Lambda e_i + a) \\prec (\\Lambda e_j + a)\n2759: $$\n2760: \n2761: This is the defining property of the **causal automorphism group**.\n2762: \n2763: **Step 2: Field operators transform covariantly.**\n2764: \n2765: From Theorem {prf:ref}`thm-field-operators-order-invariant`, the field operators are order-invariant functionals.\n2766: \n2767: Under a Poincar\u00e9 transformation, the spacetime point $(t,x)$ transforms as:\n2768: \n2769: $$\n2770: (t,x) \\to (\\Lambda^0_\\mu x^\\mu + a^0, \\Lambda^i_\\mu x^\\mu + a^i)\n2771: $$\n2772: \n2773: The field operator at the transformed point is:\n2774: \n2775: $$\n2776: \\psi(\\Lambda x + a, \\Lambda v)\n2777: $$\n2778: \n2779: **Step 3: Unitary representation on Fock space.**\n2780: \n2781: Define the unitary operator $U(\\Lambda, a)$ on Fock space by its action on basis states:\n2782: \n2783: $$\n2784: U(\\Lambda, a) |N; x_1, v_1, \\ldots, x_N, v_N\\rangle = |N; \\Lambda x_1 + a, \\Lambda v_1, \\ldots, \\Lambda x_N + a, \\Lambda v_N\\rangle\n2785: $$\n2786: \n2787: This is well-defined because:\n2788: 1. It preserves the symmetric tensor product structure (permutation-invariant)\n2789: 2. It preserves the norm $\\langle \\psi | \\psi \\rangle$ (Lorentz transformations are isometries)\n2790: \n2791: **Step 4: Covariance relation.**\n2792: \n2793: By construction:\n2794: \n2795: $$\n2796: U(\\Lambda, a) \\psi(x,v) U(\\Lambda, a)^{-1} = \\psi(\\Lambda x + a, \\Lambda v)\n2797: $$\n2798: \n2799: This is the **transformation law** for a quantum field under Poincar\u00e9 transformations.\n2800: \n2801: **Step 5: Representation theory.**\n2802: \n2803: The operators $\\{U(\\Lambda, a)\\}$ form a **unitary representation** of the Poincar\u00e9 group:\n2804: \n2805: $$\n2806: U(\\Lambda_1, a_1) U(\\Lambda_2, a_2) = U(\\Lambda_1 \\Lambda_2, \\Lambda_1 a_2 + a_1)\n2807: $$\n2808: \n2809: This is verified by checking the group composition law on basis states.",
+      "metadata": {},
+      "section": "## 15. Lorentz Invariance from Order-Invariant Causal Structure",
+      "raw_directive": "2746: :::\n2747: \n2748: :::{prf:proof}\n2749: **Step 1: Poincar\u00e9 group preserves causal structure.**\n2750: \n2751: A Poincar\u00e9 transformation $(\\Lambda, a) \\in ISO(1,3)$ consists of:\n2752: - Lorentz transformation $\\Lambda \\in SO(1,3)$\n2753: - Translation $a \\in \\mathbb{R}^4$\n2754: \n2755: Both preserve the causal order:\n2756: \n2757: $$\n2758: e_i \\prec e_j \\quad \\iff \\quad (\\Lambda e_i + a) \\prec (\\Lambda e_j + a)\n2759: $$\n2760: \n2761: This is the defining property of the **causal automorphism group**.\n2762: \n2763: **Step 2: Field operators transform covariantly.**\n2764: \n2765: From Theorem {prf:ref}`thm-field-operators-order-invariant`, the field operators are order-invariant functionals.\n2766: \n2767: Under a Poincar\u00e9 transformation, the spacetime point $(t,x)$ transforms as:\n2768: \n2769: $$\n2770: (t,x) \\to (\\Lambda^0_\\mu x^\\mu + a^0, \\Lambda^i_\\mu x^\\mu + a^i)\n2771: $$\n2772: \n2773: The field operator at the transformed point is:\n2774: \n2775: $$\n2776: \\psi(\\Lambda x + a, \\Lambda v)\n2777: $$\n2778: \n2779: **Step 3: Unitary representation on Fock space.**\n2780: \n2781: Define the unitary operator $U(\\Lambda, a)$ on Fock space by its action on basis states:\n2782: \n2783: $$\n2784: U(\\Lambda, a) |N; x_1, v_1, \\ldots, x_N, v_N\\rangle = |N; \\Lambda x_1 + a, \\Lambda v_1, \\ldots, \\Lambda x_N + a, \\Lambda v_N\\rangle\n2785: $$\n2786: \n2787: This is well-defined because:\n2788: 1. It preserves the symmetric tensor product structure (permutation-invariant)\n2789: 2. It preserves the norm $\\langle \\psi | \\psi \\rangle$ (Lorentz transformations are isometries)\n2790: \n2791: **Step 4: Covariance relation.**\n2792: \n2793: By construction:\n2794: \n2795: $$\n2796: U(\\Lambda, a) \\psi(x,v) U(\\Lambda, a)^{-1} = \\psi(\\Lambda x + a, \\Lambda v)\n2797: $$\n2798: \n2799: This is the **transformation law** for a quantum field under Poincar\u00e9 transformations.\n2800: \n2801: **Step 5: Representation theory.**\n2802: \n2803: The operators $\\{U(\\Lambda, a)\\}$ form a **unitary representation** of the Poincar\u00e9 group:\n2804: \n2805: $$\n2806: U(\\Lambda_1, a_1) U(\\Lambda_2, a_2) = U(\\Lambda_1 \\Lambda_2, \\Lambda_1 a_2 + a_1)\n2807: $$\n2808: \n2809: This is verified by checking the group composition law on basis states.\n2810: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-galilean-discretization-sufficient",
+      "title": "Why Galilean Discretization is Sufficient",
+      "start_line": 2830,
+      "end_line": 2848,
+      "header_lines": [
+        2831
+      ],
+      "content_start": 2833,
+      "content_end": 2847,
+      "content": "2833: :label: rem-galilean-discretization-sufficient\n2834: \n2835: The Langevin dynamics samples episodes from the QSD:\n2836: \n2837: $$\n2838: \\rho_{\\text{QSD}}(x,v) = \\frac{1}{Z} \\sqrt{\\det g(x)} \\exp\\left(-\\frac{U_{\\text{eff}}(x) + \\frac{1}{2}m v^2}{T}\\right)\n2839: $$\n2840: \n2841: The velocity $v$ is **non-relativistic** ($v \\ll c$) because:\n2842: 1. The Langevin friction $\\gamma$ thermalizes velocities to $\\langle v^2 \\rangle \\sim T/m$\n2843: 2. For $T \\ll mc^2$, this gives $v \\ll c$ (non-relativistic regime)\n2844: \n2845: **However**, the **causal structure** is still relativistic because:\n2846: - Episodes are ordered by $e_i \\prec e_j \\iff t_i < t_j \\text{ and } d(x_i, x_j) < c(t_j - t_i)$\n2847: - This is a **Lorentzian** light-cone constraint, even though individual walker velocities are non-relativistic",
+      "metadata": {
+        "label": "rem-galilean-discretization-sufficient"
+      },
+      "section": "## 15. Lorentz Invariance from Order-Invariant Causal Structure",
+      "raw_directive": "2830: :::\n2831: \n2832: :::{prf:remark} Why Galilean Discretization is Sufficient\n2833: :label: rem-galilean-discretization-sufficient\n2834: \n2835: The Langevin dynamics samples episodes from the QSD:\n2836: \n2837: $$\n2838: \\rho_{\\text{QSD}}(x,v) = \\frac{1}{Z} \\sqrt{\\det g(x)} \\exp\\left(-\\frac{U_{\\text{eff}}(x) + \\frac{1}{2}m v^2}{T}\\right)\n2839: $$\n2840: \n2841: The velocity $v$ is **non-relativistic** ($v \\ll c$) because:\n2842: 1. The Langevin friction $\\gamma$ thermalizes velocities to $\\langle v^2 \\rangle \\sim T/m$\n2843: 2. For $T \\ll mc^2$, this gives $v \\ll c$ (non-relativistic regime)\n2844: \n2845: **However**, the **causal structure** is still relativistic because:\n2846: - Episodes are ordered by $e_i \\prec e_j \\iff t_i < t_j \\text{ and } d(x_i, x_j) < c(t_j - t_i)$\n2847: - This is a **Lorentzian** light-cone constraint, even though individual walker velocities are non-relativistic\n2848: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-relativistic-langevin-status",
+      "title": "Status of Relativistic Langevin Conjecture",
+      "start_line": 2871,
+      "end_line": 2893,
+      "header_lines": [
+        2872
+      ],
+      "content_start": 2874,
+      "content_end": 2892,
+      "content": "2874: :label: rem-relativistic-langevin-status\n2875: \n2876: Conjecture {prf:ref}`conj-relativistic-gas` (\u00a74) stated:\n2877: \n2878: > \"The Euclidean Gas can be extended to a relativistic version using relativistic Langevin dynamics.\"\n2879: \n2880: **Current status**: This conjecture is **not needed** for the Millennium Prize.\n2881: \n2882: **Why?**\n2883: - The goal was to achieve Lorentz invariance\n2884: - We now know Lorentz invariance emerges from the causal set structure (\u00a715)\n2885: - The Galilean Langevin dynamics is sufficient\n2886: \n2887: **Does this mean the conjecture is false?** No! It's still true that you **can** construct a relativistic Langevin extension. But it's **not necessary** for the QFT to be Lorentz-invariant.\n2888: \n2889: **Future work**: The relativistic Langevin extension would be interesting for:\n2890: - Ultra-relativistic applications ($T \\sim mc^2$)\n2891: - Cosmological settings (high-energy early universe)\n2892: - Direct numerical simulation of relativistic particles",
+      "metadata": {
+        "label": "rem-relativistic-langevin-status"
+      },
+      "section": "## 15. Lorentz Invariance from Order-Invariant Causal Structure",
+      "raw_directive": "2871: ### 15.7. Relation to Conjecture {prf:ref}`conj-relativistic-gas`\n2872: \n2873: :::{prf:remark} Status of Relativistic Langevin Conjecture\n2874: :label: rem-relativistic-langevin-status\n2875: \n2876: Conjecture {prf:ref}`conj-relativistic-gas` (\u00a74) stated:\n2877: \n2878: > \"The Euclidean Gas can be extended to a relativistic version using relativistic Langevin dynamics.\"\n2879: \n2880: **Current status**: This conjecture is **not needed** for the Millennium Prize.\n2881: \n2882: **Why?**\n2883: - The goal was to achieve Lorentz invariance\n2884: - We now know Lorentz invariance emerges from the causal set structure (\u00a715)\n2885: - The Galilean Langevin dynamics is sufficient\n2886: \n2887: **Does this mean the conjecture is false?** No! It's still true that you **can** construct a relativistic Langevin extension. But it's **not necessary** for the QFT to be Lorentz-invariant.\n2888: \n2889: **Future work**: The relativistic Langevin extension would be interesting for:\n2890: - Ultra-relativistic applications ($T \\sim mc^2$)\n2891: - Cosmological settings (high-energy early universe)\n2892: - Direct numerical simulation of relativistic particles\n2893: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "chapter_index": 5,
+  "section_id": "## 5. Derivation of Newton's Gravitational Constant",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "proposition",
+      "label": "prop-gravitational-constant",
+      "title": "Newton's Constant from Algorithmic Parameters",
+      "start_line": 1808,
+      "end_line": 1828,
+      "header_lines": [
+        1809
+      ],
+      "content_start": 1811,
+      "content_end": 1827,
+      "content": "1811: :label: prop-gravitational-constant\n1812: \n1813: Newton's gravitational constant in the Fractal Set framework is:\n1814: \n1815: $$\n1816: G = \\frac{\\ell_{\\text{typ}}^d}{8\\pi N T}\n1817: \n1818: $$\n1819: \n1820: where:\n1821: - $\\ell_{\\text{typ}}$: Typical length scale of fitness landscape (e.g., $\\text{diam}(\\mathcal{X})$)\n1822: - $N$: Total number of walkers\n1823: - $T = \\sigma^2/(2\\gamma)$: Temperature (equipartition from Langevin)\n1824: - $d$: Spatial dimension\n1825: \n1826: **Interpretation**: Gravitational coupling is **weaker** when:\n1827: - More walkers ($N$ large): Distributed mass-energy",
+      "metadata": {
+        "label": "prop-gravitational-constant"
+      },
+      "section": "## 5. Derivation of Newton's Gravitational Constant",
+      "raw_directive": "1808: ### 5.3. Explicit Formula\n1809: \n1810: :::{prf:proposition} Newton's Constant from Algorithmic Parameters\n1811: :label: prop-gravitational-constant\n1812: \n1813: Newton's gravitational constant in the Fractal Set framework is:\n1814: \n1815: $$\n1816: G = \\frac{\\ell_{\\text{typ}}^d}{8\\pi N T}\n1817: \n1818: $$\n1819: \n1820: where:\n1821: - $\\ell_{\\text{typ}}$: Typical length scale of fitness landscape (e.g., $\\text{diam}(\\mathcal{X})$)\n1822: - $N$: Total number of walkers\n1823: - $T = \\sigma^2/(2\\gamma)$: Temperature (equipartition from Langevin)\n1824: - $d$: Spatial dimension\n1825: \n1826: **Interpretation**: Gravitational coupling is **weaker** when:\n1827: - More walkers ($N$ large): Distributed mass-energy\n1828: - Higher temperature ($T$ large): Thermal fluctuations resist focusing"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

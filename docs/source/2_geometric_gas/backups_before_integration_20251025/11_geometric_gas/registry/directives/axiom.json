@@ -1,0 +1,109 @@
+{
+  "document_id": "11_geometric_gas",
+  "stage": "directives",
+  "directive_type": "axiom",
+  "generated_at": "2025-11-08T17:07:43.269206+00:00",
+  "count": 4,
+  "items": [
+    {
+      "directive_type": "axiom",
+      "label": "ax:confining-potential-hybrid",
+      "title": "Axiom of a Globally Confining Potential",
+      "start_line": 532,
+      "end_line": 537,
+      "header_lines": [
+        533
+      ],
+      "content_start": 535,
+      "content_end": 536,
+      "content": "535: :label: ax:confining-potential-hybrid\n536: ",
+      "metadata": {
+        "label": "ax:confining-potential-hybrid"
+      },
+      "section": "## 3. The Complete Axiomatic Framework",
+      "raw_directive": "532: These are the foundational axioms, inherited from the original framework, that guarantee the existence of the underlying stable system which we are perturbing.\n533: \n534: :::{prf:axiom} Axiom of a Globally Confining Potential\n535: :label: ax:confining-potential-hybrid\n536: \n537: The potential `U(x)` used to define the stability force `F_stable = -∇U(x)` must satisfy the **Axiom of a Globally Confining Potential** as stated in `04_convergence.md` (Axiom 1.3.1). It must be smooth, coercive, and compatible with the boundary.",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 3. The Complete Axiomatic Framework"
+      }
+    },
+    {
+      "directive_type": "axiom",
+      "label": "ax:positive-friction-hybrid",
+      "title": "Axiom of Positive Friction",
+      "start_line": 539,
+      "end_line": 544,
+      "header_lines": [
+        540
+      ],
+      "content_start": 542,
+      "content_end": 543,
+      "content": "542: :label: ax:positive-friction-hybrid\n543: ",
+      "metadata": {
+        "label": "ax:positive-friction-hybrid"
+      },
+      "section": "## 3. The Complete Axiomatic Framework",
+      "raw_directive": "539: :::\n540: \n541: :::{prf:axiom} Axiom of Positive Friction\n542: :label: ax:positive-friction-hybrid\n543: \n544: The bulk friction coefficient `γ` must be a strictly positive constant: `γ > 0`.",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 3. The Complete Axiomatic Framework"
+      }
+    },
+    {
+      "directive_type": "axiom",
+      "label": "ax:cloning-env-hybrid",
+      "title": "Foundational Cloning and Environmental Axioms",
+      "start_line": 546,
+      "end_line": 554,
+      "header_lines": [
+        547
+      ],
+      "content_start": 549,
+      "content_end": 553,
+      "content": "549: :label: ax:cloning-env-hybrid\n550: \n551: All foundational axioms related to the cloning operator's pipeline and the environment, as defined in `03_cloning.md` (Chapter 4), must hold. This includes:\n552: *   **Axiom EG-2 (Safe Harbor):** Ensures the cloning operator provides boundary safety.\n553: *   **Axiom EG-4 (Velocity Regularization):** Ensures the velocity domain is bounded.",
+      "metadata": {
+        "label": "ax:cloning-env-hybrid"
+      },
+      "section": "## 3. The Complete Axiomatic Framework",
+      "raw_directive": "546: :::\n547: \n548: :::{prf:axiom} Foundational Cloning and Environmental Axioms\n549: :label: ax:cloning-env-hybrid\n550: \n551: All foundational axioms related to the cloning operator's pipeline and the environment, as defined in `03_cloning.md` (Chapter 4), must hold. This includes:\n552: *   **Axiom EG-2 (Safe Harbor):** Ensures the cloning operator provides boundary safety.\n553: *   **Axiom EG-4 (Velocity Regularization):** Ensures the velocity domain is bounded.\n554: *   **Axiom EG-5 (Active Diversity Signal):** Ensures the Keystone Principle is active.",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 3. The Complete Axiomatic Framework"
+      }
+    },
+    {
+      "directive_type": "axiom",
+      "label": "ax:viscous-kernel",
+      "title": "Axiom of a Well-Behaved Viscous Kernel",
+      "start_line": 589,
+      "end_line": 594,
+      "header_lines": [
+        590
+      ],
+      "content_start": 592,
+      "content_end": 593,
+      "content": "592: :label: ax:viscous-kernel\n593: ",
+      "metadata": {
+        "label": "ax:viscous-kernel"
+      },
+      "section": "## 3. The Complete Axiomatic Framework",
+      "raw_directive": "589: :::\n590: \n591: :::{prf:axiom} Axiom of a Well-Behaved Viscous Kernel\n592: :label: ax:viscous-kernel\n593: \n594: The kernel `K(r)` used in the viscous force `F_viscous` must be a non-negative, bounded, and decaying function of the distance `r = ||x_i - x_j||`. For example, a Gaussian kernel `K(r) = exp(-r² / 2l²)`.",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 3. The Complete Axiomatic Framework"
+      }
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "chapter_index": 7,
+  "section_id": "## 7. Geometric Interpretation",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "conjecture",
+      "label": "conj-metric-consistency",
+      "title": "Metric Consistency at QSD",
+      "start_line": 339,
+      "end_line": 362,
+      "header_lines": [
+        340
+      ],
+      "content_start": 342,
+      "content_end": 361,
+      "content": "342: :label: conj-metric-consistency\n343: \n344: At the quasi-stationary distribution, the scutoid metric and adaptive diffusion metric are asymptotically equal in the limit $\\varepsilon_F \\to 0$:\n345: \n346: $$\n347: G_{ij}^{\\text{adapt}}[\\mu_{\\text{QSD}}] = g_{ij}^{\\text{scutoid}}[\\mu_{\\text{QSD}}] + O(\\varepsilon_F)\n348: $$\n349: \n350: **Heuristic Argument**: Both metrics encode the geometry of the equilibrium distribution $\\rho_{\\text{QSD}}(x)$. The scutoid metric arises from the Voronoi tessellation, while the adaptive metric arises from the Hessian of the fitness potential. At equilibrium, the density should follow the fitness landscape:\n351: \n352: $$\n353: \\rho_{\\text{QSD}} \\propto \\exp(-V_{\\text{eff}}/k_B T)\n354: $$\n355: \n356: where $V_{\\text{eff}} = U + \\varepsilon_F V_{\\text{fit}}$. The Hessians of $\\log \\rho_{\\text{QSD}}$ computed from:\n357: - Voronoi geometry (scutoid metric)\n358: - Fitness landscape (adaptive metric)\n359: \n360: should match to leading order.\n361: ",
+      "metadata": {
+        "label": "conj-metric-consistency"
+      },
+      "section": "## 7. Geometric Interpretation",
+      "raw_directive": "339: **Question**: Are these metrics compatible? Do they describe the same emergent geometry?\n340: \n341: :::{prf:conjecture} Metric Consistency at QSD\n342: :label: conj-metric-consistency\n343: \n344: At the quasi-stationary distribution, the scutoid metric and adaptive diffusion metric are asymptotically equal in the limit $\\varepsilon_F \\to 0$:\n345: \n346: $$\n347: G_{ij}^{\\text{adapt}}[\\mu_{\\text{QSD}}] = g_{ij}^{\\text{scutoid}}[\\mu_{\\text{QSD}}] + O(\\varepsilon_F)\n348: $$\n349: \n350: **Heuristic Argument**: Both metrics encode the geometry of the equilibrium distribution $\\rho_{\\text{QSD}}(x)$. The scutoid metric arises from the Voronoi tessellation, while the adaptive metric arises from the Hessian of the fitness potential. At equilibrium, the density should follow the fitness landscape:\n351: \n352: $$\n353: \\rho_{\\text{QSD}} \\propto \\exp(-V_{\\text{eff}}/k_B T)\n354: $$\n355: \n356: where $V_{\\text{eff}} = U + \\varepsilon_F V_{\\text{fit}}$. The Hessians of $\\log \\rho_{\\text{QSD}}$ computed from:\n357: - Voronoi geometry (scutoid metric)\n358: - Fitness landscape (adaptive metric)\n359: \n360: should match to leading order.\n361: \n362: **Status**: This is a **conjecture** requiring rigorous proof. If true, it implies that the adaptive forces do not introduce a **new** emergent geometry, but rather refine the existing scutoid geometry with $O(\\varepsilon_F)$ corrections."
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

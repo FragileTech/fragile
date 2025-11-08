@@ -1,0 +1,47 @@
+{
+  "chapter_index": 7,
+  "section_id": "## 5. The Stable Backbone System",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-backbone-sde",
+      "title": "The Backbone SDE",
+      "start_line": 1003,
+      "end_line": 1027,
+      "header_lines": [
+        1004
+      ],
+      "content_start": 1006,
+      "content_end": 1026,
+      "content": "1006: :label: def-backbone-sde\n1007: \n1008: The **backbone system** is obtained from the full Hybrid SDE ([](#def-hybrid-sde)) by setting all adaptive parameters to zero:\n1009: \n1010: $$\n1011: \\epsilon_F = 0, \\quad \\nu = 0, \\quad \\Sigma_{\\text{reg}}(x, S) = \\sigma I\n1012: $$\n1013: \n1014: This yields the simplified SDE:\n1015: \n1016: $$\n1017: \\begin{aligned}\n1018: dx_i &= v_i \\, dt \\\\\n1019: dv_i &= \\left[ -\\nabla U(x_i) - \\gamma v_i \\right] dt + \\sigma \\, dW_i\n1020: \\end{aligned}\n1021: $$\n1022: \n1023: The backbone is a **static underdamped Langevin equation** with:\n1024: - Globally confining potential $U(x)$\n1025: - Constant friction coefficient $\\gamma > 0$\n1026: - Constant isotropic diffusion $\\sigma > 0$",
+      "metadata": {
+        "label": "def-backbone-sde"
+      },
+      "section": "## 5. The Stable Backbone System",
+      "raw_directive": "1003: ### 5.1. Definition of the Backbone System\n1004: \n1005: :::{prf:definition} The Backbone SDE\n1006: :label: def-backbone-sde\n1007: \n1008: The **backbone system** is obtained from the full Hybrid SDE ([](#def-hybrid-sde)) by setting all adaptive parameters to zero:\n1009: \n1010: $$\n1011: \\epsilon_F = 0, \\quad \\nu = 0, \\quad \\Sigma_{\\text{reg}}(x, S) = \\sigma I\n1012: $$\n1013: \n1014: This yields the simplified SDE:\n1015: \n1016: $$\n1017: \\begin{aligned}\n1018: dx_i &= v_i \\, dt \\\\\n1019: dv_i &= \\left[ -\\nabla U(x_i) - \\gamma v_i \\right] dt + \\sigma \\, dW_i\n1020: \\end{aligned}\n1021: $$\n1022: \n1023: The backbone is a **static underdamped Langevin equation** with:\n1024: - Globally confining potential $U(x)$\n1025: - Constant friction coefficient $\\gamma > 0$\n1026: - Constant isotropic diffusion $\\sigma > 0$\n1027: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-backbone-convergence",
+      "title": "Geometric Ergodicity of the Backbone",
+      "start_line": 1033,
+      "end_line": 1049,
+      "header_lines": [
+        1034
+      ],
+      "content_start": 1036,
+      "content_end": 1048,
+      "content": "1036: :label: thm-backbone-convergence\n1037: \n1038: The backbone system, composed with the cloning operator $\\Psi_{\\text{clone}}$, satisfies a discrete-time Foster-Lyapunov drift condition. There exist constants $\\kappa_{\\text{backbone}} > 0$ and $C_{\\text{backbone}} < \\infty$ such that:\n1039: \n1040: $$\n1041: \\mathbb{E}[V_{\\text{total}}(S_{k+1}) \\mid S_k] \\le (1 - \\kappa_{\\text{backbone}}) V_{\\text{total}}(S_k) + C_{\\text{backbone}}\n1042: $$\n1043: \n1044: for all $k \\ge 0$, where $V_{\\text{total}}$ is the composite Lyapunov function:\n1045: \n1046: $$\n1047: V_{\\text{total}}(S) = \\alpha_x V_{\\text{Var},x}(S) + \\alpha_v V_{\\text{Var},v}(S) + \\alpha_D V_{\\text{Mean},D}(S) + \\alpha_R V_{\\text{Mean},R}(S)\n1048: $$",
+      "metadata": {
+        "label": "thm-backbone-convergence"
+      },
+      "section": "## 5. The Stable Backbone System",
+      "raw_directive": "1033: The convergence of the backbone system has been rigorously established in the companion documents. We summarize the key result here.\n1034: \n1035: :::{prf:theorem} Geometric Ergodicity of the Backbone\n1036: :label: thm-backbone-convergence\n1037: \n1038: The backbone system, composed with the cloning operator $\\Psi_{\\text{clone}}$, satisfies a discrete-time Foster-Lyapunov drift condition. There exist constants $\\kappa_{\\text{backbone}} > 0$ and $C_{\\text{backbone}} < \\infty$ such that:\n1039: \n1040: $$\n1041: \\mathbb{E}[V_{\\text{total}}(S_{k+1}) \\mid S_k] \\le (1 - \\kappa_{\\text{backbone}}) V_{\\text{total}}(S_k) + C_{\\text{backbone}}\n1042: $$\n1043: \n1044: for all $k \\ge 0$, where $V_{\\text{total}}$ is the composite Lyapunov function:\n1045: \n1046: $$\n1047: V_{\\text{total}}(S) = \\alpha_x V_{\\text{Var},x}(S) + \\alpha_v V_{\\text{Var},v}(S) + \\alpha_D V_{\\text{Mean},D}(S) + \\alpha_R V_{\\text{Mean},R}(S)\n1048: $$\n1049: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

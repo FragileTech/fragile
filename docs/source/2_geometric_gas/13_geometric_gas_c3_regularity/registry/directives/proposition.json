@@ -1,0 +1,109 @@
+{
+  "document_id": "13_geometric_gas_c3_regularity",
+  "stage": "directives",
+  "directive_type": "proposition",
+  "generated_at": "2025-11-08T17:07:43.247909+00:00",
+  "count": 4,
+  "items": [
+    {
+      "directive_type": "proposition",
+      "label": "prop-scaling-kv3",
+      "title": "ρ-Scaling of Third Derivative Bound",
+      "start_line": 1804,
+      "end_line": 1813,
+      "header_lines": [
+        1805
+      ],
+      "content_start": 1807,
+      "content_end": 1812,
+      "content": "1807: :label: prop-scaling-kv3\n1808: \n1809: The third derivative bound satisfies:\n1810: $$\n1811: K_{V,3}(\\rho) = O(\\rho^{6d-3}) \\quad \\text{as } \\rho \\to 0\n1812: $$",
+      "metadata": {
+        "label": "prop-scaling-kv3"
+      },
+      "section": "## 8. Main $C^3$ Regularity Theorem",
+      "raw_directive": "1804: :::\n1805: \n1806: :::{prf:proposition} ρ-Scaling of Third Derivative Bound\n1807: :label: prop-scaling-kv3\n1808: \n1809: The third derivative bound satisfies:\n1810: $$\n1811: K_{V,3}(\\rho) = O(\\rho^{6d-3}) \\quad \\text{as } \\rho \\to 0\n1812: $$\n1813: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "13_geometric_gas_c3_regularity",
+        "chapter_index": 9,
+        "chapter_file": "chapter_9.json",
+        "section_id": "## 8. Main $C^3$ Regularity Theorem"
+      }
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-scaling-k-v-3",
+      "title": "Scaling of Third-Derivative Bound",
+      "start_line": 2010,
+      "end_line": 2032,
+      "header_lines": [
+        2011
+      ],
+      "content_start": 2013,
+      "content_end": 2031,
+      "content": "2013: :label: prop-scaling-k-v-3\n2014: \n2015: For the Gaussian localization kernel $K_\\rho(x, x') = Z_\\rho(x)^{-1} \\exp(-\\|x-x'\\|^2/(2\\rho^2))$ with $C_{\\nabla^m K}(\\rho) = O(1)$, the third-derivative bound scales as:\n2016: \n2017: **Local regime ($\\rho \\to 0$):**\n2018: $$\n2019: K_{V,3}(\\rho) = O(\\rho^{6d-3})\n2020: $$\n2021: \n2022: where the $\\rho^{6d-3}$ scaling incorporates the $k_{\\text{eff}}^{(\\rho)} = O(\\rho^{2d})$ factor appearing at each of three derivative orders.\n2023: \n2024: **Global regime ($\\rho \\to \\infty$):**\n2025: $$\n2026: K_{V,3}(\\rho) = O(\\rho^{6d})\n2027: $$\n2028: \n2029: **Intermediate regime ($0 < \\rho < \\infty$):**\n2030: $$\n2031: K_{V,3}(\\rho) = O(\\rho^{6d-3}) \\quad \\text{(dominant term for small } \\rho\\text{)}",
+      "metadata": {
+        "label": "prop-scaling-k-v-3"
+      },
+      "section": "## 10. ρ-Scaling Analysis and Numerical Considerations",
+      "raw_directive": "2010: ### 10.1. Asymptotic Scaling of $K_{V,3}(\\rho)$\n2011: \n2012: :::{prf:proposition} Scaling of Third-Derivative Bound\n2013: :label: prop-scaling-k-v-3\n2014: \n2015: For the Gaussian localization kernel $K_\\rho(x, x') = Z_\\rho(x)^{-1} \\exp(-\\|x-x'\\|^2/(2\\rho^2))$ with $C_{\\nabla^m K}(\\rho) = O(1)$, the third-derivative bound scales as:\n2016: \n2017: **Local regime ($\\rho \\to 0$):**\n2018: $$\n2019: K_{V,3}(\\rho) = O(\\rho^{6d-3})\n2020: $$\n2021: \n2022: where the $\\rho^{6d-3}$ scaling incorporates the $k_{\\text{eff}}^{(\\rho)} = O(\\rho^{2d})$ factor appearing at each of three derivative orders.\n2023: \n2024: **Global regime ($\\rho \\to \\infty$):**\n2025: $$\n2026: K_{V,3}(\\rho) = O(\\rho^{6d})\n2027: $$\n2028: \n2029: **Intermediate regime ($0 < \\rho < \\infty$):**\n2030: $$\n2031: K_{V,3}(\\rho) = O(\\rho^{6d-3}) \\quad \\text{(dominant term for small } \\rho\\text{)}\n2032: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "13_geometric_gas_c3_regularity",
+        "chapter_index": 11,
+        "chapter_file": "chapter_11.json",
+        "section_id": "## 10. ρ-Scaling Analysis and Numerical Considerations"
+      }
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-timestep-constraint",
+      "title": "Time Step Constraint from $C^3$ Regularity",
+      "start_line": 2115,
+      "end_line": 2129,
+      "header_lines": [
+        2116
+      ],
+      "content_start": 2118,
+      "content_end": 2128,
+      "content": "2118: :label: prop-timestep-constraint\n2119: \n2120: For the BAOAB integrator to maintain $O(\\Delta t^2)$ weak error, the time step must satisfy:\n2121: $$\n2122: \\Delta t \\lesssim \\frac{1}{\\sqrt{K_{V,3}(\\rho)}}\n2123: $$\n2124: \n2125: For small localization scales $\\rho \\to 0$, this gives:\n2126: $$\n2127: \\Delta t \\lesssim \\rho^{3/2}\n2128: $$",
+      "metadata": {
+        "label": "prop-timestep-constraint"
+      },
+      "section": "## 10. ρ-Scaling Analysis and Numerical Considerations",
+      "raw_directive": "2115: ### 10.2. Numerical Stability and Time Step Constraints\n2116: \n2117: :::{prf:proposition} Time Step Constraint from $C^3$ Regularity\n2118: :label: prop-timestep-constraint\n2119: \n2120: For the BAOAB integrator to maintain $O(\\Delta t^2)$ weak error, the time step must satisfy:\n2121: $$\n2122: \\Delta t \\lesssim \\frac{1}{\\sqrt{K_{V,3}(\\rho)}}\n2123: $$\n2124: \n2125: For small localization scales $\\rho \\to 0$, this gives:\n2126: $$\n2127: \\Delta t \\lesssim \\rho^{3/2}\n2128: $$\n2129: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "13_geometric_gas_c3_regularity",
+        "chapter_index": 11,
+        "chapter_file": "chapter_11.json",
+        "section_id": "## 10. ρ-Scaling Analysis and Numerical Considerations"
+      }
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-explicit-k-v-3",
+      "title": "Explicit Formula for $K_{V,3}(\\rho)$",
+      "start_line": 2182,
+      "end_line": 2200,
+      "header_lines": [
+        2183
+      ],
+      "content_start": 2185,
+      "content_end": 2199,
+      "content": "2185: :label: prop-explicit-k-v-3\n2186: \n2187: For the Gaussian kernel with constants $(d_{\\max}, d'_{\\max}, d''_{\\max}, d'''_{\\max}, A, L_{g'_A}, L_{g''_A}, L_{g'''_A}, \\sigma\\'_{\\min})$, the third-derivative bound is:\n2188: $$\n2189: \\begin{aligned}\n2190: K_{V,3}(\\rho) = &\\, L_{g'_A} \\cdot \\frac{1}{\\sigma\\'_{\\min}} \\cdot \\left[d'''_{\\max} + \\frac{6 d''_{\\max}}{\\rho} + \\frac{6 d'_{\\max}}{\\rho^2} + \\frac{C_{\\max}}{\\rho^3}\\right] \\\\\n2191: &+ 3 L_{g''_A} \\cdot K_{Z,1}(\\rho) \\cdot K_{Z,2}(\\rho) + L_{g'''_A} \\cdot (K_{Z,1}(\\rho))^3\n2192: \\end{aligned}\n2193: $$\n2194: \n2195: where $C_{\\max}$ is a constant depending on $(d_{\\max}, d'_{\\max}, d''_{\\max}, d'''_{\\max})$ and kernel coefficients.\n2196: \n2197: **Asymptotic behavior:**\n2198: - As $\\rho \\to 0$: $K_{V,3}(\\rho) \\sim \\frac{L_{g'_A} C_{\\max}}{\\sigma\\'_{\\min} \\rho^3}$\n2199: - As $\\rho \\to \\infty$: $K_{V,3}(\\rho) \\sim \\frac{L_{g'_A} d'''_{\\max}}{\\sigma\\'_{\\min}}$",
+      "metadata": {
+        "label": "prop-explicit-k-v-3"
+      },
+      "section": "## 10. ρ-Scaling Analysis and Numerical Considerations",
+      "raw_directive": "2182: ### 10.3. Explicit Dependence of $K_{V,3}(\\rho)$ on Parameters\n2183: \n2184: :::{prf:proposition} Explicit Formula for $K_{V,3}(\\rho)$\n2185: :label: prop-explicit-k-v-3\n2186: \n2187: For the Gaussian kernel with constants $(d_{\\max}, d'_{\\max}, d''_{\\max}, d'''_{\\max}, A, L_{g'_A}, L_{g''_A}, L_{g'''_A}, \\sigma\\'_{\\min})$, the third-derivative bound is:\n2188: $$\n2189: \\begin{aligned}\n2190: K_{V,3}(\\rho) = &\\, L_{g'_A} \\cdot \\frac{1}{\\sigma\\'_{\\min}} \\cdot \\left[d'''_{\\max} + \\frac{6 d''_{\\max}}{\\rho} + \\frac{6 d'_{\\max}}{\\rho^2} + \\frac{C_{\\max}}{\\rho^3}\\right] \\\\\n2191: &+ 3 L_{g''_A} \\cdot K_{Z,1}(\\rho) \\cdot K_{Z,2}(\\rho) + L_{g'''_A} \\cdot (K_{Z,1}(\\rho))^3\n2192: \\end{aligned}\n2193: $$\n2194: \n2195: where $C_{\\max}$ is a constant depending on $(d_{\\max}, d'_{\\max}, d''_{\\max}, d'''_{\\max})$ and kernel coefficients.\n2196: \n2197: **Asymptotic behavior:**\n2198: - As $\\rho \\to 0$: $K_{V,3}(\\rho) \\sim \\frac{L_{g'_A} C_{\\max}}{\\sigma\\'_{\\min} \\rho^3}$\n2199: - As $\\rho \\to \\infty$: $K_{V,3}(\\rho) \\sim \\frac{L_{g'_A} d'''_{\\max}}{\\sigma\\'_{\\min}}$\n2200: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "13_geometric_gas_c3_regularity",
+        "chapter_index": 11,
+        "chapter_file": "chapter_11.json",
+        "section_id": "## 10. ρ-Scaling Analysis and Numerical Considerations"
+      }
+    }
+  ]
+}

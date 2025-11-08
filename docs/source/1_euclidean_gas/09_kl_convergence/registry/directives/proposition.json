@@ -1,0 +1,34 @@
+{
+  "document_id": "09_kl_convergence",
+  "stage": "directives",
+  "directive_type": "proposition",
+  "generated_at": "2025-11-08T17:07:43.216288+00:00",
+  "count": 1,
+  "items": [
+    {
+      "directive_type": "proposition",
+      "label": "prop-hypocoercivity-piecewise",
+      "title": "Hypocoercivity for Piecewise Smooth Confining Potentials",
+      "start_line": 5423,
+      "end_line": 5444,
+      "header_lines": [
+        5424
+      ],
+      "content_start": 5426,
+      "content_end": 5443,
+      "content": "5426: :label: prop-hypocoercivity-piecewise\n5427: \n5428: Let $U: \\mathcal{X}_{\\text{valid}} \\to [0, +\\infty]$ be a confining potential satisfying Axiom {prf:ref}`axiom-confining-complete` with:\n5429: 1. $U$ is piecewise $C^2$ on the interior\n5430: 2. $U = +\\infty$ on the boundary $\\partial \\mathcal{X}$\n5431: 3. Coercivity: $\\langle x, \\nabla U(x) \\rangle \\geq \\alpha_U \\|x\\|^2 - R_U$ where smooth\n5432: \n5433: Then the Langevin dynamics with potential $U$ satisfies hypocoercive exponential convergence:\n5434: \n5435: $$\n5436: D_{\\text{KL}}(\\rho_t \\| \\pi_{\\text{kin}}) \\leq e^{-\\lambda_{\\text{hypo}} t} D_{\\text{KL}}(\\rho_0 \\| \\pi_{\\text{kin}})\n5437: $$\n5438: \n5439: where:\n5440: \n5441: $$\n5442: \\lambda_{\\text{hypo}} = c \\cdot \\min\\left(\\gamma, \\frac{\\alpha_U}{\\sigma_v^2}\\right)\n5443: $$",
+      "metadata": {
+        "label": "prop-hypocoercivity-piecewise"
+      },
+      "section": "## Part 2: Approach 1 - Hypocoercivity for Non-Convex Kinetic Systems",
+      "raw_directive": "5423: **Solution**: Use smooth approximation and stability under perturbation.\n5424: \n5425: :::{prf:proposition} Hypocoercivity for Piecewise Smooth Confining Potentials\n5426: :label: prop-hypocoercivity-piecewise\n5427: \n5428: Let $U: \\mathcal{X}_{\\text{valid}} \\to [0, +\\infty]$ be a confining potential satisfying Axiom {prf:ref}`axiom-confining-complete` with:\n5429: 1. $U$ is piecewise $C^2$ on the interior\n5430: 2. $U = +\\infty$ on the boundary $\\partial \\mathcal{X}$\n5431: 3. Coercivity: $\\langle x, \\nabla U(x) \\rangle \\geq \\alpha_U \\|x\\|^2 - R_U$ where smooth\n5432: \n5433: Then the Langevin dynamics with potential $U$ satisfies hypocoercive exponential convergence:\n5434: \n5435: $$\n5436: D_{\\text{KL}}(\\rho_t \\| \\pi_{\\text{kin}}) \\leq e^{-\\lambda_{\\text{hypo}} t} D_{\\text{KL}}(\\rho_0 \\| \\pi_{\\text{kin}})\n5437: $$\n5438: \n5439: where:\n5440: \n5441: $$\n5442: \\lambda_{\\text{hypo}} = c \\cdot \\min\\left(\\gamma, \\frac{\\alpha_U}{\\sigma_v^2}\\right)\n5443: $$\n5444: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 84,
+        "chapter_file": "chapter_84.json",
+        "section_id": "## Part 2: Approach 1 - Hypocoercivity for Non-Convex Kinetic Systems"
+      }
+    }
+  ]
+}

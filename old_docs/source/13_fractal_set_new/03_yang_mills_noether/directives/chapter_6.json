@@ -1,0 +1,43 @@
+{
+  "chapter_index": 6,
+  "section_id": "## 7. Continuum Limit and Asymptotic Freedom",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-continuum-limit-ym",
+      "title": "Continuum Limit of Discrete Yang-Mills",
+      "start_line": 1160,
+      "end_line": 1178,
+      "header_lines": [
+        1161
+      ],
+      "content_start": 1163,
+      "content_end": 1177,
+      "content": "1163: :label: thm-continuum-limit-ym\n1164: \n1165: As lattice parameters $\\Delta t, \\rho \\to 0$ with fixed physical coupling $g_{\\text{phys}}$:\n1166: \n1167: $$\n1168: S_{\\text{YM}}^{\\text{discrete}} \\to S_{\\text{YM}}^{\\text{continuum}} = \\frac{1}{4g_{\\text{phys}}^2} \\int d^{d+1}x \\sum_{a=1}^3 F_{\\mu\\nu}^{(a)} F^{(a),\\mu\\nu}\n1169: $$\n1170: \n1171: **Lattice renormalization**:\n1172: \n1173: $$\n1174: \\frac{1}{g_{\\text{phys}}^2} = \\frac{1}{g^2} + b_0 \\log(\\Lambda \\tau) + O(g^2)\n1175: $$\n1176: \n1177: where $b_0 = -11/(48\\pi^2)$ for SU(2) (beta function coefficient).",
+      "metadata": {
+        "label": "thm-continuum-limit-ym"
+      },
+      "section": "## 7. Continuum Limit and Asymptotic Freedom",
+      "raw_directive": "1160: ## 7. Continuum Limit and Asymptotic Freedom\n1161: \n1162: :::{prf:theorem} Continuum Limit of Discrete Yang-Mills\n1163: :label: thm-continuum-limit-ym\n1164: \n1165: As lattice parameters $\\Delta t, \\rho \\to 0$ with fixed physical coupling $g_{\\text{phys}}$:\n1166: \n1167: $$\n1168: S_{\\text{YM}}^{\\text{discrete}} \\to S_{\\text{YM}}^{\\text{continuum}} = \\frac{1}{4g_{\\text{phys}}^2} \\int d^{d+1}x \\sum_{a=1}^3 F_{\\mu\\nu}^{(a)} F^{(a),\\mu\\nu}\n1169: $$\n1170: \n1171: **Lattice renormalization**:\n1172: \n1173: $$\n1174: \\frac{1}{g_{\\text{phys}}^2} = \\frac{1}{g^2} + b_0 \\log(\\Lambda \\tau) + O(g^2)\n1175: $$\n1176: \n1177: where $b_0 = -11/(48\\pi^2)$ for SU(2) (beta function coefficient).\n1178: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-21",
+      "title": "Sketch",
+      "start_line": 1180,
+      "end_line": 1209,
+      "header_lines": [],
+      "content_start": 1182,
+      "content_end": 1208,
+      "content": "1182: :::{prf:proof} Sketch\n1183: \n1184: **Step 1**: Expand link variables for small $\\tau$:\n1185: \n1186: $$\n1187: U_{ij} = I + i\\tau A_e T^a - \\frac{\\tau^2}{2} A_e^2 (T^a)^2 + O(\\tau^3)\n1188: $$\n1189: \n1190: **Step 2**: Compute plaquette product:\n1191: \n1192: $$\n1193: U_{\\square} = I + i\\tau^2 F_{\\square}^{(a)} T^a - \\frac{\\tau^4}{2} (F_{\\square}^{(a)})^2 + O(\\tau^6)\n1194: $$\n1195: \n1196: where $F_{\\square}^{(a)} = \\partial_\\mu A_\\nu^{(a)} - \\partial_\\nu A_\\mu^{(a)} + g \\epsilon^{abc} A_\\mu^{(b)} A_\\nu^{(c)}$.\n1197: \n1198: **Step 3**: Plaquette action:\n1199: \n1200: $$\n1201: S_{\\square} = \\frac{\\tau^4}{4} \\sum_a (F_{\\square}^{(a)})^2\n1202: $$\n1203: \n1204: **Step 4**: Sum over plaquettes with density $N_{\\square} \\sim V/\\tau^{d+1}$:\n1205: \n1206: $$\n1207: S_{\\text{YM}} \\to \\frac{1}{4g^2} \\int d^{d+1}x \\sum_a F_{\\mu\\nu}^{(a)} F^{(a),\\mu\\nu}\n1208: $$",
+      "metadata": {},
+      "section": "## 7. Continuum Limit and Asymptotic Freedom",
+      "raw_directive": "1180: :::\n1181: \n1182: :::{prf:proof} Sketch\n1183: \n1184: **Step 1**: Expand link variables for small $\\tau$:\n1185: \n1186: $$\n1187: U_{ij} = I + i\\tau A_e T^a - \\frac{\\tau^2}{2} A_e^2 (T^a)^2 + O(\\tau^3)\n1188: $$\n1189: \n1190: **Step 2**: Compute plaquette product:\n1191: \n1192: $$\n1193: U_{\\square} = I + i\\tau^2 F_{\\square}^{(a)} T^a - \\frac{\\tau^4}{2} (F_{\\square}^{(a)})^2 + O(\\tau^6)\n1194: $$\n1195: \n1196: where $F_{\\square}^{(a)} = \\partial_\\mu A_\\nu^{(a)} - \\partial_\\nu A_\\mu^{(a)} + g \\epsilon^{abc} A_\\mu^{(b)} A_\\nu^{(c)}$.\n1197: \n1198: **Step 3**: Plaquette action:\n1199: \n1200: $$\n1201: S_{\\square} = \\frac{\\tau^4}{4} \\sum_a (F_{\\square}^{(a)})^2\n1202: $$\n1203: \n1204: **Step 4**: Sum over plaquettes with density $N_{\\square} \\sim V/\\tau^{d+1}$:\n1205: \n1206: $$\n1207: S_{\\text{YM}} \\to \\frac{1}{4g^2} \\int d^{d+1}x \\sum_a F_{\\mu\\nu}^{(a)} F^{(a),\\mu\\nu}\n1208: $$\n1209: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

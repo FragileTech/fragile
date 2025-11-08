@@ -1,0 +1,234 @@
+{
+  "document_id": "09_kl_convergence",
+  "stage": "directives",
+  "directive_type": "definition",
+  "generated_at": "2025-11-08T17:07:43.212971+00:00",
+  "count": 9,
+  "items": [
+    {
+      "directive_type": "definition",
+      "label": "def-relative-entropy",
+      "title": "Relative Entropy and Fisher Information",
+      "start_line": 234,
+      "end_line": 257,
+      "header_lines": [
+        235
+      ],
+      "content_start": 237,
+      "content_end": 256,
+      "content": "237: :label: def-relative-entropy\n238: \n239: For probability measures $\\mu, \\pi$ on a measurable space $(\\mathcal{X}, \\mathcal{F})$ with $\\mu \\ll \\pi$, the **relative entropy** (KL-divergence) is:\n240: \n241: $$\n242: D_{\\text{KL}}(\\mu \\| \\pi) := \\int \\frac{d\\mu}{d\\pi} \\log \\frac{d\\mu}{d\\pi} \\, d\\pi = \\int \\log \\frac{d\\mu}{d\\pi} \\, d\\mu\n243: $$\n244: \n245: The **entropy** of a density $f$ with respect to $\\pi$ is:\n246: \n247: $$\n248: \\text{Ent}_\\pi(f) := \\int f \\log f \\, d\\pi - \\left(\\int f \\, d\\pi\\right) \\log \\left(\\int f \\, d\\pi\\right)\n249: $$\n250: \n251: For a probability density $\\rho = d\\mu/d\\pi$, we have $D_{\\text{KL}}(\\mu \\| \\pi) = \\text{Ent}_\\pi(\\rho)$.\n252: \n253: The **Fisher information** of $\\mu$ with respect to a diffusion generator $\\mathcal{L}$ is:\n254: \n255: $$\n256: I(\\mu \\| \\pi) := \\int \\left|\\nabla \\log \\frac{d\\mu}{d\\pi}\\right|^2 \\frac{d\\mu}{d\\pi} \\, d\\pi = 4 \\int \\left|\\nabla \\sqrt{\\frac{d\\mu}{d\\pi}}\\right|^2 d\\pi",
+      "metadata": {
+        "label": "def-relative-entropy"
+      },
+      "section": "## 1. Preliminaries and Functional Inequalities",
+      "raw_directive": "234: ### 1.1. Basic Definitions\n235: \n236: :::{prf:definition} Relative Entropy and Fisher Information\n237: :label: def-relative-entropy\n238: \n239: For probability measures $\\mu, \\pi$ on a measurable space $(\\mathcal{X}, \\mathcal{F})$ with $\\mu \\ll \\pi$, the **relative entropy** (KL-divergence) is:\n240: \n241: $$\n242: D_{\\text{KL}}(\\mu \\| \\pi) := \\int \\frac{d\\mu}{d\\pi} \\log \\frac{d\\mu}{d\\pi} \\, d\\pi = \\int \\log \\frac{d\\mu}{d\\pi} \\, d\\mu\n243: $$\n244: \n245: The **entropy** of a density $f$ with respect to $\\pi$ is:\n246: \n247: $$\n248: \\text{Ent}_\\pi(f) := \\int f \\log f \\, d\\pi - \\left(\\int f \\, d\\pi\\right) \\log \\left(\\int f \\, d\\pi\\right)\n249: $$\n250: \n251: For a probability density $\\rho = d\\mu/d\\pi$, we have $D_{\\text{KL}}(\\mu \\| \\pi) = \\text{Ent}_\\pi(\\rho)$.\n252: \n253: The **Fisher information** of $\\mu$ with respect to a diffusion generator $\\mathcal{L}$ is:\n254: \n255: $$\n256: I(\\mu \\| \\pi) := \\int \\left|\\nabla \\log \\frac{d\\mu}{d\\pi}\\right|^2 \\frac{d\\mu}{d\\pi} \\, d\\pi = 4 \\int \\left|\\nabla \\sqrt{\\frac{d\\mu}{d\\pi}}\\right|^2 d\\pi\n257: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 1. Preliminaries and Functional Inequalities"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-lsi-continuous",
+      "title": "Logarithmic Sobolev Inequality (LSI)",
+      "start_line": 259,
+      "end_line": 276,
+      "header_lines": [
+        260
+      ],
+      "content_start": 262,
+      "content_end": 275,
+      "content": "262: :label: def-lsi-continuous\n263: \n264: A probability measure $\\pi$ on $\\mathbb{R}^d$ with generator $\\mathcal{L}$ satisfies a **logarithmic Sobolev inequality** with constant $C_{\\text{LSI}} > 0$ if for all smooth functions $f > 0$ with $\\int f^2 d\\pi = 1$:\n265: \n266: $$\n267: \\text{Ent}_\\pi(f^2) \\le 2C_{\\text{LSI}} \\cdot \\mathcal{E}(f, f)\n268: $$\n269: \n270: where $\\mathcal{E}(f, f) := -\\int f \\mathcal{L} f \\, d\\pi$ is the Dirichlet form.\n271: \n272: **Equivalent formulation:** For all $f > 0$:\n273: \n274: $$\n275: \\int f^2 \\log f^2 \\, d\\pi - \\left(\\int f^2 d\\pi\\right) \\log\\left(\\int f^2 d\\pi\\right) \\le 2C_{\\text{LSI}} \\int |\\nabla f|^2 \\, d\\pi",
+      "metadata": {
+        "label": "def-lsi-continuous"
+      },
+      "section": "## 1. Preliminaries and Functional Inequalities",
+      "raw_directive": "259: :::\n260: \n261: :::{prf:definition} Logarithmic Sobolev Inequality (LSI)\n262: :label: def-lsi-continuous\n263: \n264: A probability measure $\\pi$ on $\\mathbb{R}^d$ with generator $\\mathcal{L}$ satisfies a **logarithmic Sobolev inequality** with constant $C_{\\text{LSI}} > 0$ if for all smooth functions $f > 0$ with $\\int f^2 d\\pi = 1$:\n265: \n266: $$\n267: \\text{Ent}_\\pi(f^2) \\le 2C_{\\text{LSI}} \\cdot \\mathcal{E}(f, f)\n268: $$\n269: \n270: where $\\mathcal{E}(f, f) := -\\int f \\mathcal{L} f \\, d\\pi$ is the Dirichlet form.\n271: \n272: **Equivalent formulation:** For all $f > 0$:\n273: \n274: $$\n275: \\int f^2 \\log f^2 \\, d\\pi - \\left(\\int f^2 d\\pi\\right) \\log\\left(\\int f^2 d\\pi\\right) \\le 2C_{\\text{LSI}} \\int |\\nabla f|^2 \\, d\\pi\n276: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 1. Preliminaries and Functional Inequalities"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-discrete-lsi",
+      "title": "Discrete-Time LSI",
+      "start_line": 278,
+      "end_line": 296,
+      "header_lines": [
+        279
+      ],
+      "content_start": 281,
+      "content_end": 295,
+      "content": "281: :label: def-discrete-lsi\n282: \n283: A Markov kernel $K: \\mathcal{X} \\to \\mathcal{P}(\\mathcal{X})$ with invariant measure $\\pi$ satisfies a **discrete-time LSI** with constant $C_{\\text{LSI}} > 0$ if for all functions $f: \\mathcal{X} \\to \\mathbb{R}_{>0}$:\n284: \n285: $$\n286: \\text{Ent}_\\pi(K f^2) \\le e^{-\\tau/C_{\\text{LSI}}} \\cdot \\text{Ent}_\\pi(f^2)\n287: $$\n288: \n289: where $(Kf)(x) := \\int f(y) K(x, dy)$ and $\\tau$ is the discrete time step.\n290: \n291: **Equivalent formulation via Dirichlet form:** For all $f$:\n292: \n293: $$\n294: \\text{Ent}_\\pi(f^2) \\le C_{\\text{LSI}} \\cdot \\mathcal{E}_K(f, f)\n295: $$",
+      "metadata": {
+        "label": "def-discrete-lsi"
+      },
+      "section": "## 1. Preliminaries and Functional Inequalities",
+      "raw_directive": "278: :::\n279: \n280: :::{prf:definition} Discrete-Time LSI\n281: :label: def-discrete-lsi\n282: \n283: A Markov kernel $K: \\mathcal{X} \\to \\mathcal{P}(\\mathcal{X})$ with invariant measure $\\pi$ satisfies a **discrete-time LSI** with constant $C_{\\text{LSI}} > 0$ if for all functions $f: \\mathcal{X} \\to \\mathbb{R}_{>0}$:\n284: \n285: $$\n286: \\text{Ent}_\\pi(K f^2) \\le e^{-\\tau/C_{\\text{LSI}}} \\cdot \\text{Ent}_\\pi(f^2)\n287: $$\n288: \n289: where $(Kf)(x) := \\int f(y) K(x, dy)$ and $\\tau$ is the discrete time step.\n290: \n291: **Equivalent formulation via Dirichlet form:** For all $f$:\n292: \n293: $$\n294: \\text{Ent}_\\pi(f^2) \\le C_{\\text{LSI}} \\cdot \\mathcal{E}_K(f, f)\n295: $$\n296: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 1. Preliminaries and Functional Inequalities"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-gibbs-kinetic",
+      "title": "Target Gibbs Measure for Kinetic Dynamics",
+      "start_line": 559,
+      "end_line": 576,
+      "header_lines": [
+        560
+      ],
+      "content_start": 562,
+      "content_end": 575,
+      "content": "562: :label: def-gibbs-kinetic\n563: \n564: The **target Gibbs measure** for the kinetic dynamics is:\n565: \n566: $$\n567: d\\pi_{\\text{kin}}(x, v) = Z^{-1} \\exp\\left(-\\frac{U(x) + \\frac{1}{2}|v|^2}{\\theta}\\right) dx \\, dv\n568: $$\n569: \n570: where $\\theta = \\sigma^2/(2\\gamma)$ is the temperature (from fluctuation-dissipation theorem) and $Z$ is the normalization constant.\n571: \n572: For the harmonic potential:\n573: \n574: $$\n575: \\pi_{\\text{kin}} = \\mathcal{N}\\left(x^*, \\frac{\\theta}{\\kappa} I\\right) \\otimes \\mathcal{N}(0, \\theta I)",
+      "metadata": {
+        "label": "def-gibbs-kinetic"
+      },
+      "section": "## 2. The Hypoelliptic Kinetic Operator",
+      "raw_directive": "559: For simplicity, we consider the case $U(x) = \\frac{\\kappa}{2}|x - x^*|^2$ (harmonic confinement).\n560: \n561: :::{prf:definition} Target Gibbs Measure for Kinetic Dynamics\n562: :label: def-gibbs-kinetic\n563: \n564: The **target Gibbs measure** for the kinetic dynamics is:\n565: \n566: $$\n567: d\\pi_{\\text{kin}}(x, v) = Z^{-1} \\exp\\left(-\\frac{U(x) + \\frac{1}{2}|v|^2}{\\theta}\\right) dx \\, dv\n568: $$\n569: \n570: where $\\theta = \\sigma^2/(2\\gamma)$ is the temperature (from fluctuation-dissipation theorem) and $Z$ is the normalization constant.\n571: \n572: For the harmonic potential:\n573: \n574: $$\n575: \\pi_{\\text{kin}} = \\mathcal{N}\\left(x^*, \\frac{\\theta}{\\kappa} I\\right) \\otimes \\mathcal{N}(0, \\theta I)\n576: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## 2. The Hypoelliptic Kinetic Operator"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-hypocoercive-metric",
+      "title": "Hypocoercive Metric and Modified Dirichlet Form",
+      "start_line": 586,
+      "end_line": 608,
+      "header_lines": [
+        587
+      ],
+      "content_start": 589,
+      "content_end": 607,
+      "content": "589: :label: def-hypocoercive-metric\n590: \n591: Following Villani (2009), we define the **hypocoercive metric** via an auxiliary operator\n592: \n593: $$\n594: A := \\nabla_v\n595: $$\n596: \n597: and coupling parameter $\\lambda > 0$. The **modified norm** is:\n598: \n599: $$\n600: \\|f\\|_{\\text{hypo}}^2 := \\|\\nabla_v f\\|_{L^2(\\pi)}^2 + \\lambda \\|\\nabla_x f\\|_{L^2(\\pi)}^2\n601: $$\n602: \n603: The **hypocoercive Dirichlet form** is:\n604: \n605: $$\n606: \\mathcal{E}_{\\text{hypo}}(f, f) := \\|\\nabla_v f\\|_{L^2(\\pi)}^2 + \\lambda \\|\\nabla_x f\\|_{L^2(\\pi)}^2 + 2\\mu \\langle \\nabla_v f, \\nabla_x f \\rangle_{L^2(\\pi)}\n607: $$",
+      "metadata": {
+        "label": "def-hypocoercive-metric"
+      },
+      "section": "## 2. The Hypoelliptic Kinetic Operator",
+      "raw_directive": "586: ### 2.2. The Hypocoercivity Framework\n587: \n588: :::{prf:definition} Hypocoercive Metric and Modified Dirichlet Form\n589: :label: def-hypocoercive-metric\n590: \n591: Following Villani (2009), we define the **hypocoercive metric** via an auxiliary operator\n592: \n593: $$\n594: A := \\nabla_v\n595: $$\n596: \n597: and coupling parameter $\\lambda > 0$. The **modified norm** is:\n598: \n599: $$\n600: \\|f\\|_{\\text{hypo}}^2 := \\|\\nabla_v f\\|_{L^2(\\pi)}^2 + \\lambda \\|\\nabla_x f\\|_{L^2(\\pi)}^2\n601: $$\n602: \n603: The **hypocoercive Dirichlet form** is:\n604: \n605: $$\n606: \\mathcal{E}_{\\text{hypo}}(f, f) := \\|\\nabla_v f\\|_{L^2(\\pi)}^2 + \\lambda \\|\\nabla_x f\\|_{L^2(\\pi)}^2 + 2\\mu \\langle \\nabla_v f, \\nabla_x f \\rangle_{L^2(\\pi)}\n607: $$\n608: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## 2. The Hypoelliptic Kinetic Operator"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-log-concavity-condition",
+      "title": "Explicit Log-Concavity Condition",
+      "start_line": 1047,
+      "end_line": 1069,
+      "header_lines": [
+        1048
+      ],
+      "content_start": 1050,
+      "content_end": 1068,
+      "content": "1050: :label: def-log-concavity-condition\n1051: \n1052: For $\\rho_{\\text{QSD}}(x) \\propto \\sqrt{\\det g(x)} \\cdot \\exp(-U_{\\text{eff}}(x)/T)$ to be log-concave, we require:\n1053: \n1054: $$\n1055: \\nabla^2 \\left[\\frac{1}{2}\\log(\\det g(x)) - \\frac{U_{\\text{eff}}(x)}{T}\\right] \\preceq 0\n1056: $$\n1057: \n1058: (Hessian must be negative semi-definite).\n1059: \n1060: **Expanding the terms**:\n1061: \n1062: $$\n1063: \\nabla^2 \\log(\\rho_{\\text{QSD}}) = \\frac{1}{2}\\nabla^2 \\log(\\det(H(x) + \\epsilon_\\Sigma I)) - \\frac{1}{T}\\nabla^2(U(x) - \\epsilon_F V_{\\text{fit}}(x))\n1064: $$\n1065: \n1066: where:\n1067: - $H(x) = \\nabla^2 V_{\\text{fit}}(x)$ is the Hessian of the fitness potential\n1068: - $V_{\\text{fit}}(x)$ itself depends on reward $r(x)$ and swarm density via complex integral",
+      "metadata": {
+        "label": "def-log-concavity-condition"
+      },
+      "section": "## 3.5. Fundamental Axiom: Log-Concavity of the Quasi-Stationary Distribution (SUPERSEDED - Now Proven)",
+      "raw_directive": "1047: :::\n1048: \n1049: :::{prf:definition} Explicit Log-Concavity Condition\n1050: :label: def-log-concavity-condition\n1051: \n1052: For $\\rho_{\\text{QSD}}(x) \\propto \\sqrt{\\det g(x)} \\cdot \\exp(-U_{\\text{eff}}(x)/T)$ to be log-concave, we require:\n1053: \n1054: $$\n1055: \\nabla^2 \\left[\\frac{1}{2}\\log(\\det g(x)) - \\frac{U_{\\text{eff}}(x)}{T}\\right] \\preceq 0\n1056: $$\n1057: \n1058: (Hessian must be negative semi-definite).\n1059: \n1060: **Expanding the terms**:\n1061: \n1062: $$\n1063: \\nabla^2 \\log(\\rho_{\\text{QSD}}) = \\frac{1}{2}\\nabla^2 \\log(\\det(H(x) + \\epsilon_\\Sigma I)) - \\frac{1}{T}\\nabla^2(U(x) - \\epsilon_F V_{\\text{fit}}(x))\n1064: $$\n1065: \n1066: where:\n1067: - $H(x) = \\nabla^2 V_{\\text{fit}}(x)$ is the Hessian of the fitness potential\n1068: - $V_{\\text{fit}}(x)$ itself depends on reward $r(x)$ and swarm density via complex integral\n1069: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 8,
+        "chapter_file": "chapter_8.json",
+        "section_id": "## 3.5. Fundamental Axiom: Log-Concavity of the Quasi-Stationary Distribution (SUPERSEDED - Now Proven)"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-entropy-transport-lyapunov",
+      "title": "Entropy-Transport Lyapunov Function",
+      "start_line": 1431,
+      "end_line": 1441,
+      "header_lines": [
+        1432
+      ],
+      "content_start": 1434,
+      "content_end": 1440,
+      "content": "1434: :label: def-entropy-transport-lyapunov\n1435: \n1436: For a probability measure $\\mu$ and target $\\pi$, define:\n1437: \n1438: $$\n1439: V(\\mu) := D_{\\text{KL}}(\\mu \\| \\pi) + c \\cdot W_2^2(\\mu, \\pi)\n1440: $$",
+      "metadata": {
+        "label": "def-entropy-transport-lyapunov"
+      },
+      "section": "## 5. The Composition Theorem: Entropy-Transport Lyapunov Function",
+      "raw_directive": "1431: The key innovation is to define a **joint Lyapunov function** combining entropy and Wasserstein distance.\n1432: \n1433: :::{prf:definition} Entropy-Transport Lyapunov Function\n1434: :label: def-entropy-transport-lyapunov\n1435: \n1436: For a probability measure $\\mu$ and target $\\pi$, define:\n1437: \n1438: $$\n1439: V(\\mu) := D_{\\text{KL}}(\\mu \\| \\pi) + c \\cdot W_2^2(\\mu, \\pi)\n1440: $$\n1441: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 10,
+        "chapter_file": "chapter_10.json",
+        "section_id": "## 5. The Composition Theorem: Entropy-Transport Lyapunov Function"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-discrete-dirichlet",
+      "title": "Discrete Dirichlet Form",
+      "start_line": 4108,
+      "end_line": 4118,
+      "header_lines": [
+        4109
+      ],
+      "content_start": 4111,
+      "content_end": 4117,
+      "content": "4111: :label: def-discrete-dirichlet\n4112: \n4113: For a Markov operator $\\Psi$ with stationary distribution $\\pi$, define the discrete Dirichlet form:\n4114: \n4115: $$\n4116: \\mathcal{E}_{\\Psi}(f, f) := \\mathbb{E}_\\pi[(f - \\Psi f)^2]\n4117: $$",
+      "metadata": {
+        "label": "def-discrete-dirichlet"
+      },
+      "section": "## Step 4: Discrete-Time LSI Formulation",
+      "raw_directive": "4108: ## Step 4: Discrete-Time LSI Formulation\n4109: \n4110: :::{prf:definition} Discrete Dirichlet Form\n4111: :label: def-discrete-dirichlet\n4112: \n4113: For a Markov operator $\\Psi$ with stationary distribution $\\pi$, define the discrete Dirichlet form:\n4114: \n4115: $$\n4116: \\mathcal{E}_{\\Psi}(f, f) := \\mathbb{E}_\\pi[(f - \\Psi f)^2]\n4117: $$\n4118: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 65,
+        "chapter_file": "chapter_65.json",
+        "section_id": "## Step 4: Discrete-Time LSI Formulation"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-status-metric",
+      "title": "Discrete Status-Change Metric",
+      "start_line": 5905,
+      "end_line": 5921,
+      "header_lines": [
+        5906
+      ],
+      "content_start": 5908,
+      "content_end": 5920,
+      "content": "5908: :label: def-status-metric\n5909: \n5910: For two swarm states $\\mathcal{S}_1, \\mathcal{S}_2$ with the same number of walkers $N$, define:\n5911: \n5912: $$\n5913: d_{\\text{status}}(\\mathcal{S}_1, \\mathcal{S}_2) := n_c(\\mathcal{S}_1, \\mathcal{S}_2)\n5914: $$\n5915: \n5916: where $n_c$ is the **number of status changes**: the number of walker indices $i$ where walker $i$ has different alive/dead status in the two swarms.\n5917: \n5918: Equivalently, if $\\mathbf{s}_1, \\mathbf{s}_2 \\in \\{\\text{alive}, \\text{dead}\\}^N$ are the status vectors:\n5919: \n5920: $$",
+      "metadata": {
+        "label": "def-status-metric"
+      },
+      "section": "## Part 3: Dobrushin Contraction for the Full Dynamics",
+      "raw_directive": "5905: ### 3.2. The Discrete Status-Change Metric\n5906: \n5907: :::{prf:definition} Discrete Status-Change Metric\n5908: :label: def-status-metric\n5909: \n5910: For two swarm states $\\mathcal{S}_1, \\mathcal{S}_2$ with the same number of walkers $N$, define:\n5911: \n5912: $$\n5913: d_{\\text{status}}(\\mathcal{S}_1, \\mathcal{S}_2) := n_c(\\mathcal{S}_1, \\mathcal{S}_2)\n5914: $$\n5915: \n5916: where $n_c$ is the **number of status changes**: the number of walker indices $i$ where walker $i$ has different alive/dead status in the two swarms.\n5917: \n5918: Equivalently, if $\\mathbf{s}_1, \\mathbf{s}_2 \\in \\{\\text{alive}, \\text{dead}\\}^N$ are the status vectors:\n5919: \n5920: $$\n5921: d_{\\text{status}}(\\mathcal{S}_1, \\mathcal{S}_2) = \\|\\mathbf{s}_1 - \\mathbf{s}_2\\|_0 = \\sum_{i=1}^N \\mathbb{1}[\\mathbf{s}_{1,i} \\neq \\mathbf{s}_{2,i}]",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 85,
+        "chapter_file": "chapter_85.json",
+        "section_id": "## Part 3: Dobrushin Contraction for the Full Dynamics"
+      }
+    }
+  ]
+}

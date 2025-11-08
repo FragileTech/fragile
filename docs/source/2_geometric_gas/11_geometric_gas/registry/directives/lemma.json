@@ -1,0 +1,484 @@
+{
+  "document_id": "11_geometric_gas",
+  "stage": "directives",
+  "directive_type": "lemma",
+  "generated_at": "2025-11-08T17:07:43.238964+00:00",
+  "count": 19,
+  "items": [
+    {
+      "directive_type": "lemma",
+      "label": "lem-hessian-bounded",
+      "title": "N-Uniform Boundedness of the Pure Hessian",
+      "start_line": 700,
+      "end_line": 711,
+      "header_lines": [
+        701
+      ],
+      "content_start": 703,
+      "content_end": 710,
+      "content": "703: :label: lem-hessian-bounded\n704: \n705: Under the axiomatic framework of Section 3, the unregularized Hessian $H(S) = \\nabla^2_{x_i} V_{\\text{fit}}(S)$ satisfies:\n706: \n707: $$\n708: \\|H(S)\\| \\le H_{\\max}(\\rho) < \\infty\n709: \n710: $$",
+      "metadata": {
+        "label": "lem-hessian-bounded"
+      },
+      "section": "## 4. Uniform Ellipticity and Well-Posedness",
+      "raw_directive": "700: The proof proceeds in three steps: we first establish boundedness of the pure Hessian, then demonstrate why regularization is necessary, and finally prove the main theorem.\n701: \n702: :::{prf:lemma} N-Uniform Boundedness of the Pure Hessian\n703: :label: lem-hessian-bounded\n704: \n705: Under the axiomatic framework of Section 3, the unregularized Hessian $H(S) = \\nabla^2_{x_i} V_{\\text{fit}}(S)$ satisfies:\n706: \n707: $$\n708: \\|H(S)\\| \\le H_{\\max}(\\rho) < \\infty\n709: \n710: $$\n711: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## 4. Uniform Ellipticity and Well-Posedness"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-hessian-bounded-rigorous",
+      "title": "Rigorous Boundedness of the Hessian",
+      "start_line": 768,
+      "end_line": 782,
+      "header_lines": [
+        769
+      ],
+      "content_start": 771,
+      "content_end": 781,
+      "content": "771: :label: lem-hessian-bounded-rigorous\n772: \n773: Under the fitness pipeline construction with regularized Z-score regularization, the Hessian $H(S) = \\nabla^2_{x_i} V_{\\text{fit}}(S)$ satisfies:\n774: \n775: $$\n776: \\|H(S)\\| \\le H_{\\max} = \\frac{4 A g'_{\\max}^2 \\|\\nabla d\\|^2_{\\infty}}{\\sigma'^2_{\\min,\\text{patch}}} + \\frac{A g'_{\\max} \\|\\nabla^2 d\\|_{\\infty}}{\\sigma\\'_{\\min}} + \\frac{4 A g''_{\\max} \\|\\nabla d\\|^4_{\\infty}}{\\sigma'^4_{\\min,\\text{patch}}}\n777: \n778: $$\n779: \n780: for all swarm states $S$, where:\n781: - $\\|\\nabla d\\|_{\\infty}$ and $\\|\\nabla^2 d\\|_{\\infty}$ are uniform bounds on the measurement function derivatives",
+      "metadata": {
+        "label": "lem-hessian-bounded-rigorous"
+      },
+      "section": "## 4. Uniform Ellipticity and Well-Posedness",
+      "raw_directive": "768: :::\n769: \n770: :::{prf:lemma} Rigorous Boundedness of the Hessian\n771: :label: lem-hessian-bounded-rigorous\n772: \n773: Under the fitness pipeline construction with regularized Z-score regularization, the Hessian $H(S) = \\nabla^2_{x_i} V_{\\text{fit}}(S)$ satisfies:\n774: \n775: $$\n776: \\|H(S)\\| \\le H_{\\max} = \\frac{4 A g'_{\\max}^2 \\|\\nabla d\\|^2_{\\infty}}{\\sigma'^2_{\\min,\\text{patch}}} + \\frac{A g'_{\\max} \\|\\nabla^2 d\\|_{\\infty}}{\\sigma\\'_{\\min}} + \\frac{4 A g''_{\\max} \\|\\nabla d\\|^4_{\\infty}}{\\sigma'^4_{\\min,\\text{patch}}}\n777: \n778: $$\n779: \n780: for all swarm states $S$, where:\n781: - $\\|\\nabla d\\|_{\\infty}$ and $\\|\\nabla^2 d\\|_{\\infty}$ are uniform bounds on the measurement function derivatives\n782: - $g'_{\\max}$ and $g''_{\\max}$ are bounds on the rescale function derivatives",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## 4. Uniform Ellipticity and Well-Posedness"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-hessian-explosion",
+      "title": "Failure of Uniformity Without Regularization",
+      "start_line": 881,
+      "end_line": 892,
+      "header_lines": [
+        882
+      ],
+      "content_start": 884,
+      "content_end": 891,
+      "content": "884: :label: lem-hessian-explosion\n885: \n886: If the regularization $\\epsilon_\\Sigma = 0$ and the swarm variance $\\text{Var}_\\mu[d] \\to 0$, then:\n887: \n888: $$\n889: \\|H(\\mu)\\| \\to \\infty\n890: \n891: $$",
+      "metadata": {
+        "label": "lem-hessian-explosion"
+      },
+      "section": "## 4. Uniform Ellipticity and Well-Posedness",
+      "raw_directive": "881: :::\n882: \n883: :::{prf:lemma} Failure of Uniformity Without Regularization\n884: :label: lem-hessian-explosion\n885: \n886: If the regularization $\\epsilon_\\Sigma = 0$ and the swarm variance $\\text{Var}_\\mu[d] \\to 0$, then:\n887: \n888: $$\n889: \\|H(\\mu)\\| \\to \\infty\n890: \n891: $$\n892: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## 4. Uniform Ellipticity and Well-Posedness"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-adaptive-force-bounded",
+      "title": "N-Uniform Bounded Perturbation from Adaptive Force",
+      "start_line": 1377,
+      "end_line": 1388,
+      "header_lines": [
+        1378
+      ],
+      "content_start": 1380,
+      "content_end": 1387,
+      "content": "1380: :label: lem-adaptive-force-bounded\n1381: \n1382: The adaptive force $\\mathbf{F}_{\\text{adapt}} = \\epsilon_F \\nabla V_{\\text{fit}}[f_k, \\rho]$ contributes a bounded perturbation to the drift of $V_{\\text{total}}$. There exists a **ρ-dependent but N-uniform constant** $K_F(\\rho) < \\infty$ such that:\n1383: \n1384: $$\n1385: \\left| \\left\\langle \\nabla V_{\\text{total}}(S), \\, \\mathbf{F}_{\\text{adapt}}(S) \\right\\rangle \\right| \\le \\epsilon_F K_F(\\rho) (V_{\\text{total}}(S) + 1)\n1386: \n1387: $$",
+      "metadata": {
+        "label": "lem-adaptive-force-bounded"
+      },
+      "section": "## 6. Boundedness of the Adaptive Perturbations",
+      "raw_directive": "1377: ### 6.2. Boundedness of the Adaptive Force Contribution\n1378: \n1379: :::{prf:lemma} N-Uniform Bounded Perturbation from Adaptive Force\n1380: :label: lem-adaptive-force-bounded\n1381: \n1382: The adaptive force $\\mathbf{F}_{\\text{adapt}} = \\epsilon_F \\nabla V_{\\text{fit}}[f_k, \\rho]$ contributes a bounded perturbation to the drift of $V_{\\text{total}}$. There exists a **ρ-dependent but N-uniform constant** $K_F(\\rho) < \\infty$ such that:\n1383: \n1384: $$\n1385: \\left| \\left\\langle \\nabla V_{\\text{total}}(S), \\, \\mathbf{F}_{\\text{adapt}}(S) \\right\\rangle \\right| \\le \\epsilon_F K_F(\\rho) (V_{\\text{total}}(S) + 1)\n1386: \n1387: $$\n1388: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 9,
+        "chapter_file": "chapter_9.json",
+        "section_id": "## 6. Boundedness of the Adaptive Perturbations"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-viscous-dissipative",
+      "title": "Dissipative Contribution from Viscous Force",
+      "start_line": 1473,
+      "end_line": 1498,
+      "header_lines": [
+        1474
+      ],
+      "content_start": 1476,
+      "content_end": 1497,
+      "content": "1476: :label: lem-viscous-dissipative\n1477: \n1478: The normalized viscous force\n1479: \n1480: $$\n1481: \\mathbf{F}_{\\text{viscous}} = \\nu \\sum_{j \\neq i} \\frac{K(x_i - x_j)}{\\deg(i)} (v_j - v_i)\n1482: \n1483: $$\n1484: \n1485: contributes a **negative** (dissipative) term to the Stratonovich drift of $V_{\\text{Var},v}$:\n1486: \n1487: $$\n1488: A_{\\text{viscous}}(V_{\\text{Var},v}) = -\\nu \\mathcal{D}_{\\text{visc}}(S) \\le 0\n1489: \n1490: $$\n1491: \n1492: where\n1493: \n1494: $$\n1495: \\mathcal{D}_{\\text{visc}}(S) := \\frac{1}{N} \\sum_{i < j} K(x_i - x_j) \\left[ \\frac{1}{\\deg(i)} + \\frac{1}{\\deg(j)} \\right] \\|v_i - v_j\\|^2 \\ge 0\n1496: \n1497: $$",
+      "metadata": {
+        "label": "lem-viscous-dissipative"
+      },
+      "section": "## 6. Boundedness of the Adaptive Perturbations",
+      "raw_directive": "1473: ### 6.3. Dissipativity of the Viscous Force\n1474: \n1475: :::{prf:lemma} Dissipative Contribution from Viscous Force\n1476: :label: lem-viscous-dissipative\n1477: \n1478: The normalized viscous force\n1479: \n1480: $$\n1481: \\mathbf{F}_{\\text{viscous}} = \\nu \\sum_{j \\neq i} \\frac{K(x_i - x_j)}{\\deg(i)} (v_j - v_i)\n1482: \n1483: $$\n1484: \n1485: contributes a **negative** (dissipative) term to the Stratonovich drift of $V_{\\text{Var},v}$:\n1486: \n1487: $$\n1488: A_{\\text{viscous}}(V_{\\text{Var},v}) = -\\nu \\mathcal{D}_{\\text{visc}}(S) \\le 0\n1489: \n1490: $$\n1491: \n1492: where\n1493: \n1494: $$\n1495: \\mathcal{D}_{\\text{visc}}(S) := \\frac{1}{N} \\sum_{i < j} K(x_i - x_j) \\left[ \\frac{1}{\\deg(i)} + \\frac{1}{\\deg(j)} \\right] \\|v_i - v_j\\|^2 \\ge 0\n1496: \n1497: $$\n1498: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 9,
+        "chapter_file": "chapter_9.json",
+        "section_id": "## 6. Boundedness of the Adaptive Perturbations"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-diffusion-bounded",
+      "title": "Bounded Change from Adaptive Diffusion",
+      "start_line": 1562,
+      "end_line": 1573,
+      "header_lines": [
+        1563
+      ],
+      "content_start": 1565,
+      "content_end": 1572,
+      "content": "1565: :label: lem-diffusion-bounded\n1566: \n1567: Replacing the constant diffusion $\\sigma I$ with the adaptive diffusion $\\Sigma_{\\text{reg}}(x, S)$ results in a bounded change to the drift. The diffusion contribution $A_{\\text{diff}}(S)$ from Definition [](#def-strat-drift) satisfies:\n1568: \n1569: $$\n1570: |A_{\\text{diff}}(S)| \\le C_{\\text{diff}} < \\infty\n1571: \n1572: $$",
+      "metadata": {
+        "label": "lem-diffusion-bounded"
+      },
+      "section": "## 6. Boundedness of the Adaptive Perturbations",
+      "raw_directive": "1562: ### 6.4. Boundedness of the Diffusion Perturbation\n1563: \n1564: :::{prf:lemma} Bounded Change from Adaptive Diffusion\n1565: :label: lem-diffusion-bounded\n1566: \n1567: Replacing the constant diffusion $\\sigma I$ with the adaptive diffusion $\\Sigma_{\\text{reg}}(x, S)$ results in a bounded change to the drift. The diffusion contribution $A_{\\text{diff}}(S)$ from Definition [](#def-strat-drift) satisfies:\n1568: \n1569: $$\n1570: |A_{\\text{diff}}(S)| \\le C_{\\text{diff}} < \\infty\n1571: \n1572: $$\n1573: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 9,
+        "chapter_file": "chapter_9.json",
+        "section_id": "## 6. Boundedness of the Adaptive Perturbations"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-dissipation-decomp",
+      "title": "Decomposition of Entropy Dissipation",
+      "start_line": 2544,
+      "end_line": 2560,
+      "header_lines": [
+        2545
+      ],
+      "content_start": 2547,
+      "content_end": 2559,
+      "content": "2547: :label: lem-dissipation-decomp\n2548: \n2549: The total entropy dissipation can be decomposed as:\n2550: \n2551: $$\n2552: D(f) = D_{\\text{kin}}(f) + D_{\\text{clone}}(f) + D_{\\text{boundary}}(f)\n2553: \n2554: $$\n2555: \n2556: where:\n2557: - $D_{\\text{kin}}(f) = \\int f \\|\\nabla_v \\log(f / \\rho_{\\text{QSD}})\\|^2_{G_{\\text{reg}}} \\, dx \\, dv$ is the kinetic dissipation.\n2558: - $D_{\\text{clone}}(f) \\ge 0$ is the dissipation from the selection/cloning mechanism.\n2559: - $D_{\\text{boundary}}(f) \\ge 0$ is the dissipation from boundary flux.",
+      "metadata": {
+        "label": "lem-dissipation-decomp"
+      },
+      "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "raw_directive": "2544: **Step 1: Decomposition of Entropy Dissipation**\n2545: \n2546: :::{prf:lemma} Decomposition of Entropy Dissipation\n2547: :label: lem-dissipation-decomp\n2548: \n2549: The total entropy dissipation can be decomposed as:\n2550: \n2551: $$\n2552: D(f) = D_{\\text{kin}}(f) + D_{\\text{clone}}(f) + D_{\\text{boundary}}(f)\n2553: \n2554: $$\n2555: \n2556: where:\n2557: - $D_{\\text{kin}}(f) = \\int f \\|\\nabla_v \\log(f / \\rho_{\\text{QSD}})\\|^2_{G_{\\text{reg}}} \\, dx \\, dv$ is the kinetic dissipation.\n2558: - $D_{\\text{clone}}(f) \\ge 0$ is the dissipation from the selection/cloning mechanism.\n2559: - $D_{\\text{boundary}}(f) \\ge 0$ is the dissipation from boundary flux.\n2560: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 12,
+        "chapter_file": "chapter_12.json",
+        "section_id": "## 9. Main Convergence Theorems and Physical Interpretation"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-micro-coercivity",
+      "title": "Microscopic Coercivity (Step A)",
+      "start_line": 2578,
+      "end_line": 2589,
+      "header_lines": [
+        2579
+      ],
+      "content_start": 2581,
+      "content_end": 2588,
+      "content": "2581: :label: lem-micro-coercivity\n2582: \n2583: There exists $\\lambda_{\\text{mic}} > 0$ such that:\n2584: \n2585: $$\n2586: D_{\\text{kin}}(h \\cdot \\rho_{\\text{QSD}}) \\ge \\lambda_{\\text{mic}} \\|(I - \\Pi) h\\|^2_{L^2(\\rho_{\\text{QSD}})}\n2587: \n2588: $$",
+      "metadata": {
+        "label": "lem-micro-coercivity"
+      },
+      "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "raw_directive": "2578: The core technical work involves proving three lemmas:\n2579: \n2580: :::{prf:lemma} Microscopic Coercivity (Step A)\n2581: :label: lem-micro-coercivity\n2582: \n2583: There exists $\\lambda_{\\text{mic}} > 0$ such that:\n2584: \n2585: $$\n2586: D_{\\text{kin}}(h \\cdot \\rho_{\\text{QSD}}) \\ge \\lambda_{\\text{mic}} \\|(I - \\Pi) h\\|^2_{L^2(\\rho_{\\text{QSD}})}\n2587: \n2588: $$\n2589: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 12,
+        "chapter_file": "chapter_12.json",
+        "section_id": "## 9. Main Convergence Theorems and Physical Interpretation"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-macro-transport",
+      "title": "Macroscopic Transport in Absorption Form (Step B)",
+      "start_line": 2591,
+      "end_line": 2638,
+      "header_lines": [
+        2592
+      ],
+      "content_start": 2594,
+      "content_end": 2637,
+      "content": "2594: :label: lem-macro-transport\n2595: \n2596: **Assumption A1 (Uniform Convexity)**: The confining potential $U(x)$ satisfies:\n2597: \n2598: $$\n2599: \\nabla^2 U(x) \\succeq \\kappa_{\\text{conf}} I \\quad \\text{for all } x \\in \\mathcal{X}\n2600: \n2601: $$\n2602: \n2603: for some constant $\\kappa_{\\text{conf}} > 0$.\n2604: \n2605: **Assumption A2 (Centered Velocities)**: The conditional velocity mean under the QSD vanishes:\n2606: \n2607: $$\n2608: \\int v \\rho_{\\text{QSD}}(v | x) \\, dv = 0 \\quad \\text{for all } x \\in \\mathcal{X}\n2609: \n2610: $$\n2611: \n2612: **Assumption A3 (Bounded Perturbation)**: The position marginal $\\rho_x(x) := \\int \\rho_{\\text{QSD}}(x, v) \\, dv$ satisfies:\n2613: \n2614: $$\n2615: \\left\\| \\log\\left(\\frac{\\rho_x}{\\mu_{\\text{Gibbs}}}\\right) \\right\\|_{L^\\infty(\\mathcal{X})} < \\infty\n2616: \n2617: $$\n2618: \n2619: where $\\mu_{\\text{Gibbs}}(dx) \\propto e^{-U(x)} dx$ is the Gibbs measure.\n2620: \n2621: Under these assumptions, there exist constants $C_1, C_{\\text{aux}} > 0$ such that for all $h \\in H^1(\\rho_{\\text{QSD}})$ with $\\int h \\rho_{\\text{QSD}} = 1$:\n2622: \n2623: $$\n2624: \\|\\Pi h - 1\\|^2_{L^2(\\rho_x)} \\le C_1 \\left| \\langle (I - \\Pi) h, v \\cdot \\nabla_x (\\Pi h) \\rangle_{L^2(\\rho_{\\text{QSD}})} \\right| + C_{\\text{aux}} \\|(I - \\Pi) h\\|^2_{L^2(\\rho_{\\text{QSD}})}\n2625: \n2626: $$\n2627: \n2628: where:\n2629: \n2630: $$\n2631: C_1 = \\frac{2}{\\sqrt{\\kappa_x c_v}}, \\quad C_{\\text{aux}} = \\frac{1}{\\kappa_x c_v}\n2632: \n2633: $$\n2634: \n2635: with:\n2636: - $\\kappa_x \\ge \\kappa_{\\text{conf}} e^{-2 C_{\\text{pert}}}$ (position Poincaré constant)\n2637: - $c_v = \\frac{\\sigma^2}{2\\gamma}$ (velocity covariance lower bound)",
+      "metadata": {
+        "label": "lem-macro-transport"
+      },
+      "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "raw_directive": "2591: :::\n2592: \n2593: :::{prf:lemma} Macroscopic Transport in Absorption Form (Step B)\n2594: :label: lem-macro-transport\n2595: \n2596: **Assumption A1 (Uniform Convexity)**: The confining potential $U(x)$ satisfies:\n2597: \n2598: $$\n2599: \\nabla^2 U(x) \\succeq \\kappa_{\\text{conf}} I \\quad \\text{for all } x \\in \\mathcal{X}\n2600: \n2601: $$\n2602: \n2603: for some constant $\\kappa_{\\text{conf}} > 0$.\n2604: \n2605: **Assumption A2 (Centered Velocities)**: The conditional velocity mean under the QSD vanishes:\n2606: \n2607: $$\n2608: \\int v \\rho_{\\text{QSD}}(v | x) \\, dv = 0 \\quad \\text{for all } x \\in \\mathcal{X}\n2609: \n2610: $$\n2611: \n2612: **Assumption A3 (Bounded Perturbation)**: The position marginal $\\rho_x(x) := \\int \\rho_{\\text{QSD}}(x, v) \\, dv$ satisfies:\n2613: \n2614: $$\n2615: \\left\\| \\log\\left(\\frac{\\rho_x}{\\mu_{\\text{Gibbs}}}\\right) \\right\\|_{L^\\infty(\\mathcal{X})} < \\infty\n2616: \n2617: $$\n2618: \n2619: where $\\mu_{\\text{Gibbs}}(dx) \\propto e^{-U(x)} dx$ is the Gibbs measure.\n2620: \n2621: Under these assumptions, there exist constants $C_1, C_{\\text{aux}} > 0$ such that for all $h \\in H^1(\\rho_{\\text{QSD}})$ with $\\int h \\rho_{\\text{QSD}} = 1$:\n2622: \n2623: $$\n2624: \\|\\Pi h - 1\\|^2_{L^2(\\rho_x)} \\le C_1 \\left| \\langle (I - \\Pi) h, v \\cdot \\nabla_x (\\Pi h) \\rangle_{L^2(\\rho_{\\text{QSD}})} \\right| + C_{\\text{aux}} \\|(I - \\Pi) h\\|^2_{L^2(\\rho_{\\text{QSD}})}\n2625: \n2626: $$\n2627: \n2628: where:\n2629: \n2630: $$\n2631: C_1 = \\frac{2}{\\sqrt{\\kappa_x c_v}}, \\quad C_{\\text{aux}} = \\frac{1}{\\kappa_x c_v}\n2632: \n2633: $$\n2634: \n2635: with:\n2636: - $\\kappa_x \\ge \\kappa_{\\text{conf}} e^{-2 C_{\\text{pert}}}$ (position Poincaré constant)\n2637: - $c_v = \\frac{\\sigma^2}{2\\gamma}$ (velocity covariance lower bound)\n2638: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 12,
+        "chapter_file": "chapter_12.json",
+        "section_id": "## 9. Main Convergence Theorems and Physical Interpretation"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-micro-reg",
+      "title": "Microscopic Regularization (Step C)",
+      "start_line": 2741,
+      "end_line": 2752,
+      "header_lines": [
+        2742
+      ],
+      "content_start": 2744,
+      "content_end": 2751,
+      "content": "2744: :label: lem-micro-reg\n2745: \n2746: There exists $C_2 > 0$ such that:\n2747: \n2748: $$\n2749: \\left| \\langle (I - \\Pi) h, v \\cdot \\nabla_x (\\Pi h) \\rangle_{L^2(\\rho_{\\text{QSD}})} \\right| \\le C_2 \\sqrt{D_{\\text{kin}}(h \\cdot \\rho_{\\text{QSD}})}\n2750: \n2751: $$",
+      "metadata": {
+        "label": "lem-micro-reg"
+      },
+      "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "raw_directive": "2741: :::\n2742: \n2743: :::{prf:lemma} Microscopic Regularization (Step C)\n2744: :label: lem-micro-reg\n2745: \n2746: There exists $C_2 > 0$ such that:\n2747: \n2748: $$\n2749: \\left| \\langle (I - \\Pi) h, v \\cdot \\nabla_x (\\Pi h) \\rangle_{L^2(\\rho_{\\text{QSD}})} \\right| \\le C_2 \\sqrt{D_{\\text{kin}}(h \\cdot \\rho_{\\text{QSD}})}\n2750: \n2751: $$\n2752: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 12,
+        "chapter_file": "chapter_12.json",
+        "section_id": "## 9. Main Convergence Theorems and Physical Interpretation"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-weight-derivatives",
+      "title": "Derivatives of Localization Weights",
+      "start_line": 2969,
+      "end_line": 3006,
+      "header_lines": [
+        2970
+      ],
+      "content_start": 2972,
+      "content_end": 3005,
+      "content": "2972: :label: lem-weight-derivatives\n2973: \n2974: The localization weights $w_{ij}(\\rho)$ satisfy:\n2975: \n2976: **First Derivative:**\n2977: \n2978: $$\n2979: \\nabla_{x_i} w_{ij}(\\rho) = \\frac{1}{Z_i(\\rho)} \\left[ \\nabla_{x_i} K_\\rho(x_i, x_j) - w_{ij}(\\rho) \\sum_{\\ell \\in A_k} \\nabla_{x_i} K_\\rho(x_i, x_\\ell) \\right]\n2980: \n2981: $$\n2982: \n2983: where $Z_i(\\rho) = \\sum_{\\ell \\in A_k} K_\\rho(x_i, x_\\ell)$ is the normalization **over alive walkers only**.\n2984: \n2985: **Bound:**\n2986: \n2987: $$\n2988: \\|\\nabla_{x_i} w_{ij}(\\rho)\\| \\le \\frac{2C_{\\nabla K}(\\rho)}{\\rho}\n2989: \n2990: $$\n2991: \n2992: **Second Derivative:** The Hessian $\\nabla^2_{x_i} w_{ij}(\\rho)$ involves terms with $\\nabla^2 K_\\rho$, $(\\nabla K_\\rho) \\otimes (\\nabla K_\\rho)$, and products of weights. It satisfies:\n2993: \n2994: $$\n2995: \\|\\nabla^2_{x_i} w_{ij}(\\rho)\\| \\le C_w(\\rho) := \\frac{C_{\\nabla^2 K}(\\rho)}{\\rho^2} + \\frac{4C_{\\nabla K}(\\rho)^2}{\\rho^2}\n2996: \n2997: $$\n2998: \n2999: **Proof:**\n3000: The first derivative follows from the quotient rule applied to $w_{ij} = K_\\rho(x_i, x_j) / Z_i(\\rho)$. The bound uses $\\sum_k w_{ik} = 1$ and the triangle inequality.\n3001: \n3002: The second derivative involves differentiating the quotient rule expression, yielding terms of the form:\n3003: - $\\nabla^2 K_\\rho / Z_i$ (bounded by $C_{\\nabla^2 K}/\\rho^2$)\n3004: - $(\\nabla K_\\rho) \\otimes (\\nabla K_\\rho) / Z_i^2$ (bounded by $C_{\\nabla K}^2/\\rho^2$ after using $Z_i \\ge 1/N$)\n3005: - Products involving $w_{ij}$ and sums over $k$",
+      "metadata": {
+        "label": "lem-weight-derivatives"
+      },
+      "section": "## Appendix A: Regularity of the ρ-Localized Fitness Potential",
+      "raw_directive": "2969: Before tackling the full derivatives, we establish bounds on the derivatives of the weighted sums.\n2970: \n2971: :::{prf:lemma} Derivatives of Localization Weights\n2972: :label: lem-weight-derivatives\n2973: \n2974: The localization weights $w_{ij}(\\rho)$ satisfy:\n2975: \n2976: **First Derivative:**\n2977: \n2978: $$\n2979: \\nabla_{x_i} w_{ij}(\\rho) = \\frac{1}{Z_i(\\rho)} \\left[ \\nabla_{x_i} K_\\rho(x_i, x_j) - w_{ij}(\\rho) \\sum_{\\ell \\in A_k} \\nabla_{x_i} K_\\rho(x_i, x_\\ell) \\right]\n2980: \n2981: $$\n2982: \n2983: where $Z_i(\\rho) = \\sum_{\\ell \\in A_k} K_\\rho(x_i, x_\\ell)$ is the normalization **over alive walkers only**.\n2984: \n2985: **Bound:**\n2986: \n2987: $$\n2988: \\|\\nabla_{x_i} w_{ij}(\\rho)\\| \\le \\frac{2C_{\\nabla K}(\\rho)}{\\rho}\n2989: \n2990: $$\n2991: \n2992: **Second Derivative:** The Hessian $\\nabla^2_{x_i} w_{ij}(\\rho)$ involves terms with $\\nabla^2 K_\\rho$, $(\\nabla K_\\rho) \\otimes (\\nabla K_\\rho)$, and products of weights. It satisfies:\n2993: \n2994: $$\n2995: \\|\\nabla^2_{x_i} w_{ij}(\\rho)\\| \\le C_w(\\rho) := \\frac{C_{\\nabla^2 K}(\\rho)}{\\rho^2} + \\frac{4C_{\\nabla K}(\\rho)^2}{\\rho^2}\n2996: \n2997: $$\n2998: \n2999: **Proof:**\n3000: The first derivative follows from the quotient rule applied to $w_{ij} = K_\\rho(x_i, x_j) / Z_i(\\rho)$. The bound uses $\\sum_k w_{ik} = 1$ and the triangle inequality.\n3001: \n3002: The second derivative involves differentiating the quotient rule expression, yielding terms of the form:\n3003: - $\\nabla^2 K_\\rho / Z_i$ (bounded by $C_{\\nabla^2 K}/\\rho^2$)\n3004: - $(\\nabla K_\\rho) \\otimes (\\nabla K_\\rho) / Z_i^2$ (bounded by $C_{\\nabla K}^2/\\rho^2$ after using $Z_i \\ge 1/N$)\n3005: - Products involving $w_{ij}$ and sums over $k$\n3006: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 14,
+        "chapter_file": "chapter_14.json",
+        "section_id": "## Appendix A: Regularity of the ρ-Localized Fitness Potential"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-mean-first-derivative",
+      "title": "First Derivative of Localized Mean",
+      "start_line": 3008,
+      "end_line": 3094,
+      "header_lines": [
+        3009
+      ],
+      "content_start": 3011,
+      "content_end": 3093,
+      "content": "3011: :label: lem-mean-first-derivative\n3012: \n3013: The gradient of the localized mean satisfies:\n3014: \n3015: $$\n3016: \\nabla_{x_i} \\mu_\\rho^{(i)} = \\nabla_{x_i} d(x_i) \\cdot w_{ii}(\\rho) + \\sum_{j \\in A_k} d(x_j) \\nabla_{x_i} w_{ij}(\\rho)\n3017: \n3018: $$\n3019: \n3020: **k-Uniform Bound:**\n3021: \n3022: $$\n3023: \\|\\nabla_{x_i} \\mu_\\rho^{(i)}\\| \\le d'_{\\max} + \\frac{4 d_{\\max} C_{\\nabla K}(\\rho)}{\\rho}\n3024: \n3025: $$\n3026: \n3027: **Proof:**\n3028: \n3029: Differentiate $\\mu_\\rho^{(i)} = \\sum_{j \\in A_k} w_{ij}(\\rho) d(x_j)$ using the product rule. The term with $j=i$ contributes $\\nabla d(x_i) \\cdot w_{ii}$. For $j \\ne i$, only the weights depend on $x_i$.\n3030: \n3031: **Step 1: Exploit the Telescoping Property.** Since $\\sum_{j \\in A_k} w_{ij} = 1$ is constant, differentiating yields:\n3032: \n3033: $$\n3034: \\sum_{j \\in A_k} \\nabla_{x_i} w_{ij}(\\rho) = 0\n3035: \n3036: $$\n3037: \n3038: This is the key telescoping property that enables k-uniformity. Using this identity, we can rewrite:\n3039: \n3040: $$\n3041: \\sum_{j \\in A_k} d(x_j) \\nabla_{x_i} w_{ij}(\\rho) = \\sum_{j \\in A_k} [d(x_j) - d(x_i)] \\nabla_{x_i} w_{ij}(\\rho)\n3042: \n3043: $$\n3044: \n3045: **Why this matters:** The term $[d(x_j) - d(x_i)]$ is only non-zero when $j \\ne i$, and crucially, it is **localized by the kernel's structure**, not by counting walkers.\n3046: \n3047: **Step 2: Bound Using Kernel Localization.** The gradient $\\nabla_{x_i} w_{ij}(\\rho)$ is significant only when $K_\\rho(x_i, x_j)$ is non-negligible, which requires $\\|x_i - x_j\\| = O(\\rho)$. For such $j$, by smoothness of $d$:\n3048: \n3049: $$\n3050: |d(x_j) - d(x_i)| \\le d'_{\\max} \\|x_j - x_i\\| \\le d'_{\\max} \\cdot C_K \\rho\n3051: \n3052: $$\n3053: \n3054: where $C_K$ is a constant depending on the kernel's effective radius (e.g., $C_K \\approx 3$ for a Gaussian kernel with 99.7% mass within 3σ).\n3055: \n3056: **Step 3: Apply the Triangle Inequality.** Combining with the bound $\\|\\nabla w_{ij}\\| \\le 2C_{\\nabla K}(\\rho)/\\rho$:\n3057: \n3058: $$\n3059: \\left\\|\\sum_{j \\in A_k} [d(x_j) - d(x_i)] \\nabla_{x_i} w_{ij}\\right\\| \\le \\sum_{j \\in A_k} |d(x_j) - d(x_i)| \\cdot \\|\\nabla_{x_i} w_{ij}\\|\n3060: \n3061: $$\n3062: \n3063: Now, **the key insight**: While the sum is over all $k$ alive walkers, the terms are **non-zero only for j in the ρ-neighborhood** of $i$ (by kernel localization). For such $j$:\n3064: \n3065: $$\n3066: |d(x_j) - d(x_i)| \\cdot \\|\\nabla_{x_i} w_{ij}\\| \\le d'_{\\max} C_K \\rho \\cdot \\frac{2C_{\\nabla K}(\\rho)}{\\rho} = 2d'_{\\max} C_K C_{\\nabla K}(\\rho)\n3067: \n3068: $$\n3069: \n3070: For walkers outside the ρ-neighborhood, $K_\\rho(x_i, x_j) \\approx 0$, so $\\nabla_{x_i} w_{ij} \\approx 0$ (exponentially small for Gaussian kernels).\n3071: \n3072: **Step 4: Sum the Contributions.** The total bound is:\n3073: \n3074: $$\n3075: \\left\\|\\sum_{j \\in A_k} [d(x_j) - d(x_i)] \\nabla_{x_i} w_{ij}\\right\\| \\le \\underbrace{\\left[\\text{bound per term}\\right]}_{2d'_{\\max} C_K C_{\\nabla K}(\\rho)} \\cdot \\underbrace{\\left[\\text{sum of weights}\\right]}_{\\sum_{j \\in A_k} w_{ij} = 1}\n3076: \n3077: $$\n3078: \n3079: The critical observation is that **the weighted sum collapses via telescoping**, not via counting effective walkers. The terms are automatically bounded by the normalization $\\sum w_{ij} = 1$, independent of $k$.\n3080: \n3081: **Step 5: Final Bound.** Including the diagonal term $\\nabla d(x_i) \\cdot w_{ii}$:\n3082: \n3083: $$\n3084: \\|\\nabla_{x_i} \\mu_\\rho^{(i)}\\| \\le d'_{\\max} + 2d'_{\\max} C_K C_{\\nabla K}(\\rho)\n3085: \n3086: $$\n3087: \n3088: For a conservative bound, we absorb $C_K$ into a rescaled constant and use $|d(x_j)| \\le d_{\\max}$ directly (without telescoping for the outer triangle inequality):\n3089: \n3090: $$\n3091: \\|\\nabla_{x_i} \\mu_\\rho^{(i)}\\| \\le d'_{\\max} + \\frac{4 d_{\\max} C_{\\nabla K}(\\rho)}{\\rho}\n3092: \n3093: $$",
+      "metadata": {
+        "label": "lem-mean-first-derivative"
+      },
+      "section": "## Appendix A: Regularity of the ρ-Localized Fitness Potential",
+      "raw_directive": "3008: :::\n3009: \n3010: :::{prf:lemma} First Derivative of Localized Mean\n3011: :label: lem-mean-first-derivative\n3012: \n3013: The gradient of the localized mean satisfies:\n3014: \n3015: $$\n3016: \\nabla_{x_i} \\mu_\\rho^{(i)} = \\nabla_{x_i} d(x_i) \\cdot w_{ii}(\\rho) + \\sum_{j \\in A_k} d(x_j) \\nabla_{x_i} w_{ij}(\\rho)\n3017: \n3018: $$\n3019: \n3020: **k-Uniform Bound:**\n3021: \n3022: $$\n3023: \\|\\nabla_{x_i} \\mu_\\rho^{(i)}\\| \\le d'_{\\max} + \\frac{4 d_{\\max} C_{\\nabla K}(\\rho)}{\\rho}\n3024: \n3025: $$\n3026: \n3027: **Proof:**\n3028: \n3029: Differentiate $\\mu_\\rho^{(i)} = \\sum_{j \\in A_k} w_{ij}(\\rho) d(x_j)$ using the product rule. The term with $j=i$ contributes $\\nabla d(x_i) \\cdot w_{ii}$. For $j \\ne i$, only the weights depend on $x_i$.\n3030: \n3031: **Step 1: Exploit the Telescoping Property.** Since $\\sum_{j \\in A_k} w_{ij} = 1$ is constant, differentiating yields:\n3032: \n3033: $$\n3034: \\sum_{j \\in A_k} \\nabla_{x_i} w_{ij}(\\rho) = 0\n3035: \n3036: $$\n3037: \n3038: This is the key telescoping property that enables k-uniformity. Using this identity, we can rewrite:\n3039: \n3040: $$\n3041: \\sum_{j \\in A_k} d(x_j) \\nabla_{x_i} w_{ij}(\\rho) = \\sum_{j \\in A_k} [d(x_j) - d(x_i)] \\nabla_{x_i} w_{ij}(\\rho)\n3042: \n3043: $$\n3044: \n3045: **Why this matters:** The term $[d(x_j) - d(x_i)]$ is only non-zero when $j \\ne i$, and crucially, it is **localized by the kernel's structure**, not by counting walkers.\n3046: \n3047: **Step 2: Bound Using Kernel Localization.** The gradient $\\nabla_{x_i} w_{ij}(\\rho)$ is significant only when $K_\\rho(x_i, x_j)$ is non-negligible, which requires $\\|x_i - x_j\\| = O(\\rho)$. For such $j$, by smoothness of $d$:\n3048: \n3049: $$\n3050: |d(x_j) - d(x_i)| \\le d'_{\\max} \\|x_j - x_i\\| \\le d'_{\\max} \\cdot C_K \\rho\n3051: \n3052: $$\n3053: \n3054: where $C_K$ is a constant depending on the kernel's effective radius (e.g., $C_K \\approx 3$ for a Gaussian kernel with 99.7% mass within 3σ).\n3055: \n3056: **Step 3: Apply the Triangle Inequality.** Combining with the bound $\\|\\nabla w_{ij}\\| \\le 2C_{\\nabla K}(\\rho)/\\rho$:\n3057: \n3058: $$\n3059: \\left\\|\\sum_{j \\in A_k} [d(x_j) - d(x_i)] \\nabla_{x_i} w_{ij}\\right\\| \\le \\sum_{j \\in A_k} |d(x_j) - d(x_i)| \\cdot \\|\\nabla_{x_i} w_{ij}\\|\n3060: \n3061: $$\n3062: \n3063: Now, **the key insight**: While the sum is over all $k$ alive walkers, the terms are **non-zero only for j in the ρ-neighborhood** of $i$ (by kernel localization). For such $j$:\n3064: \n3065: $$\n3066: |d(x_j) - d(x_i)| \\cdot \\|\\nabla_{x_i} w_{ij}\\| \\le d'_{\\max} C_K \\rho \\cdot \\frac{2C_{\\nabla K}(\\rho)}{\\rho} = 2d'_{\\max} C_K C_{\\nabla K}(\\rho)\n3067: \n3068: $$\n3069: \n3070: For walkers outside the ρ-neighborhood, $K_\\rho(x_i, x_j) \\approx 0$, so $\\nabla_{x_i} w_{ij} \\approx 0$ (exponentially small for Gaussian kernels).\n3071: \n3072: **Step 4: Sum the Contributions.** The total bound is:\n3073: \n3074: $$\n3075: \\left\\|\\sum_{j \\in A_k} [d(x_j) - d(x_i)] \\nabla_{x_i} w_{ij}\\right\\| \\le \\underbrace{\\left[\\text{bound per term}\\right]}_{2d'_{\\max} C_K C_{\\nabla K}(\\rho)} \\cdot \\underbrace{\\left[\\text{sum of weights}\\right]}_{\\sum_{j \\in A_k} w_{ij} = 1}\n3076: \n3077: $$\n3078: \n3079: The critical observation is that **the weighted sum collapses via telescoping**, not via counting effective walkers. The terms are automatically bounded by the normalization $\\sum w_{ij} = 1$, independent of $k$.\n3080: \n3081: **Step 5: Final Bound.** Including the diagonal term $\\nabla d(x_i) \\cdot w_{ii}$:\n3082: \n3083: $$\n3084: \\|\\nabla_{x_i} \\mu_\\rho^{(i)}\\| \\le d'_{\\max} + 2d'_{\\max} C_K C_{\\nabla K}(\\rho)\n3085: \n3086: $$\n3087: \n3088: For a conservative bound, we absorb $C_K$ into a rescaled constant and use $|d(x_j)| \\le d_{\\max}$ directly (without telescoping for the outer triangle inequality):\n3089: \n3090: $$\n3091: \\|\\nabla_{x_i} \\mu_\\rho^{(i)}\\| \\le d'_{\\max} + \\frac{4 d_{\\max} C_{\\nabla K}(\\rho)}{\\rho}\n3092: \n3093: $$\n3094: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 14,
+        "chapter_file": "chapter_14.json",
+        "section_id": "## Appendix A: Regularity of the ρ-Localized Fitness Potential"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-mean-second-derivative",
+      "title": "Second Derivative of Localized Mean",
+      "start_line": 3096,
+      "end_line": 3183,
+      "header_lines": [
+        3097
+      ],
+      "content_start": 3099,
+      "content_end": 3182,
+      "content": "3099: :label: lem-mean-second-derivative\n3100: \n3101: The Hessian of the localized mean satisfies:\n3102: \n3103: $$\n3104: \\nabla^2_{x_i} \\mu_\\rho^{(i)} = \\nabla^2_{x_i} d(x_i) \\cdot w_{ii}(\\rho) + 2 \\nabla_{x_i} d(x_i) \\otimes \\nabla_{x_i} w_{ii}(\\rho) + \\sum_{j \\in A_k} d(x_j) \\nabla^2_{x_i} w_{ij}(\\rho)\n3105: \n3106: $$\n3107: \n3108: **k-Uniform Bound:**\n3109: \n3110: $$\n3111: \\|\\nabla^2_{x_i} \\mu_\\rho^{(i)}\\| \\le d''_{\\max} + \\frac{4d'_{\\max} C_{\\nabla K}(\\rho)}{\\rho} + 2d_{\\max} C_w(\\rho)\n3112: \n3113: $$\n3114: \n3115: **Proof:**\n3116: \n3117: Differentiate the expression from Lemma {prf:ref}`lem-mean-first-derivative`. The diagonal term ($j=i$) contributes $\\nabla^2 d(x_i)$ and $\\nabla d(x_i) \\otimes \\nabla w_{ii}$.\n3118: \n3119: **Step 1: Exploit the Telescoping Property.** Differentiating the constraint $\\sum_{j \\in A_k} w_{ij} = 1$ twice yields:\n3120: \n3121: $$\n3122: \\sum_{j \\in A_k} \\nabla^2_{x_i} w_{ij} = 0\n3123: \n3124: $$\n3125: \n3126: This telescoping identity allows us to rewrite:\n3127: \n3128: $$\n3129: \\sum_{j \\in A_k} d(x_j) \\nabla^2_{x_i} w_{ij} = \\sum_{j \\in A_k} [d(x_j) - d(x_i)] \\nabla^2_{x_i} w_{ij}\n3130: \n3131: $$\n3132: \n3133: **Step 2: Bound Using Kernel Localization.** The Hessian $\\nabla^2_{x_i} w_{ij}$ is significant only when $K_\\rho(x_i, x_j)$ is non-negligible, requiring $\\|x_i - x_j\\| = O(\\rho)$. For such $j$:\n3134: \n3135: $$\n3136: |d(x_j) - d(x_i)| \\le d'_{\\max} C_K \\rho\n3137: \n3138: $$\n3139: \n3140: where $C_K$ is the kernel's effective radius constant.\n3141: \n3142: **Step 3: Apply the Hessian Bound.** Combining with $\\|\\nabla^2 w_{ij}\\| \\le C_w(\\rho)$ from Lemma {prf:ref}`lem-weight-derivatives`:\n3143: \n3144: $$\n3145: \\left\\|\\sum_{j \\in A_k} [d(x_j) - d(x_i)] \\nabla^2_{x_i} w_{ij}\\right\\| \\le \\sum_{j \\in A_k} |d(x_j) - d(x_i)| \\cdot \\|\\nabla^2_{x_i} w_{ij}\\|\n3146: \n3147: $$\n3148: \n3149: For walkers in the ρ-neighborhood (the only ones contributing significantly):\n3150: \n3151: $$\n3152: |d(x_j) - d(x_i)| \\cdot \\|\\nabla^2_{x_i} w_{ij}\\| \\le d'_{\\max} C_K \\rho \\cdot C_w(\\rho)\n3153: \n3154: $$\n3155: \n3156: **Step 4: Sum via Telescoping.** The weighted sum collapses using the normalization $\\sum_{j \\in A_k} w_{ij} = 1$:\n3157: \n3158: $$\n3159: \\left\\|\\sum_{j \\in A_k} [d(x_j) - d(x_i)] \\nabla^2_{x_i} w_{ij}\\right\\| \\le d'_{\\max} C_K \\rho \\cdot C_w(\\rho) \\cdot \\underbrace{\\left[\\text{normalized weight sum}\\right]}_{O(1)}\n3160: \n3161: $$\n3162: \n3163: **Step 5: Final Bound.** For the term $\\nabla d(x_i) \\otimes \\nabla w_{ii}$:\n3164: \n3165: $$\n3166: \\|2 \\nabla_{x_i} d(x_i) \\otimes \\nabla_{x_i} w_{ii}\\| \\le 2d'_{\\max} \\cdot \\frac{2C_{\\nabla K}(\\rho)}{\\rho} = \\frac{4d'_{\\max} C_{\\nabla K}(\\rho)}{\\rho}\n3167: \n3168: $$\n3169: \n3170: Combining all terms (diagonal $\\nabla^2 d(x_i)$, cross-term, and the sum):\n3171: \n3172: $$\n3173: \\|\\nabla^2_{x_i} \\mu_\\rho^{(i)}\\| \\le d''_{\\max} + \\frac{4d'_{\\max} C_{\\nabla K}(\\rho)}{\\rho} + d'_{\\max} C_K \\rho C_w(\\rho)\n3174: \n3175: $$\n3176: \n3177: For a conservative bound, we use $|d(x_j)| \\le d_{\\max}$ directly and absorb constants:\n3178: \n3179: $$\n3180: \\|\\nabla^2_{x_i} \\mu_\\rho^{(i)}\\| \\le d''_{\\max} + \\frac{4d'_{\\max} C_{\\nabla K}(\\rho)}{\\rho} + 2d_{\\max} C_w(\\rho)\n3181: \n3182: $$",
+      "metadata": {
+        "label": "lem-mean-second-derivative"
+      },
+      "section": "## Appendix A: Regularity of the ρ-Localized Fitness Potential",
+      "raw_directive": "3096: :::\n3097: \n3098: :::{prf:lemma} Second Derivative of Localized Mean\n3099: :label: lem-mean-second-derivative\n3100: \n3101: The Hessian of the localized mean satisfies:\n3102: \n3103: $$\n3104: \\nabla^2_{x_i} \\mu_\\rho^{(i)} = \\nabla^2_{x_i} d(x_i) \\cdot w_{ii}(\\rho) + 2 \\nabla_{x_i} d(x_i) \\otimes \\nabla_{x_i} w_{ii}(\\rho) + \\sum_{j \\in A_k} d(x_j) \\nabla^2_{x_i} w_{ij}(\\rho)\n3105: \n3106: $$\n3107: \n3108: **k-Uniform Bound:**\n3109: \n3110: $$\n3111: \\|\\nabla^2_{x_i} \\mu_\\rho^{(i)}\\| \\le d''_{\\max} + \\frac{4d'_{\\max} C_{\\nabla K}(\\rho)}{\\rho} + 2d_{\\max} C_w(\\rho)\n3112: \n3113: $$\n3114: \n3115: **Proof:**\n3116: \n3117: Differentiate the expression from Lemma {prf:ref}`lem-mean-first-derivative`. The diagonal term ($j=i$) contributes $\\nabla^2 d(x_i)$ and $\\nabla d(x_i) \\otimes \\nabla w_{ii}$.\n3118: \n3119: **Step 1: Exploit the Telescoping Property.** Differentiating the constraint $\\sum_{j \\in A_k} w_{ij} = 1$ twice yields:\n3120: \n3121: $$\n3122: \\sum_{j \\in A_k} \\nabla^2_{x_i} w_{ij} = 0\n3123: \n3124: $$\n3125: \n3126: This telescoping identity allows us to rewrite:\n3127: \n3128: $$\n3129: \\sum_{j \\in A_k} d(x_j) \\nabla^2_{x_i} w_{ij} = \\sum_{j \\in A_k} [d(x_j) - d(x_i)] \\nabla^2_{x_i} w_{ij}\n3130: \n3131: $$\n3132: \n3133: **Step 2: Bound Using Kernel Localization.** The Hessian $\\nabla^2_{x_i} w_{ij}$ is significant only when $K_\\rho(x_i, x_j)$ is non-negligible, requiring $\\|x_i - x_j\\| = O(\\rho)$. For such $j$:\n3134: \n3135: $$\n3136: |d(x_j) - d(x_i)| \\le d'_{\\max} C_K \\rho\n3137: \n3138: $$\n3139: \n3140: where $C_K$ is the kernel's effective radius constant.\n3141: \n3142: **Step 3: Apply the Hessian Bound.** Combining with $\\|\\nabla^2 w_{ij}\\| \\le C_w(\\rho)$ from Lemma {prf:ref}`lem-weight-derivatives`:\n3143: \n3144: $$\n3145: \\left\\|\\sum_{j \\in A_k} [d(x_j) - d(x_i)] \\nabla^2_{x_i} w_{ij}\\right\\| \\le \\sum_{j \\in A_k} |d(x_j) - d(x_i)| \\cdot \\|\\nabla^2_{x_i} w_{ij}\\|\n3146: \n3147: $$\n3148: \n3149: For walkers in the ρ-neighborhood (the only ones contributing significantly):\n3150: \n3151: $$\n3152: |d(x_j) - d(x_i)| \\cdot \\|\\nabla^2_{x_i} w_{ij}\\| \\le d'_{\\max} C_K \\rho \\cdot C_w(\\rho)\n3153: \n3154: $$\n3155: \n3156: **Step 4: Sum via Telescoping.** The weighted sum collapses using the normalization $\\sum_{j \\in A_k} w_{ij} = 1$:\n3157: \n3158: $$\n3159: \\left\\|\\sum_{j \\in A_k} [d(x_j) - d(x_i)] \\nabla^2_{x_i} w_{ij}\\right\\| \\le d'_{\\max} C_K \\rho \\cdot C_w(\\rho) \\cdot \\underbrace{\\left[\\text{normalized weight sum}\\right]}_{O(1)}\n3160: \n3161: $$\n3162: \n3163: **Step 5: Final Bound.** For the term $\\nabla d(x_i) \\otimes \\nabla w_{ii}$:\n3164: \n3165: $$\n3166: \\|2 \\nabla_{x_i} d(x_i) \\otimes \\nabla_{x_i} w_{ii}\\| \\le 2d'_{\\max} \\cdot \\frac{2C_{\\nabla K}(\\rho)}{\\rho} = \\frac{4d'_{\\max} C_{\\nabla K}(\\rho)}{\\rho}\n3167: \n3168: $$\n3169: \n3170: Combining all terms (diagonal $\\nabla^2 d(x_i)$, cross-term, and the sum):\n3171: \n3172: $$\n3173: \\|\\nabla^2_{x_i} \\mu_\\rho^{(i)}\\| \\le d''_{\\max} + \\frac{4d'_{\\max} C_{\\nabla K}(\\rho)}{\\rho} + d'_{\\max} C_K \\rho C_w(\\rho)\n3174: \n3175: $$\n3176: \n3177: For a conservative bound, we use $|d(x_j)| \\le d_{\\max}$ directly and absorb constants:\n3178: \n3179: $$\n3180: \\|\\nabla^2_{x_i} \\mu_\\rho^{(i)}\\| \\le d''_{\\max} + \\frac{4d'_{\\max} C_{\\nabla K}(\\rho)}{\\rho} + 2d_{\\max} C_w(\\rho)\n3181: \n3182: $$\n3183: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 14,
+        "chapter_file": "chapter_14.json",
+        "section_id": "## Appendix A: Regularity of the ρ-Localized Fitness Potential"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-variance-gradient",
+      "title": "k-Uniform Gradient of Localized Variance",
+      "start_line": 3185,
+      "end_line": 3235,
+      "header_lines": [
+        3186
+      ],
+      "content_start": 3188,
+      "content_end": 3234,
+      "content": "3188: :label: lem-variance-gradient\n3189: \n3190: The gradient of the localized variance satisfies:\n3191: \n3192: $$\n3193: \\|\\nabla_{x_i} V_\\rho^{(i)}\\| \\le C_{V,\\nabla}(\\rho)\n3194: \n3195: $$\n3196: \n3197: where $C_{V,\\nabla}(\\rho)$ is a ρ-dependent but **k-uniform** constant:\n3198: \n3199: $$\n3200: C_{V,\\nabla}(\\rho) = 4d_{\\max} d'_{\\max} + 4d_{\\max}^2 \\frac{C_{\\nabla K}(\\rho)}{\\rho} + 2d_{\\max} \\left(d'_{\\max} + \\frac{4d_{\\max} C_{\\nabla K}(\\rho)}{\\rho}\\right)\n3201: \n3202: $$\n3203: \n3204: **Proof:**\n3205: \n3206: The variance is $V_\\rho^{(i)} = \\sum_{j \\in A_k} w_{ij} d(x_j)^2 - (\\mu_\\rho^{(i)})^2$. Differentiating:\n3207: \n3208: $$\n3209: \\nabla_{x_i} V_\\rho^{(i)} = \\nabla_{x_i}\\left(\\sum_{j \\in A_k} w_{ij} d(x_j)^2\\right) - 2\\mu_\\rho^{(i)} \\nabla_{x_i} \\mu_\\rho^{(i)}\n3210: \n3211: $$\n3212: \n3213: **Term 1:** For the first term, apply the telescoping property $\\sum_j \\nabla w_{ij} = 0$:\n3214: \n3215: $$\n3216: \\sum_{j \\in A_k} d(x_j)^2 \\nabla_{x_i} w_{ij} = \\sum_{j \\in A_k} [d(x_j)^2 - d(x_i)^2] \\nabla_{x_i} w_{ij}\n3217: \n3218: $$\n3219: \n3220: Using $|d(x_j)^2 - d(x_i)^2| = |d(x_j) - d(x_i)| \\cdot |d(x_j) + d(x_i)| \\le |d(x_j) - d(x_i)| \\cdot 2d_{\\max}$ and the kernel localization $|d(x_j) - d(x_i)| \\le d'_{\\max} C_K \\rho$:\n3221: \n3222: $$\n3223: \\left\\|\\sum_{j \\in A_k} [d(x_j)^2 - d(x_i)^2] \\nabla w_{ij}\\right\\| \\le 2d_{\\max} d'_{\\max} C_K \\rho \\cdot \\frac{2C_{\\nabla K}(\\rho)}{\\rho} = 4d_{\\max} d'_{\\max} C_K C_{\\nabla K}(\\rho)\n3224: \n3225: $$\n3226: \n3227: The diagonal term contributes $2d(x_i) d'_{\\max} w_{ii} \\le 2d_{\\max} d'_{\\max}$.\n3228: \n3229: **Term 2:** The second term uses the bound from Lemma {prf:ref}`lem-mean-first-derivative`:\n3230: \n3231: $$\n3232: \\|2\\mu_\\rho^{(i)} \\nabla_{x_i} \\mu_\\rho^{(i)}\\| \\le 2d_{\\max} \\left(d'_{\\max} + \\frac{4d_{\\max} C_{\\nabla K}(\\rho)}{\\rho}\\right)\n3233: \n3234: $$",
+      "metadata": {
+        "label": "lem-variance-gradient"
+      },
+      "section": "## Appendix A: Regularity of the ρ-Localized Fitness Potential",
+      "raw_directive": "3185: :::\n3186: \n3187: :::{prf:lemma} k-Uniform Gradient of Localized Variance\n3188: :label: lem-variance-gradient\n3189: \n3190: The gradient of the localized variance satisfies:\n3191: \n3192: $$\n3193: \\|\\nabla_{x_i} V_\\rho^{(i)}\\| \\le C_{V,\\nabla}(\\rho)\n3194: \n3195: $$\n3196: \n3197: where $C_{V,\\nabla}(\\rho)$ is a ρ-dependent but **k-uniform** constant:\n3198: \n3199: $$\n3200: C_{V,\\nabla}(\\rho) = 4d_{\\max} d'_{\\max} + 4d_{\\max}^2 \\frac{C_{\\nabla K}(\\rho)}{\\rho} + 2d_{\\max} \\left(d'_{\\max} + \\frac{4d_{\\max} C_{\\nabla K}(\\rho)}{\\rho}\\right)\n3201: \n3202: $$\n3203: \n3204: **Proof:**\n3205: \n3206: The variance is $V_\\rho^{(i)} = \\sum_{j \\in A_k} w_{ij} d(x_j)^2 - (\\mu_\\rho^{(i)})^2$. Differentiating:\n3207: \n3208: $$\n3209: \\nabla_{x_i} V_\\rho^{(i)} = \\nabla_{x_i}\\left(\\sum_{j \\in A_k} w_{ij} d(x_j)^2\\right) - 2\\mu_\\rho^{(i)} \\nabla_{x_i} \\mu_\\rho^{(i)}\n3210: \n3211: $$\n3212: \n3213: **Term 1:** For the first term, apply the telescoping property $\\sum_j \\nabla w_{ij} = 0$:\n3214: \n3215: $$\n3216: \\sum_{j \\in A_k} d(x_j)^2 \\nabla_{x_i} w_{ij} = \\sum_{j \\in A_k} [d(x_j)^2 - d(x_i)^2] \\nabla_{x_i} w_{ij}\n3217: \n3218: $$\n3219: \n3220: Using $|d(x_j)^2 - d(x_i)^2| = |d(x_j) - d(x_i)| \\cdot |d(x_j) + d(x_i)| \\le |d(x_j) - d(x_i)| \\cdot 2d_{\\max}$ and the kernel localization $|d(x_j) - d(x_i)| \\le d'_{\\max} C_K \\rho$:\n3221: \n3222: $$\n3223: \\left\\|\\sum_{j \\in A_k} [d(x_j)^2 - d(x_i)^2] \\nabla w_{ij}\\right\\| \\le 2d_{\\max} d'_{\\max} C_K \\rho \\cdot \\frac{2C_{\\nabla K}(\\rho)}{\\rho} = 4d_{\\max} d'_{\\max} C_K C_{\\nabla K}(\\rho)\n3224: \n3225: $$\n3226: \n3227: The diagonal term contributes $2d(x_i) d'_{\\max} w_{ii} \\le 2d_{\\max} d'_{\\max}$.\n3228: \n3229: **Term 2:** The second term uses the bound from Lemma {prf:ref}`lem-mean-first-derivative`:\n3230: \n3231: $$\n3232: \\|2\\mu_\\rho^{(i)} \\nabla_{x_i} \\mu_\\rho^{(i)}\\| \\le 2d_{\\max} \\left(d'_{\\max} + \\frac{4d_{\\max} C_{\\nabla K}(\\rho)}{\\rho}\\right)\n3233: \n3234: $$\n3235: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 14,
+        "chapter_file": "chapter_14.json",
+        "section_id": "## Appendix A: Regularity of the ρ-Localized Fitness Potential"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-variance-hessian",
+      "title": "k-Uniform Hessian of Localized Variance",
+      "start_line": 3237,
+      "end_line": 3266,
+      "header_lines": [
+        3238
+      ],
+      "content_start": 3240,
+      "content_end": 3265,
+      "content": "3240: :label: lem-variance-hessian\n3241: \n3242: The Hessian of the localized variance satisfies:\n3243: \n3244: $$\n3245: \\|\\nabla^2_{x_i} V_\\rho^{(i)}\\| \\le C_{V,\\nabla^2}(\\rho)\n3246: \n3247: $$\n3248: \n3249: where $C_{V,\\nabla^2}(\\rho)$ is a ρ-dependent but **k-uniform** constant involving $d''_{\\max}$, $C_{\\nabla K}(\\rho)/\\rho$, $C_w(\\rho)$, and the first-order bounds.\n3250: \n3251: **Proof:**\n3252: \n3253: Differentiate the expression from Lemma {prf:ref}`lem-variance-gradient`. Apply the telescoping property $\\sum_j \\nabla^2 w_{ij} = 0$ to:\n3254: \n3255: $$\n3256: \\sum_{j \\in A_k} d(x_j)^2 \\nabla^2_{x_i} w_{ij} = \\sum_{j \\in A_k} [d(x_j)^2 - d(x_i)^2] \\nabla^2_{x_i} w_{ij}\n3257: \n3258: $$\n3259: \n3260: Using kernel localization and the bound $\\|\\nabla^2 w_{ij}\\| \\le C_w(\\rho)$, the sum collapses via the normalization constraint. The second derivative of the product $\\mu_\\rho^2$ involves:\n3261: \n3262: $$\n3263: \\nabla^2(\\mu_\\rho^2) = 2(\\nabla \\mu_\\rho) \\otimes (\\nabla \\mu_\\rho) + 2\\mu_\\rho \\nabla^2 \\mu_\\rho\n3264: \n3265: $$",
+      "metadata": {
+        "label": "lem-variance-hessian"
+      },
+      "section": "## Appendix A: Regularity of the ρ-Localized Fitness Potential",
+      "raw_directive": "3237: :::\n3238: \n3239: :::{prf:lemma} k-Uniform Hessian of Localized Variance\n3240: :label: lem-variance-hessian\n3241: \n3242: The Hessian of the localized variance satisfies:\n3243: \n3244: $$\n3245: \\|\\nabla^2_{x_i} V_\\rho^{(i)}\\| \\le C_{V,\\nabla^2}(\\rho)\n3246: \n3247: $$\n3248: \n3249: where $C_{V,\\nabla^2}(\\rho)$ is a ρ-dependent but **k-uniform** constant involving $d''_{\\max}$, $C_{\\nabla K}(\\rho)/\\rho$, $C_w(\\rho)$, and the first-order bounds.\n3250: \n3251: **Proof:**\n3252: \n3253: Differentiate the expression from Lemma {prf:ref}`lem-variance-gradient`. Apply the telescoping property $\\sum_j \\nabla^2 w_{ij} = 0$ to:\n3254: \n3255: $$\n3256: \\sum_{j \\in A_k} d(x_j)^2 \\nabla^2_{x_i} w_{ij} = \\sum_{j \\in A_k} [d(x_j)^2 - d(x_i)^2] \\nabla^2_{x_i} w_{ij}\n3257: \n3258: $$\n3259: \n3260: Using kernel localization and the bound $\\|\\nabla^2 w_{ij}\\| \\le C_w(\\rho)$, the sum collapses via the normalization constraint. The second derivative of the product $\\mu_\\rho^2$ involves:\n3261: \n3262: $$\n3263: \\nabla^2(\\mu_\\rho^2) = 2(\\nabla \\mu_\\rho) \\otimes (\\nabla \\mu_\\rho) + 2\\mu_\\rho \\nabla^2 \\mu_\\rho\n3264: \n3265: $$\n3266: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 14,
+        "chapter_file": "chapter_14.json",
+        "section_id": "## Appendix A: Regularity of the ρ-Localized Fitness Potential"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-variance-to-gap-adaptive",
+      "title": "Variance-to-Gap (Universal Statistical Inequality)",
+      "start_line": 3638,
+      "end_line": 3649,
+      "header_lines": [
+        3639
+      ],
+      "content_start": 3641,
+      "content_end": 3648,
+      "content": "3641: :label: lem-variance-to-gap-adaptive\n3642: \n3643: For any random variable $X$ with mean $\\mu$ and variance $\\sigma^2 > 0$:\n3644: \n3645: $$\n3646: \\sup_{x \\in \\text{supp}(X)} |x - \\mu| \\ge \\sigma\n3647: \n3648: $$",
+      "metadata": {
+        "label": "lem-variance-to-gap-adaptive"
+      },
+      "section": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model",
+      "raw_directive": "3638: #### B.3.1. The Variance-to-Gap Lemma (Universal)\n3639: \n3640: :::{prf:lemma} Variance-to-Gap (Universal Statistical Inequality)\n3641: :label: lem-variance-to-gap-adaptive\n3642: \n3643: For any random variable $X$ with mean $\\mu$ and variance $\\sigma^2 > 0$:\n3644: \n3645: $$\n3646: \\sup_{x \\in \\text{supp}(X)} |x - \\mu| \\ge \\sigma\n3647: \n3648: $$\n3649: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 15,
+        "chapter_file": "chapter_15.json",
+        "section_id": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-rho-pipeline-bounds",
+      "title": "Uniform Bounds on the ρ-Localized Pipeline",
+      "start_line": 3767,
+      "end_line": 3802,
+      "header_lines": [
+        3768
+      ],
+      "content_start": 3770,
+      "content_end": 3801,
+      "content": "3770: :label: lem-rho-pipeline-bounds\n3771: \n3772: For the ρ-localized rescaling pipeline with bounded measurements $d \\in [0, d_{\\max}]$:\n3773: \n3774: **1. Upper Bound on Localized Standard Deviation:**\n3775: \n3776: $$\n3777: \\sigma'_\\rho[f, d, x] \\le \\sigma'_{\\rho,\\max} := d_{\\max}\n3778: \n3779: $$\n3780: \n3781: for all $f, x, \\rho$. This bound is **N-uniform** and **ρ-dependent** (it could be tighter for specific ρ, but this worst-case bound suffices).\n3782: \n3783: **2. Lower Bound on Rescale Derivative:**\n3784: \n3785: $$\n3786: g'_A(z) \\ge g'_{\\min} > 0\n3787: \n3788: $$\n3789: \n3790: for all $z \\in \\mathbb{R}$, where $g_A$ is the smooth, monotone rescale function. This bound is **ρ-independent**.\n3791: \n3792: **Proof:**\n3793: \n3794: **Part 1:** The localized standard deviation is bounded by the range of the measurement function:\n3795: \n3796: $$\n3797: \\sigma'_\\rho[f, d, x] = \\max\\{\\sigma_\\rho[f, d, x], \\kappa_{\\text{var,min}}\\} \\le \\max_{x \\in \\mathcal{X}} d(x) = d_{\\max}\n3798: \n3799: $$\n3800: \n3801: This holds for all ρ because even in the hyper-local limit, the standard deviation of bounded measurements remains bounded.",
+      "metadata": {
+        "label": "lem-rho-pipeline-bounds"
+      },
+      "section": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model",
+      "raw_directive": "3767: #### B.3.2. Uniform Bounds on ρ-Dependent Pipeline Components\n3768: \n3769: :::{prf:lemma} Uniform Bounds on the ρ-Localized Pipeline\n3770: :label: lem-rho-pipeline-bounds\n3771: \n3772: For the ρ-localized rescaling pipeline with bounded measurements $d \\in [0, d_{\\max}]$:\n3773: \n3774: **1. Upper Bound on Localized Standard Deviation:**\n3775: \n3776: $$\n3777: \\sigma'_\\rho[f, d, x] \\le \\sigma'_{\\rho,\\max} := d_{\\max}\n3778: \n3779: $$\n3780: \n3781: for all $f, x, \\rho$. This bound is **N-uniform** and **ρ-dependent** (it could be tighter for specific ρ, but this worst-case bound suffices).\n3782: \n3783: **2. Lower Bound on Rescale Derivative:**\n3784: \n3785: $$\n3786: g'_A(z) \\ge g'_{\\min} > 0\n3787: \n3788: $$\n3789: \n3790: for all $z \\in \\mathbb{R}$, where $g_A$ is the smooth, monotone rescale function. This bound is **ρ-independent**.\n3791: \n3792: **Proof:**\n3793: \n3794: **Part 1:** The localized standard deviation is bounded by the range of the measurement function:\n3795: \n3796: $$\n3797: \\sigma'_\\rho[f, d, x] = \\max\\{\\sigma_\\rho[f, d, x], \\kappa_{\\text{var,min}}\\} \\le \\max_{x \\in \\mathcal{X}} d(x) = d_{\\max}\n3798: \n3799: $$\n3800: \n3801: This holds for all ρ because even in the hyper-local limit, the standard deviation of bounded measurements remains bounded.\n3802: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 15,
+        "chapter_file": "chapter_15.json",
+        "section_id": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-raw-to-rescaled-gap-rho",
+      "title": "Raw-Gap to Rescaled-Gap for ρ-Localized Pipeline",
+      "start_line": 3806,
+      "end_line": 3852,
+      "header_lines": [
+        3807
+      ],
+      "content_start": 3809,
+      "content_end": 3851,
+      "content": "3809: :label: lem-raw-to-rescaled-gap-rho\n3810: \n3811: If the raw measurements satisfy:\n3812: \n3813: $$\n3814: \\max_{i \\in \\{1, \\ldots, N\\}} |d_i - \\mu_\\rho[f_k, d, x_{\\text{ref}}]| \\ge \\kappa_{\\text{raw}}\n3815: \n3816: $$\n3817: \n3818: for some reference point $x_{\\text{ref}}$ and raw gap $\\kappa_{\\text{raw}} > 0$, then the rescaled measurements satisfy:\n3819: \n3820: $$\n3821: \\max_{i \\in \\{1, \\ldots, N\\}} |d'_i - \\mu[d']| \\ge \\kappa_{\\text{rescaled}}(\\kappa_{\\text{raw}}, \\rho)\n3822: \n3823: $$\n3824: \n3825: where:\n3826: \n3827: $$\n3828: \\kappa_{\\text{rescaled}}(\\kappa_{\\text{raw}}, \\rho) := g'_{\\min} \\cdot \\frac{\\kappa_{\\text{raw}}}{\\sigma'_{\\rho,\\max}}\n3829: \n3830: $$\n3831: \n3832: **Proof:** By the Mean Value Theorem applied to the composition $d'_i = g_A(Z_\\rho[f_k, d, x_i])$:\n3833: \n3834: $$\n3835: |d'_i - d'_j| \\ge g'_{\\min} \\cdot |Z_\\rho[f_k, d, x_i] - Z_\\rho[f_k, d, x_j]|\n3836: \n3837: $$\n3838: \n3839: The Z-score difference satisfies:\n3840: \n3841: $$\n3842: |Z_\\rho[f_k, d, x_i] - Z_\\rho[f_k, d, x_j]| \\ge \\frac{|d_i - d_j|}{\\sigma'_{\\rho,\\max}}\n3843: \n3844: $$\n3845: \n3846: Combining these and using the raw gap:\n3847: \n3848: $$\n3849: \\max_{i,j} |d'_i - d'_j| \\ge g'_{\\min} \\cdot \\frac{\\kappa_{\\text{raw}}}{\\sigma'_{\\rho,\\max}}\n3850: \n3851: $$",
+      "metadata": {
+        "label": "lem-raw-to-rescaled-gap-rho"
+      },
+      "section": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model",
+      "raw_directive": "3806: #### B.3.3. Raw-Gap to Rescaled-Gap Propagation (ρ-Dependent)\n3807: \n3808: :::{prf:lemma} Raw-Gap to Rescaled-Gap for ρ-Localized Pipeline\n3809: :label: lem-raw-to-rescaled-gap-rho\n3810: \n3811: If the raw measurements satisfy:\n3812: \n3813: $$\n3814: \\max_{i \\in \\{1, \\ldots, N\\}} |d_i - \\mu_\\rho[f_k, d, x_{\\text{ref}}]| \\ge \\kappa_{\\text{raw}}\n3815: \n3816: $$\n3817: \n3818: for some reference point $x_{\\text{ref}}$ and raw gap $\\kappa_{\\text{raw}} > 0$, then the rescaled measurements satisfy:\n3819: \n3820: $$\n3821: \\max_{i \\in \\{1, \\ldots, N\\}} |d'_i - \\mu[d']| \\ge \\kappa_{\\text{rescaled}}(\\kappa_{\\text{raw}}, \\rho)\n3822: \n3823: $$\n3824: \n3825: where:\n3826: \n3827: $$\n3828: \\kappa_{\\text{rescaled}}(\\kappa_{\\text{raw}}, \\rho) := g'_{\\min} \\cdot \\frac{\\kappa_{\\text{raw}}}{\\sigma'_{\\rho,\\max}}\n3829: \n3830: $$\n3831: \n3832: **Proof:** By the Mean Value Theorem applied to the composition $d'_i = g_A(Z_\\rho[f_k, d, x_i])$:\n3833: \n3834: $$\n3835: |d'_i - d'_j| \\ge g'_{\\min} \\cdot |Z_\\rho[f_k, d, x_i] - Z_\\rho[f_k, d, x_j]|\n3836: \n3837: $$\n3838: \n3839: The Z-score difference satisfies:\n3840: \n3841: $$\n3842: |Z_\\rho[f_k, d, x_i] - Z_\\rho[f_k, d, x_j]| \\ge \\frac{|d_i - d_j|}{\\sigma'_{\\rho,\\max}}\n3843: \n3844: $$\n3845: \n3846: Combining these and using the raw gap:\n3847: \n3848: $$\n3849: \\max_{i,j} |d'_i - d'_j| \\ge g'_{\\min} \\cdot \\frac{\\kappa_{\\text{raw}}}{\\sigma'_{\\rho,\\max}}\n3850: \n3851: $$\n3852: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 15,
+        "chapter_file": "chapter_15.json",
+        "section_id": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-log-gap-bounds-adaptive",
+      "title": "Logarithmic Gap Bounds (from 03_cloning.md, Lemma 7.5.1)",
+      "start_line": 3868,
+      "end_line": 3888,
+      "header_lines": [
+        3869
+      ],
+      "content_start": 3871,
+      "content_end": 3887,
+      "content": "3871: :label: lem-log-gap-bounds-adaptive\n3872: \n3873: For any random variable $X \\in [a, b]$ with mean $\\mu$ and $a < \\mu < b$:\n3874: \n3875: **Lower Bound:**\n3876: \n3877: $$\n3878: \\mathbb{E}[\\log X] \\le \\log \\mu\n3879: \n3880: $$\n3881: \n3882: **Upper Bound (Gap to Extremal Point):**\n3883: \n3884: $$\n3885: |\\log b - \\mathbb{E}[\\log X]| \\ge \\log(b) - \\log(\\mu)\n3886: \n3887: $$",
+      "metadata": {
+        "label": "lem-log-gap-bounds-adaptive"
+      },
+      "section": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model",
+      "raw_directive": "3868: #### B.4.1. Foundational Statistical Lemmas (ρ-Independent)\n3869: \n3870: :::{prf:lemma} Logarithmic Gap Bounds (from 03_cloning.md, Lemma 7.5.1)\n3871: :label: lem-log-gap-bounds-adaptive\n3872: \n3873: For any random variable $X \\in [a, b]$ with mean $\\mu$ and $a < \\mu < b$:\n3874: \n3875: **Lower Bound:**\n3876: \n3877: $$\n3878: \\mathbb{E}[\\log X] \\le \\log \\mu\n3879: \n3880: $$\n3881: \n3882: **Upper Bound (Gap to Extremal Point):**\n3883: \n3884: $$\n3885: |\\log b - \\mathbb{E}[\\log X]| \\ge \\log(b) - \\log(\\mu)\n3886: \n3887: $$\n3888: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 15,
+        "chapter_file": "chapter_15.json",
+        "section_id": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model"
+      }
+    }
+  ]
+}

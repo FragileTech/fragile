@@ -1,0 +1,93 @@
+{
+  "chapter_index": 7,
+  "section_id": "## 6. KL-Divergence Convergence",
+  "directive_count": 5,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-lsi-implies-kl-convergence",
+      "title": "Exponential KL-Convergence via LSI",
+      "start_line": 1484,
+      "end_line": 1494,
+      "header_lines": [
+        1485
+      ],
+      "content_start": 1487,
+      "content_end": 1493,
+      "content": "1487: :label: thm-lsi-implies-kl-convergence\n1488: \n1489: If a Markov kernel $K$ with invariant measure $\\pi$ satisfies a discrete-time LSI with constant $C_{\\text{LSI}}$, then for any initial distribution $\\mu_0$:\n1490: \n1491: $$\n1492: D_{\\text{KL}}(\\mu_t \\| \\pi) \\le e^{-t/C_{\\text{LSI}}} D_{\\text{KL}}(\\mu_0 \\| \\pi)\n1493: $$",
+      "metadata": {
+        "label": "thm-lsi-implies-kl-convergence"
+      },
+      "section": "## 6. KL-Divergence Convergence",
+      "raw_directive": "1484: ### 6.1. From LSI to Exponential Convergence\n1485: \n1486: :::{prf:theorem} Exponential KL-Convergence via LSI\n1487: :label: thm-lsi-implies-kl-convergence\n1488: \n1489: If a Markov kernel $K$ with invariant measure $\\pi$ satisfies a discrete-time LSI with constant $C_{\\text{LSI}}$, then for any initial distribution $\\mu_0$:\n1490: \n1491: $$\n1492: D_{\\text{KL}}(\\mu_t \\| \\pi) \\le e^{-t/C_{\\text{LSI}}} D_{\\text{KL}}(\\mu_0 \\| \\pi)\n1493: $$\n1494: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-15",
+      "title": null,
+      "start_line": 1496,
+      "end_line": 1515,
+      "header_lines": [],
+      "content_start": 1497,
+      "content_end": 1514,
+      "content": "1497: \n1498: :::{prf:proof}\n1499: **Step 1: Entropy contraction via LSI**\n1500: \n1501: Let $\\rho_t = d\\mu_t/d\\pi$ be the Radon-Nikodym derivative. The LSI states:\n1502: \n1503: $$\n1504: \\text{Ent}_{\\pi}(\\rho_{t+1}) \\le e^{-1/C_{\\text{LSI}}} \\text{Ent}_{\\pi}(\\rho_t)\n1505: $$\n1506: \n1507: But $\\text{Ent}_{\\pi}(\\rho_t) = D_{\\text{KL}}(\\mu_t \\| \\pi)$.\n1508: \n1509: **Step 2: Iteration**\n1510: \n1511: Applying the LSI recursively:\n1512: \n1513: $$\n1514: D_{\\text{KL}}(\\mu_t \\| \\pi) \\le e^{-t/C_{\\text{LSI}}} D_{\\text{KL}}(\\mu_0 \\| \\pi)",
+      "metadata": {},
+      "section": "## 6. KL-Divergence Convergence",
+      "raw_directive": "1496: :::\n1497: \n1498: :::{prf:proof}\n1499: **Step 1: Entropy contraction via LSI**\n1500: \n1501: Let $\\rho_t = d\\mu_t/d\\pi$ be the Radon-Nikodym derivative. The LSI states:\n1502: \n1503: $$\n1504: \\text{Ent}_{\\pi}(\\rho_{t+1}) \\le e^{-1/C_{\\text{LSI}}} \\text{Ent}_{\\pi}(\\rho_t)\n1505: $$\n1506: \n1507: But $\\text{Ent}_{\\pi}(\\rho_t) = D_{\\text{KL}}(\\mu_t \\| \\pi)$.\n1508: \n1509: **Step 2: Iteration**\n1510: \n1511: Applying the LSI recursively:\n1512: \n1513: $$\n1514: D_{\\text{KL}}(\\mu_t \\| \\pi) \\le e^{-t/C_{\\text{LSI}}} D_{\\text{KL}}(\\mu_0 \\| \\pi)\n1515: $$"
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-main-kl-final",
+      "title": "KL-Convergence of the Euclidean Gas (Main Result)",
+      "start_line": 1521,
+      "end_line": 1543,
+      "header_lines": [
+        1522
+      ],
+      "content_start": 1524,
+      "content_end": 1542,
+      "content": "1524: :label: thm-main-kl-final\n1525: \n1526: For the N-particle Euclidean Gas with parameters satisfying the Foster-Lyapunov conditions of Theorem 8.1 in [04_convergence.md](04_convergence.md), the Markov chain\n1527: \n1528: $$\n1529: S_{t+1} = \\Psi_{\\text{total}}(S_t) = (\\Psi_{\\text{kin}}(\\tau) \\circ \\Psi_{\\text{clone}})(S_t)\n1530: $$\n1531: \n1532: converges exponentially fast to the quasi-stationary distribution $\\pi_{\\text{QSD}}$ in relative entropy:\n1533: \n1534: $$\n1535: D_{\\text{KL}}(\\mu_t \\| \\pi_{\\text{QSD}}) \\le e^{-t/C_{\\text{LSI}}} D_{\\text{KL}}(\\mu_0 \\| \\pi_{\\text{QSD}})\n1536: $$\n1537: \n1538: with LSI constant:\n1539: \n1540: $$\n1541: C_{\\text{LSI}} = O\\left(\\frac{1}{\\min(\\gamma, \\kappa_{\\text{conf}}) \\cdot \\kappa_x}\\right)\n1542: $$",
+      "metadata": {
+        "label": "thm-main-kl-final"
+      },
+      "section": "## 6. KL-Divergence Convergence",
+      "raw_directive": "1521: Combining Theorem {prf:ref}`thm-main-lsi-composition` and Theorem {prf:ref}`thm-lsi-implies-kl-convergence`:\n1522: \n1523: :::{prf:theorem} KL-Convergence of the Euclidean Gas (Main Result)\n1524: :label: thm-main-kl-final\n1525: \n1526: For the N-particle Euclidean Gas with parameters satisfying the Foster-Lyapunov conditions of Theorem 8.1 in [04_convergence.md](04_convergence.md), the Markov chain\n1527: \n1528: $$\n1529: S_{t+1} = \\Psi_{\\text{total}}(S_t) = (\\Psi_{\\text{kin}}(\\tau) \\circ \\Psi_{\\text{clone}})(S_t)\n1530: $$\n1531: \n1532: converges exponentially fast to the quasi-stationary distribution $\\pi_{\\text{QSD}}$ in relative entropy:\n1533: \n1534: $$\n1535: D_{\\text{KL}}(\\mu_t \\| \\pi_{\\text{QSD}}) \\le e^{-t/C_{\\text{LSI}}} D_{\\text{KL}}(\\mu_0 \\| \\pi_{\\text{QSD}})\n1536: $$\n1537: \n1538: with LSI constant:\n1539: \n1540: $$\n1541: C_{\\text{LSI}} = O\\left(\\frac{1}{\\min(\\gamma, \\kappa_{\\text{conf}}) \\cdot \\kappa_x}\\right)\n1542: $$\n1543: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-64",
+      "title": null,
+      "start_line": 1545,
+      "end_line": 1550,
+      "header_lines": [],
+      "content_start": 1546,
+      "content_end": 1549,
+      "content": "1546: \n1547: :::{prf:proof}\n1548: Direct application of:\n1549: 1. Corollary {prf:ref}`cor-quantitative-lsi-final` (explicit LSI constant)",
+      "metadata": {},
+      "section": "## 6. KL-Divergence Convergence",
+      "raw_directive": "1545: :::\n1546: \n1547: :::{prf:proof}\n1548: Direct application of:\n1549: 1. Corollary {prf:ref}`cor-quantitative-lsi-final` (explicit LSI constant)\n1550: 2. Theorem {prf:ref}`thm-lsi-implies-kl-convergence` (LSI implies KL-convergence)"
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-kl-tv-comparison",
+      "title": "Relationship Between KL and TV Convergence Rates",
+      "start_line": 1554,
+      "end_line": 1572,
+      "header_lines": [
+        1555
+      ],
+      "content_start": 1557,
+      "content_end": 1571,
+      "content": "1557: :label: rem-kl-tv-comparison\n1558: \n1559: The Foster-Lyapunov proof establishes TV convergence with rate $\\lambda_{\\text{TV}}$. The KL convergence rate is:\n1560: \n1561: $$\n1562: \\lambda_{\\text{KL}} = \\frac{1}{C_{\\text{LSI}}} = \\Theta(\\gamma \\kappa_{\\text{conf}} \\kappa_x)\n1563: $$\n1564: \n1565: **Relationship:**\n1566: - KL-convergence **implies** TV-convergence via Pinsker's inequality: $\\|P_t - \\pi\\|_{\\text{TV}} \\le \\sqrt{D_{\\text{KL}}(P_t \\| \\pi)/2}$\n1567: - The rates may differ: typically $\\lambda_{\\text{KL}} \\le \\lambda_{\\text{TV}}$ (KL is stronger, may be slower)\n1568: - For this system, both are $O(\\gamma \\kappa_{\\text{conf}})$, suggesting **matched rates**\n1569: \n1570: **Additional information from KL-convergence:**\n1571: - Gaussian tail bounds via Herbst argument",
+      "metadata": {
+        "label": "rem-kl-tv-comparison"
+      },
+      "section": "## 6. KL-Divergence Convergence",
+      "raw_directive": "1554: ### 6.3. Comparison with Foster-Lyapunov Result\n1555: \n1556: :::{prf:remark} Relationship Between KL and TV Convergence Rates\n1557: :label: rem-kl-tv-comparison\n1558: \n1559: The Foster-Lyapunov proof establishes TV convergence with rate $\\lambda_{\\text{TV}}$. The KL convergence rate is:\n1560: \n1561: $$\n1562: \\lambda_{\\text{KL}} = \\frac{1}{C_{\\text{LSI}}} = \\Theta(\\gamma \\kappa_{\\text{conf}} \\kappa_x)\n1563: $$\n1564: \n1565: **Relationship:**\n1566: - KL-convergence **implies** TV-convergence via Pinsker's inequality: $\\|P_t - \\pi\\|_{\\text{TV}} \\le \\sqrt{D_{\\text{KL}}(P_t \\| \\pi)/2}$\n1567: - The rates may differ: typically $\\lambda_{\\text{KL}} \\le \\lambda_{\\text{TV}}$ (KL is stronger, may be slower)\n1568: - For this system, both are $O(\\gamma \\kappa_{\\text{conf}})$, suggesting **matched rates**\n1569: \n1570: **Additional information from KL-convergence:**\n1571: - Gaussian tail bounds via Herbst argument\n1572: - Concentration of measure around the QSD"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

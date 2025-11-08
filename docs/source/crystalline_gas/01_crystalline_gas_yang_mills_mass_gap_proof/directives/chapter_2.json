@@ -1,0 +1,277 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 2. The Crystalline Gas Algorithm",
+  "directive_count": 15,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-cg-walker-state-space",
+      "title": "Walker State Space",
+      "start_line": 94,
+      "end_line": 114,
+      "header_lines": [
+        95
+      ],
+      "content_start": 97,
+      "content_end": 113,
+      "content": "97: :label: def-cg-walker-state-space\n98: \n99: Let $d \\geq 3$ be the spatial dimension. The **walker state space** is the phase space\n100: \n101: $$\n102: \\Omega := \\mathcal{X} \\times \\mathcal{V} = \\mathbb{R}^{d} \\times \\mathbb{R}^{d}\n103: $$\n104: \n105: A **walker** is a point $w = (x, v) \\in \\Omega$ consisting of:\n106: - **Position:** $x \\in \\mathcal{X} = \\mathbb{R}^{d}$\n107: - **Velocity:** $v \\in \\mathcal{V} = \\mathbb{R}^{d}$\n108: \n109: The state space $\\Omega$ is equipped with the product metric\n110: \n111: $$\n112: d_{\\Omega}(w_1, w_2) := \\sqrt{\\|x_1 - x_2\\|^2 + \\|v_1 - v_2\\|^2}\n113: $$",
+      "metadata": {
+        "label": "def-cg-walker-state-space"
+      },
+      "section": "## 2. The Crystalline Gas Algorithm",
+      "raw_directive": "94: ### 2.1 The State Space and Configuration Space\n95: \n96: :::{prf:definition} Walker State Space\n97: :label: def-cg-walker-state-space\n98: \n99: Let $d \\geq 3$ be the spatial dimension. The **walker state space** is the phase space\n100: \n101: $$\n102: \\Omega := \\mathcal{X} \\times \\mathcal{V} = \\mathbb{R}^{d} \\times \\mathbb{R}^{d}\n103: $$\n104: \n105: A **walker** is a point $w = (x, v) \\in \\Omega$ consisting of:\n106: - **Position:** $x \\in \\mathcal{X} = \\mathbb{R}^{d}$\n107: - **Velocity:** $v \\in \\mathcal{V} = \\mathbb{R}^{d}$\n108: \n109: The state space $\\Omega$ is equipped with the product metric\n110: \n111: $$\n112: d_{\\Omega}(w_1, w_2) := \\sqrt{\\|x_1 - x_2\\|^2 + \\|v_1 - v_2\\|^2}\n113: $$\n114: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-cg-configuration-space",
+      "title": "Swarm Configuration Space",
+      "start_line": 116,
+      "end_line": 134,
+      "header_lines": [
+        117
+      ],
+      "content_start": 119,
+      "content_end": 133,
+      "content": "119: :label: def-cg-configuration-space\n120: \n121: Fix $N \\geq 2$ entities (walkers). The **swarm configuration space** is\n122: \n123: $$\n124: \\Sigma_N := \\Omega^N = (\\mathbb{R}^{d} \\times \\mathbb{R}^{d})^N\n125: $$\n126: \n127: A **swarm configuration** is an ordered $N$-tuple\n128: \n129: $$\n130: \\mathcal{S} = (w_1, \\ldots, w_N) \\in \\Sigma_N\n131: $$\n132: \n133: We denote by $\\mathcal{S}_x = (x_1, \\ldots, x_N) \\in (\\mathbb{R}^{d})^N$ and $\\mathcal{S}_v = (v_1, \\ldots, v_N) \\in (\\mathbb{R}^{d})^N$ the position and velocity projections.",
+      "metadata": {
+        "label": "def-cg-configuration-space"
+      },
+      "section": "## 2. The Crystalline Gas Algorithm",
+      "raw_directive": "116: :::\n117: \n118: :::{prf:definition} Swarm Configuration Space\n119: :label: def-cg-configuration-space\n120: \n121: Fix $N \\geq 2$ entities (walkers). The **swarm configuration space** is\n122: \n123: $$\n124: \\Sigma_N := \\Omega^N = (\\mathbb{R}^{d} \\times \\mathbb{R}^{d})^N\n125: $$\n126: \n127: A **swarm configuration** is an ordered $N$-tuple\n128: \n129: $$\n130: \\mathcal{S} = (w_1, \\ldots, w_N) \\in \\Sigma_N\n131: $$\n132: \n133: We denote by $\\mathcal{S}_x = (x_1, \\ldots, x_N) \\in (\\mathbb{R}^{d})^N$ and $\\mathcal{S}_v = (v_1, \\ldots, v_N) \\in (\\mathbb{R}^{d})^N$ the position and velocity projections.\n134: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-cg-fitness-landscape",
+      "title": "Fitness Landscape",
+      "start_line": 144,
+      "end_line": 186,
+      "header_lines": [
+        145
+      ],
+      "content_start": 147,
+      "content_end": 185,
+      "content": "147: :label: def-cg-fitness-landscape\n148: \n149: The **fitness landscape** is a smooth function\n150: \n151: $$\n152: \\Phi : \\mathbb{R}^{d} \\to \\mathbb{R}\n153: $$\n154: \n155: satisfying the following properties:\n156: \n157: 1. **Smoothness:** $\\Phi \\in C^{\\infty}(\\mathbb{R}^{d})$\n158: \n159: 2. **Strict Concavity:** The Hessian $H_{\\Phi}(x) := \\nabla^2 \\Phi(x)$ satisfies\n160: \n161: $$\n162: H_{\\Phi}(x) \\preceq -\\kappa I \\quad \\text{for all } x \\in \\mathbb{R}^{d}\n163: $$\n164: \n165: for some constant $\\kappa > 0$, where $A \\preceq B$ means $B - A$ is positive semi-definite, and $I$ is the identity matrix.\n166: \n167: 3. **Coercivity:** There exists $R_0 > 0$ such that\n168: \n169: $$\n170: \\Phi(x) \\leq \\Phi(0) - \\frac{\\kappa}{4} \\|x\\|^2 \\quad \\text{for all } \\|x\\| \\geq R_0\n171: $$\n172: \n173: 4. **Bounded Gradient:** The gradient satisfies\n174: \n175: $$\n176: \\|\\nabla \\Phi(x)\\| \\leq L_{\\Phi}(1 + \\|x\\|) \\quad \\text{for all } x \\in \\mathbb{R}^{d}\n177: $$\n178: \n179: for some constant $L_{\\Phi} > 0$.\n180: \n181: 5. **Bounded Higher Derivatives:** For all $k \\geq 3$, there exists $C_k > 0$ such that\n182: \n183: $$\n184: \\|\\nabla^k \\Phi(x)\\| \\leq C_k \\quad \\text{for all } x \\in \\mathbb{R}^{d}\n185: $$",
+      "metadata": {
+        "label": "def-cg-fitness-landscape"
+      },
+      "section": "## 2. The Crystalline Gas Algorithm",
+      "raw_directive": "144: The dynamics of the Crystalline Gas are governed by a **fitness landscape** $\\Phi : \\mathcal{X} \\to \\mathbb{R}$, which plays the role of a potential function guiding the stochastic ascent.\n145: \n146: :::{prf:definition} Fitness Landscape\n147: :label: def-cg-fitness-landscape\n148: \n149: The **fitness landscape** is a smooth function\n150: \n151: $$\n152: \\Phi : \\mathbb{R}^{d} \\to \\mathbb{R}\n153: $$\n154: \n155: satisfying the following properties:\n156: \n157: 1. **Smoothness:** $\\Phi \\in C^{\\infty}(\\mathbb{R}^{d})$\n158: \n159: 2. **Strict Concavity:** The Hessian $H_{\\Phi}(x) := \\nabla^2 \\Phi(x)$ satisfies\n160: \n161: $$\n162: H_{\\Phi}(x) \\preceq -\\kappa I \\quad \\text{for all } x \\in \\mathbb{R}^{d}\n163: $$\n164: \n165: for some constant $\\kappa > 0$, where $A \\preceq B$ means $B - A$ is positive semi-definite, and $I$ is the identity matrix.\n166: \n167: 3. **Coercivity:** There exists $R_0 > 0$ such that\n168: \n169: $$\n170: \\Phi(x) \\leq \\Phi(0) - \\frac{\\kappa}{4} \\|x\\|^2 \\quad \\text{for all } \\|x\\| \\geq R_0\n171: $$\n172: \n173: 4. **Bounded Gradient:** The gradient satisfies\n174: \n175: $$\n176: \\|\\nabla \\Phi(x)\\| \\leq L_{\\Phi}(1 + \\|x\\|) \\quad \\text{for all } x \\in \\mathbb{R}^{d}\n177: $$\n178: \n179: for some constant $L_{\\Phi} > 0$.\n180: \n181: 5. **Bounded Higher Derivatives:** For all $k \\geq 3$, there exists $C_k > 0$ such that\n182: \n183: $$\n184: \\|\\nabla^k \\Phi(x)\\| \\leq C_k \\quad \\text{for all } x \\in \\mathbb{R}^{d}\n185: $$\n186: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-fitness-interpretation",
+      "title": "Physical Interpretation",
+      "start_line": 188,
+      "end_line": 194,
+      "header_lines": [
+        189
+      ],
+      "content_start": 191,
+      "content_end": 193,
+      "content": "191: :label: rem-fitness-interpretation\n192: \n193: The fitness landscape $\\Phi$ encodes the \"desirability\" of positions in state space. Regions with high $\\Phi(x)$ are preferred, and the algorithm drives walkers toward these regions. The strict concavity ensures a unique global maximum, which serves as the attractor for the dynamics. The coercivity condition ensures that walkers do not escape to infinity, providing effective confinement despite working on unbounded $\\mathbb{R}^{d}$.",
+      "metadata": {
+        "label": "rem-fitness-interpretation"
+      },
+      "section": "## 2. The Crystalline Gas Algorithm",
+      "raw_directive": "188: :::\n189: \n190: :::{prf:remark} Physical Interpretation\n191: :label: rem-fitness-interpretation\n192: \n193: The fitness landscape $\\Phi$ encodes the \"desirability\" of positions in state space. Regions with high $\\Phi(x)$ are preferred, and the algorithm drives walkers toward these regions. The strict concavity ensures a unique global maximum, which serves as the attractor for the dynamics. The coercivity condition ensures that walkers do not escape to infinity, providing effective confinement despite working on unbounded $\\mathbb{R}^{d}$.\n194: "
+    },
+    {
+      "directive_type": "example",
+      "label": "ex-quadratic-fitness",
+      "title": "Quadratic Fitness Landscape",
+      "start_line": 196,
+      "end_line": 211,
+      "header_lines": [
+        197
+      ],
+      "content_start": 199,
+      "content_end": 210,
+      "content": "199: :label: ex-quadratic-fitness\n200: \n201: The simplest example satisfying {prf:ref}`def-cg-fitness-landscape` is the **quadratic potential**\n202: \n203: $$\n204: \\Phi(x) = \\Phi_0 - \\frac{\\kappa}{2} \\|x - x_0\\|^2\n205: $$\n206: \n207: where $\\Phi_0 \\in \\mathbb{R}$, $\\kappa > 0$, and $x_0 \\in \\mathbb{R}^{d}$ is the unique global maximum. This potential has:\n208: - Constant Hessian: $H_{\\Phi}(x) = -\\kappa I$\n209: - Linear gradient: $\\nabla \\Phi(x) = -\\kappa(x - x_0)$\n210: - All higher derivatives vanish: $\\nabla^k \\Phi(x) = 0$ for $k \\geq 3$",
+      "metadata": {
+        "label": "ex-quadratic-fitness"
+      },
+      "section": "## 2. The Crystalline Gas Algorithm",
+      "raw_directive": "196: :::\n197: \n198: :::{prf:example} Quadratic Fitness Landscape\n199: :label: ex-quadratic-fitness\n200: \n201: The simplest example satisfying {prf:ref}`def-cg-fitness-landscape` is the **quadratic potential**\n202: \n203: $$\n204: \\Phi(x) = \\Phi_0 - \\frac{\\kappa}{2} \\|x - x_0\\|^2\n205: $$\n206: \n207: where $\\Phi_0 \\in \\mathbb{R}$, $\\kappa > 0$, and $x_0 \\in \\mathbb{R}^{d}$ is the unique global maximum. This potential has:\n208: - Constant Hessian: $H_{\\Phi}(x) = -\\kappa I$\n209: - Linear gradient: $\\nabla \\Phi(x) = -\\kappa(x - x_0)$\n210: - All higher derivatives vanish: $\\nabla^k \\Phi(x) = 0$ for $k \\geq 3$\n211: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-cg-dynamics",
+      "title": "Crystalline Gas Dynamics",
+      "start_line": 217,
+      "end_line": 231,
+      "header_lines": [
+        218
+      ],
+      "content_start": 220,
+      "content_end": 230,
+      "content": "220: :label: def-cg-dynamics\n221: \n222: Let $\\mathcal{S}(t) = (w_1(t), \\ldots, w_N(t)) \\in \\Sigma_N$ denote the swarm configuration at discrete time $t \\in \\mathbb{N} \\cdot \\Delta t$. The **Crystalline Gas update operator** is the composition\n223: \n224: $$\n225: \\Psi_{\\text{CG}} := \\Psi_{\\text{thermal}} \\circ \\Psi_{\\text{ascent}}\n226: $$\n227: \n228: where $\\Psi_{\\text{ascent}}$ and $\\Psi_{\\text{thermal}}$ are defined below. The time evolution is given by\n229: \n230: $$",
+      "metadata": {
+        "label": "def-cg-dynamics"
+      },
+      "section": "## 2. The Crystalline Gas Algorithm",
+      "raw_directive": "217: The Crystalline Gas evolves through a discrete-time Markov process on $\\Sigma_N$. Each time step consists of two operators applied sequentially: **Geometric Ascent** followed by **Thermal Fluctuation**.\n218: \n219: :::{prf:definition} Crystalline Gas Dynamics\n220: :label: def-cg-dynamics\n221: \n222: Let $\\mathcal{S}(t) = (w_1(t), \\ldots, w_N(t)) \\in \\Sigma_N$ denote the swarm configuration at discrete time $t \\in \\mathbb{N} \\cdot \\Delta t$. The **Crystalline Gas update operator** is the composition\n223: \n224: $$\n225: \\Psi_{\\text{CG}} := \\Psi_{\\text{thermal}} \\circ \\Psi_{\\text{ascent}}\n226: $$\n227: \n228: where $\\Psi_{\\text{ascent}}$ and $\\Psi_{\\text{thermal}}$ are defined below. The time evolution is given by\n229: \n230: $$\n231: \\mathcal{S}(t + \\Delta t) = \\Psi_{\\text{CG}}(\\mathcal{S}(t))"
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-cg-ascent-operator",
+      "title": "Geometric Ascent Operator",
+      "start_line": 235,
+      "end_line": 285,
+      "header_lines": [
+        236
+      ],
+      "content_start": 238,
+      "content_end": 284,
+      "content": "238: :label: def-cg-ascent-operator\n239: \n240: The **Geometric Ascent operator** $\\Psi_{\\text{ascent}} : \\Sigma_N \\to \\Sigma_N$ updates the position of each walker according to a Hessian-informed gradient ascent step on a collective fitness potential.\n241: \n242: For each walker $i \\in \\{1, \\ldots, N\\}$, given configuration $\\mathcal{S} = (w_1, \\ldots, w_N)$ with $w_i = (x_i, v_i)$:\n243: \n244: 1. **Define Collective Fitness Potential:** Let\n245: \n246: $$\n247: \\Psi(x_1, \\ldots, x_N) := \\frac{1}{\\beta} \\log \\sum_{j=1}^N e^{\\beta \\Phi(x_j)}\n248: $$\n249: \n250: where:\n251: - $\\Phi : \\mathbb{R}^d \\to \\mathbb{R}$ is the fitness landscape ({prf:ref}`def-cg-fitness-landscape`)\n252: - $\\beta > 0$ is the **inverse temperature parameter** (controls selection strength)\n253: \n254: This is the **log-sum-exp** (smooth maximum) of individual fitness values.\n255: \n256: 2. **Compute Gradient:** The gradient of $\\Psi$ with respect to walker $i$'s position is:\n257: \n258: $$\n259: \\nabla_{x_i} \\Psi(x) = \\frac{e^{\\beta \\Phi(x_i)}}{\\sum_{k=1}^N e^{\\beta \\Phi(x_k)}} \\nabla \\Phi(x_i) = p_i \\cdot \\nabla \\Phi(x_i)\n260: $$\n261: \n262: where $p_i := \\frac{e^{\\beta \\Phi(x_i)}}{\\sum_{k=1}^N e^{\\beta \\Phi(x_k)}}$ is the softmax weight of walker $i$.\n263: \n264: 3. **Gradient Ascent Update:** Update the walker state via\n265: \n266: $$\n267: \\begin{aligned}\n268: x_i' &= x_i + \\eta \\cdot (-H_{\\Phi}(x_i) + \\varepsilon_{\\text{reg}} I)^{-1} \\nabla_{x_i} \\Psi(x) \\\\\n269: v_i' &= v_i + \\frac{1}{\\Delta t}(x_i' - x_i)\n270: \\end{aligned}\n271: $$\n272: \n273: where:\n274: - $\\eta \\in (0, 1]$ is the **step size parameter**\n275: - $(-H_{\\Phi}(x_i) + \\varepsilon_{\\text{reg}} I)^{-1}$ is the **emergent metric tensor** at $x_i$\n276: - The velocity update reflects the displacement with timescale $\\Delta t$\n277: \n278: The updated configuration is $\\mathcal{S}' = (w_1', \\ldots, w_N')$ with $w_i' = (x_i', v_i')$.\n279: \n280: **Note:** This defines the **matter force** from the fitness landscape. The full dynamics in Section 4 includes an additional **gauge force** that mediates interactions through SU(3) link variables, yielding:\n281: \n282: $$\n283: F_i^{\\text{total}} = F_i^{\\text{matter}} + F_i^{\\text{gauge}}\n284: $$",
+      "metadata": {
+        "label": "def-cg-ascent-operator"
+      },
+      "section": "## 2. The Crystalline Gas Algorithm",
+      "raw_directive": "235: #### 2.3.1 The Geometric Ascent Operator\n236: \n237: :::{prf:definition} Geometric Ascent Operator\n238: :label: def-cg-ascent-operator\n239: \n240: The **Geometric Ascent operator** $\\Psi_{\\text{ascent}} : \\Sigma_N \\to \\Sigma_N$ updates the position of each walker according to a Hessian-informed gradient ascent step on a collective fitness potential.\n241: \n242: For each walker $i \\in \\{1, \\ldots, N\\}$, given configuration $\\mathcal{S} = (w_1, \\ldots, w_N)$ with $w_i = (x_i, v_i)$:\n243: \n244: 1. **Define Collective Fitness Potential:** Let\n245: \n246: $$\n247: \\Psi(x_1, \\ldots, x_N) := \\frac{1}{\\beta} \\log \\sum_{j=1}^N e^{\\beta \\Phi(x_j)}\n248: $$\n249: \n250: where:\n251: - $\\Phi : \\mathbb{R}^d \\to \\mathbb{R}$ is the fitness landscape ({prf:ref}`def-cg-fitness-landscape`)\n252: - $\\beta > 0$ is the **inverse temperature parameter** (controls selection strength)\n253: \n254: This is the **log-sum-exp** (smooth maximum) of individual fitness values.\n255: \n256: 2. **Compute Gradient:** The gradient of $\\Psi$ with respect to walker $i$'s position is:\n257: \n258: $$\n259: \\nabla_{x_i} \\Psi(x) = \\frac{e^{\\beta \\Phi(x_i)}}{\\sum_{k=1}^N e^{\\beta \\Phi(x_k)}} \\nabla \\Phi(x_i) = p_i \\cdot \\nabla \\Phi(x_i)\n260: $$\n261: \n262: where $p_i := \\frac{e^{\\beta \\Phi(x_i)}}{\\sum_{k=1}^N e^{\\beta \\Phi(x_k)}}$ is the softmax weight of walker $i$.\n263: \n264: 3. **Gradient Ascent Update:** Update the walker state via\n265: \n266: $$\n267: \\begin{aligned}\n268: x_i' &= x_i + \\eta \\cdot (-H_{\\Phi}(x_i) + \\varepsilon_{\\text{reg}} I)^{-1} \\nabla_{x_i} \\Psi(x) \\\\\n269: v_i' &= v_i + \\frac{1}{\\Delta t}(x_i' - x_i)\n270: \\end{aligned}\n271: $$\n272: \n273: where:\n274: - $\\eta \\in (0, 1]$ is the **step size parameter**\n275: - $(-H_{\\Phi}(x_i) + \\varepsilon_{\\text{reg}} I)^{-1}$ is the **emergent metric tensor** at $x_i$\n276: - The velocity update reflects the displacement with timescale $\\Delta t$\n277: \n278: The updated configuration is $\\mathcal{S}' = (w_1', \\ldots, w_N')$ with $w_i' = (x_i', v_i')$.\n279: \n280: **Note:** This defines the **matter force** from the fitness landscape. The full dynamics in Section 4 includes an additional **gauge force** that mediates interactions through SU(3) link variables, yielding:\n281: \n282: $$\n283: F_i^{\\text{total}} = F_i^{\\text{matter}} + F_i^{\\text{gauge}}\n284: $$\n285: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-metric-regularity",
+      "title": "Metric Tensor and Regularity",
+      "start_line": 287,
+      "end_line": 303,
+      "header_lines": [
+        288
+      ],
+      "content_start": 290,
+      "content_end": 302,
+      "content": "290: :label: rem-metric-regularity\n291: \n292: Since $\\Phi$ is strictly concave with $H_{\\Phi}(x) \\preceq -\\kappa I$, we have $-H_{\\Phi}(x) \\succeq \\kappa I \\succ 0$. Thus, the emergent metric tensor:\n293: \n294: $$\n295: g(x) := (-H_{\\Phi}(x) + \\varepsilon_{\\text{reg}} I)^{-1}\n296: $$\n297: \n298: is positive definite and well-defined for all $x \\in \\mathbb{R}^{d}$. The metric satisfies:\n299: \n300: $$\n301: \\kappa^{-1} I \\preceq g(x) \\preceq (\\kappa + \\varepsilon_{\\text{reg}})^{-1} I\n302: $$",
+      "metadata": {
+        "label": "rem-metric-regularity"
+      },
+      "section": "## 2. The Crystalline Gas Algorithm",
+      "raw_directive": "287: :::\n288: \n289: :::{prf:remark} Metric Tensor and Regularity\n290: :label: rem-metric-regularity\n291: \n292: Since $\\Phi$ is strictly concave with $H_{\\Phi}(x) \\preceq -\\kappa I$, we have $-H_{\\Phi}(x) \\succeq \\kappa I \\succ 0$. Thus, the emergent metric tensor:\n293: \n294: $$\n295: g(x) := (-H_{\\Phi}(x) + \\varepsilon_{\\text{reg}} I)^{-1}\n296: $$\n297: \n298: is positive definite and well-defined for all $x \\in \\mathbb{R}^{d}$. The metric satisfies:\n299: \n300: $$\n301: \\kappa^{-1} I \\preceq g(x) \\preceq (\\kappa + \\varepsilon_{\\text{reg}})^{-1} I\n302: $$\n303: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-ascent-interpretation",
+      "title": "Physical Interpretation: Collective Gradient Ascent",
+      "start_line": 305,
+      "end_line": 317,
+      "header_lines": [
+        306
+      ],
+      "content_start": 308,
+      "content_end": 316,
+      "content": "308: :label: rem-ascent-interpretation\n309: \n310: The geometric ascent operator encodes **collective fitness optimization** in the emergent Riemannian geometry:\n311: \n312: 1. **Collective Potential:** $\\Psi = \\frac{1}{\\beta}\\log \\sum_j e^{\\beta \\Phi(x_j)}$ is the smooth maximum (log-sum-exp) of all walker fitness values, providing a global measure of swarm quality.\n313: \n314: 2. **Weighted Gradient:** Each walker $i$ moves along $\\nabla_{x_i} \\Psi = p_i \\nabla \\Phi(x_i)$, where $p_i = \\frac{e^{\\beta\\Phi(x_i)}}{\\sum_k e^{\\beta\\Phi(x_k)}}$. High-fitness walkers have larger weights and contribute more to the collective ascent.\n315: \n316: 3. **Riemannian Ascent:** The metric tensor $g = (-H_\\Phi + \\varepsilon I)^{-1}$ preconditions the gradient, creating a **second-order optimization method** (natural gradient) that accounts for the landscape's curvature. This curvature generates the **Yang-Mills gauge fields** (Section 4).",
+      "metadata": {
+        "label": "rem-ascent-interpretation"
+      },
+      "section": "## 2. The Crystalline Gas Algorithm",
+      "raw_directive": "305: :::\n306: \n307: :::{prf:remark} Physical Interpretation: Collective Gradient Ascent\n308: :label: rem-ascent-interpretation\n309: \n310: The geometric ascent operator encodes **collective fitness optimization** in the emergent Riemannian geometry:\n311: \n312: 1. **Collective Potential:** $\\Psi = \\frac{1}{\\beta}\\log \\sum_j e^{\\beta \\Phi(x_j)}$ is the smooth maximum (log-sum-exp) of all walker fitness values, providing a global measure of swarm quality.\n313: \n314: 2. **Weighted Gradient:** Each walker $i$ moves along $\\nabla_{x_i} \\Psi = p_i \\nabla \\Phi(x_i)$, where $p_i = \\frac{e^{\\beta\\Phi(x_i)}}{\\sum_k e^{\\beta\\Phi(x_k)}}$. High-fitness walkers have larger weights and contribute more to the collective ascent.\n315: \n316: 3. **Riemannian Ascent:** The metric tensor $g = (-H_\\Phi + \\varepsilon I)^{-1}$ preconditions the gradient, creating a **second-order optimization method** (natural gradient) that accounts for the landscape's curvature. This curvature generates the **Yang-Mills gauge fields** (Section 4).\n317: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-cg-thermal-operator",
+      "title": "Thermal Fluctuation Operator",
+      "start_line": 321,
+      "end_line": 361,
+      "header_lines": [
+        322
+      ],
+      "content_start": 324,
+      "content_end": 360,
+      "content": "324: :label: def-cg-thermal-operator\n325: \n326: The **Thermal Fluctuation operator** $\\Psi_{\\text{thermal}} : \\Sigma_N \\to \\Sigma_N$ adds state-dependent Gaussian noise to each walker's position and velocity.\n327: \n328: For each walker $i \\in \\{1, \\ldots, N\\}$, given configuration $\\mathcal{S}' = (w_1', \\ldots, w_N')$ from the ascent step with $w_i' = (x_i', v_i')$:\n329: \n330: 1. **Define Diffusion Tensor:** Let\n331: \n332: $$\n333: \\Sigma_{\\text{reg}}(x) := (-H_{\\Phi}(x) + \\varepsilon_{\\text{reg}} I)^{-1/2}\n334: $$\n335: \n336: where $\\varepsilon_{\\text{reg}} > 0$ is the **regularization parameter**. The square root is well-defined since $-H_{\\Phi}(x) + \\varepsilon_{\\text{reg}} I \\succ 0$ is positive definite (because $H_\\Phi(x) \\preceq -\\kappa I$ implies $-H_\\Phi(x) \\succeq \\kappa I$, so $-H_\\Phi(x) + \\varepsilon_{\\text{reg}} I \\succeq (\\kappa + \\varepsilon_{\\text{reg}}) I \\succ 0$).\n337: \n338: 2. **Sample Noise:** Draw independent Gaussian random vectors\n339: \n340: $$\n341: \\xi_i^{(x)}, \\xi_i^{(v)} \\sim \\mathcal{N}(0, I_d) \\in \\mathbb{R}^{d}\n342: $$\n343: \n344: where $I_d$ is the $d \\times d$ identity matrix.\n345: \n346: 3. **Stochastic Update (BAOAB O-step):** Update the walker state via\n347: \n348: $$\n349: \\begin{aligned}\n350: x_i(t + \\Delta t) &= x_i' + \\sqrt{\\Delta t} \\cdot \\sigma_x \\cdot \\Sigma_{\\text{reg}}(x_i') \\xi_i^{(x)} \\\\\n351: v_i(t + \\Delta t) &= c_1 \\, v_i' + c_2 \\, \\xi_i^{(v)}\n352: \\end{aligned}\n353: $$\n354: \n355: where:\n356: - $\\sigma_x > 0$ is the **position noise scale**\n357: - $\\sigma_v > 0$ is the **velocity noise scale**\n358: - $\\gamma_{\\text{fric}} > 0$ is the **friction coefficient**\n359: - $c_1 := e^{-\\gamma_{\\text{fric}} \\Delta t}$ is the **friction decay factor**\n360: - $c_2 := \\sigma_v \\sqrt{1 - c_1^2}$ is the **equipartition noise amplitude**",
+      "metadata": {
+        "label": "def-cg-thermal-operator"
+      },
+      "section": "## 2. The Crystalline Gas Algorithm",
+      "raw_directive": "321: #### 2.3.2 The Thermal Fluctuation Operator\n322: \n323: :::{prf:definition} Thermal Fluctuation Operator\n324: :label: def-cg-thermal-operator\n325: \n326: The **Thermal Fluctuation operator** $\\Psi_{\\text{thermal}} : \\Sigma_N \\to \\Sigma_N$ adds state-dependent Gaussian noise to each walker's position and velocity.\n327: \n328: For each walker $i \\in \\{1, \\ldots, N\\}$, given configuration $\\mathcal{S}' = (w_1', \\ldots, w_N')$ from the ascent step with $w_i' = (x_i', v_i')$:\n329: \n330: 1. **Define Diffusion Tensor:** Let\n331: \n332: $$\n333: \\Sigma_{\\text{reg}}(x) := (-H_{\\Phi}(x) + \\varepsilon_{\\text{reg}} I)^{-1/2}\n334: $$\n335: \n336: where $\\varepsilon_{\\text{reg}} > 0$ is the **regularization parameter**. The square root is well-defined since $-H_{\\Phi}(x) + \\varepsilon_{\\text{reg}} I \\succ 0$ is positive definite (because $H_\\Phi(x) \\preceq -\\kappa I$ implies $-H_\\Phi(x) \\succeq \\kappa I$, so $-H_\\Phi(x) + \\varepsilon_{\\text{reg}} I \\succeq (\\kappa + \\varepsilon_{\\text{reg}}) I \\succ 0$).\n337: \n338: 2. **Sample Noise:** Draw independent Gaussian random vectors\n339: \n340: $$\n341: \\xi_i^{(x)}, \\xi_i^{(v)} \\sim \\mathcal{N}(0, I_d) \\in \\mathbb{R}^{d}\n342: $$\n343: \n344: where $I_d$ is the $d \\times d$ identity matrix.\n345: \n346: 3. **Stochastic Update (BAOAB O-step):** Update the walker state via\n347: \n348: $$\n349: \\begin{aligned}\n350: x_i(t + \\Delta t) &= x_i' + \\sqrt{\\Delta t} \\cdot \\sigma_x \\cdot \\Sigma_{\\text{reg}}(x_i') \\xi_i^{(x)} \\\\\n351: v_i(t + \\Delta t) &= c_1 \\, v_i' + c_2 \\, \\xi_i^{(v)}\n352: \\end{aligned}\n353: $$\n354: \n355: where:\n356: - $\\sigma_x > 0$ is the **position noise scale**\n357: - $\\sigma_v > 0$ is the **velocity noise scale**\n358: - $\\gamma_{\\text{fric}} > 0$ is the **friction coefficient**\n359: - $c_1 := e^{-\\gamma_{\\text{fric}} \\Delta t}$ is the **friction decay factor**\n360: - $c_2 := \\sigma_v \\sqrt{1 - c_1^2}$ is the **equipartition noise amplitude**\n361: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-noise-anisotropy",
+      "title": "Anisotropic Position Noise vs. Ornstein-Uhlenbeck Velocity Dynamics",
+      "start_line": 363,
+      "end_line": 381,
+      "header_lines": [
+        364
+      ],
+      "content_start": 366,
+      "content_end": 380,
+      "content": "366: :label: rem-noise-anisotropy\n367: \n368: The position noise is **anisotropic** and **state-dependent**, scaled by $\\Sigma_{\\text{reg}}(x)$, which is the inverse square root of the regularized Hessian. This coupling between diffusion and geometry is **Axiom V (Geometrization of Information)** from the foundational framework.\n369: \n370: In contrast, the velocity update follows **Ornstein-Uhlenbeck (OU) dynamics** with friction coefficient $\\gamma_{\\text{fric}}$. This is the \"O-step\" of the **BAOAB integrator** used in molecular dynamics. The OU process has:\n371: - **Friction term**: $c_1 v_i' = e^{-\\gamma_{\\text{fric}} \\Delta t} v_i'$ (exponential decay toward zero)\n372: - **Noise term**: $c_2 \\xi_i^{(v)} = \\sigma_v \\sqrt{1 - e^{-2\\gamma_{\\text{fric}} \\Delta t}} \\xi_i^{(v)}$ (Gaussian fluctuation)\n373: - **Invariant measure**: $\\pi(v) \\propto \\exp(-\\|v\\|^2/(2\\sigma_v^2))$ (Maxwell-Boltzmann distribution)\n374: - **Spectral gap**: $\\lambda_{\\text{gap}}^{(v)} = \\gamma_{\\text{fric}} > 0$ (exponential convergence to equilibrium)\n375: \n376: The friction term is **crucial** for establishing a spectral gap in velocity space. Without it, free Brownian motion has continuous spectrum with no gap.\n377: \n378: The anisotropic position noise ensures that:\n379: - In directions of high curvature (large $|-H_{\\Phi}|$), diffusion is suppressed\n380: - In directions of low curvature (small $|-H_{\\Phi}|$), diffusion is enhanced",
+      "metadata": {
+        "label": "rem-noise-anisotropy"
+      },
+      "section": "## 2. The Crystalline Gas Algorithm",
+      "raw_directive": "363: :::\n364: \n365: :::{prf:remark} Anisotropic Position Noise vs. Ornstein-Uhlenbeck Velocity Dynamics\n366: :label: rem-noise-anisotropy\n367: \n368: The position noise is **anisotropic** and **state-dependent**, scaled by $\\Sigma_{\\text{reg}}(x)$, which is the inverse square root of the regularized Hessian. This coupling between diffusion and geometry is **Axiom V (Geometrization of Information)** from the foundational framework.\n369: \n370: In contrast, the velocity update follows **Ornstein-Uhlenbeck (OU) dynamics** with friction coefficient $\\gamma_{\\text{fric}}$. This is the \"O-step\" of the **BAOAB integrator** used in molecular dynamics. The OU process has:\n371: - **Friction term**: $c_1 v_i' = e^{-\\gamma_{\\text{fric}} \\Delta t} v_i'$ (exponential decay toward zero)\n372: - **Noise term**: $c_2 \\xi_i^{(v)} = \\sigma_v \\sqrt{1 - e^{-2\\gamma_{\\text{fric}} \\Delta t}} \\xi_i^{(v)}$ (Gaussian fluctuation)\n373: - **Invariant measure**: $\\pi(v) \\propto \\exp(-\\|v\\|^2/(2\\sigma_v^2))$ (Maxwell-Boltzmann distribution)\n374: - **Spectral gap**: $\\lambda_{\\text{gap}}^{(v)} = \\gamma_{\\text{fric}} > 0$ (exponential convergence to equilibrium)\n375: \n376: The friction term is **crucial** for establishing a spectral gap in velocity space. Without it, free Brownian motion has continuous spectrum with no gap.\n377: \n378: The anisotropic position noise ensures that:\n379: - In directions of high curvature (large $|-H_{\\Phi}|$), diffusion is suppressed\n380: - In directions of low curvature (small $|-H_{\\Phi}|$), diffusion is enhanced\n381: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-cg-sde-connection",
+      "title": "Connection to SDEs",
+      "start_line": 383,
+      "end_line": 405,
+      "header_lines": [
+        384
+      ],
+      "content_start": 386,
+      "content_end": 404,
+      "content": "386: :label: rem-cg-sde-connection\n387: \n388: In the continuous-time limit $\\Delta t \\to 0$, the Crystalline Gas dynamics formally converge to a system of coupled stochastic differential equations (SDEs):\n389: \n390: $$\n391: \\begin{aligned}\n392: \\mathrm{d}x_i &= v_i \\, \\mathrm{d}t + \\sigma_x \\Sigma_{\\text{reg}}(x_i) \\, \\mathrm{d}W_i^{(x)} + \\eta \\, g(x_i) \\nabla_{x_i} \\Psi(x) \\, \\mathrm{d}t \\\\\n393: \\mathrm{d}v_i &= -\\gamma_{\\text{fric}} v_i \\, \\mathrm{d}t + \\sigma_v \\sqrt{2\\gamma_{\\text{fric}}} \\, \\mathrm{d}W_i^{(v)}\n394: \\end{aligned}\n395: $$\n396: \n397: where:\n398: - $W_i^{(x)}, W_i^{(v)}$ are independent $d$-dimensional Brownian motions\n399: - $\\Psi(x) = \\frac{1}{\\beta}\\log\\sum_{j=1}^N e^{\\beta\\Phi(x_j)}$ is the log-sum-exp collective potential\n400: - $g(x_i) = (-H_{\\Phi}(x_i) + \\varepsilon_{\\text{reg}} I)^{-1}$ is the emergent Riemannian metric\n401: - $\\nabla_{x_i} \\Psi = p_i \\nabla\\Phi(x_i)$ with $p_i = \\frac{e^{\\beta\\Phi(x_i)}}{\\sum_k e^{\\beta\\Phi(x_k)}}$\n402: - The friction term $-\\gamma_{\\text{fric}} v_i$ ensures **velocity confinement** (necessary for spectral gap)\n403: \n404: The velocity equation is an **Ornstein-Uhlenbeck (OU) process** with invariant measure $\\pi(v) \\propto \\exp(-\\|v\\|^2/(2\\sigma_v^2))$ and spectral gap $\\lambda_{\\text{gap}}^{(v)} = \\gamma_{\\text{fric}} > 0$.",
+      "metadata": {
+        "label": "rem-cg-sde-connection"
+      },
+      "section": "## 2. The Crystalline Gas Algorithm",
+      "raw_directive": "383: :::\n384: \n385: :::{prf:remark} Connection to SDEs\n386: :label: rem-cg-sde-connection\n387: \n388: In the continuous-time limit $\\Delta t \\to 0$, the Crystalline Gas dynamics formally converge to a system of coupled stochastic differential equations (SDEs):\n389: \n390: $$\n391: \\begin{aligned}\n392: \\mathrm{d}x_i &= v_i \\, \\mathrm{d}t + \\sigma_x \\Sigma_{\\text{reg}}(x_i) \\, \\mathrm{d}W_i^{(x)} + \\eta \\, g(x_i) \\nabla_{x_i} \\Psi(x) \\, \\mathrm{d}t \\\\\n393: \\mathrm{d}v_i &= -\\gamma_{\\text{fric}} v_i \\, \\mathrm{d}t + \\sigma_v \\sqrt{2\\gamma_{\\text{fric}}} \\, \\mathrm{d}W_i^{(v)}\n394: \\end{aligned}\n395: $$\n396: \n397: where:\n398: - $W_i^{(x)}, W_i^{(v)}$ are independent $d$-dimensional Brownian motions\n399: - $\\Psi(x) = \\frac{1}{\\beta}\\log\\sum_{j=1}^N e^{\\beta\\Phi(x_j)}$ is the log-sum-exp collective potential\n400: - $g(x_i) = (-H_{\\Phi}(x_i) + \\varepsilon_{\\text{reg}} I)^{-1}$ is the emergent Riemannian metric\n401: - $\\nabla_{x_i} \\Psi = p_i \\nabla\\Phi(x_i)$ with $p_i = \\frac{e^{\\beta\\Phi(x_i)}}{\\sum_k e^{\\beta\\Phi(x_k)}}$\n402: - The friction term $-\\gamma_{\\text{fric}} v_i$ ensures **velocity confinement** (necessary for spectral gap)\n403: \n404: The velocity equation is an **Ornstein-Uhlenbeck (OU) process** with invariant measure $\\pi(v) \\propto \\exp(-\\|v\\|^2/(2\\sigma_v^2))$ and spectral gap $\\lambda_{\\text{gap}}^{(v)} = \\gamma_{\\text{fric}} > 0$.\n405: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-cg-markov-kernel",
+      "title": "Crystalline Gas Markov Kernel",
+      "start_line": 409,
+      "end_line": 438,
+      "header_lines": [
+        410
+      ],
+      "content_start": 412,
+      "content_end": 437,
+      "content": "412: :label: def-cg-markov-kernel\n413: \n414: The Crystalline Gas dynamics define a discrete-time Markov process on $\\Sigma_N$ with transition kernel $P_{\\text{CG}} : \\Sigma_N \\times \\mathcal{B}(\\Sigma_N) \\to [0, 1]$ given by\n415: \n416: $$\n417: P_{\\text{CG}}(\\mathcal{S}, A) := \\mathbb{P}(\\Psi_{\\text{CG}}(\\mathcal{S}) \\in A)\n418: $$\n419: \n420: for all $\\mathcal{S} \\in \\Sigma_N$ and $A \\in \\mathcal{B}(\\Sigma_N)$, where the probability is with respect to the random noise $\\{\\xi_i^{(x)}, \\xi_i^{(v)}\\}_{i=1}^N$ in the thermal fluctuation operator {prf:ref}`def-cg-thermal-operator`.\n421: \n422: The kernel satisfies:\n423: 1. **Feller Property:** For any bounded continuous $f : \\Sigma_N \\to \\mathbb{R}$, the function $P_{\\text{CG}} f : \\Sigma_N \\to \\mathbb{R}$ defined by\n424: \n425: $$\n426: (P_{\\text{CG}} f)(\\mathcal{S}) := \\int_{\\Sigma_N} f(\\mathcal{S}') \\, P_{\\text{CG}}(\\mathcal{S}, \\mathrm{d}\\mathcal{S}')\n427: $$\n428: \n429: is bounded and continuous.\n430: \n431: 2. **Irreducibility:** For any $\\mathcal{S}_0, \\mathcal{S}_1 \\in \\Sigma_N$ and any $\\varepsilon > 0$, there exists $n \\in \\mathbb{N}$ such that\n432: \n433: $$\n434: P_{\\text{CG}}^{(n)}(\\mathcal{S}_0, B_{\\varepsilon}(\\mathcal{S}_1)) > 0\n435: $$\n436: \n437: where $B_{\\varepsilon}(\\mathcal{S}_1)$ is the $\\varepsilon$-ball around $\\mathcal{S}_1$.",
+      "metadata": {
+        "label": "def-cg-markov-kernel"
+      },
+      "section": "## 2. The Crystalline Gas Algorithm",
+      "raw_directive": "409: ### 2.4 The Markov Transition Kernel\n410: \n411: :::{prf:definition} Crystalline Gas Markov Kernel\n412: :label: def-cg-markov-kernel\n413: \n414: The Crystalline Gas dynamics define a discrete-time Markov process on $\\Sigma_N$ with transition kernel $P_{\\text{CG}} : \\Sigma_N \\times \\mathcal{B}(\\Sigma_N) \\to [0, 1]$ given by\n415: \n416: $$\n417: P_{\\text{CG}}(\\mathcal{S}, A) := \\mathbb{P}(\\Psi_{\\text{CG}}(\\mathcal{S}) \\in A)\n418: $$\n419: \n420: for all $\\mathcal{S} \\in \\Sigma_N$ and $A \\in \\mathcal{B}(\\Sigma_N)$, where the probability is with respect to the random noise $\\{\\xi_i^{(x)}, \\xi_i^{(v)}\\}_{i=1}^N$ in the thermal fluctuation operator {prf:ref}`def-cg-thermal-operator`.\n421: \n422: The kernel satisfies:\n423: 1. **Feller Property:** For any bounded continuous $f : \\Sigma_N \\to \\mathbb{R}$, the function $P_{\\text{CG}} f : \\Sigma_N \\to \\mathbb{R}$ defined by\n424: \n425: $$\n426: (P_{\\text{CG}} f)(\\mathcal{S}) := \\int_{\\Sigma_N} f(\\mathcal{S}') \\, P_{\\text{CG}}(\\mathcal{S}, \\mathrm{d}\\mathcal{S}')\n427: $$\n428: \n429: is bounded and continuous.\n430: \n431: 2. **Irreducibility:** For any $\\mathcal{S}_0, \\mathcal{S}_1 \\in \\Sigma_N$ and any $\\varepsilon > 0$, there exists $n \\in \\mathbb{N}$ such that\n432: \n433: $$\n434: P_{\\text{CG}}^{(n)}(\\mathcal{S}_0, B_{\\varepsilon}(\\mathcal{S}_1)) > 0\n435: $$\n436: \n437: where $B_{\\varepsilon}(\\mathcal{S}_1)$ is the $\\varepsilon$-ball around $\\mathcal{S}_1$.\n438: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-351",
+      "title": "Verification of Markov Properties",
+      "start_line": 440,
+      "end_line": 448,
+      "header_lines": [],
+      "content_start": 441,
+      "content_end": 447,
+      "content": "441: \n442: :::{prf:proof} Verification of Markov Properties\n443: The properties follow directly from the structure of $\\Psi_{\\text{CG}}$:\n444: \n445: 1. **Feller:** The geometric ascent $\\Psi_{\\text{ascent}}$ is deterministic and Lipschitz continuous (by {prf:ref}`rem-hessian-inversion`). The thermal fluctuation $\\Psi_{\\text{thermal}}$ is a Gaussian convolution, which preserves continuity and boundedness. Thus, $\\Psi_{\\text{CG}}$ maps continuous functions to continuous functions, establishing the Feller property.\n446: \n447: 2. **Irreducibility:** The Gaussian noise in $\\Psi_{\\text{thermal}}$ has full support on $\\mathbb{R}^{d}$. Given any two configurations $\\mathcal{S}_0, \\mathcal{S}_1$, there exists a positive-probability path connecting them in finitely many steps (by iterating the noise). This establishes irreducibility.",
+      "metadata": {},
+      "section": "## 2. The Crystalline Gas Algorithm",
+      "raw_directive": "440: :::\n441: \n442: :::{prf:proof} Verification of Markov Properties\n443: The properties follow directly from the structure of $\\Psi_{\\text{CG}}$:\n444: \n445: 1. **Feller:** The geometric ascent $\\Psi_{\\text{ascent}}$ is deterministic and Lipschitz continuous (by {prf:ref}`rem-hessian-inversion`). The thermal fluctuation $\\Psi_{\\text{thermal}}$ is a Gaussian convolution, which preserves continuity and boundedness. Thus, $\\Psi_{\\text{CG}}$ maps continuous functions to continuous functions, establishing the Feller property.\n446: \n447: 2. **Irreducibility:** The Gaussian noise in $\\Psi_{\\text{thermal}}$ has full support on $\\mathbb{R}^{d}$. Given any two configurations $\\mathcal{S}_0, \\mathcal{S}_1$, there exists a positive-probability path connecting them in finitely many steps (by iterating the noise). This establishes irreducibility.\n448: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-cg-markov-history",
+      "title": "Markov Assumption and History",
+      "start_line": 450,
+      "end_line": 456,
+      "header_lines": [
+        451
+      ],
+      "content_start": 453,
+      "content_end": 455,
+      "content": "453: :label: rem-cg-markov-history\n454: \n455: The Crystalline Gas is **Markovian:** the next state $\\mathcal{S}(t + \\Delta t)$ depends only on the current state $\\mathcal{S}(t)$, not on the full history $\\{\\mathcal{S}(s) : s < t\\}$.",
+      "metadata": {
+        "label": "rem-cg-markov-history"
+      },
+      "section": "## 2. The Crystalline Gas Algorithm",
+      "raw_directive": "450: :::\n451: \n452: :::{prf:remark} Markov Assumption and History\n453: :label: rem-cg-markov-history\n454: \n455: The Crystalline Gas is **Markovian:** the next state $\\mathcal{S}(t + \\Delta t)$ depends only on the current state $\\mathcal{S}(t)$, not on the full history $\\{\\mathcal{S}(s) : s < t\\}$.\n456: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

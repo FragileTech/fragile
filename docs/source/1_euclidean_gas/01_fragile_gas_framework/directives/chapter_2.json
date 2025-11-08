@@ -1,0 +1,249 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
+  "directive_count": 13,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-walker",
+      "title": "Walker",
+      "start_line": 153,
+      "end_line": 165,
+      "header_lines": [
+        154
+      ],
+      "content_start": 156,
+      "content_end": 164,
+      "content": "156: :label: def-walker\n157: \n158: A **walker**, denoted $w$, is a tuple consisting of a position and a status:\n159: \n160: $$\n161: w := (x, s)\n162: $$\n163: \n164: where:",
+      "metadata": {
+        "label": "def-walker"
+      },
+      "section": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
+      "raw_directive": "153: :::\n154: \n155: :::{prf:definition} Walker\n156: :label: def-walker\n157: \n158: A **walker**, denoted $w$, is a tuple consisting of a position and a status:\n159: \n160: $$\n161: w := (x, s)\n162: $$\n163: \n164: where:\n165: 1.  $x \\in \\mathcal{X}$ is the walker's **position** in a state space $\\mathcal{X}$."
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-swarm-and-state-space",
+      "title": "Swarm and Swarm State Space",
+      "start_line": 180,
+      "end_line": 195,
+      "header_lines": [
+        181
+      ],
+      "content_start": 183,
+      "content_end": 194,
+      "content": "183: :label: def-swarm-and-state-space\n184: \n185: A **swarm**, denoted $\\mathcal{S}$, is an N-tuple of walkers:\n186: \n187: $$\n188: \\mathcal{S} := (w_1, w_2, \\dots, w_N)\n189: $$\n190: \n191: The **Swarm State Space**, denoted $\\Sigma_N$, is the set of all possible swarms of size N. It is the N-fold Cartesian product of the single-walker state space:\n192: \n193: $$\n194: \\Sigma_N := (\\mathcal{X} \\times \\{0, 1\\})^N",
+      "metadata": {
+        "label": "def-swarm-and-state-space"
+      },
+      "section": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
+      "raw_directive": "180: :::\n181: \n182: :::{prf:definition} Swarm and Swarm State Space\n183: :label: def-swarm-and-state-space\n184: \n185: A **swarm**, denoted $\\mathcal{S}$, is an N-tuple of walkers:\n186: \n187: $$\n188: \\mathcal{S} := (w_1, w_2, \\dots, w_N)\n189: $$\n190: \n191: The **Swarm State Space**, denoted $\\Sigma_N$, is the set of all possible swarms of size N. It is the N-fold Cartesian product of the single-walker state space:\n192: \n193: $$\n194: \\Sigma_N := (\\mathcal{X} \\times \\{0, 1\\})^N\n195: $$"
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-alive-dead-sets",
+      "title": "Alive and Dead Sets",
+      "start_line": 199,
+      "end_line": 218,
+      "header_lines": [
+        200
+      ],
+      "content_start": 202,
+      "content_end": 217,
+      "content": "202: :label: def-alive-dead-sets\n203: \n204: For any swarm state $\\mathcal{S} = ((x_1, s_1), \\dots, (x_N, s_N)) \\in \\Sigma_N$:\n205: \n206: 1.  The **alive set**, $\\mathcal{A}(\\mathcal{S})$, is the set of indices of all walkers with a survival status of 1.\n207: \n208: \n209: $$\n210: \\mathcal{A}(\\mathcal{S}) := \\{i \\in \\{1, \\dots, N\\} \\mid s_i = 1\\}\n211: $$\n212: \n213: 2.  The **dead set**, $\\mathcal{D}(\\mathcal{S})$, is the set of indices of all walkers with a survival status of 0.\n214: \n215: \n216: $$\n217: \\mathcal{D}(\\mathcal{S}) := \\{i \\in \\{1, \\dots, N\\} \\mid s_i = 0\\}",
+      "metadata": {
+        "label": "def-alive-dead-sets"
+      },
+      "section": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
+      "raw_directive": "199: For any swarm $\\mathcal{S}$, we define two critical index sets that partition the walkers based on their survival status.\n200: \n201: :::{prf:definition} Alive and Dead Sets\n202: :label: def-alive-dead-sets\n203: \n204: For any swarm state $\\mathcal{S} = ((x_1, s_1), \\dots, (x_N, s_N)) \\in \\Sigma_N$:\n205: \n206: 1.  The **alive set**, $\\mathcal{A}(\\mathcal{S})$, is the set of indices of all walkers with a survival status of 1.\n207: \n208: \n209: $$\n210: \\mathcal{A}(\\mathcal{S}) := \\{i \\in \\{1, \\dots, N\\} \\mid s_i = 1\\}\n211: $$\n212: \n213: 2.  The **dead set**, $\\mathcal{D}(\\mathcal{S})$, is the set of indices of all walkers with a survival status of 0.\n214: \n215: \n216: $$\n217: \\mathcal{D}(\\mathcal{S}) := \\{i \\in \\{1, \\dots, N\\} \\mid s_i = 0\\}\n218: $$"
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-valid-state-space",
+      "title": "Valid State Space",
+      "start_line": 256,
+      "end_line": 272,
+      "header_lines": [
+        257
+      ],
+      "content_start": 259,
+      "content_end": 271,
+      "content": "259: :label: def-valid-state-space\n260: \n261: A **Valid State Space** is a tuple $(\\mathcal{X}, d_{\\mathcal{X}}, \\mu_{\\mathcal{X}})$ with the following properties:\n262: \n263: 1.  **Topological Structure:** The space $(\\mathcal{X}, d_{\\mathcal{X}})$ must be a **Polish space** (a complete, separable metric space). This ensures that notions of convergence and probability measures are well-defined.\n264: \n265: 2.  **Measure Structure:** The space must be equipped with a **reference measure** $\\mu_{\\mathcal{X}}$ (e.g., Lebesgue measure for Euclidean spaces, or the Riemannian volume measure for manifolds). This measure is used to define probability densities for the noise kernels.\n266: \n267: 3.  **Existence of Valid Noise:** The space must support a **Valid Noise Measure** ($\\mathcal{P}_\\sigma$ and $\\mathcal{Q}_\\delta$) as per Definition 2.3. This is the most critical functional requirement, as it implies the space has enough geometric regularity to satisfy:\n268:     *   The **Axiom of Bounded Second Moment of Perturbation** ([](#def-axiom-bounded-second-moment-perturbation)).\n269:     *   The **Axiom of Boundary Regularity** ([](#axiom-boundary-regularity)).\n270: \n271: 4.  **Regularity of the Domain:** The **Valid Domain** $\\mathcal{X}_{\\mathrm{valid}} \\subset \\mathcal{X}$ must have a boundary $\\partial \\mathcal{X}_{\\mathrm{valid}}$ that is a null set with respect to any admissible noise measure. For example, if $\\mathcal{X}$ is a smooth manifold, requiring a $C^1$ boundary is sufficient.",
+      "metadata": {
+        "label": "def-valid-state-space"
+      },
+      "section": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
+      "raw_directive": "256: For the analytical framework to be sound, the State Space $(\\mathcal{X}, d_{\\mathcal{X}}, \\mu_{\\mathcal{X}})$ in which walkers evolve must satisfy a set of foundational properties. Any space that meets these criteria is considered a **Valid State Space**.\n257: \n258: :::{prf:definition} Valid State Space\n259: :label: def-valid-state-space\n260: \n261: A **Valid State Space** is a tuple $(\\mathcal{X}, d_{\\mathcal{X}}, \\mu_{\\mathcal{X}})$ with the following properties:\n262: \n263: 1.  **Topological Structure:** The space $(\\mathcal{X}, d_{\\mathcal{X}})$ must be a **Polish space** (a complete, separable metric space). This ensures that notions of convergence and probability measures are well-defined.\n264: \n265: 2.  **Measure Structure:** The space must be equipped with a **reference measure** $\\mu_{\\mathcal{X}}$ (e.g., Lebesgue measure for Euclidean spaces, or the Riemannian volume measure for manifolds). This measure is used to define probability densities for the noise kernels.\n266: \n267: 3.  **Existence of Valid Noise:** The space must support a **Valid Noise Measure** ($\\mathcal{P}_\\sigma$ and $\\mathcal{Q}_\\delta$) as per Definition 2.3. This is the most critical functional requirement, as it implies the space has enough geometric regularity to satisfy:\n268:     *   The **Axiom of Bounded Second Moment of Perturbation** ([](#def-axiom-bounded-second-moment-perturbation)).\n269:     *   The **Axiom of Boundary Regularity** ([](#axiom-boundary-regularity)).\n270: \n271: 4.  **Regularity of the Domain:** The **Valid Domain** $\\mathcal{X}_{\\mathrm{valid}} \\subset \\mathcal{X}$ must have a boundary $\\partial \\mathcal{X}_{\\mathrm{valid}}$ that is a null set with respect to any admissible noise measure. For example, if $\\mathcal{X}$ is a smooth manifold, requiring a $C^1$ boundary is sufficient.\n272: "
+    },
+    {
+      "directive_type": "assumption",
+      "label": "def-ambient-euclidean",
+      "title": "Ambient Euclidean Structure and Reference Measures",
+      "start_line": 314,
+      "end_line": 320,
+      "header_lines": [
+        315
+      ],
+      "content_start": 317,
+      "content_end": 319,
+      "content": "317: :label: def-ambient-euclidean\n318: \n319: - The spaces $\\mathcal{X} \\subset \\mathbb{R}^d$ and $\\mathcal{Y} \\subset \\mathbb{R}^m$ are finite-dimensional Euclidean domains with Lebesgue reference measures $\\lambda_d$ and $\\lambda_m$.",
+      "metadata": {
+        "label": "def-ambient-euclidean"
+      },
+      "section": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
+      "raw_directive": "314:     These structures, formally defined in subsequent sections, give rise to a set of fixed **environmental constants**, including the reward bound ($R_{\\max}$), reward Lipschitz constant ($L_R$), the diameter of the projected valid domain ($D_{\\mathrm{valid}} := \\operatorname{diam}_{d_{\\mathcal{Y}}}(\\varphi(\\mathcal{X}_{\\mathrm{valid}}))$), the diameter of the entire algorithmic space ($D_{\\mathcal{Y}} := \\operatorname{diam}_{d_{\\mathcal{Y}}}(\\mathcal{Y})$), and the **Projection Map Lipschitz Constant ($L_{\\varphi}$)**.\n315: \n316: :::{prf:assumption} Ambient Euclidean Structure and Reference Measures\n317: :label: def-ambient-euclidean\n318: \n319: - The spaces $\\mathcal{X} \\subset \\mathbb{R}^d$ and $\\mathcal{Y} \\subset \\mathbb{R}^m$ are finite-dimensional Euclidean domains with Lebesgue reference measures $\\lambda_d$ and $\\lambda_m$.\n320: - All linear-algebraic objects (means, variances, covariances) and kernel densities are defined with respect to these Euclidean structures and Lebesgue measures. In particular, KDE normalizations use the standard Euclidean constants (e.g., $\\int \\exp(-\\|y\\|_2^2/(2\\sigma^2))\\,dy = (2\\pi\\sigma^2)^{m/2}$)."
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-reference-measures",
+      "title": "Reference Noise and Kernel Families",
+      "start_line": 322,
+      "end_line": 332,
+      "header_lines": [
+        323
+      ],
+      "content_start": 325,
+      "content_end": 331,
+      "content": "325: :label: def-reference-measures\n326: \n327: - **Perturbation kernels on $\\mathcal{X}$ (dimension $d$):**\n328:   - Gaussian: $\\xi \\sim \\mathcal{N}(0, \\sigma^2 I_d)$ so that $\\mathbb{E}[\\|\\xi\\|_2^2] = d\\,\\sigma^2$.\n329:   - Uniform ball: $\\xi$ uniform on $B_d(0,\\sigma)$ with density $1/\\lambda_d(B_d(0,\\sigma))$.\n330: - **Cloning kernels on $\\mathcal{X}$:** analogously parameterized by $\\delta>0$ (e.g., $\\mathcal{N}(0, \\delta^2 I_d)$ or uniform on $B_d(0,\\delta)$).\n331: - **Smoothing kernels on $\\mathcal{Y}$ (dimension $m$):**",
+      "metadata": {
+        "label": "def-reference-measures"
+      },
+      "section": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
+      "raw_directive": "322: :::\n323: \n324: :::{prf:definition} Reference Noise and Kernel Families\n325: :label: def-reference-measures\n326: \n327: - **Perturbation kernels on $\\mathcal{X}$ (dimension $d$):**\n328:   - Gaussian: $\\xi \\sim \\mathcal{N}(0, \\sigma^2 I_d)$ so that $\\mathbb{E}[\\|\\xi\\|_2^2] = d\\,\\sigma^2$.\n329:   - Uniform ball: $\\xi$ uniform on $B_d(0,\\sigma)$ with density $1/\\lambda_d(B_d(0,\\sigma))$.\n330: - **Cloning kernels on $\\mathcal{X}$:** analogously parameterized by $\\delta>0$ (e.g., $\\mathcal{N}(0, \\delta^2 I_d)$ or uniform on $B_d(0,\\delta)$).\n331: - **Smoothing kernels on $\\mathcal{Y}$ (dimension $m$):**\n332:   - Gaussian: $K_\\sigma(y) = (2\\pi\\sigma^2)^{-m/2} \\exp(-\\|y\\|_2^2/(2\\sigma^2))$."
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-n-particle-displacement-metric",
+      "title": "N-Particle Displacement Pseudometric ($d_{\\text{Disp},\\mathcal{Y}}$)",
+      "start_line": 414,
+      "end_line": 443,
+      "header_lines": [
+        415,
+        434,
+        435
+      ],
+      "content_start": 417,
+      "content_end": 442,
+      "content": "417: :label: def-n-particle-displacement-metric\n418: \n419: For any two swarms, $\\mathcal{S}_1$ and $\\mathcal{S}_2$, define the (pseudo)metric by\n420: \n421: $$\n422: d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)\n423: := \\Bigg( \\frac{1}{N} \\sum_{i=1}^N d_{\\mathcal{Y}}\\!\\big(\\varphi(x_{1,i}), \\varphi(x_{2,i})\\big)^2\n424: \\;+\n425: \\; \\frac{\\lambda_{\\mathrm{status}}}{N} \\sum_{i=1}^N (s_{1,i} - s_{2,i})^2 \\Bigg)^{\\!1/2}.\n426: $$\n427: \n428: For algebraic convenience we will frequently write and bound its square,\n429: \n430: $$\n431: d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)^2\n432: = \\frac{1}{N} \\sum_{i=1}^N d_{\\mathcal{Y}}(\\varphi(x_{1,i}), \\varphi(x_{2,i}))^2 + \\frac{\\lambda_{\\mathrm{status}}}{N} \\sum_{i=1}^N (s_{1,i} - s_{2,i})^2.\n433: $$\n434: \n435: :::{admonition} Breaking Down the Formula\n436: :class: note\n437: :open:\n438: This formula has two parts:\n439: \n440: 1. **Position Changes** (first term): For each walker $i$, measure how far it moved in the algorithmic space, square it, then average over all walkers.\n441: \n442: 2. **Status Changes** (second term): For each walker $i$, check if its status changed (alive \u2194 dead). Since status is 0 or 1, $(s_{1,i} - s_{2,i})^2$ equals 1 if status changed, 0 if unchanged. Sum these up and weight by $\\lambda_{\\text{status}}$.",
+      "metadata": {
+        "label": "def-n-particle-displacement-metric",
+        "class": "note",
+        "open": ""
+      },
+      "section": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
+      "raw_directive": "414: :::\n415: \n416: :::{prf:definition} N-Particle Displacement Pseudometric ($d_{\\text{Disp},\\mathcal{Y}}$)\n417: :label: def-n-particle-displacement-metric\n418: \n419: For any two swarms, $\\mathcal{S}_1$ and $\\mathcal{S}_2$, define the (pseudo)metric by\n420: \n421: $$\n422: d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)\n423: := \\Bigg( \\frac{1}{N} \\sum_{i=1}^N d_{\\mathcal{Y}}\\!\\big(\\varphi(x_{1,i}), \\varphi(x_{2,i})\\big)^2\n424: \\;+\n425: \\; \\frac{\\lambda_{\\mathrm{status}}}{N} \\sum_{i=1}^N (s_{1,i} - s_{2,i})^2 \\Bigg)^{\\!1/2}.\n426: $$\n427: \n428: For algebraic convenience we will frequently write and bound its square,\n429: \n430: $$\n431: d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)^2\n432: = \\frac{1}{N} \\sum_{i=1}^N d_{\\mathcal{Y}}(\\varphi(x_{1,i}), \\varphi(x_{2,i}))^2 + \\frac{\\lambda_{\\mathrm{status}}}{N} \\sum_{i=1}^N (s_{1,i} - s_{2,i})^2.\n433: $$\n434: \n435: :::{admonition} Breaking Down the Formula\n436: :class: note\n437: :open:\n438: This formula has two parts:\n439: \n440: 1. **Position Changes** (first term): For each walker $i$, measure how far it moved in the algorithmic space, square it, then average over all walkers.\n441: \n442: 2. **Status Changes** (second term): For each walker $i$, check if its status changed (alive \u2194 dead). Since status is 0 or 1, $(s_{1,i} - s_{2,i})^2$ equals 1 if status changed, 0 if unchanged. Sum these up and weight by $\\lambda_{\\text{status}}$.\n443: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-metric-quotient",
+      "title": "Metric quotient of $(\\Sigma_N, d_{\\text{Disp},\\mathcal{Y}})$",
+      "start_line": 447,
+      "end_line": 456,
+      "header_lines": [
+        448
+      ],
+      "content_start": 449,
+      "content_end": 455,
+      "content": "449: :::{prf:definition} Metric quotient of $(\\Sigma_N, d_{\\text{Disp},\\mathcal{Y}})$\n450: :label: def-metric-quotient\n451: Define the equivalence relation $\\mathcal{S}_1\\sim\\mathcal{S}_2$ iff $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)=0$. The **metric identification** (Kolmogorov quotient) is $\\overline{\\Sigma}_N := \\Sigma_N/\\!\\sim$ with metric\n452: \n453: $$\n454: \\overline d_{\\text{Disp},\\mathcal{Y}}\\big([\\mathcal{S}_1],[\\mathcal{S}_2]\\big):= d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2),\n455: $$",
+      "metadata": {
+        "label": "def-metric-quotient"
+      },
+      "section": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
+      "raw_directive": "447: #### 1.6.1 Metric identification (Kolmogorov quotient)\n448: \n449: :::{prf:definition} Metric quotient of $(\\Sigma_N, d_{\\text{Disp},\\mathcal{Y}})$\n450: :label: def-metric-quotient\n451: Define the equivalence relation $\\mathcal{S}_1\\sim\\mathcal{S}_2$ iff $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)=0$. The **metric identification** (Kolmogorov quotient) is $\\overline{\\Sigma}_N := \\Sigma_N/\\!\\sim$ with metric\n452: \n453: $$\n454: \\overline d_{\\text{Disp},\\mathcal{Y}}\\big([\\mathcal{S}_1],[\\mathcal{S}_2]\\big):= d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2),\n455: $$\n456: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-borel-image-of-the-projected-swarm-space",
+      "title": "Borel image of the projected swarm space",
+      "start_line": 462,
+      "end_line": 471,
+      "header_lines": [
+        463
+      ],
+      "content_start": 464,
+      "content_end": 470,
+      "content": "464: :::{prf:lemma} Borel image of the projected swarm space\n465: :label: lem-borel-image-of-the-projected-swarm-space\n466: Let $(\\mathcal X,d_{\\mathcal X})$ be Polish and $\\varphi:\\mathcal X\\to\\mathcal Y$ continuous. If $\\mathcal X$ is $\\sigma$\u2011compact and $\\Sigma_N\\subset(\\mathcal X\\times\\{0,1\\})^N$ is Borel, then the projected image\n467: \n468: $$\n469: \\widehat{\\Phi}(\\Sigma_N):=\\{((\\varphi(x_i),s_i))_{i=1}^N : ((x_i,s_i))\\in\\Sigma_N\\}\\subset (\\mathcal Y\\times\\{0,1\\})^N\n470: $$",
+      "metadata": {
+        "label": "lem-borel-image-of-the-projected-swarm-space"
+      },
+      "section": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
+      "raw_directive": "462: #### 1.6.2 Borel image and completion of the working space\n463: \n464: :::{prf:lemma} Borel image of the projected swarm space\n465: :label: lem-borel-image-of-the-projected-swarm-space\n466: Let $(\\mathcal X,d_{\\mathcal X})$ be Polish and $\\varphi:\\mathcal X\\to\\mathcal Y$ continuous. If $\\mathcal X$ is $\\sigma$\u2011compact and $\\Sigma_N\\subset(\\mathcal X\\times\\{0,1\\})^N$ is Borel, then the projected image\n467: \n468: $$\n469: \\widehat{\\Phi}(\\Sigma_N):=\\{((\\varphi(x_i),s_i))_{i=1}^N : ((x_i,s_i))\\in\\Sigma_N\\}\\subset (\\mathcal Y\\times\\{0,1\\})^N\n470: $$\n471: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-lem-borel-image-of-the-projected-swarm-space",
+      "title": null,
+      "start_line": 473,
+      "end_line": 478,
+      "header_lines": [
+        474
+      ],
+      "content_start": 475,
+      "content_end": 477,
+      "content": "475: :::{prf:proof}\n476: :label: proof-lem-borel-image-of-the-projected-swarm-space\n477: Write $\\mathcal X=\\bigcup_m K_m$ with $K_m$ compact. Then $\\varphi(\\mathcal X)=\\bigcup_m \\varphi(K_m)$ is $F_\\sigma$, hence Borel. Products and intersections with Borel sets are Borel; the status constraints are Borel in $\\{0,1\\}^N$. Hence the claim.",
+      "metadata": {
+        "label": "proof-lem-borel-image-of-the-projected-swarm-space"
+      },
+      "section": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
+      "raw_directive": "473: :::\n474: \n475: :::{prf:proof}\n476: :label: proof-lem-borel-image-of-the-projected-swarm-space\n477: Write $\\mathcal X=\\bigcup_m K_m$ with $K_m$ compact. Then $\\varphi(\\mathcal X)=\\bigcup_m \\varphi(K_m)$ is $F_\\sigma$, hence Borel. Products and intersections with Borel sets are Borel; the status constraints are Borel in $\\{0,1\\}^N$. Hence the claim.\n478: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-closure-cemetery",
+      "title": null,
+      "start_line": 480,
+      "end_line": 483,
+      "header_lines": [
+        481
+      ],
+      "content_start": 482,
+      "content_end": 482,
+      "content": "482: :::{prf:remark}",
+      "metadata": {
+        "label": "rem-closure-cemetery"
+      },
+      "section": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
+      "raw_directive": "480: :::\n481: \n482: :::{prf:remark}\n483: :label: rem-closure-cemetery"
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-polishness-and-w2",
+      "title": "Polishness of the quotient state space and $W_2$",
+      "start_line": 488,
+      "end_line": 492,
+      "header_lines": [
+        489
+      ],
+      "content_start": 491,
+      "content_end": 491,
+      "content": "491: :label: lem-polishness-and-w2",
+      "metadata": {
+        "label": "lem-polishness-and-w2"
+      },
+      "section": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
+      "raw_directive": "488: #### 1.7.1 Polishness and $W_2$ well\u2011posedness (on the quotient)\n489: \n490: :::{prf:lemma} Polishness of the quotient state space and $W_2$\n491: :label: lem-polishness-and-w2\n492: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-displacement-components",
+      "title": "Components of Swarm Displacement",
+      "start_line": 507,
+      "end_line": 520,
+      "header_lines": [
+        508
+      ],
+      "content_start": 510,
+      "content_end": 519,
+      "content": "510: :label: def-displacement-components\n511: \n512: For any two swarms, $\\mathcal{S}_1$ and $\\mathcal{S}_2$, their total displacement is decomposed into two fundamental components:\n513: \n514: 1.  **The Squared Positional Displacement ($\\Delta_{\\text{pos}}^2$):** The sum of squared distances between corresponding walkers in the algorithmic space.\n515: \n516: $$\n517: \\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) := \\sum_{i=1}^N d_{\\mathcal{Y}}(\\varphi(x_{1,i}), \\varphi(x_{2,i}))^2\n518: $$\n519: ",
+      "metadata": {
+        "label": "def-displacement-components"
+      },
+      "section": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
+      "raw_directive": "507: This section formally defines the two components of swarm displacement that will be used as inputs to the generalized continuity axioms.\n508: \n509: :::{prf:definition} Components of Swarm Displacement\n510: :label: def-displacement-components\n511: \n512: For any two swarms, $\\mathcal{S}_1$ and $\\mathcal{S}_2$, their total displacement is decomposed into two fundamental components:\n513: \n514: 1.  **The Squared Positional Displacement ($\\Delta_{\\text{pos}}^2$):** The sum of squared distances between corresponding walkers in the algorithmic space.\n515: \n516: $$\n517: \\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) := \\sum_{i=1}^N d_{\\mathcal{Y}}(\\varphi(x_{1,i}), \\varphi(x_{2,i}))^2\n518: $$\n519: \n520: :::{hint}"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 2. Fractal Set (CST) Perspective",
+  "directive_count": 4,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-bh-horizon-cst",
+      "title": "Black Hole Horizon in CST",
+      "start_line": 939,
+      "end_line": 961,
+      "header_lines": [
+        940
+      ],
+      "content_start": 942,
+      "content_end": 960,
+      "content": "942: :label: def-bh-horizon-cst\n943: \n944: Let $\\mathcal{E} = \\bigcup_{t=0}^\\infty \\mathcal{E}_t$ be the CST (episode set across all times). The **black hole interior** is the subset:\n945: \n946: $$\n947: \\mathcal{E}_{\\text{BH}} := \\{e \\in \\mathcal{E} : x_e \\in B_H\\}\n948: \n949: $$\n950: \n951: where $B_H = \\{x : r < r_S\\}$ is the spatial region inside the Schwarzschild radius.\n952: \n953: The **horizon boundary** in the CST is the **antichain** (set of causally unrelated episodes):\n954: \n955: $$\n956: \\mathcal{H}_{\\text{CST}} := \\{e \\in \\mathcal{E} : x_e \\in \\mathcal{H}, \\, \\nexists e' \\succ e \\text{ with } x_{e'} \\notin B_H\\}\n957: \n958: $$\n959: \n960: where $e' \\succ e$ denotes causal successor (descendant in CST).",
+      "metadata": {
+        "label": "def-bh-horizon-cst"
+      },
+      "section": "## 2. Fractal Set (CST) Perspective",
+      "raw_directive": "939: **Key Insight**: The CST is a directed acyclic graph (DAG) where nodes are episodes (walker states at discrete times) and edges are causal relationships (cloning events). A black hole creates a **subtree with no outgoing edges** beyond the horizon.\n940: \n941: :::{prf:definition} Black Hole Horizon in CST\n942: :label: def-bh-horizon-cst\n943: \n944: Let $\\mathcal{E} = \\bigcup_{t=0}^\\infty \\mathcal{E}_t$ be the CST (episode set across all times). The **black hole interior** is the subset:\n945: \n946: $$\n947: \\mathcal{E}_{\\text{BH}} := \\{e \\in \\mathcal{E} : x_e \\in B_H\\}\n948: \n949: $$\n950: \n951: where $B_H = \\{x : r < r_S\\}$ is the spatial region inside the Schwarzschild radius.\n952: \n953: The **horizon boundary** in the CST is the **antichain** (set of causally unrelated episodes):\n954: \n955: $$\n956: \\mathcal{H}_{\\text{CST}} := \\{e \\in \\mathcal{E} : x_e \\in \\mathcal{H}, \\, \\nexists e' \\succ e \\text{ with } x_{e'} \\notin B_H\\}\n957: \n958: $$\n959: \n960: where $e' \\succ e$ denotes causal successor (descendant in CST).\n961: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-bh-horizon-absorbing-cst",
+      "title": "Horizon as CST Absorbing Boundary",
+      "start_line": 963,
+      "end_line": 994,
+      "header_lines": [
+        964
+      ],
+      "content_start": 966,
+      "content_end": 993,
+      "content": "966: :label: thm-bh-horizon-absorbing-cst\n967: \n968: The black hole horizon $\\mathcal{H}_{\\text{CST}}$ has the following properties:\n969: \n970: **1. Absorbing Set**:\n971: For any episode $e \\in \\mathcal{E}_{\\text{BH}}$ (inside the horizon), all future descendants remain inside:\n972: \n973: $$\n974: \\forall e' \\succ e, \\quad x_{e'} \\in B_H\n975: \n976: $$\n977: \n978: **2. Antichain Structure**:\n979: $\\mathcal{H}_{\\text{CST}}$ is an antichain in the CST poset: no two episodes in $\\mathcal{H}_{\\text{CST}}$ are causally related.\n980: \n981: **3. Area Law**:\n982: The cardinality (number of episodes) in the horizon antichain scales with the spatial area:\n983: \n984: $$\n985: |\\mathcal{H}_{\\text{CST}}| \\propto A_H = 4\\pi r_S^2\n986: \n987: $$\n988: \n989: **4. No Outgoing Edges**:\n990: There are no CST edges from interior to exterior:\n991: \n992: $$\n993: \\nexists (e, e') \\in \\mathcal{E}_{\\text{CST}}, \\quad x_e \\in B_H, \\, x_{e'} \\notin B_H, \\, e \\prec e'",
+      "metadata": {
+        "label": "thm-bh-horizon-absorbing-cst"
+      },
+      "section": "## 2. Fractal Set (CST) Perspective",
+      "raw_directive": "963: :::\n964: \n965: :::{prf:theorem} Horizon as CST Absorbing Boundary\n966: :label: thm-bh-horizon-absorbing-cst\n967: \n968: The black hole horizon $\\mathcal{H}_{\\text{CST}}$ has the following properties:\n969: \n970: **1. Absorbing Set**:\n971: For any episode $e \\in \\mathcal{E}_{\\text{BH}}$ (inside the horizon), all future descendants remain inside:\n972: \n973: $$\n974: \\forall e' \\succ e, \\quad x_{e'} \\in B_H\n975: \n976: $$\n977: \n978: **2. Antichain Structure**:\n979: $\\mathcal{H}_{\\text{CST}}$ is an antichain in the CST poset: no two episodes in $\\mathcal{H}_{\\text{CST}}$ are causally related.\n980: \n981: **3. Area Law**:\n982: The cardinality (number of episodes) in the horizon antichain scales with the spatial area:\n983: \n984: $$\n985: |\\mathcal{H}_{\\text{CST}}| \\propto A_H = 4\\pi r_S^2\n986: \n987: $$\n988: \n989: **4. No Outgoing Edges**:\n990: There are no CST edges from interior to exterior:\n991: \n992: $$\n993: \\nexists (e, e') \\in \\mathcal{E}_{\\text{CST}}, \\quad x_e \\in B_H, \\, x_{e'} \\notin B_H, \\, e \\prec e'\n994: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-64",
+      "title": null,
+      "start_line": 996,
+      "end_line": 1029,
+      "header_lines": [],
+      "content_start": 998,
+      "content_end": 1028,
+      "content": "998: :::{prf:proof}\n999: \n1000: **Step 1: Absorbing property from no-escape theorem**\n1001: \n1002: This follows immediately from {prf:ref}`thm-bh-horizon-causal` Part 3: all causal futures of interior points hit the singularity. Since CST edges represent causal relationships (parent \u2192 child via cloning), any descendant of an interior episode must also be interior.\n1003: \n1004: **Step 2: Antichain by definition**\n1005: \n1006: By construction, $\\mathcal{H}_{\\text{CST}}$ consists of episodes at the same spatial boundary $r = r_S$ but at different times. Episodes at the same time slice are never causally related (cloning requires time evolution), and we've selected the \"last\" episodes before permanent entry, so no causal relations exist within $\\mathcal{H}_{\\text{CST}}$.\n1007: \n1008: **Step 3: Area scaling from spatial distribution**\n1009: \n1010: From {prf:ref}`thm-antichain-surface-correspondence` ({doc}`../13_fractal_set_new/12_holography`), the number of episodes in an antichain separating a region scales as:\n1011: \n1012: $$\n1013: |\\mathcal{H}_{\\text{CST}}| \\sim N \\cdot (\\text{surface area}) / (\\text{total volume})\n1014: \n1015: $$\n1016: \n1017: For a sphere of radius $r_S$ in $d=3$ dimensions:\n1018: \n1019: $$\n1020: |\\mathcal{H}_{\\text{CST}}| \\sim N \\cdot \\frac{4\\pi r_S^2}{(4/3)\\pi r_S^3} \\cdot (\\text{lattice spacing}) \\propto A_H\n1021: \n1022: $$\n1023: \n1024: The proportionality constant depends on walker density $\\rho_0$ and lattice structure.\n1025: \n1026: **Step 4: No outgoing edges from causal structure**\n1027: \n1028: Proven in {prf:ref}`thm-bh-horizon-causal` Part 4.",
+      "metadata": {},
+      "section": "## 2. Fractal Set (CST) Perspective",
+      "raw_directive": "996: :::\n997: \n998: :::{prf:proof}\n999: \n1000: **Step 1: Absorbing property from no-escape theorem**\n1001: \n1002: This follows immediately from {prf:ref}`thm-bh-horizon-causal` Part 3: all causal futures of interior points hit the singularity. Since CST edges represent causal relationships (parent \u2192 child via cloning), any descendant of an interior episode must also be interior.\n1003: \n1004: **Step 2: Antichain by definition**\n1005: \n1006: By construction, $\\mathcal{H}_{\\text{CST}}$ consists of episodes at the same spatial boundary $r = r_S$ but at different times. Episodes at the same time slice are never causally related (cloning requires time evolution), and we've selected the \"last\" episodes before permanent entry, so no causal relations exist within $\\mathcal{H}_{\\text{CST}}$.\n1007: \n1008: **Step 3: Area scaling from spatial distribution**\n1009: \n1010: From {prf:ref}`thm-antichain-surface-correspondence` ({doc}`../13_fractal_set_new/12_holography`), the number of episodes in an antichain separating a region scales as:\n1011: \n1012: $$\n1013: |\\mathcal{H}_{\\text{CST}}| \\sim N \\cdot (\\text{surface area}) / (\\text{total volume})\n1014: \n1015: $$\n1016: \n1017: For a sphere of radius $r_S$ in $d=3$ dimensions:\n1018: \n1019: $$\n1020: |\\mathcal{H}_{\\text{CST}}| \\sim N \\cdot \\frac{4\\pi r_S^2}{(4/3)\\pi r_S^3} \\cdot (\\text{lattice spacing}) \\propto A_H\n1021: \n1022: $$\n1023: \n1024: The proportionality constant depends on walker density $\\rho_0$ and lattice structure.\n1025: \n1026: **Step 4: No outgoing edges from causal structure**\n1027: \n1028: Proven in {prf:ref}`thm-bh-horizon-causal` Part 4.\n1029: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-bh-penrose-cst",
+      "title": "Penrose Coordinates from CST",
+      "start_line": 1035,
+      "end_line": 1064,
+      "header_lines": [
+        1036
+      ],
+      "content_start": 1038,
+      "content_end": 1063,
+      "content": "1038: :label: def-bh-penrose-cst\n1039: \n1040: For a Schwarzschild black hole QSD, define **tortoise coordinate**:\n1041: \n1042: $$\n1043: r^* = r + r_S \\ln\\left|\\frac{r}{r_S} - 1\\right|\n1044: \n1045: $$\n1046: \n1047: This ranges over $r^* \\in (-\\infty, \\infty)$ as $r \\in (r_S, \\infty)$.\n1048: \n1049: Define **null coordinates**:\n1050: \n1051: $$\n1052: u = t - r^*/c, \\quad v = t + r^*/c\n1053: \n1054: $$\n1055: \n1056: Then construct **Penrose coordinates**:\n1057: \n1058: $$\n1059: U = \\arctan(u), \\quad V = \\arctan(v)\n1060: \n1061: $$\n1062: \n1063: which map the entire exterior spacetime to $U, V \\in (-\\pi/2, \\pi/2)$.",
+      "metadata": {
+        "label": "def-bh-penrose-cst"
+      },
+      "section": "## 2. Fractal Set (CST) Perspective",
+      "raw_directive": "1035: The Penrose diagram is a conformal compactification of spacetime that reveals global causal structure. We can construct it directly from the CST.\n1036: \n1037: :::{prf:definition} Penrose Coordinates from CST\n1038: :label: def-bh-penrose-cst\n1039: \n1040: For a Schwarzschild black hole QSD, define **tortoise coordinate**:\n1041: \n1042: $$\n1043: r^* = r + r_S \\ln\\left|\\frac{r}{r_S} - 1\\right|\n1044: \n1045: $$\n1046: \n1047: This ranges over $r^* \\in (-\\infty, \\infty)$ as $r \\in (r_S, \\infty)$.\n1048: \n1049: Define **null coordinates**:\n1050: \n1051: $$\n1052: u = t - r^*/c, \\quad v = t + r^*/c\n1053: \n1054: $$\n1055: \n1056: Then construct **Penrose coordinates**:\n1057: \n1058: $$\n1059: U = \\arctan(u), \\quad V = \\arctan(v)\n1060: \n1061: $$\n1062: \n1063: which map the entire exterior spacetime to $U, V \\in (-\\pi/2, \\pi/2)$.\n1064: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

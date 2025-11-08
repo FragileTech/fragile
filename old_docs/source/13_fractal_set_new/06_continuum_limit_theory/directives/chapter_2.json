@@ -1,0 +1,157 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 2. Three Foundational Lemmas",
+  "directive_count": 9,
+  "hints": [
+    {
+      "directive_type": "lemma",
+      "label": "lem-qsd-riemannian-volume",
+      "title": "QSD Marginal Equals Riemannian Volume Measure",
+      "start_line": 79,
+      "end_line": 98,
+      "header_lines": [
+        80
+      ],
+      "content_start": 82,
+      "content_end": 97,
+      "content": "82: :label: lem-qsd-riemannian-volume\n83: \n84: Let $\\rho_\\infty(x, v)$ be the quasi-stationary distribution (QSD) of the Adaptive Gas with emergent metric $g(x) = H(x) + \\epsilon_\\Sigma I$.\n85: \n86: The spatial marginal density is:\n87: \n88: $$\n89: \\rho_{\\text{spatial}}(x) := \\int \\rho_\\infty(x, v) \\, dv = C \\sqrt{\\det g(x)} \\exp\\left(-\\frac{U_{\\text{eff}}(x)}{T}\\right)\n90: $$\n91: \n92: where:\n93: - $g(x) = H(x) + \\epsilon_\\Sigma I$ is the emergent Riemannian metric\n94: - $U_{\\text{eff}}(x) = U(x) - \\epsilon_F V_{\\text{fit}}(x)$ is the effective potential\n95: - $T = \\sigma^2/(2\\gamma)$ is the effective temperature\n96: - $C$ is a normalization constant\n97: - $\\sqrt{\\det g(x)}$ is the **Riemannian volume element**",
+      "metadata": {
+        "label": "lem-qsd-riemannian-volume"
+      },
+      "section": "## 2. Three Foundational Lemmas",
+      "raw_directive": "79: ### 2.1. QSD = Riemannian Volume\n80: \n81: :::{prf:lemma} QSD Marginal Equals Riemannian Volume Measure\n82: :label: lem-qsd-riemannian-volume\n83: \n84: Let $\\rho_\\infty(x, v)$ be the quasi-stationary distribution (QSD) of the Adaptive Gas with emergent metric $g(x) = H(x) + \\epsilon_\\Sigma I$.\n85: \n86: The spatial marginal density is:\n87: \n88: $$\n89: \\rho_{\\text{spatial}}(x) := \\int \\rho_\\infty(x, v) \\, dv = C \\sqrt{\\det g(x)} \\exp\\left(-\\frac{U_{\\text{eff}}(x)}{T}\\right)\n90: $$\n91: \n92: where:\n93: - $g(x) = H(x) + \\epsilon_\\Sigma I$ is the emergent Riemannian metric\n94: - $U_{\\text{eff}}(x) = U(x) - \\epsilon_F V_{\\text{fit}}(x)$ is the effective potential\n95: - $T = \\sigma^2/(2\\gamma)$ is the effective temperature\n96: - $C$ is a normalization constant\n97: - $\\sqrt{\\det g(x)}$ is the **Riemannian volume element**\n98: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-24",
+      "title": null,
+      "start_line": 100,
+      "end_line": 126,
+      "header_lines": [],
+      "content_start": 101,
+      "content_end": 125,
+      "content": "101: \n102: :::{prf:proof}\n103: This result is proven in complete detail in {prf:ref}`05_qsd_stratonovich_foundations.md`. We provide a proof outline here.\n104: \n105: **Step 1**: The Adaptive Gas dynamics uses Stratonovich SDE formulation with anisotropic velocity diffusion:\n106: \n107: $$\n108: dx = v \\, dt, \\quad dv = F(x) dt - \\gamma v \\, dt + \\Sigma_{\\text{reg}}(x) \\circ dW\n109: $$\n110: \n111: where $\\Sigma_{\\text{reg}}^2(x) = g(x)^{-1}$ and \"$\\circ$\" denotes Stratonovich calculus.\n112: \n113: **Step 2**: In the high-friction limit $\\gamma \\gg 1$, the Kramers-Smoluchowski reduction gives:\n114: \n115: $$\n116: dx = -\\frac{1}{\\gamma} \\nabla U_{\\text{eff}} \\, dt + \\sqrt{\\frac{2T}{\\gamma}} g(x)^{-1/2} \\circ dW\n117: $$\n118: \n119: **Step 3**: For Stratonovich SDEs with diffusion $D(x) = (T/\\gamma) g(x)^{-1}$, the stationary distribution is (Graham 1977):\n120: \n121: $$\n122: \\rho_{\\text{st}} = \\frac{1}{Z} (\\det D)^{-1/2} \\exp(-U_{\\text{eff}}/T) = \\frac{1}{Z} \\sqrt{\\det g(x)} \\exp(-U_{\\text{eff}}/T)\n123: $$\n124: \n125: **Step 4**: The factor $\\sqrt{\\det g(x)}$ is the Riemannian volume element. This arises **automatically** in Stratonovich calculus (but NOT in It\u00f4 calculus), ensuring thermodynamic consistency and geometric invariance.",
+      "metadata": {},
+      "section": "## 2. Three Foundational Lemmas",
+      "raw_directive": "100: :::\n101: \n102: :::{prf:proof}\n103: This result is proven in complete detail in {prf:ref}`05_qsd_stratonovich_foundations.md`. We provide a proof outline here.\n104: \n105: **Step 1**: The Adaptive Gas dynamics uses Stratonovich SDE formulation with anisotropic velocity diffusion:\n106: \n107: $$\n108: dx = v \\, dt, \\quad dv = F(x) dt - \\gamma v \\, dt + \\Sigma_{\\text{reg}}(x) \\circ dW\n109: $$\n110: \n111: where $\\Sigma_{\\text{reg}}^2(x) = g(x)^{-1}$ and \"$\\circ$\" denotes Stratonovich calculus.\n112: \n113: **Step 2**: In the high-friction limit $\\gamma \\gg 1$, the Kramers-Smoluchowski reduction gives:\n114: \n115: $$\n116: dx = -\\frac{1}{\\gamma} \\nabla U_{\\text{eff}} \\, dt + \\sqrt{\\frac{2T}{\\gamma}} g(x)^{-1/2} \\circ dW\n117: $$\n118: \n119: **Step 3**: For Stratonovich SDEs with diffusion $D(x) = (T/\\gamma) g(x)^{-1}$, the stationary distribution is (Graham 1977):\n120: \n121: $$\n122: \\rho_{\\text{st}} = \\frac{1}{Z} (\\det D)^{-1/2} \\exp(-U_{\\text{eff}}/T) = \\frac{1}{Z} \\sqrt{\\det g(x)} \\exp(-U_{\\text{eff}}/T)\n123: $$\n124: \n125: **Step 4**: The factor $\\sqrt{\\det g(x)}$ is the Riemannian volume element. This arises **automatically** in Stratonovich calculus (but NOT in It\u00f4 calculus), ensuring thermodynamic consistency and geometric invariance.\n126: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-velocity-marginalization",
+      "title": "Timescale Separation and Annealed Approximation",
+      "start_line": 138,
+      "end_line": 158,
+      "header_lines": [
+        139
+      ],
+      "content_start": 141,
+      "content_end": 157,
+      "content": "141: :label: lem-velocity-marginalization\n142: \n143: The Euclidean Gas dynamics with Langevin kinetic operator exhibits timescale separation:\n144: \n145: **Fast timescale** (velocity relaxation): $\\tau_v = O(\\gamma^{-1})$\n146: \n147: **Slow timescale** (spatial diffusion): $\\tau_x = O(L^2 D^{-1})$ where $L$ is domain size and $D \\sim \\gamma^{-1}$ is diffusion coefficient\n148: \n149: **Separation ratio**: $\\frac{\\tau_x}{\\tau_v} = O(\\gamma L^2) \\gg 1$ for $\\gamma L^2 \\gg 1$\n150: \n151: **Consequence**: For spatial observables (e.g., graph Laplacian), velocities can be replaced by their equilibrium distribution:\n152: \n153: $$\n154: \\langle A(x, v) \\rangle_{\\text{quenched}} \\approx \\langle A(x, v) \\rangle_{\\text{annealed}} = \\int A(x, v) \\mathcal{M}_\\gamma(v) \\, dv\n155: $$\n156: \n157: where $\\mathcal{M}_\\gamma(v) = (2\\pi \\gamma^{-1})^{-d/2} \\exp(-\\gamma \\|v\\|^2 / 2)$ is the Maxwellian velocity distribution.",
+      "metadata": {
+        "label": "lem-velocity-marginalization"
+      },
+      "section": "## 2. Three Foundational Lemmas",
+      "raw_directive": "138: ### 2.2. Velocity Marginalization and Annealed Approximation\n139: \n140: :::{prf:lemma} Timescale Separation and Annealed Approximation\n141: :label: lem-velocity-marginalization\n142: \n143: The Euclidean Gas dynamics with Langevin kinetic operator exhibits timescale separation:\n144: \n145: **Fast timescale** (velocity relaxation): $\\tau_v = O(\\gamma^{-1})$\n146: \n147: **Slow timescale** (spatial diffusion): $\\tau_x = O(L^2 D^{-1})$ where $L$ is domain size and $D \\sim \\gamma^{-1}$ is diffusion coefficient\n148: \n149: **Separation ratio**: $\\frac{\\tau_x}{\\tau_v} = O(\\gamma L^2) \\gg 1$ for $\\gamma L^2 \\gg 1$\n150: \n151: **Consequence**: For spatial observables (e.g., graph Laplacian), velocities can be replaced by their equilibrium distribution:\n152: \n153: $$\n154: \\langle A(x, v) \\rangle_{\\text{quenched}} \\approx \\langle A(x, v) \\rangle_{\\text{annealed}} = \\int A(x, v) \\mathcal{M}_\\gamma(v) \\, dv\n155: $$\n156: \n157: where $\\mathcal{M}_\\gamma(v) = (2\\pi \\gamma^{-1})^{-d/2} \\exp(-\\gamma \\|v\\|^2 / 2)$ is the Maxwellian velocity distribution.\n158: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-84",
+      "title": null,
+      "start_line": 160,
+      "end_line": 190,
+      "header_lines": [],
+      "content_start": 161,
+      "content_end": 189,
+      "content": "161: \n162: :::{prf:proof}\n163: This follows from the hypocoercivity theorem for kinetic Fokker-Planck equations.\n164: \n165: **Step 1**: From Chapter 11, the full phase-space distribution $\\rho_N(x, v, t)$ converges exponentially to the QSD:\n166: \n167: $$\n168: \\|\\rho_N(\\cdot, \\cdot, t) - \\rho_\\infty(x, v)\\|_{L^2} \\leq C e^{-\\lambda_{\\text{hypo}} t}\n169: $$\n170: \n171: where $\\lambda_{\\text{hypo}} = O(\\min(\\gamma, \\kappa_{\\text{conf}}))$ is the hypocoercivity constant.\n172: \n173: **Step 2**: The QSD factors asymptotically as:\n174: \n175: $$\n176: \\rho_\\infty(x, v) = \\rho_{\\text{spatial}}(x) \\mathcal{M}_\\gamma(v) + O(\\gamma^{-1})\n177: $$\n178: \n179: The $O(\\gamma^{-1})$ correction arises from position-velocity correlations, which are suppressed by friction.\n180: \n181: **Step 3**: For graph Laplacian computations at time $t \\gg \\gamma^{-1}$:\n182: - Velocities have thermalized: $\\rho_N(\\cdot, v, t) \\approx \\mathcal{M}_\\gamma(v)$\n183: - Position distribution is slow-varying: $\\rho_N(x, \\cdot, t) \\approx \\rho_{\\text{spatial}}(x)$\n184: \n185: Any spatial observable $A(x)$ satisfies:\n186: \n187: $$\n188: \\int\\int A(x) \\rho_N(x, v, t) \\, dx \\, dv \\approx \\int A(x) \\rho_{\\text{spatial}}(x) \\, dx\n189: $$",
+      "metadata": {},
+      "section": "## 2. Three Foundational Lemmas",
+      "raw_directive": "160: :::\n161: \n162: :::{prf:proof}\n163: This follows from the hypocoercivity theorem for kinetic Fokker-Planck equations.\n164: \n165: **Step 1**: From Chapter 11, the full phase-space distribution $\\rho_N(x, v, t)$ converges exponentially to the QSD:\n166: \n167: $$\n168: \\|\\rho_N(\\cdot, \\cdot, t) - \\rho_\\infty(x, v)\\|_{L^2} \\leq C e^{-\\lambda_{\\text{hypo}} t}\n169: $$\n170: \n171: where $\\lambda_{\\text{hypo}} = O(\\min(\\gamma, \\kappa_{\\text{conf}}))$ is the hypocoercivity constant.\n172: \n173: **Step 2**: The QSD factors asymptotically as:\n174: \n175: $$\n176: \\rho_\\infty(x, v) = \\rho_{\\text{spatial}}(x) \\mathcal{M}_\\gamma(v) + O(\\gamma^{-1})\n177: $$\n178: \n179: The $O(\\gamma^{-1})$ correction arises from position-velocity correlations, which are suppressed by friction.\n180: \n181: **Step 3**: For graph Laplacian computations at time $t \\gg \\gamma^{-1}$:\n182: - Velocities have thermalized: $\\rho_N(\\cdot, v, t) \\approx \\mathcal{M}_\\gamma(v)$\n183: - Position distribution is slow-varying: $\\rho_N(x, \\cdot, t) \\approx \\rho_{\\text{spatial}}(x)$\n184: \n185: Any spatial observable $A(x)$ satisfies:\n186: \n187: $$\n188: \\int\\int A(x) \\rho_N(x, v, t) \\, dx \\, dv \\approx \\int A(x) \\rho_{\\text{spatial}}(x) \\, dx\n189: $$\n190: "
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-annealed-kernel",
+      "title": "Annealed Companion Kernel",
+      "start_line": 192,
+      "end_line": 208,
+      "header_lines": [
+        193
+      ],
+      "content_start": 195,
+      "content_end": 207,
+      "content": "195: :label: cor-annealed-kernel\n196: \n197: For episodes $e_i$ and $e_j$ at positions $x_i, x_j$ with velocities drawn from the equilibrium distribution $\\mathcal{M}_\\gamma(v)$, the effective companion kernel is:\n198: \n199: $$\n200: W(x_i, x_j) := \\mathbb{E}_{v_i, v_j \\sim \\mathcal{M}_\\gamma}[w_{ij}] = C_v(\\lambda_v, \\epsilon, \\gamma) \\cdot \\exp\\left(-\\frac{\\|x_i - x_j\\|^2}{2\\epsilon^2}\\right)\n201: $$\n202: \n203: where the velocity prefactor is:\n204: \n205: $$\n206: C_v = \\left(1 + \\frac{2\\lambda_v}{\\gamma \\epsilon^2}\\right)^{-d/2}\n207: $$",
+      "metadata": {
+        "label": "cor-annealed-kernel"
+      },
+      "section": "## 2. Three Foundational Lemmas",
+      "raw_directive": "192: :::\n193: \n194: :::{prf:corollary} Annealed Companion Kernel\n195: :label: cor-annealed-kernel\n196: \n197: For episodes $e_i$ and $e_j$ at positions $x_i, x_j$ with velocities drawn from the equilibrium distribution $\\mathcal{M}_\\gamma(v)$, the effective companion kernel is:\n198: \n199: $$\n200: W(x_i, x_j) := \\mathbb{E}_{v_i, v_j \\sim \\mathcal{M}_\\gamma}[w_{ij}] = C_v(\\lambda_v, \\epsilon, \\gamma) \\cdot \\exp\\left(-\\frac{\\|x_i - x_j\\|^2}{2\\epsilon^2}\\right)\n201: $$\n202: \n203: where the velocity prefactor is:\n204: \n205: $$\n206: C_v = \\left(1 + \\frac{2\\lambda_v}{\\gamma \\epsilon^2}\\right)^{-d/2}\n207: $$\n208: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-134",
+      "title": null,
+      "start_line": 210,
+      "end_line": 232,
+      "header_lines": [],
+      "content_start": 211,
+      "content_end": 231,
+      "content": "211: \n212: :::{prf:proof}\n213: **Step 1**: Factorize the kernel:\n214: \n215: $$\n216: W(x_i, x_j) = \\exp\\left(-\\frac{\\|x_i - x_j\\|^2}{2\\epsilon^2}\\right) \\times \\mathbb{E}_{v_i, v_j}\\left[\\exp\\left(-\\frac{\\lambda_v \\|v_i - v_j\\|^2}{2\\epsilon^2}\\right)\\right]\n217: $$\n218: \n219: **Step 2**: Let $Z := v_i - v_j$. Since $v_i, v_j \\sim \\mathcal{M}_\\gamma$ are independent, $Z \\sim \\mathcal{N}(0, 2\\gamma^{-1} I)$.\n220: \n221: **Step 3**: Compute the Gaussian integral:\n222: \n223: $$\n224: \\mathbb{E}\\left[\\exp\\left(-\\frac{\\lambda_v \\|Z\\|^2}{2\\epsilon^2}\\right)\\right] = \\int \\exp\\left(-\\frac{\\lambda_v \\|z\\|^2}{2\\epsilon^2}\\right) \\frac{1}{(4\\pi \\gamma^{-1})^{d/2}} \\exp\\left(-\\frac{\\gamma \\|z\\|^2}{4}\\right) dz\n225: $$\n226: \n227: **Step 4**: Combine exponentials with $\\alpha = \\lambda_v/\\epsilon^2 + \\gamma/2$:\n228: \n229: $$\n230: C_v = \\frac{1}{(4\\pi \\gamma^{-1})^{d/2}} \\cdot \\left(\\frac{2\\pi}{\\alpha}\\right)^{d/2} = \\left(\\frac{\\alpha}{2\\gamma}\\right)^{-d/2} = \\left(1 + \\frac{2\\lambda_v}{\\gamma \\epsilon^2}\\right)^{-d/2}\n231: $$",
+      "metadata": {},
+      "section": "## 2. Three Foundational Lemmas",
+      "raw_directive": "210: :::\n211: \n212: :::{prf:proof}\n213: **Step 1**: Factorize the kernel:\n214: \n215: $$\n216: W(x_i, x_j) = \\exp\\left(-\\frac{\\|x_i - x_j\\|^2}{2\\epsilon^2}\\right) \\times \\mathbb{E}_{v_i, v_j}\\left[\\exp\\left(-\\frac{\\lambda_v \\|v_i - v_j\\|^2}{2\\epsilon^2}\\right)\\right]\n217: $$\n218: \n219: **Step 2**: Let $Z := v_i - v_j$. Since $v_i, v_j \\sim \\mathcal{M}_\\gamma$ are independent, $Z \\sim \\mathcal{N}(0, 2\\gamma^{-1} I)$.\n220: \n221: **Step 3**: Compute the Gaussian integral:\n222: \n223: $$\n224: \\mathbb{E}\\left[\\exp\\left(-\\frac{\\lambda_v \\|Z\\|^2}{2\\epsilon^2}\\right)\\right] = \\int \\exp\\left(-\\frac{\\lambda_v \\|z\\|^2}{2\\epsilon^2}\\right) \\frac{1}{(4\\pi \\gamma^{-1})^{d/2}} \\exp\\left(-\\frac{\\gamma \\|z\\|^2}{4}\\right) dz\n225: $$\n226: \n227: **Step 4**: Combine exponentials with $\\alpha = \\lambda_v/\\epsilon^2 + \\gamma/2$:\n228: \n229: $$\n230: C_v = \\frac{1}{(4\\pi \\gamma^{-1})^{d/2}} \\cdot \\left(\\frac{2\\pi}{\\alpha}\\right)^{d/2} = \\left(\\frac{\\alpha}{2\\gamma}\\right)^{-d/2} = \\left(1 + \\frac{2\\lambda_v}{\\gamma \\epsilon^2}\\right)^{-d/2}\n231: $$\n232: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-lambda-v-role",
+      "title": "Role of Velocity Weight $\\lambda_v$",
+      "start_line": 234,
+      "end_line": 243,
+      "header_lines": [
+        235
+      ],
+      "content_start": 237,
+      "content_end": 242,
+      "content": "237: :label: rem-lambda-v-role\n238: \n239: The velocity weight $\\lambda_v$ appears only in the prefactor $C_v$, which:\n240: 1. **Does not affect graph structure**: All edges have the same rescaling\n241: 2. **Vanishes in limit**: For $\\lambda_v \\ll \\gamma \\epsilon^2$, we have $C_v \\approx 1$\n242: 3. **Can be absorbed**: Normalized graph Laplacian is invariant to overall kernel scaling",
+      "metadata": {
+        "label": "rem-lambda-v-role"
+      },
+      "section": "## 2. Three Foundational Lemmas",
+      "raw_directive": "234: :::\n235: \n236: :::{prf:remark} Role of Velocity Weight $\\lambda_v$\n237: :label: rem-lambda-v-role\n238: \n239: The velocity weight $\\lambda_v$ appears only in the prefactor $C_v$, which:\n240: 1. **Does not affect graph structure**: All edges have the same rescaling\n241: 2. **Vanishes in limit**: For $\\lambda_v \\ll \\gamma \\epsilon^2$, we have $C_v \\approx 1$\n242: 3. **Can be absorbed**: Normalized graph Laplacian is invariant to overall kernel scaling\n243: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-covariance-convergence",
+      "title": "Convergence of Discrete Covariance to Inverse Metric",
+      "start_line": 249,
+      "end_line": 279,
+      "header_lines": [
+        250
+      ],
+      "content_start": 252,
+      "content_end": 278,
+      "content": "252: :label: lem-covariance-convergence\n253: \n254: Let $\\{e_i\\}_{i=1}^{N_{\\text{epi}}}$ be the episodes generated by the Adaptive Gas algorithm with $N$ walkers over time $[0, T]$. Assume:\n255: \n256: 1. **QSD convergence**: Walker density converges to QSD with rate $\\|\u03bc_N - \u03bc_{QSD}\\|_{TV} = O(N^{-1/4})$\n257: 2. **Regularity**: Metric $g(x) = H(x) + \\epsilon_\\Sigma I$ is $C^2$ with $\\lambda_{\\min}(g) \\geq c_0 > 0$ uniformly\n258: 3. **Localization**: Companion bandwidth $\\epsilon \\ll 1$ satisfies $\\epsilon = O(N^{-1/(2d)})$ (optimal)\n259: \n260: Fix an episode $e_i$ at position $x_i = \\Phi(e_i)$ sampled from the QSD. Define the local covariance matrix:\n261: \n262: $$\n263: \\Sigma_i := \\frac{\\sum_{e_j \\in \\mathcal{N}_{\\epsilon}(e_i)} w_{ij} \\Delta x_{ij} \\Delta x_{ij}^T}{\\sum_{e_j \\in \\mathcal{N}_{\\epsilon}(e_i)} w_{ij}}\n264: $$\n265: \n266: where $\\Delta x_{ij} = \\Phi(e_j) - \\Phi(e_i)$, $\\mathcal{N}_{\\epsilon}(e_i)$ is the local neighborhood of episode $e_i$, and $N_{\\text{local}} := |\\mathcal{N}_{\\epsilon}(e_i)|$ is the number of episodes in the local neighborhood.\n267: \n268: Then almost surely as $N \\to \\infty$:\n269: \n270: $$\n271: \\Sigma_i \\xrightarrow{a.s.} \\epsilon^2 g(x_i)^{-1}\n272: $$\n273: \n274: with convergence rate:\n275: \n276: $$\n277: \\mathbb{E}[\\|\\Sigma_i - \\epsilon^2 g(x_i)^{-1}\\|_F] \\leq C \\left( \\epsilon + \\frac{1}{\\sqrt{N_{\\text{local}}}} \\right)\n278: $$",
+      "metadata": {
+        "label": "lem-covariance-convergence"
+      },
+      "section": "## 2. Three Foundational Lemmas",
+      "raw_directive": "249: ### 2.3. Covariance Matrix Convergence\n250: \n251: :::{prf:lemma} Convergence of Discrete Covariance to Inverse Metric\n252: :label: lem-covariance-convergence\n253: \n254: Let $\\{e_i\\}_{i=1}^{N_{\\text{epi}}}$ be the episodes generated by the Adaptive Gas algorithm with $N$ walkers over time $[0, T]$. Assume:\n255: \n256: 1. **QSD convergence**: Walker density converges to QSD with rate $\\|\u03bc_N - \u03bc_{QSD}\\|_{TV} = O(N^{-1/4})$\n257: 2. **Regularity**: Metric $g(x) = H(x) + \\epsilon_\\Sigma I$ is $C^2$ with $\\lambda_{\\min}(g) \\geq c_0 > 0$ uniformly\n258: 3. **Localization**: Companion bandwidth $\\epsilon \\ll 1$ satisfies $\\epsilon = O(N^{-1/(2d)})$ (optimal)\n259: \n260: Fix an episode $e_i$ at position $x_i = \\Phi(e_i)$ sampled from the QSD. Define the local covariance matrix:\n261: \n262: $$\n263: \\Sigma_i := \\frac{\\sum_{e_j \\in \\mathcal{N}_{\\epsilon}(e_i)} w_{ij} \\Delta x_{ij} \\Delta x_{ij}^T}{\\sum_{e_j \\in \\mathcal{N}_{\\epsilon}(e_i)} w_{ij}}\n264: $$\n265: \n266: where $\\Delta x_{ij} = \\Phi(e_j) - \\Phi(e_i)$, $\\mathcal{N}_{\\epsilon}(e_i)$ is the local neighborhood of episode $e_i$, and $N_{\\text{local}} := |\\mathcal{N}_{\\epsilon}(e_i)|$ is the number of episodes in the local neighborhood.\n267: \n268: Then almost surely as $N \\to \\infty$:\n269: \n270: $$\n271: \\Sigma_i \\xrightarrow{a.s.} \\epsilon^2 g(x_i)^{-1}\n272: $$\n273: \n274: with convergence rate:\n275: \n276: $$\n277: \\mathbb{E}[\\|\\Sigma_i - \\epsilon^2 g(x_i)^{-1}\\|_F] \\leq C \\left( \\epsilon + \\frac{1}{\\sqrt{N_{\\text{local}}}} \\right)\n278: $$\n279: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-205",
+      "title": null,
+      "start_line": 281,
+      "end_line": 336,
+      "header_lines": [],
+      "content_start": 282,
+      "content_end": 335,
+      "content": "282: \n283: :::{prf:proof}\n284: The complete rigorous proof is given in the source document `covariance_convergence_rigorous_proof.md`. We provide a proof outline here.\n285: \n286: **Step 1**: **Continuum approximation via Riemann sums**\n287: \n288: Replace discrete sum over episodes with integral over continuum. For any continuous function $h: \\mathbb{R}^d \\times \\mathbb{R}^d \\to \\mathbb{R}$ with compact support:\n289: \n290: $$\n291: \\frac{1}{N_{\\text{local}}} \\sum_{e_j \\in \\mathcal{N}_{\\epsilon}(e_i)} h(\\Phi(e_i), \\Phi(e_j)) \\xrightarrow{N \\to \\infty} \\frac{1}{Z_i} \\int_{\\mathbb{R}^d} h(x_i, x_i + \\Delta x) \\rho_{QSD}(x_i + \\Delta x) \\sqrt{\\det g(x_i + \\Delta x)} \\, d\\Delta x\n292: $$\n293: \n294: where $Z_i$ is the normalization constant. Error bound: $O(N_{\\text{local}}^{-1/2} + \\epsilon)$.\n295: \n296: **Step 2**: **Gaussian moment calculation**\n297: \n298: Apply Step 1 to the covariance sum with $h(x_i, x_j) = w_{ij} \\Delta x_{ij} \\Delta x_{ij}^T$. The continuum limit becomes:\n299: \n300: $$\n301: \\Sigma_i \\to \\frac{\\int \\exp(-\\|\\Delta x\\|^2 / (2\\epsilon^2)) \\rho_{QSD}(x_i + \\Delta x) \\sqrt{\\det g(x_i + \\Delta x)} \\, \\Delta x \\Delta x^T \\, d\\Delta x}{\\int \\exp(-\\|\\Delta x\\|^2 / (2\\epsilon^2)) \\rho_{QSD}(x_i + \\Delta x) \\sqrt{\\det g(x_i + \\Delta x)} \\, d\\Delta x}\n302: $$\n303: \n304: **Step 3**: **Taylor expansion and Gaussian integration**\n305: \n306: Taylor expand $\\rho(x_0 + \\Delta x) \\sqrt{\\det g(x_0 + \\Delta x)}$ to second order. Using Gaussian moment formulas:\n307: \n308: $$\n309: \\int \\exp(-\\|\\Delta x\\|^2 / (2\\epsilon^2)) \\Delta x_j \\Delta x_k \\, d\\Delta x = \\begin{cases}\n310: \\epsilon^2 (2\\pi \\epsilon^2)^{d/2} & \\text{if } j = k \\\\\n311: 0 & \\text{if } j \\neq k\n312: \\end{cases}\n313: $$\n314: \n315: The integral is of an **isotropic Gaussian kernel** against the **non-uniform density** $\\rho_{QSD}(x_i + \\Delta x) \\sqrt{\\det g(x_i + \\Delta x)}$. After Taylor-expanding the density term around $x_i$, the resulting Gaussian moment integrals become anisotropic due to the spatial variation of the density, yielding the inverse metric:\n316: \n317: $$\n318: \\Sigma_i = \\epsilon^2 g(x_i)^{-1} + O(\\epsilon^3)\n319: $$\n320: \n321: **Step 4**: **Identification with diffusion tensor**\n322: \n323: The inverse metric $g(x_i)^{-1} = D_{\\text{reg}}(x_i)$ is the diffusion tensor from the Fokker-Planck equation:\n324: \n325: $$\n326: \\frac{\\partial \\rho}{\\partial t} = \\nabla \\cdot (D(x) \\nabla \\rho + \\rho F)\n327: $$\n328: \n329: where $D(x) = (H(x) + \\epsilon_\\Sigma I)^{-1} = g(x)^{-1}$.\n330: \n331: **Final assembly**: Combining all steps gives:\n332: \n333: $$\n334: \\Sigma_i = \\epsilon^2 g(x_i)^{-1} + O\\left(\\epsilon^3 + \\epsilon + \\frac{1}{\\sqrt{N_{\\text{local}}}}\\right)\n335: $$",
+      "metadata": {},
+      "section": "## 2. Three Foundational Lemmas",
+      "raw_directive": "281: :::\n282: \n283: :::{prf:proof}\n284: The complete rigorous proof is given in the source document `covariance_convergence_rigorous_proof.md`. We provide a proof outline here.\n285: \n286: **Step 1**: **Continuum approximation via Riemann sums**\n287: \n288: Replace discrete sum over episodes with integral over continuum. For any continuous function $h: \\mathbb{R}^d \\times \\mathbb{R}^d \\to \\mathbb{R}$ with compact support:\n289: \n290: $$\n291: \\frac{1}{N_{\\text{local}}} \\sum_{e_j \\in \\mathcal{N}_{\\epsilon}(e_i)} h(\\Phi(e_i), \\Phi(e_j)) \\xrightarrow{N \\to \\infty} \\frac{1}{Z_i} \\int_{\\mathbb{R}^d} h(x_i, x_i + \\Delta x) \\rho_{QSD}(x_i + \\Delta x) \\sqrt{\\det g(x_i + \\Delta x)} \\, d\\Delta x\n292: $$\n293: \n294: where $Z_i$ is the normalization constant. Error bound: $O(N_{\\text{local}}^{-1/2} + \\epsilon)$.\n295: \n296: **Step 2**: **Gaussian moment calculation**\n297: \n298: Apply Step 1 to the covariance sum with $h(x_i, x_j) = w_{ij} \\Delta x_{ij} \\Delta x_{ij}^T$. The continuum limit becomes:\n299: \n300: $$\n301: \\Sigma_i \\to \\frac{\\int \\exp(-\\|\\Delta x\\|^2 / (2\\epsilon^2)) \\rho_{QSD}(x_i + \\Delta x) \\sqrt{\\det g(x_i + \\Delta x)} \\, \\Delta x \\Delta x^T \\, d\\Delta x}{\\int \\exp(-\\|\\Delta x\\|^2 / (2\\epsilon^2)) \\rho_{QSD}(x_i + \\Delta x) \\sqrt{\\det g(x_i + \\Delta x)} \\, d\\Delta x}\n302: $$\n303: \n304: **Step 3**: **Taylor expansion and Gaussian integration**\n305: \n306: Taylor expand $\\rho(x_0 + \\Delta x) \\sqrt{\\det g(x_0 + \\Delta x)}$ to second order. Using Gaussian moment formulas:\n307: \n308: $$\n309: \\int \\exp(-\\|\\Delta x\\|^2 / (2\\epsilon^2)) \\Delta x_j \\Delta x_k \\, d\\Delta x = \\begin{cases}\n310: \\epsilon^2 (2\\pi \\epsilon^2)^{d/2} & \\text{if } j = k \\\\\n311: 0 & \\text{if } j \\neq k\n312: \\end{cases}\n313: $$\n314: \n315: The integral is of an **isotropic Gaussian kernel** against the **non-uniform density** $\\rho_{QSD}(x_i + \\Delta x) \\sqrt{\\det g(x_i + \\Delta x)}$. After Taylor-expanding the density term around $x_i$, the resulting Gaussian moment integrals become anisotropic due to the spatial variation of the density, yielding the inverse metric:\n316: \n317: $$\n318: \\Sigma_i = \\epsilon^2 g(x_i)^{-1} + O(\\epsilon^3)\n319: $$\n320: \n321: **Step 4**: **Identification with diffusion tensor**\n322: \n323: The inverse metric $g(x_i)^{-1} = D_{\\text{reg}}(x_i)$ is the diffusion tensor from the Fokker-Planck equation:\n324: \n325: $$\n326: \\frac{\\partial \\rho}{\\partial t} = \\nabla \\cdot (D(x) \\nabla \\rho + \\rho F)\n327: $$\n328: \n329: where $D(x) = (H(x) + \\epsilon_\\Sigma I)^{-1} = g(x)^{-1}$.\n330: \n331: **Final assembly**: Combining all steps gives:\n332: \n333: $$\n334: \\Sigma_i = \\epsilon^2 g(x_i)^{-1} + O\\left(\\epsilon^3 + \\epsilon + \\frac{1}{\\sqrt{N_{\\text{local}}}}\\right)\n335: $$\n336: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

@@ -1,0 +1,183 @@
+{
+  "chapter_index": 3,
+  "section_id": "## 3. The Riemannian Thermodynamic Manifold",
+  "directive_count": 10,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-state-space-rigorous",
+      "title": "Thermodynamic State Space (Rigorous)",
+      "start_line": 841,
+      "end_line": 858,
+      "header_lines": [
+        842
+      ],
+      "content_start": 844,
+      "content_end": 857,
+      "content": "844: :label: def-state-space-rigorous\n845: \n846: The **thermodynamic state space** is the quotient of the phase space by the Legendre foliation:\n847: \n848: $$\n849: \\mathcal{M}_{\\text{thermo}} = \\mathcal{T} / \\sim\n850: $$\n851: \n852: where $(U_1, S_1, \\ldots, T_1, P_1, \\mu_1) \\sim (U_2, S_2, \\ldots, T_2, P_2, \\mu_2)$ if they lie on the same Legendre submanifold.\n853: \n854: **Coordinate Representations:**\n855: - **Entropy representation**: $\\mathcal{M}_S \\cong \\{(U, V, N)\\}$\n856: - **Energy representation**: $\\mathcal{M}_U \\cong \\{(S, V, N)\\}$\n857: - **Helmholtz representation**: $\\mathcal{M}_F \\cong \\{(T, V, N)\\}$",
+      "metadata": {
+        "label": "def-state-space-rigorous"
+      },
+      "section": "## 3. The Riemannian Thermodynamic Manifold",
+      "raw_directive": "841: Having established the contact geometric structure of thermodynamic phase space $\\mathcal{T}$ in \u00a72, we now project down to the **thermodynamic state space** $\\mathcal{M}_{\\text{thermo}}$, where the Ruppeiner and Weinhold metrics live.\n842: \n843: :::{prf:definition} Thermodynamic State Space (Rigorous)\n844: :label: def-state-space-rigorous\n845: \n846: The **thermodynamic state space** is the quotient of the phase space by the Legendre foliation:\n847: \n848: $$\n849: \\mathcal{M}_{\\text{thermo}} = \\mathcal{T} / \\sim\n850: $$\n851: \n852: where $(U_1, S_1, \\ldots, T_1, P_1, \\mu_1) \\sim (U_2, S_2, \\ldots, T_2, P_2, \\mu_2)$ if they lie on the same Legendre submanifold.\n853: \n854: **Coordinate Representations:**\n855: - **Entropy representation**: $\\mathcal{M}_S \\cong \\{(U, V, N)\\}$\n856: - **Energy representation**: $\\mathcal{M}_U \\cong \\{(S, V, N)\\}$\n857: - **Helmholtz representation**: $\\mathcal{M}_F \\cong \\{(T, V, N)\\}$\n858: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-hessian-metric-general",
+      "title": "Hessian Metric (General)",
+      "start_line": 864,
+      "end_line": 879,
+      "header_lines": [
+        865
+      ],
+      "content_start": 867,
+      "content_end": 878,
+      "content": "867: :label: def-hessian-metric-general\n868: \n869: Let $\\Phi: \\mathcal{M} \\to \\mathbb{R}$ be a smooth function on a manifold $\\mathcal{M}$ with local coordinates $(x^1, \\ldots, x^n)$. The **Hessian metric** associated to $\\Phi$ is:\n870: \n871: $$\n872: g_{\\Phi}^{ij} = \\frac{\\partial^2 \\Phi}{\\partial x^i \\partial x^j}\n873: $$\n874: \n875: If $\\Phi$ is **convex** (resp. **concave**), then $g_{\\Phi}$ is positive definite (resp. $-g_{\\Phi}$ is positive definite), defining a Riemannian metric.\n876: \n877: **Examples in thermodynamics:**\n878: - $\\Phi = U(S, V, N)$ \u2192 Weinhold metric (convex)",
+      "metadata": {
+        "label": "def-hessian-metric-general"
+      },
+      "section": "## 3. The Riemannian Thermodynamic Manifold",
+      "raw_directive": "864: ### 3.2. Hessian Metrics from Thermodynamic Potentials\n865: \n866: :::{prf:definition} Hessian Metric (General)\n867: :label: def-hessian-metric-general\n868: \n869: Let $\\Phi: \\mathcal{M} \\to \\mathbb{R}$ be a smooth function on a manifold $\\mathcal{M}$ with local coordinates $(x^1, \\ldots, x^n)$. The **Hessian metric** associated to $\\Phi$ is:\n870: \n871: $$\n872: g_{\\Phi}^{ij} = \\frac{\\partial^2 \\Phi}{\\partial x^i \\partial x^j}\n873: $$\n874: \n875: If $\\Phi$ is **convex** (resp. **concave**), then $g_{\\Phi}$ is positive definite (resp. $-g_{\\Phi}$ is positive definite), defining a Riemannian metric.\n876: \n877: **Examples in thermodynamics:**\n878: - $\\Phi = U(S, V, N)$ \u2192 Weinhold metric (convex)\n879: - $\\Phi = -S(U, V, N)$ \u2192 Ruppeiner metric (concave $S$ \u2192 convex $-S$)"
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-ruppeiner-metric-preliminary",
+      "title": "Ruppeiner Metric (Preliminary Definition)",
+      "start_line": 881,
+      "end_line": 909,
+      "header_lines": [
+        882
+      ],
+      "content_start": 884,
+      "content_end": 908,
+      "content": "884: :label: def-ruppeiner-metric-preliminary\n885: \n886: The **Ruppeiner metric** on the entropy representation $\\mathcal{M}_S = \\{(U, V, N)\\}$ is:\n887: \n888: $$\n889: g_R^{ij} = -\\frac{\\partial^2 S}{\\partial U^i \\partial U^j}\n890: $$\n891: \n892: where $(U^1, U^2, U^3) = (U, V, N)$ and $S = S(U, V, N)$ is the thermodynamic entropy.\n893: \n894: The minus sign ensures positive definiteness (since $S$ is concave by thermodynamic stability, {prf:ref}`thm-thermodynamic-stability`).\n895: \n896: **Matrix form:**\n897: \n898: $$\n899: g_R = -\\begin{pmatrix}\n900: \\frac{\\partial^2 S}{\\partial U^2} & \\frac{\\partial^2 S}{\\partial U \\partial V} & \\frac{\\partial^2 S}{\\partial U \\partial N} \\\\\n901: \\frac{\\partial^2 S}{\\partial V \\partial U} & \\frac{\\partial^2 S}{\\partial V^2} & \\frac{\\partial^2 S}{\\partial V \\partial N} \\\\\n902: \\frac{\\partial^2 S}{\\partial N \\partial U} & \\frac{\\partial^2 S}{\\partial N \\partial V} & \\frac{\\partial^2 S}{\\partial N^2}\n903: \\end{pmatrix}\n904: $$\n905: \n906: **Physical Interpretation:** The Ruppeiner metric measures the \"thermodynamic distance\" between nearby equilibrium states. For infinitesimal changes $(dU, dV, dN)$, the distance is:\n907: \n908: $$",
+      "metadata": {
+        "label": "def-ruppeiner-metric-preliminary"
+      },
+      "section": "## 3. The Riemannian Thermodynamic Manifold",
+      "raw_directive": "881: :::\n882: \n883: :::{prf:definition} Ruppeiner Metric (Preliminary Definition)\n884: :label: def-ruppeiner-metric-preliminary\n885: \n886: The **Ruppeiner metric** on the entropy representation $\\mathcal{M}_S = \\{(U, V, N)\\}$ is:\n887: \n888: $$\n889: g_R^{ij} = -\\frac{\\partial^2 S}{\\partial U^i \\partial U^j}\n890: $$\n891: \n892: where $(U^1, U^2, U^3) = (U, V, N)$ and $S = S(U, V, N)$ is the thermodynamic entropy.\n893: \n894: The minus sign ensures positive definiteness (since $S$ is concave by thermodynamic stability, {prf:ref}`thm-thermodynamic-stability`).\n895: \n896: **Matrix form:**\n897: \n898: $$\n899: g_R = -\\begin{pmatrix}\n900: \\frac{\\partial^2 S}{\\partial U^2} & \\frac{\\partial^2 S}{\\partial U \\partial V} & \\frac{\\partial^2 S}{\\partial U \\partial N} \\\\\n901: \\frac{\\partial^2 S}{\\partial V \\partial U} & \\frac{\\partial^2 S}{\\partial V^2} & \\frac{\\partial^2 S}{\\partial V \\partial N} \\\\\n902: \\frac{\\partial^2 S}{\\partial N \\partial U} & \\frac{\\partial^2 S}{\\partial N \\partial V} & \\frac{\\partial^2 S}{\\partial N^2}\n903: \\end{pmatrix}\n904: $$\n905: \n906: **Physical Interpretation:** The Ruppeiner metric measures the \"thermodynamic distance\" between nearby equilibrium states. For infinitesimal changes $(dU, dV, dN)$, the distance is:\n907: \n908: $$\n909: ds_R^2 = g_R^{ij} dU^i dU^j = -\\left(\\frac{\\partial^2 S}{\\partial U^2} dU^2 + 2\\frac{\\partial^2 S}{\\partial U \\partial V} dU dV + \\cdots\\right)"
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-weinhold-metric-preliminary",
+      "title": "Weinhold Metric (Preliminary Definition)",
+      "start_line": 911,
+      "end_line": 933,
+      "header_lines": [
+        912
+      ],
+      "content_start": 914,
+      "content_end": 932,
+      "content": "914: :label: def-weinhold-metric-preliminary\n915: \n916: The **Weinhold metric** on the energy representation $\\mathcal{M}_U = \\{(S, V, N)\\}$ is:\n917: \n918: $$\n919: g_W^{ij} = \\frac{\\partial^2 U}{\\partial S^i \\partial S^j}\n920: $$\n921: \n922: where $(S^1, S^2, S^3) = (S, V, N)$ and $U = U(S, V, N)$ is the internal energy.\n923: \n924: **Matrix form:**\n925: \n926: $$\n927: g_W = \\begin{pmatrix}\n928: \\frac{\\partial^2 U}{\\partial S^2} & \\frac{\\partial^2 U}{\\partial S \\partial V} & \\frac{\\partial^2 U}{\\partial S \\partial N} \\\\\n929: \\frac{\\partial^2 U}{\\partial V \\partial S} & \\frac{\\partial^2 U}{\\partial V^2} & \\frac{\\partial^2 U}{\\partial V \\partial N} \\\\\n930: \\frac{\\partial^2 U}{\\partial N \\partial S} & \\frac{\\partial^2 U}{\\partial N \\partial V} & \\frac{\\partial^2 U}{\\partial N^2}\n931: \\end{pmatrix}\n932: $$",
+      "metadata": {
+        "label": "def-weinhold-metric-preliminary"
+      },
+      "section": "## 3. The Riemannian Thermodynamic Manifold",
+      "raw_directive": "911: :::\n912: \n913: :::{prf:definition} Weinhold Metric (Preliminary Definition)\n914: :label: def-weinhold-metric-preliminary\n915: \n916: The **Weinhold metric** on the energy representation $\\mathcal{M}_U = \\{(S, V, N)\\}$ is:\n917: \n918: $$\n919: g_W^{ij} = \\frac{\\partial^2 U}{\\partial S^i \\partial S^j}\n920: $$\n921: \n922: where $(S^1, S^2, S^3) = (S, V, N)$ and $U = U(S, V, N)$ is the internal energy.\n923: \n924: **Matrix form:**\n925: \n926: $$\n927: g_W = \\begin{pmatrix}\n928: \\frac{\\partial^2 U}{\\partial S^2} & \\frac{\\partial^2 U}{\\partial S \\partial V} & \\frac{\\partial^2 U}{\\partial S \\partial N} \\\\\n929: \\frac{\\partial^2 U}{\\partial V \\partial S} & \\frac{\\partial^2 U}{\\partial V^2} & \\frac{\\partial^2 U}{\\partial V \\partial N} \\\\\n930: \\frac{\\partial^2 U}{\\partial N \\partial S} & \\frac{\\partial^2 U}{\\partial N \\partial V} & \\frac{\\partial^2 U}{\\partial N^2}\n931: \\end{pmatrix}\n932: $$\n933: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-ruppeiner-fisher-connection",
+      "title": "Ruppeiner Metric as Fisher Information Metric",
+      "start_line": 939,
+      "end_line": 955,
+      "header_lines": [
+        940
+      ],
+      "content_start": 942,
+      "content_end": 954,
+      "content": "942: :label: thm-ruppeiner-fisher-connection\n943: \n944: Let $\\rho_{\\text{QSD}}(\\beta, N, V)$ be the quasi-stationary distribution of the Fragile Gas as a function of thermodynamic parameters $\\theta = (\\beta, V, N)$. The **Fisher information metric** on the parameter space is:\n945: \n946: $$\n947: g_{\\text{Fisher}}^{ij}(\\theta) = \\mathbb{E}_{\\text{QSD}}\\left[\\frac{\\partial \\log \\rho_{\\text{QSD}}}{\\partial \\theta^i} \\frac{\\partial \\log \\rho_{\\text{QSD}}}{\\partial \\theta^j}\\right]\n948: $$\n949: \n950: Then the Ruppeiner metric is equal to the Fisher information metric, up to a change of coordinates:\n951: \n952: $$\n953: g_R^{ij}(U, V, N) = \\left(\\frac{\\partial \\theta^k}{\\partial U^i}\\right) g_{\\text{Fisher}}^{kl}(\\theta) \\left(\\frac{\\partial \\theta^l}{\\partial U^j}\\right)\n954: $$",
+      "metadata": {
+        "label": "thm-ruppeiner-fisher-connection"
+      },
+      "section": "## 3. The Riemannian Thermodynamic Manifold",
+      "raw_directive": "939: The Ruppeiner metric has a deep connection to information geometry via the Fisher information metric.\n940: \n941: :::{prf:theorem} Ruppeiner Metric as Fisher Information Metric\n942: :label: thm-ruppeiner-fisher-connection\n943: \n944: Let $\\rho_{\\text{QSD}}(\\beta, N, V)$ be the quasi-stationary distribution of the Fragile Gas as a function of thermodynamic parameters $\\theta = (\\beta, V, N)$. The **Fisher information metric** on the parameter space is:\n945: \n946: $$\n947: g_{\\text{Fisher}}^{ij}(\\theta) = \\mathbb{E}_{\\text{QSD}}\\left[\\frac{\\partial \\log \\rho_{\\text{QSD}}}{\\partial \\theta^i} \\frac{\\partial \\log \\rho_{\\text{QSD}}}{\\partial \\theta^j}\\right]\n948: $$\n949: \n950: Then the Ruppeiner metric is equal to the Fisher information metric, up to a change of coordinates:\n951: \n952: $$\n953: g_R^{ij}(U, V, N) = \\left(\\frac{\\partial \\theta^k}{\\partial U^i}\\right) g_{\\text{Fisher}}^{kl}(\\theta) \\left(\\frac{\\partial \\theta^l}{\\partial U^j}\\right)\n954: $$\n955: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-121",
+      "title": null,
+      "start_line": 957,
+      "end_line": 1072,
+      "header_lines": [],
+      "content_start": 959,
+      "content_end": 1071,
+      "content": "959: :::{prf:proof}\n960: \n961: **This proof establishes the equivalence by relating both metrics to the heat capacity $C_V$.**\n962: \n963: **Step 1: Ruppeiner metric in terms of heat capacity.**\n964: \n965: By definition, $g_R^{UU} = -\\frac{\\partial^2 S}{\\partial U^2}$. Using the chain rule and thermodynamic identities (with $k_B = 1$ for simplicity):\n966: \n967: $$\n968: g_R^{UU} = -\\frac{\\partial}{\\partial U}\\left(\\frac{\\partial S}{\\partial U}\\right) = -\\frac{\\partial(1/T)}{\\partial U}\n969: $$\n970: \n971: Since $\\frac{\\partial S}{\\partial U} = \\frac{1}{T}$ (First Law), we have:\n972: \n973: $$\n974: g_R^{UU} = -\\frac{\\partial(1/T)}{\\partial U} = \\frac{1}{T^2} \\frac{\\partial T}{\\partial U}\n975: $$\n976: \n977: By definition of the heat capacity at constant volume:\n978: \n979: $$\n980: C_V = \\left(\\frac{\\partial U}{\\partial T}\\right)_{V,N} \\quad \\Rightarrow \\quad \\frac{\\partial T}{\\partial U} = \\frac{1}{C_V}\n981: $$\n982: \n983: Therefore:\n984: \n985: $$\n986: g_R^{UU} = \\frac{1}{T^2 C_V}\n987: $$\n988: \n989: **Step 2: Fisher information metric in terms of variance.**\n990: \n991: From {prf:ref}`thm-qsd-canonical-ensemble`, the QSD has the form:\n992: \n993: $$\n994: \\rho_{\\text{QSD}}(x, v; \\beta) = \\frac{1}{Z} \\sqrt{\\det g(x)} \\exp(-\\beta H_{\\text{eff}}(x, v))\n995: $$\n996: \n997: where $\\beta = 1/T$ is the inverse temperature. Taking logarithm:\n998: \n999: $$\n1000: \\log \\rho_{\\text{QSD}} = -\\beta H_{\\text{eff}} + \\frac{1}{2}\\log \\det g(x) - \\log Z(\\beta)\n1001: $$\n1002: \n1003: Computing the score function:\n1004: \n1005: $$\n1006: \\frac{\\partial \\log \\rho_{\\text{QSD}}}{\\partial \\beta} = -H_{\\text{eff}} - \\frac{\\partial \\log Z}{\\partial \\beta}\n1007: $$\n1008: \n1009: Using the identity $\\frac{\\partial \\log Z}{\\partial \\beta} = -\\langle H_{\\text{eff}} \\rangle$ (standard result from statistical mechanics):\n1010: \n1011: $$\n1012: \\frac{\\partial \\log \\rho_{\\text{QSD}}}{\\partial \\beta} = -(H_{\\text{eff}} - \\langle H_{\\text{eff}} \\rangle)\n1013: $$\n1014: \n1015: Therefore, the Fisher information metric is:\n1016: \n1017: $$\n1018: g_{\\text{Fisher}}^{\\beta\\beta} = \\mathbb{E}_{\\text{QSD}}\\left[\\left(\\frac{\\partial \\log \\rho_{\\text{QSD}}}{\\partial \\beta}\\right)^2\\right] = \\text{Var}_{\\text{QSD}}(H_{\\text{eff}})\n1019: $$\n1020: \n1021: **Step 3: Relate Fisher information to heat capacity.**\n1022: \n1023: From the fluctuation-dissipation theorem in statistical mechanics:\n1024: \n1025: $$\n1026: \\text{Var}_{\\text{QSD}}(H_{\\text{eff}}) = k_B T^2 C_V\n1027: $$\n1028: \n1029: (This is a standard result: the variance of energy equals $k_B T^2$ times the heat capacity.) Therefore:\n1030: \n1031: $$\n1032: g_{\\text{Fisher}}^{\\beta\\beta} = T^2 C_V\n1033: $$\n1034: \n1035: **Step 4: Establish the connection between the metrics.**\n1036: \n1037: From Steps 1 and 3:\n1038: \n1039: $$\n1040: g_R^{UU} = \\frac{1}{T^2 C_V} = \\frac{1}{g_{\\text{Fisher}}^{\\beta\\beta}}\n1041: $$\n1042: \n1043: **Step 5: Pullback formula.**\n1044: \n1045: The coordinate transformation is $\\phi: (U, V, N) \\to (\\beta(U), V, N)$ where $\\beta = 1/T$ and $T = T(U, V, N)$ is determined by the First Law. The pullback of the Fisher metric under $\\phi$ is:\n1046: \n1047: $$\n1048: (\\phi^* g_{\\text{Fisher}})_{UU} = \\left(\\frac{\\partial \\beta}{\\partial U}\\right)^2 g_{\\text{Fisher}}^{\\beta\\beta}\n1049: $$\n1050: \n1051: Computing the Jacobian:\n1052: \n1053: $$\n1054: \\frac{\\partial \\beta}{\\partial U} = \\frac{\\partial(1/T)}{\\partial U} = -\\frac{1}{T^2} \\frac{\\partial T}{\\partial U} = -\\frac{1}{T^2 C_V}\n1055: $$\n1056: \n1057: Therefore:\n1058: \n1059: $$\n1060: (\\phi^* g_{\\text{Fisher}})_{UU} = \\left(-\\frac{1}{T^2 C_V}\\right)^2 (T^2 C_V) = \\frac{1}{T^4 C_V^2} \\cdot T^2 C_V = \\frac{1}{T^2 C_V}\n1061: $$\n1062: \n1063: **Step 6: Conclusion.**\n1064: \n1065: Comparing with Step 1:\n1066: \n1067: $$\n1068: g_R^{UU} = \\frac{1}{T^2 C_V} = (\\phi^* g_{\\text{Fisher}})_{UU}\n1069: $$\n1070: \n1071: This proves that the Ruppeiner metric component $g_R^{UU}$ equals the pullback of the Fisher information metric. The generalization to all components $(g_R^{ij})$ follows by analogous calculations for mixed partial derivatives involving $(U, V, N)$.",
+      "metadata": {},
+      "section": "## 3. The Riemannian Thermodynamic Manifold",
+      "raw_directive": "957: :::\n958: \n959: :::{prf:proof}\n960: \n961: **This proof establishes the equivalence by relating both metrics to the heat capacity $C_V$.**\n962: \n963: **Step 1: Ruppeiner metric in terms of heat capacity.**\n964: \n965: By definition, $g_R^{UU} = -\\frac{\\partial^2 S}{\\partial U^2}$. Using the chain rule and thermodynamic identities (with $k_B = 1$ for simplicity):\n966: \n967: $$\n968: g_R^{UU} = -\\frac{\\partial}{\\partial U}\\left(\\frac{\\partial S}{\\partial U}\\right) = -\\frac{\\partial(1/T)}{\\partial U}\n969: $$\n970: \n971: Since $\\frac{\\partial S}{\\partial U} = \\frac{1}{T}$ (First Law), we have:\n972: \n973: $$\n974: g_R^{UU} = -\\frac{\\partial(1/T)}{\\partial U} = \\frac{1}{T^2} \\frac{\\partial T}{\\partial U}\n975: $$\n976: \n977: By definition of the heat capacity at constant volume:\n978: \n979: $$\n980: C_V = \\left(\\frac{\\partial U}{\\partial T}\\right)_{V,N} \\quad \\Rightarrow \\quad \\frac{\\partial T}{\\partial U} = \\frac{1}{C_V}\n981: $$\n982: \n983: Therefore:\n984: \n985: $$\n986: g_R^{UU} = \\frac{1}{T^2 C_V}\n987: $$\n988: \n989: **Step 2: Fisher information metric in terms of variance.**\n990: \n991: From {prf:ref}`thm-qsd-canonical-ensemble`, the QSD has the form:\n992: \n993: $$\n994: \\rho_{\\text{QSD}}(x, v; \\beta) = \\frac{1}{Z} \\sqrt{\\det g(x)} \\exp(-\\beta H_{\\text{eff}}(x, v))\n995: $$\n996: \n997: where $\\beta = 1/T$ is the inverse temperature. Taking logarithm:\n998: \n999: $$\n1000: \\log \\rho_{\\text{QSD}} = -\\beta H_{\\text{eff}} + \\frac{1}{2}\\log \\det g(x) - \\log Z(\\beta)\n1001: $$\n1002: \n1003: Computing the score function:\n1004: \n1005: $$\n1006: \\frac{\\partial \\log \\rho_{\\text{QSD}}}{\\partial \\beta} = -H_{\\text{eff}} - \\frac{\\partial \\log Z}{\\partial \\beta}\n1007: $$\n1008: \n1009: Using the identity $\\frac{\\partial \\log Z}{\\partial \\beta} = -\\langle H_{\\text{eff}} \\rangle$ (standard result from statistical mechanics):\n1010: \n1011: $$\n1012: \\frac{\\partial \\log \\rho_{\\text{QSD}}}{\\partial \\beta} = -(H_{\\text{eff}} - \\langle H_{\\text{eff}} \\rangle)\n1013: $$\n1014: \n1015: Therefore, the Fisher information metric is:\n1016: \n1017: $$\n1018: g_{\\text{Fisher}}^{\\beta\\beta} = \\mathbb{E}_{\\text{QSD}}\\left[\\left(\\frac{\\partial \\log \\rho_{\\text{QSD}}}{\\partial \\beta}\\right)^2\\right] = \\text{Var}_{\\text{QSD}}(H_{\\text{eff}})\n1019: $$\n1020: \n1021: **Step 3: Relate Fisher information to heat capacity.**\n1022: \n1023: From the fluctuation-dissipation theorem in statistical mechanics:\n1024: \n1025: $$\n1026: \\text{Var}_{\\text{QSD}}(H_{\\text{eff}}) = k_B T^2 C_V\n1027: $$\n1028: \n1029: (This is a standard result: the variance of energy equals $k_B T^2$ times the heat capacity.) Therefore:\n1030: \n1031: $$\n1032: g_{\\text{Fisher}}^{\\beta\\beta} = T^2 C_V\n1033: $$\n1034: \n1035: **Step 4: Establish the connection between the metrics.**\n1036: \n1037: From Steps 1 and 3:\n1038: \n1039: $$\n1040: g_R^{UU} = \\frac{1}{T^2 C_V} = \\frac{1}{g_{\\text{Fisher}}^{\\beta\\beta}}\n1041: $$\n1042: \n1043: **Step 5: Pullback formula.**\n1044: \n1045: The coordinate transformation is $\\phi: (U, V, N) \\to (\\beta(U), V, N)$ where $\\beta = 1/T$ and $T = T(U, V, N)$ is determined by the First Law. The pullback of the Fisher metric under $\\phi$ is:\n1046: \n1047: $$\n1048: (\\phi^* g_{\\text{Fisher}})_{UU} = \\left(\\frac{\\partial \\beta}{\\partial U}\\right)^2 g_{\\text{Fisher}}^{\\beta\\beta}\n1049: $$\n1050: \n1051: Computing the Jacobian:\n1052: \n1053: $$\n1054: \\frac{\\partial \\beta}{\\partial U} = \\frac{\\partial(1/T)}{\\partial U} = -\\frac{1}{T^2} \\frac{\\partial T}{\\partial U} = -\\frac{1}{T^2 C_V}\n1055: $$\n1056: \n1057: Therefore:\n1058: \n1059: $$\n1060: (\\phi^* g_{\\text{Fisher}})_{UU} = \\left(-\\frac{1}{T^2 C_V}\\right)^2 (T^2 C_V) = \\frac{1}{T^4 C_V^2} \\cdot T^2 C_V = \\frac{1}{T^2 C_V}\n1061: $$\n1062: \n1063: **Step 6: Conclusion.**\n1064: \n1065: Comparing with Step 1:\n1066: \n1067: $$\n1068: g_R^{UU} = \\frac{1}{T^2 C_V} = (\\phi^* g_{\\text{Fisher}})_{UU}\n1069: $$\n1070: \n1071: This proves that the Ruppeiner metric component $g_R^{UU}$ equals the pullback of the Fisher information metric. The generalization to all components $(g_R^{ij})$ follows by analogous calculations for mixed partial derivatives involving $(U, V, N)$.\n1072: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-238",
+      "title": "Why This Connection Matters",
+      "start_line": 1074,
+      "end_line": 1086,
+      "header_lines": [
+        1075
+      ],
+      "content_start": 1077,
+      "content_end": 1085,
+      "content": "1077: :class: important\n1078: \n1079: The theorem {prf:ref}`thm-ruppeiner-fisher-connection` establishes that:\n1080: \n1081: 1. **Thermodynamic geometry IS information geometry**: The Ruppeiner metric is not a separate geometric structure but the Fisher information metric in disguise.\n1082: \n1083: 2. **Phase transitions ARE information-geometric critical points**: Divergences in the Fisher information metric (indicating difficulty in distinguishing nearby parameter values) coincide with thermodynamic phase transitions.\n1084: \n1085: 3. **Algorithmic construction IS statistically principled**: By computing the Fisher information from QSD samples (which we can do algorithmically), we automatically obtain the Ruppeiner metric with statistical guarantees.",
+      "metadata": {
+        "class": "important"
+      },
+      "section": "## 3. The Riemannian Thermodynamic Manifold",
+      "raw_directive": "1074: :::\n1075: \n1076: :::{prf:remark} Why This Connection Matters\n1077: :class: important\n1078: \n1079: The theorem {prf:ref}`thm-ruppeiner-fisher-connection` establishes that:\n1080: \n1081: 1. **Thermodynamic geometry IS information geometry**: The Ruppeiner metric is not a separate geometric structure but the Fisher information metric in disguise.\n1082: \n1083: 2. **Phase transitions ARE information-geometric critical points**: Divergences in the Fisher information metric (indicating difficulty in distinguishing nearby parameter values) coincide with thermodynamic phase transitions.\n1084: \n1085: 3. **Algorithmic construction IS statistically principled**: By computing the Fisher information from QSD samples (which we can do algorithmically), we automatically obtain the Ruppeiner metric with statistical guarantees.\n1086: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-thermodynamic-emergent-connection",
+      "title": "Thermodynamic Metric as Expectation of Emergent Metric",
+      "start_line": 1092,
+      "end_line": 1104,
+      "header_lines": [
+        1093
+      ],
+      "content_start": 1095,
+      "content_end": 1103,
+      "content": "1095: :label: thm-thermodynamic-emergent-connection\n1096: \n1097: Let $g(x, S) = H(x, S) + \\epsilon_\\Sigma I$ be the emergent Riemannian metric from {prf:ref}`def-emergent-metric` in [08_emergent_geometry.md](08_emergent_geometry.md), and let $g_{\\text{Fisher}}^{ij}(\\theta)$ be the Fisher information metric on the parameter space $\\theta = (\\beta, V, N)$.\n1098: \n1099: Then:\n1100: \n1101: $$\n1102: g_{\\text{Fisher}}^{ij}(\\theta) = \\mathbb{E}_{\\text{QSD}}\\left[g(x, S)^{ij} \\frac{\\partial x}{\\partial \\theta^i} \\frac{\\partial x}{\\partial \\theta^j}\\right] + \\text{(velocity contribution)}\n1103: $$",
+      "metadata": {
+        "label": "thm-thermodynamic-emergent-connection"
+      },
+      "section": "## 3. The Riemannian Thermodynamic Manifold",
+      "raw_directive": "1092: We now establish the relationship between the thermodynamic metric (Ruppeiner/Fisher) and the emergent Riemannian metric from Chapter 8.\n1093: \n1094: :::{prf:theorem} Thermodynamic Metric as Expectation of Emergent Metric\n1095: :label: thm-thermodynamic-emergent-connection\n1096: \n1097: Let $g(x, S) = H(x, S) + \\epsilon_\\Sigma I$ be the emergent Riemannian metric from {prf:ref}`def-emergent-metric` in [08_emergent_geometry.md](08_emergent_geometry.md), and let $g_{\\text{Fisher}}^{ij}(\\theta)$ be the Fisher information metric on the parameter space $\\theta = (\\beta, V, N)$.\n1098: \n1099: Then:\n1100: \n1101: $$\n1102: g_{\\text{Fisher}}^{ij}(\\theta) = \\mathbb{E}_{\\text{QSD}}\\left[g(x, S)^{ij} \\frac{\\partial x}{\\partial \\theta^i} \\frac{\\partial x}{\\partial \\theta^j}\\right] + \\text{(velocity contribution)}\n1103: $$\n1104: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-270",
+      "title": null,
+      "start_line": 1106,
+      "end_line": 1171,
+      "header_lines": [],
+      "content_start": 1108,
+      "content_end": 1170,
+      "content": "1108: :::{prf:proof}\n1109: \n1110: **Step 1: Recall emergent metric definition.**\n1111: \n1112: From Chapter 8:\n1113: \n1114: $$\n1115: g(x, S)^{ab} = H^{ab}(x, S) + \\epsilon_\\Sigma \\delta^{ab}\n1116: $$\n1117: \n1118: where $H^{ab} = \\partial^2 V_{\\text{fit}} / \\partial x^a \\partial x^b$ is the fitness Hessian.\n1119: \n1120: **Step 2: Recall Fisher information definition.**\n1121: \n1122: $$\n1123: g_{\\text{Fisher}}^{ij}(\\theta) = \\mathbb{E}_{\\text{QSD}}\\left[\\frac{\\partial \\log \\rho_{\\text{QSD}}}{\\partial \\theta^i} \\frac{\\partial \\log \\rho_{\\text{QSD}}}{\\partial \\theta^j}\\right]\n1124: $$\n1125: \n1126: **Step 3: Use QSD formula with Riemannian volume.**\n1127: \n1128: From {prf:ref}`thm-qsd-riemannian-volume-main`:\n1129: \n1130: $$\n1131: \\log \\rho_{\\text{QSD}}(x, v; \\theta) = \\frac{1}{2}\\log \\det g(x) - \\beta H_{\\text{eff}}(x, v) - \\log Z(\\theta)\n1132: $$\n1133: \n1134: **Step 4: Compute derivative with respect to $\\theta^i$.**\n1135: \n1136: $$\n1137: \\frac{\\partial \\log \\rho_{\\text{QSD}}}{\\partial \\theta^i} = \\frac{1}{2} \\frac{\\partial \\log \\det g(x)}{\\partial \\theta^i} - \\frac{\\partial \\beta}{\\partial \\theta^i} H_{\\text{eff}} - \\frac{\\partial \\log Z}{\\partial \\theta^i}\n1138: $$\n1139: \n1140: **Step 5: Expand the determinant derivative.**\n1141: \n1142: Using $\\frac{\\partial \\log \\det A}{\\partial \\theta} = \\text{Tr}(A^{-1} \\partial A / \\partial \\theta)$:\n1143: \n1144: $$\n1145: \\frac{\\partial \\log \\det g(x)}{\\partial \\theta^i} = g^{ab} \\frac{\\partial g_{ab}}{\\partial \\theta^i} = g^{ab} H_{ab,i}\n1146: $$\n1147: \n1148: where $H_{ab,i} = \\partial H_{ab} / \\partial \\theta^i$.\n1149: \n1150: **Step 6: Compute Fisher information (spatial part).**\n1151: \n1152: Squaring and taking expectation (and using $\\mathbb{E}[\\partial \\log Z / \\partial \\theta^i] = 0$ by normalization):\n1153: \n1154: $$\n1155: g_{\\text{Fisher}}^{ij} = \\frac{1}{4} \\mathbb{E}_{\\text{QSD}}\\left[(g^{ab} H_{ab,i})(g^{cd} H_{cd,j})\\right] + \\text{(cross terms)} + \\text{(kinetic terms)}\n1156: $$\n1157: \n1158: The expansion and simplification of these terms requires detailed algebraic manipulation involving:\n1159: - Expansion of nine cross terms from the product of derivatives\n1160: - Application of normalization constraints ($\\mathbb{E}[\\partial_i \\log \\rho] = 0$)\n1161: - Covariance decomposition to separate spatial and kinetic contributions\n1162: - Chain rule to relate Hessian derivatives to coordinate transformations\n1163: \n1164: After this algebra (detailed in **Appendix A**), the Fisher information simplifies to:\n1165: \n1166: $$\n1167: g_{\\text{Fisher}}^{ij} = \\mathbb{E}_{\\text{QSD}}\\left[g^{ab} \\frac{\\partial x^a}{\\partial \\theta^i} \\frac{\\partial x^b}{\\partial \\theta^j}\\right] + \\beta_i \\beta_j \\, \\text{Var}(H_{\\text{eff}})\n1168: $$\n1169: \n1170: where the cross terms vanish for separable parametrizations (spatial vs. kinetic).",
+      "metadata": {},
+      "section": "## 3. The Riemannian Thermodynamic Manifold",
+      "raw_directive": "1106: :::\n1107: \n1108: :::{prf:proof}\n1109: \n1110: **Step 1: Recall emergent metric definition.**\n1111: \n1112: From Chapter 8:\n1113: \n1114: $$\n1115: g(x, S)^{ab} = H^{ab}(x, S) + \\epsilon_\\Sigma \\delta^{ab}\n1116: $$\n1117: \n1118: where $H^{ab} = \\partial^2 V_{\\text{fit}} / \\partial x^a \\partial x^b$ is the fitness Hessian.\n1119: \n1120: **Step 2: Recall Fisher information definition.**\n1121: \n1122: $$\n1123: g_{\\text{Fisher}}^{ij}(\\theta) = \\mathbb{E}_{\\text{QSD}}\\left[\\frac{\\partial \\log \\rho_{\\text{QSD}}}{\\partial \\theta^i} \\frac{\\partial \\log \\rho_{\\text{QSD}}}{\\partial \\theta^j}\\right]\n1124: $$\n1125: \n1126: **Step 3: Use QSD formula with Riemannian volume.**\n1127: \n1128: From {prf:ref}`thm-qsd-riemannian-volume-main`:\n1129: \n1130: $$\n1131: \\log \\rho_{\\text{QSD}}(x, v; \\theta) = \\frac{1}{2}\\log \\det g(x) - \\beta H_{\\text{eff}}(x, v) - \\log Z(\\theta)\n1132: $$\n1133: \n1134: **Step 4: Compute derivative with respect to $\\theta^i$.**\n1135: \n1136: $$\n1137: \\frac{\\partial \\log \\rho_{\\text{QSD}}}{\\partial \\theta^i} = \\frac{1}{2} \\frac{\\partial \\log \\det g(x)}{\\partial \\theta^i} - \\frac{\\partial \\beta}{\\partial \\theta^i} H_{\\text{eff}} - \\frac{\\partial \\log Z}{\\partial \\theta^i}\n1138: $$\n1139: \n1140: **Step 5: Expand the determinant derivative.**\n1141: \n1142: Using $\\frac{\\partial \\log \\det A}{\\partial \\theta} = \\text{Tr}(A^{-1} \\partial A / \\partial \\theta)$:\n1143: \n1144: $$\n1145: \\frac{\\partial \\log \\det g(x)}{\\partial \\theta^i} = g^{ab} \\frac{\\partial g_{ab}}{\\partial \\theta^i} = g^{ab} H_{ab,i}\n1146: $$\n1147: \n1148: where $H_{ab,i} = \\partial H_{ab} / \\partial \\theta^i$.\n1149: \n1150: **Step 6: Compute Fisher information (spatial part).**\n1151: \n1152: Squaring and taking expectation (and using $\\mathbb{E}[\\partial \\log Z / \\partial \\theta^i] = 0$ by normalization):\n1153: \n1154: $$\n1155: g_{\\text{Fisher}}^{ij} = \\frac{1}{4} \\mathbb{E}_{\\text{QSD}}\\left[(g^{ab} H_{ab,i})(g^{cd} H_{cd,j})\\right] + \\text{(cross terms)} + \\text{(kinetic terms)}\n1156: $$\n1157: \n1158: The expansion and simplification of these terms requires detailed algebraic manipulation involving:\n1159: - Expansion of nine cross terms from the product of derivatives\n1160: - Application of normalization constraints ($\\mathbb{E}[\\partial_i \\log \\rho] = 0$)\n1161: - Covariance decomposition to separate spatial and kinetic contributions\n1162: - Chain rule to relate Hessian derivatives to coordinate transformations\n1163: \n1164: After this algebra (detailed in **Appendix A**), the Fisher information simplifies to:\n1165: \n1166: $$\n1167: g_{\\text{Fisher}}^{ij} = \\mathbb{E}_{\\text{QSD}}\\left[g^{ab} \\frac{\\partial x^a}{\\partial \\theta^i} \\frac{\\partial x^b}{\\partial \\theta^j}\\right] + \\beta_i \\beta_j \\, \\text{Var}(H_{\\text{eff}})\n1168: $$\n1169: \n1170: where the cross terms vanish for separable parametrizations (spatial vs. kinetic).\n1171: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-337",
+      "title": "Physical Intuition",
+      "start_line": 1173,
+      "end_line": 1183,
+      "header_lines": [
+        1174
+      ],
+      "content_start": 1176,
+      "content_end": 1182,
+      "content": "1176: :class: tip\n1177: \n1178: The theorem says: **Thermodynamic curvature = spatially averaged geometric curvature + kinetic energy fluctuations**.\n1179: \n1180: - The first term (spatial) comes from the landscape geometry via the emergent metric $g(x, S)$\n1181: - The second term (kinetic) comes from the velocity distribution and is related to heat capacity\n1182: - Both contributions are weighted by the QSD, which concentrates the measure near high-fitness regions",
+      "metadata": {
+        "class": "tip"
+      },
+      "section": "## 3. The Riemannian Thermodynamic Manifold",
+      "raw_directive": "1173: :::\n1174: \n1175: :::{prf:remark} Physical Intuition\n1176: :class: tip\n1177: \n1178: The theorem says: **Thermodynamic curvature = spatially averaged geometric curvature + kinetic energy fluctuations**.\n1179: \n1180: - The first term (spatial) comes from the landscape geometry via the emergent metric $g(x, S)$\n1181: - The second term (kinetic) comes from the velocity distribution and is related to heat capacity\n1182: - Both contributions are weighted by the QSD, which concentrates the measure near high-fitness regions\n1183: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

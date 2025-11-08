@@ -1,0 +1,47 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 2. The Fractal Set as a Dynamic Geometric Data Structure",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-fractal-set-dynamic-tessellation",
+      "title": "Fractal Set as Dynamic Tessellation",
+      "start_line": 61,
+      "end_line": 75,
+      "header_lines": [
+        62
+      ],
+      "content_start": 64,
+      "content_end": 74,
+      "content": "64: :label: def-fractal-set-dynamic-tessellation\n65: \n66: The Fractal Set F = (V, E_CST, E_collision) can be viewed as encoding a time-evolving tessellation of state space:\n67: \n68: **At each time slice t**:\n69: - The vertices V_t = {v_i : t(v_i) = t} represent walker positions {x_i(t)}\n70: - These positions define a **Voronoi tessellation** Vor(t) and dual **Delaunay triangulation** DT(t)\n71: \n72: **The CST edges E_CST encode tessellation updates**:\n73: - An edge (v_i(t), v_j(t+\u0394t)) specifies how the Voronoi cell V_i(t) transforms into V_j(t+\u0394t)\n74: - The collection of all edges between time slices defines the **scutoid tessellation** of spacetime",
+      "metadata": {
+        "label": "def-fractal-set-dynamic-tessellation"
+      },
+      "section": "## 2. The Fractal Set as a Dynamic Geometric Data Structure",
+      "raw_directive": "61: The Fractal Set is not merely a record of walker trajectories; it is a **dynamic geometric data structure** that encodes the evolution of spatial tessellations.\n62: \n63: :::{prf:definition} Fractal Set as Dynamic Tessellation\n64: :label: def-fractal-set-dynamic-tessellation\n65: \n66: The Fractal Set F = (V, E_CST, E_collision) can be viewed as encoding a time-evolving tessellation of state space:\n67: \n68: **At each time slice t**:\n69: - The vertices V_t = {v_i : t(v_i) = t} represent walker positions {x_i(t)}\n70: - These positions define a **Voronoi tessellation** Vor(t) and dual **Delaunay triangulation** DT(t)\n71: \n72: **The CST edges E_CST encode tessellation updates**:\n73: - An edge (v_i(t), v_j(t+\u0394t)) specifies how the Voronoi cell V_i(t) transforms into V_j(t+\u0394t)\n74: - The collection of all edges between time slices defines the **scutoid tessellation** of spacetime\n75: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-scutoid-update-types",
+      "title": "Scutoid Classification and Triangulation Updates",
+      "start_line": 81,
+      "end_line": 101,
+      "header_lines": [
+        82
+      ],
+      "content_start": 84,
+      "content_end": 100,
+      "content": "84: :label: thm-scutoid-update-types\n85: \n86: The scutoids in the Fractal Set tessellation fall into two categories, corresponding to two types of triangulation updates:\n87: \n88: **Type 1: Prismatic Scutoids (Local Moves)**\n89: - **Geometry**: Prism-like 4D polytope with congruent top and bottom faces\n90: - **Causal Structure**: Single parent \u2192 single child (no cloning)\n91: - **Physical Process**: Walker moves continuously via SDE\n92: - **Triangulation Update**: **Vertex position update** - move vertex x_i \u2192 x'_i and perform local Lawson flips\n93: - **Complexity**: O(1) amortized (small number of flips)\n94: \n95: **Type 2: Non-Prismatic Scutoids (Teleportation)**\n96: - **Geometry**: Scutoid with different top/bottom combinatorial structure\n97: - **Causal Structure**: Parent-child cloning relationship\n98: - **Physical Process**: Dead walker removed, new walker inserted at parent's position\n99: - **Triangulation Update**: **Delete-and-insert** operation - remove old vertex, insert new vertex\n100: - **Complexity**: O(log N) (point location) + O(1) amortized (flips)",
+      "metadata": {
+        "label": "thm-scutoid-update-types"
+      },
+      "section": "## 2. The Fractal Set as a Dynamic Geometric Data Structure",
+      "raw_directive": "81: Each scutoid in the 4D tessellation corresponds to a specific type of update to the 3D triangulation:\n82: \n83: :::{prf:theorem} Scutoid Classification and Triangulation Updates\n84: :label: thm-scutoid-update-types\n85: \n86: The scutoids in the Fractal Set tessellation fall into two categories, corresponding to two types of triangulation updates:\n87: \n88: **Type 1: Prismatic Scutoids (Local Moves)**\n89: - **Geometry**: Prism-like 4D polytope with congruent top and bottom faces\n90: - **Causal Structure**: Single parent \u2192 single child (no cloning)\n91: - **Physical Process**: Walker moves continuously via SDE\n92: - **Triangulation Update**: **Vertex position update** - move vertex x_i \u2192 x'_i and perform local Lawson flips\n93: - **Complexity**: O(1) amortized (small number of flips)\n94: \n95: **Type 2: Non-Prismatic Scutoids (Teleportation)**\n96: - **Geometry**: Scutoid with different top/bottom combinatorial structure\n97: - **Causal Structure**: Parent-child cloning relationship\n98: - **Physical Process**: Dead walker removed, new walker inserted at parent's position\n99: - **Triangulation Update**: **Delete-and-insert** operation - remove old vertex, insert new vertex\n100: - **Complexity**: O(log N) (point location) + O(1) amortized (flips)\n101: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

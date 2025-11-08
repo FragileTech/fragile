@@ -1,0 +1,209 @@
+{
+  "document_id": "13_geometric_gas_c3_regularity",
+  "stage": "directives",
+  "directive_type": "lemma",
+  "generated_at": "2025-11-08T17:07:43.246551+00:00",
+  "count": 8,
+  "items": [
+    {
+      "directive_type": "lemma",
+      "label": "lem-derivative-locality-c3",
+      "title": "Derivative Locality for Third Derivatives (Complete)",
+      "start_line": 468,
+      "end_line": 499,
+      "header_lines": [
+        469
+      ],
+      "content_start": 471,
+      "content_end": 498,
+      "content": "471: :label: lem-derivative-locality-c3\n472: \n473: For walkers $i, j \\in \\mathcal{A}$ with $i \\neq j$, the companion-dependent measurement $d_j = \\sum_{\\ell \\in \\mathcal{A} \\setminus \\{j\\}} \\mathbb{P}(c(j) = \\ell) \\cdot d_{\\text{alg}}(j, \\ell)$ satisfies:\n474: \n475: **First derivative**:\n476: $$\n477: \\nabla_{x_i} d_j = P_{ji} A_{ji} \\nabla_{x_i} d_{\\text{alg}}(j,i)\n478: $$\n479: \n480: where $P_{ji} = \\mathbb{P}(c(j)=i)$ and $A_{ji} = 1 - \\frac{d_{\\text{alg}}(j,i)(d_{\\text{alg}}(j,i) - d_j)}{\\varepsilon_c^2}$.\n481: \n482: **KEY INSIGHT**: In the sum over companions $\\ell \\in \\mathcal{A} \\setminus \\{j\\}$, only the term **$\\ell = i$** contributes to $\\nabla_{x_i} d_{\\text{alg}}(j, \\ell)$ because $d_{\\text{alg}}(j,\\ell)$ depends only on $(x_j, v_j, x_\\ell, v_\\ell)$, not on $(x_i, v_i)$ for $\\ell \\neq i$.\n483: \n484: **Derivative bounds** (using $d_{\\text{alg}}(j,i) = \\sqrt{\\|x_j - x_i\\|^2 + \\lambda_{\\text{alg}}\\|v_j - v_i\\|^2 + \\varepsilon_d^2}$):\n485: $$\n486: \\|\\nabla_{x_i} d_{\\text{alg}}(j,i)\\| \\leq 1, \\quad \\|\\nabla^2_{x_i} d_{\\text{alg}}(j,i)\\| \\leq \\frac{2}{\\varepsilon_d}, \\quad \\|\\nabla^3_{x_i} d_{\\text{alg}}(j,i)\\| \\leq \\frac{6}{\\varepsilon_d^2}\n487: $$\n488: \n489: **Bounds for companion-dependent measurement** (with $P_{ji} \\leq 1$ and $|A_{ji}| \\leq 1 + D_{\\max}^2/\\varepsilon_c^2$):\n490: $$\n491: \\|\\nabla_{x_i} d_j\\| \\leq C_{d,1} := 1 + \\frac{D_{\\max}^2}{\\varepsilon_c^2}\n492: $$\n493: $$\n494: \\|\\nabla^2_{x_i} d_j\\| \\leq C_{d,2} \\varepsilon_d^{-1} \\quad \\text{where} \\quad C_{d,2} = 2\\left(1 + \\frac{D_{\\max}^2}{\\varepsilon_c^2}\\right) + \\frac{3D_{\\max}^3}{\\varepsilon_c^4}\n495: $$\n496: $$\n497: \\|\\nabla^3_{x_i} d_j\\| \\leq C_{d,3} \\varepsilon_d^{-2} \\quad \\text{where} \\quad C_{d,3} = 6\\left(1 + \\frac{D_{\\max}^2}{\\varepsilon_c^2}\\right) + \\frac{15D_{\\max}^3}{\\varepsilon_c^4}\n498: $$",
+      "metadata": {
+        "label": "lem-derivative-locality-c3"
+      },
+      "section": "## 2. Mathematical Framework and Notation",
+      "raw_directive": "468: #### 2.5.4. Derivative Locality Lemma (KEY for k-Uniformity)\n469: \n470: :::{prf:lemma} Derivative Locality for Third Derivatives (Complete)\n471: :label: lem-derivative-locality-c3\n472: \n473: For walkers $i, j \\in \\mathcal{A}$ with $i \\neq j$, the companion-dependent measurement $d_j = \\sum_{\\ell \\in \\mathcal{A} \\setminus \\{j\\}} \\mathbb{P}(c(j) = \\ell) \\cdot d_{\\text{alg}}(j, \\ell)$ satisfies:\n474: \n475: **First derivative**:\n476: $$\n477: \\nabla_{x_i} d_j = P_{ji} A_{ji} \\nabla_{x_i} d_{\\text{alg}}(j,i)\n478: $$\n479: \n480: where $P_{ji} = \\mathbb{P}(c(j)=i)$ and $A_{ji} = 1 - \\frac{d_{\\text{alg}}(j,i)(d_{\\text{alg}}(j,i) - d_j)}{\\varepsilon_c^2}$.\n481: \n482: **KEY INSIGHT**: In the sum over companions $\\ell \\in \\mathcal{A} \\setminus \\{j\\}$, only the term **$\\ell = i$** contributes to $\\nabla_{x_i} d_{\\text{alg}}(j, \\ell)$ because $d_{\\text{alg}}(j,\\ell)$ depends only on $(x_j, v_j, x_\\ell, v_\\ell)$, not on $(x_i, v_i)$ for $\\ell \\neq i$.\n483: \n484: **Derivative bounds** (using $d_{\\text{alg}}(j,i) = \\sqrt{\\|x_j - x_i\\|^2 + \\lambda_{\\text{alg}}\\|v_j - v_i\\|^2 + \\varepsilon_d^2}$):\n485: $$\n486: \\|\\nabla_{x_i} d_{\\text{alg}}(j,i)\\| \\leq 1, \\quad \\|\\nabla^2_{x_i} d_{\\text{alg}}(j,i)\\| \\leq \\frac{2}{\\varepsilon_d}, \\quad \\|\\nabla^3_{x_i} d_{\\text{alg}}(j,i)\\| \\leq \\frac{6}{\\varepsilon_d^2}\n487: $$\n488: \n489: **Bounds for companion-dependent measurement** (with $P_{ji} \\leq 1$ and $|A_{ji}| \\leq 1 + D_{\\max}^2/\\varepsilon_c^2$):\n490: $$\n491: \\|\\nabla_{x_i} d_j\\| \\leq C_{d,1} := 1 + \\frac{D_{\\max}^2}{\\varepsilon_c^2}\n492: $$\n493: $$\n494: \\|\\nabla^2_{x_i} d_j\\| \\leq C_{d,2} \\varepsilon_d^{-1} \\quad \\text{where} \\quad C_{d,2} = 2\\left(1 + \\frac{D_{\\max}^2}{\\varepsilon_c^2}\\right) + \\frac{3D_{\\max}^3}{\\varepsilon_c^4}\n495: $$\n496: $$\n497: \\|\\nabla^3_{x_i} d_j\\| \\leq C_{d,3} \\varepsilon_d^{-2} \\quad \\text{where} \\quad C_{d,3} = 6\\left(1 + \\frac{D_{\\max}^2}{\\varepsilon_c^2}\\right) + \\frac{15D_{\\max}^3}{\\varepsilon_c^4}\n498: $$\n499: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "13_geometric_gas_c3_regularity",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. Mathematical Framework and Notation"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-self-measurement-derivatives",
+      "title": "Self-Measurement Derivative Bounds (j=i Case)",
+      "start_line": 614,
+      "end_line": 659,
+      "header_lines": [
+        615
+      ],
+      "content_start": 617,
+      "content_end": 658,
+      "content": "617: :label: lem-self-measurement-derivatives\n618: \n619: For the self-measurement where walker $i$ selects a companion from the alive set:\n620: \n621: $$\n622: d_i = \\sum_{\\ell \\in \\mathcal{A} \\setminus \\{i\\}} P_{i\\ell} \\, d_{\\text{alg}}(i,\\ell), \\quad P_{i\\ell} = \\frac{\\exp(-d_{i\\ell}^2/(2\\varepsilon_c^2))}{Z_i}\n623: $$\n624: \n625: the third derivative with respect to walker $i$'s position is **k-uniform** despite the sum over $k_{\\text{eff}}^{(\\varepsilon_c)} = O((\\log k)^d)$ companions.\n626: \n627: **Key Mechanism**: The normalization $\\sum_{\\ell} P_{i\\ell} = 1$ ensures all derivatives are **probability-weighted expectations**, canceling the sum over companions.\n628: \n629: **First derivative** (covariance form):\n630: \n631: $$\n632: \\nabla_{x_i} d_i = \\mathbb{E}_{P_i}[\\nabla_{x_i} d_{i\\ell}] - \\text{Cov}_{P_i}(d_{i\\ell}, S_{i\\ell})\n633: $$\n634: \n635: where $S_{i\\ell} := \\frac{d_{i\\ell}}{\\varepsilon_c^2} \\nabla_{x_i} d_{i\\ell}$.\n636: \n637: **Third derivative** (expectation form):\n638: \n639: $$\n640: \\begin{aligned}\n641: \\nabla^3_{x_i} d_i &= \\sum_{\\ell} P_{i\\ell} \\nabla^3 d_{i\\ell}\n642: + 3\\,\\text{sym}\\sum_{\\ell} P_{i\\ell} (\\Delta_{i\\ell} \\otimes \\nabla^2 d_{i\\ell}) \\\\\n643: &\\quad + 3\\,\\text{sym}\\sum_{\\ell} P_{i\\ell} [(\\Delta_{i\\ell} \\otimes \\Delta_{i\\ell}) + \\Gamma_{i\\ell}] \\otimes \\nabla d_{i\\ell} \\\\\n644: &\\quad + \\sum_{\\ell} P_{i\\ell} [\\Delta_{i\\ell}^{\\otimes 3} + \\text{sym}(\\Delta_{i\\ell} \\otimes \\Gamma_{i\\ell}) + \\Xi_{i\\ell}] d_{i\\ell}\n645: \\end{aligned}\n646: $$\n647: \n648: where $\\Delta_{i\\ell} = \\bar{S}_i - S_{i\\ell}$ with $\\bar{S}_i = \\sum_r P_{ir} S_{ir}$ (expectation), and $\\Gamma_{i\\ell}, \\Xi_{i\\ell}$ are derivatives of $\\Delta_{i\\ell}$ (also expectations).\n649: \n650: **Bounds** (using $\\|\\nabla d_{i\\ell}\\| \\leq 1$, $\\|\\nabla^2 d_{i\\ell}\\| \\leq 2/\\varepsilon_d$, $\\|\\nabla^3 d_{i\\ell}\\| \\leq 6/\\varepsilon_d^2$, $d_{i\\ell} \\leq D_{\\max}$):\n651: \n652: $$\n653: \\|\\nabla_{x_i} d_i\\| \\leq C_{d,1} := 1 + \\frac{D_{\\max}^2}{\\varepsilon_c^2}\n654: $$\n655: \n656: $$\n657: \\|\\nabla^3_{x_i} d_i\\| \\leq C_{d,3} \\varepsilon_d^{-2} \\quad \\text{with} \\quad C_{d,3} = 6\\left(1 + \\frac{D_{\\max}^2}{\\varepsilon_c^2}\\right) + \\frac{15 D_{\\max}^3}{\\varepsilon_c^4}\n658: $$",
+      "metadata": {
+        "label": "lem-self-measurement-derivatives"
+      },
+      "section": "## 2. Mathematical Framework and Notation",
+      "raw_directive": "614: ### 2.6. Two-Scale Framework for k-Uniformity\n615: \n616: :::{prf:lemma} Self-Measurement Derivative Bounds (j=i Case)\n617: :label: lem-self-measurement-derivatives\n618: \n619: For the self-measurement where walker $i$ selects a companion from the alive set:\n620: \n621: $$\n622: d_i = \\sum_{\\ell \\in \\mathcal{A} \\setminus \\{i\\}} P_{i\\ell} \\, d_{\\text{alg}}(i,\\ell), \\quad P_{i\\ell} = \\frac{\\exp(-d_{i\\ell}^2/(2\\varepsilon_c^2))}{Z_i}\n623: $$\n624: \n625: the third derivative with respect to walker $i$'s position is **k-uniform** despite the sum over $k_{\\text{eff}}^{(\\varepsilon_c)} = O((\\log k)^d)$ companions.\n626: \n627: **Key Mechanism**: The normalization $\\sum_{\\ell} P_{i\\ell} = 1$ ensures all derivatives are **probability-weighted expectations**, canceling the sum over companions.\n628: \n629: **First derivative** (covariance form):\n630: \n631: $$\n632: \\nabla_{x_i} d_i = \\mathbb{E}_{P_i}[\\nabla_{x_i} d_{i\\ell}] - \\text{Cov}_{P_i}(d_{i\\ell}, S_{i\\ell})\n633: $$\n634: \n635: where $S_{i\\ell} := \\frac{d_{i\\ell}}{\\varepsilon_c^2} \\nabla_{x_i} d_{i\\ell}$.\n636: \n637: **Third derivative** (expectation form):\n638: \n639: $$\n640: \\begin{aligned}\n641: \\nabla^3_{x_i} d_i &= \\sum_{\\ell} P_{i\\ell} \\nabla^3 d_{i\\ell}\n642: + 3\\,\\text{sym}\\sum_{\\ell} P_{i\\ell} (\\Delta_{i\\ell} \\otimes \\nabla^2 d_{i\\ell}) \\\\\n643: &\\quad + 3\\,\\text{sym}\\sum_{\\ell} P_{i\\ell} [(\\Delta_{i\\ell} \\otimes \\Delta_{i\\ell}) + \\Gamma_{i\\ell}] \\otimes \\nabla d_{i\\ell} \\\\\n644: &\\quad + \\sum_{\\ell} P_{i\\ell} [\\Delta_{i\\ell}^{\\otimes 3} + \\text{sym}(\\Delta_{i\\ell} \\otimes \\Gamma_{i\\ell}) + \\Xi_{i\\ell}] d_{i\\ell}\n645: \\end{aligned}\n646: $$\n647: \n648: where $\\Delta_{i\\ell} = \\bar{S}_i - S_{i\\ell}$ with $\\bar{S}_i = \\sum_r P_{ir} S_{ir}$ (expectation), and $\\Gamma_{i\\ell}, \\Xi_{i\\ell}$ are derivatives of $\\Delta_{i\\ell}$ (also expectations).\n649: \n650: **Bounds** (using $\\|\\nabla d_{i\\ell}\\| \\leq 1$, $\\|\\nabla^2 d_{i\\ell}\\| \\leq 2/\\varepsilon_d$, $\\|\\nabla^3 d_{i\\ell}\\| \\leq 6/\\varepsilon_d^2$, $d_{i\\ell} \\leq D_{\\max}$):\n651: \n652: $$\n653: \\|\\nabla_{x_i} d_i\\| \\leq C_{d,1} := 1 + \\frac{D_{\\max}^2}{\\varepsilon_c^2}\n654: $$\n655: \n656: $$\n657: \\|\\nabla^3_{x_i} d_i\\| \\leq C_{d,3} \\varepsilon_d^{-2} \\quad \\text{with} \\quad C_{d,3} = 6\\left(1 + \\frac{D_{\\max}^2}{\\varepsilon_c^2}\\right) + \\frac{15 D_{\\max}^3}{\\varepsilon_c^4}\n658: $$\n659: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "13_geometric_gas_c3_regularity",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. Mathematical Framework and Notation"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-weight-third-derivative",
+      "title": "Third Derivative of Localization Weights",
+      "start_line": 1047,
+      "end_line": 1061,
+      "header_lines": [
+        1048
+      ],
+      "content_start": 1050,
+      "content_end": 1060,
+      "content": "1050: :label: lem-weight-third-derivative\n1051: \n1052: The localization weights $w_{ij}(\\rho) = K_\\rho(x_i, x_j) / Z_i(\\rho)$ where $Z_i(\\rho) = \\sum_{\\ell \\in A_k} K_\\rho(x_i, x_\\ell)$ satisfy:\n1053: $$\n1054: \\|\\nabla^3_{x_i} w_{ij}(\\rho)\\| \\le C_{w,3}(\\rho)\n1055: $$\n1056: \n1057: where\n1058: $$\n1059: C_{w,3}(\\rho) := \\frac{C_{\\nabla^3 K}(\\rho)}{\\rho^3} + \\frac{12 C_{\\nabla K}(\\rho) C_{\\nabla^2 K}(\\rho)}{\\rho^3} + \\frac{16 C_{\\nabla K}(\\rho)^3}{\\rho^3}\n1060: $$",
+      "metadata": {
+        "label": "lem-weight-third-derivative"
+      },
+      "section": "## 4. Third Derivatives of Localization Weights",
+      "raw_directive": "1047: where $d_{\\text{alg}}(i,j) = \\sqrt{\\|x_i - x_j\\|^2 + \\lambda_{\\text{alg}}\\|v_i - v_j\\|^2 + \\varepsilon_d^2}$ (from §2.5.1). The weights $w_{ij} = K_\\rho(i,j) / Z_i$ do NOT involve companion selection (they use direct pairwise distances), so the quotient analysis below applies with minor adaptations. The key difference: derivatives of $K_\\rho$ now involve derivatives of $d_{\\text{alg}}$, which are regularized by $\\varepsilon_d > 0$.\n1048: \n1049: :::{prf:lemma} Third Derivative of Localization Weights\n1050: :label: lem-weight-third-derivative\n1051: \n1052: The localization weights $w_{ij}(\\rho) = K_\\rho(x_i, x_j) / Z_i(\\rho)$ where $Z_i(\\rho) = \\sum_{\\ell \\in A_k} K_\\rho(x_i, x_\\ell)$ satisfy:\n1053: $$\n1054: \\|\\nabla^3_{x_i} w_{ij}(\\rho)\\| \\le C_{w,3}(\\rho)\n1055: $$\n1056: \n1057: where\n1058: $$\n1059: C_{w,3}(\\rho) := \\frac{C_{\\nabla^3 K}(\\rho)}{\\rho^3} + \\frac{12 C_{\\nabla K}(\\rho) C_{\\nabla^2 K}(\\rho)}{\\rho^3} + \\frac{16 C_{\\nabla K}(\\rho)^3}{\\rho^3}\n1060: $$\n1061: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "13_geometric_gas_c3_regularity",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 4. Third Derivatives of Localization Weights"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-mean-third-derivative",
+      "title": "k-Uniform Third Derivative of Localized Mean (Full Model)",
+      "start_line": 1149,
+      "end_line": 1166,
+      "header_lines": [
+        1150
+      ],
+      "content_start": 1152,
+      "content_end": 1165,
+      "content": "1152: :label: lem-mean-third-derivative\n1153: \n1154: The localized mean for the companion-dependent model $\\mu_\\rho^{(i)} := \\sum_{j \\in \\mathcal{A}} w_{ij}(\\rho) \\, d_j$ (where $d_j = \\mathbb{E}[d_{\\text{alg}}(j, c(j))]$) satisfies:\n1155: $$\n1156: \\|\\nabla^3_{x_i} \\mu_\\rho^{(i)}\\| \\leq K_{\\mu,3}(\\rho, \\varepsilon_d, \\varepsilon_c)\n1157: $$\n1158: \n1159: where $C_{d,m}$ denote constants from the bounds $\\|\\nabla^m d_j\\|$ (from Lemma {prf:ref}`lem-derivative-locality-c3`), and:\n1160: \n1161: $$\n1162: K_{\\mu,3}(\\rho, \\varepsilon_d, \\varepsilon_c) := C_{d,3} \\varepsilon_d^{-2} + \\frac{6 C_{d,2} \\varepsilon_d^{-1} C_{\\nabla K}(\\rho)}{\\rho} k_{\\text{eff}}^{(\\rho)} + \\frac{6 C_{d,1} C_{\\nabla^2 K}(\\rho)}{\\rho^2} k_{\\text{eff}}^{(\\rho)} + 2 D_{\\max} C_{w,3}(\\rho) k_{\\text{eff}}^{(\\rho)}\n1163: $$\n1164: \n1165: **Note on $k_{\\text{eff}}^{(\\rho)}$ dependence**: The last three terms (those involving weight derivatives) scale with $k_{\\text{eff}}^{(\\rho)} \\leq C_{\\text{vol}} \\rho_{\\max} \\rho^{2d}$. When $C_{w,3}(\\rho) = O(\\rho^{-3})$, the bound scales as $K_{\\mu,3} = O(\\varepsilon_d^{-2}) + O(\\rho^{2d-1}) + O(\\rho^{2d-2}) + O(\\rho^{2d-3})$, matching Document 20's $m=3$ formula.",
+      "metadata": {
+        "label": "lem-mean-third-derivative"
+      },
+      "section": "## 5. Third Derivatives of Localized Moments",
+      "raw_directive": "1149: ### 5.1. Third Derivative of Localized Mean (Companion-Dependent Model)\n1150: \n1151: :::{prf:lemma} k-Uniform Third Derivative of Localized Mean (Full Model)\n1152: :label: lem-mean-third-derivative\n1153: \n1154: The localized mean for the companion-dependent model $\\mu_\\rho^{(i)} := \\sum_{j \\in \\mathcal{A}} w_{ij}(\\rho) \\, d_j$ (where $d_j = \\mathbb{E}[d_{\\text{alg}}(j, c(j))]$) satisfies:\n1155: $$\n1156: \\|\\nabla^3_{x_i} \\mu_\\rho^{(i)}\\| \\leq K_{\\mu,3}(\\rho, \\varepsilon_d, \\varepsilon_c)\n1157: $$\n1158: \n1159: where $C_{d,m}$ denote constants from the bounds $\\|\\nabla^m d_j\\|$ (from Lemma {prf:ref}`lem-derivative-locality-c3`), and:\n1160: \n1161: $$\n1162: K_{\\mu,3}(\\rho, \\varepsilon_d, \\varepsilon_c) := C_{d,3} \\varepsilon_d^{-2} + \\frac{6 C_{d,2} \\varepsilon_d^{-1} C_{\\nabla K}(\\rho)}{\\rho} k_{\\text{eff}}^{(\\rho)} + \\frac{6 C_{d,1} C_{\\nabla^2 K}(\\rho)}{\\rho^2} k_{\\text{eff}}^{(\\rho)} + 2 D_{\\max} C_{w,3}(\\rho) k_{\\text{eff}}^{(\\rho)}\n1163: $$\n1164: \n1165: **Note on $k_{\\text{eff}}^{(\\rho)}$ dependence**: The last three terms (those involving weight derivatives) scale with $k_{\\text{eff}}^{(\\rho)} \\leq C_{\\text{vol}} \\rho_{\\max} \\rho^{2d}$. When $C_{w,3}(\\rho) = O(\\rho^{-3})$, the bound scales as $K_{\\mu,3} = O(\\varepsilon_d^{-2}) + O(\\rho^{2d-1}) + O(\\rho^{2d-2}) + O(\\rho^{2d-3})$, matching Document 20's $m=3$ formula.\n1166: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "13_geometric_gas_c3_regularity",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## 5. Third Derivatives of Localized Moments"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-variance-third-derivative",
+      "title": "k-Uniform Third Derivative of Localized Variance (Full Model)",
+      "start_line": 1273,
+      "end_line": 1284,
+      "header_lines": [
+        1274
+      ],
+      "content_start": 1276,
+      "content_end": 1283,
+      "content": "1276: :label: lem-variance-third-derivative\n1277: \n1278: The localized variance for the companion-dependent model $V_\\rho^{(i)} := \\sigma^2_\\rho[f_k, x_i] = \\sum_{j \\in \\mathcal{A}} w_{ij}(\\rho) d_j^2 - (\\mu_\\rho^{(i)})^2$ (where $d_j = \\mathbb{E}[d_{\\text{alg}}(j, c(j))]$) satisfies:\n1279: $$\n1280: \\|\\nabla^3_{x_i} V_\\rho^{(i)}\\| \\leq K_{V,3}(\\rho, \\varepsilon_d, \\varepsilon_c)\n1281: $$\n1282: \n1283: where $K_{V,3}(\\rho, \\varepsilon_d, \\varepsilon_c)$ is a k-uniform constant (explicit formula in proof).",
+      "metadata": {
+        "label": "lem-variance-third-derivative"
+      },
+      "section": "## 5. Third Derivatives of Localized Moments",
+      "raw_directive": "1273: \n1274: \n1275: :::{prf:lemma} k-Uniform Third Derivative of Localized Variance (Full Model)\n1276: :label: lem-variance-third-derivative\n1277: \n1278: The localized variance for the companion-dependent model $V_\\rho^{(i)} := \\sigma^2_\\rho[f_k, x_i] = \\sum_{j \\in \\mathcal{A}} w_{ij}(\\rho) d_j^2 - (\\mu_\\rho^{(i)})^2$ (where $d_j = \\mathbb{E}[d_{\\text{alg}}(j, c(j))]$) satisfies:\n1279: $$\n1280: \\|\\nabla^3_{x_i} V_\\rho^{(i)}\\| \\leq K_{V,3}(\\rho, \\varepsilon_d, \\varepsilon_c)\n1281: $$\n1282: \n1283: where $K_{V,3}(\\rho, \\varepsilon_d, \\varepsilon_c)$ is a k-uniform constant (explicit formula in proof).\n1284: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "13_geometric_gas_c3_regularity",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## 5. Third Derivatives of Localized Moments"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-patch-chain-rule",
+      "title": "Chain Rule for Regularized Standard Deviation",
+      "start_line": 1436,
+      "end_line": 1457,
+      "header_lines": [
+        1437
+      ],
+      "content_start": 1439,
+      "content_end": 1456,
+      "content": "1439: :label: lem-patch-chain-rule\n1440: \n1441: Let $\\sigma\\'_{\\text{reg}}: \\mathbb{R}_{\\ge 0} \\to \\mathbb{R}_{>0}$ satisfy Assumption {prf:ref}`assump-c3-patch` ($C^3$ regularity). For a smooth function $V: \\mathbb{R}^d \\to \\mathbb{R}_{\\ge 0}$, the composition $h(x) := \\sigma\\'_{\\text{reg}}(V(x))$ has third derivative given by the **Faà di Bruno formula**:\n1442: $$\n1443: \\nabla^3 h = (\\sigma\\'_{\\text{reg}})'''(V) \\cdot (\\nabla V)^{\\otimes 3} + 3(\\sigma\\'_{\\text{reg}})''(V) \\cdot \\text{sym}(\\nabla V \\otimes \\nabla^2 V) + (\\sigma\\'_{\\text{reg}})'(V) \\cdot \\nabla^3 V\n1444: $$\n1445: \n1446: where $\\text{sym}(\\nabla V \\otimes \\nabla^2 V)$ denotes the symmetrized tensor product (sum over all permutations).\n1447: \n1448: More explicitly, using index notation for clarity:\n1449: $$\n1450: \\frac{\\partial^3 h}{\\partial x_i \\partial x_j \\partial x_k} = (\\sigma\\'_{\\text{reg}})'''(V) \\frac{\\partial V}{\\partial x_i} \\frac{\\partial V}{\\partial x_j} \\frac{\\partial V}{\\partial x_k} + (\\sigma\\'_{\\text{reg}})''(V) \\left[\\frac{\\partial V}{\\partial x_i} \\frac{\\partial^2 V}{\\partial x_j \\partial x_k} + \\text{perms}\\right] + (\\sigma\\'_{\\text{reg}})'(V) \\frac{\\partial^3 V}{\\partial x_i \\partial x_j \\partial x_k}\n1451: $$\n1452: \n1453: **Norm bound:**\n1454: $$\n1455: \\|\\nabla^3 h\\| \\le L_{\\sigma\\'\\'\\'_{\\text{reg}}} \\cdot \\|\\nabla V\\|^3 + 3 L_{\\sigma\\'\\'_{\\text{reg}}} \\cdot \\|\\nabla V\\| \\cdot \\|\\nabla^2 V\\| + L_{\\sigma\\'_{\\text{reg}}} \\cdot \\|\\nabla^3 V\\|\n1456: $$",
+      "metadata": {
+        "label": "lem-patch-chain-rule"
+      },
+      "section": "## 6. Third Derivatives of Regularized Standard Deviation",
+      "raw_directive": "1436: The Z-score denominator involves the regularized standard deviation $\\sigma\\'_{\\text{reg}}(V_\\rho^{(i)})$, which is a composition requiring the chain rule.\n1437: \n1438: :::{prf:lemma} Chain Rule for Regularized Standard Deviation\n1439: :label: lem-patch-chain-rule\n1440: \n1441: Let $\\sigma\\'_{\\text{reg}}: \\mathbb{R}_{\\ge 0} \\to \\mathbb{R}_{>0}$ satisfy Assumption {prf:ref}`assump-c3-patch` ($C^3$ regularity). For a smooth function $V: \\mathbb{R}^d \\to \\mathbb{R}_{\\ge 0}$, the composition $h(x) := \\sigma\\'_{\\text{reg}}(V(x))$ has third derivative given by the **Faà di Bruno formula**:\n1442: $$\n1443: \\nabla^3 h = (\\sigma\\'_{\\text{reg}})'''(V) \\cdot (\\nabla V)^{\\otimes 3} + 3(\\sigma\\'_{\\text{reg}})''(V) \\cdot \\text{sym}(\\nabla V \\otimes \\nabla^2 V) + (\\sigma\\'_{\\text{reg}})'(V) \\cdot \\nabla^3 V\n1444: $$\n1445: \n1446: where $\\text{sym}(\\nabla V \\otimes \\nabla^2 V)$ denotes the symmetrized tensor product (sum over all permutations).\n1447: \n1448: More explicitly, using index notation for clarity:\n1449: $$\n1450: \\frac{\\partial^3 h}{\\partial x_i \\partial x_j \\partial x_k} = (\\sigma\\'_{\\text{reg}})'''(V) \\frac{\\partial V}{\\partial x_i} \\frac{\\partial V}{\\partial x_j} \\frac{\\partial V}{\\partial x_k} + (\\sigma\\'_{\\text{reg}})''(V) \\left[\\frac{\\partial V}{\\partial x_i} \\frac{\\partial^2 V}{\\partial x_j \\partial x_k} + \\text{perms}\\right] + (\\sigma\\'_{\\text{reg}})'(V) \\frac{\\partial^3 V}{\\partial x_i \\partial x_j \\partial x_k}\n1451: $$\n1452: \n1453: **Norm bound:**\n1454: $$\n1455: \\|\\nabla^3 h\\| \\le L_{\\sigma\\'\\'\\'_{\\text{reg}}} \\cdot \\|\\nabla V\\|^3 + 3 L_{\\sigma\\'\\'_{\\text{reg}}} \\cdot \\|\\nabla V\\| \\cdot \\|\\nabla^2 V\\| + L_{\\sigma\\'_{\\text{reg}}} \\cdot \\|\\nabla^3 V\\|\n1456: $$\n1457: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "13_geometric_gas_c3_regularity",
+        "chapter_index": 7,
+        "chapter_file": "chapter_7.json",
+        "section_id": "## 6. Third Derivatives of Regularized Standard Deviation"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-patch-third-derivative",
+      "title": "Third Derivative Bound for Regularized Standard Deviation",
+      "start_line": 1493,
+      "end_line": 1504,
+      "header_lines": [
+        1494
+      ],
+      "content_start": 1496,
+      "content_end": 1503,
+      "content": "1496: :label: lem-patch-third-derivative\n1497: \n1498: The regularized standard deviation $\\sigma'_{\\rho}^{(i)} := \\sigma\\'_{\\text{reg}}(V_\\rho^{(i)})$ satisfies:\n1499: $$\n1500: \\|\\nabla^3_{x_i} \\sigma'_{\\rho}^{(i)}\\| \\le L_{\\sigma\\'\\'\\'_{\\text{reg}}} \\cdot (C_{V,\\nabla}(\\rho))^3 + 3 L_{\\sigma\\'\\'_{\\text{reg}}} \\cdot C_{V,\\nabla}(\\rho) \\cdot C_{V,\\nabla^2}(\\rho) + L_{\\sigma\\'_{\\text{reg}}} \\cdot C_{V,\\nabla^3}(\\rho)\n1501: $$\n1502: \n1503: where $C_{V,\\nabla}(\\rho)$, $C_{V,\\nabla^2}(\\rho)$, $C_{V,\\nabla^3}(\\rho)$ are the bounds from Lemmas {prf:ref}`lem-variance-gradient`, {prf:ref}`lem-variance-hessian`, and {prf:ref}`lem-variance-third-derivative` (the latter two from Appendix A of [11_geometric_gas.md](11_geometric_gas.md) and Lemma {prf:ref}`lem-variance-third-derivative` above).",
+      "metadata": {
+        "label": "lem-patch-third-derivative"
+      },
+      "section": "## 6. Third Derivatives of Regularized Standard Deviation",
+      "raw_directive": "1493: :::\n1494: \n1495: :::{prf:lemma} Third Derivative Bound for Regularized Standard Deviation\n1496: :label: lem-patch-third-derivative\n1497: \n1498: The regularized standard deviation $\\sigma'_{\\rho}^{(i)} := \\sigma\\'_{\\text{reg}}(V_\\rho^{(i)})$ satisfies:\n1499: $$\n1500: \\|\\nabla^3_{x_i} \\sigma'_{\\rho}^{(i)}\\| \\le L_{\\sigma\\'\\'\\'_{\\text{reg}}} \\cdot (C_{V,\\nabla}(\\rho))^3 + 3 L_{\\sigma\\'\\'_{\\text{reg}}} \\cdot C_{V,\\nabla}(\\rho) \\cdot C_{V,\\nabla^2}(\\rho) + L_{\\sigma\\'_{\\text{reg}}} \\cdot C_{V,\\nabla^3}(\\rho)\n1501: $$\n1502: \n1503: where $C_{V,\\nabla}(\\rho)$, $C_{V,\\nabla^2}(\\rho)$, $C_{V,\\nabla^3}(\\rho)$ are the bounds from Lemmas {prf:ref}`lem-variance-gradient`, {prf:ref}`lem-variance-hessian`, and {prf:ref}`lem-variance-third-derivative` (the latter two from Appendix A of [11_geometric_gas.md](11_geometric_gas.md) and Lemma {prf:ref}`lem-variance-third-derivative` above).\n1504: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "13_geometric_gas_c3_regularity",
+        "chapter_index": 7,
+        "chapter_file": "chapter_7.json",
+        "section_id": "## 6. Third Derivatives of Regularized Standard Deviation"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-zscore-third-derivative",
+      "title": "k-Uniform Third Derivative of Z-Score",
+      "start_line": 1524,
+      "end_line": 1549,
+      "header_lines": [
+        1525
+      ],
+      "content_start": 1527,
+      "content_end": 1548,
+      "content": "1527: :label: lem-zscore-third-derivative\n1528: \n1529: The Z-score $Z_\\rho^{(i)} := Z_\\rho[f_k, d, x_i]$ satisfies:\n1530: $$\n1531: \\|\\nabla^3_{x_i} Z_\\rho^{(i)}\\| \\le K_{Z,3}(\\rho)\n1532: $$\n1533: \n1534: where $K_{Z,3}(\\rho)$ is a k-uniform constant:\n1535: $$\n1536: \\begin{aligned}\n1537: K_{Z,3}(\\rho) := &\\, \\frac{1}{\\sigma\\'_{\\min}} \\Big[C_{u,\\nabla^3}(\\rho) + 3 C_{u,\\nabla}(\\rho) C_{v,\\nabla^2}(\\rho) \\\\\n1538: &\\quad + 3 C_{u,\\nabla^2}(\\rho) C_{v,\\nabla}(\\rho) + 6 C_{u,\\nabla}(\\rho) (C_{v,\\nabla}(\\rho))^2 \\\\\n1539: &\\quad + (d_{\\max} + C_{\\mu,\\nabla}(\\rho)) C_{v,\\nabla^3}(\\rho) \\Big]\n1540: \\end{aligned}\n1541: $$\n1542: \n1543: where:\n1544: - $u(x_i) := d_i (companion-dependent measurement) - \\mu_\\rho^{(i)}$ (numerator)\n1545: - $v(x_i) := \\sigma'_{\\rho}^{(i)}$ (denominator)\n1546: - $C_{u,\\nabla^m}(\\rho)$ are bounds on $\\nabla^m u$ (from measurement and mean)\n1547: - $C_{v,\\nabla^m}(\\rho)$ are bounds on $\\nabla^m v$ (from Lemma {prf:ref}`lem-patch-third-derivative`)\n1548: - **Numerator bounds**: For $d_i$, use Lemma {prf:ref}`lem-derivative-locality-c3`: $\\|\\nabla^3 d_i\\| \\leq C_{d,3} \\varepsilon_d^{-2}$ (companion-dependent, k-uniform)",
+      "metadata": {
+        "label": "lem-zscore-third-derivative"
+      },
+      "section": "## 7. Third Derivative of the Z-Score",
+      "raw_directive": "1524: The Z-score $Z_\\rho[f_k, d, x_i] = (d_i - \\mu_\\rho^{(i)}) / \\sigma'_{\\rho}^{(i)}$ is a quotient of smooth functions. We now compute its third derivative.\n1525: \n1526: :::{prf:lemma} k-Uniform Third Derivative of Z-Score\n1527: :label: lem-zscore-third-derivative\n1528: \n1529: The Z-score $Z_\\rho^{(i)} := Z_\\rho[f_k, d, x_i]$ satisfies:\n1530: $$\n1531: \\|\\nabla^3_{x_i} Z_\\rho^{(i)}\\| \\le K_{Z,3}(\\rho)\n1532: $$\n1533: \n1534: where $K_{Z,3}(\\rho)$ is a k-uniform constant:\n1535: $$\n1536: \\begin{aligned}\n1537: K_{Z,3}(\\rho) := &\\, \\frac{1}{\\sigma\\'_{\\min}} \\Big[C_{u,\\nabla^3}(\\rho) + 3 C_{u,\\nabla}(\\rho) C_{v,\\nabla^2}(\\rho) \\\\\n1538: &\\quad + 3 C_{u,\\nabla^2}(\\rho) C_{v,\\nabla}(\\rho) + 6 C_{u,\\nabla}(\\rho) (C_{v,\\nabla}(\\rho))^2 \\\\\n1539: &\\quad + (d_{\\max} + C_{\\mu,\\nabla}(\\rho)) C_{v,\\nabla^3}(\\rho) \\Big]\n1540: \\end{aligned}\n1541: $$\n1542: \n1543: where:\n1544: - $u(x_i) := d_i (companion-dependent measurement) - \\mu_\\rho^{(i)}$ (numerator)\n1545: - $v(x_i) := \\sigma'_{\\rho}^{(i)}$ (denominator)\n1546: - $C_{u,\\nabla^m}(\\rho)$ are bounds on $\\nabla^m u$ (from measurement and mean)\n1547: - $C_{v,\\nabla^m}(\\rho)$ are bounds on $\\nabla^m v$ (from Lemma {prf:ref}`lem-patch-third-derivative`)\n1548: - **Numerator bounds**: For $d_i$, use Lemma {prf:ref}`lem-derivative-locality-c3`: $\\|\\nabla^3 d_i\\| \\leq C_{d,3} \\varepsilon_d^{-2}$ (companion-dependent, k-uniform)\n1549: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "13_geometric_gas_c3_regularity",
+        "chapter_index": 8,
+        "chapter_file": "chapter_8.json",
+        "section_id": "## 7. Third Derivative of the Z-Score"
+      }
+    }
+  ]
+}

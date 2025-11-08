@@ -1,0 +1,83 @@
+{
+  "chapter_index": 1,
+  "section_id": "## 2. Two-Dimensional Areas: Plaquettes and Surfaces",
+  "directive_count": 4,
+  "hints": [
+    {
+      "directive_type": "algorithm",
+      "label": "alg-fan-triangulation-area",
+      "title": "Fan Triangulation for Riemannian Area",
+      "start_line": 158,
+      "end_line": 216,
+      "header_lines": [
+        159
+      ],
+      "content_start": 161,
+      "content_end": 215,
+      "content": "161: :label: alg-fan-triangulation-area\n162: \n163: **Input:**\n164: - Ordered cycle of episodes $C = (e_0, e_1, \\ldots, e_{n-1}, e_0)$ with positions $x_i := \\Phi(e_i) \\in \\mathbb{R}^d$\n165: - Metric function $g: \\mathcal{X} \\to \\mathbb{R}^{d \\times d}$ (positive definite)\n166: \n167: **Output:** Riemannian area $A_g(C)$ of the 2D surface enclosed by cycle $C$\n168: \n169: **Procedure:**\n170: \n171: **Step 1: Compute reference point (centroid)**\n172: \n173: $$\n174: x_c := \\frac{1}{n} \\sum_{i=0}^{n-1} x_i\n175: $$\n176: \n177: **Step 2: Evaluate metric at centroid**\n178: \n179: $$\n180: g_c := g(x_c)\n181: $$\n182: \n183: **Step 3: For each triangle $T_i = (x_c, x_i, x_{i+1})$, compute edge vectors:**\n184: \n185: $$\n186: v_1^{(i)} := x_i - x_c, \\quad v_2^{(i)} := x_{i+1} - x_c\n187: $$\n188: \n189: where $x_n := x_0$ (wrap around).\n190: \n191: **Step 4: Compute Riemannian inner products:**\n192: \n193: $$\n194: \\begin{aligned}\n195: \\langle v_1, v_1 \\rangle_{g_c} &:= (v_1^{(i)})^T g_c v_1^{(i)} \\\\\n196: \\langle v_2, v_2 \\rangle_{g_c} &:= (v_2^{(i)})^T g_c v_2^{(i)} \\\\\n197: \\langle v_1, v_2 \\rangle_{g_c} &:= (v_1^{(i)})^T g_c v_2^{(i)}\n198: \\end{aligned}\n199: $$\n200: \n201: **Step 5: Compute triangle area (Gram determinant formula):**\n202: \n203: $$\n204: A_i := \\frac{1}{2} \\sqrt{\\langle v_1, v_1 \\rangle_{g_c} \\cdot \\langle v_2, v_2 \\rangle_{g_c} - \\langle v_1, v_2 \\rangle_{g_c}^2}\n205: $$\n206: \n207: **Step 6: Sum all triangle areas:**\n208: \n209: $$\n210: A_g(C) := \\sum_{i=0}^{n-1} A_i\n211: $$\n212: \n213: **Complexity:** $O(n \\cdot d^2)$ for $n$ vertices in $d$ dimensions\n214: \n215: **Error:** $O(\\text{diam}(C)^2)$ where $\\text{diam}(C) = \\max_{i,j} \\|x_i - x_j\\|$ (assuming $g$ is $C^2$)",
+      "metadata": {
+        "label": "alg-fan-triangulation-area"
+      },
+      "section": "## 2. Two-Dimensional Areas: Plaquettes and Surfaces",
+      "raw_directive": "158: ### 2.1. Fan Triangulation Algorithm\n159: \n160: :::{prf:algorithm} Fan Triangulation for Riemannian Area\n161: :label: alg-fan-triangulation-area\n162: \n163: **Input:**\n164: - Ordered cycle of episodes $C = (e_0, e_1, \\ldots, e_{n-1}, e_0)$ with positions $x_i := \\Phi(e_i) \\in \\mathbb{R}^d$\n165: - Metric function $g: \\mathcal{X} \\to \\mathbb{R}^{d \\times d}$ (positive definite)\n166: \n167: **Output:** Riemannian area $A_g(C)$ of the 2D surface enclosed by cycle $C$\n168: \n169: **Procedure:**\n170: \n171: **Step 1: Compute reference point (centroid)**\n172: \n173: $$\n174: x_c := \\frac{1}{n} \\sum_{i=0}^{n-1} x_i\n175: $$\n176: \n177: **Step 2: Evaluate metric at centroid**\n178: \n179: $$\n180: g_c := g(x_c)\n181: $$\n182: \n183: **Step 3: For each triangle $T_i = (x_c, x_i, x_{i+1})$, compute edge vectors:**\n184: \n185: $$\n186: v_1^{(i)} := x_i - x_c, \\quad v_2^{(i)} := x_{i+1} - x_c\n187: $$\n188: \n189: where $x_n := x_0$ (wrap around).\n190: \n191: **Step 4: Compute Riemannian inner products:**\n192: \n193: $$\n194: \\begin{aligned}\n195: \\langle v_1, v_1 \\rangle_{g_c} &:= (v_1^{(i)})^T g_c v_1^{(i)} \\\\\n196: \\langle v_2, v_2 \\rangle_{g_c} &:= (v_2^{(i)})^T g_c v_2^{(i)} \\\\\n197: \\langle v_1, v_2 \\rangle_{g_c} &:= (v_1^{(i)})^T g_c v_2^{(i)}\n198: \\end{aligned}\n199: $$\n200: \n201: **Step 5: Compute triangle area (Gram determinant formula):**\n202: \n203: $$\n204: A_i := \\frac{1}{2} \\sqrt{\\langle v_1, v_1 \\rangle_{g_c} \\cdot \\langle v_2, v_2 \\rangle_{g_c} - \\langle v_1, v_2 \\rangle_{g_c}^2}\n205: $$\n206: \n207: **Step 6: Sum all triangle areas:**\n208: \n209: $$\n210: A_g(C) := \\sum_{i=0}^{n-1} A_i\n211: $$\n212: \n213: **Complexity:** $O(n \\cdot d^2)$ for $n$ vertices in $d$ dimensions\n214: \n215: **Error:** $O(\\text{diam}(C)^2)$ where $\\text{diam}(C) = \\max_{i,j} \\|x_i - x_j\\|$ (assuming $g$ is $C^2$)\n216: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-fan-triangulation-correct",
+      "title": "Fan Triangulation Gives Correct Riemannian Area",
+      "start_line": 218,
+      "end_line": 241,
+      "header_lines": [
+        219
+      ],
+      "content_start": 221,
+      "content_end": 240,
+      "content": "221: :label: thm-fan-triangulation-correct\n222: \n223: Let $C = (x_0, \\ldots, x_{n-1}, x_0)$ be a simple closed curve in $(\\mathcal{X}, g)$ bounding a simply-connected region $\\Sigma \\subset \\mathcal{X}$.\n224: \n225: Assume:\n226: 1. $\\Sigma$ is nearly planar (small geodesic curvature)\n227: 2. $\\text{diam}(\\Sigma) \\ll R_g$ where $R_g$ is the radius of curvature of $(\\mathcal{X}, g)$\n228: 3. Metric $g$ is $C^2$ on $\\Sigma$\n229: \n230: Then the fan triangulation algorithm {prf:ref}`alg-fan-triangulation-area` computes:\n231: \n232: $$\n233: A_g(C) = \\text{Vol}_g(\\Sigma) + O(\\text{diam}(\\Sigma)^3)\n234: $$\n235: \n236: where $\\text{Vol}_g(\\Sigma) = \\int_\\Sigma dV_{g_\\Sigma}$ is the true Riemannian area.\n237: \n238: **Proof idea:**\n239: 1. Each triangle area $A_i$ approximates the Riemannian area of the corresponding region\n240: 2. Using $g_c$ (metric at centroid) instead of variable $g(x)$ introduces error $O(\\|\\nabla g\\| \\cdot \\text{diam}^2)$",
+      "metadata": {
+        "label": "thm-fan-triangulation-correct"
+      },
+      "section": "## 2. Two-Dimensional Areas: Plaquettes and Surfaces",
+      "raw_directive": "218: :::\n219: \n220: :::{prf:theorem} Fan Triangulation Gives Correct Riemannian Area\n221: :label: thm-fan-triangulation-correct\n222: \n223: Let $C = (x_0, \\ldots, x_{n-1}, x_0)$ be a simple closed curve in $(\\mathcal{X}, g)$ bounding a simply-connected region $\\Sigma \\subset \\mathcal{X}$.\n224: \n225: Assume:\n226: 1. $\\Sigma$ is nearly planar (small geodesic curvature)\n227: 2. $\\text{diam}(\\Sigma) \\ll R_g$ where $R_g$ is the radius of curvature of $(\\mathcal{X}, g)$\n228: 3. Metric $g$ is $C^2$ on $\\Sigma$\n229: \n230: Then the fan triangulation algorithm {prf:ref}`alg-fan-triangulation-area` computes:\n231: \n232: $$\n233: A_g(C) = \\text{Vol}_g(\\Sigma) + O(\\text{diam}(\\Sigma)^3)\n234: $$\n235: \n236: where $\\text{Vol}_g(\\Sigma) = \\int_\\Sigma dV_{g_\\Sigma}$ is the true Riemannian area.\n237: \n238: **Proof idea:**\n239: 1. Each triangle area $A_i$ approximates the Riemannian area of the corresponding region\n240: 2. Using $g_c$ (metric at centroid) instead of variable $g(x)$ introduces error $O(\\|\\nabla g\\| \\cdot \\text{diam}^2)$\n241: 3. Summing $n$ triangles accumulates error $O(n \\cdot \\text{diam}^3)$"
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-plaquette-area-gauge",
+      "title": "Plaquette Area in Lattice Gauge Theory",
+      "start_line": 245,
+      "end_line": 274,
+      "header_lines": [
+        246
+      ],
+      "content_start": 248,
+      "content_end": 273,
+      "content": "248: :label: def-plaquette-area-gauge\n249: \n250: In the lattice QFT framework ({doc}`08_lattice_qft_framework.md`), a **plaquette** $P$ is an elementary closed loop formed by:\n251: \n252: $$\n253: P = (e_{i_0} \\xrightarrow{\\text{CST}} e_{i_1} \\xleftarrow{\\text{IG}} e_{j_1} \\xleftarrow{\\text{CST}} e_{j_0} \\xrightarrow{\\text{IG}} e_{i_0})\n254: $$\n255: \n256: **Four vertices:**\n257: - $x_{i_0}, x_{i_1}, x_{j_1}, x_{j_0}$ (positions of the four episodes)\n258: \n259: **Riemannian area:** Apply fan triangulation:\n260: \n261: $$\n262: A_g(P) = \\text{FanTriangulation}([x_{i_0}, x_{i_1}, x_{j_1}, x_{j_0}], g)\n263: $$\n264: \n265: **Use in Wilson action:** From {prf:ref}`def-wilson-action-lattice` in {doc}`08_lattice_qft_framework.md`:\n266: \n267: $$\n268: S_{\\text{Wilson}}[\\mathcal{F}] = \\sum_{P \\in \\text{Plaquettes}} \\left(1 - \\text{Re}[W[P]]\\right) \\cdot A_g(P)\n269: $$\n270: \n271: where $W[P]$ is the Wilson loop around plaquette $P$.\n272: \n273: **Physical interpretation:**",
+      "metadata": {
+        "label": "def-plaquette-area-gauge"
+      },
+      "section": "## 2. Two-Dimensional Areas: Plaquettes and Surfaces",
+      "raw_directive": "245: ### 2.2. Riemannian Area for Plaquettes in Lattice QFT\n246: \n247: :::{prf:definition} Plaquette Area in Lattice Gauge Theory\n248: :label: def-plaquette-area-gauge\n249: \n250: In the lattice QFT framework ({doc}`08_lattice_qft_framework.md`), a **plaquette** $P$ is an elementary closed loop formed by:\n251: \n252: $$\n253: P = (e_{i_0} \\xrightarrow{\\text{CST}} e_{i_1} \\xleftarrow{\\text{IG}} e_{j_1} \\xleftarrow{\\text{CST}} e_{j_0} \\xrightarrow{\\text{IG}} e_{i_0})\n254: $$\n255: \n256: **Four vertices:**\n257: - $x_{i_0}, x_{i_1}, x_{j_1}, x_{j_0}$ (positions of the four episodes)\n258: \n259: **Riemannian area:** Apply fan triangulation:\n260: \n261: $$\n262: A_g(P) = \\text{FanTriangulation}([x_{i_0}, x_{i_1}, x_{j_1}, x_{j_0}], g)\n263: $$\n264: \n265: **Use in Wilson action:** From {prf:ref}`def-wilson-action-lattice` in {doc}`08_lattice_qft_framework.md`:\n266: \n267: $$\n268: S_{\\text{Wilson}}[\\mathcal{F}] = \\sum_{P \\in \\text{Plaquettes}} \\left(1 - \\text{Re}[W[P]]\\right) \\cdot A_g(P)\n269: $$\n270: \n271: where $W[P]$ is the Wilson loop around plaquette $P$.\n272: \n273: **Physical interpretation:**\n274: - Larger $A_g(P)$: Stronger penalty for non-trivial holonomy"
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-curvature-from-area-defect",
+      "title": "Curvature from Area Defect",
+      "start_line": 278,
+      "end_line": 303,
+      "header_lines": [
+        279
+      ],
+      "content_start": 281,
+      "content_end": 302,
+      "content": "281: :label: prop-curvature-from-area-defect\n282: \n283: For a plaquette $P$ with Euclidean area $A_{\\text{Euclid}}(P)$ and Riemannian area $A_g(P)$, define the **area ratio**:\n284: \n285: $$\n286: r_A(P) := \\frac{A_g(P)}{A_{\\text{Euclid}}(P)}\n287: $$\n288: \n289: Then:\n290: \n291: $$\n292: r_A(P) \\approx 1 + \\frac{1}{6} R_{\\text{scalar}} \\cdot A_{\\text{Euclid}}(P) + O(A^2)\n293: $$\n294: \n295: where $R_{\\text{scalar}}$ is the scalar curvature at the plaquette centroid.\n296: \n297: **Interpretation:**\n298: - $r_A > 1$: Positive curvature (sphere-like, \"stretched\")\n299: - $r_A < 1$: Negative curvature (hyperbolic, \"compressed\")\n300: - $r_A \\approx 1$: Flat (Euclidean geometry)\n301: \n302: **Use:** Measure curvature empirically by computing $r_A$ for plaquettes.",
+      "metadata": {
+        "label": "prop-curvature-from-area-defect"
+      },
+      "section": "## 2. Two-Dimensional Areas: Plaquettes and Surfaces",
+      "raw_directive": "278: ### 2.3. Euclidean vs Riemannian Area Comparison\n279: \n280: :::{prf:proposition} Curvature from Area Defect\n281: :label: prop-curvature-from-area-defect\n282: \n283: For a plaquette $P$ with Euclidean area $A_{\\text{Euclid}}(P)$ and Riemannian area $A_g(P)$, define the **area ratio**:\n284: \n285: $$\n286: r_A(P) := \\frac{A_g(P)}{A_{\\text{Euclid}}(P)}\n287: $$\n288: \n289: Then:\n290: \n291: $$\n292: r_A(P) \\approx 1 + \\frac{1}{6} R_{\\text{scalar}} \\cdot A_{\\text{Euclid}}(P) + O(A^2)\n293: $$\n294: \n295: where $R_{\\text{scalar}}$ is the scalar curvature at the plaquette centroid.\n296: \n297: **Interpretation:**\n298: - $r_A > 1$: Positive curvature (sphere-like, \"stretched\")\n299: - $r_A < 1$: Negative curvature (hyperbolic, \"compressed\")\n300: - $r_A \\approx 1$: Flat (Euclidean geometry)\n301: \n302: **Use:** Measure curvature empirically by computing $r_A$ for plaquettes.\n303: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

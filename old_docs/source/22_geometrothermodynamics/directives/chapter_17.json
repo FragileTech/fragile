@@ -1,0 +1,61 @@
+{
+  "chapter_index": 17,
+  "section_id": "## 5.5 Algorithmic Construction of Weinhold Metric",
+  "directive_count": 3,
+  "hints": [
+    {
+      "directive_type": "algorithm",
+      "label": "alg-weinhold-metric-from-qsd",
+      "title": "Weinhold Metric from QSD Samples",
+      "start_line": 2786,
+      "end_line": 2808,
+      "header_lines": [
+        2787
+      ],
+      "content_start": 2789,
+      "content_end": 2807,
+      "content": "2789: :label: alg-weinhold-metric-from-qsd\n2790: \n2791: **Input:** $N$ samples $\\{(x_k, v_k)\\}_{k=1}^N$ from the QSD at temperature $T$\n2792: \n2793: **Output:** Weinhold metric $\\hat{g}_W$ in thermodynamic coordinates\n2794: \n2795: 1. **Estimate Ruppeiner metric**: Use Algorithm {prf:ref}`alg-ruppeiner-metric-construction` to obtain $\\hat{g}_R(U, V, N)$\n2796: \n2797: 2. **Compute temperature**:\n2798:    $$\n2799:    \\hat{T} = \\frac{1}{N}\\sum_{k=1}^N \\frac{1}{2}v_k^T M v_k \\quad \\text{(average kinetic energy)}\n2800:    $$\n2801: \n2802: 3. **Scale by temperature**:\n2803:    $$\n2804:    \\hat{g}_W = \\hat{T} \\cdot \\hat{g}_R\n2805:    $$\n2806: \n2807: 4. **Return** $\\hat{g}_W$",
+      "metadata": {
+        "label": "alg-weinhold-metric-from-qsd"
+      },
+      "section": "## 5.5 Algorithmic Construction of Weinhold Metric",
+      "raw_directive": "2786: Since $g_W = T \\cdot g_R$, we can construct the Weinhold metric directly from the Ruppeiner metric algorithm.\n2787: \n2788: :::{prf:algorithm} Weinhold Metric from QSD Samples\n2789: :label: alg-weinhold-metric-from-qsd\n2790: \n2791: **Input:** $N$ samples $\\{(x_k, v_k)\\}_{k=1}^N$ from the QSD at temperature $T$\n2792: \n2793: **Output:** Weinhold metric $\\hat{g}_W$ in thermodynamic coordinates\n2794: \n2795: 1. **Estimate Ruppeiner metric**: Use Algorithm {prf:ref}`alg-ruppeiner-metric-construction` to obtain $\\hat{g}_R(U, V, N)$\n2796: \n2797: 2. **Compute temperature**:\n2798:    $$\n2799:    \\hat{T} = \\frac{1}{N}\\sum_{k=1}^N \\frac{1}{2}v_k^T M v_k \\quad \\text{(average kinetic energy)}\n2800:    $$\n2801: \n2802: 3. **Scale by temperature**:\n2803:    $$\n2804:    \\hat{g}_W = \\hat{T} \\cdot \\hat{g}_R\n2805:    $$\n2806: \n2807: 4. **Return** $\\hat{g}_W$\n2808: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-weinhold-convergence",
+      "title": "Convergence of Weinhold Estimator",
+      "start_line": 2810,
+      "end_line": 2822,
+      "header_lines": [
+        2811
+      ],
+      "content_start": 2813,
+      "content_end": 2821,
+      "content": "2813: :label: thm-weinhold-convergence\n2814: \n2815: Under the same conditions as Theorem {prf:ref}`thm-ruppeiner-convergence`, the Weinhold metric estimator converges as:\n2816: \n2817: $$\n2818: \\mathbb{E}[\\|\\hat{g}_W - g_W\\|_F] = O\\left(N^{-2/(d+4)}\\right) + O(\\text{Var}(\\hat{T}))\n2819: $$\n2820: \n2821: where $\\text{Var}(\\hat{T}) = O(1/N)$ for the kinetic temperature estimator.",
+      "metadata": {
+        "label": "thm-weinhold-convergence"
+      },
+      "section": "## 5.5 Algorithmic Construction of Weinhold Metric",
+      "raw_directive": "2810: :::\n2811: \n2812: :::{prf:theorem} Convergence of Weinhold Estimator\n2813: :label: thm-weinhold-convergence\n2814: \n2815: Under the same conditions as Theorem {prf:ref}`thm-ruppeiner-convergence`, the Weinhold metric estimator converges as:\n2816: \n2817: $$\n2818: \\mathbb{E}[\\|\\hat{g}_W - g_W\\|_F] = O\\left(N^{-2/(d+4)}\\right) + O(\\text{Var}(\\hat{T}))\n2819: $$\n2820: \n2821: where $\\text{Var}(\\hat{T}) = O(1/N)$ for the kinetic temperature estimator.\n2822: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-41",
+      "title": null,
+      "start_line": 2824,
+      "end_line": 2867,
+      "header_lines": [],
+      "content_start": 2826,
+      "content_end": 2866,
+      "content": "2826: :::{prf:proof}\n2827: \n2828: **Step 1**: Decompose the error.\n2829: \n2830: $$\n2831: \\|\\hat{g}_W - g_W\\|_F \\leq T \\|\\hat{g}_R - g_R\\|_F + |\\hat{T} - T| \\|\\hat{g}_R\\|_F\n2832: $$\n2833: \n2834: **Step 2**: Bound the first term.\n2835: \n2836: From Theorem {prf:ref}`thm-ruppeiner-convergence`:\n2837: \n2838: $$\n2839: \\mathbb{E}[T \\|\\hat{g}_R - g_R\\|_F] = T \\cdot O(N^{-2/(d+4)})\n2840: $$\n2841: \n2842: **Step 3**: Bound the second term.\n2843: \n2844: The kinetic temperature is a simple average:\n2845: \n2846: $$\n2847: \\hat{T} = \\frac{1}{N}\\sum_{k=1}^N \\frac{1}{2}v_k^T M v_k\n2848: $$\n2849: \n2850: By the Central Limit Theorem:\n2851: \n2852: $$\n2853: \\text{Var}(\\hat{T}) = \\frac{\\text{Var}(v^T M v)}{N} = O(1/N)\n2854: $$\n2855: \n2856: Therefore:\n2857: \n2858: $$\n2859: \\mathbb{E}[|\\hat{T} - T| \\|\\hat{g}_R\\|_F] = O(1/\\sqrt{N}) \\cdot O(1) = O(N^{-1/2})\n2860: $$\n2861: \n2862: **Step 4**: Combine bounds.\n2863: \n2864: $$\n2865: \\mathbb{E}[\\|\\hat{g}_W - g_W\\|_F] = O(N^{-2/(d+4)}) + O(N^{-1/2})\n2866: $$",
+      "metadata": {},
+      "section": "## 5.5 Algorithmic Construction of Weinhold Metric",
+      "raw_directive": "2824: :::\n2825: \n2826: :::{prf:proof}\n2827: \n2828: **Step 1**: Decompose the error.\n2829: \n2830: $$\n2831: \\|\\hat{g}_W - g_W\\|_F \\leq T \\|\\hat{g}_R - g_R\\|_F + |\\hat{T} - T| \\|\\hat{g}_R\\|_F\n2832: $$\n2833: \n2834: **Step 2**: Bound the first term.\n2835: \n2836: From Theorem {prf:ref}`thm-ruppeiner-convergence`:\n2837: \n2838: $$\n2839: \\mathbb{E}[T \\|\\hat{g}_R - g_R\\|_F] = T \\cdot O(N^{-2/(d+4)})\n2840: $$\n2841: \n2842: **Step 3**: Bound the second term.\n2843: \n2844: The kinetic temperature is a simple average:\n2845: \n2846: $$\n2847: \\hat{T} = \\frac{1}{N}\\sum_{k=1}^N \\frac{1}{2}v_k^T M v_k\n2848: $$\n2849: \n2850: By the Central Limit Theorem:\n2851: \n2852: $$\n2853: \\text{Var}(\\hat{T}) = \\frac{\\text{Var}(v^T M v)}{N} = O(1/N)\n2854: $$\n2855: \n2856: Therefore:\n2857: \n2858: $$\n2859: \\mathbb{E}[|\\hat{T} - T| \\|\\hat{g}_R\\|_F] = O(1/\\sqrt{N}) \\cdot O(1) = O(N^{-1/2})\n2860: $$\n2861: \n2862: **Step 4**: Combine bounds.\n2863: \n2864: $$\n2865: \\mathbb{E}[\\|\\hat{g}_W - g_W\\|_F] = O(N^{-2/(d+4)}) + O(N^{-1/2})\n2866: $$\n2867: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

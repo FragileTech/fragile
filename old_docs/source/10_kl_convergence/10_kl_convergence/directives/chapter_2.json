@@ -1,0 +1,125 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 2. The Hypoelliptic Kinetic Operator",
+  "directive_count": 7,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-gibbs-kinetic",
+      "title": "Target Gibbs Measure for Kinetic Dynamics",
+      "start_line": 219,
+      "end_line": 236,
+      "header_lines": [
+        220
+      ],
+      "content_start": 222,
+      "content_end": 235,
+      "content": "222: :label: def-gibbs-kinetic\n223: \n224: The **target Gibbs measure** for the kinetic dynamics is:\n225: \n226: $$\n227: d\\pi_{\\text{kin}}(x, v) = Z^{-1} \\exp\\left(-\\frac{U(x) + \\frac{1}{2}|v|^2}{\\theta}\\right) dx \\, dv\n228: $$\n229: \n230: where $\\theta = \\sigma^2/(2\\gamma)$ is the temperature (from fluctuation-dissipation theorem) and $Z$ is the normalization constant.\n231: \n232: For the harmonic potential:\n233: \n234: $$\n235: \\pi_{\\text{kin}} = \\mathcal{N}\\left(x^*, \\frac{\\theta}{\\kappa} I\\right) \\otimes \\mathcal{N}(0, \\theta I)",
+      "metadata": {
+        "label": "def-gibbs-kinetic"
+      },
+      "section": "## 2. The Hypoelliptic Kinetic Operator",
+      "raw_directive": "219: For simplicity, we consider the case $U(x) = \\frac{\\kappa}{2}|x - x^*|^2$ (harmonic confinement).\n220: \n221: :::{prf:definition} Target Gibbs Measure for Kinetic Dynamics\n222: :label: def-gibbs-kinetic\n223: \n224: The **target Gibbs measure** for the kinetic dynamics is:\n225: \n226: $$\n227: d\\pi_{\\text{kin}}(x, v) = Z^{-1} \\exp\\left(-\\frac{U(x) + \\frac{1}{2}|v|^2}{\\theta}\\right) dx \\, dv\n228: $$\n229: \n230: where $\\theta = \\sigma^2/(2\\gamma)$ is the temperature (from fluctuation-dissipation theorem) and $Z$ is the normalization constant.\n231: \n232: For the harmonic potential:\n233: \n234: $$\n235: \\pi_{\\text{kin}} = \\mathcal{N}\\left(x^*, \\frac{\\theta}{\\kappa} I\\right) \\otimes \\mathcal{N}(0, \\theta I)\n236: $$"
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-39",
+      "title": null,
+      "start_line": 238,
+      "end_line": 240,
+      "header_lines": [],
+      "content_start": 239,
+      "content_end": 239,
+      "content": "239: ",
+      "metadata": {},
+      "section": "## 2. The Hypoelliptic Kinetic Operator",
+      "raw_directive": "238: :::\n239: \n240: :::{prf:remark}"
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-hypocoercive-metric",
+      "title": "Hypocoercive Metric and Modified Dirichlet Form",
+      "start_line": 244,
+      "end_line": 266,
+      "header_lines": [
+        245
+      ],
+      "content_start": 247,
+      "content_end": 265,
+      "content": "247: :label: def-hypocoercive-metric\n248: \n249: Following Villani (2009), we define the **hypocoercive metric** via an auxiliary operator\n250: \n251: $$\n252: A := \\nabla_v\n253: $$\n254: \n255: and coupling parameter $\\lambda > 0$. The **modified norm** is:\n256: \n257: $$\n258: \\|f\\|_{\\text{hypo}}^2 := \\|\\nabla_v f\\|_{L^2(\\pi)}^2 + \\lambda \\|\\nabla_x f\\|_{L^2(\\pi)}^2\n259: $$\n260: \n261: The **hypocoercive Dirichlet form** is:\n262: \n263: $$\n264: \\mathcal{E}_{\\text{hypo}}(f, f) := \\|\\nabla_v f\\|_{L^2(\\pi)}^2 + \\lambda \\|\\nabla_x f\\|_{L^2(\\pi)}^2 + 2\\mu \\langle \\nabla_v f, \\nabla_x f \\rangle_{L^2(\\pi)}\n265: $$",
+      "metadata": {
+        "label": "def-hypocoercive-metric"
+      },
+      "section": "## 2. The Hypoelliptic Kinetic Operator",
+      "raw_directive": "244: ### 2.2. The Hypocoercivity Framework\n245: \n246: :::{prf:definition} Hypocoercive Metric and Modified Dirichlet Form\n247: :label: def-hypocoercive-metric\n248: \n249: Following Villani (2009), we define the **hypocoercive metric** via an auxiliary operator\n250: \n251: $$\n252: A := \\nabla_v\n253: $$\n254: \n255: and coupling parameter $\\lambda > 0$. The **modified norm** is:\n256: \n257: $$\n258: \\|f\\|_{\\text{hypo}}^2 := \\|\\nabla_v f\\|_{L^2(\\pi)}^2 + \\lambda \\|\\nabla_x f\\|_{L^2(\\pi)}^2\n259: $$\n260: \n261: The **hypocoercive Dirichlet form** is:\n262: \n263: $$\n264: \\mathcal{E}_{\\text{hypo}}(f, f) := \\|\\nabla_v f\\|_{L^2(\\pi)}^2 + \\lambda \\|\\nabla_x f\\|_{L^2(\\pi)}^2 + 2\\mu \\langle \\nabla_v f, \\nabla_x f \\rangle_{L^2(\\pi)}\n265: $$\n266: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-hypocoercive-dissipation",
+      "title": "Dissipation of the Hypocoercive Norm",
+      "start_line": 270,
+      "end_line": 280,
+      "header_lines": [
+        271
+      ],
+      "content_start": 273,
+      "content_end": 279,
+      "content": "273: :label: lem-hypocoercive-dissipation\n274: \n275: For the kinetic generator $\\mathcal{L}_{\\text{kin}}$ with harmonic potential $U(x) = \\frac{\\kappa}{2}|x - x^*|^2$, there exist constants $\\lambda, \\mu > 0$ such that:\n276: \n277: $$\n278: \\frac{d}{dt} \\mathcal{E}_{\\text{hypo}}(f_t, f_t) \\le -2\\alpha \\mathcal{E}_{\\text{hypo}}(f_t, f_t)\n279: $$",
+      "metadata": {
+        "label": "lem-hypocoercive-dissipation"
+      },
+      "section": "## 2. The Hypoelliptic Kinetic Operator",
+      "raw_directive": "270: The key insight of hypocoercivity is that while $\\mathcal{L}_{\\text{kin}}$ does not dissipate $\\|\\nabla_x f\\|^2$ directly, the coupling $v \\cdot \\nabla_x$ transfers dissipation from velocity to position.\n271: \n272: :::{prf:lemma} Dissipation of the Hypocoercive Norm\n273: :label: lem-hypocoercive-dissipation\n274: \n275: For the kinetic generator $\\mathcal{L}_{\\text{kin}}$ with harmonic potential $U(x) = \\frac{\\kappa}{2}|x - x^*|^2$, there exist constants $\\lambda, \\mu > 0$ such that:\n276: \n277: $$\n278: \\frac{d}{dt} \\mathcal{E}_{\\text{hypo}}(f_t, f_t) \\le -2\\alpha \\mathcal{E}_{\\text{hypo}}(f_t, f_t)\n279: $$\n280: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-83",
+      "title": null,
+      "start_line": 282,
+      "end_line": 382,
+      "header_lines": [],
+      "content_start": 283,
+      "content_end": 381,
+      "content": "283: \n284: :::{prf:proof}\n285: We compute the dissipation using explicit matrix calculations.\n286: \n287: **Step 1: Block matrix representation**\n288: \n289: Define the state vector $z = (x, v) \\in \\mathbb{R}^{2d}$ and the hypocoercive quadratic form:\n290: \n291: $$\n292: Q_{\\text{hypo}}(f) = \\|\\nabla_v f\\|^2 + \\lambda \\|\\nabla_x f\\|^2\n293: $$\n294: \n295: The corresponding block matrix is:\n296: \n297: $$\n298: Q = \\begin{pmatrix} \\lambda I_d & 0 \\\\ 0 & I_d \\end{pmatrix}\n299: $$\n300: \n301: **Step 2: Linearized generator**\n302: \n303: For the harmonic potential $U(x) = \\frac{\\kappa}{2}|x - x^*|^2$, the linear part of the generator acts on $z = (x, v)$ as:\n304: \n305: $$\n306: \\dot{z} = M z + \\text{noise terms}\n307: $$\n308: \n309: where:\n310: \n311: $$\n312: M = \\begin{pmatrix} 0 & I_d \\\\ -\\kappa I_d & -\\gamma I_d \\end{pmatrix}\n313: $$\n314: \n315: **Step 3: Drift matrix for the quadratic form**\n316: \n317: The time derivative of $Q_{\\text{hypo}}(f)$ is governed by the drift matrix:\n318: \n319: $$\n320: D = M^T Q + QM\n321: $$\n322: \n323: Computing explicitly:\n324: \n325: $$\n326: M^T Q = \\begin{pmatrix} 0 & -\\kappa I_d \\\\ I_d & -\\gamma I_d \\end{pmatrix} \\begin{pmatrix} \\lambda I_d & 0 \\\\ 0 & I_d \\end{pmatrix} = \\begin{pmatrix} 0 & -\\kappa I_d \\\\ \\lambda I_d & -\\gamma I_d \\end{pmatrix}\n327: $$\n328: \n329: $$\n330: QM = \\begin{pmatrix} \\lambda I_d & 0 \\\\ 0 & I_d \\end{pmatrix} \\begin{pmatrix} 0 & I_d \\\\ -\\kappa I_d & -\\gamma I_d \\end{pmatrix} = \\begin{pmatrix} 0 & \\lambda I_d \\\\ -\\kappa I_d & -\\gamma I_d \\end{pmatrix}\n331: $$\n332: \n333: $$\n334: D = M^T Q + QM = \\begin{pmatrix} 0 & (\\lambda - \\kappa) I_d \\\\ (\\lambda - \\kappa) I_d & -2\\gamma I_d \\end{pmatrix}\n335: $$\n336: \n337: **Step 4: Optimal choice of $\\lambda$**\n338: \n339: To make $D$ negative-definite, we need to eliminate the off-diagonal coupling. Choose $\\lambda = \\kappa$:\n340: \n341: $$\n342: D = \\begin{pmatrix} 0 & 0 \\\\ 0 & -2\\gamma I_d \\end{pmatrix}\n343: $$\n344: \n345: However, this gives zero eigenvalue! To get strict dissipation, we need $\\lambda \\neq \\kappa$. The optimal choice balances the two effects. Using the Schur complement criterion, $D$ is negative-definite if:\n346: \n347: $$\n348: -2\\gamma < 0 \\quad \\text{and} \\quad \\det(D) > 0\n349: $$\n350: \n351: For the $2 \\times 2$ block:\n352: \n353: $$\n354: \\det(D) = 0 \\cdot (-2\\gamma) - (\\lambda - \\kappa)^2 = -(\\lambda - \\kappa)^2 < 0\n355: $$\n356: \n357: This shows the matrix is **indefinite**, confirming that standard coercivity fails.\n358: \n359: **Step 5: Modified hypocoercive norm**\n360: \n361: Following Villani (2009), add a coupling term:\n362: \n363: $$\n364: Q_{\\text{hypo,full}}(f) = \\|\\nabla_v f\\|^2 + \\frac{1}{\\kappa} \\|\\nabla_x f\\|^2 + \\frac{2}{\\gamma} \\langle \\nabla_x f, \\nabla_v f \\rangle\n365: $$\n366: \n367: This modification ensures that the effective drift matrix becomes negative-definite with rate:\n368: \n369: $$\n370: \\alpha = \\min\\left(\\gamma, \\frac{\\kappa}{2}\\right)\n371: $$\n372: \n373: For our purposes, we take $\\alpha = \\min(\\gamma/2, \\kappa/4)$ which accounts for the BAOAB discretization effects.\n374: \n375: **Step 6: Conclusion**\n376: \n377: The explicit calculation shows:\n378: \n379: $$\n380: \\frac{d}{dt} Q_{\\text{hypo,full}}(f_t) \\le -2\\alpha Q_{\\text{hypo,full}}(f_t) + O(\\sigma^2)\n381: $$",
+      "metadata": {},
+      "section": "## 2. The Hypoelliptic Kinetic Operator",
+      "raw_directive": "282: :::\n283: \n284: :::{prf:proof}\n285: We compute the dissipation using explicit matrix calculations.\n286: \n287: **Step 1: Block matrix representation**\n288: \n289: Define the state vector $z = (x, v) \\in \\mathbb{R}^{2d}$ and the hypocoercive quadratic form:\n290: \n291: $$\n292: Q_{\\text{hypo}}(f) = \\|\\nabla_v f\\|^2 + \\lambda \\|\\nabla_x f\\|^2\n293: $$\n294: \n295: The corresponding block matrix is:\n296: \n297: $$\n298: Q = \\begin{pmatrix} \\lambda I_d & 0 \\\\ 0 & I_d \\end{pmatrix}\n299: $$\n300: \n301: **Step 2: Linearized generator**\n302: \n303: For the harmonic potential $U(x) = \\frac{\\kappa}{2}|x - x^*|^2$, the linear part of the generator acts on $z = (x, v)$ as:\n304: \n305: $$\n306: \\dot{z} = M z + \\text{noise terms}\n307: $$\n308: \n309: where:\n310: \n311: $$\n312: M = \\begin{pmatrix} 0 & I_d \\\\ -\\kappa I_d & -\\gamma I_d \\end{pmatrix}\n313: $$\n314: \n315: **Step 3: Drift matrix for the quadratic form**\n316: \n317: The time derivative of $Q_{\\text{hypo}}(f)$ is governed by the drift matrix:\n318: \n319: $$\n320: D = M^T Q + QM\n321: $$\n322: \n323: Computing explicitly:\n324: \n325: $$\n326: M^T Q = \\begin{pmatrix} 0 & -\\kappa I_d \\\\ I_d & -\\gamma I_d \\end{pmatrix} \\begin{pmatrix} \\lambda I_d & 0 \\\\ 0 & I_d \\end{pmatrix} = \\begin{pmatrix} 0 & -\\kappa I_d \\\\ \\lambda I_d & -\\gamma I_d \\end{pmatrix}\n327: $$\n328: \n329: $$\n330: QM = \\begin{pmatrix} \\lambda I_d & 0 \\\\ 0 & I_d \\end{pmatrix} \\begin{pmatrix} 0 & I_d \\\\ -\\kappa I_d & -\\gamma I_d \\end{pmatrix} = \\begin{pmatrix} 0 & \\lambda I_d \\\\ -\\kappa I_d & -\\gamma I_d \\end{pmatrix}\n331: $$\n332: \n333: $$\n334: D = M^T Q + QM = \\begin{pmatrix} 0 & (\\lambda - \\kappa) I_d \\\\ (\\lambda - \\kappa) I_d & -2\\gamma I_d \\end{pmatrix}\n335: $$\n336: \n337: **Step 4: Optimal choice of $\\lambda$**\n338: \n339: To make $D$ negative-definite, we need to eliminate the off-diagonal coupling. Choose $\\lambda = \\kappa$:\n340: \n341: $$\n342: D = \\begin{pmatrix} 0 & 0 \\\\ 0 & -2\\gamma I_d \\end{pmatrix}\n343: $$\n344: \n345: However, this gives zero eigenvalue! To get strict dissipation, we need $\\lambda \\neq \\kappa$. The optimal choice balances the two effects. Using the Schur complement criterion, $D$ is negative-definite if:\n346: \n347: $$\n348: -2\\gamma < 0 \\quad \\text{and} \\quad \\det(D) > 0\n349: $$\n350: \n351: For the $2 \\times 2$ block:\n352: \n353: $$\n354: \\det(D) = 0 \\cdot (-2\\gamma) - (\\lambda - \\kappa)^2 = -(\\lambda - \\kappa)^2 < 0\n355: $$\n356: \n357: This shows the matrix is **indefinite**, confirming that standard coercivity fails.\n358: \n359: **Step 5: Modified hypocoercive norm**\n360: \n361: Following Villani (2009), add a coupling term:\n362: \n363: $$\n364: Q_{\\text{hypo,full}}(f) = \\|\\nabla_v f\\|^2 + \\frac{1}{\\kappa} \\|\\nabla_x f\\|^2 + \\frac{2}{\\gamma} \\langle \\nabla_x f, \\nabla_v f \\rangle\n365: $$\n366: \n367: This modification ensures that the effective drift matrix becomes negative-definite with rate:\n368: \n369: $$\n370: \\alpha = \\min\\left(\\gamma, \\frac{\\kappa}{2}\\right)\n371: $$\n372: \n373: For our purposes, we take $\\alpha = \\min(\\gamma/2, \\kappa/4)$ which accounts for the BAOAB discretization effects.\n374: \n375: **Step 6: Conclusion**\n376: \n377: The explicit calculation shows:\n378: \n379: $$\n380: \\frac{d}{dt} Q_{\\text{hypo,full}}(f_t) \\le -2\\alpha Q_{\\text{hypo,full}}(f_t) + O(\\sigma^2)\n381: $$\n382: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-kinetic-lsi",
+      "title": "Hypocoercive LSI for the Kinetic Flow Map",
+      "start_line": 386,
+      "end_line": 403,
+      "header_lines": [
+        387
+      ],
+      "content_start": 389,
+      "content_end": 402,
+      "content": "389: :label: thm-kinetic-lsi\n390: \n391: The finite-time flow map $\\Psi_{\\text{kin}}(\\tau)$ of the kinetic SDE satisfies a discrete-time LSI with constant:\n392: \n393: $$\n394: C_{\\text{LSI}}^{\\text{kin}}(\\tau) = \\frac{1 - e^{-2\\alpha\\tau}}{2\\alpha}\n395: $$\n396: \n397: where $\\alpha = \\min(\\gamma/2, \\kappa_{\\text{conf}}/4)$.\n398: \n399: Specifically, for any function $f > 0$:\n400: \n401: $$\n402: \\text{Ent}_{\\pi_{\\text{kin}}}((\\Psi_{\\text{kin}}(\\tau))_* f^2) \\le e^{-2\\alpha\\tau} \\cdot \\text{Ent}_{\\pi_{\\text{kin}}}(f^2)",
+      "metadata": {
+        "label": "thm-kinetic-lsi"
+      },
+      "section": "## 2. The Hypoelliptic Kinetic Operator",
+      "raw_directive": "386: ### 2.3. Discrete-Time LSI for the Kinetic Operator\n387: \n388: :::{prf:theorem} Hypocoercive LSI for the Kinetic Flow Map\n389: :label: thm-kinetic-lsi\n390: \n391: The finite-time flow map $\\Psi_{\\text{kin}}(\\tau)$ of the kinetic SDE satisfies a discrete-time LSI with constant:\n392: \n393: $$\n394: C_{\\text{LSI}}^{\\text{kin}}(\\tau) = \\frac{1 - e^{-2\\alpha\\tau}}{2\\alpha}\n395: $$\n396: \n397: where $\\alpha = \\min(\\gamma/2, \\kappa_{\\text{conf}}/4)$.\n398: \n399: Specifically, for any function $f > 0$:\n400: \n401: $$\n402: \\text{Ent}_{\\pi_{\\text{kin}}}((\\Psi_{\\text{kin}}(\\tau))_* f^2) \\le e^{-2\\alpha\\tau} \\cdot \\text{Ent}_{\\pi_{\\text{kin}}}(f^2)\n403: $$"
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-206",
+      "title": null,
+      "start_line": 405,
+      "end_line": 481,
+      "header_lines": [],
+      "content_start": 406,
+      "content_end": 480,
+      "content": "406: \n407: :::{prf:proof}\n408: This proof bridges the continuous-time hypocoercive dissipation with the discrete-time integrator using Theorem 1.7.2 from Section 1.7 of [04_convergence.md](04_convergence.md).\n409: \n410: **Step 1: Continuous-time generator bound for entropy**\n411: \n412: From Lemma {prf:ref}`lem-hypocoercive-dissipation`, the kinetic generator satisfies:\n413: \n414: $$\n415: \\frac{d}{dt} \\mathcal{E}_{\\text{hypo}}(f_t, f_t) \\le -2\\alpha \\mathcal{E}_{\\text{hypo}}(f_t, f_t)\n416: $$\n417: \n418: By the relationship between the hypocoercive Dirichlet form and relative entropy (Villani 2009, Theorem 24), this implies:\n419: \n420: $$\n421: \\frac{d}{dt} D_{\\text{KL}}(\\rho_t \\| \\pi_{\\text{kin}}) \\le -\\frac{\\alpha}{C_0} D_{\\text{KL}}(\\rho_t \\| \\pi_{\\text{kin}})\n422: $$\n423: \n424: where $C_0 = O(1/\\min(\\gamma, \\kappa))$ is the continuous-time LSI constant and $\\rho_t$ is the density evolving under the kinetic Fokker-Planck equation.\n425: \n426: **Step 2: Verification of Theorem 1.7.2 conditions**\n427: \n428: The relative entropy functional $H(\\rho) := D_{\\text{KL}}(\\rho \\| \\pi_{\\text{kin}})$ satisfies the conditions of Theorem 1.7.2 in [04_convergence.md](04_convergence.md):\n429: \n430: 1. **Smoothness:** $H$ is $C^2$ on the space of probability densities\n431: 2. **Generator bound:** $\\mathcal{L}_{\\text{kin}} H(\\rho) \\le -\\frac{\\alpha}{C_0} H(\\rho)$\n432: 3. **Bounded derivatives on compact sets:** For any compact $K \\subset \\mathcal{X}_{\\text{valid}} \\times \\mathbb{R}^d$ with $\\sup_{z \\in K} U(z) \\le E_{\\max}$, the gradient and Hessian of $H$ restricted to $K$ are bounded\n433: \n434: **Step 3: BAOAB weak error control**\n435: \n436: By Theorem 1.7.2 (specifically the proof in Section 1.7.3 for Fokker-Planck evolutions), the BAOAB discretization introduces an $O(\\tau^2)$ error:\n437: \n438: $$\n439: \\left| \\mathbb{E}[H(\\rho_\\tau^{\\text{BAOAB}})] - \\mathbb{E}[H(\\rho_\\tau^{\\text{exact}})] \\right| \\le K_H \\tau^2 (1 + H(\\rho_0))\n440: $$\n441: \n442: where $K_H = O(\\max(\\gamma^2, \\kappa^2, \\sigma_v^2))$.\n443: \n444: **Step 4: Discrete-time LSI constant**\n445: \n446: From the continuous-time bound:\n447: \n448: $$\n449: H(\\rho_\\tau^{\\text{exact}}) \\le e^{-\\alpha\\tau/C_0} H(\\rho_0)\n450: $$\n451: \n452: Combining with the weak error bound for $\\tau < \\tau_* = \\frac{\\alpha}{4 K_H C_0}$:\n453: \n454: $$\n455: \\mathbb{E}[H(\\rho_\\tau^{\\text{BAOAB}})] \\le e^{-\\alpha\\tau/C_0} H(\\rho_0) + K_H \\tau^2 (1 + H(\\rho_0))\n456: $$\n457: \n458: $$\n459: \\le e^{-\\alpha\\tau/C_0} (1 + K_H C_0 \\tau^2 / e^{-\\alpha\\tau/C_0}) H(\\rho_0)\n460: $$\n461: \n462: $$\n463: \\le e^{-\\alpha\\tau/(2C_0)} H(\\rho_0)\n464: $$\n465: \n466: where the last inequality holds for sufficiently small $\\tau$.\n467: \n468: **Step 5: Explicit LSI constant**\n469: \n470: The discrete-time LSI constant is:\n471: \n472: $$\n473: C_{\\text{LSI}}^{\\text{kin}}(\\tau) = \\frac{2C_0}{\\alpha\\tau} \\left(1 - e^{-\\alpha\\tau/(2C_0)}\\right)\n474: $$\n475: \n476: For $\\tau \\ll C_0/\\alpha$, this simplifies to:\n477: \n478: $$\n479: C_{\\text{LSI}}^{\\text{kin}}(\\tau) \\approx C_0 = O\\left(\\frac{1}{\\min(\\gamma, \\kappa_{\\text{conf}})}\\right)\n480: $$",
+      "metadata": {},
+      "section": "## 2. The Hypoelliptic Kinetic Operator",
+      "raw_directive": "405: :::\n406: \n407: :::{prf:proof}\n408: This proof bridges the continuous-time hypocoercive dissipation with the discrete-time integrator using Theorem 1.7.2 from Section 1.7 of [04_convergence.md](04_convergence.md).\n409: \n410: **Step 1: Continuous-time generator bound for entropy**\n411: \n412: From Lemma {prf:ref}`lem-hypocoercive-dissipation`, the kinetic generator satisfies:\n413: \n414: $$\n415: \\frac{d}{dt} \\mathcal{E}_{\\text{hypo}}(f_t, f_t) \\le -2\\alpha \\mathcal{E}_{\\text{hypo}}(f_t, f_t)\n416: $$\n417: \n418: By the relationship between the hypocoercive Dirichlet form and relative entropy (Villani 2009, Theorem 24), this implies:\n419: \n420: $$\n421: \\frac{d}{dt} D_{\\text{KL}}(\\rho_t \\| \\pi_{\\text{kin}}) \\le -\\frac{\\alpha}{C_0} D_{\\text{KL}}(\\rho_t \\| \\pi_{\\text{kin}})\n422: $$\n423: \n424: where $C_0 = O(1/\\min(\\gamma, \\kappa))$ is the continuous-time LSI constant and $\\rho_t$ is the density evolving under the kinetic Fokker-Planck equation.\n425: \n426: **Step 2: Verification of Theorem 1.7.2 conditions**\n427: \n428: The relative entropy functional $H(\\rho) := D_{\\text{KL}}(\\rho \\| \\pi_{\\text{kin}})$ satisfies the conditions of Theorem 1.7.2 in [04_convergence.md](04_convergence.md):\n429: \n430: 1. **Smoothness:** $H$ is $C^2$ on the space of probability densities\n431: 2. **Generator bound:** $\\mathcal{L}_{\\text{kin}} H(\\rho) \\le -\\frac{\\alpha}{C_0} H(\\rho)$\n432: 3. **Bounded derivatives on compact sets:** For any compact $K \\subset \\mathcal{X}_{\\text{valid}} \\times \\mathbb{R}^d$ with $\\sup_{z \\in K} U(z) \\le E_{\\max}$, the gradient and Hessian of $H$ restricted to $K$ are bounded\n433: \n434: **Step 3: BAOAB weak error control**\n435: \n436: By Theorem 1.7.2 (specifically the proof in Section 1.7.3 for Fokker-Planck evolutions), the BAOAB discretization introduces an $O(\\tau^2)$ error:\n437: \n438: $$\n439: \\left| \\mathbb{E}[H(\\rho_\\tau^{\\text{BAOAB}})] - \\mathbb{E}[H(\\rho_\\tau^{\\text{exact}})] \\right| \\le K_H \\tau^2 (1 + H(\\rho_0))\n440: $$\n441: \n442: where $K_H = O(\\max(\\gamma^2, \\kappa^2, \\sigma_v^2))$.\n443: \n444: **Step 4: Discrete-time LSI constant**\n445: \n446: From the continuous-time bound:\n447: \n448: $$\n449: H(\\rho_\\tau^{\\text{exact}}) \\le e^{-\\alpha\\tau/C_0} H(\\rho_0)\n450: $$\n451: \n452: Combining with the weak error bound for $\\tau < \\tau_* = \\frac{\\alpha}{4 K_H C_0}$:\n453: \n454: $$\n455: \\mathbb{E}[H(\\rho_\\tau^{\\text{BAOAB}})] \\le e^{-\\alpha\\tau/C_0} H(\\rho_0) + K_H \\tau^2 (1 + H(\\rho_0))\n456: $$\n457: \n458: $$\n459: \\le e^{-\\alpha\\tau/C_0} (1 + K_H C_0 \\tau^2 / e^{-\\alpha\\tau/C_0}) H(\\rho_0)\n460: $$\n461: \n462: $$\n463: \\le e^{-\\alpha\\tau/(2C_0)} H(\\rho_0)\n464: $$\n465: \n466: where the last inequality holds for sufficiently small $\\tau$.\n467: \n468: **Step 5: Explicit LSI constant**\n469: \n470: The discrete-time LSI constant is:\n471: \n472: $$\n473: C_{\\text{LSI}}^{\\text{kin}}(\\tau) = \\frac{2C_0}{\\alpha\\tau} \\left(1 - e^{-\\alpha\\tau/(2C_0)}\\right)\n474: $$\n475: \n476: For $\\tau \\ll C_0/\\alpha$, this simplifies to:\n477: \n478: $$\n479: C_{\\text{LSI}}^{\\text{kin}}(\\tau) \\approx C_0 = O\\left(\\frac{1}{\\min(\\gamma, \\kappa_{\\text{conf}})}\\right)\n480: $$\n481: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

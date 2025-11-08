@@ -1,0 +1,119 @@
+{
+  "chapter_index": 5,
+  "section_id": "## 3. The Complete Axiomatic Framework",
+  "directive_count": 6,
+  "hints": [
+    {
+      "directive_type": "axiom",
+      "label": "ax:confining-potential-hybrid",
+      "title": "Axiom of a Globally Confining Potential",
+      "start_line": 532,
+      "end_line": 537,
+      "header_lines": [
+        533
+      ],
+      "content_start": 535,
+      "content_end": 536,
+      "content": "535: :label: ax:confining-potential-hybrid\n536: ",
+      "metadata": {
+        "label": "ax:confining-potential-hybrid"
+      },
+      "section": "## 3. The Complete Axiomatic Framework",
+      "raw_directive": "532: These are the foundational axioms, inherited from the original framework, that guarantee the existence of the underlying stable system which we are perturbing.\n533: \n534: :::{prf:axiom} Axiom of a Globally Confining Potential\n535: :label: ax:confining-potential-hybrid\n536: \n537: The potential `U(x)` used to define the stability force `F_stable = -\u2207U(x)` must satisfy the **Axiom of a Globally Confining Potential** as stated in `04_convergence.md` (Axiom 1.3.1). It must be smooth, coercive, and compatible with the boundary."
+    },
+    {
+      "directive_type": "axiom",
+      "label": "ax:positive-friction-hybrid",
+      "title": "Axiom of Positive Friction",
+      "start_line": 539,
+      "end_line": 544,
+      "header_lines": [
+        540
+      ],
+      "content_start": 542,
+      "content_end": 543,
+      "content": "542: :label: ax:positive-friction-hybrid\n543: ",
+      "metadata": {
+        "label": "ax:positive-friction-hybrid"
+      },
+      "section": "## 3. The Complete Axiomatic Framework",
+      "raw_directive": "539: :::\n540: \n541: :::{prf:axiom} Axiom of Positive Friction\n542: :label: ax:positive-friction-hybrid\n543: \n544: The bulk friction coefficient `\u03b3` must be a strictly positive constant: `\u03b3 > 0`."
+    },
+    {
+      "directive_type": "axiom",
+      "label": "ax:cloning-env-hybrid",
+      "title": "Foundational Cloning and Environmental Axioms",
+      "start_line": 546,
+      "end_line": 554,
+      "header_lines": [
+        547
+      ],
+      "content_start": 549,
+      "content_end": 553,
+      "content": "549: :label: ax:cloning-env-hybrid\n550: \n551: All foundational axioms related to the cloning operator's pipeline and the environment, as defined in `03_cloning.md` (Chapter 4), must hold. This includes:\n552: *   **Axiom EG-2 (Safe Harbor):** Ensures the cloning operator provides boundary safety.\n553: *   **Axiom EG-4 (Velocity Regularization):** Ensures the velocity domain is bounded.",
+      "metadata": {
+        "label": "ax:cloning-env-hybrid"
+      },
+      "section": "## 3. The Complete Axiomatic Framework",
+      "raw_directive": "546: :::\n547: \n548: :::{prf:axiom} Foundational Cloning and Environmental Axioms\n549: :label: ax:cloning-env-hybrid\n550: \n551: All foundational axioms related to the cloning operator's pipeline and the environment, as defined in `03_cloning.md` (Chapter 4), must hold. This includes:\n552: *   **Axiom EG-2 (Safe Harbor):** Ensures the cloning operator provides boundary safety.\n553: *   **Axiom EG-4 (Velocity Regularization):** Ensures the velocity domain is bounded.\n554: *   **Axiom EG-5 (Active Diversity Signal):** Ensures the Keystone Principle is active."
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop:bounded-adaptive-force",
+      "title": "k-Uniform Boundedness of the Adaptive Force (\u03c1-Dependent)",
+      "start_line": 560,
+      "end_line": 587,
+      "header_lines": [
+        561
+      ],
+      "content_start": 563,
+      "content_end": 586,
+      "content": "563: :label: prop:bounded-adaptive-force\n564: \n565: The adaptive force $\\mathbf{F}_{\\text{adapt}} = \\epsilon_F \\nabla V_{\\text{fit}}[f_k, \\rho]$ is uniformly bounded. There exists a finite, state-independent constant $F_{\\text{adapt,max}}(\\rho)$ such that:\n566: \n567: $$\n568: \\sup_{S \\in \\Sigma_N, i \\in A_k} \\|\\mathbf{F}_{\\text{adapt}}(x_i, S)\\| \\le F_{\\text{adapt,max}}(\\rho) < \\infty\n569: $$\n570: \n571: **\u03c1-Dependence:** The bound $F_{\\text{adapt,max}}(\\rho)$ depends on the localization scale \u03c1 through:\n572: 1. The localized moments $\\mu_\\rho$ and $\\sigma'_\\rho$ computed over $f_k$ (Definition {prf:ref}`def-localized-mean-field-moments`)\n573: 2. The derivatives of the localization kernel $K_\\rho(x, x')$\n574: 3. The rescale function $g_A$ and its derivatives\n575: \n576: **Proof:** The complete rigorous proof is provided in **Appendix A, Theorem A.1** (Theorem {prf:ref}`thm-c1-regularity`). The proof establishes that:\n577: \n578: \n579: \n580: $$\n581: F_{\\text{adapt,max}}(\\rho) = L_{g_A} \\cdot \\left[ \\frac{2d'_{\\max}}{\\sigma\\'_{\\min}} \\left(1 + \\frac{2d_{\\max} C_{\\nabla K}(\\rho)}{\\rho d'_{\\max}}\\right) + \\frac{4d_{\\max}^2 L_{\\sigma\\'_{\\text{reg}}}}{\\sigma'^2_{\\min,\\text{bound}}} \\cdot C_{\\mu,V}(\\rho) \\right]\n582: $$\n583: \n584:     where $C_{\\mu,V}(\\rho) = O(1/\\rho)$ is **independent of N** and bounds the derivatives of the localized moments.\n585: \n586: **Critical k-Uniformity:** The bound is **uniform in k** (and thus in N) due to the telescoping property $\\sum_{j \\in A_k} \\nabla w_{ij} = 0$ of the normalized localization weights computed over alive walkers, combined with the fact that only $k_{\\text{eff}}(\\rho) = O(1)$ alive walkers effectively contribute to the \u03c1-localized measurements. The key technical steps involve applying the chain rule to $V_{\\text{fit}} = g_A \\circ Z_\\rho$ and using the normalized weight constraints to eliminate k-dependence (and thus N-dependence).",
+      "metadata": {
+        "label": "prop:bounded-adaptive-force"
+      },
+      "section": "## 3. The Complete Axiomatic Framework",
+      "raw_directive": "560: These \"axioms\" are fundamentally different. They are not assumptions about the environment, but rather **properties of the algorithm's adaptive components that must be (and can be) proven**. They state that the adaptive terms are \"well-behaved\" enough to be treated as bounded perturbations.\n561: \n562: :::{prf:proposition} k-Uniform Boundedness of the Adaptive Force (\u03c1-Dependent)\n563: :label: prop:bounded-adaptive-force\n564: \n565: The adaptive force $\\mathbf{F}_{\\text{adapt}} = \\epsilon_F \\nabla V_{\\text{fit}}[f_k, \\rho]$ is uniformly bounded. There exists a finite, state-independent constant $F_{\\text{adapt,max}}(\\rho)$ such that:\n566: \n567: $$\n568: \\sup_{S \\in \\Sigma_N, i \\in A_k} \\|\\mathbf{F}_{\\text{adapt}}(x_i, S)\\| \\le F_{\\text{adapt,max}}(\\rho) < \\infty\n569: $$\n570: \n571: **\u03c1-Dependence:** The bound $F_{\\text{adapt,max}}(\\rho)$ depends on the localization scale \u03c1 through:\n572: 1. The localized moments $\\mu_\\rho$ and $\\sigma'_\\rho$ computed over $f_k$ (Definition {prf:ref}`def-localized-mean-field-moments`)\n573: 2. The derivatives of the localization kernel $K_\\rho(x, x')$\n574: 3. The rescale function $g_A$ and its derivatives\n575: \n576: **Proof:** The complete rigorous proof is provided in **Appendix A, Theorem A.1** (Theorem {prf:ref}`thm-c1-regularity`). The proof establishes that:\n577: \n578: \n579: \n580: $$\n581: F_{\\text{adapt,max}}(\\rho) = L_{g_A} \\cdot \\left[ \\frac{2d'_{\\max}}{\\sigma\\'_{\\min}} \\left(1 + \\frac{2d_{\\max} C_{\\nabla K}(\\rho)}{\\rho d'_{\\max}}\\right) + \\frac{4d_{\\max}^2 L_{\\sigma\\'_{\\text{reg}}}}{\\sigma'^2_{\\min,\\text{bound}}} \\cdot C_{\\mu,V}(\\rho) \\right]\n582: $$\n583: \n584:     where $C_{\\mu,V}(\\rho) = O(1/\\rho)$ is **independent of N** and bounds the derivatives of the localized moments.\n585: \n586: **Critical k-Uniformity:** The bound is **uniform in k** (and thus in N) due to the telescoping property $\\sum_{j \\in A_k} \\nabla w_{ij} = 0$ of the normalized localization weights computed over alive walkers, combined with the fact that only $k_{\\text{eff}}(\\rho) = O(1)$ alive walkers effectively contribute to the \u03c1-localized measurements. The key technical steps involve applying the chain rule to $V_{\\text{fit}} = g_A \\circ Z_\\rho$ and using the normalized weight constraints to eliminate k-dependence (and thus N-dependence).\n587: "
+    },
+    {
+      "directive_type": "axiom",
+      "label": "ax:viscous-kernel",
+      "title": "Axiom of a Well-Behaved Viscous Kernel",
+      "start_line": 589,
+      "end_line": 594,
+      "header_lines": [
+        590
+      ],
+      "content_start": 592,
+      "content_end": 593,
+      "content": "592: :label: ax:viscous-kernel\n593: ",
+      "metadata": {
+        "label": "ax:viscous-kernel"
+      },
+      "section": "## 3. The Complete Axiomatic Framework",
+      "raw_directive": "589: :::\n590: \n591: :::{prf:axiom} Axiom of a Well-Behaved Viscous Kernel\n592: :label: ax:viscous-kernel\n593: \n594: The kernel `K(r)` used in the viscous force `F_viscous` must be a non-negative, bounded, and decaying function of the distance `r = ||x_i - x_j||`. For example, a Gaussian kernel `K(r) = exp(-r\u00b2 / 2l\u00b2)`."
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop:ueph-by-construction",
+      "title": "k-Uniform Ellipticity by Construction (Proven in Chapter 4)",
+      "start_line": 596,
+      "end_line": 612,
+      "header_lines": [
+        597
+      ],
+      "content_start": 599,
+      "content_end": 611,
+      "content": "599: :label: prop:ueph-by-construction\n600: \n601: The regularized diffusion tensor $\\Sigma_{\\text{reg}} = (H + \\epsilon_\\Sigma I)^{-1/2}$ is **uniformly elliptic by construction**.\n602: \n603: **Statement:** The eigenvalues of the induced metric $G_{\\text{reg}} = (H + \\epsilon_\\Sigma I)^{-1}$ are uniformly bounded:\n604: \n605: $$\n606: c_{\\min}(\\rho) I \\preceq G_{\\text{reg}}(S) \\preceq c_{\\max}(\\rho) I \\quad \\forall S \\in \\Sigma_N, \\, \\forall k, \\, \\forall N\n607: $$\n608: \n609: where $c_{\\min}(\\rho)$ and $c_{\\max}(\\rho)$ are **k-uniform** (and thus **N-uniform**) constants that depend only on \u03c1 and the regularization parameter $\\epsilon_\\Sigma$.\n610: \n611: **Proof:** See **Chapter 4, Theorem 4.1** (Theorem {prf:ref}`thm-ueph`), which provides the complete rigorous proof based on the C\u00b2 regularity established in **Appendix A, Theorem A.2** (Theorem {prf:ref}`thm-c2-regularity`).",
+      "metadata": {
+        "label": "prop:ueph-by-construction"
+      },
+      "section": "## 3. The Complete Axiomatic Framework",
+      "raw_directive": "596: :::\n597: \n598: :::{prf:proposition} k-Uniform Ellipticity by Construction (Proven in Chapter 4)\n599: :label: prop:ueph-by-construction\n600: \n601: The regularized diffusion tensor $\\Sigma_{\\text{reg}} = (H + \\epsilon_\\Sigma I)^{-1/2}$ is **uniformly elliptic by construction**.\n602: \n603: **Statement:** The eigenvalues of the induced metric $G_{\\text{reg}} = (H + \\epsilon_\\Sigma I)^{-1}$ are uniformly bounded:\n604: \n605: $$\n606: c_{\\min}(\\rho) I \\preceq G_{\\text{reg}}(S) \\preceq c_{\\max}(\\rho) I \\quad \\forall S \\in \\Sigma_N, \\, \\forall k, \\, \\forall N\n607: $$\n608: \n609: where $c_{\\min}(\\rho)$ and $c_{\\max}(\\rho)$ are **k-uniform** (and thus **N-uniform**) constants that depend only on \u03c1 and the regularization parameter $\\epsilon_\\Sigma$.\n610: \n611: **Proof:** See **Chapter 4, Theorem 4.1** (Theorem {prf:ref}`thm-ueph`), which provides the complete rigorous proof based on the C\u00b2 regularity established in **Appendix A, Theorem A.2** (Theorem {prf:ref}`thm-c2-regularity`).\n612: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

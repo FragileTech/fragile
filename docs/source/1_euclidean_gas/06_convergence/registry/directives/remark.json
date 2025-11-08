@@ -1,0 +1,59 @@
+{
+  "document_id": "06_convergence",
+  "stage": "directives",
+  "directive_type": "remark",
+  "generated_at": "2025-11-08T17:07:43.202038+00:00",
+  "count": 2,
+  "items": [
+    {
+      "directive_type": "remark",
+      "label": "rem-prerequisite-drifts",
+      "title": "Summary of Required Operator Drifts",
+      "start_line": 165,
+      "end_line": 178,
+      "header_lines": [
+        166
+      ],
+      "content_start": 168,
+      "content_end": 177,
+      "content": "168: :label: rem-prerequisite-drifts\n169: \n170: The following drift inequalities are established in the prerequisite documents and used throughout:\n171: \n172: | Component          | Cloning Drift (03_cloning.md)           | Kinetic Drift (05_kinetic_contraction.md)                   |\n173: |:-------------------|:----------------------------------------|:------------------------------------------------------------|\n174: | $V_W$              | $\\leq C_W$                              | $\\leq -\\kappa_W V_W \\tau + C_W'\\tau$                        |\n175: | $V_{\\text{Var},x}$ | $\\leq -\\kappa_x V_{\\text{Var},x} + C_x$ | $\\leq C_{\\text{kin},x}\\tau$                                 |\n176: | $V_{\\text{Var},v}$ | $\\leq C_v$                              | $\\leq -2\\gamma V_{\\text{Var},v}\\tau + d\\sigma_{\\max}^2\\tau$ |\n177: | $W_b$              | $\\leq -\\kappa_b W_b + C_b$              | $\\leq -\\kappa_{\\text{pot}} W_b \\tau + C_{\\text{pot}}\\tau$   |",
+      "metadata": {
+        "label": "rem-prerequisite-drifts"
+      },
+      "section": "## 2. Document Overview and Prerequisites",
+      "raw_directive": "165: - {prf:ref}`thm-boundary-potential-contraction-kinetic` (Section 05:5.3): Boundary potential contraction via confining potential\n166: \n167: :::{prf:remark} Summary of Required Operator Drifts\n168: :label: rem-prerequisite-drifts\n169: \n170: The following drift inequalities are established in the prerequisite documents and used throughout:\n171: \n172: | Component          | Cloning Drift (03_cloning.md)           | Kinetic Drift (05_kinetic_contraction.md)                   |\n173: |:-------------------|:----------------------------------------|:------------------------------------------------------------|\n174: | $V_W$              | $\\leq C_W$                              | $\\leq -\\kappa_W V_W \\tau + C_W'\\tau$                        |\n175: | $V_{\\text{Var},x}$ | $\\leq -\\kappa_x V_{\\text{Var},x} + C_x$ | $\\leq C_{\\text{kin},x}\\tau$                                 |\n176: | $V_{\\text{Var},v}$ | $\\leq C_v$                              | $\\leq -2\\gamma V_{\\text{Var},v}\\tau + d\\sigma_{\\max}^2\\tau$ |\n177: | $W_b$              | $\\leq -\\kappa_b W_b + C_b$              | $\\leq -\\kappa_{\\text{pot}} W_b \\tau + C_{\\text{pot}}\\tau$   |\n178: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "06_convergence",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
+        "section_id": "## 2. Document Overview and Prerequisites"
+      }
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-extinction-inevitable",
+      "title": "Why Extinction is Inevitable (Eventually)",
+      "start_line": 593,
+      "end_line": 607,
+      "header_lines": [
+        594
+      ],
+      "content_start": 596,
+      "content_end": 606,
+      "content": "596: :label: rem-extinction-inevitable\n597: \n598: The use of **unbounded Gaussian noise** means:\n599: \n600: $$P(\\text{all } N \\text{ walkers cross boundary in one step} \\mid S) > 0$$\n601: \n602: for ANY state $S$, no matter how safe. This is because Gaussian tails extend to infinity, so there's always a positive (though perhaps tiny) probability of a coherent, large-deviation event.\n603: \n604: Therefore:\n605: - **Absorption is certain:** $P(\\text{reach } \\dagger \\text{ eventually}) = 1$\n606: - **No true stationary distribution** on $\\Sigma_N$",
+      "metadata": {
+        "label": "rem-extinction-inevitable"
+      },
+      "section": "## 4. Main Convergence Theorem and Quasi-Stationary Distribution",
+      "raw_directive": "593: :::\n594: \n595: :::{prf:remark} Why Extinction is Inevitable (Eventually)\n596: :label: rem-extinction-inevitable\n597: \n598: The use of **unbounded Gaussian noise** means:\n599: \n600: $$P(\\text{all } N \\text{ walkers cross boundary in one step} \\mid S) > 0$$\n601: \n602: for ANY state $S$, no matter how safe. This is because Gaussian tails extend to infinity, so there's always a positive (though perhaps tiny) probability of a coherent, large-deviation event.\n603: \n604: Therefore:\n605: - **Absorption is certain:** $P(\\text{reach } \\dagger \\text{ eventually}) = 1$\n606: - **No true stationary distribution** on $\\Sigma_N$\n607: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "06_convergence",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 4. Main Convergence Theorem and Quasi-Stationary Distribution"
+      }
+    }
+  ]
+}

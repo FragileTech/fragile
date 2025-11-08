@@ -1,0 +1,65 @@
+{
+  "chapter_index": 8,
+  "section_id": "## 5.4. The Stratonovich Chain Rule and Drift Calculation",
+  "directive_count": 3,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-strat-chain",
+      "title": "Stratonovich Chain Rule for Lyapunov Functions",
+      "start_line": 1241,
+      "end_line": 1279,
+      "header_lines": [
+        1242
+      ],
+      "content_start": 1244,
+      "content_end": 1278,
+      "content": "1244: :label: thm-strat-chain\n1245: \n1246: Let $V: \\Sigma_N \\to \\mathbb{R}$ be a $C^2$ function of the swarm state $S = \\{(x_1, v_1), \\ldots, (x_N, v_N)\\}$, and suppose $S_t$ evolves according to the Stratonovich SDE:\n1247: \n1248: $$\n1249: \\begin{aligned}\n1250: dx_i &= v_i \\, dt \\\\\n1251: dv_i &= b_i(S) \\, dt + \\Sigma_{\\text{reg}}(x_i, S) \\circ dW_i\n1252: \\end{aligned}\n1253: \n1254: $$\n1255: \n1256: where $b_i(S)$ is the total drift (including all forces and friction).\n1257: \n1258: Then the evolution of $V(S_t)$ is governed by:\n1259: \n1260: $$\n1261: dV = A(S_t) \\, dt + B(S_t) \\circ dW_t\n1262: \n1263: $$\n1264: \n1265: where the **Stratonovich drift** is:\n1266: \n1267: $$\n1268: A(S_t) = \\sum_{i=1}^N \\left[ \\langle \\nabla_{x_i} V, v_i \\rangle + \\langle \\nabla_{v_i} V, b_i(S) \\rangle \\right] + \\frac{1}{2} \\sum_{i=1}^N \\sum_{j=1}^d \\left( \\sigma_{ij} \\cdot \\nabla_{v_i} \\right) \\left( \\sigma_{ij} \\cdot \\nabla_{v_i} V \\right)\n1269: \n1270: $$\n1271: \n1272: where $\\sigma_{ij}$ is the $j$-th column of $\\Sigma_{\\text{reg}}(x_i, S)$, and the operator $(\\sigma_{ij} \\cdot \\nabla_{v_i})$ denotes the directional derivative in the direction $\\sigma_{ij}$.\n1273: \n1274: The stochastic term is:\n1275: \n1276: $$\n1277: B(S_t) \\circ dW_t = \\sum_{i=1}^N \\sum_{j=1}^d \\langle \\nabla_{v_i} V, \\sigma_{ij}(S) \\rangle \\circ dW_i^{(j)}\n1278: ",
+      "metadata": {
+        "label": "thm-strat-chain"
+      },
+      "section": "## 5.4. The Stratonovich Chain Rule and Drift Calculation",
+      "raw_directive": "1241: :::\n1242: \n1243: :::{prf:theorem} Stratonovich Chain Rule for Lyapunov Functions\n1244: :label: thm-strat-chain\n1245: \n1246: Let $V: \\Sigma_N \\to \\mathbb{R}$ be a $C^2$ function of the swarm state $S = \\{(x_1, v_1), \\ldots, (x_N, v_N)\\}$, and suppose $S_t$ evolves according to the Stratonovich SDE:\n1247: \n1248: $$\n1249: \\begin{aligned}\n1250: dx_i &= v_i \\, dt \\\\\n1251: dv_i &= b_i(S) \\, dt + \\Sigma_{\\text{reg}}(x_i, S) \\circ dW_i\n1252: \\end{aligned}\n1253: \n1254: $$\n1255: \n1256: where $b_i(S)$ is the total drift (including all forces and friction).\n1257: \n1258: Then the evolution of $V(S_t)$ is governed by:\n1259: \n1260: $$\n1261: dV = A(S_t) \\, dt + B(S_t) \\circ dW_t\n1262: \n1263: $$\n1264: \n1265: where the **Stratonovich drift** is:\n1266: \n1267: $$\n1268: A(S_t) = \\sum_{i=1}^N \\left[ \\langle \\nabla_{x_i} V, v_i \\rangle + \\langle \\nabla_{v_i} V, b_i(S) \\rangle \\right] + \\frac{1}{2} \\sum_{i=1}^N \\sum_{j=1}^d \\left( \\sigma_{ij} \\cdot \\nabla_{v_i} \\right) \\left( \\sigma_{ij} \\cdot \\nabla_{v_i} V \\right)\n1269: \n1270: $$\n1271: \n1272: where $\\sigma_{ij}$ is the $j$-th column of $\\Sigma_{\\text{reg}}(x_i, S)$, and the operator $(\\sigma_{ij} \\cdot \\nabla_{v_i})$ denotes the directional derivative in the direction $\\sigma_{ij}$.\n1273: \n1274: The stochastic term is:\n1275: \n1276: $$\n1277: B(S_t) \\circ dW_t = \\sum_{i=1}^N \\sum_{j=1}^d \\langle \\nabla_{v_i} V, \\sigma_{ij}(S) \\rangle \\circ dW_i^{(j)}\n1278: \n1279: $$"
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-thm-strat-chain",
+      "title": null,
+      "start_line": 1281,
+      "end_line": 1287,
+      "header_lines": [
+        1282
+      ],
+      "content_start": 1284,
+      "content_end": 1286,
+      "content": "1284: :label: proof-thm-strat-chain\n1285: \n1286: This follows from the standard Stratonovich chain rule (see \u00d8ksendal, \"Stochastic Differential Equations\", Chapter 3, or Kunita, \"Stochastic Flows and Stochastic Differential Equations\", Chapter 3).",
+      "metadata": {
+        "label": "proof-thm-strat-chain"
+      },
+      "section": "## 5.4. The Stratonovich Chain Rule and Drift Calculation",
+      "raw_directive": "1281: :::\n1282: \n1283: :::{prf:proof}\n1284: :label: proof-thm-strat-chain\n1285: \n1286: This follows from the standard Stratonovich chain rule (see \u00d8ksendal, \"Stochastic Differential Equations\", Chapter 3, or Kunita, \"Stochastic Flows and Stochastic Differential Equations\", Chapter 3).\n1287: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-strat-drift",
+      "title": "Stratonovich Drift for the Hybrid System",
+      "start_line": 1289,
+      "end_line": 1331,
+      "header_lines": [
+        1290
+      ],
+      "content_start": 1292,
+      "content_end": 1330,
+      "content": "1292: :label: def-strat-drift\n1293: \n1294: For the Hybrid SDE with drift:\n1295: \n1296: $$\n1297: b_i(S) = -\\nabla U(x_i) + \\epsilon_F \\nabla_{x_i} V_{\\text{fit}}(S) + \\mathbf{F}_{\\text{viscous}}(x_i, S) - \\gamma v_i\n1298: \n1299: $$\n1300: \n1301: we define:\n1302: \n1303: **Backbone drift:**\n1304: \n1305: $$\n1306: A_{\\text{backbone}}(S) = \\sum_{i=1}^N \\left[ \\langle \\nabla_{x_i} V, v_i \\rangle + \\langle \\nabla_{v_i} V, -\\nabla U(x_i) - \\gamma v_i \\rangle \\right] + \\frac{1}{2} \\sigma^2 \\sum_{i=1}^N \\|\\nabla_{v_i} V\\|^2\n1307: \n1308: $$\n1309: \n1310: (This corresponds to $\\epsilon_F = 0$, $\\nu = 0$, $\\Sigma_{\\text{reg}} = \\sigma I$.)\n1311: \n1312: **Adaptive perturbation drift:**\n1313: \n1314: $$\n1315: A_{\\text{perturb}}(S) = \\sum_{i=1}^N \\langle \\nabla_{v_i} V, \\epsilon_F \\nabla_{x_i} V_{\\text{fit}}(S) + \\mathbf{F}_{\\text{viscous}}(x_i, S) \\rangle + A_{\\text{diff}}(S)\n1316: \n1317: $$\n1318: \n1319: where $A_{\\text{diff}}(S)$ is the additional drift from the state-dependent diffusion:\n1320: \n1321: $$\n1322: A_{\\text{diff}}(S) = \\frac{1}{2} \\sum_{i=1}^N \\sum_{j=1}^d \\left[ (\\sigma_{ij}^{\\text{reg}} \\cdot \\nabla_{v_i})(\\sigma_{ij}^{\\text{reg}} \\cdot \\nabla_{v_i} V) - \\sigma^2 \\|\\nabla_{v_i} V\\|^2 \\right]\n1323: \n1324: $$\n1325: \n1326: The total Stratonovich drift is:\n1327: \n1328: $$\n1329: A_{\\text{full}}(S) = A_{\\text{backbone}}(S) + A_{\\text{perturb}}(S)\n1330: ",
+      "metadata": {
+        "label": "def-strat-drift"
+      },
+      "section": "## 5.4. The Stratonovich Chain Rule and Drift Calculation",
+      "raw_directive": "1289: :::\n1290: \n1291: :::{prf:definition} Stratonovich Drift for the Hybrid System\n1292: :label: def-strat-drift\n1293: \n1294: For the Hybrid SDE with drift:\n1295: \n1296: $$\n1297: b_i(S) = -\\nabla U(x_i) + \\epsilon_F \\nabla_{x_i} V_{\\text{fit}}(S) + \\mathbf{F}_{\\text{viscous}}(x_i, S) - \\gamma v_i\n1298: \n1299: $$\n1300: \n1301: we define:\n1302: \n1303: **Backbone drift:**\n1304: \n1305: $$\n1306: A_{\\text{backbone}}(S) = \\sum_{i=1}^N \\left[ \\langle \\nabla_{x_i} V, v_i \\rangle + \\langle \\nabla_{v_i} V, -\\nabla U(x_i) - \\gamma v_i \\rangle \\right] + \\frac{1}{2} \\sigma^2 \\sum_{i=1}^N \\|\\nabla_{v_i} V\\|^2\n1307: \n1308: $$\n1309: \n1310: (This corresponds to $\\epsilon_F = 0$, $\\nu = 0$, $\\Sigma_{\\text{reg}} = \\sigma I$.)\n1311: \n1312: **Adaptive perturbation drift:**\n1313: \n1314: $$\n1315: A_{\\text{perturb}}(S) = \\sum_{i=1}^N \\langle \\nabla_{v_i} V, \\epsilon_F \\nabla_{x_i} V_{\\text{fit}}(S) + \\mathbf{F}_{\\text{viscous}}(x_i, S) \\rangle + A_{\\text{diff}}(S)\n1316: \n1317: $$\n1318: \n1319: where $A_{\\text{diff}}(S)$ is the additional drift from the state-dependent diffusion:\n1320: \n1321: $$\n1322: A_{\\text{diff}}(S) = \\frac{1}{2} \\sum_{i=1}^N \\sum_{j=1}^d \\left[ (\\sigma_{ij}^{\\text{reg}} \\cdot \\nabla_{v_i})(\\sigma_{ij}^{\\text{reg}} \\cdot \\nabla_{v_i} V) - \\sigma^2 \\|\\nabla_{v_i} V\\|^2 \\right]\n1323: \n1324: $$\n1325: \n1326: The total Stratonovich drift is:\n1327: \n1328: $$\n1329: A_{\\text{full}}(S) = A_{\\text{backbone}}(S) + A_{\\text{perturb}}(S)\n1330: \n1331: $$"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

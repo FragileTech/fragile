@@ -1,0 +1,119 @@
+{
+  "chapter_index": 1,
+  "section_id": "## 1. The Stress-Energy Tensor from Walker Kinematics",
+  "directive_count": 6,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-stress-energy-discrete",
+      "title": "Discrete Stress-Energy Tensor (N-Walker System)",
+      "start_line": 173,
+      "end_line": 205,
+      "header_lines": [
+        174
+      ],
+      "content_start": 176,
+      "content_end": 204,
+      "content": "176: :label: def-stress-energy-discrete\n177: \n178: For a swarm of $N$ walkers with states $\\mathcal{S}_t = \\{(x_i(t), v_i(t), s_i(t))\\}_{i=1}^N$ at time $t$, the **discrete stress-energy tensor** at spatial position $x \\in \\mathcal{X}$ is:\n179: \n180: $$\n181: T^{(N)}_{\\mu\\nu}(x, t) = \\frac{1}{N} \\sum_{i=1}^N s_i(t) \\, p^{(i)}_\\mu(t) \\, u^{(i)}_\\nu(t) \\, \\delta(x - x_i(t))\n182: \n183: $$\n184: \n185: where:\n186: \n187: **Four-momentum components** (in units where walker mass $m=1$):\n188: \n189: $$\n190: p^{(i)}_\\mu =\n191: \\begin{cases}\n192: \\frac{1}{2}\\|v_i\\|^2 - \\Phi(x_i) & \\mu = 0 \\text{ (energy)} \\\\\n193: v_i^j & \\mu = j \\in \\{1, \\ldots, d\\} \\text{ (momentum)}\n194: \\end{cases}\n195: \n196: $$\n197: \n198: :::{note}\n199: **Sign convention**: The fitness landscape $\\Phi(x)$ represents where walkers are attracted (higher $\\Phi$ = more attractive). In classical mechanics, potential energy $U$ satisfies $F = -\\nabla U$, so attractive regions have LOW potential. Therefore, we define $U(x) = -\\Phi(x)$, and the total energy is:\n200: \n201: $$\n202: E = \\frac{1}{2}\\|v\\|^2 + U = \\frac{1}{2}\\|v\\|^2 - \\Phi\n203: \n204: $$",
+      "metadata": {
+        "label": "def-stress-energy-discrete"
+      },
+      "section": "## 1. The Stress-Energy Tensor from Walker Kinematics",
+      "raw_directive": "173: ### 1.2. Discrete Stress-Energy Tensor\n174: \n175: :::{prf:definition} Discrete Stress-Energy Tensor (N-Walker System)\n176: :label: def-stress-energy-discrete\n177: \n178: For a swarm of $N$ walkers with states $\\mathcal{S}_t = \\{(x_i(t), v_i(t), s_i(t))\\}_{i=1}^N$ at time $t$, the **discrete stress-energy tensor** at spatial position $x \\in \\mathcal{X}$ is:\n179: \n180: $$\n181: T^{(N)}_{\\mu\\nu}(x, t) = \\frac{1}{N} \\sum_{i=1}^N s_i(t) \\, p^{(i)}_\\mu(t) \\, u^{(i)}_\\nu(t) \\, \\delta(x - x_i(t))\n182: \n183: $$\n184: \n185: where:\n186: \n187: **Four-momentum components** (in units where walker mass $m=1$):\n188: \n189: $$\n190: p^{(i)}_\\mu =\n191: \\begin{cases}\n192: \\frac{1}{2}\\|v_i\\|^2 - \\Phi(x_i) & \\mu = 0 \\text{ (energy)} \\\\\n193: v_i^j & \\mu = j \\in \\{1, \\ldots, d\\} \\text{ (momentum)}\n194: \\end{cases}\n195: \n196: $$\n197: \n198: :::{note}\n199: **Sign convention**: The fitness landscape $\\Phi(x)$ represents where walkers are attracted (higher $\\Phi$ = more attractive). In classical mechanics, potential energy $U$ satisfies $F = -\\nabla U$, so attractive regions have LOW potential. Therefore, we define $U(x) = -\\Phi(x)$, and the total energy is:\n200: \n201: $$\n202: E = \\frac{1}{2}\\|v\\|^2 + U = \\frac{1}{2}\\|v\\|^2 - \\Phi\n203: \n204: $$\n205: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-stress-energy-continuum",
+      "title": "Continuum Stress-Energy Tensor (Mean-Field Limit)",
+      "start_line": 266,
+      "end_line": 312,
+      "header_lines": [
+        267
+      ],
+      "content_start": 269,
+      "content_end": 311,
+      "content": "269: :label: def-stress-energy-continuum\n270: \n271: Let $\\mu_t(x, v) \\, dx \\, dv$ be the McKean-Vlasov measure from [05_mean_field.md](05_mean_field.md) satisfying:\n272: \n273: $$\n274: \\partial_t \\mu_t + v \\cdot \\nabla_x \\mu_t + \\nabla_v \\cdot (F[\\mu_t] \\mu_t) = \\frac{\\gamma}{2} \\Delta_v \\mu_t + \\frac{\\sigma^2}{2}\\Delta_v \\mu_t\n275: \n276: $$\n277: \n278: where $F[\\mu_t]$ is the mean-field force (adaptive force + viscous coupling + potential gradient).\n279: \n280: The **continuum stress-energy tensor** is:\n281: \n282: $$\n283: T_{\\mu\\nu}(x, t) = \\int_{\\mathcal{V}} p_\\mu(v) \\, u_\\nu(v) \\, \\mu_t(x, v) \\, dv\n284: \n285: $$\n286: \n287: where:\n288: \n289: **Four-momentum** (as function of velocity):\n290: \n291: $$\n292: p_\\mu(v) =\n293: \\begin{cases}\n294: \\frac{1}{2}\\|v\\|^2 - \\Phi(x) & \\mu = 0 \\\\\n295: v^j & \\mu = j\n296: \\end{cases}\n297: \n298: $$\n299: \n300: (Note: Energy is kinetic + potential $U = -\\Phi$, consistent with force $F = +\\nabla\\Phi$ toward high fitness)\n301: \n302: **Four-velocity**:\n303: \n304: $$\n305: u_\\nu(v) =\n306: \\begin{cases}\n307: 1 & \\nu = 0 \\\\\n308: v^k/c & \\nu = k\n309: \\end{cases}\n310: \n311: $$",
+      "metadata": {
+        "label": "def-stress-energy-continuum"
+      },
+      "section": "## 1. The Stress-Energy Tensor from Walker Kinematics",
+      "raw_directive": "266: In the mean-field limit $N \\to \\infty$, the discrete sum becomes an integral over the McKean-Vlasov measure.\n267: \n268: :::{prf:definition} Continuum Stress-Energy Tensor (Mean-Field Limit)\n269: :label: def-stress-energy-continuum\n270: \n271: Let $\\mu_t(x, v) \\, dx \\, dv$ be the McKean-Vlasov measure from [05_mean_field.md](05_mean_field.md) satisfying:\n272: \n273: $$\n274: \\partial_t \\mu_t + v \\cdot \\nabla_x \\mu_t + \\nabla_v \\cdot (F[\\mu_t] \\mu_t) = \\frac{\\gamma}{2} \\Delta_v \\mu_t + \\frac{\\sigma^2}{2}\\Delta_v \\mu_t\n275: \n276: $$\n277: \n278: where $F[\\mu_t]$ is the mean-field force (adaptive force + viscous coupling + potential gradient).\n279: \n280: The **continuum stress-energy tensor** is:\n281: \n282: $$\n283: T_{\\mu\\nu}(x, t) = \\int_{\\mathcal{V}} p_\\mu(v) \\, u_\\nu(v) \\, \\mu_t(x, v) \\, dv\n284: \n285: $$\n286: \n287: where:\n288: \n289: **Four-momentum** (as function of velocity):\n290: \n291: $$\n292: p_\\mu(v) =\n293: \\begin{cases}\n294: \\frac{1}{2}\\|v\\|^2 - \\Phi(x) & \\mu = 0 \\\\\n295: v^j & \\mu = j\n296: \\end{cases}\n297: \n298: $$\n299: \n300: (Note: Energy is kinetic + potential $U = -\\Phi$, consistent with force $F = +\\nabla\\Phi$ toward high fitness)\n301: \n302: **Four-velocity**:\n303: \n304: $$\n305: u_\\nu(v) =\n306: \\begin{cases}\n307: 1 & \\nu = 0 \\\\\n308: v^k/c & \\nu = k\n309: \\end{cases}\n310: \n311: $$\n312: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-stress-energy-lorentz-covariant",
+      "title": "Stress-Energy Tensor is Symmetric and Lorentz-Covariant",
+      "start_line": 348,
+      "end_line": 356,
+      "header_lines": [
+        349
+      ],
+      "content_start": 351,
+      "content_end": 355,
+      "content": "351: :label: thm-stress-energy-lorentz-covariant\n352: \n353: The continuum stress-energy tensor $T_{\\mu\\nu}$ defined in {prf:ref}`def-stress-energy-continuum` satisfies:\n354: 1. **Symmetry**: $T_{\\mu\\nu} = T_{\\nu\\mu}$\n355: 2. **Lorentz covariance**: $T'_{\\mu\\nu}(x') = \\Lambda^\\alpha_\\mu \\Lambda^\\beta_\\nu T_{\\alpha\\beta}(x)$ under $\\Lambda \\in SO(1,3)$",
+      "metadata": {
+        "label": "thm-stress-energy-lorentz-covariant"
+      },
+      "section": "## 1. The Stress-Energy Tensor from Walker Kinematics",
+      "raw_directive": "348: ### 1.4. Lorentz Covariance and Symmetry from Order-Invariance\n349: \n350: :::{prf:theorem} Stress-Energy Tensor is Symmetric and Lorentz-Covariant\n351: :label: thm-stress-energy-lorentz-covariant\n352: \n353: The continuum stress-energy tensor $T_{\\mu\\nu}$ defined in {prf:ref}`def-stress-energy-continuum` satisfies:\n354: 1. **Symmetry**: $T_{\\mu\\nu} = T_{\\nu\\mu}$\n355: 2. **Lorentz covariance**: $T'_{\\mu\\nu}(x') = \\Lambda^\\alpha_\\mu \\Lambda^\\beta_\\nu T_{\\alpha\\beta}(x)$ under $\\Lambda \\in SO(1,3)$\n356: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-order-invariance-lorentz-qft-cited",
+      "title": "Order-Invariant Functionals are Lorentz-Invariant (Reference)",
+      "start_line": 383,
+      "end_line": 389,
+      "header_lines": [
+        384
+      ],
+      "content_start": 386,
+      "content_end": 388,
+      "content": "386: :label: thm-order-invariance-lorentz-qft-cited\n387: \n388: Let $\\mathcal{F}$ be an order-invariant functional of a causal set $(E, \\prec_{\\text{CST}})$. In the continuum limit $N \\to \\infty$, if the causal set converges to a Lorentzian manifold $(M, g_{\\mu\\nu})$, then $\\mathcal{F}$ becomes a **Lorentz-covariant** observable.",
+      "metadata": {
+        "label": "thm-order-invariance-lorentz-qft-cited"
+      },
+      "section": "## 1. The Stress-Energy Tensor from Walker Kinematics",
+      "raw_directive": "383: From [15_millennium_problem_completion.md](15_millennium_problem_completion.md) \u00a715, {prf:ref}`thm-order-invariance-lorentz-qft`:\n384: \n385: :::{prf:theorem} Order-Invariant Functionals are Lorentz-Invariant (Reference)\n386: :label: thm-order-invariance-lorentz-qft-cited\n387: \n388: Let $\\mathcal{F}$ be an order-invariant functional of a causal set $(E, \\prec_{\\text{CST}})$. In the continuum limit $N \\to \\infty$, if the causal set converges to a Lorentzian manifold $(M, g_{\\mu\\nu})$, then $\\mathcal{F}$ becomes a **Lorentz-covariant** observable.\n389: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-spatial-stress-symmetric",
+      "title": "Symmetry of Spatial Components",
+      "start_line": 415,
+      "end_line": 424,
+      "header_lines": [
+        416
+      ],
+      "content_start": 418,
+      "content_end": 423,
+      "content": "418: :label: lem-spatial-stress-symmetric\n419: \n420: For any measure $\\mu_t(x,v)$ solving the McKean-Vlasov equation, the spatial stress tensor is symmetric:\n421: \n422: $$\n423: T_{ij}[\\mu_t] = T_{ji}[\\mu_t] \\quad \\forall i,j \\in \\{1,\\ldots,d\\}",
+      "metadata": {
+        "label": "lem-spatial-stress-symmetric"
+      },
+      "section": "## 1. The Stress-Energy Tensor from Walker Kinematics",
+      "raw_directive": "415: **Strategy**: We will show that the off-diagonal components $T_{0j} - T_{j0}$ vanish identically in the continuum limit by exploiting the structure of the McKean-Vlasov equation.\n416: \n417: :::{prf:lemma} Symmetry of Spatial Components\n418: :label: lem-spatial-stress-symmetric\n419: \n420: For any measure $\\mu_t(x,v)$ solving the McKean-Vlasov equation, the spatial stress tensor is symmetric:\n421: \n422: $$\n423: T_{ij}[\\mu_t] = T_{ji}[\\mu_t] \\quad \\forall i,j \\in \\{1,\\ldots,d\\}\n424: $$"
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-time-space-symmetry",
+      "title": "Time-Space Components Vanish via Flux Balance",
+      "start_line": 434,
+      "end_line": 445,
+      "header_lines": [
+        435
+      ],
+      "content_start": 437,
+      "content_end": 444,
+      "content": "437: :label: lem-time-space-symmetry\n438: \n439: For any measure $\\mu_t(x,v)$ solving the McKean-Vlasov equation with the structure from {prf:ref}`thm-mean-field-equation`:\n440: \n441: $$\n442: \\partial_t \\mu_t = L^\\dagger \\mu_t - c(z)\\mu_t + B[\\mu_t, m_d] + S[\\mu_t]\n443: $$\n444: ",
+      "metadata": {
+        "label": "lem-time-space-symmetry"
+      },
+      "section": "## 1. The Stress-Energy Tensor from Walker Kinematics",
+      "raw_directive": "434: Since multiplication is commutative, $v^i v^j = v^j v^i$, we immediately have $T_{ij} = T_{ji}$. $\\square$\n435: \n436: :::{prf:lemma} Time-Space Components Vanish via Flux Balance\n437: :label: lem-time-space-symmetry\n438: \n439: For any measure $\\mu_t(x,v)$ solving the McKean-Vlasov equation with the structure from {prf:ref}`thm-mean-field-equation`:\n440: \n441: $$\n442: \\partial_t \\mu_t = L^\\dagger \\mu_t - c(z)\\mu_t + B[\\mu_t, m_d] + S[\\mu_t]\n443: $$\n444: \n445: the off-diagonal time-space components satisfy a consistency condition that forces symmetry in the continuum limit."
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

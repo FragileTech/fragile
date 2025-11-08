@@ -1,0 +1,47 @@
+{
+  "chapter_index": 4,
+  "section_id": "## 4. N-Uniform Poincar\u00e9 Inequality for Geometric Gas",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-poincare-geometric",
+      "title": "N-Uniform Poincar\u00e9 Inequality (Velocity Marginal, Geometric Gas)",
+      "start_line": 191,
+      "end_line": 207,
+      "header_lines": [
+        192
+      ],
+      "content_start": 194,
+      "content_end": 206,
+      "content": "194: :label: thm-poincare-geometric\n195: \n196: The marginal velocity distribution $\\pi_N^{\\text{vel}}(\\mathbf{v})$ of the Geometric Gas QSD satisfies:\n197: \n198: $$\n199: \\text{Var}_{\\pi_N^{\\text{vel}}}(g) \\leq C_P(\\rho) \\sum_{i=1}^N \\int |\\nabla_{v_i} g|^2 d\\pi_N^{\\text{vel}}\n200: $$\n201: \n202: where:\n203: \n204: $$\n205: C_P(\\rho) = \\frac{c_{\\max}^2(\\rho)}{2\\gamma}\n206: $$",
+      "metadata": {
+        "label": "thm-poincare-geometric"
+      },
+      "section": "## 4. N-Uniform Poincar\u00e9 Inequality for Geometric Gas",
+      "raw_directive": "191: ### 4.1. Conditional Poincar\u00e9 for Multivariate Gaussian\n192: \n193: :::{prf:theorem} N-Uniform Poincar\u00e9 Inequality (Velocity Marginal, Geometric Gas)\n194: :label: thm-poincare-geometric\n195: \n196: The marginal velocity distribution $\\pi_N^{\\text{vel}}(\\mathbf{v})$ of the Geometric Gas QSD satisfies:\n197: \n198: $$\n199: \\text{Var}_{\\pi_N^{\\text{vel}}}(g) \\leq C_P(\\rho) \\sum_{i=1}^N \\int |\\nabla_{v_i} g|^2 d\\pi_N^{\\text{vel}}\n200: $$\n201: \n202: where:\n203: \n204: $$\n205: C_P(\\rho) = \\frac{c_{\\max}^2(\\rho)}{2\\gamma}\n206: $$\n207: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-thm-poincare-geometric",
+      "title": null,
+      "start_line": 209,
+      "end_line": 241,
+      "header_lines": [
+        210
+      ],
+      "content_start": 211,
+      "content_end": 240,
+      "content": "211: :::{prf:proof}\n212: :label: proof-thm-poincare-geometric\n213: **Step 1 (Conditional Poincar\u00e9 for multivariate Gaussian):**\n214: For any fixed $\\mathbf{x}$, the conditional distribution $\\pi_N(\\mathbf{v}|\\mathbf{x}) = \\mathcal{N}(0, \\Sigma_{\\mathbf{v}}(\\mathbf{x}))$ is a multivariate Gaussian. By Bakry-\u00c9mery (1985), it satisfies a Poincar\u00e9 inequality:\n215: \n216: $$\n217: \\text{Var}_{\\pi_N(\\mathbf{v}|\\mathbf{x})}(g) \\leq \\lambda_{\\max}(\\Sigma_{\\mathbf{v}}(\\mathbf{x})) \\int |\\nabla_{\\mathbf{v}} g|^2 d\\pi_N(\\mathbf{v}|\\mathbf{x})\n218: $$\n219: \n220: where $\\nabla_{\\mathbf{v}} = (\\nabla_{v_1}, \\ldots, \\nabla_{v_N})$ and $|\\nabla_{\\mathbf{v}} g|^2 = \\sum_{i=1}^N |\\nabla_{v_i} g|^2$.\n221: \n222: **Step 2 (Apply N-uniform bound):**\n223: By Lemma {prf:ref}`lem-eigenvalue-bound-geometric`, $\\lambda_{\\max}(\\Sigma_{\\mathbf{v}}(\\mathbf{x})) \\leq c_{\\max}^2(\\rho)/(2\\gamma)$ uniformly in $\\mathbf{x}$, $N$, and $\\nu$. Therefore:\n224: \n225: $$\n226: \\text{Var}_{\\pi_N(\\mathbf{v}|\\mathbf{x})}(g) \\leq \\frac{c_{\\max}^2(\\rho)}{2\\gamma} \\sum_{i=1}^N \\int |\\nabla_{v_i} g|^2 d\\pi_N(\\mathbf{v}|\\mathbf{x})\n227: $$\n228: \n229: **Step 3 (Extend to marginal via Holley-Stroock):**\n230: The marginal velocity distribution $\\pi_N^{\\text{vel}}(\\mathbf{v}) = \\int \\pi_N(\\mathbf{x}, \\mathbf{v}) d\\mathbf{x}$ is a mixture of these conditional Gaussians (mixing over $\\mathbf{x}$). By Holley-Stroock (1987), the Poincar\u00e9 constant for a mixture is bounded by the supremum of the Poincar\u00e9 constants of the components:\n231: \n232: $$\n233: C_P(\\pi_N^{\\text{vel}}) \\leq \\sup_{\\mathbf{x}} C_P(\\pi_N(\\mathbf{v}|\\mathbf{x})) = \\sup_{\\mathbf{x}} \\lambda_{\\max}(\\Sigma_{\\mathbf{v}}(\\mathbf{x})) \\leq \\frac{c_{\\max}^2(\\rho)}{2\\gamma}\n234: $$\n235: \n236: Therefore, for functions of velocity only:\n237: \n238: $$\n239: \\text{Var}_{\\pi_N^{\\text{vel}}}(g) \\leq \\frac{c_{\\max}^2(\\rho)}{2\\gamma} \\sum_{i=1}^N \\int |\\nabla_{v_i} g|^2 d\\pi_N^{\\text{vel}}\n240: $$",
+      "metadata": {
+        "label": "proof-thm-poincare-geometric"
+      },
+      "section": "## 4. N-Uniform Poincar\u00e9 Inequality for Geometric Gas",
+      "raw_directive": "209: :::\n210: \n211: :::{prf:proof}\n212: :label: proof-thm-poincare-geometric\n213: **Step 1 (Conditional Poincar\u00e9 for multivariate Gaussian):**\n214: For any fixed $\\mathbf{x}$, the conditional distribution $\\pi_N(\\mathbf{v}|\\mathbf{x}) = \\mathcal{N}(0, \\Sigma_{\\mathbf{v}}(\\mathbf{x}))$ is a multivariate Gaussian. By Bakry-\u00c9mery (1985), it satisfies a Poincar\u00e9 inequality:\n215: \n216: $$\n217: \\text{Var}_{\\pi_N(\\mathbf{v}|\\mathbf{x})}(g) \\leq \\lambda_{\\max}(\\Sigma_{\\mathbf{v}}(\\mathbf{x})) \\int |\\nabla_{\\mathbf{v}} g|^2 d\\pi_N(\\mathbf{v}|\\mathbf{x})\n218: $$\n219: \n220: where $\\nabla_{\\mathbf{v}} = (\\nabla_{v_1}, \\ldots, \\nabla_{v_N})$ and $|\\nabla_{\\mathbf{v}} g|^2 = \\sum_{i=1}^N |\\nabla_{v_i} g|^2$.\n221: \n222: **Step 2 (Apply N-uniform bound):**\n223: By Lemma {prf:ref}`lem-eigenvalue-bound-geometric`, $\\lambda_{\\max}(\\Sigma_{\\mathbf{v}}(\\mathbf{x})) \\leq c_{\\max}^2(\\rho)/(2\\gamma)$ uniformly in $\\mathbf{x}$, $N$, and $\\nu$. Therefore:\n224: \n225: $$\n226: \\text{Var}_{\\pi_N(\\mathbf{v}|\\mathbf{x})}(g) \\leq \\frac{c_{\\max}^2(\\rho)}{2\\gamma} \\sum_{i=1}^N \\int |\\nabla_{v_i} g|^2 d\\pi_N(\\mathbf{v}|\\mathbf{x})\n227: $$\n228: \n229: **Step 3 (Extend to marginal via Holley-Stroock):**\n230: The marginal velocity distribution $\\pi_N^{\\text{vel}}(\\mathbf{v}) = \\int \\pi_N(\\mathbf{x}, \\mathbf{v}) d\\mathbf{x}$ is a mixture of these conditional Gaussians (mixing over $\\mathbf{x}$). By Holley-Stroock (1987), the Poincar\u00e9 constant for a mixture is bounded by the supremum of the Poincar\u00e9 constants of the components:\n231: \n232: $$\n233: C_P(\\pi_N^{\\text{vel}}) \\leq \\sup_{\\mathbf{x}} C_P(\\pi_N(\\mathbf{v}|\\mathbf{x})) = \\sup_{\\mathbf{x}} \\lambda_{\\max}(\\Sigma_{\\mathbf{v}}(\\mathbf{x})) \\leq \\frac{c_{\\max}^2(\\rho)}{2\\gamma}\n234: $$\n235: \n236: Therefore, for functions of velocity only:\n237: \n238: $$\n239: \\text{Var}_{\\pi_N^{\\text{vel}}}(g) \\leq \\frac{c_{\\max}^2(\\rho)}{2\\gamma} \\sum_{i=1}^N \\int |\\nabla_{v_i} g|^2 d\\pi_N^{\\text{vel}}\n240: $$\n241: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

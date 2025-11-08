@@ -1,0 +1,47 @@
+{
+  "chapter_index": 4,
+  "section_id": "## 2. The Regularized Diffusion Tensor",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-regularized-hessian-tensor",
+      "title": "Regularized Hessian Diffusion Tensor",
+      "start_line": 429,
+      "end_line": 448,
+      "header_lines": [
+        430
+      ],
+      "content_start": 432,
+      "content_end": 447,
+      "content": "432: :label: def-regularized-hessian-tensor\n433: \n434: Let `V_fit(S)` be the N-dimensional fitness potential vector, as defined in `03_cloning.md` (Def. 5.6.1). For each walker `i`, let `V_i(x_1, ..., x_N)` be its fitness potential, viewed as a function of all walker positions. Let `H_i(S) = \u2207\u00b2_{x_i} V_i` be the Hessian of walker `i`'s fitness with respect to its own position.\n435: \n436: The **Regularized Adaptive Diffusion Tensor** for walker `i` is defined as:\n437: \n438: $$\n439: \\Sigma_{\\text{reg}}(x_i, S) := \\left( H_i(S) + \\epsilon_\\Sigma I \\right)^{-1/2}\n440: $$\n441: \n442: where `\u03b5_\u03a3 > 0` is a fixed, small **regularization constant**.\n443: \n444: The induced Riemannian metric for the kinetic dynamics is the inverse of the regularized Hessian:\n445: \n446: $$\n447: G_{\\text{reg}}(x_i, S) := \\Sigma_{\\text{reg}}(x_i, S) \\Sigma_{\\text{reg}}(x_i, S)^T = \\left( H_i(S) + \\epsilon_\\Sigma I \\right)^{-1}",
+      "metadata": {
+        "label": "def-regularized-hessian-tensor"
+      },
+      "section": "## 2. The Regularized Diffusion Tensor",
+      "raw_directive": "429: The most innovative component of this model is the adaptive diffusion tensor. This section formally defines it and explains the critical role of regularization.\n430: \n431: :::{prf:definition} Regularized Hessian Diffusion Tensor\n432: :label: def-regularized-hessian-tensor\n433: \n434: Let `V_fit(S)` be the N-dimensional fitness potential vector, as defined in `03_cloning.md` (Def. 5.6.1). For each walker `i`, let `V_i(x_1, ..., x_N)` be its fitness potential, viewed as a function of all walker positions. Let `H_i(S) = \u2207\u00b2_{x_i} V_i` be the Hessian of walker `i`'s fitness with respect to its own position.\n435: \n436: The **Regularized Adaptive Diffusion Tensor** for walker `i` is defined as:\n437: \n438: $$\n439: \\Sigma_{\\text{reg}}(x_i, S) := \\left( H_i(S) + \\epsilon_\\Sigma I \\right)^{-1/2}\n440: $$\n441: \n442: where `\u03b5_\u03a3 > 0` is a fixed, small **regularization constant**.\n443: \n444: The induced Riemannian metric for the kinetic dynamics is the inverse of the regularized Hessian:\n445: \n446: $$\n447: G_{\\text{reg}}(x_i, S) := \\Sigma_{\\text{reg}}(x_i, S) \\Sigma_{\\text{reg}}(x_i, S)^T = \\left( H_i(S) + \\epsilon_\\Sigma I \\right)^{-1}\n448: $$"
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-localized-mean-field-fitness",
+      "title": "Localized Mean-Field Fitness Potential",
+      "start_line": 468,
+      "end_line": 497,
+      "header_lines": [
+        469
+      ],
+      "content_start": 471,
+      "content_end": 496,
+      "content": "471: :label: def-localized-mean-field-fitness\n472: \n473: The **\u03c1-localized mean-field fitness potential** $V_{\\text{fit}}[f, \\rho]: \\mathcal{X} \\to \\mathbb{R}$ for a walker at position $x \\in \\mathcal{X}$ is defined as:\n474: \n475: $$\n476: V_{\\text{fit}}[f, \\rho](x) := g_A\\left( Z_\\rho[f, d, x] \\right)\n477: $$\n478: \n479: where:\n480: \n481: 1.  **Rescale Function:** $g_A: \\mathbb{R} \\to [0, A]$ is a smooth, bounded, monotone increasing function (e.g., $g_A(z) = A/(1 + e^{-z})$).\n482: \n483: 2.  **Unified Z-Score:** $Z_\\rho[f, d, x]$ is the unified localized Z-score from Definition {prf:ref}`def-unified-z-score`, which combines:\n484:    - Localization via kernel $K_\\rho(x, x')$\n485:    - Statistical moments $\\mu_\\rho[f, d, x]$ and $\\sigma^2_\\rho[f, d, x]$ from Definition {prf:ref}`def-localized-mean-field-moments`\n486:    - Numerical regularization via $\\kappa_{\\text{var,min}}$\n487: \n488: 3.  **Measurement Function:** $d: \\mathcal{X} \\to \\mathbb{R}$ is a bounded measurement of local objective quality (e.g., reward, distance to target).\n489: \n490: **Properties:**\n491: - **\u03c1-Dependence:** The fitness explicitly depends on the localization scale \u03c1, which controls the spatial extent of statistical aggregation.\n492: - **Nonlocality:** For finite \u03c1, $V_{\\text{fit}}[f, \\rho](x)$ depends on the distribution $f$ within the \u03c1-neighborhood of $x$.\n493: - **Nonlinearity:** The functional is nonlinear in $f$ due to the Z-score's division by localized standard deviation.\n494: - **Boundedness:** $0 \\le V_{\\text{fit}}[f, \\rho](x) \\le A$ for all $x, f, \\rho$ by construction (due to bounded rescale and regularized Z-score).\n495: - **Smoothness:** $V_{\\text{fit}}[f, \\rho](x)$ is $C^\\infty$ in $x$ (provided $f$ is sufficiently regular) due to the smoothness of $g_A$, $K_\\rho$, and the regularization.\n496: - **Limiting Behavior:**",
+      "metadata": {
+        "label": "def-localized-mean-field-fitness"
+      },
+      "section": "## 2. The Regularized Diffusion Tensor",
+      "raw_directive": "468: The adaptive force $\\mathbf{F}_{\\text{adapt}}$ and the regularized diffusion tensor $\\Sigma_{\\text{reg}}$ depend on the fitness potential $V_{\\text{fit}}[f, \\rho]$, which is a \u03c1-parameterized functional of the swarm state. This section connects the unified pipeline from Chapter 1 to the adaptive dynamics.\n469: \n470: :::{prf:definition} Localized Mean-Field Fitness Potential\n471: :label: def-localized-mean-field-fitness\n472: \n473: The **\u03c1-localized mean-field fitness potential** $V_{\\text{fit}}[f, \\rho]: \\mathcal{X} \\to \\mathbb{R}$ for a walker at position $x \\in \\mathcal{X}$ is defined as:\n474: \n475: $$\n476: V_{\\text{fit}}[f, \\rho](x) := g_A\\left( Z_\\rho[f, d, x] \\right)\n477: $$\n478: \n479: where:\n480: \n481: 1.  **Rescale Function:** $g_A: \\mathbb{R} \\to [0, A]$ is a smooth, bounded, monotone increasing function (e.g., $g_A(z) = A/(1 + e^{-z})$).\n482: \n483: 2.  **Unified Z-Score:** $Z_\\rho[f, d, x]$ is the unified localized Z-score from Definition {prf:ref}`def-unified-z-score`, which combines:\n484:    - Localization via kernel $K_\\rho(x, x')$\n485:    - Statistical moments $\\mu_\\rho[f, d, x]$ and $\\sigma^2_\\rho[f, d, x]$ from Definition {prf:ref}`def-localized-mean-field-moments`\n486:    - Numerical regularization via $\\kappa_{\\text{var,min}}$\n487: \n488: 3.  **Measurement Function:** $d: \\mathcal{X} \\to \\mathbb{R}$ is a bounded measurement of local objective quality (e.g., reward, distance to target).\n489: \n490: **Properties:**\n491: - **\u03c1-Dependence:** The fitness explicitly depends on the localization scale \u03c1, which controls the spatial extent of statistical aggregation.\n492: - **Nonlocality:** For finite \u03c1, $V_{\\text{fit}}[f, \\rho](x)$ depends on the distribution $f$ within the \u03c1-neighborhood of $x$.\n493: - **Nonlinearity:** The functional is nonlinear in $f$ due to the Z-score's division by localized standard deviation.\n494: - **Boundedness:** $0 \\le V_{\\text{fit}}[f, \\rho](x) \\le A$ for all $x, f, \\rho$ by construction (due to bounded rescale and regularized Z-score).\n495: - **Smoothness:** $V_{\\text{fit}}[f, \\rho](x)$ is $C^\\infty$ in $x$ (provided $f$ is sufficiently regular) due to the smoothness of $g_A$, $K_\\rho$, and the regularization.\n496: - **Limiting Behavior:**\n497:   - As $\\rho \\to \\infty$: Recovers the global fitness potential from `03_cloning.md`"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

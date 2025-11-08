@@ -1,0 +1,119 @@
+{
+  "chapter_index": 1,
+  "section_id": "## Section 1: Emergent Metric and Affine Connection",
+  "directive_count": 6,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-emergent-metric",
+      "title": "Emergent Spatial Metric",
+      "start_line": 38,
+      "end_line": 53,
+      "header_lines": [
+        39
+      ],
+      "content_start": 41,
+      "content_end": 52,
+      "content": "41: :label: def-emergent-metric\n42: \n43: For a swarm state $S_t = \\{(x_i(t), v_i(t))\\}_{i=1}^N$ with fitness function $f: \\mathcal{X} \\to \\mathbb{R}$, the **emergent spatial metric** at position $x \\in \\mathcal{X}$ is:\n44: \n45: $$\n46: g_{ab}(x, S_t) = H_{ab}(x) + \\varepsilon I_{ab}\n47: $$\n48: \n49: where:\n50: - $H_{ab}(x) = \\frac{\\partial^2 f}{\\partial x^a \\partial x^b}$ is the Hessian of the fitness function\n51: - $\\varepsilon > 0$ is the regularization parameter (thermal energy scale)\n52: - $I_{ab} = \\delta_{ab}$ is the Euclidean metric",
+      "metadata": {
+        "label": "def-emergent-metric"
+      },
+      "section": "## Section 1: Emergent Metric and Affine Connection",
+      "raw_directive": "38: We begin by recalling the **emergent Riemannian metric** from Chapter 8 (Emergent Geometry). The spatial metric at time $t$ is defined by the regularized fitness Hessian:\n39: \n40: :::{prf:definition} Emergent Spatial Metric\n41: :label: def-emergent-metric\n42: \n43: For a swarm state $S_t = \\{(x_i(t), v_i(t))\\}_{i=1}^N$ with fitness function $f: \\mathcal{X} \\to \\mathbb{R}$, the **emergent spatial metric** at position $x \\in \\mathcal{X}$ is:\n44: \n45: $$\n46: g_{ab}(x, S_t) = H_{ab}(x) + \\varepsilon I_{ab}\n47: $$\n48: \n49: where:\n50: - $H_{ab}(x) = \\frac{\\partial^2 f}{\\partial x^a \\partial x^b}$ is the Hessian of the fitness function\n51: - $\\varepsilon > 0$ is the regularization parameter (thermal energy scale)\n52: - $I_{ab} = \\delta_{ab}$ is the Euclidean metric\n53: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-geodesic-ruling-recall",
+      "title": "Geodesic Ruling (Recall from Chapter 18)",
+      "start_line": 61,
+      "end_line": 71,
+      "header_lines": [
+        62
+      ],
+      "content_start": 64,
+      "content_end": 70,
+      "content": "64: :label: def-geodesic-ruling-recall\n65: \n66: For a scutoid cell $\\mathcal{C}_i$ between $t$ and $t + \\Delta t$, let $\\phi_k: \\Gamma_{j,k}(t) \\to \\Gamma_{i,k}(t + \\Delta t)$ be the boundary correspondence map for shared neighbor $k \\in \\mathcal{N}_{\\text{shared}}$. The **geodesic ruling** is the family of geodesics:\n67: \n68: $$\n69: \\{ \\Gamma_{j,k}(t) \\ni p \\mapsto \\text{geodesic}(p, \\phi_k(p), \\Delta t) \\}\n70: $$",
+      "metadata": {
+        "label": "def-geodesic-ruling-recall"
+      },
+      "section": "## Section 1: Emergent Metric and Affine Connection",
+      "raw_directive": "61: The key insight connecting scutoid geometry to affine connections is that **geodesic rulings** (Definition 18.1.6) define a notion of **parallel transport** between time slices. Recall:\n62: \n63: :::{prf:definition} Geodesic Ruling (Recall from Chapter 18)\n64: :label: def-geodesic-ruling-recall\n65: \n66: For a scutoid cell $\\mathcal{C}_i$ between $t$ and $t + \\Delta t$, let $\\phi_k: \\Gamma_{j,k}(t) \\to \\Gamma_{i,k}(t + \\Delta t)$ be the boundary correspondence map for shared neighbor $k \\in \\mathcal{N}_{\\text{shared}}$. The **geodesic ruling** is the family of geodesics:\n67: \n68: $$\n69: \\{ \\Gamma_{j,k}(t) \\ni p \\mapsto \\text{geodesic}(p, \\phi_k(p), \\Delta t) \\}\n70: $$\n71: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-scutoid-connection",
+      "title": "Scutoid-Induced Affine Connection",
+      "start_line": 79,
+      "end_line": 97,
+      "header_lines": [
+        80
+      ],
+      "content_start": 82,
+      "content_end": 96,
+      "content": "82: :label: def-scutoid-connection\n83: \n84: Let $\\gamma(s) = (x^a(s), t(s))$ be a geodesic ruling in the scutoid cell $\\mathcal{C}_i$, parameterized by arc-length $s \\in [0, L]$ with $t(0) = t$ and $t(L) = t + \\Delta t$. Let $V^a(s)$ be a tangent vector field along $\\gamma(s)$ representing the **edge direction** of the Voronoi cell boundary.\n85: \n86: The **Christoffel symbols** $\\Gamma^a_{bc}$ are defined by the **geodesic deviation equation**:\n87: \n88: $$\n89: \\frac{D V^a}{ds} = \\frac{dV^a}{ds} + \\Gamma^a_{bc} \\frac{dx^b}{ds} V^c = 0\n90: $$\n91: \n92: where $\\frac{D}{ds}$ denotes **covariant derivative** along $\\gamma(s)$. Solving for $\\Gamma^a_{bc}$:\n93: \n94: $$\n95: \\Gamma^a_{bc}(x) = \\frac{1}{2} g^{ad} \\left( \\frac{\\partial g_{db}}{\\partial x^c} + \\frac{\\partial g_{dc}}{\\partial x^b} - \\frac{\\partial g_{bc}}{\\partial x^d} \\right)\n96: $$",
+      "metadata": {
+        "label": "def-scutoid-connection"
+      },
+      "section": "## Section 1: Emergent Metric and Affine Connection",
+      "raw_directive": "79: We now define the **affine connection** by quantifying how geodesics in the ruling **fail to remain parallel** as they propagate from $t$ to $t + \\Delta t$.\n80: \n81: :::{prf:definition} Scutoid-Induced Affine Connection\n82: :label: def-scutoid-connection\n83: \n84: Let $\\gamma(s) = (x^a(s), t(s))$ be a geodesic ruling in the scutoid cell $\\mathcal{C}_i$, parameterized by arc-length $s \\in [0, L]$ with $t(0) = t$ and $t(L) = t + \\Delta t$. Let $V^a(s)$ be a tangent vector field along $\\gamma(s)$ representing the **edge direction** of the Voronoi cell boundary.\n85: \n86: The **Christoffel symbols** $\\Gamma^a_{bc}$ are defined by the **geodesic deviation equation**:\n87: \n88: $$\n89: \\frac{D V^a}{ds} = \\frac{dV^a}{ds} + \\Gamma^a_{bc} \\frac{dx^b}{ds} V^c = 0\n90: $$\n91: \n92: where $\\frac{D}{ds}$ denotes **covariant derivative** along $\\gamma(s)$. Solving for $\\Gamma^a_{bc}$:\n93: \n94: $$\n95: \\Gamma^a_{bc}(x) = \\frac{1}{2} g^{ad} \\left( \\frac{\\partial g_{db}}{\\partial x^c} + \\frac{\\partial g_{dc}}{\\partial x^b} - \\frac{\\partial g_{bc}}{\\partial x^d} \\right)\n96: $$\n97: "
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-connection-computation",
+      "title": "Computational Formula for Connection",
+      "start_line": 103,
+      "end_line": 113,
+      "header_lines": [
+        104
+      ],
+      "content_start": 106,
+      "content_end": 112,
+      "content": "106: :label: prop-connection-computation\n107: \n108: For the emergent metric $g_{ab}(x, S_t) = H_{ab}(x) + \\varepsilon \\delta_{ab}$, the Christoffel symbols are:\n109: \n110: $$\n111: \\Gamma^a_{bc}(x) = \\frac{1}{2} (H + \\varepsilon I)^{-1}_{ad} \\left( \\frac{\\partial H_{db}}{\\partial x^c} + \\frac{\\partial H_{dc}}{\\partial x^b} - \\frac{\\partial H_{bc}}{\\partial x^d} \\right)\n112: $$",
+      "metadata": {
+        "label": "prop-connection-computation"
+      },
+      "section": "## Section 1: Emergent Metric and Affine Connection",
+      "raw_directive": "103: - In flat regions: $H_{ab} \\approx 0$ \u2192 $\\Gamma^a_{bc} \\approx 0$ \u2192 nearly Euclidean\n104: \n105: :::{prf:proposition} Computational Formula for Connection\n106: :label: prop-connection-computation\n107: \n108: For the emergent metric $g_{ab}(x, S_t) = H_{ab}(x) + \\varepsilon \\delta_{ab}$, the Christoffel symbols are:\n109: \n110: $$\n111: \\Gamma^a_{bc}(x) = \\frac{1}{2} (H + \\varepsilon I)^{-1}_{ad} \\left( \\frac{\\partial H_{db}}{\\partial x^c} + \\frac{\\partial H_{dc}}{\\partial x^b} - \\frac{\\partial H_{bc}}{\\partial x^d} \\right)\n112: $$\n113: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-edge-deformation",
+      "title": "Edge Deformation Tensor",
+      "start_line": 121,
+      "end_line": 133,
+      "header_lines": [
+        122
+      ],
+      "content_start": 124,
+      "content_end": 132,
+      "content": "124: :label: def-edge-deformation\n125: \n126: Consider a shared neighbor interface $k \\in \\mathcal{N}_{\\text{shared}}$ with boundary segments $\\Gamma_{j,k}(t)$ and $\\Gamma_{i,k}(t + \\Delta t)$. Let $\\tau_a(s)$ be the unit tangent vector to $\\Gamma_{j,k}(t)$ at arc-length parameter $s$, and let $\\bar{\\tau}_a(s)$ be the unit tangent vector to $\\Gamma_{i,k}(t + \\Delta t)$ at the corresponding point $\\phi_k(\\gamma_{j,k}(s))$.\n127: \n128: The **edge deformation tensor** is:\n129: \n130: $$\n131: D_{ab}(s) = \\bar{\\tau}_a(s) \\otimes \\tau_b(s) - \\delta_{ab}\n132: $$",
+      "metadata": {
+        "label": "def-edge-deformation"
+      },
+      "section": "## Section 1: Emergent Metric and Affine Connection",
+      "raw_directive": "121: To make the connection with scutoid geometry explicit, we introduce the **edge deformation tensor**, which measures how much the boundary segments $\\Gamma_{j,k}(t)$ and $\\Gamma_{i,k}(t + \\Delta t)$ differ in shape.\n122: \n123: :::{prf:definition} Edge Deformation Tensor\n124: :label: def-edge-deformation\n125: \n126: Consider a shared neighbor interface $k \\in \\mathcal{N}_{\\text{shared}}$ with boundary segments $\\Gamma_{j,k}(t)$ and $\\Gamma_{i,k}(t + \\Delta t)$. Let $\\tau_a(s)$ be the unit tangent vector to $\\Gamma_{j,k}(t)$ at arc-length parameter $s$, and let $\\bar{\\tau}_a(s)$ be the unit tangent vector to $\\Gamma_{i,k}(t + \\Delta t)$ at the corresponding point $\\phi_k(\\gamma_{j,k}(s))$.\n127: \n128: The **edge deformation tensor** is:\n129: \n130: $$\n131: D_{ab}(s) = \\bar{\\tau}_a(s) \\otimes \\tau_b(s) - \\delta_{ab}\n132: $$\n133: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-connection-from-deformation",
+      "title": "Connection from Edge Deformation",
+      "start_line": 139,
+      "end_line": 149,
+      "header_lines": [
+        140
+      ],
+      "content_start": 142,
+      "content_end": 148,
+      "content": "142: :label: lem-connection-from-deformation\n143: \n144: The Christoffel symbols can be expressed in terms of the edge deformation tensor:\n145: \n146: $$\n147: \\Gamma^a_{bc} \\Delta t = \\frac{1}{|\\mathcal{N}_{\\text{shared}}|} \\sum_{k \\in \\mathcal{N}_{\\text{shared}}} \\int_{\\Gamma_{j,k}(t)} D^a_c(s) \\, n_b(s) \\, ds\n148: $$",
+      "metadata": {
+        "label": "lem-connection-from-deformation"
+      },
+      "section": "## Section 1: Emergent Metric and Affine Connection",
+      "raw_directive": "139: - If $D_{ab} \\neq 0$: Edge rotates or shears between time slices\n140: \n141: :::{prf:lemma} Connection from Edge Deformation\n142: :label: lem-connection-from-deformation\n143: \n144: The Christoffel symbols can be expressed in terms of the edge deformation tensor:\n145: \n146: $$\n147: \\Gamma^a_{bc} \\Delta t = \\frac{1}{|\\mathcal{N}_{\\text{shared}}|} \\sum_{k \\in \\mathcal{N}_{\\text{shared}}} \\int_{\\Gamma_{j,k}(t)} D^a_c(s) \\, n_b(s) \\, ds\n148: $$\n149: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

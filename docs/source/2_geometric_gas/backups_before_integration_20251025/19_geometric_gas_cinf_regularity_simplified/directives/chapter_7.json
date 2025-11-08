@@ -1,0 +1,83 @@
+{
+  "chapter_index": 7,
+  "section_id": "## 7. Gevrey-1 Classification",
+  "directive_count": 4,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-gevrey-class-cinf",
+      "title": "Gevrey Classes",
+      "start_line": 749,
+      "end_line": 763,
+      "header_lines": [
+        750
+      ],
+      "content_start": 752,
+      "content_end": 762,
+      "content": "752: :label: def-gevrey-class-cinf\n753: \n754: A function f: U \u2192 \u211d (U \u2286 \u211d^d open) belongs to **Gevrey class G^s** (s \u2265 1) if for every compact K \u2286 U, there exist C_K, A_K > 0 such that:\n755: \n756: $$\n757: \\sup_{x \\in K} \\|\\nabla^m f(x)\\| \\leq C_K \\cdot A_K^m \\cdot (m!)^s \\quad \\forall m \\geq 0\n758: $$\n759: \n760: **Special cases**:\n761: - s < 1: Real analytic (convergent Taylor series)\n762: - s = 1: **Gevrey-1** (borderline, \"analytic-Gevrey\")",
+      "metadata": {
+        "label": "def-gevrey-class-cinf"
+      },
+      "section": "## 7. Gevrey-1 Classification",
+      "raw_directive": "749: ## 7. Gevrey-1 Classification\n750: \n751: :::{prf:definition} Gevrey Classes\n752: :label: def-gevrey-class-cinf\n753: \n754: A function f: U \u2192 \u211d (U \u2286 \u211d^d open) belongs to **Gevrey class G^s** (s \u2265 1) if for every compact K \u2286 U, there exist C_K, A_K > 0 such that:\n755: \n756: $$\n757: \\sup_{x \\in K} \\|\\nabla^m f(x)\\| \\leq C_K \\cdot A_K^m \\cdot (m!)^s \\quad \\forall m \\geq 0\n758: $$\n759: \n760: **Special cases**:\n761: - s < 1: Real analytic (convergent Taylor series)\n762: - s = 1: **Gevrey-1** (borderline, \"analytic-Gevrey\")\n763: - s > 1: Smooth but not analytic"
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-gevrey-1-cinf",
+      "title": "Gevrey-1 Regularity of the Fitness Potential",
+      "start_line": 765,
+      "end_line": 789,
+      "header_lines": [
+        766
+      ],
+      "content_start": 768,
+      "content_end": 788,
+      "content": "768: :label: thm-gevrey-1-cinf\n769: \n770: V_fit[f_k, \u03c1](x_i) belongs to **Gevrey class G\u00b9** for each fixed \u03c1 > 0 and swarm configuration S. For any compact K \u2286 X and any \u03c1 \u2208 (0, \u03c1_0]:\n771: \n772: $$\n773: \\sup_{x_i \\in K} \\|\\nabla^m V_{\\text{fit}}\\| \\leq C_K(\\rho_0) \\cdot \\left(\\frac{A_K(\\rho_0)}{\\rho}\\right)^m \\cdot m!\n774: $$\n775: \n776: where A_K(\u03c1_0) is **independent of m**, confirming Gevrey-1 classification with s = 1.\n777: \n778: **Proof**: From Theorem {prf:ref}`thm-cinf-regularity`:\n779: \n780: $$\n781: K_{V,m}(\\rho) = C_{\\text{Gevrey}}(\\rho_0) \\cdot \\rho_0^{-m} \\cdot m!\n782: $$\n783: \n784: for \u03c1 \u2264 \u03c1_0. Set C_K = C_Gevrey, A_K = \u03c1_0^{-1}:\n785: \n786: $$\n787: \\|\\nabla^m V_{\\text{fit}}\\| \\leq C_K \\cdot A_K^m \\cdot m!\n788: $$",
+      "metadata": {
+        "label": "thm-gevrey-1-cinf"
+      },
+      "section": "## 7. Gevrey-1 Classification",
+      "raw_directive": "765: :::\n766: \n767: :::{prf:theorem} Gevrey-1 Regularity of the Fitness Potential\n768: :label: thm-gevrey-1-cinf\n769: \n770: V_fit[f_k, \u03c1](x_i) belongs to **Gevrey class G\u00b9** for each fixed \u03c1 > 0 and swarm configuration S. For any compact K \u2286 X and any \u03c1 \u2208 (0, \u03c1_0]:\n771: \n772: $$\n773: \\sup_{x_i \\in K} \\|\\nabla^m V_{\\text{fit}}\\| \\leq C_K(\\rho_0) \\cdot \\left(\\frac{A_K(\\rho_0)}{\\rho}\\right)^m \\cdot m!\n774: $$\n775: \n776: where A_K(\u03c1_0) is **independent of m**, confirming Gevrey-1 classification with s = 1.\n777: \n778: **Proof**: From Theorem {prf:ref}`thm-cinf-regularity`:\n779: \n780: $$\n781: K_{V,m}(\\rho) = C_{\\text{Gevrey}}(\\rho_0) \\cdot \\rho_0^{-m} \\cdot m!\n782: $$\n783: \n784: for \u03c1 \u2264 \u03c1_0. Set C_K = C_Gevrey, A_K = \u03c1_0^{-1}:\n785: \n786: $$\n787: \\|\\nabla^m V_{\\text{fit}}\\| \\leq C_K \\cdot A_K^m \\cdot m!\n788: $$\n789: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rmk-gevrey-not-analytic-cinf",
+      "title": "Why Gevrey-1, Not Real Analytic?",
+      "start_line": 791,
+      "end_line": 803,
+      "header_lines": [
+        792
+      ],
+      "content_start": 794,
+      "content_end": 802,
+      "content": "794: :label: rmk-gevrey-not-analytic-cinf\n795: \n796: Despite the Gaussian kernel being real analytic, V_fit fails real analyticity due to:\n797: \n798: 1. **Variable alive set**: The sum \u2211_{j \u2208 A_k} involves k-dependent number of terms, where k changes as walkers die. Not a finite composition of analytic functions.\n799: \n800: 2. **Normalization non-analyticity**: w_ij = K_ij / (\u2211_\u2113 K_i\u2113) has denominator depending on alive set. While smooth, may fail holomorphic extension if zeros of denominator cluster near real axis.\n801: \n802: 3. **Hermite polynomial growth**: Bounds |H_m(y)| ~ \u221a(m!) are **sub-factorial**, insufficient to guarantee Taylor series convergence.",
+      "metadata": {
+        "label": "rmk-gevrey-not-analytic-cinf"
+      },
+      "section": "## 7. Gevrey-1 Classification",
+      "raw_directive": "791: :::\n792: \n793: :::{prf:remark} Why Gevrey-1, Not Real Analytic?\n794: :label: rmk-gevrey-not-analytic-cinf\n795: \n796: Despite the Gaussian kernel being real analytic, V_fit fails real analyticity due to:\n797: \n798: 1. **Variable alive set**: The sum \u2211_{j \u2208 A_k} involves k-dependent number of terms, where k changes as walkers die. Not a finite composition of analytic functions.\n799: \n800: 2. **Normalization non-analyticity**: w_ij = K_ij / (\u2211_\u2113 K_i\u2113) has denominator depending on alive set. While smooth, may fail holomorphic extension if zeros of denominator cluster near real axis.\n801: \n802: 3. **Hermite polynomial growth**: Bounds |H_m(y)| ~ \u221a(m!) are **sub-factorial**, insufficient to guarantee Taylor series convergence.\n803: "
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-gevrey-regularization-cinf",
+      "title": "Gevrey Regularization Property",
+      "start_line": 805,
+      "end_line": 816,
+      "header_lines": [
+        806
+      ],
+      "content_start": 808,
+      "content_end": 815,
+      "content": "808: :label: prop-gevrey-regularization-cinf\n809: \n810: If d \u2208 G^s(X) for some s \u2265 1, then V_fit \u2208 G^{min(s, 1)}(X). In particular:\n811: - d real analytic (s < 1) \u2192 V_fit \u2208 G\u00b9\n812: - d \u2208 G\u00b9 \u2192 V_fit \u2208 G\u00b9 (preserved)\n813: - d \u2208 G^s (s > 1) \u2192 V_fit \u2208 G\u00b9 (regularization)\n814: \n815: **Interpretation**: The Gaussian localization kernel **regularizes** the measurement to at least Gevrey-1, regardless of input regularity (as long as d \u2208 C\u221e). Analogous to heat kernel smoothing.",
+      "metadata": {
+        "label": "prop-gevrey-regularization-cinf"
+      },
+      "section": "## 7. Gevrey-1 Classification",
+      "raw_directive": "805: :::\n806: \n807: :::{prf:proposition} Gevrey Regularization Property\n808: :label: prop-gevrey-regularization-cinf\n809: \n810: If d \u2208 G^s(X) for some s \u2265 1, then V_fit \u2208 G^{min(s, 1)}(X). In particular:\n811: - d real analytic (s < 1) \u2192 V_fit \u2208 G\u00b9\n812: - d \u2208 G\u00b9 \u2192 V_fit \u2208 G\u00b9 (preserved)\n813: - d \u2208 G^s (s > 1) \u2192 V_fit \u2208 G\u00b9 (regularization)\n814: \n815: **Interpretation**: The Gaussian localization kernel **regularizes** the measurement to at least Gevrey-1, regardless of input regularity (as long as d \u2208 C\u221e). Analogous to heat kernel smoothing.\n816: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

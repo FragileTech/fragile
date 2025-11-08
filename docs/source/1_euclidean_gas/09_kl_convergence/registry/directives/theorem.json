@@ -1,0 +1,834 @@
+{
+  "document_id": "09_kl_convergence",
+  "stage": "directives",
+  "directive_type": "theorem",
+  "generated_at": "2025-11-08T17:07:43.216866+00:00",
+  "count": 33,
+  "items": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-main-kl-convergence",
+      "title": "Exponential KL-Convergence for the Euclidean Gas",
+      "start_line": 166,
+      "end_line": 192,
+      "header_lines": [
+        167
+      ],
+      "content_start": 169,
+      "content_end": 191,
+      "content": "169: :label: thm-main-kl-convergence\n170: \n171: Under Axiom {prf:ref}`axiom-qsd-log-concave` (log-concavity of the quasi-stationary distribution), for the N-particle Euclidean Gas with parameters satisfying the Foster-Lyapunov conditions of Theorem 8.1 in [06_convergence](06_convergence), and with cloning noise variance $\\delta^2$ satisfying:\n172: \n173: $$\n174: \\delta > \\delta_* = e^{-\\alpha\\tau/(2C_0)} \\cdot C_{\\text{HWI}} \\sqrt{\\frac{2(1 - \\kappa_W)}{\\kappa_{\\text{conf}}}}\n175: $$\n176: \n177: the discrete-time Markov chain\n178: \n179: $$\n180: S_{t+1} = \\Psi_{\\text{total}}(S_t) := (\\Psi_{\\text{kin}}(\\tau) \\circ \\Psi_{\\text{clone}})(S_t)\n181: $$\n182: \n183: satisfies a discrete-time logarithmic Sobolev inequality with constant $C_{\\text{LSI}} > 0$. Consequently, for any initial distribution $\\mu_0$ with finite entropy:\n184: \n185: $$\n186: D_{\\text{KL}}(\\mu_t \\| \\pi_{\\text{QSD}}) \\le e^{-t/C_{\\text{LSI}}} \\cdot D_{\\text{KL}}(\\mu_0 \\| \\pi_{\\text{QSD}})\n187: $$\n188: \n189: where $\\pi_{\\text{QSD}}$ is the unique quasi-stationary distribution.\n190: \n191: **Explicit constant:** $C_{\\text{LSI}} = O(1/(\\gamma \\kappa_{\\text{conf}} \\kappa_W \\delta^2))$ where $\\gamma$ is the friction coefficient, $\\kappa_{\\text{conf}}$ is the convexity constant of the confining potential, $\\kappa_W$ is the Wasserstein contraction rate, and $\\delta^2$ is the cloning noise variance.",
+      "metadata": {
+        "label": "thm-main-kl-convergence"
+      },
+      "section": "## 0. Overview and Strategy",
+      "raw_directive": "166: The central theorem of this document is:\n167: \n168: :::{prf:theorem} Exponential KL-Convergence for the Euclidean Gas\n169: :label: thm-main-kl-convergence\n170: \n171: Under Axiom {prf:ref}`axiom-qsd-log-concave` (log-concavity of the quasi-stationary distribution), for the N-particle Euclidean Gas with parameters satisfying the Foster-Lyapunov conditions of Theorem 8.1 in [06_convergence](06_convergence), and with cloning noise variance $\\delta^2$ satisfying:\n172: \n173: $$\n174: \\delta > \\delta_* = e^{-\\alpha\\tau/(2C_0)} \\cdot C_{\\text{HWI}} \\sqrt{\\frac{2(1 - \\kappa_W)}{\\kappa_{\\text{conf}}}}\n175: $$\n176: \n177: the discrete-time Markov chain\n178: \n179: $$\n180: S_{t+1} = \\Psi_{\\text{total}}(S_t) := (\\Psi_{\\text{kin}}(\\tau) \\circ \\Psi_{\\text{clone}})(S_t)\n181: $$\n182: \n183: satisfies a discrete-time logarithmic Sobolev inequality with constant $C_{\\text{LSI}} > 0$. Consequently, for any initial distribution $\\mu_0$ with finite entropy:\n184: \n185: $$\n186: D_{\\text{KL}}(\\mu_t \\| \\pi_{\\text{QSD}}) \\le e^{-t/C_{\\text{LSI}}} \\cdot D_{\\text{KL}}(\\mu_0 \\| \\pi_{\\text{QSD}})\n187: $$\n188: \n189: where $\\pi_{\\text{QSD}}$ is the unique quasi-stationary distribution.\n190: \n191: **Explicit constant:** $C_{\\text{LSI}} = O(1/(\\gamma \\kappa_{\\text{conf}} \\kappa_W \\delta^2))$ where $\\gamma$ is the friction coefficient, $\\kappa_{\\text{conf}}$ is the convexity constant of the confining potential, $\\kappa_W$ is the Wasserstein contraction rate, and $\\delta^2$ is the cloning noise variance.\n192: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 0. Overview and Strategy"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-bakry-emery",
+      "title": "Bakry-Émery Criterion for LSI",
+      "start_line": 300,
+      "end_line": 316,
+      "header_lines": [
+        301
+      ],
+      "content_start": 303,
+      "content_end": 315,
+      "content": "303: :label: thm-bakry-emery\n304: \n305: Let $\\pi$ be a probability measure on $\\mathbb{R}^d$ with smooth density and generator\n306: \n307: $$\n308: \\mathcal{L} = \\Delta - \\nabla U \\cdot \\nabla\n309: $$\n310: \n311: If the potential $U$ satisfies the **Bakry-Émery criterion**\n312: \n313: $$\n314: \\text{Hess}(U) \\succeq \\rho I \\quad \\text{for some } \\rho > 0\n315: $$",
+      "metadata": {
+        "label": "thm-bakry-emery"
+      },
+      "section": "## 1. Preliminaries and Functional Inequalities",
+      "raw_directive": "300: ### 1.2. Classical Results\n301: \n302: :::{prf:theorem} Bakry-Émery Criterion for LSI\n303: :label: thm-bakry-emery\n304: \n305: Let $\\pi$ be a probability measure on $\\mathbb{R}^d$ with smooth density and generator\n306: \n307: $$\n308: \\mathcal{L} = \\Delta - \\nabla U \\cdot \\nabla\n309: $$\n310: \n311: If the potential $U$ satisfies the **Bakry-Émery criterion**\n312: \n313: $$\n314: \\text{Hess}(U) \\succeq \\rho I \\quad \\text{for some } \\rho > 0\n315: $$\n316: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 1. Preliminaries and Functional Inequalities"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-kinetic-lsi",
+      "title": "Hypocoercive LSI for the Kinetic Flow Map",
+      "start_line": 729,
+      "end_line": 746,
+      "header_lines": [
+        730
+      ],
+      "content_start": 732,
+      "content_end": 745,
+      "content": "732: :label: thm-kinetic-lsi\n733: \n734: The finite-time flow map $\\Psi_{\\text{kin}}(\\tau)$ of the kinetic SDE satisfies a discrete-time LSI with constant:\n735: \n736: $$\n737: C_{\\text{LSI}}^{\\text{kin}}(\\tau) = \\frac{1 - e^{-2\\alpha\\tau}}{2\\alpha}\n738: $$\n739: \n740: where $\\alpha = \\min(\\gamma/2, \\kappa_{\\text{conf}}/4)$.\n741: \n742: Specifically, for any function $f > 0$:\n743: \n744: $$\n745: \\text{Ent}_{\\pi_{\\text{kin}}}((\\Psi_{\\text{kin}}(\\tau))_* f^2) \\le e^{-2\\alpha\\tau} \\cdot \\text{Ent}_{\\pi_{\\text{kin}}}(f^2)",
+      "metadata": {
+        "label": "thm-kinetic-lsi"
+      },
+      "section": "## 2. The Hypoelliptic Kinetic Operator",
+      "raw_directive": "729: ### 2.3. Discrete-Time LSI for the Kinetic Operator\n730: \n731: :::{prf:theorem} Hypocoercive LSI for the Kinetic Flow Map\n732: :label: thm-kinetic-lsi\n733: \n734: The finite-time flow map $\\Psi_{\\text{kin}}(\\tau)$ of the kinetic SDE satisfies a discrete-time LSI with constant:\n735: \n736: $$\n737: C_{\\text{LSI}}^{\\text{kin}}(\\tau) = \\frac{1 - e^{-2\\alpha\\tau}}{2\\alpha}\n738: $$\n739: \n740: where $\\alpha = \\min(\\gamma/2, \\kappa_{\\text{conf}}/4)$.\n741: \n742: Specifically, for any function $f > 0$:\n743: \n744: $$\n745: \\text{Ent}_{\\pi_{\\text{kin}}}((\\Psi_{\\text{kin}}(\\tau))_* f^2) \\le e^{-2\\alpha\\tau} \\cdot \\text{Ent}_{\\pi_{\\text{kin}}}(f^2)\n746: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## 2. The Hypoelliptic Kinetic Operator"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-tensorization",
+      "title": "Tensorization of LSI",
+      "start_line": 848,
+      "end_line": 857,
+      "header_lines": [
+        849
+      ],
+      "content_start": 851,
+      "content_end": 856,
+      "content": "851: :label: thm-tensorization\n852: \n853: If each single-particle kernel $K_i$ satisfies an LSI with constant $C_i$, then the product kernel $K = \\bigotimes_{i=1}^N K_i$ satisfies an LSI with constant:\n854: \n855: $$\n856: C_{\\text{product}} = \\max_{i=1, \\ldots, N} C_i",
+      "metadata": {
+        "label": "thm-tensorization"
+      },
+      "section": "## 3. Extension to the N-Particle System",
+      "raw_directive": "848: where $\\Psi_{\\text{kin}}^{(i)}$ is the single-particle kinetic evolution.\n849: \n850: :::{prf:theorem} Tensorization of LSI\n851: :label: thm-tensorization\n852: \n853: If each single-particle kernel $K_i$ satisfies an LSI with constant $C_i$, then the product kernel $K = \\bigotimes_{i=1}^N K_i$ satisfies an LSI with constant:\n854: \n855: $$\n856: C_{\\text{product}} = \\max_{i=1, \\ldots, N} C_i\n857: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 7,
+        "chapter_file": "chapter_7.json",
+        "section_id": "## 3. Extension to the N-Particle System"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-hwi-inequality",
+      "title": "The HWI Inequality (Otto-Villani)",
+      "start_line": 1212,
+      "end_line": 1227,
+      "header_lines": [
+        1213
+      ],
+      "content_start": 1215,
+      "content_end": 1226,
+      "content": "1215: :label: thm-hwi-inequality\n1216: \n1217: For probability measures $\\mu, \\pi$ on $\\mathbb{R}^d$ with $\\mu \\ll \\pi$ and $\\pi$ log-concave, the following inequality holds:\n1218: \n1219: $$\n1220: H(\\mu | \\pi) \\le W_2(\\mu, \\pi) \\sqrt{I(\\mu | \\pi)}\n1221: $$\n1222: \n1223: where:\n1224: - $H(\\mu | \\pi) := D_{\\text{KL}}(\\mu \\| \\pi)$ is the relative entropy\n1225: - $W_2(\\mu, \\pi)$ is the 2-Wasserstein distance\n1226: - $I(\\mu | \\pi)$ is the Fisher information",
+      "metadata": {
+        "label": "thm-hwi-inequality"
+      },
+      "section": "## 4. The Cloning Operator and Entropy Contraction via Optimal Transport",
+      "raw_directive": "1212: The direct path from variance contraction to LSI via entropy estimates is **invalid** (as Gemini correctly identified). Instead, we use the **optimal transport approach** via the HWI inequality.\n1213: \n1214: :::{prf:theorem} The HWI Inequality (Otto-Villani)\n1215: :label: thm-hwi-inequality\n1216: \n1217: For probability measures $\\mu, \\pi$ on $\\mathbb{R}^d$ with $\\mu \\ll \\pi$ and $\\pi$ log-concave, the following inequality holds:\n1218: \n1219: $$\n1220: H(\\mu | \\pi) \\le W_2(\\mu, \\pi) \\sqrt{I(\\mu | \\pi)}\n1221: $$\n1222: \n1223: where:\n1224: - $H(\\mu | \\pi) := D_{\\text{KL}}(\\mu \\| \\pi)$ is the relative entropy\n1225: - $W_2(\\mu, \\pi)$ is the 2-Wasserstein distance\n1226: - $I(\\mu | \\pi)$ is the Fisher information\n1227: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 9,
+        "chapter_file": "chapter_9.json",
+        "section_id": "## 4. The Cloning Operator and Entropy Contraction via Optimal Transport"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-cloning-entropy-contraction",
+      "title": "Entropy Contraction for the Cloning Operator",
+      "start_line": 1330,
+      "end_line": 1340,
+      "header_lines": [
+        1331
+      ],
+      "content_start": 1333,
+      "content_end": 1339,
+      "content": "1333: :label: thm-cloning-entropy-contraction\n1334: \n1335: For the cloning operator $\\Psi_{\\text{clone}}$ with Gaussian noise variance $\\delta^2 > 0$, the relative entropy contracts:\n1336: \n1337: $$\n1338: D_{\\text{KL}}(\\mu_{S'} \\| \\pi_{\\text{QSD}}) \\le \\left(1 - \\frac{\\kappa_W^2 \\delta^2}{2C_I}\\right) D_{\\text{KL}}(\\mu_S \\| \\pi_{\\text{QSD}}) + C_{\\text{clone}}\n1339: $$",
+      "metadata": {
+        "label": "thm-cloning-entropy-contraction"
+      },
+      "section": "## 4. The Cloning Operator and Entropy Contraction via Optimal Transport",
+      "raw_directive": "1330: ### 4.5. Entropy Contraction via HWI\n1331: \n1332: :::{prf:theorem} Entropy Contraction for the Cloning Operator\n1333: :label: thm-cloning-entropy-contraction\n1334: \n1335: For the cloning operator $\\Psi_{\\text{clone}}$ with Gaussian noise variance $\\delta^2 > 0$, the relative entropy contracts:\n1336: \n1337: $$\n1338: D_{\\text{KL}}(\\mu_{S'} \\| \\pi_{\\text{QSD}}) \\le \\left(1 - \\frac{\\kappa_W^2 \\delta^2}{2C_I}\\right) D_{\\text{KL}}(\\mu_S \\| \\pi_{\\text{QSD}}) + C_{\\text{clone}}\n1339: $$\n1340: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 9,
+        "chapter_file": "chapter_9.json",
+        "section_id": "## 4. The Cloning Operator and Entropy Contraction via Optimal Transport"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-entropy-transport-contraction",
+      "title": "Linear Contraction of the Entropy-Transport Lyapunov Function",
+      "start_line": 1624,
+      "end_line": 1649,
+      "header_lines": [
+        1625
+      ],
+      "content_start": 1627,
+      "content_end": 1648,
+      "content": "1627: :label: thm-entropy-transport-contraction\n1628: \n1629: For the composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}}(\\tau) \\circ \\Psi_{\\text{clone}}$, there exist constants $c > 0$ and $\\lambda < 1$ such that the Lyapunov function $V(\\mu) = D_{\\text{KL}}(\\mu \\| \\pi) + c W_2^2(\\mu, \\pi)$ satisfies:\n1630: \n1631: $$\n1632: V(\\mu_{t+1}) \\le \\lambda \\cdot V(\\mu_t) + C_{\\text{steady}}\n1633: $$\n1634: \n1635: where $\\mu_{t+1} = (\\Psi_{\\text{total}})_* \\mu_t$.\n1636: \n1637: **Explicit constants:**\n1638: \n1639: $$\n1640: \\lambda = \\max\\left(e^{-\\rho_k}, \\frac{(1 + \\beta)(1 - \\kappa_W) + \\alpha e^{-\\rho_k}/c}{1 + 1/c}\\right)\n1641: $$\n1642: \n1643: with $c = \\alpha e^{-\\rho_k} / (1 - K_W)$ where $K_W = (1 + \\beta)(1 - \\kappa_W)$.\n1644: \n1645: **Condition for $\\lambda < 1$:** The Wasserstein contraction must dominate the kinetic expansion:\n1646: \n1647: $$\n1648: \\kappa_W > \\frac{\\beta}{1 + \\beta}",
+      "metadata": {
+        "label": "thm-entropy-transport-contraction"
+      },
+      "section": "## 5. The Composition Theorem: Entropy-Transport Lyapunov Function",
+      "raw_directive": "1624: ### 5.4. Main Composition Theorem\n1625: \n1626: :::{prf:theorem} Linear Contraction of the Entropy-Transport Lyapunov Function\n1627: :label: thm-entropy-transport-contraction\n1628: \n1629: For the composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}}(\\tau) \\circ \\Psi_{\\text{clone}}$, there exist constants $c > 0$ and $\\lambda < 1$ such that the Lyapunov function $V(\\mu) = D_{\\text{KL}}(\\mu \\| \\pi) + c W_2^2(\\mu, \\pi)$ satisfies:\n1630: \n1631: $$\n1632: V(\\mu_{t+1}) \\le \\lambda \\cdot V(\\mu_t) + C_{\\text{steady}}\n1633: $$\n1634: \n1635: where $\\mu_{t+1} = (\\Psi_{\\text{total}})_* \\mu_t$.\n1636: \n1637: **Explicit constants:**\n1638: \n1639: $$\n1640: \\lambda = \\max\\left(e^{-\\rho_k}, \\frac{(1 + \\beta)(1 - \\kappa_W) + \\alpha e^{-\\rho_k}/c}{1 + 1/c}\\right)\n1641: $$\n1642: \n1643: with $c = \\alpha e^{-\\rho_k} / (1 - K_W)$ where $K_W = (1 + \\beta)(1 - \\kappa_W)$.\n1644: \n1645: **Condition for $\\lambda < 1$:** The Wasserstein contraction must dominate the kinetic expansion:\n1646: \n1647: $$\n1648: \\kappa_W > \\frac{\\beta}{1 + \\beta}\n1649: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 10,
+        "chapter_file": "chapter_10.json",
+        "section_id": "## 5. The Composition Theorem: Entropy-Transport Lyapunov Function"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-main-lsi-composition",
+      "title": "Discrete-Time LSI for the Euclidean Gas",
+      "start_line": 1774,
+      "end_line": 1792,
+      "header_lines": [
+        1775
+      ],
+      "content_start": 1777,
+      "content_end": 1791,
+      "content": "1777: :label: thm-main-lsi-composition\n1778: \n1779: Under the seesaw condition $\\kappa_W > \\beta/(1+\\beta)$, the composed operator $\\Psi_{\\text{total}}$ satisfies a discrete-time LSI. For any initial distribution $\\mu_0$:\n1780: \n1781: $$\n1782: D_{\\text{KL}}(\\mu_t \\| \\pi_{\\text{QSD}}) \\le C_{\\text{init}} \\lambda^t V(\\mu_0) \\le C_{\\text{init}} \\lambda^t (D_{\\text{KL}}(\\mu_0 \\| \\pi) + c W_2^2(\\mu_0, \\pi))\n1783: $$\n1784: \n1785: where $\\lambda < 1$ is from Theorem {prf:ref}`thm-entropy-transport-contraction$.\n1786: \n1787: **LSI constant:**\n1788: \n1789: $$\n1790: C_{\\text{LSI}} = \\frac{-1}{\\log \\lambda} \\approx \\frac{1}{1 - \\lambda}\n1791: $$",
+      "metadata": {
+        "label": "thm-main-lsi-composition"
+      },
+      "section": "## 5. The Composition Theorem: Entropy-Transport Lyapunov Function",
+      "raw_directive": "1774: ### 5.5. LSI for the Composed Operator\n1775: \n1776: :::{prf:theorem} Discrete-Time LSI for the Euclidean Gas\n1777: :label: thm-main-lsi-composition\n1778: \n1779: Under the seesaw condition $\\kappa_W > \\beta/(1+\\beta)$, the composed operator $\\Psi_{\\text{total}}$ satisfies a discrete-time LSI. For any initial distribution $\\mu_0$:\n1780: \n1781: $$\n1782: D_{\\text{KL}}(\\mu_t \\| \\pi_{\\text{QSD}}) \\le C_{\\text{init}} \\lambda^t V(\\mu_0) \\le C_{\\text{init}} \\lambda^t (D_{\\text{KL}}(\\mu_0 \\| \\pi) + c W_2^2(\\mu_0, \\pi))\n1783: $$\n1784: \n1785: where $\\lambda < 1$ is from Theorem {prf:ref}`thm-entropy-transport-contraction$.\n1786: \n1787: **LSI constant:**\n1788: \n1789: $$\n1790: C_{\\text{LSI}} = \\frac{-1}{\\log \\lambda} \\approx \\frac{1}{1 - \\lambda}\n1791: $$\n1792: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 10,
+        "chapter_file": "chapter_10.json",
+        "section_id": "## 5. The Composition Theorem: Entropy-Transport Lyapunov Function"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-lsi-implies-kl-convergence",
+      "title": "Exponential KL-Convergence via LSI",
+      "start_line": 1862,
+      "end_line": 1872,
+      "header_lines": [
+        1863
+      ],
+      "content_start": 1865,
+      "content_end": 1871,
+      "content": "1865: :label: thm-lsi-implies-kl-convergence\n1866: \n1867: If a Markov kernel $K$ with invariant measure $\\pi$ satisfies a discrete-time LSI with constant $C_{\\text{LSI}}$, then for any initial distribution $\\mu_0$:\n1868: \n1869: $$\n1870: D_{\\text{KL}}(\\mu_t \\| \\pi) \\le e^{-t/C_{\\text{LSI}}} D_{\\text{KL}}(\\mu_0 \\| \\pi)\n1871: $$",
+      "metadata": {
+        "label": "thm-lsi-implies-kl-convergence"
+      },
+      "section": "## 6. KL-Divergence Convergence",
+      "raw_directive": "1862: ### 6.1. From LSI to Exponential Convergence\n1863: \n1864: :::{prf:theorem} Exponential KL-Convergence via LSI\n1865: :label: thm-lsi-implies-kl-convergence\n1866: \n1867: If a Markov kernel $K$ with invariant measure $\\pi$ satisfies a discrete-time LSI with constant $C_{\\text{LSI}}$, then for any initial distribution $\\mu_0$:\n1868: \n1869: $$\n1870: D_{\\text{KL}}(\\mu_t \\| \\pi) \\le e^{-t/C_{\\text{LSI}}} D_{\\text{KL}}(\\mu_0 \\| \\pi)\n1871: $$\n1872: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 11,
+        "chapter_file": "chapter_11.json",
+        "section_id": "## 6. KL-Divergence Convergence"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-main-kl-final",
+      "title": "KL-Convergence of the Euclidean Gas (Main Result)",
+      "start_line": 1900,
+      "end_line": 1922,
+      "header_lines": [
+        1901
+      ],
+      "content_start": 1903,
+      "content_end": 1921,
+      "content": "1903: :label: thm-main-kl-final\n1904: \n1905: For the N-particle Euclidean Gas with parameters satisfying the Foster-Lyapunov conditions of Theorem 8.1 in [06_convergence](06_convergence), the Markov chain\n1906: \n1907: $$\n1908: S_{t+1} = \\Psi_{\\text{total}}(S_t) = (\\Psi_{\\text{kin}}(\\tau) \\circ \\Psi_{\\text{clone}})(S_t)\n1909: $$\n1910: \n1911: converges exponentially fast to the quasi-stationary distribution $\\pi_{\\text{QSD}}$ in relative entropy:\n1912: \n1913: $$\n1914: D_{\\text{KL}}(\\mu_t \\| \\pi_{\\text{QSD}}) \\le e^{-t/C_{\\text{LSI}}} D_{\\text{KL}}(\\mu_0 \\| \\pi_{\\text{QSD}})\n1915: $$\n1916: \n1917: with LSI constant:\n1918: \n1919: $$\n1920: C_{\\text{LSI}} = O\\left(\\frac{1}{\\min(\\gamma, \\kappa_{\\text{conf}}) \\cdot \\kappa_x}\\right)\n1921: $$",
+      "metadata": {
+        "label": "thm-main-kl-final"
+      },
+      "section": "## 6. KL-Divergence Convergence",
+      "raw_directive": "1900: Combining Theorem {prf:ref}`thm-main-lsi-composition` and Theorem {prf:ref}`thm-lsi-implies-kl-convergence`:\n1901: \n1902: :::{prf:theorem} KL-Convergence of the Euclidean Gas (Main Result)\n1903: :label: thm-main-kl-final\n1904: \n1905: For the N-particle Euclidean Gas with parameters satisfying the Foster-Lyapunov conditions of Theorem 8.1 in [06_convergence](06_convergence), the Markov chain\n1906: \n1907: $$\n1908: S_{t+1} = \\Psi_{\\text{total}}(S_t) = (\\Psi_{\\text{kin}}(\\tau) \\circ \\Psi_{\\text{clone}})(S_t)\n1909: $$\n1910: \n1911: converges exponentially fast to the quasi-stationary distribution $\\pi_{\\text{QSD}}$ in relative entropy:\n1912: \n1913: $$\n1914: D_{\\text{KL}}(\\mu_t \\| \\pi_{\\text{QSD}}) \\le e^{-t/C_{\\text{LSI}}} D_{\\text{KL}}(\\mu_0 \\| \\pi_{\\text{QSD}})\n1915: $$\n1916: \n1917: with LSI constant:\n1918: \n1919: $$\n1920: C_{\\text{LSI}} = O\\left(\\frac{1}{\\min(\\gamma, \\kappa_{\\text{conf}}) \\cdot \\kappa_x}\\right)\n1921: $$\n1922: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 11,
+        "chapter_file": "chapter_11.json",
+        "section_id": "## 6. KL-Divergence Convergence"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-lsi-perturbation",
+      "title": "LSI Stability Under Bounded Perturbations",
+      "start_line": 1964,
+      "end_line": 1979,
+      "header_lines": [
+        1965
+      ],
+      "content_start": 1967,
+      "content_end": 1978,
+      "content": "1967: :label: thm-lsi-perturbation\n1968: \n1969: If the backbone generator $\\mathcal{L}_0$ satisfies an LSI with constant $C_0$, and the perturbed generator is $\\mathcal{L}_\\epsilon = \\mathcal{L}_0 + \\epsilon \\mathcal{V}$ where $\\mathcal{V}$ is a bounded operator with:\n1970: \n1971: $$\n1972: \\|\\mathcal{V} f\\|_{L^2(\\pi)} \\le K \\|f\\|_{H^1(\\pi)}\n1973: $$\n1974: \n1975: then for $\\epsilon < \\epsilon^* = 1/(2KC_0)$, the perturbed generator satisfies an LSI with constant:\n1976: \n1977: $$\n1978: C_\\epsilon \\le \\frac{C_0}{1 - 2\\epsilon K C_0}",
+      "metadata": {
+        "label": "thm-lsi-perturbation"
+      },
+      "section": "## 7. Extension to the Adaptive Model",
+      "raw_directive": "1964: - Anisotropic diffusion $\\Sigma_{\\text{reg}}(x, S)$\n1965: \n1966: :::{prf:theorem} LSI Stability Under Bounded Perturbations\n1967: :label: thm-lsi-perturbation\n1968: \n1969: If the backbone generator $\\mathcal{L}_0$ satisfies an LSI with constant $C_0$, and the perturbed generator is $\\mathcal{L}_\\epsilon = \\mathcal{L}_0 + \\epsilon \\mathcal{V}$ where $\\mathcal{V}$ is a bounded operator with:\n1970: \n1971: $$\n1972: \\|\\mathcal{V} f\\|_{L^2(\\pi)} \\le K \\|f\\|_{H^1(\\pi)}\n1973: $$\n1974: \n1975: then for $\\epsilon < \\epsilon^* = 1/(2KC_0)$, the perturbed generator satisfies an LSI with constant:\n1976: \n1977: $$\n1978: C_\\epsilon \\le \\frac{C_0}{1 - 2\\epsilon K C_0}\n1979: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 12,
+        "chapter_file": "chapter_12.json",
+        "section_id": "## 7. Extension to the Adaptive Model"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-entropy-bound-debruijn",
+      "title": "Entropy Bound via De Bruijn Identity",
+      "start_line": 3222,
+      "end_line": 3239,
+      "header_lines": [
+        3223
+      ],
+      "content_start": 3225,
+      "content_end": 3238,
+      "content": "3225: :label: thm-entropy-bound-debruijn\n3226: \n3227: **Hypotheses**:\n3228: \n3229: 1. $\\rho_\\mu \\in C^2(\\Omega)$ with $0 < \\rho_{\\min} \\leq \\rho_\\mu \\leq \\rho_{\\max} < \\infty$\n3230: 2. $\\rho_\\mu$ satisfies a Log-Sobolev Inequality with constant $\\kappa > 0$:\n3231:    $$2\\kappa D_{\\text{KL}}(p \\| \\rho_\\mu) \\leq I(p \\| \\rho_\\mu) \\quad \\forall p$$\n3232: 3. $\\rho_{\\text{clone}}$ is the distribution after cloning (before noise)\n3233: 4. $\\rho_{\\text{offspring}} = \\rho_{\\text{clone}} * G_{\\delta^2}$ (Gaussian convolution)\n3234: \n3235: **Conclusion**:\n3236: \n3237: $$\n3238: D_{\\text{KL}}(\\rho_{\\text{offspring}} \\| \\rho_\\mu) \\leq e^{-\\kappa \\delta^2} \\cdot D_{\\text{KL}}(\\rho_{\\text{clone}} \\| \\rho_\\mu)",
+      "metadata": {
+        "label": "thm-entropy-bound-debruijn"
+      },
+      "section": "## Rigorous Formulation",
+      "raw_directive": "3222: ## Rigorous Formulation\n3223: \n3224: :::{prf:theorem} Entropy Bound via De Bruijn Identity\n3225: :label: thm-entropy-bound-debruijn\n3226: \n3227: **Hypotheses**:\n3228: \n3229: 1. $\\rho_\\mu \\in C^2(\\Omega)$ with $0 < \\rho_{\\min} \\leq \\rho_\\mu \\leq \\rho_{\\max} < \\infty$\n3230: 2. $\\rho_\\mu$ satisfies a Log-Sobolev Inequality with constant $\\kappa > 0$:\n3231:    $$2\\kappa D_{\\text{KL}}(p \\| \\rho_\\mu) \\leq I(p \\| \\rho_\\mu) \\quad \\forall p$$\n3232: 3. $\\rho_{\\text{clone}}$ is the distribution after cloning (before noise)\n3233: 4. $\\rho_{\\text{offspring}} = \\rho_{\\text{clone}} * G_{\\delta^2}$ (Gaussian convolution)\n3234: \n3235: **Conclusion**:\n3236: \n3237: $$\n3238: D_{\\text{KL}}(\\rho_{\\text{offspring}} \\| \\rho_\\mu) \\leq e^{-\\kappa \\delta^2} \\cdot D_{\\text{KL}}(\\rho_{\\text{clone}} \\| \\rho_\\mu)\n3239: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 39,
+        "chapter_file": "chapter_39.json",
+        "section_id": "## Rigorous Formulation"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-meanfield-kl-convergence-hybrid",
+      "title": "Exponential KL-Convergence via Mean-Field Analysis",
+      "start_line": 3816,
+      "end_line": 3843,
+      "header_lines": [
+        3817
+      ],
+      "content_start": 3819,
+      "content_end": 3842,
+      "content": "3819: :label: thm-meanfield-kl-convergence-hybrid\n3820: \n3821: **Hypotheses**: Same as Theorem {prf:ref}`thm-main-kl-convergence` in [09_kl_convergence](09_kl_convergence):\n3822: \n3823: 1. $\\pi_{\\text{QSD}}$ is log-concave (Axiom 3.5)\n3824: 2. Parameters satisfy Foster-Lyapunov conditions\n3825: 3. Noise variance satisfies $\\delta^2 > \\delta_{\\min}^2$ (favorable regime)\n3826: \n3827: **Conclusion**:\n3828: \n3829: The discrete-time Markov chain $S_{t+1} = \\Psi_{\\text{total}}(S_t) := (\\Psi_{\\text{kin}}(\\tau) \\circ \\Psi_{\\text{clone}})(S_t)$ satisfies:\n3830: \n3831: $$\n3832: D_{\\text{KL}}(\\mu_t \\| \\pi_{\\text{QSD}}) \\leq e^{-t/C_{\\text{LSI}}} D_{\\text{KL}}(\\mu_0 \\| \\pi_{\\text{QSD}})\n3833: $$\n3834: \n3835: where the LSI constant is:\n3836: \n3837: $$\n3838: C_{\\text{LSI}} = O\\left(\\frac{1}{\\alpha_{\\text{kin}} + \\beta_{\\text{clone}}}\\right)\n3839: $$\n3840: \n3841: with:\n3842: - $\\alpha_{\\text{kin}} = O(\\gamma \\kappa_{\\text{conf}})$ from kinetic operator",
+      "metadata": {
+        "label": "thm-meanfield-kl-convergence-hybrid"
+      },
+      "section": "## Main Result",
+      "raw_directive": "3816: ## Main Result\n3817: \n3818: :::{prf:theorem} Exponential KL-Convergence via Mean-Field Analysis\n3819: :label: thm-meanfield-kl-convergence-hybrid\n3820: \n3821: **Hypotheses**: Same as Theorem {prf:ref}`thm-main-kl-convergence` in [09_kl_convergence](09_kl_convergence):\n3822: \n3823: 1. $\\pi_{\\text{QSD}}$ is log-concave (Axiom 3.5)\n3824: 2. Parameters satisfy Foster-Lyapunov conditions\n3825: 3. Noise variance satisfies $\\delta^2 > \\delta_{\\min}^2$ (favorable regime)\n3826: \n3827: **Conclusion**:\n3828: \n3829: The discrete-time Markov chain $S_{t+1} = \\Psi_{\\text{total}}(S_t) := (\\Psi_{\\text{kin}}(\\tau) \\circ \\Psi_{\\text{clone}})(S_t)$ satisfies:\n3830: \n3831: $$\n3832: D_{\\text{KL}}(\\mu_t \\| \\pi_{\\text{QSD}}) \\leq e^{-t/C_{\\text{LSI}}} D_{\\text{KL}}(\\mu_0 \\| \\pi_{\\text{QSD}})\n3833: $$\n3834: \n3835: where the LSI constant is:\n3836: \n3837: $$\n3838: C_{\\text{LSI}} = O\\left(\\frac{1}{\\alpha_{\\text{kin}} + \\beta_{\\text{clone}}}\\right)\n3839: $$\n3840: \n3841: with:\n3842: - $\\alpha_{\\text{kin}} = O(\\gamma \\kappa_{\\text{conf}})$ from kinetic operator\n3843: - $\\beta_{\\text{clone}} = \\frac{\\lambda_{\\text{clone}}}{m_a} \\lambda_{\\text{corr}} \\lambda_{\\text{Poin}} (1 - \\epsilon_{\\text{ratio}})$ from mean-field cloning analysis",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 60,
+        "chapter_file": "chapter_60.json",
+        "section_id": "## Main Result"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-kinetic-lsi-reference",
+      "title": "Hypocoercive LSI for Kinetic Operator (Reference)",
+      "start_line": 3859,
+      "end_line": 3878,
+      "header_lines": [
+        3860
+      ],
+      "content_start": 3862,
+      "content_end": 3877,
+      "content": "3862: :label: thm-kinetic-lsi-reference\n3863: \n3864: The kinetic operator $\\Psi_{\\text{kin}}(\\tau)$ with Langevin dynamics satisfies:\n3865: \n3866: $$\n3867: D_{\\text{KL}}(\\mu' \\| \\pi) \\leq (1 - \\alpha_{\\text{kin}} \\tau) D_{\\text{KL}}(\\mu \\| \\pi) + O(\\tau^2)\n3868: $$\n3869: \n3870: where:\n3871: $$\n3872: \\alpha_{\\text{kin}} = O(\\gamma \\kappa_{\\text{conf}})\n3873: $$\n3874: \n3875: with $\\gamma$ the friction coefficient and $\\kappa_{\\text{conf}}$ the convexity constant of the confining potential.\n3876: \n3877: **Proof**: See Theorem 3.4 (lines 495-553) and Section 2 (lines 200-494) of [09_kl_convergence](09_kl_convergence).",
+      "metadata": {
+        "label": "thm-kinetic-lsi-reference"
+      },
+      "section": "## Step 1: Kinetic Operator LSI (Existing Result)",
+      "raw_directive": "3859: ## Step 1: Kinetic Operator LSI (Existing Result)\n3860: \n3861: :::{prf:theorem} Hypocoercive LSI for Kinetic Operator (Reference)\n3862: :label: thm-kinetic-lsi-reference\n3863: \n3864: The kinetic operator $\\Psi_{\\text{kin}}(\\tau)$ with Langevin dynamics satisfies:\n3865: \n3866: $$\n3867: D_{\\text{KL}}(\\mu' \\| \\pi) \\leq (1 - \\alpha_{\\text{kin}} \\tau) D_{\\text{KL}}(\\mu \\| \\pi) + O(\\tau^2)\n3868: $$\n3869: \n3870: where:\n3871: $$\n3872: \\alpha_{\\text{kin}} = O(\\gamma \\kappa_{\\text{conf}})\n3873: $$\n3874: \n3875: with $\\gamma$ the friction coefficient and $\\kappa_{\\text{conf}}$ the convexity constant of the confining potential.\n3876: \n3877: **Proof**: See Theorem 3.4 (lines 495-553) and Section 2 (lines 200-494) of [09_kl_convergence](09_kl_convergence).\n3878: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 62,
+        "chapter_file": "chapter_62.json",
+        "section_id": "## Step 1: Kinetic Operator LSI (Existing Result)"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-composition-reference",
+      "title": "Composition of LSI Operators (Reference)",
+      "start_line": 4069,
+      "end_line": 4086,
+      "header_lines": [
+        4070
+      ],
+      "content_start": 4072,
+      "content_end": 4085,
+      "content": "4072: :label: thm-composition-reference\n4073: \n4074: If $\\Psi_1$ and $\\Psi_2$ are Markov operators on $\\mathcal{P}(\\Omega)$ satisfying:\n4075: \n4076: 1. $D_{\\text{KL}}(\\Psi_1 \\# \\mu \\| \\pi) \\leq (1 - \\alpha_1 \\tau) D_{\\text{KL}}(\\mu \\| \\pi) + C_1$\n4077: 2. $D_{\\text{KL}}(\\Psi_2 \\# \\nu \\| \\pi) \\leq (1 - \\alpha_2 \\tau) D_{\\text{KL}}(\\nu \\| \\pi) + C_2$\n4078: \n4079: Then the composition $\\Psi_{\\text{total}} = \\Psi_2 \\circ \\Psi_1$ satisfies:\n4080: \n4081: $$\n4082: D_{\\text{KL}}(\\Psi_{\\text{total}} \\# \\mu \\| \\pi) \\leq [1 - \\tau(\\alpha_1 + \\alpha_2)] D_{\\text{KL}}(\\mu \\| \\pi) + C_1 + C_2 + O(\\tau^2)\n4083: $$\n4084: \n4085: **Proof**: See Theorem 6.3 (Composition Theorem, lines 1148-1215) of [09_kl_convergence](09_kl_convergence).",
+      "metadata": {
+        "label": "thm-composition-reference"
+      },
+      "section": "## Step 3: Composition via Existing Theorem",
+      "raw_directive": "4069: ## Step 3: Composition via Existing Theorem\n4070: \n4071: :::{prf:theorem} Composition of LSI Operators (Reference)\n4072: :label: thm-composition-reference\n4073: \n4074: If $\\Psi_1$ and $\\Psi_2$ are Markov operators on $\\mathcal{P}(\\Omega)$ satisfying:\n4075: \n4076: 1. $D_{\\text{KL}}(\\Psi_1 \\# \\mu \\| \\pi) \\leq (1 - \\alpha_1 \\tau) D_{\\text{KL}}(\\mu \\| \\pi) + C_1$\n4077: 2. $D_{\\text{KL}}(\\Psi_2 \\# \\nu \\| \\pi) \\leq (1 - \\alpha_2 \\tau) D_{\\text{KL}}(\\nu \\| \\pi) + C_2$\n4078: \n4079: Then the composition $\\Psi_{\\text{total}} = \\Psi_2 \\circ \\Psi_1$ satisfies:\n4080: \n4081: $$\n4082: D_{\\text{KL}}(\\Psi_{\\text{total}} \\# \\mu \\| \\pi) \\leq [1 - \\tau(\\alpha_1 + \\alpha_2)] D_{\\text{KL}}(\\mu \\| \\pi) + C_1 + C_2 + O(\\tau^2)\n4083: $$\n4084: \n4085: **Proof**: See Theorem 6.3 (Composition Theorem, lines 1148-1215) of [09_kl_convergence](09_kl_convergence).\n4086: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 64,
+        "chapter_file": "chapter_64.json",
+        "section_id": "## Step 3: Composition via Existing Theorem"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-discrete-lsi-hybrid",
+      "title": "Discrete-Time LSI",
+      "start_line": 4120,
+      "end_line": 4138,
+      "header_lines": [
+        4121
+      ],
+      "content_start": 4123,
+      "content_end": 4137,
+      "content": "4123: :label: thm-discrete-lsi-hybrid\n4124: \n4125: If a Markov operator $\\Psi$ satisfies the contraction:\n4126: \n4127: $$\n4128: D_{\\text{KL}}(\\Psi \\# \\mu \\| \\pi) \\leq (1 - \\epsilon) D_{\\text{KL}}(\\mu \\| \\pi) + C\n4129: $$\n4130: \n4131: for some $\\epsilon > 0$, then $\\Psi$ satisfies a discrete-time Log-Sobolev inequality:\n4132: \n4133: $$\n4134: D_{\\text{KL}}(\\mu \\| \\pi) \\leq \\frac{1}{\\epsilon} \\text{Ent}_\\pi[\\mu] + \\frac{C}{\\epsilon}\n4135: $$\n4136: \n4137: where $\\text{Ent}_\\pi[\\mu]$ is the relative entropy production.",
+      "metadata": {
+        "label": "thm-discrete-lsi-hybrid"
+      },
+      "section": "## Step 4: Discrete-Time LSI Formulation",
+      "raw_directive": "4120: :::\n4121: \n4122: :::{prf:theorem} Discrete-Time LSI\n4123: :label: thm-discrete-lsi-hybrid\n4124: \n4125: If a Markov operator $\\Psi$ satisfies the contraction:\n4126: \n4127: $$\n4128: D_{\\text{KL}}(\\Psi \\# \\mu \\| \\pi) \\leq (1 - \\epsilon) D_{\\text{KL}}(\\mu \\| \\pi) + C\n4129: $$\n4130: \n4131: for some $\\epsilon > 0$, then $\\Psi$ satisfies a discrete-time Log-Sobolev inequality:\n4132: \n4133: $$\n4134: D_{\\text{KL}}(\\mu \\| \\pi) \\leq \\frac{1}{\\epsilon} \\text{Ent}_\\pi[\\mu] + \\frac{C}{\\epsilon}\n4135: $$\n4136: \n4137: where $\\text{Ent}_\\pi[\\mu]$ is the relative entropy production.\n4138: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 65,
+        "chapter_file": "chapter_65.json",
+        "section_id": "## Step 4: Discrete-Time LSI Formulation"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-exp-convergence-hybrid",
+      "title": "Exponential Convergence from LSI",
+      "start_line": 4151,
+      "end_line": 4177,
+      "header_lines": [
+        4152
+      ],
+      "content_start": 4154,
+      "content_end": 4176,
+      "content": "4154: :label: thm-exp-convergence-hybrid\n4155: \n4156: If a discrete-time Markov chain satisfies a Log-Sobolev inequality with constant $C_{\\text{LSI}}$, then:\n4157: \n4158: $$\n4159: D_{\\text{KL}}(\\mu_t \\| \\pi) \\leq e^{-t/C_{\\text{LSI}}} D_{\\text{KL}}(\\mu_0 \\| \\pi) + C_{\\text{asymptotic}}\n4160: $$\n4161: \n4162: where:\n4163: $$\n4164: C_{\\text{asymptotic}} := \\frac{C_{\\text{total}}}{\\tau(\\alpha_{\\text{kin}} + \\beta_{\\text{clone}})}\n4165: $$\n4166: \n4167: **Proof**: This is the standard Bakry-Émery argument. Iterating the contraction inequality from Theorem {prf:ref}`thm-composition-reference`:\n4168: \n4169: $$\n4170: D_{\\text{KL}}(\\mu_{t+1} \\| \\pi) \\leq (1 - \\epsilon) D_{\\text{KL}}(\\mu_t \\| \\pi) + C_{\\text{total}}\n4171: $$\n4172: \n4173: gives the geometric series:\n4174: $$\n4175: D_{\\text{KL}}(\\mu_t \\| \\pi) \\leq (1 - \\epsilon)^t D_{\\text{KL}}(\\mu_0 \\| \\pi) + C_{\\text{total}} \\sum_{k=0}^{t-1} (1 - \\epsilon)^k\n4176: $$",
+      "metadata": {
+        "label": "thm-exp-convergence-hybrid"
+      },
+      "section": "## Step 5: Exponential KL Convergence",
+      "raw_directive": "4151: ## Step 5: Exponential KL Convergence\n4152: \n4153: :::{prf:theorem} Exponential Convergence from LSI\n4154: :label: thm-exp-convergence-hybrid\n4155: \n4156: If a discrete-time Markov chain satisfies a Log-Sobolev inequality with constant $C_{\\text{LSI}}$, then:\n4157: \n4158: $$\n4159: D_{\\text{KL}}(\\mu_t \\| \\pi) \\leq e^{-t/C_{\\text{LSI}}} D_{\\text{KL}}(\\mu_0 \\| \\pi) + C_{\\text{asymptotic}}\n4160: $$\n4161: \n4162: where:\n4163: $$\n4164: C_{\\text{asymptotic}} := \\frac{C_{\\text{total}}}{\\tau(\\alpha_{\\text{kin}} + \\beta_{\\text{clone}})}\n4165: $$\n4166: \n4167: **Proof**: This is the standard Bakry-Émery argument. Iterating the contraction inequality from Theorem {prf:ref}`thm-composition-reference`:\n4168: \n4169: $$\n4170: D_{\\text{KL}}(\\mu_{t+1} \\| \\pi) \\leq (1 - \\epsilon) D_{\\text{KL}}(\\mu_t \\| \\pi) + C_{\\text{total}}\n4171: $$\n4172: \n4173: gives the geometric series:\n4174: $$\n4175: D_{\\text{KL}}(\\mu_t \\| \\pi) \\leq (1 - \\epsilon)^t D_{\\text{KL}}(\\mu_0 \\| \\pi) + C_{\\text{total}} \\sum_{k=0}^{t-1} (1 - \\epsilon)^k\n4176: $$\n4177: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 66,
+        "chapter_file": "chapter_66.json",
+        "section_id": "## Step 5: Exponential KL Convergence"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-meanfield-lsi-standalone",
+      "title": "Exponential KL-Convergence via Mean-Field Generator Analysis",
+      "start_line": 4272,
+      "end_line": 4310,
+      "header_lines": [
+        4273
+      ],
+      "content_start": 4275,
+      "content_end": 4309,
+      "content": "4275: :label: thm-meanfield-lsi-standalone\n4276: \n4277: **Hypotheses**:\n4278: \n4279: 1. **Log-concavity (Axiom 3.5)**: The quasi-stationary distribution has density $\\rho_\\pi(z) = \\exp(-V_{\\text{QSD}}(z))$ for convex $V_{\\text{QSD}}$\n4280: \n4281: 2. **Fitness-QSD anti-correlation**: There exists $\\lambda_{\\text{corr}} > 0$ such that:\n4282:    $$\\log V[z] = -\\lambda_{\\text{corr}} V_{\\text{QSD}}(z) + \\log V_0$$\n4283: \n4284: 3. **Regularity**: All distributions have smooth densities in $C^2(\\Omega)$ with:\n4285:    - $0 < \\rho_{\\min} \\leq \\rho(z) \\leq \\rho_{\\max} < \\infty$\n4286:    - $0 < V_{\\min} \\leq V[z] \\leq V_{\\max} < \\infty$\n4287: \n4288: 4. **Noise regime**: Cloning noise variance satisfies $\\delta^2 > \\delta_{\\min}^2$\n4289: \n4290: 5. **Parameter conditions**: Friction $\\gamma > 0$, confining potential convexity $\\kappa_{\\text{conf}} > 0$, time step $\\tau$ sufficiently small\n4291: \n4292: **Conclusion**:\n4293: \n4294: The discrete-time Markov chain $S_{t+1} = \\Psi_{\\text{total}}(S_t)$ with:\n4295: $$\n4296: \\Psi_{\\text{total}} := \\Psi_{\\text{clone}} \\circ \\Psi_{\\text{kin}}\n4297: $$\n4298: \n4299: satisfies exponential convergence in KL divergence:\n4300: \n4301: $$\n4302: D_{\\text{KL}}(\\mu_t \\| \\pi_{\\text{QSD}}) \\leq e^{-\\lambda t} D_{\\text{KL}}(\\mu_0 \\| \\pi_{\\text{QSD}}) + C_\\infty\n4303: $$\n4304: \n4305: where:\n4306: $$\n4307: \\lambda = \\tau(\\alpha_{\\text{kin}} + \\beta_{\\text{clone}}) = \\tau \\cdot O(\\gamma \\kappa_{\\text{conf}} + \\lambda_{\\text{clone}} \\lambda_{\\text{corr}})\n4308: $$\n4309: ",
+      "metadata": {
+        "label": "thm-meanfield-lsi-standalone"
+      },
+      "section": "## Main Result",
+      "raw_directive": "4272: ## Main Result\n4273: \n4274: :::{prf:theorem} Exponential KL-Convergence via Mean-Field Generator Analysis\n4275: :label: thm-meanfield-lsi-standalone\n4276: \n4277: **Hypotheses**:\n4278: \n4279: 1. **Log-concavity (Axiom 3.5)**: The quasi-stationary distribution has density $\\rho_\\pi(z) = \\exp(-V_{\\text{QSD}}(z))$ for convex $V_{\\text{QSD}}$\n4280: \n4281: 2. **Fitness-QSD anti-correlation**: There exists $\\lambda_{\\text{corr}} > 0$ such that:\n4282:    $$\\log V[z] = -\\lambda_{\\text{corr}} V_{\\text{QSD}}(z) + \\log V_0$$\n4283: \n4284: 3. **Regularity**: All distributions have smooth densities in $C^2(\\Omega)$ with:\n4285:    - $0 < \\rho_{\\min} \\leq \\rho(z) \\leq \\rho_{\\max} < \\infty$\n4286:    - $0 < V_{\\min} \\leq V[z] \\leq V_{\\max} < \\infty$\n4287: \n4288: 4. **Noise regime**: Cloning noise variance satisfies $\\delta^2 > \\delta_{\\min}^2$\n4289: \n4290: 5. **Parameter conditions**: Friction $\\gamma > 0$, confining potential convexity $\\kappa_{\\text{conf}} > 0$, time step $\\tau$ sufficiently small\n4291: \n4292: **Conclusion**:\n4293: \n4294: The discrete-time Markov chain $S_{t+1} = \\Psi_{\\text{total}}(S_t)$ with:\n4295: $$\n4296: \\Psi_{\\text{total}} := \\Psi_{\\text{clone}} \\circ \\Psi_{\\text{kin}}\n4297: $$\n4298: \n4299: satisfies exponential convergence in KL divergence:\n4300: \n4301: $$\n4302: D_{\\text{KL}}(\\mu_t \\| \\pi_{\\text{QSD}}) \\leq e^{-\\lambda t} D_{\\text{KL}}(\\mu_0 \\| \\pi_{\\text{QSD}}) + C_\\infty\n4303: $$\n4304: \n4305: where:\n4306: $$\n4307: \\lambda = \\tau(\\alpha_{\\text{kin}} + \\beta_{\\text{clone}}) = \\tau \\cdot O(\\gamma \\kappa_{\\text{conf}} + \\lambda_{\\text{clone}} \\lambda_{\\text{corr}})\n4308: $$\n4309: \n4310: and $C_\\infty < 0$ for the favorable noise regime.",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 72,
+        "chapter_file": "chapter_72.json",
+        "section_id": "## Main Result"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-kinetic-lsi-standalone",
+      "title": "Hypocoercive LSI for Kinetic Operator",
+      "start_line": 4369,
+      "end_line": 4385,
+      "header_lines": [
+        4370
+      ],
+      "content_start": 4372,
+      "content_end": 4384,
+      "content": "4372: :label: thm-kinetic-lsi-standalone\n4373: \n4374: The kinetic operator $\\Psi_{\\text{kin}}(\\tau)$ satisfies:\n4375: \n4376: $$\n4377: D_{\\text{KL}}(\\mu' \\| \\pi_{\\text{kin}}) \\leq (1 - \\alpha_{\\text{kin}} \\tau) D_{\\text{KL}}(\\mu \\| \\pi_{\\text{kin}}) + O(\\tau^2)\n4378: $$\n4379: \n4380: where:\n4381: $$\n4382: \\alpha_{\\text{kin}} = c \\cdot \\gamma \\kappa_{\\text{conf}}\n4383: $$\n4384: ",
+      "metadata": {
+        "label": "thm-kinetic-lsi-standalone"
+      },
+      "section": "## Section 1: Kinetic Operator LSI (Hypocoercive Analysis)",
+      "raw_directive": "4369: ### 1.4. Hypocoercivity via Villani's Framework\n4370: \n4371: :::{prf:theorem} Hypocoercive LSI for Kinetic Operator\n4372: :label: thm-kinetic-lsi-standalone\n4373: \n4374: The kinetic operator $\\Psi_{\\text{kin}}(\\tau)$ satisfies:\n4375: \n4376: $$\n4377: D_{\\text{KL}}(\\mu' \\| \\pi_{\\text{kin}}) \\leq (1 - \\alpha_{\\text{kin}} \\tau) D_{\\text{KL}}(\\mu \\| \\pi_{\\text{kin}}) + O(\\tau^2)\n4378: $$\n4379: \n4380: where:\n4381: $$\n4382: \\alpha_{\\text{kin}} = c \\cdot \\gamma \\kappa_{\\text{conf}}\n4383: $$\n4384: \n4385: for some universal constant $c > 0$, with $\\kappa_{\\text{conf}} := \\inf_{x} \\lambda_{\\min}(\\nabla^2 U(x))$ the convexity modulus.",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 74,
+        "chapter_file": "chapter_74.json",
+        "section_id": "## Section 1: Kinetic Operator LSI (Hypocoercive Analysis)"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-composition-standalone",
+      "title": "Composition of Kinetic and Cloning Operators",
+      "start_line": 4789,
+      "end_line": 4803,
+      "header_lines": [
+        4790
+      ],
+      "content_start": 4792,
+      "content_end": 4802,
+      "content": "4792: :label: thm-composition-standalone\n4793: \n4794: For the composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{clone}} \\circ \\Psi_{\\text{kin}}$:\n4795: \n4796: $$\n4797: D_{\\text{KL}}(\\mu_{t+1} \\| \\pi) \\leq [1 - \\tau(\\alpha_{\\text{kin}} + \\beta_{\\text{clone}})] D_{\\text{KL}}(\\mu_t \\| \\pi) + C_{\\text{total}} + O(\\tau^2)\n4798: $$\n4799: \n4800: where:\n4801: $$\n4802: C_{\\text{total}} = C_{\\text{ent}} + O(e^{-\\kappa \\delta^2})",
+      "metadata": {
+        "label": "thm-composition-standalone"
+      },
+      "section": "## Section 3: Composition",
+      "raw_directive": "4789: ## Section 3: Composition\n4790: \n4791: :::{prf:theorem} Composition of Kinetic and Cloning Operators\n4792: :label: thm-composition-standalone\n4793: \n4794: For the composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{clone}} \\circ \\Psi_{\\text{kin}}$:\n4795: \n4796: $$\n4797: D_{\\text{KL}}(\\mu_{t+1} \\| \\pi) \\leq [1 - \\tau(\\alpha_{\\text{kin}} + \\beta_{\\text{clone}})] D_{\\text{KL}}(\\mu_t \\| \\pi) + C_{\\text{total}} + O(\\tau^2)\n4798: $$\n4799: \n4800: where:\n4801: $$\n4802: C_{\\text{total}} = C_{\\text{ent}} + O(e^{-\\kappa \\delta^2})\n4803: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 76,
+        "chapter_file": "chapter_76.json",
+        "section_id": "## Section 3: Composition"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-exp-convergence-standalone",
+      "title": "Exponential KL Convergence",
+      "start_line": 4854,
+      "end_line": 4873,
+      "header_lines": [
+        4855
+      ],
+      "content_start": 4857,
+      "content_end": 4872,
+      "content": "4857: :label: thm-exp-convergence-standalone\n4858: \n4859: For the iterated dynamics $\\mu_{t+1} = \\Psi_{\\text{total}}(\\mu_t)$:\n4860: \n4861: $$\n4862: D_{\\text{KL}}(\\mu_t \\| \\pi) \\leq e^{-\\lambda t} D_{\\text{KL}}(\\mu_0 \\| \\pi) + C_\\infty\n4863: $$\n4864: \n4865: where:\n4866: $$\n4867: \\lambda = \\tau(\\alpha_{\\text{kin}} + \\beta_{\\text{clone}})\n4868: $$\n4869: \n4870: and:\n4871: $$\n4872: C_\\infty = \\frac{C_{\\text{total}}}{\\alpha_{\\text{kin}} + \\beta_{\\text{clone}}}",
+      "metadata": {
+        "label": "thm-exp-convergence-standalone"
+      },
+      "section": "## Section 4: Exponential Convergence",
+      "raw_directive": "4854: ## Section 4: Exponential Convergence\n4855: \n4856: :::{prf:theorem} Exponential KL Convergence\n4857: :label: thm-exp-convergence-standalone\n4858: \n4859: For the iterated dynamics $\\mu_{t+1} = \\Psi_{\\text{total}}(\\mu_t)$:\n4860: \n4861: $$\n4862: D_{\\text{KL}}(\\mu_t \\| \\pi) \\leq e^{-\\lambda t} D_{\\text{KL}}(\\mu_0 \\| \\pi) + C_\\infty\n4863: $$\n4864: \n4865: where:\n4866: $$\n4867: \\lambda = \\tau(\\alpha_{\\text{kin}} + \\beta_{\\text{clone}})\n4868: $$\n4869: \n4870: and:\n4871: $$\n4872: C_\\infty = \\frac{C_{\\text{total}}}{\\alpha_{\\text{kin}} + \\beta_{\\text{clone}}}\n4873: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 77,
+        "chapter_file": "chapter_77.json",
+        "section_id": "## Section 4: Exponential Convergence"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-nonconvex-informal",
+      "title": "Exponential KL Convergence for Non-Convex Fitness (Informal)",
+      "start_line": 5130,
+      "end_line": 5146,
+      "header_lines": [
+        5131
+      ],
+      "content_start": 5133,
+      "content_end": 5145,
+      "content": "5133: :label: thm-nonconvex-informal\n5134: \n5135: For the N-particle Euclidean Gas with a **confining potential** (Axiom {prf:ref}`axiom-confining-recap`) but **no convexity assumption**:\n5136: \n5137: $$\n5138: D_{\\text{KL}}(\\mu_t \\| \\pi_{\\text{QSD}}) \\leq e^{-\\lambda t} D_{\\text{KL}}(\\mu_0 \\| \\pi_{\\text{QSD}})\n5139: $$\n5140: \n5141: where:\n5142: \n5143: $$\n5144: \\lambda = c \\cdot \\min\\left(\\gamma, \\frac{\\alpha_U}{\\sigma_v^2}\\right) - C \\cdot L_g \\cdot G_{\\max}\n5145: $$",
+      "metadata": {
+        "label": "thm-nonconvex-informal"
+      },
+      "section": "## Exponential Convergence for Non-Convex Fitness Landscapes: Hypocoercivity and Feynman-Kac Theory",
+      "raw_directive": "5130: ### 0.3. Main Theoretical Contribution\n5131: \n5132: :::{prf:theorem} Exponential KL Convergence for Non-Convex Fitness (Informal)\n5133: :label: thm-nonconvex-informal\n5134: \n5135: For the N-particle Euclidean Gas with a **confining potential** (Axiom {prf:ref}`axiom-confining-recap`) but **no convexity assumption**:\n5136: \n5137: $$\n5138: D_{\\text{KL}}(\\mu_t \\| \\pi_{\\text{QSD}}) \\leq e^{-\\lambda t} D_{\\text{KL}}(\\mu_0 \\| \\pi_{\\text{QSD}})\n5139: $$\n5140: \n5141: where:\n5142: \n5143: $$\n5144: \\lambda = c \\cdot \\min\\left(\\gamma, \\frac{\\alpha_U}{\\sigma_v^2}\\right) - C \\cdot L_g \\cdot G_{\\max}\n5145: $$\n5146: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 82,
+        "chapter_file": "chapter_82.json",
+        "section_id": "## Exponential Convergence for Non-Convex Fitness Landscapes: Hypocoercivity and Feynman-Kac Theory"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-villani-hypocoercivity",
+      "title": "Villani's Hypocoercivity (Simplified)",
+      "start_line": 5323,
+      "end_line": 5356,
+      "header_lines": [
+        5324
+      ],
+      "content_start": 5326,
+      "content_end": 5355,
+      "content": "5326: :label: thm-villani-hypocoercivity\n5327: \n5328: Consider the kinetic Fokker-Planck equation:\n5329: \n5330: $$\n5331: \\frac{\\partial \\rho}{\\partial t} = v \\cdot \\nabla_x \\rho - \\nabla U(x) \\cdot \\nabla_v \\rho + \\gamma \\nabla_v \\cdot (v \\rho) + \\frac{\\sigma_v^2}{2} \\Delta_v \\rho\n5332: $$\n5333: \n5334: If:\n5335: 1. $U(x)$ is **confining**: $\\langle \\nabla U(x), x \\rangle \\geq \\alpha_U |x|^2$ for $|x|$ large\n5336: 2. $U \\in C^2(\\mathbb{R}^d)$ with bounded Hessian on compact sets\n5337: 3. Friction $\\gamma > 0$ and noise $\\sigma_v^2 > 0$\n5338: \n5339: Then **without requiring $U$ to be convex**, the density $\\rho(x, v, t)$ converges exponentially to the equilibrium:\n5340: \n5341: $$\n5342: D_{\\text{KL}}(\\rho_t \\| \\pi_{\\text{eq}}) \\leq e^{-\\lambda_{\\text{hypo}} t} D_{\\text{KL}}(\\rho_0 \\| \\pi_{\\text{eq}})\n5343: $$\n5344: \n5345: where:\n5346: \n5347: $$\n5348: \\pi_{\\text{eq}}(x, v) = Z^{-1} \\exp\\left(-\\frac{U(x) + \\frac{1}{2}|v|^2}{\\theta}\\right)\n5349: $$\n5350: \n5351: and:\n5352: \n5353: $$\n5354: \\lambda_{\\text{hypo}} = c \\cdot \\min\\left(\\gamma, \\frac{\\alpha_U}{\\sigma_v^2}\\right)\n5355: $$",
+      "metadata": {
+        "label": "thm-villani-hypocoercivity"
+      },
+      "section": "## Part 2: Approach 1 - Hypocoercivity for Non-Convex Kinetic Systems",
+      "raw_directive": "5323: ### 2.1.1. The Core Theorem\n5324: \n5325: :::{prf:theorem} Villani's Hypocoercivity (Simplified)\n5326: :label: thm-villani-hypocoercivity\n5327: \n5328: Consider the kinetic Fokker-Planck equation:\n5329: \n5330: $$\n5331: \\frac{\\partial \\rho}{\\partial t} = v \\cdot \\nabla_x \\rho - \\nabla U(x) \\cdot \\nabla_v \\rho + \\gamma \\nabla_v \\cdot (v \\rho) + \\frac{\\sigma_v^2}{2} \\Delta_v \\rho\n5332: $$\n5333: \n5334: If:\n5335: 1. $U(x)$ is **confining**: $\\langle \\nabla U(x), x \\rangle \\geq \\alpha_U |x|^2$ for $|x|$ large\n5336: 2. $U \\in C^2(\\mathbb{R}^d)$ with bounded Hessian on compact sets\n5337: 3. Friction $\\gamma > 0$ and noise $\\sigma_v^2 > 0$\n5338: \n5339: Then **without requiring $U$ to be convex**, the density $\\rho(x, v, t)$ converges exponentially to the equilibrium:\n5340: \n5341: $$\n5342: D_{\\text{KL}}(\\rho_t \\| \\pi_{\\text{eq}}) \\leq e^{-\\lambda_{\\text{hypo}} t} D_{\\text{KL}}(\\rho_0 \\| \\pi_{\\text{eq}})\n5343: $$\n5344: \n5345: where:\n5346: \n5347: $$\n5348: \\pi_{\\text{eq}}(x, v) = Z^{-1} \\exp\\left(-\\frac{U(x) + \\frac{1}{2}|v|^2}{\\theta}\\right)\n5349: $$\n5350: \n5351: and:\n5352: \n5353: $$\n5354: \\lambda_{\\text{hypo}} = c \\cdot \\min\\left(\\gamma, \\frac{\\alpha_U}{\\sigma_v^2}\\right)\n5355: $$\n5356: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 84,
+        "chapter_file": "chapter_84.json",
+        "section_id": "## Part 2: Approach 1 - Hypocoercivity for Non-Convex Kinetic Systems"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-dobrushin-contraction",
+      "title": "Dobrushin Contraction for Euclidean Gas",
+      "start_line": 6081,
+      "end_line": 6105,
+      "header_lines": [
+        6082
+      ],
+      "content_start": 6084,
+      "content_end": 6104,
+      "content": "6084: :label: thm-dobrushin-contraction\n6085: \n6086: Let $\\Psi_{\\text{EG}} = \\Psi_{\\text{kin}} \\circ \\Psi_{\\text{clone}}$ be the one-step Euclidean Gas operator (cloning followed by kinetic evolution). Assume:\n6087: \n6088: 1. **Confining potential**: $U$ satisfies Axiom {prf:ref}`axiom-confining-complete`\n6089: 2. **Hypocoercivity**: The kinetic operator has LSI constant $\\lambda_{\\text{hypo}} = c \\cdot \\min(\\gamma, \\alpha_U/\\sigma_v^2)$ (Proposition {prf:ref}`prop-hypocoercivity-piecewise`)\n6090: 3. **Non-degeneracy**: The alive set has size $k \\geq k_{\\min} \\geq 2$ with positive probability\n6091: \n6092: Then there exists a **contraction coefficient** $\\gamma < 1$ and constant $K$ such that for any two swarms $\\mathcal{S}_1, \\mathcal{S}_2$ with at least $k_{\\min}$ alive walkers:\n6093: \n6094: $$\n6095: \\mathbb{E}[d_{\\text{status}}(\\mathcal{S}'_1, \\mathcal{S}'_2) \\mid \\mathcal{S}_1, \\mathcal{S}_2] \\leq \\gamma \\cdot d_{\\text{status}}(\\mathcal{S}_1, \\mathcal{S}_2) + K\n6096: $$\n6097: \n6098: where $\\mathcal{S}'_1, \\mathcal{S}'_2$ are the swarms after one step under a **synchronous coupling** (using identical random numbers for both evolutions).\n6099: \n6100: The contraction coefficient satisfies:\n6101: \n6102: $$\n6103: \\gamma = (1 - \\lambda_{\\text{clone}} \\cdot \\tau) \\cdot (1 + O(\\tau \\cdot \\lambda_{\\text{hypo}}))\n6104: $$",
+      "metadata": {
+        "label": "thm-dobrushin-contraction"
+      },
+      "section": "## Part 3: Dobrushin Contraction for the Full Dynamics",
+      "raw_directive": "6081: The core idea: prove that one step of the Euclidean Gas dynamics brings two swarms **closer together** in expectation, with respect to $d_{\\text{status}}$.\n6082: \n6083: :::{prf:theorem} Dobrushin Contraction for Euclidean Gas\n6084: :label: thm-dobrushin-contraction\n6085: \n6086: Let $\\Psi_{\\text{EG}} = \\Psi_{\\text{kin}} \\circ \\Psi_{\\text{clone}}$ be the one-step Euclidean Gas operator (cloning followed by kinetic evolution). Assume:\n6087: \n6088: 1. **Confining potential**: $U$ satisfies Axiom {prf:ref}`axiom-confining-complete`\n6089: 2. **Hypocoercivity**: The kinetic operator has LSI constant $\\lambda_{\\text{hypo}} = c \\cdot \\min(\\gamma, \\alpha_U/\\sigma_v^2)$ (Proposition {prf:ref}`prop-hypocoercivity-piecewise`)\n6090: 3. **Non-degeneracy**: The alive set has size $k \\geq k_{\\min} \\geq 2$ with positive probability\n6091: \n6092: Then there exists a **contraction coefficient** $\\gamma < 1$ and constant $K$ such that for any two swarms $\\mathcal{S}_1, \\mathcal{S}_2$ with at least $k_{\\min}$ alive walkers:\n6093: \n6094: $$\n6095: \\mathbb{E}[d_{\\text{status}}(\\mathcal{S}'_1, \\mathcal{S}'_2) \\mid \\mathcal{S}_1, \\mathcal{S}_2] \\leq \\gamma \\cdot d_{\\text{status}}(\\mathcal{S}_1, \\mathcal{S}_2) + K\n6096: $$\n6097: \n6098: where $\\mathcal{S}'_1, \\mathcal{S}'_2$ are the swarms after one step under a **synchronous coupling** (using identical random numbers for both evolutions).\n6099: \n6100: The contraction coefficient satisfies:\n6101: \n6102: $$\n6103: \\gamma = (1 - \\lambda_{\\text{clone}} \\cdot \\tau) \\cdot (1 + O(\\tau \\cdot \\lambda_{\\text{hypo}}))\n6104: $$\n6105: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 85,
+        "chapter_file": "chapter_85.json",
+        "section_id": "## Part 3: Dobrushin Contraction for the Full Dynamics"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-exponential-convergence-status",
+      "title": "Exponential Convergence in $d_{\\text{status}}$ Metric",
+      "start_line": 6238,
+      "end_line": 6258,
+      "header_lines": [
+        6239
+      ],
+      "content_start": 6241,
+      "content_end": 6257,
+      "content": "6241: :label: thm-exponential-convergence-status\n6242: \n6243: Under the assumptions of Theorem {prf:ref}`thm-dobrushin-contraction`, the Euclidean Gas has a unique quasi-stationary distribution $\\pi_{\\text{QSD}}$ on the alive state space, and for any initial swarm $\\mathcal{S}_0$ with at least $k_{\\min}$ alive walkers:\n6244: \n6245: $$\n6246: \\mathbb{E}[d_{\\text{status}}(\\mathcal{S}_t, \\pi_{\\text{QSD}})] \\leq \\gamma^t \\cdot C_0 + \\frac{K}{1 - \\gamma}\n6247: $$\n6248: \n6249: where:\n6250: - $\\mathcal{S}_t$ is the swarm at time $t$\n6251: - $C_0 = d_{\\text{status}}(\\mathcal{S}_0, \\pi_{\\text{QSD}})$ is the initial distance\n6252: - $\\gamma < 1$ is the contraction coefficient from Theorem {prf:ref}`thm-dobrushin-contraction`\n6253: - $K$ is the boundary contribution (exponentially small)\n6254: \n6255: This gives **exponential convergence** with rate:\n6256: \n6257: $$",
+      "metadata": {
+        "label": "thm-exponential-convergence-status"
+      },
+      "section": "## Part 3: Dobrushin Contraction for the Full Dynamics",
+      "raw_directive": "6238: With the Dobrushin contraction established, we can now prove exponential convergence to a unique quasi-stationary distribution.\n6239: \n6240: :::{prf:theorem} Exponential Convergence in $d_{\\text{status}}$ Metric\n6241: :label: thm-exponential-convergence-status\n6242: \n6243: Under the assumptions of Theorem {prf:ref}`thm-dobrushin-contraction`, the Euclidean Gas has a unique quasi-stationary distribution $\\pi_{\\text{QSD}}$ on the alive state space, and for any initial swarm $\\mathcal{S}_0$ with at least $k_{\\min}$ alive walkers:\n6244: \n6245: $$\n6246: \\mathbb{E}[d_{\\text{status}}(\\mathcal{S}_t, \\pi_{\\text{QSD}})] \\leq \\gamma^t \\cdot C_0 + \\frac{K}{1 - \\gamma}\n6247: $$\n6248: \n6249: where:\n6250: - $\\mathcal{S}_t$ is the swarm at time $t$\n6251: - $C_0 = d_{\\text{status}}(\\mathcal{S}_0, \\pi_{\\text{QSD}})$ is the initial distance\n6252: - $\\gamma < 1$ is the contraction coefficient from Theorem {prf:ref}`thm-dobrushin-contraction`\n6253: - $K$ is the boundary contribution (exponentially small)\n6254: \n6255: This gives **exponential convergence** with rate:\n6256: \n6257: $$\n6258: \\lambda_{\\text{converge}} = -\\log(\\gamma) \\approx \\lambda_{\\text{clone}} \\cdot \\tau",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 85,
+        "chapter_file": "chapter_85.json",
+        "section_id": "## Part 3: Dobrushin Contraction for the Full Dynamics"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-nonconvex-main",
+      "title": "Exponential KL Convergence for Non-Convex Fitness Landscapes",
+      "start_line": 6316,
+      "end_line": 6352,
+      "header_lines": [
+        6317
+      ],
+      "content_start": 6319,
+      "content_end": 6351,
+      "content": "6319: :label: thm-nonconvex-main\n6320: \n6321: Let the N-particle Euclidean Gas satisfy:\n6322: \n6323: **Axioms**:\n6324: 1. **Confining potential** (Axiom 1.3.1 in [06_convergence](06_convergence)): $U(x) \\to \\infty$ as $|x| \\to \\infty$ with coercivity $\\langle \\nabla U, x \\rangle \\geq \\alpha_U |x|^2$\n6325: 2. **Positive friction** (Axiom 1.2.2): $\\gamma > 0$\n6326: 3. **Positive kinetic noise** (Axiom 1.2.3): $\\sigma_v^2 > 0$\n6327: 4. **Bounded fitness** (Axiom 3.1): $|g(x, v, S)| \\leq G_{\\max}(1 + V_{\\text{total}}(S))$\n6328: 5. **Positive cloning rate**: $\\lambda_{\\text{clone}} > 0$\n6329: 6. **Sufficient post-cloning noise**: $\\delta^2 > \\delta_{\\min}^2$\n6330: \n6331: Then **without requiring convexity or log-concavity of the QSD**:\n6332: \n6333: $$\n6334: D_{\\text{KL}}(\\mu_t \\| \\pi_{\\text{QSD}}) \\leq e^{-\\lambda t} D_{\\text{KL}}(\\mu_0 \\| \\pi_{\\text{QSD}}) + O(N^{-1})\n6335: $$\n6336: \n6337: where the convergence rate is:\n6338: \n6339: $$\n6340: \\lambda = c \\cdot \\min\\left(\\gamma, \\frac{\\alpha_U}{\\sigma_v^2}\\right) - C \\cdot L_g \\cdot G_{\\max}\n6341: $$\n6342: \n6343: **Interpretation of the rate**:\n6344: - **Hypocoercive mixing** ($c \\cdot \\min(\\gamma, \\alpha_U/\\sigma_v^2)$): The base convergence rate from Langevin dynamics, where $c \\approx 1/4$ is the hypocoercivity constant for BAOAB integrator\n6345: - **Interaction penalty** ($-C \\cdot L_g \\cdot G_{\\max}$): Degradation due to mean-field particle interactions during selection, where $C$ is a universal constant and $L_g$ is the Lipschitz constant of the interaction potential $g(z, \\mu)$ from Theorem {prf:ref}`thm-propagation-chaos-ips`\n6346: \n6347: **Explicit parameter dependence**:\n6348: \n6349: $$\n6350: \\lambda = f(\\gamma, \\alpha_U, \\sigma_v^2, L_g, G_{\\max})\n6351: $$",
+      "metadata": {
+        "label": "thm-nonconvex-main"
+      },
+      "section": "## Part 4: Unified Theorem - Combining Both Approaches",
+      "raw_directive": "6316: We now combine the hypocoercivity result (Part 2) with the Feynman-Kac result (Part 3) into a single, unified convergence theorem:\n6317: \n6318: :::{prf:theorem} Exponential KL Convergence for Non-Convex Fitness Landscapes\n6319: :label: thm-nonconvex-main\n6320: \n6321: Let the N-particle Euclidean Gas satisfy:\n6322: \n6323: **Axioms**:\n6324: 1. **Confining potential** (Axiom 1.3.1 in [06_convergence](06_convergence)): $U(x) \\to \\infty$ as $|x| \\to \\infty$ with coercivity $\\langle \\nabla U, x \\rangle \\geq \\alpha_U |x|^2$\n6325: 2. **Positive friction** (Axiom 1.2.2): $\\gamma > 0$\n6326: 3. **Positive kinetic noise** (Axiom 1.2.3): $\\sigma_v^2 > 0$\n6327: 4. **Bounded fitness** (Axiom 3.1): $|g(x, v, S)| \\leq G_{\\max}(1 + V_{\\text{total}}(S))$\n6328: 5. **Positive cloning rate**: $\\lambda_{\\text{clone}} > 0$\n6329: 6. **Sufficient post-cloning noise**: $\\delta^2 > \\delta_{\\min}^2$\n6330: \n6331: Then **without requiring convexity or log-concavity of the QSD**:\n6332: \n6333: $$\n6334: D_{\\text{KL}}(\\mu_t \\| \\pi_{\\text{QSD}}) \\leq e^{-\\lambda t} D_{\\text{KL}}(\\mu_0 \\| \\pi_{\\text{QSD}}) + O(N^{-1})\n6335: $$\n6336: \n6337: where the convergence rate is:\n6338: \n6339: $$\n6340: \\lambda = c \\cdot \\min\\left(\\gamma, \\frac{\\alpha_U}{\\sigma_v^2}\\right) - C \\cdot L_g \\cdot G_{\\max}\n6341: $$\n6342: \n6343: **Interpretation of the rate**:\n6344: - **Hypocoercive mixing** ($c \\cdot \\min(\\gamma, \\alpha_U/\\sigma_v^2)$): The base convergence rate from Langevin dynamics, where $c \\approx 1/4$ is the hypocoercivity constant for BAOAB integrator\n6345: - **Interaction penalty** ($-C \\cdot L_g \\cdot G_{\\max}$): Degradation due to mean-field particle interactions during selection, where $C$ is a universal constant and $L_g$ is the Lipschitz constant of the interaction potential $g(z, \\mu)$ from Theorem {prf:ref}`thm-propagation-chaos-ips`\n6346: \n6347: **Explicit parameter dependence**:\n6348: \n6349: $$\n6350: \\lambda = f(\\gamma, \\alpha_U, \\sigma_v^2, L_g, G_{\\max})\n6351: $$\n6352: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 86,
+        "chapter_file": "chapter_86.json",
+        "section_id": "## Part 4: Unified Theorem - Combining Both Approaches"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-fl-recap",
+      "title": "Foster-Lyapunov Drift (Unconditional)",
+      "start_line": 7086,
+      "end_line": 7101,
+      "header_lines": [
+        7087
+      ],
+      "content_start": 7089,
+      "content_end": 7100,
+      "content": "7089: :label: thm-fl-recap\n7090: \n7091: The composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}} \\circ \\Psi_{\\text{clone}}$ satisfies:\n7092: \n7093: $$\n7094: \\mathbb{E}[V_{\\text{total}}(S') \\mid S] \\leq (1 - \\kappa_{\\text{total}}\\tau) V_{\\text{total}}(S) + C_{\\text{total}}\n7095: $$\n7096: \n7097: where:\n7098: - $V_{\\text{total}} = V_W + c_V V_{\\text{Var}} + c_B W_b$ is a synergistic Lyapunov function\n7099: - $\\kappa_{\\text{total}} > 0$ is independent of N\n7100: - $C_{\\text{total}} < \\infty$ is the constant drift term",
+      "metadata": {
+        "label": "thm-fl-recap"
+      },
+      "section": "## 0.1 The Problem: Foster-Lyapunov ≠ LSI",
+      "raw_directive": "7086: From [06_convergence](06_convergence), Theorem `thm-foster-lyapunov-main`:\n7087: \n7088: :::{prf:theorem} Foster-Lyapunov Drift (Unconditional)\n7089: :label: thm-fl-recap\n7090: \n7091: The composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}} \\circ \\Psi_{\\text{clone}}$ satisfies:\n7092: \n7093: $$\n7094: \\mathbb{E}[V_{\\text{total}}(S') \\mid S] \\leq (1 - \\kappa_{\\text{total}}\\tau) V_{\\text{total}}(S) + C_{\\text{total}}\n7095: $$\n7096: \n7097: where:\n7098: - $V_{\\text{total}} = V_W + c_V V_{\\text{Var}} + c_B W_b$ is a synergistic Lyapunov function\n7099: - $\\kappa_{\\text{total}} > 0$ is independent of N\n7100: - $C_{\\text{total}} < \\infty$ is the constant drift term\n7101: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 96,
+        "chapter_file": "chapter_96.json",
+        "section_id": "## 0.1 The Problem: Foster-Lyapunov ≠ LSI"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-lsi-target",
+      "title": "Logarithmic Sobolev Inequality (Target)",
+      "start_line": 7107,
+      "end_line": 7120,
+      "header_lines": [
+        7108
+      ],
+      "content_start": 7110,
+      "content_end": 7119,
+      "content": "7110: :label: thm-lsi-target\n7111: \n7112: For all smooth functions $f: \\mathcal{S}_N \\to \\mathbb{R}$ with $\\int f^2 d\\pi_{\\text{QSD}} = 1$:\n7113: \n7114: $$\n7115: \\text{Ent}_{\\pi_{\\text{QSD}}}(f^2) \\leq C_{\\text{LSI}} \\cdot \\mathbb{E}_{\\pi_{\\text{QSD}}}[|\\nabla f|^2]\n7116: $$\n7117: \n7118: where:\n7119: - $\\text{Ent}_{\\pi}(g) = \\int g \\log(g/\\int g) d\\pi$ is the relative entropy",
+      "metadata": {
+        "label": "thm-lsi-target"
+      },
+      "section": "## 0.1 The Problem: Foster-Lyapunov ≠ LSI",
+      "raw_directive": "7107: ### What We Want\n7108: \n7109: :::{prf:theorem} Logarithmic Sobolev Inequality (Target)\n7110: :label: thm-lsi-target\n7111: \n7112: For all smooth functions $f: \\mathcal{S}_N \\to \\mathbb{R}$ with $\\int f^2 d\\pi_{\\text{QSD}} = 1$:\n7113: \n7114: $$\n7115: \\text{Ent}_{\\pi_{\\text{QSD}}}(f^2) \\leq C_{\\text{LSI}} \\cdot \\mathbb{E}_{\\pi_{\\text{QSD}}}[|\\nabla f|^2]\n7116: $$\n7117: \n7118: where:\n7119: - $\\text{Ent}_{\\pi}(g) = \\int g \\log(g/\\int g) d\\pi$ is the relative entropy\n7120: - $|\\nabla f|^2 = \\sum_{i=1}^N |\\nabla_{x_i} f|^2 + |\\nabla_{v_i} f|^2$ is the squared gradient",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 96,
+        "chapter_file": "chapter_96.json",
+        "section_id": "## 0.1 The Problem: Foster-Lyapunov ≠ LSI"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-bakry-emery-classical",
+      "title": "Classical Bakry-Émery Criterion",
+      "start_line": 7150,
+      "end_line": 7163,
+      "header_lines": [
+        7151
+      ],
+      "content_start": 7153,
+      "content_end": 7162,
+      "content": "7153: :label: thm-bakry-emery-classical\n7154: \n7155: Let $L$ be a diffusion generator on $\\mathbb{R}^d$ with invariant measure $\\pi$. Define:\n7156: - **Carré du champ**: $\\Gamma(f, f) = \\frac{1}{2}(L(f^2) - 2f Lf) = |\\nabla f|^2$\n7157: - **Iterated carré du champ**: $\\Gamma_2(f, f) = \\frac{1}{2}(L\\Gamma(f,f) - 2\\Gamma(f, Lf))$\n7158: \n7159: If there exists $\\rho > 0$ such that for all smooth $f$:\n7160: $$\n7161: \\Gamma_2(f, f) \\geq \\rho \\cdot \\Gamma(f, f)\n7162: $$",
+      "metadata": {
+        "label": "thm-bakry-emery-classical"
+      },
+      "section": "## 0.2 Why Classical Bakry-Émery Fails",
+      "raw_directive": "7150: The classical Bakry-Émery criterion (Bakry-Émery 1985) states:\n7151: \n7152: :::{prf:theorem} Classical Bakry-Émery Criterion\n7153: :label: thm-bakry-emery-classical\n7154: \n7155: Let $L$ be a diffusion generator on $\\mathbb{R}^d$ with invariant measure $\\pi$. Define:\n7156: - **Carré du champ**: $\\Gamma(f, f) = \\frac{1}{2}(L(f^2) - 2f Lf) = |\\nabla f|^2$\n7157: - **Iterated carré du champ**: $\\Gamma_2(f, f) = \\frac{1}{2}(L\\Gamma(f,f) - 2\\Gamma(f, Lf))$\n7158: \n7159: If there exists $\\rho > 0$ such that for all smooth $f$:\n7160: $$\n7161: \\Gamma_2(f, f) \\geq \\rho \\cdot \\Gamma(f, f)\n7162: $$\n7163: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 97,
+        "chapter_file": "chapter_97.json",
+        "section_id": "## 0.2 Why Classical Bakry-Émery Fails"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-villani-hypocoercivity-recap",
+      "title": "Villani's Hypocoercivity (Informal)",
+      "start_line": 7195,
+      "end_line": 7212,
+      "header_lines": [
+        7196
+      ],
+      "content_start": 7198,
+      "content_end": 7211,
+      "content": "7198: :label: thm-villani-hypocoercivity-recap\n7199: \n7200: For the kinetic Fokker-Planck equation with **non-convex** confining potential $U$:\n7201: \n7202: If:\n7203: 1. $\\langle \\nabla U(x), x \\rangle \\geq \\alpha_U |x|^2$ for $|x|$ large (confinement)\n7204: 2. $\\gamma > 0$ (friction)\n7205: 3. $\\sigma_v^2 > 0$ (noise)\n7206: \n7207: Then there exists $\\lambda_{\\text{hypo}} = c \\cdot \\min(\\gamma, \\alpha_U/\\sigma_v^2) > 0$ such that:\n7208: \n7209: $$\n7210: D_{\\text{KL}}(\\rho_t \\| \\pi_{\\text{kin}}) \\leq e^{-\\lambda_{\\text{hypo}} t} D_{\\text{KL}}(\\rho_0 \\| \\pi_{\\text{kin}})\n7211: $$",
+      "metadata": {
+        "label": "thm-villani-hypocoercivity-recap"
+      },
+      "section": "## 0.3 Hypocoercive Extension Strategy",
+      "raw_directive": "7195: ### Villani's Hypocoercivity (2009)\n7196: \n7197: :::{prf:theorem} Villani's Hypocoercivity (Informal)\n7198: :label: thm-villani-hypocoercivity-recap\n7199: \n7200: For the kinetic Fokker-Planck equation with **non-convex** confining potential $U$:\n7201: \n7202: If:\n7203: 1. $\\langle \\nabla U(x), x \\rangle \\geq \\alpha_U |x|^2$ for $|x|$ large (confinement)\n7204: 2. $\\gamma > 0$ (friction)\n7205: 3. $\\sigma_v^2 > 0$ (noise)\n7206: \n7207: Then there exists $\\lambda_{\\text{hypo}} = c \\cdot \\min(\\gamma, \\alpha_U/\\sigma_v^2) > 0$ such that:\n7208: \n7209: $$\n7210: D_{\\text{KL}}(\\rho_t \\| \\pi_{\\text{kin}}) \\leq e^{-\\lambda_{\\text{hypo}} t} D_{\\text{KL}}(\\rho_0 \\| \\pi_{\\text{kin}})\n7211: $$\n7212: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 98,
+        "chapter_file": "chapter_98.json",
+        "section_id": "## 0.3 Hypocoercive Extension Strategy"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-fl-established",
+      "title": "Synergistic Foster-Lyapunov (Established)",
+      "start_line": 7253,
+      "end_line": 7273,
+      "header_lines": [
+        7254
+      ],
+      "content_start": 7256,
+      "content_end": 7272,
+      "content": "7256: :label: thm-fl-established\n7257: \n7258: Under the foundational axioms:\n7259: - Confining potential: $\\langle \\nabla U, x \\rangle \\geq \\alpha_U |x|^2$\n7260: - Positive friction: $\\gamma > 0$\n7261: - Positive noise: $\\sigma_v^2 > 0$\n7262: \n7263: The composed operator satisfies:\n7264: \n7265: $$\n7266: \\mathbb{E}[V_{\\text{total}}(S_{t+1})] \\leq (1 - \\kappa_{\\text{total}}\\tau) V_{\\text{total}}(S_t) + C_{\\text{total}}\n7267: $$\n7268: \n7269: with:\n7270: $$\n7271: \\kappa_{\\text{total}} = \\min\\left(\\frac{\\kappa_W\\tau}{2}, \\frac{c_V\\kappa_x}{2}, \\frac{c_V\\gamma\\tau}{2}, \\frac{c_B(\\kappa_b + \\kappa_{\\text{pot}}\\tau)}{2}\\right) > 0\n7272: $$",
+      "metadata": {
+        "label": "thm-fl-established"
+      },
+      "section": "## 1.1 Foster-Lyapunov Drift Condition",
+      "raw_directive": "7253: From [06_convergence](06_convergence), we have proven:\n7254: \n7255: :::{prf:theorem} Synergistic Foster-Lyapunov (Established)\n7256: :label: thm-fl-established\n7257: \n7258: Under the foundational axioms:\n7259: - Confining potential: $\\langle \\nabla U, x \\rangle \\geq \\alpha_U |x|^2$\n7260: - Positive friction: $\\gamma > 0$\n7261: - Positive noise: $\\sigma_v^2 > 0$\n7262: \n7263: The composed operator satisfies:\n7264: \n7265: $$\n7266: \\mathbb{E}[V_{\\text{total}}(S_{t+1})] \\leq (1 - \\kappa_{\\text{total}}\\tau) V_{\\text{total}}(S_t) + C_{\\text{total}}\n7267: $$\n7268: \n7269: with:\n7270: $$\n7271: \\kappa_{\\text{total}} = \\min\\left(\\frac{\\kappa_W\\tau}{2}, \\frac{c_V\\kappa_x}{2}, \\frac{c_V\\gamma\\tau}{2}, \\frac{c_B(\\kappa_b + \\kappa_{\\text{pot}}\\tau)}{2}\\right) > 0\n7272: $$\n7273: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 100,
+        "chapter_file": "chapter_100.json",
+        "section_id": "## 1.1 Foster-Lyapunov Drift Condition"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-dobrushin-established",
+      "title": "Dobrushin Contraction (Established)",
+      "start_line": 7320,
+      "end_line": 7332,
+      "header_lines": [
+        7321
+      ],
+      "content_start": 7323,
+      "content_end": 7331,
+      "content": "7323: :label: thm-dobrushin-established\n7324: \n7325: The full operator contracts in the **discrete status metric** $d_{\\text{status}}$ (number of alive/dead changes):\n7326: \n7327: $$\n7328: \\mathbb{E}[d_{\\text{status}}(S_{t+1}, \\pi_{\\text{QSD}})] \\leq \\gamma \\cdot d_{\\text{status}}(S_t, \\pi_{\\text{QSD}}) + K\n7329: $$\n7330: \n7331: where $\\gamma = (1 - \\lambda_{\\text{clone}}\\tau) < 1$.",
+      "metadata": {
+        "label": "thm-dobrushin-established"
+      },
+      "section": "## 1.3 Status Convergence via Dobrushin",
+      "raw_directive": "7320: From non-convex extensions analysis, Part 3:\n7321: \n7322: :::{prf:theorem} Dobrushin Contraction (Established)\n7323: :label: thm-dobrushin-established\n7324: \n7325: The full operator contracts in the **discrete status metric** $d_{\\text{status}}$ (number of alive/dead changes):\n7326: \n7327: $$\n7328: \\mathbb{E}[d_{\\text{status}}(S_{t+1}, \\pi_{\\text{QSD}})] \\leq \\gamma \\cdot d_{\\text{status}}(S_t, \\pi_{\\text{QSD}}) + K\n7329: $$\n7330: \n7331: where $\\gamma = (1 - \\lambda_{\\text{clone}}\\tau) < 1$.\n7332: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 102,
+        "chapter_file": "chapter_102.json",
+        "section_id": "## 1.3 Status Convergence via Dobrushin"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-unconditional-lsi",
+      "title": "Unconditional LSI for Euclidean Gas (TARGET)",
+      "start_line": 7403,
+      "end_line": 7437,
+      "header_lines": [
+        7404
+      ],
+      "content_start": 7406,
+      "content_end": 7436,
+      "content": "7406: :label: thm-unconditional-lsi\n7407: \n7408: Under the foundational axioms:\n7409: 1. Confining potential: $U(x) \\to \\infty$ as $|x| \\to \\infty$ with $\\langle \\nabla U, x \\rangle \\geq \\alpha_U |x|^2$\n7410: 2. Positive friction: $\\gamma > 0$\n7411: 3. Positive kinetic noise: $\\sigma_v^2 > 0$\n7412: 4. Bounded fitness: $|g(x, v, S)| \\leq G_{\\max}$\n7413: 5. Sufficient cloning noise: $\\delta^2 \\geq \\delta_{\\min}^2$\n7414: \n7415: **WITHOUT assuming**:\n7416: - ❌ Convexity of $U(x)$\n7417: - ❌ Log-concavity of $\\pi_{\\text{QSD}}$\n7418: - ❌ Any smoothness of fitness landscape\n7419: \n7420: The Euclidean Gas satisfies a Logarithmic Sobolev Inequality:\n7421: \n7422: $$\n7423: \\text{Ent}_{\\pi_{\\text{QSD}}}(f^2) \\leq C_{\\text{LSI}} \\cdot \\mathbb{E}_{\\pi_{\\text{QSD}}}[|\\nabla f|^2]\n7424: $$\n7425: \n7426: where:\n7427: \n7428: $$\n7429: C_{\\text{LSI}} = \\frac{C_0}{2\\lambda_{\\text{hypo}}} \\cdot f(\\tau, \\lambda_{\\text{clone}}, G_{\\max})\n7430: $$\n7431: \n7432: with:\n7433: - $\\lambda_{\\text{hypo}} = c \\cdot \\min(\\gamma, \\alpha_U/\\sigma_v^2)$ is the hypocoercive rate\n7434: - $\\lambda_{\\text{clone}}$ is the cloning rate\n7435: - $f(\\cdot)$ is a computable function (depends on proof method)\n7436: - $C_0 = O(1)$ is a universal constant",
+      "metadata": {
+        "label": "thm-unconditional-lsi"
+      },
+      "section": "## 3.1 Statement of Main Result",
+      "raw_directive": "7403: **This is what we aim to prove:**\n7404: \n7405: :::{prf:theorem} Unconditional LSI for Euclidean Gas (TARGET)\n7406: :label: thm-unconditional-lsi\n7407: \n7408: Under the foundational axioms:\n7409: 1. Confining potential: $U(x) \\to \\infty$ as $|x| \\to \\infty$ with $\\langle \\nabla U, x \\rangle \\geq \\alpha_U |x|^2$\n7410: 2. Positive friction: $\\gamma > 0$\n7411: 3. Positive kinetic noise: $\\sigma_v^2 > 0$\n7412: 4. Bounded fitness: $|g(x, v, S)| \\leq G_{\\max}$\n7413: 5. Sufficient cloning noise: $\\delta^2 \\geq \\delta_{\\min}^2$\n7414: \n7415: **WITHOUT assuming**:\n7416: - ❌ Convexity of $U(x)$\n7417: - ❌ Log-concavity of $\\pi_{\\text{QSD}}$\n7418: - ❌ Any smoothness of fitness landscape\n7419: \n7420: The Euclidean Gas satisfies a Logarithmic Sobolev Inequality:\n7421: \n7422: $$\n7423: \\text{Ent}_{\\pi_{\\text{QSD}}}(f^2) \\leq C_{\\text{LSI}} \\cdot \\mathbb{E}_{\\pi_{\\text{QSD}}}[|\\nabla f|^2]\n7424: $$\n7425: \n7426: where:\n7427: \n7428: $$\n7429: C_{\\text{LSI}} = \\frac{C_0}{2\\lambda_{\\text{hypo}}} \\cdot f(\\tau, \\lambda_{\\text{clone}}, G_{\\max})\n7430: $$\n7431: \n7432: with:\n7433: - $\\lambda_{\\text{hypo}} = c \\cdot \\min(\\gamma, \\alpha_U/\\sigma_v^2)$ is the hypocoercive rate\n7434: - $\\lambda_{\\text{clone}}$ is the cloning rate\n7435: - $f(\\cdot)$ is a computable function (depends on proof method)\n7436: - $C_0 = O(1)$ is a universal constant\n7437: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 108,
+        "chapter_file": "chapter_108.json",
+        "section_id": "## 3.1 Statement of Main Result"
+      }
+    }
+  ]
+}

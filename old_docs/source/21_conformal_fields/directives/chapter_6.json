@@ -1,0 +1,155 @@
+{
+  "chapter_index": 6,
+  "section_id": "## Part 4: Central Charge and Conformal Anomaly",
+  "directive_count": 8,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-swarm-central-charge",
+      "title": "\u2705 Swarm Central Charge from Stress-Energy Correlator - NOW RIGOROUS",
+      "start_line": 2962,
+      "end_line": 2990,
+      "header_lines": [
+        2963
+      ],
+      "content_start": 2965,
+      "content_end": 2989,
+      "content": "2965: :label: thm-swarm-central-charge\n2966: \n2967: **With Hypothesis H2 ({prf:ref}`hyp-2-point-convergence`) now proven**, the central charge $c$ of the swarm CFT is rigorously extracted from the two-point function of the holomorphic stress-energy tensor:\n2968: \n2969: $$\n2970: \\langle T(z) T(w) \\rangle_{\\text{QSD}} = \\frac{c/2}{(z - w)^4} + \\text{subleading}\n2971: $$\n2972: \n2973: **Computational Formula:**\n2974: \n2975: Given the empirical stress-energy estimator $\\hat{T}(z) = \\hat{T}_{zz}(z)$ from swarm data (see {prf:ref}`def-empirical-stress-energy-estimator`), the central charge is computed as:\n2976: \n2977: $$\n2978: c = 2 \\lim_{z \\to w} (z - w)^4 \\langle \\hat{T}(z) \\hat{T}(w) \\rangle_{\\text{QSD}}\n2979: $$\n2980: \n2981: **Connection to Swarm Parameters:**\n2982: \n2983: We conjecture that $c$ depends on the fundamental swarm parameters as:\n2984: \n2985: $$\n2986: c = f(N, \\alpha, \\beta, \\gamma_R, T)\n2987: $$\n2988: \n2989: where $f$ is a function to be determined. In the thermodynamic limit $N \\to \\infty$, $c$ should approach a finite value $c_{\\infty}$ characterizing the continuum CFT.",
+      "metadata": {
+        "label": "thm-swarm-central-charge"
+      },
+      "section": "## Part 4: Central Charge and Conformal Anomaly",
+      "raw_directive": "2962: The central charge is the defining parameter of a 2D CFT, appearing in the Virasoro algebra and controlling the structure of correlation functions.\n2963: \n2964: :::{prf:theorem} \u2705 Swarm Central Charge from Stress-Energy Correlator - NOW RIGOROUS\n2965: :label: thm-swarm-central-charge\n2966: \n2967: **With Hypothesis H2 ({prf:ref}`hyp-2-point-convergence`) now proven**, the central charge $c$ of the swarm CFT is rigorously extracted from the two-point function of the holomorphic stress-energy tensor:\n2968: \n2969: $$\n2970: \\langle T(z) T(w) \\rangle_{\\text{QSD}} = \\frac{c/2}{(z - w)^4} + \\text{subleading}\n2971: $$\n2972: \n2973: **Computational Formula:**\n2974: \n2975: Given the empirical stress-energy estimator $\\hat{T}(z) = \\hat{T}_{zz}(z)$ from swarm data (see {prf:ref}`def-empirical-stress-energy-estimator`), the central charge is computed as:\n2976: \n2977: $$\n2978: c = 2 \\lim_{z \\to w} (z - w)^4 \\langle \\hat{T}(z) \\hat{T}(w) \\rangle_{\\text{QSD}}\n2979: $$\n2980: \n2981: **Connection to Swarm Parameters:**\n2982: \n2983: We conjecture that $c$ depends on the fundamental swarm parameters as:\n2984: \n2985: $$\n2986: c = f(N, \\alpha, \\beta, \\gamma_R, T)\n2987: $$\n2988: \n2989: where $f$ is a function to be determined. In the thermodynamic limit $N \\to \\infty$, $c$ should approach a finite value $c_{\\infty}$ characterizing the continuum CFT.\n2990: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-explicit-central-charge",
+      "title": "\u2705 Explicit Central Charge from QSD Thermodynamics",
+      "start_line": 3012,
+      "end_line": 3047,
+      "header_lines": [
+        3013
+      ],
+      "content_start": 3015,
+      "content_end": 3046,
+      "content": "3015: :label: thm-explicit-central-charge\n3016: \n3017: The central charge of the swarm CFT in the thermodynamic limit is:\n3018: \n3019: $$\n3020: c = d \\cdot \\frac{T_{\\text{eff}}}{\\langle E_{\\text{kin}}/N \\rangle_{\\text{QSD}}}\n3021: $$\n3022: \n3023: where:\n3024: - $d = 2$ is the spatial dimension\n3025: - $T_{\\text{eff}} = \\sigma_v^2$ is the effective temperature (noise strength in Langevin dynamics)\n3026: - $\\langle E_{\\text{kin}}/N \\rangle_{\\text{QSD}} = \\langle \\frac{1}{2N} \\sum_i |v_i|^2 \\rangle$ is the average kinetic energy per walker at the QSD\n3027: \n3028: **Simplified form** (using equipartition at QSD):\n3029: \n3030: $$\n3031: c = d \\cdot \\frac{\\sigma_v^2}{\\langle v^2/2 \\rangle_{\\text{QSD}}}\n3032: $$\n3033: \n3034: **For equilibrated systems** where $\\langle v^2/2 \\rangle_{\\text{QSD}} \\approx \\sigma_v^2/2$ (approximate equipartition):\n3035: \n3036: $$\n3037: c \\approx d = 2\n3038: $$\n3039: \n3040: **General formula** accounting for velocity-position coupling from hypocoercivity:\n3041: \n3042: $$\n3043: c = d \\cdot \\left(1 + \\frac{\\alpha_U \\langle U \\rangle}{\\sigma_v^2} \\right)^{-1}\n3044: $$\n3045: \n3046: where $\\alpha_U$ is the potential energy coupling and $\\langle U \\rangle$ is the average potential energy per particle.",
+      "metadata": {
+        "label": "thm-explicit-central-charge"
+      },
+      "section": "## Part 4: Central Charge and Conformal Anomaly",
+      "raw_directive": "3012: #### 4.1.1 Explicit Central Charge Formula\n3013: \n3014: :::{prf:theorem} \u2705 Explicit Central Charge from QSD Thermodynamics\n3015: :label: thm-explicit-central-charge\n3016: \n3017: The central charge of the swarm CFT in the thermodynamic limit is:\n3018: \n3019: $$\n3020: c = d \\cdot \\frac{T_{\\text{eff}}}{\\langle E_{\\text{kin}}/N \\rangle_{\\text{QSD}}}\n3021: $$\n3022: \n3023: where:\n3024: - $d = 2$ is the spatial dimension\n3025: - $T_{\\text{eff}} = \\sigma_v^2$ is the effective temperature (noise strength in Langevin dynamics)\n3026: - $\\langle E_{\\text{kin}}/N \\rangle_{\\text{QSD}} = \\langle \\frac{1}{2N} \\sum_i |v_i|^2 \\rangle$ is the average kinetic energy per walker at the QSD\n3027: \n3028: **Simplified form** (using equipartition at QSD):\n3029: \n3030: $$\n3031: c = d \\cdot \\frac{\\sigma_v^2}{\\langle v^2/2 \\rangle_{\\text{QSD}}}\n3032: $$\n3033: \n3034: **For equilibrated systems** where $\\langle v^2/2 \\rangle_{\\text{QSD}} \\approx \\sigma_v^2/2$ (approximate equipartition):\n3035: \n3036: $$\n3037: c \\approx d = 2\n3038: $$\n3039: \n3040: **General formula** accounting for velocity-position coupling from hypocoercivity:\n3041: \n3042: $$\n3043: c = d \\cdot \\left(1 + \\frac{\\alpha_U \\langle U \\rangle}{\\sigma_v^2} \\right)^{-1}\n3044: $$\n3045: \n3046: where $\\alpha_U$ is the potential energy coupling and $\\langle U \\rangle$ is the average potential energy per particle.\n3047: "
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-central-charge-limits",
+      "title": "Central Charge for Specific Limits",
+      "start_line": 3209,
+      "end_line": 3237,
+      "header_lines": [
+        3210
+      ],
+      "content_start": 3212,
+      "content_end": 3236,
+      "content": "3212: :label: cor-central-charge-limits\n3213: \n3214: **Limit 1: Free Theory** ($\\alpha = \\beta = \\gamma_R = 0$, $\\gamma_W \\to \\infty$)\n3215: \n3216: Walkers are non-interacting with conformal flat geometry:\n3217: \n3218: $$\n3219: c_{\\text{free}} = d = 2\n3220: $$\n3221: \n3222: **Limit 2: Weak Coupling** ($\\alpha, \\beta \\ll 1$)\n3223: \n3224: Perturbative correction:\n3225: \n3226: $$\n3227: c \\approx d \\left(1 - \\frac{\\alpha \\langle V_{\\text{fit}} \\rangle + \\beta \\langle S \\rangle}{\\sigma_v^2} \\right)\n3228: $$\n3229: \n3230: **Limit 3: Strong Ricci Penalty** ($\\gamma_R \\gg \\sigma_v^2$)\n3231: \n3232: Geometric coupling dominates:\n3233: \n3234: $$\n3235: c \\approx d \\cdot \\frac{\\sigma_v^2}{\\gamma_R \\langle R \\rangle}\n3236: $$",
+      "metadata": {
+        "label": "cor-central-charge-limits"
+      },
+      "section": "## Part 4: Central Charge and Conformal Anomaly",
+      "raw_directive": "3209: 4. **Connection to thermalization**: The ratio $T_{\\text{eff}}/\\langle E_{\\text{kin}} \\rangle$ measures how well the system thermalizes. Perfect thermalization \u2192 $c = d$.\n3210: \n3211: :::{prf:corollary} Central Charge for Specific Limits\n3212: :label: cor-central-charge-limits\n3213: \n3214: **Limit 1: Free Theory** ($\\alpha = \\beta = \\gamma_R = 0$, $\\gamma_W \\to \\infty$)\n3215: \n3216: Walkers are non-interacting with conformal flat geometry:\n3217: \n3218: $$\n3219: c_{\\text{free}} = d = 2\n3220: $$\n3221: \n3222: **Limit 2: Weak Coupling** ($\\alpha, \\beta \\ll 1$)\n3223: \n3224: Perturbative correction:\n3225: \n3226: $$\n3227: c \\approx d \\left(1 - \\frac{\\alpha \\langle V_{\\text{fit}} \\rangle + \\beta \\langle S \\rangle}{\\sigma_v^2} \\right)\n3228: $$\n3229: \n3230: **Limit 3: Strong Ricci Penalty** ($\\gamma_R \\gg \\sigma_v^2$)\n3231: \n3232: Geometric coupling dominates:\n3233: \n3234: $$\n3235: c \\approx d \\cdot \\frac{\\sigma_v^2}{\\gamma_R \\langle R \\rangle}\n3236: $$\n3237: "
+    },
+    {
+      "directive_type": "observation",
+      "label": "obs-finite-n-central-charge",
+      "title": "Finite-N Corrections to Central Charge",
+      "start_line": 3247,
+      "end_line": 3264,
+      "header_lines": [
+        3248
+      ],
+      "content_start": 3250,
+      "content_end": 3263,
+      "content": "3250: :label: obs-finite-n-central-charge\n3251: \n3252: For finite $N$, the central charge exhibits corrections:\n3253: \n3254: $$\n3255: c(N) = c_{\\infty} + \\frac{a_1}{N} + \\frac{a_2}{N^2} + \\cdots\n3256: $$\n3257: \n3258: where $c_{\\infty}$ is the thermodynamic limit value and $a_1, a_2, \\ldots$ are correction coefficients.\n3259: \n3260: **Origin of Corrections:**\n3261: 1. **Discreteness:** Finite $N$ introduces granularity in the particle density, breaking perfect conformal invariance\n3262: 2. **Boundary Effects:** For finite domains, walkers near boundaries experience different dynamics\n3263: 3. **Regularization:** The smoothing scale $\\epsilon \\sim N^{-1/d}$ introduces UV cutoff effects",
+      "metadata": {
+        "label": "obs-finite-n-central-charge"
+      },
+      "section": "## Part 4: Central Charge and Conformal Anomaly",
+      "raw_directive": "3247: #### 4.1.2 Finite-Size Corrections\n3248: \n3249: :::{prf:observation} Finite-N Corrections to Central Charge\n3250: :label: obs-finite-n-central-charge\n3251: \n3252: For finite $N$, the central charge exhibits corrections:\n3253: \n3254: $$\n3255: c(N) = c_{\\infty} + \\frac{a_1}{N} + \\frac{a_2}{N^2} + \\cdots\n3256: $$\n3257: \n3258: where $c_{\\infty}$ is the thermodynamic limit value and $a_1, a_2, \\ldots$ are correction coefficients.\n3259: \n3260: **Origin of Corrections:**\n3261: 1. **Discreteness:** Finite $N$ introduces granularity in the particle density, breaking perfect conformal invariance\n3262: 2. **Boundary Effects:** For finite domains, walkers near boundaries experience different dynamics\n3263: 3. **Regularization:** The smoothing scale $\\epsilon \\sim N^{-1/d}$ introduces UV cutoff effects\n3264: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-gamma-trace-anomaly",
+      "title": "\u2705 Gamma-Trace Anomaly Connection - NOW RIGOROUS",
+      "start_line": 3270,
+      "end_line": 3294,
+      "header_lines": [
+        3271
+      ],
+      "content_start": 3273,
+      "content_end": 3293,
+      "content": "3273: :label: thm-gamma-trace-anomaly\n3274: \n3275: **With Hypothesis H2 ({prf:ref}`hyp-2-point-convergence`) now proven** and the variational definition of $T_{\\mu\\nu}$ ({prf:ref}`def-swarm-stress-energy-tensor-variational`) rigorously established, the expectation value of the trace of the stress-energy tensor at the QSD is:\n3276: \n3277: $$\n3278: \\langle T^\\mu_\\mu(x) \\rangle_{\\text{QSD}} = \\frac{c}{12} R(x) + O(\\gamma_R)\n3279: $$\n3280: \n3281: where:\n3282: - $T^\\mu_\\mu = g^{\\mu\\nu} T_{\\mu\\nu}$ is the trace\n3283: - $R(x)$ is the Ricci scalar of the emergent metric\n3284: - $c$ is the central charge (rigorously extractable via {prf:ref}`thm-swarm-central-charge`)\n3285: - The $O(\\gamma_R)$ term accounts for the explicit breaking of conformal invariance by the gamma channel\n3286: \n3287: **Explicit Form with Gamma Channel:**\n3288: \n3289: When $\\gamma_R \\ne 0$, the trace anomaly is modified to:\n3290: \n3291: $$\n3292: \\langle T^\\mu_\\mu(x) \\rangle_{\\text{QSD}} = \\frac{c}{12} R(x) + \\gamma_R \\cdot \\frac{\\partial R}{\\partial g^{\\mu\\nu}}(x) g_{\\mu\\nu}(x) + \\cdots\n3293: $$",
+      "metadata": {
+        "label": "thm-gamma-trace-anomaly"
+      },
+      "section": "## Part 4: Central Charge and Conformal Anomaly",
+      "raw_directive": "3270: We now prove the key connection between the gamma channel's Ricci parameter $\\gamma_R$ and the CFT trace anomaly.\n3271: \n3272: :::{prf:theorem} \u2705 Gamma-Trace Anomaly Connection - NOW RIGOROUS\n3273: :label: thm-gamma-trace-anomaly\n3274: \n3275: **With Hypothesis H2 ({prf:ref}`hyp-2-point-convergence`) now proven** and the variational definition of $T_{\\mu\\nu}$ ({prf:ref}`def-swarm-stress-energy-tensor-variational`) rigorously established, the expectation value of the trace of the stress-energy tensor at the QSD is:\n3276: \n3277: $$\n3278: \\langle T^\\mu_\\mu(x) \\rangle_{\\text{QSD}} = \\frac{c}{12} R(x) + O(\\gamma_R)\n3279: $$\n3280: \n3281: where:\n3282: - $T^\\mu_\\mu = g^{\\mu\\nu} T_{\\mu\\nu}$ is the trace\n3283: - $R(x)$ is the Ricci scalar of the emergent metric\n3284: - $c$ is the central charge (rigorously extractable via {prf:ref}`thm-swarm-central-charge`)\n3285: - The $O(\\gamma_R)$ term accounts for the explicit breaking of conformal invariance by the gamma channel\n3286: \n3287: **Explicit Form with Gamma Channel:**\n3288: \n3289: When $\\gamma_R \\ne 0$, the trace anomaly is modified to:\n3290: \n3291: $$\n3292: \\langle T^\\mu_\\mu(x) \\rangle_{\\text{QSD}} = \\frac{c}{12} R(x) + \\gamma_R \\cdot \\frac{\\partial R}{\\partial g^{\\mu\\nu}}(x) g_{\\mu\\nu}(x) + \\cdots\n3293: $$\n3294: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-trace-anomaly-sign",
+      "title": "Sign Convention",
+      "start_line": 3374,
+      "end_line": 3388,
+      "header_lines": [
+        3375
+      ],
+      "content_start": 3377,
+      "content_end": 3387,
+      "content": "3377: :label: rem-trace-anomaly-sign\n3378: \n3379: There's a sign ambiguity depending on convention:\n3380: - **CFT convention:** $\\langle T^\\mu_\\mu \\rangle = -c R / 12$ (with $R$ being the background Ricci)\n3381: - **GR convention:** $\\langle T^\\mu_\\mu \\rangle = +c R / 12$ (with $R$ from emergent metric)\n3382: \n3383: The gamma channel uses $-\\gamma_R R$ (negative sign for Ricci penalty), which gives:\n3384: \n3385: $$\n3386: \\langle T^\\mu_\\mu \\rangle = +\\frac{c}{12} R\n3387: $$",
+      "metadata": {
+        "label": "rem-trace-anomaly-sign"
+      },
+      "section": "## Part 4: Central Charge and Conformal Anomaly",
+      "raw_directive": "3374: This trace anomaly result is now mathematically rigorous without any conditional assumptions.\n3375: \n3376: :::{prf:remark} Sign Convention\n3377: :label: rem-trace-anomaly-sign\n3378: \n3379: There's a sign ambiguity depending on convention:\n3380: - **CFT convention:** $\\langle T^\\mu_\\mu \\rangle = -c R / 12$ (with $R$ being the background Ricci)\n3381: - **GR convention:** $\\langle T^\\mu_\\mu \\rangle = +c R / 12$ (with $R$ from emergent metric)\n3382: \n3383: The gamma channel uses $-\\gamma_R R$ (negative sign for Ricci penalty), which gives:\n3384: \n3385: $$\n3386: \\langle T^\\mu_\\mu \\rangle = +\\frac{c}{12} R\n3387: $$\n3388: "
+    },
+    {
+      "directive_type": "algorithm",
+      "label": "alg-trace-anomaly-measurement",
+      "title": "Computing Trace Anomaly Coefficient",
+      "start_line": 3392,
+      "end_line": 3427,
+      "header_lines": [
+        3393
+      ],
+      "content_start": 3395,
+      "content_end": 3426,
+      "content": "3395: :label: alg-trace-anomaly-measurement\n3396: \n3397: To extract the trace anomaly coefficient from swarm simulations:\n3398: \n3399: **Input:** Swarm trajectory data $\\{S(t)\\}$ sampled from QSD\n3400: \n3401: **Step 1:** For each snapshot $S(t)$, compute:\n3402: - Empirical stress-energy tensor $\\hat{T}_{\\mu\\nu}(x, S(t))$ (with regularization $\\epsilon$)\n3403: - Emergent metric $g_{\\mu\\nu}(x, S(t))$ from fitness Hessian\n3404: - Ricci scalar $R(x, S(t))$ using Regge calculus or smooth differentiation\n3405: \n3406: **Step 2:** Compute the trace $\\hat{T}^\\mu_\\mu(x, S(t)) = g^{\\mu\\nu}(x) \\hat{T}_{\\mu\\nu}(x)$\n3407: \n3408: **Step 3:** Bin the data by Ricci scalar value: for each bin $R_i \\pm \\Delta R$, compute:\n3409: \n3410: $$\n3411: \\langle T^\\mu_\\mu \\rangle_{R_i} = \\frac{1}{|\\{x : R(x) \\in [R_i - \\Delta R, R_i + \\Delta R]\\}|} \\sum_{x \\text{ in bin}} \\hat{T}^\\mu_\\mu(x)\n3412: $$\n3413: \n3414: **Step 4:** Perform linear regression: fit $\\langle T^\\mu_\\mu \\rangle_R$ vs. $R$ to the model:\n3415: \n3416: $$\n3417: \\langle T^\\mu_\\mu \\rangle = a_0 + a_1 R\n3418: $$\n3419: \n3420: **Step 5:** Extract trace anomaly coefficient:\n3421: \n3422: $$\n3423: \\text{Trace Anomaly Coefficient} = a_1\n3424: $$\n3425: \n3426: Compare with theoretical prediction $a_1 = c/12$ where $c$ is computed from {prf:ref}`thm-swarm-central-charge`.",
+      "metadata": {
+        "label": "alg-trace-anomaly-measurement"
+      },
+      "section": "## Part 4: Central Charge and Conformal Anomaly",
+      "raw_directive": "3392: #### 4.2.1 Measuring the Trace Anomaly from Swarm Data\n3393: \n3394: :::{prf:algorithm} Computing Trace Anomaly Coefficient\n3395: :label: alg-trace-anomaly-measurement\n3396: \n3397: To extract the trace anomaly coefficient from swarm simulations:\n3398: \n3399: **Input:** Swarm trajectory data $\\{S(t)\\}$ sampled from QSD\n3400: \n3401: **Step 1:** For each snapshot $S(t)$, compute:\n3402: - Empirical stress-energy tensor $\\hat{T}_{\\mu\\nu}(x, S(t))$ (with regularization $\\epsilon$)\n3403: - Emergent metric $g_{\\mu\\nu}(x, S(t))$ from fitness Hessian\n3404: - Ricci scalar $R(x, S(t))$ using Regge calculus or smooth differentiation\n3405: \n3406: **Step 2:** Compute the trace $\\hat{T}^\\mu_\\mu(x, S(t)) = g^{\\mu\\nu}(x) \\hat{T}_{\\mu\\nu}(x)$\n3407: \n3408: **Step 3:** Bin the data by Ricci scalar value: for each bin $R_i \\pm \\Delta R$, compute:\n3409: \n3410: $$\n3411: \\langle T^\\mu_\\mu \\rangle_{R_i} = \\frac{1}{|\\{x : R(x) \\in [R_i - \\Delta R, R_i + \\Delta R]\\}|} \\sum_{x \\text{ in bin}} \\hat{T}^\\mu_\\mu(x)\n3412: $$\n3413: \n3414: **Step 4:** Perform linear regression: fit $\\langle T^\\mu_\\mu \\rangle_R$ vs. $R$ to the model:\n3415: \n3416: $$\n3417: \\langle T^\\mu_\\mu \\rangle = a_0 + a_1 R\n3418: $$\n3419: \n3420: **Step 5:** Extract trace anomaly coefficient:\n3421: \n3422: $$\n3423: \\text{Trace Anomaly Coefficient} = a_1\n3424: $$\n3425: \n3426: Compare with theoretical prediction $a_1 = c/12$ where $c$ is computed from {prf:ref}`thm-swarm-central-charge`.\n3427: "
+    },
+    {
+      "directive_type": "example",
+      "label": "ex-free-boson-trace-anomaly",
+      "title": "Free Boson CFT: $c=1$ and Trace Anomaly",
+      "start_line": 3431,
+      "end_line": 3449,
+      "header_lines": [
+        3432
+      ],
+      "content_start": 3434,
+      "content_end": 3448,
+      "content": "3434: :label: ex-free-boson-trace-anomaly\n3435: \n3436: The simplest 2D CFT is the **free boson** with action:\n3437: \n3438: $$\n3439: S = \\frac{1}{4\\pi} \\int d^2x \\sqrt{g} \\, g^{\\mu\\nu} \\partial_\\mu \\phi \\partial_\\nu \\phi\n3440: $$\n3441: \n3442: This theory has:\n3443: - **Central charge:** $c = 1$\n3444: - **Trace anomaly:** $\\langle T^\\mu_\\mu \\rangle = -\\frac{1}{12} R$ (CFT convention)\n3445: \n3446: **Swarm Analogy:** If the Fragile Gas in the $\\gamma_R = 0$, $\\gamma_W \\to \\infty$ limit behaves as a collection of $N$ non-interacting random walkers, and if each walker corresponds to one free boson degree of freedom, we'd expect $c \\approx N$.\n3447: \n3448: However, the mean-field interactions (adaptive force, viscous coupling) and cloning/death events introduce correlations, likely reducing the effective central charge below $N$.",
+      "metadata": {
+        "label": "ex-free-boson-trace-anomaly"
+      },
+      "section": "## Part 4: Central Charge and Conformal Anomaly",
+      "raw_directive": "3431: #### 4.2.2 Comparison with Free Boson CFT\n3432: \n3433: :::{prf:example} Free Boson CFT: $c=1$ and Trace Anomaly\n3434: :label: ex-free-boson-trace-anomaly\n3435: \n3436: The simplest 2D CFT is the **free boson** with action:\n3437: \n3438: $$\n3439: S = \\frac{1}{4\\pi} \\int d^2x \\sqrt{g} \\, g^{\\mu\\nu} \\partial_\\mu \\phi \\partial_\\nu \\phi\n3440: $$\n3441: \n3442: This theory has:\n3443: - **Central charge:** $c = 1$\n3444: - **Trace anomaly:** $\\langle T^\\mu_\\mu \\rangle = -\\frac{1}{12} R$ (CFT convention)\n3445: \n3446: **Swarm Analogy:** If the Fragile Gas in the $\\gamma_R = 0$, $\\gamma_W \\to \\infty$ limit behaves as a collection of $N$ non-interacting random walkers, and if each walker corresponds to one free boson degree of freedom, we'd expect $c \\approx N$.\n3447: \n3448: However, the mean-field interactions (adaptive force, viscous coupling) and cloning/death events introduce correlations, likely reducing the effective central charge below $N$.\n3449: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

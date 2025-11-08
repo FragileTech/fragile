@@ -1,0 +1,65 @@
+{
+  "chapter_index": 31,
+  "section_id": "## 12.3. The Complete Lyapunov Drift Under Cloning",
+  "directive_count": 3,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-complete-cloning-drift",
+      "title": "Complete Drift Inequality for the Cloning Operator",
+      "start_line": 8083,
+      "end_line": 8117,
+      "header_lines": [
+        8084
+      ],
+      "content_start": 8086,
+      "content_end": 8116,
+      "content": "8086: :label: thm-complete-cloning-drift\n8087: \n8088: Under the foundational axioms (Chapter 4), the cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the synergistic Lyapunov function:\n8089: \n8090: $$\n8091: V_{\\text{total}}(S_1, S_2) = V_W(S_1, S_2) + c_V V_{\\text{Var}}(S_1, S_2) + c_B W_b(S_1, S_2)\n8092: $$\n8093: \n8094: **Individual Component Drifts:**\n8095: \n8096: $$\n8097: \\begin{aligned}\n8098: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] &\\leq C_W \\quad &\\text{(bounded expansion)} \\\\\n8099: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] &\\leq -\\kappa_x V_{\\text{Var},x} + C_x \\quad &\\text{(strong contraction)} \\\\\n8100: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] &\\leq C_v \\quad &\\text{(bounded expansion)} \\\\\n8101: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] &\\leq -\\kappa_b W_b + C_b \\quad &\\text{(strong contraction)}\n8102: \\end{aligned}\n8103: $$\n8104: \n8105: **Combined Drift:**\n8106: \n8107: $$\n8108: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] \\leq C_W + c_V(-\\kappa_x V_{\\text{Var},x} + C_v + C_x) + c_B(-\\kappa_b W_b + C_b)\n8109: $$\n8110: \n8111: **Critical Property - Partial Contraction:**\n8112: \n8113: When $V_{\\text{Var},x}$ and $W_b$ are sufficiently large relative to the expansion terms, the drift becomes negative:\n8114: \n8115: $$\n8116: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] < 0 \\quad \\text{when } c_V V_{\\text{Var},x} + c_B W_b > \\frac{C_W + c_V(C_v + C_x) + c_B C_b}{\\min(\\kappa_x, \\kappa_b)}",
+      "metadata": {
+        "label": "thm-complete-cloning-drift"
+      },
+      "section": "## 12.3. The Complete Lyapunov Drift Under Cloning",
+      "raw_directive": "8083: ### 12.3.1. Main Result\n8084: \n8085: :::{prf:theorem} Complete Drift Inequality for the Cloning Operator\n8086: :label: thm-complete-cloning-drift\n8087: \n8088: Under the foundational axioms (Chapter 4), the cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the synergistic Lyapunov function:\n8089: \n8090: $$\n8091: V_{\\text{total}}(S_1, S_2) = V_W(S_1, S_2) + c_V V_{\\text{Var}}(S_1, S_2) + c_B W_b(S_1, S_2)\n8092: $$\n8093: \n8094: **Individual Component Drifts:**\n8095: \n8096: $$\n8097: \\begin{aligned}\n8098: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] &\\leq C_W \\quad &\\text{(bounded expansion)} \\\\\n8099: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] &\\leq -\\kappa_x V_{\\text{Var},x} + C_x \\quad &\\text{(strong contraction)} \\\\\n8100: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] &\\leq C_v \\quad &\\text{(bounded expansion)} \\\\\n8101: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] &\\leq -\\kappa_b W_b + C_b \\quad &\\text{(strong contraction)}\n8102: \\end{aligned}\n8103: $$\n8104: \n8105: **Combined Drift:**\n8106: \n8107: $$\n8108: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] \\leq C_W + c_V(-\\kappa_x V_{\\text{Var},x} + C_v + C_x) + c_B(-\\kappa_b W_b + C_b)\n8109: $$\n8110: \n8111: **Critical Property - Partial Contraction:**\n8112: \n8113: When $V_{\\text{Var},x}$ and $W_b$ are sufficiently large relative to the expansion terms, the drift becomes negative:\n8114: \n8115: $$\n8116: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] < 0 \\quad \\text{when } c_V V_{\\text{Var},x} + c_B W_b > \\frac{C_W + c_V(C_v + C_x) + c_B C_b}{\\min(\\kappa_x, \\kappa_b)}\n8117: $$"
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-thm-complete-cloning-drift",
+      "title": null,
+      "start_line": 8119,
+      "end_line": 8153,
+      "header_lines": [
+        8120
+      ],
+      "content_start": 8121,
+      "content_end": 8152,
+      "content": "8121: :::{prf:proof}\n8122: :label: proof-thm-complete-cloning-drift\n8123: **Proof.**\n8124: \n8125: The total drift is obtained by summing the component drifts with their respective weights:\n8126: \n8127: $$\n8128: \\begin{aligned}\n8129: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] &= \\mathbb{E}_{\\text{clone}}[\\Delta V_W] + c_V \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var}}] + c_B \\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\\\\n8130: &= \\mathbb{E}_{\\text{clone}}[\\Delta V_W] + c_V (\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}]) + c_B \\mathbb{E}_{\\text{clone}}[\\Delta W_b]\n8131: \\end{aligned}\n8132: $$\n8133: \n8134: Substituting the individual bounds from Theorems 10.3.1, 10.4.1, 11.3.1, and 12.2.1:\n8135: \n8136: $$\n8137: \\leq C_W + c_V(-\\kappa_x V_{\\text{Var},x} + C_x + C_v) + c_B(-\\kappa_b W_b + C_b)\n8138: $$\n8139: \n8140: Rearranging:\n8141: \n8142: $$\n8143: = -c_V \\kappa_x V_{\\text{Var},x} - c_B \\kappa_b W_b + (C_W + c_V C_x + c_V C_v + c_B C_b)\n8144: $$\n8145: \n8146: For the drift to be negative, we need the contraction terms to dominate:\n8147: \n8148: $$\n8149: c_V \\kappa_x V_{\\text{Var},x} + c_B \\kappa_b W_b > C_W + c_V C_x + c_V C_v + c_B C_b\n8150: $$\n8151: \n8152: This holds when the weighted variance and boundary potential are sufficiently large.",
+      "metadata": {
+        "label": "proof-thm-complete-cloning-drift"
+      },
+      "section": "## 12.3. The Complete Lyapunov Drift Under Cloning",
+      "raw_directive": "8119: :::\n8120: \n8121: :::{prf:proof}\n8122: :label: proof-thm-complete-cloning-drift\n8123: **Proof.**\n8124: \n8125: The total drift is obtained by summing the component drifts with their respective weights:\n8126: \n8127: $$\n8128: \\begin{aligned}\n8129: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] &= \\mathbb{E}_{\\text{clone}}[\\Delta V_W] + c_V \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var}}] + c_B \\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\\\\n8130: &= \\mathbb{E}_{\\text{clone}}[\\Delta V_W] + c_V (\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}]) + c_B \\mathbb{E}_{\\text{clone}}[\\Delta W_b]\n8131: \\end{aligned}\n8132: $$\n8133: \n8134: Substituting the individual bounds from Theorems 10.3.1, 10.4.1, 11.3.1, and 12.2.1:\n8135: \n8136: $$\n8137: \\leq C_W + c_V(-\\kappa_x V_{\\text{Var},x} + C_x + C_v) + c_B(-\\kappa_b W_b + C_b)\n8138: $$\n8139: \n8140: Rearranging:\n8141: \n8142: $$\n8143: = -c_V \\kappa_x V_{\\text{Var},x} - c_B \\kappa_b W_b + (C_W + c_V C_x + c_V C_v + c_B C_b)\n8144: $$\n8145: \n8146: For the drift to be negative, we need the contraction terms to dominate:\n8147: \n8148: $$\n8149: c_V \\kappa_x V_{\\text{Var},x} + c_B \\kappa_b W_b > C_W + c_V C_x + c_V C_v + c_B C_b\n8150: $$\n8151: \n8152: This holds when the weighted variance and boundary potential are sufficiently large.\n8153: "
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-kinetic-necessity",
+      "title": "Necessity of the Kinetic Operator",
+      "start_line": 8187,
+      "end_line": 8202,
+      "header_lines": [
+        8188
+      ],
+      "content_start": 8190,
+      "content_end": 8201,
+      "content": "8190: :label: prop-kinetic-necessity\n8191: \n8192: The cloning operator alone cannot guarantee convergence to a quasi-stationary distribution. Specifically:\n8193: \n8194: 1. **Velocity variance accumulation:** The bounded expansion $+C_v$ per step can accumulate without bound over infinite time if not countered.\n8195: \n8196: 2. **Inter-swarm divergence:** The bounded expansion $+C_W$ means the two coupled swarms can drift arbitrarily far apart without inter-swarm correction.\n8197: \n8198: 3. **No velocity equilibrium:** Cloning has no mechanism to dissipate kinetic energy toward a target distribution - it only redistributes it through collisions.\n8199: \n8200: Therefore, the **kinetic operator is essential** to:\n8201: - Contract $V_{\\text{Var},v}$ via Langevin friction (overcoming $C_v$)",
+      "metadata": {
+        "label": "prop-kinetic-necessity"
+      },
+      "section": "## 12.3. The Complete Lyapunov Drift Under Cloning",
+      "raw_directive": "8187: ### 12.3.3. Why Cloning Alone Cannot Achieve Convergence\n8188: \n8189: :::{prf:proposition} Necessity of the Kinetic Operator\n8190: :label: prop-kinetic-necessity\n8191: \n8192: The cloning operator alone cannot guarantee convergence to a quasi-stationary distribution. Specifically:\n8193: \n8194: 1. **Velocity variance accumulation:** The bounded expansion $+C_v$ per step can accumulate without bound over infinite time if not countered.\n8195: \n8196: 2. **Inter-swarm divergence:** The bounded expansion $+C_W$ means the two coupled swarms can drift arbitrarily far apart without inter-swarm correction.\n8197: \n8198: 3. **No velocity equilibrium:** Cloning has no mechanism to dissipate kinetic energy toward a target distribution - it only redistributes it through collisions.\n8199: \n8200: Therefore, the **kinetic operator is essential** to:\n8201: - Contract $V_{\\text{Var},v}$ via Langevin friction (overcoming $C_v$)\n8202: - Contract $V_W$ via hypocoercive drift and confining potential (overcoming $C_W$)"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

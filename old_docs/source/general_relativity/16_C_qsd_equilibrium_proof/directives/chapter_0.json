@@ -1,0 +1,65 @@
+{
+  "chapter_index": 0,
+  "section_id": "## 1. QSD Theory from Chapter 4",
+  "directive_count": 3,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-qsd-recall",
+      "title": "Quasi-Stationary Distribution (Recall)",
+      "start_line": 11,
+      "end_line": 29,
+      "header_lines": [
+        12
+      ],
+      "content_start": 14,
+      "content_end": 28,
+      "content": "14: :label: def-qsd-recall\n15: \n16: A **quasi-stationary distribution** $\\nu_{\\text{QSD}}$ on the alive state space is a probability measure such that:\n17: \n18: $$\n19: P(S_{t+1} \\in A \\mid S_t \\sim \\nu_{\\text{QSD}}, \\text{not absorbed}) = \\nu_{\\text{QSD}}(A)\n20: $$\n21: \n22: **Meaning**: If the swarm is distributed according to $\\nu_{\\text{QSD}}$ and survives, it remains in $\\nu_{\\text{QSD}}$.\n23: \n24: For the mean-field density $\\mu_t(x, v)$, the QSD condition is:\n25: \n26: $$\n27: \\partial_t \\mu_{\\text{QSD}} = 0\n28: $$",
+      "metadata": {
+        "label": "def-qsd-recall"
+      },
+      "section": "## 1. QSD Theory from Chapter 4",
+      "raw_directive": "11: From [04_convergence.md](04_convergence.md) {prf:ref}`def-qsd`:\n12: \n13: :::{prf:definition} Quasi-Stationary Distribution (Recall)\n14: :label: def-qsd-recall\n15: \n16: A **quasi-stationary distribution** $\\nu_{\\text{QSD}}$ on the alive state space is a probability measure such that:\n17: \n18: $$\n19: P(S_{t+1} \\in A \\mid S_t \\sim \\nu_{\\text{QSD}}, \\text{not absorbed}) = \\nu_{\\text{QSD}}(A)\n20: $$\n21: \n22: **Meaning**: If the swarm is distributed according to $\\nu_{\\text{QSD}}$ and survives, it remains in $\\nu_{\\text{QSD}}$.\n23: \n24: For the mean-field density $\\mu_t(x, v)$, the QSD condition is:\n25: \n26: $$\n27: \\partial_t \\mu_{\\text{QSD}} = 0\n28: $$\n29: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-convergence-qsd-recall",
+      "title": "Exponential Convergence to QSD (Recall)",
+      "start_line": 35,
+      "end_line": 47,
+      "header_lines": [
+        36
+      ],
+      "content_start": 38,
+      "content_end": 46,
+      "content": "38: :label: thm-convergence-qsd-recall\n39: \n40: The Euclidean Gas converges exponentially to the unique QSD:\n41: \n42: $$\n43: \\|\\mu_t - \\mu_{\\text{QSD}}\\|_{\\text{TV}} \\leq C_{\\text{conv}} e^{-\\kappa_{\\text{QSD}} t}\n44: $$\n45: \n46: where $\\kappa_{\\text{QSD}} > 0$ is the convergence rate.",
+      "metadata": {
+        "label": "thm-convergence-qsd-recall"
+      },
+      "section": "## 1. QSD Theory from Chapter 4",
+      "raw_directive": "35: From [04_convergence.md](04_convergence.md) {prf:ref}`thm-geometric-ergodicity-qsd`:\n36: \n37: :::{prf:theorem} Exponential Convergence to QSD (Recall)\n38: :label: thm-convergence-qsd-recall\n39: \n40: The Euclidean Gas converges exponentially to the unique QSD:\n41: \n42: $$\n43: \\|\\mu_t - \\mu_{\\text{QSD}}\\|_{\\text{TV}} \\leq C_{\\text{conv}} e^{-\\kappa_{\\text{QSD}} t}\n44: $$\n45: \n46: where $\\kappa_{\\text{QSD}} > 0$ is the convergence rate.\n47: "
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-equipartition-qsd-recall",
+      "title": "Equipartition at QSD (Recall)",
+      "start_line": 53,
+      "end_line": 80,
+      "header_lines": [
+        54
+      ],
+      "content_start": 56,
+      "content_end": 79,
+      "content": "56: :label: prop-equipartition-qsd-recall\n57: \n58: At the QSD, the velocity variance satisfies **equipartition**:\n59: \n60: $$\n61: V_{\\text{Var},v}^{\\text{QSD}} = \\frac{d \\sigma_{\\max}^2}{2\\gamma}\n62: $$\n63: \n64: where:\n65: - $d$: Spatial dimension\n66: - $\\sigma_{\\max}$: Noise amplitude\n67: - $\\gamma$: Friction coefficient\n68: \n69: **Proof**: The drift inequality for $V_{\\text{Var},v}$ (Theorem 3.2.1 in Chapter 4) gives:\n70: \n71: $$\n72: \\mathbb{E}[\\Delta V_{\\text{Var},v}] \\leq -\\gamma (V_{\\text{Var},v} - V_{\\text{Var},v}^{\\text{eq}}) \\tau + O(\\tau^2)\n73: $$\n74: \n75: At equilibrium ($\\mathbb{E}[\\Delta V_{\\text{Var},v}] = 0$):\n76: \n77: $$\n78: V_{\\text{Var},v}^{\\text{eq}} = \\frac{d \\sigma_{\\max}^2}{2\\gamma}\n79: $$",
+      "metadata": {
+        "label": "prop-equipartition-qsd-recall"
+      },
+      "section": "## 1. QSD Theory from Chapter 4",
+      "raw_directive": "53: From [04_convergence.md](04_convergence.md), Section 3.2:\n54: \n55: :::{prf:proposition} Equipartition at QSD (Recall)\n56: :label: prop-equipartition-qsd-recall\n57: \n58: At the QSD, the velocity variance satisfies **equipartition**:\n59: \n60: $$\n61: V_{\\text{Var},v}^{\\text{QSD}} = \\frac{d \\sigma_{\\max}^2}{2\\gamma}\n62: $$\n63: \n64: where:\n65: - $d$: Spatial dimension\n66: - $\\sigma_{\\max}$: Noise amplitude\n67: - $\\gamma$: Friction coefficient\n68: \n69: **Proof**: The drift inequality for $V_{\\text{Var},v}$ (Theorem 3.2.1 in Chapter 4) gives:\n70: \n71: $$\n72: \\mathbb{E}[\\Delta V_{\\text{Var},v}] \\leq -\\gamma (V_{\\text{Var},v} - V_{\\text{Var},v}^{\\text{eq}}) \\tau + O(\\tau^2)\n73: $$\n74: \n75: At equilibrium ($\\mathbb{E}[\\Delta V_{\\text{Var},v}] = 0$):\n76: \n77: $$\n78: V_{\\text{Var},v}^{\\text{eq}} = \\frac{d \\sigma_{\\max}^2}{2\\gamma}\n79: $$\n80: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

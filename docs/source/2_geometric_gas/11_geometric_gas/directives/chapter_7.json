@@ -1,0 +1,65 @@
+{
+  "chapter_index": 7,
+  "section_id": "## 5. The Stable Backbone System",
+  "directive_count": 3,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-backbone-sde",
+      "title": "The Backbone SDE",
+      "start_line": 1085,
+      "end_line": 1111,
+      "header_lines": [
+        1086
+      ],
+      "content_start": 1088,
+      "content_end": 1110,
+      "content": "1088: :label: def-backbone-sde\n1089: \n1090: The **backbone system** is obtained from the full Hybrid SDE ([](#def-hybrid-sde)) by setting all adaptive parameters to zero:\n1091: \n1092: $$\n1093: \\epsilon_F = 0, \\quad \\nu = 0, \\quad \\Sigma_{\\text{reg}}(x, S) = \\sigma I\n1094: \n1095: $$\n1096: \n1097: This yields the simplified SDE:\n1098: \n1099: $$\n1100: \\begin{aligned}\n1101: dx_i &= v_i \\, dt \\\\\n1102: dv_i &= \\left[ -\\nabla U(x_i) - \\gamma v_i \\right] dt + \\sigma \\, dW_i\n1103: \\end{aligned}\n1104: \n1105: $$\n1106: \n1107: The backbone is a **static underdamped Langevin equation** with:\n1108: - Globally confining potential $U(x)$\n1109: - Constant friction coefficient $\\gamma > 0$\n1110: - Constant isotropic diffusion $\\sigma > 0$",
+      "metadata": {
+        "label": "def-backbone-sde"
+      },
+      "section": "## 5. The Stable Backbone System",
+      "raw_directive": "1085: ### 5.1. Definition of the Backbone System\n1086: \n1087: :::{prf:definition} The Backbone SDE\n1088: :label: def-backbone-sde\n1089: \n1090: The **backbone system** is obtained from the full Hybrid SDE ([](#def-hybrid-sde)) by setting all adaptive parameters to zero:\n1091: \n1092: $$\n1093: \\epsilon_F = 0, \\quad \\nu = 0, \\quad \\Sigma_{\\text{reg}}(x, S) = \\sigma I\n1094: \n1095: $$\n1096: \n1097: This yields the simplified SDE:\n1098: \n1099: $$\n1100: \\begin{aligned}\n1101: dx_i &= v_i \\, dt \\\\\n1102: dv_i &= \\left[ -\\nabla U(x_i) - \\gamma v_i \\right] dt + \\sigma \\, dW_i\n1103: \\end{aligned}\n1104: \n1105: $$\n1106: \n1107: The backbone is a **static underdamped Langevin equation** with:\n1108: - Globally confining potential $U(x)$\n1109: - Constant friction coefficient $\\gamma > 0$\n1110: - Constant isotropic diffusion $\\sigma > 0$\n1111: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-backbone-convergence",
+      "title": "Geometric Ergodicity of the Backbone",
+      "start_line": 1117,
+      "end_line": 1135,
+      "header_lines": [
+        1118
+      ],
+      "content_start": 1120,
+      "content_end": 1134,
+      "content": "1120: :label: thm-backbone-convergence\n1121: \n1122: The backbone system, composed with the cloning operator $\\Psi_{\\text{clone}}$, satisfies a discrete-time Foster-Lyapunov drift condition. There exist constants $\\kappa_{\\text{backbone}} > 0$ and $C_{\\text{backbone}} < \\infty$ such that:\n1123: \n1124: $$\n1125: \\mathbb{E}[V_{\\text{total}}(S_{k+1}) \\mid S_k] \\le (1 - \\kappa_{\\text{backbone}}) V_{\\text{total}}(S_k) + C_{\\text{backbone}}\n1126: \n1127: $$\n1128: \n1129: for all $k \\ge 0$, where $V_{\\text{total}}$ is the composite Lyapunov function:\n1130: \n1131: $$\n1132: V_{\\text{total}}(S) = \\alpha_x V_{\\text{Var},x}(S) + \\alpha_v V_{\\text{Var},v}(S) + \\alpha_D V_{\\text{Mean},D}(S) + \\alpha_R V_{\\text{Mean},R}(S)\n1133: \n1134: $$",
+      "metadata": {
+        "label": "thm-backbone-convergence"
+      },
+      "section": "## 5. The Stable Backbone System",
+      "raw_directive": "1117: The convergence of the backbone system has been rigorously established in the companion documents. We summarize the key result here.\n1118: \n1119: :::{prf:theorem} Geometric Ergodicity of the Backbone\n1120: :label: thm-backbone-convergence\n1121: \n1122: The backbone system, composed with the cloning operator $\\Psi_{\\text{clone}}$, satisfies a discrete-time Foster-Lyapunov drift condition. There exist constants $\\kappa_{\\text{backbone}} > 0$ and $C_{\\text{backbone}} < \\infty$ such that:\n1123: \n1124: $$\n1125: \\mathbb{E}[V_{\\text{total}}(S_{k+1}) \\mid S_k] \\le (1 - \\kappa_{\\text{backbone}}) V_{\\text{total}}(S_k) + C_{\\text{backbone}}\n1126: \n1127: $$\n1128: \n1129: for all $k \\ge 0$, where $V_{\\text{total}}$ is the composite Lyapunov function:\n1130: \n1131: $$\n1132: V_{\\text{total}}(S) = \\alpha_x V_{\\text{Var},x}(S) + \\alpha_v V_{\\text{Var},v}(S) + \\alpha_D V_{\\text{Mean},D}(S) + \\alpha_R V_{\\text{Mean},R}(S)\n1133: \n1134: $$\n1135: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-thm-backbone-convergence",
+      "title": "Proof sketch",
+      "start_line": 1137,
+      "end_line": 1149,
+      "header_lines": [
+        1138
+      ],
+      "content_start": 1140,
+      "content_end": 1148,
+      "content": "1140: :label: proof-thm-backbone-convergence\n1141: \n1142: The full proof is provided in Theorem 1.4.2 of [04_convergence.md](../1_euclidean_gas/06_convergence.md). The argument proceeds by establishing drift inequalities for each component of $V_{\\text{total}}$ under both the cloning operator $\\Psi_{\\text{clone}}$ and the kinetic evolution $\\Psi_{\\text{kin,backbone}}$, then combining them via the Discretization Theorem (Theorem 1.7.2).\n1143: \n1144: The key mechanisms are:\n1145: 1.  **Boundary contraction** via the cloning Safe Harbor (Axiom EG-2).\n1146: 2.  **Velocity variance contraction** via friction dissipation.\n1147: 3.  **Spatial variance contraction** via hypocoercive coupling between $x$ and $v$.\n1148: 4.  **Mean distance contraction** via the globally confining potential $U$.",
+      "metadata": {
+        "label": "proof-thm-backbone-convergence"
+      },
+      "section": "## 5. The Stable Backbone System",
+      "raw_directive": "1137: :::\n1138: \n1139: :::{prf:proof} Proof sketch\n1140: :label: proof-thm-backbone-convergence\n1141: \n1142: The full proof is provided in Theorem 1.4.2 of [04_convergence.md](../1_euclidean_gas/06_convergence.md). The argument proceeds by establishing drift inequalities for each component of $V_{\\text{total}}$ under both the cloning operator $\\Psi_{\\text{clone}}$ and the kinetic evolution $\\Psi_{\\text{kin,backbone}}$, then combining them via the Discretization Theorem (Theorem 1.7.2).\n1143: \n1144: The key mechanisms are:\n1145: 1.  **Boundary contraction** via the cloning Safe Harbor (Axiom EG-2).\n1146: 2.  **Velocity variance contraction** via friction dissipation.\n1147: 3.  **Spatial variance contraction** via hypocoercive coupling between $x$ and $v$.\n1148: 4.  **Mean distance contraction** via the globally confining potential $U$.\n1149: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

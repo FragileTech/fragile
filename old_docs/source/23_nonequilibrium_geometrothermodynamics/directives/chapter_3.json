@@ -1,0 +1,151 @@
+{
+  "chapter_index": 3,
+  "section_id": "## 3. Calculus of Variations on Path Space",
+  "directive_count": 8,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-action-functional-constrained",
+      "title": "Action Functional with Constraints",
+      "start_line": 858,
+      "end_line": 888,
+      "header_lines": [
+        859
+      ],
+      "content_start": 861,
+      "content_end": 887,
+      "content": "861: :label: def-action-functional-constrained\n862: \n863: Consider the variational problem:\n864: \n865: $$\n866: \\delta S[\\gamma] = 0\n867: $$\n868: \n869: where:\n870: \n871: $$\n872: S[\\gamma] = \\int_0^T L(x_t, v_t, \\dot{x}_t, \\dot{v}_t) dt\n873: $$\n874: \n875: subject to:\n876: \n877: 1. **Kinematic constraint**: $\\dot{x}_t = v_t$ for all $t$\n878: 2. **Boundary conditions**: $\\gamma(0) = (x_0, v_0)$ and (optionally) $\\gamma(T) = (x_T, v_T)$\n879: 3. **Viability constraint**: $x_t \\in \\mathcal{X}_{\\text{valid}}$ for all $t$ (path remains in valid domain)\n880: \n881: **Lagrangian:**\n882: \n883: For the Onsager-Machlup action ({prf:ref}`def-reduced-om-action`):\n884: \n885: $$\n886: L(x, v, \\dot{v}) = \\frac{1}{4\\gamma T} \\|\\dot{v} + \\nabla U_{\\text{eff}}(x) + \\gamma v\\|^2\n887: $$",
+      "metadata": {
+        "label": "def-action-functional-constrained"
+      },
+      "section": "## 3. Calculus of Variations on Path Space",
+      "raw_directive": "858: We now seek paths that **extremize** the action functional.\n859: \n860: :::{prf:definition} Action Functional with Constraints\n861: :label: def-action-functional-constrained\n862: \n863: Consider the variational problem:\n864: \n865: $$\n866: \\delta S[\\gamma] = 0\n867: $$\n868: \n869: where:\n870: \n871: $$\n872: S[\\gamma] = \\int_0^T L(x_t, v_t, \\dot{x}_t, \\dot{v}_t) dt\n873: $$\n874: \n875: subject to:\n876: \n877: 1. **Kinematic constraint**: $\\dot{x}_t = v_t$ for all $t$\n878: 2. **Boundary conditions**: $\\gamma(0) = (x_0, v_0)$ and (optionally) $\\gamma(T) = (x_T, v_T)$\n879: 3. **Viability constraint**: $x_t \\in \\mathcal{X}_{\\text{valid}}$ for all $t$ (path remains in valid domain)\n880: \n881: **Lagrangian:**\n882: \n883: For the Onsager-Machlup action ({prf:ref}`def-reduced-om-action`):\n884: \n885: $$\n886: L(x, v, \\dot{v}) = \\frac{1}{4\\gamma T} \\|\\dot{v} + \\nabla U_{\\text{eff}}(x) + \\gamma v\\|^2\n887: $$\n888: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-gateaux-derivative",
+      "title": "G\u00e2teaux Derivative",
+      "start_line": 892,
+      "end_line": 902,
+      "header_lines": [
+        893
+      ],
+      "content_start": 895,
+      "content_end": 901,
+      "content": "895: :label: def-gateaux-derivative\n896: \n897: The **G\u00e2teaux derivative** of the action $S: \\mathcal{P} \\to \\mathbb{R}$ at $\\gamma$ in the direction $h \\in H$ (Cameron-Martin space) is:\n898: \n899: $$\n900: DS[\\gamma] \\cdot h := \\lim_{\\epsilon \\to 0} \\frac{S[\\gamma + \\epsilon h] - S[\\gamma]}{\\epsilon}\n901: $$",
+      "metadata": {
+        "label": "def-gateaux-derivative"
+      },
+      "section": "## 3. Calculus of Variations on Path Space",
+      "raw_directive": "892: ### 3.2. G\u00e2teaux Derivative and First Variation\n893: \n894: :::{prf:definition} G\u00e2teaux Derivative\n895: :label: def-gateaux-derivative\n896: \n897: The **G\u00e2teaux derivative** of the action $S: \\mathcal{P} \\to \\mathbb{R}$ at $\\gamma$ in the direction $h \\in H$ (Cameron-Martin space) is:\n898: \n899: $$\n900: DS[\\gamma] \\cdot h := \\lim_{\\epsilon \\to 0} \\frac{S[\\gamma + \\epsilon h] - S[\\gamma]}{\\epsilon}\n901: $$\n902: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-first-variation-om-action",
+      "title": "First Variation of Onsager-Machlup Action",
+      "start_line": 904,
+      "end_line": 952,
+      "header_lines": [
+        905
+      ],
+      "content_start": 907,
+      "content_end": 951,
+      "content": "907: :label: thm-first-variation-om-action\n908: \n909: Let $S[\\gamma] = \\int_0^T L(x, v, \\dot{v}) dt$ with $L$ from {prf:ref}`def-reduced-om-action` and the **kinematic constraint** $\\dot{x} = v$.\n910: \n911: **Method:** We use a Lagrange multiplier $p(t) \\in \\mathbb{R}^d$ to enforce the constraint, defining the augmented Lagrangian:\n912: \n913: $$\n914: \\mathcal{L}(x, v, \\dot{x}, \\dot{v}, p) = L(x, v, \\dot{v}) + \\langle p, \\dot{x} - v \\rangle\n915: $$\n916: \n917: The action with constraint becomes:\n918: \n919: $$\n920: S[\\gamma, p] = \\int_0^T \\left[ L(x, v, \\dot{v}) + \\langle p, \\dot{x} - v \\rangle \\right] dt\n921: $$\n922: \n923: **First variation:** For perturbations $h = (h_x, h_v)$ with $h(0) = h(T) = 0$ and $\\delta p$:\n924: \n925: $$\n926: DS \\cdot (h, \\delta p) = \\int_0^T \\left[ \\frac{\\partial L}{\\partial x} h_x + \\frac{\\partial L}{\\partial v} h_v + \\frac{\\partial L}{\\partial \\dot{v}} \\dot{h}_v + \\langle \\delta p, \\dot{x} - v \\rangle + \\langle p, \\dot{h}_x - h_v \\rangle \\right] dt\n927: $$\n928: \n929: Integrating by parts on the $\\frac{\\partial L}{\\partial \\dot{v}} \\dot{h}_v$ and $\\langle p, \\dot{h}_x \\rangle$ terms:\n930: \n931: $$\n932: DS = \\int_0^T \\left[ \\left(\\frac{\\partial L}{\\partial x} - \\dot{p}\\right) h_x + \\left(\\frac{\\partial L}{\\partial v} - \\frac{d}{dt}\\frac{\\partial L}{\\partial \\dot{v}} - p\\right) h_v + (\\dot{x} - v) \\delta p \\right] dt\n933: $$\n934: \n935: (boundary terms vanish due to $h(0) = h(T) = 0$).\n936: \n937: For $DS = 0$ with arbitrary $h_x, h_v, \\delta p$, we obtain the **constrained Euler-Lagrange equations**:\n938: \n939: $$\n940: \\begin{cases}\n941: \\dot{x} = v & \\text{(constraint)} \\\\\n942: \\frac{\\partial L}{\\partial x} = \\dot{p} & \\text{(EL for } x\\text{)} \\\\\n943: \\frac{\\partial L}{\\partial v} - \\frac{d}{dt}\\frac{\\partial L}{\\partial \\dot{v}} = p & \\text{(EL for } v\\text{)}\n944: \\end{cases}\n945: $$\n946: \n947: Differentiating the third equation: $\\frac{d}{dt}\\left(\\frac{\\partial L}{\\partial v} - \\frac{d}{dt}\\frac{\\partial L}{\\partial \\dot{v}}\\right) = \\dot{p}$, and substituting the second equation gives:\n948: \n949: $$\n950: \\frac{d}{dt}\\left(\\frac{\\partial L}{\\partial v} - \\frac{d}{dt}\\frac{\\partial L}{\\partial \\dot{v}}\\right) = \\frac{\\partial L}{\\partial x}\n951: $$",
+      "metadata": {
+        "label": "thm-first-variation-om-action"
+      },
+      "section": "## 3. Calculus of Variations on Path Space",
+      "raw_directive": "904: :::\n905: \n906: :::{prf:theorem} First Variation of Onsager-Machlup Action\n907: :label: thm-first-variation-om-action\n908: \n909: Let $S[\\gamma] = \\int_0^T L(x, v, \\dot{v}) dt$ with $L$ from {prf:ref}`def-reduced-om-action` and the **kinematic constraint** $\\dot{x} = v$.\n910: \n911: **Method:** We use a Lagrange multiplier $p(t) \\in \\mathbb{R}^d$ to enforce the constraint, defining the augmented Lagrangian:\n912: \n913: $$\n914: \\mathcal{L}(x, v, \\dot{x}, \\dot{v}, p) = L(x, v, \\dot{v}) + \\langle p, \\dot{x} - v \\rangle\n915: $$\n916: \n917: The action with constraint becomes:\n918: \n919: $$\n920: S[\\gamma, p] = \\int_0^T \\left[ L(x, v, \\dot{v}) + \\langle p, \\dot{x} - v \\rangle \\right] dt\n921: $$\n922: \n923: **First variation:** For perturbations $h = (h_x, h_v)$ with $h(0) = h(T) = 0$ and $\\delta p$:\n924: \n925: $$\n926: DS \\cdot (h, \\delta p) = \\int_0^T \\left[ \\frac{\\partial L}{\\partial x} h_x + \\frac{\\partial L}{\\partial v} h_v + \\frac{\\partial L}{\\partial \\dot{v}} \\dot{h}_v + \\langle \\delta p, \\dot{x} - v \\rangle + \\langle p, \\dot{h}_x - h_v \\rangle \\right] dt\n927: $$\n928: \n929: Integrating by parts on the $\\frac{\\partial L}{\\partial \\dot{v}} \\dot{h}_v$ and $\\langle p, \\dot{h}_x \\rangle$ terms:\n930: \n931: $$\n932: DS = \\int_0^T \\left[ \\left(\\frac{\\partial L}{\\partial x} - \\dot{p}\\right) h_x + \\left(\\frac{\\partial L}{\\partial v} - \\frac{d}{dt}\\frac{\\partial L}{\\partial \\dot{v}} - p\\right) h_v + (\\dot{x} - v) \\delta p \\right] dt\n933: $$\n934: \n935: (boundary terms vanish due to $h(0) = h(T) = 0$).\n936: \n937: For $DS = 0$ with arbitrary $h_x, h_v, \\delta p$, we obtain the **constrained Euler-Lagrange equations**:\n938: \n939: $$\n940: \\begin{cases}\n941: \\dot{x} = v & \\text{(constraint)} \\\\\n942: \\frac{\\partial L}{\\partial x} = \\dot{p} & \\text{(EL for } x\\text{)} \\\\\n943: \\frac{\\partial L}{\\partial v} - \\frac{d}{dt}\\frac{\\partial L}{\\partial \\dot{v}} = p & \\text{(EL for } v\\text{)}\n944: \\end{cases}\n945: $$\n946: \n947: Differentiating the third equation: $\\frac{d}{dt}\\left(\\frac{\\partial L}{\\partial v} - \\frac{d}{dt}\\frac{\\partial L}{\\partial \\dot{v}}\\right) = \\dot{p}$, and substituting the second equation gives:\n948: \n949: $$\n950: \\frac{d}{dt}\\left(\\frac{\\partial L}{\\partial v} - \\frac{d}{dt}\\frac{\\partial L}{\\partial \\dot{v}}\\right) = \\frac{\\partial L}{\\partial x}\n951: $$\n952: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-euler-lagrange-fragile-gas",
+      "title": "Euler-Lagrange Equations for Fragile Gas Paths",
+      "start_line": 956,
+      "end_line": 985,
+      "header_lines": [
+        957
+      ],
+      "content_start": 959,
+      "content_end": 984,
+      "content": "959: :label: thm-euler-lagrange-fragile-gas\n960: \n961: Extremal paths of the Onsager-Machlup action {prf:ref}`def-reduced-om-action` satisfy:\n962: \n963: **Position equation:**\n964: \n965: $$\n966: \\dot{x}_t = v_t\n967: $$\n968: \n969: **Velocity equation:**\n970: \n971: $$\n972: \\frac{d}{dt}\\left(\\dot{v}_t + \\nabla U_{\\text{eff}}(x_t) + \\gamma v_t\\right) = -\\nabla^2 U_{\\text{eff}}(x_t) \\cdot v_t + \\gamma \\nabla U_{\\text{eff}}(x_t)\n973: $$\n974: \n975: **Interpretation:**\n976: \n977: These are the **deterministic Langevin equations** (the SDE with noise set to zero):\n978: \n979: $$\n980: \\begin{cases}\n981: \\dot{x}_t = v_t \\\\\n982: \\dot{v}_t = -\\nabla U_{\\text{eff}}(x_t) - \\gamma v_t\n983: \\end{cases}\n984: $$",
+      "metadata": {
+        "label": "thm-euler-lagrange-fragile-gas"
+      },
+      "section": "## 3. Calculus of Variations on Path Space",
+      "raw_directive": "956: ### 3.3. Euler-Lagrange Equations for Most Probable Paths\n957: \n958: :::{prf:theorem} Euler-Lagrange Equations for Fragile Gas Paths\n959: :label: thm-euler-lagrange-fragile-gas\n960: \n961: Extremal paths of the Onsager-Machlup action {prf:ref}`def-reduced-om-action` satisfy:\n962: \n963: **Position equation:**\n964: \n965: $$\n966: \\dot{x}_t = v_t\n967: $$\n968: \n969: **Velocity equation:**\n970: \n971: $$\n972: \\frac{d}{dt}\\left(\\dot{v}_t + \\nabla U_{\\text{eff}}(x_t) + \\gamma v_t\\right) = -\\nabla^2 U_{\\text{eff}}(x_t) \\cdot v_t + \\gamma \\nabla U_{\\text{eff}}(x_t)\n973: $$\n974: \n975: **Interpretation:**\n976: \n977: These are the **deterministic Langevin equations** (the SDE with noise set to zero):\n978: \n979: $$\n980: \\begin{cases}\n981: \\dot{x}_t = v_t \\\\\n982: \\dot{v}_t = -\\nabla U_{\\text{eff}}(x_t) - \\gamma v_t\n983: \\end{cases}\n984: $$\n985: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-134",
+      "title": null,
+      "start_line": 987,
+      "end_line": 1081,
+      "header_lines": [],
+      "content_start": 989,
+      "content_end": 1080,
+      "content": "989: :::{prf:proof}\n990: \n991: We use the Lagrange multiplier method from {prf:ref}`thm-first-variation-om-action` to handle the kinematic constraint $\\dot{x} = v$.\n992: \n993: **Step 1: Compute partial derivatives of the Lagrangian.**\n994: \n995: From $L = \\frac{1}{4\\gamma T} \\|\\dot{v} + \\nabla U_{\\text{eff}}(x) + \\gamma v\\|^2$, define $w := \\dot{v} + \\nabla U_{\\text{eff}}(x) + \\gamma v$. Then $L = \\frac{1}{4\\gamma T} \\|w\\|^2$.\n996: \n997: $$\n998: \\frac{\\partial L}{\\partial x} = \\frac{1}{2\\gamma T} w \\cdot \\nabla^2 U_{\\text{eff}}(x)\n999: $$\n1000: \n1001: $$\n1002: \\frac{\\partial L}{\\partial v} = \\frac{1}{2\\gamma T} w \\cdot \\gamma = \\frac{\\gamma}{2\\gamma T} w\n1003: $$\n1004: \n1005: $$\n1006: \\frac{\\partial L}{\\partial \\dot{v}} = \\frac{1}{2\\gamma T} w\n1007: $$\n1008: \n1009: **Step 2: Apply the Euler-Lagrange equations from {prf:ref}`thm-first-variation-om-action`.**\n1010: \n1011: The combined equation with the Lagrange multiplier $p(t)$ is:\n1012: \n1013: $$\n1014: \\frac{d}{dt}\\left(\\frac{\\partial L}{\\partial v} - \\frac{d}{dt}\\frac{\\partial L}{\\partial \\dot{v}}\\right) = \\frac{\\partial L}{\\partial x}\n1015: $$\n1016: \n1017: From the $v$ equation in {prf:ref}`thm-first-variation-om-action`:\n1018: \n1019: $$\n1020: p = \\frac{\\partial L}{\\partial v} - \\frac{d}{dt}\\frac{\\partial L}{\\partial \\dot{v}}\n1021: $$\n1022: \n1023: Compute $\\frac{\\partial L}{\\partial v}$:\n1024: \n1025: $$\n1026: \\frac{\\partial L}{\\partial v} = \\frac{\\gamma}{2\\gamma T} w = \\frac{1}{2T} w\n1027: $$\n1028: \n1029: Compute $\\frac{d}{dt}\\frac{\\partial L}{\\partial \\dot{v}}$:\n1030: \n1031: $$\n1032: \\frac{d}{dt}\\left(\\frac{1}{2\\gamma T} w\\right) = \\frac{1}{2\\gamma T} \\frac{dw}{dt} = \\frac{1}{2\\gamma T}(\\ddot{v} + \\nabla^2 U_{\\text{eff}} \\cdot \\dot{x} + \\gamma \\dot{v})\n1033: $$\n1034: \n1035: where we used $\\frac{d}{dt}\\nabla U_{\\text{eff}}(x) = \\nabla^2 U_{\\text{eff}} \\cdot \\dot{x}$.\n1036: \n1037: Thus:\n1038: \n1039: $$\n1040: p = \\frac{1}{2T} w - \\frac{1}{2\\gamma T}(\\ddot{v} + \\nabla^2 U_{\\text{eff}} \\cdot \\dot{x} + \\gamma \\dot{v})\n1041: $$\n1042: \n1043: From the $x$ equation: $\\dot{p} = \\frac{\\partial L}{\\partial x}$. Compute:\n1044: \n1045: $$\n1046: \\dot{p} = \\frac{1}{2T} \\dot{w} - \\frac{1}{2\\gamma T}(\\dddot{v} + \\nabla^3 U_{\\text{eff}} \\cdot (\\dot{x}, \\dot{x}) + \\nabla^2 U_{\\text{eff}} \\cdot \\ddot{x} + \\gamma \\ddot{v})\n1047: $$\n1048: \n1049: **Step 3: Simplify by using the kinematic constraint.**\n1050: \n1051: Using $\\dot{x} = v$ and recognizing that for an extremal path, $w = 0$ (the path minimizes the action when the drift deviation vanishes), we have:\n1052: \n1053: $$\n1054: \\dot{v} = -\\nabla U_{\\text{eff}}(x) - \\gamma v\n1055: $$\n1056: \n1057: Differentiating this:\n1058: \n1059: $$\n1060: \\ddot{v} = -\\nabla^2 U_{\\text{eff}}(x) \\cdot \\dot{x} - \\gamma \\dot{v} = -\\nabla^2 U_{\\text{eff}} \\cdot v - \\gamma \\dot{v}\n1061: $$\n1062: \n1063: Substituting $\\dot{v} = -\\nabla U_{\\text{eff}} - \\gamma v$:\n1064: \n1065: $$\n1066: \\ddot{v} = -\\nabla^2 U_{\\text{eff}} \\cdot v - \\gamma(-\\nabla U_{\\text{eff}} - \\gamma v) = -\\nabla^2 U_{\\text{eff}} \\cdot v + \\gamma \\nabla U_{\\text{eff}} + \\gamma^2 v\n1067: $$\n1068: \n1069: **Step 4: Verify this satisfies the Euler-Lagrange equation.**\n1070: \n1071: For an extremal path with $w = 0$:\n1072: \n1073: $$\n1074: \\dot{v} + \\nabla U_{\\text{eff}}(x) + \\gamma v = 0\n1075: $$\n1076: \n1077: This is precisely the **deterministic Langevin equation**, confirming that deterministic trajectories are critical points of the action.\n1078: \n1079: The fact that these critical points are actually minima (for convex $U_{\\text{eff}}$) follows from the positive-definiteness of the path space metric ({prf:ref}`thm-riemannian-metric-convex`). \u220e\n1080: ",
+      "metadata": {},
+      "section": "## 3. Calculus of Variations on Path Space",
+      "raw_directive": "987: :::\n988: \n989: :::{prf:proof}\n990: \n991: We use the Lagrange multiplier method from {prf:ref}`thm-first-variation-om-action` to handle the kinematic constraint $\\dot{x} = v$.\n992: \n993: **Step 1: Compute partial derivatives of the Lagrangian.**\n994: \n995: From $L = \\frac{1}{4\\gamma T} \\|\\dot{v} + \\nabla U_{\\text{eff}}(x) + \\gamma v\\|^2$, define $w := \\dot{v} + \\nabla U_{\\text{eff}}(x) + \\gamma v$. Then $L = \\frac{1}{4\\gamma T} \\|w\\|^2$.\n996: \n997: $$\n998: \\frac{\\partial L}{\\partial x} = \\frac{1}{2\\gamma T} w \\cdot \\nabla^2 U_{\\text{eff}}(x)\n999: $$\n1000: \n1001: $$\n1002: \\frac{\\partial L}{\\partial v} = \\frac{1}{2\\gamma T} w \\cdot \\gamma = \\frac{\\gamma}{2\\gamma T} w\n1003: $$\n1004: \n1005: $$\n1006: \\frac{\\partial L}{\\partial \\dot{v}} = \\frac{1}{2\\gamma T} w\n1007: $$\n1008: \n1009: **Step 2: Apply the Euler-Lagrange equations from {prf:ref}`thm-first-variation-om-action`.**\n1010: \n1011: The combined equation with the Lagrange multiplier $p(t)$ is:\n1012: \n1013: $$\n1014: \\frac{d}{dt}\\left(\\frac{\\partial L}{\\partial v} - \\frac{d}{dt}\\frac{\\partial L}{\\partial \\dot{v}}\\right) = \\frac{\\partial L}{\\partial x}\n1015: $$\n1016: \n1017: From the $v$ equation in {prf:ref}`thm-first-variation-om-action`:\n1018: \n1019: $$\n1020: p = \\frac{\\partial L}{\\partial v} - \\frac{d}{dt}\\frac{\\partial L}{\\partial \\dot{v}}\n1021: $$\n1022: \n1023: Compute $\\frac{\\partial L}{\\partial v}$:\n1024: \n1025: $$\n1026: \\frac{\\partial L}{\\partial v} = \\frac{\\gamma}{2\\gamma T} w = \\frac{1}{2T} w\n1027: $$\n1028: \n1029: Compute $\\frac{d}{dt}\\frac{\\partial L}{\\partial \\dot{v}}$:\n1030: \n1031: $$\n1032: \\frac{d}{dt}\\left(\\frac{1}{2\\gamma T} w\\right) = \\frac{1}{2\\gamma T} \\frac{dw}{dt} = \\frac{1}{2\\gamma T}(\\ddot{v} + \\nabla^2 U_{\\text{eff}} \\cdot \\dot{x} + \\gamma \\dot{v})\n1033: $$\n1034: \n1035: where we used $\\frac{d}{dt}\\nabla U_{\\text{eff}}(x) = \\nabla^2 U_{\\text{eff}} \\cdot \\dot{x}$.\n1036: \n1037: Thus:\n1038: \n1039: $$\n1040: p = \\frac{1}{2T} w - \\frac{1}{2\\gamma T}(\\ddot{v} + \\nabla^2 U_{\\text{eff}} \\cdot \\dot{x} + \\gamma \\dot{v})\n1041: $$\n1042: \n1043: From the $x$ equation: $\\dot{p} = \\frac{\\partial L}{\\partial x}$. Compute:\n1044: \n1045: $$\n1046: \\dot{p} = \\frac{1}{2T} \\dot{w} - \\frac{1}{2\\gamma T}(\\dddot{v} + \\nabla^3 U_{\\text{eff}} \\cdot (\\dot{x}, \\dot{x}) + \\nabla^2 U_{\\text{eff}} \\cdot \\ddot{x} + \\gamma \\ddot{v})\n1047: $$\n1048: \n1049: **Step 3: Simplify by using the kinematic constraint.**\n1050: \n1051: Using $\\dot{x} = v$ and recognizing that for an extremal path, $w = 0$ (the path minimizes the action when the drift deviation vanishes), we have:\n1052: \n1053: $$\n1054: \\dot{v} = -\\nabla U_{\\text{eff}}(x) - \\gamma v\n1055: $$\n1056: \n1057: Differentiating this:\n1058: \n1059: $$\n1060: \\ddot{v} = -\\nabla^2 U_{\\text{eff}}(x) \\cdot \\dot{x} - \\gamma \\dot{v} = -\\nabla^2 U_{\\text{eff}} \\cdot v - \\gamma \\dot{v}\n1061: $$\n1062: \n1063: Substituting $\\dot{v} = -\\nabla U_{\\text{eff}} - \\gamma v$:\n1064: \n1065: $$\n1066: \\ddot{v} = -\\nabla^2 U_{\\text{eff}} \\cdot v - \\gamma(-\\nabla U_{\\text{eff}} - \\gamma v) = -\\nabla^2 U_{\\text{eff}} \\cdot v + \\gamma \\nabla U_{\\text{eff}} + \\gamma^2 v\n1067: $$\n1068: \n1069: **Step 4: Verify this satisfies the Euler-Lagrange equation.**\n1070: \n1071: For an extremal path with $w = 0$:\n1072: \n1073: $$\n1074: \\dot{v} + \\nabla U_{\\text{eff}}(x) + \\gamma v = 0\n1075: $$\n1076: \n1077: This is precisely the **deterministic Langevin equation**, confirming that deterministic trajectories are critical points of the action.\n1078: \n1079: The fact that these critical points are actually minima (for convex $U_{\\text{eff}}$) follows from the positive-definiteness of the path space metric ({prf:ref}`thm-riemannian-metric-convex`). \u220e\n1080: \n1081: :::{note}"
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-natural-boundary-conditions",
+      "title": "Natural Boundary Conditions",
+      "start_line": 1089,
+      "end_line": 1111,
+      "header_lines": [
+        1090
+      ],
+      "content_start": 1092,
+      "content_end": 1110,
+      "content": "1092: :label: thm-natural-boundary-conditions\n1093: \n1094: For the action functional $S[\\gamma]$ with **free endpoint** at $t = T$, the extremal path must satisfy:\n1095: \n1096: $$\n1097: \\left.\\frac{\\partial L}{\\partial \\dot{v}}\\right|_{t=T} = 0\n1098: $$\n1099: \n1100: This gives:\n1101: \n1102: $$\n1103: \\dot{v}_T + \\nabla U_{\\text{eff}}(x_T) + \\gamma v_T = 0\n1104: $$\n1105: \n1106: **Physical Interpretation:**\n1107: \n1108: At the free endpoint, the path \"decelerates smoothly\" to equilibrium with the potential, rather than abruptly stopping.\n1109: \n1110: **Transversality Condition:**",
+      "metadata": {
+        "label": "thm-natural-boundary-conditions"
+      },
+      "section": "## 3. Calculus of Variations on Path Space",
+      "raw_directive": "1089: When endpoints are **not fixed**, the boundary terms in the first variation must vanish separately.\n1090: \n1091: :::{prf:theorem} Natural Boundary Conditions\n1092: :label: thm-natural-boundary-conditions\n1093: \n1094: For the action functional $S[\\gamma]$ with **free endpoint** at $t = T$, the extremal path must satisfy:\n1095: \n1096: $$\n1097: \\left.\\frac{\\partial L}{\\partial \\dot{v}}\\right|_{t=T} = 0\n1098: $$\n1099: \n1100: This gives:\n1101: \n1102: $$\n1103: \\dot{v}_T + \\nabla U_{\\text{eff}}(x_T) + \\gamma v_T = 0\n1104: $$\n1105: \n1106: **Physical Interpretation:**\n1107: \n1108: At the free endpoint, the path \"decelerates smoothly\" to equilibrium with the potential, rather than abruptly stopping.\n1109: \n1110: **Transversality Condition:**\n1111: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-second-variation",
+      "title": "Second Variation (Hessian of Action)",
+      "start_line": 1115,
+      "end_line": 1133,
+      "header_lines": [
+        1116
+      ],
+      "content_start": 1118,
+      "content_end": 1132,
+      "content": "1118: :label: def-second-variation\n1119: \n1120: The **second variation** (Hessian) of the action at an extremal path $\\gamma$ is the bilinear form:\n1121: \n1122: $$\n1123: D^2 S[\\gamma](h_1, h_2) := \\frac{\\partial^2}{\\partial \\epsilon_1 \\partial \\epsilon_2} S[\\gamma + \\epsilon_1 h_1 + \\epsilon_2 h_2] \\Big|_{\\epsilon_1 = \\epsilon_2 = 0}\n1124: $$\n1125: \n1126: For the Onsager-Machlup action:\n1127: \n1128: $$\n1129: D^2 S[\\gamma](h, h) = \\int_0^T \\left[ h_v^T \\nabla_v^2 L \\, h_v + 2 h_v^T \\nabla_v \\nabla_x L \\, h_x + h_x^T \\nabla_x^2 L \\, h_x \\right] dt\n1130: $$\n1131: \n1132: **Positive Definiteness:**",
+      "metadata": {
+        "label": "def-second-variation"
+      },
+      "section": "## 3. Calculus of Variations on Path Space",
+      "raw_directive": "1115: ### 3.5. Second Variation and Stability\n1116: \n1117: :::{prf:definition} Second Variation (Hessian of Action)\n1118: :label: def-second-variation\n1119: \n1120: The **second variation** (Hessian) of the action at an extremal path $\\gamma$ is the bilinear form:\n1121: \n1122: $$\n1123: D^2 S[\\gamma](h_1, h_2) := \\frac{\\partial^2}{\\partial \\epsilon_1 \\partial \\epsilon_2} S[\\gamma + \\epsilon_1 h_1 + \\epsilon_2 h_2] \\Big|_{\\epsilon_1 = \\epsilon_2 = 0}\n1124: $$\n1125: \n1126: For the Onsager-Machlup action:\n1127: \n1128: $$\n1129: D^2 S[\\gamma](h, h) = \\int_0^T \\left[ h_v^T \\nabla_v^2 L \\, h_v + 2 h_v^T \\nabla_v \\nabla_x L \\, h_x + h_x^T \\nabla_x^2 L \\, h_x \\right] dt\n1130: $$\n1131: \n1132: **Positive Definiteness:**\n1133: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-stability-second-variation",
+      "title": "Stability Criterion via Second Variation",
+      "start_line": 1135,
+      "end_line": 1159,
+      "header_lines": [
+        1136
+      ],
+      "content_start": 1138,
+      "content_end": 1158,
+      "content": "1138: :label: thm-stability-second-variation\n1139: \n1140: An extremal path $\\gamma$ is **stable** (locally minimizes action) if and only if:\n1141: \n1142: $$\n1143: D^2 S[\\gamma](h, h) \\geq \\kappa \\|h\\|_H^2\n1144: $$\n1145: \n1146: for some $\\kappa > 0$ and all $h \\in H$.\n1147: \n1148: **Jacobi Equation:**\n1149: \n1150: The boundary of stability is determined by the **Jacobi equation**:\n1151: \n1152: $$\n1153: \\frac{d}{dt}\\left(\\frac{\\partial^2 L}{\\partial \\dot{v}^2} \\dot{h}_v\\right) - \\frac{\\partial^2 L}{\\partial v^2} h_v - \\frac{\\partial^2 L}{\\partial x \\partial v} h_x = 0\n1154: $$\n1155: \n1156: Solutions $h \\neq 0$ satisfying $h(0) = h(t^*) = 0$ for some $t^* \\in (0, T]$ are **Jacobi fields**. The first such time $t^*$ is the **conjugate point**.\n1157: \n1158: **Physical Meaning:**",
+      "metadata": {
+        "label": "thm-stability-second-variation"
+      },
+      "section": "## 3. Calculus of Variations on Path Space",
+      "raw_directive": "1135: :::\n1136: \n1137: :::{prf:theorem} Stability Criterion via Second Variation\n1138: :label: thm-stability-second-variation\n1139: \n1140: An extremal path $\\gamma$ is **stable** (locally minimizes action) if and only if:\n1141: \n1142: $$\n1143: D^2 S[\\gamma](h, h) \\geq \\kappa \\|h\\|_H^2\n1144: $$\n1145: \n1146: for some $\\kappa > 0$ and all $h \\in H$.\n1147: \n1148: **Jacobi Equation:**\n1149: \n1150: The boundary of stability is determined by the **Jacobi equation**:\n1151: \n1152: $$\n1153: \\frac{d}{dt}\\left(\\frac{\\partial^2 L}{\\partial \\dot{v}^2} \\dot{h}_v\\right) - \\frac{\\partial^2 L}{\\partial v^2} h_v - \\frac{\\partial^2 L}{\\partial x \\partial v} h_x = 0\n1154: $$\n1155: \n1156: Solutions $h \\neq 0$ satisfying $h(0) = h(t^*) = 0$ for some $t^* \\in (0, T]$ are **Jacobi fields**. The first such time $t^*$ is the **conjugate point**.\n1157: \n1158: **Physical Meaning:**\n1159: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

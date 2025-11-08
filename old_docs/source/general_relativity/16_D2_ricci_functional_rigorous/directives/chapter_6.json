@@ -1,0 +1,47 @@
+{
+  "chapter_index": 6,
+  "section_id": "## 6. Regularity and Error Estimates",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "assumption",
+      "label": "assump-qsd-regularity",
+      "title": "Regularity of QSD Density",
+      "start_line": 620,
+      "end_line": 639,
+      "header_lines": [
+        621
+      ],
+      "content_start": 623,
+      "content_end": 638,
+      "content": "623: :label: assump-qsd-regularity\n624: \n625: The spatial density $\\rho_{\\text{QSD}}(x)$ at the quasi-stationary distribution satisfies:\n626: \n627: 1. **Smoothness**: $\\rho_{\\text{QSD}} \\in C^{3,\\alpha}(\\Omega)$ for some $\\alpha \\in (0, 1)$\n628: \n629: 2. **Positivity**: $\\inf_{x \\in \\Omega} \\rho_{\\text{QSD}}(x) \\geq c_{\\min} > 0$\n630: \n631: 3. **Boundedness**: $\\sup_{x \\in \\Omega} \\rho_{\\text{QSD}}(x) \\leq c_{\\max} < \\infty$\n632: \n633: 4. **Compact support**: $\\Omega$ is a compact domain with smooth boundary\n634: \n635: **Justification**: From Chapter 4, the QSD satisfies a Fokker-Planck equation with:\n636: - Globally confining potential $U(x) \\to \\infty$ as $x \\to \\partial \\Omega$\n637: - Smooth drift and diffusion coefficients\n638: ",
+      "metadata": {
+        "label": "assump-qsd-regularity"
+      },
+      "section": "## 6. Regularity and Error Estimates",
+      "raw_directive": "620: For the above proofs to hold rigorously, we require:\n621: \n622: :::{prf:assumption} Regularity of QSD Density\n623: :label: assump-qsd-regularity\n624: \n625: The spatial density $\\rho_{\\text{QSD}}(x)$ at the quasi-stationary distribution satisfies:\n626: \n627: 1. **Smoothness**: $\\rho_{\\text{QSD}} \\in C^{3,\\alpha}(\\Omega)$ for some $\\alpha \\in (0, 1)$\n628: \n629: 2. **Positivity**: $\\inf_{x \\in \\Omega} \\rho_{\\text{QSD}}(x) \\geq c_{\\min} > 0$\n630: \n631: 3. **Boundedness**: $\\sup_{x \\in \\Omega} \\rho_{\\text{QSD}}(x) \\leq c_{\\max} < \\infty$\n632: \n633: 4. **Compact support**: $\\Omega$ is a compact domain with smooth boundary\n634: \n635: **Justification**: From Chapter 4, the QSD satisfies a Fokker-Planck equation with:\n636: - Globally confining potential $U(x) \\to \\infty$ as $x \\to \\partial \\Omega$\n637: - Smooth drift and diffusion coefficients\n638: \n639: Standard PDE regularity theory (Gilbarg-Trudinger, 2001) guarantees $\\rho_{\\text{QSD}} \\in C^\\infty$ in the interior, with exponential decay at the boundary."
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-complete-error",
+      "title": "Complete Error Estimate (Rigorous)",
+      "start_line": 643,
+      "end_line": 712,
+      "header_lines": [
+        644
+      ],
+      "content_start": 646,
+      "content_end": 711,
+      "content": "646: :label: prop-complete-error\n647: \n648: Under Assumption {prf:ref}`assump-qsd-regularity`, the total error in the scutoid Ricci tensor is:\n649: \n650: $$\n651: \\left\\|R_{\\mu\\nu}^{\\text{scutoid}}[\\mu_t] - R_{\\mu\\nu}[g^{\\text{emergent}}[\\mu_t]]\\right\\|_{L^2} = O(N^{-1/d})\n652: $$\n653: \n654: with high probability.\n655: \n656: **For physical space ($d = 3$)**:\n657: \n658: $$\n659: \\boxed{\\left\\|R_{\\mu\\nu}^{\\text{scutoid}} - R_{\\mu\\nu}[g^{\\text{emergent}}]\\right\\|_{L^2} = O(N^{-1/3})}\n660: $$\n661: \n662: **Convergence rate**: $N = 10^6$ walkers \u2192 error $\\sim 10^{-2}$\n663: \n664: **Proof**:\n665: \n666: The error arises from the composition:\n667: \n668: $$\n669: \\mu_t \\xrightarrow{\\text{sampling}} \\hat{\\rho}_N \\xrightarrow{\\text{CVT}} g^{\\text{CVT}} \\xrightarrow{\\text{Regge}} R^{\\text{scutoid}}\n670: $$\n671: \n672: **Step 1: CVT Quantization Error**\n673: \n674: From Graf & Luschgy (2000, Chapter 6), for $N$ generators forming a Centroidal Voronoi Tessellation of density $\\rho_t$, the Wasserstein-2 distance between the empirical measure $\\hat{\\rho}_N$ and $\\rho_t$ satisfies:\n675: \n676: $$\n677: W_2(\\hat{\\rho}_N, \\rho_t) = O(N^{-1/d})\n678: $$\n679: \n680: with high probability (exponential concentration).\n681: \n682: **Step 2: Metric Error via Wasserstein Distance**\n683: \n684: The emergent metric $g_{ij} \\sim \\nabla^2 \\log \\rho$ depends on second derivatives of the density. The Wasserstein-2 distance controls the metric error via:\n685: \n686: $$\n687: \\|g^{\\text{CVT}}[\\hat{\\rho}_N] - g^{\\text{emergent}}[\\rho_t]\\|_{L^2} \\leq C \\cdot W_2(\\hat{\\rho}_N, \\rho_t) = O(N^{-1/d})\n688: $$\n689: \n690: where the constant $C$ depends on the regularity of $\\rho_t$ (guaranteed by Assumption {prf:ref}`assump-qsd-regularity`).\n691: \n692: **Step 3: Regge Curvature Error**\n693: \n694: From Cheeger et al. (1984), the Regge curvature converges to the Riemannian curvature with error:\n695: \n696: $$\n697: \\|R^{\\text{Regge}}[g^{\\text{CVT}}] - R[g^{\\text{CVT}}]\\|_{L^\\infty} = O(\\delta_N^2) = O(N^{-2/d})\n698: $$\n699: \n700: where $\\delta_N \\sim N^{-1/d}$ is the mesh size.\n701: \n702: **Step 4: Error Propagation**\n703: \n704: Since $N^{-2/d} \\leq N^{-1/d}$ for all $d \\geq 1$, the dominant error is the CVT quantization error:\n705: \n706: $$\n707: \\boxed{\\|R^{\\text{scutoid}} - R[g^{\\text{emergent}}]\\|_{L^2} = O(N^{-1/d})}\n708: $$\n709: \n710: \u220e\n711: ",
+      "metadata": {
+        "label": "prop-complete-error"
+      },
+      "section": "## 6. Regularity and Error Estimates",
+      "raw_directive": "643: ### 6.2 Convergence Rates\n644: \n645: :::{prf:proposition} Complete Error Estimate (Rigorous)\n646: :label: prop-complete-error\n647: \n648: Under Assumption {prf:ref}`assump-qsd-regularity`, the total error in the scutoid Ricci tensor is:\n649: \n650: $$\n651: \\left\\|R_{\\mu\\nu}^{\\text{scutoid}}[\\mu_t] - R_{\\mu\\nu}[g^{\\text{emergent}}[\\mu_t]]\\right\\|_{L^2} = O(N^{-1/d})\n652: $$\n653: \n654: with high probability.\n655: \n656: **For physical space ($d = 3$)**:\n657: \n658: $$\n659: \\boxed{\\left\\|R_{\\mu\\nu}^{\\text{scutoid}} - R_{\\mu\\nu}[g^{\\text{emergent}}]\\right\\|_{L^2} = O(N^{-1/3})}\n660: $$\n661: \n662: **Convergence rate**: $N = 10^6$ walkers \u2192 error $\\sim 10^{-2}$\n663: \n664: **Proof**:\n665: \n666: The error arises from the composition:\n667: \n668: $$\n669: \\mu_t \\xrightarrow{\\text{sampling}} \\hat{\\rho}_N \\xrightarrow{\\text{CVT}} g^{\\text{CVT}} \\xrightarrow{\\text{Regge}} R^{\\text{scutoid}}\n670: $$\n671: \n672: **Step 1: CVT Quantization Error**\n673: \n674: From Graf & Luschgy (2000, Chapter 6), for $N$ generators forming a Centroidal Voronoi Tessellation of density $\\rho_t$, the Wasserstein-2 distance between the empirical measure $\\hat{\\rho}_N$ and $\\rho_t$ satisfies:\n675: \n676: $$\n677: W_2(\\hat{\\rho}_N, \\rho_t) = O(N^{-1/d})\n678: $$\n679: \n680: with high probability (exponential concentration).\n681: \n682: **Step 2: Metric Error via Wasserstein Distance**\n683: \n684: The emergent metric $g_{ij} \\sim \\nabla^2 \\log \\rho$ depends on second derivatives of the density. The Wasserstein-2 distance controls the metric error via:\n685: \n686: $$\n687: \\|g^{\\text{CVT}}[\\hat{\\rho}_N] - g^{\\text{emergent}}[\\rho_t]\\|_{L^2} \\leq C \\cdot W_2(\\hat{\\rho}_N, \\rho_t) = O(N^{-1/d})\n688: $$\n689: \n690: where the constant $C$ depends on the regularity of $\\rho_t$ (guaranteed by Assumption {prf:ref}`assump-qsd-regularity`).\n691: \n692: **Step 3: Regge Curvature Error**\n693: \n694: From Cheeger et al. (1984), the Regge curvature converges to the Riemannian curvature with error:\n695: \n696: $$\n697: \\|R^{\\text{Regge}}[g^{\\text{CVT}}] - R[g^{\\text{CVT}}]\\|_{L^\\infty} = O(\\delta_N^2) = O(N^{-2/d})\n698: $$\n699: \n700: where $\\delta_N \\sim N^{-1/d}$ is the mesh size.\n701: \n702: **Step 4: Error Propagation**\n703: \n704: Since $N^{-2/d} \\leq N^{-1/d}$ for all $d \\geq 1$, the dominant error is the CVT quantization error:\n705: \n706: $$\n707: \\boxed{\\|R^{\\text{scutoid}} - R[g^{\\text{emergent}}]\\|_{L^2} = O(N^{-1/d})}\n708: $$\n709: \n710: \u220e\n711: \n712: **Reference**: Graf, S., Luschgy, H. (2000). *Foundations of Quantization for Probability Distributions*. Springer-Verlag, Chapter 6."
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

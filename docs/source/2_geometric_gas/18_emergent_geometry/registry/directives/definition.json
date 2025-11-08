@@ -1,0 +1,211 @@
+{
+  "document_id": "18_emergent_geometry",
+  "stage": "directives",
+  "directive_type": "definition",
+  "generated_at": "2025-11-08T17:07:43.263899+00:00",
+  "count": 8,
+  "items": [
+    {
+      "directive_type": "definition",
+      "label": "def-d-adaptive-diffusion",
+      "title": "Adaptive Diffusion Tensor (from `11_geometric_gas.md`)",
+      "start_line": 303,
+      "end_line": 323,
+      "header_lines": [
+        304
+      ],
+      "content_start": 306,
+      "content_end": 322,
+      "content": "306: :label: def-d-adaptive-diffusion\n307: \n308: For a swarm state $S = \\{(x_i, v_i, s_i)\\}_{i=1}^N$, the **adaptive diffusion tensor** for walker $i$ is:\n309: \n310: $$\n311: \\Sigma_{\\text{reg}}(x_i, S) = \\left( H_i(S) + \\epsilon_\\Sigma I \\right)^{-1/2}\n312: $$\n313: \n314: where:\n315: - $H_i(S) = \\nabla^2_{x_i} V_{\\text{fit}}(S)$ is the Hessian of the fitness potential with respect to walker $i$'s position\n316: - $\\epsilon_\\Sigma > 0$ is the **regularization parameter**\n317: - The matrix square root is the unique symmetric positive definite square root\n318: \n319: The induced **diffusion matrix** (covariance of the noise) is:\n320: \n321: $$\n322: D_{\\text{reg}}(x_i, S) = \\Sigma_{\\text{reg}}(x_i, S) \\Sigma_{\\text{reg}}(x_i, S)^T = \\left( H_i(S) + \\epsilon_\\Sigma I \\right)^{-1}",
+      "metadata": {
+        "label": "def-d-adaptive-diffusion"
+      },
+      "section": "## 3. The Emergent Geometry Framework",
+      "raw_directive": "303: The Geometric Gas introduces geometry through its noise structure.\n304: \n305: :::{prf:definition} Adaptive Diffusion Tensor (from `11_geometric_gas.md`)\n306: :label: def-d-adaptive-diffusion\n307: \n308: For a swarm state $S = \\{(x_i, v_i, s_i)\\}_{i=1}^N$, the **adaptive diffusion tensor** for walker $i$ is:\n309: \n310: $$\n311: \\Sigma_{\\text{reg}}(x_i, S) = \\left( H_i(S) + \\epsilon_\\Sigma I \\right)^{-1/2}\n312: $$\n313: \n314: where:\n315: - $H_i(S) = \\nabla^2_{x_i} V_{\\text{fit}}(S)$ is the Hessian of the fitness potential with respect to walker $i$'s position\n316: - $\\epsilon_\\Sigma > 0$ is the **regularization parameter**\n317: - The matrix square root is the unique symmetric positive definite square root\n318: \n319: The induced **diffusion matrix** (covariance of the noise) is:\n320: \n321: $$\n322: D_{\\text{reg}}(x_i, S) = \\Sigma_{\\text{reg}}(x_i, S) \\Sigma_{\\text{reg}}(x_i, S)^T = \\left( H_i(S) + \\epsilon_\\Sigma I \\right)^{-1}\n323: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "18_emergent_geometry",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 3. The Emergent Geometry Framework"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-d-kinetic-operator-adaptive",
+      "title": "Kinetic Operator with Adaptive Diffusion",
+      "start_line": 516,
+      "end_line": 555,
+      "header_lines": [
+        517
+      ],
+      "content_start": 519,
+      "content_end": 554,
+      "content": "519: :label: def-d-kinetic-operator-adaptive\n520: \n521: The kinetic operator $\\Psi_{\\text{kin}}$ evolves the swarm for time $\\tau$ according to:\n522: \n523: $$\n524: \\begin{aligned}\n525: dx_i &= v_i \\, dt \\\\\n526: dv_i &= \\left[ F(x_i) - \\gamma v_i \\right] dt + \\Sigma_{\\text{reg}}(x_i, S) \\circ dW_i\n527: \\end{aligned}\n528: $$\n529: \n530: where:\n531: - $F(x) = -\\nabla U(x)$ is the force from the confining potential (Axiom 1.3.1 from `../1_euclidean_gas/06_convergence.md`)\n532: - $\\gamma > 0$ is the friction coefficient\n533: - $W_i$ are independent standard Brownian motions\n534: - $\\circ$ denotes the **Stratonovich product** (not Itô)\n535: \n536: **Why Stratonovich**: The Stratonovich formulation is essential for manifold/geometric settings because:\n537: 1. **Chain rule works**: Stratonovich SDEs transform naturally under coordinate changes\n538: 2. **Geometric invariance**: The diffusion $(H + \\epsilon_\\Sigma I)^{-1/2}$ represents intrinsic geometry\n539: 3. **No spurious drift**: Itô would add correction terms $\\frac{1}{2}\\sum_j (D_x\\Sigma_{\\text{reg}}^{(\\cdot,j)})\\Sigma_{\\text{reg}}^{(\\cdot,j)}$ that obscure the physics\n540: \n541: **Generator and Discretization Convention**: We present the SDE in Stratonovich form for geometric clarity. However:\n542: - **For proofs**: The infinitesimal generator $\\mathcal{L}$ uses the **Itô form** with Itô drift:\n543: \n544: $$\n545: b_{\\text{It\\hat{o}}}(x,v,S) = [F(x) - \\gamma v] + \\frac{1}{2}\\sum_{j=1}^d (D_x\\Sigma_{\\text{reg}}^{(\\cdot,j)}(x,S))\\Sigma_{\\text{reg}}^{(\\cdot,j)}(x,S)\n546: $$\n547: \n548:   where $\\Sigma_{\\text{reg}}^{(\\cdot,j)}$ is the $j$-th column and $D_x$ is the Jacobian w.r.t. $x$.\n549: \n550: - **For discretization**: To properly simulate this SDE, we use either:\n551:   - **Heun's method** (stochastic midpoint) for the Stratonovich form, or\n552:   - **Euler-Maruyama** on the Itô form (with the corrected drift above)\n553: \n554: Note: Direct application of Euler-Maruyama to the Stratonovich form is inconsistent and should be avoided.",
+      "metadata": {
+        "label": "def-d-kinetic-operator-adaptive"
+      },
+      "section": "## 3. The Emergent Geometry Framework",
+      "raw_directive": "516: The kinetic operator evolves walkers according to underdamped Langevin dynamics with the adaptive diffusion.\n517: \n518: :::{prf:definition} Kinetic Operator with Adaptive Diffusion\n519: :label: def-d-kinetic-operator-adaptive\n520: \n521: The kinetic operator $\\Psi_{\\text{kin}}$ evolves the swarm for time $\\tau$ according to:\n522: \n523: $$\n524: \\begin{aligned}\n525: dx_i &= v_i \\, dt \\\\\n526: dv_i &= \\left[ F(x_i) - \\gamma v_i \\right] dt + \\Sigma_{\\text{reg}}(x_i, S) \\circ dW_i\n527: \\end{aligned}\n528: $$\n529: \n530: where:\n531: - $F(x) = -\\nabla U(x)$ is the force from the confining potential (Axiom 1.3.1 from `../1_euclidean_gas/06_convergence.md`)\n532: - $\\gamma > 0$ is the friction coefficient\n533: - $W_i$ are independent standard Brownian motions\n534: - $\\circ$ denotes the **Stratonovich product** (not Itô)\n535: \n536: **Why Stratonovich**: The Stratonovich formulation is essential for manifold/geometric settings because:\n537: 1. **Chain rule works**: Stratonovich SDEs transform naturally under coordinate changes\n538: 2. **Geometric invariance**: The diffusion $(H + \\epsilon_\\Sigma I)^{-1/2}$ represents intrinsic geometry\n539: 3. **No spurious drift**: Itô would add correction terms $\\frac{1}{2}\\sum_j (D_x\\Sigma_{\\text{reg}}^{(\\cdot,j)})\\Sigma_{\\text{reg}}^{(\\cdot,j)}$ that obscure the physics\n540: \n541: **Generator and Discretization Convention**: We present the SDE in Stratonovich form for geometric clarity. However:\n542: - **For proofs**: The infinitesimal generator $\\mathcal{L}$ uses the **Itô form** with Itô drift:\n543: \n544: $$\n545: b_{\\text{It\\hat{o}}}(x,v,S) = [F(x) - \\gamma v] + \\frac{1}{2}\\sum_{j=1}^d (D_x\\Sigma_{\\text{reg}}^{(\\cdot,j)}(x,S))\\Sigma_{\\text{reg}}^{(\\cdot,j)}(x,S)\n546: $$\n547: \n548:   where $\\Sigma_{\\text{reg}}^{(\\cdot,j)}$ is the $j$-th column and $D_x$ is the Jacobian w.r.t. $x$.\n549: \n550: - **For discretization**: To properly simulate this SDE, we use either:\n551:   - **Heun's method** (stochastic midpoint) for the Stratonovich form, or\n552:   - **Euler-Maruyama** on the Itô form (with the corrected drift above)\n553: \n554: Note: Direct application of Euler-Maruyama to the Stratonovich form is inconsistent and should be avoided.\n555: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "18_emergent_geometry",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 3. The Emergent Geometry Framework"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-d-coupled-state",
+      "title": "Coupled Swarm State",
+      "start_line": 734,
+      "end_line": 744,
+      "header_lines": [
+        735
+      ],
+      "content_start": 737,
+      "content_end": 743,
+      "content": "737: :label: def-d-coupled-state\n738: \n739: A **coupled swarm state** consists of two independent swarms evolving under the same transition kernel:\n740: \n741: $$\n742: (S_1, S_2) \\in (\\mathcal{X} \\times \\mathbb{R}^d \\times \\{0,1\\})^{2N}\n743: $$",
+      "metadata": {
+        "label": "def-d-coupled-state"
+      },
+      "section": "## 4. Main Theorem and Proof Strategy",
+      "raw_directive": "734: To prove geometric ergodicity, we must show that **two independent copies** of the swarm converge to each other. This requires a Lyapunov function on the **coupled state space**.\n735: \n736: :::{prf:definition} Coupled Swarm State\n737: :label: def-d-coupled-state\n738: \n739: A **coupled swarm state** consists of two independent swarms evolving under the same transition kernel:\n740: \n741: $$\n742: (S_1, S_2) \\in (\\mathcal{X} \\times \\mathbb{R}^d \\times \\{0,1\\})^{2N}\n743: $$\n744: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "18_emergent_geometry",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 4. Main Theorem and Proof Strategy"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-d-coupled-lyapunov",
+      "title": "Coupled Lyapunov Function (from `../1_euclidean_gas/03_cloning.md` and `../1_euclidean_gas/06_convergence.md`)",
+      "start_line": 746,
+      "end_line": 789,
+      "header_lines": [
+        747,
+        786
+      ],
+      "content_start": 749,
+      "content_end": 788,
+      "content": "749: :label: def-d-coupled-lyapunov\n750: \n751: The **total Lyapunov function** is:\n752: \n753: $$\n754: V_{\\text{total}}(S_1, S_2) = c_V V_{\\text{inter}}(S_1, S_2) + c_B V_{\\text{boundary}}(S_1, S_2)\n755: $$\n756: \n757: where $c_V, c_B > 0$ are **coupling constants** to be chosen.\n758: \n759: **Inter-Swarm Component:**\n760: \n761: $$\n762: V_{\\text{inter}}(S_1, S_2) = V_W(S_1, S_2) + V_{\\text{Var},x}(S_1, S_2) + V_{\\text{Var},v}(S_1, S_2)\n763: $$\n764: \n765: where:\n766: \n767: **1. Wasserstein-2 Distance** (with hypocoercive cost):\n768: \n769: $$\n770: V_W(S_1, S_2) = W_h^2(\\mu_1, \\mu_2)\n771: $$\n772: \n773: where $\\mu_k$ is the empirical measure of alive walkers in swarm $k$, and $W_h$ is the Wasserstein-2 distance with respect to the **hypocoercive norm** (defined in Section 3.2):\n774: \n775: $$\n776: \\|((\\Delta x, \\Delta v))\\|_h^2 = \\|\\Delta x\\|^2 + \\lambda_v \\|\\Delta v\\|^2 + b \\langle \\Delta x, \\Delta v \\rangle\n777: $$\n778: \n779: **2. Position Variance Sum:**\n780: \n781: $$\n782: V_{\\text{Var},x}(S_1, S_2) = V_{\\text{Var},x}(S_1) + V_{\\text{Var},x}(S_2)\n783: $$\n784: \n785: where $V_{\\text{Var},x}(S_k) = \\frac{1}{N} \\sum_{i: s_{k,i}=1} \\|x_{k,i} - \\bar{x}_k\\|^2$.\n786: \n787: :::{admonition} Normalization by $N$ (not $N_{\\text{alive}}$)\n788: :class: note",
+      "metadata": {
+        "label": "def-d-coupled-lyapunov",
+        "class": "note"
+      },
+      "section": "## 4. Main Theorem and Proof Strategy",
+      "raw_directive": "746: :::\n747: \n748: :::{prf:definition} Coupled Lyapunov Function (from `../1_euclidean_gas/03_cloning.md` and `../1_euclidean_gas/06_convergence.md`)\n749: :label: def-d-coupled-lyapunov\n750: \n751: The **total Lyapunov function** is:\n752: \n753: $$\n754: V_{\\text{total}}(S_1, S_2) = c_V V_{\\text{inter}}(S_1, S_2) + c_B V_{\\text{boundary}}(S_1, S_2)\n755: $$\n756: \n757: where $c_V, c_B > 0$ are **coupling constants** to be chosen.\n758: \n759: **Inter-Swarm Component:**\n760: \n761: $$\n762: V_{\\text{inter}}(S_1, S_2) = V_W(S_1, S_2) + V_{\\text{Var},x}(S_1, S_2) + V_{\\text{Var},v}(S_1, S_2)\n763: $$\n764: \n765: where:\n766: \n767: **1. Wasserstein-2 Distance** (with hypocoercive cost):\n768: \n769: $$\n770: V_W(S_1, S_2) = W_h^2(\\mu_1, \\mu_2)\n771: $$\n772: \n773: where $\\mu_k$ is the empirical measure of alive walkers in swarm $k$, and $W_h$ is the Wasserstein-2 distance with respect to the **hypocoercive norm** (defined in Section 3.2):\n774: \n775: $$\n776: \\|((\\Delta x, \\Delta v))\\|_h^2 = \\|\\Delta x\\|^2 + \\lambda_v \\|\\Delta v\\|^2 + b \\langle \\Delta x, \\Delta v \\rangle\n777: $$\n778: \n779: **2. Position Variance Sum:**\n780: \n781: $$\n782: V_{\\text{Var},x}(S_1, S_2) = V_{\\text{Var},x}(S_1) + V_{\\text{Var},x}(S_2)\n783: $$\n784: \n785: where $V_{\\text{Var},x}(S_k) = \\frac{1}{N} \\sum_{i: s_{k,i}=1} \\|x_{k,i} - \\bar{x}_k\\|^2$.\n786: \n787: :::{admonition} Normalization by $N$ (not $N_{\\text{alive}}$)\n788: :class: note\n789: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "18_emergent_geometry",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 4. Main Theorem and Proof Strategy"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-d-hypocoercive-norm",
+      "title": "Hypocoercive Norm (from `../1_euclidean_gas/06_convergence.md`)",
+      "start_line": 1220,
+      "end_line": 1236,
+      "header_lines": [
+        1221
+      ],
+      "content_start": 1223,
+      "content_end": 1235,
+      "content": "1223: :label: def-d-hypocoercive-norm\n1224: \n1225: For phase-space differences $(\\Delta x, \\Delta v) \\in \\mathbb{R}^{2d}$, the **hypocoercive norm squared** is:\n1226: \n1227: $$\n1228: \\|(\\Delta x, \\Delta v)\\|_h^2 = \\|\\Delta x\\|^2 + \\lambda_v \\|\\Delta v\\|^2 + b \\langle \\Delta x, \\Delta v \\rangle\n1229: $$\n1230: \n1231: where:\n1232: - $\\lambda_v > 0$: Velocity weight (typically $\\lambda_v \\sim 1/\\gamma$)\n1233: - $b \\in \\mathbb{R}$: Coupling coefficient (chosen for optimal contraction)\n1234: \n1235: **Positive definiteness**: Requires $\\lambda_v > b^2/4$.",
+      "metadata": {
+        "label": "def-d-hypocoercive-norm"
+      },
+      "section": "## 5. Anisotropic Kinetic Operator Analysis",
+      "raw_directive": "1220: #### 3.2.1. The Hypocoercive Norm (Review)\n1221: \n1222: :::{prf:definition} Hypocoercive Norm (from `../1_euclidean_gas/06_convergence.md`)\n1223: :label: def-d-hypocoercive-norm\n1224: \n1225: For phase-space differences $(\\Delta x, \\Delta v) \\in \\mathbb{R}^{2d}$, the **hypocoercive norm squared** is:\n1226: \n1227: $$\n1228: \\|(\\Delta x, \\Delta v)\\|_h^2 = \\|\\Delta x\\|^2 + \\lambda_v \\|\\Delta v\\|^2 + b \\langle \\Delta x, \\Delta v \\rangle\n1229: $$\n1230: \n1231: where:\n1232: - $\\lambda_v > 0$: Velocity weight (typically $\\lambda_v \\sim 1/\\gamma$)\n1233: - $b \\in \\mathbb{R}$: Coupling coefficient (chosen for optimal contraction)\n1234: \n1235: **Positive definiteness**: Requires $\\lambda_v > b^2/4$.\n1236: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "18_emergent_geometry",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. Anisotropic Kinetic Operator Analysis"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-fitness-algorithmic",
+      "title": "Fitness Potential Construction (Algorithmic Specification)",
+      "start_line": 2757,
+      "end_line": 2812,
+      "header_lines": [
+        2758
+      ],
+      "content_start": 2760,
+      "content_end": 2811,
+      "content": "2760: :label: def-fitness-algorithmic\n2761: \n2762: For a swarm state $S = \\{(x_i, v_i, s_i)\\}_{i=1}^N$ with alive walkers $A_k = \\{i : s_i = \\text{alive}\\}$, the fitness potential at position $x \\in \\mathcal{X}$ is constructed through the following pipeline:\n2763: \n2764: **Step 1: Measurement Function.** Given a measurement function $d: \\mathcal{X} \\to \\mathbb{R}$ (e.g., reward, diversity score), evaluate:\n2765: \n2766: $$\n2767: d_i = d(x_i) \\quad \\text{for all } i \\in A_k\n2768: $$\n2769: \n2770: **Step 2: Localization Weights.** For localization scale $\\rho > 0$ and localization kernel $K_\\rho(x, x') = \\frac{1}{Z_K(x, \\rho)} \\exp\\left(-\\frac{\\|x - x'\\|^2}{2\\rho^2}\\right)$, compute normalized weights:\n2771: \n2772: $$\n2773: w_{ij}(\\rho) = \\frac{K_\\rho(x, x_j)}{\\sum_{\\ell \\in A_k} K_\\rho(x, x_\\ell)}\n2774: $$\n2775: \n2776: where the normalization ensures $\\sum_{j \\in A_k} w_{ij}(\\rho) = 1$.\n2777: \n2778: **Step 3: Localized Moments.** Compute the ρ-localized mean and variance at position $x$:\n2779: \n2780: $$\n2781: \\mu_\\rho[f_k, d, x] = \\sum_{j \\in A_k} w_{ij}(\\rho) \\, d_j\n2782: $$\n2783: \n2784: $$\n2785: \\sigma^2_\\rho[f_k, d, x] = \\sum_{j \\in A_k} w_{ij}(\\rho) \\, (d_j - \\mu_\\rho[f_k, d, x])^2\n2786: $$\n2787: \n2788: **Step 4: Regularized Standard Deviation.** Apply numerical regularization using a C¹-smooth patching function:\n2789: \n2790: $$\n2791: \\sigma'_\\rho[f_k, d, x] = \\sigma\\'_{\\text{reg}}\\left(\\sqrt{\\sigma^2_\\rho[f_k, d, x]}\\right)\n2792: $$\n2793: \n2794: where $\\sigma\\'_{\\text{reg}}: [0, \\infty) \\to [\\kappa_{\\text{var,min}}, \\infty)$ is a C¹-smooth function (see Definition {prf:ref}`def-unified-z-score` in `11_geometric_gas.md`) that:\n2795: - Equals $\\kappa_{\\text{var,min}}$ for $\\sigma \\le \\kappa_{\\text{var,min}} - \\delta$\n2796: - Smoothly transitions through a polynomial patch in $[\\kappa_{\\text{var,min}} - \\delta, \\kappa_{\\text{var,min}} + \\delta]$\n2797: - Equals the identity $\\sigma$ for $\\sigma \\ge \\kappa_{\\text{var,min}} + \\delta$\n2798: \n2799: This ensures $V_{\\text{fit}}$ is C² everywhere, as required for the Hessian to be well-defined.\n2800: \n2801: **Step 5: Localized Z-Score.** Compute the standardized measurement:\n2802: \n2803: $$\n2804: Z_\\rho[f_k, d, x] = \\frac{d(x) - \\mu_\\rho[f_k, d, x]}{\\sigma'_\\rho[f_k, d, x]}\n2805: $$\n2806: \n2807: **Step 6: Rescale to Bounded Potential.** Apply a smooth, monotone, bounded rescale function $g_A: \\mathbb{R} \\to [0, A]$ (e.g., $g_A(z) = \\frac{A}{1 + e^{-z}}$):\n2808: \n2809: $$\n2810: V_{\\text{fit}}[f_k, \\rho](x) = g_A\\left(Z_\\rho[f_k, d, x]\\right)\n2811: $$",
+      "metadata": {
+        "label": "def-fitness-algorithmic"
+      },
+      "section": "## 11. Explicit Derivation of the Emergent Metric from Algorithmic Parameters",
+      "raw_directive": "2757: We begin with the algorithmic construction of the fitness potential.\n2758: \n2759: :::{prf:definition} Fitness Potential Construction (Algorithmic Specification)\n2760: :label: def-fitness-algorithmic\n2761: \n2762: For a swarm state $S = \\{(x_i, v_i, s_i)\\}_{i=1}^N$ with alive walkers $A_k = \\{i : s_i = \\text{alive}\\}$, the fitness potential at position $x \\in \\mathcal{X}$ is constructed through the following pipeline:\n2763: \n2764: **Step 1: Measurement Function.** Given a measurement function $d: \\mathcal{X} \\to \\mathbb{R}$ (e.g., reward, diversity score), evaluate:\n2765: \n2766: $$\n2767: d_i = d(x_i) \\quad \\text{for all } i \\in A_k\n2768: $$\n2769: \n2770: **Step 2: Localization Weights.** For localization scale $\\rho > 0$ and localization kernel $K_\\rho(x, x') = \\frac{1}{Z_K(x, \\rho)} \\exp\\left(-\\frac{\\|x - x'\\|^2}{2\\rho^2}\\right)$, compute normalized weights:\n2771: \n2772: $$\n2773: w_{ij}(\\rho) = \\frac{K_\\rho(x, x_j)}{\\sum_{\\ell \\in A_k} K_\\rho(x, x_\\ell)}\n2774: $$\n2775: \n2776: where the normalization ensures $\\sum_{j \\in A_k} w_{ij}(\\rho) = 1$.\n2777: \n2778: **Step 3: Localized Moments.** Compute the ρ-localized mean and variance at position $x$:\n2779: \n2780: $$\n2781: \\mu_\\rho[f_k, d, x] = \\sum_{j \\in A_k} w_{ij}(\\rho) \\, d_j\n2782: $$\n2783: \n2784: $$\n2785: \\sigma^2_\\rho[f_k, d, x] = \\sum_{j \\in A_k} w_{ij}(\\rho) \\, (d_j - \\mu_\\rho[f_k, d, x])^2\n2786: $$\n2787: \n2788: **Step 4: Regularized Standard Deviation.** Apply numerical regularization using a C¹-smooth patching function:\n2789: \n2790: $$\n2791: \\sigma'_\\rho[f_k, d, x] = \\sigma\\'_{\\text{reg}}\\left(\\sqrt{\\sigma^2_\\rho[f_k, d, x]}\\right)\n2792: $$\n2793: \n2794: where $\\sigma\\'_{\\text{reg}}: [0, \\infty) \\to [\\kappa_{\\text{var,min}}, \\infty)$ is a C¹-smooth function (see Definition {prf:ref}`def-unified-z-score` in `11_geometric_gas.md`) that:\n2795: - Equals $\\kappa_{\\text{var,min}}$ for $\\sigma \\le \\kappa_{\\text{var,min}} - \\delta$\n2796: - Smoothly transitions through a polynomial patch in $[\\kappa_{\\text{var,min}} - \\delta, \\kappa_{\\text{var,min}} + \\delta]$\n2797: - Equals the identity $\\sigma$ for $\\sigma \\ge \\kappa_{\\text{var,min}} + \\delta$\n2798: \n2799: This ensures $V_{\\text{fit}}$ is C² everywhere, as required for the Hessian to be well-defined.\n2800: \n2801: **Step 5: Localized Z-Score.** Compute the standardized measurement:\n2802: \n2803: $$\n2804: Z_\\rho[f_k, d, x] = \\frac{d(x) - \\mu_\\rho[f_k, d, x]}{\\sigma'_\\rho[f_k, d, x]}\n2805: $$\n2806: \n2807: **Step 6: Rescale to Bounded Potential.** Apply a smooth, monotone, bounded rescale function $g_A: \\mathbb{R} \\to [0, A]$ (e.g., $g_A(z) = \\frac{A}{1 + e^{-z}}$):\n2808: \n2809: $$\n2810: V_{\\text{fit}}[f_k, \\rho](x) = g_A\\left(Z_\\rho[f_k, d, x]\\right)\n2811: $$\n2812: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "18_emergent_geometry",
+        "chapter_index": 11,
+        "chapter_file": "chapter_11.json",
+        "section_id": "## 11. Explicit Derivation of the Emergent Metric from Algorithmic Parameters"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-metric-explicit",
+      "title": "Emergent Riemannian Metric (Explicit Construction)",
+      "start_line": 3001,
+      "end_line": 3027,
+      "header_lines": [
+        3002
+      ],
+      "content_start": 3004,
+      "content_end": 3026,
+      "content": "3004: :label: def-metric-explicit\n3005: \n3006: For a walker at position $x$ in swarm state $S$, the **emergent Riemannian metric** is defined as:\n3007: \n3008: $$\n3009: g(x, S) = H(x, S) + \\epsilon_\\Sigma I\n3010: $$\n3011: \n3012: where:\n3013: - $H(x, S) = \\nabla^2_x V_{\\text{fit}}[f_k, \\rho](x)$ is the Hessian from {prf:ref}`thm-explicit-hessian`\n3014: - $\\epsilon_\\Sigma > 0$ is the **regularization parameter**\n3015: - $I$ is the $d \\times d$ identity matrix\n3016: \n3017: The corresponding **diffusion tensor** (inverse of the metric) is:\n3018: \n3019: $$\n3020: D_{\\text{reg}}(x, S) = g(x, S)^{-1} = \\left(H(x, S) + \\epsilon_\\Sigma I\\right)^{-1}\n3021: $$\n3022: \n3023: and the **diffusion coefficient matrix** used in the SDE is:\n3024: \n3025: $$\n3026: \\Sigma_{\\text{reg}}(x, S) = D_{\\text{reg}}(x, S)^{1/2} = \\left(H(x, S) + \\epsilon_\\Sigma I\\right)^{-1/2}",
+      "metadata": {
+        "label": "def-metric-explicit"
+      },
+      "section": "## 11. Explicit Derivation of the Emergent Metric from Algorithmic Parameters",
+      "raw_directive": "3001: The Hessian alone may not be positive definite (e.g., at saddle points or in flat regions). The regularization ensures well-posedness.\n3002: \n3003: :::{prf:definition} Emergent Riemannian Metric (Explicit Construction)\n3004: :label: def-metric-explicit\n3005: \n3006: For a walker at position $x$ in swarm state $S$, the **emergent Riemannian metric** is defined as:\n3007: \n3008: $$\n3009: g(x, S) = H(x, S) + \\epsilon_\\Sigma I\n3010: $$\n3011: \n3012: where:\n3013: - $H(x, S) = \\nabla^2_x V_{\\text{fit}}[f_k, \\rho](x)$ is the Hessian from {prf:ref}`thm-explicit-hessian`\n3014: - $\\epsilon_\\Sigma > 0$ is the **regularization parameter**\n3015: - $I$ is the $d \\times d$ identity matrix\n3016: \n3017: The corresponding **diffusion tensor** (inverse of the metric) is:\n3018: \n3019: $$\n3020: D_{\\text{reg}}(x, S) = g(x, S)^{-1} = \\left(H(x, S) + \\epsilon_\\Sigma I\\right)^{-1}\n3021: $$\n3022: \n3023: and the **diffusion coefficient matrix** used in the SDE is:\n3024: \n3025: $$\n3026: \\Sigma_{\\text{reg}}(x, S) = D_{\\text{reg}}(x, S)^{1/2} = \\left(H(x, S) + \\epsilon_\\Sigma I\\right)^{-1/2}\n3027: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "18_emergent_geometry",
+        "chapter_index": 11,
+        "chapter_file": "chapter_11.json",
+        "section_id": "## 11. Explicit Derivation of the Emergent Metric from Algorithmic Parameters"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-emergent-manifold",
+      "title": "Emergent Riemannian Manifold",
+      "start_line": 3234,
+      "end_line": 3271,
+      "header_lines": [
+        3235
+      ],
+      "content_start": 3237,
+      "content_end": 3270,
+      "content": "3237: :label: def-emergent-manifold\n3238: \n3239: The metric $g(x, S)$ from {prf:ref}`def-metric-explicit` endows the state space $\\mathcal{X}$ with the structure of a **Riemannian manifold** $(\\mathcal{X}, g_S)$, where the metric depends parametrically on the swarm state $S$.\n3240: \n3241: **Geometric Quantities:**\n3242: \n3243: **1. Metric Tensor (Index Form):**\n3244: \n3245: $$\n3246: g_{ab}(x, S) = \\left[\\nabla^2_x V_{\\text{fit}}[f_k, \\rho](x)\\right]_{ab} + \\epsilon_\\Sigma \\delta_{ab}\n3247: $$\n3248: \n3249: **2. Inverse Metric (Contravariant Tensor):**\n3250: \n3251: $$\n3252: g^{ab}(x, S) = \\left[\\left(\\nabla^2_x V_{\\text{fit}}[f_k, \\rho](x) + \\epsilon_\\Sigma I\\right)^{-1}\\right]_{ab}\n3253: $$\n3254: \n3255: **3. Volume Element:** The Riemannian volume measure is:\n3256: \n3257: $$\n3258: d\\text{Vol}_g = \\sqrt{\\det g(x, S)} \\, dx\n3259: $$\n3260: \n3261: **4. Geodesic Equation:** Curves $\\gamma(t)$ that minimize length satisfy:\n3262: \n3263: $$\n3264: \\frac{d^2 \\gamma^a}{dt^2} + \\Gamma^a_{bc}(x, S) \\frac{d\\gamma^b}{dt} \\frac{d\\gamma^c}{dt} = 0\n3265: $$\n3266: \n3267: where $\\Gamma^a_{bc}$ are the **Christoffel symbols** computed from $g$ via:\n3268: \n3269: $$\n3270: \\Gamma^a_{bc} = \\frac{1}{2} g^{ad} \\left(\\frac{\\partial g_{db}}{\\partial x^c} + \\frac{\\partial g_{dc}}{\\partial x^b} - \\frac{\\partial g_{bc}}{\\partial x^d}\\right)",
+      "metadata": {
+        "label": "def-emergent-manifold"
+      },
+      "section": "## 11. Explicit Derivation of the Emergent Metric from Algorithmic Parameters",
+      "raw_directive": "3234: With the metric explicitly constructed, we can characterize the induced geometric structure.\n3235: \n3236: :::{prf:definition} Emergent Riemannian Manifold\n3237: :label: def-emergent-manifold\n3238: \n3239: The metric $g(x, S)$ from {prf:ref}`def-metric-explicit` endows the state space $\\mathcal{X}$ with the structure of a **Riemannian manifold** $(\\mathcal{X}, g_S)$, where the metric depends parametrically on the swarm state $S$.\n3240: \n3241: **Geometric Quantities:**\n3242: \n3243: **1. Metric Tensor (Index Form):**\n3244: \n3245: $$\n3246: g_{ab}(x, S) = \\left[\\nabla^2_x V_{\\text{fit}}[f_k, \\rho](x)\\right]_{ab} + \\epsilon_\\Sigma \\delta_{ab}\n3247: $$\n3248: \n3249: **2. Inverse Metric (Contravariant Tensor):**\n3250: \n3251: $$\n3252: g^{ab}(x, S) = \\left[\\left(\\nabla^2_x V_{\\text{fit}}[f_k, \\rho](x) + \\epsilon_\\Sigma I\\right)^{-1}\\right]_{ab}\n3253: $$\n3254: \n3255: **3. Volume Element:** The Riemannian volume measure is:\n3256: \n3257: $$\n3258: d\\text{Vol}_g = \\sqrt{\\det g(x, S)} \\, dx\n3259: $$\n3260: \n3261: **4. Geodesic Equation:** Curves $\\gamma(t)$ that minimize length satisfy:\n3262: \n3263: $$\n3264: \\frac{d^2 \\gamma^a}{dt^2} + \\Gamma^a_{bc}(x, S) \\frac{d\\gamma^b}{dt} \\frac{d\\gamma^c}{dt} = 0\n3265: $$\n3266: \n3267: where $\\Gamma^a_{bc}$ are the **Christoffel symbols** computed from $g$ via:\n3268: \n3269: $$\n3270: \\Gamma^a_{bc} = \\frac{1}{2} g^{ad} \\left(\\frac{\\partial g_{db}}{\\partial x^c} + \\frac{\\partial g_{dc}}{\\partial x^b} - \\frac{\\partial g_{bc}}{\\partial x^d}\\right)\n3271: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "18_emergent_geometry",
+        "chapter_index": 11,
+        "chapter_file": "chapter_11.json",
+        "section_id": "## 11. Explicit Derivation of the Emergent Metric from Algorithmic Parameters"
+      }
+    }
+  ]
+}

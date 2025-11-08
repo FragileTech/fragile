@@ -1,0 +1,29 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 2. Formal Setup: The Sequence of N-Particle Stationary Measures",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-sequence-of-qsds",
+      "title": "Sequence of N-Particle QSDs and their Marginals",
+      "start_line": 125,
+      "end_line": 134,
+      "header_lines": [
+        126
+      ],
+      "content_start": 128,
+      "content_end": 133,
+      "content": "128: :label: def-sequence-of-qsds\n129: \n130: 1.  **The N-Particle Quasi-Stationary Distribution.** For each integer $N \\ge 2$, let $\\nu_N^{QSD} \\in \\mathcal{P}(\\Sigma_N)$ be the **unique Quasi-Stationary Distribution** for the N-particle Euclidean Gas, whose existence and uniqueness were established in `06_convergence.md`. This is a probability measure on the full N-particle state space $\\Sigma_N = (\\mathbb{R}^d \\times \\mathbb{R}^d \\times \\{0,1\\})^N$, describing the long-term statistical behavior of surviving swarm trajectories.\n131: \n132: 2.  **The First Marginal Measure.** Let $\\mu_N \\in \\mathcal{P}(\\Omega)$ be the **first marginal** of the N-particle measure $\\nu_N^{QSD}$. This measure represents the probability distribution of a single, typical particle (e.g., walker $i=1$) when the entire N-particle swarm is in its quasi-stationary equilibrium state. Formally, for any measurable set $A \\subseteq \\Omega$:\n133:     $$",
+      "metadata": {
+        "label": "def-sequence-of-qsds"
+      },
+      "section": "## 2. Formal Setup: The Sequence of N-Particle Stationary Measures",
+      "raw_directive": "125: The analysis in `06_convergence.md` established, via a Foster-Lyapunov drift condition, that for any fixed, finite number of walkers $N \\ge 2$, the Euclidean Gas Markov process converges exponentially fast to a unique statistical equilibrium, conditioned on survival. This foundational result provides us with a countably infinite sequence of well-defined N-particle stationary measures. Our strategy is to leverage this sequence to construct the stationary state of the continuous mean-field model. We begin by formally defining these measures.\n126: \n127: :::{prf:definition} Sequence of N-Particle QSDs and their Marginals\n128: :label: def-sequence-of-qsds\n129: \n130: 1.  **The N-Particle Quasi-Stationary Distribution.** For each integer $N \\ge 2$, let $\\nu_N^{QSD} \\in \\mathcal{P}(\\Sigma_N)$ be the **unique Quasi-Stationary Distribution** for the N-particle Euclidean Gas, whose existence and uniqueness were established in `06_convergence.md`. This is a probability measure on the full N-particle state space $\\Sigma_N = (\\mathbb{R}^d \\times \\mathbb{R}^d \\times \\{0,1\\})^N$, describing the long-term statistical behavior of surviving swarm trajectories.\n131: \n132: 2.  **The First Marginal Measure.** Let $\\mu_N \\in \\mathcal{P}(\\Omega)$ be the **first marginal** of the N-particle measure $\\nu_N^{QSD}$. This measure represents the probability distribution of a single, typical particle (e.g., walker $i=1$) when the entire N-particle swarm is in its quasi-stationary equilibrium state. Formally, for any measurable set $A \\subseteq \\Omega$:\n133:     $$\n134:     \\mu_N(A) := \\nu_N^{QSD}(\\{ S \\in \\Sigma_N \\mid (x_1, v_1) \\in A \\})"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

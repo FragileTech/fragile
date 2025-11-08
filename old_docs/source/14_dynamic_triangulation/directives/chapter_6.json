@@ -1,0 +1,47 @@
+{
+  "chapter_index": 6,
+  "section_id": "## 6. Implementation Considerations",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-triangulation-data-structure",
+      "title": "Efficient Triangulation Data Structure",
+      "start_line": 758,
+      "end_line": 785,
+      "header_lines": [
+        759
+      ],
+      "content_start": 761,
+      "content_end": 784,
+      "content": "761: :label: def-triangulation-data-structure\n762: \n763: A practical implementation requires:\n764: \n765: **1. Half-Edge or Quad-Edge Structure** (for d=3):\n766: - Stores simplices with adjacency information\n767: - Each simplex knows its 4 faces and 4 neighbors\n768: - Enables O(1) traversal during Lawson flips\n769: \n770: **2. Vertex-Simplex Incidence**:\n771: - Each vertex maintains a list of incident simplices\n772: - Enables O(1) lookup of affected simplices when a vertex moves\n773: \n774: **3. Spatial Index** (for point location):\n775: - Grid-based hashing or octree\n776: - Maps positions to nearby simplices\n777: - Provides good \"hint\" for jump-and-walk algorithm\n778: \n779: **4. Conflict Graph** (optional, for robustness):\n780: - Tracks which simplices might be affected by future updates\n781: - Useful for maintaining numerical stability\n782: \n783: **Recommended Libraries**:\n784: - CGAL (Computational Geometry Algorithms Library): Full-featured, C++",
+      "metadata": {
+        "label": "def-triangulation-data-structure"
+      },
+      "section": "## 6. Implementation Considerations",
+      "raw_directive": "758: ### 6.1 Data Structure Requirements\n759: \n760: :::{prf:definition} Efficient Triangulation Data Structure\n761: :label: def-triangulation-data-structure\n762: \n763: A practical implementation requires:\n764: \n765: **1. Half-Edge or Quad-Edge Structure** (for d=3):\n766: - Stores simplices with adjacency information\n767: - Each simplex knows its 4 faces and 4 neighbors\n768: - Enables O(1) traversal during Lawson flips\n769: \n770: **2. Vertex-Simplex Incidence**:\n771: - Each vertex maintains a list of incident simplices\n772: - Enables O(1) lookup of affected simplices when a vertex moves\n773: \n774: **3. Spatial Index** (for point location):\n775: - Grid-based hashing or octree\n776: - Maps positions to nearby simplices\n777: - Provides good \"hint\" for jump-and-walk algorithm\n778: \n779: **4. Conflict Graph** (optional, for robustness):\n780: - Tracks which simplices might be affected by future updates\n781: - Useful for maintaining numerical stability\n782: \n783: **Recommended Libraries**:\n784: - CGAL (Computational Geometry Algorithms Library): Full-featured, C++\n785: - scipy.spatial.Delaunay: Python wrapper around Qhull (batch only, but good for initialization)"
+    },
+    {
+      "directive_type": "observation",
+      "label": "obs-parallelization",
+      "title": "Parallelization Opportunities",
+      "start_line": 815,
+      "end_line": 835,
+      "header_lines": [
+        816
+      ],
+      "content_start": 818,
+      "content_end": 834,
+      "content": "818: :label: obs-parallelization\n819: \n820: **Potential for Parallelism**:\n821: 1. **Independent Lawson Flips**: If two moved vertices are far apart (no overlapping incident simplices), their flip cascades can run in parallel\n822: 2. **Batch Cloning**: Multiple delete-insert operations can be parallelized if they don't interact\n823: \n824: **Challenges**:\n825: - Delaunay triangulation is a globally coupled structure\n826: - Flips can propagate unpredictably, making it hard to partition work\n827: - Requires sophisticated conflict detection and resolution\n828: \n829: **GPU Implementation**:\n830: - Active research area (see gDel3D by Ashwin et al.)\n831: - Achieves 5-10\u00d7 speedup for batch construction\n832: - Online updates on GPU are less explored, but promising\n833: \n834: **Recommendation**:",
+      "metadata": {
+        "label": "obs-parallelization"
+      },
+      "section": "## 6. Implementation Considerations",
+      "raw_directive": "815: ### 6.3 Parallel and GPU Implementation\n816: \n817: :::{prf:observation} Parallelization Opportunities\n818: :label: obs-parallelization\n819: \n820: **Potential for Parallelism**:\n821: 1. **Independent Lawson Flips**: If two moved vertices are far apart (no overlapping incident simplices), their flip cascades can run in parallel\n822: 2. **Batch Cloning**: Multiple delete-insert operations can be parallelized if they don't interact\n823: \n824: **Challenges**:\n825: - Delaunay triangulation is a globally coupled structure\n826: - Flips can propagate unpredictably, making it hard to partition work\n827: - Requires sophisticated conflict detection and resolution\n828: \n829: **GPU Implementation**:\n830: - Active research area (see gDel3D by Ashwin et al.)\n831: - Achieves 5-10\u00d7 speedup for batch construction\n832: - Online updates on GPU are less explored, but promising\n833: \n834: **Recommendation**:\n835: - Start with CPU implementation using OpenMP for coarse-grained parallelism (e.g., parallel processing of non-interacting walkers)"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

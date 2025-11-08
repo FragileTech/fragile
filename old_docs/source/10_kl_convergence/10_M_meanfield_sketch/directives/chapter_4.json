@@ -1,0 +1,43 @@
+{
+  "chapter_index": 4,
+  "section_id": "## PART A: Potential Energy Reduction (\ud83d\udea7 INCOMPLETE)",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "lemma",
+      "label": "lem-sinh-bound-global",
+      "title": "Sinh Inequality",
+      "start_line": 225,
+      "end_line": 235,
+      "header_lines": [
+        226
+      ],
+      "content_start": 228,
+      "content_end": 234,
+      "content": "228: :label: lem-sinh-bound-global\n229: \n230: For all $z \\in \\mathbb{R}$:\n231: \n232: $$\n233: \\frac{\\sinh(z)}{z} \\geq 1\n234: $$",
+      "metadata": {
+        "label": "lem-sinh-bound-global"
+      },
+      "section": "## PART A: Potential Energy Reduction (\ud83d\udea7 INCOMPLETE)",
+      "raw_directive": "225: **Apply the global sinh inequality**:\n226: \n227: :::{prf:lemma} Sinh Inequality\n228: :label: lem-sinh-bound-global\n229: \n230: For all $z \\in \\mathbb{R}$:\n231: \n232: $$\n233: \\frac{\\sinh(z)}{z} \\geq 1\n234: $$\n235: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-137",
+      "title": null,
+      "start_line": 237,
+      "end_line": 239,
+      "header_lines": [],
+      "content_start": 238,
+      "content_end": 238,
+      "content": "238: ",
+      "metadata": {},
+      "section": "## PART A: Potential Energy Reduction (\ud83d\udea7 INCOMPLETE)",
+      "raw_directive": "237: :::\n238: \n239: :::{prf:proof}"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

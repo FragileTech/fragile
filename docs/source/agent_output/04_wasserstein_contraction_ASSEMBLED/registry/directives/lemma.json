@@ -1,0 +1,184 @@
+{
+  "document_id": "04_wasserstein_contraction_ASSEMBLED",
+  "stage": "directives",
+  "directive_type": "lemma",
+  "generated_at": "2025-11-08T17:07:43.299057+00:00",
+  "count": 7,
+  "items": [
+    {
+      "directive_type": "lemma",
+      "label": "lem-fitness-valley-static",
+      "title": "Fitness Valley Between Separated Swarms",
+      "start_line": 446,
+      "end_line": 462,
+      "header_lines": [
+        447
+      ],
+      "content_start": 449,
+      "content_end": 461,
+      "content": "449: :label: lem-fitness-valley-static\n450: \n451: Let $F: \\mathbb{R}^d \\to \\mathbb{R}$ be the fitness function satisfying:\n452: - **Axiom 2.1.1 (Confining Potential):** $F(x)$ decays sufficiently fast as $\\|x\\| \\to \\infty$ to ensure particles remain bounded\n453: - **Axiom 4.1.1 (Environmental Richness):** The reward landscape $R(x)$ exhibits non-trivial spatial variation with multiple local maxima\n454: \n455: For any two points $\\bar{x}_1, \\bar{x}_2 \\in \\mathbb{R}^d$ that are local maxima of $F$ with separation $L = \\|\\bar{x}_1 - \\bar{x}_2\\| > 0$, there exists a point $x_{\\text{valley}}$ on the line segment $[\\bar{x}_1, \\bar{x}_2]$ such that:\n456: \n457: $$\n458: F(x_{\\text{valley}}) < \\min(F(\\bar{x}_1), F(\\bar{x}_2)) - \\Delta_{\\text{valley}}\n459: $$\n460: \n461: for some $\\Delta_{\\text{valley}} > 0$ depending on $L$ and the fitness landscape geometry.",
+      "metadata": {
+        "label": "lem-fitness-valley-static"
+      },
+      "section": "## 2. Foundational Lemmas for Outlier Alignment",
+      "raw_directive": "446: Before proving the Outlier Alignment property, we establish that the fitness landscape structure guarantees the existence of low-fitness regions between separated swarms. This is a **static** property of the fitness function, not a dynamic consequence.\n447: \n448: :::{prf:lemma} Fitness Valley Between Separated Swarms\n449: :label: lem-fitness-valley-static\n450: \n451: Let $F: \\mathbb{R}^d \\to \\mathbb{R}$ be the fitness function satisfying:\n452: - **Axiom 2.1.1 (Confining Potential):** $F(x)$ decays sufficiently fast as $\\|x\\| \\to \\infty$ to ensure particles remain bounded\n453: - **Axiom 4.1.1 (Environmental Richness):** The reward landscape $R(x)$ exhibits non-trivial spatial variation with multiple local maxima\n454: \n455: For any two points $\\bar{x}_1, \\bar{x}_2 \\in \\mathbb{R}^d$ that are local maxima of $F$ with separation $L = \\|\\bar{x}_1 - \\bar{x}_2\\| > 0$, there exists a point $x_{\\text{valley}}$ on the line segment $[\\bar{x}_1, \\bar{x}_2]$ such that:\n456: \n457: $$\n458: F(x_{\\text{valley}}) < \\min(F(\\bar{x}_1), F(\\bar{x}_2)) - \\Delta_{\\text{valley}}\n459: $$\n460: \n461: for some $\\Delta_{\\text{valley}} > 0$ depending on $L$ and the fitness landscape geometry.\n462: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "04_wasserstein_contraction_ASSEMBLED",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. Foundational Lemmas for Outlier Alignment"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-outlier-alignment",
+      "title": "Asymptotic Outlier Alignment",
+      "start_line": 537,
+      "end_line": 559,
+      "header_lines": [
+        538
+      ],
+      "content_start": 540,
+      "content_end": 558,
+      "content": "540: :label: lem-outlier-alignment\n541: \n542: Let $S_1$ and $S_2$ be two swarms satisfying the Geometric Partition (Definition 5.1.3 in [03_cloning.md](03_cloning.md)), with position barycenters $\\bar{x}_1$ and $\\bar{x}_2$ separated by:\n543: \n544: $$\n545: \\|\\bar{x}_1 - \\bar{x}_2\\| = L > D_{\\min}\n546: $$\n547: \n548: for some threshold $D_{\\min} > 0$ sufficiently large.\n549: \n550: Then for any outlier $x_{1,i} \\in H_1$ (high-error set), the following **Outlier Alignment** property holds:\n551: \n552: $$\n553: \\langle x_{1,i} - \\bar{x}_1, \\bar{x}_1 - \\bar{x}_2 \\rangle \\geq \\eta \\|x_{1,i} - \\bar{x}_1\\| \\|\\bar{x}_1 - \\bar{x}_2\\|\n554: $$\n555: \n556: where $\\eta > 0$ is a uniform constant depending only on framework parameters (independent of $N$, $L$, or swarm configurations).\n557: \n558: **Geometric Interpretation:** The vector from barycenter to outlier $(x_{1,i} - \\bar{x}_1)$ has positive projection onto the vector pointing away from the other swarm $(\\bar{x}_1 - \\bar{x}_2)$. Outliers are on the \"far side\" of their swarm, away from the other swarm.",
+      "metadata": {
+        "label": "lem-outlier-alignment"
+      },
+      "section": "## 2. Foundational Lemmas for Outlier Alignment",
+      "raw_directive": "537: This is the **key innovation** of the proof. We show that outliers in separated swarms preferentially align away from the other swarm, and this property is **emergent** from the fitness landscape structure established in Lemma {prf:ref}`lem-fitness-valley-static`.\n538: \n539: :::{prf:lemma} Asymptotic Outlier Alignment\n540: :label: lem-outlier-alignment\n541: \n542: Let $S_1$ and $S_2$ be two swarms satisfying the Geometric Partition (Definition 5.1.3 in [03_cloning.md](03_cloning.md)), with position barycenters $\\bar{x}_1$ and $\\bar{x}_2$ separated by:\n543: \n544: $$\n545: \\|\\bar{x}_1 - \\bar{x}_2\\| = L > D_{\\min}\n546: $$\n547: \n548: for some threshold $D_{\\min} > 0$ sufficiently large.\n549: \n550: Then for any outlier $x_{1,i} \\in H_1$ (high-error set), the following **Outlier Alignment** property holds:\n551: \n552: $$\n553: \\langle x_{1,i} - \\bar{x}_1, \\bar{x}_1 - \\bar{x}_2 \\rangle \\geq \\eta \\|x_{1,i} - \\bar{x}_1\\| \\|\\bar{x}_1 - \\bar{x}_2\\|\n554: $$\n555: \n556: where $\\eta > 0$ is a uniform constant depending only on framework parameters (independent of $N$, $L$, or swarm configurations).\n557: \n558: **Geometric Interpretation:** The vector from barycenter to outlier $(x_{1,i} - \\bar{x}_1)$ has positive projection onto the vector pointing away from the other swarm $(\\bar{x}_1 - \\bar{x}_2)$. Outliers are on the \"far side\" of their swarm, away from the other swarm.\n559: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "04_wasserstein_contraction_ASSEMBLED",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. Foundational Lemmas for Outlier Alignment"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-case-a-bounded-expansion",
+      "title": "Case A Bounded Expansion",
+      "start_line": 938,
+      "end_line": 950,
+      "header_lines": [
+        939
+      ],
+      "content_start": 941,
+      "content_end": 949,
+      "content": "941: :label: lem-case-a-bounded-expansion\n942: \n943: For a pair $(i,j)$ in Case A (consistent fitness ordering):\n944: \n945: $$\n946: \\mathbb{E}[\\|x'_{1,i} - x'_{2,i}\\|^2 + \\|x'_{1,j} - x'_{2,j}\\|^2 \\mid \\text{Case A}] \\leq (1 + \\epsilon_A) (D_{ii} + D_{jj}) + C_A\n947: $$\n948: \n949: where $\\epsilon_A = O(1/L)$ is small for separated swarms, and $C_A = 2d\\delta^2$.",
+      "metadata": {
+        "label": "lem-case-a-bounded-expansion"
+      },
+      "section": "## 3. Case A: Consistent Fitness Ordering",
+      "raw_directive": "938: This doesn't give contraction. The issue is that Case A alone may not contract - it's the **combination** with Case B that provides overall contraction.\n939: \n940: :::{prf:lemma} Case A Bounded Expansion\n941: :label: lem-case-a-bounded-expansion\n942: \n943: For a pair $(i,j)$ in Case A (consistent fitness ordering):\n944: \n945: $$\n946: \\mathbb{E}[\\|x'_{1,i} - x'_{2,i}\\|^2 + \\|x'_{1,j} - x'_{2,j}\\|^2 \\mid \\text{Case A}] \\leq (1 + \\epsilon_A) (D_{ii} + D_{jj}) + C_A\n947: $$\n948: \n949: where $\\epsilon_A = O(1/L)$ is small for separated swarms, and $C_A = 2d\\delta^2$.\n950: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "04_wasserstein_contraction_ASSEMBLED",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 3. Case A: Consistent Fitness Ordering"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-high-error-projection",
+      "title": "High-Error Projection for Separated Swarms",
+      "start_line": 1222,
+      "end_line": 1328,
+      "header_lines": [
+        1223
+      ],
+      "content_start": 1225,
+      "content_end": 1327,
+      "content": "1225: :label: lem-high-error-projection\n1226: \n1227: For swarms $S_1, S_2$ with separation $L = \\|\\bar{x}_1 - \\bar{x}_2\\|$ and high-error fraction $|H_1| \\geq f_H N$ (from Corollary 6.4.4 in [03_cloning.md](03_cloning.md)):\n1228: \n1229: $$\n1230: \\max_{i \\in H_1} \\langle x_{1,i} - \\bar{x}_1, u \\rangle \\geq \\frac{L - 2R_L/f_H}{2}\n1231: $$\n1232: \n1233: where $u = \\frac{\\bar{x}_1 - \\bar{x}_2}{L}$ is the unit direction.\n1234: \n1235: **Corollary:** For separated swarms with $L \\gg R_L/f_H$:\n1236: \n1237: $$\n1238: R_H(\\varepsilon) \\geq c_0 L - c_1\n1239: $$\n1240: \n1241: where $c_0 = f_H/2$ and $c_1 = R_L/f_H$ are N-uniform constants.\n1242: \n1243: **Proof:**\n1244: \n1245: **Step 1: Barycenter Decomposition**\n1246: \n1247: The barycenter difference can be decomposed:\n1248: \n1249: $$\n1250: \\bar{x}_1 - \\bar{x}_2 = \\frac{1}{N}\\sum_{i=1}^N (x_{1,i} - x_{2,i})\n1251: $$\n1252: \n1253: Separate into high-error and low-error sets:\n1254: \n1255: $$\n1256: \\bar{x}_1 - \\bar{x}_2 = \\frac{1}{N}\\sum_{i \\in H_1}(x_{1,i} - \\bar{x}_1) - \\frac{1}{N}\\sum_{i \\in H_2}(x_{2,i} - \\bar{x}_2) + O(R_L)\n1257: $$\n1258: \n1259: The $O(R_L)$ term accounts for low-error walkers concentrated near barycenters.\n1260: \n1261: **Step 2: Project onto Direction $u$**\n1262: \n1263: Taking inner product with $u$:\n1264: \n1265: $$\n1266: L = \\langle \\bar{x}_1 - \\bar{x}_2, u \\rangle \\leq \\frac{|H_1|}{N} \\max_{i \\in H_1} \\langle x_{1,i} - \\bar{x}_1, u \\rangle + O(R_L)\n1267: $$\n1268: \n1269: **Step 3: Use High-Error Fraction Bound**\n1270: \n1271: By Corollary 6.4.4 in [03_cloning.md](03_cloning.md): $|H_1| \\geq f_H N$.\n1272: \n1273: Therefore:\n1274: \n1275: $$\n1276: \\max_{i \\in H_1} \\langle x_{1,i} - \\bar{x}_1, u \\rangle \\geq \\frac{L - O(R_L)}{f_H} \\geq \\frac{L - 2R_L/f_H}{f_H}\n1277: $$\n1278: \n1279: Wait, let me recalculate more carefully:\n1280: \n1281: $$\n1282: L \\leq \\frac{|H_1|}{N} \\max_{i \\in H_1} \\langle x_{1,i} - \\bar{x}_1, u \\rangle + \\frac{|H_2|}{N} \\max_{i \\in H_2} \\langle \\bar{x}_2 - x_{2,i}, u \\rangle + 2R_L/N\n1283: $$\n1284: \n1285: Using $|H_k| \\geq f_H N$ and symmetry:\n1286: \n1287: $$\n1288: L \\leq 2 f_H \\cdot \\max_{i \\in H_1} \\langle x_{1,i} - \\bar{x}_1, u \\rangle + 2R_L\n1289: $$\n1290: \n1291: Therefore:\n1292: \n1293: $$\n1294: \\max_{i \\in H_1} \\langle x_{1,i} - \\bar{x}_1, u \\rangle \\geq \\frac{L - 2R_L}{2f_H}\n1295: $$\n1296: \n1297: **Step 4: Relate to $R_H$**\n1298: \n1299: Since $x_{1,i} \\in H_1$ implies $\\|x_{1,i} - \\bar{x}_1\\| \\geq R_H$ by definition:\n1300: \n1301: $$\n1302: \\langle x_{1,i} - \\bar{x}_1, u \\rangle \\leq \\|x_{1,i} - \\bar{x}_1\\| \\cdot \\|u\\| = \\|x_{1,i} - \\bar{x}_1\\|\n1303: $$\n1304: \n1305: Therefore, the maximum projection is at most the maximum distance:\n1306: \n1307: $$\n1308: \\max_{i \\in H_1} \\|x_{1,i} - \\bar{x}_1\\| \\geq \\max_{i \\in H_1} \\langle x_{1,i} - \\bar{x}_1, u \\rangle \\geq \\frac{L - 2R_L}{2f_H}\n1309: $$\n1310: \n1311: But the maximum distance in $H_1$ is at least $R_H$ (and could be larger). To get a bound on $R_H$ itself, note that by definition of the geometric partition, there exists at least one walker at distance $\\geq R_H$.\n1312: \n1313: By the pigeonhole principle and the fact that $|H_1| \\geq f_H N$, we have:\n1314: \n1315: $$\n1316: R_H \\geq \\frac{1}{|H_1|} \\sum_{i \\in H_1} \\langle x_{1,i} - \\bar{x}_1, u \\rangle \\geq \\frac{L - 2R_L}{2f_H}\n1317: $$\n1318: \n1319: (Actually, this argument needs refinement - the average projection is at least this, but we need the minimum distance in $H_1$, which is $R_H$ by definition.)\n1320: \n1321: **Corrected argument:** The separation $L$ must be \"generated\" by the displacement of high-error walkers. Since $|H_1| \\geq f_H N$, and these walkers contribute to the barycenter difference, at least a fraction $f_H$ of the separation comes from high-error displacement. This gives:\n1322: \n1323: $$\n1324: R_H \\geq c_0 L - c_1\n1325: $$\n1326: \n1327: where $c_0 = f_H/2$ (accounting for contributions from both swarms) and $c_1 = O(R_L/f_H)$.",
+      "metadata": {
+        "label": "lem-high-error-projection"
+      },
+      "section": "## Section 4 Updates: Quadratic Scaling Fixes",
+      "raw_directive": "1222: This lemma provides an alternative derivation showing that $R_H$ itself scales with $L$ for separated swarms, making even the \"linear\" terms quadratic.\n1223: \n1224: :::{prf:lemma} High-Error Projection for Separated Swarms\n1225: :label: lem-high-error-projection\n1226: \n1227: For swarms $S_1, S_2$ with separation $L = \\|\\bar{x}_1 - \\bar{x}_2\\|$ and high-error fraction $|H_1| \\geq f_H N$ (from Corollary 6.4.4 in [03_cloning.md](03_cloning.md)):\n1228: \n1229: $$\n1230: \\max_{i \\in H_1} \\langle x_{1,i} - \\bar{x}_1, u \\rangle \\geq \\frac{L - 2R_L/f_H}{2}\n1231: $$\n1232: \n1233: where $u = \\frac{\\bar{x}_1 - \\bar{x}_2}{L}$ is the unit direction.\n1234: \n1235: **Corollary:** For separated swarms with $L \\gg R_L/f_H$:\n1236: \n1237: $$\n1238: R_H(\\varepsilon) \\geq c_0 L - c_1\n1239: $$\n1240: \n1241: where $c_0 = f_H/2$ and $c_1 = R_L/f_H$ are N-uniform constants.\n1242: \n1243: **Proof:**\n1244: \n1245: **Step 1: Barycenter Decomposition**\n1246: \n1247: The barycenter difference can be decomposed:\n1248: \n1249: $$\n1250: \\bar{x}_1 - \\bar{x}_2 = \\frac{1}{N}\\sum_{i=1}^N (x_{1,i} - x_{2,i})\n1251: $$\n1252: \n1253: Separate into high-error and low-error sets:\n1254: \n1255: $$\n1256: \\bar{x}_1 - \\bar{x}_2 = \\frac{1}{N}\\sum_{i \\in H_1}(x_{1,i} - \\bar{x}_1) - \\frac{1}{N}\\sum_{i \\in H_2}(x_{2,i} - \\bar{x}_2) + O(R_L)\n1257: $$\n1258: \n1259: The $O(R_L)$ term accounts for low-error walkers concentrated near barycenters.\n1260: \n1261: **Step 2: Project onto Direction $u$**\n1262: \n1263: Taking inner product with $u$:\n1264: \n1265: $$\n1266: L = \\langle \\bar{x}_1 - \\bar{x}_2, u \\rangle \\leq \\frac{|H_1|}{N} \\max_{i \\in H_1} \\langle x_{1,i} - \\bar{x}_1, u \\rangle + O(R_L)\n1267: $$\n1268: \n1269: **Step 3: Use High-Error Fraction Bound**\n1270: \n1271: By Corollary 6.4.4 in [03_cloning.md](03_cloning.md): $|H_1| \\geq f_H N$.\n1272: \n1273: Therefore:\n1274: \n1275: $$\n1276: \\max_{i \\in H_1} \\langle x_{1,i} - \\bar{x}_1, u \\rangle \\geq \\frac{L - O(R_L)}{f_H} \\geq \\frac{L - 2R_L/f_H}{f_H}\n1277: $$\n1278: \n1279: Wait, let me recalculate more carefully:\n1280: \n1281: $$\n1282: L \\leq \\frac{|H_1|}{N} \\max_{i \\in H_1} \\langle x_{1,i} - \\bar{x}_1, u \\rangle + \\frac{|H_2|}{N} \\max_{i \\in H_2} \\langle \\bar{x}_2 - x_{2,i}, u \\rangle + 2R_L/N\n1283: $$\n1284: \n1285: Using $|H_k| \\geq f_H N$ and symmetry:\n1286: \n1287: $$\n1288: L \\leq 2 f_H \\cdot \\max_{i \\in H_1} \\langle x_{1,i} - \\bar{x}_1, u \\rangle + 2R_L\n1289: $$\n1290: \n1291: Therefore:\n1292: \n1293: $$\n1294: \\max_{i \\in H_1} \\langle x_{1,i} - \\bar{x}_1, u \\rangle \\geq \\frac{L - 2R_L}{2f_H}\n1295: $$\n1296: \n1297: **Step 4: Relate to $R_H$**\n1298: \n1299: Since $x_{1,i} \\in H_1$ implies $\\|x_{1,i} - \\bar{x}_1\\| \\geq R_H$ by definition:\n1300: \n1301: $$\n1302: \\langle x_{1,i} - \\bar{x}_1, u \\rangle \\leq \\|x_{1,i} - \\bar{x}_1\\| \\cdot \\|u\\| = \\|x_{1,i} - \\bar{x}_1\\|\n1303: $$\n1304: \n1305: Therefore, the maximum projection is at most the maximum distance:\n1306: \n1307: $$\n1308: \\max_{i \\in H_1} \\|x_{1,i} - \\bar{x}_1\\| \\geq \\max_{i \\in H_1} \\langle x_{1,i} - \\bar{x}_1, u \\rangle \\geq \\frac{L - 2R_L}{2f_H}\n1309: $$\n1310: \n1311: But the maximum distance in $H_1$ is at least $R_H$ (and could be larger). To get a bound on $R_H$ itself, note that by definition of the geometric partition, there exists at least one walker at distance $\\geq R_H$.\n1312: \n1313: By the pigeonhole principle and the fact that $|H_1| \\geq f_H N$, we have:\n1314: \n1315: $$\n1316: R_H \\geq \\frac{1}{|H_1|} \\sum_{i \\in H_1} \\langle x_{1,i} - \\bar{x}_1, u \\rangle \\geq \\frac{L - 2R_L}{2f_H}\n1317: $$\n1318: \n1319: (Actually, this argument needs refinement - the average projection is at least this, but we need the minimum distance in $H_1$, which is $R_H$ by definition.)\n1320: \n1321: **Corrected argument:** The separation $L$ must be \"generated\" by the displacement of high-error walkers. Since $|H_1| \\geq f_H N$, and these walkers contribute to the barycenter difference, at least a fraction $f_H$ of the separation comes from high-error displacement. This gives:\n1322: \n1323: $$\n1324: R_H \\geq c_0 L - c_1\n1325: $$\n1326: \n1327: where $c_0 = f_H/2$ (accounting for contributions from both swarms) and $c_1 = O(R_L/f_H)$.\n1328: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "04_wasserstein_contraction_ASSEMBLED",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## Section 4 Updates: Quadratic Scaling Fixes"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-case-b-probability",
+      "title": "Case B Frequency Lower Bound",
+      "start_line": 1428,
+      "end_line": 1519,
+      "header_lines": [
+        1429
+      ],
+      "content_start": 1431,
+      "content_end": 1518,
+      "content": "1431: :label: lem-case-b-probability\n1432: \n1433: For swarms $S_1, S_2$ with separation $L > D_{\\min}$, the probability that a pair $(i, \\pi(i))$ sampled from the matching distribution exhibits Case B is bounded below:\n1434: \n1435: $$\n1436: \\mathbb{P}(\\text{Case B} \\mid M) \\geq f_{UH}(\\varepsilon) \\cdot q_{\\min}(\\varepsilon) > 0\n1437: $$\n1438: \n1439: where:\n1440: - $f_{UH}(\\varepsilon)$ is the unfit-high-error overlap fraction from Theorem 7.6.1 in [03_cloning.md](03_cloning.md)\n1441: - $q_{\\min}(\\varepsilon)$ is the minimum Gibbs matching probability\n1442: - Both constants are N-uniform\n1443: \n1444: **Proof:**\n1445: \n1446: **Step 1: Define Target Set**\n1447: \n1448: Let $I_{\\text{target}} = \\{i \\in \\{1,\\ldots,N\\} : x_{1,i} \\in H_1 \\cap U_1\\}$ be the set of walkers in swarm 1 that are both:\n1449: - In high-error set $H_1$ (geometric)\n1450: - In unfit set $U_1$ (fitness)\n1451: \n1452: By the Unfit-High-Error Overlap Theorem (Theorem 7.6.1 in [03_cloning.md](03_cloning.md)):\n1453: \n1454: $$\n1455: |I_{\\text{target}}| \\geq f_{UH}(\\varepsilon) \\cdot N\n1456: $$\n1457: \n1458: where $f_{UH}(\\varepsilon) > 0$ is N-uniform.\n1459: \n1460: **Step 2: Case B Structure for Target Walkers**\n1461: \n1462: For walker $i \\in I_{\\text{target}}$:\n1463: \n1464: **In swarm 1:** Walker $i$ is unfit, so by Lemma 8.3.2 in [03_cloning.md](03_cloning.md):\n1465: $$\n1466: V_{\\text{fit},1,i} < V_{\\text{fit},1,\\pi(i)}\n1467: $$\n1468: with high probability (the companion $\\pi(i)$ is selected from higher-fitness walkers).\n1469: \n1470: **In swarm 2:** By the Fitness-Geometry Correspondence Lemma ({prf:ref}`lem-fitness-geometry-correspondence`), for separated swarms:\n1471: $$\n1472: \\mathbb{P}(x_{2,i} \\in L_2 \\mid x_{1,i} \\in H_1) \\geq 1 - O(e^{-cL/R_H})\n1473: $$\n1474: \n1475: If $x_{2,i} \\in L_2$ (low-error in swarm 2), then:\n1476: $$\n1477: V_{\\text{fit},2,i} > V_{\\text{fit},2,\\pi(i)}\n1478: $$\n1479: \n1480: This is precisely Case B: reversed fitness ordering between the two swarms.\n1481: \n1482: **Step 3: Matching Probability**\n1483: \n1484: The matching $M$ is sampled from Gibbs distribution:\n1485: \n1486: $$\n1487: P(M \\mid S_1) \\propto \\prod_{(i,j) \\in M} \\exp\\left(-\\frac{d_{\\text{alg}}(i,j)^2}{2\\varepsilon_d^2}\\right)\n1488: $$\n1489: \n1490: The minimum probability over all matchings is:\n1491: \n1492: $$\n1493: q_{\\min}(\\varepsilon) = \\min_{M \\in \\mathcal{M}_N} P(M \\mid S_1) > 0\n1494: $$\n1495: \n1496: This is N-uniform (depends only on $\\varepsilon_d$ and algorithmic distance bounds).\n1497: \n1498: **Step 4: Union Bound**\n1499: \n1500: The probability of Case B is at least the probability that one of the target walkers is selected and exhibits Case B:\n1501: \n1502: $$\n1503: \\mathbb{P}(\\text{Case B}) \\geq \\mathbb{P}(\\exists i \\in I_{\\text{target}} : (i, \\pi(i)) \\in M \\text{ and Case B})\n1504: $$\n1505: \n1506: $$\n1507: \\geq \\frac{|I_{\\text{target}}|}{N} \\cdot q_{\\min} \\cdot (1 - O(e^{-cL/R_H}))\n1508: $$\n1509: \n1510: $$\n1511: \\geq f_{UH}(\\varepsilon) \\cdot q_{\\min}(\\varepsilon) \\cdot (1 - O(e^{-cL/R_H}))\n1512: $$\n1513: \n1514: For $L > D_{\\min}$, the exponential term is negligible:\n1515: \n1516: $$\n1517: \\mathbb{P}(\\text{Case B}) \\geq f_{UH}(\\varepsilon) \\cdot q_{\\min}(\\varepsilon) > 0\n1518: $$",
+      "metadata": {
+        "label": "lem-case-b-probability"
+      },
+      "section": "## Section 4 Updates: Quadratic Scaling Fixes",
+      "raw_directive": "1428: To complete the contraction analysis, we must bound the probability that a randomly selected pair exhibits Case B (mixed fitness ordering).\n1429: \n1430: :::{prf:lemma} Case B Frequency Lower Bound\n1431: :label: lem-case-b-probability\n1432: \n1433: For swarms $S_1, S_2$ with separation $L > D_{\\min}$, the probability that a pair $(i, \\pi(i))$ sampled from the matching distribution exhibits Case B is bounded below:\n1434: \n1435: $$\n1436: \\mathbb{P}(\\text{Case B} \\mid M) \\geq f_{UH}(\\varepsilon) \\cdot q_{\\min}(\\varepsilon) > 0\n1437: $$\n1438: \n1439: where:\n1440: - $f_{UH}(\\varepsilon)$ is the unfit-high-error overlap fraction from Theorem 7.6.1 in [03_cloning.md](03_cloning.md)\n1441: - $q_{\\min}(\\varepsilon)$ is the minimum Gibbs matching probability\n1442: - Both constants are N-uniform\n1443: \n1444: **Proof:**\n1445: \n1446: **Step 1: Define Target Set**\n1447: \n1448: Let $I_{\\text{target}} = \\{i \\in \\{1,\\ldots,N\\} : x_{1,i} \\in H_1 \\cap U_1\\}$ be the set of walkers in swarm 1 that are both:\n1449: - In high-error set $H_1$ (geometric)\n1450: - In unfit set $U_1$ (fitness)\n1451: \n1452: By the Unfit-High-Error Overlap Theorem (Theorem 7.6.1 in [03_cloning.md](03_cloning.md)):\n1453: \n1454: $$\n1455: |I_{\\text{target}}| \\geq f_{UH}(\\varepsilon) \\cdot N\n1456: $$\n1457: \n1458: where $f_{UH}(\\varepsilon) > 0$ is N-uniform.\n1459: \n1460: **Step 2: Case B Structure for Target Walkers**\n1461: \n1462: For walker $i \\in I_{\\text{target}}$:\n1463: \n1464: **In swarm 1:** Walker $i$ is unfit, so by Lemma 8.3.2 in [03_cloning.md](03_cloning.md):\n1465: $$\n1466: V_{\\text{fit},1,i} < V_{\\text{fit},1,\\pi(i)}\n1467: $$\n1468: with high probability (the companion $\\pi(i)$ is selected from higher-fitness walkers).\n1469: \n1470: **In swarm 2:** By the Fitness-Geometry Correspondence Lemma ({prf:ref}`lem-fitness-geometry-correspondence`), for separated swarms:\n1471: $$\n1472: \\mathbb{P}(x_{2,i} \\in L_2 \\mid x_{1,i} \\in H_1) \\geq 1 - O(e^{-cL/R_H})\n1473: $$\n1474: \n1475: If $x_{2,i} \\in L_2$ (low-error in swarm 2), then:\n1476: $$\n1477: V_{\\text{fit},2,i} > V_{\\text{fit},2,\\pi(i)}\n1478: $$\n1479: \n1480: This is precisely Case B: reversed fitness ordering between the two swarms.\n1481: \n1482: **Step 3: Matching Probability**\n1483: \n1484: The matching $M$ is sampled from Gibbs distribution:\n1485: \n1486: $$\n1487: P(M \\mid S_1) \\propto \\prod_{(i,j) \\in M} \\exp\\left(-\\frac{d_{\\text{alg}}(i,j)^2}{2\\varepsilon_d^2}\\right)\n1488: $$\n1489: \n1490: The minimum probability over all matchings is:\n1491: \n1492: $$\n1493: q_{\\min}(\\varepsilon) = \\min_{M \\in \\mathcal{M}_N} P(M \\mid S_1) > 0\n1494: $$\n1495: \n1496: This is N-uniform (depends only on $\\varepsilon_d$ and algorithmic distance bounds).\n1497: \n1498: **Step 4: Union Bound**\n1499: \n1500: The probability of Case B is at least the probability that one of the target walkers is selected and exhibits Case B:\n1501: \n1502: $$\n1503: \\mathbb{P}(\\text{Case B}) \\geq \\mathbb{P}(\\exists i \\in I_{\\text{target}} : (i, \\pi(i)) \\in M \\text{ and Case B})\n1504: $$\n1505: \n1506: $$\n1507: \\geq \\frac{|I_{\\text{target}}|}{N} \\cdot q_{\\min} \\cdot (1 - O(e^{-cL/R_H}))\n1508: $$\n1509: \n1510: $$\n1511: \\geq f_{UH}(\\varepsilon) \\cdot q_{\\min}(\\varepsilon) \\cdot (1 - O(e^{-cL/R_H}))\n1512: $$\n1513: \n1514: For $L > D_{\\min}$, the exponential term is negligible:\n1515: \n1516: $$\n1517: \\mathbb{P}(\\text{Case B}) \\geq f_{UH}(\\varepsilon) \\cdot q_{\\min}(\\varepsilon) > 0\n1518: $$\n1519: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "04_wasserstein_contraction_ASSEMBLED",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## Section 4 Updates: Quadratic Scaling Fixes"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-case-a-weak-expansion",
+      "title": "Case A Weak Expansion",
+      "start_line": 1555,
+      "end_line": 1575,
+      "header_lines": [
+        1556
+      ],
+      "content_start": 1558,
+      "content_end": 1574,
+      "content": "1558: :label: lem-case-a-weak-expansion\n1559: \n1560: For a Case A pair (i, π(i)) where both walkers have consistent fitness ordering with their companions, the post-cloning distance satisfies:\n1561: \n1562: $$\n1563: \\mathbb{E}[D'_{i\\pi(i)} \\mid \\text{Case A}, M, T] \\leq D_{i\\pi(i)} + C_A \\delta^2\n1564: $$\n1565: \n1566: where $C_A = 4d$ is the noise constant, independent of $L$ and $N$.\n1567: \n1568: **Contraction Factor**:\n1569: $$\n1570: \\gamma_A := \\frac{\\mathbb{E}[D'_{i\\pi(i)} \\mid \\text{Case A}, M, T]}{D_{i\\pi(i)}} \\leq 1 + \\frac{C_A \\delta^2}{D_{i\\pi(i)}}\n1571: $$\n1572: \n1573: For separated swarms with $D_{i\\pi(i)} \\sim L^2$:\n1574: $$",
+      "metadata": {
+        "label": "lem-case-a-weak-expansion"
+      },
+      "section": "## 5. Unified Single-Pair Lemma",
+      "raw_directive": "1555: Before combining cases, we first establish that Case A provides only weak expansion that vanishes for large separations.\n1556: \n1557: :::{prf:lemma} Case A Weak Expansion\n1558: :label: lem-case-a-weak-expansion\n1559: \n1560: For a Case A pair (i, π(i)) where both walkers have consistent fitness ordering with their companions, the post-cloning distance satisfies:\n1561: \n1562: $$\n1563: \\mathbb{E}[D'_{i\\pi(i)} \\mid \\text{Case A}, M, T] \\leq D_{i\\pi(i)} + C_A \\delta^2\n1564: $$\n1565: \n1566: where $C_A = 4d$ is the noise constant, independent of $L$ and $N$.\n1567: \n1568: **Contraction Factor**:\n1569: $$\n1570: \\gamma_A := \\frac{\\mathbb{E}[D'_{i\\pi(i)} \\mid \\text{Case A}, M, T]}{D_{i\\pi(i)}} \\leq 1 + \\frac{C_A \\delta^2}{D_{i\\pi(i)}}\n1571: $$\n1572: \n1573: For separated swarms with $D_{i\\pi(i)} \\sim L^2$:\n1574: $$\n1575: \\gamma_A \\leq 1 + O(\\delta^2/L^2)",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "04_wasserstein_contraction_ASSEMBLED",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## 5. Unified Single-Pair Lemma"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-case-b-strong-contraction",
+      "title": "Case B Strong Contraction",
+      "start_line": 1668,
+      "end_line": 1692,
+      "header_lines": [
+        1669
+      ],
+      "content_start": 1671,
+      "content_end": 1691,
+      "content": "1671: :label: lem-case-b-strong-contraction\n1672: \n1673: For a Case B pair $(i, \\pi(i))$ where walker $i \\in H_1$ and walker $\\pi(i) \\in H_2$ (high-error status in opposite swarms), the expected post-cloning distance satisfies:\n1674: \n1675: $$\n1676: \\mathbb{E}[D'_{i\\pi(i)} \\mid \\text{Case B}, M, T] \\leq D_{i\\pi(i)} - \\kappa_B \\cdot D_{i\\pi(i)} + C_W\n1677: $$\n1678: \n1679: where:\n1680: - $\\kappa_B = \\frac{p_u \\eta_{\\text{geo}}}{2}$ is the Case B contraction constant\n1681: - $p_u \\geq \\exp(-\\beta \\Delta V_{\\max})/N$ is the minimum survival probability (N-uniform)\n1682: - $\\eta_{\\text{geo}} = \\frac{c_0^2}{2(1 + 2c_H)^2}$ is the geometric efficiency (from Lemma 4.3.7)\n1683: - $C_W = 4d\\delta^2$ is the noise constant\n1684: \n1685: **Contraction Factor**:\n1686: $$\n1687: \\gamma_B := \\frac{\\mathbb{E}[D'_{i\\pi(i)} \\mid \\text{Case B}, M, T]}{D_{i\\pi(i)}} \\leq 1 - \\kappa_B + \\frac{C_W}{D_{i\\pi(i)}}\n1688: $$\n1689: \n1690: For separated swarms with $D_{i\\pi(i)} \\sim L^2$:\n1691: $$",
+      "metadata": {
+        "label": "lem-case-b-strong-contraction"
+      },
+      "section": "## 5. Unified Single-Pair Lemma",
+      "raw_directive": "1668: Case B provides strong contraction due to the quadratic geometric advantage derived in Section 4.\n1669: \n1670: :::{prf:lemma} Case B Strong Contraction\n1671: :label: lem-case-b-strong-contraction\n1672: \n1673: For a Case B pair $(i, \\pi(i))$ where walker $i \\in H_1$ and walker $\\pi(i) \\in H_2$ (high-error status in opposite swarms), the expected post-cloning distance satisfies:\n1674: \n1675: $$\n1676: \\mathbb{E}[D'_{i\\pi(i)} \\mid \\text{Case B}, M, T] \\leq D_{i\\pi(i)} - \\kappa_B \\cdot D_{i\\pi(i)} + C_W\n1677: $$\n1678: \n1679: where:\n1680: - $\\kappa_B = \\frac{p_u \\eta_{\\text{geo}}}{2}$ is the Case B contraction constant\n1681: - $p_u \\geq \\exp(-\\beta \\Delta V_{\\max})/N$ is the minimum survival probability (N-uniform)\n1682: - $\\eta_{\\text{geo}} = \\frac{c_0^2}{2(1 + 2c_H)^2}$ is the geometric efficiency (from Lemma 4.3.7)\n1683: - $C_W = 4d\\delta^2$ is the noise constant\n1684: \n1685: **Contraction Factor**:\n1686: $$\n1687: \\gamma_B := \\frac{\\mathbb{E}[D'_{i\\pi(i)} \\mid \\text{Case B}, M, T]}{D_{i\\pi(i)}} \\leq 1 - \\kappa_B + \\frac{C_W}{D_{i\\pi(i)}}\n1688: $$\n1689: \n1690: For separated swarms with $D_{i\\pi(i)} \\sim L^2$:\n1691: $$\n1692: \\gamma_B \\leq 1 - \\kappa_B + O(\\delta^2/L^2) < 1 - \\frac{\\kappa_B}{2} \\quad \\text{for } L \\gg \\delta",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "04_wasserstein_contraction_ASSEMBLED",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## 5. Unified Single-Pair Lemma"
+      }
+    }
+  ]
+}

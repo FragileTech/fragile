@@ -1,0 +1,43 @@
+{
+  "chapter_index": 20,
+  "section_id": "## 6.3 Connection to Fragile Gas Phase Behavior",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "proposition",
+      "label": "prop-exploration-exploitation-curvature",
+      "title": "Exploration-Exploitation Transition",
+      "start_line": 3020,
+      "end_line": 3041,
+      "header_lines": [
+        3021
+      ],
+      "content_start": 3023,
+      "content_end": 3040,
+      "content": "3023: :label: prop-exploration-exploitation-curvature\n3024: \n3025: Consider the Adaptive Gas with fitness potential $V_{\\text{fit}}(x) = -\\alpha R(x) + \\beta D(x, S)$ where:\n3026: - $R(x)$: reward function\n3027: - $D(x, S)$: diversity from swarm $S$\n3028: - $\\alpha, \\beta$: weights\n3029: \n3030: As $\\beta/\\alpha$ varies, the system undergoes a **continuous phase transition** from:\n3031: - **Low $\\beta/\\alpha$**: Exploitation phase (swarm clusters on high-reward regions)\n3032: - **High $\\beta/\\alpha$**: Exploration phase (swarm disperses for diversity)\n3033: \n3034: The Ruppeiner curvature $R_{\\text{Rupp}}(\\alpha, \\beta)$ exhibits a peak near the critical ratio:\n3035: \n3036: $$\n3037: \\left(\\frac{\\beta}{\\alpha}\\right)_c \\approx 1 + \\frac{\\lambda_v}{\\sigma_v^2}\n3038: $$\n3039: \n3040: (from {prf:ref}`def-effective-temperature` in Chapter 7).",
+      "metadata": {
+        "label": "prop-exploration-exploitation-curvature"
+      },
+      "section": "## 6.3 Connection to Fragile Gas Phase Behavior",
+      "raw_directive": "3020: The Fragile Gas framework exhibits **algorithmic phase transitions** detectable via Ruppeiner curvature.\n3021: \n3022: :::{prf:proposition} Exploration-Exploitation Transition\n3023: :label: prop-exploration-exploitation-curvature\n3024: \n3025: Consider the Adaptive Gas with fitness potential $V_{\\text{fit}}(x) = -\\alpha R(x) + \\beta D(x, S)$ where:\n3026: - $R(x)$: reward function\n3027: - $D(x, S)$: diversity from swarm $S$\n3028: - $\\alpha, \\beta$: weights\n3029: \n3030: As $\\beta/\\alpha$ varies, the system undergoes a **continuous phase transition** from:\n3031: - **Low $\\beta/\\alpha$**: Exploitation phase (swarm clusters on high-reward regions)\n3032: - **High $\\beta/\\alpha$**: Exploration phase (swarm disperses for diversity)\n3033: \n3034: The Ruppeiner curvature $R_{\\text{Rupp}}(\\alpha, \\beta)$ exhibits a peak near the critical ratio:\n3035: \n3036: $$\n3037: \\left(\\frac{\\beta}{\\alpha}\\right)_c \\approx 1 + \\frac{\\lambda_v}{\\sigma_v^2}\n3038: $$\n3039: \n3040: (from {prf:ref}`def-effective-temperature` in Chapter 7).\n3041: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-26",
+      "title": null,
+      "start_line": 3043,
+      "end_line": 3078,
+      "header_lines": [],
+      "content_start": 3045,
+      "content_end": 3077,
+      "content": "3045: :::{prf:proof}\n3046: \n3047: **Step 1**: Map to thermodynamic variables.\n3048: \n3049: - Temperature $T \\leftrightarrow 1/\\beta$ (inverse exploitation strength)\n3050: - Volume $V \\leftrightarrow$ effective search space\n3051: - Entropy $S \\leftrightarrow$ swarm diversity\n3052: \n3053: **Step 2**: Fisher information at transition.\n3054: \n3055: At the critical point, the QSD transitions from **unimodal** (exploitation) to **multimodal** (exploration). The Fisher information matrix detects this via:\n3056: \n3057: $$\n3058: g_{\\text{Fisher}}^{\\beta\\beta} = \\text{Var}_{\\text{QSD}}(H_{\\text{eff}}) \\quad \\text{(energy fluctuations)}\n3059: $$\n3060: \n3061: Multimodal distributions have **larger variance**, so:\n3062: \n3063: $$\n3064: g_{\\text{Fisher}}^{\\beta\\beta} \\text{ increases sharply near } \\beta_c\n3065: $$\n3066: \n3067: **Step 3**: Pullback to Ruppeiner metric.\n3068: \n3069: Via the coordinate transformation $(\u03b2, V, N) \\to (U, V, N)$:\n3070: \n3071: $$\n3072: g_R = J^T g_{\\text{Fisher}} J\n3073: $$\n3074: \n3075: The Jacobian has a singularity when $\\partial U / \\partial \\beta$ is ill-defined (phase coexistence), leading to curvature divergence.\n3076: \n3077: **Step 4**: Numerical verification.",
+      "metadata": {},
+      "section": "## 6.3 Connection to Fragile Gas Phase Behavior",
+      "raw_directive": "3043: :::\n3044: \n3045: :::{prf:proof}\n3046: \n3047: **Step 1**: Map to thermodynamic variables.\n3048: \n3049: - Temperature $T \\leftrightarrow 1/\\beta$ (inverse exploitation strength)\n3050: - Volume $V \\leftrightarrow$ effective search space\n3051: - Entropy $S \\leftrightarrow$ swarm diversity\n3052: \n3053: **Step 2**: Fisher information at transition.\n3054: \n3055: At the critical point, the QSD transitions from **unimodal** (exploitation) to **multimodal** (exploration). The Fisher information matrix detects this via:\n3056: \n3057: $$\n3058: g_{\\text{Fisher}}^{\\beta\\beta} = \\text{Var}_{\\text{QSD}}(H_{\\text{eff}}) \\quad \\text{(energy fluctuations)}\n3059: $$\n3060: \n3061: Multimodal distributions have **larger variance**, so:\n3062: \n3063: $$\n3064: g_{\\text{Fisher}}^{\\beta\\beta} \\text{ increases sharply near } \\beta_c\n3065: $$\n3066: \n3067: **Step 3**: Pullback to Ruppeiner metric.\n3068: \n3069: Via the coordinate transformation $(\u03b2, V, N) \\to (U, V, N)$:\n3070: \n3071: $$\n3072: g_R = J^T g_{\\text{Fisher}} J\n3073: $$\n3074: \n3075: The Jacobian has a singularity when $\\partial U / \\partial \\beta$ is ill-defined (phase coexistence), leading to curvature divergence.\n3076: \n3077: **Step 4**: Numerical verification.\n3078: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "document_id": "09_kl_convergence",
+  "stage": "directives",
+  "directive_type": "corollary",
+  "generated_at": "2025-11-08T17:07:43.212696+00:00",
+  "count": 5,
+  "items": [
+    {
+      "directive_type": "corollary",
+      "label": "cor-n-particle-kinetic-lsi",
+      "title": "LSI for N-Particle Kinetic Operator",
+      "start_line": 881,
+      "end_line": 890,
+      "header_lines": [
+        882
+      ],
+      "content_start": 884,
+      "content_end": 889,
+      "content": "884: :label: cor-n-particle-kinetic-lsi\n885: \n886: The N-particle kinetic operator $\\Psi_{\\text{kin}}^{\\otimes N}$ satisfies a discrete-time LSI with the **same constant** as the single-particle operator:\n887: \n888: $$\n889: C_{\\text{LSI}}^{\\text{kin}, N}(\\tau) = C_{\\text{LSI}}^{\\text{kin}}(\\tau)",
+      "metadata": {
+        "label": "cor-n-particle-kinetic-lsi"
+      },
+      "section": "## 3. Extension to the N-Particle System",
+      "raw_directive": "881: :::\n882: \n883: :::{prf:corollary} LSI for N-Particle Kinetic Operator\n884: :label: cor-n-particle-kinetic-lsi\n885: \n886: The N-particle kinetic operator $\\Psi_{\\text{kin}}^{\\otimes N}$ satisfies a discrete-time LSI with the **same constant** as the single-particle operator:\n887: \n888: $$\n889: C_{\\text{LSI}}^{\\text{kin}, N}(\\tau) = C_{\\text{LSI}}^{\\text{kin}}(\\tau)\n890: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 7,
+        "chapter_file": "chapter_7.json",
+        "section_id": "## 3. Extension to the N-Particle System"
+      }
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-quantitative-lsi-final",
+      "title": "Quantitative LSI Constant",
+      "start_line": 1811,
+      "end_line": 1840,
+      "header_lines": [
+        1812
+      ],
+      "content_start": 1814,
+      "content_end": 1839,
+      "content": "1814: :label: cor-quantitative-lsi-final\n1815: \n1816: For the N-particle Euclidean Gas with parameters:\n1817: - Friction $\\gamma > 0$\n1818: - Confining potential convexity $\\kappa_{\\text{conf}} > 0$\n1819: - Cloning Wasserstein contraction $\\kappa_W > 0$ (from Keystone Principle)\n1820: - Kinetic time step $\\tau > 0$\n1821: - Maximum velocity $v_{\\max}$\n1822: - Domain radius $r_{\\text{valid}}$\n1823: \n1824: the system satisfies an LSI provided:\n1825: \n1826: **Seesaw condition:**\n1827: \n1828: $$\n1829: \\kappa_W > \\frac{\\beta}{1 + \\beta} \\quad \\text{where} \\quad \\beta = O\\left(\\frac{\\tau v_{\\max}^2}{r_{\\text{valid}}^2}\\right)\n1830: $$\n1831: \n1832: The LSI constant is:\n1833: \n1834: $$\n1835: C_{\\text{LSI}} = O\\left(\\frac{1}{\\min(\\gamma, \\kappa_{\\text{conf}}) \\cdot \\kappa_W}\\right)\n1836: $$\n1837: \n1838: **Practical interpretation:**\n1839: - Small time steps $\\tau$ reduce $\\beta$, making the seesaw condition easier to satisfy",
+      "metadata": {
+        "label": "cor-quantitative-lsi-final"
+      },
+      "section": "## 5. The Composition Theorem: Entropy-Transport Lyapunov Function",
+      "raw_directive": "1811: ### 5.6. Explicit Constants and Parameter Conditions\n1812: \n1813: :::{prf:corollary} Quantitative LSI Constant\n1814: :label: cor-quantitative-lsi-final\n1815: \n1816: For the N-particle Euclidean Gas with parameters:\n1817: - Friction $\\gamma > 0$\n1818: - Confining potential convexity $\\kappa_{\\text{conf}} > 0$\n1819: - Cloning Wasserstein contraction $\\kappa_W > 0$ (from Keystone Principle)\n1820: - Kinetic time step $\\tau > 0$\n1821: - Maximum velocity $v_{\\max}$\n1822: - Domain radius $r_{\\text{valid}}$\n1823: \n1824: the system satisfies an LSI provided:\n1825: \n1826: **Seesaw condition:**\n1827: \n1828: $$\n1829: \\kappa_W > \\frac{\\beta}{1 + \\beta} \\quad \\text{where} \\quad \\beta = O\\left(\\frac{\\tau v_{\\max}^2}{r_{\\text{valid}}^2}\\right)\n1830: $$\n1831: \n1832: The LSI constant is:\n1833: \n1834: $$\n1835: C_{\\text{LSI}} = O\\left(\\frac{1}{\\min(\\gamma, \\kappa_{\\text{conf}}) \\cdot \\kappa_W}\\right)\n1836: $$\n1837: \n1838: **Practical interpretation:**\n1839: - Small time steps $\\tau$ reduce $\\beta$, making the seesaw condition easier to satisfy\n1840: - Strong cloning contraction $\\kappa_W$ (high fitness signal) ensures LSI",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 10,
+        "chapter_file": "chapter_10.json",
+        "section_id": "## 5. The Composition Theorem: Entropy-Transport Lyapunov Function"
+      }
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-adaptive-lsi",
+      "title": "LSI for the ρ-Localized Geometric Gas",
+      "start_line": 1994,
+      "end_line": 2011,
+      "header_lines": [
+        1995
+      ],
+      "content_start": 1997,
+      "content_end": 2010,
+      "content": "1997: :label: cor-adaptive-lsi\n1998: \n1999: For the geometric gas with localization scale $\\rho > 0$, the LSI constant depends on $\\rho$ via:\n2000: \n2001: $$\n2002: C_{\\text{LSI}}(\\rho) \\le \\frac{C_{\\text{LSI}}^{\\text{backbone}}}{1 - \\epsilon_F \\cdot C_{\\text{adapt}}(\\rho)}\n2003: $$\n2004: \n2005: where $C_{\\text{adapt}}(\\rho) = O(F_{\\text{adapt,max}}(\\rho) / \\kappa_x)$ quantifies the perturbation strength.\n2006: \n2007: **Critical threshold:** Stability requires:\n2008: \n2009: $$\n2010: \\epsilon_F < \\epsilon_F^*(\\rho) = \\frac{1}{C_{\\text{adapt}}(\\rho)}",
+      "metadata": {
+        "label": "cor-adaptive-lsi"
+      },
+      "section": "## 7. Extension to the Adaptive Model",
+      "raw_directive": "1994: ### 7.2. ρ-Dependent LSI Constants\n1995: \n1996: :::{prf:corollary} LSI for the ρ-Localized Geometric Gas\n1997: :label: cor-adaptive-lsi\n1998: \n1999: For the geometric gas with localization scale $\\rho > 0$, the LSI constant depends on $\\rho$ via:\n2000: \n2001: $$\n2002: C_{\\text{LSI}}(\\rho) \\le \\frac{C_{\\text{LSI}}^{\\text{backbone}}}{1 - \\epsilon_F \\cdot C_{\\text{adapt}}(\\rho)}\n2003: $$\n2004: \n2005: where $C_{\\text{adapt}}(\\rho) = O(F_{\\text{adapt,max}}(\\rho) / \\kappa_x)$ quantifies the perturbation strength.\n2006: \n2007: **Critical threshold:** Stability requires:\n2008: \n2009: $$\n2010: \\epsilon_F < \\epsilon_F^*(\\rho) = \\frac{1}{C_{\\text{adapt}}(\\rho)}\n2011: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 12,
+        "chapter_file": "chapter_12.json",
+        "section_id": "## 7. Extension to the Adaptive Model"
+      }
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-n-uniform-lsi",
+      "title": "N-Uniform Logarithmic Sobolev Inequality",
+      "start_line": 2134,
+      "end_line": 2150,
+      "header_lines": [
+        2135
+      ],
+      "content_start": 2137,
+      "content_end": 2149,
+      "content": "2137: :label: cor-n-uniform-lsi\n2138: \n2139: Under the same conditions as Theorem {prf:ref}`thm-main-kl-convergence`, the LSI constant for the N-particle Euclidean Gas is **uniform in N**. That is, there exists a constant $C_{\\text{LSI}}^{\\max} < \\infty$ such that:\n2140: \n2141: $$\n2142: \\sup_{N \\geq 2} C_{\\text{LSI}}(N) \\leq C_{\\text{LSI}}^{\\max}\n2143: $$\n2144: \n2145: **Explicit bound**:\n2146: \n2147: $$\n2148: C_{\\text{LSI}}^{\\max} = O\\left(\\frac{1}{\\min(\\gamma, \\kappa_{\\text{conf}}) \\cdot \\kappa_{W,\\min} \\cdot \\delta^2}\\right)\n2149: $$",
+      "metadata": {
+        "label": "cor-n-uniform-lsi"
+      },
+      "section": "## 9. Conclusion",
+      "raw_directive": "2134: ### 9.6. N-Uniform LSI: Scalability to Large Swarms\n2135: \n2136: :::{prf:corollary} N-Uniform Logarithmic Sobolev Inequality\n2137: :label: cor-n-uniform-lsi\n2138: \n2139: Under the same conditions as Theorem {prf:ref}`thm-main-kl-convergence`, the LSI constant for the N-particle Euclidean Gas is **uniform in N**. That is, there exists a constant $C_{\\text{LSI}}^{\\max} < \\infty$ such that:\n2140: \n2141: $$\n2142: \\sup_{N \\geq 2} C_{\\text{LSI}}(N) \\leq C_{\\text{LSI}}^{\\max}\n2143: $$\n2144: \n2145: **Explicit bound**:\n2146: \n2147: $$\n2148: C_{\\text{LSI}}^{\\max} = O\\left(\\frac{1}{\\min(\\gamma, \\kappa_{\\text{conf}}) \\cdot \\kappa_{W,\\min} \\cdot \\delta^2}\\right)\n2149: $$\n2150: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 14,
+        "chapter_file": "chapter_14.json",
+        "section_id": "## 9. Conclusion"
+      }
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-n-particle-hypocoercive",
+      "title": "N-Particle Hypocoercive LSI",
+      "start_line": 5765,
+      "end_line": 5779,
+      "header_lines": [
+        5766
+      ],
+      "content_start": 5768,
+      "content_end": 5778,
+      "content": "5768: :label: cor-n-particle-hypocoercive\n5769: \n5770: For the N-particle kinetic operator with confining potential $U$ (Axiom {prf:ref}`axiom-confining-complete`), **without requiring convexity**:\n5771: \n5772: $$\n5773: D_{\\text{KL}}(\\mu_S^{(N)} \\| \\pi_{\\text{kin}}^{\\otimes N}) \\leq (1 - \\tau \\lambda_{\\text{hypo}}) D_{\\text{KL}}(\\mu_0^{(N)} \\| \\pi_{\\text{kin}}^{\\otimes N})\n5774: $$\n5775: \n5776: Moreover, the LSI constant is **uniform in N**:\n5777: \n5778: $$",
+      "metadata": {
+        "label": "cor-n-particle-hypocoercive"
+      },
+      "section": "## Part 2: Approach 1 - Hypocoercivity for Non-Convex Kinetic Systems",
+      "raw_directive": "5765: $$\n5766: \n5767: :::{prf:corollary} N-Particle Hypocoercive LSI\n5768: :label: cor-n-particle-hypocoercive\n5769: \n5770: For the N-particle kinetic operator with confining potential $U$ (Axiom {prf:ref}`axiom-confining-complete`), **without requiring convexity**:\n5771: \n5772: $$\n5773: D_{\\text{KL}}(\\mu_S^{(N)} \\| \\pi_{\\text{kin}}^{\\otimes N}) \\leq (1 - \\tau \\lambda_{\\text{hypo}}) D_{\\text{KL}}(\\mu_0^{(N)} \\| \\pi_{\\text{kin}}^{\\otimes N})\n5774: $$\n5775: \n5776: Moreover, the LSI constant is **uniform in N**:\n5777: \n5778: $$\n5779: C_{\\text{LSI}}^{\\text{kin}}(N, \\tau) = C_{\\text{LSI}}^{\\text{kin}}(1, \\tau)",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "09_kl_convergence",
+        "chapter_index": 84,
+        "chapter_file": "chapter_84.json",
+        "section_id": "## Part 2: Approach 1 - Hypocoercivity for Non-Convex Kinetic Systems"
+      }
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "chapter_index": 1,
+  "section_id": "## I. Prerequisites from Framework",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-ig-hilbert-space",
+      "title": "IG Hilbert Space Structure",
+      "start_line": 30,
+      "end_line": 62,
+      "header_lines": [
+        31
+      ],
+      "content_start": 33,
+      "content_end": 61,
+      "content": "33: :label: thm-ig-hilbert-space\n34: \n35: The Information Graph has a well-defined quantum Hilbert space structure:\n36: \n37: $$\n38: \\mathcal{H}_{\\text{IG}} = \\bigoplus_{N=0}^\\infty \\mathcal{H}_N\n39: $$\n40: \n41: where $\\mathcal{H}_N = L^2(\\mathcal{X}^N \\times \\mathcal{V}^N) / S_N$ is the symmetric $N$-walker subspace.\n42: \n43: **Basis states**: For $N$ walkers at positions/velocities $(x_1, v_1), \\ldots, (x_N, v_N)$:\n44: \n45: $$\n46: |N; x_1, v_1, \\ldots, x_N, v_N\\rangle \\in \\mathcal{H}_N\n47: $$\n48: \n49: **Creation/Annihilation operators**:\n50: \n51: $$\n52: \\hat{\\phi}^\\dagger(x, v) |N; \\{x_i, v_i\\}\\rangle = |N+1; x, v, \\{x_i, v_i\\}\\rangle\n53: $$\n54: \n55: $$\n56: \\hat{\\phi}(x, v) |N; \\{x_i, v_i\\}\\rangle = \\sqrt{N} \\sum_{j=1}^N \\delta(x - x_j) \\delta(v - v_j) |N-1; \\{x_i, v_i\\}_{i \\neq j}\\rangle\n57: $$\n58: \n59: **Canonical commutation relations**:\n60: \n61: $$",
+      "metadata": {
+        "label": "thm-ig-hilbert-space"
+      },
+      "section": "## I. Prerequisites from Framework",
+      "raw_directive": "30: From [08_lattice_qft_framework.md](08_lattice_qft_framework.md) \u00a7 9.4.1:\n31: \n32: :::{prf:theorem} IG Hilbert Space Structure\n33: :label: thm-ig-hilbert-space\n34: \n35: The Information Graph has a well-defined quantum Hilbert space structure:\n36: \n37: $$\n38: \\mathcal{H}_{\\text{IG}} = \\bigoplus_{N=0}^\\infty \\mathcal{H}_N\n39: $$\n40: \n41: where $\\mathcal{H}_N = L^2(\\mathcal{X}^N \\times \\mathcal{V}^N) / S_N$ is the symmetric $N$-walker subspace.\n42: \n43: **Basis states**: For $N$ walkers at positions/velocities $(x_1, v_1), \\ldots, (x_N, v_N)$:\n44: \n45: $$\n46: |N; x_1, v_1, \\ldots, x_N, v_N\\rangle \\in \\mathcal{H}_N\n47: $$\n48: \n49: **Creation/Annihilation operators**:\n50: \n51: $$\n52: \\hat{\\phi}^\\dagger(x, v) |N; \\{x_i, v_i\\}\\rangle = |N+1; x, v, \\{x_i, v_i\\}\\rangle\n53: $$\n54: \n55: $$\n56: \\hat{\\phi}(x, v) |N; \\{x_i, v_i\\}\\rangle = \\sqrt{N} \\sum_{j=1}^N \\delta(x - x_j) \\delta(v - v_j) |N-1; \\{x_i, v_i\\}_{i \\neq j}\\rangle\n57: $$\n58: \n59: **Canonical commutation relations**:\n60: \n61: $$\n62: [\\hat{\\phi}(x, v), \\hat{\\phi}^\\dagger(x', v')] = \\delta(x - x') \\delta(v - v')"
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-qsd-gibbs",
+      "title": "QSD is Gibbs State",
+      "start_line": 70,
+      "end_line": 96,
+      "header_lines": [
+        71
+      ],
+      "content_start": 73,
+      "content_end": 95,
+      "content": "73: :label: thm-qsd-gibbs\n74: \n75: The quasi-stationary distribution (QSD) is an exact thermal equilibrium state for the many-body effective Hamiltonian:\n76: \n77: $$\n78: H_{\\text{eff}}(S) = \\sum_{i=1}^N \\left( \\frac{1}{2}m v_i^2 + U(x_i) \\right) + \\mathcal{V}_{\\text{int}}(S)\n79: $$\n80: \n81: where $\\mathcal{V}_{\\text{int}}(S) = -\\epsilon_F \\sum_{i=1}^N V_{\\text{fit}}(x_i, v_i; S)$ is the emergent many-body interaction potential from fitness.\n82: \n83: **QSD density operator**:\n84: \n85: $$\n86: \\rho_{\\text{QSD}} = \\frac{e^{-\\beta H_{\\text{eff}}}}{Z}\n87: $$\n88: \n89: where $\\beta = 1/T$ is inverse temperature and $Z = \\text{Tr}(e^{-\\beta H_{\\text{eff}}})$ is partition function.\n90: \n91: **Detailed balance**: The birth/death rates satisfy:\n92: \n93: $$\n94: \\frac{\\Gamma_{\\text{death}}(x_i, v_i; S)}{\\Gamma_{\\text{birth}}(x_i, v_i; S)} = e^{\\beta(E_{\\text{eff},i}(S) - \\mu)}\n95: $$",
+      "metadata": {
+        "label": "thm-qsd-gibbs"
+      },
+      "section": "## I. Prerequisites from Framework",
+      "raw_directive": "70: From [QSD_THERMAL_EQUILIBRIUM_RESOLUTION.md](../../deprecated_analysis/QSD_THERMAL_EQUILIBRIUM_RESOLUTION.md):\n71: \n72: :::{prf:theorem} QSD is Gibbs State\n73: :label: thm-qsd-gibbs\n74: \n75: The quasi-stationary distribution (QSD) is an exact thermal equilibrium state for the many-body effective Hamiltonian:\n76: \n77: $$\n78: H_{\\text{eff}}(S) = \\sum_{i=1}^N \\left( \\frac{1}{2}m v_i^2 + U(x_i) \\right) + \\mathcal{V}_{\\text{int}}(S)\n79: $$\n80: \n81: where $\\mathcal{V}_{\\text{int}}(S) = -\\epsilon_F \\sum_{i=1}^N V_{\\text{fit}}(x_i, v_i; S)$ is the emergent many-body interaction potential from fitness.\n82: \n83: **QSD density operator**:\n84: \n85: $$\n86: \\rho_{\\text{QSD}} = \\frac{e^{-\\beta H_{\\text{eff}}}}{Z}\n87: $$\n88: \n89: where $\\beta = 1/T$ is inverse temperature and $Z = \\text{Tr}(e^{-\\beta H_{\\text{eff}}})$ is partition function.\n90: \n91: **Detailed balance**: The birth/death rates satisfy:\n92: \n93: $$\n94: \\frac{\\Gamma_{\\text{death}}(x_i, v_i; S)}{\\Gamma_{\\text{birth}}(x_i, v_i; S)} = e^{\\beta(E_{\\text{eff},i}(S) - \\mu)}\n95: $$\n96: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

@@ -1,0 +1,159 @@
+{
+  "document_id": "03_cloning",
+  "stage": "directives",
+  "directive_type": "corollary",
+  "generated_at": "2025-11-08T17:07:43.186536+00:00",
+  "count": 6,
+  "items": [
+    {
+      "directive_type": "corollary",
+      "label": "cor-vvarx-to-high-error-fraction",
+      "title": "A Large Intra-Swarm Positional Variance Guarantees a Non-Vanishing High-Error Fraction",
+      "start_line": 2806,
+      "end_line": 2817,
+      "header_lines": [
+        2807
+      ],
+      "content_start": 2809,
+      "content_end": 2816,
+      "content": "2809: :label: cor-vvarx-to-high-error-fraction\n2810: \n2811: For any fixed interaction range $\\varepsilon > 0$, there exists a positional variance threshold $R^2_{\\text{total\\_var},x} > 0$ and a corresponding N-uniform constant $f_H(\\epsilon) > 0$ such that:\n2812: \n2813: If the total intra-swarm positional variance is large, $V_{\\text{Var},x} > R^2_{\\text{total\\_var},x}$, then the fraction of *alive* walkers in the unified high-error set of at least one of the swarms, $k \\in {1, 2}$, is bounded below:\n2814: \n2815: $$\n2816: \\frac{|H_k(\\epsilon)|}{k} \\ge f_H(\\epsilon) > 0",
+      "metadata": {
+        "label": "cor-vvarx-to-high-error-fraction"
+      },
+      "section": "## 6. The Geometry of Error: From System Error to a Guaranteed Geometric Structure",
+      "raw_directive": "2806: This corollary provides the final, synthesized result of our geometric analysis. It proves that a large **total intra-swarm positional variance ($V_{\\text{Var},x}$)** is sufficient to guarantee that a non-vanishing fraction of at least one of the swarms belongs to this high-error set, providing the clean, unified input required for the subsequent analysis. This directly aligns with the Keystone Principle's central thesis: the cloning operator contracts the positional variance component of the Lyapunov function.\n2807: \n2808: :::{prf:corollary} A Large Intra-Swarm Positional Variance Guarantees a Non-Vanishing High-Error Fraction\n2809: :label: cor-vvarx-to-high-error-fraction\n2810: \n2811: For any fixed interaction range $\\varepsilon > 0$, there exists a positional variance threshold $R^2_{\\text{total\\_var},x} > 0$ and a corresponding N-uniform constant $f_H(\\epsilon) > 0$ such that:\n2812: \n2813: If the total intra-swarm positional variance is large, $V_{\\text{Var},x} > R^2_{\\text{total\\_var},x}$, then the fraction of *alive* walkers in the unified high-error set of at least one of the swarms, $k \\in {1, 2}$, is bounded below:\n2814: \n2815: $$\n2816: \\frac{|H_k(\\epsilon)|}{k} \\ge f_H(\\epsilon) > 0\n2817: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## 6. The Geometry of Error: From System Error to a Guaranteed Geometric Structure"
+      }
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-cloning-pressure-target-set",
+      "title": "Cloning Pressure on the Target Set",
+      "start_line": 5007,
+      "end_line": 5016,
+      "header_lines": [
+        5008
+      ],
+      "content_start": 5010,
+      "content_end": 5015,
+      "content": "5010: :label: cor-cloning-pressure-target-set\n5011: \n5012: For any walker $i$ in the **critical target set**, $I_{\\text{target}} = I_{11} \\cap U_k \\cap H_k(\\epsilon)$, its total cloning probability in the high-variance swarm $k$ is also bounded below by the same N-uniform constant:\n5013: \n5014: $$\n5015: p_{k,i} \\ge p_u(\\epsilon) > 0",
+      "metadata": {
+        "label": "cor-cloning-pressure-target-set"
+      },
+      "section": "## 8. The N-Uniform Quantitative Keystone Lemma",
+      "raw_directive": "5007: This powerful lemma guarantees that every walker identified as \"unfit\" is under significant, quantifiable pressure to be cloned. We can now extend this guarantee directly to our critical target population.\n5008: \n5009: :::{prf:corollary} Cloning Pressure on the Target Set\n5010: :label: cor-cloning-pressure-target-set\n5011: \n5012: For any walker $i$ in the **critical target set**, $I_{\\text{target}} = I_{11} \\cap U_k \\cap H_k(\\epsilon)$, its total cloning probability in the high-variance swarm $k$ is also bounded below by the same N-uniform constant:\n5013: \n5014: $$\n5015: p_{k,i} \\ge p_u(\\epsilon) > 0\n5016: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 8,
+        "chapter_file": "chapter_8.json",
+        "section_id": "## 8. The N-Uniform Quantitative Keystone Lemma"
+      }
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-structural-error-contraction",
+      "title": "Structural Error Contraction",
+      "start_line": 6855,
+      "end_line": 6865,
+      "header_lines": [
+        6856
+      ],
+      "content_start": 6858,
+      "content_end": 6864,
+      "content": "6858: :label: cor-structural-error-contraction\n6859: \n6860: Under the same conditions as Theorem 10.3.1, the structural error also contracts:\n6861: \n6862: $$\n6863: \\mathbb{E}_{\\text{clone}}[V_{\\text{struct}}(S'_1, S'_2)] \\leq (1 - \\kappa_{\\text{struct}}) V_{\\text{struct}}(S_1, S_2) + C_{\\text{struct}}\n6864: $$",
+      "metadata": {
+        "label": "cor-structural-error-contraction"
+      },
+      "section": "## 10.5. Implications for Structural Error",
+      "raw_directive": "6855: The positional variance contraction has immediate consequences for the structural error $V_{\\text{struct}}$.\n6856: \n6857: :::{prf:corollary} Structural Error Contraction\n6858: :label: cor-structural-error-contraction\n6859: \n6860: Under the same conditions as Theorem 10.3.1, the structural error also contracts:\n6861: \n6862: $$\n6863: \\mathbb{E}_{\\text{clone}}[V_{\\text{struct}}(S'_1, S'_2)] \\leq (1 - \\kappa_{\\text{struct}}) V_{\\text{struct}}(S_1, S_2) + C_{\\text{struct}}\n6864: $$\n6865: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 19,
+        "chapter_file": "chapter_19.json",
+        "section_id": "## 10.5. Implications for Structural Error"
+      }
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-bounded-boundary-exposure",
+      "title": "Bounded Boundary Exposure in Equilibrium",
+      "start_line": 7552,
+      "end_line": 7562,
+      "header_lines": [
+        7553
+      ],
+      "content_start": 7555,
+      "content_end": 7561,
+      "content": "7555: :label: cor-bounded-boundary-exposure\n7556: \n7557: Under the drift inequality from Theorem 11.3.1, the long-term boundary exposure is bounded:\n7558: \n7559: $$\n7560: \\limsup_{t \\to \\infty} \\mathbb{E}[W_b(S_t)] \\leq \\frac{C_b}{\\kappa_b}\n7561: $$",
+      "metadata": {
+        "label": "cor-bounded-boundary-exposure"
+      },
+      "section": "## 11.5. Implications for Extinction Probability",
+      "raw_directive": "7552: The boundary potential contraction has important consequences for swarm survival.\n7553: \n7554: :::{prf:corollary} Bounded Boundary Exposure in Equilibrium\n7555: :label: cor-bounded-boundary-exposure\n7556: \n7557: Under the drift inequality from Theorem 11.3.1, the long-term boundary exposure is bounded:\n7558: \n7559: $$\n7560: \\limsup_{t \\to \\infty} \\mathbb{E}[W_b(S_t)] \\leq \\frac{C_b}{\\kappa_b}\n7561: $$\n7562: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 26,
+        "chapter_file": "chapter_26.json",
+        "section_id": "## 11.5. Implications for Extinction Probability"
+      }
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-extinction-suppression",
+      "title": "Exponentially Suppressed Extinction Probability",
+      "start_line": 7595,
+      "end_line": 7605,
+      "header_lines": [
+        7596
+      ],
+      "content_start": 7598,
+      "content_end": 7604,
+      "content": "7598: :label: cor-extinction-suppression\n7599: \n7600: The boundary potential contraction exponentially suppresses the probability of catastrophic boundary crossing events. Specifically, for any $\\epsilon > 0$, there exists $N_0$ such that for all $N > N_0$:\n7601: \n7602: $$\n7603: P(\\text{extinction in one step}) = O(e^{-N \\cdot \\text{const}})\n7604: $$",
+      "metadata": {
+        "label": "cor-extinction-suppression"
+      },
+      "section": "## 11.5. Implications for Extinction Probability",
+      "raw_directive": "7595: :::\n7596: \n7597: :::{prf:corollary} Exponentially Suppressed Extinction Probability\n7598: :label: cor-extinction-suppression\n7599: \n7600: The boundary potential contraction exponentially suppresses the probability of catastrophic boundary crossing events. Specifically, for any $\\epsilon > 0$, there exists $N_0$ such that for all $N > N_0$:\n7601: \n7602: $$\n7603: P(\\text{extinction in one step}) = O(e^{-N \\cdot \\text{const}})\n7604: $$\n7605: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 26,
+        "chapter_file": "chapter_26.json",
+        "section_id": "## 11.5. Implications for Extinction Probability"
+      }
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-component-bounds-vw",
+      "title": "Component-Wise Bounds on Inter-Swarm Error",
+      "start_line": 7976,
+      "end_line": 7989,
+      "header_lines": [
+        7977
+      ],
+      "content_start": 7979,
+      "content_end": 7988,
+      "content": "7979: :label: cor-component-bounds-vw\n7980: \n7981: The location and structural error components satisfy:\n7982: \n7983: $$\n7984: \\begin{aligned}\n7985: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] &\\leq C_{\\text{loc}} \\\\\n7986: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}] &\\leq C_{\\text{struct}}\n7987: \\end{aligned}\n7988: $$",
+      "metadata": {
+        "label": "cor-component-bounds-vw"
+      },
+      "section": "## 12.2. Inter-Swarm Error Under Cloning",
+      "raw_directive": "7976: For completeness, we state the separate bounds on the location and structural components.\n7977: \n7978: :::{prf:corollary} Component-Wise Bounds on Inter-Swarm Error\n7979: :label: cor-component-bounds-vw\n7980: \n7981: The location and structural error components satisfy:\n7982: \n7983: $$\n7984: \\begin{aligned}\n7985: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] &\\leq C_{\\text{loc}} \\\\\n7986: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}] &\\leq C_{\\text{struct}}\n7987: \\end{aligned}\n7988: $$\n7989: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 30,
+        "chapter_file": "chapter_30.json",
+        "section_id": "## 12.2. Inter-Swarm Error Under Cloning"
+      }
+    }
+  ]
+}

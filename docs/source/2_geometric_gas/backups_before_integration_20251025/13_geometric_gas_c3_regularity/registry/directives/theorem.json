@@ -1,0 +1,59 @@
+{
+  "document_id": "13_geometric_gas_c3_regularity",
+  "stage": "directives",
+  "directive_type": "theorem",
+  "generated_at": "2025-11-08T17:07:43.276240+00:00",
+  "count": 2,
+  "items": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-c3-regularity",
+      "title": "$C^3$ Regularity of the �-Localized Fitness Potential",
+      "start_line": 931,
+      "end_line": 956,
+      "header_lines": [
+        932
+      ],
+      "content_start": 934,
+      "content_end": 955,
+      "content": "934: :label: thm-c3-regularity\n935: \n936: Under Assumptions {prf:ref}`assump-c3-measurement`, {prf:ref}`assump-c3-kernel`, {prf:ref}`assump-c3-rescale`, and {prf:ref}`assump-c3-patch`, the fitness potential $V_{\\text{fit}}[f_k, \\rho](x_i) = g_A(Z_\\rho[f_k, d, x_i])$ is three times continuously differentiable with respect to walker position $x_i \\in \\mathcal{X}$, with **k-uniform** and **N-uniform** bound:\n937: \n938: $$\n939: \\|\\nabla^3_{x_i} V_{\\text{fit}}[f_k, \\rho](x_i)\\| \\le K_{V,3}(\\rho) < \\infty\n940: $$\n941: \n942: for all alive walker counts $k \\in \\{1, \\ldots, N\\}$, all swarm sizes $N \\ge 1$, and all localization scales $\\rho > 0$, where:\n943: \n944: $$\n945: K_{V,3}(\\rho) := L_{g'''_A} \\cdot (K_{Z,1}(\\rho))^3 + 3 L_{g''_A} \\cdot K_{Z,1}(\\rho) \\cdot K_{Z,2}(\\rho) + L_{g'_A} \\cdot K_{Z,3}(\\rho)\n946: $$\n947: \n948: Here:\n949: - $K_{Z,1}(\\rho) = F_{\\text{adapt,max}}(\\rho) / L_{g'_A}$ is the $C^3$ bound on $\\nabla Z_\\rho$ (from Theorem {prf:ref}`thm-c1-review`)\n950: - $K_{Z,2}(\\rho)$ is the $C^3$ bound on $\\nabla^2 Z_\\rho$ (from Theorem {prf:ref}`thm-c2-review` and chain rule)\n951: - $K_{Z,3}(\\rho)$ is the $C^3$ bound on $\\nabla^3 Z_\\rho$ (from Lemma {prf:ref}`lem-zscore-third-derivative`)\n952: - $L_{g'_A}, L_{g''_A}, L_{g'''_A}$ are the derivative bounds on the rescale function $g_A$ (Assumption {prf:ref}`assump-c3-rescale`)\n953: \n954: **Moreover**, the third derivatives $\\nabla^3 V_{\\text{fit}}[f_k, \\rho](x_i)$ are continuous functions of:\n955: 1. Walker position $x_i \\in \\mathcal{X}$",
+      "metadata": {
+        "label": "thm-c3-regularity"
+      },
+      "section": "## 8. Main $C^3$ Regularity Theorem",
+      "raw_directive": "931: We now combine the preparatory lemmas to establish the main result: $C^3$ regularity of the fitness potential with k-uniform bounds.\n932: \n933: :::{prf:theorem} $C^3$ Regularity of the �-Localized Fitness Potential\n934: :label: thm-c3-regularity\n935: \n936: Under Assumptions {prf:ref}`assump-c3-measurement`, {prf:ref}`assump-c3-kernel`, {prf:ref}`assump-c3-rescale`, and {prf:ref}`assump-c3-patch`, the fitness potential $V_{\\text{fit}}[f_k, \\rho](x_i) = g_A(Z_\\rho[f_k, d, x_i])$ is three times continuously differentiable with respect to walker position $x_i \\in \\mathcal{X}$, with **k-uniform** and **N-uniform** bound:\n937: \n938: $$\n939: \\|\\nabla^3_{x_i} V_{\\text{fit}}[f_k, \\rho](x_i)\\| \\le K_{V,3}(\\rho) < \\infty\n940: $$\n941: \n942: for all alive walker counts $k \\in \\{1, \\ldots, N\\}$, all swarm sizes $N \\ge 1$, and all localization scales $\\rho > 0$, where:\n943: \n944: $$\n945: K_{V,3}(\\rho) := L_{g'''_A} \\cdot (K_{Z,1}(\\rho))^3 + 3 L_{g''_A} \\cdot K_{Z,1}(\\rho) \\cdot K_{Z,2}(\\rho) + L_{g'_A} \\cdot K_{Z,3}(\\rho)\n946: $$\n947: \n948: Here:\n949: - $K_{Z,1}(\\rho) = F_{\\text{adapt,max}}(\\rho) / L_{g'_A}$ is the $C^3$ bound on $\\nabla Z_\\rho$ (from Theorem {prf:ref}`thm-c1-review`)\n950: - $K_{Z,2}(\\rho)$ is the $C^3$ bound on $\\nabla^2 Z_\\rho$ (from Theorem {prf:ref}`thm-c2-review` and chain rule)\n951: - $K_{Z,3}(\\rho)$ is the $C^3$ bound on $\\nabla^3 Z_\\rho$ (from Lemma {prf:ref}`lem-zscore-third-derivative`)\n952: - $L_{g'_A}, L_{g''_A}, L_{g'''_A}$ are the derivative bounds on the rescale function $g_A$ (Assumption {prf:ref}`assump-c3-rescale`)\n953: \n954: **Moreover**, the third derivatives $\\nabla^3 V_{\\text{fit}}[f_k, \\rho](x_i)$ are continuous functions of:\n955: 1. Walker position $x_i \\in \\mathcal{X}$\n956: 2. Swarm configuration $S = (x_1, \\ldots, x_N, v_1, \\ldots, v_N) \\in (\\mathcal{X} \\times \\mathbb{R}^d)^N$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "13_geometric_gas_c3_regularity",
+        "chapter_index": 8,
+        "chapter_file": "chapter_8.json",
+        "section_id": "## 8. Main $C^3$ Regularity Theorem"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-continuity-third-derivatives",
+      "title": "Continuity of Third Derivatives",
+      "start_line": 1481,
+      "end_line": 1496,
+      "header_lines": [
+        1482
+      ],
+      "content_start": 1484,
+      "content_end": 1495,
+      "content": "1484: :label: thm-continuity-third-derivatives\n1485: \n1486: The third derivatives $\\nabla^3 V_{\\text{fit}}[f_k, \\rho](x_i)$ are continuous functions of:\n1487: 1. **Walker position** $x_i \\in \\mathcal{X}$\n1488: 2. **Swarm configuration** $S = (x_1, \\ldots, x_N, v_1, \\ldots, v_N) \\in (\\mathcal{X} \\times \\mathbb{R}^d)^N$\n1489: 3. **Localization parameter** $\\rho \\in (0, \\infty)$\n1490: \n1491: **Uniform continuity on compact sets:** For any compact set $K \\subset \\mathcal{X} \\times (\\mathcal{X} \\times \\mathbb{R}^d)^N \\times (0, \\infty)$, the map:\n1492: \n1493: $$\n1494: (x_i, S, \\rho) \\mapsto \\nabla^3 V_{\\text{fit}}[f_k, \\rho](x_i)\n1495: $$",
+      "metadata": {
+        "label": "thm-continuity-third-derivatives"
+      },
+      "section": "## 11. Continuity of Third Derivatives",
+      "raw_directive": "1481: Beyond boundedness, we establish that the third derivatives are continuous functions, which is required for some functional analytic arguments.\n1482: \n1483: :::{prf:theorem} Continuity of Third Derivatives\n1484: :label: thm-continuity-third-derivatives\n1485: \n1486: The third derivatives $\\nabla^3 V_{\\text{fit}}[f_k, \\rho](x_i)$ are continuous functions of:\n1487: 1. **Walker position** $x_i \\in \\mathcal{X}$\n1488: 2. **Swarm configuration** $S = (x_1, \\ldots, x_N, v_1, \\ldots, v_N) \\in (\\mathcal{X} \\times \\mathbb{R}^d)^N$\n1489: 3. **Localization parameter** $\\rho \\in (0, \\infty)$\n1490: \n1491: **Uniform continuity on compact sets:** For any compact set $K \\subset \\mathcal{X} \\times (\\mathcal{X} \\times \\mathbb{R}^d)^N \\times (0, \\infty)$, the map:\n1492: \n1493: $$\n1494: (x_i, S, \\rho) \\mapsto \\nabla^3 V_{\\text{fit}}[f_k, \\rho](x_i)\n1495: $$\n1496: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "13_geometric_gas_c3_regularity",
+        "chapter_index": 11,
+        "chapter_file": "chapter_11.json",
+        "section_id": "## 11. Continuity of Third Derivatives"
+      }
+    }
+  ]
+}

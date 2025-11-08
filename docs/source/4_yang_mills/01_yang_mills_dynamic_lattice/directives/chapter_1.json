@@ -1,0 +1,155 @@
+{
+  "chapter_index": 1,
+  "section_id": "## The Minimal Dynamic Lattice Gauge Theory (MDLGT)",
+  "directive_count": 8,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-mdlgt-state-space",
+      "title": "MDLGT State Space with Center-of-Mass Constraint",
+      "start_line": 60,
+      "end_line": 82,
+      "header_lines": [
+        61
+      ],
+      "content_start": 63,
+      "content_end": 81,
+      "content": "63: :label: def-mdlgt-state-space\n64: \n65: The state of the MDLGT system is a pair $\\mathcal{S} = (\\mathbf{x}, \\mathbf{U})$ living in the constrained product space:\n66: \n67: $$\n68: \\Sigma_N = \\left\\{(\\mathbf{x}, \\mathbf{U}) \\in (\\mathbb{R}^4)^N \\times (\\text{SU}(N_c))^{E_N(\\mathbf{x})} : \\sum_{i=1}^N x_i = 0\\right\\}\n69: \n70: $$\n71: \n72: where:\n73: \n74: - **Nodes (Lattice Sites)**: $\\mathbf{x} = (x_1, \\ldots, x_N)$ with each $x_i \\in \\mathbb{R}^4$ representing a position in Euclidean spacetime, subject to the **center-of-mass constraint**:\n75: \n76: $$\n77: \\sum_{i=1}^N x_i = 0\n78: \n79: $$\n80: \n81: - **Graph Construction**: $\\mathcal{G}(\\mathbf{x})$ is the **Delaunay triangulation** of the point set $\\{x_1, \\ldots, x_N\\}$ in $\\mathbb{R}^4$, producing a simplicial complex of 4-simplices with edge set $E_N(\\mathbf{x})$",
+      "metadata": {
+        "label": "def-mdlgt-state-space"
+      },
+      "section": "## The Minimal Dynamic Lattice Gauge Theory (MDLGT)",
+      "raw_directive": "60: ### State Space and Gauge Fixing\n61: \n62: :::{prf:definition} MDLGT State Space with Center-of-Mass Constraint\n63: :label: def-mdlgt-state-space\n64: \n65: The state of the MDLGT system is a pair $\\mathcal{S} = (\\mathbf{x}, \\mathbf{U})$ living in the constrained product space:\n66: \n67: $$\n68: \\Sigma_N = \\left\\{(\\mathbf{x}, \\mathbf{U}) \\in (\\mathbb{R}^4)^N \\times (\\text{SU}(N_c))^{E_N(\\mathbf{x})} : \\sum_{i=1}^N x_i = 0\\right\\}\n69: \n70: $$\n71: \n72: where:\n73: \n74: - **Nodes (Lattice Sites)**: $\\mathbf{x} = (x_1, \\ldots, x_N)$ with each $x_i \\in \\mathbb{R}^4$ representing a position in Euclidean spacetime, subject to the **center-of-mass constraint**:\n75: \n76: $$\n77: \\sum_{i=1}^N x_i = 0\n78: \n79: $$\n80: \n81: - **Graph Construction**: $\\mathcal{G}(\\mathbf{x})$ is the **Delaunay triangulation** of the point set $\\{x_1, \\ldots, x_N\\}$ in $\\mathbb{R}^4$, producing a simplicial complex of 4-simplices with edge set $E_N(\\mathbf{x})$\n82: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-fiber-bundle-structure",
+      "title": "Fiber Bundle Structure of $\\Sigma_N$",
+      "start_line": 115,
+      "end_line": 142,
+      "header_lines": [
+        116
+      ],
+      "content_start": 118,
+      "content_end": 141,
+      "content": "118: :label: rem-fiber-bundle-structure\n119: \n120: The state space $\\Sigma_N$ is naturally a fiber bundle:\n121: \n122: **Base Space**: The constrained node configuration space modulo rotations:\n123: \n124: $$\n125: \\mathcal{B}_N := \\left\\{\\mathbf{x} \\in (\\mathbb{R}^4)^N : \\sum_{i=1}^N x_i = 0\\right\\} / SO(4)\n126: $$\n127: \n128: where we quotient by the rotation group SO(4) because the Hamiltonian depends only on relative coordinates $x_i - x_j$ and their norms, which are rotationally invariant.\n129: \n130: **Fiber**: Over each node configuration $\\mathbf{x} \\in \\mathcal{B}_N$, the gauge field lives in:\n131: \n132: $$\n133: \\mathcal{F}(\\mathbf{x}) := (\\text{SU}(N_c))^{E_N(\\mathbf{x})}\n134: $$\n135: \n136: The dimension of this fiber is $|E_N(\\mathbf{x})| \\cdot \\dim(\\text{SU}(N_c)) = |E_N(\\mathbf{x})| \\cdot (N_c^2 - 1)$, which varies with the graph structure.\n137: \n138: **Singularities**: The fiber dimension changes at configurations where the Delaunay triangulation topology changes. In $\\mathbb{R}^4$, such topology changes occur when $d+2 = 6$ points become co-spherical (lie on a common 3-sphere), causing a 4-simplex to \"flip\" and reconnect differently. These singularities form a measure-zero algebraic variety in $\\mathbb{R}^{4N}$.\n139: \n140: **Well-Posedness**: Despite these singularities, the dynamics and invariant measure are well-defined:\n141: 1. The Hamiltonian $H(\\mathbf{x}, \\mathbf{U})$ is smooth everywhere (depends only on distances and gauge fields)",
+      "metadata": {
+        "label": "rem-fiber-bundle-structure"
+      },
+      "section": "## The Minimal Dynamic Lattice Gauge Theory (MDLGT)",
+      "raw_directive": "115: The state space $\\Sigma_N$ has a rich mathematical structure that must be properly characterized to rigorously define dynamics and measures.\n116: \n117: :::{prf:remark} Fiber Bundle Structure of $\\Sigma_N$\n118: :label: rem-fiber-bundle-structure\n119: \n120: The state space $\\Sigma_N$ is naturally a fiber bundle:\n121: \n122: **Base Space**: The constrained node configuration space modulo rotations:\n123: \n124: $$\n125: \\mathcal{B}_N := \\left\\{\\mathbf{x} \\in (\\mathbb{R}^4)^N : \\sum_{i=1}^N x_i = 0\\right\\} / SO(4)\n126: $$\n127: \n128: where we quotient by the rotation group SO(4) because the Hamiltonian depends only on relative coordinates $x_i - x_j$ and their norms, which are rotationally invariant.\n129: \n130: **Fiber**: Over each node configuration $\\mathbf{x} \\in \\mathcal{B}_N$, the gauge field lives in:\n131: \n132: $$\n133: \\mathcal{F}(\\mathbf{x}) := (\\text{SU}(N_c))^{E_N(\\mathbf{x})}\n134: $$\n135: \n136: The dimension of this fiber is $|E_N(\\mathbf{x})| \\cdot \\dim(\\text{SU}(N_c)) = |E_N(\\mathbf{x})| \\cdot (N_c^2 - 1)$, which varies with the graph structure.\n137: \n138: **Singularities**: The fiber dimension changes at configurations where the Delaunay triangulation topology changes. In $\\mathbb{R}^4$, such topology changes occur when $d+2 = 6$ points become co-spherical (lie on a common 3-sphere), causing a 4-simplex to \"flip\" and reconnect differently. These singularities form a measure-zero algebraic variety in $\\mathbb{R}^{4N}$.\n139: \n140: **Well-Posedness**: Despite these singularities, the dynamics and invariant measure are well-defined:\n141: 1. The Hamiltonian $H(\\mathbf{x}, \\mathbf{U})$ is smooth everywhere (depends only on distances and gauge fields)\n142: 2. Topology changes occur with probability zero under the continuous diffusion"
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-dynamics-regularity",
+      "title": "Regularity of the MDLGT Dynamics",
+      "start_line": 144,
+      "end_line": 158,
+      "header_lines": [
+        145
+      ],
+      "content_start": 147,
+      "content_end": 157,
+      "content": "147: :label: lem-dynamics-regularity\n148: \n149: The MDLGT dynamics (constrained Langevin + heat bath) are well-defined on $\\Sigma_N$ despite the fiber bundle singularities.\n150: \n151: **Proof Sketch**:\n152: \n153: 1. **Node dynamics well-defined**: The gradient $\\nabla_{x_i} H$ exists and is bounded everywhere by {prf:ref}`lem-uniform-force-bounds`, since $H$ depends only on pairwise distances $\\|x_i - x_j\\|$ (smooth except at collisions, which are excluded by hard-core repulsion).\n154: \n155: 2. **Topology changes have measure zero**: The constrained Langevin dynamics induce a continuous diffusion on $\\mathcal{B}_N$. The set of co-spherical configurations is an algebraic variety of codimension $\\geq 1$ in $\\mathbb{R}^{4N}$, hence has Lebesgue measure zero. Under the diffusion, such sets are visited with probability zero.\n156: \n157: 3. **Gauge field updates well-defined**: For any fixed node configuration $\\mathbf{x}$, the heat bath algorithm samples from the conditional Boltzmann distribution on $(\\text{SU}(N_c))^{E_N(\\mathbf{x})}$, which is well-defined by compactness of SU($N_c$).",
+      "metadata": {
+        "label": "lem-dynamics-regularity"
+      },
+      "section": "## The Minimal Dynamic Lattice Gauge Theory (MDLGT)",
+      "raw_directive": "144: :::\n145: \n146: :::{prf:lemma} Regularity of the MDLGT Dynamics\n147: :label: lem-dynamics-regularity\n148: \n149: The MDLGT dynamics (constrained Langevin + heat bath) are well-defined on $\\Sigma_N$ despite the fiber bundle singularities.\n150: \n151: **Proof Sketch**:\n152: \n153: 1. **Node dynamics well-defined**: The gradient $\\nabla_{x_i} H$ exists and is bounded everywhere by {prf:ref}`lem-uniform-force-bounds`, since $H$ depends only on pairwise distances $\\|x_i - x_j\\|$ (smooth except at collisions, which are excluded by hard-core repulsion).\n154: \n155: 2. **Topology changes have measure zero**: The constrained Langevin dynamics induce a continuous diffusion on $\\mathcal{B}_N$. The set of co-spherical configurations is an algebraic variety of codimension $\\geq 1$ in $\\mathbb{R}^{4N}$, hence has Lebesgue measure zero. Under the diffusion, such sets are visited with probability zero.\n156: \n157: 3. **Gauge field updates well-defined**: For any fixed node configuration $\\mathbf{x}$, the heat bath algorithm samples from the conditional Boltzmann distribution on $(\\text{SU}(N_c))^{E_N(\\mathbf{x})}$, which is well-defined by compactness of SU($N_c$).\n158: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-mdlgt-hamiltonian",
+      "title": "MDLGT Hamiltonian",
+      "start_line": 162,
+      "end_line": 173,
+      "header_lines": [
+        163
+      ],
+      "content_start": 165,
+      "content_end": 172,
+      "content": "165: :label: def-mdlgt-hamiltonian\n166: \n167: The total energy of the system is given by the Hamiltonian:\n168: \n169: $$\n170: H(\\mathbf{x}, \\mathbf{U}) = H_{\\text{nodes}}(\\mathbf{x}) + H_{\\text{gauge}}(\\mathbf{x}, \\mathbf{U})\n171: \n172: $$",
+      "metadata": {
+        "label": "def-mdlgt-hamiltonian"
+      },
+      "section": "## The Minimal Dynamic Lattice Gauge Theory (MDLGT)",
+      "raw_directive": "162: ### Hamiltonian (Energy Functional)\n163: \n164: :::{prf:definition} MDLGT Hamiltonian\n165: :label: def-mdlgt-hamiltonian\n166: \n167: The total energy of the system is given by the Hamiltonian:\n168: \n169: $$\n170: H(\\mathbf{x}, \\mathbf{U}) = H_{\\text{nodes}}(\\mathbf{x}) + H_{\\text{gauge}}(\\mathbf{x}, \\mathbf{U})\n171: \n172: $$\n173: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-node-hamiltonian",
+      "title": "Node Hamiltonian (Translation-Invariant)",
+      "start_line": 175,
+      "end_line": 197,
+      "header_lines": [
+        176
+      ],
+      "content_start": 178,
+      "content_end": 196,
+      "content": "178: :label: def-node-hamiltonian\n179: \n180: The node Hamiltonian is defined in terms of **relative coordinates only**:\n181: \n182: $$\n183: H_{\\text{nodes}}(\\mathbf{x}) = \\sum_{i<j} V_{\\text{pair}}(\\|x_i - x_j\\|)\n184: \n185: $$\n186: \n187: where $V_{\\text{pair}}(r)$ is a pairwise potential with the following properties:\n188: 1. **Repulsion at short range**: $V_{\\text{pair}}(r) \\to +\\infty$ as $r \\to 0$\n189: 2. **Confinement at long range**: $V_{\\text{pair}}(r) \\to +\\infty$ as $r \\to \\infty$\n190: 3. **Bounded gradient on hard-core region**: $\\sup_{r \\geq r_{\\min}} |V_{\\text{pair}}'(r)| < \\infty$ for any $r_{\\min} > 0$\n191: 4. **Unique minimum**: $V_{\\text{pair}}(r)$ has a unique minimum at $r = r_0 > 0$\n192: \n193: :::{note} Relaxed Gradient Requirement\n194: Property 3 has been **relaxed from global boundedness** to boundedness on $[r_{\\min}, \\infty)$ for any $r_{\\min} > 0$. This relaxation is necessary because no $C^1$ function can simultaneously:\n195: - Diverge to $+\\infty$ as $r \\to 0$ (Property 1)\n196: - Have globally bounded derivative",
+      "metadata": {
+        "label": "def-node-hamiltonian"
+      },
+      "section": "## The Minimal Dynamic Lattice Gauge Theory (MDLGT)",
+      "raw_directive": "175: :::\n176: \n177: :::{prf:definition} Node Hamiltonian (Translation-Invariant)\n178: :label: def-node-hamiltonian\n179: \n180: The node Hamiltonian is defined in terms of **relative coordinates only**:\n181: \n182: $$\n183: H_{\\text{nodes}}(\\mathbf{x}) = \\sum_{i<j} V_{\\text{pair}}(\\|x_i - x_j\\|)\n184: \n185: $$\n186: \n187: where $V_{\\text{pair}}(r)$ is a pairwise potential with the following properties:\n188: 1. **Repulsion at short range**: $V_{\\text{pair}}(r) \\to +\\infty$ as $r \\to 0$\n189: 2. **Confinement at long range**: $V_{\\text{pair}}(r) \\to +\\infty$ as $r \\to \\infty$\n190: 3. **Bounded gradient on hard-core region**: $\\sup_{r \\geq r_{\\min}} |V_{\\text{pair}}'(r)| < \\infty$ for any $r_{\\min} > 0$\n191: 4. **Unique minimum**: $V_{\\text{pair}}(r)$ has a unique minimum at $r = r_0 > 0$\n192: \n193: :::{note} Relaxed Gradient Requirement\n194: Property 3 has been **relaxed from global boundedness** to boundedness on $[r_{\\min}, \\infty)$ for any $r_{\\min} > 0$. This relaxation is necessary because no $C^1$ function can simultaneously:\n195: - Diverge to $+\\infty$ as $r \\to 0$ (Property 1)\n196: - Have globally bounded derivative\n197: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-gauge-hamiltonian",
+      "title": "Gauge Hamiltonian",
+      "start_line": 245,
+      "end_line": 266,
+      "header_lines": [
+        246
+      ],
+      "content_start": 248,
+      "content_end": 265,
+      "content": "248: :label: def-gauge-hamiltonian\n249: \n250: The gauge Hamiltonian is the standard Wilson plaquette action summed over the **2-faces of the Delaunay triangulation**:\n251: \n252: $$\n253: H_{\\text{gauge}}(\\mathbf{x}, \\mathbf{U}) = \\beta_{\\text{gauge}} \\sum_{\\Delta \\in \\text{Plaq}(\\mathbf{x})} \\left(1 - \\frac{1}{N_c}\\text{Re}\\,\\text{Tr}(U_{\\Delta})\\right)\n254: \n255: $$\n256: \n257: where:\n258: - $\\beta_{\\text{gauge}} > 0$ is the inverse coupling constant\n259: - $\\text{Plaq}(\\mathbf{x})$ denotes the set of **oriented 2-simplices** (triangular plaquettes) in the Delaunay triangulation of $\\mathbf{x}$\n260: - For a triangular 2-face $\\Delta = (i, j, k)$ with ordered vertices, the Wilson loop is:\n261: \n262: $$\n263: U_{\\Delta} = U_{ij}U_{jk}U_{ki}\n264: \n265: $$",
+      "metadata": {
+        "label": "def-gauge-hamiltonian"
+      },
+      "section": "## The Minimal Dynamic Lattice Gauge Theory (MDLGT)",
+      "raw_directive": "245: :::\n246: \n247: :::{prf:definition} Gauge Hamiltonian\n248: :label: def-gauge-hamiltonian\n249: \n250: The gauge Hamiltonian is the standard Wilson plaquette action summed over the **2-faces of the Delaunay triangulation**:\n251: \n252: $$\n253: H_{\\text{gauge}}(\\mathbf{x}, \\mathbf{U}) = \\beta_{\\text{gauge}} \\sum_{\\Delta \\in \\text{Plaq}(\\mathbf{x})} \\left(1 - \\frac{1}{N_c}\\text{Re}\\,\\text{Tr}(U_{\\Delta})\\right)\n254: \n255: $$\n256: \n257: where:\n258: - $\\beta_{\\text{gauge}} > 0$ is the inverse coupling constant\n259: - $\\text{Plaq}(\\mathbf{x})$ denotes the set of **oriented 2-simplices** (triangular plaquettes) in the Delaunay triangulation of $\\mathbf{x}$\n260: - For a triangular 2-face $\\Delta = (i, j, k)$ with ordered vertices, the Wilson loop is:\n261: \n262: $$\n263: U_{\\Delta} = U_{ij}U_{jk}U_{ki}\n264: \n265: $$\n266: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-mdlgt-dynamics",
+      "title": "MDLGT Dynamics with Constraint",
+      "start_line": 308,
+      "end_line": 343,
+      "header_lines": [
+        309
+      ],
+      "content_start": 311,
+      "content_end": 342,
+      "content": "311: :label: def-mdlgt-dynamics\n312: \n313: The system evolves via a two-step update procedure:\n314: \n315: **Step A (Node Update - Constrained Langevin):**\n316: \n317: For each node $i = 1, \\ldots, N$, the dynamics evolve on the constrained manifold $\\sum_i x_i = 0$ via:\n318: \n319: $$\n320: dx_i = -\\left[\\mathbb{P}_{\\perp}\\nabla_{x_i} H(\\mathbf{x}, \\mathbf{U})\\right]\\, dt + \\sqrt{2T}\\, \\left[\\mathbb{P}_{\\perp} dW\\right]_i\n321: \n322: $$\n323: \n324: where:\n325: - $dW = (dW_1, \\ldots, dW_N)$ with each $dW_i$ an independent 4-dimensional Brownian motion\n326: - $T > 0$ is the temperature\n327: - $\\mathbb{P}_{\\perp}$ is the orthogonal projection onto the tangent space of the constraint manifold, acting component-wise:\n328: \n329: $$\n330: \\left[\\mathbb{P}_{\\perp} v\\right]_i = v_i - \\frac{1}{N}\\sum_{j=1}^N v_j\n331: \n332: $$\n333: \n334: The projection is applied to both the drift and diffusion terms, ensuring $\\sum_i dx_i = 0$ for all times, preserving the constraint.\n335: \n336: **Step B (Link Update - Heat Bath):**\n337: \n338: For fixed node positions $\\mathbf{x}$, each link $U_{ij}$ on the current graph $\\mathcal{G}(\\mathbf{x})$ is resampled from its conditional Boltzmann distribution:\n339: \n340: $$\n341: P(U_{ij} \\mid \\text{all other links}) \\propto \\exp\\left(-\\frac{1}{T} H_{\\text{gauge}}(\\mathbf{x}, \\mathbf{U})\\right)\n342: $$",
+      "metadata": {
+        "label": "def-mdlgt-dynamics"
+      },
+      "section": "## The Minimal Dynamic Lattice Gauge Theory (MDLGT)",
+      "raw_directive": "308: The MDLGT evolves through alternating updates of nodes and links, defining a coupled stochastic process on $\\Sigma_N$.\n309: \n310: :::{prf:definition} MDLGT Dynamics with Constraint\n311: :label: def-mdlgt-dynamics\n312: \n313: The system evolves via a two-step update procedure:\n314: \n315: **Step A (Node Update - Constrained Langevin):**\n316: \n317: For each node $i = 1, \\ldots, N$, the dynamics evolve on the constrained manifold $\\sum_i x_i = 0$ via:\n318: \n319: $$\n320: dx_i = -\\left[\\mathbb{P}_{\\perp}\\nabla_{x_i} H(\\mathbf{x}, \\mathbf{U})\\right]\\, dt + \\sqrt{2T}\\, \\left[\\mathbb{P}_{\\perp} dW\\right]_i\n321: \n322: $$\n323: \n324: where:\n325: - $dW = (dW_1, \\ldots, dW_N)$ with each $dW_i$ an independent 4-dimensional Brownian motion\n326: - $T > 0$ is the temperature\n327: - $\\mathbb{P}_{\\perp}$ is the orthogonal projection onto the tangent space of the constraint manifold, acting component-wise:\n328: \n329: $$\n330: \\left[\\mathbb{P}_{\\perp} v\\right]_i = v_i - \\frac{1}{N}\\sum_{j=1}^N v_j\n331: \n332: $$\n333: \n334: The projection is applied to both the drift and diffusion terms, ensuring $\\sum_i dx_i = 0$ for all times, preserving the constraint.\n335: \n336: **Step B (Link Update - Heat Bath):**\n337: \n338: For fixed node positions $\\mathbf{x}$, each link $U_{ij}$ on the current graph $\\mathcal{G}(\\mathbf{x})$ is resampled from its conditional Boltzmann distribution:\n339: \n340: $$\n341: P(U_{ij} \\mid \\text{all other links}) \\propto \\exp\\left(-\\frac{1}{T} H_{\\text{gauge}}(\\mathbf{x}, \\mathbf{U})\\right)\n342: $$\n343: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-mdlgt-generator",
+      "title": "MDLGT Generator",
+      "start_line": 363,
+      "end_line": 381,
+      "header_lines": [
+        364
+      ],
+      "content_start": 366,
+      "content_end": 380,
+      "content": "366: :label: def-mdlgt-generator\n367: \n368: The infinitesimal generator of the full MDLGT process acting on test functions $f: \\Sigma_N \\to \\mathbb{R}$ is:\n369: \n370: $$\n371: \\mathcal{L} f = \\mathcal{L}_{\\text{nodes}} f + \\mathcal{L}_{\\text{links}} f\n372: \n373: $$\n374: \n375: where:\n376: \n377: $$\n378: \\mathcal{L}_{\\text{nodes}} f = -\\sum_i \\mathbb{P}_{\\perp}\\nabla_{x_i} H \\cdot \\nabla_{x_i} f + T\\sum_i \\text{tr}(\\mathbb{P}_{\\perp} \\nabla_{x_i}^2 f)\n379: \n380: $$",
+      "metadata": {
+        "label": "def-mdlgt-generator"
+      },
+      "section": "## The Minimal Dynamic Lattice Gauge Theory (MDLGT)",
+      "raw_directive": "363: :::\n364: \n365: :::{prf:definition} MDLGT Generator\n366: :label: def-mdlgt-generator\n367: \n368: The infinitesimal generator of the full MDLGT process acting on test functions $f: \\Sigma_N \\to \\mathbb{R}$ is:\n369: \n370: $$\n371: \\mathcal{L} f = \\mathcal{L}_{\\text{nodes}} f + \\mathcal{L}_{\\text{links}} f\n372: \n373: $$\n374: \n375: where:\n376: \n377: $$\n378: \\mathcal{L}_{\\text{nodes}} f = -\\sum_i \\mathbb{P}_{\\perp}\\nabla_{x_i} H \\cdot \\nabla_{x_i} f + T\\sum_i \\text{tr}(\\mathbb{P}_{\\perp} \\nabla_{x_i}^2 f)\n379: \n380: $$\n381: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

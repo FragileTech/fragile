@@ -1,0 +1,29 @@
+{
+  "chapter_index": 9,
+  "section_id": "## 4. Counterexample Search and Failure Modes",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "observation",
+      "label": "obs-revival-rate-constraint",
+      "title": "Revival Rate Constraint",
+      "start_line": 852,
+      "end_line": 860,
+      "header_lines": [
+        853
+      ],
+      "content_start": 855,
+      "content_end": 859,
+      "content": "855: :label: obs-revival-rate-constraint\n856: \n857: In the two-state model, KL-non-expansiveness requires $\\lambda_{\\text{revive}} \\le 1$.\n858: \n859: **Physical interpretation**: Revival rate must not exceed the death rate (on average) for stability.",
+      "metadata": {
+        "label": "obs-revival-rate-constraint"
+      },
+      "section": "## 4. Counterexample Search and Failure Modes",
+      "raw_directive": "852: **Conclusion**: If $\\lambda \\le 1$, contraction holds. If $\\lambda > 1$, expansion!\n853: \n854: :::{prf:observation} Revival Rate Constraint\n855: :label: obs-revival-rate-constraint\n856: \n857: In the two-state model, KL-non-expansiveness requires $\\lambda_{\\text{revive}} \\le 1$.\n858: \n859: **Physical interpretation**: Revival rate must not exceed the death rate (on average) for stability.\n860: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

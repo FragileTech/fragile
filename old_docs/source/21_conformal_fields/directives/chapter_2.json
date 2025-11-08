@@ -1,0 +1,83 @@
+{
+  "chapter_index": 2,
+  "section_id": "## Part 0: Introduction and Motivation",
+  "directive_count": 4,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-gamma-channel-potential",
+      "title": "Gamma Channel Geometric Potential",
+      "start_line": 84,
+      "end_line": 108,
+      "header_lines": [
+        85
+      ],
+      "content_start": 87,
+      "content_end": 107,
+      "content": "87: :label: def-gamma-channel-potential\n88: \n89: The **gamma channel geometric potential** is defined as:\n90: \n91: $$\n92: U_{\\text{geom}}(x, S) = -\\gamma_R \\cdot R(x, S) + \\gamma_W \\cdot \\|C(x, S)\\|^2\n93: $$\n94: \n95: where:\n96: - $\\gamma_R \\ge 0$ is the **Ricci reward coefficient**, favoring positive Ricci curvature (focusing geometries)\n97: - $\\gamma_W \\ge 0$ is the **Weyl penalty coefficient**, penalizing Weyl tensor norm (tidal distortion)\n98: - $R(x, S)$ is the Ricci scalar: $R = g^{\\mu\\nu} R_{\\mu\\nu}$\n99: - $\\|C(x, S)\\|^2 = C^{\\alpha\\beta\\gamma\\delta} C_{\\alpha\\beta\\gamma\\delta}$ is the squared Weyl tensor norm\n100: \n101: This potential is added to the fitness potential:\n102: \n103: $$\n104: V_{\\text{total}}(x, S) = V_{\\text{fit}}(x, S) + U_{\\text{geom}}(x, S)\n105: $$\n106: \n107: **Physical Interpretation:**",
+      "metadata": {
+        "label": "def-gamma-channel-potential"
+      },
+      "section": "## Part 0: Introduction and Motivation",
+      "raw_directive": "84: This emergent metric has associated curvature tensors\u2014most notably, the **Ricci tensor** $R_{\\mu\\nu}$ (encoding average curvature) and the **Weyl tensor** $C_{\\alpha\\beta\\gamma\\delta}$ (encoding tidal/conformal distortion). The gamma channel modifies the effective potential to directly reward or penalize specific geometric features:\n85: \n86: :::{prf:definition} Gamma Channel Geometric Potential\n87: :label: def-gamma-channel-potential\n88: \n89: The **gamma channel geometric potential** is defined as:\n90: \n91: $$\n92: U_{\\text{geom}}(x, S) = -\\gamma_R \\cdot R(x, S) + \\gamma_W \\cdot \\|C(x, S)\\|^2\n93: $$\n94: \n95: where:\n96: - $\\gamma_R \\ge 0$ is the **Ricci reward coefficient**, favoring positive Ricci curvature (focusing geometries)\n97: - $\\gamma_W \\ge 0$ is the **Weyl penalty coefficient**, penalizing Weyl tensor norm (tidal distortion)\n98: - $R(x, S)$ is the Ricci scalar: $R = g^{\\mu\\nu} R_{\\mu\\nu}$\n99: - $\\|C(x, S)\\|^2 = C^{\\alpha\\beta\\gamma\\delta} C_{\\alpha\\beta\\gamma\\delta}$ is the squared Weyl tensor norm\n100: \n101: This potential is added to the fitness potential:\n102: \n103: $$\n104: V_{\\text{total}}(x, S) = V_{\\text{fit}}(x, S) + U_{\\text{geom}}(x, S)\n105: $$\n106: \n107: **Physical Interpretation:**\n108: - $\\gamma_R > 0$: Rewards regions where geodesics converge (positive curvature), guiding swarm toward \"well-behaved\" geometries"
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-conformally-flat",
+      "title": "Conformally Flat Geometry",
+      "start_line": 114,
+      "end_line": 126,
+      "header_lines": [
+        115
+      ],
+      "content_start": 117,
+      "content_end": 125,
+      "content": "117: :label: def-conformally-flat\n118: \n119: A Riemannian manifold $(M, g)$ is **conformally flat** if there exists a coordinate system in which the metric can be written as:\n120: \n121: $$\n122: g_{\\mu\\nu}(x) = \\Omega^2(x) \\eta_{\\mu\\nu}\n123: $$\n124: \n125: where $\\Omega(x) > 0$ is a smooth conformal factor and $\\eta_{\\mu\\nu}$ is the flat (Euclidean or Minkowski) metric.",
+      "metadata": {
+        "label": "def-conformally-flat"
+      },
+      "section": "## Part 0: Introduction and Motivation",
+      "raw_directive": "114: ### 0.2 Conformal Flatness and CFT\n115: \n116: :::{prf:definition} Conformally Flat Geometry\n117: :label: def-conformally-flat\n118: \n119: A Riemannian manifold $(M, g)$ is **conformally flat** if there exists a coordinate system in which the metric can be written as:\n120: \n121: $$\n122: g_{\\mu\\nu}(x) = \\Omega^2(x) \\eta_{\\mu\\nu}\n123: $$\n124: \n125: where $\\Omega(x) > 0$ is a smooth conformal factor and $\\eta_{\\mu\\nu}$ is the flat (Euclidean or Minkowski) metric.\n126: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-weyl-dimensionality",
+      "title": "Weyl Tensor in Low Dimensions",
+      "start_line": 169,
+      "end_line": 183,
+      "header_lines": [
+        170
+      ],
+      "content_start": 172,
+      "content_end": 182,
+      "content": "172: :label: lem-weyl-dimensionality\n173: \n174: **In $d = 2$:** The Weyl tensor **identically vanishes** for any metric. The Riemann tensor is completely determined by the Ricci scalar:\n175: \n176: $$\n177: R_{\\mu\\nu\\rho\\sigma} = \\frac{R}{2} (g_{\\mu\\rho} g_{\\nu\\sigma} - g_{\\mu\\sigma} g_{\\nu\\rho})\n178: $$\n179: \n180: Thus, $C = 0$ is automatic, and all 2D geometries are conformally flat.\n181: \n182: **In $d = 3$:** The Weyl tensor vanishes identically: $C_{\\alpha\\beta\\gamma\\delta} = 0$. The Riemann tensor is determined by the Ricci tensor.",
+      "metadata": {
+        "label": "lem-weyl-dimensionality"
+      },
+      "section": "## Part 0: Introduction and Motivation",
+      "raw_directive": "169: The connection to CFT is cleanest and most powerful in **2D spacetime**. Here's why:\n170: \n171: :::{prf:lemma} Weyl Tensor in Low Dimensions\n172: :label: lem-weyl-dimensionality\n173: \n174: **In $d = 2$:** The Weyl tensor **identically vanishes** for any metric. The Riemann tensor is completely determined by the Ricci scalar:\n175: \n176: $$\n177: R_{\\mu\\nu\\rho\\sigma} = \\frac{R}{2} (g_{\\mu\\rho} g_{\\nu\\sigma} - g_{\\mu\\sigma} g_{\\nu\\rho})\n178: $$\n179: \n180: Thus, $C = 0$ is automatic, and all 2D geometries are conformally flat.\n181: \n182: **In $d = 3$:** The Weyl tensor vanishes identically: $C_{\\alpha\\beta\\gamma\\delta} = 0$. The Riemann tensor is determined by the Ricci tensor.\n183: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-focus-2d",
+      "title": "Focus on 2D for CFT",
+      "start_line": 185,
+      "end_line": 211,
+      "header_lines": [
+        186
+      ],
+      "content_start": 188,
+      "content_end": 210,
+      "content": "188: :label: rem-focus-2d\n189: \n190: For this chapter, we **focus on the 2D case** for the following reasons:\n191: \n192: 1. **Mathematical Tractability:** 2D CFT is the most developed, with complete classifications (minimal models, free bosons, etc.)\n193: \n194: 2. **Infinite Symmetry:** The conformal group in 2D is infinite-dimensional (Virasoro algebra), providing maximal analytical power. This is unique to $d=2$.\n195: \n196: 3. **Automatic Conformal Flatness:** In 2D, the Weyl tensor vanishes identically ($C = 0$), so the gamma channel's Weyl penalty is automatically satisfied. This simplifies the geometric analysis.\n197: \n198: 4. **Unique Trace Anomaly Structure:** This is the **primary reason** for focusing on 2D. The conformal trace anomaly in different dimensions takes different forms:\n199: \n200:    - **$d=2$:** $\\langle T^\\mu_\\mu \\rangle = \\frac{c}{12} R$ (Ricci scalar only)\n201:    - **$d=4$:** $\\langle T^\\mu_\\mu \\rangle = \\alpha \\|C\\|^2 + \\beta (R^2 - 4R_{\\mu\\nu}R^{\\mu\\nu})$ (Weyl squared + Euler density)\n202:    - **$d=3$:** No conformal anomaly (odd dimensions have no anomaly in flat space)\n203: \n204:    In 2D, there is a **direct, local correspondence** between the gamma channel's Ricci term $-\\gamma_R R(x)$ and the trace anomaly. This one-to-one relationship is unique to two dimensions and makes it the ideal starting point for rigorous analysis.\n205: \n206: 5. **Physical Relevance:** Many physical systems are effectively 2D (thin films, quantum Hall effect, string worldsheets, graphene, topological insulators)\n207: \n208: **Why Not Study 3D (Where $C=0$ Also)?**\n209: \n210: While the Weyl tensor also vanishes in $d=3$ ({prf:ref}`lem-weyl-dimensionality`), the conformal group in 3D is finite-dimensional (SO(4,1), 15 generators) and, critically, there is **no conformal anomaly** in odd-dimensional flat space. The trace $\\langle T^\\mu_\\mu \\rangle$ can be made to vanish classically and receives no quantum corrections (in flat space). Thus, the connection between $\\gamma_R$ and fundamental CFT parameters is less direct.",
+      "metadata": {
+        "label": "rem-focus-2d"
+      },
+      "section": "## Part 0: Introduction and Motivation",
+      "raw_directive": "185: :::\n186: \n187: :::{prf:remark} Focus on 2D for CFT\n188: :label: rem-focus-2d\n189: \n190: For this chapter, we **focus on the 2D case** for the following reasons:\n191: \n192: 1. **Mathematical Tractability:** 2D CFT is the most developed, with complete classifications (minimal models, free bosons, etc.)\n193: \n194: 2. **Infinite Symmetry:** The conformal group in 2D is infinite-dimensional (Virasoro algebra), providing maximal analytical power. This is unique to $d=2$.\n195: \n196: 3. **Automatic Conformal Flatness:** In 2D, the Weyl tensor vanishes identically ($C = 0$), so the gamma channel's Weyl penalty is automatically satisfied. This simplifies the geometric analysis.\n197: \n198: 4. **Unique Trace Anomaly Structure:** This is the **primary reason** for focusing on 2D. The conformal trace anomaly in different dimensions takes different forms:\n199: \n200:    - **$d=2$:** $\\langle T^\\mu_\\mu \\rangle = \\frac{c}{12} R$ (Ricci scalar only)\n201:    - **$d=4$:** $\\langle T^\\mu_\\mu \\rangle = \\alpha \\|C\\|^2 + \\beta (R^2 - 4R_{\\mu\\nu}R^{\\mu\\nu})$ (Weyl squared + Euler density)\n202:    - **$d=3$:** No conformal anomaly (odd dimensions have no anomaly in flat space)\n203: \n204:    In 2D, there is a **direct, local correspondence** between the gamma channel's Ricci term $-\\gamma_R R(x)$ and the trace anomaly. This one-to-one relationship is unique to two dimensions and makes it the ideal starting point for rigorous analysis.\n205: \n206: 5. **Physical Relevance:** Many physical systems are effectively 2D (thin films, quantum Hall effect, string worldsheets, graphene, topological insulators)\n207: \n208: **Why Not Study 3D (Where $C=0$ Also)?**\n209: \n210: While the Weyl tensor also vanishes in $d=3$ ({prf:ref}`lem-weyl-dimensionality`), the conformal group in 3D is finite-dimensional (SO(4,1), 15 generators) and, critically, there is **no conformal anomaly** in odd-dimensional flat space. The trace $\\langle T^\\mu_\\mu \\rangle$ can be made to vanish classically and receives no quantum corrections (in flat space). Thus, the connection between $\\gamma_R$ and fundamental CFT parameters is less direct.\n211: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

@@ -1,0 +1,159 @@
+{
+  "document_id": "04_wasserstein_contraction_ASSEMBLED",
+  "stage": "directives",
+  "directive_type": "proposition",
+  "generated_at": "2025-11-08T17:07:43.300126+00:00",
+  "count": 6,
+  "items": [
+    {
+      "directive_type": "proposition",
+      "label": "prop-exact-distance-change",
+      "title": "Exact Distance Change for Cloning",
+      "start_line": 994,
+      "end_line": 1080,
+      "header_lines": [
+        995
+      ],
+      "content_start": 997,
+      "content_end": 1079,
+      "content": "997: :label: prop-exact-distance-change\n998: \n999: Let $S$ be a swarm with $N$ walkers at positions $\\{x_1, \\ldots, x_N\\}$ and global barycenter $\\bar{x} = \\frac{1}{N}\\sum_{p=1}^N x_p$.\n1000: \n1001: When the cloning operator replaces walker $i$ with a clone of walker $j$ (position $x'_i = x_j + \\zeta$ where $\\zeta$ is jitter), the change in sum of squared distances to all other walkers is:\n1002: \n1003: $$\n1004: \\Delta D_i := \\sum_{k \\neq i} \\|x'_k - x'_\\ell\\|^2 - \\sum_{k \\neq i} \\|x_k - x_\\ell\\|^2\n1005: $$\n1006: \n1007: **Exact Formula (pre-jitter):**\n1008: \n1009: $$\n1010: \\Delta D_i = -(N-1)\\|x_j - x_i\\|^2 - 2N\\langle x_j - x_i, x_i - \\bar{x}\\rangle\n1011: $$\n1012: \n1013: **With jitter:** Add $O(N \\delta^2)$ variance.\n1014: \n1015: **Proof:**\n1016: \n1017: Only distances involving walker $i$ change. The change is:\n1018: \n1019: $$\n1020: \\Delta D_i = \\sum_{k \\neq i} (\\|x_j - x_k\\|^2 - \\|x_i - x_k\\|^2)\n1021: $$\n1022: \n1023: **Key identity:** For any vectors $a, b, c$:\n1024: \n1025: $$\n1026: \\|a - c\\|^2 - \\|b - c\\|^2 = \\|a - b\\|^2 + 2\\langle a - b, b - c \\rangle\n1027: $$\n1028: \n1029: **Proof of identity:**\n1030: \n1031: $$\n1032: \\|a-c\\|^2 - \\|b-c\\|^2 = (\\|a\\|^2 - 2\\langle a,c\\rangle + \\|c\\|^2) - (\\|b\\|^2 - 2\\langle b,c\\rangle + \\|c\\|^2)\n1033: $$\n1034: \n1035: $$\n1036: = \\|a\\|^2 - \\|b\\|^2 - 2\\langle a-b, c\\rangle\n1037: $$\n1038: \n1039: $$\n1040: = \\|a-b\\|^2 + 2\\langle a,b\\rangle - 2\\langle a,c\\rangle - 2\\langle b, -c\\rangle\n1041: $$\n1042: \n1043: $$\n1044: = \\|a-b\\|^2 + 2\\langle a-b, b\\rangle - 2\\langle a-b, c\\rangle\n1045: $$\n1046: \n1047: $$\n1048: = \\|a-b\\|^2 + 2\\langle a-b, b-c\\rangle\n1049: $$\n1050: \n1051: **Apply identity:** With $a = x_j, b = x_i, c = x_k$:\n1052: \n1053: $$\n1054: \\|x_j - x_k\\|^2 - \\|x_i - x_k\\|^2 = \\|x_j - x_i\\|^2 + 2\\langle x_j - x_i, x_i - x_k \\rangle\n1055: $$\n1056: \n1057: **Sum over $k \\neq i$:**\n1058: \n1059: $$\n1060: \\Delta D_i = (N-1)\\|x_j - x_i\\|^2 + 2\\langle x_j - x_i, \\sum_{k \\neq i}(x_i - x_k) \\rangle\n1061: $$\n1062: \n1063: **Simplify the sum:**\n1064: \n1065: $$\n1066: \\sum_{k \\neq i}(x_i - x_k) = (N-1)x_i - \\sum_{k \\neq i} x_k = (N-1)x_i - (N\\bar{x} - x_i) = N(x_i - \\bar{x})\n1067: $$\n1068: \n1069: **Therefore:**\n1070: \n1071: $$\n1072: \\Delta D_i = (N-1)\\|x_j - x_i\\|^2 + 2N\\langle x_j - x_i, x_i - \\bar{x} \\rangle\n1073: $$\n1074: \n1075: For Wasserstein distance, we care about $D_{ii} - D_{ji}$ (replacing $i$ with clone from $j$), which has opposite sign:\n1076: \n1077: $$\n1078: D_{ii} - D_{ji} = -\\Delta D_i = -(N-1)\\|x_j - x_i\\|^2 - 2N\\langle x_j - x_i, x_i - \\bar{x} \\rangle\n1079: $$",
+      "metadata": {
+        "label": "prop-exact-distance-change"
+      },
+      "section": "## Section 4 Updates: Quadratic Scaling Fixes",
+      "raw_directive": "994: This is the key mathematical insight that resolves the scaling mismatch. Instead of geometric approximations, we use the exact algebraic formula.\n995: \n996: :::{prf:proposition} Exact Distance Change for Cloning\n997: :label: prop-exact-distance-change\n998: \n999: Let $S$ be a swarm with $N$ walkers at positions $\\{x_1, \\ldots, x_N\\}$ and global barycenter $\\bar{x} = \\frac{1}{N}\\sum_{p=1}^N x_p$.\n1000: \n1001: When the cloning operator replaces walker $i$ with a clone of walker $j$ (position $x'_i = x_j + \\zeta$ where $\\zeta$ is jitter), the change in sum of squared distances to all other walkers is:\n1002: \n1003: $$\n1004: \\Delta D_i := \\sum_{k \\neq i} \\|x'_k - x'_\\ell\\|^2 - \\sum_{k \\neq i} \\|x_k - x_\\ell\\|^2\n1005: $$\n1006: \n1007: **Exact Formula (pre-jitter):**\n1008: \n1009: $$\n1010: \\Delta D_i = -(N-1)\\|x_j - x_i\\|^2 - 2N\\langle x_j - x_i, x_i - \\bar{x}\\rangle\n1011: $$\n1012: \n1013: **With jitter:** Add $O(N \\delta^2)$ variance.\n1014: \n1015: **Proof:**\n1016: \n1017: Only distances involving walker $i$ change. The change is:\n1018: \n1019: $$\n1020: \\Delta D_i = \\sum_{k \\neq i} (\\|x_j - x_k\\|^2 - \\|x_i - x_k\\|^2)\n1021: $$\n1022: \n1023: **Key identity:** For any vectors $a, b, c$:\n1024: \n1025: $$\n1026: \\|a - c\\|^2 - \\|b - c\\|^2 = \\|a - b\\|^2 + 2\\langle a - b, b - c \\rangle\n1027: $$\n1028: \n1029: **Proof of identity:**\n1030: \n1031: $$\n1032: \\|a-c\\|^2 - \\|b-c\\|^2 = (\\|a\\|^2 - 2\\langle a,c\\rangle + \\|c\\|^2) - (\\|b\\|^2 - 2\\langle b,c\\rangle + \\|c\\|^2)\n1033: $$\n1034: \n1035: $$\n1036: = \\|a\\|^2 - \\|b\\|^2 - 2\\langle a-b, c\\rangle\n1037: $$\n1038: \n1039: $$\n1040: = \\|a-b\\|^2 + 2\\langle a,b\\rangle - 2\\langle a,c\\rangle - 2\\langle b, -c\\rangle\n1041: $$\n1042: \n1043: $$\n1044: = \\|a-b\\|^2 + 2\\langle a-b, b\\rangle - 2\\langle a-b, c\\rangle\n1045: $$\n1046: \n1047: $$\n1048: = \\|a-b\\|^2 + 2\\langle a-b, b-c\\rangle\n1049: $$\n1050: \n1051: **Apply identity:** With $a = x_j, b = x_i, c = x_k$:\n1052: \n1053: $$\n1054: \\|x_j - x_k\\|^2 - \\|x_i - x_k\\|^2 = \\|x_j - x_i\\|^2 + 2\\langle x_j - x_i, x_i - x_k \\rangle\n1055: $$\n1056: \n1057: **Sum over $k \\neq i$:**\n1058: \n1059: $$\n1060: \\Delta D_i = (N-1)\\|x_j - x_i\\|^2 + 2\\langle x_j - x_i, \\sum_{k \\neq i}(x_i - x_k) \\rangle\n1061: $$\n1062: \n1063: **Simplify the sum:**\n1064: \n1065: $$\n1066: \\sum_{k \\neq i}(x_i - x_k) = (N-1)x_i - \\sum_{k \\neq i} x_k = (N-1)x_i - (N\\bar{x} - x_i) = N(x_i - \\bar{x})\n1067: $$\n1068: \n1069: **Therefore:**\n1070: \n1071: $$\n1072: \\Delta D_i = (N-1)\\|x_j - x_i\\|^2 + 2N\\langle x_j - x_i, x_i - \\bar{x} \\rangle\n1073: $$\n1074: \n1075: For Wasserstein distance, we care about $D_{ii} - D_{ji}$ (replacing $i$ with clone from $j$), which has opposite sign:\n1076: \n1077: $$\n1078: D_{ii} - D_{ji} = -\\Delta D_i = -(N-1)\\|x_j - x_i\\|^2 - 2N\\langle x_j - x_i, x_i - \\bar{x} \\rangle\n1079: $$\n1080: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "04_wasserstein_contraction_ASSEMBLED",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## Section 4 Updates: Quadratic Scaling Fixes"
+      }
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-case-b-quadratic-bound",
+      "title": "Quadratic Geometric Bound for Case B",
+      "start_line": 1348,
+      "end_line": 1407,
+      "header_lines": [
+        1349
+      ],
+      "content_start": 1351,
+      "content_end": 1406,
+      "content": "1351: :label: prop-case-b-quadratic-bound\n1352: \n1353: For Case B with walker $i \\in H_1$ (outlier in swarm 1) and companion $j = \\pi(i) \\in L_1$ (low-error in swarm 1), the distance difference satisfies:\n1354: \n1355: $$\n1356: D_{ii} - D_{ji} \\geq c_B L^2 - C_{\\text{err}}\n1357: $$\n1358: \n1359: where:\n1360: - $c_B = \\frac{1}{2N}$ is the quadratic constant\n1361: - $C_{\\text{err}} = O(N L R_H)$ is the error term\n1362: - For $L \\gg R_H$, the quadratic term dominates\n1363: \n1364: **Proof:**\n1365: \n1366: We use the Exact Distance Change Identity (Proposition {prf:ref}`prop-exact-distance-change`).\n1367: \n1368: **Apply Corollary {prf:ref}`cor-quadratic-scaling-wasserstein`:**\n1369: \n1370: For outlier $i \\in S_1$ cloning from companion $\\pi(i) \\in S_2$:\n1371: \n1372: $$\n1373: D_{ii} - D_{ji} \\geq L^2 + O(NLR_H)\n1374: $$\n1375: \n1376: **Accounting for empirical measure normalization:**\n1377: \n1378: The Wasserstein-2 distance for empirical measures involves summing over all pairs and normalizing:\n1379: \n1380: $$\n1381: W_2^2(\\mu_1, \\mu_2) = \\frac{1}{N^2} \\sum_{i,j} \\|x_{1,i} - x_{2,j}\\|^2\n1382: $$\n1383: \n1384: For a single pair contribution:\n1385: \n1386: $$\n1387: \\frac{D_{ii} - D_{ji}}{N} \\geq \\frac{L^2}{N} + O(LR_H)\n1388: $$\n1389: \n1390: **For the contraction analysis:**\n1391: \n1392: The relevant quantity is the ratio of contraction term to total distance:\n1393: \n1394: $$\n1395: \\frac{D_{ii} - D_{ji}}{D_{ii} + D_{jj}} \\approx \\frac{L^2}{2L^2} = \\frac{1}{2}\n1396: $$\n1397: \n1398: This is $O(1)$ and **independent of $L$**!\n1399: \n1400: **Setting constants:**\n1401: \n1402: $$\n1403: c_B = \\frac{1}{2N}, \\quad C_{\\text{err}} = 2N L R_H\n1404: $$\n1405: \n1406: For $L > D_{\\min} = 10R_H$, the ratio $C_{\\text{err}}/(c_B L^2) = O(R_H/L) < 1/10$, so the quadratic term dominates.",
+      "metadata": {
+        "label": "prop-case-b-quadratic-bound"
+      },
+      "section": "## Section 4 Updates: Quadratic Scaling Fixes",
+      "raw_directive": "1348: **REPLACE THE ENTIRE CURRENT SECTION 4.4 WITH THIS:**\n1349: \n1350: :::{prf:proposition} Quadratic Geometric Bound for Case B\n1351: :label: prop-case-b-quadratic-bound\n1352: \n1353: For Case B with walker $i \\in H_1$ (outlier in swarm 1) and companion $j = \\pi(i) \\in L_1$ (low-error in swarm 1), the distance difference satisfies:\n1354: \n1355: $$\n1356: D_{ii} - D_{ji} \\geq c_B L^2 - C_{\\text{err}}\n1357: $$\n1358: \n1359: where:\n1360: - $c_B = \\frac{1}{2N}$ is the quadratic constant\n1361: - $C_{\\text{err}} = O(N L R_H)$ is the error term\n1362: - For $L \\gg R_H$, the quadratic term dominates\n1363: \n1364: **Proof:**\n1365: \n1366: We use the Exact Distance Change Identity (Proposition {prf:ref}`prop-exact-distance-change`).\n1367: \n1368: **Apply Corollary {prf:ref}`cor-quadratic-scaling-wasserstein`:**\n1369: \n1370: For outlier $i \\in S_1$ cloning from companion $\\pi(i) \\in S_2$:\n1371: \n1372: $$\n1373: D_{ii} - D_{ji} \\geq L^2 + O(NLR_H)\n1374: $$\n1375: \n1376: **Accounting for empirical measure normalization:**\n1377: \n1378: The Wasserstein-2 distance for empirical measures involves summing over all pairs and normalizing:\n1379: \n1380: $$\n1381: W_2^2(\\mu_1, \\mu_2) = \\frac{1}{N^2} \\sum_{i,j} \\|x_{1,i} - x_{2,j}\\|^2\n1382: $$\n1383: \n1384: For a single pair contribution:\n1385: \n1386: $$\n1387: \\frac{D_{ii} - D_{ji}}{N} \\geq \\frac{L^2}{N} + O(LR_H)\n1388: $$\n1389: \n1390: **For the contraction analysis:**\n1391: \n1392: The relevant quantity is the ratio of contraction term to total distance:\n1393: \n1394: $$\n1395: \\frac{D_{ii} - D_{ji}}{D_{ii} + D_{jj}} \\approx \\frac{L^2}{2L^2} = \\frac{1}{2}\n1396: $$\n1397: \n1398: This is $O(1)$ and **independent of $L$**!\n1399: \n1400: **Setting constants:**\n1401: \n1402: $$\n1403: c_B = \\frac{1}{2N}, \\quad C_{\\text{err}} = 2N L R_H\n1404: $$\n1405: \n1406: For $L > D_{\\min} = 10R_H$, the ratio $C_{\\text{err}}/(c_B L^2) = O(R_H/L) < 1/10$, so the quadratic term dominates.\n1407: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "04_wasserstein_contraction_ASSEMBLED",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## Section 4 Updates: Quadratic Scaling Fixes"
+      }
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-explicit-kappa-pair",
+      "title": "Explicit Single-Pair Contraction Constant",
+      "start_line": 1897,
+      "end_line": 1918,
+      "header_lines": [
+        1898
+      ],
+      "content_start": 1900,
+      "content_end": 1917,
+      "content": "1900: :label: prop-explicit-kappa-pair\n1901: \n1902: Under the stated axioms, the single-pair contraction constant satisfies:\n1903: \n1904: $$\n1905: \\kappa_{\\text{pair}} \\geq \\frac{1}{4} \\cdot \\frac{p_u \\eta_{\\text{geo}}}{2} \\cdot f_{UH}(\\varepsilon) \\cdot q_{\\min}(\\varepsilon)\n1906: $$\n1907: \n1908: where:\n1909: - $p_u = \\exp(-\\beta \\Delta V_{\\max})$ (minimum survival probability)\n1910: - $\\eta_{\\text{geo}} = \\frac{c_0^2}{2(1 + 2c_H)^2}$ (geometric efficiency)\n1911: - $f_{UH}(\\varepsilon) \\geq \\varepsilon^2 / 4$ (unfit-high-error overlap fraction)\n1912: - $q_{\\min}(\\varepsilon) \\geq \\exp(-\\beta V_{\\max}) / Z$ (minimum Gibbs weight)\n1913: \n1914: **Concrete Lower Bound**: For parameter regime $\\varepsilon = 0.1$, $\\beta = 1$, $\\Delta V_{\\max} = 10$:\n1915: $$\n1916: \\kappa_{\\text{pair}} \\geq \\frac{1}{4} \\cdot \\frac{e^{-10} \\cdot c_0^2}{4(1 + 2c_H)^2} \\cdot \\frac{0.01}{4} \\cdot \\frac{e^{-V_{\\max}}}{Z}\n1917: $$",
+      "metadata": {
+        "label": "prop-explicit-kappa-pair"
+      },
+      "section": "## 5. Unified Single-Pair Lemma",
+      "raw_directive": "1897: For practical implementation and verification, we provide explicit formulas for all constants.\n1898: \n1899: :::{prf:proposition} Explicit Single-Pair Contraction Constant\n1900: :label: prop-explicit-kappa-pair\n1901: \n1902: Under the stated axioms, the single-pair contraction constant satisfies:\n1903: \n1904: $$\n1905: \\kappa_{\\text{pair}} \\geq \\frac{1}{4} \\cdot \\frac{p_u \\eta_{\\text{geo}}}{2} \\cdot f_{UH}(\\varepsilon) \\cdot q_{\\min}(\\varepsilon)\n1906: $$\n1907: \n1908: where:\n1909: - $p_u = \\exp(-\\beta \\Delta V_{\\max})$ (minimum survival probability)\n1910: - $\\eta_{\\text{geo}} = \\frac{c_0^2}{2(1 + 2c_H)^2}$ (geometric efficiency)\n1911: - $f_{UH}(\\varepsilon) \\geq \\varepsilon^2 / 4$ (unfit-high-error overlap fraction)\n1912: - $q_{\\min}(\\varepsilon) \\geq \\exp(-\\beta V_{\\max}) / Z$ (minimum Gibbs weight)\n1913: \n1914: **Concrete Lower Bound**: For parameter regime $\\varepsilon = 0.1$, $\\beta = 1$, $\\Delta V_{\\max} = 10$:\n1915: $$\n1916: \\kappa_{\\text{pair}} \\geq \\frac{1}{4} \\cdot \\frac{e^{-10} \\cdot c_0^2}{4(1 + 2c_H)^2} \\cdot \\frac{0.01}{4} \\cdot \\frac{e^{-V_{\\max}}}{Z}\n1917: $$\n1918: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "04_wasserstein_contraction_ASSEMBLED",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## 5. Unified Single-Pair Lemma"
+      }
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-matching-conditional-contraction",
+      "title": "Matching-Conditional Contraction",
+      "start_line": 2067,
+      "end_line": 2077,
+      "header_lines": [
+        2068
+      ],
+      "content_start": 2070,
+      "content_end": 2076,
+      "content": "2070: :label: prop-matching-conditional-contraction\n2071: \n2072: For a fixed matching $M$:\n2073: \n2074: $$\n2075: \\mathbb{E}[W_2^2(\\mu_{S_1'}, \\mu_{S_2'}) \\mid M, S_1, S_2] \\leq \\gamma_{\\text{pair}} W_2^2(\\mu_{S_1}, \\mu_{S_2}) + C_{\\text{pair}}\n2076: $$",
+      "metadata": {
+        "label": "prop-matching-conditional-contraction"
+      },
+      "section": "## 6. Sum Over Matching",
+      "raw_directive": "2067: ### 6.2. Linearity of Expectation\n2068: \n2069: :::{prf:proposition} Matching-Conditional Contraction\n2070: :label: prop-matching-conditional-contraction\n2071: \n2072: For a fixed matching $M$:\n2073: \n2074: $$\n2075: \\mathbb{E}[W_2^2(\\mu_{S_1'}, \\mu_{S_2'}) \\mid M, S_1, S_2] \\leq \\gamma_{\\text{pair}} W_2^2(\\mu_{S_1}, \\mu_{S_2}) + C_{\\text{pair}}\n2076: $$\n2077: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "04_wasserstein_contraction_ASSEMBLED",
+        "chapter_index": 8,
+        "chapter_file": "chapter_8.json",
+        "section_id": "## 6. Sum Over Matching"
+      }
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-full-expectation-matching",
+      "title": "Full Expectation Over Matching",
+      "start_line": 2108,
+      "end_line": 2116,
+      "header_lines": [
+        2109
+      ],
+      "content_start": 2111,
+      "content_end": 2115,
+      "content": "2111: :label: prop-full-expectation-matching\n2112: \n2113: Taking expectation over the matching distribution:\n2114: \n2115: $$",
+      "metadata": {
+        "label": "prop-full-expectation-matching"
+      },
+      "section": "## 7. Integration Over Matching Distribution",
+      "raw_directive": "2108: The coupling is **asymmetric**: $P(M | S_1)$ depends only on $S_1$, not $S_2$.\n2109: \n2110: :::{prf:proposition} Full Expectation Over Matching\n2111: :label: prop-full-expectation-matching\n2112: \n2113: Taking expectation over the matching distribution:\n2114: \n2115: $$\n2116: \\mathbb{E}_{M \\sim P(\\cdot | S_1)}[\\mathbb{E}[W_2^2(\\mu_{S_1'}, \\mu_{S_2'}) \\mid M]] \\leq \\gamma_{\\text{pair}} W_2^2(\\mu_{S_1}, \\mu_{S_2}) + C_{\\text{pair}}",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "04_wasserstein_contraction_ASSEMBLED",
+        "chapter_index": 9,
+        "chapter_file": "chapter_9.json",
+        "section_id": "## 7. Integration Over Matching Distribution"
+      }
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-n-uniformity",
+      "title": "N-Uniformity of Contraction Constant",
+      "start_line": 2448,
+      "end_line": 2491,
+      "header_lines": [
+        2449
+      ],
+      "content_start": 2451,
+      "content_end": 2490,
+      "content": "2451: :label: prop-n-uniformity\n2452: \n2453: The contraction constant $\\kappa_W$ is independent of $N$ in the following sense:\n2454: \n2455: For each component:\n2456: 1. $p_u = \\exp(-\\beta \\Delta V_{\\max})$ ✓ **N-independent** (fitness bounds from axioms)\n2457: 2. $\\eta_{\\text{geo}} = \\frac{c_0^2}{2(1 + 2c_H)^2}$ ✓ **N-independent** (geometric constants)\n2458: 3. $f_{UH}(\\varepsilon)$ is a **fraction** ✓ **N-independent** (ratio of walker counts)\n2459: 4. $q_{\\min}(\\varepsilon)$ appears to scale as $1/N^2$ ✗ **BUT** see below\n2460: \n2461: **Resolution of $q_{\\min}$ N-Dependence**:\n2462: \n2463: The minimum matching probability is:\n2464: $$\n2465: q_{\\min} = \\min_{i,j} \\frac{\\exp(-\\beta V_{\\text{fit},1,i}) \\exp(-\\beta V_{\\text{fit},2,j})}{Z_1 Z_2}\n2466: $$\n2467: \n2468: where $Z_k = \\sum_{\\ell=1}^N \\exp(-\\beta V_{\\text{fit},k,\\ell}) \\sim N$ for large $N$.\n2469: \n2470: Thus, $q_{\\min} \\sim 1/N^2$, which seems to make $\\kappa_W \\sim 1/N^2$.\n2471: \n2472: **However**, in the expectation over matching:\n2473: $$\n2474: \\mathbb{E}_\\pi[\\kappa_{\\text{pair}}] = \\sum_{i=1}^N \\sum_{j=1}^N q_{ij} \\cdot \\kappa_{\\text{pair}}(i, j)\n2475: $$\n2476: \n2477: The sum has $N^2$ terms, each with weight $q_{ij} \\sim 1/N^2$, giving **cancellation**:\n2478: $$\n2479: \\sum_{i,j} q_{ij} = 1 \\quad \\text{(normalization)}\n2480: $$\n2481: \n2482: Therefore, the **effective** contraction constant is:\n2483: $$\n2484: \\kappa_W^{\\text{eff}} = \\sum_{i,j} q_{ij} \\cdot \\kappa_{\\text{pair}}(i, j)\n2485: $$\n2486: \n2487: For pairs in Case B (which occur with fraction $f_{UH}$):\n2488: $$\n2489: \\kappa_W^{\\text{eff}} \\geq f_{UH} \\cdot \\min_{\\text{Case B pairs}} \\kappa_{\\text{pair}}(i, j)\n2490: $$",
+      "metadata": {
+        "label": "prop-n-uniformity"
+      },
+      "section": "## 8. Main Wasserstein-2 Contraction Theorem",
+      "raw_directive": "2448: A critical property for mean-field limit is that the contraction constant $\\kappa_W$ is **independent of the number of walkers $N$**.\n2449: \n2450: :::{prf:proposition} N-Uniformity of Contraction Constant\n2451: :label: prop-n-uniformity\n2452: \n2453: The contraction constant $\\kappa_W$ is independent of $N$ in the following sense:\n2454: \n2455: For each component:\n2456: 1. $p_u = \\exp(-\\beta \\Delta V_{\\max})$ ✓ **N-independent** (fitness bounds from axioms)\n2457: 2. $\\eta_{\\text{geo}} = \\frac{c_0^2}{2(1 + 2c_H)^2}$ ✓ **N-independent** (geometric constants)\n2458: 3. $f_{UH}(\\varepsilon)$ is a **fraction** ✓ **N-independent** (ratio of walker counts)\n2459: 4. $q_{\\min}(\\varepsilon)$ appears to scale as $1/N^2$ ✗ **BUT** see below\n2460: \n2461: **Resolution of $q_{\\min}$ N-Dependence**:\n2462: \n2463: The minimum matching probability is:\n2464: $$\n2465: q_{\\min} = \\min_{i,j} \\frac{\\exp(-\\beta V_{\\text{fit},1,i}) \\exp(-\\beta V_{\\text{fit},2,j})}{Z_1 Z_2}\n2466: $$\n2467: \n2468: where $Z_k = \\sum_{\\ell=1}^N \\exp(-\\beta V_{\\text{fit},k,\\ell}) \\sim N$ for large $N$.\n2469: \n2470: Thus, $q_{\\min} \\sim 1/N^2$, which seems to make $\\kappa_W \\sim 1/N^2$.\n2471: \n2472: **However**, in the expectation over matching:\n2473: $$\n2474: \\mathbb{E}_\\pi[\\kappa_{\\text{pair}}] = \\sum_{i=1}^N \\sum_{j=1}^N q_{ij} \\cdot \\kappa_{\\text{pair}}(i, j)\n2475: $$\n2476: \n2477: The sum has $N^2$ terms, each with weight $q_{ij} \\sim 1/N^2$, giving **cancellation**:\n2478: $$\n2479: \\sum_{i,j} q_{ij} = 1 \\quad \\text{(normalization)}\n2480: $$\n2481: \n2482: Therefore, the **effective** contraction constant is:\n2483: $$\n2484: \\kappa_W^{\\text{eff}} = \\sum_{i,j} q_{ij} \\cdot \\kappa_{\\text{pair}}(i, j)\n2485: $$\n2486: \n2487: For pairs in Case B (which occur with fraction $f_{UH}$):\n2488: $$\n2489: \\kappa_W^{\\text{eff}} \\geq f_{UH} \\cdot \\min_{\\text{Case B pairs}} \\kappa_{\\text{pair}}(i, j)\n2490: $$\n2491: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "04_wasserstein_contraction_ASSEMBLED",
+        "chapter_index": 10,
+        "chapter_file": "chapter_10.json",
+        "section_id": "## 8. Main Wasserstein-2 Contraction Theorem"
+      }
+    }
+  ]
+}

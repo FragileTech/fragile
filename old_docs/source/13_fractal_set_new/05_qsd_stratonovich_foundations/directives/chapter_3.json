@@ -1,0 +1,61 @@
+{
+  "chapter_index": 3,
+  "section_id": "## 4. Stationary Distribution for Stratonovich SDEs",
+  "directive_count": 3,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-stratonovich-stationary-general",
+      "title": "Stratonovich Stationary Distribution with State-Dependent Diffusion",
+      "start_line": 293,
+      "end_line": 329,
+      "header_lines": [
+        294
+      ],
+      "content_start": 296,
+      "content_end": 328,
+      "content": "296: :label: thm-stratonovich-stationary-general\n297: \n298: Consider a **Stratonovich SDE** on $\\mathbb{R}^d$:\n299: \n300: $$\n301: dx = b(x) \\, dt + \\sigma(x) \\circ dW\n302: $$\n303: \n304: with:\n305: - Drift: $b(x) = -D(x) \\nabla U(x)$ (gradient flow)\n306: - Diffusion tensor: $D(x) = \\frac{1}{2} \\sigma(x) \\sigma(x)^T$ (symmetric, positive definite)\n307: - Potential: $U: \\mathbb{R}^d \\to \\mathbb{R}$ (smooth, grows at infinity)\n308: \n309: Assume:\n310: 1. **Detailed balance:** The system is in thermal equilibrium (no external driving)\n311: 2. **Ergodicity:** The SDE admits a unique stationary distribution\n312: 3. **Integrability:** $\\int_{\\mathbb{R}^d} (\\det D(x))^{-1/2} e^{-U(x)} dx < \\infty$\n313: \n314: Then the **stationary distribution** is:\n315: \n316: $$\n317: \\rho_{\\text{st}}(x) = \\frac{1}{Z} \\frac{1}{\\sqrt{\\det D(x)}} \\, \\exp(-U(x))\n318: $$\n319: \n320: where $Z = \\int_{\\mathbb{R}^d} (\\det D)^{-1/2} e^{-U} dx$ is the normalization constant.\n321: \n322: **Geometric form:** Define the **metric tensor** $g(x) := D(x)^{-1}$. Then:\n323: \n324: $$\n325: \\boxed{\\rho_{\\text{st}}(x) = \\frac{1}{Z} \\sqrt{\\det g(x)} \\, \\exp(-U(x))}\n326: $$\n327: \n328: This is the **Gibbs measure with respect to the Riemannian volume element** $dV_g = \\sqrt{\\det g(x)} \\, dx$.",
+      "metadata": {
+        "label": "thm-stratonovich-stationary-general"
+      },
+      "section": "## 4. Stationary Distribution for Stratonovich SDEs",
+      "raw_directive": "293: ### 4.1. General Theorem (Graham 1977)\n294: \n295: :::{prf:theorem} Stratonovich Stationary Distribution with State-Dependent Diffusion\n296: :label: thm-stratonovich-stationary-general\n297: \n298: Consider a **Stratonovich SDE** on $\\mathbb{R}^d$:\n299: \n300: $$\n301: dx = b(x) \\, dt + \\sigma(x) \\circ dW\n302: $$\n303: \n304: with:\n305: - Drift: $b(x) = -D(x) \\nabla U(x)$ (gradient flow)\n306: - Diffusion tensor: $D(x) = \\frac{1}{2} \\sigma(x) \\sigma(x)^T$ (symmetric, positive definite)\n307: - Potential: $U: \\mathbb{R}^d \\to \\mathbb{R}$ (smooth, grows at infinity)\n308: \n309: Assume:\n310: 1. **Detailed balance:** The system is in thermal equilibrium (no external driving)\n311: 2. **Ergodicity:** The SDE admits a unique stationary distribution\n312: 3. **Integrability:** $\\int_{\\mathbb{R}^d} (\\det D(x))^{-1/2} e^{-U(x)} dx < \\infty$\n313: \n314: Then the **stationary distribution** is:\n315: \n316: $$\n317: \\rho_{\\text{st}}(x) = \\frac{1}{Z} \\frac{1}{\\sqrt{\\det D(x)}} \\, \\exp(-U(x))\n318: $$\n319: \n320: where $Z = \\int_{\\mathbb{R}^d} (\\det D)^{-1/2} e^{-U} dx$ is the normalization constant.\n321: \n322: **Geometric form:** Define the **metric tensor** $g(x) := D(x)^{-1}$. Then:\n323: \n324: $$\n325: \\boxed{\\rho_{\\text{st}}(x) = \\frac{1}{Z} \\sqrt{\\det g(x)} \\, \\exp(-U(x))}\n326: $$\n327: \n328: This is the **Gibbs measure with respect to the Riemannian volume element** $dV_g = \\sqrt{\\det g(x)} \\, dx$.\n329: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-41",
+      "title": null,
+      "start_line": 331,
+      "end_line": 374,
+      "header_lines": [],
+      "content_start": 332,
+      "content_end": 373,
+      "content": "332: \n333: :::{prf:proof}\n334: **Physical derivation (Graham 1977):**\n335: \n336: **Step 1: Stratonovich Fokker-Planck operator**\n337: \n338: The adjoint Fokker-Planck operator for a Stratonovich SDE with drift $b$ and diffusion $D$ is:\n339: \n340: $$\n341: \\mathcal{L}_{\\text{Strat}}^* \\rho = -\\nabla \\cdot (b \\rho) + \\frac{1}{2} \\nabla \\cdot (D \\nabla \\rho) - \\frac{1}{4} \\nabla \\cdot \\left( D \\nabla \\log \\det D \\cdot \\rho \\right)\n342: $$\n343: \n344: The last term is the **Stratonovich correction** that doesn't appear in It\u00f4 calculus.\n345: \n346: **Step 2: Stationary condition**\n347: \n348: For stationary distribution: $\\mathcal{L}_{\\text{Strat}}^* \\rho_{\\text{st}} = 0$.\n349: \n350: Substitute $b = -D \\nabla U$ and $\\rho_{\\text{st}} = (\\det D)^{-1/2} e^{-U} / Z$:\n351: \n352: $$\n353: \\begin{aligned}\n354: \\nabla \\cdot (b \\rho_{\\text{st}}) &= \\nabla \\cdot \\left( -D \\nabla U \\cdot \\frac{e^{-U}}{\\sqrt{\\det D}} \\right) \\\\\n355: &= \\nabla \\cdot \\left( D \\nabla \\left[\\frac{e^{-U}}{\\sqrt{\\det D}}\\right] \\right) \\quad \\text{(integration by parts)}\n356: \\end{aligned}\n357: $$\n358: \n359: **Step 3: Detailed balance**\n360: \n361: The Stratonovich correction term exactly cancels the geometric factor from $\\nabla \\log \\det D$, giving:\n362: \n363: $$\n364: \\mathcal{L}_{\\text{Strat}}^* \\rho_{\\text{st}} = 0\n365: $$\n366: \n367: This is **detailed balance**: the probability current $\\mathbf{J} = b \\rho - D \\nabla \\rho$ vanishes everywhere.\n368: \n369: **Step 4: Uniqueness**\n370: \n371: By ergodicity assumption, this is the **unique** stationary distribution.\n372: \n373: **Geometric interpretation:** The factor $(\\det D)^{-1/2} = \\sqrt{\\det g}$ is the **Jacobian** needed to transform the measure from Euclidean to Riemannian coordinates where the diffusion is isotropic. In Stratonovich calculus, this factor appears **automatically** from the correct treatment of state-dependent diffusion.",
+      "metadata": {},
+      "section": "## 4. Stationary Distribution for Stratonovich SDEs",
+      "raw_directive": "331: :::\n332: \n333: :::{prf:proof}\n334: **Physical derivation (Graham 1977):**\n335: \n336: **Step 1: Stratonovich Fokker-Planck operator**\n337: \n338: The adjoint Fokker-Planck operator for a Stratonovich SDE with drift $b$ and diffusion $D$ is:\n339: \n340: $$\n341: \\mathcal{L}_{\\text{Strat}}^* \\rho = -\\nabla \\cdot (b \\rho) + \\frac{1}{2} \\nabla \\cdot (D \\nabla \\rho) - \\frac{1}{4} \\nabla \\cdot \\left( D \\nabla \\log \\det D \\cdot \\rho \\right)\n342: $$\n343: \n344: The last term is the **Stratonovich correction** that doesn't appear in It\u00f4 calculus.\n345: \n346: **Step 2: Stationary condition**\n347: \n348: For stationary distribution: $\\mathcal{L}_{\\text{Strat}}^* \\rho_{\\text{st}} = 0$.\n349: \n350: Substitute $b = -D \\nabla U$ and $\\rho_{\\text{st}} = (\\det D)^{-1/2} e^{-U} / Z$:\n351: \n352: $$\n353: \\begin{aligned}\n354: \\nabla \\cdot (b \\rho_{\\text{st}}) &= \\nabla \\cdot \\left( -D \\nabla U \\cdot \\frac{e^{-U}}{\\sqrt{\\det D}} \\right) \\\\\n355: &= \\nabla \\cdot \\left( D \\nabla \\left[\\frac{e^{-U}}{\\sqrt{\\det D}}\\right] \\right) \\quad \\text{(integration by parts)}\n356: \\end{aligned}\n357: $$\n358: \n359: **Step 3: Detailed balance**\n360: \n361: The Stratonovich correction term exactly cancels the geometric factor from $\\nabla \\log \\det D$, giving:\n362: \n363: $$\n364: \\mathcal{L}_{\\text{Strat}}^* \\rho_{\\text{st}} = 0\n365: $$\n366: \n367: This is **detailed balance**: the probability current $\\mathbf{J} = b \\rho - D \\nabla \\rho$ vanishes everywhere.\n368: \n369: **Step 4: Uniqueness**\n370: \n371: By ergodicity assumption, this is the **unique** stationary distribution.\n372: \n373: **Geometric interpretation:** The factor $(\\det D)^{-1/2} = \\sqrt{\\det g}$ is the **Jacobian** needed to transform the measure from Euclidean to Riemannian coordinates where the diffusion is isotropic. In Stratonovich calculus, this factor appears **automatically** from the correct treatment of state-dependent diffusion.\n374: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-ito-vs-stratonovich-stationary",
+      "title": "Why It\u00f4 Would Give Wrong Answer",
+      "start_line": 378,
+      "end_line": 403,
+      "header_lines": [
+        379
+      ],
+      "content_start": 381,
+      "content_end": 402,
+      "content": "381: :label: rem-ito-vs-stratonovich-stationary\n382: \n383: For the **same formal SDE** (same drift $b$ and noise $\\sigma$), the stationary distributions differ between interpretations:\n384: \n385: | Interpretation | Stationary Distribution | Volume Element |\n386: |:---------------|:------------------------|:---------------|\n387: | **Stratonovich** | $\\rho \\propto (\\det D)^{-1/2} e^{-U}$ | Riemannian $\\sqrt{\\det g} \\, dx$ |\n388: | **It\u00f4** | $\\rho \\propto e^{-U + \\frac{1}{2}\\nabla \\cdot D}$ | Lebesgue $dx$ |\n389: \n390: The difference arises from the **noise-induced drift** term:\n391: \n392: $$\n393: b_{\\text{It\u00f4}} = b_{\\text{Strat}} - \\frac{1}{2} \\nabla \\cdot D\n394: $$\n395: \n396: that appears when converting Stratonovich \u2192 It\u00f4.\n397: \n398: **For Adaptive Gas:**\n399: - Stratonovich gives: $\\rho \\propto \\sqrt{\\det(H + \\epsilon_\\Sigma I)} \\, e^{-U_{\\text{eff}}/T}$ \u2705 **Correct**\n400: - It\u00f4 would give: $\\rho \\propto e^{-U_{\\text{eff}}/T + \\text{(correction)}}$ \u274c **Wrong**\n401: \n402: The It\u00f4 version would **not** match the emergent Riemannian geometry and would fail direct verification via Fokker-Planck equation.",
+      "metadata": {
+        "label": "rem-ito-vs-stratonovich-stationary"
+      },
+      "section": "## 4. Stationary Distribution for Stratonovich SDEs",
+      "raw_directive": "378: ### 4.2. Comparison: It\u00f4 vs Stratonovich\n379: \n380: :::{prf:remark} Why It\u00f4 Would Give Wrong Answer\n381: :label: rem-ito-vs-stratonovich-stationary\n382: \n383: For the **same formal SDE** (same drift $b$ and noise $\\sigma$), the stationary distributions differ between interpretations:\n384: \n385: | Interpretation | Stationary Distribution | Volume Element |\n386: |:---------------|:------------------------|:---------------|\n387: | **Stratonovich** | $\\rho \\propto (\\det D)^{-1/2} e^{-U}$ | Riemannian $\\sqrt{\\det g} \\, dx$ |\n388: | **It\u00f4** | $\\rho \\propto e^{-U + \\frac{1}{2}\\nabla \\cdot D}$ | Lebesgue $dx$ |\n389: \n390: The difference arises from the **noise-induced drift** term:\n391: \n392: $$\n393: b_{\\text{It\u00f4}} = b_{\\text{Strat}} - \\frac{1}{2} \\nabla \\cdot D\n394: $$\n395: \n396: that appears when converting Stratonovich \u2192 It\u00f4.\n397: \n398: **For Adaptive Gas:**\n399: - Stratonovich gives: $\\rho \\propto \\sqrt{\\det(H + \\epsilon_\\Sigma I)} \\, e^{-U_{\\text{eff}}/T}$ \u2705 **Correct**\n400: - It\u00f4 would give: $\\rho \\propto e^{-U_{\\text{eff}}/T + \\text{(correction)}}$ \u274c **Wrong**\n401: \n402: The It\u00f4 version would **not** match the emergent Riemannian geometry and would fail direct verification via Fokker-Planck equation.\n403: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

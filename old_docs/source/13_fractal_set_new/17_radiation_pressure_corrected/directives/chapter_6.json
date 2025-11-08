@@ -1,0 +1,25 @@
+{
+  "chapter_index": 6,
+  "section_id": "## VI. Final Status of de Sitter Conjecture",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "conjecture",
+      "label": "unlabeled-conjecture-84",
+      "title": "de Sitter in IR Regime",
+      "start_line": 452,
+      "end_line": 454,
+      "header_lines": [],
+      "content_start": 453,
+      "content_end": 453,
+      "content": "453: ",
+      "metadata": {},
+      "section": "## VI. Final Status of de Sitter Conjecture",
+      "raw_directive": "452: **de Sitter Conjecture** (from [12_holography.md](12_holography.md), lines 1820-1872):\n453: \n454: :::{prf:conjecture} de Sitter in IR Regime"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

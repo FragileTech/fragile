@@ -1,0 +1,29 @@
+{
+  "chapter_index": 66,
+  "section_id": "## Step 5: Exponential KL Convergence",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-exp-convergence-hybrid",
+      "title": "Exponential Convergence from LSI",
+      "start_line": 4151,
+      "end_line": 4177,
+      "header_lines": [
+        4152
+      ],
+      "content_start": 4154,
+      "content_end": 4176,
+      "content": "4154: :label: thm-exp-convergence-hybrid\n4155: \n4156: If a discrete-time Markov chain satisfies a Log-Sobolev inequality with constant $C_{\\text{LSI}}$, then:\n4157: \n4158: $$\n4159: D_{\\text{KL}}(\\mu_t \\| \\pi) \\leq e^{-t/C_{\\text{LSI}}} D_{\\text{KL}}(\\mu_0 \\| \\pi) + C_{\\text{asymptotic}}\n4160: $$\n4161: \n4162: where:\n4163: $$\n4164: C_{\\text{asymptotic}} := \\frac{C_{\\text{total}}}{\\tau(\\alpha_{\\text{kin}} + \\beta_{\\text{clone}})}\n4165: $$\n4166: \n4167: **Proof**: This is the standard Bakry-\u00c9mery argument. Iterating the contraction inequality from Theorem {prf:ref}`thm-composition-reference`:\n4168: \n4169: $$\n4170: D_{\\text{KL}}(\\mu_{t+1} \\| \\pi) \\leq (1 - \\epsilon) D_{\\text{KL}}(\\mu_t \\| \\pi) + C_{\\text{total}}\n4171: $$\n4172: \n4173: gives the geometric series:\n4174: $$\n4175: D_{\\text{KL}}(\\mu_t \\| \\pi) \\leq (1 - \\epsilon)^t D_{\\text{KL}}(\\mu_0 \\| \\pi) + C_{\\text{total}} \\sum_{k=0}^{t-1} (1 - \\epsilon)^k\n4176: $$",
+      "metadata": {
+        "label": "thm-exp-convergence-hybrid"
+      },
+      "section": "## Step 5: Exponential KL Convergence",
+      "raw_directive": "4151: ## Step 5: Exponential KL Convergence\n4152: \n4153: :::{prf:theorem} Exponential Convergence from LSI\n4154: :label: thm-exp-convergence-hybrid\n4155: \n4156: If a discrete-time Markov chain satisfies a Log-Sobolev inequality with constant $C_{\\text{LSI}}$, then:\n4157: \n4158: $$\n4159: D_{\\text{KL}}(\\mu_t \\| \\pi) \\leq e^{-t/C_{\\text{LSI}}} D_{\\text{KL}}(\\mu_0 \\| \\pi) + C_{\\text{asymptotic}}\n4160: $$\n4161: \n4162: where:\n4163: $$\n4164: C_{\\text{asymptotic}} := \\frac{C_{\\text{total}}}{\\tau(\\alpha_{\\text{kin}} + \\beta_{\\text{clone}})}\n4165: $$\n4166: \n4167: **Proof**: This is the standard Bakry-\u00c9mery argument. Iterating the contraction inequality from Theorem {prf:ref}`thm-composition-reference`:\n4168: \n4169: $$\n4170: D_{\\text{KL}}(\\mu_{t+1} \\| \\pi) \\leq (1 - \\epsilon) D_{\\text{KL}}(\\mu_t \\| \\pi) + C_{\\text{total}}\n4171: $$\n4172: \n4173: gives the geometric series:\n4174: $$\n4175: D_{\\text{KL}}(\\mu_t \\| \\pi) \\leq (1 - \\epsilon)^t D_{\\text{KL}}(\\mu_0 \\| \\pi) + C_{\\text{total}} \\sum_{k=0}^{t-1} (1 - \\epsilon)^k\n4176: $$\n4177: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

@@ -1,0 +1,173 @@
+{
+  "chapter_index": 3,
+  "section_id": "## Part 1: Conformal Field Theory Foundations",
+  "directive_count": 9,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-conformal-transformation",
+      "title": "Conformal Transformation",
+      "start_line": 318,
+      "end_line": 336,
+      "header_lines": [
+        319
+      ],
+      "content_start": 321,
+      "content_end": 335,
+      "content": "321: :label: def-conformal-transformation\n322: \n323: A **conformal transformation** is a smooth coordinate change $x^\\mu \\to x'^\\mu$ that preserves angles but not necessarily lengths. Infinitesimally, the metric transforms as:\n324: \n325: $$\n326: g'_{\\mu\\nu}(x') = \\Omega^2(x) g_{\\mu\\nu}(x)\n327: $$\n328: \n329: for some positive function $\\Omega(x) > 0$ (the **conformal factor**).\n330: \n331: **Infinitesimal Form:** For an infinitesimal transformation $x^\\mu \\to x^\\mu + \\epsilon^\\mu(x)$, conformality requires:\n332: \n333: $$\n334: \\partial_\\mu \\epsilon_\\nu + \\partial_\\nu \\epsilon_\\mu = \\frac{2}{d} (\\partial \\cdot \\epsilon) g_{\\mu\\nu}\n335: $$",
+      "metadata": {
+        "label": "def-conformal-transformation"
+      },
+      "section": "## Part 1: Conformal Field Theory Foundations",
+      "raw_directive": "318: ### 1.1 Conformal Transformations in 2D\n319: \n320: :::{prf:definition} Conformal Transformation\n321: :label: def-conformal-transformation\n322: \n323: A **conformal transformation** is a smooth coordinate change $x^\\mu \\to x'^\\mu$ that preserves angles but not necessarily lengths. Infinitesimally, the metric transforms as:\n324: \n325: $$\n326: g'_{\\mu\\nu}(x') = \\Omega^2(x) g_{\\mu\\nu}(x)\n327: $$\n328: \n329: for some positive function $\\Omega(x) > 0$ (the **conformal factor**).\n330: \n331: **Infinitesimal Form:** For an infinitesimal transformation $x^\\mu \\to x^\\mu + \\epsilon^\\mu(x)$, conformality requires:\n332: \n333: $$\n334: \\partial_\\mu \\epsilon_\\nu + \\partial_\\nu \\epsilon_\\mu = \\frac{2}{d} (\\partial \\cdot \\epsilon) g_{\\mu\\nu}\n335: $$\n336: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-2d-conformal-infinite",
+      "title": "Infinite-Dimensional Conformal Symmetry in 2D",
+      "start_line": 344,
+      "end_line": 370,
+      "header_lines": [
+        345
+      ],
+      "content_start": 347,
+      "content_end": 369,
+      "content": "347: :label: thm-2d-conformal-infinite\n348: \n349: In 2D Euclidean space with complex coordinates $z = x + iy$, the conformal transformations are **all holomorphic and anti-holomorphic functions**:\n350: \n351: $$\n352: z \\to f(z), \\quad \\bar{z} \\to \\bar{f}(\\bar{z})\n353: $$\n354: \n355: where $f$ and $\\bar{f}$ are arbitrary analytic functions.\n356: \n357: The infinitesimal generators are:\n358: \n359: $$\n360: \\ell_n = -z^{n+1} \\partial_z, \\quad \\bar{\\ell}_n = -\\bar{z}^{n+1} \\partial_{\\bar{z}}, \\quad n \\in \\mathbb{Z}\n361: $$\n362: \n363: These form the **Witt algebra**:\n364: \n365: $$\n366: [\\ell_m, \\ell_n] = (m - n) \\ell_{m+n}\n367: $$\n368: \n369: with an analogous relation for $\\bar{\\ell}_n$.",
+      "metadata": {
+        "label": "thm-2d-conformal-infinite"
+      },
+      "section": "## Part 1: Conformal Field Theory Foundations",
+      "raw_directive": "344: But in $d = 2$, something remarkable happens:\n345: \n346: :::{prf:theorem} Infinite-Dimensional Conformal Symmetry in 2D\n347: :label: thm-2d-conformal-infinite\n348: \n349: In 2D Euclidean space with complex coordinates $z = x + iy$, the conformal transformations are **all holomorphic and anti-holomorphic functions**:\n350: \n351: $$\n352: z \\to f(z), \\quad \\bar{z} \\to \\bar{f}(\\bar{z})\n353: $$\n354: \n355: where $f$ and $\\bar{f}$ are arbitrary analytic functions.\n356: \n357: The infinitesimal generators are:\n358: \n359: $$\n360: \\ell_n = -z^{n+1} \\partial_z, \\quad \\bar{\\ell}_n = -\\bar{z}^{n+1} \\partial_{\\bar{z}}, \\quad n \\in \\mathbb{Z}\n361: $$\n362: \n363: These form the **Witt algebra**:\n364: \n365: $$\n366: [\\ell_m, \\ell_n] = (m - n) \\ell_{m+n}\n367: $$\n368: \n369: with an analogous relation for $\\bar{\\ell}_n$.\n370: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-complex-coordinates",
+      "title": "Complex Coordinates",
+      "start_line": 372,
+      "end_line": 394,
+      "header_lines": [
+        373
+      ],
+      "content_start": 375,
+      "content_end": 393,
+      "content": "375: :label: rem-complex-coordinates\n376: \n377: For 2D Euclidean space, it's conventional to use complex coordinates:\n378: \n379: $$\n380: z = x^1 + i x^2, \\quad \\bar{z} = x^1 - i x^2\n381: $$\n382: \n383: The metric becomes:\n384: \n385: $$\n386: ds^2 = dx^1 \\cdot dx^1 + dx^2 \\cdot dx^2 = dz d\\bar{z}\n387: $$\n388: \n389: Derivatives:\n390: \n391: $$\n392: \\partial_z = \\frac{1}{2}(\\partial_1 - i \\partial_2), \\quad \\partial_{\\bar{z}} = \\frac{1}{2}(\\partial_1 + i \\partial_2)\n393: $$",
+      "metadata": {
+        "label": "rem-complex-coordinates"
+      },
+      "section": "## Part 1: Conformal Field Theory Foundations",
+      "raw_directive": "372: :::\n373: \n374: :::{prf:remark} Complex Coordinates\n375: :label: rem-complex-coordinates\n376: \n377: For 2D Euclidean space, it's conventional to use complex coordinates:\n378: \n379: $$\n380: z = x^1 + i x^2, \\quad \\bar{z} = x^1 - i x^2\n381: $$\n382: \n383: The metric becomes:\n384: \n385: $$\n386: ds^2 = dx^1 \\cdot dx^1 + dx^2 \\cdot dx^2 = dz d\\bar{z}\n387: $$\n388: \n389: Derivatives:\n390: \n391: $$\n392: \\partial_z = \\frac{1}{2}(\\partial_1 - i \\partial_2), \\quad \\partial_{\\bar{z}} = \\frac{1}{2}(\\partial_1 + i \\partial_2)\n393: $$\n394: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-virasoro-algebra",
+      "title": "Virasoro Algebra",
+      "start_line": 400,
+      "end_line": 421,
+      "header_lines": [
+        401
+      ],
+      "content_start": 403,
+      "content_end": 420,
+      "content": "403: :label: def-virasoro-algebra\n404: \n405: The **Virasoro algebra** is the central extension of the Witt algebra:\n406: \n407: $$\n408: [L_m, L_n] = (m - n) L_{m+n} + \\frac{c}{12} m (m^2 - 1) \\delta_{m+n, 0}\n409: $$\n410: \n411: where:\n412: - $L_n$ are the Virasoro generators (modes of the stress-energy tensor)\n413: - $c$ is the **central charge**, a real number characterizing the CFT\n414: - The term $\\propto c$ is the **central extension** (Schwinger term)\n415: \n416: There is an independent algebra for the anti-holomorphic sector:\n417: \n418: $$\n419: [\\bar{L}_m, \\bar{L}_n] = (m - n) \\bar{L}_{m+n} + \\frac{\\bar{c}}{12} m (m^2 - 1) \\delta_{m+n, 0}\n420: $$",
+      "metadata": {
+        "label": "def-virasoro-algebra"
+      },
+      "section": "## Part 1: Conformal Field Theory Foundations",
+      "raw_directive": "400: The Witt algebra $\\{\\ell_n\\}$ is the classical algebra of conformal symmetries. Upon quantization (or in the presence of a \"central term\"), it gets extended to the **Virasoro algebra**:\n401: \n402: :::{prf:definition} Virasoro Algebra\n403: :label: def-virasoro-algebra\n404: \n405: The **Virasoro algebra** is the central extension of the Witt algebra:\n406: \n407: $$\n408: [L_m, L_n] = (m - n) L_{m+n} + \\frac{c}{12} m (m^2 - 1) \\delta_{m+n, 0}\n409: $$\n410: \n411: where:\n412: - $L_n$ are the Virasoro generators (modes of the stress-energy tensor)\n413: - $c$ is the **central charge**, a real number characterizing the CFT\n414: - The term $\\propto c$ is the **central extension** (Schwinger term)\n415: \n416: There is an independent algebra for the anti-holomorphic sector:\n417: \n418: $$\n419: [\\bar{L}_m, \\bar{L}_n] = (m - n) \\bar{L}_{m+n} + \\frac{\\bar{c}}{12} m (m^2 - 1) \\delta_{m+n, 0}\n420: $$\n421: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-primary-field",
+      "title": "Primary Field",
+      "start_line": 437,
+      "end_line": 455,
+      "header_lines": [
+        438
+      ],
+      "content_start": 440,
+      "content_end": 454,
+      "content": "440: :label: def-primary-field\n441: \n442: A **primary field** $\\Phi_{h, \\bar{h}}(z, \\bar{z})$ is a local operator with **conformal weights** $(h, \\bar{h})$ that transforms under a conformal transformation $z \\to w(z)$ as:\n443: \n444: $$\n445: \\Phi_{h, \\bar{h}}(z, \\bar{z}) \\to \\left(\\frac{dw}{dz}\\right)^h \\left(\\frac{d\\bar{w}}{d\\bar{z}}\\right)^{\\bar{h}} \\Phi_{h, \\bar{h}}(w, \\bar{w})\n446: $$\n447: \n448: **Scaling Dimension:** $\\Delta = h + \\bar{h}$ (total conformal weight)\n449: \n450: **Spin:** $s = h - \\bar{h}$\n451: \n452: **Special Cases:**\n453: - **Quasi-primary (semi-primary):** Transforms correctly under global conformal transformations (M\u00f6bius), but not necessarily under full conformal group\n454: - **Descendant:** Obtained by acting with $L_{-n}$ ($n > 0$) on a primary",
+      "metadata": {
+        "label": "def-primary-field"
+      },
+      "section": "## Part 1: Conformal Field Theory Foundations",
+      "raw_directive": "437: ### 1.3 Primary Fields and the Operator Product Expansion\n438: \n439: :::{prf:definition} Primary Field\n440: :label: def-primary-field\n441: \n442: A **primary field** $\\Phi_{h, \\bar{h}}(z, \\bar{z})$ is a local operator with **conformal weights** $(h, \\bar{h})$ that transforms under a conformal transformation $z \\to w(z)$ as:\n443: \n444: $$\n445: \\Phi_{h, \\bar{h}}(z, \\bar{z}) \\to \\left(\\frac{dw}{dz}\\right)^h \\left(\\frac{d\\bar{w}}{d\\bar{z}}\\right)^{\\bar{h}} \\Phi_{h, \\bar{h}}(w, \\bar{w})\n446: $$\n447: \n448: **Scaling Dimension:** $\\Delta = h + \\bar{h}$ (total conformal weight)\n449: \n450: **Spin:** $s = h - \\bar{h}$\n451: \n452: **Special Cases:**\n453: - **Quasi-primary (semi-primary):** Transforms correctly under global conformal transformations (M\u00f6bius), but not necessarily under full conformal group\n454: - **Descendant:** Obtained by acting with $L_{-n}$ ($n > 0$) on a primary\n455: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-ope",
+      "title": "Operator Product Expansion (OPE)",
+      "start_line": 457,
+      "end_line": 475,
+      "header_lines": [
+        458
+      ],
+      "content_start": 460,
+      "content_end": 474,
+      "content": "460: :label: def-ope\n461: \n462: The **Operator Product Expansion** expresses the product of two operators at nearby points as a sum of local operators:\n463: \n464: $$\n465: \\Phi_i(z, \\bar{z}) \\Phi_j(w, \\bar{w}) = \\sum_k C_{ijk}(z - w, \\bar{z} - \\bar{w}) \\Phi_k(w, \\bar{w})\n466: $$\n467: \n468: where $C_{ijk}$ are **structure constants** (OPE coefficients), which are power-law functions of $(z-w)$.\n469: \n470: **For Primary Fields:**\n471: \n472: $$\n473: \\Phi_i(z) \\Phi_j(w) \\sim \\sum_k \\frac{C_{ijk}}{(z-w)^{h_i + h_j - h_k}} \\Phi_k(w) + \\text{descendants}\n474: $$",
+      "metadata": {
+        "label": "def-ope"
+      },
+      "section": "## Part 1: Conformal Field Theory Foundations",
+      "raw_directive": "457: :::\n458: \n459: :::{prf:definition} Operator Product Expansion (OPE)\n460: :label: def-ope\n461: \n462: The **Operator Product Expansion** expresses the product of two operators at nearby points as a sum of local operators:\n463: \n464: $$\n465: \\Phi_i(z, \\bar{z}) \\Phi_j(w, \\bar{w}) = \\sum_k C_{ijk}(z - w, \\bar{z} - \\bar{w}) \\Phi_k(w, \\bar{w})\n466: $$\n467: \n468: where $C_{ijk}$ are **structure constants** (OPE coefficients), which are power-law functions of $(z-w)$.\n469: \n470: **For Primary Fields:**\n471: \n472: $$\n473: \\Phi_i(z) \\Phi_j(w) \\sim \\sum_k \\frac{C_{ijk}}{(z-w)^{h_i + h_j - h_k}} \\Phi_k(w) + \\text{descendants}\n474: $$\n475: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-cft-stress-energy-tensor",
+      "title": "Stress-Energy Tensor in 2D CFT",
+      "start_line": 481,
+      "end_line": 513,
+      "header_lines": [
+        482
+      ],
+      "content_start": 484,
+      "content_end": 512,
+      "content": "484: :label: def-cft-stress-energy-tensor\n485: \n486: In 2D CFT with complex coordinates, the stress-energy tensor splits into holomorphic and anti-holomorphic parts:\n487: \n488: $$\n489: T(z) = T_{zz}(z), \\quad \\bar{T}(\\bar{z}) = T_{\\bar{z}\\bar{z}}(\\bar{z})\n490: $$\n491: \n492: where $T(z)$ is a **holomorphic primary field** of conformal weight $(h, \\bar{h}) = (2, 0)$.\n493: \n494: **Key Properties:**\n495: \n496: 1. **Tracelessness (classically):** $T^\\mu_\\mu = T_{z\\bar{z}} = 0$ (up to quantum anomaly)\n497: \n498: 2. **Conservation:** $\\partial_{\\bar{z}} T(z) = 0$, $\\partial_z \\bar{T}(\\bar{z}) = 0$ (holomorphic and anti-holomorphic)\n499: \n500: 3. **OPE with itself:**\n501: \n502: $$\n503: T(z) T(w) \\sim \\frac{c/2}{(z-w)^4} + \\frac{2 T(w)}{(z-w)^2} + \\frac{\\partial T(w)}{z-w} + \\text{regular}\n504: $$\n505: \n506: The leading $1/(z-w)^4$ term's coefficient is $c/2$, where $c$ is the **central charge**.\n507: \n508: 4. **Virasoro Generators:** The modes of $T(z)$ are the Virasoro generators:\n509: \n510: $$\n511: T(z) = \\sum_{n \\in \\mathbb{Z}} \\frac{L_n}{z^{n+2}}\n512: $$",
+      "metadata": {
+        "label": "def-cft-stress-energy-tensor"
+      },
+      "section": "## Part 1: Conformal Field Theory Foundations",
+      "raw_directive": "481: The stress-energy tensor is the Noether current associated with conformal symmetry.\n482: \n483: :::{prf:definition} Stress-Energy Tensor in 2D CFT\n484: :label: def-cft-stress-energy-tensor\n485: \n486: In 2D CFT with complex coordinates, the stress-energy tensor splits into holomorphic and anti-holomorphic parts:\n487: \n488: $$\n489: T(z) = T_{zz}(z), \\quad \\bar{T}(\\bar{z}) = T_{\\bar{z}\\bar{z}}(\\bar{z})\n490: $$\n491: \n492: where $T(z)$ is a **holomorphic primary field** of conformal weight $(h, \\bar{h}) = (2, 0)$.\n493: \n494: **Key Properties:**\n495: \n496: 1. **Tracelessness (classically):** $T^\\mu_\\mu = T_{z\\bar{z}} = 0$ (up to quantum anomaly)\n497: \n498: 2. **Conservation:** $\\partial_{\\bar{z}} T(z) = 0$, $\\partial_z \\bar{T}(\\bar{z}) = 0$ (holomorphic and anti-holomorphic)\n499: \n500: 3. **OPE with itself:**\n501: \n502: $$\n503: T(z) T(w) \\sim \\frac{c/2}{(z-w)^4} + \\frac{2 T(w)}{(z-w)^2} + \\frac{\\partial T(w)}{z-w} + \\text{regular}\n504: $$\n505: \n506: The leading $1/(z-w)^4$ term's coefficient is $c/2$, where $c$ is the **central charge**.\n507: \n508: 4. **Virasoro Generators:** The modes of $T(z)$ are the Virasoro generators:\n509: \n510: $$\n511: T(z) = \\sum_{n \\in \\mathbb{Z}} \\frac{L_n}{z^{n+2}}\n512: $$\n513: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-conformal-ward-identity",
+      "title": "Conformal Ward Identity",
+      "start_line": 525,
+      "end_line": 549,
+      "header_lines": [
+        526
+      ],
+      "content_start": 528,
+      "content_end": 548,
+      "content": "528: :label: thm-conformal-ward-identity\n529: \n530: For a conformal transformation generated by $\\epsilon(z)$, the variation of a correlation function is:\n531: \n532: $$\n533: \\delta \\langle \\Phi_1(z_1) \\cdots \\Phi_n(z_n) \\rangle = -\\sum_{i=1}^n \\langle \\Phi_1(z_1) \\cdots [T, \\epsilon]_{z_i} \\Phi_i(z_i) \\cdots \\Phi_n(z_n) \\rangle\n534: $$\n535: \n536: where the commutator is defined via the OPE:\n537: \n538: $$\n539: [T(w), \\Phi_i(z_i)] = \\oint_{C(z_i)} \\frac{dw}{2\\pi i} T(w) \\Phi_i(z_i)\n540: $$\n541: \n542: **Explicit Form for Primary Fields:**\n543: \n544: For a primary field $\\Phi_h(z)$ of weight $h$:\n545: \n546: $$\n547: \\langle T(z) \\Phi_h(w, \\bar{w}) \\cdots \\rangle = \\sum_{\\text{others}} \\left[ \\frac{h}{(z-w)^2} + \\frac{\\partial_w}{z-w} \\right] \\langle \\Phi_h(w, \\bar{w}) \\cdots \\rangle\n548: $$",
+      "metadata": {
+        "label": "thm-conformal-ward-identity"
+      },
+      "section": "## Part 1: Conformal Field Theory Foundations",
+      "raw_directive": "525: Ward identities express the constraints imposed by symmetry on correlation functions.\n526: \n527: :::{prf:theorem} Conformal Ward Identity\n528: :label: thm-conformal-ward-identity\n529: \n530: For a conformal transformation generated by $\\epsilon(z)$, the variation of a correlation function is:\n531: \n532: $$\n533: \\delta \\langle \\Phi_1(z_1) \\cdots \\Phi_n(z_n) \\rangle = -\\sum_{i=1}^n \\langle \\Phi_1(z_1) \\cdots [T, \\epsilon]_{z_i} \\Phi_i(z_i) \\cdots \\Phi_n(z_n) \\rangle\n534: $$\n535: \n536: where the commutator is defined via the OPE:\n537: \n538: $$\n539: [T(w), \\Phi_i(z_i)] = \\oint_{C(z_i)} \\frac{dw}{2\\pi i} T(w) \\Phi_i(z_i)\n540: $$\n541: \n542: **Explicit Form for Primary Fields:**\n543: \n544: For a primary field $\\Phi_h(z)$ of weight $h$:\n545: \n546: $$\n547: \\langle T(z) \\Phi_h(w, \\bar{w}) \\cdots \\rangle = \\sum_{\\text{others}} \\left[ \\frac{h}{(z-w)^2} + \\frac{\\partial_w}{z-w} \\right] \\langle \\Phi_h(w, \\bar{w}) \\cdots \\rangle\n548: $$\n549: "
+    },
+    {
+      "directive_type": "observation",
+      "label": "obs-central-charge-physical",
+      "title": "Physical Significance of Central Charge",
+      "start_line": 577,
+      "end_line": 612,
+      "header_lines": [
+        578
+      ],
+      "content_start": 580,
+      "content_end": 611,
+      "content": "580: :label: obs-central-charge-physical\n581: \n582: The central charge $c$ has multiple physical interpretations:\n583: \n584: 1. **Effective Degrees of Freedom:** $c$ counts the number of independent \"channels\" or \"modes\" contributing to the theory. For example:\n585:    - $n$ free bosons: $c = n$\n586:    - $n$ free fermions (Majorana): $c = n/2$\n587: \n588: 2. **Casimir Energy:** For a CFT on a cylinder of circumference $L$, the ground state energy (Casimir effect) is:\n589: \n590: $$\n591: E_0 = -\\frac{\\pi c}{6L}\n592: $$\n593: \n594: 3. **Partition Function Asymptotics:** The partition function on a torus grows as:\n595: \n596: $$\n597: Z(\\tau) \\sim e^{2\\pi i \\tau (-c/24)}\n598: $$\n599: \n600: 4. **Conformal Anomaly:** In the presence of a background curved metric $g_{\\mu\\nu}$, the trace of the stress-energy tensor is non-zero:\n601: \n602: $$\n603: \\langle T^\\mu_\\mu \\rangle = -\\frac{c}{12} R\n604: $$\n605: \n606: where $R$ is the Ricci scalar. This is the **trace anomaly**.\n607: \n608: 5. **Mutual Information and Entanglement:** For a spatial interval of length $L$, the entanglement entropy is:\n609: \n610: $$\n611: S_{\\text{ent}} = \\frac{c}{3} \\log L + \\text{const}",
+      "metadata": {
+        "label": "obs-central-charge-physical"
+      },
+      "section": "## Part 1: Conformal Field Theory Foundations",
+      "raw_directive": "577: The central charge $c$ is the single most important number characterizing a 2D CFT.\n578: \n579: :::{prf:observation} Physical Significance of Central Charge\n580: :label: obs-central-charge-physical\n581: \n582: The central charge $c$ has multiple physical interpretations:\n583: \n584: 1. **Effective Degrees of Freedom:** $c$ counts the number of independent \"channels\" or \"modes\" contributing to the theory. For example:\n585:    - $n$ free bosons: $c = n$\n586:    - $n$ free fermions (Majorana): $c = n/2$\n587: \n588: 2. **Casimir Energy:** For a CFT on a cylinder of circumference $L$, the ground state energy (Casimir effect) is:\n589: \n590: $$\n591: E_0 = -\\frac{\\pi c}{6L}\n592: $$\n593: \n594: 3. **Partition Function Asymptotics:** The partition function on a torus grows as:\n595: \n596: $$\n597: Z(\\tau) \\sim e^{2\\pi i \\tau (-c/24)}\n598: $$\n599: \n600: 4. **Conformal Anomaly:** In the presence of a background curved metric $g_{\\mu\\nu}$, the trace of the stress-energy tensor is non-zero:\n601: \n602: $$\n603: \\langle T^\\mu_\\mu \\rangle = -\\frac{c}{12} R\n604: $$\n605: \n606: where $R$ is the Ricci scalar. This is the **trace anomaly**.\n607: \n608: 5. **Mutual Information and Entanglement:** For a spatial interval of length $L$, the entanglement entropy is:\n609: \n610: $$\n611: S_{\\text{ent}} = \\frac{c}{3} \\log L + \\text{const}\n612: $$"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

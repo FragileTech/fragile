@@ -1,0 +1,47 @@
+{
+  "chapter_index": 4,
+  "section_id": "## 5. Gauge-Covariant Path Integral",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-gauge-covariant-path-integral",
+      "title": "Complete Gauge-Covariant Path Integral",
+      "start_line": 1019,
+      "end_line": 1063,
+      "header_lines": [
+        1020
+      ],
+      "content_start": 1022,
+      "content_end": 1062,
+      "content": "1022: :label: thm-gauge-covariant-path-integral\n1023: \n1024: The full effective field theory for the Adaptive Gas on the Fractal Set has partition function:\n1025: \n1026: $$\n1027: Z = \\int \\mathcal{D}[\\Psi] \\mathcal{D}[A] \\exp\\left(i(S_{\\text{matter}} + S_{\\text{coupling}} + S_{\\text{YM}})\\right)\n1028: $$\n1029: \n1030: where:\n1031: \n1032: **1. Matter action**:\n1033: \n1034: $$\n1035: S_{\\text{matter}} = \\sum_{(i,j) \\in \\text{IG}} \\int d\\tau \\, \\bar{\\Psi}_{ij} (i\\gamma^\\mu D_\\mu - m_{\\text{eff}}) \\Psi_{ij}\n1036: $$\n1037: \n1038: with $D_\\mu = \\partial_\\mu - ig A_\\mu^{(a)} (T^a \\otimes I_{\\text{div}})$ (covariant derivative).\n1039: \n1040: **2. Coupling action**:\n1041: \n1042: $$\n1043: S_{\\text{coupling}} = g \\sum_{a=1}^3 \\sum_{(i,j)} \\int d\\tau \\, J_\\mu^{(a)}(i,j) \\cdot A_\\mu^{(a)}\n1044: $$\n1045: \n1046: where $J_\\mu^{(a)}$ is the weak isospin current ({prf:ref}`thm-su2-noether-current`).\n1047: \n1048: **3. Yang-Mills action**:\n1049: \n1050: $$\n1051: S_{\\text{YM}} = \\frac{1}{g^2} \\sum_{\\square} 2\\left(1 - \\frac{1}{2}\\text{Tr}(U_{\\square})\\right)\n1052: $$\n1053: \n1054: **Integration measure**:\n1055: - $\\mathcal{D}[\\Psi]$: Functional integral over all interaction states $\\Psi_{ij} \\in \\mathbb{C}^2 \\otimes \\mathbb{C}^{N-1}$\n1056: - $\\mathcal{D}[A]$: Functional integral over all gauge field configurations $A_e^{(a)}$\n1057: \n1058: **Gauge invariance**: The path integral is gauge-invariant:\n1059: \n1060: $$\n1061: Z' = Z\n1062: $$",
+      "metadata": {
+        "label": "thm-gauge-covariant-path-integral"
+      },
+      "section": "## 5. Gauge-Covariant Path Integral",
+      "raw_directive": "1019: ## 5. Gauge-Covariant Path Integral\n1020: \n1021: :::{prf:theorem} Complete Gauge-Covariant Path Integral\n1022: :label: thm-gauge-covariant-path-integral\n1023: \n1024: The full effective field theory for the Adaptive Gas on the Fractal Set has partition function:\n1025: \n1026: $$\n1027: Z = \\int \\mathcal{D}[\\Psi] \\mathcal{D}[A] \\exp\\left(i(S_{\\text{matter}} + S_{\\text{coupling}} + S_{\\text{YM}})\\right)\n1028: $$\n1029: \n1030: where:\n1031: \n1032: **1. Matter action**:\n1033: \n1034: $$\n1035: S_{\\text{matter}} = \\sum_{(i,j) \\in \\text{IG}} \\int d\\tau \\, \\bar{\\Psi}_{ij} (i\\gamma^\\mu D_\\mu - m_{\\text{eff}}) \\Psi_{ij}\n1036: $$\n1037: \n1038: with $D_\\mu = \\partial_\\mu - ig A_\\mu^{(a)} (T^a \\otimes I_{\\text{div}})$ (covariant derivative).\n1039: \n1040: **2. Coupling action**:\n1041: \n1042: $$\n1043: S_{\\text{coupling}} = g \\sum_{a=1}^3 \\sum_{(i,j)} \\int d\\tau \\, J_\\mu^{(a)}(i,j) \\cdot A_\\mu^{(a)}\n1044: $$\n1045: \n1046: where $J_\\mu^{(a)}$ is the weak isospin current ({prf:ref}`thm-su2-noether-current`).\n1047: \n1048: **3. Yang-Mills action**:\n1049: \n1050: $$\n1051: S_{\\text{YM}} = \\frac{1}{g^2} \\sum_{\\square} 2\\left(1 - \\frac{1}{2}\\text{Tr}(U_{\\square})\\right)\n1052: $$\n1053: \n1054: **Integration measure**:\n1055: - $\\mathcal{D}[\\Psi]$: Functional integral over all interaction states $\\Psi_{ij} \\in \\mathbb{C}^2 \\otimes \\mathbb{C}^{N-1}$\n1056: - $\\mathcal{D}[A]$: Functional integral over all gauge field configurations $A_e^{(a)}$\n1057: \n1058: **Gauge invariance**: The path integral is gauge-invariant:\n1059: \n1060: $$\n1061: Z' = Z\n1062: $$\n1063: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-47",
+      "title": "Gauge Fixing and Faddeev-Popov Procedure",
+      "start_line": 1065,
+      "end_line": 1085,
+      "header_lines": [
+        1066
+      ],
+      "content_start": 1068,
+      "content_end": 1084,
+      "content": "1068: :class: warning\n1069: \n1070: The path integral $Z$ **overcounts** gauge-equivalent configurations. Standard remedy:\n1071: \n1072: **1. Faddeev-Popov gauge fixing:**\n1073: \n1074: Impose gauge condition (e.g., Lorenz gauge $\\partial^\\mu A_\\mu = 0$) and introduce ghost fields $c^a, \\bar{c}^a$ with action:\n1075: \n1076: $$\n1077: S_{\\text{ghost}} = \\sum_e \\bar{c}_e^{(a)} \\nabla_{\\text{discrete}} \\cdot D_e c_e^{(a)}\n1078: $$\n1079: \n1080: **2. Open question for Fractal Set:**\n1081: \n1082: Does the **antisymmetric IG edge structure** ({prf:ref}`rmk-fermionic-exclusion` in {doc}`13_fractal_set/00_full_set.md`) play the role of ghosts?\n1083: \n1084: **Hypothesis**: The fermionic exclusion on IG may provide a constraint equivalent to ghost field cancellation.",
+      "metadata": {
+        "class": "warning"
+      },
+      "section": "## 5. Gauge-Covariant Path Integral",
+      "raw_directive": "1065: :::\n1066: \n1067: :::{prf:remark} Gauge Fixing and Faddeev-Popov Procedure\n1068: :class: warning\n1069: \n1070: The path integral $Z$ **overcounts** gauge-equivalent configurations. Standard remedy:\n1071: \n1072: **1. Faddeev-Popov gauge fixing:**\n1073: \n1074: Impose gauge condition (e.g., Lorenz gauge $\\partial^\\mu A_\\mu = 0$) and introduce ghost fields $c^a, \\bar{c}^a$ with action:\n1075: \n1076: $$\n1077: S_{\\text{ghost}} = \\sum_e \\bar{c}_e^{(a)} \\nabla_{\\text{discrete}} \\cdot D_e c_e^{(a)}\n1078: $$\n1079: \n1080: **2. Open question for Fractal Set:**\n1081: \n1082: Does the **antisymmetric IG edge structure** ({prf:ref}`rmk-fermionic-exclusion` in {doc}`13_fractal_set/00_full_set.md`) play the role of ghosts?\n1083: \n1084: **Hypothesis**: The fermionic exclusion on IG may provide a constraint equivalent to ghost field cancellation.\n1085: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

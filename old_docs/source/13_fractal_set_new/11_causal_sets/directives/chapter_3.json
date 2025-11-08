@@ -1,0 +1,79 @@
+{
+  "chapter_index": 3,
+  "section_id": "## 3. Proof that Fractal Set Satisfies Causal Set Axioms",
+  "directive_count": 4,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-fractal-set-causal-order",
+      "title": "Causal Order on Fractal Set",
+      "start_line": 143,
+      "end_line": 157,
+      "header_lines": [
+        144
+      ],
+      "content_start": 146,
+      "content_end": 156,
+      "content": "146: :label: def-fractal-set-causal-order\n147: \n148: For episodes $e_i, e_j \\in E$ with positions $x_i, x_j \\in \\mathcal{X}$ and times $t_i, t_j \\in \\mathbb{R}$, define:\n149: \n150: $$\n151: e_i \\prec_{\\text{CST}} e_j \\quad \\iff \\quad t_i < t_j \\text{ and } d_{\\mathcal{X}}(x_i, x_j) < c(t_j - t_i)\n152: $$\n153: \n154: where:\n155: - $d_{\\mathcal{X}}(x_i, x_j)$ is the **Riemannian distance** on $(\\mathcal{X}, g)$\n156: - $c$ is the effective \"speed of light\" (maximal information propagation speed)",
+      "metadata": {
+        "label": "def-fractal-set-causal-order"
+      },
+      "section": "## 3. Proof that Fractal Set Satisfies Causal Set Axioms",
+      "raw_directive": "143: ### 3.1. Causal Order on Episodes\n144: \n145: :::{prf:definition} Causal Order on Fractal Set\n146: :label: def-fractal-set-causal-order\n147: \n148: For episodes $e_i, e_j \\in E$ with positions $x_i, x_j \\in \\mathcal{X}$ and times $t_i, t_j \\in \\mathbb{R}$, define:\n149: \n150: $$\n151: e_i \\prec_{\\text{CST}} e_j \\quad \\iff \\quad t_i < t_j \\text{ and } d_{\\mathcal{X}}(x_i, x_j) < c(t_j - t_i)\n152: $$\n153: \n154: where:\n155: - $d_{\\mathcal{X}}(x_i, x_j)$ is the **Riemannian distance** on $(\\mathcal{X}, g)$\n156: - $c$ is the effective \"speed of light\" (maximal information propagation speed)\n157: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-lorentzian-from-riemannian",
+      "title": "Relation to Lorentzian Structure",
+      "start_line": 159,
+      "end_line": 175,
+      "header_lines": [
+        160
+      ],
+      "content_start": 162,
+      "content_end": 174,
+      "content": "162: :label: rem-lorentzian-from-riemannian\n163: \n164: The emergent Riemannian metric $g(x)$ on $\\mathcal{X}$ can be promoted to a Lorentzian metric on spacetime $M = \\mathbb{R} \\times \\mathcal{X}$ by:\n165: \n166: $$\n167: ds^2 = -c^2 dt^2 + g_{ij}(x) dx^i dx^j\n168: $$\n169: \n170: The causal order $\\prec_{\\text{CST}}$ then corresponds to the **chronological order** induced by this Lorentzian metric:\n171: \n172: $$\n173: e_i \\prec e_j \\quad \\iff \\quad x_j \\in J^+(x_i)\n174: $$",
+      "metadata": {
+        "label": "rem-lorentzian-from-riemannian"
+      },
+      "section": "## 3. Proof that Fractal Set Satisfies Causal Set Axioms",
+      "raw_directive": "159: :::\n160: \n161: :::{prf:remark} Relation to Lorentzian Structure\n162: :label: rem-lorentzian-from-riemannian\n163: \n164: The emergent Riemannian metric $g(x)$ on $\\mathcal{X}$ can be promoted to a Lorentzian metric on spacetime $M = \\mathbb{R} \\times \\mathcal{X}$ by:\n165: \n166: $$\n167: ds^2 = -c^2 dt^2 + g_{ij}(x) dx^i dx^j\n168: $$\n169: \n170: The causal order $\\prec_{\\text{CST}}$ then corresponds to the **chronological order** induced by this Lorentzian metric:\n171: \n172: $$\n173: e_i \\prec e_j \\quad \\iff \\quad x_j \\in J^+(x_i)\n174: $$\n175: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-fractal-set-is-causal-set",
+      "title": "Fractal Set is a Valid Causal Set",
+      "start_line": 179,
+      "end_line": 183,
+      "header_lines": [
+        180
+      ],
+      "content_start": 182,
+      "content_end": 182,
+      "content": "182: :label: thm-fractal-set-is-causal-set",
+      "metadata": {
+        "label": "thm-fractal-set-is-causal-set"
+      },
+      "section": "## 3. Proof that Fractal Set Satisfies Causal Set Axioms",
+      "raw_directive": "179: ### 3.2. Verification of Causal Set Axioms\n180: \n181: :::{prf:theorem} Fractal Set is a Valid Causal Set\n182: :label: thm-fractal-set-is-causal-set\n183: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-45",
+      "title": null,
+      "start_line": 185,
+      "end_line": 256,
+      "header_lines": [],
+      "content_start": 186,
+      "content_end": 255,
+      "content": "186: \n187: :::{prf:proof}\n188: We verify each axiom:\n189: \n190: **Axiom CS1 (Irreflexivity): $e \\not\\prec e$ for all $e \\in E$**\n191: \n192: For any episode $e_i$ with time $t_i$:\n193: \n194: $$\n195: e_i \\prec_{\\text{CST}} e_i \\quad \\iff \\quad t_i < t_i \\text{ and } d_{\\mathcal{X}}(x_i, x_i) < c(t_i - t_i)\n196: $$\n197: \n198: $$\n199: \\iff \\quad t_i < t_i \\text{ and } 0 < 0\n200: $$\n201: \n202: Both conditions are false, so $e_i \\not\\prec_{\\text{CST}} e_i$. \u2713\n203: \n204: **Axiom CS2 (Transitivity): $e_1 \\prec e_2$ and $e_2 \\prec e_3$ implies $e_1 \\prec e_3$**\n205: \n206: Assume $e_1 \\prec_{\\text{CST}} e_2$ and $e_2 \\prec_{\\text{CST}} e_3$. Then:\n207: \n208: 1. $t_1 < t_2 < t_3$ (time ordering is transitive)\n209: 2. $d_{\\mathcal{X}}(x_1, x_2) < c(t_2 - t_1)$\n210: 3. $d_{\\mathcal{X}}(x_2, x_3) < c(t_3 - t_2)$\n211: \n212: By the **triangle inequality** for Riemannian distance:\n213: \n214: $$\n215: d_{\\mathcal{X}}(x_1, x_3) \\leq d_{\\mathcal{X}}(x_1, x_2) + d_{\\mathcal{X}}(x_2, x_3)\n216: $$\n217: \n218: $$\n219: < c(t_2 - t_1) + c(t_3 - t_2) = c(t_3 - t_1)\n220: $$\n221: \n222: Therefore $t_1 < t_3$ and $d_{\\mathcal{X}}(x_1, x_3) < c(t_3 - t_1)$, which means $e_1 \\prec_{\\text{CST}} e_3$. \u2713\n223: \n224: **Axiom CS3 (Local Finiteness): $|\\{e \\in E : e_1 \\prec e \\prec e_2\\}| < \\infty$**\n225: \n226: The set $I(e_1, e_2) := \\{e \\in E : e_1 \\prec e \\prec e_2\\}$ is the **causal interval** between $e_1$ and $e_2$.\n227: \n228: **Geometric characterization**: An episode $e$ is in $I(e_1, e_2)$ iff:\n229: \n230: $$\n231: t_1 < t < t_2 \\quad \\text{and} \\quad d_{\\mathcal{X}}(x_1, x) < c(t - t_1) \\quad \\text{and} \\quad d_{\\mathcal{X}}(x, x_2) < c(t_2 - t)\n232: $$\n233: \n234: This defines a **bounded region** $\\mathcal{D} \\subset \\mathbb{R} \\times \\mathcal{X}$ (a \"double cone\" in spacetime).\n235: \n236: **Expected number of episodes in $\\mathcal{D}$**:\n237: \n238: $$\n239: \\mathbb{E}[|I(e_1, e_2)|] = \\int_{\\mathcal{D}} \\rho_{\\text{episode}}(t, x) \\, dt \\, dx\n240: $$\n241: \n242: $$\n243: = \\int_{t_1}^{t_2} dt \\int_{\\mathcal{B}_t} \\rho_{\\text{spatial}}(x) \\sqrt{\\det g(x)} \\, dx\n244: $$\n245: \n246: where $\\mathcal{B}_t = \\{x : d_{\\mathcal{X}}(x_1, x) < c(t - t_1) \\text{ and } d_{\\mathcal{X}}(x, x_2) < c(t_2 - t)\\}$ is the spatial slice at time $t$.\n247: \n248: **Key observations**:\n249: 1. $\\mathcal{B}_t$ is a **compact subset** of $\\mathcal{X}$ (bounded by two balls)\n250: 2. $\\rho_{\\text{spatial}}(x) = (1/Z) \\sqrt{\\det g} e^{-U_{\\text{eff}}/T}$ is **integrable** over compact sets\n251: 3. The time integral is over a **finite interval** $[t_1, t_2]$\n252: \n253: Therefore $\\mathbb{E}[|I(e_1, e_2)|] < \\infty$, and for any finite realization, $|I(e_1, e_2)| < \\infty$ almost surely. \u2713\n254: \n255: **Conclusion**: All three axioms are satisfied, so $(E, \\prec_{\\text{CST}})$ is a causal set.",
+      "metadata": {},
+      "section": "## 3. Proof that Fractal Set Satisfies Causal Set Axioms",
+      "raw_directive": "185: :::\n186: \n187: :::{prf:proof}\n188: We verify each axiom:\n189: \n190: **Axiom CS1 (Irreflexivity): $e \\not\\prec e$ for all $e \\in E$**\n191: \n192: For any episode $e_i$ with time $t_i$:\n193: \n194: $$\n195: e_i \\prec_{\\text{CST}} e_i \\quad \\iff \\quad t_i < t_i \\text{ and } d_{\\mathcal{X}}(x_i, x_i) < c(t_i - t_i)\n196: $$\n197: \n198: $$\n199: \\iff \\quad t_i < t_i \\text{ and } 0 < 0\n200: $$\n201: \n202: Both conditions are false, so $e_i \\not\\prec_{\\text{CST}} e_i$. \u2713\n203: \n204: **Axiom CS2 (Transitivity): $e_1 \\prec e_2$ and $e_2 \\prec e_3$ implies $e_1 \\prec e_3$**\n205: \n206: Assume $e_1 \\prec_{\\text{CST}} e_2$ and $e_2 \\prec_{\\text{CST}} e_3$. Then:\n207: \n208: 1. $t_1 < t_2 < t_3$ (time ordering is transitive)\n209: 2. $d_{\\mathcal{X}}(x_1, x_2) < c(t_2 - t_1)$\n210: 3. $d_{\\mathcal{X}}(x_2, x_3) < c(t_3 - t_2)$\n211: \n212: By the **triangle inequality** for Riemannian distance:\n213: \n214: $$\n215: d_{\\mathcal{X}}(x_1, x_3) \\leq d_{\\mathcal{X}}(x_1, x_2) + d_{\\mathcal{X}}(x_2, x_3)\n216: $$\n217: \n218: $$\n219: < c(t_2 - t_1) + c(t_3 - t_2) = c(t_3 - t_1)\n220: $$\n221: \n222: Therefore $t_1 < t_3$ and $d_{\\mathcal{X}}(x_1, x_3) < c(t_3 - t_1)$, which means $e_1 \\prec_{\\text{CST}} e_3$. \u2713\n223: \n224: **Axiom CS3 (Local Finiteness): $|\\{e \\in E : e_1 \\prec e \\prec e_2\\}| < \\infty$**\n225: \n226: The set $I(e_1, e_2) := \\{e \\in E : e_1 \\prec e \\prec e_2\\}$ is the **causal interval** between $e_1$ and $e_2$.\n227: \n228: **Geometric characterization**: An episode $e$ is in $I(e_1, e_2)$ iff:\n229: \n230: $$\n231: t_1 < t < t_2 \\quad \\text{and} \\quad d_{\\mathcal{X}}(x_1, x) < c(t - t_1) \\quad \\text{and} \\quad d_{\\mathcal{X}}(x, x_2) < c(t_2 - t)\n232: $$\n233: \n234: This defines a **bounded region** $\\mathcal{D} \\subset \\mathbb{R} \\times \\mathcal{X}$ (a \"double cone\" in spacetime).\n235: \n236: **Expected number of episodes in $\\mathcal{D}$**:\n237: \n238: $$\n239: \\mathbb{E}[|I(e_1, e_2)|] = \\int_{\\mathcal{D}} \\rho_{\\text{episode}}(t, x) \\, dt \\, dx\n240: $$\n241: \n242: $$\n243: = \\int_{t_1}^{t_2} dt \\int_{\\mathcal{B}_t} \\rho_{\\text{spatial}}(x) \\sqrt{\\det g(x)} \\, dx\n244: $$\n245: \n246: where $\\mathcal{B}_t = \\{x : d_{\\mathcal{X}}(x_1, x) < c(t - t_1) \\text{ and } d_{\\mathcal{X}}(x, x_2) < c(t_2 - t)\\}$ is the spatial slice at time $t$.\n247: \n248: **Key observations**:\n249: 1. $\\mathcal{B}_t$ is a **compact subset** of $\\mathcal{X}$ (bounded by two balls)\n250: 2. $\\rho_{\\text{spatial}}(x) = (1/Z) \\sqrt{\\det g} e^{-U_{\\text{eff}}/T}$ is **integrable** over compact sets\n251: 3. The time integral is over a **finite interval** $[t_1, t_2]$\n252: \n253: Therefore $\\mathbb{E}[|I(e_1, e_2)|] < \\infty$, and for any finite realization, $|I(e_1, e_2)| < \\infty$ almost surely. \u2713\n254: \n255: **Conclusion**: All three axioms are satisfied, so $(E, \\prec_{\\text{CST}})$ is a causal set.\n256: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

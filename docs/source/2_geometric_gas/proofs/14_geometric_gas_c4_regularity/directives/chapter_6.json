@@ -1,0 +1,47 @@
+{
+  "chapter_index": 6,
+  "section_id": "## 6. Fourth Derivative Chain Rule for Regularized Standard Deviation",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "lemma",
+      "label": "lem-reg-fourth-chain",
+      "title": "Chain Rule for $\\sigma'_{\\text{reg}}$",
+      "start_line": 687,
+      "end_line": 715,
+      "header_lines": [
+        688
+      ],
+      "content_start": 690,
+      "content_end": 714,
+      "content": "690: :label: lem-reg-fourth-chain\n691: \n692: For $h(x) = \\sigma'_{\\text{reg}}(V(x))$ where $V(x) = \\sigma^2_\\rho[f_k, d, x]$, the fourth derivative is:\n693: \n694: $$\n695: \\begin{align}\n696: \\nabla^4 h = \\,&(\\sigma'_{\\text{reg}})^{(4)}(V) \\cdot (\\nabla V)^{\\otimes 4} + 6 (\\sigma'_{\\text{reg}})^{(3)}(V) \\cdot (\\nabla V)^{\\otimes 2} \\otimes \\nabla^2 V \\\\\n697: &+ 3 (\\sigma'_{\\text{reg}})^{(2)}(V) \\cdot (\\nabla^2 V)^{\\otimes 2} + 4 (\\sigma'_{\\text{reg}})^{(2)}(V) \\cdot \\nabla V \\otimes \\nabla^3 V \\\\\n698: &+ (\\sigma'_{\\text{reg}})^{(1)}(V) \\cdot \\nabla^4 V\n699: \\end{align}\n700: \n701: $$\n702: \n703: **Norm bound:**\n704: \n705: $$\n706: \\|\\nabla^4 h\\| \\le \\frac{15}{16\\sigma'^7_{\\min}} \\|\\nabla V\\|^4 + \\frac{6 \\cdot 3}{8\\sigma'^5_{\\min}} \\|\\nabla V\\|^2 \\|\\nabla^2 V\\| + \\frac{3}{4\\sigma'^3_{\\min}} \\|\\nabla^2 V\\|^2 + \\frac{4}{4\\sigma'^3_{\\min}} \\|\\nabla V\\| \\|\\nabla^3 V\\| + \\frac{1}{2\\sigma'_{\\min}} \\|\\nabla^4 V\\|\n707: \n708: $$\n709: \n710: Simplifying:\n711: \n712: $$\n713: \\|\\nabla^4 h\\| \\le \\frac{15}{16\\sigma'^7_{\\min}} \\|\\nabla V\\|^4 + \\frac{9}{4\\sigma'^5_{\\min}} \\|\\nabla V\\|^2 \\|\\nabla^2 V\\| + \\frac{3}{4\\sigma'^3_{\\min}} \\|\\nabla^2 V\\|^2 + \\frac{1}{\\sigma'^3_{\\min}} \\|\\nabla V\\| \\|\\nabla^3 V\\| + \\frac{1}{2\\sigma'_{\\min}} \\|\\nabla^4 V\\|\n714: ",
+      "metadata": {
+        "label": "lem-reg-fourth-chain"
+      },
+      "section": "## 6. Fourth Derivative Chain Rule for Regularized Standard Deviation",
+      "raw_directive": "687: ## 6. Fourth Derivative Chain Rule for Regularized Standard Deviation\n688: \n689: :::{prf:lemma} Chain Rule for $\\sigma'_{\\text{reg}}$\n690: :label: lem-reg-fourth-chain\n691: \n692: For $h(x) = \\sigma'_{\\text{reg}}(V(x))$ where $V(x) = \\sigma^2_\\rho[f_k, d, x]$, the fourth derivative is:\n693: \n694: $$\n695: \\begin{align}\n696: \\nabla^4 h = \\,&(\\sigma'_{\\text{reg}})^{(4)}(V) \\cdot (\\nabla V)^{\\otimes 4} + 6 (\\sigma'_{\\text{reg}})^{(3)}(V) \\cdot (\\nabla V)^{\\otimes 2} \\otimes \\nabla^2 V \\\\\n697: &+ 3 (\\sigma'_{\\text{reg}})^{(2)}(V) \\cdot (\\nabla^2 V)^{\\otimes 2} + 4 (\\sigma'_{\\text{reg}})^{(2)}(V) \\cdot \\nabla V \\otimes \\nabla^3 V \\\\\n698: &+ (\\sigma'_{\\text{reg}})^{(1)}(V) \\cdot \\nabla^4 V\n699: \\end{align}\n700: \n701: $$\n702: \n703: **Norm bound:**\n704: \n705: $$\n706: \\|\\nabla^4 h\\| \\le \\frac{15}{16\\sigma'^7_{\\min}} \\|\\nabla V\\|^4 + \\frac{6 \\cdot 3}{8\\sigma'^5_{\\min}} \\|\\nabla V\\|^2 \\|\\nabla^2 V\\| + \\frac{3}{4\\sigma'^3_{\\min}} \\|\\nabla^2 V\\|^2 + \\frac{4}{4\\sigma'^3_{\\min}} \\|\\nabla V\\| \\|\\nabla^3 V\\| + \\frac{1}{2\\sigma'_{\\min}} \\|\\nabla^4 V\\|\n707: \n708: $$\n709: \n710: Simplifying:\n711: \n712: $$\n713: \\|\\nabla^4 h\\| \\le \\frac{15}{16\\sigma'^7_{\\min}} \\|\\nabla V\\|^4 + \\frac{9}{4\\sigma'^5_{\\min}} \\|\\nabla V\\|^2 \\|\\nabla^2 V\\| + \\frac{3}{4\\sigma'^3_{\\min}} \\|\\nabla^2 V\\|^2 + \\frac{1}{\\sigma'^3_{\\min}} \\|\\nabla V\\| \\|\\nabla^3 V\\| + \\frac{1}{2\\sigma'_{\\min}} \\|\\nabla^4 V\\|\n714: \n715: $$"
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-lem-reg-fourth-chain",
+      "title": null,
+      "start_line": 717,
+      "end_line": 729,
+      "header_lines": [
+        718
+      ],
+      "content_start": 720,
+      "content_end": 728,
+      "content": "720: :label: proof-lem-reg-fourth-chain\n721: \n722: Apply the Fa\u00e0 di Bruno formula (Section 2.2) to the composition $h = \\sigma'_{\\text{reg}} \\circ V$ with:\n723: \n724: - $g = \\sigma'_{\\text{reg}}$, $f = V$\n725: - $|g^{(1)}| \\le L_{\\sigma'_{\\text{reg}}} = 1/(2\\sigma'_{\\min})$\n726: - $|g^{(2)}| \\le L_{\\sigma''_{\\text{reg}}} = 1/(4\\sigma'^3_{\\min})$\n727: - $|g^{(3)}| \\le L_{\\sigma'''_{\\text{reg}}} = 3/(8\\sigma'^5_{\\min})$\n728: - $|g^{(4)}| \\le L_{(\\sigma'_{\\text{reg}})^{(4)}} = 15/(16\\sigma'^7_{\\min})$",
+      "metadata": {
+        "label": "proof-lem-reg-fourth-chain"
+      },
+      "section": "## 6. Fourth Derivative Chain Rule for Regularized Standard Deviation",
+      "raw_directive": "717: :::\n718: \n719: :::{prf:proof}\n720: :label: proof-lem-reg-fourth-chain\n721: \n722: Apply the Fa\u00e0 di Bruno formula (Section 2.2) to the composition $h = \\sigma'_{\\text{reg}} \\circ V$ with:\n723: \n724: - $g = \\sigma'_{\\text{reg}}$, $f = V$\n725: - $|g^{(1)}| \\le L_{\\sigma'_{\\text{reg}}} = 1/(2\\sigma'_{\\min})$\n726: - $|g^{(2)}| \\le L_{\\sigma''_{\\text{reg}}} = 1/(4\\sigma'^3_{\\min})$\n727: - $|g^{(3)}| \\le L_{\\sigma'''_{\\text{reg}}} = 3/(8\\sigma'^5_{\\min})$\n728: - $|g^{(4)}| \\le L_{(\\sigma'_{\\text{reg}})^{(4)}} = 15/(16\\sigma'^7_{\\min})$\n729: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

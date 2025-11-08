@@ -1,0 +1,29 @@
+{
+  "chapter_index": 4,
+  "section_id": "## IV. Alternative Approach: Perturbative Verification",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-kms-second-order",
+      "title": "KMS Condition to Second Order (ATTEMPTED)",
+      "start_line": 343,
+      "end_line": 401,
+      "header_lines": [
+        344
+      ],
+      "content_start": 346,
+      "content_end": 400,
+      "content": "346: :label: thm-kms-second-order\n347: \n348: **Goal**: Verify KMS condition perturbatively:\n349: \n350: $$\n351: \\langle O_1(x) e^{is\\mathcal{H}_{\\text{jump}}} O_2(y) \\rangle_{\\text{QSD}} = \\langle O_2(y) e^{i(s-1)\\mathcal{H}_{\\text{jump}}} O_1(x) \\rangle_{\\text{QSD}}\n352: $$\n353: \n354: to second order in $s$.\n355: \n356: **Step 1**: Expand modular flow\n357: \n358: $$\n359: e^{is\\mathcal{H}_{\\text{jump}}} \\approx 1 + is\\mathcal{H}_{\\text{jump}} - \\frac{s^2}{2}\\mathcal{H}_{\\text{jump}}^2 + O(s^3)\n360: $$\n361: \n362: **Step 2**: Correlation function to second order\n363: \n364: $$\n365: C(s) = \\langle O_1(x) e^{is\\mathcal{H}_{\\text{jump}}} O_2(y) \\rangle = \\langle O_1 O_2 \\rangle + is\\langle O_1 \\mathcal{H}_{\\text{jump}} O_2 \\rangle - \\frac{s^2}{2}\\langle O_1 \\mathcal{H}_{\\text{jump}}^2 O_2 \\rangle\n366: $$\n367: \n368: **Step 3**: KMS relation\n369: \n370: For KMS to hold:\n371: \n372: $$\n373: C(is) = C(i(s-1))\n374: $$\n375: \n376: This requires:\n377: \n378: $$\n379: \\langle O_1 O_2 \\rangle - s\\langle O_1 \\mathcal{H}_{\\text{jump}} O_2 \\rangle + \\frac{s^2}{2}\\langle O_1 \\mathcal{H}_{\\text{jump}}^2 O_2 \\rangle = \\langle O_1 O_2 \\rangle - (s-1)\\langle O_2 \\mathcal{H}_{\\text{jump}} O_1 \\rangle + \\frac{(s-1)^2}{2}\\langle O_2 \\mathcal{H}_{\\text{jump}}^2 O_1 \\rangle\n380: $$\n381: \n382: **Simplification**: To first order in $s$:\n383: \n384: $$\n385: \\langle O_1 \\mathcal{H}_{\\text{jump}} O_2 \\rangle = \\langle O_2 \\mathcal{H}_{\\text{jump}} O_1 \\rangle - \\langle O_2 O_1 \\rangle\n386: $$\n387: \n388: **Issue**: Need to compute these expectation values explicitly for specific observables $O_1, O_2$.\n389: \n390: **Choice of observables**: For walker density operators:\n391: \n392: $$\n393: O_1(x) = \\hat{\\phi}^\\dagger(x, v) \\hat{\\phi}(x, v), \\quad O_2(y) = \\hat{\\phi}^\\dagger(y, v') \\hat{\\phi}(y, v')\n394: $$\n395: \n396: **\u26a0\ufe0f CALCULATION INCOMPLETE**: Computing $\\langle O_1 \\mathcal{H}_{\\text{jump}} O_2 \\rangle$ requires:\n397: \n398: 1. Expressing $\\mathcal{H}_{\\text{jump}}$ in terms of $\\hat{\\phi}, \\hat{\\phi}^\\dagger$\n399: 2. Using Wick's theorem for QSD Gaussian state\n400: 3. Evaluating nested commutators",
+      "metadata": {
+        "label": "thm-kms-second-order"
+      },
+      "section": "## IV. Alternative Approach: Perturbative Verification",
+      "raw_directive": "343: ### IV.1. Second-Order Expansion\n344: \n345: :::{prf:theorem} KMS Condition to Second Order (ATTEMPTED)\n346: :label: thm-kms-second-order\n347: \n348: **Goal**: Verify KMS condition perturbatively:\n349: \n350: $$\n351: \\langle O_1(x) e^{is\\mathcal{H}_{\\text{jump}}} O_2(y) \\rangle_{\\text{QSD}} = \\langle O_2(y) e^{i(s-1)\\mathcal{H}_{\\text{jump}}} O_1(x) \\rangle_{\\text{QSD}}\n352: $$\n353: \n354: to second order in $s$.\n355: \n356: **Step 1**: Expand modular flow\n357: \n358: $$\n359: e^{is\\mathcal{H}_{\\text{jump}}} \\approx 1 + is\\mathcal{H}_{\\text{jump}} - \\frac{s^2}{2}\\mathcal{H}_{\\text{jump}}^2 + O(s^3)\n360: $$\n361: \n362: **Step 2**: Correlation function to second order\n363: \n364: $$\n365: C(s) = \\langle O_1(x) e^{is\\mathcal{H}_{\\text{jump}}} O_2(y) \\rangle = \\langle O_1 O_2 \\rangle + is\\langle O_1 \\mathcal{H}_{\\text{jump}} O_2 \\rangle - \\frac{s^2}{2}\\langle O_1 \\mathcal{H}_{\\text{jump}}^2 O_2 \\rangle\n366: $$\n367: \n368: **Step 3**: KMS relation\n369: \n370: For KMS to hold:\n371: \n372: $$\n373: C(is) = C(i(s-1))\n374: $$\n375: \n376: This requires:\n377: \n378: $$\n379: \\langle O_1 O_2 \\rangle - s\\langle O_1 \\mathcal{H}_{\\text{jump}} O_2 \\rangle + \\frac{s^2}{2}\\langle O_1 \\mathcal{H}_{\\text{jump}}^2 O_2 \\rangle = \\langle O_1 O_2 \\rangle - (s-1)\\langle O_2 \\mathcal{H}_{\\text{jump}} O_1 \\rangle + \\frac{(s-1)^2}{2}\\langle O_2 \\mathcal{H}_{\\text{jump}}^2 O_1 \\rangle\n380: $$\n381: \n382: **Simplification**: To first order in $s$:\n383: \n384: $$\n385: \\langle O_1 \\mathcal{H}_{\\text{jump}} O_2 \\rangle = \\langle O_2 \\mathcal{H}_{\\text{jump}} O_1 \\rangle - \\langle O_2 O_1 \\rangle\n386: $$\n387: \n388: **Issue**: Need to compute these expectation values explicitly for specific observables $O_1, O_2$.\n389: \n390: **Choice of observables**: For walker density operators:\n391: \n392: $$\n393: O_1(x) = \\hat{\\phi}^\\dagger(x, v) \\hat{\\phi}(x, v), \\quad O_2(y) = \\hat{\\phi}^\\dagger(y, v') \\hat{\\phi}(y, v')\n394: $$\n395: \n396: **\u26a0\ufe0f CALCULATION INCOMPLETE**: Computing $\\langle O_1 \\mathcal{H}_{\\text{jump}} O_2 \\rangle$ requires:\n397: \n398: 1. Expressing $\\mathcal{H}_{\\text{jump}}$ in terms of $\\hat{\\phi}, \\hat{\\phi}^\\dagger$\n399: 2. Using Wick's theorem for QSD Gaussian state\n400: 3. Evaluating nested commutators\n401: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

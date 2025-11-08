@@ -1,0 +1,47 @@
+{
+  "chapter_index": 4,
+  "section_id": "## 4. Parallel Transport and Holonomy Computation",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-parallel-transport-fractal",
+      "title": "Parallel Transport on Fractal Set",
+      "start_line": 752,
+      "end_line": 771,
+      "header_lines": [
+        753
+      ],
+      "content_start": 755,
+      "content_end": 770,
+      "content": "755: :label: def-parallel-transport-fractal\n756: \n757: For gauge field $U_e \\in SU(N_c)$ on each edge $e$:\n758: \n759: **CST edge** $e_p \\to e_c$ (parent \u2192 child):\n760: - Forward: $U(e_p, e_c)$\n761: - Backward: $U(e_c, e_p) = U(e_p, e_c)^\\dagger$\n762: \n763: **IG edge** $e_i \\sim e_j$ (undirected):\n764: - Either direction: $U(e_i, e_j)$ or $U(e_j, e_i) = U(e_i, e_j)^\\dagger$\n765: \n766: **Path-ordered product** along path $P = \\{e_0 \\to e_1 \\to \\cdots \\to e_n\\}$:\n767: \n768: $$\n769: U(P) = U(e_{n-1}, e_n) \\times U(e_{n-2}, e_{n-1}) \\times \\cdots \\times U(e_0, e_1)\n770: $$",
+      "metadata": {
+        "label": "def-parallel-transport-fractal"
+      },
+      "section": "## 4. Parallel Transport and Holonomy Computation",
+      "raw_directive": "752: ### 4.1. Path Tracing on CST+IG\n753: \n754: :::{prf:definition} Parallel Transport on Fractal Set\n755: :label: def-parallel-transport-fractal\n756: \n757: For gauge field $U_e \\in SU(N_c)$ on each edge $e$:\n758: \n759: **CST edge** $e_p \\to e_c$ (parent \u2192 child):\n760: - Forward: $U(e_p, e_c)$\n761: - Backward: $U(e_c, e_p) = U(e_p, e_c)^\\dagger$\n762: \n763: **IG edge** $e_i \\sim e_j$ (undirected):\n764: - Either direction: $U(e_i, e_j)$ or $U(e_j, e_i) = U(e_i, e_j)^\\dagger$\n765: \n766: **Path-ordered product** along path $P = \\{e_0 \\to e_1 \\to \\cdots \\to e_n\\}$:\n767: \n768: $$\n769: U(P) = U(e_{n-1}, e_n) \\times U(e_{n-2}, e_{n-1}) \\times \\cdots \\times U(e_0, e_1)\n770: $$\n771: "
+    },
+    {
+      "directive_type": "algorithm",
+      "label": "alg-wilson-loop",
+      "title": "Wilson Loop from IG Edge",
+      "start_line": 829,
+      "end_line": 872,
+      "header_lines": [
+        830
+      ],
+      "content_start": 832,
+      "content_end": 871,
+      "content": "832: :label: alg-wilson-loop\n833: \n834: **Input:**\n835: - IG edge $e = (e_i \\sim e_j)$\n836: - Fundamental cycle $C(e)$ (from Algorithm {prf:ref}`alg-fundamental-cycle`)\n837: - Gauge links $\\{U_{ab}\\}$ on all CST and IG edges\n838: \n839: **Output:** Wilson loop observable $W_e = \\text{Tr}(U_C) \\in \\mathbb{R}$\n840: \n841: **Procedure:**\n842: \n843: 1. **Split cycle into segments:**\n844:    - IG segment: $e_i \\to e_j$ (via IG edge)\n845:    - CST segment: $e_j \\to e_i$ (via CST path)\n846: \n847: 2. **Compute IG transport:**\n848: \n849: $$\n850: U_{\\text{IG}} = U(e_i, e_j)\n851: $$\n852: \n853: 3. **Compute CST transport:**\n854: \n855: $$\n856: U_{\\text{CST}} = U(P_{\\text{CST}}(e_j, e_i))\n857: $$\n858: \n859:    Using path-ordered product from \u00a7 4.1\n860: \n861: 4. **Multiply to close loop:**\n862: \n863: $$\n864: U_C = U_{\\text{IG}} \\times U_{\\text{CST}}\n865: $$\n866: \n867: 5. **Take trace (gauge-invariant observable):**\n868: \n869: $$\n870: W_e = \\text{Re}\\left[\\frac{1}{N_c} \\text{Tr}(U_C)\\right]\n871: $$",
+      "metadata": {
+        "label": "alg-wilson-loop"
+      },
+      "section": "## 4. Parallel Transport and Holonomy Computation",
+      "raw_directive": "829: ### 4.2. Wilson Loop Evaluation\n830: \n831: :::{prf:algorithm} Wilson Loop from IG Edge\n832: :label: alg-wilson-loop\n833: \n834: **Input:**\n835: - IG edge $e = (e_i \\sim e_j)$\n836: - Fundamental cycle $C(e)$ (from Algorithm {prf:ref}`alg-fundamental-cycle`)\n837: - Gauge links $\\{U_{ab}\\}$ on all CST and IG edges\n838: \n839: **Output:** Wilson loop observable $W_e = \\text{Tr}(U_C) \\in \\mathbb{R}$\n840: \n841: **Procedure:**\n842: \n843: 1. **Split cycle into segments:**\n844:    - IG segment: $e_i \\to e_j$ (via IG edge)\n845:    - CST segment: $e_j \\to e_i$ (via CST path)\n846: \n847: 2. **Compute IG transport:**\n848: \n849: $$\n850: U_{\\text{IG}} = U(e_i, e_j)\n851: $$\n852: \n853: 3. **Compute CST transport:**\n854: \n855: $$\n856: U_{\\text{CST}} = U(P_{\\text{CST}}(e_j, e_i))\n857: $$\n858: \n859:    Using path-ordered product from \u00a7 4.1\n860: \n861: 4. **Multiply to close loop:**\n862: \n863: $$\n864: U_C = U_{\\text{IG}} \\times U_{\\text{CST}}\n865: $$\n866: \n867: 5. **Take trace (gauge-invariant observable):**\n868: \n869: $$\n870: W_e = \\text{Re}\\left[\\frac{1}{N_c} \\text{Tr}(U_C)\\right]\n871: $$\n872: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

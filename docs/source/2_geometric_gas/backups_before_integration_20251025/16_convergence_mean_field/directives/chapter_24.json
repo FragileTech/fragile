@@ -1,0 +1,29 @@
+{
+  "chapter_index": 24,
+  "section_id": "## 4. Main Theorem (Corrected)",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-corrected-kl-convergence",
+      "title": "KL-Convergence for Mean-Field Euclidean Gas (CORRECTED)",
+      "start_line": 3082,
+      "end_line": 3100,
+      "header_lines": [
+        3083
+      ],
+      "content_start": 3085,
+      "content_end": 3099,
+      "content": "3085: :label: thm-corrected-kl-convergence\n3086: \n3087: If the kinetic dominance condition holds:\n3088: \n3089: $$\n3090: \\sigma^2 \\gamma \\kappa_{\\text{conf}} > C_0 \\max\\left(\\frac{\\lambda}{M_\\infty}, \\bar{\\kappa}\\right)\n3091: $$\n3092: \n3093: then the mean-field Euclidean Gas converges exponentially to its QSD:\n3094: \n3095: $$\n3096: D_{\\text{KL}}(\\rho_t \\| \\rho_\\infty) \\le e^{-\\alpha_{\\text{net}} t} D_{\\text{KL}}(\\rho_0 \\| \\rho_\\infty) + \\frac{B_{\\text{jump}}}{\\alpha_{\\text{net}}} (1 - e^{-\\alpha_{\\text{net}} t})\n3097: $$\n3098: \n3099: where $\\alpha_{\\text{net}} = \\alpha_{\\text{kin}} - A_{\\text{jump}} > 0$.",
+      "metadata": {
+        "label": "thm-corrected-kl-convergence"
+      },
+      "section": "## 4. Main Theorem (Corrected)",
+      "raw_directive": "3082: ## 4. Main Theorem (Corrected)\n3083: \n3084: :::{prf:theorem} KL-Convergence for Mean-Field Euclidean Gas (CORRECTED)\n3085: :label: thm-corrected-kl-convergence\n3086: \n3087: If the kinetic dominance condition holds:\n3088: \n3089: $$\n3090: \\sigma^2 \\gamma \\kappa_{\\text{conf}} > C_0 \\max\\left(\\frac{\\lambda}{M_\\infty}, \\bar{\\kappa}\\right)\n3091: $$\n3092: \n3093: then the mean-field Euclidean Gas converges exponentially to its QSD:\n3094: \n3095: $$\n3096: D_{\\text{KL}}(\\rho_t \\| \\rho_\\infty) \\le e^{-\\alpha_{\\text{net}} t} D_{\\text{KL}}(\\rho_0 \\| \\rho_\\infty) + \\frac{B_{\\text{jump}}}{\\alpha_{\\text{net}}} (1 - e^{-\\alpha_{\\text{net}} t})\n3097: $$\n3098: \n3099: where $\\alpha_{\\text{net}} = \\alpha_{\\text{kin}} - A_{\\text{jump}} > 0$.\n3100: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

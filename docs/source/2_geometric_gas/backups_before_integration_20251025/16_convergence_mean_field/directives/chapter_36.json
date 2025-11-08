@@ -1,0 +1,29 @@
+{
+  "chapter_index": 36,
+  "section_id": "## 10. Conclusion",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-main-explicit-rate",
+      "title": "Main Result: Explicit Convergence Rate",
+      "start_line": 4148,
+      "end_line": 4164,
+      "header_lines": [
+        4149
+      ],
+      "content_start": 4151,
+      "content_end": 4163,
+      "content": "4151: :label: thm-main-explicit-rate\n4152: \n4153: Under the assumptions of Stage 0.5 (QSD regularity R1-R6) and the parameter condition:\n4154: \n4155: $$\n4156: \\sigma^2 > \\sigma_{\\text{crit}}^2 := \\frac{2\\lambda_{\\text{LSI}} C_{\\text{Fisher}}^{\\text{coup}} + C_{\\text{KL}}^{\\text{coup}} + A_{\\text{jump}}}{\\lambda_{\\text{LSI}}}\n4157: $$\n4158: \n4159: the mean-field Euclidean Gas converges exponentially to the QSD with rate:\n4160: \n4161: $$\n4162: \\boxed{\\alpha_{\\text{net}} = \\frac{1}{2}\\left(\\lambda_{\\text{LSI}} \\sigma^2 - 2\\lambda_{\\text{LSI}} C_{\\text{Fisher}}^{\\text{coup}} - C_{\\text{KL}}^{\\text{coup}} - A_{\\text{jump}}\\right)}\n4163: $$",
+      "metadata": {
+        "label": "thm-main-explicit-rate"
+      },
+      "section": "## 10. Conclusion",
+      "raw_directive": "4148: ## 10. Conclusion\n4149: \n4150: :::{prf:theorem} Main Result: Explicit Convergence Rate\n4151: :label: thm-main-explicit-rate\n4152: \n4153: Under the assumptions of Stage 0.5 (QSD regularity R1-R6) and the parameter condition:\n4154: \n4155: $$\n4156: \\sigma^2 > \\sigma_{\\text{crit}}^2 := \\frac{2\\lambda_{\\text{LSI}} C_{\\text{Fisher}}^{\\text{coup}} + C_{\\text{KL}}^{\\text{coup}} + A_{\\text{jump}}}{\\lambda_{\\text{LSI}}}\n4157: $$\n4158: \n4159: the mean-field Euclidean Gas converges exponentially to the QSD with rate:\n4160: \n4161: $$\n4162: \\boxed{\\alpha_{\\text{net}} = \\frac{1}{2}\\left(\\lambda_{\\text{LSI}} \\sigma^2 - 2\\lambda_{\\text{LSI}} C_{\\text{Fisher}}^{\\text{coup}} - C_{\\text{KL}}^{\\text{coup}} - A_{\\text{jump}}\\right)}\n4163: $$\n4164: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

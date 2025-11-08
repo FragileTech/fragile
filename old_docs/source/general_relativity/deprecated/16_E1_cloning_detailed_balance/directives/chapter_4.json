@@ -1,0 +1,29 @@
+{
+  "chapter_index": 4,
+  "section_id": "## 4. Resolution: Global Detailed Balance",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-global-detailed-balance-cloning",
+      "title": "Global Detailed Balance for Cloning",
+      "start_line": 186,
+      "end_line": 225,
+      "header_lines": [
+        187
+      ],
+      "content_start": 189,
+      "content_end": 224,
+      "content": "189: :label: thm-global-detailed-balance-cloning\n190: \n191: At the QSD, the total birth rate equals the total death rate:\n192: \n193: $$\n194: \\int R_{\\text{birth}}(x) dx = \\int R_{\\text{death}}(x) dx\n195: $$\n196: \n197: This is automatically satisfied because:\n198: \n199: $$\n200: \\int \\frac{e^{\\alpha \\Psi(x)}}{\\mathcal{Z}} \\rho(x) dx = \\int \\frac{e^{-\\alpha \\Psi(x)}}{\\mathcal{Z}} \\rho(x) dx\n201: $$\n202: \n203: if $\\rho(x)$ is the stationary distribution for the **full dynamics** (Langevin + cloning).\n204: \n205: **Proof**:\n206: \n207: The QSD satisfies $\\mathcal{L}^* \\mu_{\\text{QSD}} = 0$. Integrating over all phase space:\n208: \n209: $$\n210: \\int (\\mathcal{L}_{\\text{Langevin}}^* + \\mathcal{L}_{\\text{clone}}^*) \\mu \\, dx dv = 0\n211: $$\n212: \n213: For the cloning part:\n214: \n215: $$\n216: \\int \\mathcal{L}_{\\text{clone}}^* \\mu \\, dx dv = \\int \\left[\\int K(x, v | x', v') \\mu(x', v') dx' dv'\\right] dx dv - \\int \\lambda(x, v) \\mu(x, v) dx dv\n217: $$\n218: \n219: The first integral (total birth) equals the second (total death) by conservation of probability:\n220: \n221: $$\n222: \\boxed{\\text{Total Birth Rate} = \\text{Total Death Rate}}\n223: $$\n224: ",
+      "metadata": {
+        "label": "thm-global-detailed-balance-cloning"
+      },
+      "section": "## 4. Resolution: Global Detailed Balance",
+      "raw_directive": "186: The issue is that we considered **local** detailed balance at each point $x$. The correct condition is **global** detailed balance over the entire swarm.\n187: \n188: :::{prf:theorem} Global Detailed Balance for Cloning\n189: :label: thm-global-detailed-balance-cloning\n190: \n191: At the QSD, the total birth rate equals the total death rate:\n192: \n193: $$\n194: \\int R_{\\text{birth}}(x) dx = \\int R_{\\text{death}}(x) dx\n195: $$\n196: \n197: This is automatically satisfied because:\n198: \n199: $$\n200: \\int \\frac{e^{\\alpha \\Psi(x)}}{\\mathcal{Z}} \\rho(x) dx = \\int \\frac{e^{-\\alpha \\Psi(x)}}{\\mathcal{Z}} \\rho(x) dx\n201: $$\n202: \n203: if $\\rho(x)$ is the stationary distribution for the **full dynamics** (Langevin + cloning).\n204: \n205: **Proof**:\n206: \n207: The QSD satisfies $\\mathcal{L}^* \\mu_{\\text{QSD}} = 0$. Integrating over all phase space:\n208: \n209: $$\n210: \\int (\\mathcal{L}_{\\text{Langevin}}^* + \\mathcal{L}_{\\text{clone}}^*) \\mu \\, dx dv = 0\n211: $$\n212: \n213: For the cloning part:\n214: \n215: $$\n216: \\int \\mathcal{L}_{\\text{clone}}^* \\mu \\, dx dv = \\int \\left[\\int K(x, v | x', v') \\mu(x', v') dx' dv'\\right] dx dv - \\int \\lambda(x, v) \\mu(x, v) dx dv\n217: $$\n218: \n219: The first integral (total birth) equals the second (total death) by conservation of probability:\n220: \n221: $$\n222: \\boxed{\\text{Total Birth Rate} = \\text{Total Death Rate}}\n223: $$\n224: \n225: \u220e"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

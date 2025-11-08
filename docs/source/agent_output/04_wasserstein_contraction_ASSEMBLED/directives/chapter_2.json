@@ -1,0 +1,83 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 1. Synchronous Coupling Construction",
+  "directive_count": 4,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-synchronous-cloning-coupling",
+      "title": "Synchronous Cloning Coupling for Two Swarms",
+      "start_line": 346,
+      "end_line": 399,
+      "header_lines": [
+        347
+      ],
+      "content_start": 349,
+      "content_end": 398,
+      "content": "349: :label: def-synchronous-cloning-coupling\n350: \n351: For two swarms $(S_1, S_2) \\in \\Sigma_N \\times \\Sigma_N$, the **synchronous cloning coupling** evolves them to $(S_1', S_2')$ using shared randomness:\n352: \n353: **Step 1: Sample Matching**\n354: \n355: Sample a single perfect matching $M$ from the Gibbs distribution based on swarm $S_1$'s algorithmic geometry:\n356: \n357: $$\n358: P(M \\mid S_1) = \\frac{W(M)}{Z}, \\quad W(M) = \\prod_{(i,j) \\in M} \\exp\\left(-\\frac{d_{\\text{alg}}(i,j)^2}{2\\varepsilon_d^2}\\right)\n359: $$\n360: \n361: where:\n362: - $d_{\\text{alg}}(i,j)$ is the algorithmic distance from Definition 2.3.1 in [01_fragile_gas_framework.md](01_fragile_gas_framework.md)\n363: - $Z = \\sum_{M' \\in \\mathcal{M}_N} W(M')$ is the partition function\n364: - $\\mathcal{M}_N$ is the set of all perfect matchings on $N$ walkers\n365: \n366: The matching defines a permutation $\\pi: \\{1,\\ldots,N\\} \\to \\{1,\\ldots,N\\}$ where walker $i$ pairs with companion $\\pi(i)$.\n367: \n368: **Step 2: Apply Same Permutation**\n369: \n370: Use the **same permutation** $\\pi$ for both swarms:\n371: - In $S_1$: walker $i$ compares fitness with companion $\\pi(i)$\n372: - In $S_2$: walker $i$ compares fitness with companion $\\pi(i)$\n373: \n374: **Step 3: Shared Cloning Thresholds**\n375: \n376: For each walker index $i \\in \\{1,\\ldots,N\\}$, sample a **shared random threshold**:\n377: \n378: $$\n379: T_i \\sim \\text{Uniform}(0, p_{\\max})\n380: $$\n381: \n382: Walker $i$ in swarm $k$ clones if $T_i < p_{k,i}$ where $p_{k,i}$ is the cloning probability in swarm $k$ (determined by fitness comparison with companion $\\pi(i)$).\n383: \n384: **Step 4: Shared Jitter**\n385: \n386: If walker $i$ clones in either swarm (or both), sample a **shared Gaussian jitter**:\n387: \n388: $$\n389: \\zeta_i \\sim \\mathcal{N}(0, \\delta^2 I_d)\n390: $$\n391: \n392: The post-cloning position is:\n393: \n394: $$\n395: x'_{k,i} = \\begin{cases}\n396: x_{k,\\pi(i)} + \\zeta_i & \\text{if } T_i < p_{k,i} \\text{ (clone)} \\\\\n397: x_{k,i} & \\text{if } T_i \\geq p_{k,i} \\text{ (persist)}\n398: \\end{cases}",
+      "metadata": {
+        "label": "def-synchronous-cloning-coupling"
+      },
+      "section": "## 1. Synchronous Coupling Construction",
+      "raw_directive": "346: ### 1.2. The Coupling Definition\n347: \n348: :::{prf:definition} Synchronous Cloning Coupling for Two Swarms\n349: :label: def-synchronous-cloning-coupling\n350: \n351: For two swarms $(S_1, S_2) \\in \\Sigma_N \\times \\Sigma_N$, the **synchronous cloning coupling** evolves them to $(S_1', S_2')$ using shared randomness:\n352: \n353: **Step 1: Sample Matching**\n354: \n355: Sample a single perfect matching $M$ from the Gibbs distribution based on swarm $S_1$'s algorithmic geometry:\n356: \n357: $$\n358: P(M \\mid S_1) = \\frac{W(M)}{Z}, \\quad W(M) = \\prod_{(i,j) \\in M} \\exp\\left(-\\frac{d_{\\text{alg}}(i,j)^2}{2\\varepsilon_d^2}\\right)\n359: $$\n360: \n361: where:\n362: - $d_{\\text{alg}}(i,j)$ is the algorithmic distance from Definition 2.3.1 in [01_fragile_gas_framework.md](01_fragile_gas_framework.md)\n363: - $Z = \\sum_{M' \\in \\mathcal{M}_N} W(M')$ is the partition function\n364: - $\\mathcal{M}_N$ is the set of all perfect matchings on $N$ walkers\n365: \n366: The matching defines a permutation $\\pi: \\{1,\\ldots,N\\} \\to \\{1,\\ldots,N\\}$ where walker $i$ pairs with companion $\\pi(i)$.\n367: \n368: **Step 2: Apply Same Permutation**\n369: \n370: Use the **same permutation** $\\pi$ for both swarms:\n371: - In $S_1$: walker $i$ compares fitness with companion $\\pi(i)$\n372: - In $S_2$: walker $i$ compares fitness with companion $\\pi(i)$\n373: \n374: **Step 3: Shared Cloning Thresholds**\n375: \n376: For each walker index $i \\in \\{1,\\ldots,N\\}$, sample a **shared random threshold**:\n377: \n378: $$\n379: T_i \\sim \\text{Uniform}(0, p_{\\max})\n380: $$\n381: \n382: Walker $i$ in swarm $k$ clones if $T_i < p_{k,i}$ where $p_{k,i}$ is the cloning probability in swarm $k$ (determined by fitness comparison with companion $\\pi(i)$).\n383: \n384: **Step 4: Shared Jitter**\n385: \n386: If walker $i$ clones in either swarm (or both), sample a **shared Gaussian jitter**:\n387: \n388: $$\n389: \\zeta_i \\sim \\mathcal{N}(0, \\delta^2 I_d)\n390: $$\n391: \n392: The post-cloning position is:\n393: \n394: $$\n395: x'_{k,i} = \\begin{cases}\n396: x_{k,\\pi(i)} + \\zeta_i & \\text{if } T_i < p_{k,i} \\text{ (clone)} \\\\\n397: x_{k,i} & \\text{if } T_i \\geq p_{k,i} \\text{ (persist)}\n398: \\end{cases}\n399: $$"
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-asymmetric-coupling",
+      "title": "Asymmetric Coupling",
+      "start_line": 401,
+      "end_line": 407,
+      "header_lines": [
+        402
+      ],
+      "content_start": 404,
+      "content_end": 406,
+      "content": "404: :label: rem-asymmetric-coupling\n405: \n406: The coupling is **asymmetric**: the matching distribution $P(M | S_1)$ depends only on swarm $S_1$, not $S_2$. This is standard practice in coupling arguments and simplifies analysis while maintaining sufficient correlation for contraction.",
+      "metadata": {
+        "label": "rem-asymmetric-coupling"
+      },
+      "section": "## 1. Synchronous Coupling Construction",
+      "raw_directive": "401: :::\n402: \n403: :::{prf:remark} Asymmetric Coupling\n404: :label: rem-asymmetric-coupling\n405: \n406: The coupling is **asymmetric**: the matching distribution $P(M | S_1)$ depends only on swarm $S_1$, not $S_2$. This is standard practice in coupling arguments and simplifies analysis while maintaining sufficient correlation for contraction.\n407: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-jitter-cancellation",
+      "title": "Jitter Cancellation in Clone-Clone Case",
+      "start_line": 409,
+      "end_line": 421,
+      "header_lines": [
+        410
+      ],
+      "content_start": 412,
+      "content_end": 420,
+      "content": "412: :label: rem-jitter-cancellation\n413: \n414: The most powerful feature of this coupling is **jitter cancellation**. If walker $i$ clones in **both** swarms (which happens in Case A with consistent fitness ordering), then:\n415: \n416: $$\n417: \\|x'_{1,i} - x'_{2,i}\\|^2 = \\|(x_{1,\\pi(i)} + \\zeta_i) - (x_{2,\\pi(i)} + \\zeta_i)\\|^2 = \\|x_{1,\\pi(i)} - x_{2,\\pi(i)}\\|^2\n418: $$\n419: \n420: The jitter **cancels exactly** due to synchronization! This is the strongest form of contraction.",
+      "metadata": {
+        "label": "rem-jitter-cancellation"
+      },
+      "section": "## 1. Synchronous Coupling Construction",
+      "raw_directive": "409: :::\n410: \n411: :::{prf:remark} Jitter Cancellation in Clone-Clone Case\n412: :label: rem-jitter-cancellation\n413: \n414: The most powerful feature of this coupling is **jitter cancellation**. If walker $i$ clones in **both** swarms (which happens in Case A with consistent fitness ordering), then:\n415: \n416: $$\n417: \\|x'_{1,i} - x'_{2,i}\\|^2 = \\|(x_{1,\\pi(i)} + \\zeta_i) - (x_{2,\\pi(i)} + \\zeta_i)\\|^2 = \\|x_{1,\\pi(i)} - x_{2,\\pi(i)}\\|^2\n418: $$\n419: \n420: The jitter **cancels exactly** due to synchronization! This is the strongest form of contraction.\n421: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-coupling-sufficiency",
+      "title": "Synchronous Coupling Sufficiency",
+      "start_line": 425,
+      "end_line": 436,
+      "header_lines": [
+        426
+      ],
+      "content_start": 428,
+      "content_end": 435,
+      "content": "428: :label: rem-coupling-sufficiency\n429: \n430: The synchronous coupling {prf:ref}`def-synchronous-cloning-coupling` provides sufficient correlation to prove Wasserstein-2 contraction. By using shared randomness (matching $M$, thresholds $T_i$, jitter $\\zeta_i$), the coupling eliminates extrinsic variance sources and maximizes correlation between paired walkers.\n431: \n432: **Key Properties:**\n433: 1. **Jitter cancellation**: When both walkers clone, the shared jitter $\\zeta_i$ cancels exactly\n434: 2. **Maximum correlation**: Using the same matching and thresholds minimizes $\\mathbb{E}[\\sum_i \\|x'_{1,i} - x'_{2,i}\\|^2]$\n435: 3. **Tractable analysis**: The synchronous structure allows explicit calculation of contraction factors",
+      "metadata": {
+        "label": "rem-coupling-sufficiency"
+      },
+      "section": "## 1. Synchronous Coupling Construction",
+      "raw_directive": "425: ### 1.3. Coupling Properties\n426: \n427: :::{prf:remark} Synchronous Coupling Sufficiency\n428: :label: rem-coupling-sufficiency\n429: \n430: The synchronous coupling {prf:ref}`def-synchronous-cloning-coupling` provides sufficient correlation to prove Wasserstein-2 contraction. By using shared randomness (matching $M$, thresholds $T_i$, jitter $\\zeta_i$), the coupling eliminates extrinsic variance sources and maximizes correlation between paired walkers.\n431: \n432: **Key Properties:**\n433: 1. **Jitter cancellation**: When both walkers clone, the shared jitter $\\zeta_i$ cancels exactly\n434: 2. **Maximum correlation**: Using the same matching and thresholds minimizes $\\mathbb{E}[\\sum_i \\|x'_{1,i} - x'_{2,i}\\|^2]$\n435: 3. **Tractable analysis**: The synchronous structure allows explicit calculation of contraction factors\n436: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

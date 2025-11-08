@@ -1,0 +1,47 @@
+{
+  "chapter_index": 5,
+  "section_id": "## 6. Physical Observables and Wilson Loops",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-physical-observables",
+      "title": "Gauge-Invariant Observables",
+      "start_line": 1091,
+      "end_line": 1134,
+      "header_lines": [
+        1092
+      ],
+      "content_start": 1094,
+      "content_end": 1133,
+      "content": "1094: :label: def-physical-observables\n1095: \n1096: **1. Wilson loops** (holonomy around closed paths):\n1097: \n1098: For closed loop $\\gamma = (e_1, e_2, \\ldots, e_L, e_1)$:\n1099: \n1100: $$\n1101: W_\\gamma = \\text{Tr}\\left(\\prod_{k=1}^L U_{e_k}\\right) \\in \\mathbb{R}\n1102: $$\n1103: \n1104: **Properties**:\n1105: - Gauge-invariant\n1106: - $|W_\\gamma| \\le 2$ (dimension of SU(2))\n1107: - Measures enclosed gauge field curvature\n1108: \n1109: **2. Total interaction probability** (SU(2)-invariant):\n1110: \n1111: From {prf:ref}`prop-su2-invariance`:\n1112: \n1113: $$\n1114: P_{\\text{total}}(i,j) = P_{\\text{clone}}(i \\to j) + P_{\\text{clone}}(j \\to i)\n1115: $$\n1116: \n1117: This is the **correct** SU(2)-invariant observable, not individual directional probabilities.\n1118: \n1119: **3. Plaquette expectation values**:\n1120: \n1121: $$\n1122: \\langle W_{\\square} \\rangle = \\frac{1}{Z} \\int \\mathcal{D}[A] \\, \\text{Tr}(U_{\\square}) \\, e^{-S_{\\text{YM}}}\n1123: $$\n1124: \n1125: **Interpretation**:\n1126: - $\\langle W_{\\square} \\rangle \\approx 2$: Weak coupling (small field)\n1127: - $\\langle W_{\\square} \\rangle \\ll 2$: Strong coupling (large field)\n1128: \n1129: **4. Noether charge expectation values**:\n1130: \n1131: $$\n1132: \\langle Q_{\\text{fitness}} \\rangle = \\frac{1}{Z} \\int \\mathcal{D}[\\Psi] \\mathcal{D}[A] \\, Q_{\\text{fitness}} \\, e^{iS}\n1133: $$",
+      "metadata": {
+        "label": "def-physical-observables"
+      },
+      "section": "## 6. Physical Observables and Wilson Loops",
+      "raw_directive": "1091: ## 6. Physical Observables and Wilson Loops\n1092: \n1093: :::{prf:definition} Gauge-Invariant Observables\n1094: :label: def-physical-observables\n1095: \n1096: **1. Wilson loops** (holonomy around closed paths):\n1097: \n1098: For closed loop $\\gamma = (e_1, e_2, \\ldots, e_L, e_1)$:\n1099: \n1100: $$\n1101: W_\\gamma = \\text{Tr}\\left(\\prod_{k=1}^L U_{e_k}\\right) \\in \\mathbb{R}\n1102: $$\n1103: \n1104: **Properties**:\n1105: - Gauge-invariant\n1106: - $|W_\\gamma| \\le 2$ (dimension of SU(2))\n1107: - Measures enclosed gauge field curvature\n1108: \n1109: **2. Total interaction probability** (SU(2)-invariant):\n1110: \n1111: From {prf:ref}`prop-su2-invariance`:\n1112: \n1113: $$\n1114: P_{\\text{total}}(i,j) = P_{\\text{clone}}(i \\to j) + P_{\\text{clone}}(j \\to i)\n1115: $$\n1116: \n1117: This is the **correct** SU(2)-invariant observable, not individual directional probabilities.\n1118: \n1119: **3. Plaquette expectation values**:\n1120: \n1121: $$\n1122: \\langle W_{\\square} \\rangle = \\frac{1}{Z} \\int \\mathcal{D}[A] \\, \\text{Tr}(U_{\\square}) \\, e^{-S_{\\text{YM}}}\n1123: $$\n1124: \n1125: **Interpretation**:\n1126: - $\\langle W_{\\square} \\rangle \\approx 2$: Weak coupling (small field)\n1127: - $\\langle W_{\\square} \\rangle \\ll 2$: Strong coupling (large field)\n1128: \n1129: **4. Noether charge expectation values**:\n1130: \n1131: $$\n1132: \\langle Q_{\\text{fitness}} \\rangle = \\frac{1}{Z} \\int \\mathcal{D}[\\Psi] \\mathcal{D}[A] \\, Q_{\\text{fitness}} \\, e^{iS}\n1133: $$\n1134: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-cluster-decomposition",
+      "title": "Cluster Decomposition for Wilson Loops",
+      "start_line": 1136,
+      "end_line": 1154,
+      "header_lines": [
+        1137
+      ],
+      "content_start": 1139,
+      "content_end": 1153,
+      "content": "1139: :label: thm-cluster-decomposition\n1140: \n1141: For non-overlapping Wilson loops $\\gamma_1$, $\\gamma_2$ separated by $d \\gg \\rho$:\n1142: \n1143: $$\n1144: \\langle W_{\\gamma_1} W_{\\gamma_2} \\rangle \\approx \\langle W_{\\gamma_1} \\rangle \\langle W_{\\gamma_2} \\rangle \\quad \\text{as } d \\to \\infty\n1145: $$\n1146: \n1147: **Physical significance**: Ensures locality of gauge interactions.\n1148: \n1149: **Fractal Set context**: Correlation decays exponentially:\n1150: \n1151: $$\n1152: \\langle W_{\\gamma_1} W_{\\gamma_2} \\rangle - \\langle W_{\\gamma_1} \\rangle \\langle W_{\\gamma_2} \\rangle \\sim e^{-d_{\\text{alg}}(\\gamma_1, \\gamma_2)/\\rho}\n1153: $$",
+      "metadata": {
+        "label": "thm-cluster-decomposition"
+      },
+      "section": "## 6. Physical Observables and Wilson Loops",
+      "raw_directive": "1136: :::\n1137: \n1138: :::{prf:theorem} Cluster Decomposition for Wilson Loops\n1139: :label: thm-cluster-decomposition\n1140: \n1141: For non-overlapping Wilson loops $\\gamma_1$, $\\gamma_2$ separated by $d \\gg \\rho$:\n1142: \n1143: $$\n1144: \\langle W_{\\gamma_1} W_{\\gamma_2} \\rangle \\approx \\langle W_{\\gamma_1} \\rangle \\langle W_{\\gamma_2} \\rangle \\quad \\text{as } d \\to \\infty\n1145: $$\n1146: \n1147: **Physical significance**: Ensures locality of gauge interactions.\n1148: \n1149: **Fractal Set context**: Correlation decays exponentially:\n1150: \n1151: $$\n1152: \\langle W_{\\gamma_1} W_{\\gamma_2} \\rangle - \\langle W_{\\gamma_1} \\rangle \\langle W_{\\gamma_2} \\rangle \\sim e^{-d_{\\text{alg}}(\\gamma_1, \\gamma_2)/\\rho}\n1153: $$\n1154: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

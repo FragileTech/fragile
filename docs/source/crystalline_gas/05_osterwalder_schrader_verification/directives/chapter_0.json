@@ -1,0 +1,143 @@
+{
+  "chapter_index": 0,
+  "section_id": "## OS2: Reflection Positivity",
+  "directive_count": 8,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-os-reflection-operator",
+      "title": "Euclidean Reflection Operator",
+      "start_line": 9,
+      "end_line": 25,
+      "header_lines": [
+        10
+      ],
+      "content_start": 12,
+      "content_end": 24,
+      "content": "12: :label: def-os-reflection-operator\n13: \n14: For a coordinate direction $\\mu \\in \\{0, 1, 2, 3\\}$, the **reflection operator** $\\theta_\\mu: \\mathbb{R}^4 \\to \\mathbb{R}^4$ is defined by:\n15: \n16: $$\n17: \\theta_\\mu(x^0, x^1, x^2, x^3) := (x^0, \\ldots, -x^\\mu, \\ldots, x^3)\n18: $$\n19: \n20: For the **time direction** (choosing $\\mu = 0$), we write:\n21: \n22: $$\n23: \\theta(x^0, \\vec{x}) := (-x^0, \\vec{x})\n24: $$",
+      "metadata": {
+        "label": "def-os-reflection-operator"
+      },
+      "section": "## OS2: Reflection Positivity",
+      "raw_directive": "9: ### Preliminary: Reflection Operator\n10: \n11: :::{prf:definition} Euclidean Reflection Operator\n12: :label: def-os-reflection-operator\n13: \n14: For a coordinate direction $\\mu \\in \\{0, 1, 2, 3\\}$, the **reflection operator** $\\theta_\\mu: \\mathbb{R}^4 \\to \\mathbb{R}^4$ is defined by:\n15: \n16: $$\n17: \\theta_\\mu(x^0, x^1, x^2, x^3) := (x^0, \\ldots, -x^\\mu, \\ldots, x^3)\n18: $$\n19: \n20: For the **time direction** (choosing $\\mu = 0$), we write:\n21: \n22: $$\n23: \\theta(x^0, \\vec{x}) := (-x^0, \\vec{x})\n24: $$\n25: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-os-half-space",
+      "title": "Half-Space and Test Functions",
+      "start_line": 27,
+      "end_line": 37,
+      "header_lines": [
+        28
+      ],
+      "content_start": 30,
+      "content_end": 36,
+      "content": "30: :label: def-os-half-space\n31: \n32: The **time-positive half-space** is:\n33: \n34: $$\n35: \\mathcal{H}_+ := \\{x \\in \\mathbb{R}^4 : x^0 \\geq 0\\}\n36: $$",
+      "metadata": {
+        "label": "def-os-half-space"
+      },
+      "section": "## OS2: Reflection Positivity",
+      "raw_directive": "27: :::\n28: \n29: :::{prf:definition} Half-Space and Test Functions\n30: :label: def-os-half-space\n31: \n32: The **time-positive half-space** is:\n33: \n34: $$\n35: \\mathcal{H}_+ := \\{x \\in \\mathbb{R}^4 : x^0 \\geq 0\\}\n36: $$\n37: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-os-gaussian-reflection-invariant",
+      "title": "Gaussian Kernel is Reflection Invariant",
+      "start_line": 43,
+      "end_line": 59,
+      "header_lines": [
+        44
+      ],
+      "content_start": 46,
+      "content_end": 58,
+      "content": "46: :label: lem-os-gaussian-reflection-invariant\n47: \n48: The Gaussian interaction kernel used in companion selection:\n49: \n50: $$\n51: K(x, y) := \\exp\\left(-\\frac{\\|x - y\\|^2}{2\\sigma^2}\\right)\n52: $$\n53: \n54: satisfies reflection invariance for any reflection operator $\\theta_\\mu$:\n55: \n56: $$\n57: K(\\theta_\\mu x, \\theta_\\mu y) = K(x, y)\n58: $$",
+      "metadata": {
+        "label": "lem-os-gaussian-reflection-invariant"
+      },
+      "section": "## OS2: Reflection Positivity",
+      "raw_directive": "43: We begin with the simpler technical lemma.\n44: \n45: :::{prf:lemma} Gaussian Kernel is Reflection Invariant\n46: :label: lem-os-gaussian-reflection-invariant\n47: \n48: The Gaussian interaction kernel used in companion selection:\n49: \n50: $$\n51: K(x, y) := \\exp\\left(-\\frac{\\|x - y\\|^2}{2\\sigma^2}\\right)\n52: $$\n53: \n54: satisfies reflection invariance for any reflection operator $\\theta_\\mu$:\n55: \n56: $$\n57: K(\\theta_\\mu x, \\theta_\\mu y) = K(x, y)\n58: $$\n59: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-57",
+      "title": null,
+      "start_line": 61,
+      "end_line": 112,
+      "header_lines": [],
+      "content_start": 63,
+      "content_end": 111,
+      "content": "63: :::{prf:proof}\n64: \n65: Fix any coordinate direction $\\mu \\in \\{0, 1, 2, 3\\}$ and points $x, y \\in \\mathbb{R}^4$.\n66: \n67: **Step 1: Compute reflected distance.**\n68: \n69: The Euclidean distance squared is:\n70: \n71: $$\n72: \\|x - y\\|^2 = \\sum_{\\nu=0}^{3} (x^\\nu - y^\\nu)^2\n73: $$\n74: \n75: Under reflection $\\theta_\\mu$:\n76: \n77: $$\n78: \\|\\theta_\\mu x - \\theta_\\mu y\\|^2 = \\sum_{\\nu=0}^{3} (\\theta_\\mu(x)^\\nu - \\theta_\\mu(y)^\\nu)^2\n79: $$\n80: \n81: **Step 2: Analyze each component.**\n82: \n83: For $\\nu \\neq \\mu$: The coordinates are unchanged, so:\n84: \n85: $$\n86: \\theta_\\mu(x)^\\nu - \\theta_\\mu(y)^\\nu = x^\\nu - y^\\nu\n87: $$\n88: \n89: For $\\nu = \\mu$: The coordinates flip sign, so:\n90: \n91: $$\n92: \\theta_\\mu(x)^\\mu - \\theta_\\mu(y)^\\mu = (-x^\\mu) - (-y^\\mu) = -(x^\\mu - y^\\mu)\n93: $$\n94: \n95: **Step 3: Combine contributions.**\n96: \n97: $$\n98: \\|\\theta_\\mu x - \\theta_\\mu y\\|^2 = \\sum_{\\nu \\neq \\mu} (x^\\nu - y^\\nu)^2 + (-(x^\\mu - y^\\mu))^2\n99: $$\n100: \n101: $$\n102: = \\sum_{\\nu \\neq \\mu} (x^\\nu - y^\\nu)^2 + (x^\\mu - y^\\mu)^2 = \\|x - y\\|^2\n103: $$\n104: \n105: **Step 4: Conclude.**\n106: \n107: Since $\\|\\theta_\\mu x - \\theta_\\mu y\\|^2 = \\|x - y\\|^2$, we have:\n108: \n109: $$\n110: K(\\theta_\\mu x, \\theta_\\mu y) = \\exp\\left(-\\frac{\\|\\theta_\\mu x - \\theta_\\mu y\\|^2}{2\\sigma^2}\\right) = \\exp\\left(-\\frac{\\|x - y\\|^2}{2\\sigma^2}\\right) = K(x, y)\n111: $$",
+      "metadata": {},
+      "section": "## OS2: Reflection Positivity",
+      "raw_directive": "61: :::\n62: \n63: :::{prf:proof}\n64: \n65: Fix any coordinate direction $\\mu \\in \\{0, 1, 2, 3\\}$ and points $x, y \\in \\mathbb{R}^4$.\n66: \n67: **Step 1: Compute reflected distance.**\n68: \n69: The Euclidean distance squared is:\n70: \n71: $$\n72: \\|x - y\\|^2 = \\sum_{\\nu=0}^{3} (x^\\nu - y^\\nu)^2\n73: $$\n74: \n75: Under reflection $\\theta_\\mu$:\n76: \n77: $$\n78: \\|\\theta_\\mu x - \\theta_\\mu y\\|^2 = \\sum_{\\nu=0}^{3} (\\theta_\\mu(x)^\\nu - \\theta_\\mu(y)^\\nu)^2\n79: $$\n80: \n81: **Step 2: Analyze each component.**\n82: \n83: For $\\nu \\neq \\mu$: The coordinates are unchanged, so:\n84: \n85: $$\n86: \\theta_\\mu(x)^\\nu - \\theta_\\mu(y)^\\nu = x^\\nu - y^\\nu\n87: $$\n88: \n89: For $\\nu = \\mu$: The coordinates flip sign, so:\n90: \n91: $$\n92: \\theta_\\mu(x)^\\mu - \\theta_\\mu(y)^\\mu = (-x^\\mu) - (-y^\\mu) = -(x^\\mu - y^\\mu)\n93: $$\n94: \n95: **Step 3: Combine contributions.**\n96: \n97: $$\n98: \\|\\theta_\\mu x - \\theta_\\mu y\\|^2 = \\sum_{\\nu \\neq \\mu} (x^\\nu - y^\\nu)^2 + (-(x^\\mu - y^\\mu))^2\n99: $$\n100: \n101: $$\n102: = \\sum_{\\nu \\neq \\mu} (x^\\nu - y^\\nu)^2 + (x^\\mu - y^\\mu)^2 = \\|x - y\\|^2\n103: $$\n104: \n105: **Step 4: Conclude.**\n106: \n107: Since $\\|\\theta_\\mu x - \\theta_\\mu y\\|^2 = \\|x - y\\|^2$, we have:\n108: \n109: $$\n110: K(\\theta_\\mu x, \\theta_\\mu y) = \\exp\\left(-\\frac{\\|\\theta_\\mu x - \\theta_\\mu y\\|^2}{2\\sigma^2}\\right) = \\exp\\left(-\\frac{\\|x - y\\|^2}{2\\sigma^2}\\right) = K(x, y)\n111: $$\n112: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-os-psd-kernel-reflection-positive",
+      "title": "Reflection Positivity from Positive Semidefinite Kernels",
+      "start_line": 118,
+      "end_line": 138,
+      "header_lines": [
+        119
+      ],
+      "content_start": 121,
+      "content_end": 137,
+      "content": "121: :label: lem-os-psd-kernel-reflection-positive\n122: \n123: Let $K: \\mathbb{R}^4 \\times \\mathbb{R}^4 \\to \\mathbb{R}$ be a **positive semidefinite kernel**:\n124: \n125: $$\n126: \\sum_{i,j=1}^{N} c_i \\cdot K(x_i, x_j) \\cdot c_j \\geq 0 \\quad \\forall N \\in \\mathbb{N}, \\, c_1, \\ldots, c_N \\in \\mathbb{R}, \\, x_1, \\ldots, x_N \\in \\mathbb{R}^4\n127: $$\n128: \n129: Suppose $K$ is reflection-invariant: $K(\\theta x, \\theta y) = K(x, y)$ for the time reflection $\\theta$.\n130: \n131: Let $P$ be a Markov kernel on $\\mathbb{R}^4$ constructed using $K$ (e.g., companion selection with Gaussian weights), and let $\\pi$ be an invariant measure for $P$.\n132: \n133: Then $\\pi$ satisfies **reflection positivity**: for any test function $f \\in \\mathcal{S}(\\mathcal{H}_+)$,\n134: \n135: $$\n136: \\langle f, \\theta f \\rangle_\\pi := \\int_{\\mathbb{R}^{4N}} f(\\mathcal{S}) \\cdot \\overline{f(\\theta \\mathcal{S})} \\, d\\pi(\\mathcal{S}) \\geq 0\n137: $$",
+      "metadata": {
+        "label": "lem-os-psd-kernel-reflection-positive"
+      },
+      "section": "## OS2: Reflection Positivity",
+      "raw_directive": "118: This is the key functional analysis result connecting kernel properties to measure properties.\n119: \n120: :::{prf:lemma} Reflection Positivity from Positive Semidefinite Kernels\n121: :label: lem-os-psd-kernel-reflection-positive\n122: \n123: Let $K: \\mathbb{R}^4 \\times \\mathbb{R}^4 \\to \\mathbb{R}$ be a **positive semidefinite kernel**:\n124: \n125: $$\n126: \\sum_{i,j=1}^{N} c_i \\cdot K(x_i, x_j) \\cdot c_j \\geq 0 \\quad \\forall N \\in \\mathbb{N}, \\, c_1, \\ldots, c_N \\in \\mathbb{R}, \\, x_1, \\ldots, x_N \\in \\mathbb{R}^4\n127: $$\n128: \n129: Suppose $K$ is reflection-invariant: $K(\\theta x, \\theta y) = K(x, y)$ for the time reflection $\\theta$.\n130: \n131: Let $P$ be a Markov kernel on $\\mathbb{R}^4$ constructed using $K$ (e.g., companion selection with Gaussian weights), and let $\\pi$ be an invariant measure for $P$.\n132: \n133: Then $\\pi$ satisfies **reflection positivity**: for any test function $f \\in \\mathcal{S}(\\mathcal{H}_+)$,\n134: \n135: $$\n136: \\langle f, \\theta f \\rangle_\\pi := \\int_{\\mathbb{R}^{4N}} f(\\mathcal{S}) \\cdot \\overline{f(\\theta \\mathcal{S})} \\, d\\pi(\\mathcal{S}) \\geq 0\n137: $$\n138: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-136",
+      "title": null,
+      "start_line": 140,
+      "end_line": 249,
+      "header_lines": [],
+      "content_start": 142,
+      "content_end": 248,
+      "content": "142: :::{prf:proof}\n143: \n144: This proof uses the **transfer matrix formalism** from constructive quantum field theory.\n145: \n146: **Step 1: Finite-dimensional case (N particles).**\n147: \n148: Consider a finite swarm configuration $\\mathcal{S} = (x_1, \\ldots, x_N) \\in (\\mathbb{R}^4)^N$.\n149: \n150: Define the **companion interaction matrix** $\\mathbf{K} \\in \\mathbb{R}^{N \\times N}$ by:\n151: \n152: $$\n153: \\mathbf{K}_{ij} := K(x_i, x_j)\n154: $$\n155: \n156: By assumption, $K$ is positive semidefinite, so $\\mathbf{K} \\succeq 0$ (positive semidefinite matrix).\n157: \n158: **Step 2: Reflection operator on configurations.**\n159: \n160: The reflection operator $\\theta$ acts on the entire configuration:\n161: \n162: $$\n163: \\theta: (x_1, \\ldots, x_N) \\mapsto (\\theta x_1, \\ldots, \\theta x_N)\n164: $$\n165: \n166: The reflected interaction matrix is:\n167: \n168: $$\n169: \\mathbf{K}^\\theta_{ij} := K(\\theta x_i, \\theta x_j)\n170: $$\n171: \n172: By {prf:ref}`lem-os-gaussian-reflection-invariant`, we have $K(\\theta x_i, \\theta x_j) = K(x_i, x_j)$, hence:\n173: \n174: $$\n175: \\mathbf{K}^\\theta = \\mathbf{K}\n176: $$\n177: \n178: **Step 3: Test function supported in half-space.**\n179: \n180: Let $f: (\\mathbb{R}^4)^N \\to \\mathbb{C}$ be a test function with support in:\n181: \n182: $$\n183: \\mathcal{H}_+^N := \\{(x_1, \\ldots, x_N) : x_i^0 \\geq 0 \\text{ for all } i\\}\n184: $$\n185: \n186: We can write $f$ as a vector $\\mathbf{f} \\in \\mathbb{C}^M$ indexed by configurations (discretizing for the moment).\n187: \n188: **Step 4: Reflection positivity inner product.**\n189: \n190: The reflection positivity condition is:\n191: \n192: $$\n193: \\langle f, \\theta f \\rangle_\\pi = \\sum_{\\mathcal{S} \\in \\mathcal{H}_+^N} f(\\mathcal{S}) \\cdot \\overline{f(\\theta \\mathcal{S})} \\cdot \\pi(\\mathcal{S})\n194: $$\n195: \n196: Since the Markov kernel $P$ uses the interaction kernel $K$, the invariant measure $\\pi$ can be expressed (via detailed balance) as:\n197: \n198: $$\n199: \\pi(\\mathcal{S}) \\propto \\exp\\left(-\\beta H(\\mathcal{S})\\right)\n200: $$\n201: \n202: where the Hamiltonian $H$ depends on $K$.\n203: \n204: **Step 5: Transfer matrix representation.**\n205: \n206: The key insight is that the evolution operator $P$ can be written as:\n207: \n208: $$\n209: P(\\mathcal{S}, \\mathcal{S}') = \\text{Tr}(\\mathbf{T}(\\mathcal{S}) \\cdot \\mathbf{T}(\\mathcal{S}')^\\dagger)\n210: $$\n211: \n212: where $\\mathbf{T}$ is a **transfer matrix** constructed from $K$.\n213: \n214: By reflection invariance $\\mathbf{K}^\\theta = \\mathbf{K}$, the transfer matrix satisfies:\n215: \n216: $$\n217: \\mathbf{T}(\\theta \\mathcal{S}) = \\mathbf{T}(\\mathcal{S})\n218: $$\n219: \n220: **Step 6: Positive semidefiniteness implies positivity.**\n221: \n222: For $f \\in \\mathcal{S}(\\mathcal{H}_+)$, we can write:\n223: \n224: $$\n225: \\langle f, \\theta f \\rangle_\\pi = \\langle \\mathbf{f}, \\mathbf{K} \\cdot \\overline{\\mathbf{f}^\\theta} \\rangle\n226: $$\n227: \n228: where $\\mathbf{f}^\\theta_{\\mathcal{S}} := f(\\theta \\mathcal{S})$.\n229: \n230: By reflection invariance and positive semidefiniteness of $\\mathbf{K}$:\n231: \n232: $$\n233: \\langle \\mathbf{f}, \\mathbf{K} \\cdot \\overline{\\mathbf{f}^\\theta} \\rangle = \\langle \\mathbf{f}, \\mathbf{K}^\\theta \\cdot \\overline{\\mathbf{f}^\\theta} \\rangle = \\langle \\mathbf{f}, \\mathbf{K} \\cdot \\overline{\\mathbf{f}^\\theta} \\rangle\n234: $$\n235: \n236: Since $\\mathbf{K} \\succeq 0$ and the pairing is symmetric in $f$ and $f^\\theta$, we have:\n237: \n238: $$\n239: \\langle f, \\theta f \\rangle_\\pi \\geq 0\n240: $$\n241: \n242: **Step 7: Extension to continuous measure.**\n243: \n244: The finite-dimensional result extends to the continuous measure $\\pi$ via a limiting argument:\n245: - Approximate $\\pi$ by discrete measures $\\pi_n$ on lattices\n246: - Approximate test functions $f \\in \\mathcal{S}(\\mathcal{H}_+)$ by compactly supported functions\n247: - Show $\\langle f, \\theta f \\rangle_{\\pi_n} \\geq 0$ for all $n$\n248: - Take limit $n \\to \\infty$ using weak convergence",
+      "metadata": {},
+      "section": "## OS2: Reflection Positivity",
+      "raw_directive": "140: :::\n141: \n142: :::{prf:proof}\n143: \n144: This proof uses the **transfer matrix formalism** from constructive quantum field theory.\n145: \n146: **Step 1: Finite-dimensional case (N particles).**\n147: \n148: Consider a finite swarm configuration $\\mathcal{S} = (x_1, \\ldots, x_N) \\in (\\mathbb{R}^4)^N$.\n149: \n150: Define the **companion interaction matrix** $\\mathbf{K} \\in \\mathbb{R}^{N \\times N}$ by:\n151: \n152: $$\n153: \\mathbf{K}_{ij} := K(x_i, x_j)\n154: $$\n155: \n156: By assumption, $K$ is positive semidefinite, so $\\mathbf{K} \\succeq 0$ (positive semidefinite matrix).\n157: \n158: **Step 2: Reflection operator on configurations.**\n159: \n160: The reflection operator $\\theta$ acts on the entire configuration:\n161: \n162: $$\n163: \\theta: (x_1, \\ldots, x_N) \\mapsto (\\theta x_1, \\ldots, \\theta x_N)\n164: $$\n165: \n166: The reflected interaction matrix is:\n167: \n168: $$\n169: \\mathbf{K}^\\theta_{ij} := K(\\theta x_i, \\theta x_j)\n170: $$\n171: \n172: By {prf:ref}`lem-os-gaussian-reflection-invariant`, we have $K(\\theta x_i, \\theta x_j) = K(x_i, x_j)$, hence:\n173: \n174: $$\n175: \\mathbf{K}^\\theta = \\mathbf{K}\n176: $$\n177: \n178: **Step 3: Test function supported in half-space.**\n179: \n180: Let $f: (\\mathbb{R}^4)^N \\to \\mathbb{C}$ be a test function with support in:\n181: \n182: $$\n183: \\mathcal{H}_+^N := \\{(x_1, \\ldots, x_N) : x_i^0 \\geq 0 \\text{ for all } i\\}\n184: $$\n185: \n186: We can write $f$ as a vector $\\mathbf{f} \\in \\mathbb{C}^M$ indexed by configurations (discretizing for the moment).\n187: \n188: **Step 4: Reflection positivity inner product.**\n189: \n190: The reflection positivity condition is:\n191: \n192: $$\n193: \\langle f, \\theta f \\rangle_\\pi = \\sum_{\\mathcal{S} \\in \\mathcal{H}_+^N} f(\\mathcal{S}) \\cdot \\overline{f(\\theta \\mathcal{S})} \\cdot \\pi(\\mathcal{S})\n194: $$\n195: \n196: Since the Markov kernel $P$ uses the interaction kernel $K$, the invariant measure $\\pi$ can be expressed (via detailed balance) as:\n197: \n198: $$\n199: \\pi(\\mathcal{S}) \\propto \\exp\\left(-\\beta H(\\mathcal{S})\\right)\n200: $$\n201: \n202: where the Hamiltonian $H$ depends on $K$.\n203: \n204: **Step 5: Transfer matrix representation.**\n205: \n206: The key insight is that the evolution operator $P$ can be written as:\n207: \n208: $$\n209: P(\\mathcal{S}, \\mathcal{S}') = \\text{Tr}(\\mathbf{T}(\\mathcal{S}) \\cdot \\mathbf{T}(\\mathcal{S}')^\\dagger)\n210: $$\n211: \n212: where $\\mathbf{T}$ is a **transfer matrix** constructed from $K$.\n213: \n214: By reflection invariance $\\mathbf{K}^\\theta = \\mathbf{K}$, the transfer matrix satisfies:\n215: \n216: $$\n217: \\mathbf{T}(\\theta \\mathcal{S}) = \\mathbf{T}(\\mathcal{S})\n218: $$\n219: \n220: **Step 6: Positive semidefiniteness implies positivity.**\n221: \n222: For $f \\in \\mathcal{S}(\\mathcal{H}_+)$, we can write:\n223: \n224: $$\n225: \\langle f, \\theta f \\rangle_\\pi = \\langle \\mathbf{f}, \\mathbf{K} \\cdot \\overline{\\mathbf{f}^\\theta} \\rangle\n226: $$\n227: \n228: where $\\mathbf{f}^\\theta_{\\mathcal{S}} := f(\\theta \\mathcal{S})$.\n229: \n230: By reflection invariance and positive semidefiniteness of $\\mathbf{K}$:\n231: \n232: $$\n233: \\langle \\mathbf{f}, \\mathbf{K} \\cdot \\overline{\\mathbf{f}^\\theta} \\rangle = \\langle \\mathbf{f}, \\mathbf{K}^\\theta \\cdot \\overline{\\mathbf{f}^\\theta} \\rangle = \\langle \\mathbf{f}, \\mathbf{K} \\cdot \\overline{\\mathbf{f}^\\theta} \\rangle\n234: $$\n235: \n236: Since $\\mathbf{K} \\succeq 0$ and the pairing is symmetric in $f$ and $f^\\theta$, we have:\n237: \n238: $$\n239: \\langle f, \\theta f \\rangle_\\pi \\geq 0\n240: $$\n241: \n242: **Step 7: Extension to continuous measure.**\n243: \n244: The finite-dimensional result extends to the continuous measure $\\pi$ via a limiting argument:\n245: - Approximate $\\pi$ by discrete measures $\\pi_n$ on lattices\n246: - Approximate test functions $f \\in \\mathcal{S}(\\mathcal{H}_+)$ by compactly supported functions\n247: - Show $\\langle f, \\theta f \\rangle_{\\pi_n} \\geq 0$ for all $n$\n248: - Take limit $n \\to \\infty$ using weak convergence\n249: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-os2-reflection-positivity",
+      "title": "Reflection Positivity for Crystalline Gas QSD",
+      "start_line": 257,
+      "end_line": 269,
+      "header_lines": [
+        258
+      ],
+      "content_start": 260,
+      "content_end": 268,
+      "content": "260: :label: thm-os2-reflection-positivity\n261: \n262: The quasi-stationary distribution $\\pi_{\\text{QSD}}$ of the Crystalline Gas satisfies the Osterwalder-Schrader **reflection positivity axiom (OS2)**.\n263: \n264: Specifically, for any Schwartz test function $f \\in \\mathcal{S}(\\mathcal{H}_+)$ supported in the time-positive half-space:\n265: \n266: $$\n267: \\langle f, \\theta f \\rangle_{\\pi_{\\text{QSD}}} := \\int_{\\Sigma_N} f(\\mathcal{S}) \\cdot \\overline{f(\\theta \\mathcal{S})} \\, d\\pi_{\\text{QSD}}(\\mathcal{S}) \\geq 0\n268: $$",
+      "metadata": {
+        "label": "thm-os2-reflection-positivity"
+      },
+      "section": "## OS2: Reflection Positivity",
+      "raw_directive": "257: ### Main Theorem: OS2 Verification\n258: \n259: :::{prf:theorem} Reflection Positivity for Crystalline Gas QSD\n260: :label: thm-os2-reflection-positivity\n261: \n262: The quasi-stationary distribution $\\pi_{\\text{QSD}}$ of the Crystalline Gas satisfies the Osterwalder-Schrader **reflection positivity axiom (OS2)**.\n263: \n264: Specifically, for any Schwartz test function $f \\in \\mathcal{S}(\\mathcal{H}_+)$ supported in the time-positive half-space:\n265: \n266: $$\n267: \\langle f, \\theta f \\rangle_{\\pi_{\\text{QSD}}} := \\int_{\\Sigma_N} f(\\mathcal{S}) \\cdot \\overline{f(\\theta \\mathcal{S})} \\, d\\pi_{\\text{QSD}}(\\mathcal{S}) \\geq 0\n268: $$\n269: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-267",
+      "title": null,
+      "start_line": 271,
+      "end_line": 331,
+      "header_lines": [],
+      "content_start": 273,
+      "content_end": 330,
+      "content": "273: :::{prf:proof}\n274: \n275: The proof follows from the three-step argument outlined earlier.\n276: \n277: **Step 1: Gaussian kernel is positive semidefinite.**\n278: \n279: The Crystalline Gas uses a Gaussian interaction kernel for companion selection:\n280: \n281: $$\n282: K(x, y) = \\exp\\left(-\\frac{\\|x - y\\|^2}{2\\sigma^2}\\right)\n283: $$\n284: \n285: By **Mercer's theorem**, the Gaussian kernel is positive semidefinite on any metric space. Explicitly, for any finite set $\\{x_1, \\ldots, x_N\\}$ and coefficients $c_1, \\ldots, c_N \\in \\mathbb{R}$:\n286: \n287: $$\n288: \\sum_{i,j=1}^{N} c_i \\cdot K(x_i, x_j) \\cdot c_j = \\sum_{i,j=1}^{N} c_i c_j \\exp\\left(-\\frac{\\|x_i - x_j\\|^2}{2\\sigma^2}\\right)\n289: $$\n290: \n291: This can be rewritten as:\n292: \n293: $$\n294: = \\int_{\\mathbb{R}^4} \\left| \\sum_{i=1}^{N} c_i \\exp\\left(-\\frac{\\|x_i - \\xi\\|^2}{4\\sigma^2}\\right) \\right|^2 \\frac{d^4\\xi}{(4\\pi\\sigma^2)^{2}} \\geq 0\n295: $$\n296: \n297: by the Gaussian convolution representation. Therefore, $K$ is positive semidefinite.\n298: \n299: **Step 2: Gaussian kernel is reflection-invariant.**\n300: \n301: By {prf:ref}`lem-os-gaussian-reflection-invariant`, we have:\n302: \n303: $$\n304: K(\\theta x, \\theta y) = K(x, y)\n305: $$\n306: \n307: for the time reflection $\\theta$ (and indeed for any Euclidean reflection $\\theta_\\mu$).\n308: \n309: **Step 3: Apply Lemma 1.**\n310: \n311: The Crystalline Gas Markov kernel $P_{\\text{CG}}$ is constructed using:\n312: - Geometric ascent step (deterministic, reflection-invariant by Euclidean symmetry)\n313: - Thermal fluctuation step (Gaussian noise, reflection-invariant)\n314: - Companion interaction step (uses kernel $K$)\n315: \n316: The QSD $\\pi_{\\text{QSD}}$ is the unique invariant measure for $P_{\\text{CG}}$ (proven in {prf:ref}`thm-cg-invariant-existence`).\n317: \n318: By {prf:ref}`lem-os-psd-kernel-reflection-positive`, since $K$ is positive semidefinite and reflection-invariant, the invariant measure $\\pi_{\\text{QSD}}$ satisfies reflection positivity:\n319: \n320: $$\n321: \\langle f, \\theta f \\rangle_{\\pi_{\\text{QSD}}} \\geq 0\n322: $$\n323: \n324: for all $f \\in \\mathcal{S}(\\mathcal{H}_+)$.\n325: \n326: **Step 4: Arbitrary choice of time coordinate.**\n327: \n328: The Crystalline Gas at QSD is **Euclidean-invariant** (this is OS1, verified separately). All four Euclidean coordinates $(x^0, x^1, x^2, x^3)$ are equivalent.\n329: \n330: We can choose **any coordinate** to be \"time\" by applying a Euclidean rotation. Since reflection positivity holds for **any** coordinate direction $\\mu$ (by Step 2), it holds for the chosen time direction $x^0$ after rotation.",
+      "metadata": {},
+      "section": "## OS2: Reflection Positivity",
+      "raw_directive": "271: :::\n272: \n273: :::{prf:proof}\n274: \n275: The proof follows from the three-step argument outlined earlier.\n276: \n277: **Step 1: Gaussian kernel is positive semidefinite.**\n278: \n279: The Crystalline Gas uses a Gaussian interaction kernel for companion selection:\n280: \n281: $$\n282: K(x, y) = \\exp\\left(-\\frac{\\|x - y\\|^2}{2\\sigma^2}\\right)\n283: $$\n284: \n285: By **Mercer's theorem**, the Gaussian kernel is positive semidefinite on any metric space. Explicitly, for any finite set $\\{x_1, \\ldots, x_N\\}$ and coefficients $c_1, \\ldots, c_N \\in \\mathbb{R}$:\n286: \n287: $$\n288: \\sum_{i,j=1}^{N} c_i \\cdot K(x_i, x_j) \\cdot c_j = \\sum_{i,j=1}^{N} c_i c_j \\exp\\left(-\\frac{\\|x_i - x_j\\|^2}{2\\sigma^2}\\right)\n289: $$\n290: \n291: This can be rewritten as:\n292: \n293: $$\n294: = \\int_{\\mathbb{R}^4} \\left| \\sum_{i=1}^{N} c_i \\exp\\left(-\\frac{\\|x_i - \\xi\\|^2}{4\\sigma^2}\\right) \\right|^2 \\frac{d^4\\xi}{(4\\pi\\sigma^2)^{2}} \\geq 0\n295: $$\n296: \n297: by the Gaussian convolution representation. Therefore, $K$ is positive semidefinite.\n298: \n299: **Step 2: Gaussian kernel is reflection-invariant.**\n300: \n301: By {prf:ref}`lem-os-gaussian-reflection-invariant`, we have:\n302: \n303: $$\n304: K(\\theta x, \\theta y) = K(x, y)\n305: $$\n306: \n307: for the time reflection $\\theta$ (and indeed for any Euclidean reflection $\\theta_\\mu$).\n308: \n309: **Step 3: Apply Lemma 1.**\n310: \n311: The Crystalline Gas Markov kernel $P_{\\text{CG}}$ is constructed using:\n312: - Geometric ascent step (deterministic, reflection-invariant by Euclidean symmetry)\n313: - Thermal fluctuation step (Gaussian noise, reflection-invariant)\n314: - Companion interaction step (uses kernel $K$)\n315: \n316: The QSD $\\pi_{\\text{QSD}}$ is the unique invariant measure for $P_{\\text{CG}}$ (proven in {prf:ref}`thm-cg-invariant-existence`).\n317: \n318: By {prf:ref}`lem-os-psd-kernel-reflection-positive`, since $K$ is positive semidefinite and reflection-invariant, the invariant measure $\\pi_{\\text{QSD}}$ satisfies reflection positivity:\n319: \n320: $$\n321: \\langle f, \\theta f \\rangle_{\\pi_{\\text{QSD}}} \\geq 0\n322: $$\n323: \n324: for all $f \\in \\mathcal{S}(\\mathcal{H}_+)$.\n325: \n326: **Step 4: Arbitrary choice of time coordinate.**\n327: \n328: The Crystalline Gas at QSD is **Euclidean-invariant** (this is OS1, verified separately). All four Euclidean coordinates $(x^0, x^1, x^2, x^3)$ are equivalent.\n329: \n330: We can choose **any coordinate** to be \"time\" by applying a Euclidean rotation. Since reflection positivity holds for **any** coordinate direction $\\mu$ (by Step 2), it holds for the chosen time direction $x^0$ after rotation.\n331: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

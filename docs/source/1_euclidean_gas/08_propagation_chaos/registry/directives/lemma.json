@@ -1,0 +1,334 @@
+{
+  "document_id": "08_propagation_chaos",
+  "stage": "directives",
+  "directive_type": "lemma",
+  "generated_at": "2025-11-08T17:07:43.206178+00:00",
+  "count": 13,
+  "items": [
+    {
+      "directive_type": "lemma",
+      "label": "lem-exchangeability",
+      "title": "Exchangeability of the N-Particle QSD",
+      "start_line": 214,
+      "end_line": 223,
+      "header_lines": [
+        215
+      ],
+      "content_start": 217,
+      "content_end": 222,
+      "content": "217: :label: lem-exchangeability\n218: \n219: The unique N-particle QSD $\\nu_N^{QSD}$ is an exchangeable measure on the product space $\\Omega^N$. That is, for any permutation $\\sigma$ of the indices $\\{1, \\ldots, N\\}$ and any measurable set $A \\subseteq \\Omega^N$,\n220: \n221: $$\n222: \\nu_N^{QSD}(\\{(z_1, \\ldots, z_N) \\in A\\}) = \\nu_N^{QSD}(\\{(z_{\\sigma(1)}, \\ldots, z_{\\sigma(N)}) \\in A\\})",
+      "metadata": {
+        "label": "lem-exchangeability"
+      },
+      "section": "## **4. Identification of the Limit Point**",
+      "raw_directive": "214: #### **Lemma A.1: Exchangeability of the N-Particle QSD**\n215: \n216: :::{prf:lemma} Exchangeability of the N-Particle QSD\n217: :label: lem-exchangeability\n218: \n219: The unique N-particle QSD $\\nu_N^{QSD}$ is an exchangeable measure on the product space $\\Omega^N$. That is, for any permutation $\\sigma$ of the indices $\\{1, \\ldots, N\\}$ and any measurable set $A \\subseteq \\Omega^N$,\n220: \n221: $$\n222: \\nu_N^{QSD}(\\{(z_1, \\ldots, z_N) \\in A\\}) = \\nu_N^{QSD}(\\{(z_{\\sigma(1)}, \\ldots, z_{\\sigma(N)}) \\in A\\})\n223: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "08_propagation_chaos",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## **4. Identification of the Limit Point**"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-empirical-convergence",
+      "title": "Weak Convergence of the Empirical Companion Measure",
+      "start_line": 236,
+      "end_line": 252,
+      "header_lines": [
+        237
+      ],
+      "content_start": 239,
+      "content_end": 251,
+      "content": "239: :label: lem-empirical-convergence\n240: \n241: Let $\\{N_k\\}$ be any subsequence such that $\\mu_{N_k} \\rightharpoonup \\mu_\\infty$. For a configuration $S_{N_k} = (z_1, \\ldots, z_{N_k})$ drawn from $\\nu_{N_k}^{QSD}$, define the empirical companion measure\n242: \n243: $$\n244: \\mu_{N_k-1}^{\\text{comp}}(S_{N_k}) := \\frac{1}{N_k-1} \\sum_{j=2}^{N_k} \\delta_{z_j}\n245: \n246: $$\n247: \n248: Then for $\\nu_{N_k}^{QSD}$-almost every sequence of configurations, as $k \\to \\infty$,\n249: \n250: $$\n251: \\mu_{N_k-1}^{\\text{comp}}(S_{N_k}) \\rightharpoonup \\mu_\\infty \\quad \\text{weakly in } \\mathcal{P}(\\Omega)",
+      "metadata": {
+        "label": "lem-empirical-convergence"
+      },
+      "section": "## **4. Identification of the Limit Point**",
+      "raw_directive": "236: #### **Lemma A.2: Weak Convergence of the Empirical Companion Measure**\n237: \n238: :::{prf:lemma} Weak Convergence of the Empirical Companion Measure\n239: :label: lem-empirical-convergence\n240: \n241: Let $\\{N_k\\}$ be any subsequence such that $\\mu_{N_k} \\rightharpoonup \\mu_\\infty$. For a configuration $S_{N_k} = (z_1, \\ldots, z_{N_k})$ drawn from $\\nu_{N_k}^{QSD}$, define the empirical companion measure\n242: \n243: $$\n244: \\mu_{N_k-1}^{\\text{comp}}(S_{N_k}) := \\frac{1}{N_k-1} \\sum_{j=2}^{N_k} \\delta_{z_j}\n245: \n246: $$\n247: \n248: Then for $\\nu_{N_k}^{QSD}$-almost every sequence of configurations, as $k \\to \\infty$,\n249: \n250: $$\n251: \\mu_{N_k-1}^{\\text{comp}}(S_{N_k}) \\rightharpoonup \\mu_\\infty \\quad \\text{weakly in } \\mathcal{P}(\\Omega)\n252: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "08_propagation_chaos",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## **4. Identification of the Limit Point**"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-reward-continuity",
+      "title": "Continuity of the Reward Moments",
+      "start_line": 278,
+      "end_line": 287,
+      "header_lines": [
+        279
+      ],
+      "content_start": 281,
+      "content_end": 286,
+      "content": "281: :label: lem-reward-continuity\n282: \n283: The reward moment functionals $\\mu_R[\\cdot]$ and $\\sigma_R^2[\\cdot]$ are continuous with respect to weak convergence of measures. That is, if $\\{\\mu_k\\}$ converges weakly to $\\mu_\\infty$, then\n284: \n285: $$\n286: \\lim_{k \\to \\infty} \\mu_R[\\mu_k] = \\mu_R[\\mu_\\infty] \\quad \\text{and} \\quad \\lim_{k \\to \\infty} \\sigma_R^2[\\mu_k] = \\sigma_R^2[\\mu_\\infty]",
+      "metadata": {
+        "label": "lem-reward-continuity"
+      },
+      "section": "## **4. Identification of the Limit Point**",
+      "raw_directive": "278: #### **Lemma B.1: Continuity of the Reward Moments**\n279: \n280: :::{prf:lemma} Continuity of the Reward Moments\n281: :label: lem-reward-continuity\n282: \n283: The reward moment functionals $\\mu_R[\\cdot]$ and $\\sigma_R^2[\\cdot]$ are continuous with respect to weak convergence of measures. That is, if $\\{\\mu_k\\}$ converges weakly to $\\mu_\\infty$, then\n284: \n285: $$\n286: \\lim_{k \\to \\infty} \\mu_R[\\mu_k] = \\mu_R[\\mu_\\infty] \\quad \\text{and} \\quad \\lim_{k \\to \\infty} \\sigma_R^2[\\mu_k] = \\sigma_R^2[\\mu_\\infty]\n287: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "08_propagation_chaos",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## **4. Identification of the Limit Point**"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-distance-continuity",
+      "title": "Continuity of the Distance Moments",
+      "start_line": 307,
+      "end_line": 316,
+      "header_lines": [
+        308
+      ],
+      "content_start": 310,
+      "content_end": 315,
+      "content": "310: :label: lem-distance-continuity\n311: \n312: The distance moment functionals $\\mu_D[\\cdot]$ and $\\sigma_D^2[\\cdot]$ are continuous with respect to weak convergence of measures. That is, if $\\{\\mu_k\\}$ converges weakly to $\\mu_\\infty$, then\n313: \n314: $$\n315: \\lim_{k \\to \\infty} \\mu_D[\\mu_k] = \\mu_D[\\mu_\\infty] \\quad \\text{and} \\quad \\lim_{k \\to \\infty} \\sigma_D^2[\\mu_k] = \\sigma_D^2[\\mu_\\infty]",
+      "metadata": {
+        "label": "lem-distance-continuity"
+      },
+      "section": "## **4. Identification of the Limit Point**",
+      "raw_directive": "307: #### **Lemma B.2: Continuity of the Distance Moments**\n308: \n309: :::{prf:lemma} Continuity of the Distance Moments\n310: :label: lem-distance-continuity\n311: \n312: The distance moment functionals $\\mu_D[\\cdot]$ and $\\sigma_D^2[\\cdot]$ are continuous with respect to weak convergence of measures. That is, if $\\{\\mu_k\\}$ converges weakly to $\\mu_\\infty$, then\n313: \n314: $$\n315: \\lim_{k \\to \\infty} \\mu_D[\\mu_k] = \\mu_D[\\mu_\\infty] \\quad \\text{and} \\quad \\lim_{k \\to \\infty} \\sigma_D^2[\\mu_k] = \\sigma_D^2[\\mu_\\infty]\n316: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "08_propagation_chaos",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## **4. Identification of the Limit Point**"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-uniform-integrability",
+      "title": "Uniform Integrability and Interchange of Limits",
+      "start_line": 362,
+      "end_line": 380,
+      "header_lines": [
+        363
+      ],
+      "content_start": 365,
+      "content_end": 379,
+      "content": "365: :label: lem-uniform-integrability\n366: \n367: Let $\\phi \\in C_c^\\infty(\\Omega)$ be a smooth, compactly supported test function. The sequence of integrands\n368: \n369: $$\n370: \\left\\{ \\mathcal{L}_{N_k} \\phi(z_1) \\right\\}_{k=1}^\\infty\n371: \n372: $$\n373: \n374: is uniformly integrable with respect to the measures $\\{\\nu_{N_k}^{QSD}\\}$. Consequently, for any convergent subsequence $\\mu_{N_k} \\rightharpoonup \\mu_\\infty$,\n375: \n376: $$\n377: \\lim_{k \\to \\infty} \\mathbb{E}_{\\nu_{N_k}^{QSD}}[\\mathcal{L}_{N_k} \\phi(z_1)] = \\mathbb{E}_{\\mu_\\infty}\\left[\\lim_{k \\to \\infty} \\mathbb{E}^{(N_k)}_{\\text{comp}}[\\mathcal{L}_{N_k} \\phi(z_1) \\mid z_1]\\right]\n378: \n379: $$",
+      "metadata": {
+        "label": "lem-uniform-integrability"
+      },
+      "section": "## **4. Identification of the Limit Point**",
+      "raw_directive": "362: #### **Lemma C.1: Uniform Integrability and Interchange of Limits**\n363: \n364: :::{prf:lemma} Uniform Integrability and Interchange of Limits\n365: :label: lem-uniform-integrability\n366: \n367: Let $\\phi \\in C_c^\\infty(\\Omega)$ be a smooth, compactly supported test function. The sequence of integrands\n368: \n369: $$\n370: \\left\\{ \\mathcal{L}_{N_k} \\phi(z_1) \\right\\}_{k=1}^\\infty\n371: \n372: $$\n373: \n374: is uniformly integrable with respect to the measures $\\{\\nu_{N_k}^{QSD}\\}$. Consequently, for any convergent subsequence $\\mu_{N_k} \\rightharpoonup \\mu_\\infty$,\n375: \n376: $$\n377: \\lim_{k \\to \\infty} \\mathbb{E}_{\\nu_{N_k}^{QSD}}[\\mathcal{L}_{N_k} \\phi(z_1)] = \\mathbb{E}_{\\mu_\\infty}\\left[\\lim_{k \\to \\infty} \\mathbb{E}^{(N_k)}_{\\text{comp}}[\\mathcal{L}_{N_k} \\phi(z_1) \\mid z_1]\\right]\n378: \n379: $$\n380: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "08_propagation_chaos",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## **4. Identification of the Limit Point**"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-boundary-convergence",
+      "title": "Convergence of Boundary Death and Revival",
+      "start_line": 411,
+      "end_line": 423,
+      "header_lines": [
+        412
+      ],
+      "content_start": 414,
+      "content_end": 422,
+      "content": "414: :label: lem-boundary-convergence\n415: \n416: Let $\\{N_k\\}$ be any subsequence such that $\\mu_{N_k} \\rightharpoonup \\mu_\\infty$. The discrete boundary death and revival mechanism of the N-particle system converges to the continuous interior-killing-and-revival operators. For any smooth test function $\\phi \\in C_c^\\infty(\\Omega)$:\n417: \n418: $$\n419: \\lim_{k \\to \\infty} \\mathbb{E}_{\\nu_{N_k}^{QSD}}[\\mathcal{L}_{\\text{boundary}, N_k} \\phi(z_1)]\n420: = \\int_{\\Omega} \\left(-c(z)\\rho_0(z) + B[\\rho_0, m_{d,\\infty}](z)\\right) \\phi(z) \\, dz\n421: \n422: $$",
+      "metadata": {
+        "label": "lem-boundary-convergence"
+      },
+      "section": "## **4. Identification of the Limit Point**",
+      "raw_directive": "411: #### **Lemma C.2: Convergence of the Boundary Death and Revival Mechanism**\n412: \n413: :::{prf:lemma} Convergence of Boundary Death and Revival\n414: :label: lem-boundary-convergence\n415: \n416: Let $\\{N_k\\}$ be any subsequence such that $\\mu_{N_k} \\rightharpoonup \\mu_\\infty$. The discrete boundary death and revival mechanism of the N-particle system converges to the continuous interior-killing-and-revival operators. For any smooth test function $\\phi \\in C_c^\\infty(\\Omega)$:\n417: \n418: $$\n419: \\lim_{k \\to \\infty} \\mathbb{E}_{\\nu_{N_k}^{QSD}}[\\mathcal{L}_{\\text{boundary}, N_k} \\phi(z_1)]\n420: = \\int_{\\Omega} \\left(-c(z)\\rho_0(z) + B[\\rho_0, m_{d,\\infty}](z)\\right) \\phi(z) \\, dz\n421: \n422: $$\n423: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "08_propagation_chaos",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## **4. Identification of the Limit Point**"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-uniqueness-self-mapping",
+      "title": "Self-Mapping Property of the Solution Operator",
+      "start_line": 935,
+      "end_line": 939,
+      "header_lines": [
+        936
+      ],
+      "content_start": 938,
+      "content_end": 938,
+      "content": "938: :label: lem-uniqueness-self-mapping",
+      "metadata": {
+        "label": "lem-uniqueness-self-mapping"
+      },
+      "section": "## **5. Uniqueness of the Weak Solution via Contraction Mapping**",
+      "raw_directive": "935: A stationary solution is a fixed point of the solution operator $\\mathcal{T}: \\mathcal{P} \\to \\mathcal{P}$.\n936: \n937: :::{prf:lemma} Self-Mapping Property of the Solution Operator\n938: :label: lem-uniqueness-self-mapping\n939: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "08_propagation_chaos",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## **5. Uniqueness of the Weak Solution via Contraction Mapping**"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-uniqueness-lipschitz-moments",
+      "title": "Lipschitz Continuity of Moment Functionals",
+      "start_line": 1062,
+      "end_line": 1073,
+      "header_lines": [
+        1063
+      ],
+      "content_start": 1065,
+      "content_end": 1072,
+      "content": "1065: :label: lem-uniqueness-lipschitz-moments\n1066: \n1067: The moment functionals $\\mu_R[\\cdot], \\sigma_R[\\cdot], \\mu_D[\\cdot], \\sigma_D[\\cdot]$ are Lipschitz continuous from $H^1_w(\\Omega)$ to $\\mathbb{R}$. That is, there exist constants $L_{\\mu}, L_{\\sigma} > 0$ such that for all $\\rho_1, \\rho_2 \\in \\mathcal{P}$:\n1068: \n1069: $$\n1070: |\\mu_R[\\rho_1] - \\mu_R[\\rho_2]| \\le L_{\\mu} \\|\\rho_1 - \\rho_2\\|_{H^1_w}\n1071: \n1072: $$",
+      "metadata": {
+        "label": "lem-uniqueness-lipschitz-moments"
+      },
+      "section": "## **5. Uniqueness of the Weak Solution via Contraction Mapping**",
+      "raw_directive": "1062: :::\n1063: \n1064: :::{prf:lemma} Lipschitz Continuity of Moment Functionals\n1065: :label: lem-uniqueness-lipschitz-moments\n1066: \n1067: The moment functionals $\\mu_R[\\cdot], \\sigma_R[\\cdot], \\mu_D[\\cdot], \\sigma_D[\\cdot]$ are Lipschitz continuous from $H^1_w(\\Omega)$ to $\\mathbb{R}$. That is, there exist constants $L_{\\mu}, L_{\\sigma} > 0$ such that for all $\\rho_1, \\rho_2 \\in \\mathcal{P}$:\n1068: \n1069: $$\n1070: |\\mu_R[\\rho_1] - \\mu_R[\\rho_2]| \\le L_{\\mu} \\|\\rho_1 - \\rho_2\\|_{H^1_w}\n1071: \n1072: $$\n1073: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "08_propagation_chaos",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## **5. Uniqueness of the Weak Solution via Contraction Mapping**"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-uniqueness-fixed-point-bounded",
+      "title": "Fixed Points Lie in a Bounded Ball",
+      "start_line": 1107,
+      "end_line": 1116,
+      "header_lines": [
+        1108
+      ],
+      "content_start": 1110,
+      "content_end": 1115,
+      "content": "1110: :label: lem-uniqueness-fixed-point-bounded\n1111: \n1112: Any fixed point $\\rho^* \\in \\mathcal{P}$ of the solution operator $\\mathcal{T}$ satisfies a uniform bound in the $H^1_w$ norm. Specifically, there exists a radius $R_* < \\infty$, independent of the particular fixed point, such that:\n1113: \n1114: $$\n1115: \\|\\rho^*\\|_{H^1_w} \\leq R_*",
+      "metadata": {
+        "label": "lem-uniqueness-fixed-point-bounded"
+      },
+      "section": "## **5. Uniqueness of the Weak Solution via Contraction Mapping**",
+      "raw_directive": "1107: :::\n1108: \n1109: :::{prf:lemma} Fixed Points Lie in a Bounded Ball\n1110: :label: lem-uniqueness-fixed-point-bounded\n1111: \n1112: Any fixed point $\\rho^* \\in \\mathcal{P}$ of the solution operator $\\mathcal{T}$ satisfies a uniform bound in the $H^1_w$ norm. Specifically, there exists a radius $R_* < \\infty$, independent of the particular fixed point, such that:\n1113: \n1114: $$\n1115: \\|\\rho^*\\|_{H^1_w} \\leq R_*\n1116: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "08_propagation_chaos",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## **5. Uniqueness of the Weak Solution via Contraction Mapping**"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-uniqueness-lipschitz-fitness-potential",
+      "title": "Lipschitz Continuity of the Fitness Potential",
+      "start_line": 1241,
+      "end_line": 1250,
+      "header_lines": [
+        1242
+      ],
+      "content_start": 1244,
+      "content_end": 1249,
+      "content": "1244: :label: lem-uniqueness-lipschitz-fitness-potential\n1245: \n1246: The fitness potential operator $\\rho \\mapsto V[\\rho]$ is Lipschitz continuous from $\\mathcal{P}$ to $L^\\infty(\\Omega)$. That is, there exists $L_V > 0$ such that:\n1247: \n1248: $$\n1249: \\|V[\\rho_1] - V[\\rho_2]\\|_{L^\\infty} \\le L_V \\|\\rho_1 - \\rho_2\\|_{H^1_w}",
+      "metadata": {
+        "label": "lem-uniqueness-lipschitz-fitness-potential"
+      },
+      "section": "## **5. Uniqueness of the Weak Solution via Contraction Mapping**",
+      "raw_directive": "1241: :::\n1242: \n1243: :::{prf:lemma} Lipschitz Continuity of the Fitness Potential\n1244: :label: lem-uniqueness-lipschitz-fitness-potential\n1245: \n1246: The fitness potential operator $\\rho \\mapsto V[\\rho]$ is Lipschitz continuous from $\\mathcal{P}$ to $L^\\infty(\\Omega)$. That is, there exists $L_V > 0$ such that:\n1247: \n1248: $$\n1249: \\|V[\\rho_1] - V[\\rho_2]\\|_{L^\\infty} \\le L_V \\|\\rho_1 - \\rho_2\\|_{H^1_w}\n1250: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "08_propagation_chaos",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## **5. Uniqueness of the Weak Solution via Contraction Mapping**"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-uniqueness-lipschitz-cloning-operator",
+      "title": "Local Lipschitz Continuity of the Cloning Operator",
+      "start_line": 1279,
+      "end_line": 1290,
+      "header_lines": [
+        1280
+      ],
+      "content_start": 1282,
+      "content_end": 1289,
+      "content": "1282: :label: lem-uniqueness-lipschitz-cloning-operator\n1283: \n1284: The cloning operator $S: \\mathcal{P} \\to H^1_w(\\Omega)$ is **locally Lipschitz continuous**. For any $R > 0$, on the ball $\\mathcal{P}_R := \\mathcal{P} \\cap \\{\\rho : \\|\\rho\\|_{H^1_w} \\leq R\\}$, there exists a Lipschitz constant $L_S(R)$ such that for all $\\rho_1, \\rho_2 \\in \\mathcal{P}_R$:\n1285: \n1286: $$\n1287: \\|S[\\rho_1] - S[\\rho_2]\\|_{H^1_w} \\le L_S(R) \\|\\rho_1 - \\rho_2\\|_{H^1_w}\n1288: \n1289: $$",
+      "metadata": {
+        "label": "lem-uniqueness-lipschitz-cloning-operator"
+      },
+      "section": "## **5. Uniqueness of the Weak Solution via Contraction Mapping**",
+      "raw_directive": "1279: :::\n1280: \n1281: :::{prf:lemma} Local Lipschitz Continuity of the Cloning Operator\n1282: :label: lem-uniqueness-lipschitz-cloning-operator\n1283: \n1284: The cloning operator $S: \\mathcal{P} \\to H^1_w(\\Omega)$ is **locally Lipschitz continuous**. For any $R > 0$, on the ball $\\mathcal{P}_R := \\mathcal{P} \\cap \\{\\rho : \\|\\rho\\|_{H^1_w} \\leq R\\}$, there exists a Lipschitz constant $L_S(R)$ such that for all $\\rho_1, \\rho_2 \\in \\mathcal{P}_R$:\n1285: \n1286: $$\n1287: \\|S[\\rho_1] - S[\\rho_2]\\|_{H^1_w} \\le L_S(R) \\|\\rho_1 - \\rho_2\\|_{H^1_w}\n1288: \n1289: $$\n1290: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "08_propagation_chaos",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## **5. Uniqueness of the Weak Solution via Contraction Mapping**"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-uniqueness-hormander-verification",
+      "title": "Verification of Hörmander's Condition for the Kinetic Operator",
+      "start_line": 1468,
+      "end_line": 1472,
+      "header_lines": [
+        1469
+      ],
+      "content_start": 1471,
+      "content_end": 1471,
+      "content": "1471: :label: lem-uniqueness-hormander-verification",
+      "metadata": {
+        "label": "lem-uniqueness-hormander-verification"
+      },
+      "section": "## **5. Uniqueness of the Weak Solution via Contraction Mapping**",
+      "raw_directive": "1468: :::\n1469: \n1470: :::{prf:lemma} Verification of Hörmander's Condition for the Kinetic Operator\n1471: :label: lem-uniqueness-hormander-verification\n1472: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "08_propagation_chaos",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## **5. Uniqueness of the Weak Solution via Contraction Mapping**"
+      }
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-uniqueness-scaling-hypoelliptic-constant",
+      "title": "Scaling of $C_{\\text{hypo}}$ with Diffusion Strength",
+      "start_line": 1642,
+      "end_line": 1658,
+      "header_lines": [
+        1643
+      ],
+      "content_start": 1645,
+      "content_end": 1657,
+      "content": "1645: :label: lem-uniqueness-scaling-hypoelliptic-constant\n1646: \n1647: The constant $C_{\\text{hypo}}$ from Theorem [](#thm-uniqueness-hypoelliptic-regularity) satisfies the scaling estimate:\n1648: \n1649: $$\n1650: C_{\\text{hypo}} \\sim \\frac{1}{\\min(\\sigma_v^2 \\gamma, C)}\n1651: \n1652: $$\n1653: \n1654: In particular, for $C$ fixed and $\\sigma_v^2$ sufficiently large:\n1655: \n1656: $$\n1657: C_{\\text{hypo}} \\lesssim \\frac{1}{\\sigma_v^2 \\gamma}",
+      "metadata": {
+        "label": "lem-uniqueness-scaling-hypoelliptic-constant"
+      },
+      "section": "## **5. Uniqueness of the Weak Solution via Contraction Mapping**",
+      "raw_directive": "1642: #### **C.4. Scaling of the Hypoelliptic Constant**\n1643: \n1644: :::{prf:lemma} Scaling of $C_{\\text{hypo}}$ with Diffusion Strength\n1645: :label: lem-uniqueness-scaling-hypoelliptic-constant\n1646: \n1647: The constant $C_{\\text{hypo}}$ from Theorem [](#thm-uniqueness-hypoelliptic-regularity) satisfies the scaling estimate:\n1648: \n1649: $$\n1650: C_{\\text{hypo}} \\sim \\frac{1}{\\min(\\sigma_v^2 \\gamma, C)}\n1651: \n1652: $$\n1653: \n1654: In particular, for $C$ fixed and $\\sigma_v^2$ sufficiently large:\n1655: \n1656: $$\n1657: C_{\\text{hypo}} \\lesssim \\frac{1}{\\sigma_v^2 \\gamma}\n1658: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "08_propagation_chaos",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## **5. Uniqueness of the Weak Solution via Contraction Mapping**"
+      }
+    }
+  ]
+}

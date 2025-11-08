@@ -1,0 +1,125 @@
+{
+  "chapter_index": 9,
+  "section_id": "## 6. Boundedness of the Adaptive Perturbations",
+  "directive_count": 7,
+  "hints": [
+    {
+      "directive_type": "lemma",
+      "label": "lem-adaptive-force-bounded",
+      "title": "N-Uniform Bounded Perturbation from Adaptive Force",
+      "start_line": 1230,
+      "end_line": 1240,
+      "header_lines": [
+        1231
+      ],
+      "content_start": 1233,
+      "content_end": 1239,
+      "content": "1233: :label: lem-adaptive-force-bounded\n1234: \n1235: The adaptive force $\\mathbf{F}_{\\text{adapt}} = \\epsilon_F \\nabla V_{\\text{fit}}[f_k, \\rho]$ contributes a bounded perturbation to the drift of $V_{\\text{total}}$. There exists a **\u03c1-dependent but N-uniform constant** $K_F(\\rho) < \\infty$ such that:\n1236: \n1237: $$\n1238: \\left| \\left\\langle \\nabla V_{\\text{total}}(S), \\, \\mathbf{F}_{\\text{adapt}}(S) \\right\\rangle \\right| \\le \\epsilon_F K_F(\\rho) (V_{\\text{total}}(S) + 1)\n1239: $$",
+      "metadata": {
+        "label": "lem-adaptive-force-bounded"
+      },
+      "section": "## 6. Boundedness of the Adaptive Perturbations",
+      "raw_directive": "1230: ### 6.2. Boundedness of the Adaptive Force Contribution\n1231: \n1232: :::{prf:lemma} N-Uniform Bounded Perturbation from Adaptive Force\n1233: :label: lem-adaptive-force-bounded\n1234: \n1235: The adaptive force $\\mathbf{F}_{\\text{adapt}} = \\epsilon_F \\nabla V_{\\text{fit}}[f_k, \\rho]$ contributes a bounded perturbation to the drift of $V_{\\text{total}}$. There exists a **\u03c1-dependent but N-uniform constant** $K_F(\\rho) < \\infty$ such that:\n1236: \n1237: $$\n1238: \\left| \\left\\langle \\nabla V_{\\text{total}}(S), \\, \\mathbf{F}_{\\text{adapt}}(S) \\right\\rangle \\right| \\le \\epsilon_F K_F(\\rho) (V_{\\text{total}}(S) + 1)\n1239: $$\n1240: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-34",
+      "title": null,
+      "start_line": 1242,
+      "end_line": 1296,
+      "header_lines": [],
+      "content_start": 1243,
+      "content_end": 1295,
+      "content": "1243: \n1244: :::{prf:proof}\n1245: By the Cauchy-Schwarz inequality:\n1246: \n1247: $$\n1248: \\left| \\left\\langle \\nabla V_{\\text{total}}, \\, \\mathbf{F}_{\\text{adapt}} \\right\\rangle \\right| \\le \\|\\nabla V_{\\text{total}}\\| \\cdot \\|\\mathbf{F}_{\\text{adapt}}\\|\n1249: $$\n1250: \n1251: **Step 1: N-Uniform Bound on $\\|\\mathbf{F}_{\\text{adapt}}\\|$.** By **Appendix A, Theorem A.1** (Theorem {prf:ref}`thm-c1-regularity`), the C\u00b9 regularity of the \u03c1-localized fitness potential establishes that:\n1252: \n1253: $$\n1254: \\|\\mathbf{F}_{\\text{adapt}}(S)\\| = \\epsilon_F \\|\\nabla V_{\\text{fit}}[f_k, \\rho](S)\\| \\le \\epsilon_F F_{\\text{adapt,max}}(\\rho)\n1255: $$\n1256: \n1257: where $F_{\\text{adapt,max}}(\\rho) = O(1/\\rho)$ is the **N-uniform** explicit bound derived in the appendix through rigorous chain rule analysis and the telescoping property of normalized localization weights.\n1258: \n1259: **Step 2: Polynomial growth of $\\|\\nabla V_{\\text{total}}\\|$.** The Lyapunov function is:\n1260: \n1261: $$\n1262: V_{\\text{total}}(S) = \\alpha_x V_{\\text{Var},x} + \\alpha_v V_{\\text{Var},v} + \\alpha_D V_{\\text{Mean},D} + \\alpha_R V_{\\text{Mean},R}\n1263: $$\n1264: \n1265: Each component is a quadratic or linear function of the particle positions and velocities. For example:\n1266: \n1267: $$\n1268: V_{\\text{Var},x} = \\frac{1}{N} \\sum_{i=1}^N \\|x_i - \\bar{x}\\|^2\n1269: $$\n1270: \n1271: Its gradient with respect to $x_i$ is:\n1272: \n1273: $$\n1274: \\nabla_{x_i} V_{\\text{Var},x} = \\frac{2}{N} (x_i - \\bar{x})\n1275: $$\n1276: \n1277: Thus:\n1278: \n1279: $$\n1280: \\|\\nabla_{x_i} V_{\\text{Var},x}\\| \\le \\frac{2}{N} \\|x_i - \\bar{x}\\| \\le \\frac{2}{\\sqrt{N}} \\sqrt{V_{\\text{Var},x}}\n1281: $$\n1282: \n1283: Summing over all particles and components:\n1284: \n1285: $$\n1286: \\|\\nabla V_{\\text{total}}\\|^2 \\le C_{\\nabla} (V_{\\text{total}} + 1)\n1287: $$\n1288: \n1289: for some constant $C_{\\nabla}$ depending on the weights $\\alpha_x, \\alpha_v, \\alpha_D, \\alpha_R$.\n1290: \n1291: **Step 3: Combine.** Therefore:\n1292: \n1293: $$\n1294: \\left| \\left\\langle \\nabla V_{\\text{total}}, \\, \\mathbf{F}_{\\text{adapt}} \\right\\rangle \\right| \\le \\sqrt{C_{\\nabla} (V_{\\text{total}} + 1)} \\cdot \\epsilon_F F_{\\text{adapt,max}}(\\rho) \\le \\epsilon_F K_F(\\rho) (V_{\\text{total}} + 1)\n1295: $$",
+      "metadata": {},
+      "section": "## 6. Boundedness of the Adaptive Perturbations",
+      "raw_directive": "1242: :::\n1243: \n1244: :::{prf:proof}\n1245: By the Cauchy-Schwarz inequality:\n1246: \n1247: $$\n1248: \\left| \\left\\langle \\nabla V_{\\text{total}}, \\, \\mathbf{F}_{\\text{adapt}} \\right\\rangle \\right| \\le \\|\\nabla V_{\\text{total}}\\| \\cdot \\|\\mathbf{F}_{\\text{adapt}}\\|\n1249: $$\n1250: \n1251: **Step 1: N-Uniform Bound on $\\|\\mathbf{F}_{\\text{adapt}}\\|$.** By **Appendix A, Theorem A.1** (Theorem {prf:ref}`thm-c1-regularity`), the C\u00b9 regularity of the \u03c1-localized fitness potential establishes that:\n1252: \n1253: $$\n1254: \\|\\mathbf{F}_{\\text{adapt}}(S)\\| = \\epsilon_F \\|\\nabla V_{\\text{fit}}[f_k, \\rho](S)\\| \\le \\epsilon_F F_{\\text{adapt,max}}(\\rho)\n1255: $$\n1256: \n1257: where $F_{\\text{adapt,max}}(\\rho) = O(1/\\rho)$ is the **N-uniform** explicit bound derived in the appendix through rigorous chain rule analysis and the telescoping property of normalized localization weights.\n1258: \n1259: **Step 2: Polynomial growth of $\\|\\nabla V_{\\text{total}}\\|$.** The Lyapunov function is:\n1260: \n1261: $$\n1262: V_{\\text{total}}(S) = \\alpha_x V_{\\text{Var},x} + \\alpha_v V_{\\text{Var},v} + \\alpha_D V_{\\text{Mean},D} + \\alpha_R V_{\\text{Mean},R}\n1263: $$\n1264: \n1265: Each component is a quadratic or linear function of the particle positions and velocities. For example:\n1266: \n1267: $$\n1268: V_{\\text{Var},x} = \\frac{1}{N} \\sum_{i=1}^N \\|x_i - \\bar{x}\\|^2\n1269: $$\n1270: \n1271: Its gradient with respect to $x_i$ is:\n1272: \n1273: $$\n1274: \\nabla_{x_i} V_{\\text{Var},x} = \\frac{2}{N} (x_i - \\bar{x})\n1275: $$\n1276: \n1277: Thus:\n1278: \n1279: $$\n1280: \\|\\nabla_{x_i} V_{\\text{Var},x}\\| \\le \\frac{2}{N} \\|x_i - \\bar{x}\\| \\le \\frac{2}{\\sqrt{N}} \\sqrt{V_{\\text{Var},x}}\n1281: $$\n1282: \n1283: Summing over all particles and components:\n1284: \n1285: $$\n1286: \\|\\nabla V_{\\text{total}}\\|^2 \\le C_{\\nabla} (V_{\\text{total}} + 1)\n1287: $$\n1288: \n1289: for some constant $C_{\\nabla}$ depending on the weights $\\alpha_x, \\alpha_v, \\alpha_D, \\alpha_R$.\n1290: \n1291: **Step 3: Combine.** Therefore:\n1292: \n1293: $$\n1294: \\left| \\left\\langle \\nabla V_{\\text{total}}, \\, \\mathbf{F}_{\\text{adapt}} \\right\\rangle \\right| \\le \\sqrt{C_{\\nabla} (V_{\\text{total}} + 1)} \\cdot \\epsilon_F F_{\\text{adapt,max}}(\\rho) \\le \\epsilon_F K_F(\\rho) (V_{\\text{total}} + 1)\n1295: $$\n1296: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-viscous-dissipative",
+      "title": "Dissipative Contribution from Viscous Force",
+      "start_line": 1315,
+      "end_line": 1337,
+      "header_lines": [
+        1316
+      ],
+      "content_start": 1318,
+      "content_end": 1336,
+      "content": "1318: :label: lem-viscous-dissipative\n1319: \n1320: The normalized viscous force\n1321: \n1322: $$\n1323: \\mathbf{F}_{\\text{viscous}} = \\nu \\sum_{j \\neq i} \\frac{K(x_i - x_j)}{\\deg(i)} (v_j - v_i)\n1324: $$\n1325: \n1326: contributes a **negative** (dissipative) term to the Stratonovich drift of $V_{\\text{Var},v}$:\n1327: \n1328: $$\n1329: A_{\\text{viscous}}(V_{\\text{Var},v}) = -\\nu \\mathcal{D}_{\\text{visc}}(S) \\le 0\n1330: $$\n1331: \n1332: where\n1333: \n1334: $$\n1335: \\mathcal{D}_{\\text{visc}}(S) := \\frac{1}{N} \\sum_{i < j} K(x_i - x_j) \\left[ \\frac{1}{\\deg(i)} + \\frac{1}{\\deg(j)} \\right] \\|v_i - v_j\\|^2 \\ge 0\n1336: $$",
+      "metadata": {
+        "label": "lem-viscous-dissipative"
+      },
+      "section": "## 6. Boundedness of the Adaptive Perturbations",
+      "raw_directive": "1315: ### 6.3. Dissipativity of the Viscous Force\n1316: \n1317: :::{prf:lemma} Dissipative Contribution from Viscous Force\n1318: :label: lem-viscous-dissipative\n1319: \n1320: The normalized viscous force\n1321: \n1322: $$\n1323: \\mathbf{F}_{\\text{viscous}} = \\nu \\sum_{j \\neq i} \\frac{K(x_i - x_j)}{\\deg(i)} (v_j - v_i)\n1324: $$\n1325: \n1326: contributes a **negative** (dissipative) term to the Stratonovich drift of $V_{\\text{Var},v}$:\n1327: \n1328: $$\n1329: A_{\\text{viscous}}(V_{\\text{Var},v}) = -\\nu \\mathcal{D}_{\\text{visc}}(S) \\le 0\n1330: $$\n1331: \n1332: where\n1333: \n1334: $$\n1335: \\mathcal{D}_{\\text{visc}}(S) := \\frac{1}{N} \\sum_{i < j} K(x_i - x_j) \\left[ \\frac{1}{\\deg(i)} + \\frac{1}{\\deg(j)} \\right] \\|v_i - v_j\\|^2 \\ge 0\n1336: $$\n1337: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-131",
+      "title": null,
+      "start_line": 1339,
+      "end_line": 1383,
+      "header_lines": [],
+      "content_start": 1340,
+      "content_end": 1382,
+      "content": "1340: \n1341: :::{prf:proof}\n1342: The velocity variance is:\n1343: \n1344: $$\n1345: V_{\\text{Var},v} = \\frac{1}{N} \\sum_{i=1}^N \\|v_i - \\bar{v}\\|^2\n1346: $$\n1347: \n1348: From the Stratonovich chain rule (Theorem [](#thm-strat-chain)), the contribution of the normalized viscous force to the drift is:\n1349: \n1350: $$\n1351: A_{\\text{viscous}}(V_{\\text{Var},v}) = \\sum_{i=1}^N \\left\\langle \\nabla_{v_i} V_{\\text{Var},v}, \\, \\nu \\sum_{j \\neq i} \\frac{K(x_i - x_j)}{\\deg(i)} (v_j - v_i) \\right\\rangle\n1352: $$\n1353: \n1354: Since $\\nabla_{v_i} V_{\\text{Var},v} = \\frac{2}{N}(v_i - \\bar{v})$:\n1355: \n1356: $$\n1357: \\begin{aligned}\n1358: A_{\\text{viscous}}(V_{\\text{Var},v}) &= \\frac{2\\nu}{N} \\sum_{i=1}^N \\frac{1}{\\deg(i)} \\sum_{j \\neq i} K(x_i - x_j) \\langle v_i - \\bar{v}, \\, v_j - v_i \\rangle\n1359: \\end{aligned}\n1360: $$\n1361: \n1362: **Key observation:** We use the **antisymmetric pairing structure** of $(v_j - v_i)$.\n1363: \n1364: Define the symmetric weight matrix $W_{ij} = K(x_i - x_j)$. Since the sum over all pairs can be symmetrized:\n1365: \n1366: $$\n1367: \\begin{aligned}\n1368: A_{\\text{viscous}}(V_{\\text{Var},v}) &= \\frac{\\nu}{N} \\sum_{i < j} W_{ij} \\left[ \\frac{\\langle v_i - \\bar{v}, v_j - v_i \\rangle}{\\deg(i)} + \\frac{\\langle v_j - \\bar{v}, v_i - v_j \\rangle}{\\deg(j)} \\right]\n1369: \\end{aligned}\n1370: $$\n1371: \n1372: Using $\\langle v_j - \\bar{v}, v_i - v_j \\rangle = -\\langle v_j - \\bar{v}, v_j - v_i \\rangle$:\n1373: \n1374: $$\n1375: = \\frac{\\nu}{N} \\sum_{i < j} W_{ij} \\left[ \\frac{1}{\\deg(i)} - \\frac{1}{\\deg(j)} \\right] \\langle v_i - \\bar{v}, v_j - v_i \\rangle\n1376: $$\n1377: \n1378: Expanding $\\langle v_i - \\bar{v}, v_j - v_i \\rangle = -\\|v_i - \\bar{v}\\|^2 + \\langle v_i - \\bar{v}, v_j - \\bar{v} \\rangle$ and using the identity $\\|v_i - v_j\\|^2 = \\|v_i - \\bar{v}\\|^2 + \\|v_j - \\bar{v}\\|^2 - 2\\langle v_i - \\bar{v}, v_j - \\bar{v} \\rangle$, we obtain after algebraic manipulation:\n1379: \n1380: $$\n1381: A_{\\text{viscous}}(V_{\\text{Var},v}) = -\\frac{\\nu}{N} \\sum_{i < j} K(x_i - x_j) \\left[ \\frac{1}{\\deg(i)} + \\frac{1}{\\deg(j)} \\right] \\|v_i - v_j\\|^2 \\le 0\n1382: $$",
+      "metadata": {},
+      "section": "## 6. Boundedness of the Adaptive Perturbations",
+      "raw_directive": "1339: :::\n1340: \n1341: :::{prf:proof}\n1342: The velocity variance is:\n1343: \n1344: $$\n1345: V_{\\text{Var},v} = \\frac{1}{N} \\sum_{i=1}^N \\|v_i - \\bar{v}\\|^2\n1346: $$\n1347: \n1348: From the Stratonovich chain rule (Theorem [](#thm-strat-chain)), the contribution of the normalized viscous force to the drift is:\n1349: \n1350: $$\n1351: A_{\\text{viscous}}(V_{\\text{Var},v}) = \\sum_{i=1}^N \\left\\langle \\nabla_{v_i} V_{\\text{Var},v}, \\, \\nu \\sum_{j \\neq i} \\frac{K(x_i - x_j)}{\\deg(i)} (v_j - v_i) \\right\\rangle\n1352: $$\n1353: \n1354: Since $\\nabla_{v_i} V_{\\text{Var},v} = \\frac{2}{N}(v_i - \\bar{v})$:\n1355: \n1356: $$\n1357: \\begin{aligned}\n1358: A_{\\text{viscous}}(V_{\\text{Var},v}) &= \\frac{2\\nu}{N} \\sum_{i=1}^N \\frac{1}{\\deg(i)} \\sum_{j \\neq i} K(x_i - x_j) \\langle v_i - \\bar{v}, \\, v_j - v_i \\rangle\n1359: \\end{aligned}\n1360: $$\n1361: \n1362: **Key observation:** We use the **antisymmetric pairing structure** of $(v_j - v_i)$.\n1363: \n1364: Define the symmetric weight matrix $W_{ij} = K(x_i - x_j)$. Since the sum over all pairs can be symmetrized:\n1365: \n1366: $$\n1367: \\begin{aligned}\n1368: A_{\\text{viscous}}(V_{\\text{Var},v}) &= \\frac{\\nu}{N} \\sum_{i < j} W_{ij} \\left[ \\frac{\\langle v_i - \\bar{v}, v_j - v_i \\rangle}{\\deg(i)} + \\frac{\\langle v_j - \\bar{v}, v_i - v_j \\rangle}{\\deg(j)} \\right]\n1369: \\end{aligned}\n1370: $$\n1371: \n1372: Using $\\langle v_j - \\bar{v}, v_i - v_j \\rangle = -\\langle v_j - \\bar{v}, v_j - v_i \\rangle$:\n1373: \n1374: $$\n1375: = \\frac{\\nu}{N} \\sum_{i < j} W_{ij} \\left[ \\frac{1}{\\deg(i)} - \\frac{1}{\\deg(j)} \\right] \\langle v_i - \\bar{v}, v_j - v_i \\rangle\n1376: $$\n1377: \n1378: Expanding $\\langle v_i - \\bar{v}, v_j - v_i \\rangle = -\\|v_i - \\bar{v}\\|^2 + \\langle v_i - \\bar{v}, v_j - \\bar{v} \\rangle$ and using the identity $\\|v_i - v_j\\|^2 = \\|v_i - \\bar{v}\\|^2 + \\|v_j - \\bar{v}\\|^2 - 2\\langle v_i - \\bar{v}, v_j - \\bar{v} \\rangle$, we obtain after algebraic manipulation:\n1379: \n1380: $$\n1381: A_{\\text{viscous}}(V_{\\text{Var},v}) = -\\frac{\\nu}{N} \\sum_{i < j} K(x_i - x_j) \\left[ \\frac{1}{\\deg(i)} + \\frac{1}{\\deg(j)} \\right] \\|v_i - v_j\\|^2 \\le 0\n1382: $$\n1383: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-diffusion-bounded",
+      "title": "Bounded Change from Adaptive Diffusion",
+      "start_line": 1393,
+      "end_line": 1403,
+      "header_lines": [
+        1394
+      ],
+      "content_start": 1396,
+      "content_end": 1402,
+      "content": "1396: :label: lem-diffusion-bounded\n1397: \n1398: Replacing the constant diffusion $\\sigma I$ with the adaptive diffusion $\\Sigma_{\\text{reg}}(x, S)$ results in a bounded change to the drift. The diffusion contribution $A_{\\text{diff}}(S)$ from Definition [](#def-strat-drift) satisfies:\n1399: \n1400: $$\n1401: |A_{\\text{diff}}(S)| \\le C_{\\text{diff}} < \\infty\n1402: $$",
+      "metadata": {
+        "label": "lem-diffusion-bounded"
+      },
+      "section": "## 6. Boundedness of the Adaptive Perturbations",
+      "raw_directive": "1393: ### 6.4. Boundedness of the Diffusion Perturbation\n1394: \n1395: :::{prf:lemma} Bounded Change from Adaptive Diffusion\n1396: :label: lem-diffusion-bounded\n1397: \n1398: Replacing the constant diffusion $\\sigma I$ with the adaptive diffusion $\\Sigma_{\\text{reg}}(x, S)$ results in a bounded change to the drift. The diffusion contribution $A_{\\text{diff}}(S)$ from Definition [](#def-strat-drift) satisfies:\n1399: \n1400: $$\n1401: |A_{\\text{diff}}(S)| \\le C_{\\text{diff}} < \\infty\n1402: $$\n1403: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-197",
+      "title": null,
+      "start_line": 1405,
+      "end_line": 1459,
+      "header_lines": [],
+      "content_start": 1406,
+      "content_end": 1458,
+      "content": "1406: \n1407: :::{prf:proof}\n1408: Recall from Definition [](#def-strat-drift):\n1409: \n1410: $$\n1411: A_{\\text{diff}}(S) = \\frac{1}{2} \\sum_{i=1}^N \\sum_{j=1}^d \\left[ (\\sigma_{ij}^{\\text{reg}} \\cdot \\nabla_{v_i})(\\sigma_{ij}^{\\text{reg}} \\cdot \\nabla_{v_i} V) - \\sigma^2 \\|\\nabla_{v_i} V\\|^2 \\right]\n1412: $$\n1413: \n1414: where $\\sigma_{ij}^{\\text{reg}}$ is the $j$-th column of $\\Sigma_{\\text{reg}}(x_i, S)$.\n1415: \n1416: **Step 1: Bound the Stratonovich second-order term.** The term $(\\sigma_{ij} \\cdot \\nabla_{v_i})(\\sigma_{ij} \\cdot \\nabla_{v_i} V)$ is a directional second derivative. By the chain rule:\n1417: \n1418: $$\n1419: (\\sigma_{ij} \\cdot \\nabla_{v_i})(\\sigma_{ij} \\cdot \\nabla_{v_i} V) = \\langle \\sigma_{ij}, \\nabla^2_{v_i} V \\sigma_{ij} \\rangle + \\langle \\sigma_{ij} \\cdot \\nabla_{v_i} \\sigma_{ij}, \\nabla_{v_i} V \\rangle\n1420: $$\n1421: \n1422: The first term is bounded using the Hessian of $V$:\n1423: \n1424: $$\n1425: \\left| \\langle \\sigma_{ij}, \\nabla^2_{v_i} V \\sigma_{ij} \\rangle \\right| \\le \\|\\sigma_{ij}\\|^2 \\|\\nabla^2_{v_i} V\\| \\le c_{\\max} \\|\\nabla^2 V\\|\n1426: $$\n1427: \n1428: by Theorem [](#thm-ueph).\n1429: \n1430: The second term involves the derivative of the diffusion coefficient. Since $\\Sigma_{\\text{reg}}$ has bounded derivatives (it's a smooth function of the uniformly bounded $H(S)$), there exists $L_\\Sigma < \\infty$ such that:\n1431: \n1432: $$\n1433: \\left| \\langle \\sigma_{ij} \\cdot \\nabla_{v_i} \\sigma_{ij}, \\nabla_{v_i} V \\rangle \\right| \\le L_\\Sigma \\|\\nabla V\\|\n1434: $$\n1435: \n1436: **Step 2: Bound the backbone term.** For the backbone diffusion $\\sigma I$:\n1437: \n1438: $$\n1439: \\sigma^2 \\|\\nabla_{v_i} V\\|^2 \\le \\sigma^2 \\|\\nabla V\\|^2\n1440: $$\n1441: \n1442: **Step 3: Combine.** Since $V_{\\text{total}}$ is a quadratic-like function with bounded second derivatives:\n1443: \n1444: $$\n1445: \\|\\nabla^2 V_{\\text{total}}\\| \\le C_{\\nabla\\nabla}, \\quad \\|\\nabla V_{\\text{total}}\\| \\le C_{\\nabla} (V_{\\text{total}} + 1)^{1/2}\n1446: $$\n1447: \n1448: Therefore:\n1449: \n1450: $$\n1451: |A_{\\text{diff}}(S)| \\le \\frac{N d}{2} \\left( c_{\\max} C_{\\nabla\\nabla} + L_\\Sigma C_{\\nabla} (V_{\\text{total}} + 1)^{1/2} + \\sigma^2 C_{\\nabla}^2 (V_{\\text{total}} + 1) \\right)\n1452: $$\n1453: \n1454: For the perturbation analysis, we can bound this by:\n1455: \n1456: $$\n1457: |A_{\\text{diff}}(S)| \\le C_{\\text{diff,0}} + C_{\\text{diff,1}} V_{\\text{total}}\n1458: $$",
+      "metadata": {},
+      "section": "## 6. Boundedness of the Adaptive Perturbations",
+      "raw_directive": "1405: :::\n1406: \n1407: :::{prf:proof}\n1408: Recall from Definition [](#def-strat-drift):\n1409: \n1410: $$\n1411: A_{\\text{diff}}(S) = \\frac{1}{2} \\sum_{i=1}^N \\sum_{j=1}^d \\left[ (\\sigma_{ij}^{\\text{reg}} \\cdot \\nabla_{v_i})(\\sigma_{ij}^{\\text{reg}} \\cdot \\nabla_{v_i} V) - \\sigma^2 \\|\\nabla_{v_i} V\\|^2 \\right]\n1412: $$\n1413: \n1414: where $\\sigma_{ij}^{\\text{reg}}$ is the $j$-th column of $\\Sigma_{\\text{reg}}(x_i, S)$.\n1415: \n1416: **Step 1: Bound the Stratonovich second-order term.** The term $(\\sigma_{ij} \\cdot \\nabla_{v_i})(\\sigma_{ij} \\cdot \\nabla_{v_i} V)$ is a directional second derivative. By the chain rule:\n1417: \n1418: $$\n1419: (\\sigma_{ij} \\cdot \\nabla_{v_i})(\\sigma_{ij} \\cdot \\nabla_{v_i} V) = \\langle \\sigma_{ij}, \\nabla^2_{v_i} V \\sigma_{ij} \\rangle + \\langle \\sigma_{ij} \\cdot \\nabla_{v_i} \\sigma_{ij}, \\nabla_{v_i} V \\rangle\n1420: $$\n1421: \n1422: The first term is bounded using the Hessian of $V$:\n1423: \n1424: $$\n1425: \\left| \\langle \\sigma_{ij}, \\nabla^2_{v_i} V \\sigma_{ij} \\rangle \\right| \\le \\|\\sigma_{ij}\\|^2 \\|\\nabla^2_{v_i} V\\| \\le c_{\\max} \\|\\nabla^2 V\\|\n1426: $$\n1427: \n1428: by Theorem [](#thm-ueph).\n1429: \n1430: The second term involves the derivative of the diffusion coefficient. Since $\\Sigma_{\\text{reg}}$ has bounded derivatives (it's a smooth function of the uniformly bounded $H(S)$), there exists $L_\\Sigma < \\infty$ such that:\n1431: \n1432: $$\n1433: \\left| \\langle \\sigma_{ij} \\cdot \\nabla_{v_i} \\sigma_{ij}, \\nabla_{v_i} V \\rangle \\right| \\le L_\\Sigma \\|\\nabla V\\|\n1434: $$\n1435: \n1436: **Step 2: Bound the backbone term.** For the backbone diffusion $\\sigma I$:\n1437: \n1438: $$\n1439: \\sigma^2 \\|\\nabla_{v_i} V\\|^2 \\le \\sigma^2 \\|\\nabla V\\|^2\n1440: $$\n1441: \n1442: **Step 3: Combine.** Since $V_{\\text{total}}$ is a quadratic-like function with bounded second derivatives:\n1443: \n1444: $$\n1445: \\|\\nabla^2 V_{\\text{total}}\\| \\le C_{\\nabla\\nabla}, \\quad \\|\\nabla V_{\\text{total}}\\| \\le C_{\\nabla} (V_{\\text{total}} + 1)^{1/2}\n1446: $$\n1447: \n1448: Therefore:\n1449: \n1450: $$\n1451: |A_{\\text{diff}}(S)| \\le \\frac{N d}{2} \\left( c_{\\max} C_{\\nabla\\nabla} + L_\\Sigma C_{\\nabla} (V_{\\text{total}} + 1)^{1/2} + \\sigma^2 C_{\\nabla}^2 (V_{\\text{total}} + 1) \\right)\n1452: $$\n1453: \n1454: For the perturbation analysis, we can bound this by:\n1455: \n1456: $$\n1457: |A_{\\text{diff}}(S)| \\le C_{\\text{diff,0}} + C_{\\text{diff,1}} V_{\\text{total}}\n1458: $$\n1459: "
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-total-perturbation",
+      "title": "Total Perturbation Bound (\u03c1-Dependent)",
+      "start_line": 1471,
+      "end_line": 1496,
+      "header_lines": [
+        1472
+      ],
+      "content_start": 1474,
+      "content_end": 1495,
+      "content": "1474: :label: cor-total-perturbation\n1475: \n1476: The total perturbative contribution to the Stratonovich drift of $V_{\\text{total}}$ satisfies:\n1477: \n1478: $$\n1479: A_{\\text{perturb}}(S) \\le \\epsilon_F K_F(\\rho) (V_{\\text{total}}(S) + 1) + C_{\\text{diff,0}}(\\rho) + C_{\\text{diff,1}}(\\rho) V_{\\text{total}}(S)\n1480: $$\n1481: \n1482: where **all constants are \u03c1-dependent**:\n1483: - The adaptive force contributes $O(\\epsilon_F V_{\\text{total}})$ with coefficient $K_F(\\rho)$ (Lemma {prf:ref}`lem-adaptive-force-bounded`)\n1484: - The viscous force contributes a negative (stabilizing) term $\\le 0$ (Lemma [](#lem-viscous-dissipative))\n1485: - The adaptive diffusion contributes $C_{\\text{diff,0}}(\\rho) + C_{\\text{diff,1}}(\\rho) V_{\\text{total}}$ (Lemma [](#lem-diffusion-bounded)), where the diffusion tensor depends on $H(\\rho) = \\nabla^2 V_{\\text{fit}}[f_k, \\rho]$\n1486: \n1487: Combining these and absorbing constants:\n1488: \n1489: $$\n1490: A_{\\text{perturb}}(S) \\le (\\epsilon_F K_F(\\rho) + C_{\\text{diff,1}}(\\rho)) V_{\\text{total}}(S) + (\\epsilon_F K_F(\\rho) + C_{\\text{diff,0}}(\\rho))\n1491: $$\n1492: \n1493: **\u03c1-Dependence Interpretation:**\n1494: - All perturbation bounds depend on \u03c1 through the localized fitness potential $V_{\\text{fit}}[f_k, \\rho]$\n1495: - For any fixed \u03c1 > 0, all bounds are finite",
+      "metadata": {
+        "label": "cor-total-perturbation"
+      },
+      "section": "## 6. Boundedness of the Adaptive Perturbations",
+      "raw_directive": "1471: Combining the three lemmas, we obtain the total perturbation bound:\n1472: \n1473: :::{prf:corollary} Total Perturbation Bound (\u03c1-Dependent)\n1474: :label: cor-total-perturbation\n1475: \n1476: The total perturbative contribution to the Stratonovich drift of $V_{\\text{total}}$ satisfies:\n1477: \n1478: $$\n1479: A_{\\text{perturb}}(S) \\le \\epsilon_F K_F(\\rho) (V_{\\text{total}}(S) + 1) + C_{\\text{diff,0}}(\\rho) + C_{\\text{diff,1}}(\\rho) V_{\\text{total}}(S)\n1480: $$\n1481: \n1482: where **all constants are \u03c1-dependent**:\n1483: - The adaptive force contributes $O(\\epsilon_F V_{\\text{total}})$ with coefficient $K_F(\\rho)$ (Lemma {prf:ref}`lem-adaptive-force-bounded`)\n1484: - The viscous force contributes a negative (stabilizing) term $\\le 0$ (Lemma [](#lem-viscous-dissipative))\n1485: - The adaptive diffusion contributes $C_{\\text{diff,0}}(\\rho) + C_{\\text{diff,1}}(\\rho) V_{\\text{total}}$ (Lemma [](#lem-diffusion-bounded)), where the diffusion tensor depends on $H(\\rho) = \\nabla^2 V_{\\text{fit}}[f_k, \\rho]$\n1486: \n1487: Combining these and absorbing constants:\n1488: \n1489: $$\n1490: A_{\\text{perturb}}(S) \\le (\\epsilon_F K_F(\\rho) + C_{\\text{diff,1}}(\\rho)) V_{\\text{total}}(S) + (\\epsilon_F K_F(\\rho) + C_{\\text{diff,0}}(\\rho))\n1491: $$\n1492: \n1493: **\u03c1-Dependence Interpretation:**\n1494: - All perturbation bounds depend on \u03c1 through the localized fitness potential $V_{\\text{fit}}[f_k, \\rho]$\n1495: - For any fixed \u03c1 > 0, all bounds are finite\n1496: - As \u03c1 \u2192 \u221e, the bounds recover those of the global backbone model"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

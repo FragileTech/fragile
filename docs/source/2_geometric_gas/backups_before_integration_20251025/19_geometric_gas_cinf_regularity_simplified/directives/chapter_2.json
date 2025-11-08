@@ -1,0 +1,115 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 2. Mathematical Framework and Notation",
+  "directive_count": 6,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-simplified-measurement-cinf",
+      "title": "Simplified Measurement Function",
+      "start_line": 203,
+      "end_line": 215,
+      "header_lines": [
+        204
+      ],
+      "content_start": 206,
+      "content_end": 214,
+      "content": "206: :label: def-simplified-measurement-cinf\n207: \n208: The **simplified measurement function** d: X \u2192 \u211d depends only on position. We assume d \u2208 C\u221e(X) with bounded derivatives:\n209: \n210: $$\n211: \\sup_{x \\in X} \\|\\nabla^m d(x)\\| \\leq C_d^{(m)} < \\infty \\quad \\forall m \\geq 0\n212: $$\n213: \n214: **Examples**: Distance to target set d(x) = dist(x, T) (smoothed), reward landscape d(x) = R(x), entropy proxy d(x) = -log \u03c0_ref(x).",
+      "metadata": {
+        "label": "def-simplified-measurement-cinf"
+      },
+      "section": "## 2. Mathematical Framework and Notation",
+      "raw_directive": "203: - **Empirical measure**: f_k = (1/k) \u2211_{j \u2208 A_k} \u03b4_{x_j}\n204: \n205: :::{prf:definition} Simplified Measurement Function\n206: :label: def-simplified-measurement-cinf\n207: \n208: The **simplified measurement function** d: X \u2192 \u211d depends only on position. We assume d \u2208 C\u221e(X) with bounded derivatives:\n209: \n210: $$\n211: \\sup_{x \\in X} \\|\\nabla^m d(x)\\| \\leq C_d^{(m)} < \\infty \\quad \\forall m \\geq 0\n212: $$\n213: \n214: **Examples**: Distance to target set d(x) = dist(x, T) (smoothed), reward landscape d(x) = R(x), entropy proxy d(x) = -log \u03c0_ref(x).\n215: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-localization-kernel-cinf",
+      "title": "Localization Kernel",
+      "start_line": 221,
+      "end_line": 243,
+      "header_lines": [
+        222
+      ],
+      "content_start": 224,
+      "content_end": 242,
+      "content": "224: :label: def-localization-kernel-cinf\n225: \n226: The **Gaussian localization kernel**:\n227: \n228: $$\n229: K_\\rho(r) = \\exp\\left(-\\frac{r^2}{2\\rho^2}\\right)\n230: $$\n231: \n232: is real analytic with Hermite polynomial derivatives:\n233: \n234: $$\n235: \\frac{d^m}{dr^m} K_\\rho(r) = H_m\\left(\\frac{r}{\\rho}\\right) \\cdot \\rho^{-m} \\cdot K_\\rho(r)\n236: $$\n237: \n238: Derivative bounds:\n239: \n240: $$\n241: \\left| \\frac{d^m}{dr^m} K_\\rho(r) \\right| \\leq C_{\\text{Herm}} \\cdot m! \\cdot \\rho^{-m} \\cdot \\exp\\left(-\\frac{r^2}{4\\rho^2}\\right)\n242: $$",
+      "metadata": {
+        "label": "def-localization-kernel-cinf"
+      },
+      "section": "## 2. Mathematical Framework and Notation",
+      "raw_directive": "221: The fitness potential is computed through a six-stage pipeline:\n222: \n223: :::{prf:definition} Localization Kernel\n224: :label: def-localization-kernel-cinf\n225: \n226: The **Gaussian localization kernel**:\n227: \n228: $$\n229: K_\\rho(r) = \\exp\\left(-\\frac{r^2}{2\\rho^2}\\right)\n230: $$\n231: \n232: is real analytic with Hermite polynomial derivatives:\n233: \n234: $$\n235: \\frac{d^m}{dr^m} K_\\rho(r) = H_m\\left(\\frac{r}{\\rho}\\right) \\cdot \\rho^{-m} \\cdot K_\\rho(r)\n236: $$\n237: \n238: Derivative bounds:\n239: \n240: $$\n241: \\left| \\frac{d^m}{dr^m} K_\\rho(r) \\right| \\leq C_{\\text{Herm}} \\cdot m! \\cdot \\rho^{-m} \\cdot \\exp\\left(-\\frac{r^2}{4\\rho^2}\\right)\n242: $$\n243: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-localization-weights-cinf",
+      "title": "Localization Weights",
+      "start_line": 245,
+      "end_line": 265,
+      "header_lines": [
+        246
+      ],
+      "content_start": 248,
+      "content_end": 264,
+      "content": "248: :label: def-localization-weights-cinf\n249: \n250: Unnormalized weight:\n251: \n252: $$\n253: \\tilde{w}_{ij}(\\rho) = K_\\rho(d(x_i)) \\cdot K_\\rho(\\|x_i - x_j\\|)\n254: $$\n255: \n256: Normalized weight:\n257: \n258: $$\n259: w_{ij}(\\rho) = \\frac{\\tilde{w}_{ij}(\\rho)}{\\sum_{\\ell \\in A_k} \\tilde{w}_{i\\ell}(\\rho)}\n260: $$\n261: \n262: Normalization condition:\n263: \n264: $$",
+      "metadata": {
+        "label": "def-localization-weights-cinf"
+      },
+      "section": "## 2. Mathematical Framework and Notation",
+      "raw_directive": "245: :::\n246: \n247: :::{prf:definition} Localization Weights\n248: :label: def-localization-weights-cinf\n249: \n250: Unnormalized weight:\n251: \n252: $$\n253: \\tilde{w}_{ij}(\\rho) = K_\\rho(d(x_i)) \\cdot K_\\rho(\\|x_i - x_j\\|)\n254: $$\n255: \n256: Normalized weight:\n257: \n258: $$\n259: w_{ij}(\\rho) = \\frac{\\tilde{w}_{ij}(\\rho)}{\\sum_{\\ell \\in A_k} \\tilde{w}_{i\\ell}(\\rho)}\n260: $$\n261: \n262: Normalization condition:\n263: \n264: $$\n265: \\sum_{j \\in A_k} w_{ij}(\\rho) = 1 \\quad \\text{(identically for all } x_i, S, \\rho \\text{)}"
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-pipeline-cinf",
+      "title": "Localized Moments, Regularized Std Dev, Z-Score, Fitness Potential",
+      "start_line": 267,
+      "end_line": 300,
+      "header_lines": [
+        268
+      ],
+      "content_start": 270,
+      "content_end": 299,
+      "content": "270: :label: def-pipeline-cinf\n271: \n272: **Localized mean**:\n273: \n274: $$\n275: \\mu_\\rho[f_k, x_i] = \\sum_{j \\in A_k} w_{ij}(\\rho) \\cdot d(x_j)\n276: $$\n277: \n278: **Localized variance**:\n279: \n280: $$\n281: \\sigma^2_\\rho[f_k, x_i] = \\sum_{j \\in A_k} w_{ij}(\\rho) \\cdot (d(x_j) - \\mu_\\rho)^2\n282: $$\n283: \n284: **Regularized standard deviation**: \u03c3'_reg: \u211d_{\u22650} \u2192 [\u03b5_\u03c3, \u221e) satisfying:\n285: 1. \u03c3'_reg \u2208 C\u221e with bounded derivatives: sup_{\u03c3\u00b2} |d^m \u03c3'_reg / d(\u03c3\u00b2)^m| \u2264 C_{\u03c3',m}\n286: 2. \u03c3'_reg(\u03c3\u00b2) \u2265 \u03b5_\u03c3 > 0 (prevents division by zero)\n287: 3. \u03c3'_reg(\u03c3\u00b2) ~ \u221a(\u03c3\u00b2) as \u03c3\u00b2 \u2192 \u221e\n288: \n289: **Z-score**:\n290: \n291: $$\n292: Z_\\rho[f_k, d, x_i] = \\frac{d(x_i) - \\mu_\\rho[f_k, x_i]}{\\sigma'_{\\text{reg}}(\\sigma^2_\\rho[f_k, x_i])}\n293: $$\n294: \n295: **Fitness potential**:\n296: \n297: $$\n298: V_{\\text{fit}}[f_k, \\rho](x_i) = g_A(Z_\\rho[f_k, d, x_i])\n299: $$",
+      "metadata": {
+        "label": "def-pipeline-cinf"
+      },
+      "section": "## 2. Mathematical Framework and Notation",
+      "raw_directive": "267: :::\n268: \n269: :::{prf:definition} Localized Moments, Regularized Std Dev, Z-Score, Fitness Potential\n270: :label: def-pipeline-cinf\n271: \n272: **Localized mean**:\n273: \n274: $$\n275: \\mu_\\rho[f_k, x_i] = \\sum_{j \\in A_k} w_{ij}(\\rho) \\cdot d(x_j)\n276: $$\n277: \n278: **Localized variance**:\n279: \n280: $$\n281: \\sigma^2_\\rho[f_k, x_i] = \\sum_{j \\in A_k} w_{ij}(\\rho) \\cdot (d(x_j) - \\mu_\\rho)^2\n282: $$\n283: \n284: **Regularized standard deviation**: \u03c3'_reg: \u211d_{\u22650} \u2192 [\u03b5_\u03c3, \u221e) satisfying:\n285: 1. \u03c3'_reg \u2208 C\u221e with bounded derivatives: sup_{\u03c3\u00b2} |d^m \u03c3'_reg / d(\u03c3\u00b2)^m| \u2264 C_{\u03c3',m}\n286: 2. \u03c3'_reg(\u03c3\u00b2) \u2265 \u03b5_\u03c3 > 0 (prevents division by zero)\n287: 3. \u03c3'_reg(\u03c3\u00b2) ~ \u221a(\u03c3\u00b2) as \u03c3\u00b2 \u2192 \u221e\n288: \n289: **Z-score**:\n290: \n291: $$\n292: Z_\\rho[f_k, d, x_i] = \\frac{d(x_i) - \\mu_\\rho[f_k, x_i]}{\\sigma'_{\\text{reg}}(\\sigma^2_\\rho[f_k, x_i])}\n293: $$\n294: \n295: **Fitness potential**:\n296: \n297: $$\n298: V_{\\text{fit}}[f_k, \\rho](x_i) = g_A(Z_\\rho[f_k, d, x_i])\n299: $$\n300: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-faa-di-bruno-cinf",
+      "title": "Fa\u00e0 di Bruno Formula (Multivariate)",
+      "start_line": 304,
+      "end_line": 326,
+      "header_lines": [
+        305
+      ],
+      "content_start": 307,
+      "content_end": 325,
+      "content": "307: :label: thm-faa-di-bruno-cinf\n308: \n309: For f: \u211d \u2192 \u211d and g: \u211d^d \u2192 \u211d smooth, the m-th derivative of h(x) = f(g(x)) is:\n310: \n311: $$\n312: \\nabla^m h(x) = \\sum_{p=1}^{m} f^{(p)}(g(x)) \\cdot B_{m,p}[\\nabla g, \\nabla^2 g, \\ldots, \\nabla^{m-p+1} g]\n313: $$\n314: \n315: where B_{m,p} is the **complete Bell polynomial**:\n316: \n317: $$\n318: B_{m,p} = \\sum_{\\substack{k_1 + 2k_2 + \\cdots = m \\\\ k_1 + k_2 + \\cdots = p}} \\frac{m!}{k_1! k_2! \\cdots} \\prod_{j=1}^{m-p+1} \\left(\\frac{\\nabla^j g}{j!}\\right)^{k_j}\n319: $$\n320: \n321: **Norm bound**: If ||\u2207^j g|| \u2264 M_j, then:\n322: \n323: $$\n324: \\|B_{m,p}\\| \\leq C_{\\text{Bell}}(m, p) \\cdot \\prod_{j=1}^{m-p+1} M_j^{k_j}\n325: $$",
+      "metadata": {
+        "label": "thm-faa-di-bruno-cinf"
+      },
+      "section": "## 2. Mathematical Framework and Notation",
+      "raw_directive": "304: ### 2.3. Fa\u00e0 di Bruno Formula for Arbitrary Order\n305: \n306: :::{prf:theorem} Fa\u00e0 di Bruno Formula (Multivariate)\n307: :label: thm-faa-di-bruno-cinf\n308: \n309: For f: \u211d \u2192 \u211d and g: \u211d^d \u2192 \u211d smooth, the m-th derivative of h(x) = f(g(x)) is:\n310: \n311: $$\n312: \\nabla^m h(x) = \\sum_{p=1}^{m} f^{(p)}(g(x)) \\cdot B_{m,p}[\\nabla g, \\nabla^2 g, \\ldots, \\nabla^{m-p+1} g]\n313: $$\n314: \n315: where B_{m,p} is the **complete Bell polynomial**:\n316: \n317: $$\n318: B_{m,p} = \\sum_{\\substack{k_1 + 2k_2 + \\cdots = m \\\\ k_1 + k_2 + \\cdots = p}} \\frac{m!}{k_1! k_2! \\cdots} \\prod_{j=1}^{m-p+1} \\left(\\frac{\\nabla^j g}{j!}\\right)^{k_j}\n319: $$\n320: \n321: **Norm bound**: If ||\u2207^j g|| \u2264 M_j, then:\n322: \n323: $$\n324: \\|B_{m,p}\\| \\leq C_{\\text{Bell}}(m, p) \\cdot \\prod_{j=1}^{m-p+1} M_j^{k_j}\n325: $$\n326: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-136",
+      "title": null,
+      "start_line": 328,
+      "end_line": 330,
+      "header_lines": [],
+      "content_start": 329,
+      "content_end": 329,
+      "content": "329: ",
+      "metadata": {},
+      "section": "## 2. Mathematical Framework and Notation",
+      "raw_directive": "328: :::\n329: \n330: :::{prf:proof}"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

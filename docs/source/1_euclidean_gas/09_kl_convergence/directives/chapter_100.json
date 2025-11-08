@@ -1,0 +1,29 @@
+{
+  "chapter_index": 100,
+  "section_id": "## 1.1 Foster-Lyapunov Drift Condition",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-fl-established",
+      "title": "Synergistic Foster-Lyapunov (Established)",
+      "start_line": 7253,
+      "end_line": 7273,
+      "header_lines": [
+        7254
+      ],
+      "content_start": 7256,
+      "content_end": 7272,
+      "content": "7256: :label: thm-fl-established\n7257: \n7258: Under the foundational axioms:\n7259: - Confining potential: $\\langle \\nabla U, x \\rangle \\geq \\alpha_U |x|^2$\n7260: - Positive friction: $\\gamma > 0$\n7261: - Positive noise: $\\sigma_v^2 > 0$\n7262: \n7263: The composed operator satisfies:\n7264: \n7265: $$\n7266: \\mathbb{E}[V_{\\text{total}}(S_{t+1})] \\leq (1 - \\kappa_{\\text{total}}\\tau) V_{\\text{total}}(S_t) + C_{\\text{total}}\n7267: $$\n7268: \n7269: with:\n7270: $$\n7271: \\kappa_{\\text{total}} = \\min\\left(\\frac{\\kappa_W\\tau}{2}, \\frac{c_V\\kappa_x}{2}, \\frac{c_V\\gamma\\tau}{2}, \\frac{c_B(\\kappa_b + \\kappa_{\\text{pot}}\\tau)}{2}\\right) > 0\n7272: $$",
+      "metadata": {
+        "label": "thm-fl-established"
+      },
+      "section": "## 1.1 Foster-Lyapunov Drift Condition",
+      "raw_directive": "7253: From [06_convergence](06_convergence), we have proven:\n7254: \n7255: :::{prf:theorem} Synergistic Foster-Lyapunov (Established)\n7256: :label: thm-fl-established\n7257: \n7258: Under the foundational axioms:\n7259: - Confining potential: $\\langle \\nabla U, x \\rangle \\geq \\alpha_U |x|^2$\n7260: - Positive friction: $\\gamma > 0$\n7261: - Positive noise: $\\sigma_v^2 > 0$\n7262: \n7263: The composed operator satisfies:\n7264: \n7265: $$\n7266: \\mathbb{E}[V_{\\text{total}}(S_{t+1})] \\leq (1 - \\kappa_{\\text{total}}\\tau) V_{\\text{total}}(S_t) + C_{\\text{total}}\n7267: $$\n7268: \n7269: with:\n7270: $$\n7271: \\kappa_{\\text{total}} = \\min\\left(\\frac{\\kappa_W\\tau}{2}, \\frac{c_V\\kappa_x}{2}, \\frac{c_V\\gamma\\tau}{2}, \\frac{c_B(\\kappa_b + \\kappa_{\\text{pot}}\\tau)}{2}\\right) > 0\n7272: $$\n7273: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

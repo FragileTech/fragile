@@ -1,0 +1,83 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 3. Three-Dimensional Volumes: Tetrahedral Decomposition",
+  "directive_count": 4,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-tetrahedron-volume",
+      "title": "Riemannian Volume of Tetrahedron",
+      "start_line": 311,
+      "end_line": 351,
+      "header_lines": [
+        312
+      ],
+      "content_start": 314,
+      "content_end": 350,
+      "content": "314: :label: def-tetrahedron-volume\n315: \n316: Let $T = (x_0, x_1, x_2, x_3)$ be a tetrahedron with vertices $x_i \\in \\mathbb{R}^d$ (typically $d \\geq 3$).\n317: \n318: **Metric tensor:** Evaluate at centroid:\n319: \n320: $$\n321: g_c := g\\left(\\frac{x_0 + x_1 + x_2 + x_3}{4}\\right)\n322: $$\n323: \n324: **Edge vectors from base vertex $x_0$:**\n325: \n326: $$\n327: v_1 := x_1 - x_0, \\quad v_2 := x_2 - x_0, \\quad v_3 := x_3 - x_0\n328: $$\n329: \n330: **Gram matrix:** $3 \\times 3$ matrix of Riemannian inner products:\n331: \n332: $$\n333: G := \\begin{pmatrix}\n334: \\langle v_1, v_1 \\rangle_g & \\langle v_1, v_2 \\rangle_g & \\langle v_1, v_3 \\rangle_g \\\\\n335: \\langle v_2, v_1 \\rangle_g & \\langle v_2, v_2 \\rangle_g & \\langle v_2, v_3 \\rangle_g \\\\\n336: \\langle v_3, v_1 \\rangle_g & \\langle v_3, v_2 \\rangle_g & \\langle v_3, v_3 \\rangle_g\n337: \\end{pmatrix}\n338: $$\n339: \n340: where $\\langle v_i, v_j \\rangle_g := v_i^T g_c v_j$.\n341: \n342: **Riemannian volume:**\n343: \n344: $$\n345: V_g(T) := \\frac{1}{6} \\sqrt{\\det G}\n346: $$\n347: \n348: **Geometric interpretation:** Generalization of $\\frac{1}{6} |v_1 \\cdot (v_2 \\times v_3)|$ from Euclidean space to Riemannian manifold.\n349: \n350: **Error:** If $\\text{diam}(T) = O(\\epsilon)$, then $V_g(T) = V_{\\text{true}} + O(\\epsilon^4)$ (assuming $g$ is $C^3$).",
+      "metadata": {
+        "label": "def-tetrahedron-volume"
+      },
+      "section": "## 3. Three-Dimensional Volumes: Tetrahedral Decomposition",
+      "raw_directive": "311: ### 3.1. Cayley-Menger Determinant for Tetrahedron Volume\n312: \n313: :::{prf:definition} Riemannian Volume of Tetrahedron\n314: :label: def-tetrahedron-volume\n315: \n316: Let $T = (x_0, x_1, x_2, x_3)$ be a tetrahedron with vertices $x_i \\in \\mathbb{R}^d$ (typically $d \\geq 3$).\n317: \n318: **Metric tensor:** Evaluate at centroid:\n319: \n320: $$\n321: g_c := g\\left(\\frac{x_0 + x_1 + x_2 + x_3}{4}\\right)\n322: $$\n323: \n324: **Edge vectors from base vertex $x_0$:**\n325: \n326: $$\n327: v_1 := x_1 - x_0, \\quad v_2 := x_2 - x_0, \\quad v_3 := x_3 - x_0\n328: $$\n329: \n330: **Gram matrix:** $3 \\times 3$ matrix of Riemannian inner products:\n331: \n332: $$\n333: G := \\begin{pmatrix}\n334: \\langle v_1, v_1 \\rangle_g & \\langle v_1, v_2 \\rangle_g & \\langle v_1, v_3 \\rangle_g \\\\\n335: \\langle v_2, v_1 \\rangle_g & \\langle v_2, v_2 \\rangle_g & \\langle v_2, v_3 \\rangle_g \\\\\n336: \\langle v_3, v_1 \\rangle_g & \\langle v_3, v_2 \\rangle_g & \\langle v_3, v_3 \\rangle_g\n337: \\end{pmatrix}\n338: $$\n339: \n340: where $\\langle v_i, v_j \\rangle_g := v_i^T g_c v_j$.\n341: \n342: **Riemannian volume:**\n343: \n344: $$\n345: V_g(T) := \\frac{1}{6} \\sqrt{\\det G}\n346: $$\n347: \n348: **Geometric interpretation:** Generalization of $\\frac{1}{6} |v_1 \\cdot (v_2 \\times v_3)|$ from Euclidean space to Riemannian manifold.\n349: \n350: **Error:** If $\\text{diam}(T) = O(\\epsilon)$, then $V_g(T) = V_{\\text{true}} + O(\\epsilon^4)$ (assuming $g$ is $C^3$).\n351: "
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-cayley-menger-volume",
+      "title": "Cayley-Menger Determinant Formula",
+      "start_line": 353,
+      "end_line": 387,
+      "header_lines": [
+        354
+      ],
+      "content_start": 356,
+      "content_end": 386,
+      "content": "356: :label: prop-cayley-menger-volume\n357: \n358: An alternative formula using pairwise Riemannian distances:\n359: \n360: Define **Riemannian distance matrix** $D \\in \\mathbb{R}^{4 \\times 4}$:\n361: \n362: $$\n363: D_{ij} := \\sqrt{(x_i - x_j)^T g_c (x_i - x_j)} \\quad \\text{for } i, j = 0, 1, 2, 3\n364: $$\n365: \n366: The **Cayley-Menger determinant** is:\n367: \n368: $$\n369: \\text{CM}(T) := \\begin{vmatrix}\n370: 0 & 1 & 1 & 1 & 1 \\\\\n371: 1 & 0 & D_{01}^2 & D_{02}^2 & D_{03}^2 \\\\\n372: 1 & D_{10}^2 & 0 & D_{12}^2 & D_{13}^2 \\\\\n373: 1 & D_{20}^2 & D_{21}^2 & 0 & D_{23}^2 \\\\\n374: 1 & D_{30}^2 & D_{31}^2 & D_{32}^2 & 0\n375: \\end{vmatrix}\n376: $$\n377: \n378: Then:\n379: \n380: $$\n381: V_g(T) = \\frac{1}{6\\sqrt{2}} \\sqrt{|\\text{CM}(T)|}\n382: $$\n383: \n384: **Advantage:** Only requires pairwise distances, not full coordinate representation.\n385: \n386: **Disadvantage:** Numerically less stable than Gram matrix method for high dimensions.",
+      "metadata": {
+        "label": "prop-cayley-menger-volume"
+      },
+      "section": "## 3. Three-Dimensional Volumes: Tetrahedral Decomposition",
+      "raw_directive": "353: :::\n354: \n355: :::{prf:proposition} Cayley-Menger Determinant Formula\n356: :label: prop-cayley-menger-volume\n357: \n358: An alternative formula using pairwise Riemannian distances:\n359: \n360: Define **Riemannian distance matrix** $D \\in \\mathbb{R}^{4 \\times 4}$:\n361: \n362: $$\n363: D_{ij} := \\sqrt{(x_i - x_j)^T g_c (x_i - x_j)} \\quad \\text{for } i, j = 0, 1, 2, 3\n364: $$\n365: \n366: The **Cayley-Menger determinant** is:\n367: \n368: $$\n369: \\text{CM}(T) := \\begin{vmatrix}\n370: 0 & 1 & 1 & 1 & 1 \\\\\n371: 1 & 0 & D_{01}^2 & D_{02}^2 & D_{03}^2 \\\\\n372: 1 & D_{10}^2 & 0 & D_{12}^2 & D_{13}^2 \\\\\n373: 1 & D_{20}^2 & D_{21}^2 & 0 & D_{23}^2 \\\\\n374: 1 & D_{30}^2 & D_{31}^2 & D_{32}^2 & 0\n375: \\end{vmatrix}\n376: $$\n377: \n378: Then:\n379: \n380: $$\n381: V_g(T) = \\frac{1}{6\\sqrt{2}} \\sqrt{|\\text{CM}(T)|}\n382: $$\n383: \n384: **Advantage:** Only requires pairwise distances, not full coordinate representation.\n385: \n386: **Disadvantage:** Numerically less stable than Gram matrix method for high dimensions.\n387: "
+    },
+    {
+      "directive_type": "algorithm",
+      "label": "alg-tetrahedral-volume",
+      "title": "Delaunay Tetrahedral Decomposition for Volume",
+      "start_line": 391,
+      "end_line": 434,
+      "header_lines": [
+        392
+      ],
+      "content_start": 394,
+      "content_end": 433,
+      "content": "394: :label: alg-tetrahedral-volume\n395: \n396: **Input:**\n397: - Set of episodes $\\{e_i\\}_{i=1}^N$ with positions $x_i = \\Phi(e_i) \\in \\mathbb{R}^3$\n398: - Convex region $\\Omega \\subset \\mathcal{X}$ (e.g., convex hull of episodes)\n399: - Metric function $g: \\mathcal{X} \\to \\mathbb{R}^{3 \\times 3}$\n400: \n401: **Output:** Total Riemannian volume $V_g(\\Omega)$\n402: \n403: **Procedure:**\n404: \n405: **Step 1: Compute Delaunay tetrahedralization**\n406: \n407: Use computational geometry library (e.g., `scipy.spatial.Delaunay`) to decompose $\\Omega$ into tetrahedra:\n408: \n409: $$\n410: \\Omega = \\bigcup_{k=1}^{N_{\\text{tet}}} T_k\n411: $$\n412: \n413: where each $T_k = (x_{i_0}, x_{i_1}, x_{i_2}, x_{i_3})$ is a tetrahedron with vertices from $\\{x_i\\}$.\n414: \n415: **Step 2: Compute volume of each tetrahedron**\n416: \n417: For each $T_k$:\n418: \n419: $$\n420: V_k := V_g(T_k) \\quad \\text{(using Definition }\\ref{def-tetrahedron-volume}\\text{)}\n421: $$\n422: \n423: **Step 3: Sum all tetrahedral volumes**\n424: \n425: $$\n426: V_g(\\Omega) := \\sum_{k=1}^{N_{\\text{tet}}} V_k\n427: $$\n428: \n429: **Complexity:** $O(N \\log N + N_{\\text{tet}} \\cdot d^3)$ where $N_{\\text{tet}} = O(N)$ for 3D\n430: \n431: **Accuracy:** Improves as episode density increases (finer triangulation)\n432: \n433: **Note:** Delaunay tetrahedralization minimizes \"sliver\" tetrahedra (high aspect ratio), improving numerical stability.",
+      "metadata": {
+        "label": "alg-tetrahedral-volume"
+      },
+      "section": "## 3. Three-Dimensional Volumes: Tetrahedral Decomposition",
+      "raw_directive": "391: ### 3.2. Tetrahedral Decomposition of 3D Regions\n392: \n393: :::{prf:algorithm} Delaunay Tetrahedral Decomposition for Volume\n394: :label: alg-tetrahedral-volume\n395: \n396: **Input:**\n397: - Set of episodes $\\{e_i\\}_{i=1}^N$ with positions $x_i = \\Phi(e_i) \\in \\mathbb{R}^3$\n398: - Convex region $\\Omega \\subset \\mathcal{X}$ (e.g., convex hull of episodes)\n399: - Metric function $g: \\mathcal{X} \\to \\mathbb{R}^{3 \\times 3}$\n400: \n401: **Output:** Total Riemannian volume $V_g(\\Omega)$\n402: \n403: **Procedure:**\n404: \n405: **Step 1: Compute Delaunay tetrahedralization**\n406: \n407: Use computational geometry library (e.g., `scipy.spatial.Delaunay`) to decompose $\\Omega$ into tetrahedra:\n408: \n409: $$\n410: \\Omega = \\bigcup_{k=1}^{N_{\\text{tet}}} T_k\n411: $$\n412: \n413: where each $T_k = (x_{i_0}, x_{i_1}, x_{i_2}, x_{i_3})$ is a tetrahedron with vertices from $\\{x_i\\}$.\n414: \n415: **Step 2: Compute volume of each tetrahedron**\n416: \n417: For each $T_k$:\n418: \n419: $$\n420: V_k := V_g(T_k) \\quad \\text{(using Definition }\\ref{def-tetrahedron-volume}\\text{)}\n421: $$\n422: \n423: **Step 3: Sum all tetrahedral volumes**\n424: \n425: $$\n426: V_g(\\Omega) := \\sum_{k=1}^{N_{\\text{tet}}} V_k\n427: $$\n428: \n429: **Complexity:** $O(N \\log N + N_{\\text{tet}} \\cdot d^3)$ where $N_{\\text{tet}} = O(N)$ for 3D\n430: \n431: **Accuracy:** Improves as episode density increases (finer triangulation)\n432: \n433: **Note:** Delaunay tetrahedralization minimizes \"sliver\" tetrahedra (high aspect ratio), improving numerical stability.\n434: "
+    },
+    {
+      "directive_type": "example",
+      "label": "ex-entropy-phase-space-volume",
+      "title": "Entropy from Phase Space Volume",
+      "start_line": 438,
+      "end_line": 477,
+      "header_lines": [
+        439
+      ],
+      "content_start": 441,
+      "content_end": 476,
+      "content": "441: :label: ex-entropy-phase-space-volume\n442: \n443: Consider the Adaptive Gas in phase space $(x, v) \\in \\mathcal{X} \\times \\mathbb{R}^d$.\n444: \n445: **Accessible volume:** The QSD is supported on alive set $\\mathcal{A} = \\{(x, v) : U(x) < U_{\\text{kill}}\\}$.\n446: \n447: **Phase space metric:** Product metric:\n448: \n449: $$\n450: g_{\\text{phase}}(x, v) = \\begin{pmatrix}\n451: g(x) & 0 \\\\\n452: 0 & m I\n453: \\end{pmatrix}\n454: $$\n455: \n456: where $m$ is effective \"mass\" (from friction-diffusion balance).\n457: \n458: **Accessible phase space volume:**\n459: \n460: $$\n461: V_{\\text{accessible}} = \\int_{\\mathcal{A}} \\sqrt{\\det g_{\\text{phase}}(x, v)} \\, dx \\, dv\n462: $$\n463: \n464: **Entropy (Boltzmann):**\n465: \n466: $$\n467: S = k_B \\log V_{\\text{accessible}}\n468: $$\n469: \n470: **Discrete approximation:** Sample episodes $(x_i, v_i)$ from QSD:\n471: \n472: $$\n473: V_{\\text{accessible}} \\approx \\frac{\\text{Vol}(\\mathcal{A})}{N} \\sum_{i=1}^N \\sqrt{\\det g_{\\text{phase}}(x_i, v_i)}\n474: $$\n475: \n476: where $\\text{Vol}(\\mathcal{A})$ is estimated from convex hull or kernel density.",
+      "metadata": {
+        "label": "ex-entropy-phase-space-volume"
+      },
+      "section": "## 3. Three-Dimensional Volumes: Tetrahedral Decomposition",
+      "raw_directive": "438: ### 3.3. Application: Phase Space Volume and Entropy\n439: \n440: :::{prf:example} Entropy from Phase Space Volume\n441: :label: ex-entropy-phase-space-volume\n442: \n443: Consider the Adaptive Gas in phase space $(x, v) \\in \\mathcal{X} \\times \\mathbb{R}^d$.\n444: \n445: **Accessible volume:** The QSD is supported on alive set $\\mathcal{A} = \\{(x, v) : U(x) < U_{\\text{kill}}\\}$.\n446: \n447: **Phase space metric:** Product metric:\n448: \n449: $$\n450: g_{\\text{phase}}(x, v) = \\begin{pmatrix}\n451: g(x) & 0 \\\\\n452: 0 & m I\n453: \\end{pmatrix}\n454: $$\n455: \n456: where $m$ is effective \"mass\" (from friction-diffusion balance).\n457: \n458: **Accessible phase space volume:**\n459: \n460: $$\n461: V_{\\text{accessible}} = \\int_{\\mathcal{A}} \\sqrt{\\det g_{\\text{phase}}(x, v)} \\, dx \\, dv\n462: $$\n463: \n464: **Entropy (Boltzmann):**\n465: \n466: $$\n467: S = k_B \\log V_{\\text{accessible}}\n468: $$\n469: \n470: **Discrete approximation:** Sample episodes $(x_i, v_i)$ from QSD:\n471: \n472: $$\n473: V_{\\text{accessible}} \\approx \\frac{\\text{Vol}(\\mathcal{A})}{N} \\sum_{i=1}^N \\sqrt{\\det g_{\\text{phase}}(x_i, v_i)}\n474: $$\n475: \n476: where $\\text{Vol}(\\mathcal{A})$ is estimated from convex hull or kernel density.\n477: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

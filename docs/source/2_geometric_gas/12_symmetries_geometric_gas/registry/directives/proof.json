@@ -1,0 +1,184 @@
+{
+  "document_id": "12_symmetries_geometric_gas",
+  "stage": "directives",
+  "directive_type": "proof",
+  "generated_at": "2025-11-08T17:07:43.243801+00:00",
+  "count": 7,
+  "items": [
+    {
+      "directive_type": "proof",
+      "label": "proof-thm-permutation-symmetry",
+      "title": null,
+      "start_line": 267,
+      "end_line": 321,
+      "header_lines": [
+        268
+      ],
+      "content_start": 270,
+      "content_end": 320,
+      "content": "270: :label: proof-thm-permutation-symmetry\n271: \n272: We verify invariance at each stage of the algorithm.\n273: \n274: **Stage 1: Measurement and localized statistics**\n275: \n276: The alive-walker empirical measure is permutation-invariant:\n277: \n278: $$\n279: f_k[\\sigma(\\mathcal{S})] = \\frac{1}{k}\\sum_{j \\in A_k} \\delta_{(x_{\\sigma(j)}, v_{\\sigma(j)})} = \\frac{1}{k}\\sum_{i \\in \\sigma(A_k)} \\delta_{(x_i, v_i)} = f_k[\\mathcal{S}]\n280: \n281: $$\n282: \n283: since $\\sigma$ permutes the alive set: $\\sigma(A_k) = A_k$ (the set is unchanged, only indices are relabeled).\n284: \n285: The localized weights $w_{ij}(\\rho)$ depend only on pairwise distances:\n286: \n287: $$\n288: w_{\\sigma(i)\\sigma(j)}(\\rho) = \\frac{K_\\rho(x_{\\sigma(i)}, x_{\\sigma(j)})}{\\sum_{\\ell \\in A_k} K_\\rho(x_{\\sigma(i)}, x_{\\sigma(\\ell)})} = \\frac{K_\\rho(x_i, x_j)}{\\sum_{\\ell \\in A_k} K_\\rho(x_i, x_\\ell)} = w_{ij}(\\rho)\n289: \n290: $$\n291: \n292: Therefore, all localized moments are invariant:\n293: \n294: $$\n295: \\mu_\\rho[f_k[\\sigma(\\mathcal{S})], Q, x_{\\sigma(i)}] = \\mu_\\rho[f_k[\\mathcal{S}], Q, x_i]\n296: \n297: $$\n298: \n299: **Stage 2: Fitness potential**\n300: \n301: By invariance of the Z-scores, the fitness potential satisfies:\n302: \n303: $$\n304: V_{\\text{fit}}[f_k[\\sigma(\\mathcal{S})], \\rho](x_{\\sigma(i)}, v_{\\sigma(i)}) = V_{\\text{fit}}[f_k[\\mathcal{S}], \\rho](x_i, v_i)\n305: \n306: $$\n307: \n308: **Stage 3: Cloning operator**\n309: \n310: The companion selection kernel $\\mathbb{C}_\\epsilon(\\mathcal{S}, i)$ depends only on the algorithmic distances $d_{\\text{alg}}(i, j)$, which are permutation-invariant when indices are relabeled consistently.\n311: \n312: The cloning probability depends only on the fitness values, which are invariant by the above.\n313: \n314: **Stage 4: Kinetic operator**\n315: \n316: The BAOAB integrator acts independently on each walker with state-independent noise, hence commutes with permutations.\n317: \n318: **Stage 5: Status refresh**\n319: \n320: The boundary indicator $\\mathbf{1}_{\\mathcal{X}_{\\text{valid}}}(x_i)$ is permutation-invariant.",
+      "metadata": {
+        "label": "proof-thm-permutation-symmetry"
+      },
+      "section": "## 3. Flat Algorithmic Space Symmetries",
+      "raw_directive": "267: :::\n268: \n269: :::{prf:proof}\n270: :label: proof-thm-permutation-symmetry\n271: \n272: We verify invariance at each stage of the algorithm.\n273: \n274: **Stage 1: Measurement and localized statistics**\n275: \n276: The alive-walker empirical measure is permutation-invariant:\n277: \n278: $$\n279: f_k[\\sigma(\\mathcal{S})] = \\frac{1}{k}\\sum_{j \\in A_k} \\delta_{(x_{\\sigma(j)}, v_{\\sigma(j)})} = \\frac{1}{k}\\sum_{i \\in \\sigma(A_k)} \\delta_{(x_i, v_i)} = f_k[\\mathcal{S}]\n280: \n281: $$\n282: \n283: since $\\sigma$ permutes the alive set: $\\sigma(A_k) = A_k$ (the set is unchanged, only indices are relabeled).\n284: \n285: The localized weights $w_{ij}(\\rho)$ depend only on pairwise distances:\n286: \n287: $$\n288: w_{\\sigma(i)\\sigma(j)}(\\rho) = \\frac{K_\\rho(x_{\\sigma(i)}, x_{\\sigma(j)})}{\\sum_{\\ell \\in A_k} K_\\rho(x_{\\sigma(i)}, x_{\\sigma(\\ell)})} = \\frac{K_\\rho(x_i, x_j)}{\\sum_{\\ell \\in A_k} K_\\rho(x_i, x_\\ell)} = w_{ij}(\\rho)\n289: \n290: $$\n291: \n292: Therefore, all localized moments are invariant:\n293: \n294: $$\n295: \\mu_\\rho[f_k[\\sigma(\\mathcal{S})], Q, x_{\\sigma(i)}] = \\mu_\\rho[f_k[\\mathcal{S}], Q, x_i]\n296: \n297: $$\n298: \n299: **Stage 2: Fitness potential**\n300: \n301: By invariance of the Z-scores, the fitness potential satisfies:\n302: \n303: $$\n304: V_{\\text{fit}}[f_k[\\sigma(\\mathcal{S})], \\rho](x_{\\sigma(i)}, v_{\\sigma(i)}) = V_{\\text{fit}}[f_k[\\mathcal{S}], \\rho](x_i, v_i)\n305: \n306: $$\n307: \n308: **Stage 3: Cloning operator**\n309: \n310: The companion selection kernel $\\mathbb{C}_\\epsilon(\\mathcal{S}, i)$ depends only on the algorithmic distances $d_{\\text{alg}}(i, j)$, which are permutation-invariant when indices are relabeled consistently.\n311: \n312: The cloning probability depends only on the fitness values, which are invariant by the above.\n313: \n314: **Stage 4: Kinetic operator**\n315: \n316: The BAOAB integrator acts independently on each walker with state-independent noise, hence commutes with permutations.\n317: \n318: **Stage 5: Status refresh**\n319: \n320: The boundary indicator $\\mathbf{1}_{\\mathcal{X}_{\\text{valid}}}(x_i)$ is permutation-invariant.\n321: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "12_symmetries_geometric_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 3. Flat Algorithmic Space Symmetries"
+      }
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-cor-qsd-exchangeable",
+      "title": null,
+      "start_line": 334,
+      "end_line": 338,
+      "header_lines": [
+        335
+      ],
+      "content_start": 337,
+      "content_end": 337,
+      "content": "337: :label: proof-cor-qsd-exchangeable",
+      "metadata": {
+        "label": "proof-cor-qsd-exchangeable"
+      },
+      "section": "## 3. Flat Algorithmic Space Symmetries",
+      "raw_directive": "334: :::\n335: \n336: :::{prf:proof}\n337: :label: proof-cor-qsd-exchangeable\n338: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "12_symmetries_geometric_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 3. Flat Algorithmic Space Symmetries"
+      }
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-thm-translation-equivariance",
+      "title": null,
+      "start_line": 364,
+      "end_line": 398,
+      "header_lines": [
+        365
+      ],
+      "content_start": 367,
+      "content_end": 397,
+      "content": "367: :label: proof-thm-translation-equivariance\n368: \n369: **Measurement stage**: Since $R(x + a, v) = R(x, v)$, the reward Z-scores are invariant:\n370: \n371: $$\n372: Z_\\rho[f_k[T_a(\\mathcal{S})], R, (x_i + a, v_i)] = Z_\\rho[f_k[\\mathcal{S}], R, (x_i, v_i)]\n373: \n374: $$\n375: \n376: The distance channel uses the algorithmic projection $\\varphi(x, v) = (x, \\lambda_v v)$. Under translation:\n377: \n378: $$\n379: d_{\\mathcal{Y}}(\\varphi(x_i + a, v_i), \\varphi(x_j + a, v_j)) = \\|(x_i + a) - (x_j + a)\\| = \\|x_i - x_j\\| = d_{\\mathcal{Y}}(\\varphi(x_i, v_i), \\varphi(x_j, v_j))\n380: \n381: $$\n382: \n383: Therefore distance measurements are invariant, and the fitness potential satisfies:\n384: \n385: $$\n386: V_{\\text{fit}}[f_k[T_a(\\mathcal{S})], \\rho](x_i + a, v_i) = V_{\\text{fit}}[f_k[\\mathcal{S}], \\rho](x_i, v_i)\n387: \n388: $$\n389: \n390: **Kinetic stage**: The BAOAB integrator uses the force $F(x) = \\nabla R(x)$. If $R(x + a) = R(x)$, then $F(x + a) = F(x)$, so:\n391: \n392: $$\n393: \\Psi_{\\text{kin}}(T_a(\\mathcal{S}), \\cdot) = T_a \\circ \\Psi_{\\text{kin}}(\\mathcal{S}, \\cdot)\n394: \n395: $$\n396: \n397: **Status refresh**: By assumption, $x + a \\in \\mathcal{X}_{\\text{valid}} \\iff x \\in \\mathcal{X}_{\\text{valid}}$, so survival status is equivariant.",
+      "metadata": {
+        "label": "proof-thm-translation-equivariance"
+      },
+      "section": "## 3. Flat Algorithmic Space Symmetries",
+      "raw_directive": "364: :::\n365: \n366: :::{prf:proof}\n367: :label: proof-thm-translation-equivariance\n368: \n369: **Measurement stage**: Since $R(x + a, v) = R(x, v)$, the reward Z-scores are invariant:\n370: \n371: $$\n372: Z_\\rho[f_k[T_a(\\mathcal{S})], R, (x_i + a, v_i)] = Z_\\rho[f_k[\\mathcal{S}], R, (x_i, v_i)]\n373: \n374: $$\n375: \n376: The distance channel uses the algorithmic projection $\\varphi(x, v) = (x, \\lambda_v v)$. Under translation:\n377: \n378: $$\n379: d_{\\mathcal{Y}}(\\varphi(x_i + a, v_i), \\varphi(x_j + a, v_j)) = \\|(x_i + a) - (x_j + a)\\| = \\|x_i - x_j\\| = d_{\\mathcal{Y}}(\\varphi(x_i, v_i), \\varphi(x_j, v_j))\n380: \n381: $$\n382: \n383: Therefore distance measurements are invariant, and the fitness potential satisfies:\n384: \n385: $$\n386: V_{\\text{fit}}[f_k[T_a(\\mathcal{S})], \\rho](x_i + a, v_i) = V_{\\text{fit}}[f_k[\\mathcal{S}], \\rho](x_i, v_i)\n387: \n388: $$\n389: \n390: **Kinetic stage**: The BAOAB integrator uses the force $F(x) = \\nabla R(x)$. If $R(x + a) = R(x)$, then $F(x + a) = F(x)$, so:\n391: \n392: $$\n393: \\Psi_{\\text{kin}}(T_a(\\mathcal{S}), \\cdot) = T_a \\circ \\Psi_{\\text{kin}}(\\mathcal{S}, \\cdot)\n394: \n395: $$\n396: \n397: **Status refresh**: By assumption, $x + a \\in \\mathcal{X}_{\\text{valid}} \\iff x \\in \\mathcal{X}_{\\text{valid}}$, so survival status is equivariant.\n398: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "12_symmetries_geometric_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 3. Flat Algorithmic Space Symmetries"
+      }
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-thm-rotation-equivariance",
+      "title": null,
+      "start_line": 430,
+      "end_line": 461,
+      "header_lines": [
+        431
+      ],
+      "content_start": 433,
+      "content_end": 460,
+      "content": "433: :label: proof-thm-rotation-equivariance\n434: \n435: **Algorithmic distance**: Under rotation, the Sasaki metric transforms as:\n436: \n437: $$\n438: d_{\\mathcal{Y}}(\\varphi(Rx_i, Rv_i), \\varphi(Rx_j, Rv_j)) = \\|Rx_i - Rx_j\\| = \\|x_i - x_j\\| = d_{\\mathcal{Y}}(\\varphi(x_i, v_i), \\varphi(x_j, v_j))\n439: \n440: $$\n441: \n442: using $R^T R = I$ for orthogonal matrices.\n443: \n444: **Localization kernel**: The Gaussian kernel depends only on distances:\n445: \n446: $$\n447: K_\\rho(Rx_i, Rx_j) = \\exp\\left(-\\frac{\\|Rx_i - Rx_j\\|^2}{2\\rho^2}\\right) = K_\\rho(x_i, x_j)\n448: \n449: $$\n450: \n451: Therefore localized moments and Z-scores are rotation-invariant.\n452: \n453: **Kinetic operator**: The force $F(x) = \\nabla R(x)$ transforms covariantly:\n454: \n455: $$\n456: F(Rx) = R \\nabla R(x) = R F(x)\n457: \n458: $$\n459: \n460: The noise is isotropic (covariance $\\sigma_v^2 I$), hence rotation-invariant.",
+      "metadata": {
+        "label": "proof-thm-rotation-equivariance"
+      },
+      "section": "## 3. Flat Algorithmic Space Symmetries",
+      "raw_directive": "430: :::\n431: \n432: :::{prf:proof}\n433: :label: proof-thm-rotation-equivariance\n434: \n435: **Algorithmic distance**: Under rotation, the Sasaki metric transforms as:\n436: \n437: $$\n438: d_{\\mathcal{Y}}(\\varphi(Rx_i, Rv_i), \\varphi(Rx_j, Rv_j)) = \\|Rx_i - Rx_j\\| = \\|x_i - x_j\\| = d_{\\mathcal{Y}}(\\varphi(x_i, v_i), \\varphi(x_j, v_j))\n439: \n440: $$\n441: \n442: using $R^T R = I$ for orthogonal matrices.\n443: \n444: **Localization kernel**: The Gaussian kernel depends only on distances:\n445: \n446: $$\n447: K_\\rho(Rx_i, Rx_j) = \\exp\\left(-\\frac{\\|Rx_i - Rx_j\\|^2}{2\\rho^2}\\right) = K_\\rho(x_i, x_j)\n448: \n449: $$\n450: \n451: Therefore localized moments and Z-scores are rotation-invariant.\n452: \n453: **Kinetic operator**: The force $F(x) = \\nabla R(x)$ transforms covariantly:\n454: \n455: $$\n456: F(Rx) = R \\nabla R(x) = R F(x)\n457: \n458: $$\n459: \n460: The noise is isotropic (covariance $\\sigma_v^2 I$), hence rotation-invariant.\n461: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "12_symmetries_geometric_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 3. Flat Algorithmic Space Symmetries"
+      }
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-thm-fitness-scaling",
+      "title": null,
+      "start_line": 494,
+      "end_line": 512,
+      "header_lines": [
+        495
+      ],
+      "content_start": 497,
+      "content_end": 511,
+      "content": "497: :label: proof-thm-fitness-scaling\n498: \n499: The fitness potential is:\n500: \n501: $$\n502: V_{\\text{fit}} = \\eta^{\\alpha + \\beta} \\exp(\\alpha Z_r + \\beta Z_d)\n503: \n504: $$\n505: \n506: Under the rescaling $\\alpha \\to c\\alpha, \\beta \\to c\\beta, \\eta \\to \\eta^c$:\n507: \n508: $$\n509: (\\eta^c)^{c(\\alpha + \\beta)} \\exp(c\\alpha Z_r + c\\beta Z_d) = \\eta^{c(\\alpha + \\beta)} \\exp(c(\\alpha Z_r + \\beta Z_d)) = \\left[\\eta^{\\alpha+\\beta} \\exp(\\alpha Z_r + \\beta Z_d)\\right]^c\n510: \n511: $$",
+      "metadata": {
+        "label": "proof-thm-fitness-scaling"
+      },
+      "section": "## 3. Flat Algorithmic Space Symmetries",
+      "raw_directive": "494: :::\n495: \n496: :::{prf:proof}\n497: :label: proof-thm-fitness-scaling\n498: \n499: The fitness potential is:\n500: \n501: $$\n502: V_{\\text{fit}} = \\eta^{\\alpha + \\beta} \\exp(\\alpha Z_r + \\beta Z_d)\n503: \n504: $$\n505: \n506: Under the rescaling $\\alpha \\to c\\alpha, \\beta \\to c\\beta, \\eta \\to \\eta^c$:\n507: \n508: $$\n509: (\\eta^c)^{c(\\alpha + \\beta)} \\exp(c\\alpha Z_r + c\\beta Z_d) = \\eta^{c(\\alpha + \\beta)} \\exp(c(\\alpha Z_r + \\beta Z_d)) = \\left[\\eta^{\\alpha+\\beta} \\exp(\\alpha Z_r + \\beta Z_d)\\right]^c\n510: \n511: $$\n512: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "12_symmetries_geometric_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 3. Flat Algorithmic Space Symmetries"
+      }
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-thm-irreversibility",
+      "title": null,
+      "start_line": 537,
+      "end_line": 563,
+      "header_lines": [
+        538
+      ],
+      "content_start": 540,
+      "content_end": 562,
+      "content": "540: :label: proof-thm-irreversibility\n541: \n542: **Time-reversal in Hamiltonian systems** requires velocity inversion: $\\mathcal{T}(x, v, s) = (x, -v, s)$. We show this does not reverse the Geometric Gas dynamics.\n543: \n544: **Cloning operator breaks time-reversal**: The cloning gate compares fitness values and creates discontinuous jumps:\n545: \n546: $$\n547: (x_i, v_i) \\to (x_j, v_j) \\quad \\text{if } V_{\\text{fit}}(j) > V_{\\text{fit}}(i)\n548: \n549: $$\n550: \n551: Under velocity inversion:\n552: \n553: $$\n554: \\mathcal{T}(x_i, v_i) = (x_i, -v_i)\n555: \n556: $$\n557: \n558: But the fitness potential $V_{\\text{fit}}(x, v, S)$ depends on the **unaveraged** velocity through the localized Z-score of the algorithmic distance. Inverting velocities changes the fitness landscape, hence changes which cloning events occur.\n559: \n560: **Companion selection is non-reversible**: The companion distribution $\\mathbb{C}_\\epsilon(\\mathcal{S}, i)$ weights by $\\exp(-d_{\\text{alg}}^2/(2\\epsilon^2))$. Under time reversal, companions would need to be selected using the **reversed distances** from the future state, which is impossible.\n561: \n562: **Entropy production**: The cloning operator strictly increases the fitness-weighted concentration (see `03_cloning.md`, Keystone Lemma). This is a **monotone decrease** in entropy relative to the QSD, violating time-reversal symmetry which would require entropy to be conserved.",
+      "metadata": {
+        "label": "proof-thm-irreversibility"
+      },
+      "section": "## 3. Flat Algorithmic Space Symmetries",
+      "raw_directive": "537: :::\n538: \n539: :::{prf:proof}\n540: :label: proof-thm-irreversibility\n541: \n542: **Time-reversal in Hamiltonian systems** requires velocity inversion: $\\mathcal{T}(x, v, s) = (x, -v, s)$. We show this does not reverse the Geometric Gas dynamics.\n543: \n544: **Cloning operator breaks time-reversal**: The cloning gate compares fitness values and creates discontinuous jumps:\n545: \n546: $$\n547: (x_i, v_i) \\to (x_j, v_j) \\quad \\text{if } V_{\\text{fit}}(j) > V_{\\text{fit}}(i)\n548: \n549: $$\n550: \n551: Under velocity inversion:\n552: \n553: $$\n554: \\mathcal{T}(x_i, v_i) = (x_i, -v_i)\n555: \n556: $$\n557: \n558: But the fitness potential $V_{\\text{fit}}(x, v, S)$ depends on the **unaveraged** velocity through the localized Z-score of the algorithmic distance. Inverting velocities changes the fitness landscape, hence changes which cloning events occur.\n559: \n560: **Companion selection is non-reversible**: The companion distribution $\\mathbb{C}_\\epsilon(\\mathcal{S}, i)$ weights by $\\exp(-d_{\\text{alg}}^2/(2\\epsilon^2))$. Under time reversal, companions would need to be selected using the **reversed distances** from the future state, which is impossible.\n561: \n562: **Entropy production**: The cloning operator strictly increases the fitness-weighted concentration (see `03_cloning.md`, Keystone Lemma). This is a **monotone decrease** in entropy relative to the QSD, violating time-reversal symmetry which would require entropy to be conserved.\n563: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "12_symmetries_geometric_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 3. Flat Algorithmic Space Symmetries"
+      }
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-prop-h-theorem",
+      "title": null,
+      "start_line": 580,
+      "end_line": 584,
+      "header_lines": [
+        581
+      ],
+      "content_start": 583,
+      "content_end": 583,
+      "content": "583: :label: proof-prop-h-theorem",
+      "metadata": {
+        "label": "proof-prop-h-theorem"
+      },
+      "section": "## 3. Flat Algorithmic Space Symmetries",
+      "raw_directive": "580: :::\n581: \n582: :::{prf:proof}\n583: :label: proof-prop-h-theorem\n584: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "12_symmetries_geometric_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 3. Flat Algorithmic Space Symmetries"
+      }
+    }
+  ]
+}

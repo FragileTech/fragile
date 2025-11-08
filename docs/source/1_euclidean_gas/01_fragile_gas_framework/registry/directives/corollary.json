@@ -1,0 +1,84 @@
+{
+  "document_id": "01_fragile_gas_framework",
+  "stage": "directives",
+  "directive_type": "corollary",
+  "generated_at": "2025-11-08T17:07:43.172076+00:00",
+  "count": 3,
+  "items": [
+    {
+      "directive_type": "corollary",
+      "label": "cor-chain-rule-sigma-reg-var",
+      "title": "Chain‑rule bound for \\sigma\\'_{\\text{reg}}\\circ \\mathrm{Var}",
+      "start_line": 2044,
+      "end_line": 2059,
+      "header_lines": [
+        2045
+      ],
+      "content_start": 2047,
+      "content_end": 2058,
+      "content": "2047: \n2048: Under the conditions of the lemma and §8.2.2.9, the composite map \\sigma\\'_{\\text{reg}}\\circ\\mathrm{Var} is Lipschitz with\n2049: $$\n2050: \n2051: L_{\\sigma\\'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; L_{\\sigma\\'_{\\text{reg}}}\\,\\Big( L_{m_2,M}+2 V_{\\max} L_{\\mu,M}\\Big).\n2052: \n2053: $$\n2054: In particular, for the empirical aggregator of §6.2.2.a (see [](#lem-empirical-aggregator-properties)), $L_{\\mu,M}=1/\\sqrt{k}$ and $L_{m_2,M}=2V_{\\max}/\\sqrt{k}$, hence\n2055: $$\n2056: \n2057: L_{\\sigma\\'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; L_{\\sigma\\'_{\\text{reg}}}\\,\\Big( \\tfrac{2 V_{\\max}}{\\sqrt{k}} + 2 V_{\\max}\\,\\tfrac{1}{\\sqrt{k}}\\Big)\\n\\;=\\; \\frac{2 L_{\\sigma\\'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}.\n2058: ",
+      "metadata": {
+        "label": "cor-chain-rule-sigma-reg-var"
+      },
+      "section": "## 9. Rescale Transformation",
+      "raw_directive": "2044: :::\n2045: :::{prf:corollary} Chain‑rule bound for \\sigma\\'_{\\text{reg}}\\circ \\mathrm{Var}\n2046: :label: cor-chain-rule-sigma-reg-var\n2047: \n2048: Under the conditions of the lemma and §8.2.2.9, the composite map \\sigma\\'_{\\text{reg}}\\circ\\mathrm{Var} is Lipschitz with\n2049: $$\n2050: \n2051: L_{\\sigma\\'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; L_{\\sigma\\'_{\\text{reg}}}\\,\\Big( L_{m_2,M}+2 V_{\\max} L_{\\mu,M}\\Big).\n2052: \n2053: $$\n2054: In particular, for the empirical aggregator of §6.2.2.a (see [](#lem-empirical-aggregator-properties)), $L_{\\mu,M}=1/\\sqrt{k}$ and $L_{m_2,M}=2V_{\\max}/\\sqrt{k}$, hence\n2055: $$\n2056: \n2057: L_{\\sigma\\'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; L_{\\sigma\\'_{\\text{reg}}}\\,\\Big( \\tfrac{2 V_{\\max}}{\\sqrt{k}} + 2 V_{\\max}\\,\\tfrac{1}{\\sqrt{k}}\\Big)\\n\\;=\\; \\frac{2 L_{\\sigma\\'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}.\n2058: \n2059: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 9,
+        "chapter_file": "chapter_9.json",
+        "section_id": "## 9. Rescale Transformation"
+      }
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-closed-form-lipschitz-composite",
+      "title": "Closed‑form bound for $L_{g_A\\circ z}$ (empirical aggregator)",
+      "start_line": 2060,
+      "end_line": 2070,
+      "header_lines": [
+        2061
+      ],
+      "content_start": 2063,
+      "content_end": 2069,
+      "content": "2063: \n2064: Let $k=|\\mathcal A(\\mathcal S)|$ and assume $|v_i|\\le V_{\\max}$. For the empirical aggregator of §6.2.2.a (see [](#lem-empirical-aggregator-properties)) with the regularized standardization and piecewise rescale of §8.2.2, the composite map $g_A\\circ z$ is globally Lipschitz with\n2065: $$\n2066: \n2067: \\boxed{\\;L_{g_A\\circ z}\\;\\le\\; \\max\\{\\,L_P,\\,1\\,\\}\\;\\cdot\\; \\frac{2 L_{\\sigma\\'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}\\;}\n2068: \n2069: $$",
+      "metadata": {
+        "label": "cor-closed-form-lipschitz-composite"
+      },
+      "section": "## 9. Rescale Transformation",
+      "raw_directive": "2060: :::\n2061: :::{prf:corollary} Closed‑form bound for $L_{g_A\\circ z}$ (empirical aggregator)\n2062: :label: cor-closed-form-lipschitz-composite\n2063: \n2064: Let $k=|\\mathcal A(\\mathcal S)|$ and assume $|v_i|\\le V_{\\max}$. For the empirical aggregator of §6.2.2.a (see [](#lem-empirical-aggregator-properties)) with the regularized standardization and piecewise rescale of §8.2.2, the composite map $g_A\\circ z$ is globally Lipschitz with\n2065: $$\n2066: \n2067: \\boxed{\\;L_{g_A\\circ z}\\;\\le\\; \\max\\{\\,L_P,\\,1\\,\\}\\;\\cdot\\; \\frac{2 L_{\\sigma\\'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}\\;}\n2068: \n2069: $$\n2070: where $L_P=\\|P'\\|_\\infty$ is the uniform derivative bound of the cubic patch from §8.2.2.5.",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 9,
+        "chapter_file": "chapter_9.json",
+        "section_id": "## 9. Rescale Transformation"
+      }
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-pipeline-continuity-margin-stability",
+      "title": null,
+      "start_line": 3986,
+      "end_line": 3999,
+      "header_lines": [
+        3987
+      ],
+      "content_start": 3989,
+      "content_end": 3998,
+      "content": "3989: \n3990: $$\n3991: where $C_{V,\\text{total}}^{(*)}$ is defined in [](#def-lipschitz-value-error-coefficients) and $C_{S,\\text{direct}}^{(*)}$, $C_{S,\\text{indirect}}^{(*)}$ are from [](#def-lipschitz-structural-error-coefficients). The dependence on the swarm states is entirely through these deterministic coefficients.\n3992: 5.  **Assemble the Final Bound `F_pot,det`:**\n3993:     Combining the bounds from steps 2–4 yields the final deterministic function $F_{\\text{pot,det}}$. It is a sum of terms proportional to $\\|\\Delta\\mathbf{v}_r\\|^2$, $\\|\\Delta\\mathbf{v}_d\\|^2$, $n_c$, and $n_c^2$, with coefficients obtained by collecting $V_{\\text{pot,max}}$, $L_{F,*}$, and the standardization constants $C_{V,\\text{total}}^{(*)}$, $C_{S,\\text{direct}}^{(*)}$, $C_{S,\\text{indirect}}^{(*)}$. Since each constituent coefficient is finite by definition, $F_{\\text{pot,det}}$ is a well-defined, continuous bound on the deterministic error. This completes the proof.\n3994: **Q.E.D.**\n3995: :::\n3996: #### 12.3.3 Corollary: Pipeline Continuity Under Margin-Based Status Stability\n3997: :::{prf:corollary}\n3998: :label: cor-pipeline-continuity-margin-stability",
+      "metadata": {
+        "label": "cor-pipeline-continuity-margin-stability"
+      },
+      "section": "## 13. Fitness potential operator",
+      "raw_directive": "3986: \n3987:     \\|\\mathbf{z}_{*,1} - \\mathbf{z}_{*,2}\\|_2^2 \\le 2 C_{V,\\text{total}}^{(*)}\\cdot \\|\\Delta\\mathbf{v}_*\\|_2^2 + 2 C_{S,\\text{direct}}^{(*)} \\cdot n_c + 2 C_{S,\\text{indirect}}^{(*)}(\\mathcal{S}_1,\\mathcal{S}_2) \\cdot n_c^2,\n3988: \n3989: \n3990: $$\n3991: where $C_{V,\\text{total}}^{(*)}$ is defined in [](#def-lipschitz-value-error-coefficients) and $C_{S,\\text{direct}}^{(*)}$, $C_{S,\\text{indirect}}^{(*)}$ are from [](#def-lipschitz-structural-error-coefficients). The dependence on the swarm states is entirely through these deterministic coefficients.\n3992: 5.  **Assemble the Final Bound `F_pot,det`:**\n3993:     Combining the bounds from steps 2–4 yields the final deterministic function $F_{\\text{pot,det}}$. It is a sum of terms proportional to $\\|\\Delta\\mathbf{v}_r\\|^2$, $\\|\\Delta\\mathbf{v}_d\\|^2$, $n_c$, and $n_c^2$, with coefficients obtained by collecting $V_{\\text{pot,max}}$, $L_{F,*}$, and the standardization constants $C_{V,\\text{total}}^{(*)}$, $C_{S,\\text{direct}}^{(*)}$, $C_{S,\\text{indirect}}^{(*)}$. Since each constituent coefficient is finite by definition, $F_{\\text{pot,det}}$ is a well-defined, continuous bound on the deterministic error. This completes the proof.\n3994: **Q.E.D.**\n3995: :::\n3996: #### 12.3.3 Corollary: Pipeline Continuity Under Margin-Based Status Stability\n3997: :::{prf:corollary}\n3998: :label: cor-pipeline-continuity-margin-stability\n3999: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_fragile_gas_framework",
+        "chapter_index": 13,
+        "chapter_file": "chapter_13.json",
+        "section_id": "## 13. Fitness potential operator"
+      }
+    }
+  ]
+}

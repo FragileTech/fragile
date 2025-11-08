@@ -1,0 +1,173 @@
+{
+  "chapter_index": 12,
+  "section_id": "## 9. Main Convergence Theorems and Physical Interpretation",
+  "directive_count": 9,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-qsd-existence",
+      "title": "Existence and Uniqueness of the QSD",
+      "start_line": 2104,
+      "end_line": 2116,
+      "header_lines": [
+        2105
+      ],
+      "content_start": 2107,
+      "content_end": 2115,
+      "content": "2107: :label: thm-qsd-existence\n2108: \n2109: The Geometric Viscous Fluid Model, composed with the cloning operator $\\Psi_{\\text{clone}}$, admits a unique Quasi-Stationary Distribution (QSD) $\\pi_{\\text{QSD}}$ on the phase space $\\mathcal{X} \\times \\mathbb{R}^d$.\n2110: \n2111: Moreover, for any initial distribution $\\mu_0$, the law of the swarm at time $t$ converges exponentially fast to $\\pi_{\\text{QSD}}$ in total variation:\n2112: \n2113: $$\n2114: \\|\\mu_t - \\pi_{\\text{QSD}}\\|_{\\text{TV}} \\le C_{\\text{TV}} (1 - \\kappa_{\\text{total}})^t\n2115: $$",
+      "metadata": {
+        "label": "thm-qsd-existence"
+      },
+      "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "raw_directive": "2104: ### 9.1. Theorem: Geometric Ergodicity and the QSD\n2105: \n2106: :::{prf:theorem} Existence and Uniqueness of the QSD\n2107: :label: thm-qsd-existence\n2108: \n2109: The Geometric Viscous Fluid Model, composed with the cloning operator $\\Psi_{\\text{clone}}$, admits a unique Quasi-Stationary Distribution (QSD) $\\pi_{\\text{QSD}}$ on the phase space $\\mathcal{X} \\times \\mathbb{R}^d$.\n2110: \n2111: Moreover, for any initial distribution $\\mu_0$, the law of the swarm at time $t$ converges exponentially fast to $\\pi_{\\text{QSD}}$ in total variation:\n2112: \n2113: $$\n2114: \\|\\mu_t - \\pi_{\\text{QSD}}\\|_{\\text{TV}} \\le C_{\\text{TV}} (1 - \\kappa_{\\text{total}})^t\n2115: $$\n2116: "
+    },
+    {
+      "directive_type": "conjecture",
+      "label": "conj-wfr-convergence",
+      "title": "Convergence in the WFR Metric",
+      "start_line": 2131,
+      "end_line": 2141,
+      "header_lines": [
+        2132
+      ],
+      "content_start": 2134,
+      "content_end": 2140,
+      "content": "2134: :label: conj-wfr-convergence\n2135: \n2136: The composition of the kinetic evolution $\\Psi_{\\text{kin,adapt}}$ and the cloning selection $\\Psi_{\\text{clone}}$ is a contraction in the Wasserstein-Fisher-Rao (WFR) metric. Consequently, the empirical distribution converges in WFR distance:\n2137: \n2138: $$\n2139: \\text{WFR}(\\mu_t, \\pi_{\\text{QSD}}) \\le C_{\\text{WFR}} e^{-\\lambda_{\\text{WFR}} t}\n2140: $$",
+      "metadata": {
+        "label": "conj-wfr-convergence"
+      },
+      "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "raw_directive": "2131: The Wasserstein-Fisher-Rao (WFR) metric is a natural geometric framework for analyzing the convergence of probability distributions evolving under reaction-diffusion dynamics. We now state a formal conjecture regarding WFR convergence for the adaptive system.\n2132: \n2133: :::{prf:conjecture} Convergence in the WFR Metric\n2134: :label: conj-wfr-convergence\n2135: \n2136: The composition of the kinetic evolution $\\Psi_{\\text{kin,adapt}}$ and the cloning selection $\\Psi_{\\text{clone}}$ is a contraction in the Wasserstein-Fisher-Rao (WFR) metric. Consequently, the empirical distribution converges in WFR distance:\n2137: \n2138: $$\n2139: \\text{WFR}(\\mu_t, \\pi_{\\text{QSD}}) \\le C_{\\text{WFR}} e^{-\\lambda_{\\text{WFR}} t}\n2140: $$\n2141: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-wfr-analogy",
+      "title": "Formal Analogy and Evidence",
+      "start_line": 2168,
+      "end_line": 2189,
+      "header_lines": [
+        2169
+      ],
+      "content_start": 2171,
+      "content_end": 2188,
+      "content": "2171: :label: rem-wfr-analogy\n2172: \n2173: Despite the lack of a complete proof, there is strong formal evidence for the conjecture:\n2174: \n2175: **Structural analogy:** The adaptive system has the form of a **gradient flow in WFR space**:\n2176: - The kinetic evolution is a gradient flow of the free energy in Wasserstein space\n2177: - The cloning operator is a gradient flow of relative entropy in Fisher-Rao space\n2178: - The WFR metric naturally interpolates between these two geometries\n2179: \n2180: **Partial results:**\n2181: - For the **backbone system** (without adaptive terms), W\u2082 contractivity follows from standard theory\n2182: - For **simplified selection operators** (e.g., resampling with absolute fitness), FR contractivity is well-established\n2183: - The uniform ellipticity (Theorem [](#thm-ueph)) provides the regularity needed for Wasserstein contractivity\n2184: \n2185: **What would complete the proof:**\n2186: 1. Extend W\u2082 contraction theory to uniformly elliptic, state-dependent diffusions (possible via Otto calculus)\n2187: 2. Prove FR contractivity for competitive, state-dependent selection operators\n2188: 3. Apply the Chizat-Peyr\u00e9-Schmitzer WFR theory to verify the composition",
+      "metadata": {
+        "label": "rem-wfr-analogy"
+      },
+      "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "raw_directive": "2168: :::\n2169: \n2170: :::{prf:remark} Formal Analogy and Evidence\n2171: :label: rem-wfr-analogy\n2172: \n2173: Despite the lack of a complete proof, there is strong formal evidence for the conjecture:\n2174: \n2175: **Structural analogy:** The adaptive system has the form of a **gradient flow in WFR space**:\n2176: - The kinetic evolution is a gradient flow of the free energy in Wasserstein space\n2177: - The cloning operator is a gradient flow of relative entropy in Fisher-Rao space\n2178: - The WFR metric naturally interpolates between these two geometries\n2179: \n2180: **Partial results:**\n2181: - For the **backbone system** (without adaptive terms), W\u2082 contractivity follows from standard theory\n2182: - For **simplified selection operators** (e.g., resampling with absolute fitness), FR contractivity is well-established\n2183: - The uniform ellipticity (Theorem [](#thm-ueph)) provides the regularity needed for Wasserstein contractivity\n2184: \n2185: **What would complete the proof:**\n2186: 1. Extend W\u2082 contraction theory to uniformly elliptic, state-dependent diffusions (possible via Otto calculus)\n2187: 2. Prove FR contractivity for competitive, state-dependent selection operators\n2188: 3. Apply the Chizat-Peyr\u00e9-Schmitzer WFR theory to verify the composition\n2189: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-lsi-mean-field",
+      "title": "Logarithmic Sobolev Inequality for the Mean-Field Generator",
+      "start_line": 2215,
+      "end_line": 2229,
+      "header_lines": [
+        2216
+      ],
+      "content_start": 2218,
+      "content_end": 2228,
+      "content": "2218: :label: thm-lsi-mean-field\n2219: \n2220: For the mean-field limit of the Geometric Viscous Fluid Model (as $N \\to \\infty$), the mean-field generator $\\mathcal{L}_{\\text{MF}}$ satisfies a logarithmic Sobolev inequality with respect to its unique stationary state $\\rho_{\\text{QSD}}$. There exists a constant $\\lambda_{\\text{LSI}} > 0$ such that for all probability densities $f \\in H^1_w(\\mathcal{X} \\times \\mathbb{R}^d)$:\n2221: \n2222: $$\n2223: \\text{Ent}_{\\rho_{\\text{QSD}}}(f) \\le \\frac{1}{2\\lambda_{\\text{LSI}}} D(f)\n2224: $$\n2225: \n2226: where:\n2227: - $\\text{Ent}_{\\rho}(f) := \\int f \\log(f / \\rho) \\, dx \\, dv$ is the relative entropy.\n2228: - $D(f) := -\\int (\\mathcal{L}_{\\text{MF}} f) \\log(f / \\rho_{\\text{QSD}}) \\, dx \\, dv$ is the entropy dissipation (Fisher information).",
+      "metadata": {
+        "label": "thm-lsi-mean-field"
+      },
+      "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "raw_directive": "2215: The natural next question is: **Does the LSI survive in the mean-field limit as $N \\to \\infty$?** This section discusses this open problem.\n2216: \n2217: :::{prf:theorem} Logarithmic Sobolev Inequality for the Mean-Field Generator\n2218: :label: thm-lsi-mean-field\n2219: \n2220: For the mean-field limit of the Geometric Viscous Fluid Model (as $N \\to \\infty$), the mean-field generator $\\mathcal{L}_{\\text{MF}}$ satisfies a logarithmic Sobolev inequality with respect to its unique stationary state $\\rho_{\\text{QSD}}$. There exists a constant $\\lambda_{\\text{LSI}} > 0$ such that for all probability densities $f \\in H^1_w(\\mathcal{X} \\times \\mathbb{R}^d)$:\n2221: \n2222: $$\n2223: \\text{Ent}_{\\rho_{\\text{QSD}}}(f) \\le \\frac{1}{2\\lambda_{\\text{LSI}}} D(f)\n2224: $$\n2225: \n2226: where:\n2227: - $\\text{Ent}_{\\rho}(f) := \\int f \\log(f / \\rho) \\, dx \\, dv$ is the relative entropy.\n2228: - $D(f) := -\\int (\\mathcal{L}_{\\text{MF}} f) \\log(f / \\rho_{\\text{QSD}}) \\, dx \\, dv$ is the entropy dissipation (Fisher information).\n2229: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-dissipation-decomp",
+      "title": "Decomposition of Entropy Dissipation",
+      "start_line": 2269,
+      "end_line": 2284,
+      "header_lines": [
+        2270
+      ],
+      "content_start": 2272,
+      "content_end": 2283,
+      "content": "2272: :label: lem-dissipation-decomp\n2273: \n2274: The total entropy dissipation can be decomposed as:\n2275: \n2276: $$\n2277: D(f) = D_{\\text{kin}}(f) + D_{\\text{clone}}(f) + D_{\\text{boundary}}(f)\n2278: $$\n2279: \n2280: where:\n2281: - $D_{\\text{kin}}(f) = \\int f \\|\\nabla_v \\log(f / \\rho_{\\text{QSD}})\\|^2_{G_{\\text{reg}}} \\, dx \\, dv$ is the kinetic dissipation.\n2282: - $D_{\\text{clone}}(f) \\ge 0$ is the dissipation from the selection/cloning mechanism.\n2283: - $D_{\\text{boundary}}(f) \\ge 0$ is the dissipation from boundary flux.",
+      "metadata": {
+        "label": "lem-dissipation-decomp"
+      },
+      "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "raw_directive": "2269: **Step 1: Decomposition of Entropy Dissipation**\n2270: \n2271: :::{prf:lemma} Decomposition of Entropy Dissipation\n2272: :label: lem-dissipation-decomp\n2273: \n2274: The total entropy dissipation can be decomposed as:\n2275: \n2276: $$\n2277: D(f) = D_{\\text{kin}}(f) + D_{\\text{clone}}(f) + D_{\\text{boundary}}(f)\n2278: $$\n2279: \n2280: where:\n2281: - $D_{\\text{kin}}(f) = \\int f \\|\\nabla_v \\log(f / \\rho_{\\text{QSD}})\\|^2_{G_{\\text{reg}}} \\, dx \\, dv$ is the kinetic dissipation.\n2282: - $D_{\\text{clone}}(f) \\ge 0$ is the dissipation from the selection/cloning mechanism.\n2283: - $D_{\\text{boundary}}(f) \\ge 0$ is the dissipation from boundary flux.\n2284: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-microlocal",
+      "title": "Microlocal Decomposition",
+      "start_line": 2288,
+      "end_line": 2296,
+      "header_lines": [
+        2289
+      ],
+      "content_start": 2291,
+      "content_end": 2295,
+      "content": "2291: :label: def-microlocal\n2292: \n2293: For any function $h = f / \\rho_{\\text{QSD}}$, define:\n2294: - **Hydrodynamic projection:** $\\Pi h(x) := \\int_{\\mathbb{R}^d} h(x, v) \\rho_{\\text{QSD}}(v | x) \\, dv$\n2295: - **Microscopic fluctuation:** $(I - \\Pi) h := h - \\Pi h$",
+      "metadata": {
+        "label": "def-microlocal"
+      },
+      "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "raw_directive": "2288: **Step 2: Hypocoercive Decomposition**\n2289: \n2290: :::{prf:definition} Microlocal Decomposition\n2291: :label: def-microlocal\n2292: \n2293: For any function $h = f / \\rho_{\\text{QSD}}$, define:\n2294: - **Hydrodynamic projection:** $\\Pi h(x) := \\int_{\\mathbb{R}^d} h(x, v) \\rho_{\\text{QSD}}(v | x) \\, dv$\n2295: - **Microscopic fluctuation:** $(I - \\Pi) h := h - \\Pi h$\n2296: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-micro-coercivity",
+      "title": "Microscopic Coercivity (Step A)",
+      "start_line": 2302,
+      "end_line": 2312,
+      "header_lines": [
+        2303
+      ],
+      "content_start": 2305,
+      "content_end": 2311,
+      "content": "2305: :label: lem-micro-coercivity\n2306: \n2307: There exists $\\lambda_{\\text{mic}} > 0$ such that:\n2308: \n2309: $$\n2310: D_{\\text{kin}}(h \\cdot \\rho_{\\text{QSD}}) \\ge \\lambda_{\\text{mic}} \\|(I - \\Pi) h\\|^2_{L^2(\\rho_{\\text{QSD}})}\n2311: $$",
+      "metadata": {
+        "label": "lem-micro-coercivity"
+      },
+      "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "raw_directive": "2302: The core technical work involves proving three lemmas:\n2303: \n2304: :::{prf:lemma} Microscopic Coercivity (Step A)\n2305: :label: lem-micro-coercivity\n2306: \n2307: There exists $\\lambda_{\\text{mic}} > 0$ such that:\n2308: \n2309: $$\n2310: D_{\\text{kin}}(h \\cdot \\rho_{\\text{QSD}}) \\ge \\lambda_{\\text{mic}} \\|(I - \\Pi) h\\|^2_{L^2(\\rho_{\\text{QSD}})}\n2311: $$\n2312: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-macro-transport",
+      "title": "Macroscopic Transport (Step B)",
+      "start_line": 2314,
+      "end_line": 2324,
+      "header_lines": [
+        2315
+      ],
+      "content_start": 2317,
+      "content_end": 2323,
+      "content": "2317: :label: lem-macro-transport\n2318: \n2319: There exists $C_1 > 0$ such that:\n2320: \n2321: $$\n2322: \\|\\Pi h\\|^2_{L^2(\\rho_{\\text{QSD}})} \\le C_1 \\left| \\langle (I - \\Pi) h, v \\cdot \\nabla_x (\\Pi h) \\rangle_{L^2(\\rho_{\\text{QSD}})} \\right|\n2323: $$",
+      "metadata": {
+        "label": "lem-macro-transport"
+      },
+      "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "raw_directive": "2314: :::\n2315: \n2316: :::{prf:lemma} Macroscopic Transport (Step B)\n2317: :label: lem-macro-transport\n2318: \n2319: There exists $C_1 > 0$ such that:\n2320: \n2321: $$\n2322: \\|\\Pi h\\|^2_{L^2(\\rho_{\\text{QSD}})} \\le C_1 \\left| \\langle (I - \\Pi) h, v \\cdot \\nabla_x (\\Pi h) \\rangle_{L^2(\\rho_{\\text{QSD}})} \\right|\n2323: $$\n2324: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-micro-reg",
+      "title": "Microscopic Regularization (Step C)",
+      "start_line": 2326,
+      "end_line": 2336,
+      "header_lines": [
+        2327
+      ],
+      "content_start": 2329,
+      "content_end": 2335,
+      "content": "2329: :label: lem-micro-reg\n2330: \n2331: There exists $C_2 > 0$ such that:\n2332: \n2333: $$\n2334: \\left| \\langle (I - \\Pi) h, v \\cdot \\nabla_x (\\Pi h) \\rangle_{L^2(\\rho_{\\text{QSD}})} \\right| \\le C_2 \\sqrt{D_{\\text{kin}}(h \\cdot \\rho_{\\text{QSD}})}\n2335: $$",
+      "metadata": {
+        "label": "lem-micro-reg"
+      },
+      "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "raw_directive": "2326: :::\n2327: \n2328: :::{prf:lemma} Microscopic Regularization (Step C)\n2329: :label: lem-micro-reg\n2330: \n2331: There exists $C_2 > 0$ such that:\n2332: \n2333: $$\n2334: \\left| \\langle (I - \\Pi) h, v \\cdot \\nabla_x (\\Pi h) \\rangle_{L^2(\\rho_{\\text{QSD}})} \\right| \\le C_2 \\sqrt{D_{\\text{kin}}(h \\cdot \\rho_{\\text{QSD}})}\n2335: $$\n2336: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

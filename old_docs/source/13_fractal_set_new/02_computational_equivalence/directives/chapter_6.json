@@ -1,0 +1,47 @@
+{
+  "chapter_index": 6,
+  "section_id": "## 6. Approximation Accuracy and Consistency",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-weak-convergence-invariant",
+      "title": "Consistency: $\\pi_{\\Delta t} \\to \\pi$ as $\\Delta t \\to 0$",
+      "start_line": 943,
+      "end_line": 970,
+      "header_lines": [
+        944
+      ],
+      "content_start": 946,
+      "content_end": 969,
+      "content": "946: :label: thm-weak-convergence-invariant\n947: \n948: As the timestep $\\Delta t \\to 0$, the stationary distribution $\\pi_{\\Delta t}$ of the discrete BAOAB chain converges weakly to the quasi-stationary distribution $\\pi$ of the continuous Adaptive Gas SDE:\n949: \n950: $$\n951: \\pi_{\\Delta t} \\xrightarrow{w} \\pi \\quad \\text{as } \\Delta t \\to 0\n952: \n953: $$\n954: \n955: **Proof sketch:**\n956: \n957: This is a standard result in numerical analysis of SDEs. For BAOAB (a second-order integrator):\n958: \n959: 1. **Local consistency:** For smooth test functions $f$:\n960:    $$\n961:    \\left|\\mathbb{E}[f(Z_{k+1}) \\mid Z_k = z] - f(z) - \\Delta t \\, \\mathcal{L}f(z)\\right| \\leq C \\Delta t^2\n962:    $$\n963: \n964: 2. **Global error accumulation:** Over time $T = k \\Delta t$:\n965:    $$\n966:    \\left|\\mathbb{E}[f(Z_k)] - \\mathbb{E}_\\pi[f]\\right| \\leq C_T \\Delta t\n967:    $$\n968: \n969: 3. **Portmanteau theorem:** Weak convergence follows from convergence of expectations for all bounded continuous $f$.",
+      "metadata": {
+        "label": "thm-weak-convergence-invariant"
+      },
+      "section": "## 6. Approximation Accuracy and Consistency",
+      "raw_directive": "943: ### 6.1. Weak Convergence of Invariant Measures\n944: \n945: :::{prf:theorem} Consistency: $\\pi_{\\Delta t} \\to \\pi$ as $\\Delta t \\to 0$\n946: :label: thm-weak-convergence-invariant\n947: \n948: As the timestep $\\Delta t \\to 0$, the stationary distribution $\\pi_{\\Delta t}$ of the discrete BAOAB chain converges weakly to the quasi-stationary distribution $\\pi$ of the continuous Adaptive Gas SDE:\n949: \n950: $$\n951: \\pi_{\\Delta t} \\xrightarrow{w} \\pi \\quad \\text{as } \\Delta t \\to 0\n952: \n953: $$\n954: \n955: **Proof sketch:**\n956: \n957: This is a standard result in numerical analysis of SDEs. For BAOAB (a second-order integrator):\n958: \n959: 1. **Local consistency:** For smooth test functions $f$:\n960:    $$\n961:    \\left|\\mathbb{E}[f(Z_{k+1}) \\mid Z_k = z] - f(z) - \\Delta t \\, \\mathcal{L}f(z)\\right| \\leq C \\Delta t^2\n962:    $$\n963: \n964: 2. **Global error accumulation:** Over time $T = k \\Delta t$:\n965:    $$\n966:    \\left|\\mathbb{E}[f(Z_k)] - \\mathbb{E}_\\pi[f]\\right| \\leq C_T \\Delta t\n967:    $$\n968: \n969: 3. **Portmanteau theorem:** Weak convergence follows from convergence of expectations for all bounded continuous $f$.\n970: "
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-total-error",
+      "title": "Two-Term Error Bound",
+      "start_line": 974,
+      "end_line": 993,
+      "header_lines": [
+        975
+      ],
+      "content_start": 977,
+      "content_end": 992,
+      "content": "977: :label: prop-total-error\n978: \n979: Let $\\mu_k$ be the distribution of $Z_k$ (Fractal Set state at step $k$) starting from initial distribution $\\mu_0$. Let $\\pi$ be the continuous QSD. Then:\n980: \n981: $$\n982: \\|\\mu_k - \\pi\\|_{\\text{TV}} \\leq M(\\mu_0) \\, \\rho_{\\text{discrete}}^k + C_{\\text{approx}} \\Delta t\n983: \n984: $$\n985: \n986: where:\n987: - **First term** $M \\rho^k$: **Convergence error** (exponentially decaying in $k$)\n988: - **Second term** $C \\Delta t$: **Discretization error** (constant for fixed $\\Delta t$)\n989: \n990: **Interpretation:**\n991: \n992: - For **fixed $\\Delta t$**, as $k \\to \\infty$: Converges to within $O(\\Delta t)$ of the continuous QSD",
+      "metadata": {
+        "label": "prop-total-error"
+      },
+      "section": "## 6. Approximation Accuracy and Consistency",
+      "raw_directive": "974: ### 5.2. Total Error Decomposition\n975: \n976: :::{prf:proposition} Two-Term Error Bound\n977: :label: prop-total-error\n978: \n979: Let $\\mu_k$ be the distribution of $Z_k$ (Fractal Set state at step $k$) starting from initial distribution $\\mu_0$. Let $\\pi$ be the continuous QSD. Then:\n980: \n981: $$\n982: \\|\\mu_k - \\pi\\|_{\\text{TV}} \\leq M(\\mu_0) \\, \\rho_{\\text{discrete}}^k + C_{\\text{approx}} \\Delta t\n983: \n984: $$\n985: \n986: where:\n987: - **First term** $M \\rho^k$: **Convergence error** (exponentially decaying in $k$)\n988: - **Second term** $C \\Delta t$: **Discretization error** (constant for fixed $\\Delta t$)\n989: \n990: **Interpretation:**\n991: \n992: - For **fixed $\\Delta t$**, as $k \\to \\infty$: Converges to within $O(\\Delta t)$ of the continuous QSD\n993: - For **fixed $k$**, as $\\Delta t \\to 0$: Approximates the continuous distribution at time $t = k \\Delta t$"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

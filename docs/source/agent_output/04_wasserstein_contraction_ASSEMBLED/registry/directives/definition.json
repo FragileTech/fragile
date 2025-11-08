@@ -1,0 +1,159 @@
+{
+  "document_id": "04_wasserstein_contraction_ASSEMBLED",
+  "stage": "directives",
+  "directive_type": "definition",
+  "generated_at": "2025-11-08T17:07:43.298668+00:00",
+  "count": 6,
+  "items": [
+    {
+      "directive_type": "definition",
+      "label": "def-synchronous-cloning-coupling",
+      "title": "Synchronous Cloning Coupling for Two Swarms",
+      "start_line": 346,
+      "end_line": 399,
+      "header_lines": [
+        347
+      ],
+      "content_start": 349,
+      "content_end": 398,
+      "content": "349: :label: def-synchronous-cloning-coupling\n350: \n351: For two swarms $(S_1, S_2) \\in \\Sigma_N \\times \\Sigma_N$, the **synchronous cloning coupling** evolves them to $(S_1', S_2')$ using shared randomness:\n352: \n353: **Step 1: Sample Matching**\n354: \n355: Sample a single perfect matching $M$ from the Gibbs distribution based on swarm $S_1$'s algorithmic geometry:\n356: \n357: $$\n358: P(M \\mid S_1) = \\frac{W(M)}{Z}, \\quad W(M) = \\prod_{(i,j) \\in M} \\exp\\left(-\\frac{d_{\\text{alg}}(i,j)^2}{2\\varepsilon_d^2}\\right)\n359: $$\n360: \n361: where:\n362: - $d_{\\text{alg}}(i,j)$ is the algorithmic distance from Definition 2.3.1 in [01_fragile_gas_framework.md](01_fragile_gas_framework.md)\n363: - $Z = \\sum_{M' \\in \\mathcal{M}_N} W(M')$ is the partition function\n364: - $\\mathcal{M}_N$ is the set of all perfect matchings on $N$ walkers\n365: \n366: The matching defines a permutation $\\pi: \\{1,\\ldots,N\\} \\to \\{1,\\ldots,N\\}$ where walker $i$ pairs with companion $\\pi(i)$.\n367: \n368: **Step 2: Apply Same Permutation**\n369: \n370: Use the **same permutation** $\\pi$ for both swarms:\n371: - In $S_1$: walker $i$ compares fitness with companion $\\pi(i)$\n372: - In $S_2$: walker $i$ compares fitness with companion $\\pi(i)$\n373: \n374: **Step 3: Shared Cloning Thresholds**\n375: \n376: For each walker index $i \\in \\{1,\\ldots,N\\}$, sample a **shared random threshold**:\n377: \n378: $$\n379: T_i \\sim \\text{Uniform}(0, p_{\\max})\n380: $$\n381: \n382: Walker $i$ in swarm $k$ clones if $T_i < p_{k,i}$ where $p_{k,i}$ is the cloning probability in swarm $k$ (determined by fitness comparison with companion $\\pi(i)$).\n383: \n384: **Step 4: Shared Jitter**\n385: \n386: If walker $i$ clones in either swarm (or both), sample a **shared Gaussian jitter**:\n387: \n388: $$\n389: \\zeta_i \\sim \\mathcal{N}(0, \\delta^2 I_d)\n390: $$\n391: \n392: The post-cloning position is:\n393: \n394: $$\n395: x'_{k,i} = \\begin{cases}\n396: x_{k,\\pi(i)} + \\zeta_i & \\text{if } T_i < p_{k,i} \\text{ (clone)} \\\\\n397: x_{k,i} & \\text{if } T_i \\geq p_{k,i} \\text{ (persist)}\n398: \\end{cases}",
+      "metadata": {
+        "label": "def-synchronous-cloning-coupling"
+      },
+      "section": "## 1. Synchronous Coupling Construction",
+      "raw_directive": "346: ### 1.2. The Coupling Definition\n347: \n348: :::{prf:definition} Synchronous Cloning Coupling for Two Swarms\n349: :label: def-synchronous-cloning-coupling\n350: \n351: For two swarms $(S_1, S_2) \\in \\Sigma_N \\times \\Sigma_N$, the **synchronous cloning coupling** evolves them to $(S_1', S_2')$ using shared randomness:\n352: \n353: **Step 1: Sample Matching**\n354: \n355: Sample a single perfect matching $M$ from the Gibbs distribution based on swarm $S_1$'s algorithmic geometry:\n356: \n357: $$\n358: P(M \\mid S_1) = \\frac{W(M)}{Z}, \\quad W(M) = \\prod_{(i,j) \\in M} \\exp\\left(-\\frac{d_{\\text{alg}}(i,j)^2}{2\\varepsilon_d^2}\\right)\n359: $$\n360: \n361: where:\n362: - $d_{\\text{alg}}(i,j)$ is the algorithmic distance from Definition 2.3.1 in [01_fragile_gas_framework.md](01_fragile_gas_framework.md)\n363: - $Z = \\sum_{M' \\in \\mathcal{M}_N} W(M')$ is the partition function\n364: - $\\mathcal{M}_N$ is the set of all perfect matchings on $N$ walkers\n365: \n366: The matching defines a permutation $\\pi: \\{1,\\ldots,N\\} \\to \\{1,\\ldots,N\\}$ where walker $i$ pairs with companion $\\pi(i)$.\n367: \n368: **Step 2: Apply Same Permutation**\n369: \n370: Use the **same permutation** $\\pi$ for both swarms:\n371: - In $S_1$: walker $i$ compares fitness with companion $\\pi(i)$\n372: - In $S_2$: walker $i$ compares fitness with companion $\\pi(i)$\n373: \n374: **Step 3: Shared Cloning Thresholds**\n375: \n376: For each walker index $i \\in \\{1,\\ldots,N\\}$, sample a **shared random threshold**:\n377: \n378: $$\n379: T_i \\sim \\text{Uniform}(0, p_{\\max})\n380: $$\n381: \n382: Walker $i$ in swarm $k$ clones if $T_i < p_{k,i}$ where $p_{k,i}$ is the cloning probability in swarm $k$ (determined by fitness comparison with companion $\\pi(i)$).\n383: \n384: **Step 4: Shared Jitter**\n385: \n386: If walker $i$ clones in either swarm (or both), sample a **shared Gaussian jitter**:\n387: \n388: $$\n389: \\zeta_i \\sim \\mathcal{N}(0, \\delta^2 I_d)\n390: $$\n391: \n392: The post-cloning position is:\n393: \n394: $$\n395: x'_{k,i} = \\begin{cases}\n396: x_{k,\\pi(i)} + \\zeta_i & \\text{if } T_i < p_{k,i} \\text{ (clone)} \\\\\n397: x_{k,i} & \\text{if } T_i \\geq p_{k,i} \\text{ (persist)}\n398: \\end{cases}\n399: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "04_wasserstein_contraction_ASSEMBLED",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
+        "section_id": "## 1. Synchronous Coupling Construction"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-case-a",
+      "title": "Case A - Consistent Fitness Ordering",
+      "start_line": 781,
+      "end_line": 791,
+      "header_lines": [
+        782
+      ],
+      "content_start": 784,
+      "content_end": 790,
+      "content": "784: :label: def-case-a\n785: \n786: For a matched pair $(i, j)$ where $j = \\pi(i)$ from the synchronous coupling {prf:ref}`def-synchronous-cloning-coupling`, we say the pair exhibits **Case A (Consistent Fitness Ordering)** if both swarms have the same lower-fitness walker:\n787: \n788: $$\n789: V_{\\text{fit}, 1, i} \\leq V_{\\text{fit}, 1, j} \\quad \\text{AND} \\quad V_{\\text{fit}, 2, i} \\leq V_{\\text{fit}, 2, j}\n790: $$",
+      "metadata": {
+        "label": "def-case-a"
+      },
+      "section": "## 3. Case A: Consistent Fitness Ordering",
+      "raw_directive": "781: ### 3.1. Setup and Case Definition\n782: \n783: :::{prf:definition} Case A - Consistent Fitness Ordering\n784: :label: def-case-a\n785: \n786: For a matched pair $(i, j)$ where $j = \\pi(i)$ from the synchronous coupling {prf:ref}`def-synchronous-cloning-coupling`, we say the pair exhibits **Case A (Consistent Fitness Ordering)** if both swarms have the same lower-fitness walker:\n787: \n788: $$\n789: V_{\\text{fit}, 1, i} \\leq V_{\\text{fit}, 1, j} \\quad \\text{AND} \\quad V_{\\text{fit}, 2, i} \\leq V_{\\text{fit}, 2, j}\n790: $$\n791: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "04_wasserstein_contraction_ASSEMBLED",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 3. Case A: Consistent Fitness Ordering"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-w2-contraction-constants",
+      "title": "Wasserstein Contraction Constants",
+      "start_line": 2140,
+      "end_line": 2160,
+      "header_lines": [
+        2141
+      ],
+      "content_start": 2143,
+      "content_end": 2159,
+      "content": "2143: :label: def-w2-contraction-constants\n2144: \n2145: The Wasserstein-2 contraction for the cloning operator is characterized by:\n2146: \n2147: $$\n2148: \\kappa_W := 1 - \\gamma_{\\text{pair}} = \\frac{p_u \\eta}{2} > 0\n2149: $$\n2150: \n2151: where:\n2152: - $p_u > 0$ is the uniform lower bound on cloning probability for unfit walkers (Lemma 8.3.2 in [03_cloning.md](03_cloning.md))\n2153: - $\\eta > 0$ is the Outlier Alignment constant (Lemma {prf:ref}`lem-outlier-alignment`)\n2154: \n2155: The additive constant is:\n2156: \n2157: $$\n2158: C_W := C_{\\text{pair}} = 4d\\delta^2\n2159: $$",
+      "metadata": {
+        "label": "def-w2-contraction-constants"
+      },
+      "section": "## 7. Integration Over Matching Distribution",
+      "raw_directive": "2140: ### 7.2. Final Constants\n2141: \n2142: :::{prf:definition} Wasserstein Contraction Constants\n2143: :label: def-w2-contraction-constants\n2144: \n2145: The Wasserstein-2 contraction for the cloning operator is characterized by:\n2146: \n2147: $$\n2148: \\kappa_W := 1 - \\gamma_{\\text{pair}} = \\frac{p_u \\eta}{2} > 0\n2149: $$\n2150: \n2151: where:\n2152: - $p_u > 0$ is the uniform lower bound on cloning probability for unfit walkers (Lemma 8.3.2 in [03_cloning.md](03_cloning.md))\n2153: - $\\eta > 0$ is the Outlier Alignment constant (Lemma {prf:ref}`lem-outlier-alignment`)\n2154: \n2155: The additive constant is:\n2156: \n2157: $$\n2158: C_W := C_{\\text{pair}} = 4d\\delta^2\n2159: $$\n2160: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "04_wasserstein_contraction_ASSEMBLED",
+        "chapter_index": 9,
+        "chapter_file": "chapter_9.json",
+        "section_id": "## 7. Integration Over Matching Distribution"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-main-contraction-constant",
+      "title": "Main Contraction Constant",
+      "start_line": 2231,
+      "end_line": 2283,
+      "header_lines": [
+        2232
+      ],
+      "content_start": 2234,
+      "content_end": 2282,
+      "content": "2234: :label: def-main-contraction-constant\n2235: \n2236: The contraction constant is:\n2237: $$\n2238: \\kappa_W := \\kappa_{\\text{pair}} = \\frac{1}{2} \\cdot \\frac{p_u \\eta_{\\text{geo}}}{2} \\cdot f_{UH}(\\varepsilon) \\cdot q_{\\min}(\\varepsilon)\n2239: $$\n2240: \n2241: where the factor of $1/2$ comes from Corollary 5.5 (large separation regime).\n2242: \n2243: **Component Definitions**:\n2244: \n2245: 1. **Minimum Survival Probability** $p_u$:\n2246:    $$\n2247:    p_u := \\exp(-\\beta \\Delta V_{\\max})\n2248:    $$\n2249:    where $\\Delta V_{\\max}$ is the maximum virtual reward difference across the swarm.\n2250:    - **Derivation**: Section 4.4, minimum Gibbs probability\n2251:    - **N-Dependence**: None (virtual rewards are bounded by axioms)\n2252:    - **Typical Value**: $e^{-10} \\approx 4.5 \\times 10^{-5}$ for $\\beta = 1$, $\\Delta V_{\\max} = 10$\n2253: \n2254: 2. **Geometric Efficiency** $\\eta_{\\text{geo}}$:\n2255:    $$\n2256:    \\eta_{\\text{geo}} := \\frac{c_0^2}{2(1 + 2c_H)^2}\n2257:    $$\n2258:    where:\n2259:    - $c_0$ is the projection constant from Lemma 4.3.7 (High-Error Projection): $R_H \\geq c_0 L - c_1$\n2260:    - $c_H$ is the high-error radius constant: $R_H \\leq c_H L$ (for large $L$)\n2261:    - **Derivation**: Lemma 4.3.7, combining projection bound with radius bound\n2262:    - **N-Dependence**: None (geometric constants)\n2263:    - **Typical Value**: For $c_0 = 0.5$, $c_H = 0.6$: $\\eta_{\\text{geo}} \\approx 0.025$\n2264: \n2265: 3. **Unfit-High-Error Overlap Fraction** $f_{UH}(\\varepsilon)$:\n2266:    $$\n2267:    f_{UH}(\\varepsilon) := \\frac{\\text{# walkers in } U_k \\cap H_k}{N}\n2268:    $$\n2269:    where $U_k$ is the set of unfit walkers (lower 50% fitness) and $H_k$ is the high-error set (pointing toward other swarm).\n2270:    - **Derivation**: Lemma 4.6, geometric separation argument\n2271:    - **Lower Bound**: $f_{UH}(\\varepsilon) \\geq \\varepsilon^2 / 4$ for geometric overlap parameter $\\varepsilon$\n2272:    - **N-Dependence**: None (fraction is $O(1)$ as $N \\to \\infty$)\n2273:    - **Typical Value**: For $\\varepsilon = 0.1$: $f_{UH} \\geq 0.0025$\n2274: \n2275: 4. **Minimum Gibbs Matching Probability** $q_{\\min}(\\varepsilon)$:\n2276:    $$\n2277:    q_{\\min}(\\varepsilon) := \\min_{i,j} \\frac{\\exp(-\\beta V_{\\text{fit},k,i}) \\exp(-\\beta V_{\\text{fit},\\ell,j})}{Z^2}\n2278:    $$\n2279:    where $Z = \\sum_{i=1}^N \\exp(-\\beta V_{\\text{fit},k,i})$ is the partition function.\n2280:    - **Derivation**: Section 1.2, Gibbs matching distribution\n2281:    - **Lower Bound**: $q_{\\min} \\geq \\frac{e^{-2\\beta V_{\\max}}}{N^2}$ but effective bound is $\\frac{e^{-2\\beta V_{\\max}}}{Z^2}$\n2282:    - **N-Dependence**: For fixed $\\beta$, $Z \\sim N$ and $q_{\\min} \\sim 1/N^2$, BUT this cancels in expectation over matching",
+      "metadata": {
+        "label": "def-main-contraction-constant"
+      },
+      "section": "## 8. Main Wasserstein-2 Contraction Theorem",
+      "raw_directive": "2231: #### 8.2.1. Contraction Constant $\\kappa_W$\n2232: \n2233: :::{prf:definition} Main Contraction Constant\n2234: :label: def-main-contraction-constant\n2235: \n2236: The contraction constant is:\n2237: $$\n2238: \\kappa_W := \\kappa_{\\text{pair}} = \\frac{1}{2} \\cdot \\frac{p_u \\eta_{\\text{geo}}}{2} \\cdot f_{UH}(\\varepsilon) \\cdot q_{\\min}(\\varepsilon)\n2239: $$\n2240: \n2241: where the factor of $1/2$ comes from Corollary 5.5 (large separation regime).\n2242: \n2243: **Component Definitions**:\n2244: \n2245: 1. **Minimum Survival Probability** $p_u$:\n2246:    $$\n2247:    p_u := \\exp(-\\beta \\Delta V_{\\max})\n2248:    $$\n2249:    where $\\Delta V_{\\max}$ is the maximum virtual reward difference across the swarm.\n2250:    - **Derivation**: Section 4.4, minimum Gibbs probability\n2251:    - **N-Dependence**: None (virtual rewards are bounded by axioms)\n2252:    - **Typical Value**: $e^{-10} \\approx 4.5 \\times 10^{-5}$ for $\\beta = 1$, $\\Delta V_{\\max} = 10$\n2253: \n2254: 2. **Geometric Efficiency** $\\eta_{\\text{geo}}$:\n2255:    $$\n2256:    \\eta_{\\text{geo}} := \\frac{c_0^2}{2(1 + 2c_H)^2}\n2257:    $$\n2258:    where:\n2259:    - $c_0$ is the projection constant from Lemma 4.3.7 (High-Error Projection): $R_H \\geq c_0 L - c_1$\n2260:    - $c_H$ is the high-error radius constant: $R_H \\leq c_H L$ (for large $L$)\n2261:    - **Derivation**: Lemma 4.3.7, combining projection bound with radius bound\n2262:    - **N-Dependence**: None (geometric constants)\n2263:    - **Typical Value**: For $c_0 = 0.5$, $c_H = 0.6$: $\\eta_{\\text{geo}} \\approx 0.025$\n2264: \n2265: 3. **Unfit-High-Error Overlap Fraction** $f_{UH}(\\varepsilon)$:\n2266:    $$\n2267:    f_{UH}(\\varepsilon) := \\frac{\\text{# walkers in } U_k \\cap H_k}{N}\n2268:    $$\n2269:    where $U_k$ is the set of unfit walkers (lower 50% fitness) and $H_k$ is the high-error set (pointing toward other swarm).\n2270:    - **Derivation**: Lemma 4.6, geometric separation argument\n2271:    - **Lower Bound**: $f_{UH}(\\varepsilon) \\geq \\varepsilon^2 / 4$ for geometric overlap parameter $\\varepsilon$\n2272:    - **N-Dependence**: None (fraction is $O(1)$ as $N \\to \\infty$)\n2273:    - **Typical Value**: For $\\varepsilon = 0.1$: $f_{UH} \\geq 0.0025$\n2274: \n2275: 4. **Minimum Gibbs Matching Probability** $q_{\\min}(\\varepsilon)$:\n2276:    $$\n2277:    q_{\\min}(\\varepsilon) := \\min_{i,j} \\frac{\\exp(-\\beta V_{\\text{fit},k,i}) \\exp(-\\beta V_{\\text{fit},\\ell,j})}{Z^2}\n2278:    $$\n2279:    where $Z = \\sum_{i=1}^N \\exp(-\\beta V_{\\text{fit},k,i})$ is the partition function.\n2280:    - **Derivation**: Section 1.2, Gibbs matching distribution\n2281:    - **Lower Bound**: $q_{\\min} \\geq \\frac{e^{-2\\beta V_{\\max}}}{N^2}$ but effective bound is $\\frac{e^{-2\\beta V_{\\max}}}{Z^2}$\n2282:    - **N-Dependence**: For fixed $\\beta$, $Z \\sim N$ and $q_{\\min} \\sim 1/N^2$, BUT this cancels in expectation over matching\n2283:    - **Typical Value**: For $\\beta = 1$, $V_{\\max} = 10$: $q_{\\min} \\geq e^{-20}/Z^2$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "04_wasserstein_contraction_ASSEMBLED",
+        "chapter_index": 10,
+        "chapter_file": "chapter_10.json",
+        "section_id": "## 8. Main Wasserstein-2 Contraction Theorem"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-noise-constant",
+      "title": "Wasserstein Noise Constant",
+      "start_line": 2293,
+      "end_line": 2324,
+      "header_lines": [
+        2294
+      ],
+      "content_start": 2296,
+      "content_end": 2323,
+      "content": "2296: :label: def-noise-constant\n2297: \n2298: The noise constant is:\n2299: $$\n2300: C_W := 4d\\delta^2\n2301: $$\n2302: \n2303: where:\n2304: - $d$ is the state space dimension\n2305: - $\\delta$ is the jitter noise scale: $\\zeta_i \\sim \\mathcal{N}(0, \\delta^2 I_d)$\n2306: \n2307: **Derivation**: From the jitter step in the cloning operator:\n2308: $$\n2309: x'_{k,i} = \\begin{cases}\n2310: x_{k,i} + \\zeta_i & \\text{if } i \\text{ survives} \\\\\n2311: x_{k,j} + \\zeta_i & \\text{if } i \\text{ eliminated, replaced by } j\n2312: \\end{cases}\n2313: $$\n2314: \n2315: The jitter adds noise to both walkers in a pair:\n2316: $$\n2317: \\mathbb{E}[\\|(\\zeta_i - \\zeta_j)\\|^2] = \\mathbb{E}[\\|\\zeta_i\\|^2] + \\mathbb{E}[\\|\\zeta_j\\|^2] = 2d\\delta^2\n2318: $$\n2319: \n2320: For worst-case analysis (both walkers get independent jitter):\n2321: $$\n2322: C_W = 2 \\cdot 2d\\delta^2 = 4d\\delta^2\n2323: $$",
+      "metadata": {
+        "label": "def-noise-constant"
+      },
+      "section": "## 8. Main Wasserstein-2 Contraction Theorem",
+      "raw_directive": "2293: #### 8.2.2. Noise Constant $C_W$\n2294: \n2295: :::{prf:definition} Wasserstein Noise Constant\n2296: :label: def-noise-constant\n2297: \n2298: The noise constant is:\n2299: $$\n2300: C_W := 4d\\delta^2\n2301: $$\n2302: \n2303: where:\n2304: - $d$ is the state space dimension\n2305: - $\\delta$ is the jitter noise scale: $\\zeta_i \\sim \\mathcal{N}(0, \\delta^2 I_d)$\n2306: \n2307: **Derivation**: From the jitter step in the cloning operator:\n2308: $$\n2309: x'_{k,i} = \\begin{cases}\n2310: x_{k,i} + \\zeta_i & \\text{if } i \\text{ survives} \\\\\n2311: x_{k,j} + \\zeta_i & \\text{if } i \\text{ eliminated, replaced by } j\n2312: \\end{cases}\n2313: $$\n2314: \n2315: The jitter adds noise to both walkers in a pair:\n2316: $$\n2317: \\mathbb{E}[\\|(\\zeta_i - \\zeta_j)\\|^2] = \\mathbb{E}[\\|\\zeta_i\\|^2] + \\mathbb{E}[\\|\\zeta_j\\|^2] = 2d\\delta^2\n2318: $$\n2319: \n2320: For worst-case analysis (both walkers get independent jitter):\n2321: $$\n2322: C_W = 2 \\cdot 2d\\delta^2 = 4d\\delta^2\n2323: $$\n2324: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "04_wasserstein_contraction_ASSEMBLED",
+        "chapter_index": 10,
+        "chapter_file": "chapter_10.json",
+        "section_id": "## 8. Main Wasserstein-2 Contraction Theorem"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-separation-threshold",
+      "title": "Asymptotic Separation Threshold",
+      "start_line": 2330,
+      "end_line": 2350,
+      "header_lines": [
+        2331
+      ],
+      "content_start": 2333,
+      "content_end": 2349,
+      "content": "2333: :label: def-separation-threshold\n2334: \n2335: The separation threshold $L_0(\\delta, \\varepsilon)$ is defined as:\n2336: $$\n2337: L_0 := \\max\\left(D_{\\min}, \\frac{2\\sqrt{d}\\delta}{\\sqrt{\\kappa_B f_{UH} q_{\\min}}}\\right)\n2338: $$\n2339: \n2340: where:\n2341: - $D_{\\min}$ is the minimum separation for geometric partition (from Axiom 3.3)\n2342: - The second term ensures Case A expansion is negligible: $\\varepsilon_A = 4d\\delta^2/L^2 < \\kappa_B f_{UH} q_{\\min}$\n2343: \n2344: **Physical Interpretation**: Below $L_0$, the swarms are too close for the geometric partition to be well-defined, or the noise $\\delta$ dominates over the geometric contraction. Above $L_0$, we enter the **asymptotic regime** where Wasserstein-2 contraction holds.\n2345: \n2346: **Typical Value**: For $d = 10$, $\\delta = 0.1$, $\\kappa_B = 0.01$, $f_{UH} = 0.0025$, $q_{\\min} = 0.001$:\n2347: $$\n2348: L_0 \\approx \\max\\left(D_{\\min}, \\frac{2\\sqrt{10} \\cdot 0.1}{\\sqrt{0.01 \\cdot 0.0025 \\cdot 0.001}}\\right) \\approx \\max(D_{\\min}, 126)\n2349: $$",
+      "metadata": {
+        "label": "def-separation-threshold"
+      },
+      "section": "## 8. Main Wasserstein-2 Contraction Theorem",
+      "raw_directive": "2330: #### 8.2.3. Separation Threshold $L_0$\n2331: \n2332: :::{prf:definition} Asymptotic Separation Threshold\n2333: :label: def-separation-threshold\n2334: \n2335: The separation threshold $L_0(\\delta, \\varepsilon)$ is defined as:\n2336: $$\n2337: L_0 := \\max\\left(D_{\\min}, \\frac{2\\sqrt{d}\\delta}{\\sqrt{\\kappa_B f_{UH} q_{\\min}}}\\right)\n2338: $$\n2339: \n2340: where:\n2341: - $D_{\\min}$ is the minimum separation for geometric partition (from Axiom 3.3)\n2342: - The second term ensures Case A expansion is negligible: $\\varepsilon_A = 4d\\delta^2/L^2 < \\kappa_B f_{UH} q_{\\min}$\n2343: \n2344: **Physical Interpretation**: Below $L_0$, the swarms are too close for the geometric partition to be well-defined, or the noise $\\delta$ dominates over the geometric contraction. Above $L_0$, we enter the **asymptotic regime** where Wasserstein-2 contraction holds.\n2345: \n2346: **Typical Value**: For $d = 10$, $\\delta = 0.1$, $\\kappa_B = 0.01$, $f_{UH} = 0.0025$, $q_{\\min} = 0.001$:\n2347: $$\n2348: L_0 \\approx \\max\\left(D_{\\min}, \\frac{2\\sqrt{10} \\cdot 0.1}{\\sqrt{0.01 \\cdot 0.0025 \\cdot 0.001}}\\right) \\approx \\max(D_{\\min}, 126)\n2349: $$\n2350: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "04_wasserstein_contraction_ASSEMBLED",
+        "chapter_index": 10,
+        "chapter_file": "chapter_10.json",
+        "section_id": "## 8. Main Wasserstein-2 Contraction Theorem"
+      }
+    }
+  ]
+}

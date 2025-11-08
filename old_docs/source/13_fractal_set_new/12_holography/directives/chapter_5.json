@@ -1,0 +1,97 @@
+{
+  "chapter_index": 5,
+  "section_id": "## 5. Boundary Conformal Field Theory from IG Structure",
+  "directive_count": 5,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-ig-quantum-recap",
+      "title": "IG Encodes Quantum Correlations (Recap)",
+      "start_line": 1937,
+      "end_line": 1948,
+      "header_lines": [
+        1938
+      ],
+      "content_start": 1940,
+      "content_end": 1947,
+      "content": "1940: :label: thm-ig-quantum-recap\n1941: \n1942: The Information Graph satisfies:\n1943: \n1944: 1. **Osterwalder-Schrader axioms** (Euclidean QFT) - proven in {doc}`08_lattice_qft_framework` Section 9.3\n1945: 2. **Wightman axioms** (Relativistic QFT) - proven in {doc}`08_lattice_qft_framework` Section 9.4\n1946: \n1947: **Consequence**: The IG 2-point function $G_{\\text{IG}}^{(2)}(x, y)$ is a **quantum vacuum correlation function**, not classical noise.",
+      "metadata": {
+        "label": "thm-ig-quantum-recap"
+      },
+      "section": "## 5. Boundary Conformal Field Theory from IG Structure",
+      "raw_directive": "1937: ### 5.1. IG as Quantum Vacuum\n1938: \n1939: :::{prf:theorem} IG Encodes Quantum Correlations (Recap)\n1940: :label: thm-ig-quantum-recap\n1941: \n1942: The Information Graph satisfies:\n1943: \n1944: 1. **Osterwalder-Schrader axioms** (Euclidean QFT) - proven in {doc}`08_lattice_qft_framework` Section 9.3\n1945: 2. **Wightman axioms** (Relativistic QFT) - proven in {doc}`08_lattice_qft_framework` Section 9.4\n1946: \n1947: **Consequence**: The IG 2-point function $G_{\\text{IG}}^{(2)}(x, y)$ is a **quantum vacuum correlation function**, not classical noise.\n1948: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-conformal-transformations",
+      "title": "Conformal Transformations",
+      "start_line": 1965,
+      "end_line": 1978,
+      "header_lines": [
+        1966
+      ],
+      "content_start": 1968,
+      "content_end": 1977,
+      "content": "1968: :label: def-conformal-transformations\n1969: \n1970: A coordinate transformation $x^\\mu \\to x'^\\mu$ is **conformal** if it preserves angles but not necessarily lengths:\n1971: \n1972: $$\n1973: g'_{\\mu\\nu}(x') = \\Omega^2(x) g_{\\mu\\nu}(x)\n1974: \n1975: $$\n1976: \n1977: for some positive scalar function $\\Omega(x)$ (conformal factor).",
+      "metadata": {
+        "label": "def-conformal-transformations"
+      },
+      "section": "## 5. Boundary Conformal Field Theory from IG Structure",
+      "raw_directive": "1965: ### 5.2. Conformal Invariance\n1966: \n1967: :::{prf:definition} Conformal Transformations\n1968: :label: def-conformal-transformations\n1969: \n1970: A coordinate transformation $x^\\mu \\to x'^\\mu$ is **conformal** if it preserves angles but not necessarily lengths:\n1971: \n1972: $$\n1973: g'_{\\mu\\nu}(x') = \\Omega^2(x) g_{\\mu\\nu}(x)\n1974: \n1975: $$\n1976: \n1977: for some positive scalar function $\\Omega(x)$ (conformal factor).\n1978: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-ig-conformal",
+      "title": "IG Exhibits Approximate Conformal Symmetry",
+      "start_line": 1980,
+      "end_line": 2001,
+      "header_lines": [
+        1981
+      ],
+      "content_start": 1983,
+      "content_end": 2000,
+      "content": "1983: :label: thm-ig-conformal\n1984: \n1985: **Scaling limit**: Consider a family of systems indexed by $N$ (number of walkers) with:\n1986: \n1987: 1. **Density scaling**: $\\rho_N = N / L^d$ where $L$ is the system size\n1988: 2. **Interaction range scaling**: $\\varepsilon_{c,N} = \\ell_0 N^{-1/d}$ for fixed $\\ell_0 > 0$\n1989: 3. **Thermodynamic limit**: $N \\to \\infty$, $L \\to \\infty$ with $N/L^d \\to \\rho_0$ (constant density)\n1990: \n1991: **Result**: In this limit, the IG 2-point correlation function exhibits **approximate conformal invariance**:\n1992: \n1993: $$\n1994: \\lim_{N \\to \\infty} G_{\\text{IG},N}^{(2)}(\\lambda x, \\lambda y) = \\lambda^{-2\\Delta} G_{\\text{IG},\\infty}^{(2)}(x, y) + o(\\lambda^{-2\\Delta})\n1995: \n1996: $$\n1997: \n1998: where $\\Delta$ is the scaling dimension determined by the fitness potential.\n1999: \n2000: **Condition**: The fitness potential must be scale-invariant in the IR limit: $V_{\\text{fit}}(\\lambda x) = \\lambda^\\Delta V_{\\text{fit}}(x)$ for $\\lambda \\gg \\ell_0$.",
+      "metadata": {
+        "label": "thm-ig-conformal"
+      },
+      "section": "## 5. Boundary Conformal Field Theory from IG Structure",
+      "raw_directive": "1980: :::\n1981: \n1982: :::{prf:theorem} IG Exhibits Approximate Conformal Symmetry\n1983: :label: thm-ig-conformal\n1984: \n1985: **Scaling limit**: Consider a family of systems indexed by $N$ (number of walkers) with:\n1986: \n1987: 1. **Density scaling**: $\\rho_N = N / L^d$ where $L$ is the system size\n1988: 2. **Interaction range scaling**: $\\varepsilon_{c,N} = \\ell_0 N^{-1/d}$ for fixed $\\ell_0 > 0$\n1989: 3. **Thermodynamic limit**: $N \\to \\infty$, $L \\to \\infty$ with $N/L^d \\to \\rho_0$ (constant density)\n1990: \n1991: **Result**: In this limit, the IG 2-point correlation function exhibits **approximate conformal invariance**:\n1992: \n1993: $$\n1994: \\lim_{N \\to \\infty} G_{\\text{IG},N}^{(2)}(\\lambda x, \\lambda y) = \\lambda^{-2\\Delta} G_{\\text{IG},\\infty}^{(2)}(x, y) + o(\\lambda^{-2\\Delta})\n1995: \n1996: $$\n1997: \n1998: where $\\Delta$ is the scaling dimension determined by the fitness potential.\n1999: \n2000: **Condition**: The fitness potential must be scale-invariant in the IR limit: $V_{\\text{fit}}(\\lambda x) = \\lambda^\\Delta V_{\\text{fit}}(x)$ for $\\lambda \\gg \\ell_0$.\n2001: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-98",
+      "title": null,
+      "start_line": 2003,
+      "end_line": 2087,
+      "header_lines": [],
+      "content_start": 2004,
+      "content_end": 2086,
+      "content": "2004: \n2005: :::{prf:proof}\n2006: We prove the 2-point case rigorously and indicate the extension to $n$-point functions.\n2007: \n2008: **Step 1: Rescaled kernel in thermodynamic limit**\n2009: \n2010: The IG kernel at scale $N$ is:\n2011: \n2012: $$\n2013: K_{\\varepsilon_{c,N}}(x, y) = C(\\varepsilon_{c,N}) V_{\\text{fit}}(x) V_{\\text{fit}}(y) \\exp\\left(-\\frac{\\|x-y\\|^2}{2\\varepsilon_{c,N}^2}\\right)\n2014: \n2015: $$\n2016: \n2017: With $\\varepsilon_{c,N} = \\ell_0 N^{-1/d}$ and scale-invariant fitness $V_{\\text{fit}}(\\lambda x) = \\lambda^\\Delta V_{\\text{fit}}(x)$.\n2018: \n2019: **Step 2: Scaling transformation**\n2020: \n2021: Under rescaling $x \\to \\lambda x$:\n2022: \n2023: $$\n2024: K_{\\varepsilon_{c,N}}(\\lambda x, \\lambda y) = C(\\varepsilon_{c,N}) \\lambda^{2\\Delta} V_{\\text{fit}}(x) V_{\\text{fit}}(y) \\exp\\left(-\\frac{\\lambda^2 \\|x-y\\|^2}{2\\varepsilon_{c,N}^2}\\right)\n2025: \n2026: $$\n2027: \n2028: **Step 3: 2-point correlation function**\n2029: \n2030: The IG 2-point function is (from {doc}`08_lattice_qft_framework` Section 9.3):\n2031: \n2032: $$\n2033: G_{\\text{IG},N}^{(2)}(x, y) = \\int K_{\\varepsilon_{c,N}}(x, z) K_{\\varepsilon_{c,N}}(z, y) \\rho_N(z) dz + \\text{(higher orders)}\n2034: \n2035: $$\n2036: \n2037: **Step 4: Dominant contribution in scaling limit**\n2038: \n2039: For large $N$, the integral is dominated by $z$ in a region of size $\\sim \\varepsilon_{c,N}$ around the line connecting $x$ and $y$. Using stationary phase approximation:\n2040: \n2041: $$\n2042: G_{\\text{IG},N}^{(2)}(\\lambda x, \\lambda y) \\sim \\lambda^{2\\Delta} \\int K_{\\varepsilon_{c,N}/\\lambda}(x, z) K_{\\varepsilon_{c,N}/\\lambda}(z, y) \\rho_N(z) dz\n2043: \n2044: $$\n2045: \n2046: **Step 5: Finite-size corrections**\n2047: \n2048: The subleading corrections are of order $O(\\varepsilon_{c,N}/\\|x-y\\|) = O(N^{-1/d}/\\|x-y\\|)$. In the limit $N \\to \\infty$ with fixed $\\|x-y\\|$, these vanish:\n2049: \n2050: $$\n2051: \\lim_{N \\to \\infty} G_{\\text{IG},N}^{(2)}(\\lambda x, \\lambda y) = \\lambda^{-2\\Delta} G_{\\text{IG},\\infty}^{(2)}(x, y)\n2052: \n2053: $$\n2054: \n2055: where the sign changed because the kernel contributes $\\lambda^{2\\Delta}$ but the measure contributes $\\lambda^{-d}$ and the integration gives net factor $\\lambda^{-2\\Delta}$ (standard CFT calculation).\n2056: \n2057: **Step 6: Extension to $n$-point functions - ALL PROVEN**\n2058: \n2059: **\u2705 Proven for n=2** ({prf:ref}`thm-h2-two-point-convergence` from {doc}`../21_conformal_fields`): The 2-point function satisfies conformal covariance in the scaling limit:\n2060: \n2061: $$\n2062: \\langle \\hat{T}(z) \\hat{T}(w) \\rangle_{\\text{QSD}} = \\frac{c/2}{(z-w)^4} + \\frac{2\\langle \\hat{T}(w) \\rangle}{(z-w)^2} + \\text{regular} + O(N^{-1})\n2063: \n2064: $$\n2065: \n2066: **Proof method**: Spatial hypocoercivity (local LSI + correlation length bounds + mean-field screening) establishes exponential decay of correlations beyond screening length $\\xi_{\\text{screen}}$. For $|z-w| \\ll \\xi$, the system behaves as a massless 2D conformal field theory, yielding the standard CFT OPE structure via Wick's theorem.\n2067: \n2068: **\u2705 Proven for all n** ({prf:ref}`thm-h3-n-point-convergence` from {doc}`../21_conformal_fields`): All $n$-point connected correlation functions converge to CFT form:\n2069: \n2070: $$\n2071: \\langle \\hat{T}(x_1) \\cdots \\hat{T}(x_n) \\rangle_{\\text{QSD}}^{\\text{conn}} \\xrightarrow{N \\to \\infty} \\langle T(x_1) \\cdots T(x_n) \\rangle_{\\text{CFT}}^{\\text{conn}} + O(N^{-1})\n2072: \n2073: $$\n2074: \n2075: **Proof method**: Cluster expansion via strong induction on n. Key steps:\n2076: 1. Partition n points into spatially separated clusters\n2077: 2. Within-cluster convergence by inductive hypothesis (base: n=1 from mean-field, n=2 from H2)\n2078: 3. Inter-cluster factorization via cluster decomposition lemma (exponential decay $e^{-R/\\xi_{\\text{cluster}}}$)\n2079: 4. CFT consistency via OPE algebra closure\n2080: \n2081: **Convergence rate**: Uniform $O(N^{-1})$ for $n \\le N^{1/4}$ (excludes pathological highly-connected configurations).\n2082: \n2083: **Status**: The full CFT structure (all n-point functions) is **rigorously proven**. This establishes:\n2084: - Complete conformal symmetry of the vacuum state\n2085: - All correlation functions and OPE coefficients\n2086: - Central charge and conformal anomaly (trace anomaly $\\propto c/12$)",
+      "metadata": {},
+      "section": "## 5. Boundary Conformal Field Theory from IG Structure",
+      "raw_directive": "2003: :::\n2004: \n2005: :::{prf:proof}\n2006: We prove the 2-point case rigorously and indicate the extension to $n$-point functions.\n2007: \n2008: **Step 1: Rescaled kernel in thermodynamic limit**\n2009: \n2010: The IG kernel at scale $N$ is:\n2011: \n2012: $$\n2013: K_{\\varepsilon_{c,N}}(x, y) = C(\\varepsilon_{c,N}) V_{\\text{fit}}(x) V_{\\text{fit}}(y) \\exp\\left(-\\frac{\\|x-y\\|^2}{2\\varepsilon_{c,N}^2}\\right)\n2014: \n2015: $$\n2016: \n2017: With $\\varepsilon_{c,N} = \\ell_0 N^{-1/d}$ and scale-invariant fitness $V_{\\text{fit}}(\\lambda x) = \\lambda^\\Delta V_{\\text{fit}}(x)$.\n2018: \n2019: **Step 2: Scaling transformation**\n2020: \n2021: Under rescaling $x \\to \\lambda x$:\n2022: \n2023: $$\n2024: K_{\\varepsilon_{c,N}}(\\lambda x, \\lambda y) = C(\\varepsilon_{c,N}) \\lambda^{2\\Delta} V_{\\text{fit}}(x) V_{\\text{fit}}(y) \\exp\\left(-\\frac{\\lambda^2 \\|x-y\\|^2}{2\\varepsilon_{c,N}^2}\\right)\n2025: \n2026: $$\n2027: \n2028: **Step 3: 2-point correlation function**\n2029: \n2030: The IG 2-point function is (from {doc}`08_lattice_qft_framework` Section 9.3):\n2031: \n2032: $$\n2033: G_{\\text{IG},N}^{(2)}(x, y) = \\int K_{\\varepsilon_{c,N}}(x, z) K_{\\varepsilon_{c,N}}(z, y) \\rho_N(z) dz + \\text{(higher orders)}\n2034: \n2035: $$\n2036: \n2037: **Step 4: Dominant contribution in scaling limit**\n2038: \n2039: For large $N$, the integral is dominated by $z$ in a region of size $\\sim \\varepsilon_{c,N}$ around the line connecting $x$ and $y$. Using stationary phase approximation:\n2040: \n2041: $$\n2042: G_{\\text{IG},N}^{(2)}(\\lambda x, \\lambda y) \\sim \\lambda^{2\\Delta} \\int K_{\\varepsilon_{c,N}/\\lambda}(x, z) K_{\\varepsilon_{c,N}/\\lambda}(z, y) \\rho_N(z) dz\n2043: \n2044: $$\n2045: \n2046: **Step 5: Finite-size corrections**\n2047: \n2048: The subleading corrections are of order $O(\\varepsilon_{c,N}/\\|x-y\\|) = O(N^{-1/d}/\\|x-y\\|)$. In the limit $N \\to \\infty$ with fixed $\\|x-y\\|$, these vanish:\n2049: \n2050: $$\n2051: \\lim_{N \\to \\infty} G_{\\text{IG},N}^{(2)}(\\lambda x, \\lambda y) = \\lambda^{-2\\Delta} G_{\\text{IG},\\infty}^{(2)}(x, y)\n2052: \n2053: $$\n2054: \n2055: where the sign changed because the kernel contributes $\\lambda^{2\\Delta}$ but the measure contributes $\\lambda^{-d}$ and the integration gives net factor $\\lambda^{-2\\Delta}$ (standard CFT calculation).\n2056: \n2057: **Step 6: Extension to $n$-point functions - ALL PROVEN**\n2058: \n2059: **\u2705 Proven for n=2** ({prf:ref}`thm-h2-two-point-convergence` from {doc}`../21_conformal_fields`): The 2-point function satisfies conformal covariance in the scaling limit:\n2060: \n2061: $$\n2062: \\langle \\hat{T}(z) \\hat{T}(w) \\rangle_{\\text{QSD}} = \\frac{c/2}{(z-w)^4} + \\frac{2\\langle \\hat{T}(w) \\rangle}{(z-w)^2} + \\text{regular} + O(N^{-1})\n2063: \n2064: $$\n2065: \n2066: **Proof method**: Spatial hypocoercivity (local LSI + correlation length bounds + mean-field screening) establishes exponential decay of correlations beyond screening length $\\xi_{\\text{screen}}$. For $|z-w| \\ll \\xi$, the system behaves as a massless 2D conformal field theory, yielding the standard CFT OPE structure via Wick's theorem.\n2067: \n2068: **\u2705 Proven for all n** ({prf:ref}`thm-h3-n-point-convergence` from {doc}`../21_conformal_fields`): All $n$-point connected correlation functions converge to CFT form:\n2069: \n2070: $$\n2071: \\langle \\hat{T}(x_1) \\cdots \\hat{T}(x_n) \\rangle_{\\text{QSD}}^{\\text{conn}} \\xrightarrow{N \\to \\infty} \\langle T(x_1) \\cdots T(x_n) \\rangle_{\\text{CFT}}^{\\text{conn}} + O(N^{-1})\n2072: \n2073: $$\n2074: \n2075: **Proof method**: Cluster expansion via strong induction on n. Key steps:\n2076: 1. Partition n points into spatially separated clusters\n2077: 2. Within-cluster convergence by inductive hypothesis (base: n=1 from mean-field, n=2 from H2)\n2078: 3. Inter-cluster factorization via cluster decomposition lemma (exponential decay $e^{-R/\\xi_{\\text{cluster}}}$)\n2079: 4. CFT consistency via OPE algebra closure\n2080: \n2081: **Convergence rate**: Uniform $O(N^{-1})$ for $n \\le N^{1/4}$ (excludes pathological highly-connected configurations).\n2082: \n2083: **Status**: The full CFT structure (all n-point functions) is **rigorously proven**. This establishes:\n2084: - Complete conformal symmetry of the vacuum state\n2085: - All correlation functions and OPE coefficients\n2086: - Central charge and conformal anomaly (trace anomaly $\\propto c/12$)\n2087: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-ads-cft-correspondence",
+      "title": "AdS/CFT Correspondence",
+      "start_line": 2091,
+      "end_line": 2123,
+      "header_lines": [
+        2092
+      ],
+      "content_start": 2094,
+      "content_end": 2122,
+      "content": "2094: :label: thm-ads-cft-correspondence\n2095: \n2096: In the marginal-stability AdS regime ({prf:ref}`def-marginal-stability`), there exists a one-to-one correspondence between:\n2097: \n2098: **Bulk Observables** (CST in AdS\u2085):\n2099: - Geometry: $G_{\\mu\\nu} + \\Lambda g_{\\mu\\nu} = 8\\pi G_N T_{\\mu\\nu}$\n2100: - Minimal surfaces: $\\text{Area}_{\\text{CST}}(\\gamma_A)$\n2101: - Geodesics: $\\text{Length}_{\\text{CST}}(p_1, p_2)$\n2102: \n2103: **Boundary Observables** (IG as CFT\u2084):\n2104: - Quantum correlations: $G_{\\text{IG}}^{(n)}(x_1, \\ldots, x_n)$\n2105: - Entanglement entropy: $S_{\\text{IG}}(A)$\n2106: - CFT stress-energy: $\\langle T_{\\mu\\nu}^{\\text{CFT}} \\rangle$\n2107: \n2108: **The Dictionary**:\n2109: \n2110: 1. **Ryu-Takayanagi formula** ({prf:ref}`thm-area-law-holography`):\n2111:    $$\n2112:    S_{\\text{IG}}(A) = \\frac{\\text{Area}_{\\text{CST}}(\\gamma_A)}{4G_N}\n2113:    $$\n2114: \n2115: 2. **Partition function equality**:\n2116:    $$\n2117:    Z_{\\text{gravity}}[\\text{CST}] = Z_{\\text{CFT}}[\\text{IG}]\n2118:    $$\n2119: \n2120: 3. **Operator/field correspondence**: Bulk fields $\\phi(x, z)$ in AdS correspond to boundary operators $\\mathcal{O}_\\phi(x)$ in CFT via:\n2121:    $$\n2122:    \\langle \\mathcal{O}_{\\phi_1}(x_1) \\cdots \\mathcal{O}_{\\phi_n}(x_n) \\rangle_{\\text{CFT}} = \\left. \\frac{\\delta^n Z_{\\text{gravity}}[\\phi_0]}{\\delta\\phi_0(x_1) \\cdots \\delta\\phi_0(x_n)} \\right|_{\\phi_0 = 0}",
+      "metadata": {
+        "label": "thm-ads-cft-correspondence"
+      },
+      "section": "## 5. Boundary Conformal Field Theory from IG Structure",
+      "raw_directive": "2091: ### 5.3. The Holographic Dictionary\n2092: \n2093: :::{prf:theorem} AdS/CFT Correspondence\n2094: :label: thm-ads-cft-correspondence\n2095: \n2096: In the marginal-stability AdS regime ({prf:ref}`def-marginal-stability`), there exists a one-to-one correspondence between:\n2097: \n2098: **Bulk Observables** (CST in AdS\u2085):\n2099: - Geometry: $G_{\\mu\\nu} + \\Lambda g_{\\mu\\nu} = 8\\pi G_N T_{\\mu\\nu}$\n2100: - Minimal surfaces: $\\text{Area}_{\\text{CST}}(\\gamma_A)$\n2101: - Geodesics: $\\text{Length}_{\\text{CST}}(p_1, p_2)$\n2102: \n2103: **Boundary Observables** (IG as CFT\u2084):\n2104: - Quantum correlations: $G_{\\text{IG}}^{(n)}(x_1, \\ldots, x_n)$\n2105: - Entanglement entropy: $S_{\\text{IG}}(A)$\n2106: - CFT stress-energy: $\\langle T_{\\mu\\nu}^{\\text{CFT}} \\rangle$\n2107: \n2108: **The Dictionary**:\n2109: \n2110: 1. **Ryu-Takayanagi formula** ({prf:ref}`thm-area-law-holography`):\n2111:    $$\n2112:    S_{\\text{IG}}(A) = \\frac{\\text{Area}_{\\text{CST}}(\\gamma_A)}{4G_N}\n2113:    $$\n2114: \n2115: 2. **Partition function equality**:\n2116:    $$\n2117:    Z_{\\text{gravity}}[\\text{CST}] = Z_{\\text{CFT}}[\\text{IG}]\n2118:    $$\n2119: \n2120: 3. **Operator/field correspondence**: Bulk fields $\\phi(x, z)$ in AdS correspond to boundary operators $\\mathcal{O}_\\phi(x)$ in CFT via:\n2121:    $$\n2122:    \\langle \\mathcal{O}_{\\phi_1}(x_1) \\cdots \\mathcal{O}_{\\phi_n}(x_n) \\rangle_{\\text{CFT}} = \\left. \\frac{\\delta^n Z_{\\text{gravity}}[\\phi_0]}{\\delta\\phi_0(x_1) \\cdots \\delta\\phi_0(x_n)} \\right|_{\\phi_0 = 0}\n2123:    $$"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

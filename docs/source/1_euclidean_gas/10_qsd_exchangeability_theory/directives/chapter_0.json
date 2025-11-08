@@ -1,0 +1,137 @@
+{
+  "chapter_index": 0,
+  "section_id": "## A1.1 QSD Structure: Exchangeability",
+  "directive_count": 7,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-qsd-exchangeability",
+      "title": "Exchangeability of the QSD",
+      "start_line": 11,
+      "end_line": 21,
+      "header_lines": [
+        12
+      ],
+      "content_start": 14,
+      "content_end": 20,
+      "content": "14: :label: thm-qsd-exchangeability\n15: \n16: Let $\\pi_N \\in \\mathcal{P}(\\Sigma_N)$ be the unique Quasi-Stationary Distribution of the Euclidean Gas. Then $\\pi_N$ is an **exchangeable probability measure**: for any permutation $\\sigma \\in S_N$ and any measurable set $A \\subseteq \\Sigma_N$:\n17: \n18: $$\n19: \\pi_N(\\{(w_1, \\ldots, w_N) \\in A\\}) = \\pi_N(\\{(w_{\\sigma(1)}, \\ldots, w_{\\sigma(N)}) \\in A\\})\n20: $$",
+      "metadata": {
+        "label": "thm-qsd-exchangeability"
+      },
+      "section": "## A1.1 QSD Structure: Exchangeability",
+      "raw_directive": "11: ### A1.1.1 Main Result\n12: \n13: :::{prf:theorem} Exchangeability of the QSD\n14: :label: thm-qsd-exchangeability\n15: \n16: Let $\\pi_N \\in \\mathcal{P}(\\Sigma_N)$ be the unique Quasi-Stationary Distribution of the Euclidean Gas. Then $\\pi_N$ is an **exchangeable probability measure**: for any permutation $\\sigma \\in S_N$ and any measurable set $A \\subseteq \\Sigma_N$:\n17: \n18: $$\n19: \\pi_N(\\{(w_1, \\ldots, w_N) \\in A\\}) = \\pi_N(\\{(w_{\\sigma(1)}, \\ldots, w_{\\sigma(N)}) \\in A\\})\n20: $$\n21: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-thm-qsd-exchangeability",
+      "title": null,
+      "start_line": 23,
+      "end_line": 46,
+      "header_lines": [
+        24
+      ],
+      "content_start": 25,
+      "content_end": 45,
+      "content": "25: :::{prf:proof}\n26: :label: proof-thm-qsd-exchangeability\n27: The dynamics are manifestly symmetric under permutation of walker labels.\n28: \n29: **Kinetic operator**: Each walker evolves according to the same Langevin dynamics:\n30: \n31: $$\n32: \\mathcal{L}_{\\text{kin}} f(S) = \\sum_{i=1}^N \\left[ v_i \\cdot \\nabla_{x_i} + F_i \\cdot \\nabla_{v_i} + \\frac{\\sigma_i^2}{2}\\Delta_{v_i} \\right] f\n33: $$\n34: \n35: Permuting indices preserves this structure since the sum is symmetric.\n36: \n37: **Cloning operator**: The companion selection and cloning mechanism are permutation-invariant:\n38: \n39: $$\n40: \\mathcal{L}_{\\text{clone}} f(S) = \\sum_{i \\in \\mathcal{D}} \\lambda_i \\sum_{j \\in \\mathcal{A}} p_{ij} \\int [f(S^{i \\leftarrow j}_\\delta) - f(S)] \\phi_\\delta\n41: $$\n42: \n43: where $p_{ij} \\propto V_{\\text{fit}}(w_j)$ depends only on walker states, not labels.\n44: \n45: **Total generator**: $\\mathcal{L} = \\mathcal{L}_{\\text{kin}} + \\mathcal{L}_{\\text{clone}}$ is permutation-symmetric.",
+      "metadata": {
+        "label": "proof-thm-qsd-exchangeability"
+      },
+      "section": "## A1.1 QSD Structure: Exchangeability",
+      "raw_directive": "23: :::\n24: \n25: :::{prf:proof}\n26: :label: proof-thm-qsd-exchangeability\n27: The dynamics are manifestly symmetric under permutation of walker labels.\n28: \n29: **Kinetic operator**: Each walker evolves according to the same Langevin dynamics:\n30: \n31: $$\n32: \\mathcal{L}_{\\text{kin}} f(S) = \\sum_{i=1}^N \\left[ v_i \\cdot \\nabla_{x_i} + F_i \\cdot \\nabla_{v_i} + \\frac{\\sigma_i^2}{2}\\Delta_{v_i} \\right] f\n33: $$\n34: \n35: Permuting indices preserves this structure since the sum is symmetric.\n36: \n37: **Cloning operator**: The companion selection and cloning mechanism are permutation-invariant:\n38: \n39: $$\n40: \\mathcal{L}_{\\text{clone}} f(S) = \\sum_{i \\in \\mathcal{D}} \\lambda_i \\sum_{j \\in \\mathcal{A}} p_{ij} \\int [f(S^{i \\leftarrow j}_\\delta) - f(S)] \\phi_\\delta\n41: $$\n42: \n43: where $p_{ij} \\propto V_{\\text{fit}}(w_j)$ depends only on walker states, not labels.\n44: \n45: **Total generator**: $\\mathcal{L} = \\mathcal{L}_{\\text{kin}} + \\mathcal{L}_{\\text{clone}}$ is permutation-symmetric.\n46: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-hewitt-savage-representation",
+      "title": "Finite de Finetti Representation",
+      "start_line": 50,
+      "end_line": 76,
+      "header_lines": [
+        51
+      ],
+      "content_start": 53,
+      "content_end": 75,
+      "content": "53: :label: thm-hewitt-savage-representation\n54: \n55: Since $\\pi_N$ is exchangeable on the compact space $\\Omega$, there exists a probability measure $\\mathcal{Q}_N$ on $\\mathcal{P}(\\Omega)$ (the **mixing measure**) such that for any $k$-particle marginal with $1 \\leq k \\leq N$:\n56: \n57: $$\n58: d_{\\text{TV}}\\left(\\pi_{N,k}, \\int_{\\mathcal{P}(\\Omega)} \\mu^{\\otimes k} \\, d\\mathcal{Q}_N(\\mu)\\right) \\leq \\frac{k(k-1)}{2N}\n59: $$\n60: \n61: where $\\pi_{N,k}$ is the law of the first $k$ walkers under $\\pi_N$, $\\mu^{\\otimes k}$ denotes the $k$-fold product measure (walkers are i.i.d. with law $\\mu$), and $d_{\\text{TV}}$ is total variation distance.\n62: \n63: **Key consequences**:\n64: \n65: 1. **Low-order marginals** ($k$ fixed, $N \\to \\infty$): The bound is $O(1/N)$\n66:    - Pairwise marginals ($k=2$): $d_{\\text{TV}} \\leq 1/N$\n67:    - Single-particle marginal ($k=1$): exact representation\n68: \n69: 2. **Full N-particle distribution** ($k=N$): The bound is $O(N)$\n70:    - $d_{\\text{TV}}(\\pi_N, \\int \\mu^{\\otimes N} d\\mathcal{Q}_N) \\leq (N-1)/2$\n71:    - Representation becomes exact only in the limit $N \\to \\infty$\n72: \n73: **Interpretation**: The QSD can be **approximately** represented as a mixture of IID configurations. The approximation is excellent for low-order marginals ($k \\ll N$), which is precisely what is needed for correlation decay and propagation of chaos.\n74: \n75: **Construction**: The mixing measure $\\mathcal{Q}_N$ is the law of the empirical measure $L_N = \\frac{1}{N}\\sum_{i=1}^N \\delta_{w_i}$ when $(w_1, \\ldots, w_N) \\sim \\pi_N$.",
+      "metadata": {
+        "label": "thm-hewitt-savage-representation"
+      },
+      "section": "## A1.1 QSD Structure: Exchangeability",
+      "raw_directive": "50: ### A1.1.2 Hewitt-Savage Representation\n51: \n52: :::{prf:theorem} Finite de Finetti Representation\n53: :label: thm-hewitt-savage-representation\n54: \n55: Since $\\pi_N$ is exchangeable on the compact space $\\Omega$, there exists a probability measure $\\mathcal{Q}_N$ on $\\mathcal{P}(\\Omega)$ (the **mixing measure**) such that for any $k$-particle marginal with $1 \\leq k \\leq N$:\n56: \n57: $$\n58: d_{\\text{TV}}\\left(\\pi_{N,k}, \\int_{\\mathcal{P}(\\Omega)} \\mu^{\\otimes k} \\, d\\mathcal{Q}_N(\\mu)\\right) \\leq \\frac{k(k-1)}{2N}\n59: $$\n60: \n61: where $\\pi_{N,k}$ is the law of the first $k$ walkers under $\\pi_N$, $\\mu^{\\otimes k}$ denotes the $k$-fold product measure (walkers are i.i.d. with law $\\mu$), and $d_{\\text{TV}}$ is total variation distance.\n62: \n63: **Key consequences**:\n64: \n65: 1. **Low-order marginals** ($k$ fixed, $N \\to \\infty$): The bound is $O(1/N)$\n66:    - Pairwise marginals ($k=2$): $d_{\\text{TV}} \\leq 1/N$\n67:    - Single-particle marginal ($k=1$): exact representation\n68: \n69: 2. **Full N-particle distribution** ($k=N$): The bound is $O(N)$\n70:    - $d_{\\text{TV}}(\\pi_N, \\int \\mu^{\\otimes N} d\\mathcal{Q}_N) \\leq (N-1)/2$\n71:    - Representation becomes exact only in the limit $N \\to \\infty$\n72: \n73: **Interpretation**: The QSD can be **approximately** represented as a mixture of IID configurations. The approximation is excellent for low-order marginals ($k \\ll N$), which is precisely what is needed for correlation decay and propagation of chaos.\n74: \n75: **Construction**: The mixing measure $\\mathcal{Q}_N$ is the law of the empirical measure $L_N = \\frac{1}{N}\\sum_{i=1}^N \\delta_{w_i}$ when $(w_1, \\ldots, w_N) \\sim \\pi_N$.\n76: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-thm-hewitt-savage-representation",
+      "title": null,
+      "start_line": 78,
+      "end_line": 163,
+      "header_lines": [
+        79
+      ],
+      "content_start": 81,
+      "content_end": 162,
+      "content": "81: :label: proof-thm-hewitt-savage-representation\n82: \n83: This proof applies the Diaconis-Freedman finite de Finetti theorem to the QSD of the Euclidean Gas.\n84: \n85: **Step 1: Verify Compactness of $\\Omega$**\n86: \n87: The single-walker state space is $\\Omega = X_{\\text{valid}} \\times V_{\\text{alg}}$ where:\n88: - $X_{\\text{valid}} \\subseteq \\mathbb{R}^d$ is a bounded convex set (hence closed and bounded)\n89: - $V_{\\text{alg}} = \\{v \\in \\mathbb{R}^d : \\|v\\|_{\\text{alg}} \\leq R_v\\}$ is a closed ball\n90: \n91: By the Heine-Borel theorem, both $X_{\\text{valid}}$ and $V_{\\text{alg}}$ are compact. By Tychonoff's theorem, the product $\\Omega = X_{\\text{valid}} \\times V_{\\text{alg}}$ is compact in the product topology. As a compact subset of a metric space ($\\mathbb{R}^{2d}$), $\\Omega$ is a compact metric space (Polish space).\n92: \n93: **Step 2: Verify Exchangeability of $\\pi_N$**\n94: \n95: By {prf:ref}`thm-qsd-exchangeability`, the QSD $\\pi_N$ is an exchangeable probability measure on $\\Omega^N$. That is, for any permutation $\\sigma \\in S_N$ and any measurable set $A \\subseteq \\Omega^N$:\n96: \n97: $$\n98: \\pi_N(\\{(w_1, \\ldots, w_N) \\in A\\}) = \\pi_N(\\{(w_{\\sigma(1)}, \\ldots, w_{\\sigma(N)}) \\in A\\})\n99: $$\n100: \n101: **Step 3: Apply Diaconis-Freedman Theorem 4**\n102: \n103: **Citation**: Diaconis, P., & Freedman, D. (1980). Finite exchangeable sequences. *The Annals of Probability*, 8(4), 745-764, Theorem 4.\n104: \n105: **Theorem Statement (Diaconis-Freedman)**: Let $(X_1, \\ldots, X_N)$ be an exchangeable sequence on a compact metric space $S$, with joint law $\\pi_N$. Then there exists a probability measure $Q$ on $\\mathcal{P}(S)$ such that for any $1 \\leq k \\leq N$, the law $\\pi_{N,k}$ of the first $k$ variables satisfies:\n106: \n107: $$\n108: d_{\\text{TV}}\\left(\\pi_{N,k}, \\int_{\\mathcal{P}(S)} \\mu^{\\otimes k} \\, dQ(\\mu)\\right) \\leq \\frac{k(k-1)}{2N}\n109: $$\n110: \n111: **Application to our setting**: Set $S = \\Omega$ (compact metric space, verified in Step 1). The QSD $\\pi_N$ on $\\Omega^N$ is exchangeable (verified in Step 2). Therefore, Diaconis-Freedman's theorem directly applies, establishing the existence of a mixing measure $\\mathcal{Q}_N$ on $\\mathcal{P}(\\Omega)$ with the stated quantitative bound.\n112: \n113: **Step 4: Construct the Canonical Mixing Measure**\n114: \n115: While Diaconis-Freedman's theorem guarantees existence, the mixing measure can be constructed explicitly:\n116: \n117: **Definition**: Let $(w_1, \\ldots, w_N) \\sim \\pi_N$. Define the **empirical measure**:\n118: \n119: $$\n120: L_N(w_1, \\ldots, w_N) := \\frac{1}{N}\\sum_{i=1}^N \\delta_{w_i} \\in \\mathcal{P}(\\Omega)\n121: $$\n122: \n123: The **canonical mixing measure** is:\n124: \n125: $$\n126: \\mathcal{Q}_N := \\text{Law}_{\\pi_N}(L_N)\n127: $$\n128: \n129: That is, $\\mathcal{Q}_N$ is the pushforward of $\\pi_N$ under the empirical measure map $L_N: \\Omega^N \\to \\mathcal{P}(\\Omega)$.\n130: \n131: **Verification**: This construction is standard in de Finetti theory (see Diaconis-Freedman \u00a72). The bound in Step 3 holds for this canonical choice of $\\mathcal{Q}_N$.\n132: \n133: **Step 5: Interpret the Key Consequences**\n134: \n135: **For low-order marginals** ($k$ fixed, $N \\to \\infty$):\n136: \n137: The bound becomes:\n138: \n139: $$\n140: d_{\\text{TV}}\\left(\\pi_{N,k}, \\int \\mu^{\\otimes k} d\\mathcal{Q}_N(\\mu)\\right) \\leq \\frac{k(k-1)}{2N} = O(1/N)\n141: $$\n142: \n143: This is the regime of practical importance:\n144: - **Single-particle marginal** ($k=1$): Bound is $0/N = 0$ (exact representation)\n145: - **Pairwise marginals** ($k=2$): Bound is $1/N$ (used in correlation decay, Theorem {prf:ref}`thm-correlation-decay`)\n146: - **Finite $k$**: Bound is $k(k-1)/(2N) \\to 0$ as $N \\to \\infty$\n147: \n148: **For full N-particle distribution** ($k=N$):\n149: \n150: $$\n151: d_{\\text{TV}}\\left(\\pi_N, \\int \\mu^{\\otimes N} d\\mathcal{Q}_N(\\mu)\\right) \\leq \\frac{N(N-1)}{2N} = \\frac{N-1}{2} \\approx \\frac{N}{2}\n152: $$\n153: \n154: This bound is $O(N)$ and does NOT vanish as $N \\to \\infty$. The full N-particle distribution is **not** well-approximated by the mixture for finite $N$. However, this is not a limitation: propagation of chaos results only require good approximation of low-order marginals.\n155: \n156: **Step 6: Non-Uniqueness for Finite $N$**\n157: \n158: For any finite $N$, the mixing measure $\\mathcal{Q}_N$ is **not unique**. The map $Q \\mapsto \\int \\mu^{\\otimes N} dQ(\\mu)$ from $\\mathcal{P}(\\mathcal{P}(\\Omega))$ to $\\mathcal{P}(\\Omega^N)$ is not injective for finite $N$ because the $N$-particle distribution only determines the moments of $Q$ up to order $N$.\n159: \n160: **Example** (following Diaconis-Freedman, Example 1): For $N=1$, any two mixing measures $\\mathcal{Q}_1$ and $\\mathcal{Q}_1'$ with the same barycenter (mean measure) produce the same single-particle distribution.\n161: \n162: The canonical choice $\\mathcal{Q}_N = \\text{Law}(L_N)$ is natural but not unique. Uniqueness holds only in the limit $N \\to \\infty$ (de Finetti's theorem for infinite exchangeable sequences).",
+      "metadata": {
+        "label": "proof-thm-hewitt-savage-representation"
+      },
+      "section": "## A1.1 QSD Structure: Exchangeability",
+      "raw_directive": "78: :::\n79: \n80: :::{prf:proof}\n81: :label: proof-thm-hewitt-savage-representation\n82: \n83: This proof applies the Diaconis-Freedman finite de Finetti theorem to the QSD of the Euclidean Gas.\n84: \n85: **Step 1: Verify Compactness of $\\Omega$**\n86: \n87: The single-walker state space is $\\Omega = X_{\\text{valid}} \\times V_{\\text{alg}}$ where:\n88: - $X_{\\text{valid}} \\subseteq \\mathbb{R}^d$ is a bounded convex set (hence closed and bounded)\n89: - $V_{\\text{alg}} = \\{v \\in \\mathbb{R}^d : \\|v\\|_{\\text{alg}} \\leq R_v\\}$ is a closed ball\n90: \n91: By the Heine-Borel theorem, both $X_{\\text{valid}}$ and $V_{\\text{alg}}$ are compact. By Tychonoff's theorem, the product $\\Omega = X_{\\text{valid}} \\times V_{\\text{alg}}$ is compact in the product topology. As a compact subset of a metric space ($\\mathbb{R}^{2d}$), $\\Omega$ is a compact metric space (Polish space).\n92: \n93: **Step 2: Verify Exchangeability of $\\pi_N$**\n94: \n95: By {prf:ref}`thm-qsd-exchangeability`, the QSD $\\pi_N$ is an exchangeable probability measure on $\\Omega^N$. That is, for any permutation $\\sigma \\in S_N$ and any measurable set $A \\subseteq \\Omega^N$:\n96: \n97: $$\n98: \\pi_N(\\{(w_1, \\ldots, w_N) \\in A\\}) = \\pi_N(\\{(w_{\\sigma(1)}, \\ldots, w_{\\sigma(N)}) \\in A\\})\n99: $$\n100: \n101: **Step 3: Apply Diaconis-Freedman Theorem 4**\n102: \n103: **Citation**: Diaconis, P., & Freedman, D. (1980). Finite exchangeable sequences. *The Annals of Probability*, 8(4), 745-764, Theorem 4.\n104: \n105: **Theorem Statement (Diaconis-Freedman)**: Let $(X_1, \\ldots, X_N)$ be an exchangeable sequence on a compact metric space $S$, with joint law $\\pi_N$. Then there exists a probability measure $Q$ on $\\mathcal{P}(S)$ such that for any $1 \\leq k \\leq N$, the law $\\pi_{N,k}$ of the first $k$ variables satisfies:\n106: \n107: $$\n108: d_{\\text{TV}}\\left(\\pi_{N,k}, \\int_{\\mathcal{P}(S)} \\mu^{\\otimes k} \\, dQ(\\mu)\\right) \\leq \\frac{k(k-1)}{2N}\n109: $$\n110: \n111: **Application to our setting**: Set $S = \\Omega$ (compact metric space, verified in Step 1). The QSD $\\pi_N$ on $\\Omega^N$ is exchangeable (verified in Step 2). Therefore, Diaconis-Freedman's theorem directly applies, establishing the existence of a mixing measure $\\mathcal{Q}_N$ on $\\mathcal{P}(\\Omega)$ with the stated quantitative bound.\n112: \n113: **Step 4: Construct the Canonical Mixing Measure**\n114: \n115: While Diaconis-Freedman's theorem guarantees existence, the mixing measure can be constructed explicitly:\n116: \n117: **Definition**: Let $(w_1, \\ldots, w_N) \\sim \\pi_N$. Define the **empirical measure**:\n118: \n119: $$\n120: L_N(w_1, \\ldots, w_N) := \\frac{1}{N}\\sum_{i=1}^N \\delta_{w_i} \\in \\mathcal{P}(\\Omega)\n121: $$\n122: \n123: The **canonical mixing measure** is:\n124: \n125: $$\n126: \\mathcal{Q}_N := \\text{Law}_{\\pi_N}(L_N)\n127: $$\n128: \n129: That is, $\\mathcal{Q}_N$ is the pushforward of $\\pi_N$ under the empirical measure map $L_N: \\Omega^N \\to \\mathcal{P}(\\Omega)$.\n130: \n131: **Verification**: This construction is standard in de Finetti theory (see Diaconis-Freedman \u00a72). The bound in Step 3 holds for this canonical choice of $\\mathcal{Q}_N$.\n132: \n133: **Step 5: Interpret the Key Consequences**\n134: \n135: **For low-order marginals** ($k$ fixed, $N \\to \\infty$):\n136: \n137: The bound becomes:\n138: \n139: $$\n140: d_{\\text{TV}}\\left(\\pi_{N,k}, \\int \\mu^{\\otimes k} d\\mathcal{Q}_N(\\mu)\\right) \\leq \\frac{k(k-1)}{2N} = O(1/N)\n141: $$\n142: \n143: This is the regime of practical importance:\n144: - **Single-particle marginal** ($k=1$): Bound is $0/N = 0$ (exact representation)\n145: - **Pairwise marginals** ($k=2$): Bound is $1/N$ (used in correlation decay, Theorem {prf:ref}`thm-correlation-decay`)\n146: - **Finite $k$**: Bound is $k(k-1)/(2N) \\to 0$ as $N \\to \\infty$\n147: \n148: **For full N-particle distribution** ($k=N$):\n149: \n150: $$\n151: d_{\\text{TV}}\\left(\\pi_N, \\int \\mu^{\\otimes N} d\\mathcal{Q}_N(\\mu)\\right) \\leq \\frac{N(N-1)}{2N} = \\frac{N-1}{2} \\approx \\frac{N}{2}\n152: $$\n153: \n154: This bound is $O(N)$ and does NOT vanish as $N \\to \\infty$. The full N-particle distribution is **not** well-approximated by the mixture for finite $N$. However, this is not a limitation: propagation of chaos results only require good approximation of low-order marginals.\n155: \n156: **Step 6: Non-Uniqueness for Finite $N$**\n157: \n158: For any finite $N$, the mixing measure $\\mathcal{Q}_N$ is **not unique**. The map $Q \\mapsto \\int \\mu^{\\otimes N} dQ(\\mu)$ from $\\mathcal{P}(\\mathcal{P}(\\Omega))$ to $\\mathcal{P}(\\Omega^N)$ is not injective for finite $N$ because the $N$-particle distribution only determines the moments of $Q$ up to order $N$.\n159: \n160: **Example** (following Diaconis-Freedman, Example 1): For $N=1$, any two mixing measures $\\mathcal{Q}_1$ and $\\mathcal{Q}_1'$ with the same barycenter (mean measure) produce the same single-particle distribution.\n161: \n162: The canonical choice $\\mathcal{Q}_N = \\text{Law}(L_N)$ is natural but not unique. Uniqueness holds only in the limit $N \\to \\infty$ (de Finetti's theorem for infinite exchangeable sequences).\n163: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-single-particle-marginal",
+      "title": "Single-Particle Marginal",
+      "start_line": 173,
+      "end_line": 183,
+      "header_lines": [
+        174
+      ],
+      "content_start": 176,
+      "content_end": 182,
+      "content": "176: :label: def-single-particle-marginal\n177: \n178: The single-particle marginal of $\\pi_N$ is:\n179: \n180: $$\n181: \\mu_N(A) := \\pi_N(\\{(w_1, \\ldots, w_N) : w_1 \\in A\\})\n182: $$",
+      "metadata": {
+        "label": "def-single-particle-marginal"
+      },
+      "section": "## A1.1 QSD Structure: Exchangeability",
+      "raw_directive": "173: ### A1.1.3 Single-Particle Marginal\n174: \n175: :::{prf:definition} Single-Particle Marginal\n176: :label: def-single-particle-marginal\n177: \n178: The single-particle marginal of $\\pi_N$ is:\n179: \n180: $$\n181: \\mu_N(A) := \\pi_N(\\{(w_1, \\ldots, w_N) : w_1 \\in A\\})\n182: $$\n183: "
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-marginal-mixture",
+      "title": "Marginal as Mixture Average",
+      "start_line": 185,
+      "end_line": 197,
+      "header_lines": [
+        186
+      ],
+      "content_start": 188,
+      "content_end": 196,
+      "content": "188: :label: prop-marginal-mixture\n189: \n190: From the finite de Finetti representation ({prf:ref}`thm-hewitt-savage-representation`) with $k=1$:\n191: \n192: $$\n193: \\mu_N = \\int_{\\mathcal{P}(\\Omega)} \\mu \\, d\\mathcal{Q}_N(\\mu)\n194: $$\n195: \n196: where $\\mu_N$ is the single-particle marginal of $\\pi_N$. This is an **exact** representation (the bound $k(k-1)/(2N) = 0$ for $k=1$).",
+      "metadata": {
+        "label": "prop-marginal-mixture"
+      },
+      "section": "## A1.1 QSD Structure: Exchangeability",
+      "raw_directive": "185: :::\n186: \n187: :::{prf:proposition} Marginal as Mixture Average\n188: :label: prop-marginal-mixture\n189: \n190: From the finite de Finetti representation ({prf:ref}`thm-hewitt-savage-representation`) with $k=1$:\n191: \n192: $$\n193: \\mu_N = \\int_{\\mathcal{P}(\\Omega)} \\mu \\, d\\mathcal{Q}_N(\\mu)\n194: $$\n195: \n196: where $\\mu_N$ is the single-particle marginal of $\\pi_N$. This is an **exact** representation (the bound $k(k-1)/(2N) = 0$ for $k=1$).\n197: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-prop-marginal-mixture",
+      "title": null,
+      "start_line": 199,
+      "end_line": 209,
+      "header_lines": [
+        200
+      ],
+      "content_start": 202,
+      "content_end": 208,
+      "content": "202: :label: proof-prop-marginal-mixture\n203: \n204: Apply {prf:ref}`thm-hewitt-savage-representation` with $k=1$. The bound becomes:\n205: \n206: $$\n207: d_{\\text{TV}}\\left(\\mu_N, \\int_{\\mathcal{P}(\\Omega)} \\mu \\, d\\mathcal{Q}_N(\\mu)\\right) \\leq \\frac{1(1-1)}{2N} = 0\n208: $$",
+      "metadata": {
+        "label": "proof-prop-marginal-mixture"
+      },
+      "section": "## A1.1 QSD Structure: Exchangeability",
+      "raw_directive": "199: :::\n200: \n201: :::{prf:proof}\n202: :label: proof-prop-marginal-mixture\n203: \n204: Apply {prf:ref}`thm-hewitt-savage-representation` with $k=1$. The bound becomes:\n205: \n206: $$\n207: d_{\\text{TV}}\\left(\\mu_N, \\int_{\\mathcal{P}(\\Omega)} \\mu \\, d\\mathcal{Q}_N(\\mu)\\right) \\leq \\frac{1(1-1)}{2N} = 0\n208: $$\n209: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

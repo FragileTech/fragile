@@ -1,0 +1,43 @@
+{
+  "chapter_index": 3,
+  "section_id": "## 4. Geometric Computations on the Fractal Set",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-fan-triangulation-area",
+      "title": "Fan Triangulation for Riemannian Area",
+      "start_line": 802,
+      "end_line": 823,
+      "header_lines": [
+        803
+      ],
+      "content_start": 805,
+      "content_end": 822,
+      "content": "805: :label: thm-fan-triangulation-area\n806: \n807: Let $C = (e_1, e_2, \\ldots, e_n, e_1)$ be a closed cycle in the Fractal Set with episodes at positions $x_1, \\ldots, x_n \\in \\mathcal{X} \\subset \\mathbb{R}^d$.\n808: \n809: **Algorithm: Fan Triangulation**\n810: \n811: 1. Choose a base episode $e_1$ (arbitrary)\n812: 2. Triangulate the cycle into $n-2$ triangles:\n813:    $$T_k = (e_1, e_{k+1}, e_{k+2}) \\quad \\text{for } k = 1, \\ldots, n-2$$\n814: \n815: 3. Compute the **Riemannian area** of each triangle using the metric $g$:\n816:    $$A(T_k) = \\frac{1}{2} \\sqrt{\\det\\begin{pmatrix} g(v_{k+1}, v_{k+1}) & g(v_{k+1}, v_{k+2}) \\\\ g(v_{k+1}, v_{k+2}) & g(v_{k+2}, v_{k+2}) \\end{pmatrix}}$$\n817:    where $v_{k+1} = x_{k+1} - x_1$, $v_{k+2} = x_{k+2} - x_1$ are edge vectors, and $g(v, w) = v^T g(x_1) w$ is the metric inner product.\n818: \n819: 4. Sum the areas:\n820:    $$A(C) = \\sum_{k=1}^{n-2} A(T_k)$$\n821: \n822: **Key property:** This area is **base-independent** (choice of $e_1$ doesn't matter) and equals the **Riemannian surface area** enclosed by the cycle.",
+      "metadata": {
+        "label": "thm-fan-triangulation-area"
+      },
+      "section": "## 4. Geometric Computations on the Fractal Set",
+      "raw_directive": "802: A critical practical question: Given a closed cycle $C$ in the Fractal Set, how do we compute its **Riemannian area**?\n803: \n804: :::{prf:theorem} Fan Triangulation for Riemannian Area\n805: :label: thm-fan-triangulation-area\n806: \n807: Let $C = (e_1, e_2, \\ldots, e_n, e_1)$ be a closed cycle in the Fractal Set with episodes at positions $x_1, \\ldots, x_n \\in \\mathcal{X} \\subset \\mathbb{R}^d$.\n808: \n809: **Algorithm: Fan Triangulation**\n810: \n811: 1. Choose a base episode $e_1$ (arbitrary)\n812: 2. Triangulate the cycle into $n-2$ triangles:\n813:    $$T_k = (e_1, e_{k+1}, e_{k+2}) \\quad \\text{for } k = 1, \\ldots, n-2$$\n814: \n815: 3. Compute the **Riemannian area** of each triangle using the metric $g$:\n816:    $$A(T_k) = \\frac{1}{2} \\sqrt{\\det\\begin{pmatrix} g(v_{k+1}, v_{k+1}) & g(v_{k+1}, v_{k+2}) \\\\ g(v_{k+1}, v_{k+2}) & g(v_{k+2}, v_{k+2}) \\end{pmatrix}}$$\n817:    where $v_{k+1} = x_{k+1} - x_1$, $v_{k+2} = x_{k+2} - x_1$ are edge vectors, and $g(v, w) = v^T g(x_1) w$ is the metric inner product.\n818: \n819: 4. Sum the areas:\n820:    $$A(C) = \\sum_{k=1}^{n-2} A(T_k)$$\n821: \n822: **Key property:** This area is **base-independent** (choice of $e_1$ doesn't matter) and equals the **Riemannian surface area** enclosed by the cycle.\n823: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-28",
+      "title": null,
+      "start_line": 825,
+      "end_line": 861,
+      "header_lines": [],
+      "content_start": 826,
+      "content_end": 860,
+      "content": "826: \n827: :::{prf:proof}\n828: **Step 1: Euclidean Case**\n829: \n830: In flat space ($g = I$), the area of triangle $(x_1, x_2, x_3)$ is:\n831: \n832: $$\n833: A_{\\text{Euclid}} = \\frac{1}{2} \\|(x_2 - x_1) \\times (x_3 - x_1)\\| = \\frac{1}{2} \\sqrt{\\|x_2 - x_1\\|^2 \\|x_3 - x_1\\|^2 - (x_2 - x_1)^T(x_3 - x_1)^2}\n834: $$\n835: \n836: This is the Gram determinant formula.\n837: \n838: **Step 2: Riemannian Generalization**\n839: \n840: In Riemannian manifold, replace Euclidean inner product with metric inner product:\n841: \n842: $$\n843: g(v, w) = v^T g(x_1) w\n844: $$\n845: \n846: where $g(x_1)$ is the metric tensor at base point $x_1$.\n847: \n848: The Riemannian area formula becomes:\n849: \n850: $$\n851: A(T) = \\frac{1}{2} \\sqrt{g(v_2, v_2) g(v_3, v_3) - g(v_2, v_3)^2}\n852: $$\n853: \n854: which is the stated determinant formula.\n855: \n856: **Step 3: Fan Decomposition**\n857: \n858: Any simple polygon can be triangulated by choosing a base vertex and connecting it to all non-adjacent vertices. This creates $n-2$ triangles for an $n$-gon.\n859: \n860: **Step 4: Base Independence**",
+      "metadata": {},
+      "section": "## 4. Geometric Computations on the Fractal Set",
+      "raw_directive": "825: :::\n826: \n827: :::{prf:proof}\n828: **Step 1: Euclidean Case**\n829: \n830: In flat space ($g = I$), the area of triangle $(x_1, x_2, x_3)$ is:\n831: \n832: $$\n833: A_{\\text{Euclid}} = \\frac{1}{2} \\|(x_2 - x_1) \\times (x_3 - x_1)\\| = \\frac{1}{2} \\sqrt{\\|x_2 - x_1\\|^2 \\|x_3 - x_1\\|^2 - (x_2 - x_1)^T(x_3 - x_1)^2}\n834: $$\n835: \n836: This is the Gram determinant formula.\n837: \n838: **Step 2: Riemannian Generalization**\n839: \n840: In Riemannian manifold, replace Euclidean inner product with metric inner product:\n841: \n842: $$\n843: g(v, w) = v^T g(x_1) w\n844: $$\n845: \n846: where $g(x_1)$ is the metric tensor at base point $x_1$.\n847: \n848: The Riemannian area formula becomes:\n849: \n850: $$\n851: A(T) = \\frac{1}{2} \\sqrt{g(v_2, v_2) g(v_3, v_3) - g(v_2, v_3)^2}\n852: $$\n853: \n854: which is the stated determinant formula.\n855: \n856: **Step 3: Fan Decomposition**\n857: \n858: Any simple polygon can be triangulated by choosing a base vertex and connecting it to all non-adjacent vertices. This creates $n-2$ triangles for an $n$-gon.\n859: \n860: **Step 4: Base Independence**\n861: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

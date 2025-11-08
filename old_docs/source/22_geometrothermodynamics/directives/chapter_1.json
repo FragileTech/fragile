@@ -1,0 +1,197 @@
+{
+  "chapter_index": 1,
+  "section_id": "## 1. Thermodynamic Foundations from QSD",
+  "directive_count": 11,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-qsd-canonical-ensemble",
+      "title": "QSD as Canonical Ensemble",
+      "start_line": 152,
+      "end_line": 188,
+      "header_lines": [
+        153
+      ],
+      "content_start": 155,
+      "content_end": 187,
+      "content": "155: :label: thm-qsd-canonical-ensemble\n156: \n157: The quasi-stationary distribution of the N-particle Euclidean Gas with confining potential $U(x)$, friction coefficient $\\gamma$, and velocity noise magnitude $\\sigma_v$ is a canonical ensemble with the form:\n158: \n159: $$\n160: \\rho_{\\text{QSD}}(x_1, \\ldots, x_N, v_1, \\ldots, v_N) = \\frac{1}{Z} \\prod_{i=1}^N \\sqrt{\\det g(x_i)} \\exp\\left(-\\beta H_{\\text{eff}}(x_i, v_i)\\right)\n161: $$\n162: \n163: where:\n164: \n165: 1. **Effective Hamiltonian:**\n166: \n167: $$\n168: H_{\\text{eff}}(x, v) = U(x) - \\epsilon_F V_{\\text{fit}}(x, S) + \\frac{1}{2}m\\|v\\|^2\n169: $$\n170: \n171: 2. **Inverse Temperature:**\n172: \n173: $$\n174: \\beta = \\frac{\\gamma}{\\sigma_v^2} = \\frac{1}{k_B T}\n175: $$\n176: \n177: with effective temperature $T = \\sigma_v^2 / \\gamma$\n178: \n179: 3. **Partition Function:**\n180: \n181: $$\n182: Z = \\int_{\\mathcal{X}^N \\times \\mathbb{R}^{dN}} \\prod_{i=1}^N \\sqrt{\\det g(x_i)} \\exp\\left(-\\beta H_{\\text{eff}}(x_i, v_i)\\right) dx_1 \\cdots dx_N dv_1 \\cdots dv_N\n183: $$\n184: \n185: 4. **Measure Correction Factor:**\n186: \n187: The $\\sqrt{\\det g(x_i)}$ term is the Riemannian volume element from the emergent metric {prf:ref}`def-emergent-metric`.",
+      "metadata": {
+        "label": "thm-qsd-canonical-ensemble"
+      },
+      "section": "## 1. Thermodynamic Foundations from QSD",
+      "raw_directive": "152: The quasi-stationary distribution (QSD) $\\pi_{\\text{QSD}}$ of the Fragile Gas, proven to exist and be unique in Chapter 4, is the natural starting point for thermodynamic analysis. We now establish that the QSD satisfies all requirements of a canonical ensemble in statistical mechanics.\n153: \n154: :::{prf:theorem} QSD as Canonical Ensemble\n155: :label: thm-qsd-canonical-ensemble\n156: \n157: The quasi-stationary distribution of the N-particle Euclidean Gas with confining potential $U(x)$, friction coefficient $\\gamma$, and velocity noise magnitude $\\sigma_v$ is a canonical ensemble with the form:\n158: \n159: $$\n160: \\rho_{\\text{QSD}}(x_1, \\ldots, x_N, v_1, \\ldots, v_N) = \\frac{1}{Z} \\prod_{i=1}^N \\sqrt{\\det g(x_i)} \\exp\\left(-\\beta H_{\\text{eff}}(x_i, v_i)\\right)\n161: $$\n162: \n163: where:\n164: \n165: 1. **Effective Hamiltonian:**\n166: \n167: $$\n168: H_{\\text{eff}}(x, v) = U(x) - \\epsilon_F V_{\\text{fit}}(x, S) + \\frac{1}{2}m\\|v\\|^2\n169: $$\n170: \n171: 2. **Inverse Temperature:**\n172: \n173: $$\n174: \\beta = \\frac{\\gamma}{\\sigma_v^2} = \\frac{1}{k_B T}\n175: $$\n176: \n177: with effective temperature $T = \\sigma_v^2 / \\gamma$\n178: \n179: 3. **Partition Function:**\n180: \n181: $$\n182: Z = \\int_{\\mathcal{X}^N \\times \\mathbb{R}^{dN}} \\prod_{i=1}^N \\sqrt{\\det g(x_i)} \\exp\\left(-\\beta H_{\\text{eff}}(x_i, v_i)\\right) dx_1 \\cdots dx_N dv_1 \\cdots dv_N\n183: $$\n184: \n185: 4. **Measure Correction Factor:**\n186: \n187: The $\\sqrt{\\det g(x_i)}$ term is the Riemannian volume element from the emergent metric {prf:ref}`def-emergent-metric`.\n188: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-43",
+      "title": null,
+      "start_line": 190,
+      "end_line": 240,
+      "header_lines": [],
+      "content_start": 192,
+      "content_end": 239,
+      "content": "192: :::{prf:proof}\n193: \n194: **Step 1: Recall QSD formula from Chapter 4.**\n195: \n196: From {prf:ref}`thm-qsd-riemannian-volume-main` in [04_convergence.md](04_convergence.md), the QSD satisfies:\n197: \n198: $$\n199: \\rho_{\\text{QSD}}(x, v) \\propto \\sqrt{\\det g(x)} \\exp\\left(-\\frac{U_{\\text{eff}}(x)}{T}\\right) \\exp\\left(-\\frac{\\|v\\|^2}{2T}\\right)\n200: $$\n201: \n202: where $U_{\\text{eff}}(x) = U(x) - \\epsilon_F V_{\\text{fit}}(x, S)$ and $T = \\sigma_v^2 / \\gamma$.\n203: \n204: **Step 2: Define effective Hamiltonian.**\n205: \n206: The exponential factors combine as:\n207: \n208: $$\n209: \\exp\\left(-\\frac{U_{\\text{eff}}(x)}{T} - \\frac{\\|v\\|^2}{2T}\\right) = \\exp\\left(-\\frac{1}{T}\\left(U_{\\text{eff}}(x) + \\frac{1}{2}\\|v\\|^2\\right)\\right)\n210: $$\n211: \n212: Identifying $H_{\\text{eff}}(x, v) = U_{\\text{eff}}(x) + \\frac{1}{2}m\\|v\\|^2$ (with $m = 1$ in our units) and $\\beta = 1/T$, we obtain:\n213: \n214: $$\n215: \\rho_{\\text{QSD}}(x, v) = \\frac{\\sqrt{\\det g(x)}}{Z} \\exp(-\\beta H_{\\text{eff}}(x, v))\n216: $$\n217: \n218: **Step 3: N-particle extension (Mean-Field Approximation).**\n219: \n220: For the N-particle system, the joint distribution factorizes in the **mean-field limit** $N \\to \\infty$:\n221: \n222: $$\n223: \\rho_{\\text{QSD}}(x_1, \\ldots, x_N, v_1, \\ldots, v_N) \\approx \\prod_{i=1}^N \\rho_{\\text{QSD},i}(x_i, v_i)\n224: $$\n225: \n226: **Justification**: Although $V_{\\text{fit}}(x, S)$ creates interaction between walkers through the collective state $S$, in the limit $N \\to \\infty$ each walker experiences the **average field** created by all others. This is the standard mean-field approximation in statistical mechanics. For finite $N$, correlations exist but become negligible as $O(1/N)$ (Chapter 5, Proposition 5.2 on propagation of chaos).\n227: \n228: The partition function is the product of single-walker partition functions in this approximation:\n229: \n230: $$\n231: Z \\approx \\prod_{i=1}^N Z_i \\quad \\text{where } Z_i = \\int \\sqrt{\\det g(x)} e^{-\\beta H_{\\text{eff}}(x,v)} dx dv\n232: $$\n233: \n234: **Step 4: Verify canonical ensemble properties.**\n235: \n236: The distribution has the form $\\rho \\propto e^{-\\beta H}$ with:\n237: - Fixed particle number $N$ (canonical ensemble, not grand canonical)\n238: - Temperature $T = 1/(k_B \\beta)$ determined by the noise-friction balance\n239: - Energy function $H_{\\text{eff}}$ playing the role of the Hamiltonian",
+      "metadata": {},
+      "section": "## 1. Thermodynamic Foundations from QSD",
+      "raw_directive": "190: :::\n191: \n192: :::{prf:proof}\n193: \n194: **Step 1: Recall QSD formula from Chapter 4.**\n195: \n196: From {prf:ref}`thm-qsd-riemannian-volume-main` in [04_convergence.md](04_convergence.md), the QSD satisfies:\n197: \n198: $$\n199: \\rho_{\\text{QSD}}(x, v) \\propto \\sqrt{\\det g(x)} \\exp\\left(-\\frac{U_{\\text{eff}}(x)}{T}\\right) \\exp\\left(-\\frac{\\|v\\|^2}{2T}\\right)\n200: $$\n201: \n202: where $U_{\\text{eff}}(x) = U(x) - \\epsilon_F V_{\\text{fit}}(x, S)$ and $T = \\sigma_v^2 / \\gamma$.\n203: \n204: **Step 2: Define effective Hamiltonian.**\n205: \n206: The exponential factors combine as:\n207: \n208: $$\n209: \\exp\\left(-\\frac{U_{\\text{eff}}(x)}{T} - \\frac{\\|v\\|^2}{2T}\\right) = \\exp\\left(-\\frac{1}{T}\\left(U_{\\text{eff}}(x) + \\frac{1}{2}\\|v\\|^2\\right)\\right)\n210: $$\n211: \n212: Identifying $H_{\\text{eff}}(x, v) = U_{\\text{eff}}(x) + \\frac{1}{2}m\\|v\\|^2$ (with $m = 1$ in our units) and $\\beta = 1/T$, we obtain:\n213: \n214: $$\n215: \\rho_{\\text{QSD}}(x, v) = \\frac{\\sqrt{\\det g(x)}}{Z} \\exp(-\\beta H_{\\text{eff}}(x, v))\n216: $$\n217: \n218: **Step 3: N-particle extension (Mean-Field Approximation).**\n219: \n220: For the N-particle system, the joint distribution factorizes in the **mean-field limit** $N \\to \\infty$:\n221: \n222: $$\n223: \\rho_{\\text{QSD}}(x_1, \\ldots, x_N, v_1, \\ldots, v_N) \\approx \\prod_{i=1}^N \\rho_{\\text{QSD},i}(x_i, v_i)\n224: $$\n225: \n226: **Justification**: Although $V_{\\text{fit}}(x, S)$ creates interaction between walkers through the collective state $S$, in the limit $N \\to \\infty$ each walker experiences the **average field** created by all others. This is the standard mean-field approximation in statistical mechanics. For finite $N$, correlations exist but become negligible as $O(1/N)$ (Chapter 5, Proposition 5.2 on propagation of chaos).\n227: \n228: The partition function is the product of single-walker partition functions in this approximation:\n229: \n230: $$\n231: Z \\approx \\prod_{i=1}^N Z_i \\quad \\text{where } Z_i = \\int \\sqrt{\\det g(x)} e^{-\\beta H_{\\text{eff}}(x,v)} dx dv\n232: $$\n233: \n234: **Step 4: Verify canonical ensemble properties.**\n235: \n236: The distribution has the form $\\rho \\propto e^{-\\beta H}$ with:\n237: - Fixed particle number $N$ (canonical ensemble, not grand canonical)\n238: - Temperature $T = 1/(k_B \\beta)$ determined by the noise-friction balance\n239: - Energy function $H_{\\text{eff}}$ playing the role of the Hamiltonian\n240: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-95",
+      "title": "Why This is Non-Trivial",
+      "start_line": 242,
+      "end_line": 253,
+      "header_lines": [
+        243
+      ],
+      "content_start": 245,
+      "content_end": 252,
+      "content": "245: :class: note\n246: \n247: Standard thermodynamic systems (e.g., ideal gas, harmonic oscillator) require postulating a Hamiltonian and deriving the partition function via microscopic physics (statistical mechanics). The Fragile Gas inverts this logic:\n248: \n249: 1. The algorithm dynamics are specified algorithmically (Langevin + cloning)\n250: 2. The QSD emerges as the unique invariant measure (Chapter 4)\n251: 3. We observe that the QSD has canonical ensemble form\n252: 4. We identify the effective Hamiltonian $H_{\\text{eff}}$ post-hoc",
+      "metadata": {
+        "class": "note"
+      },
+      "section": "## 1. Thermodynamic Foundations from QSD",
+      "raw_directive": "242: :::\n243: \n244: :::{prf:remark} Why This is Non-Trivial\n245: :class: note\n246: \n247: Standard thermodynamic systems (e.g., ideal gas, harmonic oscillator) require postulating a Hamiltonian and deriving the partition function via microscopic physics (statistical mechanics). The Fragile Gas inverts this logic:\n248: \n249: 1. The algorithm dynamics are specified algorithmically (Langevin + cloning)\n250: 2. The QSD emerges as the unique invariant measure (Chapter 4)\n251: 3. We observe that the QSD has canonical ensemble form\n252: 4. We identify the effective Hamiltonian $H_{\\text{eff}}$ post-hoc\n253: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-thermodynamic-potentials",
+      "title": "Thermodynamic Potentials for the Fragile Gas",
+      "start_line": 259,
+      "end_line": 305,
+      "header_lines": [
+        260
+      ],
+      "content_start": 262,
+      "content_end": 304,
+      "content": "262: :label: def-thermodynamic-potentials\n263: \n264: For the Fragile Gas at QSD with partition function $Z(\\beta, N, V)$, the **thermodynamic potentials** are:\n265: \n266: **1. Helmholtz Free Energy:**\n267: \n268: $$\n269: F(\\beta, N, V) = -k_B T \\log Z(\\beta, N, V) = -\\frac{1}{\\beta} \\log Z\n270: $$\n271: \n272: **2. Internal Energy:**\n273: \n274: $$\n275: U(\\beta, N, V) = \\mathbb{E}_{\\text{QSD}}[H_{\\text{eff}}] = -\\frac{\\partial \\log Z}{\\partial \\beta} = \\langle H_{\\text{eff}} \\rangle_{\\text{QSD}}\n276: $$\n277: \n278: **3. Thermodynamic Entropy:**\n279: \n280: $$\n281: S(\\beta, N, V) = -\\frac{\\partial F}{\\partial T} = k_B \\left(\\log Z + \\beta \\langle H_{\\text{eff}} \\rangle\\right)\n282: $$\n283: \n284: **4. Pressure:**\n285: \n286: $$\n287: P(\\beta, N, V) = -\\frac{\\partial F}{\\partial V}\n288: $$\n289: \n290: For the Fragile Gas with domain $\\mathcal{X} \\subset \\mathbb{R}^d$ of volume $V = |\\mathcal{X}|$, this measures the confining force at the boundary.\n291: \n292: **5. Chemical Potential:**\n293: \n294: $$\n295: \\mu(\\beta, N, V) = \\frac{\\partial F}{\\partial N}\n296: $$\n297: \n298: This measures the free energy cost of adding one additional walker to the swarm.\n299: \n300: **6. Entropy in Terms of KL-Divergence:**\n301: \n302: $$\n303: S = -k_B D_{\\text{KL}}(\\rho_{\\text{QSD}} \\| \\mu_{\\text{ref}}) + S_{\\text{ref}}\n304: $$",
+      "metadata": {
+        "label": "def-thermodynamic-potentials"
+      },
+      "section": "## 1. Thermodynamic Foundations from QSD",
+      "raw_directive": "259: Having established the partition function, we can now define all standard thermodynamic potentials via the standard formulas of statistical mechanics.\n260: \n261: :::{prf:definition} Thermodynamic Potentials for the Fragile Gas\n262: :label: def-thermodynamic-potentials\n263: \n264: For the Fragile Gas at QSD with partition function $Z(\\beta, N, V)$, the **thermodynamic potentials** are:\n265: \n266: **1. Helmholtz Free Energy:**\n267: \n268: $$\n269: F(\\beta, N, V) = -k_B T \\log Z(\\beta, N, V) = -\\frac{1}{\\beta} \\log Z\n270: $$\n271: \n272: **2. Internal Energy:**\n273: \n274: $$\n275: U(\\beta, N, V) = \\mathbb{E}_{\\text{QSD}}[H_{\\text{eff}}] = -\\frac{\\partial \\log Z}{\\partial \\beta} = \\langle H_{\\text{eff}} \\rangle_{\\text{QSD}}\n276: $$\n277: \n278: **3. Thermodynamic Entropy:**\n279: \n280: $$\n281: S(\\beta, N, V) = -\\frac{\\partial F}{\\partial T} = k_B \\left(\\log Z + \\beta \\langle H_{\\text{eff}} \\rangle\\right)\n282: $$\n283: \n284: **4. Pressure:**\n285: \n286: $$\n287: P(\\beta, N, V) = -\\frac{\\partial F}{\\partial V}\n288: $$\n289: \n290: For the Fragile Gas with domain $\\mathcal{X} \\subset \\mathbb{R}^d$ of volume $V = |\\mathcal{X}|$, this measures the confining force at the boundary.\n291: \n292: **5. Chemical Potential:**\n293: \n294: $$\n295: \\mu(\\beta, N, V) = \\frac{\\partial F}{\\partial N}\n296: $$\n297: \n298: This measures the free energy cost of adding one additional walker to the swarm.\n299: \n300: **6. Entropy in Terms of KL-Divergence:**\n301: \n302: $$\n303: S = -k_B D_{\\text{KL}}(\\rho_{\\text{QSD}} \\| \\mu_{\\text{ref}}) + S_{\\text{ref}}\n304: $$\n305: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-first-law",
+      "title": "Thermodynamic Identities (First Law)",
+      "start_line": 307,
+      "end_line": 327,
+      "header_lines": [
+        308
+      ],
+      "content_start": 310,
+      "content_end": 326,
+      "content": "310: :label: thm-first-law\n311: \n312: The thermodynamic potentials of {prf:ref}`def-thermodynamic-potentials` satisfy the **First Law of Thermodynamics**:\n313: \n314: $$\n315: dU = T dS - P dV + \\mu dN\n316: $$\n317: \n318: Equivalently, in terms of the Helmholtz free energy:\n319: \n320: $$\n321: dF = -S dT - P dV + \\mu dN\n322: $$\n323: \n324: These are exact differentials, implying **Maxwell relations**:\n325: \n326: $$",
+      "metadata": {
+        "label": "thm-first-law"
+      },
+      "section": "## 1. Thermodynamic Foundations from QSD",
+      "raw_directive": "307: :::\n308: \n309: :::{prf:theorem} Thermodynamic Identities (First Law)\n310: :label: thm-first-law\n311: \n312: The thermodynamic potentials of {prf:ref}`def-thermodynamic-potentials` satisfy the **First Law of Thermodynamics**:\n313: \n314: $$\n315: dU = T dS - P dV + \\mu dN\n316: $$\n317: \n318: Equivalently, in terms of the Helmholtz free energy:\n319: \n320: $$\n321: dF = -S dT - P dV + \\mu dN\n322: $$\n323: \n324: These are exact differentials, implying **Maxwell relations**:\n325: \n326: $$\n327: \\left(\\frac{\\partial S}{\\partial V}\\right)_{T, N} = \\left(\\frac{\\partial P}{\\partial T}\\right)_{V, N}, \\quad \\left(\\frac{\\partial S}{\\partial N}\\right)_{T, V} = -\\left(\\frac{\\partial \\mu}{\\partial T}\\right)_{V, N}, \\quad \\text{etc.}"
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-182",
+      "title": null,
+      "start_line": 329,
+      "end_line": 376,
+      "header_lines": [],
+      "content_start": 331,
+      "content_end": 375,
+      "content": "331: :::{prf:proof}\n332: \n333: **Step 1: Derive from partition function.**\n334: \n335: The fundamental relation between $F$ and $Z$ is:\n336: \n337: $$\n338: F = -\\frac{1}{\\beta} \\log Z(\\beta, N, V)\n339: $$\n340: \n341: Taking the differential:\n342: \n343: $$\n344: dF = -\\frac{1}{\\beta} \\frac{dZ}{Z} + \\frac{1}{\\beta^2} \\log Z \\, d\\beta\n345: $$\n346: \n347: **Step 2: Compute partial derivatives.**\n348: \n349: Using $\\frac{\\partial \\log Z}{\\partial \\beta} = -\\langle H_{\\text{eff}} \\rangle = -U$ and $\\frac{\\partial \\log Z}{\\partial V} = \\beta \\langle P \\rangle$:\n350: \n351: $$\n352: dF = \\frac{U}{\\beta} d\\beta + \\frac{1}{\\beta^2} \\log Z \\, d\\beta - \\frac{1}{\\beta}\\beta \\langle P \\rangle dV + \\frac{\\mu}{\\beta} dN\n353: $$\n354: \n355: **Step 3: Use $S = k_B(\\log Z + \\beta U)$.**\n356: \n357: From the definition of entropy:\n358: \n359: $$\n360: \\frac{1}{\\beta^2}\\log Z \\, d\\beta = -T \\,dS + U \\, dT/T\n361: $$\n362: \n363: Substituting and simplifying:\n364: \n365: $$\n366: dF = -S dT - P dV + \\mu dN\n367: $$\n368: \n369: **Step 4: Convert to energy representation.**\n370: \n371: Using $F = U - TS$, we have $dF = dU - T dS - S dT$. Comparing with the result above:\n372: \n373: $$\n374: dU = T dS - P dV + \\mu dN\n375: $$",
+      "metadata": {},
+      "section": "## 1. Thermodynamic Foundations from QSD",
+      "raw_directive": "329: :::\n330: \n331: :::{prf:proof}\n332: \n333: **Step 1: Derive from partition function.**\n334: \n335: The fundamental relation between $F$ and $Z$ is:\n336: \n337: $$\n338: F = -\\frac{1}{\\beta} \\log Z(\\beta, N, V)\n339: $$\n340: \n341: Taking the differential:\n342: \n343: $$\n344: dF = -\\frac{1}{\\beta} \\frac{dZ}{Z} + \\frac{1}{\\beta^2} \\log Z \\, d\\beta\n345: $$\n346: \n347: **Step 2: Compute partial derivatives.**\n348: \n349: Using $\\frac{\\partial \\log Z}{\\partial \\beta} = -\\langle H_{\\text{eff}} \\rangle = -U$ and $\\frac{\\partial \\log Z}{\\partial V} = \\beta \\langle P \\rangle$:\n350: \n351: $$\n352: dF = \\frac{U}{\\beta} d\\beta + \\frac{1}{\\beta^2} \\log Z \\, d\\beta - \\frac{1}{\\beta}\\beta \\langle P \\rangle dV + \\frac{\\mu}{\\beta} dN\n353: $$\n354: \n355: **Step 3: Use $S = k_B(\\log Z + \\beta U)$.**\n356: \n357: From the definition of entropy:\n358: \n359: $$\n360: \\frac{1}{\\beta^2}\\log Z \\, d\\beta = -T \\,dS + U \\, dT/T\n361: $$\n362: \n363: Substituting and simplifying:\n364: \n365: $$\n366: dF = -S dT - P dV + \\mu dN\n367: $$\n368: \n369: **Step 4: Convert to energy representation.**\n370: \n371: Using $F = U - TS$, we have $dF = dU - T dS - S dT$. Comparing with the result above:\n372: \n373: $$\n374: dU = T dS - P dV + \\mu dN\n375: $$\n376: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-thermodynamic-state-space",
+      "title": "Thermodynamic State Space",
+      "start_line": 382,
+      "end_line": 420,
+      "header_lines": [
+        383
+      ],
+      "content_start": 385,
+      "content_end": 419,
+      "content": "385: :label: def-thermodynamic-state-space\n386: \n387: The **thermodynamic state space** $\\mathcal{M}_{\\text{thermo}}$ of the Fragile Gas is the space of equilibrium states, parameterized by either:\n388: \n389: **Energy Representation (Extensive Variables):**\n390: \n391: $$\n392: \\mathcal{M}_U = \\{(S, V, N) \\in \\mathbb{R}_+ \\times \\mathbb{R}_+ \\times \\mathbb{N} : \\text{accessible states}\\}\n393: $$\n394: \n395: with internal energy $U(S, V, N)$ as the fundamental potential.\n396: \n397: **Entropy Representation (Extensive Variables):**\n398: \n399: $$\n400: \\mathcal{M}_S = \\{(U, V, N) \\in \\mathbb{R}_+ \\times \\mathbb{R}_+ \\times \\mathbb{N} : \\text{accessible states}\\}\n401: $$\n402: \n403: with entropy $S(U, V, N)$ as the fundamental potential.\n404: \n405: **Helmholtz Representation (Mixed Variables):**\n406: \n407: $$\n408: \\mathcal{M}_F = \\{(T, V, N) \\in \\mathbb{R}_+ \\times \\mathbb{R}_+ \\times \\mathbb{N} : \\text{accessible states}\\}\n409: $$\n410: \n411: with Helmholtz free energy $F(T, V, N)$ as the fundamental potential.\n412: \n413: **Algorithmic Parameter Representation:**\n414: \n415: For the Fragile Gas, we can also use the algorithmic parameters as coordinates:\n416: \n417: $$\n418: \\mathcal{M}_{\\text{alg}} = \\{(\\alpha, \\beta, \\gamma, \\sigma_v, \\epsilon_\\Sigma) \\in \\mathbb{R}_+^5 : \\text{valid parameter regime}\\}\n419: $$",
+      "metadata": {
+        "label": "def-thermodynamic-state-space"
+      },
+      "section": "## 1. Thermodynamic Foundations from QSD",
+      "raw_directive": "382: We now define the state space on which the Ruppeiner metric will be constructed.\n383: \n384: :::{prf:definition} Thermodynamic State Space\n385: :label: def-thermodynamic-state-space\n386: \n387: The **thermodynamic state space** $\\mathcal{M}_{\\text{thermo}}$ of the Fragile Gas is the space of equilibrium states, parameterized by either:\n388: \n389: **Energy Representation (Extensive Variables):**\n390: \n391: $$\n392: \\mathcal{M}_U = \\{(S, V, N) \\in \\mathbb{R}_+ \\times \\mathbb{R}_+ \\times \\mathbb{N} : \\text{accessible states}\\}\n393: $$\n394: \n395: with internal energy $U(S, V, N)$ as the fundamental potential.\n396: \n397: **Entropy Representation (Extensive Variables):**\n398: \n399: $$\n400: \\mathcal{M}_S = \\{(U, V, N) \\in \\mathbb{R}_+ \\times \\mathbb{R}_+ \\times \\mathbb{N} : \\text{accessible states}\\}\n401: $$\n402: \n403: with entropy $S(U, V, N)$ as the fundamental potential.\n404: \n405: **Helmholtz Representation (Mixed Variables):**\n406: \n407: $$\n408: \\mathcal{M}_F = \\{(T, V, N) \\in \\mathbb{R}_+ \\times \\mathbb{R}_+ \\times \\mathbb{N} : \\text{accessible states}\\}\n409: $$\n410: \n411: with Helmholtz free energy $F(T, V, N)$ as the fundamental potential.\n412: \n413: **Algorithmic Parameter Representation:**\n414: \n415: For the Fragile Gas, we can also use the algorithmic parameters as coordinates:\n416: \n417: $$\n418: \\mathcal{M}_{\\text{alg}} = \\{(\\alpha, \\beta, \\gamma, \\sigma_v, \\epsilon_\\Sigma) \\in \\mathbb{R}_+^5 : \\text{valid parameter regime}\\}\n419: $$\n420: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-275",
+      "title": "Why Multiple Representations?",
+      "start_line": 422,
+      "end_line": 431,
+      "header_lines": [
+        423
+      ],
+      "content_start": 425,
+      "content_end": 430,
+      "content": "425: :class: tip\n426: \n427: Different thermodynamic problems are naturally formulated in different representations:\n428: - **Microcanonical ensemble** (isolated system): Use $(S, V, N)$ (energy representation)\n429: - **Canonical ensemble** (heat bath): Use $(T, V, N)$ (Helmholtz representation)\n430: - **Grand canonical ensemble** (particle reservoir): Use $(T, V, \\mu)$ (grand potential representation)",
+      "metadata": {
+        "class": "tip"
+      },
+      "section": "## 1. Thermodynamic Foundations from QSD",
+      "raw_directive": "422: :::\n423: \n424: :::{prf:remark} Why Multiple Representations?\n425: :class: tip\n426: \n427: Different thermodynamic problems are naturally formulated in different representations:\n428: - **Microcanonical ensemble** (isolated system): Use $(S, V, N)$ (energy representation)\n429: - **Canonical ensemble** (heat bath): Use $(T, V, N)$ (Helmholtz representation)\n430: - **Grand canonical ensemble** (particle reservoir): Use $(T, V, \\mu)$ (grand potential representation)\n431: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-thermodynamic-stability",
+      "title": "Thermodynamic Stability Conditions",
+      "start_line": 437,
+      "end_line": 467,
+      "header_lines": [
+        438
+      ],
+      "content_start": 440,
+      "content_end": 466,
+      "content": "440: :label: thm-thermodynamic-stability\n441: \n442: For a stable thermodynamic system at equilibrium:\n443: \n444: **1. Entropy is Concave in Energy:**\n445: \n446: $$\n447: \\frac{\\partial^2 S}{\\partial U^2} \\leq 0 \\quad \\text{(positive heat capacity)}\n448: $$\n449: \n450: **2. Energy is Convex in Entropy:**\n451: \n452: $$\n453: \\frac{\\partial^2 U}{\\partial S^2} \\geq 0 \\quad \\text{(positive temperature)}\n454: $$\n455: \n456: **3. Free Energy is Concave in Temperature:**\n457: \n458: $$\n459: \\frac{\\partial^2 F}{\\partial T^2} \\leq 0 \\quad \\text{(positive heat capacity)}\n460: $$\n461: \n462: **Geometric Consequence:** The Hessian matrices\n463: \n464: $$\n465: g_R^{ij} = -\\frac{\\partial^2 S}{\\partial U^i \\partial U^j}, \\quad g_W^{ij} = \\frac{\\partial^2 U}{\\partial S^i \\partial S^j}\n466: $$",
+      "metadata": {
+        "label": "thm-thermodynamic-stability"
+      },
+      "section": "## 1. Thermodynamic Foundations from QSD",
+      "raw_directive": "437: A crucial property of thermodynamic potentials is that they satisfy convexity conditions encoding thermodynamic stability.\n438: \n439: :::{prf:theorem} Thermodynamic Stability Conditions\n440: :label: thm-thermodynamic-stability\n441: \n442: For a stable thermodynamic system at equilibrium:\n443: \n444: **1. Entropy is Concave in Energy:**\n445: \n446: $$\n447: \\frac{\\partial^2 S}{\\partial U^2} \\leq 0 \\quad \\text{(positive heat capacity)}\n448: $$\n449: \n450: **2. Energy is Convex in Entropy:**\n451: \n452: $$\n453: \\frac{\\partial^2 U}{\\partial S^2} \\geq 0 \\quad \\text{(positive temperature)}\n454: $$\n455: \n456: **3. Free Energy is Concave in Temperature:**\n457: \n458: $$\n459: \\frac{\\partial^2 F}{\\partial T^2} \\leq 0 \\quad \\text{(positive heat capacity)}\n460: $$\n461: \n462: **Geometric Consequence:** The Hessian matrices\n463: \n464: $$\n465: g_R^{ij} = -\\frac{\\partial^2 S}{\\partial U^i \\partial U^j}, \\quad g_W^{ij} = \\frac{\\partial^2 U}{\\partial S^i \\partial S^j}\n466: $$\n467: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-322",
+      "title": null,
+      "start_line": 469,
+      "end_line": 536,
+      "header_lines": [],
+      "content_start": 471,
+      "content_end": 535,
+      "content": "471: :::{prf:proof}\n472: \n473: **This proof clarifies that thermodynamic stability is a fundamental physical postulate, not a derived result.**\n474: \n475: **Step 1: Thermodynamic stability as a foundational principle.**\n476: \n477: Thermodynamic stability is the requirement that a system in equilibrium is stable against spontaneous fluctuations. For a multi-variable system characterized by extensive variables $(U, V, N, \\ldots)$, this stability is expressed as:\n478: \n479: **Principle of Thermodynamic Stability:** *The entropy $S(U, V, N)$ is a concave function of all its extensive variables.*\n480: \n481: Mathematically, this means that for any two equilibrium states $(U_1, V_1, N_1)$ and $(U_2, V_2, N_2)$, and any $\\lambda \\in [0, 1]$:\n482: \n483: $$\n484: S(\\lambda U_1 + (1-\\lambda)U_2, \\lambda V_1 + (1-\\lambda)V_2, \\lambda N_1 + (1-\\lambda)N_2) \\geq \\lambda S(U_1, V_1, N_1) + (1-\\lambda)S(U_2, V_2, N_2)\n485: $$\n486: \n487: This is a generalization of Le Chatelier's principle and is a fundamental axiom of equilibrium thermodynamics (see Callen, *Thermodynamics and an Introduction to Thermostatistics*, 2nd ed., Chapter 8).\n488: \n489: **Step 2: Consequences for the Hessian matrix.**\n490: \n491: For a twice-differentiable concave function, the Hessian matrix is negative semi-definite:\n492: \n493: $$\n494: \\nabla^2 S(U, V, N) \\preceq 0\n495: $$\n496: \n497: In component form:\n498: \n499: $$\n500: \\sum_{i,j} \\frac{\\partial^2 S}{\\partial X^i \\partial X^j} v^i v^j \\leq 0 \\quad \\text{for all vectors } v \\in \\mathbb{R}^n\n501: $$\n502: \n503: where $(X^1, X^2, X^3) = (U, V, N)$.\n504: \n505: **Step 3: Positive definiteness of the Ruppeiner metric.**\n506: \n507: By definition, the Ruppeiner metric is:\n508: \n509: $$\n510: g_R^{ij} = -\\frac{\\partial^2 S}{\\partial U^i \\partial U^j}\n511: $$\n512: \n513: Since $\\nabla^2 S \\preceq 0$ (negative semi-definite), the matrix $g_R = -\\nabla^2 S$ is positive semi-definite:\n514: \n515: $$\n516: g_R \\succeq 0\n517: $$\n518: \n519: **Step 4: Strict positive definiteness away from critical points.**\n520: \n521: At a non-critical thermodynamic state (i.e., away from phase transitions), the entropy is **strictly concave**, making $\\nabla^2 S$ strictly negative definite, and thus $g_R$ strictly positive definite:\n522: \n523: $$\n524: g_R \\succ 0\n525: $$\n526: \n527: This ensures that the Ruppeiner metric is a genuine Riemannian metric on the thermodynamic state space away from critical points.\n528: \n529: **Step 5: Physical examples of each condition.**\n530: \n531: - **Diagonal element** ($\\partial^2 S / \\partial U^2 < 0$): This is equivalent to positive heat capacity $C_V > 0$, ensuring that adding energy increases temperature.\n532: \n533: - **Off-diagonal elements**: The mixed partial $\\partial^2 S / \\partial U \\partial V$ relates to thermodynamic response functions (e.g., how temperature changes with volume at fixed energy).\n534: \n535: - **Full matrix positive-definiteness**: Ensures no combination of simultaneous fluctuations in $(U, V, N)$ can lead to instability.",
+      "metadata": {},
+      "section": "## 1. Thermodynamic Foundations from QSD",
+      "raw_directive": "469: :::\n470: \n471: :::{prf:proof}\n472: \n473: **This proof clarifies that thermodynamic stability is a fundamental physical postulate, not a derived result.**\n474: \n475: **Step 1: Thermodynamic stability as a foundational principle.**\n476: \n477: Thermodynamic stability is the requirement that a system in equilibrium is stable against spontaneous fluctuations. For a multi-variable system characterized by extensive variables $(U, V, N, \\ldots)$, this stability is expressed as:\n478: \n479: **Principle of Thermodynamic Stability:** *The entropy $S(U, V, N)$ is a concave function of all its extensive variables.*\n480: \n481: Mathematically, this means that for any two equilibrium states $(U_1, V_1, N_1)$ and $(U_2, V_2, N_2)$, and any $\\lambda \\in [0, 1]$:\n482: \n483: $$\n484: S(\\lambda U_1 + (1-\\lambda)U_2, \\lambda V_1 + (1-\\lambda)V_2, \\lambda N_1 + (1-\\lambda)N_2) \\geq \\lambda S(U_1, V_1, N_1) + (1-\\lambda)S(U_2, V_2, N_2)\n485: $$\n486: \n487: This is a generalization of Le Chatelier's principle and is a fundamental axiom of equilibrium thermodynamics (see Callen, *Thermodynamics and an Introduction to Thermostatistics*, 2nd ed., Chapter 8).\n488: \n489: **Step 2: Consequences for the Hessian matrix.**\n490: \n491: For a twice-differentiable concave function, the Hessian matrix is negative semi-definite:\n492: \n493: $$\n494: \\nabla^2 S(U, V, N) \\preceq 0\n495: $$\n496: \n497: In component form:\n498: \n499: $$\n500: \\sum_{i,j} \\frac{\\partial^2 S}{\\partial X^i \\partial X^j} v^i v^j \\leq 0 \\quad \\text{for all vectors } v \\in \\mathbb{R}^n\n501: $$\n502: \n503: where $(X^1, X^2, X^3) = (U, V, N)$.\n504: \n505: **Step 3: Positive definiteness of the Ruppeiner metric.**\n506: \n507: By definition, the Ruppeiner metric is:\n508: \n509: $$\n510: g_R^{ij} = -\\frac{\\partial^2 S}{\\partial U^i \\partial U^j}\n511: $$\n512: \n513: Since $\\nabla^2 S \\preceq 0$ (negative semi-definite), the matrix $g_R = -\\nabla^2 S$ is positive semi-definite:\n514: \n515: $$\n516: g_R \\succeq 0\n517: $$\n518: \n519: **Step 4: Strict positive definiteness away from critical points.**\n520: \n521: At a non-critical thermodynamic state (i.e., away from phase transitions), the entropy is **strictly concave**, making $\\nabla^2 S$ strictly negative definite, and thus $g_R$ strictly positive definite:\n522: \n523: $$\n524: g_R \\succ 0\n525: $$\n526: \n527: This ensures that the Ruppeiner metric is a genuine Riemannian metric on the thermodynamic state space away from critical points.\n528: \n529: **Step 5: Physical examples of each condition.**\n530: \n531: - **Diagonal element** ($\\partial^2 S / \\partial U^2 < 0$): This is equivalent to positive heat capacity $C_V > 0$, ensuring that adding energy increases temperature.\n532: \n533: - **Off-diagonal elements**: The mixed partial $\\partial^2 S / \\partial U \\partial V$ relates to thermodynamic response functions (e.g., how temperature changes with volume at fixed energy).\n534: \n535: - **Full matrix positive-definiteness**: Ensures no combination of simultaneous fluctuations in $(U, V, N)$ can lead to instability.\n536: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-391",
+      "title": "Phase Transitions and Metric Degeneracy",
+      "start_line": 538,
+      "end_line": 546,
+      "header_lines": [
+        539
+      ],
+      "content_start": 541,
+      "content_end": 545,
+      "content": "541: :class: warning\n542: \n543: At a **first-order phase transition** (e.g., liquid-gas coexistence), the free energy $F(T, V, N)$ has a kink, causing $\\partial^2 F / \\partial T^2$ to be discontinuous. At this point, the Ruppeiner metric becomes **degenerate** (not positive definite).\n544: \n545: At a **second-order phase transition** (e.g., critical point), the heat capacity $C_V \\to \\infty$, causing $\\partial^2 S / \\partial U^2 \\to 0$. The Ruppeiner metric curvature **diverges** at this point.",
+      "metadata": {
+        "class": "warning"
+      },
+      "section": "## 1. Thermodynamic Foundations from QSD",
+      "raw_directive": "538: :::\n539: \n540: :::{prf:remark} Phase Transitions and Metric Degeneracy\n541: :class: warning\n542: \n543: At a **first-order phase transition** (e.g., liquid-gas coexistence), the free energy $F(T, V, N)$ has a kink, causing $\\partial^2 F / \\partial T^2$ to be discontinuous. At this point, the Ruppeiner metric becomes **degenerate** (not positive definite).\n544: \n545: At a **second-order phase transition** (e.g., critical point), the heat capacity $C_V \\to \\infty$, causing $\\partial^2 S / \\partial U^2 \\to 0$. The Ruppeiner metric curvature **diverges** at this point.\n546: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

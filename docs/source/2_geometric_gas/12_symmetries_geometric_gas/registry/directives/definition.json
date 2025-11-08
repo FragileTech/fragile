@@ -1,0 +1,184 @@
+{
+  "document_id": "12_symmetries_geometric_gas",
+  "stage": "directives",
+  "directive_type": "definition",
+  "generated_at": "2025-11-08T17:07:43.243150+00:00",
+  "count": 7,
+  "items": [
+    {
+      "directive_type": "definition",
+      "label": "def-swarm-config-space",
+      "title": "Swarm Configuration Space",
+      "start_line": 84,
+      "end_line": 107,
+      "header_lines": [
+        85
+      ],
+      "content_start": 87,
+      "content_end": 106,
+      "content": "87: :label: def-swarm-config-space\n88: \n89: The **full swarm configuration space** is:\n90: \n91: $$\n92: \\Sigma_N^{\\text{full}} = (\\mathcal{X} \\times \\mathcal{V} \\times \\{0,1\\})^N\n93: \n94: $$\n95: \n96: where:\n97: - $\\mathcal{X} \\subset \\mathbb{R}^d$ is the position state space (Valid Domain)\n98: - $\\mathcal{V} = \\{v \\in \\mathbb{R}^d : \\|v\\| \\le V_{\\text{alg}}\\}$ is the velocity ball\n99: - $\\{0,1\\}$ encodes the alive/dead status\n100: \n101: The **alive subspace** is:\n102: \n103: $$\n104: \\Sigma_N^{\\text{alive}} = \\{\\mathcal{S} \\in \\Sigma_N^{\\text{full}} : |\\mathcal{A}(\\mathcal{S})| \\ge 1\\}\n105: \n106: $$",
+      "metadata": {
+        "label": "def-swarm-config-space"
+      },
+      "section": "## 2. Foundational Definitions",
+      "raw_directive": "84: We work with the Geometric Gas as defined in `07_geometric_gas.md`, with swarm state space:\n85: \n86: :::{prf:definition} Swarm Configuration Space\n87: :label: def-swarm-config-space\n88: \n89: The **full swarm configuration space** is:\n90: \n91: $$\n92: \\Sigma_N^{\\text{full}} = (\\mathcal{X} \\times \\mathcal{V} \\times \\{0,1\\})^N\n93: \n94: $$\n95: \n96: where:\n97: - $\\mathcal{X} \\subset \\mathbb{R}^d$ is the position state space (Valid Domain)\n98: - $\\mathcal{V} = \\{v \\in \\mathbb{R}^d : \\|v\\| \\le V_{\\text{alg}}\\}$ is the velocity ball\n99: - $\\{0,1\\}$ encodes the alive/dead status\n100: \n101: The **alive subspace** is:\n102: \n103: $$\n104: \\Sigma_N^{\\text{alive}} = \\{\\mathcal{S} \\in \\Sigma_N^{\\text{full}} : |\\mathcal{A}(\\mathcal{S})| \\ge 1\\}\n105: \n106: $$\n107: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "12_symmetries_geometric_gas",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
+        "section_id": "## 2. Foundational Definitions"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-algorithmic-projection-space",
+      "title": "Algorithmic Projection Space",
+      "start_line": 109,
+      "end_line": 129,
+      "header_lines": [
+        110
+      ],
+      "content_start": 112,
+      "content_end": 128,
+      "content": "112: :label: def-algorithmic-projection-space\n113: \n114: The **algorithmic space** $\\mathcal{Y} \\subset \\mathbb{R}^m$ is the range of the projection map $\\varphi: \\mathcal{X} \\times \\mathcal{V} \\to \\mathbb{R}^m$.\n115: \n116: For the canonical Geometric Gas with velocity weighting $\\lambda_v > 0$:\n117: \n118: $$\n119: \\varphi(x, v) = (x, \\lambda_v v) \\in \\mathbb{R}^d \\times \\mathbb{R}^d = \\mathbb{R}^{2d}\n120: \n121: $$\n122: \n123: Thus $m = 2d$ and $\\mathcal{Y} = \\mathcal{X} \\times \\lambda_v \\mathcal{V}$.\n124: \n125: The algorithmic metric is the **Sasaki metric**:\n126: \n127: $$\n128: d_{\\mathcal{Y}}^2(\\varphi(x_1, v_1), \\varphi(x_2, v_2)) = \\|x_1 - x_2\\|^2 + \\lambda_v^2 \\|v_1 - v_2\\|^2",
+      "metadata": {
+        "label": "def-algorithmic-projection-space"
+      },
+      "section": "## 2. Foundational Definitions",
+      "raw_directive": "109: :::\n110: \n111: :::{prf:definition} Algorithmic Projection Space\n112: :label: def-algorithmic-projection-space\n113: \n114: The **algorithmic space** $\\mathcal{Y} \\subset \\mathbb{R}^m$ is the range of the projection map $\\varphi: \\mathcal{X} \\times \\mathcal{V} \\to \\mathbb{R}^m$.\n115: \n116: For the canonical Geometric Gas with velocity weighting $\\lambda_v > 0$:\n117: \n118: $$\n119: \\varphi(x, v) = (x, \\lambda_v v) \\in \\mathbb{R}^d \\times \\mathbb{R}^d = \\mathbb{R}^{2d}\n120: \n121: $$\n122: \n123: Thus $m = 2d$ and $\\mathcal{Y} = \\mathcal{X} \\times \\lambda_v \\mathcal{V}$.\n124: \n125: The algorithmic metric is the **Sasaki metric**:\n126: \n127: $$\n128: d_{\\mathcal{Y}}^2(\\varphi(x_1, v_1), \\varphi(x_2, v_2)) = \\|x_1 - x_2\\|^2 + \\lambda_v^2 \\|v_1 - v_2\\|^2\n129: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "12_symmetries_geometric_gas",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
+        "section_id": "## 2. Foundational Definitions"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-symmetry-transformation",
+      "title": "Symmetry Transformation",
+      "start_line": 133,
+      "end_line": 149,
+      "header_lines": [
+        134
+      ],
+      "content_start": 136,
+      "content_end": 148,
+      "content": "136: :label: def-symmetry-transformation\n137: \n138: A **symmetry** of a dynamical system $\\mathcal{S}_{t+1} \\sim \\Psi(\\mathcal{S}_t, \\cdot)$ is a transformation $T: \\Sigma_N \\to \\Sigma_N$ such that:\n139: \n140: $$\n141: T(\\mathcal{S}_{t+1}) \\sim \\Psi(T(\\mathcal{S}_t), \\cdot)\n142: \n143: $$\n144: \n145: in distribution. That is, applying $T$ before or after the dynamics gives statistically equivalent outcomes.\n146: \n147: **Types of symmetries:**\n148: 1. **Exact symmetry**: The transition kernel is invariant: $\\Psi(T(\\mathcal{S}), \\cdot) = \\Psi(\\mathcal{S}, \\cdot) \\circ T^{-1}$",
+      "metadata": {
+        "label": "def-symmetry-transformation"
+      },
+      "section": "## 2. Foundational Definitions",
+      "raw_directive": "133: ### 2.2. Symmetry Groups: Definitions\n134: \n135: :::{prf:definition} Symmetry Transformation\n136: :label: def-symmetry-transformation\n137: \n138: A **symmetry** of a dynamical system $\\mathcal{S}_{t+1} \\sim \\Psi(\\mathcal{S}_t, \\cdot)$ is a transformation $T: \\Sigma_N \\to \\Sigma_N$ such that:\n139: \n140: $$\n141: T(\\mathcal{S}_{t+1}) \\sim \\Psi(T(\\mathcal{S}_t), \\cdot)\n142: \n143: $$\n144: \n145: in distribution. That is, applying $T$ before or after the dynamics gives statistically equivalent outcomes.\n146: \n147: **Types of symmetries:**\n148: 1. **Exact symmetry**: The transition kernel is invariant: $\\Psi(T(\\mathcal{S}), \\cdot) = \\Psi(\\mathcal{S}, \\cdot) \\circ T^{-1}$\n149: 2. **Statistical symmetry**: The quasi-stationary distribution (QSD) is invariant: $T_* \\pi_{\\text{QSD}} = \\pi_{\\text{QSD}}$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "12_symmetries_geometric_gas",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
+        "section_id": "## 2. Foundational Definitions"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-permutation-group",
+      "title": "Permutation Group",
+      "start_line": 151,
+      "end_line": 162,
+      "header_lines": [
+        152
+      ],
+      "content_start": 154,
+      "content_end": 161,
+      "content": "154: :label: def-permutation-group\n155: \n156: The **symmetric group** $S_N$ acts on $\\Sigma_N$ by permuting walker indices. For $\\sigma \\in S_N$:\n157: \n158: $$\n159: \\sigma(\\mathcal{S}) = ((x_{\\sigma(1)}, v_{\\sigma(1)}, s_{\\sigma(1)}), \\ldots, (x_{\\sigma(N)}, v_{\\sigma(N)}, s_{\\sigma(N)}))\n160: \n161: $$",
+      "metadata": {
+        "label": "def-permutation-group"
+      },
+      "section": "## 2. Foundational Definitions",
+      "raw_directive": "151: :::\n152: \n153: :::{prf:definition} Permutation Group\n154: :label: def-permutation-group\n155: \n156: The **symmetric group** $S_N$ acts on $\\Sigma_N$ by permuting walker indices. For $\\sigma \\in S_N$:\n157: \n158: $$\n159: \\sigma(\\mathcal{S}) = ((x_{\\sigma(1)}, v_{\\sigma(1)}, s_{\\sigma(1)}), \\ldots, (x_{\\sigma(N)}, v_{\\sigma(N)}, s_{\\sigma(N)}))\n160: \n161: $$\n162: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "12_symmetries_geometric_gas",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
+        "section_id": "## 2. Foundational Definitions"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-euclidean-group-actions",
+      "title": "Euclidean Group Actions",
+      "start_line": 164,
+      "end_line": 184,
+      "header_lines": [
+        165
+      ],
+      "content_start": 167,
+      "content_end": 183,
+      "content": "167: :label: def-euclidean-group-actions\n168: \n169: The **Euclidean group** $E(d) = \\mathbb{R}^d \\rtimes O(d)$ acts on $\\mathcal{X} \\times \\mathcal{V}$.\n170: \n171: **Translation subgroup** $\\mathbb{R}^d$: For $a \\in \\mathbb{R}^d$,\n172: \n173: $$\n174: T_a(x, v, s) = (x + a, v, s)\n175: \n176: $$\n177: \n178: **Rotation subgroup** $SO(d)$: For $R \\in SO(d)$,\n179: \n180: $$\n181: R(x, v, s) = (Rx, Rv, s)\n182: \n183: $$",
+      "metadata": {
+        "label": "def-euclidean-group-actions"
+      },
+      "section": "## 2. Foundational Definitions",
+      "raw_directive": "164: :::\n165: \n166: :::{prf:definition} Euclidean Group Actions\n167: :label: def-euclidean-group-actions\n168: \n169: The **Euclidean group** $E(d) = \\mathbb{R}^d \\rtimes O(d)$ acts on $\\mathcal{X} \\times \\mathcal{V}$.\n170: \n171: **Translation subgroup** $\\mathbb{R}^d$: For $a \\in \\mathbb{R}^d$,\n172: \n173: $$\n174: T_a(x, v, s) = (x + a, v, s)\n175: \n176: $$\n177: \n178: **Rotation subgroup** $SO(d)$: For $R \\in SO(d)$,\n179: \n180: $$\n181: R(x, v, s) = (Rx, Rv, s)\n182: \n183: $$\n184: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "12_symmetries_geometric_gas",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
+        "section_id": "## 2. Foundational Definitions"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-rho-fitness-potential",
+      "title": "ρ-Localized Fitness Potential",
+      "start_line": 190,
+      "end_line": 210,
+      "header_lines": [
+        191
+      ],
+      "content_start": 193,
+      "content_end": 209,
+      "content": "193: :label: def-rho-fitness-potential\n194: \n195: For localization scale $\\rho > 0$, the fitness potential at walker $i$ is:\n196: \n197: $$\n198: V_{\\text{fit}}[f_k, \\rho](x_i, v_i) = \\eta^{\\alpha + \\beta} \\exp\\left(\\alpha Z_\\rho[f_k, R, (x_i, v_i)] + \\beta Z_\\rho[f_k, d, (x_i, v_i)]\\right)\n199: \n200: $$\n201: \n202: where:\n203: - $f_k = \\frac{1}{k}\\sum_{j \\in A_k} \\delta_{(x_j, v_j)}$ is the empirical measure over alive walkers\n204: - $Z_\\rho[f_k, Q, z]$ is the localized Z-score:\n205: \n206: $$\n207: Z_\\rho[f_k, Q, z] = \\frac{Q(z) - \\mu_\\rho[f_k, Q, z]}{\\sigma'_\\rho[f_k, Q, z]}\n208: \n209: $$",
+      "metadata": {
+        "label": "def-rho-fitness-potential"
+      },
+      "section": "## 2. Foundational Definitions",
+      "raw_directive": "190: The adaptive mechanisms depend critically on the **ρ-localized fitness potential** from `07_geometric_gas.md`:\n191: \n192: :::{prf:definition} ρ-Localized Fitness Potential\n193: :label: def-rho-fitness-potential\n194: \n195: For localization scale $\\rho > 0$, the fitness potential at walker $i$ is:\n196: \n197: $$\n198: V_{\\text{fit}}[f_k, \\rho](x_i, v_i) = \\eta^{\\alpha + \\beta} \\exp\\left(\\alpha Z_\\rho[f_k, R, (x_i, v_i)] + \\beta Z_\\rho[f_k, d, (x_i, v_i)]\\right)\n199: \n200: $$\n201: \n202: where:\n203: - $f_k = \\frac{1}{k}\\sum_{j \\in A_k} \\delta_{(x_j, v_j)}$ is the empirical measure over alive walkers\n204: - $Z_\\rho[f_k, Q, z]$ is the localized Z-score:\n205: \n206: $$\n207: Z_\\rho[f_k, Q, z] = \\frac{Q(z) - \\mu_\\rho[f_k, Q, z]}{\\sigma'_\\rho[f_k, Q, z]}\n208: \n209: $$\n210: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "12_symmetries_geometric_gas",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
+        "section_id": "## 2. Foundational Definitions"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-emergent-metric",
+      "title": "Emergent Riemannian Metric",
+      "start_line": 212,
+      "end_line": 237,
+      "header_lines": [
+        213
+      ],
+      "content_start": 215,
+      "content_end": 236,
+      "content": "215: :label: def-emergent-metric\n216: \n217: The **emergent metric** is the regularized Hessian of the fitness potential:\n218: \n219: $$\n220: g(x_i, S) = H_i(S) + \\epsilon_\\Sigma I\n221: \n222: $$\n223: \n224: where:\n225: \n226: $$\n227: H_i(S) = \\nabla^2_{x_i} V_{\\text{fit}}[f_k, \\rho](x_i, v_i)\n228: \n229: $$\n230: \n231: The **adaptive diffusion tensor** is:\n232: \n233: $$\n234: D_{\\text{reg}}(x_i, S) = g(x_i, S)^{-1}\n235: \n236: $$",
+      "metadata": {
+        "label": "def-emergent-metric"
+      },
+      "section": "## 2. Foundational Definitions",
+      "raw_directive": "212: :::\n213: \n214: :::{prf:definition} Emergent Riemannian Metric\n215: :label: def-emergent-metric\n216: \n217: The **emergent metric** is the regularized Hessian of the fitness potential:\n218: \n219: $$\n220: g(x_i, S) = H_i(S) + \\epsilon_\\Sigma I\n221: \n222: $$\n223: \n224: where:\n225: \n226: $$\n227: H_i(S) = \\nabla^2_{x_i} V_{\\text{fit}}[f_k, \\rho](x_i, v_i)\n228: \n229: $$\n230: \n231: The **adaptive diffusion tensor** is:\n232: \n233: $$\n234: D_{\\text{reg}}(x_i, S) = g(x_i, S)^{-1}\n235: \n236: $$\n237: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "12_symmetries_geometric_gas",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
+        "section_id": "## 2. Foundational Definitions"
+      }
+    }
+  ]
+}

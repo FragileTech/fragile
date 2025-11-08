@@ -1,0 +1,34 @@
+{
+  "document_id": "01_crystalline_gas_yang_mills_mass_gap_proof",
+  "stage": "directives",
+  "directive_type": "example",
+  "generated_at": "2025-11-08T17:07:43.303777+00:00",
+  "count": 1,
+  "items": [
+    {
+      "directive_type": "example",
+      "label": "ex-quadratic-fitness",
+      "title": "Quadratic Fitness Landscape",
+      "start_line": 196,
+      "end_line": 211,
+      "header_lines": [
+        197
+      ],
+      "content_start": 199,
+      "content_end": 210,
+      "content": "199: :label: ex-quadratic-fitness\n200: \n201: The simplest example satisfying {prf:ref}`def-cg-fitness-landscape` is the **quadratic potential**\n202: \n203: $$\n204: \\Phi(x) = \\Phi_0 - \\frac{\\kappa}{2} \\|x - x_0\\|^2\n205: $$\n206: \n207: where $\\Phi_0 \\in \\mathbb{R}$, $\\kappa > 0$, and $x_0 \\in \\mathbb{R}^{d}$ is the unique global maximum. This potential has:\n208: - Constant Hessian: $H_{\\Phi}(x) = -\\kappa I$\n209: - Linear gradient: $\\nabla \\Phi(x) = -\\kappa(x - x_0)$\n210: - All higher derivatives vanish: $\\nabla^k \\Phi(x) = 0$ for $k \\geq 3$",
+      "metadata": {
+        "label": "ex-quadratic-fitness"
+      },
+      "section": "## 2. The Crystalline Gas Algorithm",
+      "raw_directive": "196: :::\n197: \n198: :::{prf:example} Quadratic Fitness Landscape\n199: :label: ex-quadratic-fitness\n200: \n201: The simplest example satisfying {prf:ref}`def-cg-fitness-landscape` is the **quadratic potential**\n202: \n203: $$\n204: \\Phi(x) = \\Phi_0 - \\frac{\\kappa}{2} \\|x - x_0\\|^2\n205: $$\n206: \n207: where $\\Phi_0 \\in \\mathbb{R}$, $\\kappa > 0$, and $x_0 \\in \\mathbb{R}^{d}$ is the unique global maximum. This potential has:\n208: - Constant Hessian: $H_{\\Phi}(x) = -\\kappa I$\n209: - Linear gradient: $\\nabla \\Phi(x) = -\\kappa(x - x_0)$\n210: - All higher derivatives vanish: $\\nabla^k \\Phi(x) = 0$ for $k \\geq 3$\n211: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_crystalline_gas_yang_mills_mass_gap_proof",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
+        "section_id": "## 2. The Crystalline Gas Algorithm"
+      }
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "document_id": "18_emergent_geometry",
+  "stage": "directives",
+  "directive_type": "observation",
+  "generated_at": "2025-11-08T17:07:43.264620+00:00",
+  "count": 4,
+  "items": [
+    {
+      "directive_type": "observation",
+      "label": "rem-observation-two-formulations",
+      "title": "Two Equivalent Formulations",
+      "start_line": 590,
+      "end_line": 620,
+      "header_lines": [
+        591
+      ],
+      "content_start": 593,
+      "content_end": 619,
+      "content": "593: :label: rem-observation-two-formulations\n594: \n595: **Perspective 1: Flat Algorithmic Space (This Document)**\n596: - **State space**: Flat Euclidean $\\mathbb{R}^d \\times \\mathbb{R}^d$ (positions and velocities)\n597: - **Diffusion**: Anisotropic, state-dependent: $D(x, S) = (H(x, S) + \\epsilon_\\Sigma I)^{-1}$\n598: - **Metric**: Standard Euclidean inner product\n599: - **SDE** (Stratonovich):\n600: \n601: \n602: $$\n603: dv = [F(x) - \\gamma v] dt + \\Sigma_{\\text{reg}}(x, S) \\circ dW\n604: $$\n605: \n606:   where $\\Sigma_{\\text{reg}} = D^{1/2}$ is anisotropic\n607: \n608: **Perspective 2: Emergent Riemannian Manifold**\n609: - **State space**: Riemannian manifold $(\\mathcal{X}, g)$ with metric $g(x, S) = H(x, S) + \\epsilon_\\Sigma I$\n610: - **Diffusion**: Isotropic in the Riemannian metric (constant diffusion coefficient)\n611: - **Metric**: Riemannian metric $g = D^{-1}$ induced by regularized Hessian\n612: - **SDE** (in local coordinates, Stratonovich):\n613: \n614: \n615: $$\n616: dv = [\\tilde{F}_g(x) - \\gamma v] dt + \\sigma \\sqrt{g^{-1}(x, S)} \\circ dW\n617: $$\n618: \n619:   where $\\tilde{F}_g$ includes Christoffel symbol corrections",
+      "metadata": {
+        "label": "rem-observation-two-formulations"
+      },
+      "section": "## 3. The Emergent Geometry Framework",
+      "raw_directive": "590: The Geometric Gas can be analyzed from two complementary viewpoints:\n591: \n592: :::{prf:observation} Two Equivalent Formulations\n593: :label: rem-observation-two-formulations\n594: \n595: **Perspective 1: Flat Algorithmic Space (This Document)**\n596: - **State space**: Flat Euclidean $\\mathbb{R}^d \\times \\mathbb{R}^d$ (positions and velocities)\n597: - **Diffusion**: Anisotropic, state-dependent: $D(x, S) = (H(x, S) + \\epsilon_\\Sigma I)^{-1}$\n598: - **Metric**: Standard Euclidean inner product\n599: - **SDE** (Stratonovich):\n600: \n601: \n602: $$\n603: dv = [F(x) - \\gamma v] dt + \\Sigma_{\\text{reg}}(x, S) \\circ dW\n604: $$\n605: \n606:   where $\\Sigma_{\\text{reg}} = D^{1/2}$ is anisotropic\n607: \n608: **Perspective 2: Emergent Riemannian Manifold**\n609: - **State space**: Riemannian manifold $(\\mathcal{X}, g)$ with metric $g(x, S) = H(x, S) + \\epsilon_\\Sigma I$\n610: - **Diffusion**: Isotropic in the Riemannian metric (constant diffusion coefficient)\n611: - **Metric**: Riemannian metric $g = D^{-1}$ induced by regularized Hessian\n612: - **SDE** (in local coordinates, Stratonovich):\n613: \n614: \n615: $$\n616: dv = [\\tilde{F}_g(x) - \\gamma v] dt + \\sigma \\sqrt{g^{-1}(x, S)} \\circ dW\n617: $$\n618: \n619:   where $\\tilde{F}_g$ includes Christoffel symbol corrections\n620: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "18_emergent_geometry",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 3. The Emergent Geometry Framework"
+      }
+    },
+    {
+      "directive_type": "observation",
+      "label": "rem-observation-three-regimes",
+      "title": "Three Bottleneck Regimes",
+      "start_line": 2499,
+      "end_line": 2562,
+      "header_lines": [
+        2500
+      ],
+      "content_start": 2502,
+      "content_end": 2561,
+      "content": "2502: :label: rem-observation-three-regimes\n2503: \n2504: **Regime 1: Cloning-Limited** ($\\kappa_x$ is smallest)\n2505: \n2506: $$\n2507: \\kappa_{\\text{total}} \\approx \\kappa_x \\quad \\text{when} \\quad \\kappa_x < \\min\\left\\{\\gamma, \\frac{\\epsilon_\\Sigma}{H_{\\max} + \\epsilon_\\Sigma}\\right\\} \\tau\n2508: $$\n2509: \n2510: **Bottleneck**: Fitness landscape geometry limits how fast cloning can reduce position variance.\n2511: \n2512: **Characteristics**:\n2513: - Convergence rate is **independent of kinetic parameters** $\\gamma, \\tau, \\epsilon_\\Sigma$\n2514: - Improving kinetic mixing (larger $\\gamma$, longer $\\tau$) does **not** help\n2515: - Only way to accelerate: improve fitness landscape (stronger gradients, better conditioning)\n2516: \n2517: **Typical for**: Flat fitness landscapes, poorly-conditioned problems with $H_{\\max} \\gg \\epsilon_\\Sigma$\n2518: \n2519: ---\n2520: \n2521: **Regime 2: Hypocoercivity-Limited** ($\\min\\{\\gamma, c_{\\min}\\}\\tau$ is smallest)\n2522: \n2523: $$\n2524: \\kappa_{\\text{total}} \\approx \\min\\left\\{\\gamma, \\frac{\\epsilon_\\Sigma}{H_{\\max} + \\epsilon_\\Sigma}\\right\\} \\tau\n2525: $$\n2526: \n2527: **Bottleneck**: Kinetic operator's hypocoercive mixing limits convergence.\n2528: \n2529: **Sub-regime 2a**: $\\gamma \\tau < c_{\\min} \\tau$ (friction-limited)\n2530: \n2531: $$\n2532: \\kappa_{\\text{total}} \\approx \\gamma \\tau\n2533: $$\n2534: \n2535: - **Solution**: Increase friction $\\gamma$ or timestep $\\tau$\n2536: - Typical for: Under-damped dynamics ($\\gamma$ too small)\n2537: \n2538: **Sub-regime 2b**: $c_{\\min} \\tau < \\gamma \\tau$ (diffusion-limited)\n2539: \n2540: $$\n2541: \\kappa_{\\text{total}} \\approx \\frac{\\epsilon_\\Sigma}{H_{\\max} + \\epsilon_\\Sigma} \\tau\n2542: $$\n2543: \n2544: - **Solution**: Increase regularization $\\epsilon_\\Sigma$ or timestep $\\tau$\n2545: - Typical for: Ill-conditioned Hessians with $H_{\\max} \\gg \\epsilon_\\Sigma$\n2546: \n2547: ---\n2548: \n2549: **Regime 3: Boundary-Limited** ($\\kappa_b + O(\\alpha_U)\\tau$ is smallest)\n2550: \n2551: $$\n2552: \\kappa_{\\text{total}} \\approx \\kappa_b + O(\\alpha_U) \\tau\n2553: $$\n2554: \n2555: **Bottleneck**: Walkers near boundary limit convergence (both cloning repulsion and kinetic force).\n2556: \n2557: **Characteristics**:\n2558: - Weakly depends on confining potential strength $\\alpha_U$\n2559: - Typical for: Problems with significant boundary effects, weak confinement\n2560: \n2561: ---",
+      "metadata": {
+        "label": "rem-observation-three-regimes"
+      },
+      "section": "## 7. Explicit Convergence Constants and Algorithmic Parameter Dependence",
+      "raw_directive": "2499: The total convergence rate $\\kappa_{\\text{total}}$ is the minimum of three terms. Depending on problem and algorithmic parameters, different terms may dominate, leading to distinct convergence regimes.\n2500: \n2501: :::{prf:observation} Three Bottleneck Regimes\n2502: :label: rem-observation-three-regimes\n2503: \n2504: **Regime 1: Cloning-Limited** ($\\kappa_x$ is smallest)\n2505: \n2506: $$\n2507: \\kappa_{\\text{total}} \\approx \\kappa_x \\quad \\text{when} \\quad \\kappa_x < \\min\\left\\{\\gamma, \\frac{\\epsilon_\\Sigma}{H_{\\max} + \\epsilon_\\Sigma}\\right\\} \\tau\n2508: $$\n2509: \n2510: **Bottleneck**: Fitness landscape geometry limits how fast cloning can reduce position variance.\n2511: \n2512: **Characteristics**:\n2513: - Convergence rate is **independent of kinetic parameters** $\\gamma, \\tau, \\epsilon_\\Sigma$\n2514: - Improving kinetic mixing (larger $\\gamma$, longer $\\tau$) does **not** help\n2515: - Only way to accelerate: improve fitness landscape (stronger gradients, better conditioning)\n2516: \n2517: **Typical for**: Flat fitness landscapes, poorly-conditioned problems with $H_{\\max} \\gg \\epsilon_\\Sigma$\n2518: \n2519: ---\n2520: \n2521: **Regime 2: Hypocoercivity-Limited** ($\\min\\{\\gamma, c_{\\min}\\}\\tau$ is smallest)\n2522: \n2523: $$\n2524: \\kappa_{\\text{total}} \\approx \\min\\left\\{\\gamma, \\frac{\\epsilon_\\Sigma}{H_{\\max} + \\epsilon_\\Sigma}\\right\\} \\tau\n2525: $$\n2526: \n2527: **Bottleneck**: Kinetic operator's hypocoercive mixing limits convergence.\n2528: \n2529: **Sub-regime 2a**: $\\gamma \\tau < c_{\\min} \\tau$ (friction-limited)\n2530: \n2531: $$\n2532: \\kappa_{\\text{total}} \\approx \\gamma \\tau\n2533: $$\n2534: \n2535: - **Solution**: Increase friction $\\gamma$ or timestep $\\tau$\n2536: - Typical for: Under-damped dynamics ($\\gamma$ too small)\n2537: \n2538: **Sub-regime 2b**: $c_{\\min} \\tau < \\gamma \\tau$ (diffusion-limited)\n2539: \n2540: $$\n2541: \\kappa_{\\text{total}} \\approx \\frac{\\epsilon_\\Sigma}{H_{\\max} + \\epsilon_\\Sigma} \\tau\n2542: $$\n2543: \n2544: - **Solution**: Increase regularization $\\epsilon_\\Sigma$ or timestep $\\tau$\n2545: - Typical for: Ill-conditioned Hessians with $H_{\\max} \\gg \\epsilon_\\Sigma$\n2546: \n2547: ---\n2548: \n2549: **Regime 3: Boundary-Limited** ($\\kappa_b + O(\\alpha_U)\\tau$ is smallest)\n2550: \n2551: $$\n2552: \\kappa_{\\text{total}} \\approx \\kappa_b + O(\\alpha_U) \\tau\n2553: $$\n2554: \n2555: **Bottleneck**: Walkers near boundary limit convergence (both cloning repulsion and kinetic force).\n2556: \n2557: **Characteristics**:\n2558: - Weakly depends on confining potential strength $\\alpha_U$\n2559: - Typical for: Problems with significant boundary effects, weak confinement\n2560: \n2561: ---\n2562: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "18_emergent_geometry",
+        "chapter_index": 7,
+        "chapter_file": "chapter_7.json",
+        "section_id": "## 7. Explicit Convergence Constants and Algorithmic Parameter Dependence"
+      }
+    },
+    {
+      "directive_type": "observation",
+      "label": "rem-observation-regularization-tradeoff",
+      "title": "Regularization Trade-Off",
+      "start_line": 2568,
+      "end_line": 2605,
+      "header_lines": [
+        2569
+      ],
+      "content_start": 2571,
+      "content_end": 2604,
+      "content": "2571: :label: rem-observation-regularization-tradeoff\n2572: \n2573: The regularization $\\epsilon_\\Sigma$ controls a fundamental trade-off:\n2574: \n2575: **Large $\\epsilon_\\Sigma$ (Strong Regularization)**:\n2576: - **Pros**:\n2577:   - Large $c_{\\min} \\approx \\epsilon_\\Sigma/H_{\\max}$ → faster hypocoercive convergence\n2578:   - Diffusion is nearly isotropic ($c_{\\min} \\approx c_{\\max}$) → robust\n2579:   - Small expansion constants: $C'_v, C'_W \\sim 1/\\epsilon_\\Sigma$ decrease\n2580: - **Cons**:\n2581:   - Diffusion $D = (H + \\epsilon_\\Sigma I)^{-1} \\approx \\epsilon_\\Sigma^{-1} I$ loses geometry information\n2582:   - Algorithm behaves like **isotropic Euclidean Gas** (loses adaptive advantage)\n2583:   - May not exploit landscape structure efficiently\n2584: \n2585: **Small $\\epsilon_\\Sigma$ (Weak Regularization)**:\n2586: - **Pros**:\n2587:   - Diffusion $D \\approx H^{-1}$ strongly adapts to fitness geometry\n2588:   - Natural gradient-like behavior: optimal exploitation vs. exploration\n2589:   - Exploits landscape structure efficiently\n2590: - **Cons**:\n2591:   - Small $c_{\\min} \\approx \\epsilon_\\Sigma/H_{\\max}$ → slower hypocoercive convergence (especially if $H_{\\max} \\gg 1$)\n2592:   - Large expansion constants: $C'_v, C'_W \\sim 1/\\epsilon_\\Sigma$ increase\n2593:   - More sensitive to ill-conditioning\n2594: \n2595: **Optimal Choice**: Balance between:\n2596: \n2597: $$\n2598: \\epsilon_\\Sigma \\sim \\sqrt{H_{\\max}} \\quad \\Rightarrow \\quad c_{\\min} \\sim \\epsilon_\\Sigma / (2H_{\\max}) \\sim 1/(2\\sqrt{H_{\\max}})\n2599: $$\n2600: \n2601: This makes $c_{\\min}$ scale as $1/\\sqrt{H_{\\max}}$ (intermediate) while maintaining some geometry adaptation.\n2602: \n2603: **Rule of thumb**: For Hessian condition number $\\kappa(H) = H_{\\max}/H_{\\min}$:\n2604: - Well-conditioned ($\\kappa(H) \\lesssim 100$): Small $\\epsilon_\\Sigma \\sim H_{\\min}$ (strong adaptation)",
+      "metadata": {
+        "label": "rem-observation-regularization-tradeoff"
+      },
+      "section": "## 7. Explicit Convergence Constants and Algorithmic Parameter Dependence",
+      "raw_directive": "2568: The regularization parameter $\\epsilon_\\Sigma$ plays a critical role, appearing in both $c_{\\min}$ and $c_{\\max}$.\n2569: \n2570: :::{prf:observation} Regularization Trade-Off\n2571: :label: rem-observation-regularization-tradeoff\n2572: \n2573: The regularization $\\epsilon_\\Sigma$ controls a fundamental trade-off:\n2574: \n2575: **Large $\\epsilon_\\Sigma$ (Strong Regularization)**:\n2576: - **Pros**:\n2577:   - Large $c_{\\min} \\approx \\epsilon_\\Sigma/H_{\\max}$ → faster hypocoercive convergence\n2578:   - Diffusion is nearly isotropic ($c_{\\min} \\approx c_{\\max}$) → robust\n2579:   - Small expansion constants: $C'_v, C'_W \\sim 1/\\epsilon_\\Sigma$ decrease\n2580: - **Cons**:\n2581:   - Diffusion $D = (H + \\epsilon_\\Sigma I)^{-1} \\approx \\epsilon_\\Sigma^{-1} I$ loses geometry information\n2582:   - Algorithm behaves like **isotropic Euclidean Gas** (loses adaptive advantage)\n2583:   - May not exploit landscape structure efficiently\n2584: \n2585: **Small $\\epsilon_\\Sigma$ (Weak Regularization)**:\n2586: - **Pros**:\n2587:   - Diffusion $D \\approx H^{-1}$ strongly adapts to fitness geometry\n2588:   - Natural gradient-like behavior: optimal exploitation vs. exploration\n2589:   - Exploits landscape structure efficiently\n2590: - **Cons**:\n2591:   - Small $c_{\\min} \\approx \\epsilon_\\Sigma/H_{\\max}$ → slower hypocoercive convergence (especially if $H_{\\max} \\gg 1$)\n2592:   - Large expansion constants: $C'_v, C'_W \\sim 1/\\epsilon_\\Sigma$ increase\n2593:   - More sensitive to ill-conditioning\n2594: \n2595: **Optimal Choice**: Balance between:\n2596: \n2597: $$\n2598: \\epsilon_\\Sigma \\sim \\sqrt{H_{\\max}} \\quad \\Rightarrow \\quad c_{\\min} \\sim \\epsilon_\\Sigma / (2H_{\\max}) \\sim 1/(2\\sqrt{H_{\\max}})\n2599: $$\n2600: \n2601: This makes $c_{\\min}$ scale as $1/\\sqrt{H_{\\max}}$ (intermediate) while maintaining some geometry adaptation.\n2602: \n2603: **Rule of thumb**: For Hessian condition number $\\kappa(H) = H_{\\max}/H_{\\min}$:\n2604: - Well-conditioned ($\\kappa(H) \\lesssim 100$): Small $\\epsilon_\\Sigma \\sim H_{\\min}$ (strong adaptation)\n2605: - Ill-conditioned ($\\kappa(H) \\gtrsim 10^4$): Moderate $\\epsilon_\\Sigma \\sim \\sqrt{H_{\\max} H_{\\min}}$ (balanced)",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "18_emergent_geometry",
+        "chapter_index": 7,
+        "chapter_file": "chapter_7.json",
+        "section_id": "## 7. Explicit Convergence Constants and Algorithmic Parameter Dependence"
+      }
+    },
+    {
+      "directive_type": "observation",
+      "label": "rem-observation-emergent-metric",
+      "title": "The Emergent Metric",
+      "start_line": 2615,
+      "end_line": 2627,
+      "header_lines": [
+        2616
+      ],
+      "content_start": 2618,
+      "content_end": 2626,
+      "content": "2618: :label: rem-observation-emergent-metric\n2619: \n2620: The adaptive diffusion $D_{\\text{reg}}(x, S) = (H + \\epsilon_\\Sigma I)^{-1}$ is the **inverse** of a Riemannian metric:\n2621: \n2622: $$\n2623: g_{\\text{emergent}}(x, S) = H(x, S) + \\epsilon_\\Sigma I\n2624: $$\n2625: \n2626: This metric defines **geodesic distances** on the state space. Two points that are close in **Euclidean distance** may be far in **geodesic distance** if the Hessian $H$ is large (high curvature).",
+      "metadata": {
+        "label": "rem-observation-emergent-metric"
+      },
+      "section": "## 8. Convergence on the Emergent Manifold (Geometric Perspective)",
+      "raw_directive": "2615: We have proven convergence in the **flat state space** $\\mathcal{X} \\times \\mathbb{R}^d$ with anisotropic diffusion. But the anisotropic diffusion **defines an emergent Riemannian geometry**.\n2616: \n2617: :::{prf:observation} The Emergent Metric\n2618: :label: rem-observation-emergent-metric\n2619: \n2620: The adaptive diffusion $D_{\\text{reg}}(x, S) = (H + \\epsilon_\\Sigma I)^{-1}$ is the **inverse** of a Riemannian metric:\n2621: \n2622: $$\n2623: g_{\\text{emergent}}(x, S) = H(x, S) + \\epsilon_\\Sigma I\n2624: $$\n2625: \n2626: This metric defines **geodesic distances** on the state space. Two points that are close in **Euclidean distance** may be far in **geodesic distance** if the Hessian $H$ is large (high curvature).\n2627: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "18_emergent_geometry",
+        "chapter_index": 8,
+        "chapter_file": "chapter_8.json",
+        "section_id": "## 8. Convergence on the Emergent Manifold (Geometric Perspective)"
+      }
+    }
+  ]
+}

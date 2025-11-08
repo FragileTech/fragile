@@ -1,0 +1,34 @@
+{
+  "document_id": "14_geometric_gas_cinf_regularity_full",
+  "stage": "directives",
+  "directive_type": "proposition",
+  "generated_at": "2025-11-08T17:07:43.253732+00:00",
+  "count": 1,
+  "items": [
+    {
+      "directive_type": "proposition",
+      "label": "prop-factorial-sqrt-composition",
+      "title": "Factorial Growth for Composition with Square Root",
+      "start_line": 5333,
+      "end_line": 5344,
+      "header_lines": [
+        5334
+      ],
+      "content_start": 5336,
+      "content_end": 5343,
+      "content": "5336: :label: prop-factorial-sqrt-composition\n5337: \n5338: For $\\sigma'(V) = \\sqrt{V + c^2}$ where $c = \\eta_{\\min} > 0$ and $V \\in C^m$ with $\\|\\nabla^k V\\| \\leq M_k$, the $m$-th derivative satisfies:\n5339: \n5340: $$\n5341: \\|\\nabla^m \\sigma'(V)\\| \\leq C_{\\sigma,m} \\cdot m!\n5342: \n5343: $$",
+      "metadata": {
+        "label": "prop-factorial-sqrt-composition"
+      },
+      "section": "## Appendix A: Combinatorial Proof of Gevrey-1 Bounds via Faà di Bruno Formula",
+      "raw_directive": "5333: We prove the Gevrey-1 bound for $\\sigma'_{\\text{reg}}(V) = \\sqrt{V + \\eta_{\\min}^2}$ as a concrete example.\n5334: \n5335: :::{prf:proposition} Factorial Growth for Composition with Square Root\n5336: :label: prop-factorial-sqrt-composition\n5337: \n5338: For $\\sigma'(V) = \\sqrt{V + c^2}$ where $c = \\eta_{\\min} > 0$ and $V \\in C^m$ with $\\|\\nabla^k V\\| \\leq M_k$, the $m$-th derivative satisfies:\n5339: \n5340: $$\n5341: \\|\\nabla^m \\sigma'(V)\\| \\leq C_{\\sigma,m} \\cdot m!\n5342: \n5343: $$\n5344: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "14_geometric_gas_cinf_regularity_full",
+        "chapter_index": 29,
+        "chapter_file": "chapter_29.json",
+        "section_id": "## Appendix A: Combinatorial Proof of Gevrey-1 Bounds via Faà di Bruno Formula"
+      }
+    }
+  ]
+}

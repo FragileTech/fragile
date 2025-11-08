@@ -1,0 +1,134 @@
+{
+  "document_id": "11_geometric_gas",
+  "stage": "directives",
+  "directive_type": "proposition",
+  "generated_at": "2025-11-08T17:07:43.271949+00:00",
+  "count": 5,
+  "items": [
+    {
+      "directive_type": "proposition",
+      "label": "prop-limiting-regimes",
+      "title": "Limiting Behavior of the Unified Pipeline",
+      "start_line": 308,
+      "end_line": 346,
+      "header_lines": [
+        309
+      ],
+      "content_start": 311,
+      "content_end": 345,
+      "content": "311: :label: prop-limiting-regimes\n312: \n313: The ρ-parameterized framework interpolates between two well-understood regimes:\n314: \n315: **1. Global Backbone Regime (ρ → ∞):**\n316: \n317: For the N-particle system with alive walker set $A_k$:\n318: \n319: $$\n320: \\lim_{\\rho \\to \\infty} w_{ij}(\\rho) = \\frac{1}{k} \\quad \\text{for all } i, j \\in A_k\n321: $$\n322: \n323: $$\n324: \\lim_{\\rho \\to \\infty} \\mu_\\rho[f_k, d, x_i] = \\frac{1}{k}\\sum_{j \\in A_k} d(x_j) =: \\mu[f_k, d]\n325: $$\n326: \n327: $$\n328: \\lim_{\\rho \\to \\infty} \\sigma^2_\\rho[f_k, d, x_i] = \\frac{1}{k}\\sum_{j \\in A_k} [d(x_j) - \\mu[f_k, d]]^2 =: \\sigma^2[f_k, d]\n329: $$\n330: \n331: In this limit, all alive walkers use identical **k-normalized global statistics**, and the fitness potential becomes position-independent in its statistical weights. This **exactly recovers the backbone model** from `03_cloning.md` and `04_convergence.md`, which uses the empirical distribution over $A_k$ only.\n332: \n333: **2. Hyper-Local Regime (ρ → 0):**\n334: \n335: $$\n336: \\lim_{\\rho \\to 0} K_\\rho(x, x') = \\delta(x - x')\n337: $$\n338: \n339: In this limit, the moments become point evaluations (up to the nearest neighbor in the discrete case), and the fitness potential responds purely to infinitesimal local structure. This is the regime required for Hessian-based geometric adaptation.\n340: \n341: **3. Intermediate Regime (0 < ρ < ∞):**\n342: \n343: For finite ρ, the pipeline balances local geometric sensitivity with statistical robustness. The optimal choice of ρ trades off:\n344: - **Smaller ρ:** More sensitive to local structure, but higher variance in moment estimates\n345: - **Larger ρ:** More statistically robust, but loses geometric localization",
+      "metadata": {
+        "label": "prop-limiting-regimes"
+      },
+      "section": "## 1. The Unified Measurement Pipeline",
+      "raw_directive": "308: ### 1.0.5. Analysis of Limiting Regimes\n309: \n310: :::{prf:proposition} Limiting Behavior of the Unified Pipeline\n311: :label: prop-limiting-regimes\n312: \n313: The ρ-parameterized framework interpolates between two well-understood regimes:\n314: \n315: **1. Global Backbone Regime (ρ → ∞):**\n316: \n317: For the N-particle system with alive walker set $A_k$:\n318: \n319: $$\n320: \\lim_{\\rho \\to \\infty} w_{ij}(\\rho) = \\frac{1}{k} \\quad \\text{for all } i, j \\in A_k\n321: $$\n322: \n323: $$\n324: \\lim_{\\rho \\to \\infty} \\mu_\\rho[f_k, d, x_i] = \\frac{1}{k}\\sum_{j \\in A_k} d(x_j) =: \\mu[f_k, d]\n325: $$\n326: \n327: $$\n328: \\lim_{\\rho \\to \\infty} \\sigma^2_\\rho[f_k, d, x_i] = \\frac{1}{k}\\sum_{j \\in A_k} [d(x_j) - \\mu[f_k, d]]^2 =: \\sigma^2[f_k, d]\n329: $$\n330: \n331: In this limit, all alive walkers use identical **k-normalized global statistics**, and the fitness potential becomes position-independent in its statistical weights. This **exactly recovers the backbone model** from `03_cloning.md` and `04_convergence.md`, which uses the empirical distribution over $A_k$ only.\n332: \n333: **2. Hyper-Local Regime (ρ → 0):**\n334: \n335: $$\n336: \\lim_{\\rho \\to 0} K_\\rho(x, x') = \\delta(x - x')\n337: $$\n338: \n339: In this limit, the moments become point evaluations (up to the nearest neighbor in the discrete case), and the fitness potential responds purely to infinitesimal local structure. This is the regime required for Hessian-based geometric adaptation.\n340: \n341: **3. Intermediate Regime (0 < ρ < ∞):**\n342: \n343: For finite ρ, the pipeline balances local geometric sensitivity with statistical robustness. The optimal choice of ρ trades off:\n344: - **Smaller ρ:** More sensitive to local structure, but higher variance in moment estimates\n345: - **Larger ρ:** More statistically robust, but loses geometric localization\n346: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
+        "section_id": "## 1. The Unified Measurement Pipeline"
+      }
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop:bounded-adaptive-force",
+      "title": "k-Uniform Boundedness of the Adaptive Force (ρ-Dependent)",
+      "start_line": 560,
+      "end_line": 587,
+      "header_lines": [
+        561
+      ],
+      "content_start": 563,
+      "content_end": 586,
+      "content": "563: :label: prop:bounded-adaptive-force\n564: \n565: The adaptive force $\\mathbf{F}_{\\text{adapt}} = \\epsilon_F \\nabla V_{\\text{fit}}[f_k, \\rho]$ is uniformly bounded. There exists a finite, state-independent constant $F_{\\text{adapt,max}}(\\rho)$ such that:\n566: \n567: $$\n568: \\sup_{S \\in \\Sigma_N, i \\in A_k} \\|\\mathbf{F}_{\\text{adapt}}(x_i, S)\\| \\le F_{\\text{adapt,max}}(\\rho) < \\infty\n569: $$\n570: \n571: **ρ-Dependence:** The bound $F_{\\text{adapt,max}}(\\rho)$ depends on the localization scale ρ through:\n572: 1. The localized moments $\\mu_\\rho$ and $\\sigma'_\\rho$ computed over $f_k$ (Definition {prf:ref}`def-localized-mean-field-moments`)\n573: 2. The derivatives of the localization kernel $K_\\rho(x, x')$\n574: 3. The rescale function $g_A$ and its derivatives\n575: \n576: **Proof:** The complete rigorous proof is provided in **Appendix A, Theorem A.1** (Theorem {prf:ref}`thm-c1-regularity`). The proof establishes that:\n577: \n578: \n579: \n580: $$\n581: F_{\\text{adapt,max}}(\\rho) = L_{g_A} \\cdot \\left[ \\frac{2d'_{\\max}}{\\sigma\\'_{\\min}} \\left(1 + \\frac{2d_{\\max} C_{\\nabla K}(\\rho)}{\\rho d'_{\\max}}\\right) + \\frac{4d_{\\max}^2 L_{\\sigma\\'_{\\text{reg}}}}{\\sigma'^2_{\\min,\\text{bound}}} \\cdot C_{\\mu,V}(\\rho) \\right]\n582: $$\n583: \n584:     where $C_{\\mu,V}(\\rho) = O(1/\\rho)$ is **independent of N** and bounds the derivatives of the localized moments.\n585: \n586: **Critical k-Uniformity:** The bound is **uniform in k** (and thus in N) due to the telescoping property $\\sum_{j \\in A_k} \\nabla w_{ij} = 0$ of the normalized localization weights computed over alive walkers, combined with the fact that only $k_{\\text{eff}}(\\rho) = O(1)$ alive walkers effectively contribute to the ρ-localized measurements. The key technical steps involve applying the chain rule to $V_{\\text{fit}} = g_A \\circ Z_\\rho$ and using the normalized weight constraints to eliminate k-dependence (and thus N-dependence).",
+      "metadata": {
+        "label": "prop:bounded-adaptive-force"
+      },
+      "section": "## 3. The Complete Axiomatic Framework",
+      "raw_directive": "560: These \"axioms\" are fundamentally different. They are not assumptions about the environment, but rather **properties of the algorithm's adaptive components that must be (and can be) proven**. They state that the adaptive terms are \"well-behaved\" enough to be treated as bounded perturbations.\n561: \n562: :::{prf:proposition} k-Uniform Boundedness of the Adaptive Force (ρ-Dependent)\n563: :label: prop:bounded-adaptive-force\n564: \n565: The adaptive force $\\mathbf{F}_{\\text{adapt}} = \\epsilon_F \\nabla V_{\\text{fit}}[f_k, \\rho]$ is uniformly bounded. There exists a finite, state-independent constant $F_{\\text{adapt,max}}(\\rho)$ such that:\n566: \n567: $$\n568: \\sup_{S \\in \\Sigma_N, i \\in A_k} \\|\\mathbf{F}_{\\text{adapt}}(x_i, S)\\| \\le F_{\\text{adapt,max}}(\\rho) < \\infty\n569: $$\n570: \n571: **ρ-Dependence:** The bound $F_{\\text{adapt,max}}(\\rho)$ depends on the localization scale ρ through:\n572: 1. The localized moments $\\mu_\\rho$ and $\\sigma'_\\rho$ computed over $f_k$ (Definition {prf:ref}`def-localized-mean-field-moments`)\n573: 2. The derivatives of the localization kernel $K_\\rho(x, x')$\n574: 3. The rescale function $g_A$ and its derivatives\n575: \n576: **Proof:** The complete rigorous proof is provided in **Appendix A, Theorem A.1** (Theorem {prf:ref}`thm-c1-regularity`). The proof establishes that:\n577: \n578: \n579: \n580: $$\n581: F_{\\text{adapt,max}}(\\rho) = L_{g_A} \\cdot \\left[ \\frac{2d'_{\\max}}{\\sigma\\'_{\\min}} \\left(1 + \\frac{2d_{\\max} C_{\\nabla K}(\\rho)}{\\rho d'_{\\max}}\\right) + \\frac{4d_{\\max}^2 L_{\\sigma\\'_{\\text{reg}}}}{\\sigma'^2_{\\min,\\text{bound}}} \\cdot C_{\\mu,V}(\\rho) \\right]\n582: $$\n583: \n584:     where $C_{\\mu,V}(\\rho) = O(1/\\rho)$ is **independent of N** and bounds the derivatives of the localized moments.\n585: \n586: **Critical k-Uniformity:** The bound is **uniform in k** (and thus in N) due to the telescoping property $\\sum_{j \\in A_k} \\nabla w_{ij} = 0$ of the normalized localization weights computed over alive walkers, combined with the fact that only $k_{\\text{eff}}(\\rho) = O(1)$ alive walkers effectively contribute to the ρ-localized measurements. The key technical steps involve applying the chain rule to $V_{\\text{fit}} = g_A \\circ Z_\\rho$ and using the normalized weight constraints to eliminate k-dependence (and thus N-dependence).\n587: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 3. The Complete Axiomatic Framework"
+      }
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop:ueph-by-construction",
+      "title": "k-Uniform Ellipticity by Construction (Proven in Chapter 4)",
+      "start_line": 596,
+      "end_line": 612,
+      "header_lines": [
+        597
+      ],
+      "content_start": 599,
+      "content_end": 611,
+      "content": "599: :label: prop:ueph-by-construction\n600: \n601: The regularized diffusion tensor $\\Sigma_{\\text{reg}} = (H + \\epsilon_\\Sigma I)^{-1/2}$ is **uniformly elliptic by construction**.\n602: \n603: **Statement:** The eigenvalues of the induced metric $G_{\\text{reg}} = (H + \\epsilon_\\Sigma I)^{-1}$ are uniformly bounded:\n604: \n605: $$\n606: c_{\\min}(\\rho) I \\preceq G_{\\text{reg}}(S) \\preceq c_{\\max}(\\rho) I \\quad \\forall S \\in \\Sigma_N, \\, \\forall k, \\, \\forall N\n607: $$\n608: \n609: where $c_{\\min}(\\rho)$ and $c_{\\max}(\\rho)$ are **k-uniform** (and thus **N-uniform**) constants that depend only on ρ and the regularization parameter $\\epsilon_\\Sigma$.\n610: \n611: **Proof:** See **Chapter 4, Theorem 4.1** (Theorem {prf:ref}`thm-ueph`), which provides the complete rigorous proof based on the C² regularity established in **Appendix A, Theorem A.2** (Theorem {prf:ref}`thm-c2-regularity`).",
+      "metadata": {
+        "label": "prop:ueph-by-construction"
+      },
+      "section": "## 3. The Complete Axiomatic Framework",
+      "raw_directive": "596: :::\n597: \n598: :::{prf:proposition} k-Uniform Ellipticity by Construction (Proven in Chapter 4)\n599: :label: prop:ueph-by-construction\n600: \n601: The regularized diffusion tensor $\\Sigma_{\\text{reg}} = (H + \\epsilon_\\Sigma I)^{-1/2}$ is **uniformly elliptic by construction**.\n602: \n603: **Statement:** The eigenvalues of the induced metric $G_{\\text{reg}} = (H + \\epsilon_\\Sigma I)^{-1}$ are uniformly bounded:\n604: \n605: $$\n606: c_{\\min}(\\rho) I \\preceq G_{\\text{reg}}(S) \\preceq c_{\\max}(\\rho) I \\quad \\forall S \\in \\Sigma_N, \\, \\forall k, \\, \\forall N\n607: $$\n608: \n609: where $c_{\\min}(\\rho)$ and $c_{\\max}(\\rho)$ are **k-uniform** (and thus **N-uniform**) constants that depend only on ρ and the regularization parameter $\\epsilon_\\Sigma$.\n610: \n611: **Proof:** See **Chapter 4, Theorem 4.1** (Theorem {prf:ref}`thm-ueph`), which provides the complete rigorous proof based on the C² regularity established in **Appendix A, Theorem A.2** (Theorem {prf:ref}`thm-c2-regularity`).\n612: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 3. The Complete Axiomatic Framework"
+      }
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-diversity-signal-rho",
+      "title": "Lower Bound on Corrective Diversity Signal (ρ-Dependent)",
+      "start_line": 3289,
+      "end_line": 3345,
+      "header_lines": [
+        3290
+      ],
+      "content_start": 3292,
+      "content_end": 3344,
+      "content": "3292: :label: prop-diversity-signal-rho\n3293: \n3294: For a swarm satisfying $\\text{Var}(x) > R^2$ and $\\mathbb{E}[\\text{Var}(d)] > \\kappa_{\\text{meas}}$, the mean logarithmic rescaled distance satisfies:\n3295: \n3296: $$\n3297: \\mathbb{E}[\\log d'] \\ge \\kappa_{d',\\text{mean}}(\\epsilon, \\rho)\n3298: $$\n3299: \n3300: where:\n3301: \n3302: $$\n3303: \\kappa_{d',\\text{mean}}(\\epsilon, \\rho) := \\log g_A\\left( \\frac{\\kappa_{\\text{rescaled}}(\\kappa_{\\text{meas}}, \\rho)}{2} \\right) - \\log(A)\n3304: $$\n3305: \n3306: and $\\kappa_{\\text{rescaled}}(\\kappa_{\\text{meas}}, \\rho)$ is from Lemma {prf:ref}`lem-raw-to-rescaled-gap-rho`.\n3307: \n3308: **Proof:**\n3309: \n3310: **Step 1: From Structural Variance to Raw Distance Variance.** By Theorem {prf:ref}`thm-signal-generation-adaptive` (Hypothesis 1), if $\\text{Var}(x) > R^2$, then:\n3311: \n3312: $$\n3313: \\mathbb{E}[\\text{Var}(d)] > \\kappa_{\\text{meas}} > 0\n3314: $$\n3315: \n3316: This is the raw variance in the pairwise distance measurements before any statistical processing.\n3317: \n3318: **Step 2: From Variance to Gap.** By Lemma {prf:ref}`lem-variance-to-gap-adaptive`, any random variable with variance $\\sigma^2 > 0$ must have a gap to its mean:\n3319: \n3320: $$\n3321: \\max_i |d_i - \\mu[d]| \\ge \\sigma[d] \\ge \\sqrt{\\kappa_{\\text{meas}}}\n3322: $$\n3323: \n3324: Therefore, $\\kappa_{\\text{raw}} := \\sqrt{\\kappa_{\\text{meas}}}$ bounds the raw gap.\n3325: \n3326: **Step 3: Propagation Through ρ-Localized Pipeline.** By Lemma {prf:ref}`lem-raw-to-rescaled-gap-rho`, the raw gap propagates to a rescaled gap:\n3327: \n3328: $$\n3329: \\max_i |d'_i - \\mu[d']| \\ge \\kappa_{\\text{rescaled}}(\\kappa_{\\text{raw}}, \\rho) = g'_{\\min} \\cdot \\frac{\\kappa_{\\text{raw}}}{\\sigma'_{\\rho,\\max}}\n3330: $$\n3331: \n3332: where $g'_{\\min}$ is the minimum derivative of the rescale function and $\\sigma'_{\\rho,\\max} = d_{\\max}$ is the worst-case bound on the localized standard deviation.\n3333: \n3334: **Step 4: From Gap to Logarithmic Mean.** By Lemma {prf:ref}`lem-log-gap-bounds-adaptive`, if the rescaled measurements $d' \\in [0, A]$ have mean $\\mu[d']$ and gap $\\ge \\kappa_{\\text{rescaled}}$, then:\n3335: \n3336: $$\n3337: \\mathbb{E}[\\log d'] \\ge \\log(\\mu[d'] - \\kappa_{\\text{rescaled}}/2)\n3338: $$\n3339: \n3340: Since $\\mu[d'] \\le A$ and the gap is at least $\\kappa_{\\text{rescaled}}$, we have:\n3341: \n3342: $$\n3343: \\mathbb{E}[\\log d'] \\ge \\log g_A\\left( \\frac{\\kappa_{\\text{rescaled}}(\\kappa_{\\text{meas}}, \\rho)}{2} \\right) - \\log(A) =: \\kappa_{d',\\text{mean}}(\\epsilon, \\rho)\n3344: $$",
+      "metadata": {
+        "label": "prop-diversity-signal-rho"
+      },
+      "section": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model",
+      "raw_directive": "3289: #### B.4.2. ρ-Dependent Lower Bound on Corrective Diversity Signal\n3290: \n3291: :::{prf:proposition} Lower Bound on Corrective Diversity Signal (ρ-Dependent)\n3292: :label: prop-diversity-signal-rho\n3293: \n3294: For a swarm satisfying $\\text{Var}(x) > R^2$ and $\\mathbb{E}[\\text{Var}(d)] > \\kappa_{\\text{meas}}$, the mean logarithmic rescaled distance satisfies:\n3295: \n3296: $$\n3297: \\mathbb{E}[\\log d'] \\ge \\kappa_{d',\\text{mean}}(\\epsilon, \\rho)\n3298: $$\n3299: \n3300: where:\n3301: \n3302: $$\n3303: \\kappa_{d',\\text{mean}}(\\epsilon, \\rho) := \\log g_A\\left( \\frac{\\kappa_{\\text{rescaled}}(\\kappa_{\\text{meas}}, \\rho)}{2} \\right) - \\log(A)\n3304: $$\n3305: \n3306: and $\\kappa_{\\text{rescaled}}(\\kappa_{\\text{meas}}, \\rho)$ is from Lemma {prf:ref}`lem-raw-to-rescaled-gap-rho`.\n3307: \n3308: **Proof:**\n3309: \n3310: **Step 1: From Structural Variance to Raw Distance Variance.** By Theorem {prf:ref}`thm-signal-generation-adaptive` (Hypothesis 1), if $\\text{Var}(x) > R^2$, then:\n3311: \n3312: $$\n3313: \\mathbb{E}[\\text{Var}(d)] > \\kappa_{\\text{meas}} > 0\n3314: $$\n3315: \n3316: This is the raw variance in the pairwise distance measurements before any statistical processing.\n3317: \n3318: **Step 2: From Variance to Gap.** By Lemma {prf:ref}`lem-variance-to-gap-adaptive`, any random variable with variance $\\sigma^2 > 0$ must have a gap to its mean:\n3319: \n3320: $$\n3321: \\max_i |d_i - \\mu[d]| \\ge \\sigma[d] \\ge \\sqrt{\\kappa_{\\text{meas}}}\n3322: $$\n3323: \n3324: Therefore, $\\kappa_{\\text{raw}} := \\sqrt{\\kappa_{\\text{meas}}}$ bounds the raw gap.\n3325: \n3326: **Step 3: Propagation Through ρ-Localized Pipeline.** By Lemma {prf:ref}`lem-raw-to-rescaled-gap-rho`, the raw gap propagates to a rescaled gap:\n3327: \n3328: $$\n3329: \\max_i |d'_i - \\mu[d']| \\ge \\kappa_{\\text{rescaled}}(\\kappa_{\\text{raw}}, \\rho) = g'_{\\min} \\cdot \\frac{\\kappa_{\\text{raw}}}{\\sigma'_{\\rho,\\max}}\n3330: $$\n3331: \n3332: where $g'_{\\min}$ is the minimum derivative of the rescale function and $\\sigma'_{\\rho,\\max} = d_{\\max}$ is the worst-case bound on the localized standard deviation.\n3333: \n3334: **Step 4: From Gap to Logarithmic Mean.** By Lemma {prf:ref}`lem-log-gap-bounds-adaptive`, if the rescaled measurements $d' \\in [0, A]$ have mean $\\mu[d']$ and gap $\\ge \\kappa_{\\text{rescaled}}$, then:\n3335: \n3336: $$\n3337: \\mathbb{E}[\\log d'] \\ge \\log(\\mu[d'] - \\kappa_{\\text{rescaled}}/2)\n3338: $$\n3339: \n3340: Since $\\mu[d'] \\le A$ and the gap is at least $\\kappa_{\\text{rescaled}}$, we have:\n3341: \n3342: $$\n3343: \\mathbb{E}[\\log d'] \\ge \\log g_A\\left( \\frac{\\kappa_{\\text{rescaled}}(\\kappa_{\\text{meas}}, \\rho)}{2} \\right) - \\log(A) =: \\kappa_{d',\\text{mean}}(\\epsilon, \\rho)\n3344: $$\n3345: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 15,
+        "chapter_file": "chapter_15.json",
+        "section_id": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model"
+      }
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-reward-bias-rho",
+      "title": "Axiom-Based Bound on Logarithmic Reward Gap (ρ-Dependent)",
+      "start_line": 3349,
+      "end_line": 3395,
+      "header_lines": [
+        3350
+      ],
+      "content_start": 3352,
+      "content_end": 3394,
+      "content": "3352: :label: prop-reward-bias-rho\n3353: \n3354: Under the foundational axioms (specifically, Axiom EG-5: Active Diversity Signal), the adversarial logarithmic reward bias satisfies:\n3355: \n3356: $$\n3357: |\\mathbb{E}[\\log r'] - \\log r'_{\\text{high}}| \\le \\kappa_{r',\\text{mean,adv}}(\\rho)\n3358: $$\n3359: \n3360: where $\\kappa_{r',\\text{mean,adv}}(\\rho)$ is a ρ-dependent constant that can be bounded through the pipeline analysis.\n3361: \n3362: **Proof:**\n3363: \n3364: **Step 1: Reward Bounded and Active (Axiom EG-5).** By the Active Diversity Signal axiom from `03_cloning.md`, the reward function $r: \\mathcal{X} \\to \\mathbb{R}$ satisfies:\n3365: - Boundedness: $0 \\le r(x) \\le r_{\\max}$ for all $x$\n3366: - Activity: There exists a non-trivial gap in reward values across the domain\n3367: \n3368: **Step 2: ρ-Localized Rescaling of Rewards.** The rescaled rewards are:\n3369: \n3370: $$\n3371: r'_i = g_A(Z_\\rho[f_k, r, x_i])\n3372: $$\n3373: \n3374: where the Z-score uses the ρ-localized moments for the reward function $r$ instead of distance $d$.\n3375: \n3376: **Step 3: Lipschitz Control.** By the Lipschitz property of $g_A$ and the bounded Z-scores:\n3377: \n3378: $$\n3379: |r'_i - r'_j| \\le L_{g_A} |Z_\\rho^{(i)} - Z_\\rho^{(j)}| \\le L_{g_A} \\cdot \\frac{2r_{\\max}}{\\sigma'_{\\rho,\\min}}\n3380: $$\n3381: \n3382: where $\\sigma'_{\\rho,\\min}$ is a lower bound on the localized standard deviation for reward measurements (which exists because rewards have non-trivial variance by Axiom EG-5 and the regularization ensures $\\sigma'_\\rho \\ge \\sigma\\'_{\\min}$).\n3383: \n3384: **Step 4: Logarithmic Gap Bound.** Since rescaled rewards lie in $[0, A]$ and have Lipschitz-controlled variation:\n3385: \n3386: $$\n3387: |\\mathbb{E}[\\log r'] - \\log r'_{\\text{high}}| \\le \\log(A) - \\log(A - L_{g_A} r_{\\max} / \\sigma'_{\\rho,\\min})\n3388: $$\n3389: \n3390: Expanding for small perturbations and using worst-case bounds:\n3391: \n3392: $$\n3393: \\kappa_{r',\\text{mean,adv}}(\\rho) := \\frac{L_{g_A} r_{\\max}}{A \\cdot \\sigma'_{\\rho,\\min}} + O\\left(\\frac{r_{\\max}^2}{\\sigma'^2_{\\rho,\\min}}\\right)\n3394: $$",
+      "metadata": {
+        "label": "prop-reward-bias-rho"
+      },
+      "section": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model",
+      "raw_directive": "3349: #### B.4.3. ρ-Dependent Upper Bound on Adversarial Reward Bias\n3350: \n3351: :::{prf:proposition} Axiom-Based Bound on Logarithmic Reward Gap (ρ-Dependent)\n3352: :label: prop-reward-bias-rho\n3353: \n3354: Under the foundational axioms (specifically, Axiom EG-5: Active Diversity Signal), the adversarial logarithmic reward bias satisfies:\n3355: \n3356: $$\n3357: |\\mathbb{E}[\\log r'] - \\log r'_{\\text{high}}| \\le \\kappa_{r',\\text{mean,adv}}(\\rho)\n3358: $$\n3359: \n3360: where $\\kappa_{r',\\text{mean,adv}}(\\rho)$ is a ρ-dependent constant that can be bounded through the pipeline analysis.\n3361: \n3362: **Proof:**\n3363: \n3364: **Step 1: Reward Bounded and Active (Axiom EG-5).** By the Active Diversity Signal axiom from `03_cloning.md`, the reward function $r: \\mathcal{X} \\to \\mathbb{R}$ satisfies:\n3365: - Boundedness: $0 \\le r(x) \\le r_{\\max}$ for all $x$\n3366: - Activity: There exists a non-trivial gap in reward values across the domain\n3367: \n3368: **Step 2: ρ-Localized Rescaling of Rewards.** The rescaled rewards are:\n3369: \n3370: $$\n3371: r'_i = g_A(Z_\\rho[f_k, r, x_i])\n3372: $$\n3373: \n3374: where the Z-score uses the ρ-localized moments for the reward function $r$ instead of distance $d$.\n3375: \n3376: **Step 3: Lipschitz Control.** By the Lipschitz property of $g_A$ and the bounded Z-scores:\n3377: \n3378: $$\n3379: |r'_i - r'_j| \\le L_{g_A} |Z_\\rho^{(i)} - Z_\\rho^{(j)}| \\le L_{g_A} \\cdot \\frac{2r_{\\max}}{\\sigma'_{\\rho,\\min}}\n3380: $$\n3381: \n3382: where $\\sigma'_{\\rho,\\min}$ is a lower bound on the localized standard deviation for reward measurements (which exists because rewards have non-trivial variance by Axiom EG-5 and the regularization ensures $\\sigma'_\\rho \\ge \\sigma\\'_{\\min}$).\n3383: \n3384: **Step 4: Logarithmic Gap Bound.** Since rescaled rewards lie in $[0, A]$ and have Lipschitz-controlled variation:\n3385: \n3386: $$\n3387: |\\mathbb{E}[\\log r'] - \\log r'_{\\text{high}}| \\le \\log(A) - \\log(A - L_{g_A} r_{\\max} / \\sigma'_{\\rho,\\min})\n3388: $$\n3389: \n3390: Expanding for small perturbations and using worst-case bounds:\n3391: \n3392: $$\n3393: \\kappa_{r',\\text{mean,adv}}(\\rho) := \\frac{L_{g_A} r_{\\max}}{A \\cdot \\sigma'_{\\rho,\\min}} + O\\left(\\frac{r_{\\max}^2}{\\sigma'^2_{\\rho,\\min}}\\right)\n3394: $$\n3395: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 15,
+        "chapter_file": "chapter_15.json",
+        "section_id": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model"
+      }
+    }
+  ]
+}

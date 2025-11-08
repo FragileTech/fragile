@@ -1,0 +1,29 @@
+{
+  "chapter_index": 108,
+  "section_id": "## 3.1 Statement of Main Result",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-unconditional-lsi",
+      "title": "Unconditional LSI for Euclidean Gas (TARGET)",
+      "start_line": 7403,
+      "end_line": 7437,
+      "header_lines": [
+        7404
+      ],
+      "content_start": 7406,
+      "content_end": 7436,
+      "content": "7406: :label: thm-unconditional-lsi\n7407: \n7408: Under the foundational axioms:\n7409: 1. Confining potential: $U(x) \\to \\infty$ as $|x| \\to \\infty$ with $\\langle \\nabla U, x \\rangle \\geq \\alpha_U |x|^2$\n7410: 2. Positive friction: $\\gamma > 0$\n7411: 3. Positive kinetic noise: $\\sigma_v^2 > 0$\n7412: 4. Bounded fitness: $|g(x, v, S)| \\leq G_{\\max}$\n7413: 5. Sufficient cloning noise: $\\delta^2 \\geq \\delta_{\\min}^2$\n7414: \n7415: **WITHOUT assuming**:\n7416: - \u274c Convexity of $U(x)$\n7417: - \u274c Log-concavity of $\\pi_{\\text{QSD}}$\n7418: - \u274c Any smoothness of fitness landscape\n7419: \n7420: The Euclidean Gas satisfies a Logarithmic Sobolev Inequality:\n7421: \n7422: $$\n7423: \\text{Ent}_{\\pi_{\\text{QSD}}}(f^2) \\leq C_{\\text{LSI}} \\cdot \\mathbb{E}_{\\pi_{\\text{QSD}}}[|\\nabla f|^2]\n7424: $$\n7425: \n7426: where:\n7427: \n7428: $$\n7429: C_{\\text{LSI}} = \\frac{C_0}{2\\lambda_{\\text{hypo}}} \\cdot f(\\tau, \\lambda_{\\text{clone}}, G_{\\max})\n7430: $$\n7431: \n7432: with:\n7433: - $\\lambda_{\\text{hypo}} = c \\cdot \\min(\\gamma, \\alpha_U/\\sigma_v^2)$ is the hypocoercive rate\n7434: - $\\lambda_{\\text{clone}}$ is the cloning rate\n7435: - $f(\\cdot)$ is a computable function (depends on proof method)\n7436: - $C_0 = O(1)$ is a universal constant",
+      "metadata": {
+        "label": "thm-unconditional-lsi"
+      },
+      "section": "## 3.1 Statement of Main Result",
+      "raw_directive": "7403: **This is what we aim to prove:**\n7404: \n7405: :::{prf:theorem} Unconditional LSI for Euclidean Gas (TARGET)\n7406: :label: thm-unconditional-lsi\n7407: \n7408: Under the foundational axioms:\n7409: 1. Confining potential: $U(x) \\to \\infty$ as $|x| \\to \\infty$ with $\\langle \\nabla U, x \\rangle \\geq \\alpha_U |x|^2$\n7410: 2. Positive friction: $\\gamma > 0$\n7411: 3. Positive kinetic noise: $\\sigma_v^2 > 0$\n7412: 4. Bounded fitness: $|g(x, v, S)| \\leq G_{\\max}$\n7413: 5. Sufficient cloning noise: $\\delta^2 \\geq \\delta_{\\min}^2$\n7414: \n7415: **WITHOUT assuming**:\n7416: - \u274c Convexity of $U(x)$\n7417: - \u274c Log-concavity of $\\pi_{\\text{QSD}}$\n7418: - \u274c Any smoothness of fitness landscape\n7419: \n7420: The Euclidean Gas satisfies a Logarithmic Sobolev Inequality:\n7421: \n7422: $$\n7423: \\text{Ent}_{\\pi_{\\text{QSD}}}(f^2) \\leq C_{\\text{LSI}} \\cdot \\mathbb{E}_{\\pi_{\\text{QSD}}}[|\\nabla f|^2]\n7424: $$\n7425: \n7426: where:\n7427: \n7428: $$\n7429: C_{\\text{LSI}} = \\frac{C_0}{2\\lambda_{\\text{hypo}}} \\cdot f(\\tau, \\lambda_{\\text{clone}}, G_{\\max})\n7430: $$\n7431: \n7432: with:\n7433: - $\\lambda_{\\text{hypo}} = c \\cdot \\min(\\gamma, \\alpha_U/\\sigma_v^2)$ is the hypocoercive rate\n7434: - $\\lambda_{\\text{clone}}$ is the cloning rate\n7435: - $f(\\cdot)$ is a computable function (depends on proof method)\n7436: - $C_0 = O(1)$ is a universal constant\n7437: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

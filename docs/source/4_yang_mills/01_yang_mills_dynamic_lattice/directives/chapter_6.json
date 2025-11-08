@@ -1,0 +1,83 @@
+{
+  "chapter_index": 6,
+  "section_id": "## Proof of Theorem 4: Osterwalder-Schrader Axioms",
+  "directive_count": 4,
+  "hints": [
+    {
+      "directive_type": "proof",
+      "label": "lem-euclidean-symmetry-continuum",
+      "title": "Proof Sketch of {prf:ref}`thm-os-axioms`",
+      "start_line": 1091,
+      "end_line": 1106,
+      "header_lines": [
+        1096
+      ],
+      "content_start": 1093,
+      "content_end": 1105,
+      "content": "1093: :::{prf:proof} Proof Sketch of {prf:ref}`thm-os-axioms`\n1094: \n1095: **OS1: Euclidean Invariance**\n1096: \n1097: :::{prf:lemma} Euclidean Symmetry in Continuum Limit\n1098: :label: lem-euclidean-symmetry-continuum\n1099: \n1100: The continuum Schwinger functions constructed in Theorem 3 are invariant under the Euclidean group $E(4)$:\n1101: \n1102: $$\n1103: S_n(g \\cdot C_1, \\ldots, g \\cdot C_n) = S_n(C_1, \\ldots, C_n)\n1104: \n1105: $$",
+      "metadata": {
+        "label": "lem-euclidean-symmetry-continuum"
+      },
+      "section": "## Proof of Theorem 4: Osterwalder-Schrader Axioms",
+      "raw_directive": "1091: 3. Mass gap from Theorem 3\n1092: \n1093: :::{prf:proof} Proof Sketch of {prf:ref}`thm-os-axioms`\n1094: \n1095: **OS1: Euclidean Invariance**\n1096: \n1097: :::{prf:lemma} Euclidean Symmetry in Continuum Limit\n1098: :label: lem-euclidean-symmetry-continuum\n1099: \n1100: The continuum Schwinger functions constructed in Theorem 3 are invariant under the Euclidean group $E(4)$:\n1101: \n1102: $$\n1103: S_n(g \\cdot C_1, \\ldots, g \\cdot C_n) = S_n(C_1, \\ldots, C_n)\n1104: \n1105: $$\n1106: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-reflection-positivity-symmetrized",
+      "title": "Reflection Positivity via Symmetrized Configurations",
+      "start_line": 1133,
+      "end_line": 1139,
+      "header_lines": [
+        1134
+      ],
+      "content_start": 1136,
+      "content_end": 1138,
+      "content": "1136: :label: lem-reflection-positivity-symmetrized\n1137: \n1138: **Sketch: expansion into full proof in progress (estimated 20-40 pages)**",
+      "metadata": {
+        "label": "lem-reflection-positivity-symmetrized"
+      },
+      "section": "## Proof of Theorem 4: Osterwalder-Schrader Axioms",
+      "raw_directive": "1133: This is the most technically challenging axiom. The key steps are:\n1134: \n1135: :::{prf:lemma} Reflection Positivity via Symmetrized Configurations\n1136: :label: lem-reflection-positivity-symmetrized\n1137: \n1138: **Sketch: expansion into full proof in progress (estimated 20-40 pages)**\n1139: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-clustering",
+      "title": "Clustering from Mass Gap",
+      "start_line": 1204,
+      "end_line": 1215,
+      "header_lines": [
+        1205
+      ],
+      "content_start": 1207,
+      "content_end": 1214,
+      "content": "1207: :label: lem-clustering\n1208: \n1209: The mass gap $\\Delta > 0$ established in {prf:ref}`thm-continuum-limit` implies exponential decay of correlation functions:\n1210: \n1211: $$\n1212: |\\langle W_{C_1} W_{C_2} \\rangle - \\langle W_{C_1}\\rangle \\langle W_{C_2}\\rangle| \\leq C e^{-\\Delta \\cdot d(C_1, C_2)}\n1213: \n1214: $$",
+      "metadata": {
+        "label": "lem-clustering"
+      },
+      "section": "## Proof of Theorem 4: Osterwalder-Schrader Axioms",
+      "raw_directive": "1204: **OS3: Cluster Property (Exponential Decay)**\n1205: \n1206: :::{prf:lemma} Clustering from Mass Gap\n1207: :label: lem-clustering\n1208: \n1209: The mass gap $\\Delta > 0$ established in {prf:ref}`thm-continuum-limit` implies exponential decay of correlation functions:\n1210: \n1211: $$\n1212: |\\langle W_{C_1} W_{C_2} \\rangle - \\langle W_{C_1}\\rangle \\langle W_{C_2}\\rangle| \\leq C e^{-\\Delta \\cdot d(C_1, C_2)}\n1213: \n1214: $$\n1215: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-os-reconstruction",
+      "title": "OS Reconstruction",
+      "start_line": 1251,
+      "end_line": 1261,
+      "header_lines": [
+        1252
+      ],
+      "content_start": 1254,
+      "content_end": 1260,
+      "content": "1254: :label: thm-os-reconstruction\n1255: \n1256: There exists a unique relativistic quantum field theory in Minkowski spacetime, defined by:\n1257: - A Hilbert space $\\mathcal{H}$\n1258: - A vacuum state $|0\\rangle \\in \\mathcal{H}$\n1259: - A strongly continuous unitary representation $U(g)$ of the Poincare group\n1260: - Gauge field operators $A_{\\mu}(x)$ (or Wilson loop operators) satisfying the Wightman axioms",
+      "metadata": {
+        "label": "thm-os-reconstruction"
+      },
+      "section": "## Proof of Theorem 4: Osterwalder-Schrader Axioms",
+      "raw_directive": "1251: Once all four axioms are verified, the Osterwalder-Schrader reconstruction theorem (Osterwalder & Schrader, 1973, 1975) guarantees:\n1252: \n1253: :::{prf:theorem} OS Reconstruction\n1254: :label: thm-os-reconstruction\n1255: \n1256: There exists a unique relativistic quantum field theory in Minkowski spacetime, defined by:\n1257: - A Hilbert space $\\mathcal{H}$\n1258: - A vacuum state $|0\\rangle \\in \\mathcal{H}$\n1259: - A strongly continuous unitary representation $U(g)$ of the Poincare group\n1260: - Gauge field operators $A_{\\mu}(x)$ (or Wilson loop operators) satisfying the Wightman axioms\n1261: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "chapter_index": 1,
+  "section_id": "## 2. Calculation of $\\partial_t T^{\\mu\\nu}$ from McKean-Vlasov",
+  "directive_count": 0,
+  "hints": [],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

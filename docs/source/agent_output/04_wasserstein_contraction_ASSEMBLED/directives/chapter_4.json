@@ -1,0 +1,61 @@
+{
+  "chapter_index": 4,
+  "section_id": "## 3. Case A: Consistent Fitness Ordering",
+  "directive_count": 3,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-case-a",
+      "title": "Case A - Consistent Fitness Ordering",
+      "start_line": 781,
+      "end_line": 791,
+      "header_lines": [
+        782
+      ],
+      "content_start": 784,
+      "content_end": 790,
+      "content": "784: :label: def-case-a\n785: \n786: For a matched pair $(i, j)$ where $j = \\pi(i)$ from the synchronous coupling {prf:ref}`def-synchronous-cloning-coupling`, we say the pair exhibits **Case A (Consistent Fitness Ordering)** if both swarms have the same lower-fitness walker:\n787: \n788: $$\n789: V_{\\text{fit}, 1, i} \\leq V_{\\text{fit}, 1, j} \\quad \\text{AND} \\quad V_{\\text{fit}, 2, i} \\leq V_{\\text{fit}, 2, j}\n790: $$",
+      "metadata": {
+        "label": "def-case-a"
+      },
+      "section": "## 3. Case A: Consistent Fitness Ordering",
+      "raw_directive": "781: ### 3.1. Setup and Case Definition\n782: \n783: :::{prf:definition} Case A - Consistent Fitness Ordering\n784: :label: def-case-a\n785: \n786: For a matched pair $(i, j)$ where $j = \\pi(i)$ from the synchronous coupling {prf:ref}`def-synchronous-cloning-coupling`, we say the pair exhibits **Case A (Consistent Fitness Ordering)** if both swarms have the same lower-fitness walker:\n787: \n788: $$\n789: V_{\\text{fit}, 1, i} \\leq V_{\\text{fit}, 1, j} \\quad \\text{AND} \\quad V_{\\text{fit}, 2, i} \\leq V_{\\text{fit}, 2, j}\n790: $$\n791: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-case-a-bounded-expansion",
+      "title": "Case A Bounded Expansion",
+      "start_line": 938,
+      "end_line": 950,
+      "header_lines": [
+        939
+      ],
+      "content_start": 941,
+      "content_end": 949,
+      "content": "941: :label: lem-case-a-bounded-expansion\n942: \n943: For a pair $(i,j)$ in Case A (consistent fitness ordering):\n944: \n945: $$\n946: \\mathbb{E}[\\|x'_{1,i} - x'_{2,i}\\|^2 + \\|x'_{1,j} - x'_{2,j}\\|^2 \\mid \\text{Case A}] \\leq (1 + \\epsilon_A) (D_{ii} + D_{jj}) + C_A\n947: $$\n948: \n949: where $\\epsilon_A = O(1/L)$ is small for separated swarms, and $C_A = 2d\\delta^2$.",
+      "metadata": {
+        "label": "lem-case-a-bounded-expansion"
+      },
+      "section": "## 3. Case A: Consistent Fitness Ordering",
+      "raw_directive": "938: This doesn't give contraction. The issue is that Case A alone may not contract - it's the **combination** with Case B that provides overall contraction.\n939: \n940: :::{prf:lemma} Case A Bounded Expansion\n941: :label: lem-case-a-bounded-expansion\n942: \n943: For a pair $(i,j)$ in Case A (consistent fitness ordering):\n944: \n945: $$\n946: \\mathbb{E}[\\|x'_{1,i} - x'_{2,i}\\|^2 + \\|x'_{1,j} - x'_{2,j}\\|^2 \\mid \\text{Case A}] \\leq (1 + \\epsilon_A) (D_{ii} + D_{jj}) + C_A\n947: $$\n948: \n949: where $\\epsilon_A = O(1/L)$ is small for separated swarms, and $C_A = 2d\\delta^2$.\n950: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-174",
+      "title": null,
+      "start_line": 952,
+      "end_line": 978,
+      "header_lines": [],
+      "content_start": 953,
+      "content_end": 977,
+      "content": "953: \n954: :::{prf:proof}\n955: Total expected distance:\n956: \n957: $$\n958: \\mathbb{E}[D'_{ii}] + D'_{jj} = \\mathbb{E}[D'_{ii}] + D_{jj}\n959: $$\n960: \n961: Using the bound from Section 3.3 and $D_{ji} \\leq (1 + \\epsilon)(D_{ii} + D_{jj})$ for small $\\epsilon$:\n962: \n963: $$\n964: \\mathbb{E}[D'_{ii}] \\leq (1 - p_{\\min}) D_{ii} + p_{\\min} D_{jj} + \\Delta p [(1 + \\epsilon)(D_{ii} + D_{jj}) + d\\delta^2]\n965: $$\n966: \n967: Adding $D_{jj}$:\n968: \n969: $$\n970: \\mathbb{E}[D'_{ii} + D'_{jj}] \\leq [(1 - p_{\\min}) + \\Delta p (1 + \\epsilon)] D_{ii} + [p_{\\min} + 1 + \\Delta p(1 + \\epsilon)] D_{jj} + \\Delta p d\\delta^2\n971: $$\n972: \n973: Since $p_{\\min} + \\Delta p = p_{\\max}$ and $\\Delta p \\leq 1$:\n974: \n975: $$\n976: \\leq [1 + \\epsilon] D_{ii} + [1 + p_{\\max} + \\epsilon] D_{jj} + d\\delta^2 \\leq (1 + 2\\epsilon) (D_{ii} + D_{jj}) + 2d\\delta^2\n977: $$",
+      "metadata": {},
+      "section": "## 3. Case A: Consistent Fitness Ordering",
+      "raw_directive": "952: :::\n953: \n954: :::{prf:proof}\n955: Total expected distance:\n956: \n957: $$\n958: \\mathbb{E}[D'_{ii}] + D'_{jj} = \\mathbb{E}[D'_{ii}] + D_{jj}\n959: $$\n960: \n961: Using the bound from Section 3.3 and $D_{ji} \\leq (1 + \\epsilon)(D_{ii} + D_{jj})$ for small $\\epsilon$:\n962: \n963: $$\n964: \\mathbb{E}[D'_{ii}] \\leq (1 - p_{\\min}) D_{ii} + p_{\\min} D_{jj} + \\Delta p [(1 + \\epsilon)(D_{ii} + D_{jj}) + d\\delta^2]\n965: $$\n966: \n967: Adding $D_{jj}$:\n968: \n969: $$\n970: \\mathbb{E}[D'_{ii} + D'_{jj}] \\leq [(1 - p_{\\min}) + \\Delta p (1 + \\epsilon)] D_{ii} + [p_{\\min} + 1 + \\Delta p(1 + \\epsilon)] D_{jj} + \\Delta p d\\delta^2\n971: $$\n972: \n973: Since $p_{\\min} + \\Delta p = p_{\\max}$ and $\\Delta p \\leq 1$:\n974: \n975: $$\n976: \\leq [1 + \\epsilon] D_{ii} + [1 + p_{\\max} + \\epsilon] D_{jj} + d\\delta^2 \\leq (1 + 2\\epsilon) (D_{ii} + D_{jj}) + 2d\\delta^2\n977: $$\n978: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

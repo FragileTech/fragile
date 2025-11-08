@@ -1,0 +1,29 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 2. Background and Motivation",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-main-informal",
+      "title": "Main Theorem (Informal)",
+      "start_line": 259,
+      "end_line": 274,
+      "header_lines": [
+        260
+      ],
+      "content_start": 262,
+      "content_end": 273,
+      "content": "262: :label: thm-main-informal\n263: \n264: The Geometric Gas with uniformly elliptic anisotropic diffusion is geometrically ergodic on its state space $\\mathcal{X} \\times \\mathbb{R}^d$. There exists a unique quasi-stationary distribution (QSD) $\\pi_{\\text{QSD}}$, and the Markov chain converges exponentially fast:\n265: \n266: $$\n267: \\left\\| \\mathcal{L}(S_t \\mid S_0) - \\pi_{\\text{QSD}} \\right\\|_{\\text{TV}} \\le C_\\pi (1 + V_{\\text{total}}(S_0)) e^{-\\kappa_{\\text{total}} t}\n268: $$\n269: \n270: where:\n271: - $\\kappa_{\\text{total}} = O(\\min\\{\\gamma \\tau, \\kappa_x^{\\text{clone}}, c_{\\min}\\underline{\\lambda} - C_1 L_\\Sigma - C_2|\\nabla\\Sigma_{\\text{reg}}|_\\infty\\}) > 0$\n272: - All constants are **independent of $N$**\n273: - $c_{\\min}$ is the ellipticity lower bound from regularization",
+      "metadata": {
+        "label": "thm-main-informal"
+      },
+      "section": "## 2. Background and Motivation",
+      "raw_directive": "259: ### 2.5. Main Result (Informal)\n260: \n261: :::{prf:theorem} Main Theorem (Informal)\n262: :label: thm-main-informal\n263: \n264: The Geometric Gas with uniformly elliptic anisotropic diffusion is geometrically ergodic on its state space $\\mathcal{X} \\times \\mathbb{R}^d$. There exists a unique quasi-stationary distribution (QSD) $\\pi_{\\text{QSD}}$, and the Markov chain converges exponentially fast:\n265: \n266: $$\n267: \\left\\| \\mathcal{L}(S_t \\mid S_0) - \\pi_{\\text{QSD}} \\right\\|_{\\text{TV}} \\le C_\\pi (1 + V_{\\text{total}}(S_0)) e^{-\\kappa_{\\text{total}} t}\n268: $$\n269: \n270: where:\n271: - $\\kappa_{\\text{total}} = O(\\min\\{\\gamma \\tau, \\kappa_x^{\\text{clone}}, c_{\\min}\\underline{\\lambda} - C_1 L_\\Sigma - C_2|\\nabla\\Sigma_{\\text{reg}}|_\\infty\\}) > 0$\n272: - All constants are **independent of $N$**\n273: - $c_{\\min}$ is the ellipticity lower bound from regularization\n274: - $L_\\Sigma$ is the Lipschitz constant of $\\Sigma_{\\text{reg}}$"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

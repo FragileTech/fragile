@@ -1,0 +1,43 @@
+{
+  "chapter_index": 10,
+  "section_id": "## A.6 Connecting to Spatial Coordinates",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "lemma",
+      "label": "lem-spatial-score-log-derivative-appendix",
+      "title": "Spatial Score as Logarithmic Derivative",
+      "start_line": 2325,
+      "end_line": 2335,
+      "header_lines": [
+        2326
+      ],
+      "content_start": 2328,
+      "content_end": 2334,
+      "content": "2328: :label: lem-spatial-score-log-derivative-appendix\n2329: \n2330: For the emergent metric $g_{ab}(x) = H_{ab}(x) + \\epsilon_\\Sigma \\delta_{ab}$ where $H_{ab} = \\partial^2 V_{\\text{fit}} / \\partial x^a \\partial x^b$:\n2331: \n2332: $$\n2333: g^{ab} \\frac{\\partial g_{ab}}{\\partial x^c} = \\frac{\\partial}{\\partial x^c} \\log \\sqrt{\\det g(x)}\n2334: $$",
+      "metadata": {
+        "label": "lem-spatial-score-log-derivative-appendix"
+      },
+      "section": "## A.6 Connecting to Spatial Coordinates",
+      "raw_directive": "2325: We now prove the connection rigorously using the Jacobi formula for metric determinants.\n2326: \n2327: :::{prf:lemma} Spatial Score as Logarithmic Derivative\n2328: :label: lem-spatial-score-log-derivative-appendix\n2329: \n2330: For the emergent metric $g_{ab}(x) = H_{ab}(x) + \\epsilon_\\Sigma \\delta_{ab}$ where $H_{ab} = \\partial^2 V_{\\text{fit}} / \\partial x^a \\partial x^b$:\n2331: \n2332: $$\n2333: g^{ab} \\frac{\\partial g_{ab}}{\\partial x^c} = \\frac{\\partial}{\\partial x^c} \\log \\sqrt{\\det g(x)}\n2334: $$\n2335: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-50",
+      "title": null,
+      "start_line": 2337,
+      "end_line": 2346,
+      "header_lines": [],
+      "content_start": 2339,
+      "content_end": 2345,
+      "content": "2339: :::{prf:proof}\n2340: \n2341: The Jacobi formula states:\n2342: \n2343: $$\n2344: \\frac{\\partial \\log \\det g}{\\partial x^c} = \\text{Tr}\\left(g^{-1} \\frac{\\partial g}{\\partial x^c}\\right) = g^{ab} \\frac{\\partial g_{ab}}{\\partial x^c}\n2345: $$",
+      "metadata": {},
+      "section": "## A.6 Connecting to Spatial Coordinates",
+      "raw_directive": "2337: :::\n2338: \n2339: :::{prf:proof}\n2340: \n2341: The Jacobi formula states:\n2342: \n2343: $$\n2344: \\frac{\\partial \\log \\det g}{\\partial x^c} = \\text{Tr}\\left(g^{-1} \\frac{\\partial g}{\\partial x^c}\\right) = g^{ab} \\frac{\\partial g_{ab}}{\\partial x^c}\n2345: $$\n2346: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

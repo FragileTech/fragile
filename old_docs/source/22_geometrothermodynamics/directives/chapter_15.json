@@ -1,0 +1,47 @@
+{
+  "chapter_index": 15,
+  "section_id": "## 5.3 Conformal Equivalence",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-weinhold-ruppeiner-conformal",
+      "title": "Weinhold-Ruppeiner Conformal Duality",
+      "start_line": 2592,
+      "end_line": 2610,
+      "header_lines": [
+        2593
+      ],
+      "content_start": 2595,
+      "content_end": 2609,
+      "content": "2595: :label: thm-weinhold-ruppeiner-conformal\n2596: \n2597: The Weinhold and Ruppeiner metrics are **conformally equivalent** with temperature as the conformal factor:\n2598: \n2599: $$\n2600: g_W^{UU} = T \\cdot g_R^{UU}\n2601: $$\n2602: \n2603: More generally, for the full metric tensor:\n2604: \n2605: $$\n2606: g_W = T \\cdot g_R\n2607: $$\n2608: \n2609: where the relationship holds component-wise in the appropriate coordinate systems after proper Legendre transformation.",
+      "metadata": {
+        "label": "thm-weinhold-ruppeiner-conformal"
+      },
+      "section": "## 5.3 Conformal Equivalence",
+      "raw_directive": "2592: The central result connecting the two metrics:\n2593: \n2594: :::{prf:theorem} Weinhold-Ruppeiner Conformal Duality\n2595: :label: thm-weinhold-ruppeiner-conformal\n2596: \n2597: The Weinhold and Ruppeiner metrics are **conformally equivalent** with temperature as the conformal factor:\n2598: \n2599: $$\n2600: g_W^{UU} = T \\cdot g_R^{UU}\n2601: $$\n2602: \n2603: More generally, for the full metric tensor:\n2604: \n2605: $$\n2606: g_W = T \\cdot g_R\n2607: $$\n2608: \n2609: where the relationship holds component-wise in the appropriate coordinate systems after proper Legendre transformation.\n2610: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-94",
+      "title": "Geometric Interpretation",
+      "start_line": 2683,
+      "end_line": 2704,
+      "header_lines": [
+        2684
+      ],
+      "content_start": 2686,
+      "content_end": 2703,
+      "content": "2686: :class: tip\n2687: \n2688: **Conformal geometry**: Two metrics $g$ and $\\tilde{g}$ are conformally related if $\\tilde{g} = e^{2\\sigma} g$ for some scalar field $\\sigma$. Here:\n2689: \n2690: $$\n2691: g_W = e^{\\sigma} g_R \\quad \\text{with } e^{\\sigma} = T\n2692: $$\n2693: \n2694: **Physical meaning**:\n2695: - $g_R$ measures thermodynamic distance in \"natural units\" (entropy)\n2696: - $g_W$ measures the same distance in \"energy units\" (internal energy)\n2697: - Temperature converts between the two: high $T$ \u2192 large energy fluctuations for fixed entropy fluctuations\n2698: \n2699: **Curvature**: Conformal transformations preserve angles but not lengths. Importantly, in 2D, curvature scales as:\n2700: \n2701: $$\n2702: R_W = e^{-\\sigma} R_R = \\frac{1}{T} R_R\n2703: $$",
+      "metadata": {
+        "class": "tip"
+      },
+      "section": "## 5.3 Conformal Equivalence",
+      "raw_directive": "2683: :::\n2684: \n2685: :::{prf:remark} Geometric Interpretation\n2686: :class: tip\n2687: \n2688: **Conformal geometry**: Two metrics $g$ and $\\tilde{g}$ are conformally related if $\\tilde{g} = e^{2\\sigma} g$ for some scalar field $\\sigma$. Here:\n2689: \n2690: $$\n2691: g_W = e^{\\sigma} g_R \\quad \\text{with } e^{\\sigma} = T\n2692: $$\n2693: \n2694: **Physical meaning**:\n2695: - $g_R$ measures thermodynamic distance in \"natural units\" (entropy)\n2696: - $g_W$ measures the same distance in \"energy units\" (internal energy)\n2697: - Temperature converts between the two: high $T$ \u2192 large energy fluctuations for fixed entropy fluctuations\n2698: \n2699: **Curvature**: Conformal transformations preserve angles but not lengths. Importantly, in 2D, curvature scales as:\n2700: \n2701: $$\n2702: R_W = e^{-\\sigma} R_R = \\frac{1}{T} R_R\n2703: $$\n2704: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

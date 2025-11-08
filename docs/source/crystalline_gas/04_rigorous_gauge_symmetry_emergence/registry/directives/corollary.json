@@ -1,0 +1,34 @@
+{
+  "document_id": "04_rigorous_gauge_symmetry_emergence",
+  "stage": "directives",
+  "directive_type": "corollary",
+  "generated_at": "2025-11-08T17:07:43.308505+00:00",
+  "count": 1,
+  "items": [
+    {
+      "directive_type": "corollary",
+      "label": "cor-cg-pure-yang-mills-vacuum",
+      "title": "Pure Yang-Mills Vacuum at Equilibrium",
+      "start_line": 791,
+      "end_line": 809,
+      "header_lines": [
+        792
+      ],
+      "content_start": 794,
+      "content_end": 808,
+      "content": "794: :label: cor-cg-pure-yang-mills-vacuum\n795: \n796: The quasi-stationary distribution $\\pi_{\\text{QSD}}$ of the Crystalline Gas corresponds to a **pure Yang-Mills vacuum** with no matter coupling. That is, the gauge field dynamics satisfy:\n797: \n798: $$\n799: D_{\\mu} F^{\\mu\\nu}_{\\text{color}} = 0 \\quad \\text{(SU(3) gluodynamics)}\n800: $$\n801: \n802: $$\n803: D_{\\mu} W^{\\mu\\nu} = 0 \\quad \\text{(SU(2) weak gauge dynamics)}\n804: $$\n805: \n806: $$\n807: \\partial_{\\mu} F^{\\mu\\nu}_{\\text{hyper}} = 0 \\quad \\text{(U(1) Maxwell dynamics)}\n808: $$",
+      "metadata": {
+        "label": "cor-cg-pure-yang-mills-vacuum"
+      },
+      "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "raw_directive": "791: :::\n792: \n793: :::{prf:corollary} Pure Yang-Mills Vacuum at Equilibrium\n794: :label: cor-cg-pure-yang-mills-vacuum\n795: \n796: The quasi-stationary distribution $\\pi_{\\text{QSD}}$ of the Crystalline Gas corresponds to a **pure Yang-Mills vacuum** with no matter coupling. That is, the gauge field dynamics satisfy:\n797: \n798: $$\n799: D_{\\mu} F^{\\mu\\nu}_{\\text{color}} = 0 \\quad \\text{(SU(3) gluodynamics)}\n800: $$\n801: \n802: $$\n803: D_{\\mu} W^{\\mu\\nu} = 0 \\quad \\text{(SU(2) weak gauge dynamics)}\n804: $$\n805: \n806: $$\n807: \\partial_{\\mu} F^{\\mu\\nu}_{\\text{hyper}} = 0 \\quad \\text{(U(1) Maxwell dynamics)}\n808: $$\n809: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "04_rigorous_gauge_symmetry_emergence",
+        "chapter_index": 0,
+        "chapter_file": "chapter_0.json",
+        "section_id": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics"
+      }
+    }
+  ]
+}

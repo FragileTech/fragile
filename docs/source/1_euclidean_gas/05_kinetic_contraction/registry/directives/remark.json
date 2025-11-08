@@ -1,0 +1,134 @@
+{
+  "document_id": "05_kinetic_contraction",
+  "stage": "directives",
+  "directive_type": "remark",
+  "generated_at": "2025-11-08T17:07:43.199112+00:00",
+  "count": 5,
+  "items": [
+    {
+      "directive_type": "remark",
+      "label": "rem-stratonovich-ito-equivalence",
+      "title": "Relationship to Itô Formulation",
+      "start_line": 212,
+      "end_line": 225,
+      "header_lines": [
+        213
+      ],
+      "content_start": 215,
+      "content_end": 224,
+      "content": "215: :label: rem-stratonovich-ito-equivalence\n216: \n217: The equivalent Itô SDE includes a correction term:\n218: \n219: $$\n220: dv_t = \\left[F(x_t) - \\gamma(v_t - u(x_t)) + \\underbrace{\\frac{1}{2}\\sum_{j=1}^d \\Sigma_j(x_t,v_t) \\cdot \\nabla_v \\Sigma_j(x_t,v_t)}_{\\text{Stratonovich correction}}\\right] dt + \\Sigma(x_t,v_t) \\, dW_t\n221: \n222: $$\n223: \n224: where $\\Sigma_j$ is the $j$-th column of $\\Sigma$.",
+      "metadata": {
+        "label": "rem-stratonovich-ito-equivalence"
+      },
+      "section": "## 3. The Kinetic Operator with Stratonovich Formulation",
+      "raw_directive": "212: :::\n213: \n214: :::{prf:remark} Relationship to Itô Formulation\n215: :label: rem-stratonovich-ito-equivalence\n216: \n217: The equivalent Itô SDE includes a correction term:\n218: \n219: $$\n220: dv_t = \\left[F(x_t) - \\gamma(v_t - u(x_t)) + \\underbrace{\\frac{1}{2}\\sum_{j=1}^d \\Sigma_j(x_t,v_t) \\cdot \\nabla_v \\Sigma_j(x_t,v_t)}_{\\text{Stratonovich correction}}\\right] dt + \\Sigma(x_t,v_t) \\, dW_t\n221: \n222: $$\n223: \n224: where $\\Sigma_j$ is the $j$-th column of $\\Sigma$.\n225: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "05_kinetic_contraction",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 3. The Kinetic Operator with Stratonovich Formulation"
+      }
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-uniform-ellipticity-importance",
+      "title": "Why Uniform Ellipticity Matters",
+      "start_line": 370,
+      "end_line": 380,
+      "header_lines": [
+        371
+      ],
+      "content_start": 373,
+      "content_end": 379,
+      "content": "373: :label: rem-uniform-ellipticity-importance\n374: \n375: The uniform ellipticity condition $\\lambda_{\\min} \\geq \\sigma_{\\min}^2 > 0$ is **critical** for:\n376: \n377: 1. **Ergodicity:** Ensures all velocity directions are explored\n378: 2. **Hypocoercivity:** Allows diffusion in velocity to induce contraction in position\n379: 3. **Coupling arguments:** Synchronous coupling between two swarms remains correlated",
+      "metadata": {
+        "label": "rem-uniform-ellipticity-importance"
+      },
+      "section": "## 3. The Kinetic Operator with Stratonovich Formulation",
+      "raw_directive": "370: :::\n371: \n372: :::{prf:remark} Why Uniform Ellipticity Matters\n373: :label: rem-uniform-ellipticity-importance\n374: \n375: The uniform ellipticity condition $\\lambda_{\\min} \\geq \\sigma_{\\min}^2 > 0$ is **critical** for:\n376: \n377: 1. **Ergodicity:** Ensures all velocity directions are explored\n378: 2. **Hypocoercivity:** Allows diffusion in velocity to induce contraction in position\n379: 3. **Coupling arguments:** Synchronous coupling between two swarms remains correlated\n380: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "05_kinetic_contraction",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 3. The Kinetic Operator with Stratonovich Formulation"
+      }
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-formal-invariant-measure",
+      "title": "Formal Invariant Measure (Without Boundary)",
+      "start_line": 463,
+      "end_line": 476,
+      "header_lines": [
+        464
+      ],
+      "content_start": 466,
+      "content_end": 475,
+      "content": "466: :label: rem-formal-invariant-measure\n467: \n468: On the **unbounded domain** $\\mathbb{R}^d \\times \\mathbb{R}^d$ without the boundary condition, the Fokker-Planck equation admits the formal invariant density:\n469: \n470: $$\n471: \\rho_{\\infty}(x,v) \\propto e^{-U(x) - \\frac{1}{2\\sigma_v^2/\\gamma}\\|v\\|^2}\n472: \n473: $$\n474: \n475: This is the **canonical Gibbs distribution** for position and velocity.",
+      "metadata": {
+        "label": "rem-formal-invariant-measure"
+      },
+      "section": "## 3. The Kinetic Operator with Stratonovich Formulation",
+      "raw_directive": "463: :::\n464: \n465: :::{prf:remark} Formal Invariant Measure (Without Boundary)\n466: :label: rem-formal-invariant-measure\n467: \n468: On the **unbounded domain** $\\mathbb{R}^d \\times \\mathbb{R}^d$ without the boundary condition, the Fokker-Planck equation admits the formal invariant density:\n469: \n470: $$\n471: \\rho_{\\infty}(x,v) \\propto e^{-U(x) - \\frac{1}{2\\sigma_v^2/\\gamma}\\|v\\|^2}\n472: \n473: $$\n474: \n475: This is the **canonical Gibbs distribution** for position and velocity.\n476: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "05_kinetic_contraction",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 3. The Kinetic Operator with Stratonovich Formulation"
+      }
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-28",
+      "title": "No Convexity Required",
+      "start_line": 1339,
+      "end_line": 1356,
+      "header_lines": [
+        1340
+      ],
+      "content_start": 1342,
+      "content_end": 1355,
+      "content": "1342: :class: important\n1343: \n1344: **Critical clarification:** The hypocoercive contraction proven in this chapter uses **only**:\n1345: 1. **Coercivity** of $U$ (Axiom 3.3.1) - confinement at infinity\n1346: 2. **Lipschitz continuity** of forces on compact regions\n1347: 3. **Friction-transport coupling** through the hypocoercive norm\n1348: 4. **Non-degenerate noise** (Axiom 3.3.2)\n1349: \n1350: We do **NOT** assume:\n1351: - Convexity of $U$ (monotonicity of forces)\n1352: - Strong convexity (uniform lower bound on $\\nabla^2 U$)\n1353: - Dissipativity outside the boundary\n1354: \n1355: The proof works for **W-shaped potentials**, **multi-well landscapes**, and any coercive potential. The effective contraction rate $\\alpha_{\\text{eff}}$ depends on $\\min(\\gamma, \\alpha_U)$ but not on convexity moduli.",
+      "metadata": {
+        "class": "important"
+      },
+      "section": "## 4. Hypocoercive Contraction of Inter-Swarm Error",
+      "raw_directive": "1339: This chapter proves that this hypocoercive mechanism contracts the inter-swarm Wasserstein distance $V_W$.\n1340: \n1341: :::{prf:remark} No Convexity Required\n1342: :class: important\n1343: \n1344: **Critical clarification:** The hypocoercive contraction proven in this chapter uses **only**:\n1345: 1. **Coercivity** of $U$ (Axiom 3.3.1) - confinement at infinity\n1346: 2. **Lipschitz continuity** of forces on compact regions\n1347: 3. **Friction-transport coupling** through the hypocoercive norm\n1348: 4. **Non-degenerate noise** (Axiom 3.3.2)\n1349: \n1350: We do **NOT** assume:\n1351: - Convexity of $U$ (monotonicity of forces)\n1352: - Strong convexity (uniform lower bound on $\\nabla^2 U$)\n1353: - Dissipativity outside the boundary\n1354: \n1355: The proof works for **W-shaped potentials**, **multi-well landscapes**, and any coercive potential. The effective contraction rate $\\alpha_{\\text{eff}}$ depends on $\\min(\\gamma, \\alpha_U)$ but not on convexity moduli.\n1356: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "05_kinetic_contraction",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 4. Hypocoercive Contraction of Inter-Swarm Error"
+      }
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-coupling-term-intuition",
+      "title": "Intuition for the Coupling Term",
+      "start_line": 1396,
+      "end_line": 1406,
+      "header_lines": [
+        1397
+      ],
+      "content_start": 1399,
+      "content_end": 1405,
+      "content": "1399: :label: rem-coupling-term-intuition\n1400: \n1401: The coupling term $b\\langle \\Delta x, \\Delta v \\rangle$ is the key to hypocoercivity:\n1402: \n1403: - **Without coupling** ($b = 0$): Position and velocity evolve independently in the norm. The degenerate noise in $v$ doesn't help regularize $x$.\n1404: \n1405: - **With coupling** ($b \\neq 0$): The cross term creates a \"rotation\" in the $(x,v)$ phase space. Even though noise only enters in $v$, the coupling allows dissipation to \"leak\" into the $x$ coordinate.",
+      "metadata": {
+        "label": "rem-coupling-term-intuition"
+      },
+      "section": "## 4. Hypocoercive Contraction of Inter-Swarm Error",
+      "raw_directive": "1396: :::\n1397: \n1398: :::{prf:remark} Intuition for the Coupling Term\n1399: :label: rem-coupling-term-intuition\n1400: \n1401: The coupling term $b\\langle \\Delta x, \\Delta v \\rangle$ is the key to hypocoercivity:\n1402: \n1403: - **Without coupling** ($b = 0$): Position and velocity evolve independently in the norm. The degenerate noise in $v$ doesn't help regularize $x$.\n1404: \n1405: - **With coupling** ($b \\neq 0$): The cross term creates a \"rotation\" in the $(x,v)$ phase space. Even though noise only enters in $v$, the coupling allows dissipation to \"leak\" into the $x$ coordinate.\n1406: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "05_kinetic_contraction",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 4. Hypocoercive Contraction of Inter-Swarm Error"
+      }
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "chapter_index": 2,
+  "section_id": "## Part 2: Betti Numbers and Persistent Homology",
+  "directive_count": 7,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-betti-numbers",
+      "title": "Betti Numbers",
+      "start_line": 229,
+      "end_line": 253,
+      "header_lines": [
+        230
+      ],
+      "content_start": 232,
+      "content_end": 252,
+      "content": "232: :label: def-betti-numbers\n233: \n234: For a topological space $X$ (or simplicial complex $K$), the **$k$-th Betti number** is:\n235: \n236: $$\n237: \\beta_k(X) := \\text{rank}(H_k(X))\n238: \n239: $$\n240: \n241: where $H_k(X)$ is the $k$-th homology group (see Part 3).\n242: \n243: **Interpretation**:\n244: - $\\beta_0$: Number of **connected components**\n245: - $\\beta_1$: Number of independent **1-dimensional holes** (loops, tunnels)\n246: - $\\beta_2$: Number of independent **2-dimensional voids** (cavities)\n247: - $\\beta_k$: Number of independent **$k$-dimensional holes**\n248: \n249: **Relation to Euler characteristic**:\n250: \n251: $$\n252: \\chi(X) = \\sum_{k=0}^{\\dim(X)} (-1)^k \\beta_k(X)",
+      "metadata": {
+        "label": "def-betti-numbers"
+      },
+      "section": "## Part 2: Betti Numbers and Persistent Homology",
+      "raw_directive": "229: **Betti numbers** count independent topological features at each dimension.\n230: \n231: :::{prf:definition} Betti Numbers\n232: :label: def-betti-numbers\n233: \n234: For a topological space $X$ (or simplicial complex $K$), the **$k$-th Betti number** is:\n235: \n236: $$\n237: \\beta_k(X) := \\text{rank}(H_k(X))\n238: \n239: $$\n240: \n241: where $H_k(X)$ is the $k$-th homology group (see Part 3).\n242: \n243: **Interpretation**:\n244: - $\\beta_0$: Number of **connected components**\n245: - $\\beta_1$: Number of independent **1-dimensional holes** (loops, tunnels)\n246: - $\\beta_2$: Number of independent **2-dimensional voids** (cavities)\n247: - $\\beta_k$: Number of independent **$k$-dimensional holes**\n248: \n249: **Relation to Euler characteristic**:\n250: \n251: $$\n252: \\chi(X) = \\sum_{k=0}^{\\dim(X)} (-1)^k \\beta_k(X)\n253: "
+    },
+    {
+      "directive_type": "example",
+      "label": "ex-betti-standard",
+      "title": "Betti Numbers for Standard Spaces",
+      "start_line": 255,
+      "end_line": 274,
+      "header_lines": [
+        256
+      ],
+      "content_start": 258,
+      "content_end": 273,
+      "content": "258: :label: ex-betti-standard\n259: \n260: 1. **Sphere $S^2$**:\n261:    - $\\beta_0 = 1$ (connected)\n262:    - $\\beta_1 = 0$ (no loops)\n263:    - $\\beta_2 = 1$ (one void)\n264:    - Euler characteristic: $\\chi = 1 - 0 + 1 = 2$ \u2713\n265: \n266: 2. **Torus $T^2$**:\n267:    - $\\beta_0 = 1$ (connected)\n268:    - $\\beta_1 = 2$ (two independent loops: meridian and parallel)\n269:    - $\\beta_2 = 1$ (one void)\n270:    - Euler characteristic: $\\chi = 1 - 2 + 1 = 0$ \u2713\n271: \n272: 3. **Figure-eight $S^1 \\vee S^1$**:\n273:    - $\\beta_0 = 1$ (connected)",
+      "metadata": {
+        "label": "ex-betti-standard"
+      },
+      "section": "## Part 2: Betti Numbers and Persistent Homology",
+      "raw_directive": "255: :::\n256: \n257: :::{prf:example} Betti Numbers for Standard Spaces\n258: :label: ex-betti-standard\n259: \n260: 1. **Sphere $S^2$**:\n261:    - $\\beta_0 = 1$ (connected)\n262:    - $\\beta_1 = 0$ (no loops)\n263:    - $\\beta_2 = 1$ (one void)\n264:    - Euler characteristic: $\\chi = 1 - 0 + 1 = 2$ \u2713\n265: \n266: 2. **Torus $T^2$**:\n267:    - $\\beta_0 = 1$ (connected)\n268:    - $\\beta_1 = 2$ (two independent loops: meridian and parallel)\n269:    - $\\beta_2 = 1$ (one void)\n270:    - Euler characteristic: $\\chi = 1 - 2 + 1 = 0$ \u2713\n271: \n272: 3. **Figure-eight $S^1 \\vee S^1$**:\n273:    - $\\beta_0 = 1$ (connected)\n274:    - $\\beta_1 = 2$ (two independent loops)"
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-betti-fractal-set",
+      "title": "Betti Numbers from Fractal Set 2-Complex",
+      "start_line": 278,
+      "end_line": 355,
+      "header_lines": [
+        279
+      ],
+      "content_start": 281,
+      "content_end": 354,
+      "content": "281: :label: thm-betti-fractal-set\n282: \n283: The Fractal Set is formally defined as a **2-dimensional simplicial complex** $\\mathcal{F} = (\\mathcal{E}, E_{\\text{CST}} \\cup E_{\\text{IG}}, P)$ where $P$ is the set of plaquettes (CST-IG 4-cycles), as specified in {prf:ref}`def-fractal-set-simplicial-complex` from [13_fractal_set_new/08_lattice_qft_framework.md](13_fractal_set_new/08_lattice_qft_framework.md).\n284: \n285: ::::{important} **Cellular Homology Required**\n286: The 2-cells (plaquettes) are **quadrilaterals** (CST-IG 4-cycles), NOT triangles (2-simplices). Therefore, the Fractal Set is technically a **CW complex** (or cellular complex), not a simplicial complex in the strict sense.\n287: \n288: **Consequences**:\n289: 1. Standard simplicial boundary operators $\\partial_k$ do NOT apply directly without modification\n290: 2. Must use **cellular homology** with boundary operators defined for arbitrary cell attachments\n291: 3. Alternatively, **triangulate each plaquette** via barycentric subdivision to obtain a true simplicial complex\n292: \n293: The formulas below assume either:\n294: - (A) Cellular boundary operators properly defined for quadrilateral 2-cells, OR\n295: - (B) Barycentric subdivision has been performed to triangulate all plaquettes\n296: \n297: **Status**: The framework document [13_fractal_set_new/08_lattice_qft_framework.md](13_fractal_set_new/08_lattice_qft_framework.md) defines the 2-complex structure but **does not provide explicit cellular boundary operators** for quadrilateral plaquettes. The boundary maps $\\partial_1$ and $\\partial_2$ are structurally implied by the CW complex definition but not computed. Implementation of $\\beta_1, \\beta_2$ computation requires either:\n298: 1. Explicitly defining cellular boundary operators (mathematically straightforward but not yet done), OR\n299: 2. Triangulating each plaquette via barycentric subdivision to obtain a simplicial complex where standard $\\partial_k$ formulas apply\n300: ::::\n301: \n302: **$\\beta_0$: Connected Components**\n303: \n304: $$\n305: \\beta_0 = \\text{number of connected components in } \\mathcal{F}\n306: \n307: $$\n308: \n309: Computed via depth-first search (DFS) or union-find in $O(|\\mathcal{E}| + |E|)$ on the 1-skeleton.\n310: \n311: **$\\beta_1$: Independent Cycles (1-dimensional holes)**\n312: \n313: For the full 2-complex, the first Betti number is defined as:\n314: \n315: $$\n316: \\beta_1 = \\dim(\\ker \\partial_1) - \\dim(\\text{im } \\partial_2)\n317: \n318: $$\n319: \n320: where $\\partial_1: C_1 \\to C_0$ and $\\partial_2: C_2 \\to C_1$ are the boundary operators.\n321: \n322: **Coefficient field**: When working over a **field** $\\mathbb{F}$ (e.g., $\\mathbb{Z}_2$, $\\mathbb{Q}$), the dimension formula above applies directly. Working over $\\mathbb{Z}_2$ is computationally efficient (bitwise XOR operations) and sufficient for computing Betti numbers (counts of topological holes), but it loses torsion information.\n323: \n324: To capture **torsion** (finite-order elements in homology groups), work over the integers $\\mathbb{Z}$. However, $\\mathbb{Z}$ is not a field, so \"dimension\" is replaced by \"rank\" and the Smith Normal Form algorithm is required (see {prf:ref}`alg-boundary-matrix` for the full integer homology workflow).\n325: \n326: **Computational formula via rank-nullity theorem**: Using $\\dim(C_k)$ to denote the dimension of the $k$-chain group:\n327: \n328: $$\n329: \\beta_1 = \\dim(C_1) - \\text{rank}(\\partial_1) - \\text{rank}(\\partial_2)\n330: \n331: $$\n332: \n333: For the Fractal Set 2-complex:\n334: - **Vertex set**: $V := \\mathcal{E}$ (episodes from Fractal Set)\n335: - **Edge set**: $E' := \\{\\{u, v\\} \\mid (u, v) \\in E_{\\text{CST}} \\cup E_{\\text{IG}} \\text{ or } (v, u) \\in E_{\\text{CST}} \\cup E_{\\text{IG}}\\}$ (undirected 1-skeleton)\n336: - **Plaquette set**: $P$ is the set of CST-IG 4-cycles (2-cells)\n337: \n338: Then $\\dim(C_1) = |E'|$, and:\n339: \n340: $$\n341: \\beta_1 = |E'| - \\text{rank}(\\partial_1) - \\text{rank}(\\partial_2)\n342: \n343: $$\n344: \n345: **1-skeleton upper bound**: If we ignore the 2-complex structure and treat the Fractal Set as a graph (1-skeleton only), we get an **upper bound** by setting $\\text{rank}(\\partial_2) = 0$:\n346: \n347: $$\n348: \\beta_1^{\\text{graph}} = |E'| - \\text{rank}(\\partial_1) = |E'| - (|\\mathcal{E}| - \\beta_0)\n349: \n350: $$\n351: \n352: This simplifies to $\\beta_1^{\\text{graph}} = |E'| - |\\mathcal{E}| + \\beta_0$, which overcounts cycles that bound plaquettes.\n353: \n354: **Critical distinction**: The correct formula requires computing $\\text{rank}(\\partial_2)$, which is done via boundary matrix reduction (see {prf:ref}`alg-boundary-matrix`). The graph formula is computationally cheaper but mathematically gives only an upper bound: $\\beta_1 \\le \\beta_1^{\\text{graph}}$.",
+      "metadata": {
+        "label": "thm-betti-fractal-set"
+      },
+      "section": "## Part 2: Betti Numbers and Persistent Homology",
+      "raw_directive": "278: ### 2.2. Computation from Delaunay Triangulation\n279: \n280: :::{prf:theorem} Betti Numbers from Fractal Set 2-Complex\n281: :label: thm-betti-fractal-set\n282: \n283: The Fractal Set is formally defined as a **2-dimensional simplicial complex** $\\mathcal{F} = (\\mathcal{E}, E_{\\text{CST}} \\cup E_{\\text{IG}}, P)$ where $P$ is the set of plaquettes (CST-IG 4-cycles), as specified in {prf:ref}`def-fractal-set-simplicial-complex` from [13_fractal_set_new/08_lattice_qft_framework.md](13_fractal_set_new/08_lattice_qft_framework.md).\n284: \n285: ::::{important} **Cellular Homology Required**\n286: The 2-cells (plaquettes) are **quadrilaterals** (CST-IG 4-cycles), NOT triangles (2-simplices). Therefore, the Fractal Set is technically a **CW complex** (or cellular complex), not a simplicial complex in the strict sense.\n287: \n288: **Consequences**:\n289: 1. Standard simplicial boundary operators $\\partial_k$ do NOT apply directly without modification\n290: 2. Must use **cellular homology** with boundary operators defined for arbitrary cell attachments\n291: 3. Alternatively, **triangulate each plaquette** via barycentric subdivision to obtain a true simplicial complex\n292: \n293: The formulas below assume either:\n294: - (A) Cellular boundary operators properly defined for quadrilateral 2-cells, OR\n295: - (B) Barycentric subdivision has been performed to triangulate all plaquettes\n296: \n297: **Status**: The framework document [13_fractal_set_new/08_lattice_qft_framework.md](13_fractal_set_new/08_lattice_qft_framework.md) defines the 2-complex structure but **does not provide explicit cellular boundary operators** for quadrilateral plaquettes. The boundary maps $\\partial_1$ and $\\partial_2$ are structurally implied by the CW complex definition but not computed. Implementation of $\\beta_1, \\beta_2$ computation requires either:\n298: 1. Explicitly defining cellular boundary operators (mathematically straightforward but not yet done), OR\n299: 2. Triangulating each plaquette via barycentric subdivision to obtain a simplicial complex where standard $\\partial_k$ formulas apply\n300: ::::\n301: \n302: **$\\beta_0$: Connected Components**\n303: \n304: $$\n305: \\beta_0 = \\text{number of connected components in } \\mathcal{F}\n306: \n307: $$\n308: \n309: Computed via depth-first search (DFS) or union-find in $O(|\\mathcal{E}| + |E|)$ on the 1-skeleton.\n310: \n311: **$\\beta_1$: Independent Cycles (1-dimensional holes)**\n312: \n313: For the full 2-complex, the first Betti number is defined as:\n314: \n315: $$\n316: \\beta_1 = \\dim(\\ker \\partial_1) - \\dim(\\text{im } \\partial_2)\n317: \n318: $$\n319: \n320: where $\\partial_1: C_1 \\to C_0$ and $\\partial_2: C_2 \\to C_1$ are the boundary operators.\n321: \n322: **Coefficient field**: When working over a **field** $\\mathbb{F}$ (e.g., $\\mathbb{Z}_2$, $\\mathbb{Q}$), the dimension formula above applies directly. Working over $\\mathbb{Z}_2$ is computationally efficient (bitwise XOR operations) and sufficient for computing Betti numbers (counts of topological holes), but it loses torsion information.\n323: \n324: To capture **torsion** (finite-order elements in homology groups), work over the integers $\\mathbb{Z}$. However, $\\mathbb{Z}$ is not a field, so \"dimension\" is replaced by \"rank\" and the Smith Normal Form algorithm is required (see {prf:ref}`alg-boundary-matrix` for the full integer homology workflow).\n325: \n326: **Computational formula via rank-nullity theorem**: Using $\\dim(C_k)$ to denote the dimension of the $k$-chain group:\n327: \n328: $$\n329: \\beta_1 = \\dim(C_1) - \\text{rank}(\\partial_1) - \\text{rank}(\\partial_2)\n330: \n331: $$\n332: \n333: For the Fractal Set 2-complex:\n334: - **Vertex set**: $V := \\mathcal{E}$ (episodes from Fractal Set)\n335: - **Edge set**: $E' := \\{\\{u, v\\} \\mid (u, v) \\in E_{\\text{CST}} \\cup E_{\\text{IG}} \\text{ or } (v, u) \\in E_{\\text{CST}} \\cup E_{\\text{IG}}\\}$ (undirected 1-skeleton)\n336: - **Plaquette set**: $P$ is the set of CST-IG 4-cycles (2-cells)\n337: \n338: Then $\\dim(C_1) = |E'|$, and:\n339: \n340: $$\n341: \\beta_1 = |E'| - \\text{rank}(\\partial_1) - \\text{rank}(\\partial_2)\n342: \n343: $$\n344: \n345: **1-skeleton upper bound**: If we ignore the 2-complex structure and treat the Fractal Set as a graph (1-skeleton only), we get an **upper bound** by setting $\\text{rank}(\\partial_2) = 0$:\n346: \n347: $$\n348: \\beta_1^{\\text{graph}} = |E'| - \\text{rank}(\\partial_1) = |E'| - (|\\mathcal{E}| - \\beta_0)\n349: \n350: $$\n351: \n352: This simplifies to $\\beta_1^{\\text{graph}} = |E'| - |\\mathcal{E}| + \\beta_0$, which overcounts cycles that bound plaquettes.\n353: \n354: **Critical distinction**: The correct formula requires computing $\\text{rank}(\\partial_2)$, which is done via boundary matrix reduction (see {prf:ref}`alg-boundary-matrix`). The graph formula is computationally cheaper but mathematically gives only an upper bound: $\\beta_1 \\le \\beta_1^{\\text{graph}}$.\n355: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-betti-physical",
+      "title": "Physical Interpretation in Fragile Gas",
+      "start_line": 357,
+      "end_line": 372,
+      "header_lines": [
+        358
+      ],
+      "content_start": 360,
+      "content_end": 371,
+      "content": "360: :label: rem-betti-physical\n361: \n362: **$\\beta_0$ (Connected Components)**:\n363: - Number of **disconnected fitness basins** explored by the swarm\n364: - Phase transition indicator: $\\beta_0$ decreases when walkers merge into a single basin\n365: - Related to **multimodal optimization** performance\n366: \n367: **$\\beta_1$ (Independent Cycles)**:\n368: - Number of **independent exploration pathways** in the configuration graph\n369: - High $\\beta_1$ \u2192 rich connectivity, many alternative paths\n370: - Low $\\beta_1$ \u2192 bottlenecks, sparse connectivity\n371: - Connection to **propagation of chaos**: mean-field limit homogenizes cycles",
+      "metadata": {
+        "label": "rem-betti-physical"
+      },
+      "section": "## Part 2: Betti Numbers and Persistent Homology",
+      "raw_directive": "357: :::\n358: \n359: :::{prf:remark} Physical Interpretation in Fragile Gas\n360: :label: rem-betti-physical\n361: \n362: **$\\beta_0$ (Connected Components)**:\n363: - Number of **disconnected fitness basins** explored by the swarm\n364: - Phase transition indicator: $\\beta_0$ decreases when walkers merge into a single basin\n365: - Related to **multimodal optimization** performance\n366: \n367: **$\\beta_1$ (Independent Cycles)**:\n368: - Number of **independent exploration pathways** in the configuration graph\n369: - High $\\beta_1$ \u2192 rich connectivity, many alternative paths\n370: - Low $\\beta_1$ \u2192 bottlenecks, sparse connectivity\n371: - Connection to **propagation of chaos**: mean-field limit homogenizes cycles\n372: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-persistent-homology",
+      "title": "Persistent Homology (Filtration)",
+      "start_line": 378,
+      "end_line": 400,
+      "header_lines": [
+        379
+      ],
+      "content_start": 381,
+      "content_end": 399,
+      "content": "381: :label: def-persistent-homology\n382: \n383: A **filtration** is a nested sequence of simplicial complexes:\n384: \n385: $$\n386: K_0 \\subseteq K_1 \\subseteq K_2 \\subseteq \\cdots \\subseteq K_m\n387: \n388: $$\n389: \n390: indexed by a scale parameter (e.g., radius $r$ in Vietoris-Rips complex).\n391: \n392: For each $K_i$, compute Betti numbers $\\beta_k^{(i)}$. A topological feature (connected component, loop, void) that appears at scale $r_{\\text{birth}}$ and disappears at $r_{\\text{death}}$ has **persistence**:\n393: \n394: $$\n395: \\text{persistence} := r_{\\text{death}} - r_{\\text{birth}}\n396: \n397: $$\n398: \n399: **Persistent homology** is the collection of all (birth, death) pairs across scales, typically visualized as a **persistence diagram** or **barcode**.",
+      "metadata": {
+        "label": "def-persistent-homology"
+      },
+      "section": "## Part 2: Betti Numbers and Persistent Homology",
+      "raw_directive": "378: **Persistent homology** tracks how Betti numbers change across multiple scales, revealing the \"lifetime\" of topological features.\n379: \n380: :::{prf:definition} Persistent Homology (Filtration)\n381: :label: def-persistent-homology\n382: \n383: A **filtration** is a nested sequence of simplicial complexes:\n384: \n385: $$\n386: K_0 \\subseteq K_1 \\subseteq K_2 \\subseteq \\cdots \\subseteq K_m\n387: \n388: $$\n389: \n390: indexed by a scale parameter (e.g., radius $r$ in Vietoris-Rips complex).\n391: \n392: For each $K_i$, compute Betti numbers $\\beta_k^{(i)}$. A topological feature (connected component, loop, void) that appears at scale $r_{\\text{birth}}$ and disappears at $r_{\\text{death}}$ has **persistence**:\n393: \n394: $$\n395: \\text{persistence} := r_{\\text{death}} - r_{\\text{birth}}\n396: \n397: $$\n398: \n399: **Persistent homology** is the collection of all (birth, death) pairs across scales, typically visualized as a **persistence diagram** or **barcode**.\n400: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-vietoris-rips",
+      "title": "Vietoris-Rips Complex (for TDA)",
+      "start_line": 402,
+      "end_line": 424,
+      "header_lines": [
+        403
+      ],
+      "content_start": 405,
+      "content_end": 423,
+      "content": "405: :label: def-vietoris-rips\n406: \n407: For a point cloud $\\{x_1, \\ldots, x_N\\} \\subset \\mathbb{R}^d$ and radius $r > 0$, the **Vietoris-Rips complex** $\\text{VR}(r)$ is the simplicial complex where:\n408: \n409: - $k+1$ points $\\{x_{i_0}, \\ldots, x_{i_k}\\}$ form a $k$-simplex if and only if:\n410: \n411: $$\n412: d(x_i, x_j) \\le r \\quad \\text{for all } i, j \\in \\{i_0, \\ldots, i_k\\}\n413: \n414: $$\n415: \n416: **Filtration**: As $r$ increases from 0 to $\\infty$, we get a filtration:\n417: \n418: $$\n419: \\text{VR}(0) \\subseteq \\text{VR}(r_1) \\subseteq \\text{VR}(r_2) \\subseteq \\cdots \\subseteq \\text{VR}(\\infty)\n420: \n421: $$\n422: \n423: **Computational note**: Vietoris-Rips is easier to compute than \u010cech complex (only pairwise distances needed) but may create spurious higher-dimensional simplices. Theoretically, the \u010cech complex is often preferred as the **Nerve Lemma** guarantees that it is homotopy equivalent to the union of balls, faithfully capturing the topology of the underlying continuous space.",
+      "metadata": {
+        "label": "def-vietoris-rips"
+      },
+      "section": "## Part 2: Betti Numbers and Persistent Homology",
+      "raw_directive": "402: :::\n403: \n404: :::{prf:definition} Vietoris-Rips Complex (for TDA)\n405: :label: def-vietoris-rips\n406: \n407: For a point cloud $\\{x_1, \\ldots, x_N\\} \\subset \\mathbb{R}^d$ and radius $r > 0$, the **Vietoris-Rips complex** $\\text{VR}(r)$ is the simplicial complex where:\n408: \n409: - $k+1$ points $\\{x_{i_0}, \\ldots, x_{i_k}\\}$ form a $k$-simplex if and only if:\n410: \n411: $$\n412: d(x_i, x_j) \\le r \\quad \\text{for all } i, j \\in \\{i_0, \\ldots, i_k\\}\n413: \n414: $$\n415: \n416: **Filtration**: As $r$ increases from 0 to $\\infty$, we get a filtration:\n417: \n418: $$\n419: \\text{VR}(0) \\subseteq \\text{VR}(r_1) \\subseteq \\text{VR}(r_2) \\subseteq \\cdots \\subseteq \\text{VR}(\\infty)\n420: \n421: $$\n422: \n423: **Computational note**: Vietoris-Rips is easier to compute than \u010cech complex (only pairwise distances needed) but may create spurious higher-dimensional simplices. Theoretically, the \u010cech complex is often preferred as the **Nerve Lemma** guarantees that it is homotopy equivalent to the union of balls, faithfully capturing the topology of the underlying continuous space.\n424: "
+    },
+    {
+      "directive_type": "algorithm",
+      "label": "alg-persistent-homology",
+      "title": "Computing Persistent Homology for Fragile Gas",
+      "start_line": 426,
+      "end_line": 460,
+      "header_lines": [
+        427
+      ],
+      "content_start": 429,
+      "content_end": 459,
+      "content": "429: :label: alg-persistent-homology\n430: \n431: **Input**: Walker positions $\\{x_1(t), \\ldots, x_N(t)\\}$ at time $t$\n432: \n433: **Output**: Persistence diagrams for $H_0, H_1, H_2$\n434: \n435: **Steps**:\n436: \n437: 1. **Construct filtration**: Build Vietoris-Rips filtration $\\{\\text{VR}(r_i)\\}_{i=0}^m$ with radii $0 = r_0 < r_1 < \\cdots < r_m$\n438: \n439: 2. **Compute boundary matrices**: For each $k \\in \\{0, 1, 2\\}$, construct boundary operator $\\partial_k: C_k \\to C_{k-1}$ at each scale\n440: \n441: 3. **Matrix reduction**: Apply persistent homology algorithm (e.g., standard reduction, twist reduction, or clearing optimization)\n442: \n443: 4. **Extract persistence pairs**: Identify (birth, death) pairs for each homology class\n444: \n445: 5. **Filter by persistence**: Remove short-lived features (noise) by thresholding:\n446: \n447: $$\n448: \\text{keep feature if } r_{\\text{death}} - r_{\\text{birth}} > \\epsilon_{\\text{pers}}\n449: \n450: $$\n451: \n452: **Complexity**: $O(s^3)$ where $s$ is the total number of simplices in the final complex of the filtration. **Important**: For a Vietoris-Rips complex on $N$ points with maximum dimension $k_{\\max}$, the number of simplices is bounded by $s \\le \\sum_{k=0}^{k_{\\max}} \\binom{N}{k+1} = O(N^{k_{\\max}+1})$. Thus the complexity is $O(N^{3(k_{\\max}+1)})$ in the worst case, which is polynomial in $N$ for fixed $k_{\\max}$ but exponential for large $k_{\\max}$.\n453: \n454: **Feasibility assumption**: The worst-case complexity is $O(s^3)$ where $s$ can be exponential in $N$ for high-dimensional data. In practice, libraries such as **Ripser** exploit sparsity and geometric structure of many real-world point clouds to achieve much better performance, but there is **no general near-linear guarantee**. The complexity is practical only under the assumption that the walker point cloud has **well-behaved geometric structure** (e.g., low intrinsic dimension, sparse distribution, or clustered configuration). For arbitrary or adversarially-chosen point configurations in high dimensions, the method becomes computationally infeasible. For large $N$ (>1000), use sparse matrix methods, dimension capping ($k \\le 2$), or approximate algorithms.\n455: \n456: **Reference**: Bauer et al., \"Ripser: Efficient computation of Vietoris-Rips persistence barcodes\" (2021) \u2014 practical optimizations for geometric data.\n457: \n458: **Libraries**: Use existing TDA libraries:\n459: - **Python**: `gudhi`, `ripser`, `scikit-tda`",
+      "metadata": {
+        "label": "alg-persistent-homology"
+      },
+      "section": "## Part 2: Betti Numbers and Persistent Homology",
+      "raw_directive": "426: :::\n427: \n428: :::{prf:algorithm} Computing Persistent Homology for Fragile Gas\n429: :label: alg-persistent-homology\n430: \n431: **Input**: Walker positions $\\{x_1(t), \\ldots, x_N(t)\\}$ at time $t$\n432: \n433: **Output**: Persistence diagrams for $H_0, H_1, H_2$\n434: \n435: **Steps**:\n436: \n437: 1. **Construct filtration**: Build Vietoris-Rips filtration $\\{\\text{VR}(r_i)\\}_{i=0}^m$ with radii $0 = r_0 < r_1 < \\cdots < r_m$\n438: \n439: 2. **Compute boundary matrices**: For each $k \\in \\{0, 1, 2\\}$, construct boundary operator $\\partial_k: C_k \\to C_{k-1}$ at each scale\n440: \n441: 3. **Matrix reduction**: Apply persistent homology algorithm (e.g., standard reduction, twist reduction, or clearing optimization)\n442: \n443: 4. **Extract persistence pairs**: Identify (birth, death) pairs for each homology class\n444: \n445: 5. **Filter by persistence**: Remove short-lived features (noise) by thresholding:\n446: \n447: $$\n448: \\text{keep feature if } r_{\\text{death}} - r_{\\text{birth}} > \\epsilon_{\\text{pers}}\n449: \n450: $$\n451: \n452: **Complexity**: $O(s^3)$ where $s$ is the total number of simplices in the final complex of the filtration. **Important**: For a Vietoris-Rips complex on $N$ points with maximum dimension $k_{\\max}$, the number of simplices is bounded by $s \\le \\sum_{k=0}^{k_{\\max}} \\binom{N}{k+1} = O(N^{k_{\\max}+1})$. Thus the complexity is $O(N^{3(k_{\\max}+1)})$ in the worst case, which is polynomial in $N$ for fixed $k_{\\max}$ but exponential for large $k_{\\max}$.\n453: \n454: **Feasibility assumption**: The worst-case complexity is $O(s^3)$ where $s$ can be exponential in $N$ for high-dimensional data. In practice, libraries such as **Ripser** exploit sparsity and geometric structure of many real-world point clouds to achieve much better performance, but there is **no general near-linear guarantee**. The complexity is practical only under the assumption that the walker point cloud has **well-behaved geometric structure** (e.g., low intrinsic dimension, sparse distribution, or clustered configuration). For arbitrary or adversarially-chosen point configurations in high dimensions, the method becomes computationally infeasible. For large $N$ (>1000), use sparse matrix methods, dimension capping ($k \\le 2$), or approximate algorithms.\n455: \n456: **Reference**: Bauer et al., \"Ripser: Efficient computation of Vietoris-Rips persistence barcodes\" (2021) \u2014 practical optimizations for geometric data.\n457: \n458: **Libraries**: Use existing TDA libraries:\n459: - **Python**: `gudhi`, `ripser`, `scikit-tda`\n460: - **C++**: `GUDHI`, `Ripser`, `PHAT`"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

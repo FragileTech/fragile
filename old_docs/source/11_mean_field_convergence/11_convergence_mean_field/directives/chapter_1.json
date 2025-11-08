@@ -1,0 +1,29 @@
+{
+  "chapter_index": 1,
+  "section_id": "## 1. Why Mean-Field KL-Convergence is Valuable",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "conjecture",
+      "label": "conj-ldp-mean-field",
+      "title": "Large Deviations Principle for Mean-Field Limit (Unproven)",
+      "start_line": 78,
+      "end_line": 95,
+      "header_lines": [
+        79
+      ],
+      "content_start": 81,
+      "content_end": 94,
+      "content": "81: :label: conj-ldp-mean-field\n82: \n83: As $N \\to \\infty$, the empirical measure $\\mu_N = \\frac{1}{N} \\sum_{i=1}^N \\delta_{(x_i, v_i)}$ is conjectured to satisfy a large deviations principle with rate function:\n84: \n85: $$\n86: I(\\rho) = \\begin{cases}\n87: D_{\\text{KL}}(\\rho \\| \\rho_\\infty) & \\text{if } \\rho \\ll \\rho_\\infty \\\\\n88: +\\infty & \\text{otherwise}\n89: \\end{cases}\n90: $$\n91: \n92: This means deviations from the mean-field limit $\\rho_\\infty$ would be exponentially suppressed with probability $\\sim e^{-N \\cdot D_{\\text{KL}}}$.\n93: \n94: **Status**: This LDP has **not been proven** for systems with state-dependent killing and proportional revival. Standard LDP results (Dawson-G\u00e4rtner, Dupuis-Ellis) apply to conservative systems or systems with fixed jump rates, not QSD-conditioned dynamics.",
+      "metadata": {
+        "label": "conj-ldp-mean-field"
+      },
+      "section": "## 1. Why Mean-Field KL-Convergence is Valuable",
+      "raw_directive": "78: For McKean-Vlasov systems, KL-divergence is the **fundamental** metric:\n79: \n80: :::{prf:conjecture} Large Deviations Principle for Mean-Field Limit (Unproven)\n81: :label: conj-ldp-mean-field\n82: \n83: As $N \\to \\infty$, the empirical measure $\\mu_N = \\frac{1}{N} \\sum_{i=1}^N \\delta_{(x_i, v_i)}$ is conjectured to satisfy a large deviations principle with rate function:\n84: \n85: $$\n86: I(\\rho) = \\begin{cases}\n87: D_{\\text{KL}}(\\rho \\| \\rho_\\infty) & \\text{if } \\rho \\ll \\rho_\\infty \\\\\n88: +\\infty & \\text{otherwise}\n89: \\end{cases}\n90: $$\n91: \n92: This means deviations from the mean-field limit $\\rho_\\infty$ would be exponentially suppressed with probability $\\sim e^{-N \\cdot D_{\\text{KL}}}$.\n93: \n94: **Status**: This LDP has **not been proven** for systems with state-dependent killing and proportional revival. Standard LDP results (Dawson-G\u00e4rtner, Dupuis-Ellis) apply to conservative systems or systems with fixed jump rates, not QSD-conditioned dynamics.\n95: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "chapter_index": 5,
+  "section_id": "## 1.2 Hypocoercivity for Kinetic Operator",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "lemma",
+      "label": "lem-kinetic-lsi-established",
+      "title": "Hypocoercive LSI for \u03a8_kin (Established)",
+      "start_line": 257,
+      "end_line": 274,
+      "header_lines": [
+        258
+      ],
+      "content_start": 260,
+      "content_end": 273,
+      "content": "260: :label: lem-kinetic-lsi-established\n261: \n262: The kinetic operator $\\Psi_{\\text{kin}}$ (Langevin dynamics) satisfies an LSI **with respect to its own invariant measure** $\\pi_{\\text{kin}}$:\n263: \n264: $$\n265: \\text{Ent}_{\\pi_{\\text{kin}}}(f^2) \\leq C_{\\text{LSI}}^{\\text{kin}} \\cdot \\mathbb{E}_{\\pi_{\\text{kin}}}[|\\nabla f|^2]\n266: $$\n267: \n268: where:\n269: $$\n270: C_{\\text{LSI}}^{\\text{kin}} = \\frac{1}{2\\lambda_{\\text{hypo}}}, \\quad \\lambda_{\\text{hypo}} = c \\cdot \\min\\left(\\gamma, \\frac{\\alpha_U}{\\sigma_v^2}\\right)\n271: $$\n272: \n273: **Crucially**: This holds for **non-convex** $U(x)$ via hypocoercivity.",
+      "metadata": {
+        "label": "lem-kinetic-lsi-established"
+      },
+      "section": "## 1.2 Hypocoercivity for Kinetic Operator",
+      "raw_directive": "257: From [10_T_non_convex_extensions.md](10_T_non_convex_extensions.md), Part 2:\n258: \n259: :::{prf:lemma} Hypocoercive LSI for \u03a8_kin (Established)\n260: :label: lem-kinetic-lsi-established\n261: \n262: The kinetic operator $\\Psi_{\\text{kin}}$ (Langevin dynamics) satisfies an LSI **with respect to its own invariant measure** $\\pi_{\\text{kin}}$:\n263: \n264: $$\n265: \\text{Ent}_{\\pi_{\\text{kin}}}(f^2) \\leq C_{\\text{LSI}}^{\\text{kin}} \\cdot \\mathbb{E}_{\\pi_{\\text{kin}}}[|\\nabla f|^2]\n266: $$\n267: \n268: where:\n269: $$\n270: C_{\\text{LSI}}^{\\text{kin}} = \\frac{1}{2\\lambda_{\\text{hypo}}}, \\quad \\lambda_{\\text{hypo}} = c \\cdot \\min\\left(\\gamma, \\frac{\\alpha_U}{\\sigma_v^2}\\right)\n271: $$\n272: \n273: **Crucially**: This holds for **non-convex** $U(x)$ via hypocoercivity.\n274: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

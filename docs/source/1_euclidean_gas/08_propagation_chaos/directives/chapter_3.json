@@ -1,0 +1,47 @@
+{
+  "chapter_index": 3,
+  "section_id": "## **3. Tightness of the Marginal Sequence**",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-qsd-marginals-are-tight",
+      "title": "The Sequence of Marginals $\\{\\mu_N\\}$ is Tight",
+      "start_line": 152,
+      "end_line": 156,
+      "header_lines": [
+        153
+      ],
+      "content_start": 155,
+      "content_end": 155,
+      "content": "155: :label: thm-qsd-marginals-are-tight",
+      "metadata": {
+        "label": "thm-qsd-marginals-are-tight"
+      },
+      "section": "## **3. Tightness of the Marginal Sequence**",
+      "raw_directive": "152: ---\n153: \n154: :::{prf:theorem} The Sequence of Marginals $\\{\\mu_N\\}$ is Tight\n155: :label: thm-qsd-marginals-are-tight\n156: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-thm-qsd-marginals-are-tight",
+      "title": null,
+      "start_line": 157,
+      "end_line": 191,
+      "header_lines": [
+        158
+      ],
+      "content_start": 159,
+      "content_end": 190,
+      "content": "159: :::{prf:proof}\n160: :label: proof-thm-qsd-marginals-are-tight\n161: **Proof.**\n162: \n163: The proof proceeds by verifying the conditions of Prokhorov's theorem. On the Polish space $\\Omega$, this is equivalent to showing that for any $\\epsilon > 0$, there exists a compact set $K_\\epsilon \\subset \\Omega$ such that the containment condition $\\mu_N(K_\\epsilon) \\ge 1 - \\epsilon$ holds uniformly for all $N \\ge 2$. We establish this uniform containment by leveraging the moment bounds provided by the Lyapunov function analysis from `06_convergence.md`.\n164: \n165: 1.  **Uniform Moment Bound from the N-Particle System:**\n166:     The geometric ergodicity of the N-particle system, established in `06_convergence.md`, relies on a Foster-Lyapunov drift condition for a Lyapunov function $V_{\\text{total}}(S)$. A standard result from the theory of Markov chains (see Meyn & Tweedie) is that such a geometric drift condition implies the existence of uniform moment bounds for the corresponding stationary measure. Specifically, there exists a constant $C < \\infty$, which is independent of the number of walkers $N$, such that the expectation of the Lyapunov function with respect to the N-particle QSD is uniformly bounded:\n167:     $$\n168:     \\mathbb{E}_{\\nu_N^{QSD}}[V_{\\text{total}}] = \\int_{\\Sigma_N} V_{\\text{total}}(S) \\, d\\nu_N^{QSD}(S) \\le C\n169:     $$\n170: \n171: 2.  **Translation to a Single-Particle Moment Bound:**\n172:     The Lyapunov function $V_{\\text{total}}$ is constructed as a sum of terms, including the average squared norms of the walkers' kinematic states, of the form $\\frac{1}{N}\\sum_i (\\|x_i\\|^2 + \\|v_i\\|^2)$. By the linearity of expectation and the exchangeability of the walkers under the symmetric measure $\\nu_N^{QSD}$, the uniform bound on the total expectation implies a uniform bound on the expected squared norm of any single walker:\n173:     $$\n174:     \\mathbb{E}_{\\mu_N}[\\|x\\|^2 + \\|v\\|^2] = \\int_\\Omega (\\|x\\|^2 + \\|v\\|^2) \\, d\\mu_N(x,v) \\le C'\n175:     $$\n176:     for some other constant $C'$ that is also independent of $N$. This demonstrates that the second moments of the measures in the sequence $\\{\\mu_N\\}$ are uniformly bounded.\n177: \n178: 3.  **Application of Markov's Inequality to Show Tightness:**\n179:     With this uniform moment control established, we can now apply Markov's inequality to demonstrate uniform containment. For any $R > 0$, let $K_R = \\{ (x,v) \\in \\Omega \\mid \\|x\\|^2 + \\|v\\|^2 \\le R^2 \\}$ be a compact ball in the phase space. The probability of a particle being outside this set is bounded as follows:\n180:     $$\n181:     \\mu_N(\\Omega \\setminus K_R) = \\mathbb{P}(\\|x\\|^2 + \\|v\\|^2 > R^2) \\le \\frac{\\mathbb{E}_{\\mu_N}[\\|x\\|^2 + \\|v\\|^2]}{R^2} \\le \\frac{C'}{R^2}\n182:     $$\n183:     For any desired tolerance $\\epsilon > 0$, we can choose a radius $R$ large enough such that $C'/R^2 \\le \\epsilon$. Specifically, we choose $R_\\epsilon = \\sqrt{C'/\\epsilon}$. This choice defines a compact set $K_\\epsilon := K_{R_\\epsilon}$ for which the following holds:\n184:     $$\n185:     \\mu_N(K_\\epsilon) = 1 - \\mu_N(\\Omega \\setminus K_\\epsilon) \\ge 1 - \\frac{C'}{R_\\epsilon^2} = 1 - \\epsilon.\n186:     $$\n187:     Critically, because the constant $C'$ is independent of $N$, our choice of the compact set $K_\\epsilon$ depends only on the tolerance $\\epsilon$ and not on $N$. This satisfies the uniformity condition required by Prokhorov's theorem.\n188: \n189: 4.  **Conclusion:**\n190:     We have shown that for any $\\epsilon > 0$, there exists a compact set $K_\\epsilon$ such that $\\mu_N(K_\\epsilon) \\ge 1 - \\epsilon$ for all measures in the sequence. By Prokhorov's theorem, this uniform containment guarantees that the sequence of marginal measures $\\{\\mu_N\\}$ is tight. This, in turn, implies the existence of at least one weakly convergent subsequence.",
+      "metadata": {
+        "label": "proof-thm-qsd-marginals-are-tight"
+      },
+      "section": "## **3. Tightness of the Marginal Sequence**",
+      "raw_directive": "157: The sequence of single-particle marginal measures $\\{\\mu_N\\}_{N=2}^\\infty$ is tight in the space of probability measures on $\\Omega$, $\\mathcal{P}(\\Omega)$.\n158: :::\n159: :::{prf:proof}\n160: :label: proof-thm-qsd-marginals-are-tight\n161: **Proof.**\n162: \n163: The proof proceeds by verifying the conditions of Prokhorov's theorem. On the Polish space $\\Omega$, this is equivalent to showing that for any $\\epsilon > 0$, there exists a compact set $K_\\epsilon \\subset \\Omega$ such that the containment condition $\\mu_N(K_\\epsilon) \\ge 1 - \\epsilon$ holds uniformly for all $N \\ge 2$. We establish this uniform containment by leveraging the moment bounds provided by the Lyapunov function analysis from `06_convergence.md`.\n164: \n165: 1.  **Uniform Moment Bound from the N-Particle System:**\n166:     The geometric ergodicity of the N-particle system, established in `06_convergence.md`, relies on a Foster-Lyapunov drift condition for a Lyapunov function $V_{\\text{total}}(S)$. A standard result from the theory of Markov chains (see Meyn & Tweedie) is that such a geometric drift condition implies the existence of uniform moment bounds for the corresponding stationary measure. Specifically, there exists a constant $C < \\infty$, which is independent of the number of walkers $N$, such that the expectation of the Lyapunov function with respect to the N-particle QSD is uniformly bounded:\n167:     $$\n168:     \\mathbb{E}_{\\nu_N^{QSD}}[V_{\\text{total}}] = \\int_{\\Sigma_N} V_{\\text{total}}(S) \\, d\\nu_N^{QSD}(S) \\le C\n169:     $$\n170: \n171: 2.  **Translation to a Single-Particle Moment Bound:**\n172:     The Lyapunov function $V_{\\text{total}}$ is constructed as a sum of terms, including the average squared norms of the walkers' kinematic states, of the form $\\frac{1}{N}\\sum_i (\\|x_i\\|^2 + \\|v_i\\|^2)$. By the linearity of expectation and the exchangeability of the walkers under the symmetric measure $\\nu_N^{QSD}$, the uniform bound on the total expectation implies a uniform bound on the expected squared norm of any single walker:\n173:     $$\n174:     \\mathbb{E}_{\\mu_N}[\\|x\\|^2 + \\|v\\|^2] = \\int_\\Omega (\\|x\\|^2 + \\|v\\|^2) \\, d\\mu_N(x,v) \\le C'\n175:     $$\n176:     for some other constant $C'$ that is also independent of $N$. This demonstrates that the second moments of the measures in the sequence $\\{\\mu_N\\}$ are uniformly bounded.\n177: \n178: 3.  **Application of Markov's Inequality to Show Tightness:**\n179:     With this uniform moment control established, we can now apply Markov's inequality to demonstrate uniform containment. For any $R > 0$, let $K_R = \\{ (x,v) \\in \\Omega \\mid \\|x\\|^2 + \\|v\\|^2 \\le R^2 \\}$ be a compact ball in the phase space. The probability of a particle being outside this set is bounded as follows:\n180:     $$\n181:     \\mu_N(\\Omega \\setminus K_R) = \\mathbb{P}(\\|x\\|^2 + \\|v\\|^2 > R^2) \\le \\frac{\\mathbb{E}_{\\mu_N}[\\|x\\|^2 + \\|v\\|^2]}{R^2} \\le \\frac{C'}{R^2}\n182:     $$\n183:     For any desired tolerance $\\epsilon > 0$, we can choose a radius $R$ large enough such that $C'/R^2 \\le \\epsilon$. Specifically, we choose $R_\\epsilon = \\sqrt{C'/\\epsilon}$. This choice defines a compact set $K_\\epsilon := K_{R_\\epsilon}$ for which the following holds:\n184:     $$\n185:     \\mu_N(K_\\epsilon) = 1 - \\mu_N(\\Omega \\setminus K_\\epsilon) \\ge 1 - \\frac{C'}{R_\\epsilon^2} = 1 - \\epsilon.\n186:     $$\n187:     Critically, because the constant $C'$ is independent of $N$, our choice of the compact set $K_\\epsilon$ depends only on the tolerance $\\epsilon$ and not on $N$. This satisfies the uniformity condition required by Prokhorov's theorem.\n188: \n189: 4.  **Conclusion:**\n190:     We have shown that for any $\\epsilon > 0$, there exists a compact set $K_\\epsilon$ such that $\\mu_N(K_\\epsilon) \\ge 1 - \\epsilon$ for all measures in the sequence. By Prokhorov's theorem, this uniform containment guarantees that the sequence of marginal measures $\\{\\mu_N\\}$ is tight. This, in turn, implies the existence of at least one weakly convergent subsequence.\n191: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "chapter_index": 22,
+  "section_id": "## Proof Sketch",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "lemma",
+      "label": "lem-sinh-bound-global",
+      "title": "Sinh Inequality",
+      "start_line": 2494,
+      "end_line": 2504,
+      "header_lines": [
+        2495
+      ],
+      "content_start": 2497,
+      "content_end": 2503,
+      "content": "2497: :label: lem-sinh-bound-global\n2498: \n2499: For all $z \\in \\mathbb{R}$:\n2500: \n2501: $$\n2502: \\frac{\\sinh(z)}{z} \\geq 1\n2503: $$",
+      "metadata": {
+        "label": "lem-sinh-bound-global"
+      },
+      "section": "## Proof Sketch",
+      "raw_directive": "2494: **Apply the global sinh inequality**:\n2495: \n2496: :::{prf:lemma} Sinh Inequality\n2497: :label: lem-sinh-bound-global\n2498: \n2499: For all $z \\in \\mathbb{R}$:\n2500: \n2501: $$\n2502: \\frac{\\sinh(z)}{z} \\geq 1\n2503: $$\n2504: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-sinh-bound-global",
+      "title": null,
+      "start_line": 2506,
+      "end_line": 2509,
+      "header_lines": [
+        2507
+      ],
+      "content_start": 2508,
+      "content_end": 2508,
+      "content": "2508: :::{prf:proof}",
+      "metadata": {
+        "label": "proof-sinh-bound-global"
+      },
+      "section": "## Proof Sketch",
+      "raw_directive": "2506: :::\n2507: \n2508: :::{prf:proof}\n2509: :label: proof-sinh-bound-global"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

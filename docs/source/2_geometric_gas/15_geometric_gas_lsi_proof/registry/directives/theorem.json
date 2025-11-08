@@ -1,0 +1,134 @@
+{
+  "document_id": "15_geometric_gas_lsi_proof",
+  "stage": "directives",
+  "directive_type": "theorem",
+  "generated_at": "2025-11-08T17:07:43.255726+00:00",
+  "count": 5,
+  "items": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-fitness-third-deriv-proven",
+      "title": "N-Uniform Third Derivative Bound for Fitness (PROVEN)",
+      "start_line": 800,
+      "end_line": 820,
+      "header_lines": [
+        801
+      ],
+      "content_start": 803,
+      "content_end": 819,
+      "content": "803: :label: thm-fitness-third-deriv-proven\n804: \n805: **From Theorem `thm-c3-main-preview` in [stability/c3_geometric_gas.md](13_geometric_gas_c3_regularity.md):**\n806: \n807: Under natural smoothness assumptions:\n808: 1. Squashing function $g_A \\in C^3$ with $\\|g_A'''\\|_\\infty < \\infty$\n809: 2. Localization kernel $K_\\rho \\in C^3$ with appropriate bounds\n810: 3. Distance function $d \\in C^3(T^3)$\n811: 4. Regularized standard deviation $\\sigma'_{\\text{reg}} \\in C^3$\n812: \n813: the fitness potential satisfies:\n814: \n815: $$\n816: \\sup_{x \\in T^3, S \\in \\Sigma_N} \\|\\nabla^3_{x} V_{\\text{fit}}[f_k, \\rho](x)\\| \\leq K_{V,3}(\\rho) < \\infty\n817: $$\n818: \n819: where $K_{V,3}(\\rho)$ is **k-uniform and N-uniform** (independent of alive walker count and total swarm size).",
+      "metadata": {
+        "label": "thm-fitness-third-deriv-proven"
+      },
+      "section": "## 8. N-Uniform Bounds on All Constants",
+      "raw_directive": "800: **Conclusion:** If the kernel $K_\\rho$ and distance $d$ are both $C^3$, then $\\|\\nabla^3 V_{\\text{fit}}\\| \\leq C''_{\\text{fit}}(\\rho)$ with $C''_{\\text{fit}}(\\rho)$ **independent of N**.\n801: \n802: :::{prf:theorem} N-Uniform Third Derivative Bound for Fitness (PROVEN)\n803: :label: thm-fitness-third-deriv-proven\n804: \n805: **From Theorem `thm-c3-main-preview` in [stability/c3_geometric_gas.md](13_geometric_gas_c3_regularity.md):**\n806: \n807: Under natural smoothness assumptions:\n808: 1. Squashing function $g_A \\in C^3$ with $\\|g_A'''\\|_\\infty < \\infty$\n809: 2. Localization kernel $K_\\rho \\in C^3$ with appropriate bounds\n810: 3. Distance function $d \\in C^3(T^3)$\n811: 4. Regularized standard deviation $\\sigma'_{\\text{reg}} \\in C^3$\n812: \n813: the fitness potential satisfies:\n814: \n815: $$\n816: \\sup_{x \\in T^3, S \\in \\Sigma_N} \\|\\nabla^3_{x} V_{\\text{fit}}[f_k, \\rho](x)\\| \\leq K_{V,3}(\\rho) < \\infty\n817: $$\n818: \n819: where $K_{V,3}(\\rho)$ is **k-uniform and N-uniform** (independent of alive walker count and total swarm size).\n820: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "15_geometric_gas_lsi_proof",
+        "chapter_index": 13,
+        "chapter_file": "chapter_13.json",
+        "section_id": "## 8. N-Uniform Bounds on All Constants"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-qsd-poincare-rigorous",
+      "title": "N-Uniform Poincaré Inequality for QSD Velocities (CORRECTED PROOF)",
+      "start_line": 880,
+      "end_line": 901,
+      "header_lines": [
+        881
+      ],
+      "content_start": 883,
+      "content_end": 900,
+      "content": "883: :label: thm-qsd-poincare-rigorous\n884: \n885: The quasi-stationary distribution $\\pi_N$ for the Geometric Gas with **normalized viscous coupling** satisfies a Poincaré inequality in velocity:\n886: \n887: $$\n888: \\text{Var}_{\\pi_N}(g) \\leq C_P(\\rho) \\sum_{i=1}^N \\int |\\nabla_{v_i} g|^2 d\\pi_N\n889: $$\n890: \n891: where:\n892: \n893: $$\n894: C_P(\\rho) \\leq \\frac{c_{\\max}^2(\\rho)}{2\\gamma}\n895: $$\n896: \n897: is **independent of N** for all $\\nu > 0$.\n898: \n899: Here:\n900: - $c_{\\max}(\\rho) = 1/(\\epsilon_\\Sigma - H_{\\max}(\\rho))$ from uniform ellipticity",
+      "metadata": {
+        "label": "thm-qsd-poincare-rigorous"
+      },
+      "section": "## 8. N-Uniform Bounds on All Constants",
+      "raw_directive": "880: **Note on correlations:** The QSD is not exactly a product measure (there are correlations from viscous coupling). However, as proven rigorously in Theorem {prf:ref}`thm-qsd-poincare-rigorous` below, the **normalized viscous coupling** ensures the Poincaré constant remains N-uniform for **all $\\nu > 0$** (no upper bound required).\n881: \n882: :::{prf:theorem} N-Uniform Poincaré Inequality for QSD Velocities (CORRECTED PROOF)\n883: :label: thm-qsd-poincare-rigorous\n884: \n885: The quasi-stationary distribution $\\pi_N$ for the Geometric Gas with **normalized viscous coupling** satisfies a Poincaré inequality in velocity:\n886: \n887: $$\n888: \\text{Var}_{\\pi_N}(g) \\leq C_P(\\rho) \\sum_{i=1}^N \\int |\\nabla_{v_i} g|^2 d\\pi_N\n889: $$\n890: \n891: where:\n892: \n893: $$\n894: C_P(\\rho) \\leq \\frac{c_{\\max}^2(\\rho)}{2\\gamma}\n895: $$\n896: \n897: is **independent of N** for all $\\nu > 0$.\n898: \n899: Here:\n900: - $c_{\\max}(\\rho) = 1/(\\epsilon_\\Sigma - H_{\\max}(\\rho))$ from uniform ellipticity\n901: - The normalized viscous coupling $\\mathbf{F}_{\\text{viscous}} = \\nu \\sum_j [K(x_i-x_j)/\\deg(i)](v_j - v_i)$ produces a graph Laplacian with eigenvalues in $[0,2]$ independent of $N$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "15_geometric_gas_lsi_proof",
+        "chapter_index": 13,
+        "chapter_file": "chapter_13.json",
+        "section_id": "## 8. N-Uniform Bounds on All Constants"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-drift-perturbation-bounds",
+      "title": "N-Uniform Drift Perturbation Bounds",
+      "start_line": 1065,
+      "end_line": 1087,
+      "header_lines": [
+        1066
+      ],
+      "content_start": 1068,
+      "content_end": 1086,
+      "content": "1068: :label: thm-drift-perturbation-bounds\n1069: \n1070: The adaptive and viscous forces satisfy the following N-uniform bounds:\n1071: \n1072: 1. **Adaptive force bound:**\n1073: \n1074: $$\n1075: \\|\\mathbf{F}_{\\text{adapt}}(x_i, S)\\| \\leq \\epsilon_F F_{\\text{adapt,max}}(\\rho)\n1076: $$\n1077: \n1078: where $F_{\\text{adapt,max}}(\\rho) < \\infty$ is given explicitly by Theorem A.1 ({prf:ref}`thm-c1-regularity`) in Appendix A of `07_geometric_gas.md`.\n1079: \n1080: 2. **Normalized viscous force bound:**\n1081: \n1082: $$\n1083: \\left\\|\\mathbf{F}_{\\text{viscous}}(x_i, S)\\right\\| = \\left\\|\\nu \\sum_{j \\neq i} \\frac{K(x_i - x_j)}{\\deg(i)} (v_j - v_i)\\right\\| \\leq 2\\nu \\|v\\|_{\\max}\n1084: $$\n1085: \n1086: where $\\|v\\|_{\\max}$ is the maximum velocity magnitude (controlled by the QSD ergodicity).",
+      "metadata": {
+        "label": "thm-drift-perturbation-bounds"
+      },
+      "section": "## 8. N-Uniform Bounds on All Constants",
+      "raw_directive": "1065: Before proceeding to the main theorem, we must rigorously verify that the adaptive and viscous perturbations satisfy the conditions required for LSI perturbation theory.\n1066: \n1067: :::{prf:theorem} N-Uniform Drift Perturbation Bounds\n1068: :label: thm-drift-perturbation-bounds\n1069: \n1070: The adaptive and viscous forces satisfy the following N-uniform bounds:\n1071: \n1072: 1. **Adaptive force bound:**\n1073: \n1074: $$\n1075: \\|\\mathbf{F}_{\\text{adapt}}(x_i, S)\\| \\leq \\epsilon_F F_{\\text{adapt,max}}(\\rho)\n1076: $$\n1077: \n1078: where $F_{\\text{adapt,max}}(\\rho) < \\infty$ is given explicitly by Theorem A.1 ({prf:ref}`thm-c1-regularity`) in Appendix A of `07_geometric_gas.md`.\n1079: \n1080: 2. **Normalized viscous force bound:**\n1081: \n1082: $$\n1083: \\left\\|\\mathbf{F}_{\\text{viscous}}(x_i, S)\\right\\| = \\left\\|\\nu \\sum_{j \\neq i} \\frac{K(x_i - x_j)}{\\deg(i)} (v_j - v_i)\\right\\| \\leq 2\\nu \\|v\\|_{\\max}\n1084: $$\n1085: \n1086: where $\\|v\\|_{\\max}$ is the maximum velocity magnitude (controlled by the QSD ergodicity).\n1087: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "15_geometric_gas_lsi_proof",
+        "chapter_index": 13,
+        "chapter_file": "chapter_13.json",
+        "section_id": "## 8. N-Uniform Bounds on All Constants"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-cattiaux-guillin-verification",
+      "title": "Verification of Cattiaux-Guillin Hypotheses",
+      "start_line": 1122,
+      "end_line": 1148,
+      "header_lines": [
+        1123
+      ],
+      "content_start": 1125,
+      "content_end": 1147,
+      "content": "1125: :label: thm-cattiaux-guillin-verification\n1126: \n1127: The generator perturbation\n1128: \n1129: $$\n1130: \\mathcal{L}_{\\text{full}} = \\mathcal{L}_{\\text{backbone}} + \\mathcal{V}_{\\text{adapt}} + \\mathcal{V}_{\\text{visc}}\n1131: $$\n1132: \n1133: satisfies the hypotheses of the Cattiaux-Guillin LSI perturbation theorem:\n1134: \n1135: 1. **Invariance:** The QSD $\\pi_N$ is invariant under $\\mathcal{L}_{\\text{full}}$ (by construction of the QSD)\n1136: \n1137: 2. **Relative boundedness:** The perturbations are relatively bounded in the Dirichlet form sense:\n1138: \n1139: $$\n1140: \\left|\\int \\mathcal{V}_{\\text{adapt}} f \\, d\\pi_N\\right| \\leq \\epsilon_F \\cdot C_1(\\rho) \\sqrt{\\mathcal{E}(f, f)}\n1141: $$\n1142: \n1143: $$\n1144: \\left|\\int \\mathcal{V}_{\\text{visc}} f \\, d\\pi_N\\right| \\leq \\nu \\cdot C_2(\\rho) \\sqrt{\\mathcal{E}(f, f)}\n1145: $$\n1146: \n1147: where $\\mathcal{E}(f, f) = \\int |\\Sigma_{\\text{reg}} \\nabla_v f|^2 d\\pi_N$ is the Dirichlet form and $C_1(\\rho), C_2(\\rho)$ are N-uniform.",
+      "metadata": {
+        "label": "thm-cattiaux-guillin-verification"
+      },
+      "section": "## 8. N-Uniform Bounds on All Constants",
+      "raw_directive": "1122: :::\n1123: \n1124: :::{prf:theorem} Verification of Cattiaux-Guillin Hypotheses\n1125: :label: thm-cattiaux-guillin-verification\n1126: \n1127: The generator perturbation\n1128: \n1129: $$\n1130: \\mathcal{L}_{\\text{full}} = \\mathcal{L}_{\\text{backbone}} + \\mathcal{V}_{\\text{adapt}} + \\mathcal{V}_{\\text{visc}}\n1131: $$\n1132: \n1133: satisfies the hypotheses of the Cattiaux-Guillin LSI perturbation theorem:\n1134: \n1135: 1. **Invariance:** The QSD $\\pi_N$ is invariant under $\\mathcal{L}_{\\text{full}}$ (by construction of the QSD)\n1136: \n1137: 2. **Relative boundedness:** The perturbations are relatively bounded in the Dirichlet form sense:\n1138: \n1139: $$\n1140: \\left|\\int \\mathcal{V}_{\\text{adapt}} f \\, d\\pi_N\\right| \\leq \\epsilon_F \\cdot C_1(\\rho) \\sqrt{\\mathcal{E}(f, f)}\n1141: $$\n1142: \n1143: $$\n1144: \\left|\\int \\mathcal{V}_{\\text{visc}} f \\, d\\pi_N\\right| \\leq \\nu \\cdot C_2(\\rho) \\sqrt{\\mathcal{E}(f, f)}\n1145: $$\n1146: \n1147: where $\\mathcal{E}(f, f) = \\int |\\Sigma_{\\text{reg}} \\nabla_v f|^2 d\\pi_N$ is the Dirichlet form and $C_1(\\rho), C_2(\\rho)$ are N-uniform.\n1148: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "15_geometric_gas_lsi_proof",
+        "chapter_index": 13,
+        "chapter_file": "chapter_13.json",
+        "section_id": "## 8. N-Uniform Bounds on All Constants"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-adaptive-lsi-main",
+      "title": "N-Uniform Log-Sobolev Inequality for Geometric Viscous Fluid Model",
+      "start_line": 1280,
+      "end_line": 1323,
+      "header_lines": [
+        1281
+      ],
+      "content_start": 1283,
+      "content_end": 1322,
+      "content": "1283: :label: thm-adaptive-lsi-main\n1284: \n1285: Under the assumptions:\n1286: \n1287: 1. **Kernel regularity:** Localization kernel $K_\\rho \\in C^3$ with $\\|\\nabla^k K_\\rho\\| \\leq C_K^{(k)}(\\rho)/\\rho^k$ for $k=1,2,3$\n1288: 2. **Distance regularity:** Distance function $d \\in C^3(T^3)$\n1289: 3. **Squashing regularity:** $g_A \\in C^3$ with $\\|g_A'''\\|_\\infty < \\infty$\n1290: 4. **Parameter regime:** $\\epsilon_F < \\epsilon_F^*(\\rho) = c_{\\min}(\\rho)/(2F_{\\text{adapt,max}}(\\rho))$, $\\nu > 0$ (arbitrary), $\\epsilon_\\Sigma > H_{\\max}(\\rho)$\n1291: \n1292: the quasi-stationary distribution $\\pi_N$ for the N-particle Geometric Viscous Fluid Model satisfies a Log-Sobolev Inequality:\n1293: \n1294: **N-Uniformity:** The LSI constant's independence of $N$ is a direct consequence of the proven N-uniformity of all its constituent components: the ellipticity bounds $c_{\\min}(\\rho), c_{\\max}(\\rho)$ ({prf:ref}`thm-ueph-proven`), the C³ regularity bound $K_{V,3}(\\rho)$ ({prf:ref}`thm-fitness-third-deriv-proven`), the Poincaré constant $C_P(\\rho)$ ({prf:ref}`thm-qsd-poincare-rigorous`), and the Wasserstein contraction rate $\\kappa_W$ (Theorem 2.3.1 in `04_convergence.md`).\n1295: \n1296: $$\n1297: \\text{Ent}_{\\pi_N}(f^2) \\leq C_{\\text{LSI}}(\\rho) \\sum_{i=1}^N \\int \\|\\Sigma_{\\text{reg}}(x_i, S) \\nabla_{v_i} f\\|^2 d\\pi_N\n1298: $$\n1299: \n1300: where the LSI constant satisfies the explicit bound:\n1301: \n1302: $$\n1303: C_{\\text{LSI}}(\\rho) \\leq \\frac{C_{\\text{backbone+clone}}(\\rho)}{1 - \\epsilon_F \\cdot C_1(\\rho)}\n1304: $$\n1305: \n1306: with constituent terms:\n1307: \n1308: $$\n1309: \\begin{aligned}\n1310: C_{\\text{backbone+clone}}(\\rho) &= \\frac{C_P(\\rho)}{1 - C_{\\text{comm}}(\\rho)/\\alpha_{\\text{backbone}}(\\rho)} \\cdot \\frac{1}{1 - \\kappa_W^{-1} \\delta_{\\text{clone}}} \\\\\n1311: C_P(\\rho) &= \\frac{c_{\\max}^2(\\rho)}{2\\gamma} \\quad \\text{(Poincaré constant from {prf:ref}`thm-qsd-poincare-rigorous`)} \\\\\n1312: \\alpha_{\\text{backbone}}(\\rho) &= \\min(\\gamma, \\kappa_{\\text{conf}}) \\quad \\text{(hypocoercive gap)} \\\\\n1313: C_{\\text{comm}}(\\rho) &= \\frac{C_{\\nabla\\Sigma}(\\rho)}{c_{\\min}(\\rho)} \\leq \\frac{K_{V,3}(\\rho)}{c_{\\min}(\\rho)} \\quad \\text{(commutator error from {prf:ref}`thm-fitness-third-deriv-proven`)} \\\\\n1314: C_1(\\rho) &= \\frac{F_{\\text{adapt,max}}(\\rho)}{c_{\\min}(\\rho)} \\quad \\text{(adaptive force perturbation constant)}\n1315: \\end{aligned}\n1316: $$\n1317: \n1318: This constant is **uniformly bounded for all $N \\geq 2$**:\n1319: \n1320: $$\n1321: \\sup_{N \\geq 2} C_{\\text{LSI}}(N, \\rho) \\leq C_{\\text{LSI}}^{\\max}(\\rho) < \\infty\n1322: $$",
+      "metadata": {
+        "label": "thm-adaptive-lsi-main"
+      },
+      "section": "## 9. Main Theorem: N-Uniform LSI for Geometric Gas",
+      "raw_directive": "1280: ### 9.1. Statement of the Theorem\n1281: \n1282: :::{prf:theorem} N-Uniform Log-Sobolev Inequality for Geometric Viscous Fluid Model\n1283: :label: thm-adaptive-lsi-main\n1284: \n1285: Under the assumptions:\n1286: \n1287: 1. **Kernel regularity:** Localization kernel $K_\\rho \\in C^3$ with $\\|\\nabla^k K_\\rho\\| \\leq C_K^{(k)}(\\rho)/\\rho^k$ for $k=1,2,3$\n1288: 2. **Distance regularity:** Distance function $d \\in C^3(T^3)$\n1289: 3. **Squashing regularity:** $g_A \\in C^3$ with $\\|g_A'''\\|_\\infty < \\infty$\n1290: 4. **Parameter regime:** $\\epsilon_F < \\epsilon_F^*(\\rho) = c_{\\min}(\\rho)/(2F_{\\text{adapt,max}}(\\rho))$, $\\nu > 0$ (arbitrary), $\\epsilon_\\Sigma > H_{\\max}(\\rho)$\n1291: \n1292: the quasi-stationary distribution $\\pi_N$ for the N-particle Geometric Viscous Fluid Model satisfies a Log-Sobolev Inequality:\n1293: \n1294: **N-Uniformity:** The LSI constant's independence of $N$ is a direct consequence of the proven N-uniformity of all its constituent components: the ellipticity bounds $c_{\\min}(\\rho), c_{\\max}(\\rho)$ ({prf:ref}`thm-ueph-proven`), the C³ regularity bound $K_{V,3}(\\rho)$ ({prf:ref}`thm-fitness-third-deriv-proven`), the Poincaré constant $C_P(\\rho)$ ({prf:ref}`thm-qsd-poincare-rigorous`), and the Wasserstein contraction rate $\\kappa_W$ (Theorem 2.3.1 in `04_convergence.md`).\n1295: \n1296: $$\n1297: \\text{Ent}_{\\pi_N}(f^2) \\leq C_{\\text{LSI}}(\\rho) \\sum_{i=1}^N \\int \\|\\Sigma_{\\text{reg}}(x_i, S) \\nabla_{v_i} f\\|^2 d\\pi_N\n1298: $$\n1299: \n1300: where the LSI constant satisfies the explicit bound:\n1301: \n1302: $$\n1303: C_{\\text{LSI}}(\\rho) \\leq \\frac{C_{\\text{backbone+clone}}(\\rho)}{1 - \\epsilon_F \\cdot C_1(\\rho)}\n1304: $$\n1305: \n1306: with constituent terms:\n1307: \n1308: $$\n1309: \\begin{aligned}\n1310: C_{\\text{backbone+clone}}(\\rho) &= \\frac{C_P(\\rho)}{1 - C_{\\text{comm}}(\\rho)/\\alpha_{\\text{backbone}}(\\rho)} \\cdot \\frac{1}{1 - \\kappa_W^{-1} \\delta_{\\text{clone}}} \\\\\n1311: C_P(\\rho) &= \\frac{c_{\\max}^2(\\rho)}{2\\gamma} \\quad \\text{(Poincaré constant from {prf:ref}`thm-qsd-poincare-rigorous`)} \\\\\n1312: \\alpha_{\\text{backbone}}(\\rho) &= \\min(\\gamma, \\kappa_{\\text{conf}}) \\quad \\text{(hypocoercive gap)} \\\\\n1313: C_{\\text{comm}}(\\rho) &= \\frac{C_{\\nabla\\Sigma}(\\rho)}{c_{\\min}(\\rho)} \\leq \\frac{K_{V,3}(\\rho)}{c_{\\min}(\\rho)} \\quad \\text{(commutator error from {prf:ref}`thm-fitness-third-deriv-proven`)} \\\\\n1314: C_1(\\rho) &= \\frac{F_{\\text{adapt,max}}(\\rho)}{c_{\\min}(\\rho)} \\quad \\text{(adaptive force perturbation constant)}\n1315: \\end{aligned}\n1316: $$\n1317: \n1318: This constant is **uniformly bounded for all $N \\geq 2$**:\n1319: \n1320: $$\n1321: \\sup_{N \\geq 2} C_{\\text{LSI}}(N, \\rho) \\leq C_{\\text{LSI}}^{\\max}(\\rho) < \\infty\n1322: $$\n1323: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "15_geometric_gas_lsi_proof",
+        "chapter_index": 14,
+        "chapter_file": "chapter_14.json",
+        "section_id": "## 9. Main Theorem: N-Uniform LSI for Geometric Gas"
+      }
+    }
+  ]
+}

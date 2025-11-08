@@ -1,0 +1,155 @@
+{
+  "chapter_index": 1,
+  "section_id": "## 1. The Mean-Field System and Function Spaces",
+  "directive_count": 8,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-mf-state-space",
+      "title": "Mean-Field State Space",
+      "start_line": 64,
+      "end_line": 86,
+      "header_lines": [
+        65
+      ],
+      "content_start": 67,
+      "content_end": 85,
+      "content": "67: :label: def-mf-state-space\n68: \n69: The **single-particle phase space** is:\n70: \n71: $$\n72: \\Omega = \\mathcal{X}_{\\text{valid}} \\times \\mathcal{V}\n73: $$\n74: \n75: where:\n76: - $\\mathcal{X}_{\\text{valid}} \\subset \\mathbb{R}^d$ is the valid position space (open, bounded, smooth boundary)\n77: - $\\mathcal{V} = \\{v \\in \\mathbb{R}^d : \\|v\\| \\le V_{\\max}\\}$ is the velocity space (bounded)\n78: \n79: We use the notation $z = (x, v) \\in \\Omega$ for a point in phase space.\n80: \n81: The **density function space** is:\n82: \n83: $$\n84: \\mathcal{F} = \\left\\{ f \\in L^1(\\Omega) \\cap L^\\infty(\\Omega) : f \\ge 0, \\int_\\Omega f(z) dz = m_a \\le 1 \\right\\}\n85: $$",
+      "metadata": {
+        "label": "def-mf-state-space"
+      },
+      "section": "## 1. The Mean-Field System and Function Spaces",
+      "raw_directive": "64: We begin by precisely stating the mean-field system from [05_mean_field.md](05_mean_field.md).\n65: \n66: :::{prf:definition} Mean-Field State Space\n67: :label: def-mf-state-space\n68: \n69: The **single-particle phase space** is:\n70: \n71: $$\n72: \\Omega = \\mathcal{X}_{\\text{valid}} \\times \\mathcal{V}\n73: $$\n74: \n75: where:\n76: - $\\mathcal{X}_{\\text{valid}} \\subset \\mathbb{R}^d$ is the valid position space (open, bounded, smooth boundary)\n77: - $\\mathcal{V} = \\{v \\in \\mathbb{R}^d : \\|v\\| \\le V_{\\max}\\}$ is the velocity space (bounded)\n78: \n79: We use the notation $z = (x, v) \\in \\Omega$ for a point in phase space.\n80: \n81: The **density function space** is:\n82: \n83: $$\n84: \\mathcal{F} = \\left\\{ f \\in L^1(\\Omega) \\cap L^\\infty(\\Omega) : f \\ge 0, \\int_\\Omega f(z) dz = m_a \\le 1 \\right\\}\n85: $$\n86: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-mckean-vlasov-system",
+      "title": "The Mean-Field McKean-Vlasov System",
+      "start_line": 88,
+      "end_line": 134,
+      "header_lines": [
+        89
+      ],
+      "content_start": 91,
+      "content_end": 133,
+      "content": "91: :label: def-mckean-vlasov-system\n92: \n93: The coupled system governing the density $f(z, t)$ and dead mass $m_d(t)$ is:\n94: \n95: $$\n96: \\boxed{\\partial_t f = \\mathcal{L}[f] \\equiv L^\\dagger f - c(z)f + B[f, m_d] + S[f]}\n97: $$\n98: \n99: $$\n100: \\boxed{\\frac{dm_d}{dt} = \\int_\\Omega c(z) f(z, t) dz - \\lambda_{\\text{rev}} m_d}\n101: $$\n102: \n103: with conservation: $m_a(t) + m_d(t) = 1$ for all $t \\ge 0$.\n104: \n105: **Operator Definitions:**\n106: \n107: 1. **Kinetic Transport (Fokker-Planck):**\n108: \n109: $$\n110: L^\\dagger f = -\\nabla_x \\cdot (v f) - \\nabla_v \\cdot (F(x) f) + \\gamma \\nabla_v \\cdot (v f) + \\frac{\\sigma_v^2}{2} \\Delta_v f\n111: $$\n112: \n113: where $F(x) = -\\nabla U(x)$ is the confining force and $\\gamma > 0$ is friction.\n114: \n115: 2. **Killing Operator:**\n116: \n117: $$\n118: c(z) = c(x, v) \\ge 0 \\quad \\text{(death rate near boundary)}\n119: $$\n120: \n121: 3. **Revival Operator:**\n122: \n123: $$\n124: B[f, m_d](z) = \\lambda_{\\text{rev}} m_d \\cdot f_{\\text{init}}(z)\n125: $$\n126: \n127: where $f_{\\text{init}}$ is a fixed initial distribution.\n128: \n129: 4. **Cloning/Selection Operator:**\n130: \n131: $$\n132: S[f](z) = \\text{(to be specified - depends on fitness functional)}\n133: $$",
+      "metadata": {
+        "label": "def-mckean-vlasov-system"
+      },
+      "section": "## 1. The Mean-Field System and Function Spaces",
+      "raw_directive": "88: :::\n89: \n90: :::{prf:definition} The Mean-Field McKean-Vlasov System\n91: :label: def-mckean-vlasov-system\n92: \n93: The coupled system governing the density $f(z, t)$ and dead mass $m_d(t)$ is:\n94: \n95: $$\n96: \\boxed{\\partial_t f = \\mathcal{L}[f] \\equiv L^\\dagger f - c(z)f + B[f, m_d] + S[f]}\n97: $$\n98: \n99: $$\n100: \\boxed{\\frac{dm_d}{dt} = \\int_\\Omega c(z) f(z, t) dz - \\lambda_{\\text{rev}} m_d}\n101: $$\n102: \n103: with conservation: $m_a(t) + m_d(t) = 1$ for all $t \\ge 0$.\n104: \n105: **Operator Definitions:**\n106: \n107: 1. **Kinetic Transport (Fokker-Planck):**\n108: \n109: $$\n110: L^\\dagger f = -\\nabla_x \\cdot (v f) - \\nabla_v \\cdot (F(x) f) + \\gamma \\nabla_v \\cdot (v f) + \\frac{\\sigma_v^2}{2} \\Delta_v f\n111: $$\n112: \n113: where $F(x) = -\\nabla U(x)$ is the confining force and $\\gamma > 0$ is friction.\n114: \n115: 2. **Killing Operator:**\n116: \n117: $$\n118: c(z) = c(x, v) \\ge 0 \\quad \\text{(death rate near boundary)}\n119: $$\n120: \n121: 3. **Revival Operator:**\n122: \n123: $$\n124: B[f, m_d](z) = \\lambda_{\\text{rev}} m_d \\cdot f_{\\text{init}}(z)\n125: $$\n126: \n127: where $f_{\\text{init}}$ is a fixed initial distribution.\n128: \n129: 4. **Cloning/Selection Operator:**\n130: \n131: $$\n132: S[f](z) = \\text{(to be specified - depends on fitness functional)}\n133: $$\n134: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-77",
+      "title": "Operator Structure and Symmetry",
+      "start_line": 136,
+      "end_line": 147,
+      "header_lines": [
+        137
+      ],
+      "content_start": 139,
+      "content_end": 146,
+      "content": "139: :class: note\n140: \n141: The symmetries of this system depend critically on the **specific form** of each operator:\n142: \n143: - $L^\\dagger$: Determined by the confining potential $U(x)$ and friction $\\gamma$\n144: - $c(z)$: Determined by boundary geometry\n145: - $B[f, m_d]$: Linear in $m_d$, but depends on choice of $f_{\\text{init}}$\n146: - $S[f]$: **Highly non-linear** and non-local through fitness functional $V_{\\text{fit}}[f](x)$",
+      "metadata": {
+        "class": "note"
+      },
+      "section": "## 1. The Mean-Field System and Function Spaces",
+      "raw_directive": "136: :::\n137: \n138: :::{prf:remark} Operator Structure and Symmetry\n139: :class: note\n140: \n141: The symmetries of this system depend critically on the **specific form** of each operator:\n142: \n143: - $L^\\dagger$: Determined by the confining potential $U(x)$ and friction $\\gamma$\n144: - $c(z)$: Determined by boundary geometry\n145: - $B[f, m_d]$: Linear in $m_d$, but depends on choice of $f_{\\text{init}}$\n146: - $S[f]$: **Highly non-linear** and non-local through fitness functional $V_{\\text{fit}}[f](x)$\n147: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-mf-fitness-functional-global",
+      "title": "Mean-Field Fitness Functional (Global Version)",
+      "start_line": 153,
+      "end_line": 181,
+      "header_lines": [
+        154
+      ],
+      "content_start": 156,
+      "content_end": 180,
+      "content": "156: :label: def-mf-fitness-functional-global\n157: \n158: For the **global** (non-localized) fitness, following the framework's Z-score normalization:\n159: \n160: $$\n161: V_{\\text{fit}}[f](z) = \\left( g_A(\\widetilde{r}[f](z)) + \\eta \\right)^\\alpha \\cdot \\left( g_A(\\widetilde{d}[f](z)) + \\eta \\right)^\\beta\n162: $$\n163: \n164: where:\n165: \n166: **Reward Z-score:**\n167: \n168: $$\n169: \\widetilde{r}[f](z) = \\frac{R(z) - \\mu_R[f]}{\\sigma_R[f]}, \\quad \\mu_R[f] = \\int_\\Omega R(z') f(z') dz', \\quad \\sigma_R^2[f] = \\int_\\Omega (R(z') - \\mu_R[f])^2 f(z') dz'\n170: $$\n171: \n172: **Diversity Z-score** (requires companion selection measure $\\mathcal{C}[f]$):\n173: \n174: $$\n175: \\widetilde{d}[f](z) = \\frac{\\mathbb{E}_{z_c \\sim \\mathcal{C}[f](z)}[d_{\\text{alg}}(z, z_c)] - \\mu_D[f]}{\\sigma_D[f]}\n176: $$\n177: \n178: **Rescale function:** $g_A: \\mathbb{R} \\to [0, A]$ is smooth, bounded, monotone (e.g., logistic)\n179: \n180: **Parameters:** $\\alpha, \\beta > 0$ (exploitation, exploration weights), $\\eta > 0$ (floor)",
+      "metadata": {
+        "label": "def-mf-fitness-functional-global"
+      },
+      "section": "## 1. The Mean-Field System and Function Spaces",
+      "raw_directive": "153: The cloning operator $S[f]$ depends on a **fitness functional** that couples the local density to global statistics.\n154: \n155: :::{prf:definition} Mean-Field Fitness Functional (Global Version)\n156: :label: def-mf-fitness-functional-global\n157: \n158: For the **global** (non-localized) fitness, following the framework's Z-score normalization:\n159: \n160: $$\n161: V_{\\text{fit}}[f](z) = \\left( g_A(\\widetilde{r}[f](z)) + \\eta \\right)^\\alpha \\cdot \\left( g_A(\\widetilde{d}[f](z)) + \\eta \\right)^\\beta\n162: $$\n163: \n164: where:\n165: \n166: **Reward Z-score:**\n167: \n168: $$\n169: \\widetilde{r}[f](z) = \\frac{R(z) - \\mu_R[f]}{\\sigma_R[f]}, \\quad \\mu_R[f] = \\int_\\Omega R(z') f(z') dz', \\quad \\sigma_R^2[f] = \\int_\\Omega (R(z') - \\mu_R[f])^2 f(z') dz'\n170: $$\n171: \n172: **Diversity Z-score** (requires companion selection measure $\\mathcal{C}[f]$):\n173: \n174: $$\n175: \\widetilde{d}[f](z) = \\frac{\\mathbb{E}_{z_c \\sim \\mathcal{C}[f](z)}[d_{\\text{alg}}(z, z_c)] - \\mu_D[f]}{\\sigma_D[f]}\n176: $$\n177: \n178: **Rescale function:** $g_A: \\mathbb{R} \\to [0, A]$ is smooth, bounded, monotone (e.g., logistic)\n179: \n180: **Parameters:** $\\alpha, \\beta > 0$ (exploitation, exploration weights), $\\eta > 0$ (floor)\n181: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-mf-fitness-functional-localized",
+      "title": "Localized Fitness Functional (\u03c1-Dependent)",
+      "start_line": 183,
+      "end_line": 211,
+      "header_lines": [
+        184
+      ],
+      "content_start": 186,
+      "content_end": 210,
+      "content": "186: :label: def-mf-fitness-functional-localized\n187: \n188: For the **localized** fitness from the Adaptive Viscous Fluid Model:\n189: \n190: $$\n191: V_{\\text{fit}}[f, \\rho](x) = g_A(Z_\\rho[f, d, x])\n192: $$\n193: \n194: where $Z_\\rho[f, d, x]$ is the **\u03c1-localized Z-score**:\n195: \n196: $$\n197: Z_\\rho[f, d, x] = \\frac{d(x) - \\mu_\\rho[f, d, x]}{\\sigma_\\rho[f, d, x]}\n198: $$\n199: \n200: **Localized moments:**\n201: \n202: $$\n203: \\mu_\\rho[f, d, x] = \\int_{\\mathcal{X} \\times \\mathcal{V}} K_\\rho(x, x') d(x') f(x', v) dx' dv\n204: $$\n205: \n206: $$\n207: \\sigma_\\rho^2[f, d, x] = \\int_{\\mathcal{X} \\times \\mathcal{V}} K_\\rho(x, x') [d(x') - \\mu_\\rho[f, d, x]]^2 f(x', v) dx' dv\n208: $$\n209: \n210: **Localization kernel:** $K_\\rho(x, x')$ with support radius $\\sim \\rho$",
+      "metadata": {
+        "label": "def-mf-fitness-functional-localized"
+      },
+      "section": "## 1. The Mean-Field System and Function Spaces",
+      "raw_directive": "183: :::\n184: \n185: :::{prf:definition} Localized Fitness Functional (\u03c1-Dependent)\n186: :label: def-mf-fitness-functional-localized\n187: \n188: For the **localized** fitness from the Adaptive Viscous Fluid Model:\n189: \n190: $$\n191: V_{\\text{fit}}[f, \\rho](x) = g_A(Z_\\rho[f, d, x])\n192: $$\n193: \n194: where $Z_\\rho[f, d, x]$ is the **\u03c1-localized Z-score**:\n195: \n196: $$\n197: Z_\\rho[f, d, x] = \\frac{d(x) - \\mu_\\rho[f, d, x]}{\\sigma_\\rho[f, d, x]}\n198: $$\n199: \n200: **Localized moments:**\n201: \n202: $$\n203: \\mu_\\rho[f, d, x] = \\int_{\\mathcal{X} \\times \\mathcal{V}} K_\\rho(x, x') d(x') f(x', v) dx' dv\n204: $$\n205: \n206: $$\n207: \\sigma_\\rho^2[f, d, x] = \\int_{\\mathcal{X} \\times \\mathcal{V}} K_\\rho(x, x') [d(x') - \\mu_\\rho[f, d, x]]^2 f(x', v) dx' dv\n208: $$\n209: \n210: **Localization kernel:** $K_\\rho(x, x')$ with support radius $\\sim \\rho$\n211: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-154",
+      "title": "Symmetry-Breaking by Fitness Functional",
+      "start_line": 213,
+      "end_line": 226,
+      "header_lines": [
+        214
+      ],
+      "content_start": 216,
+      "content_end": 225,
+      "content": "216: :class: warning\n217: \n218: The **non-local** and **non-linear** structure of $V_{\\text{fit}}[f]$ is the primary source of **symmetry breaking** in the mean-field system.\n219: \n220: **Key Observations:**\n221: 1. If $R(z)$ and the companion selection depend on global moments $\\mu_R[f], \\sigma_R[f]$, then spatial translation is **broken** (unless $R$ itself has special structure)\n222: 2. If $V_{\\text{fit}}$ depends on position $x$ explicitly (not just through $z$), rotational symmetry is **broken**\n223: 3. The only \"universal\" symmetries are:\n224:    - **Time translation** (if all operators are time-independent)\n225:    - **Indistinguishability** (intrinsic to the density description)",
+      "metadata": {
+        "class": "warning"
+      },
+      "section": "## 1. The Mean-Field System and Function Spaces",
+      "raw_directive": "213: :::\n214: \n215: :::{prf:remark} Symmetry-Breaking by Fitness Functional\n216: :class: warning\n217: \n218: The **non-local** and **non-linear** structure of $V_{\\text{fit}}[f]$ is the primary source of **symmetry breaking** in the mean-field system.\n219: \n220: **Key Observations:**\n221: 1. If $R(z)$ and the companion selection depend on global moments $\\mu_R[f], \\sigma_R[f]$, then spatial translation is **broken** (unless $R$ itself has special structure)\n222: 2. If $V_{\\text{fit}}$ depends on position $x$ explicitly (not just through $z$), rotational symmetry is **broken**\n223: 3. The only \"universal\" symmetries are:\n224:    - **Time translation** (if all operators are time-independent)\n225:    - **Indistinguishability** (intrinsic to the density description)\n226: "
+    },
+    {
+      "directive_type": "assumption",
+      "label": "assump-operator-structure",
+      "title": "Operator Regularity and Structure",
+      "start_line": 232,
+      "end_line": 258,
+      "header_lines": [
+        233
+      ],
+      "content_start": 235,
+      "content_end": 257,
+      "content": "235: :label: assump-operator-structure\n236: \n237: We assume the following properties hold throughout this chapter:\n238: \n239: **A1. Kinetic Operator:**\n240: - Confining potential: $U \\in C^2(\\mathcal{X}_{\\text{valid}})$ with $\\langle x, \\nabla U(x) \\rangle \\ge \\alpha_U \\|x\\|^2 - R_U$\n241: - Friction: $\\gamma > 0$ is constant\n242: - Diffusion: $\\sigma_v^2 > 0$ is constant (isotropic velocity diffusion)\n243: \n244: **A2. Killing Operator:**\n245: - Boundary-supported: $c(x, v) = 0$ for $x$ in interior of $\\mathcal{X}_{\\text{valid}}$\n246: - Ballistic form near boundary: $c(x, v) \\sim (v \\cdot n_x)^+ / d(x)$ for $d(x) < \\delta$\n247: \n248: **A3. Revival Operator:**\n249: - Linear structure: $B[f, m_d] = \\lambda_{\\text{rev}} m_d \\cdot f_{\\text{init}}$\n250: - Fixed distribution: $f_{\\text{init}} \\in \\mathcal{F}$ is time-independent\n251: \n252: **A4. Cloning Operator:**\n253: - Mass-neutral: $\\int_\\Omega S[f](z) dz = 0$ for all $f \\in \\mathcal{F}$\n254: - Fitness-driven: $S[f]$ depends on $f$ through $V_{\\text{fit}}[f]$\n255: \n256: **A5. Fitness Functional:**\n257: - Depends on global moments: $\\mu_R[f], \\sigma_R[f], \\mu_D[f], \\sigma_D[f]$",
+      "metadata": {
+        "label": "assump-operator-structure"
+      },
+      "section": "## 1. The Mean-Field System and Function Spaces",
+      "raw_directive": "232: To proceed with symmetry analysis, we must state our assumptions clearly.\n233: \n234: :::{prf:assumption} Operator Regularity and Structure\n235: :label: assump-operator-structure\n236: \n237: We assume the following properties hold throughout this chapter:\n238: \n239: **A1. Kinetic Operator:**\n240: - Confining potential: $U \\in C^2(\\mathcal{X}_{\\text{valid}})$ with $\\langle x, \\nabla U(x) \\rangle \\ge \\alpha_U \\|x\\|^2 - R_U$\n241: - Friction: $\\gamma > 0$ is constant\n242: - Diffusion: $\\sigma_v^2 > 0$ is constant (isotropic velocity diffusion)\n243: \n244: **A2. Killing Operator:**\n245: - Boundary-supported: $c(x, v) = 0$ for $x$ in interior of $\\mathcal{X}_{\\text{valid}}$\n246: - Ballistic form near boundary: $c(x, v) \\sim (v \\cdot n_x)^+ / d(x)$ for $d(x) < \\delta$\n247: \n248: **A3. Revival Operator:**\n249: - Linear structure: $B[f, m_d] = \\lambda_{\\text{rev}} m_d \\cdot f_{\\text{init}}$\n250: - Fixed distribution: $f_{\\text{init}} \\in \\mathcal{F}$ is time-independent\n251: \n252: **A4. Cloning Operator:**\n253: - Mass-neutral: $\\int_\\Omega S[f](z) dz = 0$ for all $f \\in \\mathcal{F}$\n254: - Fitness-driven: $S[f]$ depends on $f$ through $V_{\\text{fit}}[f]$\n255: \n256: **A5. Fitness Functional:**\n257: - Depends on global moments: $\\mu_R[f], \\sigma_R[f], \\mu_D[f], \\sigma_D[f]$\n258: - Bounded: $0 \\le V_{\\text{fit}}[f](z) \\le V_{\\max} < \\infty$"
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-201",
+      "title": "Necessity of Explicit Assumptions",
+      "start_line": 260,
+      "end_line": 271,
+      "header_lines": [
+        261
+      ],
+      "content_start": 263,
+      "content_end": 270,
+      "content": "263: :class: important\n264: \n265: These assumptions are **not merely technicalities**\u2014they directly determine which symmetries exist.\n266: \n267: For example:\n268: - If $U(x) = U(\\|x\\|)$ (spherically symmetric), we gain **rotational symmetry**\n269: - If $U(x) = \\frac{1}{2}\\|x\\|^2$ (harmonic), we might gain **scaling symmetry**\n270: - If $f_{\\text{init}}$ breaks spatial symmetry, the revival operator breaks that symmetry",
+      "metadata": {
+        "class": "important"
+      },
+      "section": "## 1. The Mean-Field System and Function Spaces",
+      "raw_directive": "260: :::\n261: \n262: :::{prf:remark} Necessity of Explicit Assumptions\n263: :class: important\n264: \n265: These assumptions are **not merely technicalities**\u2014they directly determine which symmetries exist.\n266: \n267: For example:\n268: - If $U(x) = U(\\|x\\|)$ (spherically symmetric), we gain **rotational symmetry**\n269: - If $U(x) = \\frac{1}{2}\\|x\\|^2$ (harmonic), we might gain **scaling symmetry**\n270: - If $f_{\\text{init}}$ breaks spatial symmetry, the revival operator breaks that symmetry\n271: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

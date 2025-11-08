@@ -1,0 +1,125 @@
+{
+  "chapter_index": 1,
+  "section_id": "## OS4: Clustering (Exponential Decay of Correlations)",
+  "directive_count": 7,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-os-interaction-scale",
+      "title": "Companion Interaction Scale",
+      "start_line": 345,
+      "end_line": 357,
+      "header_lines": [
+        346
+      ],
+      "content_start": 348,
+      "content_end": 356,
+      "content": "348: :label: def-os-interaction-scale\n349: \n350: The Crystalline Gas companion interaction kernel has a **scale parameter** $\\sigma > 0$:\n351: \n352: $$\n353: K(x, y) = \\exp\\left(-\\frac{\\|x - y\\|^2}{2\\sigma^2}\\right)\n354: $$\n355: \n356: This sets the **correlation length scale** for walker interactions:",
+      "metadata": {
+        "label": "def-os-interaction-scale"
+      },
+      "section": "## OS4: Clustering (Exponential Decay of Correlations)",
+      "raw_directive": "345: ### Gaussian Kernel Scale Parameter\n346: \n347: :::{prf:definition} Companion Interaction Scale\n348: :label: def-os-interaction-scale\n349: \n350: The Crystalline Gas companion interaction kernel has a **scale parameter** $\\sigma > 0$:\n351: \n352: $$\n353: K(x, y) = \\exp\\left(-\\frac{\\|x - y\\|^2}{2\\sigma^2}\\right)\n354: $$\n355: \n356: This sets the **correlation length scale** for walker interactions:\n357: - Walkers separated by $\\|x - y\\| \\ll \\sigma$ are **strongly coupled**"
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-os-gaussian-exponential-decay",
+      "title": "Gaussian Kernel Induces Exponential Clustering",
+      "start_line": 361,
+      "end_line": 377,
+      "header_lines": [
+        362
+      ],
+      "content_start": 364,
+      "content_end": 376,
+      "content": "364: :label: lem-os-gaussian-exponential-decay\n365: \n366: For walkers at positions $x, y \\in \\mathbb{R}^4$ with $\\|x - y\\| = r$, the companion interaction strength decays exponentially:\n367: \n368: $$\n369: K(x, y) = \\exp\\left(-\\frac{r^2}{2\\sigma^2}\\right) \\leq \\exp\\left(-\\frac{r}{2\\sigma}\\right)\n370: $$\n371: \n372: for $r \\geq \\sigma$.\n373: \n374: This establishes an **exponential suppression** with decay rate:\n375: \n376: $$",
+      "metadata": {
+        "label": "lem-os-gaussian-exponential-decay"
+      },
+      "section": "## OS4: Clustering (Exponential Decay of Correlations)",
+      "raw_directive": "361: ### Lemma: Exponential Decay of Companion Correlations\n362: \n363: :::{prf:lemma} Gaussian Kernel Induces Exponential Clustering\n364: :label: lem-os-gaussian-exponential-decay\n365: \n366: For walkers at positions $x, y \\in \\mathbb{R}^4$ with $\\|x - y\\| = r$, the companion interaction strength decays exponentially:\n367: \n368: $$\n369: K(x, y) = \\exp\\left(-\\frac{r^2}{2\\sigma^2}\\right) \\leq \\exp\\left(-\\frac{r}{2\\sigma}\\right)\n370: $$\n371: \n372: for $r \\geq \\sigma$.\n373: \n374: This establishes an **exponential suppression** with decay rate:\n375: \n376: $$\n377: m_{\\text{corr}} := \\frac{1}{2\\sigma}"
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-39",
+      "title": null,
+      "start_line": 379,
+      "end_line": 396,
+      "header_lines": [],
+      "content_start": 381,
+      "content_end": 395,
+      "content": "381: :::{prf:proof}\n382: \n383: For $r = \\|x - y\\| \\geq \\sigma$:\n384: \n385: $$\n386: \\frac{r^2}{2\\sigma^2} = \\frac{r}{2\\sigma} \\cdot \\frac{r}{\\sigma} \\geq \\frac{r}{2\\sigma}\n387: $$\n388: \n389: since $r/\\sigma \\geq 1$.\n390: \n391: Therefore:\n392: \n393: $$\n394: K(x, y) = \\exp\\left(-\\frac{r^2}{2\\sigma^2}\\right) \\leq \\exp\\left(-\\frac{r}{2\\sigma}\\right)\n395: $$",
+      "metadata": {},
+      "section": "## OS4: Clustering (Exponential Decay of Correlations)",
+      "raw_directive": "379: :::\n380: \n381: :::{prf:proof}\n382: \n383: For $r = \\|x - y\\| \\geq \\sigma$:\n384: \n385: $$\n386: \\frac{r^2}{2\\sigma^2} = \\frac{r}{2\\sigma} \\cdot \\frac{r}{\\sigma} \\geq \\frac{r}{2\\sigma}\n387: $$\n388: \n389: since $r/\\sigma \\geq 1$.\n390: \n391: Therefore:\n392: \n393: $$\n394: K(x, y) = \\exp\\left(-\\frac{r^2}{2\\sigma^2}\\right) \\leq \\exp\\left(-\\frac{r}{2\\sigma}\\right)\n395: $$\n396: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-os4-clustering",
+      "title": "Clustering of Gauge Field Correlations",
+      "start_line": 400,
+      "end_line": 422,
+      "header_lines": [
+        401
+      ],
+      "content_start": 403,
+      "content_end": 421,
+      "content": "403: :label: thm-os4-clustering\n404: \n405: The $n$-point correlation functions of gauge fields $A_\\mu^a(x)$ at QSD satisfy **exponential clustering**:\n406: \n407: For configurations $(x_1, \\ldots, x_n)$ and $(y_1, \\ldots, y_m)$ with spatial separation $R := \\min_{i,j} \\|x_i - y_j\\|$:\n408: \n409: $$\n410: \\left| \\mathcal{S}_{n+m}(x_1, \\ldots, x_n, y_1, \\ldots, y_m) - \\mathcal{S}_n(x_1, \\ldots, x_n) \\cdot \\mathcal{S}_m(y_1, \\ldots, y_m) \\right|\n411: $$\n412: \n413: $$\n414: \\leq C_{n,m} \\cdot \\exp\\left(-m_{\\text{gap}} \\cdot R\\right)\n415: $$\n416: \n417: where the **mass gap** is:\n418: \n419: $$\n420: m_{\\text{gap}} := \\frac{1}{2\\sigma}\n421: $$",
+      "metadata": {
+        "label": "thm-os4-clustering"
+      },
+      "section": "## OS4: Clustering (Exponential Decay of Correlations)",
+      "raw_directive": "400: ### Propagation to N-Point Functions\n401: \n402: :::{prf:theorem} Clustering of Gauge Field Correlations\n403: :label: thm-os4-clustering\n404: \n405: The $n$-point correlation functions of gauge fields $A_\\mu^a(x)$ at QSD satisfy **exponential clustering**:\n406: \n407: For configurations $(x_1, \\ldots, x_n)$ and $(y_1, \\ldots, y_m)$ with spatial separation $R := \\min_{i,j} \\|x_i - y_j\\|$:\n408: \n409: $$\n410: \\left| \\mathcal{S}_{n+m}(x_1, \\ldots, x_n, y_1, \\ldots, y_m) - \\mathcal{S}_n(x_1, \\ldots, x_n) \\cdot \\mathcal{S}_m(y_1, \\ldots, y_m) \\right|\n411: $$\n412: \n413: $$\n414: \\leq C_{n,m} \\cdot \\exp\\left(-m_{\\text{gap}} \\cdot R\\right)\n415: $$\n416: \n417: where the **mass gap** is:\n418: \n419: $$\n420: m_{\\text{gap}} := \\frac{1}{2\\sigma}\n421: $$\n422: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-84",
+      "title": null,
+      "start_line": 424,
+      "end_line": 512,
+      "header_lines": [],
+      "content_start": 426,
+      "content_end": 511,
+      "content": "426: :::{prf:proof}\n427: \n428: **Step 1: Schwinger functions from QSD.**\n429: \n430: The $n$-point Schwinger function is defined as:\n431: \n432: $$\n433: \\mathcal{S}_n(x_1, \\ldots, x_n) := \\int_{\\Sigma_N} \\prod_{j=1}^{n} A_{\\mu_j}^{a_j}(x_j) \\, d\\pi_{\\text{QSD}}(\\mathcal{S})\n434: $$\n435: \n436: where gauge fields $A_\\mu^a(x)$ are constructed from walker observables (Section 4).\n437: \n438: **Step 2: Factorization at large separation.**\n439: \n440: At QSD, the probability measure $\\pi_{\\text{QSD}}$ describes a thermal equilibrium. For two clusters of walkers separated by distance $R$:\n441: \n442: - **Cluster A**: Walkers near positions $(x_1, \\ldots, x_n)$\n443: - **Cluster B**: Walkers near positions $(y_1, \\ldots, y_m)$\n444: \n445: The companion interaction between clusters A and B is:\n446: \n447: $$\n448: K_{\\text{AB}} := \\sum_{i \\in A, j \\in B} K(x_i, y_j)\n449: $$\n450: \n451: By {prf:ref}`lem-os-gaussian-exponential-decay`, for $R = \\min_{i,j} \\|x_i - y_j\\|$:\n452: \n453: $$\n454: K(x_i, y_j) \\leq \\exp\\left(-\\frac{R}{2\\sigma}\\right)\n455: $$\n456: \n457: **Step 3: Correlation function mixing.**\n458: \n459: The QSD measure has the **mixing property**: for observables $f$ supported near cluster A and $g$ supported near cluster B:\n460: \n461: $$\n462: \\left| \\int f \\cdot g \\, d\\pi_{\\text{QSD}} - \\left(\\int f \\, d\\pi_{\\text{QSD}}\\right) \\cdot \\left(\\int g \\, d\\pi_{\\text{QSD}}\\right) \\right| \\leq \\|f\\|_\\infty \\|g\\|_\\infty \\cdot K_{\\text{AB}}\n463: $$\n464: \n465: This follows from the **Dobrushin-Shlosman mixing condition** for Gibbs measures with exponentially decaying interactions.\n466: \n467: **Step 4: Apply to gauge field correlations.**\n468: \n469: Taking $f := \\prod_{j=1}^{n} A_{\\mu_j}^{a_j}(x_j)$ and $g := \\prod_{k=1}^{m} A_{\\nu_k}^{b_k}(y_k)$:\n470: \n471: $$\n472: \\left| \\mathcal{S}_{n+m}(x_1, \\ldots, x_n, y_1, \\ldots, y_m) - \\mathcal{S}_n(x_1, \\ldots, x_n) \\cdot \\mathcal{S}_m(y_1, \\ldots, y_m) \\right|\n473: $$\n474: \n475: $$\n476: \\leq \\|f\\|_{\\infty} \\|g\\|_{\\infty} \\cdot N_A \\cdot N_B \\cdot \\exp\\left(-\\frac{R}{2\\sigma}\\right)\n477: $$\n478: \n479: where $N_A, N_B$ are the numbers of walkers in clusters A and B.\n480: \n481: **Step 5: Bound gauge field magnitudes.**\n482: \n483: From the gauge field construction (Section 4), we have:\n484: \n485: $$\n486: |A_\\mu^a(x)| \\leq C_A \\cdot \\frac{1}{N} \\sum_{i=1}^{N} |F_i| \\leq C_A \\cdot \\|\\nabla \\Phi\\|_{\\infty}\n487: $$\n488: \n489: where $C_A$ is a geometric constant and $\\|\\nabla \\Phi\\|_\\infty}$ is bounded by the potential regularity (Axiom 1.1).\n490: \n491: Therefore:\n492: \n493: $$\n494: \\|f\\|_\\infty \\leq C_A^n, \\quad \\|g\\|_\\infty \\leq C_A^m\n495: $$\n496: \n497: **Step 6: Conclude.**\n498: \n499: Combining steps 4 and 5:\n500: \n501: $$\n502: \\left| \\mathcal{S}_{n+m} - \\mathcal{S}_n \\cdot \\mathcal{S}_m \\right| \\leq C_{n,m} \\cdot \\exp\\left(-\\frac{R}{2\\sigma}\\right)\n503: $$\n504: \n505: where $C_{n,m} := C_A^{n+m} \\cdot N^2$ (assuming $N_A, N_B \\sim N$).\n506: \n507: Defining the **mass gap**:\n508: \n509: $$\n510: m_{\\text{gap}} := \\frac{1}{2\\sigma}\n511: $$",
+      "metadata": {},
+      "section": "## OS4: Clustering (Exponential Decay of Correlations)",
+      "raw_directive": "424: :::\n425: \n426: :::{prf:proof}\n427: \n428: **Step 1: Schwinger functions from QSD.**\n429: \n430: The $n$-point Schwinger function is defined as:\n431: \n432: $$\n433: \\mathcal{S}_n(x_1, \\ldots, x_n) := \\int_{\\Sigma_N} \\prod_{j=1}^{n} A_{\\mu_j}^{a_j}(x_j) \\, d\\pi_{\\text{QSD}}(\\mathcal{S})\n434: $$\n435: \n436: where gauge fields $A_\\mu^a(x)$ are constructed from walker observables (Section 4).\n437: \n438: **Step 2: Factorization at large separation.**\n439: \n440: At QSD, the probability measure $\\pi_{\\text{QSD}}$ describes a thermal equilibrium. For two clusters of walkers separated by distance $R$:\n441: \n442: - **Cluster A**: Walkers near positions $(x_1, \\ldots, x_n)$\n443: - **Cluster B**: Walkers near positions $(y_1, \\ldots, y_m)$\n444: \n445: The companion interaction between clusters A and B is:\n446: \n447: $$\n448: K_{\\text{AB}} := \\sum_{i \\in A, j \\in B} K(x_i, y_j)\n449: $$\n450: \n451: By {prf:ref}`lem-os-gaussian-exponential-decay`, for $R = \\min_{i,j} \\|x_i - y_j\\|$:\n452: \n453: $$\n454: K(x_i, y_j) \\leq \\exp\\left(-\\frac{R}{2\\sigma}\\right)\n455: $$\n456: \n457: **Step 3: Correlation function mixing.**\n458: \n459: The QSD measure has the **mixing property**: for observables $f$ supported near cluster A and $g$ supported near cluster B:\n460: \n461: $$\n462: \\left| \\int f \\cdot g \\, d\\pi_{\\text{QSD}} - \\left(\\int f \\, d\\pi_{\\text{QSD}}\\right) \\cdot \\left(\\int g \\, d\\pi_{\\text{QSD}}\\right) \\right| \\leq \\|f\\|_\\infty \\|g\\|_\\infty \\cdot K_{\\text{AB}}\n463: $$\n464: \n465: This follows from the **Dobrushin-Shlosman mixing condition** for Gibbs measures with exponentially decaying interactions.\n466: \n467: **Step 4: Apply to gauge field correlations.**\n468: \n469: Taking $f := \\prod_{j=1}^{n} A_{\\mu_j}^{a_j}(x_j)$ and $g := \\prod_{k=1}^{m} A_{\\nu_k}^{b_k}(y_k)$:\n470: \n471: $$\n472: \\left| \\mathcal{S}_{n+m}(x_1, \\ldots, x_n, y_1, \\ldots, y_m) - \\mathcal{S}_n(x_1, \\ldots, x_n) \\cdot \\mathcal{S}_m(y_1, \\ldots, y_m) \\right|\n473: $$\n474: \n475: $$\n476: \\leq \\|f\\|_{\\infty} \\|g\\|_{\\infty} \\cdot N_A \\cdot N_B \\cdot \\exp\\left(-\\frac{R}{2\\sigma}\\right)\n477: $$\n478: \n479: where $N_A, N_B$ are the numbers of walkers in clusters A and B.\n480: \n481: **Step 5: Bound gauge field magnitudes.**\n482: \n483: From the gauge field construction (Section 4), we have:\n484: \n485: $$\n486: |A_\\mu^a(x)| \\leq C_A \\cdot \\frac{1}{N} \\sum_{i=1}^{N} |F_i| \\leq C_A \\cdot \\|\\nabla \\Phi\\|_{\\infty}\n487: $$\n488: \n489: where $C_A$ is a geometric constant and $\\|\\nabla \\Phi\\|_\\infty}$ is bounded by the potential regularity (Axiom 1.1).\n490: \n491: Therefore:\n492: \n493: $$\n494: \\|f\\|_\\infty \\leq C_A^n, \\quad \\|g\\|_\\infty \\leq C_A^m\n495: $$\n496: \n497: **Step 6: Conclude.**\n498: \n499: Combining steps 4 and 5:\n500: \n501: $$\n502: \\left| \\mathcal{S}_{n+m} - \\mathcal{S}_n \\cdot \\mathcal{S}_m \\right| \\leq C_{n,m} \\cdot \\exp\\left(-\\frac{R}{2\\sigma}\\right)\n503: $$\n504: \n505: where $C_{n,m} := C_A^{n+m} \\cdot N^2$ (assuming $N_A, N_B \\sim N$).\n506: \n507: Defining the **mass gap**:\n508: \n509: $$\n510: m_{\\text{gap}} := \\frac{1}{2\\sigma}\n511: $$\n512: "
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-os4-area-law",
+      "title": "Area Law from Clustering",
+      "start_line": 526,
+      "end_line": 538,
+      "header_lines": [
+        527
+      ],
+      "content_start": 529,
+      "content_end": 537,
+      "content": "529: :label: cor-os4-area-law\n530: \n531: The exponential clustering of gauge field correlations implies the **area law** for Wilson loops.\n532: \n533: For a rectangular loop $\\mathcal{C}$ with spatial area $A$ and perimeter $\\ell$:\n534: \n535: $$\n536: \\langle W(\\mathcal{C}) \\rangle_{\\pi_{\\text{QSD}}} \\leq \\exp(-m_{\\text{gap}} \\cdot A)\n537: $$",
+      "metadata": {
+        "label": "cor-os4-area-law"
+      },
+      "section": "## OS4: Clustering (Exponential Decay of Correlations)",
+      "raw_directive": "526: ### Connection to Wilson Loop Area Law\n527: \n528: :::{prf:corollary} Area Law from Clustering\n529: :label: cor-os4-area-law\n530: \n531: The exponential clustering of gauge field correlations implies the **area law** for Wilson loops.\n532: \n533: For a rectangular loop $\\mathcal{C}$ with spatial area $A$ and perimeter $\\ell$:\n534: \n535: $$\n536: \\langle W(\\mathcal{C}) \\rangle_{\\pi_{\\text{QSD}}} \\leq \\exp(-m_{\\text{gap}} \\cdot A)\n537: $$\n538: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-200",
+      "title": null,
+      "start_line": 540,
+      "end_line": 551,
+      "header_lines": [],
+      "content_start": 542,
+      "content_end": 550,
+      "content": "542: :::{prf:proof}\n543: \n544: This follows from the **Glimm-Jaffe-Spencer theorem** (referenced in Section 6) combined with the clustering property.\n545: \n546: The key steps are:\n547: 1. Express Wilson loop as product of link variables\n548: 2. Use clustering to factorize correlations across the loop area\n549: 3. Each factorization contributes exponential suppression $\\exp(-m_{\\text{gap}} \\cdot \\delta A)$\n550: 4. Integrate over area to obtain area law",
+      "metadata": {},
+      "section": "## OS4: Clustering (Exponential Decay of Correlations)",
+      "raw_directive": "540: :::\n541: \n542: :::{prf:proof}\n543: \n544: This follows from the **Glimm-Jaffe-Spencer theorem** (referenced in Section 6) combined with the clustering property.\n545: \n546: The key steps are:\n547: 1. Express Wilson loop as product of link variables\n548: 2. Use clustering to factorize correlations across the loop area\n549: 3. Each factorization contributes exponential suppression $\\exp(-m_{\\text{gap}} \\cdot \\delta A)$\n550: 4. Integrate over area to obtain area law\n551: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

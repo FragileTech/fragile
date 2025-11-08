@@ -1,0 +1,129 @@
+{
+  "chapter_index": 7,
+  "section_id": "## 7. The Mass Gap",
+  "directive_count": 7,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-cg-glueball",
+      "title": "Glueball States",
+      "start_line": 1967,
+      "end_line": 1982,
+      "header_lines": [
+        1968
+      ],
+      "content_start": 1970,
+      "content_end": 1981,
+      "content": "1970: :label: def-cg-glueball\n1971: \n1972: In a pure Yang-Mills theory (without quarks), the **glueball** is the lightest bound state of gluons. Glueballs are characterized by their quantum numbers:\n1973: - **Spin** $J$ (angular momentum)\n1974: - **Parity** $P = \\pm 1$\n1975: - **Charge conjugation** $C = \\pm 1$ (for neutral states)\n1976: \n1977: The **glueball spectrum** is the set of energy eigenvalues $\\{E_n\\}$ of these bound states, ordered as:\n1978: \n1979: $$\n1980: 0 = E_0 < E_1 \\leq E_2 \\leq \\cdots\n1981: $$",
+      "metadata": {
+        "label": "def-cg-glueball"
+      },
+      "section": "## 7. The Mass Gap",
+      "raw_directive": "1967: ### 7.1 Glueballs and the Spectrum\n1968: \n1969: :::{prf:definition} Glueball States\n1970: :label: def-cg-glueball\n1971: \n1972: In a pure Yang-Mills theory (without quarks), the **glueball** is the lightest bound state of gluons. Glueballs are characterized by their quantum numbers:\n1973: - **Spin** $J$ (angular momentum)\n1974: - **Parity** $P = \\pm 1$\n1975: - **Charge conjugation** $C = \\pm 1$ (for neutral states)\n1976: \n1977: The **glueball spectrum** is the set of energy eigenvalues $\\{E_n\\}$ of these bound states, ordered as:\n1978: \n1979: $$\n1980: 0 = E_0 < E_1 \\leq E_2 \\leq \\cdots\n1981: $$\n1982: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-mass-gap",
+      "title": "Mass Gap",
+      "start_line": 1984,
+      "end_line": 1996,
+      "header_lines": [
+        1985
+      ],
+      "content_start": 1987,
+      "content_end": 1995,
+      "content": "1987: :label: def-mass-gap\n1988: \n1989: The **mass gap** $\\Delta_{\\text{YM}}$ is the energy of the lightest non-trivial excitation above the vacuum:\n1990: \n1991: $$\n1992: \\Delta_{\\text{YM}} := E_1 - E_0 = E_1\n1993: $$\n1994: \n1995: where $E_1$ is the mass of the lightest glueball (typically the $0^{++}$ scalar glueball).",
+      "metadata": {
+        "label": "def-mass-gap"
+      },
+      "section": "## 7. The Mass Gap",
+      "raw_directive": "1984: :::\n1985: \n1986: :::{prf:definition} Mass Gap\n1987: :label: def-mass-gap\n1988: \n1989: The **mass gap** $\\Delta_{\\text{YM}}$ is the energy of the lightest non-trivial excitation above the vacuum:\n1990: \n1991: $$\n1992: \\Delta_{\\text{YM}} := E_1 - E_0 = E_1\n1993: $$\n1994: \n1995: where $E_1$ is the mass of the lightest glueball (typically the $0^{++}$ scalar glueball).\n1996: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-mass-gap-from-confinement",
+      "title": "Mass Gap from Confinement",
+      "start_line": 1998,
+      "end_line": 2014,
+      "header_lines": [
+        1999
+      ],
+      "content_start": 2001,
+      "content_end": 2013,
+      "content": "2001: :label: thm-mass-gap-from-confinement\n2002: \n2003: Let $\\sigma > 0$ be the string tension from the area law ({prf:ref}`cor-cg-area-law`). Then the Yang-Mills theory has a mass gap:\n2004: \n2005: $$\n2006: \\Delta_{\\text{YM}} \\geq c_{\\text{gb}} \\cdot \\sqrt{\\sigma}\n2007: $$\n2008: \n2009: where $c_{\\text{gb}} > 0$ is a constant depending on the spatial dimension $d$ and the gauge group, but independent of the ultraviolet cutoff or lattice spacing.\n2010: \n2011: In particular:\n2012: \n2013: $$",
+      "metadata": {
+        "label": "thm-mass-gap-from-confinement"
+      },
+      "section": "## 7. The Mass Gap",
+      "raw_directive": "1998: :::\n1999: \n2000: :::{prf:theorem} Mass Gap from Confinement\n2001: :label: thm-mass-gap-from-confinement\n2002: \n2003: Let $\\sigma > 0$ be the string tension from the area law ({prf:ref}`cor-cg-area-law`). Then the Yang-Mills theory has a mass gap:\n2004: \n2005: $$\n2006: \\Delta_{\\text{YM}} \\geq c_{\\text{gb}} \\cdot \\sqrt{\\sigma}\n2007: $$\n2008: \n2009: where $c_{\\text{gb}} > 0$ is a constant depending on the spatial dimension $d$ and the gauge group, but independent of the ultraviolet cutoff or lattice spacing.\n2010: \n2011: In particular:\n2012: \n2013: $$\n2014: \\Delta_{\\text{YM}} > 0"
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-54",
+      "title": null,
+      "start_line": 2016,
+      "end_line": 2085,
+      "header_lines": [],
+      "content_start": 2018,
+      "content_end": 2084,
+      "content": "2018: :::{prf:proof}\n2019: \n2020: The proof uses the **flux-tube picture** of confinement and dimensional analysis.\n2021: \n2022: **Step 1: Flux Tube Energy**\n2023: \n2024: Consider a static quark-antiquark pair separated by distance $R$. By the area law, the energy of the configuration is:\n2025: \n2026: $$\n2027: E(R) = \\sigma \\cdot R + O(1)\n2028: $$\n2029: \n2030: The linear term $\\sigma R$ represents the energy stored in the **flux tube** (or \"string\") connecting the quarks. The string has tension $\\sigma$.\n2031: \n2032: **Step 2: Glueball as Flux Loop**\n2033: \n2034: A glueball can be thought of as a **closed flux tube** (a loop of gauge field with no endpoints). The minimal energy configuration is a loop of radius $R_{\\text{gb}}$ satisfying:\n2035: \n2036: $$\n2037: E_{\\text{loop}} = \\sigma \\cdot (2\\pi R_{\\text{gb}}) + E_{\\text{quantum}}\n2038: $$\n2039: \n2040: where $E_{\\text{quantum}}$ accounts for quantum fluctuations.\n2041: \n2042: **Step 3: Minimize Energy**\n2043: \n2044: The quantum fluctuations contribute a **zero-point energy** of order $\\hbar \\omega \\sim \\hbar c / R_{\\text{gb}}$ (from the vibrational modes of the string). Thus:\n2045: \n2046: $$\n2047: E_{\\text{loop}}(R_{\\text{gb}}) = 2\\pi \\sigma R_{\\text{gb}} + \\frac{\\alpha}{R_{\\text{gb}}}\n2048: $$\n2049: \n2050: for some constant $\\alpha > 0$. Minimizing with respect to $R_{\\text{gb}}$:\n2051: \n2052: $$\n2053: \\frac{\\mathrm{d}E_{\\text{loop}}}{\\mathrm{d}R_{\\text{gb}}} = 2\\pi \\sigma - \\frac{\\alpha}{R_{\\text{gb}}^2} = 0 \\quad \\Rightarrow \\quad R_{\\text{gb}} = \\sqrt{\\frac{\\alpha}{2\\pi \\sigma}}\n2054: $$\n2055: \n2056: Substituting back:\n2057: \n2058: $$\n2059: E_{\\text{loop}}(R_{\\text{gb}}) = 2\\pi \\sigma \\sqrt{\\frac{\\alpha}{2\\pi \\sigma}} + \\frac{\\alpha}{\\sqrt{\\alpha / (2\\pi \\sigma)}} = 2\\sqrt{2\\pi \\alpha \\sigma}\n2060: $$\n2061: \n2062: **Step 4: Identify Mass Gap**\n2063: \n2064: The lightest glueball has mass:\n2065: \n2066: $$\n2067: \\Delta_{\\text{YM}} = E_1 \\sim \\sqrt{\\sigma}\n2068: $$\n2069: \n2070: up to numerical constants. Explicitly:\n2071: \n2072: $$\n2073: \\Delta_{\\text{YM}} \\geq c_{\\text{gb}} \\sqrt{\\sigma}\n2074: $$\n2075: \n2076: for $c_{\\text{gb}} = \\sqrt{2\\pi \\alpha}$, where $\\alpha$ depends on the gauge group and dimension.\n2077: \n2078: **Step 5: Positivity**\n2079: \n2080: Since $\\sigma > 0$ by {prf:ref}`cor-cg-area-law`, we have:\n2081: \n2082: $$\n2083: \\Delta_{\\text{YM}} > 0\n2084: $$",
+      "metadata": {},
+      "section": "## 7. The Mass Gap",
+      "raw_directive": "2016: :::\n2017: \n2018: :::{prf:proof}\n2019: \n2020: The proof uses the **flux-tube picture** of confinement and dimensional analysis.\n2021: \n2022: **Step 1: Flux Tube Energy**\n2023: \n2024: Consider a static quark-antiquark pair separated by distance $R$. By the area law, the energy of the configuration is:\n2025: \n2026: $$\n2027: E(R) = \\sigma \\cdot R + O(1)\n2028: $$\n2029: \n2030: The linear term $\\sigma R$ represents the energy stored in the **flux tube** (or \"string\") connecting the quarks. The string has tension $\\sigma$.\n2031: \n2032: **Step 2: Glueball as Flux Loop**\n2033: \n2034: A glueball can be thought of as a **closed flux tube** (a loop of gauge field with no endpoints). The minimal energy configuration is a loop of radius $R_{\\text{gb}}$ satisfying:\n2035: \n2036: $$\n2037: E_{\\text{loop}} = \\sigma \\cdot (2\\pi R_{\\text{gb}}) + E_{\\text{quantum}}\n2038: $$\n2039: \n2040: where $E_{\\text{quantum}}$ accounts for quantum fluctuations.\n2041: \n2042: **Step 3: Minimize Energy**\n2043: \n2044: The quantum fluctuations contribute a **zero-point energy** of order $\\hbar \\omega \\sim \\hbar c / R_{\\text{gb}}$ (from the vibrational modes of the string). Thus:\n2045: \n2046: $$\n2047: E_{\\text{loop}}(R_{\\text{gb}}) = 2\\pi \\sigma R_{\\text{gb}} + \\frac{\\alpha}{R_{\\text{gb}}}\n2048: $$\n2049: \n2050: for some constant $\\alpha > 0$. Minimizing with respect to $R_{\\text{gb}}$:\n2051: \n2052: $$\n2053: \\frac{\\mathrm{d}E_{\\text{loop}}}{\\mathrm{d}R_{\\text{gb}}} = 2\\pi \\sigma - \\frac{\\alpha}{R_{\\text{gb}}^2} = 0 \\quad \\Rightarrow \\quad R_{\\text{gb}} = \\sqrt{\\frac{\\alpha}{2\\pi \\sigma}}\n2054: $$\n2055: \n2056: Substituting back:\n2057: \n2058: $$\n2059: E_{\\text{loop}}(R_{\\text{gb}}) = 2\\pi \\sigma \\sqrt{\\frac{\\alpha}{2\\pi \\sigma}} + \\frac{\\alpha}{\\sqrt{\\alpha / (2\\pi \\sigma)}} = 2\\sqrt{2\\pi \\alpha \\sigma}\n2060: $$\n2061: \n2062: **Step 4: Identify Mass Gap**\n2063: \n2064: The lightest glueball has mass:\n2065: \n2066: $$\n2067: \\Delta_{\\text{YM}} = E_1 \\sim \\sqrt{\\sigma}\n2068: $$\n2069: \n2070: up to numerical constants. Explicitly:\n2071: \n2072: $$\n2073: \\Delta_{\\text{YM}} \\geq c_{\\text{gb}} \\sqrt{\\sigma}\n2074: $$\n2075: \n2076: for $c_{\\text{gb}} = \\sqrt{2\\pi \\alpha}$, where $\\alpha$ depends on the gauge group and dimension.\n2077: \n2078: **Step 5: Positivity**\n2079: \n2080: Since $\\sigma > 0$ by {prf:ref}`cor-cg-area-law`, we have:\n2081: \n2082: $$\n2083: \\Delta_{\\text{YM}} > 0\n2084: $$\n2085: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-mass-gap-vs-string-tension",
+      "title": "Relation to String Tension",
+      "start_line": 2087,
+      "end_line": 2105,
+      "header_lines": [
+        2088
+      ],
+      "content_start": 2090,
+      "content_end": 2104,
+      "content": "2090: :label: rem-mass-gap-vs-string-tension\n2091: \n2092: The mass gap scaling $\\Delta_{\\text{YM}} \\sim \\sqrt{\\sigma}$ is a classic result in flux-tube models and is supported by lattice QCD simulations. The square-root dependence arises from the interplay between the string tension (which favors larger loops to minimize curvature) and quantum fluctuations (which favor smaller loops to minimize zero-point energy).\n2093: \n2094: For the Crystalline Gas:\n2095: \n2096: $$\n2097: \\sigma \\geq c_0 \\lambda_0 \\geq c_0 \\left( \\frac{\\kappa \\eta}{2} \\wedge \\frac{\\sigma_x^2}{2d} \\wedge \\gamma_{\\text{fric}} \\right)\n2098: $$\n2099: \n2100: from {prf:ref}`cor-cg-area-law`, so:\n2101: \n2102: $$\n2103: \\Delta_{\\text{YM}} \\geq c_{\\text{gb}} \\sqrt{c_0 \\lambda_0} > 0\n2104: $$",
+      "metadata": {
+        "label": "rem-mass-gap-vs-string-tension"
+      },
+      "section": "## 7. The Mass Gap",
+      "raw_directive": "2087: :::\n2088: \n2089: :::{prf:remark} Relation to String Tension\n2090: :label: rem-mass-gap-vs-string-tension\n2091: \n2092: The mass gap scaling $\\Delta_{\\text{YM}} \\sim \\sqrt{\\sigma}$ is a classic result in flux-tube models and is supported by lattice QCD simulations. The square-root dependence arises from the interplay between the string tension (which favors larger loops to minimize curvature) and quantum fluctuations (which favor smaller loops to minimize zero-point energy).\n2093: \n2094: For the Crystalline Gas:\n2095: \n2096: $$\n2097: \\sigma \\geq c_0 \\lambda_0 \\geq c_0 \\left( \\frac{\\kappa \\eta}{2} \\wedge \\frac{\\sigma_x^2}{2d} \\wedge \\gamma_{\\text{fric}} \\right)\n2098: $$\n2099: \n2100: from {prf:ref}`cor-cg-area-law`, so:\n2101: \n2102: $$\n2103: \\Delta_{\\text{YM}} \\geq c_{\\text{gb}} \\sqrt{c_0 \\lambda_0} > 0\n2104: $$\n2105: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-main-yang-mills-mass-gap",
+      "title": "Yang-Mills Mass Gap (Main Result)",
+      "start_line": 2111,
+      "end_line": 2143,
+      "header_lines": [
+        2112
+      ],
+      "content_start": 2114,
+      "content_end": 2142,
+      "content": "2114: :label: thm-main-yang-mills-mass-gap\n2115: \n2116: The Crystalline Gas algorithm ({prf:ref}`def-cg-dynamics`) with fitness landscape satisfying {prf:ref}`def-cg-fitness-landscape` generates a four-dimensional $\\text{SU}(2) \\times \\text{SU}(3)$ Yang-Mills theory satisfying:\n2117: \n2118: 1. **Existence:** The theory is rigorously defined via the quasi-stationary distribution $\\pi_{\\text{QSD}}$ ({prf:ref}`thm-cg-invariant-existence`), whose correlation functions satisfy the Osterwalder-Schrader axioms of quantum field theory.\n2119: \n2120: 2. **Mass Gap:** The spectrum of the quantum Hamiltonian has a gap:\n2121: \n2122: $$\n2123: \\Delta_{\\text{YM}} := \\inf\\{\\text{Spec}(H) \\setminus \\{0\\}\\} > 0\n2124: $$\n2125: \n2126: Explicitly:\n2127: \n2128: $$\n2129: \\Delta_{\\text{YM}} \\geq c_{\\text{gb}} \\sqrt{c_0 \\lambda_0}\n2130: $$\n2131: \n2132: where:\n2133: - $\\lambda_0 \\geq \\frac{\\kappa \\eta}{2} \\wedge \\frac{\\sigma_x^2}{2d} \\wedge \\gamma_{\\text{fric}}$ is the spectral gap ({prf:ref}`thm-cg-spectral-gap`)\n2134: - $c_0, c_{\\text{gb}} > 0$ are universal constants\n2135: \n2136: 3. **Confinement:** The theory exhibits confinement via the area law:\n2137: \n2138: $$\n2139: \\langle W_{\\mathcal{C}} \\rangle_{\\pi_{\\text{QSD}}} \\leq e^{-\\sigma \\mathcal{A}(\\mathcal{C})}\n2140: $$\n2141: \n2142: with string tension $\\sigma \\geq c_0 \\lambda_0 > 0$.",
+      "metadata": {
+        "label": "thm-main-yang-mills-mass-gap"
+      },
+      "section": "## 7. The Mass Gap",
+      "raw_directive": "2111: We can now state the main theorem of this paper.\n2112: \n2113: :::{prf:theorem} Yang-Mills Mass Gap (Main Result)\n2114: :label: thm-main-yang-mills-mass-gap\n2115: \n2116: The Crystalline Gas algorithm ({prf:ref}`def-cg-dynamics`) with fitness landscape satisfying {prf:ref}`def-cg-fitness-landscape` generates a four-dimensional $\\text{SU}(2) \\times \\text{SU}(3)$ Yang-Mills theory satisfying:\n2117: \n2118: 1. **Existence:** The theory is rigorously defined via the quasi-stationary distribution $\\pi_{\\text{QSD}}$ ({prf:ref}`thm-cg-invariant-existence`), whose correlation functions satisfy the Osterwalder-Schrader axioms of quantum field theory.\n2119: \n2120: 2. **Mass Gap:** The spectrum of the quantum Hamiltonian has a gap:\n2121: \n2122: $$\n2123: \\Delta_{\\text{YM}} := \\inf\\{\\text{Spec}(H) \\setminus \\{0\\}\\} > 0\n2124: $$\n2125: \n2126: Explicitly:\n2127: \n2128: $$\n2129: \\Delta_{\\text{YM}} \\geq c_{\\text{gb}} \\sqrt{c_0 \\lambda_0}\n2130: $$\n2131: \n2132: where:\n2133: - $\\lambda_0 \\geq \\frac{\\kappa \\eta}{2} \\wedge \\frac{\\sigma_x^2}{2d} \\wedge \\gamma_{\\text{fric}}$ is the spectral gap ({prf:ref}`thm-cg-spectral-gap`)\n2134: - $c_0, c_{\\text{gb}} > 0$ are universal constants\n2135: \n2136: 3. **Confinement:** The theory exhibits confinement via the area law:\n2137: \n2138: $$\n2139: \\langle W_{\\mathcal{C}} \\rangle_{\\pi_{\\text{QSD}}} \\leq e^{-\\sigma \\mathcal{A}(\\mathcal{C})}\n2140: $$\n2141: \n2142: with string tension $\\sigma \\geq c_0 \\lambda_0 > 0$.\n2143: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-183",
+      "title": null,
+      "start_line": 2145,
+      "end_line": 2169,
+      "header_lines": [],
+      "content_start": 2146,
+      "content_end": 2168,
+      "content": "2146: \n2147: :::{prf:proof}\n2148: The theorem follows by combining:\n2149: - **Existence of QSD**: {prf:ref}`thm-cg-invariant-existence` (Section 3)\n2150: - **Principal bundle structure**:\n2151:   - Emergent Riemannian manifold: {prf:ref}`thm-emergent-riemannian-manifold` (Section 4.6.4)\n2152:   - Frame bundle construction: {prf:ref}`thm-principal-bundle-frame-bundle` (Section 4.6.4)\n2153:   - Non-zero curvature: {prf:ref}`thm-nonzero-curvature-fitness` (Section 4.6.4)\n2154:   - Complete solution: {prf:ref}`cor-complete-ym-solution` (Section 4.6.5)\n2155: - **Gauge symmetry**: {prf:ref}`thm-cg-complete-gauge-group` and {prf:ref}`cor-cg-pure-yang-mills-vacuum` (Section 4)\n2156: - **Spectral gap**: {prf:ref}`thm-cg-spectral-gap` (Section 5.2)\n2157: - **Osterwalder-Schrader axioms**:\n2158:   - OS2 (reflection positivity): {prf:ref}`thm-os2-softmax` (Section 8.2)\n2159:   - OS4 (clustering): {prf:ref}`thm-os4-clustering` (Section 8.3)\n2160: - **Area law**: {prf:ref}`cor-cg-area-law` (Section 6.2)\n2161: - **Mass gap**: {prf:ref}`thm-mass-gap-from-confinement` (Section 7.1)\n2162: \n2163: All CMI requirements are satisfied:\n2164: 1. \u2705 Four-dimensional spacetime (d=3 spatial + time)\n2165: 2. \u2705 Compact simple gauge group (SU(3))\n2166: 3. \u2705 Principal bundle with non-zero curvature (F \u2260 0)\n2167: 4. \u2705 Rigorous QFT construction (via OS axioms)\n2168: 5. \u2705 Mass gap \u0394_YM > 0 with explicit lower bound",
+      "metadata": {},
+      "section": "## 7. The Mass Gap",
+      "raw_directive": "2145: :::\n2146: \n2147: :::{prf:proof}\n2148: The theorem follows by combining:\n2149: - **Existence of QSD**: {prf:ref}`thm-cg-invariant-existence` (Section 3)\n2150: - **Principal bundle structure**:\n2151:   - Emergent Riemannian manifold: {prf:ref}`thm-emergent-riemannian-manifold` (Section 4.6.4)\n2152:   - Frame bundle construction: {prf:ref}`thm-principal-bundle-frame-bundle` (Section 4.6.4)\n2153:   - Non-zero curvature: {prf:ref}`thm-nonzero-curvature-fitness` (Section 4.6.4)\n2154:   - Complete solution: {prf:ref}`cor-complete-ym-solution` (Section 4.6.5)\n2155: - **Gauge symmetry**: {prf:ref}`thm-cg-complete-gauge-group` and {prf:ref}`cor-cg-pure-yang-mills-vacuum` (Section 4)\n2156: - **Spectral gap**: {prf:ref}`thm-cg-spectral-gap` (Section 5.2)\n2157: - **Osterwalder-Schrader axioms**:\n2158:   - OS2 (reflection positivity): {prf:ref}`thm-os2-softmax` (Section 8.2)\n2159:   - OS4 (clustering): {prf:ref}`thm-os4-clustering` (Section 8.3)\n2160: - **Area law**: {prf:ref}`cor-cg-area-law` (Section 6.2)\n2161: - **Mass gap**: {prf:ref}`thm-mass-gap-from-confinement` (Section 7.1)\n2162: \n2163: All CMI requirements are satisfied:\n2164: 1. \u2705 Four-dimensional spacetime (d=3 spatial + time)\n2165: 2. \u2705 Compact simple gauge group (SU(3))\n2166: 3. \u2705 Principal bundle with non-zero curvature (F \u2260 0)\n2167: 4. \u2705 Rigorous QFT construction (via OS axioms)\n2168: 5. \u2705 Mass gap \u0394_YM > 0 with explicit lower bound\n2169: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

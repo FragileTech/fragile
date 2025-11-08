@@ -1,0 +1,34 @@
+{
+  "document_id": "16_convergence_mean_field",
+  "stage": "directives",
+  "directive_type": "assumption",
+  "generated_at": "2025-11-08T17:07:43.277975+00:00",
+  "count": 1,
+  "items": [
+    {
+      "directive_type": "assumption",
+      "label": "assump-qsd-existence",
+      "title": "Framework Assumptions",
+      "start_line": 1146,
+      "end_line": 1168,
+      "header_lines": [
+        1147
+      ],
+      "content_start": 1149,
+      "content_end": 1167,
+      "content": "1149: :label: assump-qsd-existence\n1150: \n1151: We assume:\n1152: \n1153: **A1 (Confinement)**: The potential $U: \\mathcal{X} \\to \\mathbb{R}$ satisfies:\n1154: - $U(x) \\to +\\infty$ as $x \\to \\partial \\mathcal{X}$ or $|x| \\to \\infty$\n1155: - $\\nabla^2 U(x) \\ge \\kappa_{\\text{conf}} I_d$ for some $\\kappa_{\\text{conf}} > 0$ (strong convexity)\n1156: \n1157: **A2 (Killing near boundaries)**: The killing rate $\\kappa_{\\text{kill}}: \\mathcal{X} \\to \\mathbb{R}_+$ satisfies:\n1158: - $\\kappa_{\\text{kill}}(x) = 0$ on a compact subset $K \\subset \\mathcal{X}$ (safe region)\n1159: - $\\kappa_{\\text{kill}}(x) \\ge \\kappa_0 > 0$ near $\\partial \\mathcal{X}$ (strong killing near boundaries)\n1160: - $\\kappa_{\\text{kill}} \\in C^2(\\mathcal{X})$ with bounded derivatives\n1161: \n1162: **A3 (Bounded parameters)**:\n1163: - Friction coefficient: $\\gamma > 0$\n1164: - Diffusion coefficient: $\\sigma^2 > 0$\n1165: - Revival rate: $0 < \\lambda_{\\text{revive}} < \\infty$\n1166: \n1167: **A4 (Domain)**: The alive region $\\mathcal{X} \\subset \\mathbb{R}^d_x$ is either:",
+      "metadata": {
+        "label": "assump-qsd-existence"
+      },
+      "section": "## 1. QSD Existence and Uniqueness (R1)",
+      "raw_directive": "1146: ### 1.2. Assumptions\n1147: \n1148: :::{prf:assumption} Framework Assumptions\n1149: :label: assump-qsd-existence\n1150: \n1151: We assume:\n1152: \n1153: **A1 (Confinement)**: The potential $U: \\mathcal{X} \\to \\mathbb{R}$ satisfies:\n1154: - $U(x) \\to +\\infty$ as $x \\to \\partial \\mathcal{X}$ or $|x| \\to \\infty$\n1155: - $\\nabla^2 U(x) \\ge \\kappa_{\\text{conf}} I_d$ for some $\\kappa_{\\text{conf}} > 0$ (strong convexity)\n1156: \n1157: **A2 (Killing near boundaries)**: The killing rate $\\kappa_{\\text{kill}}: \\mathcal{X} \\to \\mathbb{R}_+$ satisfies:\n1158: - $\\kappa_{\\text{kill}}(x) = 0$ on a compact subset $K \\subset \\mathcal{X}$ (safe region)\n1159: - $\\kappa_{\\text{kill}}(x) \\ge \\kappa_0 > 0$ near $\\partial \\mathcal{X}$ (strong killing near boundaries)\n1160: - $\\kappa_{\\text{kill}} \\in C^2(\\mathcal{X})$ with bounded derivatives\n1161: \n1162: **A3 (Bounded parameters)**:\n1163: - Friction coefficient: $\\gamma > 0$\n1164: - Diffusion coefficient: $\\sigma^2 > 0$\n1165: - Revival rate: $0 < \\lambda_{\\text{revive}} < \\infty$\n1166: \n1167: **A4 (Domain)**: The alive region $\\mathcal{X} \\subset \\mathbb{R}^d_x$ is either:\n1168: - Bounded with smooth boundary, OR",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "16_convergence_mean_field",
+        "chapter_index": 15,
+        "chapter_file": "chapter_15.json",
+        "section_id": "## 1. QSD Existence and Uniqueness (R1)"
+      }
+    }
+  ]
+}

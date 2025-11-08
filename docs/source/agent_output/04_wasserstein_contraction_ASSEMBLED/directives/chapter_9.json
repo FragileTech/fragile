@@ -1,0 +1,61 @@
+{
+  "chapter_index": 9,
+  "section_id": "## 7. Integration Over Matching Distribution",
+  "directive_count": 3,
+  "hints": [
+    {
+      "directive_type": "proposition",
+      "label": "prop-full-expectation-matching",
+      "title": "Full Expectation Over Matching",
+      "start_line": 2108,
+      "end_line": 2116,
+      "header_lines": [
+        2109
+      ],
+      "content_start": 2111,
+      "content_end": 2115,
+      "content": "2111: :label: prop-full-expectation-matching\n2112: \n2113: Taking expectation over the matching distribution:\n2114: \n2115: $$",
+      "metadata": {
+        "label": "prop-full-expectation-matching"
+      },
+      "section": "## 7. Integration Over Matching Distribution",
+      "raw_directive": "2108: The coupling is **asymmetric**: $P(M | S_1)$ depends only on $S_1$, not $S_2$.\n2109: \n2110: :::{prf:proposition} Full Expectation Over Matching\n2111: :label: prop-full-expectation-matching\n2112: \n2113: Taking expectation over the matching distribution:\n2114: \n2115: $$\n2116: \\mathbb{E}_{M \\sim P(\\cdot | S_1)}[\\mathbb{E}[W_2^2(\\mu_{S_1'}, \\mu_{S_2'}) \\mid M]] \\leq \\gamma_{\\text{pair}} W_2^2(\\mu_{S_1}, \\mu_{S_2}) + C_{\\text{pair}}"
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-21",
+      "title": null,
+      "start_line": 2118,
+      "end_line": 2136,
+      "header_lines": [],
+      "content_start": 2119,
+      "content_end": 2135,
+      "content": "2119: \n2120: :::{prf:proof}\n2121: By the tower property of expectation:\n2122: \n2123: $$\n2124: \\mathbb{E}[W_2^2(\\mu_{S_1'}, \\mu_{S_2'})] = \\mathbb{E}_M[\\mathbb{E}[W_2^2(\\mu_{S_1'}, \\mu_{S_2'}) \\mid M]]\n2125: $$\n2126: \n2127: Using Proposition {prf:ref}`prop-matching-conditional-contraction`:\n2128: \n2129: $$\n2130: \\mathbb{E}_M[\\mathbb{E}[W_2^2 \\mid M]] \\leq \\mathbb{E}_M[\\gamma_{\\text{pair}} W_2^2(\\mu_{S_1}, \\mu_{S_2}) + C_{\\text{pair}}]\n2131: $$\n2132: \n2133: Since $W_2^2(\\mu_{S_1}, \\mu_{S_2})$ is deterministic given $S_1$ and $S_2$ (not random in $M$):\n2134: \n2135: $$",
+      "metadata": {},
+      "section": "## 7. Integration Over Matching Distribution",
+      "raw_directive": "2118: :::\n2119: \n2120: :::{prf:proof}\n2121: By the tower property of expectation:\n2122: \n2123: $$\n2124: \\mathbb{E}[W_2^2(\\mu_{S_1'}, \\mu_{S_2'})] = \\mathbb{E}_M[\\mathbb{E}[W_2^2(\\mu_{S_1'}, \\mu_{S_2'}) \\mid M]]\n2125: $$\n2126: \n2127: Using Proposition {prf:ref}`prop-matching-conditional-contraction`:\n2128: \n2129: $$\n2130: \\mathbb{E}_M[\\mathbb{E}[W_2^2 \\mid M]] \\leq \\mathbb{E}_M[\\gamma_{\\text{pair}} W_2^2(\\mu_{S_1}, \\mu_{S_2}) + C_{\\text{pair}}]\n2131: $$\n2132: \n2133: Since $W_2^2(\\mu_{S_1}, \\mu_{S_2})$ is deterministic given $S_1$ and $S_2$ (not random in $M$):\n2134: \n2135: $$\n2136: = \\gamma_{\\text{pair}} W_2^2(\\mu_{S_1}, \\mu_{S_2}) + C_{\\text{pair}} \\qquad \\Box"
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-w2-contraction-constants",
+      "title": "Wasserstein Contraction Constants",
+      "start_line": 2140,
+      "end_line": 2160,
+      "header_lines": [
+        2141
+      ],
+      "content_start": 2143,
+      "content_end": 2159,
+      "content": "2143: :label: def-w2-contraction-constants\n2144: \n2145: The Wasserstein-2 contraction for the cloning operator is characterized by:\n2146: \n2147: $$\n2148: \\kappa_W := 1 - \\gamma_{\\text{pair}} = \\frac{p_u \\eta}{2} > 0\n2149: $$\n2150: \n2151: where:\n2152: - $p_u > 0$ is the uniform lower bound on cloning probability for unfit walkers (Lemma 8.3.2 in [03_cloning.md](03_cloning.md))\n2153: - $\\eta > 0$ is the Outlier Alignment constant (Lemma {prf:ref}`lem-outlier-alignment`)\n2154: \n2155: The additive constant is:\n2156: \n2157: $$\n2158: C_W := C_{\\text{pair}} = 4d\\delta^2\n2159: $$",
+      "metadata": {
+        "label": "def-w2-contraction-constants"
+      },
+      "section": "## 7. Integration Over Matching Distribution",
+      "raw_directive": "2140: ### 7.2. Final Constants\n2141: \n2142: :::{prf:definition} Wasserstein Contraction Constants\n2143: :label: def-w2-contraction-constants\n2144: \n2145: The Wasserstein-2 contraction for the cloning operator is characterized by:\n2146: \n2147: $$\n2148: \\kappa_W := 1 - \\gamma_{\\text{pair}} = \\frac{p_u \\eta}{2} > 0\n2149: $$\n2150: \n2151: where:\n2152: - $p_u > 0$ is the uniform lower bound on cloning probability for unfit walkers (Lemma 8.3.2 in [03_cloning.md](03_cloning.md))\n2153: - $\\eta > 0$ is the Outlier Alignment constant (Lemma {prf:ref}`lem-outlier-alignment`)\n2154: \n2155: The additive constant is:\n2156: \n2157: $$\n2158: C_W := C_{\\text{pair}} = 4d\\delta^2\n2159: $$\n2160: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

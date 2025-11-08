@@ -1,0 +1,65 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 2. IG as Quantum Correlation Network",
+  "directive_count": 3,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-ig-edge-weights-algorithmic",
+      "title": "Algorithmic Determination of IG Edge Weights",
+      "start_line": 142,
+      "end_line": 178,
+      "header_lines": [
+        143
+      ],
+      "content_start": 145,
+      "content_end": 177,
+      "content": "145: :label: thm-ig-edge-weights-algorithmic\n146: \n147: **Source:** [13_E_cst_ig_lattice_qft.md \u00a7 2.1b, lines 284-345]\n148: \n149: For episodes $e_i$ and $e_j$ with temporal overlap period $T_{\\text{overlap}} = \\{t : e_i, e_j \\in \\mathcal{A}(t)\\}$, the IG edge weight is **algorithmically determined** (not arbitrary):\n150: \n151: $$\n152: w_{ij} = \\int_{T_{\\text{overlap}}} P(c_i(t) = j \\mid i) \\, dt\n153: \n154: $$\n155: \n156: where $P(c_i(t) = j \\mid i)$ is the **companion selection probability** from Chapter 03, Definition 5.7.1:\n157: \n158: $$\n159: P(c_i(t) = j \\mid i) = \\frac{\\exp\\left(-\\frac{d_{\\text{alg}}(i,j;t)^2}{2\\varepsilon_c^2}\\right)}{Z_i(t)}\n160: \n161: $$\n162: \n163: with:\n164: - **Algorithmic distance:** $d_{\\text{alg}}(i,j)^2 = \\|x_i - x_j\\|^2 + \\lambda_{\\text{alg}} \\|v_i - v_j\\|^2$\n165: - **Cloning interaction range:** $\\varepsilon_c > 0$ (algorithm parameter)\n166: - **Partition function:** $Z_i(t) = \\sum_{l \\in \\mathcal{A}(t) \\setminus \\{i\\}} \\exp(-d_{\\text{alg}}(i,l;t)^2 / 2\\varepsilon_c^2)$\n167: \n168: **Discrete approximation:**\n169: \n170: $$\n171: w_{ij} \\approx \\tau \\sum_{k=1}^{n} \\frac{\\exp\\left(-\\frac{d_{\\text{alg}}(i,j; t_k)^2}{2\\varepsilon_c^2}\\right)}{Z_i(t_k)}\n172: \n173: $$\n174: \n175: where $\\tau$ is the discrete timestep size and $n$ is the number of timesteps in the overlap period.\n176: \n177: **Proof:** See [13_E_cst_ig_lattice_qft.md \u00a7 2.1b, lines 316-345] for complete derivation.",
+      "metadata": {
+        "label": "thm-ig-edge-weights-algorithmic"
+      },
+      "section": "## 2. IG as Quantum Correlation Network",
+      "raw_directive": "142: ### 2.1. IG Edge Weights from Selection Dynamics\n143: \n144: :::{prf:theorem} Algorithmic Determination of IG Edge Weights\n145: :label: thm-ig-edge-weights-algorithmic\n146: \n147: **Source:** [13_E_cst_ig_lattice_qft.md \u00a7 2.1b, lines 284-345]\n148: \n149: For episodes $e_i$ and $e_j$ with temporal overlap period $T_{\\text{overlap}} = \\{t : e_i, e_j \\in \\mathcal{A}(t)\\}$, the IG edge weight is **algorithmically determined** (not arbitrary):\n150: \n151: $$\n152: w_{ij} = \\int_{T_{\\text{overlap}}} P(c_i(t) = j \\mid i) \\, dt\n153: \n154: $$\n155: \n156: where $P(c_i(t) = j \\mid i)$ is the **companion selection probability** from Chapter 03, Definition 5.7.1:\n157: \n158: $$\n159: P(c_i(t) = j \\mid i) = \\frac{\\exp\\left(-\\frac{d_{\\text{alg}}(i,j;t)^2}{2\\varepsilon_c^2}\\right)}{Z_i(t)}\n160: \n161: $$\n162: \n163: with:\n164: - **Algorithmic distance:** $d_{\\text{alg}}(i,j)^2 = \\|x_i - x_j\\|^2 + \\lambda_{\\text{alg}} \\|v_i - v_j\\|^2$\n165: - **Cloning interaction range:** $\\varepsilon_c > 0$ (algorithm parameter)\n166: - **Partition function:** $Z_i(t) = \\sum_{l \\in \\mathcal{A}(t) \\setminus \\{i\\}} \\exp(-d_{\\text{alg}}(i,l;t)^2 / 2\\varepsilon_c^2)$\n167: \n168: **Discrete approximation:**\n169: \n170: $$\n171: w_{ij} \\approx \\tau \\sum_{k=1}^{n} \\frac{\\exp\\left(-\\frac{d_{\\text{alg}}(i,j; t_k)^2}{2\\varepsilon_c^2}\\right)}{Z_i(t_k)}\n172: \n173: $$\n174: \n175: where $\\tau$ is the discrete timestep size and $n$ is the number of timesteps in the overlap period.\n176: \n177: **Proof:** See [13_E_cst_ig_lattice_qft.md \u00a7 2.1b, lines 316-345] for complete derivation.\n178: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-41",
+      "title": "Physical Interpretation",
+      "start_line": 180,
+      "end_line": 190,
+      "header_lines": [
+        181
+      ],
+      "content_start": 183,
+      "content_end": 189,
+      "content": "183: :class: note\n184: \n185: **Source:** [13_E_cst_ig_lattice_qft.md \u00a7 2.1b, lines 347-355]\n186: \n187: **Sparsity:** For episodes with short overlap or large separation ($d_{\\text{alg}} \\gg \\varepsilon_c$), the exponential factor implies $w_{ij} \\approx 0$ (exponential suppression). The IG is **sparse** by construction.\n188: \n189: **Euclidean Distance:** The algorithm uses **Euclidean** algorithmic distance $d_{\\text{alg}}$, even though the emergent geometry is Riemannian. This is not a bug\u2014as proven in Chapter 13B, Section 3.4, the Euclidean weights automatically discover the Riemannian structure through the QSD equilibrium distribution.",
+      "metadata": {
+        "class": "note"
+      },
+      "section": "## 2. IG as Quantum Correlation Network",
+      "raw_directive": "180: :::\n181: \n182: :::{prf:remark} Physical Interpretation\n183: :class: note\n184: \n185: **Source:** [13_E_cst_ig_lattice_qft.md \u00a7 2.1b, lines 347-355]\n186: \n187: **Sparsity:** For episodes with short overlap or large separation ($d_{\\text{alg}} \\gg \\varepsilon_c$), the exponential factor implies $w_{ij} \\approx 0$ (exponential suppression). The IG is **sparse** by construction.\n188: \n189: **Euclidean Distance:** The algorithm uses **Euclidean** algorithmic distance $d_{\\text{alg}}$, even though the emergent geometry is Riemannian. This is not a bug\u2014as proven in Chapter 13B, Section 3.4, the Euclidean weights automatically discover the Riemannian structure through the QSD equilibrium distribution.\n190: "
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-ig-spacelike-separation",
+      "title": "IG Edges Connect Causally Disconnected Events",
+      "start_line": 194,
+      "end_line": 227,
+      "header_lines": [
+        195
+      ],
+      "content_start": 197,
+      "content_end": 226,
+      "content": "197: :label: prop-ig-spacelike-separation\n198: \n199: **Source:** [13_E_cst_ig_lattice_qft.md \u00a7 2.1, lines 259-281]\n200: \n201: For any IG edge $e_i \\sim e_j$:\n202: \n203: $$\n204: e_i \\not\\prec e_j \\quad \\text{and} \\quad e_j \\not\\prec e_i\n205: \n206: $$\n207: \n208: (neither is an ancestor of the other in the CST).\n209: \n210: **Proof:** By construction, IG edges connect episodes that are **simultaneously alive**:\n211: \n212: $$\n213: e_i \\sim e_j \\implies \\exists t : e_i, e_j \\in \\mathcal{A}(t)\n214: \n215: $$\n216: \n217: If $e_i \\prec e_j$, then $t^{\\rm d}_i < t^{\\rm b}_j$ (child born after parent dies), contradicting simultaneous existence. Similarly, $e_j \\prec e_i$ leads to contradiction. Therefore, $e_i$ and $e_j$ are causally independent in the CST. \u220e\n218: \n219: **Spacelike separation:** For $e_i \\sim e_j$, define the interval:\n220: \n221: $$\n222: \\Delta s^2(e_i, e_j) = -c^2 (t_i - t_j)^2 + d_g(\\mathbf{x}_i, \\mathbf{x}_j)^2 > 0\n223: \n224: $$\n225: \n226: (positive $\\implies$ spacelike).",
+      "metadata": {
+        "label": "prop-ig-spacelike-separation"
+      },
+      "section": "## 2. IG as Quantum Correlation Network",
+      "raw_directive": "194: ### 2.2. Spacelike vs Timelike Edges\n195: \n196: :::{prf:proposition} IG Edges Connect Causally Disconnected Events\n197: :label: prop-ig-spacelike-separation\n198: \n199: **Source:** [13_E_cst_ig_lattice_qft.md \u00a7 2.1, lines 259-281]\n200: \n201: For any IG edge $e_i \\sim e_j$:\n202: \n203: $$\n204: e_i \\not\\prec e_j \\quad \\text{and} \\quad e_j \\not\\prec e_i\n205: \n206: $$\n207: \n208: (neither is an ancestor of the other in the CST).\n209: \n210: **Proof:** By construction, IG edges connect episodes that are **simultaneously alive**:\n211: \n212: $$\n213: e_i \\sim e_j \\implies \\exists t : e_i, e_j \\in \\mathcal{A}(t)\n214: \n215: $$\n216: \n217: If $e_i \\prec e_j$, then $t^{\\rm d}_i < t^{\\rm b}_j$ (child born after parent dies), contradicting simultaneous existence. Similarly, $e_j \\prec e_i$ leads to contradiction. Therefore, $e_i$ and $e_j$ are causally independent in the CST. \u220e\n218: \n219: **Spacelike separation:** For $e_i \\sim e_j$, define the interval:\n220: \n221: $$\n222: \\Delta s^2(e_i, e_j) = -c^2 (t_i - t_j)^2 + d_g(\\mathbf{x}_i, \\mathbf{x}_j)^2 > 0\n223: \n224: $$\n225: \n226: (positive $\\implies$ spacelike).\n227: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

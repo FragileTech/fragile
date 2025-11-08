@@ -1,0 +1,61 @@
+{
+  "chapter_index": 3,
+  "section_id": "## 3. Discrete-Continuous Symmetry Correspondence",
+  "directive_count": 3,
+  "hints": [
+    {
+      "directive_type": "proposition",
+      "label": "prop-symmetry-correspondence-discrete-sym",
+      "title": "Symmetry Correspondence Across Layers",
+      "start_line": 636,
+      "end_line": 649,
+      "header_lines": [
+        637
+      ],
+      "content_start": 639,
+      "content_end": 648,
+      "content": "639: :label: prop-symmetry-correspondence-discrete-sym\n640: \n641: The symmetries established in Chapter 9 have exact discrete analogues in the Fractal Set:\n642: \n643: | **Symmetry** | **Layer 3 (Ch 9)** | **Layer 2 (Ch 12)** | **Layer 1 (This Ch)** | **Convergence** |\n644: |--------------|-------------------|---------------------|----------------------|-----------------|\n645: | **Permutation** | $S_N$ | Gauge group $S_N$ | Episode relabeling $S_{\\|\\mathcal{E}\\|}$ | {prf:ref}`thm-discrete-permutation-invariance-discrete-sym` |\n646: | **Translation** | $T_a$ (Thm 9.2.2) | Config space symmetry | $T_a$-invariance ({prf:ref}`thm-discrete-translation-equivariance-discrete-sym`) | Exact |\n647: | **Rotation** | $SO(d)$ (Thm 9.2.3) | Braid group $B_N$ | Plaquette symmetry | {prf:ref}`cor-discrete-rotational-equivariance-discrete-sym` |\n648: | **Time-reversal** | Broken (Thm 9.2.5) | CST acyclicity | No timelike loops | {prf:ref}`conj-connection-to-braid-holonomy-discrete-sym` |",
+      "metadata": {
+        "label": "prop-symmetry-correspondence-discrete-sym"
+      },
+      "section": "## 3. Discrete-Continuous Symmetry Correspondence",
+      "raw_directive": "636: ## 3. Discrete-Continuous Symmetry Correspondence\n637: \n638: :::{prf:proposition} Symmetry Correspondence Across Layers\n639: :label: prop-symmetry-correspondence-discrete-sym\n640: \n641: The symmetries established in Chapter 9 have exact discrete analogues in the Fractal Set:\n642: \n643: | **Symmetry** | **Layer 3 (Ch 9)** | **Layer 2 (Ch 12)** | **Layer 1 (This Ch)** | **Convergence** |\n644: |--------------|-------------------|---------------------|----------------------|-----------------|\n645: | **Permutation** | $S_N$ | Gauge group $S_N$ | Episode relabeling $S_{\\|\\mathcal{E}\\|}$ | {prf:ref}`thm-discrete-permutation-invariance-discrete-sym` |\n646: | **Translation** | $T_a$ (Thm 9.2.2) | Config space symmetry | $T_a$-invariance ({prf:ref}`thm-discrete-translation-equivariance-discrete-sym`) | Exact |\n647: | **Rotation** | $SO(d)$ (Thm 9.2.3) | Braid group $B_N$ | Plaquette symmetry | {prf:ref}`cor-discrete-rotational-equivariance-discrete-sym` |\n648: | **Time-reversal** | Broken (Thm 9.2.5) | CST acyclicity | No timelike loops | {prf:ref}`conj-connection-to-braid-holonomy-discrete-sym` |\n649: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-16",
+      "title": null,
+      "start_line": 651,
+      "end_line": 661,
+      "header_lines": [],
+      "content_start": 652,
+      "content_end": 660,
+      "content": "652: \n653: :::{prf:proof}\n654: Each entry verified by:\n655: \n656: 1. **Permutation**: {prf:ref}`thm-discrete-permutation-invariance-discrete-sym` proves $\\mathcal{F}$ is $S_{|\\mathcal{E}|}$-invariant. {prf:ref}`cor-continuous-limit-permutation-discrete-sym` shows convergence to $S_N$.\n657: \n658: 2. **Translation**: {prf:ref}`thm-discrete-translation-equivariance-discrete-sym` proves $\\mathcal{L}(\\mathcal{F}) = \\mathcal{L}(T_a(\\mathcal{F}))$ when reward and domain are translation-symmetric.\n659: \n660: 3. **Rotation**: {prf:ref}`cor-discrete-rotational-equivariance-discrete-sym` extends translation argument to rotations.",
+      "metadata": {},
+      "section": "## 3. Discrete-Continuous Symmetry Correspondence",
+      "raw_directive": "651: :::\n652: \n653: :::{prf:proof}\n654: Each entry verified by:\n655: \n656: 1. **Permutation**: {prf:ref}`thm-discrete-permutation-invariance-discrete-sym` proves $\\mathcal{F}$ is $S_{|\\mathcal{E}|}$-invariant. {prf:ref}`cor-continuous-limit-permutation-discrete-sym` shows convergence to $S_N$.\n657: \n658: 2. **Translation**: {prf:ref}`thm-discrete-translation-equivariance-discrete-sym` proves $\\mathcal{L}(\\mathcal{F}) = \\mathcal{L}(T_a(\\mathcal{F}))$ when reward and domain are translation-symmetric.\n659: \n660: 3. **Rotation**: {prf:ref}`cor-discrete-rotational-equivariance-discrete-sym` extends translation argument to rotations.\n661: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-28",
+      "title": "Emergence of Continuous Symmetries",
+      "start_line": 663,
+      "end_line": 673,
+      "header_lines": [
+        664
+      ],
+      "content_start": 666,
+      "content_end": 672,
+      "content": "666: :class: note\n667: \n668: **Bottom-up perspective**: The Fractal Set is the **primary object** (discrete, finite, algorithmically generated). Continuous symmetries (diffeomorphisms, gauge transformations) emerge in the $N \\to \\infty$ limit via:\n669: \n670: 1. **Episode density**: As $N$ increases, episodes densify in spacetime \u2192 discrete graph approaches continuum manifold\n671: 2. **Symmetry inheritance**: Discrete permutation symmetry $S_{|\\mathcal{E}|}$ restricts to walker permutation $S_N$ \u2192 continuous exchangeability\n672: 3. **Gauge connection**: Discrete holonomy ({prf:ref}`def-discrete-gauge-connection-discrete-sym`) converges to continuous gauge connection (Chapter 12)",
+      "metadata": {
+        "class": "note"
+      },
+      "section": "## 3. Discrete-Continuous Symmetry Correspondence",
+      "raw_directive": "663: :::\n664: \n665: :::{prf:remark} Emergence of Continuous Symmetries\n666: :class: note\n667: \n668: **Bottom-up perspective**: The Fractal Set is the **primary object** (discrete, finite, algorithmically generated). Continuous symmetries (diffeomorphisms, gauge transformations) emerge in the $N \\to \\infty$ limit via:\n669: \n670: 1. **Episode density**: As $N$ increases, episodes densify in spacetime \u2192 discrete graph approaches continuum manifold\n671: 2. **Symmetry inheritance**: Discrete permutation symmetry $S_{|\\mathcal{E}|}$ restricts to walker permutation $S_N$ \u2192 continuous exchangeability\n672: 3. **Gauge connection**: Discrete holonomy ({prf:ref}`def-discrete-gauge-connection-discrete-sym`) converges to continuous gauge connection (Chapter 12)\n673: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

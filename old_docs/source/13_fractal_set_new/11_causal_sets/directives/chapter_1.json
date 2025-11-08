@@ -1,0 +1,47 @@
+{
+  "chapter_index": 1,
+  "section_id": "## 1. Causal Set Theory: Axioms and Framework",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-causal-set-standard",
+      "title": "Causal Set (Bombelli et al. 1987)",
+      "start_line": 27,
+      "end_line": 42,
+      "header_lines": [
+        28
+      ],
+      "content_start": 30,
+      "content_end": 41,
+      "content": "30: :label: def-causal-set-standard\n31: \n32: A **causal set** $(C, \\prec)$ is a locally finite partially ordered set (poset) satisfying:\n33: \n34: **Axiom CS1 (Irreflexivity)**: For all $e \\in C$, $e \\not\\prec e$\n35: \n36: **Axiom CS2 (Transitivity)**: For all $e_1, e_2, e_3 \\in C$, if $e_1 \\prec e_2$ and $e_2 \\prec e_3$, then $e_1 \\prec e_3$\n37: \n38: **Axiom CS3 (Local Finiteness)**: For all $e_1, e_2 \\in C$, the set $\\{e \\in C : e_1 \\prec e \\prec e_2\\}$ is finite\n39: \n40: **Physical interpretation**:\n41: - Elements $e \\in C$ represent spacetime events",
+      "metadata": {
+        "label": "def-causal-set-standard"
+      },
+      "section": "## 1. Causal Set Theory: Axioms and Framework",
+      "raw_directive": "27: ### 1.1. Standard Causal Set Definition\n28: \n29: :::{prf:definition} Causal Set (Bombelli et al. 1987)\n30: :label: def-causal-set-standard\n31: \n32: A **causal set** $(C, \\prec)$ is a locally finite partially ordered set (poset) satisfying:\n33: \n34: **Axiom CS1 (Irreflexivity)**: For all $e \\in C$, $e \\not\\prec e$\n35: \n36: **Axiom CS2 (Transitivity)**: For all $e_1, e_2, e_3 \\in C$, if $e_1 \\prec e_2$ and $e_2 \\prec e_3$, then $e_1 \\prec e_3$\n37: \n38: **Axiom CS3 (Local Finiteness)**: For all $e_1, e_2 \\in C$, the set $\\{e \\in C : e_1 \\prec e \\prec e_2\\}$ is finite\n39: \n40: **Physical interpretation**:\n41: - Elements $e \\in C$ represent spacetime events\n42: - $e_1 \\prec e_2$ means \"$e_1$ causally precedes $e_2$\" (future light cone)"
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-poisson-sprinkling",
+      "title": "Poisson Sprinkling",
+      "start_line": 46,
+      "end_line": 56,
+      "header_lines": [
+        47
+      ],
+      "content_start": 49,
+      "content_end": 55,
+      "content": "49: :label: def-poisson-sprinkling\n50: \n51: Given a Lorentzian manifold $(M, g_{\\mu\\nu})$ with volume element $dV = \\sqrt{-\\det g} \\, d^d x$, a **Poisson sprinkling** with density $\\rho$ is:\n52: \n53: 1. **Sample points**: Draw $N$ points $\\{x_i\\}$ from $M$ with probability density $p(x) = \\rho \\cdot \\sqrt{-\\det g(x)} / V_{\\text{total}}$\n54: \n55: 2. **Define order**: $e_i \\prec e_j$ iff $x_i$ is in the causal past of $x_j$ (i.e., timelike/lightlike separated with $t_i < t_j$)",
+      "metadata": {
+        "label": "def-poisson-sprinkling"
+      },
+      "section": "## 1. Causal Set Theory: Axioms and Framework",
+      "raw_directive": "46: ### 1.2. Poisson Sprinkling (Standard Construction)\n47: \n48: :::{prf:definition} Poisson Sprinkling\n49: :label: def-poisson-sprinkling\n50: \n51: Given a Lorentzian manifold $(M, g_{\\mu\\nu})$ with volume element $dV = \\sqrt{-\\det g} \\, d^d x$, a **Poisson sprinkling** with density $\\rho$ is:\n52: \n53: 1. **Sample points**: Draw $N$ points $\\{x_i\\}$ from $M$ with probability density $p(x) = \\rho \\cdot \\sqrt{-\\det g(x)} / V_{\\text{total}}$\n54: \n55: 2. **Define order**: $e_i \\prec e_j$ iff $x_i$ is in the causal past of $x_j$ (i.e., timelike/lightlike separated with $t_i < t_j$)\n56: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

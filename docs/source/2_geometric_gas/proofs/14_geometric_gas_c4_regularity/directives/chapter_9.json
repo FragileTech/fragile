@@ -1,0 +1,101 @@
+{
+  "chapter_index": 9,
+  "section_id": "## 9. Stability Implications and Corollaries",
+  "directive_count": 5,
+  "hints": [
+    {
+      "directive_type": "corollary",
+      "label": "cor-hessian-lipschitz",
+      "title": "Hessian Lipschitz Continuity",
+      "start_line": 903,
+      "end_line": 916,
+      "header_lines": [
+        904
+      ],
+      "content_start": 906,
+      "content_end": 915,
+      "content": "906: :label: cor-hessian-lipschitz\n907: \n908: The Hessian $\\nabla^2 V_{\\text{fit}}$ is Lipschitz continuous:\n909: \n910: $$\n911: \\|\\nabla^2 V_{\\text{fit}}(x) - \\nabla^2 V_{\\text{fit}}(y)\\| \\le K_{V,3}(\\rho) \\|x - y\\|\n912: \n913: $$\n914: \n915: where $K_{V,3}(\\rho) = O(\\rho^{-3})$ is the third-derivative bound from C\u00b3 regularity (see {prf:ref}`thm-c3-regularity` in [13_geometric_gas_c3_regularity.md](13_geometric_gas_c3_regularity.md)).",
+      "metadata": {
+        "label": "cor-hessian-lipschitz"
+      },
+      "section": "## 9. Stability Implications and Corollaries",
+      "raw_directive": "903: ## 9. Stability Implications and Corollaries\n904: \n905: :::{prf:corollary} Hessian Lipschitz Continuity\n906: :label: cor-hessian-lipschitz\n907: \n908: The Hessian $\\nabla^2 V_{\\text{fit}}$ is Lipschitz continuous:\n909: \n910: $$\n911: \\|\\nabla^2 V_{\\text{fit}}(x) - \\nabla^2 V_{\\text{fit}}(y)\\| \\le K_{V,3}(\\rho) \\|x - y\\|\n912: \n913: $$\n914: \n915: where $K_{V,3}(\\rho) = O(\\rho^{-3})$ is the third-derivative bound from C\u00b3 regularity (see {prf:ref}`thm-c3-regularity` in [13_geometric_gas_c3_regularity.md](13_geometric_gas_c3_regularity.md)).\n916: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-cor-hessian-lipschitz",
+      "title": null,
+      "start_line": 918,
+      "end_line": 936,
+      "header_lines": [
+        919
+      ],
+      "content_start": 921,
+      "content_end": 935,
+      "content": "921: :label: proof-cor-hessian-lipschitz\n922: \n923: Lipschitz continuity of the Hessian follows from the fundamental theorem of calculus:\n924: \n925: $$\n926: \\nabla^2 V_{\\text{fit}}(y) - \\nabla^2 V_{\\text{fit}}(x) = \\int_0^1 \\nabla^3 V_{\\text{fit}}(x + t(y-x)) \\cdot (y - x) \\, dt\n927: \n928: $$\n929: \n930: Taking norms and using $\\|\\nabla^3 V_{\\text{fit}}\\| \\le K_{V,3}(\\rho)$:\n931: \n932: $$\n933: \\|\\nabla^2 V_{\\text{fit}}(y) - \\nabla^2 V_{\\text{fit}}(x)\\| \\le K_{V,3}(\\rho) \\|y - x\\|\n934: \n935: $$",
+      "metadata": {
+        "label": "proof-cor-hessian-lipschitz"
+      },
+      "section": "## 9. Stability Implications and Corollaries",
+      "raw_directive": "918: :::\n919: \n920: :::{prf:proof}\n921: :label: proof-cor-hessian-lipschitz\n922: \n923: Lipschitz continuity of the Hessian follows from the fundamental theorem of calculus:\n924: \n925: $$\n926: \\nabla^2 V_{\\text{fit}}(y) - \\nabla^2 V_{\\text{fit}}(x) = \\int_0^1 \\nabla^3 V_{\\text{fit}}(x + t(y-x)) \\cdot (y - x) \\, dt\n927: \n928: $$\n929: \n930: Taking norms and using $\\|\\nabla^3 V_{\\text{fit}}\\| \\le K_{V,3}(\\rho)$:\n931: \n932: $$\n933: \\|\\nabla^2 V_{\\text{fit}}(y) - \\nabla^2 V_{\\text{fit}}(x)\\| \\le K_{V,3}(\\rho) \\|y - x\\|\n934: \n935: $$\n936: "
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-fourth-order-integrators",
+      "title": "Fourth-Order Integrator Compatibility",
+      "start_line": 938,
+      "end_line": 942,
+      "header_lines": [
+        939
+      ],
+      "content_start": 941,
+      "content_end": 941,
+      "content": "941: :label: cor-fourth-order-integrators",
+      "metadata": {
+        "label": "cor-fourth-order-integrators"
+      },
+      "section": "## 9. Stability Implications and Corollaries",
+      "raw_directive": "938: :::\n939: \n940: :::{prf:corollary} Fourth-Order Integrator Compatibility\n941: :label: cor-fourth-order-integrators\n942: "
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-brascamp-lieb",
+      "title": "Brascamp-Lieb Inequality (Conditional)",
+      "start_line": 944,
+      "end_line": 959,
+      "header_lines": [
+        945
+      ],
+      "content_start": 947,
+      "content_end": 958,
+      "content": "947: :label: cor-brascamp-lieb\n948: \n949: **Hypothesis:** Assume the fitness potential is uniformly convex: $\\nabla^2 V_{\\text{fit}}(x) \\ge \\lambda_{\\rho} I$ for some $\\lambda_{\\rho} > 0$ and all $x \\in \\mathcal{X}$.\n950: \n951: **Conclusion:** The QSD $\\pi_{\\text{QSD}}$ satisfies the Brascamp-Lieb inequality:\n952: \n953: $$\n954: \\text{Var}_{\\pi_{\\text{QSD}}}[f] \\le \\int_{\\mathcal{X}} \\frac{(\\nabla f)^2}{\\lambda_{\\min}(\\nabla^2 V_{\\text{fit}})} d\\pi_{\\text{QSD}} \\le \\frac{1}{\\lambda_{\\rho}} \\|\\nabla f\\|^2_{L^2(\\pi_{\\text{QSD}})}\n955: \n956: $$\n957: \n958: enabling sharp concentration inequalities.",
+      "metadata": {
+        "label": "cor-brascamp-lieb"
+      },
+      "section": "## 9. Stability Implications and Corollaries",
+      "raw_directive": "944: :::\n945: \n946: :::{prf:corollary} Brascamp-Lieb Inequality (Conditional)\n947: :label: cor-brascamp-lieb\n948: \n949: **Hypothesis:** Assume the fitness potential is uniformly convex: $\\nabla^2 V_{\\text{fit}}(x) \\ge \\lambda_{\\rho} I$ for some $\\lambda_{\\rho} > 0$ and all $x \\in \\mathcal{X}$.\n950: \n951: **Conclusion:** The QSD $\\pi_{\\text{QSD}}$ satisfies the Brascamp-Lieb inequality:\n952: \n953: $$\n954: \\text{Var}_{\\pi_{\\text{QSD}}}[f] \\le \\int_{\\mathcal{X}} \\frac{(\\nabla f)^2}{\\lambda_{\\min}(\\nabla^2 V_{\\text{fit}})} d\\pi_{\\text{QSD}} \\le \\frac{1}{\\lambda_{\\rho}} \\|\\nabla f\\|^2_{L^2(\\pi_{\\text{QSD}})}\n955: \n956: $$\n957: \n958: enabling sharp concentration inequalities.\n959: "
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-bakry-emery-gamma2",
+      "title": "Bakry-\u00c9mery \u0393\u2082 Criterion (Conditional)",
+      "start_line": 982,
+      "end_line": 1009,
+      "header_lines": [
+        983
+      ],
+      "content_start": 985,
+      "content_end": 1008,
+      "content": "985: :label: prop-bakry-emery-gamma2\n986: \n987: C\u2074 regularity of $V_{\\text{fit}}$ ensures the Langevin generator $\\mathcal{L} = \\Delta - \\nabla V_{\\text{fit}} \\cdot \\nabla$ admits a well-defined \u0393\u2082 operator:\n988: \n989: $$\n990: \\Gamma_2(f, f) = \\frac{1}{2}\\mathcal{L}(\\Gamma(f, f)) - \\Gamma(f, \\mathcal{L} f)\n991: \n992: $$\n993: \n994: where $\\Gamma(f, f) = \\|\\nabla f\\|^2$.\n995: \n996: **Curvature hypothesis:** If the fitness potential satisfies the **Bakry-\u00c9mery curvature condition**:\n997: \n998: $$\n999: \\Gamma_2(f, f) \\ge \\lambda_{\\text{BE}} \\Gamma(f, f) \\quad \\text{for some } \\lambda_{\\text{BE}} > 0\n1000: \n1001: $$\n1002: \n1003: (which is equivalent to $\\text{Hess}(V_{\\text{fit}}) \\ge \\lambda_{\\text{BE}} I$ for the Langevin generator), then the semigroup $P_t$ is **hypercontractive**:\n1004: \n1005: $$\n1006: \\|P_t f\\|_{L^q} \\le \\|f\\|_{L^p} \\quad \\text{for } q = 1 + (p - 1)e^{2\\lambda_{\\text{BE}} t}\n1007: \n1008: $$",
+      "metadata": {
+        "label": "prop-bakry-emery-gamma2"
+      },
+      "section": "## 9. Stability Implications and Corollaries",
+      "raw_directive": "982: :::\n983: \n984: :::{prf:proposition} Bakry-\u00c9mery \u0393\u2082 Criterion (Conditional)\n985: :label: prop-bakry-emery-gamma2\n986: \n987: C\u2074 regularity of $V_{\\text{fit}}$ ensures the Langevin generator $\\mathcal{L} = \\Delta - \\nabla V_{\\text{fit}} \\cdot \\nabla$ admits a well-defined \u0393\u2082 operator:\n988: \n989: $$\n990: \\Gamma_2(f, f) = \\frac{1}{2}\\mathcal{L}(\\Gamma(f, f)) - \\Gamma(f, \\mathcal{L} f)\n991: \n992: $$\n993: \n994: where $\\Gamma(f, f) = \\|\\nabla f\\|^2$.\n995: \n996: **Curvature hypothesis:** If the fitness potential satisfies the **Bakry-\u00c9mery curvature condition**:\n997: \n998: $$\n999: \\Gamma_2(f, f) \\ge \\lambda_{\\text{BE}} \\Gamma(f, f) \\quad \\text{for some } \\lambda_{\\text{BE}} > 0\n1000: \n1001: $$\n1002: \n1003: (which is equivalent to $\\text{Hess}(V_{\\text{fit}}) \\ge \\lambda_{\\text{BE}} I$ for the Langevin generator), then the semigroup $P_t$ is **hypercontractive**:\n1004: \n1005: $$\n1006: \\|P_t f\\|_{L^q} \\le \\|f\\|_{L^p} \\quad \\text{for } q = 1 + (p - 1)e^{2\\lambda_{\\text{BE}} t}\n1007: \n1008: $$\n1009: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

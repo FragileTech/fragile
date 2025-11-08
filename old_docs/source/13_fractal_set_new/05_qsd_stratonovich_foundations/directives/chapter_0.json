@@ -1,0 +1,29 @@
+{
+  "chapter_index": 0,
+  "section_id": "## 1. Main Result and Significance",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-qsd-riemannian-volume-main",
+      "title": "QSD Spatial Marginal Equals Riemannian Volume Measure",
+      "start_line": 21,
+      "end_line": 45,
+      "header_lines": [
+        22
+      ],
+      "content_start": 24,
+      "content_end": 44,
+      "content": "24: :label: thm-qsd-riemannian-volume-main\n25: \n26: Let $\\pi_{\\text{QSD}}(x, v)$ be the quasi-stationary distribution of the Adaptive Gas on the alive set $\\mathcal{A} = \\mathcal{X} \\times \\mathbb{R}^d$. The **spatial marginal** (integrating out velocities) is:\n27: \n28: $$\n29: \\rho_{\\text{spatial}}(x) = \\int_{\\mathbb{R}^d} \\pi_{\\text{QSD}}(x, v) \\, dv = \\frac{1}{Z} \\sqrt{\\det g(x)} \\, \\exp\\left(-\\frac{U_{\\text{eff}}(x)}{T}\\right)\n30: $$\n31: \n32: where:\n33: - $g(x) = (H(x) + \\epsilon_\\Sigma I)$ is the **emergent Riemannian metric** tensor from {prf:ref}`def-regularized-hessian-tensor` in {doc}`../08_emergent_geometry.md`\n34: - $U_{\\text{eff}}(x) = U(x) - \\epsilon_F V_{\\text{fit}}(x)$ is the **effective potential** combining confinement $U$ and adaptive force virtual reward $V_{\\text{fit}}$\n35: - $T = \\sigma^2/(2\\gamma)$ is the **effective temperature** from friction-diffusion balance\n36: - $Z$ is the normalization constant ensuring $\\int_{\\mathcal{X}} \\rho_{\\text{spatial}}(x) \\, dx = 1$\n37: \n38: **Geometric interpretation:** Episodes sample from the **canonical Gibbs measure with respect to the Riemannian volume element**:\n39: \n40: $$\n41: d\\mu_{\\text{Riem}}(x) = \\sqrt{\\det g(x)} \\, dx\n42: $$\n43: \n44: This is the natural volume measure on the emergent Riemannian manifold $(\\mathcal{X}, g)$.",
+      "metadata": {
+        "label": "thm-qsd-riemannian-volume-main"
+      },
+      "section": "## 1. Main Result and Significance",
+      "raw_directive": "21: ### 1.1. Statement of Main Theorem\n22: \n23: :::{prf:theorem} QSD Spatial Marginal Equals Riemannian Volume Measure\n24: :label: thm-qsd-riemannian-volume-main\n25: \n26: Let $\\pi_{\\text{QSD}}(x, v)$ be the quasi-stationary distribution of the Adaptive Gas on the alive set $\\mathcal{A} = \\mathcal{X} \\times \\mathbb{R}^d$. The **spatial marginal** (integrating out velocities) is:\n27: \n28: $$\n29: \\rho_{\\text{spatial}}(x) = \\int_{\\mathbb{R}^d} \\pi_{\\text{QSD}}(x, v) \\, dv = \\frac{1}{Z} \\sqrt{\\det g(x)} \\, \\exp\\left(-\\frac{U_{\\text{eff}}(x)}{T}\\right)\n30: $$\n31: \n32: where:\n33: - $g(x) = (H(x) + \\epsilon_\\Sigma I)$ is the **emergent Riemannian metric** tensor from {prf:ref}`def-regularized-hessian-tensor` in {doc}`../08_emergent_geometry.md`\n34: - $U_{\\text{eff}}(x) = U(x) - \\epsilon_F V_{\\text{fit}}(x)$ is the **effective potential** combining confinement $U$ and adaptive force virtual reward $V_{\\text{fit}}$\n35: - $T = \\sigma^2/(2\\gamma)$ is the **effective temperature** from friction-diffusion balance\n36: - $Z$ is the normalization constant ensuring $\\int_{\\mathcal{X}} \\rho_{\\text{spatial}}(x) \\, dx = 1$\n37: \n38: **Geometric interpretation:** Episodes sample from the **canonical Gibbs measure with respect to the Riemannian volume element**:\n39: \n40: $$\n41: d\\mu_{\\text{Riem}}(x) = \\sqrt{\\det g(x)} \\, dx\n42: $$\n43: \n44: This is the natural volume measure on the emergent Riemannian manifold $(\\mathcal{X}, g)$.\n45: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

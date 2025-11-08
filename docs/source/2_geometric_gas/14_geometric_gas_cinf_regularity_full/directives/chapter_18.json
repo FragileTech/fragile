@@ -1,0 +1,47 @@
+{
+  "chapter_index": 18,
+  "section_id": "## 10. Regularized Standard Deviation",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "lemma",
+      "label": "lem-properties-regularized-std-dev-full",
+      "title": "Properties of Regularized Standard Deviation",
+      "start_line": 4284,
+      "end_line": 4301,
+      "header_lines": [
+        4285
+      ],
+      "content_start": 4287,
+      "content_end": 4300,
+      "content": "4287: :label: lem-properties-regularized-std-dev-full\n4288: \n4289: The function $\\sigma'_\\rho(i) = \\sqrt{\\sigma_\\rho^{2(i)} + \\eta_{\\min}^2}$ satisfies:\n4290: \n4291: 1. **Positive lower bound**: $\\sigma'_\\rho(i) \\geq \\eta_{\\min} > 0$ for all configurations\n4292: \n4293: 2. **C^\u221e regularity**: $\\sigma'_\\rho \\in C^\\infty$ as a composition of C^\u221e functions\n4294: \n4295: 3. **Derivative bounds**: For $m \\geq 1$,\n4296: \n4297: $$\n4298: \\|\\nabla^m \\sigma'_\\rho(i)\\| \\leq C_{\\sigma',m}(\\rho) \\cdot \\rho^{-m}\n4299: \n4300: $$",
+      "metadata": {
+        "label": "lem-properties-regularized-std-dev-full"
+      },
+      "section": "## 10. Regularized Standard Deviation",
+      "raw_directive": "4284: ### 10.1 Smoothness and Lower Bounds\n4285: \n4286: :::{prf:lemma} Properties of Regularized Standard Deviation\n4287: :label: lem-properties-regularized-std-dev-full\n4288: \n4289: The function $\\sigma'_\\rho(i) = \\sqrt{\\sigma_\\rho^{2(i)} + \\eta_{\\min}^2}$ satisfies:\n4290: \n4291: 1. **Positive lower bound**: $\\sigma'_\\rho(i) \\geq \\eta_{\\min} > 0$ for all configurations\n4292: \n4293: 2. **C^\u221e regularity**: $\\sigma'_\\rho \\in C^\\infty$ as a composition of C^\u221e functions\n4294: \n4295: 3. **Derivative bounds**: For $m \\geq 1$,\n4296: \n4297: $$\n4298: \\|\\nabla^m \\sigma'_\\rho(i)\\| \\leq C_{\\sigma',m}(\\rho) \\cdot \\rho^{-m}\n4299: \n4300: $$\n4301: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-lem-properties-regularized-std-dev-full",
+      "title": null,
+      "start_line": 4303,
+      "end_line": 4385,
+      "header_lines": [
+        4304
+      ],
+      "content_start": 4306,
+      "content_end": 4384,
+      "content": "4306: :label: proof-lem-properties-regularized-std-dev-full\n4307: \n4308: **Step 1: Lower bound.**\n4309: \n4310: Since $\\sigma_\\rho^{2(i)} \\geq 0$:\n4311: \n4312: $$\n4313: \\sigma'_\\rho(i) = \\sqrt{\\sigma_\\rho^{2(i)} + \\eta_{\\min}^2} \\geq \\sqrt{\\eta_{\\min}^2} = \\eta_{\\min} > 0\n4314: \n4315: $$\n4316: \n4317: **Step 2: Smoothness.**\n4318: \n4319: The square root function $f(x) = \\sqrt{x}$ is C^\u221e on $(0, \\infty)$.\n4320: \n4321: Since $\\sigma_\\rho^{2(i)} + \\eta_{\\min}^2 \\geq \\eta_{\\min}^2 > 0$ always, the composition:\n4322: \n4323: $$\n4324: \\sigma'_\\rho(i) = f(\\sigma_\\rho^{2(i)} + \\eta_{\\min}^2)\n4325: \n4326: $$\n4327: \n4328: is C^\u221e (composition of C^\u221e functions with domain avoiding the singularity at 0).\n4329: \n4330: **Step 3: First derivative via chain rule.**\n4331: \n4332: $$\n4333: \\nabla \\sigma'_\\rho(i) = \\frac{1}{2\\sqrt{\\sigma_\\rho^{2(i)} + \\eta_{\\min}^2}} \\cdot \\nabla \\sigma_\\rho^{2(i)}\n4334: = \\frac{1}{2\\sigma'_\\rho(i)} \\cdot \\nabla \\sigma_\\rho^{2(i)}\n4335: \n4336: $$\n4337: \n4338: Using $\\sigma'_\\rho(i) \\geq \\eta_{\\min}$ and $\\|\\nabla \\sigma_\\rho^{2(i)}\\| \\leq C_{\\sigma^2,1} \\rho^{-1}$:\n4339: \n4340: $$\n4341: \\|\\nabla \\sigma'_\\rho(i)\\| \\leq \\frac{1}{2\\eta_{\\min}} \\cdot C_{\\sigma^2,1} \\rho^{-1} = \\mathcal{O}(\\eta_{\\min}^{-1} \\rho^{-1})\n4342: \n4343: $$\n4344: \n4345: **Step 4: Higher derivatives via Fa\u00e0 di Bruno.**\n4346: \n4347: For $m \\geq 2$, apply the Fa\u00e0 di Bruno formula for the composition $\\sqrt{g(x)}$ where $g = \\sigma_\\rho^{2(i)} + \\eta_{\\min}^2$:\n4348: \n4349: $$\n4350: \\nabla^m \\sigma'_\\rho = \\sum_{\\text{partitions}} c_{\\text{partition}} \\cdot \\frac{d^k}{dx^k}\\sqrt{x}\\Big|_{x=g} \\cdot \\prod_j (\\nabla^{j} g)^{n_j}\n4351: \n4352: $$\n4353: \n4354: The derivatives of $\\sqrt{x}$ are:\n4355: \n4356: $$\n4357: \\frac{d^m}{dx^m} \\sqrt{x} = (-1)^{m-1} \\frac{(2m-3)!!}{2^m} x^{1/2 - m}\n4358: \n4359: $$\n4360: \n4361: At $x = \\sigma_\\rho^{2(i)} + \\eta_{\\min}^2 \\geq \\eta_{\\min}^2$:\n4362: \n4363: $$\n4364: \\left|\\frac{d^m}{dx^m} \\sqrt{x}\\right| \\leq C_m \\cdot \\eta_{\\min}^{1-2m}\n4365: \n4366: $$\n4367: \n4368: where $C_m = \\mathcal{O}(m!)$ from the double factorial $(2m-3)!! = \\mathcal{O}(m!/2^m)$.\n4369: \n4370: Combining with $\\|\\nabla^j \\sigma_\\rho^{2(i)}\\| \\leq C_{\\sigma^2,j} \\rho^{-j}$:\n4371: \n4372: $$\n4373: \\|\\nabla^m \\sigma'_\\rho\\| \\leq C_m \\eta_{\\min}^{1-2m} \\sum_{\\text{partitions}} \\prod_j (C_{\\sigma^2,j} \\rho^{-j})^{n_j}\n4374: \n4375: $$\n4376: \n4377: The sum over partitions gives factorial growth, yielding:\n4378: \n4379: $$\n4380: \\|\\nabla^m \\sigma'_\\rho\\| \\leq C_{\\sigma',m}(\\rho) \\cdot \\rho^{-m}\n4381: \n4382: $$\n4383: \n4384: where $C_{\\sigma',m}(\\rho) = \\mathcal{O}(m! \\cdot \\rho^{2dm} \\cdot \\eta_{\\min}^{-(2m-1)})$.",
+      "metadata": {
+        "label": "proof-lem-properties-regularized-std-dev-full"
+      },
+      "section": "## 10. Regularized Standard Deviation",
+      "raw_directive": "4303: :::\n4304: \n4305: :::{prf:proof}\n4306: :label: proof-lem-properties-regularized-std-dev-full\n4307: \n4308: **Step 1: Lower bound.**\n4309: \n4310: Since $\\sigma_\\rho^{2(i)} \\geq 0$:\n4311: \n4312: $$\n4313: \\sigma'_\\rho(i) = \\sqrt{\\sigma_\\rho^{2(i)} + \\eta_{\\min}^2} \\geq \\sqrt{\\eta_{\\min}^2} = \\eta_{\\min} > 0\n4314: \n4315: $$\n4316: \n4317: **Step 2: Smoothness.**\n4318: \n4319: The square root function $f(x) = \\sqrt{x}$ is C^\u221e on $(0, \\infty)$.\n4320: \n4321: Since $\\sigma_\\rho^{2(i)} + \\eta_{\\min}^2 \\geq \\eta_{\\min}^2 > 0$ always, the composition:\n4322: \n4323: $$\n4324: \\sigma'_\\rho(i) = f(\\sigma_\\rho^{2(i)} + \\eta_{\\min}^2)\n4325: \n4326: $$\n4327: \n4328: is C^\u221e (composition of C^\u221e functions with domain avoiding the singularity at 0).\n4329: \n4330: **Step 3: First derivative via chain rule.**\n4331: \n4332: $$\n4333: \\nabla \\sigma'_\\rho(i) = \\frac{1}{2\\sqrt{\\sigma_\\rho^{2(i)} + \\eta_{\\min}^2}} \\cdot \\nabla \\sigma_\\rho^{2(i)}\n4334: = \\frac{1}{2\\sigma'_\\rho(i)} \\cdot \\nabla \\sigma_\\rho^{2(i)}\n4335: \n4336: $$\n4337: \n4338: Using $\\sigma'_\\rho(i) \\geq \\eta_{\\min}$ and $\\|\\nabla \\sigma_\\rho^{2(i)}\\| \\leq C_{\\sigma^2,1} \\rho^{-1}$:\n4339: \n4340: $$\n4341: \\|\\nabla \\sigma'_\\rho(i)\\| \\leq \\frac{1}{2\\eta_{\\min}} \\cdot C_{\\sigma^2,1} \\rho^{-1} = \\mathcal{O}(\\eta_{\\min}^{-1} \\rho^{-1})\n4342: \n4343: $$\n4344: \n4345: **Step 4: Higher derivatives via Fa\u00e0 di Bruno.**\n4346: \n4347: For $m \\geq 2$, apply the Fa\u00e0 di Bruno formula for the composition $\\sqrt{g(x)}$ where $g = \\sigma_\\rho^{2(i)} + \\eta_{\\min}^2$:\n4348: \n4349: $$\n4350: \\nabla^m \\sigma'_\\rho = \\sum_{\\text{partitions}} c_{\\text{partition}} \\cdot \\frac{d^k}{dx^k}\\sqrt{x}\\Big|_{x=g} \\cdot \\prod_j (\\nabla^{j} g)^{n_j}\n4351: \n4352: $$\n4353: \n4354: The derivatives of $\\sqrt{x}$ are:\n4355: \n4356: $$\n4357: \\frac{d^m}{dx^m} \\sqrt{x} = (-1)^{m-1} \\frac{(2m-3)!!}{2^m} x^{1/2 - m}\n4358: \n4359: $$\n4360: \n4361: At $x = \\sigma_\\rho^{2(i)} + \\eta_{\\min}^2 \\geq \\eta_{\\min}^2$:\n4362: \n4363: $$\n4364: \\left|\\frac{d^m}{dx^m} \\sqrt{x}\\right| \\leq C_m \\cdot \\eta_{\\min}^{1-2m}\n4365: \n4366: $$\n4367: \n4368: where $C_m = \\mathcal{O}(m!)$ from the double factorial $(2m-3)!! = \\mathcal{O}(m!/2^m)$.\n4369: \n4370: Combining with $\\|\\nabla^j \\sigma_\\rho^{2(i)}\\| \\leq C_{\\sigma^2,j} \\rho^{-j}$:\n4371: \n4372: $$\n4373: \\|\\nabla^m \\sigma'_\\rho\\| \\leq C_m \\eta_{\\min}^{1-2m} \\sum_{\\text{partitions}} \\prod_j (C_{\\sigma^2,j} \\rho^{-j})^{n_j}\n4374: \n4375: $$\n4376: \n4377: The sum over partitions gives factorial growth, yielding:\n4378: \n4379: $$\n4380: \\|\\nabla^m \\sigma'_\\rho\\| \\leq C_{\\sigma',m}(\\rho) \\cdot \\rho^{-m}\n4381: \n4382: $$\n4383: \n4384: where $C_{\\sigma',m}(\\rho) = \\mathcal{O}(m! \\cdot \\rho^{2dm} \\cdot \\eta_{\\min}^{-(2m-1)})$.\n4385: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 3. Discrete Gauge Theory on Episodes",
+  "directive_count": 6,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-episode-relabeling-group-rigorous",
+      "title": "Episode Relabeling Gauge Group",
+      "start_line": 665,
+      "end_line": 687,
+      "header_lines": [
+        666
+      ],
+      "content_start": 668,
+      "content_end": 686,
+      "content": "668: :label: def-episode-relabeling-group-rigorous\n669: \n670: Let $\\mathcal{E} = \\\\{e_1, \\ldots, e_{|\\mathcal{E}|}\\\\}$ be the set of episodes in the Fractal Set. The **episode relabeling group** is:\n671: \n672: $$\n673: G_{\\text{epi}} = S_{|\\mathcal{E}|}\n674: $$\n675: \n676: the symmetric group on $|\\mathcal{E}|$ elements.\n677: \n678: **Gauge transformation:** A permutation $\\sigma \\in S_{|\\mathcal{E}|}$ acts on the Fractal Set by:\n679: \n680: $$\n681: \\sigma: e_i \\mapsto e_{\\sigma(i)}\n682: $$\n683: \n684: relabeling all episodes.\n685: \n686: **Physical equivalence:** Two Fractal Sets $\\mathcal{F}$ and $\\mathcal{F}'$ are **physically equivalent** if $\\mathcal{F}' = \\sigma \\cdot \\mathcal{F}$ for some $\\sigma \\in S_{|\\mathcal{E}|}$.",
+      "metadata": {
+        "label": "def-episode-relabeling-group-rigorous"
+      },
+      "section": "## 3. Discrete Gauge Theory on Episodes",
+      "raw_directive": "665: The old documentation develops a **discrete gauge theory** where the gauge group is the **permutation group of episodes**, not a continuous Lie group.\n666: \n667: :::{prf:definition} Episode Relabeling Gauge Group\n668: :label: def-episode-relabeling-group-rigorous\n669: \n670: Let $\\mathcal{E} = \\\\{e_1, \\ldots, e_{|\\mathcal{E}|}\\\\}$ be the set of episodes in the Fractal Set. The **episode relabeling group** is:\n671: \n672: $$\n673: G_{\\text{epi}} = S_{|\\mathcal{E}|}\n674: $$\n675: \n676: the symmetric group on $|\\mathcal{E}|$ elements.\n677: \n678: **Gauge transformation:** A permutation $\\sigma \\in S_{|\\mathcal{E}|}$ acts on the Fractal Set by:\n679: \n680: $$\n681: \\sigma: e_i \\mapsto e_{\\sigma(i)}\n682: $$\n683: \n684: relabeling all episodes.\n685: \n686: **Physical equivalence:** Two Fractal Sets $\\mathcal{F}$ and $\\mathcal{F}'$ are **physically equivalent** if $\\mathcal{F}' = \\sigma \\cdot \\mathcal{F}$ for some $\\sigma \\in S_{|\\mathcal{E}|}$.\n687: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-discrete-permutation-invariance-rigorous",
+      "title": "Discrete Permutation Invariance",
+      "start_line": 689,
+      "end_line": 709,
+      "header_lines": [
+        690
+      ],
+      "content_start": 692,
+      "content_end": 708,
+      "content": "692: :label: thm-discrete-permutation-invariance-rigorous\n693: \n694: The probability distribution over Fractal Sets is **invariant** under episode relabeling:\n695: \n696: $$\n697: \\mathcal{L}(\\mathcal{F}) = \\mathcal{L}(\\sigma \\cdot \\mathcal{F}) \\quad \\forall \\sigma \\in S_{|\\mathcal{E}|}\n698: $$\n699: \n700: where $\\mathcal{L}(\\mathcal{F})$ denotes the law of the random Fractal Set.\n701: \n702: **Proof:** Episodes are labeled arbitrarily during simulation. The underlying stochastic process treats all episodes symmetrically - labels are bookkeeping, not physical.\n703: \n704: **Consequence:** All **gauge-invariant observables** must be symmetric functions of episodes:\n705: \n706: $$\n707: O(\\sigma \\cdot \\mathcal{F}) = O(\\mathcal{F}) \\quad \\forall \\sigma \\in S_{|\\mathcal{E}|}\n708: $$",
+      "metadata": {
+        "label": "thm-discrete-permutation-invariance-rigorous"
+      },
+      "section": "## 3. Discrete Gauge Theory on Episodes",
+      "raw_directive": "689: :::\n690: \n691: :::{prf:theorem} Discrete Permutation Invariance\n692: :label: thm-discrete-permutation-invariance-rigorous\n693: \n694: The probability distribution over Fractal Sets is **invariant** under episode relabeling:\n695: \n696: $$\n697: \\mathcal{L}(\\mathcal{F}) = \\mathcal{L}(\\sigma \\cdot \\mathcal{F}) \\quad \\forall \\sigma \\in S_{|\\mathcal{E}|}\n698: $$\n699: \n700: where $\\mathcal{L}(\\mathcal{F})$ denotes the law of the random Fractal Set.\n701: \n702: **Proof:** Episodes are labeled arbitrarily during simulation. The underlying stochastic process treats all episodes symmetrically - labels are bookkeeping, not physical.\n703: \n704: **Consequence:** All **gauge-invariant observables** must be symmetric functions of episodes:\n705: \n706: $$\n707: O(\\sigma \\cdot \\mathcal{F}) = O(\\mathcal{F}) \\quad \\forall \\sigma \\in S_{|\\mathcal{E}|}\n708: $$\n709: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-discrete-gauge-connection-rigorous",
+      "title": "Discrete Gauge Connection on Fractal Set",
+      "start_line": 713,
+      "end_line": 739,
+      "header_lines": [
+        714
+      ],
+      "content_start": 716,
+      "content_end": 738,
+      "content": "716: :label: def-discrete-gauge-connection-rigorous\n717: \n718: The **discrete gauge connection** defines parallel transport along CST and IG edges.\n719: \n720: **Gauge group:** $G_{\\text{gauge}} = S_{|\\mathcal{E}|}$ (episode permutations)\n721: \n722: **Parallel transport operators:**\n723: \n724: 1. **CST edges** (timelike, causal):\n725:    $$\\mathcal{T}^{\\text{CST}}(e_i^t \\to e_i^{t+1}) = \\text{id} \\in S_{|\\mathcal{E}|}$$\n726: \n727:    **Interpretation:** Episode index is **preserved** along temporal evolution (same walker)\n728: \n729: 2. **IG edges** (spacelike, non-causal):\n730:    $$\\mathcal{T}^{\\text{IG}}(e_i \\to e_j) = (i \\, j) \\in S_{|\\mathcal{E}|}$$\n731: \n732:    **Interpretation:** IG edge represents **exchange/correlation** between episodes $i$ and $j$, encoded as transposition\n733: \n734: **Path-ordered product:** For a path $\\gamma = (e_1 \\to e_2 \\to \\cdots \\to e_n)$:\n735: \n736: $$\n737: \\mathcal{T}(\\gamma) = \\mathcal{T}(e_{n-1} \\to e_n) \\circ \\cdots \\circ \\mathcal{T}(e_1 \\to e_2) \\in S_{|\\mathcal{E}|}\n738: $$",
+      "metadata": {
+        "label": "def-discrete-gauge-connection-rigorous"
+      },
+      "section": "## 3. Discrete Gauge Theory on Episodes",
+      "raw_directive": "713: ### 3.2. Discrete Parallel Transport and Connection\n714: \n715: :::{prf:definition} Discrete Gauge Connection on Fractal Set\n716: :label: def-discrete-gauge-connection-rigorous\n717: \n718: The **discrete gauge connection** defines parallel transport along CST and IG edges.\n719: \n720: **Gauge group:** $G_{\\text{gauge}} = S_{|\\mathcal{E}|}$ (episode permutations)\n721: \n722: **Parallel transport operators:**\n723: \n724: 1. **CST edges** (timelike, causal):\n725:    $$\\mathcal{T}^{\\text{CST}}(e_i^t \\to e_i^{t+1}) = \\text{id} \\in S_{|\\mathcal{E}|}$$\n726: \n727:    **Interpretation:** Episode index is **preserved** along temporal evolution (same walker)\n728: \n729: 2. **IG edges** (spacelike, non-causal):\n730:    $$\\mathcal{T}^{\\text{IG}}(e_i \\to e_j) = (i \\, j) \\in S_{|\\mathcal{E}|}$$\n731: \n732:    **Interpretation:** IG edge represents **exchange/correlation** between episodes $i$ and $j$, encoded as transposition\n733: \n734: **Path-ordered product:** For a path $\\gamma = (e_1 \\to e_2 \\to \\cdots \\to e_n)$:\n735: \n736: $$\n737: \\mathcal{T}(\\gamma) = \\mathcal{T}(e_{n-1} \\to e_n) \\circ \\cdots \\circ \\mathcal{T}(e_1 \\to e_2) \\in S_{|\\mathcal{E}|}\n738: $$\n739: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-connection-to-braid-holonomy-rigorous",
+      "title": "Connection to Braid Holonomy",
+      "start_line": 741,
+      "end_line": 757,
+      "header_lines": [
+        742
+      ],
+      "content_start": 744,
+      "content_end": 756,
+      "content": "744: :label: thm-connection-to-braid-holonomy-rigorous\n745: \n746: The discrete gauge connection on the Fractal Set is **compatible** with the braid group holonomy from Chapter 12.\n747: \n748: Specifically, for a closed path $\\gamma$ in the Fractal Set, the discrete holonomy:\n749: \n750: $$\n751: \\text{Hol}_{\\mathcal{F}}(\\gamma) = \\mathcal{T}(\\gamma) \\in S_{|\\mathcal{E}|}\n752: $$\n753: \n754: agrees with the braid holonomy projected to $S_N$ via the natural homomorphism $\\rho: B_N \\to S_N$.\n755: \n756: **Consequence:** The Fractal Set discrete gauge structure is the **lattice regularization** of the continuous braid gauge theory.",
+      "metadata": {
+        "label": "thm-connection-to-braid-holonomy-rigorous"
+      },
+      "section": "## 3. Discrete Gauge Theory on Episodes",
+      "raw_directive": "741: :::\n742: \n743: :::{prf:theorem} Connection to Braid Holonomy\n744: :label: thm-connection-to-braid-holonomy-rigorous\n745: \n746: The discrete gauge connection on the Fractal Set is **compatible** with the braid group holonomy from Chapter 12.\n747: \n748: Specifically, for a closed path $\\gamma$ in the Fractal Set, the discrete holonomy:\n749: \n750: $$\n751: \\text{Hol}_{\\mathcal{F}}(\\gamma) = \\mathcal{T}(\\gamma) \\in S_{|\\mathcal{E}|}\n752: $$\n753: \n754: agrees with the braid holonomy projected to $S_N$ via the natural homomorphism $\\rho: B_N \\to S_N$.\n755: \n756: **Consequence:** The Fractal Set discrete gauge structure is the **lattice regularization** of the continuous braid gauge theory.\n757: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-discrete-curvature-rigorous",
+      "title": "Discrete Curvature Functional",
+      "start_line": 761,
+      "end_line": 776,
+      "header_lines": [
+        762
+      ],
+      "content_start": 764,
+      "content_end": 775,
+      "content": "764: :label: def-discrete-curvature-rigorous\n765: \n766: For a closed loop (plaquette) $P$ in the Fractal Set, define the **discrete curvature** as:\n767: \n768: $$\n769: \\kappa(P) = \\begin{cases}\n770: 0 & \\text{if } \\text{Hol}(P) = \\text{id} \\\\\n771: 1 & \\text{if } \\text{Hol}(P) \\neq \\text{id}\n772: \\end{cases}\n773: $$\n774: \n775: **Interpretation:** The loop has non-trivial holonomy if parallel transport around it produces a non-identity permutation.",
+      "metadata": {
+        "label": "def-discrete-curvature-rigorous"
+      },
+      "section": "## 3. Discrete Gauge Theory on Episodes",
+      "raw_directive": "761: ### 3.3. Wilson Loops and Holonomy Observables\n762: \n763: :::{prf:definition} Discrete Curvature Functional\n764: :label: def-discrete-curvature-rigorous\n765: \n766: For a closed loop (plaquette) $P$ in the Fractal Set, define the **discrete curvature** as:\n767: \n768: $$\n769: \\kappa(P) = \\begin{cases}\n770: 0 & \\text{if } \\text{Hol}(P) = \\text{id} \\\\\n771: 1 & \\text{if } \\text{Hol}(P) \\neq \\text{id}\n772: \\end{cases}\n773: $$\n774: \n775: **Interpretation:** The loop has non-trivial holonomy if parallel transport around it produces a non-identity permutation.\n776: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-ig-fundamental-cycles-rigorous",
+      "title": "IG Edges Close Fundamental Cycles",
+      "start_line": 778,
+      "end_line": 792,
+      "header_lines": [
+        779
+      ],
+      "content_start": 781,
+      "content_end": 791,
+      "content": "781: :label: thm-ig-fundamental-cycles-rigorous\n782: \n783: If the CST is a **tree** (single root, no cycles), then each IG edge $(e_i, e_j)$ closes **exactly one fundamental cycle**:\n784: \n785: $$\n786: C_{ij} = \\text{CST path from root to } e_i + (e_i \\to e_j)_{\\text{IG}} + \\text{CST path from } e_j \\text{ back to root}\n787: $$\n788: \n789: **Consequence:** The number of independent Wilson loops equals the number of IG edges.\n790: \n791: **Graph theory:** This is the standard result that in a tree with $V$ vertices and $E_{\\text{tree}} = V-1$ edges, adding $E_{\\text{IG}}$ edges creates $E_{\\text{IG}}$ independent cycles (first Betti number).",
+      "metadata": {
+        "label": "thm-ig-fundamental-cycles-rigorous"
+      },
+      "section": "## 3. Discrete Gauge Theory on Episodes",
+      "raw_directive": "778: :::\n779: \n780: :::{prf:theorem} IG Edges Close Fundamental Cycles\n781: :label: thm-ig-fundamental-cycles-rigorous\n782: \n783: If the CST is a **tree** (single root, no cycles), then each IG edge $(e_i, e_j)$ closes **exactly one fundamental cycle**:\n784: \n785: $$\n786: C_{ij} = \\text{CST path from root to } e_i + (e_i \\to e_j)_{\\text{IG}} + \\text{CST path from } e_j \\text{ back to root}\n787: $$\n788: \n789: **Consequence:** The number of independent Wilson loops equals the number of IG edges.\n790: \n791: **Graph theory:** This is the standard result that in a tree with $V$ vertices and $E_{\\text{tree}} = V-1$ edges, adding $E_{\\text{IG}}$ edges creates $E_{\\text{IG}}$ independent cycles (first Betti number).\n792: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

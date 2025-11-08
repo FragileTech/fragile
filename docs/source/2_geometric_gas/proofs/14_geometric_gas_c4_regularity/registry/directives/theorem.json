@@ -1,0 +1,34 @@
+{
+  "document_id": "14_geometric_gas_c4_regularity",
+  "stage": "directives",
+  "directive_type": "theorem",
+  "generated_at": "2025-11-08T17:07:43.294955+00:00",
+  "count": 1,
+  "items": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-c4-regularity",
+      "title": "C⁴ Regularity of Fitness Potential (Simplified Position-Dependent Model)",
+      "start_line": 859,
+      "end_line": 885,
+      "header_lines": [
+        860
+      ],
+      "content_start": 862,
+      "content_end": 884,
+      "content": "862: :label: thm-c4-regularity\n863: \n864: **Scope**: This theorem applies to the simplified fitness model where $d: \\mathcal{X} \\to \\mathbb{R}$ depends only on walker position (see Warning {ref}`warn-scope-simplified-model`).\n865: \n866: Under Assumptions {prf:ref}`assump-c4-measurement`, {prf:ref}`assump-c4-kernel`, {prf:ref}`assump-c4-rescale`, and {prf:ref}`assump-c4-regularized-std`,\n867: the fitness potential $V_{\\text{fit}}[f_k, \\rho](x_i) = g_A(Z_\\rho[f_k, d, x_i])$ is C⁴ with:\n868: \n869: $$\n870: \\|\\nabla^4_{x_i} V_{\\text{fit}}\\| \\le K_{V,4}(\\rho) < \\infty\n871: \n872: $$\n873: \n874: for all $k \\in \\{1, \\ldots, N\\}$ and $N \\ge 1$, where:\n875: \n876: $$\n877: \\boxed{\n878: \\begin{align}\n879: K_{V,4}(\\rho) := \\,&L_{g^{(4)}_A} \\cdot (K_{Z,1}(\\rho))^4 + 6 L_{g'''_A} \\cdot (K_{Z,1}(\\rho))^2 \\cdot K_{Z,2}(\\rho) \\\\\n880: &+ 3 L_{g''_A} \\cdot (K_{Z,2}(\\rho))^2 + 4 L_{g''_A} \\cdot K_{Z,1}(\\rho) \\cdot K_{Z,3}(\\rho) + L_{g'_A} \\cdot K_{Z,4}(\\rho)\n881: \\end{align}\n882: }\n883: \n884: $$",
+      "metadata": {
+        "label": "thm-c4-regularity"
+      },
+      "section": "## 8. Main C⁴ Regularity Theorem",
+      "raw_directive": "859: ## 8. Main C⁴ Regularity Theorem\n860: \n861: :::{prf:theorem} C⁴ Regularity of Fitness Potential (Simplified Position-Dependent Model)\n862: :label: thm-c4-regularity\n863: \n864: **Scope**: This theorem applies to the simplified fitness model where $d: \\mathcal{X} \\to \\mathbb{R}$ depends only on walker position (see Warning {ref}`warn-scope-simplified-model`).\n865: \n866: Under Assumptions {prf:ref}`assump-c4-measurement`, {prf:ref}`assump-c4-kernel`, {prf:ref}`assump-c4-rescale`, and {prf:ref}`assump-c4-regularized-std`,\n867: the fitness potential $V_{\\text{fit}}[f_k, \\rho](x_i) = g_A(Z_\\rho[f_k, d, x_i])$ is C⁴ with:\n868: \n869: $$\n870: \\|\\nabla^4_{x_i} V_{\\text{fit}}\\| \\le K_{V,4}(\\rho) < \\infty\n871: \n872: $$\n873: \n874: for all $k \\in \\{1, \\ldots, N\\}$ and $N \\ge 1$, where:\n875: \n876: $$\n877: \\boxed{\n878: \\begin{align}\n879: K_{V,4}(\\rho) := \\,&L_{g^{(4)}_A} \\cdot (K_{Z,1}(\\rho))^4 + 6 L_{g'''_A} \\cdot (K_{Z,1}(\\rho))^2 \\cdot K_{Z,2}(\\rho) \\\\\n880: &+ 3 L_{g''_A} \\cdot (K_{Z,2}(\\rho))^2 + 4 L_{g''_A} \\cdot K_{Z,1}(\\rho) \\cdot K_{Z,3}(\\rho) + L_{g'_A} \\cdot K_{Z,4}(\\rho)\n881: \\end{align}\n882: }\n883: \n884: $$\n885: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "14_geometric_gas_c4_regularity",
+        "chapter_index": 8,
+        "chapter_file": "chapter_8.json",
+        "section_id": "## 8. Main C⁴ Regularity Theorem"
+      }
+    }
+  ]
+}

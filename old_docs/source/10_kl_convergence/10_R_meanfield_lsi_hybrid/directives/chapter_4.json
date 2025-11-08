@@ -1,0 +1,29 @@
+{
+  "chapter_index": 4,
+  "section_id": "## Step 2: Cloning Operator Contraction (Mean-Field Proof)",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "lemma",
+      "label": "lem-meanfield-cloning-dissipation-hybrid",
+      "title": "Mean-Field Cloning Entropy Dissipation",
+      "start_line": 92,
+      "end_line": 122,
+      "header_lines": [
+        93
+      ],
+      "content_start": 95,
+      "content_end": 121,
+      "content": "95: :label: lem-meanfield-cloning-dissipation-hybrid\n96: \n97: **Hypotheses**:\n98: \n99: 1. $\\mu, \\pi$ are probability measures on $\\Omega \\subset \\mathbb{R}^{2d}$ with smooth densities $\\rho_\\mu, \\rho_\\pi \\in C^2(\\Omega)$\n100: 2. $\\pi = \\pi_{\\text{QSD}}$ is log-concave: $\\rho_\\pi = e^{-V_{\\text{QSD}}}$ for convex $V_{\\text{QSD}}$\n101: 3. $T_{\\text{clone}}: \\mathcal{P}(\\Omega) \\to \\mathcal{P}(\\Omega)$ is the mean-field cloning operator\n102: 4. Fitness-QSD anti-correlation: $\\log V[z] = -\\lambda_{\\text{corr}} V_{\\text{QSD}}(z) + \\log V_0$ with $\\lambda_{\\text{corr}} > 0$\n103: 5. Regularity: $0 < \\rho_{\\min} \\leq \\rho_\\mu \\leq \\rho_{\\max} < \\infty$ and $0 < V_{\\min} \\leq V[z] \\leq V_{\\max} < \\infty$\n104: 6. Noise regime: $\\delta^2 > \\delta_{\\min}^2$\n105: \n106: **Conclusion**:\n107: \n108: For $\\mu' = T_{\\text{clone}} \\# \\mu$ with infinitesimal time step $\\tau$:\n109: \n110: $$\n111: D_{\\text{KL}}(\\mu' \\| \\pi) \\leq (1 - \\tau \\beta_{\\text{clone}}) D_{\\text{KL}}(\\mu \\| \\pi) + C_{\\text{ent}} + O(e^{-\\kappa \\delta^2}) + O(\\tau^2)\n112: $$\n113: \n114: where:\n115: $$\n116: \\beta_{\\text{clone}} := \\frac{\\lambda_{\\text{clone}}}{m_a} \\lambda_{\\text{corr}} \\lambda_{\\text{Poin}} (1 - \\epsilon_{\\text{ratio}}) > 0\n117: $$\n118: \n119: and:\n120: $$\n121: C_{\\text{ent}} := \\tau \\lambda_{\\text{clone}} \\left[\\log\\left(\\frac{\\rho_{\\max}}{\\rho_{\\min}}\\right) - \\frac{d}{2} \\log(2\\pi e \\delta^2)\\right] < 0",
+      "metadata": {
+        "label": "lem-meanfield-cloning-dissipation-hybrid"
+      },
+      "section": "## Step 2: Cloning Operator Contraction (Mean-Field Proof)",
+      "raw_directive": "92: This is the **new contribution** of the mean-field approach. We prove:\n93: \n94: :::{prf:lemma} Mean-Field Cloning Entropy Dissipation\n95: :label: lem-meanfield-cloning-dissipation-hybrid\n96: \n97: **Hypotheses**:\n98: \n99: 1. $\\mu, \\pi$ are probability measures on $\\Omega \\subset \\mathbb{R}^{2d}$ with smooth densities $\\rho_\\mu, \\rho_\\pi \\in C^2(\\Omega)$\n100: 2. $\\pi = \\pi_{\\text{QSD}}$ is log-concave: $\\rho_\\pi = e^{-V_{\\text{QSD}}}$ for convex $V_{\\text{QSD}}$\n101: 3. $T_{\\text{clone}}: \\mathcal{P}(\\Omega) \\to \\mathcal{P}(\\Omega)$ is the mean-field cloning operator\n102: 4. Fitness-QSD anti-correlation: $\\log V[z] = -\\lambda_{\\text{corr}} V_{\\text{QSD}}(z) + \\log V_0$ with $\\lambda_{\\text{corr}} > 0$\n103: 5. Regularity: $0 < \\rho_{\\min} \\leq \\rho_\\mu \\leq \\rho_{\\max} < \\infty$ and $0 < V_{\\min} \\leq V[z] \\leq V_{\\max} < \\infty$\n104: 6. Noise regime: $\\delta^2 > \\delta_{\\min}^2$\n105: \n106: **Conclusion**:\n107: \n108: For $\\mu' = T_{\\text{clone}} \\# \\mu$ with infinitesimal time step $\\tau$:\n109: \n110: $$\n111: D_{\\text{KL}}(\\mu' \\| \\pi) \\leq (1 - \\tau \\beta_{\\text{clone}}) D_{\\text{KL}}(\\mu \\| \\pi) + C_{\\text{ent}} + O(e^{-\\kappa \\delta^2}) + O(\\tau^2)\n112: $$\n113: \n114: where:\n115: $$\n116: \\beta_{\\text{clone}} := \\frac{\\lambda_{\\text{clone}}}{m_a} \\lambda_{\\text{corr}} \\lambda_{\\text{Poin}} (1 - \\epsilon_{\\text{ratio}}) > 0\n117: $$\n118: \n119: and:\n120: $$\n121: C_{\\text{ent}} := \\tau \\lambda_{\\text{clone}} \\left[\\log\\left(\\frac{\\rho_{\\max}}{\\rho_{\\min}}\\right) - \\frac{d}{2} \\log(2\\pi e \\delta^2)\\right] < 0\n122: $$"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

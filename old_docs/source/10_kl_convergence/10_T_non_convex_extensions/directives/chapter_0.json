@@ -1,0 +1,65 @@
+{
+  "chapter_index": 0,
+  "section_id": "## Part 0: Executive Summary",
+  "directive_count": 3,
+  "hints": [
+    {
+      "directive_type": "axiom",
+      "label": "ax-qsd-log-concave-recap",
+      "title": "Log-Concavity of the Quasi-Stationary Distribution (Current Requirement)",
+      "start_line": 13,
+      "end_line": 17,
+      "header_lines": [
+        14
+      ],
+      "content_start": 16,
+      "content_end": 16,
+      "content": "16: :label: ax-qsd-log-concave-recap",
+      "metadata": {
+        "label": "ax-qsd-log-concave-recap"
+      },
+      "section": "## Part 0: Executive Summary",
+      "raw_directive": "13: The unified KL-convergence proof in [10_kl_convergence_unification.md](10_kl_convergence_unification.md) establishes exponential convergence of the Euclidean Gas to its quasi-stationary distribution (QSD) under a critical assumption:\n14: \n15: :::{prf:axiom} Log-Concavity of the Quasi-Stationary Distribution (Current Requirement)\n16: :label: ax-qsd-log-concave-recap\n17: "
+    },
+    {
+      "directive_type": "axiom",
+      "label": "ax-confining-recap",
+      "title": "Confining Potential (from 04_convergence.md, Axiom 1.3.1)",
+      "start_line": 29,
+      "end_line": 43,
+      "header_lines": [
+        30
+      ],
+      "content_start": 32,
+      "content_end": 42,
+      "content": "32: :label: ax-confining-recap\n33: \n34: The potential $U: \\mathcal{X} \\to \\mathbb{R}$ satisfies:\n35: \n36: $$\n37: U(x) \\to +\\infty \\quad \\text{as} \\quad |x| \\to \\infty \\quad \\text{or} \\quad x \\to \\partial \\mathcal{X}\n38: $$\n39: \n40: Equivalently, there exist constants $\\alpha_U > 0$ and $R_0 > 0$ such that:\n41: \n42: $$",
+      "metadata": {
+        "label": "ax-confining-recap"
+      },
+      "section": "## Part 0: Executive Summary",
+      "raw_directive": "29: This document establishes exponential KL-convergence using a **strictly weaker assumption** that we **already have**:\n30: \n31: :::{prf:axiom} Confining Potential (from 04_convergence.md, Axiom 1.3.1)\n32: :label: ax-confining-recap\n33: \n34: The potential $U: \\mathcal{X} \\to \\mathbb{R}$ satisfies:\n35: \n36: $$\n37: U(x) \\to +\\infty \\quad \\text{as} \\quad |x| \\to \\infty \\quad \\text{or} \\quad x \\to \\partial \\mathcal{X}\n38: $$\n39: \n40: Equivalently, there exist constants $\\alpha_U > 0$ and $R_0 > 0$ such that:\n41: \n42: $$\n43: \\langle \\nabla U(x), x \\rangle \\geq \\alpha_U |x|^2 \\quad \\text{for all} \\quad |x| \\geq R_0"
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-nonconvex-informal",
+      "title": "Exponential KL Convergence for Non-Convex Fitness (Informal)",
+      "start_line": 55,
+      "end_line": 71,
+      "header_lines": [
+        56
+      ],
+      "content_start": 58,
+      "content_end": 70,
+      "content": "58: :label: thm-nonconvex-informal\n59: \n60: For the N-particle Euclidean Gas with a **confining potential** (Axiom {prf:ref}`ax-confining-recap`) but **no convexity assumption**:\n61: \n62: $$\n63: D_{\\text{KL}}(\\mu_t \\| \\pi_{\\text{QSD}}) \\leq e^{-\\lambda t} D_{\\text{KL}}(\\mu_0 \\| \\pi_{\\text{QSD}})\n64: $$\n65: \n66: where:\n67: \n68: $$\n69: \\lambda = c \\cdot \\min\\left(\\gamma, \\frac{\\alpha_U}{\\sigma_v^2}\\right) - C \\cdot L_g \\cdot G_{\\max}\n70: $$",
+      "metadata": {
+        "label": "thm-nonconvex-informal"
+      },
+      "section": "## Part 0: Executive Summary",
+      "raw_directive": "55: ### 0.3. Main Theoretical Contribution\n56: \n57: :::{prf:theorem} Exponential KL Convergence for Non-Convex Fitness (Informal)\n58: :label: thm-nonconvex-informal\n59: \n60: For the N-particle Euclidean Gas with a **confining potential** (Axiom {prf:ref}`ax-confining-recap`) but **no convexity assumption**:\n61: \n62: $$\n63: D_{\\text{KL}}(\\mu_t \\| \\pi_{\\text{QSD}}) \\leq e^{-\\lambda t} D_{\\text{KL}}(\\mu_0 \\| \\pi_{\\text{QSD}})\n64: $$\n65: \n66: where:\n67: \n68: $$\n69: \\lambda = c \\cdot \\min\\left(\\gamma, \\frac{\\alpha_U}{\\sigma_v^2}\\right) - C \\cdot L_g \\cdot G_{\\max}\n70: $$\n71: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "document_id": "01_yang_mills_dynamic_lattice",
+  "stage": "directives",
+  "directive_type": "theorem",
+  "generated_at": "2025-11-08T17:07:43.296791+00:00",
+  "count": 5,
+  "items": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-invariant-measure-existence",
+      "title": "Existence and Uniqueness of Invariant Measure",
+      "start_line": 389,
+      "end_line": 407,
+      "header_lines": [
+        390
+      ],
+      "content_start": 392,
+      "content_end": 406,
+      "content": "392: :label: thm-invariant-measure-existence\n393: \n394: For any choice of parameters $(\\epsilon_{\\text{rep}}, \\delta, \\kappa, r_0, \\beta_{\\text{gauge}}, T, N, R_{\\text{cut}})$ satisfying:\n395: - $\\epsilon_{\\text{rep}}, \\delta, \\kappa, r_0, \\beta_{\\text{gauge}}, T > 0$\n396: - $N \\geq 5$ (minimum for 4-dimensional Delaunay triangulation)\n397: - $R_{\\text{cut}} \\geq 2r_0$ (ensures connectivity)\n398: \n399: the MDLGT dynamics defined by {prf:ref}`def-mdlgt-dynamics` possess a unique invariant probability measure $\\mu_{\\text{inv}}$ on the constrained state space $\\Sigma_N$.\n400: \n401: Furthermore, the process converges to $\\mu_{\\text{inv}}$ exponentially fast in the total variation distance:\n402: \n403: $$\n404: \\|\\mathcal{L}^t(P_0) - \\mu_{\\text{inv}}\\|_{\\text{TV}} \\leq C e^{-\\lambda t}\n405: \n406: $$",
+      "metadata": {
+        "label": "thm-invariant-measure-existence"
+      },
+      "section": "## Main Results",
+      "raw_directive": "389: We now state the four main theorems that together establish the Yang-Mills mass gap. Detailed proofs are provided in subsequent sections.\n390: \n391: :::{prf:theorem} Existence and Uniqueness of Invariant Measure\n392: :label: thm-invariant-measure-existence\n393: \n394: For any choice of parameters $(\\epsilon_{\\text{rep}}, \\delta, \\kappa, r_0, \\beta_{\\text{gauge}}, T, N, R_{\\text{cut}})$ satisfying:\n395: - $\\epsilon_{\\text{rep}}, \\delta, \\kappa, r_0, \\beta_{\\text{gauge}}, T > 0$\n396: - $N \\geq 5$ (minimum for 4-dimensional Delaunay triangulation)\n397: - $R_{\\text{cut}} \\geq 2r_0$ (ensures connectivity)\n398: \n399: the MDLGT dynamics defined by {prf:ref}`def-mdlgt-dynamics` possess a unique invariant probability measure $\\mu_{\\text{inv}}$ on the constrained state space $\\Sigma_N$.\n400: \n401: Furthermore, the process converges to $\\mu_{\\text{inv}}$ exponentially fast in the total variation distance:\n402: \n403: $$\n404: \\|\\mathcal{L}^t(P_0) - \\mu_{\\text{inv}}\\|_{\\text{TV}} \\leq C e^{-\\lambda t}\n405: \n406: $$\n407: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_yang_mills_dynamic_lattice",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
+        "section_id": "## Main Results"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-finite-n-mass-gap",
+      "title": "Mass Gap at Finite N",
+      "start_line": 409,
+      "end_line": 429,
+      "header_lines": [
+        410
+      ],
+      "content_start": 412,
+      "content_end": 428,
+      "content": "412: :label: thm-finite-n-mass-gap\n413: \n414: There exists a critical coupling $\\beta_c(N) > 0$ such that for all $\\beta_{\\text{gauge}} < \\beta_c(N)$ (strong-coupling regime) and for all choices of parameters satisfying the conditions of {prf:ref}`thm-invariant-measure-existence`, the equilibrium state $\\mu_{\\text{inv}}$ describes a confining theory with a mass gap:\n415: \n416: $$\n417: \\Delta_N := \\inf\\{\\omega > 0 : \\omega \\in \\text{Spec}(\\mathcal{H}_N) \\setminus \\{0\\}\\} > 0\n418: \n419: $$\n420: \n421: where $\\mathcal{H}_N$ is the quantum Hamiltonian associated with the Euclidean field theory defined by $\\mu_{\\text{inv}}$, and $\\text{Spec}(\\mathcal{H}_N)$ is its spectrum.\n422: \n423: Moreover, there exists a constant $\\delta > 0$ independent of $N$ (but depending on $\\beta_{\\text{gauge}}$) such that:\n424: \n425: $$\n426: \\Delta_N \\geq \\delta\n427: \n428: $$",
+      "metadata": {
+        "label": "thm-finite-n-mass-gap"
+      },
+      "section": "## Main Results",
+      "raw_directive": "409: :::\n410: \n411: :::{prf:theorem} Mass Gap at Finite N\n412: :label: thm-finite-n-mass-gap\n413: \n414: There exists a critical coupling $\\beta_c(N) > 0$ such that for all $\\beta_{\\text{gauge}} < \\beta_c(N)$ (strong-coupling regime) and for all choices of parameters satisfying the conditions of {prf:ref}`thm-invariant-measure-existence`, the equilibrium state $\\mu_{\\text{inv}}$ describes a confining theory with a mass gap:\n415: \n416: $$\n417: \\Delta_N := \\inf\\{\\omega > 0 : \\omega \\in \\text{Spec}(\\mathcal{H}_N) \\setminus \\{0\\}\\} > 0\n418: \n419: $$\n420: \n421: where $\\mathcal{H}_N$ is the quantum Hamiltonian associated with the Euclidean field theory defined by $\\mu_{\\text{inv}}$, and $\\text{Spec}(\\mathcal{H}_N)$ is its spectrum.\n422: \n423: Moreover, there exists a constant $\\delta > 0$ independent of $N$ (but depending on $\\beta_{\\text{gauge}}$) such that:\n424: \n425: $$\n426: \\Delta_N \\geq \\delta\n427: \n428: $$\n429: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_yang_mills_dynamic_lattice",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
+        "section_id": "## Main Results"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-continuum-limit",
+      "title": "Existence of Continuum Limit",
+      "start_line": 431,
+      "end_line": 459,
+      "header_lines": [
+        432
+      ],
+      "content_start": 434,
+      "content_end": 458,
+      "content": "434: :label: thm-continuum-limit\n435: \n436: Consider a sequence of MDLGT systems indexed by $N$ with parameters chosen such that the average lattice spacing scales as:\n437: \n438: $$\n439: a_N \\sim N^{-1/4}\n440: \n441: $$\n442: \n443: and the bare coupling runs according to:\n444: \n445: $$\n446: \\beta_{\\text{gauge}}(a_N) = \\beta_{\\text{gauge}}^{(0)} + b_0 \\ln(a_N^{-1}) + O(1/\\ln(a_N^{-1}))\n447: \n448: $$\n449: \n450: where $b_0 = \\frac{11N_{\\text{color}}}{3(4\\pi)^2}$ is the one-loop beta function coefficient. Then:\n451: \n452: 1. **Non-Triviality**: The limiting Schwinger functions (correlation functions of Wilson loops) exist and are non-trivial\n453: 2. **Mass Gap Persistence**: The mass gap survives the continuum limit:\n454: \n455: $$\n456: \\Delta := \\lim_{N \\to \\infty} \\Delta_N > 0\n457: \n458: $$",
+      "metadata": {
+        "label": "thm-continuum-limit"
+      },
+      "section": "## Main Results",
+      "raw_directive": "431: :::\n432: \n433: :::{prf:theorem} Existence of Continuum Limit\n434: :label: thm-continuum-limit\n435: \n436: Consider a sequence of MDLGT systems indexed by $N$ with parameters chosen such that the average lattice spacing scales as:\n437: \n438: $$\n439: a_N \\sim N^{-1/4}\n440: \n441: $$\n442: \n443: and the bare coupling runs according to:\n444: \n445: $$\n446: \\beta_{\\text{gauge}}(a_N) = \\beta_{\\text{gauge}}^{(0)} + b_0 \\ln(a_N^{-1}) + O(1/\\ln(a_N^{-1}))\n447: \n448: $$\n449: \n450: where $b_0 = \\frac{11N_{\\text{color}}}{3(4\\pi)^2}$ is the one-loop beta function coefficient. Then:\n451: \n452: 1. **Non-Triviality**: The limiting Schwinger functions (correlation functions of Wilson loops) exist and are non-trivial\n453: 2. **Mass Gap Persistence**: The mass gap survives the continuum limit:\n454: \n455: $$\n456: \\Delta := \\lim_{N \\to \\infty} \\Delta_N > 0\n457: \n458: $$\n459: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_yang_mills_dynamic_lattice",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
+        "section_id": "## Main Results"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-os-axioms",
+      "title": "Osterwalder-Schrader Axioms",
+      "start_line": 461,
+      "end_line": 472,
+      "header_lines": [
+        462
+      ],
+      "content_start": 464,
+      "content_end": 471,
+      "content": "464: :label: thm-os-axioms\n465: \n466: The continuum limit theory constructed in {prf:ref}`thm-continuum-limit` satisfies all Osterwalder-Schrader axioms:\n467: \n468: 1. **OS1 (Euclidean Invariance)**: The Schwinger functions are invariant under the Euclidean group $E(4)$\n469: 2. **OS2 (Reflection Positivity)**: The Schwinger functions satisfy reflection positivity with respect to time reflection\n470: 3. **OS3 (Cluster Property)**: Correlation functions decay exponentially at large separations (consequence of mass gap)\n471: 4. **OS4 (Regularity)**: The Schwinger functions have appropriate analyticity and growth properties",
+      "metadata": {
+        "label": "thm-os-axioms"
+      },
+      "section": "## Main Results",
+      "raw_directive": "461: :::\n462: \n463: :::{prf:theorem} Osterwalder-Schrader Axioms\n464: :label: thm-os-axioms\n465: \n466: The continuum limit theory constructed in {prf:ref}`thm-continuum-limit` satisfies all Osterwalder-Schrader axioms:\n467: \n468: 1. **OS1 (Euclidean Invariance)**: The Schwinger functions are invariant under the Euclidean group $E(4)$\n469: 2. **OS2 (Reflection Positivity)**: The Schwinger functions satisfy reflection positivity with respect to time reflection\n470: 3. **OS3 (Cluster Property)**: Correlation functions decay exponentially at large separations (consequence of mass gap)\n471: 4. **OS4 (Regularity)**: The Schwinger functions have appropriate analyticity and growth properties\n472: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_yang_mills_dynamic_lattice",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
+        "section_id": "## Main Results"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-os-reconstruction",
+      "title": "OS Reconstruction",
+      "start_line": 1251,
+      "end_line": 1261,
+      "header_lines": [
+        1252
+      ],
+      "content_start": 1254,
+      "content_end": 1260,
+      "content": "1254: :label: thm-os-reconstruction\n1255: \n1256: There exists a unique relativistic quantum field theory in Minkowski spacetime, defined by:\n1257: - A Hilbert space $\\mathcal{H}$\n1258: - A vacuum state $|0\\rangle \\in \\mathcal{H}$\n1259: - A strongly continuous unitary representation $U(g)$ of the Poincare group\n1260: - Gauge field operators $A_{\\mu}(x)$ (or Wilson loop operators) satisfying the Wightman axioms",
+      "metadata": {
+        "label": "thm-os-reconstruction"
+      },
+      "section": "## Proof of Theorem 4: Osterwalder-Schrader Axioms",
+      "raw_directive": "1251: Once all four axioms are verified, the Osterwalder-Schrader reconstruction theorem (Osterwalder & Schrader, 1973, 1975) guarantees:\n1252: \n1253: :::{prf:theorem} OS Reconstruction\n1254: :label: thm-os-reconstruction\n1255: \n1256: There exists a unique relativistic quantum field theory in Minkowski spacetime, defined by:\n1257: - A Hilbert space $\\mathcal{H}$\n1258: - A vacuum state $|0\\rangle \\in \\mathcal{H}$\n1259: - A strongly continuous unitary representation $U(g)$ of the Poincare group\n1260: - Gauge field operators $A_{\\mu}(x)$ (or Wilson loop operators) satisfying the Wightman axioms\n1261: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "01_yang_mills_dynamic_lattice",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## Proof of Theorem 4: Osterwalder-Schrader Axioms"
+      }
+    }
+  ]
+}

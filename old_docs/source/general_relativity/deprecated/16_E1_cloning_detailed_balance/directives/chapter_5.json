@@ -1,0 +1,29 @@
+{
+  "chapter_index": 5,
+  "section_id": "## 5. Spatial Density from Combined Equilibrium",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "proposition",
+      "label": "prop-qsd-spatial-density",
+      "title": "QSD Spatial Density",
+      "start_line": 239,
+      "end_line": 272,
+      "header_lines": [
+        240
+      ],
+      "content_start": 242,
+      "content_end": 271,
+      "content": "242: :label: prop-qsd-spatial-density\n243: \n244: At QSD, the spatial density satisfies:\n245: \n246: $$\n247: \\rho_{\\text{QSD}}(x) \\propto \\exp\\left(-\\frac{U(x) + \\Delta V_{\\text{clone}}(x)}{k_B T_{\\text{eff}}}\\right)\n248: $$\n249: \n250: where $\\Delta V_{\\text{clone}}(x)$ is an effective potential from cloning, related to the fitness $\\Psi(x)$.\n251: \n252: **Heuristic Derivation**:\n253: \n254: The Langevin operator alone would give:\n255: \n256: $$\n257: \\rho_{\\text{Langevin}}(x) \\propto e^{-U(x) / k_B T}\n258: $$\n259: \n260: The cloning operator with birth rate $\\propto e^{\\alpha \\Psi(x)}$ and death rate $\\propto e^{-\\alpha \\Psi(x)}$ effectively creates a **potential bias**:\n261: \n262: $$\n263: \\Delta V_{\\text{clone}}(x) \\sim -\\alpha \\Psi(x)\n264: $$\n265: \n266: (Walkers are born more often at high $\\Psi$ and die more often at low $\\Psi$, creating an effective attraction to high-fitness regions.)\n267: \n268: Combining both:\n269: \n270: $$\n271: \\rho_{\\text{QSD}}(x) \\propto \\exp\\left(-\\frac{U(x) - \\alpha \\Psi(x)}{k_B T_{\\text{eff}}}\\right)",
+      "metadata": {
+        "label": "prop-qsd-spatial-density"
+      },
+      "section": "## 5. Spatial Density from Combined Equilibrium",
+      "raw_directive": "239: 3. **Cloning birth-death**: Redistributes walkers based on fitness $\\Psi(x)$\n240: \n241: :::{prf:proposition} QSD Spatial Density\n242: :label: prop-qsd-spatial-density\n243: \n244: At QSD, the spatial density satisfies:\n245: \n246: $$\n247: \\rho_{\\text{QSD}}(x) \\propto \\exp\\left(-\\frac{U(x) + \\Delta V_{\\text{clone}}(x)}{k_B T_{\\text{eff}}}\\right)\n248: $$\n249: \n250: where $\\Delta V_{\\text{clone}}(x)$ is an effective potential from cloning, related to the fitness $\\Psi(x)$.\n251: \n252: **Heuristic Derivation**:\n253: \n254: The Langevin operator alone would give:\n255: \n256: $$\n257: \\rho_{\\text{Langevin}}(x) \\propto e^{-U(x) / k_B T}\n258: $$\n259: \n260: The cloning operator with birth rate $\\propto e^{\\alpha \\Psi(x)}$ and death rate $\\propto e^{-\\alpha \\Psi(x)}$ effectively creates a **potential bias**:\n261: \n262: $$\n263: \\Delta V_{\\text{clone}}(x) \\sim -\\alpha \\Psi(x)\n264: $$\n265: \n266: (Walkers are born more often at high $\\Psi$ and die more often at low $\\Psi$, creating an effective attraction to high-fitness regions.)\n267: \n268: Combining both:\n269: \n270: $$\n271: \\rho_{\\text{QSD}}(x) \\propto \\exp\\left(-\\frac{U(x) - \\alpha \\Psi(x)}{k_B T_{\\text{eff}}}\\right)\n272: $$"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

@@ -1,0 +1,334 @@
+{
+  "document_id": "06_convergence",
+  "stage": "directives",
+  "directive_type": "theorem",
+  "generated_at": "2025-11-08T17:07:43.202205+00:00",
+  "count": 13,
+  "items": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-foster-lyapunov-main",
+      "title": "Foster-Lyapunov Drift for the Composed Operator",
+      "start_line": 264,
+      "end_line": 288,
+      "header_lines": [
+        265
+      ],
+      "content_start": 267,
+      "content_end": 287,
+      "content": "267: :label: thm-foster-lyapunov-main\n268: \n269: Under the foundational axioms, there exist coupling constants $c_V^*, c_B^* > 0$ such that the composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}} \\circ \\Psi_{\\text{clone}}$ satisfies:\n270: \n271: $$\n272: \\mathbb{E}_{\\text{total}}[V_{\\text{total}}(S') \\mid S] \\leq (1 - \\kappa_{\\text{total}}\\tau) V_{\\text{total}}(S) + C_{\\text{total}}\n273: $$\n274: \n275: where:\n276: $$\n277: \\kappa_{\\text{total}} := \\min\\left(\\frac{\\kappa_W}{2}, \\frac{c_V^* \\kappa_x}{2}, \\frac{c_V^* \\gamma}{2}, \\frac{c_B^*(\\kappa_b + \\kappa_{\\text{pot}}\\tau)}{2}\\right) > 0\n278: $$\n279: \n280: $$\n281: C_{\\text{total}} := C_W + C_W'\\tau + c_V^*(C_x + C_v + C_{\\text{kin},x}\\tau) + c_B^*(C_b + C_{\\text{pot}}\\tau) < \\infty\n282: $$\n283: \n284: **Both constants are independent of $N$.**\n285: \n286: **Consequence:** This is a **Foster-Lyapunov drift condition**, which implies:\n287: 1. Geometric ergodicity",
+      "metadata": {
+        "label": "thm-foster-lyapunov-main"
+      },
+      "section": "## 3. Synergistic Composition and Foster-Lyapunov Condition",
+      "raw_directive": "264: ### 3.4. Main Theorem: Synergistic Foster-Lyapunov Condition\n265: \n266: :::{prf:theorem} Foster-Lyapunov Drift for the Composed Operator\n267: :label: thm-foster-lyapunov-main\n268: \n269: Under the foundational axioms, there exist coupling constants $c_V^*, c_B^* > 0$ such that the composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}} \\circ \\Psi_{\\text{clone}}$ satisfies:\n270: \n271: $$\n272: \\mathbb{E}_{\\text{total}}[V_{\\text{total}}(S') \\mid S] \\leq (1 - \\kappa_{\\text{total}}\\tau) V_{\\text{total}}(S) + C_{\\text{total}}\n273: $$\n274: \n275: where:\n276: $$\n277: \\kappa_{\\text{total}} := \\min\\left(\\frac{\\kappa_W}{2}, \\frac{c_V^* \\kappa_x}{2}, \\frac{c_V^* \\gamma}{2}, \\frac{c_B^*(\\kappa_b + \\kappa_{\\text{pot}}\\tau)}{2}\\right) > 0\n278: $$\n279: \n280: $$\n281: C_{\\text{total}} := C_W + C_W'\\tau + c_V^*(C_x + C_v + C_{\\text{kin},x}\\tau) + c_B^*(C_b + C_{\\text{pot}}\\tau) < \\infty\n282: $$\n283: \n284: **Both constants are independent of $N$.**\n285: \n286: **Consequence:** This is a **Foster-Lyapunov drift condition**, which implies:\n287: 1. Geometric ergodicity\n288: 2. Exponential convergence to equilibrium",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "06_convergence",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 3. Synergistic Composition and Foster-Lyapunov Condition"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-phi-irreducibility",
+      "title": "φ-Irreducibility of the Euclidean Gas",
+      "start_line": 635,
+      "end_line": 645,
+      "header_lines": [
+        636
+      ],
+      "content_start": 638,
+      "content_end": 644,
+      "content": "638: :label: thm-phi-irreducibility\n639: \n640: The Euclidean Gas Markov chain on $\\Sigma_N^{\\text{alive}}$ is **φ-irreducible** with respect to Lebesgue measure: For any starting state $S_A \\in \\Sigma_N^{\\text{alive}}$ and any open set $O_B \\subseteq \\Sigma_N^{\\text{alive}}$, there exists $M \\in \\mathbb{N}$ such that:\n641: \n642: $$\n643: P^M(S_A, O_B) := P(S_M \\in O_B \\mid S_0 = S_A) > 0\n644: $$",
+      "metadata": {
+        "label": "thm-phi-irreducibility"
+      },
+      "section": "## 4. Main Convergence Theorem and Quasi-Stationary Distribution",
+      "raw_directive": "635: #### 4.4.1. φ-Irreducibility via Two-Stage Construction\n636: \n637: :::{prf:theorem} φ-Irreducibility of the Euclidean Gas\n638: :label: thm-phi-irreducibility\n639: \n640: The Euclidean Gas Markov chain on $\\Sigma_N^{\\text{alive}}$ is **φ-irreducible** with respect to Lebesgue measure: For any starting state $S_A \\in \\Sigma_N^{\\text{alive}}$ and any open set $O_B \\subseteq \\Sigma_N^{\\text{alive}}$, there exists $M \\in \\mathbb{N}$ such that:\n641: \n642: $$\n643: P^M(S_A, O_B) := P(S_M \\in O_B \\mid S_0 = S_A) > 0\n644: $$\n645: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "06_convergence",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 4. Main Convergence Theorem and Quasi-Stationary Distribution"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-aperiodicity",
+      "title": "Aperiodicity of the Euclidean Gas",
+      "start_line": 838,
+      "end_line": 848,
+      "header_lines": [
+        839
+      ],
+      "content_start": 841,
+      "content_end": 847,
+      "content": "841: :label: thm-aperiodicity\n842: \n843: The Euclidean Gas Markov chain is **aperiodic**: For any state $S \\in \\Sigma_N^{\\text{alive}}$ and any open set $U$ containing $S$, there exist integers $m, n$ with $\\gcd(m,n) = 1$ such that:\n844: \n845: $$\n846: P^m(S, U) > 0 \\quad \\text{and} \\quad P^n(S, U) > 0\n847: $$",
+      "metadata": {
+        "label": "thm-aperiodicity"
+      },
+      "section": "## 4. Main Convergence Theorem and Quasi-Stationary Distribution",
+      "raw_directive": "838: #### 4.4.2. Aperiodicity\n839: \n840: :::{prf:theorem} Aperiodicity of the Euclidean Gas\n841: :label: thm-aperiodicity\n842: \n843: The Euclidean Gas Markov chain is **aperiodic**: For any state $S \\in \\Sigma_N^{\\text{alive}}$ and any open set $U$ containing $S$, there exist integers $m, n$ with $\\gcd(m,n) = 1$ such that:\n844: \n845: $$\n846: P^m(S, U) > 0 \\quad \\text{and} \\quad P^n(S, U) > 0\n847: $$\n848: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "06_convergence",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 4. Main Convergence Theorem and Quasi-Stationary Distribution"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-main-convergence",
+      "title": "Geometric Ergodicity and Convergence to QSD",
+      "start_line": 910,
+      "end_line": 951,
+      "header_lines": [
+        911
+      ],
+      "content_start": 913,
+      "content_end": 950,
+      "content": "913: :label: thm-main-convergence\n914: \n915: Under the foundational axioms (03_cloning.md Ch 4, this document Ch 1), the Euclidean Gas Markov chain satisfies:\n916: \n917: **1. Existence and Uniqueness of QSD:**\n918: \n919: There exists a unique quasi-stationary distribution $\\nu_{\\text{QSD}}$ on $\\Sigma_N^{\\text{alive}}$.\n920: \n921: **2. Exponential Convergence to QSD:**\n922: \n923: For any initial distribution $\\mu_0$ on $\\Sigma_N^{\\text{alive}}$ and for all $t \\geq 0$:\n924: \n925: $$\n926: \\|\\mu_t - \\nu_{\\text{QSD}}\\|_{\\text{TV}} \\leq C_{\\text{conv}} e^{-\\kappa_{\\text{QSD}} t}\n927: $$\n928: \n929: where:\n930: - $\\|\\cdot\\|_{\\text{TV}}$ is the total variation distance\n931: - $\\kappa_{\\text{QSD}} = \\Theta(\\kappa_{\\text{total}}\\tau) > 0$ is the convergence rate\n932: - $C_{\\text{conv}}$ depends on $\\mu_0$ and $V_{\\text{total}}(S_0)$\n933: \n934: **3. Exponentially Long Survival Time:**\n935: \n936: Starting from $\\nu_{\\text{QSD}}$, the expected time until absorption satisfies:\n937: \n938: $$\n939: \\mathbb{E}_{\\nu_{\\text{QSD}}}[\\tau_{\\dagger}] = e^{\\Theta(N)}\n940: $$\n941: \n942: The survival time grows **exponentially with $N$**.\n943: \n944: **4. Concentration Around QSD:**\n945: \n946: For any $\\epsilon > 0$, there exists $N_0(\\epsilon)$ such that for $N > N_0$:\n947: \n948: $$\n949: P(V_{\\text{total}}(S_t) > (1+\\epsilon) V_{\\text{total}}^{\\text{QSD}} \\mid \\text{survived to time } t) \\leq e^{-\\Theta(N)}\n950: $$",
+      "metadata": {
+        "label": "thm-main-convergence"
+      },
+      "section": "## 4. Main Convergence Theorem and Quasi-Stationary Distribution",
+      "raw_directive": "910: ### 4.5. Main Convergence Theorem\n911: \n912: :::{prf:theorem} Geometric Ergodicity and Convergence to QSD\n913: :label: thm-main-convergence\n914: \n915: Under the foundational axioms (03_cloning.md Ch 4, this document Ch 1), the Euclidean Gas Markov chain satisfies:\n916: \n917: **1. Existence and Uniqueness of QSD:**\n918: \n919: There exists a unique quasi-stationary distribution $\\nu_{\\text{QSD}}$ on $\\Sigma_N^{\\text{alive}}$.\n920: \n921: **2. Exponential Convergence to QSD:**\n922: \n923: For any initial distribution $\\mu_0$ on $\\Sigma_N^{\\text{alive}}$ and for all $t \\geq 0$:\n924: \n925: $$\n926: \\|\\mu_t - \\nu_{\\text{QSD}}\\|_{\\text{TV}} \\leq C_{\\text{conv}} e^{-\\kappa_{\\text{QSD}} t}\n927: $$\n928: \n929: where:\n930: - $\\|\\cdot\\|_{\\text{TV}}$ is the total variation distance\n931: - $\\kappa_{\\text{QSD}} = \\Theta(\\kappa_{\\text{total}}\\tau) > 0$ is the convergence rate\n932: - $C_{\\text{conv}}$ depends on $\\mu_0$ and $V_{\\text{total}}(S_0)$\n933: \n934: **3. Exponentially Long Survival Time:**\n935: \n936: Starting from $\\nu_{\\text{QSD}}$, the expected time until absorption satisfies:\n937: \n938: $$\n939: \\mathbb{E}_{\\nu_{\\text{QSD}}}[\\tau_{\\dagger}] = e^{\\Theta(N)}\n940: $$\n941: \n942: The survival time grows **exponentially with $N$**.\n943: \n944: **4. Concentration Around QSD:**\n945: \n946: For any $\\epsilon > 0$, there exists $N_0(\\epsilon)$ such that for $N > N_0$:\n947: \n948: $$\n949: P(V_{\\text{total}}(S_t) > (1+\\epsilon) V_{\\text{total}}^{\\text{QSD}} \\mid \\text{survived to time } t) \\leq e^{-\\Theta(N)}\n950: $$\n951: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "06_convergence",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 4. Main Convergence Theorem and Quasi-Stationary Distribution"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-equilibrium-variance-bounds",
+      "title": "Equilibrium Variance Bounds from Drift Inequalities",
+      "start_line": 1061,
+      "end_line": 1116,
+      "header_lines": [
+        1062
+      ],
+      "content_start": 1064,
+      "content_end": 1115,
+      "content": "1064: :label: thm-equilibrium-variance-bounds\n1065: \n1066: The quasi-stationary distribution satisfies explicit variance bounds derived from the component drift inequalities:\n1067: \n1068: **Positional Variance Equilibrium:**\n1069: \n1070: From {prf:ref}`thm-positional-variance-contraction` (cloning contraction) and kinetic drift, setting $\\mathbb{E}[\\Delta V_{\\text{Var},x}] = 0$ yields:\n1071: \n1072: $$\n1073: V_{\\text{Var},x}^{\\text{QSD}} \\leq \\frac{C_x}{\\kappa_x}\n1074: $$\n1075: \n1076: where:\n1077: - $\\kappa_x > 0$ is the N-uniform positional contraction rate from the Keystone Principle\n1078: - $C_x < \\infty$ is the additive expansion constant from cloning noise and boundary effects\n1079: \n1080: **Velocity Variance Equilibrium:**\n1081: \n1082: From {prf:ref}`thm-bounded-velocity-expansion-cloning` (cloning expansion) and {prf:ref}`thm-velocity-variance-contraction-kinetic` (Langevin friction), setting $\\mathbb{E}[\\Delta V_{\\text{Var},v}] = 0$ yields:\n1083: \n1084: $$\n1085: V_{\\text{Var},v}^{\\text{QSD}} \\leq \\frac{C_v + \\sigma_{\\max}^2 d \\tau}{2\\gamma\\tau}\n1086: $$\n1087: \n1088: where:\n1089: - $C_v$ is the state-independent velocity expansion from inelastic collisions\n1090: - $\\sigma_{\\max}^2 d \\tau$ is the noise injection from Langevin dynamics\n1091: - $2\\gamma\\tau$ is the friction dissipation rate\n1092: \n1093: **Simplified form** (when $C_v \\ll \\sigma_{\\max}^2 d \\tau$):\n1094: \n1095: $$\n1096: V_{\\text{Var},v}^{\\text{QSD}} \\approx \\frac{d\\sigma_{\\max}^2}{2\\gamma}\n1097: $$\n1098: \n1099: recovering the classical equipartition result.\n1100: \n1101: **Boundary Potential Equilibrium:**\n1102: \n1103: From {prf:ref}`thm-boundary-potential-contraction`, setting $\\mathbb{E}[\\Delta W_b] = 0$ yields:\n1104: \n1105: $$\n1106: W_b^{\\text{QSD}} \\leq \\frac{C_b}{\\kappa_b}\n1107: $$\n1108: \n1109: ensuring bounded boundary exposure in the QSD.\n1110: \n1111: **Physical Interpretation:**\n1112: \n1113: These bounds show that equilibrium variance is determined by the balance between:\n1114: - **Contraction mechanisms**: Cloning (positional), friction (velocity), Safe Harbor (boundary)\n1115: - **Expansion mechanisms**: Cloning noise, Langevin noise, boundary reentry",
+      "metadata": {
+        "label": "thm-equilibrium-variance-bounds"
+      },
+      "section": "## 4. Main Convergence Theorem and Quasi-Stationary Distribution",
+      "raw_directive": "1061: :::\n1062: \n1063: :::{prf:theorem} Equilibrium Variance Bounds from Drift Inequalities\n1064: :label: thm-equilibrium-variance-bounds\n1065: \n1066: The quasi-stationary distribution satisfies explicit variance bounds derived from the component drift inequalities:\n1067: \n1068: **Positional Variance Equilibrium:**\n1069: \n1070: From {prf:ref}`thm-positional-variance-contraction` (cloning contraction) and kinetic drift, setting $\\mathbb{E}[\\Delta V_{\\text{Var},x}] = 0$ yields:\n1071: \n1072: $$\n1073: V_{\\text{Var},x}^{\\text{QSD}} \\leq \\frac{C_x}{\\kappa_x}\n1074: $$\n1075: \n1076: where:\n1077: - $\\kappa_x > 0$ is the N-uniform positional contraction rate from the Keystone Principle\n1078: - $C_x < \\infty$ is the additive expansion constant from cloning noise and boundary effects\n1079: \n1080: **Velocity Variance Equilibrium:**\n1081: \n1082: From {prf:ref}`thm-bounded-velocity-expansion-cloning` (cloning expansion) and {prf:ref}`thm-velocity-variance-contraction-kinetic` (Langevin friction), setting $\\mathbb{E}[\\Delta V_{\\text{Var},v}] = 0$ yields:\n1083: \n1084: $$\n1085: V_{\\text{Var},v}^{\\text{QSD}} \\leq \\frac{C_v + \\sigma_{\\max}^2 d \\tau}{2\\gamma\\tau}\n1086: $$\n1087: \n1088: where:\n1089: - $C_v$ is the state-independent velocity expansion from inelastic collisions\n1090: - $\\sigma_{\\max}^2 d \\tau$ is the noise injection from Langevin dynamics\n1091: - $2\\gamma\\tau$ is the friction dissipation rate\n1092: \n1093: **Simplified form** (when $C_v \\ll \\sigma_{\\max}^2 d \\tau$):\n1094: \n1095: $$\n1096: V_{\\text{Var},v}^{\\text{QSD}} \\approx \\frac{d\\sigma_{\\max}^2}{2\\gamma}\n1097: $$\n1098: \n1099: recovering the classical equipartition result.\n1100: \n1101: **Boundary Potential Equilibrium:**\n1102: \n1103: From {prf:ref}`thm-boundary-potential-contraction`, setting $\\mathbb{E}[\\Delta W_b] = 0$ yields:\n1104: \n1105: $$\n1106: W_b^{\\text{QSD}} \\leq \\frac{C_b}{\\kappa_b}\n1107: $$\n1108: \n1109: ensuring bounded boundary exposure in the QSD.\n1110: \n1111: **Physical Interpretation:**\n1112: \n1113: These bounds show that equilibrium variance is determined by the balance between:\n1114: - **Contraction mechanisms**: Cloning (positional), friction (velocity), Safe Harbor (boundary)\n1115: - **Expansion mechanisms**: Cloning noise, Langevin noise, boundary reentry\n1116: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "06_convergence",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 4. Main Convergence Theorem and Quasi-Stationary Distribution"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-synergistic-rate-derivation",
+      "title": "Synergistic Rate Derivation from Component Drifts",
+      "start_line": 1629,
+      "end_line": 1721,
+      "header_lines": [
+        1630
+      ],
+      "content_start": 1632,
+      "content_end": 1720,
+      "content": "1632: :label: thm-synergistic-rate-derivation\n1633: \n1634: The total drift inequality combines component-wise drift bounds from cloning and kinetic operators to yield explicit synergistic convergence.\n1635: \n1636: **Component Drift Structure:**\n1637: \n1638: From the cloning operator {prf:ref}`thm-positional-variance-contraction` and kinetic operator {prf:ref}`thm-velocity-variance-contraction`, each Lyapunov component satisfies:\n1639: \n1640: $$\n1641: \\begin{aligned}\n1642: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] &\\leq -\\kappa_x V_{\\text{Var},x} + C_x + C_{xv} V_{\\text{Var},v} + C_{xW} V_W \\\\\n1643: \\mathbb{E}_{\\text{kin}}[\\Delta V_{\\text{Var},v}] &\\leq -\\kappa_v V_{\\text{Var},v} + C_v + C_{vx} V_{\\text{Var},x} \\\\\n1644: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] &\\leq -\\kappa_W V_W + C_W \\\\\n1645: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] &\\leq -\\kappa_b W_b + C_b\n1646: \\end{aligned}\n1647: $$\n1648: \n1649: where cross-component coupling terms $C_{xv}, C_{xW}, C_{vx}$ arise from expansion by the complementary operator.\n1650: \n1651: **Weighted Combination:**\n1652: \n1653: Define the weighted Lyapunov function:\n1654: \n1655: $$\n1656: V_{\\text{total}} = V_{\\text{Var},x} + \\alpha_v V_{\\text{Var},v} + \\alpha_W V_W + \\alpha_b W_b\n1657: $$\n1658: \n1659: Taking expectations over a full step (kinetic + cloning):\n1660: \n1661: $$\n1662: \\begin{aligned}\n1663: \\mathbb{E}[\\Delta V_{\\text{total}}] &= \\mathbb{E}[\\Delta V_{\\text{Var},x}] + \\alpha_v \\mathbb{E}[\\Delta V_{\\text{Var},v}] + \\alpha_W \\mathbb{E}[\\Delta V_W] + \\alpha_b \\mathbb{E}[\\Delta W_b] \\\\\n1664: &\\leq (-\\kappa_x V_{\\text{Var},x} + C_x + C_{xv} V_{\\text{Var},v} + C_{xW} V_W) \\\\\n1665: &\\quad + \\alpha_v(-\\kappa_v V_{\\text{Var},v} + C_v + C_{vx} V_{\\text{Var},x}) \\\\\n1666: &\\quad + \\alpha_W(-\\kappa_W V_W + C_W) \\\\\n1667: &\\quad + \\alpha_b(-\\kappa_b W_b + C_b)\n1668: \\end{aligned}\n1669: $$\n1670: \n1671: **Weight Selection for Coupling Domination:**\n1672: \n1673: Choose weights to ensure coupling terms are dominated by contraction:\n1674: \n1675: $$\n1676: \\alpha_v \\geq \\frac{C_{xv}}{\\kappa_v V_{\\text{Var},v}^{\\text{eq}}}, \\quad\n1677: \\alpha_W \\geq \\frac{C_{xW}}{\\kappa_W V_W^{\\text{eq}}}, \\quad\n1678: \\alpha_v \\kappa_v \\geq C_{vx} / V_{\\text{Var},x}^{\\text{eq}}\n1679: $$\n1680: \n1681: With these weights, the coupling terms satisfy:\n1682: \n1683: $$\n1684: C_{xv} V_{\\text{Var},v} - \\alpha_v \\kappa_v V_{\\text{Var},v} \\leq -\\epsilon_v \\alpha_v \\kappa_v V_{\\text{Var},v}\n1685: $$\n1686: \n1687: and similarly for other cross terms, where $\\epsilon_v, \\epsilon_W \\ll 1$ are small positive fractions.\n1688: \n1689: **Synergistic Rate:**\n1690: \n1691: After cancellation of dominated coupling terms:\n1692: \n1693: $$\n1694: \\mathbb{E}[\\Delta V_{\\text{total}}] \\leq -\\kappa_{\\text{total}} V_{\\text{total}} + C_{\\text{total}}\n1695: $$\n1696: \n1697: where:\n1698: \n1699: $$\n1700: \\kappa_{\\text{total}} = \\min(\\kappa_x, \\alpha_v \\kappa_v, \\alpha_W \\kappa_W, \\alpha_b \\kappa_b) \\cdot (1 - \\epsilon_{\\text{coupling}})\n1701: $$\n1702: \n1703: $$\n1704: C_{\\text{total}} = C_x + \\alpha_v C_v + \\alpha_W C_W + \\alpha_b C_b\n1705: $$\n1706: \n1707: and $\\epsilon_{\\text{coupling}} = \\max(\\epsilon_v, \\epsilon_W, \\ldots)$ is the residual coupling ratio after weight balancing.\n1708: \n1709: **Physical Interpretation:**\n1710: \n1711: The synergistic rate $\\kappa_{\\text{total}}$ is determined by:\n1712: 1. **Bottleneck principle**: The weakest contraction rate dominates (min over components)\n1713: 2. **Coupling penalty**: $\\epsilon_{\\text{coupling}}$ reduces the effective rate due to energy transfer between components\n1714: 3. **Weight balancing**: Optimal $\\alpha_i$ maximize $\\alpha_i \\kappa_i$ subject to coupling domination\n1715: \n1716: When $\\epsilon_{\\text{coupling}} \\ll 1$, the total rate approaches the bottleneck component rate. The equilibrium variance is:\n1717: \n1718: $$\n1719: V_{\\text{total}}^{\\text{QSD}} = \\frac{C_{\\text{total}}}{\\kappa_{\\text{total}}}\n1720: $$",
+      "metadata": {
+        "label": "thm-synergistic-rate-derivation"
+      },
+      "section": "## 5. Explicit Parameter Dependence and Convergence Rates",
+      "raw_directive": "1629: **Explicit expansion:**\n1630: \n1631: :::{prf:theorem} Synergistic Rate Derivation from Component Drifts\n1632: :label: thm-synergistic-rate-derivation\n1633: \n1634: The total drift inequality combines component-wise drift bounds from cloning and kinetic operators to yield explicit synergistic convergence.\n1635: \n1636: **Component Drift Structure:**\n1637: \n1638: From the cloning operator {prf:ref}`thm-positional-variance-contraction` and kinetic operator {prf:ref}`thm-velocity-variance-contraction`, each Lyapunov component satisfies:\n1639: \n1640: $$\n1641: \\begin{aligned}\n1642: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] &\\leq -\\kappa_x V_{\\text{Var},x} + C_x + C_{xv} V_{\\text{Var},v} + C_{xW} V_W \\\\\n1643: \\mathbb{E}_{\\text{kin}}[\\Delta V_{\\text{Var},v}] &\\leq -\\kappa_v V_{\\text{Var},v} + C_v + C_{vx} V_{\\text{Var},x} \\\\\n1644: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] &\\leq -\\kappa_W V_W + C_W \\\\\n1645: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] &\\leq -\\kappa_b W_b + C_b\n1646: \\end{aligned}\n1647: $$\n1648: \n1649: where cross-component coupling terms $C_{xv}, C_{xW}, C_{vx}$ arise from expansion by the complementary operator.\n1650: \n1651: **Weighted Combination:**\n1652: \n1653: Define the weighted Lyapunov function:\n1654: \n1655: $$\n1656: V_{\\text{total}} = V_{\\text{Var},x} + \\alpha_v V_{\\text{Var},v} + \\alpha_W V_W + \\alpha_b W_b\n1657: $$\n1658: \n1659: Taking expectations over a full step (kinetic + cloning):\n1660: \n1661: $$\n1662: \\begin{aligned}\n1663: \\mathbb{E}[\\Delta V_{\\text{total}}] &= \\mathbb{E}[\\Delta V_{\\text{Var},x}] + \\alpha_v \\mathbb{E}[\\Delta V_{\\text{Var},v}] + \\alpha_W \\mathbb{E}[\\Delta V_W] + \\alpha_b \\mathbb{E}[\\Delta W_b] \\\\\n1664: &\\leq (-\\kappa_x V_{\\text{Var},x} + C_x + C_{xv} V_{\\text{Var},v} + C_{xW} V_W) \\\\\n1665: &\\quad + \\alpha_v(-\\kappa_v V_{\\text{Var},v} + C_v + C_{vx} V_{\\text{Var},x}) \\\\\n1666: &\\quad + \\alpha_W(-\\kappa_W V_W + C_W) \\\\\n1667: &\\quad + \\alpha_b(-\\kappa_b W_b + C_b)\n1668: \\end{aligned}\n1669: $$\n1670: \n1671: **Weight Selection for Coupling Domination:**\n1672: \n1673: Choose weights to ensure coupling terms are dominated by contraction:\n1674: \n1675: $$\n1676: \\alpha_v \\geq \\frac{C_{xv}}{\\kappa_v V_{\\text{Var},v}^{\\text{eq}}}, \\quad\n1677: \\alpha_W \\geq \\frac{C_{xW}}{\\kappa_W V_W^{\\text{eq}}}, \\quad\n1678: \\alpha_v \\kappa_v \\geq C_{vx} / V_{\\text{Var},x}^{\\text{eq}}\n1679: $$\n1680: \n1681: With these weights, the coupling terms satisfy:\n1682: \n1683: $$\n1684: C_{xv} V_{\\text{Var},v} - \\alpha_v \\kappa_v V_{\\text{Var},v} \\leq -\\epsilon_v \\alpha_v \\kappa_v V_{\\text{Var},v}\n1685: $$\n1686: \n1687: and similarly for other cross terms, where $\\epsilon_v, \\epsilon_W \\ll 1$ are small positive fractions.\n1688: \n1689: **Synergistic Rate:**\n1690: \n1691: After cancellation of dominated coupling terms:\n1692: \n1693: $$\n1694: \\mathbb{E}[\\Delta V_{\\text{total}}] \\leq -\\kappa_{\\text{total}} V_{\\text{total}} + C_{\\text{total}}\n1695: $$\n1696: \n1697: where:\n1698: \n1699: $$\n1700: \\kappa_{\\text{total}} = \\min(\\kappa_x, \\alpha_v \\kappa_v, \\alpha_W \\kappa_W, \\alpha_b \\kappa_b) \\cdot (1 - \\epsilon_{\\text{coupling}})\n1701: $$\n1702: \n1703: $$\n1704: C_{\\text{total}} = C_x + \\alpha_v C_v + \\alpha_W C_W + \\alpha_b C_b\n1705: $$\n1706: \n1707: and $\\epsilon_{\\text{coupling}} = \\max(\\epsilon_v, \\epsilon_W, \\ldots)$ is the residual coupling ratio after weight balancing.\n1708: \n1709: **Physical Interpretation:**\n1710: \n1711: The synergistic rate $\\kappa_{\\text{total}}$ is determined by:\n1712: 1. **Bottleneck principle**: The weakest contraction rate dominates (min over components)\n1713: 2. **Coupling penalty**: $\\epsilon_{\\text{coupling}}$ reduces the effective rate due to energy transfer between components\n1714: 3. **Weight balancing**: Optimal $\\alpha_i$ maximize $\\alpha_i \\kappa_i$ subject to coupling domination\n1715: \n1716: When $\\epsilon_{\\text{coupling}} \\ll 1$, the total rate approaches the bottleneck component rate. The equilibrium variance is:\n1717: \n1718: $$\n1719: V_{\\text{total}}^{\\text{QSD}} = \\frac{C_{\\text{total}}}{\\kappa_{\\text{total}}}\n1720: $$\n1721: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "06_convergence",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. Explicit Parameter Dependence and Convergence Rates"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-total-rate-explicit",
+      "title": "Total Convergence Rate (Parameter-Explicit)",
+      "start_line": 1740,
+      "end_line": 1817,
+      "header_lines": [
+        1741
+      ],
+      "content_start": 1743,
+      "content_end": 1816,
+      "content": "1743: :label: thm-total-rate-explicit\n1744: \n1745: The total geometric convergence rate is:\n1746: \n1747: $$\n1748: \\kappa_{\\text{total}} = \\min(\\kappa_x, \\kappa_v, \\kappa_W, \\kappa_b) \\cdot (1 - \\epsilon_{\\text{coupling}})\n1749: $$\n1750: \n1751: where $\\epsilon_{\\text{coupling}} \\ll 1$ is the expansion-to-contraction ratio:\n1752: \n1753: $$\n1754: \\epsilon_{\\text{coupling}} = \\max\\left(\n1755: \\frac{\\alpha_v C_{xv}}{\\kappa_v V_{\\text{Var},v}},\n1756: \\frac{\\alpha_W C_{xW}}{\\kappa_W V_W},\n1757: \\frac{C_{vx}}{\\kappa_x V_{\\text{Var},x}},\n1758: \\ldots\n1759: \\right)\n1760: $$\n1761: \n1762: The equilibrium constant is:\n1763: \n1764: $$\n1765: C_{\\text{total}} = \\frac{C_x + \\alpha_v C_v' + \\alpha_W C_W' + \\alpha_b C_b}{\\kappa_{\\text{total}}}\n1766: $$\n1767: \n1768: **Explicit formulas:**\n1769: \n1770: Substituting from previous sections:\n1771: \n1772: $$\n1773: \\kappa_{\\text{total}} \\sim \\min\\left(\n1774: \\lambda, \\quad 2\\gamma, \\quad \\frac{c_{\\text{hypo}}^2 \\gamma}{1 + \\gamma/\\lambda_{\\min}}, \\quad \\lambda \\frac{\\Delta f_{\\text{boundary}}}{f_{\\text{typical}}}\n1775: \\right) \\cdot (1 - O(\\tau))\n1776: $$\n1777: \n1778: $$\n1779: C_{\\text{total}} \\sim \\frac{1}{\\kappa_{\\text{total}}} \\left(\n1780: \\frac{\\sigma_v^2 \\tau^2}{\\gamma \\lambda} + \\frac{d\\sigma_v^2}{\\gamma} + \\frac{\\sigma_v^2 \\tau}{N^{1/d}} + \\frac{\\sigma_v^2 \\tau}{d_{\\text{safe}}^2}\n1781: \\right)\n1782: $$\n1783: \n1784: **Proof:**\n1785: \n1786: From {prf:ref}`thm-foster-lyapunov-main` (Synergistic Composition, Chapter 7), the weights $\\alpha_v, \\alpha_W, \\alpha_b$ are chosen to satisfy:\n1787: \n1788: $$\n1789: \\alpha_v \\geq \\frac{C_{xv}}{\\kappa_v V_{\\text{Var},v}^{\\text{eq}}}, \\quad\n1790: \\alpha_W \\geq \\frac{C_{xW}}{\\kappa_W V_W^{\\text{eq}}}, \\quad\n1791: \\text{etc.}\n1792: $$\n1793: \n1794: These ensure:\n1795: \n1796: $$\n1797: \\mathbb{E}[\\Delta V_{\\text{total}}] \\leq -\\kappa_{\\text{total}} V_{\\text{total}} + C_{\\text{total}}\n1798: $$\n1799: \n1800: The coupling ratio $\\epsilon_{\\text{coupling}}$ is the fraction of contraction \"wasted\" on compensating other operators' expansion. As long as:\n1801: \n1802: $$\n1803: \\epsilon_{\\text{coupling}} < 1 - \\delta \\quad (\\text{for some } \\delta > 0)\n1804: $$\n1805: \n1806: we have geometric convergence.\n1807: \n1808: The weakest contraction rate dominates (bottleneck):\n1809: \n1810: $$\n1811: \\kappa_{\\text{total}} = \\min_i(\\kappa_i) \\cdot (1 - \\epsilon_{\\text{coupling}})\n1812: $$\n1813: \n1814: The equilibrium is determined by balancing all source terms:\n1815: \n1816: $$",
+      "metadata": {
+        "label": "thm-total-rate-explicit"
+      },
+      "section": "## 5. Explicit Parameter Dependence and Convergence Rates",
+      "raw_directive": "1740: :::\n1741: \n1742: :::{prf:theorem} Total Convergence Rate (Parameter-Explicit)\n1743: :label: thm-total-rate-explicit\n1744: \n1745: The total geometric convergence rate is:\n1746: \n1747: $$\n1748: \\kappa_{\\text{total}} = \\min(\\kappa_x, \\kappa_v, \\kappa_W, \\kappa_b) \\cdot (1 - \\epsilon_{\\text{coupling}})\n1749: $$\n1750: \n1751: where $\\epsilon_{\\text{coupling}} \\ll 1$ is the expansion-to-contraction ratio:\n1752: \n1753: $$\n1754: \\epsilon_{\\text{coupling}} = \\max\\left(\n1755: \\frac{\\alpha_v C_{xv}}{\\kappa_v V_{\\text{Var},v}},\n1756: \\frac{\\alpha_W C_{xW}}{\\kappa_W V_W},\n1757: \\frac{C_{vx}}{\\kappa_x V_{\\text{Var},x}},\n1758: \\ldots\n1759: \\right)\n1760: $$\n1761: \n1762: The equilibrium constant is:\n1763: \n1764: $$\n1765: C_{\\text{total}} = \\frac{C_x + \\alpha_v C_v' + \\alpha_W C_W' + \\alpha_b C_b}{\\kappa_{\\text{total}}}\n1766: $$\n1767: \n1768: **Explicit formulas:**\n1769: \n1770: Substituting from previous sections:\n1771: \n1772: $$\n1773: \\kappa_{\\text{total}} \\sim \\min\\left(\n1774: \\lambda, \\quad 2\\gamma, \\quad \\frac{c_{\\text{hypo}}^2 \\gamma}{1 + \\gamma/\\lambda_{\\min}}, \\quad \\lambda \\frac{\\Delta f_{\\text{boundary}}}{f_{\\text{typical}}}\n1775: \\right) \\cdot (1 - O(\\tau))\n1776: $$\n1777: \n1778: $$\n1779: C_{\\text{total}} \\sim \\frac{1}{\\kappa_{\\text{total}}} \\left(\n1780: \\frac{\\sigma_v^2 \\tau^2}{\\gamma \\lambda} + \\frac{d\\sigma_v^2}{\\gamma} + \\frac{\\sigma_v^2 \\tau}{N^{1/d}} + \\frac{\\sigma_v^2 \\tau}{d_{\\text{safe}}^2}\n1781: \\right)\n1782: $$\n1783: \n1784: **Proof:**\n1785: \n1786: From {prf:ref}`thm-foster-lyapunov-main` (Synergistic Composition, Chapter 7), the weights $\\alpha_v, \\alpha_W, \\alpha_b$ are chosen to satisfy:\n1787: \n1788: $$\n1789: \\alpha_v \\geq \\frac{C_{xv}}{\\kappa_v V_{\\text{Var},v}^{\\text{eq}}}, \\quad\n1790: \\alpha_W \\geq \\frac{C_{xW}}{\\kappa_W V_W^{\\text{eq}}}, \\quad\n1791: \\text{etc.}\n1792: $$\n1793: \n1794: These ensure:\n1795: \n1796: $$\n1797: \\mathbb{E}[\\Delta V_{\\text{total}}] \\leq -\\kappa_{\\text{total}} V_{\\text{total}} + C_{\\text{total}}\n1798: $$\n1799: \n1800: The coupling ratio $\\epsilon_{\\text{coupling}}$ is the fraction of contraction \"wasted\" on compensating other operators' expansion. As long as:\n1801: \n1802: $$\n1803: \\epsilon_{\\text{coupling}} < 1 - \\delta \\quad (\\text{for some } \\delta > 0)\n1804: $$\n1805: \n1806: we have geometric convergence.\n1807: \n1808: The weakest contraction rate dominates (bottleneck):\n1809: \n1810: $$\n1811: \\kappa_{\\text{total}} = \\min_i(\\kappa_i) \\cdot (1 - \\epsilon_{\\text{coupling}})\n1812: $$\n1813: \n1814: The equilibrium is determined by balancing all source terms:\n1815: \n1816: $$\n1817: V_{\\text{total}}^{\\text{eq}} = \\frac{C_{\\text{total}}}{\\kappa_{\\text{total}}}",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "06_convergence",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. Explicit Parameter Dependence and Convergence Rates"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-explicit-rate-sensitivity",
+      "title": "Explicit Rate Sensitivity Matrix",
+      "start_line": 2457,
+      "end_line": 2483,
+      "header_lines": [
+        2458
+      ],
+      "content_start": 2460,
+      "content_end": 2482,
+      "content": "2460: :label: thm-explicit-rate-sensitivity\n2461: \n2462: At a balanced operating point with $\\gamma \\approx \\lambda \\approx \\sqrt{\\lambda_{\\min}}$, $\\lambda_{\\text{alg}} = 0.1$, $\\tau = 0.01$, the rate sensitivity matrix is approximately:\n2463: \n2464: $$\n2465: M_\\kappa = \\begin{bmatrix}\n2466: 1.0 & 0 & 0 & 0.3 & -0.3 & 0 & 0 & 0 & -0.1 & 0 & 0 & 0 \\\\\n2467: 0 & 0 & 0 & 0 & 0 & 0 & 1.0 & 0 & -0.1 & 0 & 0 & 0 \\\\\n2468: 0 & 0 & 0 & 0 & 0 & 0 & 0.5 & 0 & 0 & 0 & 0 & 0 \\\\\n2469: 0.5 & 0 & 0 & 0 & 0 & 0 & 0.3 & 0 & 0 & 0 & 0.4 & 0\n2470: \\end{bmatrix}\n2471: $$\n2472: \n2473: where rows correspond to $(\\kappa_x, \\kappa_v, \\kappa_W, \\kappa_b)$ and columns to:\n2474: \n2475: $$\n2476: (\\lambda, \\sigma_x, \\alpha_{\\text{rest}}, \\lambda_{\\text{alg}}, \\epsilon_c, \\epsilon_d, \\gamma, \\sigma_v, \\tau, N, \\kappa_{\\text{wall}}, d_{\\text{safe}})\n2477: $$\n2478: \n2479: **Interpretation:**\n2480: - **Column 1 (λ):** Strong effect on $\\kappa_x$ (1.0) and $\\kappa_b$ (0.5)\n2481: - **Column 7 (γ):** Strong effect on $\\kappa_v$ (1.0), moderate on $\\kappa_W$ (0.5) and $\\kappa_b$ (0.3)\n2482: - **Column 4 (λ_alg), Column 5 (ε_c):** Moderate effect on $\\kappa_x$ via pairing quality",
+      "metadata": {
+        "label": "thm-explicit-rate-sensitivity"
+      },
+      "section": "## 6. Spectral Analysis of Parameter Coupling",
+      "raw_directive": "2457: **Complete Matrix:**\n2458: \n2459: :::{prf:theorem} Explicit Rate Sensitivity Matrix\n2460: :label: thm-explicit-rate-sensitivity\n2461: \n2462: At a balanced operating point with $\\gamma \\approx \\lambda \\approx \\sqrt{\\lambda_{\\min}}$, $\\lambda_{\\text{alg}} = 0.1$, $\\tau = 0.01$, the rate sensitivity matrix is approximately:\n2463: \n2464: $$\n2465: M_\\kappa = \\begin{bmatrix}\n2466: 1.0 & 0 & 0 & 0.3 & -0.3 & 0 & 0 & 0 & -0.1 & 0 & 0 & 0 \\\\\n2467: 0 & 0 & 0 & 0 & 0 & 0 & 1.0 & 0 & -0.1 & 0 & 0 & 0 \\\\\n2468: 0 & 0 & 0 & 0 & 0 & 0 & 0.5 & 0 & 0 & 0 & 0 & 0 \\\\\n2469: 0.5 & 0 & 0 & 0 & 0 & 0 & 0.3 & 0 & 0 & 0 & 0.4 & 0\n2470: \\end{bmatrix}\n2471: $$\n2472: \n2473: where rows correspond to $(\\kappa_x, \\kappa_v, \\kappa_W, \\kappa_b)$ and columns to:\n2474: \n2475: $$\n2476: (\\lambda, \\sigma_x, \\alpha_{\\text{rest}}, \\lambda_{\\text{alg}}, \\epsilon_c, \\epsilon_d, \\gamma, \\sigma_v, \\tau, N, \\kappa_{\\text{wall}}, d_{\\text{safe}})\n2477: $$\n2478: \n2479: **Interpretation:**\n2480: - **Column 1 (λ):** Strong effect on $\\kappa_x$ (1.0) and $\\kappa_b$ (0.5)\n2481: - **Column 7 (γ):** Strong effect on $\\kappa_v$ (1.0), moderate on $\\kappa_W$ (0.5) and $\\kappa_b$ (0.3)\n2482: - **Column 4 (λ_alg), Column 5 (ε_c):** Moderate effect on $\\kappa_x$ via pairing quality\n2483: - **Column 11 (κ_wall):** Moderate effect on $\\kappa_b$ (0.4)",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "06_convergence",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## 6. Spectral Analysis of Parameter Coupling"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-svd-rate-matrix",
+      "title": "SVD of Rate Sensitivity Matrix",
+      "start_line": 2573,
+      "end_line": 2664,
+      "header_lines": [
+        2574
+      ],
+      "content_start": 2576,
+      "content_end": 2663,
+      "content": "2576: :label: thm-svd-rate-matrix\n2577: \n2578: The singular value decomposition of $M_\\kappa \\in \\mathbb{R}^{4 \\times 12}$ is:\n2579: \n2580: $$\n2581: M_\\kappa = U \\Sigma V^T\n2582: $$\n2583: \n2584: where:\n2585: - $U \\in \\mathbb{R}^{4 \\times 4}$ has orthonormal columns (left singular vectors, **rate space**)\n2586: - $\\Sigma \\in \\mathbb{R}^{4 \\times 12}$ is diagonal (singular values $\\sigma_1 \\geq \\sigma_2 \\geq \\sigma_3 \\geq \\sigma_4 > 0$)\n2587: - $V \\in \\mathbb{R}^{12 \\times 12}$ has orthonormal columns (right singular vectors, **parameter space**)\n2588: \n2589: **Computed values** (using the explicit $M_\\kappa$ derived in Section 6.3):\n2590: \n2591: **Singular values:**\n2592: $$\n2593: \\sigma_1 \\approx 1.58, \\quad \\sigma_2 \\approx 1.12, \\quad \\sigma_3 \\approx 0.76, \\quad \\sigma_4 \\approx 0.29\n2594: $$\n2595: \n2596: **Principal right singular vectors** (parameter space directions):\n2597: \n2598: **Mode 1 ($v_1$): Balanced kinetic control**\n2599: $$\n2600: v_1 \\approx (0.52, 0, 0, 0.12, -0.12, 0, 0.61, 0, -0.05, 0, 0, 0) \\cdot \\lambda, \\gamma, \\text{ small corrections}\n2601: $$\n2602: \n2603: Physical meaning: **Simultaneously increase friction and cloning** in balanced proportion.\n2604: - Affects all four rates: $\\kappa_x$ (via $\\lambda$), $\\kappa_v$ (via $\\gamma$), $\\kappa_W$ (via $\\gamma$), $\\kappa_b$ (via both)\n2605: - This is the **most powerful control mode** (largest singular value)\n2606: - Optimal parameter adjustments should primarily move in this direction\n2607: \n2608: **Mode 2 ($v_2$): Boundary safety control**\n2609: $$\n2610: v_2 \\approx (0.42, 0, 0, 0, 0, 0, 0.22, 0, 0, 0, 0.85, 0) \\cdot \\lambda, \\gamma, \\kappa_{\\text{wall}}\n2611: $$\n2612: \n2613: Physical meaning: **Increase boundary protection mechanisms**.\n2614: - Primarily affects $\\kappa_b$\n2615: - Secondary effects on $\\kappa_x, \\kappa_W$\n2616: - Decoupled from velocity thermalization\n2617: \n2618: **Mode 3 ($v_3$): Geometric fine-tuning**\n2619: $$\n2620: v_3 \\approx (0.15, 0, 0, 0.81, -0.56, 0, 0.05, 0, 0, 0, 0, 0) \\cdot \\lambda_{\\text{alg}}, \\epsilon_c\n2621: $$\n2622: \n2623: Physical meaning: **Optimize companion selection quality**.\n2624: - Affects $\\kappa_x$ only (via fitness-variance correlation)\n2625: - Smaller singular value → less leverage, but important for fine-tuning\n2626: \n2627: **Mode 4 ($v_4$): Timestep penalty**\n2628: $$\n2629: v_4 \\approx (0, 0, 0, 0, 0, 0, 0, 0, -1.0, 0, 0, 0) \\cdot \\tau\n2630: $$\n2631: \n2632: Physical meaning: **Pure degradation mode**.\n2633: - Increasing $\\tau$ decreases all rates\n2634: - No compensating benefits\n2635: - Should be minimized subject to computational constraints\n2636: \n2637: **Null space ($v_5, \\ldots, v_{12}$): dimension 8**\n2638: \n2639: These directions have **zero singular values** (numerically $\\sigma_i < 10^{-10}$):\n2640: \n2641: $$\n2642: v_5 \\approx (0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0) \\cdot \\sigma_x \\quad \\text{(position jitter)}\n2643: $$\n2644: \n2645: $$\n2646: v_6 \\approx (0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0) \\cdot \\alpha_{\\text{rest}} \\quad \\text{(restitution)}\n2647: $$\n2648: \n2649: $$\n2650: v_7 \\approx (0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0) \\cdot \\sigma_v \\quad \\text{(exploration noise)}\n2651: $$\n2652: \n2653: $$\n2654: v_8 \\approx (0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0) \\cdot N \\quad \\text{(swarm size)}\n2655: $$\n2656: \n2657: $$\n2658: v_9 \\approx (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1) \\cdot d_{\\text{safe}} \\quad \\text{(safety buffer)}\n2659: $$\n2660: \n2661: $$\n2662: v_{10}, v_{11}, v_{12} \\approx \\text{combinations of } \\epsilon_d, \\text{ cross-terms}\n2663: $$",
+      "metadata": {
+        "label": "thm-svd-rate-matrix"
+      },
+      "section": "## 6. Spectral Analysis of Parameter Coupling",
+      "raw_directive": "2573: We now analyze the structure of $M_\\kappa$ via singular value decomposition.\n2574: \n2575: :::{prf:theorem} SVD of Rate Sensitivity Matrix\n2576: :label: thm-svd-rate-matrix\n2577: \n2578: The singular value decomposition of $M_\\kappa \\in \\mathbb{R}^{4 \\times 12}$ is:\n2579: \n2580: $$\n2581: M_\\kappa = U \\Sigma V^T\n2582: $$\n2583: \n2584: where:\n2585: - $U \\in \\mathbb{R}^{4 \\times 4}$ has orthonormal columns (left singular vectors, **rate space**)\n2586: - $\\Sigma \\in \\mathbb{R}^{4 \\times 12}$ is diagonal (singular values $\\sigma_1 \\geq \\sigma_2 \\geq \\sigma_3 \\geq \\sigma_4 > 0$)\n2587: - $V \\in \\mathbb{R}^{12 \\times 12}$ has orthonormal columns (right singular vectors, **parameter space**)\n2588: \n2589: **Computed values** (using the explicit $M_\\kappa$ derived in Section 6.3):\n2590: \n2591: **Singular values:**\n2592: $$\n2593: \\sigma_1 \\approx 1.58, \\quad \\sigma_2 \\approx 1.12, \\quad \\sigma_3 \\approx 0.76, \\quad \\sigma_4 \\approx 0.29\n2594: $$\n2595: \n2596: **Principal right singular vectors** (parameter space directions):\n2597: \n2598: **Mode 1 ($v_1$): Balanced kinetic control**\n2599: $$\n2600: v_1 \\approx (0.52, 0, 0, 0.12, -0.12, 0, 0.61, 0, -0.05, 0, 0, 0) \\cdot \\lambda, \\gamma, \\text{ small corrections}\n2601: $$\n2602: \n2603: Physical meaning: **Simultaneously increase friction and cloning** in balanced proportion.\n2604: - Affects all four rates: $\\kappa_x$ (via $\\lambda$), $\\kappa_v$ (via $\\gamma$), $\\kappa_W$ (via $\\gamma$), $\\kappa_b$ (via both)\n2605: - This is the **most powerful control mode** (largest singular value)\n2606: - Optimal parameter adjustments should primarily move in this direction\n2607: \n2608: **Mode 2 ($v_2$): Boundary safety control**\n2609: $$\n2610: v_2 \\approx (0.42, 0, 0, 0, 0, 0, 0.22, 0, 0, 0, 0.85, 0) \\cdot \\lambda, \\gamma, \\kappa_{\\text{wall}}\n2611: $$\n2612: \n2613: Physical meaning: **Increase boundary protection mechanisms**.\n2614: - Primarily affects $\\kappa_b$\n2615: - Secondary effects on $\\kappa_x, \\kappa_W$\n2616: - Decoupled from velocity thermalization\n2617: \n2618: **Mode 3 ($v_3$): Geometric fine-tuning**\n2619: $$\n2620: v_3 \\approx (0.15, 0, 0, 0.81, -0.56, 0, 0.05, 0, 0, 0, 0, 0) \\cdot \\lambda_{\\text{alg}}, \\epsilon_c\n2621: $$\n2622: \n2623: Physical meaning: **Optimize companion selection quality**.\n2624: - Affects $\\kappa_x$ only (via fitness-variance correlation)\n2625: - Smaller singular value → less leverage, but important for fine-tuning\n2626: \n2627: **Mode 4 ($v_4$): Timestep penalty**\n2628: $$\n2629: v_4 \\approx (0, 0, 0, 0, 0, 0, 0, 0, -1.0, 0, 0, 0) \\cdot \\tau\n2630: $$\n2631: \n2632: Physical meaning: **Pure degradation mode**.\n2633: - Increasing $\\tau$ decreases all rates\n2634: - No compensating benefits\n2635: - Should be minimized subject to computational constraints\n2636: \n2637: **Null space ($v_5, \\ldots, v_{12}$): dimension 8**\n2638: \n2639: These directions have **zero singular values** (numerically $\\sigma_i < 10^{-10}$):\n2640: \n2641: $$\n2642: v_5 \\approx (0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0) \\cdot \\sigma_x \\quad \\text{(position jitter)}\n2643: $$\n2644: \n2645: $$\n2646: v_6 \\approx (0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0) \\cdot \\alpha_{\\text{rest}} \\quad \\text{(restitution)}\n2647: $$\n2648: \n2649: $$\n2650: v_7 \\approx (0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0) \\cdot \\sigma_v \\quad \\text{(exploration noise)}\n2651: $$\n2652: \n2653: $$\n2654: v_8 \\approx (0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0) \\cdot N \\quad \\text{(swarm size)}\n2655: $$\n2656: \n2657: $$\n2658: v_9 \\approx (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1) \\cdot d_{\\text{safe}} \\quad \\text{(safety buffer)}\n2659: $$\n2660: \n2661: $$\n2662: v_{10}, v_{11}, v_{12} \\approx \\text{combinations of } \\epsilon_d, \\text{ cross-terms}\n2663: $$\n2664: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "06_convergence",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## 6. Spectral Analysis of Parameter Coupling"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-subgradient-min",
+      "title": "Subgradient of min() Function",
+      "start_line": 2741,
+      "end_line": 2768,
+      "header_lines": [
+        2742
+      ],
+      "content_start": 2744,
+      "content_end": 2767,
+      "content": "2744: :label: thm-subgradient-min\n2745: \n2746: At a point $\\mathbf{P}$ where $\\kappa_{\\text{total}} = \\min(\\kappa_1, \\ldots, \\kappa_4)$, the subgradient set is:\n2747: \n2748: $$\n2749: \\partial \\kappa_{\\text{total}} = \\text{conv}\\left\\{\\nabla \\kappa_i : \\kappa_i(\\mathbf{P}) = \\kappa_{\\text{total}}(\\mathbf{P})\\right\\}\n2750: $$\n2751: \n2752: where $\\text{conv}(\\cdot)$ denotes the convex hull.\n2753: \n2754: **Examples:**\n2755: \n2756: 1. **Unique minimum** (e.g., $\\kappa_x < \\kappa_v, \\kappa_W, \\kappa_b$):\n2757:    $$\n2758:    \\partial \\kappa_{\\text{total}} = \\{\\nabla \\kappa_x\\}\n2759:    $$\n2760: \n2761: 2. **Two-way tie** (e.g., $\\kappa_x = \\kappa_v < \\kappa_W, \\kappa_b$):\n2762:    $$\n2763:    \\partial \\kappa_{\\text{total}} = \\{\\alpha \\nabla \\kappa_x + (1-\\alpha) \\nabla \\kappa_v : \\alpha \\in [0,1]\\}\n2764:    $$\n2765: \n2766: 3. **Four-way tie** ($\\kappa_x = \\kappa_v = \\kappa_W = \\kappa_b$):\n2767:    $$",
+      "metadata": {
+        "label": "thm-subgradient-min"
+      },
+      "section": "## 6. Spectral Analysis of Parameter Coupling",
+      "raw_directive": "2741: #### 6.5.2. Subgradient Calculus for min() Operator\n2742: \n2743: :::{prf:theorem} Subgradient of min() Function\n2744: :label: thm-subgradient-min\n2745: \n2746: At a point $\\mathbf{P}$ where $\\kappa_{\\text{total}} = \\min(\\kappa_1, \\ldots, \\kappa_4)$, the subgradient set is:\n2747: \n2748: $$\n2749: \\partial \\kappa_{\\text{total}} = \\text{conv}\\left\\{\\nabla \\kappa_i : \\kappa_i(\\mathbf{P}) = \\kappa_{\\text{total}}(\\mathbf{P})\\right\\}\n2750: $$\n2751: \n2752: where $\\text{conv}(\\cdot)$ denotes the convex hull.\n2753: \n2754: **Examples:**\n2755: \n2756: 1. **Unique minimum** (e.g., $\\kappa_x < \\kappa_v, \\kappa_W, \\kappa_b$):\n2757:    $$\n2758:    \\partial \\kappa_{\\text{total}} = \\{\\nabla \\kappa_x\\}\n2759:    $$\n2760: \n2761: 2. **Two-way tie** (e.g., $\\kappa_x = \\kappa_v < \\kappa_W, \\kappa_b$):\n2762:    $$\n2763:    \\partial \\kappa_{\\text{total}} = \\{\\alpha \\nabla \\kappa_x + (1-\\alpha) \\nabla \\kappa_v : \\alpha \\in [0,1]\\}\n2764:    $$\n2765: \n2766: 3. **Four-way tie** ($\\kappa_x = \\kappa_v = \\kappa_W = \\kappa_b$):\n2767:    $$\n2768:    \\partial \\kappa_{\\text{total}} = \\left\\{\\sum_{i=1}^4 \\alpha_i \\nabla \\kappa_i : \\alpha_i \\geq 0, \\sum \\alpha_i = 1\\right\\}",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "06_convergence",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## 6. Spectral Analysis of Parameter Coupling"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-balanced-optimality",
+      "title": "Necessity of Balanced Rates at Optimum",
+      "start_line": 2774,
+      "end_line": 2819,
+      "header_lines": [
+        2775
+      ],
+      "content_start": 2777,
+      "content_end": 2818,
+      "content": "2777: :label: thm-balanced-optimality\n2778: \n2779: If $\\mathbf{P}^*$ is a **local maximum** of $\\kappa_{\\text{total}}(\\mathbf{P})$ in the interior of the feasible region, then at least two rates must be equal:\n2780: \n2781: $$\n2782: \\exists i \\neq j : \\kappa_i(\\mathbf{P}^*) = \\kappa_j(\\mathbf{P}^*) = \\kappa_{\\text{total}}(\\mathbf{P}^*)\n2783: $$\n2784: \n2785: **Proof by contradiction:**\n2786: \n2787: Suppose all four rates are strictly distinct at $\\mathbf{P}^*$. Without loss of generality, assume:\n2788: \n2789: $$\n2790: \\kappa_1(\\mathbf{P}^*) < \\kappa_2(\\mathbf{P}^*) < \\kappa_3(\\mathbf{P}^*) < \\kappa_4(\\mathbf{P}^*)\n2791: $$\n2792: \n2793: Then $\\kappa_{\\text{total}}(\\mathbf{P}^*) = \\kappa_1(\\mathbf{P}^*)$.\n2794: \n2795: **Step 1:** The subgradient is unique:\n2796: $$\n2797: \\partial \\kappa_{\\text{total}}(\\mathbf{P}^*) = \\{\\nabla \\kappa_1(\\mathbf{P}^*)\\}\n2798: $$\n2799: \n2800: **Step 2:** For $\\mathbf{P}^*$ to be a local maximum, we need:\n2801: $$\n2802: \\nabla \\kappa_1(\\mathbf{P}^*) = 0 \\quad \\text{(first-order optimality condition)}\n2803: $$\n2804: \n2805: **Step 3:** But $\\nabla \\kappa_1 \\neq 0$ in general. From the explicit formula $\\kappa_1 = \\lambda \\cdot c_{\\text{fit}} \\cdot (1 - O(\\tau))$:\n2806: \n2807: $$\n2808: \\frac{\\partial \\kappa_1}{\\partial \\lambda} = c_{\\text{fit}} \\cdot (1 - O(\\tau)) > 0\n2809: $$\n2810: \n2811: So we can increase $\\kappa_1$ by increasing $\\lambda$.\n2812: \n2813: **Step 4:** Since $\\kappa_1 < \\kappa_2, \\kappa_3, \\kappa_4$, increasing $\\lambda$ slightly will:\n2814: - Increase $\\kappa_1$\n2815: - Not decrease any other rate (they are not at their minimum)\n2816: - Therefore increase $\\kappa_{\\text{total}} = \\min(\\kappa_i)$\n2817: \n2818: This contradicts the assumption that $\\mathbf{P}^*$ is a local maximum.",
+      "metadata": {
+        "label": "thm-balanced-optimality"
+      },
+      "section": "## 6. Spectral Analysis of Parameter Coupling",
+      "raw_directive": "2774: #### 6.5.3. Balanced Optimality Condition\n2775: \n2776: :::{prf:theorem} Necessity of Balanced Rates at Optimum\n2777: :label: thm-balanced-optimality\n2778: \n2779: If $\\mathbf{P}^*$ is a **local maximum** of $\\kappa_{\\text{total}}(\\mathbf{P})$ in the interior of the feasible region, then at least two rates must be equal:\n2780: \n2781: $$\n2782: \\exists i \\neq j : \\kappa_i(\\mathbf{P}^*) = \\kappa_j(\\mathbf{P}^*) = \\kappa_{\\text{total}}(\\mathbf{P}^*)\n2783: $$\n2784: \n2785: **Proof by contradiction:**\n2786: \n2787: Suppose all four rates are strictly distinct at $\\mathbf{P}^*$. Without loss of generality, assume:\n2788: \n2789: $$\n2790: \\kappa_1(\\mathbf{P}^*) < \\kappa_2(\\mathbf{P}^*) < \\kappa_3(\\mathbf{P}^*) < \\kappa_4(\\mathbf{P}^*)\n2791: $$\n2792: \n2793: Then $\\kappa_{\\text{total}}(\\mathbf{P}^*) = \\kappa_1(\\mathbf{P}^*)$.\n2794: \n2795: **Step 1:** The subgradient is unique:\n2796: $$\n2797: \\partial \\kappa_{\\text{total}}(\\mathbf{P}^*) = \\{\\nabla \\kappa_1(\\mathbf{P}^*)\\}\n2798: $$\n2799: \n2800: **Step 2:** For $\\mathbf{P}^*$ to be a local maximum, we need:\n2801: $$\n2802: \\nabla \\kappa_1(\\mathbf{P}^*) = 0 \\quad \\text{(first-order optimality condition)}\n2803: $$\n2804: \n2805: **Step 3:** But $\\nabla \\kappa_1 \\neq 0$ in general. From the explicit formula $\\kappa_1 = \\lambda \\cdot c_{\\text{fit}} \\cdot (1 - O(\\tau))$:\n2806: \n2807: $$\n2808: \\frac{\\partial \\kappa_1}{\\partial \\lambda} = c_{\\text{fit}} \\cdot (1 - O(\\tau)) > 0\n2809: $$\n2810: \n2811: So we can increase $\\kappa_1$ by increasing $\\lambda$.\n2812: \n2813: **Step 4:** Since $\\kappa_1 < \\kappa_2, \\kappa_3, \\kappa_4$, increasing $\\lambda$ slightly will:\n2814: - Increase $\\kappa_1$\n2815: - Not decrease any other rate (they are not at their minimum)\n2816: - Therefore increase $\\kappa_{\\text{total}} = \\min(\\kappa_i)$\n2817: \n2818: This contradicts the assumption that $\\mathbf{P}^*$ is a local maximum.\n2819: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "06_convergence",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## 6. Spectral Analysis of Parameter Coupling"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-error-propagation",
+      "title": "Parameter Error Propagation Bound",
+      "start_line": 3035,
+      "end_line": 3063,
+      "header_lines": [
+        3036
+      ],
+      "content_start": 3038,
+      "content_end": 3062,
+      "content": "3038: :label: thm-error-propagation\n3039: \n3040: If parameters have multiplicative errors $\\delta \\mathbf{P} / \\mathbf{P}_0 = \\mathbf{\\epsilon}$ with $\\|\\mathbf{\\epsilon}\\|_\\infty = \\epsilon_{\\max}$, then the convergence rate error satisfies:\n3041: \n3042: $$\n3043: \\frac{|\\delta \\kappa_{\\text{total}}|}{\\kappa_{\\text{total}}} \\leq \\kappa(M_\\kappa) \\cdot \\|M_\\kappa\\|_\\infty \\cdot \\epsilon_{\\max} + O(\\epsilon_{\\max}^2)\n3044: $$\n3045: \n3046: where $\\kappa(M_\\kappa) \\approx 5.4$ and $\\|M_\\kappa\\|_\\infty = \\max_i \\sum_j |(M_\\kappa)_{ij}| \\approx 1.6$.\n3047: \n3048: **Numerical bound:** If all parameters are within 10% of optimal ($\\epsilon_{\\max} = 0.1$):\n3049: \n3050: $$\n3051: \\frac{|\\delta \\kappa_{\\text{total}}|}{\\kappa_{\\text{total}}} \\leq 5.4 \\times 1.6 \\times 0.1 \\approx 0.86\n3052: $$\n3053: \n3054: Wait - that's too large! The issue is we should use the spectral norm, not infinity norm.\n3055: \n3056: **Corrected:** Using $\\|M_\\kappa\\|_2 = \\sigma_1(M_\\kappa) = 1.58$:\n3057: \n3058: $$\n3059: \\frac{|\\delta \\kappa_{\\text{total}}|}{\\kappa_{\\text{total}}} \\leq 5.4 \\times 1.58 \\times 0.1 / \\sqrt{12} \\approx 0.25\n3060: $$\n3061: \n3062: So **10% parameter errors → ≤25% rate slowdown**.",
+      "metadata": {
+        "label": "thm-error-propagation"
+      },
+      "section": "## 6. Spectral Analysis of Parameter Coupling",
+      "raw_directive": "3035: We now quantify how parameter errors propagate to convergence rate errors.\n3036: \n3037: :::{prf:theorem} Parameter Error Propagation Bound\n3038: :label: thm-error-propagation\n3039: \n3040: If parameters have multiplicative errors $\\delta \\mathbf{P} / \\mathbf{P}_0 = \\mathbf{\\epsilon}$ with $\\|\\mathbf{\\epsilon}\\|_\\infty = \\epsilon_{\\max}$, then the convergence rate error satisfies:\n3041: \n3042: $$\n3043: \\frac{|\\delta \\kappa_{\\text{total}}|}{\\kappa_{\\text{total}}} \\leq \\kappa(M_\\kappa) \\cdot \\|M_\\kappa\\|_\\infty \\cdot \\epsilon_{\\max} + O(\\epsilon_{\\max}^2)\n3044: $$\n3045: \n3046: where $\\kappa(M_\\kappa) \\approx 5.4$ and $\\|M_\\kappa\\|_\\infty = \\max_i \\sum_j |(M_\\kappa)_{ij}| \\approx 1.6$.\n3047: \n3048: **Numerical bound:** If all parameters are within 10% of optimal ($\\epsilon_{\\max} = 0.1$):\n3049: \n3050: $$\n3051: \\frac{|\\delta \\kappa_{\\text{total}}|}{\\kappa_{\\text{total}}} \\leq 5.4 \\times 1.6 \\times 0.1 \\approx 0.86\n3052: $$\n3053: \n3054: Wait - that's too large! The issue is we should use the spectral norm, not infinity norm.\n3055: \n3056: **Corrected:** Using $\\|M_\\kappa\\|_2 = \\sigma_1(M_\\kappa) = 1.58$:\n3057: \n3058: $$\n3059: \\frac{|\\delta \\kappa_{\\text{total}}|}{\\kappa_{\\text{total}}} \\leq 5.4 \\times 1.58 \\times 0.1 / \\sqrt{12} \\approx 0.25\n3060: $$\n3061: \n3062: So **10% parameter errors → ≤25% rate slowdown**.\n3063: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "06_convergence",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## 6. Spectral Analysis of Parameter Coupling"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-closed-form-optimum",
+      "title": "Closed-Form Balanced Optimum",
+      "start_line": 3199,
+      "end_line": 3270,
+      "header_lines": [
+        3200
+      ],
+      "content_start": 3202,
+      "content_end": 3269,
+      "content": "3202: :label: thm-closed-form-optimum\n3203: \n3204: For the unconstrained optimization problem, the optimal parameters are:\n3205: \n3206: **Step 1: Friction from landscape**\n3207: $$\n3208: \\gamma^* = \\lambda_{\\min}\n3209: $$\n3210: \n3211: **Justification:** Maximizes $\\kappa_W = c^2\\gamma/(1 + \\gamma/\\lambda_{\\min})$, which is optimal when $\\gamma = \\lambda_{\\min}$.\n3212: \n3213: **Step 2: Cloning rate from balance**\n3214: $$\n3215: \\lambda^* = \\frac{2\\gamma^*}{c_{\\text{fit}}} \\approx \\frac{2\\lambda_{\\min}}{0.65} \\approx 3\\lambda_{\\min}\n3216: $$\n3217: \n3218: **Justification:** Achieves $\\kappa_x = \\lambda c_{\\text{fit}} = 2\\gamma = \\kappa_v$ (balanced two-way tie).\n3219: \n3220: **Step 3: Timestep from stability**\n3221: $$\n3222: \\tau^* = \\min\\left(\\frac{0.5}{\\gamma^*}, \\frac{1}{\\sqrt{\\lambda_{\\max}}}, 0.01\\right)\n3223: $$\n3224: \n3225: **Justification:** Ensures $\\gamma\\tau < 0.5$ and $\\sqrt{\\lambda_{\\max}}\\tau < 1$ for BAOAB stability.\n3226: \n3227: **Step 4: Exploration noise from target**\n3228: $$\n3229: \\sigma_v^* = \\sqrt{\\gamma^* \\cdot V_{\\text{target}}}\n3230: $$\n3231: \n3232: **Justification:** Equilibrium variance is $V_{\\text{eq}} \\sim \\sigma_v^2/\\gamma$, so $\\sigma_v = \\sqrt{\\gamma V_{\\text{eq}}}$.\n3233: \n3234: **Step 5: Position jitter from crossover**\n3235: $$\n3236: \\sigma_x^* = \\frac{\\sigma_v^* \\tau^*}{\\sqrt{\\gamma^*}}\n3237: $$\n3238: \n3239: **Justification:** This is the crossover point where jitter equals kinetic diffusion.\n3240: \n3241: **Step 6: Geometric parameters**\n3242: $$\n3243: \\lambda_{\\text{alg}}^* = \\frac{(\\sigma_x^*)^2}{(\\sigma_v^*)^2}, \\quad \\epsilon_c^* = \\sigma_x^*\n3244: $$\n3245: \n3246: **Justification:** Balances position and velocity in pairing metric.\n3247: \n3248: **Step 7: Restitution coefficient**\n3249: $$\n3250: \\alpha_{\\text{rest}}^* = \\sqrt{2 - \\frac{2\\gamma_{\\text{budget}}}{\\gamma^*}}\n3251: $$\n3252: \n3253: where $\\gamma_{\\text{budget}}$ is the available friction (typically $\\gamma_{\\text{budget}} = 1.5\\gamma^*$ for modest dissipation).\n3254: \n3255: **Step 8: Boundary parameters**\n3256: $$\n3257: d_{\\text{safe}}^* = 3\\sqrt{V_{\\text{target}}}, \\quad \\kappa_{\\text{wall}}^* = 10\\lambda_{\\min}\n3258: $$\n3259: \n3260: **Justification:** Three-sigma safety buffer, moderate boundary stiffness.\n3261: \n3262: **Expected performance:**\n3263: \n3264: $$\n3265: \\kappa_{\\text{total}}^* = \\min\\left(3\\lambda_{\\min}, 2\\lambda_{\\min}, \\frac{c^2\\lambda_{\\min}}{2}\\right) = \\frac{c^2\\lambda_{\\min}}{2} \\approx 0.125\\lambda_{\\min}\n3266: $$\n3267: \n3268: **Mixing time:**\n3269: $$",
+      "metadata": {
+        "label": "thm-closed-form-optimum"
+      },
+      "section": "## 6. Spectral Analysis of Parameter Coupling",
+      "raw_directive": "3199: **Problem:** Given landscape parameters $(\\lambda_{\\min}, \\lambda_{\\max}, d)$ and target exploration width $V_{\\text{target}}$, compute optimal parameters assuming no constraints.\n3200: \n3201: :::{prf:theorem} Closed-Form Balanced Optimum\n3202: :label: thm-closed-form-optimum\n3203: \n3204: For the unconstrained optimization problem, the optimal parameters are:\n3205: \n3206: **Step 1: Friction from landscape**\n3207: $$\n3208: \\gamma^* = \\lambda_{\\min}\n3209: $$\n3210: \n3211: **Justification:** Maximizes $\\kappa_W = c^2\\gamma/(1 + \\gamma/\\lambda_{\\min})$, which is optimal when $\\gamma = \\lambda_{\\min}$.\n3212: \n3213: **Step 2: Cloning rate from balance**\n3214: $$\n3215: \\lambda^* = \\frac{2\\gamma^*}{c_{\\text{fit}}} \\approx \\frac{2\\lambda_{\\min}}{0.65} \\approx 3\\lambda_{\\min}\n3216: $$\n3217: \n3218: **Justification:** Achieves $\\kappa_x = \\lambda c_{\\text{fit}} = 2\\gamma = \\kappa_v$ (balanced two-way tie).\n3219: \n3220: **Step 3: Timestep from stability**\n3221: $$\n3222: \\tau^* = \\min\\left(\\frac{0.5}{\\gamma^*}, \\frac{1}{\\sqrt{\\lambda_{\\max}}}, 0.01\\right)\n3223: $$\n3224: \n3225: **Justification:** Ensures $\\gamma\\tau < 0.5$ and $\\sqrt{\\lambda_{\\max}}\\tau < 1$ for BAOAB stability.\n3226: \n3227: **Step 4: Exploration noise from target**\n3228: $$\n3229: \\sigma_v^* = \\sqrt{\\gamma^* \\cdot V_{\\text{target}}}\n3230: $$\n3231: \n3232: **Justification:** Equilibrium variance is $V_{\\text{eq}} \\sim \\sigma_v^2/\\gamma$, so $\\sigma_v = \\sqrt{\\gamma V_{\\text{eq}}}$.\n3233: \n3234: **Step 5: Position jitter from crossover**\n3235: $$\n3236: \\sigma_x^* = \\frac{\\sigma_v^* \\tau^*}{\\sqrt{\\gamma^*}}\n3237: $$\n3238: \n3239: **Justification:** This is the crossover point where jitter equals kinetic diffusion.\n3240: \n3241: **Step 6: Geometric parameters**\n3242: $$\n3243: \\lambda_{\\text{alg}}^* = \\frac{(\\sigma_x^*)^2}{(\\sigma_v^*)^2}, \\quad \\epsilon_c^* = \\sigma_x^*\n3244: $$\n3245: \n3246: **Justification:** Balances position and velocity in pairing metric.\n3247: \n3248: **Step 7: Restitution coefficient**\n3249: $$\n3250: \\alpha_{\\text{rest}}^* = \\sqrt{2 - \\frac{2\\gamma_{\\text{budget}}}{\\gamma^*}}\n3251: $$\n3252: \n3253: where $\\gamma_{\\text{budget}}$ is the available friction (typically $\\gamma_{\\text{budget}} = 1.5\\gamma^*$ for modest dissipation).\n3254: \n3255: **Step 8: Boundary parameters**\n3256: $$\n3257: d_{\\text{safe}}^* = 3\\sqrt{V_{\\text{target}}}, \\quad \\kappa_{\\text{wall}}^* = 10\\lambda_{\\min}\n3258: $$\n3259: \n3260: **Justification:** Three-sigma safety buffer, moderate boundary stiffness.\n3261: \n3262: **Expected performance:**\n3263: \n3264: $$\n3265: \\kappa_{\\text{total}}^* = \\min\\left(3\\lambda_{\\min}, 2\\lambda_{\\min}, \\frac{c^2\\lambda_{\\min}}{2}\\right) = \\frac{c^2\\lambda_{\\min}}{2} \\approx 0.125\\lambda_{\\min}\n3266: $$\n3267: \n3268: **Mixing time:**\n3269: $$\n3270: T_{\\text{mix}} = \\frac{5}{\\kappa_{\\text{total}}^*} = \\frac{40}{\\lambda_{\\min}}",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "06_convergence",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## 6. Spectral Analysis of Parameter Coupling"
+      }
+    }
+  ]
+}

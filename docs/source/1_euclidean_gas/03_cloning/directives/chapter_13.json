@@ -1,0 +1,65 @@
+{
+  "chapter_index": 13,
+  "section_id": "## 9.5. Key Quantities for Drift Analysis",
+  "directive_count": 3,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-key-operator-outputs",
+      "title": "Key Operator Outputs",
+      "start_line": 6204,
+      "end_line": 6244,
+      "header_lines": [
+        6205
+      ],
+      "content_start": 6207,
+      "content_end": 6243,
+      "content": "6207: :label: def-key-operator-outputs\n6208: \n6209: For input swarm $S$ and output swarm $S' \\sim \\Psi_{\\text{clone}}(S, \\cdot)$, the following quantities are central to the drift analysis:\n6210: \n6211: 1. **Total Cloning Probability:** For each walker $i$:\n6212: \n6213: \n6214: $$\n6215: p_i = P(\\text{walker } i \\text{ clones} \\mid S)\n6216: $$\n6217: \n6218: 2. **Position Displacement:** For each walker $i$:\n6219: \n6220: \n6221: $$\n6222: \\Delta x_i := x'_i - x_i\n6223: $$\n6224: \n6225:    For cloners, $\\Delta x_i = x_{c_i} - x_i + \\sigma_x \\zeta_i^x$ where $\\zeta_i^x \\sim \\mathcal{N}(0, I_d)$.\n6226: \n6227: 3. **Velocity Perturbation:** For each walker $i$ that participates in a cloning event:\n6228: \n6229: \n6230: $$\n6231: \\Delta v_i := v'_i - v_i\n6232: $$\n6233: \n6234:    This arises from the inelastic collision model. The expected squared velocity change depends on:\n6235:    - The center-of-mass shift: $\\mathbb{E}[\\|V_{\\text{COM},j} - v_i\\|^2]$\n6236:    - The restitution coefficient: $\\alpha_{\\text{restitution}}$\n6237:    - The random rotation: $R_i$\n6238: \n6239: 4. **Centered Displacements:** For coupled swarms $(S_1, S_2)$:\n6240: \n6241: \n6242: $$\n6243: \\Delta\\delta_{x,i} := \\delta_{x,1,i} - \\delta_{x,2,i}",
+      "metadata": {
+        "label": "def-key-operator-outputs"
+      },
+      "section": "## 9.5. Key Quantities for Drift Analysis",
+      "raw_directive": "6204: We conclude by highlighting the critical quantities that will be used in the subsequent drift analysis.\n6205: \n6206: :::{prf:definition} Key Operator Outputs\n6207: :label: def-key-operator-outputs\n6208: \n6209: For input swarm $S$ and output swarm $S' \\sim \\Psi_{\\text{clone}}(S, \\cdot)$, the following quantities are central to the drift analysis:\n6210: \n6211: 1. **Total Cloning Probability:** For each walker $i$:\n6212: \n6213: \n6214: $$\n6215: p_i = P(\\text{walker } i \\text{ clones} \\mid S)\n6216: $$\n6217: \n6218: 2. **Position Displacement:** For each walker $i$:\n6219: \n6220: \n6221: $$\n6222: \\Delta x_i := x'_i - x_i\n6223: $$\n6224: \n6225:    For cloners, $\\Delta x_i = x_{c_i} - x_i + \\sigma_x \\zeta_i^x$ where $\\zeta_i^x \\sim \\mathcal{N}(0, I_d)$.\n6226: \n6227: 3. **Velocity Perturbation:** For each walker $i$ that participates in a cloning event:\n6228: \n6229: \n6230: $$\n6231: \\Delta v_i := v'_i - v_i\n6232: $$\n6233: \n6234:    This arises from the inelastic collision model. The expected squared velocity change depends on:\n6235:    - The center-of-mass shift: $\\mathbb{E}[\\|V_{\\text{COM},j} - v_i\\|^2]$\n6236:    - The restitution coefficient: $\\alpha_{\\text{restitution}}$\n6237:    - The random rotation: $R_i$\n6238: \n6239: 4. **Centered Displacements:** For coupled swarms $(S_1, S_2)$:\n6240: \n6241: \n6242: $$\n6243: \\Delta\\delta_{x,i} := \\delta_{x,1,i} - \\delta_{x,2,i}\n6244: $$"
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-expected-displacement-cloning",
+      "title": "Expected Displacement Under Cloning",
+      "start_line": 6246,
+      "end_line": 6258,
+      "header_lines": [
+        6247
+      ],
+      "content_start": 6249,
+      "content_end": 6257,
+      "content": "6249: :label: prop-expected-displacement-cloning\n6250: \n6251: For walker $i$ with cloning probability $p_i$, the expected squared position displacement satisfies:\n6252: \n6253: $$\n6254: \\mathbb{E}[\\|\\Delta x_i\\|^2 \\mid S] \\leq p_i \\cdot D_{\\text{max}}^2\n6255: $$\n6256: \n6257: where $D_{\\text{max}}$ is the maximum distance in the valid domain (or a suitable bound on the jitter kernel range).",
+      "metadata": {
+        "label": "prop-expected-displacement-cloning"
+      },
+      "section": "## 9.5. Key Quantities for Drift Analysis",
+      "raw_directive": "6246: :::\n6247: \n6248: :::{prf:proposition} Expected Displacement Under Cloning\n6249: :label: prop-expected-displacement-cloning\n6250: \n6251: For walker $i$ with cloning probability $p_i$, the expected squared position displacement satisfies:\n6252: \n6253: $$\n6254: \\mathbb{E}[\\|\\Delta x_i\\|^2 \\mid S] \\leq p_i \\cdot D_{\\text{max}}^2\n6255: $$\n6256: \n6257: where $D_{\\text{max}}$ is the maximum distance in the valid domain (or a suitable bound on the jitter kernel range).\n6258: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-prop-expected-displacement-cloning",
+      "title": null,
+      "start_line": 6260,
+      "end_line": 6275,
+      "header_lines": [
+        6261
+      ],
+      "content_start": 6262,
+      "content_end": 6274,
+      "content": "6262: :::{prf:proof}\n6263: :label: proof-prop-expected-displacement-cloning\n6264: **Proof.**\n6265: \n6266: The walker clones with probability $p_i$, in which case its position is sampled from $\\mathcal{Q}_\\delta(x_{c_i}, \\cdot)$, yielding displacement bounded by $D_{\\text{max}}$.\n6267: \n6268: With probability $1 - p_i$, the walker persists and has zero displacement.\n6269: \n6270: Therefore:\n6271: \n6272: $$\n6273: \\mathbb{E}[\\|\\Delta x_i\\|^2 \\mid S] = p_i \\cdot \\mathbb{E}[\\|\\Delta x_i\\|^2 \\mid S, a_i = \\text{clone}] + (1-p_i) \\cdot 0 \\leq p_i \\cdot D_{\\text{max}}^2\n6274: $$",
+      "metadata": {
+        "label": "proof-prop-expected-displacement-cloning"
+      },
+      "section": "## 9.5. Key Quantities for Drift Analysis",
+      "raw_directive": "6260: :::\n6261: \n6262: :::{prf:proof}\n6263: :label: proof-prop-expected-displacement-cloning\n6264: **Proof.**\n6265: \n6266: The walker clones with probability $p_i$, in which case its position is sampled from $\\mathcal{Q}_\\delta(x_{c_i}, \\cdot)$, yielding displacement bounded by $D_{\\text{max}}$.\n6267: \n6268: With probability $1 - p_i$, the walker persists and has zero displacement.\n6269: \n6270: Therefore:\n6271: \n6272: $$\n6273: \\mathbb{E}[\\|\\Delta x_i\\|^2 \\mid S] = p_i \\cdot \\mathbb{E}[\\|\\Delta x_i\\|^2 \\mid S, a_i = \\text{clone}] + (1-p_i) \\cdot 0 \\leq p_i \\cdot D_{\\text{max}}^2\n6274: $$\n6275: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

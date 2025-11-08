@@ -1,0 +1,29 @@
+{
+  "chapter_index": 62,
+  "section_id": "## Step 1: Kinetic Operator LSI (Existing Result)",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-kinetic-lsi-reference",
+      "title": "Hypocoercive LSI for Kinetic Operator (Reference)",
+      "start_line": 3859,
+      "end_line": 3878,
+      "header_lines": [
+        3860
+      ],
+      "content_start": 3862,
+      "content_end": 3877,
+      "content": "3862: :label: thm-kinetic-lsi-reference\n3863: \n3864: The kinetic operator $\\Psi_{\\text{kin}}(\\tau)$ with Langevin dynamics satisfies:\n3865: \n3866: $$\n3867: D_{\\text{KL}}(\\mu' \\| \\pi) \\leq (1 - \\alpha_{\\text{kin}} \\tau) D_{\\text{KL}}(\\mu \\| \\pi) + O(\\tau^2)\n3868: $$\n3869: \n3870: where:\n3871: $$\n3872: \\alpha_{\\text{kin}} = O(\\gamma \\kappa_{\\text{conf}})\n3873: $$\n3874: \n3875: with $\\gamma$ the friction coefficient and $\\kappa_{\\text{conf}}$ the convexity constant of the confining potential.\n3876: \n3877: **Proof**: See Theorem 3.4 (lines 495-553) and Section 2 (lines 200-494) of [09_kl_convergence](09_kl_convergence).",
+      "metadata": {
+        "label": "thm-kinetic-lsi-reference"
+      },
+      "section": "## Step 1: Kinetic Operator LSI (Existing Result)",
+      "raw_directive": "3859: ## Step 1: Kinetic Operator LSI (Existing Result)\n3860: \n3861: :::{prf:theorem} Hypocoercive LSI for Kinetic Operator (Reference)\n3862: :label: thm-kinetic-lsi-reference\n3863: \n3864: The kinetic operator $\\Psi_{\\text{kin}}(\\tau)$ with Langevin dynamics satisfies:\n3865: \n3866: $$\n3867: D_{\\text{KL}}(\\mu' \\| \\pi) \\leq (1 - \\alpha_{\\text{kin}} \\tau) D_{\\text{KL}}(\\mu \\| \\pi) + O(\\tau^2)\n3868: $$\n3869: \n3870: where:\n3871: $$\n3872: \\alpha_{\\text{kin}} = O(\\gamma \\kappa_{\\text{conf}})\n3873: $$\n3874: \n3875: with $\\gamma$ the friction coefficient and $\\kappa_{\\text{conf}}$ the convexity constant of the confining potential.\n3876: \n3877: **Proof**: See Theorem 3.4 (lines 495-553) and Section 2 (lines 200-494) of [09_kl_convergence](09_kl_convergence).\n3878: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

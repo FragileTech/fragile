@@ -1,0 +1,84 @@
+{
+  "document_id": "14_geometric_gas_c4_regularity",
+  "stage": "directives",
+  "directive_type": "corollary",
+  "generated_at": "2025-11-08T17:07:43.293645+00:00",
+  "count": 3,
+  "items": [
+    {
+      "directive_type": "corollary",
+      "label": "cor-hessian-lipschitz",
+      "title": "Hessian Lipschitz Continuity",
+      "start_line": 903,
+      "end_line": 916,
+      "header_lines": [
+        904
+      ],
+      "content_start": 906,
+      "content_end": 915,
+      "content": "906: :label: cor-hessian-lipschitz\n907: \n908: The Hessian $\\nabla^2 V_{\\text{fit}}$ is Lipschitz continuous:\n909: \n910: $$\n911: \\|\\nabla^2 V_{\\text{fit}}(x) - \\nabla^2 V_{\\text{fit}}(y)\\| \\le K_{V,3}(\\rho) \\|x - y\\|\n912: \n913: $$\n914: \n915: where $K_{V,3}(\\rho) = O(\\rho^{-3})$ is the third-derivative bound from C³ regularity (see {prf:ref}`thm-c3-regularity` in [13_geometric_gas_c3_regularity.md](13_geometric_gas_c3_regularity.md)).",
+      "metadata": {
+        "label": "cor-hessian-lipschitz"
+      },
+      "section": "## 9. Stability Implications and Corollaries",
+      "raw_directive": "903: ## 9. Stability Implications and Corollaries\n904: \n905: :::{prf:corollary} Hessian Lipschitz Continuity\n906: :label: cor-hessian-lipschitz\n907: \n908: The Hessian $\\nabla^2 V_{\\text{fit}}$ is Lipschitz continuous:\n909: \n910: $$\n911: \\|\\nabla^2 V_{\\text{fit}}(x) - \\nabla^2 V_{\\text{fit}}(y)\\| \\le K_{V,3}(\\rho) \\|x - y\\|\n912: \n913: $$\n914: \n915: where $K_{V,3}(\\rho) = O(\\rho^{-3})$ is the third-derivative bound from C³ regularity (see {prf:ref}`thm-c3-regularity` in [13_geometric_gas_c3_regularity.md](13_geometric_gas_c3_regularity.md)).\n916: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "14_geometric_gas_c4_regularity",
+        "chapter_index": 9,
+        "chapter_file": "chapter_9.json",
+        "section_id": "## 9. Stability Implications and Corollaries"
+      }
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-fourth-order-integrators",
+      "title": "Fourth-Order Integrator Compatibility",
+      "start_line": 938,
+      "end_line": 942,
+      "header_lines": [
+        939
+      ],
+      "content_start": 941,
+      "content_end": 941,
+      "content": "941: :label: cor-fourth-order-integrators",
+      "metadata": {
+        "label": "cor-fourth-order-integrators"
+      },
+      "section": "## 9. Stability Implications and Corollaries",
+      "raw_directive": "938: :::\n939: \n940: :::{prf:corollary} Fourth-Order Integrator Compatibility\n941: :label: cor-fourth-order-integrators\n942: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "14_geometric_gas_c4_regularity",
+        "chapter_index": 9,
+        "chapter_file": "chapter_9.json",
+        "section_id": "## 9. Stability Implications and Corollaries"
+      }
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-brascamp-lieb",
+      "title": "Brascamp-Lieb Inequality (Conditional)",
+      "start_line": 944,
+      "end_line": 959,
+      "header_lines": [
+        945
+      ],
+      "content_start": 947,
+      "content_end": 958,
+      "content": "947: :label: cor-brascamp-lieb\n948: \n949: **Hypothesis:** Assume the fitness potential is uniformly convex: $\\nabla^2 V_{\\text{fit}}(x) \\ge \\lambda_{\\rho} I$ for some $\\lambda_{\\rho} > 0$ and all $x \\in \\mathcal{X}$.\n950: \n951: **Conclusion:** The QSD $\\pi_{\\text{QSD}}$ satisfies the Brascamp-Lieb inequality:\n952: \n953: $$\n954: \\text{Var}_{\\pi_{\\text{QSD}}}[f] \\le \\int_{\\mathcal{X}} \\frac{(\\nabla f)^2}{\\lambda_{\\min}(\\nabla^2 V_{\\text{fit}})} d\\pi_{\\text{QSD}} \\le \\frac{1}{\\lambda_{\\rho}} \\|\\nabla f\\|^2_{L^2(\\pi_{\\text{QSD}})}\n955: \n956: $$\n957: \n958: enabling sharp concentration inequalities.",
+      "metadata": {
+        "label": "cor-brascamp-lieb"
+      },
+      "section": "## 9. Stability Implications and Corollaries",
+      "raw_directive": "944: :::\n945: \n946: :::{prf:corollary} Brascamp-Lieb Inequality (Conditional)\n947: :label: cor-brascamp-lieb\n948: \n949: **Hypothesis:** Assume the fitness potential is uniformly convex: $\\nabla^2 V_{\\text{fit}}(x) \\ge \\lambda_{\\rho} I$ for some $\\lambda_{\\rho} > 0$ and all $x \\in \\mathcal{X}$.\n950: \n951: **Conclusion:** The QSD $\\pi_{\\text{QSD}}$ satisfies the Brascamp-Lieb inequality:\n952: \n953: $$\n954: \\text{Var}_{\\pi_{\\text{QSD}}}[f] \\le \\int_{\\mathcal{X}} \\frac{(\\nabla f)^2}{\\lambda_{\\min}(\\nabla^2 V_{\\text{fit}})} d\\pi_{\\text{QSD}} \\le \\frac{1}{\\lambda_{\\rho}} \\|\\nabla f\\|^2_{L^2(\\pi_{\\text{QSD}})}\n955: \n956: $$\n957: \n958: enabling sharp concentration inequalities.\n959: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "14_geometric_gas_c4_regularity",
+        "chapter_index": 9,
+        "chapter_file": "chapter_9.json",
+        "section_id": "## 9. Stability Implications and Corollaries"
+      }
+    }
+  ]
+}

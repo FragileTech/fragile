@@ -1,0 +1,59 @@
+{
+  "document_id": "04_wasserstein_contraction",
+  "stage": "directives",
+  "directive_type": "corollary",
+  "generated_at": "2025-11-08T17:07:43.195053+00:00",
+  "count": 2,
+  "items": [
+    {
+      "directive_type": "corollary",
+      "label": "cor-between-group-dominance",
+      "title": "Between-Group Variance Dominance",
+      "start_line": 352,
+      "end_line": 389,
+      "header_lines": [
+        353
+      ],
+      "content_start": 355,
+      "content_end": 388,
+      "content": "355: :label: cor-between-group-dominance\n356: \n357: For a high-error swarm satisfying $V_{\\text{struct}} > R^2_{\\text{spread}}$, the between-group variance term dominates:\n358: \n359: $$\n360: f_I f_J \\|\\mu_x(I_k) - \\mu_x(J_k)\\|^2 \\geq c_{\\text{sep}}(\\varepsilon) V_{\\text{struct}}\n361: \n362: $$\n363: \n364: for some N-uniform constant $c_{\\text{sep}}(\\varepsilon) > 0$.\n365: \n366: **Proof:**\n367: \n368: This follows from the Phase-Space Packing Lemma (Lemma 6.4.1 in [03_cloning](03_cloning), line 2409).\n369: \n370: By the clustering construction (Definition 6.3, line 2351), the high-error set $H_k$ consists of outlier clusters with high between-cluster variance contribution. Since $I_k \\subseteq H_k$ (target set is subset of high-error), the spatial separation between $I_k$ and $J_k$ (which contains all low-error walkers $L_k$) must be substantial.\n371: \n372: Specifically, from the Phase-Space Packing Lemma with $d_{\\text{close}} = D_{\\text{diam}}(\\varepsilon) = c_d \\varepsilon$:\n373: \n374: If $\\text{Var}_h(S_k) > R^2_{\\text{pack}} := \\varepsilon^2 / 2$, then not all pairs can be close in phase space. This forces:\n375: \n376: $$\n377: \\|\\mu_x(I_k) - \\mu_x(J_k)\\|^2 \\geq c_{\\text{pack}}(\\varepsilon) \\text{Var}_x(S_k)\n378: \n379: $$\n380: \n381: for some geometric constant $c_{\\text{pack}}(\\varepsilon) > 0$.\n382: \n383: Using $\\text{Var}_x(S_k) \\geq V_{\\text{struct}} / (1 + \\lambda_v)$ (position component of hypocoercive variance) and $f_I f_J \\geq f_{UH} (1 - f_{UH}) \\geq f_{UH}/2$ (for $f_{UH} \\leq 1/2$):\n384: \n385: $$\n386: f_I f_J \\|\\mu_x(I_k) - \\mu_x(J_k)\\|^2 \\geq \\frac{f_{UH}}{2} \\cdot c_{\\text{pack}}(\\varepsilon) \\cdot \\frac{V_{\\text{struct}}}{1 + \\lambda_v} =: c_{\\text{sep}}(\\varepsilon) V_{\\text{struct}}\n387: \n388: $$",
+      "metadata": {
+        "label": "cor-between-group-dominance"
+      },
+      "section": "## 3. Variance Decomposition and Cross-Swarm Analysis",
+      "raw_directive": "352: :::\n353: \n354: :::{prf:corollary} Between-Group Variance Dominance\n355: :label: cor-between-group-dominance\n356: \n357: For a high-error swarm satisfying $V_{\\text{struct}} > R^2_{\\text{spread}}$, the between-group variance term dominates:\n358: \n359: $$\n360: f_I f_J \\|\\mu_x(I_k) - \\mu_x(J_k)\\|^2 \\geq c_{\\text{sep}}(\\varepsilon) V_{\\text{struct}}\n361: \n362: $$\n363: \n364: for some N-uniform constant $c_{\\text{sep}}(\\varepsilon) > 0$.\n365: \n366: **Proof:**\n367: \n368: This follows from the Phase-Space Packing Lemma (Lemma 6.4.1 in [03_cloning](03_cloning), line 2409).\n369: \n370: By the clustering construction (Definition 6.3, line 2351), the high-error set $H_k$ consists of outlier clusters with high between-cluster variance contribution. Since $I_k \\subseteq H_k$ (target set is subset of high-error), the spatial separation between $I_k$ and $J_k$ (which contains all low-error walkers $L_k$) must be substantial.\n371: \n372: Specifically, from the Phase-Space Packing Lemma with $d_{\\text{close}} = D_{\\text{diam}}(\\varepsilon) = c_d \\varepsilon$:\n373: \n374: If $\\text{Var}_h(S_k) > R^2_{\\text{pack}} := \\varepsilon^2 / 2$, then not all pairs can be close in phase space. This forces:\n375: \n376: $$\n377: \\|\\mu_x(I_k) - \\mu_x(J_k)\\|^2 \\geq c_{\\text{pack}}(\\varepsilon) \\text{Var}_x(S_k)\n378: \n379: $$\n380: \n381: for some geometric constant $c_{\\text{pack}}(\\varepsilon) > 0$.\n382: \n383: Using $\\text{Var}_x(S_k) \\geq V_{\\text{struct}} / (1 + \\lambda_v)$ (position component of hypocoercive variance) and $f_I f_J \\geq f_{UH} (1 - f_{UH}) \\geq f_{UH}/2$ (for $f_{UH} \\leq 1/2$):\n384: \n385: $$\n386: f_I f_J \\|\\mu_x(I_k) - \\mu_x(J_k)\\|^2 \\geq \\frac{f_{UH}}{2} \\cdot c_{\\text{pack}}(\\varepsilon) \\cdot \\frac{V_{\\text{struct}}}{1 + \\lambda_v} =: c_{\\text{sep}}(\\varepsilon) V_{\\text{struct}}\n387: \n388: $$\n389: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "04_wasserstein_contraction",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 3. Variance Decomposition and Cross-Swarm Analysis"
+      }
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-average-cloning",
+      "title": "Average Cloning Pressure Bound",
+      "start_line": 835,
+      "end_line": 846,
+      "header_lines": [
+        836
+      ],
+      "content_start": 838,
+      "content_end": 845,
+      "content": "838: :label: cor-average-cloning\n839: \n840: The average cloning probability in the target set satisfies:\n841: \n842: $$\n843: \\bar{p}_I = \\frac{1}{|I_1|} \\sum_{i \\in I_1} p_{1,i} \\geq p_u(\\varepsilon)\n844: \n845: $$",
+      "metadata": {
+        "label": "cor-average-cloning"
+      },
+      "section": "## 5. Expected Distance Change Under Cloning",
+      "raw_directive": "835: :::\n836: \n837: :::{prf:corollary} Average Cloning Pressure Bound\n838: :label: cor-average-cloning\n839: \n840: The average cloning probability in the target set satisfies:\n841: \n842: $$\n843: \\bar{p}_I = \\frac{1}{|I_1|} \\sum_{i \\in I_1} p_{1,i} \\geq p_u(\\varepsilon)\n844: \n845: $$\n846: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "04_wasserstein_contraction",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. Expected Distance Change Under Cloning"
+      }
+    }
+  ]
+}

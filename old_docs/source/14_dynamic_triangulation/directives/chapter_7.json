@@ -1,0 +1,29 @@
+{
+  "chapter_index": 7,
+  "section_id": "## 7. Experimental Validation and Benchmarks",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "algorithm",
+      "label": "alg-validation-protocol",
+      "title": "Empirical Validation Protocol",
+      "start_line": 841,
+      "end_line": 876,
+      "header_lines": [
+        842
+      ],
+      "content_start": 844,
+      "content_end": 875,
+      "content": "844: :label: alg-validation-protocol\n845: \n846: **Test Cases**:\n847: \n848: 1. **Uniform Random Walk** (p_clone = 0):\n849:    - N walkers performing pure SDE evolution in a bounded domain\n850:    - Measure: Time per timestep as a function of N\n851:    - Expected: Linear scaling O(N)\n852: \n853: 2. **High Cloning Rate** (p_clone = 0.5):\n854:    - Frequent teleportation events\n855:    - Measure: Time per timestep, comparison to batch\n856:    - Expected: O(N log N), but with better constants than batch\n857: \n858: 3. **Localized Cloning**:\n859:    - Cloning events concentrated in a subregion\n860:    - Tests spatial locality exploitation\n861:    - Expected: Sublinear dependence on N for updates outside the active region\n862: \n863: 4. **Realistic Fragile Simulation**:\n864:    - Full Euclidean Gas or Adaptive Gas run\n865:    - Measure: Total time for geometric analysis over 10\u2074 timesteps\n866:    - Compare: Batch vs. online algorithm\n867: \n868: **Metrics to Report**:\n869: - Wall-clock time per timestep\n870: - Number of Lawson flips per walker update\n871: - Memory usage\n872: - Scaling exponent (fit log(T) vs. log(N))\n873: \n874: **Target Platforms**:\n875: - CPU: Intel Xeon or AMD EPYC (high core count)",
+      "metadata": {
+        "label": "alg-validation-protocol"
+      },
+      "section": "## 7. Experimental Validation and Benchmarks",
+      "raw_directive": "841: ### 7.1 Proposed Benchmark Suite\n842: \n843: :::{prf:algorithm} Empirical Validation Protocol\n844: :label: alg-validation-protocol\n845: \n846: **Test Cases**:\n847: \n848: 1. **Uniform Random Walk** (p_clone = 0):\n849:    - N walkers performing pure SDE evolution in a bounded domain\n850:    - Measure: Time per timestep as a function of N\n851:    - Expected: Linear scaling O(N)\n852: \n853: 2. **High Cloning Rate** (p_clone = 0.5):\n854:    - Frequent teleportation events\n855:    - Measure: Time per timestep, comparison to batch\n856:    - Expected: O(N log N), but with better constants than batch\n857: \n858: 3. **Localized Cloning**:\n859:    - Cloning events concentrated in a subregion\n860:    - Tests spatial locality exploitation\n861:    - Expected: Sublinear dependence on N for updates outside the active region\n862: \n863: 4. **Realistic Fragile Simulation**:\n864:    - Full Euclidean Gas or Adaptive Gas run\n865:    - Measure: Total time for geometric analysis over 10\u2074 timesteps\n866:    - Compare: Batch vs. online algorithm\n867: \n868: **Metrics to Report**:\n869: - Wall-clock time per timestep\n870: - Number of Lawson flips per walker update\n871: - Memory usage\n872: - Scaling exponent (fit log(T) vs. log(N))\n873: \n874: **Target Platforms**:\n875: - CPU: Intel Xeon or AMD EPYC (high core count)\n876: - GPU: NVIDIA A100 (if GPU implementation is developed)"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

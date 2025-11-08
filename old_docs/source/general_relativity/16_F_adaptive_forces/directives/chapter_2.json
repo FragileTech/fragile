@@ -1,0 +1,29 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 2. Mean-Field Fitness Potential",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-rho-localized-fitness",
+      "title": "\u03c1-Localized Mean-Field Fitness Potential",
+      "start_line": 54,
+      "end_line": 71,
+      "header_lines": [
+        55
+      ],
+      "content_start": 57,
+      "content_end": 70,
+      "content": "57: :label: def-rho-localized-fitness\n58: \n59: The fitness potential at position $x$ is computed using a localized kernel $K_\\rho(x, x')$:\n60: \n61: $$\n62: V_{\\text{fit}}[\\rho](x) = -\\int_{\\mathcal{X}} K_\\rho(x, x') \\Psi(x') \\rho_t(x') \\, dx'\n63: $$\n64: \n65: where:\n66: - $\\Psi(x')$ is the reward landscape\n67: - $\\rho_t(x')$ is the spatial walker density\n68: - $K_\\rho(x, x') = Z_\\rho^{-1}(x) \\exp(-\\|x - x'\\|^2 / 2\\rho^2)$ is the localization kernel\n69: \n70: **Limiting cases**:",
+      "metadata": {
+        "label": "def-rho-localized-fitness"
+      },
+      "section": "## 2. Mean-Field Fitness Potential",
+      "raw_directive": "54: ## 2. Mean-Field Fitness Potential\n55: \n56: :::{prf:definition} \u03c1-Localized Mean-Field Fitness Potential\n57: :label: def-rho-localized-fitness\n58: \n59: The fitness potential at position $x$ is computed using a localized kernel $K_\\rho(x, x')$:\n60: \n61: $$\n62: V_{\\text{fit}}[\\rho](x) = -\\int_{\\mathcal{X}} K_\\rho(x, x') \\Psi(x') \\rho_t(x') \\, dx'\n63: $$\n64: \n65: where:\n66: - $\\Psi(x')$ is the reward landscape\n67: - $\\rho_t(x')$ is the spatial walker density\n68: - $K_\\rho(x, x') = Z_\\rho^{-1}(x) \\exp(-\\|x - x'\\|^2 / 2\\rho^2)$ is the localization kernel\n69: \n70: **Limiting cases**:\n71: - $\\rho \\to \\infty$: Global average $V_{\\text{fit}} = -\\langle \\Psi \\rangle_{\\text{global}}$"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

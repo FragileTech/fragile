@@ -1,0 +1,93 @@
+{
+  "chapter_index": 5,
+  "section_id": "## 5. Mean-Field (McKean-Vlasov) Perspective",
+  "directive_count": 5,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-bh-qsd-mean-field",
+      "title": "Black Hole QSD",
+      "start_line": 1931,
+      "end_line": 1961,
+      "header_lines": [
+        1932
+      ],
+      "content_start": 1934,
+      "content_end": 1960,
+      "content": "1934: :label: def-bh-qsd-mean-field\n1935: \n1936: The **black hole quasi-stationary distribution** is a weak solution $\\rho_{\\text{BH}} : \\mathcal{X}_{\\text{ext}} \\to \\mathbb{R}_+$ to the McKean-Vlasov equation:\n1937: \n1938: $$\n1939: -\\nabla \\cdot (F[\\rho_{\\text{BH}}] \\rho_{\\text{BH}}) + \\frac{T}{2}\\Delta \\rho_{\\text{BH}} = 0\n1940: \n1941: $$\n1942: \n1943: on the **exterior region** $\\mathcal{X}_{\\text{ext}} = \\{x : r > r_S\\}$, with **absorbing boundary condition** at the horizon:\n1944: \n1945: $$\n1946: \\rho_{\\text{BH}}(x) = 0 \\quad \\forall x \\in \\mathcal{H}\n1947: \n1948: $$\n1949: \n1950: and **normalization**:\n1951: \n1952: $$\n1953: \\int_{\\mathcal{X}_{\\text{ext}}} \\rho_{\\text{BH}}(x) dx = 1\n1954: \n1955: $$\n1956: \n1957: **Physical Interpretation**: The QSD describes the steady-state distribution of walkers that have **not yet been absorbed** by the black hole. It is a **conditional distribution**:\n1958: \n1959: $$\n1960: \\rho_{\\text{BH}}(x | \\text{survived to time } t)",
+      "metadata": {
+        "label": "def-bh-qsd-mean-field"
+      },
+      "section": "## 5. Mean-Field (McKean-Vlasov) Perspective",
+      "raw_directive": "1931: has equilibrium solutions (QSD) satisfying $\\partial_t \\rho = 0$. For a deep fitness well, the QSD is **delta-function-like** near the black hole center.\n1932: \n1933: :::{prf:definition} Black Hole QSD\n1934: :label: def-bh-qsd-mean-field\n1935: \n1936: The **black hole quasi-stationary distribution** is a weak solution $\\rho_{\\text{BH}} : \\mathcal{X}_{\\text{ext}} \\to \\mathbb{R}_+$ to the McKean-Vlasov equation:\n1937: \n1938: $$\n1939: -\\nabla \\cdot (F[\\rho_{\\text{BH}}] \\rho_{\\text{BH}}) + \\frac{T}{2}\\Delta \\rho_{\\text{BH}} = 0\n1940: \n1941: $$\n1942: \n1943: on the **exterior region** $\\mathcal{X}_{\\text{ext}} = \\{x : r > r_S\\}$, with **absorbing boundary condition** at the horizon:\n1944: \n1945: $$\n1946: \\rho_{\\text{BH}}(x) = 0 \\quad \\forall x \\in \\mathcal{H}\n1947: \n1948: $$\n1949: \n1950: and **normalization**:\n1951: \n1952: $$\n1953: \\int_{\\mathcal{X}_{\\text{ext}}} \\rho_{\\text{BH}}(x) dx = 1\n1954: \n1955: $$\n1956: \n1957: **Physical Interpretation**: The QSD describes the steady-state distribution of walkers that have **not yet been absorbed** by the black hole. It is a **conditional distribution**:\n1958: \n1959: $$\n1960: \\rho_{\\text{BH}}(x | \\text{survived to time } t)\n1961: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-bh-qsd-existence",
+      "title": "Black Hole QSD Existence and Uniqueness",
+      "start_line": 1963,
+      "end_line": 1998,
+      "header_lines": [
+        1964
+      ],
+      "content_start": 1966,
+      "content_end": 1997,
+      "content": "1966: :label: thm-bh-qsd-existence\n1967: \n1968: Under the fitness landscape $V_{\\text{fit}} = -GM/(c^2 r)$ with absorbing horizon at $r = r_S$, there exists a **unique quasi-stationary distribution** $\\rho_{\\text{BH}}$ satisfying {prf:ref}`def-bh-qsd-mean-field`.\n1969: \n1970: **Properties**:\n1971: \n1972: **1. Exponential Tail**:\n1973: \n1974: $$\n1975: \\rho_{\\text{BH}}(r) \\sim A r^{\\alpha} \\exp\\left(-\\frac{\\gamma (r - r_S)^2}{2T}\\right) \\quad \\text{as } r \\to \\infty\n1976: \n1977: $$\n1978: \n1979: where $\\alpha$ depends on angular momentum quantum numbers.\n1980: \n1981: **2. Horizon Accumulation**:\n1982: The density peaks near the horizon:\n1983: \n1984: $$\n1985: \\rho_{\\text{BH}}(r) \\sim B (r - r_S)^{\\beta} \\quad \\text{as } r \\to r_S^+\n1986: \n1987: $$\n1988: \n1989: with $\\beta > 0$ (vanishes at horizon but with non-zero gradient).\n1990: \n1991: **3. Mass Distribution**:\n1992: The total mass outside radius $r$ is:\n1993: \n1994: $$\n1995: M_{\\text{out}}(r) = \\int_{r}^\\infty 4\\pi r'^2 \\rho_{\\text{BH}}(r') dr' \\sim \\frac{c^2 (r - r_S)}{G}\n1996: \n1997: $$",
+      "metadata": {
+        "label": "thm-bh-qsd-existence"
+      },
+      "section": "## 5. Mean-Field (McKean-Vlasov) Perspective",
+      "raw_directive": "1963: :::\n1964: \n1965: :::{prf:theorem} Black Hole QSD Existence and Uniqueness\n1966: :label: thm-bh-qsd-existence\n1967: \n1968: Under the fitness landscape $V_{\\text{fit}} = -GM/(c^2 r)$ with absorbing horizon at $r = r_S$, there exists a **unique quasi-stationary distribution** $\\rho_{\\text{BH}}$ satisfying {prf:ref}`def-bh-qsd-mean-field`.\n1969: \n1970: **Properties**:\n1971: \n1972: **1. Exponential Tail**:\n1973: \n1974: $$\n1975: \\rho_{\\text{BH}}(r) \\sim A r^{\\alpha} \\exp\\left(-\\frac{\\gamma (r - r_S)^2}{2T}\\right) \\quad \\text{as } r \\to \\infty\n1976: \n1977: $$\n1978: \n1979: where $\\alpha$ depends on angular momentum quantum numbers.\n1980: \n1981: **2. Horizon Accumulation**:\n1982: The density peaks near the horizon:\n1983: \n1984: $$\n1985: \\rho_{\\text{BH}}(r) \\sim B (r - r_S)^{\\beta} \\quad \\text{as } r \\to r_S^+\n1986: \n1987: $$\n1988: \n1989: with $\\beta > 0$ (vanishes at horizon but with non-zero gradient).\n1990: \n1991: **3. Mass Distribution**:\n1992: The total mass outside radius $r$ is:\n1993: \n1994: $$\n1995: M_{\\text{out}}(r) = \\int_{r}^\\infty 4\\pi r'^2 \\rho_{\\text{BH}}(r') dr' \\sim \\frac{c^2 (r - r_S)}{G}\n1996: \n1997: $$\n1998: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-83",
+      "title": null,
+      "start_line": 2000,
+      "end_line": 2069,
+      "header_lines": [],
+      "content_start": 2002,
+      "content_end": 2068,
+      "content": "2002: :::{prf:proof}\n2003: \n2004: **Step 1: Variational formulation**\n2005: \n2006: The QSD can be characterized as the minimizer of the free energy functional:\n2007: \n2008: $$\n2009: \\mathcal{F}[\\rho] = \\int_{\\mathcal{X}_{\\text{ext}}} \\rho(x) V_{\\text{fit}}(x) dx + T \\int_{\\mathcal{X}_{\\text{ext}}} \\rho(x) \\ln \\rho(x) dx\n2010: \n2011: $$\n2012: \n2013: subject to normalization $\\int \\rho = 1$ and absorbing boundary $\\rho|_{\\mathcal{H}} = 0$.\n2014: \n2015: This functional is **strictly convex** (proven in {prf:ref}`thm-qsd-free-energy` from {doc}`../04_convergence`), so the minimizer is unique.\n2016: \n2017: **Step 2: Existence by Lax-Milgram**\n2018: \n2019: The Euler-Lagrange equation for $\\mathcal{F}[\\rho]$ is:\n2020: \n2021: $$\n2022: V_{\\text{fit}}(x) + T(1 + \\ln \\rho(x)) - \\mu = 0\n2023: \n2024: $$\n2025: \n2026: where $\\mu$ is the Lagrange multiplier for normalization.\n2027: \n2028: Solving:\n2029: \n2030: $$\n2031: \\rho(x) = \\frac{1}{Z} \\exp\\left(-\\frac{V_{\\text{fit}}(x)}{T}\\right)\n2032: \n2033: $$\n2034: \n2035: where $Z$ is the partition function. For $V_{\\text{fit}} = -GM/(c^2 r)$:\n2036: \n2037: $$\n2038: \\rho_{\\text{BH}}(r) = \\frac{1}{Z} \\exp\\left(\\frac{GM}{c^2 T r}\\right)\n2039: \n2040: $$\n2041: \n2042: This is well-defined and integrable on $\\mathcal{X}_{\\text{ext}}$ (finite partition function).\n2043: \n2044: **Step 3: Asymptotic behavior**\n2045: \n2046: For large $r$, the fitness dominates: $V_{\\text{fit}} \\to 0$, so $\\rho \\sim \\exp(-V/T) \\to 1/Z$ (uniform).\n2047: \n2048: For $r \\to r_S^+$, the fitness diverges: $V_{\\text{fit}} \\to -\\infty$, so $\\rho \\sim \\exp(\\infty) \\cdot (r - r_S)^0 = 0$ at the boundary (absorbing condition enforced).\n2049: \n2050: The precise exponent $\\beta$ in the near-horizon expansion depends on the geometry (coordinate system) but is generically positive.\n2051: \n2052: **Step 4: Mass distribution from Poisson equation**\n2053: \n2054: The density $\\rho_{\\text{BH}}$ sources the gravitational potential via Einstein equations (Poisson limit):\n2055: \n2056: $$\n2057: \\nabla^2 V = 4\\pi G \\rho\n2058: \n2059: $$\n2060: \n2061: Integrating:\n2062: \n2063: $$\n2064: M_{\\text{out}}(r) = \\frac{1}{4\\pi G}\\int_{r}^\\infty 4\\pi r'^2 \\nabla^2 V dr' = \\frac{r}{G}\\left|\\frac{\\partial V}{\\partial r}\\right|\n2065: \n2066: $$\n2067: \n2068: For Schwarzschild $V \\sim -GM/(c^2 r)$, this gives $M_{\\text{out}} \\sim M(1 - r_S/r)$.",
+      "metadata": {},
+      "section": "## 5. Mean-Field (McKean-Vlasov) Perspective",
+      "raw_directive": "2000: :::\n2001: \n2002: :::{prf:proof}\n2003: \n2004: **Step 1: Variational formulation**\n2005: \n2006: The QSD can be characterized as the minimizer of the free energy functional:\n2007: \n2008: $$\n2009: \\mathcal{F}[\\rho] = \\int_{\\mathcal{X}_{\\text{ext}}} \\rho(x) V_{\\text{fit}}(x) dx + T \\int_{\\mathcal{X}_{\\text{ext}}} \\rho(x) \\ln \\rho(x) dx\n2010: \n2011: $$\n2012: \n2013: subject to normalization $\\int \\rho = 1$ and absorbing boundary $\\rho|_{\\mathcal{H}} = 0$.\n2014: \n2015: This functional is **strictly convex** (proven in {prf:ref}`thm-qsd-free-energy` from {doc}`../04_convergence`), so the minimizer is unique.\n2016: \n2017: **Step 2: Existence by Lax-Milgram**\n2018: \n2019: The Euler-Lagrange equation for $\\mathcal{F}[\\rho]$ is:\n2020: \n2021: $$\n2022: V_{\\text{fit}}(x) + T(1 + \\ln \\rho(x)) - \\mu = 0\n2023: \n2024: $$\n2025: \n2026: where $\\mu$ is the Lagrange multiplier for normalization.\n2027: \n2028: Solving:\n2029: \n2030: $$\n2031: \\rho(x) = \\frac{1}{Z} \\exp\\left(-\\frac{V_{\\text{fit}}(x)}{T}\\right)\n2032: \n2033: $$\n2034: \n2035: where $Z$ is the partition function. For $V_{\\text{fit}} = -GM/(c^2 r)$:\n2036: \n2037: $$\n2038: \\rho_{\\text{BH}}(r) = \\frac{1}{Z} \\exp\\left(\\frac{GM}{c^2 T r}\\right)\n2039: \n2040: $$\n2041: \n2042: This is well-defined and integrable on $\\mathcal{X}_{\\text{ext}}$ (finite partition function).\n2043: \n2044: **Step 3: Asymptotic behavior**\n2045: \n2046: For large $r$, the fitness dominates: $V_{\\text{fit}} \\to 0$, so $\\rho \\sim \\exp(-V/T) \\to 1/Z$ (uniform).\n2047: \n2048: For $r \\to r_S^+$, the fitness diverges: $V_{\\text{fit}} \\to -\\infty$, so $\\rho \\sim \\exp(\\infty) \\cdot (r - r_S)^0 = 0$ at the boundary (absorbing condition enforced).\n2049: \n2050: The precise exponent $\\beta$ in the near-horizon expansion depends on the geometry (coordinate system) but is generically positive.\n2051: \n2052: **Step 4: Mass distribution from Poisson equation**\n2053: \n2054: The density $\\rho_{\\text{BH}}$ sources the gravitational potential via Einstein equations (Poisson limit):\n2055: \n2056: $$\n2057: \\nabla^2 V = 4\\pi G \\rho\n2058: \n2059: $$\n2060: \n2061: Integrating:\n2062: \n2063: $$\n2064: M_{\\text{out}}(r) = \\frac{1}{4\\pi G}\\int_{r}^\\infty 4\\pi r'^2 \\nabla^2 V dr' = \\frac{r}{G}\\left|\\frac{\\partial V}{\\partial r}\\right|\n2065: \n2066: $$\n2067: \n2068: For Schwarzschild $V \\sim -GM/(c^2 r)$, this gives $M_{\\text{out}} \\sim M(1 - r_S/r)$.\n2069: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-bh-hawking-temperature",
+      "title": "Hawking Temperature from Thermal Equilibrium",
+      "start_line": 2075,
+      "end_line": 2095,
+      "header_lines": [
+        2076
+      ],
+      "content_start": 2078,
+      "content_end": 2094,
+      "content": "2078: :label: thm-bh-hawking-temperature\n2079: \n2080: A walker following a trajectory near the event horizon of a Schwarzschild black hole experiences the Langevin noise as a thermal bath with temperature:\n2081: \n2082: $$\n2083: \\boxed{T_H = \\frac{\\hbar \\kappa}{2\\pi k_B}}\n2084: \n2085: $$\n2086: \n2087: where $\\kappa$ is the **surface gravity**:\n2088: \n2089: $$\n2090: \\kappa = \\frac{c^4}{4GM}\n2091: \n2092: $$\n2093: \n2094: This is the **Hawking temperature**, derived from the **Unruh effect** in the black hole background.",
+      "metadata": {
+        "label": "thm-bh-hawking-temperature"
+      },
+      "section": "## 5. Mean-Field (McKean-Vlasov) Perspective",
+      "raw_directive": "2075: The black hole QSD is in **thermal equilibrium** with the Langevin noise bath at a specific temperature\u2014the Hawking temperature.\n2076: \n2077: :::{prf:theorem} Hawking Temperature from Thermal Equilibrium\n2078: :label: thm-bh-hawking-temperature\n2079: \n2080: A walker following a trajectory near the event horizon of a Schwarzschild black hole experiences the Langevin noise as a thermal bath with temperature:\n2081: \n2082: $$\n2083: \\boxed{T_H = \\frac{\\hbar \\kappa}{2\\pi k_B}}\n2084: \n2085: $$\n2086: \n2087: where $\\kappa$ is the **surface gravity**:\n2088: \n2089: $$\n2090: \\kappa = \\frac{c^4}{4GM}\n2091: \n2092: $$\n2093: \n2094: This is the **Hawking temperature**, derived from the **Unruh effect** in the black hole background.\n2095: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-180",
+      "title": null,
+      "start_line": 2097,
+      "end_line": 2153,
+      "header_lines": [],
+      "content_start": 2099,
+      "content_end": 2152,
+      "content": "2099: :::{prf:proof}\n2100: \n2101: **Step 1: Surface gravity from Killing vector**\n2102: \n2103: In Schwarzschild coordinates, the timelike Killing vector is $\\xi^\\mu = (1, 0, 0, 0)$. The surface gravity is defined by:\n2104: \n2105: $$\n2106: \\kappa^2 = -\\frac{1}{2}(\\nabla_\\mu \\xi_\\nu)(\\nabla^\\mu \\xi^\\nu)\\bigg|_{r=r_S}\n2107: \n2108: $$\n2109: \n2110: Computing in Schwarzschild metric:\n2111: \n2112: $$\n2113: \\nabla_r \\xi_t = \\frac{\\partial g_{tt}}{\\partial r} = \\frac{r_S}{r^2}\n2114: \n2115: $$\n2116: \n2117: At the horizon $r = r_S$:\n2118: \n2119: $$\n2120: \\kappa = \\frac{1}{2r_S} = \\frac{c^4}{4GM}\n2121: \n2122: $$\n2123: \n2124: **Step 2: Unruh-Hawking temperature from Langevin noise power spectrum**\n2125: \n2126: The Langevin operator ({doc}`../04_convergence`) adds stochastic noise $\\xi(t)$ to walker velocities:\n2127: \n2128: $$\n2129: \\frac{dv}{dt} = -\\gamma v - \\nabla V_{\\text{fit}} + \\sqrt{2\\gamma T_{\\text{kin}}} \\xi(t)\n2130: \n2131: $$\n2132: \n2133: where $\\xi(t)$ is white noise: $\\langle \\xi(t) \\xi(t') \\rangle = \\delta(t - t')$.\n2134: \n2135: **Key insight**: For an **accelerated observer** with proper acceleration $a$, the vacuum fluctuations of this noise are Doppler-shifted and appear thermal.\n2136: \n2137: :::{important}\n2138: **Status of Unruh Effect in This Framework**\n2139: \n2140: The Unruh temperature formula $T_{\\text{Unruh}} = \\hbar a/(2\\pi k_B c)$ is a **standard result from quantum field theory** (Unruh 1976, Davies 1975) that we apply to the Fragile Gas framework. The rigorous derivation requires:\n2141: \n2142: 1. **QFT on curved spacetime**: Bogoliubov transformation between inertial and Rindler vacuum modes\n2143: 2. **Lorentz covariance**: The framework's emergent metric must have Lorentzian signature\n2144: \n2145: **What the framework provides**:\n2146: - Lorentz-covariant dynamics (via emergent metric from {doc}`../08_emergent_geometry`)\n2147: - Thermal noise with correct temperature structure\n2148: - Causal structure (CST) compatible with Minkowski light cones\n2149: \n2150: **What this theorem assumes**:\n2151: - The standard Unruh formula applies to the Langevin noise\n2152: - The noise couples to walkers in a QFT-like manner",
+      "metadata": {},
+      "section": "## 5. Mean-Field (McKean-Vlasov) Perspective",
+      "raw_directive": "2097: :::\n2098: \n2099: :::{prf:proof}\n2100: \n2101: **Step 1: Surface gravity from Killing vector**\n2102: \n2103: In Schwarzschild coordinates, the timelike Killing vector is $\\xi^\\mu = (1, 0, 0, 0)$. The surface gravity is defined by:\n2104: \n2105: $$\n2106: \\kappa^2 = -\\frac{1}{2}(\\nabla_\\mu \\xi_\\nu)(\\nabla^\\mu \\xi^\\nu)\\bigg|_{r=r_S}\n2107: \n2108: $$\n2109: \n2110: Computing in Schwarzschild metric:\n2111: \n2112: $$\n2113: \\nabla_r \\xi_t = \\frac{\\partial g_{tt}}{\\partial r} = \\frac{r_S}{r^2}\n2114: \n2115: $$\n2116: \n2117: At the horizon $r = r_S$:\n2118: \n2119: $$\n2120: \\kappa = \\frac{1}{2r_S} = \\frac{c^4}{4GM}\n2121: \n2122: $$\n2123: \n2124: **Step 2: Unruh-Hawking temperature from Langevin noise power spectrum**\n2125: \n2126: The Langevin operator ({doc}`../04_convergence`) adds stochastic noise $\\xi(t)$ to walker velocities:\n2127: \n2128: $$\n2129: \\frac{dv}{dt} = -\\gamma v - \\nabla V_{\\text{fit}} + \\sqrt{2\\gamma T_{\\text{kin}}} \\xi(t)\n2130: \n2131: $$\n2132: \n2133: where $\\xi(t)$ is white noise: $\\langle \\xi(t) \\xi(t') \\rangle = \\delta(t - t')$.\n2134: \n2135: **Key insight**: For an **accelerated observer** with proper acceleration $a$, the vacuum fluctuations of this noise are Doppler-shifted and appear thermal.\n2136: \n2137: :::{important}\n2138: **Status of Unruh Effect in This Framework**\n2139: \n2140: The Unruh temperature formula $T_{\\text{Unruh}} = \\hbar a/(2\\pi k_B c)$ is a **standard result from quantum field theory** (Unruh 1976, Davies 1975) that we apply to the Fragile Gas framework. The rigorous derivation requires:\n2141: \n2142: 1. **QFT on curved spacetime**: Bogoliubov transformation between inertial and Rindler vacuum modes\n2143: 2. **Lorentz covariance**: The framework's emergent metric must have Lorentzian signature\n2144: \n2145: **What the framework provides**:\n2146: - Lorentz-covariant dynamics (via emergent metric from {doc}`../08_emergent_geometry`)\n2147: - Thermal noise with correct temperature structure\n2148: - Causal structure (CST) compatible with Minkowski light cones\n2149: \n2150: **What this theorem assumes**:\n2151: - The standard Unruh formula applies to the Langevin noise\n2152: - The noise couples to walkers in a QFT-like manner\n2153: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

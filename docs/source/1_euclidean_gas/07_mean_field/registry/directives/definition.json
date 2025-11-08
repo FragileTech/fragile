@@ -2,31 +2,31 @@
   "document_id": "07_mean_field",
   "stage": "directives",
   "directive_type": "definition",
-  "generated_at": "2025-11-07T12:16:43.471191+00:00",
+  "generated_at": "2025-11-08T17:07:43.203551+00:00",
   "count": 12,
   "items": [
     {
       "directive_type": "definition",
       "label": "def-mean-field-phase-space",
       "title": "Phase Space",
-      "start_line": 39,
-      "end_line": 50,
+      "start_line": 37,
+      "end_line": 48,
       "header_lines": [
-        40
+        38
       ],
-      "content_start": 42,
-      "content_end": 49,
-      "content": "42: Let $X_{\\text{valid}} \\subset \\mathbb{R}^d$ be the bounded, convex domain with a $C^2$ boundary, and let $V_{\\text{alg}} := \\{v \\in \\mathbb{R}^d : \\|v\\| \\le V_{\\text{alg}}\\}$ be the closed ball of allowed velocities, as defined in the Euclidean Gas specification (*Chapter 2, Sec. 1.1*).\n 43: \n 44: The single-particle **phase space**, denoted $\\Omega$, is the Cartesian product of the valid position and velocity domains:\n 45: \n 46: $$\n 47: \\Omega := X_{\\text{valid}} \\times V_{\\text{alg}}\n 48: $$\n 49:",
+      "content_start": 40,
+      "content_end": 47,
+      "content": "40: :label: def-mean-field-phase-space\n41: \n42: Let $X_{\\text{valid}} \\subset \\mathbb{R}^d$ be the bounded, convex domain with a $C^2$ boundary, and let $V_{\\text{alg}} := \\{v \\in \\mathbb{R}^d : \\|v\\| \\le V_{\\text{alg}}\\}$ be the closed ball of allowed velocities, as defined in the Euclidean Gas specification (*Chapter 2, Sec. 1.1*).\n43: \n44: The single-particle **phase space**, denoted $\\Omega$, is the Cartesian product of the valid position and velocity domains:\n45: \n46: $$\n47: \\Omega := X_{\\text{valid}} \\times V_{\\text{alg}}",
       "metadata": {
         "label": "def-mean-field-phase-space"
       },
       "section": "## 1. Foundations of the Mean-Field Model",
-      "raw_directive": " 39: :::{prf:definition} Phase Space\n 40: :label: def-mean-field-phase-space\n 41: \n 42: Let $X_{\\text{valid}} \\subset \\mathbb{R}^d$ be the bounded, convex domain with a $C^2$ boundary, and let $V_{\\text{alg}} := \\{v \\in \\mathbb{R}^d : \\|v\\| \\le V_{\\text{alg}}\\}$ be the closed ball of allowed velocities, as defined in the Euclidean Gas specification (*Chapter 2, Sec. 1.1*).\n 43: \n 44: The single-particle **phase space**, denoted $\\Omega$, is the Cartesian product of the valid position and velocity domains:\n 45: \n 46: $$\n 47: \\Omega := X_{\\text{valid}} \\times V_{\\text{alg}}\n 48: $$\n 49: \n 50: :::",
+      "raw_directive": "37: The single-particle **phase space** defines the complete set of possible kinematic states—position and velocity—that a particle can occupy. Its properties are not arbitrary but are a direct, faithful translation of the constraints imposed on the walkers in the discrete Euclidean Gas algorithm.\n38: \n39: :::{prf:definition} Phase Space\n40: :label: def-mean-field-phase-space\n41: \n42: Let $X_{\\text{valid}} \\subset \\mathbb{R}^d$ be the bounded, convex domain with a $C^2$ boundary, and let $V_{\\text{alg}} := \\{v \\in \\mathbb{R}^d : \\|v\\| \\le V_{\\text{alg}}\\}$ be the closed ball of allowed velocities, as defined in the Euclidean Gas specification (*Chapter 2, Sec. 1.1*).\n43: \n44: The single-particle **phase space**, denoted $\\Omega$, is the Cartesian product of the valid position and velocity domains:\n45: \n46: $$\n47: \\Omega := X_{\\text{valid}} \\times V_{\\text{alg}}\n48: $$",
       "_registry_context": {
         "stage": "directives",
         "document_id": "07_mean_field",
-        "chapter_index": 2,
-        "chapter_file": "chapter_2.json",
+        "chapter_index": 1,
+        "chapter_file": "chapter_1.json",
         "section_id": "## 1. Foundations of the Mean-Field Model"
       }
     },
@@ -34,24 +34,24 @@
       "directive_type": "definition",
       "label": "def-phase-space-density",
       "title": "Phase-Space Density",
-      "start_line": 61,
-      "end_line": 81,
+      "start_line": 59,
+      "end_line": 79,
       "header_lines": [
-        62
+        60
       ],
-      "content_start": 64,
-      "content_end": 80,
-      "content": "64: The state of the swarm's **alive population** at time $t \\ge 0$ is described by the **phase-space sub-probability density** $f: [0, \\infty) \\times \\Omega \\to [0, \\infty)$. For any time $t$, $f(t, \\cdot, \\cdot)$ is a function on the phase space such that for any measurable subset $A \\subseteq \\Omega$, the mass of alive walkers in $A$ is given by the integral:\n 65: \n 66: $$\n 67: \\text{Alive mass in } A = \\int_A f(t, z) dz.\n 68: $$\n 69: \n 70: Just as integrating a city's population density over a neighborhood gives the number of people living there, integrating $f$ over a region of phase space gives the fraction of alive walkers expected to be in that region.\n 71: \n 72: The integral of this density gives the total mass of alive walkers, $m_a(t)$:\n 73: \n 74: $$\n 75: m_a(t) := \\int_{\\Omega} f(t,x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v \\le 1\n 76: $$\n 77: \n 78: The mass of dead walkers is then given by $m_d(t) = 1 - m_a(t)$. The evolution of the system will be described by a coupled system for $f(t,z)$ and $m_d(t)$ that conserves the total mass $m_a(t) + m_d(t) = 1$.\n 79: \n 80: We assume that $f$ has sufficient regularity for all subsequent operations to be well-defined, namely $f \\in C([0, \\infty); L^1(\\Omega))$.",
+      "content_start": 62,
+      "content_end": 78,
+      "content": "62: :label: def-phase-space-density\n63: \n64: The state of the swarm's **alive population** at time $t \\ge 0$ is described by the **phase-space sub-probability density** $f: [0, \\infty) \\times \\Omega \\to [0, \\infty)$. For any time $t$, $f(t, \\cdot, \\cdot)$ is a function on the phase space such that for any measurable subset $A \\subseteq \\Omega$, the mass of alive walkers in $A$ is given by the integral:\n65: \n66: $$\n67: \\text{Alive mass in } A = \\int_A f(t, z) dz.\n68: $$\n69: \n70: Just as integrating a city's population density over a neighborhood gives the number of people living there, integrating $f$ over a region of phase space gives the fraction of alive walkers expected to be in that region.\n71: \n72: The integral of this density gives the total mass of alive walkers, $m_a(t)$:\n73: \n74: $$\n75: m_a(t) := \\int_{\\Omega} f(t,x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v \\le 1\n76: $$\n77: \n78: The mass of dead walkers is then given by $m_d(t) = 1 - m_a(t)$. The evolution of the system will be described by a coupled system for $f(t,z)$ and $m_d(t)$ that conserves the total mass $m_a(t) + m_d(t) = 1$.",
       "metadata": {
         "label": "def-phase-space-density"
       },
       "section": "## 1. Foundations of the Mean-Field Model",
-      "raw_directive": " 61: :::{prf:definition} Phase-Space Density\n 62: :label: def-phase-space-density\n 63: \n 64: The state of the swarm's **alive population** at time $t \\ge 0$ is described by the **phase-space sub-probability density** $f: [0, \\infty) \\times \\Omega \\to [0, \\infty)$. For any time $t$, $f(t, \\cdot, \\cdot)$ is a function on the phase space such that for any measurable subset $A \\subseteq \\Omega$, the mass of alive walkers in $A$ is given by the integral:\n 65: \n 66: $$\n 67: \\text{Alive mass in } A = \\int_A f(t, z) dz.\n 68: $$\n 69: \n 70: Just as integrating a city's population density over a neighborhood gives the number of people living there, integrating $f$ over a region of phase space gives the fraction of alive walkers expected to be in that region.\n 71: \n 72: The integral of this density gives the total mass of alive walkers, $m_a(t)$:\n 73: \n 74: $$\n 75: m_a(t) := \\int_{\\Omega} f(t,x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v \\le 1\n 76: $$\n 77: \n 78: The mass of dead walkers is then given by $m_d(t) = 1 - m_a(t)$. The evolution of the system will be described by a coupled system for $f(t,z)$ and $m_d(t)$ that conserves the total mass $m_a(t) + m_d(t) = 1$.\n 79: \n 80: We assume that $f$ has sufficient regularity for all subsequent operations to be well-defined, namely $f \\in C([0, \\infty); L^1(\\Omega))$.\n 81: :::",
+      "raw_directive": "59: With the arena defined, we can now introduce the central object of our analysis. Instead of tracking individual walkers, we track the continuous density of the probability cloud, $f(t,x,v)$. A high value of $f$ at a point $(t,x,v)$ signifies a high concentration of probability mass, meaning it is more likely to find a particle with that position and velocity at that time.\n60: \n61: :::{prf:definition} Phase-Space Density\n62: :label: def-phase-space-density\n63: \n64: The state of the swarm's **alive population** at time $t \\ge 0$ is described by the **phase-space sub-probability density** $f: [0, \\infty) \\times \\Omega \\to [0, \\infty)$. For any time $t$, $f(t, \\cdot, \\cdot)$ is a function on the phase space such that for any measurable subset $A \\subseteq \\Omega$, the mass of alive walkers in $A$ is given by the integral:\n65: \n66: $$\n67: \\text{Alive mass in } A = \\int_A f(t, z) dz.\n68: $$\n69: \n70: Just as integrating a city's population density over a neighborhood gives the number of people living there, integrating $f$ over a region of phase space gives the fraction of alive walkers expected to be in that region.\n71: \n72: The integral of this density gives the total mass of alive walkers, $m_a(t)$:\n73: \n74: $$\n75: m_a(t) := \\int_{\\Omega} f(t,x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v \\le 1\n76: $$\n77: \n78: The mass of dead walkers is then given by $m_d(t) = 1 - m_a(t)$. The evolution of the system will be described by a coupled system for $f(t,z)$ and $m_d(t)$ that conserves the total mass $m_a(t) + m_d(t) = 1$.\n79: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "07_mean_field",
-        "chapter_index": 2,
-        "chapter_file": "chapter_2.json",
+        "chapter_index": 1,
+        "chapter_file": "chapter_1.json",
         "section_id": "## 1. Foundations of the Mean-Field Model"
       }
     },
@@ -59,24 +59,24 @@
       "directive_type": "definition",
       "label": "def-mean-field-moments",
       "title": "Mean-Field Statistical Moments",
-      "start_line": 116,
-      "end_line": 142,
+      "start_line": 114,
+      "end_line": 140,
       "header_lines": [
-        117
+        115
       ],
-      "content_start": 119,
-      "content_end": 141,
-      "content": "119: Let $f(t, \\cdot)$ be the phase-space density at time $t$, with total alive mass $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$. The statistical moments required for the standardization pipeline are defined as the following **functionals** of $f$. The notation $\\mu[f]$ emphasizes that these are numbers that depend on the entire *shape* of the function $f$.\n120: \n121: The moments are computed with respect to the **normalized density of the alive population**, which is $f(t,z) / m_a(t)$. This normalization is critical for ensuring the mean-field model is a faithful limit of the N-particle system, where statistics are computed by averaging over the $k$ alive walkers.\n122: \n123: *   **Reward Moments:** The mean reward, $\\mu_R[f]$, is computed as the expected value over the normalized alive population:\n124: \n125:     $$\n126:     \\mu_R[f](t) := \\int_{\\Omega} R(z) \\frac{f(t,z)}{m_a(t)}\\,\\mathrm dz\n127:     $$\n128: \n129:     $$\n130:     \\sigma_R^2[f](t) := \\int_{\\Omega} \\bigl(R(z) - \\mu_R[f](t)\\bigr)^2 \\frac{f(t,z)}{m_a(t)}\\,\\mathrm dz\n131:     $$\n132: \n133: *   **Distance Moments:** The mean distance is the expectation of the distance between two particles drawn independently from the normalized alive population:\n134: \n135:     $$\n136:     \\mu_D[f](t) := \\iint_{\\Omega \\times \\Omega} d_{\\mathcal{Y}}(\\varphi(z), \\varphi(z')) \\frac{f(t,z)}{m_a(t)} \\frac{f(t,z')}{m_a(t)}\\,\\mathrm dz\\,\\mathrm dz'\n137:     $$\n138: \n139:     $$\n140:     \\sigma_D^2[f](t) := \\iint_{\\Omega \\times \\Omega} \\bigl(d_{\\mathcal{Y}}(\\varphi(z), \\varphi(z')) - \\mu_D[f](t)\\bigr)^2 \\frac{f(t,z)}{m_a(t)} \\frac{f(t,z')}{m_a(t)}\\,\\mathrm dz\\,\\mathrm dz'\n141:     $$",
+      "content_start": 117,
+      "content_end": 139,
+      "content": "117: :label: def-mean-field-moments\n118: \n119: Let $f(t, \\cdot)$ be the phase-space density at time $t$, with total alive mass $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$. The statistical moments required for the standardization pipeline are defined as the following **functionals** of $f$. The notation $\\mu[f]$ emphasizes that these are numbers that depend on the entire *shape* of the function $f$.\n120: \n121: The moments are computed with respect to the **normalized density of the alive population**, which is $f(t,z) / m_a(t)$. This normalization is critical for ensuring the mean-field model is a faithful limit of the N-particle system, where statistics are computed by averaging over the $k$ alive walkers.\n122: \n123: *   **Reward Moments:** The mean reward, $\\mu_R[f]$, is computed as the expected value over the normalized alive population:\n124: \n125:     $$\n126:     \\mu_R[f](t) := \\int_{\\Omega} R(z) \\frac{f(t,z)}{m_a(t)}\\,\\mathrm dz\n127:     $$\n128: \n129:     $$\n130:     \\sigma_R^2[f](t) := \\int_{\\Omega} \\bigl(R(z) - \\mu_R[f](t)\\bigr)^2 \\frac{f(t,z)}{m_a(t)}\\,\\mathrm dz\n131:     $$\n132: \n133: *   **Distance Moments:** The mean distance is the expectation of the distance between two particles drawn independently from the normalized alive population:\n134: \n135:     $$\n136:     \\mu_D[f](t) := \\iint_{\\Omega \\times \\Omega} d_{\\mathcal{Y}}(\\varphi(z), \\varphi(z')) \\frac{f(t,z)}{m_a(t)} \\frac{f(t,z')}{m_a(t)}\\,\\mathrm dz\\,\\mathrm dz'\n137:     $$\n138: \n139:     $$",
       "metadata": {
         "label": "def-mean-field-moments"
       },
       "section": "## 1. Foundations of the Mean-Field Model",
-      "raw_directive": "116: :::{prf:definition} Mean-Field Statistical Moments\n117: :label: def-mean-field-moments\n118: \n119: Let $f(t, \\cdot)$ be the phase-space density at time $t$, with total alive mass $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$. The statistical moments required for the standardization pipeline are defined as the following **functionals** of $f$. The notation $\\mu[f]$ emphasizes that these are numbers that depend on the entire *shape* of the function $f$.\n120: \n121: The moments are computed with respect to the **normalized density of the alive population**, which is $f(t,z) / m_a(t)$. This normalization is critical for ensuring the mean-field model is a faithful limit of the N-particle system, where statistics are computed by averaging over the $k$ alive walkers.\n122: \n123: *   **Reward Moments:** The mean reward, $\\mu_R[f]$, is computed as the expected value over the normalized alive population:\n124: \n125:     $$\n126:     \\mu_R[f](t) := \\int_{\\Omega} R(z) \\frac{f(t,z)}{m_a(t)}\\,\\mathrm dz\n127:     $$\n128: \n129:     $$\n130:     \\sigma_R^2[f](t) := \\int_{\\Omega} \\bigl(R(z) - \\mu_R[f](t)\\bigr)^2 \\frac{f(t,z)}{m_a(t)}\\,\\mathrm dz\n131:     $$\n132: \n133: *   **Distance Moments:** The mean distance is the expectation of the distance between two particles drawn independently from the normalized alive population:\n134: \n135:     $$\n136:     \\mu_D[f](t) := \\iint_{\\Omega \\times \\Omega} d_{\\mathcal{Y}}(\\varphi(z), \\varphi(z')) \\frac{f(t,z)}{m_a(t)} \\frac{f(t,z')}{m_a(t)}\\,\\mathrm dz\\,\\mathrm dz'\n137:     $$\n138: \n139:     $$\n140:     \\sigma_D^2[f](t) := \\iint_{\\Omega \\times \\Omega} \\bigl(d_{\\mathcal{Y}}(\\varphi(z), \\varphi(z')) - \\mu_D[f](t)\\bigr)^2 \\frac{f(t,z)}{m_a(t)} \\frac{f(t,z')}{m_a(t)}\\,\\mathrm dz\\,\\mathrm dz'\n141:     $$\n142: :::",
+      "raw_directive": "114: In the N-particle system, measurements are aggregated by computing empirical statistics over the finite set of alive walkers. In the mean-field limit, these discrete sums are replaced by integrals over the phase-space density $f$.\n115: \n116: :::{prf:definition} Mean-Field Statistical Moments\n117: :label: def-mean-field-moments\n118: \n119: Let $f(t, \\cdot)$ be the phase-space density at time $t$, with total alive mass $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$. The statistical moments required for the standardization pipeline are defined as the following **functionals** of $f$. The notation $\\mu[f]$ emphasizes that these are numbers that depend on the entire *shape* of the function $f$.\n120: \n121: The moments are computed with respect to the **normalized density of the alive population**, which is $f(t,z) / m_a(t)$. This normalization is critical for ensuring the mean-field model is a faithful limit of the N-particle system, where statistics are computed by averaging over the $k$ alive walkers.\n122: \n123: *   **Reward Moments:** The mean reward, $\\mu_R[f]$, is computed as the expected value over the normalized alive population:\n124: \n125:     $$\n126:     \\mu_R[f](t) := \\int_{\\Omega} R(z) \\frac{f(t,z)}{m_a(t)}\\,\\mathrm dz\n127:     $$\n128: \n129:     $$\n130:     \\sigma_R^2[f](t) := \\int_{\\Omega} \\bigl(R(z) - \\mu_R[f](t)\\bigr)^2 \\frac{f(t,z)}{m_a(t)}\\,\\mathrm dz\n131:     $$\n132: \n133: *   **Distance Moments:** The mean distance is the expectation of the distance between two particles drawn independently from the normalized alive population:\n134: \n135:     $$\n136:     \\mu_D[f](t) := \\iint_{\\Omega \\times \\Omega} d_{\\mathcal{Y}}(\\varphi(z), \\varphi(z')) \\frac{f(t,z)}{m_a(t)} \\frac{f(t,z')}{m_a(t)}\\,\\mathrm dz\\,\\mathrm dz'\n137:     $$\n138: \n139:     $$\n140:     \\sigma_D^2[f](t) := \\iint_{\\Omega \\times \\Omega} \\bigl(d_{\\mathcal{Y}}(\\varphi(z), \\varphi(z')) - \\mu_D[f](t)\\bigr)^2 \\frac{f(t,z)}{m_a(t)} \\frac{f(t,z')}{m_a(t)}\\,\\mathrm dz\\,\\mathrm dz'",
       "_registry_context": {
         "stage": "directives",
         "document_id": "07_mean_field",
-        "chapter_index": 2,
-        "chapter_file": "chapter_2.json",
+        "chapter_index": 1,
+        "chapter_file": "chapter_1.json",
         "section_id": "## 1. Foundations of the Mean-Field Model"
       }
     },
@@ -84,24 +84,24 @@
       "directive_type": "definition",
       "label": "def-mean-field-patched-std",
       "title": "Mean-Field Regularized Standard Deviation",
-      "start_line": 176,
-      "end_line": 185,
+      "start_line": 174,
+      "end_line": 183,
       "header_lines": [
-        177
+        175
       ],
-      "content_start": 179,
-      "content_end": 184,
-      "content": "179: The **Mean-Field Regularized Standard Deviations** are functionals of the density $f$, obtained by applying the `Regularized Standard Deviation` function from the abstract framework (*Chapter 1, Def. 11.1.2*) to the mean-field variance functionals:\n180: \n181: $$\n182: \\widehat{\\sigma}_R[f](t) := \\sigma\\'_{\\text{reg}}(\\sigma_R^2[f](t)), \\qquad \\widehat{\\sigma}_D[f](t) := \\sigma\\'_{\\text{reg}}(\\sigma_D^2[f](t))\n183: $$\n184: This ensures that the denominators in the mean-field standardization are also uniformly bounded away from zero, preserving the crucial stability properties of the discrete system.",
+      "content_start": 177,
+      "content_end": 182,
+      "content": "177: :label: def-mean-field-patched-std\n178: \n179: The **Mean-Field Regularized Standard Deviations** are functionals of the density $f$, obtained by applying the `Regularized Standard Deviation` function from the abstract framework (*Chapter 1, Def. 11.1.2*) to the mean-field variance functionals:\n180: \n181: $$\n182: \\widehat{\\sigma}_R[f](t) := \\sigma\\'_{\\text{reg}}(\\sigma_R^2[f](t)), \\qquad \\widehat{\\sigma}_D[f](t) := \\sigma\\'_{\\text{reg}}(\\sigma_D^2[f](t))",
       "metadata": {
         "label": "def-mean-field-patched-std"
       },
       "section": "## 1. Foundations of the Mean-Field Model",
-      "raw_directive": "176: :::{prf:definition} Mean-Field Regularized Standard Deviation\n177: :label: def-mean-field-patched-std\n178: \n179: The **Mean-Field Regularized Standard Deviations** are functionals of the density $f$, obtained by applying the `Regularized Standard Deviation` function from the abstract framework (*Chapter 1, Def. 11.1.2*) to the mean-field variance functionals:\n180: \n181: $$\n182: \\widehat{\\sigma}_R[f](t) := \\sigma\\'_{\\text{reg}}(\\sigma_R^2[f](t)), \\qquad \\widehat{\\sigma}_D[f](t) := \\sigma\\'_{\\text{reg}}(\\sigma_D^2[f](t))\n183: $$\n184: This ensures that the denominators in the mean-field standardization are also uniformly bounded away from zero, preserving the crucial stability properties of the discrete system.\n185: :::",
+      "raw_directive": "174: To ensure the numerical stability and continuity guarantees of the N-particle algorithm are preserved, we must prevent the denominators in the standardization from approaching zero, especially when the swarm is highly converged (i.e., when the true variance $\\sigma^2[f]$ is close to zero). We achieve this by translating the exact same regularized standard deviation mechanism from `Chapter 1` to the mean-field level.\n175: \n176: :::{prf:definition} Mean-Field Regularized Standard Deviation\n177: :label: def-mean-field-patched-std\n178: \n179: The **Mean-Field Regularized Standard Deviations** are functionals of the density $f$, obtained by applying the `Regularized Standard Deviation` function from the abstract framework (*Chapter 1, Def. 11.1.2*) to the mean-field variance functionals:\n180: \n181: $$\n182: \\widehat{\\sigma}_R[f](t) := \\sigma\\'_{\\text{reg}}(\\sigma_R^2[f](t)), \\qquad \\widehat{\\sigma}_D[f](t) := \\sigma\\'_{\\text{reg}}(\\sigma_D^2[f](t))\n183: $$",
       "_registry_context": {
         "stage": "directives",
         "document_id": "07_mean_field",
-        "chapter_index": 2,
-        "chapter_file": "chapter_2.json",
+        "chapter_index": 1,
+        "chapter_file": "chapter_1.json",
         "section_id": "## 1. Foundations of the Mean-Field Model"
       }
     },
@@ -109,24 +109,24 @@
       "directive_type": "definition",
       "label": "def-mean-field-z-scores",
       "title": "Mean-Field Z-Scores",
-      "start_line": 193,
-      "end_line": 202,
+      "start_line": 191,
+      "end_line": 200,
       "header_lines": [
-        194
+        192
       ],
-      "content_start": 196,
-      "content_end": 201,
-      "content": "196: For a particle at state $z$ and a potential companion at state $z_c$, the mean-field Z-scores at time $t$ are defined using the density-dependent functionals derived in Section 1.2:\n197: \n198: $$\n199: \\widetilde{r}[f](z,t) := \\frac{R(z) - \\mu_R[f](t)}{\\widehat{\\sigma}_R[f](t)}, \\qquad \\widetilde{d}[f](z,z_c,t) := \\frac{d_{\\mathcal{Y}}(\\varphi(z),\\varphi(z_c)) - \\mu_D[f](t)}{\\widehat{\\sigma}_D[f](t)}\n200: $$\n201: These Z-scores measure how many \"global standard deviations\" a particle's raw reward or its distance to a companion is from the swarm's current average. A positive Z-score indicates an above-average measurement.",
+      "content_start": 194,
+      "content_end": 199,
+      "content": "194: :label: def-mean-field-z-scores\n195: \n196: For a particle at state $z$ and a potential companion at state $z_c$, the mean-field Z-scores at time $t$ are defined using the density-dependent functionals derived in Section 1.2:\n197: \n198: $$\n199: \\widetilde{r}[f](z,t) := \\frac{R(z) - \\mu_R[f](t)}{\\widehat{\\sigma}_R[f](t)}, \\qquad \\widetilde{d}[f](z,z_c,t) := \\frac{d_{\\mathcal{Y}}(\\varphi(z),\\varphi(z_c)) - \\mu_D[f](t)}{\\widehat{\\sigma}_D[f](t)}",
       "metadata": {
         "label": "def-mean-field-z-scores"
       },
       "section": "## 1. Foundations of the Mean-Field Model",
-      "raw_directive": "193: :::{prf:definition} Mean-Field Z-Scores\n194: :label: def-mean-field-z-scores\n195: \n196: For a particle at state $z$ and a potential companion at state $z_c$, the mean-field Z-scores at time $t$ are defined using the density-dependent functionals derived in Section 1.2:\n197: \n198: $$\n199: \\widetilde{r}[f](z,t) := \\frac{R(z) - \\mu_R[f](t)}{\\widehat{\\sigma}_R[f](t)}, \\qquad \\widetilde{d}[f](z,z_c,t) := \\frac{d_{\\mathcal{Y}}(\\varphi(z),\\varphi(z_c)) - \\mu_D[f](t)}{\\widehat{\\sigma}_D[f](t)}\n200: $$\n201: These Z-scores measure how many \"global standard deviations\" a particle's raw reward or its distance to a companion is from the swarm's current average. A positive Z-score indicates an above-average measurement.\n202: :::",
+      "raw_directive": "191: We construct this potential in two steps, mirroring the discrete algorithm. First, we define the mean-field Z-scores, which standardize the raw measurements using the global, density-dependent moments. Second, we combine these scores to form the final, non-linear fitness potential.\n192: \n193: :::{prf:definition} Mean-Field Z-Scores\n194: :label: def-mean-field-z-scores\n195: \n196: For a particle at state $z$ and a potential companion at state $z_c$, the mean-field Z-scores at time $t$ are defined using the density-dependent functionals derived in Section 1.2:\n197: \n198: $$\n199: \\widetilde{r}[f](z,t) := \\frac{R(z) - \\mu_R[f](t)}{\\widehat{\\sigma}_R[f](t)}, \\qquad \\widetilde{d}[f](z,z_c,t) := \\frac{d_{\\mathcal{Y}}(\\varphi(z),\\varphi(z_c)) - \\mu_D[f](t)}{\\widehat{\\sigma}_D[f](t)}\n200: $$",
       "_registry_context": {
         "stage": "directives",
         "document_id": "07_mean_field",
-        "chapter_index": 2,
-        "chapter_file": "chapter_2.json",
+        "chapter_index": 1,
+        "chapter_file": "chapter_1.json",
         "section_id": "## 1. Foundations of the Mean-Field Model"
       }
     },
@@ -134,24 +134,24 @@
       "directive_type": "definition",
       "label": "def-mean-field-fitness-potential",
       "title": "Mean-Field Fitness Potential",
-      "start_line": 206,
-      "end_line": 215,
+      "start_line": 204,
+      "end_line": 213,
       "header_lines": [
-        207
+        205
       ],
-      "content_start": 209,
-      "content_end": 214,
-      "content": "209: The **Mean-Field Fitness Potential**, denoted $V[f](z, z_c, t)$, is a functional of the density $f$ that determines the fitness of a particle at state $z$ relative to a companion at $z_c$. It is constructed by applying the canonical `Rescale Transformation` $g_A$ (*Chapter 1, Sec. 8*) to the mean-field Z-scores:\n210: \n211: $$\n212: V[f](z,z_c,t) := \\left(g_A(\\widetilde{d}[f](z,z_c,t)) + \\eta\\right)^{\\beta} \\cdot \\left(g_A(\\widetilde{r}[f](z,t)) + \\eta\\right)^{\\alpha}\n213: $$\n214: This potential inherits the floor from the N-particle algorithm, ensuring it is always strictly positive.",
+      "content_start": 207,
+      "content_end": 212,
+      "content": "207: :label: def-mean-field-fitness-potential\n208: \n209: The **Mean-Field Fitness Potential**, denoted $V[f](z, z_c, t)$, is a functional of the density $f$ that determines the fitness of a particle at state $z$ relative to a companion at $z_c$. It is constructed by applying the canonical `Rescale Transformation` $g_A$ (*Chapter 1, Sec. 8*) to the mean-field Z-scores:\n210: \n211: $$\n212: V[f](z,z_c,t) := \\left(g_A(\\widetilde{d}[f](z,z_c,t)) + \\eta\\right)^{\\beta} \\cdot \\left(g_A(\\widetilde{r}[f](z,t)) + \\eta\\right)^{\\alpha}",
       "metadata": {
         "label": "def-mean-field-fitness-potential"
       },
       "section": "## 1. Foundations of the Mean-Field Model",
-      "raw_directive": "206: :::{prf:definition} Mean-Field Fitness Potential\n207: :label: def-mean-field-fitness-potential\n208: \n209: The **Mean-Field Fitness Potential**, denoted $V[f](z, z_c, t)$, is a functional of the density $f$ that determines the fitness of a particle at state $z$ relative to a companion at $z_c$. It is constructed by applying the canonical `Rescale Transformation` $g_A$ (*Chapter 1, Sec. 8*) to the mean-field Z-scores:\n210: \n211: $$\n212: V[f](z,z_c,t) := \\left(g_A(\\widetilde{d}[f](z,z_c,t)) + \\eta\\right)^{\\beta} \\cdot \\left(g_A(\\widetilde{r}[f](z,t)) + \\eta\\right)^{\\alpha}\n213: $$\n214: This potential inherits the floor from the N-particle algorithm, ensuring it is always strictly positive.\n215: :::",
+      "raw_directive": "204: The final fitness potential combines the contributions from the reward and diversity channels multiplicatively. This structure allows the algorithm to balance the drive for high rewards (exploitation) with the need to maintain diversity (exploration). The potential is a **functional** of the density $f$, denoted $V[f]$, to emphasize that its value at a single point $(z,z_c)$ depends on the global shape of the entire probability distribution.\n205: \n206: :::{prf:definition} Mean-Field Fitness Potential\n207: :label: def-mean-field-fitness-potential\n208: \n209: The **Mean-Field Fitness Potential**, denoted $V[f](z, z_c, t)$, is a functional of the density $f$ that determines the fitness of a particle at state $z$ relative to a companion at $z_c$. It is constructed by applying the canonical `Rescale Transformation` $g_A$ (*Chapter 1, Sec. 8*) to the mean-field Z-scores:\n210: \n211: $$\n212: V[f](z,z_c,t) := \\left(g_A(\\widetilde{d}[f](z,z_c,t)) + \\eta\\right)^{\\beta} \\cdot \\left(g_A(\\widetilde{r}[f](z,t)) + \\eta\\right)^{\\alpha}\n213: $$",
       "_registry_context": {
         "stage": "directives",
         "document_id": "07_mean_field",
-        "chapter_index": 2,
-        "chapter_file": "chapter_2.json",
+        "chapter_index": 1,
+        "chapter_file": "chapter_1.json",
         "section_id": "## 1. Foundations of the Mean-Field Model"
       }
     },
@@ -159,24 +159,24 @@
       "directive_type": "definition",
       "label": "def-baoab-update-rule",
       "title": "The BAOAB Update Rule",
-      "start_line": 255,
-      "end_line": 292,
+      "start_line": 253,
+      "end_line": 290,
       "header_lines": [
-        256
+        254
       ],
-      "content_start": 258,
-      "content_end": 291,
-      "content": "258: For a single particle with state $(x_n, v_n)$ at time $t_n$, the state $(x_{n+1}, v_{n+1})$ at time $t_{n+1} = t_n + \\tau$ is computed via the following five steps:\n259: \n260: 1.  **B-Step (Force Kick):** The velocity is updated with a half-step kick from the conservative force $F(x)$.\n261: \n262:     $$\n263:     v_{n+1/2}^{(1)} = v_n + \\frac{\\tau}{2m} F(x_n)\n264:     $$\n265: \n266: 2.  **A-Step (Position Drift):** The position is updated with a half-step drift using the new velocity.\n267: \n268:     $$\n269:     x_{n+1/2} = x_n + \\frac{\\tau}{2} v_{n+1/2}^{(1)}\n270:     $$\n271: \n272: 3.  **O-Step (Ornstein-Uhlenbeck):** The velocity is updated for a full timestep by exactly solving the Ornstein-Uhlenbeck process that combines friction and thermal noise. Let $u_{n+1/2} = u(x_{n+1/2})$ be the flow field evaluated at the midpoint.\n273: \n274:     $$\n275:     v_{n+1/2}^{(2)} = u_{n+1/2} + e^{-\\gamma_{\\mathrm{fric}}\\tau}\\left(v_{n+1/2}^{(1)} - u_{n+1/2}\\right) + \\sqrt{\\frac{\\Theta}{m}(1 - e^{-2\\gamma_{\\mathrm{fric}}\\tau})} \\cdot \\xi\n276:     $$\n277:     where $\\xi \\sim \\mathcal{N}(0, I_d)$ is a standard Gaussian random vector.\n278: \n279: 4.  **A-Step (Position Drift):** The position is updated with a final half-step drift.\n280: \n281:     $$\n282:     x_{n+1} = x_{n+1/2} + \\frac{\\tau}{2} v_{n+1/2}^{(2)}\n283:     $$\n284: \n285: 5.  **B-Step (Force Kick):** The velocity is updated with a final half-step kick using the force evaluated at the new position, $F(x_{n+1})$.\n286: \n287:     $$\n288:     v_{n+1} = v_{n+1/2}^{(2)} + \\frac{\\tau}{2m} F(x_{n+1})\n289:     $$\n290: \n291: An optional velocity cap, $\\psi_v$, is applied after the final B-step to ensure $v_{n+1} \\in V_{\\text{alg}}$, maintaining perfect fidelity with the discrete algorithm's definition.",
+      "content_start": 256,
+      "content_end": 289,
+      "content": "256: :label: def-baoab-update-rule\n257: \n258: For a single particle with state $(x_n, v_n)$ at time $t_n$, the state $(x_{n+1}, v_{n+1})$ at time $t_{n+1} = t_n + \\tau$ is computed via the following five steps:\n259: \n260: 1.  **B-Step (Force Kick):** The velocity is updated with a half-step kick from the conservative force $F(x)$.\n261: \n262:     $$\n263:     v_{n+1/2}^{(1)} = v_n + \\frac{\\tau}{2m} F(x_n)\n264:     $$\n265: \n266: 2.  **A-Step (Position Drift):** The position is updated with a half-step drift using the new velocity.\n267: \n268:     $$\n269:     x_{n+1/2} = x_n + \\frac{\\tau}{2} v_{n+1/2}^{(1)}\n270:     $$\n271: \n272: 3.  **O-Step (Ornstein-Uhlenbeck):** The velocity is updated for a full timestep by exactly solving the Ornstein-Uhlenbeck process that combines friction and thermal noise. Let $u_{n+1/2} = u(x_{n+1/2})$ be the flow field evaluated at the midpoint.\n273: \n274:     $$\n275:     v_{n+1/2}^{(2)} = u_{n+1/2} + e^{-\\gamma_{\\mathrm{fric}}\\tau}\\left(v_{n+1/2}^{(1)} - u_{n+1/2}\\right) + \\sqrt{\\frac{\\Theta}{m}(1 - e^{-2\\gamma_{\\mathrm{fric}}\\tau})} \\cdot \\xi\n276:     $$\n277:     where $\\xi \\sim \\mathcal{N}(0, I_d)$ is a standard Gaussian random vector.\n278: \n279: 4.  **A-Step (Position Drift):** The position is updated with a final half-step drift.\n280: \n281:     $$\n282:     x_{n+1} = x_{n+1/2} + \\frac{\\tau}{2} v_{n+1/2}^{(2)}\n283:     $$\n284: \n285: 5.  **B-Step (Force Kick):** The velocity is updated with a final half-step kick using the force evaluated at the new position, $F(x_{n+1})$.\n286: \n287:     $$\n288:     v_{n+1} = v_{n+1/2}^{(2)} + \\frac{\\tau}{2m} F(x_{n+1})\n289:     $$",
       "metadata": {
         "label": "def-baoab-update-rule"
       },
       "section": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
-      "raw_directive": "255: :::{prf:definition} The BAOAB Update Rule\n256: :label: def-baoab-update-rule\n257: \n258: For a single particle with state $(x_n, v_n)$ at time $t_n$, the state $(x_{n+1}, v_{n+1})$ at time $t_{n+1} = t_n + \\tau$ is computed via the following five steps:\n259: \n260: 1.  **B-Step (Force Kick):** The velocity is updated with a half-step kick from the conservative force $F(x)$.\n261: \n262:     $$\n263:     v_{n+1/2}^{(1)} = v_n + \\frac{\\tau}{2m} F(x_n)\n264:     $$\n265: \n266: 2.  **A-Step (Position Drift):** The position is updated with a half-step drift using the new velocity.\n267: \n268:     $$\n269:     x_{n+1/2} = x_n + \\frac{\\tau}{2} v_{n+1/2}^{(1)}\n270:     $$\n271: \n272: 3.  **O-Step (Ornstein-Uhlenbeck):** The velocity is updated for a full timestep by exactly solving the Ornstein-Uhlenbeck process that combines friction and thermal noise. Let $u_{n+1/2} = u(x_{n+1/2})$ be the flow field evaluated at the midpoint.\n273: \n274:     $$\n275:     v_{n+1/2}^{(2)} = u_{n+1/2} + e^{-\\gamma_{\\mathrm{fric}}\\tau}\\left(v_{n+1/2}^{(1)} - u_{n+1/2}\\right) + \\sqrt{\\frac{\\Theta}{m}(1 - e^{-2\\gamma_{\\mathrm{fric}}\\tau})} \\cdot \\xi\n276:     $$\n277:     where $\\xi \\sim \\mathcal{N}(0, I_d)$ is a standard Gaussian random vector.\n278: \n279: 4.  **A-Step (Position Drift):** The position is updated with a final half-step drift.\n280: \n281:     $$\n282:     x_{n+1} = x_{n+1/2} + \\frac{\\tau}{2} v_{n+1/2}^{(2)}\n283:     $$\n284: \n285: 5.  **B-Step (Force Kick):** The velocity is updated with a final half-step kick using the force evaluated at the new position, $F(x_{n+1})$.\n286: \n287:     $$\n288:     v_{n+1} = v_{n+1/2}^{(2)} + \\frac{\\tau}{2m} F(x_{n+1})\n289:     $$\n290: \n291: An optional velocity cap, $\\psi_v$, is applied after the final B-step to ensure $v_{n+1} \\in V_{\\text{alg}}$, maintaining perfect fidelity with the discrete algorithm's definition.\n292: :::",
+      "raw_directive": "253: where $W_t$ is a standard Wiener process and all parameters are as defined in the Euclidean Gas specification. The BAOAB method splits this SDE into analytically solvable parts and composes them symmetrically.\n254: \n255: :::{prf:definition} The BAOAB Update Rule\n256: :label: def-baoab-update-rule\n257: \n258: For a single particle with state $(x_n, v_n)$ at time $t_n$, the state $(x_{n+1}, v_{n+1})$ at time $t_{n+1} = t_n + \\tau$ is computed via the following five steps:\n259: \n260: 1.  **B-Step (Force Kick):** The velocity is updated with a half-step kick from the conservative force $F(x)$.\n261: \n262:     $$\n263:     v_{n+1/2}^{(1)} = v_n + \\frac{\\tau}{2m} F(x_n)\n264:     $$\n265: \n266: 2.  **A-Step (Position Drift):** The position is updated with a half-step drift using the new velocity.\n267: \n268:     $$\n269:     x_{n+1/2} = x_n + \\frac{\\tau}{2} v_{n+1/2}^{(1)}\n270:     $$\n271: \n272: 3.  **O-Step (Ornstein-Uhlenbeck):** The velocity is updated for a full timestep by exactly solving the Ornstein-Uhlenbeck process that combines friction and thermal noise. Let $u_{n+1/2} = u(x_{n+1/2})$ be the flow field evaluated at the midpoint.\n273: \n274:     $$\n275:     v_{n+1/2}^{(2)} = u_{n+1/2} + e^{-\\gamma_{\\mathrm{fric}}\\tau}\\left(v_{n+1/2}^{(1)} - u_{n+1/2}\\right) + \\sqrt{\\frac{\\Theta}{m}(1 - e^{-2\\gamma_{\\mathrm{fric}}\\tau})} \\cdot \\xi\n276:     $$\n277:     where $\\xi \\sim \\mathcal{N}(0, I_d)$ is a standard Gaussian random vector.\n278: \n279: 4.  **A-Step (Position Drift):** The position is updated with a final half-step drift.\n280: \n281:     $$\n282:     x_{n+1} = x_{n+1/2} + \\frac{\\tau}{2} v_{n+1/2}^{(2)}\n283:     $$\n284: \n285: 5.  **B-Step (Force Kick):** The velocity is updated with a final half-step kick using the force evaluated at the new position, $F(x_{n+1})$.\n286: \n287:     $$\n288:     v_{n+1} = v_{n+1/2}^{(2)} + \\frac{\\tau}{2m} F(x_{n+1})\n289:     $$\n290: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "07_mean_field",
-        "chapter_index": 3,
-        "chapter_file": "chapter_3.json",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
         "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
       }
     },
@@ -184,24 +184,24 @@
       "directive_type": "definition",
       "label": "def-kinetic-generator",
       "title": "Kinetic Transport Operator",
-      "start_line": 311,
-      "end_line": 335,
+      "start_line": 309,
+      "end_line": 333,
       "header_lines": [
-        312
+        310
       ],
-      "content_start": 314,
-      "content_end": 334,
-      "content": "314: The kinetic evolution of a single alive walker $i$ is governed by the underdamped Langevin SDE on the phase space $\\Omega$:\n315: \n316: $$\n317: \\mathrm d x_i = v_i\\,\\mathrm dt,\\qquad\n318: \\mathrm d v_i = \\left(\\frac{1}{m}F(x_i)-\\gamma_{\\mathrm{fric}}(v_i-u(x_i))\\right)\\,\\mathrm dt \\;+\\; \\sigma_v\\,\\mathrm dW_t\n319: $$\n320: \n321: where $W_t$ is a standard $d$-dimensional Wiener process and the parameters are those of the Euclidean Gas. This SDE is subject to **reflecting boundary conditions** on both position and velocity:\n322: \n323: 1.  **Reflecting Position Boundary:** Trajectories reflect at the boundary $\\partial X_{\\text{valid}}$, ensuring no mass leaves the domain through kinetic transport. This models the pure kinetic portion of the dynamics with a simple, local boundary condition.\n324: 2.  **Reflecting Velocity Boundary:** The dynamics are constrained to the velocity ball $V_{\\text{alg}}$. This is modeled by a reflecting or squash boundary condition at $\\|v\\|=V_{\\text{alg}}$ that mirrors the action of the velocity cap $\\psi_v$.\n325: \n326: The infinitesimal generator for the N-particle system under this collection of independent SDEs is the **Fokker-Planck operator**, which acts on a test function $f$ on the swarm state space. For the set of alive walkers $\\mathcal{A}$, it is given by:\n327: \n328: $$\n329: \\boxed{\n330: \\mathcal{L}_{\\text{kin}} f = \\sum_{i\\in\\mathcal A}\\left[ v_i\\cdot\\nabla_{x_i} f + \\left(m^{-1}F(x_i)-\\gamma_{\\mathrm{fric}}(v_i-u(x_i))\\right)\\cdot\\nabla_{v_i} f + \\tfrac{\\sigma_v^2}{2}\\,\\Delta_{v_i} f\\right]\n331: }\n332: $$\n333: \n334: A key property of this operator with reflecting boundary conditions is that it is **mass-conservative**: when integrated over the domain, the total flux through the boundary vanishes, so $\\int_\\Omega L^\\dagger f \\,\\mathrm{d}z = 0$.",
+      "content_start": 312,
+      "content_end": 332,
+      "content": "312: :label: def-kinetic-generator\n313: \n314: The kinetic evolution of a single alive walker $i$ is governed by the underdamped Langevin SDE on the phase space $\\Omega$:\n315: \n316: $$\n317: \\mathrm d x_i = v_i\\,\\mathrm dt,\\qquad\n318: \\mathrm d v_i = \\left(\\frac{1}{m}F(x_i)-\\gamma_{\\mathrm{fric}}(v_i-u(x_i))\\right)\\,\\mathrm dt \\;+\\; \\sigma_v\\,\\mathrm dW_t\n319: $$\n320: \n321: where $W_t$ is a standard $d$-dimensional Wiener process and the parameters are those of the Euclidean Gas. This SDE is subject to **reflecting boundary conditions** on both position and velocity:\n322: \n323: 1.  **Reflecting Position Boundary:** Trajectories reflect at the boundary $\\partial X_{\\text{valid}}$, ensuring no mass leaves the domain through kinetic transport. This models the pure kinetic portion of the dynamics with a simple, local boundary condition.\n324: 2.  **Reflecting Velocity Boundary:** The dynamics are constrained to the velocity ball $V_{\\text{alg}}$. This is modeled by a reflecting or squash boundary condition at $\\|v\\|=V_{\\text{alg}}$ that mirrors the action of the velocity cap $\\psi_v$.\n325: \n326: The infinitesimal generator for the N-particle system under this collection of independent SDEs is the **Fokker-Planck operator**, which acts on a test function $f$ on the swarm state space. For the set of alive walkers $\\mathcal{A}$, it is given by:\n327: \n328: $$\n329: \\boxed{\n330: \\mathcal{L}_{\\text{kin}} f = \\sum_{i\\in\\mathcal A}\\left[ v_i\\cdot\\nabla_{x_i} f + \\left(m^{-1}F(x_i)-\\gamma_{\\mathrm{fric}}(v_i-u(x_i))\\right)\\cdot\\nabla_{v_i} f + \\tfrac{\\sigma_v^2}{2}\\,\\Delta_{v_i} f\\right]\n331: }\n332: $$",
       "metadata": {
         "label": "def-kinetic-generator"
       },
       "section": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
-      "raw_directive": "311: :::{prf:definition} Kinetic Transport Operator\n312: :label: def-kinetic-generator\n313: \n314: The kinetic evolution of a single alive walker $i$ is governed by the underdamped Langevin SDE on the phase space $\\Omega$:\n315: \n316: $$\n317: \\mathrm d x_i = v_i\\,\\mathrm dt,\\qquad\n318: \\mathrm d v_i = \\left(\\frac{1}{m}F(x_i)-\\gamma_{\\mathrm{fric}}(v_i-u(x_i))\\right)\\,\\mathrm dt \\;+\\; \\sigma_v\\,\\mathrm dW_t\n319: $$\n320: \n321: where $W_t$ is a standard $d$-dimensional Wiener process and the parameters are those of the Euclidean Gas. This SDE is subject to **reflecting boundary conditions** on both position and velocity:\n322: \n323: 1.  **Reflecting Position Boundary:** Trajectories reflect at the boundary $\\partial X_{\\text{valid}}$, ensuring no mass leaves the domain through kinetic transport. This models the pure kinetic portion of the dynamics with a simple, local boundary condition.\n324: 2.  **Reflecting Velocity Boundary:** The dynamics are constrained to the velocity ball $V_{\\text{alg}}$. This is modeled by a reflecting or squash boundary condition at $\\|v\\|=V_{\\text{alg}}$ that mirrors the action of the velocity cap $\\psi_v$.\n325: \n326: The infinitesimal generator for the N-particle system under this collection of independent SDEs is the **Fokker-Planck operator**, which acts on a test function $f$ on the swarm state space. For the set of alive walkers $\\mathcal{A}$, it is given by:\n327: \n328: $$\n329: \\boxed{\n330: \\mathcal{L}_{\\text{kin}} f = \\sum_{i\\in\\mathcal A}\\left[ v_i\\cdot\\nabla_{x_i} f + \\left(m^{-1}F(x_i)-\\gamma_{\\mathrm{fric}}(v_i-u(x_i))\\right)\\cdot\\nabla_{v_i} f + \\tfrac{\\sigma_v^2}{2}\\,\\Delta_{v_i} f\\right]\n331: }\n332: $$\n333: \n334: A key property of this operator with reflecting boundary conditions is that it is **mass-conservative**: when integrated over the domain, the total flux through the boundary vanishes, so $\\int_\\Omega L^\\dagger f \\,\\mathrm{d}z = 0$.\n335: :::",
+      "raw_directive": "309: Between cloning events and death/revival transitions, the state of each alive walker evolves according to a continuous stochastic process. The kinetic stage of the Euclidean Gas algorithm, as defined by the BAOAB integrator, is a discrete-time approximation of a specific underdamped Langevin stochastic differential equation (SDE). This SDE governs the diffusive part of the generator.\n310: \n311: :::{prf:definition} Kinetic Transport Operator\n312: :label: def-kinetic-generator\n313: \n314: The kinetic evolution of a single alive walker $i$ is governed by the underdamped Langevin SDE on the phase space $\\Omega$:\n315: \n316: $$\n317: \\mathrm d x_i = v_i\\,\\mathrm dt,\\qquad\n318: \\mathrm d v_i = \\left(\\frac{1}{m}F(x_i)-\\gamma_{\\mathrm{fric}}(v_i-u(x_i))\\right)\\,\\mathrm dt \\;+\\; \\sigma_v\\,\\mathrm dW_t\n319: $$\n320: \n321: where $W_t$ is a standard $d$-dimensional Wiener process and the parameters are those of the Euclidean Gas. This SDE is subject to **reflecting boundary conditions** on both position and velocity:\n322: \n323: 1.  **Reflecting Position Boundary:** Trajectories reflect at the boundary $\\partial X_{\\text{valid}}$, ensuring no mass leaves the domain through kinetic transport. This models the pure kinetic portion of the dynamics with a simple, local boundary condition.\n324: 2.  **Reflecting Velocity Boundary:** The dynamics are constrained to the velocity ball $V_{\\text{alg}}$. This is modeled by a reflecting or squash boundary condition at $\\|v\\|=V_{\\text{alg}}$ that mirrors the action of the velocity cap $\\psi_v$.\n325: \n326: The infinitesimal generator for the N-particle system under this collection of independent SDEs is the **Fokker-Planck operator**, which acts on a test function $f$ on the swarm state space. For the set of alive walkers $\\mathcal{A}$, it is given by:\n327: \n328: $$\n329: \\boxed{\n330: \\mathcal{L}_{\\text{kin}} f = \\sum_{i\\in\\mathcal A}\\left[ v_i\\cdot\\nabla_{x_i} f + \\left(m^{-1}F(x_i)-\\gamma_{\\mathrm{fric}}(v_i-u(x_i))\\right)\\cdot\\nabla_{v_i} f + \\tfrac{\\sigma_v^2}{2}\\,\\Delta_{v_i} f\\right]\n331: }\n332: $$\n333: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "07_mean_field",
-        "chapter_index": 3,
-        "chapter_file": "chapter_3.json",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
         "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
       }
     },
@@ -209,24 +209,24 @@
       "directive_type": "definition",
       "label": "def-killing-operator",
       "title": "Interior Killing Operator",
-      "start_line": 360,
-      "end_line": 376,
+      "start_line": 358,
+      "end_line": 374,
       "header_lines": [
-        361
+        359
       ],
-      "content_start": 363,
-      "content_end": 375,
-      "content": "363: Death is modeled by an **interior killing rate** $c: \\Omega \\to [0, \\infty)$, a smooth, non-negative function with the following properties:\n364: \n365: 1.  **Safety in the interior**: $c(z) = 0$ for all $z$ in a safe subset of $\\Omega$ away from the position boundary.\n366: 2.  **Activity near the boundary**: $c(z) > 0$ in a smooth transition layer near $\\partial X_{\\text{valid}} \\times V_{\\text{alg}}$.\n367: 3.  **Smoothness**: $c \\in C^\\infty(\\Omega)$ to ensure regularity of the PDE solutions.\n368: \n369: The killing operator removes mass from the alive density $f$ at a rate $c(z)f(z)$. The **total mass killed per unit time** is a functional of $f$:\n370: \n371: $$\n372: k_{\\text{killed}}[f](t) := \\int_{\\Omega} c(z) f(t,z) \\, \\mathrm{d}z\n373: $$\n374: \n375: This is the instantaneous rate at which alive mass transitions to dead mass.",
+      "content_start": 361,
+      "content_end": 373,
+      "content": "361: :label: def-killing-operator\n362: \n363: Death is modeled by an **interior killing rate** $c: \\Omega \\to [0, \\infty)$, a smooth, non-negative function with the following properties:\n364: \n365: 1.  **Safety in the interior**: $c(z) = 0$ for all $z$ in a safe subset of $\\Omega$ away from the position boundary.\n366: 2.  **Activity near the boundary**: $c(z) > 0$ in a smooth transition layer near $\\partial X_{\\text{valid}} \\times V_{\\text{alg}}$.\n367: 3.  **Smoothness**: $c \\in C^\\infty(\\Omega)$ to ensure regularity of the PDE solutions.\n368: \n369: The killing operator removes mass from the alive density $f$ at a rate $c(z)f(z)$. The **total mass killed per unit time** is a functional of $f$:\n370: \n371: $$\n372: k_{\\text{killed}}[f](t) := \\int_{\\Omega} c(z) f(t,z) \\, \\mathrm{d}z\n373: $$",
       "metadata": {
         "label": "def-killing-operator"
       },
       "section": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
-      "raw_directive": "360: :::{prf:definition} Interior Killing Operator\n361: :label: def-killing-operator\n362: \n363: Death is modeled by an **interior killing rate** $c: \\Omega \\to [0, \\infty)$, a smooth, non-negative function with the following properties:\n364: \n365: 1.  **Safety in the interior**: $c(z) = 0$ for all $z$ in a safe subset of $\\Omega$ away from the position boundary.\n366: 2.  **Activity near the boundary**: $c(z) > 0$ in a smooth transition layer near $\\partial X_{\\text{valid}} \\times V_{\\text{alg}}$.\n367: 3.  **Smoothness**: $c \\in C^\\infty(\\Omega)$ to ensure regularity of the PDE solutions.\n368: \n369: The killing operator removes mass from the alive density $f$ at a rate $c(z)f(z)$. The **total mass killed per unit time** is a functional of $f$:\n370: \n371: $$\n372: k_{\\text{killed}}[f](t) := \\int_{\\Omega} c(z) f(t,z) \\, \\mathrm{d}z\n373: $$\n374: \n375: This is the instantaneous rate at which alive mass transitions to dead mass.\n376: :::",
+      "raw_directive": "358: :::\n359: \n360: :::{prf:definition} Interior Killing Operator\n361: :label: def-killing-operator\n362: \n363: Death is modeled by an **interior killing rate** $c: \\Omega \\to [0, \\infty)$, a smooth, non-negative function with the following properties:\n364: \n365: 1.  **Safety in the interior**: $c(z) = 0$ for all $z$ in a safe subset of $\\Omega$ away from the position boundary.\n366: 2.  **Activity near the boundary**: $c(z) > 0$ in a smooth transition layer near $\\partial X_{\\text{valid}} \\times V_{\\text{alg}}$.\n367: 3.  **Smoothness**: $c \\in C^\\infty(\\Omega)$ to ensure regularity of the PDE solutions.\n368: \n369: The killing operator removes mass from the alive density $f$ at a rate $c(z)f(z)$. The **total mass killed per unit time** is a functional of $f$:\n370: \n371: $$\n372: k_{\\text{killed}}[f](t) := \\int_{\\Omega} c(z) f(t,z) \\, \\mathrm{d}z\n373: $$\n374: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "07_mean_field",
-        "chapter_index": 3,
-        "chapter_file": "chapter_3.json",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
         "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
       }
     },
@@ -234,24 +234,24 @@
       "directive_type": "definition",
       "label": "def-revival-operator",
       "title": "Revival Operator",
-      "start_line": 378,
-      "end_line": 403,
+      "start_line": 376,
+      "end_line": 401,
       "header_lines": [
-        379
+        377
       ],
-      "content_start": 381,
-      "content_end": 402,
-      "content": "381: Revival is modeled as a source term that re-injects mass from the dead population back into the alive population. The dead population acts as a reservoir from which revival occurs at a constant rate. Dead walkers are instantly revived by cloning from alive companions, so the spatial profile of the re-injected mass is simply **proportional to the current alive density**, mirroring the discrete algorithm's revival mechanism.\n382: \n383: The **Revival Operator** is defined as:\n384: \n385: $$\n386: B[f, m_d](t, z) := \\lambda_{\\text{revive}} \\cdot m_d(t) \\cdot \\frac{f(t,z)}{m_a(t)}\n387: $$\n388: \n389: where:\n390: *   $\\lambda_{\\text{revive}} > 0$ is the **revival rate**, a free parameter independent of the timestep (typical values: 0.1-5)\n391: *   $m_d(t) = 1 - m_a(t)$ is the current dead mass\n392: *   $f(t,z)/m_a(t)$ is the **normalized alive density** (the probability distribution over the alive population)\n393: \n394: This form directly translates the discrete algorithm: dead walkers select companions uniformly from the alive set and clone to their positions.\n395: \n396: **Key property**: The total mass revived per unit time is:\n397: \n398: $$\n399: \\int_{\\Omega} B[f, m_d](t,z)\\,\\mathrm{d}z = \\lambda_{\\text{revive}} \\cdot m_d(t)\n400: $$\n401: \n402: since the normalized alive density integrates to unity: $\\int_\\Omega [f/m_a]\\,\\mathrm{d}z = 1$.",
+      "content_start": 379,
+      "content_end": 400,
+      "content": "379: :label: def-revival-operator\n380: \n381: Revival is modeled as a source term that re-injects mass from the dead population back into the alive population. The dead population acts as a reservoir from which revival occurs at a constant rate. Dead walkers are instantly revived by cloning from alive companions, so the spatial profile of the re-injected mass is simply **proportional to the current alive density**, mirroring the discrete algorithm's revival mechanism.\n382: \n383: The **Revival Operator** is defined as:\n384: \n385: $$\n386: B[f, m_d](t, z) := \\lambda_{\\text{revive}} \\cdot m_d(t) \\cdot \\frac{f(t,z)}{m_a(t)}\n387: $$\n388: \n389: where:\n390: *   $\\lambda_{\\text{revive}} > 0$ is the **revival rate**, a free parameter independent of the timestep (typical values: 0.1-5)\n391: *   $m_d(t) = 1 - m_a(t)$ is the current dead mass\n392: *   $f(t,z)/m_a(t)$ is the **normalized alive density** (the probability distribution over the alive population)\n393: \n394: This form directly translates the discrete algorithm: dead walkers select companions uniformly from the alive set and clone to their positions.\n395: \n396: **Key property**: The total mass revived per unit time is:\n397: \n398: $$\n399: \\int_{\\Omega} B[f, m_d](t,z)\\,\\mathrm{d}z = \\lambda_{\\text{revive}} \\cdot m_d(t)\n400: $$",
       "metadata": {
         "label": "def-revival-operator"
       },
       "section": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
-      "raw_directive": "378: :::{prf:definition} Revival Operator\n379: :label: def-revival-operator\n380: \n381: Revival is modeled as a source term that re-injects mass from the dead population back into the alive population. The dead population acts as a reservoir from which revival occurs at a constant rate. Dead walkers are instantly revived by cloning from alive companions, so the spatial profile of the re-injected mass is simply **proportional to the current alive density**, mirroring the discrete algorithm's revival mechanism.\n382: \n383: The **Revival Operator** is defined as:\n384: \n385: $$\n386: B[f, m_d](t, z) := \\lambda_{\\text{revive}} \\cdot m_d(t) \\cdot \\frac{f(t,z)}{m_a(t)}\n387: $$\n388: \n389: where:\n390: *   $\\lambda_{\\text{revive}} > 0$ is the **revival rate**, a free parameter independent of the timestep (typical values: 0.1-5)\n391: *   $m_d(t) = 1 - m_a(t)$ is the current dead mass\n392: *   $f(t,z)/m_a(t)$ is the **normalized alive density** (the probability distribution over the alive population)\n393: \n394: This form directly translates the discrete algorithm: dead walkers select companions uniformly from the alive set and clone to their positions.\n395: \n396: **Key property**: The total mass revived per unit time is:\n397: \n398: $$\n399: \\int_{\\Omega} B[f, m_d](t,z)\\,\\mathrm{d}z = \\lambda_{\\text{revive}} \\cdot m_d(t)\n400: $$\n401: \n402: since the normalized alive density integrates to unity: $\\int_\\Omega [f/m_a]\\,\\mathrm{d}z = 1$.\n403: :::",
+      "raw_directive": "376: :::\n377: \n378: :::{prf:definition} Revival Operator\n379: :label: def-revival-operator\n380: \n381: Revival is modeled as a source term that re-injects mass from the dead population back into the alive population. The dead population acts as a reservoir from which revival occurs at a constant rate. Dead walkers are instantly revived by cloning from alive companions, so the spatial profile of the re-injected mass is simply **proportional to the current alive density**, mirroring the discrete algorithm's revival mechanism.\n382: \n383: The **Revival Operator** is defined as:\n384: \n385: $$\n386: B[f, m_d](t, z) := \\lambda_{\\text{revive}} \\cdot m_d(t) \\cdot \\frac{f(t,z)}{m_a(t)}\n387: $$\n388: \n389: where:\n390: *   $\\lambda_{\\text{revive}} > 0$ is the **revival rate**, a free parameter independent of the timestep (typical values: 0.1-5)\n391: *   $m_d(t) = 1 - m_a(t)$ is the current dead mass\n392: *   $f(t,z)/m_a(t)$ is the **normalized alive density** (the probability distribution over the alive population)\n393: \n394: This form directly translates the discrete algorithm: dead walkers select companions uniformly from the alive set and clone to their positions.\n395: \n396: **Key property**: The total mass revived per unit time is:\n397: \n398: $$\n399: \\int_{\\Omega} B[f, m_d](t,z)\\,\\mathrm{d}z = \\lambda_{\\text{revive}} \\cdot m_d(t)\n400: $$\n401: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "07_mean_field",
-        "chapter_index": 3,
-        "chapter_file": "chapter_3.json",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
         "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
       }
     },
@@ -259,24 +259,24 @@
       "directive_type": "definition",
       "label": "def-cloning-generator",
       "title": "Internal Cloning Operator (Derived Form)",
-      "start_line": 497,
-      "end_line": 542,
+      "start_line": 495,
+      "end_line": 540,
       "header_lines": [
-        498
+        496
       ],
-      "content_start": 500,
-      "content_end": 541,
-      "content": "500: The **Internal Cloning Operator**, $S[f]$, is the mean-field limit of the discrete cloning mechanism. It is a mass-neutral, non-local operator that decomposes into sink and source terms:\n501: \n502: $$\n503: S[f](t, z) = S_{\\text{src}}[f](t, z) - S_{\\text{sink}}[f](t, z)\n504: $$\n505: \n506: where:\n507: \n508: *   **Sink** (mass removed when walkers at $z$ clone away):\n509: \n510:     $$\n511:     S_{\\text{sink}}[f](t,z) = \\frac{1}{\\tau} f(t,z) \\int_{\\Omega} P_{\\text{clone}}[f/m_a](z, z_c) \\frac{f(t,z_c)}{m_a(t)} \\,\\mathrm{d}z_c\n512:     $$\n513: \n514: *   **Source** (mass gained when walkers from other states clone to $z$):\n515: \n516:     $$\n517:     S_{\\text{src}}[f](t,z) = \\frac{1}{\\tau m_a(t)} \\int_{\\Omega} \\int_{\\Omega} f(t,z_d) f(t,z_c) P_{\\text{clone}}[f/m_a](z_d, z_c) Q_{\\delta}(z \\mid z_c) \\,\\mathrm{d}z_d\\,\\mathrm{d}z_c\n518:     $$\n519: \n520: Here:\n521: - $P_{\\text{clone}}[f/m_a](z_d, z_c)$ is the cloning probability depending on fitness values computed from the normalized alive density $f/m_a$\n522: - $Q_\\delta(z \\mid z_c)$ is the jitter kernel (Gaussian in position, delta in velocity)\n523: - $\\tau$ is the discrete timestep, and $1/\\tau$ converts per-step probabilities to continuous rates\n524: \n525: **Key property**: The operator is mass-neutral by construction. To verify, integrate over $\\Omega$:\n526: \n527: $$\n528: \\begin{aligned}\n529: \\int_{\\Omega} S[f](t,z)\\,\\mathrm{d}z &= \\int_{\\Omega} S_{\\text{src}}[f](t,z)\\,\\mathrm{d}z - \\int_{\\Omega} S_{\\text{sink}}[f](t,z)\\,\\mathrm{d}z \\\\\n530: &= \\frac{1}{\\tau m_a} \\int_{\\Omega} \\int_{\\Omega} \\int_{\\Omega} f(z_d) f(z_c) P(z_d, z_c) Q_\\delta(z \\mid z_c) \\,\\mathrm{d}z\\,\\mathrm{d}z_d\\,\\mathrm{d}z_c \\\\\n531: &\\quad - \\frac{1}{\\tau} \\int_{\\Omega} f(z) \\int_{\\Omega} P(z, z_c) \\frac{f(z_c)}{m_a} \\,\\mathrm{d}z_c\\,\\mathrm{d}z\n532: \\end{aligned}\n533: $$\n534: \n535: Using $\\int_\\Omega Q_\\delta(z \\mid z_c)\\,\\mathrm{d}z = 1$:\n536: \n537: $$\n538: = \\frac{1}{\\tau m_a} \\int_{\\Omega} \\int_{\\Omega} f(z_d) f(z_c) P(z_d, z_c) \\,\\mathrm{d}z_d\\,\\mathrm{d}z_c - \\frac{1}{\\tau m_a} \\int_{\\Omega} \\int_{\\Omega} f(z_d) f(z_c) P(z_d, z_c) \\,\\mathrm{d}z_d\\,\\mathrm{d}z_c = 0\n539: $$\n540: \n541: Thus $\\int_{\\Omega} S[f]\\,\\mathrm{d}z = 0$, confirming mass conservation.",
+      "content_start": 498,
+      "content_end": 539,
+      "content": "498: :label: def-cloning-generator\n499: \n500: The **Internal Cloning Operator**, $S[f]$, is the mean-field limit of the discrete cloning mechanism. It is a mass-neutral, non-local operator that decomposes into sink and source terms:\n501: \n502: $$\n503: S[f](t, z) = S_{\\text{src}}[f](t, z) - S_{\\text{sink}}[f](t, z)\n504: $$\n505: \n506: where:\n507: \n508: *   **Sink** (mass removed when walkers at $z$ clone away):\n509: \n510:     $$\n511:     S_{\\text{sink}}[f](t,z) = \\frac{1}{\\tau} f(t,z) \\int_{\\Omega} P_{\\text{clone}}[f/m_a](z, z_c) \\frac{f(t,z_c)}{m_a(t)} \\,\\mathrm{d}z_c\n512:     $$\n513: \n514: *   **Source** (mass gained when walkers from other states clone to $z$):\n515: \n516:     $$\n517:     S_{\\text{src}}[f](t,z) = \\frac{1}{\\tau m_a(t)} \\int_{\\Omega} \\int_{\\Omega} f(t,z_d) f(t,z_c) P_{\\text{clone}}[f/m_a](z_d, z_c) Q_{\\delta}(z \\mid z_c) \\,\\mathrm{d}z_d\\,\\mathrm{d}z_c\n518:     $$\n519: \n520: Here:\n521: - $P_{\\text{clone}}[f/m_a](z_d, z_c)$ is the cloning probability depending on fitness values computed from the normalized alive density $f/m_a$\n522: - $Q_\\delta(z \\mid z_c)$ is the jitter kernel (Gaussian in position, delta in velocity)\n523: - $\\tau$ is the discrete timestep, and $1/\\tau$ converts per-step probabilities to continuous rates\n524: \n525: **Key property**: The operator is mass-neutral by construction. To verify, integrate over $\\Omega$:\n526: \n527: $$\n528: \\begin{aligned}\n529: \\int_{\\Omega} S[f](t,z)\\,\\mathrm{d}z &= \\int_{\\Omega} S_{\\text{src}}[f](t,z)\\,\\mathrm{d}z - \\int_{\\Omega} S_{\\text{sink}}[f](t,z)\\,\\mathrm{d}z \\\\\n530: &= \\frac{1}{\\tau m_a} \\int_{\\Omega} \\int_{\\Omega} \\int_{\\Omega} f(z_d) f(z_c) P(z_d, z_c) Q_\\delta(z \\mid z_c) \\,\\mathrm{d}z\\,\\mathrm{d}z_d\\,\\mathrm{d}z_c \\\\\n531: &\\quad - \\frac{1}{\\tau} \\int_{\\Omega} f(z) \\int_{\\Omega} P(z, z_c) \\frac{f(z_c)}{m_a} \\,\\mathrm{d}z_c\\,\\mathrm{d}z\n532: \\end{aligned}\n533: $$\n534: \n535: Using $\\int_\\Omega Q_\\delta(z \\mid z_c)\\,\\mathrm{d}z = 1$:\n536: \n537: $$\n538: = \\frac{1}{\\tau m_a} \\int_{\\Omega} \\int_{\\Omega} f(z_d) f(z_c) P(z_d, z_c) \\,\\mathrm{d}z_d\\,\\mathrm{d}z_c - \\frac{1}{\\tau m_a} \\int_{\\Omega} \\int_{\\Omega} f(z_d) f(z_c) P(z_d, z_c) \\,\\mathrm{d}z_d\\,\\mathrm{d}z_c = 0\n539: $$",
       "metadata": {
         "label": "def-cloning-generator"
       },
       "section": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)",
-      "raw_directive": "497: :::{prf:definition} Internal Cloning Operator (Derived Form)\n498: :label: def-cloning-generator\n499: \n500: The **Internal Cloning Operator**, $S[f]$, is the mean-field limit of the discrete cloning mechanism. It is a mass-neutral, non-local operator that decomposes into sink and source terms:\n501: \n502: $$\n503: S[f](t, z) = S_{\\text{src}}[f](t, z) - S_{\\text{sink}}[f](t, z)\n504: $$\n505: \n506: where:\n507: \n508: *   **Sink** (mass removed when walkers at $z$ clone away):\n509: \n510:     $$\n511:     S_{\\text{sink}}[f](t,z) = \\frac{1}{\\tau} f(t,z) \\int_{\\Omega} P_{\\text{clone}}[f/m_a](z, z_c) \\frac{f(t,z_c)}{m_a(t)} \\,\\mathrm{d}z_c\n512:     $$\n513: \n514: *   **Source** (mass gained when walkers from other states clone to $z$):\n515: \n516:     $$\n517:     S_{\\text{src}}[f](t,z) = \\frac{1}{\\tau m_a(t)} \\int_{\\Omega} \\int_{\\Omega} f(t,z_d) f(t,z_c) P_{\\text{clone}}[f/m_a](z_d, z_c) Q_{\\delta}(z \\mid z_c) \\,\\mathrm{d}z_d\\,\\mathrm{d}z_c\n518:     $$\n519: \n520: Here:\n521: - $P_{\\text{clone}}[f/m_a](z_d, z_c)$ is the cloning probability depending on fitness values computed from the normalized alive density $f/m_a$\n522: - $Q_\\delta(z \\mid z_c)$ is the jitter kernel (Gaussian in position, delta in velocity)\n523: - $\\tau$ is the discrete timestep, and $1/\\tau$ converts per-step probabilities to continuous rates\n524: \n525: **Key property**: The operator is mass-neutral by construction. To verify, integrate over $\\Omega$:\n526: \n527: $$\n528: \\begin{aligned}\n529: \\int_{\\Omega} S[f](t,z)\\,\\mathrm{d}z &= \\int_{\\Omega} S_{\\text{src}}[f](t,z)\\,\\mathrm{d}z - \\int_{\\Omega} S_{\\text{sink}}[f](t,z)\\,\\mathrm{d}z \\\\\n530: &= \\frac{1}{\\tau m_a} \\int_{\\Omega} \\int_{\\Omega} \\int_{\\Omega} f(z_d) f(z_c) P(z_d, z_c) Q_\\delta(z \\mid z_c) \\,\\mathrm{d}z\\,\\mathrm{d}z_d\\,\\mathrm{d}z_c \\\\\n531: &\\quad - \\frac{1}{\\tau} \\int_{\\Omega} f(z) \\int_{\\Omega} P(z, z_c) \\frac{f(z_c)}{m_a} \\,\\mathrm{d}z_c\\,\\mathrm{d}z\n532: \\end{aligned}\n533: $$\n534: \n535: Using $\\int_\\Omega Q_\\delta(z \\mid z_c)\\,\\mathrm{d}z = 1$:\n536: \n537: $$\n538: = \\frac{1}{\\tau m_a} \\int_{\\Omega} \\int_{\\Omega} f(z_d) f(z_c) P(z_d, z_c) \\,\\mathrm{d}z_d\\,\\mathrm{d}z_c - \\frac{1}{\\tau m_a} \\int_{\\Omega} \\int_{\\Omega} f(z_d) f(z_c) P(z_d, z_c) \\,\\mathrm{d}z_d\\,\\mathrm{d}z_c = 0\n539: $$\n540: \n541: Thus $\\int_{\\Omega} S[f]\\,\\mathrm{d}z = 0$, confirming mass conservation.\n542: :::",
+      "raw_directive": "495: This is exactly the form of the cloning operator stated below.\n496: \n497: :::{prf:definition} Internal Cloning Operator (Derived Form)\n498: :label: def-cloning-generator\n499: \n500: The **Internal Cloning Operator**, $S[f]$, is the mean-field limit of the discrete cloning mechanism. It is a mass-neutral, non-local operator that decomposes into sink and source terms:\n501: \n502: $$\n503: S[f](t, z) = S_{\\text{src}}[f](t, z) - S_{\\text{sink}}[f](t, z)\n504: $$\n505: \n506: where:\n507: \n508: *   **Sink** (mass removed when walkers at $z$ clone away):\n509: \n510:     $$\n511:     S_{\\text{sink}}[f](t,z) = \\frac{1}{\\tau} f(t,z) \\int_{\\Omega} P_{\\text{clone}}[f/m_a](z, z_c) \\frac{f(t,z_c)}{m_a(t)} \\,\\mathrm{d}z_c\n512:     $$\n513: \n514: *   **Source** (mass gained when walkers from other states clone to $z$):\n515: \n516:     $$\n517:     S_{\\text{src}}[f](t,z) = \\frac{1}{\\tau m_a(t)} \\int_{\\Omega} \\int_{\\Omega} f(t,z_d) f(t,z_c) P_{\\text{clone}}[f/m_a](z_d, z_c) Q_{\\delta}(z \\mid z_c) \\,\\mathrm{d}z_d\\,\\mathrm{d}z_c\n518:     $$\n519: \n520: Here:\n521: - $P_{\\text{clone}}[f/m_a](z_d, z_c)$ is the cloning probability depending on fitness values computed from the normalized alive density $f/m_a$\n522: - $Q_\\delta(z \\mid z_c)$ is the jitter kernel (Gaussian in position, delta in velocity)\n523: - $\\tau$ is the discrete timestep, and $1/\\tau$ converts per-step probabilities to continuous rates\n524: \n525: **Key property**: The operator is mass-neutral by construction. To verify, integrate over $\\Omega$:\n526: \n527: $$\n528: \\begin{aligned}\n529: \\int_{\\Omega} S[f](t,z)\\,\\mathrm{d}z &= \\int_{\\Omega} S_{\\text{src}}[f](t,z)\\,\\mathrm{d}z - \\int_{\\Omega} S_{\\text{sink}}[f](t,z)\\,\\mathrm{d}z \\\\\n530: &= \\frac{1}{\\tau m_a} \\int_{\\Omega} \\int_{\\Omega} \\int_{\\Omega} f(z_d) f(z_c) P(z_d, z_c) Q_\\delta(z \\mid z_c) \\,\\mathrm{d}z\\,\\mathrm{d}z_d\\,\\mathrm{d}z_c \\\\\n531: &\\quad - \\frac{1}{\\tau} \\int_{\\Omega} f(z) \\int_{\\Omega} P(z, z_c) \\frac{f(z_c)}{m_a} \\,\\mathrm{d}z_c\\,\\mathrm{d}z\n532: \\end{aligned}\n533: $$\n534: \n535: Using $\\int_\\Omega Q_\\delta(z \\mid z_c)\\,\\mathrm{d}z = 1$:\n536: \n537: $$\n538: = \\frac{1}{\\tau m_a} \\int_{\\Omega} \\int_{\\Omega} f(z_d) f(z_c) P(z_d, z_c) \\,\\mathrm{d}z_d\\,\\mathrm{d}z_c - \\frac{1}{\\tau m_a} \\int_{\\Omega} \\int_{\\Omega} f(z_d) f(z_c) P(z_d, z_c) \\,\\mathrm{d}z_d\\,\\mathrm{d}z_c = 0\n539: $$\n540: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "07_mean_field",
-        "chapter_index": 3,
-        "chapter_file": "chapter_3.json",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
         "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
       }
     },
@@ -284,24 +284,24 @@
       "directive_type": "definition",
       "label": "def-transport-operator",
       "title": "Transport Operator and Probability Flux",
-      "start_line": 554,
-      "end_line": 568,
+      "start_line": 552,
+      "end_line": 566,
       "header_lines": [
-        555
+        553
       ],
-      "content_start": 557,
-      "content_end": 567,
-      "content": "557: Let $L$ be the backward kinetic generator from Section 2.2. The **Transport Operator**, denoted $L^\\dagger$, is its formal $L^2$-adjoint, which acts on the density $f$. It can be written in conservative form as the negative divergence of a **probability flux vector** $J = (J_x, J_v)$:\n558: \n559: $$\n560: L^\\dagger f = -\\nabla \\cdot J[f] = -\\nabla_x \\cdot J_x[f] - \\nabla_v \\cdot J_v[f]\n561: $$\n562: \n563: where the components of the flux are:\n564: *   **Positional Flux ($J_x$):** $J_x[f] := v f - D_x \\nabla_x f$ (Advection + Fickian Diffusion)\n565: *   **Velocity Flux ($J_v$):** $J_v[f] := A_v f - D_v \\nabla_v f$ (Drift + Fickian Diffusion)\n566: \n567: and $A_v$ is the velocity drift field from the Langevin dynamics.",
+      "content_start": 555,
+      "content_end": 565,
+      "content": "555: :label: def-transport-operator\n556: \n557: Let $L$ be the backward kinetic generator from Section 2.2. The **Transport Operator**, denoted $L^\\dagger$, is its formal $L^2$-adjoint, which acts on the density $f$. It can be written in conservative form as the negative divergence of a **probability flux vector** $J = (J_x, J_v)$:\n558: \n559: $$\n560: L^\\dagger f = -\\nabla \\cdot J[f] = -\\nabla_x \\cdot J_x[f] - \\nabla_v \\cdot J_v[f]\n561: $$\n562: \n563: where the components of the flux are:\n564: *   **Positional Flux ($J_x$):** $J_x[f] := v f - D_x \\nabla_x f$ (Advection + Fickian Diffusion)\n565: *   **Velocity Flux ($J_v$):** $J_v[f] := A_v f - D_v \\nabla_v f$ (Drift + Fickian Diffusion)",
       "metadata": {
         "label": "def-transport-operator"
       },
       "section": "## 3. The Mass-Conserving Forward Equation (PDE)",
-      "raw_directive": "554: :::{prf:definition} Transport Operator and Probability Flux\n555: :label: def-transport-operator\n556: \n557: Let $L$ be the backward kinetic generator from Section 2.2. The **Transport Operator**, denoted $L^\\dagger$, is its formal $L^2$-adjoint, which acts on the density $f$. It can be written in conservative form as the negative divergence of a **probability flux vector** $J = (J_x, J_v)$:\n558: \n559: $$\n560: L^\\dagger f = -\\nabla \\cdot J[f] = -\\nabla_x \\cdot J_x[f] - \\nabla_v \\cdot J_v[f]\n561: $$\n562: \n563: where the components of the flux are:\n564: *   **Positional Flux ($J_x$):** $J_x[f] := v f - D_x \\nabla_x f$ (Advection + Fickian Diffusion)\n565: *   **Velocity Flux ($J_v$):** $J_v[f] := A_v f - D_v \\nabla_v f$ (Drift + Fickian Diffusion)\n566: \n567: and $A_v$ is the velocity drift field from the Langevin dynamics.\n568: :::",
+      "raw_directive": "552: The kinetic part of the evolution, described by the generator $\\mathcal{L}_{\\text{kin}}$, corresponds to a local transport of probability density via drift and diffusion. Its representation in the forward equation is given by the formal adjoint of $\\mathcal{L}_{\\text{kin}}$, which is the Fokker-Planck operator.\n553: \n554: :::{prf:definition} Transport Operator and Probability Flux\n555: :label: def-transport-operator\n556: \n557: Let $L$ be the backward kinetic generator from Section 2.2. The **Transport Operator**, denoted $L^\\dagger$, is its formal $L^2$-adjoint, which acts on the density $f$. It can be written in conservative form as the negative divergence of a **probability flux vector** $J = (J_x, J_v)$:\n558: \n559: $$\n560: L^\\dagger f = -\\nabla \\cdot J[f] = -\\nabla_x \\cdot J_x[f] - \\nabla_v \\cdot J_v[f]\n561: $$\n562: \n563: where the components of the flux are:\n564: *   **Positional Flux ($J_x$):** $J_x[f] := v f - D_x \\nabla_x f$ (Advection + Fickian Diffusion)\n565: *   **Velocity Flux ($J_v$):** $J_v[f] := A_v f - D_v \\nabla_v f$ (Drift + Fickian Diffusion)\n566: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "07_mean_field",
-        "chapter_index": 4,
-        "chapter_file": "chapter_4.json",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
         "section_id": "## 3. The Mass-Conserving Forward Equation (PDE)"
       }
     }

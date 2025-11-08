@@ -1,0 +1,83 @@
+{
+  "chapter_index": 4,
+  "section_id": "## 4. Geometric Ergodicity of the Fractal Set Generator",
+  "directive_count": 4,
+  "hints": [
+    {
+      "directive_type": "lemma",
+      "label": "lem-discrete-irreducibility",
+      "title": "Irreducibility and Aperiodicity of the Discrete Chain via H\u00f6rmander",
+      "start_line": 450,
+      "end_line": 486,
+      "header_lines": [
+        451
+      ],
+      "content_start": 453,
+      "content_end": 485,
+      "content": "453: :label: lem-discrete-irreducibility\n454: \n455: The BAOAB Markov chain $\\{Z_k\\}$ composed with the cloning operator is **$\\psi$-irreducible** and **aperiodic**.\n456: \n457: **Proof:**\n458: \n459: The discrete BAOAB+cloning chain inherits the hypoelliptic structure of the continuous SDE. We adapt the H\u00f6rmander controllability argument from {prf:ref}`thm-irreducibility-two-stage` in `04_convergence.md \u00a7 7.4`.\n460: \n461: **Step 1: Hypoelliptic Structure of BAOAB**\n462: \n463: The BAOAB integrator preserves the underdamped Langevin structure:\n464: - **O-step**: Injects Gaussian noise in velocity: $v_i^{(2)} = e^{-\\gamma \\Delta t} v_i^{(1)} + \\sqrt{\\frac{1}{\\gamma}(1 - e^{-2\\gamma \\Delta t})} \\, \\Sigma_{\\text{reg}} \\xi_i$\n465: - **A-steps**: Hamiltonian transport coupling position and velocity: $x_i^{(1)} = x_i^{(0)} + \\frac{\\Delta t}{2} v_i^{(1)}$\n466: - **B-steps**: Deterministic force updates: $v_i^{(1)} = v_i^{(0)} + \\frac{\\Delta t}{2} \\mathbf{F}_{\\text{total}}(x_i, Z_k)$\n467: \n468: Since $\\Sigma_{\\text{reg}}$ is uniformly elliptic ({prf:ref}`thm-ueph` with $\\lambda_{\\min} \\geq \\sigma_{\\min}^2 > 0$), the velocity noise is **non-degenerate**.\n469: \n470: **Step 2: H\u00f6rmander-Type Controllability**\n471: \n472: The composition of noise (in $v$) and transport ($\\dot{x} = v$) creates **hypoelliptic controllability**:\n473: - After the O-step, each walker's velocity has a smooth, positive density on $\\mathbb{R}^d$\n474: - The subsequent A-step couples this velocity noise to position via $x' = x + \\frac{\\Delta t}{2} v$\n475: - Repeated BAOAB iterations create a Lie algebra of accessible directions spanning the full $(x,v)$ phase space\n476: \n477: By discrete H\u00f6rmander theory (Bismut-type estimates for numerical schemes; see Leimkuhler & Matthews 2015, Ch. 8), the BAOAB transition kernel has a smooth density $p_k(z, z')$ that is **strictly positive** for all $z, z'$ in the interior of $\\mathcal{X} \\times \\mathbb{R}^d$ and all $k \\geq k_0$ (for some mixing time $k_0$).\n478: \n479: **Step 3: Cloning Provides Global Jumps**\n480: \n481: Following the two-stage argument from `04_convergence.md \u00a7 7.4.3`:\n482: 1. **Cloning acts as global teleportation**: With positive probability, cloning can reset the entire swarm to cluster around any single favorable walker\n483: 2. **BAOAB acts as local navigation**: From this clustered state, hypoelliptic controllability allows reaching any target configuration\n484: \n485: **Combined irreducibility**: For any initial state $z$ and any target set $A$ with positive Lebesgue measure, there exists $m \\geq 1$ such that $P^m(z, A) > 0$.",
+      "metadata": {
+        "label": "lem-discrete-irreducibility"
+      },
+      "section": "## 4. Geometric Ergodicity of the Fractal Set Generator",
+      "raw_directive": "450: ### 4.1. Prerequisites: Irreducibility and Aperiodicity\n451: \n452: :::{prf:lemma} Irreducibility and Aperiodicity of the Discrete Chain via H\u00f6rmander\n453: :label: lem-discrete-irreducibility\n454: \n455: The BAOAB Markov chain $\\{Z_k\\}$ composed with the cloning operator is **$\\psi$-irreducible** and **aperiodic**.\n456: \n457: **Proof:**\n458: \n459: The discrete BAOAB+cloning chain inherits the hypoelliptic structure of the continuous SDE. We adapt the H\u00f6rmander controllability argument from {prf:ref}`thm-irreducibility-two-stage` in `04_convergence.md \u00a7 7.4`.\n460: \n461: **Step 1: Hypoelliptic Structure of BAOAB**\n462: \n463: The BAOAB integrator preserves the underdamped Langevin structure:\n464: - **O-step**: Injects Gaussian noise in velocity: $v_i^{(2)} = e^{-\\gamma \\Delta t} v_i^{(1)} + \\sqrt{\\frac{1}{\\gamma}(1 - e^{-2\\gamma \\Delta t})} \\, \\Sigma_{\\text{reg}} \\xi_i$\n465: - **A-steps**: Hamiltonian transport coupling position and velocity: $x_i^{(1)} = x_i^{(0)} + \\frac{\\Delta t}{2} v_i^{(1)}$\n466: - **B-steps**: Deterministic force updates: $v_i^{(1)} = v_i^{(0)} + \\frac{\\Delta t}{2} \\mathbf{F}_{\\text{total}}(x_i, Z_k)$\n467: \n468: Since $\\Sigma_{\\text{reg}}$ is uniformly elliptic ({prf:ref}`thm-ueph` with $\\lambda_{\\min} \\geq \\sigma_{\\min}^2 > 0$), the velocity noise is **non-degenerate**.\n469: \n470: **Step 2: H\u00f6rmander-Type Controllability**\n471: \n472: The composition of noise (in $v$) and transport ($\\dot{x} = v$) creates **hypoelliptic controllability**:\n473: - After the O-step, each walker's velocity has a smooth, positive density on $\\mathbb{R}^d$\n474: - The subsequent A-step couples this velocity noise to position via $x' = x + \\frac{\\Delta t}{2} v$\n475: - Repeated BAOAB iterations create a Lie algebra of accessible directions spanning the full $(x,v)$ phase space\n476: \n477: By discrete H\u00f6rmander theory (Bismut-type estimates for numerical schemes; see Leimkuhler & Matthews 2015, Ch. 8), the BAOAB transition kernel has a smooth density $p_k(z, z')$ that is **strictly positive** for all $z, z'$ in the interior of $\\mathcal{X} \\times \\mathbb{R}^d$ and all $k \\geq k_0$ (for some mixing time $k_0$).\n478: \n479: **Step 3: Cloning Provides Global Jumps**\n480: \n481: Following the two-stage argument from `04_convergence.md \u00a7 7.4.3`:\n482: 1. **Cloning acts as global teleportation**: With positive probability, cloning can reset the entire swarm to cluster around any single favorable walker\n483: 2. **BAOAB acts as local navigation**: From this clustered state, hypoelliptic controllability allows reaching any target configuration\n484: \n485: **Combined irreducibility**: For any initial state $z$ and any target set $A$ with positive Lebesgue measure, there exists $m \\geq 1$ such that $P^m(z, A) > 0$.\n486: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-compact-level-sets-discrete",
+      "title": "Compact Level Sets",
+      "start_line": 488,
+      "end_line": 510,
+      "header_lines": [
+        489
+      ],
+      "content_start": 491,
+      "content_end": 509,
+      "content": "491: :label: lem-compact-level-sets-discrete\n492: \n493: The Lyapunov function $V_{\\text{total}}$ has **compact sublevel sets**: For any $R < \\infty$,\n494: \n495: $$\n496: \\mathcal{K}_R := \\{z \\in \\mathcal{X}^N \\times \\mathbb{R}^{Nd} : V_{\\text{total}}(z) \\leq R\\}\n497: \n498: $$\n499: \n500: is a compact subset of the state space.\n501: \n502: **Proof:**\n503: \n504: From the coercivity of $V_{\\text{total}}$ ({prf:ref}`def-full-synergistic-lyapunov-function`):\n505: \n506: $$\n507: V_{\\text{total}}(Z) \\to \\infty \\quad \\text{as } \\|Z\\| \\to \\infty\n508: \n509: $$",
+      "metadata": {
+        "label": "lem-compact-level-sets-discrete"
+      },
+      "section": "## 4. Geometric Ergodicity of the Fractal Set Generator",
+      "raw_directive": "488: :::\n489: \n490: :::{prf:lemma} Compact Level Sets\n491: :label: lem-compact-level-sets-discrete\n492: \n493: The Lyapunov function $V_{\\text{total}}$ has **compact sublevel sets**: For any $R < \\infty$,\n494: \n495: $$\n496: \\mathcal{K}_R := \\{z \\in \\mathcal{X}^N \\times \\mathbb{R}^{Nd} : V_{\\text{total}}(z) \\leq R\\}\n497: \n498: $$\n499: \n500: is a compact subset of the state space.\n501: \n502: **Proof:**\n503: \n504: From the coercivity of $V_{\\text{total}}$ ({prf:ref}`def-full-synergistic-lyapunov-function`):\n505: \n506: $$\n507: V_{\\text{total}}(Z) \\to \\infty \\quad \\text{as } \\|Z\\| \\to \\infty\n508: \n509: $$\n510: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-fractal-set-ergodicity",
+      "title": "Geometric Ergodicity of the Fractal Set Generator",
+      "start_line": 514,
+      "end_line": 572,
+      "header_lines": [
+        515
+      ],
+      "content_start": 517,
+      "content_end": 571,
+      "content": "517: :label: thm-fractal-set-ergodicity\n518: \n519: Let $\\{Z_k\\}_{k \\geq 0}$ be the discrete-time Markov chain that generates the Fractal Set, defined by BAOAB with timestep $\\Delta t < \\Delta t_{\\max}$. Then:\n520: \n521: **1. Unique stationary distribution:**\n522: \n523: There exists a unique stationary distribution $\\pi_{\\Delta t}$ on $\\mathcal{X}^N \\times \\mathbb{R}^{Nd}$ such that:\n524: \n525: $$\n526: \\int P_{\\Delta t}(z, A) \\, \\pi_{\\Delta t}(dz) = \\pi_{\\Delta t}(A) \\quad \\forall A\n527: \n528: $$\n529: \n530: **2. Exponential convergence:**\n531: \n532: For any initial distribution $\\mu_0$, let $\\mu_k$ be the distribution of $Z_k$. Then:\n533: \n534: $$\n535: \\|\\mu_k - \\pi_{\\Delta t}\\|_{\\text{TV}} \\leq M(\\mu_0) \\, \\rho_{\\text{discrete}}^k\n536: \n537: $$\n538: \n539: where:\n540: - $\\rho_{\\text{discrete}} = 1 - \\frac{\\kappa_{\\text{total}} \\Delta t}{2} < 1$: Discrete contraction coefficient\n541: - $M(\\mu_0) < \\infty$: Constant depending on initial condition\n542: \n543: **3. Convergence rate relation:**\n544: \n545: As $\\Delta t \\to 0$:\n546: \n547: $$\n548: \\rho_{\\text{discrete}} = e^{-\\kappa_{\\text{total}} \\Delta t / 2} \\to e^{-\\kappa_{\\text{total}} \\cdot 0} = 1^-\n549: \n550: $$\n551: \n552: but for $k = t / \\Delta t$ (fixed continuous time $t$):\n553: \n554: $$\n555: \\rho_{\\text{discrete}}^{k} = e^{-\\kappa_{\\text{total}} t / 2} \\to e^{-\\kappa_{\\text{total}} t}\n556: \n557: $$\n558: \n559: recovering the continuous convergence rate.\n560: \n561: **Proof:**\n562: \n563: Apply **Meyn & Tweedie (2009), Theorem 14.0.1 (Foster-Lyapunov Criterion)** with:\n564: - **Foster-Lyapunov drift:** {prf:ref}`thm-discrete-drift-baoab` establishes $\\mathbb{E}[V_{\\text{total}}(Z_{k+1}) | Z_k] \\leq (1 - \\kappa_{\\text{total}}\\Delta t/2) V_{\\text{total}}(Z_k) + C$\n565: - **Compact sublevel sets:** {prf:ref}`lem-compact-level-sets-discrete` establishes coercivity of $V_{\\text{total}}$\n566: - **Irreducibility:** {prf:ref}`lem-discrete-irreducibility` establishes $\\psi$-irreducibility via H\u00f6rmander-type hypoelliptic controllability\n567: - **Aperiodicity:** {prf:ref}`lem-discrete-irreducibility` establishes aperiodicity via continuous noise injection\n568: \n569: By Meyn & Tweedie Theorem 14.0.1, these four conditions (drift + compactness + irreducibility + aperiodicity) together imply:\n570: 1. Existence and uniqueness of invariant measure $\\pi_{\\Delta t}$\n571: 2. Geometric ergodicity with exponential rate $\\rho_{\\text{discrete}} = 1 - \\kappa_{\\text{total}}\\Delta t/2$",
+      "metadata": {
+        "label": "thm-fractal-set-ergodicity"
+      },
+      "section": "## 4. Geometric Ergodicity of the Fractal Set Generator",
+      "raw_directive": "514: ### 4.2. Main Ergodicity Theorem\n515: \n516: :::{prf:theorem} Geometric Ergodicity of the Fractal Set Generator\n517: :label: thm-fractal-set-ergodicity\n518: \n519: Let $\\{Z_k\\}_{k \\geq 0}$ be the discrete-time Markov chain that generates the Fractal Set, defined by BAOAB with timestep $\\Delta t < \\Delta t_{\\max}$. Then:\n520: \n521: **1. Unique stationary distribution:**\n522: \n523: There exists a unique stationary distribution $\\pi_{\\Delta t}$ on $\\mathcal{X}^N \\times \\mathbb{R}^{Nd}$ such that:\n524: \n525: $$\n526: \\int P_{\\Delta t}(z, A) \\, \\pi_{\\Delta t}(dz) = \\pi_{\\Delta t}(A) \\quad \\forall A\n527: \n528: $$\n529: \n530: **2. Exponential convergence:**\n531: \n532: For any initial distribution $\\mu_0$, let $\\mu_k$ be the distribution of $Z_k$. Then:\n533: \n534: $$\n535: \\|\\mu_k - \\pi_{\\Delta t}\\|_{\\text{TV}} \\leq M(\\mu_0) \\, \\rho_{\\text{discrete}}^k\n536: \n537: $$\n538: \n539: where:\n540: - $\\rho_{\\text{discrete}} = 1 - \\frac{\\kappa_{\\text{total}} \\Delta t}{2} < 1$: Discrete contraction coefficient\n541: - $M(\\mu_0) < \\infty$: Constant depending on initial condition\n542: \n543: **3. Convergence rate relation:**\n544: \n545: As $\\Delta t \\to 0$:\n546: \n547: $$\n548: \\rho_{\\text{discrete}} = e^{-\\kappa_{\\text{total}} \\Delta t / 2} \\to e^{-\\kappa_{\\text{total}} \\cdot 0} = 1^-\n549: \n550: $$\n551: \n552: but for $k = t / \\Delta t$ (fixed continuous time $t$):\n553: \n554: $$\n555: \\rho_{\\text{discrete}}^{k} = e^{-\\kappa_{\\text{total}} t / 2} \\to e^{-\\kappa_{\\text{total}} t}\n556: \n557: $$\n558: \n559: recovering the continuous convergence rate.\n560: \n561: **Proof:**\n562: \n563: Apply **Meyn & Tweedie (2009), Theorem 14.0.1 (Foster-Lyapunov Criterion)** with:\n564: - **Foster-Lyapunov drift:** {prf:ref}`thm-discrete-drift-baoab` establishes $\\mathbb{E}[V_{\\text{total}}(Z_{k+1}) | Z_k] \\leq (1 - \\kappa_{\\text{total}}\\Delta t/2) V_{\\text{total}}(Z_k) + C$\n565: - **Compact sublevel sets:** {prf:ref}`lem-compact-level-sets-discrete` establishes coercivity of $V_{\\text{total}}$\n566: - **Irreducibility:** {prf:ref}`lem-discrete-irreducibility` establishes $\\psi$-irreducibility via H\u00f6rmander-type hypoelliptic controllability\n567: - **Aperiodicity:** {prf:ref}`lem-discrete-irreducibility` establishes aperiodicity via continuous noise injection\n568: \n569: By Meyn & Tweedie Theorem 14.0.1, these four conditions (drift + compactness + irreducibility + aperiodicity) together imply:\n570: 1. Existence and uniqueness of invariant measure $\\pi_{\\Delta t}$\n571: 2. Geometric ergodicity with exponential rate $\\rho_{\\text{discrete}} = 1 - \\kappa_{\\text{total}}\\Delta t/2$\n572: "
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-convergence-inheritance",
+      "title": "Convergence Inheritance",
+      "start_line": 574,
+      "end_line": 586,
+      "header_lines": [
+        575
+      ],
+      "content_start": 577,
+      "content_end": 585,
+      "content": "577: :label: cor-convergence-inheritance\n578: \n579: All convergence guarantees from the continuous Adaptive Gas SDE are **inherited** by the discrete Fractal Set generator:\n580: \n581: 1. **Geometric ergodicity** ({prf:ref}`thm-main-convergence`) \u2192 {prf:ref}`thm-fractal-set-ergodicity`\n582: 2. **Foster-Lyapunov stability** ({prf:ref}`thm-foster-lyapunov-main`) \u2192 {prf:ref}`thm-discrete-drift-baoab`\n583: 3. **Exponential convergence rate** $\\kappa_{\\text{total}}$ \u2192 $\\kappa_{\\text{total}}/2$ (discrete, for small $\\Delta t$)\n584: 4. **Keystone targeting** ({prf:ref}`lem-quantitative-keystone`) \u2192 Built into $\\mathbf{F}_{\\text{adapt}}$\n585: 5. **Uniform ellipticity** ({prf:ref}`thm-ueph`) \u2192 Preserved in O-step",
+      "metadata": {
+        "label": "cor-convergence-inheritance"
+      },
+      "section": "## 4. Geometric Ergodicity of the Fractal Set Generator",
+      "raw_directive": "574: :::\n575: \n576: :::{prf:corollary} Convergence Inheritance\n577: :label: cor-convergence-inheritance\n578: \n579: All convergence guarantees from the continuous Adaptive Gas SDE are **inherited** by the discrete Fractal Set generator:\n580: \n581: 1. **Geometric ergodicity** ({prf:ref}`thm-main-convergence`) \u2192 {prf:ref}`thm-fractal-set-ergodicity`\n582: 2. **Foster-Lyapunov stability** ({prf:ref}`thm-foster-lyapunov-main`) \u2192 {prf:ref}`thm-discrete-drift-baoab`\n583: 3. **Exponential convergence rate** $\\kappa_{\\text{total}}$ \u2192 $\\kappa_{\\text{total}}/2$ (discrete, for small $\\Delta t$)\n584: 4. **Keystone targeting** ({prf:ref}`lem-quantitative-keystone`) \u2192 Built into $\\mathbf{F}_{\\text{adapt}}$\n585: 5. **Uniform ellipticity** ({prf:ref}`thm-ueph`) \u2192 Preserved in O-step\n586: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

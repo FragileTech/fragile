@@ -1,0 +1,203 @@
+{
+  "chapter_index": 6,
+  "section_id": "## 5. The Composition Theorem: Entropy-Transport Lyapunov Function",
+  "directive_count": 12,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-entropy-transport-lyapunov",
+      "title": "Entropy-Transport Lyapunov Function",
+      "start_line": 1059,
+      "end_line": 1069,
+      "header_lines": [
+        1060
+      ],
+      "content_start": 1062,
+      "content_end": 1068,
+      "content": "1062: :label: def-entropy-transport-lyapunov\n1063: \n1064: For a probability measure $\\mu$ and target $\\pi$, define:\n1065: \n1066: $$\n1067: V(\\mu) := D_{\\text{KL}}(\\mu \\| \\pi) + c \\cdot W_2^2(\\mu, \\pi)\n1068: $$",
+      "metadata": {
+        "label": "def-entropy-transport-lyapunov"
+      },
+      "section": "## 5. The Composition Theorem: Entropy-Transport Lyapunov Function",
+      "raw_directive": "1059: The key innovation is to define a **joint Lyapunov function** combining entropy and Wasserstein distance.\n1060: \n1061: :::{prf:definition} Entropy-Transport Lyapunov Function\n1062: :label: def-entropy-transport-lyapunov\n1063: \n1064: For a probability measure $\\mu$ and target $\\pi$, define:\n1065: \n1066: $$\n1067: V(\\mu) := D_{\\text{KL}}(\\mu \\| \\pi) + c \\cdot W_2^2(\\mu, \\pi)\n1068: $$\n1069: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-entropy-transport-dissipation",
+      "title": "Entropy-Transport Dissipation Inequality",
+      "start_line": 1077,
+      "end_line": 1087,
+      "header_lines": [
+        1078
+      ],
+      "content_start": 1080,
+      "content_end": 1086,
+      "content": "1080: :label: lem-entropy-transport-dissipation\n1081: \n1082: For the cloning operator $\\Psi_{\\text{clone}}$ with parameters satisfying the Keystone Principle (Theorem 8.1 in [03_cloning.md](03_cloning.md)), there exists $\\alpha > 0$ such that:\n1083: \n1084: $$\n1085: D_{\\text{KL}}(\\mu' \\| \\pi) \\le D_{\\text{KL}}(\\mu \\| \\pi) - \\alpha \\cdot W_2^2(\\mu, \\pi) + C_{\\text{clone}}\n1086: $$",
+      "metadata": {
+        "label": "lem-entropy-transport-dissipation"
+      },
+      "section": "## 5. The Composition Theorem: Entropy-Transport Lyapunov Function",
+      "raw_directive": "1077: The crucial technical result is that cloning dissipates entropy proportional to the Wasserstein distance squared:\n1078: \n1079: :::{prf:lemma} Entropy-Transport Dissipation Inequality\n1080: :label: lem-entropy-transport-dissipation\n1081: \n1082: For the cloning operator $\\Psi_{\\text{clone}}$ with parameters satisfying the Keystone Principle (Theorem 8.1 in [03_cloning.md](03_cloning.md)), there exists $\\alpha > 0$ such that:\n1083: \n1084: $$\n1085: D_{\\text{KL}}(\\mu' \\| \\pi) \\le D_{\\text{KL}}(\\mu \\| \\pi) - \\alpha \\cdot W_2^2(\\mu, \\pi) + C_{\\text{clone}}\n1086: $$\n1087: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-40",
+      "title": null,
+      "start_line": 1089,
+      "end_line": 1196,
+      "header_lines": [],
+      "content_start": 1090,
+      "content_end": 1195,
+      "content": "1090: \n1091: :::{prf:proof}\n1092: This inequality connects geometric contraction to information-theoretic dissipation through the displacement convexity of relative entropy.\n1093: \n1094: **Step 1: Displacement convexity**\n1095: \n1096: The relative entropy $H(\\mu) := D_{\\text{KL}}(\\mu \\| \\pi)$ is displacement convex in Wasserstein space (McCann 1997). For a geodesic $\\mu_s$ (with respect to $W_2$) from $\\mu_0$ to $\\mu_1$:\n1097: \n1098: $$\n1099: H(\\mu_s) \\le (1-s) H(\\mu_0) + s H(\\mu_1) - \\frac{s(1-s)}{2} \\tau_{\\text{conv}} W_2^2(\\mu_0, \\mu_1)\n1100: $$\n1101: \n1102: where $\\tau_{\\text{conv}} \\ge \\kappa_{\\text{conf}}$ is the convexity constant of the log-density of $\\pi$.\n1103: \n1104: **Step 2: Cloning as a transport map**\n1105: \n1106: The cloning operator can be decomposed as:\n1107: 1. Resampling dead walkers from alive walker positions\n1108: 2. Adding Gaussian noise $\\mathcal{N}(0, \\delta^2 I)$\n1109: \n1110: The resampling step is a transport map $T: \\mathcal{X} \\to \\mathcal{X}$ that moves particles from low-fitness regions to high-fitness regions. This transport satisfies:\n1111: \n1112: $$\n1113: W_2^2(T_\\# \\mu, \\pi) \\le (1 - \\kappa_W) W_2^2(\\mu, \\pi)\n1114: $$\n1115: \n1116: where $\\kappa_W = \\kappa_x/2$ relates to the position variance contraction from the Keystone Principle.\n1117: \n1118: **Step 3: Entropy dissipation along the transport**\n1119: \n1120: Consider the straight-line geodesic $\\mu_s = (1-s)\\mu + s T_\\# \\mu$ in Wasserstein space. The displacement convexity gives:\n1121: \n1122: $$\n1123: H(T_\\# \\mu) \\le H(\\mu) - \\frac{\\tau_{\\text{conv}}}{2} W_2^2(\\mu, T_\\# \\mu)\n1124: $$\n1125: \n1126: **Step 4: Relating transport distance to stationary distance via the law of cosines**\n1127: \n1128: The transport distance $W_2^2(\\mu, T_\\# \\mu)$ is related to $W_2^2(\\mu, \\pi)$ by a geometric inequality for contractive maps in metric spaces.\n1129: \n1130: For a contraction $T$ with $W_2^2(T_\\# \\mu, \\pi) \\leq (1 - \\kappa_W) W_2^2(\\mu, \\pi)$ toward a fixed point $\\pi$, the **law of cosines in CAT(0) spaces** (Villani, *Optimal Transport*, Theorem 9.3.9) gives:\n1131: \n1132: $$\n1133: W_2^2(\\mu, T_\\# \\mu) + W_2^2(T_\\# \\mu, \\pi) \\leq W_2^2(\\mu, \\pi)\n1134: $$\n1135: \n1136: Rearranging:\n1137: \n1138: $$\n1139: W_2^2(\\mu, T_\\# \\mu) \\geq W_2^2(\\mu, \\pi) - W_2^2(T_\\# \\mu, \\pi)\n1140: $$\n1141: \n1142: Substituting the contraction bound:\n1143: \n1144: $$\n1145: W_2^2(\\mu, T_\\# \\mu) \\geq W_2^2(\\mu, \\pi) - (1 - \\kappa_W) W_2^2(\\mu, \\pi) = \\kappa_W \\cdot W_2^2(\\mu, \\pi)\n1146: $$\n1147: \n1148: This shows the transport moves $\\mu$ a distance proportional to its distance from $\\pi$.\n1149: \n1150: **Step 5: Effect of Gaussian noise on entropy and Wasserstein distance**\n1151: \n1152: The final step is Gaussian convolution: $\\mu' = T_\\# \\mu * G_\\delta$ where $G_\\delta = \\mathcal{N}(0, \\delta^2 I)$.\n1153: \n1154: **Entropy analysis:**\n1155: By the entropy power inequality (Shannon 1948), convolution with Gaussian noise decreases entropy:\n1156: \n1157: $$\n1158: D_{\\text{KL}}(T_\\# \\mu * G_\\delta \\| \\pi * G_\\delta) \\leq D_{\\text{KL}}(T_\\# \\mu \\| \\pi)\n1159: $$\n1160: \n1161: When $\\pi$ is log-concave (Axiom {prf:ref}`ax-qsd-log-concave`), $\\pi * G_\\delta$ remains log-concave and close to $\\pi$ for small $\\delta$. By continuity of the KL divergence with respect to the reference measure (in the weak topology), we have:\n1162: \n1163: $$\n1164: D_{\\text{KL}}(\\mu' \\| \\pi) \\leq D_{\\text{KL}}(T_\\# \\mu * G_\\delta \\| \\pi * G_\\delta) + O(\\delta^2)\n1165: $$\n1166: \n1167: Combining:\n1168: \n1169: $$\n1170: D_{\\text{KL}}(\\mu' \\| \\pi) \\leq D_{\\text{KL}}(T_\\# \\mu \\| \\pi) + O(\\delta^2)\n1171: $$\n1172: \n1173: **Wasserstein analysis:**\n1174: Gaussian convolution contracts Wasserstein distance by the triangle inequality:\n1175: \n1176: $$\n1177: W_2^2(\\mu' , \\pi) = W_2^2(T_\\# \\mu * G_\\delta, \\pi)\n1178: $$\n1179: \n1180: Since $\\pi * G_\\delta$ is $\\delta^2 d$-close to $\\pi$ in $W_2^2$ (by direct calculation of Gaussian covariance), and Gaussian convolution is $W_2$-contractive:\n1181: \n1182: $$\n1183: W_2^2(\\mu', \\pi) \\leq W_2^2(T_\\# \\mu, \\pi) + O(\\delta^2)\n1184: $$\n1185: \n1186: **Combined effect:**\n1187: The Gaussian noise introduces additive errors of $O(\\delta^2)$ in both entropy and Wasserstein components, which are absorbed into the constant $C_{\\text{clone}}$.\n1188: \n1189: **Step 6: Final bound**\n1190: \n1191: Combining all steps:\n1192: \n1193: $$\n1194: D_{\\text{KL}}(\\mu' \\| \\pi) \\le D_{\\text{KL}}(\\mu \\| \\pi) - \\alpha W_2^2(\\mu, \\pi) + C_{\\text{clone}}\n1195: $$",
+      "metadata": {},
+      "section": "## 5. The Composition Theorem: Entropy-Transport Lyapunov Function",
+      "raw_directive": "1089: :::\n1090: \n1091: :::{prf:proof}\n1092: This inequality connects geometric contraction to information-theoretic dissipation through the displacement convexity of relative entropy.\n1093: \n1094: **Step 1: Displacement convexity**\n1095: \n1096: The relative entropy $H(\\mu) := D_{\\text{KL}}(\\mu \\| \\pi)$ is displacement convex in Wasserstein space (McCann 1997). For a geodesic $\\mu_s$ (with respect to $W_2$) from $\\mu_0$ to $\\mu_1$:\n1097: \n1098: $$\n1099: H(\\mu_s) \\le (1-s) H(\\mu_0) + s H(\\mu_1) - \\frac{s(1-s)}{2} \\tau_{\\text{conv}} W_2^2(\\mu_0, \\mu_1)\n1100: $$\n1101: \n1102: where $\\tau_{\\text{conv}} \\ge \\kappa_{\\text{conf}}$ is the convexity constant of the log-density of $\\pi$.\n1103: \n1104: **Step 2: Cloning as a transport map**\n1105: \n1106: The cloning operator can be decomposed as:\n1107: 1. Resampling dead walkers from alive walker positions\n1108: 2. Adding Gaussian noise $\\mathcal{N}(0, \\delta^2 I)$\n1109: \n1110: The resampling step is a transport map $T: \\mathcal{X} \\to \\mathcal{X}$ that moves particles from low-fitness regions to high-fitness regions. This transport satisfies:\n1111: \n1112: $$\n1113: W_2^2(T_\\# \\mu, \\pi) \\le (1 - \\kappa_W) W_2^2(\\mu, \\pi)\n1114: $$\n1115: \n1116: where $\\kappa_W = \\kappa_x/2$ relates to the position variance contraction from the Keystone Principle.\n1117: \n1118: **Step 3: Entropy dissipation along the transport**\n1119: \n1120: Consider the straight-line geodesic $\\mu_s = (1-s)\\mu + s T_\\# \\mu$ in Wasserstein space. The displacement convexity gives:\n1121: \n1122: $$\n1123: H(T_\\# \\mu) \\le H(\\mu) - \\frac{\\tau_{\\text{conv}}}{2} W_2^2(\\mu, T_\\# \\mu)\n1124: $$\n1125: \n1126: **Step 4: Relating transport distance to stationary distance via the law of cosines**\n1127: \n1128: The transport distance $W_2^2(\\mu, T_\\# \\mu)$ is related to $W_2^2(\\mu, \\pi)$ by a geometric inequality for contractive maps in metric spaces.\n1129: \n1130: For a contraction $T$ with $W_2^2(T_\\# \\mu, \\pi) \\leq (1 - \\kappa_W) W_2^2(\\mu, \\pi)$ toward a fixed point $\\pi$, the **law of cosines in CAT(0) spaces** (Villani, *Optimal Transport*, Theorem 9.3.9) gives:\n1131: \n1132: $$\n1133: W_2^2(\\mu, T_\\# \\mu) + W_2^2(T_\\# \\mu, \\pi) \\leq W_2^2(\\mu, \\pi)\n1134: $$\n1135: \n1136: Rearranging:\n1137: \n1138: $$\n1139: W_2^2(\\mu, T_\\# \\mu) \\geq W_2^2(\\mu, \\pi) - W_2^2(T_\\# \\mu, \\pi)\n1140: $$\n1141: \n1142: Substituting the contraction bound:\n1143: \n1144: $$\n1145: W_2^2(\\mu, T_\\# \\mu) \\geq W_2^2(\\mu, \\pi) - (1 - \\kappa_W) W_2^2(\\mu, \\pi) = \\kappa_W \\cdot W_2^2(\\mu, \\pi)\n1146: $$\n1147: \n1148: This shows the transport moves $\\mu$ a distance proportional to its distance from $\\pi$.\n1149: \n1150: **Step 5: Effect of Gaussian noise on entropy and Wasserstein distance**\n1151: \n1152: The final step is Gaussian convolution: $\\mu' = T_\\# \\mu * G_\\delta$ where $G_\\delta = \\mathcal{N}(0, \\delta^2 I)$.\n1153: \n1154: **Entropy analysis:**\n1155: By the entropy power inequality (Shannon 1948), convolution with Gaussian noise decreases entropy:\n1156: \n1157: $$\n1158: D_{\\text{KL}}(T_\\# \\mu * G_\\delta \\| \\pi * G_\\delta) \\leq D_{\\text{KL}}(T_\\# \\mu \\| \\pi)\n1159: $$\n1160: \n1161: When $\\pi$ is log-concave (Axiom {prf:ref}`ax-qsd-log-concave`), $\\pi * G_\\delta$ remains log-concave and close to $\\pi$ for small $\\delta$. By continuity of the KL divergence with respect to the reference measure (in the weak topology), we have:\n1162: \n1163: $$\n1164: D_{\\text{KL}}(\\mu' \\| \\pi) \\leq D_{\\text{KL}}(T_\\# \\mu * G_\\delta \\| \\pi * G_\\delta) + O(\\delta^2)\n1165: $$\n1166: \n1167: Combining:\n1168: \n1169: $$\n1170: D_{\\text{KL}}(\\mu' \\| \\pi) \\leq D_{\\text{KL}}(T_\\# \\mu \\| \\pi) + O(\\delta^2)\n1171: $$\n1172: \n1173: **Wasserstein analysis:**\n1174: Gaussian convolution contracts Wasserstein distance by the triangle inequality:\n1175: \n1176: $$\n1177: W_2^2(\\mu' , \\pi) = W_2^2(T_\\# \\mu * G_\\delta, \\pi)\n1178: $$\n1179: \n1180: Since $\\pi * G_\\delta$ is $\\delta^2 d$-close to $\\pi$ in $W_2^2$ (by direct calculation of Gaussian covariance), and Gaussian convolution is $W_2$-contractive:\n1181: \n1182: $$\n1183: W_2^2(\\mu', \\pi) \\leq W_2^2(T_\\# \\mu, \\pi) + O(\\delta^2)\n1184: $$\n1185: \n1186: **Combined effect:**\n1187: The Gaussian noise introduces additive errors of $O(\\delta^2)$ in both entropy and Wasserstein components, which are absorbed into the constant $C_{\\text{clone}}$.\n1188: \n1189: **Step 6: Final bound**\n1190: \n1191: Combining all steps:\n1192: \n1193: $$\n1194: D_{\\text{KL}}(\\mu' \\| \\pi) \\le D_{\\text{KL}}(\\mu \\| \\pi) - \\alpha W_2^2(\\mu, \\pi) + C_{\\text{clone}}\n1195: $$\n1196: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-149",
+      "title": null,
+      "start_line": 1198,
+      "end_line": 1202,
+      "header_lines": [],
+      "content_start": 1199,
+      "content_end": 1201,
+      "content": "1199: \n1200: :::{prf:remark}\n1201: This lemma is the **key technical innovation**. It shows that the geometric contraction in Wasserstein space (already proven in [04_convergence.md](04_convergence.md)) drives entropy dissipation. The constant $\\alpha$ depends on:",
+      "metadata": {},
+      "section": "## 5. The Composition Theorem: Entropy-Transport Lyapunov Function",
+      "raw_directive": "1198: :::\n1199: \n1200: :::{prf:remark}\n1201: This lemma is the **key technical innovation**. It shows that the geometric contraction in Wasserstein space (already proven in [04_convergence.md](04_convergence.md)) drives entropy dissipation. The constant $\\alpha$ depends on:\n1202: - $\\kappa_{\\text{conf}}$: convexity of confining potential (controls displacement convexity)"
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-kinetic-evolution-bounds",
+      "title": "Kinetic Evolution Bounds",
+      "start_line": 1206,
+      "end_line": 1226,
+      "header_lines": [
+        1207
+      ],
+      "content_start": 1209,
+      "content_end": 1225,
+      "content": "1209: :label: lem-kinetic-evolution-bounds\n1210: \n1211: For the kinetic operator $\\Psi_{\\text{kin}}(\\tau)$ from Theorem {prf:ref}`thm-kinetic-lsi`, we have:\n1212: \n1213: **Entropy contraction:**\n1214: \n1215: $$\n1216: D_{\\text{KL}}(\\mu'' \\| \\pi) \\le e^{-\\rho_k} D_{\\text{KL}}(\\mu' \\| \\pi)\n1217: $$\n1218: \n1219: where $\\rho_k = \\alpha\\tau/C_0$ with $\\alpha = \\min(\\gamma/2, \\kappa_{\\text{conf}}/4)$ and $C_0 = O(1/\\min(\\gamma, \\kappa_{\\text{conf}}))$.\n1220: \n1221: **Wasserstein expansion bound:**\n1222: \n1223: $$\n1224: W_2^2(\\mu'', \\pi) \\le (1 + \\beta) W_2^2(\\mu', \\pi)\n1225: $$",
+      "metadata": {
+        "label": "lem-kinetic-evolution-bounds"
+      },
+      "section": "## 5. The Composition Theorem: Entropy-Transport Lyapunov Function",
+      "raw_directive": "1206: ### 5.3. Evolution of the Kinetic Operator on Entropy and Transport\n1207: \n1208: :::{prf:lemma} Kinetic Evolution Bounds\n1209: :label: lem-kinetic-evolution-bounds\n1210: \n1211: For the kinetic operator $\\Psi_{\\text{kin}}(\\tau)$ from Theorem {prf:ref}`thm-kinetic-lsi`, we have:\n1212: \n1213: **Entropy contraction:**\n1214: \n1215: $$\n1216: D_{\\text{KL}}(\\mu'' \\| \\pi) \\le e^{-\\rho_k} D_{\\text{KL}}(\\mu' \\| \\pi)\n1217: $$\n1218: \n1219: where $\\rho_k = \\alpha\\tau/C_0$ with $\\alpha = \\min(\\gamma/2, \\kappa_{\\text{conf}}/4)$ and $C_0 = O(1/\\min(\\gamma, \\kappa_{\\text{conf}}))$.\n1220: \n1221: **Wasserstein expansion bound:**\n1222: \n1223: $$\n1224: W_2^2(\\mu'', \\pi) \\le (1 + \\beta) W_2^2(\\mu', \\pi)\n1225: $$\n1226: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-179",
+      "title": null,
+      "start_line": 1228,
+      "end_line": 1244,
+      "header_lines": [],
+      "content_start": 1229,
+      "content_end": 1243,
+      "content": "1229: \n1230: :::{prf:proof}\n1231: **Entropy:** Direct application of Theorem {prf:ref}`thm-kinetic-lsi`.\n1232: \n1233: **Wasserstein:** The kinetic SDE $dx = v dt + \\ldots$ transports particles with velocity $v$. Over time $\\tau$, particles can move distance $O(\\tau v_{\\max})$. This gives a Wasserstein expansion:\n1234: \n1235: $$\n1236: W_2(\\mu'', \\pi) \\le W_2(\\mu', \\pi) + \\tau \\cdot \\mathbb{E}[\\|v\\|] \\le W_2(\\mu', \\pi) + \\tau v_{\\max}\n1237: $$\n1238: \n1239: Squaring and using $(a + b)^2 \\le (1 + \\epsilon) a^2 + (1 + 1/\\epsilon) b^2$:\n1240: \n1241: $$\n1242: W_2^2(\\mu'', \\pi) \\le (1 + O(\\tau v_{\\max} / W_2(\\mu', \\pi))) W_2^2(\\mu', \\pi)\n1243: $$",
+      "metadata": {},
+      "section": "## 5. The Composition Theorem: Entropy-Transport Lyapunov Function",
+      "raw_directive": "1228: :::\n1229: \n1230: :::{prf:proof}\n1231: **Entropy:** Direct application of Theorem {prf:ref}`thm-kinetic-lsi`.\n1232: \n1233: **Wasserstein:** The kinetic SDE $dx = v dt + \\ldots$ transports particles with velocity $v$. Over time $\\tau$, particles can move distance $O(\\tau v_{\\max})$. This gives a Wasserstein expansion:\n1234: \n1235: $$\n1236: W_2(\\mu'', \\pi) \\le W_2(\\mu', \\pi) + \\tau \\cdot \\mathbb{E}[\\|v\\|] \\le W_2(\\mu', \\pi) + \\tau v_{\\max}\n1237: $$\n1238: \n1239: Squaring and using $(a + b)^2 \\le (1 + \\epsilon) a^2 + (1 + 1/\\epsilon) b^2$:\n1240: \n1241: $$\n1242: W_2^2(\\mu'', \\pi) \\le (1 + O(\\tau v_{\\max} / W_2(\\mu', \\pi))) W_2^2(\\mu', \\pi)\n1243: $$\n1244: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-entropy-transport-contraction",
+      "title": "Linear Contraction of the Entropy-Transport Lyapunov Function",
+      "start_line": 1248,
+      "end_line": 1273,
+      "header_lines": [
+        1249
+      ],
+      "content_start": 1251,
+      "content_end": 1272,
+      "content": "1251: :label: thm-entropy-transport-contraction\n1252: \n1253: For the composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}}(\\tau) \\circ \\Psi_{\\text{clone}}$, there exist constants $c > 0$ and $\\lambda < 1$ such that the Lyapunov function $V(\\mu) = D_{\\text{KL}}(\\mu \\| \\pi) + c W_2^2(\\mu, \\pi)$ satisfies:\n1254: \n1255: $$\n1256: V(\\mu_{t+1}) \\le \\lambda \\cdot V(\\mu_t) + C_{\\text{steady}}\n1257: $$\n1258: \n1259: where $\\mu_{t+1} = (\\Psi_{\\text{total}})_* \\mu_t$.\n1260: \n1261: **Explicit constants:**\n1262: \n1263: $$\n1264: \\lambda = \\max\\left(e^{-\\rho_k}, \\frac{(1 + \\beta)(1 - \\kappa_W) + \\alpha e^{-\\rho_k}/c}{1 + 1/c}\\right)\n1265: $$\n1266: \n1267: with $c = \\alpha e^{-\\rho_k} / (1 - K_W)$ where $K_W = (1 + \\beta)(1 - \\kappa_W)$.\n1268: \n1269: **Condition for $\\lambda < 1$:** The Wasserstein contraction must dominate the kinetic expansion:\n1270: \n1271: $$\n1272: \\kappa_W > \\frac{\\beta}{1 + \\beta}",
+      "metadata": {
+        "label": "thm-entropy-transport-contraction"
+      },
+      "section": "## 5. The Composition Theorem: Entropy-Transport Lyapunov Function",
+      "raw_directive": "1248: ### 5.4. Main Composition Theorem\n1249: \n1250: :::{prf:theorem} Linear Contraction of the Entropy-Transport Lyapunov Function\n1251: :label: thm-entropy-transport-contraction\n1252: \n1253: For the composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}}(\\tau) \\circ \\Psi_{\\text{clone}}$, there exist constants $c > 0$ and $\\lambda < 1$ such that the Lyapunov function $V(\\mu) = D_{\\text{KL}}(\\mu \\| \\pi) + c W_2^2(\\mu, \\pi)$ satisfies:\n1254: \n1255: $$\n1256: V(\\mu_{t+1}) \\le \\lambda \\cdot V(\\mu_t) + C_{\\text{steady}}\n1257: $$\n1258: \n1259: where $\\mu_{t+1} = (\\Psi_{\\text{total}})_* \\mu_t$.\n1260: \n1261: **Explicit constants:**\n1262: \n1263: $$\n1264: \\lambda = \\max\\left(e^{-\\rho_k}, \\frac{(1 + \\beta)(1 - \\kappa_W) + \\alpha e^{-\\rho_k}/c}{1 + 1/c}\\right)\n1265: $$\n1266: \n1267: with $c = \\alpha e^{-\\rho_k} / (1 - K_W)$ where $K_W = (1 + \\beta)(1 - \\kappa_W)$.\n1268: \n1269: **Condition for $\\lambda < 1$:** The Wasserstein contraction must dominate the kinetic expansion:\n1270: \n1271: $$\n1272: \\kappa_W > \\frac{\\beta}{1 + \\beta}\n1273: $$"
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-226",
+      "title": null,
+      "start_line": 1275,
+      "end_line": 1393,
+      "header_lines": [],
+      "content_start": 1276,
+      "content_end": 1392,
+      "content": "1276: \n1277: :::{prf:proof}\n1278: Let $\\mu_t$ be the distribution at step $t$. Define:\n1279: - $\\mu_{t+1/2} = (\\Psi_{\\text{clone}})_* \\mu_t$ (after cloning)\n1280: - $\\mu_{t+1} = (\\Psi_{\\text{kin}})_* \\mu_{t+1/2}$ (after kinetics)\n1281: \n1282: **Step 1: Evolution through cloning**\n1283: \n1284: From Lemma {prf:ref}`lem-entropy-transport-dissipation`:\n1285: \n1286: $$\n1287: H_{t+1/2} := D_{\\text{KL}}(\\mu_{t+1/2} \\| \\pi) \\le H_t - \\alpha W_t^2 + C_{\\text{clone}}\n1288: $$\n1289: \n1290: From Lemma {prf:ref}`lem-cloning-wasserstein-contraction`:\n1291: \n1292: $$\n1293: W_{t+1/2}^2 := W_2^2(\\mu_{t+1/2}, \\pi) \\le (1 - \\kappa_W) W_t^2 + C_W\n1294: $$\n1295: \n1296: **Step 2: Evolution through kinetics**\n1297: \n1298: From Lemma {prf:ref}`lem-kinetic-evolution-bounds`:\n1299: \n1300: $$\n1301: H_{t+1} := D_{\\text{KL}}(\\mu_{t+1} \\| \\pi) \\le e^{-\\rho_k} H_{t+1/2}\n1302: $$\n1303: \n1304: $$\n1305: W_{t+1}^2 := W_2^2(\\mu_{t+1}, \\pi) \\le (1 + \\beta) W_{t+1/2}^2\n1306: $$\n1307: \n1308: **Step 3: Combined one-step evolution**\n1309: \n1310: Substitute the cloning bounds into the kinetic bounds:\n1311: \n1312: $$\n1313: H_{t+1} \\le e^{-\\rho_k} (H_t - \\alpha W_t^2 + C_{\\text{clone}})\n1314: $$\n1315: \n1316: $$\n1317: W_{t+1}^2 \\le (1 + \\beta)(1 - \\kappa_W) W_t^2 + (1 + \\beta) C_W\n1318: $$\n1319: \n1320: Define $K_W = (1 + \\beta)(1 - \\kappa_W)$. Expanding:\n1321: \n1322: $$\n1323: H_{t+1} \\le e^{-\\rho_k} H_t - \\alpha e^{-\\rho_k} W_t^2 + e^{-\\rho_k} C_{\\text{clone}}\n1324: $$\n1325: \n1326: $$\n1327: W_{t+1}^2 \\le K_W W_t^2 + (1 + \\beta) C_W\n1328: $$\n1329: \n1330: **Step 4: Lyapunov function evolution**\n1331: \n1332: $$\n1333: V_{t+1} = H_{t+1} + c W_{t+1}^2\n1334: $$\n1335: \n1336: $$\n1337: \\le e^{-\\rho_k} H_t - \\alpha e^{-\\rho_k} W_t^2 + e^{-\\rho_k} C_{\\text{clone}} + c K_W W_t^2 + c(1 + \\beta) C_W\n1338: $$\n1339: \n1340: Group terms in $H_t$ and $W_t^2$:\n1341: \n1342: $$\n1343: V_{t+1} \\le e^{-\\rho_k} H_t + [c K_W - \\alpha e^{-\\rho_k}] W_t^2 + C_{\\text{steady}}\n1344: $$\n1345: \n1346: where $C_{\\text{steady}} = e^{-\\rho_k} C_{\\text{clone}} + c(1 + \\beta) C_W$.\n1347: \n1348: **Step 5: Choosing $c$ to ensure contraction**\n1349: \n1350: For $V_{t+1} \\le \\lambda V_t$ with $\\lambda < 1$, we need:\n1351: \n1352: $$\n1353: e^{-\\rho_k} H_t + [c K_W - \\alpha e^{-\\rho_k}] W_t^2 \\le \\lambda (H_t + c W_t^2)\n1354: $$\n1355: \n1356: This requires:\n1357: 1. $e^{-\\rho_k} \\le \\lambda$ (entropy coefficient)\n1358: 2. $c K_W - \\alpha e^{-\\rho_k} \\le \\lambda c$ (Wasserstein coefficient)\n1359: \n1360: From condition 2:\n1361: \n1362: $$\n1363: c(K_W - \\lambda) \\le \\alpha e^{-\\rho_k}\n1364: $$\n1365: \n1366: **Case 1:** $K_W < 1$ (cloning dominates kinetic expansion).\n1367: \n1368: Choose $\\lambda$ such that $\\max(e^{-\\rho_k}, K_W) < \\lambda < 1$. Then $K_W - \\lambda < 0$, so:\n1369: \n1370: $$\n1371: c \\ge \\frac{\\alpha e^{-\\rho_k}}{\\lambda - K_W}\n1372: $$\n1373: \n1374: This is always satisfiable with finite $c > 0$.\n1375: \n1376: **Case 2:** $K_W \\ge 1$ (kinetic expansion dominates).\n1377: \n1378: We cannot achieve $\\lambda < 1$ with any finite $c$. This requires the **seesaw condition**:\n1379: \n1380: $$\n1381: \\kappa_W > \\frac{\\beta}{1 + \\beta}\n1382: $$\n1383: \n1384: which ensures $K_W < 1$.\n1385: \n1386: **Step 6: Optimal choice of $\\lambda$ and $c$**\n1387: \n1388: To minimize $\\lambda$, choose $\\lambda$ close to $\\max(e^{-\\rho_k}, K_W)$ and set:\n1389: \n1390: $$\n1391: c = \\frac{\\alpha e^{-\\rho_k}}{\\lambda - K_W} = \\frac{\\alpha e^{-\\rho_k}}{1 - K_W}\n1392: $$",
+      "metadata": {},
+      "section": "## 5. The Composition Theorem: Entropy-Transport Lyapunov Function",
+      "raw_directive": "1275: :::\n1276: \n1277: :::{prf:proof}\n1278: Let $\\mu_t$ be the distribution at step $t$. Define:\n1279: - $\\mu_{t+1/2} = (\\Psi_{\\text{clone}})_* \\mu_t$ (after cloning)\n1280: - $\\mu_{t+1} = (\\Psi_{\\text{kin}})_* \\mu_{t+1/2}$ (after kinetics)\n1281: \n1282: **Step 1: Evolution through cloning**\n1283: \n1284: From Lemma {prf:ref}`lem-entropy-transport-dissipation`:\n1285: \n1286: $$\n1287: H_{t+1/2} := D_{\\text{KL}}(\\mu_{t+1/2} \\| \\pi) \\le H_t - \\alpha W_t^2 + C_{\\text{clone}}\n1288: $$\n1289: \n1290: From Lemma {prf:ref}`lem-cloning-wasserstein-contraction`:\n1291: \n1292: $$\n1293: W_{t+1/2}^2 := W_2^2(\\mu_{t+1/2}, \\pi) \\le (1 - \\kappa_W) W_t^2 + C_W\n1294: $$\n1295: \n1296: **Step 2: Evolution through kinetics**\n1297: \n1298: From Lemma {prf:ref}`lem-kinetic-evolution-bounds`:\n1299: \n1300: $$\n1301: H_{t+1} := D_{\\text{KL}}(\\mu_{t+1} \\| \\pi) \\le e^{-\\rho_k} H_{t+1/2}\n1302: $$\n1303: \n1304: $$\n1305: W_{t+1}^2 := W_2^2(\\mu_{t+1}, \\pi) \\le (1 + \\beta) W_{t+1/2}^2\n1306: $$\n1307: \n1308: **Step 3: Combined one-step evolution**\n1309: \n1310: Substitute the cloning bounds into the kinetic bounds:\n1311: \n1312: $$\n1313: H_{t+1} \\le e^{-\\rho_k} (H_t - \\alpha W_t^2 + C_{\\text{clone}})\n1314: $$\n1315: \n1316: $$\n1317: W_{t+1}^2 \\le (1 + \\beta)(1 - \\kappa_W) W_t^2 + (1 + \\beta) C_W\n1318: $$\n1319: \n1320: Define $K_W = (1 + \\beta)(1 - \\kappa_W)$. Expanding:\n1321: \n1322: $$\n1323: H_{t+1} \\le e^{-\\rho_k} H_t - \\alpha e^{-\\rho_k} W_t^2 + e^{-\\rho_k} C_{\\text{clone}}\n1324: $$\n1325: \n1326: $$\n1327: W_{t+1}^2 \\le K_W W_t^2 + (1 + \\beta) C_W\n1328: $$\n1329: \n1330: **Step 4: Lyapunov function evolution**\n1331: \n1332: $$\n1333: V_{t+1} = H_{t+1} + c W_{t+1}^2\n1334: $$\n1335: \n1336: $$\n1337: \\le e^{-\\rho_k} H_t - \\alpha e^{-\\rho_k} W_t^2 + e^{-\\rho_k} C_{\\text{clone}} + c K_W W_t^2 + c(1 + \\beta) C_W\n1338: $$\n1339: \n1340: Group terms in $H_t$ and $W_t^2$:\n1341: \n1342: $$\n1343: V_{t+1} \\le e^{-\\rho_k} H_t + [c K_W - \\alpha e^{-\\rho_k}] W_t^2 + C_{\\text{steady}}\n1344: $$\n1345: \n1346: where $C_{\\text{steady}} = e^{-\\rho_k} C_{\\text{clone}} + c(1 + \\beta) C_W$.\n1347: \n1348: **Step 5: Choosing $c$ to ensure contraction**\n1349: \n1350: For $V_{t+1} \\le \\lambda V_t$ with $\\lambda < 1$, we need:\n1351: \n1352: $$\n1353: e^{-\\rho_k} H_t + [c K_W - \\alpha e^{-\\rho_k}] W_t^2 \\le \\lambda (H_t + c W_t^2)\n1354: $$\n1355: \n1356: This requires:\n1357: 1. $e^{-\\rho_k} \\le \\lambda$ (entropy coefficient)\n1358: 2. $c K_W - \\alpha e^{-\\rho_k} \\le \\lambda c$ (Wasserstein coefficient)\n1359: \n1360: From condition 2:\n1361: \n1362: $$\n1363: c(K_W - \\lambda) \\le \\alpha e^{-\\rho_k}\n1364: $$\n1365: \n1366: **Case 1:** $K_W < 1$ (cloning dominates kinetic expansion).\n1367: \n1368: Choose $\\lambda$ such that $\\max(e^{-\\rho_k}, K_W) < \\lambda < 1$. Then $K_W - \\lambda < 0$, so:\n1369: \n1370: $$\n1371: c \\ge \\frac{\\alpha e^{-\\rho_k}}{\\lambda - K_W}\n1372: $$\n1373: \n1374: This is always satisfiable with finite $c > 0$.\n1375: \n1376: **Case 2:** $K_W \\ge 1$ (kinetic expansion dominates).\n1377: \n1378: We cannot achieve $\\lambda < 1$ with any finite $c$. This requires the **seesaw condition**:\n1379: \n1380: $$\n1381: \\kappa_W > \\frac{\\beta}{1 + \\beta}\n1382: $$\n1383: \n1384: which ensures $K_W < 1$.\n1385: \n1386: **Step 6: Optimal choice of $\\lambda$ and $c$**\n1387: \n1388: To minimize $\\lambda$, choose $\\lambda$ close to $\\max(e^{-\\rho_k}, K_W)$ and set:\n1389: \n1390: $$\n1391: c = \\frac{\\alpha e^{-\\rho_k}}{\\lambda - K_W} = \\frac{\\alpha e^{-\\rho_k}}{1 - K_W}\n1392: $$\n1393: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-main-lsi-composition",
+      "title": "Discrete-Time LSI for the Euclidean Gas",
+      "start_line": 1397,
+      "end_line": 1415,
+      "header_lines": [
+        1398
+      ],
+      "content_start": 1400,
+      "content_end": 1414,
+      "content": "1400: :label: thm-main-lsi-composition\n1401: \n1402: Under the seesaw condition $\\kappa_W > \\beta/(1+\\beta)$, the composed operator $\\Psi_{\\text{total}}$ satisfies a discrete-time LSI. For any initial distribution $\\mu_0$:\n1403: \n1404: $$\n1405: D_{\\text{KL}}(\\mu_t \\| \\pi_{\\text{QSD}}) \\le C_{\\text{init}} \\lambda^t V(\\mu_0) \\le C_{\\text{init}} \\lambda^t (D_{\\text{KL}}(\\mu_0 \\| \\pi) + c W_2^2(\\mu_0, \\pi))\n1406: $$\n1407: \n1408: where $\\lambda < 1$ is from Theorem {prf:ref}`thm-entropy-transport-contraction$.\n1409: \n1410: **LSI constant:**\n1411: \n1412: $$\n1413: C_{\\text{LSI}} = \\frac{-1}{\\log \\lambda} \\approx \\frac{1}{1 - \\lambda}\n1414: $$",
+      "metadata": {
+        "label": "thm-main-lsi-composition"
+      },
+      "section": "## 5. The Composition Theorem: Entropy-Transport Lyapunov Function",
+      "raw_directive": "1397: ### 5.5. LSI for the Composed Operator\n1398: \n1399: :::{prf:theorem} Discrete-Time LSI for the Euclidean Gas\n1400: :label: thm-main-lsi-composition\n1401: \n1402: Under the seesaw condition $\\kappa_W > \\beta/(1+\\beta)$, the composed operator $\\Psi_{\\text{total}}$ satisfies a discrete-time LSI. For any initial distribution $\\mu_0$:\n1403: \n1404: $$\n1405: D_{\\text{KL}}(\\mu_t \\| \\pi_{\\text{QSD}}) \\le C_{\\text{init}} \\lambda^t V(\\mu_0) \\le C_{\\text{init}} \\lambda^t (D_{\\text{KL}}(\\mu_0 \\| \\pi) + c W_2^2(\\mu_0, \\pi))\n1406: $$\n1407: \n1408: where $\\lambda < 1$ is from Theorem {prf:ref}`thm-entropy-transport-contraction$.\n1409: \n1410: **LSI constant:**\n1411: \n1412: $$\n1413: C_{\\text{LSI}} = \\frac{-1}{\\log \\lambda} \\approx \\frac{1}{1 - \\lambda}\n1414: $$\n1415: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-368",
+      "title": null,
+      "start_line": 1417,
+      "end_line": 1429,
+      "header_lines": [],
+      "content_start": 1418,
+      "content_end": 1428,
+      "content": "1418: \n1419: :::{prf:proof}\n1420: **Step 1:** From Theorem {prf:ref}`thm-entropy-transport-contraction`, $V_t \\le \\lambda^t V_0 + C_{\\text{steady}}/(1 - \\lambda)$.\n1421: \n1422: **Step 2:** Since $H_t = D_{\\text{KL}}(\\mu_t \\| \\pi) \\le V_t$:\n1423: \n1424: $$\n1425: D_{\\text{KL}}(\\mu_t \\| \\pi) \\le \\lambda^t V_0 + C_{\\text{steady}}/(1 - \\lambda)\n1426: $$\n1427: \n1428: **Step 3:** For large $t$, the steady-state term dominates, giving exponential convergence with rate $\\lambda$.",
+      "metadata": {},
+      "section": "## 5. The Composition Theorem: Entropy-Transport Lyapunov Function",
+      "raw_directive": "1417: :::\n1418: \n1419: :::{prf:proof}\n1420: **Step 1:** From Theorem {prf:ref}`thm-entropy-transport-contraction`, $V_t \\le \\lambda^t V_0 + C_{\\text{steady}}/(1 - \\lambda)$.\n1421: \n1422: **Step 2:** Since $H_t = D_{\\text{KL}}(\\mu_t \\| \\pi) \\le V_t$:\n1423: \n1424: $$\n1425: D_{\\text{KL}}(\\mu_t \\| \\pi) \\le \\lambda^t V_0 + C_{\\text{steady}}/(1 - \\lambda)\n1426: $$\n1427: \n1428: **Step 3:** For large $t$, the steady-state term dominates, giving exponential convergence with rate $\\lambda$.\n1429: "
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-quantitative-lsi-final",
+      "title": "Quantitative LSI Constant",
+      "start_line": 1433,
+      "end_line": 1462,
+      "header_lines": [
+        1434
+      ],
+      "content_start": 1436,
+      "content_end": 1461,
+      "content": "1436: :label: cor-quantitative-lsi-final\n1437: \n1438: For the N-particle Euclidean Gas with parameters:\n1439: - Friction $\\gamma > 0$\n1440: - Confining potential convexity $\\kappa_{\\text{conf}} > 0$\n1441: - Cloning Wasserstein contraction $\\kappa_W > 0$ (from Keystone Principle)\n1442: - Kinetic time step $\\tau > 0$\n1443: - Maximum velocity $v_{\\max}$\n1444: - Domain radius $r_{\\text{valid}}$\n1445: \n1446: the system satisfies an LSI provided:\n1447: \n1448: **Seesaw condition:**\n1449: \n1450: $$\n1451: \\kappa_W > \\frac{\\beta}{1 + \\beta} \\quad \\text{where} \\quad \\beta = O\\left(\\frac{\\tau v_{\\max}^2}{r_{\\text{valid}}^2}\\right)\n1452: $$\n1453: \n1454: The LSI constant is:\n1455: \n1456: $$\n1457: C_{\\text{LSI}} = O\\left(\\frac{1}{\\min(\\gamma, \\kappa_{\\text{conf}}) \\cdot \\kappa_W}\\right)\n1458: $$\n1459: \n1460: **Practical interpretation:**\n1461: - Small time steps $\\tau$ reduce $\\beta$, making the seesaw condition easier to satisfy",
+      "metadata": {
+        "label": "cor-quantitative-lsi-final"
+      },
+      "section": "## 5. The Composition Theorem: Entropy-Transport Lyapunov Function",
+      "raw_directive": "1433: ### 5.6. Explicit Constants and Parameter Conditions\n1434: \n1435: :::{prf:corollary} Quantitative LSI Constant\n1436: :label: cor-quantitative-lsi-final\n1437: \n1438: For the N-particle Euclidean Gas with parameters:\n1439: - Friction $\\gamma > 0$\n1440: - Confining potential convexity $\\kappa_{\\text{conf}} > 0$\n1441: - Cloning Wasserstein contraction $\\kappa_W > 0$ (from Keystone Principle)\n1442: - Kinetic time step $\\tau > 0$\n1443: - Maximum velocity $v_{\\max}$\n1444: - Domain radius $r_{\\text{valid}}$\n1445: \n1446: the system satisfies an LSI provided:\n1447: \n1448: **Seesaw condition:**\n1449: \n1450: $$\n1451: \\kappa_W > \\frac{\\beta}{1 + \\beta} \\quad \\text{where} \\quad \\beta = O\\left(\\frac{\\tau v_{\\max}^2}{r_{\\text{valid}}^2}\\right)\n1452: $$\n1453: \n1454: The LSI constant is:\n1455: \n1456: $$\n1457: C_{\\text{LSI}} = O\\left(\\frac{1}{\\min(\\gamma, \\kappa_{\\text{conf}}) \\cdot \\kappa_W}\\right)\n1458: $$\n1459: \n1460: **Practical interpretation:**\n1461: - Small time steps $\\tau$ reduce $\\beta$, making the seesaw condition easier to satisfy\n1462: - Strong cloning contraction $\\kappa_W$ (high fitness signal) ensures LSI"
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-415",
+      "title": null,
+      "start_line": 1464,
+      "end_line": 1475,
+      "header_lines": [],
+      "content_start": 1465,
+      "content_end": 1474,
+      "content": "1465: \n1466: :::{prf:proof}\n1467: Direct computation from Theorem {prf:ref}`thm-main-lsi-composition` using:\n1468: - $\\rho_k = \\alpha\\tau/C_0 = O(\\min(\\gamma, \\kappa_{\\text{conf}}) \\tau)$\n1469: - $\\alpha = O(\\kappa_{\\text{conf}} \\kappa_x) = O(\\kappa_{\\text{conf}} \\kappa_W)$\n1470: - $K_W = (1 + \\beta)(1 - \\kappa_W) \\approx 1 - \\kappa_W + \\beta$\n1471: \n1472: For $\\lambda \\approx 1 - \\epsilon$ with $\\epsilon = O(\\min(\\rho_k, 1 - K_W))$:\n1473: \n1474: $$",
+      "metadata": {},
+      "section": "## 5. The Composition Theorem: Entropy-Transport Lyapunov Function",
+      "raw_directive": "1464: :::\n1465: \n1466: :::{prf:proof}\n1467: Direct computation from Theorem {prf:ref}`thm-main-lsi-composition` using:\n1468: - $\\rho_k = \\alpha\\tau/C_0 = O(\\min(\\gamma, \\kappa_{\\text{conf}}) \\tau)$\n1469: - $\\alpha = O(\\kappa_{\\text{conf}} \\kappa_x) = O(\\kappa_{\\text{conf}} \\kappa_W)$\n1470: - $K_W = (1 + \\beta)(1 - \\kappa_W) \\approx 1 - \\kappa_W + \\beta$\n1471: \n1472: For $\\lambda \\approx 1 - \\epsilon$ with $\\epsilon = O(\\min(\\rho_k, 1 - K_W))$:\n1473: \n1474: $$\n1475: C_{\\text{LSI}} \\approx 1/\\epsilon = O(1/(\\min(\\gamma, \\kappa_{\\text{conf}}) \\kappa_W))"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

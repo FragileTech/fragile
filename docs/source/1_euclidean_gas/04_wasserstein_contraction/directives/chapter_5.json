@@ -1,0 +1,65 @@
+{
+  "chapter_index": 5,
+  "section_id": "## 5. Expected Distance Change Under Cloning",
+  "directive_count": 3,
+  "hints": [
+    {
+      "directive_type": "lemma",
+      "label": "lem-expected-distance-change",
+      "title": "Expected Cross-Distance Change",
+      "start_line": 711,
+      "end_line": 764,
+      "header_lines": [
+        712
+      ],
+      "content_start": 714,
+      "content_end": 763,
+      "content": "714: :label: lem-expected-distance-change\n715: \n716: Under the cluster-preserving coupling {prf:ref}`def-cluster-coupling`, the expected change in population-level cross-distance $D_{IJ}$ after cloning in swarm 1 is:\n717: \n718: $$\n719: \\mathbb{E}[\\Delta D_{IJ}] \\leq -\\bar{p}_I \\cdot c_{\\text{geom}} \\|\\mu_x(I_1) - \\mu_x(J_1)\\|^2 + O(\\delta^2)\n720: \n721: $$\n722: \n723: where:\n724: - $\\bar{p}_I = \\frac{1}{|I_1|} \\sum_{i \\in I_1} p_{1,i}$ is the average cloning probability in target set\n725: - $c_{\\text{geom}} > 0$ is a geometric constant from the cluster alignment\n726: \n727: **Proof:**\n728: \n729: Consider a walker $i \\in I_1$ (target set) with cloning probability $p_{1,i}$.\n730: \n731: If $i$ clones from a walker $j_1 \\in J_1$ (companion in complement set), the position updates:\n732: \n733: $$\n734: x'_{1,i} = x_{1,j_1} + \\zeta_i\n735: \n736: $$\n737: \n738: where $\\zeta_i \\sim \\mathcal{N}(0, \\delta^2 I_d)$.\n739: \n740: The change in squared distance to a walker $j_2 \\in I_2$ (target set in swarm 2) is:\n741: \n742: $$\n743: \\begin{aligned}\n744: \\Delta_{ij_2} &:= \\|x'_{1,i} - x_{2,j_2}\\|^2 - \\|x_{1,i} - x_{2,j_2}\\|^2 \\\\\n745: &= \\|x_{1,j_1} + \\zeta_i - x_{2,j_2}\\|^2 - \\|x_{1,i} - x_{2,j_2}\\|^2\n746: \\end{aligned}\n747: \n748: $$\n749: \n750: Taking expectation over $\\zeta_i$:\n751: \n752: $$\n753: \\mathbb{E}_{\\zeta_i}[\\Delta_{ij_2}] = \\|x_{1,j_1} - x_{2,j_2}\\|^2 - \\|x_{1,i} - x_{2,j_2}\\|^2 + d\\delta^2\n754: \n755: $$\n756: \n757: Using the identity $\\|a - c\\|^2 - \\|b - c\\|^2 = \\|a - b\\|^2 + 2\\langle a - b, b - c\\rangle$:\n758: \n759: $$\n760: \\mathbb{E}_{\\zeta_i}[\\Delta_{ij_2}] = \\|x_{1,j_1} - x_{1,i}\\|^2 + 2\\langle x_{1,j_1} - x_{1,i}, x_{1,i} - x_{2,j_2}\\rangle + d\\delta^2\n761: \n762: $$\n763: ",
+      "metadata": {
+        "label": "lem-expected-distance-change"
+      },
+      "section": "## 5. Expected Distance Change Under Cloning",
+      "raw_directive": "711: ### 5.1. Population-Level Cloning Dynamics\n712: \n713: :::{prf:lemma} Expected Cross-Distance Change\n714: :label: lem-expected-distance-change\n715: \n716: Under the cluster-preserving coupling {prf:ref}`def-cluster-coupling`, the expected change in population-level cross-distance $D_{IJ}$ after cloning in swarm 1 is:\n717: \n718: $$\n719: \\mathbb{E}[\\Delta D_{IJ}] \\leq -\\bar{p}_I \\cdot c_{\\text{geom}} \\|\\mu_x(I_1) - \\mu_x(J_1)\\|^2 + O(\\delta^2)\n720: \n721: $$\n722: \n723: where:\n724: - $\\bar{p}_I = \\frac{1}{|I_1|} \\sum_{i \\in I_1} p_{1,i}$ is the average cloning probability in target set\n725: - $c_{\\text{geom}} > 0$ is a geometric constant from the cluster alignment\n726: \n727: **Proof:**\n728: \n729: Consider a walker $i \\in I_1$ (target set) with cloning probability $p_{1,i}$.\n730: \n731: If $i$ clones from a walker $j_1 \\in J_1$ (companion in complement set), the position updates:\n732: \n733: $$\n734: x'_{1,i} = x_{1,j_1} + \\zeta_i\n735: \n736: $$\n737: \n738: where $\\zeta_i \\sim \\mathcal{N}(0, \\delta^2 I_d)$.\n739: \n740: The change in squared distance to a walker $j_2 \\in I_2$ (target set in swarm 2) is:\n741: \n742: $$\n743: \\begin{aligned}\n744: \\Delta_{ij_2} &:= \\|x'_{1,i} - x_{2,j_2}\\|^2 - \\|x_{1,i} - x_{2,j_2}\\|^2 \\\\\n745: &= \\|x_{1,j_1} + \\zeta_i - x_{2,j_2}\\|^2 - \\|x_{1,i} - x_{2,j_2}\\|^2\n746: \\end{aligned}\n747: \n748: $$\n749: \n750: Taking expectation over $\\zeta_i$:\n751: \n752: $$\n753: \\mathbb{E}_{\\zeta_i}[\\Delta_{ij_2}] = \\|x_{1,j_1} - x_{2,j_2}\\|^2 - \\|x_{1,i} - x_{2,j_2}\\|^2 + d\\delta^2\n754: \n755: $$\n756: \n757: Using the identity $\\|a - c\\|^2 - \\|b - c\\|^2 = \\|a - b\\|^2 + 2\\langle a - b, b - c\\rangle$:\n758: \n759: $$\n760: \\mathbb{E}_{\\zeta_i}[\\Delta_{ij_2}] = \\|x_{1,j_1} - x_{1,i}\\|^2 + 2\\langle x_{1,j_1} - x_{1,i}, x_{1,i} - x_{2,j_2}\\rangle + d\\delta^2\n761: \n762: $$\n763: \n764: :::{note}"
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-target-cloning-pressure",
+      "title": "Cloning Pressure on Target Set",
+      "start_line": 803,
+      "end_line": 833,
+      "header_lines": [
+        804
+      ],
+      "content_start": 806,
+      "content_end": 832,
+      "content": "806: :label: lem-target-cloning-pressure\n807: \n808: For any walker $i \\in I_k$ (target set), the cloning probability satisfies:\n809: \n810: $$\n811: p_{k,i} \\geq p_u(\\varepsilon) > 0\n812: \n813: $$\n814: \n815: where $p_u(\\varepsilon)$ is the N-uniform constant from Lemma 8.3.2 in [03_cloning](03_cloning), line 4881.\n816: \n817: **Proof:**\n818: \n819: By definition, $I_k = U_k \\cap H_k$ where $U_k$ is the unfit set.\n820: \n821: Lemma 8.3.2 ([03_cloning](03_cloning), line 4881) states:\n822: \n823: > For any walker $i$ in the unfit set $U_k$, its total cloning probability is bounded below by a positive, N-uniform, and $\\varepsilon$-dependent constant $p_u(\\varepsilon) > 0$.\n824: \n825: Since $I_k \\subseteq U_k$, the bound applies to all $i \\in I_k$.\n826: \n827: The explicit formula (from Section 8.6.1.1, line 5334):\n828: \n829: $$\n830: p_u(\\varepsilon) = \\min\\left(1, \\frac{1}{p_{\\max}(V_{\\text{pot,max}} + \\varepsilon_{\\text{clone}})} \\cdot \\frac{f_F f_U \\kappa_{V,\\text{gap}}(\\varepsilon)}{(k-1)(f_F + f_U^2/f_F)}\\right)\n831: \n832: $$",
+      "metadata": {
+        "label": "lem-target-cloning-pressure"
+      },
+      "section": "## 5. Expected Distance Change Under Cloning",
+      "raw_directive": "803: ### 5.2. Lower Bound on Average Cloning Probability\n804: \n805: :::{prf:lemma} Cloning Pressure on Target Set\n806: :label: lem-target-cloning-pressure\n807: \n808: For any walker $i \\in I_k$ (target set), the cloning probability satisfies:\n809: \n810: $$\n811: p_{k,i} \\geq p_u(\\varepsilon) > 0\n812: \n813: $$\n814: \n815: where $p_u(\\varepsilon)$ is the N-uniform constant from Lemma 8.3.2 in [03_cloning](03_cloning), line 4881.\n816: \n817: **Proof:**\n818: \n819: By definition, $I_k = U_k \\cap H_k$ where $U_k$ is the unfit set.\n820: \n821: Lemma 8.3.2 ([03_cloning](03_cloning), line 4881) states:\n822: \n823: > For any walker $i$ in the unfit set $U_k$, its total cloning probability is bounded below by a positive, N-uniform, and $\\varepsilon$-dependent constant $p_u(\\varepsilon) > 0$.\n824: \n825: Since $I_k \\subseteq U_k$, the bound applies to all $i \\in I_k$.\n826: \n827: The explicit formula (from Section 8.6.1.1, line 5334):\n828: \n829: $$\n830: p_u(\\varepsilon) = \\min\\left(1, \\frac{1}{p_{\\max}(V_{\\text{pot,max}} + \\varepsilon_{\\text{clone}})} \\cdot \\frac{f_F f_U \\kappa_{V,\\text{gap}}(\\varepsilon)}{(k-1)(f_F + f_U^2/f_F)}\\right)\n831: \n832: $$\n833: "
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-average-cloning",
+      "title": "Average Cloning Pressure Bound",
+      "start_line": 835,
+      "end_line": 846,
+      "header_lines": [
+        836
+      ],
+      "content_start": 838,
+      "content_end": 845,
+      "content": "838: :label: cor-average-cloning\n839: \n840: The average cloning probability in the target set satisfies:\n841: \n842: $$\n843: \\bar{p}_I = \\frac{1}{|I_1|} \\sum_{i \\in I_1} p_{1,i} \\geq p_u(\\varepsilon)\n844: \n845: $$",
+      "metadata": {
+        "label": "cor-average-cloning"
+      },
+      "section": "## 5. Expected Distance Change Under Cloning",
+      "raw_directive": "835: :::\n836: \n837: :::{prf:corollary} Average Cloning Pressure Bound\n838: :label: cor-average-cloning\n839: \n840: The average cloning probability in the target set satisfies:\n841: \n842: $$\n843: \\bar{p}_I = \\frac{1}{|I_1|} \\sum_{i \\in I_1} p_{1,i} \\geq p_u(\\varepsilon)\n844: \n845: $$\n846: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

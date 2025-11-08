@@ -1,0 +1,29 @@
+{
+  "chapter_index": 4,
+  "section_id": "## 0. Overview and Strategy",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-main-kl-convergence",
+      "title": "Exponential KL-Convergence for the Euclidean Gas",
+      "start_line": 166,
+      "end_line": 192,
+      "header_lines": [
+        167
+      ],
+      "content_start": 169,
+      "content_end": 191,
+      "content": "169: :label: thm-main-kl-convergence\n170: \n171: Under Axiom {prf:ref}`axiom-qsd-log-concave` (log-concavity of the quasi-stationary distribution), for the N-particle Euclidean Gas with parameters satisfying the Foster-Lyapunov conditions of Theorem 8.1 in [06_convergence](06_convergence), and with cloning noise variance $\\delta^2$ satisfying:\n172: \n173: $$\n174: \\delta > \\delta_* = e^{-\\alpha\\tau/(2C_0)} \\cdot C_{\\text{HWI}} \\sqrt{\\frac{2(1 - \\kappa_W)}{\\kappa_{\\text{conf}}}}\n175: $$\n176: \n177: the discrete-time Markov chain\n178: \n179: $$\n180: S_{t+1} = \\Psi_{\\text{total}}(S_t) := (\\Psi_{\\text{kin}}(\\tau) \\circ \\Psi_{\\text{clone}})(S_t)\n181: $$\n182: \n183: satisfies a discrete-time logarithmic Sobolev inequality with constant $C_{\\text{LSI}} > 0$. Consequently, for any initial distribution $\\mu_0$ with finite entropy:\n184: \n185: $$\n186: D_{\\text{KL}}(\\mu_t \\| \\pi_{\\text{QSD}}) \\le e^{-t/C_{\\text{LSI}}} \\cdot D_{\\text{KL}}(\\mu_0 \\| \\pi_{\\text{QSD}})\n187: $$\n188: \n189: where $\\pi_{\\text{QSD}}$ is the unique quasi-stationary distribution.\n190: \n191: **Explicit constant:** $C_{\\text{LSI}} = O(1/(\\gamma \\kappa_{\\text{conf}} \\kappa_W \\delta^2))$ where $\\gamma$ is the friction coefficient, $\\kappa_{\\text{conf}}$ is the convexity constant of the confining potential, $\\kappa_W$ is the Wasserstein contraction rate, and $\\delta^2$ is the cloning noise variance.",
+      "metadata": {
+        "label": "thm-main-kl-convergence"
+      },
+      "section": "## 0. Overview and Strategy",
+      "raw_directive": "166: The central theorem of this document is:\n167: \n168: :::{prf:theorem} Exponential KL-Convergence for the Euclidean Gas\n169: :label: thm-main-kl-convergence\n170: \n171: Under Axiom {prf:ref}`axiom-qsd-log-concave` (log-concavity of the quasi-stationary distribution), for the N-particle Euclidean Gas with parameters satisfying the Foster-Lyapunov conditions of Theorem 8.1 in [06_convergence](06_convergence), and with cloning noise variance $\\delta^2$ satisfying:\n172: \n173: $$\n174: \\delta > \\delta_* = e^{-\\alpha\\tau/(2C_0)} \\cdot C_{\\text{HWI}} \\sqrt{\\frac{2(1 - \\kappa_W)}{\\kappa_{\\text{conf}}}}\n175: $$\n176: \n177: the discrete-time Markov chain\n178: \n179: $$\n180: S_{t+1} = \\Psi_{\\text{total}}(S_t) := (\\Psi_{\\text{kin}}(\\tau) \\circ \\Psi_{\\text{clone}})(S_t)\n181: $$\n182: \n183: satisfies a discrete-time logarithmic Sobolev inequality with constant $C_{\\text{LSI}} > 0$. Consequently, for any initial distribution $\\mu_0$ with finite entropy:\n184: \n185: $$\n186: D_{\\text{KL}}(\\mu_t \\| \\pi_{\\text{QSD}}) \\le e^{-t/C_{\\text{LSI}}} \\cdot D_{\\text{KL}}(\\mu_0 \\| \\pi_{\\text{QSD}})\n187: $$\n188: \n189: where $\\pi_{\\text{QSD}}$ is the unique quasi-stationary distribution.\n190: \n191: **Explicit constant:** $C_{\\text{LSI}} = O(1/(\\gamma \\kappa_{\\text{conf}} \\kappa_W \\delta^2))$ where $\\gamma$ is the friction coefficient, $\\kappa_{\\text{conf}}$ is the convexity constant of the confining potential, $\\kappa_W$ is the Wasserstein contraction rate, and $\\delta^2$ is the cloning noise variance.\n192: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

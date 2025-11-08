@@ -1,0 +1,159 @@
+{
+  "document_id": "10_qsd_exchangeability_theory",
+  "stage": "directives",
+  "directive_type": "theorem",
+  "generated_at": "2025-11-08T17:07:43.220475+00:00",
+  "count": 6,
+  "items": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-qsd-exchangeability",
+      "title": "Exchangeability of the QSD",
+      "start_line": 11,
+      "end_line": 21,
+      "header_lines": [
+        12
+      ],
+      "content_start": 14,
+      "content_end": 20,
+      "content": "14: :label: thm-qsd-exchangeability\n15: \n16: Let $\\pi_N \\in \\mathcal{P}(\\Sigma_N)$ be the unique Quasi-Stationary Distribution of the Euclidean Gas. Then $\\pi_N$ is an **exchangeable probability measure**: for any permutation $\\sigma \\in S_N$ and any measurable set $A \\subseteq \\Sigma_N$:\n17: \n18: $$\n19: \\pi_N(\\{(w_1, \\ldots, w_N) \\in A\\}) = \\pi_N(\\{(w_{\\sigma(1)}, \\ldots, w_{\\sigma(N)}) \\in A\\})\n20: $$",
+      "metadata": {
+        "label": "thm-qsd-exchangeability"
+      },
+      "section": "## A1.1 QSD Structure: Exchangeability",
+      "raw_directive": "11: ### A1.1.1 Main Result\n12: \n13: :::{prf:theorem} Exchangeability of the QSD\n14: :label: thm-qsd-exchangeability\n15: \n16: Let $\\pi_N \\in \\mathcal{P}(\\Sigma_N)$ be the unique Quasi-Stationary Distribution of the Euclidean Gas. Then $\\pi_N$ is an **exchangeable probability measure**: for any permutation $\\sigma \\in S_N$ and any measurable set $A \\subseteq \\Sigma_N$:\n17: \n18: $$\n19: \\pi_N(\\{(w_1, \\ldots, w_N) \\in A\\}) = \\pi_N(\\{(w_{\\sigma(1)}, \\ldots, w_{\\sigma(N)}) \\in A\\})\n20: $$\n21: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "10_qsd_exchangeability_theory",
+        "chapter_index": 0,
+        "chapter_file": "chapter_0.json",
+        "section_id": "## A1.1 QSD Structure: Exchangeability"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-hewitt-savage-representation",
+      "title": "Finite de Finetti Representation",
+      "start_line": 50,
+      "end_line": 76,
+      "header_lines": [
+        51
+      ],
+      "content_start": 53,
+      "content_end": 75,
+      "content": "53: :label: thm-hewitt-savage-representation\n54: \n55: Since $\\pi_N$ is exchangeable on the compact space $\\Omega$, there exists a probability measure $\\mathcal{Q}_N$ on $\\mathcal{P}(\\Omega)$ (the **mixing measure**) such that for any $k$-particle marginal with $1 \\leq k \\leq N$:\n56: \n57: $$\n58: d_{\\text{TV}}\\left(\\pi_{N,k}, \\int_{\\mathcal{P}(\\Omega)} \\mu^{\\otimes k} \\, d\\mathcal{Q}_N(\\mu)\\right) \\leq \\frac{k(k-1)}{2N}\n59: $$\n60: \n61: where $\\pi_{N,k}$ is the law of the first $k$ walkers under $\\pi_N$, $\\mu^{\\otimes k}$ denotes the $k$-fold product measure (walkers are i.i.d. with law $\\mu$), and $d_{\\text{TV}}$ is total variation distance.\n62: \n63: **Key consequences**:\n64: \n65: 1. **Low-order marginals** ($k$ fixed, $N \\to \\infty$): The bound is $O(1/N)$\n66:    - Pairwise marginals ($k=2$): $d_{\\text{TV}} \\leq 1/N$\n67:    - Single-particle marginal ($k=1$): exact representation\n68: \n69: 2. **Full N-particle distribution** ($k=N$): The bound is $O(N)$\n70:    - $d_{\\text{TV}}(\\pi_N, \\int \\mu^{\\otimes N} d\\mathcal{Q}_N) \\leq (N-1)/2$\n71:    - Representation becomes exact only in the limit $N \\to \\infty$\n72: \n73: **Interpretation**: The QSD can be **approximately** represented as a mixture of IID configurations. The approximation is excellent for low-order marginals ($k \\ll N$), which is precisely what is needed for correlation decay and propagation of chaos.\n74: \n75: **Construction**: The mixing measure $\\mathcal{Q}_N$ is the law of the empirical measure $L_N = \\frac{1}{N}\\sum_{i=1}^N \\delta_{w_i}$ when $(w_1, \\ldots, w_N) \\sim \\pi_N$.",
+      "metadata": {
+        "label": "thm-hewitt-savage-representation"
+      },
+      "section": "## A1.1 QSD Structure: Exchangeability",
+      "raw_directive": "50: ### A1.1.2 Hewitt-Savage Representation\n51: \n52: :::{prf:theorem} Finite de Finetti Representation\n53: :label: thm-hewitt-savage-representation\n54: \n55: Since $\\pi_N$ is exchangeable on the compact space $\\Omega$, there exists a probability measure $\\mathcal{Q}_N$ on $\\mathcal{P}(\\Omega)$ (the **mixing measure**) such that for any $k$-particle marginal with $1 \\leq k \\leq N$:\n56: \n57: $$\n58: d_{\\text{TV}}\\left(\\pi_{N,k}, \\int_{\\mathcal{P}(\\Omega)} \\mu^{\\otimes k} \\, d\\mathcal{Q}_N(\\mu)\\right) \\leq \\frac{k(k-1)}{2N}\n59: $$\n60: \n61: where $\\pi_{N,k}$ is the law of the first $k$ walkers under $\\pi_N$, $\\mu^{\\otimes k}$ denotes the $k$-fold product measure (walkers are i.i.d. with law $\\mu$), and $d_{\\text{TV}}$ is total variation distance.\n62: \n63: **Key consequences**:\n64: \n65: 1. **Low-order marginals** ($k$ fixed, $N \\to \\infty$): The bound is $O(1/N)$\n66:    - Pairwise marginals ($k=2$): $d_{\\text{TV}} \\leq 1/N$\n67:    - Single-particle marginal ($k=1$): exact representation\n68: \n69: 2. **Full N-particle distribution** ($k=N$): The bound is $O(N)$\n70:    - $d_{\\text{TV}}(\\pi_N, \\int \\mu^{\\otimes N} d\\mathcal{Q}_N) \\leq (N-1)/2$\n71:    - Representation becomes exact only in the limit $N \\to \\infty$\n72: \n73: **Interpretation**: The QSD can be **approximately** represented as a mixture of IID configurations. The approximation is excellent for low-order marginals ($k \\ll N$), which is precisely what is needed for correlation decay and propagation of chaos.\n74: \n75: **Construction**: The mixing measure $\\mathcal{Q}_N$ is the law of the empirical measure $L_N = \\frac{1}{N}\\sum_{i=1}^N \\delta_{w_i}$ when $(w_1, \\ldots, w_N) \\sim \\pi_N$.\n76: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "10_qsd_exchangeability_theory",
+        "chapter_index": 0,
+        "chapter_file": "chapter_0.json",
+        "section_id": "## A1.1 QSD Structure: Exchangeability"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-propagation-chaos-qsd",
+      "title": "Propagation of Chaos",
+      "start_line": 217,
+      "end_line": 233,
+      "header_lines": [
+        218
+      ],
+      "content_start": 220,
+      "content_end": 232,
+      "content": "220: :label: thm-propagation-chaos-qsd\n221: \n222: As $N \\to \\infty$, the single-particle marginal $\\mu_N$ converges weakly to a unique limit $\\mu_\\infty \\in \\mathcal{P}(\\Omega)$:\n223: \n224: $$\n225: \\mu_N \\Rightarrow \\mu_\\infty\n226: $$\n227: \n228: Moreover, $\\mu_\\infty$ is the unique stationary solution of the mean-field McKean-Vlasov equation:\n229: \n230: $$\n231: \\frac{\\partial \\rho}{\\partial t} = \\mathcal{L}[\\rho] \\rho\n232: $$",
+      "metadata": {
+        "label": "thm-propagation-chaos-qsd"
+      },
+      "section": "## A1.2 Mean-Field Limit and Propagation of Chaos",
+      "raw_directive": "217: ### A1.2.1 Main Convergence Result\n218: \n219: :::{prf:theorem} Propagation of Chaos\n220: :label: thm-propagation-chaos-qsd\n221: \n222: As $N \\to \\infty$, the single-particle marginal $\\mu_N$ converges weakly to a unique limit $\\mu_\\infty \\in \\mathcal{P}(\\Omega)$:\n223: \n224: $$\n225: \\mu_N \\Rightarrow \\mu_\\infty\n226: $$\n227: \n228: Moreover, $\\mu_\\infty$ is the unique stationary solution of the mean-field McKean-Vlasov equation:\n229: \n230: $$\n231: \\frac{\\partial \\rho}{\\partial t} = \\mathcal{L}[\\rho] \\rho\n232: $$\n233: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "10_qsd_exchangeability_theory",
+        "chapter_index": 1,
+        "chapter_file": "chapter_1.json",
+        "section_id": "## A1.2 Mean-Field Limit and Propagation of Chaos"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-correlation-decay",
+      "title": "Quantitative Decorrelation",
+      "start_line": 277,
+      "end_line": 289,
+      "header_lines": [
+        278
+      ],
+      "content_start": 280,
+      "content_end": 288,
+      "content": "280: :label: thm-correlation-decay\n281: \n282: For bounded single-particle test functions $g: \\Omega \\to \\mathbb{R}$ with $\\|g\\|_{\\infty} \\leq 1$:\n283: \n284: $$\n285: \\left|\\text{Cov}_{\\pi_N}(g(w_i), g(w_j))\\right| \\leq \\frac{C}{N}\n286: $$\n287: \n288: for $i \\neq j$, where $C$ is independent of $N$.",
+      "metadata": {
+        "label": "thm-correlation-decay"
+      },
+      "section": "## A1.2 Mean-Field Limit and Propagation of Chaos",
+      "raw_directive": "277: ### A1.2.2 Correlation Decay\n278: \n279: :::{prf:theorem} Quantitative Decorrelation\n280: :label: thm-correlation-decay\n281: \n282: For bounded single-particle test functions $g: \\Omega \\to \\mathbb{R}$ with $\\|g\\|_{\\infty} \\leq 1$:\n283: \n284: $$\n285: \\left|\\text{Cov}_{\\pi_N}(g(w_i), g(w_j))\\right| \\leq \\frac{C}{N}\n286: $$\n287: \n288: for $i \\neq j$, where $C$ is independent of $N$.\n289: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "10_qsd_exchangeability_theory",
+        "chapter_index": 1,
+        "chapter_file": "chapter_1.json",
+        "section_id": "## A1.2 Mean-Field Limit and Propagation of Chaos"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-mixing-variance-corrected",
+      "title": "Variance of Mixing Measure",
+      "start_line": 377,
+      "end_line": 405,
+      "header_lines": [
+        378
+      ],
+      "content_start": 380,
+      "content_end": 404,
+      "content": "380: :label: thm-mixing-variance-corrected\n381: \n382: Let $\\pi_N = \\int \\mu^{\\otimes N} d\\mathcal{Q}_N(\\mu)$ be the de Finetti representation of the QSD, and let $\\rho_0$ be the mean-field limit. Assume the quantitative KL bound from {prf:ref}`lem-quantitative-kl-bound` (document `12_quantitative_error_bounds.md`):\n383: \n384: $$\n385: D_{KL}(\\pi_N \\| \\rho_0^{\\otimes N}) \\leq \\frac{C_{\\text{int}}}{N}\n386: $$\n387: \n388: Then for any bounded measurable function $g: \\Omega \\to \\mathbb{R}$ with $\\|g\\|_{\\infty} \\leq B$:\n389: \n390: $$\n391: \\text{Var}_{\\mathcal{Q}_N}(\\mathbb{E}_{\\mu}[g]) \\leq \\frac{2 \\cdot e^{C_{\\text{int}}/N} \\cdot B^2}{N}\n392: $$\n393: \n394: For sufficiently large $N$ (such that $e^{C_{\\text{int}}/N} \\leq 3/2$):\n395: \n396: $$\n397: \\text{Var}_{\\mathcal{Q}_N}(\\mathbb{E}_{\\mu}[g]) \\leq \\frac{3B^2}{N}\n398: $$\n399: \n400: **Consequence**: Combined with the corrected de Finetti identity:\n401: \n402: $$\n403: |\\text{Cov}_{\\pi_N}(g(w_i), g(w_j))| = \\text{Var}_{\\mathcal{Q}_N}(\\mathbb{E}_{\\mu}[g]) \\leq \\frac{3\\|g\\|_{\\infty}^2}{N}\n404: $$",
+      "metadata": {
+        "label": "thm-mixing-variance-corrected"
+      },
+      "section": "## A1.2 Mean-Field Limit and Propagation of Chaos",
+      "raw_directive": "377: ### A1.2.3 Quantitative Mixing Measure Concentration\n378: \n379: :::{prf:theorem} Variance of Mixing Measure\n380: :label: thm-mixing-variance-corrected\n381: \n382: Let $\\pi_N = \\int \\mu^{\\otimes N} d\\mathcal{Q}_N(\\mu)$ be the de Finetti representation of the QSD, and let $\\rho_0$ be the mean-field limit. Assume the quantitative KL bound from {prf:ref}`lem-quantitative-kl-bound` (document `12_quantitative_error_bounds.md`):\n383: \n384: $$\n385: D_{KL}(\\pi_N \\| \\rho_0^{\\otimes N}) \\leq \\frac{C_{\\text{int}}}{N}\n386: $$\n387: \n388: Then for any bounded measurable function $g: \\Omega \\to \\mathbb{R}$ with $\\|g\\|_{\\infty} \\leq B$:\n389: \n390: $$\n391: \\text{Var}_{\\mathcal{Q}_N}(\\mathbb{E}_{\\mu}[g]) \\leq \\frac{2 \\cdot e^{C_{\\text{int}}/N} \\cdot B^2}{N}\n392: $$\n393: \n394: For sufficiently large $N$ (such that $e^{C_{\\text{int}}/N} \\leq 3/2$):\n395: \n396: $$\n397: \\text{Var}_{\\mathcal{Q}_N}(\\mathbb{E}_{\\mu}[g]) \\leq \\frac{3B^2}{N}\n398: $$\n399: \n400: **Consequence**: Combined with the corrected de Finetti identity:\n401: \n402: $$\n403: |\\text{Cov}_{\\pi_N}(g(w_i), g(w_j))| = \\text{Var}_{\\mathcal{Q}_N}(\\mathbb{E}_{\\mu}[g]) \\leq \\frac{3\\|g\\|_{\\infty}^2}{N}\n404: $$\n405: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "10_qsd_exchangeability_theory",
+        "chapter_index": 1,
+        "chapter_file": "chapter_1.json",
+        "section_id": "## A1.2 Mean-Field Limit and Propagation of Chaos"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-n-uniform-lsi-exchangeable",
+      "title": "N-Uniform LSI via Hypocoercivity",
+      "start_line": 533,
+      "end_line": 543,
+      "header_lines": [
+        534
+      ],
+      "content_start": 536,
+      "content_end": 542,
+      "content": "536: :label: thm-n-uniform-lsi-exchangeable\n537: \n538: The QSD $\\pi_N$ satisfies a Log-Sobolev inequality:\n539: \n540: $$\n541: D_{\\text{KL}}(\\nu \\| \\pi_N) \\leq C_{\\text{LSI}} \\cdot I(\\nu \\| \\pi_N)\n542: $$",
+      "metadata": {
+        "label": "thm-n-uniform-lsi-exchangeable"
+      },
+      "section": "## A1.3 N-Uniform Log-Sobolev Inequality",
+      "raw_directive": "533: ### A1.3.1 LSI for Exchangeable Measures\n534: \n535: :::{prf:theorem} N-Uniform LSI via Hypocoercivity\n536: :label: thm-n-uniform-lsi-exchangeable\n537: \n538: The QSD $\\pi_N$ satisfies a Log-Sobolev inequality:\n539: \n540: $$\n541: D_{\\text{KL}}(\\nu \\| \\pi_N) \\leq C_{\\text{LSI}} \\cdot I(\\nu \\| \\pi_N)\n542: $$\n543: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "10_qsd_exchangeability_theory",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
+        "section_id": "## A1.3 N-Uniform Log-Sobolev Inequality"
+      }
+    }
+  ]
+}

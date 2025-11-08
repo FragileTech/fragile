@@ -1,0 +1,913 @@
+{
+  "document_id": "03_cloning",
+  "stage": "directives",
+  "directive_type": "definition",
+  "generated_at": "2025-11-08T17:07:43.186901+00:00",
+  "count": 36,
+  "items": [
+    {
+      "directive_type": "definition",
+      "label": "def-single-swarm-space",
+      "title": "Single-Walker and Swarm State Spaces",
+      "start_line": 106,
+      "end_line": 127,
+      "header_lines": [
+        107
+      ],
+      "content_start": 109,
+      "content_end": 126,
+      "content": "109: :label: def-single-swarm-space\n110: \n111: 1.  A **walker** is a tuple $(x, s)$, where $x \\in \\mathcal{X}$ is its position in a state space and $s \\in \\{0, 1\\}$ is its survival status. For the Euclidean Gas, this is extended to include a velocity component, making the **full state** of a single walker a tuple $(x, v, s) \\in \\mathbb{R}^d \\times \\mathbb{R}^d \\times \\{0, 1\\}$. We refer to $(x,v)$ as the **kinematic state**.\n112: \n113: 2.  A **swarm configuration**, $S$, is an N-tuple of walker states:\n114: \n115: \n116: \n117: $$\n118: S := \\left( (x_1, v_1, s_1), (x_2, v_2, s_2), \\dots, (x_N, v_N, s_N) \\right)\n119: $$\n120: \n121: 3.  The **single-swarm state space**, denoted $\\Sigma_N$, is the Cartesian product of the per-walker state spaces:\n122: \n123: \n124: \n125: $$\n126: \\Sigma_N := \\left( \\mathbb{R}^d \\times \\mathbb{R}^d \\times \\{0, 1\\} \\right)^N.",
+      "metadata": {
+        "label": "def-single-swarm-space"
+      },
+      "section": "## 2. The Coupled State Space and State Differences",
+      "raw_directive": "106: The fundamental unit of the system is the walker, and a collection of these walkers constitutes a swarm. We begin by defining their state spaces abstractly, in a manner consistent with the Fragile Gas framework.\n107: \n108: :::{prf:definition} Single-Walker and Swarm State Spaces\n109: :label: def-single-swarm-space\n110: \n111: 1.  A **walker** is a tuple $(x, s)$, where $x \\in \\mathcal{X}$ is its position in a state space and $s \\in \\{0, 1\\}$ is its survival status. For the Euclidean Gas, this is extended to include a velocity component, making the **full state** of a single walker a tuple $(x, v, s) \\in \\mathbb{R}^d \\times \\mathbb{R}^d \\times \\{0, 1\\}$. We refer to $(x,v)$ as the **kinematic state**.\n112: \n113: 2.  A **swarm configuration**, $S$, is an N-tuple of walker states:\n114: \n115: \n116: \n117: $$\n118: S := \\left( (x_1, v_1, s_1), (x_2, v_2, s_2), \\dots, (x_N, v_N, s_N) \\right)\n119: $$\n120: \n121: 3.  The **single-swarm state space**, denoted $\\Sigma_N$, is the Cartesian product of the per-walker state spaces:\n122: \n123: \n124: \n125: $$\n126: \\Sigma_N := \\left( \\mathbb{R}^d \\times \\mathbb{R}^d \\times \\{0, 1\\} \\right)^N.\n127: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
+        "section_id": "## 2. The Coupled State Space and State Differences"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-coupled-state-space",
+      "title": "The Coupled State Space",
+      "start_line": 144,
+      "end_line": 158,
+      "header_lines": [
+        145
+      ],
+      "content_start": 147,
+      "content_end": 157,
+      "content": "147: :label: def-coupled-state-space\n148: \n149: The **coupled state space** for the Euclidean Gas is the Cartesian product $\\Sigma_N \\times \\Sigma_N$. An element of this space is an ordered pair of swarm configurations, $(S_1, S_2)$, where:\n150: \n151: $$\n152: S_1 = \\left( (x_{1,1}, v_{1,1}, s_{1,1}), \\dots, (x_{1,N}, v_{1,N}, s_{1,N}) \\right) \\in \\Sigma_N,\n153: $$\n154: \n155: $$\n156: S_2 = \\left( (x_{2,1}, v_{2,1}, s_{2,1}), \\dots, (x_{2,N}, v_{2,N}, s_{2,N}) \\right) \\in \\Sigma_N.\n157: $$",
+      "metadata": {
+        "label": "def-coupled-state-space"
+      },
+      "section": "## 2. The Coupled State Space and State Differences",
+      "raw_directive": "144: This synchronous coupling is chosen because it is designed to minimize the distance between the two trajectories, making it the most suitable choice for proving a contraction. All expectations $\\mathbb{E}[\\cdot]$ in the subsequent analysis are taken with respect to this single, shared source of randomness.\n145: \n146: :::{prf:definition} The Coupled State Space\n147: :label: def-coupled-state-space\n148: \n149: The **coupled state space** for the Euclidean Gas is the Cartesian product $\\Sigma_N \\times \\Sigma_N$. An element of this space is an ordered pair of swarm configurations, $(S_1, S_2)$, where:\n150: \n151: $$\n152: S_1 = \\left( (x_{1,1}, v_{1,1}, s_{1,1}), \\dots, (x_{1,N}, v_{1,N}, s_{1,N}) \\right) \\in \\Sigma_N,\n153: $$\n154: \n155: $$\n156: S_2 = \\left( (x_{2,1}, v_{2,1}, s_{2,1}), \\dots, (x_{2,N}, v_{2,N}, s_{2,N}) \\right) \\in \\Sigma_N.\n157: $$\n158: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
+        "section_id": "## 2. The Coupled State Space and State Differences"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-state-difference-vectors",
+      "title": "State Difference Vectors",
+      "start_line": 164,
+      "end_line": 186,
+      "header_lines": [
+        165
+      ],
+      "content_start": 167,
+      "content_end": 185,
+      "content": "167: :label: def-state-difference-vectors\n168: \n169: For any element $(S_1, S_2) \\in \\Sigma_N \\times \\Sigma_N$, we define the **state difference vectors** for each walker index $i \\in \\{1, \\ldots, N\\}$ as follows:\n170: \n171: 1.  The **position difference vector** for walker $i$ is:\n172: \n173: \n174: \n175: $$\n176: \\Delta x_i := x_{1,i} - x_{2,i} \\in \\mathbb{R}^d\n177: $$\n178: \n179: 2.  The **velocity difference vector** for walker $i$ is:\n180: \n181: \n182: \n183: $$\n184: \\Delta v_i := v_{1,i} - v_{2,i} \\in \\mathbb{R}^d\n185: $$",
+      "metadata": {
+        "label": "def-state-difference-vectors"
+      },
+      "section": "## 2. The Coupled State Space and State Differences",
+      "raw_directive": "164: The core of the hypocoercive analysis is not the absolute state of the swarms, but the *difference* between them. We formally define the vectors that capture this relative configuration.\n165: \n166: :::{prf:definition} State Difference Vectors\n167: :label: def-state-difference-vectors\n168: \n169: For any element $(S_1, S_2) \\in \\Sigma_N \\times \\Sigma_N$, we define the **state difference vectors** for each walker index $i \\in \\{1, \\ldots, N\\}$ as follows:\n170: \n171: 1.  The **position difference vector** for walker $i$ is:\n172: \n173: \n174: \n175: $$\n176: \\Delta x_i := x_{1,i} - x_{2,i} \\in \\mathbb{R}^d\n177: $$\n178: \n179: 2.  The **velocity difference vector** for walker $i$ is:\n180: \n181: \n182: \n183: $$\n184: \\Delta v_i := v_{1,i} - v_{2,i} \\in \\mathbb{R}^d\n185: $$\n186: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
+        "section_id": "## 2. The Coupled State Space and State Differences"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-barycentres-and-centered-vectors",
+      "title": "Barycentres and Centered Vectors (Alive Walkers Only)",
+      "start_line": 364,
+      "end_line": 415,
+      "header_lines": [
+        365,
+        406
+      ],
+      "content_start": 367,
+      "content_end": 414,
+      "content": "367: :label: def-barycentres-and-centered-vectors\n368: \n369: For each swarm $k \\in \\{1, 2\\}$ in a coupled state $(S_1, S_2)$, let $\\mathcal{A}(S_k)$ denote the set of alive walker indices and let $k_{\\text{alive}} := |\\mathcal{A}(S_k)|$ denote the number of alive walkers in swarm $k$. We define:\n370: \n371: 1.  The **positional center of mass** (barycentre) **computed over alive walkers only**:\n372: \n373: \n374: \n375: $$\n376: \\mu_{x,k} := \\frac{1}{k_{\\text{alive}}}\\sum_{i \\in \\mathcal{A}(S_k)} x_{k,i}\n377: $$\n378: \n379: 2.  The **velocity center of mass** **computed over alive walkers only**:\n380: \n381: \n382: \n383: $$\n384: \\mu_{v,k} := \\frac{1}{k_{\\text{alive}}}\\sum_{i \\in \\mathcal{A}(S_k)} v_{k,i}\n385: $$\n386: \n387: The **centered vectors** represent the state of each **alive** walker relative to its swarm's center of mass:\n388: \n389: 1.  The **centered position vector** for alive walker $i \\in \\mathcal{A}(S_k)$:\n390: \n391: \n392: \n393: $$\n394: \\delta_{x,k,i} := x_{k,i} - \\mu_{x,k}\n395: $$\n396: \n397: 2.  The **centered velocity vector** for alive walker $i \\in \\mathcal{A}(S_k)$:\n398: \n399: \n400: \n401: $$\n402: \\delta_{v,k,i} := v_{k,i} - \\mu_{v,k}\n403: $$\n404: \n405: **Convention**: Dead walkers ($i \\notin \\mathcal{A}(S_k)$) do not contribute to barycentres, variances, or any statistical quantities. By construction, the centered vectors for alive walkers in any swarm sum to zero: $\\sum_{i \\in \\mathcal{A}(S_k)} \\delta_{x,k,i} = 0$ and $\\sum_{i \\in \\mathcal{A}(S_k)} \\delta_{v,k,i} = 0$.\n406: \n407: :::{admonition} Rationale for Alive-Walker-Only Statistics\n408: :class: important\n409: \n410: Dead walkers retain their last known position $(x_i, v_i)$ but have status $s_i = 0$. Including them in statistical calculations would distort the geometric properties:\n411: \n412: 1. **Physical Interpretation**: Dead walkers represent \"failed\" exploration paths. Their positions are historical artifacts, not part of the current active swarm distribution.\n413: \n414: 2. **Cloning Operator Target**: The cloning operator $\\Psi_{\\text{clone}}$ acts on the fitness and geometric distribution of **alive** walkers. The variance it contracts is specifically the variance of the alive population.",
+      "metadata": {
+        "label": "def-barycentres-and-centered-vectors",
+        "class": "important"
+      },
+      "section": "## 3. The Augmented Hypocoercive Lyapunov Function",
+      "raw_directive": "364: We begin by formally defining the mathematical objects required for this decomposition.\n365: \n366: :::{prf:definition} Barycentres and Centered Vectors (Alive Walkers Only)\n367: :label: def-barycentres-and-centered-vectors\n368: \n369: For each swarm $k \\in \\{1, 2\\}$ in a coupled state $(S_1, S_2)$, let $\\mathcal{A}(S_k)$ denote the set of alive walker indices and let $k_{\\text{alive}} := |\\mathcal{A}(S_k)|$ denote the number of alive walkers in swarm $k$. We define:\n370: \n371: 1.  The **positional center of mass** (barycentre) **computed over alive walkers only**:\n372: \n373: \n374: \n375: $$\n376: \\mu_{x,k} := \\frac{1}{k_{\\text{alive}}}\\sum_{i \\in \\mathcal{A}(S_k)} x_{k,i}\n377: $$\n378: \n379: 2.  The **velocity center of mass** **computed over alive walkers only**:\n380: \n381: \n382: \n383: $$\n384: \\mu_{v,k} := \\frac{1}{k_{\\text{alive}}}\\sum_{i \\in \\mathcal{A}(S_k)} v_{k,i}\n385: $$\n386: \n387: The **centered vectors** represent the state of each **alive** walker relative to its swarm's center of mass:\n388: \n389: 1.  The **centered position vector** for alive walker $i \\in \\mathcal{A}(S_k)$:\n390: \n391: \n392: \n393: $$\n394: \\delta_{x,k,i} := x_{k,i} - \\mu_{x,k}\n395: $$\n396: \n397: 2.  The **centered velocity vector** for alive walker $i \\in \\mathcal{A}(S_k)$:\n398: \n399: \n400: \n401: $$\n402: \\delta_{v,k,i} := v_{k,i} - \\mu_{v,k}\n403: $$\n404: \n405: **Convention**: Dead walkers ($i \\notin \\mathcal{A}(S_k)$) do not contribute to barycentres, variances, or any statistical quantities. By construction, the centered vectors for alive walkers in any swarm sum to zero: $\\sum_{i \\in \\mathcal{A}(S_k)} \\delta_{x,k,i} = 0$ and $\\sum_{i \\in \\mathcal{A}(S_k)} \\delta_{v,k,i} = 0$.\n406: \n407: :::{admonition} Rationale for Alive-Walker-Only Statistics\n408: :class: important\n409: \n410: Dead walkers retain their last known position $(x_i, v_i)$ but have status $s_i = 0$. Including them in statistical calculations would distort the geometric properties:\n411: \n412: 1. **Physical Interpretation**: Dead walkers represent \"failed\" exploration paths. Their positions are historical artifacts, not part of the current active swarm distribution.\n413: \n414: 2. **Cloning Operator Target**: The cloning operator $\\Psi_{\\text{clone}}$ acts on the fitness and geometric distribution of **alive** walkers. The variance it contracts is specifically the variance of the alive population.\n415: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 3. The Augmented Hypocoercive Lyapunov Function"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-location-error-component",
+      "title": "The Location Error Component ($V_{\\text{loc}}$)",
+      "start_line": 426,
+      "end_line": 436,
+      "header_lines": [
+        427
+      ],
+      "content_start": 429,
+      "content_end": 435,
+      "content": "429: :label: def-location-error-component\n430: \n431: For any pair of swarm configurations $(S_1, S_2)$ with barycenters $(\\mu_{x,1}, \\mu_{v,1})$ and $(\\mu_{x,2}, \\mu_{v,2})$, the **location error component** is defined as:\n432: \n433: $$\n434: V_{\\text{loc}} := \\|\\Delta\\mu_x\\|^2 + \\lambda_v\\|\\Delta\\mu_v\\|^2 + b\\langle\\Delta\\mu_x, \\Delta\\mu_v\\rangle\n435: $$",
+      "metadata": {
+        "label": "def-location-error-component"
+      },
+      "section": "## 3. The Augmented Hypocoercive Lyapunov Function",
+      "raw_directive": "426: The distance between the swarms' centers of mass is an intrinsically permutation-invariant quantity. We define the location error as the hypocoercive quadratic form applied to the difference between the barycenters of the two swarms.\n427: \n428: :::{prf:definition} The Location Error Component ($V_{\\text{loc}}$)\n429: :label: def-location-error-component\n430: \n431: For any pair of swarm configurations $(S_1, S_2)$ with barycenters $(\\mu_{x,1}, \\mu_{v,1})$ and $(\\mu_{x,2}, \\mu_{v,2})$, the **location error component** is defined as:\n432: \n433: $$\n434: V_{\\text{loc}} := \\|\\Delta\\mu_x\\|^2 + \\lambda_v\\|\\Delta\\mu_v\\|^2 + b\\langle\\Delta\\mu_x, \\Delta\\mu_v\\rangle\n435: $$\n436: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 3. The Augmented Hypocoercive Lyapunov Function"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-structural-error-component",
+      "title": "The Structural Error Component ($V_{\\text{struct}}$)",
+      "start_line": 442,
+      "end_line": 460,
+      "header_lines": [
+        443
+      ],
+      "content_start": 445,
+      "content_end": 459,
+      "content": "445: :label: def-structural-error-component\n446: \n447: Let $\\tilde{\\mu}_1$ and $\\tilde{\\mu}_2$ be the centered empirical measures of swarms $S_1$ and $S_2$ **computed over alive walkers only**:\n448: \n449: $$\n450: \\tilde{\\mu}_k := \\frac{1}{k_{\\text{alive}}} \\sum_{i \\in \\mathcal{A}(S_k)} \\delta_{(\\delta_{x,k,i}, \\delta_{v,k,i})}\n451: $$\n452: \n453: where $k_{\\text{alive}} = |\\mathcal{A}(S_k)|$ is the number of alive walkers in swarm $k$, and $\\delta_{x,k,i}, \\delta_{v,k,i}$ are the centered vectors defined in [](#def-barycentres-and-centered-vectors).\n454: \n455: The **structural error component** $V_{\\text{struct}}$ is defined as the squared hypocoercive Wasserstein distance between these centered measures:\n456: \n457: $$\n458: V_{\\text{struct}} := W_h^2(\\tilde{\\mu}_1, \\tilde{\\mu}_2) = \\inf_{\\gamma \\in \\Gamma(\\tilde{\\mu}_1, \\tilde{\\mu}_2)} \\int c(\\delta_{z,1}, \\delta_{z,2}) \\, d\\gamma(\\delta_{z,1}, \\delta_{z,2})\n459: $$",
+      "metadata": {
+        "label": "def-structural-error-component"
+      },
+      "section": "## 3. The Augmented Hypocoercive Lyapunov Function",
+      "raw_directive": "442: The structural error measures the mismatch between the \"shapes\" of the two swarms. The shape of a swarm is described by the set of its centered vectors, $\\{\\delta_{z,k,i}\\}$. To compare these shapes in a permutation-invariant way, we find the **optimal matching** between the centered vectors of the two swarms and measure the residual error of that matching. This is equivalent to the hypocoercive Wasserstein distance between the *centered empirical measures*.\n443: \n444: :::{prf:definition} The Structural Error Component ($V_{\\text{struct}}$)\n445: :label: def-structural-error-component\n446: \n447: Let $\\tilde{\\mu}_1$ and $\\tilde{\\mu}_2$ be the centered empirical measures of swarms $S_1$ and $S_2$ **computed over alive walkers only**:\n448: \n449: $$\n450: \\tilde{\\mu}_k := \\frac{1}{k_{\\text{alive}}} \\sum_{i \\in \\mathcal{A}(S_k)} \\delta_{(\\delta_{x,k,i}, \\delta_{v,k,i})}\n451: $$\n452: \n453: where $k_{\\text{alive}} = |\\mathcal{A}(S_k)|$ is the number of alive walkers in swarm $k$, and $\\delta_{x,k,i}, \\delta_{v,k,i}$ are the centered vectors defined in [](#def-barycentres-and-centered-vectors).\n454: \n455: The **structural error component** $V_{\\text{struct}}$ is defined as the squared hypocoercive Wasserstein distance between these centered measures:\n456: \n457: $$\n458: V_{\\text{struct}} := W_h^2(\\tilde{\\mu}_1, \\tilde{\\mu}_2) = \\inf_{\\gamma \\in \\Gamma(\\tilde{\\mu}_1, \\tilde{\\mu}_2)} \\int c(\\delta_{z,1}, \\delta_{z,2}) \\, d\\gamma(\\delta_{z,1}, \\delta_{z,2})\n459: $$\n460: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 3. The Augmented Hypocoercive Lyapunov Function"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-full-synergistic-lyapunov-function",
+      "title": "The Full Synergistic Hypocoercive Lyapunov Function",
+      "start_line": 745,
+      "end_line": 848,
+      "header_lines": [
+        746,
+        794
+      ],
+      "content_start": 748,
+      "content_end": 847,
+      "content": "748: :label: def-full-synergistic-lyapunov-function\n749: \n750: For any pair of swarm configurations $(S_1, S_2)$ with corresponding empirical measures $(\\mu_1, \\mu_2)$, the **total synergistic Lyapunov function** is defined as:\n751: \n752: $$\n753: V_{\\mathrm{total}}(S_1, S_2) := W_h^2(\\mu_1, \\mu_2) + c_V V_{Var}(S_1, S_2) + c_B W_b(S_1, S_2)\n754: $$\n755: \n756: where the intra-swarm variance term explicitly decomposes into positional and velocity components **summed over alive walkers only, but normalized by the total swarm size $N$**:\n757: \n758: $$\n759: V_{Var}(S_1, S_2) = V_{Var,x}(S_1, S_2) + \\lambda_v V_{Var,v}(S_1, S_2)\n760: $$\n761: \n762: with:\n763: \n764: $$\n765: \\begin{align*}\n766: V_{Var,x}(S_1, S_2) &:= \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_1)} \\|\\delta_{x,1,i}\\|^2 + \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_2)} \\|\\delta_{x,2,i}\\|^2 \\\\\n767: V_{Var,v}(S_1, S_2) &:= \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_1)} \\|\\delta_{v,1,i}\\|^2 + \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_2)} \\|\\delta_{v,2,i}\\|^2\n768: \\end{align*}\n769: $$\n770: \n771: where $N$ is the total swarm size, $\\mathcal{A}(S_k)$ is the set of alive walker indices in swarm $k$, and $\\delta_{x,k,i}, \\delta_{v,k,i}$ are the centered vectors defined in [](#def-barycentres-and-centered-vectors).\n772: \n773: The function is a sum of three components:\n774: \n775: 1.  **The Inter-Swarm Error ($W_h^2$):** The squared hypocoercive 2-Wasserstein distance between the swarms' full empirical measures. This term quantifies the total permutation-invariant distance between the two swarms in phase space. As established in [](#lem-wasserstein-decomposition), this component can be exactly decomposed into:\n776:     *   A **Location Component ($V_{\\text{loc}}$)**, measuring the error between the swarm centers of mass.\n777:     *   A **Structural Component ($V_{\\text{struct}}$)**, measuring the mismatch in swarm shapes.\n778: \n779: 2.  **The Intra-Swarm Error ($V_{\\text{Var}}$):** The sum of the internal hypocoercive variances of each swarm. This term quantifies the internal dispersion or \"shape error\" *within* each individual swarm in phase space, measuring their lack of internal convergence in both position and velocity. This component is the primary target of the **synergistic dissipation framework**:\n780:     *   The **cloning operator** ($\\Psi_{\\text{clone}}$, analyzed in this document) provides powerful contraction of the positional variance component $V_{Var,x}$ but causes bounded expansion of the velocity variance component $V_{Var,v}$ through the velocity reset mechanism.\n781:     *   The **kinetic operator** ($\\Psi_{\\text{kin}}$, analyzed in the companion document) provides contraction of the velocity variance component $V_{Var,v}$ through Langevin dissipation but causes bounded expansion of the positional variance component $V_{Var,x}$ through diffusion.\n782:     *   When properly balanced, these two operators achieve **net contraction** of the total $V_{Var}$, enabling the system to converge in both position and velocity simultaneously.\n783: \n784: 3.  **The Boundary Potential ($W_b$):** A term that penalizes **alive** walkers approaching the boundary, constructed from the smooth barrier function $\\varphi_{\\text{barrier}}(x)$ defined in [](#prop-barrier-existence).\n785: \n786: \n787: $$\n788: W_b(S_1, S_2) := \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_1)} \\varphi_{\\text{barrier}}(x_{1,i}) + \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_2)} \\varphi_{\\text{barrier}}(x_{2,i})\n789: $$\n790: \n791:     where $N$ is the total swarm size and $\\mathcal{A}(S_k)$ denotes the set of alive walker indices in swarm $k$. Note that dead walkers do not contribute to the boundary potential.\n792: \n793: The parameters $b$ and $\\lambda_v > 0$ are the **hypocoercive parameters**. The constants $c_V > 0$ and $c_B > 0$ are small, positive **coupling constants** used in the analysis to balance the contributions of the different error components in the final drift inequality.\n794: \n795: :::{admonition} Normalization by $N$ vs. $k_{\\text{alive}}$ in the Lyapunov Function\n796: :class: important\n797: \n798: The Lyapunov function components $V_{\\text{Var}}$ and $W_b$ are normalized by the **total swarm size $N$**, not by the number of alive walkers $k_{\\text{alive}}$. This design choice is critical for mathematical tractability and deserves careful explanation:\n799: \n800: **Why This Choice Differs from Algorithm Internals:**\n801: \n802: The algorithm's internal fitness calculations (z-scores, variance measurements used for cloning decisions) correctly use $k_{\\text{alive}}$-normalization to compute statistics over the current active population. This is the physically and statistically correct choice for **decision-making**, as it accurately characterizes the distribution of alive walkers at each step.\n803: \n804: However, the Lyapunov function serves a different purpose: it is an **analytical tool** designed to prove long-term stability through drift analysis. For this purpose, $N$-normalization is mathematically necessary.\n805: \n806: **The Mathematical Necessity:**\n807: \n808: Consider the one-step change in the variance component:\n809: \n810: $$\n811: \\Delta V_{\\text{Var}} = V_{\\text{Var}}(S_{t+1}) - V_{\\text{Var}}(S_t)\n812: $$\n813: \n814: If $V_{\\text{Var}}$ were normalized by $k_{\\text{alive}}$, the drift calculation would become:\n815: \n816: $$\n817: \\mathbb{E}[\\Delta V_{\\text{Var}}] = \\mathbb{E}\\left[\\frac{1}{k_{t+1}} \\sum_{i} \\|\\delta_{x,i}\\|^2_{t+1} - \\frac{1}{k_t} \\sum_{i} \\|\\delta_{x,i}\\|^2_t\\right]\n818: $$\n819: \n820: This expression involves the **ratio of correlated random variables**: both the sum of squares and the number of alive walkers change stochastically at each step, and these changes are strongly coupled (e.g., if a high-variance walker dies, both the numerator and denominator change). The expectation of such a ratio cannot be simplified, making rigorous drift bounds essentially impossible to derive.\n821: \n822: With $N$-normalization, the constant factor $1/N$ factors out of the expectation:\n823: \n824: $$\n825: \\mathbb{E}[\\Delta V_{\\text{Var}}] = \\frac{1}{N} \\mathbb{E}\\left[\\sum_{i} \\|\\delta_{x,i}\\|^2_{t+1} - \\sum_{i} \\|\\delta_{x,i}\\|^2_t\\right]\n826: $$\n827: \n828: This allows the analysis to focus entirely on $\\mathbb{E}[\\Delta \\text{SumOfSquares}]$, which is the direct effect of the cloning and kinetic operators on the swarm's kinematic state. This is precisely what the Keystone Principle and the hypocoercive analysis are designed to bound.\n829: \n830: **The Mean-Field Interpretation:**\n831: \n832: The $N$-normalized variance can be interpreted as:\n833: \n834: $$\n835: V_{\\text{Var},x}(S_k) = \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2 = \\frac{k_{\\text{alive}}}{N} \\cdot \\text{Var}_{\\text{alive}}(S_k)\n836: $$\n837: \n838: This represents the **mean-field contribution to system disorder per walker slot**. It scales with the fraction of alive walkers, which is exactly the correct behavior: if only a small fraction of walkers remain alive, the system's total disorder (as measured by the Lyapunov function) should reflect this reduced active mass.\n839: \n840: **The Viability Requirement:**\n841: \n842: This normalization implicitly assumes that the swarm remains viable, meaning $k_{\\text{alive}}/N$ is bounded away from zero. This is guaranteed by the framework's design:\n843: - The Safe Harbor Axiom ensures existence of a desirable region away from boundaries\n844: - The contractive properties of the cloning operator (Keystone Principle) and the confining potential prevent swarm collapse\n845: - The Lyapunov analysis operates in the regime where the swarm is stable, with extinction probability exponentially small\n846: \n847: **Conclusion:**",
+      "metadata": {
+        "label": "def-full-synergistic-lyapunov-function",
+        "class": "important"
+      },
+      "section": "## 3. The Augmented Hypocoercive Lyapunov Function",
+      "raw_directive": "745: With the permutation-invariant decomposition of the inter-swarm error established, we now define the full Lyapunov function. This **synergistic** function is constructed as a weighted sum of three distinct error components. It is designed to capture not only the distance *between* the swarms, but also the internal disorder *within* each swarm, which is the primary target of the cloning operator.\n746: \n747: :::{prf:definition} The Full Synergistic Hypocoercive Lyapunov Function\n748: :label: def-full-synergistic-lyapunov-function\n749: \n750: For any pair of swarm configurations $(S_1, S_2)$ with corresponding empirical measures $(\\mu_1, \\mu_2)$, the **total synergistic Lyapunov function** is defined as:\n751: \n752: $$\n753: V_{\\mathrm{total}}(S_1, S_2) := W_h^2(\\mu_1, \\mu_2) + c_V V_{Var}(S_1, S_2) + c_B W_b(S_1, S_2)\n754: $$\n755: \n756: where the intra-swarm variance term explicitly decomposes into positional and velocity components **summed over alive walkers only, but normalized by the total swarm size $N$**:\n757: \n758: $$\n759: V_{Var}(S_1, S_2) = V_{Var,x}(S_1, S_2) + \\lambda_v V_{Var,v}(S_1, S_2)\n760: $$\n761: \n762: with:\n763: \n764: $$\n765: \\begin{align*}\n766: V_{Var,x}(S_1, S_2) &:= \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_1)} \\|\\delta_{x,1,i}\\|^2 + \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_2)} \\|\\delta_{x,2,i}\\|^2 \\\\\n767: V_{Var,v}(S_1, S_2) &:= \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_1)} \\|\\delta_{v,1,i}\\|^2 + \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_2)} \\|\\delta_{v,2,i}\\|^2\n768: \\end{align*}\n769: $$\n770: \n771: where $N$ is the total swarm size, $\\mathcal{A}(S_k)$ is the set of alive walker indices in swarm $k$, and $\\delta_{x,k,i}, \\delta_{v,k,i}$ are the centered vectors defined in [](#def-barycentres-and-centered-vectors).\n772: \n773: The function is a sum of three components:\n774: \n775: 1.  **The Inter-Swarm Error ($W_h^2$):** The squared hypocoercive 2-Wasserstein distance between the swarms' full empirical measures. This term quantifies the total permutation-invariant distance between the two swarms in phase space. As established in [](#lem-wasserstein-decomposition), this component can be exactly decomposed into:\n776:     *   A **Location Component ($V_{\\text{loc}}$)**, measuring the error between the swarm centers of mass.\n777:     *   A **Structural Component ($V_{\\text{struct}}$)**, measuring the mismatch in swarm shapes.\n778: \n779: 2.  **The Intra-Swarm Error ($V_{\\text{Var}}$):** The sum of the internal hypocoercive variances of each swarm. This term quantifies the internal dispersion or \"shape error\" *within* each individual swarm in phase space, measuring their lack of internal convergence in both position and velocity. This component is the primary target of the **synergistic dissipation framework**:\n780:     *   The **cloning operator** ($\\Psi_{\\text{clone}}$, analyzed in this document) provides powerful contraction of the positional variance component $V_{Var,x}$ but causes bounded expansion of the velocity variance component $V_{Var,v}$ through the velocity reset mechanism.\n781:     *   The **kinetic operator** ($\\Psi_{\\text{kin}}$, analyzed in the companion document) provides contraction of the velocity variance component $V_{Var,v}$ through Langevin dissipation but causes bounded expansion of the positional variance component $V_{Var,x}$ through diffusion.\n782:     *   When properly balanced, these two operators achieve **net contraction** of the total $V_{Var}$, enabling the system to converge in both position and velocity simultaneously.\n783: \n784: 3.  **The Boundary Potential ($W_b$):** A term that penalizes **alive** walkers approaching the boundary, constructed from the smooth barrier function $\\varphi_{\\text{barrier}}(x)$ defined in [](#prop-barrier-existence).\n785: \n786: \n787: $$\n788: W_b(S_1, S_2) := \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_1)} \\varphi_{\\text{barrier}}(x_{1,i}) + \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_2)} \\varphi_{\\text{barrier}}(x_{2,i})\n789: $$\n790: \n791:     where $N$ is the total swarm size and $\\mathcal{A}(S_k)$ denotes the set of alive walker indices in swarm $k$. Note that dead walkers do not contribute to the boundary potential.\n792: \n793: The parameters $b$ and $\\lambda_v > 0$ are the **hypocoercive parameters**. The constants $c_V > 0$ and $c_B > 0$ are small, positive **coupling constants** used in the analysis to balance the contributions of the different error components in the final drift inequality.\n794: \n795: :::{admonition} Normalization by $N$ vs. $k_{\\text{alive}}$ in the Lyapunov Function\n796: :class: important\n797: \n798: The Lyapunov function components $V_{\\text{Var}}$ and $W_b$ are normalized by the **total swarm size $N$**, not by the number of alive walkers $k_{\\text{alive}}$. This design choice is critical for mathematical tractability and deserves careful explanation:\n799: \n800: **Why This Choice Differs from Algorithm Internals:**\n801: \n802: The algorithm's internal fitness calculations (z-scores, variance measurements used for cloning decisions) correctly use $k_{\\text{alive}}$-normalization to compute statistics over the current active population. This is the physically and statistically correct choice for **decision-making**, as it accurately characterizes the distribution of alive walkers at each step.\n803: \n804: However, the Lyapunov function serves a different purpose: it is an **analytical tool** designed to prove long-term stability through drift analysis. For this purpose, $N$-normalization is mathematically necessary.\n805: \n806: **The Mathematical Necessity:**\n807: \n808: Consider the one-step change in the variance component:\n809: \n810: $$\n811: \\Delta V_{\\text{Var}} = V_{\\text{Var}}(S_{t+1}) - V_{\\text{Var}}(S_t)\n812: $$\n813: \n814: If $V_{\\text{Var}}$ were normalized by $k_{\\text{alive}}$, the drift calculation would become:\n815: \n816: $$\n817: \\mathbb{E}[\\Delta V_{\\text{Var}}] = \\mathbb{E}\\left[\\frac{1}{k_{t+1}} \\sum_{i} \\|\\delta_{x,i}\\|^2_{t+1} - \\frac{1}{k_t} \\sum_{i} \\|\\delta_{x,i}\\|^2_t\\right]\n818: $$\n819: \n820: This expression involves the **ratio of correlated random variables**: both the sum of squares and the number of alive walkers change stochastically at each step, and these changes are strongly coupled (e.g., if a high-variance walker dies, both the numerator and denominator change). The expectation of such a ratio cannot be simplified, making rigorous drift bounds essentially impossible to derive.\n821: \n822: With $N$-normalization, the constant factor $1/N$ factors out of the expectation:\n823: \n824: $$\n825: \\mathbb{E}[\\Delta V_{\\text{Var}}] = \\frac{1}{N} \\mathbb{E}\\left[\\sum_{i} \\|\\delta_{x,i}\\|^2_{t+1} - \\sum_{i} \\|\\delta_{x,i}\\|^2_t\\right]\n826: $$\n827: \n828: This allows the analysis to focus entirely on $\\mathbb{E}[\\Delta \\text{SumOfSquares}]$, which is the direct effect of the cloning and kinetic operators on the swarm's kinematic state. This is precisely what the Keystone Principle and the hypocoercive analysis are designed to bound.\n829: \n830: **The Mean-Field Interpretation:**\n831: \n832: The $N$-normalized variance can be interpreted as:\n833: \n834: $$\n835: V_{\\text{Var},x}(S_k) = \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2 = \\frac{k_{\\text{alive}}}{N} \\cdot \\text{Var}_{\\text{alive}}(S_k)\n836: $$\n837: \n838: This represents the **mean-field contribution to system disorder per walker slot**. It scales with the fraction of alive walkers, which is exactly the correct behavior: if only a small fraction of walkers remain alive, the system's total disorder (as measured by the Lyapunov function) should reflect this reduced active mass.\n839: \n840: **The Viability Requirement:**\n841: \n842: This normalization implicitly assumes that the swarm remains viable, meaning $k_{\\text{alive}}/N$ is bounded away from zero. This is guaranteed by the framework's design:\n843: - The Safe Harbor Axiom ensures existence of a desirable region away from boundaries\n844: - The contractive properties of the cloning operator (Keystone Principle) and the confining potential prevent swarm collapse\n845: - The Lyapunov analysis operates in the regime where the swarm is stable, with extinction probability exponentially small\n846: \n847: **Conclusion:**\n848: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 3. The Augmented Hypocoercive Lyapunov Function"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-variance-conversions",
+      "title": "Variance Notation Conversion Formulas",
+      "start_line": 855,
+      "end_line": 898,
+      "header_lines": [
+        856
+      ],
+      "content_start": 858,
+      "content_end": 897,
+      "content": "858: :label: def-variance-conversions\n859: \n860: For a swarm $k$ with $k_{\\text{alive}} = |\\mathcal{A}(S_k)|$ alive walkers out of $N$ total walker slots:\n861: \n862: **1. Un-normalized Sum of Squared Deviations:**\n863: \n864: $$\n865: S_k := \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2\n866: $$\n867: \n868: This is the total positional variance without any normalization.\n869: \n870: **2. Physical Internal Variance ($k$-normalized):**\n871: \n872: $$\n873: \\text{Var}_k(x) := \\frac{1}{k_{\\text{alive}}} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2 = \\frac{S_k}{k_{\\text{alive}}}\n874: $$\n875: \n876: This is the average squared deviation per alive walker - the standard statistical variance.\n877: \n878: **3. Lyapunov Variance Component ($N$-normalized):**\n879: \n880: $$\n881: V_{\\text{Var},x}(S_k) := \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2 = \\frac{S_k}{N}\n882: $$\n883: \n884: This is the mean-field contribution to system disorder per walker slot.\n885: \n886: **Conversion Formulas:**\n887: \n888: $$\n889: \\begin{aligned}\n890: S_k &= k_{\\text{alive}} \\cdot \\text{Var}_k(x) = N \\cdot V_{\\text{Var},x}(S_k) \\\\\n891: V_{\\text{Var},x}(S_k) &= \\frac{k_{\\text{alive}}}{N} \\cdot \\text{Var}_k(x) \\\\\n892: \\text{Var}_k(x) &= \\frac{N}{k_{\\text{alive}}} \\cdot V_{\\text{Var},x}(S_k)\n893: \\end{aligned}\n894: $$\n895: \n896: **When converting between notations in proofs:**\n897: - From $S_k$ to $V_{\\text{Var},x}$: **divide by $N$**",
+      "metadata": {
+        "label": "def-variance-conversions"
+      },
+      "section": "## 3. The Augmented Hypocoercive Lyapunov Function",
+      "raw_directive": "855: To ensure clarity throughout the proofs, we explicitly state the relationships between the three variance concepts used in this document:\n856: \n857: :::{prf:definition} Variance Notation Conversion Formulas\n858: :label: def-variance-conversions\n859: \n860: For a swarm $k$ with $k_{\\text{alive}} = |\\mathcal{A}(S_k)|$ alive walkers out of $N$ total walker slots:\n861: \n862: **1. Un-normalized Sum of Squared Deviations:**\n863: \n864: $$\n865: S_k := \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2\n866: $$\n867: \n868: This is the total positional variance without any normalization.\n869: \n870: **2. Physical Internal Variance ($k$-normalized):**\n871: \n872: $$\n873: \\text{Var}_k(x) := \\frac{1}{k_{\\text{alive}}} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2 = \\frac{S_k}{k_{\\text{alive}}}\n874: $$\n875: \n876: This is the average squared deviation per alive walker - the standard statistical variance.\n877: \n878: **3. Lyapunov Variance Component ($N$-normalized):**\n879: \n880: $$\n881: V_{\\text{Var},x}(S_k) := \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2 = \\frac{S_k}{N}\n882: $$\n883: \n884: This is the mean-field contribution to system disorder per walker slot.\n885: \n886: **Conversion Formulas:**\n887: \n888: $$\n889: \\begin{aligned}\n890: S_k &= k_{\\text{alive}} \\cdot \\text{Var}_k(x) = N \\cdot V_{\\text{Var},x}(S_k) \\\\\n891: V_{\\text{Var},x}(S_k) &= \\frac{k_{\\text{alive}}}{N} \\cdot \\text{Var}_k(x) \\\\\n892: \\text{Var}_k(x) &= \\frac{N}{k_{\\text{alive}}} \\cdot V_{\\text{Var},x}(S_k)\n893: \\end{aligned}\n894: $$\n895: \n896: **When converting between notations in proofs:**\n897: - From $S_k$ to $V_{\\text{Var},x}$: **divide by $N$**\n898: - From $\\text{Var}_k(x)$ to $V_{\\text{Var},x}$: **multiply by $\\frac{k_{\\text{alive}}}{N}$**",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 3. The Augmented Hypocoercive Lyapunov Function"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-algorithmic-distance-metric",
+      "title": "Algorithmic Distance for Companion Selection",
+      "start_line": 1349,
+      "end_line": 1359,
+      "header_lines": [
+        1350
+      ],
+      "content_start": 1352,
+      "content_end": 1358,
+      "content": "1352: :label: def-algorithmic-distance-metric\n1353: \n1354: For any two walkers $i$ and $j$ with states $(x_i, v_i)$ and $(x_j, v_j)$, the **algorithmic distance** between them is defined as:\n1355: \n1356: $$\n1357: d_{\\text{alg}}(i, j)^2 := \\|x_i - x_j\\|^2 + \\lambda_{\\text{alg}} \\|v_i - v_j\\|^2\n1358: $$",
+      "metadata": {
+        "label": "def-algorithmic-distance-metric"
+      },
+      "section": "## 5. The Measurement and Interaction Pipeline",
+      "raw_directive": "1349: Before defining the measurement operators, we must first establish the fundamental metric that quantifies proximity between walkers. This metric is central to all intra-swarm measurements in the algorithm, including companion selection for diversity measurement and companion selection for cloning.\n1350: \n1351: :::{prf:definition} Algorithmic Distance for Companion Selection\n1352: :label: def-algorithmic-distance-metric\n1353: \n1354: For any two walkers $i$ and $j$ with states $(x_i, v_i)$ and $(x_j, v_j)$, the **algorithmic distance** between them is defined as:\n1355: \n1356: $$\n1357: d_{\\text{alg}}(i, j)^2 := \\|x_i - x_j\\|^2 + \\lambda_{\\text{alg}} \\|v_i - v_j\\|^2\n1358: $$\n1359: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. The Measurement and Interaction Pipeline"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-spatial-pairing-operator-diversity",
+      "title": "Spatially-Aware Pairing Operator (Idealized Model)",
+      "start_line": 1391,
+      "end_line": 1422,
+      "header_lines": [
+        1392
+      ],
+      "content_start": 1394,
+      "content_end": 1421,
+      "content": "1394: :label: def-spatial-pairing-operator-diversity\n1395: \n1396: Let $\\mathcal{S}_t$ be the current swarm state with alive set $\\mathcal{A}_t$ of size $k = |\\mathcal{A}_t|$. The idealized **Spatially-Aware Pairing Operator**, denoted $\\mathbb{P}_{\\text{pair}}$, maps the alive set $\\mathcal{A}_t$ to a probability distribution over the set of all possible perfect matchings, $\\mathcal{M}_k$.\n1397: \n1398: **Inputs:**\n1399: *   The alive set of walkers, $\\mathcal{A}_t = \\{w_1, w_2, \\dots, w_k\\}$.\n1400: *   $\\varepsilon_d > 0$ (The Interaction Range for Diversity).\n1401: \n1402: **Operation:**\n1403: 1.  For every pair of distinct walkers $(w_i, w_j)$, an edge weight is assigned based on their phase-space proximity:\n1404: \n1405: \n1406: $$\n1407: w_{ij} := \\exp\\left(-\\frac{d_{\\text{alg}}(i, j)^2}{2\\epsilon_d^2}\\right)\n1408: $$\n1409: \n1410: 2.  The \"quality\" of a specific perfect matching `M` is the product of the weights of the edges it contains:\n1411: \n1412: \n1413: $$\n1414: W(M) := \\prod_{(i,j) \\in M} w_{ij}\n1415: $$\n1416: \n1417: 3.  The probability of selecting a specific matching `M` is given by its quality normalized by the sum of qualities over all possible matchings (the partition function):\n1418: \n1419: \n1420: $$\n1421: P(M) = \\frac{W(M)}{\\sum_{M' \\in \\mathcal{M}_k} W(M')}",
+      "metadata": {
+        "label": "def-spatial-pairing-operator-diversity"
+      },
+      "section": "## 5. The Measurement and Interaction Pipeline",
+      "raw_directive": "1391: For the purposes of theoretical analysis, it is useful to model the pairing as a single, collective draw from a probability distribution over all possible perfect matchings of the alive set. This idealized model captures the physical intent of the operator—to strongly favor pairings between walkers that are close in the algorithmic space.\n1392: \n1393: :::{prf:definition} Spatially-Aware Pairing Operator (Idealized Model)\n1394: :label: def-spatial-pairing-operator-diversity\n1395: \n1396: Let $\\mathcal{S}_t$ be the current swarm state with alive set $\\mathcal{A}_t$ of size $k = |\\mathcal{A}_t|$. The idealized **Spatially-Aware Pairing Operator**, denoted $\\mathbb{P}_{\\text{pair}}$, maps the alive set $\\mathcal{A}_t$ to a probability distribution over the set of all possible perfect matchings, $\\mathcal{M}_k$.\n1397: \n1398: **Inputs:**\n1399: *   The alive set of walkers, $\\mathcal{A}_t = \\{w_1, w_2, \\dots, w_k\\}$.\n1400: *   $\\varepsilon_d > 0$ (The Interaction Range for Diversity).\n1401: \n1402: **Operation:**\n1403: 1.  For every pair of distinct walkers $(w_i, w_j)$, an edge weight is assigned based on their phase-space proximity:\n1404: \n1405: \n1406: $$\n1407: w_{ij} := \\exp\\left(-\\frac{d_{\\text{alg}}(i, j)^2}{2\\epsilon_d^2}\\right)\n1408: $$\n1409: \n1410: 2.  The \"quality\" of a specific perfect matching `M` is the product of the weights of the edges it contains:\n1411: \n1412: \n1413: $$\n1414: W(M) := \\prod_{(i,j) \\in M} w_{ij}\n1415: $$\n1416: \n1417: 3.  The probability of selecting a specific matching `M` is given by its quality normalized by the sum of qualities over all possible matchings (the partition function):\n1418: \n1419: \n1420: $$\n1421: P(M) = \\frac{W(M)}{\\sum_{M' \\in \\mathcal{M}_k} W(M')}\n1422: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. The Measurement and Interaction Pipeline"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-greedy-pairing-algorithm",
+      "title": "Sequential Stochastic Greedy Pairing Operator",
+      "start_line": 1430,
+      "end_line": 1457,
+      "header_lines": [
+        1431
+      ],
+      "content_start": 1433,
+      "content_end": 1456,
+      "content": "1433: :label: def-greedy-pairing-algorithm\n1434: \n1435: Let `A_t` be the set of `k` alive walkers at time `t`. The pairing operator generates a **Companion Map**, `c: A_t → A_t`, which is a perfect matching if `k` is even, or a maximal matching if `k` is odd.\n1436: \n1437: **Inputs:**\n1438: *   The set of alive walkers, `A_t = {w_1, w_2, ..., w_k}`.\n1439: *   $\\varepsilon_d > 0$ (The Interaction Range for Diversity).\n1440: \n1441: **Operation:**\n1442: 1.  Initialize a set of unpaired walkers `U ← A_t` and an empty companion map `c`.\n1443: 2.  While `|U| > 1`:\n1444:     a. Select and remove an arbitrary walker `i` from `U`.\n1445:     b. For each remaining walker $j \\in U$, calculate the selection weight based on phase-space proximity:\n1446: \n1447: \n1448: $$\n1449: w_{ij} := \\exp\\left(-\\frac{d_{\\text{alg}}(i, j)^2}{2\\epsilon_d^2}\\right)\n1450: $$\n1451: \n1452:     c. Form a probability distribution over $j \\in U$ where $P(\\text{choose } j) = w_{ij} / (\\sum_{l \\in U} w_{il})$.\n1453:     d. Sample a companion `c_i` for `i` from this distribution.\n1454:     e. Remove `c_i` from `U`.\n1455:     f. Set the pairing in the companion map: `c(i) ← c_i` and `c(c_i) ← i`.\n1456: 3.  Return the completed companion map `c`.",
+      "metadata": {
+        "label": "def-greedy-pairing-algorithm"
+      },
+      "section": "## 5. The Measurement and Interaction Pipeline",
+      "raw_directive": "1430: This algorithm builds the matching iteratively. It selects an unpaired walker, computes a probability distribution over all other currently unpaired walkers based on proximity, samples a companion, and removes the new pair from the pool. This reduces the computational complexity from factorial to quadratic, making it practical for large swarms.\n1431: \n1432: :::{prf:definition} Sequential Stochastic Greedy Pairing Operator\n1433: :label: def-greedy-pairing-algorithm\n1434: \n1435: Let `A_t` be the set of `k` alive walkers at time `t`. The pairing operator generates a **Companion Map**, `c: A_t → A_t`, which is a perfect matching if `k` is even, or a maximal matching if `k` is odd.\n1436: \n1437: **Inputs:**\n1438: *   The set of alive walkers, `A_t = {w_1, w_2, ..., w_k}`.\n1439: *   $\\varepsilon_d > 0$ (The Interaction Range for Diversity).\n1440: \n1441: **Operation:**\n1442: 1.  Initialize a set of unpaired walkers `U ← A_t` and an empty companion map `c`.\n1443: 2.  While `|U| > 1`:\n1444:     a. Select and remove an arbitrary walker `i` from `U`.\n1445:     b. For each remaining walker $j \\in U$, calculate the selection weight based on phase-space proximity:\n1446: \n1447: \n1448: $$\n1449: w_{ij} := \\exp\\left(-\\frac{d_{\\text{alg}}(i, j)^2}{2\\epsilon_d^2}\\right)\n1450: $$\n1451: \n1452:     c. Form a probability distribution over $j \\in U$ where $P(\\text{choose } j) = w_{ij} / (\\sum_{l \\in U} w_{il})$.\n1453:     d. Sample a companion `c_i` for `i` from this distribution.\n1454:     e. Remove `c_i` from `U`.\n1455:     f. Set the pairing in the companion map: `c(i) ← c_i` and `c(c_i) ← i`.\n1456: 3.  Return the completed companion map `c`.\n1457: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. The Measurement and Interaction Pipeline"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-geometric-partition",
+      "title": "Geometric Partitioning of High-Variance Swarms",
+      "start_line": 1516,
+      "end_line": 1524,
+      "header_lines": [
+        1517
+      ],
+      "content_start": 1519,
+      "content_end": 1523,
+      "content": "1519: :label: def-geometric-partition\n1520: \n1521: For a given interaction range $\\varepsilon$, we define a swarm's phase-space structure based on local and global properties. As will be proven in **Corollary 6.4.4**, any swarm with sufficiently high variance (`Var(x) > R^{2}_var`) can be partitioned into two non-empty, N-uniform sets:\n1522: 1.  A **high-error set** `H_k`, whose members are **kinematically isolated** in phase space. This implies the existence of a distance $D_H(\\varepsilon) > 0$ such that for any $i \\in H_k$, all other walkers `j` are at an algorithmic distance $d_alg(i, j) > D_H(\\varepsilon)$.\n1523: 2.  A **low-error set** `L_k`, whose members are part of dense clusters in phase space. For any $j \\in L_k$, there is a non-empty subset of other walkers `C_j ⊂ L_k` of size $|C_j| \\geq f_c k$ (for some N-uniform `f_c > 0`) located within an algorithmic radius $R_L(\\varepsilon) < D_H(\\varepsilon)$.",
+      "metadata": {
+        "label": "def-geometric-partition"
+      },
+      "section": "## 5. The Measurement and Interaction Pipeline",
+      "raw_directive": "1516: First, we must formalize the geometric partitioning of the swarm that is guaranteed to exist in a high-variance state, a result that will be proven in full detail in Chapter 6.\n1517: \n1518: :::{prf:definition} Geometric Partitioning of High-Variance Swarms\n1519: :label: def-geometric-partition\n1520: \n1521: For a given interaction range $\\varepsilon$, we define a swarm's phase-space structure based on local and global properties. As will be proven in **Corollary 6.4.4**, any swarm with sufficiently high variance (`Var(x) > R^{2}_var`) can be partitioned into two non-empty, N-uniform sets:\n1522: 1.  A **high-error set** `H_k`, whose members are **kinematically isolated** in phase space. This implies the existence of a distance $D_H(\\varepsilon) > 0$ such that for any $i \\in H_k$, all other walkers `j` are at an algorithmic distance $d_alg(i, j) > D_H(\\varepsilon)$.\n1523: 2.  A **low-error set** `L_k`, whose members are part of dense clusters in phase space. For any $j \\in L_k$, there is a non-empty subset of other walkers `C_j ⊂ L_k` of size $|C_j| \\geq f_c k$ (for some N-uniform `f_c > 0`) located within an algorithmic radius $R_L(\\varepsilon) < D_H(\\varepsilon)$.\n1524: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. The Measurement and Interaction Pipeline"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-raw-value-operators",
+      "title": "Raw Value Operators",
+      "start_line": 1741,
+      "end_line": 1761,
+      "header_lines": [
+        1742
+      ],
+      "content_start": 1744,
+      "content_end": 1760,
+      "content": "1744: :label: def-raw-value-operators\n1745: \n1746: 1.  **The Reward Measurement Operator ($V_R$):** The raw reward for each alive walker `i` is its direct, individual measurement of the reward function, which explicitly includes both positional and velocity components:\n1747: \n1748: \n1749: $$\n1750: r_i := R(x_i, v_i) = R_{\\text{pos}}(x_i) - c_{v\\_reg} \\|v_i\\|^2\n1751: $$\n1752: \n1753:     where $R_{\\text{pos}}(x_i)$ is the positional reward and $c_{v\\_reg} > 0$ is the velocity regularization coefficient from Axiom EG-4.\n1754: \n1755: 2.  **The Paired Distance Measurement Operator ($V_D$):** Given the Companion Map `c(i)` generated by the pairing operator, the raw distance for each alive walker `i` is deterministically defined as the algorithmic distance to its assigned companion:\n1756: \n1757: \n1758: $$\n1759: d_i := d_{\\text{alg}}(i, c(i))\n1760: $$",
+      "metadata": {
+        "label": "def-raw-value-operators"
+      },
+      "section": "## 5. The Measurement and Interaction Pipeline",
+      "raw_directive": "1741: Once the Companion Map `c(i)` is fixed for the timestep by the pairing operator, the measurement of raw values for each walker becomes a deterministic process.\n1742: \n1743: :::{prf:definition} Raw Value Operators\n1744: :label: def-raw-value-operators\n1745: \n1746: 1.  **The Reward Measurement Operator ($V_R$):** The raw reward for each alive walker `i` is its direct, individual measurement of the reward function, which explicitly includes both positional and velocity components:\n1747: \n1748: \n1749: $$\n1750: r_i := R(x_i, v_i) = R_{\\text{pos}}(x_i) - c_{v\\_reg} \\|v_i\\|^2\n1751: $$\n1752: \n1753:     where $R_{\\text{pos}}(x_i)$ is the positional reward and $c_{v\\_reg} > 0$ is the velocity regularization coefficient from Axiom EG-4.\n1754: \n1755: 2.  **The Paired Distance Measurement Operator ($V_D$):** Given the Companion Map `c(i)` generated by the pairing operator, the raw distance for each alive walker `i` is deterministically defined as the algorithmic distance to its assigned companion:\n1756: \n1757: \n1758: $$\n1759: d_i := d_{\\text{alg}}(i, c(i))\n1760: $$\n1761: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. The Measurement and Interaction Pipeline"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-swarm-aggregation-operator",
+      "title": "Swarm Aggregation Operator",
+      "start_line": 1779,
+      "end_line": 1783,
+      "header_lines": [
+        1780
+      ],
+      "content_start": 1782,
+      "content_end": 1782,
+      "content": "1782: :label: def-swarm-aggregation-operator",
+      "metadata": {
+        "label": "def-swarm-aggregation-operator"
+      },
+      "section": "## 5. The Measurement and Interaction Pipeline",
+      "raw_directive": "1779: This stage distills the raw reward and distance vectors from the `k` alive walkers into the summary statistics (mean and standard deviation) required for standardization.\n1780: \n1781: :::{prf:definition} Swarm Aggregation Operator\n1782: :label: def-swarm-aggregation-operator\n1783: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. The Measurement and Interaction Pipeline"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-patched-std-dev-function",
+      "title": "Patched Standard Deviation Function",
+      "start_line": 1792,
+      "end_line": 1807,
+      "header_lines": [
+        1793
+      ],
+      "content_start": 1795,
+      "content_end": 1806,
+      "content": "1795: :label: def-patched-std-dev-function\n1796: \n1797: The **Patched Standard Deviation Function**, $\\sigma'_{\\text{patch}}: \\mathbb{R}_{\\ge 0} \\to \\mathbb{R}_{>0}$, is a $C^1$ smooth replacement for the standard square-root function, designed to be globally Lipschitz and bounded away from zero. It is defined piecewise in terms of the raw variance, $V := \\operatorname{Var}[\\mu_{\\mathbf{v}}]$:\n1798: \n1799: $$\n1800: \\sigma'_{\\text{patch}}(V) :=\n1801: \\begin{cases}\n1802: \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\mathrm{std}}^2}, & V \\le \\kappa_{\\text{var,min}} \\\\\n1803: P(V), & \\kappa_{\\text{var,min}} < V < 2\\kappa_{\\text{var,min}} \\\\\n1804: \\sqrt{V + \\varepsilon_{\\mathrm{std}}^2}, & V \\ge 2\\kappa_{\\text{var,min}}\n1805: \\end{cases}\n1806: $$",
+      "metadata": {
+        "label": "def-patched-std-dev-function"
+      },
+      "section": "## 5. The Measurement and Interaction Pipeline",
+      "raw_directive": "1792: A critical component of this stage is the use of a robust, smooth function to compute the standard deviation, which is essential for the stability of the entire pipeline.\n1793: \n1794: :::{prf:definition} Patched Standard Deviation Function\n1795: :label: def-patched-std-dev-function\n1796: \n1797: The **Patched Standard Deviation Function**, $\\sigma'_{\\text{patch}}: \\mathbb{R}_{\\ge 0} \\to \\mathbb{R}_{>0}$, is a $C^1$ smooth replacement for the standard square-root function, designed to be globally Lipschitz and bounded away from zero. It is defined piecewise in terms of the raw variance, $V := \\operatorname{Var}[\\mu_{\\mathbf{v}}]$:\n1798: \n1799: $$\n1800: \\sigma'_{\\text{patch}}(V) :=\n1801: \\begin{cases}\n1802: \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\mathrm{std}}^2}, & V \\le \\kappa_{\\text{var,min}} \\\\\n1803: P(V), & \\kappa_{\\text{var,min}} < V < 2\\kappa_{\\text{var,min}} \\\\\n1804: \\sqrt{V + \\varepsilon_{\\mathrm{std}}^2}, & V \\ge 2\\kappa_{\\text{var,min}}\n1805: \\end{cases}\n1806: $$\n1807: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. The Measurement and Interaction Pipeline"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-standardization-operator",
+      "title": "N-Dimensional Standardization Operator",
+      "start_line": 1818,
+      "end_line": 1828,
+      "header_lines": [
+        1819
+      ],
+      "content_start": 1821,
+      "content_end": 1827,
+      "content": "1821: :label: def-standardization-operator\n1822: \n1823: The **N-Dimensional Standardization Operator**, $z$, maps a swarm state `S`, a raw value vector `v`, and an aggregation operator `M` to an N-dimensional vector of Z-scores.\n1824: \n1825: **Operation:**\n1826: 1.  Aggregate the alive components `v_A` to get a measure $\\mu_v = M(S, v_A)$.\n1827: 2.  Compute the mean $\\mu_A = \\mathbb{E}[\\mu_v]$ and the **patched** standard deviation $\\sigma'_A = \\sigma'_{\\text{patch}}(\\text{Var}[\\mu_v])$.",
+      "metadata": {
+        "label": "def-standardization-operator"
+      },
+      "section": "## 5. The Measurement and Interaction Pipeline",
+      "raw_directive": "1818: This operator uses the robust statistics from the previous stage to convert the raw value vectors into standardized Z-scores.\n1819: \n1820: :::{prf:definition} N-Dimensional Standardization Operator\n1821: :label: def-standardization-operator\n1822: \n1823: The **N-Dimensional Standardization Operator**, $z$, maps a swarm state `S`, a raw value vector `v`, and an aggregation operator `M` to an N-dimensional vector of Z-scores.\n1824: \n1825: **Operation:**\n1826: 1.  Aggregate the alive components `v_A` to get a measure $\\mu_v = M(S, v_A)$.\n1827: 2.  Compute the mean $\\mu_A = \\mathbb{E}[\\mu_v]$ and the **patched** standard deviation $\\sigma'_A = \\sigma'_{\\text{patch}}(\\text{Var}[\\mu_v])$.\n1828: 3.  For each alive walker `i`, compute its Z-score: $z_i = (v_i - \\mu_A) / \\sigma'_A$.",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. The Measurement and Interaction Pipeline"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-logistic-rescale",
+      "title": "Canonical Logistic Rescale Function",
+      "start_line": 1844,
+      "end_line": 1853,
+      "header_lines": [
+        1845
+      ],
+      "content_start": 1847,
+      "content_end": 1852,
+      "content": "1847: :label: def-logistic-rescale\n1848: \n1849: The **Canonical Logistic Rescale Function**, $g_A: \\mathbb{R} \\to (0, 2)$, is defined as:\n1850: \n1851: $$\n1852: g_A(z) := \\frac{2}{1 + e^{-z}}",
+      "metadata": {
+        "label": "def-logistic-rescale"
+      },
+      "section": "## 5. The Measurement and Interaction Pipeline",
+      "raw_directive": "1844: :::\n1845: \n1846: :::{prf:definition} Canonical Logistic Rescale Function\n1847: :label: def-logistic-rescale\n1848: \n1849: The **Canonical Logistic Rescale Function**, $g_A: \\mathbb{R} \\to (0, 2)$, is defined as:\n1850: \n1851: $$\n1852: g_A(z) := \\frac{2}{1 + e^{-z}}\n1853: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. The Measurement and Interaction Pipeline"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-fitness-potential-operator",
+      "title": "Fitness Potential Operator",
+      "start_line": 1864,
+      "end_line": 1884,
+      "header_lines": [
+        1865
+      ],
+      "content_start": 1867,
+      "content_end": 1883,
+      "content": "1867: :label: def-fitness-potential-operator\n1868: \n1869: The **Fitness Potential Operator**, $\\Phi_{\\text{pipeline}}$, maps a swarm state `S` and its raw measurement vectors `r` and `d` to the final N-dimensional fitness potential vector $\\mathbf{V}_{\\text{fit}}$.\n1870: \n1871: **Operation:**\n1872: 1.  Compute reward Z-scores: $\\mathbf{z}_r = z(S, \\mathbf{r}, R_{agg})$.\n1873: 2.  Compute distance Z-scores: $\\mathbf{z}_d = z(S, \\mathbf{d}, M_D)$.\n1874: 3.  For each alive walker `i`, compute the rescaled components with the floor $\\eta$:\n1875:     *   $r'_i := g_A(z_{r,i}) + \\eta$\n1876:     *   $d'_i := g_A(z_{d,i}) + \\eta$\n1877: 4.  Combine the components using the dynamics weights $\\alpha$ and $\\beta$:\n1878: \n1879: \n1880: \n1881: $$\n1882: V_i := (d'_i)^\\beta \\cdot (r'_i)^\\alpha\n1883: $$",
+      "metadata": {
+        "label": "def-fitness-potential-operator"
+      },
+      "section": "## 5. The Measurement and Interaction Pipeline",
+      "raw_directive": "1864: The final stage of the pipeline assembles the rescaled components from both the reward and diversity channels into the final fitness potential vector.\n1865: \n1866: :::{prf:definition} Fitness Potential Operator\n1867: :label: def-fitness-potential-operator\n1868: \n1869: The **Fitness Potential Operator**, $\\Phi_{\\text{pipeline}}$, maps a swarm state `S` and its raw measurement vectors `r` and `d` to the final N-dimensional fitness potential vector $\\mathbf{V}_{\\text{fit}}$.\n1870: \n1871: **Operation:**\n1872: 1.  Compute reward Z-scores: $\\mathbf{z}_r = z(S, \\mathbf{r}, R_{agg})$.\n1873: 2.  Compute distance Z-scores: $\\mathbf{z}_d = z(S, \\mathbf{d}, M_D)$.\n1874: 3.  For each alive walker `i`, compute the rescaled components with the floor $\\eta$:\n1875:     *   $r'_i := g_A(z_{r,i}) + \\eta$\n1876:     *   $d'_i := g_A(z_{d,i}) + \\eta$\n1877: 4.  Combine the components using the dynamics weights $\\alpha$ and $\\beta$:\n1878: \n1879: \n1880: \n1881: $$\n1882: V_i := (d'_i)^\\beta \\cdot (r'_i)^\\alpha\n1883: $$\n1884: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. The Measurement and Interaction Pipeline"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-cloning-companion-operator",
+      "title": "Companion Selection Operator for Cloning",
+      "start_line": 1934,
+      "end_line": 1962,
+      "header_lines": [
+        1935
+      ],
+      "content_start": 1937,
+      "content_end": 1961,
+      "content": "1937: :label: def-cloning-companion-operator\n1938: \n1939: The first step of the cloning action is to select a companion. The **Companion Selection Operator for Cloning** defines, for each walker `i`, a probability measure $\\mathcal{C}_i(S)$ from which a companion `c_i` is sampled independently. This is a hybrid operator that uses the best available information for each type of walker.\n1940: \n1941: **Inputs:**\n1942: *   The swarm state `S`, which defines the set of alive walkers, $\\mathcal{A}_k$, and the set of dead walkers, $\\mathcal{D}_k$.\n1943: *   The interaction range for cloning, $\\varepsilon_c > 0$.\n1944: \n1945: **Operation:**\n1946: The definition of the measure $\\mathcal{C}_i(S)$ depends on the status of walker `i`:\n1947: \n1948: 1.  **If `i` is an ALIVE walker ($i \\in \\mathcal{A}_k$):**\n1949:     The selection is phase-space-aware and restricted to other alive walkers. For any other alive walker $j \\in \\mathcal{A}_k \\setminus \\{i\\}$, the probability of selection is given by a softmax distribution based on algorithmic distance:\n1950: \n1951: \n1952: $$\n1953: P(c_i=j \\mid i \\in \\mathcal{A}_k) := \\frac{\\exp\\left(-\\frac{d_{\\text{alg}}(i, j)^2}{2\\epsilon_c^2}\\right)}{\\sum_{l \\in \\mathcal{A}_k \\setminus \\{i\\}} \\exp\\left(-\\frac{d_{\\text{alg}}(i, l)^2}{2\\epsilon_c^2}\\right)}\n1954: $$\n1955: \n1956: 2.  **If `i` is a DEAD walker ($i \\in \\mathcal{D}_k$):**\n1957:     The selection is a uniform random choice from the entire set of `k` alive walkers. For any alive walker $j \\in \\mathcal{A}_k$:\n1958: \n1959: \n1960: $$\n1961: P(c_i=j \\mid i \\in \\mathcal{D}_k) := \\frac{1}{k}",
+      "metadata": {
+        "label": "def-cloning-companion-operator"
+      },
+      "section": "## 5. The Measurement and Interaction Pipeline",
+      "raw_directive": "1934: \n1935: #### 5.7.1 Companion Selection Operator for Cloning\n1936: :::{prf:definition} Companion Selection Operator for Cloning\n1937: :label: def-cloning-companion-operator\n1938: \n1939: The first step of the cloning action is to select a companion. The **Companion Selection Operator for Cloning** defines, for each walker `i`, a probability measure $\\mathcal{C}_i(S)$ from which a companion `c_i` is sampled independently. This is a hybrid operator that uses the best available information for each type of walker.\n1940: \n1941: **Inputs:**\n1942: *   The swarm state `S`, which defines the set of alive walkers, $\\mathcal{A}_k$, and the set of dead walkers, $\\mathcal{D}_k$.\n1943: *   The interaction range for cloning, $\\varepsilon_c > 0$.\n1944: \n1945: **Operation:**\n1946: The definition of the measure $\\mathcal{C}_i(S)$ depends on the status of walker `i`:\n1947: \n1948: 1.  **If `i` is an ALIVE walker ($i \\in \\mathcal{A}_k$):**\n1949:     The selection is phase-space-aware and restricted to other alive walkers. For any other alive walker $j \\in \\mathcal{A}_k \\setminus \\{i\\}$, the probability of selection is given by a softmax distribution based on algorithmic distance:\n1950: \n1951: \n1952: $$\n1953: P(c_i=j \\mid i \\in \\mathcal{A}_k) := \\frac{\\exp\\left(-\\frac{d_{\\text{alg}}(i, j)^2}{2\\epsilon_c^2}\\right)}{\\sum_{l \\in \\mathcal{A}_k \\setminus \\{i\\}} \\exp\\left(-\\frac{d_{\\text{alg}}(i, l)^2}{2\\epsilon_c^2}\\right)}\n1954: $$\n1955: \n1956: 2.  **If `i` is a DEAD walker ($i \\in \\mathcal{D}_k$):**\n1957:     The selection is a uniform random choice from the entire set of `k` alive walkers. For any alive walker $j \\in \\mathcal{A}_k$:\n1958: \n1959: \n1960: $$\n1961: P(c_i=j \\mid i \\in \\mathcal{D}_k) := \\frac{1}{k}\n1962: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. The Measurement and Interaction Pipeline"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-cloning-score",
+      "title": "The Canonical Cloning Score",
+      "start_line": 1965,
+      "end_line": 1975,
+      "header_lines": [
+        1966
+      ],
+      "content_start": 1968,
+      "content_end": 1974,
+      "content": "1968: :label: def-cloning-score\n1969: \n1970: Once a companion `c_i` has been selected for walker `i`, the **Canonical Cloning Score**, $S_i(c_i)$, is calculated as:\n1971: \n1972: $$\n1973: S_i(c_i) := \\frac{V_{\\text{fit},{c_i}} - V_{\\text{fit},i}}{V_{\\text{fit},i} + \\varepsilon_{\\mathrm{clone}}}\n1974: $$",
+      "metadata": {
+        "label": "def-cloning-score"
+      },
+      "section": "## 5. The Measurement and Interaction Pipeline",
+      "raw_directive": "1965: \n1966: #### 5.7.2 Cloning Score\n1967: :::{prf:definition} The Canonical Cloning Score\n1968: :label: def-cloning-score\n1969: \n1970: Once a companion `c_i` has been selected for walker `i`, the **Canonical Cloning Score**, $S_i(c_i)$, is calculated as:\n1971: \n1972: $$\n1973: S_i(c_i) := \\frac{V_{\\text{fit},{c_i}} - V_{\\text{fit},i}}{V_{\\text{fit},i} + \\varepsilon_{\\mathrm{clone}}}\n1974: $$\n1975: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. The Measurement and Interaction Pipeline"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-cloning-probability",
+      "title": "Total Cloning Probability",
+      "start_line": 1977,
+      "end_line": 1993,
+      "header_lines": [
+        1978
+      ],
+      "content_start": 1980,
+      "content_end": 1992,
+      "content": "1980: :label: def-cloning-probability\n1981: \n1982: The **total cloning probability**, $p_i$, for a walker `i` is its unconditional probability of being marked for cloning. This is the expectation of the cloning event taken over the random draws of both the companion `c_i` and the threshold `T_i`.\n1983: \n1984: $$\n1985: p_i := \\mathbb{E}_{c_i \\sim \\mathcal{C}_i(S)} \\left[ \\mathbb{P}_{T_i \\sim U(0,p_{\\max})} \\left( S_i(c_i) > T_i \\right) \\right]\n1986: $$\n1987: \n1988: The inner probability, for a fixed companion, evaluates to $\\min(1, \\max(0, S_i(c_i)/p_{\\max}))$. This gives the final expression for the total cloning probability as an expectation over the choice of companion:\n1989: \n1990: $$\n1991: p_i = \\mathbb{E}_{c_i \\sim \\mathcal{C}_i(S)}\\left[\\min\\left(1, \\max\\left(0, \\frac{S_i(c_i)}{p_{\\max}}\\right)\\right)\\right]\n1992: $$",
+      "metadata": {
+        "label": "def-cloning-probability"
+      },
+      "section": "## 5. The Measurement and Interaction Pipeline",
+      "raw_directive": "1977: :::\n1978: \n1979: :::{prf:definition} Total Cloning Probability\n1980: :label: def-cloning-probability\n1981: \n1982: The **total cloning probability**, $p_i$, for a walker `i` is its unconditional probability of being marked for cloning. This is the expectation of the cloning event taken over the random draws of both the companion `c_i` and the threshold `T_i`.\n1983: \n1984: $$\n1985: p_i := \\mathbb{E}_{c_i \\sim \\mathcal{C}_i(S)} \\left[ \\mathbb{P}_{T_i \\sim U(0,p_{\\max})} \\left( S_i(c_i) > T_i \\right) \\right]\n1986: $$\n1987: \n1988: The inner probability, for a fixed companion, evaluates to $\\min(1, \\max(0, S_i(c_i)/p_{\\max}))$. This gives the final expression for the total cloning probability as an expectation over the choice of companion:\n1989: \n1990: $$\n1991: p_i = \\mathbb{E}_{c_i \\sim \\mathcal{C}_i(S)}\\left[\\min\\left(1, \\max\\left(0, \\frac{S_i(c_i)}{p_{\\max}}\\right)\\right)\\right]\n1992: $$\n1993: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. The Measurement and Interaction Pipeline"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-cloning-decision",
+      "title": "The Stochastic Cloning Decision",
+      "start_line": 2005,
+      "end_line": 2009,
+      "header_lines": [
+        2006
+      ],
+      "content_start": 2008,
+      "content_end": 2008,
+      "content": "2008: :label: def-cloning-decision",
+      "metadata": {
+        "label": "def-cloning-decision"
+      },
+      "section": "## 5. The Measurement and Interaction Pipeline",
+      "raw_directive": "2005: #### 5.7.3  Cloning Decision\n2006: \n2007: :::{prf:definition} The Stochastic Cloning Decision\n2008: :label: def-cloning-decision\n2009: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. The Measurement and Interaction Pipeline"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-inelastic-collision-update",
+      "title": "The Inelastic Collision State Update",
+      "start_line": 2017,
+      "end_line": 2078,
+      "header_lines": [
+        2018
+      ],
+      "content_start": 2020,
+      "content_end": 2077,
+      "content": "2020: :label: def-inelastic-collision-update\n2021: \n2022: Let the set of all walkers marked for cloning be `C_set`. For each cloner $i \\in C_set$, let `c_i` be its selected companion. The intermediate swarm state `S'` is constructed as follows.\n2023: \n2024: First, for each unique companion `c` in the swarm, we identify the set of all cloners that selected it:\n2025: \n2026: $$\n2027: I_c := \\{j \\in C_{set} \\mid c_j = c\\}\n2028: $$\n2029: \n2030: Let `M = |I_c|` be the number of walkers cloning from companion `c`. The update is then defined for each `(M+1)`-particle system consisting of the companion `c` and its set of cloners `I_c`.\n2031: \n2032: 1.  **Position Updates:**\n2033:     *   For each cloner $j \\in I_c$, its position is reset to that of its companion `c`, plus independent Gaussian jitter:\n2034: \n2035: \n2036: $$\n2037: x'_j := x_c + \\sigma_x \\zeta_j^x\n2038: $$\n2039: \n2040:     *   The position of the companion `c` is unchanged by this interaction: `x'_c := x_c`.\n2041: \n2042: 2.  **Velocity Updates (The Inelastic Collapse):**\n2043:     The velocities of all `M+1` interacting walkers are updated simultaneously in a process that conserves the group's total momentum.\n2044: \n2045:     *   **a. Center-of-Mass Velocity:** First, compute the center-of-mass velocity of the `(M+1)`-particle interacting system. This quantity is conserved throughout the collision.\n2046: \n2047: \n2048: $$\n2049: V_{COM, c} := \\frac{1}{M+1} \\left( v_c + \\sum_{j \\in I_c} v_j \\right)\n2050: $$\n2051: \n2052:     *   **b. Update Relative Velocities:** For each walker `k` in the system ($k \\in I_c \\cup {c}$), its velocity relative to the CoM is `u_k = v_k - V_{COM,c}`. The new relative velocities `u'_k` are defined by a random rotation and a frictional contraction.\n2053:         Let $\\alpha_restitution \\in [0, 1]$ be a fixed algorithmic parameter representing the coefficient of restitution. For each `k`, let `R_k` be a random orthogonal transformation that isotropically rotates `u_k` (i.e., `R_k(u_k)` has the same magnitude as `u_k` but a uniformly random direction on the `(d-1)`-sphere). The new relative velocity is:\n2054: \n2055: \n2056: $$\n2057: u'_k := \\alpha_{\\text{restitution}} \\cdot R_k(u_k)\n2058: $$\n2059: \n2060:     *   **c. Return to Lab Frame:** The final velocities for all interacting walkers are then reconstructed:\n2061: \n2062: \n2063: $$\n2064: v'_k := V_{COM, c} + u'_k\n2065: $$\n2066: \n2067: 3.  **Uninvolved Walkers:** Any walker `k` that is not a cloner and was not selected as a companion by any cloner has its state `(x_k, v_k)` unchanged.\n2068: \n2069: **Analysis of the Restitution Parameter $\\alpha_restitution$:**\n2070: \n2071: This model introduces $\\alpha_restitution$ as a crucial hyperparameter that controls the velocity variance expansion caused by the velocity reset mechanism during cloning.\n2072: \n2073: *   If **$\\alpha_restitution = 1$**, the collision is **perfectly elastic**. The magnitudes of the relative velocities are preserved (`||u'_k|| = ||u_k||`), and the total kinetic energy of the interacting system is conserved. In this regime, cloning redistributes kinetic energy among walkers but does not directly dissipate it. However, the velocity reset mechanism still causes bounded expansion of $V_{\\text{Var},v}$ as walkers' velocities are reset based on their companions.\n2074: \n2075: *   If **$\\alpha_restitution = 0$**, the collision is **perfectly inelastic**. All new relative velocities are zero (`u'_k = 0`), meaning all `M+1` walkers emerge with the identical center-of-mass velocity, `v'_k = V_{COM,c}`. This corresponds to the **maximum possible dissipation** of the group's internal kinetic energy while still conserving total momentum. In this regime, the velocity variance expansion is minimized, as all walkers in a cloning group collapse to a single velocity.\n2076: \n2077: *   If **$\\alpha_restitution \\in (0, 1)$**, the cloning event has **intermediate dissipation**. The internal kinetic energy of the interacting group is reduced by a factor of $\\alpha_restitution^{2}$. This parameter provides a tunable mechanism for controlling the trade-off between maintaining kinetic diversity and bounding velocity variance expansion.",
+      "metadata": {
+        "label": "def-inelastic-collision-update"
+      },
+      "section": "## 5. The Measurement and Interaction Pipeline",
+      "raw_directive": "2017: This model handles the complex but common scenario where multiple \"cloners\" (either unfit alive walkers or dead walkers being revived) select the same high-fitness walker as their companion. Instead of a series of pairwise interactions, all cloners associated with a single companion are treated as a single interacting system that undergoes a simultaneous, momentum-conserving \"inelastic collapse.\" This process includes a tunable parameter for energy dissipation, allowing the cloning operator itself to act as a powerful mechanism for controlling the swarm's kinetic energy.\n2018: \n2019: :::{prf:definition} The Inelastic Collision State Update\n2020: :label: def-inelastic-collision-update\n2021: \n2022: Let the set of all walkers marked for cloning be `C_set`. For each cloner $i \\in C_set$, let `c_i` be its selected companion. The intermediate swarm state `S'` is constructed as follows.\n2023: \n2024: First, for each unique companion `c` in the swarm, we identify the set of all cloners that selected it:\n2025: \n2026: $$\n2027: I_c := \\{j \\in C_{set} \\mid c_j = c\\}\n2028: $$\n2029: \n2030: Let `M = |I_c|` be the number of walkers cloning from companion `c`. The update is then defined for each `(M+1)`-particle system consisting of the companion `c` and its set of cloners `I_c`.\n2031: \n2032: 1.  **Position Updates:**\n2033:     *   For each cloner $j \\in I_c$, its position is reset to that of its companion `c`, plus independent Gaussian jitter:\n2034: \n2035: \n2036: $$\n2037: x'_j := x_c + \\sigma_x \\zeta_j^x\n2038: $$\n2039: \n2040:     *   The position of the companion `c` is unchanged by this interaction: `x'_c := x_c`.\n2041: \n2042: 2.  **Velocity Updates (The Inelastic Collapse):**\n2043:     The velocities of all `M+1` interacting walkers are updated simultaneously in a process that conserves the group's total momentum.\n2044: \n2045:     *   **a. Center-of-Mass Velocity:** First, compute the center-of-mass velocity of the `(M+1)`-particle interacting system. This quantity is conserved throughout the collision.\n2046: \n2047: \n2048: $$\n2049: V_{COM, c} := \\frac{1}{M+1} \\left( v_c + \\sum_{j \\in I_c} v_j \\right)\n2050: $$\n2051: \n2052:     *   **b. Update Relative Velocities:** For each walker `k` in the system ($k \\in I_c \\cup {c}$), its velocity relative to the CoM is `u_k = v_k - V_{COM,c}`. The new relative velocities `u'_k` are defined by a random rotation and a frictional contraction.\n2053:         Let $\\alpha_restitution \\in [0, 1]$ be a fixed algorithmic parameter representing the coefficient of restitution. For each `k`, let `R_k` be a random orthogonal transformation that isotropically rotates `u_k` (i.e., `R_k(u_k)` has the same magnitude as `u_k` but a uniformly random direction on the `(d-1)`-sphere). The new relative velocity is:\n2054: \n2055: \n2056: $$\n2057: u'_k := \\alpha_{\\text{restitution}} \\cdot R_k(u_k)\n2058: $$\n2059: \n2060:     *   **c. Return to Lab Frame:** The final velocities for all interacting walkers are then reconstructed:\n2061: \n2062: \n2063: $$\n2064: v'_k := V_{COM, c} + u'_k\n2065: $$\n2066: \n2067: 3.  **Uninvolved Walkers:** Any walker `k` that is not a cloner and was not selected as a companion by any cloner has its state `(x_k, v_k)` unchanged.\n2068: \n2069: **Analysis of the Restitution Parameter $\\alpha_restitution$:**\n2070: \n2071: This model introduces $\\alpha_restitution$ as a crucial hyperparameter that controls the velocity variance expansion caused by the velocity reset mechanism during cloning.\n2072: \n2073: *   If **$\\alpha_restitution = 1$**, the collision is **perfectly elastic**. The magnitudes of the relative velocities are preserved (`||u'_k|| = ||u_k||`), and the total kinetic energy of the interacting system is conserved. In this regime, cloning redistributes kinetic energy among walkers but does not directly dissipate it. However, the velocity reset mechanism still causes bounded expansion of $V_{\\text{Var},v}$ as walkers' velocities are reset based on their companions.\n2074: \n2075: *   If **$\\alpha_restitution = 0$**, the collision is **perfectly inelastic**. All new relative velocities are zero (`u'_k = 0`), meaning all `M+1` walkers emerge with the identical center-of-mass velocity, `v'_k = V_{COM,c}`. This corresponds to the **maximum possible dissipation** of the group's internal kinetic energy while still conserving total momentum. In this regime, the velocity variance expansion is minimized, as all walkers in a cloning group collapse to a single velocity.\n2076: \n2077: *   If **$\\alpha_restitution \\in (0, 1)$**, the cloning event has **intermediate dissipation**. The internal kinetic energy of the interacting group is reduced by a factor of $\\alpha_restitution^{2}$. This parameter provides a tunable mechanism for controlling the trade-off between maintaining kinetic diversity and bounding velocity variance expansion.\n2078: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. The Measurement and Interaction Pipeline"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-unified-high-low-error-sets",
+      "title": "The Unified High-Error and Low-Error Sets",
+      "start_line": 2371,
+      "end_line": 2414,
+      "header_lines": [
+        2372
+      ],
+      "content_start": 2374,
+      "content_end": 2413,
+      "content": "2374: :label: def-unified-high-low-error-sets\n2375: \n2376: For a given swarm `k` with alive set $\\mathcal{A}_k$ ($k \\ge 2$), we define a partition into a unified high-error set $H_k(\\epsilon)$ and a unified low-error set $L_k(\\epsilon)$ using a **clustering-based approach** that applies uniformly across all interaction regimes. This unified approach captures both global outlier structure and local phase-space clustering through a single consistent mechanism.\n2377: \n2378: **Phase-Space Clustering Construction:**\n2379: \n2380: The construction proceeds in four steps:\n2381: \n2382: 1.  **Clustering:** Partition the alive set $\\mathcal{A}_k$ into disjoint clusters $\\{G_1, \\ldots, G_M\\}$ using complete-linkage hierarchical clustering with a maximum cluster diameter $D_{\\text{diam}}(\\epsilon) := c_d \\cdot \\epsilon$ (where $c_d > 0$ is a fixed constant, typically $c_d = 2$). Each cluster $G_m$ satisfies:\n2383: \n2384: $$\n2385: \\text{diam}(G_m) := \\max_{i,j \\in G_m} d_{\\text{alg}}(i, j) \\le D_{\\text{diam}}(\\epsilon)\n2386: $$\n2387: \n2388: where $d_{\\text{alg}}(i, j)^2 := \\|x_i - x_j\\|^2 + \\lambda_{\\text{alg}} \\|v_i - v_j\\|^2$ is the algorithmic phase-space distance.\n2389: \n2390: 2.  **Statistical Validity Constraint:** To ensure that cluster-level statistics are meaningful, we impose a minimum cluster size requirement. Let $k_{\\min} := \\max(5, \\lceil 0.05k \\rceil)$ be the minimum statistically valid cluster size. All clusters with $|G_m| < k_{\\min}$ are marked as **invalid** and their walkers are automatically included in the high-error set (as they represent statistically unreliable outlier configurations).\n2391: \n2392: 3.  **Outlier Cluster Identification:** For each valid cluster $G_m$ (with $|G_m| \\ge k_{\\min}$), compute its center of mass in phase space: $(\\mu_{x,m}, \\mu_{v,m})$. Compute the between-cluster hypocoercive variance contribution:\n2393: \n2394: $$\n2395: \\text{Contrib}(G_m) := |G_m| \\left(\\|\\mu_{x,m} - \\mu_x\\|^2 + \\lambda_v \\|\\mu_{v,m} - \\mu_v\\|^2\\right)\n2396: $$\n2397: \n2398: where $(\\mu_x, \\mu_v)$ is the global center of mass. Sort valid clusters by $\\text{Contrib}(G_m)$ in descending order, and let $O_M \\subseteq \\{1, \\ldots, M\\}$ be the smallest set of cluster indices (among valid clusters) whose cumulative contribution meets or exceeds a fraction $(1-\\varepsilon_O)$ of the total contribution from valid clusters (where $\\varepsilon_O \\in (0, 1)$ is a fixed structural parameter, typically $\\varepsilon_O = 0.1$):\n2399: \n2400: $$\n2401: \\sum_{m \\in O_M} \\text{Contrib}(G_m) \\ge (1-\\varepsilon_O) \\sum_{\\substack{m=1 \\\\ |G_m| \\ge k_{\\min}}}^M \\text{Contrib}(G_m)\n2402: $$\n2403: \n2404: 4.  **Unified High-Error Set Construction:** The unified high-error set is the union of all walkers in outlier clusters plus all walkers in invalid clusters:\n2405: \n2406: $$\n2407: H_k(\\epsilon) := \\left(\\bigcup_{m \\in O_M} G_m\\right) \\cup \\left(\\bigcup_{\\substack{m: |G_m| < k_{\\min}}} G_m\\right)\n2408: $$\n2409: \n2410: The **Unified Low-Error Set** is the complement:\n2411: \n2412: $$\n2413: L_k(\\epsilon) := \\mathcal{A}_k \\setminus H_k(\\epsilon)",
+      "metadata": {
+        "label": "def-unified-high-low-error-sets"
+      },
+      "section": "## 6. The Geometry of Error: From System Error to a Guaranteed Geometric Structure",
+      "raw_directive": "2371: Therefore, this section formally defines these sets based on the swarm's full **phase-space configuration**. We will partition the swarm based on two distinct phase-space measures: global kinematic dispersion and local phase-space density. These definitions create the crucial link between the state of the swarm and the signals measured by the algorithm. The remainder of the Keystone analysis will then be dedicated to proving that high *positional* variance is a sufficient condition to force a non-trivial number of walkers into these *phase-space* defined error sets.\n2372: \n2373: :::{prf:definition} The Unified High-Error and Low-Error Sets\n2374: :label: def-unified-high-low-error-sets\n2375: \n2376: For a given swarm `k` with alive set $\\mathcal{A}_k$ ($k \\ge 2$), we define a partition into a unified high-error set $H_k(\\epsilon)$ and a unified low-error set $L_k(\\epsilon)$ using a **clustering-based approach** that applies uniformly across all interaction regimes. This unified approach captures both global outlier structure and local phase-space clustering through a single consistent mechanism.\n2377: \n2378: **Phase-Space Clustering Construction:**\n2379: \n2380: The construction proceeds in four steps:\n2381: \n2382: 1.  **Clustering:** Partition the alive set $\\mathcal{A}_k$ into disjoint clusters $\\{G_1, \\ldots, G_M\\}$ using complete-linkage hierarchical clustering with a maximum cluster diameter $D_{\\text{diam}}(\\epsilon) := c_d \\cdot \\epsilon$ (where $c_d > 0$ is a fixed constant, typically $c_d = 2$). Each cluster $G_m$ satisfies:\n2383: \n2384: $$\n2385: \\text{diam}(G_m) := \\max_{i,j \\in G_m} d_{\\text{alg}}(i, j) \\le D_{\\text{diam}}(\\epsilon)\n2386: $$\n2387: \n2388: where $d_{\\text{alg}}(i, j)^2 := \\|x_i - x_j\\|^2 + \\lambda_{\\text{alg}} \\|v_i - v_j\\|^2$ is the algorithmic phase-space distance.\n2389: \n2390: 2.  **Statistical Validity Constraint:** To ensure that cluster-level statistics are meaningful, we impose a minimum cluster size requirement. Let $k_{\\min} := \\max(5, \\lceil 0.05k \\rceil)$ be the minimum statistically valid cluster size. All clusters with $|G_m| < k_{\\min}$ are marked as **invalid** and their walkers are automatically included in the high-error set (as they represent statistically unreliable outlier configurations).\n2391: \n2392: 3.  **Outlier Cluster Identification:** For each valid cluster $G_m$ (with $|G_m| \\ge k_{\\min}$), compute its center of mass in phase space: $(\\mu_{x,m}, \\mu_{v,m})$. Compute the between-cluster hypocoercive variance contribution:\n2393: \n2394: $$\n2395: \\text{Contrib}(G_m) := |G_m| \\left(\\|\\mu_{x,m} - \\mu_x\\|^2 + \\lambda_v \\|\\mu_{v,m} - \\mu_v\\|^2\\right)\n2396: $$\n2397: \n2398: where $(\\mu_x, \\mu_v)$ is the global center of mass. Sort valid clusters by $\\text{Contrib}(G_m)$ in descending order, and let $O_M \\subseteq \\{1, \\ldots, M\\}$ be the smallest set of cluster indices (among valid clusters) whose cumulative contribution meets or exceeds a fraction $(1-\\varepsilon_O)$ of the total contribution from valid clusters (where $\\varepsilon_O \\in (0, 1)$ is a fixed structural parameter, typically $\\varepsilon_O = 0.1$):\n2399: \n2400: $$\n2401: \\sum_{m \\in O_M} \\text{Contrib}(G_m) \\ge (1-\\varepsilon_O) \\sum_{\\substack{m=1 \\\\ |G_m| \\ge k_{\\min}}}^M \\text{Contrib}(G_m)\n2402: $$\n2403: \n2404: 4.  **Unified High-Error Set Construction:** The unified high-error set is the union of all walkers in outlier clusters plus all walkers in invalid clusters:\n2405: \n2406: $$\n2407: H_k(\\epsilon) := \\left(\\bigcup_{m \\in O_M} G_m\\right) \\cup \\left(\\bigcup_{\\substack{m: |G_m| < k_{\\min}}} G_m\\right)\n2408: $$\n2409: \n2410: The **Unified Low-Error Set** is the complement:\n2411: \n2412: $$\n2413: L_k(\\epsilon) := \\mathcal{A}_k \\setminus H_k(\\epsilon)\n2414: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## 6. The Geometry of Error: From System Error to a Guaranteed Geometric Structure"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-max-patched-std",
+      "title": "Maximum Patched Standard Deviation",
+      "start_line": 3656,
+      "end_line": 3666,
+      "header_lines": [
+        3657
+      ],
+      "content_start": 3659,
+      "content_end": 3665,
+      "content": "3659: :label: def-max-patched-std\n3660: \n3661: Let $V_{\\max}$ be the uniform upper bound on a raw measurement's absolute value (either $V_{\\max}^{(R)}$ for rewards or $D_{\\text{valid}}$ for distances). The **maximum patched standard deviation**, $\\sigma'_{\\max}$, is the maximum value that the patched standard deviation function can attain over its entire possible input domain.\n3662: \n3663: $$\n3664: \\sigma'_{\\max} := \\sup_{0 \\le V \\le V_{\\max}^2} \\sigma'_{\\mathrm{patch}}(V)\n3665: $$",
+      "metadata": {
+        "label": "def-max-patched-std"
+      },
+      "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
+      "raw_directive": "3656: The first component we must bound is the denominator of the standardization formula. The following definition establishes a uniform upper bound on the patched standard deviation.\n3657: \n3658: :::{prf:definition} Maximum Patched Standard Deviation\n3659: :label: def-max-patched-std\n3660: \n3661: Let $V_{\\max}$ be the uniform upper bound on a raw measurement's absolute value (either $V_{\\max}^{(R)}$ for rewards or $D_{\\text{valid}}$ for distances). The **maximum patched standard deviation**, $\\sigma'_{\\max}$, is the maximum value that the patched standard deviation function can attain over its entire possible input domain.\n3662: \n3663: $$\n3664: \\sigma'_{\\max} := \\sup_{0 \\le V \\le V_{\\max}^2} \\sigma'_{\\mathrm{patch}}(V)\n3665: $$\n3666: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 7,
+        "chapter_file": "chapter_7.json",
+        "section_id": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-unfit-set",
+      "title": "The Unfit Set",
+      "start_line": 4559,
+      "end_line": 4568,
+      "header_lines": [
+        4560
+      ],
+      "content_start": 4562,
+      "content_end": 4567,
+      "content": "4562: :label: def-unfit-set\n4563: \n4564: For a given swarm `k` with alive set $\\mathcal{A}_k$ and a calculated fitness potential vector $(V_{k,i})_{i \\in \\mathcal{A}_k}$, the **unfit set**, $U_k$, is the subset of alive walkers whose fitness potential is less than or equal to the swarm's mean fitness potential, $\\mu_{V,k} = \\frac{1}{k}\\sum_{j \\in \\mathcal{A}_k} V_{k,j}$.\n4565: \n4566: $$\n4567: U_k := \\{i \\in \\mathcal{A}_k \\mid V_{k,i} \\le \\mu_{V,k}\\}",
+      "metadata": {
+        "label": "def-unfit-set"
+      },
+      "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
+      "raw_directive": "4559: The first pillar of the overlap proof is to show that the fitness signal generated by a high-error swarm is a collective phenomenon. A large `V_struct` implies a large internal variance, which is guaranteed to produce a non-vanishing raw measurement variance ([](#thm-geometry-guarantees-variance)). This raw signal robustly propagates through the measurement pipeline to create a guaranteed microscopic gap in the final fitness potentials, ensuring a non-trivial overall fitness range, $\\kappa_V,gap(\\varepsilon) > 0$. The following lemma proves that such a gap cannot be explained by a single unusually fit or unfit walker; it necessitates a statistically significant imbalance in the fitness distribution of the entire population.\n4560: \n4561: :::{prf:definition} The Unfit Set\n4562: :label: def-unfit-set\n4563: \n4564: For a given swarm `k` with alive set $\\mathcal{A}_k$ and a calculated fitness potential vector $(V_{k,i})_{i \\in \\mathcal{A}_k}$, the **unfit set**, $U_k$, is the subset of alive walkers whose fitness potential is less than or equal to the swarm's mean fitness potential, $\\mu_{V,k} = \\frac{1}{k}\\sum_{j \\in \\mathcal{A}_k} V_{k,j}$.\n4565: \n4566: $$\n4567: U_k := \\{i \\in \\mathcal{A}_k \\mid V_{k,i} \\le \\mu_{V,k}\\}\n4568: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 7,
+        "chapter_file": "chapter_7.json",
+        "section_id": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-critical-target-set",
+      "title": "The Critical Target Set",
+      "start_line": 4761,
+      "end_line": 4771,
+      "header_lines": [
+        4762
+      ],
+      "content_start": 4764,
+      "content_end": 4770,
+      "content": "4764: :label: def-critical-target-set\n4765: \n4766: For a state in the high-error regime, let $k$ be the index of the high-variance swarm. The **critical target set**, $I_{\\text{target}}$, is the set of walkers that are simultaneously stably alive, unfit in swarm $k$, and high-error in swarm $k$.\n4767: \n4768: $$\n4769: I_{\\text{target}} := I_{11} \\cap U_k \\cap H_k(\\epsilon)\n4770: $$",
+      "metadata": {
+        "label": "def-critical-target-set"
+      },
+      "section": "## 8. The N-Uniform Quantitative Keystone Lemma",
+      "raw_directive": "4761: The analysis in Chapter 7 proved that this high-variance swarm $k$ contains a non-vanishing fraction of \"unfit\" walkers ($U_k$) and a non-vanishing fraction of \"high-error\" walkers ($H_k$), and that these two sets have a substantial overlap. The final step of the Keystone proof is to show that the corrective cloning action is concentrated on the walkers that are simultaneously members of all three critical sets: those that are alive in both swarms (and thus can contribute to the contractive force), those that are unfit (and thus targeted for cloning), and those that are high-error (and thus the source of the problem). We formally define this intersection as our target set.\n4762: \n4763: :::{prf:definition} The Critical Target Set\n4764: :label: def-critical-target-set\n4765: \n4766: For a state in the high-error regime, let $k$ be the index of the high-variance swarm. The **critical target set**, $I_{\\text{target}}$, is the set of walkers that are simultaneously stably alive, unfit in swarm $k$, and high-error in swarm $k$.\n4767: \n4768: $$\n4769: I_{\\text{target}} := I_{11} \\cap U_k \\cap H_k(\\epsilon)\n4770: $$\n4771: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 8,
+        "chapter_file": "chapter_8.json",
+        "section_id": "## 8. The N-Uniform Quantitative Keystone Lemma"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-cloning-operator-formal",
+      "title": "The Cloning Operator $\\Psi_{\\text{clone}}$",
+      "start_line": 5806,
+      "end_line": 5834,
+      "header_lines": [
+        5807
+      ],
+      "content_start": 5809,
+      "content_end": 5833,
+      "content": "5809: :label: def-cloning-operator-formal\n5810: \n5811: The **cloning operator** $\\Psi_{\\text{clone}}$ is a Markov transition kernel on the swarm state space $\\Sigma_N$. For any input swarm configuration $S \\in \\Sigma_N$, it produces a probability measure $\\Psi_{\\text{clone}}(S, \\cdot)$ on $\\Sigma_N$.\n5812: \n5813: **Domain and Range:**\n5814: - **Input:** A swarm configuration $S = ((x_1, v_1, s_1), \\ldots, (x_N, v_N, s_N)) \\in \\Sigma_N$ with at least one alive walker ($|\\mathcal{A}(S)| \\geq 1$).\n5815: - **Output:** A probability measure over swarm configurations $S' \\in \\Sigma_N$ where all walkers have status $s'_i = 1$ (the intermediate, all-alive configuration).\n5816: \n5817: **Stochastic Structure:**\n5818: \n5819: The operator is defined by a composition of deterministic and stochastic sub-operators:\n5820: \n5821: $$\n5822: \\Psi_{\\text{clone}} = \\Psi_{\\text{update}} \\circ \\Psi_{\\text{decision}} \\circ \\Psi_{\\text{fitness}} \\circ \\Psi_{\\text{measure}}\n5823: $$\n5824: \n5825: where each sub-operator is defined in the subsequent sections.\n5826: \n5827: **Key Property - All-Alive Output:**\n5828: \n5829: By construction, the output configuration $S' \\sim \\Psi_{\\text{clone}}(S, \\cdot)$ satisfies:\n5830: \n5831: $$\n5832: s'_i = 1 \\quad \\text{for all } i \\in \\{1, \\ldots, N\\}\n5833: $$",
+      "metadata": {
+        "label": "def-cloning-operator-formal"
+      },
+      "section": "## 9.2. The Cloning Operator as a Markov Kernel",
+      "raw_directive": "5806: We begin with the highest-level definition of the operator as a mathematical object.\n5807: \n5808: :::{prf:definition} The Cloning Operator $\\Psi_{\\text{clone}}$\n5809: :label: def-cloning-operator-formal\n5810: \n5811: The **cloning operator** $\\Psi_{\\text{clone}}$ is a Markov transition kernel on the swarm state space $\\Sigma_N$. For any input swarm configuration $S \\in \\Sigma_N$, it produces a probability measure $\\Psi_{\\text{clone}}(S, \\cdot)$ on $\\Sigma_N$.\n5812: \n5813: **Domain and Range:**\n5814: - **Input:** A swarm configuration $S = ((x_1, v_1, s_1), \\ldots, (x_N, v_N, s_N)) \\in \\Sigma_N$ with at least one alive walker ($|\\mathcal{A}(S)| \\geq 1$).\n5815: - **Output:** A probability measure over swarm configurations $S' \\in \\Sigma_N$ where all walkers have status $s'_i = 1$ (the intermediate, all-alive configuration).\n5816: \n5817: **Stochastic Structure:**\n5818: \n5819: The operator is defined by a composition of deterministic and stochastic sub-operators:\n5820: \n5821: $$\n5822: \\Psi_{\\text{clone}} = \\Psi_{\\text{update}} \\circ \\Psi_{\\text{decision}} \\circ \\Psi_{\\text{fitness}} \\circ \\Psi_{\\text{measure}}\n5823: $$\n5824: \n5825: where each sub-operator is defined in the subsequent sections.\n5826: \n5827: **Key Property - All-Alive Output:**\n5828: \n5829: By construction, the output configuration $S' \\sim \\Psi_{\\text{clone}}(S, \\cdot)$ satisfies:\n5830: \n5831: $$\n5832: s'_i = 1 \\quad \\text{for all } i \\in \\{1, \\ldots, N\\}\n5833: $$\n5834: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 10,
+        "chapter_file": "chapter_10.json",
+        "section_id": "## 9.2. The Cloning Operator as a Markov Kernel"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-measurement-operator",
+      "title": "The Measurement Operator",
+      "start_line": 5853,
+      "end_line": 5885,
+      "header_lines": [
+        5854
+      ],
+      "content_start": 5856,
+      "content_end": 5884,
+      "content": "5856: :label: def-measurement-operator\n5857: \n5858: For input swarm $S$ with alive set $\\mathcal{A}(S)$ of size $k = |\\mathcal{A}(S)|$:\n5859: \n5860: **Input:** Swarm configuration $S$\n5861: \n5862: **Stochastic Process:**\n5863: \n5864: 1. **Companion Pairing:** Sample a pairing $\\pi: \\mathcal{A}(S) \\to \\mathcal{A}(S)$ from the spatially-aware random pairing distribution (Definition 5.4.1):\n5865: \n5866: \n5867: $$\n5868: \\pi \\sim P_{\\text{pair}}(S, \\cdot)\n5869: $$\n5870: \n5871: 2. **Raw Distance Vector:** For each alive walker $i \\in \\mathcal{A}(S)$, compute:\n5872: \n5873: \n5874: $$\n5875: d_i = d_{\\text{alg}}(x_i, x_{\\pi(i)})\n5876: $$\n5877: \n5878: \n5879:    For dead walkers $i \\notin \\mathcal{A}(S)$, set $d_i = 0$ deterministically.\n5880: \n5881: **Output:** The $N$-dimensional raw distance vector $\\mathbf{d} = (d_1, \\ldots, d_N) \\in \\mathbb{R}^N_{\\geq 0}$\n5882: \n5883: **Key Properties:**\n5884: - The pairing $\\pi$ is sampled once per swarm, creating correlations between measurements",
+      "metadata": {
+        "label": "def-measurement-operator"
+      },
+      "section": "## 9.3. Decomposition into Sub-Operators",
+      "raw_directive": "5853: The first stage generates the stochastic diversity measurements that form the foundation of the fitness evaluation.\n5854: \n5855: :::{prf:definition} The Measurement Operator\n5856: :label: def-measurement-operator\n5857: \n5858: For input swarm $S$ with alive set $\\mathcal{A}(S)$ of size $k = |\\mathcal{A}(S)|$:\n5859: \n5860: **Input:** Swarm configuration $S$\n5861: \n5862: **Stochastic Process:**\n5863: \n5864: 1. **Companion Pairing:** Sample a pairing $\\pi: \\mathcal{A}(S) \\to \\mathcal{A}(S)$ from the spatially-aware random pairing distribution (Definition 5.4.1):\n5865: \n5866: \n5867: $$\n5868: \\pi \\sim P_{\\text{pair}}(S, \\cdot)\n5869: $$\n5870: \n5871: 2. **Raw Distance Vector:** For each alive walker $i \\in \\mathcal{A}(S)$, compute:\n5872: \n5873: \n5874: $$\n5875: d_i = d_{\\text{alg}}(x_i, x_{\\pi(i)})\n5876: $$\n5877: \n5878: \n5879:    For dead walkers $i \\notin \\mathcal{A}(S)$, set $d_i = 0$ deterministically.\n5880: \n5881: **Output:** The $N$-dimensional raw distance vector $\\mathbf{d} = (d_1, \\ldots, d_N) \\in \\mathbb{R}^N_{\\geq 0}$\n5882: \n5883: **Key Properties:**\n5884: - The pairing $\\pi$ is sampled once per swarm, creating correlations between measurements\n5885: - The distribution of $\\mathbf{d}$ depends only on $S$ and the algorithmic parameters $(\\epsilon_p, \\ell_p)$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 11,
+        "chapter_file": "chapter_11.json",
+        "section_id": "## 9.3. Decomposition into Sub-Operators"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-fitness-operator",
+      "title": "The Fitness Evaluation Operator",
+      "start_line": 5900,
+      "end_line": 5971,
+      "header_lines": [
+        5901
+      ],
+      "content_start": 5903,
+      "content_end": 5970,
+      "content": "5903: :label: def-fitness-operator\n5904: \n5905: **Input:**\n5906: - Swarm configuration $S$\n5907: - Raw distance vector $\\mathbf{d} \\in \\mathbb{R}^N_{\\geq 0}$\n5908: \n5909: **Deterministic Computation:**\n5910: \n5911: 1. **Boundary Proximity:** For each walker $i$, compute:\n5912: \n5913: \n5914: $$\n5915: r_i = g_A(x_i) = \\varphi_{\\text{barrier}}(x_i)\n5916: $$\n5917: \n5918:    yielding the raw reward vector $\\mathbf{r} = (r_1, \\ldots, r_N)$.\n5919: \n5920: 2. **Rescaling:** Apply the rescale function with floor $\\eta > 0$:\n5921: \n5922: \n5923: $$\n5924: \\tilde{d}_i = d_i + \\eta, \\quad \\tilde{r}_i = r_i + \\eta\n5925: $$\n5926: \n5927: 3. **Z-Score Normalization:** Compute empirical means and standard deviations over **alive walkers only**:\n5928: \n5929: \n5930: $$\n5931: \\bar{d} = \\frac{1}{k}\\sum_{i \\in \\mathcal{A}(S)} \\tilde{d}_i, \\quad \\sigma_d = \\sqrt{\\frac{1}{k}\\sum_{i \\in \\mathcal{A}(S)} (\\tilde{d}_i - \\bar{d})^2}\n5932: $$\n5933: \n5934: \n5935: \n5936: $$\n5937: \\bar{r} = \\frac{1}{k}\\sum_{i \\in \\mathcal{A}(S)} \\tilde{r}_i, \\quad \\sigma_r = \\sqrt{\\frac{1}{k}\\sum_{i \\in \\mathcal{A}(S)} (\\tilde{r}_i - \\bar{r})^2}\n5938: $$\n5939: \n5940: \n5941:    For alive walkers $i \\in \\mathcal{A}(S)$:\n5942: \n5943: \n5944: $$\n5945: z_{d,i} = \\frac{\\tilde{d}_i - \\bar{d}}{\\sigma_d + \\sigma_{\\text{stab}}}, \\quad z_{r,i} = \\frac{\\tilde{r}_i - \\bar{r}}{\\sigma_r + \\sigma_{\\text{stab}}}\n5946: $$\n5947: \n5948: \n5949:    For dead walkers, set $z_{d,i} = z_{r,i} = 0$.\n5950: \n5951: 4. **Fitness Potential:** For each walker $i$, compute:\n5952: \n5953:    a. Apply the Rescale Function $g_A$ and add the floor $\\eta$ to create the rescaled components:\n5954:       - $r'_i := g_A(z_{r,i}) + \\eta$\n5955:       - $d'_i := g_A(z_{d,i}) + \\eta$\n5956: \n5957:    b. Combine the components using the dynamics weights $\\alpha$ and $\\beta$:\n5958: \n5959: \n5960: $$\n5961: V_{\\text{fit},i} = \\begin{cases}\n5962:       (d'_i)^{\\beta} \\cdot (r'_i)^{\\alpha} & \\text{if } i \\in \\mathcal{A}(S) \\\\\n5963:       0 & \\text{if } i \\notin \\mathcal{A}(S)\n5964:       \\end{cases}\n5965: $$\n5966: \n5967: **Output:** The fitness potential vector $\\mathbf{V}_{\\text{fit}} = (V_{\\text{fit},1}, \\ldots, V_{\\text{fit},N}) \\in \\mathbb{R}^N_{\\geq 0}$\n5968: \n5969: **Key Properties:**\n5970: - The operator is deterministic given $S$ and $\\mathbf{d}$",
+      "metadata": {
+        "label": "def-fitness-operator"
+      },
+      "section": "## 9.3. Decomposition into Sub-Operators",
+      "raw_directive": "5900: This deterministic operator transforms raw measurements into fitness potentials.\n5901: \n5902: :::{prf:definition} The Fitness Evaluation Operator\n5903: :label: def-fitness-operator\n5904: \n5905: **Input:**\n5906: - Swarm configuration $S$\n5907: - Raw distance vector $\\mathbf{d} \\in \\mathbb{R}^N_{\\geq 0}$\n5908: \n5909: **Deterministic Computation:**\n5910: \n5911: 1. **Boundary Proximity:** For each walker $i$, compute:\n5912: \n5913: \n5914: $$\n5915: r_i = g_A(x_i) = \\varphi_{\\text{barrier}}(x_i)\n5916: $$\n5917: \n5918:    yielding the raw reward vector $\\mathbf{r} = (r_1, \\ldots, r_N)$.\n5919: \n5920: 2. **Rescaling:** Apply the rescale function with floor $\\eta > 0$:\n5921: \n5922: \n5923: $$\n5924: \\tilde{d}_i = d_i + \\eta, \\quad \\tilde{r}_i = r_i + \\eta\n5925: $$\n5926: \n5927: 3. **Z-Score Normalization:** Compute empirical means and standard deviations over **alive walkers only**:\n5928: \n5929: \n5930: $$\n5931: \\bar{d} = \\frac{1}{k}\\sum_{i \\in \\mathcal{A}(S)} \\tilde{d}_i, \\quad \\sigma_d = \\sqrt{\\frac{1}{k}\\sum_{i \\in \\mathcal{A}(S)} (\\tilde{d}_i - \\bar{d})^2}\n5932: $$\n5933: \n5934: \n5935: \n5936: $$\n5937: \\bar{r} = \\frac{1}{k}\\sum_{i \\in \\mathcal{A}(S)} \\tilde{r}_i, \\quad \\sigma_r = \\sqrt{\\frac{1}{k}\\sum_{i \\in \\mathcal{A}(S)} (\\tilde{r}_i - \\bar{r})^2}\n5938: $$\n5939: \n5940: \n5941:    For alive walkers $i \\in \\mathcal{A}(S)$:\n5942: \n5943: \n5944: $$\n5945: z_{d,i} = \\frac{\\tilde{d}_i - \\bar{d}}{\\sigma_d + \\sigma_{\\text{stab}}}, \\quad z_{r,i} = \\frac{\\tilde{r}_i - \\bar{r}}{\\sigma_r + \\sigma_{\\text{stab}}}\n5946: $$\n5947: \n5948: \n5949:    For dead walkers, set $z_{d,i} = z_{r,i} = 0$.\n5950: \n5951: 4. **Fitness Potential:** For each walker $i$, compute:\n5952: \n5953:    a. Apply the Rescale Function $g_A$ and add the floor $\\eta$ to create the rescaled components:\n5954:       - $r'_i := g_A(z_{r,i}) + \\eta$\n5955:       - $d'_i := g_A(z_{d,i}) + \\eta$\n5956: \n5957:    b. Combine the components using the dynamics weights $\\alpha$ and $\\beta$:\n5958: \n5959: \n5960: $$\n5961: V_{\\text{fit},i} = \\begin{cases}\n5962:       (d'_i)^{\\beta} \\cdot (r'_i)^{\\alpha} & \\text{if } i \\in \\mathcal{A}(S) \\\\\n5963:       0 & \\text{if } i \\notin \\mathcal{A}(S)\n5964:       \\end{cases}\n5965: $$\n5966: \n5967: **Output:** The fitness potential vector $\\mathbf{V}_{\\text{fit}} = (V_{\\text{fit},1}, \\ldots, V_{\\text{fit},N}) \\in \\mathbb{R}^N_{\\geq 0}$\n5968: \n5969: **Key Properties:**\n5970: - The operator is deterministic given $S$ and $\\mathbf{d}$\n5971: - Bounded: $V_{\\text{fit},i} \\in [0, V_{\\text{pot,max}}]$ for alive walkers, where $V_{\\text{pot,max}} = (g_{A,\\max} + \\eta)^{\\alpha+\\beta}$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 11,
+        "chapter_file": "chapter_11.json",
+        "section_id": "## 9.3. Decomposition into Sub-Operators"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-decision-operator",
+      "title": "The Cloning Decision Operator",
+      "start_line": 5977,
+      "end_line": 6029,
+      "header_lines": [
+        5978
+      ],
+      "content_start": 5980,
+      "content_end": 6028,
+      "content": "5980: :label: def-decision-operator\n5981: \n5982: **Input:**\n5983: - Swarm configuration $S$\n5984: - Fitness potential vector $\\mathbf{V}_{\\text{fit}}$\n5985: \n5986: **Stochastic Process:**\n5987: \n5988: For each walker $i \\in \\{1, \\ldots, N\\}$:\n5989: \n5990: 1. **Companion Selection:**\n5991: \n5992:    - If $i \\in \\mathcal{A}(S)$ (alive): Sample companion $c_i$ from the softmax distribution over other alive walkers:\n5993: \n5994: \n5995: $$\n5996: P(c_i = j) = \\frac{\\exp\\left(-\\frac{d_{\\text{alg}}(x_i, x_j)^2}{2\\epsilon_c^2}\\right)}{\\sum_{\\ell \\in \\mathcal{A}(S) \\setminus \\{i\\}} \\exp\\left(-\\frac{d_{\\text{alg}}(x_i, x_\\ell)^2}{2\\epsilon_c^2}\\right)} \\quad \\text{for } j \\in \\mathcal{A}(S) \\setminus \\{i\\}\n5997: $$\n5998: \n5999: \n6000:    - If $i \\in \\mathcal{D}(S)$ (dead): Sample companion uniformly from all alive walkers:\n6001: \n6002: \n6003: $$\n6004: P(c_i = j) = \\frac{1}{k} \\quad \\text{for all } j \\in \\mathcal{A}(S)\n6005: $$\n6006: \n6007: 2. **Cloning Score:** Compute the score based on fitness difference:\n6008: \n6009: \n6010: $$\n6011: S_i = \\frac{V_{\\text{fit},c_i} - V_{\\text{fit},i}}{V_{\\text{fit},i} + \\varepsilon_{\\text{clone}}}\n6012: $$\n6013: \n6014: 3. **Stochastic Decision:** Sample threshold $T_i \\sim \\text{Uniform}(0, p_{\\max})$ independently.\n6015: \n6016:    Walker $i$ is marked for **cloning** if $S_i > T_i$, otherwise marked to **persist**.\n6017: \n6018: **Output:**\n6019: - Companion assignment vector $\\mathbf{c} = (c_1, \\ldots, c_N)$\n6020: - Binary action vector $\\mathbf{a} = (a_1, \\ldots, a_N)$ where $a_i \\in \\{\\text{clone}, \\text{persist}\\}$\n6021: \n6022: **Total Cloning Probability:**\n6023: \n6024: The key quantity for drift analysis is the **total probability** that walker $i$ clones, averaging over all randomness in companion selection and threshold sampling:\n6025: \n6026: $$\n6027: p_i := P(\\text{walker } i \\text{ clones} \\mid S, \\mathbf{V}_{\\text{fit}})\n6028: $$",
+      "metadata": {
+        "label": "def-decision-operator"
+      },
+      "section": "## 9.3. Decomposition into Sub-Operators",
+      "raw_directive": "5977: This stochastic operator determines which walkers will clone and which will persist.\n5978: \n5979: :::{prf:definition} The Cloning Decision Operator\n5980: :label: def-decision-operator\n5981: \n5982: **Input:**\n5983: - Swarm configuration $S$\n5984: - Fitness potential vector $\\mathbf{V}_{\\text{fit}}$\n5985: \n5986: **Stochastic Process:**\n5987: \n5988: For each walker $i \\in \\{1, \\ldots, N\\}$:\n5989: \n5990: 1. **Companion Selection:**\n5991: \n5992:    - If $i \\in \\mathcal{A}(S)$ (alive): Sample companion $c_i$ from the softmax distribution over other alive walkers:\n5993: \n5994: \n5995: $$\n5996: P(c_i = j) = \\frac{\\exp\\left(-\\frac{d_{\\text{alg}}(x_i, x_j)^2}{2\\epsilon_c^2}\\right)}{\\sum_{\\ell \\in \\mathcal{A}(S) \\setminus \\{i\\}} \\exp\\left(-\\frac{d_{\\text{alg}}(x_i, x_\\ell)^2}{2\\epsilon_c^2}\\right)} \\quad \\text{for } j \\in \\mathcal{A}(S) \\setminus \\{i\\}\n5997: $$\n5998: \n5999: \n6000:    - If $i \\in \\mathcal{D}(S)$ (dead): Sample companion uniformly from all alive walkers:\n6001: \n6002: \n6003: $$\n6004: P(c_i = j) = \\frac{1}{k} \\quad \\text{for all } j \\in \\mathcal{A}(S)\n6005: $$\n6006: \n6007: 2. **Cloning Score:** Compute the score based on fitness difference:\n6008: \n6009: \n6010: $$\n6011: S_i = \\frac{V_{\\text{fit},c_i} - V_{\\text{fit},i}}{V_{\\text{fit},i} + \\varepsilon_{\\text{clone}}}\n6012: $$\n6013: \n6014: 3. **Stochastic Decision:** Sample threshold $T_i \\sim \\text{Uniform}(0, p_{\\max})$ independently.\n6015: \n6016:    Walker $i$ is marked for **cloning** if $S_i > T_i$, otherwise marked to **persist**.\n6017: \n6018: **Output:**\n6019: - Companion assignment vector $\\mathbf{c} = (c_1, \\ldots, c_N)$\n6020: - Binary action vector $\\mathbf{a} = (a_1, \\ldots, a_N)$ where $a_i \\in \\{\\text{clone}, \\text{persist}\\}$\n6021: \n6022: **Total Cloning Probability:**\n6023: \n6024: The key quantity for drift analysis is the **total probability** that walker $i$ clones, averaging over all randomness in companion selection and threshold sampling:\n6025: \n6026: $$\n6027: p_i := P(\\text{walker } i \\text{ clones} \\mid S, \\mathbf{V}_{\\text{fit}})\n6028: $$\n6029: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 11,
+        "chapter_file": "chapter_11.json",
+        "section_id": "## 9.3. Decomposition into Sub-Operators"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-update-operator",
+      "title": "The State Update Operator",
+      "start_line": 6064,
+      "end_line": 6154,
+      "header_lines": [
+        6065
+      ],
+      "content_start": 6067,
+      "content_end": 6153,
+      "content": "6067: :label: def-update-operator\n6068: \n6069: **Input:**\n6070: - Swarm configuration $S$\n6071: - Companion vector $\\mathbf{c}$\n6072: - Action vector $\\mathbf{a}$\n6073: \n6074: **Deterministic Grouping:**\n6075: \n6076: For each unique companion $j \\in \\mathcal{A}(S)$, identify all walkers cloning from it:\n6077: \n6078: $$\n6079: I_j := \\{i \\in \\{1, \\ldots, N\\} : a_i = \\text{clone} \\text{ and } c_i = j\\}\n6080: $$\n6081: \n6082: Let $M_j = |I_j|$ be the number of cloners for companion $j$.\n6083: \n6084: **Stochastic State Update:**\n6085: \n6086: For each $(M_j + 1)$-particle system consisting of companion $j$ and its cloners $I_j$:\n6087: \n6088: 1. **Position Updates:**\n6089: \n6090:    For each cloner $i \\in I_j$, the position is reset to the companion's position plus **Gaussian jitter**:\n6091: \n6092: \n6093: $$\n6094: x'_i = x_j + \\sigma_x \\zeta_i^x \\quad \\text{where } \\zeta_i^x \\sim \\mathcal{N}(0, I_d)\n6095: $$\n6096: \n6097: \n6098:    Companion position is unchanged: $x'_j = x_j$\n6099: \n6100: 2. **Velocity Updates (The Inelastic Collision):**\n6101: \n6102:    The velocities are updated through a momentum-conserving inelastic collision model. **There is NO Gaussian jitter added to velocities.**\n6103: \n6104:    **a. Center-of-Mass Velocity:**\n6105: \n6106: \n6107: $$\n6108: V_{\\text{COM},j} = \\frac{1}{M_j + 1}\\left(v_j + \\sum_{i \\in I_j} v_i\\right)\n6109: $$\n6110: \n6111: \n6112:    **b. Update Relative Velocities:**\n6113: \n6114:    For each walker $k \\in I_j \\cup \\{j\\}$, compute the relative velocity:\n6115: \n6116: \n6117: $$\n6118: u_k = v_k - V_{\\text{COM},j}\n6119: $$\n6120: \n6121: \n6122:    Sample a random orthogonal transformation $R_k$ that isotropically rotates $u_k$ (uniformly random direction on the $(d-1)$-sphere, preserving magnitude). The new relative velocity is:\n6123: \n6124: \n6125: $$\n6126: u'_k = \\alpha_{\\text{restitution}} \\cdot R_k(u_k)\n6127: $$\n6128: \n6129: \n6130:    **c. Return to Lab Frame:**\n6131: \n6132: \n6133: $$\n6134: v'_k = V_{\\text{COM},j} + u'_k\n6135: $$\n6136: \n6137: 3. **Persisting Walkers:**\n6138: \n6139:    For walkers with $a_i = \\text{persist}$:\n6140: \n6141: \n6142: $$\n6143: x'_i = x_i, \\quad v'_i = v_i\n6144: $$\n6145: \n6146: 4. **Status Update:**\n6147: \n6148:    All walkers in the output are alive:\n6149: \n6150: \n6151: $$\n6152: s'_i = 1 \\quad \\text{for all } i \\in \\{1, \\ldots, N\\}\n6153: $$",
+      "metadata": {
+        "label": "def-update-operator"
+      },
+      "section": "## 9.3. Decomposition into Sub-Operators",
+      "raw_directive": "6064: The final stage executes the cloning actions, producing the output swarm configuration.\n6065: \n6066: :::{prf:definition} The State Update Operator\n6067: :label: def-update-operator\n6068: \n6069: **Input:**\n6070: - Swarm configuration $S$\n6071: - Companion vector $\\mathbf{c}$\n6072: - Action vector $\\mathbf{a}$\n6073: \n6074: **Deterministic Grouping:**\n6075: \n6076: For each unique companion $j \\in \\mathcal{A}(S)$, identify all walkers cloning from it:\n6077: \n6078: $$\n6079: I_j := \\{i \\in \\{1, \\ldots, N\\} : a_i = \\text{clone} \\text{ and } c_i = j\\}\n6080: $$\n6081: \n6082: Let $M_j = |I_j|$ be the number of cloners for companion $j$.\n6083: \n6084: **Stochastic State Update:**\n6085: \n6086: For each $(M_j + 1)$-particle system consisting of companion $j$ and its cloners $I_j$:\n6087: \n6088: 1. **Position Updates:**\n6089: \n6090:    For each cloner $i \\in I_j$, the position is reset to the companion's position plus **Gaussian jitter**:\n6091: \n6092: \n6093: $$\n6094: x'_i = x_j + \\sigma_x \\zeta_i^x \\quad \\text{where } \\zeta_i^x \\sim \\mathcal{N}(0, I_d)\n6095: $$\n6096: \n6097: \n6098:    Companion position is unchanged: $x'_j = x_j$\n6099: \n6100: 2. **Velocity Updates (The Inelastic Collision):**\n6101: \n6102:    The velocities are updated through a momentum-conserving inelastic collision model. **There is NO Gaussian jitter added to velocities.**\n6103: \n6104:    **a. Center-of-Mass Velocity:**\n6105: \n6106: \n6107: $$\n6108: V_{\\text{COM},j} = \\frac{1}{M_j + 1}\\left(v_j + \\sum_{i \\in I_j} v_i\\right)\n6109: $$\n6110: \n6111: \n6112:    **b. Update Relative Velocities:**\n6113: \n6114:    For each walker $k \\in I_j \\cup \\{j\\}$, compute the relative velocity:\n6115: \n6116: \n6117: $$\n6118: u_k = v_k - V_{\\text{COM},j}\n6119: $$\n6120: \n6121: \n6122:    Sample a random orthogonal transformation $R_k$ that isotropically rotates $u_k$ (uniformly random direction on the $(d-1)$-sphere, preserving magnitude). The new relative velocity is:\n6123: \n6124: \n6125: $$\n6126: u'_k = \\alpha_{\\text{restitution}} \\cdot R_k(u_k)\n6127: $$\n6128: \n6129: \n6130:    **c. Return to Lab Frame:**\n6131: \n6132: \n6133: $$\n6134: v'_k = V_{\\text{COM},j} + u'_k\n6135: $$\n6136: \n6137: 3. **Persisting Walkers:**\n6138: \n6139:    For walkers with $a_i = \\text{persist}$:\n6140: \n6141: \n6142: $$\n6143: x'_i = x_i, \\quad v'_i = v_i\n6144: $$\n6145: \n6146: 4. **Status Update:**\n6147: \n6148:    All walkers in the output are alive:\n6149: \n6150: \n6151: $$\n6152: s'_i = 1 \\quad \\text{for all } i \\in \\{1, \\ldots, N\\}\n6153: $$\n6154: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 11,
+        "chapter_file": "chapter_11.json",
+        "section_id": "## 9.3. Decomposition into Sub-Operators"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-key-operator-outputs",
+      "title": "Key Operator Outputs",
+      "start_line": 6204,
+      "end_line": 6244,
+      "header_lines": [
+        6205
+      ],
+      "content_start": 6207,
+      "content_end": 6243,
+      "content": "6207: :label: def-key-operator-outputs\n6208: \n6209: For input swarm $S$ and output swarm $S' \\sim \\Psi_{\\text{clone}}(S, \\cdot)$, the following quantities are central to the drift analysis:\n6210: \n6211: 1. **Total Cloning Probability:** For each walker $i$:\n6212: \n6213: \n6214: $$\n6215: p_i = P(\\text{walker } i \\text{ clones} \\mid S)\n6216: $$\n6217: \n6218: 2. **Position Displacement:** For each walker $i$:\n6219: \n6220: \n6221: $$\n6222: \\Delta x_i := x'_i - x_i\n6223: $$\n6224: \n6225:    For cloners, $\\Delta x_i = x_{c_i} - x_i + \\sigma_x \\zeta_i^x$ where $\\zeta_i^x \\sim \\mathcal{N}(0, I_d)$.\n6226: \n6227: 3. **Velocity Perturbation:** For each walker $i$ that participates in a cloning event:\n6228: \n6229: \n6230: $$\n6231: \\Delta v_i := v'_i - v_i\n6232: $$\n6233: \n6234:    This arises from the inelastic collision model. The expected squared velocity change depends on:\n6235:    - The center-of-mass shift: $\\mathbb{E}[\\|V_{\\text{COM},j} - v_i\\|^2]$\n6236:    - The restitution coefficient: $\\alpha_{\\text{restitution}}$\n6237:    - The random rotation: $R_i$\n6238: \n6239: 4. **Centered Displacements:** For coupled swarms $(S_1, S_2)$:\n6240: \n6241: \n6242: $$\n6243: \\Delta\\delta_{x,i} := \\delta_{x,1,i} - \\delta_{x,2,i}",
+      "metadata": {
+        "label": "def-key-operator-outputs"
+      },
+      "section": "## 9.5. Key Quantities for Drift Analysis",
+      "raw_directive": "6204: We conclude by highlighting the critical quantities that will be used in the subsequent drift analysis.\n6205: \n6206: :::{prf:definition} Key Operator Outputs\n6207: :label: def-key-operator-outputs\n6208: \n6209: For input swarm $S$ and output swarm $S' \\sim \\Psi_{\\text{clone}}(S, \\cdot)$, the following quantities are central to the drift analysis:\n6210: \n6211: 1. **Total Cloning Probability:** For each walker $i$:\n6212: \n6213: \n6214: $$\n6215: p_i = P(\\text{walker } i \\text{ clones} \\mid S)\n6216: $$\n6217: \n6218: 2. **Position Displacement:** For each walker $i$:\n6219: \n6220: \n6221: $$\n6222: \\Delta x_i := x'_i - x_i\n6223: $$\n6224: \n6225:    For cloners, $\\Delta x_i = x_{c_i} - x_i + \\sigma_x \\zeta_i^x$ where $\\zeta_i^x \\sim \\mathcal{N}(0, I_d)$.\n6226: \n6227: 3. **Velocity Perturbation:** For each walker $i$ that participates in a cloning event:\n6228: \n6229: \n6230: $$\n6231: \\Delta v_i := v'_i - v_i\n6232: $$\n6233: \n6234:    This arises from the inelastic collision model. The expected squared velocity change depends on:\n6235:    - The center-of-mass shift: $\\mathbb{E}[\\|V_{\\text{COM},j} - v_i\\|^2]$\n6236:    - The restitution coefficient: $\\alpha_{\\text{restitution}}$\n6237:    - The random rotation: $R_i$\n6238: \n6239: 4. **Centered Displacements:** For coupled swarms $(S_1, S_2)$:\n6240: \n6241: \n6242: $$\n6243: \\Delta\\delta_{x,i} := \\delta_{x,1,i} - \\delta_{x,2,i}\n6244: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 13,
+        "chapter_file": "chapter_13.json",
+        "section_id": "## 9.5. Key Quantities for Drift Analysis"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-coupled-cloning-expectation",
+      "title": "Coupled Cloning Expectation",
+      "start_line": 6324,
+      "end_line": 6341,
+      "header_lines": [
+        6325
+      ],
+      "content_start": 6327,
+      "content_end": 6340,
+      "content": "6327: :label: def-coupled-cloning-expectation\n6328: \n6329: Consider two swarms $(S_1, S_2)$ in the coupled state space. Let $(S'_1, S'_2)$ be the output swarms after applying $\\Psi_{\\text{clone}}$ to each independently, using **synchronous coupling** of all randomness:\n6330: \n6331: - Same PRNG seeds for companion selection\n6332: - Same pairing algorithm random choices\n6333: - Same threshold samples $T_i$ for each walker index $i$\n6334: - Same Gaussian jitters $\\zeta_i^x$ for position updates (when both walkers clone)\n6335: - Same rotation operators $R_i$ for velocity collisions (when both walkers participate in collisions)\n6336: \n6337: For any function $f: \\Sigma_N \\times \\Sigma_N \\to \\mathbb{R}$, the **coupled cloning expectation** is:\n6338: \n6339: $$\n6340: \\mathbb{E}_{\\text{clone}}[f(S'_1, S'_2) \\mid S_1, S_2] := \\mathbb{E}[f(S'_1, S'_2) \\mid S_1, S_2, \\text{coupling}]",
+      "metadata": {
+        "label": "def-coupled-cloning-expectation"
+      },
+      "section": "## 10.2. The Coupled Expectation Framework",
+      "raw_directive": "6324: To analyze the drift of the Lyapunov function components, we work with two copies of the swarm evolving under synchronous coupling.\n6325: \n6326: :::{prf:definition} Coupled Cloning Expectation\n6327: :label: def-coupled-cloning-expectation\n6328: \n6329: Consider two swarms $(S_1, S_2)$ in the coupled state space. Let $(S'_1, S'_2)$ be the output swarms after applying $\\Psi_{\\text{clone}}$ to each independently, using **synchronous coupling** of all randomness:\n6330: \n6331: - Same PRNG seeds for companion selection\n6332: - Same pairing algorithm random choices\n6333: - Same threshold samples $T_i$ for each walker index $i$\n6334: - Same Gaussian jitters $\\zeta_i^x$ for position updates (when both walkers clone)\n6335: - Same rotation operators $R_i$ for velocity collisions (when both walkers participate in collisions)\n6336: \n6337: For any function $f: \\Sigma_N \\times \\Sigma_N \\to \\mathbb{R}$, the **coupled cloning expectation** is:\n6338: \n6339: $$\n6340: \\mathbb{E}_{\\text{clone}}[f(S'_1, S'_2) \\mid S_1, S_2] := \\mathbb{E}[f(S'_1, S'_2) \\mid S_1, S_2, \\text{coupling}]\n6341: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 16,
+        "chapter_file": "chapter_16.json",
+        "section_id": "## 10.2. The Coupled Expectation Framework"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-boundary-potential-recall",
+      "title": "Boundary Potential Component (Recall)",
+      "start_line": 7047,
+      "end_line": 7065,
+      "header_lines": [
+        7048
+      ],
+      "content_start": 7050,
+      "content_end": 7064,
+      "content": "7050: :label: def-boundary-potential-recall\n7051: \n7052: From Definition 3.3.1, the boundary potential is:\n7053: \n7054: $$\n7055: W_b(S_1, S_2) := \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_1)} \\varphi_{\\text{barrier}}(x_{1,i}) + \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_2)} \\varphi_{\\text{barrier}}(x_{2,i})\n7056: $$\n7057: \n7058: where $\\varphi_{\\text{barrier}}: \\mathcal{X}_{\\text{valid}} \\to \\mathbb{R}_{\\geq 0}$ is the smooth barrier function satisfying:\n7059: \n7060: 1. **Interior safety:** $\\varphi_{\\text{barrier}}(x) = 0$ for $x$ in the safe interior region (distance $> \\delta_{\\text{safe}}$ from boundary)\n7061: \n7062: 2. **Boundary growth:** $\\varphi_{\\text{barrier}}(x) \\to \\infty$ as $x \\to \\partial \\mathcal{X}_{\\text{valid}}$\n7063: \n7064: 3. **Smoothness:** $\\varphi_{\\text{barrier}} \\in C^2(\\mathcal{X}_{\\text{valid}})$ with bounded derivatives in the interior",
+      "metadata": {
+        "label": "def-boundary-potential-recall"
+      },
+      "section": "## 11.2. The Boundary Barrier and Fitness Gradient",
+      "raw_directive": "7047: ### 11.2.1. The Barrier Function\n7048: \n7049: :::{prf:definition} Boundary Potential Component (Recall)\n7050: :label: def-boundary-potential-recall\n7051: \n7052: From Definition 3.3.1, the boundary potential is:\n7053: \n7054: $$\n7055: W_b(S_1, S_2) := \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_1)} \\varphi_{\\text{barrier}}(x_{1,i}) + \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_2)} \\varphi_{\\text{barrier}}(x_{2,i})\n7056: $$\n7057: \n7058: where $\\varphi_{\\text{barrier}}: \\mathcal{X}_{\\text{valid}} \\to \\mathbb{R}_{\\geq 0}$ is the smooth barrier function satisfying:\n7059: \n7060: 1. **Interior safety:** $\\varphi_{\\text{barrier}}(x) = 0$ for $x$ in the safe interior region (distance $> \\delta_{\\text{safe}}$ from boundary)\n7061: \n7062: 2. **Boundary growth:** $\\varphi_{\\text{barrier}}(x) \\to \\infty$ as $x \\to \\partial \\mathcal{X}_{\\text{valid}}$\n7063: \n7064: 3. **Smoothness:** $\\varphi_{\\text{barrier}} \\in C^2(\\mathcal{X}_{\\text{valid}})$ with bounded derivatives in the interior\n7065: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 23,
+        "chapter_file": "chapter_23.json",
+        "section_id": "## 11.2. The Boundary Barrier and Fitness Gradient"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-boundary-exposed-set",
+      "title": "The Boundary-Exposed Set",
+      "start_line": 7255,
+      "end_line": 7272,
+      "header_lines": [
+        7256
+      ],
+      "content_start": 7258,
+      "content_end": 7271,
+      "content": "7258: :label: def-boundary-exposed-set\n7259: \n7260: For a swarm $S$ and a threshold $\\phi_{\\text{thresh}} > 0$, the **boundary-exposed set** is:\n7261: \n7262: $$\n7263: \\mathcal{E}_{\\text{boundary}}(S) := \\{i \\in \\mathcal{A}(S) : \\varphi_{\\text{barrier}}(x_i) > \\phi_{\\text{thresh}}\\}\n7264: $$\n7265: \n7266: These are alive walkers whose barrier penalty exceeds the threshold, indicating dangerous proximity to the boundary.\n7267: \n7268: The **boundary-exposed mass** is:\n7269: \n7270: $$\n7271: M_{\\text{boundary}}(S) := \\frac{1}{N} \\sum_{i \\in \\mathcal{E}_{\\text{boundary}}(S)} \\varphi_{\\text{barrier}}(x_i)",
+      "metadata": {
+        "label": "def-boundary-exposed-set"
+      },
+      "section": "## 11.2. The Boundary Barrier and Fitness Gradient",
+      "raw_directive": "7255: We now formalize the set of walkers that are in danger due to boundary proximity.\n7256: \n7257: :::{prf:definition} The Boundary-Exposed Set\n7258: :label: def-boundary-exposed-set\n7259: \n7260: For a swarm $S$ and a threshold $\\phi_{\\text{thresh}} > 0$, the **boundary-exposed set** is:\n7261: \n7262: $$\n7263: \\mathcal{E}_{\\text{boundary}}(S) := \\{i \\in \\mathcal{A}(S) : \\varphi_{\\text{barrier}}(x_i) > \\phi_{\\text{thresh}}\\}\n7264: $$\n7265: \n7266: These are alive walkers whose barrier penalty exceeds the threshold, indicating dangerous proximity to the boundary.\n7267: \n7268: The **boundary-exposed mass** is:\n7269: \n7270: $$\n7271: M_{\\text{boundary}}(S) := \\frac{1}{N} \\sum_{i \\in \\mathcal{E}_{\\text{boundary}}(S)} \\varphi_{\\text{barrier}}(x_i)\n7272: $$",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 23,
+        "chapter_file": "chapter_23.json",
+        "section_id": "## 11.2. The Boundary Barrier and Fitness Gradient"
+      }
+    }
+  ]
+}

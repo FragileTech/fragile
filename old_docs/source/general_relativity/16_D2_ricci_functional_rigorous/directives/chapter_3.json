@@ -1,0 +1,83 @@
+{
+  "chapter_index": 3,
+  "section_id": "## 3. Regge Calculus: Discrete Curvature Convergence",
+  "directive_count": 4,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-regge-curvature",
+      "title": "Regge Curvature",
+      "start_line": 370,
+      "end_line": 389,
+      "header_lines": [
+        371
+      ],
+      "content_start": 373,
+      "content_end": 388,
+      "content": "373: :label: def-regge-curvature\n374: \n375: Let $\\mathcal{T}$ be a simplicial complex (triangulation or Voronoi dual) in $d$ dimensions. For each $(d-2)$-simplex (hinge) $h$, define the **deficit angle**:\n376: \n377: $$\n378: \\theta_h := 2\\pi - \\sum_{\\sigma \\supset h} \\alpha_\\sigma(h)\n379: $$\n380: \n381: where $\\alpha_\\sigma(h)$ is the dihedral angle at $h$ in $d$-simplex $\\sigma$.\n382: \n383: The **Regge curvature** concentrated at hinge $h$ is:\n384: \n385: $$\n386: R_{\\text{Regge}}(h) := \\frac{\\theta_h}{|h|}\n387: $$\n388: ",
+      "metadata": {
+        "label": "def-regge-curvature"
+      },
+      "section": "## 3. Regge Calculus: Discrete Curvature Convergence",
+      "raw_directive": "370: ### 3.1 Regge Curvature on Simplicial Complexes\n371: \n372: :::{prf:definition} Regge Curvature\n373: :label: def-regge-curvature\n374: \n375: Let $\\mathcal{T}$ be a simplicial complex (triangulation or Voronoi dual) in $d$ dimensions. For each $(d-2)$-simplex (hinge) $h$, define the **deficit angle**:\n376: \n377: $$\n378: \\theta_h := 2\\pi - \\sum_{\\sigma \\supset h} \\alpha_\\sigma(h)\n379: $$\n380: \n381: where $\\alpha_\\sigma(h)$ is the dihedral angle at $h$ in $d$-simplex $\\sigma$.\n382: \n383: The **Regge curvature** concentrated at hinge $h$ is:\n384: \n385: $$\n386: R_{\\text{Regge}}(h) := \\frac{\\theta_h}{|h|}\n387: $$\n388: \n389: where $|h|$ is the $(d-2)$-dimensional volume of $h$."
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-regge-convergence-rigorous",
+      "title": "Regge Calculus Convergence",
+      "start_line": 393,
+      "end_line": 420,
+      "header_lines": [
+        394
+      ],
+      "content_start": 396,
+      "content_end": 419,
+      "content": "396: :label: thm-regge-convergence-rigorous\n397: \n398: Let $(M, g)$ be a smooth Riemannian $d$-manifold. Let $\\{\\mathcal{T}_N\\}$ be a sequence of triangulations with mesh size $\\delta_N \\to 0$ as $N \\to \\infty$.\n399: \n400: Assume the triangulations are **shape-regular**: There exist constants $0 < c_{\\min} < c_{\\max}$ such that all simplices $\\sigma$ satisfy:\n401: \n402: $$\n403: c_{\\min} \\leq \\frac{\\text{inradius}(\\sigma)}{\\text{diameter}(\\sigma)} \\leq c_{\\max}\n404: $$\n405: \n406: Then the Regge curvature converges to the Riemannian sectional curvature:\n407: \n408: $$\n409: R_{\\text{Regge}}(h_N) \\to K_g(P) \\quad \\text{as } N \\to \\infty\n410: $$\n411: \n412: where $P$ is the 2-plane containing $h_N$ and $K_g(P)$ is the sectional curvature.\n413: \n414: **Convergence Rate**: If $g \\in C^{k,\\alpha}$ with $k \\geq 3$, then:\n415: \n416: $$\n417: |R_{\\text{Regge}}(h_N) - K_g(P)| = O(\\delta_N^2)\n418: $$\n419: ",
+      "metadata": {
+        "label": "thm-regge-convergence-rigorous"
+      },
+      "section": "## 3. Regge Calculus: Discrete Curvature Convergence",
+      "raw_directive": "393: **Connection to Riemannian Curvature**:\n394: \n395: :::{prf:theorem} Regge Calculus Convergence\n396: :label: thm-regge-convergence-rigorous\n397: \n398: Let $(M, g)$ be a smooth Riemannian $d$-manifold. Let $\\{\\mathcal{T}_N\\}$ be a sequence of triangulations with mesh size $\\delta_N \\to 0$ as $N \\to \\infty$.\n399: \n400: Assume the triangulations are **shape-regular**: There exist constants $0 < c_{\\min} < c_{\\max}$ such that all simplices $\\sigma$ satisfy:\n401: \n402: $$\n403: c_{\\min} \\leq \\frac{\\text{inradius}(\\sigma)}{\\text{diameter}(\\sigma)} \\leq c_{\\max}\n404: $$\n405: \n406: Then the Regge curvature converges to the Riemannian sectional curvature:\n407: \n408: $$\n409: R_{\\text{Regge}}(h_N) \\to K_g(P) \\quad \\text{as } N \\to \\infty\n410: $$\n411: \n412: where $P$ is the 2-plane containing $h_N$ and $K_g(P)$ is the sectional curvature.\n413: \n414: **Convergence Rate**: If $g \\in C^{k,\\alpha}$ with $k \\geq 3$, then:\n415: \n416: $$\n417: |R_{\\text{Regge}}(h_N) - K_g(P)| = O(\\delta_N^2)\n418: $$\n419: \n420: **Reference**: Cheeger, J., M\u00fcller, W., Schrader, R. (1984). \"On the curvature of piecewise flat spaces\". *Communications in Mathematical Physics* **92**, 405-454."
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-cvt-shape-regular",
+      "title": "CVT Shape Regularity",
+      "start_line": 426,
+      "end_line": 459,
+      "header_lines": [
+        427
+      ],
+      "content_start": 429,
+      "content_end": 458,
+      "content": "429: :label: lem-cvt-shape-regular\n430: \n431: Let $\\rho(x)$ be a smooth, positive density on a compact domain $\\Omega$ with $\\inf_\\Omega \\rho > 0$ and $\\sup_\\Omega \\rho < \\infty$.\n432: \n433: Then the Centroidal Voronoi Tessellation for $\\rho$ with $N$ generators is **quasi-uniform** in the sense:\n434: \n435: $$\n436: \\frac{\\max_i \\text{diam}(\\mathcal{V}_i)}{\\min_j \\text{diam}(\\mathcal{V}_j)} = O(1)\n437: $$\n438: \n439: as $N \\to \\infty$.\n440: \n441: **Proof Sketch**:\n442: \n443: For CVT, the generator distribution approximates $\\rho$ via:\n444: \n445: $$\n446: \\frac{1}{N}\\sum_{i=1}^N \\delta_{x_i} \\approx \\frac{\\rho}{\\int \\rho}\n447: $$\n448: \n449: If $\\rho$ is bounded above and below, then generators are **quasi-uniformly** distributed: no region is over-sampled or under-sampled by more than a constant factor.\n450: \n451: This implies all Voronoi cells have comparable size:\n452: \n453: $$\n454: |\\mathcal{V}_i| \\sim N^{-1}\n455: $$\n456: \n457: and comparable shape (roughly isotropic), satisfying the shape-regularity condition.\n458: ",
+      "metadata": {
+        "label": "lem-cvt-shape-regular"
+      },
+      "section": "## 3. Regge Calculus: Discrete Curvature Convergence",
+      "raw_directive": "426: **Issue**: The theorem above assumes **shape-regular** triangulations. Are Voronoi tessellations shape-regular?\n427: \n428: :::{prf:lemma} CVT Shape Regularity\n429: :label: lem-cvt-shape-regular\n430: \n431: Let $\\rho(x)$ be a smooth, positive density on a compact domain $\\Omega$ with $\\inf_\\Omega \\rho > 0$ and $\\sup_\\Omega \\rho < \\infty$.\n432: \n433: Then the Centroidal Voronoi Tessellation for $\\rho$ with $N$ generators is **quasi-uniform** in the sense:\n434: \n435: $$\n436: \\frac{\\max_i \\text{diam}(\\mathcal{V}_i)}{\\min_j \\text{diam}(\\mathcal{V}_j)} = O(1)\n437: $$\n438: \n439: as $N \\to \\infty$.\n440: \n441: **Proof Sketch**:\n442: \n443: For CVT, the generator distribution approximates $\\rho$ via:\n444: \n445: $$\n446: \\frac{1}{N}\\sum_{i=1}^N \\delta_{x_i} \\approx \\frac{\\rho}{\\int \\rho}\n447: $$\n448: \n449: If $\\rho$ is bounded above and below, then generators are **quasi-uniformly** distributed: no region is over-sampled or under-sampled by more than a constant factor.\n450: \n451: This implies all Voronoi cells have comparable size:\n452: \n453: $$\n454: |\\mathcal{V}_i| \\sim N^{-1}\n455: $$\n456: \n457: and comparable shape (roughly isotropic), satisfying the shape-regularity condition.\n458: \n459: **Reference**: Du, Q., et al. (2003). \"Convergence of the Lloyd algorithm for computing centroidal Voronoi tessellations\". *SIAM J. Numer. Anal.* **41**(4), 1443-1478."
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-scutoid-ricci-convergence",
+      "title": "Scutoid Ricci Tensor Converges to Riemannian Ricci Tensor",
+      "start_line": 463,
+      "end_line": 510,
+      "header_lines": [
+        464
+      ],
+      "content_start": 466,
+      "content_end": 509,
+      "content": "466: :label: thm-scutoid-ricci-convergence\n467: \n468: Let $\\rho_t(x)$ be a smooth, positive spatial density from the Fractal Set at time $t$. Let $\\{x_i\\}_{i=1}^N$ be walkers distributed according to $\\rho_t$, forming a Voronoi tessellation $\\{\\mathcal{V}_i\\}$.\n469: \n470: Define the scutoid Ricci tensor as in Chapter 15:\n471: \n472: $$\n473: R_{\\mu\\nu}^{\\text{scutoid}} = \\lim_{\\Delta x \\to 0} \\frac{1}{\\text{Vol}(\\mathcal{B}_\\mu)} \\sum_{P \\ni x^\\mu} \\theta_P n_P^\\mu n_P^\\nu\n474: $$\n475: \n476: Then as $N \\to \\infty$:\n477: \n478: $$\n479: R_{\\mu\\nu}^{\\text{scutoid}}[\\rho_t](x) \\to R_{\\mu\\nu}[g[\\rho_t]](x)\n480: $$\n481: \n482: where $R_{\\mu\\nu}[g]$ is the **Riemannian Ricci tensor** of the metric $g_{ij}[\\rho_t]$ defined by optimal transport / CVT ({prf:ref}`lem-emergent-equals-ot`).\n483: \n484: **Convergence Rate**:\n485: \n486: $$\n487: \\left|R_{\\mu\\nu}^{\\text{scutoid}} - R_{\\mu\\nu}[g]\\right| = O(N^{-2/d})\n488: $$\n489: \n490: assuming $\\rho_t \\in C^{3,\\alpha}$.\n491: \n492: **Proof**:\n493: \n494: **Step 1**: By {prf:ref}`lem-cvt-shape-regular`, the Voronoi tessellation is shape-regular.\n495: \n496: **Step 2**: By {prf:ref}`thm-regge-convergence-rigorous`, the Regge curvature (deficit angles) converges to the sectional curvature $K_g$ of the metric $g$.\n497: \n498: **Step 3**: The Ricci tensor is obtained by contracting the Riemann tensor:\n499: \n500: $$\n501: R_{\\mu\\nu} = \\sum_{k} R_{\\mu k \\nu k}\n502: $$\n503: \n504: In the discretization, this corresponds to summing deficit angles over all plaquettes containing edge $(\\mu, \\nu)$, which is exactly the scutoid Ricci definition.\n505: \n506: **Step 4**: The convergence rate follows from:\n507: - CVT mesh size: $\\delta_N = O(N^{-1/d})$\n508: - Regge convergence: $O(\\delta_N^2) = O(N^{-2/d})$\n509: ",
+      "metadata": {
+        "label": "thm-scutoid-ricci-convergence"
+      },
+      "section": "## 3. Regge Calculus: Discrete Curvature Convergence",
+      "raw_directive": "463: ### 3.3 Application to Scutoid Ricci Tensor\n464: \n465: :::{prf:theorem} Scutoid Ricci Tensor Converges to Riemannian Ricci Tensor\n466: :label: thm-scutoid-ricci-convergence\n467: \n468: Let $\\rho_t(x)$ be a smooth, positive spatial density from the Fractal Set at time $t$. Let $\\{x_i\\}_{i=1}^N$ be walkers distributed according to $\\rho_t$, forming a Voronoi tessellation $\\{\\mathcal{V}_i\\}$.\n469: \n470: Define the scutoid Ricci tensor as in Chapter 15:\n471: \n472: $$\n473: R_{\\mu\\nu}^{\\text{scutoid}} = \\lim_{\\Delta x \\to 0} \\frac{1}{\\text{Vol}(\\mathcal{B}_\\mu)} \\sum_{P \\ni x^\\mu} \\theta_P n_P^\\mu n_P^\\nu\n474: $$\n475: \n476: Then as $N \\to \\infty$:\n477: \n478: $$\n479: R_{\\mu\\nu}^{\\text{scutoid}}[\\rho_t](x) \\to R_{\\mu\\nu}[g[\\rho_t]](x)\n480: $$\n481: \n482: where $R_{\\mu\\nu}[g]$ is the **Riemannian Ricci tensor** of the metric $g_{ij}[\\rho_t]$ defined by optimal transport / CVT ({prf:ref}`lem-emergent-equals-ot`).\n483: \n484: **Convergence Rate**:\n485: \n486: $$\n487: \\left|R_{\\mu\\nu}^{\\text{scutoid}} - R_{\\mu\\nu}[g]\\right| = O(N^{-2/d})\n488: $$\n489: \n490: assuming $\\rho_t \\in C^{3,\\alpha}$.\n491: \n492: **Proof**:\n493: \n494: **Step 1**: By {prf:ref}`lem-cvt-shape-regular`, the Voronoi tessellation is shape-regular.\n495: \n496: **Step 2**: By {prf:ref}`thm-regge-convergence-rigorous`, the Regge curvature (deficit angles) converges to the sectional curvature $K_g$ of the metric $g$.\n497: \n498: **Step 3**: The Ricci tensor is obtained by contracting the Riemann tensor:\n499: \n500: $$\n501: R_{\\mu\\nu} = \\sum_{k} R_{\\mu k \\nu k}\n502: $$\n503: \n504: In the discretization, this corresponds to summing deficit angles over all plaquettes containing edge $(\\mu, \\nu)$, which is exactly the scutoid Ricci definition.\n505: \n506: **Step 4**: The convergence rate follows from:\n507: - CVT mesh size: $\\delta_N = O(N^{-1/d})$\n508: - Regge convergence: $O(\\delta_N^2) = O(N^{-2/d})$\n509: \n510: \u220e"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

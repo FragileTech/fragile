@@ -1,0 +1,65 @@
+{
+  "chapter_index": 4,
+  "section_id": "## 4. Order-Invariant Functionals",
+  "directive_count": 3,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-order-invariant-functionals-discrete-sym",
+      "title": "Order-Invariant Functionals",
+      "start_line": 679,
+      "end_line": 704,
+      "header_lines": [
+        680
+      ],
+      "content_start": 682,
+      "content_end": 703,
+      "content": "682: :label: def-order-invariant-functionals-discrete-sym\n683: \n684: A functional $F : \\mathcal{C} \\to \\mathbb{R}$ on the space of CST configurations $\\mathcal{C}$ is **order-invariant** if:\n685: \n686: $$\n687: F(\\psi(\\mathcal{T})) = F(\\mathcal{T})\n688: $$\n689: \n690: for every **causal automorphism** $\\psi : (\\mathcal{E}, \\prec) \\to (\\mathcal{E}', \\prec')$ (order-preserving bijection).\n691: \n692: **Examples of order-invariant functionals**:\n693: \n694: 1. **Interval cardinalities**: $|I(e, e')| := |\\{e'' : e \\prec e'' \\prec e'\\}|$\n695: 2. **Longest chain lengths**: $\\ell(e, e') := \\max\\{\\text{length of chains from } e \\text{ to } e'\\}$\n696: 3. **Antichain sizes**: $\\max |\\mathcal{A}|$ for $\\mathcal{A} \\subset \\mathcal{E}$ an antichain\n697: 4. **Causal diamond counts**: $\\#\\{e : e_1 \\prec e \\prec e_2\\}$\n698: \n699: **Examples that are NOT order-invariant**:\n700: \n701: 1. **Episode death times** $t^{\\rm d}_e$ (depend on coordinate choice)\n702: 2. **Proper lifetimes** $\\tau_e$ (depend on metric, not just order)\n703: 3. **Spatial distances** $d_g(\\Phi(e), \\Phi(e'))$ (depend on embedding, not just order)",
+      "metadata": {
+        "label": "def-order-invariant-functionals-discrete-sym"
+      },
+      "section": "## 4. Order-Invariant Functionals",
+      "raw_directive": "679: ## 4. Order-Invariant Functionals\n680: \n681: :::{prf:definition} Order-Invariant Functionals\n682: :label: def-order-invariant-functionals-discrete-sym\n683: \n684: A functional $F : \\mathcal{C} \\to \\mathbb{R}$ on the space of CST configurations $\\mathcal{C}$ is **order-invariant** if:\n685: \n686: $$\n687: F(\\psi(\\mathcal{T})) = F(\\mathcal{T})\n688: $$\n689: \n690: for every **causal automorphism** $\\psi : (\\mathcal{E}, \\prec) \\to (\\mathcal{E}', \\prec')$ (order-preserving bijection).\n691: \n692: **Examples of order-invariant functionals**:\n693: \n694: 1. **Interval cardinalities**: $|I(e, e')| := |\\{e'' : e \\prec e'' \\prec e'\\}|$\n695: 2. **Longest chain lengths**: $\\ell(e, e') := \\max\\{\\text{length of chains from } e \\text{ to } e'\\}$\n696: 3. **Antichain sizes**: $\\max |\\mathcal{A}|$ for $\\mathcal{A} \\subset \\mathcal{E}$ an antichain\n697: 4. **Causal diamond counts**: $\\#\\{e : e_1 \\prec e \\prec e_2\\}$\n698: \n699: **Examples that are NOT order-invariant**:\n700: \n701: 1. **Episode death times** $t^{\\rm d}_e$ (depend on coordinate choice)\n702: 2. **Proper lifetimes** $\\tau_e$ (depend on metric, not just order)\n703: 3. **Spatial distances** $d_g(\\Phi(e), \\Phi(e'))$ (depend on embedding, not just order)\n704: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-order-invariance-lorentz-discrete-sym",
+      "title": "Order-Invariance Implies Lorentz Invariance (Continuum Limit)",
+      "start_line": 706,
+      "end_line": 724,
+      "header_lines": [
+        707
+      ],
+      "content_start": 709,
+      "content_end": 723,
+      "content": "709: :label: thm-order-invariance-lorentz-discrete-sym\n710: \n711: **Conjecture**: If a discrete functional $F$ on the Fractal Set is order-invariant, then its continuum limit (if it exists) is Lorentz-invariant.\n712: \n713: **Heuristic argument**:\n714: \n715: 1. **Discrete**: Order-invariance means $F$ depends only on causal structure $\\prec$, not on coordinates or embeddings.\n716: \n717: 2. **Continuum**: In Minkowski spacetime, the causal structure (light cone ordering) is preserved by Lorentz transformations:\n718: \n719:    $$\n720:    x \\prec y \\iff (y - x) \\text{ is future-directed timelike or null}\n721:    $$\n722: \n723: 3. **Convergence**: If $F_N \\to F_\\infty$ as $N \\to \\infty$, and each $F_N$ is order-invariant, then $F_\\infty$ must be Lorentz-invariant (causal structure is the only preserved data).",
+      "metadata": {
+        "label": "thm-order-invariance-lorentz-discrete-sym"
+      },
+      "section": "## 4. Order-Invariant Functionals",
+      "raw_directive": "706: :::\n707: \n708: :::{prf:theorem} Order-Invariance Implies Lorentz Invariance (Continuum Limit)\n709: :label: thm-order-invariance-lorentz-discrete-sym\n710: \n711: **Conjecture**: If a discrete functional $F$ on the Fractal Set is order-invariant, then its continuum limit (if it exists) is Lorentz-invariant.\n712: \n713: **Heuristic argument**:\n714: \n715: 1. **Discrete**: Order-invariance means $F$ depends only on causal structure $\\prec$, not on coordinates or embeddings.\n716: \n717: 2. **Continuum**: In Minkowski spacetime, the causal structure (light cone ordering) is preserved by Lorentz transformations:\n718: \n719:    $$\n720:    x \\prec y \\iff (y - x) \\text{ is future-directed timelike or null}\n721:    $$\n722: \n723: 3. **Convergence**: If $F_N \\to F_\\infty$ as $N \\to \\infty$, and each $F_N$ is order-invariant, then $F_\\infty$ must be Lorentz-invariant (causal structure is the only preserved data).\n724: "
+    },
+    {
+      "directive_type": "example",
+      "label": "ex-ig-edge-weights-order-invariant-discrete-sym",
+      "title": "IG Edge Weights from Order-Invariant Construction",
+      "start_line": 726,
+      "end_line": 750,
+      "header_lines": [
+        727
+      ],
+      "content_start": 729,
+      "content_end": 749,
+      "content": "729: :label: ex-ig-edge-weights-order-invariant-discrete-sym\n730: \n731: **Canonical IG edge weight choices** (from Chapter 13A):\n732: \n733: 1. **Interval cardinality weight**:\n734: \n735:    $$\n736:    w_{ij} = \\exp\\left(-\\alpha |I(e_i, e_j)|\\right)\n737:    $$\n738: \n739:    where $I(e_i, e_j) = \\{e : e_i \\prec e \\prec e_j \\text{ or } e_j \\prec e \\prec e_i\\}$.\n740: \n741: 2. **Longest chain weight**:\n742: \n743:    $$\n744:    w_{ij} = \\frac{1}{\\ell(e_i, e_j) + 1}\n745:    $$\n746: \n747:    where $\\ell(e_i, e_j)$ is the length of the longest directed path between $e_i$ and $e_j$ in the CST.\n748: \n749: **Key property**: Both choices are **order-invariant** (depend only on $\\prec$, not on episode labels, coordinates, or foliation).",
+      "metadata": {
+        "label": "ex-ig-edge-weights-order-invariant-discrete-sym"
+      },
+      "section": "## 4. Order-Invariant Functionals",
+      "raw_directive": "726: :::\n727: \n728: :::{prf:example} IG Edge Weights from Order-Invariant Construction\n729: :label: ex-ig-edge-weights-order-invariant-discrete-sym\n730: \n731: **Canonical IG edge weight choices** (from Chapter 13A):\n732: \n733: 1. **Interval cardinality weight**:\n734: \n735:    $$\n736:    w_{ij} = \\exp\\left(-\\alpha |I(e_i, e_j)|\\right)\n737:    $$\n738: \n739:    where $I(e_i, e_j) = \\{e : e_i \\prec e \\prec e_j \\text{ or } e_j \\prec e \\prec e_i\\}$.\n740: \n741: 2. **Longest chain weight**:\n742: \n743:    $$\n744:    w_{ij} = \\frac{1}{\\ell(e_i, e_j) + 1}\n745:    $$\n746: \n747:    where $\\ell(e_i, e_j)$ is the length of the longest directed path between $e_i$ and $e_j$ in the CST.\n748: \n749: **Key property**: Both choices are **order-invariant** (depend only on $\\prec$, not on episode labels, coordinates, or foliation).\n750: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "chapter_index": 3,
+  "section_id": "## 3. $C^3$ Regularity Assumptions",
+  "directive_count": 4,
+  "hints": [
+    {
+      "directive_type": "assumption",
+      "label": "assump-c3-measurement",
+      "title": "Measurement Function $C^3$ Regularity",
+      "start_line": 233,
+      "end_line": 245,
+      "header_lines": [
+        234
+      ],
+      "content_start": 236,
+      "content_end": 244,
+      "content": "236: :label: assump-c3-measurement\n237: \n238: The measurement function $d: \\mathcal{X} \\to \\mathbb{R}$ is three times continuously differentiable with uniformly bounded derivatives:\n239: \n240: $$\n241: |d(x)| \\le d_{\\max}, \\quad \\|\\nabla d(x)\\| \\le d'_{\\max}, \\quad \\|\\nabla^2 d(x)\\| \\le d''_{\\max}, \\quad \\|\\nabla^3 d(x)\\| \\le d'''_{\\max}\n242: $$\n243: \n244: for all $x \\in \\mathcal{X}$, where $d_{\\max}, d'_{\\max}, d''_{\\max}, d'''_{\\max} < \\infty$ are constants.",
+      "metadata": {
+        "label": "assump-c3-measurement"
+      },
+      "section": "## 3. $C^3$ Regularity Assumptions",
+      "raw_directive": "233: To establish $C^3$ regularity of the fitness potential, we require natural smoothness conditions on the primitive functions in the pipeline. These assumptions extend the $C^3$ conditions from Appendix A to the third-order setting.\n234: \n235: :::{prf:assumption} Measurement Function $C^3$ Regularity\n236: :label: assump-c3-measurement\n237: \n238: The measurement function $d: \\mathcal{X} \\to \\mathbb{R}$ is three times continuously differentiable with uniformly bounded derivatives:\n239: \n240: $$\n241: |d(x)| \\le d_{\\max}, \\quad \\|\\nabla d(x)\\| \\le d'_{\\max}, \\quad \\|\\nabla^2 d(x)\\| \\le d''_{\\max}, \\quad \\|\\nabla^3 d(x)\\| \\le d'''_{\\max}\n242: $$\n243: \n244: for all $x \\in \\mathcal{X}$, where $d_{\\max}, d'_{\\max}, d''_{\\max}, d'''_{\\max} < \\infty$ are constants.\n245: "
+    },
+    {
+      "directive_type": "assumption",
+      "label": "assump-c3-kernel",
+      "title": "Localization Kernel $C^3$ Regularity",
+      "start_line": 247,
+      "end_line": 265,
+      "header_lines": [
+        248
+      ],
+      "content_start": 250,
+      "content_end": 264,
+      "content": "250: :label: assump-c3-kernel\n251: \n252: The localization kernel $K_\\rho: \\mathcal{X} \\times \\mathcal{X} \\to [0, 1]$ is three times continuously differentiable in its first argument with bounds:\n253: \n254: 1. $|K_\\rho(x, x')| \\le 1$\n255: 2. $\\|\\nabla_x K_\\rho(x, x')\\| \\le C_{\\nabla K}(\\rho) / \\rho$\n256: 3. $\\|\\nabla^2_x K_\\rho(x, x')\\| \\le C_{\\nabla^2 K}(\\rho) / \\rho^2$\n257: 4. $\\|\\nabla^3_x K_\\rho(x, x')\\| \\le C_{\\nabla^3 K}(\\rho) / \\rho^3$\n258: \n259: where $C_{\\nabla K}(\\rho), C_{\\nabla^2 K}(\\rho), C_{\\nabla^3 K}(\\rho)$ are $O(1)$ functions of $\\rho$ (typically constants for Gaussian kernels).\n260: \n261: **Justification:** For the standard Gaussian kernel $K_\\rho(x, x') = Z_\\rho(x)^{-1} \\exp(-\\|x-x'\\|^2/(2\\rho^2))$, direct calculation shows:\n262: - $\\nabla^m_x K_\\rho$ involves products of Hermite polynomials (degree $\\le m$) with the exponential\n263: - Each derivative introduces a factor of $1/\\rho$\n264: - The Hermite polynomial coefficients are $O(1)$",
+      "metadata": {
+        "label": "assump-c3-kernel"
+      },
+      "section": "## 3. $C^3$ Regularity Assumptions",
+      "raw_directive": "247: :::\n248: \n249: :::{prf:assumption} Localization Kernel $C^3$ Regularity\n250: :label: assump-c3-kernel\n251: \n252: The localization kernel $K_\\rho: \\mathcal{X} \\times \\mathcal{X} \\to [0, 1]$ is three times continuously differentiable in its first argument with bounds:\n253: \n254: 1. $|K_\\rho(x, x')| \\le 1$\n255: 2. $\\|\\nabla_x K_\\rho(x, x')\\| \\le C_{\\nabla K}(\\rho) / \\rho$\n256: 3. $\\|\\nabla^2_x K_\\rho(x, x')\\| \\le C_{\\nabla^2 K}(\\rho) / \\rho^2$\n257: 4. $\\|\\nabla^3_x K_\\rho(x, x')\\| \\le C_{\\nabla^3 K}(\\rho) / \\rho^3$\n258: \n259: where $C_{\\nabla K}(\\rho), C_{\\nabla^2 K}(\\rho), C_{\\nabla^3 K}(\\rho)$ are $O(1)$ functions of $\\rho$ (typically constants for Gaussian kernels).\n260: \n261: **Justification:** For the standard Gaussian kernel $K_\\rho(x, x') = Z_\\rho(x)^{-1} \\exp(-\\|x-x'\\|^2/(2\\rho^2))$, direct calculation shows:\n262: - $\\nabla^m_x K_\\rho$ involves products of Hermite polynomials (degree $\\le m$) with the exponential\n263: - Each derivative introduces a factor of $1/\\rho$\n264: - The Hermite polynomial coefficients are $O(1)$\n265: "
+    },
+    {
+      "directive_type": "assumption",
+      "label": "assump-c3-rescale",
+      "title": "Rescale Function $C^3$ Regularity",
+      "start_line": 267,
+      "end_line": 279,
+      "header_lines": [
+        268
+      ],
+      "content_start": 270,
+      "content_end": 278,
+      "content": "270: :label: assump-c3-rescale\n271: \n272: The rescale function $g_A: \\mathbb{R} \\to [0, A]$ is three times continuously differentiable with bounded derivatives:\n273: \n274: $$\n275: |g_A(z)| \\le A, \\quad |g'_A(z)| \\le L_{g'_A}, \\quad |g''_A(z)| \\le L_{g''_A}, \\quad |g'''_A(z)| \\le L_{g'''_A}\n276: $$\n277: \n278: for all $z \\in \\mathbb{R}$, where $A, L_{g'_A}, L_{g''_A}, L_{g'''_A} < \\infty$ are constants.",
+      "metadata": {
+        "label": "assump-c3-rescale"
+      },
+      "section": "## 3. $C^3$ Regularity Assumptions",
+      "raw_directive": "267: :::\n268: \n269: :::{prf:assumption} Rescale Function $C^3$ Regularity\n270: :label: assump-c3-rescale\n271: \n272: The rescale function $g_A: \\mathbb{R} \\to [0, A]$ is three times continuously differentiable with bounded derivatives:\n273: \n274: $$\n275: |g_A(z)| \\le A, \\quad |g'_A(z)| \\le L_{g'_A}, \\quad |g''_A(z)| \\le L_{g''_A}, \\quad |g'''_A(z)| \\le L_{g'''_A}\n276: $$\n277: \n278: for all $z \\in \\mathbb{R}$, where $A, L_{g'_A}, L_{g''_A}, L_{g'''_A} < \\infty$ are constants.\n279: "
+    },
+    {
+      "directive_type": "assumption",
+      "label": "assump-c3-patch",
+      "title": "Regularized Standard Deviation $C^\\infty$ Regularity",
+      "start_line": 281,
+      "end_line": 310,
+      "header_lines": [
+        282
+      ],
+      "content_start": 284,
+      "content_end": 309,
+      "content": "284: :label: assump-c3-patch\n285: \n286: The regularized standard deviation function is defined as:\n287: \n288: $$\n289: \\sigma\\'_{\\text{reg}}(V) := \\sqrt{V + \\sigma\\'^2_{\\min}}\n290: $$\n291: \n292: where $\\sigma\\'_{\\min} = \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2} > 0$ is the regularization parameter.\n293: \n294: This function is **infinitely differentiable** ($C^\\infty$) with explicit derivative bounds:\n295: \n296: 1. **Positive lower bound:** $\\sigma\\'_{\\text{reg}}(V) \\ge \\sigma\\'_{\\min} > 0$ for all $V \\ge 0$\n297: 2. **Bounded first derivative:** $|(\\sigma\\'_{\\text{reg}})'(V)| \\le L_{\\sigma\\'_{\\text{reg}}} = \\frac{1}{2\\sigma\\'_{\\min}}$ for all $V \\ge 0$\n298: 3. **Bounded second derivative:** $|(\\sigma\\'_{\\text{reg}})''(V)| \\le L_{\\sigma''_{\\text{reg}}} = \\frac{1}{4\\sigma\\'^3_{\\min}}$ for all $V \\ge 0$\n299: 4. **Bounded third derivative:** $|(\\sigma\\'_{\\text{reg}})'''(V)| \\le L_{\\sigma'''_{\\text{reg}}} = \\frac{3}{8\\sigma\\'^5_{\\min}}$ for all $V \\ge 0$\n300: \n301: **Derivation:** Direct computation of derivatives:\n302: \n303: $$\n304: (\\sigma\\'_{\\text{reg}})'(V) = \\frac{1}{2\\sqrt{V + \\sigma\\'^2_{\\min}}}, \\quad\n305: (\\sigma\\'_{\\text{reg}})''(V) = -\\frac{1}{4(V + \\sigma\\'^2_{\\min})^{3/2}}, \\quad\n306: (\\sigma\\'_{\\text{reg}})'''(V) = \\frac{3}{8(V + \\sigma\\'^2_{\\min})^{5/2}}\n307: $$\n308: \n309: Since $V \\ge 0$, all bounds are achieved at $V = 0$.",
+      "metadata": {
+        "label": "assump-c3-patch"
+      },
+      "section": "## 3. $C^3$ Regularity Assumptions",
+      "raw_directive": "281: :::\n282: \n283: :::{prf:assumption} Regularized Standard Deviation $C^\\infty$ Regularity\n284: :label: assump-c3-patch\n285: \n286: The regularized standard deviation function is defined as:\n287: \n288: $$\n289: \\sigma\\'_{\\text{reg}}(V) := \\sqrt{V + \\sigma\\'^2_{\\min}}\n290: $$\n291: \n292: where $\\sigma\\'_{\\min} = \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2} > 0$ is the regularization parameter.\n293: \n294: This function is **infinitely differentiable** ($C^\\infty$) with explicit derivative bounds:\n295: \n296: 1. **Positive lower bound:** $\\sigma\\'_{\\text{reg}}(V) \\ge \\sigma\\'_{\\min} > 0$ for all $V \\ge 0$\n297: 2. **Bounded first derivative:** $|(\\sigma\\'_{\\text{reg}})'(V)| \\le L_{\\sigma\\'_{\\text{reg}}} = \\frac{1}{2\\sigma\\'_{\\min}}$ for all $V \\ge 0$\n298: 3. **Bounded second derivative:** $|(\\sigma\\'_{\\text{reg}})''(V)| \\le L_{\\sigma''_{\\text{reg}}} = \\frac{1}{4\\sigma\\'^3_{\\min}}$ for all $V \\ge 0$\n299: 4. **Bounded third derivative:** $|(\\sigma\\'_{\\text{reg}})'''(V)| \\le L_{\\sigma'''_{\\text{reg}}} = \\frac{3}{8\\sigma\\'^5_{\\min}}$ for all $V \\ge 0$\n300: \n301: **Derivation:** Direct computation of derivatives:\n302: \n303: $$\n304: (\\sigma\\'_{\\text{reg}})'(V) = \\frac{1}{2\\sqrt{V + \\sigma\\'^2_{\\min}}}, \\quad\n305: (\\sigma\\'_{\\text{reg}})''(V) = -\\frac{1}{4(V + \\sigma\\'^2_{\\min})^{3/2}}, \\quad\n306: (\\sigma\\'_{\\text{reg}})'''(V) = \\frac{3}{8(V + \\sigma\\'^2_{\\min})^{5/2}}\n307: $$\n308: \n309: Since $V \\ge 0$, all bounds are achieved at $V = 0$.\n310: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

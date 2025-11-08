@@ -1,0 +1,83 @@
+{
+  "chapter_index": 4,
+  "section_id": "## 4. Fourth Derivatives of Localization Weights",
+  "directive_count": 4,
+  "hints": [
+    {
+      "directive_type": "lemma",
+      "label": "lem-weight-fourth-derivative",
+      "title": "Fourth Derivative of Localization Weights",
+      "start_line": 395,
+      "end_line": 413,
+      "header_lines": [
+        396
+      ],
+      "content_start": 398,
+      "content_end": 412,
+      "content": "398: :label: lem-weight-fourth-derivative\n399: \n400: $$\n401: \\|\\nabla^4_{x_i} w_{ij}(\\rho)\\| \\le C_{w,4}(\\rho) = O(\\rho^{-4})\n402: \n403: $$\n404: \n405: where the constant $C_{w,4}(\\rho)$ is derived from the quotient rule applied to:\n406: \n407: $$\n408: w_{ij}(\\rho) = \\frac{K_\\rho(x_i, x_j)}{\\sum_{j' \\in A_k} K_\\rho(x_i, x_{j'})}\n409: \n410: $$\n411: \n412: The fourth derivative involves sums of products of kernel derivatives up to order 4, with dominant term $C_{\\nabla^4 K}(\\rho) = 24/\\rho^4$ from the Gaussian kernel.",
+      "metadata": {
+        "label": "lem-weight-fourth-derivative"
+      },
+      "section": "## 4. Fourth Derivatives of Localization Weights",
+      "raw_directive": "395: ## 4. Fourth Derivatives of Localization Weights\n396: \n397: :::{prf:lemma} Fourth Derivative of Localization Weights\n398: :label: lem-weight-fourth-derivative\n399: \n400: $$\n401: \\|\\nabla^4_{x_i} w_{ij}(\\rho)\\| \\le C_{w,4}(\\rho) = O(\\rho^{-4})\n402: \n403: $$\n404: \n405: where the constant $C_{w,4}(\\rho)$ is derived from the quotient rule applied to:\n406: \n407: $$\n408: w_{ij}(\\rho) = \\frac{K_\\rho(x_i, x_j)}{\\sum_{j' \\in A_k} K_\\rho(x_i, x_{j'})}\n409: \n410: $$\n411: \n412: The fourth derivative involves sums of products of kernel derivatives up to order 4, with dominant term $C_{\\nabla^4 K}(\\rho) = 24/\\rho^4$ from the Gaussian kernel.\n413: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-lem-weight-fourth-derivative",
+      "title": null,
+      "start_line": 415,
+      "end_line": 425,
+      "header_lines": [
+        416
+      ],
+      "content_start": 418,
+      "content_end": 424,
+      "content": "418: :label: proof-lem-weight-fourth-derivative\n419: \n420: The fourth derivative of the quotient $w_{ij} = K_{ij}/S_i$ (where $S_i = \\sum_{j'} K_{ij'}$) follows from the general Leibniz rule. The numerator derivatives involve $\\nabla^m K_{ij}$ for $m \\le 4$, and the denominator derivatives involve products. The bound follows from:\n421: \n422: 1. $\\|\\nabla^4 K_{ij}\\| \\le C_{\\nabla^4 K}(\\rho) K_{ij}$ with $C_{\\nabla^4 K}(\\rho) = 24/\\rho^4$\n423: 2. Products of lower-order derivatives (up to total order 4)\n424: 3. Division by $S_i \\ge K_{ii} = 1$",
+      "metadata": {
+        "label": "proof-lem-weight-fourth-derivative"
+      },
+      "section": "## 4. Fourth Derivatives of Localization Weights",
+      "raw_directive": "415: :::\n416: \n417: :::{prf:proof}\n418: :label: proof-lem-weight-fourth-derivative\n419: \n420: The fourth derivative of the quotient $w_{ij} = K_{ij}/S_i$ (where $S_i = \\sum_{j'} K_{ij'}$) follows from the general Leibniz rule. The numerator derivatives involve $\\nabla^m K_{ij}$ for $m \\le 4$, and the denominator derivatives involve products. The bound follows from:\n421: \n422: 1. $\\|\\nabla^4 K_{ij}\\| \\le C_{\\nabla^4 K}(\\rho) K_{ij}$ with $C_{\\nabla^4 K}(\\rho) = 24/\\rho^4$\n423: 2. Products of lower-order derivatives (up to total order 4)\n424: 3. Division by $S_i \\ge K_{ii} = 1$\n425: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-weight-telescoping-fourth",
+      "title": "Telescoping Property for Fourth Derivative",
+      "start_line": 427,
+      "end_line": 436,
+      "header_lines": [
+        428
+      ],
+      "content_start": 430,
+      "content_end": 435,
+      "content": "430: :label: lem-weight-telescoping-fourth\n431: \n432: $$\n433: \\sum_{j \\in A_k} \\nabla^4_{x_i} w_{ij}(\\rho) = 0\n434: \n435: $$",
+      "metadata": {
+        "label": "lem-weight-telescoping-fourth"
+      },
+      "section": "## 4. Fourth Derivatives of Localization Weights",
+      "raw_directive": "427: :::\n428: \n429: :::{prf:lemma} Telescoping Property for Fourth Derivative\n430: :label: lem-weight-telescoping-fourth\n431: \n432: $$\n433: \\sum_{j \\in A_k} \\nabla^4_{x_i} w_{ij}(\\rho) = 0\n434: \n435: $$\n436: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-lem-weight-telescoping-fourth",
+      "title": null,
+      "start_line": 438,
+      "end_line": 449,
+      "header_lines": [
+        439
+      ],
+      "content_start": 441,
+      "content_end": 448,
+      "content": "441: :label: proof-lem-weight-telescoping-fourth\n442: \n443: The weights satisfy the normalization $\\sum_{j \\in A_k} w_{ij}(\\rho) = 1$ identically for all $x_i$. Differentiating this identity four times with respect to $x_i$ yields:\n444: \n445: $$\n446: \\sum_{j \\in A_k} \\nabla^4_{x_i} w_{ij}(\\rho) = \\nabla^4_{x_i} \\left( \\sum_{j \\in A_k} w_{ij}(\\rho) \\right) = \\nabla^4_{x_i}(1) = 0\n447: \n448: $$",
+      "metadata": {
+        "label": "proof-lem-weight-telescoping-fourth"
+      },
+      "section": "## 4. Fourth Derivatives of Localization Weights",
+      "raw_directive": "438: :::\n439: \n440: :::{prf:proof}\n441: :label: proof-lem-weight-telescoping-fourth\n442: \n443: The weights satisfy the normalization $\\sum_{j \\in A_k} w_{ij}(\\rho) = 1$ identically for all $x_i$. Differentiating this identity four times with respect to $x_i$ yields:\n444: \n445: $$\n446: \\sum_{j \\in A_k} \\nabla^4_{x_i} w_{ij}(\\rho) = \\nabla^4_{x_i} \\left( \\sum_{j \\in A_k} w_{ij}(\\rho) \\right) = \\nabla^4_{x_i}(1) = 0\n447: \n448: $$\n449: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

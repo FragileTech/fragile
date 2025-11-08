@@ -1,0 +1,47 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 2. Cloning Contribution to Stress-Energy Tensor",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "proposition",
+      "label": "prop-cloning-energy-dissipation",
+      "title": "Cloning as Energy Sink",
+      "start_line": 84,
+      "end_line": 137,
+      "header_lines": [
+        85
+      ],
+      "content_start": 87,
+      "content_end": 136,
+      "content": "87: :label: prop-cloning-energy-dissipation\n88: \n89: The inelastic collision cloning operator **dissipates kinetic energy**, acting as an effective **cooling mechanism** that reduces the stress-energy tensor:\n90: \n91: $$\n92: \\frac{d}{dt}\\langle E_{\\text{kin}} \\rangle_{\\text{clone}} = -\\frac{1 - \\alpha_{\\text{rest}}^2}{2\\tau_{\\text{clone}}} m \\langle \\|v_{\\text{rel}}\\|^2 \\rangle < 0\n93: $$\n94: \n95: where $v_{\\text{rel}}$ is the relative velocity within collision groups and $\\tau_{\\text{clone}}$ is the average time between cloning events.\n96: \n97: **Derivation**:\n98: \n99: Consider the kinetic energy change during an inelastic collision event.\n100: \n101: **Before collision**: The collision group $\\{i, j_1, \\ldots, j_k\\}$ has kinetic energy:\n102: \n103: $$\n104: E_{\\text{before}} = \\frac{1}{2}m \\sum_{a \\in \\text{group}} \\|v_a\\|^2\n105: $$\n106: \n107: **After collision**: Using $v_a' = v_{\\text{COM}} + \\alpha_{\\text{rest}}(v_a - v_{\\text{COM}})$:\n108: \n109: $$\n110: E_{\\text{after}} = \\frac{1}{2}m \\sum_a \\|v_{\\text{COM}} + \\alpha_{\\text{rest}}(v_a - v_{\\text{COM}})\\|^2\n111: $$\n112: \n113: $$\n114: = \\frac{1}{2}m(k+1)\\|v_{\\text{COM}}\\|^2 + \\frac{1}{2}m\\alpha_{\\text{rest}}^2 \\sum_a \\|v_a - v_{\\text{COM}}\\|^2\n115: $$\n116: \n117: **Energy loss**:\n118: \n119: $$\n120: \\Delta E = E_{\\text{after}} - E_{\\text{before}} = -\\frac{1 - \\alpha_{\\text{rest}}^2}{2}m \\sum_a \\|v_a - v_{\\text{COM}}\\|^2 < 0\n121: $$\n122: \n123: The fraction $(1 - \\alpha_{\\text{rest}}^2)$ of the relative kinetic energy is dissipated.\n124: \n125: **Mean-field rate**: At rate $1/\\tau_{\\text{clone}}$, the average energy dissipation is:\n126: \n127: $$\n128: \\boxed{\\frac{d E_{\\text{kin}}}{dt}\\bigg|_{\\text{clone}} = -\\frac{1-\\alpha_{\\text{rest}}^2}{2\\tau_{\\text{clone}}} m \\langle \\|v_{\\text{rel}}\\|^2 \\rangle}\n129: $$\n130: \n131: **Effective cooling**: This acts opposite to Langevin heating ($+\\sigma_v^2$ term), leading to a **reduced** effective temperature:\n132: \n133: $$\n134: k_B T_{\\text{eff}} = k_B T_{\\text{Langevin}} - \\Delta T_{\\text{clone}}\n135: $$\n136: ",
+      "metadata": {
+        "label": "prop-cloning-energy-dissipation"
+      },
+      "section": "## 2. Cloning Contribution to Stress-Energy Tensor",
+      "raw_directive": "84: ###2.2 Energy Dissipation and Effective Cooling\n85: \n86: :::{prf:proposition} Cloning as Energy Sink\n87: :label: prop-cloning-energy-dissipation\n88: \n89: The inelastic collision cloning operator **dissipates kinetic energy**, acting as an effective **cooling mechanism** that reduces the stress-energy tensor:\n90: \n91: $$\n92: \\frac{d}{dt}\\langle E_{\\text{kin}} \\rangle_{\\text{clone}} = -\\frac{1 - \\alpha_{\\text{rest}}^2}{2\\tau_{\\text{clone}}} m \\langle \\|v_{\\text{rel}}\\|^2 \\rangle < 0\n93: $$\n94: \n95: where $v_{\\text{rel}}$ is the relative velocity within collision groups and $\\tau_{\\text{clone}}$ is the average time between cloning events.\n96: \n97: **Derivation**:\n98: \n99: Consider the kinetic energy change during an inelastic collision event.\n100: \n101: **Before collision**: The collision group $\\{i, j_1, \\ldots, j_k\\}$ has kinetic energy:\n102: \n103: $$\n104: E_{\\text{before}} = \\frac{1}{2}m \\sum_{a \\in \\text{group}} \\|v_a\\|^2\n105: $$\n106: \n107: **After collision**: Using $v_a' = v_{\\text{COM}} + \\alpha_{\\text{rest}}(v_a - v_{\\text{COM}})$:\n108: \n109: $$\n110: E_{\\text{after}} = \\frac{1}{2}m \\sum_a \\|v_{\\text{COM}} + \\alpha_{\\text{rest}}(v_a - v_{\\text{COM}})\\|^2\n111: $$\n112: \n113: $$\n114: = \\frac{1}{2}m(k+1)\\|v_{\\text{COM}}\\|^2 + \\frac{1}{2}m\\alpha_{\\text{rest}}^2 \\sum_a \\|v_a - v_{\\text{COM}}\\|^2\n115: $$\n116: \n117: **Energy loss**:\n118: \n119: $$\n120: \\Delta E = E_{\\text{after}} - E_{\\text{before}} = -\\frac{1 - \\alpha_{\\text{rest}}^2}{2}m \\sum_a \\|v_a - v_{\\text{COM}}\\|^2 < 0\n121: $$\n122: \n123: The fraction $(1 - \\alpha_{\\text{rest}}^2)$ of the relative kinetic energy is dissipated.\n124: \n125: **Mean-field rate**: At rate $1/\\tau_{\\text{clone}}$, the average energy dissipation is:\n126: \n127: $$\n128: \\boxed{\\frac{d E_{\\text{kin}}}{dt}\\bigg|_{\\text{clone}} = -\\frac{1-\\alpha_{\\text{rest}}^2}{2\\tau_{\\text{clone}}} m \\langle \\|v_{\\text{rel}}\\|^2 \\rangle}\n129: $$\n130: \n131: **Effective cooling**: This acts opposite to Langevin heating ($+\\sigma_v^2$ term), leading to a **reduced** effective temperature:\n132: \n133: $$\n134: k_B T_{\\text{eff}} = k_B T_{\\text{Langevin}} - \\Delta T_{\\text{clone}}\n135: $$\n136: \n137: where $\\Delta T_{\\text{clone}} > 0$ depends on $\\alpha_{\\text{rest}}$, $\\tau_{\\text{clone}}$, and the velocity distribution."
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-momentum-conservation-cloning",
+      "title": "Exact Momentum Conservation",
+      "start_line": 141,
+      "end_line": 181,
+      "header_lines": [
+        142
+      ],
+      "content_start": 144,
+      "content_end": 180,
+      "content": "144: :label: lem-momentum-conservation-cloning\n145: \n146: The inelastic collision cloning operator **exactly conserves total four-momentum** during each cloning event:\n147: \n148: $$\n149: \\sum_{i=1}^N p^\\mu_i \\bigg|_{\\text{after}} = \\sum_{i=1}^N p^\\mu_i \\bigg|_{\\text{before}}\n150: $$\n151: \n152: **Proof**:\n153: \n154: Consider a cloning event where walkers $\\{j_1, \\ldots, j_k\\}$ clone from companion $i$, and walker $\\ell$ is killed.\n155: \n156: **Before cloning**:\n157: $$\n158: P^\\mu_{\\text{before}} = \\sum_{a=1}^N m v_a^\\mu\n159: $$\n160: \n161: **After cloning**:\n162: - The collision group $\\{i, j_1, \\ldots, j_k\\}$ has velocities updated to:\n163:   $$\n164:   v_a' = v_{\\text{COM}} + \\alpha_{\\text{rest}}(v_a - v_{\\text{COM}})\n165:   $$\n166: - Total momentum of collision group:\n167:   $$\n168:   \\sum_{a \\in \\{i,j_1,\\ldots,j_k\\}} m v_a' = (k+1) m v_{\\text{COM}} + \\alpha_{\\text{rest}}\\sum_a m(v_a - v_{\\text{COM}}) = (k+1) m v_{\\text{COM}}\n169:   $$\n170:   where the second term vanishes by definition of $v_{\\text{COM}}$.\n171: \n172: - Since $v_{\\text{COM}} = \\frac{1}{k+1}\\sum_a v_a$:\n173:   $$\n174:   \\sum_{a \\in \\{i,j_1,\\ldots,j_k\\}} m v_a' = m\\sum_{a \\in \\{i,j_1,\\ldots,j_k\\}} v_a\n175:   $$\n176: \n177: **Total momentum after**:\n178: $$\n179: P^\\mu_{\\text{after}} = \\sum_{a \\neq \\ell, a \\notin \\text{collision}} mv_a + \\sum_{a \\in \\text{collision}} mv_a' = P^\\mu_{\\text{before}}\n180: $$",
+      "metadata": {
+        "label": "lem-momentum-conservation-cloning"
+      },
+      "section": "## 2. Cloning Contribution to Stress-Energy Tensor",
+      "raw_directive": "141: ### 2.3 Momentum Conservation Under Cloning\n142: \n143: :::{prf:lemma} Exact Momentum Conservation\n144: :label: lem-momentum-conservation-cloning\n145: \n146: The inelastic collision cloning operator **exactly conserves total four-momentum** during each cloning event:\n147: \n148: $$\n149: \\sum_{i=1}^N p^\\mu_i \\bigg|_{\\text{after}} = \\sum_{i=1}^N p^\\mu_i \\bigg|_{\\text{before}}\n150: $$\n151: \n152: **Proof**:\n153: \n154: Consider a cloning event where walkers $\\{j_1, \\ldots, j_k\\}$ clone from companion $i$, and walker $\\ell$ is killed.\n155: \n156: **Before cloning**:\n157: $$\n158: P^\\mu_{\\text{before}} = \\sum_{a=1}^N m v_a^\\mu\n159: $$\n160: \n161: **After cloning**:\n162: - The collision group $\\{i, j_1, \\ldots, j_k\\}$ has velocities updated to:\n163:   $$\n164:   v_a' = v_{\\text{COM}} + \\alpha_{\\text{rest}}(v_a - v_{\\text{COM}})\n165:   $$\n166: - Total momentum of collision group:\n167:   $$\n168:   \\sum_{a \\in \\{i,j_1,\\ldots,j_k\\}} m v_a' = (k+1) m v_{\\text{COM}} + \\alpha_{\\text{rest}}\\sum_a m(v_a - v_{\\text{COM}}) = (k+1) m v_{\\text{COM}}\n169:   $$\n170:   where the second term vanishes by definition of $v_{\\text{COM}}$.\n171: \n172: - Since $v_{\\text{COM}} = \\frac{1}{k+1}\\sum_a v_a$:\n173:   $$\n174:   \\sum_{a \\in \\{i,j_1,\\ldots,j_k\\}} m v_a' = m\\sum_{a \\in \\{i,j_1,\\ldots,j_k\\}} v_a\n175:   $$\n176: \n177: **Total momentum after**:\n178: $$\n179: P^\\mu_{\\text{after}} = \\sum_{a \\neq \\ell, a \\notin \\text{collision}} mv_a + \\sum_{a \\in \\text{collision}} mv_a' = P^\\mu_{\\text{before}}\n180: $$\n181: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "document_id": "19_geometric_gas_cinf_regularity_simplified",
+  "stage": "directives",
+  "directive_type": "proof",
+  "generated_at": "2025-11-08T17:07:43.282660+00:00",
+  "count": 1,
+  "items": [
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-136",
+      "title": null,
+      "start_line": 328,
+      "end_line": 330,
+      "header_lines": [],
+      "content_start": 329,
+      "content_end": 329,
+      "content": "329: ",
+      "metadata": {},
+      "section": "## 2. Mathematical Framework and Notation",
+      "raw_directive": "328: :::\n329: \n330: :::{prf:proof}",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "19_geometric_gas_cinf_regularity_simplified",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
+        "section_id": "## 2. Mathematical Framework and Notation"
+      }
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "chapter_index": 3,
+  "section_id": "## Proof of Theorem 1: Invariant Measure Existence",
+  "directive_count": 3,
+  "hints": [
+    {
+      "directive_type": "proof",
+      "label": "lem-hard-core-exclusion",
+      "title": "Proof Sketch of {prf:ref}`thm-invariant-measure-existence`",
+      "start_line": 495,
+      "end_line": 544,
+      "header_lines": [
+        502
+      ],
+      "content_start": 497,
+      "content_end": 543,
+      "content": "497: :::{prf:proof} Proof Sketch of {prf:ref}`thm-invariant-measure-existence`\n498: \n499: **Step 1: A Priori Energy Bounds and Hard-Core Exclusion**\n500: \n501: We first establish deterministic bounds on configurations with finite energy, without assuming the existence of $\\mu_{\\text{inv}}$.\n502: \n503: :::{prf:lemma} Hard-Core Exclusion from Energy Bounds\n504: :label: lem-hard-core-exclusion\n505: \n506: For any energy level $E > 0$, define:\n507: \n508: $$\n509: r_{\\min}(E) := \\sqrt{\\frac{A}{E + 1}}\n510: \n511: $$\n512: \n513: where $A$ is the repulsion strength parameter from the potential $V_{\\text{pair}}(r) = A/r^2 + Br^2$.\n514: \n515: Then any configuration $(\\mathbf{x}, \\mathbf{U})$ with $H(\\mathbf{x}, \\mathbf{U}) \\leq E$ satisfies:\n516: \n517: $$\n518: \\min_{i \\neq j} \\|x_i - x_j\\| \\geq r_{\\min}(E)\n519: \n520: $$\n521: \n522: **Proof**: Suppose $\\|x_i - x_j\\| = r < r_{\\min}(E)$ for some pair. The total energy decomposes as:\n523: \n524: $$\n525: H(\\mathbf{x}, \\mathbf{U}) = H_{\\text{nodes}}(\\mathbf{x}) + H_{\\text{gauge}}(\\mathbf{x}, \\mathbf{U}) \\geq H_{\\text{nodes}}(\\mathbf{x})\n526: \n527: $$\n528: \n529: since $H_{\\text{gauge}} \\geq 0$. The node Hamiltonian is a sum of pairwise potentials:\n530: \n531: $$\n532: H_{\\text{nodes}}(\\mathbf{x}) = \\sum_{i<j} V_{\\text{pair}}(\\|x_i - x_j\\|) \\geq V_{\\text{pair}}(r) = \\frac{A}{r^2} + Br^2 \\geq \\frac{A}{r^2}\n533: \n534: $$\n535: \n536: If $r < r_{\\min}(E) = \\sqrt{A/(E+1)}$, then $r^2 < A/(E+1)$, so:\n537: \n538: $$\n539: H \\geq \\frac{A}{r^2} > \\frac{A}{A/(E+1)} = E + 1 > E\n540: \n541: $$\n542: \n543: This contradicts the assumption $H \\leq E$. Therefore, all pairs must satisfy $\\|x_i - x_j\\| \\geq r_{\\min}(E)$.",
+      "metadata": {
+        "label": "lem-hard-core-exclusion"
+      },
+      "section": "## Proof of Theorem 1: Invariant Measure Existence",
+      "raw_directive": "495: 5. **Exponential convergence** via spectral gap estimates\n496: \n497: :::{prf:proof} Proof Sketch of {prf:ref}`thm-invariant-measure-existence`\n498: \n499: **Step 1: A Priori Energy Bounds and Hard-Core Exclusion**\n500: \n501: We first establish deterministic bounds on configurations with finite energy, without assuming the existence of $\\mu_{\\text{inv}}$.\n502: \n503: :::{prf:lemma} Hard-Core Exclusion from Energy Bounds\n504: :label: lem-hard-core-exclusion\n505: \n506: For any energy level $E > 0$, define:\n507: \n508: $$\n509: r_{\\min}(E) := \\sqrt{\\frac{A}{E + 1}}\n510: \n511: $$\n512: \n513: where $A$ is the repulsion strength parameter from the potential $V_{\\text{pair}}(r) = A/r^2 + Br^2$.\n514: \n515: Then any configuration $(\\mathbf{x}, \\mathbf{U})$ with $H(\\mathbf{x}, \\mathbf{U}) \\leq E$ satisfies:\n516: \n517: $$\n518: \\min_{i \\neq j} \\|x_i - x_j\\| \\geq r_{\\min}(E)\n519: \n520: $$\n521: \n522: **Proof**: Suppose $\\|x_i - x_j\\| = r < r_{\\min}(E)$ for some pair. The total energy decomposes as:\n523: \n524: $$\n525: H(\\mathbf{x}, \\mathbf{U}) = H_{\\text{nodes}}(\\mathbf{x}) + H_{\\text{gauge}}(\\mathbf{x}, \\mathbf{U}) \\geq H_{\\text{nodes}}(\\mathbf{x})\n526: \n527: $$\n528: \n529: since $H_{\\text{gauge}} \\geq 0$. The node Hamiltonian is a sum of pairwise potentials:\n530: \n531: $$\n532: H_{\\text{nodes}}(\\mathbf{x}) = \\sum_{i<j} V_{\\text{pair}}(\\|x_i - x_j\\|) \\geq V_{\\text{pair}}(r) = \\frac{A}{r^2} + Br^2 \\geq \\frac{A}{r^2}\n533: \n534: $$\n535: \n536: If $r < r_{\\min}(E) = \\sqrt{A/(E+1)}$, then $r^2 < A/(E+1)$, so:\n537: \n538: $$\n539: H \\geq \\frac{A}{r^2} > \\frac{A}{A/(E+1)} = E + 1 > E\n540: \n541: $$\n542: \n543: This contradicts the assumption $H \\leq E$. Therefore, all pairs must satisfy $\\|x_i - x_j\\| \\geq r_{\\min}(E)$.\n544: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-uniform-force-bounds",
+      "title": "Uniform Force Bounds",
+      "start_line": 548,
+      "end_line": 568,
+      "header_lines": [
+        549
+      ],
+      "content_start": 551,
+      "content_end": 567,
+      "content": "551: :label: lem-uniform-force-bounds\n552: \n553: For any configuration satisfying the hard-core constraint $\\min_{i \\neq j}\\|x_i - x_j\\| \\geq r_{\\min}$:\n554: \n555: 1. **Node forces are uniformly bounded**:\n556: \n557: $$\n558: \\sup_{\\mathbf{x} : \\min_{i \\neq j}\\|x_i - x_j\\| \\geq r_{\\min}} \\|\\nabla_{x_i} H_{\\text{nodes}}(\\mathbf{x})\\| \\leq C_F(N) := (N-1) \\sup_{r > 0} |V'_{\\text{pair}}(r)| < \\infty\n559: \n560: $$\n561: \n562: 2. **Gauge forces are bounded for any gauge field**:\n563: \n564: $$\n565: \\sup_{\\mathbf{x}, \\mathbf{U} : \\min_{i \\neq j}\\|x_i - x_j\\| \\geq r_{\\min}} \\|\\nabla_{x_i} H_{\\text{gauge}}(\\mathbf{x}, \\mathbf{U})\\| \\leq C_G(N, N_c, \\beta_{\\text{gauge}}, r_{\\min}) < \\infty\n566: \n567: $$",
+      "metadata": {
+        "label": "lem-uniform-force-bounds"
+      },
+      "section": "## Proof of Theorem 1: Invariant Measure Existence",
+      "raw_directive": "548: **Step 2: Deterministic Force Bounds**\n549: \n550: :::{prf:lemma} Uniform Force Bounds\n551: :label: lem-uniform-force-bounds\n552: \n553: For any configuration satisfying the hard-core constraint $\\min_{i \\neq j}\\|x_i - x_j\\| \\geq r_{\\min}$:\n554: \n555: 1. **Node forces are uniformly bounded**:\n556: \n557: $$\n558: \\sup_{\\mathbf{x} : \\min_{i \\neq j}\\|x_i - x_j\\| \\geq r_{\\min}} \\|\\nabla_{x_i} H_{\\text{nodes}}(\\mathbf{x})\\| \\leq C_F(N) := (N-1) \\sup_{r > 0} |V'_{\\text{pair}}(r)| < \\infty\n559: \n560: $$\n561: \n562: 2. **Gauge forces are bounded for any gauge field**:\n563: \n564: $$\n565: \\sup_{\\mathbf{x}, \\mathbf{U} : \\min_{i \\neq j}\\|x_i - x_j\\| \\geq r_{\\min}} \\|\\nabla_{x_i} H_{\\text{gauge}}(\\mathbf{x}, \\mathbf{U})\\| \\leq C_G(N, N_c, \\beta_{\\text{gauge}}, r_{\\min}) < \\infty\n566: \n567: $$\n568: "
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-gauge-force-bound",
+      "title": "Bounded Gradient of Plaquette Weights",
+      "start_line": 593,
+      "end_line": 608,
+      "header_lines": [
+        594
+      ],
+      "content_start": 596,
+      "content_end": 607,
+      "content": "596: :label: lem-gauge-force-bound\n597: \n598: For triangular plaquettes $\\Delta$ in a Delaunay triangulation satisfying:\n599: - Hard-core exclusion: edge lengths in $[r_{\\min}, R_{\\text{cut}}]$\n600: - Shape regularity: aspect ratio $\\rho(\\Delta) \\leq \\rho_{\\max}$, area $A(\\Delta) \\geq A_{\\min}$\n601: \n602: the gradient of the weight function $w(\\Delta) = \\exp(\u2212(\\rho(\\Delta) \u2212 1)^2/(2\\sigma_{\\text{shape}}^2))$ satisfies:\n603: \n604: $$\n605: \\|\\nabla_{x_i} w(\\Delta)\\| \\leq C_w(\\rho_{\\max}, r_{\\min}, R_{\\text{cut}}, A_{\\min}, \\sigma_{\\text{shape}})\n606: \n607: $$",
+      "metadata": {
+        "label": "lem-gauge-force-bound"
+      },
+      "section": "## Proof of Theorem 1: Invariant Measure Existence",
+      "raw_directive": "593: For the gauge field term, we first establish that the weight gradient is bounded:\n594: \n595: :::{prf:lemma} Bounded Gradient of Plaquette Weights\n596: :label: lem-gauge-force-bound\n597: \n598: For triangular plaquettes $\\Delta$ in a Delaunay triangulation satisfying:\n599: - Hard-core exclusion: edge lengths in $[r_{\\min}, R_{\\text{cut}}]$\n600: - Shape regularity: aspect ratio $\\rho(\\Delta) \\leq \\rho_{\\max}$, area $A(\\Delta) \\geq A_{\\min}$\n601: \n602: the gradient of the weight function $w(\\Delta) = \\exp(\u2212(\\rho(\\Delta) \u2212 1)^2/(2\\sigma_{\\text{shape}}^2))$ satisfies:\n603: \n604: $$\n605: \\|\\nabla_{x_i} w(\\Delta)\\| \\leq C_w(\\rho_{\\max}, r_{\\min}, R_{\\text{cut}}, A_{\\min}, \\sigma_{\\text{shape}})\n606: \n607: $$\n608: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

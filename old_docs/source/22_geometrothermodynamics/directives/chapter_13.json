@@ -1,0 +1,47 @@
+{
+  "chapter_index": 13,
+  "section_id": "## 5.1 The Weinhold Metric in Energy Representation",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-weinhold-metric",
+      "title": "Weinhold Metric",
+      "start_line": 2497,
+      "end_line": 2519,
+      "header_lines": [
+        2498
+      ],
+      "content_start": 2500,
+      "content_end": 2518,
+      "content": "2500: :label: def-weinhold-metric\n2501: \n2502: The **Weinhold metric** is the Hessian of internal energy $U$ with respect to extensive variables in entropy representation:\n2503: \n2504: $$\n2505: g_W^{ij} := \\frac{\\partial^2 U}{\\partial S^i \\partial S^j}\n2506: $$\n2507: \n2508: where $S^i$ are generalized extensive variables: $(S, V, N)$ for a simple system.\n2509: \n2510: Equivalently, in the canonical parametrization:\n2511: \n2512: $$\n2513: g_W = \\begin{pmatrix}\n2514: \\frac{\\partial^2 U}{\\partial S^2} & \\frac{\\partial^2 U}{\\partial S \\partial V} & \\frac{\\partial^2 U}{\\partial S \\partial N} \\\\\n2515: \\frac{\\partial^2 U}{\\partial V \\partial S} & \\frac{\\partial^2 U}{\\partial V^2} & \\frac{\\partial^2 U}{\\partial V \\partial N} \\\\\n2516: \\frac{\\partial^2 U}{\\partial N \\partial S} & \\frac{\\partial^2 U}{\\partial N \\partial V} & \\frac{\\partial^2 U}{\\partial N^2}\n2517: \\end{pmatrix}\n2518: $$",
+      "metadata": {
+        "label": "def-weinhold-metric"
+      },
+      "section": "## 5.1 The Weinhold Metric in Energy Representation",
+      "raw_directive": "2497: While the Ruppeiner metric uses entropy $S$ as a fundamental variable, the Weinhold metric works in the energy representation.\n2498: \n2499: :::{prf:definition} Weinhold Metric\n2500: :label: def-weinhold-metric\n2501: \n2502: The **Weinhold metric** is the Hessian of internal energy $U$ with respect to extensive variables in entropy representation:\n2503: \n2504: $$\n2505: g_W^{ij} := \\frac{\\partial^2 U}{\\partial S^i \\partial S^j}\n2506: $$\n2507: \n2508: where $S^i$ are generalized extensive variables: $(S, V, N)$ for a simple system.\n2509: \n2510: Equivalently, in the canonical parametrization:\n2511: \n2512: $$\n2513: g_W = \\begin{pmatrix}\n2514: \\frac{\\partial^2 U}{\\partial S^2} & \\frac{\\partial^2 U}{\\partial S \\partial V} & \\frac{\\partial^2 U}{\\partial S \\partial N} \\\\\n2515: \\frac{\\partial^2 U}{\\partial V \\partial S} & \\frac{\\partial^2 U}{\\partial V^2} & \\frac{\\partial^2 U}{\\partial V \\partial N} \\\\\n2516: \\frac{\\partial^2 U}{\\partial N \\partial S} & \\frac{\\partial^2 U}{\\partial N \\partial V} & \\frac{\\partial^2 U}{\\partial N^2}\n2517: \\end{pmatrix}\n2518: $$\n2519: "
+    },
+    {
+      "directive_type": "example",
+      "label": "unlabeled-example-27",
+      "title": "Ideal Gas Weinhold Metric",
+      "start_line": 2521,
+      "end_line": 2535,
+      "header_lines": [
+        2522
+      ],
+      "content_start": 2524,
+      "content_end": 2534,
+      "content": "2524: :class: tip\n2525: \n2526: For an ideal gas with $U = \\frac{3}{2}Nk_BT = \\frac{3}{2}k_B \\frac{U}{C_V}$, the Weinhold metric is:\n2527: \n2528: $$\n2529: g_W = \\begin{pmatrix}\n2530: \\frac{T}{C_V} & 0 & 0 \\\\\n2531: 0 & 0 & 0 \\\\\n2532: 0 & 0 & \\frac{k_B T^2}{N}\n2533: \\end{pmatrix}\n2534: $$",
+      "metadata": {
+        "class": "tip"
+      },
+      "section": "## 5.1 The Weinhold Metric in Energy Representation",
+      "raw_directive": "2521: :::\n2522: \n2523: :::{prf:example} Ideal Gas Weinhold Metric\n2524: :class: tip\n2525: \n2526: For an ideal gas with $U = \\frac{3}{2}Nk_BT = \\frac{3}{2}k_B \\frac{U}{C_V}$, the Weinhold metric is:\n2527: \n2528: $$\n2529: g_W = \\begin{pmatrix}\n2530: \\frac{T}{C_V} & 0 & 0 \\\\\n2531: 0 & 0 & 0 \\\\\n2532: 0 & 0 & \\frac{k_B T^2}{N}\n2533: \\end{pmatrix}\n2534: $$\n2535: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

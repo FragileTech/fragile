@@ -6,7 +6,7 @@ Tests automated directive structure extraction from Jupyter Book MyST markdown.
 
 import pytest
 
-from mathster.directives import extract_directive_hints
+from mathster.directives import extract_directive_hints, split_into_sections
 from mathster.directives.directive_parser import DirectiveHint, extract_jupyter_directives
 
 
@@ -136,3 +136,42 @@ Content.
         assert hint_dict["label"] == "def-test"
         assert "start_line" in hint_dict
         assert "metadata" in hint_dict
+
+
+class TestSplitIntoSectionsGranularity:
+    """Tests for configurable heading scope in split_into_sections."""
+
+    def test_split_by_level_two(self):
+        """Sections split at level-2 headings should include deeper subheadings."""
+        text = """# Chapter 1
+
+## Section 1
+Intro text.
+### Subsection A
+More details.
+
+## Section 2
+Other text.
+"""
+        sections = split_into_sections(text, heading_scope="##")
+        assert [section.title for section in sections] == ["Section 1", "Section 2"]
+        assert "### Subsection A" in sections[0].content
+
+    def test_split_by_level_three(self):
+        """Level-3 splitting should treat level-2 headings as outer context only."""
+        text = """# Chapter
+
+## Major Section
+### Detail A
+Content A.
+### Detail B
+Content B.
+"""
+        sections = split_into_sections(text, heading_scope="###")
+        assert [section.title for section in sections] == ["Detail A", "Detail B"]
+        assert all("## Major Section" not in section.content for section in sections)
+
+    def test_invalid_heading_scope(self):
+        """Non-# heading spec should raise ValueError."""
+        with pytest.raises(ValueError):
+            split_into_sections("# Title", heading_scope="invalid")

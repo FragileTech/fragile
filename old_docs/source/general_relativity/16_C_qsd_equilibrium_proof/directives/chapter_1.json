@@ -1,0 +1,47 @@
+{
+  "chapter_index": 1,
+  "section_id": "## 2. Main Theorem: $J^\\nu$ Vanishes at QSD",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-j-nu-vanishes-qsd",
+      "title": "Energy-Momentum Conservation at QSD",
+      "start_line": 96,
+      "end_line": 114,
+      "header_lines": [
+        97
+      ],
+      "content_start": 99,
+      "content_end": 113,
+      "content": "99: :label: thm-j-nu-vanishes-qsd\n100: \n101: At the quasi-stationary distribution, the energy-momentum source term vanishes:\n102: \n103: $$\n104: J^\\nu[\\mu_{\\text{QSD}}] = 0\n105: $$\n106: \n107: to all orders in the system parameters.\n108: \n109: **Consequence**: The modified Einstein equations $\\nabla_\\mu G^{\\mu\\nu} = \\kappa J^\\nu$ reduce to standard Einstein equations:\n110: \n111: $$\n112: G_{\\mu\\nu} = 8\\pi G T_{\\mu\\nu}\n113: $$",
+      "metadata": {
+        "label": "thm-j-nu-vanishes-qsd"
+      },
+      "section": "## 2. Main Theorem: $J^\\nu$ Vanishes at QSD",
+      "raw_directive": "96: ## 2. Main Theorem: $J^\\nu$ Vanishes at QSD\n97: \n98: :::{prf:theorem} Energy-Momentum Conservation at QSD\n99: :label: thm-j-nu-vanishes-qsd\n100: \n101: At the quasi-stationary distribution, the energy-momentum source term vanishes:\n102: \n103: $$\n104: J^\\nu[\\mu_{\\text{QSD}}] = 0\n105: $$\n106: \n107: to all orders in the system parameters.\n108: \n109: **Consequence**: The modified Einstein equations $\\nabla_\\mu G^{\\mu\\nu} = \\kappa J^\\nu$ reduce to standard Einstein equations:\n110: \n111: $$\n112: G_{\\mu\\nu} = 8\\pi G T_{\\mu\\nu}\n113: $$\n114: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-no-bulk-flow-qsd",
+      "title": "Vanishing Bulk Flow at QSD",
+      "start_line": 208,
+      "end_line": 222,
+      "header_lines": [
+        209
+      ],
+      "content_start": 211,
+      "content_end": 221,
+      "content": "211: :label: thm-no-bulk-flow-qsd\n212: \n213: Under the conditions:\n214: 1. All external forces are potential-derived: $F(x) = -\\nabla U(x)$\n215: 2. No external flow fields: $u_{\\text{ext}}(x) = 0$ in the Langevin dynamics\n216: 3. The system has reached the QSD: $\\partial_t \\mu_{\\text{QSD}} = 0$\n217: \n218: the mean velocity field vanishes everywhere:\n219: \n220: $$\n221: u(x) := \\frac{1}{\\rho(x)} \\int v \\, \\mu_{\\text{QSD}}(x, v) \\, dv = 0 \\quad \\forall x",
+      "metadata": {
+        "label": "thm-no-bulk-flow-qsd"
+      },
+      "section": "## 2. Main Theorem: $J^\\nu$ Vanishes at QSD",
+      "raw_directive": "208: **Proof of vanishing bulk flow**: We now prove this rigorously from the structure of the QSD.\n209: \n210: :::{prf:theorem} Vanishing Bulk Flow at QSD\n211: :label: thm-no-bulk-flow-qsd\n212: \n213: Under the conditions:\n214: 1. All external forces are potential-derived: $F(x) = -\\nabla U(x)$\n215: 2. No external flow fields: $u_{\\text{ext}}(x) = 0$ in the Langevin dynamics\n216: 3. The system has reached the QSD: $\\partial_t \\mu_{\\text{QSD}} = 0$\n217: \n218: the mean velocity field vanishes everywhere:\n219: \n220: $$\n221: u(x) := \\frac{1}{\\rho(x)} \\int v \\, \\mu_{\\text{QSD}}(x, v) \\, dv = 0 \\quad \\forall x\n222: $$"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

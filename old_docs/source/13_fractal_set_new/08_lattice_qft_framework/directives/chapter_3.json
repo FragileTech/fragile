@@ -1,0 +1,47 @@
+{
+  "chapter_index": 3,
+  "section_id": "## 3. Combined CST+IG Lattice Structure",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-fractal-set-simplicial-complex",
+      "title": "Fractal Set as Simplicial Complex",
+      "start_line": 237,
+      "end_line": 268,
+      "header_lines": [
+        238
+      ],
+      "content_start": 240,
+      "content_end": 267,
+      "content": "240: :label: def-fractal-set-simplicial-complex\n241: \n242: **Source:** [13_E_cst_ig_lattice_qft.md \u00a7 3.2, lines 447-478]\n243: \n244: The Fractal Set $\\mathcal{F} = (\\mathcal{E}, E_{\\text{CST}} \\cup E_{\\text{IG}})$ is a **2-dimensional simplicial complex**:\n245: \n246: **0-cells (vertices):** Episodes $e \\in \\mathcal{E}$\n247: \n248: **1-cells (edges):**\n249: - **Timelike edges:** CST edges $e_i \\to e_j$ (directed)\n250: - **Spacelike edges:** IG edges $e_i \\sim e_j$ (undirected)\n251: \n252: **2-cells (faces):** Plaquettes $P$ (alternating CST-IG 4-cycles):\n253: \n254: $$\n255: P = (e_0 \\xrightarrow{\\text{CST}} e_1 \\xrightarrow{\\text{IG}} e_2 \\xrightarrow{\\text{CST}} e_3 \\xrightarrow{\\text{IG}} e_0)\n256: \n257: $$\n258: \n259: **Boundary operator:** For a 2-cell $P = (e_0, e_1, e_2, e_3)$:\n260: \n261: $$\n262: \\partial P = (e_0 \\to e_1) + (e_1 \\sim e_2) + (e_2 \\to e_3) + (e_3 \\sim e_0)\n263: \n264: $$\n265: \n266: **Cohomology:** The cohomology groups $H^k(\\mathcal{F})$ classify topological features:\n267: - $H^0$: Connected components",
+      "metadata": {
+        "label": "def-fractal-set-simplicial-complex"
+      },
+      "section": "## 3. Combined CST+IG Lattice Structure",
+      "raw_directive": "237: ### 3.1. Fractal Set as 2-Complex\n238: \n239: :::{prf:definition} Fractal Set as Simplicial Complex\n240: :label: def-fractal-set-simplicial-complex\n241: \n242: **Source:** [13_E_cst_ig_lattice_qft.md \u00a7 3.2, lines 447-478]\n243: \n244: The Fractal Set $\\mathcal{F} = (\\mathcal{E}, E_{\\text{CST}} \\cup E_{\\text{IG}})$ is a **2-dimensional simplicial complex**:\n245: \n246: **0-cells (vertices):** Episodes $e \\in \\mathcal{E}$\n247: \n248: **1-cells (edges):**\n249: - **Timelike edges:** CST edges $e_i \\to e_j$ (directed)\n250: - **Spacelike edges:** IG edges $e_i \\sim e_j$ (undirected)\n251: \n252: **2-cells (faces):** Plaquettes $P$ (alternating CST-IG 4-cycles):\n253: \n254: $$\n255: P = (e_0 \\xrightarrow{\\text{CST}} e_1 \\xrightarrow{\\text{IG}} e_2 \\xrightarrow{\\text{CST}} e_3 \\xrightarrow{\\text{IG}} e_0)\n256: \n257: $$\n258: \n259: **Boundary operator:** For a 2-cell $P = (e_0, e_1, e_2, e_3)$:\n260: \n261: $$\n262: \\partial P = (e_0 \\to e_1) + (e_1 \\sim e_2) + (e_2 \\to e_3) + (e_3 \\sim e_0)\n263: \n264: $$\n265: \n266: **Cohomology:** The cohomology groups $H^k(\\mathcal{F})$ classify topological features:\n267: - $H^0$: Connected components\n268: - $H^1$: Loops (1-cycles not bounding 2-chains)"
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-paths-wilson-loops",
+      "title": "Paths and Wilson Loops",
+      "start_line": 270,
+      "end_line": 292,
+      "header_lines": [
+        271
+      ],
+      "content_start": 273,
+      "content_end": 291,
+      "content": "273: :label: def-paths-wilson-loops\n274: \n275: **Source:** [13_E_cst_ig_lattice_qft.md \u00a7 3.3, lines 482-520]\n276: \n277: A **path** in $\\mathcal{F}$ is a sequence:\n278: \n279: $$\n280: \\gamma = (e_0, e_1, \\ldots, e_n)\n281: \n282: $$\n283: \n284: where consecutive episodes are connected by either CST edge (timelike step) or IG edge (spacelike step).\n285: \n286: **Path classification:**\n287: 1. **Timelike path:** All edges are CST edges (follows genealogy)\n288: 2. **Spacelike path:** All edges are IG edges (stays within one time slice)\n289: 3. **Mixed path:** Contains both CST and IG edges\n290: \n291: **Closed loop:** A path with $e_n = e_0$ (returns to starting episode).",
+      "metadata": {
+        "label": "def-paths-wilson-loops"
+      },
+      "section": "## 3. Combined CST+IG Lattice Structure",
+      "raw_directive": "270: :::\n271: \n272: :::{prf:definition} Paths and Wilson Loops\n273: :label: def-paths-wilson-loops\n274: \n275: **Source:** [13_E_cst_ig_lattice_qft.md \u00a7 3.3, lines 482-520]\n276: \n277: A **path** in $\\mathcal{F}$ is a sequence:\n278: \n279: $$\n280: \\gamma = (e_0, e_1, \\ldots, e_n)\n281: \n282: $$\n283: \n284: where consecutive episodes are connected by either CST edge (timelike step) or IG edge (spacelike step).\n285: \n286: **Path classification:**\n287: 1. **Timelike path:** All edges are CST edges (follows genealogy)\n288: 2. **Spacelike path:** All edges are IG edges (stays within one time slice)\n289: 3. **Mixed path:** Contains both CST and IG edges\n290: \n291: **Closed loop:** A path with $e_n = e_0$ (returns to starting episode).\n292: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

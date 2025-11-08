@@ -1,0 +1,147 @@
+{
+  "chapter_index": 3,
+  "section_id": "## 3. Information-Theoretic (IG) Perspective",
+  "directive_count": 8,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-bh-horizon-ig-mincut",
+      "title": "Black Hole Horizon as IG Min-Cut",
+      "start_line": 1094,
+      "end_line": 1119,
+      "header_lines": [
+        1095
+      ],
+      "content_start": 1097,
+      "content_end": 1118,
+      "content": "1097: :label: def-bh-horizon-ig-mincut\n1098: \n1099: Let $G_{\\text{IG}} = (V, E, w)$ be the Information Graph where:\n1100: - $V = \\{w_i\\}_{i=1}^N$ is the set of walker states\n1101: - $E = \\{(w_i, w_j) : w_j \\text{ selected } w_i \\text{ as companion}\\}$\n1102: - $w_{ij} = K_\\varepsilon(x_i, x_j)$ is the edge weight (interaction kernel)\n1103: \n1104: Partition the walkers into **interior** $V_{\\text{in}} = \\{w_i : r_i < r_S\\}$ and **exterior** $V_{\\text{out}} = \\{w_i : r_i > r_S\\}$.\n1105: \n1106: The **horizon cut** is the set of edges crossing the boundary:\n1107: \n1108: $$\n1109: \\Gamma_H = \\{(w_i, w_j) \\in E : w_i \\in V_{\\text{in}}, w_j \\in V_{\\text{out}}\\}\n1110: \n1111: $$\n1112: \n1113: The **Bekenstein-Hawking entropy** is the capacity of this cut:\n1114: \n1115: $$\n1116: S_{\\text{BH}} := \\sum_{(i,j) \\in \\Gamma_H} w_{ij}\n1117: \n1118: $$",
+      "metadata": {
+        "label": "def-bh-horizon-ig-mincut"
+      },
+      "section": "## 3. Information-Theoretic (IG) Perspective",
+      "raw_directive": "1094: **Key Insight**: The IG is constructed from companion selection during cloning. Edge weights represent mutual information between walker states. A black hole horizon corresponds to a **min-cut** separating interior from exterior with minimal information flow.\n1095: \n1096: :::{prf:definition} Black Hole Horizon as IG Min-Cut\n1097: :label: def-bh-horizon-ig-mincut\n1098: \n1099: Let $G_{\\text{IG}} = (V, E, w)$ be the Information Graph where:\n1100: - $V = \\{w_i\\}_{i=1}^N$ is the set of walker states\n1101: - $E = \\{(w_i, w_j) : w_j \\text{ selected } w_i \\text{ as companion}\\}$\n1102: - $w_{ij} = K_\\varepsilon(x_i, x_j)$ is the edge weight (interaction kernel)\n1103: \n1104: Partition the walkers into **interior** $V_{\\text{in}} = \\{w_i : r_i < r_S\\}$ and **exterior** $V_{\\text{out}} = \\{w_i : r_i > r_S\\}$.\n1105: \n1106: The **horizon cut** is the set of edges crossing the boundary:\n1107: \n1108: $$\n1109: \\Gamma_H = \\{(w_i, w_j) \\in E : w_i \\in V_{\\text{in}}, w_j \\in V_{\\text{out}}\\}\n1110: \n1111: $$\n1112: \n1113: The **Bekenstein-Hawking entropy** is the capacity of this cut:\n1114: \n1115: $$\n1116: S_{\\text{BH}} := \\sum_{(i,j) \\in \\Gamma_H} w_{ij}\n1117: \n1118: $$\n1119: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-bh-bekenstein-hawking",
+      "title": "Bekenstein-Hawking Entropy from IG Min-Cut",
+      "start_line": 1121,
+      "end_line": 1142,
+      "header_lines": [
+        1122
+      ],
+      "content_start": 1124,
+      "content_end": 1141,
+      "content": "1124: :label: thm-bh-bekenstein-hawking\n1125: \n1126: For a Schwarzschild black hole QSD, the entropy defined by the IG horizon cut ({prf:ref}`def-bh-horizon-ig-mincut`) satisfies:\n1127: \n1128: $$\n1129: \\boxed{S_{\\text{BH}} = \\frac{A_H}{4G_N}}\n1130: \n1131: $$\n1132: \n1133: where:\n1134: - $A_H = 4\\pi r_S^2$ is the horizon area\n1135: - $G_N$ is Newton's gravitational constant\n1136: - $r_S = 2GM/c^2$ is the Schwarzschild radius\n1137: \n1138: This is the **Bekenstein-Hawking formula**, proven as a rigorous theorem from IG structure.\n1139: \n1140: **Proof method**:\n1141: 1. Show horizon cut is minimal by \u0393-convergence of nonlocal perimeter functional ({prf:ref}`thm-gamma-convergence-holography`)",
+      "metadata": {
+        "label": "thm-bh-bekenstein-hawking"
+      },
+      "section": "## 3. Information-Theoretic (IG) Perspective",
+      "raw_directive": "1121: :::\n1122: \n1123: :::{prf:theorem} Bekenstein-Hawking Entropy from IG Min-Cut\n1124: :label: thm-bh-bekenstein-hawking\n1125: \n1126: For a Schwarzschild black hole QSD, the entropy defined by the IG horizon cut ({prf:ref}`def-bh-horizon-ig-mincut`) satisfies:\n1127: \n1128: $$\n1129: \\boxed{S_{\\text{BH}} = \\frac{A_H}{4G_N}}\n1130: \n1131: $$\n1132: \n1133: where:\n1134: - $A_H = 4\\pi r_S^2$ is the horizon area\n1135: - $G_N$ is Newton's gravitational constant\n1136: - $r_S = 2GM/c^2$ is the Schwarzschild radius\n1137: \n1138: This is the **Bekenstein-Hawking formula**, proven as a rigorous theorem from IG structure.\n1139: \n1140: **Proof method**:\n1141: 1. Show horizon cut is minimal by \u0393-convergence of nonlocal perimeter functional ({prf:ref}`thm-gamma-convergence-holography`)\n1142: 2. Apply area law from CST antichain correspondence ({prf:ref}`thm-area-law-holography`)"
+    },
+    {
+      "directive_type": "proof",
+      "label": "lem-bh-nonlocal-isoperimetric",
+      "title": null,
+      "start_line": 1144,
+      "end_line": 1174,
+      "header_lines": [
+        1163
+      ],
+      "content_start": 1146,
+      "content_end": 1173,
+      "content": "1146: :::{prf:proof}\n1147: \n1148: **Step 1: IG min-cut from nonlocal isoperimetric inequality**\n1149: \n1150: From {prf:ref}`def-nonlocal-perimeter` ({doc}`../13_fractal_set_new/12_holography`), the expected IG cut capacity is:\n1151: \n1152: $$\n1153: \\mathbb{E}[S_{\\text{IG}}(B_H)] = \\inf_{B \\sim B_H} \\mathcal{P}_\\varepsilon(B)\n1154: \n1155: $$\n1156: \n1157: where the **nonlocal perimeter** is:\n1158: \n1159: $$\n1160: \\mathcal{P}_\\varepsilon(B_H) = \\iint_{B_H \\times B_H^c} K_\\varepsilon(x, y) \\rho(x) \\rho(y) dx dy\n1161: \n1162: $$\n1163: \n1164: :::{prf:lemma} Nonlocal Isoperimetric Inequality for Spherical Domains\n1165: :label: lem-bh-nonlocal-isoperimetric\n1166: \n1167: For a Schwarzschild black hole QSD with spherically symmetric density $\\rho(r)$ and isotropic kernel $K_\\varepsilon(x, y) = K_\\varepsilon(\\|x-y\\|)$, the sphere $B_H = \\{x : \\|x\\| \\leq r_S\\}$ is the unique minimizer of the nonlocal perimeter among all sets with volume $V_H = (4/3)\\pi r_S^3$.\n1168: \n1169: **Proof**: By Steiner symmetrization (Baernstein & Taylor, Ann. Math. 1976), nonlocal perimeter functionals with radial kernels are minimized by spheres among sets of fixed volume. Specifically:\n1170: \n1171: 1. **Symmetrization**: For any set $B$ with volume $V_H$, the Steiner rearrangement $B^*$ (sphere of radius $r_S$) satisfies $\\mathcal{P}_\\varepsilon(B^*) \\leq \\mathcal{P}_\\varepsilon(B)$\n1172: 2. **Spherical case**: For spherically symmetric $\\rho$ and radial $K_\\varepsilon$, the functional $\\mathcal{P}_\\varepsilon$ decomposes into radial integrals\n1173: 3. **Uniqueness**: Equality holds only for $B = B^*$ (spheres)",
+      "metadata": {
+        "label": "lem-bh-nonlocal-isoperimetric"
+      },
+      "section": "## 3. Information-Theoretic (IG) Perspective",
+      "raw_directive": "1144: :::\n1145: \n1146: :::{prf:proof}\n1147: \n1148: **Step 1: IG min-cut from nonlocal isoperimetric inequality**\n1149: \n1150: From {prf:ref}`def-nonlocal-perimeter` ({doc}`../13_fractal_set_new/12_holography`), the expected IG cut capacity is:\n1151: \n1152: $$\n1153: \\mathbb{E}[S_{\\text{IG}}(B_H)] = \\inf_{B \\sim B_H} \\mathcal{P}_\\varepsilon(B)\n1154: \n1155: $$\n1156: \n1157: where the **nonlocal perimeter** is:\n1158: \n1159: $$\n1160: \\mathcal{P}_\\varepsilon(B_H) = \\iint_{B_H \\times B_H^c} K_\\varepsilon(x, y) \\rho(x) \\rho(y) dx dy\n1161: \n1162: $$\n1163: \n1164: :::{prf:lemma} Nonlocal Isoperimetric Inequality for Spherical Domains\n1165: :label: lem-bh-nonlocal-isoperimetric\n1166: \n1167: For a Schwarzschild black hole QSD with spherically symmetric density $\\rho(r)$ and isotropic kernel $K_\\varepsilon(x, y) = K_\\varepsilon(\\|x-y\\|)$, the sphere $B_H = \\{x : \\|x\\| \\leq r_S\\}$ is the unique minimizer of the nonlocal perimeter among all sets with volume $V_H = (4/3)\\pi r_S^3$.\n1168: \n1169: **Proof**: By Steiner symmetrization (Baernstein & Taylor, Ann. Math. 1976), nonlocal perimeter functionals with radial kernels are minimized by spheres among sets of fixed volume. Specifically:\n1170: \n1171: 1. **Symmetrization**: For any set $B$ with volume $V_H$, the Steiner rearrangement $B^*$ (sphere of radius $r_S$) satisfies $\\mathcal{P}_\\varepsilon(B^*) \\leq \\mathcal{P}_\\varepsilon(B)$\n1172: 2. **Spherical case**: For spherically symmetric $\\rho$ and radial $K_\\varepsilon$, the functional $\\mathcal{P}_\\varepsilon$ decomposes into radial integrals\n1173: 3. **Uniqueness**: Equality holds only for $B = B^*$ (spheres)\n1174: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-bh-information-conservation",
+      "title": "Black Hole Information Conservation",
+      "start_line": 1247,
+      "end_line": 1274,
+      "header_lines": [
+        1248
+      ],
+      "content_start": 1250,
+      "content_end": 1273,
+      "content": "1250: :label: thm-bh-information-conservation\n1251: \n1252: **Claim**: Information falling into a black hole is **not lost**\u2014it is encoded in the IG structure and recoverable from Hawking radiation.\n1253: \n1254: **Mechanisms**:\n1255: \n1256: **1. CST Records All Histories**:\n1257: Every walker that crosses the horizon leaves a causal record in the CST. The episode $(t_{\\text{cross}}, x_{\\text{horizon}})$ remains in the CST forever, causally connected to future episodes.\n1258: \n1259: **2. IG Correlations Persist**:\n1260: When a walker $w_i$ crosses the horizon, its IG edges to exterior walkers $\\{w_j : r_j > r_S\\}$ remain in the graph (with exponentially decaying weights as $r_j$ increases). These edges encode the quantum state of $w_i$ holographically.\n1261: \n1262: **3. Hawking Radiation Entanglement**:\n1263: Hawking radiation (Section 7) consists of walker pairs created near the horizon:\n1264: - One partner crosses into interior (negative energy, absorbed)\n1265: - Other partner escapes to exterior (positive energy, observed radiation)\n1266: \n1267: These pairs are **entangled** via IG edges. The exterior radiation carries correlations with interior, allowing state reconstruction.\n1268: \n1269: **4. Page Curve and Unitarity** (Section 9):\n1270: The entanglement entropy between interior and exterior Hawking radiation follows the **Page curve**:\n1271: - Initially grows linearly with time (radiation accumulates)\n1272: - Peaks at $S_{\\text{max}} = A_H/(4G_N)$ (horizon entropy)\n1273: - Decreases as black hole evaporates (unitarity restored)",
+      "metadata": {
+        "label": "thm-bh-information-conservation"
+      },
+      "section": "## 3. Information-Theoretic (IG) Perspective",
+      "raw_directive": "1247: ### 3.2. Holographic Encoding and Information Paradox\n1248: \n1249: :::{prf:theorem} Black Hole Information Conservation\n1250: :label: thm-bh-information-conservation\n1251: \n1252: **Claim**: Information falling into a black hole is **not lost**\u2014it is encoded in the IG structure and recoverable from Hawking radiation.\n1253: \n1254: **Mechanisms**:\n1255: \n1256: **1. CST Records All Histories**:\n1257: Every walker that crosses the horizon leaves a causal record in the CST. The episode $(t_{\\text{cross}}, x_{\\text{horizon}})$ remains in the CST forever, causally connected to future episodes.\n1258: \n1259: **2. IG Correlations Persist**:\n1260: When a walker $w_i$ crosses the horizon, its IG edges to exterior walkers $\\{w_j : r_j > r_S\\}$ remain in the graph (with exponentially decaying weights as $r_j$ increases). These edges encode the quantum state of $w_i$ holographically.\n1261: \n1262: **3. Hawking Radiation Entanglement**:\n1263: Hawking radiation (Section 7) consists of walker pairs created near the horizon:\n1264: - One partner crosses into interior (negative energy, absorbed)\n1265: - Other partner escapes to exterior (positive energy, observed radiation)\n1266: \n1267: These pairs are **entangled** via IG edges. The exterior radiation carries correlations with interior, allowing state reconstruction.\n1268: \n1269: **4. Page Curve and Unitarity** (Section 9):\n1270: The entanglement entropy between interior and exterior Hawking radiation follows the **Page curve**:\n1271: - Initially grows linearly with time (radiation accumulates)\n1272: - Peaks at $S_{\\text{max}} = A_H/(4G_N)$ (horizon entropy)\n1273: - Decreases as black hole evaporates (unitarity restored)\n1274: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-189",
+      "title": null,
+      "start_line": 1276,
+      "end_line": 1356,
+      "header_lines": [],
+      "content_start": 1278,
+      "content_end": 1355,
+      "content": "1278: :::{prf:proof}\n1279: \n1280: **Step 1: CST is deterministic and reversible**\n1281: \n1282: The CST construction from {doc}`../13_fractal_set_new/01_fractal_set` is **one-to-one**: each episode has a unique parent (except initial generation). Given the full CST at time $T$, we can reconstruct the entire history back to $t=0$ by tracing parent pointers.\n1283: \n1284: When a walker crosses the horizon at $t_{\\text{cross}}$, this event is recorded as an episode $e_{\\text{cross}} \\in \\mathcal{E}$. All future events inside the black hole are descendants of $e_{\\text{cross}}$ and connected via CST edges. Therefore, the information about the walker's initial state is **preserved in the CST topology**.\n1285: \n1286: **Step 2: IG edges as quantum correlations**\n1287: \n1288: From {prf:ref}`def-ig-construction` ({doc}`../13_fractal_set_new/08_lattice_qft_framework`), an IG edge between $w_i$ and $w_j$ represents:\n1289: \n1290: $$\n1291: w_{ij} = K_\\varepsilon(x_i, x_j) = C_0 V_{\\text{fit}}(x_i) V_{\\text{fit}}(x_j) \\exp\\left(-\\frac{\\|x_i - x_j\\|^2}{2\\varepsilon_c^2}\\right)\n1292: \n1293: $$\n1294: \n1295: When $w_i$ crosses the horizon ($r_i < r_S$) and $w_j$ remains outside ($r_j > r_S$), the edge weight decays exponentially:\n1296: \n1297: $$\n1298: w_{ij} \\propto \\exp\\left(-\\frac{(r_j - r_S)^2}{2\\varepsilon_c^2}\\right)\n1299: \n1300: $$\n1301: \n1302: But for $r_j \\approx r_S$ (near-horizon exterior walkers), $w_{ij}$ remains $O(1)$. These edges encode **entanglement** between interior and near-horizon exterior.\n1303: \n1304: **Step 3: Hawking pair creation and entanglement**\n1305: \n1306: Hawking radiation arises from **pair creation at the horizon** (detailed derivation in Section 7). The Langevin noise $\\xi(t)$ creates virtual pairs:\n1307: \n1308: $$\n1309: w_{\\text{vacuum}} \\xrightarrow{\\text{noise}} (w_{\\text{in}}, w_{\\text{out}})\n1310: \n1311: $$\n1312: \n1313: with $w_{\\text{in}}$ having negative energy (relative to horizon) and $w_{\\text{out}}$ positive energy.\n1314: \n1315: These pairs are created via the **cloning operator** with correlated noise, so they share an IG edge:\n1316: \n1317: $$\n1318: w_{\\text{in}} \\leftrightarrow w_{\\text{out}} \\quad \\text{(IG edge)}\n1319: \n1320: $$\n1321: \n1322: As $w_{\\text{out}}$ escapes to infinity, this edge stretches, maintaining entanglement entropy $S_{\\text{ent}} = \\ln(w_{\\text{in,out}})$.\n1323: \n1324: **Step 4: Page curve from IG entropy (heuristic derivation)**\n1325: \n1326: The **Page curve** is the entanglement entropy $S_{\\text{ent}}(t)$ between the black hole interior and the Hawking radiation collected up to time $t$.\n1327: \n1328: From the IG, this is computed as the **cut capacity** between interior and radiation:\n1329: \n1330: $$\n1331: S_{\\text{ent}}(t) = \\sum_{\\substack{w_i \\in V_{\\text{in}}(t) \\\\ w_j \\in V_{\\text{rad}}(t)}} w_{ij}\n1332: \n1333: $$\n1334: \n1335: where $V_{\\text{in}}(t)$ is the interior walker population at time $t$ and $V_{\\text{rad}}(t)$ is the accumulated Hawking radiation.\n1336: \n1337: :::{important}\n1338: **Heuristic vs. Rigorous Status**\n1339: \n1340: This argument is **heuristic** and identifies the key mechanism but does not constitute a complete proof. A fully rigorous derivation requires:\n1341: \n1342: **What's established**:\n1343: 1. The IG cut capacity $S_{\\text{ent}}(t)$ correctly measures entanglement entropy between regions\n1344: 2. Hawking radiation creates entangled pairs with interior walkers\n1345: 3. The IG graph structure preserves information (CST records all causal history)\n1346: \n1347: **What requires further work**:\n1348: 1. **Time evolution of cut capacity**: Solve the coupled dynamics of $|V_{\\text{in}}(t)|$, $|V_{\\text{rad}}(t)|$, and edge weights $w_{ij}(t)$ as the black hole evaporates\n1349: 2. **Dominant replica contribution**: Adapt replica trick from holographic calculations (Penington 2020, Almheiri et al. 2020) to show island contribution dominates at late times\n1350: 3. **Quantitative prediction**: Compute $t_{\\text{Page}}$ and $S_{\\text{max}}$ from framework parameters\n1351: \n1352: **Literature support**: The mechanism we describe matches the modern resolution (Penington, Almheiri-Engelhardt-Marolf-Maxfield 2020):\n1353: - **Early times**: Hawking's original calculation (no interior correlations) \u2192 $S \\sim t$\n1354: - **Page time**: Island formula kicks in when black hole entropy equals radiation entropy\n1355: - **Late times**: Island dominates, entropy decreases \u2192 $S \\to 0$",
+      "metadata": {},
+      "section": "## 3. Information-Theoretic (IG) Perspective",
+      "raw_directive": "1276: :::\n1277: \n1278: :::{prf:proof}\n1279: \n1280: **Step 1: CST is deterministic and reversible**\n1281: \n1282: The CST construction from {doc}`../13_fractal_set_new/01_fractal_set` is **one-to-one**: each episode has a unique parent (except initial generation). Given the full CST at time $T$, we can reconstruct the entire history back to $t=0$ by tracing parent pointers.\n1283: \n1284: When a walker crosses the horizon at $t_{\\text{cross}}$, this event is recorded as an episode $e_{\\text{cross}} \\in \\mathcal{E}$. All future events inside the black hole are descendants of $e_{\\text{cross}}$ and connected via CST edges. Therefore, the information about the walker's initial state is **preserved in the CST topology**.\n1285: \n1286: **Step 2: IG edges as quantum correlations**\n1287: \n1288: From {prf:ref}`def-ig-construction` ({doc}`../13_fractal_set_new/08_lattice_qft_framework`), an IG edge between $w_i$ and $w_j$ represents:\n1289: \n1290: $$\n1291: w_{ij} = K_\\varepsilon(x_i, x_j) = C_0 V_{\\text{fit}}(x_i) V_{\\text{fit}}(x_j) \\exp\\left(-\\frac{\\|x_i - x_j\\|^2}{2\\varepsilon_c^2}\\right)\n1292: \n1293: $$\n1294: \n1295: When $w_i$ crosses the horizon ($r_i < r_S$) and $w_j$ remains outside ($r_j > r_S$), the edge weight decays exponentially:\n1296: \n1297: $$\n1298: w_{ij} \\propto \\exp\\left(-\\frac{(r_j - r_S)^2}{2\\varepsilon_c^2}\\right)\n1299: \n1300: $$\n1301: \n1302: But for $r_j \\approx r_S$ (near-horizon exterior walkers), $w_{ij}$ remains $O(1)$. These edges encode **entanglement** between interior and near-horizon exterior.\n1303: \n1304: **Step 3: Hawking pair creation and entanglement**\n1305: \n1306: Hawking radiation arises from **pair creation at the horizon** (detailed derivation in Section 7). The Langevin noise $\\xi(t)$ creates virtual pairs:\n1307: \n1308: $$\n1309: w_{\\text{vacuum}} \\xrightarrow{\\text{noise}} (w_{\\text{in}}, w_{\\text{out}})\n1310: \n1311: $$\n1312: \n1313: with $w_{\\text{in}}$ having negative energy (relative to horizon) and $w_{\\text{out}}$ positive energy.\n1314: \n1315: These pairs are created via the **cloning operator** with correlated noise, so they share an IG edge:\n1316: \n1317: $$\n1318: w_{\\text{in}} \\leftrightarrow w_{\\text{out}} \\quad \\text{(IG edge)}\n1319: \n1320: $$\n1321: \n1322: As $w_{\\text{out}}$ escapes to infinity, this edge stretches, maintaining entanglement entropy $S_{\\text{ent}} = \\ln(w_{\\text{in,out}})$.\n1323: \n1324: **Step 4: Page curve from IG entropy (heuristic derivation)**\n1325: \n1326: The **Page curve** is the entanglement entropy $S_{\\text{ent}}(t)$ between the black hole interior and the Hawking radiation collected up to time $t$.\n1327: \n1328: From the IG, this is computed as the **cut capacity** between interior and radiation:\n1329: \n1330: $$\n1331: S_{\\text{ent}}(t) = \\sum_{\\substack{w_i \\in V_{\\text{in}}(t) \\\\ w_j \\in V_{\\text{rad}}(t)}} w_{ij}\n1332: \n1333: $$\n1334: \n1335: where $V_{\\text{in}}(t)$ is the interior walker population at time $t$ and $V_{\\text{rad}}(t)$ is the accumulated Hawking radiation.\n1336: \n1337: :::{important}\n1338: **Heuristic vs. Rigorous Status**\n1339: \n1340: This argument is **heuristic** and identifies the key mechanism but does not constitute a complete proof. A fully rigorous derivation requires:\n1341: \n1342: **What's established**:\n1343: 1. The IG cut capacity $S_{\\text{ent}}(t)$ correctly measures entanglement entropy between regions\n1344: 2. Hawking radiation creates entangled pairs with interior walkers\n1345: 3. The IG graph structure preserves information (CST records all causal history)\n1346: \n1347: **What requires further work**:\n1348: 1. **Time evolution of cut capacity**: Solve the coupled dynamics of $|V_{\\text{in}}(t)|$, $|V_{\\text{rad}}(t)|$, and edge weights $w_{ij}(t)$ as the black hole evaporates\n1349: 2. **Dominant replica contribution**: Adapt replica trick from holographic calculations (Penington 2020, Almheiri et al. 2020) to show island contribution dominates at late times\n1350: 3. **Quantitative prediction**: Compute $t_{\\text{Page}}$ and $S_{\\text{max}}$ from framework parameters\n1351: \n1352: **Literature support**: The mechanism we describe matches the modern resolution (Penington, Almheiri-Engelhardt-Marolf-Maxfield 2020):\n1353: - **Early times**: Hawking's original calculation (no interior correlations) \u2192 $S \\sim t$\n1354: - **Page time**: Island formula kicks in when black hole entropy equals radiation entropy\n1355: - **Late times**: Island dominates, entropy decreases \u2192 $S \\to 0$\n1356: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-bh-ig-capacity-saturation",
+      "title": "IG Information Capacity Saturation Criterion",
+      "start_line": 1383,
+      "end_line": 1414,
+      "header_lines": [
+        1384
+      ],
+      "content_start": 1386,
+      "content_end": 1413,
+      "content": "1386: :label: thm-bh-ig-capacity-saturation\n1387: \n1388: A localized mass distribution with total mass $M$ within radius $R$ forms a black hole when the **IG information capacity** saturates the **Bekenstein bound**:\n1389: \n1390: $$\n1391: C_{\\text{IG}}(M, R) \\geq C_{\\text{Bekenstein}}(M, R)\n1392: \n1393: $$\n1394: \n1395: where:\n1396: \n1397: **IG Capacity**:\n1398: \n1399: $$\n1400: C_{\\text{IG}}(M, R) = \\sum_{\\substack{i,j=1 \\\\ i<j}}^N K_\\varepsilon(x_i, x_j) \\sim N^2 \\langle K_\\varepsilon \\rangle\n1401: \n1402: $$\n1403: \n1404: for $N = M/m$ particles within volume $V = (4/3)\\pi R^3$.\n1405: \n1406: **Bekenstein Bound**:\n1407: \n1408: $$\n1409: C_{\\text{Bekenstein}}(M, R) = \\frac{2\\pi k_B c}{\\hbar} M R\n1410: \n1411: $$\n1412: \n1413: **Threshold Condition**: When $C_{\\text{IG}} = C_{\\text{Bekenstein}}$, the system is at **marginal stability**\u2014the critical point between stable matter and black hole.",
+      "metadata": {
+        "label": "thm-bh-ig-capacity-saturation"
+      },
+      "section": "## 3. Information-Theoretic (IG) Perspective",
+      "raw_directive": "1383: The IG perspective provides a natural **information-theoretic criterion** for black hole formation, connecting to the Chandrasekhar limit derived in Section 6.4.\n1384: \n1385: :::{prf:theorem} IG Information Capacity Saturation Criterion\n1386: :label: thm-bh-ig-capacity-saturation\n1387: \n1388: A localized mass distribution with total mass $M$ within radius $R$ forms a black hole when the **IG information capacity** saturates the **Bekenstein bound**:\n1389: \n1390: $$\n1391: C_{\\text{IG}}(M, R) \\geq C_{\\text{Bekenstein}}(M, R)\n1392: \n1393: $$\n1394: \n1395: where:\n1396: \n1397: **IG Capacity**:\n1398: \n1399: $$\n1400: C_{\\text{IG}}(M, R) = \\sum_{\\substack{i,j=1 \\\\ i<j}}^N K_\\varepsilon(x_i, x_j) \\sim N^2 \\langle K_\\varepsilon \\rangle\n1401: \n1402: $$\n1403: \n1404: for $N = M/m$ particles within volume $V = (4/3)\\pi R^3$.\n1405: \n1406: **Bekenstein Bound**:\n1407: \n1408: $$\n1409: C_{\\text{Bekenstein}}(M, R) = \\frac{2\\pi k_B c}{\\hbar} M R\n1410: \n1411: $$\n1412: \n1413: **Threshold Condition**: When $C_{\\text{IG}} = C_{\\text{Bekenstein}}$, the system is at **marginal stability**\u2014the critical point between stable matter and black hole.\n1414: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-329",
+      "title": null,
+      "start_line": 1416,
+      "end_line": 1422,
+      "header_lines": [],
+      "content_start": 1418,
+      "content_end": 1421,
+      "content": "1418: :::{prf:proof}\n1419: \n1420: **Step 1: IG capacity scaling with density**\n1421: ",
+      "metadata": {},
+      "section": "## 3. Information-Theoretic (IG) Perspective",
+      "raw_directive": "1416: :::\n1417: \n1418: :::{prf:proof}\n1419: \n1420: **Step 1: IG capacity scaling with density**\n1421: \n1422: :::{note}"
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-bh-exponential-bound",
+      "title": "Exponential Suppression Bound for Degenerate Matter",
+      "start_line": 1463,
+      "end_line": 1488,
+      "header_lines": [
+        1464
+      ],
+      "content_start": 1466,
+      "content_end": 1487,
+      "content": "1466: :label: lem-bh-exponential-bound\n1467: \n1468: For a degenerate gas with density $\\rho$ and walker mass $m$, the average IG edge weight satisfies:\n1469: \n1470: $$\n1471: \\left|1 - \\exp\\left(-\\frac{(m/\\rho)^{2/3}}{2\\varepsilon_c^2}\\right)\\right| \\leq \\frac{(m/\\rho)^{2/3}}{2\\varepsilon_c^2}\n1472: \n1473: $$\n1474: \n1475: for all $\\rho > 0$.\n1476: \n1477: In the high-density limit $\\rho \\geq \\rho_{\\text{crit}}$ where:\n1478: \n1479: $$\n1480: \\rho_{\\text{crit}} := m \\left(2\\varepsilon_c^2 \\delta\\right)^{-3/2}\n1481: \n1482: $$\n1483: \n1484: for prescribed tolerance $\\delta > 0$, we have the rigorous bound:\n1485: \n1486: $$\n1487: 1 - \\delta \\leq \\exp\\left(-\\frac{(m/\\rho)^{2/3}}{2\\varepsilon_c^2}\\right) \\leq 1",
+      "metadata": {
+        "label": "lem-bh-exponential-bound"
+      },
+      "section": "## 3. Information-Theoretic (IG) Perspective",
+      "raw_directive": "1463: We now rigorously bound the exponential factor in the high-density regime.\n1464: \n1465: :::{prf:lemma} Exponential Suppression Bound for Degenerate Matter\n1466: :label: lem-bh-exponential-bound\n1467: \n1468: For a degenerate gas with density $\\rho$ and walker mass $m$, the average IG edge weight satisfies:\n1469: \n1470: $$\n1471: \\left|1 - \\exp\\left(-\\frac{(m/\\rho)^{2/3}}{2\\varepsilon_c^2}\\right)\\right| \\leq \\frac{(m/\\rho)^{2/3}}{2\\varepsilon_c^2}\n1472: \n1473: $$\n1474: \n1475: for all $\\rho > 0$.\n1476: \n1477: In the high-density limit $\\rho \\geq \\rho_{\\text{crit}}$ where:\n1478: \n1479: $$\n1480: \\rho_{\\text{crit}} := m \\left(2\\varepsilon_c^2 \\delta\\right)^{-3/2}\n1481: \n1482: $$\n1483: \n1484: for prescribed tolerance $\\delta > 0$, we have the rigorous bound:\n1485: \n1486: $$\n1487: 1 - \\delta \\leq \\exp\\left(-\\frac{(m/\\rho)^{2/3}}{2\\varepsilon_c^2}\\right) \\leq 1\n1488: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

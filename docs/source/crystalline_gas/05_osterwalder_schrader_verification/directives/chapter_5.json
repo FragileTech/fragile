@@ -1,0 +1,43 @@
+{
+  "chapter_index": 5,
+  "section_id": "## OS3: Symmetry (Permutation Invariance)",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-os3-permutation-symmetry",
+      "title": "OS3: Permutation Symmetry for Crystalline Gas",
+      "start_line": 972,
+      "end_line": 992,
+      "header_lines": [
+        973
+      ],
+      "content_start": 975,
+      "content_end": 991,
+      "content": "975: :label: thm-os3-permutation-symmetry\n976: \n977: For any permutation $\\sigma \\in S_n$ and field insertions with identical Lorentz and gauge indices:\n978: \n979: $$\n980: \\mathcal{S}_n(x_{\\sigma(1)}, \\ldots, x_{\\sigma(n)}) = \\mathcal{S}_n(x_1, \\ldots, x_n)\n981: $$\n982: \n983: More generally, for gauge fields with different indices:\n984: \n985: $$\n986: \\mathcal{S}_n\\left(A_{\\mu_1}^{a_1}(x_1), \\ldots, A_{\\mu_n}^{a_n}(x_n)\\right)\n987: $$\n988: \n989: is symmetric under permutations $\\sigma$ that preserve the index structure:\n990: \n991: $$",
+      "metadata": {
+        "label": "thm-os3-permutation-symmetry"
+      },
+      "section": "## OS3: Symmetry (Permutation Invariance)",
+      "raw_directive": "972: The symmetry axiom states that Schwinger functions are symmetric under permutation of identical field insertions. This is essentially trivial for bosonic gauge fields.\n973: \n974: :::{prf:theorem} OS3: Permutation Symmetry for Crystalline Gas\n975: :label: thm-os3-permutation-symmetry\n976: \n977: For any permutation $\\sigma \\in S_n$ and field insertions with identical Lorentz and gauge indices:\n978: \n979: $$\n980: \\mathcal{S}_n(x_{\\sigma(1)}, \\ldots, x_{\\sigma(n)}) = \\mathcal{S}_n(x_1, \\ldots, x_n)\n981: $$\n982: \n983: More generally, for gauge fields with different indices:\n984: \n985: $$\n986: \\mathcal{S}_n\\left(A_{\\mu_1}^{a_1}(x_1), \\ldots, A_{\\mu_n}^{a_n}(x_n)\\right)\n987: $$\n988: \n989: is symmetric under permutations $\\sigma$ that preserve the index structure:\n990: \n991: $$\n992: (\\mu_{\\sigma(j)}, a_{\\sigma(j)}, x_{\\sigma(j)}) = (\\mu_j, a_j, x_j)"
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-25",
+      "title": null,
+      "start_line": 994,
+      "end_line": 1025,
+      "header_lines": [],
+      "content_start": 996,
+      "content_end": 1024,
+      "content": "996: :::{prf:proof}\n997: \n998: **Step 1: Gauge fields are bosonic.**\n999: \n1000: Yang-Mills gauge fields are **bosonic** - they commute at spacelike separations in the quantized theory. In the Euclidean formulation, this means the field operators have no preferred ordering.\n1001: \n1002: **Step 2: Integration is symmetric.**\n1003: \n1004: The Schwinger function is defined as:\n1005: \n1006: $$\n1007: \\mathcal{S}_n(x_1, \\ldots, x_n) = \\int_{\\Sigma_N} \\prod_{j=1}^{n} A_{\\mu_j}^{a_j}(x_j) \\, d\\pi_{\\text{QSD}}(\\mathcal{S})\n1008: $$\n1009: \n1010: The product $\\prod_{j=1}^{n} A_{\\mu_j}^{a_j}(x_j)$ is a commutative product of real numbers (for each fixed configuration $\\mathcal{S}$), hence:\n1011: \n1012: $$\n1013: \\prod_{j=1}^{n} A_{\\mu_j}^{a_j}(x_j) = \\prod_{j=1}^{n} A_{\\mu_{\\sigma(j)}}^{a_{\\sigma(j)}}(x_{\\sigma(j)})\n1014: $$\n1015: \n1016: for any permutation $\\sigma$.\n1017: \n1018: **Step 3: Conclude.**\n1019: \n1020: Integrating both sides against $\\pi_{\\text{QSD}}$:\n1021: \n1022: $$\n1023: \\mathcal{S}_n(x_1, \\ldots, x_n) = \\mathcal{S}_n(x_{\\sigma(1)}, \\ldots, x_{\\sigma(n)})\n1024: $$",
+      "metadata": {},
+      "section": "## OS3: Symmetry (Permutation Invariance)",
+      "raw_directive": "994: :::\n995: \n996: :::{prf:proof}\n997: \n998: **Step 1: Gauge fields are bosonic.**\n999: \n1000: Yang-Mills gauge fields are **bosonic** - they commute at spacelike separations in the quantized theory. In the Euclidean formulation, this means the field operators have no preferred ordering.\n1001: \n1002: **Step 2: Integration is symmetric.**\n1003: \n1004: The Schwinger function is defined as:\n1005: \n1006: $$\n1007: \\mathcal{S}_n(x_1, \\ldots, x_n) = \\int_{\\Sigma_N} \\prod_{j=1}^{n} A_{\\mu_j}^{a_j}(x_j) \\, d\\pi_{\\text{QSD}}(\\mathcal{S})\n1008: $$\n1009: \n1010: The product $\\prod_{j=1}^{n} A_{\\mu_j}^{a_j}(x_j)$ is a commutative product of real numbers (for each fixed configuration $\\mathcal{S}$), hence:\n1011: \n1012: $$\n1013: \\prod_{j=1}^{n} A_{\\mu_j}^{a_j}(x_j) = \\prod_{j=1}^{n} A_{\\mu_{\\sigma(j)}}^{a_{\\sigma(j)}}(x_{\\sigma(j)})\n1014: $$\n1015: \n1016: for any permutation $\\sigma$.\n1017: \n1018: **Step 3: Conclude.**\n1019: \n1020: Integrating both sides against $\\pi_{\\text{QSD}}$:\n1021: \n1022: $$\n1023: \\mathcal{S}_n(x_1, \\ldots, x_n) = \\mathcal{S}_n(x_{\\sigma(1)}, \\ldots, x_{\\sigma(n)})\n1024: $$\n1025: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

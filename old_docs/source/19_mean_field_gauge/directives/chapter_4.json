@@ -1,0 +1,165 @@
+{
+  "chapter_index": 4,
+  "section_id": "## 4. Indistinguishability and the S_N \u2192 \u221e Limit",
+  "directive_count": 9,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-sn-symmetry-n-particle",
+      "title": "S_N Permutation Symmetry (N-Particle)",
+      "start_line": 668,
+      "end_line": 680,
+      "header_lines": [
+        669
+      ],
+      "content_start": 671,
+      "content_end": 679,
+      "content": "671: :label: thm-sn-symmetry-n-particle\n672: \n673: The N-particle transition operator $\\Psi: \\Sigma_N \\to \\mathcal{P}(\\Sigma_N)$ is **S_N-equivariant**:\n674: \n675: $$\n676: \\Psi(\\sigma \\cdot \\mathcal{S}, \\cdot) = (\\sigma \\cdot)_* \\Psi(\\mathcal{S}, \\cdot)\n677: $$\n678: \n679: for all $\\sigma \\in S_N$, where $\\sigma \\cdot \\mathcal{S} = (w_{\\sigma(1)}, \\ldots, w_{\\sigma(N)})$.",
+      "metadata": {
+        "label": "thm-sn-symmetry-n-particle"
+      },
+      "section": "## 4. Indistinguishability and the S_N \u2192 \u221e Limit",
+      "raw_directive": "668: Before analyzing the mean-field limit, we recall the permutation structure from the N-particle system.\n669: \n670: :::{prf:theorem} S_N Permutation Symmetry (N-Particle)\n671: :label: thm-sn-symmetry-n-particle\n672: \n673: The N-particle transition operator $\\Psi: \\Sigma_N \\to \\mathcal{P}(\\Sigma_N)$ is **S_N-equivariant**:\n674: \n675: $$\n676: \\Psi(\\sigma \\cdot \\mathcal{S}, \\cdot) = (\\sigma \\cdot)_* \\Psi(\\mathcal{S}, \\cdot)\n677: $$\n678: \n679: for all $\\sigma \\in S_N$, where $\\sigma \\cdot \\mathcal{S} = (w_{\\sigma(1)}, \\ldots, w_{\\sigma(N)})$.\n680: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-19",
+      "title": "Gauge Redundancy vs. Physical Symmetry",
+      "start_line": 682,
+      "end_line": 692,
+      "header_lines": [
+        683
+      ],
+      "content_start": 685,
+      "content_end": 691,
+      "content": "685: :class: important\n686: \n687: The S_N symmetry reflects a **gauge redundancy** rather than a physical transformation:\n688: \n689: - Relabeling walkers $1 \\leftrightarrow 2$ does not change the physics\n690: - The physically meaningful object is the **orbit** $[\\mathcal{S}] = \\{\\sigma \\cdot \\mathcal{S} : \\sigma \\in S_N\\}$\n691: - This led to the orbifold structure $\\mathcal{M}_{\\text{config}} = \\Sigma_N / S_N$ in {prf:ref}`thm-config-orbifold`",
+      "metadata": {
+        "class": "important"
+      },
+      "section": "## 4. Indistinguishability and the S_N \u2192 \u221e Limit",
+      "raw_directive": "682: :::\n683: \n684: :::{prf:remark} Gauge Redundancy vs. Physical Symmetry\n685: :class: important\n686: \n687: The S_N symmetry reflects a **gauge redundancy** rather than a physical transformation:\n688: \n689: - Relabeling walkers $1 \\leftrightarrow 2$ does not change the physics\n690: - The physically meaningful object is the **orbit** $[\\mathcal{S}] = \\{\\sigma \\cdot \\mathcal{S} : \\sigma \\in S_N\\}$\n691: - This led to the orbifold structure $\\mathcal{M}_{\\text{config}} = \\Sigma_N / S_N$ in {prf:ref}`thm-config-orbifold`\n692: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-empirical-measure-marginals",
+      "title": "Empirical Measure and Marginals",
+      "start_line": 698,
+      "end_line": 720,
+      "header_lines": [
+        699
+      ],
+      "content_start": 701,
+      "content_end": 719,
+      "content": "701: :label: def-empirical-measure-marginals\n702: \n703: For an N-particle configuration $\\mathcal{S} = (z_1, \\ldots, z_N)$ with $z_i = (x_i, v_i)$, the **empirical measure** is:\n704: \n705: $$\n706: f^N(\\mathcal{S}) = \\frac{1}{N} \\sum_{i=1}^N \\delta_{z_i}\n707: $$\n708: \n709: The **k-particle marginal** of a probability measure $\\nu_N$ on $\\Sigma_N$ is:\n710: \n711: $$\n712: \\mu_N^{(k)}(z_1, \\ldots, z_k) = \\int_{\\Omega^{N-k}} \\nu_N(z_1, \\ldots, z_N) dz_{k+1} \\cdots dz_N\n713: $$\n714: \n715: **Marginal hierarchy:**\n716: \n717: $$\n718: \\mu_N^{(k)} \\rightharpoonup \\rho_0^{\\otimes k} \\quad \\text{as } N \\to \\infty\n719: $$",
+      "metadata": {
+        "label": "def-empirical-measure-marginals"
+      },
+      "section": "## 4. Indistinguishability and the S_N \u2192 \u221e Limit",
+      "raw_directive": "698: The connection between N-particle and mean-field descriptions is through the **BBGKY hierarchy**.\n699: \n700: :::{prf:definition} Empirical Measure and Marginals\n701: :label: def-empirical-measure-marginals\n702: \n703: For an N-particle configuration $\\mathcal{S} = (z_1, \\ldots, z_N)$ with $z_i = (x_i, v_i)$, the **empirical measure** is:\n704: \n705: $$\n706: f^N(\\mathcal{S}) = \\frac{1}{N} \\sum_{i=1}^N \\delta_{z_i}\n707: $$\n708: \n709: The **k-particle marginal** of a probability measure $\\nu_N$ on $\\Sigma_N$ is:\n710: \n711: $$\n712: \\mu_N^{(k)}(z_1, \\ldots, z_k) = \\int_{\\Omega^{N-k}} \\nu_N(z_1, \\ldots, z_N) dz_{k+1} \\cdots dz_N\n713: $$\n714: \n715: **Marginal hierarchy:**\n716: \n717: $$\n718: \\mu_N^{(k)} \\rightharpoonup \\rho_0^{\\otimes k} \\quad \\text{as } N \\to \\infty\n719: $$\n720: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-molecular-chaos-sn",
+      "title": "Molecular Chaos and S_N Symmetry",
+      "start_line": 722,
+      "end_line": 744,
+      "header_lines": [
+        723
+      ],
+      "content_start": 725,
+      "content_end": 743,
+      "content": "725: :label: thm-molecular-chaos-sn\n726: \n727: The **molecular chaos assumption** (factorization of marginals) is a direct consequence of S_N symmetry in the thermodynamic limit.\n728: \n729: **Statement:**\n730: \n731: If $\\nu_N$ is an S_N-invariant probability measure on $\\Sigma_N$ (i.e., $\\nu_N(\\sigma \\cdot A) = \\nu_N(A)$ for all Borel sets $A$ and $\\sigma \\in S_N$), and if the empirical measures $f^N$ converge weakly to a limit $\\rho_0$:\n732: \n733: $$\n734: f^N \\rightharpoonup \\rho_0 \\quad \\text{as } N \\to \\infty\n735: $$\n736: \n737: then the k-particle marginals **factorize**:\n738: \n739: $$\n740: \\lim_{N \\to \\infty} \\mu_N^{(k)}(z_1, \\ldots, z_k) = \\rho_0(z_1) \\cdots \\rho_0(z_k)\n741: $$\n742: \n743: **Interpretation:** In the limit, particles become **statistically independent** and **identically distributed** (i.i.d.) according to $\\rho_0$.",
+      "metadata": {
+        "label": "thm-molecular-chaos-sn"
+      },
+      "section": "## 4. Indistinguishability and the S_N \u2192 \u221e Limit",
+      "raw_directive": "722: :::\n723: \n724: :::{prf:theorem} Molecular Chaos and S_N Symmetry\n725: :label: thm-molecular-chaos-sn\n726: \n727: The **molecular chaos assumption** (factorization of marginals) is a direct consequence of S_N symmetry in the thermodynamic limit.\n728: \n729: **Statement:**\n730: \n731: If $\\nu_N$ is an S_N-invariant probability measure on $\\Sigma_N$ (i.e., $\\nu_N(\\sigma \\cdot A) = \\nu_N(A)$ for all Borel sets $A$ and $\\sigma \\in S_N$), and if the empirical measures $f^N$ converge weakly to a limit $\\rho_0$:\n732: \n733: $$\n734: f^N \\rightharpoonup \\rho_0 \\quad \\text{as } N \\to \\infty\n735: $$\n736: \n737: then the k-particle marginals **factorize**:\n738: \n739: $$\n740: \\lim_{N \\to \\infty} \\mu_N^{(k)}(z_1, \\ldots, z_k) = \\rho_0(z_1) \\cdots \\rho_0(z_k)\n741: $$\n742: \n743: **Interpretation:** In the limit, particles become **statistically independent** and **identically distributed** (i.i.d.) according to $\\rho_0$.\n744: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-83",
+      "title": null,
+      "start_line": 746,
+      "end_line": 768,
+      "header_lines": [],
+      "content_start": 747,
+      "content_end": 767,
+      "content": "747: \n748: :::{prf:proof}\n749: **Sketch:**\n750: \n751: 1. **Exchangeability from S_N:** S_N-invariance of $\\nu_N$ implies that $\\mu_N^{(k)}$ is **exchangeable** (permutation-symmetric in its arguments).\n752: \n753: 2. **De Finetti's Theorem:** For an exchangeable sequence of random variables (the particle states), the joint distribution is a **mixture of i.i.d. distributions**:\n754: \n755: $$\n756: \\mu_N^{(k)} = \\int_{\\mathcal{P}(\\Omega)} \\rho^{\\otimes k} d\\Pi_N(\\rho)\n757: $$\n758: \n759: where $\\Pi_N$ is a measure on the space of probability measures.\n760: \n761: 3. **Convergence of empirical measure:** If $f^N \\rightharpoonup \\rho_0$, then $\\Pi_N \\rightharpoonup \\delta_{\\rho_0}$ (concentration at $\\rho_0$).\n762: \n763: 4. **Factorization:** Taking the limit:\n764: \n765: $$\n766: \\lim_{N \\to \\infty} \\mu_N^{(k)} = \\int_{\\mathcal{P}(\\Omega)} \\rho^{\\otimes k} d\\delta_{\\rho_0}(\\rho) = \\rho_0^{\\otimes k}\n767: $$",
+      "metadata": {},
+      "section": "## 4. Indistinguishability and the S_N \u2192 \u221e Limit",
+      "raw_directive": "746: :::\n747: \n748: :::{prf:proof}\n749: **Sketch:**\n750: \n751: 1. **Exchangeability from S_N:** S_N-invariance of $\\nu_N$ implies that $\\mu_N^{(k)}$ is **exchangeable** (permutation-symmetric in its arguments).\n752: \n753: 2. **De Finetti's Theorem:** For an exchangeable sequence of random variables (the particle states), the joint distribution is a **mixture of i.i.d. distributions**:\n754: \n755: $$\n756: \\mu_N^{(k)} = \\int_{\\mathcal{P}(\\Omega)} \\rho^{\\otimes k} d\\Pi_N(\\rho)\n757: $$\n758: \n759: where $\\Pi_N$ is a measure on the space of probability measures.\n760: \n761: 3. **Convergence of empirical measure:** If $f^N \\rightharpoonup \\rho_0$, then $\\Pi_N \\rightharpoonup \\delta_{\\rho_0}$ (concentration at $\\rho_0$).\n762: \n763: 4. **Factorization:** Taking the limit:\n764: \n765: $$\n766: \\lim_{N \\to \\infty} \\mu_N^{(k)} = \\int_{\\mathcal{P}(\\Omega)} \\rho^{\\otimes k} d\\delta_{\\rho_0}(\\rho) = \\rho_0^{\\otimes k}\n767: $$\n768: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-gauge-mf-limit",
+      "title": "Gauge Structure in the Mean-Field Limit",
+      "start_line": 772,
+      "end_line": 790,
+      "header_lines": [
+        773
+      ],
+      "content_start": 775,
+      "content_end": 789,
+      "content": "775: :label: thm-gauge-mf-limit\n776: \n777: In the mean-field limit $N \\to \\infty$:\n778: \n779: 1. **Particle labels disappear:** The density $f(z, t)$ does not \"remember\" which particle is which. There is no notion of \"walker $i$\" anymore.\n780: \n781: 2. **S_N becomes trivial:** The action of $S_N$ on the density is:\n782: \n783: $$\n784: \\sigma_* f(z) = f(z) \\quad \\text{for all } \\sigma \\in S_N\n785: $$\n786: \n787: because $f$ is already averaged over all permutations.\n788: \n789: 3. **Indistinguishability is intrinsic:** The \"gauge symmetry\" in the mean-field is the fact that $f(z)$ describes a **continuum** of indistinguishable particles. Any \"relabeling\" of infinitesimal parcels of probability mass leaves the physics invariant.",
+      "metadata": {
+        "label": "thm-gauge-mf-limit"
+      },
+      "section": "## 4. Indistinguishability and the S_N \u2192 \u221e Limit",
+      "raw_directive": "772: ### 4.3. From S_N to Intrinsic Indistinguishability\n773: \n774: :::{prf:theorem} Gauge Structure in the Mean-Field Limit\n775: :label: thm-gauge-mf-limit\n776: \n777: In the mean-field limit $N \\to \\infty$:\n778: \n779: 1. **Particle labels disappear:** The density $f(z, t)$ does not \"remember\" which particle is which. There is no notion of \"walker $i$\" anymore.\n780: \n781: 2. **S_N becomes trivial:** The action of $S_N$ on the density is:\n782: \n783: $$\n784: \\sigma_* f(z) = f(z) \\quad \\text{for all } \\sigma \\in S_N\n785: $$\n786: \n787: because $f$ is already averaged over all permutations.\n788: \n789: 3. **Indistinguishability is intrinsic:** The \"gauge symmetry\" in the mean-field is the fact that $f(z)$ describes a **continuum** of indistinguishable particles. Any \"relabeling\" of infinitesimal parcels of probability mass leaves the physics invariant.\n790: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-129",
+      "title": "Mathematical Formalization",
+      "start_line": 792,
+      "end_line": 818,
+      "header_lines": [
+        793
+      ],
+      "content_start": 795,
+      "content_end": 817,
+      "content": "795: :class: note\n796: \n797: The \"gauge symmetry\" of the mean-field density is more accurately described as a **redundancy in the measure-theoretic description**:\n798: \n799: - The density $f(z)$ is defined up to a **diffeomorphism** $\\phi: \\Omega \\to \\Omega$ that preserves the measure:\n800: \n801: $$\n802: f \\sim \\phi_* f \\quad \\text{if } \\phi_* f = f\n803: $$\n804: \n805: - The space of such transformations forms the **diffeomorphism group** $\\text{Diff}(\\Omega, \\mu)$ preserving the reference measure $\\mu$.\n806: \n807: - For the McKean-Vlasov equation, the \"true\" configuration space is the **orbit space** under this action:\n808: \n809: $$\n810: \\mathcal{M}_{\\text{config}}^{MF} = \\mathcal{F} / \\text{Diff}(\\Omega, \\mu)\n811: $$\n812: \n813: **This is an infinite-dimensional quotient**, far more complex than the $S_N$ quotient.\n814: \n815: A rigorous treatment requires:\n816: - Functional analysis on diffeomorphism groups (Arnold, Marsden, Ratiu)\n817: - Geometric hydrodynamics (Otto calculus, Wasserstein geometry)",
+      "metadata": {
+        "class": "note"
+      },
+      "section": "## 4. Indistinguishability and the S_N \u2192 \u221e Limit",
+      "raw_directive": "792: :::\n793: \n794: :::{prf:remark} Mathematical Formalization\n795: :class: note\n796: \n797: The \"gauge symmetry\" of the mean-field density is more accurately described as a **redundancy in the measure-theoretic description**:\n798: \n799: - The density $f(z)$ is defined up to a **diffeomorphism** $\\phi: \\Omega \\to \\Omega$ that preserves the measure:\n800: \n801: $$\n802: f \\sim \\phi_* f \\quad \\text{if } \\phi_* f = f\n803: $$\n804: \n805: - The space of such transformations forms the **diffeomorphism group** $\\text{Diff}(\\Omega, \\mu)$ preserving the reference measure $\\mu$.\n806: \n807: - For the McKean-Vlasov equation, the \"true\" configuration space is the **orbit space** under this action:\n808: \n809: $$\n810: \\mathcal{M}_{\\text{config}}^{MF} = \\mathcal{F} / \\text{Diff}(\\Omega, \\mu)\n811: $$\n812: \n813: **This is an infinite-dimensional quotient**, far more complex than the $S_N$ quotient.\n814: \n815: A rigorous treatment requires:\n816: - Functional analysis on diffeomorphism groups (Arnold, Marsden, Ratiu)\n817: - Geometric hydrodynamics (Otto calculus, Wasserstein geometry)\n818: "
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-limit-braid-holonomy",
+      "title": "Limit of Braid Holonomy",
+      "start_line": 820,
+      "end_line": 832,
+      "header_lines": [
+        821
+      ],
+      "content_start": 823,
+      "content_end": 831,
+      "content": "823: :label: prop-limit-braid-holonomy\n824: \n825: As $N \\to \\infty$, the holonomy distribution for braided loops concentrates on the identity:\n826: \n827: $$\n828: \\lim_{N \\to \\infty} \\mathbb{P}(\\text{Hol}(\\gamma) = \\sigma) = \\delta_{\\sigma, e}\n829: $$\n830: \n831: for any fixed closed loop $\\gamma$ in configuration space.",
+      "metadata": {
+        "label": "prop-limit-braid-holonomy"
+      },
+      "section": "## 4. Indistinguishability and the S_N \u2192 \u221e Limit",
+      "raw_directive": "820: :::\n821: \n822: :::{prf:proposition} Limit of Braid Holonomy\n823: :label: prop-limit-braid-holonomy\n824: \n825: As $N \\to \\infty$, the holonomy distribution for braided loops concentrates on the identity:\n826: \n827: $$\n828: \\lim_{N \\to \\infty} \\mathbb{P}(\\text{Hol}(\\gamma) = \\sigma) = \\delta_{\\sigma, e}\n829: $$\n830: \n831: for any fixed closed loop $\\gamma$ in configuration space.\n832: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-171",
+      "title": null,
+      "start_line": 834,
+      "end_line": 846,
+      "header_lines": [],
+      "content_start": 835,
+      "content_end": 845,
+      "content": "835: \n836: :::{prf:proof}\n837: **Informal argument:**\n838: \n839: 1. A braid involves a **finite number** of particles (say $k$ particles exchange positions).\n840: \n841: 2. The probability that exactly $k$ specific particles out of $N$ participate in a given braiding event is $\\sim 1 / \\binom{N}{k} \\sim N^{-k}$.\n842: \n843: 3. As $N \\to \\infty$, this probability vanishes.\n844: \n845: 4. The mean-field density \"sees\" only **local averages** - the discrete permutation structure is washed out.",
+      "metadata": {},
+      "section": "## 4. Indistinguishability and the S_N \u2192 \u221e Limit",
+      "raw_directive": "834: :::\n835: \n836: :::{prf:proof}\n837: **Informal argument:**\n838: \n839: 1. A braid involves a **finite number** of particles (say $k$ particles exchange positions).\n840: \n841: 2. The probability that exactly $k$ specific particles out of $N$ participate in a given braiding event is $\\sim 1 / \\binom{N}{k} \\sim N^{-k}$.\n842: \n843: 3. As $N \\to \\infty$, this probability vanishes.\n844: \n845: 4. The mean-field density \"sees\" only **local averages** - the discrete permutation structure is washed out.\n846: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

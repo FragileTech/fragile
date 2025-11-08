@@ -1,0 +1,115 @@
+{
+  "chapter_index": 6,
+  "section_id": "## 6. Minimum Action Principle and Optimal Control",
+  "directive_count": 6,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-optimal-control-problem",
+      "title": "Optimal Control Problem for Fragile Gas",
+      "start_line": 1926,
+      "end_line": 1957,
+      "header_lines": [
+        1927
+      ],
+      "content_start": 1929,
+      "content_end": 1956,
+      "content": "1929: :label: def-optimal-control-problem\n1930: \n1931: **State:** $(x_t, v_t) \\in \\mathcal{M}$\n1932: \n1933: **Control:** $u_t \\in \\mathbb{R}^d$ (interpreted as \"external force\")\n1934: \n1935: **Dynamics:**\n1936: \n1937: $$\n1938: \\begin{cases}\n1939: \\dot{x}_t = v_t \\\\\n1940: \\dot{v}_t = -\\nabla U_{\\text{eff}}(x_t) - \\gamma v_t + u_t + \\sqrt{2\\gamma T} \\, \\xi_t\n1941: \\end{cases}\n1942: $$\n1943: \n1944: where $\\xi_t$ is white noise.\n1945: \n1946: **Cost Functional:**\n1947: \n1948: $$\n1949: J[u] = \\mathbb{E}\\left[\\int_0^T \\frac{1}{2}\\|u_t\\|^2 dt + \\Phi(x_T, v_T)\\right]\n1950: $$\n1951: \n1952: where $\\Phi$ is a terminal cost.\n1953: \n1954: **Goal:** Find the control $u^*$ minimizing $J[u]$ subject to reaching a target state $(x_T, v_T)$.\n1955: \n1956: **Connection to Onsager-Machlup:**",
+      "metadata": {
+        "label": "def-optimal-control-problem"
+      },
+      "section": "## 6. Minimum Action Principle and Optimal Control",
+      "raw_directive": "1926: We now recast the path probability problem as an **optimal control** problem.\n1927: \n1928: :::{prf:definition} Optimal Control Problem for Fragile Gas\n1929: :label: def-optimal-control-problem\n1930: \n1931: **State:** $(x_t, v_t) \\in \\mathcal{M}$\n1932: \n1933: **Control:** $u_t \\in \\mathbb{R}^d$ (interpreted as \"external force\")\n1934: \n1935: **Dynamics:**\n1936: \n1937: $$\n1938: \\begin{cases}\n1939: \\dot{x}_t = v_t \\\\\n1940: \\dot{v}_t = -\\nabla U_{\\text{eff}}(x_t) - \\gamma v_t + u_t + \\sqrt{2\\gamma T} \\, \\xi_t\n1941: \\end{cases}\n1942: $$\n1943: \n1944: where $\\xi_t$ is white noise.\n1945: \n1946: **Cost Functional:**\n1947: \n1948: $$\n1949: J[u] = \\mathbb{E}\\left[\\int_0^T \\frac{1}{2}\\|u_t\\|^2 dt + \\Phi(x_T, v_T)\\right]\n1950: $$\n1951: \n1952: where $\\Phi$ is a terminal cost.\n1953: \n1954: **Goal:** Find the control $u^*$ minimizing $J[u]$ subject to reaching a target state $(x_T, v_T)$.\n1955: \n1956: **Connection to Onsager-Machlup:**\n1957: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-hjb-equation-fragile-gas",
+      "title": "HJB Equation for Fragile Gas Path Optimization",
+      "start_line": 1961,
+      "end_line": 1989,
+      "header_lines": [
+        1962
+      ],
+      "content_start": 1964,
+      "content_end": 1988,
+      "content": "1964: :label: thm-hjb-equation-fragile-gas\n1965: \n1966: Define the **value function**:\n1967: \n1968: $$\n1969: V(x, v, t) := \\inf_{u} \\mathbb{E}\\left[\\int_t^T \\frac{1}{2}\\|u_s\\|^2 ds + \\Phi(x_T, v_T) \\mid (x_t, v_t) = (x, v)\\right]\n1970: $$\n1971: \n1972: Then $V$ satisfies the **Hamilton-Jacobi-Bellman equation**:\n1973: \n1974: $$\n1975: -\\frac{\\partial V}{\\partial t} = \\inf_u \\left\\{ \\frac{1}{2}\\|u\\|^2 + \\nabla_v V \\cdot (-\\nabla U_{\\text{eff}} - \\gamma v + u) + \\nabla_x V \\cdot v + \\gamma T \\Delta_v V \\right\\}\n1976: $$\n1977: \n1978: with terminal condition $V(x, v, T) = \\Phi(x, v)$.\n1979: \n1980: **Optimal Control:**\n1981: \n1982: The minimizing control is:\n1983: \n1984: $$\n1985: u^*(x, v, t) = -\\nabla_v V(x, v, t)\n1986: $$\n1987: \n1988: **Interpretation:**",
+      "metadata": {
+        "label": "thm-hjb-equation-fragile-gas"
+      },
+      "section": "## 6. Minimum Action Principle and Optimal Control",
+      "raw_directive": "1961: ### 6.2. Hamilton-Jacobi-Bellman Equation\n1962: \n1963: :::{prf:theorem} HJB Equation for Fragile Gas Path Optimization\n1964: :label: thm-hjb-equation-fragile-gas\n1965: \n1966: Define the **value function**:\n1967: \n1968: $$\n1969: V(x, v, t) := \\inf_{u} \\mathbb{E}\\left[\\int_t^T \\frac{1}{2}\\|u_s\\|^2 ds + \\Phi(x_T, v_T) \\mid (x_t, v_t) = (x, v)\\right]\n1970: $$\n1971: \n1972: Then $V$ satisfies the **Hamilton-Jacobi-Bellman equation**:\n1973: \n1974: $$\n1975: -\\frac{\\partial V}{\\partial t} = \\inf_u \\left\\{ \\frac{1}{2}\\|u\\|^2 + \\nabla_v V \\cdot (-\\nabla U_{\\text{eff}} - \\gamma v + u) + \\nabla_x V \\cdot v + \\gamma T \\Delta_v V \\right\\}\n1976: $$\n1977: \n1978: with terminal condition $V(x, v, T) = \\Phi(x, v)$.\n1979: \n1980: **Optimal Control:**\n1981: \n1982: The minimizing control is:\n1983: \n1984: $$\n1985: u^*(x, v, t) = -\\nabla_v V(x, v, t)\n1986: $$\n1987: \n1988: **Interpretation:**\n1989: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-70",
+      "title": "(Standard Dynamic Programming Argument)",
+      "start_line": 1991,
+      "end_line": 2012,
+      "header_lines": [],
+      "content_start": 1993,
+      "content_end": 2011,
+      "content": "1993: :::{prf:proof} (Standard Dynamic Programming Argument)\n1994: \n1995: **Step 1:** Apply Bellman's principle of optimality:\n1996: \n1997: $$\n1998: V(x, v, t) = \\inf_u \\left\\{ \\frac{1}{2}\\|u\\|^2 dt + \\mathbb{E}[V(x + v dt, v + (-\\nabla U_{\\text{eff}} - \\gamma v + u)dt + \\sqrt{2\\gamma T} dW, t + dt)] \\right\\}\n1999: $$\n2000: \n2001: **Step 2:** Expand to second order in $dt$ using It\u00f4's lemma:\n2002: \n2003: $$\n2004: \\mathbb{E}[V(x_{t+dt}, v_{t+dt}, t+dt)] = V + \\frac{\\partial V}{\\partial t} dt + \\nabla_x V \\cdot v dt + \\nabla_v V \\cdot (-\\nabla U_{\\text{eff}} - \\gamma v + u) dt + \\gamma T \\Delta_v V \\, dt + O(dt^2)\n2005: $$\n2006: \n2007: **Step 3:** Set the derivative to zero and minimize over $u$:\n2008: \n2009: $$\n2010: \\frac{\\partial}{\\partial u}\\left[\\frac{1}{2}\\|u\\|^2 + \\nabla_v V \\cdot u\\right] = 0 \\implies u^* = -\\nabla_v V\n2011: $$",
+      "metadata": {},
+      "section": "## 6. Minimum Action Principle and Optimal Control",
+      "raw_directive": "1991: :::\n1992: \n1993: :::{prf:proof} (Standard Dynamic Programming Argument)\n1994: \n1995: **Step 1:** Apply Bellman's principle of optimality:\n1996: \n1997: $$\n1998: V(x, v, t) = \\inf_u \\left\\{ \\frac{1}{2}\\|u\\|^2 dt + \\mathbb{E}[V(x + v dt, v + (-\\nabla U_{\\text{eff}} - \\gamma v + u)dt + \\sqrt{2\\gamma T} dW, t + dt)] \\right\\}\n1999: $$\n2000: \n2001: **Step 2:** Expand to second order in $dt$ using It\u00f4's lemma:\n2002: \n2003: $$\n2004: \\mathbb{E}[V(x_{t+dt}, v_{t+dt}, t+dt)] = V + \\frac{\\partial V}{\\partial t} dt + \\nabla_x V \\cdot v dt + \\nabla_v V \\cdot (-\\nabla U_{\\text{eff}} - \\gamma v + u) dt + \\gamma T \\Delta_v V \\, dt + O(dt^2)\n2005: $$\n2006: \n2007: **Step 3:** Set the derivative to zero and minimize over $u$:\n2008: \n2009: $$\n2010: \\frac{\\partial}{\\partial u}\\left[\\frac{1}{2}\\|u\\|^2 + \\nabla_v V \\cdot u\\right] = 0 \\implies u^* = -\\nabla_v V\n2011: $$\n2012: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-pontryagin-maximum-principle",
+      "title": "Pontryagin's Maximum Principle for Path Optimization",
+      "start_line": 2018,
+      "end_line": 2058,
+      "header_lines": [
+        2019
+      ],
+      "content_start": 2021,
+      "content_end": 2057,
+      "content": "2021: :label: thm-pontryagin-maximum-principle\n2022: \n2023: Define the **Hamiltonian**:\n2024: \n2025: $$\n2026: \\mathcal{H}(x, v, p_x, p_v, u) := -\\frac{1}{2}\\|u\\|^2 + p_x \\cdot v + p_v \\cdot (-\\nabla U_{\\text{eff}} - \\gamma v + u)\n2027: $$\n2028: \n2029: where $(p_x, p_v)$ are adjoint variables.\n2030: \n2031: **Necessary Conditions for Optimality:**\n2032: \n2033: 1. **State equations:**\n2034: \n2035: $$\n2036: \\dot{x} = \\frac{\\partial \\mathcal{H}}{\\partial p_x} = v, \\quad \\dot{v} = \\frac{\\partial \\mathcal{H}}{\\partial p_v} = -\\nabla U_{\\text{eff}} - \\gamma v + u\n2037: $$\n2038: \n2039: 2. **Adjoint equations:**\n2040: \n2041: $$\n2042: \\dot{p}_x = -\\frac{\\partial \\mathcal{H}}{\\partial x} = p_v \\cdot \\nabla^2 U_{\\text{eff}}, \\quad \\dot{p}_v = -\\frac{\\partial \\mathcal{H}}{\\partial v} = -p_x + \\gamma p_v\n2043: $$\n2044: \n2045: 3. **Optimality condition:**\n2046: \n2047: $$\n2048: u^* = \\arg\\max_u \\mathcal{H} = p_v\n2049: $$\n2050: \n2051: 4. **Transversality:**\n2052: \n2053: $$\n2054: p_x(T) = \\frac{\\partial \\Phi}{\\partial x}(x_T, v_T), \\quad p_v(T) = \\frac{\\partial \\Phi}{\\partial v}(x_T, v_T)\n2055: $$\n2056: \n2057: **Solution Method:**",
+      "metadata": {
+        "label": "thm-pontryagin-maximum-principle"
+      },
+      "section": "## 6. Minimum Action Principle and Optimal Control",
+      "raw_directive": "2018: An alternative formulation uses **adjoint variables** (co-states).\n2019: \n2020: :::{prf:theorem} Pontryagin's Maximum Principle for Path Optimization\n2021: :label: thm-pontryagin-maximum-principle\n2022: \n2023: Define the **Hamiltonian**:\n2024: \n2025: $$\n2026: \\mathcal{H}(x, v, p_x, p_v, u) := -\\frac{1}{2}\\|u\\|^2 + p_x \\cdot v + p_v \\cdot (-\\nabla U_{\\text{eff}} - \\gamma v + u)\n2027: $$\n2028: \n2029: where $(p_x, p_v)$ are adjoint variables.\n2030: \n2031: **Necessary Conditions for Optimality:**\n2032: \n2033: 1. **State equations:**\n2034: \n2035: $$\n2036: \\dot{x} = \\frac{\\partial \\mathcal{H}}{\\partial p_x} = v, \\quad \\dot{v} = \\frac{\\partial \\mathcal{H}}{\\partial p_v} = -\\nabla U_{\\text{eff}} - \\gamma v + u\n2037: $$\n2038: \n2039: 2. **Adjoint equations:**\n2040: \n2041: $$\n2042: \\dot{p}_x = -\\frac{\\partial \\mathcal{H}}{\\partial x} = p_v \\cdot \\nabla^2 U_{\\text{eff}}, \\quad \\dot{p}_v = -\\frac{\\partial \\mathcal{H}}{\\partial v} = -p_x + \\gamma p_v\n2043: $$\n2044: \n2045: 3. **Optimality condition:**\n2046: \n2047: $$\n2048: u^* = \\arg\\max_u \\mathcal{H} = p_v\n2049: $$\n2050: \n2051: 4. **Transversality:**\n2052: \n2053: $$\n2054: p_x(T) = \\frac{\\partial \\Phi}{\\partial x}(x_T, v_T), \\quad p_v(T) = \\frac{\\partial \\Phi}{\\partial v}(x_T, v_T)\n2055: $$\n2056: \n2057: **Solution Method:**\n2058: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-instanton-path",
+      "title": "Instanton Path",
+      "start_line": 2064,
+      "end_line": 2083,
+      "header_lines": [
+        2065
+      ],
+      "content_start": 2067,
+      "content_end": 2082,
+      "content": "2067: :label: def-instanton-path\n2068: \n2069: An **instanton** is a solution to the Euler-Lagrange equations:\n2070: \n2071: $$\n2072: \\ddot{v} = -\\nabla^2 U_{\\text{eff}} \\cdot v + \\gamma \\nabla U_{\\text{eff}} + \\gamma^2 v\n2073: $$\n2074: \n2075: connecting two fixed points $(x_0, v_0)$ and $(x_T, v_T)$ that **minimizes the action** among all such paths.\n2076: \n2077: **Physical Significance:**\n2078: \n2079: Instantons describe **rare event transitions** (e.g., barrier crossing) in the low-temperature limit. They dominate the path integral:\n2080: \n2081: $$\n2082: \\mathbb{P}(\\gamma_0 \\to \\gamma_T) \\approx e^{-S_{\\text{instanton}}/T}",
+      "metadata": {
+        "label": "def-instanton-path"
+      },
+      "section": "## 6. Minimum Action Principle and Optimal Control",
+      "raw_directive": "2064: In the small-noise limit $T \\to 0$, the optimal paths become **instantons** (classical solutions tunneling between states).\n2065: \n2066: :::{prf:definition} Instanton Path\n2067: :label: def-instanton-path\n2068: \n2069: An **instanton** is a solution to the Euler-Lagrange equations:\n2070: \n2071: $$\n2072: \\ddot{v} = -\\nabla^2 U_{\\text{eff}} \\cdot v + \\gamma \\nabla U_{\\text{eff}} + \\gamma^2 v\n2073: $$\n2074: \n2075: connecting two fixed points $(x_0, v_0)$ and $(x_T, v_T)$ that **minimizes the action** among all such paths.\n2076: \n2077: **Physical Significance:**\n2078: \n2079: Instantons describe **rare event transitions** (e.g., barrier crossing) in the low-temperature limit. They dominate the path integral:\n2080: \n2081: $$\n2082: \\mathbb{P}(\\gamma_0 \\to \\gamma_T) \\approx e^{-S_{\\text{instanton}}/T}\n2083: $$"
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-instanton-dominance",
+      "title": "Instanton Dominance in Low-Temperature Limit",
+      "start_line": 2085,
+      "end_line": 2107,
+      "header_lines": [
+        2086
+      ],
+      "content_start": 2088,
+      "content_end": 2106,
+      "content": "2088: :label: thm-instanton-dominance\n2089: \n2090: As $T \\to 0$ (equivalently $\\sigma_v \\to 0$), the path measure concentrates on instantons:\n2091: \n2092: $$\n2093: \\mathbb{P}_{\\text{path}}[\\gamma] \\to \\sum_{\\gamma_{\\text{inst}}} \\delta(\\gamma - \\gamma_{\\text{inst}})\n2094: $$\n2095: \n2096: where the sum is over all instanton solutions.\n2097: \n2098: **Application to Barrier Crossing:**\n2099: \n2100: The rate of crossing a potential barrier $U(x)$ with height $\\Delta U$ is:\n2101: \n2102: $$\n2103: \\Gamma \\sim \\omega_0 e^{-S_{\\text{instanton}}/T} \\approx \\omega_0 e^{-\\Delta U / T}\n2104: $$\n2105: \n2106: recovering the Arrhenius law. The prefactor $\\omega_0$ is determined by fluctuations around the instanton (Gaussian approximation).",
+      "metadata": {
+        "label": "thm-instanton-dominance"
+      },
+      "section": "## 6. Minimum Action Principle and Optimal Control",
+      "raw_directive": "2085: :::\n2086: \n2087: :::{prf:theorem} Instanton Dominance in Low-Temperature Limit\n2088: :label: thm-instanton-dominance\n2089: \n2090: As $T \\to 0$ (equivalently $\\sigma_v \\to 0$), the path measure concentrates on instantons:\n2091: \n2092: $$\n2093: \\mathbb{P}_{\\text{path}}[\\gamma] \\to \\sum_{\\gamma_{\\text{inst}}} \\delta(\\gamma - \\gamma_{\\text{inst}})\n2094: $$\n2095: \n2096: where the sum is over all instanton solutions.\n2097: \n2098: **Application to Barrier Crossing:**\n2099: \n2100: The rate of crossing a potential barrier $U(x)$ with height $\\Delta U$ is:\n2101: \n2102: $$\n2103: \\Gamma \\sim \\omega_0 e^{-S_{\\text{instanton}}/T} \\approx \\omega_0 e^{-\\Delta U / T}\n2104: $$\n2105: \n2106: recovering the Arrhenius law. The prefactor $\\omega_0$ is determined by fluctuations around the instanton (Gaussian approximation).\n2107: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

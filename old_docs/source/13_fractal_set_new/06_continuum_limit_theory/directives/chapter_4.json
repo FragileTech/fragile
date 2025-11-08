@@ -1,0 +1,111 @@
+{
+  "chapter_index": 4,
+  "section_id": "## 4. Algorithmic Determination of Graph Structure",
+  "directive_count": 6,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-ig-edge-weights-algorithmic",
+      "title": "IG Edge Weights from Companion Selection",
+      "start_line": 469,
+      "end_line": 495,
+      "header_lines": [
+        470
+      ],
+      "content_start": 472,
+      "content_end": 494,
+      "content": "472: :label: thm-ig-edge-weights-algorithmic\n473: \n474: For episodes $e_i$ and $e_j$ with temporal overlap period $T_{\\text{overlap}}(i,j)$, the IG edge weight is the time-integrated companion selection probability:\n475: \n476: $$\n477: w_{ij} = \\int_{T_{\\text{overlap}}(i,j)} P(c_i(t) = j \\mid i \\in \\mathcal{A}(t)) \\, dt\n478: $$\n479: \n480: where the companion selection probability is:\n481: \n482: $$\n483: P(c_i(t) = j \\mid i) = \\frac{\\exp\\left(-\\frac{d_{\\text{alg}}(i,j;t)^2}{2\\varepsilon_c^2}\\right)}{Z_i(t)}\n484: $$\n485: \n486: with:\n487: - **Algorithmic distance**: $d_{\\text{alg}}(i,j)^2 = \\|x_i(t) - x_j(t)\\|^2 + \\lambda_v \\|v_i(t) - v_j(t)\\|^2$\n488: - **Partition function**: $Z_i(t) = \\sum_{l \\in \\mathcal{A}(t) \\setminus \\{i\\}} \\exp(-d_{\\text{alg}}(i,l;t)^2 / 2\\varepsilon_c^2)$\n489: \n490: **Discrete form**:\n491: \n492: $$\n493: w_{ij} \\approx \\tau \\sum_{t_k \\in T_{\\text{overlap}}(i,j)} \\frac{\\exp\\left(-d_{\\text{alg}}(i,j; t_k)^2 / 2\\varepsilon_c^2\\right)}{Z_i(t_k)}\n494: $$",
+      "metadata": {
+        "label": "thm-ig-edge-weights-algorithmic"
+      },
+      "section": "## 4. Algorithmic Determination of Graph Structure",
+      "raw_directive": "469: ### 4.1. IG Edge Weights from Companion Selection Dynamics\n470: \n471: :::{prf:theorem} IG Edge Weights from Companion Selection\n472: :label: thm-ig-edge-weights-algorithmic\n473: \n474: For episodes $e_i$ and $e_j$ with temporal overlap period $T_{\\text{overlap}}(i,j)$, the IG edge weight is the time-integrated companion selection probability:\n475: \n476: $$\n477: w_{ij} = \\int_{T_{\\text{overlap}}(i,j)} P(c_i(t) = j \\mid i \\in \\mathcal{A}(t)) \\, dt\n478: $$\n479: \n480: where the companion selection probability is:\n481: \n482: $$\n483: P(c_i(t) = j \\mid i) = \\frac{\\exp\\left(-\\frac{d_{\\text{alg}}(i,j;t)^2}{2\\varepsilon_c^2}\\right)}{Z_i(t)}\n484: $$\n485: \n486: with:\n487: - **Algorithmic distance**: $d_{\\text{alg}}(i,j)^2 = \\|x_i(t) - x_j(t)\\|^2 + \\lambda_v \\|v_i(t) - v_j(t)\\|^2$\n488: - **Partition function**: $Z_i(t) = \\sum_{l \\in \\mathcal{A}(t) \\setminus \\{i\\}} \\exp(-d_{\\text{alg}}(i,l;t)^2 / 2\\varepsilon_c^2)$\n489: \n490: **Discrete form**:\n491: \n492: $$\n493: w_{ij} \\approx \\tau \\sum_{t_k \\in T_{\\text{overlap}}(i,j)} \\frac{\\exp\\left(-d_{\\text{alg}}(i,j; t_k)^2 / 2\\varepsilon_c^2\\right)}{Z_i(t_k)}\n494: $$\n495: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-31",
+      "title": null,
+      "start_line": 497,
+      "end_line": 501,
+      "header_lines": [],
+      "content_start": 498,
+      "content_end": 500,
+      "content": "498: \n499: :::{prf:proof}\n500: This follows directly from the companion selection mechanism defined in Chapter 3. The weight $w_{ij}$ accumulates the probability that walker $j$ was selected as the companion of walker $i$ during their temporal overlap.",
+      "metadata": {},
+      "section": "## 4. Algorithmic Determination of Graph Structure",
+      "raw_directive": "497: :::\n498: \n499: :::{prf:proof}\n500: This follows directly from the companion selection mechanism defined in Chapter 3. The weight $w_{ij}$ accumulates the probability that walker $j$ was selected as the companion of walker $i$ during their temporal overlap.\n501: "
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-edge-weight-decay",
+      "title": "Exponential Decay of Edge Weights",
+      "start_line": 503,
+      "end_line": 513,
+      "header_lines": [
+        504
+      ],
+      "content_start": 506,
+      "content_end": 512,
+      "content": "506: :label: cor-edge-weight-decay\n507: \n508: For episodes $e_i, e_j$ with spatial separation $\\|\\Phi(e_i) - \\Phi(e_j)\\| = r$ large compared to $\\varepsilon_c$:\n509: \n510: $$\n511: w_{ij} \\lesssim T_{\\text{overlap}} \\cdot \\exp\\left(-\\frac{r^2}{2\\varepsilon_c^2}\\right)\n512: $$",
+      "metadata": {
+        "label": "cor-edge-weight-decay"
+      },
+      "section": "## 4. Algorithmic Determination of Graph Structure",
+      "raw_directive": "503: :::\n504: \n505: :::{prf:corollary} Exponential Decay of Edge Weights\n506: :label: cor-edge-weight-decay\n507: \n508: For episodes $e_i, e_j$ with spatial separation $\\|\\Phi(e_i) - \\Phi(e_j)\\| = r$ large compared to $\\varepsilon_c$:\n509: \n510: $$\n511: w_{ij} \\lesssim T_{\\text{overlap}} \\cdot \\exp\\left(-\\frac{r^2}{2\\varepsilon_c^2}\\right)\n512: $$\n513: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-weighted-first-moment-connection",
+      "title": "Weighted First Moment and Connection Term",
+      "start_line": 519,
+      "end_line": 536,
+      "header_lines": [
+        520
+      ],
+      "content_start": 522,
+      "content_end": 535,
+      "content": "522: :label: thm-weighted-first-moment-connection\n523: \n524: Let $g(x) = H(x) + \\varepsilon_{\\Sigma} I$ be the emergent Riemannian metric.\n525: \n526: For an episode $e_i$ at position $x_i = \\Phi(e_i)$ in a swarm state converged to QSD, the weighted first moment of the IG edge distribution is:\n527: \n528: $$\n529: \\sum_{e_j \\in \\text{IG}(e_i)} w_{ij} \\Delta x_{ij} = \\varepsilon_c^2 D_{\\text{reg}}(x_i) \\nabla \\log \\sqrt{\\det g(x_i)} + O(\\varepsilon_c^3)\n530: $$\n531: \n532: where:\n533: - $\\Delta x_{ij} = \\Phi(e_j) - \\Phi(e_i)$: Spatial separation\n534: - $D_{\\text{reg}}(x_i) = g(x_i)^{-1}$: Diffusion tensor (inverse metric)\n535: - $\\varepsilon_c$: Companion selection bandwidth",
+      "metadata": {
+        "label": "thm-weighted-first-moment-connection"
+      },
+      "section": "## 4. Algorithmic Determination of Graph Structure",
+      "raw_directive": "519: ### 4.2. Christoffel Symbols Emerge from Weighted First Moment\n520: \n521: :::{prf:theorem} Weighted First Moment and Connection Term\n522: :label: thm-weighted-first-moment-connection\n523: \n524: Let $g(x) = H(x) + \\varepsilon_{\\Sigma} I$ be the emergent Riemannian metric.\n525: \n526: For an episode $e_i$ at position $x_i = \\Phi(e_i)$ in a swarm state converged to QSD, the weighted first moment of the IG edge distribution is:\n527: \n528: $$\n529: \\sum_{e_j \\in \\text{IG}(e_i)} w_{ij} \\Delta x_{ij} = \\varepsilon_c^2 D_{\\text{reg}}(x_i) \\nabla \\log \\sqrt{\\det g(x_i)} + O(\\varepsilon_c^3)\n530: $$\n531: \n532: where:\n533: - $\\Delta x_{ij} = \\Phi(e_j) - \\Phi(e_i)$: Spatial separation\n534: - $D_{\\text{reg}}(x_i) = g(x_i)^{-1}$: Diffusion tensor (inverse metric)\n535: - $\\varepsilon_c$: Companion selection bandwidth\n536: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-72",
+      "title": null,
+      "start_line": 538,
+      "end_line": 564,
+      "header_lines": [],
+      "content_start": 539,
+      "content_end": 563,
+      "content": "539: \n540: :::{prf:proof}\n541: The weighted first moment is:\n542: \n543: $$\n544: \\sum_j w_{ij} \\Delta x_{ij} \\approx \\int W(x_i, x_i + \\Delta x) \\Delta x \\rho_{QSD}(x_i + \\Delta x) \\sqrt{\\det g(x_i + \\Delta x)} \\, d\\Delta x\n545: $$\n546: \n547: Taylor expand $\\rho(x_i + \\Delta x) \\sqrt{\\det g(x_i + \\Delta x)}$:\n548: \n549: $$\n550: \\rho(x_i + \\Delta x) \\sqrt{\\det g(x_i + \\Delta x)} \\approx \\rho_0 \\sqrt{\\det g_0} \\left(1 + \\nabla \\log(\\rho \\sqrt{\\det g})|_{x_i} \\cdot \\Delta x + O(\\|\\Delta x\\|^2)\\right)\n551: $$\n552: \n553: The integral becomes:\n554: \n555: $$\n556: \\int \\exp\\left(-\\frac{\\|\\Delta x\\|^2}{2\\varepsilon_c^2}\\right) \\Delta x \\left(\\nabla \\log(\\rho \\sqrt{\\det g})\\right) \\cdot \\Delta x \\, d\\Delta x\n557: $$\n558: \n559: Using Gaussian moment formulas and the fact that $\\rho_{QSD} \\propto \\exp(-U_{\\text{eff}}/T)$, the dominant contribution is:\n560: \n561: $$\n562: \\varepsilon_c^2 \\nabla \\log \\sqrt{\\det g(x_i)} + O(\\varepsilon_c^3)\n563: $$",
+      "metadata": {},
+      "section": "## 4. Algorithmic Determination of Graph Structure",
+      "raw_directive": "538: :::\n539: \n540: :::{prf:proof}\n541: The weighted first moment is:\n542: \n543: $$\n544: \\sum_j w_{ij} \\Delta x_{ij} \\approx \\int W(x_i, x_i + \\Delta x) \\Delta x \\rho_{QSD}(x_i + \\Delta x) \\sqrt{\\det g(x_i + \\Delta x)} \\, d\\Delta x\n545: $$\n546: \n547: Taylor expand $\\rho(x_i + \\Delta x) \\sqrt{\\det g(x_i + \\Delta x)}$:\n548: \n549: $$\n550: \\rho(x_i + \\Delta x) \\sqrt{\\det g(x_i + \\Delta x)} \\approx \\rho_0 \\sqrt{\\det g_0} \\left(1 + \\nabla \\log(\\rho \\sqrt{\\det g})|_{x_i} \\cdot \\Delta x + O(\\|\\Delta x\\|^2)\\right)\n551: $$\n552: \n553: The integral becomes:\n554: \n555: $$\n556: \\int \\exp\\left(-\\frac{\\|\\Delta x\\|^2}{2\\varepsilon_c^2}\\right) \\Delta x \\left(\\nabla \\log(\\rho \\sqrt{\\det g})\\right) \\cdot \\Delta x \\, d\\Delta x\n557: $$\n558: \n559: Using Gaussian moment formulas and the fact that $\\rho_{QSD} \\propto \\exp(-U_{\\text{eff}}/T)$, the dominant contribution is:\n560: \n561: $$\n562: \\varepsilon_c^2 \\nabla \\log \\sqrt{\\det g(x_i)} + O(\\varepsilon_c^3)\n563: $$\n564: "
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-christoffel-from-algorithm",
+      "title": "Christoffel Symbols from Algorithmic Dynamics",
+      "start_line": 566,
+      "end_line": 576,
+      "header_lines": [
+        567
+      ],
+      "content_start": 569,
+      "content_end": 575,
+      "content": "569: :label: cor-christoffel-from-algorithm\n570: \n571: The Christoffel symbols $\\Gamma^{\\lambda}_{\\mu\\nu}$ of the emergent metric $g(x)$ satisfy:\n572: \n573: $$\n574: \\Gamma^{\\lambda}_{\\mu\\nu} g^{\\nu\\rho} = \\partial_{\\mu} \\log \\sqrt{\\det g}\n575: $$",
+      "metadata": {
+        "label": "cor-christoffel-from-algorithm"
+      },
+      "section": "## 4. Algorithmic Determination of Graph Structure",
+      "raw_directive": "566: :::\n567: \n568: :::{prf:corollary} Christoffel Symbols from Algorithmic Dynamics\n569: :label: cor-christoffel-from-algorithm\n570: \n571: The Christoffel symbols $\\Gamma^{\\lambda}_{\\mu\\nu}$ of the emergent metric $g(x)$ satisfy:\n572: \n573: $$\n574: \\Gamma^{\\lambda}_{\\mu\\nu} g^{\\nu\\rho} = \\partial_{\\mu} \\log \\sqrt{\\det g}\n575: $$\n576: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "chapter_index": 30,
+  "section_id": "## 12.2. Inter-Swarm Error Under Cloning",
+  "directive_count": 6,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-inter-swarm-bounded-expansion",
+      "title": "Bounded Expansion of Inter-Swarm Wasserstein Distance",
+      "start_line": 7845,
+      "end_line": 7862,
+      "header_lines": [
+        7846
+      ],
+      "content_start": 7848,
+      "content_end": 7861,
+      "content": "7848: :label: thm-inter-swarm-bounded-expansion\n7849: \n7850: For the coupled cloning operator acting on two swarms $(S_1, S_2)$, the expected change in the hypocoercive Wasserstein distance satisfies:\n7851: \n7852: $$\n7853: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W\n7854: $$\n7855: \n7856: where $V_W = W_h^2(\\mu_1, \\mu_2) = V_{\\text{loc}} + V_{\\text{struct}}$ is the total inter-swarm error and $C_W < \\infty$ is a state-independent constant.\n7857: \n7858: Equivalently:\n7859: \n7860: $$\n7861: \\mathbb{E}_{\\text{clone}}[V_W(S'_1, S'_2)] \\leq V_W(S_1, S_2) + C_W",
+      "metadata": {
+        "label": "thm-inter-swarm-bounded-expansion"
+      },
+      "section": "## 12.2. Inter-Swarm Error Under Cloning",
+      "raw_directive": "7845: ### 12.2.1. Bounded Expansion of Inter-Swarm Error\n7846: \n7847: :::{prf:theorem} Bounded Expansion of Inter-Swarm Wasserstein Distance\n7848: :label: thm-inter-swarm-bounded-expansion\n7849: \n7850: For the coupled cloning operator acting on two swarms $(S_1, S_2)$, the expected change in the hypocoercive Wasserstein distance satisfies:\n7851: \n7852: $$\n7853: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W\n7854: $$\n7855: \n7856: where $V_W = W_h^2(\\mu_1, \\mu_2) = V_{\\text{loc}} + V_{\\text{struct}}$ is the total inter-swarm error and $C_W < \\infty$ is a state-independent constant.\n7857: \n7858: Equivalently:\n7859: \n7860: $$\n7861: \\mathbb{E}_{\\text{clone}}[V_W(S'_1, S'_2)] \\leq V_W(S_1, S_2) + C_W\n7862: $$"
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-thm-inter-swarm-bounded-expansion",
+      "title": null,
+      "start_line": 7864,
+      "end_line": 7956,
+      "header_lines": [
+        7865
+      ],
+      "content_start": 7866,
+      "content_end": 7955,
+      "content": "7866: :::{prf:proof}\n7867: :label: proof-thm-inter-swarm-bounded-expansion\n7868: **Proof.**\n7869: \n7870: The proof analyzes how the stochastic cloning mechanism affects the distance between the two swarms' empirical measures.\n7871: \n7872: **Step 1: Sources of inter-swarm divergence**\n7873: \n7874: The coupled cloning operator uses synchronous coupling for all randomness, but divergence still occurs through:\n7875: \n7876: 1. **Different companion selections:** Walker $i$ in swarm 1 may select companion $j$ while the same walker in swarm 2 selects companion $k \\neq j$\n7877: \n7878: 2. **Different cloning decisions:** The cloning scores $S_{1,i}$ and $S_{2,i}$ depend on the fitness potentials, which differ between swarms when the swarms are in different configurations\n7879: \n7880: 3. **Position jitter:** Even when both swarms make the same cloning decision, the Gaussian jitter $\\zeta_i^x$ adds independent noise to each swarm's walker positions\n7881: \n7882: **Step 2: Bounding location error expansion**\n7883: \n7884: The location error is:\n7885: \n7886: $$\n7887: V_{\\text{loc}} = \\|\\Delta\\mu_x\\|^2 + \\lambda_v \\|\\Delta\\mu_v\\|^2 + b\\langle\\Delta\\mu_x, \\Delta\\mu_v\\rangle\n7888: $$\n7889: \n7890: The barycenters change based on the cloning decisions. In the worst case, if walker $i$ clones in swarm 1 but not in swarm 2:\n7891: \n7892: $$\n7893: \\Delta\\mu'_x = \\Delta\\mu_x + \\frac{1}{N}(x'_{1,i} - x_{1,i}) - 0\n7894: $$\n7895: \n7896: Since positions are bounded within $\\mathcal{X}_{\\text{valid}}$:\n7897: \n7898: $$\n7899: \\|\\Delta\\mu'_x - \\Delta\\mu_x\\| \\leq \\frac{2D_{\\text{valid}}}{N}\n7900: $$\n7901: \n7902: Squaring and summing over all potential mismatches:\n7903: \n7904: $$\n7905: \\mathbb{E}[\\|\\Delta\\mu'_x\\|^2] \\leq \\|\\Delta\\mu_x\\|^2 + O(D_{\\text{valid}}^2)\n7906: $$\n7907: \n7908: Similarly for velocity barycenters.\n7909: \n7910: **Step 3: Bounding structural error expansion**\n7911: \n7912: The structural error $V_{\\text{struct}}$ measures the Wasserstein distance between centered empirical measures. When walkers clone:\n7913: \n7914: - **Synchronized cloning:** Both swarms clone walker $i$ to similar positions (same companion, same jitter) \u2192 minimal divergence\n7915: - **Desynchronized cloning:** Only one swarm clones walker $i$ \u2192 position divergence bounded by $D_{\\text{valid}}$\n7916: \n7917: The expected number of desynchronized events is bounded by the differences in cloning probabilities:\n7918: \n7919: $$\n7920: \\mathbb{E}[\\text{# desynchronized}] \\leq \\sum_{i=1}^N |p_{1,i} - p_{2,i}|\n7921: $$\n7922: \n7923: By the Lipschitz continuity of the cloning probability with respect to swarm configuration (proven in the framework document, Section 15.2):\n7924: \n7925: $$\n7926: |p_{1,i} - p_{2,i}| \\leq L_{\\text{clone}} \\cdot d_{\\text{Disp}}(S_1, S_2)\n7927: $$\n7928: \n7929: Combined with the bounded displacement per desynchronized event:\n7930: \n7931: $$\n7932: \\mathbb{E}[\\Delta V_{\\text{struct}}] \\leq N \\cdot L_{\\text{clone}} \\cdot d_{\\text{Disp}}(S_1, S_2) \\cdot D_{\\text{valid}}^2 + C_{\\text{jitter}}\n7933: $$\n7934: \n7935: **Step 4: Combine and use Wasserstein decomposition**\n7936: \n7937: From Lemma 3.2.3:\n7938: \n7939: $$\n7940: V_W = V_{\\text{loc}} + V_{\\text{struct}}\n7941: $$\n7942: \n7943: Combining the bounds from Steps 2-3:\n7944: \n7945: $$\n7946: \\mathbb{E}[\\Delta V_W] \\leq O(D_{\\text{valid}}^2) + O(N \\cdot d_{\\text{Disp}}(S_1, S_2)) + C_{\\text{jitter}}\n7947: $$\n7948: \n7949: In the drift analysis regime where we consider bounded swarm configurations, $d_{\\text{Disp}}(S_1, S_2)$ is bounded, yielding:\n7950: \n7951: $$\n7952: \\mathbb{E}[\\Delta V_W] \\leq C_W\n7953: $$\n7954: \n7955: for a state-independent constant $C_W$.",
+      "metadata": {
+        "label": "proof-thm-inter-swarm-bounded-expansion"
+      },
+      "section": "## 12.2. Inter-Swarm Error Under Cloning",
+      "raw_directive": "7864: :::\n7865: \n7866: :::{prf:proof}\n7867: :label: proof-thm-inter-swarm-bounded-expansion\n7868: **Proof.**\n7869: \n7870: The proof analyzes how the stochastic cloning mechanism affects the distance between the two swarms' empirical measures.\n7871: \n7872: **Step 1: Sources of inter-swarm divergence**\n7873: \n7874: The coupled cloning operator uses synchronous coupling for all randomness, but divergence still occurs through:\n7875: \n7876: 1. **Different companion selections:** Walker $i$ in swarm 1 may select companion $j$ while the same walker in swarm 2 selects companion $k \\neq j$\n7877: \n7878: 2. **Different cloning decisions:** The cloning scores $S_{1,i}$ and $S_{2,i}$ depend on the fitness potentials, which differ between swarms when the swarms are in different configurations\n7879: \n7880: 3. **Position jitter:** Even when both swarms make the same cloning decision, the Gaussian jitter $\\zeta_i^x$ adds independent noise to each swarm's walker positions\n7881: \n7882: **Step 2: Bounding location error expansion**\n7883: \n7884: The location error is:\n7885: \n7886: $$\n7887: V_{\\text{loc}} = \\|\\Delta\\mu_x\\|^2 + \\lambda_v \\|\\Delta\\mu_v\\|^2 + b\\langle\\Delta\\mu_x, \\Delta\\mu_v\\rangle\n7888: $$\n7889: \n7890: The barycenters change based on the cloning decisions. In the worst case, if walker $i$ clones in swarm 1 but not in swarm 2:\n7891: \n7892: $$\n7893: \\Delta\\mu'_x = \\Delta\\mu_x + \\frac{1}{N}(x'_{1,i} - x_{1,i}) - 0\n7894: $$\n7895: \n7896: Since positions are bounded within $\\mathcal{X}_{\\text{valid}}$:\n7897: \n7898: $$\n7899: \\|\\Delta\\mu'_x - \\Delta\\mu_x\\| \\leq \\frac{2D_{\\text{valid}}}{N}\n7900: $$\n7901: \n7902: Squaring and summing over all potential mismatches:\n7903: \n7904: $$\n7905: \\mathbb{E}[\\|\\Delta\\mu'_x\\|^2] \\leq \\|\\Delta\\mu_x\\|^2 + O(D_{\\text{valid}}^2)\n7906: $$\n7907: \n7908: Similarly for velocity barycenters.\n7909: \n7910: **Step 3: Bounding structural error expansion**\n7911: \n7912: The structural error $V_{\\text{struct}}$ measures the Wasserstein distance between centered empirical measures. When walkers clone:\n7913: \n7914: - **Synchronized cloning:** Both swarms clone walker $i$ to similar positions (same companion, same jitter) \u2192 minimal divergence\n7915: - **Desynchronized cloning:** Only one swarm clones walker $i$ \u2192 position divergence bounded by $D_{\\text{valid}}$\n7916: \n7917: The expected number of desynchronized events is bounded by the differences in cloning probabilities:\n7918: \n7919: $$\n7920: \\mathbb{E}[\\text{# desynchronized}] \\leq \\sum_{i=1}^N |p_{1,i} - p_{2,i}|\n7921: $$\n7922: \n7923: By the Lipschitz continuity of the cloning probability with respect to swarm configuration (proven in the framework document, Section 15.2):\n7924: \n7925: $$\n7926: |p_{1,i} - p_{2,i}| \\leq L_{\\text{clone}} \\cdot d_{\\text{Disp}}(S_1, S_2)\n7927: $$\n7928: \n7929: Combined with the bounded displacement per desynchronized event:\n7930: \n7931: $$\n7932: \\mathbb{E}[\\Delta V_{\\text{struct}}] \\leq N \\cdot L_{\\text{clone}} \\cdot d_{\\text{Disp}}(S_1, S_2) \\cdot D_{\\text{valid}}^2 + C_{\\text{jitter}}\n7933: $$\n7934: \n7935: **Step 4: Combine and use Wasserstein decomposition**\n7936: \n7937: From Lemma 3.2.3:\n7938: \n7939: $$\n7940: V_W = V_{\\text{loc}} + V_{\\text{struct}}\n7941: $$\n7942: \n7943: Combining the bounds from Steps 2-3:\n7944: \n7945: $$\n7946: \\mathbb{E}[\\Delta V_W] \\leq O(D_{\\text{valid}}^2) + O(N \\cdot d_{\\text{Disp}}(S_1, S_2)) + C_{\\text{jitter}}\n7947: $$\n7948: \n7949: In the drift analysis regime where we consider bounded swarm configurations, $d_{\\text{Disp}}(S_1, S_2)$ is bounded, yielding:\n7950: \n7951: $$\n7952: \\mathbb{E}[\\Delta V_W] \\leq C_W\n7953: $$\n7954: \n7955: for a state-independent constant $C_W$.\n7956: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-why-vw-expands",
+      "title": "Why Inter-Swarm Error Doesn't Contract Under Cloning",
+      "start_line": 7958,
+      "end_line": 7970,
+      "header_lines": [
+        7959
+      ],
+      "content_start": 7961,
+      "content_end": 7969,
+      "content": "7961: :label: rem-why-vw-expands\n7962: \n7963: The cloning operator **cannot contract** $V_W$ because:\n7964: \n7965: 1. **Intra-swarm mechanism:** Cloning acts **within** each swarm independently. It compares walker $i$ to its companion in the **same swarm**, not to the corresponding walker in the other swarm.\n7966: \n7967: 2. **No inter-swarm communication:** The fitness evaluation and companion selection have no information about the other swarm in the coupled analysis. They cannot \"know\" which direction reduces $V_W$.\n7968: \n7969: 3. **Stochastic desynchronization:** Even with synchronous coupling, different swarm configurations lead to different fitness landscapes, causing different cloning decisions that increase divergence.",
+      "metadata": {
+        "label": "rem-why-vw-expands"
+      },
+      "section": "## 12.2. Inter-Swarm Error Under Cloning",
+      "raw_directive": "7958: :::\n7959: \n7960: :::{prf:remark} Why Inter-Swarm Error Doesn't Contract Under Cloning\n7961: :label: rem-why-vw-expands\n7962: \n7963: The cloning operator **cannot contract** $V_W$ because:\n7964: \n7965: 1. **Intra-swarm mechanism:** Cloning acts **within** each swarm independently. It compares walker $i$ to its companion in the **same swarm**, not to the corresponding walker in the other swarm.\n7966: \n7967: 2. **No inter-swarm communication:** The fitness evaluation and companion selection have no information about the other swarm in the coupled analysis. They cannot \"know\" which direction reduces $V_W$.\n7968: \n7969: 3. **Stochastic desynchronization:** Even with synchronous coupling, different swarm configurations lead to different fitness landscapes, causing different cloning decisions that increase divergence.\n7970: "
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-component-bounds-vw",
+      "title": "Component-Wise Bounds on Inter-Swarm Error",
+      "start_line": 7976,
+      "end_line": 7989,
+      "header_lines": [
+        7977
+      ],
+      "content_start": 7979,
+      "content_end": 7988,
+      "content": "7979: :label: cor-component-bounds-vw\n7980: \n7981: The location and structural error components satisfy:\n7982: \n7983: $$\n7984: \\begin{aligned}\n7985: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] &\\leq C_{\\text{loc}} \\\\\n7986: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}] &\\leq C_{\\text{struct}}\n7987: \\end{aligned}\n7988: $$",
+      "metadata": {
+        "label": "cor-component-bounds-vw"
+      },
+      "section": "## 12.2. Inter-Swarm Error Under Cloning",
+      "raw_directive": "7976: For completeness, we state the separate bounds on the location and structural components.\n7977: \n7978: :::{prf:corollary} Component-Wise Bounds on Inter-Swarm Error\n7979: :label: cor-component-bounds-vw\n7980: \n7981: The location and structural error components satisfy:\n7982: \n7983: $$\n7984: \\begin{aligned}\n7985: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] &\\leq C_{\\text{loc}} \\\\\n7986: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}] &\\leq C_{\\text{struct}}\n7987: \\end{aligned}\n7988: $$\n7989: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-complete-wasserstein-drift",
+      "title": "Complete Wasserstein Decomposition Drift",
+      "start_line": 7991,
+      "end_line": 8030,
+      "header_lines": [
+        7992
+      ],
+      "content_start": 7994,
+      "content_end": 8029,
+      "content": "7994: :label: thm-complete-wasserstein-drift\n7995: \n7996: The total inter-swarm Wasserstein distance $V_W = V_{\\text{loc}} + V_{\\text{struct}}$ satisfies a combined drift inequality under the cloning operator:\n7997: \n7998: $$\n7999: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W\n8000: $$\n8001: \n8002: where $C_W < \\infty$ is a state-independent constant satisfying:\n8003: \n8004: $$\n8005: C_W = C_{\\text{loc}} + C_{\\text{struct}}\n8006: $$\n8007: \n8008: **Component Bounds:**\n8009: \n8010: From {prf:ref}`cor-component-bounds-vw`, the individual components satisfy:\n8011: \n8012: $$\n8013: \\begin{aligned}\n8014: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] &\\leq C_{\\text{loc}} \\\\\n8015: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}] &\\leq C_{\\text{struct}}\n8016: \\end{aligned}\n8017: $$\n8018: \n8019: where:\n8020: - $C_{\\text{loc}}$ arises from barycenter desynchronization due to differential cloning rates\n8021: - $C_{\\text{struct}}$ arises from jitter noise and structural rearrangement during cloning\n8022: \n8023: **Note on Kinetic Contraction:**\n8024: \n8025: While the cloning operator allows bounded expansion of $V_W$, the **kinetic operator** provides contraction. From hypocoercive analysis (Chapter 4 of companion document):\n8026: \n8027: $$\n8028: \\mathbb{E}_{\\text{kin}}[\\Delta V_W] \\leq -\\kappa_W^{\\text{kin}} \\tau V_W + C_W^{\\text{kin}} \\tau\n8029: $$",
+      "metadata": {
+        "label": "thm-complete-wasserstein-drift"
+      },
+      "section": "## 12.2. Inter-Swarm Error Under Cloning",
+      "raw_directive": "7991: :::\n7992: \n7993: :::{prf:theorem} Complete Wasserstein Decomposition Drift\n7994: :label: thm-complete-wasserstein-drift\n7995: \n7996: The total inter-swarm Wasserstein distance $V_W = V_{\\text{loc}} + V_{\\text{struct}}$ satisfies a combined drift inequality under the cloning operator:\n7997: \n7998: $$\n7999: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W\n8000: $$\n8001: \n8002: where $C_W < \\infty$ is a state-independent constant satisfying:\n8003: \n8004: $$\n8005: C_W = C_{\\text{loc}} + C_{\\text{struct}}\n8006: $$\n8007: \n8008: **Component Bounds:**\n8009: \n8010: From {prf:ref}`cor-component-bounds-vw`, the individual components satisfy:\n8011: \n8012: $$\n8013: \\begin{aligned}\n8014: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] &\\leq C_{\\text{loc}} \\\\\n8015: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}] &\\leq C_{\\text{struct}}\n8016: \\end{aligned}\n8017: $$\n8018: \n8019: where:\n8020: - $C_{\\text{loc}}$ arises from barycenter desynchronization due to differential cloning rates\n8021: - $C_{\\text{struct}}$ arises from jitter noise and structural rearrangement during cloning\n8022: \n8023: **Note on Kinetic Contraction:**\n8024: \n8025: While the cloning operator allows bounded expansion of $V_W$, the **kinetic operator** provides contraction. From hypocoercive analysis (Chapter 4 of companion document):\n8026: \n8027: $$\n8028: \\mathbb{E}_{\\text{kin}}[\\Delta V_W] \\leq -\\kappa_W^{\\text{kin}} \\tau V_W + C_W^{\\text{kin}} \\tau\n8029: $$\n8030: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-thm-complete-wasserstein-drift",
+      "title": null,
+      "start_line": 8032,
+      "end_line": 8075,
+      "header_lines": [
+        8033
+      ],
+      "content_start": 8034,
+      "content_end": 8074,
+      "content": "8034: :::{prf:proof}\n8035: :label: proof-thm-complete-wasserstein-drift\n8036: **Proof.**\n8037: \n8038: By linearity of expectation and the Wasserstein decomposition {prf:ref}`lem-wasserstein-decomposition`:\n8039: \n8040: $$\n8041: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] = \\mathbb{E}_{\\text{clone}}[\\Delta(V_{\\text{loc}} + V_{\\text{struct}})]\n8042: $$\n8043: \n8044: $$\n8045: = \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}]\n8046: $$\n8047: \n8048: Applying the component bounds from {prf:ref}`cor-component-bounds-vw`:\n8049: \n8050: $$\n8051: \\leq C_{\\text{loc}} + C_{\\text{struct}} =: C_W\n8052: $$\n8053: \n8054: This establishes the combined drift bound.\n8055: \n8056: **Explicit Constants:**\n8057: \n8058: From the proof of Theorem 12.2.1:\n8059: \n8060: **Location Expansion:** $C_{\\text{loc}}$ arises from the differential expected clone positions between swarms:\n8061: \n8062: $$\n8063: C_{\\text{loc}} = O\\left(\\mathbb{E}\\left[\\left\\|\\mathbb{E}_{c_1 \\sim \\mathcal{C}_i(S_1)}[x_{c_1}] - \\mathbb{E}_{c_2 \\sim \\mathcal{C}_i(S_2)}[x_{c_2}]\\right\\|^2\\right]\\right)\n8064: $$\n8065: \n8066: which is bounded by the domain diameter and companion selection variance.\n8067: \n8068: **Structural Expansion:** $C_{\\text{struct}}$ is dominated by position jitter:\n8069: \n8070: $$\n8071: C_{\\text{struct}} = O(\\sigma_x^2 f_{\\text{clone}})\n8072: $$\n8073: \n8074: where $f_{\\text{clone}}$ is the expected fraction of walkers that clone per step and $\\sigma_x^2$ is the jitter variance.",
+      "metadata": {
+        "label": "proof-thm-complete-wasserstein-drift"
+      },
+      "section": "## 12.2. Inter-Swarm Error Under Cloning",
+      "raw_directive": "8032: :::\n8033: \n8034: :::{prf:proof}\n8035: :label: proof-thm-complete-wasserstein-drift\n8036: **Proof.**\n8037: \n8038: By linearity of expectation and the Wasserstein decomposition {prf:ref}`lem-wasserstein-decomposition`:\n8039: \n8040: $$\n8041: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] = \\mathbb{E}_{\\text{clone}}[\\Delta(V_{\\text{loc}} + V_{\\text{struct}})]\n8042: $$\n8043: \n8044: $$\n8045: = \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}]\n8046: $$\n8047: \n8048: Applying the component bounds from {prf:ref}`cor-component-bounds-vw`:\n8049: \n8050: $$\n8051: \\leq C_{\\text{loc}} + C_{\\text{struct}} =: C_W\n8052: $$\n8053: \n8054: This establishes the combined drift bound.\n8055: \n8056: **Explicit Constants:**\n8057: \n8058: From the proof of Theorem 12.2.1:\n8059: \n8060: **Location Expansion:** $C_{\\text{loc}}$ arises from the differential expected clone positions between swarms:\n8061: \n8062: $$\n8063: C_{\\text{loc}} = O\\left(\\mathbb{E}\\left[\\left\\|\\mathbb{E}_{c_1 \\sim \\mathcal{C}_i(S_1)}[x_{c_1}] - \\mathbb{E}_{c_2 \\sim \\mathcal{C}_i(S_2)}[x_{c_2}]\\right\\|^2\\right]\\right)\n8064: $$\n8065: \n8066: which is bounded by the domain diameter and companion selection variance.\n8067: \n8068: **Structural Expansion:** $C_{\\text{struct}}$ is dominated by position jitter:\n8069: \n8070: $$\n8071: C_{\\text{struct}} = O(\\sigma_x^2 f_{\\text{clone}})\n8072: $$\n8073: \n8074: where $f_{\\text{clone}}$ is the expected fraction of walkers that clone per step and $\\sigma_x^2$ is the jitter variance.\n8075: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "chapter_index": 24,
+  "section_id": "## 7.2 Quantum Phase Transitions and Entanglement",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "proposition",
+      "label": "prop-entanglement-curvature",
+      "title": "Entanglement and Curvature",
+      "start_line": 3358,
+      "end_line": 3370,
+      "header_lines": [
+        3359
+      ],
+      "content_start": 3361,
+      "content_end": 3369,
+      "content": "3361: :label: prop-entanglement-curvature\n3362: \n3363: For a bipartite quantum system with subsystems $A$ and $B$, the Bures curvature at a quantum critical point satisfies:\n3364: \n3365: $$\n3366: R_{\\text{Bures}} \\sim S_{\\text{ent}}^2\n3367: $$\n3368: \n3369: where $S_{\\text{ent}} = -\\text{Tr}_A(\\rho_A \\log \\rho_A)$ is the **entanglement entropy** of subsystem $A$.",
+      "metadata": {
+        "label": "prop-entanglement-curvature"
+      },
+      "section": "## 7.2 Quantum Phase Transitions and Entanglement",
+      "raw_directive": "3358: Quantum phase transitions exhibit **entanglement signatures** in the Bures/Ruppeiner geometry.\n3359: \n3360: :::{prf:proposition} Entanglement and Curvature\n3361: :label: prop-entanglement-curvature\n3362: \n3363: For a bipartite quantum system with subsystems $A$ and $B$, the Bures curvature at a quantum critical point satisfies:\n3364: \n3365: $$\n3366: R_{\\text{Bures}} \\sim S_{\\text{ent}}^2\n3367: $$\n3368: \n3369: where $S_{\\text{ent}} = -\\text{Tr}_A(\\rho_A \\log \\rho_A)$ is the **entanglement entropy** of subsystem $A$.\n3370: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-17",
+      "title": null,
+      "start_line": 3372,
+      "end_line": 3399,
+      "header_lines": [],
+      "content_start": 3374,
+      "content_end": 3398,
+      "content": "3374: :::{prf:proof}\n3375: \n3376: **Step 1**: Entanglement contribution to Fisher information.\n3377: \n3378: The quantum Fisher information detects entanglement via:\n3379: \n3380: $$\n3381: g_{\\text{Bures}}^{\\theta\\theta} = 4\\sum_{m \\neq n} \\frac{|\\langle m | \\partial_\\theta \\hat{\\rho} | n \\rangle|^2}{\\rho_m + \\rho_n}\n3382: $$\n3383: \n3384: For highly entangled states, the off-diagonal matrix elements $\\langle m | \\partial_\\theta \\hat{\\rho} | n \\rangle$ are large (many states participate in the transition).\n3385: \n3386: **Step 2**: Curvature scaling.\n3387: \n3388: The Bures curvature involves second derivatives of the metric, which scale as:\n3389: \n3390: $$\n3391: R \\sim \\frac{\\partial^2 g}{\\partial \\theta^2} \\sim \\frac{\\partial^2 S_{\\text{ent}}}{\\partial \\theta^2}\n3392: $$\n3393: \n3394: At a quantum critical point, entanglement entropy exhibits a logarithmic divergence:\n3395: \n3396: $$\n3397: S_{\\text{ent}} \\sim c \\log L\n3398: $$",
+      "metadata": {},
+      "section": "## 7.2 Quantum Phase Transitions and Entanglement",
+      "raw_directive": "3372: :::\n3373: \n3374: :::{prf:proof}\n3375: \n3376: **Step 1**: Entanglement contribution to Fisher information.\n3377: \n3378: The quantum Fisher information detects entanglement via:\n3379: \n3380: $$\n3381: g_{\\text{Bures}}^{\\theta\\theta} = 4\\sum_{m \\neq n} \\frac{|\\langle m | \\partial_\\theta \\hat{\\rho} | n \\rangle|^2}{\\rho_m + \\rho_n}\n3382: $$\n3383: \n3384: For highly entangled states, the off-diagonal matrix elements $\\langle m | \\partial_\\theta \\hat{\\rho} | n \\rangle$ are large (many states participate in the transition).\n3385: \n3386: **Step 2**: Curvature scaling.\n3387: \n3388: The Bures curvature involves second derivatives of the metric, which scale as:\n3389: \n3390: $$\n3391: R \\sim \\frac{\\partial^2 g}{\\partial \\theta^2} \\sim \\frac{\\partial^2 S_{\\text{ent}}}{\\partial \\theta^2}\n3392: $$\n3393: \n3394: At a quantum critical point, entanglement entropy exhibits a logarithmic divergence:\n3395: \n3396: $$\n3397: S_{\\text{ent}} \\sim c \\log L\n3398: $$\n3399: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

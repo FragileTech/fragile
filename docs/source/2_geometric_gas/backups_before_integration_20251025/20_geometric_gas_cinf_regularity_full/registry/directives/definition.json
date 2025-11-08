@@ -1,0 +1,159 @@
+{
+  "document_id": "20_geometric_gas_cinf_regularity_full",
+  "stage": "directives",
+  "directive_type": "definition",
+  "generated_at": "2025-11-08T17:07:43.286924+00:00",
+  "count": 6,
+  "items": [
+    {
+      "directive_type": "definition",
+      "label": "def-effective-counts-two-scales",
+      "title": "Effective Interaction Counts (Two Scales)",
+      "start_line": 191,
+      "end_line": 241,
+      "header_lines": [
+        192
+      ],
+      "content_start": 194,
+      "content_end": 240,
+      "content": "194: :label: def-effective-counts-two-scales\n195: \n196: **1. Softmax Effective Companions** (scale $\\varepsilon_c$):\n197: \n198: $$\n199: k_{\\text{eff}}^{(\\varepsilon_c)}(i) := \\left|\\left\\{\\ell \\in \\mathcal{A} : d_{\\text{alg}}(i,\\ell) \\leq R_{\\text{eff}}^{(\\varepsilon_c)}\\right\\}\\right|\n200: $$\n201: \n202: where:\n203: \n204: $$\n205: R_{\\text{eff}}^{(\\varepsilon_c)} = \\varepsilon_c \\sqrt{C_{\\text{comp}}^2 + 2\\log(k^2)}\n206: $$\n207: \n208: **Scaling**:\n209: \n210: $$\n211: k_{\\text{eff}}^{(\\varepsilon_c)}(i) = O(\\rho_{\\max} \\cdot \\varepsilon_c^{2d} \\cdot (\\log k)^d)\n212: $$\n213: \n214: **Properties**:\n215: - Grows logarithmically with $k$\n216: - NOT k-uniform\n217: - Controls softmax companion sums over $\\ell$\n218: \n219: **2. Localization Effective Neighbors** (scale $\\rho$):\n220: \n221: $$\n222: k_{\\text{eff}}^{(\\rho)}(i) := \\left|\\left\\{j \\in \\mathcal{A} : d_{\\text{alg}}(i,j) \\leq R_{\\text{eff}}^{(\\rho)}\\right\\}\\right|\n223: $$\n224: \n225: where:\n226: \n227: $$\n228: R_{\\text{eff}}^{(\\rho)} = C_\\rho \\cdot \\rho\n229: $$\n230: \n231: for some constant $C_\\rho$ independent of $k$.\n232: \n233: **Scaling**:\n234: \n235: $$\n236: k_{\\text{eff}}^{(\\rho)}(i) = O(\\rho_{\\max} \\cdot \\rho^{2d})\n237: $$\n238: \n239: **Properties**:\n240: - Independent of $k$",
+      "metadata": {
+        "label": "def-effective-counts-two-scales"
+      },
+      "section": "## 1. Introduction",
+      "raw_directive": "191: The Geometric Gas fitness potential involves **two distinct spatial scales** with separate effective interaction counts. It is crucial to distinguish these to understand which bounds are k-uniform.\n192: \n193: :::{prf:definition} Effective Interaction Counts (Two Scales)\n194: :label: def-effective-counts-two-scales\n195: \n196: **1. Softmax Effective Companions** (scale $\\varepsilon_c$):\n197: \n198: $$\n199: k_{\\text{eff}}^{(\\varepsilon_c)}(i) := \\left|\\left\\{\\ell \\in \\mathcal{A} : d_{\\text{alg}}(i,\\ell) \\leq R_{\\text{eff}}^{(\\varepsilon_c)}\\right\\}\\right|\n200: $$\n201: \n202: where:\n203: \n204: $$\n205: R_{\\text{eff}}^{(\\varepsilon_c)} = \\varepsilon_c \\sqrt{C_{\\text{comp}}^2 + 2\\log(k^2)}\n206: $$\n207: \n208: **Scaling**:\n209: \n210: $$\n211: k_{\\text{eff}}^{(\\varepsilon_c)}(i) = O(\\rho_{\\max} \\cdot \\varepsilon_c^{2d} \\cdot (\\log k)^d)\n212: $$\n213: \n214: **Properties**:\n215: - Grows logarithmically with $k$\n216: - NOT k-uniform\n217: - Controls softmax companion sums over $\\ell$\n218: \n219: **2. Localization Effective Neighbors** (scale $\\rho$):\n220: \n221: $$\n222: k_{\\text{eff}}^{(\\rho)}(i) := \\left|\\left\\{j \\in \\mathcal{A} : d_{\\text{alg}}(i,j) \\leq R_{\\text{eff}}^{(\\rho)}\\right\\}\\right|\n223: $$\n224: \n225: where:\n226: \n227: $$\n228: R_{\\text{eff}}^{(\\rho)} = C_\\rho \\cdot \\rho\n229: $$\n230: \n231: for some constant $C_\\rho$ independent of $k$.\n232: \n233: **Scaling**:\n234: \n235: $$\n236: k_{\\text{eff}}^{(\\rho)}(i) = O(\\rho_{\\max} \\cdot \\rho^{2d})\n237: $$\n238: \n239: **Properties**:\n240: - Independent of $k$\n241: - **k-uniform** ✓",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "20_geometric_gas_cinf_regularity_full",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
+        "section_id": "## 1. Introduction"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-smooth-phase-space-partition-full",
+      "title": "Smooth Phase-Space Partition",
+      "start_line": 1128,
+      "end_line": 1157,
+      "header_lines": [
+        1129
+      ],
+      "content_start": 1131,
+      "content_end": 1156,
+      "content": "1131: :label: def-smooth-phase-space-partition-full\n1132: \n1133: Fix a clustering scale $\\varepsilon_c > 0$ and cluster centers $\\{(y_m, u_m)\\}_{m=1}^M$ in phase space.\n1134: \n1135: A **smooth partition of unity** is a collection of functions $\\{\\psi_m : \\mathcal{X} \\times \\mathbb{R}^d \\to [0,1]\\}_{m=1}^M$ satisfying:\n1136: \n1137: 1. **Partition identity**:\n1138: \n1139: $$\n1140: \\sum_{m=1}^M \\psi_m(x, v) = 1 \\quad \\text{for all } (x, v) \\in \\mathcal{X} \\times \\mathbb{R}^d\n1141: \n1142: $$\n1143: \n1144: 2. **Smoothness**: Each $\\psi_m \\in C^\\infty$ with bounded derivatives:\n1145: \n1146: $$\n1147: \\|\\nabla^n \\psi_m\\|_\\infty \\leq C_{\\psi,n} \\cdot \\varepsilon_c^{-n} \\quad \\text{for all } n \\geq 0\n1148: \n1149: $$\n1150: \n1151: 3. **Localization**: Each $\\psi_m$ has support concentrated near cluster $m$:\n1152: \n1153: $$\n1154: \\psi_m(x, v) = 0 \\quad \\text{when } d_{\\text{alg}}((x,v), (y_m, u_m)) > 2\\varepsilon_c\n1155: \n1156: $$",
+      "metadata": {
+        "label": "def-smooth-phase-space-partition-full"
+      },
+      "section": "## 3. Smooth Phase-Space Clustering",
+      "raw_directive": "1128: We construct a **smooth partition of unity** on phase space that avoids the discontinuity problems of hard clustering.\n1129: \n1130: :::{prf:definition} Smooth Phase-Space Partition\n1131: :label: def-smooth-phase-space-partition-full\n1132: \n1133: Fix a clustering scale $\\varepsilon_c > 0$ and cluster centers $\\{(y_m, u_m)\\}_{m=1}^M$ in phase space.\n1134: \n1135: A **smooth partition of unity** is a collection of functions $\\{\\psi_m : \\mathcal{X} \\times \\mathbb{R}^d \\to [0,1]\\}_{m=1}^M$ satisfying:\n1136: \n1137: 1. **Partition identity**:\n1138: \n1139: $$\n1140: \\sum_{m=1}^M \\psi_m(x, v) = 1 \\quad \\text{for all } (x, v) \\in \\mathcal{X} \\times \\mathbb{R}^d\n1141: \n1142: $$\n1143: \n1144: 2. **Smoothness**: Each $\\psi_m \\in C^\\infty$ with bounded derivatives:\n1145: \n1146: $$\n1147: \\|\\nabla^n \\psi_m\\|_\\infty \\leq C_{\\psi,n} \\cdot \\varepsilon_c^{-n} \\quad \\text{for all } n \\geq 0\n1148: \n1149: $$\n1150: \n1151: 3. **Localization**: Each $\\psi_m$ has support concentrated near cluster $m$:\n1152: \n1153: $$\n1154: \\psi_m(x, v) = 0 \\quad \\text{when } d_{\\text{alg}}((x,v), (y_m, u_m)) > 2\\varepsilon_c\n1155: \n1156: $$\n1157: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "20_geometric_gas_cinf_regularity_full",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 3. Smooth Phase-Space Clustering"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-soft-cluster-membership-full",
+      "title": "Soft Cluster Membership Weights",
+      "start_line": 1266,
+      "end_line": 1280,
+      "header_lines": [
+        1267
+      ],
+      "content_start": 1269,
+      "content_end": 1279,
+      "content": "1269: :label: def-soft-cluster-membership-full\n1270: \n1271: For walker $j \\in \\mathcal{A}$, define its **soft membership** in cluster $m$ as:\n1272: \n1273: $$\n1274: \\alpha_{j,m} = \\psi_m(x_j, v_j) \\in [0, 1]\n1275: \n1276: $$\n1277: \n1278: This satisfies:\n1279: - $\\sum_{m=1}^M \\alpha_{j,m} = 1$ (walker belongs to all clusters with fractional weights)",
+      "metadata": {
+        "label": "def-soft-cluster-membership-full"
+      },
+      "section": "## 3. Smooth Phase-Space Clustering",
+      "raw_directive": "1266: ### 3.2 Cluster Assignment via Soft Membership\n1267: \n1268: :::{prf:definition} Soft Cluster Membership Weights\n1269: :label: def-soft-cluster-membership-full\n1270: \n1271: For walker $j \\in \\mathcal{A}$, define its **soft membership** in cluster $m$ as:\n1272: \n1273: $$\n1274: \\alpha_{j,m} = \\psi_m(x_j, v_j) \\in [0, 1]\n1275: \n1276: $$\n1277: \n1278: This satisfies:\n1279: - $\\sum_{m=1}^M \\alpha_{j,m} = 1$ (walker belongs to all clusters with fractional weights)\n1280: - $\\alpha_{j,m} \\geq 1/2$ if $d_{\\text{alg}}(j, m) \\leq \\varepsilon_c/2$ (strong membership near center)",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "20_geometric_gas_cinf_regularity_full",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 3. Smooth Phase-Space Clustering"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-effective-cluster-population-full",
+      "title": "Effective Cluster Population",
+      "start_line": 1286,
+      "end_line": 1297,
+      "header_lines": [
+        1287
+      ],
+      "content_start": 1289,
+      "content_end": 1296,
+      "content": "1289: :label: def-effective-cluster-population-full\n1290: \n1291: The **effective number of walkers** in cluster $m$ is:\n1292: \n1293: $$\n1294: k_m^{\\text{eff}} = \\sum_{j \\in \\mathcal{A}} \\alpha_{j,m} = \\sum_{j \\in \\mathcal{A}} \\psi_m(x_j, v_j)\n1295: \n1296: $$",
+      "metadata": {
+        "label": "def-effective-cluster-population-full"
+      },
+      "section": "## 3. Smooth Phase-Space Clustering",
+      "raw_directive": "1286: ### 3.3 Effective Cluster Size\n1287: \n1288: :::{prf:definition} Effective Cluster Population\n1289: :label: def-effective-cluster-population-full\n1290: \n1291: The **effective number of walkers** in cluster $m$ is:\n1292: \n1293: $$\n1294: k_m^{\\text{eff}} = \\sum_{j \\in \\mathcal{A}} \\alpha_{j,m} = \\sum_{j \\in \\mathcal{A}} \\psi_m(x_j, v_j)\n1295: \n1296: $$\n1297: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "20_geometric_gas_cinf_regularity_full",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 3. Smooth Phase-Space Clustering"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-diversity-pairing-cinf",
+      "title": "Sequential Stochastic Greedy Pairing (From 03_cloning.md)",
+      "start_line": 2183,
+      "end_line": 2200,
+      "header_lines": [
+        2184
+      ],
+      "content_start": 2186,
+      "content_end": 2199,
+      "content": "2186: :label: def-diversity-pairing-cinf\n2187: \n2188: From Definition 5.1.2 in `docs/source/1_euclidean_gas/03_cloning.md`:\n2189: \n2190: **Inputs**: Alive walkers $\\mathcal{A}_t = \\{w_1, \\ldots, w_k\\}$, interaction range $\\varepsilon_d > 0$\n2191: \n2192: **Operation** (Algorithm 5.1):\n2193: 1. Initialize unpaired set $U \\leftarrow \\mathcal{A}_t$, empty companion map $c$\n2194: 2. While $|U| > 1$:\n2195:    - Select walker $i$ from $U$, remove from $U$\n2196:    - For each $j \\in U$, compute weight: $w_{ij} := \\exp\\left(-\\frac{d_{\\text{alg}}(i, j)^2}{2\\varepsilon_d^2}\\right)$\n2197:    - Sample companion $c_i$ from softmax distribution: $P(j) = w_{ij} / \\sum_{\\ell \\in U} w_{i\\ell}$\n2198:    - Remove $c_i$ from $U$\n2199:    - Set bidirectional pairing: $c(i) \\leftarrow c_i$ and $c(c_i) \\leftarrow i$",
+      "metadata": {
+        "label": "def-diversity-pairing-cinf"
+      },
+      "section": "## 5.6 Diversity Pairing Mechanism Analysis",
+      "raw_directive": "2183: ### 5.6.1 Diversity Pairing Definition\n2184: \n2185: :::{prf:definition} Sequential Stochastic Greedy Pairing (From 03_cloning.md)\n2186: :label: def-diversity-pairing-cinf\n2187: \n2188: From Definition 5.1.2 in `docs/source/1_euclidean_gas/03_cloning.md`:\n2189: \n2190: **Inputs**: Alive walkers $\\mathcal{A}_t = \\{w_1, \\ldots, w_k\\}$, interaction range $\\varepsilon_d > 0$\n2191: \n2192: **Operation** (Algorithm 5.1):\n2193: 1. Initialize unpaired set $U \\leftarrow \\mathcal{A}_t$, empty companion map $c$\n2194: 2. While $|U| > 1$:\n2195:    - Select walker $i$ from $U$, remove from $U$\n2196:    - For each $j \\in U$, compute weight: $w_{ij} := \\exp\\left(-\\frac{d_{\\text{alg}}(i, j)^2}{2\\varepsilon_d^2}\\right)$\n2197:    - Sample companion $c_i$ from softmax distribution: $P(j) = w_{ij} / \\sum_{\\ell \\in U} w_{i\\ell}$\n2198:    - Remove $c_i$ from $U$\n2199:    - Set bidirectional pairing: $c(i) \\leftarrow c_i$ and $c(c_i) \\leftarrow i$\n2200: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "20_geometric_gas_cinf_regularity_full",
+        "chapter_index": 9,
+        "chapter_file": "chapter_9.json",
+        "section_id": "## 5.6 Diversity Pairing Mechanism Analysis"
+      }
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-idealized-pairing-cinf",
+      "title": "Idealized Spatially-Aware Pairing (From 03_cloning.md)",
+      "start_line": 2202,
+      "end_line": 2222,
+      "header_lines": [
+        2203
+      ],
+      "content_start": 2205,
+      "content_end": 2221,
+      "content": "2205: :label: def-idealized-pairing-cinf\n2206: \n2207: From Definition 5.1.1 in `03_cloning.md`:\n2208: \n2209: The idealized model assigns probability to each perfect matching $M \\in \\mathcal{M}_k$ via:\n2210: \n2211: $$\n2212: P_{\\text{ideal}}(M | S) = \\frac{W(M)}{\\sum_{M' \\in \\mathcal{M}_k} W(M')}\n2213: \n2214: $$\n2215: \n2216: where the matching quality is:\n2217: \n2218: $$\n2219: W(M) := \\prod_{(i,j) \\in M} \\exp\\left(-\\frac{d_{\\text{alg}}(i, j)^2}{2\\varepsilon_d^2}\\right)\n2220: \n2221: $$",
+      "metadata": {
+        "label": "def-idealized-pairing-cinf"
+      },
+      "section": "## 5.6 Diversity Pairing Mechanism Analysis",
+      "raw_directive": "2202: :::\n2203: \n2204: :::{prf:definition} Idealized Spatially-Aware Pairing (From 03_cloning.md)\n2205: :label: def-idealized-pairing-cinf\n2206: \n2207: From Definition 5.1.1 in `03_cloning.md`:\n2208: \n2209: The idealized model assigns probability to each perfect matching $M \\in \\mathcal{M}_k$ via:\n2210: \n2211: $$\n2212: P_{\\text{ideal}}(M | S) = \\frac{W(M)}{\\sum_{M' \\in \\mathcal{M}_k} W(M')}\n2213: \n2214: $$\n2215: \n2216: where the matching quality is:\n2217: \n2218: $$\n2219: W(M) := \\prod_{(i,j) \\in M} \\exp\\left(-\\frac{d_{\\text{alg}}(i, j)^2}{2\\varepsilon_d^2}\\right)\n2220: \n2221: $$\n2222: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "20_geometric_gas_cinf_regularity_full",
+        "chapter_index": 9,
+        "chapter_file": "chapter_9.json",
+        "section_id": "## 5.6 Diversity Pairing Mechanism Analysis"
+      }
+    }
+  ]
+}

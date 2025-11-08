@@ -1,0 +1,75 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 3. Kramers-Smoluchowski Reduction",
+  "directive_count": 4,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-timescale-separation-overdamped",
+      "title": "Timescale Separation in Overdamped Limit",
+      "start_line": 172,
+      "end_line": 190,
+      "header_lines": [
+        173
+      ],
+      "content_start": 175,
+      "content_end": 189,
+      "content": "175: :label: thm-timescale-separation-overdamped\n176: \n177: Consider the Stratonovich Langevin system {prf:ref}`def-adaptive-gas-stratonovich-sde` in the regime where the friction coefficient is large: $\\gamma \\gg 1$.\n178: \n179: There is a **timescale separation** between velocity and position dynamics:\n180: \n181: $$\n182: \\tau_v \\ll \\tau_x\n183: $$\n184: \n185: where:\n186: - $\\tau_v \\sim \\gamma^{-1}$: Velocity thermalization time (fast)\n187: - $\\tau_x \\sim \\ell^2 \\gamma / T$: Spatial diffusion time over length scale $\\ell$ (slow)\n188: \n189: **Consequence:** On timescales $t \\gg \\gamma^{-1}$, velocities have equilibrated to a **quasi-equilibrium** Maxwell-Boltzmann distribution at each position $x$, and the spatial dynamics can be described by an **effective overdamped Langevin equation** (Kramers-Smoluchowski limit).",
+      "metadata": {
+        "label": "thm-timescale-separation-overdamped"
+      },
+      "section": "## 3. Kramers-Smoluchowski Reduction",
+      "raw_directive": "172: ### 3.1. High-Friction Limit and Timescale Separation\n173: \n174: :::{prf:theorem} Timescale Separation in Overdamped Limit\n175: :label: thm-timescale-separation-overdamped\n176: \n177: Consider the Stratonovich Langevin system {prf:ref}`def-adaptive-gas-stratonovich-sde` in the regime where the friction coefficient is large: $\\gamma \\gg 1$.\n178: \n179: There is a **timescale separation** between velocity and position dynamics:\n180: \n181: $$\n182: \\tau_v \\ll \\tau_x\n183: $$\n184: \n185: where:\n186: - $\\tau_v \\sim \\gamma^{-1}$: Velocity thermalization time (fast)\n187: - $\\tau_x \\sim \\ell^2 \\gamma / T$: Spatial diffusion time over length scale $\\ell$ (slow)\n188: \n189: **Consequence:** On timescales $t \\gg \\gamma^{-1}$, velocities have equilibrated to a **quasi-equilibrium** Maxwell-Boltzmann distribution at each position $x$, and the spatial dynamics can be described by an **effective overdamped Langevin equation** (Kramers-Smoluchowski limit).\n190: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-23",
+      "title": null,
+      "start_line": 192,
+      "end_line": 232,
+      "header_lines": [],
+      "content_start": 193,
+      "content_end": 231,
+      "content": "193: \n194: :::{prf:proof}\n195: **Step 1: Velocity autocorrelation**\n196: \n197: From the O-step (Ornstein-Uhlenbeck process) in the BAOAB integrator ({prf:ref}`def-baoab-kernel` in {doc}`02_computational_equivalence.md`):\n198: \n199: $$\n200: v^{(2)} = e^{-\\gamma \\Delta t} v^{(1)} + \\sqrt{\\frac{T}{\\gamma}(1 - e^{-2\\gamma \\Delta t})} \\, \\xi\n201: $$\n202: \n203: The velocity autocorrelation decays exponentially:\n204: \n205: $$\n206: \\langle v(t) \\cdot v(0) \\rangle \\sim e^{-\\gamma t}\n207: $$\n208: \n209: giving relaxation time $\\tau_v = \\gamma^{-1}$.\n210: \n211: **Step 2: Spatial diffusion constant**\n212: \n213: After velocity marginalization (see \u00a73.2), the effective spatial diffusion constant is:\n214: \n215: $$\n216: D_{\\text{eff}} = \\frac{T}{\\gamma} g(x)^{-1}\n217: $$\n218: \n219: The time to diffuse distance $\\ell$ is:\n220: \n221: $$\n222: \\tau_{\\text{diff}}(\\ell) \\sim \\frac{\\ell^2}{D_{\\text{eff}}} \\sim \\frac{\\ell^2 \\gamma}{T}\n223: $$\n224: \n225: **Step 3: Timescale ratio**\n226: \n227: For the thermal coherence length $\\ell = \\epsilon_c := \\sqrt{T/\\gamma}$:\n228: \n229: $$\n230: \\frac{\\tau_v}{\\tau_x} = \\frac{\\gamma^{-1}}{\\epsilon_c^2 \\gamma / T} = \\frac{T}{\\gamma^2 \\epsilon_c^2} = \\frac{1}{\\gamma} \\ll 1\n231: $$",
+      "metadata": {},
+      "section": "## 3. Kramers-Smoluchowski Reduction",
+      "raw_directive": "192: :::\n193: \n194: :::{prf:proof}\n195: **Step 1: Velocity autocorrelation**\n196: \n197: From the O-step (Ornstein-Uhlenbeck process) in the BAOAB integrator ({prf:ref}`def-baoab-kernel` in {doc}`02_computational_equivalence.md`):\n198: \n199: $$\n200: v^{(2)} = e^{-\\gamma \\Delta t} v^{(1)} + \\sqrt{\\frac{T}{\\gamma}(1 - e^{-2\\gamma \\Delta t})} \\, \\xi\n201: $$\n202: \n203: The velocity autocorrelation decays exponentially:\n204: \n205: $$\n206: \\langle v(t) \\cdot v(0) \\rangle \\sim e^{-\\gamma t}\n207: $$\n208: \n209: giving relaxation time $\\tau_v = \\gamma^{-1}$.\n210: \n211: **Step 2: Spatial diffusion constant**\n212: \n213: After velocity marginalization (see \u00a73.2), the effective spatial diffusion constant is:\n214: \n215: $$\n216: D_{\\text{eff}} = \\frac{T}{\\gamma} g(x)^{-1}\n217: $$\n218: \n219: The time to diffuse distance $\\ell$ is:\n220: \n221: $$\n222: \\tau_{\\text{diff}}(\\ell) \\sim \\frac{\\ell^2}{D_{\\text{eff}}} \\sim \\frac{\\ell^2 \\gamma}{T}\n223: $$\n224: \n225: **Step 3: Timescale ratio**\n226: \n227: For the thermal coherence length $\\ell = \\epsilon_c := \\sqrt{T/\\gamma}$:\n228: \n229: $$\n230: \\frac{\\tau_v}{\\tau_x} = \\frac{\\gamma^{-1}}{\\epsilon_c^2 \\gamma / T} = \\frac{T}{\\gamma^2 \\epsilon_c^2} = \\frac{1}{\\gamma} \\ll 1\n231: $$\n232: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-stratonovich-kramers-smoluchowski",
+      "title": "Kramers-Smoluchowski Reduction in Stratonovich Form",
+      "start_line": 236,
+      "end_line": 260,
+      "header_lines": [
+        237
+      ],
+      "content_start": 239,
+      "content_end": 259,
+      "content": "239: :label: thm-stratonovich-kramers-smoluchowski\n240: \n241: In the high-friction limit $\\gamma \\gg 1$, the Stratonovich Langevin system {prf:ref}`def-adaptive-gas-stratonovich-sde` reduces to an **effective Stratonovich SDE** for the spatial marginal:\n242: \n243: $$\n244: dx = b_{\\text{eff}}(x) \\, dt + \\sigma_{\\text{eff}}(x) \\circ dW_t^{\\text{spatial}}\n245: $$\n246: \n247: where:\n248: \n249: $$\n250: b_{\\text{eff}}(x) = \\frac{1}{\\gamma} F_{\\text{total}}(x) = -\\frac{1}{\\gamma} \\nabla U_{\\text{eff}}(x)\n251: $$\n252: \n253: $$\n254: \\sigma_{\\text{eff}}(x) = \\sqrt{\\frac{2T}{\\gamma}} \\Sigma_{\\text{reg}}(x) = \\sqrt{\\frac{2T}{\\gamma}} g(x)^{-1/2}\n255: $$\n256: \n257: **Diffusion tensor:** $D(x) = \\frac{1}{2} \\sigma_{\\text{eff}} \\sigma_{\\text{eff}}^T = \\frac{T}{\\gamma} g(x)^{-1}$\n258: \n259: **Critical property:** This SDE is **Stratonovich** (symbol $\\circ$), preserving the interpretation from the original Langevin equation.",
+      "metadata": {
+        "label": "thm-stratonovich-kramers-smoluchowski"
+      },
+      "section": "## 3. Kramers-Smoluchowski Reduction",
+      "raw_directive": "236: ### 3.2. Effective Spatial Stratonovich SDE\n237: \n238: :::{prf:theorem} Kramers-Smoluchowski Reduction in Stratonovich Form\n239: :label: thm-stratonovich-kramers-smoluchowski\n240: \n241: In the high-friction limit $\\gamma \\gg 1$, the Stratonovich Langevin system {prf:ref}`def-adaptive-gas-stratonovich-sde` reduces to an **effective Stratonovich SDE** for the spatial marginal:\n242: \n243: $$\n244: dx = b_{\\text{eff}}(x) \\, dt + \\sigma_{\\text{eff}}(x) \\circ dW_t^{\\text{spatial}}\n245: $$\n246: \n247: where:\n248: \n249: $$\n250: b_{\\text{eff}}(x) = \\frac{1}{\\gamma} F_{\\text{total}}(x) = -\\frac{1}{\\gamma} \\nabla U_{\\text{eff}}(x)\n251: $$\n252: \n253: $$\n254: \\sigma_{\\text{eff}}(x) = \\sqrt{\\frac{2T}{\\gamma}} \\Sigma_{\\text{reg}}(x) = \\sqrt{\\frac{2T}{\\gamma}} g(x)^{-1/2}\n255: $$\n256: \n257: **Diffusion tensor:** $D(x) = \\frac{1}{2} \\sigma_{\\text{eff}} \\sigma_{\\text{eff}}^T = \\frac{T}{\\gamma} g(x)^{-1}$\n258: \n259: **Critical property:** This SDE is **Stratonovich** (symbol $\\circ$), preserving the interpretation from the original Langevin equation.\n260: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-93",
+      "title": null,
+      "start_line": 262,
+      "end_line": 285,
+      "header_lines": [],
+      "content_start": 263,
+      "content_end": 284,
+      "content": "263: \n264: :::{prf:proof}\n265: **Chapman-Enskog expansion approach:**\n266: \n267: 1. **Ansatz:** Assume the full distribution factors as:\n268: \n269: $$\n270: \\pi(x, v, t) \\approx \\rho(x, t) \\cdot \\rho_{\\text{Maxwell}}(v \\mid x)\n271: $$\n272: \n273: where $\\rho_{\\text{Maxwell}}(v \\mid x) \\propto \\exp(-\\gamma \\|v\\|^2 / (2T))$ is the Maxwell-Boltzmann distribution at temperature $T = \\sigma^2/(2\\gamma)$.\n274: \n275: 2. **Integrate out velocities:** Apply Fokker-Planck equation to full $(x, v)$ dynamics and integrate over $v$.\n276: \n277: 3. **Use timescale separation:** Terms involving $\\partial_t v$ and $v \\cdot \\nabla_v$ are $O(\\gamma^{-1})$ faster, so velocities instantaneously equilibrate.\n278: \n279: 4. **Result:** Effective equation for $\\rho(x, t)$ is Fokker-Planck equation for the stated Stratonovich SDE.\n280: \n281: **Key point:** The **Stratonovich interpretation is preserved** in the reduction because:\n282: - Original SDE was Stratonovich\n283: - Velocity averaging doesn't change stochastic calculus convention\n284: - The effective noise $\\sigma_{\\text{eff}}(x)$ still arises from fast microscopic degrees of freedom",
+      "metadata": {},
+      "section": "## 3. Kramers-Smoluchowski Reduction",
+      "raw_directive": "262: :::\n263: \n264: :::{prf:proof}\n265: **Chapman-Enskog expansion approach:**\n266: \n267: 1. **Ansatz:** Assume the full distribution factors as:\n268: \n269: $$\n270: \\pi(x, v, t) \\approx \\rho(x, t) \\cdot \\rho_{\\text{Maxwell}}(v \\mid x)\n271: $$\n272: \n273: where $\\rho_{\\text{Maxwell}}(v \\mid x) \\propto \\exp(-\\gamma \\|v\\|^2 / (2T))$ is the Maxwell-Boltzmann distribution at temperature $T = \\sigma^2/(2\\gamma)$.\n274: \n275: 2. **Integrate out velocities:** Apply Fokker-Planck equation to full $(x, v)$ dynamics and integrate over $v$.\n276: \n277: 3. **Use timescale separation:** Terms involving $\\partial_t v$ and $v \\cdot \\nabla_v$ are $O(\\gamma^{-1})$ faster, so velocities instantaneously equilibrate.\n278: \n279: 4. **Result:** Effective equation for $\\rho(x, t)$ is Fokker-Planck equation for the stated Stratonovich SDE.\n280: \n281: **Key point:** The **Stratonovich interpretation is preserved** in the reduction because:\n282: - Original SDE was Stratonovich\n283: - Velocity averaging doesn't change stochastic calculus convention\n284: - The effective noise $\\sigma_{\\text{eff}}(x)$ still arises from fast microscopic degrees of freedom\n285: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

@@ -1,0 +1,137 @@
+{
+  "chapter_index": 7,
+  "section_id": "## 8. Surface Integrals and Flux Computations",
+  "directive_count": 7,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-surface-integral-scalar",
+      "title": "Surface Integral on Riemannian Manifold",
+      "start_line": 1004,
+      "end_line": 1043,
+      "header_lines": [
+        1005
+      ],
+      "content_start": 1007,
+      "content_end": 1042,
+      "content": "1007: :label: def-surface-integral-scalar\n1008: \n1009: Let $\\Sigma \\subset (\\mathcal{X}, g)$ be a 2D surface (submanifold) embedded in the $d$-dimensional Riemannian manifold $(\\mathcal{X}, g)$.\n1010: \n1011: Let $f: \\Sigma \\to \\mathbb{R}$ be a continuous scalar function defined on $\\Sigma$.\n1012: \n1013: The **surface integral** of $f$ over $\\Sigma$ is:\n1014: \n1015: $$\n1016: \\iint_\\Sigma f \\, dS_g := \\int_\\Sigma f(x) \\, dV_{g_\\Sigma}(x)\n1017: $$\n1018: \n1019: where $dV_{g_\\Sigma}$ is the induced Riemannian volume element on $\\Sigma$ from {prf:ref}`def-induced-volume-form`.\n1020: \n1021: **Parametric form:** If $\\Sigma$ is parametrized by $\\varphi: U \\subset \\mathbb{R}^2 \\to \\Sigma$ with $\\varphi(u,v) = x(u,v)$:\n1022: \n1023: $$\n1024: \\iint_\\Sigma f \\, dS_g = \\int_U f(x(u,v)) \\sqrt{\\det g_\\Sigma(u,v)} \\, du \\, dv\n1025: $$\n1026: \n1027: where the induced metric is:\n1028: \n1029: $$\n1030: g_\\Sigma = \\begin{pmatrix}\n1031: \\langle \\partial_u x, \\partial_u x \\rangle_g & \\langle \\partial_u x, \\partial_v x \\rangle_g \\\\\n1032: \\langle \\partial_v x, \\partial_u x \\rangle_g & \\langle \\partial_v x, \\partial_v x \\rangle_g\n1033: \\end{pmatrix}\n1034: $$\n1035: \n1036: **Discrete approximation:** For a triangulated surface $\\Sigma \\approx \\bigcup_i T_i$ (triangles):\n1037: \n1038: $$\n1039: \\iint_\\Sigma f \\, dS_g \\approx \\sum_i f(x_{c_i}) \\cdot A_g(T_i)\n1040: $$\n1041: \n1042: where $x_{c_i}$ is the centroid of triangle $T_i$ and $A_g(T_i)$ is computed via fan triangulation.",
+      "metadata": {
+        "label": "def-surface-integral-scalar"
+      },
+      "section": "## 8. Surface Integrals and Flux Computations",
+      "raw_directive": "1004: ### 8.1. Surface Integrals of Scalar Fields\n1005: \n1006: :::{prf:definition} Surface Integral on Riemannian Manifold\n1007: :label: def-surface-integral-scalar\n1008: \n1009: Let $\\Sigma \\subset (\\mathcal{X}, g)$ be a 2D surface (submanifold) embedded in the $d$-dimensional Riemannian manifold $(\\mathcal{X}, g)$.\n1010: \n1011: Let $f: \\Sigma \\to \\mathbb{R}$ be a continuous scalar function defined on $\\Sigma$.\n1012: \n1013: The **surface integral** of $f$ over $\\Sigma$ is:\n1014: \n1015: $$\n1016: \\iint_\\Sigma f \\, dS_g := \\int_\\Sigma f(x) \\, dV_{g_\\Sigma}(x)\n1017: $$\n1018: \n1019: where $dV_{g_\\Sigma}$ is the induced Riemannian volume element on $\\Sigma$ from {prf:ref}`def-induced-volume-form`.\n1020: \n1021: **Parametric form:** If $\\Sigma$ is parametrized by $\\varphi: U \\subset \\mathbb{R}^2 \\to \\Sigma$ with $\\varphi(u,v) = x(u,v)$:\n1022: \n1023: $$\n1024: \\iint_\\Sigma f \\, dS_g = \\int_U f(x(u,v)) \\sqrt{\\det g_\\Sigma(u,v)} \\, du \\, dv\n1025: $$\n1026: \n1027: where the induced metric is:\n1028: \n1029: $$\n1030: g_\\Sigma = \\begin{pmatrix}\n1031: \\langle \\partial_u x, \\partial_u x \\rangle_g & \\langle \\partial_u x, \\partial_v x \\rangle_g \\\\\n1032: \\langle \\partial_v x, \\partial_u x \\rangle_g & \\langle \\partial_v x, \\partial_v x \\rangle_g\n1033: \\end{pmatrix}\n1034: $$\n1035: \n1036: **Discrete approximation:** For a triangulated surface $\\Sigma \\approx \\bigcup_i T_i$ (triangles):\n1037: \n1038: $$\n1039: \\iint_\\Sigma f \\, dS_g \\approx \\sum_i f(x_{c_i}) \\cdot A_g(T_i)\n1040: $$\n1041: \n1042: where $x_{c_i}$ is the centroid of triangle $T_i$ and $A_g(T_i)$ is computed via fan triangulation.\n1043: "
+    },
+    {
+      "directive_type": "algorithm",
+      "label": "alg-surface-integral-scalar",
+      "title": "Surface Integral via Triangulation",
+      "start_line": 1045,
+      "end_line": 1076,
+      "header_lines": [
+        1046
+      ],
+      "content_start": 1048,
+      "content_end": 1075,
+      "content": "1048: :label: alg-surface-integral-scalar\n1049: \n1050: **Input:**\n1051: - Triangulated surface: list of triangles $\\{T_i\\}$ with vertices\n1052: - Scalar function $f: \\mathcal{X} \\to \\mathbb{R}$\n1053: - Metric function $g: \\mathcal{X} \\to \\mathbb{R}^{d \\times d}$\n1054: \n1055: **Output:** Surface integral $I = \\iint_\\Sigma f \\, dS_g$\n1056: \n1057: **Procedure:**\n1058: \n1059: 1. **Initialize:** $I = 0$\n1060: \n1061: 2. **For each triangle $T_i = (x_0, x_1, x_2)$:**\n1062: \n1063:    a. Compute centroid: $x_c = (x_0 + x_1 + x_2)/3$\n1064: \n1065:    b. Evaluate function: $f_c = f(x_c)$\n1066: \n1067:    c. Compute Riemannian area: $A_i = A_g(T_i)$ (fan triangulation)\n1068: \n1069:    d. Add contribution: $I \\leftarrow I + f_c \\cdot A_i$\n1070: \n1071: 3. **Return** $I$\n1072: \n1073: **Complexity:** $O(N_{\\text{tri}} \\cdot d^2)$ for $N_{\\text{tri}}$ triangles\n1074: \n1075: **Error:** $O(h^2)$ for mesh size $h$ (same as volume error)",
+      "metadata": {
+        "label": "alg-surface-integral-scalar"
+      },
+      "section": "## 8. Surface Integrals and Flux Computations",
+      "raw_directive": "1045: :::\n1046: \n1047: :::{prf:algorithm} Surface Integral via Triangulation\n1048: :label: alg-surface-integral-scalar\n1049: \n1050: **Input:**\n1051: - Triangulated surface: list of triangles $\\{T_i\\}$ with vertices\n1052: - Scalar function $f: \\mathcal{X} \\to \\mathbb{R}$\n1053: - Metric function $g: \\mathcal{X} \\to \\mathbb{R}^{d \\times d}$\n1054: \n1055: **Output:** Surface integral $I = \\iint_\\Sigma f \\, dS_g$\n1056: \n1057: **Procedure:**\n1058: \n1059: 1. **Initialize:** $I = 0$\n1060: \n1061: 2. **For each triangle $T_i = (x_0, x_1, x_2)$:**\n1062: \n1063:    a. Compute centroid: $x_c = (x_0 + x_1 + x_2)/3$\n1064: \n1065:    b. Evaluate function: $f_c = f(x_c)$\n1066: \n1067:    c. Compute Riemannian area: $A_i = A_g(T_i)$ (fan triangulation)\n1068: \n1069:    d. Add contribution: $I \\leftarrow I + f_c \\cdot A_i$\n1070: \n1071: 3. **Return** $I$\n1072: \n1073: **Complexity:** $O(N_{\\text{tri}} \\cdot d^2)$ for $N_{\\text{tri}}$ triangles\n1074: \n1075: **Error:** $O(h^2)$ for mesh size $h$ (same as volume error)\n1076: "
+    },
+    {
+      "directive_type": "definition",
+      "label": "def-flux-vector-field",
+      "title": "Flux of Vector Field Through Surface",
+      "start_line": 1080,
+      "end_line": 1119,
+      "header_lines": [
+        1081
+      ],
+      "content_start": 1083,
+      "content_end": 1118,
+      "content": "1083: :label: def-flux-vector-field\n1084: \n1085: Let $\\Sigma \\subset (\\mathcal{X}, g)$ be an oriented 2D surface with **unit normal vector field** $\\mathbf{n}: \\Sigma \\to T\\mathcal{X}$ (where $\\|\\mathbf{n}\\|_g = 1$).\n1086: \n1087: Let $\\mathbf{F}: \\mathcal{X} \\to T\\mathcal{X}$ be a vector field.\n1088: \n1089: The **flux** of $\\mathbf{F}$ through $\\Sigma$ is:\n1090: \n1091: $$\n1092: \\Phi[\\mathbf{F}, \\Sigma] := \\iint_\\Sigma \\langle \\mathbf{F}, \\mathbf{n} \\rangle_g \\, dS_g\n1093: $$\n1094: \n1095: where $\\langle \\cdot, \\cdot \\rangle_g$ is the Riemannian inner product: $\\langle \\mathbf{F}, \\mathbf{n} \\rangle_g = \\mathbf{F}^T g \\mathbf{n}$.\n1096: \n1097: **Physical interpretation:**\n1098: - $\\Phi > 0$: Net flow of $\\mathbf{F}$ outward through $\\Sigma$\n1099: - $\\Phi < 0$: Net flow inward\n1100: - $\\Phi = 0$: No net flux (source-free or balanced)\n1101: \n1102: **Parametric form:** For parametrization $x(u,v)$:\n1103: \n1104: $$\n1105: \\mathbf{n} = \\frac{(\\partial_u x) \\times_g (\\partial_v x)}{\\|(\\partial_u x) \\times_g (\\partial_v x)\\|_g}\n1106: $$\n1107: \n1108: where $\\times_g$ is the Riemannian cross product (requires $d \\geq 3$).\n1109: \n1110: **Simplified for embedded surface in $\\mathbb{R}^3$:**\n1111: \n1112: If $\\Sigma \\subset \\mathbb{R}^3$ and $g(x) \\approx I$ (nearly Euclidean):\n1113: \n1114: $$\n1115: \\mathbf{n} \\approx \\frac{(\\partial_u x) \\times (\\partial_v x)}{\\|(\\partial_u x) \\times (\\partial_v x)\\|}\n1116: $$\n1117: \n1118: Standard Euclidean cross product.",
+      "metadata": {
+        "label": "def-flux-vector-field"
+      },
+      "section": "## 8. Surface Integrals and Flux Computations",
+      "raw_directive": "1080: ### 8.2. Vector Field Flux Through Surfaces\n1081: \n1082: :::{prf:definition} Flux of Vector Field Through Surface\n1083: :label: def-flux-vector-field\n1084: \n1085: Let $\\Sigma \\subset (\\mathcal{X}, g)$ be an oriented 2D surface with **unit normal vector field** $\\mathbf{n}: \\Sigma \\to T\\mathcal{X}$ (where $\\|\\mathbf{n}\\|_g = 1$).\n1086: \n1087: Let $\\mathbf{F}: \\mathcal{X} \\to T\\mathcal{X}$ be a vector field.\n1088: \n1089: The **flux** of $\\mathbf{F}$ through $\\Sigma$ is:\n1090: \n1091: $$\n1092: \\Phi[\\mathbf{F}, \\Sigma] := \\iint_\\Sigma \\langle \\mathbf{F}, \\mathbf{n} \\rangle_g \\, dS_g\n1093: $$\n1094: \n1095: where $\\langle \\cdot, \\cdot \\rangle_g$ is the Riemannian inner product: $\\langle \\mathbf{F}, \\mathbf{n} \\rangle_g = \\mathbf{F}^T g \\mathbf{n}$.\n1096: \n1097: **Physical interpretation:**\n1098: - $\\Phi > 0$: Net flow of $\\mathbf{F}$ outward through $\\Sigma$\n1099: - $\\Phi < 0$: Net flow inward\n1100: - $\\Phi = 0$: No net flux (source-free or balanced)\n1101: \n1102: **Parametric form:** For parametrization $x(u,v)$:\n1103: \n1104: $$\n1105: \\mathbf{n} = \\frac{(\\partial_u x) \\times_g (\\partial_v x)}{\\|(\\partial_u x) \\times_g (\\partial_v x)\\|_g}\n1106: $$\n1107: \n1108: where $\\times_g$ is the Riemannian cross product (requires $d \\geq 3$).\n1109: \n1110: **Simplified for embedded surface in $\\mathbb{R}^3$:**\n1111: \n1112: If $\\Sigma \\subset \\mathbb{R}^3$ and $g(x) \\approx I$ (nearly Euclidean):\n1113: \n1114: $$\n1115: \\mathbf{n} \\approx \\frac{(\\partial_u x) \\times (\\partial_v x)}{\\|(\\partial_u x) \\times (\\partial_v x)\\|}\n1116: $$\n1117: \n1118: Standard Euclidean cross product.\n1119: "
+    },
+    {
+      "directive_type": "algorithm",
+      "label": "alg-flux-through-surface",
+      "title": "Flux Computation via Triangulated Surface",
+      "start_line": 1121,
+      "end_line": 1184,
+      "header_lines": [
+        1122
+      ],
+      "content_start": 1124,
+      "content_end": 1183,
+      "content": "1124: :label: alg-flux-through-surface\n1125: \n1126: **Input:**\n1127: - Oriented triangulated surface $\\{T_i\\}$ with vertices and orientation\n1128: - Vector field $\\mathbf{F}: \\mathcal{X} \\to \\mathbb{R}^d$\n1129: - Metric function $g: \\mathcal{X} \\to \\mathbb{R}^{d \\times d}$\n1130: \n1131: **Output:** Total flux $\\Phi = \\iint_\\Sigma \\langle \\mathbf{F}, \\mathbf{n} \\rangle_g \\, dS_g$\n1132: \n1133: **Procedure:**\n1134: \n1135: 1. **Initialize:** $\\Phi = 0$\n1136: \n1137: 2. **For each triangle $T_i = (x_0, x_1, x_2)$ with vertices ordered counterclockwise:**\n1138: \n1139:    a. Compute edge vectors:\n1140: \n1141:    $$\n1142:    \\mathbf{e}_1 = x_1 - x_0, \\quad \\mathbf{e}_2 = x_2 - x_0\n1143:    $$\n1144: \n1145:    b. Compute (non-unit) normal vector using Riemannian cross product:\n1146: \n1147:    For $\\mathbb{R}^3$ with metric $g_c = g(x_c)$ at centroid $x_c$:\n1148: \n1149:    $$\n1150:    \\mathbf{n}_{\\text{raw}} = g_c^{-1} (\\mathbf{e}_1 \\times \\mathbf{e}_2)\n1151:    $$\n1152: \n1153:    where $\\times$ is Euclidean cross product and $g_c^{-1}$ \"raises\" the index to make it a vector.\n1154: \n1155:    c. Compute (signed) area element magnitude:\n1156: \n1157:    $$\n1158:    dA_i = \\|\\mathbf{n}_{\\text{raw}}\\|_g = \\sqrt{\\mathbf{n}_{\\text{raw}}^T g_c \\mathbf{n}_{\\text{raw}}}\n1159:    $$\n1160: \n1161:    d. Normalize to unit normal:\n1162: \n1163:    $$\n1164:    \\mathbf{n}_i = \\frac{\\mathbf{n}_{\\text{raw}}}{dA_i}\n1165:    $$\n1166: \n1167:    e. Evaluate vector field at centroid:\n1168: \n1169:    $$\n1170:    \\mathbf{F}_c = \\mathbf{F}(x_c)\n1171:    $$\n1172: \n1173:    f. Compute flux through triangle:\n1174: \n1175:    $$\n1176:    \\Phi_i = \\langle \\mathbf{F}_c, \\mathbf{n}_i \\rangle_g \\cdot dA_i = \\mathbf{F}_c^T g_c \\mathbf{n}_{\\text{raw}}\n1177:    $$\n1178: \n1179:    g. Add to total: $\\Phi \\leftarrow \\Phi + \\Phi_i$\n1180: \n1181: 3. **Return** $\\Phi$\n1182: \n1183: **Complexity:** $O(N_{\\text{tri}} \\cdot d^3)$ (matrix-vector products)",
+      "metadata": {
+        "label": "alg-flux-through-surface"
+      },
+      "section": "## 8. Surface Integrals and Flux Computations",
+      "raw_directive": "1121: :::\n1122: \n1123: :::{prf:algorithm} Flux Computation via Triangulated Surface\n1124: :label: alg-flux-through-surface\n1125: \n1126: **Input:**\n1127: - Oriented triangulated surface $\\{T_i\\}$ with vertices and orientation\n1128: - Vector field $\\mathbf{F}: \\mathcal{X} \\to \\mathbb{R}^d$\n1129: - Metric function $g: \\mathcal{X} \\to \\mathbb{R}^{d \\times d}$\n1130: \n1131: **Output:** Total flux $\\Phi = \\iint_\\Sigma \\langle \\mathbf{F}, \\mathbf{n} \\rangle_g \\, dS_g$\n1132: \n1133: **Procedure:**\n1134: \n1135: 1. **Initialize:** $\\Phi = 0$\n1136: \n1137: 2. **For each triangle $T_i = (x_0, x_1, x_2)$ with vertices ordered counterclockwise:**\n1138: \n1139:    a. Compute edge vectors:\n1140: \n1141:    $$\n1142:    \\mathbf{e}_1 = x_1 - x_0, \\quad \\mathbf{e}_2 = x_2 - x_0\n1143:    $$\n1144: \n1145:    b. Compute (non-unit) normal vector using Riemannian cross product:\n1146: \n1147:    For $\\mathbb{R}^3$ with metric $g_c = g(x_c)$ at centroid $x_c$:\n1148: \n1149:    $$\n1150:    \\mathbf{n}_{\\text{raw}} = g_c^{-1} (\\mathbf{e}_1 \\times \\mathbf{e}_2)\n1151:    $$\n1152: \n1153:    where $\\times$ is Euclidean cross product and $g_c^{-1}$ \"raises\" the index to make it a vector.\n1154: \n1155:    c. Compute (signed) area element magnitude:\n1156: \n1157:    $$\n1158:    dA_i = \\|\\mathbf{n}_{\\text{raw}}\\|_g = \\sqrt{\\mathbf{n}_{\\text{raw}}^T g_c \\mathbf{n}_{\\text{raw}}}\n1159:    $$\n1160: \n1161:    d. Normalize to unit normal:\n1162: \n1163:    $$\n1164:    \\mathbf{n}_i = \\frac{\\mathbf{n}_{\\text{raw}}}{dA_i}\n1165:    $$\n1166: \n1167:    e. Evaluate vector field at centroid:\n1168: \n1169:    $$\n1170:    \\mathbf{F}_c = \\mathbf{F}(x_c)\n1171:    $$\n1172: \n1173:    f. Compute flux through triangle:\n1174: \n1175:    $$\n1176:    \\Phi_i = \\langle \\mathbf{F}_c, \\mathbf{n}_i \\rangle_g \\cdot dA_i = \\mathbf{F}_c^T g_c \\mathbf{n}_{\\text{raw}}\n1177:    $$\n1178: \n1179:    g. Add to total: $\\Phi \\leftarrow \\Phi + \\Phi_i$\n1180: \n1181: 3. **Return** $\\Phi$\n1182: \n1183: **Complexity:** $O(N_{\\text{tri}} \\cdot d^3)$ (matrix-vector products)\n1184: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-discrete-divergence-theorem",
+      "title": "Discrete Divergence Theorem",
+      "start_line": 1188,
+      "end_line": 1234,
+      "header_lines": [
+        1189
+      ],
+      "content_start": 1191,
+      "content_end": 1233,
+      "content": "1191: :label: thm-discrete-divergence-theorem\n1192: \n1193: Let $\\Omega \\subset \\mathcal{X}$ be a 3D region with smooth boundary $\\partial \\Omega = \\Sigma$ (closed surface).\n1194: \n1195: Let $\\mathbf{F}: \\mathcal{X} \\to T\\mathcal{X}$ be a smooth vector field.\n1196: \n1197: The **divergence theorem** (Gauss's theorem) states:\n1198: \n1199: $$\n1200: \\iiint_\\Omega (\\nabla_g \\cdot \\mathbf{F}) \\, dV_g = \\iint_{\\partial \\Omega} \\langle \\mathbf{F}, \\mathbf{n} \\rangle_g \\, dS_g\n1201: $$\n1202: \n1203: where:\n1204: - $\\nabla_g \\cdot \\mathbf{F} = \\frac{1}{\\sqrt{\\det g}} \\partial_i(\\sqrt{\\det g} \\, F^i)$ is the **Riemannian divergence**\n1205: - $\\mathbf{n}$ is the outward-pointing unit normal to $\\partial \\Omega$\n1206: \n1207: **Discrete approximation:**\n1208: \n1209: 1. **Volume integral (LHS):**\n1210: \n1211:    Tetrahedralize $\\Omega = \\bigcup_k T_k$:\n1212: \n1213:    $$\n1214:    \\iiint_\\Omega (\\nabla_g \\cdot \\mathbf{F}) \\, dV_g \\approx \\sum_k (\\nabla_g \\cdot \\mathbf{F})(x_{c_k}) \\cdot V_g(T_k)\n1215:    $$\n1216: \n1217: 2. **Surface integral (RHS):**\n1218: \n1219:    Triangulate $\\partial \\Omega$:\n1220: \n1221:    $$\n1222:    \\iint_{\\partial \\Omega} \\langle \\mathbf{F}, \\mathbf{n} \\rangle_g \\, dS_g \\approx \\sum_i \\langle \\mathbf{F}(x_{c_i}), \\mathbf{n}_i \\rangle_g \\cdot A_g(T_i)\n1223:    $$\n1224: \n1225: **Validation test:** Compute both sides independently and check:\n1226: \n1227: $$\n1228: \\left| \\text{LHS} - \\text{RHS} \\right| / \\text{max}(|\\text{LHS}|, |\\text{RHS}|) < \\epsilon_{\\text{tol}}\n1229: $$\n1230: \n1231: This tests both:\n1232: - Correctness of volume/area algorithms\n1233: - Consistency of divergence computation",
+      "metadata": {
+        "label": "thm-discrete-divergence-theorem"
+      },
+      "section": "## 8. Surface Integrals and Flux Computations",
+      "raw_directive": "1188: ### 8.3. Divergence Theorem on Fractal Set\n1189: \n1190: :::{prf:theorem} Discrete Divergence Theorem\n1191: :label: thm-discrete-divergence-theorem\n1192: \n1193: Let $\\Omega \\subset \\mathcal{X}$ be a 3D region with smooth boundary $\\partial \\Omega = \\Sigma$ (closed surface).\n1194: \n1195: Let $\\mathbf{F}: \\mathcal{X} \\to T\\mathcal{X}$ be a smooth vector field.\n1196: \n1197: The **divergence theorem** (Gauss's theorem) states:\n1198: \n1199: $$\n1200: \\iiint_\\Omega (\\nabla_g \\cdot \\mathbf{F}) \\, dV_g = \\iint_{\\partial \\Omega} \\langle \\mathbf{F}, \\mathbf{n} \\rangle_g \\, dS_g\n1201: $$\n1202: \n1203: where:\n1204: - $\\nabla_g \\cdot \\mathbf{F} = \\frac{1}{\\sqrt{\\det g}} \\partial_i(\\sqrt{\\det g} \\, F^i)$ is the **Riemannian divergence**\n1205: - $\\mathbf{n}$ is the outward-pointing unit normal to $\\partial \\Omega$\n1206: \n1207: **Discrete approximation:**\n1208: \n1209: 1. **Volume integral (LHS):**\n1210: \n1211:    Tetrahedralize $\\Omega = \\bigcup_k T_k$:\n1212: \n1213:    $$\n1214:    \\iiint_\\Omega (\\nabla_g \\cdot \\mathbf{F}) \\, dV_g \\approx \\sum_k (\\nabla_g \\cdot \\mathbf{F})(x_{c_k}) \\cdot V_g(T_k)\n1215:    $$\n1216: \n1217: 2. **Surface integral (RHS):**\n1218: \n1219:    Triangulate $\\partial \\Omega$:\n1220: \n1221:    $$\n1222:    \\iint_{\\partial \\Omega} \\langle \\mathbf{F}, \\mathbf{n} \\rangle_g \\, dS_g \\approx \\sum_i \\langle \\mathbf{F}(x_{c_i}), \\mathbf{n}_i \\rangle_g \\cdot A_g(T_i)\n1223:    $$\n1224: \n1225: **Validation test:** Compute both sides independently and check:\n1226: \n1227: $$\n1228: \\left| \\text{LHS} - \\text{RHS} \\right| / \\text{max}(|\\text{LHS}|, |\\text{RHS}|) < \\epsilon_{\\text{tol}}\n1229: $$\n1230: \n1231: This tests both:\n1232: - Correctness of volume/area algorithms\n1233: - Consistency of divergence computation\n1234: "
+    },
+    {
+      "directive_type": "example",
+      "label": "ex-mass-flux-continuity",
+      "title": "Mass Flux and Continuity Equation",
+      "start_line": 1238,
+      "end_line": 1282,
+      "header_lines": [
+        1239
+      ],
+      "content_start": 1241,
+      "content_end": 1281,
+      "content": "1241: :label: ex-mass-flux-continuity\n1242: \n1243: Consider the **walker density** $\\rho(x, t)$ evolving under Adaptive Gas dynamics.\n1244: \n1245: The **mass flux** (probability current) is:\n1246: \n1247: $$\n1248: \\mathbf{J}(x, t) = \\rho(x, t) \\cdot \\mathbf{v}_{\\text{drift}}(x, t)\n1249: $$\n1250: \n1251: where $\\mathbf{v}_{\\text{drift}} = -D(x) \\nabla U_{\\text{eff}}$ is the drift velocity from Kramers-Smoluchowski ({doc}`05_qsd_stratonovich_foundations.md`).\n1252: \n1253: **Continuity equation:**\n1254: \n1255: $$\n1256: \\frac{\\partial \\rho}{\\partial t} + \\nabla_g \\cdot \\mathbf{J} = 0\n1257: $$\n1258: \n1259: **Discrete validation:**\n1260: \n1261: 1. **Choose region $\\Omega$** (e.g., convex hull of episodes at time $t$)\n1262: \n1263: 2. **Compute rate of change:**\n1264: \n1265:    $$\n1266:    \\frac{dM}{dt} \\approx \\frac{M(t + \\Delta t) - M(t)}{\\Delta t}\n1267:    $$\n1268: \n1269:    where $M(t) = \\sum_{e: x_e \\in \\Omega} 1$ is episode count.\n1270: \n1271: 3. **Compute net flux out:**\n1272: \n1273:    $$\n1274:    \\Phi_{\\text{out}} = \\iint_{\\partial \\Omega} \\langle \\mathbf{J}, \\mathbf{n} \\rangle_g \\, dS_g\n1275:    $$\n1276: \n1277: 4. **Check continuity:**\n1278: \n1279:    $$\n1280:    \\frac{dM}{dt} + \\Phi_{\\text{out}} \\approx 0\n1281:    $$",
+      "metadata": {
+        "label": "ex-mass-flux-continuity"
+      },
+      "section": "## 8. Surface Integrals and Flux Computations",
+      "raw_directive": "1238: ### 8.4. Applications: Conservation Laws and Physical Fluxes\n1239: \n1240: :::{prf:example} Mass Flux and Continuity Equation\n1241: :label: ex-mass-flux-continuity\n1242: \n1243: Consider the **walker density** $\\rho(x, t)$ evolving under Adaptive Gas dynamics.\n1244: \n1245: The **mass flux** (probability current) is:\n1246: \n1247: $$\n1248: \\mathbf{J}(x, t) = \\rho(x, t) \\cdot \\mathbf{v}_{\\text{drift}}(x, t)\n1249: $$\n1250: \n1251: where $\\mathbf{v}_{\\text{drift}} = -D(x) \\nabla U_{\\text{eff}}$ is the drift velocity from Kramers-Smoluchowski ({doc}`05_qsd_stratonovich_foundations.md`).\n1252: \n1253: **Continuity equation:**\n1254: \n1255: $$\n1256: \\frac{\\partial \\rho}{\\partial t} + \\nabla_g \\cdot \\mathbf{J} = 0\n1257: $$\n1258: \n1259: **Discrete validation:**\n1260: \n1261: 1. **Choose region $\\Omega$** (e.g., convex hull of episodes at time $t$)\n1262: \n1263: 2. **Compute rate of change:**\n1264: \n1265:    $$\n1266:    \\frac{dM}{dt} \\approx \\frac{M(t + \\Delta t) - M(t)}{\\Delta t}\n1267:    $$\n1268: \n1269:    where $M(t) = \\sum_{e: x_e \\in \\Omega} 1$ is episode count.\n1270: \n1271: 3. **Compute net flux out:**\n1272: \n1273:    $$\n1274:    \\Phi_{\\text{out}} = \\iint_{\\partial \\Omega} \\langle \\mathbf{J}, \\mathbf{n} \\rangle_g \\, dS_g\n1275:    $$\n1276: \n1277: 4. **Check continuity:**\n1278: \n1279:    $$\n1280:    \\frac{dM}{dt} + \\Phi_{\\text{out}} \\approx 0\n1281:    $$\n1282: "
+    },
+    {
+      "directive_type": "example",
+      "label": "ex-energy-flux-first-law",
+      "title": "Energy Flux and First Law",
+      "start_line": 1284,
+      "end_line": 1306,
+      "header_lines": [
+        1285
+      ],
+      "content_start": 1287,
+      "content_end": 1305,
+      "content": "1287: :label: ex-energy-flux-first-law\n1288: \n1289: The **energy density** is $\\varepsilon(x) = \\rho(x) \\cdot E(x)$ where $E(x) = U(x) + \\langle \\text{kinetic} \\rangle$.\n1290: \n1291: The **energy flux** is:\n1292: \n1293: $$\n1294: \\mathbf{J}_E(x) = \\varepsilon(x) \\cdot \\mathbf{v}_{\\text{drift}}(x) + \\mathbf{q}(x)\n1295: $$\n1296: \n1297: where $\\mathbf{q}(x)$ is heat flux from diffusion.\n1298: \n1299: **First law (energy balance):**\n1300: \n1301: $$\n1302: \\frac{\\partial \\varepsilon}{\\partial t} + \\nabla_g \\cdot \\mathbf{J}_E = \\text{sources/sinks}\n1303: $$\n1304: \n1305: **Discrete check:**",
+      "metadata": {
+        "label": "ex-energy-flux-first-law"
+      },
+      "section": "## 8. Surface Integrals and Flux Computations",
+      "raw_directive": "1284: :::\n1285: \n1286: :::{prf:example} Energy Flux and First Law\n1287: :label: ex-energy-flux-first-law\n1288: \n1289: The **energy density** is $\\varepsilon(x) = \\rho(x) \\cdot E(x)$ where $E(x) = U(x) + \\langle \\text{kinetic} \\rangle$.\n1290: \n1291: The **energy flux** is:\n1292: \n1293: $$\n1294: \\mathbf{J}_E(x) = \\varepsilon(x) \\cdot \\mathbf{v}_{\\text{drift}}(x) + \\mathbf{q}(x)\n1295: $$\n1296: \n1297: where $\\mathbf{q}(x)$ is heat flux from diffusion.\n1298: \n1299: **First law (energy balance):**\n1300: \n1301: $$\n1302: \\frac{\\partial \\varepsilon}{\\partial t} + \\nabla_g \\cdot \\mathbf{J}_E = \\text{sources/sinks}\n1303: $$\n1304: \n1305: **Discrete check:**\n1306: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

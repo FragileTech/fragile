@@ -1,0 +1,47 @@
+{
+  "chapter_index": 14,
+  "section_id": "## 9. Conclusion",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "corollary",
+      "label": "cor-n-uniform-lsi",
+      "title": "N-Uniform Logarithmic Sobolev Inequality",
+      "start_line": 2134,
+      "end_line": 2150,
+      "header_lines": [
+        2135
+      ],
+      "content_start": 2137,
+      "content_end": 2149,
+      "content": "2137: :label: cor-n-uniform-lsi\n2138: \n2139: Under the same conditions as Theorem {prf:ref}`thm-main-kl-convergence`, the LSI constant for the N-particle Euclidean Gas is **uniform in N**. That is, there exists a constant $C_{\\text{LSI}}^{\\max} < \\infty$ such that:\n2140: \n2141: $$\n2142: \\sup_{N \\geq 2} C_{\\text{LSI}}(N) \\leq C_{\\text{LSI}}^{\\max}\n2143: $$\n2144: \n2145: **Explicit bound**:\n2146: \n2147: $$\n2148: C_{\\text{LSI}}^{\\max} = O\\left(\\frac{1}{\\min(\\gamma, \\kappa_{\\text{conf}}) \\cdot \\kappa_{W,\\min} \\cdot \\delta^2}\\right)\n2149: $$",
+      "metadata": {
+        "label": "cor-n-uniform-lsi"
+      },
+      "section": "## 9. Conclusion",
+      "raw_directive": "2134: ### 9.6. N-Uniform LSI: Scalability to Large Swarms\n2135: \n2136: :::{prf:corollary} N-Uniform Logarithmic Sobolev Inequality\n2137: :label: cor-n-uniform-lsi\n2138: \n2139: Under the same conditions as Theorem {prf:ref}`thm-main-kl-convergence`, the LSI constant for the N-particle Euclidean Gas is **uniform in N**. That is, there exists a constant $C_{\\text{LSI}}^{\\max} < \\infty$ such that:\n2140: \n2141: $$\n2142: \\sup_{N \\geq 2} C_{\\text{LSI}}(N) \\leq C_{\\text{LSI}}^{\\max}\n2143: $$\n2144: \n2145: **Explicit bound**:\n2146: \n2147: $$\n2148: C_{\\text{LSI}}^{\\max} = O\\left(\\frac{1}{\\min(\\gamma, \\kappa_{\\text{conf}}) \\cdot \\kappa_{W,\\min} \\cdot \\delta^2}\\right)\n2149: $$\n2150: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-n-uniform-lsi",
+      "title": null,
+      "start_line": 2152,
+      "end_line": 2178,
+      "header_lines": [
+        2153
+      ],
+      "content_start": 2154,
+      "content_end": 2177,
+      "content": "2154: :::{prf:proof}\n2155: :label: proof-n-uniform-lsi\n2156: **Proof.**\n2157: \n2158: 1. From Corollary {prf:ref}`cor-quantitative-lsi-final` (Section 5.6), the LSI constant for the N-particle system is given by:\n2159:    $$\n2160:    C_{\\text{LSI}}(N) = O\\left(\\frac{1}{\\min(\\gamma, \\kappa_{\\text{conf}}) \\cdot \\kappa_W(N) \\cdot \\delta^2}\\right)\n2161:    $$\n2162: \n2163: 2. The parameters $\\gamma$ (friction coefficient) and $\\kappa_{\\text{conf}}$ (confining potential convexity) are N-independent by definition (algorithm parameters).\n2164: \n2165: 3. From **Theorem 2.3.1** of [06_convergence](06_convergence) (Inter-Swarm Error Contraction Under Kinetic Operator), the Wasserstein contraction rate $\\kappa_W(N)$ is proven to be **N-uniform**. Specifically, the theorem states:\n2166: \n2167:    > **Key Properties:**\n2168:    > 3. **N-uniformity:** All constants are independent of swarm size N.\n2169: \n2170:    Therefore, there exists $\\kappa_{W,\\min} > 0$ such that $\\kappa_W(N) \\geq \\kappa_{W,\\min}$ for all $N \\geq 2$.\n2171: \n2172: 4. The cloning noise parameter $\\delta > 0$ is an algorithm parameter, independent of $N$.\n2173: \n2174: 5. Therefore, the LSI constant is uniformly bounded:\n2175:    $$\n2176:    C_{\\text{LSI}}(N) \\leq O\\left(\\frac{1}{\\min(\\gamma, \\kappa_{\\text{conf}}) \\cdot \\kappa_{W,\\min} \\cdot \\delta^2}\\right) =: C_{\\text{LSI}}^{\\max} < \\infty\n2177:    $$",
+      "metadata": {
+        "label": "proof-n-uniform-lsi"
+      },
+      "section": "## 9. Conclusion",
+      "raw_directive": "2152: :::\n2153: \n2154: :::{prf:proof}\n2155: :label: proof-n-uniform-lsi\n2156: **Proof.**\n2157: \n2158: 1. From Corollary {prf:ref}`cor-quantitative-lsi-final` (Section 5.6), the LSI constant for the N-particle system is given by:\n2159:    $$\n2160:    C_{\\text{LSI}}(N) = O\\left(\\frac{1}{\\min(\\gamma, \\kappa_{\\text{conf}}) \\cdot \\kappa_W(N) \\cdot \\delta^2}\\right)\n2161:    $$\n2162: \n2163: 2. The parameters $\\gamma$ (friction coefficient) and $\\kappa_{\\text{conf}}$ (confining potential convexity) are N-independent by definition (algorithm parameters).\n2164: \n2165: 3. From **Theorem 2.3.1** of [06_convergence](06_convergence) (Inter-Swarm Error Contraction Under Kinetic Operator), the Wasserstein contraction rate $\\kappa_W(N)$ is proven to be **N-uniform**. Specifically, the theorem states:\n2166: \n2167:    > **Key Properties:**\n2168:    > 3. **N-uniformity:** All constants are independent of swarm size N.\n2169: \n2170:    Therefore, there exists $\\kappa_{W,\\min} > 0$ such that $\\kappa_W(N) \\geq \\kappa_{W,\\min}$ for all $N \\geq 2$.\n2171: \n2172: 4. The cloning noise parameter $\\delta > 0$ is an algorithm parameter, independent of $N$.\n2173: \n2174: 5. Therefore, the LSI constant is uniformly bounded:\n2175:    $$\n2176:    C_{\\text{LSI}}(N) \\leq O\\left(\\frac{1}{\\min(\\gamma, \\kappa_{\\text{conf}}) \\cdot \\kappa_{W,\\min} \\cdot \\delta^2}\\right) =: C_{\\text{LSI}}^{\\max} < \\infty\n2177:    $$\n2178: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

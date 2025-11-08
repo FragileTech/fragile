@@ -1,0 +1,65 @@
+{
+  "chapter_index": 15,
+  "section_id": "## 1. QSD Existence and Uniqueness (R1)",
+  "directive_count": 3,
+  "hints": [
+    {
+      "directive_type": "assumption",
+      "label": "assump-qsd-existence",
+      "title": "Framework Assumptions",
+      "start_line": 1146,
+      "end_line": 1168,
+      "header_lines": [
+        1147
+      ],
+      "content_start": 1149,
+      "content_end": 1167,
+      "content": "1149: :label: assump-qsd-existence\n1150: \n1151: We assume:\n1152: \n1153: **A1 (Confinement)**: The potential $U: \\mathcal{X} \\to \\mathbb{R}$ satisfies:\n1154: - $U(x) \\to +\\infty$ as $x \\to \\partial \\mathcal{X}$ or $|x| \\to \\infty$\n1155: - $\\nabla^2 U(x) \\ge \\kappa_{\\text{conf}} I_d$ for some $\\kappa_{\\text{conf}} > 0$ (strong convexity)\n1156: \n1157: **A2 (Killing near boundaries)**: The killing rate $\\kappa_{\\text{kill}}: \\mathcal{X} \\to \\mathbb{R}_+$ satisfies:\n1158: - $\\kappa_{\\text{kill}}(x) = 0$ on a compact subset $K \\subset \\mathcal{X}$ (safe region)\n1159: - $\\kappa_{\\text{kill}}(x) \\ge \\kappa_0 > 0$ near $\\partial \\mathcal{X}$ (strong killing near boundaries)\n1160: - $\\kappa_{\\text{kill}} \\in C^2(\\mathcal{X})$ with bounded derivatives\n1161: \n1162: **A3 (Bounded parameters)**:\n1163: - Friction coefficient: $\\gamma > 0$\n1164: - Diffusion coefficient: $\\sigma^2 > 0$\n1165: - Revival rate: $0 < \\lambda_{\\text{revive}} < \\infty$\n1166: \n1167: **A4 (Domain)**: The alive region $\\mathcal{X} \\subset \\mathbb{R}^d_x$ is either:",
+      "metadata": {
+        "label": "assump-qsd-existence"
+      },
+      "section": "## 1. QSD Existence and Uniqueness (R1)",
+      "raw_directive": "1146: ### 1.2. Assumptions\n1147: \n1148: :::{prf:assumption} Framework Assumptions\n1149: :label: assump-qsd-existence\n1150: \n1151: We assume:\n1152: \n1153: **A1 (Confinement)**: The potential $U: \\mathcal{X} \\to \\mathbb{R}$ satisfies:\n1154: - $U(x) \\to +\\infty$ as $x \\to \\partial \\mathcal{X}$ or $|x| \\to \\infty$\n1155: - $\\nabla^2 U(x) \\ge \\kappa_{\\text{conf}} I_d$ for some $\\kappa_{\\text{conf}} > 0$ (strong convexity)\n1156: \n1157: **A2 (Killing near boundaries)**: The killing rate $\\kappa_{\\text{kill}}: \\mathcal{X} \\to \\mathbb{R}_+$ satisfies:\n1158: - $\\kappa_{\\text{kill}}(x) = 0$ on a compact subset $K \\subset \\mathcal{X}$ (safe region)\n1159: - $\\kappa_{\\text{kill}}(x) \\ge \\kappa_0 > 0$ near $\\partial \\mathcal{X}$ (strong killing near boundaries)\n1160: - $\\kappa_{\\text{kill}} \\in C^2(\\mathcal{X})$ with bounded derivatives\n1161: \n1162: **A3 (Bounded parameters)**:\n1163: - Friction coefficient: $\\gamma > 0$\n1164: - Diffusion coefficient: $\\sigma^2 > 0$\n1165: - Revival rate: $0 < \\lambda_{\\text{revive}} < \\infty$\n1166: \n1167: **A4 (Domain)**: The alive region $\\mathcal{X} \\subset \\mathbb{R}^d_x$ is either:\n1168: - Bounded with smooth boundary, OR"
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-qsd-existence-corrected",
+      "title": "QSD Existence via Nonlinear Fixed-Point",
+      "start_line": 1212,
+      "end_line": 1218,
+      "header_lines": [
+        1213
+      ],
+      "content_start": 1215,
+      "content_end": 1217,
+      "content": "1215: :label: thm-qsd-existence-corrected\n1216: \n1217: Under Assumptions A1-A4, there exists a quasi-stationary distribution $\\rho_\\infty \\in \\mathcal{P}(\\Omega)$ satisfying $\\mathcal{L}[\\rho_\\infty] = 0$ with $\\|\\rho_\\infty\\|_{L^1} = M_\\infty < 1$.",
+      "metadata": {
+        "label": "thm-qsd-existence-corrected"
+      },
+      "section": "## 1. QSD Existence and Uniqueness (R1)",
+      "raw_directive": "1212: ### 1.4. Main Existence Theorem (Corrected)\n1213: \n1214: :::{prf:theorem} QSD Existence via Nonlinear Fixed-Point\n1215: :label: thm-qsd-existence-corrected\n1216: \n1217: Under Assumptions A1-A4, there exists a quasi-stationary distribution $\\rho_\\infty \\in \\mathcal{P}(\\Omega)$ satisfying $\\mathcal{L}[\\rho_\\infty] = 0$ with $\\|\\rho_\\infty\\|_{L^1} = M_\\infty < 1$.\n1218: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-qsd-stability",
+      "title": "QSD Stability (Champagnat-Villemonais)",
+      "start_line": 1340,
+      "end_line": 1349,
+      "header_lines": [
+        1341
+      ],
+      "content_start": 1343,
+      "content_end": 1348,
+      "content": "1343: :label: thm-qsd-stability\n1344: \n1345: Let $\\{\\mathcal{L}_n\\}$ be a sequence of operators with QSDs $\\{\\rho_n\\}$ and absorption rates $\\{\\lambda_n\\}$. Suppose:\n1346: 1. $\\mathcal{L}_n \\to \\mathcal{L}_\\infty$ in resolvent sense\n1347: 2. The QSDs satisfy uniform moment bounds: $\\sup_n \\int V \\rho_n < \\infty$ for some Lyapunov $V$\n1348: 3. The absorption rates $\\lambda_n$ are uniformly bounded away from zero",
+      "metadata": {
+        "label": "thm-qsd-stability"
+      },
+      "section": "## 1. QSD Existence and Uniqueness (R1)",
+      "raw_directive": "1340: We now apply the **Champagnat-Villemonais stability theorem** (Champagnat & Villemonais 2017, Theorem 2.2):\n1341: \n1342: :::{prf:theorem} QSD Stability (Champagnat-Villemonais)\n1343: :label: thm-qsd-stability\n1344: \n1345: Let $\\{\\mathcal{L}_n\\}$ be a sequence of operators with QSDs $\\{\\rho_n\\}$ and absorption rates $\\{\\lambda_n\\}$. Suppose:\n1346: 1. $\\mathcal{L}_n \\to \\mathcal{L}_\\infty$ in resolvent sense\n1347: 2. The QSDs satisfy uniform moment bounds: $\\sup_n \\int V \\rho_n < \\infty$ for some Lyapunov $V$\n1348: 3. The absorption rates $\\lambda_n$ are uniformly bounded away from zero\n1349: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

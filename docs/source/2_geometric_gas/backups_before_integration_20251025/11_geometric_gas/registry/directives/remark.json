@@ -1,0 +1,59 @@
+{
+  "document_id": "11_geometric_gas",
+  "stage": "directives",
+  "directive_type": "remark",
+  "generated_at": "2025-11-08T17:07:43.272258+00:00",
+  "count": 2,
+  "items": [
+    {
+      "directive_type": "remark",
+      "label": "rem-concentration-lsi",
+      "title": "Concentration of Measure",
+      "start_line": 2069,
+      "end_line": 2081,
+      "header_lines": [
+        2070
+      ],
+      "content_start": 2072,
+      "content_end": 2080,
+      "content": "2072: :label: rem-concentration-lsi\n2073: \n2074: An additional benefit of the LSI is that it implies strong concentration properties for the QSD. For any Lipschitz function $\\phi: (\\mathcal{X} \\times \\mathbb{R}^d)^N \\to \\mathbb{R}$ with Lipschitz constant $L_\\phi$:\n2075: \n2076: $$\n2077: \\nu_N^{\\text{QSD}}\\left( \\left| \\phi - \\mathbb{E}_{\\nu_N^{\\text{QSD}}}[\\phi] \\right| \\ge t \\right) \\le 2 \\exp\\left( -\\frac{t^2}{2 C_{\\text{LSI}} L_\\phi^2} \\right)\n2078: $$\n2079: \n2080: This Gaussian concentration inequality (a consequence of the LSI via Herbst's argument) guarantees that observables under the QSD are tightly concentrated around their mean, with deviations occurring with exponentially small probability. This is a **much stronger statement** than what can be derived from the Foster-Lyapunov analysis alone.",
+      "metadata": {
+        "label": "rem-concentration-lsi"
+      },
+      "section": "## 8. The Logarithmic Sobolev Inequality: A Conjectured Strengthening",
+      "raw_directive": "2069: :::\n2070: \n2071: :::{prf:remark} Concentration of Measure\n2072: :label: rem-concentration-lsi\n2073: \n2074: An additional benefit of the LSI is that it implies strong concentration properties for the QSD. For any Lipschitz function $\\phi: (\\mathcal{X} \\times \\mathbb{R}^d)^N \\to \\mathbb{R}$ with Lipschitz constant $L_\\phi$:\n2075: \n2076: $$\n2077: \\nu_N^{\\text{QSD}}\\left( \\left| \\phi - \\mathbb{E}_{\\nu_N^{\\text{QSD}}}[\\phi] \\right| \\ge t \\right) \\le 2 \\exp\\left( -\\frac{t^2}{2 C_{\\text{LSI}} L_\\phi^2} \\right)\n2078: $$\n2079: \n2080: This Gaussian concentration inequality (a consequence of the LSI via Herbst's argument) guarantees that observables under the QSD are tightly concentrated around their mean, with deviations occurring with exponentially small probability. This is a **much stronger statement** than what can be derived from the Foster-Lyapunov analysis alone.\n2081: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 11,
+        "chapter_file": "chapter_11.json",
+        "section_id": "## 8. The Logarithmic Sobolev Inequality: A Conjectured Strengthening"
+      }
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-wfr-analogy",
+      "title": "Formal Analogy and Evidence",
+      "start_line": 2168,
+      "end_line": 2189,
+      "header_lines": [
+        2169
+      ],
+      "content_start": 2171,
+      "content_end": 2188,
+      "content": "2171: :label: rem-wfr-analogy\n2172: \n2173: Despite the lack of a complete proof, there is strong formal evidence for the conjecture:\n2174: \n2175: **Structural analogy:** The adaptive system has the form of a **gradient flow in WFR space**:\n2176: - The kinetic evolution is a gradient flow of the free energy in Wasserstein space\n2177: - The cloning operator is a gradient flow of relative entropy in Fisher-Rao space\n2178: - The WFR metric naturally interpolates between these two geometries\n2179: \n2180: **Partial results:**\n2181: - For the **backbone system** (without adaptive terms), W₂ contractivity follows from standard theory\n2182: - For **simplified selection operators** (e.g., resampling with absolute fitness), FR contractivity is well-established\n2183: - The uniform ellipticity (Theorem [](#thm-ueph)) provides the regularity needed for Wasserstein contractivity\n2184: \n2185: **What would complete the proof:**\n2186: 1. Extend W₂ contraction theory to uniformly elliptic, state-dependent diffusions (possible via Otto calculus)\n2187: 2. Prove FR contractivity for competitive, state-dependent selection operators\n2188: 3. Apply the Chizat-Peyré-Schmitzer WFR theory to verify the composition",
+      "metadata": {
+        "label": "rem-wfr-analogy"
+      },
+      "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "raw_directive": "2168: :::\n2169: \n2170: :::{prf:remark} Formal Analogy and Evidence\n2171: :label: rem-wfr-analogy\n2172: \n2173: Despite the lack of a complete proof, there is strong formal evidence for the conjecture:\n2174: \n2175: **Structural analogy:** The adaptive system has the form of a **gradient flow in WFR space**:\n2176: - The kinetic evolution is a gradient flow of the free energy in Wasserstein space\n2177: - The cloning operator is a gradient flow of relative entropy in Fisher-Rao space\n2178: - The WFR metric naturally interpolates between these two geometries\n2179: \n2180: **Partial results:**\n2181: - For the **backbone system** (without adaptive terms), W₂ contractivity follows from standard theory\n2182: - For **simplified selection operators** (e.g., resampling with absolute fitness), FR contractivity is well-established\n2183: - The uniform ellipticity (Theorem [](#thm-ueph)) provides the regularity needed for Wasserstein contractivity\n2184: \n2185: **What would complete the proof:**\n2186: 1. Extend W₂ contraction theory to uniformly elliptic, state-dependent diffusions (possible via Otto calculus)\n2187: 2. Prove FR contractivity for competitive, state-dependent selection operators\n2188: 3. Apply the Chizat-Peyré-Schmitzer WFR theory to verify the composition\n2189: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_geometric_gas",
+        "chapter_index": 12,
+        "chapter_file": "chapter_12.json",
+        "section_id": "## 9. Main Convergence Theorems and Physical Interpretation"
+      }
+    }
+  ]
+}

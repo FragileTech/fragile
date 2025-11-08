@@ -1,0 +1,29 @@
+{
+  "chapter_index": 31,
+  "section_id": "## 5. Assembling the Coercivity Gap",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-exponential-convergence-local",
+      "title": "Exponential Convergence (Local)",
+      "start_line": 4641,
+      "end_line": 4659,
+      "header_lines": [
+        4642
+      ],
+      "content_start": 4644,
+      "content_end": 4658,
+      "content": "4644: :label: thm-exponential-convergence-local\n4645: \n4646: Assume $\\delta > 0$ and that $\\rho_0$ satisfies $D_{\\text{KL}}(\\rho_0 \\| \\rho_\\infty) \\le \\epsilon_0$ for sufficiently small $\\epsilon_0$. Then:\n4647: \n4648: $$\n4649: D_{\\text{KL}}(\\rho_t \\| \\rho_\\infty) \\le e^{-\\alpha_{\\text{net}} t} D_{\\text{KL}}(\\rho_0 \\| \\rho_\\infty)\n4650: \n4651: $$\n4652: \n4653: where:\n4654: \n4655: $$\n4656: \\boxed{\\alpha_{\\text{net}} = \\frac{\\delta}{2}}\n4657: \n4658: $$",
+      "metadata": {
+        "label": "thm-exponential-convergence-local"
+      },
+      "section": "## 5. Assembling the Coercivity Gap",
+      "raw_directive": "4641: **For exact exponential convergence to $\\rho_\\infty$**: We need $C_{\\text{offset}} = 0$, which requires tighter control of the constant terms. This is typically achieved by working in a **local basin** around $\\rho_\\infty$ where quadratic approximations are valid.\n4642: \n4643: :::{prf:theorem} Exponential Convergence (Local)\n4644: :label: thm-exponential-convergence-local\n4645: \n4646: Assume $\\delta > 0$ and that $\\rho_0$ satisfies $D_{\\text{KL}}(\\rho_0 \\| \\rho_\\infty) \\le \\epsilon_0$ for sufficiently small $\\epsilon_0$. Then:\n4647: \n4648: $$\n4649: D_{\\text{KL}}(\\rho_t \\| \\rho_\\infty) \\le e^{-\\alpha_{\\text{net}} t} D_{\\text{KL}}(\\rho_0 \\| \\rho_\\infty)\n4650: \n4651: $$\n4652: \n4653: where:\n4654: \n4655: $$\n4656: \\boxed{\\alpha_{\\text{net}} = \\frac{\\delta}{2}}\n4657: \n4658: $$\n4659: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

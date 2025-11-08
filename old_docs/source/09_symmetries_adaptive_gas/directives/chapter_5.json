@@ -1,0 +1,147 @@
+{
+  "chapter_index": 5,
+  "section_id": "## 5. Symmetry Breaking in the Adaptive Limit",
+  "directive_count": 8,
+  "hints": [
+    {
+      "directive_type": "proposition",
+      "label": "prop-global-limit-symmetry",
+      "title": "Global Limit Preserves Translation Symmetry",
+      "start_line": 1351,
+      "end_line": 1364,
+      "header_lines": [
+        1352
+      ],
+      "content_start": 1354,
+      "content_end": 1363,
+      "content": "1354: :label: prop-global-limit-symmetry\n1355: \n1356: Consider the Adaptive Gas with \u03c1-localized fitness potential $V_{\\text{fit}}[f_k, \\rho]$.\n1357: \n1358: **Global limit ($\\rho \\to \\infty$)**: The fitness potential becomes position-independent:\n1359: \n1360: $$\n1361: \\lim_{\\rho \\to \\infty} V_{\\text{fit}}[f_k, \\rho](x_i, v_i) = V_{\\text{global}}[f_k](v_i)\n1362: \n1363: $$",
+      "metadata": {
+        "label": "prop-global-limit-symmetry"
+      },
+      "section": "## 5. Symmetry Breaking in the Adaptive Limit",
+      "raw_directive": "1351: The localization parameter $\\rho$ controls a **symmetry-breaking transition**.\n1352: \n1353: :::{prf:proposition} Global Limit Preserves Translation Symmetry\n1354: :label: prop-global-limit-symmetry\n1355: \n1356: Consider the Adaptive Gas with \u03c1-localized fitness potential $V_{\\text{fit}}[f_k, \\rho]$.\n1357: \n1358: **Global limit ($\\rho \\to \\infty$)**: The fitness potential becomes position-independent:\n1359: \n1360: $$\n1361: \\lim_{\\rho \\to \\infty} V_{\\text{fit}}[f_k, \\rho](x_i, v_i) = V_{\\text{global}}[f_k](v_i)\n1362: \n1363: $$\n1364: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-20",
+      "title": null,
+      "start_line": 1366,
+      "end_line": 1391,
+      "header_lines": [],
+      "content_start": 1367,
+      "content_end": 1390,
+      "content": "1367: \n1368: :::{prf:proof}\n1369: As $\\rho \\to \\infty$, the localization kernel becomes uniform:\n1370: \n1371: $$\n1372: K_\\rho(x_i, x_j) \\to \\frac{1}{|\\mathcal{X}|}\n1373: \n1374: $$\n1375: \n1376: The localized moments reduce to global averages:\n1377: \n1378: $$\n1379: \\mu_\\rho[f_k, Q, x_i] \\to \\frac{1}{k}\\sum_{j \\in A_k} Q(x_j, v_j)\n1380: \n1381: $$\n1382: \n1383: which is **independent of $x_i$**. The Z-scores and fitness potential then depend only on $(x_i, v_i)$ through the raw measurements $R(x_i, v_i)$ and $d_{\\text{alg}}(i, j)$, not through the statistical aggregation.\n1384: \n1385: For position-independent reward $R(v)$, the fitness becomes:\n1386: \n1387: $$\n1388: V_{\\text{fit}}(x_i, v_i, S) \\to \\eta^{\\alpha+\\beta} \\exp(\\alpha Z[R(v_i)] + \\beta Z[d_{\\text{alg}}(i, j)])\n1389: \n1390: $$",
+      "metadata": {},
+      "section": "## 5. Symmetry Breaking in the Adaptive Limit",
+      "raw_directive": "1366: :::\n1367: \n1368: :::{prf:proof}\n1369: As $\\rho \\to \\infty$, the localization kernel becomes uniform:\n1370: \n1371: $$\n1372: K_\\rho(x_i, x_j) \\to \\frac{1}{|\\mathcal{X}|}\n1373: \n1374: $$\n1375: \n1376: The localized moments reduce to global averages:\n1377: \n1378: $$\n1379: \\mu_\\rho[f_k, Q, x_i] \\to \\frac{1}{k}\\sum_{j \\in A_k} Q(x_j, v_j)\n1380: \n1381: $$\n1382: \n1383: which is **independent of $x_i$**. The Z-scores and fitness potential then depend only on $(x_i, v_i)$ through the raw measurements $R(x_i, v_i)$ and $d_{\\text{alg}}(i, j)$, not through the statistical aggregation.\n1384: \n1385: For position-independent reward $R(v)$, the fitness becomes:\n1386: \n1387: $$\n1388: V_{\\text{fit}}(x_i, v_i, S) \\to \\eta^{\\alpha+\\beta} \\exp(\\alpha Z[R(v_i)] + \\beta Z[d_{\\text{alg}}(i, j)])\n1389: \n1390: $$\n1391: "
+    },
+    {
+      "directive_type": "conjecture",
+      "label": "conj-localization-symmetry-breaking",
+      "title": "Spontaneous Symmetry Breaking in the Local Limit",
+      "start_line": 1393,
+      "end_line": 1399,
+      "header_lines": [
+        1394
+      ],
+      "content_start": 1396,
+      "content_end": 1398,
+      "content": "1396: :label: conj-localization-symmetry-breaking\n1397: \n1398: In the **local limit** ($\\rho \\to 0$) with position-independent reward $R(v)$, the Adaptive Gas exhibits **spontaneous symmetry breaking**: even though the dynamics preserve translation symmetry, the quasi-stationary distribution (QSD) develops **spatial structure** (clusters, patterns) that break this symmetry.",
+      "metadata": {
+        "label": "conj-localization-symmetry-breaking"
+      },
+      "section": "## 5. Symmetry Breaking in the Adaptive Limit",
+      "raw_directive": "1393: :::\n1394: \n1395: :::{prf:conjecture} Spontaneous Symmetry Breaking in the Local Limit\n1396: :label: conj-localization-symmetry-breaking\n1397: \n1398: In the **local limit** ($\\rho \\to 0$) with position-independent reward $R(v)$, the Adaptive Gas exhibits **spontaneous symmetry breaking**: even though the dynamics preserve translation symmetry, the quasi-stationary distribution (QSD) develops **spatial structure** (clusters, patterns) that break this symmetry.\n1399: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-89",
+      "title": "When is the Conjecture Expected to Hold?",
+      "start_line": 1435,
+      "end_line": 1445,
+      "header_lines": [
+        1436
+      ],
+      "content_start": 1438,
+      "content_end": 1444,
+      "content": "1438: :class: tip\n1439: \n1440: The conjecture is most likely to hold when:\n1441: 1. **Strong local coupling**: $\\nu / \\epsilon_F \\gg 1$ (viscous coupling dominates adaptive force)\n1442: 2. **Small localization**: $\\rho \\ll D_{\\mathcal{X}}$ (hyper-local statistics)\n1443: 3. **Sufficient walkers**: $N \\gg 1$ (avoids finite-size effects)\n1444: 4. **Periodic boundaries**: $\\mathcal{X} = \\mathbb{T}^d$ (eliminates boundary artifacts)",
+      "metadata": {
+        "class": "tip"
+      },
+      "section": "## 5. Symmetry Breaking in the Adaptive Limit",
+      "raw_directive": "1435: :::\n1436: \n1437: :::{prf:remark} When is the Conjecture Expected to Hold?\n1438: :class: tip\n1439: \n1440: The conjecture is most likely to hold when:\n1441: 1. **Strong local coupling**: $\\nu / \\epsilon_F \\gg 1$ (viscous coupling dominates adaptive force)\n1442: 2. **Small localization**: $\\rho \\ll D_{\\mathcal{X}}$ (hyper-local statistics)\n1443: 3. **Sufficient walkers**: $N \\gg 1$ (avoids finite-size effects)\n1444: 4. **Periodic boundaries**: $\\mathcal{X} = \\mathbb{T}^d$ (eliminates boundary artifacts)\n1445: "
+    },
+    {
+      "directive_type": "example",
+      "label": "unlabeled-example-101",
+      "title": "Pattern Formation via Localization",
+      "start_line": 1447,
+      "end_line": 1457,
+      "header_lines": [
+        1448
+      ],
+      "content_start": 1450,
+      "content_end": 1456,
+      "content": "1450: :class: tip\n1451: \n1452: Consider a flat reward $R(x, v) = 0$ (no external bias) on a 2D periodic domain $\\mathcal{X} = \\mathbb{T}^2$.\n1453: \n1454: **Global case ($\\rho \\to \\infty$)**: The QSD is the **uniform distribution** over $\\mathcal{X} \\times \\mathcal{V}$ (maximum entropy).\n1455: \n1456: **Local case ($\\rho \\to 0$)**: The Adaptive Gas can form **spontaneous clusters** at random locations, breaking translational symmetry. The clusters are stabilized by the local viscous coupling (see `07_adaptative_gas.md`, viscous force).",
+      "metadata": {
+        "class": "tip"
+      },
+      "section": "## 5. Symmetry Breaking in the Adaptive Limit",
+      "raw_directive": "1447: :::\n1448: \n1449: :::{prf:example} Pattern Formation via Localization\n1450: :class: tip\n1451: \n1452: Consider a flat reward $R(x, v) = 0$ (no external bias) on a 2D periodic domain $\\mathcal{X} = \\mathbb{T}^2$.\n1453: \n1454: **Global case ($\\rho \\to \\infty$)**: The QSD is the **uniform distribution** over $\\mathcal{X} \\times \\mathcal{V}$ (maximum entropy).\n1455: \n1456: **Local case ($\\rho \\to 0$)**: The Adaptive Gas can form **spontaneous clusters** at random locations, breaking translational symmetry. The clusters are stabilized by the local viscous coupling (see `07_adaptative_gas.md`, viscous force).\n1457: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-anisotropy-transition",
+      "title": "Isotropy Breaking via Adaptive Diffusion",
+      "start_line": 1461,
+      "end_line": 1486,
+      "header_lines": [
+        1462
+      ],
+      "content_start": 1464,
+      "content_end": 1485,
+      "content": "1464: :label: thm-anisotropy-transition\n1465: \n1466: For the Euclidean Gas ($\\epsilon_F = 0$, $\\nu = 0$, $\\epsilon_\\Sigma = 0$), the diffusion is **isotropic**:\n1467: \n1468: $$\n1469: \\Sigma_{\\text{EG}} = \\sigma_v I\n1470: \n1471: $$\n1472: \n1473: preserving **full $O(d)$ rotational symmetry**.\n1474: \n1475: For the Adaptive Gas with $\\epsilon_F > 0$ and finite $\\epsilon_\\Sigma$, the diffusion becomes **anisotropic**:\n1476: \n1477: $$\n1478: \\Sigma_{\\text{reg}}(x, S) = (H(x, S) + \\epsilon_\\Sigma I)^{-1/2} \\neq \\sigma I\n1479: \n1480: $$\n1481: \n1482: breaking rotational symmetry to the **isometry group** of the Hessian:\n1483: \n1484: $$\n1485: G_{\\text{iso}} = \\{R \\in O(d) : R^T H(x, S) R = H(x, S)\\}",
+      "metadata": {
+        "label": "thm-anisotropy-transition"
+      },
+      "section": "## 5. Symmetry Breaking in the Adaptive Limit",
+      "raw_directive": "1461: ### 5.2. Adaptation Strength and Isotropic \u2192 Anisotropic Transition\n1462: \n1463: :::{prf:theorem} Isotropy Breaking via Adaptive Diffusion\n1464: :label: thm-anisotropy-transition\n1465: \n1466: For the Euclidean Gas ($\\epsilon_F = 0$, $\\nu = 0$, $\\epsilon_\\Sigma = 0$), the diffusion is **isotropic**:\n1467: \n1468: $$\n1469: \\Sigma_{\\text{EG}} = \\sigma_v I\n1470: \n1471: $$\n1472: \n1473: preserving **full $O(d)$ rotational symmetry**.\n1474: \n1475: For the Adaptive Gas with $\\epsilon_F > 0$ and finite $\\epsilon_\\Sigma$, the diffusion becomes **anisotropic**:\n1476: \n1477: $$\n1478: \\Sigma_{\\text{reg}}(x, S) = (H(x, S) + \\epsilon_\\Sigma I)^{-1/2} \\neq \\sigma I\n1479: \n1480: $$\n1481: \n1482: breaking rotational symmetry to the **isometry group** of the Hessian:\n1483: \n1484: $$\n1485: G_{\\text{iso}} = \\{R \\in O(d) : R^T H(x, S) R = H(x, S)\\}\n1486: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-142",
+      "title": null,
+      "start_line": 1488,
+      "end_line": 1517,
+      "header_lines": [],
+      "content_start": 1489,
+      "content_end": 1516,
+      "content": "1489: \n1490: :::{prf:proof}\n1491: **Euclidean Gas**: The kinetic operator uses constant isotropic noise $\\sigma_v I$. By construction, this is invariant under all orthogonal transformations:\n1492: \n1493: $$\n1494: R^T (\\sigma_v I) R = \\sigma_v I\n1495: \n1496: $$\n1497: \n1498: **Adaptive Gas**: The Hessian $H(x, S) = \\nabla^2 V_{\\text{fit}}$ generically has **distinct eigenvalues** for complex fitness landscapes. The eigenvectors define **preferred directions** in $\\mathcal{X}$.\n1499: \n1500: The diffusion tensor $D_{\\text{reg}} = (H + \\epsilon_\\Sigma I)^{-1}$ shares the same eigenvectors as $H$, but with inverted eigenvalues:\n1501: \n1502: $$\n1503: H u_k = \\lambda_k u_k \\quad \\Rightarrow \\quad D_{\\text{reg}} u_k = \\frac{1}{\\lambda_k + \\epsilon_\\Sigma} u_k\n1504: \n1505: $$\n1506: \n1507: Only rotations $R$ that **preserve the eigenspaces** of $H$ will leave $D_{\\text{reg}}$ invariant.\n1508: \n1509: **Isometry group**: The residual symmetry group is:\n1510: \n1511: $$\n1512: G_{\\text{iso}} = \\{R \\in O(d) : R u_k = u_k \\text{ for all eigenvectors } u_k\\}\n1513: \n1514: $$\n1515: \n1516: For generic $H$ with all $\\lambda_k$ distinct, $G_{\\text{iso}} = \\{I\\}$ (trivial group), fully breaking rotational symmetry.",
+      "metadata": {},
+      "section": "## 5. Symmetry Breaking in the Adaptive Limit",
+      "raw_directive": "1488: :::\n1489: \n1490: :::{prf:proof}\n1491: **Euclidean Gas**: The kinetic operator uses constant isotropic noise $\\sigma_v I$. By construction, this is invariant under all orthogonal transformations:\n1492: \n1493: $$\n1494: R^T (\\sigma_v I) R = \\sigma_v I\n1495: \n1496: $$\n1497: \n1498: **Adaptive Gas**: The Hessian $H(x, S) = \\nabla^2 V_{\\text{fit}}$ generically has **distinct eigenvalues** for complex fitness landscapes. The eigenvectors define **preferred directions** in $\\mathcal{X}$.\n1499: \n1500: The diffusion tensor $D_{\\text{reg}} = (H + \\epsilon_\\Sigma I)^{-1}$ shares the same eigenvectors as $H$, but with inverted eigenvalues:\n1501: \n1502: $$\n1503: H u_k = \\lambda_k u_k \\quad \\Rightarrow \\quad D_{\\text{reg}} u_k = \\frac{1}{\\lambda_k + \\epsilon_\\Sigma} u_k\n1504: \n1505: $$\n1506: \n1507: Only rotations $R$ that **preserve the eigenspaces** of $H$ will leave $D_{\\text{reg}}$ invariant.\n1508: \n1509: **Isometry group**: The residual symmetry group is:\n1510: \n1511: $$\n1512: G_{\\text{iso}} = \\{R \\in O(d) : R u_k = u_k \\text{ for all eigenvectors } u_k\\}\n1513: \n1514: $$\n1515: \n1516: For generic $H$ with all $\\lambda_k$ distinct, $G_{\\text{iso}} = \\{I\\}$ (trivial group), fully breaking rotational symmetry.\n1517: "
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-directional-exploration",
+      "title": "Anisotropy Induces Directional Exploration",
+      "start_line": 1519,
+      "end_line": 1525,
+      "header_lines": [
+        1520
+      ],
+      "content_start": 1522,
+      "content_end": 1524,
+      "content": "1522: :label: cor-directional-exploration\n1523: \n1524: In the Adaptive Gas, walkers explore **more along flat directions** (small Hessian eigenvalues, large diffusion) and **less along curved directions** (large eigenvalues, small diffusion).",
+      "metadata": {
+        "label": "cor-directional-exploration"
+      },
+      "section": "## 5. Symmetry Breaking in the Adaptive Limit",
+      "raw_directive": "1519: :::\n1520: \n1521: :::{prf:corollary} Anisotropy Induces Directional Exploration\n1522: :label: cor-directional-exploration\n1523: \n1524: In the Adaptive Gas, walkers explore **more along flat directions** (small Hessian eigenvalues, large diffusion) and **less along curved directions** (large eigenvalues, small diffusion).\n1525: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

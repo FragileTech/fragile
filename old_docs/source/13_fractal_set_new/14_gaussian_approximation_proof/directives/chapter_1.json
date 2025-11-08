@@ -1,0 +1,29 @@
+{
+  "chapter_index": 1,
+  "section_id": "## II. Uniform QSD as Mean-Field Solution",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "assumption",
+      "label": "assume-uniform-qsd",
+      "title": "Uniform QSD",
+      "start_line": 27,
+      "end_line": 41,
+      "header_lines": [
+        28
+      ],
+      "content_start": 30,
+      "content_end": 40,
+      "content": "30: :label: assume-uniform-qsd\n31: \n32: At quasi-stationary distribution (QSD) in the thermodynamic limit, the walker density is spatially uniform:\n33: \n34: $$\n35: \\rho_{\\text{QSD}}(x) = \\rho_0 = \\frac{N}{V} = \\text{constant}\n36: \n37: $$\n38: \n39: where:\n40: - $N$: Number of alive walkers",
+      "metadata": {
+        "label": "assume-uniform-qsd"
+      },
+      "section": "## II. Uniform QSD as Mean-Field Solution",
+      "raw_directive": "27: From [12_holography.md](12_holography.md), the framework uses:\n28: \n29: :::{prf:assumption} Uniform QSD\n30: :label: assume-uniform-qsd\n31: \n32: At quasi-stationary distribution (QSD) in the thermodynamic limit, the walker density is spatially uniform:\n33: \n34: $$\n35: \\rho_{\\text{QSD}}(x) = \\rho_0 = \\frac{N}{V} = \\text{constant}\n36: \n37: $$\n38: \n39: where:\n40: - $N$: Number of alive walkers\n41: - $V = |\\mathcal{X}|$: Volume of state space"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

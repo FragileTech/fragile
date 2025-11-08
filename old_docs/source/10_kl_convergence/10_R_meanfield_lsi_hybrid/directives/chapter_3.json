@@ -1,0 +1,29 @@
+{
+  "chapter_index": 3,
+  "section_id": "## Step 1: Kinetic Operator LSI (Existing Result)",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-kinetic-lsi-reference",
+      "title": "Hypocoercive LSI for Kinetic Operator (Reference)",
+      "start_line": 63,
+      "end_line": 82,
+      "header_lines": [
+        64
+      ],
+      "content_start": 66,
+      "content_end": 81,
+      "content": "66: :label: thm-kinetic-lsi-reference\n67: \n68: The kinetic operator $\\Psi_{\\text{kin}}(\\tau)$ with Langevin dynamics satisfies:\n69: \n70: $$\n71: D_{\\text{KL}}(\\mu' \\| \\pi) \\leq (1 - \\alpha_{\\text{kin}} \\tau) D_{\\text{KL}}(\\mu \\| \\pi) + O(\\tau^2)\n72: $$\n73: \n74: where:\n75: $$\n76: \\alpha_{\\text{kin}} = O(\\gamma \\kappa_{\\text{conf}})\n77: $$\n78: \n79: with $\\gamma$ the friction coefficient and $\\kappa_{\\text{conf}}$ the convexity constant of the confining potential.\n80: \n81: **Proof**: See Theorem 3.4 (lines 495-553) and Section 2 (lines 200-494) of [10_kl_convergence.md](10_kl_convergence.md).",
+      "metadata": {
+        "label": "thm-kinetic-lsi-reference"
+      },
+      "section": "## Step 1: Kinetic Operator LSI (Existing Result)",
+      "raw_directive": "63: ## Step 1: Kinetic Operator LSI (Existing Result)\n64: \n65: :::{prf:theorem} Hypocoercive LSI for Kinetic Operator (Reference)\n66: :label: thm-kinetic-lsi-reference\n67: \n68: The kinetic operator $\\Psi_{\\text{kin}}(\\tau)$ with Langevin dynamics satisfies:\n69: \n70: $$\n71: D_{\\text{KL}}(\\mu' \\| \\pi) \\leq (1 - \\alpha_{\\text{kin}} \\tau) D_{\\text{KL}}(\\mu \\| \\pi) + O(\\tau^2)\n72: $$\n73: \n74: where:\n75: $$\n76: \\alpha_{\\text{kin}} = O(\\gamma \\kappa_{\\text{conf}})\n77: $$\n78: \n79: with $\\gamma$ the friction coefficient and $\\kappa_{\\text{conf}}$ the convexity constant of the confining potential.\n80: \n81: **Proof**: See Theorem 3.4 (lines 495-553) and Section 2 (lines 200-494) of [10_kl_convergence.md](10_kl_convergence.md).\n82: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

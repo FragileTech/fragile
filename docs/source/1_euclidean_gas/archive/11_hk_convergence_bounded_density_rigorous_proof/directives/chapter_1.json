@@ -1,0 +1,29 @@
+{
+  "chapter_index": 1,
+  "section_id": "## 1. Introduction and Proof Overview",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "axiom",
+      "label": "ax-bounded-density-ratio-rigorous",
+      "title": "Bounded Density Ratio (To Be Proven)",
+      "start_line": 26,
+      "end_line": 37,
+      "header_lines": [
+        27
+      ],
+      "content_start": 29,
+      "content_end": 36,
+      "content": "29: :label: ax-bounded-density-ratio-rigorous\n30: \n31: There exists $M < \\infty$ such that for all $t \\geq 0$ and all $x \\in \\mathcal{X}_{\\text{valid}}$:\n32: \n33: $$\n34: \\frac{d\\tilde{\\mu}_t}{d\\tilde{\\pi}_{\\text{QSD}}}(x) \\leq M\n35: \n36: $$",
+      "metadata": {
+        "label": "ax-bounded-density-ratio-rigorous"
+      },
+      "section": "## 1. Introduction and Proof Overview",
+      "raw_directive": "26: The Hellinger-Kantorovich convergence theory developed in `11_hk_convergence.md` establishes exponential convergence of the Euclidean Gas to its quasi-stationary distribution. However, the main theorem (Theorem {prf:ref}`thm-hk-convergence-main-assembly`) is conditional on the bounded density ratio assumption:\n27: \n28: :::{prf:axiom} Bounded Density Ratio (To Be Proven)\n29: :label: ax-bounded-density-ratio-rigorous\n30: \n31: There exists $M < \\infty$ such that for all $t \\geq 0$ and all $x \\in \\mathcal{X}_{\\text{valid}}$:\n32: \n33: $$\n34: \\frac{d\\tilde{\\mu}_t}{d\\tilde{\\pi}_{\\text{QSD}}}(x) \\leq M\n35: \n36: $$\n37: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

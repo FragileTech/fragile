@@ -1,0 +1,29 @@
+{
+  "chapter_index": 9,
+  "section_id": "## Appendices",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "proposition",
+      "label": "prop-affine-invariance",
+      "title": "Affine Invariance of Z-Score",
+      "start_line": 1581,
+      "end_line": 1619,
+      "header_lines": [
+        1582
+      ],
+      "content_start": 1584,
+      "content_end": 1618,
+      "content": "1584: :label: prop-affine-invariance\n1585: \n1586: The z-score transformation is invariant under global affine transformations of the raw values.\n1587: \n1588: **Statement:** Let z_i = (v_i - \u03bc_v) / \u03c3'_v be the z-score of value v_i. Under the affine transformation:\n1589: \n1590: $$\n1591: v_i \\to \\tilde{v}_i = a \\cdot v_i + b \\quad (\\text{all } i)\n1592: $$\n1593: \n1594: the z-score is invariant: $\\tilde{z}_i = z_i$.\n1595: \n1596: **Proof:**\n1597: \n1598: New mean:\n1599: \n1600: $$\n1601: \\tilde{\\mu}_v = \\frac{1}{N} \\sum_i \\tilde{v}_i = \\frac{1}{N} \\sum_i (a v_i + b) = a \\mu_v + b\n1602: $$\n1603: \n1604: New standard deviation:\n1605: \n1606: $$\n1607: \\tilde{\\sigma}_v^2 = \\frac{1}{N} \\sum_i (\\tilde{v}_i - \\tilde{\\mu}_v)^2 = \\frac{1}{N} \\sum_i (a v_i + b - a\\mu_v - b)^2 = a^2 \\sigma_v^2\n1608: $$\n1609: \n1610: Therefore $\\tilde{\\sigma}'_v = |a| \\sigma'_v$ (assuming regularization scales linearly).\n1611: \n1612: New z-score:\n1613: \n1614: $$\n1615: \\tilde{z}_i = \\frac{\\tilde{v}_i - \\tilde{\\mu}_v}{\\tilde{\\sigma}'_v} = \\frac{(a v_i + b) - (a\\mu_v + b)}{|a| \\sigma'_v} = \\frac{a(v_i - \\mu_v)}{|a| \\sigma'_v} = \\frac{v_i - \\mu_v}{\\sigma'_v} = z_i\n1616: $$\n1617: \n1618: (assuming a > 0; if a < 0, sign flips but magnitude preserved).",
+      "metadata": {
+        "label": "prop-affine-invariance"
+      },
+      "section": "## Appendices",
+      "raw_directive": "1581: ### Appendix A: Z-Score Transformation Properties\n1582: \n1583: :::{prf:proposition} Affine Invariance of Z-Score\n1584: :label: prop-affine-invariance\n1585: \n1586: The z-score transformation is invariant under global affine transformations of the raw values.\n1587: \n1588: **Statement:** Let z_i = (v_i - \u03bc_v) / \u03c3'_v be the z-score of value v_i. Under the affine transformation:\n1589: \n1590: $$\n1591: v_i \\to \\tilde{v}_i = a \\cdot v_i + b \\quad (\\text{all } i)\n1592: $$\n1593: \n1594: the z-score is invariant: $\\tilde{z}_i = z_i$.\n1595: \n1596: **Proof:**\n1597: \n1598: New mean:\n1599: \n1600: $$\n1601: \\tilde{\\mu}_v = \\frac{1}{N} \\sum_i \\tilde{v}_i = \\frac{1}{N} \\sum_i (a v_i + b) = a \\mu_v + b\n1602: $$\n1603: \n1604: New standard deviation:\n1605: \n1606: $$\n1607: \\tilde{\\sigma}_v^2 = \\frac{1}{N} \\sum_i (\\tilde{v}_i - \\tilde{\\mu}_v)^2 = \\frac{1}{N} \\sum_i (a v_i + b - a\\mu_v - b)^2 = a^2 \\sigma_v^2\n1608: $$\n1609: \n1610: Therefore $\\tilde{\\sigma}'_v = |a| \\sigma'_v$ (assuming regularization scales linearly).\n1611: \n1612: New z-score:\n1613: \n1614: $$\n1615: \\tilde{z}_i = \\frac{\\tilde{v}_i - \\tilde{\\mu}_v}{\\tilde{\\sigma}'_v} = \\frac{(a v_i + b) - (a\\mu_v + b)}{|a| \\sigma'_v} = \\frac{a(v_i - \\mu_v)}{|a| \\sigma'_v} = \\frac{v_i - \\mu_v}{\\sigma'_v} = z_i\n1616: $$\n1617: \n1618: (assuming a > 0; if a < 0, sign flips but magnitude preserved).\n1619: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

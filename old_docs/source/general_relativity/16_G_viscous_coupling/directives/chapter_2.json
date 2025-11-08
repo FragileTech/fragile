@@ -1,0 +1,47 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 2. Conservation Properties",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-viscous-momentum-conservation",
+      "title": "Exact Momentum Conservation",
+      "start_line": 45,
+      "end_line": 68,
+      "header_lines": [
+        46
+      ],
+      "content_start": 48,
+      "content_end": 67,
+      "content": "48: :label: thm-viscous-momentum-conservation\n49: \n50: The viscous coupling force **exactly conserves total momentum**:\n51: \n52: $$\n53: \\sum_{i=1}^N \\mathbf{F}_{\\text{viscous}}(x_i, S) = 0\n54: $$\n55: \n56: **Proof**:\n57: \n58: $$\n59: \\sum_{i=1}^N \\mathbf{F}_{\\text{viscous}}(x_i) = \\nu \\sum_{i=1}^N \\sum_{j \\neq i} K(x_i - x_j)(v_j - v_i)\n60: $$\n61: \n62: By symmetry of the kernel $K(x_i - x_j) = K(x_j - x_i)$, each pair $(i, j)$ contributes:\n63: \n64: $$\n65: K(x_i - x_j)(v_j - v_i) + K(x_j - x_i)(v_i - v_j) = K(x_i - x_j)[(v_j - v_i) - (v_j - v_i)] = 0\n66: $$\n67: ",
+      "metadata": {
+        "label": "thm-viscous-momentum-conservation"
+      },
+      "section": "## 2. Conservation Properties",
+      "raw_directive": "45: ## 2. Conservation Properties\n46: \n47: :::{prf:theorem} Exact Momentum Conservation\n48: :label: thm-viscous-momentum-conservation\n49: \n50: The viscous coupling force **exactly conserves total momentum**:\n51: \n52: $$\n53: \\sum_{i=1}^N \\mathbf{F}_{\\text{viscous}}(x_i, S) = 0\n54: $$\n55: \n56: **Proof**:\n57: \n58: $$\n59: \\sum_{i=1}^N \\mathbf{F}_{\\text{viscous}}(x_i) = \\nu \\sum_{i=1}^N \\sum_{j \\neq i} K(x_i - x_j)(v_j - v_i)\n60: $$\n61: \n62: By symmetry of the kernel $K(x_i - x_j) = K(x_j - x_i)$, each pair $(i, j)$ contributes:\n63: \n64: $$\n65: K(x_i - x_j)(v_j - v_i) + K(x_j - x_i)(v_i - v_j) = K(x_i - x_j)[(v_j - v_i) - (v_j - v_i)] = 0\n66: $$\n67: \n68: Therefore, the total momentum is conserved. \u220e"
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-viscous-energy-dissipation",
+      "title": "Energy Dissipation",
+      "start_line": 70,
+      "end_line": 111,
+      "header_lines": [
+        71
+      ],
+      "content_start": 73,
+      "content_end": 110,
+      "content": "73: :label: prop-viscous-energy-dissipation\n74: \n75: The viscous force **dissipates kinetic energy**:\n76: \n77: $$\n78: \\frac{d E_{\\text{kin}}}{dt}\\bigg|_{\\text{viscous}} = -\\frac{\\nu m}{2} \\sum_{i, j} K(x_i - x_j) \\|v_i - v_j\\|^2 \\leq 0\n79: $$\n80: \n81: **Proof**:\n82: \n83: The rate of kinetic energy change is:\n84: \n85: $$\n86: \\frac{d E_{\\text{kin}}}{dt} = \\sum_{i=1}^N m v_i \\cdot \\frac{dv_i}{dt} = m\\nu \\sum_i v_i \\cdot \\sum_j K(x_i - x_j)(v_j - v_i)\n87: $$\n88: \n89: $$\n90: = m\\nu \\sum_{i,j} K(x_i - x_j) v_i \\cdot (v_j - v_i)\n91: $$\n92: \n93: Expanding and using symmetry:\n94: \n95: $$\n96: = \\frac{m\\nu}{2} \\sum_{i,j} K(x_i - x_j) [v_i \\cdot (v_j - v_i) + v_j \\cdot (v_i - v_j)]\n97: $$\n98: \n99: $$\n100: = \\frac{m\\nu}{2} \\sum_{i,j} K(x_i - x_j) [v_i \\cdot v_j - \\|v_i\\|^2 + v_j \\cdot v_i - \\|v_j\\|^2]\n101: $$\n102: \n103: $$\n104: = -\\frac{m\\nu}{2} \\sum_{i,j} K(x_i - x_j) [\\|v_i\\|^2 + \\|v_j\\|^2 - 2v_i \\cdot v_j]\n105: $$\n106: \n107: $$\n108: = -\\frac{m\\nu}{2} \\sum_{i,j} K(x_i - x_j) \\|v_i - v_j\\|^2 \\leq 0\n109: $$\n110: ",
+      "metadata": {
+        "label": "prop-viscous-energy-dissipation"
+      },
+      "section": "## 2. Conservation Properties",
+      "raw_directive": "70: :::\n71: \n72: :::{prf:proposition} Energy Dissipation\n73: :label: prop-viscous-energy-dissipation\n74: \n75: The viscous force **dissipates kinetic energy**:\n76: \n77: $$\n78: \\frac{d E_{\\text{kin}}}{dt}\\bigg|_{\\text{viscous}} = -\\frac{\\nu m}{2} \\sum_{i, j} K(x_i - x_j) \\|v_i - v_j\\|^2 \\leq 0\n79: $$\n80: \n81: **Proof**:\n82: \n83: The rate of kinetic energy change is:\n84: \n85: $$\n86: \\frac{d E_{\\text{kin}}}{dt} = \\sum_{i=1}^N m v_i \\cdot \\frac{dv_i}{dt} = m\\nu \\sum_i v_i \\cdot \\sum_j K(x_i - x_j)(v_j - v_i)\n87: $$\n88: \n89: $$\n90: = m\\nu \\sum_{i,j} K(x_i - x_j) v_i \\cdot (v_j - v_i)\n91: $$\n92: \n93: Expanding and using symmetry:\n94: \n95: $$\n96: = \\frac{m\\nu}{2} \\sum_{i,j} K(x_i - x_j) [v_i \\cdot (v_j - v_i) + v_j \\cdot (v_i - v_j)]\n97: $$\n98: \n99: $$\n100: = \\frac{m\\nu}{2} \\sum_{i,j} K(x_i - x_j) [v_i \\cdot v_j - \\|v_i\\|^2 + v_j \\cdot v_i - \\|v_j\\|^2]\n101: $$\n102: \n103: $$\n104: = -\\frac{m\\nu}{2} \\sum_{i,j} K(x_i - x_j) [\\|v_i\\|^2 + \\|v_j\\|^2 - 2v_i \\cdot v_j]\n105: $$\n106: \n107: $$\n108: = -\\frac{m\\nu}{2} \\sum_{i,j} K(x_i - x_j) \\|v_i - v_j\\|^2 \\leq 0\n109: $$\n110: \n111: The viscous force dissipates energy at a rate proportional to the velocity variance between interacting walkers. \u220e"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

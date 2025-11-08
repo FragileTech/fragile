@@ -1,0 +1,29 @@
+{
+  "chapter_index": 12,
+  "section_id": "## 12. Conclusion and Future Directions",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-reg-std-implementation",
+      "title": "Regularized Standard Deviation (Implementation)",
+      "start_line": 1652,
+      "end_line": 1679,
+      "header_lines": [
+        1653
+      ],
+      "content_start": 1655,
+      "content_end": 1678,
+      "content": "1655: :label: def-reg-std-implementation\n1656: \n1657: $$\n1658: \\sigma'_{\\text{reg}}(V) = \\sqrt{V + \\sigma'^2_{\\min}}\n1659: $$\n1660: \n1661: where $\\sigma'_{\\min} = \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2}$ with:\n1662: - $\\kappa_{\\text{var,min}} > 0$: Variance floor threshold (typical value: $10^{-8}$ to $10^{-6}$)\n1663: - $\\varepsilon_{\\text{std}} > 0$: Numerical stability parameter (typical value: $10^{-6}$ to $10^{-4}$)\n1664: \n1665: **Derivative bounds:**\n1666: \n1667: $$\n1668: \\begin{align}\n1669: L_{\\sigma'_{\\text{reg}}} &= \\frac{1}{2\\sigma'_{\\min}} \\\\\n1670: L_{\\sigma''_{\\text{reg}}} &= \\frac{1}{4\\sigma'^3_{\\min}} \\\\\n1671: L_{\\sigma'''_{\\text{reg}}} &= \\frac{3}{8\\sigma'^5_{\\min}}\n1672: \\end{align}\n1673: $$\n1674: \n1675: **Example values** (with $\\kappa_{\\text{var,min}} = 10^{-6}$, $\\varepsilon_{\\text{std}} = 10^{-4}$):\n1676: - $\\sigma'_{\\min} \\approx 3.16 \\times 10^{-4}$\n1677: - $L_{\\sigma'_{\\text{reg}}} \\approx 1581.1$\n1678: - $L_{\\sigma''_{\\text{reg}}} \\approx 2.50 \\times 10^{10}$",
+      "metadata": {
+        "label": "def-reg-std-implementation"
+      },
+      "section": "## 12. Conclusion and Future Directions",
+      "raw_directive": "1652: For implementation, we provide the explicit formulas resulting from the regularized standard deviation construction:\n1653: \n1654: :::{prf:definition} Regularized Standard Deviation (Implementation)\n1655: :label: def-reg-std-implementation\n1656: \n1657: $$\n1658: \\sigma'_{\\text{reg}}(V) = \\sqrt{V + \\sigma'^2_{\\min}}\n1659: $$\n1660: \n1661: where $\\sigma'_{\\min} = \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2}$ with:\n1662: - $\\kappa_{\\text{var,min}} > 0$: Variance floor threshold (typical value: $10^{-8}$ to $10^{-6}$)\n1663: - $\\varepsilon_{\\text{std}} > 0$: Numerical stability parameter (typical value: $10^{-6}$ to $10^{-4}$)\n1664: \n1665: **Derivative bounds:**\n1666: \n1667: $$\n1668: \\begin{align}\n1669: L_{\\sigma'_{\\text{reg}}} &= \\frac{1}{2\\sigma'_{\\min}} \\\\\n1670: L_{\\sigma''_{\\text{reg}}} &= \\frac{1}{4\\sigma'^3_{\\min}} \\\\\n1671: L_{\\sigma'''_{\\text{reg}}} &= \\frac{3}{8\\sigma'^5_{\\min}}\n1672: \\end{align}\n1673: $$\n1674: \n1675: **Example values** (with $\\kappa_{\\text{var,min}} = 10^{-6}$, $\\varepsilon_{\\text{std}} = 10^{-4}$):\n1676: - $\\sigma'_{\\min} \\approx 3.16 \\times 10^{-4}$\n1677: - $L_{\\sigma'_{\\text{reg}}} \\approx 1581.1$\n1678: - $L_{\\sigma''_{\\text{reg}}} \\approx 2.50 \\times 10^{10}$\n1679: - $L_{\\sigma'''_{\\text{reg}}} \\approx 1.19 \\times 10^{17}$"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

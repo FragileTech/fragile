@@ -1,0 +1,29 @@
+{
+  "chapter_index": 6,
+  "section_id": "## 7. Summary and Implications",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-complete-summary-riemannian-sampling",
+      "title": "Complete Summary - Episodes Sample Riemannian Volume",
+      "start_line": 774,
+      "end_line": 816,
+      "header_lines": [
+        775
+      ],
+      "content_start": 777,
+      "content_end": 815,
+      "content": "777: :label: thm-complete-summary-riemannian-sampling\n778: \n779: The following statements have been proven rigorously:\n780: \n781: **1. Stratonovich formulation (Chapter 07)**\n782: \n783: The Adaptive Gas Langevin SDE uses Stratonovich interpretation $\\circ dW$, which is physically correct for state-dependent diffusion from fast degrees of freedom.\n784: \n785: **2. Kramers-Smoluchowski reduction (Theorem {prf:ref}`thm-stratonovich-kramers-smoluchowski`)**\n786: \n787: In high-friction limit $\\gamma \\gg 1$, spatial dynamics reduces to:\n788: \n789: $$\n790: dx = -\\frac{1}{\\gamma} \\nabla U_{\\text{eff}} \\, dt + \\sqrt{\\frac{2T}{\\gamma}} g^{-1/2} \\circ dW\n791: $$\n792: \n793: **3. Stationary distribution (Graham 1977, Theorem {prf:ref}`thm-stratonovich-stationary-general`)**\n794: \n795: The Stratonovich stationary distribution is:\n796: \n797: $$\n798: \\rho_{\\text{st}} \\propto (\\det D)^{-1/2} e^{-U} = \\sqrt{\\det g} \\, e^{-U}\n799: $$\n800: \n801: **4. QSD spatial marginal (Theorem {prf:ref}`thm-qsd-spatial-marginal-detailed`)**\n802: \n803: $$\n804: \\boxed{\\rho_{\\text{spatial}}(x) \\propto \\sqrt{\\det g(x)} \\exp\\left(-\\frac{U_{\\text{eff}}(x)}{T}\\right)}\n805: $$\n806: \n807: **5. Graph Laplacian convergence (Theorem {prf:ref}`thm-graph-laplacian-convergence-consequence`)**\n808: \n809: $$\n810: \\Delta_{\\text{graph}} f \\xrightarrow{N \\to \\infty} C \\Delta_g f\n811: $$\n812: \n813: **Chain of implications:**\n814: \n815: Stratonovich SDE \u2192 Kramers-Smoluchowski \u2192 Graham's theorem \u2192 $\\rho \\propto \\sqrt{\\det g}$ \u2192 Belkin-Niyogi \u2192 $\\Delta_{\\text{graph}} \\to \\Delta_g$",
+      "metadata": {
+        "label": "thm-complete-summary-riemannian-sampling"
+      },
+      "section": "## 7. Summary and Implications",
+      "raw_directive": "774: ### 7.1. Main Results Proven\n775: \n776: :::{prf:theorem} Complete Summary - Episodes Sample Riemannian Volume\n777: :label: thm-complete-summary-riemannian-sampling\n778: \n779: The following statements have been proven rigorously:\n780: \n781: **1. Stratonovich formulation (Chapter 07)**\n782: \n783: The Adaptive Gas Langevin SDE uses Stratonovich interpretation $\\circ dW$, which is physically correct for state-dependent diffusion from fast degrees of freedom.\n784: \n785: **2. Kramers-Smoluchowski reduction (Theorem {prf:ref}`thm-stratonovich-kramers-smoluchowski`)**\n786: \n787: In high-friction limit $\\gamma \\gg 1$, spatial dynamics reduces to:\n788: \n789: $$\n790: dx = -\\frac{1}{\\gamma} \\nabla U_{\\text{eff}} \\, dt + \\sqrt{\\frac{2T}{\\gamma}} g^{-1/2} \\circ dW\n791: $$\n792: \n793: **3. Stationary distribution (Graham 1977, Theorem {prf:ref}`thm-stratonovich-stationary-general`)**\n794: \n795: The Stratonovich stationary distribution is:\n796: \n797: $$\n798: \\rho_{\\text{st}} \\propto (\\det D)^{-1/2} e^{-U} = \\sqrt{\\det g} \\, e^{-U}\n799: $$\n800: \n801: **4. QSD spatial marginal (Theorem {prf:ref}`thm-qsd-spatial-marginal-detailed`)**\n802: \n803: $$\n804: \\boxed{\\rho_{\\text{spatial}}(x) \\propto \\sqrt{\\det g(x)} \\exp\\left(-\\frac{U_{\\text{eff}}(x)}{T}\\right)}\n805: $$\n806: \n807: **5. Graph Laplacian convergence (Theorem {prf:ref}`thm-graph-laplacian-convergence-consequence`)**\n808: \n809: $$\n810: \\Delta_{\\text{graph}} f \\xrightarrow{N \\to \\infty} C \\Delta_g f\n811: $$\n812: \n813: **Chain of implications:**\n814: \n815: Stratonovich SDE \u2192 Kramers-Smoluchowski \u2192 Graham's theorem \u2192 $\\rho \\propto \\sqrt{\\det g}$ \u2192 Belkin-Niyogi \u2192 $\\Delta_{\\text{graph}} \\to \\Delta_g$\n816: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

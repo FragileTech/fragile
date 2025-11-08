@@ -1,0 +1,65 @@
+{
+  "chapter_index": 4,
+  "section_id": "## 3. Proposed Symmetry Redefinitions",
+  "directive_count": 3,
+  "hints": [
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-68",
+      "title": "Structure of Proposed U(1) Phase",
+      "start_line": 495,
+      "end_line": 506,
+      "header_lines": [
+        496
+      ],
+      "content_start": 498,
+      "content_end": 505,
+      "content": "498: :class: note\n499: \n500: The proposed phase \u03b8_i^(new) has a fundamentally different structure from the current phase:\n501: \n502: **Current:** \u03b8_ik is **pairwise** \u2014 encodes relative geometry between i and k\n503: **Proposed:** \u03b8_i is a **collective local value** \u2014 encodes i's position relative to entire swarm\n504: \n505: This is not a single-particle property (depends on \u03bc_d, \u03c3'_d from all walkers) nor a two-particle property (not symmetric/antisymmetric under i \u2194 k). It is a **collective field** evaluated at walker i.",
+      "metadata": {
+        "class": "note"
+      },
+      "section": "## 3. Proposed Symmetry Redefinitions",
+      "raw_directive": "495: 4. Removes arbitrary scale (z-score normalization)\n496: \n497: :::{prf:remark} Structure of Proposed U(1) Phase\n498: :class: note\n499: \n500: The proposed phase \u03b8_i^(new) has a fundamentally different structure from the current phase:\n501: \n502: **Current:** \u03b8_ik is **pairwise** \u2014 encodes relative geometry between i and k\n503: **Proposed:** \u03b8_i is a **collective local value** \u2014 encodes i's position relative to entire swarm\n504: \n505: This is not a single-particle property (depends on \u03bc_d, \u03c3'_d from all walkers) nor a two-particle property (not symmetric/antisymmetric under i \u2194 k). It is a **collective field** evaluated at walker i.\n506: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-128",
+      "title": "Non-Recursion in SU(2) Phase",
+      "start_line": 555,
+      "end_line": 569,
+      "header_lines": [
+        556
+      ],
+      "content_start": 558,
+      "content_end": 568,
+      "content": "558: :class: important\n559: \n560: The phase \u03b8_ij^(new) = S_i(j) / \u210f_eff uses V_fit,i which was computed from the **diversity companion** c_div(i), NOT the cloning companion c_clone(i).\n561: \n562: **Causal independence:**\n563: - V_fit,i computed using c_div(i) (Step 6)\n564: - Cloning score S_i(j) uses V_fit plus independently sampled c_clone(i) = j (Step 8)\n565: \n566: If we interpret the phase as applying to the (i, j = c_clone(i)) pair, then:\n567: - Phase uses fitness values that were computed BEFORE c_clone(i) was sampled\n568: - No circular dependency exists",
+      "metadata": {
+        "class": "important"
+      },
+      "section": "## 3. Proposed Symmetry Redefinitions",
+      "raw_directive": "555: 5. Antisymmetry: S_i(j) \u2248 -S_j(i) (with regularization)\n556: \n557: :::{prf:remark} Non-Recursion in SU(2) Phase\n558: :class: important\n559: \n560: The phase \u03b8_ij^(new) = S_i(j) / \u210f_eff uses V_fit,i which was computed from the **diversity companion** c_div(i), NOT the cloning companion c_clone(i).\n561: \n562: **Causal independence:**\n563: - V_fit,i computed using c_div(i) (Step 6)\n564: - Cloning score S_i(j) uses V_fit plus independently sampled c_clone(i) = j (Step 8)\n565: \n566: If we interpret the phase as applying to the (i, j = c_clone(i)) pair, then:\n567: - Phase uses fitness values that were computed BEFORE c_clone(i) was sampled\n568: - No circular dependency exists\n569: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "unlabeled-remark-170",
+      "title": "Difference from Standard Model Higgs",
+      "start_line": 597,
+      "end_line": 611,
+      "header_lines": [
+        598
+      ],
+      "content_start": 600,
+      "content_end": 610,
+      "content": "600: :class: warning\n601: \n602: The Standard Model Higgs field \u03c6 is an **SU(2)_L doublet**:\n603: \n604: $$\n605: \\phi = \\begin{pmatrix} \\phi^+ \\\\ \\phi^0 \\end{pmatrix}\n606: $$\n607: \n608: with vacuum expectation value \u27e8\u03c6^0\u27e9 = v / \u221a2.\n609: \n610: The proposed \u03a6_Higgs(i) = r'_i is a **scalar singlet**\u2014it does not transform under SU(2). This is a significant structural difference.",
+      "metadata": {
+        "class": "warning"
+      },
+      "section": "## 3. Proposed Symmetry Redefinitions",
+      "raw_directive": "597: 4. **Scalar under SU(2):** Does not transform under isospin rotations\n598: \n599: :::{prf:remark} Difference from Standard Model Higgs\n600: :class: warning\n601: \n602: The Standard Model Higgs field \u03c6 is an **SU(2)_L doublet**:\n603: \n604: $$\n605: \\phi = \\begin{pmatrix} \\phi^+ \\\\ \\phi^0 \\end{pmatrix}\n606: $$\n607: \n608: with vacuum expectation value \u27e8\u03c6^0\u27e9 = v / \u221a2.\n609: \n610: The proposed \u03a6_Higgs(i) = r'_i is a **scalar singlet**\u2014it does not transform under SU(2). This is a significant structural difference.\n611: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

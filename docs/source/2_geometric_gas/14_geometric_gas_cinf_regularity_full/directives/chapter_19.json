@@ -1,0 +1,47 @@
+{
+  "chapter_index": 19,
+  "section_id": "## 11. Z-Score: Quotient Rule Analysis",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-cinf-regularity-zscore-full",
+      "title": "C^\u221e Regularity of Z-Score",
+      "start_line": 4402,
+      "end_line": 4415,
+      "header_lines": [
+        4403
+      ],
+      "content_start": 4405,
+      "content_end": 4414,
+      "content": "4405: :label: thm-cinf-regularity-zscore-full\n4406: \n4407: The Z-score $Z_\\rho^{(i)}$ is C^\u221e with respect to $(x_i, v_i)$ with derivative bounds:\n4408: \n4409: For $m \\geq 1$:\n4410: \n4411: $$\n4412: \\|\\nabla^m Z_\\rho^{(i)}\\| \\leq C_{Z,m}(\\rho) \\cdot \\rho^{-m}\n4413: \n4414: $$",
+      "metadata": {
+        "label": "thm-cinf-regularity-zscore-full"
+      },
+      "section": "## 11. Z-Score: Quotient Rule Analysis",
+      "raw_directive": "4402: ### 11.1 C^\u221e Regularity of Z-Score\n4403: \n4404: :::{prf:theorem} C^\u221e Regularity of Z-Score\n4405: :label: thm-cinf-regularity-zscore-full\n4406: \n4407: The Z-score $Z_\\rho^{(i)}$ is C^\u221e with respect to $(x_i, v_i)$ with derivative bounds:\n4408: \n4409: For $m \\geq 1$:\n4410: \n4411: $$\n4412: \\|\\nabla^m Z_\\rho^{(i)}\\| \\leq C_{Z,m}(\\rho) \\cdot \\rho^{-m}\n4413: \n4414: $$\n4415: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-thm-cinf-regularity-zscore-full",
+      "title": null,
+      "start_line": 4417,
+      "end_line": 4494,
+      "header_lines": [
+        4418
+      ],
+      "content_start": 4420,
+      "content_end": 4493,
+      "content": "4420: :label: proof-thm-cinf-regularity-zscore-full\n4421: \n4422: **Step 1: Well-definedness.**\n4423: \n4424: Since $\\sigma'_\\rho(i) \\geq \\eta_{\\min} > 0$ (by {prf:ref}`lem-properties-regularized-std-dev-full`), the quotient is well-defined everywhere.\n4425: \n4426: **Step 2: Smoothness.**\n4427: \n4428: Both numerator and denominator are C^\u221e:\n4429: - $d_i - \\mu_\\rho^{(i)} \\in C^\\infty$ (measurements and localized mean)\n4430: - $\\sigma'_\\rho(i) \\in C^\\infty$ (regularized std dev)\n4431: \n4432: Therefore $Z_\\rho^{(i)} \\in C^\\infty$ by smoothness of quotients with non-vanishing denominator.\n4433: \n4434: **Step 3: First derivative via quotient rule.**\n4435: \n4436: $$\n4437: \\nabla Z_\\rho^{(i)} = \\frac{\\nabla(d_i - \\mu_\\rho) \\cdot \\sigma'_\\rho - (d_i - \\mu_\\rho) \\cdot \\nabla \\sigma'_\\rho}{(\\sigma'_\\rho)^2}\n4438: \n4439: $$\n4440: \n4441: Bounding each term:\n4442: - $\\|\\nabla d_i\\| = \\mathcal{O}(1)$ (companion coupling)\n4443: - $\\|\\nabla \\mu_\\rho\\| \\leq C_\\mu \\rho^{-1}$\n4444: - $|d_i - \\mu_\\rho| \\leq \\text{diam}(d) = \\mathcal{O}(1)$\n4445: - $\\|\\nabla \\sigma'_\\rho\\| \\leq C_{\\sigma'} \\eta_{\\min}^{-1} \\rho^{-1}$\n4446: - $\\sigma'_\\rho \\geq \\eta_{\\min}$\n4447: \n4448: Therefore:\n4449: \n4450: $$\n4451: \\|\\nabla Z_\\rho^{(i)}\\| \\leq \\frac{\\mathcal{O}(\\rho^{-1}) + \\mathcal{O}(\\eta_{\\min}^{-1} \\rho^{-1})}{\\eta_{\\min}^2} = \\mathcal{O}(\\eta_{\\min}^{-3} \\rho^{-1})\n4452: \n4453: $$\n4454: \n4455: **Step 4: Higher derivatives via generalized quotient rule.**\n4456: \n4457: For $m \\geq 2$, the $m$-th derivative of a quotient $f/g$ is given by:\n4458: \n4459: $$\n4460: \\nabla^m \\left(\\frac{f}{g}\\right) = \\frac{1}{g} \\sum_{k=0}^m \\binom{m}{k} \\nabla^k f \\cdot \\nabla^{m-k}\\left(\\frac{1}{g}\\right)\n4461: \n4462: $$\n4463: \n4464: where derivatives of $1/g$ satisfy:\n4465: \n4466: $$\n4467: \\nabla^{m}\\left(\\frac{1}{g}\\right) = \\sum_{\\text{partitions}} c_{\\text{partition}} \\cdot g^{-(n_1+\\cdots+n_m+1)} \\cdot \\prod_{j=1}^m (\\nabla^j g)^{n_j}\n4468: \n4469: $$\n4470: \n4471: Using:\n4472: - $\\|\\nabla^k (d_i - \\mu_\\rho)\\| \\leq C_\\mu^{(k)} \\rho^{-k}$ (from {prf:ref}`lem-mth-derivative-localized-mean-full`)\n4473: - $\\|\\nabla^j \\sigma'_\\rho\\| \\leq C_{\\sigma',j} \\eta_{\\min}^{-(2j-1)} \\rho^{-j}$\n4474: - $\\sigma'_\\rho \\geq \\eta_{\\min}$\n4475: \n4476: We get:\n4477: \n4478: $$\n4479: \\|\\nabla^m Z_\\rho^{(i)}\\| \\leq C_{Z,m}(\\rho) \\cdot \\rho^{-m}\n4480: \n4481: $$\n4482: \n4483: where the constant:\n4484: \n4485: $$\n4486: C_{Z,m}(\\rho) = \\mathcal{O}(m! \\cdot \\rho^{2dm} \\cdot \\eta_{\\min}^{-(2m+1)})\n4487: \n4488: $$\n4489: \n4490: accounts for:\n4491: - Factorial growth from combinatorial quotient rule terms: $m!$\n4492: - Localization radius factors: $\\rho^{2dm}$\n4493: - Inverse powers of regularization: $\\eta_{\\min}^{-(2m+1)}$",
+      "metadata": {
+        "label": "proof-thm-cinf-regularity-zscore-full"
+      },
+      "section": "## 11. Z-Score: Quotient Rule Analysis",
+      "raw_directive": "4417: :::\n4418: \n4419: :::{prf:proof}\n4420: :label: proof-thm-cinf-regularity-zscore-full\n4421: \n4422: **Step 1: Well-definedness.**\n4423: \n4424: Since $\\sigma'_\\rho(i) \\geq \\eta_{\\min} > 0$ (by {prf:ref}`lem-properties-regularized-std-dev-full`), the quotient is well-defined everywhere.\n4425: \n4426: **Step 2: Smoothness.**\n4427: \n4428: Both numerator and denominator are C^\u221e:\n4429: - $d_i - \\mu_\\rho^{(i)} \\in C^\\infty$ (measurements and localized mean)\n4430: - $\\sigma'_\\rho(i) \\in C^\\infty$ (regularized std dev)\n4431: \n4432: Therefore $Z_\\rho^{(i)} \\in C^\\infty$ by smoothness of quotients with non-vanishing denominator.\n4433: \n4434: **Step 3: First derivative via quotient rule.**\n4435: \n4436: $$\n4437: \\nabla Z_\\rho^{(i)} = \\frac{\\nabla(d_i - \\mu_\\rho) \\cdot \\sigma'_\\rho - (d_i - \\mu_\\rho) \\cdot \\nabla \\sigma'_\\rho}{(\\sigma'_\\rho)^2}\n4438: \n4439: $$\n4440: \n4441: Bounding each term:\n4442: - $\\|\\nabla d_i\\| = \\mathcal{O}(1)$ (companion coupling)\n4443: - $\\|\\nabla \\mu_\\rho\\| \\leq C_\\mu \\rho^{-1}$\n4444: - $|d_i - \\mu_\\rho| \\leq \\text{diam}(d) = \\mathcal{O}(1)$\n4445: - $\\|\\nabla \\sigma'_\\rho\\| \\leq C_{\\sigma'} \\eta_{\\min}^{-1} \\rho^{-1}$\n4446: - $\\sigma'_\\rho \\geq \\eta_{\\min}$\n4447: \n4448: Therefore:\n4449: \n4450: $$\n4451: \\|\\nabla Z_\\rho^{(i)}\\| \\leq \\frac{\\mathcal{O}(\\rho^{-1}) + \\mathcal{O}(\\eta_{\\min}^{-1} \\rho^{-1})}{\\eta_{\\min}^2} = \\mathcal{O}(\\eta_{\\min}^{-3} \\rho^{-1})\n4452: \n4453: $$\n4454: \n4455: **Step 4: Higher derivatives via generalized quotient rule.**\n4456: \n4457: For $m \\geq 2$, the $m$-th derivative of a quotient $f/g$ is given by:\n4458: \n4459: $$\n4460: \\nabla^m \\left(\\frac{f}{g}\\right) = \\frac{1}{g} \\sum_{k=0}^m \\binom{m}{k} \\nabla^k f \\cdot \\nabla^{m-k}\\left(\\frac{1}{g}\\right)\n4461: \n4462: $$\n4463: \n4464: where derivatives of $1/g$ satisfy:\n4465: \n4466: $$\n4467: \\nabla^{m}\\left(\\frac{1}{g}\\right) = \\sum_{\\text{partitions}} c_{\\text{partition}} \\cdot g^{-(n_1+\\cdots+n_m+1)} \\cdot \\prod_{j=1}^m (\\nabla^j g)^{n_j}\n4468: \n4469: $$\n4470: \n4471: Using:\n4472: - $\\|\\nabla^k (d_i - \\mu_\\rho)\\| \\leq C_\\mu^{(k)} \\rho^{-k}$ (from {prf:ref}`lem-mth-derivative-localized-mean-full`)\n4473: - $\\|\\nabla^j \\sigma'_\\rho\\| \\leq C_{\\sigma',j} \\eta_{\\min}^{-(2j-1)} \\rho^{-j}$\n4474: - $\\sigma'_\\rho \\geq \\eta_{\\min}$\n4475: \n4476: We get:\n4477: \n4478: $$\n4479: \\|\\nabla^m Z_\\rho^{(i)}\\| \\leq C_{Z,m}(\\rho) \\cdot \\rho^{-m}\n4480: \n4481: $$\n4482: \n4483: where the constant:\n4484: \n4485: $$\n4486: C_{Z,m}(\\rho) = \\mathcal{O}(m! \\cdot \\rho^{2dm} \\cdot \\eta_{\\min}^{-(2m+1)})\n4487: \n4488: $$\n4489: \n4490: accounts for:\n4491: - Factorial growth from combinatorial quotient rule terms: $m!$\n4492: - Localization radius factors: $\\rho^{2dm}$\n4493: - Inverse powers of regularization: $\\eta_{\\min}^{-(2m+1)}$\n4494: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

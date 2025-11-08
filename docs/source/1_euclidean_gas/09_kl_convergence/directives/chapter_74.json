@@ -1,0 +1,47 @@
+{
+  "chapter_index": 74,
+  "section_id": "## Section 1: Kinetic Operator LSI (Hypocoercive Analysis)",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-kinetic-lsi-standalone",
+      "title": "Hypocoercive LSI for Kinetic Operator",
+      "start_line": 4369,
+      "end_line": 4385,
+      "header_lines": [
+        4370
+      ],
+      "content_start": 4372,
+      "content_end": 4384,
+      "content": "4372: :label: thm-kinetic-lsi-standalone\n4373: \n4374: The kinetic operator $\\Psi_{\\text{kin}}(\\tau)$ satisfies:\n4375: \n4376: $$\n4377: D_{\\text{KL}}(\\mu' \\| \\pi_{\\text{kin}}) \\leq (1 - \\alpha_{\\text{kin}} \\tau) D_{\\text{KL}}(\\mu \\| \\pi_{\\text{kin}}) + O(\\tau^2)\n4378: $$\n4379: \n4380: where:\n4381: $$\n4382: \\alpha_{\\text{kin}} = c \\cdot \\gamma \\kappa_{\\text{conf}}\n4383: $$\n4384: ",
+      "metadata": {
+        "label": "thm-kinetic-lsi-standalone"
+      },
+      "section": "## Section 1: Kinetic Operator LSI (Hypocoercive Analysis)",
+      "raw_directive": "4369: ### 1.4. Hypocoercivity via Villani's Framework\n4370: \n4371: :::{prf:theorem} Hypocoercive LSI for Kinetic Operator\n4372: :label: thm-kinetic-lsi-standalone\n4373: \n4374: The kinetic operator $\\Psi_{\\text{kin}}(\\tau)$ satisfies:\n4375: \n4376: $$\n4377: D_{\\text{KL}}(\\mu' \\| \\pi_{\\text{kin}}) \\leq (1 - \\alpha_{\\text{kin}} \\tau) D_{\\text{KL}}(\\mu \\| \\pi_{\\text{kin}}) + O(\\tau^2)\n4378: $$\n4379: \n4380: where:\n4381: $$\n4382: \\alpha_{\\text{kin}} = c \\cdot \\gamma \\kappa_{\\text{conf}}\n4383: $$\n4384: \n4385: for some universal constant $c > 0$, with $\\kappa_{\\text{conf}} := \\inf_{x} \\lambda_{\\min}(\\nabla^2 U(x))$ the convexity modulus."
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-kinetic-lsi-standalone",
+      "title": null,
+      "start_line": 4387,
+      "end_line": 4478,
+      "header_lines": [
+        4388
+      ],
+      "content_start": 4390,
+      "content_end": 4477,
+      "content": "4390: :label: proof-kinetic-lsi-standalone\n4391: \n4392: We use **Villani's hypocoercivity framework** (Villani 2009, \"Hypocoercivity\").\n4393: \n4394: **Step 1: Modified entropy functional**\n4395: \n4396: Define the modified entropy:\n4397: \n4398: $$\n4399: \\mathcal{H}_\\lambda(f) := H(f | \\pi_{\\text{kin}}) + \\lambda \\mathcal{I}(f)\n4400: $$\n4401: \n4402: where $H(f | \\pi) = \\int f \\log(f/\\pi)$ is relative entropy and:\n4403: \n4404: $$\n4405: \\mathcal{I}(f) := \\int \\pi_{\\text{kin}}(x, v) \\left|\\nabla_v \\log \\frac{f(x, v)}{\\pi_{\\text{kin}}(x, v)}\\right|^2 dxdv\n4406: $$\n4407: \n4408: is the Fisher information in the velocity variable.\n4409: \n4410: **Step 2: Entropy dissipation**\n4411: \n4412: The time derivative of $\\mathcal{H}_\\lambda$ along the kinetic flow satisfies:\n4413: \n4414: $$\n4415: \\frac{d}{dt} \\mathcal{H}_\\lambda \\leq -\\gamma \\mathcal{D}(f) - \\lambda \\gamma \\mathcal{I}(f) + \\lambda \\|\\nabla_x \\log f - \\nabla_x \\log \\pi\\|_{L^2(\\pi)}^2\n4416: $$\n4417: \n4418: where $\\mathcal{D}(f) = \\int \\pi |\\nabla_v \\log(f/\\pi)|^2$ is the velocity Dirichlet form.\n4419: \n4420: **Step 3: Poincar\u00e9 inequality for velocity**\n4421: \n4422: Since the velocity distribution is Gaussian, it satisfies a Poincar\u00e9 inequality:\n4423: \n4424: $$\n4425: \\text{Var}_v[g] \\leq \\frac{\\sigma_v^2}{\\gamma} \\mathbb{E}_v[|\\nabla_v g|^2]\n4426: $$\n4427: \n4428: Applied to our setting, this gives:\n4429: \n4430: $$\n4431: \\mathcal{I}(f) \\geq \\frac{\\gamma}{\\sigma_v^2} \\text{Var}_{v|x}[\\log f]\n4432: $$\n4433: \n4434: **Step 4: Coupling via position gradient**\n4435: \n4436: The key hypocoercive estimate is:\n4437: \n4438: $$\n4439: \\|\\nabla_x \\log f - \\nabla_x \\log \\pi\\|_{L^2(\\pi)}^2 \\leq C \\kappa_{\\text{conf}}^{-1} H(f | \\pi)\n4440: $$\n4441: \n4442: This holds because log-concavity of $\\pi$ (convexity of $U$) controls position fluctuations.\n4443: \n4444: **Step 5: Choose $\\lambda$ optimally**\n4445: \n4446: Setting $\\lambda = C' / (\\gamma \\kappa_{\\text{conf}})$ for appropriate $C'$, we get:\n4447: \n4448: $$\n4449: \\frac{d}{dt} \\mathcal{H}_\\lambda \\leq -c \\gamma \\kappa_{\\text{conf}} H(f | \\pi)\n4450: $$\n4451: \n4452: for some $c > 0$.\n4453: \n4454: **Step 6: Equivalence of entropies**\n4455: \n4456: Since $\\mathcal{I}(f) \\geq 0$, we have:\n4457: \n4458: $$\n4459: H(f | \\pi) \\leq \\mathcal{H}_\\lambda(f) \\leq H(f | \\pi) + \\lambda \\mathcal{I}_{\\max}\n4460: $$\n4461: \n4462: For bounded $\\mathcal{I}$, this gives equivalence, and thus:\n4463: \n4464: $$\n4465: \\frac{d}{dt} H(f | \\pi) \\leq -c \\gamma \\kappa_{\\text{conf}} H(f | \\pi) + \\text{correction}\n4466: $$\n4467: \n4468: **Step 7: Discrete-time bound**\n4469: \n4470: For time step $\\tau$, integrating gives:\n4471: \n4472: $$\n4473: H(\\mu' | \\pi_{\\text{kin}}) \\leq e^{-c \\gamma \\kappa_{\\text{conf}} \\tau} H(\\mu | \\pi_{\\text{kin}}) \\approx (1 - \\alpha_{\\text{kin}} \\tau) H(\\mu | \\pi_{\\text{kin}})\n4474: $$\n4475: \n4476: where $\\alpha_{\\text{kin}} = c \\gamma \\kappa_{\\text{conf}}$.\n4477: ",
+      "metadata": {
+        "label": "proof-kinetic-lsi-standalone"
+      },
+      "section": "## Section 1: Kinetic Operator LSI (Hypocoercive Analysis)",
+      "raw_directive": "4387: :::\n4388: \n4389: :::{prf:proof}\n4390: :label: proof-kinetic-lsi-standalone\n4391: \n4392: We use **Villani's hypocoercivity framework** (Villani 2009, \"Hypocoercivity\").\n4393: \n4394: **Step 1: Modified entropy functional**\n4395: \n4396: Define the modified entropy:\n4397: \n4398: $$\n4399: \\mathcal{H}_\\lambda(f) := H(f | \\pi_{\\text{kin}}) + \\lambda \\mathcal{I}(f)\n4400: $$\n4401: \n4402: where $H(f | \\pi) = \\int f \\log(f/\\pi)$ is relative entropy and:\n4403: \n4404: $$\n4405: \\mathcal{I}(f) := \\int \\pi_{\\text{kin}}(x, v) \\left|\\nabla_v \\log \\frac{f(x, v)}{\\pi_{\\text{kin}}(x, v)}\\right|^2 dxdv\n4406: $$\n4407: \n4408: is the Fisher information in the velocity variable.\n4409: \n4410: **Step 2: Entropy dissipation**\n4411: \n4412: The time derivative of $\\mathcal{H}_\\lambda$ along the kinetic flow satisfies:\n4413: \n4414: $$\n4415: \\frac{d}{dt} \\mathcal{H}_\\lambda \\leq -\\gamma \\mathcal{D}(f) - \\lambda \\gamma \\mathcal{I}(f) + \\lambda \\|\\nabla_x \\log f - \\nabla_x \\log \\pi\\|_{L^2(\\pi)}^2\n4416: $$\n4417: \n4418: where $\\mathcal{D}(f) = \\int \\pi |\\nabla_v \\log(f/\\pi)|^2$ is the velocity Dirichlet form.\n4419: \n4420: **Step 3: Poincar\u00e9 inequality for velocity**\n4421: \n4422: Since the velocity distribution is Gaussian, it satisfies a Poincar\u00e9 inequality:\n4423: \n4424: $$\n4425: \\text{Var}_v[g] \\leq \\frac{\\sigma_v^2}{\\gamma} \\mathbb{E}_v[|\\nabla_v g|^2]\n4426: $$\n4427: \n4428: Applied to our setting, this gives:\n4429: \n4430: $$\n4431: \\mathcal{I}(f) \\geq \\frac{\\gamma}{\\sigma_v^2} \\text{Var}_{v|x}[\\log f]\n4432: $$\n4433: \n4434: **Step 4: Coupling via position gradient**\n4435: \n4436: The key hypocoercive estimate is:\n4437: \n4438: $$\n4439: \\|\\nabla_x \\log f - \\nabla_x \\log \\pi\\|_{L^2(\\pi)}^2 \\leq C \\kappa_{\\text{conf}}^{-1} H(f | \\pi)\n4440: $$\n4441: \n4442: This holds because log-concavity of $\\pi$ (convexity of $U$) controls position fluctuations.\n4443: \n4444: **Step 5: Choose $\\lambda$ optimally**\n4445: \n4446: Setting $\\lambda = C' / (\\gamma \\kappa_{\\text{conf}})$ for appropriate $C'$, we get:\n4447: \n4448: $$\n4449: \\frac{d}{dt} \\mathcal{H}_\\lambda \\leq -c \\gamma \\kappa_{\\text{conf}} H(f | \\pi)\n4450: $$\n4451: \n4452: for some $c > 0$.\n4453: \n4454: **Step 6: Equivalence of entropies**\n4455: \n4456: Since $\\mathcal{I}(f) \\geq 0$, we have:\n4457: \n4458: $$\n4459: H(f | \\pi) \\leq \\mathcal{H}_\\lambda(f) \\leq H(f | \\pi) + \\lambda \\mathcal{I}_{\\max}\n4460: $$\n4461: \n4462: For bounded $\\mathcal{I}$, this gives equivalence, and thus:\n4463: \n4464: $$\n4465: \\frac{d}{dt} H(f | \\pi) \\leq -c \\gamma \\kappa_{\\text{conf}} H(f | \\pi) + \\text{correction}\n4466: $$\n4467: \n4468: **Step 7: Discrete-time bound**\n4469: \n4470: For time step $\\tau$, integrating gives:\n4471: \n4472: $$\n4473: H(\\mu' | \\pi_{\\text{kin}}) \\leq e^{-c \\gamma \\kappa_{\\text{conf}} \\tau} H(\\mu | \\pi_{\\text{kin}}) \\approx (1 - \\alpha_{\\text{kin}} \\tau) H(\\mu | \\pi_{\\text{kin}})\n4474: $$\n4475: \n4476: where $\\alpha_{\\text{kin}} = c \\gamma \\kappa_{\\text{conf}}$.\n4477: \n4478: $\\square$"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

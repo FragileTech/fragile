@@ -1,0 +1,109 @@
+{
+  "document_id": "16_convergence_mean_field",
+  "stage": "directives",
+  "directive_type": "problem",
+  "generated_at": "2025-11-08T17:07:43.279388+00:00",
+  "count": 4,
+  "items": [
+    {
+      "directive_type": "problem",
+      "label": "prob-revival-kl-mean-field",
+      "title": "Main Research Question",
+      "start_line": 358,
+      "end_line": 380,
+      "header_lines": [
+        359
+      ],
+      "content_start": 361,
+      "content_end": 379,
+      "content": "361: :label: prob-revival-kl-mean-field\n362: \n363: Let $\\mathcal{R}[\\rho, m_d]$ be the mean-field revival operator defined in [05_mean_field.md](../1_euclidean_gas/07_mean_field.md):\n364: \n365: $$\n366: \\mathcal{R}[\\rho, m_d](x,v) = \\lambda_{\\text{revive}} \\cdot m_d \\cdot \\frac{\\rho(x,v)}{\\int_\\Omega \\rho}\n367: $$\n368: \n369: where $m_d = 1 - \\int_\\Omega \\rho$ is the dead mass and $\\lambda_{\\text{revive}}$ is the revival rate.\n370: \n371: **Question**: Is $\\mathcal{R}$ **KL-non-expansive**? That is, does it satisfy:\n372: \n373: $$\n374: D_{\\text{KL}}(\\mathcal{R}(\\rho) \\| \\mathcal{R}(\\sigma)) \\le D_{\\text{KL}}(\\rho \\| \\sigma)\n375: $$\n376: \n377: for all alive densities $\\rho, \\sigma \\in \\mathcal{P}(\\Omega)$ with $\\int \\rho = \\int \\sigma < 1$?\n378: \n379: **Status**: **RESOLVED** - See Section 7 and Stage 2",
+      "metadata": {
+        "label": "prob-revival-kl-mean-field"
+      },
+      "section": "## 0. Executive Summary",
+      "raw_directive": "358: ### 0.1. The Central Question\n359: \n360: :::{prf:problem} Main Research Question\n361: :label: prob-revival-kl-mean-field\n362: \n363: Let $\\mathcal{R}[\\rho, m_d]$ be the mean-field revival operator defined in [05_mean_field.md](../1_euclidean_gas/07_mean_field.md):\n364: \n365: $$\n366: \\mathcal{R}[\\rho, m_d](x,v) = \\lambda_{\\text{revive}} \\cdot m_d \\cdot \\frac{\\rho(x,v)}{\\int_\\Omega \\rho}\n367: $$\n368: \n369: where $m_d = 1 - \\int_\\Omega \\rho$ is the dead mass and $\\lambda_{\\text{revive}}$ is the revival rate.\n370: \n371: **Question**: Is $\\mathcal{R}$ **KL-non-expansive**? That is, does it satisfy:\n372: \n373: $$\n374: D_{\\text{KL}}(\\mathcal{R}(\\rho) \\| \\mathcal{R}(\\sigma)) \\le D_{\\text{KL}}(\\rho \\| \\sigma)\n375: $$\n376: \n377: for all alive densities $\\rho, \\sigma \\in \\mathcal{P}(\\Omega)$ with $\\int \\rho = \\int \\sigma < 1$?\n378: \n379: **Status**: **RESOLVED** - See Section 7 and Stage 2\n380: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "16_convergence_mean_field",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 0. Executive Summary"
+      }
+    },
+    {
+      "directive_type": "problem",
+      "label": "prob-finite-n-vs-mean-field",
+      "title": "Critical Differences Between Finite-N and Mean-Field",
+      "start_line": 549,
+      "end_line": 561,
+      "header_lines": [
+        550
+      ],
+      "content_start": 552,
+      "content_end": 560,
+      "content": "552: :label: prob-finite-n-vs-mean-field\n553: \n554: | Aspect | Finite-N Cloning | Mean-Field Revival | Implication |\n555: |:-------|:-----------------|:-------------------|:------------|\n556: | **Dimensionality** | Finite $(Nd)$ | Infinite (function space) | Compactness arguments may fail |\n557: | **Noise** | Explicit $\\delta \\xi$ noise | No explicit noise in $\\mathcal{R}$ | Fisher information regularization unclear |\n558: | **Nonlinearity** | Linear in empirical measure | Nonlinear (division by $\\\\|\\rho\\\\|_{L^1}$) | May create singularities |\n559: | **Discreteness** | Discrete selection among N walkers | Continuous sampling from $\\rho$ | Combinatorial structure lost |\n560: | **Companion selection** | Finite sample ($j \\in \\mathcal{A}$) | Integral over $\\rho$ | Correlations differ |",
+      "metadata": {
+        "label": "prob-finite-n-vs-mean-field"
+      },
+      "section": "## 2. Analysis of the Finite-N to Mean-Field Transition",
+      "raw_directive": "549: **Potential issues**:\n550: \n551: :::{prf:problem} Critical Differences Between Finite-N and Mean-Field\n552: :label: prob-finite-n-vs-mean-field\n553: \n554: | Aspect | Finite-N Cloning | Mean-Field Revival | Implication |\n555: |:-------|:-----------------|:-------------------|:------------|\n556: | **Dimensionality** | Finite $(Nd)$ | Infinite (function space) | Compactness arguments may fail |\n557: | **Noise** | Explicit $\\delta \\xi$ noise | No explicit noise in $\\mathcal{R}$ | Fisher information regularization unclear |\n558: | **Nonlinearity** | Linear in empirical measure | Nonlinear (division by $\\\\|\\rho\\\\|_{L^1}$) | May create singularities |\n559: | **Discreteness** | Discrete selection among N walkers | Continuous sampling from $\\rho$ | Combinatorial structure lost |\n560: | **Companion selection** | Finite sample ($j \\in \\mathcal{A}$) | Integral over $\\rho$ | Correlations differ |\n561: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "16_convergence_mean_field",
+        "chapter_index": 7,
+        "chapter_file": "chapter_7.json",
+        "section_id": "## 2. Analysis of the Finite-N to Mean-Field Transition"
+      }
+    },
+    {
+      "directive_type": "problem",
+      "label": "prob-explicit-kl-condition",
+      "title": "Open Question from Explicit Calculation",
+      "start_line": 674,
+      "end_line": 694,
+      "header_lines": [
+        675
+      ],
+      "content_start": 677,
+      "content_end": 693,
+      "content": "677: :label: prob-explicit-kl-condition\n678: \n679: The KL-non-expansiveness of $\\mathcal{R}$ is equivalent to:\n680: \n681: $$\n682: \\lambda (1-m_\\rho) \\log \\frac{1-m_\\rho}{1-m_\\sigma} \\le m_\\rho \\log \\frac{m_\\rho}{m_\\sigma}\n683: $$\n684: \n685: plus a term involving the normalized KL-divergences.\n686: \n687: **Special case** ($m_\\rho = m_\\sigma$): Both log terms vanish, and we get:\n688: \n689: $$\n690: \\lambda (1-m_\\rho) D_{\\text{KL}}(\\tilde{\\rho} \\| \\tilde{\\sigma}) \\le m_\\rho D_{\\text{KL}}(\\tilde{\\rho} \\| \\tilde{\\sigma})\n691: $$\n692: \n693: This holds iff $\\lambda (1 - m_\\rho) \\le m_\\rho$, i.e., $\\lambda \\le \\frac{m_\\rho}{1 - m_\\rho}$.",
+      "metadata": {
+        "label": "prob-explicit-kl-condition"
+      },
+      "section": "## 3. Direct Proof Attempts",
+      "raw_directive": "674: 3. Value of $\\lambda_{\\text{revive}}$\n675: \n676: :::{prf:problem} Open Question from Explicit Calculation\n677: :label: prob-explicit-kl-condition\n678: \n679: The KL-non-expansiveness of $\\mathcal{R}$ is equivalent to:\n680: \n681: $$\n682: \\lambda (1-m_\\rho) \\log \\frac{1-m_\\rho}{1-m_\\sigma} \\le m_\\rho \\log \\frac{m_\\rho}{m_\\sigma}\n683: $$\n684: \n685: plus a term involving the normalized KL-divergences.\n686: \n687: **Special case** ($m_\\rho = m_\\sigma$): Both log terms vanish, and we get:\n688: \n689: $$\n690: \\lambda (1-m_\\rho) D_{\\text{KL}}(\\tilde{\\rho} \\| \\tilde{\\sigma}) \\le m_\\rho D_{\\text{KL}}(\\tilde{\\rho} \\| \\tilde{\\sigma})\n691: $$\n692: \n693: This holds iff $\\lambda (1 - m_\\rho) \\le m_\\rho$, i.e., $\\lambda \\le \\frac{m_\\rho}{1 - m_\\rho}$.\n694: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "16_convergence_mean_field",
+        "chapter_index": 8,
+        "chapter_file": "chapter_8.json",
+        "section_id": "## 3. Direct Proof Attempts"
+      }
+    },
+    {
+      "directive_type": "problem",
+      "label": "prob-gemini-collaboration-tasks",
+      "title": "Critical Tasks for Gemini Collaboration",
+      "start_line": 918,
+      "end_line": 930,
+      "header_lines": [
+        919
+      ],
+      "content_start": 921,
+      "content_end": 929,
+      "content": "921: :label: prob-gemini-collaboration-tasks\n922: \n923: 1. **Refine the two-state counterexample**: Develop a rigorous lower-dimensional model where calculations are exact. Determine precisely when KL-non-expansiveness holds.\n924: \n925: 2. **Investigate joint operator**: Instead of analyzing $\\mathcal{R}$ alone, study the composed operator $\\mathcal{J} = $ (killing + revival). Does the killing term compensate for revival's entropy increase?\n926: \n927: 3. **Explore alternative formulations**: Can we reformulate the revival operator to make KL-properties more transparent? E.g., as a Bayesian update with explicit noise?\n928: \n929: 4. **Check literature**: Has anyone studied KL-properties of proportional resampling operators in McKean-Vlasov systems? Search for related results in QSD theory, population dynamics, branching processes.",
+      "metadata": {
+        "label": "prob-gemini-collaboration-tasks"
+      },
+      "section": "## 5. Decision Point and Path Forward",
+      "raw_directive": "918: Based on these preliminary findings, I recommend the following investigations with Gemini:\n919: \n920: :::{prf:problem} Critical Tasks for Gemini Collaboration\n921: :label: prob-gemini-collaboration-tasks\n922: \n923: 1. **Refine the two-state counterexample**: Develop a rigorous lower-dimensional model where calculations are exact. Determine precisely when KL-non-expansiveness holds.\n924: \n925: 2. **Investigate joint operator**: Instead of analyzing $\\mathcal{R}$ alone, study the composed operator $\\mathcal{J} = $ (killing + revival). Does the killing term compensate for revival's entropy increase?\n926: \n927: 3. **Explore alternative formulations**: Can we reformulate the revival operator to make KL-properties more transparent? E.g., as a Bayesian update with explicit noise?\n928: \n929: 4. **Check literature**: Has anyone studied KL-properties of proportional resampling operators in McKean-Vlasov systems? Search for related results in QSD theory, population dynamics, branching processes.\n930: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "16_convergence_mean_field",
+        "chapter_index": 10,
+        "chapter_file": "chapter_10.json",
+        "section_id": "## 5. Decision Point and Path Forward"
+      }
+    }
+  ]
+}

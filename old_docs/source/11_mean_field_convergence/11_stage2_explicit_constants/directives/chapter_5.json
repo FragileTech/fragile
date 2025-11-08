@@ -1,0 +1,29 @@
+{
+  "chapter_index": 5,
+  "section_id": "## 5. Assembling the Coercivity Gap",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-exponential-convergence-local",
+      "title": "Exponential Convergence (Local)",
+      "start_line": 735,
+      "end_line": 751,
+      "header_lines": [
+        736
+      ],
+      "content_start": 738,
+      "content_end": 750,
+      "content": "738: :label: thm-exponential-convergence-local\n739: \n740: Assume $\\delta > 0$ and that $\\rho_0$ satisfies $D_{\\text{KL}}(\\rho_0 \\| \\rho_\\infty) \\le \\epsilon_0$ for sufficiently small $\\epsilon_0$. Then:\n741: \n742: $$\n743: D_{\\text{KL}}(\\rho_t \\| \\rho_\\infty) \\le e^{-\\alpha_{\\text{net}} t} D_{\\text{KL}}(\\rho_0 \\| \\rho_\\infty)\n744: $$\n745: \n746: where:\n747: \n748: $$\n749: \\boxed{\\alpha_{\\text{net}} = \\frac{\\delta}{2}}\n750: $$",
+      "metadata": {
+        "label": "thm-exponential-convergence-local"
+      },
+      "section": "## 5. Assembling the Coercivity Gap",
+      "raw_directive": "735: **For exact exponential convergence to $\\rho_\\infty$**: We need $C_{\\text{offset}} = 0$, which requires tighter control of the constant terms. This is typically achieved by working in a **local basin** around $\\rho_\\infty$ where quadratic approximations are valid.\n736: \n737: :::{prf:theorem} Exponential Convergence (Local)\n738: :label: thm-exponential-convergence-local\n739: \n740: Assume $\\delta > 0$ and that $\\rho_0$ satisfies $D_{\\text{KL}}(\\rho_0 \\| \\rho_\\infty) \\le \\epsilon_0$ for sufficiently small $\\epsilon_0$. Then:\n741: \n742: $$\n743: D_{\\text{KL}}(\\rho_t \\| \\rho_\\infty) \\le e^{-\\alpha_{\\text{net}} t} D_{\\text{KL}}(\\rho_0 \\| \\rho_\\infty)\n744: $$\n745: \n746: where:\n747: \n748: $$\n749: \\boxed{\\alpha_{\\text{net}} = \\frac{\\delta}{2}}\n750: $$\n751: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

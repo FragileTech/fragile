@@ -1,0 +1,47 @@
+{
+  "chapter_index": 4,
+  "section_id": "## 5. Symmetries and Conservation Laws",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-discrete-translation-equivariance-rigorous",
+      "title": "Discrete Translation Equivariance",
+      "start_line": 898,
+      "end_line": 916,
+      "header_lines": [
+        899
+      ],
+      "content_start": 901,
+      "content_end": 915,
+      "content": "901: :label: thm-discrete-translation-equivariance-rigorous\n902: \n903: If the reward function $R: \\mathcal{X} \\to \\mathbb{R}$ is translation-invariant:\n904: \n905: $$\n906: R(x + a) = R(x) \\quad \\forall x \\in \\mathcal{X}, a \\in \\mathbb{R}^d\n907: $$\n908: \n909: then the Fractal Set distribution is **translation-equivariant**:\n910: \n911: $$\n912: \\mathcal{L}(\\mathcal{F}) = \\mathcal{L}(T_a(\\mathcal{F}))\n913: $$\n914: \n915: where $T_a(\\mathcal{F})$ translates all episode positions by $a$.",
+      "metadata": {
+        "label": "thm-discrete-translation-equivariance-rigorous"
+      },
+      "section": "## 5. Symmetries and Conservation Laws",
+      "raw_directive": "898: ### 5.1. Discrete Symmetry Theorems\n899: \n900: :::{prf:theorem} Discrete Translation Equivariance\n901: :label: thm-discrete-translation-equivariance-rigorous\n902: \n903: If the reward function $R: \\mathcal{X} \\to \\mathbb{R}$ is translation-invariant:\n904: \n905: $$\n906: R(x + a) = R(x) \\quad \\forall x \\in \\mathcal{X}, a \\in \\mathbb{R}^d\n907: $$\n908: \n909: then the Fractal Set distribution is **translation-equivariant**:\n910: \n911: $$\n912: \\mathcal{L}(\\mathcal{F}) = \\mathcal{L}(T_a(\\mathcal{F}))\n913: $$\n914: \n915: where $T_a(\\mathcal{F})$ translates all episode positions by $a$.\n916: "
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-symmetry-correspondence-rigorous",
+      "title": "Discrete-Continuous Symmetry Correspondence",
+      "start_line": 920,
+      "end_line": 936,
+      "header_lines": [
+        921
+      ],
+      "content_start": 923,
+      "content_end": 935,
+      "content": "923: :label: prop-symmetry-correspondence-rigorous\n924: \n925: The following table establishes the correspondence between **discrete symmetries** of the Fractal Set and **continuous symmetries** of the emergent continuum theory:\n926: \n927: | **Discrete (Fractal Set)** | **Continuous (Continuum Limit)** | **Physical Meaning** |\n928: |----------------------------|----------------------------------|----------------------|\n929: | Episode relabeling $S_{|\\mathcal{E}|}$ | Particle permutation $S_N$ / Braid group $B_N$ | Walker indistinguishability |\n930: | CST temporal ordering | Time translation $\\mathbb{R}$ | Causality |\n931: | IG spatial coupling | Diffeomorphisms Diff($\\mathcal{X}$) | Coordinate freedom |\n932: | Reward shift $R \\to R + c$ | Global U(1)_fitness phase | Fitness scale invariance |\n933: | Episode pair $(i, j)$ exchange | SU(2)_weak isospin rotation | Cloning role exchange |\n934: \n935: **Key insight:** Discrete symmetries are **exact** on the Fractal Set, while continuous symmetries are **emergent** in the $N \\to \\infty$ limit.",
+      "metadata": {
+        "label": "prop-symmetry-correspondence-rigorous"
+      },
+      "section": "## 5. Symmetries and Conservation Laws",
+      "raw_directive": "920: ### 5.2. Symmetry Correspondence Table\n921: \n922: :::{prf:proposition} Discrete-Continuous Symmetry Correspondence\n923: :label: prop-symmetry-correspondence-rigorous\n924: \n925: The following table establishes the correspondence between **discrete symmetries** of the Fractal Set and **continuous symmetries** of the emergent continuum theory:\n926: \n927: | **Discrete (Fractal Set)** | **Continuous (Continuum Limit)** | **Physical Meaning** |\n928: |----------------------------|----------------------------------|----------------------|\n929: | Episode relabeling $S_{|\\mathcal{E}|}$ | Particle permutation $S_N$ / Braid group $B_N$ | Walker indistinguishability |\n930: | CST temporal ordering | Time translation $\\mathbb{R}$ | Causality |\n931: | IG spatial coupling | Diffeomorphisms Diff($\\mathcal{X}$) | Coordinate freedom |\n932: | Reward shift $R \\to R + c$ | Global U(1)_fitness phase | Fitness scale invariance |\n933: | Episode pair $(i, j)$ exchange | SU(2)_weak isospin rotation | Cloning role exchange |\n934: \n935: **Key insight:** Discrete symmetries are **exact** on the Fractal Set, while continuous symmetries are **emergent** in the $N \\to \\infty$ limit.\n936: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

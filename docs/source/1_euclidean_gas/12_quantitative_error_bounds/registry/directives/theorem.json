@@ -1,0 +1,134 @@
+{
+  "document_id": "12_quantitative_error_bounds",
+  "stage": "directives",
+  "directive_type": "theorem",
+  "generated_at": "2025-11-08T17:07:43.230518+00:00",
+  "count": 5,
+  "items": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-quantitative-propagation-chaos",
+      "title": "Quantitative Propagation of Chaos",
+      "start_line": 618,
+      "end_line": 637,
+      "header_lines": [
+        619
+      ],
+      "content_start": 621,
+      "content_end": 636,
+      "content": "621: :label: thm-quantitative-propagation-chaos\n622: \n623: Let $\\nu_N^{QSD}$ be the quasi-stationary distribution of the N-particle system and let $\\rho_0$ be the mean-field invariant measure. For any Lipschitz observable $\\phi: \\Omega \\to \\mathbb{R}$ with constant $L_\\phi$, we have:\n624: \n625: $$\n626: \\left| \\mathbb{E}_{\\nu_N^{QSD}} \\left[ \\frac{1}{N} \\sum_{i=1}^N \\phi(z_i) \\right] - \\int_\\Omega \\phi(z) \\rho_0(z) dz \\right| \\leq \\frac{C_{\\text{obs}} \\cdot L_\\phi}{\\sqrt{N}}\n627: $$\n628: \n629: where the constant $C_{\\text{obs}}$ is given explicitly by:\n630: \n631: $$\n632: C_{\\text{obs}} = \\sqrt{C_{\\text{var}} + C' \\cdot C_{\\text{int}}}\n633: $$\n634: \n635: and depends on:\n636: - $C_{\\text{var}}$: Second moment of $\\rho_0$ (variance constant for i.i.d. empirical measure concentration)",
+      "metadata": {
+        "label": "thm-quantitative-propagation-chaos"
+      },
+      "section": "## Part I: Mean-Field Convergence via Relative Entropy",
+      "raw_directive": "618: We now combine the three lemmas to prove the main theorem.\n619: \n620: :::{prf:theorem} Quantitative Propagation of Chaos\n621: :label: thm-quantitative-propagation-chaos\n622: \n623: Let $\\nu_N^{QSD}$ be the quasi-stationary distribution of the N-particle system and let $\\rho_0$ be the mean-field invariant measure. For any Lipschitz observable $\\phi: \\Omega \\to \\mathbb{R}$ with constant $L_\\phi$, we have:\n624: \n625: $$\n626: \\left| \\mathbb{E}_{\\nu_N^{QSD}} \\left[ \\frac{1}{N} \\sum_{i=1}^N \\phi(z_i) \\right] - \\int_\\Omega \\phi(z) \\rho_0(z) dz \\right| \\leq \\frac{C_{\\text{obs}} \\cdot L_\\phi}{\\sqrt{N}}\n627: $$\n628: \n629: where the constant $C_{\\text{obs}}$ is given explicitly by:\n630: \n631: $$\n632: C_{\\text{obs}} = \\sqrt{C_{\\text{var}} + C' \\cdot C_{\\text{int}}}\n633: $$\n634: \n635: and depends on:\n636: - $C_{\\text{var}}$: Second moment of $\\rho_0$ (variance constant for i.i.d. empirical measure concentration)\n637: - $C'$: Concentration constant from Fournier-Guillin bound for exchangeable particle systems",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "12_quantitative_error_bounds",
+        "chapter_index": 0,
+        "chapter_file": "chapter_0.json",
+        "section_id": "## Part I: Mean-Field Convergence via Relative Entropy"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-langevin-baoab-discretization-error",
+      "title": "Langevin-BAOAB Time Discretization Error",
+      "start_line": 1401,
+      "end_line": 1415,
+      "header_lines": [
+        1402
+      ],
+      "content_start": 1404,
+      "content_end": 1414,
+      "content": "1404: :label: thm-langevin-baoab-discretization-error\n1405: \n1406: Let $\\nu_N^{\\text{Langevin}}$ be the invariant measure of the continuous-time N-particle Langevin dynamics (without cloning) and let $\\nu_N^{\\text{BAOAB}}$ be the invariant measure of the discrete-time BAOAB chain with step size $\\Delta t$ for the same Langevin SDE. For any observable $\\phi \\in C^4$ with $\\|\\phi\\|_{C^4} < \\infty$:\n1407: \n1408: $$\n1409: \\left| \\mathbb{E}_{\\nu_N^{\\text{BAOAB}}} [\\phi] - \\mathbb{E}_{\\nu_N^{\\text{Langevin}}} [\\phi] \\right| \\leq C_{\\text{BAOAB}} \\cdot \\|\\phi\\|_{C^4} \\cdot (\\Delta t)^2\n1410: $$\n1411: \n1412: where $C_{\\text{BAOAB}}$ depends on $\\gamma, \\sigma, \\|\\nabla U\\|_{\\text{Lip}}, M_4, \\kappa_{\\text{mix}}$ but is independent of $N$ (N-uniform) and independent of $\\Delta t$ (for $\\Delta t$ sufficiently small).\n1413: \n1414: **Important**: This theorem analyzes the **Langevin dynamics alone**, without the cloning mechanism. The complete Fragile Gas algorithm combines BAOAB integration with cloning. The full system error analysis (which will show an $O(\\Delta t)$ rate dominated by the cloning error) is deferred to Part III and Part IV.",
+      "metadata": {
+        "label": "thm-langevin-baoab-discretization-error"
+      },
+      "section": "## Part II: Time Discretization Error Bounds",
+      "raw_directive": "1401: We now state the main result for Part II.\n1402: \n1403: :::{prf:theorem} Langevin-BAOAB Time Discretization Error\n1404: :label: thm-langevin-baoab-discretization-error\n1405: \n1406: Let $\\nu_N^{\\text{Langevin}}$ be the invariant measure of the continuous-time N-particle Langevin dynamics (without cloning) and let $\\nu_N^{\\text{BAOAB}}$ be the invariant measure of the discrete-time BAOAB chain with step size $\\Delta t$ for the same Langevin SDE. For any observable $\\phi \\in C^4$ with $\\|\\phi\\|_{C^4} < \\infty$:\n1407: \n1408: $$\n1409: \\left| \\mathbb{E}_{\\nu_N^{\\text{BAOAB}}} [\\phi] - \\mathbb{E}_{\\nu_N^{\\text{Langevin}}} [\\phi] \\right| \\leq C_{\\text{BAOAB}} \\cdot \\|\\phi\\|_{C^4} \\cdot (\\Delta t)^2\n1410: $$\n1411: \n1412: where $C_{\\text{BAOAB}}$ depends on $\\gamma, \\sigma, \\|\\nabla U\\|_{\\text{Lip}}, M_4, \\kappa_{\\text{mix}}$ but is independent of $N$ (N-uniform) and independent of $\\Delta t$ (for $\\Delta t$ sufficiently small).\n1413: \n1414: **Important**: This theorem analyzes the **Langevin dynamics alone**, without the cloning mechanism. The complete Fragile Gas algorithm combines BAOAB integration with cloning. The full system error analysis (which will show an $O(\\Delta t)$ rate dominated by the cloning error) is deferred to Part III and Part IV.\n1415: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "12_quantitative_error_bounds",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
+        "section_id": "## Part II: Time Discretization Error Bounds"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-full-system-discretization-error",
+      "title": "Full System Time Discretization Error",
+      "start_line": 1538,
+      "end_line": 1550,
+      "header_lines": [
+        1539
+      ],
+      "content_start": 1541,
+      "content_end": 1549,
+      "content": "1541: :label: thm-full-system-discretization-error\n1542: \n1543: Let $\\nu_N^{\\text{cont}}$ be the QSD of the continuous-time N-particle system (Langevin dynamics + continuous-time cloning) and let $\\nu_N^{\\text{discrete}}$ be the QSD of the discrete-time system (BAOAB + discrete cloning with step size $\\Delta t$). For any observable $\\phi \\in C^4$ with $\\|\\phi\\|_{C^4} < \\infty$:\n1544: \n1545: $$\n1546: \\left| \\mathbb{E}_{\\nu_N^{\\text{discrete}}} [\\phi] - \\mathbb{E}_{\\nu_N^{\\text{cont}}} [\\phi] \\right| \\leq C_{\\text{total}} \\cdot \\|\\phi\\|_{C^4} \\cdot \\Delta t\n1547: $$\n1548: \n1549: where $C_{\\text{total}}$ depends on $\\gamma, \\sigma, \\lambda, \\delta, M_4, \\kappa_{\\text{mix}}$ but is independent of $N$ and $\\Delta t$ (for $\\Delta t$ sufficiently small).",
+      "metadata": {
+        "label": "thm-full-system-discretization-error"
+      },
+      "section": "## Part III: Cloning Mechanism Error Bounds",
+      "raw_directive": "1538: ### Main Result (Target)\n1539: \n1540: :::{prf:theorem} Full System Time Discretization Error\n1541: :label: thm-full-system-discretization-error\n1542: \n1543: Let $\\nu_N^{\\text{cont}}$ be the QSD of the continuous-time N-particle system (Langevin dynamics + continuous-time cloning) and let $\\nu_N^{\\text{discrete}}$ be the QSD of the discrete-time system (BAOAB + discrete cloning with step size $\\Delta t$). For any observable $\\phi \\in C^4$ with $\\|\\phi\\|_{C^4} < \\infty$:\n1544: \n1545: $$\n1546: \\left| \\mathbb{E}_{\\nu_N^{\\text{discrete}}} [\\phi] - \\mathbb{E}_{\\nu_N^{\\text{cont}}} [\\phi] \\right| \\leq C_{\\text{total}} \\cdot \\|\\phi\\|_{C^4} \\cdot \\Delta t\n1547: $$\n1548: \n1549: where $C_{\\text{total}}$ depends on $\\gamma, \\sigma, \\lambda, \\delta, M_4, \\kappa_{\\text{mix}}$ but is independent of $N$ and $\\Delta t$ (for $\\Delta t$ sufficiently small).\n1550: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "12_quantitative_error_bounds",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## Part III: Cloning Mechanism Error Bounds"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-quantitative-error-propagation",
+      "title": "Error Propagation for Ergodic Chains",
+      "start_line": 2188,
+      "end_line": 2200,
+      "header_lines": [
+        2189
+      ],
+      "content_start": 2191,
+      "content_end": 2199,
+      "content": "2191: :label: thm-quantitative-error-propagation\n2192: \n2193: Suppose:\n2194: 1. The one-step weak error satisfies $\\left|\\mathbb{E}[(\\mathcal{T}^{\\Delta t} - \\mathcal{P}^{\\Delta t})\\phi(Z)]\\right| \\leq C_{\\text{split}} \\|\\phi\\|_{C^4} (\\Delta t)^2$\n2195: 2. The discrete chain is geometrically ergodic with rate $\\kappa_{\\text{mix}}$, uniformly in $\\Delta t$\n2196: \n2197: Then the error in invariant measures is:\n2198: \n2199: $$",
+      "metadata": {
+        "label": "thm-quantitative-error-propagation"
+      },
+      "section": "## Part III: Cloning Mechanism Error Bounds",
+      "raw_directive": "2188: Now we connect the $O((\\Delta t)^2)$ local weak error to the $O(\\Delta t)$ global error in invariant measures. The key is to relate the discrete-time invariant measure $\\nu_N^{\\text{discrete}}$ to the continuous-time invariant measure $\\nu_N^{\\text{cont}}$ using the Poisson equation.\n2189: \n2190: :::{prf:theorem} Error Propagation for Ergodic Chains\n2191: :label: thm-quantitative-error-propagation\n2192: \n2193: Suppose:\n2194: 1. The one-step weak error satisfies $\\left|\\mathbb{E}[(\\mathcal{T}^{\\Delta t} - \\mathcal{P}^{\\Delta t})\\phi(Z)]\\right| \\leq C_{\\text{split}} \\|\\phi\\|_{C^4} (\\Delta t)^2$\n2195: 2. The discrete chain is geometrically ergodic with rate $\\kappa_{\\text{mix}}$, uniformly in $\\Delta t$\n2196: \n2197: Then the error in invariant measures is:\n2198: \n2199: $$\n2200: \\left| \\mathbb{E}_{\\nu_N^{\\text{discrete}}} [\\phi] - \\mathbb{E}_{\\nu_N^{\\text{cont}}} [\\phi] \\right| \\leq \\frac{C_{\\text{split}}}{\\kappa_{\\text{mix}}} \\|\\phi\\|_{C^4} \\Delta t",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "12_quantitative_error_bounds",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## Part III: Cloning Mechanism Error Bounds"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-total-error-bound",
+      "title": "Total Error Bound for Discrete Fragile Gas",
+      "start_line": 2340,
+      "end_line": 2372,
+      "header_lines": [
+        2341
+      ],
+      "content_start": 2343,
+      "content_end": 2371,
+      "content": "2343: :label: thm-total-error-bound\n2344: \n2345: Let $\\nu_N^{\\text{discrete}}$ be the invariant measure of the fully discrete N-particle Fragile Gas with time step $\\Delta t$, and let $\\rho_0$ be the invariant measure of the continuous-time mean-field McKean-Vlasov equation.\n2346: \n2347: **Assumptions:**\n2348: 1. **N-uniform LSI** ({prf:ref}`thm-kl-convergence-euclidean`): The N-particle system satisfies a logarithmic Sobolev inequality with constant independent of $N$\n2349: 2. **Geometric ergodicity**: Both discrete and continuous N-particle chains mix geometrically with rates uniform in $N$ and $\\Delta t$ (for $\\Delta t < \\Delta t_0$)\n2350: 3. **Regularity**: Potential $U \\in C^4$, fitness function $F \\in C^4$, observable $\\phi \\in C^4$\n2351: 4. **Confinement**: Potential satisfies the Axiom of Confined Potential with rate $\\kappa_{\\text{conf}} > 0$\n2352: \n2353: Under these assumptions, for any single-particle observable $\\phi: \\mathcal{Z} \\to \\mathbb{R}$ with $\\|\\phi\\|_{C^4} < \\infty$, the empirical measure approximation error satisfies:\n2354: \n2355: $$\n2356: \\boxed{\n2357: \\left| \\mathbb{E}_{\\nu_N^{\\text{discrete}}} \\left[ \\frac{1}{N}\\sum_{i=1}^N \\phi(Z^{(i)}) \\right] - \\mathbb{E}_{\\rho_0} [\\phi] \\right| \\leq \\left( \\frac{C_{\\text{MF}}}{\\sqrt{N}} + C_{\\text{discrete}} \\Delta t \\right) \\|\\phi\\|_{C^4}\n2358: }\n2359: $$\n2360: \n2361: where:\n2362: - $C_{\\text{MF}} = \\sqrt{C_{\\text{var}} + C' \\cdot C_{\\text{int}}}$ is the mean-field error constant (from {prf:ref}`thm-quantitative-propagation-chaos`)\n2363: - $C_{\\text{discrete}} = \\frac{C_{\\text{split}} \\cdot C_{\\text{poisson}}}{\\kappa_{\\text{mix}}^{\\text{cont}}}$ is the time discretization constant (from {prf:ref}`thm-error-propagation`)\n2364: \n2365: **Constants depend on:**\n2366: - System parameters: $\\gamma$ (friction), $\\sigma$ (noise), $\\lambda$ (cloning rate), $\\delta$ (cloning noise), $\\beta$ (fitness weight)\n2367: - Potential: $\\|\\nabla^2 U\\|_\\infty$, $\\kappa_{\\text{conf}}$ (confinement rate)\n2368: - Fitness function: $\\|F\\|_{C^4}$, Lipschitz constants\n2369: - Mixing rate: $\\kappa_{\\text{mix}}^{\\text{cont}}$ (spectral gap of continuous generator)\n2370: \n2371: **Crucially**, both constants are **independent of $N$ and $\\Delta t$** (for $\\Delta t < \\Delta t_0$ sufficiently small).",
+      "metadata": {
+        "label": "thm-total-error-bound"
+      },
+      "section": "## Part IV: Total Error Bound",
+      "raw_directive": "2340: ### Main Result\n2341: \n2342: :::{prf:theorem} Total Error Bound for Discrete Fragile Gas\n2343: :label: thm-total-error-bound\n2344: \n2345: Let $\\nu_N^{\\text{discrete}}$ be the invariant measure of the fully discrete N-particle Fragile Gas with time step $\\Delta t$, and let $\\rho_0$ be the invariant measure of the continuous-time mean-field McKean-Vlasov equation.\n2346: \n2347: **Assumptions:**\n2348: 1. **N-uniform LSI** ({prf:ref}`thm-kl-convergence-euclidean`): The N-particle system satisfies a logarithmic Sobolev inequality with constant independent of $N$\n2349: 2. **Geometric ergodicity**: Both discrete and continuous N-particle chains mix geometrically with rates uniform in $N$ and $\\Delta t$ (for $\\Delta t < \\Delta t_0$)\n2350: 3. **Regularity**: Potential $U \\in C^4$, fitness function $F \\in C^4$, observable $\\phi \\in C^4$\n2351: 4. **Confinement**: Potential satisfies the Axiom of Confined Potential with rate $\\kappa_{\\text{conf}} > 0$\n2352: \n2353: Under these assumptions, for any single-particle observable $\\phi: \\mathcal{Z} \\to \\mathbb{R}$ with $\\|\\phi\\|_{C^4} < \\infty$, the empirical measure approximation error satisfies:\n2354: \n2355: $$\n2356: \\boxed{\n2357: \\left| \\mathbb{E}_{\\nu_N^{\\text{discrete}}} \\left[ \\frac{1}{N}\\sum_{i=1}^N \\phi(Z^{(i)}) \\right] - \\mathbb{E}_{\\rho_0} [\\phi] \\right| \\leq \\left( \\frac{C_{\\text{MF}}}{\\sqrt{N}} + C_{\\text{discrete}} \\Delta t \\right) \\|\\phi\\|_{C^4}\n2358: }\n2359: $$\n2360: \n2361: where:\n2362: - $C_{\\text{MF}} = \\sqrt{C_{\\text{var}} + C' \\cdot C_{\\text{int}}}$ is the mean-field error constant (from {prf:ref}`thm-quantitative-propagation-chaos`)\n2363: - $C_{\\text{discrete}} = \\frac{C_{\\text{split}} \\cdot C_{\\text{poisson}}}{\\kappa_{\\text{mix}}^{\\text{cont}}}$ is the time discretization constant (from {prf:ref}`thm-error-propagation`)\n2364: \n2365: **Constants depend on:**\n2366: - System parameters: $\\gamma$ (friction), $\\sigma$ (noise), $\\lambda$ (cloning rate), $\\delta$ (cloning noise), $\\beta$ (fitness weight)\n2367: - Potential: $\\|\\nabla^2 U\\|_\\infty$, $\\kappa_{\\text{conf}}$ (confinement rate)\n2368: - Fitness function: $\\|F\\|_{C^4}$, Lipschitz constants\n2369: - Mixing rate: $\\kappa_{\\text{mix}}^{\\text{cont}}$ (spectral gap of continuous generator)\n2370: \n2371: **Crucially**, both constants are **independent of $N$ and $\\Delta t$** (for $\\Delta t < \\Delta t_0$ sufficiently small).\n2372: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "12_quantitative_error_bounds",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## Part IV: Total Error Bound"
+      }
+    }
+  ]
+}

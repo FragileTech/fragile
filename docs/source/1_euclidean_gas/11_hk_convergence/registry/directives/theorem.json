@@ -1,0 +1,159 @@
+{
+  "document_id": "11_hk_convergence",
+  "stage": "directives",
+  "directive_type": "theorem",
+  "generated_at": "2025-11-08T17:07:43.225672+00:00",
+  "count": 6,
+  "items": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-uniform-density-bound-hk",
+      "title": "Uniform Boundedness of Density Ratio",
+      "start_line": 1522,
+      "end_line": 1552,
+      "header_lines": [
+        1523
+      ],
+      "content_start": 1525,
+      "content_end": 1551,
+      "content": "1525: :label: thm-uniform-density-bound-hk\n1526: \n1527: **Reference**: See Chapter 5, Theorem {prf:ref}`thm-bounded-density-ratio-main` for the complete rigorous proof.\n1528: \n1529: For the Euclidean Gas with cloning noise $\\sigma_x > 0$ (from {prf:ref}`def-axiom-local-perturbation`) and confining potential $U$ satisfying the coercivity condition, there exists a finite constant $M = M(\\gamma, \\sigma_v, \\sigma_x, U, R, M_0, N) < \\infty$ such that:\n1530: \n1531: $$\n1532: \\sup_{t \\geq 0} \\sup_{x \\in \\mathcal{X}_{\\text{valid}}} \\frac{d\\tilde{\\mu}_t}{d\\tilde{\\pi}_{\\text{QSD}}}(x) \\leq M\n1533: \n1534: $$\n1535: \n1536: where $\\tilde{\\mu}_t = \\mu_t / \\|\\mu_t\\|$ and $\\tilde{\\pi}_{\\text{QSD}} = \\pi_{\\text{QSD}} / \\|\\pi_{\\text{QSD}}\\|$ are the normalized probability measures.\n1537: \n1538: **Proof Summary** (see referenced document for full details):\n1539: \n1540: The proof combines three advanced techniques:\n1541: \n1542: 1. **Hypoelliptic Regularity and Parabolic Harnack Inequalities**: Using Hörmander's theorem and parabolic Harnack inequalities for kinetic operators (Kusuoka & Stroock 1985; Hérau & Nier 2004), we establish rigorous $L^\\infty$ bounds on the time-evolved density via the Duhamel formula and Grönwall inequality. This provides the numerator bound: $\\|\\rho_t\\|_\\infty \\leq C_{\\text{hypo}}(M_0, T, \\gamma, \\sigma_v, \\sigma_x, U, R) < \\infty$.\n1543: \n1544: 2. **Gaussian Mollification and Multi-Step Doeblin Minorization**: The cloning operator's Gaussian position jitter ($\\sigma_x > 0$) combined with the hypoelliptic kinetic operator provides a state-independent Doeblin minorization after 2 steps (Ornstein-Uhlenbeck velocity refresh + spatial mollification). This establishes the denominator bound: $\\inf_{(x,v)} \\pi_{\\text{QSD}}(x, v) \\geq c_\\pi > 0$, where $c_\\pi = (\\eta \\, c_{\\text{vel}} \\, c_{\\sigma_x, R}) m_{\\text{eq}}$.\n1545: \n1546: 3. **Stochastic Mass Conservation via QSD Theory**: Using quasi-stationary distribution theory (Champagnat & Villemonais 2016), spectral gap analysis, and propagation-of-chaos estimates (Freedman's martingale inequality), we prove high-probability lower bounds on the alive mass: $\\mathbb{P}(\\|\\rho_t\\|_{L^1} \\geq c_{\\text{mass}}) \\geq 1 - C(1+t)e^{-\\delta N}$. This ensures the normalized density ratio remains well-defined.\n1547: \n1548: **Explicit Formula**: $M = \\max(M_1, M_2) < \\infty$ where:\n1549: - $M_1 = \\frac{C_{\\text{hypo}}}{c_{\\sigma_x, R} \\cdot c_{\\text{mass}}}$ (early-time bound)\n1550: - $M_2 = \\frac{C_{\\text{late}}^{\\text{total}}}{c_{\\sigma_x, R} \\cdot c_{\\text{mass}}}$ (late-time bound)\n1551: ",
+      "metadata": {
+        "label": "thm-uniform-density-bound-hk"
+      },
+      "section": "## 4. Lemma C: Kinetic Operator Hellinger Analysis",
+      "raw_directive": "1522: **Bounded Density Ratio:** The following result is established by the rigorous proof in Chapter 5:\n1523: \n1524: :::{prf:theorem} Uniform Boundedness of Density Ratio\n1525: :label: thm-uniform-density-bound-hk\n1526: \n1527: **Reference**: See Chapter 5, Theorem {prf:ref}`thm-bounded-density-ratio-main` for the complete rigorous proof.\n1528: \n1529: For the Euclidean Gas with cloning noise $\\sigma_x > 0$ (from {prf:ref}`def-axiom-local-perturbation`) and confining potential $U$ satisfying the coercivity condition, there exists a finite constant $M = M(\\gamma, \\sigma_v, \\sigma_x, U, R, M_0, N) < \\infty$ such that:\n1530: \n1531: $$\n1532: \\sup_{t \\geq 0} \\sup_{x \\in \\mathcal{X}_{\\text{valid}}} \\frac{d\\tilde{\\mu}_t}{d\\tilde{\\pi}_{\\text{QSD}}}(x) \\leq M\n1533: \n1534: $$\n1535: \n1536: where $\\tilde{\\mu}_t = \\mu_t / \\|\\mu_t\\|$ and $\\tilde{\\pi}_{\\text{QSD}} = \\pi_{\\text{QSD}} / \\|\\pi_{\\text{QSD}}\\|$ are the normalized probability measures.\n1537: \n1538: **Proof Summary** (see referenced document for full details):\n1539: \n1540: The proof combines three advanced techniques:\n1541: \n1542: 1. **Hypoelliptic Regularity and Parabolic Harnack Inequalities**: Using Hörmander's theorem and parabolic Harnack inequalities for kinetic operators (Kusuoka & Stroock 1985; Hérau & Nier 2004), we establish rigorous $L^\\infty$ bounds on the time-evolved density via the Duhamel formula and Grönwall inequality. This provides the numerator bound: $\\|\\rho_t\\|_\\infty \\leq C_{\\text{hypo}}(M_0, T, \\gamma, \\sigma_v, \\sigma_x, U, R) < \\infty$.\n1543: \n1544: 2. **Gaussian Mollification and Multi-Step Doeblin Minorization**: The cloning operator's Gaussian position jitter ($\\sigma_x > 0$) combined with the hypoelliptic kinetic operator provides a state-independent Doeblin minorization after 2 steps (Ornstein-Uhlenbeck velocity refresh + spatial mollification). This establishes the denominator bound: $\\inf_{(x,v)} \\pi_{\\text{QSD}}(x, v) \\geq c_\\pi > 0$, where $c_\\pi = (\\eta \\, c_{\\text{vel}} \\, c_{\\sigma_x, R}) m_{\\text{eq}}$.\n1545: \n1546: 3. **Stochastic Mass Conservation via QSD Theory**: Using quasi-stationary distribution theory (Champagnat & Villemonais 2016), spectral gap analysis, and propagation-of-chaos estimates (Freedman's martingale inequality), we prove high-probability lower bounds on the alive mass: $\\mathbb{P}(\\|\\rho_t\\|_{L^1} \\geq c_{\\text{mass}}) \\geq 1 - C(1+t)e^{-\\delta N}$. This ensures the normalized density ratio remains well-defined.\n1547: \n1548: **Explicit Formula**: $M = \\max(M_1, M_2) < \\infty$ where:\n1549: - $M_1 = \\frac{C_{\\text{hypo}}}{c_{\\sigma_x, R} \\cdot c_{\\text{mass}}}$ (early-time bound)\n1550: - $M_2 = \\frac{C_{\\text{late}}^{\\text{total}}}{c_{\\sigma_x, R} \\cdot c_{\\text{mass}}}$ (late-time bound)\n1551: \n1552: All constants are explicit and depend on the physical parameters $(\\gamma, \\sigma_v, \\sigma_x, U, R)$.",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_hk_convergence",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 4. Lemma C: Kinetic Operator Hellinger Analysis"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-parabolic-harnack",
+      "title": "Parabolic Harnack Inequality for Kinetic Operators",
+      "start_line": 2029,
+      "end_line": 2066,
+      "header_lines": [
+        2030
+      ],
+      "content_start": 2032,
+      "content_end": 2065,
+      "content": "2032: :label: thm-parabolic-harnack\n2033: \n2034: **References**:\n2035: - Kusuoka & Stroock (1985, *J. Fac. Sci. Univ. Tokyo Sect. IA Math.* 32:1-76)\n2036: - Hérau & Nier (2004, *Comm. Math. Phys.* 253:741-754)\n2037: \n2038: Let $u(t, z)$ be a non-negative solution to the kinetic Fokker-Planck equation:\n2039: \n2040: $$\n2041: \\frac{\\partial u}{\\partial t} = \\mathcal{L}_{\\text{kin}}^* u + h(t, z)\n2042: \n2043: $$\n2044: \n2045: on a cylinder $Q_R = [t_0, t_0 + R^2] \\times B_R(z_0) \\subset [0, \\infty) \\times \\Omega$, where $h$ is a bounded source term with $\\|h\\|_\\infty \\leq C_h$.\n2046: \n2047: Then there exist constants $C_H$ and $\\alpha > 0$ (depending on $\\gamma, \\sigma_v, \\|F\\|_{\\text{Lip}}, d$) such that:\n2048: \n2049: $$\n2050: \\sup_{Q_{R/2}^-} u \\leq C_H \\left( \\inf_{Q_{R/2}^+} u + R^2 C_h \\right)\n2051: \n2052: $$\n2053: \n2054: where:\n2055: - $Q_{R/2}^- = [t_0, t_0 + R^2/4] \\times B_{R/2}(z_0)$ (early time, smaller ball)\n2056: - $Q_{R/2}^+ = [t_0 + 3R^2/4, t_0 + R^2] \\times B_{R/2}(z_0)$ (late time, smaller ball)\n2057: \n2058: **Interpretation**: The supremum over early times is controlled by the infimum over late times, shifted by a time lag. This is the hypoelliptic \"smoothing\" property.\n2059: \n2060: **Proof Sketch**: The proof uses sub-Riemannian geometry and the Carnot-Carathéodory distance $d_{\\text{cc}}$ induced by the Hörmander vector fields. The key steps are:\n2061: \n2062: 1. Construct a Lyapunov function adapted to the hypoelliptic structure\n2063: 2. Apply maximum principle arguments in time-space cylinders\n2064: 3. Use the bracket condition to propagate information from velocity to position variables\n2065: 4. Iterate the estimates to obtain the final bound",
+      "metadata": {
+        "label": "thm-parabolic-harnack"
+      },
+      "section": "## 5. Rigorous Proof of Bounded Density Ratio",
+      "raw_directive": "2029: The key technical tool for establishing $L^\\infty$ bounds is the **parabolic Harnack inequality** for hypoelliptic operators. This inequality provides quantitative control of the supremum of a solution in terms of its infimum over a shifted time-space cylinder.\n2030: \n2031: :::{prf:theorem} Parabolic Harnack Inequality for Kinetic Operators\n2032: :label: thm-parabolic-harnack\n2033: \n2034: **References**:\n2035: - Kusuoka & Stroock (1985, *J. Fac. Sci. Univ. Tokyo Sect. IA Math.* 32:1-76)\n2036: - Hérau & Nier (2004, *Comm. Math. Phys.* 253:741-754)\n2037: \n2038: Let $u(t, z)$ be a non-negative solution to the kinetic Fokker-Planck equation:\n2039: \n2040: $$\n2041: \\frac{\\partial u}{\\partial t} = \\mathcal{L}_{\\text{kin}}^* u + h(t, z)\n2042: \n2043: $$\n2044: \n2045: on a cylinder $Q_R = [t_0, t_0 + R^2] \\times B_R(z_0) \\subset [0, \\infty) \\times \\Omega$, where $h$ is a bounded source term with $\\|h\\|_\\infty \\leq C_h$.\n2046: \n2047: Then there exist constants $C_H$ and $\\alpha > 0$ (depending on $\\gamma, \\sigma_v, \\|F\\|_{\\text{Lip}}, d$) such that:\n2048: \n2049: $$\n2050: \\sup_{Q_{R/2}^-} u \\leq C_H \\left( \\inf_{Q_{R/2}^+} u + R^2 C_h \\right)\n2051: \n2052: $$\n2053: \n2054: where:\n2055: - $Q_{R/2}^- = [t_0, t_0 + R^2/4] \\times B_{R/2}(z_0)$ (early time, smaller ball)\n2056: - $Q_{R/2}^+ = [t_0 + 3R^2/4, t_0 + R^2] \\times B_{R/2}(z_0)$ (late time, smaller ball)\n2057: \n2058: **Interpretation**: The supremum over early times is controlled by the infimum over late times, shifted by a time lag. This is the hypoelliptic \"smoothing\" property.\n2059: \n2060: **Proof Sketch**: The proof uses sub-Riemannian geometry and the Carnot-Carathéodory distance $d_{\\text{cc}}$ induced by the Hörmander vector fields. The key steps are:\n2061: \n2062: 1. Construct a Lyapunov function adapted to the hypoelliptic structure\n2063: 2. Apply maximum principle arguments in time-space cylinders\n2064: 3. Use the bracket condition to propagate information from velocity to position variables\n2065: 4. Iterate the estimates to obtain the final bound\n2066: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_hk_convergence",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. Rigorous Proof of Bounded Density Ratio"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-exponential-survival",
+      "title": "Exponential Survival Time (QSD Theory)",
+      "start_line": 2519,
+      "end_line": 2566,
+      "header_lines": [
+        2520
+      ],
+      "content_start": 2522,
+      "content_end": 2565,
+      "content": "2522: :label: thm-exponential-survival\n2523: \n2524: **References**:\n2525: - Champagnat & Villemonais (2016, *Ann. Appl. Probab.* 26:3547-3569)\n2526: - `06_convergence.md` Theorem 4.5 (lines 906-947)\n2527: \n2528: For the Euclidean Gas initialized from the quasi-stationary distribution $\\pi_{\\text{QSD}}$, the absorption time $\\tau_\\dagger$ (first time when all walkers are dead) satisfies:\n2529: \n2530: $$\n2531: \\mathbb{E}_{\\pi_{\\text{QSD}}}[\\tau_\\dagger] = e^{\\Theta(N)}\n2532: \n2533: $$\n2534: \n2535: Moreover, for any finite time horizon $T > 0$ independent of $N$:\n2536: \n2537: $$\n2538: \\mathbb{P}_{\\pi_{\\text{QSD}}}(\\tau_\\dagger > T) \\geq 1 - T e^{-\\Theta(N)}\n2539: \n2540: $$\n2541: \n2542: **Interpretation**: The probability of survival up to time $T$ approaches 1 exponentially fast in $N$. Total extinction is exponentially rare for large swarms.\n2543: \n2544: **Proof Sketch**: The key mechanism is the **revival operator**. From `07_mean_field.md`, dead walkers are revived by cloning from the alive population. The revival rate is proportional to the alive mass:\n2545: \n2546: $$\n2547: \\frac{dm_a}{dt} \\geq -C_{\\text{death}} m_a + C_{\\text{revival}} m_d = -C_{\\text{death}} m_a + C_{\\text{revival}}(1 - m_a)\n2548: \n2549: $$\n2550: \n2551: where $C_{\\text{death}}, C_{\\text{revival}} > 0$ are the death and revival rates.\n2552: \n2553: At equilibrium ($dm_a/dt = 0$):\n2554: \n2555: $$\n2556: m_a^* = \\frac{C_{\\text{revival}}}{C_{\\text{death}} + C_{\\text{revival}}} > 0\n2557: \n2558: $$\n2559: \n2560: The variance $\\text{Var}(k_t)$ scales as $O(N)$ (standard fluctuation scaling), so:\n2561: \n2562: $$\n2563: \\mathbb{P}(k_t = 0) \\approx \\mathbb{P}\\left( |k_t - k_*| > k_* \\right) \\leq \\frac{\\text{Var}(k_t)}{k_*^2} = O(N / N^2) = O(1/N)\n2564: \n2565: $$",
+      "metadata": {
+        "label": "thm-exponential-survival"
+      },
+      "section": "## 5. Rigorous Proof of Bounded Density Ratio",
+      "raw_directive": "2519: We leverage the theory of quasi-stationary distributions for absorbed Markov processes:\n2520: \n2521: :::{prf:theorem} Exponential Survival Time (QSD Theory)\n2522: :label: thm-exponential-survival\n2523: \n2524: **References**:\n2525: - Champagnat & Villemonais (2016, *Ann. Appl. Probab.* 26:3547-3569)\n2526: - `06_convergence.md` Theorem 4.5 (lines 906-947)\n2527: \n2528: For the Euclidean Gas initialized from the quasi-stationary distribution $\\pi_{\\text{QSD}}$, the absorption time $\\tau_\\dagger$ (first time when all walkers are dead) satisfies:\n2529: \n2530: $$\n2531: \\mathbb{E}_{\\pi_{\\text{QSD}}}[\\tau_\\dagger] = e^{\\Theta(N)}\n2532: \n2533: $$\n2534: \n2535: Moreover, for any finite time horizon $T > 0$ independent of $N$:\n2536: \n2537: $$\n2538: \\mathbb{P}_{\\pi_{\\text{QSD}}}(\\tau_\\dagger > T) \\geq 1 - T e^{-\\Theta(N)}\n2539: \n2540: $$\n2541: \n2542: **Interpretation**: The probability of survival up to time $T$ approaches 1 exponentially fast in $N$. Total extinction is exponentially rare for large swarms.\n2543: \n2544: **Proof Sketch**: The key mechanism is the **revival operator**. From `07_mean_field.md`, dead walkers are revived by cloning from the alive population. The revival rate is proportional to the alive mass:\n2545: \n2546: $$\n2547: \\frac{dm_a}{dt} \\geq -C_{\\text{death}} m_a + C_{\\text{revival}} m_d = -C_{\\text{death}} m_a + C_{\\text{revival}}(1 - m_a)\n2548: \n2549: $$\n2550: \n2551: where $C_{\\text{death}}, C_{\\text{revival}} > 0$ are the death and revival rates.\n2552: \n2553: At equilibrium ($dm_a/dt = 0$):\n2554: \n2555: $$\n2556: m_a^* = \\frac{C_{\\text{revival}}}{C_{\\text{death}} + C_{\\text{revival}}} > 0\n2557: \n2558: $$\n2559: \n2560: The variance $\\text{Var}(k_t)$ scales as $O(N)$ (standard fluctuation scaling), so:\n2561: \n2562: $$\n2563: \\mathbb{P}(k_t = 0) \\approx \\mathbb{P}\\left( |k_t - k_*| > k_* \\right) \\leq \\frac{\\text{Var}(k_t)}{k_*^2} = O(N / N^2) = O(1/N)\n2564: \n2565: $$\n2566: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_hk_convergence",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. Rigorous Proof of Bounded Density Ratio"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-hk-convergence-conditional",
+      "title": "Exponential HK-Convergence of the Fragile Gas (CONDITIONAL ON SURVIVAL)",
+      "start_line": 3744,
+      "end_line": 3763,
+      "header_lines": [
+        3745
+      ],
+      "content_start": 3747,
+      "content_end": 3762,
+      "content": "3747: :label: thm-hk-convergence-conditional\n3748: \n3749: Under the foundational axioms of the Euclidean Gas (`01_fragile_gas_framework.md`, `02_euclidean_gas.md`, `03_cloning.md`), the empirical measure $\\mu_t$ converges exponentially to the quasi-stationary distribution $\\pi_{\\text{QSD}}$ in the Hellinger-Kantorovich metric:\n3750: \n3751: $$\n3752: \\text{HK}(\\mu_t, \\pi_{\\text{QSD}}) \\leq C_{\\text{HK}} e^{-\\kappa_{\\text{HK}} t}\n3753: \n3754: $$\n3755: \n3756: with explicit rate $\\kappa_{\\text{HK}} = \\kappa_{\\text{HK}}(\\gamma, \\sigma_v, \\sigma_x, U, R, N) > 0$.\n3757: \n3758: **Status**: CONDITIONAL ON SURVIVAL (standard in QSD theory)\n3759: \n3760: **Scope**:\n3761: 1. **Finite horizon**: For any $T < \\infty$, the HK convergence bound holds with probability $\\geq 1 - CT e^{-\\delta N}$ for all $t \\in [0, T]$\n3762: 2. **Infinite horizon**: On the survival event $\\{\\tau_\\dagger = \\infty\\}$, the HK convergence bound holds deterministically for all $t \\geq 0$",
+      "metadata": {
+        "label": "thm-hk-convergence-conditional"
+      },
+      "section": "## 5. Rigorous Proof of Bounded Density Ratio",
+      "raw_directive": "3744: Theorem {prf:ref}`thm-hk-convergence-main-assembly` holds with the following scope:\n3745: \n3746: :::{prf:theorem} Exponential HK-Convergence of the Fragile Gas (CONDITIONAL ON SURVIVAL)\n3747: :label: thm-hk-convergence-conditional\n3748: \n3749: Under the foundational axioms of the Euclidean Gas (`01_fragile_gas_framework.md`, `02_euclidean_gas.md`, `03_cloning.md`), the empirical measure $\\mu_t$ converges exponentially to the quasi-stationary distribution $\\pi_{\\text{QSD}}$ in the Hellinger-Kantorovich metric:\n3750: \n3751: $$\n3752: \\text{HK}(\\mu_t, \\pi_{\\text{QSD}}) \\leq C_{\\text{HK}} e^{-\\kappa_{\\text{HK}} t}\n3753: \n3754: $$\n3755: \n3756: with explicit rate $\\kappa_{\\text{HK}} = \\kappa_{\\text{HK}}(\\gamma, \\sigma_v, \\sigma_x, U, R, N) > 0$.\n3757: \n3758: **Status**: CONDITIONAL ON SURVIVAL (standard in QSD theory)\n3759: \n3760: **Scope**:\n3761: 1. **Finite horizon**: For any $T < \\infty$, the HK convergence bound holds with probability $\\geq 1 - CT e^{-\\delta N}$ for all $t \\in [0, T]$\n3762: 2. **Infinite horizon**: On the survival event $\\{\\tau_\\dagger = \\infty\\}$, the HK convergence bound holds deterministically for all $t \\geq 0$\n3763: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_hk_convergence",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. Rigorous Proof of Bounded Density Ratio"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-hk-convergence-main-assembly",
+      "title": "Exponential HK-Convergence of the Fragile Gas",
+      "start_line": 3805,
+      "end_line": 3846,
+      "header_lines": [
+        3806
+      ],
+      "content_start": 3808,
+      "content_end": 3845,
+      "content": "3808: :label: thm-hk-convergence-main-assembly\n3809: \n3810: Let $\\mu_t$ denote the empirical measure of alive walkers at time $t$ under the Fragile Gas dynamics $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}} \\circ \\Psi_{\\text{clone}}$, and let $\\pi_{\\text{QSD}}$ denote the quasi-stationary distribution.\n3811: \n3812: **Assumptions:**\n3813: \n3814: 1. **Mass Contraction (Lemma A)**: The birth-death balance satisfies the conditions of {prf:ref}`lem-mass-contraction-revival-death` with $\\kappa_{\\text{mass}} > 0$.\n3815: \n3816: 2. **Structural Variance Contraction (Lemma B)**: The Wasserstein contraction conditions of {prf:ref}`lem-structural-variance-contraction` hold with $\\lambda_{\\text{struct}} > 0$.\n3817: \n3818: 3. **Bounded Density Ratio (Theorem {prf:ref}`thm-uniform-density-bound-hk`)**: The density ratio is uniformly bounded:\n3819: \n3820: $$\n3821: \\sup_{t \\geq 0} \\sup_{x \\in \\mathcal{X}_{\\text{valid}}} \\frac{d\\tilde{\\mu}_t}{d\\tilde{\\pi}_{\\text{QSD}}}(x) \\leq M < \\infty\n3822: \n3823: $$\n3824: \n3825: The proof uses: (1) hypoelliptic regularity and parabolic Harnack inequalities (Kusuoka & Stroock 1985), (2) Gaussian mollification and multi-step Doeblin minorization (Hairer & Mattingly 2011), and (3) stochastic mass conservation via QSD theory (Champagnat & Villemonais 2016). See Chapter 5 for the complete proof.\n3826: \n3827: Under these assumptions, the **additive Hellinger-Kantorovich distance** (Definition {prf:ref}`def-hk-metric-intro`) contracts exponentially to a neighborhood of the QSD:\n3828: \n3829: $$\n3830: \\mathbb{E}[d_{HK}^2(\\mu_t, \\pi_{\\text{QSD}})] \\leq e^{-\\kappa_{HK} t} d_{HK}^2(\\mu_0, \\pi_{\\text{QSD}}) + \\frac{C_{HK}}{\\kappa_{HK}}(1 - e^{-\\kappa_{HK} t})\n3831: \n3832: $$\n3833: \n3834: where:\n3835: - $\\kappa_{HK} = \\min(\\kappa_{\\text{kin}}, \\lambda_{\\text{struct}}) > 0$ is the overall convergence rate\n3836: - $C_{HK} < \\infty$ is a constant combining noise and discretization errors from all three components\n3837: \n3838: **Note on Mass Contraction:** The mass equilibration rate from Lemma A is already incorporated into $\\kappa_{\\text{kin}} = \\min(\\lambda_{\\text{mass}}, \\alpha_{\\text{shape}}/2)$ where $\\lambda_{\\text{mass}} = r_* + c_*$. The coupled Lyapunov functional approach in Lemma C (Step 5) automatically handles the mass-shape coupling, so we do not need a separate $\\kappa_{\\text{mass}}$ term in the overall rate formula.\n3839: \n3840: **Implication (Exponential Convergence):**\n3841: \n3842: $$\n3843: d_{HK}(\\mu_t, \\pi_{\\text{QSD}}) \\leq e^{-\\kappa_{HK} t/2} \\cdot d_{HK}(\\mu_0, \\pi_{\\text{QSD}}) + \\sqrt{\\frac{C_{HK}}{\\kappa_{HK}}}\n3844: \n3845: $$",
+      "metadata": {
+        "label": "thm-hk-convergence-main-assembly"
+      },
+      "section": "## 6. Main Theorem: Exponential HK-Convergence of the Fragile Gas",
+      "raw_directive": "3805: ### 6.1. Statement of the Main Theorem\n3806: \n3807: :::{prf:theorem} Exponential HK-Convergence of the Fragile Gas\n3808: :label: thm-hk-convergence-main-assembly\n3809: \n3810: Let $\\mu_t$ denote the empirical measure of alive walkers at time $t$ under the Fragile Gas dynamics $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}} \\circ \\Psi_{\\text{clone}}$, and let $\\pi_{\\text{QSD}}$ denote the quasi-stationary distribution.\n3811: \n3812: **Assumptions:**\n3813: \n3814: 1. **Mass Contraction (Lemma A)**: The birth-death balance satisfies the conditions of {prf:ref}`lem-mass-contraction-revival-death` with $\\kappa_{\\text{mass}} > 0$.\n3815: \n3816: 2. **Structural Variance Contraction (Lemma B)**: The Wasserstein contraction conditions of {prf:ref}`lem-structural-variance-contraction` hold with $\\lambda_{\\text{struct}} > 0$.\n3817: \n3818: 3. **Bounded Density Ratio (Theorem {prf:ref}`thm-uniform-density-bound-hk`)**: The density ratio is uniformly bounded:\n3819: \n3820: $$\n3821: \\sup_{t \\geq 0} \\sup_{x \\in \\mathcal{X}_{\\text{valid}}} \\frac{d\\tilde{\\mu}_t}{d\\tilde{\\pi}_{\\text{QSD}}}(x) \\leq M < \\infty\n3822: \n3823: $$\n3824: \n3825: The proof uses: (1) hypoelliptic regularity and parabolic Harnack inequalities (Kusuoka & Stroock 1985), (2) Gaussian mollification and multi-step Doeblin minorization (Hairer & Mattingly 2011), and (3) stochastic mass conservation via QSD theory (Champagnat & Villemonais 2016). See Chapter 5 for the complete proof.\n3826: \n3827: Under these assumptions, the **additive Hellinger-Kantorovich distance** (Definition {prf:ref}`def-hk-metric-intro`) contracts exponentially to a neighborhood of the QSD:\n3828: \n3829: $$\n3830: \\mathbb{E}[d_{HK}^2(\\mu_t, \\pi_{\\text{QSD}})] \\leq e^{-\\kappa_{HK} t} d_{HK}^2(\\mu_0, \\pi_{\\text{QSD}}) + \\frac{C_{HK}}{\\kappa_{HK}}(1 - e^{-\\kappa_{HK} t})\n3831: \n3832: $$\n3833: \n3834: where:\n3835: - $\\kappa_{HK} = \\min(\\kappa_{\\text{kin}}, \\lambda_{\\text{struct}}) > 0$ is the overall convergence rate\n3836: - $C_{HK} < \\infty$ is a constant combining noise and discretization errors from all three components\n3837: \n3838: **Note on Mass Contraction:** The mass equilibration rate from Lemma A is already incorporated into $\\kappa_{\\text{kin}} = \\min(\\lambda_{\\text{mass}}, \\alpha_{\\text{shape}}/2)$ where $\\lambda_{\\text{mass}} = r_* + c_*$. The coupled Lyapunov functional approach in Lemma C (Step 5) automatically handles the mass-shape coupling, so we do not need a separate $\\kappa_{\\text{mass}}$ term in the overall rate formula.\n3839: \n3840: **Implication (Exponential Convergence):**\n3841: \n3842: $$\n3843: d_{HK}(\\mu_t, \\pi_{\\text{QSD}}) \\leq e^{-\\kappa_{HK} t/2} \\cdot d_{HK}(\\mu_0, \\pi_{\\text{QSD}}) + \\sqrt{\\frac{C_{HK}}{\\kappa_{HK}}}\n3844: \n3845: $$\n3846: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_hk_convergence",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## 6. Main Theorem: Exponential HK-Convergence of the Fragile Gas"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-hk-summary",
+      "title": "Exponential HK-Convergence (Summary)",
+      "start_line": 4452,
+      "end_line": 4474,
+      "header_lines": [
+        4453
+      ],
+      "content_start": 4455,
+      "content_end": 4473,
+      "content": "4455: :label: thm-hk-summary\n4456: \n4457: The Fragile Gas converges exponentially fast to its quasi-stationary distribution in the Hellinger-Kantorovich metric:\n4458: \n4459: $$\n4460: d_{HK}(\\mu_t, \\pi_{\\text{QSD}}) \\leq e^{-\\kappa_{HK} t/2} d_{HK}(\\mu_0, \\pi_{\\text{QSD}}) + O\\left(\\sqrt{\\frac{C_{HK}}{\\kappa_{HK}}}\\right)\n4461: \n4462: $$\n4463: \n4464: with explicit rate:\n4465: \n4466: $$\n4467: \\kappa_{HK} = \\min\\left(\\kappa_{\\text{kin}}, \\lambda_{\\text{struct}}\\right) = \\min\\left(\\min(2(r_* + c_*), \\frac{\\alpha_{\\text{eff}}}{C_{\\text{rev}}(M)}), \\min\\left(\\frac{\\kappa_W}{\\tau}, \\kappa_{\\text{kin}}\\right)\\right) > 0\n4468: \n4469: $$\n4470: \n4471: where:\n4472: - $\\kappa_{\\text{kin}} = \\min(2(r_* + c_*), \\alpha_{\\text{eff}}/C_{\\text{rev}}(M))$ is the kinetic (Hellinger) contraction rate\n4473: - $\\lambda_{\\text{struct}} = \\min(\\kappa_W/\\tau, \\kappa_{\\text{kin}})$ is the structural (Wasserstein) contraction rate",
+      "metadata": {
+        "label": "thm-hk-summary"
+      },
+      "section": "## 6. Main Theorem: Exponential HK-Convergence of the Fragile Gas",
+      "raw_directive": "4452: We have proven:\n4453: \n4454: :::{prf:theorem} Exponential HK-Convergence (Summary)\n4455: :label: thm-hk-summary\n4456: \n4457: The Fragile Gas converges exponentially fast to its quasi-stationary distribution in the Hellinger-Kantorovich metric:\n4458: \n4459: $$\n4460: d_{HK}(\\mu_t, \\pi_{\\text{QSD}}) \\leq e^{-\\kappa_{HK} t/2} d_{HK}(\\mu_0, \\pi_{\\text{QSD}}) + O\\left(\\sqrt{\\frac{C_{HK}}{\\kappa_{HK}}}\\right)\n4461: \n4462: $$\n4463: \n4464: with explicit rate:\n4465: \n4466: $$\n4467: \\kappa_{HK} = \\min\\left(\\kappa_{\\text{kin}}, \\lambda_{\\text{struct}}\\right) = \\min\\left(\\min(2(r_* + c_*), \\frac{\\alpha_{\\text{eff}}}{C_{\\text{rev}}(M)}), \\min\\left(\\frac{\\kappa_W}{\\tau}, \\kappa_{\\text{kin}}\\right)\\right) > 0\n4468: \n4469: $$\n4470: \n4471: where:\n4472: - $\\kappa_{\\text{kin}} = \\min(2(r_* + c_*), \\alpha_{\\text{eff}}/C_{\\text{rev}}(M))$ is the kinetic (Hellinger) contraction rate\n4473: - $\\lambda_{\\text{struct}} = \\min(\\kappa_W/\\tau, \\kappa_{\\text{kin}})$ is the structural (Wasserstein) contraction rate\n4474: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "11_hk_convergence",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## 6. Main Theorem: Exponential HK-Convergence of the Fragile Gas"
+      }
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "chapter_index": 2,
+  "section_id": "## 2. Convergence: Discrete \u2192 Continuum",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-stress-energy-convergence",
+      "title": "Stress-Energy Tensor Convergence",
+      "start_line": 591,
+      "end_line": 617,
+      "header_lines": [
+        592
+      ],
+      "content_start": 594,
+      "content_end": 616,
+      "content": "594: :label: thm-stress-energy-convergence\n595: \n596: Let $T^{(N)}_{\\mu\\nu}$ be the discrete stress-energy tensor {prf:ref}`def-stress-energy-discrete` and $T_{\\mu\\nu}$ be the continuum tensor {prf:ref}`def-stress-energy-continuum`. Assume:\n597: \n598: 1. **Existing mean-field convergence** ([20_A_quantitative_error_bounds.md](20_A_quantitative_error_bounds.md)): The empirical measure converges:\n599: \n600: $$\n601: W_2\\left(\\mu^{(N)}_t, \\mu_t\\right) \\leq C\\left(\\frac{1}{\\sqrt{N}} + \\Delta t\\right)\n602: \n603: $$\n604: \n605: 2. **Moment bounds**: The velocities satisfy $\\mathbb{E}[\\|v\\|^4] < \\infty$ uniformly in $N$\n606: \n607: 3. **Fitness regularity**: $\\Phi \\in C^2(\\mathcal{X})$ with $|\\Phi(x)| \\leq C_\\Phi(1 + \\|x\\|^2)$\n608: \n609: Then for any test function $\\phi \\in C_c^\\infty(\\mathcal{X})$:\n610: \n611: $$\n612: \\left|\\int_{\\mathcal{X}} T^{(N)}_{\\mu\\nu}(x,t) \\phi(x) \\, dx - \\int_{\\mathcal{X}} T_{\\mu\\nu}(x,t) \\phi(x) \\, dx\\right| \\leq C_{\\mu\\nu}(\\phi) \\left(\\frac{1}{\\sqrt{N}} + \\Delta t\\right)\n613: \n614: $$\n615: \n616: where $C_{\\mu\\nu}(\\phi)$ depends on $\\|\\phi\\|_{C^2}$ and the constants $C$, $C_\\Phi$.",
+      "metadata": {
+        "label": "thm-stress-energy-convergence"
+      },
+      "section": "## 2. Convergence: Discrete \u2192 Continuum",
+      "raw_directive": "591: ### 2.1. Main Convergence Theorem\n592: \n593: :::{prf:theorem} Stress-Energy Tensor Convergence\n594: :label: thm-stress-energy-convergence\n595: \n596: Let $T^{(N)}_{\\mu\\nu}$ be the discrete stress-energy tensor {prf:ref}`def-stress-energy-discrete` and $T_{\\mu\\nu}$ be the continuum tensor {prf:ref}`def-stress-energy-continuum`. Assume:\n597: \n598: 1. **Existing mean-field convergence** ([20_A_quantitative_error_bounds.md](20_A_quantitative_error_bounds.md)): The empirical measure converges:\n599: \n600: $$\n601: W_2\\left(\\mu^{(N)}_t, \\mu_t\\right) \\leq C\\left(\\frac{1}{\\sqrt{N}} + \\Delta t\\right)\n602: \n603: $$\n604: \n605: 2. **Moment bounds**: The velocities satisfy $\\mathbb{E}[\\|v\\|^4] < \\infty$ uniformly in $N$\n606: \n607: 3. **Fitness regularity**: $\\Phi \\in C^2(\\mathcal{X})$ with $|\\Phi(x)| \\leq C_\\Phi(1 + \\|x\\|^2)$\n608: \n609: Then for any test function $\\phi \\in C_c^\\infty(\\mathcal{X})$:\n610: \n611: $$\n612: \\left|\\int_{\\mathcal{X}} T^{(N)}_{\\mu\\nu}(x,t) \\phi(x) \\, dx - \\int_{\\mathcal{X}} T_{\\mu\\nu}(x,t) \\phi(x) \\, dx\\right| \\leq C_{\\mu\\nu}(\\phi) \\left(\\frac{1}{\\sqrt{N}} + \\Delta t\\right)\n613: \n614: $$\n615: \n616: where $C_{\\mu\\nu}(\\phi)$ depends on $\\|\\phi\\|_{C^2}$ and the constants $C$, $C_\\Phi$.\n617: "
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-energy-momentum-conservation-limit",
+      "title": "Energy-Momentum Conservation in the Limit",
+      "start_line": 684,
+      "end_line": 688,
+      "header_lines": [
+        685
+      ],
+      "content_start": 687,
+      "content_end": 687,
+      "content": "687: :label: cor-energy-momentum-conservation-limit",
+      "metadata": {
+        "label": "cor-energy-momentum-conservation-limit"
+      },
+      "section": "## 2. Convergence: Discrete \u2192 Continuum",
+      "raw_directive": "684: ### 2.2. Physical Consequences of Convergence\n685: \n686: :::{prf:corollary} Energy-Momentum Conservation in the Limit\n687: :label: cor-energy-momentum-conservation-limit\n688: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

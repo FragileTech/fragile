@@ -1,0 +1,29 @@
+{
+  "chapter_index": 5,
+  "section_id": "## 5. Implications for Lovelock's Theorem",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "corollary",
+      "label": "cor-lovelock-satisfied",
+      "title": "Scutoid Geometry Satisfies Lovelock Preconditions",
+      "start_line": 585,
+      "end_line": 612,
+      "header_lines": [
+        586
+      ],
+      "content_start": 588,
+      "content_end": 611,
+      "content": "588: :label: cor-lovelock-satisfied\n589: \n590: The emergent spacetime geometry from the Fractal Set satisfies all preconditions for Lovelock's uniqueness theorem:\n591: \n592: 1. \u2705 **Metric dependence**: $R_{\\mu\\nu} = R_{\\mu\\nu}[g, \\partial g, \\partial^2 g]$ (proven in {prf:ref}`thm-ricci-metric-functional-rigorous`)\n593: \n594: 2. \u2705 **Second-order derivatives**: The Riemannian Ricci tensor involves $\\partial^2 g$ through Christoffel symbols (standard result in differential geometry)\n595: \n596: 3. \u2705 **Linearity in $\\partial^2 g$**: The Ricci tensor is linear in second derivatives plus quadratic terms in first derivatives (standard)\n597: \n598: **Consequence**: By Lovelock's theorem ({prf:ref}`thm-lovelock-uniqueness`), the Einstein tensor:\n599: \n600: $$\n601: G_{\\mu\\nu} = R_{\\mu\\nu} - \\frac{1}{2}R g_{\\mu\\nu}\n602: $$\n603: \n604: is the **unique** symmetric, divergence-free rank-2 tensor in 4D spacetime that depends only on $g$ and its first two derivatives.\n605: \n606: **Combined with the conservation law** $\\nabla_\\mu T^{\\mu\\nu} = 0$ at QSD (Appendix C), this establishes the uniqueness of:\n607: \n608: $$\n609: G_{\\mu\\nu} = 8\\pi G T_{\\mu\\nu}\n610: $$\n611: ",
+      "metadata": {
+        "label": "cor-lovelock-satisfied"
+      },
+      "section": "## 5. Implications for Lovelock's Theorem",
+      "raw_directive": "585: ## 5. Implications for Lovelock's Theorem\n586: \n587: :::{prf:corollary} Scutoid Geometry Satisfies Lovelock Preconditions\n588: :label: cor-lovelock-satisfied\n589: \n590: The emergent spacetime geometry from the Fractal Set satisfies all preconditions for Lovelock's uniqueness theorem:\n591: \n592: 1. \u2705 **Metric dependence**: $R_{\\mu\\nu} = R_{\\mu\\nu}[g, \\partial g, \\partial^2 g]$ (proven in {prf:ref}`thm-ricci-metric-functional-rigorous`)\n593: \n594: 2. \u2705 **Second-order derivatives**: The Riemannian Ricci tensor involves $\\partial^2 g$ through Christoffel symbols (standard result in differential geometry)\n595: \n596: 3. \u2705 **Linearity in $\\partial^2 g$**: The Ricci tensor is linear in second derivatives plus quadratic terms in first derivatives (standard)\n597: \n598: **Consequence**: By Lovelock's theorem ({prf:ref}`thm-lovelock-uniqueness`), the Einstein tensor:\n599: \n600: $$\n601: G_{\\mu\\nu} = R_{\\mu\\nu} - \\frac{1}{2}R g_{\\mu\\nu}\n602: $$\n603: \n604: is the **unique** symmetric, divergence-free rank-2 tensor in 4D spacetime that depends only on $g$ and its first two derivatives.\n605: \n606: **Combined with the conservation law** $\\nabla_\\mu T^{\\mu\\nu} = 0$ at QSD (Appendix C), this establishes the uniqueness of:\n607: \n608: $$\n609: G_{\\mu\\nu} = 8\\pi G T_{\\mu\\nu}\n610: $$\n611: \n612: \u220e"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

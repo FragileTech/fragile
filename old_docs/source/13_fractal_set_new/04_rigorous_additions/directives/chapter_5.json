@@ -1,0 +1,47 @@
+{
+  "chapter_index": 5,
+  "section_id": "## 6. Additional Technical Results",
+  "directive_count": 2,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-order-invariant-functional-rigorous",
+      "title": "Order-Invariant Functional",
+      "start_line": 944,
+      "end_line": 965,
+      "header_lines": [
+        945
+      ],
+      "content_start": 947,
+      "content_end": 964,
+      "content": "947: :label: def-order-invariant-functional-rigorous\n948: \n949: A functional $F: \\mathcal{F} \\to \\mathbb{R}$ on Fractal Sets is **order-invariant** (or **causal-automorphism-invariant**) if:\n950: \n951: $$\n952: F(\\psi(\\mathcal{F})) = F(\\mathcal{F})\n953: $$\n954: \n955: for all **causal automorphisms** $\\psi$ - graph isomorphisms that preserve:\n956: 1. CST temporal ordering (causality)\n957: 2. IG edge structure\n958: \n959: **Examples:**\n960: - Total fitness: $F(\\mathcal{F}) = \\sum_{e \\in \\mathcal{E}} \\Phi(e)$\n961: - Episode measure: $\\mu_{\\text{epi}}(A) = |\\{e : x_e \\in A\\}| / |\\mathcal{E}|$\n962: - Wilson loops: $W[\\gamma] = \\text{Tr}[\\text{Hol}(\\gamma)]$\n963: \n964: **Physical interpretation:** Order-invariant functionals are the **gauge-invariant observables** of the theory.",
+      "metadata": {
+        "label": "def-order-invariant-functional-rigorous"
+      },
+      "section": "## 6. Additional Technical Results",
+      "raw_directive": "944: ### 6.1. Order-Invariant Functionals\n945: \n946: :::{prf:definition} Order-Invariant Functional\n947: :label: def-order-invariant-functional-rigorous\n948: \n949: A functional $F: \\mathcal{F} \\to \\mathbb{R}$ on Fractal Sets is **order-invariant** (or **causal-automorphism-invariant**) if:\n950: \n951: $$\n952: F(\\psi(\\mathcal{F})) = F(\\mathcal{F})\n953: $$\n954: \n955: for all **causal automorphisms** $\\psi$ - graph isomorphisms that preserve:\n956: 1. CST temporal ordering (causality)\n957: 2. IG edge structure\n958: \n959: **Examples:**\n960: - Total fitness: $F(\\mathcal{F}) = \\sum_{e \\in \\mathcal{E}} \\Phi(e)$\n961: - Episode measure: $\\mu_{\\text{epi}}(A) = |\\{e : x_e \\in A\\}| / |\\mathcal{E}|$\n962: - Wilson loops: $W[\\gamma] = \\text{Tr}[\\text{Hol}(\\gamma)]$\n963: \n964: **Physical interpretation:** Order-invariant functionals are the **gauge-invariant observables** of the theory.\n965: "
+    },
+    {
+      "directive_type": "proposition",
+      "label": "prop-cst-causal-set-axioms",
+      "title": "CST as Causal Set",
+      "start_line": 969,
+      "end_line": 986,
+      "header_lines": [
+        970
+      ],
+      "content_start": 972,
+      "content_end": 985,
+      "content": "972: :label: prop-cst-causal-set-axioms\n973: \n974: The Causal Spacetime Tree (CST) of the Fractal Set satisfies the **axioms of causal set theory** (Bombelli, Lee, Meyer, Sorkin):\n975: \n976: 1. **Partial order:** The temporal ordering $e_i \\prec e_j$ (episode $i$ precedes $j$) is:\n977:    - Reflexive: $e \\prec e$\n978:    - Antisymmetric: $e_i \\prec e_j$ and $e_j \\prec e_i$ implies $i = j$\n979:    - Transitive: $e_i \\prec e_j \\prec e_k$ implies $e_i \\prec e_k$\n980: \n981: 2. **Local finiteness:** For any two episodes $e_i \\prec e_k$, the set $\\{e_j : e_i \\prec e_j \\prec e_k\\}$ is finite.\n982: \n983: 3. **Manifoldlikeness:** In the continuum limit $N \\to \\infty$, the causal structure approximates that of a Lorentzian manifold.\n984: \n985: **Consequence:** The CST can be interpreted as a **discrete spacetime** in the sense of causal set quantum gravity.",
+      "metadata": {
+        "label": "prop-cst-causal-set-axioms"
+      },
+      "section": "## 6. Additional Technical Results",
+      "raw_directive": "969: ### 6.2. CST Satisfies Causal Set Axioms\n970: \n971: :::{prf:proposition} CST as Causal Set\n972: :label: prop-cst-causal-set-axioms\n973: \n974: The Causal Spacetime Tree (CST) of the Fractal Set satisfies the **axioms of causal set theory** (Bombelli, Lee, Meyer, Sorkin):\n975: \n976: 1. **Partial order:** The temporal ordering $e_i \\prec e_j$ (episode $i$ precedes $j$) is:\n977:    - Reflexive: $e \\prec e$\n978:    - Antisymmetric: $e_i \\prec e_j$ and $e_j \\prec e_i$ implies $i = j$\n979:    - Transitive: $e_i \\prec e_j \\prec e_k$ implies $e_i \\prec e_k$\n980: \n981: 2. **Local finiteness:** For any two episodes $e_i \\prec e_k$, the set $\\{e_j : e_i \\prec e_j \\prec e_k\\}$ is finite.\n982: \n983: 3. **Manifoldlikeness:** In the continuum limit $N \\to \\infty$, the causal structure approximates that of a Lorentzian manifold.\n984: \n985: **Consequence:** The CST can be interpreted as a **discrete spacetime** in the sense of causal set quantum gravity.\n986: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

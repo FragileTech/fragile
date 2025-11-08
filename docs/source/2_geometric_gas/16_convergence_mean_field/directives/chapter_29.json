@@ -1,0 +1,29 @@
+{
+  "chapter_index": 29,
+  "section_id": "## 3. Bounding Coupling and Remainder Terms",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "lemma",
+      "label": "lem-kinetic-energy-bound",
+      "title": "Kinetic Energy Control",
+      "start_line": 4247,
+      "end_line": 4258,
+      "header_lines": [
+        4248
+      ],
+      "content_start": 4250,
+      "content_end": 4257,
+      "content": "4250: :label: lem-kinetic-energy-bound\n4251: \n4252: The kinetic energy is controlled by the velocity Fisher information and KL divergence:\n4253: \n4254: $$\n4255: E_v[\\rho] \\le E_v[\\rho_\\infty] + C_v D_{\\text{KL}}(\\rho \\| \\rho_\\infty) + \\frac{C_v'}{\\gamma} I_v(\\rho)\n4256: \n4257: $$",
+      "metadata": {
+        "label": "lem-kinetic-energy-bound"
+      },
+      "section": "## 3. Bounding Coupling and Remainder Terms",
+      "raw_directive": "4247: **Lemma (Kinetic energy bound)**:\n4248: \n4249: :::{prf:lemma} Kinetic Energy Control\n4250: :label: lem-kinetic-energy-bound\n4251: \n4252: The kinetic energy is controlled by the velocity Fisher information and KL divergence:\n4253: \n4254: $$\n4255: E_v[\\rho] \\le E_v[\\rho_\\infty] + C_v D_{\\text{KL}}(\\rho \\| \\rho_\\infty) + \\frac{C_v'}{\\gamma} I_v(\\rho)\n4256: \n4257: $$\n4258: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

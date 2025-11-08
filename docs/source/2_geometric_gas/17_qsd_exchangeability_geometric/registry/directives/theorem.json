@@ -1,0 +1,59 @@
+{
+  "document_id": "17_qsd_exchangeability_geometric",
+  "stage": "directives",
+  "directive_type": "theorem",
+  "generated_at": "2025-11-08T17:07:43.261981+00:00",
+  "count": 2,
+  "items": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-poincare-geometric",
+      "title": "N-Uniform Poincaré Inequality (Velocity Marginal, Geometric Gas)",
+      "start_line": 191,
+      "end_line": 207,
+      "header_lines": [
+        192
+      ],
+      "content_start": 194,
+      "content_end": 206,
+      "content": "194: :label: thm-poincare-geometric\n195: \n196: The marginal velocity distribution $\\pi_N^{\\text{vel}}(\\mathbf{v})$ of the Geometric Gas QSD satisfies:\n197: \n198: $$\n199: \\text{Var}_{\\pi_N^{\\text{vel}}}(g) \\leq C_P(\\rho) \\sum_{i=1}^N \\int |\\nabla_{v_i} g|^2 d\\pi_N^{\\text{vel}}\n200: $$\n201: \n202: where:\n203: \n204: $$\n205: C_P(\\rho) = \\frac{c_{\\max}^2(\\rho)}{2\\gamma}\n206: $$",
+      "metadata": {
+        "label": "thm-poincare-geometric"
+      },
+      "section": "## 4. N-Uniform Poincaré Inequality for Geometric Gas",
+      "raw_directive": "191: ### 4.1. Conditional Poincaré for Multivariate Gaussian\n192: \n193: :::{prf:theorem} N-Uniform Poincaré Inequality (Velocity Marginal, Geometric Gas)\n194: :label: thm-poincare-geometric\n195: \n196: The marginal velocity distribution $\\pi_N^{\\text{vel}}(\\mathbf{v})$ of the Geometric Gas QSD satisfies:\n197: \n198: $$\n199: \\text{Var}_{\\pi_N^{\\text{vel}}}(g) \\leq C_P(\\rho) \\sum_{i=1}^N \\int |\\nabla_{v_i} g|^2 d\\pi_N^{\\text{vel}}\n200: $$\n201: \n202: where:\n203: \n204: $$\n205: C_P(\\rho) = \\frac{c_{\\max}^2(\\rho)}{2\\gamma}\n206: $$\n207: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "17_qsd_exchangeability_geometric",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 4. N-Uniform Poincaré Inequality for Geometric Gas"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-lsi-geometric",
+      "title": "N-Uniform LSI for Geometric Gas QSD",
+      "start_line": 277,
+      "end_line": 290,
+      "header_lines": [
+        278
+      ],
+      "content_start": 280,
+      "content_end": 289,
+      "content": "280: :label: thm-lsi-geometric\n281: \n282: The QSD $\\pi_N$ of the Geometric Gas satisfies a Log-Sobolev inequality:\n283: \n284: $$\n285: D_{\\text{KL}}(\\nu \\| \\pi_N) \\leq C_{\\text{LSI}}(\\rho) \\cdot I(\\nu \\| \\pi_N)\n286: $$\n287: \n288: where the LSI constant $C_{\\text{LSI}}(\\rho)$ is:\n289: - **Independent of $N$** for all $N \\geq 2$",
+      "metadata": {
+        "label": "thm-lsi-geometric"
+      },
+      "section": "## 6. N-Uniform LSI for Geometric Gas",
+      "raw_directive": "277: ### 6.1. LSI with Viscous Coupling\n278: \n279: :::{prf:theorem} N-Uniform LSI for Geometric Gas QSD\n280: :label: thm-lsi-geometric\n281: \n282: The QSD $\\pi_N$ of the Geometric Gas satisfies a Log-Sobolev inequality:\n283: \n284: $$\n285: D_{\\text{KL}}(\\nu \\| \\pi_N) \\leq C_{\\text{LSI}}(\\rho) \\cdot I(\\nu \\| \\pi_N)\n286: $$\n287: \n288: where the LSI constant $C_{\\text{LSI}}(\\rho)$ is:\n289: - **Independent of $N$** for all $N \\geq 2$\n290: - **Independent of $\\nu$** for all $\\nu \\geq 0$ (viscous coupling is unconditionally stable)",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "17_qsd_exchangeability_geometric",
+        "chapter_index": 6,
+        "chapter_file": "chapter_6.json",
+        "section_id": "## 6. N-Uniform LSI for Geometric Gas"
+      }
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "document_id": "10_qsd_exchangeability_theory",
+  "stage": "directives",
+  "directive_type": "definition",
+  "generated_at": "2025-11-08T17:07:43.219379+00:00",
+  "count": 1,
+  "items": [
+    {
+      "directive_type": "definition",
+      "label": "def-single-particle-marginal",
+      "title": "Single-Particle Marginal",
+      "start_line": 173,
+      "end_line": 183,
+      "header_lines": [
+        174
+      ],
+      "content_start": 176,
+      "content_end": 182,
+      "content": "176: :label: def-single-particle-marginal\n177: \n178: The single-particle marginal of $\\pi_N$ is:\n179: \n180: $$\n181: \\mu_N(A) := \\pi_N(\\{(w_1, \\ldots, w_N) : w_1 \\in A\\})\n182: $$",
+      "metadata": {
+        "label": "def-single-particle-marginal"
+      },
+      "section": "## A1.1 QSD Structure: Exchangeability",
+      "raw_directive": "173: ### A1.1.3 Single-Particle Marginal\n174: \n175: :::{prf:definition} Single-Particle Marginal\n176: :label: def-single-particle-marginal\n177: \n178: The single-particle marginal of $\\pi_N$ is:\n179: \n180: $$\n181: \\mu_N(A) := \\pi_N(\\{(w_1, \\ldots, w_N) : w_1 \\in A\\})\n182: $$\n183: ",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "10_qsd_exchangeability_theory",
+        "chapter_index": 0,
+        "chapter_file": "chapter_0.json",
+        "section_id": "## A1.1 QSD Structure: Exchangeability"
+      }
+    }
+  ]
+}

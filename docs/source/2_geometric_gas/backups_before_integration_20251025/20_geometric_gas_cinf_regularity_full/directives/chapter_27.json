@@ -1,0 +1,29 @@
+{
+  "chapter_index": 27,
+  "section_id": "## 16.5 Parameter Dependence and Practical Trade-offs",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "remark",
+      "label": "rem-rho-tradeoffs",
+      "title": "Localization Scale Trade-offs",
+      "start_line": 5136,
+      "end_line": 5153,
+      "header_lines": [
+        5137
+      ],
+      "content_start": 5139,
+      "content_end": 5152,
+      "content": "5139: :label: rem-rho-tradeoffs\n5140: \n5141: **Small \u03c1** (hyper-local, $\\rho \\ll \\text{diam}(\\mathcal{X})$):\n5142: - \u2713 **Pros**: Sharp localization, better low-order derivative bounds (m < 2d), geometric adaptation\n5143: - \u2717 **Cons**: High-order derivatives explode (m > 2d), numerical stiffness, small time steps for high-order integrators\n5144: \n5145: **Large \u03c1** (global backbone, $\\rho \\sim \\text{diam}(\\mathcal{X})$):\n5146: - \u2713 **Pros**: Uniform derivative bounds, stable high-order behavior, larger time steps\n5147: - \u2717 **Cons**: Loses geometric information, weak adaptation, reverts to global statistics\n5148: \n5149: **Optimal choice** (depends on application):\n5150: - **Exploration phase** (early optimization): Large \u03c1 for stability\n5151: - **Exploitation phase** (near optima): Small \u03c1 for geometric adaptation\n5152: - **Adaptive schedule**: $\\rho(t) = \\rho_0 \\cdot e^{-\\gamma t}$ (annealing from global to local)",
+      "metadata": {
+        "label": "rem-rho-tradeoffs"
+      },
+      "section": "## 16.5 Parameter Dependence and Practical Trade-offs",
+      "raw_directive": "5136: ### 16.5.4 Trade-Off Summary\n5137: \n5138: :::{prf:remark} Localization Scale Trade-offs\n5139: :label: rem-rho-tradeoffs\n5140: \n5141: **Small \u03c1** (hyper-local, $\\rho \\ll \\text{diam}(\\mathcal{X})$):\n5142: - \u2713 **Pros**: Sharp localization, better low-order derivative bounds (m < 2d), geometric adaptation\n5143: - \u2717 **Cons**: High-order derivatives explode (m > 2d), numerical stiffness, small time steps for high-order integrators\n5144: \n5145: **Large \u03c1** (global backbone, $\\rho \\sim \\text{diam}(\\mathcal{X})$):\n5146: - \u2713 **Pros**: Uniform derivative bounds, stable high-order behavior, larger time steps\n5147: - \u2717 **Cons**: Loses geometric information, weak adaptation, reverts to global statistics\n5148: \n5149: **Optimal choice** (depends on application):\n5150: - **Exploration phase** (early optimization): Large \u03c1 for stability\n5151: - **Exploitation phase** (near optima): Small \u03c1 for geometric adaptation\n5152: - **Adaptive schedule**: $\\rho(t) = \\rho_0 \\cdot e^{-\\gamma t}$ (annealing from global to local)\n5153: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

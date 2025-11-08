@@ -1,0 +1,101 @@
+{
+  "chapter_index": 1,
+  "section_id": "## Part 1: Euler Characteristic",
+  "directive_count": 5,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-euler-characteristic",
+      "title": "Euler Characteristic (Simplicial Complex)",
+      "start_line": 83,
+      "end_line": 103,
+      "header_lines": [
+        84
+      ],
+      "content_start": 86,
+      "content_end": 102,
+      "content": "86: :label: def-euler-characteristic\n87: \n88: For a simplicial complex $K$ with $V$ vertices, $E$ edges, $F$ faces (2-simplices), and $T$ tetrahedra (3-simplices) in dimension $d=3$, the **Euler characteristic** is:\n89: \n90: $$\n91: \\chi(K) := V - E + F - T\n92: \n93: $$\n94: \n95: More generally, for a $d$-dimensional simplicial complex:\n96: \n97: $$\n98: \\chi(K) := \\sum_{k=0}^{d} (-1)^k n_k\n99: \n100: $$\n101: \n102: where $n_k$ is the number of $k$-simplices.",
+      "metadata": {
+        "label": "def-euler-characteristic"
+      },
+      "section": "## Part 1: Euler Characteristic",
+      "raw_directive": "83: The **Euler characteristic** is the most fundamental topological invariant, relating combinatorial structure to global topology.\n84: \n85: :::{prf:definition} Euler Characteristic (Simplicial Complex)\n86: :label: def-euler-characteristic\n87: \n88: For a simplicial complex $K$ with $V$ vertices, $E$ edges, $F$ faces (2-simplices), and $T$ tetrahedra (3-simplices) in dimension $d=3$, the **Euler characteristic** is:\n89: \n90: $$\n91: \\chi(K) := V - E + F - T\n92: \n93: $$\n94: \n95: More generally, for a $d$-dimensional simplicial complex:\n96: \n97: $$\n98: \\chi(K) := \\sum_{k=0}^{d} (-1)^k n_k\n99: \n100: $$\n101: \n102: where $n_k$ is the number of $k$-simplices.\n103: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-euler-delaunay",
+      "title": "Euler Characteristic from Delaunay Triangulation",
+      "start_line": 105,
+      "end_line": 133,
+      "header_lines": [
+        106
+      ],
+      "content_start": 108,
+      "content_end": 132,
+      "content": "108: :label: thm-euler-delaunay\n109: \n110: For the walker configuration $S_t = \\{x_1, \\ldots, x_N\\}$ at time $t$, let $\\text{DT}(S_t)$ be the Delaunay triangulation. The Euler characteristic of the triangulated domain is:\n111: \n112: $$\n113: \\chi_t := V_t - E_t + F_t - T_t\n114: \n115: $$\n116: \n117: where:\n118: - $V_t = N$: Number of walkers (vertices)\n119: - $E_t$: Number of Delaunay edges\n120: - $F_t$: Number of Delaunay faces\n121: - $T_t$: Number of Delaunay tetrahedra (for $d=3$)\n122: \n123: **CRITICAL LIMITATION**: The Delaunay triangulation of a finite point cloud is homeomorphic to the **convex hull** of those points, NOT necessarily the underlying fitness landscape topology. For a point cloud in $\\mathbb{R}^3$, the Delaunay complex of the convex hull has $\\chi = 1$ regardless of whether the sampled surface has genus $g > 0$. This formula computes the Euler characteristic of the **triangulated point cloud**, not the **manifold being sampled**.\n124: \n125: **To capture landscape topology**: Use \u03b1-complexes with appropriate radius thresholds or persistent homology (see \u00a7 2.3) to recover the topology of the underlying space from the sample. The Nerve Lemma guarantees that sufficiently dense sampling with appropriate filtration recovers the correct homotopy type.\n126: \n127: **Valid interpretations of Delaunay $\\chi_t$**:\n128: 1. **Combinatorial complexity**: Number of simplices in the triangulation (algorithmic bookkeeping)\n129: 2. **Gauss-Bonnet verification**: Check $\\sum_i \\delta_i = 2\\pi \\chi_t$ for internal consistency\n130: 3. **NOT valid**: Inferring genus, detecting topological phase transitions, or measuring landscape topology directly from Delaunay $\\chi$ alone\n131: \n132: **Computational Complexity**: $O(|\\text{simplices}|)$ for scanning all simplices in the triangulation. In $\\mathbb{R}^d$, a Delaunay triangulation of $N$ points contains $O(N)$ simplices for $d=2$, $O(N)$ for $d=3$ (typically), but up to $\\Theta(N^{\\lceil d/2 \\rceil})$ in the worst case. For practical walker configurations in $\\mathbb{R}^3$, the simplex count is usually $O(N)$, making the Euler characteristic computation linear in the number of walkers.",
+      "metadata": {
+        "label": "thm-euler-delaunay"
+      },
+      "section": "## Part 1: Euler Characteristic",
+      "raw_directive": "105: :::\n106: \n107: :::{prf:theorem} Euler Characteristic from Delaunay Triangulation\n108: :label: thm-euler-delaunay\n109: \n110: For the walker configuration $S_t = \\{x_1, \\ldots, x_N\\}$ at time $t$, let $\\text{DT}(S_t)$ be the Delaunay triangulation. The Euler characteristic of the triangulated domain is:\n111: \n112: $$\n113: \\chi_t := V_t - E_t + F_t - T_t\n114: \n115: $$\n116: \n117: where:\n118: - $V_t = N$: Number of walkers (vertices)\n119: - $E_t$: Number of Delaunay edges\n120: - $F_t$: Number of Delaunay faces\n121: - $T_t$: Number of Delaunay tetrahedra (for $d=3$)\n122: \n123: **CRITICAL LIMITATION**: The Delaunay triangulation of a finite point cloud is homeomorphic to the **convex hull** of those points, NOT necessarily the underlying fitness landscape topology. For a point cloud in $\\mathbb{R}^3$, the Delaunay complex of the convex hull has $\\chi = 1$ regardless of whether the sampled surface has genus $g > 0$. This formula computes the Euler characteristic of the **triangulated point cloud**, not the **manifold being sampled**.\n124: \n125: **To capture landscape topology**: Use \u03b1-complexes with appropriate radius thresholds or persistent homology (see \u00a7 2.3) to recover the topology of the underlying space from the sample. The Nerve Lemma guarantees that sufficiently dense sampling with appropriate filtration recovers the correct homotopy type.\n126: \n127: **Valid interpretations of Delaunay $\\chi_t$**:\n128: 1. **Combinatorial complexity**: Number of simplices in the triangulation (algorithmic bookkeeping)\n129: 2. **Gauss-Bonnet verification**: Check $\\sum_i \\delta_i = 2\\pi \\chi_t$ for internal consistency\n130: 3. **NOT valid**: Inferring genus, detecting topological phase transitions, or measuring landscape topology directly from Delaunay $\\chi$ alone\n131: \n132: **Computational Complexity**: $O(|\\text{simplices}|)$ for scanning all simplices in the triangulation. In $\\mathbb{R}^d$, a Delaunay triangulation of $N$ points contains $O(N)$ simplices for $d=2$, $O(N)$ for $d=3$ (typically), but up to $\\Theta(N^{\\lceil d/2 \\rceil})$ in the worst case. For practical walker configurations in $\\mathbb{R}^3$, the simplex count is usually $O(N)$, making the Euler characteristic computation linear in the number of walkers.\n133: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-euler-dimensions",
+      "title": "Euler Characteristic for Different Dimensions",
+      "start_line": 135,
+      "end_line": 159,
+      "header_lines": [
+        136
+      ],
+      "content_start": 138,
+      "content_end": 158,
+      "content": "138: :label: rem-euler-dimensions\n139: \n140: **For $d=2$** (triangulated surfaces):\n141: \n142: $$\n143: \\chi = V - E + F\n144: \n145: $$\n146: \n147: **Standard values**:\n148: - Sphere: $\\chi = 2$\n149: - Torus: $\\chi = 0$\n150: - Klein bottle: $\\chi = 0$\n151: - Disk: $\\chi = 1$\n152: \n153: **For $d=4$** (4D simplicial complexes):\n154: \n155: $$\n156: \\chi = V - E + F - T + P\n157: \n158: $$",
+      "metadata": {
+        "label": "rem-euler-dimensions"
+      },
+      "section": "## Part 1: Euler Characteristic",
+      "raw_directive": "135: :::\n136: \n137: :::{prf:remark} Euler Characteristic for Different Dimensions\n138: :label: rem-euler-dimensions\n139: \n140: **For $d=2$** (triangulated surfaces):\n141: \n142: $$\n143: \\chi = V - E + F\n144: \n145: $$\n146: \n147: **Standard values**:\n148: - Sphere: $\\chi = 2$\n149: - Torus: $\\chi = 0$\n150: - Klein bottle: $\\chi = 0$\n151: - Disk: $\\chi = 1$\n152: \n153: **For $d=4$** (4D simplicial complexes):\n154: \n155: $$\n156: \\chi = V - E + F - T + P\n157: \n158: $$\n159: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-discrete-gauss-bonnet-topology",
+      "title": "Discrete Gauss-Bonnet Theorem",
+      "start_line": 165,
+      "end_line": 194,
+      "header_lines": [
+        166
+      ],
+      "content_start": 168,
+      "content_end": 193,
+      "content": "168: :label: thm-discrete-gauss-bonnet-topology\n169: \n170: For a **closed** triangulated polyhedral surface $P$ (simplicial 2-complex **without boundary**), the sum of deficit angles (see [curvature.md](curvature.md) \u00a7 1.1) equals:\n171: \n172: $$\n173: \\sum_{i \\in \\text{vertices}} \\delta_i = 2\\pi \\chi(P)\n174: \n175: $$\n176: \n177: where $\\delta_i$ is the deficit angle at vertex $i$ and $\\chi(P)$ is the Euler characteristic.\n178: \n179: **Boundary case**: For surfaces with boundary $\\partial M$, the formula becomes:\n180: \n181: $$\n182: \\sum_{i \\in \\text{vertices}} \\delta_i + \\int_{\\partial M} \\kappa_g \\, ds = 2\\pi \\chi(M)\n183: \n184: $$\n185: \n186: where $\\kappa_g$ is the geodesic curvature along the boundary curves and $ds$ is the arc length element. See [curvature.md](curvature.md) \u00a7 1.1 for full treatment of boundary contributions.\n187: \n188: **Consequence**: The total integrated Gaussian curvature is determined by topology:\n189: \n190: $$\n191: \\int_M K \\, dA = 2\\pi \\chi(M)\n192: \n193: $$",
+      "metadata": {
+        "label": "thm-discrete-gauss-bonnet-topology"
+      },
+      "section": "## Part 1: Euler Characteristic",
+      "raw_directive": "165: The Euler characteristic is deeply connected to curvature via the **Gauss-Bonnet theorem**, which bridges local geometry and global topology.\n166: \n167: :::{prf:theorem} Discrete Gauss-Bonnet Theorem\n168: :label: thm-discrete-gauss-bonnet-topology\n169: \n170: For a **closed** triangulated polyhedral surface $P$ (simplicial 2-complex **without boundary**), the sum of deficit angles (see [curvature.md](curvature.md) \u00a7 1.1) equals:\n171: \n172: $$\n173: \\sum_{i \\in \\text{vertices}} \\delta_i = 2\\pi \\chi(P)\n174: \n175: $$\n176: \n177: where $\\delta_i$ is the deficit angle at vertex $i$ and $\\chi(P)$ is the Euler characteristic.\n178: \n179: **Boundary case**: For surfaces with boundary $\\partial M$, the formula becomes:\n180: \n181: $$\n182: \\sum_{i \\in \\text{vertices}} \\delta_i + \\int_{\\partial M} \\kappa_g \\, ds = 2\\pi \\chi(M)\n183: \n184: $$\n185: \n186: where $\\kappa_g$ is the geodesic curvature along the boundary curves and $ds$ is the arc length element. See [curvature.md](curvature.md) \u00a7 1.1 for full treatment of boundary contributions.\n187: \n188: **Consequence**: The total integrated Gaussian curvature is determined by topology:\n189: \n190: $$\n191: \\int_M K \\, dA = 2\\pi \\chi(M)\n192: \n193: $$\n194: "
+    },
+    {
+      "directive_type": "remark",
+      "label": "rem-euler-characteristic-scutoid-connection",
+      "title": "Euler Characteristic and Scutoid Cells",
+      "start_line": 196,
+      "end_line": 218,
+      "header_lines": [
+        197
+      ],
+      "content_start": 199,
+      "content_end": 217,
+      "content": "199: :label: rem-euler-characteristic-scutoid-connection\n200: \n201: Each individual scutoid cell $\\mathcal{S}$ is topologically homeomorphic to a **3-ball** (a convex polyhedron), and therefore has Euler characteristic:\n202: \n203: $$\n204: \\chi(\\mathcal{S}) = 1\n205: \n206: $$\n207: \n208: regardless of its combinatorial structure (number of faces, mid-level vertices, etc.).\n209: \n210: The **scutoid index** $\\chi_{\\text{scutoid}}$ defined in [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md) is a **separate topological invariant** that measures cloning activity at mid-level vertices, not the Euler characteristic of the cell itself. See {prf:ref}`prop-euler-characteristic-scutoid` for the relationship between $\\chi_{\\text{scutoid}}$ and the combinatorial structure of scutoid faces.\n211: \n212: **Critical**: The Euler characteristic of the entire spacetime tessellation is **not** the sum of individual cell Euler characteristics. The global Euler characteristic must be computed directly from the full Delaunay triangulation using {prf:ref}`thm-euler-delaunay`:\n213: \n214: $$\n215: \\chi_{\\text{total}}(t) = V_t - E_t + F_t - T_t\n216: \n217: $$",
+      "metadata": {
+        "label": "rem-euler-characteristic-scutoid-connection"
+      },
+      "section": "## Part 1: Euler Characteristic",
+      "raw_directive": "196: :::\n197: \n198: :::{prf:remark} Euler Characteristic and Scutoid Cells\n199: :label: rem-euler-characteristic-scutoid-connection\n200: \n201: Each individual scutoid cell $\\mathcal{S}$ is topologically homeomorphic to a **3-ball** (a convex polyhedron), and therefore has Euler characteristic:\n202: \n203: $$\n204: \\chi(\\mathcal{S}) = 1\n205: \n206: $$\n207: \n208: regardless of its combinatorial structure (number of faces, mid-level vertices, etc.).\n209: \n210: The **scutoid index** $\\chi_{\\text{scutoid}}$ defined in [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md) is a **separate topological invariant** that measures cloning activity at mid-level vertices, not the Euler characteristic of the cell itself. See {prf:ref}`prop-euler-characteristic-scutoid` for the relationship between $\\chi_{\\text{scutoid}}$ and the combinatorial structure of scutoid faces.\n211: \n212: **Critical**: The Euler characteristic of the entire spacetime tessellation is **not** the sum of individual cell Euler characteristics. The global Euler characteristic must be computed directly from the full Delaunay triangulation using {prf:ref}`thm-euler-delaunay`:\n213: \n214: $$\n215: \\chi_{\\text{total}}(t) = V_t - E_t + F_t - T_t\n216: \n217: $$\n218: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

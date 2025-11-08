@@ -1,0 +1,93 @@
+{
+  "chapter_index": 22,
+  "section_id": "## 19. Validation of the \"Uniform QSD\" Assumption",
+  "directive_count": 5,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-uniform-qsd",
+      "title": "Uniform QSD Assumption",
+      "start_line": 5090,
+      "end_line": 5108,
+      "header_lines": [
+        5091
+      ],
+      "content_start": 5093,
+      "content_end": 5107,
+      "content": "5093: :label: def-uniform-qsd\n5094: \n5095: The **uniform QSD assumption** states that the quasi-stationary distribution has:\n5096: \n5097: 1. **Factorization**: $\\rho_{\\text{QSD}}(x,v) = \\rho_{\\text{spatial}}(x) \\cdot \\rho_v(v)$\n5098: \n5099: 2. **Isotropic velocity**: $\\rho_v(v)$ is **rotationally invariant**, i.e., $\\rho_v(v) = \\rho_v(|v|)$ depends only on speed\n5100: \n5101: **Consequence**:\n5102: \n5103: $$\n5104: \\int dv \\, v_\\mu \\rho_v(v) = 0 \\quad \\text{for all } \\mu\n5105: $$\n5106: \n5107: by symmetry (integrand is odd in $v_\\mu$).",
+      "metadata": {
+        "label": "def-uniform-qsd"
+      },
+      "section": "## 19. Validation of the \"Uniform QSD\" Assumption",
+      "raw_directive": "5090: ### 19.1. The Assumption Explained\n5091: \n5092: :::{prf:definition} Uniform QSD Assumption\n5093: :label: def-uniform-qsd\n5094: \n5095: The **uniform QSD assumption** states that the quasi-stationary distribution has:\n5096: \n5097: 1. **Factorization**: $\\rho_{\\text{QSD}}(x,v) = \\rho_{\\text{spatial}}(x) \\cdot \\rho_v(v)$\n5098: \n5099: 2. **Isotropic velocity**: $\\rho_v(v)$ is **rotationally invariant**, i.e., $\\rho_v(v) = \\rho_v(|v|)$ depends only on speed\n5100: \n5101: **Consequence**:\n5102: \n5103: $$\n5104: \\int dv \\, v_\\mu \\rho_v(v) = 0 \\quad \\text{for all } \\mu\n5105: $$\n5106: \n5107: by symmetry (integrand is odd in $v_\\mu$).\n5108: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-qsd-velocity-maxwellian",
+      "title": "QSD Velocity Distribution is Maxwellian",
+      "start_line": 5112,
+      "end_line": 5130,
+      "header_lines": [
+        5113
+      ],
+      "content_start": 5115,
+      "content_end": 5129,
+      "content": "5115: :label: thm-qsd-velocity-maxwellian\n5116: \n5117: The velocity marginal of the QSD is:\n5118: \n5119: $$\n5120: \\rho_v(v) = \\frac{1}{(2\\pi T/m)^{d/2}} \\exp\\left(-\\frac{m|v|^2}{2T}\\right)\n5121: $$\n5122: \n5123: where $T$ is the temperature and $m$ is the walker mass.\n5124: \n5125: **This is the Maxwellian (isotropic Gaussian) distribution**, which satisfies:\n5126: \n5127: $$\n5128: \\int dv \\, v_\\mu \\rho_v(v) = 0\n5129: $$",
+      "metadata": {
+        "label": "thm-qsd-velocity-maxwellian"
+      },
+      "section": "## 19. Validation of the \"Uniform QSD\" Assumption",
+      "raw_directive": "5112: ### 19.2. Proof from BAOAB Langevin Dynamics\n5113: \n5114: :::{prf:theorem} QSD Velocity Distribution is Maxwellian\n5115: :label: thm-qsd-velocity-maxwellian\n5116: \n5117: The velocity marginal of the QSD is:\n5118: \n5119: $$\n5120: \\rho_v(v) = \\frac{1}{(2\\pi T/m)^{d/2}} \\exp\\left(-\\frac{m|v|^2}{2T}\\right)\n5121: $$\n5122: \n5123: where $T$ is the temperature and $m$ is the walker mass.\n5124: \n5125: **This is the Maxwellian (isotropic Gaussian) distribution**, which satisfies:\n5126: \n5127: $$\n5128: \\int dv \\, v_\\mu \\rho_v(v) = 0\n5129: $$\n5130: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-58",
+      "title": null,
+      "start_line": 5132,
+      "end_line": 5237,
+      "header_lines": [],
+      "content_start": 5133,
+      "content_end": 5236,
+      "content": "5133: \n5134: :::{prf:proof}\n5135: **Step 1: BAOAB integrator structure.**\n5136: \n5137: From {doc}`02_euclidean_gas.md` \u00a71.5, the Euclidean Gas uses the BAOAB splitting integrator for underdamped Langevin dynamics. The **O-step** (Ornstein-Uhlenbeck process) is:\n5138: \n5139: ```python\n5140: c1 = exp(-\u03b3 \u03c4)\n5141: c2 = sqrt(1 - c1\u00b2) \u00d7 \u03c3_v   # where \u03c3_v = sqrt(2\u03b3T/m)\n5142: v_new = c1 \u00d7 v_old + c2 \u00d7 noise   # noise ~ N(0, I_d)\n5143: ```\n5144: \n5145: This implements the **exact solution** to the Ornstein-Uhlenbeck SDE:\n5146: \n5147: $$\n5148: dv = -\\gamma v \\, dt + \\sigma_v dW_t\n5149: $$\n5150: \n5151: where $\\gamma$ is the friction coefficient and $\\sigma_v = \\sqrt{2\\gamma T/m}$ is the noise strength.\n5152: \n5153: **Step 2: Fluctuation-dissipation relation.**\n5154: \n5155: The noise-to-friction ratio:\n5156: \n5157: $$\n5158: \\frac{\\sigma_v^2}{2\\gamma} = \\frac{2\\gamma T/m}{2\\gamma} = \\frac{T}{m}\n5159: $$\n5160: \n5161: This is **exactly** the fluctuation-dissipation relation for thermal equilibrium at temperature $T$.\n5162: \n5163: **Step 3: Stationary distribution of Ornstein-Uhlenbeck process.**\n5164: \n5165: The Ornstein-Uhlenbeck process with friction $\\gamma$ and noise $\\sigma_v = \\sqrt{2\\gamma T/m}$ has a **unique stationary distribution**:\n5166: \n5167: $$\n5168: \\rho_v^{\\text{stat}}(v) = \\mathcal{N}(0, (T/m) I_d) = \\frac{1}{(2\\pi T/m)^{d/2}} \\exp\\left(-\\frac{m|v|^2}{2T}\\right)\n5169: $$\n5170: \n5171: This is the **Maxwellian velocity distribution** (standard result in stochastic processes).\n5172: \n5173: **Proof of stationarity**: For the Fokker-Planck equation:\n5174: \n5175: $$\n5176: \\frac{\\partial \\rho_v}{\\partial t} = \\gamma \\nabla_v \\cdot (v \\rho_v) + \\frac{\\sigma_v^2}{2} \\nabla_v^2 \\rho_v\n5177: $$\n5178: \n5179: Substituting $\\rho_v(v) = C \\exp(-m|v|^2/(2T))$:\n5180: \n5181: $$\n5182: \\nabla_v \\cdot (v \\rho_v) = \\nabla_v \\cdot \\left(v \\exp(-m|v|^2/(2T))\\right) = \\left(d - \\frac{m|v|^2}{T}\\right) \\exp(-m|v|^2/(2T))\n5183: $$\n5184: \n5185: $$\n5186: \\nabla_v^2 \\rho_v = \\left(\\frac{m^2 |v|^2}{T^2} - \\frac{md}{T}\\right) \\exp(-m|v|^2/(2T))\n5187: $$\n5188: \n5189: Computing:\n5190: \n5191: $$\n5192: \\gamma \\nabla_v \\cdot (v \\rho_v) + \\frac{\\sigma_v^2}{2} \\nabla_v^2 \\rho_v = \\gamma d - \\gamma \\frac{m|v|^2}{T} + \\frac{\\gamma T}{m} \\left(\\frac{m^2 |v|^2}{T^2} - \\frac{md}{T}\\right)\n5193: $$\n5194: \n5195: $$\n5196: = \\gamma d - \\gamma \\frac{m|v|^2}{T} + \\gamma \\frac{m|v|^2}{T} - \\gamma d = 0 \\quad \\checkmark\n5197: $$\n5198: \n5199: Therefore $\\rho_v(v) \\propto \\exp(-m|v|^2/(2T))$ is **stationary**.\n5200: \n5201: **Step 4: QSD inherits Maxwellian velocities.**\n5202: \n5203: From {doc}`05_qsd_stratonovich_foundations.md` (Theorem `thm-qsd-spatial-marginal-detailed`), the QSD is the stationary distribution of the **full** Langevin dynamics (position + velocity).\n5204: \n5205: Since the velocity dynamics **decouples** from position (Langevin friction acts only on $v$, not on $x$), the velocity marginal of the QSD is the stationary distribution of the O-U process:\n5206: \n5207: $$\n5208: \\rho_v(v) = \\frac{1}{(2\\pi T/m)^{d/2}} \\exp\\left(-\\frac{m|v|^2}{2T}\\right)\n5209: $$\n5210: \n5211: **Step 5: Isotropy and vanishing expectation.**\n5212: \n5213: The Maxwellian is **rotationally invariant**:\n5214: \n5215: $$\n5216: \\rho_v(Rv) = \\rho_v(v) \\quad \\text{for all } R \\in SO(d)\n5217: $$\n5218: \n5219: because $|Rv| = |v|$ for rotation matrices $R$.\n5220: \n5221: Therefore:\n5222: \n5223: $$\n5224: \\int dv \\, v_\\mu \\rho_v(v) = \\int dv \\, v_\\mu \\exp(-m|v|^2/(2T))\n5225: $$\n5226: \n5227: Change variables $v \\to -v$ (which is a rotation by $\\pi$):\n5228: \n5229: $$\n5230: \\int dv \\, v_\\mu \\exp(-m|v|^2/(2T)) = \\int dv \\, (-v_\\mu) \\exp(-m|v|^2/(2T)) = -\\int dv \\, v_\\mu \\exp(-m|v|^2/(2T))\n5231: $$\n5232: \n5233: This implies:\n5234: \n5235: $$\n5236: \\boxed{\\int dv \\, v_\\mu \\rho_v(v) = 0} \\quad \\text{Q.E.D.} \\quad \\square",
+      "metadata": {},
+      "section": "## 19. Validation of the \"Uniform QSD\" Assumption",
+      "raw_directive": "5132: :::\n5133: \n5134: :::{prf:proof}\n5135: **Step 1: BAOAB integrator structure.**\n5136: \n5137: From {doc}`02_euclidean_gas.md` \u00a71.5, the Euclidean Gas uses the BAOAB splitting integrator for underdamped Langevin dynamics. The **O-step** (Ornstein-Uhlenbeck process) is:\n5138: \n5139: ```python\n5140: c1 = exp(-\u03b3 \u03c4)\n5141: c2 = sqrt(1 - c1\u00b2) \u00d7 \u03c3_v   # where \u03c3_v = sqrt(2\u03b3T/m)\n5142: v_new = c1 \u00d7 v_old + c2 \u00d7 noise   # noise ~ N(0, I_d)\n5143: ```\n5144: \n5145: This implements the **exact solution** to the Ornstein-Uhlenbeck SDE:\n5146: \n5147: $$\n5148: dv = -\\gamma v \\, dt + \\sigma_v dW_t\n5149: $$\n5150: \n5151: where $\\gamma$ is the friction coefficient and $\\sigma_v = \\sqrt{2\\gamma T/m}$ is the noise strength.\n5152: \n5153: **Step 2: Fluctuation-dissipation relation.**\n5154: \n5155: The noise-to-friction ratio:\n5156: \n5157: $$\n5158: \\frac{\\sigma_v^2}{2\\gamma} = \\frac{2\\gamma T/m}{2\\gamma} = \\frac{T}{m}\n5159: $$\n5160: \n5161: This is **exactly** the fluctuation-dissipation relation for thermal equilibrium at temperature $T$.\n5162: \n5163: **Step 3: Stationary distribution of Ornstein-Uhlenbeck process.**\n5164: \n5165: The Ornstein-Uhlenbeck process with friction $\\gamma$ and noise $\\sigma_v = \\sqrt{2\\gamma T/m}$ has a **unique stationary distribution**:\n5166: \n5167: $$\n5168: \\rho_v^{\\text{stat}}(v) = \\mathcal{N}(0, (T/m) I_d) = \\frac{1}{(2\\pi T/m)^{d/2}} \\exp\\left(-\\frac{m|v|^2}{2T}\\right)\n5169: $$\n5170: \n5171: This is the **Maxwellian velocity distribution** (standard result in stochastic processes).\n5172: \n5173: **Proof of stationarity**: For the Fokker-Planck equation:\n5174: \n5175: $$\n5176: \\frac{\\partial \\rho_v}{\\partial t} = \\gamma \\nabla_v \\cdot (v \\rho_v) + \\frac{\\sigma_v^2}{2} \\nabla_v^2 \\rho_v\n5177: $$\n5178: \n5179: Substituting $\\rho_v(v) = C \\exp(-m|v|^2/(2T))$:\n5180: \n5181: $$\n5182: \\nabla_v \\cdot (v \\rho_v) = \\nabla_v \\cdot \\left(v \\exp(-m|v|^2/(2T))\\right) = \\left(d - \\frac{m|v|^2}{T}\\right) \\exp(-m|v|^2/(2T))\n5183: $$\n5184: \n5185: $$\n5186: \\nabla_v^2 \\rho_v = \\left(\\frac{m^2 |v|^2}{T^2} - \\frac{md}{T}\\right) \\exp(-m|v|^2/(2T))\n5187: $$\n5188: \n5189: Computing:\n5190: \n5191: $$\n5192: \\gamma \\nabla_v \\cdot (v \\rho_v) + \\frac{\\sigma_v^2}{2} \\nabla_v^2 \\rho_v = \\gamma d - \\gamma \\frac{m|v|^2}{T} + \\frac{\\gamma T}{m} \\left(\\frac{m^2 |v|^2}{T^2} - \\frac{md}{T}\\right)\n5193: $$\n5194: \n5195: $$\n5196: = \\gamma d - \\gamma \\frac{m|v|^2}{T} + \\gamma \\frac{m|v|^2}{T} - \\gamma d = 0 \\quad \\checkmark\n5197: $$\n5198: \n5199: Therefore $\\rho_v(v) \\propto \\exp(-m|v|^2/(2T))$ is **stationary**.\n5200: \n5201: **Step 4: QSD inherits Maxwellian velocities.**\n5202: \n5203: From {doc}`05_qsd_stratonovich_foundations.md` (Theorem `thm-qsd-spatial-marginal-detailed`), the QSD is the stationary distribution of the **full** Langevin dynamics (position + velocity).\n5204: \n5205: Since the velocity dynamics **decouples** from position (Langevin friction acts only on $v$, not on $x$), the velocity marginal of the QSD is the stationary distribution of the O-U process:\n5206: \n5207: $$\n5208: \\rho_v(v) = \\frac{1}{(2\\pi T/m)^{d/2}} \\exp\\left(-\\frac{m|v|^2}{2T}\\right)\n5209: $$\n5210: \n5211: **Step 5: Isotropy and vanishing expectation.**\n5212: \n5213: The Maxwellian is **rotationally invariant**:\n5214: \n5215: $$\n5216: \\rho_v(Rv) = \\rho_v(v) \\quad \\text{for all } R \\in SO(d)\n5217: $$\n5218: \n5219: because $|Rv| = |v|$ for rotation matrices $R$.\n5220: \n5221: Therefore:\n5222: \n5223: $$\n5224: \\int dv \\, v_\\mu \\rho_v(v) = \\int dv \\, v_\\mu \\exp(-m|v|^2/(2T))\n5225: $$\n5226: \n5227: Change variables $v \\to -v$ (which is a rotation by $\\pi$):\n5228: \n5229: $$\n5230: \\int dv \\, v_\\mu \\exp(-m|v|^2/(2T)) = \\int dv \\, (-v_\\mu) \\exp(-m|v|^2/(2T)) = -\\int dv \\, v_\\mu \\exp(-m|v|^2/(2T))\n5231: $$\n5232: \n5233: This implies:\n5234: \n5235: $$\n5236: \\boxed{\\int dv \\, v_\\mu \\rho_v(v) = 0} \\quad \\text{Q.E.D.} \\quad \\square\n5237: $$"
+    },
+    {
+      "directive_type": "corollary",
+      "label": "cor-noether-current-vanishes",
+      "title": "Noether Current Vanishes in QSD",
+      "start_line": 5241,
+      "end_line": 5251,
+      "header_lines": [
+        5242
+      ],
+      "content_start": 5244,
+      "content_end": 5250,
+      "content": "5244: :label: cor-noether-current-vanishes\n5245: \n5246: The Noether current expectation in the QSD is:\n5247: \n5248: $$\n5249: \\langle J_\\mu^{(a)}(x) \\rangle_{\\text{QSD}} = \\int dx dv \\, \\tau^{(a)} \\rho_{\\text{QSD}}(x,v) v_\\mu = 0\n5250: $$",
+      "metadata": {
+        "label": "cor-noether-current-vanishes"
+      },
+      "section": "## 19. Validation of the \"Uniform QSD\" Assumption",
+      "raw_directive": "5241: ### 19.3. Consequence for Noether Current\n5242: \n5243: :::{prf:corollary} Noether Current Vanishes in QSD\n5244: :label: cor-noether-current-vanishes\n5245: \n5246: The Noether current expectation in the QSD is:\n5247: \n5248: $$\n5249: \\langle J_\\mu^{(a)}(x) \\rangle_{\\text{QSD}} = \\int dx dv \\, \\tau^{(a)} \\rho_{\\text{QSD}}(x,v) v_\\mu = 0\n5250: $$\n5251: "
+    },
+    {
+      "directive_type": "proof",
+      "label": "unlabeled-proof-179",
+      "title": null,
+      "start_line": 5253,
+      "end_line": 5302,
+      "header_lines": [],
+      "content_start": 5254,
+      "content_end": 5301,
+      "content": "5254: \n5255: :::{prf:proof}\n5256: From Theorem `thm-fractal-set-riemannian-sampling` ({doc}`13_fractal_set_new/11_causal_sets.md`):\n5257: \n5258: $$\n5259: \\rho_{\\text{QSD}}(x,v) = \\rho_{\\text{spatial}}(x) \\cdot \\rho_v(v)\n5260: $$\n5261: \n5262: where:\n5263: - $\\rho_{\\text{spatial}}(x) = \\frac{1}{Z} \\sqrt{\\det g(x)} \\exp(-U_{\\text{eff}}(x)/T)$ (spatial marginal)\n5264: - $\\rho_v(v) = \\frac{1}{(2\\pi T/m)^{d/2}} \\exp(-m|v|^2/(2T))$ (velocity marginal, Theorem {prf:ref}`thm-qsd-velocity-maxwellian`)\n5265: \n5266: The Noether current is:\n5267: \n5268: $$\n5269: J_\\mu^{(a)}(x) = \\sum_{i,j} \\psi_{ij}^{(\\text{iso})\\dagger} \\tau^{(a)} \\psi_{ij}^{(\\text{iso})} \\cdot v_\\mu(i,j)\n5270: $$\n5271: \n5272: In the continuum, this becomes:\n5273: \n5274: $$\n5275: J_\\mu^{(a)}(x) \\sim \\int dv \\, \\tau^{(a)} \\psi^\\dagger(x,v) \\psi(x,v) v_\\mu \\sim \\int dv \\, \\tau^{(a)} \\rho(x,v) v_\\mu\n5276: $$\n5277: \n5278: Taking expectation in QSD:\n5279: \n5280: $$\n5281: \\langle J_\\mu^{(a)}(x) \\rangle_{\\text{QSD}} = \\int dv \\, \\tau^{(a)} \\rho_{\\text{QSD}}(x,v) v_\\mu\n5282: $$\n5283: \n5284: $$\n5285: = \\int dv \\, \\tau^{(a)} \\rho_{\\text{spatial}}(x) \\rho_v(v) v_\\mu\n5286: $$\n5287: \n5288: $$\n5289: = \\rho_{\\text{spatial}}(x) \\cdot \\tau^{(a)} \\cdot \\int dv \\, \\rho_v(v) v_\\mu\n5290: $$\n5291: \n5292: From Theorem {prf:ref}`thm-qsd-velocity-maxwellian`:\n5293: \n5294: $$\n5295: \\int dv \\, \\rho_v(v) v_\\mu = 0\n5296: $$\n5297: \n5298: Therefore:\n5299: \n5300: $$\n5301: \\boxed{\\langle J_\\mu^{(a)}(x) \\rangle_{\\text{QSD}} = 0} \\quad \\text{Q.E.D.} \\quad \\square",
+      "metadata": {},
+      "section": "## 19. Validation of the \"Uniform QSD\" Assumption",
+      "raw_directive": "5253: :::\n5254: \n5255: :::{prf:proof}\n5256: From Theorem `thm-fractal-set-riemannian-sampling` ({doc}`13_fractal_set_new/11_causal_sets.md`):\n5257: \n5258: $$\n5259: \\rho_{\\text{QSD}}(x,v) = \\rho_{\\text{spatial}}(x) \\cdot \\rho_v(v)\n5260: $$\n5261: \n5262: where:\n5263: - $\\rho_{\\text{spatial}}(x) = \\frac{1}{Z} \\sqrt{\\det g(x)} \\exp(-U_{\\text{eff}}(x)/T)$ (spatial marginal)\n5264: - $\\rho_v(v) = \\frac{1}{(2\\pi T/m)^{d/2}} \\exp(-m|v|^2/(2T))$ (velocity marginal, Theorem {prf:ref}`thm-qsd-velocity-maxwellian`)\n5265: \n5266: The Noether current is:\n5267: \n5268: $$\n5269: J_\\mu^{(a)}(x) = \\sum_{i,j} \\psi_{ij}^{(\\text{iso})\\dagger} \\tau^{(a)} \\psi_{ij}^{(\\text{iso})} \\cdot v_\\mu(i,j)\n5270: $$\n5271: \n5272: In the continuum, this becomes:\n5273: \n5274: $$\n5275: J_\\mu^{(a)}(x) \\sim \\int dv \\, \\tau^{(a)} \\psi^\\dagger(x,v) \\psi(x,v) v_\\mu \\sim \\int dv \\, \\tau^{(a)} \\rho(x,v) v_\\mu\n5276: $$\n5277: \n5278: Taking expectation in QSD:\n5279: \n5280: $$\n5281: \\langle J_\\mu^{(a)}(x) \\rangle_{\\text{QSD}} = \\int dv \\, \\tau^{(a)} \\rho_{\\text{QSD}}(x,v) v_\\mu\n5282: $$\n5283: \n5284: $$\n5285: = \\int dv \\, \\tau^{(a)} \\rho_{\\text{spatial}}(x) \\rho_v(v) v_\\mu\n5286: $$\n5287: \n5288: $$\n5289: = \\rho_{\\text{spatial}}(x) \\cdot \\tau^{(a)} \\cdot \\int dv \\, \\rho_v(v) v_\\mu\n5290: $$\n5291: \n5292: From Theorem {prf:ref}`thm-qsd-velocity-maxwellian`:\n5293: \n5294: $$\n5295: \\int dv \\, \\rho_v(v) v_\\mu = 0\n5296: $$\n5297: \n5298: Therefore:\n5299: \n5300: $$\n5301: \\boxed{\\langle J_\\mu^{(a)}(x) \\rangle_{\\text{QSD}} = 0} \\quad \\text{Q.E.D.} \\quad \\square\n5302: $$"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

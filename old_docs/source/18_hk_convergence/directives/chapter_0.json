@@ -1,0 +1,29 @@
+{
+  "chapter_index": 0,
+  "section_id": "## 0. Background and Motivation",
+  "directive_count": 1,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-hk-metric",
+      "title": "Hellinger-Kantorovich Metric",
+      "start_line": 21,
+      "end_line": 42,
+      "header_lines": [
+        22
+      ],
+      "content_start": 24,
+      "content_end": 41,
+      "content": "24: :label: def-hk-metric\n25: \n26: For two sub-probability measures $\\mu_1, \\mu_2$ on a metric space $(\\mathcal{X}, d)$, the **Hellinger-Kantorovich metric** is:\n27: \n28: $$\n29: d_{HK}^2(\\mu_1, \\mu_2) := d_H^2(\\mu_1, \\mu_2) + W_2^2(\\tilde{\\mu}_1, \\tilde{\\mu}_2)\n30: $$\n31: \n32: where:\n33: - $d_H^2(\\mu_1, \\mu_2) = \\int \\left( \\sqrt{\\frac{d\\mu_1}{d\\lambda}} - \\sqrt{\\frac{d\\mu_2}{d\\lambda}} \\right)^2 d\\lambda$ is the **Hellinger distance**\n34: - $W_2^2(\\tilde{\\mu}_1, \\tilde{\\mu}_2)$ is the **Wasserstein-2 distance** between normalized measures $\\tilde{\\mu}_i = \\mu_i / \\|\\mu_i\\|$\n35: - $\\lambda$ is a common reference measure (e.g., Lebesgue measure)\n36: \n37: **Alternative form (Bhattacharyya):**\n38: \n39: $$\n40: d_H^2(\\mu_1, \\mu_2) = \\|\\mu_1\\| + \\|\\mu_2\\| - 2\\int \\sqrt{f_1 f_2} \\, d\\lambda\n41: $$",
+      "metadata": {
+        "label": "def-hk-metric"
+      },
+      "section": "## 0. Background and Motivation",
+      "raw_directive": "21: The Hellinger-Kantorovich (HK) metric is a modern development in optimal transport theory that unifies Wasserstein and Hellinger distances.\n22: \n23: :::{prf:definition} Hellinger-Kantorovich Metric\n24: :label: def-hk-metric\n25: \n26: For two sub-probability measures $\\mu_1, \\mu_2$ on a metric space $(\\mathcal{X}, d)$, the **Hellinger-Kantorovich metric** is:\n27: \n28: $$\n29: d_{HK}^2(\\mu_1, \\mu_2) := d_H^2(\\mu_1, \\mu_2) + W_2^2(\\tilde{\\mu}_1, \\tilde{\\mu}_2)\n30: $$\n31: \n32: where:\n33: - $d_H^2(\\mu_1, \\mu_2) = \\int \\left( \\sqrt{\\frac{d\\mu_1}{d\\lambda}} - \\sqrt{\\frac{d\\mu_2}{d\\lambda}} \\right)^2 d\\lambda$ is the **Hellinger distance**\n34: - $W_2^2(\\tilde{\\mu}_1, \\tilde{\\mu}_2)$ is the **Wasserstein-2 distance** between normalized measures $\\tilde{\\mu}_i = \\mu_i / \\|\\mu_i\\|$\n35: - $\\lambda$ is a common reference measure (e.g., Lebesgue measure)\n36: \n37: **Alternative form (Bhattacharyya):**\n38: \n39: $$\n40: d_H^2(\\mu_1, \\mu_2) = \\|\\mu_1\\| + \\|\\mu_2\\| - 2\\int \\sqrt{f_1 f_2} \\, d\\lambda\n41: $$\n42: "
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}
