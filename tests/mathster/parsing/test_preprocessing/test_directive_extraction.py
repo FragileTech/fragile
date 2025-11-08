@@ -6,8 +6,8 @@ Tests automated directive structure extraction from Jupyter Book MyST markdown.
 
 import pytest
 
-from mathster.parsing.preprocessing import extract_directive_hints
-from mathster.tools.directive_parser import DirectiveHint, extract_jupyter_directives
+from mathster.directives import extract_directive_hints
+from mathster.directives.directive_parser import DirectiveHint, extract_jupyter_directives
 
 
 class TestDirectiveExtraction:

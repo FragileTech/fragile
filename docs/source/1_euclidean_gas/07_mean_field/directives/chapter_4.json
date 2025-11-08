@@ -1,0 +1,119 @@
+{
+  "chapter_index": 4,
+  "section_id": "## 3. The Mass-Conserving Forward Equation (PDE)",
+  "directive_count": 6,
+  "hints": [
+    {
+      "directive_type": "definition",
+      "label": "def-transport-operator",
+      "title": "Transport Operator and Probability Flux",
+      "start_line": 554,
+      "end_line": 568,
+      "header_lines": [
+        555
+      ],
+      "content_start": 557,
+      "content_end": 567,
+      "content": "557: Let $L$ be the backward kinetic generator from Section 2.2. The **Transport Operator**, denoted $L^\\dagger$, is its formal $L^2$-adjoint, which acts on the density $f$. It can be written in conservative form as the negative divergence of a **probability flux vector** $J = (J_x, J_v)$:\n558: \n559: $$\n560: L^\\dagger f = -\\nabla \\cdot J[f] = -\\nabla_x \\cdot J_x[f] - \\nabla_v \\cdot J_v[f]\n561: $$\n562: \n563: where the components of the flux are:\n564: *   **Positional Flux ($J_x$):** $J_x[f] := v f - D_x \\nabla_x f$ (Advection + Fickian Diffusion)\n565: *   **Velocity Flux ($J_v$):** $J_v[f] := A_v f - D_v \\nabla_v f$ (Drift + Fickian Diffusion)\n566: \n567: and $A_v$ is the velocity drift field from the Langevin dynamics.",
+      "metadata": {
+        "label": "def-transport-operator"
+      },
+      "section": "## 3. The Mass-Conserving Forward Equation (PDE)",
+      "raw_directive": "554: :::{prf:definition} Transport Operator and Probability Flux\n555: :label: def-transport-operator\n556: \n557: Let $L$ be the backward kinetic generator from Section 2.2. The **Transport Operator**, denoted $L^\\dagger$, is its formal $L^2$-adjoint, which acts on the density $f$. It can be written in conservative form as the negative divergence of a **probability flux vector** $J = (J_x, J_v)$:\n558: \n559: $$\n560: L^\\dagger f = -\\nabla \\cdot J[f] = -\\nabla_x \\cdot J_x[f] - \\nabla_v \\cdot J_v[f]\n561: $$\n562: \n563: where the components of the flux are:\n564: *   **Positional Flux ($J_x$):** $J_x[f] := v f - D_x \\nabla_x f$ (Advection + Fickian Diffusion)\n565: *   **Velocity Flux ($J_v$):** $J_v[f] := A_v f - D_v \\nabla_v f$ (Drift + Fickian Diffusion)\n566: \n567: and $A_v$ is the velocity drift field from the Langevin dynamics.\n568: :::"
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-mass-conservation-transport",
+      "title": "Mass Conservation of Transport",
+      "start_line": 572,
+      "end_line": 581,
+      "header_lines": [
+        573
+      ],
+      "content_start": 575,
+      "content_end": 580,
+      "content": "575: The integral of the transport operator over the domain $\\Omega$ vanishes due to the reflecting boundary conditions on both position and velocity boundaries:\n576: \n577: $$\n578: \\int_\\Omega L^\\dagger f(t,z)\\,\\mathrm{d}z = 0\n579: $$\n580:",
+      "metadata": {
+        "label": "lem-mass-conservation-transport"
+      },
+      "section": "## 3. The Mass-Conserving Forward Equation (PDE)",
+      "raw_directive": "572: :::{prf:lemma} Mass Conservation of Transport\n573: :label: lem-mass-conservation-transport\n574: \n575: The integral of the transport operator over the domain $\\Omega$ vanishes due to the reflecting boundary conditions on both position and velocity boundaries:\n576: \n577: $$\n578: \\int_\\Omega L^\\dagger f(t,z)\\,\\mathrm{d}z = 0\n579: $$\n580: \n581: :::"
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-lem-mass-conservation-transport",
+      "title": null,
+      "start_line": 582,
+      "end_line": 598,
+      "header_lines": [
+        583
+      ],
+      "content_start": 584,
+      "content_end": 597,
+      "content": "584: **Proof.**\n585: Integrating $L^\\dagger f = -\\nabla \\cdot J[f]$ over $\\Omega$ and applying the divergence theorem yields:\n586: \n587: $$\n588: \\int_\\Omega L^\\dagger f\\, \\mathrm{d}z = - \\int_{\\partial\\Omega} J[f] \\cdot n\\, \\mathrm{d}S\n589: $$\n590: \n591: The boundary of the phase space is $\\partial\\Omega = (\\partial X_{\\text{valid}} \\times V_{\\text{alg}}) \\cup (X_{\\text{valid}} \\times \\partial V_{\\text{alg}})$. The reflecting boundary conditions ensure that the normal component of the flux vanishes on both boundaries:\n592: \n593: *   On $\\partial V_{\\text{alg}}$: $J_v \\cdot n_v = 0$ (velocity reflection)\n594: *   On $\\partial X_{\\text{valid}}$: $J_x \\cdot n_x = 0$ (position reflection)\n595: \n596: Therefore, the boundary integral vanishes, proving the result.\n597: **Q.E.D.**",
+      "metadata": {
+        "label": "proof-lem-mass-conservation-transport"
+      },
+      "section": "## 3. The Mass-Conserving Forward Equation (PDE)",
+      "raw_directive": "582: :::{prf:proof}\n583: :label: proof-lem-mass-conservation-transport\n584: **Proof.**\n585: Integrating $L^\\dagger f = -\\nabla \\cdot J[f]$ over $\\Omega$ and applying the divergence theorem yields:\n586: \n587: $$\n588: \\int_\\Omega L^\\dagger f\\, \\mathrm{d}z = - \\int_{\\partial\\Omega} J[f] \\cdot n\\, \\mathrm{d}S\n589: $$\n590: \n591: The boundary of the phase space is $\\partial\\Omega = (\\partial X_{\\text{valid}} \\times V_{\\text{alg}}) \\cup (X_{\\text{valid}} \\times \\partial V_{\\text{alg}})$. The reflecting boundary conditions ensure that the normal component of the flux vanishes on both boundaries:\n592: \n593: *   On $\\partial V_{\\text{alg}}$: $J_v \\cdot n_v = 0$ (velocity reflection)\n594: *   On $\\partial X_{\\text{valid}}$: $J_x \\cdot n_x = 0$ (position reflection)\n595: \n596: Therefore, the boundary integral vanishes, proving the result.\n597: **Q.E.D.**\n598: :::"
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-mean-field-equation",
+      "title": "The Mean-Field Equations for the Euclidean Gas",
+      "start_line": 614,
+      "end_line": 651,
+      "header_lines": [
+        615
+      ],
+      "content_start": 617,
+      "content_end": 650,
+      "content": "617: The evolution of the Euclidean Gas in the mean-field limit is governed by a coupled system of equations for the alive density $f(t,z)$ and the dead mass $m_d(t)$:\n618: \n619: **Equation for the Alive Density:**\n620: \n621: $$\n622: \\boxed{\n623: \\partial_t f = L^\\dagger f - c(z)f + B[f, m_d] + S[f]\n624: }\n625: $$ (eq-mean-field-pde-main)\n626: \n627: **Equation for the Dead Mass:**\n628: \n629: $$\n630: \\boxed{\n631: \\frac{\\mathrm{d}}{\\mathrm{d}t} m_d(t) = \\int_{\\Omega} c(z)f(t,z)\\,\\mathrm{d}z - \\lambda_{\\text{rev}} m_d(t)\n632: }\n633: $$ (eq-dead-mass-ode)\n634: \n635: subject to initial conditions $f(0, \\cdot) = f_0$ and $m_d(0) = 1 - \\int_\\Omega f_0$, where $m_a(0) + m_d(0) = 1$.\n636: \n637: In explicit form, the equation for $f$ is:\n638: \n639: $$\n640: \\partial_t f(t,z) = -\\nabla\\cdot(A(z) f(t,z)) + \\nabla\\cdot(\\mathsf{D}\\nabla f(t,z)) - c(z)f(t,z) + \\lambda_{\\text{revive}} m_d(t) \\frac{f(t,z)}{m_a(t)} + S[f](t,z)\n641: $$\n642: \n643: where:\n644: *   $A(z)$ is the drift field and $\\mathsf{D}$ is the diffusion tensor from the kinetic transport (with reflecting boundaries)\n645: *   $c(z)$ is the interior killing rate (zero in interior, positive near boundary)\n646: *   $\\lambda_{\\text{revive}} > 0$ is the revival rate (free parameter, typical values 0.1-5)\n647: *   $B[f, m_d] = \\lambda_{\\text{revive}} m_d(t) f/m_a$ is the revival operator\n648: *   $S[f]$ is the mass-neutral internal cloning operator\n649: \n650: The total alive mass is $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$, and the system conserves the total population: $m_a(t) + m_d(t) = 1$ for all $t$.",
+      "metadata": {
+        "label": "thm-mean-field-equation"
+      },
+      "section": "## 3. The Mass-Conserving Forward Equation (PDE)",
+      "raw_directive": "614: :::{prf:theorem} The Mean-Field Equations for the Euclidean Gas\n615: :label: thm-mean-field-equation\n616: \n617: The evolution of the Euclidean Gas in the mean-field limit is governed by a coupled system of equations for the alive density $f(t,z)$ and the dead mass $m_d(t)$:\n618: \n619: **Equation for the Alive Density:**\n620: \n621: $$\n622: \\boxed{\n623: \\partial_t f = L^\\dagger f - c(z)f + B[f, m_d] + S[f]\n624: }\n625: $$ (eq-mean-field-pde-main)\n626: \n627: **Equation for the Dead Mass:**\n628: \n629: $$\n630: \\boxed{\n631: \\frac{\\mathrm{d}}{\\mathrm{d}t} m_d(t) = \\int_{\\Omega} c(z)f(t,z)\\,\\mathrm{d}z - \\lambda_{\\text{rev}} m_d(t)\n632: }\n633: $$ (eq-dead-mass-ode)\n634: \n635: subject to initial conditions $f(0, \\cdot) = f_0$ and $m_d(0) = 1 - \\int_\\Omega f_0$, where $m_a(0) + m_d(0) = 1$.\n636: \n637: In explicit form, the equation for $f$ is:\n638: \n639: $$\n640: \\partial_t f(t,z) = -\\nabla\\cdot(A(z) f(t,z)) + \\nabla\\cdot(\\mathsf{D}\\nabla f(t,z)) - c(z)f(t,z) + \\lambda_{\\text{revive}} m_d(t) \\frac{f(t,z)}{m_a(t)} + S[f](t,z)\n641: $$\n642: \n643: where:\n644: *   $A(z)$ is the drift field and $\\mathsf{D}$ is the diffusion tensor from the kinetic transport (with reflecting boundaries)\n645: *   $c(z)$ is the interior killing rate (zero in interior, positive near boundary)\n646: *   $\\lambda_{\\text{revive}} > 0$ is the revival rate (free parameter, typical values 0.1-5)\n647: *   $B[f, m_d] = \\lambda_{\\text{revive}} m_d(t) f/m_a$ is the revival operator\n648: *   $S[f]$ is the mass-neutral internal cloning operator\n649: \n650: The total alive mass is $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$, and the system conserves the total population: $m_a(t) + m_d(t) = 1$ for all $t$.\n651: :::"
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-mass-conservation",
+      "title": "Total Mass Conservation and Population Dynamics",
+      "start_line": 673,
+      "end_line": 693,
+      "header_lines": [
+        674
+      ],
+      "content_start": 676,
+      "content_end": 692,
+      "content": "676: Any sufficiently regular solution $(f(t,z), m_d(t))$ to the Mean-Field Equations satisfies the following properties:\n677: \n678: **1. Total Mass Conservation:** The total population is conserved for all time $t>0$:\n679: \n680: $$\n681: \\frac{\\mathrm{d}}{\\mathrm{d}t}\\left[m_a(t) + m_d(t)\\right] = 0\n682: $$\n683: \n684: where $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$. This implies that $m_a(t) + m_d(t) = 1$ for all $t$ if this holds initially.\n685: \n686: **2. Alive Population Dynamics:** The alive mass evolves according to the balance between killing and revival:\n687: \n688: $$\n689: \\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = \\lambda_{\\text{rev}} m_d(t) - k_{\\text{killed}}[f](t)\n690: $$\n691: \n692: where $k_{\\text{killed}}[f] = \\int_\\Omega c(z)f(z)\\,\\mathrm{d}z$ is the instantaneous killing rate. The alive mass is **not** conserved in general, but reaches a dynamic equilibrium at the stationary state where $k_{\\text{killed}}[f_\\infty] = \\lambda_{\\text{rev}} m_{d,\\infty}$.",
+      "metadata": {
+        "label": "thm-mass-conservation"
+      },
+      "section": "## 3. The Mass-Conserving Forward Equation (PDE)",
+      "raw_directive": "673: :::{prf:theorem} Total Mass Conservation and Population Dynamics\n674: :label: thm-mass-conservation\n675: \n676: Any sufficiently regular solution $(f(t,z), m_d(t))$ to the Mean-Field Equations satisfies the following properties:\n677: \n678: **1. Total Mass Conservation:** The total population is conserved for all time $t>0$:\n679: \n680: $$\n681: \\frac{\\mathrm{d}}{\\mathrm{d}t}\\left[m_a(t) + m_d(t)\\right] = 0\n682: $$\n683: \n684: where $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$. This implies that $m_a(t) + m_d(t) = 1$ for all $t$ if this holds initially.\n685: \n686: **2. Alive Population Dynamics:** The alive mass evolves according to the balance between killing and revival:\n687: \n688: $$\n689: \\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = \\lambda_{\\text{rev}} m_d(t) - k_{\\text{killed}}[f](t)\n690: $$\n691: \n692: where $k_{\\text{killed}}[f] = \\int_\\Omega c(z)f(z)\\,\\mathrm{d}z$ is the instantaneous killing rate. The alive mass is **not** conserved in general, but reaches a dynamic equilibrium at the stationary state where $k_{\\text{killed}}[f_\\infty] = \\lambda_{\\text{rev}} m_{d,\\infty}$.\n693: :::"
+    },
+    {
+      "directive_type": "proof",
+      "label": "proof-thm-mass-conservation",
+      "title": null,
+      "start_line": 695,
+      "end_line": 734,
+      "header_lines": [
+        696
+      ],
+      "content_start": 697,
+      "content_end": 733,
+      "content": "697: **Proof.**\n698: We compute the time derivatives of both components and show they sum to zero.\n699: \n700: **For the alive mass:** Integrate the equation for $\\partial_t f$ over $\\Omega$:\n701: \n702: $$\n703: \\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = \\frac{\\mathrm{d}}{\\mathrm{d}t}\\int_\\Omega f(t,z)\\,\\mathrm{d}z = \\int_\\Omega L^\\dagger f\\,\\mathrm{d}z - \\int_\\Omega c(z)f\\,\\mathrm{d}z + \\int_\\Omega B[f, m_d]\\,\\mathrm{d}z + \\int_\\Omega S[f]\\,\\mathrm{d}z\n704: $$\n705: \n706: Evaluating each term using the properties established in previous sections:\n707: \n708: 1.  **Transport**: From Lemma 3.1, $\\int_\\Omega L^\\dagger f\\,\\mathrm{d}z = 0$ (reflecting boundaries)\n709: 2.  **Killing**: By definition, $\\int_\\Omega c(z)f\\,\\mathrm{d}z = k_{\\text{killed}}[f]$\n710: 3.  **Revival**: From Definition 2.3.2, $\\int_\\Omega B[f, m_d]\\,\\mathrm{d}z = \\lambda_{\\text{revive}} m_d(t)$\n711: 4.  **Internal cloning**: From Definition 2.3.3, $\\int_\\Omega S[f]\\,\\mathrm{d}z = 0$\n712: \n713: Therefore:\n714: \n715: $$\n716: \\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = 0 - k_{\\text{killed}}[f] + \\lambda_{\\text{rev}} m_d(t) + 0 = -k_{\\text{killed}}[f] + \\lambda_{\\text{rev}} m_d(t)\n717: $$\n718: \n719: **For the dead mass:** From the second equation:\n720: \n721: $$\n722: \\frac{\\mathrm{d}}{\\mathrm{d}t}m_d(t) = k_{\\text{killed}}[f] - \\lambda_{\\text{rev}} m_d(t)\n723: $$\n724: \n725: **Sum:** Adding these two equations:\n726: \n727: $$\n728: \\frac{\\mathrm{d}}{\\mathrm{d}t}\\left[m_a(t) + m_d(t)\\right] = \\left[-k_{\\text{killed}}[f] + \\lambda_{\\text{rev}} m_d(t)\\right] + \\left[k_{\\text{killed}}[f] - \\lambda_{\\text{rev}} m_d(t)\\right] = 0\n729: $$\n730: \n731: This demonstrates that the total mass is conserved for all time, completing the proof.\n732: \n733: **Q.E.D.**",
+      "metadata": {
+        "label": "proof-thm-mass-conservation"
+      },
+      "section": "## 3. The Mass-Conserving Forward Equation (PDE)",
+      "raw_directive": "695: :::{prf:proof}\n696: :label: proof-thm-mass-conservation\n697: **Proof.**\n698: We compute the time derivatives of both components and show they sum to zero.\n699: \n700: **For the alive mass:** Integrate the equation for $\\partial_t f$ over $\\Omega$:\n701: \n702: $$\n703: \\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = \\frac{\\mathrm{d}}{\\mathrm{d}t}\\int_\\Omega f(t,z)\\,\\mathrm{d}z = \\int_\\Omega L^\\dagger f\\,\\mathrm{d}z - \\int_\\Omega c(z)f\\,\\mathrm{d}z + \\int_\\Omega B[f, m_d]\\,\\mathrm{d}z + \\int_\\Omega S[f]\\,\\mathrm{d}z\n704: $$\n705: \n706: Evaluating each term using the properties established in previous sections:\n707: \n708: 1.  **Transport**: From Lemma 3.1, $\\int_\\Omega L^\\dagger f\\,\\mathrm{d}z = 0$ (reflecting boundaries)\n709: 2.  **Killing**: By definition, $\\int_\\Omega c(z)f\\,\\mathrm{d}z = k_{\\text{killed}}[f]$\n710: 3.  **Revival**: From Definition 2.3.2, $\\int_\\Omega B[f, m_d]\\,\\mathrm{d}z = \\lambda_{\\text{revive}} m_d(t)$\n711: 4.  **Internal cloning**: From Definition 2.3.3, $\\int_\\Omega S[f]\\,\\mathrm{d}z = 0$\n712: \n713: Therefore:\n714: \n715: $$\n716: \\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = 0 - k_{\\text{killed}}[f] + \\lambda_{\\text{rev}} m_d(t) + 0 = -k_{\\text{killed}}[f] + \\lambda_{\\text{rev}} m_d(t)\n717: $$\n718: \n719: **For the dead mass:** From the second equation:\n720: \n721: $$\n722: \\frac{\\mathrm{d}}{\\mathrm{d}t}m_d(t) = k_{\\text{killed}}[f] - \\lambda_{\\text{rev}} m_d(t)\n723: $$\n724: \n725: **Sum:** Adding these two equations:\n726: \n727: $$\n728: \\frac{\\mathrm{d}}{\\mathrm{d}t}\\left[m_a(t) + m_d(t)\\right] = \\left[-k_{\\text{killed}}[f] + \\lambda_{\\text{rev}} m_d(t)\\right] + \\left[k_{\\text{killed}}[f] - \\lambda_{\\text{rev}} m_d(t)\\right] = 0\n729: $$\n730: \n731: This demonstrates that the total mass is conserved for all time, completing the proof.\n732: \n733: **Q.E.D.**\n734: :::"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "errors": []
+  }
+}

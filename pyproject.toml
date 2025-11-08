@@ -92,6 +92,7 @@ Changelog = "https://fragile.readthedocs.io/en/latest/changelog.html"
 Tracker = "https://github.com/FragileTech/fragile/issues"
 [project.scripts]
 fragile = "fragile.__main__:run"
+mathster = "mathster.cli:cli"
 
 [project.optional-dependencies]
 docs = [

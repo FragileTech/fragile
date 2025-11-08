@@ -33,5 +33,12 @@
       "entities_deleted": 0,
       "entities_unchanged": 0
     }
-  }
+  },
+  "_improvement_attempts": [
+    {
+      "status": "critical_error",
+      "error": "No module named 'mathster.parsing.tools'",
+      "traceback": "Traceback (most recent call last):\n  File \"/home/guillem/fragile/src/mathster/parsing/orchestrator.py\", line 181, in process_document\n    raw_section, improvement_result, errors = improve_chapter(\n  File \"/home/guillem/fragile/src/mathster/parsing/workflows/improve.py\", line 778, in improve_chapter\n    improved_chapter, improvement_result, errors_encountered = improve_chapter_with_retry(\n  File \"/home/guillem/fragile/src/mathster/parsing/workflows/improve.py\", line 230, in improve_chapter_with_retry\n    from mathster.parsing.tools import compare_extraction_with_source\nModuleNotFoundError: No module named 'mathster.parsing.tools'\n"
+    }
+  ]
 }

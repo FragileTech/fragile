@@ -68,15 +68,7 @@ Examples:
     parser.add_argument(
         "--entity-types",
         nargs="+",
-        choices=[
-            "theorems",
-            "axioms",
-            "objects",
-            "parameters",
-            "mathster",
-            "remarks",
-            "equations",
-        ],
+        choices=["theorems", "axioms", "objects", "parameters", "mathster", "remarks", "equations"],
         help="Specific entity types to validate (default: all)",
     )
 

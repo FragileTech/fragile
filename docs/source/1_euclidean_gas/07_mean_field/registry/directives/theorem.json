@@ -1,0 +1,109 @@
+{
+  "document_id": "07_mean_field",
+  "stage": "directives",
+  "directive_type": "theorem",
+  "generated_at": "2025-11-07T12:16:43.471191+00:00",
+  "count": 4,
+  "items": [
+    {
+      "directive_type": "theorem",
+      "label": "thm-mean-field-equation",
+      "title": "The Mean-Field Equations for the Euclidean Gas",
+      "start_line": 614,
+      "end_line": 651,
+      "header_lines": [
+        615
+      ],
+      "content_start": 617,
+      "content_end": 650,
+      "content": "617: The evolution of the Euclidean Gas in the mean-field limit is governed by a coupled system of equations for the alive density $f(t,z)$ and the dead mass $m_d(t)$:\n618: \n619: **Equation for the Alive Density:**\n620: \n621: $$\n622: \\boxed{\n623: \\partial_t f = L^\\dagger f - c(z)f + B[f, m_d] + S[f]\n624: }\n625: $$ (eq-mean-field-pde-main)\n626: \n627: **Equation for the Dead Mass:**\n628: \n629: $$\n630: \\boxed{\n631: \\frac{\\mathrm{d}}{\\mathrm{d}t} m_d(t) = \\int_{\\Omega} c(z)f(t,z)\\,\\mathrm{d}z - \\lambda_{\\text{rev}} m_d(t)\n632: }\n633: $$ (eq-dead-mass-ode)\n634: \n635: subject to initial conditions $f(0, \\cdot) = f_0$ and $m_d(0) = 1 - \\int_\\Omega f_0$, where $m_a(0) + m_d(0) = 1$.\n636: \n637: In explicit form, the equation for $f$ is:\n638: \n639: $$\n640: \\partial_t f(t,z) = -\\nabla\\cdot(A(z) f(t,z)) + \\nabla\\cdot(\\mathsf{D}\\nabla f(t,z)) - c(z)f(t,z) + \\lambda_{\\text{revive}} m_d(t) \\frac{f(t,z)}{m_a(t)} + S[f](t,z)\n641: $$\n642: \n643: where:\n644: *   $A(z)$ is the drift field and $\\mathsf{D}$ is the diffusion tensor from the kinetic transport (with reflecting boundaries)\n645: *   $c(z)$ is the interior killing rate (zero in interior, positive near boundary)\n646: *   $\\lambda_{\\text{revive}} > 0$ is the revival rate (free parameter, typical values 0.1-5)\n647: *   $B[f, m_d] = \\lambda_{\\text{revive}} m_d(t) f/m_a$ is the revival operator\n648: *   $S[f]$ is the mass-neutral internal cloning operator\n649: \n650: The total alive mass is $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$, and the system conserves the total population: $m_a(t) + m_d(t) = 1$ for all $t$.",
+      "metadata": {
+        "label": "thm-mean-field-equation"
+      },
+      "section": "## 3. The Mass-Conserving Forward Equation (PDE)",
+      "raw_directive": "614: :::{prf:theorem} The Mean-Field Equations for the Euclidean Gas\n615: :label: thm-mean-field-equation\n616: \n617: The evolution of the Euclidean Gas in the mean-field limit is governed by a coupled system of equations for the alive density $f(t,z)$ and the dead mass $m_d(t)$:\n618: \n619: **Equation for the Alive Density:**\n620: \n621: $$\n622: \\boxed{\n623: \\partial_t f = L^\\dagger f - c(z)f + B[f, m_d] + S[f]\n624: }\n625: $$ (eq-mean-field-pde-main)\n626: \n627: **Equation for the Dead Mass:**\n628: \n629: $$\n630: \\boxed{\n631: \\frac{\\mathrm{d}}{\\mathrm{d}t} m_d(t) = \\int_{\\Omega} c(z)f(t,z)\\,\\mathrm{d}z - \\lambda_{\\text{rev}} m_d(t)\n632: }\n633: $$ (eq-dead-mass-ode)\n634: \n635: subject to initial conditions $f(0, \\cdot) = f_0$ and $m_d(0) = 1 - \\int_\\Omega f_0$, where $m_a(0) + m_d(0) = 1$.\n636: \n637: In explicit form, the equation for $f$ is:\n638: \n639: $$\n640: \\partial_t f(t,z) = -\\nabla\\cdot(A(z) f(t,z)) + \\nabla\\cdot(\\mathsf{D}\\nabla f(t,z)) - c(z)f(t,z) + \\lambda_{\\text{revive}} m_d(t) \\frac{f(t,z)}{m_a(t)} + S[f](t,z)\n641: $$\n642: \n643: where:\n644: *   $A(z)$ is the drift field and $\\mathsf{D}$ is the diffusion tensor from the kinetic transport (with reflecting boundaries)\n645: *   $c(z)$ is the interior killing rate (zero in interior, positive near boundary)\n646: *   $\\lambda_{\\text{revive}} > 0$ is the revival rate (free parameter, typical values 0.1-5)\n647: *   $B[f, m_d] = \\lambda_{\\text{revive}} m_d(t) f/m_a$ is the revival operator\n648: *   $S[f]$ is the mass-neutral internal cloning operator\n649: \n650: The total alive mass is $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$, and the system conserves the total population: $m_a(t) + m_d(t) = 1$ for all $t$.\n651: :::",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "07_mean_field",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 3. The Mass-Conserving Forward Equation (PDE)"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-mass-conservation",
+      "title": "Total Mass Conservation and Population Dynamics",
+      "start_line": 673,
+      "end_line": 693,
+      "header_lines": [
+        674
+      ],
+      "content_start": 676,
+      "content_end": 692,
+      "content": "676: Any sufficiently regular solution $(f(t,z), m_d(t))$ to the Mean-Field Equations satisfies the following properties:\n677: \n678: **1. Total Mass Conservation:** The total population is conserved for all time $t>0$:\n679: \n680: $$\n681: \\frac{\\mathrm{d}}{\\mathrm{d}t}\\left[m_a(t) + m_d(t)\\right] = 0\n682: $$\n683: \n684: where $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$. This implies that $m_a(t) + m_d(t) = 1$ for all $t$ if this holds initially.\n685: \n686: **2. Alive Population Dynamics:** The alive mass evolves according to the balance between killing and revival:\n687: \n688: $$\n689: \\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = \\lambda_{\\text{rev}} m_d(t) - k_{\\text{killed}}[f](t)\n690: $$\n691: \n692: where $k_{\\text{killed}}[f] = \\int_\\Omega c(z)f(z)\\,\\mathrm{d}z$ is the instantaneous killing rate. The alive mass is **not** conserved in general, but reaches a dynamic equilibrium at the stationary state where $k_{\\text{killed}}[f_\\infty] = \\lambda_{\\text{rev}} m_{d,\\infty}$.",
+      "metadata": {
+        "label": "thm-mass-conservation"
+      },
+      "section": "## 3. The Mass-Conserving Forward Equation (PDE)",
+      "raw_directive": "673: :::{prf:theorem} Total Mass Conservation and Population Dynamics\n674: :label: thm-mass-conservation\n675: \n676: Any sufficiently regular solution $(f(t,z), m_d(t))$ to the Mean-Field Equations satisfies the following properties:\n677: \n678: **1. Total Mass Conservation:** The total population is conserved for all time $t>0$:\n679: \n680: $$\n681: \\frac{\\mathrm{d}}{\\mathrm{d}t}\\left[m_a(t) + m_d(t)\\right] = 0\n682: $$\n683: \n684: where $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$. This implies that $m_a(t) + m_d(t) = 1$ for all $t$ if this holds initially.\n685: \n686: **2. Alive Population Dynamics:** The alive mass evolves according to the balance between killing and revival:\n687: \n688: $$\n689: \\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = \\lambda_{\\text{rev}} m_d(t) - k_{\\text{killed}}[f](t)\n690: $$\n691: \n692: where $k_{\\text{killed}}[f] = \\int_\\Omega c(z)f(z)\\,\\mathrm{d}z$ is the instantaneous killing rate. The alive mass is **not** conserved in general, but reaches a dynamic equilibrium at the stationary state where $k_{\\text{killed}}[f_\\infty] = \\lambda_{\\text{rev}} m_{d,\\infty}$.\n693: :::",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "07_mean_field",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 3. The Mass-Conserving Forward Equation (PDE)"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-killing-rate-consistency",
+      "title": "Consistency of the Interior Killing Rate Approximation",
+      "start_line": 835,
+      "end_line": 892,
+      "header_lines": [
+        836
+      ],
+      "content_start": 838,
+      "content_end": 891,
+      "content": "838: Under Assumptions [](#asmp-domain-regularity), [](#asmp-integrator-regularity), and [](#asmp-density-regularity-killing), there exists a smooth killing rate function $c \\in C^\\infty_c(\\Omega)$ with compact support in $\\mathcal{T}_\\delta$ such that:\n 839: \n 840: **Part (i): Pointwise Convergence of the Exit Rate**\n 841: \n 842: For each $(x,v) \\in \\Omega$, define the discrete exit probability:\n 843: \n 844: $$\n 845: p_{\\text{exit}}(x,v,\\tau) := \\mathbb{P}\\left(x^+(\\tau; x,v) \\notin X_{\\text{valid}}\\right)\n 846: $$\n 847: \n 848: Then:\n 849: \n 850: $$\n 851: \\lim_{\\tau \\to 0} \\frac{1}{\\tau} p_{\\text{exit}}(x,v,\\tau) = c(x,v)\n 852: $$\n 853: \n 854: where the killing rate is given explicitly by:\n 855: \n 856: $$\n 857: c(x,v) = \\begin{cases}\n 858: \\frac{(v \\cdot n_x(x))^+}{d(x)} \\cdot \\mathbf{1}_{d(x) < \\delta} & \\text{if } x \\in \\mathcal{T}_\\delta \\\\\n 859: 0 & \\text{otherwise}\n 860: \\end{cases}\n 861: $$\n 862: \n 863: with $(v \\cdot n_x(x))^+ := \\max(v \\cdot n_x(x), 0)$ denoting the outward normal velocity component.\n 864: \n 865: **Part (ii): Uniform Convergence of the Expected Killing Fraction**\n 866: \n 867: Define the expected killing fraction in a discrete timestep as:\n 868: \n 869: $$\n 870: K_{\\text{discrete}}(\\tau) := \\int_{\\Omega} p_{\\text{exit}}(x,v,\\tau) f^\\tau(x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v\n 871: $$\n 872: \n 873: and the continuous killing rate as:\n 874: \n 875: $$\n 876: K_{\\text{continuous}} := \\int_{\\Omega} c(x,v) f(x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v\n 877: $$\n 878: \n 879: Then:\n 880: \n 881: $$\n 882: \\lim_{\\tau \\to 0} \\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) = K_{\\text{continuous}}\n 883: $$\n 884: \n 885: with the error bound:\n 886: \n 887: $$\n 888: \\left|\\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) - K_{\\text{continuous}}\\right| \\le C \\left(\\sqrt{\\tau} + \\|f^\\tau - f\\|_{L^1}\\right)\n 889: $$\n 890: \n 891: for some constant $C$ depending only on $M_f, M_{\\nabla f}, M_F, C_R$, and the geometry of $X_{\\text{valid}}$.",
+      "metadata": {
+        "label": "thm-killing-rate-consistency"
+      },
+      "section": "## 4. Analysis and Properties of the Mean-Field Equations",
+      "raw_directive": " 835: :::{prf:theorem} Consistency of the Interior Killing Rate Approximation\n 836: :label: thm-killing-rate-consistency\n 837: \n 838: Under Assumptions [](#asmp-domain-regularity), [](#asmp-integrator-regularity), and [](#asmp-density-regularity-killing), there exists a smooth killing rate function $c \\in C^\\infty_c(\\Omega)$ with compact support in $\\mathcal{T}_\\delta$ such that:\n 839: \n 840: **Part (i): Pointwise Convergence of the Exit Rate**\n 841: \n 842: For each $(x,v) \\in \\Omega$, define the discrete exit probability:\n 843: \n 844: $$\n 845: p_{\\text{exit}}(x,v,\\tau) := \\mathbb{P}\\left(x^+(\\tau; x,v) \\notin X_{\\text{valid}}\\right)\n 846: $$\n 847: \n 848: Then:\n 849: \n 850: $$\n 851: \\lim_{\\tau \\to 0} \\frac{1}{\\tau} p_{\\text{exit}}(x,v,\\tau) = c(x,v)\n 852: $$\n 853: \n 854: where the killing rate is given explicitly by:\n 855: \n 856: $$\n 857: c(x,v) = \\begin{cases}\n 858: \\frac{(v \\cdot n_x(x))^+}{d(x)} \\cdot \\mathbf{1}_{d(x) < \\delta} & \\text{if } x \\in \\mathcal{T}_\\delta \\\\\n 859: 0 & \\text{otherwise}\n 860: \\end{cases}\n 861: $$\n 862: \n 863: with $(v \\cdot n_x(x))^+ := \\max(v \\cdot n_x(x), 0)$ denoting the outward normal velocity component.\n 864: \n 865: **Part (ii): Uniform Convergence of the Expected Killing Fraction**\n 866: \n 867: Define the expected killing fraction in a discrete timestep as:\n 868: \n 869: $$\n 870: K_{\\text{discrete}}(\\tau) := \\int_{\\Omega} p_{\\text{exit}}(x,v,\\tau) f^\\tau(x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v\n 871: $$\n 872: \n 873: and the continuous killing rate as:\n 874: \n 875: $$\n 876: K_{\\text{continuous}} := \\int_{\\Omega} c(x,v) f(x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v\n 877: $$\n 878: \n 879: Then:\n 880: \n 881: $$\n 882: \\lim_{\\tau \\to 0} \\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) = K_{\\text{continuous}}\n 883: $$\n 884: \n 885: with the error bound:\n 886: \n 887: $$\n 888: \\left|\\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) - K_{\\text{continuous}}\\right| \\le C \\left(\\sqrt{\\tau} + \\|f^\\tau - f\\|_{L^1}\\right)\n 889: $$\n 890: \n 891: for some constant $C$ depending only on $M_f, M_{\\nabla f}, M_F, C_R$, and the geometry of $X_{\\text{valid}}$.\n 892: :::",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "07_mean_field",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 4. Analysis and Properties of the Mean-Field Equations"
+      }
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-mean-field-limit-informal",
+      "title": "Mean-Field Limit (Informal Statement)",
+      "start_line": 1339,
+      "end_line": 1355,
+      "header_lines": [
+        1340
+      ],
+      "content_start": 1342,
+      "content_end": 1354,
+      "content": "1342: Let $(X_i^\\tau(t), V_i^\\tau(t))_{i=1}^N$ be the $N$-particle discrete Fragile Gas dynamics with timestep $\\tau$, and let:\n1343: \n1344: $$\n1345: f_N^\\tau(t, x, v) := \\frac{1}{N} \\sum_{i=1}^N \\delta(x - X_i^\\tau(t), v - V_i^\\tau(t))\n1346: $$\n1347: \n1348: be the empirical density. Then, in the joint limit $N \\to \\infty, \\tau \\to 0$ with $\\tau = O(N^{-\\alpha})$ for $\\alpha > 0$:\n1349: \n1350: $$\n1351: f_N^\\tau(t, \\cdot, \\cdot) \\xrightarrow{\\text{weak}} f(t, \\cdot, \\cdot)\n1352: $$\n1353: \n1354: where $f$ solves the mean-field PDE (Equations [](#eq-mean-field-pde-main) and [](#eq-dead-mass-ode)).",
+      "metadata": {
+        "label": "thm-mean-field-limit-informal"
+      },
+      "section": "## 4. Analysis and Properties of the Mean-Field Equations",
+      "raw_directive": "1339: :::{prf:theorem} Mean-Field Limit (Informal Statement)\n1340: :label: thm-mean-field-limit-informal\n1341: \n1342: Let $(X_i^\\tau(t), V_i^\\tau(t))_{i=1}^N$ be the $N$-particle discrete Fragile Gas dynamics with timestep $\\tau$, and let:\n1343: \n1344: $$\n1345: f_N^\\tau(t, x, v) := \\frac{1}{N} \\sum_{i=1}^N \\delta(x - X_i^\\tau(t), v - V_i^\\tau(t))\n1346: $$\n1347: \n1348: be the empirical density. Then, in the joint limit $N \\to \\infty, \\tau \\to 0$ with $\\tau = O(N^{-\\alpha})$ for $\\alpha > 0$:\n1349: \n1350: $$\n1351: f_N^\\tau(t, \\cdot, \\cdot) \\xrightarrow{\\text{weak}} f(t, \\cdot, \\cdot)\n1352: $$\n1353: \n1354: where $f$ solves the mean-field PDE (Equations [](#eq-mean-field-pde-main) and [](#eq-dead-mass-ode)).\n1355: :::",
+      "_registry_context": {
+        "stage": "directives",
+        "document_id": "07_mean_field",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 4. Analysis and Properties of the Mean-Field Equations"
+      }
+    }
+  ]
+}

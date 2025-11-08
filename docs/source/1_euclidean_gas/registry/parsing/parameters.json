@@ -1,0 +1,1959 @@
+{
+  "document_id": "1_euclidean_gas",
+  "stage": "parsing",
+  "entity_type": "parameters",
+  "generated_at": "2025-11-07T12:16:43.464631+00:00",
+  "count": 65,
+  "items": [
+    {
+      "label": "param-c",
+      "symbol": "c",
+      "meaning": "Parameter c",
+      "scope": "global",
+      "full_text": "$$  Setting $C := \\max(C_1 M_f |\\mathcal{T}_\\delta|, M_v/\\delta)$ gives:  $$",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              1209,
+              1211
+            ]
+          ]
+        },
+        "label": "param-c",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.2",
+        "section_name": "Main Theorem: Killing Rate Approximation"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-x_i",
+      "symbol": "x_i",
+      "meaning": "Parameter x_i",
+      "scope": "global",
+      "full_text": "$$ \\mathrm d x_i = v_i\\,\\mathrm dt,\\qquad \\mathrm d v_i = \\left(\\frac{1}{m}F(x_i)-\\gamma_{\\mathrm{fric}}(v_i-u(x_i))\\right)\\,\\mathrm dt \\;+\\; \\sigma_v\\,\\mathrm dW_t $$",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              312,
+              314
+            ]
+          ]
+        },
+        "label": "param-x_i",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.2",
+        "section_name": "The Kinetic Transport Operator ($L^\\dagger$)"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-v_i",
+      "symbol": "v_i",
+      "meaning": "Parameter v_i",
+      "scope": "global",
+      "full_text": "$$ \\mathrm d x_i = v_i\\,\\mathrm dt,\\qquad \\mathrm d v_i = \\left(\\frac{1}{m}F(x_i)-\\gamma_{\\mathrm{fric}}(v_i-u(x_i))\\right)\\,\\mathrm dt \\;+\\; \\sigma_v\\,\\mathrm dW_t $$",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              313,
+              315
+            ]
+          ]
+        },
+        "label": "param-v_i",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.2",
+        "section_name": "The Kinetic Transport Operator ($L^\\dagger$)"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-v_alg",
+      "symbol": "V_alg",
+      "meaning": "Parameter V_alg",
+      "scope": "global",
+      "full_text": "",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "label": "param-v_alg",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": null,
+        "section_name": null
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-lambda_revive",
+      "symbol": "lambda_revive",
+      "meaning": "Parameter lambda_revive",
+      "scope": "global",
+      "full_text": "where: *   $\\lambda_{\\text{revive}} > 0$ is the **revival rate**, a free parameter independent of the timestep (typical values: 0.1-5) *   $m_d(t) = 1 - m_a(t)$ is the current dead mass",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              385,
+              386
+            ]
+          ]
+        },
+        "label": "param-lambda_revive",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.3",
+        "section_name": "The Reaction Operators (Killing, Revival, and Cloning)"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-theta",
+      "symbol": "Theta",
+      "meaning": "Temperature parameter",
+      "scope": "global",
+      "full_text": "*   **(H2)** The reward potential $R_{\\text{pos}}$ is $C^2$, making the force field $F$ globally Lipschitz. *   **(H3)** The flow field $u$ is $C^1$, and all physical parameters ($m, \\gamma_{\\text{fric}}, \\Theta, \\sigma_x$) are finite and positive. *   **(H4)** All algorithmic functions (e.g., the rescale function, companion selection) are measurable and satisfy the continuity properties established in the abstract framework.",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              741,
+              742
+            ]
+          ]
+        },
+        "label": "param-theta",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.2",
+        "section_name": "Well-Posedness and Future Work"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-m",
+      "symbol": "m",
+      "meaning": "Mass parameter",
+      "scope": "global",
+      "full_text": "The first conceptual shift is in how we represent the state of the system. In the N-particle framework, the state is a single point in the high-dimensional configuration space $\\Sigma_N$. In the mean-field limit, we shift our perspective to that of a single, representative particle. The state is no longer a collection of individual points but a continuous probability \"cloud\" on the single-particle phase space $\\Omega$. The mathematical bridge enabling this transition is the replacement of discrete empirical averages with continuous integrals against this probability density. This principle forms the core of our translation dictionary. For example, the empirical average of a quantity $Q(w_i)$ over $k$ alive walkers, $\\bar{Q} = \\frac{1}{k} \\sum_{i \\in \\mathcal{A}} Q(w_i)$, becomes the expected value integral, $\\mathbb{E}[Q] = \\int_{\\Omega} Q(z) f(t,z) \\, dz$.",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              22,
+              23
+            ]
+          ]
+        },
+        "label": "param-m",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "1",
+        "section_name": "Foundations of the Mean-Field Model"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-z_d",
+      "symbol": "z_d",
+      "meaning": "Parameter z_d",
+      "scope": "global",
+      "full_text": "Walker $i$ arrives at state $z$ if: 1. It was originally at some state $z_d = (x_d, v_d)$ 2. It selected companion at state $z_c = (x_c, v_c)$ 3. Cloning occurred: $P_{\\text{clone}}(V[z_d], V[z_c])$",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              456,
+              458
+            ]
+          ]
+        },
+        "label": "param-z_d",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.3.3",
+        "section_name": "Derivation of the Internal Cloning Operator from First Principles"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-xi",
+      "symbol": "xi",
+      "meaning": "Parameter xi",
+      "scope": "global",
+      "full_text": "$$ where $\\xi \\sim \\mathcal{N}(0, I_d)$ is a standard Gaussian random vector.",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              274,
+              275
+            ]
+          ]
+        },
+        "label": "param-xi",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.1",
+        "section_name": "The Underlying Discrete-Time Integrator: BAOAB Splitting"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-w_t",
+      "symbol": "W_t",
+      "meaning": "Parameter W_t",
+      "scope": "global",
+      "full_text": "$$ where $W_t$ is a standard Wiener process and all parameters are as defined in the Euclidean Gas specification. The BAOAB method splits this SDE into analytically solvable parts and composes them symmetrically.",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              253,
+              254
+            ]
+          ]
+        },
+        "label": "param-w_t",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.1",
+        "section_name": "The Underlying Discrete-Time Integrator: BAOAB Splitting"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-z",
+      "symbol": "z",
+      "meaning": "Parameter z",
+      "scope": "global",
+      "full_text": "$$  A key property of this operator with reflecting boundary conditions is that it is **mass-conservative**: when integrated over the domain, the total flux through the boundary vanishes, so $\\int_\\Omega L^\\dagger f \\,\\mathrm{d}z = 0$. :::",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              329,
+              331
+            ]
+          ]
+        },
+        "label": "param-z",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.2",
+        "section_name": "The Kinetic Transport Operator ($L^\\dagger$)"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-u",
+      "symbol": "u",
+      "meaning": "Parameter u",
+      "scope": "global",
+      "full_text": "The first conceptual shift is in how we represent the state of the system. In the N-particle framework, the state is a single point in the high-dimensional configuration space $\\Sigma_N$. In the mean-field limit, we shift our perspective to that of a single, representative particle. The state is no longer a collection of individual points but a continuous probability \"cloud\" on the single-particle phase space $\\Omega$. The mathematical bridge enabling this transition is the replacement of discrete empirical averages with continuous integrals against this probability density. This principle forms the core of our translation dictionary. For example, the empirical average of a quantity $Q(w_i)$ over $k$ alive walkers, $\\bar{Q} = \\frac{1}{k} \\sum_{i \\in \\mathcal{A}} Q(w_i)$, becomes the expected value integral, $\\mathbb{E}[Q] = \\int_{\\Omega} Q(z) f(t,z) \\, dz$.",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              22,
+              23
+            ]
+          ]
+        },
+        "label": "param-u",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "1",
+        "section_name": "Foundations of the Mean-Field Model"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-t_n",
+      "symbol": "t_n",
+      "meaning": "Parameter t_n",
+      "scope": "global",
+      "full_text": "For a single particle with state $(x_n, v_n)$ at time $t_n$, the state $(x_{n+1}, v_{n+1})$ at time $t_{n+1} = t_n + \\tau$ is computed via the following five steps:",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              258,
+              259
+            ]
+          ]
+        },
+        "label": "param-t_n",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.1",
+        "section_name": "The Underlying Discrete-Time Integrator: BAOAB Splitting"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-m_a",
+      "symbol": "m_a",
+      "meaning": "Parameter m_a",
+      "scope": "global",
+      "full_text": "**Positivity Requirement:** The definitions of the statistical moments rely on the normalization by the alive mass $m_a(t)$. These functionals are well-defined for all $t$ such that $m_a(t) > 0$. The global well-posedness of the PDE system requires regularizing the behavior as $m_a(t) \\to 0$.  **Cemetery State ($m_a = 0$) and the Regularization Assumption:**  In the discrete N-particle algorithm, there exists an absorbing \"cemetery state\" where all $N$ walkers have died ($k = 0$). While this state has exponentially low probability for any finite N and initial condition with $k_0 > 0$, it cannot be completely excluded.",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              151,
+              153
+            ]
+          ]
+        },
+        "label": "param-m_a",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "1.2",
+        "section_name": "Mean-Field Measurement Pipeline"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-z_c",
+      "symbol": "z_c",
+      "meaning": "Parameter z_c",
+      "scope": "global",
+      "full_text": "Walker $i$ arrives at state $z$ if: 1. It was originally at some state $z_d = (x_d, v_d)$ 2. It selected companion at state $z_c = (x_c, v_c)$ 3. Cloning occurred: $P_{\\text{clone}}(V[z_d], V[z_c])$ 4. The jitter placed it at $z$: $Q_\\delta(z \\mid z_c)$ where $Q_\\delta(x,v \\mid x_c, v_c) = \\mathcal{N}(x; x_c, \\delta^2 I) \\delta(v - v_c)$",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              457,
+              459
+            ]
+          ]
+        },
+        "label": "param-z_c",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.3.3",
+        "section_name": "Derivation of the Internal Cloning Operator from First Principles"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-sigma_v",
+      "symbol": "sigma_v",
+      "meaning": "Parameter sigma_v",
+      "scope": "global",
+      "full_text": "$$  where $\\sigma_v := \\sqrt{\\Theta/m}$, $\\xi \\sim \\mathcal{N}(0, I_d)$, and $v_{n+1/2}^{(1)} = v + \\frac{\\tau}{2m}F(x)$.  For small $\\tau$, using $e^{-\\gamma\\tau} = 1 - \\gamma\\tau + O(\\tau^2)$ and $1 - e^{-2\\gamma\\tau} = 2\\gamma\\tau + O(\\tau^2)$:",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              887,
+              889
+            ]
+          ]
+        },
+        "label": "param-sigma_v",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.2",
+        "section_name": "Main Theorem: Killing Rate Approximation"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-m_d",
+      "symbol": "m_d",
+      "meaning": "Parameter m_d",
+      "scope": "global",
+      "full_text": "*   **Coupled Reaction-Diffusion Structure:** The system has the form of a coupled reaction-diffusion system. The PDE for $f$ has the form of a reaction-diffusion PDE with non-local reaction terms. The kinetic operator $L^\\dagger$ provides the diffusion (with reflecting boundaries), while the killing $-c(z)f$, revival $B[f, m_d]$, and cloning $S[f]$ terms provide the reactions. The ODE for $m_d$ describes the evolution of the dead reservoir. This structure is well-studied in PDE theory and enables the application of standard analytical techniques for coupled systems.  *   **Total Mass Conservation with Dynamic Equilibrium:** As proven in Theorem 3.3, the coupled system conserves the total population $m_a(t) + m_d(t) = 1$. However, unlike a model with instantaneous revival, the alive and dead masses can exchange and evolve towards a non-trivial **stationary state** where $\\mathrm{d}/\\mathrm{d}t\\, m_a = 0$ and $\\mathrm{d}/\\mathrm{d}t\\, m_d = 0$. At this stationary state, the killing and revival rates are balanced: $k_{\\text{killed}}[f_\\infty] = \\lambda_{\\text{revive}} m_{d,\\infty}$. This faithfully represents the discrete algorithm's behavior where the number of alive walkers $k$ fluctuates and converges to a stationary distribution.  ### 4.2. Well-Posedness and Future Work",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              729,
+              731
+            ]
+          ]
+        },
+        "label": "param-m_d",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.1",
+        "section_name": "Key Properties of the Coupled System"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-f",
+      "symbol": "F",
+      "meaning": "Parameter F",
+      "scope": "global",
+      "full_text": "$$ \\boxed{ \\mathcal{L}_{\\text{kin}} f = \\sum_{i\\in\\mathcal A}\\left[ v_i\\cdot\\nabla_{x_i} f + \\left(m^{-1}F(x_i)-\\gamma_{\\mathrm{fric}}(v_i-u(x_i))\\right)\\cdot\\nabla_{v_i} f + \\tfrac{\\sigma_v^2}{2}\\,\\Delta_{v_i} f\\right] } $$",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              325,
+              327
+            ]
+          ]
+        },
+        "label": "param-f",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.2",
+        "section_name": "The Kinetic Transport Operator ($L^\\dagger$)"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-x_n",
+      "symbol": "x_n",
+      "meaning": "Parameter x_n",
+      "scope": "global",
+      "full_text": "For a single particle with state $(x_n, v_n)$ at time $t_n$, the state $(x_{n+1}, v_{n+1})$ at time $t_{n+1} = t_n + \\tau$ is computed via the following five steps:",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              258,
+              259
+            ]
+          ]
+        },
+        "label": "param-x_n",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.1",
+        "section_name": "The Underlying Discrete-Time Integrator: BAOAB Splitting"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-f",
+      "symbol": "f",
+      "meaning": "Parameter f",
+      "scope": "global",
+      "full_text": "$$ \\boxed{ \\mathcal{L}_{\\text{kin}} f = \\sum_{i\\in\\mathcal A}\\left[ v_i\\cdot\\nabla_{x_i} f + \\left(m^{-1}F(x_i)-\\gamma_{\\mathrm{fric}}(v_i-u(x_i))\\right)\\cdot\\nabla_{v_i} f + \\tfrac{\\sigma_v^2}{2}\\,\\Delta_{v_i} f\\right] } $$",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              325,
+              327
+            ]
+          ]
+        },
+        "label": "param-f",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.2",
+        "section_name": "The Kinetic Transport Operator ($L^\\dagger$)"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-p_clone",
+      "symbol": "P_clone",
+      "meaning": "Parameter P_clone",
+      "scope": "global",
+      "full_text": "",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "label": "param-p_clone",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": null,
+        "section_name": null
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-v_n",
+      "symbol": "v_n",
+      "meaning": "Parameter v_n",
+      "scope": "global",
+      "full_text": "$$  where $C_\\sigma = \\frac{1}{4}\\sigma_v^2 \\cdot 2\\gamma = \\frac{\\gamma\\Theta}{2m}$ and $v_n := v \\cdot n_x(x)$ is the outward normal velocity.  The exit probability is:",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              924,
+              926
+            ]
+          ]
+        },
+        "label": "param-v_n",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.2",
+        "section_name": "Main Theorem: Killing Rate Approximation"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-x_valid",
+      "symbol": "X_valid",
+      "meaning": "Parameter X_valid",
+      "scope": "global",
+      "full_text": "",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "label": "param-x_valid",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": null,
+        "section_name": null
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-s",
+      "symbol": "S",
+      "meaning": "Parameter S",
+      "scope": "global",
+      "full_text": "Let $f(t, \\cdot)$ be the phase-space density at time $t$, with total alive mass $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$. The statistical moments required for the standardization pipeline are defined as the following **functionals** of $f$. The notation $\\mu[f]$ emphasizes that these are numbers that depend on the entire *shape* of the function $f$.  The moments are computed with respect to the **normalized density of the alive population**, which is $f(t,z) / m_a(t)$. This normalization is critical for ensuring the mean-field model is a faithful limit of the N-particle system, where statistics are computed by averaging over the $k$ alive walkers.  *   **Reward Moments:** The mean reward, $\\mu_R[f]$, is computed as the expected value over the normalized alive population:",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              122,
+              124
+            ]
+          ]
+        },
+        "label": "param-s",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "1.2",
+        "section_name": "Mean-Field Measurement Pipeline"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-omega",
+      "symbol": "Omega",
+      "meaning": "Parameter Omega",
+      "scope": "global",
+      "full_text": "$$ \\Omega := X_{\\text{valid}} \\times V_{\\text{alg}} $$",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              48,
+              50
+            ]
+          ]
+        },
+        "label": "param-omega",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "1.1",
+        "section_name": "Phase Space and Probability Density"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-gamma_fric",
+      "symbol": "gamma_fric",
+      "meaning": "Friction coefficient",
+      "scope": "global",
+      "full_text": "*   **(H2)** The reward potential $R_{\\text{pos}}$ is $C^2$, making the force field $F$ globally Lipschitz. *   **(H3)** The flow field $u$ is $C^1$, and all physical parameters ($m, \\gamma_{\\text{fric}}, \\Theta, \\sigma_x$) are finite and positive. *   **(H4)** All algorithmic functions (e.g., the rescale function, companion selection) are measurable and satisfy the continuity properties established in the abstract framework.",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              741,
+              742
+            ]
+          ]
+        },
+        "label": "param-gamma_fric",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.2",
+        "section_name": "Well-Posedness and Future Work"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-q_delta",
+      "symbol": "Q_delta",
+      "meaning": "Parameter Q_delta",
+      "scope": "global",
+      "full_text": "",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "label": "param-q_delta",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": null,
+        "section_name": null
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-tau",
+      "symbol": "tau",
+      "meaning": "Time step size",
+      "scope": "global",
+      "full_text": "$$  We are interested in the regime where $\\tau \\sim \\tau_* := d(x)/v_n$ (near the ballistic crossing time). Let $\\tau = \\tau_*(1 + \\epsilon)$ where $\\epsilon$ is a small parameter. Then:  $$",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              988,
+              990
+            ]
+          ]
+        },
+        "label": "param-tau",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.2",
+        "section_name": "Main Theorem: Killing Rate Approximation"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-c",
+      "symbol": "c",
+      "meaning": "Parameter c",
+      "scope": "global",
+      "full_text": "$$  Setting $C := \\max(C_1 M_f |\\mathcal{T}_\\delta|, M_v/\\delta)$ gives:  $$",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              1209,
+              1211
+            ]
+          ]
+        },
+        "label": "param-c",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.2",
+        "section_name": "Main Theorem: Killing Rate Approximation"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-x_i",
+      "symbol": "x_i",
+      "meaning": "Parameter x_i",
+      "scope": "global",
+      "full_text": "$$ \\mathrm d x_i = v_i\\,\\mathrm dt,\\qquad \\mathrm d v_i = \\left(\\frac{1}{m}F(x_i)-\\gamma_{\\mathrm{fric}}(v_i-u(x_i))\\right)\\,\\mathrm dt \\;+\\; \\sigma_v\\,\\mathrm dW_t $$",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              312,
+              314
+            ]
+          ]
+        },
+        "label": "param-x_i",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.2",
+        "section_name": "The Kinetic Transport Operator ($L^\\dagger$)"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-v_i",
+      "symbol": "v_i",
+      "meaning": "Parameter v_i",
+      "scope": "global",
+      "full_text": "$$ \\mathrm d x_i = v_i\\,\\mathrm dt,\\qquad \\mathrm d v_i = \\left(\\frac{1}{m}F(x_i)-\\gamma_{\\mathrm{fric}}(v_i-u(x_i))\\right)\\,\\mathrm dt \\;+\\; \\sigma_v\\,\\mathrm dW_t $$",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              313,
+              315
+            ]
+          ]
+        },
+        "label": "param-v_i",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.2",
+        "section_name": "The Kinetic Transport Operator ($L^\\dagger$)"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-v_alg",
+      "symbol": "V_alg",
+      "meaning": "Parameter V_alg",
+      "scope": "global",
+      "full_text": "# The Mean-Field Limit and Continuous Forward Equation**",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "label": "param-v_alg",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": null,
+        "section_name": null
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-lambda_revive",
+      "symbol": "lambda_revive",
+      "meaning": "Parameter lambda_revive",
+      "scope": "global",
+      "full_text": "where: *   $\\lambda_{\\text{revive}} > 0$ is the **revival rate**, a free parameter independent of the timestep (typical values: 0.1-5) *   $m_d(t) = 1 - m_a(t)$ is the current dead mass",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              385,
+              386
+            ]
+          ]
+        },
+        "label": "param-lambda_revive",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.3",
+        "section_name": "The Reaction Operators (Killing, Revival, and Cloning)"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-theta",
+      "symbol": "Theta",
+      "meaning": "Temperature parameter",
+      "scope": "global",
+      "full_text": "*   **(H2)** The reward potential $R_{\\text{pos}}$ is $C^2$, making the force field $F$ globally Lipschitz. *   **(H3)** The flow field $u$ is $C^1$, and all physical parameters ($m, \\gamma_{\\text{fric}}, \\Theta, \\sigma_x$) are finite and positive. *   **(H4)** All algorithmic functions (e.g., the rescale function, companion selection) are measurable and satisfy the continuity properties established in the abstract framework.",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              741,
+              742
+            ]
+          ]
+        },
+        "label": "param-theta",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.2",
+        "section_name": "Well-Posedness and Future Work"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-m",
+      "symbol": "m",
+      "meaning": "Mass parameter",
+      "scope": "global",
+      "full_text": "The first conceptual shift is in how we represent the state of the system. In the N-particle framework, the state is a single point in the high-dimensional configuration space $\\Sigma_N$. In the mean-field limit, we shift our perspective to that of a single, representative particle. The state is no longer a collection of individual points but a continuous probability \"cloud\" on the single-particle phase space $\\Omega$. The mathematical bridge enabling this transition is the replacement of discrete empirical averages with continuous integrals against this probability density. This principle forms the core of our translation dictionary. For example, the empirical average of a quantity $Q(w_i)$ over $k$ alive walkers, $\\bar{Q} = \\frac{1}{k} \\sum_{i \\in \\mathcal{A}} Q(w_i)$, becomes the expected value integral, $\\mathbb{E}[Q] = \\int_{\\Omega} Q(z) f(t,z) \\, dz$.",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              22,
+              23
+            ]
+          ]
+        },
+        "label": "param-m",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "1",
+        "section_name": "Foundations of the Mean-Field Model"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-z_d",
+      "symbol": "z_d",
+      "meaning": "Parameter z_d",
+      "scope": "global",
+      "full_text": "Walker $i$ arrives at state $z$ if: 1. It was originally at some state $z_d = (x_d, v_d)$ 2. It selected companion at state $z_c = (x_c, v_c)$ 3. Cloning occurred: $P_{\\text{clone}}(V[z_d], V[z_c])$",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              456,
+              458
+            ]
+          ]
+        },
+        "label": "param-z_d",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.3.3",
+        "section_name": "Derivation of the Internal Cloning Operator from First Principles"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-xi",
+      "symbol": "xi",
+      "meaning": "Parameter xi",
+      "scope": "global",
+      "full_text": "$$ where $\\xi \\sim \\mathcal{N}(0, I_d)$ is a standard Gaussian random vector.",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              274,
+              275
+            ]
+          ]
+        },
+        "label": "param-xi",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.1",
+        "section_name": "The Underlying Discrete-Time Integrator: BAOAB Splitting"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-w_t",
+      "symbol": "W_t",
+      "meaning": "Parameter W_t",
+      "scope": "global",
+      "full_text": "$$ where $W_t$ is a standard Wiener process and all parameters are as defined in the Euclidean Gas specification. The BAOAB method splits this SDE into analytically solvable parts and composes them symmetrically.",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              253,
+              254
+            ]
+          ]
+        },
+        "label": "param-w_t",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.1",
+        "section_name": "The Underlying Discrete-Time Integrator: BAOAB Splitting"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-z",
+      "symbol": "z",
+      "meaning": "Parameter z",
+      "scope": "global",
+      "full_text": "$$  A key property of this operator with reflecting boundary conditions is that it is **mass-conservative**: when integrated over the domain, the total flux through the boundary vanishes, so $\\int_\\Omega L^\\dagger f \\,\\mathrm{d}z = 0$. :::",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              329,
+              331
+            ]
+          ]
+        },
+        "label": "param-z",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.2",
+        "section_name": "The Kinetic Transport Operator ($L^\\dagger$)"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-u",
+      "symbol": "u",
+      "meaning": "Parameter u",
+      "scope": "global",
+      "full_text": "The first conceptual shift is in how we represent the state of the system. In the N-particle framework, the state is a single point in the high-dimensional configuration space $\\Sigma_N$. In the mean-field limit, we shift our perspective to that of a single, representative particle. The state is no longer a collection of individual points but a continuous probability \"cloud\" on the single-particle phase space $\\Omega$. The mathematical bridge enabling this transition is the replacement of discrete empirical averages with continuous integrals against this probability density. This principle forms the core of our translation dictionary. For example, the empirical average of a quantity $Q(w_i)$ over $k$ alive walkers, $\\bar{Q} = \\frac{1}{k} \\sum_{i \\in \\mathcal{A}} Q(w_i)$, becomes the expected value integral, $\\mathbb{E}[Q] = \\int_{\\Omega} Q(z) f(t,z) \\, dz$.",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              22,
+              23
+            ]
+          ]
+        },
+        "label": "param-u",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "1",
+        "section_name": "Foundations of the Mean-Field Model"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-t_n",
+      "symbol": "t_n",
+      "meaning": "Parameter t_n",
+      "scope": "global",
+      "full_text": "For a single particle with state $(x_n, v_n)$ at time $t_n$, the state $(x_{n+1}, v_{n+1})$ at time $t_{n+1} = t_n + \\tau$ is computed via the following five steps:",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              258,
+              259
+            ]
+          ]
+        },
+        "label": "param-t_n",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.1",
+        "section_name": "The Underlying Discrete-Time Integrator: BAOAB Splitting"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-m_a",
+      "symbol": "m_a",
+      "meaning": "Parameter m_a",
+      "scope": "global",
+      "full_text": "**Positivity Requirement:** The definitions of the statistical moments rely on the normalization by the alive mass $m_a(t)$. These functionals are well-defined for all $t$ such that $m_a(t) > 0$. The global well-posedness of the PDE system requires regularizing the behavior as $m_a(t) \\to 0$.  **Cemetery State ($m_a = 0$) and the Regularization Assumption:**  In the discrete N-particle algorithm, there exists an absorbing \"cemetery state\" where all $N$ walkers have died ($k = 0$). While this state has exponentially low probability for any finite N and initial condition with $k_0 > 0$, it cannot be completely excluded.",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              151,
+              153
+            ]
+          ]
+        },
+        "label": "param-m_a",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "1.2",
+        "section_name": "Mean-Field Measurement Pipeline"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-z_c",
+      "symbol": "z_c",
+      "meaning": "Parameter z_c",
+      "scope": "global",
+      "full_text": "Walker $i$ arrives at state $z$ if: 1. It was originally at some state $z_d = (x_d, v_d)$ 2. It selected companion at state $z_c = (x_c, v_c)$ 3. Cloning occurred: $P_{\\text{clone}}(V[z_d], V[z_c])$ 4. The jitter placed it at $z$: $Q_\\delta(z \\mid z_c)$ where $Q_\\delta(x,v \\mid x_c, v_c) = \\mathcal{N}(x; x_c, \\delta^2 I) \\delta(v - v_c)$",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              457,
+              459
+            ]
+          ]
+        },
+        "label": "param-z_c",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.3.3",
+        "section_name": "Derivation of the Internal Cloning Operator from First Principles"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-sigma_v",
+      "symbol": "sigma_v",
+      "meaning": "Parameter sigma_v",
+      "scope": "global",
+      "full_text": "$$  where $\\sigma_v := \\sqrt{\\Theta/m}$, $\\xi \\sim \\mathcal{N}(0, I_d)$, and $v_{n+1/2}^{(1)} = v + \\frac{\\tau}{2m}F(x)$.  For small $\\tau$, using $e^{-\\gamma\\tau} = 1 - \\gamma\\tau + O(\\tau^2)$ and $1 - e^{-2\\gamma\\tau} = 2\\gamma\\tau + O(\\tau^2)$:",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              887,
+              889
+            ]
+          ]
+        },
+        "label": "param-sigma_v",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.2",
+        "section_name": "Main Theorem: Killing Rate Approximation"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-m_d",
+      "symbol": "m_d",
+      "meaning": "Parameter m_d",
+      "scope": "global",
+      "full_text": "*   **Coupled Reaction-Diffusion Structure:** The system has the form of a coupled reaction-diffusion system. The PDE for $f$ has the form of a reaction-diffusion PDE with non-local reaction terms. The kinetic operator $L^\\dagger$ provides the diffusion (with reflecting boundaries), while the killing $-c(z)f$, revival $B[f, m_d]$, and cloning $S[f]$ terms provide the reactions. The ODE for $m_d$ describes the evolution of the dead reservoir. This structure is well-studied in PDE theory and enables the application of standard analytical techniques for coupled systems.  *   **Total Mass Conservation with Dynamic Equilibrium:** As proven in Theorem 3.3, the coupled system conserves the total population $m_a(t) + m_d(t) = 1$. However, unlike a model with instantaneous revival, the alive and dead masses can exchange and evolve towards a non-trivial **stationary state** where $\\mathrm{d}/\\mathrm{d}t\\, m_a = 0$ and $\\mathrm{d}/\\mathrm{d}t\\, m_d = 0$. At this stationary state, the killing and revival rates are balanced: $k_{\\text{killed}}[f_\\infty] = \\lambda_{\\text{revive}} m_{d,\\infty}$. This faithfully represents the discrete algorithm's behavior where the number of alive walkers $k$ fluctuates and converges to a stationary distribution.  ### 4.2. Well-Posedness and Future Work",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              729,
+              731
+            ]
+          ]
+        },
+        "label": "param-m_d",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.1",
+        "section_name": "Key Properties of the Coupled System"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-f",
+      "symbol": "F",
+      "meaning": "Parameter F",
+      "scope": "global",
+      "full_text": "$$ \\boxed{ \\mathcal{L}_{\\text{kin}} f = \\sum_{i\\in\\mathcal A}\\left[ v_i\\cdot\\nabla_{x_i} f + \\left(m^{-1}F(x_i)-\\gamma_{\\mathrm{fric}}(v_i-u(x_i))\\right)\\cdot\\nabla_{v_i} f + \\tfrac{\\sigma_v^2}{2}\\,\\Delta_{v_i} f\\right] } $$",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              325,
+              327
+            ]
+          ]
+        },
+        "label": "param-f",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.2",
+        "section_name": "The Kinetic Transport Operator ($L^\\dagger$)"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-x_n",
+      "symbol": "x_n",
+      "meaning": "Parameter x_n",
+      "scope": "global",
+      "full_text": "For a single particle with state $(x_n, v_n)$ at time $t_n$, the state $(x_{n+1}, v_{n+1})$ at time $t_{n+1} = t_n + \\tau$ is computed via the following five steps:",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              258,
+              259
+            ]
+          ]
+        },
+        "label": "param-x_n",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.1",
+        "section_name": "The Underlying Discrete-Time Integrator: BAOAB Splitting"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-f",
+      "symbol": "f",
+      "meaning": "Parameter f",
+      "scope": "global",
+      "full_text": "$$ \\boxed{ \\mathcal{L}_{\\text{kin}} f = \\sum_{i\\in\\mathcal A}\\left[ v_i\\cdot\\nabla_{x_i} f + \\left(m^{-1}F(x_i)-\\gamma_{\\mathrm{fric}}(v_i-u(x_i))\\right)\\cdot\\nabla_{v_i} f + \\tfrac{\\sigma_v^2}{2}\\,\\Delta_{v_i} f\\right] } $$",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              325,
+              327
+            ]
+          ]
+        },
+        "label": "param-f",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.2",
+        "section_name": "The Kinetic Transport Operator ($L^\\dagger$)"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-p_clone",
+      "symbol": "P_clone",
+      "meaning": "Parameter P_clone",
+      "scope": "global",
+      "full_text": "# The Mean-Field Limit and Continuous Forward Equation**",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "label": "param-p_clone",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": null,
+        "section_name": null
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-v_n",
+      "symbol": "v_n",
+      "meaning": "Parameter v_n",
+      "scope": "global",
+      "full_text": "$$  where $C_\\sigma = \\frac{1}{4}\\sigma_v^2 \\cdot 2\\gamma = \\frac{\\gamma\\Theta}{2m}$ and $v_n := v \\cdot n_x(x)$ is the outward normal velocity.  The exit probability is:",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              924,
+              926
+            ]
+          ]
+        },
+        "label": "param-v_n",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.2",
+        "section_name": "Main Theorem: Killing Rate Approximation"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-x_valid",
+      "symbol": "X_valid",
+      "meaning": "Parameter X_valid",
+      "scope": "global",
+      "full_text": "# The Mean-Field Limit and Continuous Forward Equation**",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "label": "param-x_valid",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": null,
+        "section_name": null
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-s",
+      "symbol": "S",
+      "meaning": "Parameter S",
+      "scope": "global",
+      "full_text": "Let $f(t, \\cdot)$ be the phase-space density at time $t$, with total alive mass $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$. The statistical moments required for the standardization pipeline are defined as the following **functionals** of $f$. The notation $\\mu[f]$ emphasizes that these are numbers that depend on the entire *shape* of the function $f$.  The moments are computed with respect to the **normalized density of the alive population**, which is $f(t,z) / m_a(t)$. This normalization is critical for ensuring the mean-field model is a faithful limit of the N-particle system, where statistics are computed by averaging over the $k$ alive walkers.  *   **Reward Moments:** The mean reward, $\\mu_R[f]$, is computed as the expected value over the normalized alive population:",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              122,
+              124
+            ]
+          ]
+        },
+        "label": "param-s",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "1.2",
+        "section_name": "Mean-Field Measurement Pipeline"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-omega",
+      "symbol": "Omega",
+      "meaning": "Parameter Omega",
+      "scope": "global",
+      "full_text": "$$ \\Omega := X_{\\text{valid}} \\times V_{\\text{alg}} $$",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              48,
+              50
+            ]
+          ]
+        },
+        "label": "param-omega",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "1.1",
+        "section_name": "Phase Space and Probability Density"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-gamma_fric",
+      "symbol": "gamma_fric",
+      "meaning": "Friction coefficient",
+      "scope": "global",
+      "full_text": "*   **(H2)** The reward potential $R_{\\text{pos}}$ is $C^2$, making the force field $F$ globally Lipschitz. *   **(H3)** The flow field $u$ is $C^1$, and all physical parameters ($m, \\gamma_{\\text{fric}}, \\Theta, \\sigma_x$) are finite and positive. *   **(H4)** All algorithmic functions (e.g., the rescale function, companion selection) are measurable and satisfy the continuity properties established in the abstract framework.",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              741,
+              742
+            ]
+          ]
+        },
+        "label": "param-gamma_fric",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.2",
+        "section_name": "Well-Posedness and Future Work"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-q_delta",
+      "symbol": "Q_delta",
+      "meaning": "Parameter Q_delta",
+      "scope": "global",
+      "full_text": "# The Mean-Field Limit and Continuous Forward Equation**",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "label": "param-q_delta",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": null,
+        "section_name": null
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-tau",
+      "symbol": "tau",
+      "meaning": "Time step size",
+      "scope": "global",
+      "full_text": "$$  We are interested in the regime where $\\tau \\sim \\tau_* := d(x)/v_n$ (near the ballistic crossing time). Let $\\tau = \\tau_*(1 + \\epsilon)$ where $\\epsilon$ is a small parameter. Then:  $$",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              988,
+              990
+            ]
+          ]
+        },
+        "label": "param-tau",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.2",
+        "section_name": "Main Theorem: Killing Rate Approximation"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3_enriched.json",
+        "section_id": "## 2. The Continuous Forward Generator ($\\mathcal{L}_{\\text{FG}}$)"
+      }
+    },
+    {
+      "label": "param-j_x",
+      "symbol": "J_x",
+      "meaning": "Parameter J_x",
+      "scope": "global",
+      "full_text": "Let $L$ be the backward kinetic generator from Section 2.2. The **Transport Operator**, denoted $L^\\dagger$, is its formal $L^2$-adjoint, which acts on the density $f$. It can be written in conservative form as the negative divergence of a **probability flux vector** $J = (J_x, J_v)$:",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              552,
+              553
+            ]
+          ]
+        },
+        "label": "param-j_x",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "3.1",
+        "section_name": "The Transport Operator ($L^\\dagger$) is Mass-Conservative"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 3. The Mass-Conserving Forward Equation (PDE)"
+      }
+    },
+    {
+      "label": "param-l",
+      "symbol": "L",
+      "meaning": "dynamic",
+      "scope": "global",
+      "full_text": "### 1.3. Density-Dependent Fitness Potential  The mean-field statistical moments derived in the previous section are not an end in themselves; they are the crucial inputs for constructing the central engine of the continuous model: the **Mean-Field Fitness Potential**. Unlike in simpler physical systems where potentials are fixed external fields (like gravity), this potential is dynamic. Its shape at any moment is determined by the shape of the swarm's own probability density, $f$. This creates the critical feedback loop that governs the system's evolution.  We construct this potential in two steps, mirroring the discrete algorithm. First, we define the mean-field Z-scores, which standardize the raw measurements using the global, density-dependent moments. Second, we combine these scores to form the final, non-linear fitness potential.",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              190,
+              192
+            ]
+          ]
+        },
+        "label": "param-l",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "1.3",
+        "section_name": "Density-Dependent Fitness Potential"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 3. The Mass-Conserving Forward Equation (PDE)"
+      }
+    },
+    {
+      "label": "param-j_v",
+      "symbol": "J_v",
+      "meaning": "Parameter J_v",
+      "scope": "global",
+      "full_text": "Let $L$ be the backward kinetic generator from Section 2.2. The **Transport Operator**, denoted $L^\\dagger$, is its formal $L^2$-adjoint, which acts on the density $f$. It can be written in conservative form as the negative divergence of a **probability flux vector** $J = (J_x, J_v)$:",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              552,
+              553
+            ]
+          ]
+        },
+        "label": "param-j_v",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "3.1",
+        "section_name": "The Transport Operator ($L^\\dagger$) is Mass-Conservative"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 3. The Mass-Conserving Forward Equation (PDE)"
+      }
+    },
+    {
+      "label": "param-l-dagger",
+      "symbol": "L^dagger",
+      "meaning": "Parameter L^dagger",
+      "scope": "global",
+      "full_text": "",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "label": "param-l-dagger",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": null,
+        "section_name": null
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 3. The Mass-Conserving Forward Equation (PDE)"
+      }
+    },
+    {
+      "label": "param-d_v",
+      "symbol": "D_v",
+      "meaning": "Parameter D_v",
+      "scope": "global",
+      "full_text": "*   The **A-steps** (position drifts) correspond to the advection in position space, represented by the term $\\nabla_x \\cdot (v f)$. *   The **stochastic part of the O-step** corresponds to the diffusion in velocity space, represented by the term $\\nabla_v \\cdot (D_v \\nabla_v f)$.",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              297,
+              298
+            ]
+          ]
+        },
+        "label": "param-d_v",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.1",
+        "section_name": "The Underlying Discrete-Time Integrator: BAOAB Splitting"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 3. The Mass-Conserving Forward Equation (PDE)"
+      }
+    },
+    {
+      "label": "param-a_v",
+      "symbol": "A_v",
+      "meaning": "Parameter A_v",
+      "scope": "global",
+      "full_text": "*   The **B-steps** (force kicks) and the drift part of the **O-step** correspond to the advection in velocity space, represented by the term $\\nabla_v \\cdot (A_v f)$. *   The **A-steps** (position drifts) correspond to the advection in position space, represented by the term $\\nabla_x \\cdot (v f)$.",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              295,
+              296
+            ]
+          ]
+        },
+        "label": "param-a_v",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.1",
+        "section_name": "The Underlying Discrete-Time Integrator: BAOAB Splitting"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 3. The Mass-Conserving Forward Equation (PDE)"
+      }
+    },
+    {
+      "label": "param-j",
+      "symbol": "J",
+      "meaning": "Parameter J",
+      "scope": "global",
+      "full_text": "$$ \\begin{aligned} P_{\\text{loss}}(z, \\tau) &= \\sum_{j=1}^k \\frac{1}{k} P_{\\text{clone}}(V[z], V[z_j]) \\cdot \\tau + o(\\tau) \\\\ &= \\int_{\\Omega} P_{\\text{clone}}(V[z], V[z']) \\rho(t, z') \\,\\mathrm{d}z' \\cdot \\tau + o(\\tau) \\end{aligned}",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              442,
+              444
+            ]
+          ]
+        },
+        "label": "param-j",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.3.3",
+        "section_name": "Derivation of the Internal Cloning Operator from First Principles"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 3. The Mass-Conserving Forward Equation (PDE)"
+      }
+    },
+    {
+      "label": "param-f",
+      "symbol": "f",
+      "meaning": "Parameter f",
+      "scope": "global",
+      "full_text": "$$ \\boxed{ \\mathcal{L}_{\\text{kin}} f = \\sum_{i\\in\\mathcal A}\\left[ v_i\\cdot\\nabla_{x_i} f + \\left(m^{-1}F(x_i)-\\gamma_{\\mathrm{fric}}(v_i-u(x_i))\\right)\\cdot\\nabla_{v_i} f + \\tfrac{\\sigma_v^2}{2}\\,\\Delta_{v_i} f\\right] } $$",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              325,
+              327
+            ]
+          ]
+        },
+        "label": "param-f",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "2.2",
+        "section_name": "The Kinetic Transport Operator ($L^\\dagger$)"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 3. The Mass-Conserving Forward Equation (PDE)"
+      }
+    },
+    {
+      "label": "param-d_x",
+      "symbol": "D_x",
+      "meaning": "Parameter D_x",
+      "scope": "global",
+      "full_text": "where the components of the flux are: *   **Positional Flux ($J_x$):** $J_x[f] := v f - D_x \\nabla_x f$ (Advection + Fickian Diffusion) *   **Velocity Flux ($J_v$):** $J_v[f] := A_v f - D_v \\nabla_v f$ (Drift + Fickian Diffusion)",
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              559,
+              560
+            ]
+          ]
+        },
+        "label": "param-d_x",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "3.1",
+        "section_name": "The Transport Operator ($L^\\dagger$) is Mass-Conservative"
+      },
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 3. The Mass-Conserving Forward Equation (PDE)"
+      }
+    }
+  ]
+}

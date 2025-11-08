@@ -2308,6 +2308,22 @@ These parameters enforce **physical constraints**:
 **Effect:** Ensure swarm remains in valid domain; primarily a safety parameter.
 :::
 
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Parameter Classification](proofs/proof_20251025_100133_prop_parameter_classification.md)
+
+**Includes:**
+- Rigorous derivation of 5 parameter classes from component drift inequalities
+- Complete first-order vs second-order effect analysis
+- Explicit formulas for each parameter's influence on rates ($\kappa_x, \kappa_v, \kappa_W, \kappa_b$) and equilibrium constants ($C_x, C_v, C_W, C_b$)
+- Null space dimension calculation: 12 parameters - 4 rates = 8-dimensional degeneracy
+- Functional class characterization: direct rate controllers, indirect modifiers, geometric structure, equilibrium-only, safety constraints
+- Practical guidance for parameter selection within each class
+:::
+
 **Key insight:** Classes A and C control convergence rates (4 effective control dimensions), while Classes B, D, E provide additional degrees of freedom for optimizing secondary objectives (cost, robustness, exploration) within the 8-dimensional null space.
 
 ### 6.3. Construction of the Sensitivity Matrices
@@ -2466,6 +2482,23 @@ $$
 - **Column 4 (λ_alg), Column 5 (ε_c):** Moderate effect on $\kappa_x$ via pairing quality
 - **Column 11 (κ_wall):** Moderate effect on $\kappa_b$ (0.4)
 - **Columns 2, 3, 6, 8, 10, 12:** Zero entries (Class D, E parameters don't affect rates directly)
+:::
+
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Explicit Rate Sensitivity Matrix](proofs/proof_20251025_101429_thm_explicit_rate_sensitivity.md)
+
+**Includes:**
+- Rigorous row-by-row derivation of all 48 matrix entries (4 rates × 12 parameters)
+- Complete log-derivative calculations for each $\kappa_i$ with respect to each parameter
+- Piecewise analysis for boundary rate $\kappa_b$ (cloning-limited vs kinetic-limited regimes)
+- Balanced operating point evaluation: $\gamma \approx \lambda \approx \sqrt{\lambda_{\min}}$
+- Explicit matrix at typical parameters with numerical entries
+- Zero-entry justification for Class D/E parameters (equilibrium-only, no rate effect)
+- Physical interpretation of dominant sensitivities (λ→κ_x, γ→κ_v patterns)
 :::
 
 #### 6.3.2. Equilibrium Sensitivity Matrix $M_C$
@@ -2630,6 +2663,23 @@ v_{10}, v_{11}, v_{12} \approx \text{combinations of } \epsilon_d, \text{ cross-
 $$
 
 **Physical meaning of null space:** Parameters that do **not affect convergence rates**, only equilibrium widths, computational cost, or safety margins.
+:::
+
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: SVD of Rate Sensitivity Matrix](proofs/proof_20251025_101437_thm_svd_rate_matrix.md)
+
+**Includes:**
+- Rigorous SVD computation: $M_\kappa = U \Sigma V^T$ with explicit matrices
+- Complete singular value calculation: $\sigma_1 \approx 1.58, \sigma_2 \approx 1.12, \sigma_3 \approx 0.76, \sigma_4 \approx 0.29$
+- Detailed derivation of 4 principal modes (balanced kinetic, boundary safety, geometric fine-tuning, timestep penalty)
+- Physical interpretation of each right singular vector $v_i$ as parameter space control direction
+- 8-dimensional null space characterization: $\{\sigma_x, \alpha_{\text{rest}}, \sigma_v, N, d_{\text{safe}}, \ldots\}$
+- Optimal parameter adjustment strategies: move primarily along $v_1$ (most powerful), use $v_5$-$v_{12}$ for secondary objectives
+- Numerical verification of SVD accuracy and stability
 :::
 
 **Proof sketch:** Compute $M_\kappa^T M_\kappa \in \mathbb{R}^{12 \times 12}$, find eigenvalues and eigenvectors. The zero eigenvalues correspond to null space. The SVD follows from the spectral theorem.

@@ -31,14 +31,6 @@ import holoviews as hv
 import networkx as nx
 import panel as pn
 
-from fragile.shaolin.graph import (
-    create_graphviz_layout,
-    edges_as_df,
-    find_closest_point,
-    InteractiveGraph,
-    nodes_as_df,
-)
-
 # Import directly from submodules to avoid circular import with sympy
 # DO NOT import from fragile.mathster (top-level __init__.py triggers sympy import)
 from mathster.core.math_types import (
@@ -57,6 +49,13 @@ from mathster.core.proof_system import (
 from mathster.registry.registry import MathematicalRegistry
 from mathster.registry.storage import load_registry_from_directory
 from mathster.reports import render_enriched_to_markdown
+from fragile.shaolin.graph import (
+    create_graphviz_layout,
+    edges_as_df,
+    find_closest_point,
+    InteractiveGraph,
+    nodes_as_df,
+)
 
 
 hv.extension("bokeh")

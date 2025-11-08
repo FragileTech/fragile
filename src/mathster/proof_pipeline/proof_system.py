@@ -33,6 +33,8 @@ if TYPE_CHECKING:
     from mathster.proof_pipeline.pipeline_types import TheoremBox
 
 
+
+
 # =============================================================================
 # PROPERTY-LEVEL SPECIFICATIONS
 # =============================================================================

@@ -650,6 +650,24 @@ where:
 The total alive mass is $m_a(t) = \int_\Omega f(t,z)\,\mathrm{d}z$, and the system conserves the total population: $m_a(t) + m_d(t) = 1$ for all $t$.
 :::
 
+:::{dropdown} 📖 **Complete Rigorous Proof**
+:icon: book
+:color: info
+
+For the full publication-ready proof with detailed verification, see:
+[Complete Proof: Mean-Field Equations for Euclidean Gas](proofs/proof_20251106_iteration2_thm_mean_field_equation.md)
+
+**Includes:**
+- Rigorous derivation from particle system to mean-field limit (N→∞)
+- Complete operator assembly: kinetic transport $L^\dagger f$, interior killing $c(z)f$, revival $B[f,m_d]$, internal cloning $S[f]$
+- Coupled PDE-ODE system derivation: $\partial_t f = L^\dagger f - c(z)f + B[f, m_d] + S[f]$ and $\frac{d}{dt}m_d = \int c(z)f\,dz - \lambda_{\text{rev}} m_d$
+- Total mass conservation proof: $m_a(t) + m_d(t) = 1$ for all $t$
+- Boundary condition treatment (reflecting boundaries via $L^\dagger$)
+- Revival operator normalization: $B[f,m_d] = \lambda_{\text{revive}} m_d(t) f/m_a$
+- Explicit drift field $A(z)$ and diffusion tensor $\mathsf{D}$ from Langevin dynamics
+- Dual-review validation (Iteration 2 with post-review corrections)
+:::
+
 The primary property of this coupled system is that it conserves **total population mass** while allowing the alive and dead populations to exchange mass and reach a dynamic equilibrium.
 
 :::{prf:theorem} Total Mass Conservation and Population Dynamics
@@ -1336,9 +1354,13 @@ $$
 where $f$ solves the mean-field PDE (Equations [](#eq-mean-field-pde-main) and [](#eq-dead-mass-ode)).
 :::
 
-**Proof** (Rigorous Sketch via Propagation of Chaos):
+:::{note}
+**Rigorous Proof**: A complete, publication-ready proof of this theorem with full operator-theoretic and functional-analytic details is developed in [08_propagation_chaos.md](08_propagation_chaos.md). The proof uses a constructive tightness-identification-uniqueness argument with hypoelliptic regularity theory. The proof sketch below provides intuition for the key steps.
+:::
 
-The proof follows the standard propagation of chaos methodology for exchangeable particle systems, adapted to the Fragile Gas structure with cloning/killing operators.
+**Informal Proof Sketch** (Propagation of Chaos Methodology):
+
+The rigorous proof (see [08_propagation_chaos.md](08_propagation_chaos.md)) follows the standard propagation of chaos methodology for exchangeable particle systems, adapted to the Fragile Gas structure with cloning/killing operators. The key steps are:
 
 **Step 1 (Chaoticity of Initial Data):**
 
@@ -1424,10 +1446,15 @@ $$
 
 with the coupling condition $\tau = O(N^{-\alpha})$ for $\alpha > 0$ ensuring both errors vanish as N → ∞.
 
-**References for Rigorous Details:**
-- Sznitman (1991): "Topics in propagation of chaos"
-- Jabin & Wang (2016): "Mean-field limit for stochastic particle systems" (for quantitative rates)
-- Mischler & Mouhot (2013): "Kac's program in kinetic theory" (for spectral gap methods)
+:::{important}
+**Complete Rigorous Treatment**: This informal sketch outlines the key ideas. For complete mathematical rigor including:
+- Tightness via N-uniform Foster-Lyapunov bounds
+- Identification via Law of Large Numbers for empirical measures
+- Uniqueness via hypoelliptic regularity and contraction mapping
+- Explicit constants and all technical details
 
-This completes the rigorous foundation for the mean-field model.
+see the dedicated proof in [08_propagation_chaos.md](08_propagation_chaos.md), which provides an Annals of Mathematics-level treatment suitable for publication.
+:::
+
+This completes the informal foundation for the mean-field model. The rigorous justification follows in the next chapter.
 :::

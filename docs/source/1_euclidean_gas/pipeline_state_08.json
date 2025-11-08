@@ -1,0 +1,58 @@
+{
+  "version": "1.0",
+  "mode": "single_document",
+  "target_path": "docs/source/1_euclidean_gas/08_propagation_chaos.md",
+  "start_time": "2025-11-07T00:00:00",
+  "last_update": "2025-11-07T00:00:00",
+  "status": "initializing",
+  "execution_plan": {
+    "total_theorems": 26,
+    "needs_proof": 1,
+    "has_complete_proof": 24,
+    "citations_only": 1,
+    "execution_order": [
+      "lem-exchangeability"
+    ],
+    "estimated_time_hours": 2.5
+  },
+  "theorems": [
+    {
+      "label": "lem-exchangeability",
+      "type": "lemma",
+      "line_number": 216,
+      "title": "Exchangeability of the N-Particle QSD",
+      "has_proof": true,
+      "proof_complete": false,
+      "proof_length_lines": 7,
+      "status": "pending",
+      "needs_expansion": true,
+      "reason": "Brief proof needs expansion for publication rigor",
+      "dependencies": [],
+      "attempts": 0
+    },
+    {
+      "label": "thm-uniqueness-hormander",
+      "type": "theorem",
+      "line_number": 1448,
+      "title": "Hörmander's Theorem for Kinetic Operators",
+      "has_proof": true,
+      "proof_complete": true,
+      "status": "citation_only",
+      "needs_expansion": false,
+      "reason": "Literature citation - no proof needed",
+      "note": "Cites Hörmander (1967) - famous result from literature"
+    }
+  ],
+  "statistics": {
+    "total_theorems": 26,
+    "completed": 24,
+    "needs_expansion": 1,
+    "citations": 1,
+    "pending": 1,
+    "failed": 0
+  },
+  "current_theorem": null,
+  "errors": [],
+  "warnings": [],
+  "resume_instructions": "Run '/math_pipeline docs/source/1_euclidean_gas/08_propagation_chaos.md' to resume"
+}

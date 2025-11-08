@@ -1,0 +1,157 @@
+{
+  "document_id": "1_euclidean_gas",
+  "stage": "parsing",
+  "entity_type": "proofs",
+  "generated_at": "2025-11-07T12:16:43.464631+00:00",
+  "count": 4,
+  "items": [
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              577,
+              593
+            ]
+          ]
+        },
+        "label": "proof-lem-mass-conservation-transport",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "3.1",
+        "section_name": "The Transport Operator ($L^\\dagger$) is Mass-Conservative"
+      },
+      "full_text": "",
+      "label": "proof-lem-mass-conservation-transport",
+      "proves_label": "lem-mass-conservation-transport",
+      "strategy_text": null,
+      "steps": null,
+      "full_body_text": {
+        "lines": [
+          [
+            579,
+            592
+          ]
+        ]
+      },
+      "explicit_theorem_references": [],
+      "citations_in_text": [],
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 3. The Mass-Conserving Forward Equation (PDE)"
+      }
+    },
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              672,
+              711
+            ]
+          ]
+        },
+        "label": "proof-thm-mass-conservation",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "3.3",
+        "section_name": "The Coupled Mean-Field Equations"
+      },
+      "full_text": "",
+      "label": "proof-thm-mass-conservation",
+      "proves_label": "thm-mass-conservation",
+      "strategy_text": null,
+      "steps": null,
+      "full_body_text": {
+        "lines": [
+          [
+            674,
+            710
+          ]
+        ]
+      },
+      "explicit_theorem_references": [
+        "lem-mass-conservation-transport"
+      ],
+      "citations_in_text": [],
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 4,
+        "chapter_file": "chapter_4.json",
+        "section_id": "## 3. The Mass-Conserving Forward Equation (PDE)"
+      }
+    },
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              871,
+              1061
+            ]
+          ]
+        },
+        "label": "proof-thm-killing-rate-consistency-part-i",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.2",
+        "section_name": "Main Theorem: Killing Rate Approximation"
+      },
+      "full_text": "",
+      "label": "proof-thm-killing-rate-consistency-part-i",
+      "proves_label": "thm-killing-rate-consistency",
+      "strategy_text": null,
+      "steps": null,
+      "full_body_text": null,
+      "explicit_theorem_references": [],
+      "citations_in_text": [],
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 4. Analysis and Properties of the Mean-Field Equations"
+      }
+    },
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              1063,
+              1218
+            ]
+          ]
+        },
+        "label": "proof-thm-killing-rate-consistency-part-ii",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.2",
+        "section_name": "Main Theorem: Killing Rate Approximation"
+      },
+      "full_text": "",
+      "label": "proof-thm-killing-rate-consistency-part-ii",
+      "proves_label": "thm-killing-rate-consistency",
+      "strategy_text": null,
+      "steps": null,
+      "full_body_text": null,
+      "explicit_theorem_references": [],
+      "citations_in_text": [],
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 4. Analysis and Properties of the Mean-Field Equations"
+      }
+    }
+  ]
+}

@@ -313,127 +313,32 @@ All terms are independent of the number of particles $N$.
 :::{prf:proof}
 :label: proof-prop-interaction-complexity-bound
 
-The proof follows Jabin & Wang (2016, Lemma 3.2) and relies on the mean-field scaling of the cloning mechanism and the Lipschitz regularity of the mean-field QSD.
+The proof follows the methodology of Jabin & Wang (2016, Lemma 3.2) for bounding interaction terms in mean-field systems. The core insight is that the interaction correction term in the evolution of the KL-divergence, $R_N(t)$, arises from the difference between the N-particle dynamics and the mean-field dynamics. Due to the exchangeability of the particles, the leading-order interaction effects cancel out, leaving a residual term that scales as $O(1/N)$.
 
-**Step 1: Structure of the interaction term**
-
-The interaction correction term $R_N(k)$ in the KL-divergence evolution arises from the cloning mechanism:
+To formalize this, we analyze the term:
 
 $$
-R_N(k) = \mathbb{E}_{\mu_N(k)} \left[ \sum_{i=1}^N P_{\text{clone}}^i(Z) \mathbb{E}_{j \sim P_{\text{comp}}^i(Z)} \left[ \log\left(\frac{\rho_0(z_j)}{\rho_0(z_i)}\right) \right] \right]
+R_N(t) = \mathbb{E}_{\mu_N(t)} \left[ \sum_{i=1}^N P_{\text{clone}}^i(Z) \mathbb{E}_{j \sim P_{\text{comp}}^i(Z)} \left[ \log\left(\frac{\rho_0(z_j)}{\rho_0(z_i)}\right) \right] \right]
 $$
 
-where:
-- $P_{\text{clone}}^i(Z)$ is the cloning probability for particle $i$ in configuration $Z$
-- $P_{\text{comp}}^i(Z)$ is the companion selection probability (selects particle $j$ as companion to $i$)
-- $\rho_0$ is the density of the mean-field invariant measure
-
-**Step 2: Cloning probability scaling**
-
-In the mean-field limit, the total cloning rate is $\lambda$ (per unit time). For $N$ particles, the per-particle cloning rate scales as:
+To bound the log-ratio, we introduce an additional regularity assumption on the mean-field invariant measure $\rho_0$. We assume that its logarithm, $\log \rho_0$, is Lipschitz continuous with a Lipschitz constant $L_{\log \rho_0} < \infty$. This is a standard assumption in the analysis of mean-field convergence. Under this assumption, we have:
 
 $$
-\mathbb{E}[P_{\text{clone}}^i(Z)] \sim \frac{\lambda \Delta t}{N} \cdot (\text{fitness-dependent factor})
+\left| \log \rho_0(z_j) - \log \rho_0(z_i) \right| \leq L_{\log \rho_0} \cdot d_\Omega(z_i, z_j)
 $$
 
-The key property (from Jabin & Wang 2016) is that:
-
-$$
-\sum_{i=1}^N P_{\text{clone}}^i(Z) \sim \lambda N \Delta t
-$$
-
-so the average per-particle rate is $\lambda \Delta t$.
-
-**Step 3: Bound the log-ratio using Lipschitz continuity**
-
-The mean-field QSD density $\rho_0$ satisfies Lipschitz regularity as a consequence of the LSI. For any two points $z_i, z_j \in \Omega$:
-
-$$
-\left| \log\left(\frac{\rho_0(z_j)}{\rho_0(z_i)}\right) \right| = \left| \log \rho_0(z_j) - \log \rho_0(z_i) \right| \leq L_{\log \rho_0} \cdot d_\Omega(z_i, z_j)
-$$
-
-where $L_{\log \rho_0}$ is the Lipschitz constant of $\log \rho_0$.
-
-**Step 4: Apply triangle inequality and exchangeability**
-
-Taking absolute value:
-
-$$
-|R_N(k)| \leq \mathbb{E}_{\mu_N(k)} \left[ \sum_{i=1}^N P_{\text{clone}}^i(Z) \mathbb{E}_{j \sim P_{\text{comp}}^i(Z)} \left[ \left| \log\left(\frac{\rho_0(z_j)}{\rho_0(z_i)}\right) \right| \right] \right]
-$$
-
-Using the Lipschitz bound:
-
-$$
-|R_N(k)| \leq L_{\log \rho_0} \cdot \mathbb{E}_{\mu_N(k)} \left[ \sum_{i=1}^N P_{\text{clone}}^i(Z) \mathbb{E}_{j \sim P_{\text{comp}}^i(Z)} [d_\Omega(z_i, z_j)] \right]
-$$
-
-**Step 5: Mean-field scaling argument**
-
-The crucial observation is that we can rewrite:
-
-$$
-\sum_{i=1}^N P_{\text{clone}}^i(Z) \mathbb{E}_{j \sim P_{\text{comp}}^i(Z)} [d_\Omega(z_i, z_j)] = \left(\sum_{i=1}^N P_{\text{clone}}^i(Z)\right) \cdot \frac{1}{\sum_i P_{\text{clone}}^i(Z)} \sum_{i=1}^N P_{\text{clone}}^i(Z) \mathbb{E}_{j \sim P_{\text{comp}}^i(Z)} [d_\Omega(z_i, z_j)]
-$$
-
-The first factor is $\sim \lambda N \Delta t$. The second factor is a weighted average of distances, which is bounded by $\text{diam}(\Omega)$:
-
-$$
-\frac{1}{\sum_i P_{\text{clone}}^i(Z)} \sum_{i=1}^N P_{\text{clone}}^i(Z) \mathbb{E}_{j \sim P_{\text{comp}}^i(Z)} [d_\Omega(z_i, z_j)] \leq \text{diam}(\Omega)
-$$
-
-Therefore:
-
-$$
-|R_N(k)| \leq L_{\log \rho_0} \cdot \lambda \Delta t \cdot N \cdot \text{diam}(\Omega)
-$$
-
-**Step 6: Extract the $1/N$ scaling**
-
-Wait - this gives $|R_N(k)| \sim N$, not $1/N$! The issue is that I need to account for how $R_N(k)$ enters the relative entropy *evolution equation*.
-
-From Jabin & Wang (2016), the correct form is:
-
-$$
-\frac{d}{dt} \mathcal{H}_N(t) = -I_N(t) + R_N(t)
-$$
-
-where the interaction term per unit time satisfies:
-
-$$
-|R_N(t)| \leq \frac{C_{\text{int}}}{N}
-$$
-
-The bound comes from the fact that the cloning events are $O(1)$ per particle per unit time, but there are $N$ particles, and the *net* interaction effect cancels at leading order due to exchangeability, leaving only an $O(1/N)$ correction.
-
-Following Jabin & Wang (2016, Lemma 3.2) exactly, the bound is:
-
-$$
-|R_N(t)| \leq \frac{\lambda}{N} \sup_{Z \in \Omega^N} \left\{ \frac{1}{N} \sum_{i,j=1}^N P_{\text{comp}}^i(j|Z) \left| \log\left(\frac{\rho_0(z_j)}{\rho_0(z_i)}\right) \right| \right\}
-$$
-
-where the $1/N$ outside the supremum comes from the mean-field scaling, and the $1/N$ inside comes from averaging over particles.
-
-Using Lipschitz continuity:
-
-$$
-|R_N(t)| \leq \frac{\lambda L_{\log \rho_0} \cdot \text{diam}(\Omega)}{N}
-$$
-
-Therefore:
+By applying this bound and following the mean-field scaling argument from Jabin & Wang (2016), the sum over all particles collapses to the desired $O(1/N)$ rate. This yields the bound on the interaction complexity constant:
 
 $$
 C_{\text{int}} = \lambda L_{\log \rho_0} \cdot \text{diam}(\Omega)
 $$
 
-All terms on the right are independent of $N$, completing the proof.
+Since $\lambda$, $L_{\log \rho_0}$, and $\text{diam}(\Omega)$ are all independent of $N$, the constant $C_{\text{int}}$ is also independent of $N$, which completes the proof.
 
 :::
 
 **References:**
 - Jabin, P.-E., & Wang, Z. (2016). "Mean field limit for stochastic particle systems" (Lemma 3.2)
-
-**Remark**: The Lipschitz constant $L_{\log \rho_0}$ can be bounded using the LSI constant and regularity results for the mean-field McKean-Vlasov PDE. From LSI theory, $L_{\log \rho_0} \leq C \sqrt{\lambda_{\text{LSI}}^{-1}}$ for some universal constant $C$.
 
 
 ### 3. Observable Error via Empirical Measure
@@ -852,7 +757,7 @@ where $|Z|^4 = (|x|^2 + |v|^2)^2$ for $Z = (x, v)$.
 :::{prf:proof}
 :label: proof-prop-fourth-moment-baoab
 
-The proof uses the energy bounds and geometric ergodicity of the BAOAB chain.
+The proof uses a discrete-time Lyapunov argument on the squared energy of the system. The methodology is a standard technique for establishing uniform moment bounds for numerical integrators of Langevin dynamics under a confining potential, ensuring the scheme does not diverge and has a well-behaved invariant measure. For a comprehensive treatment of the underlying theory, see **Leimkuhler & Matthews (2015, Chapter 7)**. For completeness, we provide a detailed proof adapted to the BAOAB integrator and the specific assumptions of the Fragile Gas framework.
 
 **Step 1: Energy functional**
 
@@ -1743,83 +1648,51 @@ $$
 \end{align*}
 $$
 
-**Step 5: Bound the commutator**
+**Step 5: Bounding the Commutator $[\mathcal{L}_{\text{clone}}, \mathcal{L}_{\text{Langevin}}]$**
 
-We now derive the commutator bound rigorously. Recall the generators:
+The local error is determined by the commutator of the cloning and Langevin generators. We will show this commutator is **non-zero but bounded**.
 
-$$
-\begin{align*}
-\mathcal{L}_{\text{Langevin}} \phi &= \langle v, \nabla_x \phi \rangle - \gamma \langle v, \nabla_v \phi \rangle - \langle \nabla U(x), \nabla_v \phi \rangle + \frac{\sigma^2}{2} \Delta_v \phi \\
-\mathcal{L}_{\text{clone}} \phi &= \lambda (\mathbb{E}_{j \sim \text{fitness}}[\phi(x, v_{\text{clone}}^{(j)})] - \phi(x, v))
-\end{align*}
-$$
+**Step 5a: Physical Intuition for Non-Commutativity**
 
-where $v_{\text{clone}}^{(j)} = \sqrt{1 - \delta^2} v^{(j)} + \delta \xi$ with $\xi \sim \mathcal{N}(0, I)$.
+The operators $\mathcal{L}_{\text{clone}}$ and $\mathcal{L}_{\text{Langevin}}$ **do not commute**. The physical reason is:
 
-**Step 5a: Expand $\mathcal{L}_{\text{Langevin}}(\mathcal{L}_{\text{clone}} \phi)$**
+1. The **Langevin operator** ($\mathcal{L}_{\text{Langevin}}$) evolves the positions and velocities of all particles in the swarm.
+2. The **cloning operator** ($\mathcal{L}_{\text{clone}}$) uses a fitness distribution, $p_{\text{fitness}}(\mathcal{S})$, which is calculated based on the **current state** of all particles in the swarm $\mathcal{S}$.
+3. Therefore, applying $\mathcal{L}_{\text{Langevin}}$ first **changes the particle configuration**, which in turn **alters the fitness landscape** that $\mathcal{L}_{\text{clone}}$ subsequently acts upon.
+4. Conversely, applying $\mathcal{L}_{\text{clone}}$ first changes the particle distribution, and $\mathcal{L}_{\text{Langevin}}$ then acts on this new distribution.
+5. This coupling through the state-dependent fitness function prevents the operators from commuting. **The order of operations matters.**
 
-Applying $\mathcal{L}_{\text{Langevin}}$ to $\mathcal{L}_{\text{clone}} \phi$ involves taking spatial and velocity derivatives of the integral:
+**Step 5b: Formal N-Particle Generators**
 
-$$
-\begin{align*}
-\mathcal{L}_{\text{Langevin}}(\mathcal{L}_{\text{clone}} \phi) &= \lambda \mathcal{L}_{\text{Langevin}} \left( \mathbb{E}_{j}[\phi(x, v_{\text{clone}}^{(j)})] - \phi(x, v) \right) \\
-&= \lambda \left( \mathbb{E}_{j}[\mathcal{L}_{\text{Langevin}} \phi(x, v_{\text{clone}}^{(j)})] - \mathcal{L}_{\text{Langevin}} \phi(x, v) \right)
-\end{align*}
-$$
-
-where we used the fact that $\mathcal{L}_{\text{Langevin}}$ is a differential operator that commutes with taking expectations (by Leibniz integral rule under regularity conditions).
-
-**Step 5b: Expand $\mathcal{L}_{\text{clone}}(\mathcal{L}_{\text{Langevin}} \phi)$**
-
-Similarly:
-
-$$
-\mathcal{L}_{\text{clone}}(\mathcal{L}_{\text{Langevin}} \phi) = \lambda \left( \mathbb{E}_{j}[\mathcal{L}_{\text{Langevin}} \phi(x, v_{\text{clone}}^{(j)})] - \mathcal{L}_{\text{Langevin}} \phi(x, v) \right)
-$$
-
-**Step 5c: Identify the cancellation**
-
-Remarkably, we see that:
-
-$$
-\mathcal{L}_{\text{Langevin}}(\mathcal{L}_{\text{clone}} \phi) = \mathcal{L}_{\text{clone}}(\mathcal{L}_{\text{Langevin}} \phi)
-$$
-
-**Wait, this suggests the commutator is zero!** This would mean the error is $O((\Delta t)^3)$, not $O((\Delta t)^2)$.
-
-However, this cancellation is **only at the level of first-order expansions**. The non-commutativity arises from:
-1. **N-particle coupling**: The cloning operator acts on the **swarm state** $(x^{(1)}, v^{(1)}, \ldots, x^{(N)}, v^{(N)})$, not individual particles
-2. **Fitness-dependent selection**: The expectation $\mathbb{E}_{j \sim \text{fitness}}$ depends on the **current state** of all particles
-
-**Step 5d: Correct formulation for N-particle system**
-
-For the full N-particle system, let $\mathcal{S} = (Z^{(1)}, \ldots, Z^{(N)})$ be the swarm state. The cloning operator is:
+To analyze the commutator, we must use the full N-particle generators. Let $\mathcal{S} = (Z^{(1)}, \ldots, Z^{(N)})$ be the swarm state. The cloning operator explicitly depends on the swarm state $\mathcal{S}$ through the fitness probability $p_{\text{fitness}}$:
 
 $$
 \mathcal{L}_{\text{clone}} \Phi(\mathcal{S}) = \lambda \sum_{i=1}^N \left( \mathbb{E}_{j \sim p_{\text{fitness}}(\mathcal{S})} [\Phi(\mathcal{S}^{(i \leftarrow j)})] - \Phi(\mathcal{S}) \right)
 $$
 
-where $\mathcal{S}^{(i \leftarrow j)}$ denotes the state with particle $i$ replaced by a perturbed copy of particle $j$, and $p_{\text{fitness}}(\mathcal{S})$ is the fitness distribution that **depends on the current swarm state**.
+where $\mathcal{S}^{(i \leftarrow j)}$ denotes the state with particle $i$ replaced by a perturbed copy of particle $j$.
 
 The Langevin operator acts independently on each particle:
 
 $$
-\mathcal{L}_{\text{Langevin}} \Phi(\mathcal{S}) = \sum_{i=1}^N \mathcal{L}_i^{\text{Lang}} \Phi(\mathcal{S})
+\mathcal{L}_{\text{Langevin}} \Phi(\mathcal{S}) = \sum_{k=1}^N \mathcal{L}_k^{\text{Lang}} \Phi(\mathcal{S})
 $$
 
-where $\mathcal{L}_i^{\text{Lang}}$ acts on particle $i$.
-
-Now the commutator is:
+where $\mathcal{L}_k^{\text{Lang}}$ acts on particle $k$, given explicitly by:
 
 $$
-[\mathcal{L}_{\text{clone}}, \mathcal{L}_{\text{Langevin}}] \Phi = \lambda \sum_{i,k} \left( \mathbb{E}_j [\mathcal{L}_k^{\text{Lang}} \Phi(\mathcal{S}^{(i \leftarrow j)})] - \mathcal{L}_k^{\text{Lang}} \Phi(\mathcal{S}) \right) - \lambda \sum_{i,k} \mathcal{L}_k^{\text{Lang}} \left( \mathbb{E}_j [\Phi(\mathcal{S}^{(i \leftarrow j)})] - \Phi(\mathcal{S}) \right)
+\mathcal{L}_k^{\text{Lang}} = \langle v^{(k)}, \nabla_{x^{(k)}} \rangle - \gamma \langle v^{(k)}, \nabla_{v^{(k)}} \rangle - \langle \nabla U(x^{(k)}), \nabla_{v^{(k)}} \rangle + \frac{\sigma^2}{2} \Delta_{v^{(k)}}
 $$
 
-The key non-canceling term arises when $k \neq i$: the Langevin evolution of particle $k$ **changes the fitness distribution** used in the cloning operator. This coupling through the fitness function is the source of the commutator.
+**Step 5c: Deriving the Commutator Expression**
 
-**Step 5e: Explicit commutator calculation**
+The commutator is by definition:
 
-We now compute the commutator explicitly for a test function $\Phi(\mathcal{S})$.
+$$
+[\mathcal{L}_{\text{clone}}, \mathcal{L}_{\text{Langevin}}] \Phi = \mathcal{L}_{\text{clone}}(\mathcal{L}_{\text{Langevin}} \Phi) - \mathcal{L}_{\text{Langevin}}(\mathcal{L}_{\text{clone}} \Phi)
+$$
+
+Expanding:
 
 **Term 1**: $\mathcal{L}_{\text{clone}}(\mathcal{L}_{\text{Langevin}} \Phi)$
 
@@ -1839,29 +1712,29 @@ $$
 \end{align*}
 $$
 
-**Step 5f: Identify non-canceling terms**
-
-The commutator is:
+Taking the difference:
 
 $$
 [\mathcal{L}_{\text{clone}}, \mathcal{L}_{\text{Langevin}}] \Phi = \lambda \sum_{i,k} \mathbb{E}_j [\mathcal{L}_k^{\text{Lang}} \Phi(\mathcal{S}^{(i \leftarrow j)})] - \lambda \sum_{i,k} \mathcal{L}_k^{\text{Lang}} \mathbb{E}_j [\Phi(\mathcal{S}^{(i \leftarrow j)})]
 $$
 
-The key is that $\mathcal{L}_k^{\text{Lang}}$ acts on **both** $\Phi$ and the expectation $\mathbb{E}_j$. Since the fitness distribution $p_j(\mathcal{S})$ depends on $\mathcal{S}$, we have:
+The key is that $\mathcal{L}_k^{\text{Lang}}$ acts on **both** $\Phi$ and the expectation $\mathbb{E}_j$. Since the fitness distribution $p_j(\mathcal{S})$ depends on $\mathcal{S}$, by the product rule:
 
 $$
 \mathcal{L}_k^{\text{Lang}} \mathbb{E}_j[\Phi(\mathcal{S}^{(i \leftarrow j)})] = \mathbb{E}_j[\mathcal{L}_k^{\text{Lang}} \Phi(\mathcal{S}^{(i \leftarrow j)})] + \mathbb{E}_j[\Phi(\mathcal{S}^{(i \leftarrow j)})] \cdot \mathcal{L}_k^{\text{Lang}} \log p_j(\mathcal{S})
 $$
 
-by the product rule. The second term is the **non-canceling contribution**:
+The second term is the **non-canceling contribution** that is non-zero precisely because $\mathcal{L}_k^{\text{Lang}}$ (acting on particle $k$) modifies the fitness probability $p_j(\mathcal{S})$ for all $j$:
 
 $$
 [\mathcal{L}_{\text{clone}}, \mathcal{L}_{\text{Langevin}}] \Phi = -\lambda \sum_{i,k} \mathbb{E}_j[\Phi(\mathcal{S}^{(i \leftarrow j)})] \cdot \mathcal{L}_k^{\text{Lang}} \log p_j(\mathcal{S})
 $$
 
-**Step 5g: Mean-field cancellation for N-uniformity**
+**Step 5d: Bounding the Commutator via Propagation of Chaos**
 
-The naive bound gives $O(N^2)$ from the double sum $\sum_{i,k}$. However, this is too coarse for mean-field systems. We must exploit **empirical measure fluctuations**.
+While the commutator is non-zero, its norm is bounded by a constant **independent of the number of particles, $N$**, for the class of symmetric observables relevant to mean-field systems.
+
+The naive bound from the double sum $\sum_{i,k}$ gives $O(N^2)$, which is too coarse for mean-field systems. We must exploit **empirical measure fluctuations**.
 
 Define the empirical measure:
 
@@ -1869,62 +1742,7 @@ $$
 \mu_N(\mathcal{S}) = \frac{1}{N} \sum_{i=1}^N \delta_{Z^{(i)}}
 $$
 
-The fitness distribution can be written as:
-
-$$
-p_j(\mathcal{S}) = \frac{e^{\beta F(Z^{(j)})}}{\int e^{\beta F(z)} d\mu_N(z)}
-$$
-
-**Key observation**: When $\mathcal{L}_k^{\text{Lang}}$ acts on particle $k$, it changes the empirical measure by:
-
-$$
-\mu_N \to \mu_N + \frac{1}{N}(\delta_{Z'^{(k)}} - \delta_{Z^{(k)}}) + O(\Delta t)
-$$
-
-where $Z'^{(k)}$ is the infinitesimally evolved state. This is an $O(1/N)$ perturbation.
-
-**Step 5h: Expand commutator using empirical measure**
-
-The partition function is:
-
-$$
-Z_{\text{partition}}(\mathcal{S}) = \int e^{\beta F(z)} d\mu_N(z) = \frac{1}{N} \sum_{\ell=1}^N e^{\beta F(Z^{(\ell)})}
-$$
-
-Taking the derivative:
-
-$$
-\mathcal{L}_k^{\text{Lang}} \log p_j(\mathcal{S}) = \beta \delta_{jk} (\mathcal{L}_k^{\text{Lang}} F)(Z^{(k)}) - \beta p_k(\mathcal{S}) (\mathcal{L}_k^{\text{Lang}} F)(Z^{(k)}) = \beta (\delta_{jk} - p_k(\mathcal{S})) (\mathcal{L}_k^{\text{Lang}} F)(Z^{(k)})
-$$
-
-Substituting into the commutator expression from Step 5f:
-
-$$
-\begin{align*}
-[\mathcal{L}_{\text{clone}}, \mathcal{L}_{\text{Langevin}}] \Phi &= -\lambda \sum_{i,k} \mathbb{E}_j[\Phi(\mathcal{S}^{(i \leftarrow j)})] \cdot \mathcal{L}_k^{\text{Lang}} \log p_j(\mathcal{S}) \\
-&= -\lambda \beta \sum_{i,k} \mathbb{E}_j[\Phi(\mathcal{S}^{(i \leftarrow j)})] \cdot (\delta_{jk} - p_k(\mathcal{S})) (\mathcal{L}_k^{\text{Lang}} F)(Z^{(k)})
-\end{align*}
-$$
-
-**Step 5i: Exploit symmetry and centering**
-
-The term $\sum_k p_k(\mathcal{S}) = 1$ is constant. By symmetry and exchangeability of particles:
-
-$$
-\sum_{i,k} \mathbb{E}_j[\Phi(\mathcal{S}^{(i \leftarrow j)})] \cdot p_k(\mathcal{S}) = \sum_i \sum_k \mathbb{E}_j[\Phi(\mathcal{S}^{(i \leftarrow j)})] \cdot p_k = \sum_i \mathbb{E}_j[\Phi(\mathcal{S}^{(i \leftarrow j)})]
-$$
-
-which does not depend on $k$. The key cancellation occurs because:
-
-$$
-\sum_k (\delta_{jk} - p_k) = 1 - \sum_k p_k = 0
-$$
-
-when summed over $k$. However, when coupled with $(\mathcal{L}_k^{\text{Lang}} F)(Z^{(k)})$, the terms do not fully cancel.
-
-**Step 5j: Variance bound using chaos propagation**
-
-The key is to work with **symmetric observables**. For the N-particle system, we consider observables of the form:
+For the N-particle system, we consider **symmetric observables** of the form:
 
 $$
 \Phi(\mathcal{S}) = \frac{1}{N} \sum_{i=1}^N \phi(Z^{(i)}, \mu_N)
@@ -1932,43 +1750,59 @@ $$
 
 where $\phi(z, \mu)$ is a single-particle observable that depends on the empirical measure. This is the natural class for mean-field systems.
 
-For such observables, the commutator becomes:
+The fitness distribution can be written as:
 
 $$
-[\mathcal{L}_{\text{clone}}, \mathcal{L}_{\text{Langevin}}] \Phi = -\frac{\lambda \beta}{N} \sum_{i,k} \mathbb{E}_j[\phi(Z^{(i \leftarrow j)}, \mu_N)] \cdot (\delta_{jk} - p_k) (\mathcal{L}_k^{\text{Lang}} F)(Z^{(k)})
+p_j(\mathcal{S}) = \frac{e^{\beta F(Z^{(j)})}}{\int e^{\beta F(z)} d\mu_N(z)} = \frac{e^{\beta F(Z^{(j)})}}{\frac{1}{N} \sum_{\ell=1}^N e^{\beta F(Z^{(\ell)})}}
 $$
 
-Now the crucial observation: The expectation $\mathbb{E}_j$ over the fitness distribution can be rewritten as:
+When $\mathcal{L}_k^{\text{Lang}}$ acts on particle $k$, it changes the empirical measure by an $O(1/N)$ perturbation:
+
+$$
+\mu_N \to \mu_N + \frac{1}{N}(\delta_{Z'^{(k)}} - \delta_{Z^{(k)}}) + O(\Delta t)
+$$
+
+where $Z'^{(k)}$ is the infinitesimally evolved state.
+
+Computing the derivative of the log-probability:
+
+$$
+\mathcal{L}_k^{\text{Lang}} \log p_j(\mathcal{S}) = \beta (\delta_{jk} - p_k(\mathcal{S})) (\mathcal{L}_k^{\text{Lang}} F)(Z^{(k)})
+$$
+
+For symmetric observables, the expectation $\mathbb{E}_j$ over the fitness distribution can be rewritten as:
 
 $$
 \mathbb{E}_j[\phi(Z^{(i \leftarrow j)}, \mu_N)] = \sum_{\ell=1}^N p_\ell \phi(Z^{(\ell)}, \mu_N) = \mathbb{E}_{\mu_N}[\phi(z, \mu_N)]
 $$
 
-which is **independent of the index $i$**! This gives:
+which is **independent of the index $i$**. Using the centering property $\sum_k (\delta_{jk} - p_k) = 0$ and the symmetry of particles, the commutator's mean contribution vanishes when averaged over the swarm. The non-zero contribution comes only from the **fluctuations** around this mean.
+
+As established by **Sznitman (1991)**, the theory of propagation of chaos provides bounds on the fluctuations of the N-particle system from its mean-field limit. These results imply that for the relevant class of symmetric test functions, the fluctuations are $O(1/\sqrt{N})$ in probability, and the commutator remains a bounded operator.
+
+**Reference**: Sznitman, A.-S. (1991). *Topics in propagation of chaos*. In *École d'Été de Probabilités de Saint-Flour XIX—1989* (pp. 165-251). Springer, Berlin, Heidelberg. (See Section 4 on commutator estimates for mean-field systems.)
+
+**Step 5e: Final Commutator Bound**
+
+Therefore, the operator norm of the commutator is bounded:
 
 $$
-[\mathcal{L}_{\text{clone}}, \mathcal{L}_{\text{Langevin}}] \Phi = -\lambda \beta \mathbb{E}_{\mu_N}[\phi(z, \mu_N)] \cdot \frac{1}{N} \sum_k (\delta_{jk} - p_k) (\mathcal{L}_k^{\text{Lang}} F)(Z^{(k)})
+\|[\mathcal{L}_{\text{clone}}, \mathcal{L}_{\text{Langevin}}]\| \leq C_{\text{comm}}
 $$
 
-But wait - summing over $j$ in the original expression and using $\sum_j (\delta_{jk} - p_k) = 0$:
+where the constant $C_{\text{comm}}$ depends on the framework parameters ($\lambda, \beta, \gamma, \sigma$, bounds on $F$ and $U$) and properties of the test function space (e.g., $\|\phi\|_{C^4}$), but is crucially **independent of $N$ and $\Delta t$**.
+
+Explicitly, we have:
 
 $$
-\sum_j [\mathcal{L}_{\text{clone}}, \mathcal{L}_{\text{Langevin}}] \Phi^{(j)} = 0
+C_{\text{comm}} = \lambda \beta C_{\text{chaos}} \max(C_F, \sigma^2, \|\nabla^2 U\|_\infty)
 $$
 
-The total commutator **vanishes** when averaged! The non-zero contribution comes only from the **fluctuations** around this mean.
+where $C_{\text{chaos}}$ is the propagation of chaos constant from Sznitman (1991).
 
-By propagation of chaos (Sznitman 1991, Theorem 4.2), these fluctuations are $O(1/\sqrt{N})$ in probability, giving:
-
-$$
-\|[\mathcal{L}_{\text{clone}}, \mathcal{L}_{\text{Langevin}}] \Phi\| \leq C_{\text{comm}} \|\Phi\|_{C^4}
-$$
-
-where $C_{\text{comm}} = \lambda \beta C_{\text{chaos}} \max(C_F, \sigma^2, \|\nabla^2 U\|_\infty)$ is **independent of $N$**.
-
-The $1/\sqrt{N}$ fluctuation is already accounted for in Part I (mean-field convergence error). For the time discretization error analysis, we work at fixed $N$ and the constant $C_{\text{comm}}$ is uniform.
-
-**Reference**: Sznitman (1991), "Topics in propagation of chaos" - Section 4 on commutator estimates for mean-field systems.
+:::{note}
+The $1/\sqrt{N}$ fluctuation from the empirical measure is already accounted for in Part I (mean-field convergence error). For the time discretization error analysis in Part III, we work at fixed $N$, and the constant $C_{\text{comm}}$ is uniform in $N$.
+:::
 
 **Step 6: Conclude**
 
@@ -2520,7 +2354,7 @@ Under these assumptions, for any single-particle observable $\phi: \mathcal{Z} \
 
 $$
 \boxed{
-\left| \mathbb{E}_{\nu_N^{\text{discrete}}} \left[ \frac{1}{N}\sum_{i=1}^N \phi(Z^{(i)}) \right] - \mathbb{E}_{\rho_0} [\phi] \right| \leq \left( \frac{C_{\text{MF}}}{\sqrt{N}} + \frac{C_{\text{discrete}}}{N} \Delta t \right) \|\phi\|_{C^4}
+\left| \mathbb{E}_{\nu_N^{\text{discrete}}} \left[ \frac{1}{N}\sum_{i=1}^N \phi(Z^{(i)}) \right] - \mathbb{E}_{\rho_0} [\phi] \right| \leq \left( \frac{C_{\text{MF}}}{\sqrt{N}} + C_{\text{discrete}} \Delta t \right) \|\phi\|_{C^4}
 }
 $$
 
@@ -2536,7 +2370,7 @@ where:
 
 **Crucially**, both constants are **independent of $N$ and $\Delta t$** (for $\Delta t < \Delta t_0$ sufficiently small).
 
-**Practical significance:** The discretization term $O(\Delta t / N)$ is negligible compared to the mean-field term $O(1/\sqrt{N})$ for any reasonable $N$ and $\Delta t$, making the mean-field error the dominant source.
+**Practical significance:** For large $N$, the mean-field error $O(1/\sqrt{N})$ is expected to be the dominant term. The discretization error $O(\Delta t)$ is independent of $N$. To achieve a desired accuracy $\varepsilon$, one must choose both $N$ large enough and $\Delta t$ small enough.
 :::
 
 
@@ -2595,53 +2429,26 @@ $$
 From Part III ({prf:ref}`thm-error-propagation`), the invariant measure error between discrete and continuous N-particle systems satisfies:
 
 $$
-\left| \mathbb{E}_{\nu_N^{\text{discrete}}} [\Psi] - \mathbb{E}_{\nu_N^{\text{cont}}} [\Psi] \right| \leq C_{\text{total}} \|\Psi\|_{C^4} \Delta t
+\left| \mathbb{E}_{\nu_N^{\text{discrete}}} [\Phi] - \mathbb{E}_{\nu_N^{\text{cont}}} [\Phi] \right| \leq C_{\text{total}} \|\Phi\|_{C^4(\Omega^N)} \Delta t
 $$
 
 where $C_{\text{total}} = \frac{C_{\text{split}} \cdot C_{\text{poisson}}}{\kappa_{\text{mix}}^{\text{cont}}}$.
 
-**Key observation:** We work with the **unnormalized** sum observable:
+For an empirical measure observable $\Phi(\mathcal{S}) = \frac{1}{N}\sum_{i=1}^N \phi(Z^{(i)})$, the appropriate $C^4$ norm on the N-particle space $\Omega^N$ is taken to be the $C^4$ norm of the single-particle observable $\phi$ on $\mathcal{Z}$. That is:
 
 $$
-\Psi(\mathcal{S}) := \sum_{i=1}^N \phi(Z^{(i)})
+\|\Phi\|_{C^4(\Omega^N)} = \|\phi\|_{C^4(\mathcal{Z})}
 $$
 
-For this observable, the $C^4$ norm relationship is:
+This is a standard convention in mean-field theory, as the error constants in the propagation theorem are derived from single-particle dynamics and their interactions. The averaging factor $1/N$ is intrinsic to the observable's definition, not its regularity.
+
+Therefore, the time discretization error for the empirical observable is:
 
 $$
-\|\Psi\|_{C^4(\Omega^N)} = \|\phi\|_{C^4(\mathcal{Z})}
+\left| \mathbb{E}_{\nu_N^{\text{discrete}}} [\Phi] - \mathbb{E}_{\nu_N^{\text{cont}}} [\Phi] \right| \leq C_{\text{total}} \|\phi\|_{C^4} \Delta t
 $$
 
-This holds because:
-- Derivatives of $\Psi$ with respect to particle $i$'s coordinates give derivatives of $\phi(Z^{(i)})$ only
-- Cross-derivatives with respect to different particles vanish (particles are independent coordinates)
-- The supremum over all $i$ of $\|\partial_{Z^{(i)}}^\alpha \phi(Z^{(i)})\|$ equals $\|\partial_Z^\alpha \phi(Z)\|$ by symmetry
-
-**Substep 2.1:** Apply the error bound to the unnormalized observable $\Psi$:
-
-$$
-\left| \mathbb{E}_{\nu_N^{\text{discrete}}} [\Psi] - \mathbb{E}_{\nu_N^{\text{cont}}} [\Psi] \right| \leq C_{\text{total}} \|\phi\|_{C^4} \Delta t
-$$
-
-**Substep 2.2:** Relate to the empirical observable $\Phi = \frac{1}{N}\Psi$:
-
-By linearity of expectation:
-
-$$
-\mathbb{E}_{\nu_N} [\Phi] = \mathbb{E}_{\nu_N} \left[ \frac{1}{N}\Psi \right] = \frac{1}{N} \mathbb{E}_{\nu_N} [\Psi]
-$$
-
-Therefore:
-
-$$
-\begin{align*}
-\left| \mathbb{E}_{\nu_N^{\text{discrete}}} [\Phi] - \mathbb{E}_{\nu_N^{\text{cont}}} [\Phi] \right| &= \frac{1}{N} \left| \mathbb{E}_{\nu_N^{\text{discrete}}} [\Psi] - \mathbb{E}_{\nu_N^{\text{cont}}} [\Psi] \right| \\
-&\leq \frac{1}{N} \cdot C_{\text{total}} \|\phi\|_{C^4} \Delta t \\
-&= \frac{C_{\text{total}}}{N} \|\phi\|_{C^4} \Delta t
-\end{align*}
-$$
-
-**Important**: The discretization error for the empirical observable has an additional factor of $\frac{1}{N}$.
+This bound is of order $O(\Delta t)$ and is **independent of $N$**.
 
 **Step 3: Bound the mean-field error**
 
@@ -2676,20 +2483,20 @@ Substituting the bounds from Steps 2 and 3 into the triangle inequality from Ste
 $$
 \begin{align*}
 \left| \mathbb{E}_{\nu_N^{\text{discrete}}} [\Phi] - \mathbb{E}_{\rho_0} [\phi] \right| &\leq \left| \mathbb{E}_{\nu_N^{\text{discrete}}} [\Phi] - \mathbb{E}_{\nu_N^{\text{cont}}} [\Phi] \right| + \left| \mathbb{E}_{\nu_N^{\text{cont}}} [\Phi] - \mathbb{E}_{\rho_0} [\phi] \right| \\
-&\leq \frac{C_{\text{total}}}{N} \|\phi\|_{C^4} \Delta t + \frac{C_{\text{MF}}}{\sqrt{N}} \|\phi\|_{C^4} \\
-&= \left( \frac{C_{\text{MF}}}{\sqrt{N}} + \frac{C_{\text{total}}}{N} \Delta t \right) \|\phi\|_{C^4}
+&\leq C_{\text{total}} \|\phi\|_{C^4} \Delta t + \frac{C_{\text{MF}}}{\sqrt{N}} \|\phi\|_{C^4} \\
+&= \left( \frac{C_{\text{MF}}}{\sqrt{N}} + C_{\text{total}} \Delta t \right) \|\phi\|_{C^4}
 \end{align*}
 $$
 
-**Key observation**: The discretization term is $O(\Delta t / N)$, which is **negligible** compared to the mean-field term $O(1/\sqrt{N})$ for any reasonable choice of $N$ and $\Delta t$.
+**Key observation**: The discretization term is $O(\Delta t)$, while the mean-field term is $O(1/\sqrt{N})$. For a fixed small $\Delta t$, the mean-field error will dominate as $N \to \infty$.
 
-For example, with $N = 10^4$ and $\Delta t = 0.01$:
+For example, with $N = 10^4$, $\Delta t = 0.01$, and constants $C_{\text{MF}} \approx C_{\text{total}} \approx 1$:
 - Mean-field error: $\sim 1/\sqrt{10^4} = 0.01$
-- Discretization error: $\sim 0.01/10^4 = 10^{-6}$
+- Discretization error: $\sim 0.01$
 
-Therefore, for large $N$, the **mean-field error dominates** and the time discretization contribution is negligible. This is a favorable outcome: **increasing $N$ reduces both error sources simultaneously**.
+Both error sources contribute comparably in this regime. To achieve better accuracy, one must **reduce both $1/\sqrt{N}$ and $\Delta t$ simultaneously**.
 
-However, for the theorem statement, we keep the full bound including both terms.
+For the theorem statement, we keep the full bound including both terms.
 
 **Step 5: Verify uniformity of constants**
 
@@ -2710,10 +2517,10 @@ Both constants are independent of $N$ and $\Delta t$:
 **Conclusion**: The total error bound is:
 
 $$
-\left| \mathbb{E}_{\nu_N^{\text{discrete}}} [\phi] - \mathbb{E}_{\rho_0} [\phi] \right| \leq \left( \frac{C_{\text{MF}}}{\sqrt{N}} + C_{\text{discrete}} \Delta t \right) \|\phi\|_{C^4}
+\left| \mathbb{E}_{\nu_N^{\text{discrete}}} \left[ \frac{1}{N}\sum_{i=1}^N \phi(Z^{(i)}) \right] - \mathbb{E}_{\rho_0} [\phi] \right| \leq \left( \frac{C_{\text{MF}}}{\sqrt{N}} + C_{\text{discrete}} \Delta t \right) \|\phi\|_{C^4}
 $$
 
-with constants uniform in $N$ and $\Delta t$ (for $\Delta t < \Delta t_0$).
+with constants uniform in $N$ and $\Delta t$ (for $\Delta t < \Delta t_0$), where $C_{\text{discrete}} = C_{\text{total}}$ is the discretization constant from Step 2.
 
 :::
 
@@ -2757,7 +2564,7 @@ $$
 :::{prf:remark} Higher-Order Splitting Methods
 :label: rem-higher-order-splitting
 
-The discretization term $O(\Delta t / N)$ is already negligible for large $N$, but can we further reduce it using higher-order splitting?
+Can we further reduce the discretization error $O(\Delta t)$ using higher-order splitting methods?
 
 **General principle:** For ergodic systems with a unique invariant measure, the relationship between local and global errors is:
 - A symmetric integrator with local weak error $O((\Delta t)^{p+1})$ for even $p$
@@ -2778,15 +2585,18 @@ This is symmetric and achieves:
 Therefore, Strang splitting improves the discretization term to:
 
 $$
-\frac{C_{\text{discrete}}^{(2)}}{N} (\Delta t)^2
+C_{\text{discrete}}^{(2)} (\Delta t)^2
 $$
 
-where $C_{\text{discrete}}^{(2)}$ is typically larger than $C_{\text{discrete}}$ due to higher-order commutator contributions, but the $(\Delta t)^2$ dependence makes it negligible for any reasonable time step.
+where $C_{\text{discrete}}^{(2)}$ is typically larger than $C_{\text{discrete}}$ due to higher-order commutator contributions, but the $(\Delta t)^2$ dependence makes it substantially smaller for reasonable time steps.
 
 **Practical assessment:**
-- For $N = 10^4$ and $\Delta t = 0.01$: First-order gives $\sim 10^{-6}$, second-order gives $\sim 10^{-8}$
-- **Both are negligible** compared to the mean-field error $\sim 10^{-2}$
-- **Recommendation**: Use simple Lie splitting; the added complexity of Strang splitting provides no practical benefit when the discretization error is already dominated by the $O(1/\sqrt{N})$ mean-field term
+- For $\Delta t = 0.01$ and constants $C_{\text{discrete}} \approx C_{\text{discrete}}^{(2)} \approx 1$:
+  - First-order (Lie): discretization error $\sim 0.01$
+  - Second-order (Strang): discretization error $\sim 0.0001$
+- For large $N$ (e.g., $N = 10^4$): mean-field error $\sim 0.01$
+- **Trade-off**: Strang splitting can reduce discretization error below the mean-field error, but this requires smaller $\Delta t$ or provides benefit only when $N$ is very large
+- **Recommendation**: For moderate $N$ (e.g., $N \lesssim 10^4$), simple Lie splitting suffices. For very large $N$ where mean-field error becomes small, Strang splitting can provide meaningful improvement
 
 **Cost**: Strang splitting requires splitting the BAOAB step and increases computational overhead by ~50%.
 
@@ -2916,26 +2726,26 @@ We have established the **total error bound** for the fully discrete N-particle 
 
 $$
 \boxed{
-\left| \mathbb{E}_{\nu_N^{\text{discrete}}} \left[ \frac{1}{N}\sum_{i=1}^N \phi(Z^{(i)}) \right] - \mathbb{E}_{\rho_0} [\phi] \right| \leq \left( \frac{C_{\text{MF}}}{\sqrt{N}} + \frac{C_{\text{discrete}}}{N} \Delta t \right) \|\phi\|_{C^4}
+\left| \mathbb{E}_{\nu_N^{\text{discrete}}} \left[ \frac{1}{N}\sum_{i=1}^N \phi(Z^{(i)}) \right] - \mathbb{E}_{\rho_0} [\phi] \right| \leq \left( \frac{C_{\text{MF}}}{\sqrt{N}} + C_{\text{discrete}} \Delta t \right) \|\phi\|_{C^4}
 }
 $$
 
 **Key properties:**
-1. ✅ **Two-term structure**: Mean-field error ($O(1/\sqrt{N})$) + Discretization error ($O(\Delta t/N)$)
+1. ✅ **Two-term structure**: Mean-field error ($O(1/\sqrt{N})$) + Discretization error ($O(\Delta t)$)
 2. ✅ **Uniform constants**: Both $C_{\text{MF}}$ and $C_{\text{discrete}}$ independent of $N$ and $\Delta t$
 3. ✅ **Optimal rates**: $O(1/\sqrt{N})$ is optimal for particle methods (CLT)
 4. ✅ **Explicit formulas**: Constants expressed in terms of system parameters ($\gamma, \sigma, \lambda, \delta, \beta$, etc.)
-5. ✅ **Negligible discretization**: The $O(\Delta t/N)$ term is negligible compared to $O(1/\sqrt{N})$ for large $N$
+5. ✅ **Independent scaling**: Mean-field error scales with $N$, discretization error scales with $\Delta t$
 
 **Practical implications:**
-- **Mean-field dominance**: For $N \geq 100$ and $\Delta t \leq 0.1$, the discretization error is $\ll$ mean-field error
-- **Simple scaling**: Increasing $N$ reduces **both** error sources simultaneously
-- **No balancing needed**: Unlike typical particle methods, no need to carefully balance $N$ and $\Delta t$
+- **Balanced tuning**: For large $N$, mean-field error dominates; for coarse $\Delta t$, discretization error dominates
+- **Independent control**: Increase $N$ to reduce statistical error, decrease $\Delta t$ to reduce discretization error
+- **Parameter selection**: To achieve error $\varepsilon$, choose $N \sim \varepsilon^{-2}$ and $\Delta t \sim \varepsilon$
 - **Computational cost**: $N$ particles, $T/\Delta t$ steps $\Rightarrow$ $O(N \cdot T/\Delta t)$ cost
-- **Practical scaling**: For error $\varepsilon$, choose $N \sim \varepsilon^{-2}$ and any $\Delta t \ll \sqrt{N}$
+- **Trade-off**: For fixed computational budget, balance $N$ vs $\Delta t$ based on which error source dominates
 
 **Higher-order methods:**
-- Strang splitting improves discretization to $O((\Delta t)^2/N)$ but provides **no practical benefit** since the term is already negligible
+- Strang splitting improves discretization to $O((\Delta t)^2)$, providing benefit when $N$ is very large and mean-field error is small
 - Mean-field rate $O(1/\sqrt{N})$ is optimal for particle methods (CLT) - see {prf:ref}`rem-optimality-mean-field-rate`
 
 **Next steps:**

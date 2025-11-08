@@ -3,18 +3,19 @@
   "mode": "single_document",
   "target_path": "docs/source/1_euclidean_gas/07_mean_field.md",
   "start_time": "2025-11-06T00:00:00",
-  "last_update": "2025-11-06T00:00:00",
-  "status": "in_progress",
+  "completion_time": "2025-11-06T23:59:00",
+  "status": "completed",
   "execution_plan": {
     "total_theorems": 5,
-    "needs_proof": 2,
+    "needs_proof": 1,
     "has_complete_proof": 3,
-    "has_informal_proof": 1,
+    "needs_cross_reference": 1,
     "execution_order": [
       "thm-mean-field-equation",
       "thm-mean-field-limit-informal"
     ],
-    "estimated_time_hours": 7.5
+    "estimated_time_hours": 6,
+    "actual_time_hours": 6
   },
   "theorems": [
     {
@@ -34,11 +35,26 @@
       "title": "The Mean-Field Equations for the Euclidean Gas",
       "has_proof": false,
       "proof_complete": false,
-      "status": "pending",
+      "status": "needs_manual_refinement",
       "needs_work": true,
       "dependencies": ["lem-mass-conservation-transport"],
-      "attempts": 0,
-      "difficulty": "medium"
+      "attempts": 2,
+      "difficulty": "high",
+      "best_rigor_score": 6.0,
+      "issues": [
+        "Bounded generators assumption false (unbounded Fokker-Planck)",
+        "H(div) self-contradiction",
+        "Nonlinearity breaks additivity",
+        "Operator-norm expansions invalid"
+      ],
+      "recommendation": "Manual expert work required (2-3 weeks)",
+      "files": {
+        "sketch": "sketcher/sketch_20251106_proof_07_mean_field.md",
+        "proof_attempt_1": "proofs/proof_20251106_thm_mean_field_equation.md",
+        "review_1": "reviewer/review_20251106_2327_proof_20251106_thm_mean_field_equation.md",
+        "proof_attempt_2": "proofs/proof_20251106_iteration2_thm_mean_field_equation.md",
+        "review_2": "reviewer/review_20251106_1645_proof_20251106_iteration2_thm_mean_field_equation.md"
+      }
     },
     {
       "label": "thm-mass-conservation",
@@ -63,28 +79,48 @@
     {
       "label": "thm-mean-field-limit-informal",
       "type": "theorem",
-      "line_number": 1321,
+      "line_number": 1339,
       "title": "Mean-Field Limit (Informal Statement)",
       "has_proof": true,
-      "proof_complete": false,
       "proof_informal": true,
-      "status": "pending",
-      "needs_work": true,
-      "dependencies": ["thm-mean-field-equation", "thm-killing-rate-consistency"],
-      "attempts": 0,
-      "difficulty": "high"
+      "status": "completed",
+      "needs_work": false,
+      "action_taken": "Updated with cross-references to 08_propagation_chaos.md",
+      "lines_modified": "1339-1460",
+      "rigorous_proof_location": "08_propagation_chaos.md"
     }
   ],
   "statistics": {
     "total_theorems": 5,
-    "completed": 3,
-    "in_progress": 0,
-    "pending": 2,
+    "completed": 4,
+    "needs_manual_work": 1,
+    "pending": 0,
     "failed": 0,
-    "auto_integrated": 0,
-    "manual_review": 0
+    "cross_references_updated": 1
   },
-  "current_theorem": null,
+  "files_generated": {
+    "sketches": 1,
+    "proofs": 2,
+    "reviews": 2,
+    "summaries": 1,
+    "reports": 1,
+    "total": 7
+  },
+  "document_modifications": {
+    "07_mean_field.md": {
+      "lines_modified": "1339-1460",
+      "changes": "Added cross-references to 08_propagation_chaos.md for rigorous proof",
+      "backup": null
+    }
+  },
   "errors": [],
-  "resume_instructions": "Run '/math_pipeline docs/source/1_euclidean_gas/07_mean_field.md' to resume"
+  "warnings": [
+    {
+      "theorem": "thm-mean-field-equation",
+      "message": "Proof requires manual expert work (operator theory complexity)",
+      "severity": "high",
+      "estimated_effort": "2-3 weeks"
+    }
+  ],
+  "resume_instructions": "Pipeline completed. See pipeline_report_20251106.md for details."
 }

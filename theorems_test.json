@@ -1,0 +1,449 @@
+[
+  {
+    "type": "theorem",
+    "label": "thm-mean-field-equation",
+    "title": "The Mean-Field Equations for the Euclidean Gas",
+    "nl_statement": "The evolution of the Euclidean Gas in the mean-field limit is governed by a coupled system of equations for the alive density $f(t,z)$ and the dead mass $m_d(t)$, which includes an equation for $f$ involving $L^\\dagger$, killing rate $c(z)$, revival $B$, and cloning $S$, and an ODE for $m_d(t)$ describing the rate of transition from alive to dead mass and mass revival from the dead pool, subject to the constraint $m_a(t) + m_d(t) = 1$.",
+    "equations": [
+      {
+        "label": "eq-mean-field-pde-main",
+        "latex": "\\partial_t f = L^\\dagger f - c(z)f + B[f, m_d] + S[f]"
+      },
+      {
+        "label": "eq-dead-mass-ode",
+        "latex": "\\frac{\\mathrm{d}}{\\mathrm{d}t} m_d(t) = \\int_{\\Omega} c(z)f(t,z)\\,\\mathrm{d}z - \\lambda_{\\text{rev}} m_d(t)"
+      },
+      {
+        "label": null,
+        "latex": "\\partial_t f(t,z) = -\\nabla\\cdot(A(z) f(t,z)) + \\nabla\\cdot(\\mathsf{D}\\nabla f(t,z)) - c(z)f(t,z) + \\lambda_{\\text{revive}} m_d(t) \\frac{f(t,z)}{m_a(t)} + S[f](t,z)"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Initial condition for alive density: $f(0, \\cdot) = f_0$",
+        "latex": "f(0, \\cdot) = f_0"
+      },
+      {
+        "text": "Initial condition for dead mass: $m_d(0) = 1 - \\int_\\Omega f_0$",
+        "latex": "m_d(0) = 1 - \\int_\\Omega f_0"
+      }
+    ],
+    "conclusion": {
+      "text": "The system conserves the total population: $m_a(t) + m_d(t) = 1$ for all $t$.",
+      "latex": "m_a(t) + m_d(t) = 1 \\text{ for all } t"
+    },
+    "variables": [
+      {
+        "symbol": "f(t,z)",
+        "role": "alive density",
+        "constraints": []
+      },
+      {
+        "symbol": "m_d(t)",
+        "role": "dead mass",
+        "constraints": []
+      },
+      {
+        "symbol": "L^\\dagger",
+        "role": "adjoint operator (implicitly defined by the context of the PDE)",
+        "constraints": []
+      },
+      {
+        "symbol": "c(z)",
+        "role": "interior killing rate (zero in interior, positive near boundary)",
+        "constraints": []
+      },
+      {
+        "symbol": "B[f, m_d]",
+        "role": "revival operator",
+        "constraints": [
+          "B[f, m_d] = \\lambda_{\\text{revive}} m_d(t) f/m_a"
+        ]
+      },
+      {
+        "symbol": "S[f]",
+        "role": "mass-neutral internal cloning operator",
+        "constraints": []
+      },
+      {
+        "symbol": "\\lambda_{\\text{revive}}",
+        "role": "revival rate",
+        "constraints": [
+          "\\lambda_{\\text{revive}} > 0"
+        ]
+      },
+      {
+        "symbol": "A(z)",
+        "role": "drift field",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathsf{D}",
+        "role": "diffusion tensor",
+        "constraints": []
+      },
+      {
+        "symbol": "m_a(t)",
+        "role": "total alive mass",
+        "constraints": [
+          "m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z"
+        ]
+      },
+      {
+        "symbol": "\\lambda_{\\text{rev}}",
+        "role": "rate used in the ODE for $m_d$ (likely related to $\\lambda_{\\text{revive}}$)",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [],
+    "local_refs": [],
+    "proof": {
+      "availability": "not present",
+      "steps": []
+    }
+  },
+  {
+    "type": "theorem",
+    "label": "thm-mass-conservation",
+    "title": "Total Mass Conservation and Population Dynamics",
+    "nl_statement": "For any sufficiently regular solution $(f(t,z), m_d(t))$ to the Mean-Field Equations, the total population $m_a(t) + m_d(t)$ is conserved, and the alive population $m_a(t)$ evolves according to the balance between revival and killing.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\frac{\\mathrm{d}}{\\mathrm{d}t}\\left[m_a(t) + m_d(t)\\right] = 0"
+      },
+      {
+        "label": null,
+        "latex": "\\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = \\lambda_{\\text{rev}} m_d(t) - k_{\\text{killed}}[f](t)"
+      },
+      {
+        "label": null,
+        "latex": "m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z"
+      },
+      {
+        "label": null,
+        "latex": "k_{\\text{killed}}[f] = \\int_\\Omega c(z)f(z)\\,\\mathrm{d}z"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "$(f(t,z), m_d(t))$ is a sufficiently regular solution to the Mean-Field Equations.",
+        "latex": null
+      },
+      {
+        "text": "The total population is conserved for all time $t>0$. (If $m_a(0) + m_d(0) = 1$, then $m_a(t) + m_d(t) = 1$ for all $t$.)",
+        "latex": null
+      },
+      {
+        "text": "The alive mass evolves according to the balance between killing and revival.",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "Total mass is conserved: $\\frac{\\mathrm{d}}{\\mathrm{d}t}\\left[m_a(t) + m_d(t)\\right] = 0$. The alive mass changes as $\\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = \\lambda_{\\text{rev}} m_d(t) - k_{\\text{killed}}[f](t)$.",
+      "latex": "\\frac{\\mathrm{d}}{\\mathrm{d}t}\\left[m_a(t) + m_d(t)\\right] = 0 \\text{ and } \\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = \\lambda_{\\text{rev}} m_d(t) - k_{\\text{killed}}[f](t)"
+    },
+    "variables": [
+      {
+        "symbol": "f(t,z)",
+        "role": "density distribution function",
+        "constraints": []
+      },
+      {
+        "symbol": "m_d(t)",
+        "role": "dead population mass",
+        "constraints": []
+      },
+      {
+        "symbol": "m_a(t)",
+        "role": "alive population mass",
+        "constraints": [
+          "m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z"
+        ]
+      },
+      {
+        "symbol": "t",
+        "role": "time",
+        "constraints": [
+          "t>0"
+        ]
+      },
+      {
+        "symbol": "z",
+        "role": "spatial variable (or state variable)",
+        "constraints": [
+          "z \\in \\Omega"
+        ]
+      },
+      {
+        "symbol": "\\lambda_{\\text{rev}}",
+        "role": "revival rate constant",
+        "constraints": []
+      },
+      {
+        "symbol": "k_{\\text{killed}}[f]",
+        "role": "instantaneous killing rate",
+        "constraints": [
+          "k_{\\text{killed}}[f] = \\int_\\Omega c(z)f(z)\\,\\mathrm{d}z"
+        ]
+      },
+      {
+        "symbol": "c(z)",
+        "role": "killing coefficient function",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The domain $\\Omega$ is the state space over which $f$ is defined.",
+        "confidence": 1.0
+      },
+      {
+        "text": "The Mean-Field Equations are the governing dynamical equations for $f$ and $m_d$.",
+        "confidence": 1.0
+      },
+      {
+        "text": "Regularity of the solution $(f(t,z), m_d(t))$ is sufficient to allow differentiation and integration as written.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not present in directive",
+      "steps": []
+    }
+  },
+  {
+    "type": "theorem",
+    "label": "thm-killing-rate-consistency",
+    "title": "Consistency of the Interior Killing Rate Approximation",
+    "nl_statement": "Under specific regularity assumptions, a smooth killing rate function $c$ exists, which satisfies pointwise convergence for the discrete exit rate to $c(x,v)$ (Part i), and yields a consistency between the discrete and continuous expected killing fractions, accompanied by a specific error bound (Part ii).",
+    "equations": [
+      {
+        "label": null,
+        "latex": "p_{\\text{exit}}(x,v,\\tau) := \\mathbb{P}\\left(x^+(\\tau; x,v) \\notin X_{\\text{valid}}\\right)"
+      },
+      {
+        "label": null,
+        "latex": "\\lim_{\\tau \\to 0} \\frac{1}{\\tau} p_{\\text{exit}}(x,v,\\tau) = c(x,v)"
+      },
+      {
+        "label": null,
+        "latex": "c(x,v) = \\begin{cases}\n\\frac{(v \\cdot n_x(x))^+}{d(x)} \\cdot \\mathbf{1}_{d(x) < \\delta} & \\text{if } x \\in \\mathcal{T}_\\delta \\\\\n0 & \\text{otherwise}\n\\end{cases}"
+      },
+      {
+        "label": null,
+        "latex": "(v \\cdot n_x(x))^+ := \\max(v \\cdot n_x(x), 0)"
+      },
+      {
+        "label": null,
+        "latex": "K_{\\text{discrete}}(\\tau) := \\int_{\\Omega} p_{\\text{exit}}(x,v,\\tau) f^\\tau(x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v"
+      },
+      {
+        "label": null,
+        "latex": "K_{\\text{continuous}} := \\int_{\\Omega} c(x,v) f(x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v"
+      },
+      {
+        "label": null,
+        "latex": "\\lim_{\\tau \\to 0} \\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) = K_{\\text{continuous}}"
+      },
+      {
+        "label": null,
+        "latex": "\\left|\\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) - K_{\\text{continuous}}\\right| \\le C \\left(\\sqrt{\\tau} + \\|f^\\tau - f\\|_{L^1}\\right)"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Domain regularity assumption",
+        "latex": "[](#asmp-domain-regularity)"
+      },
+      {
+        "text": "Integrator regularity assumption",
+        "latex": "[](#asmp-integrator-regularity)"
+      },
+      {
+        "text": "Density regularity assumption for killing",
+        "latex": "[](#asmp-density-regularity-killing)"
+      }
+    ],
+    "conclusion": {},
+    "variables": [
+      {
+        "symbol": "c",
+        "role": "smooth killing rate function",
+        "constraints": [
+          "\\in C^\\infty_c(\\Omega)",
+          "\\text{compact support in } \\mathcal{T}_\\delta"
+        ]
+      },
+      {
+        "symbol": "p_{\\text{exit}}(x,v,\\tau)",
+        "role": "discrete exit probability",
+        "constraints": []
+      },
+      {
+        "symbol": "(x,v)",
+        "role": "phase space point",
+        "constraints": [
+          "\\in \\Omega"
+        ]
+      },
+      {
+        "symbol": "\\tau",
+        "role": "discrete time step",
+        "constraints": [
+          "\\to 0"
+        ]
+      },
+      {
+        "symbol": "x^+(\\tau; x,v)",
+        "role": "flow map",
+        "constraints": []
+      },
+      {
+        "symbol": "X_{\\text{valid}}",
+        "role": "valid spatial domain subset",
+        "constraints": []
+      },
+      {
+        "symbol": "d(x)",
+        "role": "distance function (implied)",
+        "constraints": []
+      },
+      {
+        "symbol": "n_x(x)",
+        "role": "outward normal vector (implied)",
+        "constraints": []
+      },
+      {
+        "symbol": "K_{\\text{discrete}}(\\tau)",
+        "role": "discrete expected killing fraction",
+        "constraints": []
+      },
+      {
+        "symbol": "f^\\tau(x,v)",
+        "role": "discrete density",
+        "constraints": []
+      },
+      {
+        "symbol": "K_{\\text{continuous}}",
+        "role": "continuous expected killing fraction",
+        "constraints": []
+      },
+      {
+        "symbol": "f(x,v)",
+        "role": "continuous density",
+        "constraints": []
+      },
+      {
+        "symbol": "C",
+        "role": "constant",
+        "constraints": [
+          "\\text{depends only on } M_f, M_{\\nabla f}, M_F, C_R, \\text{ and the geometry of } X_{\\text{valid}}"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The domain $\\Omega$ is a subset of $\\mathbb{R}^d$.",
+        "confidence": 0.95
+      },
+      {
+        "text": "The distance function $d(x)$ refers to the distance to the boundary of $X_{\\text{valid}}$.",
+        "confidence": 0.9
+      },
+      {
+        "text": "The set $\\mathcal{T}_\\delta$ is related to the boundary layer within distance $\\delta$ of the boundary.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [
+      "asmp-domain-regularity",
+      "asmp-integrator-regularity",
+      "asmp-density-regularity-killing"
+    ],
+    "proof": {
+      "availability": "not_provided",
+      "steps": []
+    }
+  },
+  {
+    "type": "theorem",
+    "label": "thm-mean-field-limit-informal",
+    "title": "Mean-Field Limit (Informal Statement)",
+    "nl_statement": "The empirical density $f_N^\\tau(t, x, v)$ of the $N$-particle discrete Fragile Gas dynamics converges weakly to the mean-field density $f(t, x, v)$ as $N \\to \\infty$ and $\\tau \\to 0$ (with $\\tau = O(N^{-\\alpha})$ for $\\alpha > 0$), where $f$ solves the associated mean-field PDE.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "f_N^\\tau(t, x, v) := \\frac{1}{N} \\sum_{i=1}^N \\delta(x - X_i^\\tau(t), v - V_i^\\tau(t))"
+      },
+      {
+        "label": null,
+        "latex": "f_N^\\tau(t, \\cdot, \\cdot) \\xrightarrow{\\text{weak}} f(t, \\cdot, \\cdot)"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "$(X_i^\\tau(t), V_i^\\tau(t))_{i=1}^N$ is the $N$-particle discrete Fragile Gas dynamics with timestep $\\tau$.",
+        "latex": null
+      },
+      {
+        "text": "The limit is taken in the joint limit $N \\to \\infty, \\tau \\to 0$ with $\\tau = O(N^{-\\alpha})$ for $\\alpha > 0$.",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "$f_N^\\tau(t, \\cdot, \\cdot)$ converges weakly to $f(t, \\cdot, \\cdot)$, where $f$ solves the mean-field PDE (Equations [](#eq-mean-field-pde-main) and [](#eq-dead-mass-ode)).",
+      "latex": "f_N^\\tau(t, \\cdot, \\cdot) \\xrightarrow{\\text{weak}} f(t, \\cdot, \\cdot)"
+    },
+    "variables": [
+      {
+        "symbol": "(X_i^\\tau(t), V_i^\\tau(t))_{i=1}^N",
+        "role": "System state",
+        "constraints": []
+      },
+      {
+        "symbol": "\\tau",
+        "role": "Timestep parameter",
+        "constraints": [
+          "\\tau \\to 0"
+        ]
+      },
+      {
+        "symbol": "N",
+        "role": "Number of particles",
+        "constraints": [
+          "N \\to \\infty"
+        ]
+      },
+      {
+        "symbol": "f_N^\\tau(t, x, v)",
+        "role": "Empirical density",
+        "constraints": []
+      },
+      {
+        "symbol": "f(t, x, v)",
+        "role": "Mean-field limit density",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The weak convergence is typically in a suitable space, e.g., $L^p$ or bounded measures.",
+        "confidence": 0.9
+      },
+      {
+        "text": "The convergence rate $\\tau = O(N^{-\\alpha})$ for $\\alpha > 0$ ensures the time discretization error is compensated by the particle number growth.",
+        "confidence": 0.85
+      }
+    ],
+    "local_refs": [
+      "eq-mean-field-pde-main",
+      "eq-dead-mass-ode"
+    ],
+    "proof": {
+      "availability": "none",
+      "steps": []
+    }
+  }
+]

@@ -36,7 +36,7 @@ class TestModuleImports:
     def test_parsing_imports(self):
         """Test parsing module imports."""
         from mathster.parsing import extract_chapter, improve_chapter
-        from mathster.parsing.preprocessing import extract_directive_hints
+        from mathster.directives import extract_directive_hints
 
         assert callable(extract_chapter)
         assert callable(improve_chapter)
@@ -71,7 +71,7 @@ class TestDirectivePreprocessing:
 
     def test_extract_hints_from_text(self):
         """Test extracting directive hints."""
-        from mathster.parsing.preprocessing import extract_directive_hints
+        from mathster.directives import extract_directive_hints
 
         text = """:::{prf:theorem} Test
 :label: thm-test

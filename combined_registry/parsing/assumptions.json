@@ -1,0 +1,117 @@
+{
+  "stage": "parsing",
+  "entity_type": "assumptions",
+  "document_id": "combined",
+  "generated_at": "2025-11-07T12:16:43.475014+00:00",
+  "count": 4,
+  "items": [
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              735,
+              745
+            ]
+          ]
+        },
+        "label": "assumption-regularity-summary",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.2",
+        "section_name": "Well-Posedness and Future Work"
+      },
+      "full_text": "",
+      "label": "assumption-regularity-summary",
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 4. Analysis and Properties of the Mean-Field Equations"
+      }
+    },
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              777,
+              786
+            ]
+          ]
+        },
+        "label": "assumption-domain-regularity",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.1",
+        "section_name": "Mathematical Setup and Regularity Assumptions"
+      },
+      "full_text": "",
+      "label": "assumption-domain-regularity",
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 4. Analysis and Properties of the Mean-Field Equations"
+      }
+    },
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              788,
+              798
+            ]
+          ]
+        },
+        "label": "assumption-integrator-regularity",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.1",
+        "section_name": "Mathematical Setup and Regularity Assumptions"
+      },
+      "full_text": "",
+      "label": "assumption-integrator-regularity",
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 4. Analysis and Properties of the Mean-Field Equations"
+      }
+    },
+    {
+      "source": {
+        "file_path": "docs/source/1_euclidean_gas/07_mean_field.md",
+        "line_range": {
+          "lines": [
+            [
+              800,
+              808
+            ]
+          ]
+        },
+        "label": "assumption-density-regularity-killing",
+        "volume": "1_euclidean_gas",
+        "article_id": "07_mean_field",
+        "section": "4.4.1",
+        "section_name": "Mathematical Setup and Regularity Assumptions"
+      },
+      "full_text": "",
+      "label": "assumption-density-regularity-killing",
+      "_registry_context": {
+        "stage": "parsing",
+        "document_id": "1_euclidean_gas",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 4. Analysis and Properties of the Mean-Field Equations"
+      }
+    }
+  ]
+}
