@@ -150,6 +150,7 @@ class ParseTheoremDirectiveSplit(dspy.Signature):
     proof_json = dspy.OutputField(
         desc='JSON object: {"availability": "...", "steps":[{"kind": "...", "text": "...", "latex": "..."}]}'
     )
+    tags_json = dspy.OutputField(desc="JSON array of 3-10 keyword strings for search indexing.")
 
 
 # --------------------------------------------------------------------------------------
@@ -239,6 +240,7 @@ def theorem_reward(args: dict[str, Any], pred) -> float:
     impls = _json_loads(getattr(pred, "implicit_assumptions_json", None), [])
     local_refs = _json_loads(getattr(pred, "local_refs_json", None), [])
     proof = _json_loads(getattr(pred, "proof_json", None), {})
+    tags = _json_loads(getattr(pred, "tags_json", None), [])
 
     # We’ll accumulate partial points toward 1.0
     score = 0.0
@@ -382,10 +384,19 @@ def theorem_reward(args: dict[str, Any], pred) -> float:
                 s8 += 0.02
     score += min(s8, 0.12)
 
-    # 9) Anti‑metadata check across main strings (0.0–0.10 bonus)
+    # 9) Tags / keywords (0.05)
+    max_score += 0.05
+    s9 = 0.0
+    if isinstance(tags, list):
+        s9 += 0.02
+        if 3 <= len(tags) <= 10 and all(isinstance(tag, str) and tag.strip() for tag in tags):
+            s9 += 0.03
+    score += min(s9, 0.05)
+
+    # 10) Anti‑metadata check across main strings (0.0–0.10 bonus)
     #    Encourage ignoring computable metadata.
     max_score += 0.10
-    s9 = 0.10
+    s10 = 0.10
     texts_to_check = [label_str, title_str, nl_statement_str]
     for arr in (hypotheses, variables, impls):
         for obj in arr if isinstance(arr, list) else []:
@@ -402,11 +413,23 @@ def theorem_reward(args: dict[str, Any], pred) -> float:
             if isinstance(st.get("latex"), str):
                 texts_to_check.append(st["latex"])
 
+    # proof step texts/latex
+    for st in proof.get("steps", []) if isinstance(proof, dict) else []:
+        if isinstance(st, dict):
+            if isinstance(st.get("text"), str):
+                texts_to_check.append(st["text"])
+            if isinstance(st.get("latex"), str):
+                texts_to_check.append(st["latex"])
+
+    for tag in tags if isinstance(tags, list) else []:
+        if isinstance(tag, str):
+            texts_to_check.append(tag)
+
     for t in texts_to_check:
         if _URI_PAT.search(t or "") or _META_PAT.search(t or ""):
-            s9 -= 0.02  # small penalty per occurrence
-    s9 = max(0.0, s9)
-    score += min(s9, 0.10)
+            s10 -= 0.02  # small penalty per occurrence
+    s10 = max(0.0, s10)
+    score += min(s10, 0.10)
 
     # Normalize (just in case weights drift)
     return max(0.0, min(score, 1.0))
@@ -438,6 +461,7 @@ def assemble_output(res) -> dict[str, Any]:
         "implicit_assumptions": j(res.implicit_assumptions_json, []),
         "local_refs": j(res.local_refs_json, []),
         "proof": j(res.proof_json, {}),
+        "tags": j(res.tags_json, []),
     }
 
 

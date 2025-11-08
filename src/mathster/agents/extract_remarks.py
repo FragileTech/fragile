@@ -93,6 +93,9 @@ class ParseRemarkDirectiveSplit(dspy.Signature):
         desc='JSON array [{"text": str|null, "severity": str|null}, ...]'
     )
     dependencies_json = dspy.OutputField(desc='JSON array of strings ["sec-2.1","rem-other",...]')
+    tags_json = dspy.OutputField(
+        desc='JSON array of 3-10 keyword strings for search (e.g., ["design-choice","stability"]).'
+    )
 
 
 # --------------------------------------------------------------------------------------
@@ -153,6 +156,7 @@ def remark_reward(args: dict[str, Any], pred) -> float:
     references = _json_loads(getattr(pred, "references_json", None), [])
     recommendations = _json_loads(getattr(pred, "recommendations_json", None), [])
     dependencies = _json_loads(getattr(pred, "dependencies_json", None), [])
+    tags = _json_loads(getattr(pred, "tags_json", None), [])
 
     score = 0.0
 
@@ -242,7 +246,15 @@ def remark_reward(args: dict[str, Any], pred) -> float:
         part += 0.05
     score += min(part, 0.05)
 
-    # 8) Anti-metadata bonus (0.05)
+    # 8) Tags / keywords (0.05)
+    part = 0.0
+    if isinstance(tags, list):
+        part += 0.02
+        if 3 <= len(tags) <= 10 and all(isinstance(tag, str) and tag.strip() for tag in tags):
+            part += 0.03
+    score += min(part, 0.05)
+
+    # 9) Anti-metadata bonus (0.05)
     part = 0.05
     text_blobs = [label_str, title_str, remark_type_str, nl_summary_str]
     for bucket in (key_points, quantitative_notes, recommendations):
@@ -254,6 +266,9 @@ def remark_reward(args: dict[str, Any], pred) -> float:
                         text_blobs.append(val)
             elif isinstance(obj, str):
                 text_blobs.append(obj)
+    for tag in tags if isinstance(tags, list) else []:
+        if isinstance(tag, str):
+            text_blobs.append(tag)
     for blob in text_blobs:
         if _URI_PAT.search(blob or "") or _META_PAT.search(blob or ""):
             part -= 0.01
@@ -289,6 +304,7 @@ def assemble_output(res) -> dict[str, Any]:
         "references": as_json(res.references_json, []),
         "recommendations": as_json(res.recommendations_json, []),
         "dependencies": as_json(res.dependencies_json, []),
+        "tags": as_json(res.tags_json, []),
     }
 
 

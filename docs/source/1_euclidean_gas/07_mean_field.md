@@ -705,10 +705,10 @@ $$
 
 Evaluating each term using the properties established in previous sections:
 
-1.  **Transport**: From Lemma 3.1, $\int_\Omega L^\dagger f\,\mathrm{d}z = 0$ (reflecting boundaries)
+1.  **Transport**: From {prf:ref}`lem-mass-conservation-transport`, $\int_\Omega L^\dagger f\,\mathrm{d}z = 0$ (reflecting boundaries)
 2.  **Killing**: By definition, $\int_\Omega c(z)f\,\mathrm{d}z = k_{\text{killed}}[f]$
-3.  **Revival**: From Definition 2.3.2, $\int_\Omega B[f, m_d]\,\mathrm{d}z = \lambda_{\text{revive}} m_d(t)$
-4.  **Internal cloning**: From Definition 2.3.3, $\int_\Omega S[f]\,\mathrm{d}z = 0$
+3.  **Revival**: From {prf:ref}`def-revival-operator`, $\int_\Omega B[f, m_d]\,\mathrm{d}z = \lambda_{\text{revive}} m_d(t)$
+4.  **Internal cloning**: From {prf:ref}`def-cloning-generator`, $\int_\Omega S[f]\,\mathrm{d}z = 0$
 
 Therefore:
 
@@ -749,7 +749,7 @@ The Mean-Field Equations for the Euclidean Gas form a coupled system of a PDE (f
 
 *   **Coupled Reaction-Diffusion Structure:** The system has the form of a coupled reaction-diffusion system. The PDE for $f$ has the form of a reaction-diffusion PDE with non-local reaction terms. The kinetic operator $L^\dagger$ provides the diffusion (with reflecting boundaries), while the killing $-c(z)f$, revival $B[f, m_d]$, and cloning $S[f]$ terms provide the reactions. The ODE for $m_d$ describes the evolution of the dead reservoir. This structure is well-studied in PDE theory and enables the application of standard analytical techniques for coupled systems.
 
-*   **Total Mass Conservation with Dynamic Equilibrium:** As proven in Theorem 3.3, the coupled system conserves the total population $m_a(t) + m_d(t) = 1$. However, unlike a model with instantaneous revival, the alive and dead masses can exchange and evolve towards a non-trivial **stationary state** where $\mathrm{d}/\mathrm{d}t\, m_a = 0$ and $\mathrm{d}/\mathrm{d}t\, m_d = 0$. At this stationary state, the killing and revival rates are balanced: $k_{\text{killed}}[f_\infty] = \lambda_{\text{revive}} m_{d,\infty}$. This faithfully represents the discrete algorithm's behavior where the number of alive walkers $k$ fluctuates and converges to a stationary distribution.
+*   **Total Mass Conservation with Dynamic Equilibrium:** As proven in {prf:ref}`thm-mass-conservation`, the coupled system conserves the total population $m_a(t) + m_d(t) = 1$. However, unlike a model with instantaneous revival, the alive and dead masses can exchange and evolve towards a non-trivial **stationary state** where $\mathrm{d}/\mathrm{d}t\, m_a = 0$ and $\mathrm{d}/\mathrm{d}t\, m_d = 0$. At this stationary state, the killing and revival rates are balanced: $k_{\text{killed}}[f_\infty] = \lambda_{\text{revive}} m_{d,\infty}$. This faithfully represents the discrete algorithm's behavior where the number of alive walkers $k$ fluctuates and converges to a stationary distribution.
 
 ### 4.2. Well-Posedness and Future Work
 

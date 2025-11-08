@@ -99,6 +99,9 @@ class ParseAssumptionDirectiveSplit(dspy.Signature):
     )
     references_json = dspy.OutputField(desc='JSON array of strings ["ax-1.2","def-fit",...]')
     notes_json = dspy.OutputField(desc='JSON array [{"type": str|null, "text": str|null}, ...]')
+    tags_json = dspy.OutputField(
+        desc='JSON array of 3-10 keyword strings for search (e.g., ["mass","confiment","ldp"]).'
+    )
 
 
 # --------------------------------------------------------------------------------------
@@ -159,6 +162,7 @@ def assumption_reward(args: dict[str, Any], pred) -> float:
     parameters = _json_loads(getattr(pred, "parameters_json", None), [])
     references = _json_loads(getattr(pred, "references_json", None), [])
     notes = _json_loads(getattr(pred, "notes_json", None), [])
+    tags = _json_loads(getattr(pred, "tags_json", None), [])
 
     score = 0.0
 
@@ -259,7 +263,15 @@ def assumption_reward(args: dict[str, Any], pred) -> float:
             part += 0.03
     score += min(part, 0.05)
 
-    # 8) Anti-metadata bonus (0.05)
+    # 8) Tags / keywords (0.05)
+    part = 0.0
+    if isinstance(tags, list):
+        part += 0.02
+        if 3 <= len(tags) <= 10 and all(isinstance(tag, str) and tag.strip() for tag in tags):
+            part += 0.03
+    score += min(part, 0.05)
+
+    # 9) Anti-metadata bonus (0.05)
     part = 0.05
     text_blobs = [label_str, title_str, scope_str, nl_summary_str]
     for bucket in (bullet_items, conditions, notes):
@@ -271,6 +283,9 @@ def assumption_reward(args: dict[str, Any], pred) -> float:
                         text_blobs.append(val)
             elif isinstance(obj, str):
                 text_blobs.append(obj)
+    for tag in tags if isinstance(tags, list) else []:
+        if isinstance(tag, str):
+            text_blobs.append(tag)
     for blob in text_blobs:
         if _URI_PAT.search(blob or "") or _META_PAT.search(blob or ""):
             part -= 0.01
@@ -306,6 +321,7 @@ def assemble_output(res) -> dict[str, Any]:
         "parameters": as_json(res.parameters_json, []),
         "references": as_json(res.references_json, []),
         "notes": as_json(res.notes_json, []),
+        "tags": as_json(res.tags_json, []),
     }
 
 

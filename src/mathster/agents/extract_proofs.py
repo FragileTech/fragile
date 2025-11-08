@@ -130,6 +130,9 @@ class ParseProofDirectiveSplit(dspy.Signature):
     gaps_json = dspy.OutputField(
         desc='JSON array [{"description": str, "severity": str|null, "location_hint": str|null}, ...].'
     )
+    tags_json = dspy.OutputField(
+        desc='JSON array of 3-10 keyword strings for search (e.g., ["mass-conservation","flux"]).'
+    )
 
 
 # --------------------------------------------------------------------------------------
@@ -335,7 +338,15 @@ def proof_reward(args: dict[str, Any], pred) -> float:
             part += 0.03
     score += min(part, 0.05)
 
-    # 9) Anti-metadata bonus (0.05)
+    # 9) Tags / keywords (0.05)
+    part = 0.0
+    if isinstance(tags, list):
+        part += 0.02
+        if 3 <= len(tags) <= 10 and all(isinstance(tag, str) and tag.strip() for tag in tags):
+            part += 0.03
+    score += min(part, 0.05)
+
+    # 10) Anti-metadata bonus (0.05)
     part = 0.05
     text_blobs = [label_str, proves_label_str, strategy_summary_str]
     for bucket in (assumptions, steps, key_equations, cases, remarks, gaps):
@@ -352,6 +363,9 @@ def proof_reward(args: dict[str, Any], pred) -> float:
             val = conclusion.get(key)
             if isinstance(val, str):
                 text_blobs.append(val)
+    for tag in tags if isinstance(tags, list) else []:
+        if isinstance(tag, str):
+            text_blobs.append(tag)
     for blob in text_blobs:
         if _URI_PAT.search(blob or "") or _META_PAT.search(blob or ""):
             part -= 0.01
@@ -385,6 +399,7 @@ def assemble_output(res) -> dict[str, Any]:
         "cases": as_json(res.cases_json, []),
         "remarks": as_json(res.remarks_json, []),
         "gaps": as_json(res.gaps_json, []),
+        "tags": as_json(res.tags_json, []),
     }
 
 

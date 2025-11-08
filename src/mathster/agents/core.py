@@ -27,7 +27,8 @@ import re
 from typing import Any, Callable, Iterable, Iterator, Sequence
 
 from tqdm import tqdm
-
+import dspy
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -52,8 +53,30 @@ __all__ = [
     "safe_json_dumps",
     "safe_json_loads",
     "strip_line_numbers",
+    "ExtractSignature",
+    "ExtractWithParametersSignature",
 ]
+# --------------------------------------------------------------------------------------
+# Dspy output fields shared across multiple agents
+# --------------------------------------------------------------------------------------
+class ExtractSignature(dspy.Signature):
+    """Shared base signature for directive extraction agents."""
+    references_json = dspy.OutputField(desc='JSON array of labels referencing other artifacts (e.g., ["def-...", "thm-...", ...])')
+    tags_json = dspy.OutputField(
+        desc='JSON array of 3-10 keyword strings for search (e.g., ["greedy","pairing","diversity"]).'
+    )
 
+class Parameter(BaseModel):
+    symbol: str = Field(..., description="Parameter symbol.")
+    description: str | None = Field(default=None, description="Parameter description.")
+    constraints: list[str] = Field(default_factory=list, description="Parameter constraints.")
+    tags: list[str] = Field(default_factory=list, description='array of 3-10 keyword strings for search (e.g., ["greedy","pairing","diversity"]).')
+
+class ExtractWithParametersSignature(ExtractSignature):
+    """Extension of ExtractSignature including parameter extraction."""
+    parameters: list[Parameter] = dspy.OutputField(
+            desc='JSON array [{"symbol": str, "description": str|null, "constraints": [str,...], "tags": [str,...]}, ...]'
+        )
 
 # --------------------------------------------------------------------------------------
 # Regular expressions & constants shared across reward functions and text utilities
@@ -518,3 +541,4 @@ def run_directive_extraction_loop(
     write_outputs(paths.extract_path, outputs)
     logger_use.info("Wrote %s directives to %s", len(outputs), paths.extract_path)
     return outputs
+

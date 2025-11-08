@@ -132,6 +132,9 @@ class ParseDefinitionDirectiveSplit(dspy.Signature):
         desc='JSON array of label strings ["def-foo","thm-bar",...]'
     )
     notes_json = dspy.OutputField(desc='JSON array [{"type": str|null, "text": str|null}, ...]')
+    tags_json = dspy.OutputField(
+        desc='JSON array of 3-10 keyword strings for search (e.g., ["phase-space","density"]).'
+    )
 
 
 # --------------------------------------------------------------------------------------
@@ -207,6 +210,7 @@ def definition_reward(args: dict[str, Any], pred) -> float:
     examples = _json_loads(getattr(pred, "examples_json", None), [])
     related_refs = _json_loads(getattr(pred, "related_refs_json", None), [])
     notes = _json_loads(getattr(pred, "notes_json", None), [])
+    tags = _json_loads(getattr(pred, "tags_json", None), [])
 
     score = 0.0
     max_score = 0.0
@@ -315,9 +319,18 @@ def definition_reward(args: dict[str, Any], pred) -> float:
             s8 += 0.03
     score += min(s8, 0.05)
 
-    # 9) Anti-metadata bonus (0.05)
+    # 9) Tags / keywords (0.05)
     max_score += 0.05
-    s9 = 0.05
+    s9 = 0.0
+    if isinstance(tags, list):
+        s9 += 0.02
+        if 3 <= len(tags) <= 10 and all(isinstance(tag, str) and tag.strip() for tag in tags):
+            s9 += 0.03
+    score += min(s9, 0.05)
+
+    # 10) Anti-metadata bonus (0.05)
+    max_score += 0.05
+    s10 = 0.05
     text_blobs = [label_str, term_str, nl_definition_str]
     for bucket in (formal_conditions, properties, parameters, examples, notes):
         for obj in bucket if isinstance(bucket, list) else []:
@@ -328,11 +341,14 @@ def definition_reward(args: dict[str, Any], pred) -> float:
                         text_blobs.append(val)
             elif isinstance(obj, str):
                 text_blobs.append(obj)
+    for tag in tags if isinstance(tags, list) else []:
+        if isinstance(tag, str):
+            text_blobs.append(tag)
     for blob in text_blobs:
         if _URI_PAT.search(blob or "") or _META_PAT.search(blob or ""):
-            s9 -= 0.01
-    s9 = max(0.0, s9)
-    score += min(s9, 0.05)
+            s10 -= 0.01
+    s10 = max(0.0, s10)
+    score += min(s10, 0.05)
 
     return max(0.0, min(score, 1.0))
 
@@ -360,6 +376,7 @@ def assemble_output(res) -> dict[str, Any]:
         "examples": as_json(res.examples_json, []),
         "related_refs": as_json(res.related_refs_json, []),
         "notes": as_json(res.notes_json, []),
+        "tags": as_json(res.tags_json, []),
     }
 
 
