@@ -30,6 +30,7 @@ ParseTheoremDirectiveSplit signature to emit *one* consolidated JSON object per 
 """
 
 from __future__ import annotations
+import logging
 import argparse, json, re, sys
 from pathlib import Path
 from typing import Any, Dict, Iterable, Optional
@@ -37,7 +38,8 @@ from typing import Any, Dict, Iterable, Optional
 import dspy
 from dotenv import load_dotenv
 
-
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 # --------------------------------------------------------------------------------------
 # 1) Your split-output signature (exactly as you defined it earlier)
 #    If you already import it from your own module, delete this class and import instead.
@@ -461,8 +463,6 @@ def assemble_output(res) -> Dict[str, Any]:
 # --------------------------------------------------------------------------------------
 def run_agent(
     document_path: str | Path,
-    theorems_path: str | Path | None=None,
-    out_path: str | Path | None=None,
     lm_spec: str = "openai/gpt-4o-mini",
     passes: int = 5,
     threshold: float = 0.95,
@@ -479,42 +479,49 @@ def run_agent(
         reward_fn=theorem_reward,
         threshold=threshold,
     )
-
+    theorem_subtypes = ["theorem", "lemma", "proposition", "corollary", "claim"]
     # Load doc (for tiny context only)
     doc_path = Path(document_path)
     document_folder = doc_path.parent / str(doc_path.stem)
-    if out_path is None:
-        out_path = document_folder / "extract"
-        out_path.mkdir(exist_ok=True)
-        out_path = out_path / "theorem.json"
-    if theorems_path is None:
-        theorems_path = document_folder / "registry" / "directives" / "theorem.json"
-    # Iterate theorems and write outputs
-    doc_text = doc_path.read_text(encoding="utf-8")
-    out_f = Path(out_path).open("w", encoding="utf-8")
-    outputs = []
-    for idx, obj in enumerate(load_json_or_jsonl(Path(theorems_path)), start=1):
-        if not isinstance(obj, dict):
+    for theorem_subtype in theorem_subtypes:
+        logger.info(f"Processing {theorem_subtype}s...")
+        target_file = f"{theorem_subtype}.json"
+        theorems_path = document_folder / "registry" / "directives" / target_file
+        logger.info(f"from file path: {theorems_path}")
+        if not Path(theorems_path).exists():
             continue
 
-        directive_text = extract_directive_text(obj)
-        context_hints  = tiny_context_hints(obj, doc_text, window=320)
-        print(idx)
+        out_path = document_folder / "extract"
+        out_path.mkdir(exist_ok=True)
+        out_path = out_path / target_file
+        # Iterate theorems and write outputs
+        doc_text = doc_path.read_text(encoding="utf-8")
+        out_f = Path(out_path).open("w", encoding="utf-8")
+        outputs = []
+        for idx, obj in enumerate(load_json_or_jsonl(Path(theorems_path)), start=1):
+            if not isinstance(obj, dict):
+                continue
 
-        try:
-            res = program(directive_text=obj, context_hints=context_hints)
-            print("✓ Refine succeeded")
-        except Exception:
-            # Fallback: one-pass predict
-            res = dspy.Predict(ParseTheoremDirectiveSplit)(
-                directive_text=directive_text, context_hints=context_hints
-            )
+            directive_text = extract_directive_text(obj)
+            context_hints  = tiny_context_hints(obj, doc_text, window=320)
 
-        assembled = assemble_output(res)
-        outputs.append(assembled)
-    out_f.write(json.dumps(outputs, ensure_ascii=False, indent=2) + "\n")
 
-    out_f.close()
+            try:
+                res = program(directive_text=obj, context_hints=context_hints)
+                logger.info(f"✓ Refine succeeded for item {idx}: {obj.get('label')}")
+            except Exception:
+                # Fallback: one-pass predict
+                logger.warning(f"Refine failed for item #{idx}: {obj.get('label')}, falling back to single-pass Predict.")
+                res = dspy.Predict(ParseTheoremDirectiveSplit)(
+                    directive_text=directive_text, context_hints=context_hints
+                )
+
+            assembled = assemble_output(res)
+            outputs.append(assembled)
+        out_f.write(json.dumps(outputs, ensure_ascii=False, indent=2) + "\n")
+
+        out_f.close()
+        logger.info(f"Wrote outputs to {out_path}")
 
 
 # --------------------------------------------------------------------------------------
@@ -523,17 +530,13 @@ def run_agent(
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Parse theorem directives (structured objects as input) via DSPy Refine.")
     ap.add_argument("--doc", required=True, help="Path to the full document (used only for tiny context hints).")
-    ap.add_argument("--theorems", required=False, default=None, help="Path to JSON/JSONL of theorem objects (like the provided example).")
-    ap.add_argument("--out", required=False, default=None, help="Output JSONL; one structured theorem per line.")
     ap.add_argument("--lm", default="gemini/gemini-flash-lite-latest", help="LM spec for DSPy.")
     ap.add_argument("--passes", type=int, default=5, help="Refine attempts (N).")
     ap.add_argument("--threshold", type=float, default=0.95, help="Refine early-stop threshold.")
     args = ap.parse_args(argv)
 
     run_agent(
-        theorems_path=args.theorems,
         document_path=args.doc,
-        out_path=args.out,
         lm_spec=args.lm,
         passes=args.passes,
         threshold=args.threshold,

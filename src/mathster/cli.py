@@ -215,6 +215,99 @@ def parse_command(
         )
 
 
+@cli.command(
+    "registry",
+    help=(
+        "Build directive registries for one document or batches (defaults to docs/source, "
+        "batch mode, forced rebuild, verbose output)."
+    ),
+)
+@click.argument(
+    "path",
+    required=False,
+    default="docs/source",
+    type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
+)
+@click.option(
+    "--batch/--no-batch",
+    default=True,
+    help="Process entire directory tree when enabled.",
+)
+@click.option(
+    "--build-unified-only",
+    is_flag=True,
+    help="Only assemble the unified registry from existing document registries.",
+)
+@click.option(
+    "--force/--no-force",
+    default=True,
+    help="Force regeneration even when registry files already exist.",
+)
+@click.option(
+    "--no-unified",
+    is_flag=True,
+    help="Skip unified registry build during batch processing.",
+)
+@click.option(
+    "--unified-output",
+    type=click.Path(file_okay=False, dir_okay=True, path_type=Path),
+    help="Custom destination for unified registry files.",
+)
+@click.option(
+    "--verbose/--no-verbose",
+    default=True,
+    help="Toggle verbose logging for directives-stage processing.",
+)
+def registry_command(
+    path: Path,
+    batch: bool,
+    build_unified_only: bool,
+    force: bool,
+    no_unified: bool,
+    unified_output: Optional[Path],
+    verbose: bool,
+) -> None:
+    """Expose directives-stage registry building through the CLI."""
+    from mathster.registry.directives_stage import (
+        build_unified_registry,
+        process_batch,
+        process_document,
+    )
+
+    logging.basicConfig(
+        level=logging.INFO if verbose else logging.WARNING,
+        format="%(message)s",
+    )
+
+    target_path = path
+    if not target_path.exists():
+        raise click.ClickException(f"Path does not exist: {target_path}")
+
+    try:
+        if build_unified_only:
+            success = build_unified_registry(
+                target_path,
+                output_dir=unified_output,
+                verbose=verbose,
+            )
+        elif batch:
+            results = process_batch(
+                target_path,
+                force=force,
+                verbose=verbose,
+                build_unified=not no_unified,
+                unified_output=unified_output,
+            )
+            success = all(results.values())
+        else:
+            success = process_document(target_path, force=force, verbose=verbose)
+    except Exception as exc:  # pragma: no cover - CLI surface
+        raise click.ClickException(str(exc)) from exc
+
+    if not success:
+        raise click.ClickException("Directive registry build failed")
+
+
 @cli.command("validate", help="Validate refined or pipeline entities.")
 @click.option(
     "--refined-dir",

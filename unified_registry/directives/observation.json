@@ -1,7 +1,7 @@
 {
   "stage": "directives",
   "directive_type": "observation",
-  "generated_at": "2025-11-08T17:07:43.353790+00:00",
+  "generated_at": "2025-11-08T17:16:20.405008+00:00",
   "source_documents": [
     "09_kl_convergence",
     "16_convergence_mean_field",
