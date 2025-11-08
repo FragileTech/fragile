@@ -1,0 +1,730 @@
+[
+  {
+    "label": "def-mean-field-phase-space",
+    "term": "single-particle phase space",
+    "object_type": "set",
+    "nl_definition": "The single-particle phase space $\\Omega$ is the Cartesian product of the domain of valid positions $X_{\\text{valid}}$ and the closed ball of allowed velocities $V_{\\text{alg}}$.",
+    "formal_conditions": [
+      {
+        "text": "The single-particle phase space, denoted $\\Omega$, is the Cartesian product of the valid position and velocity domains:",
+        "latex": "$\\Omega := X_{\\text{valid}} \\times V_{\\text{alg}}$"
+      }
+    ],
+    "properties": [
+      {
+        "name": "Complete Kinematic States",
+        "description": "Defines the complete set of possible kinematic states (position and velocity) a particle can occupy."
+      },
+      {
+        "name": "Dependence on Constraints",
+        "description": "Its properties are a direct translation of the constraints imposed on the walkers in the discrete Euclidean Gas algorithm."
+      }
+    ],
+    "parameters": [],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "Motivation",
+        "text": "The phase space defines the complete set of possible kinematic states—position and velocity—that a particle can occupy."
+      }
+    ]
+  },
+  {
+    "label": "def-phase-space-density",
+    "term": "Phase-Space Density",
+    "object_type": "function",
+    "nl_definition": "The phase-space sub-probability density $f(t,x,v)$ describing the state of the swarm's alive population at time $t \\ge 0$.",
+    "formal_conditions": [
+      {
+        "text": "The mass of alive walkers in $A$ is given by the integral:",
+        "latex": "\\text{Alive mass in } A = \\int_A f(t, z) dz."
+      },
+      {
+        "text": "The total mass of alive walkers $m_a(t)$ is bounded by 1:",
+        "latex": "m_a(t) := \\int_{\\Omega} f(t,x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v \\le 1"
+      }
+    ],
+    "properties": [
+      {
+        "name": "Domain/Codomain",
+        "description": "$f: [0, \\infty) \\times \\Omega \\to [0, \\infty)$"
+      },
+      {
+        "name": "Interpretation",
+        "description": "A high value signifies a high concentration of probability mass."
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "t",
+        "description": "Time",
+        "constraints": [
+          "t \\ge 0"
+        ]
+      },
+      {
+        "symbol": "z",
+        "description": "Phase space coordinate (implicitly $(x,v)$)",
+        "constraints": []
+      },
+      {
+        "symbol": "A",
+        "description": "Any measurable subset of the phase space $\\Omega$",
+        "constraints": [
+          "A \\subseteq \\Omega",
+          "A \\text{ is measurable}"
+        ]
+      },
+      {
+        "symbol": "f(t,z)",
+        "description": "The phase-space sub-probability density",
+        "constraints": [
+          "f(t, z) \\ge 0"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "Note",
+        "text": "The total mass of dead walkers is $m_d(t) = 1 - m_a(t)$."
+      },
+      {
+        "type": "Note",
+        "text": "The evolution is described by a coupled system for $f(t,z)$ and $m_d(t)$ that conserves the total mass $m_a(t) + m_d(t) = 1$."
+      }
+    ]
+  },
+  {
+    "label": "def-mean-field-moments",
+    "term": "Mean-Field Statistical Moments",
+    "object_type": "other",
+    "nl_definition": "Functionals of the phase-space density $f(t, \\cdot)$ representing the reward moments ($\\mu_R[f], \\sigma_R^2[f]$) and distance moments ($\\mu_D[f], \\sigma_D^2[f]$) computed relative to the normalized density of the alive population $f(t,z) / m_a(t)$.",
+    "formal_conditions": [
+      {
+        "text": "The mean reward moment $\\mu_R[f](t)$ is computed as the expected value over the normalized alive population:",
+        "latex": "\\mu_R[f](t) := \\int_{\\Omega} R(z) \\frac{f(t,z)}{m_a(t)}\\mathrm{d}z"
+      },
+      {
+        "text": "The reward variance moment $\\sigma_R^2[f](t)$:",
+        "latex": "\\sigma_R^2[f](t) := \\int_{\\Omega} \\bigl(R(z) - \\mu_R[f](t)\\bigr)^2 \\frac{f(t,z)}{m_a(t)}\\mathrm{d}z"
+      },
+      {
+        "text": "The mean distance moment $\\mu_D[f](t)$ is the expectation of the distance between two particles drawn independently from the normalized alive population:",
+        "latex": "\\mu_D[f](t) := \\iint_{\\Omega \\times \\Omega} d_{\\mathcal{Y}}(\\varphi(z), \\varphi(z')) \\frac{f(t,z)}{m_a(t)} \\frac{f(t,z')}{m_a(t)}\\mathrm{d}z\\mathrm{d}z'"
+      },
+      {
+        "text": "The distance variance moment $\\sigma_D^2[f](t)$:",
+        "latex": "\\sigma_D^2[f](t) := \\iint_{\\Omega \\times \\Omega} \\bigl(d_{\\mathcal{Y}}(\\varphi(z), \\varphi(z')) - \\mu_D[f](t)\\bigr)^2 \\frac{f(t,z)}{m_a(t)} \\frac{f(t,z')}{m_a(t)}\\mathrm{d}z\\mathrm{d}z'"
+      }
+    ],
+    "properties": [
+      {
+        "name": "Dependence on $f$",
+        "description": "The moments are functionals of $f$, denoted by the notation $\\mu[f]$."
+      },
+      {
+        "name": "Normalization",
+        "description": "Moments are computed using the normalized density $f(t,z) / m_a(t)$."
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "f(t, \\cdot)",
+        "description": "The phase-space density at time $t$.",
+        "constraints": []
+      },
+      {
+        "symbol": "t",
+        "description": "Time.",
+        "constraints": []
+      },
+      {
+        "symbol": "\\Omega",
+        "description": "The phase space.",
+        "constraints": []
+      },
+      {
+        "symbol": "m_a(t)",
+        "description": "Total alive mass, defined as $m_a(t) = \\int_{\\Omega} f(t,z)\\,\\mathrm{d}z$.",
+        "constraints": []
+      },
+      {
+        "symbol": "R(z)",
+        "description": "The reward function dependent on state $z$.",
+        "constraints": []
+      },
+      {
+        "symbol": "d_{\\mathcal{Y}}(\\varphi(z), \\varphi(z'))",
+        "description": "The distance metric between states represented by $\\varphi(z)$ and $\\varphi(z')$.",
+        "constraints": []
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "Motivation",
+        "text": "These moments are defined as the mean-field limit replacements for empirical statistics computed over finite sets of alive walkers."
+      },
+      {
+        "type": "Notation",
+        "text": "The notation $\\mu[f]$ emphasizes that these are numbers depending on the entire shape of the function $f$."
+      }
+    ]
+  },
+  {
+    "label": "def-mean-field-patched-std",
+    "term": "Mean-Field Regularized Standard Deviations",
+    "object_type": "function",
+    "nl_definition": "The Mean-Field Regularized Standard Deviations are functionals of the density $f$, derived by applying a regularization function $\\sigma'_{\\text{reg}}$ to the mean-field variance functionals $\\sigma_R^2[f](t)$ and $\\sigma_D^2[f](t)$.",
+    "formal_conditions": [
+      {
+        "text": "Definition of $\\widehat{\\sigma}_R[f](t)$",
+        "latex": "\\widehat{\\sigma}_R[f](t) := \\sigma\\'\\_{\\text{reg}}(\\sigma_R^2[f](t))"
+      },
+      {
+        "text": "Definition of $\\widehat{\\sigma}_D[f](t)$",
+        "latex": "\\widehat{\\sigma}_D[f](t) := \\sigma\\'\\_{\\text{reg}}(\\sigma_D^2[f](t))"
+      }
+    ],
+    "properties": [],
+    "parameters": [
+      {
+        "symbol": "f",
+        "description": "The density function, a functional argument.",
+        "constraints": []
+      },
+      {
+        "symbol": "t",
+        "description": "Time parameter.",
+        "constraints": []
+      },
+      {
+        "symbol": "\\sigma_R^2[f](t)",
+        "description": "The mean-field variance functional.",
+        "constraints": []
+      },
+      {
+        "symbol": "\\sigma_D^2[f](t)",
+        "description": "The mean-field variance functional (likely referring to diffusion term).",
+        "constraints": []
+      },
+      {
+        "symbol": "\\sigma\\'\\_{\\text{reg}}",
+        "description": "The Regularized Standard Deviation function (from abstract framework).",
+        "constraints": []
+      },
+      {
+        "symbol": "\\widehat{\\sigma}_R[f](t)",
+        "description": "The Regularized Standard Deviation functional (Random/Restricted).",
+        "constraints": []
+      },
+      {
+        "symbol": "\\widehat{\\sigma}_D[f](t)",
+        "description": "The Regularized Standard Deviation functional (Diffusion).",
+        "constraints": []
+      }
+    ],
+    "examples": [],
+    "related_refs": [
+      "def-Regularized Standard Deviation"
+    ],
+    "notes": [
+      {
+        "type": "Motivation",
+        "text": "These are introduced to ensure numerical stability by preventing denominators from approaching zero, especially when the true variance $\\sigma^2[f]$ is close to zero (highly converged swarm)."
+      }
+    ]
+  },
+  {
+    "label": "def-mean-field-z-scores",
+    "term": "Mean-Field Z-Scores",
+    "object_type": "other",
+    "nl_definition": "The mean-field Z-scores for a particle at state $z$ and a potential companion at state $z_c$ at time $t$, denoted $\\widetilde{r}[f]$ and $\\widetilde{d}[f]$, are standardized versions of raw measurements derived using global, density-dependent moments.",
+    "formal_conditions": [
+      {
+        "text": "The mean-field Z-scores at time $t$ for a particle at state $z$ and a potential companion at state $z_c$ are defined as:",
+        "latex": "\\widetilde{r}[f](z,t) := \\frac{R(z) - \\mu_R[f](t)}{\\widehat{\\sigma}_R[f](t)}, \\qquad \\widetilde{d}[f](z,z_c,t) := \\frac{d_{\\mathcal{Y}}(\\varphi(z),\\varphi(z_c)) - \\mu_D[f](t)}{\\widehat{\\sigma}_D[f](t)}"
+      }
+    ],
+    "properties": [],
+    "parameters": [
+      {
+        "symbol": "z",
+        "description": "State of the particle.",
+        "constraints": []
+      },
+      {
+        "symbol": "z_c",
+        "description": "State of the potential companion.",
+        "constraints": []
+      },
+      {
+        "symbol": "t",
+        "description": "Time index.",
+        "constraints": []
+      },
+      {
+        "symbol": "f",
+        "description": "Implied dependency on the density functional or context.",
+        "constraints": []
+      },
+      {
+        "symbol": "\\widetilde{r}[f](z,t)",
+        "description": "The mean-field Z-score associated with the raw measurement $R(z)$.",
+        "constraints": []
+      },
+      {
+        "symbol": "\\widetilde{d}[f](z,z_c,t)",
+        "description": "The mean-field Z-score associated with the raw measurement $d_{\\mathcal{Y}}(\\varphi(z),\\varphi(z_c))$.",
+        "constraints": []
+      },
+      {
+        "symbol": "R(z)",
+        "description": "Raw measurement associated with state $z$.",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mu_R[f](t)",
+        "description": "Global, density-dependent moment (mean) for the $R$ measurement.",
+        "constraints": []
+      },
+      {
+        "symbol": "\\widehat{\\sigma}_R[f](t)",
+        "description": "Global, density-dependent moment (standard deviation) for the $R$ measurement.",
+        "constraints": []
+      },
+      {
+        "symbol": "d_{\\mathcal{Y}}(\\varphi(z),\\varphi(z_c))",
+        "description": "Raw measurement of distance between transformed states.",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mu_D[f](t)",
+        "description": "Global, density-dependent moment (mean) for the $d$ measurement.",
+        "constraints": []
+      },
+      {
+        "symbol": "\\widehat{\\sigma}_D[f](t)",
+        "description": "Global, density-dependent moment (standard deviation) for the $d$ measurement.",
+        "constraints": []
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "Note",
+        "text": "These scores are defined using density-dependent functionals derived in Section 1.2."
+      }
+    ]
+  },
+  {
+    "label": "def-mean-field-fitness-potential",
+    "term": "Mean-Field Fitness Potential",
+    "object_type": "function",
+    "nl_definition": "The Mean-Field Fitness Potential, denoted $V[f](z, z_c, t)$, is a functional of the density $f$ that combines scaled contributions from the diversity functional $\\widetilde{d}$ and the reward functional $\\widetilde{r}$ multiplicatively, determining the fitness of a particle at state $z$ relative to a companion at $z_c$.",
+    "formal_conditions": [
+      {
+        "text": "The Mean-Field Fitness Potential $V[f](z,z_c,t)$ is constructed by applying the canonical `Rescale Transformation` $g_A$ to the mean-field Z-scores:",
+        "latex": "V[f](z,z_c,t) := \\left(g_A(\\widetilde{d}[f](z,z_c,t)) + \\eta\\right)^{\\beta} \\cdot \\left(g_A(\\widetilde{r}[f](z,t)) + \\eta\\right)^{\\alpha}"
+      }
+    ],
+    "properties": [
+      {
+        "name": "Functional Dependence",
+        "description": "It is a functional of the density $f$, denoted $V[f]$."
+      },
+      {
+        "name": "Multiplicative Combination",
+        "description": "Combines contributions from the reward and diversity channels multiplicatively."
+      },
+      {
+        "name": "Balance Role",
+        "description": "Allows the algorithm to balance the drive for high rewards (exploitation) with the need to maintain diversity (exploration)."
+      }
+    ],
+    "parameters": [],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "Notation",
+        "text": "The use of $V[f]$ emphasizes that the potential is a functional of the density $f$, meaning its value depends on the global shape of the entire probability distribution."
+      }
+    ]
+  },
+  {
+    "label": "def-baoab-update-rule",
+    "term": "BAOAB Update Rule",
+    "object_type": "process",
+    "nl_definition": "The five sequential steps used by the Bond-Angle-Oriented-Angle-Bond (BAOAB) method to advance the state $(x_n, v_n)$ of a single particle from time $t_n$ to $t_{n+1} = t_n + \\tau$.",
+    "formal_conditions": [
+      {
+        "text": "B-Step (Force Kick): Velocity update using a half-step kick from the conservative force $F(x)$.",
+        "latex": "v_{n+1/2}^{(1)} = v_n + \\frac{\\tau}{2m} F(x_n)"
+      },
+      {
+        "text": "A-Step (Position Drift): Position update with a half-step drift using the new velocity.",
+        "latex": "x_{n+1/2} = x_n + \\frac{\\tau}{2} v_{n+1/2}^{(1)}"
+      },
+      {
+        "text": "O-Step (Ornstein-Uhlenbeck): Velocity update for a full timestep by exactly solving the Ornstein-Uhlenbeck process.",
+        "latex": "v_{n+1/2}^{(2)} = u_{n+1/2} + e^{-\\gamma_{\\mathrm{fric}}\\tau}\\left(v_{n+1/2}^{(1)} - u_{n+1/2}\\right) + \\sqrt{\\frac{\\Theta}{m}(1 - e^{-2\\gamma_{\\mathrm{fric}}\\tau})} \\cdot \\xi"
+      },
+      {
+        "text": "A-Step (Position Drift): Position update with a final half-step drift.",
+        "latex": "x_{n+1} = x_{n+1/2} + \\frac{\\tau}{2} v_{n+1/2}^{(2)}"
+      },
+      {
+        "text": "B-Step (Force Kick): Final velocity update with a half-step kick using the force evaluated at the new position $F(x_{n+1})$.",
+        "latex": "v_{n+1} = v_{n+1/2}^{(2)} + \\frac{\\tau}{2m} F(x_{n+1})"
+      }
+    ],
+    "properties": [
+      {
+        "name": "Symmetry",
+        "description": "The method composes analytically solvable parts symmetrically."
+      },
+      {
+        "name": "Type",
+        "description": "Splits the SDE (implied to be associated with the Euclidean Gas specification) into solvable parts."
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "x_n, v_n",
+        "description": "State of the particle (position and velocity) at time $t_n$.",
+        "constraints": []
+      },
+      {
+        "symbol": "\\tau",
+        "description": "Time step size, $t_{n+1} = t_n + \\tau$.",
+        "constraints": []
+      },
+      {
+        "symbol": "m",
+        "description": "Mass of the particle.",
+        "constraints": []
+      },
+      {
+        "symbol": "F(x)",
+        "description": "Conservative force derived from the potential.",
+        "constraints": []
+      },
+      {
+        "symbol": "u(x_{n+1/2})",
+        "description": "Flow field evaluated at the midpoint position $x_{n+1/2}$.",
+        "constraints": []
+      },
+      {
+        "symbol": "\\gamma_{\\mathrm{fric}}",
+        "description": "Friction coefficient in the Ornstein-Uhlenbeck process.",
+        "constraints": []
+      },
+      {
+        "symbol": "\\Theta",
+        "description": "Temperature/thermal energy parameter.",
+        "constraints": []
+      },
+      {
+        "symbol": "\\xi",
+        "description": "Standard Gaussian random vector, $\\xi \\sim \\mathcal{N}(0, I_d)$.",
+        "constraints": [
+          "Gaussian distribution",
+          "Zero mean",
+          "Identity covariance"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "Context",
+        "text": "All parameters are assumed to be as defined in the Euclidean Gas specification."
+      },
+      {
+        "type": "Intermediates",
+        "text": "Intermediate velocity states $v_{n+1/2}^{(1)}$ and $v_{n+1/2}^{(2)}$, and intermediate position $x_{n+1/2}$ are calculated."
+      }
+    ]
+  },
+  {
+    "label": "def-kinetic-generator",
+    "term": "Kinetic Transport Operator",
+    "object_type": "operator",
+    "nl_definition": "The kinetic evolution of a single alive walker $i$ is governed by an underdamped Langevin SDE, and the infinitesimal generator for the N-particle system under these independent SDEs is the Fokker-Planck operator $\\mathcal{L}_{\\text{kin}}$, acting on a test function $f$ on the swarm state space of alive walkers $\\mathcal{A}$.",
+    "formal_conditions": [],
+    "properties": [
+      {
+        "name": "Continuous Stochastic Process",
+        "description": "Governs the evolution between cloning events/death/revival transitions."
+      },
+      {
+        "name": "Discrete Approximation",
+        "description": "The kinetic stage (BAOAB integrator) is a discrete-time approximation of this SDE."
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "i",
+        "description": "Index for a single alive walker.",
+        "constraints": [
+          "\\in \\mathcal{A}"
+        ]
+      },
+      {
+        "symbol": "x_i",
+        "description": "Position of walker $i$.",
+        "constraints": []
+      },
+      {
+        "symbol": "v_i",
+        "description": "Velocity of walker $i$.",
+        "constraints": []
+      },
+      {
+        "symbol": "m",
+        "description": "Mass parameter.",
+        "constraints": []
+      },
+      {
+        "symbol": "F(x_i)",
+        "description": "Force acting on walker $i$ at position $x_i$.",
+        "constraints": []
+      },
+      {
+        "symbol": "\\gamma_{\\mathrm{fric}}",
+        "description": "Friction coefficient.",
+        "constraints": []
+      },
+      {
+        "symbol": "u(x_i)",
+        "description": "Flow velocity at position $x_i$.",
+        "constraints": []
+      },
+      {
+        "symbol": "\\sigma_v",
+        "description": "Diffusion coefficient magnitude.",
+        "constraints": []
+      },
+      {
+        "symbol": "W_t",
+        "description": "Standard $d$-dimensional Wiener process.",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal{A}",
+        "description": "Set of alive walkers.",
+        "constraints": []
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": []
+  },
+  {
+    "label": "def-killing-operator",
+    "term": "Interior Killing Operator",
+    "object_type": "other",
+    "nl_definition": "The concept is twofold: first, an interior killing rate $c$ defined by specific properties relating to its smoothness and location relative to a safe subset and boundary layer; second, the total mass killed per unit time, which is a functional defined by integrating the product of the killing rate and the alive density $f$ over the domain $\\Omega$.",
+    "formal_conditions": [],
+    "properties": [
+      {
+        "name": "Non-negativity of rate $c$",
+        "description": "The interior killing rate $c$ is a non-negative function, $c: \\Omega \\to [0, \\infty)$."
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "c",
+        "description": "Interior killing rate function",
+        "constraints": [
+          ":\\Omega \\to [0, \\infty)",
+          "smooth (C^\\infty(\\Omega))"
+        ]
+      },
+      {
+        "symbol": "\\Omega",
+        "description": "Spatial domain over which integration occurs.",
+        "constraints": []
+      },
+      {
+        "symbol": "f(t,z)",
+        "description": "Alive density at time $t$ and position $z$.",
+        "constraints": []
+      },
+      {
+        "symbol": "t",
+        "description": "Time variable.",
+        "constraints": []
+      },
+      {
+        "symbol": "z",
+        "description": "Spatial variable.",
+        "constraints": []
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "Intuition",
+        "text": "The killing operator acts by removing mass from the alive density $f$ at a rate proportional to the density itself, $c(z)f(z)$."
+      }
+    ]
+  },
+  {
+    "label": "def-revival-operator",
+    "term": "Revival Operator",
+    "object_type": "operator",
+    "nl_definition": "The Revival Operator $B[f, m_d](t, z)$ models the re-injection of mass from the dead population back into the alive population, proportional to the current alive density.",
+    "formal_conditions": [
+      {
+        "text": "The Revival Operator is defined as:",
+        "latex": "B[f, m_d](t, z) := \\lambda_{\\text{revive}} \\cdot m_d(t) \\cdot \\frac{f(t,z)}{m_a(t)}"
+      },
+      {
+        "text": "The total mass revived per unit time is:",
+        "latex": "\\int_{\\Omega} B[f, m_d](t,z)\\,\\mathrm{d}z = \\lambda_{\\text{revive}} \\cdot m_d(t)"
+      }
+    ],
+    "properties": [
+      {
+        "name": "Interpretation",
+        "description": "Models revival as a source term re-injecting mass from the dead population back into the alive population."
+      },
+      {
+        "name": "Spatial Profile",
+        "description": "The spatial profile of the re-injected mass is proportional to the current alive density, $f(t,z)/m_a(t)$."
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "B[f, m_d](t, z)",
+        "description": "The Revival Operator, dependent on the alive density function $f$, the dead mass $m_d$, time $t$, and spatial position $z$."
+      },
+      {
+        "symbol": "\\lambda_{\\text{revive}}",
+        "description": "The revival rate.",
+        "constraints": [
+          "\\lambda_{\\text{revive}} > 0"
+        ]
+      },
+      {
+        "symbol": "m_d(t)",
+        "description": "The current dead mass.",
+        "constraints": [
+          "m_d(t) = 1 - m_a(t)"
+        ]
+      },
+      {
+        "symbol": "f(t,z)/m_a(t)",
+        "description": "The normalized alive density (the probability distribution over the alive population)."
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "Intuition",
+        "text": "Dead walkers are instantly revived by cloning from alive companions, leading to the revival mass being proportional to the current alive density."
+      }
+    ]
+  },
+  {
+    "label": "def-cloning-generator",
+    "term": "Internal Cloning Operator (Derived Form)",
+    "object_type": "operator",
+    "nl_definition": "The Internal Cloning Operator, $S[f]$, which represents the mean-field limit of the discrete cloning mechanism, is defined as the difference between source ($S_{\\text{src}}[f]$) and sink ($S_{\\text{sink}}[f]$) terms.",
+    "formal_conditions": [
+      {
+        "text": "The Internal Cloning Operator $S[f](t, z)$ is decomposed into sink and source terms:",
+        "latex": "S[f](t, z) = S_{\\text{src}}[f](t, z) - S_{\\text{sink}}[f](t, z)"
+      },
+      {
+        "text": "Sink term:",
+        "latex": "S_{\\text{sink}}[f](t,z) = \\frac{1}{\\tau} f(t,z) \\int_{\\Omega} P_{\\text{clone}}[f/m_a](z, z_c) \\frac{f(t,z_c)}{m_a(t)} \\,\\mathrm{d}z_c"
+      },
+      {
+        "text": "Source term:",
+        "latex": "S_{\\text{src}}[f](t,z) = \\frac{1}{\\tau m_a(t)} \\int_{\\Omega} \\int_{\\Omega} f(t,z_d) f(t,z_c) P_{\\text{clone}}[f/m_a](z_d, z_c) Q_{\\delta}(z \\mid z_c) \\,\\mathrm{d}z_d\\,\\mathrm{d}z_c"
+      }
+    ],
+    "properties": [
+      {
+        "name": "Mean-field limit",
+        "description": "It is the mean-field limit of the discrete cloning mechanism."
+      },
+      {
+        "name": "Mass-neutral",
+        "description": "The operator is mass-neutral by construction, meaning $\\int_{\\Omega} S[f](t,z)\\,\\mathrm{d}z = 0$."
+      },
+      {
+        "name": "Non-local",
+        "description": "The operator is non-local."
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "S[f](t, z)",
+        "description": "The Internal Cloning Operator evaluated at time $t$ and state $z$."
+      },
+      {
+        "symbol": "f(t, z)",
+        "description": "The density function.",
+        "constraints": []
+      },
+      {
+        "symbol": "\\tau",
+        "description": "The discrete timestep."
+      },
+      {
+        "symbol": "m_a(t)",
+        "description": "The total mass at time $t$ (implied by context, related to $\\int f(t,z) dz$).",
+        "constraints": []
+      },
+      {
+        "symbol": "P_{\\text{clone}}[f/m_a](z_d, z_c)",
+        "description": "The cloning probability depending on fitness values computed from the normalized alive density $f/m_a$."
+      },
+      {
+        "symbol": "Q_{\\delta}(z \\mid z_c)",
+        "description": "The jitter kernel (Gaussian in position, delta in velocity)."
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "Interpretation",
+        "text": "$1/\\tau$ converts per-step probabilities to continuous rates."
+      }
+    ]
+  },
+  {
+    "label": "def-transport-operator",
+    "term": "Transport Operator",
+    "object_type": "operator",
+    "nl_definition": "The Transport Operator, denoted $L^\\dagger$, is the formal $L^2$-adjoint of the backward kinetic generator $L$, acting on a density $f$ and represented as the negative divergence of the probability flux vector $J$.",
+    "formal_conditions": [],
+    "properties": [
+      {
+        "name": "Adjoint Relationship",
+        "description": "It is the formal $L^2$-adjoint of the backward kinetic generator $L$."
+      },
+      {
+        "name": "Conservative Form",
+        "description": "It is written in conservative form as the negative divergence of the probability flux vector $J$."
+      }
+    ],
+    "parameters": [],
+    "examples": [],
+    "related_refs": [],
+    "notes": []
+  }
+]

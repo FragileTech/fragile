@@ -1,0 +1,455 @@
+[
+  {
+    "label": "proof-lem-mass-conservation-transport",
+    "proves": "lem-mass-conservation-transport",
+    "proof_type": "direct",
+    "proof_status": "complete",
+    "strategy_summary": "The proof integrates the adjoint Liouville equation $L^\\dagger f = -\\nabla \\cdot J[f]$ over the phase space $\\Omega$. Using the divergence theorem, this integral is transformed into a boundary integral, which is shown to vanish due to specified reflecting boundary conditions on $\\partial\\Omega$.",
+    "conclusion": {
+      "text": "The boundary integral vanishes, proving the result (mass conservation).",
+      "latex": "\\int_{\\partial\\Omega} J[f] \\cdot n\\, \\mathrm{d}S = 0"
+    },
+    "assumptions": [
+      {
+        "text": "The adjoint Liouville equation $L^\\dagger f = -\\nabla \\cdot J[f]$ holds.",
+        "latex": "L^\\dagger f = -\\nabla \\cdot J[f]"
+      },
+      {
+        "text": "The domain of integration is $\\Omega$.",
+        "latex": "\\Omega"
+      },
+      {
+        "text": "Reflecting boundary conditions hold on $\\partial V_{\\text{alg}}$ and $\\partial X_{\\text{valid}}$.",
+        "latex": null
+      }
+    ],
+    "steps": [
+      {
+        "order": 1,
+        "kind": "calculation",
+        "text": "Integrate $L^\\dagger f = -\\nabla \\cdot J[f]$ over $\\Omega$.",
+        "latex": "\\int_{\\Omega} L^\\dagger f\\, \\mathrm{d}z = \\int_{\\Omega} -\\nabla \\cdot J[f]\\, \\mathrm{d}z",
+        "references": [],
+        "derived_statement": null
+      },
+      {
+        "order": 2,
+        "kind": "application",
+        "text": "Apply the divergence theorem to convert the volume integral of the divergence to a surface integral over $\\partial\\Omega$.",
+        "latex": "\\int_{\\Omega} -\\nabla \\cdot J[f]\\, \\mathrm{d}z = - \\int_{\\partial\\Omega} J[f] \\cdot n\\, \\mathrm{d}S",
+        "references": [],
+        "derived_statement": "$\\int_\\Omega L^\\dagger f\\, \\mathrm{d}z = - \\int_{\\partial\\Omega} J[f] \\cdot n\\, \\mathrm{d}S$"
+      },
+      {
+        "order": 3,
+        "kind": "analysis",
+        "text": "Analyze the boundary $\\partial\\Omega = (\\partial X_{\\text{valid}} \\times V_{\\text{alg}}) \\cup (X_{\\text{valid}} \\times \\partial V_{\\text{alg}})$.",
+        "latex": "\\partial\\Omega = (\\partial X_{\\text{valid}} \\times V_{\\text{alg}}) \\cup (X_{\\text{valid}} \\times \\partial V_{\\text{alg}})",
+        "references": [],
+        "derived_statement": null
+      },
+      {
+        "order": 4,
+        "kind": "analysis",
+        "text": "State that the normal component of the flux vanishes on the velocity boundary $\\partial V_{\\text{alg}}$ due to velocity reflection.",
+        "latex": "J_v \\cdot n_v = 0 \\text{ on } \\partial V_{\\text{alg}}",
+        "references": [],
+        "derived_statement": null
+      },
+      {
+        "order": 5,
+        "kind": "analysis",
+        "text": "State that the normal component of the flux vanishes on the position boundary $\\partial X_{\\text{valid}}$ due to position reflection.",
+        "latex": "J_x \\cdot n_x = 0 \\text{ on } \\partial X_{\\text{valid}}",
+        "references": [],
+        "derived_statement": null
+      },
+      {
+        "order": 6,
+        "kind": "conclusion",
+        "text": "Conclude that the total boundary integral vanishes.",
+        "latex": "- \\int_{\\partial\\Omega} J[f] \\cdot n\\, \\mathrm{d}S = 0",
+        "references": [],
+        "derived_statement": "$\\int_\\Omega L^\\dagger f\\, \\mathrm{d}z = 0$ (implying mass conservation)"
+      }
+    ],
+    "key_equations": [
+      {
+        "label": null,
+        "latex": "L^\\dagger f = -\\nabla \\cdot J[f]",
+        "role": "Starting equation"
+      },
+      {
+        "label": null,
+        "latex": "\\int_\\Omega L^\\dagger f\\, \\mathrm{d}z = - \\int_{\\partial\\Omega} J[f] \\cdot n\\, \\mathrm{d}S",
+        "role": "Divergence theorem application"
+      },
+      {
+        "label": null,
+        "latex": "J_v \\cdot n_v = 0 \\text{ on } \\partial V_{\\text{alg}}",
+        "role": "Boundary condition 1"
+      },
+      {
+        "label": null,
+        "latex": "J_x \\cdot n_x = 0 \\text{ on } \\partial X_{\\text{valid}}",
+        "role": "Boundary condition 2"
+      }
+    ],
+    "references": [],
+    "cases": [
+      {
+        "name": "Velocity Boundary",
+        "condition": "\\partial V_{\\text{alg}}",
+        "summary": "Normal flux vanishes ($J_v \\cdot n_v = 0$)."
+      },
+      {
+        "name": "Position Boundary",
+        "condition": "\\partial X_{\\text{valid}}",
+        "summary": "Normal flux vanishes ($J_x \\cdot n_x = 0$)."
+      }
+    ],
+    "remarks": [],
+    "gaps": []
+  },
+  {
+    "label": "proof-thm-mass-conservation",
+    "proves": "thm-mass-conservation",
+    "proof_type": "direct",
+    "proof_status": "complete",
+    "strategy_summary": "The proof computes the time derivative of the alive mass ($m_a$) and the dead mass ($m_d$) separately using known integral properties of the underlying equations (transport, killing, revival, cloning). The sum of these two derivatives is then shown to be zero, establishing total mass conservation.",
+    "conclusion": {
+      "text": "This demonstrates that the total mass is conserved for all time, completing the proof.",
+      "latex": null
+    },
+    "assumptions": [
+      {
+        "text": "The equation for $\\partial_t f$ is integrable.",
+        "latex": null
+      },
+      {
+        "text": "Integral properties from Lemma 3.1, Definition 2.3.2, and Definition 2.3.3 hold.",
+        "latex": null
+      }
+    ],
+    "steps": [],
+    "key_equations": [],
+    "references": [
+      "lem-3.1",
+      "def-2.3.2",
+      "def-2.3.3"
+    ],
+    "cases": [],
+    "remarks": [
+      {
+        "type": "convention",
+        "text": "In Step 6, $\\lambda_{\\text{revive}}$ is shortened to $\\lambda_{\\text{rev}}$ for conciseness in the rate equation."
+      }
+    ],
+    "gaps": [
+      {
+        "description": "The source of the differential equation for the dead mass $\\frac{\\mathrm{d}}{\\mathrm{d}t}m_d(t)$ is not explicitly referenced, although it is implied by symmetry/the full system equations.",
+        "severity": "minor",
+        "location_hint": "Step 7"
+      }
+    ]
+  },
+  {
+    "label": "proof-thm-killing-rate-consistency-part-i",
+    "proves": "thm-killing-rate-consistency-part-i",
+    "proof_type": "direct",
+    "proof_status": "complete",
+    "strategy_summary": "The proof analyzes the exit probability $p_{\\text{exit}}(x,v,\\tau)$ for small time steps $\\tau$ by characterizing the next position $x^+$ as a Gaussian random variable. The probability is then analyzed based on the distance $d(x)$ relative to the boundary layer $\\delta$ and the sign of the outward velocity component $v_n$, leading to the final expression for the killing rate $c(x,v)$ as the limit of $\\tau^{-1}p_{\\text{exit}}$ as $\\tau \\to 0$.",
+    "conclusion": {
+      "text": "The limit of the exit probability divided by $\\tau$ yields the killing rate $c(x,v) = v_n^+/d(x)$ for points in the boundary layer and $c(x,v)=0$ otherwise.",
+      "latex": "c(x,v) = \\begin{cases} \\frac{v_n^+}{d(x)} & \\text{if } d(x) < \\delta \\\\ 0 & \\text{if } d(x) \\ge \\delta \\end{cases}"
+    },
+    "assumptions": [
+      {
+        "text": "The BAOAB update rule is defined (Definition in source material).",
+        "latex": null
+      },
+      {
+        "text": "$\\xi$ is a standard Gaussian random variable, $\\xi \\sim \\mathcal{N}(0, I_d)$.",
+        "latex": "\\xi \\sim \\mathcal{N}(0, I_d)"
+      },
+      {
+        "text": "The asymptotic expansion $e^{-\\gamma\\tau} = 1 - \\gamma\\tau + O(\\tau^2)$ and $1 - e^{-2\\gamma\\tau} = 2\\gamma\\tau + O(\\tau^2)$ holds for small $\\tau$.",
+        "latex": null
+      },
+      {
+        "text": "The asymptotic expansion $\\text{erfc}(z) \\sim \\frac{e^{-z^2}}{\\sqrt{\\pi}z}$ for large $z$.",
+        "latex": "\\text{erfc}(z) \\sim \\frac{e^{-z^2}}{\\sqrt{\\pi}z}"
+      }
+    ],
+    "steps": [
+      {
+        "order": 1,
+        "kind": "setup",
+        "text": "Fix $(x,v) \\in \\Omega$ and characterize $x^+$ after one BAOAB step as a Gaussian random variable $x^+ = \\mu_x(\\tau) + \\sigma_x(\\tau)\\,\\xi$, noting that the noise scales as $O(\\tau^{3/2})$ while the drift scales as $O(\\tau)$.",
+        "latex": null,
+        "references": [],
+        "derived_statement": null
+      },
+      {
+        "order": 2,
+        "kind": "derivation",
+        "text": "Define the normal displacement $Z_n = (x^+ - x) \\cdot n_x(x)$, which is a 1D Gaussian variable with mean $\\mu_n = v_n\\tau + O(\\tau^2)$ and variance $\\sigma_n^2 = C_\\sigma \\tau^3 + O(\\tau^4)$, where $C_\\sigma = \\gamma\\Theta/(2m)$.",
+        "latex": null,
+        "references": [],
+        "derived_statement": null
+      },
+      {
+        "order": 3,
+        "kind": "case_analysis",
+        "text": "Formulate the exit probability $p_{\\text{exit}}(x,v,\\tau) = \\mathbb{P}(Z_n \\ge d(x))$ using the complementary error function.",
+        "latex": "p_{\\text{exit}}(x,v,\\tau) = \\frac{1}{2}\\text{erfc}\\left(\\frac{d(x) - \\mu_n}{\\sqrt{2}\\sigma_n}\\right)",
+        "references": [],
+        "derived_statement": null
+      },
+      {
+        "order": 4,
+        "kind": "case_analysis",
+        "text": "Analyze Case 1 (Interior Points, $d(x) \\ge \\delta$): Since $d(x)$ is $O(1)$ while $\\sigma_n$ is $O(\\tau^{3/2})$, the argument to erfc tends to $+\\infty$, resulting in super-exponential decay, so $\\lim_{\\tau \\to 0}\\tau^{-1}p_{\\text{exit}} = 0$.",
+        "latex": null,
+        "references": [],
+        "derived_statement": null
+      },
+      {
+        "order": 5,
+        "kind": "case_analysis",
+        "text": "Analyze Case 2a (Boundary Layer, $v_n \\le 0$): The particle drifts away from the boundary, leading again to $z \\to +\\infty$ and $\\lim_{\\tau \\to 0}\\tau^{-1}p_{\\text{exit}} = 0$.",
+        "latex": null,
+        "references": [],
+        "derived_statement": null
+      },
+      {
+        "order": 6,
+        "kind": "asymptotic_analysis",
+        "text": "Analyze Case 2b (Boundary Layer, $v_n > 0$): This is the drift-dominated regime where $\\mu_n = v_n\\tau + O(\\tau^2)$ competes with $\\sigma_n = O(\\tau^{3/2})$. The exit probability approximates a step function transitioning from 0 to 1 at the ballistic time $\\tau_* = d(x)/v_n$.",
+        "latex": null,
+        "references": [],
+        "derived_statement": null
+      },
+      {
+        "order": 7,
+        "kind": "derivation",
+        "text": "The rate of transition is determined by the ballistic crossing time, yielding the killing rate $c(x,v) = 1/\\tau_* = v_n/d(x)$ in the limit.",
+        "latex": null,
+        "references": [],
+        "derived_statement": null
+      },
+      {
+        "order": 8,
+        "kind": "conclusion",
+        "text": "Combine the cases to state the final result for $c(x,v)$.",
+        "latex": null,
+        "references": [],
+        "derived_statement": null
+      }
+    ],
+    "key_equations": [
+      {
+        "label": null,
+        "latex": "x^+ = \\mu_x(\\tau) + \\sigma_x(\\tau)\\,\\xi",
+        "role": "Characterization of next position"
+      },
+      {
+        "label": null,
+        "latex": "p_{\\text{exit}}(x,v,\\tau) = \\frac{1}{2}\\text{erfc}\\left(\\frac{d(x) - v_n\\tau}{\\sqrt{2C_\\sigma}\\tau^{3/2}}\\right)",
+        "role": "Exit probability approximation in boundary layer"
+      },
+      {
+        "label": null,
+        "latex": "c(x,v) = \\frac{v_n^+}{d(x)}",
+        "role": "Final killing rate definition"
+      }
+    ],
+    "references": [],
+    "cases": [
+      {
+        "name": "Case 1: Interior Points",
+        "condition": "$d(x) \\ge \\delta$",
+        "summary": "Exit probability decays super-exponentially, so the rate $c(x,v)=0$."
+      },
+      {
+        "name": "Case 2a: Boundary Layer, Inward Velocity",
+        "condition": "$d(x) < \\delta$, $v_n \\le 0$",
+        "summary": "Particle drifts away, leading to $c(x,v)=0$."
+      },
+      {
+        "name": "Case 2b: Boundary Layer, Outward Velocity",
+        "condition": "$d(x) < \\delta$, $v_n > 0$",
+        "summary": "Drift dominates diffusion; exit rate is ballistic, $c(x,v) = v_n/d(x)$."
+      }
+    ],
+    "remarks": [
+      {
+        "type": "Physical Interpretation",
+        "text": "The result for Case 2b is the ballistic limit where stochasticity is negligible compared to the deterministic drift velocity."
+      },
+      {
+        "type": "Reference",
+        "text": "The final result is supported by general theory on first-passage times for drift-dominated processes (e.g., Risken, Gardiner, Redner)."
+      },
+      {
+        "type": "Caveat",
+        "text": "The formal transition from $\\lim_{\\tau \\to 0}(1/\\tau)\\text{erfc}(\\cdots)$ to the Dirac delta limit requires advanced asymptotic analysis (Laplace's method)."
+      }
+    ],
+    "gaps": []
+  },
+  {
+    "label": "proof-thm-killing-rate-consistency-part-ii",
+    "proves": "thm-killing-rate-consistency-part-ii",
+    "proof_type": "direct",
+    "proof_status": "complete",
+    "strategy_summary": "The proof establishes the uniform convergence by decomposing the error $E(\\tau)$ into density error $E_2(\\tau)$ and pointwise convergence error $E_1(\\tau)$. $|E_2(\\tau)|$ is bounded by the $L^1$ error in the density, while $|E_1(\\tau)|$ is bounded by analyzing the error in approximating the smooth exit probability transition by a step function, yielding an overall $O(\\sqrt{\\tau})$ bound in the boundary layer.",
+    "conclusion": {
+      "text": "The total error $|E(\tau)|$ is bounded by $C(\\sqrt{\\tau} + \\|f^\\tau - f\\|_{L^1})$, showing convergence consistent with the noise properties.",
+      "latex": " |E(\\tau)| \\le C\\left(\\sqrt{\\tau} + \\|f^\\tau - f\\|_{L^1}\\right)"
+    },
+    "assumptions": [
+      {
+        "text": "The constant $M_v := \\|v\\|_{\\max}$ is the maximum velocity magnitude.",
+        "latex": "M_v := \\|v\\|_{\\max}"
+      },
+      {
+        "text": "The constant $M_f$ bounds the density $f^\\tau$.",
+        "latex": null
+      },
+      {
+        "text": "The constant $C_1$ encapsulates geometric and physical parameters derived from the transition width $\\Delta\\tau$.",
+        "latex": "C_1 \\sim v_n/(d(x) \\sqrt{C_\\sigma})"
+      },
+      {
+        "text": "The term $c(x,v)$ is bounded by $M_v/\\delta$ in the boundary layer.",
+        "latex": "c(x,v) \\le M_v/\\delta"
+      }
+    ],
+    "steps": [
+      {
+        "order": 1,
+        "kind": "setup",
+        "text": "Define the error $E(\\tau)$ as the difference between the discrete approximation and the continuous limit.",
+        "latex": "E(\\tau) := \\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) - K_{\\text{continuous}}",
+        "references": [],
+        "derived_statement": null
+      },
+      {
+        "order": 2,
+        "kind": "decomposition",
+        "text": "Decompose the error into two parts: $E_1(\\tau)$ related to the exit probability approximation, and $E_2(\\tau)$ related to the density difference.",
+        "latex": "E(\\tau) = E_1(\\tau) + E_2(\\tau)",
+        "references": [],
+        "derived_statement": null
+      },
+      {
+        "order": 3,
+        "kind": "bound",
+        "text": "Bound $E_2(\\tau)$ using Hölder's inequality and the boundedness of $c$.",
+        "latex": "|E_2(\\tau)| \\le \\|c\\|_{L^\\infty} \\|f^\\tau - f\\|_{L^1} \\le \\frac{M_v}{\\delta} \\|f^\\tau - f\\|_{L^1}",
+        "references": [],
+        "derived_statement": null
+      },
+      {
+        "order": 4,
+        "kind": "decomposition",
+        "text": "Split the integral defining $E_1(\\tau)$ into contributions from the interior region ($d(x) \\ge \\delta$) and the boundary layer ($\\mathcal{T}_\\delta$).",
+        "latex": "E_1(\\tau) = \\int_{d(x) \\ge \\delta} [\\cdots] + \\int_{d(x) < \\delta} [\\cdots] =: E_{1,\\text{int}} + E_{1,\\text{bd}}",
+        "references": [],
+        "derived_statement": null
+      },
+      {
+        "order": 5,
+        "kind": "bound",
+        "text": "Show that the interior contribution $E_{1,\\text{int}}$ vanishes faster than any power of $\\tau$ (super-exponentially small) for small $\\tau$ because $c=0$ and $p_{\\text{exit}}=o(\\tau^m)$.",
+        "latex": "E_{1,\\text{int}} = o(\\tau^m)",
+        "references": [],
+        "derived_statement": null
+      },
+      {
+        "order": 6,
+        "kind": "analysis",
+        "text": "Analyze the boundary layer error $E_{1,\\text{bd}}$ by comparing the smooth exit probability $p_{\\text{exit}}$ (related to $\\text{erfc}$) with the ballistic approximation $p_{\\text{ballistic}}$ (step function).",
+        "latex": null,
+        "references": [],
+        "derived_statement": null
+      },
+      {
+        "order": 7,
+        "kind": "estimate",
+        "text": "Use the transition width $\\Delta\\tau \\sim O(\\sqrt{\\tau})$ and Taylor expansion around the crossing time $\\tau_*$ to estimate the pointwise error term.",
+        "latex": "\\left|\\frac{1}{\\tau}p_{\\text{exit}}(x,v,\\tau) - c(x,v)\\right| \\le C_1 \\sqrt{\\tau}",
+        "references": [],
+        "derived_statement": null
+      },
+      {
+        "order": 8,
+        "kind": "bound",
+        "text": "Bound the boundary layer contribution $|E_{1,\\text{bd}}|$ by integrating the pointwise error bound over the boundary layer region $\\mathcal{T}_\\delta$.",
+        "latex": "|E_{1,\\text{bd}}| \\le C_1 \\sqrt{\\tau} \\cdot M_f \\cdot |\\mathcal{T}_\\delta|",
+        "references": [],
+        "derived_statement": null
+      },
+      {
+        "order": 9,
+        "kind": "synthesis",
+        "text": "Combine the bounds on $E_1(\\tau)$ and $E_2(\\tau)$ to state the final error estimate.",
+        "latex": null,
+        "references": [],
+        "derived_statement": null
+      }
+    ],
+    "key_equations": [
+      {
+        "label": "eq:error-def",
+        "latex": "E(\\tau) := \\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) - K_{\\text{continuous}}",
+        "role": "Definition of Error"
+      },
+      {
+        "label": "eq:error-decomposition",
+        "latex": "E(\\tau) = \\int_{\\Omega} \\left[\\frac{1}{\\tau} p_{\\text{exit}}(x,v,\\tau) - c(x,v)\\right] f^\\tau(x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v + \\int_{\\Omega} c(x,v) [f^\\tau(x,v) - f(x,v)]\\,\\mathrm{d}x\\,\\mathrm{d}v =: E_1(\\tau) + E_2(\\tau)",
+        "role": "Error Decomposition"
+      },
+      {
+        "label": "eq:e2-bound",
+        "latex": "|E_2(\\tau)| \\le \\frac{M_v}{\\delta} \\|f^\\tau - f\\|_{L^1}",
+        "role": "Bound on Density Error"
+      },
+      {
+        "label": "eq:e1-bound-pointwise",
+        "latex": "\\left|\\frac{1}{\\tau}p_{\\text{exit}}(x,v,\\tau) - c(x,v)\\right| \\le C_1 \\sqrt{\\tau}",
+        "role": "Pointwise Error in Boundary Layer"
+      },
+      {
+        "label": "eq:final-error-bound",
+        "latex": "|E(\\tau)| \\le C\\left(\\sqrt{\\tau} + \\|f^\\tau - f\\|_{L^1}\\right)",
+        "role": "Final Convergence Bound"
+      }
+    ],
+    "references": [],
+    "cases": [
+      {
+        "name": "Interior Region",
+        "condition": "d(x) \\ge \\delta",
+        "summary": "$E_{1,\\text{int}}$ is super-exponentially small for small $\\tau$."
+      },
+      {
+        "name": "Boundary Layer",
+        "condition": "d(x) < \\delta",
+        "summary": "The dominant contribution to $E_1(\\tau)$, bounded by $O(\\sqrt{\\tau})$ based on the transition width $\\Delta\\tau \\sim O(\\sqrt{\\tau})$."
+      }
+    ],
+    "remarks": [
+      {
+        "type": "Observation",
+        "text": "The $\\sqrt{\\tau}$ error arises from the Gaussian tail approximation in the drift-dominated regime, specifically dictated by the width of the transition region $\\sim O(\\tau^{1/2})$."
+      },
+      {
+        "type": "Context",
+        "text": "This convergence rate is characteristic for the BAOAB method when using $O(\\tau^{3/2})$ position noise."
+      }
+    ],
+    "gaps": []
+  }
+]

@@ -20,6 +20,9 @@ from pathlib import Path
 from typing import Optional, Sequence
 
 import click
+import flogging
+
+flogging.setup(level="INFO")
 
 CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
 
