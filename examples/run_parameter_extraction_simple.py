@@ -10,13 +10,17 @@ Usage:
 """
 
 import json
-import sys
 from pathlib import Path
+import sys
+
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from mathster.dspy_integration.text_utils import sanitize_label, split_markdown_by_chapters_with_line_numbers
+from mathster.dspy_integration.text_utils import (
+    sanitize_label,
+    split_markdown_by_chapters_with_line_numbers,
+)
 from mathster.parameter_extraction.text_processing import (
     collect_parameters_from_extraction,
     find_parameter_declarations,
@@ -72,9 +76,7 @@ def extract_parameters_simple(
                 "meaning": meaning,
                 "scope": "global",  # Default
                 "full_text": "",
-                "source": create_source_location(
-                    label, 1, 1, file_path, article_id
-                ).model_dump(),
+                "source": create_source_location(label, 1, 1, file_path, article_id).model_dump(),
             }
         else:
             # Use declaration info
@@ -131,7 +133,7 @@ def extract_meaning_from_context(context: str, symbol: str) -> str:
         meaning = match.group(2).strip()
         # Clean up
         meaning = meaning.split(".")[0]  # Take first sentence
-        return meaning if meaning else infer_meaning_from_symbol(symbol)
+        return meaning or infer_meaning_from_symbol(symbol)
 
     # Fallback: use inferred meaning
     return infer_meaning_from_symbol(symbol)
@@ -165,7 +167,9 @@ def run_parameter_extraction(document_path: str):
     with open(doc_path, encoding="utf-8") as f:
         full_doc_lines = f.readlines()
     # Add line numbers to full document
-    full_document_text = "\n".join(f"{i+1:03d}: {line.rstrip()}" for i, line in enumerate(full_doc_lines))
+    full_document_text = "\n".join(
+        f"{i + 1:03d}: {line.rstrip()}" for i, line in enumerate(full_doc_lines)
+    )
     print(f"Loaded full document: {len(full_doc_lines)} lines\n")
 
     article_id = doc_name
@@ -182,7 +186,7 @@ def run_parameter_extraction(document_path: str):
         print(f"Chapter {i}:")
 
         # Load existing extraction
-        with open(chapter_file) as f:
+        with open(chapter_file, encoding="utf-8") as f:
             chapter_data = json.load(f)
 
         # Check if parameters already extracted
@@ -208,7 +212,7 @@ def run_parameter_extraction(document_path: str):
         if raw_parameters:
             chapter_data["parameters"] = raw_parameters
 
-            with open(chapter_file, "w") as f:
+            with open(chapter_file, "w", encoding="utf-8") as f:
                 json.dump(chapter_data, f, indent=2)
 
             print(f"  ✓ Extracted {len(raw_parameters)} parameters")
@@ -221,7 +225,7 @@ def run_parameter_extraction(document_path: str):
 
             total_params_extracted += len(raw_parameters)
         else:
-            print(f"  No parameters found")
+            print("  No parameters found")
 
         print()
 
@@ -239,8 +243,10 @@ if __name__ == "__main__":
         print("Usage: python examples/run_parameter_extraction_simple.py <document_path>")
         print()
         print("Example:")
-        print("  python examples/run_parameter_extraction_simple.py docs/source/1_euclidean_gas/07_mean_field.md")
+        print(
+            "  python examples/run_parameter_extraction_simple.py docs/source/1_euclidean_gas/07_mean_field.md"
+        )
         sys.exit(1)
 
     document_path = sys.argv[1]
-    exit(run_parameter_extraction(document_path))
+    sys.exit(run_parameter_extraction(document_path))

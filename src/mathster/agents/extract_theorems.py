@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """
 Usage
@@ -30,16 +29,30 @@ ParseTheoremDirectiveSplit signature to emit *one* consolidated JSON object per 
 """
 
 from __future__ import annotations
-import logging
-import argparse, json, re, sys
-from pathlib import Path
-from typing import Any, Dict, Iterable, Optional
 
-import dspy
+import argparse
+import json
+import logging
+from pathlib import Path
+from typing import Any
+
 from dotenv import load_dotenv
+import dspy
+from tqdm import tqdm
+
+from mathster.agents.core import (
+    DirectiveAgentPaths,
+    LATEX_FENCE_PATTERN,
+    METADATA_PATTERN,
+    run_directive_extraction_loop,
+    URI_PATTERN,
+)
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
+
 # --------------------------------------------------------------------------------------
 # 1) Your split-output signature (exactly as you defined it earlier)
 #    If you already import it from your own module, delete this class and import instead.
@@ -107,22 +120,37 @@ class ParseTheoremDirectiveSplit(dspy.Signature):
 
     # Inputs (directive-only; no global metadata)
     directive_text = dspy.InputField(desc="Raw theorem directive text (header + body).")
-    context_hints  = dspy.InputField(desc="Tiny local context to infer implicit assumptions.", optional=True)
+    context_hints = dspy.InputField(
+        desc="Tiny local context to infer implicit assumptions.", optional=True
+    )
 
     # Scalar strings
-    type_str         = dspy.OutputField(desc="One of: 'theorem','lemma','proposition',…")
-    label_str        = dspy.OutputField(desc="Directive label if present, else empty.")
-    title_str        = dspy.OutputField(desc="Human-facing title if present, else empty.")
+    type_str = dspy.OutputField(desc="One of: 'theorem','lemma','proposition',…")
+    label_str = dspy.OutputField(desc="Directive label if present, else empty.")
+    title_str = dspy.OutputField(desc="Human-facing title if present, else empty.")
     nl_statement_str = dspy.OutputField(desc="Concise natural-language statement only.")
 
     # JSON fragments (stringified JSON)
-    equations_json              = dspy.OutputField(desc='JSON array: [{"label": string|null, "latex": string}, ...]')
-    hypotheses_json             = dspy.OutputField(desc='JSON array: [{"text": string, "latex": string|null}, ...]')
-    conclusion_json             = dspy.OutputField(desc='JSON object: {"text": string|null, "latex": string|null}')
-    variables_json              = dspy.OutputField(desc='JSON array: [{"symbol": string, "role": string|null, "constraints": [string,...]}, ...]')
-    implicit_assumptions_json   = dspy.OutputField(desc='JSON array: [{"text": string, "confidence": number|null}, ...]')
-    local_refs_json             = dspy.OutputField(desc='JSON array of strings: ["lem-3.4","eq-main",...]')
-    proof_json                  = dspy.OutputField(desc='JSON object: {"availability": "...", "steps":[{"kind": "...", "text": "...", "latex": "..."}]}')
+    equations_json = dspy.OutputField(
+        desc='JSON array: [{"label": string|null, "latex": string}, ...]'
+    )
+    hypotheses_json = dspy.OutputField(
+        desc='JSON array: [{"text": string, "latex": string|null}, ...]'
+    )
+    conclusion_json = dspy.OutputField(
+        desc='JSON object: {"text": string|null, "latex": string|null}'
+    )
+    variables_json = dspy.OutputField(
+        desc='JSON array: [{"symbol": string, "role": string|null, "constraints": [string,...]}, ...]'
+    )
+    implicit_assumptions_json = dspy.OutputField(
+        desc='JSON array: [{"text": string, "confidence": number|null}, ...]'
+    )
+    local_refs_json = dspy.OutputField(desc='JSON array of strings: ["lem-3.4","eq-main",...]')
+    proof_json = dspy.OutputField(
+        desc='JSON object: {"availability": "...", "steps":[{"kind": "...", "text": "...", "latex": "..."}]}'
+    )
+
 
 # --------------------------------------------------------------------------------------
 # 2) Reward function (import yours if you already have it; fallback kept here)
@@ -130,22 +158,31 @@ class ParseTheoremDirectiveSplit(dspy.Signature):
 
 # reward_theorem_split.py
 # Reward function for ParseTheoremDirectiveSplit outputs
-import json, re
-from typing import Any, Dict, List, Tuple
 
 # Allowed enums for gentle validation
 _ALLOWED_TYPES = {"theorem", "lemma", "proposition", "corollary", "claim"}
 _ALLOWED_AVAIL = {"present", "sketch", "omitted", "by-reference"}
 _ALLOWED_STEP_KINDS = {
-    "assume","apply","rewrite","calculation","case-start","case-end",
-    "induction-base","induction-step","construction","contradiction",
-    "conclude","remark","other"
+    "assume",
+    "apply",
+    "rewrite",
+    "calculation",
+    "case-start",
+    "case-end",
+    "induction-base",
+    "induction-step",
+    "construction",
+    "contradiction",
+    "conclude",
+    "remark",
+    "other",
 }
 
 # Simple helpers
-_FENCE_PAT = re.compile(r"(\$\$|\\\[|\\\]|\\begin\{equation\}|\\end\{equation\})")
-_URI_PAT   = re.compile(r"(https?://|file://|s3://|gs://)")
-_META_PAT  = re.compile(r"\b(line|page|timestamp|uuid|sha256)\b", re.I)
+_FENCE_PAT = LATEX_FENCE_PATTERN
+_URI_PAT = URI_PATTERN
+_META_PAT = METADATA_PATTERN
+
 
 def _json_loads(s: str | None, default):
     if not s or not s.strip():
@@ -155,17 +192,21 @@ def _json_loads(s: str | None, default):
     except Exception:
         return default
 
+
 def _nonempty(s: str | None) -> bool:
     return bool(s and s.strip())
 
+
 def _no_fences(latex: str) -> bool:
     return not _FENCE_PAT.search(latex or "")
+
 
 def _reasonable_text_len(text: str | None, min_words=5, max_chars=600) -> bool:
     if not _nonempty(text):
         return False
     words = len(text.strip().split())
     return (words >= min_words) and (len(text) <= max_chars)
+
 
 def _has_dups(seq) -> bool:
     seen = set()
@@ -176,7 +217,7 @@ def _has_dups(seq) -> bool:
     return False
 
 
-def theorem_reward(args: Dict[str, Any], pred) -> float:
+def theorem_reward(args: dict[str, Any], pred) -> float:
     """
     Reward for DSPy BestOfN / Refine.
     Expects pred to have the fields produced by ParseTheoremDirectiveSplit:
@@ -186,18 +227,18 @@ def theorem_reward(args: Dict[str, Any], pred) -> float:
     Returns float in [0, 1].
     """
     # Defensive defaults
-    type_str         = (getattr(pred, "type_str", None) or "").strip().lower()
-    label_str        = (getattr(pred, "label_str", "") or "").strip()
-    title_str        = (getattr(pred, "title_str", "") or "").strip()
+    type_str = (getattr(pred, "type_str", None) or "").strip().lower()
+    label_str = (getattr(pred, "label_str", "") or "").strip()
+    title_str = (getattr(pred, "title_str", "") or "").strip()
     nl_statement_str = (getattr(pred, "nl_statement_str", "") or "").strip()
 
-    equations  = _json_loads(getattr(pred, "equations_json", None), [])
+    equations = _json_loads(getattr(pred, "equations_json", None), [])
     hypotheses = _json_loads(getattr(pred, "hypotheses_json", None), [])
     conclusion = _json_loads(getattr(pred, "conclusion_json", None), {})
-    variables  = _json_loads(getattr(pred, "variables_json", None), [])
-    impls      = _json_loads(getattr(pred, "implicit_assumptions_json", None), [])
+    variables = _json_loads(getattr(pred, "variables_json", None), [])
+    impls = _json_loads(getattr(pred, "implicit_assumptions_json", None), [])
     local_refs = _json_loads(getattr(pred, "local_refs_json", None), [])
-    proof      = _json_loads(getattr(pred, "proof_json", None), {})
+    proof = _json_loads(getattr(pred, "proof_json", None), {})
 
     # We’ll accumulate partial points toward 1.0
     score = 0.0
@@ -206,18 +247,22 @@ def theorem_reward(args: Dict[str, Any], pred) -> float:
     # 1) Type / title / label (0.15)
     max_score += 0.15
     s1 = 0.0
-    if type_str in _ALLOWED_TYPES:                          s1 += 0.08
-    if _nonempty(title_str):                                s1 += 0.02
+    if type_str in _ALLOWED_TYPES:
+        s1 += 0.08
+    if _nonempty(title_str):
+        s1 += 0.02
     # label: allowed but optional; if present, prefer short and label-like
-    if _nonempty(label_str) and len(label_str) <= 80 \
-       and not _URI_PAT.search(label_str):                  s1 += 0.05
+    if _nonempty(label_str) and len(label_str) <= 80 and not _URI_PAT.search(label_str):
+        s1 += 0.05
     score += min(s1, 0.15)
 
     # 2) NL statement (concise, no metadata) (0.15)
     max_score += 0.15
     s2 = 0.0
-    if _reasonable_text_len(nl_statement_str):              s2 += 0.12
-    if not _META_PAT.search(nl_statement_str):              s2 += 0.03
+    if _reasonable_text_len(nl_statement_str):
+        s2 += 0.12
+    if not _META_PAT.search(nl_statement_str):
+        s2 += 0.03
     score += min(s2, 0.15)
 
     # 3) Equations (JSON parse, required fields, no fences) (0.20)
@@ -236,8 +281,10 @@ def theorem_reward(args: Dict[str, Any], pred) -> float:
                 break
             if not _no_fences(e["latex"]):
                 no_fences_all = False
-        if ok_all:            s3 += 0.10
-        if no_fences_all:     s3 += 0.05
+        if ok_all:
+            s3 += 0.10
+        if no_fences_all:
+            s3 += 0.05
     score += min(s3, 0.20)
 
     # 4) Hypotheses + Conclusion (structure, minimal presence) (0.20)
@@ -248,10 +295,13 @@ def theorem_reward(args: Dict[str, Any], pred) -> float:
         s4 += 0.05
         good_hyps = True
         for h in hypotheses[:10]:
-            if not isinstance(h, dict) or not ( _nonempty(h.get("text")) or _nonempty(h.get("latex")) ):
+            if not isinstance(h, dict) or not (
+                _nonempty(h.get("text")) or _nonempty(h.get("latex"))
+            ):
                 good_hyps = False
                 break
-        if good_hyps: s4 += 0.05
+        if good_hyps:
+            s4 += 0.05
     # Conclusion object with text or latex
     if isinstance(conclusion, dict):
         s4 += 0.05
@@ -308,22 +358,28 @@ def theorem_reward(args: Dict[str, Any], pred) -> float:
     if isinstance(proof, dict):
         s8 += 0.02
         avail = (proof.get("availability") or "").strip().lower()
-        if avail in _ALLOWED_AVAIL: s8 += 0.03
+        if avail in _ALLOWED_AVAIL:
+            s8 += 0.03
         steps = proof.get("steps", [])
         if isinstance(steps, list):
             s8 += 0.03
             ok_steps = True
             no_fence_steps = True
             for st in steps[:20]:
-                if not isinstance(st, dict): ok_steps = False; break
+                if not isinstance(st, dict):
+                    ok_steps = False
+                    break
                 kind = (st.get("kind") or "").strip().lower()
                 if kind and kind not in _ALLOWED_STEP_KINDS:
-                    ok_steps = False; break
+                    ok_steps = False
+                    break
                 latex = st.get("latex")
                 if latex and not _no_fences(latex):
                     no_fence_steps = False
-            if ok_steps:        s8 += 0.02
-            if no_fence_steps:  s8 += 0.02
+            if ok_steps:
+                s8 += 0.02
+            if no_fence_steps:
+                s8 += 0.02
     score += min(s8, 0.12)
 
     # 9) Anti‑metadata check across main strings (0.0–0.10 bonus)
@@ -334,15 +390,17 @@ def theorem_reward(args: Dict[str, Any], pred) -> float:
     for arr in (hypotheses, variables, impls):
         for obj in arr if isinstance(arr, list) else []:
             if isinstance(obj, dict):
-                for k in ("text","latex"):
+                for k in ("text", "latex"):
                     val = obj.get(k)
                     if isinstance(val, str):
                         texts_to_check.append(val)
     # proof step texts/latex
     for st in proof.get("steps", []) if isinstance(proof, dict) else []:
         if isinstance(st, dict):
-            if isinstance(st.get("text"), str): texts_to_check.append(st["text"])
-            if isinstance(st.get("latex"), str): texts_to_check.append(st["latex"])
+            if isinstance(st.get("text"), str):
+                texts_to_check.append(st["text"])
+            if isinstance(st.get("latex"), str):
+                texts_to_check.append(st["latex"])
 
     for t in texts_to_check:
         if _URI_PAT.search(t or "") or _META_PAT.search(t or ""):
@@ -351,112 +409,42 @@ def theorem_reward(args: Dict[str, Any], pred) -> float:
     score += min(s9, 0.10)
 
     # Normalize (just in case weights drift)
-    score = max(0.0, min(score, 1.0))
-    return score
+    return max(0.0, min(score, 1.0))
 
 
 # --------------------------------------------------------------------------------------
 # 3) Utilities
 # --------------------------------------------------------------------------------------
-_LINENO = re.compile(r"^\s*\d+:\s?")   # matches "123: " prefix
 
-def strip_line_numbers(text: str) -> str:
-    """Remove 'NNN: ' prefixes from each line."""
-    return "\n".join(_LINENO.sub("", ln) for ln in (text or "").splitlines())
 
-def synthesize_directive_text(obj: Dict[str, Any]) -> str:
-    """
-    Build a well-formed directive block if 'raw_directive' is missing.
-    Uses directive_type/title/label and the 'content' body.
-    """
-    dtype = (obj.get("directive_type") or "theorem").strip()
-    title = (obj.get("title") or "").strip()
-    label = (obj.get("label") or obj.get("metadata", {}).get("label") or "").strip()
-
-    header = f"::{{prf:{dtype}}} {title}".rstrip()
-    labelln = f":label: {label}" if label else ""
-    body = strip_line_numbers(obj.get("content") or "")
-    parts = [header]
-    if labelln: parts.append(labelln)
-    if body: parts.append(body)
-    parts.append(":::")
-    return "\n\n".join(parts)
-
-def extract_directive_text(obj: Dict[str, Any]) -> str:
-    """Prefer raw_directive; otherwise synthesize from fields."""
-    raw = obj.get("raw_directive")
-    return strip_line_numbers(raw) if isinstance(raw, str) and raw.strip() else synthesize_directive_text(obj)
-
-def tiny_context_hints(obj: Dict[str, Any], doc_text: str, window: int = 320) -> str:
-    """
-    Build a very small context window:
-    - primary: the 'content' field (already local to the directive).
-    - fallback: locate label/title in doc_text and return a short window.
-    """
-    content = strip_line_numbers(obj.get("content") or "").strip()
-    if content:
-        # Clamp to a short window from the content itself
-        c = content
-        if len(c) > window:
-            # take head+tail
-            head = c[:window//2]
-            tail = c[-window//2:]
-            return head + "\n...\n" + tail
-        return c
-
-    # fallback: find in doc
-    key = (obj.get("label") or obj.get("title") or "").strip()
-    if not key:
-        return ""
-    idx = doc_text.find(key)
-    if idx == -1:
-        key2 = key[:60]
-        idx = doc_text.find(key2) if key2 else -1
-    if idx == -1:
-        return ""
-    start = max(0, idx - window)
-    end   = min(len(doc_text), idx + len(key) + window)
-    return doc_text[start:end]
-
-def load_json_or_jsonl(path: Path) -> Iterable[Any]:
-    text = path.read_text(encoding="utf-8")
-    if path.suffix.lower() == ".jsonl":
-        for ln in text.splitlines():
-            ln = ln.strip()
-            if not ln: continue
-            try: yield json.loads(ln)
-            except Exception: pass
-    else:
-        obj = json.loads(text)
-        obj = obj.get("items", obj)
-        if isinstance(obj, list):
-            for it in obj: yield it
-        else:
-            yield obj
-
-def assemble_output(res) -> Dict[str, Any]:
+def assemble_output(res) -> dict[str, Any]:
     """Turn split fields into the unified object."""
+
     def j(x, default):
-        try: return json.loads(x) if x else default
-        except Exception: return default
+        try:
+            return json.loads(x) if x else default
+        except Exception:
+            return default
 
     return {
-        "type":                 (res.type_str or "").strip() or None,
-        "label":                (res.label_str or "").strip() or None,
-        "title":                (res.title_str or "").strip() or None,
-        "nl_statement":         (res.nl_statement_str or "").strip() or None,
-        "equations":            j(res.equations_json, []),
-        "hypotheses":           j(res.hypotheses_json, []),
-        "conclusion":           j(res.conclusion_json, {}),
-        "variables":            j(res.variables_json, []),
+        "type": (res.type_str or "").strip() or None,
+        "label": (res.label_str or "").strip() or None,
+        "title": (res.title_str or "").strip() or None,
+        "nl_statement": (res.nl_statement_str or "").strip() or None,
+        "equations": j(res.equations_json, []),
+        "hypotheses": j(res.hypotheses_json, []),
+        "conclusion": j(res.conclusion_json, {}),
+        "variables": j(res.variables_json, []),
         "implicit_assumptions": j(res.implicit_assumptions_json, []),
-        "local_refs":           j(res.local_refs_json, []),
-        "proof":                j(res.proof_json, {}),
+        "local_refs": j(res.local_refs_json, []),
+        "proof": j(res.proof_json, {}),
     }
+
 
 # --------------------------------------------------------------------------------------
 # 4) Data loading and output
 # --------------------------------------------------------------------------------------
+
 
 # --------------------------------------------------------------------------------------
 # 5) Main refine loop
@@ -480,56 +468,37 @@ def run_agent(
         threshold=threshold,
     )
     theorem_subtypes = ["theorem", "lemma", "proposition", "corollary", "claim"]
-    # Load doc (for tiny context only)
     doc_path = Path(document_path)
-    document_folder = doc_path.parent / str(doc_path.stem)
-    for theorem_subtype in theorem_subtypes:
-        logger.info(f"Processing {theorem_subtype}s...")
-        target_file = f"{theorem_subtype}.json"
-        theorems_path = document_folder / "registry" / "directives" / target_file
-        logger.info(f"from file path: {theorems_path}")
-        if not Path(theorems_path).exists():
-            continue
+    fallback_predict = dspy.Predict(ParseTheoremDirectiveSplit)
 
-        out_path = document_folder / "extract"
-        out_path.mkdir(exist_ok=True)
-        out_path = out_path / target_file
-        # Iterate theorems and write outputs
-        doc_text = doc_path.read_text(encoding="utf-8")
-        out_f = Path(out_path).open("w", encoding="utf-8")
-        outputs = []
-        for idx, obj in enumerate(load_json_or_jsonl(Path(theorems_path)), start=1):
-            if not isinstance(obj, dict):
-                continue
-
-            directive_text = extract_directive_text(obj)
-            context_hints  = tiny_context_hints(obj, doc_text, window=320)
-
-
-            try:
-                res = program(directive_text=obj, context_hints=context_hints)
-                logger.info(f"✓ Refine succeeded for item {idx}: {obj.get('label')}")
-            except Exception:
-                # Fallback: one-pass predict
-                logger.warning(f"Refine failed for item #{idx}: {obj.get('label')}, falling back to single-pass Predict.")
-                res = dspy.Predict(ParseTheoremDirectiveSplit)(
-                    directive_text=directive_text, context_hints=context_hints
-                )
-
-            assembled = assemble_output(res)
-            outputs.append(assembled)
-        out_f.write(json.dumps(outputs, ensure_ascii=False, indent=2) + "\n")
-
-        out_f.close()
-        logger.info(f"Wrote outputs to {out_path}")
+    for theorem_subtype in tqdm(theorem_subtypes, desc="Theorem subtypes"):
+        logger.info("Processing %s directives...", theorem_subtype)
+        paths = DirectiveAgentPaths.build(doc_path, directive_basename=theorem_subtype)
+        run_directive_extraction_loop(
+            paths=paths,
+            program_call=program,
+            assemble_output=assemble_output,
+            directive_type_fallback=theorem_subtype,
+            fallback_call=fallback_predict,
+            logger_obj=logger,
+        )
 
 
 # --------------------------------------------------------------------------------------
 # 5) CLI
 # --------------------------------------------------------------------------------------
 def main(argv=None):
-    ap = argparse.ArgumentParser(description="Parse theorem directives (structured objects as input) via DSPy Refine.")
-    ap.add_argument("--doc", required=True, help="Path to the full document (used only for tiny context hints).")
+    import flogging
+
+    flogging.setup(level="INFO")
+    ap = argparse.ArgumentParser(
+        description="Parse theorem directives (structured objects as input) via DSPy Refine."
+    )
+    ap.add_argument(
+        "--doc",
+        required=True,
+        help="Path to the full document (used only for tiny context hints).",
+    )
     ap.add_argument("--lm", default="gemini/gemini-flash-lite-latest", help="LM spec for DSPy.")
     ap.add_argument("--passes", type=int, default=5, help="Refine attempts (N).")
     ap.add_argument("--threshold", type=float, default=0.95, help="Refine early-stop threshold.")

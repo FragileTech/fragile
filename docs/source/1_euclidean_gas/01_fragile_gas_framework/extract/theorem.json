@@ -1,0 +1,1649 @@
+[
+  {
+    "type": "theorem",
+    "label": "thm-revival-guarantee",
+    "title": "Almost‑sure revival under the global constraint",
+    "nl_statement": "Given a swarm $\\mathcal S$ with at least one alive walker and a dead walker $i\\in\\mathcal D(\\mathcal S)$, the probability that $i$ is revived in the cloning stage is 1, provided the global constraint $\\varepsilon_{\\text{clone}}\\,p_{\\max} < \\eta^{\\alpha+\\beta}$ holds.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\mathbb P\\big[\\text{$i$ is revived in the cloning stage}\\big] \\;=\\;1."
+      }
+    ],
+    "hypotheses": [],
+    "conclusion": {
+      "text": "Walker $i$ is revived in the cloning stage with probability 1.",
+      "latex": "\\mathbb P\\big[\\text{$i$ is revived in the cloning stage}\\big] = 1"
+    },
+    "variables": [
+      {
+        "symbol": "\\mathcal S",
+        "role": "swarm",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal A(\\mathcal S)",
+        "role": "set of alive walkers in S",
+        "constraints": []
+      },
+      {
+        "symbol": "i",
+        "role": "dead walker index",
+        "constraints": [
+          "i\\in\\mathcal D(\\mathcal S)"
+        ]
+      },
+      {
+        "symbol": "\\varepsilon_{\\text{clone}}",
+        "role": "parameter",
+        "constraints": []
+      },
+      {
+        "symbol": "p_{\\max}",
+        "role": "parameter",
+        "constraints": []
+      },
+      {
+        "symbol": "\\eta",
+        "role": "parameter",
+        "constraints": []
+      },
+      {
+        "symbol": "\\alpha",
+        "role": "exponent",
+        "constraints": []
+      },
+      {
+        "symbol": "\\beta",
+        "role": "exponent",
+        "constraints": []
+      },
+      {
+        "symbol": "T_{\\text{clone}}",
+        "role": "cloning threshold",
+        "constraints": [
+          "T_{\\text{clone}}\\sim\\mathrm{Unif}(0,p_{\\max})"
+        ]
+      },
+      {
+        "symbol": "S_i",
+        "role": "per-dead-walker score",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The definitions of $\\mathcal A(\\mathcal S)$, $\\mathcal D(\\mathcal S)$, and the cloning rule mechanism are established in prior context (implied by reliance on $\\mathcal S$, $i$, and §16.1).",
+        "confidence": 0.95
+      }
+    ],
+    "local_refs": [
+      "Sec 16.1"
+    ],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "theorem",
+    "label": "thm-mean-square-standardization-error",
+    "title": "Asymptotic Behavior of the Mean-Square Standardization Error",
+    "nl_statement": "The total expected squared error in the standardization operator's output, $\\mathbb{E}[\\| \\mathbf{z}_1 - \\mathbf{z}_2 \\|_2^2]$, is bounded by the sum of the Expected Squared Value Error ($E^2_{V,ms}$) and the Expected Squared Structural Error ($E^2_{S,ms}$), specifically $\\mathbb{E}[\\| \\mathbf{z}_1 - \\mathbf{z}_2 \\|_2^2] \\in O(E_{V,ms}^2(k_1)) + O(E_{S,ms}^2(k_1))$ for a large number of alive walkers $k_1$. Under normal operation, the dominant expected value error is $O(1)$ with respect to swarm size.",
+    "equations": [],
+    "hypotheses": [],
+    "conclusion": {},
+    "variables": [
+      {
+        "symbol": "z(\\mathcal{S})",
+        "role": "N-Dimensional Standardization Operator",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathbf{z}_1, \\mathbf{z}_2",
+        "role": "Standardized vectors",
+        "constraints": []
+      },
+      {
+        "symbol": "k_1",
+        "role": "Number of alive walkers",
+        "constraints": [
+          "k_1 = |\\mathcal{A}(\\mathcal{S}_1)|"
+        ]
+      },
+      {
+        "symbol": "E^2_{V,ms}",
+        "role": "Expected Squared Value Error",
+        "constraints": []
+      },
+      {
+        "symbol": "E^2_{S,ms}",
+        "role": "Expected Squared Structural Error",
+        "constraints": []
+      },
+      {
+        "symbol": "\\varepsilon_{\\text{std}}",
+        "role": "Regularization parameter",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The context of 'Section 11' implies prior definitions of the standardization operator and error components.",
+        "confidence": 0.9
+      },
+      {
+        "text": "The context suggests a comparison between two standardization outputs $\\mathbf{z}_1$ and $\\mathbf{z}_2$.",
+        "confidence": 0.8
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "theorem",
+    "label": "thm-forced-activity",
+    "title": "Theorem of Forced Activity",
+    "nl_statement": "If a swarm is sufficiently spread out in a rich environment with non-zero amplification and some noise, then cloning must occur, preventing stagnation.",
+    "equations": [],
+    "hypotheses": [
+      {
+        "text": "A swarm that is not collapsed to a single point must generate a non-zero probability of cloning for the algorithm's adaptive and contractive forces to function.",
+        "latex": null
+      },
+      {
+        "text": "Spread out walkers (covering enough space to sense reward differences)",
+        "latex": null
+      },
+      {
+        "text": "Rich environment (reward actually varies across space)",
+        "latex": null
+      },
+      {
+        "text": "Non-zero amplification (the algorithm pays attention to rewards)",
+        "latex": null
+      },
+      {
+        "text": "Some noise (walkers can explore)",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "Some cloning MUST happen - the swarm can't just sit still.",
+      "latex": null
+    },
+    "variables": [],
+    "implicit_assumptions": [
+      {
+        "text": "The algorithm possesses adaptive and contractive forces.",
+        "confidence": 1.0
+      },
+      {
+        "text": "The underlying system involves 'walkers' forming a 'swarm'.",
+        "confidence": 0.9
+      },
+      {
+        "text": "The concept of 'cloning' is a fundamental mechanism in the system dynamics.",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "theorem",
+    "label": "thm-total-error-status-bound",
+    "title": "Total Error Bound in Terms of Status Changes",
+    "nl_statement": "The total error $E$ between the expected values of a bounded function $f_j$ evaluated over the companion sets of two swarm states $\\mathcal{S}_1$ and $\\mathcal{S}_2$ is bounded by a term proportional to the total number of status changes $n_c$ and inversely proportional to the size of the initial support set $|S_1|$.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "E \\le \\frac{2 M_f}{|S_1|} \\cdot n_c"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "$\\\\mathcal{S}_1$ and $\\\\mathcal{S}_2$ are two swarm states.",
+        "latex": null
+      },
+      {
+        "text": "For a given walker $i$, $S_1$ and $S_2$ are its companion support sets, with $|S_1| > 0$.",
+        "latex": null
+      },
+      {
+        "text": "The status of each potential companion $j$ is given by $s_{1,j}$ and $s_{2,j}$ in the respective swarms.",
+        "latex": null
+      },
+      {
+        "text": "Let $f_j = f(x_{2,j})$ be a function bounded by $M_f$.",
+        "latex": null
+      },
+      {
+        "text": "$n_c$ is the total number of status changes in the swarm.",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The total error $E = |\\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S}_1)}[f_j] - \\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S}_2)}[f_j]|$ is bounded by $\\\\frac{2 M_f}{|S_1|} \\cdot n_c$.",
+      "latex": "E \\le \\frac{2 M_f}{|S_1|} \\cdot n_c"
+    },
+    "variables": [
+      {
+        "symbol": "\\mathcal{S}_1",
+        "role": "swarm state",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal{S}_2",
+        "role": "swarm state",
+        "constraints": []
+      },
+      {
+        "symbol": "i",
+        "role": "walker index",
+        "constraints": []
+      },
+      {
+        "symbol": "S_1",
+        "role": "companion support set",
+        "constraints": [
+          "|S_1| > 0"
+        ]
+      },
+      {
+        "symbol": "S_2",
+        "role": "companion support set",
+        "constraints": []
+      },
+      {
+        "symbol": "j",
+        "role": "potential companion index",
+        "constraints": []
+      },
+      {
+        "symbol": "s_{1,j}",
+        "role": "status in S1",
+        "constraints": []
+      },
+      {
+        "symbol": "s_{2,j}",
+        "role": "status in S2",
+        "constraints": []
+      },
+      {
+        "symbol": "f_j",
+        "role": "function of companion position",
+        "constraints": [
+          "f_j = f(x_{2,j})",
+          "f_j \\le M_f"
+        ]
+      },
+      {
+        "symbol": "M_f",
+        "role": "bound for f_j",
+        "constraints": []
+      },
+      {
+        "symbol": "n_c",
+        "role": "total number of status changes",
+        "constraints": []
+      },
+      {
+        "symbol": "E",
+        "role": "total error",
+        "constraints": [
+          "E = |\\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S}_1)}[f_j] - \\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S}_2)}[f_j]|"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The notation $\\\\mathbb{C}_i(\\cdot)$ refers to a sampling distribution or set based on walker $i$ relative to the swarm state.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "theorem",
+    "label": "thm-rescale-function-lipschitz",
+    "title": "Global Lipschitz Continuity of the Smooth Rescale Function",
+    "nl_statement": "The Smooth Piecewise Rescale Function $g_A(z)$ is globally Lipschitz continuous on $\\mathbb{R}$, and its Lipschitz constant $L_{g_A}$ is given by $L_P$.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "L_{g_A} = \\sup_{z \\in \\mathbb{R}} |g'_A(z)| = L_P = 1 + \\frac{(3\\log(2)-2)^2}{3(2\\log(2)-1)} \\approx 1.0054"
+      }
+    ],
+    "hypotheses": [],
+    "conclusion": {
+      "text": "The Smooth Piecewise Rescale Function $g_A(z)$ is globally Lipschitz continuous on $\\mathbb{R}$ with Lipschitz constant $L_{g_A} = L_P$.",
+      "latex": "g_A(z) \\text{ is globally Lipschitz continuous on } \\mathbb{R}"
+    },
+    "variables": [
+      {
+        "symbol": "g_A(z)",
+        "role": "Smooth Piecewise Rescale Function",
+        "constraints": []
+      },
+      {
+        "symbol": "L_{g_A}",
+        "role": "Lipschitz constant",
+        "constraints": []
+      },
+      {
+        "symbol": "L_P",
+        "role": "Uniform upper bound on the derivative of the polynomial patch",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The function $g_A(z)$ is defined on $\\mathbb{R}$.",
+        "confidence": 1.0
+      },
+      {
+        "text": "$L_P$ is defined as the supremum of the absolute value of the first derivative of $g_A(z)$ in the context of the theorem statement.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [
+      "lem-cubic-patch-derivative-bounds"
+    ],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "theorem",
+    "label": "thm-canonical-logistic-validity",
+    "title": "The Canonical Logistic Function is a Valid Rescale Function",
+    "nl_statement": "The Canonical Logistic Rescale Function satisfies all four conditions of the Axiom of a Well-Behaved Rescale Function.",
+    "equations": [],
+    "hypotheses": [
+      {
+        "text": "The function under consideration is the Canonical Logistic Rescale Function.",
+        "latex": null
+      },
+      {
+        "text": "The conditions required are those of the Axiom of a Well-Behaved Rescale Function.",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The Canonical Logistic Rescale Function satisfies all four conditions of the Axiom of a Well-Behaved Rescale Function.",
+      "latex": null
+    },
+    "variables": [],
+    "implicit_assumptions": [
+      {
+        "text": "The definition of the Canonical Logistic Rescale Function is available via reference to definition section [](#def-canonical-logistic-rescale-function-example).",
+        "confidence": 1.0
+      },
+      {
+        "text": "The four conditions of the Axiom of a Well-Behaved Rescale Function are defined elsewhere ([](#def-axiom-rescale-function)).",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [
+      "def-canonical-logistic-rescale-function-example",
+      "def-axiom-rescale-function"
+    ],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "theorem",
+    "label": "thm-expected-raw-distance-bound",
+    "title": "Bound on the Expected Raw Distance Vector Change",
+    "nl_statement": "The squared Euclidean distance between the expected raw distance vectors of two swarm states $\\mathcal{S}_1$ and $\\mathcal{S}_2$ is deterministically bounded by a function of the displacement components and error coefficients.",
+    "equations": [],
+    "hypotheses": [
+      {
+        "text": "$\\mathcal{S}_1$ and $\\mathcal{S}_2$ are two swarm states.",
+        "latex": "{\\mathcal{S}_1}, {\\mathcal{S}_2} \\text{ are two swarm states}"
+      },
+      {
+        "text": "$|\\mathcal{A}(\\mathcal{S}_1)| = k_1 \\ge 2$.",
+        "latex": "|\\mathcal{A}(\\mathcal{S}_1)| = k_1 \\ge 2"
+      }
+    ],
+    "conclusion": {},
+    "variables": [
+      {
+        "symbol": "$\\mathcal{S}_1$",
+        "role": "swarm state",
+        "constraints": []
+      },
+      {
+        "symbol": "$\\mathcal{S}_2$",
+        "role": "swarm state",
+        "constraints": []
+      },
+      {
+        "symbol": "$k_1$",
+        "role": "size of active set in $\\mathcal{S}_1$",
+        "constraints": [
+          "$k_1 \\ge 2$"
+        ]
+      },
+      {
+        "symbol": "$\\mathbb{E}[\\mathbf{d}(\\mathcal{S})]$",
+        "role": "N-dimensional vector of expected raw distances",
+        "constraints": []
+      },
+      {
+        "symbol": "$C_{\\text{pos},d}$",
+        "role": "Expected Distance Error Coefficient",
+        "constraints": [
+          "$C_{\\text{pos},d} = 12$"
+        ]
+      },
+      {
+        "symbol": "$\\Delta_{\\text{pos}}(\\mathcal{S}_1, \\mathcal{S}_2)$",
+        "role": "formal displacement component",
+        "constraints": []
+      },
+      {
+        "symbol": "$C_{\\text{status},d}^{(1)}$",
+        "role": "Expected Distance Error Coefficient",
+        "constraints": [
+          "$C_{\\text{status},d}^{(1)} = D_{\\mathcal{Y}}^2$"
+        ]
+      },
+      {
+        "symbol": "$n_c(\\mathcal{S}_1, \\mathcal{S}_2)$",
+        "role": "count related to status mismatch",
+        "constraints": []
+      },
+      {
+        "symbol": "$C_{\\text{status},d}^{(2)}(k_1)$",
+        "role": "Expected Distance Error Coefficient",
+        "constraints": [
+          "$C_{\\text{status},d}^{(2)}(k_1) = \\frac{8 k_1 D_{\\mathcal{Y}}^2}{(k_1 - 1)^2}$"
+        ]
+      },
+      {
+        "symbol": "$D_{\\mathcal{Y}}^2$",
+        "role": "constant related to status error",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [],
+    "local_refs": [
+      "def-displacement-components"
+    ],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "theorem",
+    "label": "thm-expected-raw-distance-k1",
+    "title": "Deterministic Behavior of the Expected Raw Distance Vector at $k=1$",
+    "nl_statement": "When a swarm state $\\mathcal{S}$ has exactly one alive walker ($|\\mathcal{A}(\\mathcal{S})| = 1$), the N-dimensional vector of expected raw distances, $\\mathbb{E}[\\mathbf{d}(\\mathcal{S})]$, is the zero vector, and transitions from states with $k \\ge 2$ alive walkers induce a discontinuity whose magnitude is the norm squared of the expected distance vector in the $k \\ge 2$ state.",
+    "equations": [],
+    "hypotheses": [],
+    "conclusion": {},
+    "variables": [
+      {
+        "symbol": "k",
+        "role": "regime indicator",
+        "constraints": [
+          "k \\geq 2",
+          "k = 1"
+        ]
+      },
+      {
+        "symbol": "S",
+        "role": "swarm state",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal{A}(\\mathcal{S})",
+        "role": "set of alive walkers in state S",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathbf{d}(\\mathcal{S})",
+        "role": "vector of raw distances",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathbb{E}[\\cdot]",
+        "role": "expectation operator",
+        "constraints": []
+      },
+      {
+        "symbol": "N",
+        "role": "dimension",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The analysis relies on the concept of 'alive walkers' and a 'swarm state' $\\mathcal{S}$.",
+        "confidence": 1.0
+      },
+      {
+        "text": "The continuity analysis mentioned refers to previous results valid for $k \\geq 2$.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "theorem",
+    "label": "thm-distance-operator-satisfies-bounded-variance-axiom",
+    "title": "The Distance Operator Satisfies the Bounded Variance Axiom",
+    "nl_statement": "The Distance-to-Companion Measurement operator ($V=d$) satisfies the Axiom of Bounded Measurement Variance, with its maximum measurement variance bounded by $\\kappa^2_{\\text{variance}} = N \\cdot D_{\\mathcal{Y}}^2$.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\kappa^2_{\\text{variance}} = N \\cdot D_{\\mathcal{Y}}^2"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "The specific stochastic measurement process is the distance-to-companion operator ($V=d$).",
+        "latex": null
+      },
+      {
+        "text": "The operator is compliant with the foundational axiom for bounded variance.",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The maximum measurement variance ($\\kappa^2_{\\text{variance}}$) is deterministically bounded by $N \\cdot D_{\\mathcal{Y}}^2$.",
+      "latex": "\\kappa^2_{\\text{variance}} = N \\cdot D_{\\mathcal{Y}}^2"
+    },
+    "variables": [
+      {
+        "symbol": "V",
+        "role": "Distance-to-Companion Measurement operator",
+        "constraints": [
+          "V=d"
+        ]
+      },
+      {
+        "symbol": "\\kappa^2_{\\text{variance}}",
+        "role": "Maximum measurement variance",
+        "constraints": []
+      },
+      {
+        "symbol": "N",
+        "role": "Total number of walkers",
+        "constraints": []
+      },
+      {
+        "symbol": "D_{\\mathcal{Y}}",
+        "role": "Diameter of the algorithmic space",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The Axiom of Bounded Measurement Variance is previously defined and established.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [
+      "axiom-bounded-measurement-variance"
+    ],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "theorem",
+    "label": "thm-distance-operator-mean-square-continuity",
+    "title": "Mean-Square Continuity of the Distance Operator",
+    "nl_statement": "The Distance-to-Companion Measurement operator ($V=d$) is mean-square continuous for transitions in the $k \\geq 2$ regime, bounded by the function $F_{d,ms}(\\mathcal{S}_1, \\mathcal{S}_2)$.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\mathbb{E}[\\|\\mathbf{d}(\\mathcal{S}_1) - \\mathbf{d}(\\mathcal{S}_2)\\|_2^2] \\le F_{d,ms}(\\mathcal{S}_1, \\mathcal{S}_2)"
+      },
+      {
+        "label": null,
+        "latex": "F_{d,ms}(\\mathcal{S}_1, \\mathcal{S}_2) := 6 N D_{\\mathcal{Y}}^2 + 3 \\left( C_{\\text{pos},d} \\cdot \\Delta_{\\text{pos}}^2 + C_{\\text{status},d}^{(1)} \\cdot n_c + C_{\\text{status},d}^{(2)}(k_1) \\cdot n_c^2 \\right)"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "The variance of the distance operator is axiomatically bounded.",
+        "latex": null
+      },
+      {
+        "text": "The number of agents in swarm state $\\mathcal{S}_1$ satisfies $|\\mathcal{A}(\\mathcal{S}_1)|=k_1 \\ge 2$.",
+        "latex": "$|\\mathcal{A}(\\mathcal{S}_1)|=k_1 \\ge 2$"
+      }
+    ],
+    "conclusion": {
+      "text": "The expected squared Euclidean distance between the sampled raw distance vectors is deterministically bounded by the function $F_{d,ms}$.",
+      "latex": "\\mathbb{E}[\\|\\mathbf{d}(\\mathcal{S}_1) - \\mathbf{d}(\\mathcal{S}_2)\\|_2^2] \\le F_{d,ms}(\\mathcal{S}_1, \\mathcal{S}_2)"
+    },
+    "variables": [
+      {
+        "symbol": "V",
+        "role": "Distance-to-Companion Measurement operator",
+        "constraints": [
+          "V=d"
+        ]
+      },
+      {
+        "symbol": "d",
+        "role": "Distance operator",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal{S}_1, \\mathcal{S}_2",
+        "role": "Swarm states",
+        "constraints": []
+      },
+      {
+        "symbol": "k_1",
+        "role": "Size of active set in \\mathcal{S}_1",
+        "constraints": [
+          "k_1 \\ge 2"
+        ]
+      },
+      {
+        "symbol": "F_{d,ms}",
+        "role": "Expected Squared Distance Error Bound function",
+        "constraints": []
+      },
+      {
+        "symbol": "N",
+        "role": "Constant related to system size",
+        "constraints": []
+      },
+      {
+        "symbol": "D_{\\mathcal{Y}}",
+        "role": "Parameter related to measurement space",
+        "constraints": []
+      },
+      {
+        "symbol": "C_{\\text{pos},d}, C_{\\text{status},d}^{(1)}, C_{\\text{status},d}^{(2)}",
+        "role": "Deterministic Expected Distance Error Coefficients",
+        "constraints": []
+      },
+      {
+        "symbol": "\\Delta_{\\text{pos}}",
+        "role": "Position uncertainty parameter",
+        "constraints": []
+      },
+      {
+        "symbol": "n_c",
+        "role": "Status vector component count",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [],
+    "local_refs": [
+      "thm-distance-operator-mean-square-continuity"
+    ],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "theorem",
+    "label": null,
+    "title": "General Bound on the Norm of the Standardized Vector",
+    "nl_statement": "The magnitude of the resulting standardized vector is algebraically bounded, regardless of the specific aggregation operator used, provided the operator produces a mean within the range of the input values.",
+    "equations": [],
+    "hypotheses": [
+      {
+        "text": "The operator produces a mean within the range of the input values.",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "A universal bound exists for the squared L2-norm of the standardized vector.",
+      "latex": null
+    },
+    "variables": [],
+    "implicit_assumptions": [],
+    "local_refs": [],
+    "proof": {
+      "availability": "present",
+      "steps": [
+        {
+          "kind": "reference",
+          "text": "The proof is identical in structure to that of lem-stats-value-continuity.",
+          "latex": null
+        },
+        {
+          "kind": "argument",
+          "text": "Uses the structural continuity functions ($L_{\\mu,S}$, $L_{m_2,S}$) from the aggregator axiom instead of the value-based Lipschitz constants.",
+          "latex": null
+        },
+        {
+          "kind": "computation",
+          "text": "The change in variance due to structure is shown to be bounded by $(L_{m_2,S}(\\mathcal{S}_1, \\mathcal{S}_2) + 2V_{\\max} L_{\\mu,S}(\\mathcal{S}_1, \\mathcal{S}_2)) \\|\\mathbf{s}_1-\\mathbf{s}_2\\|_2^2$.",
+          "latex": "\\Delta \\text{Var} \\le (L_{m_2,S}(\\mathcal{S}_1, \\mathcal{S}_2) + 2V_{\\max} L_{\\mu,S}(\\mathcal{S}_1, \\mathcal{S}_2)) \\|\\mathbf{s}_1-\\mathbf{s}_2\\|_2^2"
+        },
+        {
+          "kind": "composition",
+          "text": "This is composed with the globally Lipschitz function $\\sigma\\'_{\\text{reg}}(\\cdot)$ (with Lipschitz constant $L_{\\sigma\\'_{\\text{reg}}}$), yielding the final result for $L_{\\sigma',S}$.",
+          "latex": null
+        }
+      ]
+    }
+  },
+  {
+    "type": "theorem",
+    "label": "thm-asymptotic-std-dev-structural-continuity",
+    "title": "Asymptotic Behavior of the Structural Continuity for the Regularized Standard Deviation",
+    "nl_statement": "The asymptotic behavior of the structural Lipschitz function for the regularized standard deviation, $L_{\\sigma',S}(\\mathcal{S})$, for a swarm aggregation operator $M$ with structural growth exponents $p_{\\mu,S}$ and $p_{m_2,S}$ is determined by the larger of the two structural growth exponents as the swarm size $k$ becomes large.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "k \\left( \\frac{2V_{\\max}}{\\sigma'_{\\min\\,\\text{bound}}} \\right)^2"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "The chosen swarm aggregation operator $M$ has structural growth exponents $p_{\\mu,S}$ and $p_{m_2,S}$ for its mean and second moment, respectively, as defined in \\ref{def-swarm-aggregation-operator-axiomatic}.",
+        "latex": null
+      },
+      {
+        "text": "Let $L_{\\sigma',S}(\\mathcal{S})$ be the structural Lipschitz function for the regularized standard deviation, as derived in \\ref{lem-stats-structural-continuity}.",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The asymptotic behavior of $L_{\\sigma',S}(\\mathcal{S})$ for large swarm size $k = |\\mathcal{A}(\\mathcal{S})|$ is determined by the larger of the two structural growth exponents.",
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "M",
+        "role": "swarm aggregation operator",
+        "constraints": []
+      },
+      {
+        "symbol": "p_{\\mu,S}",
+        "role": "structural growth exponent for the mean",
+        "constraints": []
+      },
+      {
+        "symbol": "p_{m_2,S}",
+        "role": "structural growth exponent for the second moment",
+        "constraints": []
+      },
+      {
+        "symbol": "L_{\\sigma',S}(\\mathcal{S})",
+        "role": "structural Lipschitz function for the regularized standard deviation",
+        "constraints": []
+      },
+      {
+        "symbol": "k",
+        "role": "swarm size",
+        "constraints": [
+          "k = |\\mathcal{A}(\\mathcal{S})|"
+        ]
+      },
+      {
+        "symbol": "\\mathcal{A}(\\mathcal{S})",
+        "role": "set of agents/swarm",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The structural growth exponents and structural Lipschitz function are well-defined concepts within the preceding context.",
+        "confidence": 0.95
+      }
+    ],
+    "local_refs": [
+      "def-swarm-aggregation-operator-axiomatic",
+      "lem-stats-structural-continuity"
+    ],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "definition",
+    "label": "def-expected-squared-structural-error",
+    "title": "Expected Squared Structural Error",
+    "nl_statement": "The Expected Squared Structural Error, $E^2_{S,ms}(\\mathcal{S}_1, \\mathcal{S}_2)$, bounds the expected error in the standardization operator's output arising from the change in the swarm structure from $\\mathcal{S}_1$ to $\\mathcal{S}_2$, evaluated using the second swarm's raw value vector $\\mathbf{v}_2$.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "E_{S,ms}^2(\\mathcal{S}_1, \\mathcal{S}_2) := \\mathbb{E}[\\| \\mathbf{z}(\\mathcal{S}_1, \\mathbf{v}_2, M) - \\mathbf{z}(\\mathcal{S}_2, \\mathbf{v}_2, M) \\|_2^2]"
+      }
+    ],
+    "hypotheses": [],
+    "conclusion": {
+      "text": "The Expected Squared Structural Error, $E^2_{S,ms}(\\mathcal{S}_1, \\mathcal{S}_2)$, bounds the expected error in the standardization operator's output arising from the change in the swarm structure from $\\mathcal{S}_1$ to $\\mathcal{S}_2$, evaluated using the second swarm's raw value vector $\\mathbf{v}_2$.",
+      "latex": "E_{S,ms}^2(\\mathcal{S}_1, \\mathcal{S}_2) := \\mathbb{E}[\\| \\mathbf{z}(\\mathcal{S}_1, \\mathbf{v}_2, M) - \\mathbf{z}(\\mathcal{S}_2, \\mathbf{v}_2, M) \\|_2^2]"
+    },
+    "variables": [
+      {
+        "symbol": "\\mathcal{S}_1",
+        "role": "swarm structure",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal{S}_2",
+        "role": "swarm structure",
+        "constraints": []
+      },
+      {
+        "symbol": "E_{S,ms}^2(\\mathcal{S}_1, \\mathcal{S}_2)",
+        "role": "Expected Squared Structural Error",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathbf{v}_2",
+        "role": "raw value vector",
+        "constraints": []
+      },
+      {
+        "symbol": "M",
+        "role": "parameter/context",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathbf{z}(\\cdot, \\cdot, \\cdot)",
+        "role": "standardization operator output",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The expectation is taken over the distribution of the raw value vector $\\mathbf{v}_2 \\sim V(\\mathcal{S}_2)$.",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [
+      "thm-standardization-structural-error-mean-square"
+    ],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "proofstep",
+    "label": null,
+    "title": "Bounding the Expected Squared Structural Error ($E^2_{S,ms}$)",
+    "nl_statement": "Apply the Mean-Square Continuity Axiom for Raw Values, which bounds $\\mathbb{E}[\\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2]$ by $F_{V,ms}$, to yield the final result bounding $\\mathbb{E}[\\|\\mathbf{z}_1 - \\mathbf{z}_2\\|_2^2]$.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\mathbb{E}[\\|\\mathbf{z}_1 - \\mathbf{z}_2\\|_2^2] \\le C_{V,\\text{total}}(\\mathcal{S}_1) \\cdot \\mathbb{E}[\\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2]"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "$E[\\|v_1 - v_2\\|_2^2]$ is bounded by $F_{V,ms}$.",
+        "latex": "\\mathbb{E}[\\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2] \\le F_{V,ms}"
+      }
+    ],
+    "conclusion": {
+      "text": "The expected squared structural error is bounded by $C_{V,\\text{total}}(\\mathcal{S}_1) \\cdot F_{V,ms}$ (implied by substitution, although not explicitly written in the final form shown).",
+      "latex": "\\mathbb{E}[\\|\\mathbf{z}_1 - \\mathbf{z}_2\\|_2^2] \\le C_{V,\\text{total}}(\\mathcal{S}_1) \\cdot F_{V,ms}"
+    },
+    "variables": [],
+    "implicit_assumptions": [
+      {
+        "text": "The symbol $\\mathbf{z}_1, \\mathbf{z}_2, \\mathbf{v}_1, \\mathbf{v}_2$ are vectors (implied by the norm notation).",
+        "confidence": 0.9
+      },
+      {
+        "text": "The bound $F_{V,ms}$ is defined elsewhere.",
+        "confidence": 0.95
+      }
+    ],
+    "local_refs": [
+      "axiom-raw-value-mean-square-continuity"
+    ],
+    "proof": {
+      "availability": "present",
+      "steps": [
+        {
+          "kind": "application",
+          "text": "Apply the Mean-Square Continuity Axiom for Raw Values.",
+          "latex": null
+        },
+        {
+          "kind": "substitution",
+          "text": "Substitute the bound for $\\mathbb{E}[\\|v_1 - v_2\\|_2^2]$ into the inequality.",
+          "latex": null
+        }
+      ]
+    }
+  },
+  {
+    "type": "theorem",
+    "label": "thm-deterministic-error-decomposition",
+    "title": "Decomposition of the Total Standardization Error",
+    "nl_statement": "The total squared Euclidean error between the output standardized vectors $z_1$ and $z_2$ is bounded by the sum of twice the Squared Value Error ($E_V^2$) and twice the Squared Structural Error ($E_S^2$).",
+    "equations": [],
+    "hypotheses": [
+      {
+        "text": "Let $z(S, v, M)$ be the N-Dimensional Standardization Operator.",
+        "latex": null
+      },
+      {
+        "text": "Let $S_1$ and $S_2$ be two swarm states.",
+        "latex": null
+      },
+      {
+        "text": "Let $v_1$ and $v_2$ be two corresponding N-dimensional raw value vectors.",
+        "latex": null
+      },
+      {
+        "text": "Let the output standardized vectors be $z_1 = z(S_1, v_1, M)$ and $z_2 = z(S_2, v_2, M)$.",
+        "latex": null
+      }
+    ],
+    "conclusion": {},
+    "variables": [
+      {
+        "symbol": "z(S, v, M)",
+        "role": "N-Dimensional Standardization Operator",
+        "constraints": []
+      },
+      {
+        "symbol": "S_1, S_2",
+        "role": "Two swarm states",
+        "constraints": []
+      },
+      {
+        "symbol": "v_1, v_2",
+        "role": "Two corresponding N-dimensional raw value vectors",
+        "constraints": []
+      },
+      {
+        "symbol": "z_1, z_2",
+        "role": "Output standardized vectors",
+        "constraints": []
+      },
+      {
+        "symbol": "E_{V}^2",
+        "role": "Squared Value Error component",
+        "constraints": []
+      },
+      {
+        "symbol": "E_{S}^2",
+        "role": "Squared Structural Error component",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The standardization operator $z$ depends on swarm state $S$, raw value vector $v$, and parameter $M$.",
+        "confidence": 1.0
+      },
+      {
+        "text": "The comparison is based on the L2-norm.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [
+      "def-statistical-properties-measurement"
+    ],
+    "proof": {
+      "availability": "sketch",
+      "steps": [
+        {
+          "kind": "decomposition",
+          "text": "Decompose the total squared error into a Value Error component and a Structural Error component.",
+          "latex": null
+        }
+      ]
+    }
+  },
+  {
+    "type": "theorem",
+    "label": "11.3.3",
+    "title": "Bounding the Squared Value Error",
+    "nl_statement": "The bound on the total squared norm follows directly from the triangle inequality and the elementary inequality $(a+b+c)^2 \\leq 3(a^2+b^2+c^2)$.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\Delta_{\\text{direct}} + \\Delta_{\\text{mean}} + (\\mathbf{v}_2 - \\mu_2) \\left(\\frac{1}{\\sigma'_1} - \\frac{1}{\\sigma'_2}\\right) = \\Delta_{\\text{direct}} + \\Delta_{\\text{mean}} + \\frac{\\mathbf{v}_2 - \\mu_2}{\\sigma'_2} \\frac{\\sigma'_2 - \\sigma'_1}{\\sigma'_1}"
+      },
+      {
+        "label": null,
+        "latex": "(a+b+c)^2 \\leq 3(a^2+b^2+c^2)"
+      }
+    ],
+    "hypotheses": [],
+    "conclusion": {
+      "text": "The bound on the total squared norm follows directly from the triangle inequality and the elementary inequality $(a+b+c)^2 \\leq 3(a^2+b^2+c^2)$.",
+      "latex": null
+    },
+    "variables": [],
+    "implicit_assumptions": [
+      {
+        "text": "Recognizing that $(v_2 - \\mu_2) / \\sigma'_2$ is $z_2$, this matches the definition of $\\Delta_{\\text{denom}}$.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "present",
+      "steps": [
+        {
+          "kind": "step",
+          "text": "Relating the given algebraic expression using the definition $z_2 = (v_2 - \\mu_2) / \\sigma'_2$.",
+          "latex": "\\Delta_{\\text{direct}} + \\Delta_{\\text{mean}} + (\\mathbf{v}_2 - \\mu_2) \\left(\\frac{1}{\\sigma'_1} - \\frac{1}{\\sigma'_2}\\right) = \\Delta_{\\text{direct}} + \\Delta_{\\text{mean}} + z_2 \\frac{\\sigma'_2 - \\sigma'_1}{\\sigma'_1}"
+        },
+        {
+          "kind": "conclusion",
+          "text": "The bound on the total squared norm follows directly from the triangle inequality and the elementary inequality $(a+b+c)^2 \\leq 3(a^2+b^2+c^2)$.",
+          "latex": null
+        }
+      ]
+    }
+  },
+  {
+    "type": "theorem",
+    "label": null,
+    "title": "Bounding the Squared Structural Error",
+    "nl_statement": "The total value error coefficient, $C_{V,\\text{total}}(\\mathcal{S})$, bounds the total squared error and is defined based on the direct coefficient and coefficients related to the aggregator's mean and regularized standard deviation, which rely on specific value Lipschitz functions.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "C_{V,\\text{total}}(\\mathcal{S}) := 3 \\cdot \\left( C_{V,\\text{direct}} + C_{V,\\mu}(\\mathcal{S}) + C_{V,\\sigma}(\\mathcal{S}) \\right)"
+      }
+    ],
+    "hypotheses": [],
+    "conclusion": {
+      "text": "The composite coefficient that bounds the total squared error is $C_{V,\\text{total}}(\\mathcal{S})$ defined by the given equation.",
+      "latex": "C_{V,\\text{total}}(\\mathcal{S}) := 3 \\cdot \\left( C_{V,\\text{direct}} + C_{V,\\mu}(\\mathcal{S}) + C_{V,\\sigma}(\\mathcal{S}) \\right)"
+    },
+    "variables": [
+      {
+        "symbol": "C_{V,\\text{total}}(\\mathcal{S})",
+        "role": "Composite coefficient bounding total squared error",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal{S}",
+        "role": "Set/Context identifier",
+        "constraints": []
+      },
+      {
+        "symbol": "C_{V,\\text{direct}}",
+        "role": "Direct coefficient",
+        "constraints": []
+      },
+      {
+        "symbol": "C_{V,\\mu}(\\mathcal{S})",
+        "role": "Coefficient related to aggregator's mean",
+        "constraints": []
+      },
+      {
+        "symbol": "C_{V,\\sigma}(\\mathcal{S})",
+        "role": "Coefficient related to aggregator's regularized standard deviation",
+        "constraints": []
+      },
+      {
+        "symbol": "L_{\\mu,M}(S)",
+        "role": "Value Lipschitz function for the aggregator's mean",
+        "constraints": []
+      },
+      {
+        "symbol": "L_{\\sigma',M}(S)",
+        "role": "Value Lipschitz function for the aggregator's regularized standard deviation",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [],
+    "local_refs": [
+      "lem-stats-value-continuity"
+    ],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "theorem",
+    "label": null,
+    "title": "Global Continuity of the Patched Standardization Operator",
+    "nl_statement": "The operator is jointly continuous with a well-defined Lipschitz-Hölder structure, resulting from combining the bounds for the value error and the structural error.",
+    "equations": [
+      {
+        "label": "C_S_indirect",
+        "latex": "C_{S,\\text{indirect}}(\\mathcal{S}_1, \\mathcal{S}_2) := 2 k_{\\text{stable}} \\frac{(L_{\\mu,S}(\\mathcal{S}_1, \\mathcal{S}_2))^2}{\\sigma'^{2}_{\\min\\,\\text{bound}}} + 2 k_1 \\left(\\frac{2V_{\\max}}{\\sigma'_{\\min\\,\\text{bound}}}\\right)^2 \\frac{(L_{\\sigma',S}(\\mathcal{S}_1, \\mathcal{S}_2))^2}{\\sigma'^{2}_{\\min\\,\\text{bound}}}"
+      }
+    ],
+    "hypotheses": [],
+    "conclusion": {
+      "text": "The patched standardization operator is jointly continuous with a well-defined Lipschitz-Hölder structure.",
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "C_{S,\\text{indirect}}(\\mathcal{S}_1, \\mathcal{S}_2)",
+        "role": "The coefficient of the term quadratic in $n_c$, bounding the error for the stable walkers.",
+        "constraints": []
+      },
+      {
+        "symbol": "k_{\\text{stable}}",
+        "role": "Constant",
+        "constraints": []
+      },
+      {
+        "symbol": "L_{\\mu,S}(\\mathcal{S}_1, \\mathcal{S}_2)",
+        "role": "Structural continuity function for the aggregator's mean",
+        "constraints": []
+      },
+      {
+        "symbol": "\\sigma'_{\\min\\,\\text{bound}}",
+        "role": "Lower bound related to regularized standard deviation",
+        "constraints": []
+      },
+      {
+        "symbol": "k_1",
+        "role": "Constant",
+        "constraints": []
+      },
+      {
+        "symbol": "V_{\\max}",
+        "role": "Maximum value related to standard deviation",
+        "constraints": []
+      },
+      {
+        "symbol": "L_{\\sigma',S}(\\mathcal{S}_1, \\mathcal{S}_2)",
+        "role": "Structural continuity function for the aggregator's regularized standard deviation",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal{S}_1, \\mathcal{S}_2",
+        "role": "Input sets/states",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [],
+    "local_refs": [
+      "lem-stats-structural-continuity"
+    ],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-bounded-differences-favg",
+    "title": "Bounded differences for $f_{\\text{avg}}$",
+    "nl_statement": "For the normalized functional $f_{\\text{avg}}$, the McDiarmid bounded-difference constants may be taken as $c_i=D_{\\mathcal{Y}}^2/N$ for all $i$, under the assumption that each term is bounded in $[0, D_{\\mathcal{Y}}^2]$.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "f_{\\text{avg}}\\;:=\\frac{1}{N}\\,\\Delta_{\\text{pert}}^2(\\mathcal{S}_{\\text{in}})"
+      },
+      {
+        "label": null,
+        "latex": "\\frac{1}{N}\\sum_{i=1}^N d_{\\mathcal{Y}}\\big(\\varphi(x'_{\\text{out},i}),\\varphi(x_{\\text{in},i})\\big)^2."
+      },
+      {
+        "label": null,
+        "latex": "c_i = D_{\\mathcal{Y}}^2/N"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Each term in the sum defining $f_{\\text{avg}}$ is bounded in $[0, D_{\\mathcal{Y}}^2]$.",
+        "latex": null
+      },
+      {
+        "text": "Changing only the $i$-th random input can change $f_{\\text{avg}}$ by at most $c_i = D_{\\mathcal{Y}}^2/N$.",
+        "latex": null
+      },
+      {
+        "text": "Assumption A supplies the required independence (as implied by the context/referencing McDiarmid's Inequality).",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The McDiarmid bounded-difference constants for the normalized functional $f_{\\text{avg}}$ are $c_i=D_{\\mathcal{Y}}^2/N$ for all $i$.",
+      "latex": "c_i=D_{\\mathcal{Y}}^2/N"
+    },
+    "variables": [
+      {
+        "symbol": "f_{\\text{avg}}",
+        "role": "normalized functional",
+        "constraints": []
+      },
+      {
+        "symbol": "N",
+        "role": "number of terms/inputs",
+        "constraints": []
+      },
+      {
+        "symbol": "c_i",
+        "role": "McDiarmid bounded-difference constant",
+        "constraints": []
+      },
+      {
+        "symbol": "D_{\\mathcal{Y}}^2",
+        "role": "upper bound on squared distance",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The context is related to applying McDiarmid's Inequality.",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [
+      "axiom-bounded-algorithmic-diameter"
+    ],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "theorem",
+    "label": "thm-full-probabilistic-continuity-bound",
+    "title": "The Full Probabilistic Continuity Bound for the Perturbation Operator",
+    "nl_statement": "This theorem provides the final, rigorous probabilistic continuity bound for the Perturbation Operator by assembling preceding results.",
+    "equations": [
+      {
+        "label": "B_S(N, \\delta')",
+        "latex": "B_S(N, \\delta') := D_{\\mathcal{Y}}^2 \\sqrt{\\frac{N}{2} \\ln\\left(\\frac{2}{\\delta'}\\right)}"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Failure probability $\\delta' \\in (0, 1)$",
+        "latex": "\\delta' \\in (0, 1)"
+      }
+    ],
+    "conclusion": {
+      "text": "The stochastic fluctuation bound is $B_S(N, \\delta') = D_{\\mathcal{Y}}^2 \\sqrt{\\frac{N}{2} \\ln\\left(\\frac{2}{\\delta'}\\right)}$, where $D_{\\mathcal{Y}}$ is the diameter of the algorithmic space.",
+      "latex": "B_S(N, \\delta') = D_{\\mathcal{Y}}^2 \\sqrt{\\frac{N}{2} \\ln\\left(\\frac{2}{\\delta'}\\right)}"
+    },
+    "variables": [
+      {
+        "symbol": "B_S(N, \\delta')",
+        "role": "Stochastic Fluctuation Bound",
+        "constraints": []
+      },
+      {
+        "symbol": "N",
+        "role": "Count/Size parameter",
+        "constraints": []
+      },
+      {
+        "symbol": "\\delta'",
+        "role": "Failure probability",
+        "constraints": [
+          "\\delta' \\in (0, 1)"
+        ]
+      },
+      {
+        "symbol": "D_{\\mathcal{Y}}",
+        "role": "Diameter of the algorithmic space",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The bound is derived using McDiarmid's inequality.",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [
+      "sub-lem-probabilistic-bound-perturbation-displacement-reproof"
+    ],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "theorem",
+    "label": "probabilistic-continuity-of-post-perturbation-status-update",
+    "title": "Probabilistic Continuity of the Post-Perturbation Status Update",
+    "nl_statement": "The composed operator $Ψ_{\\text{status}} \\circ Ψ_{\\text{pert}}$ is probabilistically continuous, specifically, the expected number of status changes between two output swarms is a Hölder-continuous function of the displacement between the input swarms.",
+    "equations": [],
+    "hypotheses": [
+      {
+        "text": "The operator $Ψ_{\text{status}}$ is deterministic.",
+        "latex": null
+      },
+      {
+        "text": "The operator $Ψ_{\text{pert}}$ is a stochastic position-update operator.",
+        "latex": null
+      },
+      {
+        "text": "The continuity proof relies on the generalized N-particle axiom for boundary regularity.",
+        "latex": null
+      }
+    ],
+    "conclusion": {},
+    "variables": [],
+    "implicit_assumptions": [
+      {
+        "text": "The system involves N walkers whose status is updated.",
+        "confidence": 1.0
+      },
+      {
+        "text": "The status update is applied element-wise to all N walkers.",
+        "confidence": 1.0
+      },
+      {
+        "text": "When considering the probabilistic variant, draws are taken independently across walkers conditional on $\\mathcal{S}_t$, using per-walker uniforms.",
+        "confidence": 0.9
+      },
+      {
+        "text": "The result holds when restricting to compact position sets in $\\mathcal{X}$, where their images under $\\varphi$ lie in compact subsets of $\\mathcal{Y}$.",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [
+      "A"
+    ],
+    "proof": {
+      "availability": "present",
+      "steps": [
+        {
+          "kind": "statement",
+          "text": "The Status Update Operator ($Ψ_{\\text{status}}$) is a deterministic and inherently discontinuous function.",
+          "latex": null
+        },
+        {
+          "kind": "analysis",
+          "text": "The effect on system stability is analyzed by considering the composition with a stochastic position-update operator, $Ψ_{\\text{pert}}$.",
+          "latex": null
+        },
+        {
+          "kind": "goal",
+          "text": "Establish the probabilistic continuity of the composed operator, $Ψ_{\\text{status}} \\circ Ψ_{\\text{pert}}$.",
+          "latex": null
+        },
+        {
+          "kind": "claim",
+          "text": "The expected number of status changes between two output swarms is a Hölder-continuous function of the displacement between the input swarms.",
+          "latex": null
+        },
+        {
+          "kind": "reliance",
+          "text": "This result relies on the generalized N-particle axiom for boundary regularity.",
+          "latex": null
+        }
+      ]
+    }
+  },
+  {
+    "type": "theorem",
+    "label": null,
+    "title": "Continuity of the Conditional Expected Cloning Action",
+    "nl_statement": "The conditional expected cloning action, conditioned on a fixed fitness potential vector, is continuous with respect to the companion selection measure.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "P_{\\text{clone}}(\\mathcal{S}, \\mathbf{V})_i := \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S})} [\\pi(V_c, V_i)]"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "The cloning decision is stochastic due to the random choice of a companion.",
+        "latex": null
+      },
+      {
+        "text": "The process is examined conditional on a fixed fitness potential vector.",
+        "latex": "V"
+      }
+    ],
+    "conclusion": {
+      "text": "The Conditional Expected Cloning Action is continuous.",
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "i",
+        "role": "walker index",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal{S}",
+        "role": "swarm state",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathbf{V}",
+        "role": "fitness potential vector",
+        "constraints": []
+      },
+      {
+        "symbol": "P_{\\text{clone}}(\\mathcal{S}, \\mathbf{V})_i",
+        "role": "Conditional Expected Cloning Action for walker i",
+        "constraints": []
+      },
+      {
+        "symbol": "c",
+        "role": "companion index",
+        "constraints": [
+          "c \\sim \\mathbb{C}_i(\\mathcal{S})"
+        ]
+      },
+      {
+        "symbol": "\\mathbb{C}_i(\\mathcal{S})",
+        "role": "Companion Selection Measure",
+        "constraints": []
+      },
+      {
+        "symbol": "\\pi(V_c, V_i)",
+        "role": "Conditional Cloning Probability Function argument",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The concept relies on an underlying definition of the Conditional Cloning Probability Function, $\\pi$.",
+        "confidence": 1.0
+      },
+      {
+        "text": "The concept relies on an underlying definition of the Companion Selection Measure, $\\mathbb{C}_i(\\mathcal{S})$.",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [
+      "def-expected-cloning-action"
+    ],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "proof",
+    "label": null,
+    "title": null,
+    "nl_statement": "The total error is decomposed into a structural component and a value component using the triangle inequality, and each component is bounded separately, leading to the final result.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "|E_1[\\pi_1] - E_2[\\pi_2]| \\leq |E_1[\\pi_1] - E_1[\\pi_2]| + |E_1[\\pi_2] - E_2[\\pi_2]|"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "The first term (Value Error Component) is bounded using Jensen's inequality and the Lipschitz continuity of $\\pi$.",
+        "latex": null
+      },
+      {
+        "text": "The function being evaluated for the structural error component is bounded by $M_f=1$.",
+        "latex": "M_f=1"
+      },
+      {
+        "text": "The size of the initial companion set is at least $max(1, k_1-1)$ for bounding the structural error component.",
+        "latex": "\\max(1, k_1-1)"
+      }
+    ],
+    "conclusion": {
+      "text": "The final result is obtained by summing the two bounds for the value and structural error components.",
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "\\pi_1",
+        "role": "companion measure (first case)",
+        "constraints": []
+      },
+      {
+        "symbol": "\\pi_2",
+        "role": "companion measure (second case)",
+        "constraints": []
+      },
+      {
+        "symbol": "E_1",
+        "role": "Expected value functional (first setup)",
+        "constraints": []
+      },
+      {
+        "symbol": "E_2",
+        "role": "Expected value functional (second setup)",
+        "constraints": []
+      },
+      {
+        "symbol": "C_{\\text{val}}^{(\\pi)}",
+        "role": "Constant bound for value error",
+        "constraints": []
+      },
+      {
+        "symbol": "C_{\\text{struct}}^{(\\pi)}(k_1)",
+        "role": "Constant bound factor for structural error",
+        "constraints": []
+      },
+      {
+        "symbol": "n_c",
+        "role": "Structural error term multiplier",
+        "constraints": []
+      },
+      {
+        "symbol": "k_1",
+        "role": "Parameter related to companion set size",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The structure of the proof relies on established properties like Jensen's inequality and Lipschitz continuity.",
+        "confidence": 0.9
+      },
+      {
+        "text": "The context requires knowledge of the definitions of the value error component and the structural error component.",
+        "confidence": 0.95
+      }
+    ],
+    "local_refs": [
+      "lem-cloning-probability-lipschitz",
+      "thm-total-error-status-bound"
+    ],
+    "proof": {
+      "availability": "present",
+      "steps": [
+        {
+          "kind": "decomposition",
+          "text": "Decompose the total error using the triangle inequality into a value error component and a structural error component.",
+          "latex": "|E_1[\\pi_1] - E_2[\\pi_2]| \\leq |E_1[\\pi_1] - E_1[\\pi_2]| + |E_1[\\pi_2] - E_2[\\pi_2]|"
+        },
+        {
+          "kind": "bound",
+          "text": "Bound the Value Error Component ($|E_1[\\pi_1] - E_1[\\pi_2]|$). This involves using Jensen's inequality and the Lipschitz continuity of $\\pi$, yielding a bound proportional to $C_{\\text{val}}^{(\\pi)}$ times potential changes.",
+          "latex": null
+        },
+        {
+          "kind": "bound",
+          "text": "Bound the Structural Error Component ($|E_1[\\pi_2] - E_2[\\pi_2]|$). This applies the Total Error Bound in Terms of Status Changes (\\ref{thm-total-error-status-bound}), using $M_f=1$ and a minimum companion set size of $max(1, k_1-1)$, resulting in a bound of $C_{\\text{struct}}^{(\\pi)}(k_1) \\cdot n_c$.",
+          "latex": null
+        },
+        {
+          "kind": "conclusion",
+          "text": "Sum the two bounds to obtain the final result.",
+          "latex": null
+        }
+      ]
+    }
+  },
+  {
+    "type": "theorem",
+    "label": "rem-phoenix-effect",
+    "title": "Theorem of Guaranteed Revival from a Single Survivor",
+    "nl_statement": "If exactly one walker survives a near-extinction event, the swarm can recover and resurrect all dead walkers in a single step under the right conditions, characterized by the foundational axioms.",
+    "equations": [],
+    "hypotheses": [
+      {
+        "text": "The general continuity analysis is valid for the regime where the number of alive walkers is at least two.",
+        "latex": null
+      },
+      {
+        "text": "The state where exactly one walker survives represents a critical boundary condition where the system's dynamics change fundamentally.",
+        "latex": null
+      },
+      {
+        "text": "The foundational axioms ensure the swarm can recover from near-extinction events.",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "One survivor is enough to resurrect the entire swarm in a single step, triggering a guaranteed revival mechanism.",
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "number of alive walkers",
+        "role": null,
+        "constraints": [
+          "at least two (for preceding analysis validity)",
+          "exactly one (for this theorem)"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The system dynamics exhibit a 'phoenix effect' or guaranteed revival mechanism.",
+        "confidence": 1.0
+      },
+      {
+        "text": "The system state includes 'dead walkers' that can be brought back to life.",
+        "confidence": 0.9
+      },
+      {
+        "text": "The conditions for revival are met (implied by 'Under the right conditions').",
+        "confidence": 0.8
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  }
+]

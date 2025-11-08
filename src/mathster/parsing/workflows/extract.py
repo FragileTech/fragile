@@ -1,12 +1,16 @@
 """Extraction workflows using DSPy components."""
 
+import re
+
 from mathster.core.raw_data import RawDocumentSection
+from mathster.parsing.conversion import (
+    convert_dict_to_extraction_entity,
+    convert_to_raw_document_section,
+)
 from mathster.parsing.dspy_components import MathematicalConceptExtractor, SingleLabelExtractor
 from mathster.parsing.models import ChapterExtraction
-from mathster.parsing.validation import make_error_dict, generate_detailed_error_report
-from mathster.parsing.conversion import convert_to_raw_document_section, convert_dict_to_extraction_entity
 from mathster.parsing.text_processing import analyze_labels_in_chapter
-import re
+from mathster.parsing.validation import generate_detailed_error_report, make_error_dict
 
 
 def extract_chapter_with_retry(

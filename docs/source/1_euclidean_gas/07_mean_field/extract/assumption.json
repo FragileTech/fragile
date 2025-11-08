@@ -1,0 +1,256 @@
+[
+  {
+    "label": "assumption-regularity-summary",
+    "title": "Summary of Regularity Assumptions",
+    "scope": "global",
+    "nl_summary": "This assumption set summarizes the required regularity properties (smoothness, boundedness, positivity) of the domains, potentials, flow field, physical parameters, and algorithmic functions necessary for the rigorous analysis and well-posedness of the coupled mean-field system.",
+    "bullet_items": [
+      {
+        "name": "H1",
+        "text": "The domains $X_{\text{valid}}$ and $V_{\text{alg}}$ are bounded and have smooth ($C^2$) boundaries.",
+        "latex": null
+      },
+      {
+        "name": "H2",
+        "text": "The reward potential $R_{\text{pos}}$ is $C^2$, making the force field $F$ globally Lipschitz.",
+        "latex": null
+      },
+      {
+        "name": "H3",
+        "text": "The flow field $u$ is $C^1$, and all physical parameters ($m, \\gamma_{\\text{fric}}, \\Theta, \\sigma_x$) are finite and positive.",
+        "latex": null
+      },
+      {
+        "name": "H4",
+        "text": "All algorithmic functions (e.g., the rescale function, companion selection) are measurable and satisfy the continuity properties established in the abstract framework.",
+        "latex": null
+      },
+      {
+        "name": "H5",
+        "text": "The killing rate function $c(z)$ is smooth ($C^\\infty$), non-negative, and has compact support in a neighborhood of $\\partial X_{\\text{valid}}$.",
+        "latex": null
+      }
+    ],
+    "conditions": [
+      {
+        "type": "Smoothness",
+        "text": "Boundaries of $X_{\text{valid}}$ and $V_{\text{alg}}$ are $C^2$.",
+        "latex": "\\partial X_{\\text{valid}}, \\partial V_{\\text{alg}} \\in C^2"
+      },
+      {
+        "type": "Smoothness",
+        "text": "$R_{\\text{pos}}$ is $C^2$.",
+        "latex": "R_{\\text{pos}} \\in C^2"
+      },
+      {
+        "type": "Smoothness",
+        "text": "$u$ is $C^1$.",
+        "latex": "u \\in C^1"
+      },
+      {
+        "type": "Smoothness",
+        "text": "$c(z)$ is $C^\\infty$.",
+        "latex": "c(z) \\in C^\\infty"
+      },
+      {
+        "type": "Positivity/Finiteness",
+        "text": "Physical parameters ($m, \\gamma_{\\text{fric}}, \\Theta, \\sigma_x$) are finite and positive.",
+        "latex": "m, \\gamma_{\\text{fric}}, \\Theta, \\sigma_x \\in (0, \\infty)"
+      },
+      {
+        "type": "Non-negativity",
+        "text": "$c(z)$ is non-negative.",
+        "latex": "c(z) \\ge 0"
+      },
+      {
+        "type": "Boundary Condition",
+        "text": "$c(z)$ has compact support in a neighborhood of $\\partial X_{\\text{valid}}$.",
+        "latex": "\\text{supp}(c) \\subset \\text{nbhd}(\\partial X_{\\text{valid}})"
+      },
+      {
+        "type": "Lipschitz",
+        "text": "$F$ is globally Lipschitz.",
+        "latex": "\\text{globally Lipschitz}(F)"
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "m",
+        "description": "A physical parameter.",
+        "constraints": [
+          "finite",
+          "positive"
+        ]
+      },
+      {
+        "symbol": "\\gamma_{\\text{fric}}",
+        "description": "Friction parameter.",
+        "constraints": [
+          "finite",
+          "positive"
+        ]
+      },
+      {
+        "symbol": "\\Theta",
+        "description": "A physical parameter (likely related to temperature/scale).",
+        "constraints": [
+          "finite",
+          "positive"
+        ]
+      },
+      {
+        "symbol": "\\sigma_x",
+        "description": "A physical parameter.",
+        "constraints": [
+          "finite",
+          "positive"
+        ]
+      },
+      {
+        "symbol": "c(z)",
+        "description": "Killing rate function.",
+        "constraints": [
+          "C^\\infty",
+          "non-negative",
+          "compact support near \\partial X_{\\text{valid}}"
+        ]
+      }
+    ],
+    "references": [],
+    "notes": [
+      {
+        "type": "Motivation",
+        "text": "These assumptions are stated to be satisfied by the Canonical Euclidean Gas."
+      },
+      {
+        "type": "Context",
+        "text": "The analysis aims to prove existence, uniqueness, and long-term behavior of solutions to the coupled mean-field system."
+      }
+    ]
+  },
+  {
+    "label": "assumption-domain-regularity",
+    "title": "Regularity of the Valid Domain",
+    "scope": "global",
+    "nl_summary": "The valid position domain $X_{\\text{valid}} \\subset \\mathbb{R}^d$ must be an open, bounded domain with a $C^3$ boundary. Additionally, its signed distance function must be $C^2$ near the boundary, which defines the unit inward normal vector.",
+    "bullet_items": [
+      {
+        "name": "Smoothness",
+        "text": "$X_{\\text{valid}}$ is an open, bounded domain with $C^3$ boundary $\\partial X_{\\text{valid}}$.",
+        "latex": null
+      },
+      {
+        "name": "Distance Function",
+        "text": "The signed distance function $d(x) := \\text{dist}(x, \\partial X_{\\text{valid}})$ is $C^2$ in a tubular neighborhood $\\mathcal{T}_\\delta := \\{x \\in X_{\\text{valid}} : d(x) < \\delta\\}$ for some $\\delta > 0$.",
+        "latex": null
+      },
+      {
+        "name": "Unit Inward Normal",
+        "text": "For each $x \\in \\mathcal{T}_\\delta$, let $n_x(x) = -\\nabla d(x)$ denote the unit inward normal vector (pointing into $X_{\\text{valid}}$).",
+        "latex": null
+      }
+    ],
+    "conditions": [
+      {
+        "type": "Inequality",
+        "text": "$\\delta > 0$",
+        "latex": "\\delta > 0"
+      }
+    ],
+    "parameters": [],
+    "references": [],
+    "notes": []
+  },
+  {
+    "label": "assumption-integrator-regularity",
+    "title": "Regularity of the Discrete Integrator",
+    "scope": "model",
+    "nl_summary": "This assumption concerns the form of the position update produced by the discrete kinetic integrator, specifically the BAOAB scheme. It explicitly states the mathematical expression for the next position $x^+(\\tau; x,v)$ based on the current state $(x, v)$ and time step $\\tau$.",
+    "bullet_items": [
+      {
+        "name": null,
+        "text": "The discrete kinetic integrator (BAOAB) produces position updates of the form:\n$$x^+(\\tau; x,v) = x + v\\tau + \\frac{\\tau^2}{2m}F(x) + R_{\\text{pos}}(\\tau; x,v)$$",
+        "latex": "x^+(\\tau; x,v) = x + v\\tau + \\frac{\\tau^2}{2m}F(x) + R_{\\text{pos}}(\\tau; x,v)"
+      }
+    ],
+    "conditions": [],
+    "parameters": [
+      {
+        "symbol": "\\tau",
+        "description": "Time step",
+        "constraints": []
+      },
+      {
+        "symbol": "x",
+        "description": "Current position",
+        "constraints": []
+      },
+      {
+        "symbol": "v",
+        "description": "Current velocity",
+        "constraints": []
+      },
+      {
+        "symbol": "m",
+        "description": "Mass (implied denominator in the force term)",
+        "constraints": []
+      },
+      {
+        "symbol": "F(x)",
+        "description": "Force evaluated at position x",
+        "constraints": []
+      },
+      {
+        "symbol": "x^+(\\tau; x,v)",
+        "description": "Next position update",
+        "constraints": []
+      },
+      {
+        "symbol": "R_{\\text{pos}}(\\tau; x,v)",
+        "description": "Position truncation/remainder term",
+        "constraints": []
+      }
+    ],
+    "references": [],
+    "notes": [
+      {
+        "type": "method",
+        "text": "The scheme referenced is BAOAB (a specific splitting integrator)."
+      }
+    ]
+  },
+  {
+    "label": "assumption-density-regularity-killing",
+    "title": "Density Regularity",
+    "scope": "global",
+    "nl_summary": "The phase-space density $f^\\tau(x,v)$ at the start of a discrete timestep must be bounded in $L^\\infty$ and possess spatial regularity, being continuously differentiable $C^1(\\Omega)$ with a bounded gradient norm.",
+    "bullet_items": [],
+    "conditions": [],
+    "parameters": [
+      {
+        "symbol": "f^\\tau(x,v)",
+        "description": "Phase-space density at the start of a discrete timestep",
+        "constraints": []
+      },
+      {
+        "symbol": "M_f",
+        "description": "Positive constant bounding the $L^\\infty$ norm of $f^\\tau$",
+        "constraints": [
+          "M_f > 0"
+        ]
+      },
+      {
+        "symbol": "\\Omega",
+        "description": "Domain of the spatial variable $x$",
+        "constraints": []
+      },
+      {
+        "symbol": "M_{\\nabla f}",
+        "description": "Bound for the $L^\\infty$ norm of the spatial gradient of $f^\\tau$",
+        "constraints": []
+      }
+    ],
+    "references": [],
+    "notes": []
+  }
+]

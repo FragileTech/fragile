@@ -23,8 +23,9 @@ Usage:
 """
 
 import json
-import sys
 from pathlib import Path
+import sys
+
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
@@ -33,9 +34,11 @@ from mathster.dspy_integration import configure_dspy
 from mathster.dspy_integration.text_utils import split_markdown_by_chapters_with_line_numbers
 from mathster.parameter_extraction import refine_parameters as refine_parameter_line_numbers
 
+
 # Import from the simple extraction script
 sys.path.insert(0, str(Path(__file__).parent))
-from run_parameter_extraction_simple import extract_parameters_simple, infer_meaning_from_symbol, extract_meaning_from_context
+from run_parameter_extraction_simple import extract_parameters_simple
+
 
 # Configure DSPy with Gemini (fast and cheap)
 configure_dspy(
@@ -48,7 +51,7 @@ configure_dspy(
 def count_params_at_line_1(chapter_file: Path) -> int:
     """Count how many parameters are at line 1."""
     try:
-        with open(chapter_file) as f:
+        with open(chapter_file, encoding="utf-8") as f:
             data = json.load(f)
 
         count = 0
@@ -61,7 +64,9 @@ def count_params_at_line_1(chapter_file: Path) -> int:
         return 0
 
 
-def run_stage1_automated(doc_path: Path, chapters, full_document_text: str, article_id: str, parser_dir: Path):
+def run_stage1_automated(
+    doc_path: Path, chapters, full_document_text: str, article_id: str, parser_dir: Path
+):
     """Run Stage 1: Automated regex extraction."""
     print("\n" + "=" * 80)
     print("STAGE 1: Automated Regex Extraction")
@@ -85,7 +90,7 @@ def run_stage1_automated(doc_path: Path, chapters, full_document_text: str, arti
             continue
 
         # Load existing extraction
-        with open(chapter_file) as f:
+        with open(chapter_file, encoding="utf-8") as f:
             chapter_data = json.load(f)
 
         # Skip if already has parameters
@@ -110,24 +115,30 @@ def run_stage1_automated(doc_path: Path, chapters, full_document_text: str, arti
         if raw_parameters:
             chapter_data["parameters"] = raw_parameters
 
-            with open(chapter_file, "w") as f:
+            with open(chapter_file, "w", encoding="utf-8") as f:
                 json.dump(chapter_data, f, indent=2)
 
             at_line_1 = count_params_at_line_1(chapter_file)
             total_at_line_1 += at_line_1
             total_params_extracted += len(raw_parameters)
 
-            print(f"Chapter {i}: ✓ Extracted {len(raw_parameters)} parameters ({at_line_1} at line 1)")
+            print(
+                f"Chapter {i}: ✓ Extracted {len(raw_parameters)} parameters ({at_line_1} at line 1)"
+            )
 
-    print(f"\n✓ Stage 1 Complete:")
+    print("\n✓ Stage 1 Complete:")
     print(f"  Total parameters: {total_params_extracted}")
-    print(f"  Correct lines: {total_params_extracted - total_at_line_1} ({(total_params_extracted - total_at_line_1)/total_params_extracted*100 if total_params_extracted else 0:.1f}%)")
+    print(
+        f"  Correct lines: {total_params_extracted - total_at_line_1} ({(total_params_extracted - total_at_line_1) / total_params_extracted * 100 if total_params_extracted else 0:.1f}%)"
+    )
     print(f"  Need refinement: {total_at_line_1}")
 
     return total_at_line_1
 
 
-def run_stage2_dspy_refinement(doc_path: Path, full_document_text: str, article_id: str, parser_dir: Path):
+def run_stage2_dspy_refinement(
+    doc_path: Path, full_document_text: str, article_id: str, parser_dir: Path
+):
     """Run Stage 2: DSPy agent refinement."""
     print("\n" + "=" * 80)
     print("STAGE 2: DSPy Agent Refinement")
@@ -152,7 +163,7 @@ def run_stage2_dspy_refinement(doc_path: Path, full_document_text: str, article_
         total_failed += failed
         all_errors.extend(errors)
 
-    print(f"\n✓ Stage 2 Complete:")
+    print("\n✓ Stage 2 Complete:")
     print(f"  Updated: {total_updated} parameters")
     print(f"  Failed: {total_failed} parameters")
     if all_errors:
@@ -192,7 +203,9 @@ def run_hybrid_extraction(document_path: str):
     # Load full document with line numbers
     with open(doc_path, encoding="utf-8") as f:
         full_doc_lines = f.readlines()
-    full_document_text = "\n".join(f"{i+1:03d}: {line.rstrip()}" for i, line in enumerate(full_doc_lines))
+    full_document_text = "\n".join(
+        f"{i + 1:03d}: {line.rstrip()}" for i, line in enumerate(full_doc_lines)
+    )
     print(f"Document size: {len(full_doc_lines)} lines")
 
     article_id = doc_name
@@ -218,11 +231,13 @@ def run_hybrid_extraction(document_path: str):
     print("=" * 80)
     print(f"Stage 1 (Regex):  {params_needing_refinement} parameters at line 1")
     print(f"Stage 2 (DSPy):   Updated {updated}, Failed {failed}")
-    print(f"\nFinal accuracy:")
+    print("\nFinal accuracy:")
     # Rough estimate (would need to recount from files for exact number)
     total_params = params_needing_refinement + updated + failed
     correct = total_params - failed
-    print(f"  Correct line numbers: ~{correct}/{total_params} (~{correct/total_params*100 if total_params else 0:.1f}%)")
+    print(
+        f"  Correct line numbers: ~{correct}/{total_params} (~{correct / total_params * 100 if total_params else 0:.1f}%)"
+    )
     print()
 
     return 0
@@ -233,7 +248,9 @@ if __name__ == "__main__":
         print("Usage: python examples/run_parameter_extraction_hybrid.py <document_path>")
         print()
         print("Example:")
-        print("  python examples/run_parameter_extraction_hybrid.py docs/source/1_euclidean_gas/07_mean_field.md")
+        print(
+            "  python examples/run_parameter_extraction_hybrid.py docs/source/1_euclidean_gas/07_mean_field.md"
+        )
         print()
         print("This runs:")
         print("  1. Fast regex extraction (86% success)")
@@ -241,4 +258,4 @@ if __name__ == "__main__":
         sys.exit(1)
 
     document_path = sys.argv[1]
-    exit(run_hybrid_extraction(document_path))
+    sys.exit(run_hybrid_extraction(document_path))

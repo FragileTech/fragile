@@ -29,7 +29,6 @@ Maps to Lean:
 
 from dataclasses import dataclass
 import re
-from typing import Dict, List, Tuple
 
 
 @dataclass
@@ -298,10 +297,12 @@ def split_into_sections(
     target_level: int | None = None
     if heading_scope is not None:
         if not heading_scope or any(ch != "#" for ch in heading_scope):
-            raise ValueError("heading_scope must be a non-empty string of '#' characters")
+            msg = "heading_scope must be a non-empty string of '#' characters"
+            raise ValueError(msg)
         target_level = len(heading_scope)
         if not 1 <= target_level <= 6:
-            raise ValueError("heading_scope must have between 1 and 6 '#' characters")
+            msg = "heading_scope must have between 1 and 6 '#' characters"
+            raise ValueError(msg)
 
     # Track current section
     current_section = None

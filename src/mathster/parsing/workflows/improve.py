@@ -1,12 +1,18 @@
 """Improvement workflows using DSPy components."""
 
 from mathster.core.raw_data import RawDocumentSection
+from mathster.parsing.conversion import (
+    convert_to_raw_document_section,
+)
 from mathster.parsing.dspy_components import MathematicalConceptImprover
-from mathster.parsing.models import ChapterExtraction, ImprovementResult, EntityChange, ChangeOperation
-from mathster.parsing.validation import make_error_dict, generate_detailed_error_report
-from mathster.parsing.conversion import convert_to_raw_document_section, convert_dict_to_extraction_entity
-from mathster.parsing.text_processing import analyze_labels_in_chapter, compare_extraction_with_source
-import re
+from mathster.parsing.models import (
+    ChangeOperation,
+    ChapterExtraction,
+    EntityChange,
+    ImprovementResult,
+)
+from mathster.parsing.validation import make_error_dict
+
 
 def compute_changes(existing: ChapterExtraction, improved: ChapterExtraction) -> ImprovementResult:
     """
@@ -315,7 +321,6 @@ def improve_chapter_with_retry(
     # Should not reach here, but return existing as fallback
     improvement_result = ImprovementResult()
     return existing_chapter, improvement_result, errors_encountered
-
 
 
 def improve_label_with_retry(
@@ -720,7 +725,6 @@ def improve_chapter_by_labels(
 # =============================================================================
 # MAIN IMPROVEMENT WORKFLOW FUNCTION
 # =============================================================================
-
 
 
 def improve_chapter(

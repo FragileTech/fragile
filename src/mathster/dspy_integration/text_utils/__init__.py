@@ -12,6 +12,7 @@ from mathster.dspy_integration.text_utils.splitting import (
     split_markdown_by_chapters_with_line_numbers,
 )
 
+
 __all__ = [
     "add_line_numbers",
     "lookup_label_from_context",

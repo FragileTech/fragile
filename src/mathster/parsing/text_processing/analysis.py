@@ -6,7 +6,7 @@ and comparing extractions with source documents.
 """
 
 import re
-from typing import TYPE_CHECKING, Any
+from typing import Any, TYPE_CHECKING
 
 
 if TYPE_CHECKING:
@@ -248,7 +248,9 @@ def _search_parameter_patterns(symbol: str, lines: list[str]) -> dict[str, Any] 
     # Pattern 1: "Let X be ..." or "Let X denote ..."
     for i, line in enumerate(lines):
         for variant in search_variants:
-            if re.search(rf"\bLet\s+{re.escape(variant)}\s+(be|denote|represent)", line, re.IGNORECASE):
+            if re.search(
+                rf"\bLet\s+{re.escape(variant)}\s+(be|denote|represent)", line, re.IGNORECASE
+            ):
                 context = _extract_context(lines, i, window=3)
                 return {
                     "line_start": i + 1,
@@ -260,7 +262,9 @@ def _search_parameter_patterns(symbol: str, lines: list[str]) -> dict[str, Any] 
     # Pattern 2: "X denotes ..." or "X represents ..." or "X := ..." or "X = ..."
     for i, line in enumerate(lines):
         for variant in search_variants:
-            if re.search(rf"\b{re.escape(variant)}\s*(denotes?|represents?|:=|=)", line, re.IGNORECASE):
+            if re.search(
+                rf"\b{re.escape(variant)}\s*(denotes?|represents?|:=|=)", line, re.IGNORECASE
+            ):
                 context = _extract_context(lines, i, window=2)
                 return {
                     "line_start": i + 1,
@@ -303,7 +307,7 @@ def _search_parameter_patterns(symbol: str, lines: list[str]) -> dict[str, Any] 
     for i, line in enumerate(lines):
         for variant in search_variants:
             # Match LaTeX math mode (single or double dollar signs)
-            if re.search(rf'\$[^$]*{re.escape(variant)}[^$]*\$', line):
+            if re.search(rf"\$[^$]*{re.escape(variant)}[^$]*\$", line):
                 context = _extract_context(lines, i, window=1)
                 return {
                     "line_start": i + 1,
@@ -369,8 +373,7 @@ def _get_symbol_variants(symbol: str) -> list[str]:
 
     # If symbol is a Greek name, add Greek character
     if symbol.lower() in greek_map:
-        variants.append(greek_map[symbol.lower()])
-        variants.append(f"\\{symbol.lower()}")
+        variants.extend((greek_map[symbol.lower()], f"\\{symbol.lower()}"))
 
     # If symbol contains underscore (e.g., "gamma_fric"), handle LaTeX variants
     if "_" in symbol:
@@ -380,21 +383,23 @@ def _get_symbol_variants(symbol: str) -> list[str]:
 
         if base.lower() in greek_map:
             # Add multiple LaTeX subscript formats
-            variants.append(f"\\{base.lower()}_{{\\mathrm{{{subscript}}}}}")  # \gamma_{\mathrm{fric}}
-            variants.append(f"\\{base.lower()}_{{\\text{{{subscript}}}}}")    # \gamma_{\text{fric}}
-            variants.append(f"\\{base.lower()}_{{{subscript}}}")              # \gamma_{fric}
-            variants.append(f"\\{base.lower()}_{subscript}")                  # \gamma_fric (no braces)
+            variants.append(
+                f"\\{base.lower()}_{{\\mathrm{{{subscript}}}}}"
+            )  # \gamma_{\mathrm{fric}}
+            variants.append(f"\\{base.lower()}_{{\\text{{{subscript}}}}}")  # \gamma_{\text{fric}}
+            variants.append(f"\\{base.lower()}_{{{subscript}}}")  # \gamma_{fric}
+            variants.append(f"\\{base.lower()}_{subscript}")  # \gamma_fric (no braces)
 
             # Greek character variants
             greek_char = greek_map[base.lower()]
-            variants.append(f"{greek_char}_{{\\mathrm{{{subscript}}}}}")     # γ_{\mathrm{fric}}
-            variants.append(f"{greek_char}_{{\\text{{{subscript}}}}}")       # γ_{\text{fric}}
-            variants.append(f"{greek_char}_{{{subscript}}}")                  # γ_{fric}
-            variants.append(f"{greek_char}_{subscript}")                      # γ_fric
+            variants.append(f"{greek_char}_{{\\mathrm{{{subscript}}}}}")  # γ_{\mathrm{fric}}
+            variants.append(f"{greek_char}_{{\\text{{{subscript}}}}}")  # γ_{\text{fric}}
+            variants.append(f"{greek_char}_{{{subscript}}}")  # γ_{fric}
+            variants.append(f"{greek_char}_{subscript}")  # γ_fric
         else:
             # Non-Greek subscripted variables (e.g., x_i, v_n)
-            variants.append(f"{base}_{{{subscript}}}")                        # x_{i}
-            variants.append(f"{base}_{subscript}")                            # x_i
+            variants.append(f"{base}_{{{subscript}}}")  # x_{i}
+            variants.append(f"{base}_{subscript}")  # x_i
 
     return variants
 

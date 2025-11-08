@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """
 Usage
@@ -35,13 +34,22 @@ from __future__ import annotations
 import argparse
 import json
 import logging
-import re
 from pathlib import Path
-from typing import Any, Dict, Iterable
+import re
+from typing import Any
 
-import dspy
 from dotenv import load_dotenv
+import dspy
 import flogging
+
+from mathster.agents.core import (
+    DirectiveAgentPaths,
+    LATEX_FENCE_PATTERN,
+    METADATA_PATTERN,
+    run_directive_extraction_loop,
+    URI_PATTERN,
+)
+
 
 flogging.setup(level="INFO")
 logger = logging.getLogger(__name__)
@@ -117,8 +125,12 @@ class ParseDefinitionDirectiveSplit(dspy.Signature):
     parameters_json = dspy.OutputField(
         desc='JSON array [{"symbol": str, "description": str|null, "constraints": [str,...]}, ...]'
     )
-    examples_json = dspy.OutputField(desc='JSON array [{"text": str|null, "latex": str|null}, ...]')
-    related_refs_json = dspy.OutputField(desc='JSON array of label strings ["def-foo","thm-bar",...]')
+    examples_json = dspy.OutputField(
+        desc='JSON array [{"text": str|null, "latex": str|null}, ...]'
+    )
+    related_refs_json = dspy.OutputField(
+        desc='JSON array of label strings ["def-foo","thm-bar",...]'
+    )
     notes_json = dspy.OutputField(desc='JSON array [{"type": str|null, "text": str|null}, ...]')
 
 
@@ -126,11 +138,10 @@ class ParseDefinitionDirectiveSplit(dspy.Signature):
 # Reward helpers
 # --------------------------------------------------------------------------------------
 
-_URI_PAT = re.compile(r"(https?://|file://|s3://|gs://)")
-_META_PAT = re.compile(r"\b(line|page|timestamp|uuid|sha256)\b", re.I)
+_URI_PAT = URI_PATTERN
+_META_PAT = METADATA_PATTERN
 _LABEL_PAT = re.compile(r"^def-[a-z0-9-]+$")
-_LINENO = re.compile(r"^\s*\d+:\s?")
-_FENCE_PAT = re.compile(r"(\$\$|\\\[|\\\]|\\begin\{equation\}|\\end\{equation\})")
+_FENCE_PAT = LATEX_FENCE_PATTERN
 _ALLOWED_OBJECT_TYPES = {
     "set",
     "function",
@@ -179,7 +190,7 @@ def _has_dups(seq) -> bool:
     return False
 
 
-def definition_reward(args: Dict[str, Any], pred) -> float:
+def definition_reward(args: dict[str, Any], pred) -> float:
     """
     Reward function for ParseDefinitionDirectiveSplit outputs.
     Returns a float in [0, 1].
@@ -225,9 +236,15 @@ def definition_reward(args: Dict[str, Any], pred) -> float:
     s3 = 0.0
     if isinstance(formal_conditions, list):
         s3 += 0.05
-        if all(isinstance(cond, dict) and (_nonempty(cond.get("text")) or _nonempty(cond.get("latex"))) for cond in formal_conditions[:10]):
+        if all(
+            isinstance(cond, dict)
+            and (_nonempty(cond.get("text")) or _nonempty(cond.get("latex")))
+            for cond in formal_conditions[:10]
+        ):
             s3 += 0.05
-        if all(_no_fences(cond.get("latex")) for cond in formal_conditions if isinstance(cond, dict)):
+        if all(
+            _no_fences(cond.get("latex")) for cond in formal_conditions if isinstance(cond, dict)
+        ):
             s3 += 0.05
     score += min(s3, 0.15)
 
@@ -268,8 +285,7 @@ def definition_reward(args: Dict[str, Any], pred) -> float:
     if isinstance(examples, list):
         s6 += 0.02
         if all(
-            isinstance(ex, dict)
-            and (_nonempty(ex.get("text")) or _nonempty(ex.get("latex")))
+            isinstance(ex, dict) and (_nonempty(ex.get("text")) or _nonempty(ex.get("latex")))
             for ex in examples[:5]
         ):
             s6 += 0.02
@@ -324,88 +340,7 @@ def definition_reward(args: Dict[str, Any], pred) -> float:
 # --------------------------------------------------------------------------------------
 # Utilities
 # --------------------------------------------------------------------------------------
-
-
-def strip_line_numbers(text: str) -> str:
-    """Remove 'NNN: ' prefixes from line-numbered snippets."""
-    return "\n".join(_LINENO.sub("", line) for line in (text or "").splitlines())
-
-
-def synthesize_directive_text(obj: Dict[str, Any]) -> str:
-    """
-    Build a directive block if raw_directive is missing.
-    """
-    dtype = (obj.get("directive_type") or "definition").strip()
-    title = (obj.get("title") or "").strip()
-    label = (obj.get("label") or obj.get("metadata", {}).get("label") or "").strip()
-
-    header = f"::{{prf:{dtype}}} {title}".rstrip()
-    label_line = f":label: {label}" if label else ""
-    body = strip_line_numbers(obj.get("content") or "")
-
-    parts = [header]
-    if label_line:
-        parts.append(label_line)
-    if body:
-        parts.append(body)
-    parts.append(":::")
-    return "\n\n".join(parts)
-
-
-def extract_directive_text(obj: Dict[str, Any]) -> str:
-    raw = obj.get("raw_directive")
-    if isinstance(raw, str) and raw.strip():
-        return strip_line_numbers(raw)
-    return synthesize_directive_text(obj)
-
-
-def tiny_context_hints(obj: Dict[str, Any], doc_text: str, window: int = 320) -> str:
-    """
-    Provide a short snippet of nearby prose for additional hints.
-    """
-    content = strip_line_numbers(obj.get("content") or "").strip()
-    if content:
-        if len(content) > window:
-            head = content[: window // 2]
-            tail = content[-window // 2 :]
-            return head + "\n...\n" + tail
-        return content
-
-    key = (obj.get("label") or obj.get("title") or "").strip()
-    if not key:
-        return ""
-    idx = doc_text.find(key)
-    if idx == -1 and key:
-        idx = doc_text.find(key[: min(len(key), 60)])
-    if idx == -1:
-        return ""
-    start = max(0, idx - window)
-    end = min(len(doc_text), idx + len(key) + window)
-    return doc_text[start:end]
-
-
-def load_json_or_jsonl(path: Path) -> Iterable[Any]:
-    text = path.read_text(encoding="utf-8")
-    if path.suffix.lower() == ".jsonl":
-        for line in text.splitlines():
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                yield json.loads(line)
-            except Exception:
-                continue
-    else:
-        obj = json.loads(text)
-        obj = obj.get("items", obj)
-        if isinstance(obj, list):
-            for item in obj:
-                yield item
-        else:
-            yield obj
-
-
-def assemble_output(res) -> Dict[str, Any]:
+def assemble_output(res) -> dict[str, Any]:
     """Recombine split outputs into a single dictionary."""
 
     def as_json(payload, default):
@@ -455,44 +390,17 @@ def run_agent(
     )
 
     doc_path = Path(document_path)
-    document_folder = doc_path.parent / str(doc_path.stem)
-    definitions_path = document_folder / "registry" / "directives" / "definition.json"
-    if not definitions_path.exists():
-        logger.warning(f"No definition directives found at {definitions_path}")
-        return
+    fallback_predict = dspy.Predict(ParseDefinitionDirectiveSplit)
+    paths = DirectiveAgentPaths.build(doc_path, directive_basename="definition")
 
-    doc_text = doc_path.read_text(encoding="utf-8")
-    out_dir = document_folder / "extract"
-    out_dir.mkdir(exist_ok=True)
-    out_path = out_dir / "definition.json"
-    outputs = []
-
-    with out_path.open("w", encoding="utf-8") as out_f:
-        for idx, obj in enumerate(load_json_or_jsonl(definitions_path), start=1):
-            if not isinstance(obj, dict):
-                continue
-
-            directive_text = extract_directive_text(obj)
-            context_hints = tiny_context_hints(obj, doc_text, window=320)
-
-            try:
-                res = program(directive_text=directive_text, context_hints=context_hints)
-                logger.info(f"✓ Refine succeeded for definition #{idx}: {obj.get('label')}")
-            except Exception:
-                logger.warning(
-                    "Refine failed for definition #%s (%s); falling back to single-pass Predict.",
-                    idx,
-                    obj.get("label"),
-                )
-                res = dspy.Predict(ParseDefinitionDirectiveSplit)(
-                    directive_text=directive_text, context_hints=context_hints
-                )
-
-            outputs.append(assemble_output(res))
-
-        out_f.write(json.dumps(outputs, ensure_ascii=False, indent=2) + "\n")
-
-    logger.info(f"Wrote {len(outputs)} definitions to {out_path}")
+    run_directive_extraction_loop(
+        paths=paths,
+        program_call=program,
+        assemble_output=assemble_output,
+        directive_type_fallback="definition",
+        fallback_call=fallback_predict,
+        logger_obj=logger,
+    )
 
 
 # --------------------------------------------------------------------------------------
@@ -501,12 +409,11 @@ def run_agent(
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(
-        description="Parse definition directives via DSPy Refine."
-    )
-    parser.add_argument(
-        "--doc", required=True, help="Path to the document markdown file."
-    )
+    import flogging
+
+    flogging.setup(level="INFO")
+    parser = argparse.ArgumentParser(description="Parse definition directives via DSPy Refine.")
+    parser.add_argument("--doc", required=True, help="Path to the document markdown file.")
     parser.add_argument(
         "--lm",
         default="gemini/gemini-flash-lite-latest",
@@ -528,4 +435,3 @@ def main(argv=None):
 
 if __name__ == "__main__":
     main()
-

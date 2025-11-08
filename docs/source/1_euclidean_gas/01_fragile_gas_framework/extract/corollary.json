@@ -1,0 +1,195 @@
+[
+  {
+    "type": "corollary",
+    "label": "cor-chain-rule-sigma-reg-var",
+    "title": "Chain‑rule bound for $\\sigma\\'_{\\text{reg}}\\circ \\mathrm{Var}$",
+    "nl_statement": "The composite map $\\sigma\\'_{\\text{reg}}\\circ\\mathrm{Var}$ is Lipschitz under specified conditions, and a specific bound is derived for the empirical aggregator case.",
+    "equations": [],
+    "hypotheses": [
+      {
+        "text": "Under the conditions of the lemma and $\\S 8.2.2.9$.",
+        "latex": null
+      },
+      {
+        "text": "For the empirical aggregator of $\\S 6.2.2.a$, $L_{\\mu,M}=1/\\sqrt{k}$ and $L_{m_2,M}=2V_{\\max}/\\sqrt{k}$.",
+        "latex": "$L_{\\mu,M}=1/\\sqrt{k}$ and $L_{m_2,M}=2V_{\\max}/\\sqrt{k}$"
+      }
+    ],
+    "conclusion": {},
+    "variables": [
+      {
+        "symbol": "L_{\\sigma\\'\\_{\\text{reg}}\\circ\\mathrm{Var}}",
+        "role": "Lipschitz constant",
+        "constraints": []
+      },
+      {
+        "symbol": "L_{\\sigma\\'\\_{\\text{reg}}}",
+        "role": "Lipschitz constant",
+        "constraints": []
+      },
+      {
+        "symbol": "L_{m_2,M}",
+        "role": "Constant related to $m_2$",
+        "constraints": []
+      },
+      {
+        "symbol": "V_{\\max}",
+        "role": "Maximum value parameter",
+        "constraints": []
+      },
+      {
+        "symbol": "L_{\\mu,M}",
+        "role": "Lipschitz constant related to $\\mu$",
+        "constraints": []
+      },
+      {
+        "symbol": "k",
+        "role": "Sample size parameter",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [],
+    "local_refs": [
+      "lem-empirical-aggregator-properties"
+    ],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "corollary",
+    "label": "cor-closed-form-lipschitz-composite",
+    "title": "Closed‑form bound for $L_{g_A\\circ z}$ (empirical aggregator)",
+    "nl_statement": "For the empirical aggregator with regularized standardization and piecewise rescale, the composite map $g_A\\circ z$ is globally Lipschitz with a bound dependent on $L_P$, $L_{\\sigma'_{\\text{reg}}}$, $V_{\\max}$, and $k$.",
+    "equations": [],
+    "hypotheses": [],
+    "conclusion": {},
+    "variables": [
+      {
+        "symbol": "k",
+        "role": "size of $\\mathcal A(\\mathcal S)$",
+        "constraints": []
+      },
+      {
+        "symbol": "V_{\\max}",
+        "role": "bound on $|v_i|$",
+        "constraints": []
+      },
+      {
+        "symbol": "L_{g_A\\circ z}",
+        "role": "Lipschitz constant of the composite map",
+        "constraints": []
+      },
+      {
+        "symbol": "L_P",
+        "role": "uniform derivative bound of the cubic patch",
+        "constraints": [
+          "L_P = \\|P'\\|_{\\infty}"
+        ]
+      },
+      {
+        "symbol": "L_{\\sigma\\'\\_{\\text{reg}}}",
+        "role": null,
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The context requires definitions related to empirical aggregators, regularized standardization, and piecewise rescaling.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [
+      "lem-empirical-aggregator-properties"
+    ],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "corollary",
+    "label": "cor-pipeline-continuity-margin-stability",
+    "title": "Pipeline Continuity Under Margin-Based Status Stability",
+    "nl_statement": "The final deterministic bound $F_{\\text{pot,det}}$ is a well-defined, continuous bound on the deterministic error, assembled by combining previous bounds.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\|\\mathbf{z}_{*,1} - \\mathbf{z}_{*,2}\\|_2^2 \\le 2 C_{V,\\text{total}}^{(*)}\\cdot \\|\\Delta\\mathbf{v}_*\\|_2^2 + 2 C_{S,\\text{direct}}^{(*)} \\cdot n_c + 2 C_{S,\\text{indirect}}^{(*)}(\\mathcal{S}_1,\\mathcal{S}_2) \\cdot n_c^2"
+      }
+    ],
+    "hypotheses": [],
+    "conclusion": {
+      "text": "The final deterministic function $F_{\\text{pot,det}}$ is a well-defined, continuous bound on the deterministic error.",
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "\\mathbf{z}_{*,1}",
+        "role": null,
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathbf{z}_{*,2}",
+        "role": null,
+        "constraints": []
+      },
+      {
+        "symbol": "\\Delta\\mathbf{v}_*",
+        "role": null,
+        "constraints": []
+      },
+      {
+        "symbol": "n_c",
+        "role": null,
+        "constraints": []
+      },
+      {
+        "symbol": "C_{V,\\text{total}}^{(*)}",
+        "role": "coefficient",
+        "constraints": []
+      },
+      {
+        "symbol": "C_{S,\\text{direct}}^{(*)}",
+        "role": "coefficient",
+        "constraints": []
+      },
+      {
+        "symbol": "C_{S,\\text{indirect}}^{(*)}",
+        "role": "coefficient",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal{S}_1",
+        "role": null,
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal{S}_2",
+        "role": null,
+        "constraints": []
+      },
+      {
+        "symbol": "F_{\\text{pot,det}}",
+        "role": "function/bound",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The coefficients $C_{V,\\text{total}}^{(*)}$, $C_{S,\\text{direct}}^{(*)}$, and $C_{S,\\text{indirect}}^{(*)}$ are finite.",
+        "confidence": 1.0
+      },
+      {
+        "text": "The context implies that $F_{\\text{pot,det}}$ combines bounds from steps 2, 3, and 4, which are not fully provided here.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [
+      "def-lipschitz-value-error-coefficients",
+      "def-lipschitz-structural-error-coefficients"
+    ],
+    "proof": {}
+  }
+]

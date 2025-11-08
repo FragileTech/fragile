@@ -1,0 +1,213 @@
+[
+  {
+    "type": "proposition",
+    "label": "W2 continuity bound without offset (for $k\\ge 2$)",
+    "title": "W2 continuity bound without offset (for $k\\ge 2$)",
+    "nl_statement": "The 2-Wasserstein metric on the output space (quotient) provides a continuity bound removing additive offsets from independent randomness.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "W_2^2(\\mu,\\nu) := \\inf_{\\pi\\in\\Pi(\\mu,\\nu)} \\int \\overline d_{\\text{Disp},\\mathcal{Y}}(s',\\tilde s')^2\\,\\mathrm{d}\\pi(s',\\tilde s'),"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "The measures $\\mu$ and $\\nu$ are on $\\overline{\\Sigma}_N$, the $N$-particle quotient state space with the displacement metric $\\overline d_{\\text{Disp},\\mathcal{Y}}$.",
+        "latex": null
+      },
+      {
+        "text": "$k\\ge 2$",
+        "latex": "k\\ge 2"
+      }
+    ],
+    "conclusion": {
+      "text": "The 2-Wasserstein metric $W_2^2(\\mu,\\nu)$ is defined as the infimum of the integral of the squared displacement metric over all couplings $\\pi$ between $\\mu$ and $\\nu$.",
+      "latex": "W_2^2(\\mu,\\nu) = \\inf_{\\pi\\in\\Pi(\\mu,\\nu)} \\int \\overline d_{\\text{Disp},\\mathcal{Y}}(s',\\tilde s')^2\\,\\mathrm{d}\\pi(s',\\tilde s')"
+    },
+    "variables": [
+      {
+        "symbol": "\\overline{\\Sigma}_N",
+        "role": "Quotient state space",
+        "constraints": []
+      },
+      {
+        "symbol": "\\overline d_{\\text{Disp},\\mathcal{Y}}",
+        "role": "Displacement metric on $\\overline{\\Sigma}_N$",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mu, \\nu",
+        "role": "Probability measures on $\\overline{\\Sigma}_N$",
+        "constraints": []
+      },
+      {
+        "symbol": "\\pi",
+        "role": "Coupling between $\\mu$ and $\\nu$",
+        "constraints": [
+          "\\pi\\in\\Pi(\\mu,\\nu)"
+        ]
+      },
+      {
+        "symbol": "s', \\tilde s'",
+        "role": "Points in $\\overline{\\Sigma}_N$",
+        "constraints": []
+      },
+      {
+        "symbol": "W_2^2",
+        "role": "Squared 2-Wasserstein distance",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The space $(\\overline{\\Sigma}_N, \\overline d_{\\text{Disp},\\mathcal{Y}})$ is a metric space suitable for defining the Wasserstein distance.",
+        "confidence": 1.0
+      },
+      {
+        "text": "The preceding context defined $\\overline{\\Sigma}_N$ and $\\overline d_{\\text{Disp},\\mathcal{Y}}$.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [
+      "def-w2-output-metric"
+    ],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "theorem",
+    "label": null,
+    "title": null,
+    "nl_statement": "The stagewise bounds from Section 17.2.4, when repeated under synchronous coupling, maintain linear and sub-linear dependencies on $V_{\\text{in}}=d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2$, but eliminate additive offsets from independent randomness. Specifically, when $\\mathcal{S}_1=\\mathcal{S}_2$, the bound holds with no constant term.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "V_{\\text{in}}=d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2"
+      },
+      {
+        "label": null,
+        "latex": "F(\\mathcal{S}_1,\\Xi)=F(\\mathcal{S}_1,\\Xi)"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "The coefficients $C_{\\Psi,L}, C_{\\Psi,H}$ are exactly those defined in 17.2.4.1.",
+        "latex": null
+      },
+      {
+        "text": "$\\alpha_H^{\\mathrm{global}}$ is as in 17.2.4.",
+        "latex": "\\alpha_H^{\\mathrm{global}}"
+      },
+      {
+        "text": "Synchronous coupling is applied.",
+        "latex": null
+      },
+      {
+        "text": "$\\mathcal{S}_1=\\mathcal{S}_2$.",
+        "latex": "\\mathcal{S}_1=\\mathcal{S}_2"
+      }
+    ],
+    "conclusion": {
+      "text": "The stagewise bounds from Section 17.2.4 hold under synchronous coupling, yielding the stated bound with no constant term when $\\mathcal{S}_1=\\mathcal{S}_2$, and otherwise eliminating additive offsets originating solely from independent randomness.",
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "V_{\\text{in}}",
+        "role": "variable",
+        "constraints": [
+          "V_{\\text{in}}=d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2"
+        ]
+      },
+      {
+        "symbol": "\\mathcal{S}_1, \\mathcal{S}_2",
+        "role": "set labels",
+        "constraints": []
+      },
+      {
+        "symbol": "F(\\mathcal{S}_1,\\Xi)",
+        "role": "function/quantity",
+        "constraints": []
+      },
+      {
+        "symbol": "C_{\\Psi,L}, C_{\\Psi,H}",
+        "role": "coefficients",
+        "constraints": []
+      },
+      {
+        "symbol": "\\alpha_H^{\\mathrm{global}}",
+        "role": "coefficient",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The system is governed by stagewise bounds from Section 17.2.4.",
+        "confidence": 1.0
+      },
+      {
+        "text": "The claim relies on combining intermediate estimates.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [
+      "17.2.4",
+      "17.2.4.1",
+      "17.2.4.3"
+    ],
+    "proof": {
+      "availability": "by-reference",
+      "steps": [
+        {
+          "kind": "combination",
+          "text": "The inequality follows by combining the intermediate estimates with the unification lemma (17.2.4.3).",
+          "latex": null
+        }
+      ]
+    }
+  },
+  {
+    "type": "remark",
+    "label": "rem-context-5056",
+    "title": "Feller-type (continuity-preserving) properties for $\\Psi$ follow from the stagewise measurability and continuity assumptions stated in Section 2 for the operators and aggregators; on compact (or sublevel) sets these imply boundedness and continuity of the induced kernel maps.",
+    "nl_statement": "Feller-type properties for $\\Psi$ follow from stagewise measurability and continuity assumptions on the operators and aggregators, which imply boundedness and continuity of the induced kernel maps on compact or sublevel sets.",
+    "equations": [],
+    "hypotheses": [
+      {
+        "text": "stagewise measurability and continuity assumptions stated in Section 2 for the operators and aggregators",
+        "latex": null
+      }
+    ],
+    "conclusion": {},
+    "variables": [
+      {
+        "symbol": "F_{\\text{clone}},F_{\\text{pert}},F_{\\text{status}}",
+        "role": "measurable stage maps",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal{K}_{\\text{clone}},\\mathcal{K}_{\\text{pert}},\\mathcal{K}_{\\text{status}}",
+        "role": "noise kernels",
+        "constraints": []
+      },
+      {
+        "symbol": "\\Psi",
+        "role": "Markov kernel",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The measurable space for $\\Psi$ is $(\\Sigma_N,\\mathcal{B}(\\Sigma_N))$",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  }
+]

@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from mathster.directives import preview_hints, validate_hints
 from mathster.directives.directive_parser import (
@@ -22,14 +22,15 @@ from mathster.directives.directive_parser import (
     split_into_sections,
 )
 
-DirectiveSummary = Dict[str, Any]
+
+DirectiveSummary = dict[str, Any]
 
 
 def _format_section_heading(section: DocumentSection) -> str:
     return f"{'#' * section.level} {section.title}"
 
 
-def _slice_numbered_lines(lines: List[str], start: int | None, end: int | None) -> str:
+def _slice_numbered_lines(lines: list[str], start: int | None, end: int | None) -> str:
     """Return numbered line snippet using 1-indexed inclusive/exclusive bounds."""
     if start is None or end is None or start <= 0 or end <= 0:
         return ""
@@ -41,7 +42,7 @@ def _slice_numbered_lines(lines: List[str], start: int | None, end: int | None) 
 def _serialize_hint(
     section: DocumentSection,
     hint: DirectiveHint,
-    numbered_lines: List[str],
+    numbered_lines: list[str],
 ) -> dict:
     """Convert a ``DirectiveHint`` into an absolute-line-number dictionary."""
     offset = section.start_line - 1
@@ -80,7 +81,7 @@ def _serialize_hint(
 
 def run_directive_extraction(
     markdown_file: Path,
-    output_dir: Optional[Path] = None,
+    output_dir: Path | None = None,
     *,
     preview: bool = True,
     validate: bool = True,
@@ -100,17 +101,13 @@ def run_directive_extraction(
     directives_dir = base_dir / "directives"
     directives_dir.mkdir(parents=True, exist_ok=True)
 
-    numbered_lines = [
-        f"{idx + 1}: {line}" for idx, line in enumerate(document_text.splitlines())
-    ]
+    numbered_lines = [f"{idx + 1}: {line}" for idx, line in enumerate(document_text.splitlines())]
 
     chapter_summaries: list[DirectiveSummary] = []
     total_directives = 0
 
     for index, section in enumerate(sections):
-        hints = [
-            _serialize_hint(section, hint, numbered_lines) for hint in section.directives
-        ]
+        hints = [_serialize_hint(section, hint, numbered_lines) for hint in section.directives]
         if validate:
             ok, errors = validate_hints(hints)
             validation = {"ok": ok, "errors": errors}

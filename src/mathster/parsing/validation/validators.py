@@ -232,14 +232,14 @@ def validate_parameter(
             )
 
         # Validate scope
-        if param.scope not in ["global", "local"]:
+        if param.scope not in {"global", "local"}:
             errors.append(f"Parameter '{param.label}': scope must be 'global' or 'local'")
 
         # Try to convert to RawParameter
         try:
             from mathster.parsing.conversion.converters import convert_parameter
 
-            raw_param, conversion_warnings = convert_parameter(
+            _raw_param, conversion_warnings = convert_parameter(
                 param, file_path=file_path, article_id=article_id, chapter_text=chapter_text
             )
 

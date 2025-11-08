@@ -19,17 +19,18 @@ from mathster.directives.directive_parser import (
     split_into_sections,
 )
 
+
 __all__ = [
-    # Extractor functions
-    "extract_directive_hints",
-    "preview_hints",
-    "validate_hints",
     # Parser functions and classes
     "DirectiveHint",
     "DocumentSection",
+    # Extractor functions
+    "extract_directive_hints",
     "extract_jupyter_directives",
     "format_directive_hints_for_llm",
     "generate_section_id",
     "get_directive_summary",
+    "preview_hints",
     "split_into_sections",
+    "validate_hints",
 ]

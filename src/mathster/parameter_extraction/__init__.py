@@ -48,6 +48,7 @@ from mathster.parameter_extraction.workflows.extract import (
 )
 from mathster.parameter_extraction.workflows.refine import refine_parameter_line_numbers
 
+
 # Convenience aliases
 extract_parameters = extract_parameters_from_chapter
 refine_parameters = refine_parameter_line_numbers

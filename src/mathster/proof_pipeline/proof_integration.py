@@ -15,6 +15,7 @@ All types follow Lean-compatible patterns:
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from mathster.core.proof_system import AttributeReference, ProofBox, ProofInput, ProofOutput
 from mathster.proof_pipeline.pipeline_types import (
     Attribute,
     MathematicalObject,
@@ -22,7 +23,6 @@ from mathster.proof_pipeline.pipeline_types import (
     RelationshipAttribute,
     TheoremBox,
 )
-from mathster.core.proof_system import AttributeReference, ProofBox, ProofInput, ProofOutput
 
 
 # =============================================================================

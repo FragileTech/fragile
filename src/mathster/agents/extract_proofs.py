@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """
 Usage
@@ -32,12 +31,21 @@ from __future__ import annotations
 import argparse
 import json
 import logging
-import re
 from pathlib import Path
-from typing import Any, Dict, Iterable
+import re
+from typing import Any
 
-import dspy
 from dotenv import load_dotenv
+import dspy
+
+from mathster.agents.core import (
+    DirectiveAgentPaths,
+    LATEX_FENCE_PATTERN,
+    METADATA_PATTERN,
+    run_directive_extraction_loop,
+    URI_PATTERN,
+)
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -101,16 +109,10 @@ class ParseProofDirectiveSplit(dspy.Signature):
     proof_type_str = dspy.OutputField(
         desc="Technique: direct/contradiction/induction/reference/construction/variational/probabilistic/other."
     )
-    proof_status_str = dspy.OutputField(
-        desc="Status: complete/sketch/omitted/by-reference."
-    )
-    strategy_summary_str = dspy.OutputField(
-        desc="Short strategy description (1-2 sentences)."
-    )
+    proof_status_str = dspy.OutputField(desc="Status: complete/sketch/omitted/by-reference.")
+    strategy_summary_str = dspy.OutputField(desc="Short strategy description (1-2 sentences).")
 
-    conclusion_json = dspy.OutputField(
-        desc='JSON object {"text": str|null, "latex": str|null}.'
-    )
+    conclusion_json = dspy.OutputField(desc='JSON object {"text": str|null, "latex": str|null}.')
     assumptions_json = dspy.OutputField(
         desc='JSON array [{"text": str|null, "latex": str|null}, ...].'
     )
@@ -120,15 +122,11 @@ class ParseProofDirectiveSplit(dspy.Signature):
     key_equations_json = dspy.OutputField(
         desc='JSON array [{"label": str|null, "latex": str, "role": str|null}, ...].'
     )
-    references_json = dspy.OutputField(
-        desc='JSON array of labels ["thm-main", "lem-x-bound"].'
-    )
+    references_json = dspy.OutputField(desc='JSON array of labels ["thm-main", "lem-x-bound"].')
     cases_json = dspy.OutputField(
         desc='JSON array [{"name": str|null, "condition": str|null, "summary": str|null}, ...].'
     )
-    remarks_json = dspy.OutputField(
-        desc='JSON array [{"type": str|null, "text": str|null}, ...].'
-    )
+    remarks_json = dspy.OutputField(desc='JSON array [{"type": str|null, "text": str|null}, ...].')
     gaps_json = dspy.OutputField(
         desc='JSON array [{"description": str, "severity": str|null, "location_hint": str|null}, ...].'
     )
@@ -138,12 +136,11 @@ class ParseProofDirectiveSplit(dspy.Signature):
 # Reward helpers
 # --------------------------------------------------------------------------------------
 
-_URI_PAT = re.compile(r"(https?://|file://|s3://|gs://)")
-_META_PAT = re.compile(r"\b(line|page|timestamp|uuid|sha256)\b", re.I)
+_URI_PAT = URI_PATTERN
+_META_PAT = METADATA_PATTERN
 _LABEL_PAT = re.compile(r"^proof-[a-z0-9-]+$")
 _RESULT_LABEL_PAT = re.compile(r"^(thm|lem|prop|cor|claim|def|axiom|obs|remark|eq)-[a-z0-9-]+$")
-_LINENO = re.compile(r"^\s*\d+:\s?")
-_FENCE_PAT = re.compile(r"(\$\$|\\\[|\\\]|\\begin\{equation\}|\\end\{equation\})")
+_FENCE_PAT = LATEX_FENCE_PATTERN
 
 _ALLOWED_PROOF_TYPES = {
     "direct",
@@ -210,7 +207,7 @@ def _has_dups(seq) -> bool:
     return False
 
 
-def proof_reward(args: Dict[str, Any], pred) -> float:
+def proof_reward(args: dict[str, Any], pred) -> float:
     """
     Reward function for ParseProofDirectiveSplit outputs.
     """
@@ -300,8 +297,7 @@ def proof_reward(args: Dict[str, Any], pred) -> float:
     if isinstance(assumptions, list):
         part += 0.04
         if all(
-            isinstance(a, dict)
-            and (_nonempty(a.get("text")) or _nonempty(a.get("latex")))
+            isinstance(a, dict) and (_nonempty(a.get("text")) or _nonempty(a.get("latex")))
             for a in assumptions[:10]
         ):
             part += 0.02
@@ -368,81 +364,7 @@ def proof_reward(args: Dict[str, Any], pred) -> float:
 # --------------------------------------------------------------------------------------
 # Utilities
 # --------------------------------------------------------------------------------------
-
-
-def strip_line_numbers(text: str) -> str:
-    return "\n".join(_LINENO.sub("", line) for line in (text or "").splitlines())
-
-
-def synthesize_directive_text(obj: Dict[str, Any]) -> str:
-    dtype = (obj.get("directive_type") or "proof").strip()
-    title = (obj.get("title") or "").strip()
-    label = (obj.get("label") or obj.get("metadata", {}).get("label") or "").strip()
-
-    header = f"::{{prf:{dtype}}} {title}".rstrip()
-    label_line = f":label: {label}" if label else ""
-    body = strip_line_numbers(obj.get("content") or "")
-
-    parts = [header]
-    if label_line:
-        parts.append(label_line)
-    if body:
-        parts.append(body)
-    parts.append(":::")
-    return "\n\n".join(parts)
-
-
-def extract_directive_text(obj: Dict[str, Any]) -> str:
-    raw = obj.get("raw_directive")
-    if isinstance(raw, str) and raw.strip():
-        return strip_line_numbers(raw)
-    return synthesize_directive_text(obj)
-
-
-def tiny_context_hints(obj: Dict[str, Any], doc_text: str, window: int = 320) -> str:
-    content = strip_line_numbers(obj.get("content") or "").strip()
-    if content:
-        if len(content) > window:
-            head = content[: window // 2]
-            tail = content[-window // 2 :]
-            return head + "\n...\n" + tail
-        return content
-
-    key = (obj.get("label") or obj.get("title") or "").strip()
-    if not key:
-        return ""
-    idx = doc_text.find(key)
-    if idx == -1 and key:
-        idx = doc_text.find(key[: min(len(key), 60)])
-    if idx == -1:
-        return ""
-    start = max(0, idx - window)
-    end = min(len(doc_text), idx + len(key) + window)
-    return doc_text[start:end]
-
-
-def load_json_or_jsonl(path: Path) -> Iterable[Any]:
-    text = path.read_text(encoding="utf-8")
-    if path.suffix.lower() == ".jsonl":
-        for line in text.splitlines():
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                yield json.loads(line)
-            except Exception:
-                continue
-    else:
-        obj = json.loads(text)
-        obj = obj.get("items", obj)
-        if isinstance(obj, list):
-            for item in obj:
-                yield item
-        else:
-            yield obj
-
-
-def assemble_output(res) -> Dict[str, Any]:
+def assemble_output(res) -> dict[str, Any]:
     def as_json(payload, default):
         try:
             return json.loads(payload) if payload else default
@@ -489,44 +411,17 @@ def run_agent(
     )
 
     doc_path = Path(document_path)
-    document_folder = doc_path.parent / str(doc_path.stem)
-    proofs_path = document_folder / "registry" / "directives" / "proof.json"
-    if not proofs_path.exists():
-        logger.warning(f"No proof directives found at {proofs_path}")
-        return
+    fallback_predict = dspy.Predict(ParseProofDirectiveSplit)
+    paths = DirectiveAgentPaths.build(doc_path, directive_basename="proof")
 
-    doc_text = doc_path.read_text(encoding="utf-8")
-    out_dir = document_folder / "extract"
-    out_dir.mkdir(exist_ok=True)
-    out_path = out_dir / "proof.json"
-    outputs = []
-
-    with out_path.open("w", encoding="utf-8") as out_f:
-        for idx, obj in enumerate(load_json_or_jsonl(proofs_path), start=1):
-            if not isinstance(obj, dict):
-                continue
-
-            directive_text = extract_directive_text(obj)
-            context_hints = tiny_context_hints(obj, doc_text, window=320)
-
-            try:
-                res = program(directive_text=directive_text, context_hints=context_hints)
-                logger.info(f"✓ Refine succeeded for proof #{idx}: {obj.get('label')}")
-            except Exception:
-                logger.warning(
-                    "Refine failed for proof #%s (%s); falling back to single-pass Predict.",
-                    idx,
-                    obj.get("label"),
-                )
-                res = dspy.Predict(ParseProofDirectiveSplit)(
-                    directive_text=directive_text, context_hints=context_hints
-                )
-
-            outputs.append(assemble_output(res))
-
-        out_f.write(json.dumps(outputs, ensure_ascii=False, indent=2) + "\n")
-
-    logger.info(f"Wrote {len(outputs)} proofs to {out_path}")
+    run_directive_extraction_loop(
+        paths=paths,
+        program_call=program,
+        assemble_output=assemble_output,
+        directive_type_fallback="proof",
+        fallback_call=fallback_predict,
+        logger_obj=logger,
+    )
 
 
 # --------------------------------------------------------------------------------------
@@ -535,6 +430,9 @@ def run_agent(
 
 
 def main(argv=None):
+    import flogging
+
+    flogging.setup(level="INFO")
     parser = argparse.ArgumentParser(description="Parse proof directives via DSPy Refine.")
     parser.add_argument("--doc", required=True, help="Path to the document markdown file.")
     parser.add_argument(
@@ -558,4 +456,3 @@ def main(argv=None):
 
 if __name__ == "__main__":
     main()
-

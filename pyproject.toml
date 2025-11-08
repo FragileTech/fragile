@@ -74,6 +74,7 @@ dependencies = [
     "repomix>=0.3.4",
     "dspy-ai>=3.0.3",
     "python-dotenv>=1.0.0",
+    "tqdm>=4.67.1",
 ]
 
 [dependency-groups]

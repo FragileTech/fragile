@@ -1,0 +1,2463 @@
+[
+  {
+    "type": "lemma",
+    "label": "lem-borel-image-of-the-projected-swarm-space",
+    "title": "Borel image of the projected swarm space",
+    "nl_statement": "If $(\\mathcal X,d_{\\mathcal X})$ is Polish and $\\varphi:\\mathcal X\\to\\mathcal Y$ is continuous, and $\\mathcal X$ is $\\sigma$-compact, then the projected image $\\widehat{\\Phi}(\\Sigma_N)$ is Borel when $\\Sigma_N\\subset(\\mathcal X\\times\\{0,1\\})^N$ is Borel.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\widehat{\\Phi}(\\Sigma_N):=\\{((\\varphi(x_i),s_i))_{i=1}^N : ((x_i,s_i))\\in\\Sigma_N\\}\\subset (\\mathcal Y\\times\\{0,1\\})^N"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "($\\mathcal X,d_{\\mathcal X}$) is Polish",
+        "latex": "(\\mathcal X,d_{\\mathcal X}) \\text{ is Polish}"
+      },
+      {
+        "text": "$\\varphi:\\mathcal X\\to\\mathcal Y$ is continuous",
+        "latex": "\\varphi:\\mathcal X\\to\\mathcal Y \\text{ continuous}"
+      },
+      {
+        "text": "$\\mathcal X$ is $\\sigma$-compact",
+        "latex": "\\mathcal X \\text{ is } \\sigma \\text{-compact}"
+      },
+      {
+        "text": "$\\Sigma_N\\subset(\\mathcal X\\times\\{0,1\\})^N$ is Borel",
+        "latex": "\\Sigma_N\\subset(\\mathcal X\\times\\{0,1\\})^N \\text{ is Borel}"
+      }
+    ],
+    "conclusion": {
+      "text": "The projected image $\\widehat{\\Phi}(\\Sigma_N)$ is Borel",
+      "latex": "\\widehat{\\Phi}(\\Sigma_N) \\text{ is Borel}"
+    },
+    "variables": [
+      {
+        "symbol": "$\\mathcal X$",
+        "role": "space",
+        "constraints": [
+          "Polish"
+        ]
+      },
+      {
+        "symbol": "$d_{\\mathcal X}$",
+        "role": "metric",
+        "constraints": []
+      },
+      {
+        "symbol": "$\\varphi$",
+        "role": "function",
+        "constraints": [
+          "continuous",
+          "\\mathcal X\\to\\mathcal Y"
+        ]
+      },
+      {
+        "symbol": "$\\mathcal Y$",
+        "role": "space",
+        "constraints": []
+      },
+      {
+        "symbol": "$\\Sigma_N$",
+        "role": "set",
+        "constraints": [
+          "\\subset (\\mathcal X\\times\\{0,1\\})^N",
+          "Borel"
+        ]
+      },
+      {
+        "symbol": "$\\,\\widehat{\\Phi}(\\Sigma_N)$",
+        "role": "image set",
+        "constraints": [
+          "\\subset (\\mathcal Y\\times\\{0,1\\})^N"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The structure $(\\mathcal Y, d_{\\mathcal Y})$ is assumed to be a Polish space, or at least one where Borel sets are well-defined, for the conclusion to hold meaningfully in relation to the premise.",
+        "confidence": 0.8
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-polishness-and-w2",
+    "title": "Polishness of the quotient state space and $W_2$",
+    "nl_statement": "The quotient state space possesses Polishness properties, and $W_2$ well-posedness is established.",
+    "equations": [],
+    "hypotheses": [],
+    "conclusion": {
+      "text": "The quotient state space is Polish, and $W_2$ well-posedness holds.",
+      "latex": null
+    },
+    "variables": [],
+    "implicit_assumptions": [],
+    "local_refs": [],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-validation-of-the-heat-kernel",
+    "title": "Validation of the Heat Kernel",
+    "nl_statement": "If the state space $(\\mathcal{X}, d_{\\mathcal{X}}, \\mu)$ is a Polish metric measure space with a canonical heat kernel $p_t(x, \\cdot)$ that has a uniformly bounded second moment, then defining the perturbation noise measure as $\\mathcal{P}_\\sigma(x, \\cdot) := p_{\\sigma^2}(x, \\cdot)$ satisfies the required axioms, provided the boundary of the valid set $\\mathcal{X}_{\\mathrm{valid}}$ is sufficiently regular.",
+    "equations": [],
+    "hypotheses": [],
+    "conclusion": {},
+    "variables": [
+      {
+        "symbol": "(\\mathcal{X}, d_{\\mathcal{X}}, \\mu)",
+        "role": "state space",
+        "constraints": []
+      },
+      {
+        "symbol": "p_t(x, \\cdot)",
+        "role": "canonical heat kernel",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal{P}_\\sigma(x, \\cdot)",
+        "role": "perturbation noise measure",
+        "constraints": []
+      },
+      {
+        "symbol": "\\sigma",
+        "role": "parameter for perturbation",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal{X}_{\\mathrm{valid}}",
+        "role": "valid set",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The 'required axioms' mentioned in the conclusion are implicitly defined elsewhere (likely Axiom of Bounded Second Moment of Perturbation and Axiom of Boundary Regularity, as referenced in the proof).",
+        "confidence": 0.95
+      },
+      {
+        "text": "The meaning of 'sufficiently regular' boundary implies conditions under which the death probability integral yields Hölder continuity.",
+        "confidence": 0.85
+      }
+    ],
+    "local_refs": [
+      "def-axiom-bounded-second-moment-perturbation",
+      "axiom-boundary-regularity"
+    ],
+    "proof": {
+      "availability": "present",
+      "steps": [
+        {
+          "kind": "check",
+          "text": "Axiom of Bounded Second Moment of Perturbation: The definition of the state space requires that the heat kernel has a uniformly bounded second moment, i.e., $\\sup_{x \\in \\mathcal{X}} \\mathbb{E}_{x' \\sim p_t(x, \\cdot)} [ d_{\\mathcal{Y}}(\\varphi(x'), \\varphi(x))^2 ] \\le M_{\\text{pert}}^2$. This directly satisfies the axiom.",
+          "latex": "\\sup_{x \\in \\mathcal{X}} \\mathbb{E}_{x' \\sim p_t(x, \\cdot)} [ d_{\\mathcal{Y}}(\\varphi(x'), \\varphi(x))^2 ] \\le M_{\\text{pert}}^2"
+        },
+        {
+          "kind": "check",
+          "text": "Axiom of Boundary Regularity: The death probability is given by the function $P(s_{\\text{out}}=0 | x) = \\int_{\\mathcal{X} \\setminus \\mathcal{X}_{\\mathrm{valid}}} p_{\\sigma^2}(x, dx')$. This is the convolution of the indicator function of the invalid set with the heat kernel. For non-pathological boundaries (e.g., boundaries that are not space-filling curves), the heat kernel is a well-known smoothing operator. Standard results in analysis show that the convolution of a smooth kernel with an indicator function results in a continuous function. For heat kernels specifically, the resulting function $P$ is smooth and therefore locally Hölder continuous. Global Hölder continuity follows on compact subsets of $\\mathcal X$ by a finite subcover argument.",
+          "latex": "P(s_{\\text{out}}=0 | x) = \\int_{\\mathcal{X} \\setminus \\mathcal{X}_{\\mathrm{valid}}} p_{\\sigma^2}(x, dx')"
+        }
+      ]
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-validation-of-the-uniform-ball-measure",
+    "title": "Validation of the Uniform Ball Measure",
+    "nl_statement": "The noise measure $\\mathcal{P}_\\sigma(x, \\cdot)$, defined as the uniform probability measure over a ball of radius $\\sigma$ centered at $x$ in the state space $\\mathcal{X}$, satisfies the required axioms if the boundary of the valid set is sufficiently regular. Furthermore, the death-probability map is continuous under mild assumptions, and a global Lipschitz modulus with respect to $d_{\\text{Disp},\\mathcal{Y}}$ can be obtained if $\\mathcal{X}_{\\mathrm{valid}}$ has a Lipschitz boundary or finite perimeter, leading to the bound $L_{\\text{death}}\\;\\le\\; C_{\\text{perim}}/\\sigma$.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "L_{\\text{death}}\\;\\le\\; \\frac{C_{\\text{perim}}}{\\sigma}"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "The boundary of the valid set is sufficiently regular.",
+        "latex": null
+      },
+      {
+        "text": "The death‑probability map is continuous under mild assumptions.",
+        "latex": null
+      },
+      {
+        "text": "$\\mathcal{X}_{\\mathrm{valid}}$ has Lipschitz boundary or finite perimeter so that boundary layer estimates apply (to claim a global Lipschitz modulus with respect to $d_{\\text{Disp},\\mathcal{Y}}$).",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The noise measure $\\mathcal{P}_\\sigma(x, \\cdot)$ satisfies the required axioms, and $L_{\\text{death}}\\;\\le\\; C_{\\text{perim}}/\\sigma$ holds under appropriate regularity conditions.",
+      "latex": "L_{\\text{death}}\\;\\le\\; \\frac{C_{\\text{perim}}}{\\sigma}"
+    },
+    "variables": [
+      {
+        "symbol": "\\mathcal{P}_\\sigma(x, \\cdot)",
+        "role": "noise measure",
+        "constraints": [
+          "uniform probability measure over a ball of radius \\sigma centered at x in \\mathcal{X}"
+        ]
+      },
+      {
+        "symbol": "\\sigma",
+        "role": "parameter (radius)",
+        "constraints": [
+          "\\sigma > 0 (implied by radius)"
+        ]
+      },
+      {
+        "symbol": "\\mathcal{X}",
+        "role": "state space",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal{X}_{\\mathrm{valid}}",
+        "role": "valid set",
+        "constraints": []
+      },
+      {
+        "symbol": "L_{\\text{death}}",
+        "role": "Lipschitz constant for the death-probability map",
+        "constraints": []
+      },
+      {
+        "symbol": "C_{\\text{perim}}",
+        "role": "constant depending on the perimeter of \\partial\\mathcal{X}_{\\mathrm{valid}}",
+        "constraints": []
+      },
+      {
+        "symbol": "d_{\\text{Disp},\\mathcal{Y}}",
+        "role": "metric",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The state space $\\mathcal{X}$ is a metric space.",
+        "confidence": 0.9
+      },
+      {
+        "text": "The notion of \"boundary\" and \"perimeter\" are well-defined for $\\partial\\mathcal{X}_{\\mathrm{valid}}$ in the context of the algorithmic metric.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-boundary-uniform-ball",
+    "title": "BV/perimeter Lipschitz bound for uniform‑ball death probability",
+    "nl_statement": "If $E$ has finite perimeter, the probability $P_\\sigma(x)$ of a uniform ball centered at $x$ intersecting $E$ is Lipschitz in $x$ with a constant related to the perimeter of $E$ and the radius $\\sigma$.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "P_\\sigma(x)\\;:=\\:\\mathcal P_\\sigma(x, E)\\;=\\frac{1}{\\mathrm{Vol}(B_\\sigma)}\\int \\mathbb 1_E(y)\\,\\mathbb 1_{B_\\sigma}(y-x)\\,\\mathrm dy."
+      },
+      {
+        "label": null,
+        "latex": "|P_\\sigma(x)-P_\\sigma(y)|\\;\\le\\; C_d\\,\\frac{\\mathrm{Per}(E)}{\\sigma}\\, d_{\\mathcal X}(x,y)."
+      },
+      {
+        "label": null,
+        "latex": "L_{\\text{death}}\\le C_d (\\mathrm{Per}(\\varphi(E))/\\sigma)\\,L_\\varphi."
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "$E=\\mathcal{X}_{\\mathrm{invalid}}\\subset\\mathcal X$ has finite perimeter (BV boundary).",
+        "latex": "$E=\\mathcal{X}_{\\mathrm{invalid}}\\subset\\mathcal X$ has finite perimeter (BV boundary)."
+      },
+      {
+        "text": "$\\mathcal P_\\sigma(x,\\cdot)$ is the uniform law on $B(x,\\sigma)$.",
+        "latex": "$\\mathcal P_\\sigma(x,\\cdot)$ is the uniform law on $B(x,\\sigma)$."
+      },
+      {
+        "text": "$\\varphi$ is $L_\\varphi$-Lipschitz.",
+        "latex": "$\\varphi$ is $L_\\varphi$-Lipschitz."
+      },
+      {
+        "text": "Distances are measured in the algorithmic space.",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "There exists a constant $C_d>0$ such that $|P_\\sigma(x)-P_\\sigma(y)|\\;\\le\\; C_d\\,\\frac{\\mathrm{Per}(E)}{\\sigma}\\, d_{\\mathcal X}(x,y)$ for all $x,y\\in\\mathcal X$. If $\\varphi$ is $L_\\varphi$-Lipschitz and distances are measured in the algorithmic space, the bound implies $L_{\\text{death}}\\le C_d (\\mathrm{Per}(\\varphi(E))/\\sigma)\\,L_\\varphi$.",
+      "latex": "$|P_\\sigma(x)-P_\\sigma(y)|\\;\\le\\; C_d\\,\\frac{\\mathrm{Per}(E)}{\\sigma}\\, d_{\\mathcal X}(x,y)$ and $L_{\\text{death}}\\le C_d (\\mathrm{Per}(\\varphi(E))/\\sigma)\\,L_\\varphi$."
+    },
+    "variables": [
+      {
+        "symbol": "E",
+        "role": "Set of invalid points",
+        "constraints": [
+          "$E=\\mathcal{X}_{\\mathrm{invalid}}\\subset\\mathcal X$",
+          "E has finite perimeter (BV boundary)"
+        ]
+      },
+      {
+        "symbol": "\\mathcal X",
+        "role": "Ambient space",
+        "constraints": []
+      },
+      {
+        "symbol": "P_\\sigma(x)",
+        "role": "Death probability",
+        "constraints": [
+          "Defined in terms of integral over uniform law on B(x, \\sigma)"
+        ]
+      },
+      {
+        "symbol": "\\sigma",
+        "role": "Radius of the uniform ball",
+        "constraints": [
+          "\\sigma > 0 (implied by denominator)"
+        ]
+      },
+      {
+        "symbol": "C_d",
+        "role": "Dimension-dependent constant",
+        "constraints": [
+          "C_d > 0"
+        ]
+      },
+      {
+        "symbol": "d_{\\mathcal X}(x,y)",
+        "role": "Distance between x and y in \\mathcal X",
+        "constraints": []
+      },
+      {
+        "symbol": "\\varphi",
+        "role": "Function relating spaces",
+        "constraints": [
+          "L_\\varphi-Lipschitz"
+        ]
+      },
+      {
+        "symbol": "L_{\\text{death}}",
+        "role": "Lipschitz constant for death probability under \\varphi",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The space $\\mathcal X$ is equipped with a metric $d_{\\mathcal X}$.",
+        "confidence": 0.9
+      },
+      {
+        "text": "The volume $\\mathrm{Vol}(B_\\sigma)$ is well-defined and non-zero.",
+        "confidence": 0.9
+      },
+      {
+        "text": "The perimeter $\\mathrm{Per}(E)$ is well-defined.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-boundary-heat-kernel",
+    "title": "Heat‑kernel death probability is Lipschitz with constant $\\lesssim 1/\\sigma$",
+    "nl_statement": "The integral of the heat kernel over the set $E$ (denoted $P_\\sigma(x)$) satisfies a Lipschitz condition with respect to the distance $d_{\\mathcal X}(x,y)$ and perimeter $\\mathrm{Per}(E)/\\sigma$. This implies a bound on $L_{\\text{death}}$.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "|P_\\sigma(x)-P_\\sigma(y)|\\;\\le\\; C_d'\\,\\frac{\\mathrm{Per}(E)}{\\sigma}\\, d_{\\mathcal X}(x,y),"
+      },
+      {
+        "label": null,
+        "latex": "L_{\\text{death}}\\lesssim (\\mathrm{Per}(\\varphi(E))/\\sigma)\\,L_\\varphi"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "$E=\\mathcal{X}_{\\mathrm{invalid}}\\subset\\mathcal X$ has finite perimeter",
+        "latex": "E=\\mathcal{X}_{\\mathrm{invalid}}\\subset\\mathcal X \\text{ has finite perimeter}"
+      },
+      {
+        "text": "$p_{\\sigma^2}$ is the heat kernel at scale $\\sigma$.",
+        "latex": "p_{\\sigma^2} \\text{ is the heat kernel at scale } \\sigma"
+      },
+      {
+        "text": "$P_\\sigma(x)=\\int \\chi_E(y)\\,p_{\\sigma^2}(x,\\mathrm dy)$",
+        "latex": "P_\\sigma(x)=\\int \\chi_E(y)\\,p_{\\sigma^2}(x,\\mathrm dy)"
+      }
+    ],
+    "conclusion": {
+      "text": "$P_\\sigma(x)$ is Lipschitz with constant $\\lesssim \\mathrm{Per}(E)/\\sigma$, and consequently $L_{\\text{death}}\\lesssim (\\mathrm{Per}(\\varphi(E))/\\sigma)L_\\varphi$.",
+      "latex": "|P_\\sigma(x)-P_\\sigma(y)|\\;\\le\\; C_d'\\,\\frac{\\mathrm{Per}(E)}{\\sigma}\\, d_{\\mathcal X}(x,y) \\text{ and } L_{\\text{death}}\\lesssim (\\mathrm{Per}(\\varphi(E))/\\sigma)\\,L_\\varphi"
+    },
+    "variables": [
+      {
+        "symbol": "E",
+        "role": "set subset of $\\mathcal X$",
+        "constraints": [
+          "finite perimeter"
+        ]
+      },
+      {
+        "symbol": "p_{\\sigma^2}",
+        "role": "heat kernel",
+        "constraints": []
+      },
+      {
+        "symbol": "\\sigma",
+        "role": "scale parameter",
+        "constraints": []
+      },
+      {
+        "symbol": "P_\\sigma(x)",
+        "role": "function defined by integral of heat kernel over E",
+        "constraints": []
+      },
+      {
+        "symbol": "C_d'",
+        "role": "constant",
+        "constraints": [
+          "depends on dimension"
+        ]
+      },
+      {
+        "symbol": "d_{\\mathcal X}(x,y)",
+        "role": "metric",
+        "constraints": []
+      },
+      {
+        "symbol": "L_{\\text{death}}",
+        "role": "quantity related to death probability",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The space $\\mathcal X$ is equipped with a metric $d_{\\mathcal X}$.",
+        "confidence": 0.9
+      },
+      {
+        "text": "The set $E$ has a well-defined perimeter $\\mathrm{Per}(E)$.",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-empirical-moments-lipschitz",
+    "title": "Lipschitz constants for empirical moments (mean and second moment)",
+    "nl_statement": "The empirical mean $\\mu(\\mathbf v)$ and the empirical second raw moment $m_2(\\mathbf v)$ are Lipschitz in $\\mathbf v$ with respect to the L2 norm, with specific Lipschitz constants depending on $k$ and $V_{\\max}$.",
+    "equations": [],
+    "hypotheses": [
+      {
+        "text": "$|v_i|\\le V_{\\max}$ for all $i$.",
+        "latex": "|v_i|\\le V_{\\max}"
+      }
+    ],
+    "conclusion": {
+      "text": "The Lipschitz constants for the empirical mean and second moment are $L_{\\mu,M}=1/\\sqrt{k}$ and $L_{m_2,M}=2V_{\\max}/\\sqrt{k}$ respectively.",
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "\\mathbf v",
+        "role": "vector of walker values",
+        "constraints": [
+          "\\mathbf v\\in\\mathbb R^k"
+        ]
+      },
+      {
+        "symbol": "k",
+        "role": "number of alive walkers",
+        "constraints": []
+      },
+      {
+        "symbol": "v_i",
+        "role": "value of the i-th walker",
+        "constraints": [
+          "|v_i|\\le V_{\\max}"
+        ]
+      },
+      {
+        "symbol": "V_{\\max}",
+        "role": "bound on walker values",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mu(\\mathbf v)",
+        "role": "empirical mean",
+        "constraints": []
+      },
+      {
+        "symbol": "m_2(\\mathbf v)",
+        "role": "empirical second raw moment",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The norms considered are the L2 norm on $\\mathbb R^k$.",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-empirical-aggregator-properties",
+    "title": "Axiomatic Properties of the Empirical Measure Aggregator",
+    "nl_statement": "The empirical measure aggregation operator $M$ satisfies the axiomatic requirements, and its specific continuity constants and growth exponents can be derived.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "M(\\mathcal{S}, \\mathbf{v}) = \\frac{1}{k} \\sum_{i \\in \\mathcal{A}(\\mathcal{S})} \\delta_{v_i}"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "The aggregation operator $M$ is defined such that for any swarm state $\\mathcal{S}$ with alive set $\\mathcal{A}(\\mathcal{S})$ of size $k = |\\mathcal{A}(\\mathcal{S})| \\ge 1$, and any raw value vector $\\mathbf{v}$, it produces the discrete empirical measure.",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The operator $M$ satisfies the axiomatic requirements of [](#def-swarm-aggregation-operator-axiomatic) and its specific continuity constants and growth exponents are derived.",
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "M",
+        "role": "aggregation operator",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal{S}",
+        "role": "swarm state",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal{A}(\\mathcal{S})",
+        "role": "alive set of \\mathcal{S}",
+        "constraints": []
+      },
+      {
+        "symbol": "k",
+        "role": "size of alive set",
+        "constraints": [
+          "k = |\\mathcal{A}(\\mathcal{S})|",
+          "k \\ge 1"
+        ]
+      },
+      {
+        "symbol": "\\mathbf{v}",
+        "role": "raw value vector",
+        "constraints": []
+      },
+      {
+        "symbol": "v_i",
+        "role": "value for walker i",
+        "constraints": []
+      },
+      {
+        "symbol": "\\delta_{v_i}",
+        "role": "Dirac delta at v_i",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The existence and axiomatic requirements defined in definition reference [](#def-swarm-aggregation-operator-axiomatic).",
+        "confidence": 1.0
+      },
+      {
+        "text": "The context requires understanding of swarm states (\\mathcal{S}), alive sets (\\mathcal{A}(\\mathcal{S})), and Dirac delta functions (\\delta_{v_i}).",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [
+      "def-swarm-aggregation-operator-axiomatic"
+    ],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-set-difference-bound",
+    "title": "Bound on the Error from Companion Set Change",
+    "nl_statement": "The absolute difference between two set sums, normalized by the size of the first set, is bounded by the product of the maximum function value $M_f$ and the size of the symmetric difference between the sets, all divided by the size of the first set.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\left| \\frac{1}{|S_1|} \\sum_{j \\in S_1} f_j - \\frac{1}{|S_1|} \\sum_{j \\in S_2} f_j \\right| \\le \\frac{M_f}{|S_1|} |S_1 \\Delta S_2|"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "$S_1$ and $S_2$ are two companion support sets.",
+        "latex": null
+      },
+      {
+        "text": "$|S_1| > 0$.",
+        "latex": "$|S_1| > 0$"
+      },
+      {
+        "text": "$f_j = f(x_j)$ is a real-valued function bounded by a constant $M_f$ such that $|f_j| \\le M_f$ for all $j$.",
+        "latex": "$|f_j| \\le M_f$"
+      }
+    ],
+    "conclusion": {
+      "text": "The absolute difference between the sums over $S_1$ and $S_2$, normalized by $|S_1|$, is bounded by $\\frac{M_f}{|S_1|} |S_1 \\Delta S_2|$.",
+      "latex": "\\left| \\frac{1}{|S_1|} \\sum_{j \\in S_1} f_j - \\frac{1}{|S_1|} \\sum_{j \\in S_2} f_j \\right| \\le \\frac{M_f}{|S_1|} |S_1 \\Delta S_2|"
+    },
+    "variables": [
+      {
+        "symbol": "S_1",
+        "role": "companion support set",
+        "constraints": [
+          "|S_1| > 0"
+        ]
+      },
+      {
+        "symbol": "S_2",
+        "role": "companion support set",
+        "constraints": []
+      },
+      {
+        "symbol": "f_j",
+        "role": "real-valued function evaluation",
+        "constraints": [
+          "|f_j| \\le M_f"
+        ]
+      },
+      {
+        "symbol": "M_f",
+        "role": "bound on f",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The set difference $|S_1 \\Delta S_2|$ is well-defined for support sets.",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-normalization-difference-bound",
+    "title": "Bound on the Error from Normalization Change",
+    "nl_statement": "The absolute difference between two sums over the same set $S_2$, using different normalization constants $1/|S_1|$ and $1/|S_2|$, is bounded by a term involving the bound $M_f$ and the difference in the set sizes $|S_1|$ and $|S_2|$.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\left| \\frac{1}{|S_1|} \\sum_{j \\in S_2} f_j - \\frac{1}{|S_2|} \\sum_{j \\in S_2} f_j \\right| \\le \\frac{M_f}{|S_1|} \\big||S_1| - |S_2|\\big|"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "$S_1$ and $S_2$ are two companion support sets.",
+        "latex": null
+      },
+      {
+        "text": "$|S_1| > 0$ and $|S_2| > 0$.",
+        "latex": null
+      },
+      {
+        "text": "$f_j = f(x_j)$ is a real-valued function bounded by a constant $M_f$.",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The absolute difference between the normalized sums is bounded as stated.",
+      "latex": "\\left| \\frac{1}{|S_1|} \\sum_{j \\in S_2} f_j - \\frac{1}{|S_2|} \\sum_{j \\in S_2} f_j \\right| \\le \\frac{M_f}{|S_1|} \\big||S_1| - |S_2|\\big|"
+    },
+    "variables": [
+      {
+        "symbol": "S_1",
+        "role": "support set",
+        "constraints": [
+          "|S_1| > 0"
+        ]
+      },
+      {
+        "symbol": "S_2",
+        "role": "support set",
+        "constraints": [
+          "|S_2| > 0"
+        ]
+      },
+      {
+        "symbol": "f_j",
+        "role": "real-valued function value",
+        "constraints": [
+          "f_j = f(x_j)",
+          "|f_j| \\le M_f"
+        ]
+      },
+      {
+        "symbol": "M_f",
+        "role": "bound",
+        "constraints": []
+      },
+      {
+        "symbol": "j",
+        "role": "index",
+        "constraints": [
+          "j \\in S_2"
+        ]
+      }
+    ],
+    "implicit_assumptions": [],
+    "local_refs": [],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-cubic-patch-uniqueness",
+    "title": "Existence and Uniqueness of the Smooth Rescale Patch",
+    "nl_statement": "For any $z_{max} > 1$, there exists a unique cubic polynomial $P(z)$ satisfying the four $C^1$ boundary conditions specified in the definition of the asymmetric rescale function.",
+    "equations": [],
+    "hypotheses": [
+      {
+        "text": "$z_{max} > 1$",
+        "latex": "$z_{max} > 1$"
+      },
+      {
+        "text": "Four $C^1$ boundary conditions specified in [](#def-asymmetric-rescale-function)",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "There exists a unique cubic polynomial $P(z)$ that satisfies the specified boundary conditions.",
+      "latex": "\\exists ! P(z) \\text{ cubic such that } P \\text{ satisfies the boundary conditions}"
+    },
+    "variables": [
+      {
+        "symbol": "z_{max}",
+        "role": "parameter",
+        "constraints": [
+          "$z_{max} > 1$"
+        ]
+      },
+      {
+        "symbol": "P(z)",
+        "role": "cubic polynomial",
+        "constraints": []
+      },
+      {
+        "symbol": "z",
+        "role": "variable",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The existence and uniqueness claim hinges on solving a system of linear equations derived from the boundary conditions for the polynomial coefficients.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [
+      "def-asymmetric-rescale-function"
+    ],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-cubic-patch-coefficients",
+    "title": "Explicit Coefficients of the Smooth Rescale Patch",
+    "nl_statement": "The coefficients $A, B, C, D$ of the cubic polynomial patch $Q(s) = As^3 + Bs^2 + Cs + D$, which is the polynomial $P(z)$ defined on $[z_{\\max}-1, z_{\\max}]$ expressed in the normalized coordinate $s = z - (z_{\\max}-1)$ where $z_{\\max} > 1$, are given explicitly in terms of $z_{\\max}$.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "P(z(s)) = Q(s) = As^3 + Bs^2 + Cs + D"
+      },
+      {
+        "label": null,
+        "latex": "A = \\frac{1}{z_{\\max}} - 2\\log\\left(1 + \\frac{1}{z_{\\max}}\\right)"
+      },
+      {
+        "label": null,
+        "latex": "B = 3\\log\\left(1 + \\frac{1}{z_{\\max}}\\right) - \\frac{2}{z_{\\max}}"
+      },
+      {
+        "label": null,
+        "latex": "C = \\frac{1}{z_{\\max}}"
+      },
+      {
+        "label": null,
+        "latex": "D = \\log(z_{\\max}) + 1"
+      }
+    ],
+    "hypotheses": [],
+    "conclusion": {
+      "text": "The coefficients $A, B, C, D$ of the polynomial $Q(s)$ are uniquely determined by the boundary conditions and $z_{\\max}$.",
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "P(z)",
+        "role": "cubic polynomial patch",
+        "constraints": []
+      },
+      {
+        "symbol": "z",
+        "role": "variable over the domain",
+        "constraints": [
+          "z \\in [z_{\\max}-1, z_{\\max}]"
+        ]
+      },
+      {
+        "symbol": "s",
+        "role": "normalized coordinate",
+        "constraints": [
+          "s = z - (z_{\\max}-1)",
+          "s \\in [0, 1]"
+        ]
+      },
+      {
+        "symbol": "Q(s)",
+        "role": "polynomial in normalized coordinate",
+        "constraints": []
+      },
+      {
+        "symbol": "A, B, C, D",
+        "role": "coefficients of Q(s)",
+        "constraints": []
+      },
+      {
+        "symbol": "z_{\\max}",
+        "role": "governing parameter",
+        "constraints": [
+          "z_{\\max} > 1"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The polynomial $P(z)$ is uniquely determined by boundary conditions (implied by being a 'patch' defined to satisfy some properties, though the conditions themselves are not listed here).",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [
+      "lem-cubic-patch-uniqueness"
+    ],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-cubic-patch-derivative",
+    "title": "Explicit Form of the Polynomial Patch Derivative",
+    "nl_statement": "The first derivative of the cubic polynomial patch $P(z)$ on $[z_{\\max}-1, z_{\\max}]$, expressed in terms of the normalized coordinate $s = z - (z_{\\max}-1)$, is a specific quadratic function of $s$.",
+    "equations": [],
+    "hypotheses": [],
+    "conclusion": {},
+    "variables": [
+      {
+        "symbol": "P(z)",
+        "role": "Cubic polynomial patch",
+        "constraints": []
+      },
+      {
+        "symbol": "z",
+        "role": "Coordinate",
+        "constraints": [
+          "z \\in [z_{\\max}-1, z_{\\max}]"
+        ]
+      },
+      {
+        "symbol": "z_{\\max}",
+        "role": "Boundary point",
+        "constraints": []
+      },
+      {
+        "symbol": "s",
+        "role": "Normalized coordinate",
+        "constraints": [
+          "s = z - (z_{\\max}-1)",
+          "s \\in [0, 1]"
+        ]
+      },
+      {
+        "symbol": "P'(z)",
+        "role": "First derivative of P(z)",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The coefficients for the cubic polynomial patch $P(z)$ have been previously derived.",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-polynomial-patch-monotonicity",
+    "title": "Monotonicity of the Polynomial Patch (Fritsch–Carlson/Hyman)",
+    "nl_statement": "Given specific values for the endpoints and slopes of a Hermite cubic polynomial $P$ on the interval $[z_0,z_1]$, $P$ is monotonically non-decreasing.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "z_0=z_{\\max}-1"
+      },
+      {
+        "label": null,
+        "latex": "z_1=z_{\\max}"
+      },
+      {
+        "label": null,
+        "latex": "y_0=\\log(z_{\\max})+1"
+      },
+      {
+        "label": null,
+        "latex": "y_1=\\log(1+z_{\\max})+1"
+      },
+      {
+        "label": null,
+        "latex": "m_0=P'(z_0)=1/z_{\\max}"
+      },
+      {
+        "label": null,
+        "latex": "m_1=P'(z_1)=0"
+      },
+      {
+        "label": null,
+        "latex": "\\Delta:=(y_1-y_0)/(z_1-z_0)=\\log(1+1/z_{\\max})>0"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "The interval is $[z_0,z_1]$ with endpoint values $(y_0,y_1)$ and derivatives $(m_0,m_1)$.",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The Hermite cubic $P$ on $[z_0,z_1]$ is monotonically non‑decreasing.",
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "z_0",
+        "role": "interval endpoint",
+        "constraints": [
+          "z_0=z_{\\max}-1"
+        ]
+      },
+      {
+        "symbol": "z_1",
+        "role": "interval endpoint",
+        "constraints": [
+          "z_1=z_{\\max}"
+        ]
+      },
+      {
+        "symbol": "y_0",
+        "role": "endpoint value",
+        "constraints": [
+          "y_0=\\log(z_{\\max})+1"
+        ]
+      },
+      {
+        "symbol": "y_1",
+        "role": "endpoint value",
+        "constraints": [
+          "y_1=\\log(1+z_{\\max})+1"
+        ]
+      },
+      {
+        "symbol": "m_0",
+        "role": "endpoint slope",
+        "constraints": [
+          "m_0=P'(z_0)=1/z_{\\max}"
+        ]
+      },
+      {
+        "symbol": "m_1",
+        "role": "endpoint slope",
+        "constraints": [
+          "m_1=P'(z_1)=0"
+        ]
+      },
+      {
+        "symbol": "P",
+        "role": "Hermite cubic polynomial",
+        "constraints": []
+      },
+      {
+        "symbol": "z_{\\max}",
+        "role": "parameter",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "$P$ is a Hermite cubic polynomial defined by the given four conditions (two values and two slopes).",
+        "confidence": 1.0
+      },
+      {
+        "text": "$z_{\\max}$ is a positive parameter, such that the secant $\\Delta$ is well-defined and positive, implying $z_{\\max}>0$.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-cubic-patch-derivative-bounds",
+    "title": "Bounds on the Polynomial Patch Derivative",
+    "nl_statement": "The derivative of the cubic patch $P'(z(s))$ on $s \\in [0, 1]$ is uniformly bounded between 0 and a constant $L_P$, provided $z_{\\max} > 1$.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "0 \\le P'(z(s)) \\le L_P"
+      },
+      {
+        "label": null,
+        "latex": "L_P = 1 + \\frac{(3\\log(2)-2)^2}{3(2\\log(2)-1)} \\approx 1.0054"
+      }
+    ],
+    "hypotheses": [],
+    "conclusion": {
+      "text": "The derivative $P'(z(s))$ satisfies $0 \\le P'(z(s)) \\le L_P$, where $L_P = 1 + \\frac{(3\\log(2)-2)^2}{3(2\\log(2)-1)} \\approx 1.0054$.",
+      "latex": "0 \\le P'(z(s)) \\le L_P, \\quad L_P = 1 + \\frac{(3\\log(2)-2)^2}{3(2\\log(2)-1)} \\approx 1.0054"
+    },
+    "variables": [
+      {
+        "symbol": "P'(z(s))",
+        "role": "function",
+        "constraints": []
+      },
+      {
+        "symbol": "s",
+        "role": "parameter",
+        "constraints": [
+          "s \\in [0, 1]"
+        ]
+      },
+      {
+        "symbol": "L_P",
+        "role": "constant",
+        "constraints": []
+      },
+      {
+        "symbol": "z_{\\max}",
+        "role": "parameter",
+        "constraints": [
+          "z_{\\max} > 1"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The existence and definition of the cubic patch derivative $P'(z(s))$ relies on Lemma/Definition referenced by `lem-cubic-patch-derivative`.",
+        "confidence": 0.95
+      }
+    ],
+    "local_refs": [
+      "lem-cubic-patch-derivative"
+    ],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-rescale-monotonicity",
+    "title": "Monotonicity of the Smooth Rescale Function",
+    "nl_statement": "The Smooth Piecewise Rescale Function $g_A(z)$ is monotonically non-decreasing on $ℝ$.",
+    "equations": [],
+    "hypotheses": [],
+    "conclusion": {
+      "text": "The Smooth Piecewise Rescale Function $g_A(z)$ is monotonically non-decreasing on $\\mathbb{R}$.",
+      "latex": "g_A(z) \\text{ is monotonically non-decreasing on } \\mathbb{R}"
+    },
+    "variables": [
+      {
+        "symbol": "g_A(z)",
+        "role": "function",
+        "constraints": []
+      },
+      {
+        "symbol": "z",
+        "role": "variable",
+        "constraints": [
+          "z \\in \\mathbb{R}"
+        ]
+      },
+      {
+        "symbol": "A",
+        "role": "parameter",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The function $g_A(z)$ is well-defined.",
+        "confidence": 0.9
+      },
+      {
+        "text": "The term 'monotonically non-decreasing' is understood in the standard mathematical sense.",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-lipschitz-constant-of-the-patched-standardization",
+    "title": "Lipschitz constant of the patched standardization",
+    "nl_statement": "The composition of the piecewise rescale $g_A$ and the patched standardization $z=\\sigma\\'_{\\text{reg}}(\\cdot)$ is globally Lipschitz, with its constant bounded in terms of the Lipschitz constants of $g_A$ and $z$, and the Lipschitz constant of the variance functional $L_{\\mathrm{var}}$.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "L_{g_A\\circ z}\\;\\le\\; L_{g_A}\\cdot L_{z},\\qquad L_{g_A}\\le \\max\\{L_P,1\\},\\quad L_{z}\\le L_{\\sigma\\'\\_{\\text{reg}}}\\cdot L_{\\mathrm{var}}."
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "$z=\\sigma\\'\\_{\\text{reg}}(\\cdot)$ denote the patched standardization of raw values with variance floor $\\varepsilon_{\\text{std}}>0$.",
+        "latex": null
+      },
+      {
+        "text": "$g_A$ be the piecewise rescale in §8.2.2.",
+        "latex": null
+      },
+      {
+        "text": "The variance functional of the chosen aggregator is $L_{\\mathrm{var}}$‑Lipschitz (see §8.2.2.10).",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "$g_A\\circ z$ is globally Lipschitz.",
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "z",
+        "role": "patched standardization",
+        "constraints": [
+          "z=\\sigma\\'\\_{\\text{reg}}(\\cdot)"
+        ]
+      },
+      {
+        "symbol": "\\varepsilon_{\\text{std}}",
+        "role": "variance floor",
+        "constraints": [
+          "\\varepsilon_{\\text{std}}>0"
+        ]
+      },
+      {
+        "symbol": "g_A",
+        "role": "piecewise rescale",
+        "constraints": []
+      },
+      {
+        "symbol": "L_{\\mathrm{var}}",
+        "role": "Lipschitz constant of the variance functional",
+        "constraints": []
+      },
+      {
+        "symbol": "L_{g_A\\circ z}",
+        "role": "Lipschitz constant",
+        "constraints": []
+      },
+      {
+        "symbol": "L_{g_A}",
+        "role": "Lipschitz constant",
+        "constraints": []
+      },
+      {
+        "symbol": "L_{z}",
+        "role": "Lipschitz constant",
+        "constraints": []
+      },
+      {
+        "symbol": "L_P",
+        "role": "uniform derivative bound",
+        "constraints": [
+          "L_P=\\|P'\\|_\\infty"
+        ]
+      },
+      {
+        "symbol": "L_{\\sigma\\'\\_{\\text{reg}}}",
+        "role": "global Lipschitz constant of the regularized standard deviation",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The function $P$ is related to the patch derivative bounds.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [
+      "lem-cubic-patch-derivative-bounds",
+      "lem-sigma-patch-derivative-bound"
+    ],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-sigma-patch-derivative-bound",
+    "title": "Patched standard deviation derivative bound",
+    "nl_statement": "The global derivative bound $L_{\\sigma'_{\\text{reg}}}$ for the regularized standard deviation $\\sigma'_{\\text{reg}}(V) = \\sqrt{V + \\sigma'^2_{\\min}}$ is $\\sup_{V\\ge 0}\\big|\\,(\\sigma'_{\\text{reg}})'(V)\\,\\big|= \\frac{1}{2\\sigma'_{\\min}} = \\frac{1}{2\\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2}}$.",
+    "equations": [],
+    "hypotheses": [],
+    "conclusion": {},
+    "variables": [],
+    "implicit_assumptions": [
+      {
+        "text": "The context suggests that $\\sigma'_{\\text{reg}}(V)$ is differentiable for $V \\ge 0$.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [
+      "def-statistical-properties-measurement",
+      "lem-sigma-reg-derivative-bounds"
+    ],
+    "proof": {
+      "availability": "by-reference",
+      "steps": []
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-lipschitz-bound-for-the-variance-functional",
+    "title": "Lipschitz constant of the empirical variance",
+    "nl_statement": "The variance functional $\\mathrm{Var}(\\mathbf v)$ is $L_{\\mathrm{var}}$-Lipschitz with $L_{\\mathrm{var}}:=L_{m_2,M}+2 V_{\\max} L_{\\mu,M}$, where $\\mathrm{Var}(\\mathbf v) = m_2(\\mathbf v) - \\mu(\\mathbf v)^2$.",
+    "equations": [],
+    "hypotheses": [
+      {
+        "text": "$\\mu(\\mathbf v)$ and $m_2(\\mathbf v)$ denote the (aggregator) mean and second raw moment computed from a value vector $\\mathbf v\\in\\mathbb{R}^k$ over the alive set.",
+        "latex": null
+      },
+      {
+        "text": "The moment maps $\\mu(\\mathbf v)$ and $m_2(\\mathbf v)$ are Lipschitz in $\\mathbf v$ with constants $L_{\\mu,M}$ and $L_{m_2,M}$ as in §6.2.1.",
+        "latex": null
+      },
+      {
+        "text": "$|v_i|\\le V_{\\max}$ for all components $v_i$ of $\\mathbf v$.",
+        "latex": null
+      }
+    ],
+    "conclusion": {},
+    "variables": [
+      {
+        "symbol": "\\mathbf v",
+        "role": "value vector",
+        "constraints": [
+          "\\mathbf v\\in\\mathbb{R}^k"
+        ]
+      },
+      {
+        "symbol": "k",
+        "role": "dimension",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mu(\\mathbf v)",
+        "role": "moment map (mean)",
+        "constraints": []
+      },
+      {
+        "symbol": "m_2(\\mathbf v)",
+        "role": "moment map (second raw moment)",
+        "constraints": []
+      },
+      {
+        "symbol": "L_{\\mu,M}",
+        "role": "Lipschitz constant for mean",
+        "constraints": []
+      },
+      {
+        "symbol": "L_{m_2,M}",
+        "role": "Lipschitz constant for second raw moment",
+        "constraints": []
+      },
+      {
+        "symbol": "V_{\\max}",
+        "role": "bound on components",
+        "constraints": [
+          "|v_i|\\le V_{\\max}"
+        ]
+      },
+      {
+        "symbol": "\\mathrm{Var}(\\mathbf v)",
+        "role": "variance functional",
+        "constraints": [
+          "\\mathrm{Var}(\\mathbf v) = m_2(\\mathbf v) - \\mu(\\mathbf v)^2"
+        ]
+      },
+      {
+        "symbol": "L_{\\mathrm{var}}",
+        "role": "Lipschitz constant for variance",
+        "constraints": [
+          "L_{\\mathrm{var}}:=L_{m_2,M}+2 V_{\\max} L_{\\mu,M}"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The analysis concerns vectors $\\mathbf v_1$ and $\\mathbf v_2$ in the domain where the moment maps are defined.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [
+      "sec:6.2.1"
+    ],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-single-walker-positional-error",
+    "title": "Bound on Single-Walker Error from Positional Change",
+    "nl_statement": "For two swarm states $\\mathcal{S}_1$ and $\\mathcal{S}_2$, the absolute error in the expected distance for a living walker $i$ (based on its companion selection measure $\\mathbb{C}_i(\\mathcal{S}_1)$) due to positional displacement between the states is bounded by the sum of its own displacement and the average displacement of its potential companions.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\left| \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\text{alg}}(x_{1,i}, x_{1,c}) \\right] - \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\text{alg}}(x_{2,i}, x_{2,c}) \\right] \\right| \\le d_{\\text{alg}}(x_{1,i}, x_{2,i}) + \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\text{alg}}(x_{1,c}, x_{2,c}) \\right]"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states.",
+        "latex": null
+      },
+      {
+        "text": "Walker $i$ is alive in swarm $\\mathcal{S}_1$ ($s_{1,i}=1$).",
+        "latex": "$s_{1,i}=1$"
+      }
+    ],
+    "conclusion": {
+      "text": "The absolute error in the expected distance due to positional displacement is bounded by the sum of the walker's own displacement and the average displacement of its potential companions.",
+      "latex": "\\left| \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\text{alg}}(x_{1,i}, x_{1,c}) \\right] - \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\text{alg}}(x_{2,i}, x_{2,c}) \\right] \\right| \\le d_{\\text{alg}}(x_{1,i}, x_{2,i}) + \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\text{alg}}(x_{1,c}, x_{2,c}) \\right]"
+    },
+    "variables": [
+      {
+        "symbol": "$\\mathcal{S}_1, \\mathcal{S}_2$",
+        "role": "swarm states",
+        "constraints": []
+      },
+      {
+        "symbol": "$i$",
+        "role": "walker index",
+        "constraints": []
+      },
+      {
+        "symbol": "$s_{1,i}$",
+        "role": "liveness indicator for walker $i$ in $\\mathcal{S}_1$",
+        "constraints": []
+      },
+      {
+        "symbol": "$\\mathbb{C}_i(\\mathcal{S}_1)$",
+        "role": "companion selection measure for walker $i$ in $\\mathcal{S}_1$",
+        "constraints": []
+      },
+      {
+        "symbol": "$x_{k,j}$",
+        "role": "position of walker $j$ in state $\\mathcal{S}_k$",
+        "constraints": []
+      },
+      {
+        "symbol": "$d_{\\text{alg}}$",
+        "role": "distance metric",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The positions $x_{k,j}$ are elements in a metric space where $d_{\\text{alg}}$ is the distance function.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-single-walker-structural-error",
+    "title": "Bound on Single-Walker Error from Structural Change",
+    "nl_statement": "The absolute error in the expected distance for a specific walker $i$ between two swarm states $\\mathcal{S}_1$ and $\\mathcal{S}_2$, due to a change in the companion selection measure, is bounded by a term proportional to the total number of status changes $n_c$ and inversely proportional to $k_1-1$, where $k_1$ is the initial number of alive walkers in $\\mathcal{S}_1$.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\left| \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\text{alg}}(x_{2,i}, x_{2,c}) \\right] - \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_2)} \\left[ d_{\\text{alg}}(x_{2,i}, x_{2,c}) \\right] \\right| \\le \\frac{2 D_{\\mathcal{Y}}}{k_1 - 1} \\cdot n_c"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "$\\mathcal{S}_1$ and $\\mathcal{S}_2$ are two swarm states with alive sets $\\mathcal{A}_1$ and $\\mathcal{A}_2$.",
+        "latex": "S_1, S_2 \\text{ swarm states with } \\mathcal{A}_1, \\mathcal{A}_2"
+      },
+      {
+        "text": "Walker $i$ is alive in both swarms ($i \\in \\mathcal{A}_1 \\cap \\mathcal{A}_2$).",
+        "latex": "i \\in \\mathcal{A}_1 \\cap \\mathcal{A}_2"
+      },
+      {
+        "text": "The initial swarm has at least two alive walkers, $k_1=|\\mathcal{A}_1| \\ge 2$.",
+        "latex": "|\\mathcal{A}_1| = k_1 \\ge 2"
+      },
+      {
+        "text": "The walker positions $\\mathbf{x}_2$ from the second swarm are fixed for the analysis.",
+        "latex": "\\text{positions } \\mathbf{x}_2 \\text{ from } \\mathcal{S}_2 \\text{ are fixed}"
+      }
+    ],
+    "conclusion": {
+      "text": "The absolute error in the expected distance for walker $i$ due to the change in the companion selection measure is bounded by $\\frac{2 D_{\\mathcal{Y}}}{k_1 - 1} \\cdot n_c$.",
+      "latex": "\\left| \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_1)} \\left[ d_{\\text{alg}}(x_{2,i}, x_{2,c}) \\right] - \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S}_2)} \\left[ d_{\\text{alg}}(x_{2,i}, x_{2,c}) \\right] \\right| \\le \\frac{2 D_{\\mathcal{Y}}}{k_1 - 1} \\cdot n_c"
+    },
+    "variables": [
+      {
+        "symbol": "i",
+        "role": "walker index",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal{S}_1, \\mathcal{S}_2",
+        "role": "swarm states",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal{A}_1, \\mathcal{A}_2",
+        "role": "alive sets",
+        "constraints": []
+      },
+      {
+        "symbol": "k_1",
+        "role": "size of alive set in S1",
+        "constraints": [
+          "k_1 \\ge 2"
+        ]
+      },
+      {
+        "symbol": "n_c",
+        "role": "total number of status changes",
+        "constraints": []
+      },
+      {
+        "symbol": "D_{\\mathcal{Y}}",
+        "role": "diameter of the algorithmic space",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathbb{C}_i(\\mathcal{S})",
+        "role": "companion selection measure for walker i in state S",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The distance metric $d_{\\text{alg}}$ is well-defined in the algorithmic space.",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-single-walker-own-status-error",
+    "title": "Bound on Single-Walker Error from Own Status Change",
+    "nl_statement": "For any walker $i$ whose survival status changes between two swarm states $\\mathcal{S}_1$ and $\\mathcal{S}_2$, the absolute difference in its expected raw distance measurement is bounded by the diameter of the algorithmic space, $D_{\\mathcal{Y}}$.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\left| \\mathbb{E}[d_i(\\mathcal{S}_1)] - \\mathbb{E}[d_i(\\mathcal{S}_2)] \\right| \\le D_{\\mathcal{Y}}"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states.",
+        "latex": "$\\mathcal{S}_1, \\mathcal{S}_2$ are two swarm states."
+      },
+      {
+        "text": "Walker $i$ survival status changes, $s_{1,i} \\neq s_{2,i}$.",
+        "latex": "$s_{1,i} \\neq s_{2,i}$ for walker $i$"
+      }
+    ],
+    "conclusion": {
+      "text": "The absolute difference in the expected raw distance measurement for walker $i$ is bounded by $D_{\\mathcal{Y}}$.",
+      "latex": "\\left| \\mathbb{E}[d_i(\\mathcal{S}_1)] - \\mathbb{E}[d_i(\\mathcal{S}_2)] \\right| \\le D_{\\mathcal{Y}}"
+    },
+    "variables": [
+      {
+        "symbol": "\\mathcal{S}_1",
+        "role": "swarm state",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal{S}_2",
+        "role": "swarm state",
+        "constraints": []
+      },
+      {
+        "symbol": "i",
+        "role": "walker index",
+        "constraints": []
+      },
+      {
+        "symbol": "s_{1,i}",
+        "role": "survival status in $\\mathcal{S}_1$",
+        "constraints": []
+      },
+      {
+        "symbol": "s_{2,i}",
+        "role": "survival status in $\\mathcal{S}_2$",
+        "constraints": []
+      },
+      {
+        "symbol": "d_i(\\cdot)",
+        "role": "raw distance measurement function for walker $i$",
+        "constraints": []
+      },
+      {
+        "symbol": "D_{\\mathcal{Y}}",
+        "role": "diameter of the algorithmic space",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The expected raw distance measurement $\\mathbb{E}[d_i(\\mathcal{S})]$ is well-defined for any state $\\mathcal{S}$.",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-total-squared-error-unstable",
+    "title": "Bound on the Total Squared Error for Unstable Walkers",
+    "nl_statement": "The total squared error in the expected raw distance from the set of unstable walkers, $\\mathcal{A}_{\\text{unstable}}$, between two swarm states $\\mathcal{S}_1$ and $\\mathcal{S}_2$, is bounded by the total number of status changes multiplied by the square of the diameter of the algorithmic space $D_{\\mathcal{Y}}^2$.",
+    "equations": [],
+    "hypotheses": [
+      {
+        "text": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states.",
+        "latex": null
+      }
+    ],
+    "conclusion": {},
+    "variables": [
+      {
+        "symbol": "\\mathcal{S}_1, \\mathcal{S}_2",
+        "role": "swarm states",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal{A}_{\\text{unstable}}",
+        "role": "set of unstable walkers",
+        "constraints": []
+      },
+      {
+        "symbol": "d_i(\\mathcal{S})",
+        "role": "expected raw distance (implied)",
+        "constraints": []
+      },
+      {
+        "symbol": "D_{\\mathcal{Y}}",
+        "role": "diameter of the algorithmic space",
+        "constraints": []
+      },
+      {
+        "symbol": "s_{k,j}",
+        "role": "status component (implied by context of summation term)",
+        "constraints": []
+      },
+      {
+        "symbol": "N",
+        "role": "dimension/number of components (implied by summation limit)",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The term $\\sum_{j=1}^N (s_{1,j} - s_{2,j})^2$ represents the total number of status changes between the two states (or a quantity proportional to it, given the context of the lemma title).",
+        "confidence": 0.9
+      },
+      {
+        "text": "$d_i$ is a quantity whose expectation is taken over the walker $i$'s position/state.",
+        "confidence": 0.8
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-total-squared-error-stable",
+    "title": "Bound on the Total Squared Error for Stable Walkers",
+    "nl_statement": "The total squared error in the expected raw distance from the set of stable walkers, $\\mathcal{A}_{\\text{stable}}$, between two swarm states $\\mathcal{S}_1$ and $\\mathcal{S}_2$ (where $|\\mathcal{A}(\\mathcal{S}_1)|=k_1 \\ge 2$) is bounded by an expression involving the position difference $\\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2)$ and the number of consensus elements $n_c(\\mathcal{S}_1, \\mathcal{S}_2)$.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\sum_{i \\in \\mathcal{A}_{\\text{stable}}} |\\mathbb{E}[d_i(\\mathcal{S}_1)] - \\mathbb{E}[d_i(\\mathcal{S}_2)]|^2 \\le 12 \\cdot \\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) + \\frac{8 k_1 D_{\\mathcal{Y}}^2}{(k_1 - 1)^2} \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)^2"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "$ \\mathcal{S}_1 $ and $ \\mathcal{S}_2 $ be two swarm states.",
+        "latex": "\\mathcal{S}_1, \\mathcal{S}_2"
+      },
+      {
+        "text": "$|\\mathcal{A}(\\mathcal{S}_1)|=k_1 \\ge 2$.",
+        "latex": "|\\mathcal{A}(\\mathcal{S}_1)|=k_1 \\ge 2"
+      }
+    ],
+    "conclusion": {
+      "text": "The total squared error in the expected raw distance from the set of stable walkers, $\\mathcal{A}_{\\text{stable}} = \\mathcal{A}(\\mathcal{S}_1) \\cap \\mathcal{A}(\\mathcal{S}_2)$, is bounded by $12 \\cdot \\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) + \\frac{8 k_1 D_{\\mathcal{Y}}^2}{(k_1 - 1)^2} \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)^2$.",
+      "latex": "\\sum_{i \\in \\mathcal{A}_{\\text{stable}}} |\\mathbb{E}[d_i(\\mathcal{S}_1)] - \\mathbb{E}[d_i(\\mathcal{S}_2)]|^2 \\le 12 \\cdot \\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) + \\frac{8 k_1 D_{\\mathcal{Y}}^2}{(k_1 - 1)^2} \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)^2"
+    },
+    "variables": [
+      {
+        "symbol": "\\mathcal{S}_1, \\mathcal{S}_2",
+        "role": "swarm states",
+        "constraints": []
+      },
+      {
+        "symbol": "k_1",
+        "role": "size of the set of active walkers in S1",
+        "constraints": [
+          "k_1 \\ge 2"
+        ]
+      },
+      {
+        "symbol": "\\mathcal{A}_{\\text{stable}}",
+        "role": "set of stable walkers",
+        "constraints": [
+          "\\mathcal{A}_{\\text{stable}} = \\mathcal{A}(\\mathcal{S}_1) \\cap \\mathcal{A}(\\mathcal{S}_2)"
+        ]
+      },
+      {
+        "symbol": "d_i(\\mathcal{S})",
+        "role": "raw distance",
+        "constraints": []
+      },
+      {
+        "symbol": "\\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2)",
+        "role": "position difference squared",
+        "constraints": []
+      },
+      {
+        "symbol": "D_{\\mathcal{Y}}^2",
+        "role": "constant related to domain Y",
+        "constraints": []
+      },
+      {
+        "symbol": "n_c(\\mathcal{S}_1, \\mathcal{S}_2)",
+        "role": "number of consensus elements",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The terms $\\mathbb{E}[d_i(\\mathcal{S})]$, $\\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2)$, $D_{\\mathcal{Y}}^2$, and $n_c(\\mathcal{S}_1, \\mathcal{S}_2)$ are defined in the surrounding context (likely related to stability analysis of a system or swarm).",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-stats-value-continuity",
+    "title": "Value Continuity of Statistical Properties",
+    "nl_statement": "The mean ($\\mu$) and regularized standard deviation ($\\sigma'$) are Lipschitz continuous with respect to the raw value vector $\\mathbf{v}$, given a fixed swarm state $\\mathcal{S}$ with size $k \\ge 1$ and raw value components bounded by $V_{\\max}$.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "|\\mu(\\mathcal{S}, \\mathbf{v}_1) - \\mu(\\mathcal{S}, \\mathbf{v}_2)| \\le L_{\\mu,M}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2"
+      },
+      {
+        "label": null,
+        "latex": "|\\sigma'(\\mathcal{S}, \\mathbf{v}_1) - \\sigma'(\\mathcal{S}, \\mathbf{v}_2)| \\le L_{\\sigma',M}(\\mathcal{S}) \\cdot \\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2"
+      }
+    ],
+    "hypotheses": [],
+    "conclusion": {
+      "text": "The mean $\\mu(\\mathcal{S}, \\mathbf{v})$ and regularized standard deviation $\\sigma'(\\mathcal{S}, \\mathbf{v})$ are Lipschitz continuous with respect to the raw value vector $\\mathbf{v}$.",
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "\\mathcal{S}",
+        "role": "swarm state",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal{A}",
+        "role": "alive set",
+        "constraints": []
+      },
+      {
+        "symbol": "k",
+        "role": "size of alive set",
+        "constraints": [
+          "k \\ge 1"
+        ]
+      },
+      {
+        "symbol": "\\mathbf{v}_1, \\mathbf{v}_2",
+        "role": "raw value vectors",
+        "constraints": [
+          "components bounded by V_{\\max}"
+        ]
+      },
+      {
+        "symbol": "\\mu",
+        "role": "measured mean function",
+        "constraints": []
+      },
+      {
+        "symbol": "\\sigma'",
+        "role": "regularized standard deviation function",
+        "constraints": []
+      },
+      {
+        "symbol": "L_{\\mu,M}(\\mathcal{S})",
+        "role": "Lipschitz constant for mean",
+        "constraints": []
+      },
+      {
+        "symbol": "L_{\\sigma',M}(\\mathcal{S})",
+        "role": "Lipschitz constant for standard deviation",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The Swarm Aggregation Operator $M$ satisfies certain axiomatic properties ([](#def-swarm-aggregation-operator-axiomatic)).",
+        "confidence": 1.0
+      },
+      {
+        "text": "The Regularized Standard Deviation Function is Lipschitz continuous ([](#def-statistical-properties-measurement)).",
+        "confidence": 1.0
+      },
+      {
+        "text": "The $L_2$ norm is used for measuring vector difference.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [
+      "def-swarm-aggregation-operator-axiomatic",
+      "def-statistical-properties-measurement"
+    ],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-stats-structural-continuity",
+    "title": "Structural Continuity of Statistical Properties",
+    "nl_statement": "The mean $\\mu(\\mathcal{S}, \\mathbf{v})$ and regularized standard deviation $\\sigma'(\\mathcal{S}, \\mathbf{v})$ are continuous with respect to changes in the swarm structure, specifically bounded by a term involving $\\|\\mathbf{s}_1 - \\mathbf{s}_2\\|_2^2$.",
+    "equations": [],
+    "hypotheses": [],
+    "conclusion": {
+      "text": "The mean $\\mu(\\mathcal{S}, \\mathbf{v})$ and regularized standard deviation $\\sigma'(\\mathcal{S}, \\mathbf{v})$ are continuous with respect to changes in the swarm structure.",
+      "latex": "Continuity of \\mu and \\sigma'"
+    },
+    "variables": [
+      {
+        "symbol": "\\mathbf{v}",
+        "role": "fixed raw value vector",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal{S}",
+        "role": "swarm state",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mu",
+        "role": "mean",
+        "constraints": []
+      },
+      {
+        "symbol": "\\sigma'",
+        "role": "regularized standard deviation",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathbf{s}",
+        "role": "component of swarm state",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [],
+    "local_refs": [
+      "def-swarm-aggregation-operator-axiomatic"
+    ],
+    "proof": {}
+  },
+  {
+    "type": "lemma",
+    "label": "lem-sub-lipschitz-value-error-decomposition",
+    "title": "Algebraic Decomposition of the Value Error",
+    "nl_statement": "The total value error vector, $\\Deltaz = z_1 - z_2$, for a fixed swarm state $\\mathbf{S}$ and two raw value vectors $v_1$ and $v_2$, can be decomposed into the sum of the direct shift ($\\Delta_{\\text{direct}}$), the mean shift ($\\Delta_{\\text{mean}}$), and the denominator shift ($\\Delta_{\\text{denom}}$).",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\| \\mathbf{z}_1 - \\mathbf{z}_2 \\|_2^2 \\le 2 \\| \\mathbf{z}_1 - \\mathbf{z}_{\\text{inter}} \\|_2^2 + 2 \\| \\mathbf{z}_{\\text{inter}} - \\mathbf{z}_2 \\|_2^2"
+      },
+      {
+        "label": null,
+        "latex": "\\Delta\\mathbf{z} = \\Delta_{\\text{direct}} + \\Delta_{\\text{mean}} + \\Delta_{\\text{denom}}"
+      },
+      {
+        "label": null,
+        "latex": "\\Delta_{\\text{direct}} := \\frac{\\mathbf{v}_1 - \\mathbf{v}_2}{\\sigma'_1}"
+      },
+      {
+        "label": null,
+        "latex": "\\Delta_{\\text{mean}} := \\frac{\\mu_2 - \\mu_1}{\\sigma'_1} \\cdot \\mathbf{1}"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "$$v_1$$ and $$v_2$$ be two raw value vectors for the alive set.",
+        "latex": null
+      },
+      {
+        "text": "Let $(\\mu_1, \\sigma'_1)$ and $(\\mu_2, \\sigma'_2)$ be the corresponding statistical properties.",
+        "latex": null
+      },
+      {
+        "text": "Let $z_1$ and $z_2$ be the corresponding standardized vectors.",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The total value error vector, $\\Deltaz = z_1 - z_2$, can be expressed as the sum of three components: $\\Delta_{\\text{direct}}$, $\\Delta_{\\text{mean}}$, and $\\Delta_{\\text{denom}}$.",
+      "latex": "\\Delta\\mathbf{z} = \\Delta_{\\text{direct}} + \\Delta_{\\text{mean}} + \\Delta_{\\text{denom}}"
+    },
+    "variables": [
+      {
+        "symbol": "\\mathbf{S}",
+        "role": "fixed swarm state",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathbf{A}",
+        "role": "alive set",
+        "constraints": [
+          "size is k"
+        ]
+      },
+      {
+        "symbol": "k",
+        "role": "size of alive set",
+        "constraints": []
+      },
+      {
+        "symbol": "v_1",
+        "role": "raw value vector",
+        "constraints": []
+      },
+      {
+        "symbol": "v_2",
+        "role": "raw value vector",
+        "constraints": []
+      },
+      {
+        "symbol": "(\\mu_1, \\sigma'_1)",
+        "role": "statistical properties for v1",
+        "constraints": []
+      },
+      {
+        "symbol": "(\\mu_2, \\sigma'_2)",
+        "role": "statistical properties for v2",
+        "constraints": []
+      },
+      {
+        "symbol": "z_1",
+        "role": "standardized vector corresponding to v1",
+        "constraints": []
+      },
+      {
+        "symbol": "z_2",
+        "role": "standardized vector corresponding to v2",
+        "constraints": []
+      },
+      {
+        "symbol": "\\Deltaz",
+        "role": "total value error vector",
+        "constraints": [
+          "\\Deltaz = z_1 - z_2"
+        ]
+      },
+      {
+        "symbol": "\\Delta_{\\text{direct}}",
+        "role": "Direct Shift component",
+        "constraints": []
+      },
+      {
+        "symbol": "\\Delta_{\\text{mean}}",
+        "role": "Mean Shift component",
+        "constraints": []
+      },
+      {
+        "symbol": "\\Delta_{\\text{denom}}",
+        "role": "Denominator Shift component",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathbf{1}",
+        "role": "k-dimensional vector of ones",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [],
+    "local_refs": [],
+    "proof": {
+      "availability": "sketch",
+      "steps": [
+        {
+          "kind": "decomposition",
+          "text": "The error vector $\\Deltaz$ is expressed as the sum of three components: Direct Shift, Mean Shift, and Denominator Shift.",
+          "latex": "\\Delta\\mathbf{z} = \\Delta_{\\text{direct}} + \\Delta_{\\text{mean}} + \\Delta_{\\text{denom}}"
+        },
+        {
+          "kind": "definition",
+          "text": "Definition of the Direct Shift $\\Delta_{\\text{direct}}$.",
+          "latex": "\\Delta_{\\text{direct}} := \\frac{\\mathbf{v}_1 - \\mathbf{v}_2}{\\sigma'_1}"
+        },
+        {
+          "kind": "definition",
+          "text": "Definition of the Mean Shift $\\Delta_{\\text{mean}}$.",
+          "latex": "\\Delta_{\\text{mean}} := \\frac{\\mu_2 - \\mu_1}{\\sigma'_1} \\cdot \\mathbf{1}"
+        },
+        {
+          "kind": "omitted_definition",
+          "text": "The definition of the Denominator Shift (partial information given).",
+          "latex": null
+        }
+      ]
+    }
+  },
+  {
+    "type": "proof",
+    "label": null,
+    "title": null,
+    "nl_statement": "The total squared error $\\|\\mathbf{V}_1 - \\mathbf{V}_2\\|_2^2$ is decomposed into contributions from the unstable set $\\mathcal{A}_{\\text{unstable}} = \\mathcal{A}_1 \\Delta \\mathcal{A}_2$ and the stable set $\\mathcal{A}_{\\text{stable}} = \\mathcal{A}_1 \\cap \\mathcal{A}_2$, yielding the sum of squared norms over these orthogonal sets, which leads to the definition of expected errors $E^2_{\\text{unstable,ms}}$ and $E^2_{\\text{stable,ms}}$ whose bounds are provided by subsequent lemmas.",
+    "equations": [],
+    "hypotheses": [],
+    "conclusion": {
+      "text": "The total expected squared error is the sum of the expected squared errors over the unstable and stable partitions, $E^2_{\text{unstable,ms}}$ and $E^2_{\text{stable,ms}}$ respectively.",
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "V_1",
+        "role": "vector",
+        "constraints": []
+      },
+      {
+        "symbol": "V_2",
+        "role": "vector",
+        "constraints": []
+      },
+      {
+        "symbol": "V_{1,i}",
+        "role": "component of V_1",
+        "constraints": []
+      },
+      {
+        "symbol": "V_{2,i}",
+        "role": "component of V_2",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal{A}_1",
+        "role": "set of walker indices",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal{A}_2",
+        "role": "set of walker indices",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal{A}_{\\text{unstable}}",
+        "role": "unstable set of indices",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal{A}_{\\text{stable}}",
+        "role": "stable set of indices",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The expectation operation is linear.",
+        "confidence": 1.0
+      },
+      {
+        "text": "The sets $\\mathcal{A}_{\\text{unstable}}$ and $\\mathcal{A}_{\\text{stable}}$ form a partition of the relevant index set.",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [],
+    "proof": {}
+  },
+  {
+    "type": "axiom",
+    "label": null,
+    "title": "Bounding the Output Positional Displacement",
+    "nl_statement": "There is a uniform bound $M_{\\text{pert}}^2$ on the expected squared displacement of a walker starting from any position $x_{\\text{in}} \\in \\mathcal{X}$.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "M_{\text{pert}}^2 \\ge \\sup_{x_{\\text{in}} \\in \\mathcal{X}} \\mathbb{E}[Y]"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "For any starting position $x_{\\text{in}} \\in \\mathcal{X}$, the random variable for the squared displacement is $Y := d_{\\mathcal{Y}}(\\varphi(x_{\\text{out}}), \\varphi(x_{\\text{in}}))^2$ where $x_{\\text{out}} \\sim \\mathcal{P}_\\sigma(x_{\\text{in}}, \\cdot)$.",
+        "latex": "Y := d_{\\mathcal{Y}}(\\varphi(x_{\\text{out}}), \\varphi(x_{\\text{in}}))^2 \\text{ where } x_{\\text{out}} \\sim \\mathcal{P}_\\sigma(x_{\\text{in}}, \\cdot)"
+      }
+    ],
+    "conclusion": {
+      "text": "The constant $M_{\text{pert}}^2$ must satisfy a uniform bound on the mean of the random squared displacement.",
+      "latex": "M_{\\text{pert}}^2 \\ge \\sup_{x_{\\text{in}} \\in \\mathcal{X}} \\mathbb{E}[Y]"
+    },
+    "variables": [
+      {
+        "symbol": "x_{\\text{in}}",
+        "role": "starting position",
+        "constraints": [
+          "\\in \\mathcal{X}"
+        ]
+      },
+      {
+        "symbol": "Y",
+        "role": "random variable for squared displacement",
+        "constraints": []
+      },
+      {
+        "symbol": "x_{\\text{out}}",
+        "role": "output position",
+        "constraints": [
+          "\\sim \\mathcal{P}_\\sigma(x_{\\text{in}}, \\cdot)"
+        ]
+      },
+      {
+        "symbol": "M_{\\text{pert}}^2",
+        "role": "constant bound",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The space $\\mathcal{X}$ is well-defined.",
+        "confidence": 0.9
+      },
+      {
+        "text": "The metric $d_{\\mathcal{Y}}$ and the transformation $\\varphi$ are well-defined.",
+        "confidence": 0.9
+      },
+      {
+        "text": "The probability distribution $\\mathcal{P}_\\sigma$ is well-defined.",
+        "confidence": 0.9
+      },
+      {
+        "text": "The expectation $\\mathbb{E}[Y]$ is finite for all $x_{\\text{in}} \\in \\mathcal{X}$ when the axiom is satisfied.",
+        "confidence": 0.8
+      }
+    ],
+    "local_refs": [
+      "McDiarmid’s inequality",
+      "Assumption A",
+      "Boucheron–Lugosi–Massart"
+    ],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "theorem",
+    "label": null,
+    "title": "Concentration Inequality for Total Perturbation-Induced Displacement",
+    "nl_statement": "The random variable $\\Delta_{\\text{pert}}^2(\\mathcal{S})$, which is the sum of $\\mathbf{N}$ statistically independent random squared displacements, must be bounded using a concentration inequality (specifically McDiarmid's Inequality) to establish a probabilistic continuity bound for the final positional displacement.",
+    "equations": [],
+    "hypotheses": [
+      {
+        "text": "The final positional displacement depends on the random variable $\\Delta_{\\text{pert}}^2(\\mathcal{S})$",
+        "latex": "the final positional displacement depends on the random variable $\\Delta_{\\text{pert}}^2(\\mathcal{S})$"
+      },
+      {
+        "text": "The term $\\Delta_{\\text{pert}}^2(\\mathcal{S})$ is a sum of the $\\mathbf{N}$ random squared displacements of each walker.",
+        "latex": "$\\Delta_{\\text{pert}}^2(\\mathcal{S}) = \\sum_{i=1}^{\\mathbf{N}} X_i$"
+      },
+      {
+        "text": "The random squared displacements are statistically independent for a fixed initial state $\\mathcal{S}$.",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "Apply a concentration inequality for functions of independent random variables (McDiarmid's Inequality) to bound the deviation of $\\Delta_{\\text{pert}}^2(\\mathcal{S})$ from its expected value.",
+      "latex": "Bound $\\Delta_{\\text{pert}}^2(\\mathcal{S})$ using McDiarmid's Inequality."
+    },
+    "variables": [
+      {
+        "symbol": "$\\Delta_{\\text{pert}}^2(\\mathcal{S})$",
+        "role": "Random variable representing the total squared positional displacement",
+        "constraints": []
+      },
+      {
+        "symbol": "$\\mathbf{N}$",
+        "role": "Number of walkers",
+        "constraints": []
+      },
+      {
+        "symbol": "$\\mathcal{S}$",
+        "role": "Fixed initial state",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The context being analyzed is related to concentration inequalities and probabilistic bounds.",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "sketch",
+      "steps": [
+        {
+          "kind": "analysis",
+          "text": "Analyze the normalized functional for clarity.",
+          "latex": null
+        }
+      ]
+    }
+  },
+  {
+    "type": "theorem",
+    "label": null,
+    "title": null,
+    "nl_statement": "For any $t > 0$, the probability that the function's value deviates from its expected value by more than $t$ is bounded by an exponential decay function involving the input variations $c_i$.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\sup_{x_1, \\dots, x_N, x'_i} |f(x_1, \\dots, x_i, \\dots, x_N) - f(x_1, \\dots, x'_i, \\dots, x_N)| \\le c_i"
+      },
+      {
+        "label": null,
+        "latex": "P(|f(X_1, \\dots, X_N) - \\mathbb{E}[f(X_1, \\dots, X_N)]| \\ge t) \\le 2\\exp\\left(\\frac{-2t^2}{\\sum_{i=1}^N c_i^2}\\right)"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "The supremum of the variation of the function $f$ with respect to its $i$-th argument, when other arguments are held fixed, is bounded by $c_i$.",
+        "latex": "\\sup_{x_1, \\dots, x_N, x'_i} |f(x_1, \\dots, x_i, \\dots, x_N) - f(x_1, \\dots, x'_i, \\dots, x_N)| \\le c_i"
+      },
+      {
+        "text": "For any $t > 0$.",
+        "latex": "t > 0"
+      }
+    ],
+    "conclusion": {
+      "text": "The probability that the function's value deviates from its expected value by more than $t$ is bounded by $2\\exp\\left(\\frac{-2t^2}{\\sum_{i=1}^N c_i^2}\\right)$.",
+      "latex": "P(|f(X_1, \\dots, X_N) - \\mathbb{E}[f(X_1, \\dots, X_N)]| \\ge t) \\le 2\\exp\\left(\\frac{-2t^2}{\\sum_{i=1}^N c_i^2}\\right)"
+    },
+    "variables": [
+      {
+        "symbol": "f",
+        "role": "function",
+        "constraints": []
+      },
+      {
+        "symbol": "x_1, \\dots, x_N",
+        "role": "input variables",
+        "constraints": []
+      },
+      {
+        "symbol": "x'_i",
+        "role": "alternative input variable",
+        "constraints": []
+      },
+      {
+        "symbol": "c_i",
+        "role": "variation bound constant",
+        "constraints": []
+      },
+      {
+        "symbol": "t",
+        "role": "deviation threshold",
+        "constraints": [
+          "t > 0"
+        ]
+      },
+      {
+        "symbol": "X_1, \\dots, X_N",
+        "role": "random variables",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "$f$ is a function of $N$ variables.",
+        "confidence": 1.0
+      },
+      {
+        "text": "The statement relies on bounds derived from Lipschitz continuity or related concentration inequalities (like Hoeffding's inequality generalized for bounded differences, as suggested by the structure $c_i$ and the exponential bound).",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-cloning-probability-lipschitz",
+    "title": "Lipschitz Continuity of the Conditional Cloning Probability Function (case split)",
+    "nl_statement": "The Conditional Cloning Probability Function $\\pi(v_c, v_i)$ is Lipschitz continuous with respect to its two inputs, satisfying $|\\pi(v_{c1}, v_{i1}) - \\pi(v_{c2}, v_{i2})| \\le L_{\\pi,c}|v_{c1} - v_{c2}| + L_{\\pi,i}|v_{i1} - v_{i2}|$, where the constants are determined by worst-case bounds.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "|\\pi(v_{c1}, v_{i1}) - \\pi(v_{c2}, v_{i2})| \\le L_{\\pi,c}|v_{c1} - v_{c2}| + L_{\\pi,i}|v_{i1} - v_{i2}|"
+      }
+    ],
+    "hypotheses": [],
+    "conclusion": {
+      "text": "The Conditional Cloning Probability Function $\\pi(v_c, v_i)$ is Lipschitz continuous with respect to its two inputs, bounded by $L_{\\pi,c}|v_{c1} - v_{c2}| + L_{\\pi,i}|v_{i1} - v_{i2}|$.",
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "v_c",
+        "role": "fitness potential of a companion walker",
+        "constraints": [
+          "\\ge 0"
+        ]
+      },
+      {
+        "symbol": "v_i",
+        "role": "fitness potential of a primary walker",
+        "constraints": [
+          "\\ge 0"
+        ]
+      },
+      {
+        "symbol": "\\pi",
+        "role": "Conditional Cloning Probability Function",
+        "constraints": [
+          ": \\mathbb{R}_{\\ge 0} \\times \\mathbb{R}_{\\ge 0} \\to [0, 1]"
+        ]
+      },
+      {
+        "symbol": "v_{c1}, v_{c2}",
+        "role": "companion potentials",
+        "constraints": []
+      },
+      {
+        "symbol": "v_{i1}, v_{i2}",
+        "role": "primary potentials",
+        "constraints": []
+      },
+      {
+        "symbol": "L_{\\pi,c}",
+        "role": "Lipschitz constant",
+        "constraints": []
+      },
+      {
+        "symbol": "L_{\\pi,i}",
+        "role": "Lipschitz constant",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The definition of the Conditional Cloning Probability Function $\\pi(v_c, v_i)$ (from the preceding definition) holds.",
+        "confidence": 1.0
+      },
+      {
+        "text": "The constants $L_{\\pi,c}$ and $L_{\\pi,i}$ are derived from the worst-case (dead-walker) bounds.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "omitted",
+      "steps": []
+    }
+  },
+  {
+    "type": "lemma",
+    "label": "lem-sub-bound-sum-total-cloning-probs",
+    "title": "Bounding the Sum of Total Cloning Probabilities",
+    "nl_statement": "The expected output squared metric is bounded by an expression of the form $C_L V + C_H \\sqrt{V} + K$, where $V$ is the initial squared displacement.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\mathbb{E}[d_{\\text{out}}^2] \\le \\left(3 + \\frac{3D_{\\mathcal{Y}}^2 C_P}{N}\\right)V_{\\text{in}} + \\left(\\frac{3D_{\\mathcal{Y}}^2 H_P}{N}\\right)\\sqrt{V_{\\text{in}}} + \\frac{3D_{\\mathcal{Y}}^2 K_P}{N}"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states.",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The expression for $\\mathbb{E}[d_{\\text{out}}^2]$ is of the required form $C_L V + C_H \\sqrt{V} + K$, allowing identification of the coefficients $C_{\\text{clone},L}$, $C_{\\text{clone},H}$, and $K_{\\text{clone}}$ from this final expression.",
+      "latex": "\\mathbb{E}[d_{\\text{out}}^2] \\le C_L V + C_H \\sqrt{V} + K"
+    },
+    "variables": [
+      {
+        "symbol": "\\mathcal{S}_1",
+        "role": "swarm state",
+        "constraints": []
+      },
+      {
+        "symbol": "\\mathcal{S}_2",
+        "role": "swarm state",
+        "constraints": []
+      },
+      {
+        "symbol": "V_{\\text{in}}",
+        "role": "initial squared displacement",
+        "constraints": [
+          "V_{\\text{in}} := d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)^2"
+        ]
+      },
+      {
+        "symbol": "D_{\\mathcal{Y}}",
+        "role": "parameter",
+        "constraints": []
+      },
+      {
+        "symbol": "C_P",
+        "role": "parameter",
+        "constraints": []
+      },
+      {
+        "symbol": "H_P",
+        "role": "parameter",
+        "constraints": []
+      },
+      {
+        "symbol": "K_P",
+        "role": "parameter",
+        "constraints": []
+      },
+      {
+        "symbol": "N",
+        "role": "parameter (divisor)",
+        "constraints": []
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The final step concludes the proof, implying preceding steps established the components of the inequality.",
+        "confidence": 0.95
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "present",
+      "steps": [
+        {
+          "kind": "derivation",
+          "text": "Divide by N to get the bound on the expected output squared metric, $\\mathbb{E}[d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}'_1, \\mathcal{S}'_2)^2]$ (where the equation uses $d_{\\text{out}}^2$ implicitly):",
+          "latex": null
+        },
+        {
+          "kind": "equation",
+          "text": "The resulting inequality bounding $\\mathbb{E}[d_{\\text{out}}^2]$",
+          "latex": "\\mathbb{E}[d_{\\text{out}}^2] \\le \\left(3 + \\frac{3D_{\\mathcal{Y}}^2 C_P}{N}\\right)V_{\\text{in}} + \\left(\\frac{3D_{\\mathcal{Y}}^2 H_P}{N}\\right)\\sqrt{V_{\\text{in}}} + \\frac{3D_{\\mathcal{Y}}^2 K_P}{N}"
+        },
+        {
+          "kind": "conclusion",
+          "text": "The expression is of the required form $C_L V + C_H \\sqrt{V} + K$, which allows identification of the coefficients $C_{\\text{clone},L}$, $C_{\\text{clone},H}$, and $K_{\\text{clone}}$.",
+          "latex": null
+        },
+        {
+          "kind": "end_proof",
+          "text": "Q.E.D.",
+          "latex": null
+        }
+      ]
+    }
+  }
+]

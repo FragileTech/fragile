@@ -23,6 +23,7 @@ import json
 import logging
 from pathlib import Path
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -58,8 +59,7 @@ def extract_usage_context(symbol: str, chapter_data: dict) -> str:
 
     if contexts:
         return " | ".join(contexts[:3])  # Limit to 3 contexts
-    else:
-        return f"Parameter '{symbol}' mentioned in chapter"
+    return f"Parameter '{symbol}' mentioned in chapter"
 
 
 def refine_parameter_line_numbers(
@@ -139,11 +139,15 @@ def refine_parameter_line_numbers(
                 )
 
                 # Validate line numbers
-                if not isinstance(result["line_start"], int) or not isinstance(result["line_end"], int):
+                if not isinstance(result["line_start"], int) or not isinstance(
+                    result["line_end"], int
+                ):
                     raise ValueError(f"Invalid line numbers: {result}")
 
                 if result["line_start"] < 1 or result["line_end"] < result["line_start"]:
-                    raise ValueError(f"Invalid line range: {result['line_start']}-{result['line_end']}")
+                    raise ValueError(
+                        f"Invalid line range: {result['line_start']}-{result['line_end']}"
+                    )
 
                 # Success
                 break
@@ -155,7 +159,7 @@ def refine_parameter_line_numbers(
                     result = None
 
         # Process result
-        if result and result["confidence"] in ["high", "medium"]:
+        if result and result["confidence"] in {"high", "medium"}:
             # Update parameter in chapter_data
             idx = param_indices[symbol]
             chapter_data["parameters"][idx]["source"]["line_range"] = {
@@ -174,7 +178,7 @@ def refine_parameter_line_numbers(
             updated += 1
 
         elif result and result["confidence"] == "low":
-            logger.warning(f"    ⚠ Low confidence, keeping line 1")
+            logger.warning("    ⚠ Low confidence, keeping line 1")
             logger.warning(f"      Reasoning: {result['reasoning']}")
             failed += 1
 

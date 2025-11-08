@@ -76,6 +76,15 @@ For detailed migration guide, see: src/mathster/parsing/MIGRATION_GUIDE.md
 
 # Foundation modules (Phases 1-3)
 # Extended modules (Phases 4-8)
+from mathster.dspy_integration import (
+    configure_dspy,
+    generate_detailed_error_report,
+    make_error_dict,
+)
+from mathster.dspy_integration.text_utils import (
+    lookup_label_from_context,
+    sanitize_label,
+)
 from mathster.parsing import (
     conversion,
     dspy_components,
@@ -85,14 +94,9 @@ from mathster.parsing import (
     workflows,
 )
 from mathster.parsing.cli import main as cli_main
-from mathster.dspy_integration import configure_dspy
 from mathster.parsing.conversion.converters import (
     convert_dict_to_extraction_entity,
     convert_to_raw_document_section,
-)
-from mathster.dspy_integration.text_utils import (
-    lookup_label_from_context,
-    sanitize_label,
 )
 from mathster.parsing.conversion.sources import (
     create_source_location,
@@ -120,10 +124,6 @@ from mathster.parsing.models.results import (
     ValidationResult,
 )
 from mathster.parsing.orchestrator import extract_section_id, parse_line_number, process_document
-from mathster.dspy_integration import (
-    generate_detailed_error_report,
-    make_error_dict,
-)
 from mathster.parsing.validation.validators import (
     validate_extraction,
 )

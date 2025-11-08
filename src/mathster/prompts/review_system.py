@@ -18,16 +18,14 @@ import re
 from typing import Any
 
 from mathster.core.reviews import (
-    ReviewSource,
     Review,
-    ReviewSeverity,
-    ReviewIssue,
-    ValidationResult,
     ReviewComparison,
+    ReviewIssue,
+    ReviewSeverity,
+    ReviewSource,
+    ValidationResult,
 )
 from mathster.registry.review_registry import get_review_registry
-
-
 
 
 # =============================================================================

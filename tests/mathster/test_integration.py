@@ -23,9 +23,9 @@ class TestModuleImports:
     def test_parameter_extraction_imports(self):
         """Test parameter_extraction module imports."""
         from mathster.parameter_extraction import extract_parameters, refine_parameters
+        from mathster.parameter_extraction.conversion import convert_parameter
         from mathster.parameter_extraction.text_processing import find_parameter_declarations
         from mathster.parameter_extraction.validation import validate_parameter
-        from mathster.parameter_extraction.conversion import convert_parameter
 
         assert callable(extract_parameters)
         assert callable(refine_parameters)
@@ -35,8 +35,8 @@ class TestModuleImports:
 
     def test_parsing_imports(self):
         """Test parsing module imports."""
-        from mathster.parsing import extract_chapter, improve_chapter
         from mathster.directives import extract_directive_hints
+        from mathster.parsing import extract_chapter, improve_chapter
 
         assert callable(extract_chapter)
         assert callable(improve_chapter)
@@ -57,7 +57,9 @@ class TestParameterExtractionPipeline:
 
     def test_parameter_collection(self):
         """Test collecting parameters from extraction."""
-        from mathster.parameter_extraction.text_processing import collect_parameters_from_extraction
+        from mathster.parameter_extraction.text_processing import (
+            collect_parameters_from_extraction,
+        )
 
         extraction = {"definitions": [{"parameters_mentioned": ["alpha", "beta"]}]}
         params = collect_parameters_from_extraction(extraction)
@@ -95,8 +97,8 @@ class TestEndToEnd:
         # This test verifies no circular imports or missing dependencies
 
         from mathster.dspy_integration import configure_dspy
-        from mathster.parsing import extract_chapter
         from mathster.parameter_extraction import extract_parameters
+        from mathster.parsing import extract_chapter
 
         # If we get here without ImportError, the refactoring is successful
         assert True

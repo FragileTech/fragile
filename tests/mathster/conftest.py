@@ -1,5 +1,7 @@
 """Pytest fixtures for mathster tests."""
+
 import pytest
+
 
 @pytest.fixture
 def sample_extraction():

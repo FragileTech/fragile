@@ -19,7 +19,8 @@ Integration:
 import logging
 from typing import Any
 
-from mathster.directives.directive_parser import DirectiveHint, extract_jupyter_directives
+from mathster.directives.directive_parser import extract_jupyter_directives
+
 
 logger = logging.getLogger(__name__)
 
@@ -70,9 +71,7 @@ def extract_directive_hints(
         logger.info(f"  {dtype}: {count}")
 
     # Convert to dicts for JSON serialization
-    hints_as_dicts = [hint.to_dict() for hint in directive_hints]
-
-    return hints_as_dicts
+    return [hint.to_dict() for hint in directive_hints]
 
 
 def validate_hints(hints: list[dict]) -> tuple[bool, list[str]]:

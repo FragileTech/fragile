@@ -12,7 +12,11 @@
     ],
     "hypotheses": [
       {
-        "text": "The reflecting boundary conditions hold on both position and velocity boundaries.",
+        "text": "The reflecting boundary conditions established in Section 2.2 are in place.",
+        "latex": null
+      },
+      {
+        "text": "The boundary conditions are on both position and velocity boundaries.",
         "latex": null
       }
     ],
@@ -21,6 +25,11 @@
       "latex": "\\int_\\Omega L^\\dagger f(t,z)\\,\\mathrm{d}z = 0"
     },
     "variables": [
+      {
+        "symbol": "\\Omega",
+        "role": "domain",
+        "constraints": []
+      },
       {
         "symbol": "L^\\dagger",
         "role": "transport operator",
@@ -32,28 +41,20 @@
         "constraints": []
       },
       {
-        "symbol": "\\Omega",
-        "role": "domain",
-        "constraints": []
-      },
-      {
         "symbol": "t",
         "role": "time",
         "constraints": []
       },
       {
         "symbol": "z",
-        "role": "phase space variable",
+        "role": "position/velocity coordinates",
         "constraints": []
       }
     ],
-    "implicit_assumptions": [
-      {
-        "text": "Reflecting boundary conditions were established in Section 2.2.",
-        "confidence": 0.9
-      }
+    "implicit_assumptions": [],
+    "local_refs": [
+      "Section 2.2"
     ],
-    "local_refs": [],
     "proof": {
       "availability": "omitted",
       "steps": []

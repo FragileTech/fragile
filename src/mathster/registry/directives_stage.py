@@ -34,13 +34,14 @@ Usage:
 """
 
 import argparse
-import json
-import logging
-import sys
 from collections import defaultdict
 from datetime import datetime, timezone
+import json
+import logging
+import operator
 from pathlib import Path
-from typing import Dict, List, Optional
+import sys
+
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +51,7 @@ logger = logging.getLogger(__name__)
 # ============================================================================
 
 
-def discover_documents(docs_root: Path, recursive: bool = True) -> List[Path]:
+def discover_documents(docs_root: Path, recursive: bool = True) -> list[Path]:
     """
     Discover all document directories containing directives/ folder.
 
@@ -107,7 +108,7 @@ def extract_document_id(document_path: Path) -> str:
 # ============================================================================
 
 
-def load_chapter_files(directives_dir: Path) -> List[dict]:
+def load_chapter_files(directives_dir: Path) -> list[dict]:
     """
     Load all chapter JSON files from directives directory.
 
@@ -126,7 +127,7 @@ def load_chapter_files(directives_dir: Path) -> List[dict]:
     chapters = []
     for chapter_file in chapter_files:
         try:
-            with open(chapter_file, "r", encoding="utf-8") as f:
+            with open(chapter_file, encoding="utf-8") as f:
                 data = json.load(f)
                 chapters.append({
                     "data": data,
@@ -151,9 +152,9 @@ def load_chapter_files(directives_dir: Path) -> List[dict]:
 
 
 def group_hints_by_type(
-    chapters: List[dict],
+    chapters: list[dict],
     document_id: str,
-) -> Dict[str, List[dict]]:
+) -> dict[str, list[dict]]:
     """
     Group all hints by directive_type across all chapters.
 
@@ -164,7 +165,7 @@ def group_hints_by_type(
     Returns:
         Dictionary mapping directive_type -> list of enriched items
     """
-    groups: Dict[str, List[dict]] = defaultdict(list)
+    groups: dict[str, list[dict]] = defaultdict(list)
 
     for chapter_entry in chapters:
         chapter_data = chapter_entry["data"]
@@ -207,7 +208,7 @@ def write_registry_file(
     output_path: Path,
     document_id: str,
     directive_type: str,
-    items: List[dict],
+    items: list[dict],
 ) -> None:
     """
     Write registry file for a specific directive type.
@@ -304,9 +305,7 @@ def process_document(
 
     # Summary
     total_items = sum(len(items) for items in groups.values())
-    logger.info(
-        f" Processed {document_id}: {total_items} items across {len(groups)} types"
-    )
+    logger.info(f" Processed {document_id}: {total_items} items across {len(groups)} types")
 
     return True
 
@@ -316,8 +315,8 @@ def process_batch(
     force: bool = False,
     verbose: bool = False,
     build_unified: bool = True,
-    unified_output: Optional[Path] = None,
-) -> Dict[str, bool]:
+    unified_output: Path | None = None,
+) -> dict[str, bool]:
     """
     Process all documents in a directory tree.
 
@@ -356,9 +355,9 @@ def process_batch(
 
     # Summary
     successful = sum(1 for v in results.values() if v)
-    logger.info(f"\n{'='*60}")
+    logger.info(f"\n{'=' * 60}")
     logger.info(f"Batch processing complete: {successful}/{len(results)} successful")
-    logger.info(f"{'='*60}")
+    logger.info(f"{'=' * 60}")
 
     # Build unified registry if requested
     if build_unified and successful > 0:
@@ -376,7 +375,7 @@ def process_batch(
 # ============================================================================
 
 
-def discover_document_registries(docs_root: Path) -> List[Path]:
+def discover_document_registries(docs_root: Path) -> list[Path]:
     """
     Discover all document registry/directives directories.
 
@@ -392,7 +391,7 @@ def discover_document_registries(docs_root: Path) -> List[Path]:
         if registry_dir.is_dir():
             # Skip unified/combined registry folders
             parent_name = registry_dir.parent.parent.name
-            if parent_name in ("unified_registry", "combined_registry"):
+            if parent_name in {"unified_registry", "combined_registry"}:
                 continue
 
             registry_paths.append(registry_dir)
@@ -401,8 +400,8 @@ def discover_document_registries(docs_root: Path) -> List[Path]:
 
 
 def load_registry_files_by_type(
-    registry_dirs: List[Path],
-) -> Dict[str, List[tuple[str, dict]]]:
+    registry_dirs: list[Path],
+) -> dict[str, list[tuple[str, dict]]]:
     """
     Load all registry JSON files grouped by directive type.
 
@@ -412,7 +411,7 @@ def load_registry_files_by_type(
     Returns:
         Dictionary mapping directive_type -> list of (document_id, registry_data)
     """
-    files_by_type: Dict[str, List[tuple[str, dict]]] = defaultdict(list)
+    files_by_type: dict[str, list[tuple[str, dict]]] = defaultdict(list)
 
     for registry_dir in registry_dirs:
         # Extract document_id from path
@@ -424,7 +423,7 @@ def load_registry_files_by_type(
             directive_type = json_file.stem
 
             try:
-                with open(json_file, "r", encoding="utf-8") as f:
+                with open(json_file, encoding="utf-8") as f:
                     data = json.load(f)
                     files_by_type[directive_type].append((document_id, data))
             except json.JSONDecodeError as e:
@@ -438,8 +437,8 @@ def load_registry_files_by_type(
 
 
 def merge_items_by_type(
-    files_by_type: Dict[str, List[tuple[str, dict]]],
-) -> Dict[str, dict]:
+    files_by_type: dict[str, list[tuple[str, dict]]],
+) -> dict[str, dict]:
     """
     Merge items by directive type across all documents.
 
@@ -456,7 +455,7 @@ def merge_items_by_type(
         all_items = []
         source_documents = []
 
-        for document_id, registry_data in sorted(doc_files, key=lambda x: x[0]):
+        for document_id, registry_data in sorted(doc_files, key=operator.itemgetter(0)):
             items = registry_data.get("items", [])
             all_items.extend(items)
             source_documents.append(document_id)
@@ -481,7 +480,7 @@ def merge_items_by_type(
 
 def build_unified_registry(
     docs_root: Path,
-    output_dir: Optional[Path] = None,
+    output_dir: Path | None = None,
     verbose: bool = False,
 ) -> bool:
     """
@@ -509,7 +508,9 @@ def build_unified_registry(
             current = current.parent
         else:
             # Fallback: assume docs_root is like /path/to/project/docs/source
-            project_root = docs_root.parent.parent if docs_root.name == "source" else docs_root.parent
+            project_root = (
+                docs_root.parent.parent if docs_root.name == "source" else docs_root.parent
+            )
 
         output_dir = project_root / "unified_registry"
 
@@ -564,7 +565,7 @@ def build_unified_registry(
 # ============================================================================
 
 
-def main(argv: Optional[List[str]] = None) -> int:
+def main(argv: list[str] | None = None) -> int:
     """
     CLI entry point.
 
@@ -667,7 +668,7 @@ Examples:
             return 0 if success else 1
 
         # Batch processing
-        elif args.batch:
+        if args.batch:
             build_unified = not args.no_unified
             results = process_batch(
                 args.path,
@@ -679,9 +680,8 @@ Examples:
             return 0 if all(results.values()) else 1
 
         # Single document processing
-        else:
-            success = process_document(args.path, force=args.force, verbose=args.verbose)
-            return 0 if success else 1
+        success = process_document(args.path, force=args.force, verbose=args.verbose)
+        return 0 if success else 1
 
     except KeyboardInterrupt:
         logger.info("\nInterrupted by user")

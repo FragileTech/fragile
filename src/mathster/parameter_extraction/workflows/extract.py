@@ -14,9 +14,7 @@ Workflow:
 6. Update chapter extraction with parameters
 """
 
-import json
 import logging
-from typing import Any
 
 from mathster.dspy_integration import make_error_dict
 from mathster.parameter_extraction.conversion import convert_parameter
@@ -27,6 +25,7 @@ from mathster.parameter_extraction.text_processing import (
 from mathster.parameter_extraction.validation import validate_parameter
 from mathster.parsing.dspy_components.extractors import ParameterExtractor
 from mathster.parsing.models.entities import ParameterExtraction
+
 
 logger = logging.getLogger(__name__)
 
@@ -76,9 +75,7 @@ def extract_parameters_from_chapter(
     logger.info(f"Found {len(parameters_mentioned)} parameters mentioned: {parameters_mentioned}")
 
     # Stage 2: Find parameter declarations in text
-    parameter_declarations = find_parameter_declarations(
-        chapter_text, list(parameters_mentioned)
-    )
+    parameter_declarations = find_parameter_declarations(chapter_text, list(parameters_mentioned))
 
     logger.info(f"Found declarations for {len(parameter_declarations)} parameters")
 
@@ -164,23 +161,22 @@ def extract_parameters_from_chapter(
                 logger.info(f"✓ Extracted {len(attempt_parameters)} parameters")
                 return attempt_parameters, []
 
-            elif attempt_parameters and len(attempt_errors) < len(parameter_extractions):
+            if attempt_parameters and len(attempt_errors) < len(parameter_extractions):
                 # Partial success
                 logger.info(
                     f"✓ Extracted {len(attempt_parameters)} parameters with {len(attempt_errors)} errors"
                 )
                 return attempt_parameters, attempt_errors
 
+            # All failed or no results
+            if attempt < max_retries - 1:
+                # Prepare error report for next attempt
+                previous_error_report = "\n".join([e["error"] for e in attempt_errors])
+                logger.debug(f"Retrying with error report:\n{previous_error_report}")
             else:
-                # All failed or no results
-                if attempt < max_retries - 1:
-                    # Prepare error report for next attempt
-                    previous_error_report = "\n".join([e["error"] for e in attempt_errors])
-                    logger.debug(f"Retrying with error report:\n{previous_error_report}")
-                else:
-                    # Final attempt failed
-                    logger.error(f"Failed to extract parameters after {max_retries} attempts")
-                    return [], attempt_errors
+                # Final attempt failed
+                logger.error(f"Failed to extract parameters after {max_retries} attempts")
+                return [], attempt_errors
 
         except Exception as e:
             error = f"Parameter extraction failed: {e}"
@@ -223,7 +219,7 @@ def improve_parameters_from_chapter(
     parameters_mentioned = collect_parameters_from_extraction(existing_extraction)
 
     # Collect existing parameter labels
-    existing_labels = {p.get("label", "") for p in existing_parameters}
+    {p.get("label", "") for p in existing_parameters}
     existing_symbols = {p.get("symbol", "") for p in existing_parameters}
 
     # Find missed parameters

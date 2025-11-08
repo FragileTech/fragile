@@ -10,8 +10,9 @@ Usage:
 """
 
 import json
-import sys
 from pathlib import Path
+import sys
+
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
@@ -19,6 +20,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 from mathster.parsing.config import configure_dspy
 from mathster.parsing.text_processing.splitting import split_markdown_by_chapters_with_line_numbers
 from mathster.parsing.workflows.extract_parameters import extract_parameters_from_chapter
+
 
 # Configure DSPy with Gemini
 configure_dspy(
@@ -77,7 +79,7 @@ def run_parameter_extraction(document_path: str):
         print(f"Chapter {i}:")
 
         # Load existing extraction
-        with open(chapter_file) as f:
+        with open(chapter_file, encoding="utf-8") as f:
             chapter_data = json.load(f)
 
         # Check if parameters already extracted
@@ -104,7 +106,7 @@ def run_parameter_extraction(document_path: str):
             chapter_data["parameters"] = raw_parameters
 
             # Save updated chapter
-            with open(chapter_file, "w") as f:
+            with open(chapter_file, "w", encoding="utf-8") as f:
                 json.dump(chapter_data, f, indent=2)
 
             print(f"  ✓ Extracted {len(raw_parameters)} parameters")
@@ -115,7 +117,7 @@ def run_parameter_extraction(document_path: str):
 
             total_params_extracted += len(raw_parameters)
         else:
-            print(f"  No parameters extracted")
+            print("  No parameters extracted")
 
         if errors:
             print(f"  ✗ {len(errors)} errors")
@@ -141,8 +143,10 @@ if __name__ == "__main__":
         print("Usage: python examples/run_parameter_extraction.py <document_path>")
         print()
         print("Example:")
-        print("  python examples/run_parameter_extraction.py docs/source/1_euclidean_gas/07_mean_field.md")
+        print(
+            "  python examples/run_parameter_extraction.py docs/source/1_euclidean_gas/07_mean_field.md"
+        )
         sys.exit(1)
 
     document_path = sys.argv[1]
-    exit(run_parameter_extraction(document_path))
+    sys.exit(run_parameter_extraction(document_path))

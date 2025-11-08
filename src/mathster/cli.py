@@ -15,12 +15,13 @@ from __future__ import annotations
 
 import importlib.metadata
 import logging
-import re
 from pathlib import Path
-from typing import Optional, Sequence
+import re
+from typing import Sequence
 
 import click
 import flogging
+
 
 flogging.setup(level="INFO")
 
@@ -108,7 +109,7 @@ def _discover_chapter_markdown_files(roots: Sequence[Path] | None = None) -> lis
 )
 @click.option("-v", "--verbose", is_flag=True, help="Enable verbose logging output.")
 def extract_command(
-    sources: tuple[Path, ...], output_dir: Optional[Path], model: str, verbose: bool
+    sources: tuple[Path, ...], output_dir: Path | None, model: str, verbose: bool
 ) -> None:
     """Invoke the RawDocumentParser entry point."""
     from fragile.agents.raw_document_parser import RawDocumentParser
@@ -120,16 +121,16 @@ def extract_command(
     if not source_list:
         source_list = _discover_chapter_markdown_files()
         if not source_list:
-            raise click.ClickException(
-                "No chapter markdown files were found (pattern NN_chapter-name.md)."
-            )
+            msg = "No chapter markdown files were found (pattern NN_chapter-name.md)."
+            raise click.ClickException(msg)
         click.echo(
             f"Discovered {len(source_list)} chapter markdown files under "
             f"{', '.join(str(root) for root in DEFAULT_CHAPTER_ROOTS if root.exists())}."
         )
 
     if output_dir is not None and len(source_list) != 1:
-        raise click.ClickException("--output-dir can only be used with a single document.")
+        msg = "--output-dir can only be used with a single document."
+        raise click.ClickException(msg)
 
     for idx, source in enumerate(source_list, start=1):
         click.echo(f"[{idx}/{len(source_list)}] Extracting {source}...")
@@ -171,7 +172,7 @@ def extract_command(
 )
 def parse_command(
     markdown_files: tuple[Path, ...],
-    output_dir: Optional[Path],
+    output_dir: Path | None,
     no_preview: bool,
     no_validate: bool,
 ) -> None:
@@ -182,16 +183,16 @@ def parse_command(
     if not source_list:
         source_list = _discover_chapter_markdown_files()
         if not source_list:
-            raise click.ClickException(
-                "No chapter markdown files were found (pattern NN_chapter-name.md)."
-            )
+            msg = "No chapter markdown files were found (pattern NN_chapter-name.md)."
+            raise click.ClickException(msg)
         click.echo(
             f"Discovered {len(source_list)} chapter markdown files under "
             f"{', '.join(str(root) for root in DEFAULT_CHAPTER_ROOTS if root.exists())}."
         )
 
     if output_dir is not None and len(source_list) != 1:
-        raise click.ClickException("--output-dir can only be used with a single document.")
+        msg = "--output-dir can only be used with a single document."
+        raise click.ClickException(msg)
 
     for idx, markdown_file in enumerate(source_list, start=1):
         click.echo(f"[{idx}/{len(source_list)}] Parsing directives for {markdown_file}...")
@@ -267,7 +268,7 @@ def registry_command(
     build_unified_only: bool,
     force: bool,
     no_unified: bool,
-    unified_output: Optional[Path],
+    unified_output: Path | None,
     verbose: bool,
 ) -> None:
     """Expose directives-stage registry building through the CLI."""
@@ -308,7 +309,8 @@ def registry_command(
         raise click.ClickException(str(exc)) from exc
 
     if not success:
-        raise click.ClickException("Directive registry build failed")
+        msg = "Directive registry build failed"
+        raise click.ClickException(msg)
 
 
 @cli.command("validate", help="Validate refined or pipeline entities.")
@@ -329,9 +331,15 @@ def registry_command(
     "-e",
     "--entity-type",
     "entity_types",
-    type=click.Choice(
-        ["theorems", "axioms", "objects", "parameters", "mathster", "remarks", "equations"]
-    ),
+    type=click.Choice([
+        "theorems",
+        "axioms",
+        "objects",
+        "parameters",
+        "mathster",
+        "remarks",
+        "equations",
+    ]),
     multiple=True,
     help="Limit validation to selected entity types.",
 )
@@ -364,8 +372,8 @@ def validate_command(
     refined_dir: Path,
     mode: str,
     entity_types: tuple[str, ...],
-    output_report: Optional[Path],
-    output_json: Optional[Path],
+    output_report: Path | None,
+    output_json: Path | None,
     strict: bool,
     glossary: Path,
     validation_mode: str,
@@ -417,7 +425,8 @@ def validate_command(
         click.echo(f"Wrote JSON report to {output_json}")
 
     if not result.is_valid:
-        raise click.ClickException("Validation failed")
+        msg = "Validation failed"
+        raise click.ClickException(msg)
 
 
 if __name__ == "__main__":  # pragma: no cover
