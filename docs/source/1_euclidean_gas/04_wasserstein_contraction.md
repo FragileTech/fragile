@@ -114,13 +114,13 @@ graph TD
 
 **Section 2 (Cluster-Preserving Coupling)**: We establish the foundational partition of each swarm into a **target set** $I_k = U_k \cap H_k(\varepsilon)$ (unfit and high-error walkers) and its **complement** $J_k$. These sets are defined using the exact same clustering algorithm (Definition 6.3.1) and unfit set definition (Definition 7.6.1.0) from [03_cloning](03_cloning). The population-level coupling strategy matches swarms within each cluster type, avoiding the need for individual walker alignment.
 
-**Section 3 (Variance Decomposition)**: We prove that swarm variance decomposes into within-cluster and between-cluster components (Lemma 3.1). For high-error swarms, the between-cluster separation $\|\mu_x(I_k) - \mu_x(J_k)\|^2$ dominates (Corollary 3.1), providing a quantitative link between structural error $V_{\text{struct}}$ and cluster separation. We also derive cross-swarm distance formulas for separated swarms (Lemma 3.2).
+**Section 3 (Variance Decomposition)**: We prove that swarm variance decomposes into within-cluster and between-cluster components ({prf:ref}`lem-variance-decomposition`). For high-error swarms, the between-cluster separation $\|\mu_x(I_k) - \mu_x(J_k)\|^2$ dominates ({prf:ref}`cor-between-group-dominance`), providing a quantitative link between structural error $V_{\text{struct}}$ and cluster separation. We also derive cross-swarm distance formulas for separated swarms ({prf:ref}`lem-cross-swarm-distance`).
 
-**Section 4 (Cluster-Level Outlier Alignment)**: This is the **geometric core** of the proof. We prove that target set barycenters $\mu_x(I_k)$ exhibit **spatial alignment** with the inter-swarm separation direction $\bar{x}_1 - \bar{x}_2$ (Lemma 4.1). The proof is **static**, using only framework axioms (Confining Potential with fitness valleys, Stability Condition from Theorem 7.5.2.4 in [03_cloning](03_cloning), and Phase-Space Packing from Lemma 6.4.1) rather than dynamical arguments. This lemma replaces the brittle single-walker geometric alignment that caused the original approach to fail.
+**Section 4 (Cluster-Level Outlier Alignment)**: This is the **geometric core** of the proof. We prove that target set barycenters $\mu_x(I_k)$ exhibit **spatial alignment** with the inter-swarm separation direction $\bar{x}_1 - \bar{x}_2$ ({prf:ref}`lem-cluster-alignment`). The proof is **static**, using only framework axioms (Confining Potential with fitness valleys, Stability Condition from Theorem 7.5.2.4 in [03_cloning](03_cloning), and Phase-Space Packing from Lemma 6.4.1) rather than dynamical arguments. This lemma replaces the brittle single-walker geometric alignment that caused the original approach to fail.
 
-**Section 5 (Expected Distance Change)**: We analyze how cloning affects population-level cross-distances. When walkers in $I_1$ clone from walkers in $J_1$, the expected distance to $I_2$ decreases proportionally to the cluster separation (Lemma 5.1). Combined with the proven lower bound on cloning pressure $p_u(\varepsilon) > 0$ from Lemma 8.3.2 ([03_cloning](03_cloning), Section 8.3), this yields expected contraction of cross-distances.
+**Section 5 (Expected Distance Change)**: We analyze how cloning affects population-level cross-distances. When walkers in $I_1$ clone from walkers in $J_1$, the expected distance to $I_2$ decreases proportionally to the cluster separation ({prf:ref}`lem-expected-distance-change`). Combined with the proven lower bound on cloning pressure $p_u(\varepsilon) > 0$ from Lemma 8.3.2 ([03_cloning](03_cloning), Section 8.3), this yields expected contraction of cross-distances.
 
-**Section 6 (Main Contraction Theorem)**: We combine the previous results to prove the main theorem (Theorem 6.1). The Wasserstein-2 distance is bounded by population cross-distances (Lemma 6.1). The expected change in these cross-distances, driven by the Outlier Alignment and Cloning Pressure lemmas, yields the contraction inequality. All constants are verified to be N-uniform by tracing back to their sources in [03_cloning](03_cloning).
+**Section 6 (Main Contraction Theorem)**: We combine the previous results to prove the main theorem ({prf:ref}`thm-main-contraction-full`). The Wasserstein-2 distance is bounded by population cross-distances ({prf:ref}`lem-wasserstein-population-bound`). The expected change in these cross-distances, driven by the Outlier Alignment and Cloning Pressure lemmas, yields the contraction inequality. All constants are verified to be N-uniform by tracing back to their sources in [03_cloning](03_cloning).
 
 **Section 7 (Comparison)**: We contrast the successful cluster-based approach with the failed single-walker approach, explaining why $q_{\min} \sim 1/N! \to 0$ was an insurmountable obstacle for individual coupling but is completely avoided by population-level analysis.
 
@@ -893,7 +893,7 @@ Averaging and normalizing gives the bound. □
 :::{prf:theorem} Wasserstein-2 Contraction (Cluster-Based)
 :label: thm-main-contraction-full
 
-Under the conditions of Theorem {prf:ref}`thm-main-contraction-cluster`, the cloning operator satisfies:
+For two swarms $S_1, S_2$ satisfying the conditions stated in Section 1, the cloning operator satisfies:
 
 $$
 W_2^2(\Psi_{\text{clone}}(\mu_1), \Psi_{\text{clone}}(\mu_2)) \leq (1 - \kappa_W) W_2^2(\mu_1, \mu_2) + C_W

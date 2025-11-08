@@ -42,9 +42,11 @@ from tqdm import tqdm
 
 from mathster.agents.core import (
     DirectiveAgentPaths,
+    ExtractSignature,
     LATEX_FENCE_PATTERN,
     METADATA_PATTERN,
     run_directive_extraction_loop,
+    to_jsonable,
     URI_PATTERN,
 )
 
@@ -57,7 +59,7 @@ logger.setLevel(logging.INFO)
 # 1) Your split-output signature (exactly as you defined it earlier)
 #    If you already import it from your own module, delete this class and import instead.
 # --------------------------------------------------------------------------------------
-class ParseTheoremDirectiveSplit(dspy.Signature):
+class ParseTheoremDirectiveSplit(ExtractSignature):
     """
     Transform one raw theorem directive (e.g., a `::{prf:theorem}` block) into
     a compact structured representation with SEPARATE outputs per top-level key.
@@ -97,8 +99,7 @@ class ParseTheoremDirectiveSplit(dspy.Signature):
         [{"text": <string>, "confidence": <number|null>}, ...]
       * Add only if directive wording or context_hints strongly suggests them.
 
-    - local_refs_json (json):   JSON ARRAY of strings:
-        ["lem-xyz", "eq-transport", ...]
+    - references (list[str]):   Provided via the shared signature.
       * Labels cited INSIDE this directive; do not resolve or expand.
 
     - proof_json (json):        JSON OBJECT:
@@ -146,11 +147,9 @@ class ParseTheoremDirectiveSplit(dspy.Signature):
     implicit_assumptions_json = dspy.OutputField(
         desc='JSON array: [{"text": string, "confidence": number|null}, ...]'
     )
-    local_refs_json = dspy.OutputField(desc='JSON array of strings: ["lem-3.4","eq-main",...]')
     proof_json = dspy.OutputField(
         desc='JSON object: {"availability": "...", "steps":[{"kind": "...", "text": "...", "latex": "..."}]}'
     )
-    tags_json = dspy.OutputField(desc="JSON array of 3-10 keyword strings for search indexing.")
 
 
 # --------------------------------------------------------------------------------------
@@ -185,13 +184,17 @@ _URI_PAT = URI_PATTERN
 _META_PAT = METADATA_PATTERN
 
 
-def _json_loads(s: str | None, default):
-    if not s or not s.strip():
+def _json_loads(s: Any, default):
+    if s is None:
         return default
-    try:
-        return json.loads(s)
-    except Exception:
-        return default
+    if isinstance(s, str):
+        if not s.strip():
+            return default
+        try:
+            s = json.loads(s)
+        except Exception:
+            return default
+    return to_jsonable(s)
 
 
 def _nonempty(s: str | None) -> bool:
@@ -224,7 +227,7 @@ def theorem_reward(args: dict[str, Any], pred) -> float:
     Expects pred to have the fields produced by ParseTheoremDirectiveSplit:
       type_str, label_str, title_str, nl_statement_str,
       equations_json, hypotheses_json, conclusion_json,
-      variables_json, implicit_assumptions_json, local_refs_json, proof_json.
+      variables_json, implicit_assumptions_json, references, proof_json.
     Returns float in [0, 1].
     """
     # Defensive defaults
@@ -238,9 +241,9 @@ def theorem_reward(args: dict[str, Any], pred) -> float:
     conclusion = _json_loads(getattr(pred, "conclusion_json", None), {})
     variables = _json_loads(getattr(pred, "variables_json", None), [])
     impls = _json_loads(getattr(pred, "implicit_assumptions_json", None), [])
-    local_refs = _json_loads(getattr(pred, "local_refs_json", None), [])
+    local_refs = _json_loads(getattr(pred, "references", None), [])
     proof = _json_loads(getattr(pred, "proof_json", None), {})
-    tags = _json_loads(getattr(pred, "tags_json", None), [])
+    tags = _json_loads(getattr(pred, "tags", None), [])
 
     # We’ll accumulate partial points toward 1.0
     score = 0.0
@@ -444,10 +447,14 @@ def assemble_output(res) -> dict[str, Any]:
     """Turn split fields into the unified object."""
 
     def j(x, default):
-        try:
-            return json.loads(x) if x else default
-        except Exception:
+        if x is None:
             return default
+        if isinstance(x, str):
+            try:
+                return json.loads(x) if x else default
+            except Exception:
+                return default
+        return to_jsonable(x)
 
     return {
         "type": (res.type_str or "").strip() or None,
@@ -459,9 +466,9 @@ def assemble_output(res) -> dict[str, Any]:
         "conclusion": j(res.conclusion_json, {}),
         "variables": j(res.variables_json, []),
         "implicit_assumptions": j(res.implicit_assumptions_json, []),
-        "local_refs": j(res.local_refs_json, []),
+        "local_refs": j(res.references, []),
         "proof": j(res.proof_json, {}),
-        "tags": j(res.tags_json, []),
+        "tags": j(res.tags, []),
     }
 
 

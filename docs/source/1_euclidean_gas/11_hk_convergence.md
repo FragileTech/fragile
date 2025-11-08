@@ -21,11 +21,11 @@ The main result of this analysis is a **strict contraction theorem** in the HK m
 
 The scope of this chapter includes three main contributions:
 
-1. **Mass Contraction Lemma (Lemma A)**: A complete proof that the revival mechanism ({prf:ref}`def-axiom-guaranteed-revival`) combined with boundary death creates exponential contraction of mass fluctuations $\mathbb{E}[(k_t - k_*)^2]$, where $k_t = \|\mu_t\|$ is the number of alive walkers. This extends the discrete-time analysis from Chapter 3 to the continuous-time limit using the mean-field theory from Chapter 7 ([07_mean_field](07_mean_field)).
+1. **Mass Contraction Lemma ({prf:ref}`lem-mass-contraction-revival-death`)**: A complete proof that the revival mechanism ({prf:ref}`def-axiom-guaranteed-revival`) combined with boundary death creates exponential contraction of mass fluctuations $\mathbb{E}[(k_t - k_*)^2]$, where $k_t = \|\mu_t\|$ is the number of alive walkers. This extends the discrete-time analysis from Chapter 3 to the continuous-time limit using the mean-field theory from Chapter 7 ([07_mean_field](07_mean_field)).
 
-2. **Structural Variance Contraction (Lemma B)**: An application of the realization-level Wasserstein contraction theorems from Chapters 4 and 6 to prove exponential decay of the centered Wasserstein distance $W_2^2(\tilde{\mu}_t, \tilde{\pi}_{\text{QSD}})$, where $\tilde{\mu}_t$ is the normalized empirical measure.
+2. **Structural Variance Contraction ({prf:ref}`lem-structural-variance-contraction`)**: An application of the realization-level Wasserstein contraction theorems from Chapters 4 and 6 to prove exponential decay of the centered Wasserstein distance $W_2^2(\tilde{\mu}_t, \tilde{\pi}_{\text{QSD}})$, where $\tilde{\mu}_t$ is the normalized empirical measure.
 
-3. **Hellinger Contraction via Hypocoercivity (Lemma C)**: The first rigorous proof that the kinetic operator $\Psi_{\text{kin}}$ contracts the Hellinger distance through a combination of (a) hypocoercive entropy dissipation from the Langevin dynamics and (b) algebraic Pinsker inequalities that bridge KL-divergence and Hellinger distance under a bounded density ratio assumption.
+3. **Hellinger Contraction via Hypocoercivity ({prf:ref}`lem-kinetic-hellinger-contraction`)**: The first rigorous proof that the kinetic operator $\Psi_{\text{kin}}$ contracts the Hellinger distance through a combination of (a) hypocoercive entropy dissipation from the Langevin dynamics and (b) algebraic Pinsker inequalities that bridge KL-divergence and Hellinger distance under a bounded density ratio assumption.
 
 The assembly of these three lemmas into the final HK contraction theorem is provided in Chapter 6, which completes the quantitative characterization of finite-N convergence rates. This chapter assumes results from companion documents: the cloning operator Wasserstein analysis ([04_wasserstein_contraction](04_wasserstein_contraction)), the hypocoercive convergence theory ([06_convergence](06_convergence)), and the mean-field PDE derivation ([07_mean_field](07_mean_field)).
 
@@ -53,7 +53,7 @@ where:
 
 1. **Decoupled Dynamics**: The algorithm has **spatially decoupled** mass and transport mechanisms. Mass changes occur through revival (uniform over dead walkers) and cloning (based on fitness, but with Gaussian jitter), while transport happens via Langevin diffusion.
 
-2. **Modular Analysis**: The additive form enables a **three-lemma decomposition** (Lemmas A, B, C) where each component is analyzed separately with clear physical interpretation.
+2. **Modular Analysis**: The additive form enables a **three-lemma decomposition** ({prf:ref}`lem-mass-contraction-revival-death`, {prf:ref}`lem-structural-variance-contraction`, {prf:ref}`lem-kinetic-hellinger-contraction`) where each component is analyzed separately with clear physical interpretation.
 
 3. **Upper Bound Property**: For measures with comparable mass ($|k_1 - k_2| \ll \sqrt{k_1 k_2}$), the additive form provides an upper bound on the canonical HK distance (Kondratyev, Monsaingeon, Vorotnikov, *Calc. Var.* 2016).
 
@@ -163,11 +163,11 @@ graph TD
 
 **Chapter-by-Chapter Overview:**
 
-- **Chapter 2 (Lemma A)**: Establishes mass contraction through a two-stage process model that separates births (guaranteed revival + stochastic cloning) from deaths (boundary killing). The proof connects the discrete-time Lemma A from Chapter 3 to the continuous-time analysis using the mean-field BAOAB discretization theory from Chapter 7. The key result is a Foster-Lyapunov drift inequality for the squared mass deviation $(k_t - k_*)^2$ with explicit rate $\kappa_{\text{mass}} = \frac{1 - \epsilon - \epsilon^2}{2}$ where $\epsilon = (1 + 2L_p N + \bar{p}^*)(L_\lambda N + \lambda^*)$ encodes the interaction strength between birth and death rates through their Lipschitz constants $L_p, L_\lambda$. For density-dependent rates (natural scaling), $L_p, L_\lambda = O(1/N)$ ensures $\epsilon < (\sqrt{5}-1)/2 \approx 0.618$, guaranteeing $\kappa_{\text{mass}} > 0$.
+- **Chapter 2 ({prf:ref}`lem-mass-contraction-revival-death`)**: Establishes mass contraction through a two-stage process model that separates births (guaranteed revival + stochastic cloning) from deaths (boundary killing). The proof connects the discrete-time {prf:ref}`lem-mass-contraction-revival-death` from Chapter 3 to the continuous-time analysis using the mean-field BAOAB discretization theory from Chapter 7. The key result is a Foster-Lyapunov drift inequality for the squared mass deviation $(k_t - k_*)^2$ with explicit rate $\kappa_{\text{mass}} = \frac{1 - \epsilon - \epsilon^2}{2}$ where $\epsilon = (1 + 2L_p N + \bar{p}^*)(L_\lambda N + \lambda^*)$ encodes the interaction strength between birth and death rates through their Lipschitz constants $L_p, L_\lambda$. For density-dependent rates (natural scaling), $L_p, L_\lambda = O(1/N)$ ensures $\epsilon < (\sqrt{5}-1)/2 \approx 0.618$, guaranteeing $\kappa_{\text{mass}} > 0$.
 
-- **Chapter 3 (Lemma B)**: Applies the **realization-level Wasserstein contraction** theorems from the framework (Chapters 4 and 6) to the centered empirical measures $\tilde{\mu}_t = \mu_t/\|\mu_t\|$, showing that the structural variance $V_{\text{struct}} = W_2^2(\tilde{\mu}_t, \tilde{\pi}_{\text{QSD}})$ contracts exponentially.
+- **Chapter 3 ({prf:ref}`lem-structural-variance-contraction`)**: Applies the **realization-level Wasserstein contraction** theorems from the framework (Chapters 4 and 6) to the centered empirical measures $\tilde{\mu}_t = \mu_t/\|\mu_t\|$, showing that the structural variance $V_{\text{struct}} = W_2^2(\tilde{\mu}_t, \tilde{\pi}_{\text{QSD}})$ contracts exponentially.
 
-- **Chapter 4 (Lemma C)**: Establishes the **Hellinger contraction via hypocoercivity**. The proof uses a bounded density ratio assumption, reverse Pinsker inequalities, and hypocoercive entropy dissipation from Langevin dynamics to derive a Hellinger contraction inequality.
+- **Chapter 4 ({prf:ref}`lem-kinetic-hellinger-contraction`)**: Establishes the **Hellinger contraction via hypocoercivity**. The proof uses a bounded density ratio assumption, reverse Pinsker inequalities, and hypocoercive entropy dissipation from Langevin dynamics to derive a Hellinger contraction inequality.
 
 - **Chapter 5**: Provides the rigorous proof for the bounded density ratio assumption, a key component for the Hellinger contraction proof.
 
@@ -372,7 +372,7 @@ f(k_*) := (N + \lambda_{\text{clone}}(k_*) k_*)(1 - \bar{p}_{\text{kill}}(N + \l
 
 $$
 
-For physically reasonable rate functions $\lambda_{\text{clone}}(k)$ and $\bar{p}_{\text{kill}}(k')$, this equation has a unique positive solution $k_* \in (0, N)$, which defines the QSD equilibrium mass. The proof of Lemma A then shows that this equilibrium is **stable**: the mass $k_t$ converges to $k_*$ exponentially fast.
+For physically reasonable rate functions $\lambda_{\text{clone}}(k)$ and $\bar{p}_{\text{kill}}(k')$, this equation has a unique positive solution $k_* \in (0, N)$, which defines the QSD equilibrium mass. The proof of {prf:ref}`lem-mass-contraction-revival-death` then shows that this equilibrium is **stable**: the mass $k_t$ converges to $k_*$ exponentially fast.
 
 **Step 4: Expected Mass Change (Two-Stage Calculation with Taylor Expansion)**
 
@@ -983,7 +983,7 @@ $$
 
 **Convergence:** This is the standard drift inequality for squared error, which implies exponential convergence of $\mathbb{E}[(k_t - k_*)^2]$ to the stationary distribution with $\mathbb{E}[(k_\infty - k_*)^2] = O(C_{\text{mass}}/\kappa_{\text{mass}}) = O(N/\kappa_{\text{mass}})$.
 
-This completes the proof of Lemma A.
+This completes the proof of {prf:ref}`lem-mass-contraction-revival-death`.
 
 :::
 
@@ -1130,7 +1130,7 @@ $$
 
 $$
 
-Since $W_2^2(\mu_t, \pi_{\text{QSD}}) = V_{\text{struct}}(\mu_t, \pi_{\text{QSD}}) + \|m_{\mu_t} - m_{\pi}\|^2$ and the mean distance contracts as well (Lemma A for mass, standard Langevin contraction for position), we have:
+Since $W_2^2(\mu_t, \pi_{\text{QSD}}) = V_{\text{struct}}(\mu_t, \pi_{\text{QSD}}) + \|m_{\mu_t} - m_{\pi}\|^2$ and the mean distance contracts as well ({prf:ref}`lem-mass-contraction-revival-death` for mass, standard Langevin contraction for position), we have:
 
 $$
 \mathbb{E}[V_{\text{struct}}(\mu_{t+1}, \pi_{\text{QSD}})] \leq (1 - \lambda_{\text{struct}}\tau) V_{\text{struct}}(\mu_t, \pi_{\text{QSD}}) + C_{\text{struct}}
@@ -1292,7 +1292,7 @@ k_* \leq \sqrt{k_t k_*} \leq \frac{k_t + k_*}{2}
 
 $$
 
-For the proof, we will track the $\sqrt{k_t k_*}$ term exactly and show that deviations from $k_*$ are controlled by Lemma A (mass convergence).
+For the proof, we will track the $\sqrt{k_t k_*}$ term exactly and show that deviations from $k_*$ are controlled by {prf:ref}`lem-mass-contraction-revival-death` (mass convergence).
 
 **Key observation:** The kinetic operator affects these two components through different mechanisms:
 - **Mass component:** $(\sqrt{k_t} - \sqrt{k_*})^2$ changes via boundary killing
@@ -1300,7 +1300,7 @@ For the proof, we will track the $\sqrt{k_t k_*}$ term exactly and show that dev
 
 **Step 2: Mass Contraction via Boundary Killing (Connection to Mean-Field Limit)**
 
-The boundary killing mechanism in the discrete algorithm is approximated in continuous time by the killing rate $c(x,v)$ derived in the mean-field analysis. We connect the discrete Lemma A to the continuous kinetic operator using the mean-field limit established in [07_mean_field](07_mean_field) and [08_propagation_chaos](08_propagation_chaos).
+The boundary killing mechanism in the discrete algorithm is approximated in continuous time by the killing rate $c(x,v)$ derived in the mean-field analysis. We connect the discrete {prf:ref}`lem-mass-contraction-revival-death` to the continuous kinetic operator using the mean-field limit established in [07_mean_field](07_mean_field) and [08_propagation_chaos](08_propagation_chaos).
 
 **Step 2a: Discrete-to-Continuous Bridge via Mean-Field Theory**
 
@@ -1356,9 +1356,9 @@ $$
 
 where $\bar{c}_{\text{kill}}(\mu_t) = \frac{1}{k_t}\int c(x,v) d\mu_t(x,v)$ is the mass-averaged killing rate.
 
-**Step 2c: Expected Revivals from Discrete Lemma A**
+**Step 2c: Expected Revivals from Discrete {prf:ref}`lem-mass-contraction-revival-death`**
 
-Lemma A establishes that the discrete-time cloning + revival mechanism satisfies (from line 106):
+{prf:ref}`lem-mass-contraction-revival-death` establishes that the discrete-time cloning + revival mechanism satisfies (from line 106):
 
 $$
 \text{Total births: } B_t = (N - k_t) + C_t \quad \text{where } \mathbb{E}[C_t | k_t] = \lambda_{\text{clone}}(k_t) k_t
@@ -1703,7 +1703,7 @@ $$
 
 From Steps 2-3, we have:
 
-*Mass evolution* (from Step 2d, using Lemma A structure):
+*Mass evolution* (from Step 2d, using {prf:ref}`lem-mass-contraction-revival-death` structure):
 
 $$
 \mathbb{E}[(\sqrt{k_{t+1}} - \sqrt{k_*})^2 | \mu_t] \leq (1 - 2\tau \lambda_{\text{mass}}) (\sqrt{k_t} - \sqrt{k_*})^2 + C_m \tau^2
@@ -1816,7 +1816,7 @@ $$
 where:
 - $\kappa_{\text{kin}} = \lambda_{\text{min}} = \min(2\lambda_{\text{mass}}, \alpha_{\text{shape}}) > 0$ is the dominant contraction rate
 - $C_{\text{kin}} = 2(C_m + \sqrt{k_*} K_H)/\lambda_{\text{min}}$ combines:
-  - Mass variance: $C_m$ (from binomial fluctuations in Lemma A)
+  - Mass variance: $C_m$ (from binomial fluctuations in {prf:ref}`lem-mass-contraction-revival-death`)
   - BAOAB discretization: $\sqrt{k_*} K_H$ (from Step 3 shape contraction)
   - Normalization factor: $2/\lambda_{\text{min}}$ (from comparison inequalities)
 
@@ -1840,7 +1840,7 @@ where:
 
 *Mass equilibration rate:*
 - $\lambda_{\text{mass}} = r_* + c_*$ combines:
-  - $r_* > 0$: equilibrium revival rate per empty slot (from Lemma A)
+  - $r_* > 0$: equilibrium revival rate per empty slot (from {prf:ref}`lem-mass-contraction-revival-death`)
   - $c_* = \bar{c}_{\text{kill}}(\pi_{\text{QSD}}) > 0$: equilibrium death rate at QSD
 
 *Shape contraction rate:*
@@ -1863,7 +1863,7 @@ where:
 - $K_H > 0$: BAOAB weak error constant (depends on potential smoothness, friction $\gamma$, noise strength $\sigma$)
 - $C_{\text{cross}} > 0$: bounds cross-terms from $O(\tau^2 d_H^2)$ remainder
 
-This completes the proof of Lemma C.
+This completes the proof of {prf:ref}`lem-kinetic-hellinger-contraction`.
 
 :::
 
@@ -3724,7 +3724,7 @@ The key mathematical achievement is the **existence of a finite bound**, not the
 #### 6.3. Interpretation
 
 The purpose of this theorem is to establish **existence of a finite bound $M < \infty$**, which is the mathematical requirement for:
-- Reverse Pinsker inequality (Lemma C in this document)
+- Reverse Pinsker inequality ({prf:ref}`lem-kinetic-hellinger-contraction` in this document)
 - Hellinger contraction (Chapter 4 in this document)
 - Hellinger-Kantorovich convergence (Chapter 6 in this document)
 
@@ -3768,7 +3768,7 @@ This is the standard formulation in quasi-stationary distribution theory (Champa
 
 The remaining tasks for extending the HK convergence theory are:
 
-1. **Assemble the three lemmas** (Lemma A: mass, Lemma B: structural, Lemma C: shape) into a unified contraction bound (Chapter 6)
+1. **Assemble the three lemmas** ({prf:ref}`lem-mass-contraction-revival-death`: mass, {prf:ref}`lem-structural-variance-contraction`: structural, {prf:ref}`lem-kinetic-hellinger-contraction`: shape) into a unified contraction bound (Chapter 6)
 2. **Compute explicit constants** for $\kappa_{\text{HK}}$ in terms of primitive parameters
 3. **Numerical verification** of the convergence rates for benchmark problems
 
@@ -3800,7 +3800,7 @@ The remaining tasks for extending the HK convergence theory are:
 
 ## 6. Main Theorem: Exponential HK-Convergence of the Fragile Gas
 
-This chapter combines Lemmas A, B, and C to establish the main result: exponential convergence of the Fragile Gas to its quasi-stationary distribution in the **additive Hellinger-Kantorovich metric**.
+This chapter combines {prf:ref}`lem-mass-contraction-revival-death`, {prf:ref}`lem-structural-variance-contraction`, and {prf:ref}`lem-kinetic-hellinger-contraction` to establish the main result: exponential convergence of the Fragile Gas to its quasi-stationary distribution in the **additive Hellinger-Kantorovich metric**.
 
 ### 6.1. Statement of the Main Theorem
 
@@ -3811,9 +3811,9 @@ Let $\mu_t$ denote the empirical measure of alive walkers at time $t$ under the 
 
 **Assumptions:**
 
-1. **Mass Contraction (Lemma A)**: The birth-death balance satisfies the conditions of {prf:ref}`lem-mass-contraction-revival-death` with $\kappa_{\text{mass}} > 0$.
+1. **Mass Contraction ({prf:ref}`lem-mass-contraction-revival-death`)**: The birth-death balance satisfies the conditions of {prf:ref}`lem-mass-contraction-revival-death` with $\kappa_{\text{mass}} > 0$.
 
-2. **Structural Variance Contraction (Lemma B)**: The Wasserstein contraction conditions of {prf:ref}`lem-structural-variance-contraction` hold with $\lambda_{\text{struct}} > 0$.
+2. **Structural Variance Contraction ({prf:ref}`lem-structural-variance-contraction`)**: The Wasserstein contraction conditions of {prf:ref}`lem-structural-variance-contraction` hold with $\lambda_{\text{struct}} > 0$.
 
 3. **Bounded Density Ratio (Theorem {prf:ref}`thm-uniform-density-bound-hk`)**: The density ratio is uniformly bounded:
 
@@ -3835,7 +3835,7 @@ where:
 - $\kappa_{HK} = \min(\kappa_{\text{kin}}, \lambda_{\text{struct}}) > 0$ is the overall convergence rate
 - $C_{HK} < \infty$ is a constant combining noise and discretization errors from all three components
 
-**Note on Mass Contraction:** The mass equilibration rate from Lemma A is already incorporated into $\kappa_{\text{kin}} = \min(\lambda_{\text{mass}}, \alpha_{\text{shape}}/2)$ where $\lambda_{\text{mass}} = r_* + c_*$. The coupled Lyapunov functional approach in Lemma C (Step 5) automatically handles the mass-shape coupling, so we do not need a separate $\kappa_{\text{mass}}$ term in the overall rate formula.
+**Note on Mass Contraction:** The mass equilibration rate from {prf:ref}`lem-mass-contraction-revival-death` is already incorporated into $\kappa_{\text{kin}} = \min(\lambda_{\text{mass}}, \alpha_{\text{shape}}/2)$ where $\lambda_{\text{mass}} = r_* + c_*$. The coupled Lyapunov functional approach in {prf:ref}`lem-kinetic-hellinger-contraction` (Step 5) automatically handles the mass-shape coupling, so we do not need a separate $\kappa_{\text{mass}}$ term in the overall rate formula.
 
 **Implication (Exponential Convergence):**
 
@@ -3871,7 +3871,7 @@ where:
 
 ### 6.3. Step 1: Hellinger Component Contraction
 
-From Lemma C ({prf:ref}`lem-kinetic-hellinger-contraction`), the Hellinger distance contracts under the full dynamics via a coupled Lyapunov functional approach:
+From {prf:ref}`lem-kinetic-hellinger-contraction`, the Hellinger distance contracts under the full dynamics via a coupled Lyapunov functional approach:
 
 $$
 \mathbb{E}[d_H^2(\mu_{t+1}, \pi_{\text{QSD}}) | \mu_t] \leq (1 - \kappa_{\text{kin}} \tau) d_H^2(\mu_t, \pi_{\text{QSD}}) + C_{\text{kin}} \tau^2
@@ -3879,12 +3879,12 @@ $$
 $$
 
 where:
-- $\kappa_{\text{kin}} = \min(\lambda_{\text{mass}}, \alpha_{\text{shape}}/2) > 0$ (from coupled Lyapunov analysis in Lemma C, Step 5)
+- $\kappa_{\text{kin}} = \min(\lambda_{\text{mass}}, \alpha_{\text{shape}}/2) > 0$ (from coupled Lyapunov analysis in {prf:ref}`lem-kinetic-hellinger-contraction`, Step 5)
 - $\lambda_{\text{mass}} = r_* + c_*$ combines revival rate $r_*$ and death rate $c_*$
 - $\alpha_{\text{shape}} = 2\alpha_{\text{eff}} / (1 + \log M)$ is the shape contraction rate from direct Hellinger evolution
 - $C_{\text{kin}} = 4C_m + 4\sqrt{k_*} K_H$ combines mass variance and BAOAB discretization errors
 
-**Key Insight from Lemma C:** The Hellinger component already incorporates mass contraction via the decomposition:
+**Key Insight from {prf:ref}`lem-kinetic-hellinger-contraction`:** The Hellinger component already incorporates mass contraction via the decomposition:
 
 $$
 d_H^2(\mu, \pi) = (\sqrt{k_t} - \sqrt{k_*})^2 + \sqrt{k_t k_*} \cdot d_H^2(\tilde{\mu}_t, \tilde{\pi})
@@ -3893,11 +3893,11 @@ $$
 
 where the first term measures mass deviation and the second measures normalized shape deviation. Both contract under the kinetic operator, and their coupling is controlled via Cauchy-Schwarz bounds.
 
-**Implication for Assembly:** The Hellinger contraction bound from Lemma C is already a **complete bound** for the full Hellinger distance including mass effects. We do not need to separately combine Lemma A's mass contraction—it is already accounted for in the proof of Lemma C.
+**Implication for Assembly:** The Hellinger contraction bound from {prf:ref}`lem-kinetic-hellinger-contraction` is already a **complete bound** for the full Hellinger distance including mass effects. We do not need to separately combine {prf:ref}`lem-mass-contraction-revival-death`'s mass contraction—it is already accounted for in the proof of {prf:ref}`lem-kinetic-hellinger-contraction`.
 
 ### 6.4. Step 2: Wasserstein Component Contraction
 
-From Lemma B ({prf:ref}`lem-structural-variance-contraction`), the structural variance (normalized Wasserstein distance) contracts:
+From {prf:ref}`lem-structural-variance-contraction`, the structural variance (normalized Wasserstein distance) contracts:
 
 $$
 \mathbb{E}[W_2^2(\tilde{\mu}_{t+1}, \tilde{\pi}_{\text{QSD}})] \leq e^{-\lambda_{\text{struct}} \tau} W_2^2(\tilde{\mu}_t, \tilde{\pi}_{\text{QSD}}) + C_{\text{struct}}
@@ -3939,14 +3939,14 @@ $$
 
 **Substituting Component Bounds:**
 
-From Step 1 (Lemma C), we have:
+From Step 1 ({prf:ref}`lem-kinetic-hellinger-contraction`), we have:
 
 $$
 \mathbb{E}[d_H^2(\mu_{t+1}, \pi_{\text{QSD}}) | \mu_t] \leq (1 - \kappa_{\text{kin}} \tau) d_H^2(\mu_t, \pi_{\text{QSD}}) + C_{\text{kin}} \tau^2
 
 $$
 
-From Step 2 (Lemma B), using the first-order approximation $e^{-\lambda_{\text{struct}} \tau} \leq 1 - \lambda_{\text{struct}} \tau + \frac{(\lambda_{\text{struct}} \tau)^2}{2}$:
+From Step 2 ({prf:ref}`lem-structural-variance-contraction`), using the first-order approximation $e^{-\lambda_{\text{struct}} \tau} \leq 1 - \lambda_{\text{struct}} \tau + \frac{(\lambda_{\text{struct}} \tau)^2}{2}$:
 
 $$
 \mathbb{E}[W_2^2(\tilde{\mu}_{t+1}, \tilde{\pi}_{\text{QSD}}) | \mu_t] \leq (1 - \lambda_{\text{struct}} \tau) W_2^2(\tilde{\mu}_t, \tilde{\pi}_{\text{QSD}}) + C_{\text{struct}} + \frac{(\lambda_{\text{struct}})^2 \tau^2}{2} W_2^2(\tilde{\mu}_t, \tilde{\pi}_{\text{QSD}})
@@ -4060,7 +4060,7 @@ $$
 
 1. **Explicit dependence:** $C_{HK}(\tau) = C_{\text{kin}} + C_{\text{quad}} + \frac{C_{\text{struct}}}{\tau^2}$ where:
    - $C_{\text{quad}} = 2(\lambda_{\text{struct}} R)^2$ (quadratic remainder from exponential expansion)
-   - $C_{\text{struct}} = C_W + C_{\text{kin}}\tau^2$ (from Lemma B)
+   - $C_{\text{struct}} = C_W + C_{\text{kin}}\tau^2$ (from {prf:ref}`lem-structural-variance-contraction`)
 
 2. **Scaling with $\tau$:**
    - Substituting $C_{\text{struct}} = C_W + C_{\text{kin}}\tau^2$:
@@ -4255,7 +4255,7 @@ $$
 $$
 
 with:
-- $\lambda_{\text{mass}} = r_* + c_*$ (mass equilibration rate from Lemma A/C)
+- $\lambda_{\text{mass}} = r_* + c_*$ (mass equilibration rate from {prf:ref}`lem-mass-contraction-revival-death`/{prf:ref}`lem-kinetic-hellinger-contraction`)
   - $r_* > 0$: equilibrium revival rate per empty slot
   - $c_* > 0$: equilibrium death rate at QSD
 - $\alpha_{\text{shape}} = 2\alpha_{\text{eff}} / (1 + \log M)$ (shape contraction rate from direct Hellinger evolution)
@@ -4334,7 +4334,7 @@ where $C_{HK} = C_{\text{kin}} + C_{\text{struct}} + O(\tau^2)$ with $C_{\text{s
 - **Finite-$N$ effects:** The constant $C_{HK}$ includes $O(1/N)$ terms from cloning variance, so steady-state error decreases as $O(1/\sqrt{N})$ for large swarms
 
 :::{important}
-The precise $\tau$-dependence of the steady-state error depends on the scaling of the cloning Wasserstein constant $C_W$ from Lemma B. If $C_W$ represents purely discretization error, it scales as $O(\tau^2)$ and finer time steps improve accuracy. However, if $C_W$ captures finite-$N$ cloning variance (which is $\tau$-independent), the steady-state error may increase for very small $\tau$, creating an optimal time step $\tau_* \sim O(\sqrt{C_W/C_{\text{kin}}})$.
+The precise $\tau$-dependence of the steady-state error depends on the scaling of the cloning Wasserstein constant $C_W$ from {prf:ref}`lem-structural-variance-contraction`. If $C_W$ represents purely discretization error, it scales as $O(\tau^2)$ and finer time steps improve accuracy. However, if $C_W$ captures finite-$N$ cloning variance (which is $\tau$-independent), the steady-state error may increase for very small $\tau$, creating an optimal time step $\tau_* \sim O(\sqrt{C_W/C_{\text{kin}}})$.
 :::
 
 **Practical Bound:**

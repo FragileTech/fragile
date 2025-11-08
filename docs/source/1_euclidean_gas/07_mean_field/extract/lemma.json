@@ -12,11 +12,7 @@
     ],
     "hypotheses": [
       {
-        "text": "The reflecting boundary conditions established in Section 2.2 are in place.",
-        "latex": null
-      },
-      {
-        "text": "The boundary conditions are on both position and velocity boundaries.",
+        "text": "Reflecting boundary conditions are established on both position and velocity boundaries.",
         "latex": null
       }
     ],
@@ -32,12 +28,12 @@
       },
       {
         "symbol": "L^\\dagger",
-        "role": "transport operator",
+        "role": "transport operator (adjoint)",
         "constraints": []
       },
       {
         "symbol": "f(t,z)",
-        "role": "function",
+        "role": "distribution/density function",
         "constraints": []
       },
       {
@@ -47,17 +43,36 @@
       },
       {
         "symbol": "z",
-        "role": "position/velocity coordinates",
+        "role": "phase space variable",
         "constraints": []
       }
     ],
-    "implicit_assumptions": [],
-    "local_refs": [
-      "Section 2.2"
+    "implicit_assumptions": [
+      {
+        "text": "The transport operator $L^\\dagger$ is the adjoint of the standard transport operator.",
+        "confidence": 0.9
+      },
+      {
+        "text": "The domain $\\Omega$ is well-defined for integration.",
+        "confidence": 0.9
+      }
     ],
+    "local_refs": [],
     "proof": {
-      "availability": "omitted",
-      "steps": []
-    }
+      "availability": "sketch",
+      "steps": [
+        {
+          "kind": "premise",
+          "text": "The integral of the transport operator over the domain $\\Omega$ vanishes due to the reflecting boundary conditions on both position and velocity boundaries.",
+          "latex": null
+        }
+      ]
+    },
+    "tags": [
+      "conservation",
+      "transport operator",
+      "boundary conditions",
+      "mass"
+    ]
   }
 ]

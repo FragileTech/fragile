@@ -26,9 +26,11 @@ import dspy
 
 from mathster.agents.core import (
     DirectiveAgentPaths,
+    ExtractWithParametersSignature,
     LATEX_FENCE_PATTERN,
     METADATA_PATTERN,
     run_directive_extraction_loop,
+    to_jsonable,
     URI_PATTERN,
 )
 
@@ -42,7 +44,7 @@ logger.setLevel(logging.INFO)
 # --------------------------------------------------------------------------------------
 
 
-class ParseAssumptionDirectiveSplit(dspy.Signature):
+class ParseAssumptionDirectiveSplit(ExtractWithParametersSignature):
     """
     Convert a `::{prf:assumption}` directive into structured analysis artifacts.
 
@@ -66,10 +68,10 @@ class ParseAssumptionDirectiveSplit(dspy.Signature):
         [{"type": <string|null>, "text": <string|null>, "latex": <string|null>} ...]
         for inequalities, bounds, or cases.
 
-    - parameters_json (json array):
-        [{"symbol": <string>, "description": <string|null>, "constraints": [<string>, ...]}, ...]
+    - parameters (list[Parameter]):
+        Provided by the shared signature; captures all parameter metadata.
 
-    - references_json (json array of str):
+    - references (list[str]):
         Labels cited in the assumption (definitions, theorems, axioms, etc.).
 
     - notes_json (json array):
@@ -94,14 +96,7 @@ class ParseAssumptionDirectiveSplit(dspy.Signature):
     conditions_json = dspy.OutputField(
         desc='JSON array [{"type": str|null, "text": str|null, "latex": str|null}, ...]'
     )
-    parameters_json = dspy.OutputField(
-        desc='JSON array [{"symbol": str, "description": str|null, "constraints": [str,...]}, ...]'
-    )
-    references_json = dspy.OutputField(desc='JSON array of strings ["ax-1.2","def-fit",...]')
     notes_json = dspy.OutputField(desc='JSON array [{"type": str|null, "text": str|null}, ...]')
-    tags_json = dspy.OutputField(
-        desc='JSON array of 3-10 keyword strings for search (e.g., ["mass","confiment","ldp"]).'
-    )
 
 
 # --------------------------------------------------------------------------------------
@@ -114,13 +109,17 @@ _FENCE_PAT = LATEX_FENCE_PATTERN
 _LABEL_PAT = re.compile(r"^assump-[a-z0-9-]+$")
 
 
-def _json_loads(payload: str | None, default):
-    if not payload or not payload.strip():
+def _json_loads(payload: Any, default):
+    if payload is None:
         return default
-    try:
-        return json.loads(payload)
-    except Exception:
-        return default
+    if isinstance(payload, str):
+        if not payload.strip():
+            return default
+        try:
+            payload = json.loads(payload)
+        except Exception:
+            return default
+    return to_jsonable(payload)
 
 
 def _nonempty(value: str | None) -> bool:
@@ -159,10 +158,10 @@ def assumption_reward(args: dict[str, Any], pred) -> float:
 
     bullet_items = _json_loads(getattr(pred, "bullet_items_json", None), [])
     conditions = _json_loads(getattr(pred, "conditions_json", None), [])
-    parameters = _json_loads(getattr(pred, "parameters_json", None), [])
-    references = _json_loads(getattr(pred, "references_json", None), [])
+    parameters = _json_loads(getattr(pred, "parameters", None), [])
+    references = _json_loads(getattr(pred, "references", None), [])
     notes = _json_loads(getattr(pred, "notes_json", None), [])
-    tags = _json_loads(getattr(pred, "tags_json", None), [])
+    tags = _json_loads(getattr(pred, "tags", None), [])
 
     score = 0.0
 
@@ -306,8 +305,15 @@ def assemble_output(res) -> dict[str, Any]:
     """
 
     def as_json(field, default):
+        if field is None:
+            return default
+        if isinstance(field, str):
+            try:
+                return json.loads(field) if field else default
+            except Exception:
+                return default
         try:
-            return json.loads(field) if field else default
+            return to_jsonable(field)
         except Exception:
             return default
 
@@ -318,10 +324,10 @@ def assemble_output(res) -> dict[str, Any]:
         "nl_summary": (res.nl_summary_str or "").strip() or None,
         "bullet_items": as_json(res.bullet_items_json, []),
         "conditions": as_json(res.conditions_json, []),
-        "parameters": as_json(res.parameters_json, []),
-        "references": as_json(res.references_json, []),
+        "parameters": as_json(res.parameters, []),
+        "references": as_json(res.references, []),
         "notes": as_json(res.notes_json, []),
-        "tags": as_json(res.tags_json, []),
+        "tags": as_json(res.tags, []),
     }
 
 

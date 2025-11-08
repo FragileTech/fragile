@@ -26,9 +26,11 @@ import dspy
 
 from mathster.agents.core import (
     DirectiveAgentPaths,
+    ExtractSignature,
     LATEX_FENCE_PATTERN,
     METADATA_PATTERN,
     run_directive_extraction_loop,
+    to_jsonable,
     URI_PATTERN,
 )
 
@@ -42,7 +44,7 @@ logger.setLevel(logging.INFO)
 # --------------------------------------------------------------------------------------
 
 
-class ParseRemarkDirectiveSplit(dspy.Signature):
+class ParseRemarkDirectiveSplit(ExtractSignature):
     """
     Convert a `::{prf:remark}` directive into structured content.
 
@@ -64,7 +66,7 @@ class ParseRemarkDirectiveSplit(dspy.Signature):
     - quantitative_notes_json (json array):
         [{"text": <string|null>, "latex": <string|null>} ...] capturing bounds/equations.
 
-    - references_json (json array of str):
+    - references (list[str]):
         Labels cited inside the remark.
 
     - recommendations_json (json array):
@@ -88,14 +90,10 @@ class ParseRemarkDirectiveSplit(dspy.Signature):
     quantitative_notes_json = dspy.OutputField(
         desc='JSON array [{"text": str|null, "latex": str|null}, ...]'
     )
-    references_json = dspy.OutputField(desc='JSON array of strings ["thm-...", "def-...", ...]')
     recommendations_json = dspy.OutputField(
         desc='JSON array [{"text": str|null, "severity": str|null}, ...]'
     )
     dependencies_json = dspy.OutputField(desc='JSON array of strings ["sec-2.1","rem-other",...]')
-    tags_json = dspy.OutputField(
-        desc='JSON array of 3-10 keyword strings for search (e.g., ["design-choice","stability"]).'
-    )
 
 
 # --------------------------------------------------------------------------------------
@@ -108,13 +106,17 @@ _FENCE_PAT = LATEX_FENCE_PATTERN
 _LABEL_PAT = re.compile(r"^rem-[a-z0-9-]+$")
 
 
-def _json_loads(payload: str | None, default):
-    if not payload or not payload.strip():
+def _json_loads(payload: Any, default):
+    if payload is None:
         return default
-    try:
-        return json.loads(payload)
-    except Exception:
-        return default
+    if isinstance(payload, str):
+        if not payload.strip():
+            return default
+        try:
+            payload = json.loads(payload)
+        except Exception:
+            return default
+    return to_jsonable(payload)
 
 
 def _nonempty(value: str | None) -> bool:
@@ -153,10 +155,10 @@ def remark_reward(args: dict[str, Any], pred) -> float:
 
     key_points = _json_loads(getattr(pred, "key_points_json", None), [])
     quantitative_notes = _json_loads(getattr(pred, "quantitative_notes_json", None), [])
-    references = _json_loads(getattr(pred, "references_json", None), [])
+    references = _json_loads(getattr(pred, "references", None), [])
     recommendations = _json_loads(getattr(pred, "recommendations_json", None), [])
     dependencies = _json_loads(getattr(pred, "dependencies_json", None), [])
-    tags = _json_loads(getattr(pred, "tags_json", None), [])
+    tags = _json_loads(getattr(pred, "tags", None), [])
 
     score = 0.0
 
@@ -289,8 +291,15 @@ def assemble_output(res) -> dict[str, Any]:
     """
 
     def as_json(field, default):
+        if field is None:
+            return default
+        if isinstance(field, str):
+            try:
+                return json.loads(field) if field else default
+            except Exception:
+                return default
         try:
-            return json.loads(field) if field else default
+            return to_jsonable(field)
         except Exception:
             return default
 
@@ -301,10 +310,10 @@ def assemble_output(res) -> dict[str, Any]:
         "nl_summary": (res.nl_summary_str or "").strip() or None,
         "key_points": as_json(res.key_points_json, []),
         "quantitative_notes": as_json(res.quantitative_notes_json, []),
-        "references": as_json(res.references_json, []),
+        "references": as_json(res.references, []),
         "recommendations": as_json(res.recommendations_json, []),
         "dependencies": as_json(res.dependencies_json, []),
-        "tags": as_json(res.tags_json, []),
+        "tags": as_json(res.tags, []),
     }
 
 

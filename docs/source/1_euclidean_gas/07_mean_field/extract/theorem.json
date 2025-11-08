@@ -3,7 +3,7 @@
     "type": "theorem",
     "label": "thm-mean-field-equation",
     "title": "The Mean-Field Equations for the Euclidean Gas",
-    "nl_statement": "The evolution of the Euclidean Gas in the mean-field limit is governed by a coupled system describing the alive density $f(t,z)$ and the dead mass $m_d(t)$, comprising a PDE for $f$ and an ODE for $m_d$.",
+    "nl_statement": "The evolution of the Euclidean Gas in the mean-field limit is governed by a coupled system describing the alive density $f(t,z)$ and the dead mass $m_d(t)$.",
     "equations": [
       {
         "label": "eq-mean-field-pde-main",
@@ -20,20 +20,20 @@
     ],
     "hypotheses": [
       {
-        "text": "Initial condition for the alive density: $f(0, \\cdot) = f_0$",
+        "text": "$f(0, \\cdot) = f_0$",
         "latex": "f(0, \\cdot) = f_0"
       },
       {
-        "text": "Initial condition for the dead mass: $m_d(0) = 1 - \\int_{\\Omega} f_0$",
-        "latex": "m_d(0) = 1 - \\int_{\\Omega} f_0"
+        "text": "$m_d(0) = 1 - \\int_\\Omega f_0$",
+        "latex": "m_d(0) = 1 - \\int_\\Omega f_0"
       },
       {
-        "text": "Total mass conservation: $m_a(0) + m_d(0) = 1$",
+        "text": "$m_a(0) + m_d(0) = 1$",
         "latex": "m_a(0) + m_d(0) = 1"
       }
     ],
     "conclusion": {
-      "text": "The evolution of the Euclidean Gas in the mean-field limit is governed by the coupled system defined by the PDE for the alive density $f(t,z)$ and the ODE for the dead mass $m_d(t)$.",
+      "text": "The evolution of the Euclidean Gas in the mean-field limit is governed by a coupled system of equations for the alive density $f(t,z)$ and the dead mass $m_d(t)$.",
       "latex": null
     },
     "variables": [
@@ -55,29 +55,10 @@
         ]
       },
       {
-        "symbol": "L^\\dagger f",
-        "role": "operator term (kinetic transport)",
-        "constraints": []
-      },
-      {
-        "symbol": "B[f, m_d]",
-        "role": "revival operator",
-        "constraints": [
-          "B[f, m_d] = \\lambda_{\\text{revive}} m_d(t) f/m_a"
-        ]
-      },
-      {
-        "symbol": "S[f]",
-        "role": "internal cloning operator",
-        "constraints": [
-          "mass-neutral"
-        ]
-      },
-      {
         "symbol": "\\lambda_{\\text{revive}}",
         "role": "revival rate",
         "constraints": [
-          "\\lambda_{\\text{revive}} > 0",
+          "> 0",
           "typical values 0.1-5"
         ]
       },
@@ -93,25 +74,30 @@
       },
       {
         "symbol": "m_a(t)",
-        "role": "alive mass (implied)",
+        "role": "alive mass",
         "constraints": []
       }
     ],
     "implicit_assumptions": [],
-    "local_refs": [
-      "eq-mean-field-pde-main",
-      "eq-dead-mass-ode"
-    ],
+    "local_refs": [],
     "proof": {
       "availability": "omitted",
       "steps": []
-    }
+    },
+    "tags": [
+      "mean-field",
+      "kinetic transport",
+      "coupled system",
+      "alive density",
+      "dead mass",
+      "evolution equation"
+    ]
   },
   {
     "type": "theorem",
     "label": "thm-mass-conservation",
     "title": "Total Mass Conservation and Population Dynamics",
-    "nl_statement": "Any sufficiently regular solution $(f(t,z), m_d(t))$ to the Mean-Field Equations conserves total population mass and has an evolution for the alive mass governed by the balance between killing and revival.",
+    "nl_statement": "Any sufficiently regular solution $(f(t,z), m_d(t))$ to the Mean-Field Equations conserves total population mass and satisfies a specific evolution equation for the alive population mass.",
     "equations": [
       {
         "label": null,
@@ -134,29 +120,31 @@
       {
         "text": "$(f(t,z), m_d(t))$ is a sufficiently regular solution to the Mean-Field Equations.",
         "latex": null
+      },
+      {
+        "text": "The initial condition $m_a(0) + m_d(0) = 1$ holds.",
+        "latex": null
       }
     ],
     "conclusion": {
-      "text": "The total population mass $m_a(t) + m_d(t)$ is conserved for all $t>0$, and the alive mass $m_a(t)$ evolves according to $\\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = \\lambda_{\\text{rev}} m_d(t) - k_{\\text{killed}}[f](t)$.",
-      "latex": "\\frac{\\mathrm{d}}{\\mathrm{d}t}\\left[m_a(t) + m_d(t)\\right] = 0 \\text{ and } \\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = \\lambda_{\\text{rev}} m_d(t) - k_{\\text{killed}}[f](t)"
+      "text": "The total population mass $m_a(t) + m_d(t)$ is conserved for all $t>0$, and the alive mass evolves according to $\\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = \\lambda_{\\text{rev}} m_d(t) - k_{\\text{killed}}[f](t)$.",
+      "latex": "\\frac{\\mathrm{d}}{\\mathrm{d}t}\\left[m_a(t) + m_d(t)\\right] = 0 \\quad \\text{and} \\quad \\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = \\lambda_{\\text{rev}} m_d(t) - k_{\\text{killed}}[f](t)"
     },
     "variables": [
       {
         "symbol": "f(t,z)",
-        "role": "alive population density",
+        "role": "density of alive population at time t in state z",
         "constraints": []
       },
       {
         "symbol": "m_d(t)",
-        "role": "dead population mass",
+        "role": "dead population mass at time t",
         "constraints": []
       },
       {
         "symbol": "m_a(t)",
-        "role": "alive population mass",
-        "constraints": [
-          "m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z"
-        ]
+        "role": "alive population mass at time t",
+        "constraints": []
       },
       {
         "symbol": "t",
@@ -167,61 +155,65 @@
       },
       {
         "symbol": "z",
-        "role": "spatial variable",
-        "constraints": [
-          "z \\in \\Omega"
-        ]
+        "role": "state variable (in space $\\Omega$)",
+        "constraints": []
       },
       {
         "symbol": "\\lambda_{\\text{rev}}",
-        "role": "revival rate constant",
+        "role": "revival rate parameter",
         "constraints": []
       },
       {
         "symbol": "k_{\\text{killed}}[f](t)",
-        "role": "killing rate functional",
+        "role": "rate of killing dependent on alive population density",
         "constraints": []
       }
     ],
     "implicit_assumptions": [
       {
-        "text": "The total mass $m_a(0) + m_d(0) = 1$ if the conservation result holds for all $t$.",
-        "confidence": 0.9
+        "text": "The Mean-Field Equations provide a well-defined system whose solutions $(f, m_d)$ exist and are sufficiently regular.",
+        "confidence": 1.0
       },
       {
-        "text": "The domain $\\Omega$ is defined.",
-        "confidence": 1.0
+        "text": "The integration domain $\\Omega$ is fixed.",
+        "confidence": 0.9
       }
     ],
     "local_refs": [],
     "proof": {
       "availability": "omitted",
       "steps": []
-    }
+    },
+    "tags": [
+      "mass conservation",
+      "population dynamics",
+      "mean-field equations",
+      "equilibrium"
+    ]
   },
   {
     "type": "theorem",
     "label": "thm-killing-rate-consistency",
     "title": "Consistency of the Interior Killing Rate Approximation",
-    "nl_statement": "Under specified regularity assumptions, a smooth killing rate function $c$ exists, leading to pointwise convergence of the discrete exit rate to $c$ (Part i), and uniform convergence of the expected killing fraction rate to the continuous killing rate, with an explicit error bound (Part ii).",
+    "nl_statement": "Under specified regularity assumptions, the discrete exit rate converges pointwise to a smooth killing rate function $c(x,v)$, and the expected discrete killing fraction converges uniformly to the continuous killing rate $K_{\\text{continuous}}$.",
     "equations": [],
     "hypotheses": [
       {
-        "text": "Domain regularity assumptions hold",
-        "latex": "[](#asmp-domain-regularity)"
+        "text": "Assumptions regarding domain regularity",
+        "latex": null
       },
       {
-        "text": "Integrator regularity assumptions hold",
-        "latex": "[](#asmp-integrator-regularity)"
+        "text": "Assumptions regarding integrator regularity",
+        "latex": null
       },
       {
-        "text": "Density regularity assumptions hold for killing",
-        "latex": "[](#asmp-density-regularity-killing)"
+        "text": "Assumption regarding density regularity for killing",
+        "latex": null
       }
     ],
     "conclusion": {
-      "text": "There exists a smooth killing rate function $c \\in C^\\infty_c(\\Omega)$ with compact support in $\\mathcal{T}_\\delta$ such that Part (i) (pointwise convergence of exit rate) and Part (ii) (uniform convergence of expected killing fraction) hold.",
-      "latex": "\\exists c \\in C^\\infty_c(\\Omega) \\text{ s.t. Part (i) and Part (ii) hold}"
+      "text": "There exists a smooth killing rate function $c \\in C^\\infty_c(\\Omega)$ with compact support in $\\mathcal{T}_\\delta$ such that $\\lim_{\\tau \\to 0} \\frac{1}{\\tau} p_{\\text{exit}}(x,v,\\tau) = c(x,v)$ pointwise, and $\\lim_{\\tau \\to 0} \\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) = K_{\\text{continuous}}$ with the specified error bound.",
+      "latex": "\\lim_{\\tau \\to 0} \\frac{1}{\\tau} p_{\\text{exit}}(x,v,\\tau) = c(x,v) \\text{ and } \\lim_{\\tau \\to 0} \\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) = K_{\\text{continuous}}"
     },
     "variables": [
       {
@@ -239,46 +231,17 @@
       },
       {
         "symbol": "x^+(\\tau; x,v)",
-        "role": "trajectory evolved for time \\tau",
-        "constraints": []
-      },
-      {
-        "symbol": "X_{\\text{valid}}",
-        "role": "set of valid states",
+        "role": "solution to the dynamics after time \\tau",
         "constraints": []
       },
       {
         "symbol": "x",
-        "role": "spatial position",
-        "constraints": [
-          "x \\in \\Omega"
-        ]
+        "role": "spatial variable in \\Omega",
+        "constraints": []
       },
       {
         "symbol": "v",
-        "role": "velocity",
-        "constraints": [
-          "v \\in \\Omega \\text{ (implicitly, as part of } (x,v) \\in \\Omega)"
-        ]
-      },
-      {
-        "symbol": "K_{\\text{discrete}}(\\tau)",
-        "role": "discrete expected killing fraction",
-        "constraints": []
-      },
-      {
-        "symbol": "f^\\tau(x,v)",
-        "role": "discrete density",
-        "constraints": []
-      },
-      {
-        "symbol": "K_{\\text{continuous}}",
-        "role": "continuous expected killing rate",
-        "constraints": []
-      },
-      {
-        "symbol": "f(x,v)",
-        "role": "continuous density",
+        "role": "velocity variable in \\Omega",
         "constraints": []
       },
       {
@@ -290,7 +253,7 @@
       },
       {
         "symbol": "n_x(x)",
-        "role": "outward unit normal vector at x",
+        "role": "outward normal vector at x",
         "constraints": []
       },
       {
@@ -299,26 +262,42 @@
         "constraints": []
       },
       {
-        "symbol": "\\delta",
-        "role": "parameter defining the region \\mathcal{T}_\\delta",
+        "symbol": "K_{\\text{discrete}}(\\tau)",
+        "role": "expected killing fraction in discrete timestep",
+        "constraints": []
+      },
+      {
+        "symbol": "f^\\tau(x,v)",
+        "role": "discrete density function",
+        "constraints": []
+      },
+      {
+        "symbol": "K_{\\text{continuous}}",
+        "role": "continuous killing rate (integral)",
+        "constraints": []
+      },
+      {
+        "symbol": "f(x,v)",
+        "role": "continuous density function",
+        "constraints": []
+      },
+      {
+        "symbol": "C",
+        "role": "constant",
         "constraints": []
       }
     ],
     "implicit_assumptions": [
       {
-        "text": "The domain $\\Omega$ is non-empty and has a boundary.",
+        "text": "The domain $\\Omega$ and the set $X_{\\text{valid}}$ are well-defined geometric structures, likely related to the domain boundary.",
         "confidence": 1.0
       },
       {
-        "text": "The notion of 'valid states' $X_{\\text{valid}}$ is well-defined.",
+        "text": "The dynamics $x^+(\\tau; x,v)$ are defined by the underlying kinetic equation (implied by context of convergence).",
         "confidence": 0.9
       },
       {
-        "text": "The definition of $d(x)$ (distance to boundary) is standard.",
-        "confidence": 0.95
-      },
-      {
-        "text": "The notation $f^\\tau$ represents the density evolved by the discrete flow/integrator.",
+        "text": "The term $\\delta$ defines a boundary layer region $\\mathcal{T}_\\delta$ near the boundary.",
         "confidence": 0.9
       }
     ],
@@ -330,13 +309,20 @@
     "proof": {
       "availability": "omitted",
       "steps": []
-    }
+    },
+    "tags": [
+      "killing rate",
+      "convergence",
+      "exit probability",
+      "discretization",
+      "approximation"
+    ]
   },
   {
     "type": "theorem",
     "label": "thm-mean-field-limit-informal",
     "title": "Mean-Field Limit (Informal Statement)",
-    "nl_statement": "If the empirical density $f_N^\\tau(t, x, v)$ of the $N$-particle discrete Fragile Gas dynamics converges weakly to $f(t, x, v)$ in the joint limit $N \\to \\infty, \\tau \\to 0$ under the condition $\\tau = O(N^{-\\alpha})$ for $\\alpha > 0$.",
+    "nl_statement": "The empirical density $f_N^\\tau(t, x, v)$ of the $N$-particle discrete Fragile Gas dynamics converges weakly to a limiting density $f(t, x, v)$ as $N \\to \\infty$ and $\\tau \\to 0$ under the condition $\\tau = O(N^{-\\alpha})$ for some $\\alpha > 0$.",
     "equations": [
       {
         "label": null,
@@ -349,63 +335,63 @@
     ],
     "hypotheses": [
       {
-        "text": "Let $(X_i^\\tau(t), V_i^\\tau(t))_{i=1}^N$ be the $N$-particle discrete Fragile Gas dynamics with timestep $\\tau$.",
+        "text": "$(X_i^\\tau(t), V_i^\\tau(t))_{i=1}^N$ be the $N$-particle discrete Fragile Gas dynamics with timestep $\\tau$.",
         "latex": null
       },
       {
-        "text": "The limit is taken as $N \\to \\infty, \\tau \\to 0$ with $\\tau = O(N^{-\\alpha})$ for $\\alpha > 0$.",
-        "latex": "\\tau = O(N^{-\\alpha}), \\alpha > 0"
+        "text": "The limit is taken in $N \\to \\infty, \\tau \\to 0$ with $\\tau = O(N^{-\\alpha})$ for $\\alpha > 0$.",
+        "latex": "\\tau = O(N^{-\\alpha}) \\text{ for } \\alpha > 0"
       }
     ],
     "conclusion": {
-      "text": "The empirical density $f_N^\\tau(t, \\cdot, \\cdot)$ converges weakly to $f(t, \\cdot, \\cdot)$.",
+      "text": "The empirical density converges weakly to $f(t, \\cdot, \\cdot)$.",
       "latex": "f_N^\\tau(t, \\cdot, \\cdot) \\xrightarrow{\\text{weak}} f(t, \\cdot, \\cdot)"
     },
     "variables": [
       {
         "symbol": "(X_i^\\tau(t), V_i^\\tau(t))_{i=1}^N",
-        "role": "System state variables",
-        "constraints": []
+        "role": "particles of the $N$-particle discrete Fragile Gas dynamics",
+        "constraints": [
+          "i=1 to N"
+        ]
       },
       {
         "symbol": "\\tau",
-        "role": "Timestep",
+        "role": "timestep",
         "constraints": []
       },
       {
         "symbol": "N",
-        "role": "Number of particles",
-        "constraints": []
+        "role": "number of particles",
+        "constraints": [
+          "N \\to \\infty"
+        ]
       },
       {
         "symbol": "f_N^\\tau(t, x, v)",
-        "role": "Empirical density",
+        "role": "empirical density",
         "constraints": []
       },
       {
         "symbol": "f(t, x, v)",
-        "role": "Limit density",
+        "role": "limiting density",
         "constraints": []
       }
     ],
-    "implicit_assumptions": [
-      {
-        "text": "The system being considered is the Fragile Gas dynamics.",
-        "confidence": 1.0
-      },
-      {
-        "text": "Weak convergence refers to convergence in the sense of distributions/measures.",
-        "confidence": 0.9
-      }
-    ],
+    "implicit_assumptions": [],
     "local_refs": [
-      "thm-killing-rate-consistency",
-      "Section 2.2",
-      "Section 2.3"
+      "thm-killing-rate-consistency"
     ],
     "proof": {
-      "availability": "omitted",
+      "availability": "by-reference",
       "steps": []
-    }
+    },
+    "tags": [
+      "mean-field",
+      "kinetic theory",
+      "limit theorem",
+      "empirical density",
+      "fragile gas"
+    ]
   }
 ]

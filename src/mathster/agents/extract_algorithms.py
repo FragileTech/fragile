@@ -26,9 +26,11 @@ import dspy
 
 from mathster.agents.core import (
     DirectiveAgentPaths,
+    ExtractSignature,
     LATEX_FENCE_PATTERN,
     METADATA_PATTERN,
     run_directive_extraction_loop,
+    to_jsonable,
     URI_PATTERN,
 )
 
@@ -42,7 +44,7 @@ logger.setLevel(logging.INFO)
 # --------------------------------------------------------------------------------------
 
 
-class ParseAlgorithmDirectiveSplit(dspy.Signature):
+class ParseAlgorithmDirectiveSplit(ExtractSignature):
     """
     Convert a `::{prf:algorithm}` directive into a structured representation.
 
@@ -67,7 +69,7 @@ class ParseAlgorithmDirectiveSplit(dspy.Signature):
     - guard_conditions_json (json array):
         [{"text": <string|null>, "latex": <string|null>} ...] (preconditions, invariants).
 
-    - references_json (json array of str):
+    - references (list[str]):
         Labels cited in the algorithm.
 
     - failure_modes_json (json array):
@@ -91,13 +93,8 @@ class ParseAlgorithmDirectiveSplit(dspy.Signature):
     guard_conditions_json = dspy.OutputField(
         desc='JSON array [{"text": str|null, "latex": str|null}, ...]'
     )
-    
     failure_modes_json = dspy.OutputField(
         desc='JSON array [{"description": str|null, "impact": str|null}, ...]'
-    )
-    references_json = dspy.OutputField(desc='JSON array of strings ["def-...", "thm-...", ...]')
-    tags_json = dspy.OutputField(
-        desc='JSON array of 3-10 keyword strings for search (e.g., ["greedy","pairing","diversity"]).'
     )
 
 
@@ -111,13 +108,17 @@ _FENCE_PAT = LATEX_FENCE_PATTERN
 _LABEL_PAT = re.compile(r"^alg-[a-z0-9-]+$")
 
 
-def _json_loads(payload: str | None, default):
-    if not payload or not payload.strip():
+def _json_loads(payload: Any, default):
+    if payload is None:
         return default
-    try:
-        return json.loads(payload)
-    except Exception:
-        return default
+    if isinstance(payload, str):
+        if not payload.strip():
+            return default
+        try:
+            payload = json.loads(payload)
+        except Exception:
+            return default
+    return to_jsonable(payload)
 
 
 def _nonempty(value: str | None) -> bool:
@@ -157,9 +158,9 @@ def algorithm_reward(args: dict[str, Any], pred) -> float:
     signature = _json_loads(getattr(pred, "signature_json", None), {})
     steps = _json_loads(getattr(pred, "steps_json", None), [])
     guards = _json_loads(getattr(pred, "guard_conditions_json", None), [])
-    references = _json_loads(getattr(pred, "references_json", None), [])
+    references = _json_loads(getattr(pred, "references", None), [])
     failure_modes = _json_loads(getattr(pred, "failure_modes_json", None), [])
-    tags = _json_loads(getattr(pred, "tags_json", None), [])
+    tags = _json_loads(getattr(pred, "tags", None), [])
 
     score = 0.0
 
@@ -293,8 +294,15 @@ def assemble_output(res) -> dict[str, Any]:
     """Recombine DSPy outputs into the JSON we persist."""
 
     def as_json(field, default):
+        if field is None:
+            return default
+        if isinstance(field, str):
+            try:
+                return json.loads(field) if field else default
+            except Exception:
+                return default
         try:
-            return json.loads(field) if field else default
+            return to_jsonable(field)
         except Exception:
             return default
 
@@ -306,9 +314,9 @@ def assemble_output(res) -> dict[str, Any]:
         "signature": as_json(res.signature_json, {}),
         "steps": as_json(res.steps_json, []),
         "guard_conditions": as_json(res.guard_conditions_json, []),
-        "references": as_json(res.references_json, []),
+        "references": as_json(res.references, []),
         "failure_modes": as_json(res.failure_modes_json, []),
-        "tags": as_json(res.tags_json, []),
+        "tags": as_json(res.tags, []),
     }
 
 

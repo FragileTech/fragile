@@ -22,7 +22,7 @@ Sections 3-4 provide supplementary material: alternative proof approaches via me
 
 This document consolidates all KL-convergence results for the Euclidean Gas framework. While we focus on the Euclidean Gas as the primary example, the techniques extend naturally to the broader class of Fragile Gas systems. Extensions to the Adaptive Gas with viscous coupling and adaptive forces are discussed in Section 7.
 
-**Scope boundaries**: This document assumes the Foster-Lyapunov drift conditions established in the convergence analysis (document `06_convergence`) and the mean-field limit theory from documents `07_mean_field` and `08_propagation_chaos`. The primary proof (Section 2) assumes log-concavity of the quasi-stationary distribution (Axiom {prf:ref}`axiom-qsd-log-concave`), which is verified for specific physical systems (Yang-Mills vacuum, harmonic confinement). Section 4 outlines approaches to remove this assumption using weighted hypocoercivity.
+**Scope boundaries**: This document assumes the Foster-Lyapunov drift conditions established in the convergence analysis (document `06_convergence`) and the mean-field limit theory from documents `07_mean_field` and `08_propagation_chaos`. The primary proof (Section 2) assumes log-concavity of the quasi-stationary distribution ({prf:ref}`axiom-qsd-log-concave`), which is verified for specific physical systems (Yang-Mills vacuum, harmonic confinement). Section 4 outlines approaches to remove this assumption using weighted hypocoercivity.
 
 :::{important} Axiom Status Update (October 2025)
 **Axiom {prf:ref}`axiom-qsd-log-concave` is no longer an axiom**—it is now a **proven theorem** via the hypocoercivity method in [../2_geometric_gas/15_geometric_gas_lsi_proof.md](../2_geometric_gas/15_geometric_gas_lsi_proof.md), which **does NOT require log-concavity**.
@@ -954,7 +954,7 @@ This axiom is the cornerstone of our LSI proof, as it enables the use of powerfu
 
 1. **HWI Inequality (Section 4.2):** The Otto-Villani inequality $H(\mu|\pi) \leq W_2(\mu,\pi)\sqrt{I(\mu|\pi)}$ requires log-concavity of $\pi$
 
-2. **Displacement Convexity (Lemma 5.2):** McCann's displacement convexity of entropy along Wasserstein geodesics requires log-concavity of the reference measure
+2. **Displacement Convexity** ({prf:ref}`lem-entropy-transport-dissipation`): McCann's displacement convexity of entropy along Wasserstein geodesics requires log-concavity of the reference measure
 
 Without log-concavity, the entire entropy-transport Lyapunov function analysis (Section 5) becomes invalid.
 
@@ -2288,13 +2288,13 @@ All three gaps are now **completely resolved** with rigorous proofs.
 
 This document now provides a **complete, rigorous proof** of the entropy dissipation inequality using the mean-field generator approach. This proof is **complementary** to the displacement convexity approach in Section 5.2 (lines 920-1040) of the main document.
 
-Both proofs rely on log-concavity (Axiom 3.5) but exploit it through different mathematical machinery.
+Both proofs rely on log-concavity ({prf:ref}`axiom-qsd-log-concave`) but exploit it through different mathematical machinery.
 :::
 
 
 ## Motivation: Generator-Based Approach
 
-The main document proves Lemma 5.2 using **displacement convexity** in Wasserstein space (McCann's approach). This sketch explores an alternative **mean-field generator** approach that would provide:
+The main document proves {prf:ref}`lem-entropy-transport-dissipation` using **displacement convexity** in Wasserstein space (McCann's approach). This sketch explores an alternative **mean-field generator** approach that would provide:
 
 1. **Direct connection** to the infinitesimal dynamics of the cloning operator
 2. **Explicit constants** in terms of generator parameters (λ_clone, δ², etc.)
@@ -2320,7 +2320,7 @@ and bound each component separately under the cloning operator.
    - $\rho_\mu, \rho_\pi \in C^2(\Omega)$
    - $\rho_\mu, \rho_\pi > 0$ on $\Omega$ (strictly positive)
 
-2. $\pi = \pi_{\text{QSD}}$ is log-concave (Axiom 3.5):
+2. $\pi = \pi_{\text{QSD}}$ is log-concave ({prf:ref}`axiom-qsd-log-concave`):
    $$\rho_\pi(z) = \exp(-V_{\text{QSD}}(z))$$
    for convex $V_{\text{QSD}}$
 
@@ -2732,7 +2732,7 @@ The main document (Section 5.2, lines 920-1040) provides an **alternative comple
 | **Main result** | $\Delta D_{\text{KL}} \leq -\tau\beta D_{\text{KL}} + C_{\text{ent}}$ | $D_{\text{KL}}(\mu') \leq D_{\text{KL}}(\mu) - \alpha W_2^2$ |
 | **Nature** | Infinitesimal/analytic | Global/geometric |
 
-Both proofs rely fundamentally on **log-concavity** (Axiom 3.5) but exploit it through different mathematical structures.
+Both proofs rely fundamentally on **log-concavity** ({prf:ref}`axiom-qsd-log-concave`) but exploit it through different mathematical structures.
 
 
 ## Key Insights from Resolution
@@ -2747,7 +2747,7 @@ Both proofs rely fundamentally on **log-concavity** (Axiom 3.5) but exploit it t
 
 ### 3. Log-Concavity is Essential
 
-**Axiom 3.5** (log-concavity of $\pi_{\text{QSD}}$) appears in both proofs:
+{prf:ref}`axiom-qsd-log-concave` (log-concavity of $\pi_{\text{QSD}}$) appears in both proofs:
 - **Displacement convexity**: Provides geodesic convexity of entropy
 - **Mean-field generator**: Provides LSI via Bakry-Émery theory
 
@@ -3384,7 +3384,7 @@ Both rely on **log-concavity**, but exploit it differently:
 All three critical gaps in the mean-field LSI proof have been resolved using a combination of **symmetry theory** and **heat flow analysis**.
 
 **Timeline**:
-**Result**: The mean-field generator approach now provides a **complete, rigorous proof** of Lemma 5.2, offering an alternative to the displacement convexity method.
+**Result**: The mean-field generator approach now provides a **complete, rigorous proof** of {prf:ref}`lem-entropy-transport-dissipation`, offering an alternative to the displacement convexity method.
 
 
 ## Gap Resolutions
@@ -3528,7 +3528,7 @@ where:
 
 **Application**:
 - Bounds KL divergence after adding Gaussian noise
-- Exploits log-concavity hypothesis (Axiom 3.5)
+- Exploits log-concavity hypothesis ({prf:ref}`axiom-qsd-log-concave`)
 - Provides sharp exponential rate $e^{-\kappa \delta^2}$
 
 **Key technique**: PDE evolution analysis
@@ -3579,7 +3579,7 @@ where:
 
 ## Comparison: Two Complete Proofs
 
-The project now has **TWO rigorous proofs** of Lemma 5.2:
+The project now has **TWO rigorous proofs** of {prf:ref}`lem-entropy-transport-dissipation`:
 
 ### Proof 1: Displacement Convexity (Section 5.2, main document)
 
@@ -3631,7 +3631,7 @@ $$
 
 ### Complementarity
 
-Both proofs rely on **log-concavity** (Axiom 3.5) but exploit it differently:
+Both proofs rely on **log-concavity** ({prf:ref}`axiom-qsd-log-concave`) but exploit it differently:
 
 | Aspect | Displacement Convexity | Mean-Field Generator |
 |--------|------------------------|----------------------|
@@ -3735,7 +3735,7 @@ $$
 
 ### 3. Log-Concavity is Central
 
-**Axiom 3.5** (log-concavity of $\pi_{\text{QSD}}$) is not just a technical assumption—it's **essential** for:
+{prf:ref}`axiom-qsd-log-concave` (log-concavity of $\pi_{\text{QSD}}$) is not just a technical assumption—it's **essential** for:
 
 - **Displacement convexity proof**: Provides convexity of entropy functional
 - **Mean-field proof**: Provides LSI via Bakry-Émery theory
@@ -3769,7 +3769,7 @@ $$
 ### For the Broader Project
 
 **The mean-field proof now provides**:
-1. **Alternative verification** of Lemma 5.2
+1. **Alternative verification** of {prf:ref}`lem-entropy-transport-dissipation`
 2. **Generator-based perspective** connecting to PDE theory
 3. **Explicit parameter dependence** for tuning
 4. **Beautiful interplay** between discrete symmetry and continuous analysis
@@ -3810,7 +3810,7 @@ $$
 **Relationship to other proofs**:
 - This proof is **complementary** to the displacement convexity proof in Section 5.2 of [09_kl_convergence](09_kl_convergence)
 - It provides **explicit constants** from generator parameters
-- Both proofs rely on log-concavity (Axiom 3.5) but through different machinery
+- Both proofs rely on log-concavity ({prf:ref}`axiom-qsd-log-concave`) but through different machinery
 
 
 ## Main Result
@@ -3820,7 +3820,7 @@ $$
 
 **Hypotheses**: Same as Theorem {prf:ref}`thm-main-kl-convergence` in [09_kl_convergence](09_kl_convergence):
 
-1. $\pi_{\text{QSD}}$ is log-concave (Axiom 3.5)
+1. $\pi_{\text{QSD}}$ is log-concave ({prf:ref}`axiom-qsd-log-concave`)
 2. Parameters satisfy Foster-Lyapunov conditions
 3. Noise variance satisfies $\delta^2 > \delta_{\min}^2$ (favorable regime)
 
@@ -3874,7 +3874,7 @@ $$
 
 with $\gamma$ the friction coefficient and $\kappa_{\text{conf}}$ the convexity constant of the confining potential.
 
-**Proof**: See Theorem 3.4 (lines 495-553) and Section 2 (lines 200-494) of [09_kl_convergence](09_kl_convergence).
+**Proof**: See {prf:ref}`thm-kinetic-lsi` and Section 2 of this document.
 
 This result uses Villani's hypocoercivity framework with explicit auxiliary metric and block matrix calculations.
 :::
@@ -4082,7 +4082,7 @@ $$
 D_{\text{KL}}(\Psi_{\text{total}} \# \mu \| \pi) \leq [1 - \tau(\alpha_1 + \alpha_2)] D_{\text{KL}}(\mu \| \pi) + C_1 + C_2 + O(\tau^2)
 $$
 
-**Proof**: See Theorem 6.3 (Composition Theorem, lines 1148-1215) of [09_kl_convergence](09_kl_convergence).
+**Proof**: See {prf:ref}`thm-main-lsi-composition` of this document.
 
 This uses iterative application of the HWI inequality and contraction properties.
 :::
@@ -4238,7 +4238,7 @@ Both proofs (displacement convexity and mean-field generator) are complete and r
 | **Main tool** | Permutation symmetry + de Bruijn/LSI | Wasserstein geodesics |
 | **Perspective** | Infinitesimal/analytic | Global/geometric |
 
-Both rely fundamentally on **log-concavity** (Axiom 3.5) but exploit it through different mathematical structures.
+Both rely fundamentally on **log-concavity** ({prf:ref}`axiom-qsd-log-concave`) but exploit it through different mathematical structures.
 
 
 ## Conclusion
@@ -4276,7 +4276,7 @@ This proof is **complementary** to the displacement convexity approach, providin
 
 **Hypotheses**:
 
-1. **Log-concavity (Axiom 3.5)**: The quasi-stationary distribution has density $\rho_\pi(z) = \exp(-V_{\text{QSD}}(z))$ for convex $V_{\text{QSD}}$
+1. **Log-concavity** ({prf:ref}`axiom-qsd-log-concave`): The quasi-stationary distribution has density $\rho_\pi(z) = \exp(-V_{\text{QSD}}(z))$ for convex $V_{\text{QSD}}$
 
 2. **Fitness-QSD anti-correlation**: There exists $\lambda_{\text{corr}} > 0$ such that:
    $$\log V[z] = -\lambda_{\text{corr}} V_{\text{QSD}}(z) + \log V_0$$

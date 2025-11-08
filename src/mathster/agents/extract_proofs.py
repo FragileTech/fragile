@@ -40,9 +40,11 @@ import dspy
 
 from mathster.agents.core import (
     DirectiveAgentPaths,
+    ExtractSignature,
     LATEX_FENCE_PATTERN,
     METADATA_PATTERN,
     run_directive_extraction_loop,
+    to_jsonable,
     URI_PATTERN,
 )
 
@@ -55,7 +57,7 @@ logger.setLevel(logging.INFO)
 # --------------------------------------------------------------------------------------
 
 
-class ParseProofDirectiveSplit(dspy.Signature):
+class ParseProofDirectiveSplit(ExtractSignature):
     """
     Convert a `::{prf:proof}` directive into a structured description.
 
@@ -86,7 +88,7 @@ class ParseProofDirectiveSplit(dspy.Signature):
     - key_equations_json (json array):
         [{"label": <string|null>, "latex": <string>, "role": <string|null>} ...]
 
-    - references_json (json array of strings):
+    - references (list[str]):
         ["thm-aux", "lem-helper", ...]
 
     - cases_json (json array):
@@ -122,16 +124,12 @@ class ParseProofDirectiveSplit(dspy.Signature):
     key_equations_json = dspy.OutputField(
         desc='JSON array [{"label": str|null, "latex": str, "role": str|null}, ...].'
     )
-    references_json = dspy.OutputField(desc='JSON array of labels ["thm-main", "lem-x-bound"].')
     cases_json = dspy.OutputField(
         desc='JSON array [{"name": str|null, "condition": str|null, "summary": str|null}, ...].'
     )
     remarks_json = dspy.OutputField(desc='JSON array [{"type": str|null, "text": str|null}, ...].')
     gaps_json = dspy.OutputField(
         desc='JSON array [{"description": str, "severity": str|null, "location_hint": str|null}, ...].'
-    )
-    tags_json = dspy.OutputField(
-        desc='JSON array of 3-10 keyword strings for search (e.g., ["mass-conservation","flux"]).'
     )
 
 
@@ -177,13 +175,17 @@ _STEP_KINDS = {
 }
 
 
-def _json_loads(payload: str | None, default):
-    if not payload or not payload.strip():
+def _json_loads(payload: Any, default):
+    if payload is None:
         return default
-    try:
-        return json.loads(payload)
-    except Exception:
-        return default
+    if isinstance(payload, str):
+        if not payload.strip():
+            return default
+        try:
+            payload = json.loads(payload)
+        except Exception:
+            return default
+    return to_jsonable(payload)
 
 
 def _nonempty(value: str | None) -> bool:
@@ -225,10 +227,11 @@ def proof_reward(args: dict[str, Any], pred) -> float:
     assumptions = _json_loads(getattr(pred, "assumptions_json", None), [])
     steps = _json_loads(getattr(pred, "steps_json", None), [])
     key_equations = _json_loads(getattr(pred, "key_equations_json", None), [])
-    references = _json_loads(getattr(pred, "references_json", None), [])
+    references = _json_loads(getattr(pred, "references", None), [])
     cases = _json_loads(getattr(pred, "cases_json", None), [])
     remarks = _json_loads(getattr(pred, "remarks_json", None), [])
     gaps = _json_loads(getattr(pred, "gaps_json", None), [])
+    tags = _json_loads(getattr(pred, "tags", None), [])
 
     score = 0.0
 
@@ -380,10 +383,14 @@ def proof_reward(args: dict[str, Any], pred) -> float:
 # --------------------------------------------------------------------------------------
 def assemble_output(res) -> dict[str, Any]:
     def as_json(payload, default):
-        try:
-            return json.loads(payload) if payload else default
-        except Exception:
+        if payload is None:
             return default
+        if isinstance(payload, str):
+            try:
+                return json.loads(payload) if payload else default
+            except Exception:
+                return default
+        return to_jsonable(payload)
 
     return {
         "label": (res.label_str or "").strip() or None,
@@ -395,11 +402,11 @@ def assemble_output(res) -> dict[str, Any]:
         "assumptions": as_json(res.assumptions_json, []),
         "steps": as_json(res.steps_json, []),
         "key_equations": as_json(res.key_equations_json, []),
-        "references": as_json(res.references_json, []),
+        "references": as_json(res.references, []),
         "cases": as_json(res.cases_json, []),
         "remarks": as_json(res.remarks_json, []),
         "gaps": as_json(res.gaps_json, []),
-        "tags": as_json(res.tags_json, []),
+        "tags": as_json(res.tags, []),
     }
 
 

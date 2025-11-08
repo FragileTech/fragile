@@ -26,9 +26,11 @@ import dspy
 
 from mathster.agents.core import (
     DirectiveAgentPaths,
+    ExtractWithParametersSignature,
     LATEX_FENCE_PATTERN,
     METADATA_PATTERN,
     run_directive_extraction_loop,
+    to_jsonable,
     URI_PATTERN,
 )
 
@@ -42,7 +44,7 @@ logger.setLevel(logging.INFO)
 # --------------------------------------------------------------------------------------
 
 
-class ParseAxiomDirectiveSplit(dspy.Signature):
+class ParseAxiomDirectiveSplit(ExtractWithParametersSignature):
     """
     Convert a `::{prf:axiom}` directive into structured semantic content.
 
@@ -67,10 +69,10 @@ class ParseAxiomDirectiveSplit(dspy.Signature):
     - implications_json (json array):
         [{"text": <string|null>, "latex": <string|null>} ...]
 
-    - parameters_json (json array):
-        [{"symbol": <string>, "description": <string|null>, "constraints": [<string>, ...]}, ...]
+    - parameters (list[Parameter]):
+        Provided via shared signature to document symbol metadata.
 
-    - references_json (json array of str):
+    - references (list[str]):
         Labels cited in the axiom (definitions, theorems, figures, etc.).
 
     - failure_modes_json (json array):
@@ -81,9 +83,6 @@ class ParseAxiomDirectiveSplit(dspy.Signature):
 
     directive_text = dspy.InputField(desc="Raw axiom directive text.")
     context_hints = dspy.InputField(desc="Optional nearby context snippet.", optional=True)
-
-    label_str = dspy.OutputField(desc="Directive label.")
-    title_str = dspy.OutputField(desc="Title if present.")
     axiom_class_str = dspy.OutputField(desc="Classification (structural, regularity, etc.).")
     nl_summary_str = dspy.OutputField(desc="Concise natural-language summary.")
 
@@ -96,15 +95,8 @@ class ParseAxiomDirectiveSplit(dspy.Signature):
     implications_json = dspy.OutputField(
         desc='JSON array [{"text": str|null, "latex": str|null}, ...]'
     )
-    parameters_json = dspy.OutputField(
-        desc='JSON array [{"symbol": str, "description": str|null, "constraints": [str,...]}, ...]'
-    )
-    references_json = dspy.OutputField(desc='JSON array of strings ["def-...", "thm-...", ...]')
     failure_modes_json = dspy.OutputField(
         desc='JSON array [{"description": str|null, "impact": str|null}, ...]'
-    )
-    tags_json = dspy.OutputField(
-        desc='JSON array of 3-10 keyword strings for search (e.g., ["regularity","sobolev","geometric"]).'
     )
 
 
@@ -118,13 +110,17 @@ _FENCE_PAT = LATEX_FENCE_PATTERN
 _LABEL_PAT = re.compile(r"^(def-axiom|axiom)-[a-z0-9-]+$")
 
 
-def _json_loads(payload: str | None, default):
-    if not payload or not payload.strip():
+def _json_loads(payload: Any, default):
+    if payload is None:
         return default
-    try:
-        return json.loads(payload)
-    except Exception:
-        return default
+    if isinstance(payload, str):
+        if not payload.strip():
+            return default
+        try:
+            payload = json.loads(payload)
+        except Exception:
+            return default
+    return to_jsonable(payload)
 
 
 def _nonempty(value: str | None) -> bool:
@@ -164,10 +160,10 @@ def axiom_reward(args: dict[str, Any], pred) -> float:
     core_statement = _json_loads(getattr(pred, "core_statement_json", None), {})
     hypotheses = _json_loads(getattr(pred, "hypotheses_json", None), [])
     implications = _json_loads(getattr(pred, "implications_json", None), [])
-    parameters = _json_loads(getattr(pred, "parameters_json", None), [])
-    references = _json_loads(getattr(pred, "references_json", None), [])
+    parameters = _json_loads(getattr(pred, "parameters", None), [])
+    references = _json_loads(getattr(pred, "references", None), [])
     failure_modes = _json_loads(getattr(pred, "failure_modes_json", None), [])
-    tags = _json_loads(getattr(pred, "tags_json", None), [])
+    tags = _json_loads(getattr(pred, "tags", None), [])
 
     score = 0.0
 
@@ -314,8 +310,15 @@ def assemble_output(res) -> dict[str, Any]:
     """Convert DSPy result into JSON-friendly dict."""
 
     def as_json(field, default):
+        if field is None:
+            return default
+        if isinstance(field, str):
+            try:
+                return json.loads(field) if field else default
+            except Exception:
+                return default
         try:
-            return json.loads(field) if field else default
+            return to_jsonable(field)
         except Exception:
             return default
 
@@ -327,10 +330,10 @@ def assemble_output(res) -> dict[str, Any]:
         "core_statement": as_json(res.core_statement_json, {}),
         "hypotheses": as_json(res.hypotheses_json, []),
         "implications": as_json(res.implications_json, []),
-        "parameters": as_json(res.parameters_json, []),
-        "references": as_json(res.references_json, []),
+        "parameters": as_json(res.parameters, []),
+        "references": as_json(res.references, []),
         "failure_modes": as_json(res.failure_modes_json, []),
-        "tags": as_json(res.tags_json, []),
+        "tags": as_json(res.tags, []),
     }
 
 

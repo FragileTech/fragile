@@ -44,9 +44,11 @@ import flogging
 
 from mathster.agents.core import (
     DirectiveAgentPaths,
+    ExtractWithParametersSignature,
     LATEX_FENCE_PATTERN,
     METADATA_PATTERN,
     run_directive_extraction_loop,
+    to_jsonable,
     URI_PATTERN,
 )
 
@@ -60,7 +62,7 @@ logger.setLevel(logging.INFO)
 # --------------------------------------------------------------------------------------
 
 
-class ParseDefinitionDirectiveSplit(dspy.Signature):
+class ParseDefinitionDirectiveSplit(ExtractWithParametersSignature):
     """
     Transform a raw `::{prf:definition}` directive into a structured bundle.
 
@@ -85,15 +87,14 @@ class ParseDefinitionDirectiveSplit(dspy.Signature):
         [{"name": <string|null>, "description": <string|null>}, ...] summarizing
         qualitative properties or requirements.
 
-    - parameters_json (json array):
-        [{"symbol": <string>, "description": <string|null>, "constraints": [<string>, ...]}, ...]
-        listing symbols introduced or constrained by the definition.
+    - parameters (list[Parameter]):
+        Provided by the shared signature to capture introduced symbols.
 
     - examples_json (json array):
         [{"text": <string|null>, "latex": <string|null>} ...] illustrating canonical
         instances if the directive provides them.
 
-    - related_refs_json (json array of str):
+    - references (list[str]):
         ["def-other", "thm-foo", ...] capturing labels cited in the directive.
 
     - notes_json (json array):
@@ -122,19 +123,11 @@ class ParseDefinitionDirectiveSplit(dspy.Signature):
     properties_json = dspy.OutputField(
         desc='JSON array [{"name": str|null, "description": str|null}, ...]'
     )
-    parameters_json = dspy.OutputField(
-        desc='JSON array [{"symbol": str, "description": str|null, "constraints": [str,...]}, ...]'
-    )
     examples_json = dspy.OutputField(
         desc='JSON array [{"text": str|null, "latex": str|null}, ...]'
     )
-    related_refs_json = dspy.OutputField(
-        desc='JSON array of label strings ["def-foo","thm-bar",...]'
-    )
     notes_json = dspy.OutputField(desc='JSON array [{"type": str|null, "text": str|null}, ...]')
-    tags_json = dspy.OutputField(
-        desc='JSON array of 3-10 keyword strings for search (e.g., ["phase-space","density"]).'
-    )
+    # references/tags provided via ExtractWithParametersSignature
 
 
 # --------------------------------------------------------------------------------------
@@ -160,13 +153,17 @@ _ALLOWED_OBJECT_TYPES = {
 }
 
 
-def _json_loads(payload: str | None, default):
-    if not payload or not payload.strip():
+def _json_loads(payload: Any, default):
+    if payload is None:
         return default
-    try:
-        return json.loads(payload)
-    except Exception:
-        return default
+    if isinstance(payload, str):
+        if not payload.strip():
+            return default
+        try:
+            payload = json.loads(payload)
+        except Exception:
+            return default
+    return to_jsonable(payload)
 
 
 def _nonempty(value: str | None) -> bool:
@@ -206,11 +203,11 @@ def definition_reward(args: dict[str, Any], pred) -> float:
 
     formal_conditions = _json_loads(getattr(pred, "formal_conditions_json", None), [])
     properties = _json_loads(getattr(pred, "properties_json", None), [])
-    parameters = _json_loads(getattr(pred, "parameters_json", None), [])
+    parameters = _json_loads(getattr(pred, "parameters", None), [])
     examples = _json_loads(getattr(pred, "examples_json", None), [])
-    related_refs = _json_loads(getattr(pred, "related_refs_json", None), [])
+    related_refs = _json_loads(getattr(pred, "references", None), [])
     notes = _json_loads(getattr(pred, "notes_json", None), [])
-    tags = _json_loads(getattr(pred, "tags_json", None), [])
+    tags = _json_loads(getattr(pred, "tags", None), [])
 
     score = 0.0
     max_score = 0.0
@@ -360,10 +357,14 @@ def assemble_output(res) -> dict[str, Any]:
     """Recombine split outputs into a single dictionary."""
 
     def as_json(payload, default):
-        try:
-            return json.loads(payload) if payload else default
-        except Exception:
+        if payload is None:
             return default
+        if isinstance(payload, str):
+            try:
+                return json.loads(payload) if payload else default
+            except Exception:
+                return default
+        return to_jsonable(payload)
 
     return {
         "label": (res.label_str or "").strip() or None,
@@ -372,11 +373,11 @@ def assemble_output(res) -> dict[str, Any]:
         "nl_definition": (res.nl_definition_str or "").strip() or None,
         "formal_conditions": as_json(res.formal_conditions_json, []),
         "properties": as_json(res.properties_json, []),
-        "parameters": as_json(res.parameters_json, []),
+        "parameters": as_json(res.parameters, []),
         "examples": as_json(res.examples_json, []),
-        "related_refs": as_json(res.related_refs_json, []),
+        "related_refs": as_json(res.references, []),
         "notes": as_json(res.notes_json, []),
-        "tags": as_json(res.tags_json, []),
+        "tags": as_json(res.tags, []),
     }
 
 

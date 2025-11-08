@@ -26,9 +26,11 @@ import dspy
 
 from mathster.agents.core import (
     DirectiveAgentPaths,
+    ExtractWithParametersSignature,
     LATEX_FENCE_PATTERN,
     METADATA_PATTERN,
     run_directive_extraction_loop,
+    to_jsonable,
     URI_PATTERN,
 )
 
@@ -42,7 +44,7 @@ logger.setLevel(logging.INFO)
 # --------------------------------------------------------------------------------------
 
 
-class ParseConjectureDirectiveSplit(dspy.Signature):
+class ParseConjectureDirectiveSplit(ExtractWithParametersSignature):
     """
     Convert a `::{prf:conjecture}` directive into a structured representation.
 
@@ -68,10 +70,10 @@ class ParseConjectureDirectiveSplit(dspy.Signature):
     - obstacles_json (json array):
         [{"text": <string|null>, "latex": <string|null>} ...] for known difficulties.
 
-    - parameters_json (json array):
-        [{"symbol": <string>, "description": <string|null>, "constraints": [<string>, ...]}, ...]
+    - parameters (list[Parameter]):
+        Provided via the shared signature to describe the symbols involved.
 
-    - references_json (json array of str):
+    - references (list[str]):
         Labels cited in the conjecture.
 
     - recommended_paths_json (json array):
@@ -94,15 +96,8 @@ class ParseConjectureDirectiveSplit(dspy.Signature):
     obstacles_json = dspy.OutputField(
         desc='JSON array [{"text": str|null, "latex": str|null}, ...]'
     )
-    parameters_json = dspy.OutputField(
-        desc='JSON array [{"symbol": str, "description": str|null, "constraints": [str,...]}, ...]'
-    )
-    references_json = dspy.OutputField(desc='JSON array of strings ["thm-...", "assump-...", ...]')
     recommended_paths_json = dspy.OutputField(
         desc='JSON array [{"text": str|null, "priority": str|null}, ...]'
-    )
-    tags_json = dspy.OutputField(
-        desc='JSON array of 3-10 keyword strings for search (e.g., ["lsi","ldp","mean-field"]).'
     )
 
 
@@ -116,13 +111,17 @@ _FENCE_PAT = LATEX_FENCE_PATTERN
 _LABEL_PAT = re.compile(r"^conj-[a-z0-9-]+$")
 
 
-def _json_loads(payload: str | None, default):
-    if not payload or not payload.strip():
+def _json_loads(payload: Any, default):
+    if payload is None:
         return default
-    try:
-        return json.loads(payload)
-    except Exception:
-        return default
+    if isinstance(payload, str):
+        if not payload.strip():
+            return default
+        try:
+            payload = json.loads(payload)
+        except Exception:
+            return default
+    return to_jsonable(payload)
 
 
 def _nonempty(value: str | None) -> bool:
@@ -163,10 +162,10 @@ def conjecture_reward(args: dict[str, Any], pred) -> float:
     statement = _json_loads(getattr(pred, "statement_json", None), {})
     evidence = _json_loads(getattr(pred, "evidence_json", None), [])
     obstacles = _json_loads(getattr(pred, "obstacles_json", None), [])
-    parameters = _json_loads(getattr(pred, "parameters_json", None), [])
-    references = _json_loads(getattr(pred, "references_json", None), [])
+    parameters = _json_loads(getattr(pred, "parameters", None), [])
+    references = _json_loads(getattr(pred, "references", None), [])
     recommended_paths = _json_loads(getattr(pred, "recommended_paths_json", None), [])
-    tags = _json_loads(getattr(pred, "tags_json", None), [])
+    tags = _json_loads(getattr(pred, "tags", None), [])
 
     score = 0.0
 
@@ -310,8 +309,15 @@ def assemble_output(res) -> dict[str, Any]:
     """Recombine DSPy outputs into the final JSON object."""
 
     def as_json(field, default):
+        if field is None:
+            return default
+        if isinstance(field, str):
+            try:
+                return json.loads(field) if field else default
+            except Exception:
+                return default
         try:
-            return json.loads(field) if field else default
+            return to_jsonable(field)
         except Exception:
             return default
 
@@ -324,10 +330,10 @@ def assemble_output(res) -> dict[str, Any]:
         "statement": as_json(res.statement_json, {}),
         "evidence": as_json(res.evidence_json, []),
         "obstacles": as_json(res.obstacles_json, []),
-        "parameters": as_json(res.parameters_json, []),
-        "references": as_json(res.references_json, []),
+        "parameters": as_json(res.parameters, []),
+        "references": as_json(res.references, []),
         "recommended_paths": as_json(res.recommended_paths_json, []),
-        "tags": as_json(res.tags_json, []),
+        "tags": as_json(res.tags, []),
     }
 
 

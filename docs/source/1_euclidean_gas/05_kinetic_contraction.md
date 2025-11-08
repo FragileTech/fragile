@@ -432,7 +432,7 @@ The kinetic operator induces evolution of the swarm's probability density.
 :::{prf:proposition} Fokker-Planck Equation for the Kinetic Operator
 :label: prop-fokker-planck-kinetic
 
-Let $\rho(x,v,t)$ be the probability density of a single walker at time $t$. Under the kinetic SDE (Definition 3.2.1), $\rho$ evolves according to:
+Let $\rho(x,v,t)$ be the probability density of a single walker at time $t$. Under the kinetic SDE ({prf:ref}`def-kinetic-operator-stratonovich`), $\rho$ evolves according to:
 
 $$
 \partial_t \rho = -v \cdot \nabla_x \rho - \nabla_v \cdot [(F(x) - \gamma v) \rho] + \frac{1}{2}\sum_{i,j} \partial_{v_i}\partial_{v_j}[(\Sigma\Sigma^T)_{ij} \rho]
@@ -688,7 +688,7 @@ which is the **discrete-time drift inequality** with effective contraction rate 
 
 #### 3.7.3. Rigorous Component-Wise Weak Error Analysis
 
-This section provides **complete rigorous proofs** that Theorem 3.7.2 applies to each component of the synergistic Lyapunov function $V_{\text{total}} = V_W + c_V V_{\text{Var}} + c_B W_b$, despite the significant technical challenges posed by the non-standard nature of these components.
+This section provides **complete rigorous proofs** that {prf:ref}`thm-discretization` applies to each component of the synergistic Lyapunov function $V_{\text{total}} = V_W + c_V V_{\text{Var}} + c_B W_b$, despite the significant technical challenges posed by the non-standard nature of these components.
 
 :::{important}
 **On proof completeness**: The proofs in §3.7.3.1-3.7.3.4 are complete and rigorous, relying on established theorems from the numerical analysis and optimal transport literature (Leimkuhler & Matthews 2015 for BAOAB weak error theory, Ambrosio et al. 2008 for JKO schemes, Villani 2009 for Wasserstein gradient flows). Each proof provides detailed derivations showing how these general results apply to our specific Lyapunov components, including handling of technical obstacles (unbounded derivatives, implicit definitions via optimal transport).
@@ -1075,11 +1075,11 @@ The correct approach uses **synchronous coupling at the particle level** - a sta
 **Note on Isotropic Diffusion:** For the primary case $\Sigma(x,v) = \sigma_v I_d$ (isotropic, constant diffusion), the Stratonovich and Itô formulations coincide (see {prf:ref}`rem-stratonovich-ito-equivalence`). For general state-dependent $\Sigma$, the BAOAB scheme requires midpoint evaluation for Stratonovich noise, and $L_\Sigma$ appears explicitly in $K_W$.
 :::
 
-##### 3.7.3.4. Assembly: Proof of Theorem 3.7.2 for $V_{\text{total}}$
+##### 3.7.3.4. Assembly: Proof of {prf:ref}`thm-discretization` for $V_{\text{total}}$
 
 :::{prf:proof}
 :label: proof-thm-discretization
-**Proof of Theorem 3.7.2 for the Synergistic Lyapunov Function.**
+**Proof of {prf:ref}`thm-discretization` for the Synergistic Lyapunov Function.**
 
 **PART I: Decompose by Components**
 
@@ -1180,7 +1180,7 @@ $$
 
 $$
 
-**This completes the rigorous proof of Theorem 3.7.2 for the synergistic Lyapunov function, addressing all technical challenges.**
+**This completes the rigorous proof of {prf:ref}`thm-discretization` for the synergistic Lyapunov function, addressing all technical challenges.**
 
 **Q.E.D.**
 :::
@@ -1262,7 +1262,7 @@ In the subsequent chapters, we prove generator bounds for each component:
 | 4 | $V_{\text{Var},x}$ (position var) | $\mathcal{L}V_{\text{Var},x} \leq -\kappa_x V_{\text{Var},x} + C_x'$ |
 | 5 | $W_b$ (boundary) | $\mathcal{L}W_b \leq -\kappa_b W_b + C_b'$ |
 
-**By Theorem 3.7.2:** Each of these immediately implies a discrete-time inequality:
+**By {prf:ref}`thm-discretization`:** Each of these immediately implies a discrete-time inequality:
 
 $$
 \mathbb{E}[V_{\text{component}}(S_\tau)] \leq (1 - \frac{\kappa_{\text{component}}\tau}{2})V_{\text{component}}(S_0) + C_{\text{component}}'\tau
@@ -1289,7 +1289,7 @@ for $\tau < \tau_*(\kappa_{\text{component}})$.
 **How this resolves the reviewer's concern:**
 - Previous proofs mixed $\mathcal{L}V$ and $\Delta V$ notation without justification
 - Now we have a **rigorous bridge** between the two frameworks
-- All subsequent proofs will first establish $\mathcal{L}V \leq -\kappa V + C$, then invoke Theorem 3.7.2
+- All subsequent proofs will first establish $\mathcal{L}V \leq -\kappa V + C$, then invoke {prf:ref}`thm-discretization`
 
 **Cost:**
 - Requires $\tau$ to be "sufficiently small" (but explicit bound given)
@@ -1302,8 +1302,8 @@ for $\tau < \tau_*(\kappa_{\text{component}})$.
 
 From now on:
 - **$\mathcal{L}V \leq ...$** denotes continuous-time generator bounds
-- **$\mathbb{E}[\Delta V] = \mathbb{E}[V(S_\tau) - V(S_0)] \leq ...$** denotes discrete-time drift, derived via Theorem 3.7.2
-- We will prove generator bounds first, then immediately cite Theorem 3.7.2 for the discrete version
+- **$\mathbb{E}[\Delta V] = \mathbb{E}[V(S_\tau) - V(S_0)] \leq ...$** denotes discrete-time drift, derived via {prf:ref}`thm-discretization`
+- We will prove generator bounds first, then immediately cite {prf:ref}`thm-discretization` for the discrete version
 
 ---
 
@@ -1342,10 +1342,10 @@ This chapter proves that this hypocoercive mechanism contracts the inter-swarm W
 :class: important
 
 **Critical clarification:** The hypocoercive contraction proven in this chapter uses **only**:
-1. **Coercivity** of $U$ (Axiom 3.3.1) - confinement at infinity
+1. **Coercivity** of $U$ ({prf:ref}`axiom-confining-potential`) - confinement at infinity
 2. **Lipschitz continuity** of forces on compact regions
 3. **Friction-transport coupling** through the hypocoercive norm
-4. **Non-degenerate noise** (Axiom 3.3.2)
+4. **Non-degenerate noise** ({prf:ref}`axiom-diffusion-tensor`)
 
 We do **NOT** assume:
 - Convexity of $U$ (monotonicity of forces)
@@ -1473,7 +1473,7 @@ where:
 - $\alpha_{\text{eff}} = \alpha_{\text{eff}}(\gamma, \alpha_U, L_F, \sigma_{\min})$ is the effective contraction rate from hypocoercivity (not requiring convexity)
 - $C_{\text{loc}}' = O(\sigma_{\max}^2 + n_{\text{status}})$ accounts for noise and status changes
 
-**Key:** This result uses **coercivity** (Axiom 3.3.1) and **hypocoercive coupling**, not convexity.
+**Key:** This result uses **coercivity** ({prf:ref}`axiom-confining-potential`) and **hypocoercive coupling**, not convexity.
 :::
 
 :::{prf:proof}
@@ -1481,7 +1481,7 @@ where:
 **Proof (Drift Matrix Analysis).**
 
 This proof establishes hypocoercive contraction **without assuming convexity** of $U$. Instead, we use:
-1. **Coercivity** (Axiom 3.3.1): $U$ confines particles to a bounded region
+1. **Coercivity** ({prf:ref}`axiom-confining-potential`): $U$ confines particles to a bounded region
 2. **Lipschitz forces**: $\|\nabla U(x) - \nabla U(y)\| \leq L_F \|x - y\|$
 3. **Coupling between position and velocity** via the drift matrix
 
@@ -1584,7 +1584,7 @@ $$
 
 $$
 
-**Choice of $\delta_{\text{core}}$**: We take $\delta_{\text{core}} = \delta_{\text{boundary}}/2$ where $\delta_{\text{boundary}}$ is from Axiom 3.3.1 (boundary compatibility), ensuring the exterior region is strictly contained in the boundary barrier zone.
+**Choice of $\delta_{\text{core}}$**: We take $\delta_{\text{core}} = \delta_{\text{boundary}}/2$ where $\delta_{\text{boundary}}$ is from {prf:ref}`axiom-confining-potential` (boundary compatibility), ensuring the exterior region is strictly contained in the boundary barrier zone.
 :::
 
 **In the core region** ($x \in \mathcal{R}_{\text{core}}$):
@@ -1592,7 +1592,7 @@ $$
 - Apply Cauchy-Schwarz: $(\Delta\mu_x)^T \Delta F \leq L_F \|\Delta\mu_x\|^2$
 
 **In the exterior region** ($x \in \mathcal{R}_{\text{ext}}$):
-- Use **coercivity** (Axiom 3.3.1): Force points inward, providing $-\langle \Delta\mu_x, \Delta F \rangle \geq \alpha_U \|\Delta\mu_x\|^2$ when away from equilibrium
+- Use **coercivity** ({prf:ref}`axiom-confining-potential`): Force points inward, providing $-\langle \Delta\mu_x, \Delta F \rangle \geq \alpha_U \|\Delta\mu_x\|^2$ when away from equilibrium
 
 :::{note}
 **Proof strategy**: While the two-region decomposition provides intuition for how hypocoercivity works without convexity, the actual proof below uses a **global bound** (line 1372) that holds uniformly across both regions. This avoids needing to track which particles are in which region, simplifying the analysis.
@@ -1692,7 +1692,7 @@ $$
 
 **PART VI: Discrete-Time Version**
 
-Apply Theorem 3.7.2 (BAOAB weak error bounds) to convert continuous-time drift to discrete-time:
+Apply {prf:ref}`thm-discretization` (BAOAB weak error bounds) to convert continuous-time drift to discrete-time:
 
 $$
 \mathbb{E}[\Delta V_{\text{loc}}] = \mathbb{E}[V_{\text{loc}}(t + \tau) - V_{\text{loc}}(t)] \leq -\kappa_{\text{hypo}} V_{\text{loc}} \tau + C_{\text{loc}}' \tau + O(\tau^3)
@@ -1806,7 +1806,7 @@ W_2^2(\tilde{\mu}_1^N, \tilde{\mu}_2^N) \leq \frac{1}{N}\sum_{i=1}^N \|z_{1,i} -
 
 $$
 
-where $\|\cdot\|_h$ is the hypocoercive norm from Lemma 4.5.1:
+where $\|\cdot\|_h$ is the hypocoercive norm from {prf:ref}`lem-location-error-drift-kinetic`:
 
 $$
 \|z\|_h^2 = \|\Delta x\|^2 + \lambda_v \|\Delta v\|^2 + b\langle \Delta x, \Delta v \rangle
@@ -1822,7 +1822,7 @@ $$
 
 $$
 
-For each particle pair $(z_{1,i}, z_{2,i})$, apply the **drift matrix analysis** from Lemma 4.5.1.
+For each particle pair $(z_{1,i}, z_{2,i})$, apply the **drift matrix analysis** from {prf:ref}`lem-location-error-drift-kinetic`.
 
 **Key technical tool:** Use **synchronous coupling** - evolve both particles with the **same** Brownian motion $W_i$:
 
@@ -1838,7 +1838,7 @@ This coupling is **dynamically consistent** - each marginal has the correct Lang
 
 **PART V: Single-Pair Drift Inequality**
 
-By Lemma 4.5.1, for each particle pair:
+By {prf:ref}`lem-location-error-drift-kinetic`, for each particle pair:
 
 $$
 \frac{d}{dt}\mathbb{E}[\|z_{1,i} - z_{2,i}\|_h^2] \leq -\kappa_{\text{hypo}} \|z_{1,i} - z_{2,i}\|_h^2 + C_{\text{loc}}'
@@ -1875,7 +1875,7 @@ $$
 
 **PART VII: Discrete-Time Version**
 
-Apply Theorem 3.7.2 (BAOAB weak error bounds) to convert to discrete-time:
+Apply {prf:ref}`thm-discretization` (BAOAB weak error bounds) to convert to discrete-time:
 
 $$
 \mathbb{E}[\Delta V_{\text{struct}}] \leq -\kappa_{\text{struct}} V_{\text{struct}} \tau + C_{\text{struct}}' \tau
@@ -1917,7 +1917,7 @@ where $\kappa_{\text{struct}} \sim \min(\gamma, \frac{\gamma^2}{\gamma + L_F})$ 
 
 :::{prf:proof}
 :label: proof-thm-inter-swarm-contraction-kinetic
-**Proof of Theorem 4.3.1.**
+**Proof of {prf:ref}`thm-inter-swarm-contraction-kinetic`.**
 
 Combine Lemmas 2.5.1 and 2.6.1 using the decomposition $V_W = V_{\text{loc}} + V_{\text{struct}}$:
 
@@ -2188,7 +2188,7 @@ $$
 
 $$
 
-By Axiom 3.3.3 (bounded forces): $\|F(x)\| \leq F_{\max}$ for $x$ in the interior. Thus:
+By {prf:ref}`axiom-friction-timestep` (bounded forces): $\|F(x)\| \leq F_{\max}$ for $x$ in the interior. Thus:
 
 $$
 \leq \frac{2F_{\max}}{N_k}\sum_i \mathbb{E}[\|v_{k,i} - \mu_{v,k}\|]
@@ -2255,7 +2255,7 @@ $$
 
 **PART VI: Discrete-Time Version**
 
-Apply Theorem 3.7.2 (BAOAB weak error) to obtain the discrete-time inequality:
+Apply {prf:ref}`thm-discretization` (BAOAB weak error) to obtain the discrete-time inequality:
 
 $$
 \mathbb{E}[\Delta V_{\text{Var},v}] = \mathbb{E}[V_{\text{Var},v}(t+\tau) - V_{\text{Var},v}(t)]
@@ -2858,7 +2858,7 @@ $$
 
 **PART II: Compatibility Condition (Corrected Sign)**
 
-By Axiom 3.3.1 part 4, the confining force satisfies:
+By {prf:ref}`axiom-confining-potential` part 4, the confining force satisfies:
 
 $$
 \langle \vec{n}(x), F(x) \rangle \leq -\alpha_{\text{boundary}} \quad \text{for } \text{dist}(x, \partial\mathcal{X}_{\text{valid}}) < \delta_{\text{boundary}}
@@ -2903,7 +2903,7 @@ where $\varphi_i = \varphi_{\text{barrier}}(x_i)$ and $\epsilon > 0$ is a coupli
 
 **PART IV: Generator Calculation (Corrected)**
 
-Apply the Fokker-Planck generator $\mathcal{L}$ from Definition 3.7.1:
+Apply the Fokker-Planck generator $\mathcal{L}$ from {prf:ref}`def-generator`:
 
 $$
 \mathcal{L}f = v \cdot \nabla_x f + (F - \gamma v) \cdot \nabla_v f + \frac{1}{2}\text{Tr}(A \nabla_v^2 f)
@@ -3042,7 +3042,7 @@ $$
 
 $$
 
-**Velocity moment bound from Chapter 5:** By Theorem 5.3.1, the kinetic operator maintains:
+**Velocity moment bound from Chapter 5:** By {prf:ref}`thm-velocity-variance-contraction-kinetic`, the kinetic operator maintains:
 
 $$
 \mathbb{E}[\|v_i\|^2] \leq V_{\text{Var},v}^{\text{eq}} := \frac{d\sigma_{\max}^2}{2\gamma}
@@ -3088,7 +3088,7 @@ c < \delta \left[\frac{2\gamma \alpha_{\text{boundary}}}{d\sigma_{\max}^2} - K_{
 
 $$
 
-This is **always achievable** provided $\alpha_{\text{boundary}} > \frac{K_{\text{curv}} d\sigma_{\max}^2}{2\gamma}$, which is guaranteed by Axiom 3.3.1 part 4 for sufficiently strong confining potential.
+This is **always achievable** provided $\alpha_{\text{boundary}} > \frac{K_{\text{curv}} d\sigma_{\max}^2}{2\gamma}$, which is guaranteed by {prf:ref}`axiom-confining-potential` part 4 for sufficiently strong confining potential.
 
 **Resulting contraction rate:**
 
@@ -3126,7 +3126,7 @@ where $C_{\text{pot}} = \frac{C_{\text{interior}}}{N}$ is independent of $W_b$ (
 
 **PART XI: Discrete-Time Version**
 
-By Theorem 3.7.2 (Discrete-Time Inheritance of Generator Drift), the continuous-time drift translates to discrete-time:
+By {prf:ref}`thm-discretization` (Discrete-Time Inheritance of Generator Drift), the continuous-time drift translates to discrete-time:
 
 $$
 \mathbb{E}_{\text{kin}}[\Delta W_b] \leq -\kappa_{\text{pot}} W_b \tau + C_{\text{pot}} \tau + O(\tau^2)

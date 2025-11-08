@@ -264,7 +264,7 @@ A **Valid State Space** is a tuple $(\mathcal{X}, d_{\mathcal{X}}, \mu_{\mathcal
 
 2.  **Measure Structure:** The space must be equipped with a **reference measure** $\mu_{\mathcal{X}}$ (e.g., Lebesgue measure for Euclidean spaces, or the Riemannian volume measure for manifolds). This measure is used to define probability densities for the noise kernels.
 
-3.  **Existence of Valid Noise:** The space must support a **Valid Noise Measure** ($\mathcal{P}_\sigma$ and $\mathcal{Q}_\delta$) as per Definition 2.3. This is the most critical functional requirement, as it implies the space has enough geometric regularity to satisfy:
+3.  **Existence of Valid Noise:** The space must support a **Valid Noise Measure** ($\mathcal{P}_\sigma$ and $\mathcal{Q}_\delta$) as per {prf:ref}`def-valid-noise-measure`. This is the most critical functional requirement, as it implies the space has enough geometric regularity to satisfy:
     *   The **Axiom of Bounded Second Moment of Perturbation** ([](#def-axiom-bounded-second-moment-perturbation)).
     *   The **Axiom of Boundary Regularity** ([](#axiom-boundary-regularity)).
 
@@ -1119,11 +1119,11 @@ The algorithm's random movements are sourced from probability measures that must
 The algorithm uses two distinct noise measures, both of which are required to be instantiations of a Valid Noise Measure.
 :::{prf:definition} Perturbation Measure
 :label: def-perturbation-measure
-For a given noise scale $\sigma > 0$, the **Perturbation Measure**, $\mathcal{P}_\sigma(x, \cdot)$, is a **Valid Noise Measure** according to Definition 2.3. It governs the random walks during the perturbation step of the algorithm.
+For a given noise scale $\sigma > 0$, the **Perturbation Measure**, $\mathcal{P}_\sigma(x, \cdot)$, is a **Valid Noise Measure** according to {prf:ref}`def-valid-noise-measure`. It governs the random walks during the perturbation step of the algorithm.
 :::
 :::{prf:definition} Cloning Measure
 :label: def-cloning-measure
-For a given cloning noise scale $\delta > 0$, the **Cloning Measure**, $\mathcal{Q}_\delta(x, \cdot)$, is a **Valid Noise Measure** according to Definition 2.3. It governs the displacement for newly created walkers during the cloning step.
+For a given cloning noise scale $\delta > 0$, the **Cloning Measure**, $\mathcal{Q}_\delta(x, \cdot)$, is a **Valid Noise Measure** according to {prf:ref}`def-valid-noise-measure`. It governs the displacement for newly created walkers during the cloning step.
 :::
 ### 5.2 Guidance on Validating Noise Measures (Illustrative Examples)
 The axiomatic framework requires that any chosen noise measure satisfies two key properties: uniform displacement ([](#def-axiom-bounded-second-moment-perturbation)) and boundary regularity ([](#axiom-boundary-regularity)). The user of this framework is responsible for selecting a specific measure and providing a formal proof that it satisfies these axioms. The following lemmas are provided not as part of the core framework, but as illustrative templates for how such a validation proof would be constructed for two canonical examples.
@@ -1593,7 +1593,7 @@ $$
 
 
 $$
-2.  **Substitute Proven Bounds:** We substitute the results from Lemma 7.2.1 and Lemma 7.2.2:
+2.  **Substitute Proven Bounds:** We substitute the results from {prf:ref}`lem-set-difference-bound` and {prf:ref}`lem-normalization-difference-bound`:
 $$
 
     E \le \frac{M_f}{|S_1|} |S_1 \Delta S_2| + \frac{M_f}{|S_1|} \big||S_1| - |S_2|\big| = \frac{M_f}{|S_1|} \left( |S_1 \Delta S_2| + \big||S_1| - |S_2|\big| \right)
@@ -3264,7 +3264,7 @@ where $L_{\mu,M}(S)$ and $L_{\sigma',M}(S)$ are the value Lipschitz functions fo
 :::
 ##### 11.2.2.6. Proof of Theorem 11.2.2
 :label: proof-thm-standardization-value-error-mean-square
-:::{prf:proof} of Theorem 11.2.2
+:::{prf:proof} of {prf:ref}`thm-standardization-value-error-mean-square`
 :label: proof-proof-thm-standardization-value-error-mean-square
 Let $S_1$ be a fixed swarm state. Let $V$ be a raw value operator that is mean-square continuous, such that $\mathbb{E}[\|\mathbf{v}_1 - \mathbf{v}_2\|_2^2] \le F_{V,ms}(\mathcal{S}_1, \mathcal{S}_2)$ for some deterministic bounding function $F_{V,ms}$.
 The expected squared value error is bounded as follows:

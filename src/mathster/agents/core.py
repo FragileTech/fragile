@@ -26,9 +26,10 @@ from pathlib import Path
 import re
 from typing import Any, Callable, Iterable, Iterator, Sequence
 
-from tqdm import tqdm
 import dspy
 from pydantic import BaseModel, Field
+from tqdm import tqdm
+
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +41,8 @@ __all__ = [
     "URI_PATTERN",
     "DirectiveAgentPaths",
     "DirectiveInputBuilder",
+    "ExtractSignature",
+    "ExtractWithParametersSignature",
     "clamp_text_window",
     "default_input_builder",
     "directive_text_from_object",
@@ -52,35 +55,77 @@ __all__ = [
     "run_directive_extraction_loop",
     "safe_json_dumps",
     "safe_json_loads",
+    "to_jsonable",
     "strip_line_numbers",
-    "ExtractSignature",
-    "ExtractWithParametersSignature",
 ]
+
+
 # --------------------------------------------------------------------------------------
 # Dspy output fields shared across multiple agents
 # --------------------------------------------------------------------------------------
+
+class ImplicitReference(BaseModel):
+    label: str = Field(..., description="Label of the referenced artifact.")
+    context: str | None = Field(
+        default=None,
+        description="Optional brief context describing how the reference is used.",
+    )
+    tags: list[str] = Field(
+        default_factory=list,
+        description='array of 3-10 keyword strings for search (e.g., ["greedy","pairing","diversity"]).',
+    )
 class ExtractSignature(dspy.Signature):
     """Shared base signature for directive extraction agents."""
-    references_json = dspy.OutputField(desc='JSON array of labels referencing other artifacts (e.g., ["def-...", "thm-...", ...])')
-    tags_json = dspy.OutputField(
+
+    label_str: str = dspy.OutputField(desc="Directive label if present, else empty.")
+    title_str: str = dspy.OutputField(desc="Human-facing title if present, else empty.")
+    references: list[str] = dspy.OutputField(
+        desc='JSON array of labels referencing other artifacts (e.g., ["def-...", "thm-...", ...])'
+    )
+    tags: list[str] = dspy.OutputField(
         desc='JSON array of 3-10 keyword strings for search (e.g., ["greedy","pairing","diversity"]).'
     )
+    implicit_references: list[ImplicitReference] = dspy.OutputField(
+        desc='JSON array of objects representing references with no explicit label [{"label": str, "context": str|null, "tags": [str,...]}, ...]'
+    )
+
 
 class Parameter(BaseModel):
     symbol: str = Field(..., description="Parameter symbol.")
     description: str | None = Field(default=None, description="Parameter description.")
     constraints: list[str] = Field(default_factory=list, description="Parameter constraints.")
-    tags: list[str] = Field(default_factory=list, description='array of 3-10 keyword strings for search (e.g., ["greedy","pairing","diversity"]).')
+    tags: list[str] = Field(
+        default_factory=list,
+        description='array of 3-10 keyword strings for search (e.g., ["greedy","pairing","diversity"]).',
+    )
+
 
 class ExtractWithParametersSignature(ExtractSignature):
     """Extension of ExtractSignature including parameter extraction."""
+
     parameters: list[Parameter] = dspy.OutputField(
-            desc='JSON array [{"symbol": str, "description": str|null, "constraints": [str,...], "tags": [str,...]}, ...]'
-        )
+        desc='JSON array [{"symbol": str, "description": str|null, "constraints": [str,...], "tags": [str,...]}, ...]'
+    )
+
+
+def to_jsonable(value: Any) -> Any:
+    """
+    Convert nested BaseModel/list/dict structures into JSON-serializable primitives.
+    """
+
+    if isinstance(value, BaseModel):
+        return value.model_dump()
+    if isinstance(value, dict):
+        return {k: to_jsonable(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple, set)):
+        return [to_jsonable(v) for v in value]
+    return value
+
 
 # --------------------------------------------------------------------------------------
 # Regular expressions & constants shared across reward functions and text utilities
 # --------------------------------------------------------------------------------------
+
 
 URI_PATTERN = re.compile(r"(https?://|file://|s3://|gs://)", re.IGNORECASE)
 METADATA_PATTERN = re.compile(r"\b(line|page|timestamp|uuid|sha256)\b", re.IGNORECASE)
@@ -541,4 +586,3 @@ def run_directive_extraction_loop(
     write_outputs(paths.extract_path, outputs)
     logger_use.info("Wrote %s directives to %s", len(outputs), paths.extract_path)
     return outputs
-

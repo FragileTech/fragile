@@ -2152,7 +2152,7 @@ The proof demonstrates that the left-hand side is equivalent to the definition o
     \mathbb{E}_{\nu_N^{QSD}}[\phi(z_1)] = \int_\Omega \phi(z) d\mu_N(z)
     $$
 
-3.  **Invoke the Main Convergence Result:** The combination of Tightness (Theorem 5.2), Identification (Theorem 5.4), and Uniqueness (Theorem 5.5) proves that the entire sequence of first marginals converges weakly to the unique mean-field QSD, $\mu_\infty$, whose density is $\rho_0$:
+3.  **Invoke the Main Convergence Result:** The combination of Tightness ({prf:ref}`thm-qsd-marginals-are-tight`), Identification ({prf:ref}`thm-limit-is-weak-solution`), and Uniqueness ({prf:ref}`thm-uniqueness-uniqueness-stationary-solution`) proves that the entire sequence of first marginals converges weakly to the unique mean-field QSD, $\mu_\infty$, whose density is $\rho_0$:
     $$
     \mu_N \rightharpoonup \mu_\infty \quad (\text{as } N \to \infty)
     $$

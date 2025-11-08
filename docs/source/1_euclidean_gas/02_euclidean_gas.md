@@ -1587,7 +1587,7 @@ The proof bounds the squared norm by bounding its three constituent parts: the n
 
 ##### 2.3.4.5. Proof of Theorem 2.3.4
 
-:::{prf:proof} Proof
+:::{prf:proof} of {prf:ref}`thm-sasaki-standardization-value-sq`
 
 The proof establishes the final bound by assembling the deterministic bounds for each of the three error components derived in the preceding sub-lemmas.
 
@@ -1894,7 +1894,7 @@ The term in the brackets is precisely the definition of the **Squared Indirect S
 
 ##### 2.3.6.4. Proof of Theorem 2.3.6
 
-:::{prf:proof} **Proof**
+:::{prf:proof} of {prf:ref}`thm-sasaki-standardization-structural-sq`
 The proof establishes the final bound by assembling the deterministic bounds for the two orthogonal error components derived in the preceding sub-lemmas.
 
 **Step 1: Start with the Orthogonal Decomposition.**
