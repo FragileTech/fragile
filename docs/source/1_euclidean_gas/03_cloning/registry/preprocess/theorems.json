@@ -1,0 +1,2697 @@
+[
+  {
+    "label": "thm-geometry-guarantees-variance",
+    "title": "Geometric Structure Guarantees Measurement Variance",
+    "type": "theorem",
+    "nl_statement": "There exists a positional variance threshold \\(R^2_{\\mathrm{var}} > 0\\) and a positive \\(\\varepsilon\\)-dependent constant \\(\\kappa_{\\text{meas}}(\\epsilon) > 0\\) such that for any swarm with \\(k \\geq 2\\) alive walkers, if the internal positional variance satisfies \\(\\mathrm{Var}(x) \\ge R^2_{\\mathrm{var}}\\), then the expected empirical variance of the raw distance-to-companion measurements is \\(\\mathbb{E}[\\operatorname{Var}(d)] \\ge \\kappa_{\\text{meas}}(\\epsilon) > 0\\).",
+    "content_markdown": ":label: thm-geometry-guarantees-variance\n\nLet the `Sequential Stochastic Greedy Pairing Operator` be defined as in {prf:ref}`def-greedy-pairing-algorithm`. There exists a positional variance threshold $R^2_{\\mathrm{var}} > 0$ and a positive, $\\varepsilon$-dependent constant $\\kappa_{\\text{meas}}(\\epsilon) > 0$ such that for any swarm with $k \\geq 2$ alive walkers:\n\nIf the internal positional variance of the swarm is large, $\\mathrm{Var}(x) \\ge R^2_{\\mathrm{var}}$, then the expected empirical variance of the raw distance-to-companion measurements is uniformly bounded below:\n\n$$\n\\mathbb{E}[\\operatorname{Var}(d)] \\ge \\kappa_{\\text{meas}}(\\epsilon) > 0",
+    "raw_directive": "3327: \n3328: #### 7.2.1 Guaranteed Measurement Variance from Geometric Structure\n3329: :::{prf:theorem} Geometric Structure Guarantees Measurement Variance\n3330: :label: thm-geometry-guarantees-variance\n3331: \n3332: Let the `Sequential Stochastic Greedy Pairing Operator` be defined as in {prf:ref}`def-greedy-pairing-algorithm`. There exists a positional variance threshold $R^2_{\\mathrm{var}} > 0$ and a positive, $\\varepsilon$-dependent constant $\\kappa_{\\text{meas}}(\\epsilon) > 0$ such that for any swarm with $k \\geq 2$ alive walkers:\n3333: \n3334: If the internal positional variance of the swarm is large, $\\mathrm{Var}(x) \\ge R^2_{\\mathrm{var}}$, then the expected empirical variance of the raw distance-to-companion measurements is uniformly bounded below:\n3335: \n3336: $$\n3337: \\mathbb{E}[\\operatorname{Var}(d)] \\ge \\kappa_{\\text{meas}}(\\epsilon) > 0\n3338: $$",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\mathbb{E}[\\operatorname{Var}(d)] \\ge \\kappa_{\\text{meas}}(\\epsilon) > 0"
+      }
+    ],
+    "hypotheses": [],
+    "conclusion": {
+      "text": "The expected empirical variance of the raw distance-to-companion measurements is uniformly bounded below.",
+      "latex": "\\mathbb{E}[\\operatorname{Var}(d)] \\ge \\kappa_{\\text{meas}}(\\epsilon) > 0"
+    },
+    "variables": [
+      {
+        "symbol": "k",
+        "name": "number of alive walkers",
+        "description": "Number of alive walkers in the swarm",
+        "constraints": [
+          ">= 2"
+        ],
+        "tags": [
+          "swarm",
+          "count"
+        ]
+      },
+      {
+        "symbol": "\\epsilon",
+        "name": "epsilon",
+        "description": "Parameter influencing the constant kappa",
+        "constraints": [],
+        "tags": [
+          "parameter",
+          "dependence"
+        ]
+      },
+      {
+        "symbol": "R^2_{\\mathrm{var}}",
+        "name": "positional variance threshold",
+        "description": "Threshold for internal positional variance",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "threshold",
+          "variance"
+        ]
+      },
+      {
+        "symbol": "\\kappa_{\\text{meas}}(\\epsilon)",
+        "name": "measurement constant",
+        "description": "Positive constant depending on epsilon",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "constant",
+          "bound"
+        ]
+      },
+      {
+        "symbol": "x",
+        "name": "positions",
+        "description": "Internal positions of the swarm",
+        "constraints": [],
+        "tags": [
+          "position",
+          "swarm"
+        ]
+      },
+      {
+        "symbol": "d",
+        "name": "distance-to-companion",
+        "description": "Raw distance-to-companion measurements",
+        "constraints": [],
+        "tags": [
+          "distance",
+          "measurement"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "Swarm positions are in a Euclidean or metric space allowing variance computation.",
+        "confidence": 0.9
+      },
+      {
+        "text": "The pairing operator produces valid companion pairings for distance measurements.",
+        "confidence": 0.8
+      }
+    ],
+    "local_refs": [
+      "def-greedy-pairing-algorithm"
+    ],
+    "proof": {
+      "availability": "not-provided",
+      "steps": []
+    },
+    "tags": [
+      "geometry",
+      "variance",
+      "measurement",
+      "greedy-pairing",
+      "swarm",
+      "stochastic",
+      "expected-value"
+    ],
+    "document_id": "03_cloning",
+    "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
+    "span": {
+      "start_line": 3327,
+      "end_line": 3338,
+      "content_start": 3330,
+      "content_end": 3337,
+      "header_lines": [
+        3328
+      ]
+    },
+    "references": [
+      "def-greedy-pairing-algorithm"
+    ],
+    "metadata": {
+      "label": "thm-geometry-guarantees-variance"
+    },
+    "registry_context": {
+      "stage": "directives",
+      "document_id": "03_cloning",
+      "chapter_index": 7,
+      "chapter_file": "chapter_7.json",
+      "section_id": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation"
+    },
+    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "alt_labels": []
+  },
+  {
+    "label": "thm-derivation-of-stability-condition",
+    "title": "Derivation of the Stability Condition for Intelligent Adaptation",
+    "type": "theorem",
+    "nl_statement": "Under the foundational axioms including non-deceptive landscapes and sufficient swarm positional variance, the algorithm's targeting mechanism is intelligent\u2014meaning high-error walkers have systematically lower expected fitness than low-error walkers\u2014if and only if the parameters satisfy the stability condition \u03b2 ln(1 + \u03ba_{mean,d'}(\u03b5)/(g_{A,max} + \u03b7)) > \u03b1 ln(1 + \u03ba_{mean,r'}/\u03b7).",
+    "content_markdown": ":label: thm-derivation-of-stability-condition\n\nLet the system satisfy the foundational axioms, including the **Axiom of Non-Deceptive Landscapes (EG-7)**. Let a swarm `k` have a sufficiently large internal positional variance, $\\mathrm{Var}_x(S_k) > R^2_{\\mathrm{var}}$.\n\nThe algorithm's targeting mechanism is \"intelligent\" (i.e., the expected fitness of a high-error walker is systematically lower than that of a low-error walker) if and only if the system parameters ($\\alpha$, $\\beta$, $\\varepsilon$, etc.) satisfy the following **Stability Condition**:\n\n$$\n\\beta \\ln\\left(1 + \\frac{\\kappa_{\\text{mean},d'}(\\epsilon)}{g_{A,max}+\\eta}\\right) > \\alpha \\ln\\left(1 + \\frac{\\kappa_{\\text{mean},r'}}{\\eta}\\right)\n$$",
+    "raw_directive": "3915: This property is not unconditional. We will rigorously derive a **Stability Condition** on the algorithm's dynamics parameters ($\\alpha$, $\\beta$, $\\varepsilon$) from first principles. The proof will be statistical in nature, analyzing the expected fitness of the entire \"high-error\" population versus the \"low-error\" population. We will demonstrate that satisfying this Stability Condition is the necessary and sufficient condition to guarantee that the high-error walkers are, on average, less fit. This derivation provides the formal justification for elevating this condition to the status of a foundational axiom for any well-posed Fragile Gas system.\n3916: \n3917: :::{prf:theorem} Derivation of the Stability Condition for Intelligent Adaptation\n3918: :label: thm-derivation-of-stability-condition\n3919: \n3920: Let the system satisfy the foundational axioms, including the **Axiom of Non-Deceptive Landscapes (EG-7)**. Let a swarm `k` have a sufficiently large internal positional variance, $\\mathrm{Var}_x(S_k) > R^2_{\\mathrm{var}}$.\n3921: \n3922: The algorithm's targeting mechanism is \"intelligent\" (i.e., the expected fitness of a high-error walker is systematically lower than that of a low-error walker) if and only if the system parameters ($\\alpha$, $\\beta$, $\\varepsilon$, etc.) satisfy the following **Stability Condition**:\n3923: \n3924: $$\n3925: \\beta \\ln\\left(1 + \\frac{\\kappa_{\\text{mean},d'}(\\epsilon)}{g_{A,max}+\\eta}\\right) > \\alpha \\ln\\left(1 + \\frac{\\kappa_{\\text{mean},r'}}{\\eta}\\right)\n3926: $$\n3927: ",
+    "equations": [
+      {
+        "label": "stability-condition",
+        "latex": "\\beta \\ln\\left(1 + \\frac{\\kappa_{\\text{mean},d'}(\\epsilon)}{g_{A,max}+\\eta}\\right) > \\alpha \\ln\\left(1 + \\frac{\\kappa_{\\text{mean},r'}}{\\eta}\\right)"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "The system satisfies the foundational axioms, including the Axiom of Non-Deceptive Landscapes (EG-7).",
+        "latex": null
+      },
+      {
+        "text": "Swarm k has sufficiently large internal positional variance.",
+        "latex": "\\mathrm{Var}_x(S_k) > R^2_{\\mathrm{var}}"
+      }
+    ],
+    "conclusion": {
+      "text": "The algorithm's targeting mechanism is intelligent (expected fitness of high-error walker systematically lower than low-error walker) if and only if the parameters (\u03b1, \u03b2, \u03b5, etc.) satisfy the Stability Condition.",
+      "latex": "\\beta \\ln\\left(1 + \\frac{\\kappa_{\\text{mean},d'}(\\epsilon)}{g_{A,max}+\\eta}\\right) > \\alpha \\ln\\left(1 + \\frac{\\kappa_{\\text{mean},r'}}{\\eta}\\right)"
+    },
+    "variables": [
+      {
+        "symbol": "\\alpha",
+        "name": "alpha",
+        "description": "Dynamics parameter influencing low-error targeting.",
+        "constraints": [],
+        "tags": [
+          "parameter",
+          "dynamics"
+        ]
+      },
+      {
+        "symbol": "\\beta",
+        "name": "beta",
+        "description": "Dynamics parameter influencing high-error targeting.",
+        "constraints": [],
+        "tags": [
+          "parameter",
+          "dynamics"
+        ]
+      },
+      {
+        "symbol": "\\varepsilon",
+        "name": "epsilon",
+        "description": "Error threshold parameter in the stability condition.",
+        "constraints": [],
+        "tags": [
+          "parameter",
+          "error"
+        ]
+      },
+      {
+        "symbol": "\\kappa_{\\text{mean},d'}(\\epsilon)",
+        "name": "kappa_mean_d_prime",
+        "description": "Mean curvature or density factor for deviated positions depending on epsilon.",
+        "constraints": [],
+        "tags": [
+          "curvature",
+          "density"
+        ]
+      },
+      {
+        "symbol": "g_{A,max}",
+        "name": "g_A_max",
+        "description": "Maximum gradient of the attraction function.",
+        "constraints": [],
+        "tags": [
+          "gradient",
+          "maximum"
+        ]
+      },
+      {
+        "symbol": "\\eta",
+        "name": "eta",
+        "description": "Noise or regularization parameter.",
+        "constraints": [],
+        "tags": [
+          "noise",
+          "regularization"
+        ]
+      },
+      {
+        "symbol": "\\kappa_{\\text{mean},r'}",
+        "name": "kappa_mean_r_prime",
+        "description": "Mean curvature or density factor for reference positions.",
+        "constraints": [],
+        "tags": [
+          "curvature",
+          "density"
+        ]
+      },
+      {
+        "symbol": "S_k",
+        "name": "S_k",
+        "description": "Swarm k positions.",
+        "constraints": [],
+        "tags": [
+          "swarm",
+          "positions"
+        ]
+      },
+      {
+        "symbol": "R^2_{\\mathrm{var}}",
+        "name": "R_var_squared",
+        "description": "Variance threshold radius squared.",
+        "constraints": [],
+        "tags": [
+          "variance",
+          "threshold"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The system is a well-posed Fragile Gas system with statistical analysis applicable to population fitness.",
+        "confidence": 0.9
+      },
+      {
+        "text": "Parameters \u03b1, \u03b2, \u03b5 are positive real numbers ensuring logarithmic terms are defined.",
+        "confidence": 0.8
+      }
+    ],
+    "local_refs": [
+      "EG-7"
+    ],
+    "proof": {
+      "availability": "not-provided",
+      "steps": [
+        {
+          "kind": "outline",
+          "text": "Proof to be derived statistically by comparing expected fitness of high-error vs. low-error populations under axioms.",
+          "latex": null
+        }
+      ]
+    },
+    "tags": [
+      "stability-condition",
+      "intelligent-adaptation",
+      "swarm-dynamics",
+      "fitness",
+      "error-walkers",
+      "algorithm-parameters",
+      "variance"
+    ],
+    "document_id": "03_cloning",
+    "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
+    "span": {
+      "start_line": 3915,
+      "end_line": 3927,
+      "content_start": 3918,
+      "content_end": 3926,
+      "header_lines": [
+        3916
+      ]
+    },
+    "references": [],
+    "metadata": {
+      "label": "thm-derivation-of-stability-condition"
+    },
+    "registry_context": {
+      "stage": "directives",
+      "document_id": "03_cloning",
+      "chapter_index": 7,
+      "chapter_file": "chapter_7.json",
+      "section_id": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation"
+    },
+    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "alt_labels": []
+  },
+  {
+    "label": "thm-stability-condition-final-corrected",
+    "title": "The Corrected Stability Condition for Intelligent Adaptation",
+    "type": "theorem",
+    "nl_statement": "For a swarm k in a high-error state, the algorithm's targeting mechanism is intelligent (i.e., \\mathbb{E}[\\ln(V_{\\text{fit}})|H_k] < \\mathbb{E}[\\ln(V_{\\text{fit}})|L_k]) if and only if the system parameters satisfy \\beta \\ln\\left(1 + \\frac{\\kappa_{d', \\text{mean}}}{g_{A,\\max}+\\eta}\\right) > \\alpha \\ln\\left(1 + \\frac{\\kappa_{\\mathrm{rescaled}}(L_{R} \\cdot D_{\\mathrm{valid}})}{\\eta}\\right).",
+    "content_markdown": ":label: thm-stability-condition-final-corrected\n\nLet a swarm `k$ be in a high-error state. The algorithm's targeting mechanism is intelligent (i.e., $\\mathbb{E}[\\ln(V_{\\text{fit}})|H_k] < \\mathbb{E}[\\ln(V_{\\text{fit}})|L_k]$) if and only if the system parameters satisfy the following **Corrected Stability Condition**:\n$$\n\\beta \\ln\\left(1 + \\frac{\\kappa_{d', \\text{mean}}}{g_{A,\\max}+\\eta}\\right) > \\alpha \\ln\\left(1 + \\frac{\\kappa_{\\mathrm{rescaled}}(L_{R} \\cdot D_{\\mathrm{valid}})}{\\eta}\\right)",
+    "raw_directive": "4512: With a rigorous, axiom-based bound on the adversarial reward signal now established, we can state the corrected and final stability condition.\n4513: \n4514: :::{prf:theorem} **(The Corrected Stability Condition for Intelligent Adaptation)**\n4515: :label: thm-stability-condition-final-corrected\n4516: \n4517: Let a swarm `k$ be in a high-error state. The algorithm's targeting mechanism is intelligent (i.e., $\\mathbb{E}[\\ln(V_{\\text{fit}})|H_k] < \\mathbb{E}[\\ln(V_{\\text{fit}})|L_k]$) if and only if the system parameters satisfy the following **Corrected Stability Condition**:\n4518: $$\n4519: \\beta \\ln\\left(1 + \\frac{\\kappa_{d', \\text{mean}}}{g_{A,\\max}+\\eta}\\right) > \\alpha \\ln\\left(1 + \\frac{\\kappa_{\\mathrm{rescaled}}(L_{R} \\cdot D_{\\mathrm{valid}})}{\\eta}\\right)\n4520: $$",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\beta \\ln\\left(1 + \\frac{\\kappa_{d', \\text{mean}}}{g_{A,\\max}+\\eta}\\right) > \\alpha \\ln\\left(1 + \\frac{\\kappa_{\\mathrm{rescaled}}(L_{R} \\cdot D_{\\mathrm{valid}})}{\\eta}\\right)"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "A swarm k is in a high-error state.",
+        "latex": null
+      },
+      {
+        "text": "The algorithm's targeting mechanism is intelligent, i.e., \\mathbb{E}[\\ln(V_{\\text{fit}})|H_k] < \\mathbb{E}[\\ln(V_{\\text{fit}})|L_k].",
+        "latex": "\\mathbb{E}[\\ln(V_{\\text{fit}})|H_k] < \\mathbb{E}[\\ln(V_{\\text{fit}})|L_k]"
+      }
+    ],
+    "conclusion": {
+      "text": "The system parameters satisfy the Corrected Stability Condition: \\beta \\ln\\left(1 + \\frac{\\kappa_{d', \\text{mean}}}{g_{A,\\max}+\\eta}\\right) > \\alpha \\ln\\left(1 + \\frac{\\kappa_{\\mathrm{rescaled}}(L_{R} \\cdot D_{\\mathrm{valid}})}{\\eta}\\right).",
+      "latex": "\\beta \\ln\\left(1 + \\frac{\\kappa_{d', \\text{mean}}}{g_{A,\\max}+\\eta}\\right) > \\alpha \\ln\\left(1 + \\frac{\\kappa_{\\mathrm{rescaled}}(L_{R} \\cdot D_{\\mathrm{valid}})}{\\eta}\\right)"
+    },
+    "variables": [
+      {
+        "symbol": "k",
+        "name": "swarm",
+        "description": "Identifier for the swarm.",
+        "constraints": [],
+        "tags": [
+          "swarm"
+        ]
+      },
+      {
+        "symbol": "\\beta",
+        "name": "beta",
+        "description": "System parameter in the stability inequality.",
+        "constraints": [
+          "positive"
+        ],
+        "tags": [
+          "parameter"
+        ]
+      },
+      {
+        "symbol": "\\alpha",
+        "name": "alpha",
+        "description": "System parameter in the stability inequality.",
+        "constraints": [
+          "positive"
+        ],
+        "tags": [
+          "parameter"
+        ]
+      },
+      {
+        "symbol": "\\kappa_{d', \\text{mean}}",
+        "name": "kappa_d_prime_mean",
+        "description": "Mean value of kappa for d prime.",
+        "constraints": [
+          "positive"
+        ],
+        "tags": [
+          "kappa",
+          "mean"
+        ]
+      },
+      {
+        "symbol": "g_{A,\\max}",
+        "name": "g_A_max",
+        "description": "Maximum value of g_A.",
+        "constraints": [
+          "positive"
+        ],
+        "tags": [
+          "max"
+        ]
+      },
+      {
+        "symbol": "\\eta",
+        "name": "eta",
+        "description": "Regularization or noise parameter.",
+        "constraints": [
+          "positive"
+        ],
+        "tags": [
+          "eta"
+        ]
+      },
+      {
+        "symbol": "\\kappa_{\\mathrm{rescaled}}",
+        "name": "kappa_rescaled",
+        "description": "Rescaled kappa function.",
+        "constraints": [],
+        "tags": [
+          "kappa",
+          "rescaled"
+        ]
+      },
+      {
+        "symbol": "L_R",
+        "name": "L_R",
+        "description": "Loss or length related to R.",
+        "constraints": [
+          "positive"
+        ],
+        "tags": [
+          "loss"
+        ]
+      },
+      {
+        "symbol": "D_{\\mathrm{valid}}",
+        "name": "D_valid",
+        "description": "Valid dimension or distance.",
+        "constraints": [
+          "positive"
+        ],
+        "tags": [
+          "dimension"
+        ]
+      },
+      {
+        "symbol": "V_{\\text{fit}}",
+        "name": "V_fit",
+        "description": "Fitness value.",
+        "constraints": [],
+        "tags": [
+          "fitness"
+        ]
+      },
+      {
+        "symbol": "H_k",
+        "name": "H_k",
+        "description": "High-error state for swarm k.",
+        "constraints": [],
+        "tags": [
+          "high-error"
+        ]
+      },
+      {
+        "symbol": "L_k",
+        "name": "L_k",
+        "description": "Low-error state for swarm k.",
+        "constraints": [],
+        "tags": [
+          "low-error"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "All parameters (\\alpha, \\beta, \\eta, \\kappa values, etc.) are positive real numbers.",
+        "confidence": 0.9
+      },
+      {
+        "text": "The expectations \\mathbb{E}[\\ln(V_{\\text{fit}})|H_k] and \\mathbb{E}[\\ln(V_{\\text{fit}})|L_k] are well-defined.",
+        "confidence": 0.8
+      },
+      {
+        "text": "The swarm k exists in a defined state space with high-error condition.",
+        "confidence": 0.7
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not-provided",
+      "steps": []
+    },
+    "tags": [
+      "stability-condition",
+      "intelligent-adaptation",
+      "swarm-algorithm",
+      "targeting-mechanism",
+      "adversarial-reward",
+      "corrected-inequality"
+    ],
+    "document_id": "03_cloning",
+    "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
+    "span": {
+      "start_line": 4512,
+      "end_line": 4520,
+      "content_start": 4515,
+      "content_end": 4519,
+      "header_lines": [
+        4513
+      ]
+    },
+    "references": [
+      "prop-corrective-signal-bound"
+    ],
+    "metadata": {
+      "label": "thm-stability-condition-final-corrected"
+    },
+    "registry_context": {
+      "stage": "directives",
+      "document_id": "03_cloning",
+      "chapter_index": 7,
+      "chapter_file": "chapter_7.json",
+      "section_id": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation"
+    },
+    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "alt_labels": []
+  },
+  {
+    "label": "thm-unfit-high-error-overlap-fraction",
+    "title": "N-Uniform Lower Bound on the Unfit-High-Error Overlap Fraction",
+    "type": "theorem",
+    "nl_statement": "For a swarm state satisfying \\(V_{\\mathrm{struct}} > R^2_{\\mathrm{spread}}\\), with \\(U_k\\) the unfit set and \\(H_k(\\epsilon)\\) the high-error set, if the Stability Condition holds, then the fraction of alive walkers in their intersection \\(I_{UH} = U_k \\cap H_k(\\epsilon)\\) is bounded below by a positive N-uniform constant: \\(\\frac{|I_{UH}|}{k} \\ge f_{UH}(\\epsilon) > 0\\).",
+    "content_markdown": ":label: thm-unfit-high-error-overlap-fraction\n\nLet a swarm state satisfy $V_{\\mathrm{struct}} > R^2_{\\mathrm{spread}}$. Let $U_k$ be the unfit set for swarm `k` and let $H_k(\\epsilon)$ be its corresponding unified high-error set.\n\nIf the **Stability Condition** ([](#thm-stability-condition-final-corrected)) holds for the chosen system parameters, then the fraction of alive walkers in the intersection set $I_{UH} = U_k \\cap H_k(\\epsilon)$ is bounded below by a positive, N-uniform constant:\n\n$$\n\\frac{|I_{UH}|}{k} \\ge f_{UH}(\\epsilon) > 0\n$$",
+    "raw_directive": "4634: This theorem proves that the set of walkers targeted by the algorithm for corrective cloning has a substantial and non-vanishing overlap with the set of walkers that are the primary source of the system's geometric error. This is the ultimate proof of the Keystone Principle's corrective feedback loop.\n4635: \n4636: :::{prf:theorem} N-Uniform Lower Bound on the Unfit-High-Error Overlap Fraction\n4637: :label: thm-unfit-high-error-overlap-fraction\n4638: \n4639: Let a swarm state satisfy $V_{\\mathrm{struct}} > R^2_{\\mathrm{spread}}$. Let $U_k$ be the unfit set for swarm `k` and let $H_k(\\epsilon)$ be its corresponding unified high-error set.\n4640: \n4641: If the **Stability Condition** ([](#thm-stability-condition-final-corrected)) holds for the chosen system parameters, then the fraction of alive walkers in the intersection set $I_{UH} = U_k \\cap H_k(\\epsilon)$ is bounded below by a positive, N-uniform constant:\n4642: \n4643: $$\n4644: \\frac{|I_{UH}|}{k} \\ge f_{UH}(\\epsilon) > 0\n4645: $$\n4646: ",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\frac{|I_{UH}|}{k} \\ge f_{UH}(\\epsilon) > 0"
+      }
+    ],
+    "hypotheses": [],
+    "conclusion": {
+      "text": null,
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "V_{\\mathrm{struct}}",
+        "name": "structural variance",
+        "description": "Variance measure for swarm structure.",
+        "constraints": [
+          "> R^2_{\\mathrm{spread}}"
+        ],
+        "tags": [
+          "swarm state"
+        ]
+      },
+      {
+        "symbol": "R_{\\mathrm{spread}}",
+        "name": "spread radius",
+        "description": "Radius parameter for swarm spread.",
+        "constraints": [],
+        "tags": [
+          "swarm geometry"
+        ]
+      },
+      {
+        "symbol": "U_k",
+        "name": "unfit set",
+        "description": "Set of unfit walkers in swarm k.",
+        "constraints": [],
+        "tags": [
+          "unfit walkers"
+        ]
+      },
+      {
+        "symbol": "H_k(\\epsilon)",
+        "name": "high-error set",
+        "description": "Unified high-error set for swarm k with threshold \\epsilon.",
+        "constraints": [],
+        "tags": [
+          "error walkers"
+        ]
+      },
+      {
+        "symbol": "I_{UH}",
+        "name": "intersection set",
+        "description": "Intersection of unfit and high-error sets: U_k \\cap H_k(\\epsilon).",
+        "constraints": [],
+        "tags": [
+          "overlap"
+        ]
+      },
+      {
+        "symbol": "k",
+        "name": "swarm index",
+        "description": "Index of the swarm.",
+        "constraints": [],
+        "tags": [
+          "swarm size"
+        ]
+      },
+      {
+        "symbol": "f_{UH}(\\epsilon)",
+        "name": "overlap fraction lower bound",
+        "description": "Positive constant bounding the overlap fraction.",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "uniform bound"
+        ]
+      },
+      {
+        "symbol": "\\epsilon",
+        "name": "error threshold",
+        "description": "Threshold parameter for high-error definition.",
+        "constraints": [],
+        "tags": [
+          "error level"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "Walkers are alive and countable in the sets.",
+        "confidence": 0.9
+      },
+      {
+        "text": "N refers to a fixed dimension or system size independent of k.",
+        "confidence": 0.8
+      },
+      {
+        "text": "The swarm algorithm targets unfit walkers for corrective cloning.",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [
+      "thm-stability-condition-final-corrected"
+    ],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "swarm dynamics",
+      "unfit set",
+      "high-error set",
+      "overlap fraction",
+      "stability condition",
+      "uniform lower bound"
+    ],
+    "document_id": "03_cloning",
+    "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
+    "span": {
+      "start_line": 4634,
+      "end_line": 4646,
+      "content_start": 4637,
+      "content_end": 4645,
+      "header_lines": [
+        4635
+      ]
+    },
+    "references": [],
+    "metadata": {
+      "label": "thm-unfit-high-error-overlap-fraction"
+    },
+    "registry_context": {
+      "stage": "directives",
+      "document_id": "03_cloning",
+      "chapter_index": 7,
+      "chapter_file": "chapter_7.json",
+      "section_id": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation"
+    },
+    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "alt_labels": []
+  },
+  {
+    "label": "thm-cloning-operator-composition",
+    "title": "Compositional Structure of $\\Psi_{\\text{clone}}$",
+    "type": "theorem",
+    "nl_statement": "The cloning operator $\\Psi_{\\text{clone}}$ admits a compositional integral representation involving measurement, fitness, decision, and update components, forming a proper Markov kernel on the state space $\\Sigma_N$.",
+    "content_markdown": ":label: thm-cloning-operator-composition\n\nThe cloning operator admits the following compositional representation:\n\n$$\n\\Psi_{\\text{clone}}(S, \\cdot) = \\int_{\\mathbf{d}} \\int_{\\mathbf{c}, \\mathbf{a}} \\Psi_{\\text{update}}(S, \\mathbf{c}, \\mathbf{a}, \\cdot) \\, dP_{\\text{decision}}(S, \\mathbf{V}_{\\text{fit}}(\\mathbf{d}), \\mathbf{c}, \\mathbf{a}) \\, dP_{\\text{measure}}(S, \\mathbf{d})\n$$\n\nwhere:\n- $P_{\\text{measure}}(S, \\cdot)$ is the distribution of raw distance vectors from $\\Psi_{\\text{measure}}$\n- $\\mathbf{V}_{\\text{fit}}(\\mathbf{d})$ is the deterministic fitness vector from $\\Psi_{\\text{fitness}}$ given $S$ and $\\mathbf{d}$\n- $P_{\\text{decision}}(S, \\mathbf{V}_{\\text{fit}}, \\cdot)$ is the joint distribution of companion assignments and actions\n- $\\Psi_{\\text{update}}(S, \\mathbf{c}, \\mathbf{a}, \\cdot)$ is the (possibly stochastic) output distribution given the actions\n\nThis composition is a proper Markov kernel: for any measurable set $A \\subseteq \\Sigma_N$,\n\n$$\n\\Psi_{\\text{clone}}(S, A) = P(S' \\in A \\mid S)\n$$",
+    "raw_directive": "6176: We now assemble the complete operator from its components.\n6177: \n6178: :::{prf:theorem} Compositional Structure of $\\Psi_{\\text{clone}}$\n6179: :label: thm-cloning-operator-composition\n6180: \n6181: The cloning operator admits the following compositional representation:\n6182: \n6183: $$\n6184: \\Psi_{\\text{clone}}(S, \\cdot) = \\int_{\\mathbf{d}} \\int_{\\mathbf{c}, \\mathbf{a}} \\Psi_{\\text{update}}(S, \\mathbf{c}, \\mathbf{a}, \\cdot) \\, dP_{\\text{decision}}(S, \\mathbf{V}_{\\text{fit}}(\\mathbf{d}), \\mathbf{c}, \\mathbf{a}) \\, dP_{\\text{measure}}(S, \\mathbf{d})\n6185: $$\n6186: \n6187: where:\n6188: - $P_{\\text{measure}}(S, \\cdot)$ is the distribution of raw distance vectors from $\\Psi_{\\text{measure}}$\n6189: - $\\mathbf{V}_{\\text{fit}}(\\mathbf{d})$ is the deterministic fitness vector from $\\Psi_{\\text{fitness}}$ given $S$ and $\\mathbf{d}$\n6190: - $P_{\\text{decision}}(S, \\mathbf{V}_{\\text{fit}}, \\cdot)$ is the joint distribution of companion assignments and actions\n6191: - $\\Psi_{\\text{update}}(S, \\mathbf{c}, \\mathbf{a}, \\cdot)$ is the (possibly stochastic) output distribution given the actions\n6192: \n6193: This composition is a proper Markov kernel: for any measurable set $A \\subseteq \\Sigma_N$,\n6194: \n6195: $$\n6196: \\Psi_{\\text{clone}}(S, A) = P(S' \\in A \\mid S)\n6197: $$\n6198: ",
+    "equations": [],
+    "hypotheses": [],
+    "conclusion": {
+      "text": null,
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "S",
+        "name": "current state",
+        "description": "Current population state.",
+        "constraints": [
+          "$S \\in \\Sigma_N$"
+        ],
+        "tags": [
+          "state",
+          "population"
+        ]
+      },
+      {
+        "symbol": "\\mathbf{d}",
+        "name": "distance vector",
+        "description": "Raw distance vector from measurements.",
+        "constraints": [],
+        "tags": [
+          "distance",
+          "vector"
+        ]
+      },
+      {
+        "symbol": "\\mathbf{c}",
+        "name": "companion assignments",
+        "description": "Assignments of companions in the cloning process.",
+        "constraints": [],
+        "tags": [
+          "companion",
+          "assignment"
+        ]
+      },
+      {
+        "symbol": "\\mathbf{a}",
+        "name": "actions",
+        "description": "Actions taken in the decision process.",
+        "constraints": [],
+        "tags": [
+          "action",
+          "decision"
+        ]
+      },
+      {
+        "symbol": "\\mathbf{V}_{\\text{fit}}",
+        "name": "fitness vector",
+        "description": "Deterministic fitness values derived from distances.",
+        "constraints": [],
+        "tags": [
+          "fitness",
+          "vector"
+        ]
+      },
+      {
+        "symbol": "A",
+        "name": "measurable set",
+        "description": "Subset of the state space $\\Sigma_N$.",
+        "constraints": [
+          "measurable"
+        ],
+        "tags": [
+          "set",
+          "measurable"
+        ]
+      },
+      {
+        "symbol": "S'",
+        "name": "next state",
+        "description": "Resulting state after cloning transition.",
+        "constraints": [
+          "$S' \\in \\Sigma_N$"
+        ],
+        "tags": [
+          "state",
+          "next"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "All involved distributions $P_{\\text{measure}}$ and $P_{\\text{decision}}$ are probability measures ensuring the integral is well-defined.",
+        "confidence": 1.0
+      },
+      {
+        "text": "The state space $\\Sigma_N$ is equipped with a sigma-algebra making subsets measurable.",
+        "confidence": 1.0
+      },
+      {
+        "text": "$\\Psi_{\\text{update}}$ is a stochastic kernel outputting valid distributions on $\\Sigma_N$.",
+        "confidence": 0.9
+      },
+      {
+        "text": "Fitness evaluation $\\mathbf{V}_{\\text{fit}}$ is deterministic and measurable.",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "cloning",
+      "operator",
+      "composition",
+      "Markov kernel",
+      "integral representation",
+      "stochastic process"
+    ],
+    "document_id": "03_cloning",
+    "section": "## 9.4. Complete Operator Specification",
+    "span": {
+      "start_line": 6176,
+      "end_line": 6198,
+      "content_start": 6179,
+      "content_end": 6197,
+      "header_lines": [
+        6177
+      ]
+    },
+    "references": [],
+    "metadata": {
+      "label": "thm-cloning-operator-composition"
+    },
+    "registry_context": {
+      "stage": "directives",
+      "document_id": "03_cloning",
+      "chapter_index": 12,
+      "chapter_file": "chapter_12.json",
+      "section_id": "## 9.4. Complete Operator Specification"
+    },
+    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "alt_labels": []
+  },
+  {
+    "label": "thm-positional-variance-contraction",
+    "title": "Positional Variance Contraction Under Cloning",
+    "type": "theorem",
+    "nl_statement": "Under the foundational axioms of Chapter 4, there exist constants \u03ba_x > 0, C_x < \u221e, and structural error threshold R\u00b2_spread > 0, all independent of N, such that for any pair of swarms (S_1, S_2), the expected positional variance after cloning contracts: E_clone[V_Var,x(S'_1, S'_2) | S_1, S_2] \u2264 (1 - \u03ba_x) V_Var,x(S_1, S_2) + C_x. Moreover, if V_Var,x(S_1, S_2) > \\tilde{C}_x for sufficiently large \\tilde{C}_x, then E_clone[\u0394 V_Var,x] < 0, where \u0394 V_Var,x = V_Var,x(S'_1, S'_2) - V_Var,x(S_1, S_2).",
+    "content_markdown": ":label: thm-positional-variance-contraction\n\nUnder the foundational axioms (Chapter 4), there exist constants $\\kappa_x > 0$, $C_x < \\infty$, and a structural error threshold $R^2_{\\text{spread}} > 0$, all independent of $N$, such that for any pair of swarms $(S_1, S_2)$:\n\n$$\n\\mathbb{E}_{\\text{clone}}[V_{\\text{Var},x}(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_x) V_{\\text{Var},x}(S_1, S_2) + C_x\n$$\n\nFurthermore, when $V_{\\text{Var},x}(S_1, S_2) > \\tilde{C}_x$ for a sufficiently large threshold $\\tilde{C}_x$, the contraction becomes strict:\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] := \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},x}(S'_1, S'_2) - V_{\\text{Var},x}(S_1, S_2)] < 0",
+    "raw_directive": "6361: ### 10.3.1. Main Theorem\n6362: \n6363: :::{prf:theorem} Positional Variance Contraction Under Cloning\n6364: :label: thm-positional-variance-contraction\n6365: \n6366: Under the foundational axioms (Chapter 4), there exist constants $\\kappa_x > 0$, $C_x < \\infty$, and a structural error threshold $R^2_{\\text{spread}} > 0$, all independent of $N$, such that for any pair of swarms $(S_1, S_2)$:\n6367: \n6368: $$\n6369: \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},x}(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_x) V_{\\text{Var},x}(S_1, S_2) + C_x\n6370: $$\n6371: \n6372: Furthermore, when $V_{\\text{Var},x}(S_1, S_2) > \\tilde{C}_x$ for a sufficiently large threshold $\\tilde{C}_x$, the contraction becomes strict:\n6373: \n6374: $$\n6375: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] := \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},x}(S'_1, S'_2) - V_{\\text{Var},x}(S_1, S_2)] < 0\n6376: $$",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\mathbb{E}_{\\text{clone}}[V_{\\text{Var},x}(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_x) V_{\\text{Var},x}(S_1, S_2) + C_x"
+      },
+      {
+        "label": null,
+        "latex": "\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] := \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},x}(S'_1, S'_2) - V_{\\text{Var},x}(S_1, S_2)] < 0"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Under the foundational axioms (Chapter 4)",
+        "latex": null
+      },
+      {
+        "text": "There exist constants \u03ba_x > 0, C_x < \u221e, and R\u00b2_spread > 0, all independent of N",
+        "latex": null
+      },
+      {
+        "text": "For any pair of swarms (S_1, S_2)",
+        "latex": null
+      },
+      {
+        "text": "When V_Var,x(S_1, S_2) > \tilde{C}_x for sufficiently large \tilde{C}_x",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The expected positional variance after cloning satisfies the contraction inequality, and becomes strictly negative when above the threshold",
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "\\kappa_x",
+        "name": "kappa_x",
+        "description": "positive contraction constant",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "constant"
+        ]
+      },
+      {
+        "symbol": "C_x",
+        "name": "C_x",
+        "description": "finite additive error constant",
+        "constraints": [
+          "< \\infty"
+        ],
+        "tags": [
+          "constant"
+        ]
+      },
+      {
+        "symbol": "R^2_{\\text{spread}}",
+        "name": "R_spread_squared",
+        "description": "structural error threshold",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "threshold"
+        ]
+      },
+      {
+        "symbol": "V_{\\text{Var},x}",
+        "name": "V_Var_x",
+        "description": "positional variance function",
+        "constraints": [],
+        "tags": [
+          "variance",
+          "function"
+        ]
+      },
+      {
+        "symbol": "S_1",
+        "name": "S_1",
+        "description": "first swarm",
+        "constraints": [],
+        "tags": [
+          "swarm"
+        ]
+      },
+      {
+        "symbol": "S_2",
+        "name": "S_2",
+        "description": "second swarm",
+        "constraints": [],
+        "tags": [
+          "swarm"
+        ]
+      },
+      {
+        "symbol": "S'_1",
+        "name": "S_prime_1",
+        "description": "cloned first swarm",
+        "constraints": [],
+        "tags": [
+          "swarm",
+          "cloned"
+        ]
+      },
+      {
+        "symbol": "S'_2",
+        "name": "S_prime_2",
+        "description": "cloned second swarm",
+        "constraints": [],
+        "tags": [
+          "swarm",
+          "cloned"
+        ]
+      },
+      {
+        "symbol": "\\tilde{C}_x",
+        "name": "C_tilde_x",
+        "description": "sufficiently large variance threshold",
+        "constraints": [],
+        "tags": [
+          "threshold"
+        ]
+      },
+      {
+        "symbol": "N",
+        "name": "N",
+        "description": "swarm size parameter",
+        "constraints": [],
+        "tags": [
+          "size"
+        ]
+      },
+      {
+        "symbol": "\\text{clone}",
+        "name": "clone",
+        "description": "cloning process",
+        "constraints": [],
+        "tags": [
+          "process"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "Constants are independent of swarm size N",
+        "confidence": 1.0
+      },
+      {
+        "text": "Cloning process is stochastic, allowing for expectation",
+        "confidence": 0.9
+      },
+      {
+        "text": "Swarms S_1 and S_2 are valid under foundational axioms",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "variance",
+      "contraction",
+      "cloning",
+      "swarms",
+      "positional",
+      "expected value",
+      "axioms"
+    ],
+    "document_id": "03_cloning",
+    "section": "## 10.3. Positional Variance Contraction",
+    "span": {
+      "start_line": 6361,
+      "end_line": 6376,
+      "content_start": 6364,
+      "content_end": 6375,
+      "header_lines": [
+        6362
+      ]
+    },
+    "references": [],
+    "metadata": {
+      "label": "thm-positional-variance-contraction"
+    },
+    "registry_context": {
+      "stage": "directives",
+      "document_id": "03_cloning",
+      "chapter_index": 17,
+      "chapter_file": "chapter_17.json",
+      "section_id": "## 10.3. Positional Variance Contraction"
+    },
+    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "alt_labels": []
+  },
+  {
+    "label": "thm-velocity-variance-bounded-expansion",
+    "title": "Bounded Velocity Variance Expansion from Cloning",
+    "type": "theorem",
+    "nl_statement": "There exists a state-independent constant \\(C_v < \\infty\\) such that for any swarm \\(S\\), the expected velocity variance after cloning is at most the current velocity variance plus \\(C_v\\), equivalently the expected one-step drift is at most \\(C_v\\).",
+    "content_markdown": ":label: thm-velocity-variance-bounded-expansion\n\nThere exists a state-independent constant $C_v < \\infty$ such that for any swarm $S$:\n\n$$\n\\mathbb{E}_{\\text{clone}}[V_{\\text{Var},v}(S')] \\leq V_{\\text{Var},v}(S) + C_v\n$$\n\nEquivalently, the one-step drift satisfies:\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v",
+    "raw_directive": "6745: We now prove that the velocity variance expansion from cloning is uniformly bounded.\n6746: \n6747: :::{prf:theorem} Bounded Velocity Variance Expansion from Cloning\n6748: :label: thm-velocity-variance-bounded-expansion\n6749: \n6750: There exists a state-independent constant $C_v < \\infty$ such that for any swarm $S$:\n6751: \n6752: $$\n6753: \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},v}(S')] \\leq V_{\\text{Var},v}(S) + C_v\n6754: $$\n6755: \n6756: Equivalently, the one-step drift satisfies:\n6757: \n6758: $$\n6759: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n6760: $$",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\mathbb{E}_{\\text{clone}}[V_{\\text{Var},v}(S')] \\leq V_{\\text{Var},v}(S) + C_v"
+      },
+      {
+        "label": null,
+        "latex": "\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v"
+      }
+    ],
+    "hypotheses": [],
+    "conclusion": {
+      "text": null,
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "C_v",
+        "name": "constant",
+        "description": "State-independent upper bound for variance expansion",
+        "constraints": [
+          "< \\infty"
+        ],
+        "tags": [
+          "bound",
+          "constant"
+        ]
+      },
+      {
+        "symbol": "S",
+        "name": "swarm",
+        "description": "Current state of the swarm",
+        "constraints": [],
+        "tags": [
+          "swarm",
+          "state"
+        ]
+      },
+      {
+        "symbol": "S'",
+        "name": "cloned swarm",
+        "description": "Swarm state after cloning",
+        "constraints": [],
+        "tags": [
+          "swarm",
+          "state"
+        ]
+      },
+      {
+        "symbol": "V_{\\text{Var},v}",
+        "name": "velocity variance",
+        "description": "Variance of velocities in the swarm",
+        "constraints": [],
+        "tags": [
+          "variance",
+          "velocity"
+        ]
+      }
+    ],
+    "implicit_assumptions": [],
+    "local_refs": [],
+    "proof": {
+      "availability": "not included",
+      "steps": []
+    },
+    "tags": [
+      "velocity",
+      "variance",
+      "cloning",
+      "bounded",
+      "expansion",
+      "swarm",
+      "drift",
+      "expectation"
+    ],
+    "document_id": "03_cloning",
+    "section": "## 10.4. Velocity Variance Bounded Expansion",
+    "span": {
+      "start_line": 6745,
+      "end_line": 6760,
+      "content_start": 6748,
+      "content_end": 6759,
+      "header_lines": [
+        6746
+      ]
+    },
+    "references": [],
+    "metadata": {
+      "label": "thm-velocity-variance-bounded-expansion"
+    },
+    "registry_context": {
+      "stage": "directives",
+      "document_id": "03_cloning",
+      "chapter_index": 18,
+      "chapter_file": "chapter_18.json",
+      "section_id": "## 10.4. Velocity Variance Bounded Expansion"
+    },
+    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "alt_labels": []
+  },
+  {
+    "label": "thm-complete-variance-drift",
+    "title": "Complete Variance Drift Characterization for Cloning",
+    "type": "theorem",
+    "nl_statement": "The cloning operator \u03a8_clone induces a strong contraction on positional variance, bounded expansion on velocity variance, and a net contraction on total internal variance of the Lyapunov function.",
+    "content_markdown": ":label: thm-complete-variance-drift\n\nThe cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the variance components of the Lyapunov function:\n\n**1. Positional Variance (Strong Contraction):**\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x\n$$\n\nwhere $\\kappa_x > 0$ is $N$-independent (from Keystone Principle).\n\n**2. Velocity Variance (Bounded Expansion):**\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n$$\n\nwhere $C_v < \\infty$ is a state-independent constant.\n\n**3. Total Internal Variance:**\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var}}] = \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_x V_{\\text{Var},x} + (C_x + C_v)\n$$",
+    "raw_directive": "6890: We conclude by summarizing the main drift results for the variance components under $\\Psi_{\\text{clone}}$.\n6891: \n6892: :::{prf:theorem} Complete Variance Drift Characterization for Cloning\n6893: :label: thm-complete-variance-drift\n6894: \n6895: The cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the variance components of the Lyapunov function:\n6896: \n6897: **1. Positional Variance (Strong Contraction):**\n6898: \n6899: $$\n6900: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x\n6901: $$\n6902: \n6903: where $\\kappa_x > 0$ is $N$-independent (from Keystone Principle).\n6904: \n6905: **2. Velocity Variance (Bounded Expansion):**\n6906: \n6907: $$\n6908: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n6909: $$\n6910: \n6911: where $C_v < \\infty$ is a state-independent constant.\n6912: \n6913: **3. Total Internal Variance:**\n6914: \n6915: $$\n6916: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var}}] = \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_x V_{\\text{Var},x} + (C_x + C_v)\n6917: $$\n6918: ",
+    "equations": [
+      {
+        "label": "positional-variance",
+        "latex": "\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x"
+      },
+      {
+        "label": "velocity-variance",
+        "latex": "\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v"
+      },
+      {
+        "label": "total-variance",
+        "latex": "\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var}}] = \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_x V_{\\text{Var},x} + (C_x + C_v)"
+      }
+    ],
+    "hypotheses": [],
+    "conclusion": {
+      "text": "The cloning operator \u03a8_clone induces the specified drifts on variance components: strong contraction for positional variance with N-independent \u03ba_x > 0, bounded expansion for velocity variance, and net bound for total internal variance.",
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "\\Psi_{\\text{clone}}",
+        "name": "cloning operator",
+        "description": "Operator inducing variance drifts on Lyapunov function components.",
+        "constraints": [
+          "linear"
+        ],
+        "tags": [
+          "operator",
+          "cloning"
+        ]
+      },
+      {
+        "symbol": "V_{\\text{Var},x}",
+        "name": "positional variance",
+        "description": "Variance component for positions in Lyapunov function.",
+        "constraints": [
+          "non-negative"
+        ],
+        "tags": [
+          "variance",
+          "position"
+        ]
+      },
+      {
+        "symbol": "V_{\\text{Var},v}",
+        "name": "velocity variance",
+        "description": "Variance component for velocities in Lyapunov function.",
+        "constraints": [
+          "non-negative"
+        ],
+        "tags": [
+          "variance",
+          "velocity"
+        ]
+      },
+      {
+        "symbol": "V_{\\text{Var}}",
+        "name": "total internal variance",
+        "description": "Sum of positional and velocity variance components.",
+        "constraints": [
+          "non-negative"
+        ],
+        "tags": [
+          "variance",
+          "total"
+        ]
+      },
+      {
+        "symbol": "\\kappa_x",
+        "name": "contraction rate",
+        "description": "Positive constant for positional variance contraction, N-independent.",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "rate",
+          "contraction"
+        ]
+      },
+      {
+        "symbol": "C_x",
+        "name": "positional constant",
+        "description": "Constant in positional variance drift bound.",
+        "constraints": [],
+        "tags": [
+          "constant"
+        ]
+      },
+      {
+        "symbol": "C_v",
+        "name": "velocity constant",
+        "description": "Finite state-independent constant in velocity variance bound.",
+        "constraints": [
+          "< \\infty"
+        ],
+        "tags": [
+          "constant"
+        ]
+      },
+      {
+        "symbol": "\\Delta",
+        "name": "change operator",
+        "description": "Drift or change in variance components.",
+        "constraints": [],
+        "tags": [
+          "drift"
+        ]
+      },
+      {
+        "symbol": "\\mathbb{E}_{\\text{clone}}",
+        "name": "cloning expectation",
+        "description": "Expectation under cloning operator.",
+        "constraints": [],
+        "tags": [
+          "expectation"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The Lyapunov function is composed of variance components for positions and velocities.",
+        "confidence": 1.0
+      },
+      {
+        "text": "The system involves N particles or clones, with \u03ba_x independent of N.",
+        "confidence": 0.9
+      },
+      {
+        "text": "Constants C_x and C_v are finite and state-independent where applicable.",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "summarized results",
+      "steps": [
+        {
+          "kind": "summary",
+          "text": "Summarizes main drift results for variance components under cloning operator.",
+          "latex": null
+        }
+      ]
+    },
+    "tags": [
+      "cloning",
+      "variance",
+      "drift",
+      "Lyapunov",
+      "contraction",
+      "expansion"
+    ],
+    "document_id": "03_cloning",
+    "section": "## 10.6. Summary of Variance Drift Inequalities",
+    "span": {
+      "start_line": 6890,
+      "end_line": 6918,
+      "content_start": 6893,
+      "content_end": 6917,
+      "header_lines": [
+        6891
+      ]
+    },
+    "references": [],
+    "metadata": {
+      "label": "thm-complete-variance-drift"
+    },
+    "registry_context": {
+      "stage": "directives",
+      "document_id": "03_cloning",
+      "chapter_index": 20,
+      "chapter_file": "chapter_20.json",
+      "section_id": "## 10.6. Summary of Variance Drift Inequalities"
+    },
+    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "alt_labels": []
+  },
+  {
+    "label": "thm-boundary-potential-contraction",
+    "title": "Boundary Potential Contraction Under Cloning",
+    "type": "theorem",
+    "nl_statement": "Under the foundational axioms including the Safe Harbor Axiom, there exist constants \u03ba_b > 0 and C_b < \u221e independent of N such that for any pair of swarms (S_1, S_2), the expected boundary potential after cloning is at most (1 - \u03ba_b) times the original plus C_b. Furthermore, when W_b(S_1, S_2) > \\tilde{C}_b for sufficiently large \\tilde{C}_b, the expected change in boundary potential is negative.",
+    "content_markdown": ":label: thm-boundary-potential-contraction\n\nUnder the foundational axioms (Chapter 4) including the Safe Harbor Axiom (Axiom 4.3), there exist constants $\\kappa_b > 0$ and $C_b < \\infty$, both independent of $N$, such that for any pair of swarms $(S_1, S_2)$:\n\n$$\n\\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_b) W_b(S_1, S_2) + C_b\n$$\n\nFurthermore, when $W_b(S_1, S_2) > \\tilde{C}_b$ for a sufficiently large threshold $\\tilde{C}_b$, the contraction becomes strict:\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta W_b] := \\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) - W_b(S_1, S_2)] < 0",
+    "raw_directive": "7288: ## 11.3. Main Theorem: Boundary Potential Contraction\n7289: \n7290: :::{prf:theorem} Boundary Potential Contraction Under Cloning\n7291: :label: thm-boundary-potential-contraction\n7292: \n7293: Under the foundational axioms (Chapter 4) including the Safe Harbor Axiom (Axiom 4.3), there exist constants $\\kappa_b > 0$ and $C_b < \\infty$, both independent of $N$, such that for any pair of swarms $(S_1, S_2)$:\n7294: \n7295: $$\n7296: \\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_b) W_b(S_1, S_2) + C_b\n7297: $$\n7298: \n7299: Furthermore, when $W_b(S_1, S_2) > \\tilde{C}_b$ for a sufficiently large threshold $\\tilde{C}_b$, the contraction becomes strict:\n7300: \n7301: $$\n7302: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] := \\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) - W_b(S_1, S_2)] < 0\n7303: $$",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_b) W_b(S_1, S_2) + C_b"
+      },
+      {
+        "label": null,
+        "latex": "\\mathbb{E}_{\\text{clone}}[\\Delta W_b] := \\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) - W_b(S_1, S_2)] < 0"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Under the foundational axioms (Chapter 4) including the Safe Harbor Axiom (Axiom 4.3)",
+        "latex": null
+      },
+      {
+        "text": "For any pair of swarms (S_1, S_2)",
+        "latex": null
+      },
+      {
+        "text": "When W_b(S_1, S_2) > \\tilde{C}_b for sufficiently large threshold \\tilde{C}_b",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "There exist constants \\kappa_b > 0 and C_b < \\infty, both independent of N, such that \\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_b) W_b(S_1, S_2) + C_b, and the contraction becomes strict with \\mathbb{E}_{\\text{clone}}[\\Delta W_b] < 0",
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "S_1",
+        "name": "S1",
+        "description": "First input swarm",
+        "constraints": [
+          "swarm"
+        ],
+        "tags": [
+          "swarm"
+        ]
+      },
+      {
+        "symbol": "S_2",
+        "name": "S2",
+        "description": "Second input swarm",
+        "constraints": [
+          "swarm"
+        ],
+        "tags": [
+          "swarm"
+        ]
+      },
+      {
+        "symbol": "S'_1",
+        "name": "S'1",
+        "description": "Cloned version of first swarm",
+        "constraints": [
+          "swarm"
+        ],
+        "tags": [
+          "swarm",
+          "cloned"
+        ]
+      },
+      {
+        "symbol": "S'_2",
+        "name": "S'2",
+        "description": "Cloned version of second swarm",
+        "constraints": [
+          "swarm"
+        ],
+        "tags": [
+          "swarm",
+          "cloned"
+        ]
+      },
+      {
+        "symbol": "W_b",
+        "name": "Wb",
+        "description": "Boundary potential function",
+        "constraints": [],
+        "tags": [
+          "potential",
+          "boundary"
+        ]
+      },
+      {
+        "symbol": "\\kappa_b",
+        "name": "kappa_b",
+        "description": "Positive contraction constant",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "constant",
+          "contraction"
+        ]
+      },
+      {
+        "symbol": "C_b",
+        "name": "C_b",
+        "description": "Finite additive constant",
+        "constraints": [
+          "< \\infty"
+        ],
+        "tags": [
+          "constant"
+        ]
+      },
+      {
+        "symbol": "\\tilde{C}_b",
+        "name": "Ctilde_b",
+        "description": "Sufficiently large threshold for strict contraction",
+        "constraints": [
+          "large"
+        ],
+        "tags": [
+          "threshold"
+        ]
+      },
+      {
+        "symbol": "N",
+        "name": "N",
+        "description": "Parameter (e.g., dimension or size), independence from constants",
+        "constraints": [],
+        "tags": [
+          "dimension"
+        ]
+      },
+      {
+        "symbol": "\\Delta W_b",
+        "name": "Delta Wb",
+        "description": "Change in boundary potential",
+        "constraints": [],
+        "tags": [
+          "change",
+          "potential"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "Constants \\kappa_b and C_b are independent of N",
+        "confidence": 1.0
+      },
+      {
+        "text": "\\tilde{C}_b is chosen sufficiently large to ensure strict contraction",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not-provided",
+      "steps": []
+    },
+    "tags": [
+      "boundary-potential",
+      "contraction",
+      "cloning",
+      "swarms",
+      "safe-harbor",
+      "expectation",
+      "inequality"
+    ],
+    "document_id": "03_cloning",
+    "section": "## 11.3. Main Theorem: Boundary Potential Contraction",
+    "span": {
+      "start_line": 7288,
+      "end_line": 7303,
+      "content_start": 7291,
+      "content_end": 7302,
+      "header_lines": [
+        7289
+      ]
+    },
+    "references": [],
+    "metadata": {
+      "label": "thm-boundary-potential-contraction"
+    },
+    "registry_context": {
+      "stage": "directives",
+      "document_id": "03_cloning",
+      "chapter_index": 24,
+      "chapter_file": "chapter_24.json",
+      "section_id": "## 11.3. Main Theorem: Boundary Potential Contraction"
+    },
+    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "alt_labels": []
+  },
+  {
+    "label": "thm-complete-boundary-drift",
+    "title": "Complete Boundary Potential Drift Characterization",
+    "type": "theorem",
+    "nl_statement": "The cloning operator \u03a8_clone induces a drift on the boundary potential W_b satisfying E_clone[\u0394W_b] \u2264 -\u03ba_b W_b + C_b, where \u03ba_b = p_boundary(\u03c6_thresh) > 0 is N-independent, C_b = O(\u03c3_x\u00b2 + N^{-1}), ensuring unconditional contraction for W_b > C_b/\u03ba_b and strengthening near the boundary.",
+    "content_markdown": ":label: thm-complete-boundary-drift\n\nThe cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the boundary potential:\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\leq -\\kappa_b W_b + C_b\n$$\n\nwhere:\n- $\\kappa_b = p_{\\text{boundary}}(\\phi_{\\text{thresh}}) > 0$ is the minimum cloning probability for boundary-exposed walkers\n- $C_b = O(\\sigma_x^2 + N^{-1})$ accounts for position jitter and dead walker revival\n- Both constants are **$N$-independent** in the large-$N$ limit\n\n**Key Properties:**\n\n1. **Unconditional contraction:** The drift is negative for all states with $W_b > C_b/\\kappa_b$\n\n2. **Strengthening near danger:** The contraction rate $\\kappa_b$ increases with boundary proximity (through $\\phi_{\\text{thresh}}$)",
+    "raw_directive": "7724: We conclude by stating the complete boundary potential drift result.\n7725: \n7726: :::{prf:theorem} Complete Boundary Potential Drift Characterization\n7727: :label: thm-complete-boundary-drift\n7728: \n7729: The cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the boundary potential:\n7730: \n7731: $$\n7732: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\leq -\\kappa_b W_b + C_b\n7733: $$\n7734: \n7735: where:\n7736: - $\\kappa_b = p_{\\text{boundary}}(\\phi_{\\text{thresh}}) > 0$ is the minimum cloning probability for boundary-exposed walkers\n7737: - $C_b = O(\\sigma_x^2 + N^{-1})$ accounts for position jitter and dead walker revival\n7738: - Both constants are **$N$-independent** in the large-$N$ limit\n7739: \n7740: **Key Properties:**\n7741: \n7742: 1. **Unconditional contraction:** The drift is negative for all states with $W_b > C_b/\\kappa_b$\n7743: \n7744: 2. **Strengthening near danger:** The contraction rate $\\kappa_b$ increases with boundary proximity (through $\\phi_{\\text{thresh}}$)\n7745: ",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\leq -\\kappa_b W_b + C_b"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "\u03ba_b = p_boundary(\u03c6_thresh) > 0 is the minimum cloning probability for boundary-exposed walkers",
+        "latex": null
+      },
+      {
+        "text": "C_b = O(\u03c3_x\u00b2 + N^{-1}) accounts for position jitter and dead walker revival",
+        "latex": null
+      },
+      {
+        "text": "Both constants are N-independent in the large-N limit",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The cloning operator \u03a8_clone induces the following drift on the boundary potential with unconditional contraction for W_b > C_b/\u03ba_b and strengthening near danger via increasing \u03ba_b with boundary proximity through \u03c6_thresh",
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "\u03a8_clone",
+        "name": "cloning operator",
+        "description": "Operator that induces drift on boundary potential",
+        "constraints": [],
+        "tags": [
+          "operator"
+        ]
+      },
+      {
+        "symbol": "W_b",
+        "name": "boundary potential",
+        "description": "Potential function for boundary exposure",
+        "constraints": [
+          "W_b > C_b/\u03ba_b for contraction"
+        ],
+        "tags": [
+          "potential"
+        ]
+      },
+      {
+        "symbol": "\u03ba_b",
+        "name": "contraction rate",
+        "description": "Minimum cloning probability p_boundary(\u03c6_thresh) > 0, increases with boundary proximity",
+        "constraints": [
+          "\u03ba_b > 0",
+          "N-independent"
+        ],
+        "tags": [
+          "rate",
+          "probability"
+        ]
+      },
+      {
+        "symbol": "C_b",
+        "name": "drift constant",
+        "description": "Bound O(\u03c3_x\u00b2 + N^{-1}) for jitter and revival effects",
+        "constraints": [
+          "N-independent in large-N limit"
+        ],
+        "tags": [
+          "constant"
+        ]
+      },
+      {
+        "symbol": "\u03c3_x",
+        "name": "position jitter",
+        "description": "Standard deviation in position updates",
+        "constraints": [],
+        "tags": [
+          "jitter"
+        ]
+      },
+      {
+        "symbol": "N",
+        "name": "system size",
+        "description": "Number of walkers, large-N limit",
+        "constraints": [
+          "large N"
+        ],
+        "tags": [
+          "size"
+        ]
+      },
+      {
+        "symbol": "p_boundary",
+        "name": "boundary probability",
+        "description": "Cloning probability function for boundary-exposed walkers",
+        "constraints": [],
+        "tags": [
+          "probability"
+        ]
+      },
+      {
+        "symbol": "\u03c6_thresh",
+        "name": "threshold potential",
+        "description": "Threshold determining boundary proximity",
+        "constraints": [],
+        "tags": [
+          "threshold"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The system is in the large-N limit where constants are independent of N",
+        "confidence": 1.0
+      },
+      {
+        "text": "Boundary-exposed walkers are defined via \u03c6_thresh",
+        "confidence": 0.9
+      },
+      {
+        "text": "Dead walker revival contributes to C_b",
+        "confidence": 0.8
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "cloning-operator",
+      "boundary-potential",
+      "drift",
+      "contraction",
+      "walkers",
+      "threshold",
+      "large-N"
+    ],
+    "document_id": "03_cloning",
+    "section": "## 11.6. Summary and Drift Inequality",
+    "span": {
+      "start_line": 7724,
+      "end_line": 7745,
+      "content_start": 7727,
+      "content_end": 7744,
+      "header_lines": [
+        7725
+      ]
+    },
+    "references": [],
+    "metadata": {
+      "label": "thm-complete-boundary-drift"
+    },
+    "registry_context": {
+      "stage": "directives",
+      "document_id": "03_cloning",
+      "chapter_index": 27,
+      "chapter_file": "chapter_27.json",
+      "section_id": "## 11.6. Summary and Drift Inequality"
+    },
+    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "alt_labels": []
+  },
+  {
+    "label": "thm-inter-swarm-bounded-expansion",
+    "title": "Bounded Expansion of Inter-Swarm Wasserstein Distance",
+    "type": "theorem",
+    "nl_statement": "For the coupled cloning operator acting on two swarms (S\u2081, S\u2082), the expected change in the hypocoercive Wasserstein distance V_W = W_h\u00b2(\u03bc\u2081, \u03bc\u2082) = V_loc + V_struct satisfies E_clone[\u0394V_W] \u2264 C_W, where C_W < \u221e is a state-independent constant. Equivalently, E_clone[V_W(S'\u2081, S'\u2082)] \u2264 V_W(S\u2081, S\u2082) + C_W.",
+    "content_markdown": ":label: thm-inter-swarm-bounded-expansion\n\nFor the coupled cloning operator acting on two swarms $(S_1, S_2)$, the expected change in the hypocoercive Wasserstein distance satisfies:\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W\n$$\n\nwhere $V_W = W_h^2(\\mu_1, \\mu_2) = V_{\\text{loc}} + V_{\\text{struct}}$ is the total inter-swarm error and $C_W < \\infty$ is a state-independent constant.\n\nEquivalently:\n\n$$\n\\mathbb{E}_{\\text{clone}}[V_W(S'_1, S'_2)] \\leq V_W(S_1, S_2) + C_W",
+    "raw_directive": "7845: ### 12.2.1. Bounded Expansion of Inter-Swarm Error\n7846: \n7847: :::{prf:theorem} Bounded Expansion of Inter-Swarm Wasserstein Distance\n7848: :label: thm-inter-swarm-bounded-expansion\n7849: \n7850: For the coupled cloning operator acting on two swarms $(S_1, S_2)$, the expected change in the hypocoercive Wasserstein distance satisfies:\n7851: \n7852: $$\n7853: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W\n7854: $$\n7855: \n7856: where $V_W = W_h^2(\\mu_1, \\mu_2) = V_{\\text{loc}} + V_{\\text{struct}}$ is the total inter-swarm error and $C_W < \\infty$ is a state-independent constant.\n7857: \n7858: Equivalently:\n7859: \n7860: $$\n7861: \\mathbb{E}_{\\text{clone}}[V_W(S'_1, S'_2)] \\leq V_W(S_1, S_2) + C_W\n7862: $$",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W"
+      },
+      {
+        "label": null,
+        "latex": "V_W = W_h^2(\\mu_1, \\mu_2) = V_{\\text{loc}} + V_{\\text{struct}}"
+      },
+      {
+        "label": null,
+        "latex": "\\mathbb{E}_{\\text{clone}}[V_W(S'_1, S'_2)] \\leq V_W(S_1, S_2) + C_W"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Coupled cloning operator acting on two swarms (S\u2081, S\u2082)",
+        "latex": null
+      },
+      {
+        "text": "V_W is the total inter-swarm error",
+        "latex": "V_W = W_h^2(\\mu_1, \\mu_2) = V_{\\text{loc}} + V_{\\text{struct}}"
+      }
+    ],
+    "conclusion": {
+      "text": "The expected change in the hypocoercive Wasserstein distance satisfies E_clone[\u0394V_W] \u2264 C_W, where C_W < \u221e is a state-independent constant",
+      "latex": "\\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W \\quad (C_W < \\infty)"
+    },
+    "variables": [
+      {
+        "symbol": "S_1",
+        "name": "S1",
+        "description": "First swarm",
+        "constraints": [],
+        "tags": [
+          "swarm"
+        ]
+      },
+      {
+        "symbol": "S_2",
+        "name": "S2",
+        "description": "Second swarm",
+        "constraints": [],
+        "tags": [
+          "swarm"
+        ]
+      },
+      {
+        "symbol": "V_W",
+        "name": "VW",
+        "description": "Total inter-swarm error (hypocoercive Wasserstein distance squared)",
+        "constraints": [
+          "V_W = W_h^2(\u03bc_1, \u03bc_2) = V_loc + V_struct"
+        ],
+        "tags": [
+          "error",
+          "Wasserstein"
+        ]
+      },
+      {
+        "symbol": "C_W",
+        "name": "CW",
+        "description": "State-independent constant bound",
+        "constraints": [
+          "C_W < \u221e"
+        ],
+        "tags": [
+          "constant",
+          "bound"
+        ]
+      },
+      {
+        "symbol": "\u03bc_1",
+        "name": "\u03bc1",
+        "description": "Empirical measure of S\u2081",
+        "constraints": [],
+        "tags": [
+          "measure"
+        ]
+      },
+      {
+        "symbol": "\u03bc_2",
+        "name": "\u03bc2",
+        "description": "Empirical measure of S\u2082",
+        "constraints": [],
+        "tags": [
+          "measure"
+        ]
+      },
+      {
+        "symbol": "S'_1",
+        "name": "S'1",
+        "description": "Updated first swarm after cloning",
+        "constraints": [],
+        "tags": [
+          "swarm",
+          "updated"
+        ]
+      },
+      {
+        "symbol": "S'_2",
+        "name": "S'2",
+        "description": "Updated second swarm after cloning",
+        "constraints": [],
+        "tags": [
+          "swarm",
+          "updated"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "S\u2081 and S\u2082 are finite particle swarms with empirical measures \u03bc\u2081 and \u03bc\u2082",
+        "confidence": 0.9
+      },
+      {
+        "text": "The coupled cloning operator preserves the coupling between swarms",
+        "confidence": 0.8
+      },
+      {
+        "text": "W_h is a hypocoercive metric on the space of measures",
+        "confidence": 0.7
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "swarm",
+      "Wasserstein",
+      "cloning operator",
+      "bounded expansion",
+      "hypocoercive",
+      "expectation",
+      "error"
+    ],
+    "document_id": "03_cloning",
+    "section": "## 12.2. Inter-Swarm Error Under Cloning",
+    "span": {
+      "start_line": 7845,
+      "end_line": 7862,
+      "content_start": 7848,
+      "content_end": 7861,
+      "header_lines": [
+        7846
+      ]
+    },
+    "references": [],
+    "metadata": {
+      "label": "thm-inter-swarm-bounded-expansion"
+    },
+    "registry_context": {
+      "stage": "directives",
+      "document_id": "03_cloning",
+      "chapter_index": 30,
+      "chapter_file": "chapter_30.json",
+      "section_id": "## 12.2. Inter-Swarm Error Under Cloning"
+    },
+    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "alt_labels": []
+  },
+  {
+    "label": "thm-complete-wasserstein-drift",
+    "title": "Complete Wasserstein Decomposition Drift",
+    "type": "theorem",
+    "nl_statement": "The total inter-swarm Wasserstein distance \\(V_W = V_{\\text{loc}} + V_{\\text{struct}}\\) satisfies \\(\\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W\\) under the cloning operator, where \\(C_W = C_{\\text{loc}} + C_{\\text{struct}}\\) is a finite state-independent constant, with component bounds \\(\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] \\leq C_{\\text{loc}}\\) and \\(\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}] \\leq C_{\\text{struct}}\\); the kinetic operator yields \\(\\mathbb{E}_{\\text{kin}}[\\Delta V_W] \\leq -\\kappa_W^{\\text{kin}} \\tau V_W + C_W^{\\text{kin}} \\tau\\).",
+    "content_markdown": ":label: thm-complete-wasserstein-drift\n\nThe total inter-swarm Wasserstein distance $V_W = V_{\\text{loc}} + V_{\\text{struct}}$ satisfies a combined drift inequality under the cloning operator:\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W\n$$\n\nwhere $C_W < \\infty$ is a state-independent constant satisfying:\n\n$$\nC_W = C_{\\text{loc}} + C_{\\text{struct}}\n$$\n\n**Component Bounds:**\n\nFrom {prf:ref}`cor-component-bounds-vw`, the individual components satisfy:\n\n$$\n\\begin{aligned}\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] &\\leq C_{\\text{loc}} \\\\\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}] &\\leq C_{\\text{struct}}\n\\end{aligned}\n$$\n\nwhere:\n- $C_{\\text{loc}}$ arises from barycenter desynchronization due to differential cloning rates\n- $C_{\\text{struct}}$ arises from jitter noise and structural rearrangement during cloning\n\n**Note on Kinetic Contraction:**\n\nWhile the cloning operator allows bounded expansion of $V_W$, the **kinetic operator** provides contraction. From hypocoercive analysis (Chapter 4 of companion document):\n\n$$\n\\mathbb{E}_{\\text{kin}}[\\Delta V_W] \\leq -\\kappa_W^{\\text{kin}} \\tau V_W + C_W^{\\text{kin}} \\tau\n$$",
+    "raw_directive": "7991: :::\n7992: \n7993: :::{prf:theorem} Complete Wasserstein Decomposition Drift\n7994: :label: thm-complete-wasserstein-drift\n7995: \n7996: The total inter-swarm Wasserstein distance $V_W = V_{\\text{loc}} + V_{\\text{struct}}$ satisfies a combined drift inequality under the cloning operator:\n7997: \n7998: $$\n7999: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W\n8000: $$\n8001: \n8002: where $C_W < \\infty$ is a state-independent constant satisfying:\n8003: \n8004: $$\n8005: C_W = C_{\\text{loc}} + C_{\\text{struct}}\n8006: $$\n8007: \n8008: **Component Bounds:**\n8009: \n8010: From {prf:ref}`cor-component-bounds-vw`, the individual components satisfy:\n8011: \n8012: $$\n8013: \\begin{aligned}\n8014: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] &\\leq C_{\\text{loc}} \\\\\n8015: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}] &\\leq C_{\\text{struct}}\n8016: \\end{aligned}\n8017: $$\n8018: \n8019: where:\n8020: - $C_{\\text{loc}}$ arises from barycenter desynchronization due to differential cloning rates\n8021: - $C_{\\text{struct}}$ arises from jitter noise and structural rearrangement during cloning\n8022: \n8023: **Note on Kinetic Contraction:**\n8024: \n8025: While the cloning operator allows bounded expansion of $V_W$, the **kinetic operator** provides contraction. From hypocoercive analysis (Chapter 4 of companion document):\n8026: \n8027: $$\n8028: \\mathbb{E}_{\\text{kin}}[\\Delta V_W] \\leq -\\kappa_W^{\\text{kin}} \\tau V_W + C_W^{\\text{kin}} \\tau\n8029: $$\n8030: ",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W"
+      },
+      {
+        "label": null,
+        "latex": "C_W = C_{\\text{loc}} + C_{\\text{struct}}"
+      },
+      {
+        "label": null,
+        "latex": "\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] \\leq C_{\\text{loc}}"
+      },
+      {
+        "label": null,
+        "latex": "\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}] \\leq C_{\\text{struct}}"
+      },
+      {
+        "label": null,
+        "latex": "\\mathbb{E}_{\\text{kin}}[\\Delta V_W] \\leq -\\kappa_W^{\\text{kin}} \\tau V_W + C_W^{\\text{kin}} \\tau"
+      }
+    ],
+    "hypotheses": [],
+    "conclusion": {
+      "text": null,
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "V_W",
+        "name": "total inter-swarm Wasserstein distance",
+        "description": "Decomposes into local and structural components",
+        "constraints": [
+          "non-negative"
+        ],
+        "tags": [
+          "wasserstein",
+          "total"
+        ]
+      },
+      {
+        "symbol": "V_loc",
+        "name": "local Wasserstein component",
+        "description": "Due to barycenter desynchronization",
+        "constraints": [
+          "non-negative"
+        ],
+        "tags": [
+          "local",
+          "barycenter"
+        ]
+      },
+      {
+        "symbol": "V_struct",
+        "name": "structural Wasserstein component",
+        "description": "Due to jitter noise and rearrangement",
+        "constraints": [
+          "non-negative"
+        ],
+        "tags": [
+          "structural",
+          "jitter"
+        ]
+      },
+      {
+        "symbol": "C_W",
+        "name": "Wasserstein drift constant",
+        "description": "State-independent bound \\(C_{\\text{loc}} + C_{\\text{struct}}\\)",
+        "constraints": [
+          "finite"
+        ],
+        "tags": [
+          "constant",
+          "bound"
+        ]
+      },
+      {
+        "symbol": "C_loc",
+        "name": "local drift constant",
+        "description": "From differential cloning rates",
+        "constraints": [
+          "finite"
+        ],
+        "tags": [
+          "local",
+          "cloning"
+        ]
+      },
+      {
+        "symbol": "C_struct",
+        "name": "structural drift constant",
+        "description": "From cloning jitter and rearrangement",
+        "constraints": [
+          "finite"
+        ],
+        "tags": [
+          "structural",
+          "jitter"
+        ]
+      },
+      {
+        "symbol": "\\kappa_W^{kin}",
+        "name": "kinetic contraction rate",
+        "description": "Hypocoercive decay coefficient",
+        "constraints": [
+          "positive"
+        ],
+        "tags": [
+          "kinetic",
+          "contraction"
+        ]
+      },
+      {
+        "symbol": "\\tau",
+        "name": "time step",
+        "description": "For kinetic operator",
+        "constraints": [
+          "positive"
+        ],
+        "tags": [
+          "time"
+        ]
+      },
+      {
+        "symbol": "C_W^{kin}",
+        "name": "kinetic Wasserstein constant",
+        "description": "Bound in kinetic drift",
+        "constraints": [
+          "finite"
+        ],
+        "tags": [
+          "kinetic",
+          "constant"
+        ]
+      }
+    ],
+    "implicit_assumptions": [],
+    "local_refs": [
+      "cor-component-bounds-vw"
+    ],
+    "proof": {
+      "availability": "referenced",
+      "steps": [
+        {
+          "kind": "reference",
+          "text": "Component bounds from cor-component-bounds-vw",
+          "latex": null
+        },
+        {
+          "kind": "note",
+          "text": "Kinetic contraction from hypocoercive analysis in Chapter 4 of companion document",
+          "latex": null
+        }
+      ]
+    },
+    "tags": [
+      "wasserstein",
+      "drift",
+      "cloning",
+      "kinetic",
+      "hypocoercivity",
+      "inter-swarm"
+    ],
+    "document_id": "03_cloning",
+    "section": "## 12.2. Inter-Swarm Error Under Cloning",
+    "span": {
+      "start_line": 7991,
+      "end_line": 8030,
+      "content_start": 7994,
+      "content_end": 8029,
+      "header_lines": [
+        7992
+      ]
+    },
+    "references": [
+      "cor-component-bounds-vw"
+    ],
+    "metadata": {
+      "label": "thm-complete-wasserstein-drift"
+    },
+    "registry_context": {
+      "stage": "directives",
+      "document_id": "03_cloning",
+      "chapter_index": 30,
+      "chapter_file": "chapter_30.json",
+      "section_id": "## 12.2. Inter-Swarm Error Under Cloning"
+    },
+    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "alt_labels": []
+  },
+  {
+    "label": "thm-complete-cloning-drift",
+    "title": "Complete Drift Inequality for the Cloning Operator",
+    "type": "theorem",
+    "nl_statement": "Under foundational axioms, the cloning operator induces bounded or contracting drifts on components of the synergistic Lyapunov function, yielding overall negative drift when variance and boundary terms are sufficiently large.",
+    "content_markdown": ":label: thm-complete-cloning-drift\n\nUnder the foundational axioms (Chapter 4), the cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the synergistic Lyapunov function:\n\n$$\nV_{\\text{total}}(S_1, S_2) = V_W(S_1, S_2) + c_V V_{\\text{Var}}(S_1, S_2) + c_B W_b(S_1, S_2)\n$$\n\n**Individual Component Drifts:**\n\n$$\n\\begin{aligned}\n\\mathbb{E}_{\\text{clone}}[\\Delta V_W] &\\leq C_W \\quad &\\text{(bounded expansion)} \\\\\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] &\\leq -\\kappa_x V_{\\text{Var},x} + C_x \\quad &\\text{(strong contraction)} \\\\\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] &\\leq C_v \\quad &\\text{(bounded expansion)} \\\\\n\\mathbb{E}_{\\text{clone}}[\\Delta W_b] &\\leq -\\kappa_b W_b + C_b \\quad &\\text{(strong contraction)}\n\\end{aligned}\n$$\n\n**Combined Drift:**\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] \\leq C_W + c_V(-\\kappa_x V_{\\text{Var},x} + C_v + C_x) + c_B(-\\kappa_b W_b + C_b)\n$$\n\n**Critical Property - Partial Contraction:**\n\nWhen $V_{\\text{Var},x}$ and $W_b$ are sufficiently large relative to the expansion terms, the drift becomes negative:\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] < 0 \\quad \\text{when } c_V V_{\\text{Var},x} + c_B W_b > \\frac{C_W + c_V(C_v + C_x) + c_B C_b}{\\min(\\kappa_x, \\kappa_b)}",
+    "raw_directive": "8083: ### 12.3.1. Main Result\n8084: \n8085: :::{prf:theorem} Complete Drift Inequality for the Cloning Operator\n8086: :label: thm-complete-cloning-drift\n8087: \n8088: Under the foundational axioms (Chapter 4), the cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the synergistic Lyapunov function:\n8089: \n8090: $$\n8091: V_{\\text{total}}(S_1, S_2) = V_W(S_1, S_2) + c_V V_{\\text{Var}}(S_1, S_2) + c_B W_b(S_1, S_2)\n8092: $$\n8093: \n8094: **Individual Component Drifts:**\n8095: \n8096: $$\n8097: \\begin{aligned}\n8098: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] &\\leq C_W \\quad &\\text{(bounded expansion)} \\\\\n8099: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] &\\leq -\\kappa_x V_{\\text{Var},x} + C_x \\quad &\\text{(strong contraction)} \\\\\n8100: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] &\\leq C_v \\quad &\\text{(bounded expansion)} \\\\\n8101: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] &\\leq -\\kappa_b W_b + C_b \\quad &\\text{(strong contraction)}\n8102: \\end{aligned}\n8103: $$\n8104: \n8105: **Combined Drift:**\n8106: \n8107: $$\n8108: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] \\leq C_W + c_V(-\\kappa_x V_{\\text{Var},x} + C_v + C_x) + c_B(-\\kappa_b W_b + C_b)\n8109: $$\n8110: \n8111: **Critical Property - Partial Contraction:**\n8112: \n8113: When $V_{\\text{Var},x}$ and $W_b$ are sufficiently large relative to the expansion terms, the drift becomes negative:\n8114: \n8115: $$\n8116: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] < 0 \\quad \\text{when } c_V V_{\\text{Var},x} + c_B W_b > \\frac{C_W + c_V(C_v + C_x) + c_B C_b}{\\min(\\kappa_x, \\kappa_b)}\n8117: $$",
+    "equations": [
+      {
+        "label": null,
+        "latex": "V_{\\text{total}}(S_1, S_2) = V_W(S_1, S_2) + c_V V_{\\text{Var}}(S_1, S_2) + c_B W_b(S_1, S_2)"
+      },
+      {
+        "label": null,
+        "latex": "\\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W \\quad \\text{(bounded expansion)}"
+      },
+      {
+        "label": null,
+        "latex": "\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x \\quad \\text{(strong contraction)}"
+      },
+      {
+        "label": null,
+        "latex": "\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v \\quad \\text{(bounded expansion)}"
+      },
+      {
+        "label": null,
+        "latex": "\\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\leq -\\kappa_b W_b + C_b \\quad \\text{(strong contraction)}"
+      },
+      {
+        "label": null,
+        "latex": "\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] \\leq C_W + c_V(-\\kappa_x V_{\\text{Var},x} + C_v + C_x) + c_B(-\\kappa_b W_b + C_b)"
+      },
+      {
+        "label": null,
+        "latex": "\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] < 0 \\quad \\text{when } c_V V_{\\text{Var},x} + c_B W_b > \\frac{C_W + c_V(C_v + C_x) + c_B C_b}{\\min(\\kappa_x, \\kappa_b)}"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Under the foundational axioms (Chapter 4)",
+        "latex": null
+      },
+      {
+        "text": "Individual component drifts hold as specified",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The cloning operator \u03a8_clone induces the stated drift inequalities on the synergistic Lyapunov function V_total, with partial contraction when c_V V_Var,x + c_B W_b exceeds the threshold.",
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "\\Psi_{\\text{clone}}",
+        "name": "cloning operator",
+        "description": "Operator inducing drifts on state spaces S1, S2",
+        "constraints": [
+          "defined under Chapter 4 axioms"
+        ],
+        "tags": [
+          "operator",
+          "cloning"
+        ]
+      },
+      {
+        "symbol": "V_{\\text{total}}",
+        "name": "total Lyapunov function",
+        "description": "Synergistic function combining Wasserstein, variance, and boundary terms",
+        "constraints": [
+          "V_total = V_W + c_V V_Var + c_B W_b"
+        ],
+        "tags": [
+          "Lyapunov",
+          "total"
+        ]
+      },
+      {
+        "symbol": "V_W",
+        "name": "Wasserstein component",
+        "description": "Wasserstein distance-based Lyapunov term",
+        "constraints": [],
+        "tags": [
+          "Wasserstein",
+          "Lyapunov"
+        ]
+      },
+      {
+        "symbol": "V_{\\text{Var}}",
+        "name": "variance component",
+        "description": "Variance-based Lyapunov term, split into x and v",
+        "constraints": [],
+        "tags": [
+          "variance",
+          "Lyapunov"
+        ]
+      },
+      {
+        "symbol": "W_b",
+        "name": "boundary term",
+        "description": "Boundary Wasserstein-like term",
+        "constraints": [],
+        "tags": [
+          "boundary",
+          "Wasserstein"
+        ]
+      },
+      {
+        "symbol": "c_V",
+        "name": "variance coefficient",
+        "description": "Weighting constant for variance term",
+        "constraints": [
+          "positive"
+        ],
+        "tags": [
+          "coefficient"
+        ]
+      },
+      {
+        "symbol": "c_B",
+        "name": "boundary coefficient",
+        "description": "Weighting constant for boundary term",
+        "constraints": [
+          "positive"
+        ],
+        "tags": [
+          "coefficient"
+        ]
+      },
+      {
+        "symbol": "\\kappa_x",
+        "name": "x-variance contraction rate",
+        "description": "Contraction constant for V_Var,x",
+        "constraints": [
+          "positive"
+        ],
+        "tags": [
+          "contraction",
+          "rate"
+        ]
+      },
+      {
+        "symbol": "\\kappa_b",
+        "name": "boundary contraction rate",
+        "description": "Contraction constant for W_b",
+        "constraints": [
+          "positive"
+        ],
+        "tags": [
+          "contraction",
+          "rate"
+        ]
+      },
+      {
+        "symbol": "C_W",
+        "name": "Wasserstein bound",
+        "description": "Bound for expansion in \u0394V_W",
+        "constraints": [
+          "non-negative"
+        ],
+        "tags": [
+          "bound"
+        ]
+      },
+      {
+        "symbol": "C_x",
+        "name": "x-variance additive term",
+        "description": "Additive constant in V_Var,x drift",
+        "constraints": [
+          "non-negative"
+        ],
+        "tags": [
+          "additive"
+        ]
+      },
+      {
+        "symbol": "C_v",
+        "name": "v-variance bound",
+        "description": "Bound for expansion in \u0394V_Var,v",
+        "constraints": [
+          "non-negative"
+        ],
+        "tags": [
+          "bound"
+        ]
+      },
+      {
+        "symbol": "C_b",
+        "name": "boundary additive term",
+        "description": "Additive constant in W_b drift",
+        "constraints": [
+          "non-negative"
+        ],
+        "tags": [
+          "additive"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "All constants \u03ba_x, \u03ba_b > 0 ensure contraction where specified",
+        "confidence": 1.0
+      },
+      {
+        "text": "c_V, c_B > 0 as weighting factors",
+        "confidence": 1.0
+      },
+      {
+        "text": "Expansion bounds C_W, C_v, C_x, C_b \u2265 0",
+        "confidence": 1.0
+      },
+      {
+        "text": "V_Var,x and W_b can grow sufficiently large for partial contraction",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "cloning",
+      "drift",
+      "Lyapunov",
+      "contraction",
+      "inequality",
+      "operator",
+      "synergistic"
+    ],
+    "document_id": "03_cloning",
+    "section": "## 12.3. The Complete Lyapunov Drift Under Cloning",
+    "span": {
+      "start_line": 8083,
+      "end_line": 8117,
+      "content_start": 8086,
+      "content_end": 8116,
+      "header_lines": [
+        8084
+      ]
+    },
+    "references": [],
+    "metadata": {
+      "label": "thm-complete-cloning-drift"
+    },
+    "registry_context": {
+      "stage": "directives",
+      "document_id": "03_cloning",
+      "chapter_index": 31,
+      "chapter_file": "chapter_31.json",
+      "section_id": "## 12.3. The Complete Lyapunov Drift Under Cloning"
+    },
+    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "alt_labels": []
+  },
+  {
+    "label": "thm-synergistic-foster-lyapunov-preview",
+    "title": "Synergistic Foster-Lyapunov Condition (Preview)",
+    "type": "theorem",
+    "nl_statement": "When the coupling constants c_V and c_B are chosen appropriately, the composed operator \u03a8_total = \u03a8_kin \u2218 \u03a8_clone satisfies a Foster-Lyapunov drift condition: E_total[V_total(S')] \u2264 (1 - \u03ba_total) V_total(S) + C_total for some \u03ba_total > 0 and C_total < \u221e, both independent of N. This implies geometric ergodicity of the Markov chain on the alive state space and exponential convergence to the quasi-stationary distribution.",
+    "content_markdown": ":label: thm-synergistic-foster-lyapunov-preview\n\nWhen the coupling constants $c_V$ and $c_B$ are chosen appropriately, the composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}} \\circ \\Psi_{\\text{clone}}$ satisfies a Foster-Lyapunov drift condition:\n\n$$\n\\mathbb{E}_{\\text{total}}[V_{\\text{total}}(S')] \\leq (1 - \\kappa_{\\text{total}}) V_{\\text{total}}(S) + C_{\\text{total}}\n$$\n\nfor some $\\kappa_{\\text{total}} > 0$ and $C_{\\text{total}} < \\infty$, both independent of $N$.\n\n**Consequence:** This drift condition implies:\n1. **Geometric ergodicity** of the Markov chain on the alive state space",
+    "raw_directive": "8232: ### 12.4.2. The Synergistic Drift Inequality\n8233: \n8234: :::{prf:theorem} Synergistic Foster-Lyapunov Condition (Preview)\n8235: :label: thm-synergistic-foster-lyapunov-preview\n8236: \n8237: When the coupling constants $c_V$ and $c_B$ are chosen appropriately, the composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}} \\circ \\Psi_{\\text{clone}}$ satisfies a Foster-Lyapunov drift condition:\n8238: \n8239: $$\n8240: \\mathbb{E}_{\\text{total}}[V_{\\text{total}}(S')] \\leq (1 - \\kappa_{\\text{total}}) V_{\\text{total}}(S) + C_{\\text{total}}\n8241: $$\n8242: \n8243: for some $\\kappa_{\\text{total}} > 0$ and $C_{\\text{total}} < \\infty$, both independent of $N$.\n8244: \n8245: **Consequence:** This drift condition implies:\n8246: 1. **Geometric ergodicity** of the Markov chain on the alive state space\n8247: 2. **Exponential convergence** to the quasi-stationary distribution",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\mathbb{E}_{\\text{total}}[V_{\\text{total}}(S')] \\leq (1 - \\kappa_{\\text{total}}) V_{\\text{total}}(S) + C_{\\text{total}}"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "The coupling constants c_V and c_B are chosen appropriately.",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The composed operator \u03a8_total = \u03a8_kin \u2218 \u03a8_clone satisfies a Foster-Lyapunov drift condition: E_total[V_total(S')] \u2264 (1 - \u03ba_total) V_total(S) + C_total for some \u03ba_total > 0 and C_total < \u221e, both independent of N. This implies: 1. Geometric ergodicity of the Markov chain on the alive state space. 2. Exponential convergence to the quasi-stationary distribution.",
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "c_V",
+        "name": "coupling constant for V",
+        "description": "Coupling constant chosen appropriately.",
+        "constraints": [],
+        "tags": [
+          "coupling"
+        ]
+      },
+      {
+        "symbol": "c_B",
+        "name": "coupling constant for B",
+        "description": "Coupling constant chosen appropriately.",
+        "constraints": [],
+        "tags": [
+          "coupling"
+        ]
+      },
+      {
+        "symbol": "\u03a8_total",
+        "name": "total operator",
+        "description": "Composed operator \u03a8_kin \u2218 \u03a8_clone.",
+        "constraints": [],
+        "tags": [
+          "operator"
+        ]
+      },
+      {
+        "symbol": "\u03a8_kin",
+        "name": "kinetic operator",
+        "description": "Component operator in the composition.",
+        "constraints": [],
+        "tags": [
+          "operator"
+        ]
+      },
+      {
+        "symbol": "\u03a8_clone",
+        "name": "cloning operator",
+        "description": "Component operator in the composition.",
+        "constraints": [],
+        "tags": [
+          "operator"
+        ]
+      },
+      {
+        "symbol": "V_total",
+        "name": "total Lyapunov function",
+        "description": "Lyapunov function for the total process.",
+        "constraints": [],
+        "tags": [
+          "lyapunov"
+        ]
+      },
+      {
+        "symbol": "S",
+        "name": "state",
+        "description": "Current state in the Markov chain.",
+        "constraints": [],
+        "tags": [
+          "state"
+        ]
+      },
+      {
+        "symbol": "S'",
+        "name": "next state",
+        "description": "Next state in the Markov chain.",
+        "constraints": [],
+        "tags": [
+          "state"
+        ]
+      },
+      {
+        "symbol": "\u03ba_total",
+        "name": "drift constant",
+        "description": "Positive constant in the drift inequality, independent of N.",
+        "constraints": [
+          "\u03ba_total > 0"
+        ],
+        "tags": [
+          "drift"
+        ]
+      },
+      {
+        "symbol": "C_total",
+        "name": "bound constant",
+        "description": "Finite constant in the drift inequality, independent of N.",
+        "constraints": [
+          "C_total < \u221e"
+        ],
+        "tags": [
+          "bound"
+        ]
+      },
+      {
+        "symbol": "N",
+        "name": "system size",
+        "description": "Parameter independent for constants.",
+        "constraints": [],
+        "tags": [
+          "size"
+        ]
+      },
+      {
+        "symbol": "E_total",
+        "name": "total expectation",
+        "description": "Expectation under the total process.",
+        "constraints": [],
+        "tags": [
+          "expectation"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The setting involves a Markov chain on an alive state space with a quasi-stationary distribution.",
+        "confidence": 0.9
+      },
+      {
+        "text": "The operators \u03a8_kin and \u03a8_clone are well-defined in the context of the process.",
+        "confidence": 0.8
+      },
+      {
+        "text": "V_total is a valid Lyapunov function for the composed process.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "preview",
+      "steps": []
+    },
+    "tags": [
+      "foster-lyapunov",
+      "drift-condition",
+      "geometric-ergodicity",
+      "markov-chain",
+      "synergistic",
+      "coupling-constants",
+      "quasi-stationary"
+    ],
+    "document_id": "03_cloning",
+    "section": "## 12.4. The Synergistic Dissipation Framework",
+    "span": {
+      "start_line": 8232,
+      "end_line": 8247,
+      "content_start": 8235,
+      "content_end": 8246,
+      "header_lines": [
+        8233
+      ]
+    },
+    "references": [],
+    "metadata": {
+      "label": "thm-synergistic-foster-lyapunov-preview"
+    },
+    "registry_context": {
+      "stage": "directives",
+      "document_id": "03_cloning",
+      "chapter_index": 32,
+      "chapter_file": "chapter_32.json",
+      "section_id": "## 12.4. The Synergistic Dissipation Framework"
+    },
+    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "alt_labels": []
+  },
+  {
+    "label": "thm-main-results-summary",
+    "title": "Main Results of the Cloning Analysis (Summary)",
+    "type": "theorem",
+    "nl_statement": "The cloning operator \u03a8_clone establishes the Keystone Principle for detectable geometric structure and corrective pressure, leads to N-uniform positional variance contraction, bounded velocity variance expansion, boundary potential contraction with exponentially suppressed extinction, and provides an N-independent partial contraction of the Lyapunov function, requiring a kinetic operator for the synergistic Foster-Lyapunov condition.",
+    "content_markdown": ":label: thm-main-results-summary\n\nThis document has established the following results for the cloning operator $\\Psi_{\\text{clone}}$:\n\n**1. The Keystone Principle (Chapters 5-8):**\n- Large internal positional variance \u2192 detectable geometric structure\n- Geometric structure \u2192 reliable fitness signal (N-uniform)\n- Fitness signal \u2192 corrective cloning pressure\n- **Result:** $\\frac{1}{N}\\sum_{i \\in I_{11}} (p_{1,i} + p_{2,i})\\|\\Delta\\delta_{x,i}\\|^2 \\geq \\chi(\\epsilon) V_{\\text{struct}} - g_{\\max}(\\epsilon)$\n\n**2. Positional Variance Contraction (Chapter 10):**\n- The Keystone Principle translates to rigorous drift inequality\n- **Result:** $\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x$\n- Contraction rate $\\kappa_x > 0$ is **N-uniform**\n\n**3. Velocity Variance Bounded Expansion (Chapter 10):**\n- Inelastic collisions cause state-independent perturbation\n- **Result:** $\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v$\n- Expansion is **bounded**, not growing with system state or size\n\n**4. Boundary Potential Contraction (Chapter 11):**\n- Safe Harbor mechanism systematically removes boundary-proximate walkers\n- **Result:** $\\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\leq -\\kappa_b W_b + C_b$\n- Provides **exponentially suppressed extinction probability**\n\n**5. Complete Characterization (Chapter 12):**\n- All drift constants are **N-independent** (scalable to large swarms)\n- Cloning provides **partial contraction** of the Lyapunov function\n- Requires **kinetic operator** to overcome bounded expansions\n- Foundation for **synergistic Foster-Lyapunov condition**",
+    "raw_directive": "8398: ### 12.5.1. Theoretical Contributions\n8399: \n8400: :::{prf:theorem} Main Results of the Cloning Analysis (Summary)\n8401: :label: thm-main-results-summary\n8402: \n8403: This document has established the following results for the cloning operator $\\Psi_{\\text{clone}}$:\n8404: \n8405: **1. The Keystone Principle (Chapters 5-8):**\n8406: - Large internal positional variance \u2192 detectable geometric structure\n8407: - Geometric structure \u2192 reliable fitness signal (N-uniform)\n8408: - Fitness signal \u2192 corrective cloning pressure\n8409: - **Result:** $\\frac{1}{N}\\sum_{i \\in I_{11}} (p_{1,i} + p_{2,i})\\|\\Delta\\delta_{x,i}\\|^2 \\geq \\chi(\\epsilon) V_{\\text{struct}} - g_{\\max}(\\epsilon)$\n8410: \n8411: **2. Positional Variance Contraction (Chapter 10):**\n8412: - The Keystone Principle translates to rigorous drift inequality\n8413: - **Result:** $\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x$\n8414: - Contraction rate $\\kappa_x > 0$ is **N-uniform**\n8415: \n8416: **3. Velocity Variance Bounded Expansion (Chapter 10):**\n8417: - Inelastic collisions cause state-independent perturbation\n8418: - **Result:** $\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v$\n8419: - Expansion is **bounded**, not growing with system state or size\n8420: \n8421: **4. Boundary Potential Contraction (Chapter 11):**\n8422: - Safe Harbor mechanism systematically removes boundary-proximate walkers\n8423: - **Result:** $\\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\leq -\\kappa_b W_b + C_b$\n8424: - Provides **exponentially suppressed extinction probability**\n8425: \n8426: **5. Complete Characterization (Chapter 12):**\n8427: - All drift constants are **N-independent** (scalable to large swarms)\n8428: - Cloning provides **partial contraction** of the Lyapunov function\n8429: - Requires **kinetic operator** to overcome bounded expansions\n8430: - Foundation for **synergistic Foster-Lyapunov condition**\n8431: ",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\frac{1}{N}\\sum_{i \\in I_{11}} (p_{1,i} + p_{2,i})\\|\\Delta\\delta_{x,i}\\|^2 \\geq \\chi(\\epsilon) V_{\\text{struct}} - g_{\\max}(\\epsilon)"
+      },
+      {
+        "label": null,
+        "latex": "\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x"
+      },
+      {
+        "label": null,
+        "latex": "\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v"
+      },
+      {
+        "label": null,
+        "latex": "\\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\leq -\\kappa_b W_b + C_b"
+      }
+    ],
+    "hypotheses": [],
+    "conclusion": {
+      "text": "All drift constants are N-independent, providing partial contraction of the Lyapunov function and foundation for synergistic Foster-Lyapunov condition with kinetic operator.",
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "\\Psi_{\\text{clone}}",
+        "name": "cloning operator",
+        "description": "Operator applying corrective cloning pressure in swarm systems",
+        "constraints": [
+          "N-uniform"
+        ],
+        "tags": [
+          "cloning",
+          "pressure"
+        ]
+      },
+      {
+        "symbol": "N",
+        "name": "swarm size",
+        "description": "Number of agents in the swarm",
+        "constraints": [
+          "large N"
+        ],
+        "tags": [
+          "swarm",
+          "scalability"
+        ]
+      },
+      {
+        "symbol": "V_{\\text{Var},x}",
+        "name": "positional variance",
+        "description": "Variance measure for positions in the swarm",
+        "constraints": [],
+        "tags": [
+          "variance",
+          "position"
+        ]
+      },
+      {
+        "symbol": "\\kappa_x",
+        "name": "contraction rate",
+        "description": "Positive rate for positional variance contraction",
+        "constraints": [
+          "\\kappa_x > 0",
+          "N-uniform"
+        ],
+        "tags": [
+          "contraction",
+          "rate"
+        ]
+      },
+      {
+        "symbol": "V_{\\text{Var},v}",
+        "name": "velocity variance",
+        "description": "Variance measure for velocities in the swarm",
+        "constraints": [],
+        "tags": [
+          "variance",
+          "velocity"
+        ]
+      },
+      {
+        "symbol": "W_b",
+        "name": "boundary potential",
+        "description": "Potential measuring proximity to boundaries",
+        "constraints": [],
+        "tags": [
+          "boundary",
+          "potential"
+        ]
+      },
+      {
+        "symbol": "\\kappa_b",
+        "name": "boundary contraction rate",
+        "description": "Positive rate for boundary potential contraction",
+        "constraints": [
+          "\\kappa_b > 0"
+        ],
+        "tags": [
+          "contraction",
+          "boundary"
+        ]
+      },
+      {
+        "symbol": "V_{\\text{struct}}",
+        "name": "structural variance",
+        "description": "Measure of geometric structure in positions",
+        "constraints": [],
+        "tags": [
+          "structure",
+          "geometry"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "Large internal positional variance implies detectable geometric structure",
+        "confidence": 1.0
+      },
+      {
+        "text": "Inelastic collisions introduce state-independent perturbations",
+        "confidence": 1.0
+      },
+      {
+        "text": "Drift constants are independent of swarm size N for scalability",
+        "confidence": 1.0
+      },
+      {
+        "text": "Safe Harbor mechanism removes boundary-proximate walkers",
+        "confidence": 1.0
+      },
+      {
+        "text": "Kinetic operator is required to handle bounded expansions",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "summarized in referenced chapters",
+      "steps": [
+        {
+          "kind": "summary",
+          "text": "Keystone Principle (Chapters 5-8): Links variance to structure, fitness, and cloning pressure with inequality.",
+          "latex": null
+        },
+        {
+          "kind": "summary",
+          "text": "Positional Variance Contraction (Chapter 10): Drift inequality with N-uniform rate.",
+          "latex": null
+        },
+        {
+          "kind": "summary",
+          "text": "Velocity Variance Bounded Expansion (Chapter 10): Bounded by constant due to collisions.",
+          "latex": null
+        },
+        {
+          "kind": "summary",
+          "text": "Boundary Potential Contraction (Chapter 11): Exponential suppression via Safe Harbor.",
+          "latex": null
+        },
+        {
+          "kind": "summary",
+          "text": "Complete Characterization (Chapter 12): N-independent drifts and partial Lyapunov contraction.",
+          "latex": null
+        }
+      ]
+    },
+    "tags": [
+      "cloning operator",
+      "keystone principle",
+      "variance contraction",
+      "lyapunov function",
+      "foster-lyapunov",
+      "swarm dynamics",
+      "drift inequality",
+      "boundary potential"
+    ],
+    "document_id": "03_cloning",
+    "section": "## 12.5. Summary of Main Results",
+    "span": {
+      "start_line": 8398,
+      "end_line": 8431,
+      "content_start": 8401,
+      "content_end": 8430,
+      "header_lines": [
+        8399
+      ]
+    },
+    "references": [],
+    "metadata": {
+      "label": "thm-main-results-summary"
+    },
+    "registry_context": {
+      "stage": "directives",
+      "document_id": "03_cloning",
+      "chapter_index": 33,
+      "chapter_file": "chapter_33.json",
+      "section_id": "## 12.5. Summary of Main Results"
+    },
+    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "alt_labels": []
+  }
+]

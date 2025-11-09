@@ -147,8 +147,10 @@ def proof_reward(args: dict[str, Any], pred) -> float:
     steps = _json_loads(getattr(pred, "steps_json", None), [])
     key_equations = _json_loads(getattr(pred, "key_equations_json", None), [])
     raw_math_tools = getattr(pred, "math_tools", None)
-    math_tools = _json_loads(raw_math_tools, []) if isinstance(raw_math_tools, str) else (
-        raw_math_tools if isinstance(raw_math_tools, list) else []
+    math_tools = (
+        _json_loads(raw_math_tools, [])
+        if isinstance(raw_math_tools, str)
+        else (raw_math_tools if isinstance(raw_math_tools, list) else [])
     )
     references = _json_loads(getattr(pred, "references", None), [])
     cases = _json_loads(getattr(pred, "cases_json", None), [])

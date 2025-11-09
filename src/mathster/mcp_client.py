@@ -52,6 +52,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
+from dotenv import load_dotenv
 from mcp import ClientSession
 from mcp.client.stdio import stdio_client, StdioServerParameters
 
@@ -230,7 +231,9 @@ class GeminiMCPClient(BaseMCPClient):
         ```
     """
 
-    def __init__(self, server_command: str | None = None, api_key: str | None = None, **kwargs):
+    def __init__(
+        self, server_command: str | None = "gemini", api_key: str | None = None, **kwargs
+    ):
         """
         Initialize Gemini MCP client.
 
@@ -476,18 +479,20 @@ def sync_ask_codex(
 if __name__ == "__main__":
     import sys
 
+    load_dotenv()
+
     async def test_gemini():
         """Test Gemini MCP client."""
         try:
             client = GeminiMCPClient()
             print("✓ Connected to Gemini MCP server")
 
-            # List available tools
-            tools = await client.list_tools()
-            print(f"✓ Available tools: {tools}")
+            # # List available tools
+            # tools = await client.list_tools()
+            # print(f"✓ Available tools: {tools}")
 
             # Ask a question
-            response = await client.ask("What is 2+2?", model="gemini-2.5-pro")
+            response = await client.ask("What is 2+2?", model="gemini-2.5-flash")
             print(f"✓ Response: {response[:100]}...")
 
             print("\n✓ Gemini MCP client test passed!")

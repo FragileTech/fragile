@@ -1,0 +1,1826 @@
+[
+  {
+    "type": "proposition",
+    "label": "prop-barrier-existence",
+    "title": "Existence of a Global Smooth Barrier Function",
+    "nl_statement": "Assuming a regular domain where \\mathcal{X}_{\\text{valid}} satisfies Axiom EG-0, there exists a C^\\infty-smooth, strictly positive function \\varphi on \\mathcal{X}_{\\text{valid}}.",
+    "equations": [],
+    "hypotheses": [
+      {
+        "text": "\u039e_{\text{valid}} satisfies the conditions of Axiom EG-0.",
+        "latex": "\u039e_{\text{valid}} satisfies the conditions of Axiom EG-0."
+      }
+    ],
+    "conclusion": null,
+    "variables": [
+      {
+        "symbol": "\u039e_{\text{valid}}",
+        "name": "valid set",
+        "description": "The domain satisfying Axiom EG-0, assumed regular.",
+        "constraints": [
+          "regular domain"
+        ],
+        "tags": [
+          "domain",
+          "valid"
+        ]
+      },
+      {
+        "symbol": "\u03c6",
+        "name": "barrier function",
+        "description": "Global smooth positive function on the valid set.",
+        "constraints": [
+          "C^{\\infty}-smooth",
+          "strictly positive"
+        ],
+        "tags": [
+          "function",
+          "barrier"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The domain is regular, as per the introductory assumption.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not-provided",
+      "steps": []
+    },
+    "tags": [
+      "barrier-function",
+      "existence",
+      "smoothness",
+      "positivity",
+      "global"
+    ],
+    "raw": {
+      "section": "## 2. The Coupled State Space and State Differences",
+      "start_line": 208,
+      "end_line": 215,
+      "header_lines": [
+        209
+      ],
+      "content_start": 211,
+      "content_end": 214,
+      "content": ":label: prop-barrier-existence\n\nLet $\\mathcal{X}_{\\text{valid}}$ satisfy the conditions of Axiom EG-0. Then there exists a function $\\varphi: \\mathcal{X}_{\\text{valid}} \\to \\mathbb{R}$ with the following properties:\n1.  **Smoothness:** $\\varphi(x)$ is $C^{\\infty}$-smooth on $\\mathcal{X}_{\\text{valid}}$.",
+      "raw_directive": "Under the assumption of a regular domain, we can state and prove the existence of our desired barrier function.\n\n:::{prf:proposition} Existence of a Global Smooth Barrier Function\n:label: prop-barrier-existence\n\nLet $\\mathcal{X}_{\\text{valid}}$ satisfy the conditions of Axiom EG-0. Then there exists a function $\\varphi: \\mathcal{X}_{\\text{valid}} \\to \\mathbb{R}$ with the following properties:\n1.  **Smoothness:** $\\varphi(x)$ is $C^{\\infty}$-smooth on $\\mathcal{X}_{\\text{valid}}$.\n2.  **Positivity:** $\\varphi(x)$ is strictly positive for all $x \\in \\mathcal{X}_{\\text{valid}}$.",
+      "references": [],
+      "registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 2,
+        "chapter_file": "chapter_2.json",
+        "section_id": "## 2. The Coupled State Space and State Differences"
+      }
+    }
+  },
+  {
+    "type": "proposition",
+    "label": "prop-lyapunov-necessity",
+    "title": "Necessity of the Augmented Lyapunov Structure",
+    "nl_statement": "The augmented Lyapunov function V_total = W_h^2 + c_V V_Var + c_B W_b, with its weighted components measuring inter-swarm distance, intra-swarm dispersion, and boundary penalties, is mathematically necessary to prove convergence by balancing contractions and expansions from the cloning and kinetic operators, ensuring net negative drift.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\mathbb{E}[V_{\\text{total}}(t+1) - V_{\\text{total}}(t)] = \\underbrace{\\mathbb{E}[\\Delta W_h^2]}_{\\Psi_{\\text{clone}}: +, \\ \\Psi_{\\text{kin}}: -} + c_V \\underbrace{\\mathbb{E}[\\Delta V_{\\text{Var}}]}_{\\Psi_{\\text{clone}}: -, \\ \\Psi_{\\text{kin}}: +} + c_B \\underbrace{\\mathbb{E}[\\Delta W_b]}_{\\text{both: } -}"
+      }
+    ],
+    "hypotheses": [],
+    "conclusion": {
+      "text": "The weighted-sum structure of V_total ensures net negative drift: E[V_total(t+1) - V_total(t)] \u2264 -\u03ba V_total(t) + C for some \u03ba > 0, by balancing operator-induced expansions and contractions.",
+      "latex": "\\mathbb{E}[V_{\\text{total}}(t+1) - V_{\\text{total}}(t)] \\leq -\\kappa V_{\\text{total}}(t) + C \\quad (\\kappa > 0)"
+    },
+    "variables": [
+      {
+        "symbol": "V_{\\text{total}}",
+        "name": "total Lyapunov function",
+        "description": "Augmented function combining inter-swarm, intra-swarm, and boundary errors",
+        "constraints": [
+          "positive definite"
+        ],
+        "tags": [
+          "Lyapunov",
+          "total"
+        ]
+      },
+      {
+        "symbol": "W_h^2",
+        "name": "inter-swarm error",
+        "description": "Squared Wasserstein distance between empirical measures \u03bc1 and \u03bc2",
+        "constraints": [
+          "non-negative"
+        ],
+        "tags": [
+          "Wasserstein",
+          "distribution"
+        ]
+      },
+      {
+        "symbol": "V_{\\text{Var}}",
+        "name": "intra-swarm error",
+        "description": "Sum of internal variances (position and velocity) for each swarm",
+        "constraints": [
+          "non-negative"
+        ],
+        "tags": [
+          "variance",
+          "dispersion"
+        ]
+      },
+      {
+        "symbol": "W_b",
+        "name": "boundary term",
+        "description": "Penalty for walkers near the domain boundary \u2202X_valid",
+        "constraints": [
+          "non-negative"
+        ],
+        "tags": [
+          "boundary",
+          "confinement"
+        ]
+      },
+      {
+        "symbol": "c_V",
+        "name": "variance weight",
+        "description": "Coupling constant balancing V_Var term",
+        "constraints": [
+          "positive"
+        ],
+        "tags": [
+          "weight",
+          "coupling"
+        ]
+      },
+      {
+        "symbol": "c_B",
+        "name": "boundary weight",
+        "description": "Coupling constant for W_b term",
+        "constraints": [
+          "positive"
+        ],
+        "tags": [
+          "weight",
+          "boundary"
+        ]
+      },
+      {
+        "symbol": "\\Psi_{\\text{clone}}",
+        "name": "cloning operator",
+        "description": "Stochastic operator reducing internal variance via fitness-based selection",
+        "constraints": [],
+        "tags": [
+          "cloning",
+          "stochastic"
+        ]
+      },
+      {
+        "symbol": "\\Psi_{\\text{kin}}",
+        "name": "kinetic operator",
+        "description": "Langevin dynamics with drift F(x) = -\u2207U(x) and diffusion",
+        "constraints": [],
+        "tags": [
+          "kinetic",
+          "Langevin"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The system involves two swarms with empirical measures \u03bc1 and \u03bc2 in phase space.",
+        "confidence": 1.0
+      },
+      {
+        "text": "Operators \u03a8_clone and \u03a8_kin are stochastic and applied alternately.",
+        "confidence": 1.0
+      },
+      {
+        "text": "The hypocoercive norm ||(\u03b4x, \u03b4v)||_h^2 captures both position and velocity errors.",
+        "confidence": 0.9
+      },
+      {
+        "text": "Cloning adds Gaussian velocity jitter N(0, \u03b4^2 I_d), and kinetic step includes diffusion \u03c3 dW.",
+        "confidence": 1.0
+      },
+      {
+        "text": "Constants c_V and c_B can be chosen to ensure contraction dominates expansion.",
+        "confidence": 0.8
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "provided",
+      "steps": [
+        {
+          "kind": "explanation",
+          "text": "Complementary Information Content: W_h^2 and V_Var measure non-redundant aspects of swarm errors (inter- vs. intra-swarm).",
+          "latex": null
+        },
+        {
+          "kind": "explanation",
+          "text": "Operator-Specific Targeting: \u03a8_clone targets V_Var (internal), \u03a8_kin targets W_h^2 (inter-swarm via drift).",
+          "latex": null
+        },
+        {
+          "kind": "explanation",
+          "text": "Synergistic Dissipation Necessity: Each operator expands one error while contracting the other; neither alone contracts the full hypocoercive norm.",
+          "latex": null
+        },
+        {
+          "kind": "equation",
+          "text": "Weighted sum balances expansions and contractions as shown.",
+          "latex": "\\mathbb{E}[V_{\\text{total}}(t+1) - V_{\\text{total}}(t)] = \\dots"
+        },
+        {
+          "kind": "explanation",
+          "text": "The Boundary Term W_b: Both operators contract it via elimination and confining potential.",
+          "latex": null
+        },
+        {
+          "kind": "conclusion",
+          "text": "Appropriate c_V, c_B yield net negative drift for convergence.",
+          "latex": "\\mathbb{E}[\\Delta V_{\\text{total}}] \\leq -\\kappa V_{\\text{total}} + C"
+        }
+      ]
+    },
+    "tags": [
+      "Lyapunov",
+      "necessity",
+      "swarm",
+      "Wasserstein",
+      "variance",
+      "cloning",
+      "kinetic",
+      "convergence",
+      "hypocoercive"
+    ],
+    "raw": {
+      "section": "## 3. The Augmented Hypocoercive Lyapunov Function",
+      "start_line": 918,
+      "end_line": 972,
+      "header_lines": [
+        919
+      ],
+      "content_start": 921,
+      "content_end": 971,
+      "content": ":label: prop-lyapunov-necessity\n\nThe Lyapunov function $V_{\\text{total}} = W_h^2 + c_V V_{\\text{Var}} + c_B W_b$ with three distinct weighted components is mathematically necessary for the following reasons:\n\n**1. Complementary Information Content**\n\nThe two kinematic components measure fundamentally different aspects of swarm error:\n\n- **$W_h^2(\\mu_1, \\mu_2)$**: Measures how far apart the two swarms are **as distributions**. This is the squared Wasserstein distance between the full empirical measures $\\mu_1$ and $\\mu_2$. It quantifies the minimal transport cost to transform one swarm's distribution into the other's.\n\n- **$V_{\\text{Var}}(S_1, S_2)$**: Measures the **internal dispersion within each swarm**. This is the sum of the internal variances (positional and velocity) of each swarm's alive-walker population.\n\nThese quantities contain **non-redundant information**:\n- A system can have **small $W_h^2$ but large $V_{\\text{Var}}$**: Both swarms have similar empirical measures (so Wasserstein distance is small), but each swarm is internally highly dispersed (large variance).\n- A system can have **small $V_{\\text{Var}}$ but large $W_h^2$**: Both swarms are internally tight clusters (small variance), but the two tight clusters are far apart in phase space (large Wasserstein distance).\n\n**2. Operator-Specific Targeting**\n\nThe two stochastic operators act on fundamentally different error components:\n\n- **The Cloning Operator $\\Psi_{\\text{clone}}$**: Acts **within** each swarm independently. It selects walkers based on their fitness **relative to their own swarm's distribution**. The cloning mechanism directly targets $V_{\\text{Var}}$ by eliminating low-fitness walkers and duplicating high-fitness walkers, thereby reducing the internal spread of each swarm's distribution.\n\n- **The Kinetic Operator $\\Psi_{\\text{kin}}$**: Contains a drift term $F(x)$ (the negative gradient of a confining potential) that acts on walker positions. This drift causes walkers in both swarms to move toward regions of lower potential, thereby moving both swarms' barycenters toward the same equilibrium. This directly targets $W_h^2$ by reducing the distance between the swarms' centers of mass.\n\n**3. Synergistic Dissipation Necessity**\n\nNeither operator can contract the full hypocoercive norm $\\|\\!(\\delta x, \\delta v)\\!\\|_h^2 = \\|\\delta x\\|^2 + \\lambda_v \\|\\delta v\\|^2$ in both position and velocity simultaneously:\n\n- **Velocity Desynchronization from Cloning**: When the cloning operator duplicates a walker, it adds Gaussian jitter to the velocity: $v_{\\text{new}} = v_{\\text{parent}} + \\mathcal{N}(0, \\delta^2 I_d)$. This randomization **breaks velocity correlations** between swarms, causing the velocity component of the structural error to increase (expansion of the velocity-related parts of $W_h^2$). Additionally, the cloning mechanism creates a distribution of velocities within each swarm that may increase $V_{\\text{Var},v}$.\n\n- **Positional Diffusion from Kinetic Noise**: The Langevin equation for the kinetic step includes a diffusion term: $dx = (\\text{drift terms}) \\, dt + \\sigma \\, dW$. This stochastic noise **desynchronizes positions** between the two swarms' trajectories, causing positional components to expand. It also contributes to an increase in $V_{\\text{Var},x}$ within each swarm.\n\n**4. The Weighted Sum as a Solution**\n\nThe augmented Lyapunov function resolves this by allowing us to **balance expansions against contractions**:\n\n$$\n\\mathbb{E}[V_{\\text{total}}(t+1) - V_{\\text{total}}(t)] = \\underbrace{\\mathbb{E}[\\Delta W_h^2]}_{\\Psi_{\\text{clone}}: +, \\ \\Psi_{\\text{kin}}: -} + c_V \\underbrace{\\mathbb{E}[\\Delta V_{\\text{Var}}]}_{\\Psi_{\\text{clone}}: -, \\ \\Psi_{\\text{kin}}: +} + c_B \\underbrace{\\mathbb{E}[\\Delta W_b]}_{\\text{both: } -}\n$$\n\nBy choosing the coupling constant $c_V$ appropriately, we can ensure that:\n- The **strong contraction** of $V_{\\text{Var}}$ under $\\Psi_{\\text{clone}}$ (weighted by $c_V$) **dominates** the bounded expansion of $W_h^2$ under $\\Psi_{\\text{clone}}$.\n- The **strong contraction** of $W_h^2$ under $\\Psi_{\\text{kin}}$ **dominates** the bounded expansion of $c_V V_{\\text{Var}}$ under $\\Psi_{\\text{kin}}$.\n\nThis yields **net negative drift**: $\\mathbb{E}[V_{\\text{total}}(t+1) - V_{\\text{total}}(t)] \\leq -\\kappa V_{\\text{total}}(t) + C$ for some $\\kappa > 0$.\n\n**5. The Boundary Term $W_b$**\n\nThe term $c_B W_b$ ensures that walkers near the boundary $\\partial \\mathcal{X}_{\\text{valid}}$ are penalized. Both operators have mechanisms that contract this term:\n- **$\\Psi_{\\text{clone}}$**: Walkers near the boundary have lower survival probability and are thus eliminated and replaced by clones of interior walkers.\n- **$\\Psi_{\\text{kin}}$**: The confining potential $U(x)$ and force field $F(x) = -\\nabla U(x)$ push walkers away from the boundary.",
+      "raw_directive": "The inclusion of both $W_h^2$ (inter-swarm error) and $V_{\\text{Var}}$ (intra-swarm error) in the Lyapunov function is not merely convenient but mathematically necessary. This subsection explains why the specific weighted-sum structure is required for proving convergence.\n\n:::{prf:proposition} Necessity of the Augmented Lyapunov Structure\n:label: prop-lyapunov-necessity\n\nThe Lyapunov function $V_{\\text{total}} = W_h^2 + c_V V_{\\text{Var}} + c_B W_b$ with three distinct weighted components is mathematically necessary for the following reasons:\n\n**1. Complementary Information Content**\n\nThe two kinematic components measure fundamentally different aspects of swarm error:\n\n- **$W_h^2(\\mu_1, \\mu_2)$**: Measures how far apart the two swarms are **as distributions**. This is the squared Wasserstein distance between the full empirical measures $\\mu_1$ and $\\mu_2$. It quantifies the minimal transport cost to transform one swarm's distribution into the other's.\n\n- **$V_{\\text{Var}}(S_1, S_2)$**: Measures the **internal dispersion within each swarm**. This is the sum of the internal variances (positional and velocity) of each swarm's alive-walker population.\n\nThese quantities contain **non-redundant information**:\n- A system can have **small $W_h^2$ but large $V_{\\text{Var}}$**: Both swarms have similar empirical measures (so Wasserstein distance is small), but each swarm is internally highly dispersed (large variance).\n- A system can have **small $V_{\\text{Var}}$ but large $W_h^2$**: Both swarms are internally tight clusters (small variance), but the two tight clusters are far apart in phase space (large Wasserstein distance).\n\n**2. Operator-Specific Targeting**\n\nThe two stochastic operators act on fundamentally different error components:\n\n- **The Cloning Operator $\\Psi_{\\text{clone}}$**: Acts **within** each swarm independently. It selects walkers based on their fitness **relative to their own swarm's distribution**. The cloning mechanism directly targets $V_{\\text{Var}}$ by eliminating low-fitness walkers and duplicating high-fitness walkers, thereby reducing the internal spread of each swarm's distribution.\n\n- **The Kinetic Operator $\\Psi_{\\text{kin}}$**: Contains a drift term $F(x)$ (the negative gradient of a confining potential) that acts on walker positions. This drift causes walkers in both swarms to move toward regions of lower potential, thereby moving both swarms' barycenters toward the same equilibrium. This directly targets $W_h^2$ by reducing the distance between the swarms' centers of mass.\n\n**3. Synergistic Dissipation Necessity**\n\nNeither operator can contract the full hypocoercive norm $\\|\\!(\\delta x, \\delta v)\\!\\|_h^2 = \\|\\delta x\\|^2 + \\lambda_v \\|\\delta v\\|^2$ in both position and velocity simultaneously:\n\n- **Velocity Desynchronization from Cloning**: When the cloning operator duplicates a walker, it adds Gaussian jitter to the velocity: $v_{\\text{new}} = v_{\\text{parent}} + \\mathcal{N}(0, \\delta^2 I_d)$. This randomization **breaks velocity correlations** between swarms, causing the velocity component of the structural error to increase (expansion of the velocity-related parts of $W_h^2$). Additionally, the cloning mechanism creates a distribution of velocities within each swarm that may increase $V_{\\text{Var},v}$.\n\n- **Positional Diffusion from Kinetic Noise**: The Langevin equation for the kinetic step includes a diffusion term: $dx = (\\text{drift terms}) \\, dt + \\sigma \\, dW$. This stochastic noise **desynchronizes positions** between the two swarms' trajectories, causing positional components to expand. It also contributes to an increase in $V_{\\text{Var},x}$ within each swarm.\n\n**4. The Weighted Sum as a Solution**\n\nThe augmented Lyapunov function resolves this by allowing us to **balance expansions against contractions**:\n\n$$\n\\mathbb{E}[V_{\\text{total}}(t+1) - V_{\\text{total}}(t)] = \\underbrace{\\mathbb{E}[\\Delta W_h^2]}_{\\Psi_{\\text{clone}}: +, \\ \\Psi_{\\text{kin}}: -} + c_V \\underbrace{\\mathbb{E}[\\Delta V_{\\text{Var}}]}_{\\Psi_{\\text{clone}}: -, \\ \\Psi_{\\text{kin}}: +} + c_B \\underbrace{\\mathbb{E}[\\Delta W_b]}_{\\text{both: } -}\n$$\n\nBy choosing the coupling constant $c_V$ appropriately, we can ensure that:\n- The **strong contraction** of $V_{\\text{Var}}$ under $\\Psi_{\\text{clone}}$ (weighted by $c_V$) **dominates** the bounded expansion of $W_h^2$ under $\\Psi_{\\text{clone}}$.\n- The **strong contraction** of $W_h^2$ under $\\Psi_{\\text{kin}}$ **dominates** the bounded expansion of $c_V V_{\\text{Var}}$ under $\\Psi_{\\text{kin}}$.\n\nThis yields **net negative drift**: $\\mathbb{E}[V_{\\text{total}}(t+1) - V_{\\text{total}}(t)] \\leq -\\kappa V_{\\text{total}}(t) + C$ for some $\\kappa > 0$.\n\n**5. The Boundary Term $W_b$**\n\nThe term $c_B W_b$ ensures that walkers near the boundary $\\partial \\mathcal{X}_{\\text{valid}}$ are penalized. Both operators have mechanisms that contract this term:\n- **$\\Psi_{\\text{clone}}$**: Walkers near the boundary have lower survival probability and are thus eliminated and replaced by clones of interior walkers.\n- **$\\Psi_{\\text{kin}}$**: The confining potential $U(x)$ and force field $F(x) = -\\nabla U(x)$ push walkers away from the boundary.\n",
+      "references": [],
+      "registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 3. The Augmented Hypocoercive Lyapunov Function"
+      }
+    }
+  },
+  {
+    "type": "proposition",
+    "label": "prop-bounded-velocity-expansion",
+    "title": "Bounded Velocity Variance Expansion from Cloning",
+    "nl_statement": "For any cloning event where a fraction f_clone of walkers are cloned with restitution coefficient \u03b1_restitution, the change in internal velocity variance from velocity resets is bounded by \u0394V_{Var,v} \u2264 f_clone \u00b7 C_reset \u00b7 V_{max,KE}.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\Delta V_{Var,v} \\leq f_{\\text{clone}} \\cdot C_{\\text{reset}} \\cdot V_{\\max,\\text{KE}}"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Any cloning event where a fraction f_clone of walkers are cloned with restitution coefficient \u03b1_restitution",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The change in internal velocity variance from the velocity resets is bounded",
+      "latex": "\\Delta V_{Var,v} \\leq f_{\\text{clone}} \\cdot C_{\\text{reset}} \\cdot V_{\\max,\\text{KE}}"
+    },
+    "variables": [
+      {
+        "symbol": "f_{\\text{clone}}",
+        "name": "f_clone",
+        "description": "Fraction of walkers that are cloned in the event",
+        "constraints": [
+          "0 \\leq f_{\\text{clone}} \\leq 1"
+        ],
+        "tags": [
+          "cloning",
+          "fraction"
+        ]
+      },
+      {
+        "symbol": "\\alpha_{\\text{restitution}}",
+        "name": "alpha_restitution",
+        "description": "Restitution coefficient used in cloning",
+        "constraints": [
+          "0 \\leq \\alpha_{\\text{restitution}} \\leq 1"
+        ],
+        "tags": [
+          "restitution",
+          "coefficient"
+        ]
+      },
+      {
+        "symbol": "\\Delta V_{Var,v}",
+        "name": "Delta_V_Var_v",
+        "description": "Change in internal velocity variance due to resets",
+        "constraints": [],
+        "tags": [
+          "variance",
+          "change"
+        ]
+      },
+      {
+        "symbol": "C_{\\text{reset}}",
+        "name": "C_reset",
+        "description": "Constant bounding the reset effect",
+        "constraints": [
+          "C_{\\text{reset}} > 0"
+        ],
+        "tags": [
+          "constant",
+          "reset"
+        ]
+      },
+      {
+        "symbol": "V_{\\max,\\text{KE}}",
+        "name": "V_max_KE",
+        "description": "Maximum velocity related to kinetic energy",
+        "constraints": [
+          "V_{\\max,\\text{KE}} \\geq 0"
+        ],
+        "tags": [
+          "velocity",
+          "kinetic-energy"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "Cloning events involve velocity resets that affect variance",
+        "confidence": 0.95
+      },
+      {
+        "text": "C_reset is a fixed positive constant independent of the event",
+        "confidence": 1.0
+      },
+      {
+        "text": "V_max,KE represents a uniform upper bound on velocities",
+        "confidence": 0.9
+      },
+      {
+        "text": "Walkers have velocities prior to cloning",
+        "confidence": 0.85
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not-provided",
+      "steps": []
+    },
+    "tags": [
+      "cloning",
+      "velocity-variance",
+      "bounded-expansion",
+      "restitution",
+      "walkers",
+      "synergistic-dissipation"
+    ],
+    "raw": {
+      "section": "## 5. The Measurement and Interaction Pipeline",
+      "start_line": 2084,
+      "end_line": 2094,
+      "header_lines": [
+        2085
+      ],
+      "content_start": 2087,
+      "content_end": 2093,
+      "content": ":label: prop-bounded-velocity-expansion\n\nFor any cloning event where a fraction $f_{\\text{clone}}$ of walkers are cloned with restitution coefficient $\\alpha_{\\text{restitution}}$, the change in internal velocity variance from the velocity resets is bounded:\n\n$$\n\\Delta V_{Var,v} \\leq f_{\\text{clone}} \\cdot C_{\\text{reset}} \\cdot V_{\\max,\\text{KE}}\n$$",
+      "raw_directive": "The following proposition formalizes the key property that enables the synergistic dissipation framework: the expansion of velocity variance caused by cloning is uniformly bounded.\n\n:::{prf:proposition} Bounded Velocity Variance Expansion from Cloning\n:label: prop-bounded-velocity-expansion\n\nFor any cloning event where a fraction $f_{\\text{clone}}$ of walkers are cloned with restitution coefficient $\\alpha_{\\text{restitution}}$, the change in internal velocity variance from the velocity resets is bounded:\n\n$$\n\\Delta V_{Var,v} \\leq f_{\\text{clone}} \\cdot C_{\\text{reset}} \\cdot V_{\\max,\\text{KE}}\n$$\n",
+      "references": [],
+      "registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 5,
+        "chapter_file": "chapter_5.json",
+        "section_id": "## 5. The Measurement and Interaction Pipeline"
+      }
+    }
+  },
+  {
+    "type": "proposition",
+    "label": "prop-satisfiability-of-snr-gamma",
+    "title": "Satisfiability of the Signal-to-Noise Condition via Signal Gain",
+    "nl_statement": "For rescaled diversity values defined with a signal gain parameter \u03b3 > 0 and a well-behaved rescale function, any high-error system generating a non-zero raw distance signal admits a sufficiently large \u03b3 satisfying the signal-to-noise condition: the variance signal exceeds the maximum variance of the rescaled diversities.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\kappa_{\\mathrm{var}}(d') > \\operatorname{Var}_{\\max}(d')"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Rescaled diversity values are defined as d'_i = g_A(\u03b3 \u00b7 z_{d,i}) + \u03b7, where \u03b3 > 0 is the signal gain parameter and g_A satisfies the Axiom of a Well-Behaved Rescale Function.",
+        "latex": "d'_i = g_A(\\gamma \\cdot z_{d,i}) + \\eta, \\quad \\gamma > 0"
+      },
+      {
+        "text": "The system is in a high-error state, meaning Var(x) > R\u00b2_var.",
+        "latex": "\\operatorname{Var}(x) > R^{2}_{\\operatorname{var}}"
+      },
+      {
+        "text": "The system generates a non-zero raw distance signal, \u03ba_meas(d) > 0.",
+        "latex": "\\kappa_{\\mathrm{meas}}(d) > 0"
+      }
+    ],
+    "conclusion": {
+      "text": "There exists a sufficiently large \u03b3 such that the signal-to-noise condition holds: the variance-based signal exceeds the maximum variance of the rescaled diversities.",
+      "latex": "\\kappa_{\\mathrm{var}}(d') > \\operatorname{Var}_{\\max}(d')"
+    },
+    "variables": [
+      {
+        "symbol": "\u03b3",
+        "name": "Signal Gain",
+        "description": "User-defined parameter acting as a sensitivity knob to amplify the geometric error signal.",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "parameter",
+          "gain",
+          "sensitivity"
+        ]
+      },
+      {
+        "symbol": "d'_i",
+        "name": "Rescaled Diversity",
+        "description": "Rescaled diversity values incorporating signal gain and noise.",
+        "constraints": [],
+        "tags": [
+          "diversity",
+          "rescaled"
+        ]
+      },
+      {
+        "symbol": "z_{d,i}",
+        "name": "Raw Diversity",
+        "description": "Input to the rescaling function before gain and noise.",
+        "constraints": [],
+        "tags": [
+          "diversity",
+          "raw"
+        ]
+      },
+      {
+        "symbol": "\u03b7",
+        "name": "Noise",
+        "description": "Additive noise term in rescaled diversity.",
+        "constraints": [],
+        "tags": [
+          "noise"
+        ]
+      },
+      {
+        "symbol": "g_A",
+        "name": "Rescale Function",
+        "description": "Well-behaved function satisfying the Axiom of a Well-Behaved Rescale Function.",
+        "constraints": [],
+        "tags": [
+          "function",
+          "rescaling",
+          "axiom"
+        ]
+      },
+      {
+        "symbol": "\u03ba_var(d')",
+        "name": "Variance Signal",
+        "description": "Signal derived from variance of rescaled diversities.",
+        "constraints": [],
+        "tags": [
+          "signal",
+          "variance"
+        ]
+      },
+      {
+        "symbol": "Var_max(d')",
+        "name": "Maximum Variance",
+        "description": "Maximum possible variance of the rescaled diversities.",
+        "constraints": [],
+        "tags": [
+          "variance",
+          "maximum"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The rescaling function g_A is continuous and invertible to allow amplification via \u03b3.",
+        "confidence": 0.9
+      },
+      {
+        "text": "The noise \u03b7 is bounded such that Var_max(d') remains finite and controllable.",
+        "confidence": 0.8
+      },
+      {
+        "text": "The high-error state persists under rescaling, maintaining \u03ba_meas(d) > 0.",
+        "confidence": 0.95
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "sketch",
+      "steps": [
+        {
+          "kind": "introduction",
+          "text": "Introduce signal gain \u03b3 to amplify the raw distance signal \u03ba_meas(d) > 0 in high-error states (Var(x) > R\u00b2_var).",
+          "latex": null
+        },
+        {
+          "kind": "argument",
+          "text": "As \u03b3 increases, the input \u03b3 \u00b7 z_{d,i} to g_A grows, amplifying the signal component in d' while noise \u03b7 is fixed or bounded.",
+          "latex": null
+        },
+        {
+          "kind": "conclusion",
+          "text": "For large enough \u03b3, the amplified signal ensures \u03ba_var(d') dominates Var_max(d'), satisfying the condition.",
+          "latex": null
+        }
+      ]
+    },
+    "tags": [
+      "signal-to-noise",
+      "satisfiability",
+      "signal gain",
+      "gamma",
+      "diversity",
+      "rescaling",
+      "learnability"
+    ],
+    "raw": {
+      "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
+      "start_line": 3481,
+      "end_line": 3493,
+      "header_lines": [
+        3482
+      ],
+      "content_start": 3484,
+      "content_end": 3492,
+      "content": ":label: prop-satisfiability-of-snr-gamma\n\nLet the rescaled diversity values be defined as $d'_i = g_A(\\gamma \u00b7 z_{d,i}) + \\eta$, where $\\gamma > 0$ is a user-defined **Signal Gain** parameter and `g_A` is any function satisfying the **Axiom of a Well-Behaved Rescale Function**.\n\nFor any system in a high-error state (`Var(x) > R^{2}_var`) that generates a non-zero raw distance signal ($\\kappa_meas(d) > 0$), there exists a sufficiently large choice of $\\gamma$ that satisfies the **Signal-to-Noise Condition**:\n\n$$\n\\kappa_{\\mathrm{var}}(d') > \\operatorname{Var}_{\\max}(d')\n$$",
+      "raw_directive": "This section provides the formal proof that this condition, which we call the **Signal-to-Noise Condition**, is not an unstated assumption but a satisfiable criterion that can be met by a valid choice of the algorithm's user-defined parameters. We prove this by introducing a **Signal Gain** parameter, $\\gamma$, which acts as a sensitivity knob for the algorithm. This proves that the system is fundamentally \"learnable\": the signal generated by geometric error can always be amplified sufficiently to overcome the worst-case statistical noise, ensuring that a true difference between the high-error and low-error populations is always detectable.\n\n:::{prf:proposition} **(Satisfiability of the Signal-to-Noise Condition via Signal Gain)**\n:label: prop-satisfiability-of-snr-gamma\n\nLet the rescaled diversity values be defined as $d'_i = g_A(\\gamma \u00b7 z_{d,i}) + \\eta$, where $\\gamma > 0$ is a user-defined **Signal Gain** parameter and `g_A` is any function satisfying the **Axiom of a Well-Behaved Rescale Function**.\n\nFor any system in a high-error state (`Var(x) > R^{2}_var`) that generates a non-zero raw distance signal ($\\kappa_meas(d) > 0$), there exists a sufficiently large choice of $\\gamma$ that satisfies the **Signal-to-Noise Condition**:\n\n$$\n\\kappa_{\\mathrm{var}}(d') > \\operatorname{Var}_{\\max}(d')\n$$\n",
+      "references": [],
+      "registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 7,
+        "chapter_file": "chapter_7.json",
+        "section_id": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation"
+      }
+    }
+  },
+  {
+    "type": "proposition",
+    "label": "prop-corrective-signal-bound",
+    "title": "Lower Bound on the Corrective Diversity Signal",
+    "nl_statement": "In the high-error regime where the variance of rescaled diversity values d' is bounded below by a positive constant and the Signal-to-Noise Condition holds, the expected logarithmic gap in d' between high-error and low-error populations is bounded below by a positive N-uniform constant.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\mathbb{E}[\\ln(d')|H_k] - \\mathbb{E}[\\ln(d')|L_k] \\ge \\ln\\left(1 + \\frac{\\kappa_{d', \\text{mean}}}{g_{A,\\max}+\\eta}\\right) > 0"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Swarm state in high-error regime with \\(\\operatorname{Var}(d') \\ge \\kappa_{d', \\text{var}} > 0\\)",
+        "latex": "\\operatorname{Var}(d') \\ge \\kappa_{d', \\text{var}} > 0"
+      },
+      {
+        "text": "Signal-to-Noise Condition satisfied: \\(\\kappa_{d', \\text{var}} > \\operatorname{Var}_{\\max}(d')\\)",
+        "latex": "\\kappa_{d', \\text{var}} > \\operatorname{Var}_{\\max}(d')"
+      }
+    ],
+    "conclusion": {
+      "text": "Expected logarithmic gap bounded below: \\(\\mathbb{E}[\\ln(d')|H_k] - \\mathbb{E}[\\ln(d')|L_k] \\ge \\ln\\left(1 + \\frac{\\kappa_{d', \\text{mean}}}{g_{A,\\max}+\\eta}\\right) > 0\\)",
+      "latex": "\\mathbb{E}[\\ln(d')|H_k] - \\mathbb{E}[\\ln(d')|L_k] \\ge \\ln\\left(1 + \\frac{\\kappa_{d', \\text{mean}}}{g_{A,\\max}+\\eta}\\right) > 0"
+    },
+    "variables": [
+      {
+        "symbol": "d'",
+        "name": "rescaled diversity",
+        "description": "Rescaled diversity values in the swarm state",
+        "constraints": [
+          "variance bounded below"
+        ],
+        "tags": [
+          "diversity",
+          "rescaled"
+        ]
+      },
+      {
+        "symbol": "\\kappa_{d', \\text{var}}",
+        "name": "diversity variance constant",
+        "description": "Positive lower bound on variance of d'",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "constant",
+          "variance"
+        ]
+      },
+      {
+        "symbol": "H_k",
+        "name": "high-error population",
+        "description": "Population in high geometric error state at iteration k",
+        "constraints": [],
+        "tags": [
+          "population",
+          "high-error"
+        ]
+      },
+      {
+        "symbol": "L_k",
+        "name": "low-error population",
+        "description": "Population in low geometric error state at iteration k",
+        "constraints": [],
+        "tags": [
+          "population",
+          "low-error"
+        ]
+      },
+      {
+        "symbol": "\\kappa_{d', \\text{mean}}",
+        "name": "diversity mean constant",
+        "description": "Parameter related to mean separation in diversity",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "constant",
+          "mean"
+        ]
+      },
+      {
+        "symbol": "g_{A,\\max}",
+        "name": "maximum growth rate",
+        "description": "Upper bound on growth rate of A",
+        "constraints": [],
+        "tags": [
+          "growth",
+          "maximum"
+        ]
+      },
+      {
+        "symbol": "\\eta",
+        "name": "noise parameter",
+        "description": "Small positive noise or regularization term",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "noise",
+          "regularization"
+        ]
+      },
+      {
+        "symbol": "N",
+        "name": "population size",
+        "description": "Swarm or population size, uniform bound independent of N",
+        "constraints": [],
+        "tags": [
+          "size",
+          "uniform"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "All constants like \\(\\kappa\\) are positive and N-independent",
+        "confidence": 0.9
+      },
+      {
+        "text": "d' is positive-valued for logarithmic expectation to be defined",
+        "confidence": 0.8
+      },
+      {
+        "text": "System parameters ensure the bound is strictly positive",
+        "confidence": 0.95
+      }
+    ],
+    "local_refs": [
+      "lem-variance-to-mean-separation"
+    ],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "swarm optimization",
+      "diversity signal",
+      "high-error regime",
+      "logarithmic gap",
+      "signal-to-noise",
+      "corrective bound"
+    ],
+    "raw": {
+      "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
+      "start_line": 4296,
+      "end_line": 4308,
+      "header_lines": [
+        4297
+      ],
+      "content_start": 4299,
+      "content_end": 4307,
+      "content": ":label: prop-corrective-signal-bound\n\nLet a swarm state be in the high-error regime, such that the variance of its rescaled diversity values, `d'`, is bounded below, $\\operatorname{Var}(d') \\ge \\kappa_{d', \\text{var}} > 0$. Let the system parameters be chosen such that the Signal-to-Noise Condition of [](#lem-variance-to-mean-separation) is satisfied, i.e., $\\kappa_{d', \\text{var}} > \\operatorname{Var}_{\\max}(d')$.\n\nThen the expected logarithmic gap in the diversity signal between the high-error population $H_k$ and the low-error population $L_k$ is bounded below by a strictly positive, N-uniform constant:\n\n$$\n\\mathbb{E}[\\ln(d')|H_k] - \\mathbb{E}[\\ln(d')|L_k] \\ge \\ln\\left(1 + \\frac{\\kappa_{d', \\text{mean}}}{g_{A,\\max}+\\eta}\\right) > 0\n$$",
+      "raw_directive": "This proposition forges the complete link from a macroscopic state of high geometric error to a guaranteed, non-vanishing corrective signal in the logarithmic space of the fitness potential.\n\n:::{prf:proposition} **(Lower Bound on the Corrective Diversity Signal)**\n:label: prop-corrective-signal-bound\n\nLet a swarm state be in the high-error regime, such that the variance of its rescaled diversity values, `d'`, is bounded below, $\\operatorname{Var}(d') \\ge \\kappa_{d', \\text{var}} > 0$. Let the system parameters be chosen such that the Signal-to-Noise Condition of [](#lem-variance-to-mean-separation) is satisfied, i.e., $\\kappa_{d', \\text{var}} > \\operatorname{Var}_{\\max}(d')$.\n\nThen the expected logarithmic gap in the diversity signal between the high-error population $H_k$ and the low-error population $L_k$ is bounded below by a strictly positive, N-uniform constant:\n\n$$\n\\mathbb{E}[\\ln(d')|H_k] - \\mathbb{E}[\\ln(d')|L_k] \\ge \\ln\\left(1 + \\frac{\\kappa_{d', \\text{mean}}}{g_{A,\\max}+\\eta}\\right) > 0\n$$\n",
+      "references": [],
+      "registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 7,
+        "chapter_file": "chapter_7.json",
+        "section_id": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation"
+      }
+    }
+  },
+  {
+    "type": "proposition",
+    "label": "prop-adversarial-signal-bound-naive",
+    "title": "Worst-Case Upper Bound on the Adversarial Reward Signal",
+    "nl_statement": "For any swarm state, the maximum possible expected logarithmic gap in the rescaled reward signal $r'$ between the low-error and high-error populations is uniformly bounded above by $\\ln\\left(1 + \\frac{g_{A,\\max}}{\\eta}\\right)$.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\mathbb{E}[\\ln(r')|L_k] - \\mathbb{E}[\\ln(r')|H_k] \\le \\ln\\left(1 + \\frac{g_{A,\\max}}{\\eta}\\right)"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "For any swarm state",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The maximum possible expected logarithmic gap in the rescaled reward signal $r'$ between the low-error and high-error populations is uniformly bounded above by a constant derived only from the rescale function's range: $\\mathbb{E}[\\ln(r')|L_k] - \\mathbb{E}[\\ln(r')|H_k] \\le \\ln\\left(1 + \\frac{g_{A,\\max}}{\\eta}\\right)$",
+      "latex": "\\mathbb{E}[\\ln(r')|L_k] - \\mathbb{E}[\\ln(r')|H_k] \\le \\ln\\left(1 + \\frac{g_{A,\\max}}{\\eta}\\right)"
+    },
+    "variables": [
+      {
+        "symbol": "r'",
+        "name": "r'",
+        "description": "Rescaled reward signal",
+        "constraints": [],
+        "tags": [
+          "reward"
+        ]
+      },
+      {
+        "symbol": "L_k",
+        "name": "L_k",
+        "description": "Low-error population at step k",
+        "constraints": [],
+        "tags": [
+          "population",
+          "low-error"
+        ]
+      },
+      {
+        "symbol": "H_k",
+        "name": "H_k",
+        "description": "High-error population at step k",
+        "constraints": [],
+        "tags": [
+          "population",
+          "high-error"
+        ]
+      },
+      {
+        "symbol": "g_{A,\\max}",
+        "name": "g_{A,max}",
+        "description": "Maximum value of the adversarial gain function",
+        "constraints": [
+          "Maximum in rescale range"
+        ],
+        "tags": [
+          "adversarial",
+          "gain"
+        ]
+      },
+      {
+        "symbol": "\\eta",
+        "name": "\u03b7",
+        "description": "Parameter in rescale function",
+        "constraints": [
+          "Positive scalar"
+        ],
+        "tags": [
+          "rescale",
+          "parameter"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The rescale function has a defined range allowing $g_{A,\\max}$ and $\\eta$ as parameters",
+        "confidence": 0.9
+      },
+      {
+        "text": "Expectations are well-defined over low-error and high-error populations",
+        "confidence": 0.8
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not-provided",
+      "steps": []
+    },
+    "tags": [
+      "adversarial",
+      "reward-signal",
+      "upper-bound",
+      "naive",
+      "stability",
+      "swarm-state",
+      "rescale-function"
+    ],
+    "raw": {
+      "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
+      "start_line": 4342,
+      "end_line": 4351,
+      "header_lines": [
+        4343
+      ],
+      "content_start": 4345,
+      "content_end": 4350,
+      "content": ":label: prop-adversarial-signal-bound-naive\n\nFor any swarm state, the maximum possible expected logarithmic gap in the rescaled reward signal, $r'$, between the low-error and high-error populations is uniformly bounded above by a constant derived only from the rescale function's range:\n\n$$\n\\mathbb{E}[\\ln(r')|L_k] - \\mathbb{E}[\\ln(r')|H_k] \\le \\ln\\left(1 + \\frac{g_{A,\\max}}{\\eta}\\right)",
+      "raw_directive": "Before deriving the final stability condition, it is instructive to first establish a \"naive\" upper bound on the adversarial reward signal. This bound considers the absolute worst-case scenario allowed by the range of the rescale function, without yet invoking the axioms that constrain the reward landscape's structure. This will serve as a baseline to demonstrate the critical importance of those axioms.\n\n:::{prf:proposition} **(Worst-Case Upper Bound on the Adversarial Reward Signal)**\n:label: prop-adversarial-signal-bound-naive\n\nFor any swarm state, the maximum possible expected logarithmic gap in the rescaled reward signal, $r'$, between the low-error and high-error populations is uniformly bounded above by a constant derived only from the rescale function's range:\n\n$$\n\\mathbb{E}[\\ln(r')|L_k] - \\mathbb{E}[\\ln(r')|H_k] \\le \\ln\\left(1 + \\frac{g_{A,\\max}}{\\eta}\\right)\n$$",
+      "references": [],
+      "registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 7,
+        "chapter_file": "chapter_7.json",
+        "section_id": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation"
+      }
+    }
+  },
+  {
+    "type": "proposition",
+    "label": "prop-raw-reward-mean-gap-bound",
+    "title": "Lipschitz Bound on the Raw Reward Mean Gap",
+    "nl_statement": "The absolute difference between the mean raw rewards of the high-error population H_k and low-error population L_k is bounded by the product of the Lipschitz constant L_R of the positional reward component and the diameter D_valid of the valid domain X_valid.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "|\\mu_R(L_k) - \\mu_R(H_k)| \\le L_{R} \\cdot D_{\\mathrm{valid}} =: \\kappa_{\\mathrm{raw},r,\\text{adv}}"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "The reward function's positional component R_pos(x) is Lipschitz continuous on the valid domain X_valid with constant L_R, as per the Axiom of Reward Regularity.",
+        "latex": null
+      },
+      {
+        "text": "The diameter of X_valid is D_valid.",
+        "latex": null
+      },
+      {
+        "text": "For any swarm, considering high-error population H_k and low-error population L_k.",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The absolute difference between the mean raw rewards is uniformly bounded: |\u03bc_R(L_k) - \u03bc_R(H_k)| \u2264 L_R \u00b7 D_valid =: \u03ba_raw,r,adv",
+      "latex": "|\\mu_R(L_k) - \\mu_R(H_k)| \\le L_{R} \\cdot D_{\\mathrm{valid}} =: \\kappa_{\\mathrm{raw},r,\\text{adv}}"
+    },
+    "variables": [
+      {
+        "symbol": "R_pos",
+        "name": "positional reward component",
+        "description": "Lipschitz continuous function on X_valid",
+        "constraints": [
+          "Lipschitz with constant L_R"
+        ],
+        "tags": [
+          "reward",
+          "positional"
+        ]
+      },
+      {
+        "symbol": "L_R",
+        "name": "Lipschitz constant",
+        "description": "Constant for Lipschitz continuity of R_pos",
+        "constraints": [
+          "positive real"
+        ],
+        "tags": [
+          "Lipschitz"
+        ]
+      },
+      {
+        "symbol": "X_valid",
+        "name": "valid domain",
+        "description": "Domain where R_pos is defined and Lipschitz",
+        "constraints": [
+          "compact",
+          "diameter D_valid"
+        ],
+        "tags": [
+          "domain"
+        ]
+      },
+      {
+        "symbol": "D_valid",
+        "name": "domain diameter",
+        "description": "Diameter of X_valid",
+        "constraints": [
+          "non-negative real"
+        ],
+        "tags": [
+          "diameter"
+        ]
+      },
+      {
+        "symbol": "H_k",
+        "name": "high-error population",
+        "description": "Subset of swarm with high error at iteration k",
+        "constraints": [
+          "subset of swarm"
+        ],
+        "tags": [
+          "population",
+          "high-error"
+        ]
+      },
+      {
+        "symbol": "L_k",
+        "name": "low-error population",
+        "description": "Subset of swarm with low error at iteration k",
+        "constraints": [
+          "subset of swarm"
+        ],
+        "tags": [
+          "population",
+          "low-error"
+        ]
+      },
+      {
+        "symbol": "\u03bc_R",
+        "name": "mean raw reward",
+        "description": "Expected value of raw reward over a population",
+        "constraints": [],
+        "tags": [
+          "mean",
+          "reward"
+        ]
+      },
+      {
+        "symbol": "\u03ba_raw,r,adv",
+        "name": "raw reward mean gap bound",
+        "description": "Defined bound L_R \u00b7 D_valid",
+        "constraints": [
+          "non-negative real"
+        ],
+        "tags": [
+          "bound",
+          "gap"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "Populations H_k and L_k are non-empty subsets of the swarm within X_valid.",
+        "confidence": 0.9
+      },
+      {
+        "text": "Raw reward R is composed of positional component R_pos, inheriting its Lipschitz property.",
+        "confidence": 0.8
+      },
+      {
+        "text": "The swarm operates within the valid domain X_valid.",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not-provided",
+      "steps": []
+    },
+    "tags": [
+      "Lipschitz",
+      "reward",
+      "mean gap",
+      "bound",
+      "swarm",
+      "population",
+      "domain diameter"
+    ],
+    "raw": {
+      "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
+      "start_line": 4405,
+      "end_line": 4416,
+      "header_lines": [
+        4406
+      ],
+      "content_start": 4408,
+      "content_end": 4415,
+      "content": ":label: prop-raw-reward-mean-gap-bound\n\nLet the reward function's positional component, $R_{\\text{pos}}(x)$, be Lipschitz continuous on the valid domain $\\mathcal{X}_{\\text{valid}}$ with constant $L_{R}$, as per the **Axiom of Reward Regularity**. Let the diameter of $\\mathcal{X}_{\\text{valid}}$ be $D_{\\text{valid}}$.\n\nFor any swarm, the absolute difference between the mean raw rewards of the high-error population $H_k$ and the low-error population $L_k$ is uniformly bounded:\n\n$$\n|\\mu_R(L_k) - \\mu_R(H_k)| \\le L_{R} \\cdot D_{\\mathrm{valid}} =: \\kappa_{\\mathrm{raw},r,\\text{adv}}",
+      "raw_directive": "The following propositions build a chain of reasoning from the Lipschitz continuity of the raw reward function to a final, tight bound on the expected logarithmic gap.\n\n:::{prf:proposition} **(Lipschitz Bound on the Raw Reward Mean Gap)**\n:label: prop-raw-reward-mean-gap-bound\n\nLet the reward function's positional component, $R_{\\text{pos}}(x)$, be Lipschitz continuous on the valid domain $\\mathcal{X}_{\\text{valid}}$ with constant $L_{R}$, as per the **Axiom of Reward Regularity**. Let the diameter of $\\mathcal{X}_{\\text{valid}}$ be $D_{\\text{valid}}$.\n\nFor any swarm, the absolute difference between the mean raw rewards of the high-error population $H_k$ and the low-error population $L_k$ is uniformly bounded:\n\n$$\n|\\mu_R(L_k) - \\mu_R(H_k)| \\le L_{R} \\cdot D_{\\mathrm{valid}} =: \\kappa_{\\mathrm{raw},r,\\text{adv}}\n$$",
+      "references": [],
+      "registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 7,
+        "chapter_file": "chapter_7.json",
+        "section_id": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation"
+      }
+    }
+  },
+  {
+    "type": "proposition",
+    "label": "prop-log-reward-gap-axiom-bound",
+    "title": "Axiom-Based Bound on the Logarithmic Reward Gap",
+    "nl_statement": "Under the Axiom of Reward Regularity, the expected logarithmic gap in the rescaled reward signal is bounded above by the logarithm of one plus the rescaled condition number divided by eta.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\mathbb{E}[\\ln(r')|L_k] - \\mathbb{E}[\\ln(r')|H_k] \\le \\ln\\left(1 + \\frac{\\kappa_{\\mathrm{rescaled}}(L_R \\cdot D_{\\mathrm{valid}})}{\\eta}\\right)"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Axiom of Reward Regularity holds.",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The expected logarithmic gap in the rescaled reward signal is bounded.",
+      "latex": "\\mathbb{E}[\\ln(r')|L_k] - \\mathbb{E}[\\ln(r')|H_k] \\le \\ln\\left(1 + \\frac{\\kappa_{\\mathrm{rescaled}}(L_R \\cdot D_{\\mathrm{valid}})}{\\eta}\\right)"
+    },
+    "variables": [
+      {
+        "symbol": "r'",
+        "name": "rescaled reward",
+        "description": "Rescaled reward signal.",
+        "constraints": [],
+        "tags": [
+          "reward"
+        ]
+      },
+      {
+        "symbol": "L_k",
+        "name": "low condition set",
+        "description": "Low condition indicator at step k.",
+        "constraints": [],
+        "tags": [
+          "condition",
+          "low"
+        ]
+      },
+      {
+        "symbol": "H_k",
+        "name": "high condition set",
+        "description": "High condition indicator at step k.",
+        "constraints": [],
+        "tags": [
+          "condition",
+          "high"
+        ]
+      },
+      {
+        "symbol": "\\kappa_{\\mathrm{rescaled}}",
+        "name": "rescaled condition number",
+        "description": "Condition number for rescaled parameters.",
+        "constraints": [],
+        "tags": [
+          "condition",
+          "number"
+        ]
+      },
+      {
+        "symbol": "L_R",
+        "name": "reward Lipschitz constant",
+        "description": "Lipschitz constant for rewards.",
+        "constraints": [],
+        "tags": [
+          "Lipschitz",
+          "reward"
+        ]
+      },
+      {
+        "symbol": "D_{\\mathrm{valid}}",
+        "name": "valid dataset diameter",
+        "description": "Diameter of the valid dataset.",
+        "constraints": [],
+        "tags": [
+          "dataset",
+          "diameter"
+        ]
+      },
+      {
+        "symbol": "\\eta",
+        "name": "learning rate",
+        "description": "Step size or regularization parameter.",
+        "constraints": [],
+        "tags": [
+          "rate",
+          "eta"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The rescaled reward signal is positive to ensure logarithms are defined.",
+        "confidence": 0.8
+      },
+      {
+        "text": "The condition number and parameters are well-defined and positive.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "none",
+      "steps": []
+    },
+    "tags": [
+      "reward",
+      "gap",
+      "logarithmic",
+      "rescaled",
+      "axiom",
+      "bound",
+      "expectation"
+    ],
+    "raw": {
+      "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
+      "start_line": 4442,
+      "end_line": 4452,
+      "header_lines": [
+        4443
+      ],
+      "content_start": 4445,
+      "content_end": 4451,
+      "content": ":label: prop-log-reward-gap-axiom-bound\n\nUnder the **Axiom of Reward Regularity**, the expected logarithmic gap in the rescaled reward signal is bounded by:\n\n$$\n\\mathbb{E}[\\ln(r')|L_k] - \\mathbb{E}[\\ln(r')|H_k] \\le \\ln\\left(1 + \\frac{\\kappa_{\\mathrm{rescaled}}(L_R \\cdot D_{\\mathrm{valid}})}{\\eta}\\right)\n$$",
+      "raw_directive": "This raw reward gap now propagates through the measurement pipeline.\n\n:::{prf:proposition} **(Axiom-Based Bound on the Logarithmic Reward Gap)**\n:label: prop-log-reward-gap-axiom-bound\n\nUnder the **Axiom of Reward Regularity**, the expected logarithmic gap in the rescaled reward signal is bounded by:\n\n$$\n\\mathbb{E}[\\ln(r')|L_k] - \\mathbb{E}[\\ln(r')|H_k] \\le \\ln\\left(1 + \\frac{\\kappa_{\\mathrm{rescaled}}(L_R \\cdot D_{\\mathrm{valid}})}{\\eta}\\right)\n$$\n",
+      "references": [],
+      "registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 7,
+        "chapter_file": "chapter_7.json",
+        "section_id": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation"
+      }
+    }
+  },
+  {
+    "type": "proposition",
+    "label": "prop-n-uniformity-keystone",
+    "title": "N-Uniformity of Keystone Constants",
+    "nl_statement": "The Keystone constants \u03c7(\u03b5) and g_max(\u03b5) are strictly independent of the swarm size N; for any fixed system parameters, finite positive constants \u03c7\u2080(\u03b5) and g\u2080(\u03b5) exist such that for all N \u2265 2, \u03c7(\u03b5) = \u03c7\u2080(\u03b5) and g_max(\u03b5) = g\u2080(\u03b5).",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\chi(\\epsilon) = \\chi_0(\\epsilon) \\quad \\text{and} \\quad g_{\\max}(\\epsilon) = g_0(\\epsilon)"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Fixed choice of system parameters (\u03b5, domain, pipeline parameters, etc.)",
+        "latex": null
+      },
+      {
+        "text": "N \u2265 2, where N is the swarm size",
+        "latex": null
+      },
+      {
+        "text": "Finite positive constants \u03c7\u2080(\u03b5) and g\u2080(\u03b5) exist independent of N",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "\u03c7(\u03b5) = \u03c7\u2080(\u03b5) and g_max(\u03b5) = g\u2080(\u03b5)",
+      "latex": "\\chi(\\epsilon) = \\chi_0(\\epsilon) \\quad \\text{and} \\quad g_{\\max}(\\epsilon) = g_0(\\epsilon)"
+    },
+    "variables": [
+      {
+        "symbol": "\\epsilon",
+        "name": "epsilon",
+        "description": "Accuracy or tolerance parameter",
+        "constraints": [],
+        "tags": [
+          "parameter",
+          "accuracy"
+        ]
+      },
+      {
+        "symbol": "N",
+        "name": "swarm size",
+        "description": "Number of agents in the swarm",
+        "constraints": [
+          "integer",
+          "N \\geq 2"
+        ],
+        "tags": [
+          "swarm",
+          "size"
+        ]
+      },
+      {
+        "symbol": "\\chi(\\epsilon)",
+        "name": "chi epsilon",
+        "description": "Keystone constant for convergence",
+        "constraints": [
+          "positive"
+        ],
+        "tags": [
+          "keystone",
+          "constant"
+        ]
+      },
+      {
+        "symbol": "g_{\\max}(\\epsilon)",
+        "name": "g max epsilon",
+        "description": "Maximum gain Keystone constant",
+        "constraints": [
+          "positive"
+        ],
+        "tags": [
+          "keystone",
+          "gain"
+        ]
+      },
+      {
+        "symbol": "\\chi_0(\\epsilon)",
+        "name": "chi zero epsilon",
+        "description": "N-independent base for \u03c7(\u03b5)",
+        "constraints": [
+          "finite",
+          "positive"
+        ],
+        "tags": [
+          "keystone",
+          "base"
+        ]
+      },
+      {
+        "symbol": "g_0(\\epsilon)",
+        "name": "g zero epsilon",
+        "description": "N-independent base for g_max(\u03b5)",
+        "constraints": [
+          "finite",
+          "positive"
+        ],
+        "tags": [
+          "keystone",
+          "base"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "\u03c7\u2080(\u03b5) and g\u2080(\u03b5) are finite and positive for fixed \u03b5",
+        "confidence": 1.0
+      },
+      {
+        "text": "System parameters are fixed, excluding N",
+        "confidence": 1.0
+      },
+      {
+        "text": "Constants are O(1) as N \u2192 \u221e",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "keystone constants",
+      "N-uniformity",
+      "swarm size independence",
+      "chi epsilon",
+      "g max epsilon",
+      "asymptotic O(1)"
+    ],
+    "raw": {
+      "section": "## 8. The N-Uniform Quantitative Keystone Lemma",
+      "start_line": 5561,
+      "end_line": 5571,
+      "header_lines": [
+        5562
+      ],
+      "content_start": 5564,
+      "content_end": 5570,
+      "content": ":label: prop-n-uniformity-keystone\n\nThe Keystone constants $\\chi(\\epsilon)$ and $g_{\\max}(\\epsilon)$ are strictly independent of the swarm size $N$. More precisely, for any fixed choice of system parameters ($\\epsilon$, domain, pipeline parameters, etc.), there exist finite positive constants $\\chi_0(\\epsilon)$ and $g_0(\\epsilon)$ such that for all $N \\geq 2$:\n\n$$\n\\chi(\\epsilon) = \\chi_0(\\epsilon) \\quad \\text{and} \\quad g_{\\max}(\\epsilon) = g_0(\\epsilon)\n$$",
+      "raw_directive": "We now provide a formal verification that both Keystone constants, $\\chi(\\epsilon)$ and $g_{\\max}(\\epsilon)$, are **strictly independent of the swarm size N**, establishing that they are $O(1)$ as $N \\to \\infty$.\n\n:::{prf:proposition} N-Uniformity of Keystone Constants\n:label: prop-n-uniformity-keystone\n\nThe Keystone constants $\\chi(\\epsilon)$ and $g_{\\max}(\\epsilon)$ are strictly independent of the swarm size $N$. More precisely, for any fixed choice of system parameters ($\\epsilon$, domain, pipeline parameters, etc.), there exist finite positive constants $\\chi_0(\\epsilon)$ and $g_0(\\epsilon)$ such that for all $N \\geq 2$:\n\n$$\n\\chi(\\epsilon) = \\chi_0(\\epsilon) \\quad \\text{and} \\quad g_{\\max}(\\epsilon) = g_0(\\epsilon)\n$$\n",
+      "references": [],
+      "registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 8,
+        "chapter_file": "chapter_8.json",
+        "section_id": "## 8. The N-Uniform Quantitative Keystone Lemma"
+      }
+    }
+  },
+  {
+    "type": "proposition",
+    "label": "prop-expected-displacement-cloning",
+    "title": "Expected Displacement Under Cloning",
+    "nl_statement": "For walker i with cloning probability p_i, the expected squared position displacement satisfies E[||\u0394x_i||\u00b2 | S] \u2264 p_i \u00b7 D_max\u00b2, where D_max is the maximum distance in the valid domain or a bound on the jitter kernel range.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\mathbb{E}[\\|\\Delta x_i\\|^2 \\mid S] \\leq p_i \\cdot D_{\\text{max}}^2"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Walker i has cloning probability p_i.",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The expected squared position displacement satisfies the bound.",
+      "latex": "\\mathbb{E}[\\|\\Delta x_i\\|^2 \\mid S] \\leq p_i \\cdot D_{\\text{max}}^2"
+    },
+    "variables": [
+      {
+        "symbol": "i",
+        "name": "walker index",
+        "description": "Index identifying the specific walker.",
+        "constraints": [],
+        "tags": [
+          "index"
+        ]
+      },
+      {
+        "symbol": "p_i",
+        "name": "cloning probability",
+        "description": "Probability that walker i undergoes cloning.",
+        "constraints": [
+          "0 \\leq p_i \\leq 1"
+        ],
+        "tags": [
+          "probability"
+        ]
+      },
+      {
+        "symbol": "\\Delta x_i",
+        "name": "position displacement",
+        "description": "Change in position for walker i.",
+        "constraints": [],
+        "tags": [
+          "displacement",
+          "position"
+        ]
+      },
+      {
+        "symbol": "S",
+        "name": "conditioning state",
+        "description": "State or condition under which the expectation is taken.",
+        "constraints": [],
+        "tags": [
+          "state",
+          "condition"
+        ]
+      },
+      {
+        "symbol": "D_{\\text{max}}",
+        "name": "maximum distance",
+        "description": "Maximum distance in the valid domain or bound on the jitter kernel range.",
+        "constraints": [
+          "D_{\\text{max}} > 0"
+        ],
+        "tags": [
+          "bound",
+          "distance",
+          "domain"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The position displacements are bounded within the valid domain.",
+        "confidence": 1.0
+      },
+      {
+        "text": "S is a valid conditioning event or state.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "cloning",
+      "expected displacement",
+      "squared norm",
+      "walker",
+      "probability",
+      "bound"
+    ],
+    "raw": {
+      "section": "## 9.5. Key Quantities for Drift Analysis",
+      "start_line": 6246,
+      "end_line": 6258,
+      "header_lines": [
+        6247
+      ],
+      "content_start": 6249,
+      "content_end": 6257,
+      "content": ":label: prop-expected-displacement-cloning\n\nFor walker $i$ with cloning probability $p_i$, the expected squared position displacement satisfies:\n\n$$\n\\mathbb{E}[\\|\\Delta x_i\\|^2 \\mid S] \\leq p_i \\cdot D_{\\text{max}}^2\n$$\n\nwhere $D_{\\text{max}}$ is the maximum distance in the valid domain (or a suitable bound on the jitter kernel range).",
+      "raw_directive": ":::\n\n:::{prf:proposition} Expected Displacement Under Cloning\n:label: prop-expected-displacement-cloning\n\nFor walker $i$ with cloning probability $p_i$, the expected squared position displacement satisfies:\n\n$$\n\\mathbb{E}[\\|\\Delta x_i\\|^2 \\mid S] \\leq p_i \\cdot D_{\\text{max}}^2\n$$\n\nwhere $D_{\\text{max}}$ is the maximum distance in the valid domain (or a suitable bound on the jitter kernel range).\n",
+      "references": [],
+      "registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 13,
+        "chapter_file": "chapter_13.json",
+        "section_id": "## 9.5. Key Quantities for Drift Analysis"
+      }
+    }
+  },
+  {
+    "type": "proposition",
+    "label": "prop-kinetic-necessity",
+    "title": "Necessity of the Kinetic Operator",
+    "nl_statement": "The cloning operator alone cannot guarantee convergence to a quasi-stationary distribution due to unbounded velocity variance accumulation, inter-swarm divergence, and lack of velocity equilibrium; the kinetic operator is essential for contraction via friction and drift.",
+    "equations": [],
+    "hypotheses": [
+      {
+        "text": "Velocity variance accumulation: The bounded expansion +C_v per step can accumulate without bound over infinite time if not countered.",
+        "latex": null
+      },
+      {
+        "text": "Inter-swarm divergence: The bounded expansion +C_W means the two coupled swarms can drift arbitrarily far apart without inter-swarm correction.",
+        "latex": null
+      },
+      {
+        "text": "No velocity equilibrium: Cloning has no mechanism to dissipate kinetic energy toward a target distribution - it only redistributes it through collisions.",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The kinetic operator is essential to contract V_{\text{Var},v} via Langevin friction (overcoming C_v) and contract V_W via hypocoercive drift and confining potential (overcoming C_W).",
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "C_v",
+        "name": "Velocity expansion constant",
+        "description": "Bounded expansion per step for velocity variance.",
+        "constraints": [
+          "bounded",
+          "positive"
+        ],
+        "tags": [
+          "velocity",
+          "expansion",
+          "constant"
+        ]
+      },
+      {
+        "symbol": "C_W",
+        "name": "Swarm expansion constant",
+        "description": "Bounded expansion per step for inter-swarm distance.",
+        "constraints": [
+          "bounded",
+          "positive"
+        ],
+        "tags": [
+          "swarm",
+          "expansion",
+          "constant"
+        ]
+      },
+      {
+        "symbol": "V_{\\text{Var},v}",
+        "name": "Velocity variance",
+        "description": "Measure of variance in velocity components.",
+        "constraints": [],
+        "tags": [
+          "variance",
+          "velocity"
+        ]
+      },
+      {
+        "symbol": "V_W",
+        "name": "Inter-swarm variance",
+        "description": "Measure of distance between two coupled swarms.",
+        "constraints": [],
+        "tags": [
+          "variance",
+          "swarm"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "System evolves over infinite time.",
+        "confidence": 0.9
+      },
+      {
+        "text": "No additional correction mechanisms beyond cloning.",
+        "confidence": 1.0
+      },
+      {
+        "text": "Coupled swarms are present in the model.",
+        "confidence": 0.8
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "informal",
+      "steps": [
+        {
+          "kind": "explanation",
+          "text": "Velocity variance accumulation: The bounded expansion +C_v per step can accumulate without bound over infinite time if not countered.",
+          "latex": null
+        },
+        {
+          "kind": "explanation",
+          "text": "Inter-swarm divergence: The bounded expansion +C_W means the two coupled swarms can drift arbitrarily far apart without inter-swarm correction.",
+          "latex": null
+        },
+        {
+          "kind": "explanation",
+          "text": "No velocity equilibrium: Cloning has no mechanism to dissipate kinetic energy toward a target distribution - it only redistributes it through collisions.",
+          "latex": null
+        },
+        {
+          "kind": "conclusion",
+          "text": "Therefore, the kinetic operator is essential to contract V_{\text{Var},v} via Langevin friction (overcoming C_v) and contract V_W via hypocoercive drift and confining potential (overcoming C_W).",
+          "latex": null
+        }
+      ]
+    },
+    "tags": [
+      "cloning operator",
+      "kinetic operator",
+      "convergence",
+      "quasi-stationary distribution",
+      "variance accumulation",
+      "inter-swarm divergence"
+    ],
+    "raw": {
+      "section": "## 12.3. The Complete Lyapunov Drift Under Cloning",
+      "start_line": 8187,
+      "end_line": 8202,
+      "header_lines": [
+        8188
+      ],
+      "content_start": 8190,
+      "content_end": 8201,
+      "content": ":label: prop-kinetic-necessity\n\nThe cloning operator alone cannot guarantee convergence to a quasi-stationary distribution. Specifically:\n\n1. **Velocity variance accumulation:** The bounded expansion $+C_v$ per step can accumulate without bound over infinite time if not countered.\n\n2. **Inter-swarm divergence:** The bounded expansion $+C_W$ means the two coupled swarms can drift arbitrarily far apart without inter-swarm correction.\n\n3. **No velocity equilibrium:** Cloning has no mechanism to dissipate kinetic energy toward a target distribution - it only redistributes it through collisions.\n\nTherefore, the **kinetic operator is essential** to:\n- Contract $V_{\\text{Var},v}$ via Langevin friction (overcoming $C_v$)",
+      "raw_directive": "### 12.3.3. Why Cloning Alone Cannot Achieve Convergence\n\n:::{prf:proposition} Necessity of the Kinetic Operator\n:label: prop-kinetic-necessity\n\nThe cloning operator alone cannot guarantee convergence to a quasi-stationary distribution. Specifically:\n\n1. **Velocity variance accumulation:** The bounded expansion $+C_v$ per step can accumulate without bound over infinite time if not countered.\n\n2. **Inter-swarm divergence:** The bounded expansion $+C_W$ means the two coupled swarms can drift arbitrarily far apart without inter-swarm correction.\n\n3. **No velocity equilibrium:** Cloning has no mechanism to dissipate kinetic energy toward a target distribution - it only redistributes it through collisions.\n\nTherefore, the **kinetic operator is essential** to:\n- Contract $V_{\\text{Var},v}$ via Langevin friction (overcoming $C_v$)\n- Contract $V_W$ via hypocoercive drift and confining potential (overcoming $C_W$)",
+      "references": [],
+      "registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 31,
+        "chapter_file": "chapter_31.json",
+        "section_id": "## 12.3. The Complete Lyapunov Drift Under Cloning"
+      }
+    }
+  },
+  {
+    "type": "proposition",
+    "label": "prop-coupling-constant-existence",
+    "title": "Existence of Valid Coupling Constants",
+    "nl_statement": "There exist positive coupling constants \\(c_V, c_B > 0\\) that satisfy the synergistic drift condition, provided the algorithmic parameters meet conditions on cloning quality and responsiveness, kinetic friction and confinement, noise levels, and a balance inequality.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\frac{\\kappa_x}{\\text{(kinetic diffusion)}} > 1, \\quad \\frac{\\kappa_v}{\\text{(cloning velocity expansion)}} > 1, \\quad \\frac{\\kappa_W}{C_W} > 1"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Sufficient measurement quality: \u03b5 > \u03b5_min for detectable variance",
+        "latex": null
+      },
+      {
+        "text": "Sufficient cloning responsiveness: \u03b5_clone small, p_max large",
+        "latex": null
+      },
+      {
+        "text": "Sufficient fitness weight on rewards: \u03b2 > 0 for boundary detection",
+        "latex": null
+      },
+      {
+        "text": "Sufficient friction: \u03b3 > \u03b3_min for velocity dissipation",
+        "latex": null
+      },
+      {
+        "text": "Sufficient confinement: \u2225\u2207U(x)\u2225 large enough far from equilibrium",
+        "latex": null
+      },
+      {
+        "text": "Small enough noise: \u03c3_v\u00b2 to prevent excessive velocity heating",
+        "latex": null
+      },
+      {
+        "text": "Balance condition",
+        "latex": "\\frac{\\kappa_x}{\\text{(kinetic diffusion)}} > 1, \\quad \\frac{\\kappa_v}{\\text{(cloning velocity expansion)}} > 1, \\quad \\frac{\\kappa_W}{C_W} > 1"
+      }
+    ],
+    "conclusion": {
+      "text": "There exist coupling constants c_V, c_B > 0 that satisfy the synergistic drift condition",
+      "latex": "There exist coupling constants $c_V, c_B > 0$ that satisfy the synergistic drift condition"
+    },
+    "variables": [
+      {
+        "symbol": "c_V",
+        "name": "coupling constant V",
+        "description": "Positive coupling constant for velocity component",
+        "constraints": [
+          "c_V > 0"
+        ],
+        "tags": [
+          "coupling"
+        ]
+      },
+      {
+        "symbol": "c_B",
+        "name": "coupling constant B",
+        "description": "Positive coupling constant for boundary component",
+        "constraints": [
+          "c_B > 0"
+        ],
+        "tags": [
+          "coupling"
+        ]
+      },
+      {
+        "symbol": "\u03b5",
+        "name": "measurement quality",
+        "description": "Parameter for measurement quality in cloning",
+        "constraints": [
+          "\u03b5 > \u03b5_min"
+        ],
+        "tags": [
+          "cloning"
+        ]
+      },
+      {
+        "symbol": "\u03b5_min",
+        "name": "minimum measurement quality",
+        "description": "Threshold for detectable variance",
+        "constraints": [],
+        "tags": [
+          "cloning"
+        ]
+      },
+      {
+        "symbol": "\u03b5_clone",
+        "name": "cloning responsiveness",
+        "description": "Parameter controlling cloning sensitivity",
+        "constraints": [
+          "small"
+        ],
+        "tags": [
+          "cloning"
+        ]
+      },
+      {
+        "symbol": "p_max",
+        "name": "maximum cloning probability",
+        "description": "Upper bound on cloning probability",
+        "constraints": [
+          "large"
+        ],
+        "tags": [
+          "cloning"
+        ]
+      },
+      {
+        "symbol": "\u03b2",
+        "name": "fitness weight",
+        "description": "Weight on rewards for boundary detection",
+        "constraints": [
+          "\u03b2 > 0"
+        ],
+        "tags": [
+          "fitness"
+        ]
+      },
+      {
+        "symbol": "\u03b3",
+        "name": "friction coefficient",
+        "description": "Kinetic friction for velocity dissipation",
+        "constraints": [
+          "\u03b3 > \u03b3_min"
+        ],
+        "tags": [
+          "kinetic"
+        ]
+      },
+      {
+        "symbol": "\u03b3_min",
+        "name": "minimum friction",
+        "description": "Threshold for sufficient friction",
+        "constraints": [],
+        "tags": [
+          "kinetic"
+        ]
+      },
+      {
+        "symbol": "\u03c3_v\u00b2",
+        "name": "velocity noise variance",
+        "description": "Noise level to control velocity heating",
+        "constraints": [
+          "small"
+        ],
+        "tags": [
+          "noise"
+        ]
+      },
+      {
+        "symbol": "\u03ba_x",
+        "name": "position scaling",
+        "description": "Scaling factor for position in balance",
+        "constraints": [],
+        "tags": [
+          "balance"
+        ]
+      },
+      {
+        "symbol": "\u03ba_v",
+        "name": "velocity scaling",
+        "description": "Scaling factor for velocity in balance",
+        "constraints": [],
+        "tags": [
+          "balance"
+        ]
+      },
+      {
+        "symbol": "\u03ba_W",
+        "name": "weight scaling",
+        "description": "Scaling factor for weights in balance",
+        "constraints": [],
+        "tags": [
+          "balance"
+        ]
+      },
+      {
+        "symbol": "C_W",
+        "name": "weight constant",
+        "description": "Constant bounding weight complexity",
+        "constraints": [],
+        "tags": [
+          "balance"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The synergistic drift condition is well-defined based on prior kinetic and cloning dynamics",
+        "confidence": 0.9
+      },
+      {
+        "text": "Algorithmic parameters are positive real numbers where applicable",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "existence",
+      "coupling constants",
+      "synergistic drift",
+      "cloning parameters",
+      "kinetic parameters",
+      "balance condition"
+    ],
+    "raw": {
+      "section": "## 12.4. The Synergistic Dissipation Framework",
+      "start_line": 8335,
+      "end_line": 8356,
+      "header_lines": [
+        8336
+      ],
+      "content_start": 8338,
+      "content_end": 8355,
+      "content": ":label: prop-coupling-constant-existence\n\nThere exist coupling constants $c_V, c_B > 0$ that satisfy the synergistic drift condition, provided the algorithmic parameters satisfy:\n\n**Cloning Parameters:**\n- Sufficient measurement quality: $\\epsilon > \\epsilon_{\\min}$ for detectable variance\n- Sufficient cloning responsiveness: $\\varepsilon_{\\text{clone}}$ small, $p_{\\max}$ large\n- Sufficient fitness weight on rewards: $\\beta > 0$ for boundary detection\n\n**Kinetic Parameters:**\n- Sufficient friction: $\\gamma > \\gamma_{\\min}$ for velocity dissipation\n- Sufficient confinement: $\\|\\nabla U(x)\\|$ large enough far from equilibrium\n- Small enough noise: $\\sigma_v^2$ to prevent excessive velocity heating\n\n**Balance Condition:**\n\n$$\n\\frac{\\kappa_x}{\\text{(kinetic diffusion)}} > 1, \\quad \\frac{\\kappa_v}{\\text{(cloning velocity expansion)}} > 1, \\quad \\frac{\\kappa_W}{C_W} > 1",
+      "raw_directive": "### 12.4.3. Parameter Balancing\n\n:::{prf:proposition} Existence of Valid Coupling Constants\n:label: prop-coupling-constant-existence\n\nThere exist coupling constants $c_V, c_B > 0$ that satisfy the synergistic drift condition, provided the algorithmic parameters satisfy:\n\n**Cloning Parameters:**\n- Sufficient measurement quality: $\\epsilon > \\epsilon_{\\min}$ for detectable variance\n- Sufficient cloning responsiveness: $\\varepsilon_{\\text{clone}}$ small, $p_{\\max}$ large\n- Sufficient fitness weight on rewards: $\\beta > 0$ for boundary detection\n\n**Kinetic Parameters:**\n- Sufficient friction: $\\gamma > \\gamma_{\\min}$ for velocity dissipation\n- Sufficient confinement: $\\|\\nabla U(x)\\|$ large enough far from equilibrium\n- Small enough noise: $\\sigma_v^2$ to prevent excessive velocity heating\n\n**Balance Condition:**\n\n$$\n\\frac{\\kappa_x}{\\text{(kinetic diffusion)}} > 1, \\quad \\frac{\\kappa_v}{\\text{(cloning velocity expansion)}} > 1, \\quad \\frac{\\kappa_W}{C_W} > 1\n$$",
+      "references": [],
+      "registry_context": {
+        "stage": "directives",
+        "document_id": "03_cloning",
+        "chapter_index": 32,
+        "chapter_file": "chapter_32.json",
+        "section_id": "## 12.4. The Synergistic Dissipation Framework"
+      }
+    }
+  }
+]

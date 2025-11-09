@@ -1,0 +1,572 @@
+[
+  {
+    "label": "axiom-domain-regularity",
+    "title": "**(Axiom EG-0): Regularity of the Domain**",
+    "type": "axiom",
+    "axiom_class": "regularity",
+    "nl_summary": "The single-walker state space \\(\\mathcal{X}\\) satisfies standard regularity conditions to ensure the validity of the construction.",
+    "core_statement": null,
+    "hypotheses": [],
+    "implications": [
+      {
+        "text": "The construction is valid under these conditions.",
+        "latex": null
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "\\mathcal{X}",
+        "name": "single-walker state space",
+        "description": "The state space on which standard regularity conditions are imposed for the construction to be valid.",
+        "constraints": [
+          "standard regularity conditions"
+        ],
+        "tags": [
+          "state-space",
+          "topology"
+        ]
+      }
+    ],
+    "failure_modes": [],
+    "tags": [
+      "axiom",
+      "regularity",
+      "domain",
+      "state-space",
+      "topology"
+    ],
+    "content_markdown": ":label: axiom-domain-regularity",
+    "raw_directive": "196: For the construction to be valid, we impose the following standard regularity conditions on the single-walker state space $\\mathcal{X}$.\n197: \n198: :::{prf:axiom} **(Axiom EG-0): Regularity of the Domain**\n199: :label: axiom-domain-regularity\n200: ",
+    "references": [],
+    "document_id": "03_cloning",
+    "section": "## 2. The Coupled State Space and State Differences",
+    "span": {
+      "start_line": 196,
+      "end_line": 200,
+      "content_start": 199,
+      "content_end": 199,
+      "header_lines": [
+        197
+      ]
+    },
+    "metadata": {
+      "label": "axiom-domain-regularity"
+    },
+    "registry_context": {
+      "stage": "directives",
+      "document_id": "03_cloning",
+      "chapter_index": 2,
+      "chapter_file": "chapter_2.json",
+      "section_id": "## 2. The Coupled State Space and State Differences"
+    },
+    "generated_at": "2025-11-09T10:55:47.623180+00:00",
+    "alt_labels": []
+  },
+  {
+    "label": "axiom-lipschitz-fields",
+    "title": "**(Axiom EG-1): Lipschitz Regularity of Environmental Fields**",
+    "type": "axiom",
+    "axiom_class": "regularity",
+    "nl_summary": "The force field F and steady flow field u are Lipschitz continuous on the compact valid domain X_valid, with finite Lipschitz constants L_F and L_u, ensuring local smoothness and global well-behavedness of the environmental fields.",
+    "core_statement": {
+      "text": "The deterministic fields F and u are locally smooth and globally well-behaved on the compact valid domain X_valid, with finite constants L_F and L_u such that for all x1, x2 in X_valid: ||F(x1) - F(x2)|| <= L_F ||x1 - x2|| and ||u(x1) - u(x2)|| <= L_u ||x1 - x2||.",
+      "latex": "There exist finite constants $L_F$ and $L_u$ such that for all $x_1, x_2 \\in \\mathcal{X}_{\\mathrm{valid}}$: \\|F(x_1) - F(x_2)\\| \\leq L_F \\|x_1 - x_2\\| and \\|u(x_1) - u(x_2)\\| \\leq L_u \\|x_1 - x_2\\|."
+    },
+    "hypotheses": [
+      {
+        "text": "For all x1, x2 in the compact valid domain X_valid.",
+        "latex": "\\forall x_1, x_2 \\in \\mathcal{X}_{\\mathrm{valid}}."
+      }
+    ],
+    "implications": [
+      {
+        "text": "The force field satisfies ||F(x1) - F(x2)|| <= L_F ||x1 - x2||.",
+        "latex": "\\|F(x_1) - F(x_2)\\| \\leq L_F \\|x_1 - x_2\\|."
+      },
+      {
+        "text": "The steady flow field satisfies ||u(x1) - u(x2)|| <= L_u ||x1 - x2||.",
+        "latex": "\\|u(x_1) - u(x_2)\\| \\leq L_u \\|x_1 - x_2\\|."
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "L_F",
+        "name": "Lipschitz constant for force field",
+        "description": "Finite constant ensuring the Lipschitz continuity of the force field F",
+        "constraints": [
+          "finite",
+          "L_F >= 0"
+        ],
+        "tags": [
+          "lipschitz",
+          "constant",
+          "force"
+        ]
+      },
+      {
+        "symbol": "L_u",
+        "name": "Lipschitz constant for steady flow field",
+        "description": "Finite constant ensuring the Lipschitz continuity of the steady flow field u",
+        "constraints": [
+          "finite",
+          "L_u >= 0"
+        ],
+        "tags": [
+          "lipschitz",
+          "constant",
+          "flow"
+        ]
+      },
+      {
+        "symbol": "\\mathcal{X}_{\\mathrm{valid}}",
+        "name": "Valid domain",
+        "description": "Compact domain on which the fields are defined and well-behaved",
+        "constraints": [
+          "compact"
+        ],
+        "tags": [
+          "domain",
+          "state-space"
+        ]
+      },
+      {
+        "symbol": "F",
+        "name": "Force field",
+        "description": "Deterministic field governing the system's kinetic dynamics",
+        "constraints": [],
+        "tags": [
+          "force",
+          "dynamics",
+          "kinetic"
+        ]
+      },
+      {
+        "symbol": "u",
+        "name": "Steady flow field",
+        "description": "Deterministic field representing steady flow in the environment",
+        "constraints": [],
+        "tags": [
+          "flow",
+          "dynamics",
+          "steady"
+        ]
+      }
+    ],
+    "failure_modes": [
+      {
+        "description": "Fields F or u are not Lipschitz continuous (e.g., discontinuous or excessively steep gradients).",
+        "impact": "Leads to unstable kinetic dynamics, potential non-uniqueness in solutions, or unpredictable swarm behavior in the state space."
+      }
+    ],
+    "tags": [
+      "lipschitz",
+      "regularity",
+      "force-field",
+      "flow-field",
+      "smoothness",
+      "dynamics",
+      "compact-domain"
+    ],
+    "content_markdown": ":label: axiom-lipschitz-fields\n\nThe deterministic fields governing the system's kinetic dynamics are locally smooth and globally well-behaved on the compact valid domain $\\mathcal X_{\\mathrm{valid}}$. Specifically, there exist finite constants $L_F$ and $L_u$ such that for all $x_1, x_2 \\in \\mathcal X_{\\mathrm{valid}}$:\n\n1.  **Force Field:** $\\|F(x_1) - F(x_2)\\| \\leq L_F \\|x_1 - x_2\\|$\n2.  **Steady Flow Field:** $\\|u(x_1) - u(x_2)\\| \\leq L_u \\|x_1 - x_2\\|$",
+    "raw_directive": "1159: These axioms describe the fundamental properties of the state space and the reward function, which constitute the static \"world\" that the swarm explores.\n1160: \n1161: :::{prf:axiom} **(Axiom EG-1): Lipschitz Regularity of Environmental Fields**\n1162: :label: axiom-lipschitz-fields\n1163: \n1164: The deterministic fields governing the system's kinetic dynamics are locally smooth and globally well-behaved on the compact valid domain $\\mathcal X_{\\mathrm{valid}}$. Specifically, there exist finite constants $L_F$ and $L_u$ such that for all $x_1, x_2 \\in \\mathcal X_{\\mathrm{valid}}$:\n1165: \n1166: 1.  **Force Field:** $\\|F(x_1) - F(x_2)\\| \\leq L_F \\|x_1 - x_2\\|$\n1167: 2.  **Steady Flow Field:** $\\|u(x_1) - u(x_2)\\| \\leq L_u \\|x_1 - x_2\\|$\n1168: ",
+    "references": [],
+    "document_id": "03_cloning",
+    "section": "## 4. Foundational Assumptions and System Properties",
+    "span": {
+      "start_line": 1159,
+      "end_line": 1168,
+      "content_start": 1162,
+      "content_end": 1167,
+      "header_lines": [
+        1160
+      ]
+    },
+    "metadata": {
+      "label": "axiom-lipschitz-fields"
+    },
+    "registry_context": {
+      "stage": "directives",
+      "document_id": "03_cloning",
+      "chapter_index": 4,
+      "chapter_file": "chapter_4.json",
+      "section_id": "## 4. Foundational Assumptions and System Properties"
+    },
+    "generated_at": "2025-11-09T10:55:47.623180+00:00",
+    "alt_labels": []
+  },
+  {
+    "label": "axiom-safe-harbor",
+    "title": "**(Axiom EG-2): Existence of a Safe Harbor**",
+    "type": "axiom",
+    "axiom_class": "existence",
+    "nl_summary": "Asserts the existence of a compact safe harbor set within the valid state space, buffered from boundaries, where positional rewards strictly exceed those outside, providing a stable high-reward region.",
+    "core_statement": {
+      "text": "There exists a compact set C_safe subset of X_valid and a reward threshold R_safe such that the set is strictly interior and rewards inside exceed those outside.",
+      "latex": "There exists a compact set $C_{\\mathrm{safe}} \\subset \\mathcal{X}_{\\mathrm{valid}}$ and a reward threshold $R_{\\mathrm{safe}}$ such that:"
+    },
+    "hypotheses": [],
+    "implications": [
+      {
+        "text": "C_safe lies strictly inside the valid domain with a positive safety margin.",
+        "latex": "$d(x, \\partial \\mathcal{X}_{\\mathrm{valid}}) \\geq \\delta_{\\mathrm{safe}} > 0$ for every $x \\in C_{\\mathrm{safe}}$."
+      },
+      {
+        "text": "Positional reward is strictly better inside the safe harbor.",
+        "latex": "$\\max_{y \\in C_{\\mathrm{safe}}} R_{\\mathrm{pos}}(y) \\geq R_{\\mathrm{safe}}$ and $R_{\\mathrm{pos}}(x) < R_{\\mathrm{safe}}$ for all $x \\notin C_{\\mathrm{safe}}$."
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "C_{\\mathrm{safe}}",
+        "name": "Safe Harbor Set",
+        "description": "Compact set strictly inside the valid domain serving as a high-reward safe region.",
+        "constraints": [
+          "compact",
+          "subset of \\mathcal{X}_{\\mathrm{valid}}"
+        ],
+        "tags": [
+          "set",
+          "compact",
+          "safe"
+        ]
+      },
+      {
+        "symbol": "R_{\\mathrm{safe}}",
+        "name": "Safe Reward Threshold",
+        "description": "Threshold value for reward distinguishing the safe harbor from outside regions.",
+        "constraints": [
+          "real number",
+          "\\max_{y \\in C_{\\mathrm{safe}}} R_{\\mathrm{pos}}(y) \\geq R_{\\mathrm{safe}}"
+        ],
+        "tags": [
+          "reward",
+          "threshold"
+        ]
+      },
+      {
+        "symbol": "\\delta_{\\mathrm{safe}}",
+        "name": "Safety Margin",
+        "description": "Positive minimum distance from points in the safe set to the boundary of the valid domain.",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "distance",
+          "margin",
+          "boundary"
+        ]
+      }
+    ],
+    "failure_modes": [
+      {
+        "description": "No compact safe harbor exists in the valid domain.",
+        "impact": "The RL agent lacks a buffered high-reward goal, increasing risk of approaching invalid boundaries or failing to achieve stable valid behaviors."
+      }
+    ],
+    "tags": [
+      "axiom",
+      "existence",
+      "safe-harbor",
+      "compact-set",
+      "valid-domain",
+      "reward-threshold",
+      "positional-reward"
+    ],
+    "content_markdown": ":label: axiom-safe-harbor\n\nThere exists a compact set $C_{\\mathrm{safe}} \\subset \\mathcal X_{\\mathrm{valid}}$ and a reward threshold $R_{\\mathrm{safe}}$ such that:\n\n1.  $C_{\\mathrm{safe}}$ lies strictly inside the valid domain: $d(x, \\partial X_{\\mathrm{valid}}) \\geq \\delta_{\\mathrm{safe}} > 0$ for every $x \\in C_{\\mathrm{safe}}$.\n2.  The positional reward is strictly better inside the safe harbor: $\\max_{y \\in C_{\\mathrm{safe}}} R_{\\mathrm{pos}}(y) \\geq R_{\\mathrm{safe}}$ and $R_{\\mathrm{pos}}(x) < R_{\\mathrm{safe}}$ for all $x \\notin C_{\\mathrm{safe}}$.",
+    "raw_directive": "1183: :::\n1184: \n1185: :::{prf:axiom} **(Axiom EG-2): Existence of a Safe Harbor**\n1186: :label: axiom-safe-harbor\n1187: \n1188: There exists a compact set $C_{\\mathrm{safe}} \\subset \\mathcal X_{\\mathrm{valid}}$ and a reward threshold $R_{\\mathrm{safe}}$ such that:\n1189: \n1190: 1.  $C_{\\mathrm{safe}}$ lies strictly inside the valid domain: $d(x, \\partial X_{\\mathrm{valid}}) \\geq \\delta_{\\mathrm{safe}} > 0$ for every $x \\in C_{\\mathrm{safe}}$.\n1191: 2.  The positional reward is strictly better inside the safe harbor: $\\max_{y \\in C_{\\mathrm{safe}}} R_{\\mathrm{pos}}(y) \\geq R_{\\mathrm{safe}}$ and $R_{\\mathrm{pos}}(x) < R_{\\mathrm{safe}}$ for all $x \\notin C_{\\mathrm{safe}}$.\n1192: ",
+    "references": [],
+    "document_id": "03_cloning",
+    "section": "## 4. Foundational Assumptions and System Properties",
+    "span": {
+      "start_line": 1183,
+      "end_line": 1192,
+      "content_start": 1186,
+      "content_end": 1191,
+      "header_lines": [
+        1184
+      ]
+    },
+    "metadata": {
+      "label": "axiom-safe-harbor"
+    },
+    "registry_context": {
+      "stage": "directives",
+      "document_id": "03_cloning",
+      "chapter_index": 4,
+      "chapter_file": "chapter_4.json",
+      "section_id": "## 4. Foundational Assumptions and System Properties"
+    },
+    "generated_at": "2025-11-09T10:55:47.623180+00:00",
+    "alt_labels": []
+  },
+  {
+    "label": "axiom-non-deceptive-landscape",
+    "title": "**(Axiom EG-3): Non-Deceptive Landscape**",
+    "type": "axiom",
+    "axiom_class": "regularity",
+    "nl_summary": "The reward landscape is non-deceptive: positions separated by at least L_grad yield rewards differing by at least kappa_raw_r > 0.",
+    "core_statement": {
+      "text": "There exist constants L_grad > 0 and \u03ba_raw,r > 0 such that if ||x - y|| \u2265 L_grad, then |R_pos(y) - R_pos(x)| \u2265 \u03ba_raw,r.",
+      "latex": "there exist constants $L_{\\text{grad}} > 0$ and $\\kappa_{\\text{raw},r} > 0$ such that: If $\\Vert x - y \\Vert \\geq L_{\\text{grad}}$, then $|R_{\\mathrm{pos}}(y) - R_{\\mathrm{pos}}(x)| \\geq \\kappa_{\\text{raw},r}$."
+    },
+    "hypotheses": [
+      {
+        "text": "||x - y|| \u2265 L_grad (for positions x, y of walkers)",
+        "latex": "\\Vert x - y \\Vert \\geq L_{\\text{grad}}"
+      }
+    ],
+    "implications": [
+      {
+        "text": "|R_pos(y) - R_pos(x)| \u2265 \u03ba_raw,r",
+        "latex": "|R_{\\mathrm{pos}}(y) - R_{\\mathrm{pos}}(x)| \\geq \\kappa_{\\text{raw},r}"
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "L_{\\text{grad}}",
+        "name": "L_grad",
+        "description": "positive constant representing the minimal geometric separation threshold",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "separation",
+          "threshold",
+          "length"
+        ]
+      },
+      {
+        "symbol": "\\kappa_{\\text{raw},r}",
+        "name": "kappa_raw_r",
+        "description": "positive constant representing the minimal non-zero reward difference",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "reward",
+          "difference",
+          "kappa"
+        ]
+      }
+    ],
+    "failure_modes": [
+      {
+        "description": "Deceptive landscape with distant positions having arbitrarily small reward differences",
+        "impact": "Swarm algorithms fail to distinguish configurations, causing stagnation in exploration"
+      },
+      {
+        "description": "Vanishing gradients or flat regions beyond L_grad",
+        "impact": "Prevents convergence to optimal swarm behaviors"
+      }
+    ],
+    "tags": [
+      "non-deceptive",
+      "landscape",
+      "geometric-separation",
+      "positional-rewards",
+      "constants",
+      "environment",
+      "walkers"
+    ],
+    "content_markdown": ":label: axiom-non-deceptive-landscape\n\nThe environment is **non-deceptive**. A sufficient geometric separation between two walkers guarantees a minimal, non-zero difference in their raw positional rewards. Formally, there exist constants $L_{\\text{grad}} > 0$ and $\\kappa_{\\text{raw},r} > 0$ such that:\n\nIf $\\|x - y\\| \\geq L_{\\text{grad}}$, then $|R_{\\mathrm{pos}}(y) - R_{\\mathrm{pos}}(x)| \\geq \\kappa_{\\text{raw},r}$.",
+    "raw_directive": "1211: These axioms ensure that the environment is sufficiently informative to prevent algorithmic stagnation and to allow the swarm to distinguish between good and bad configurations.\n1212: \n1213: :::{prf:axiom} **(Axiom EG-3): Non-Deceptive Landscape**\n1214: :label: axiom-non-deceptive-landscape\n1215: \n1216: The environment is **non-deceptive**. A sufficient geometric separation between two walkers guarantees a minimal, non-zero difference in their raw positional rewards. Formally, there exist constants $L_{\\text{grad}} > 0$ and $\\kappa_{\\text{raw},r} > 0$ such that:\n1217: \n1218: If $\\|x - y\\| \\geq L_{\\text{grad}}$, then $|R_{\\mathrm{pos}}(y) - R_{\\mathrm{pos}}(x)| \\geq \\kappa_{\\text{raw},r}$.\n1219: ",
+    "references": [],
+    "document_id": "03_cloning",
+    "section": "## 4. Foundational Assumptions and System Properties",
+    "span": {
+      "start_line": 1211,
+      "end_line": 1219,
+      "content_start": 1214,
+      "content_end": 1218,
+      "header_lines": [
+        1212
+      ]
+    },
+    "metadata": {
+      "label": "axiom-non-deceptive-landscape"
+    },
+    "registry_context": {
+      "stage": "directives",
+      "document_id": "03_cloning",
+      "chapter_index": 4,
+      "chapter_file": "chapter_4.json",
+      "section_id": "## 4. Foundational Assumptions and System Properties"
+    },
+    "generated_at": "2025-11-09T10:55:47.623180+00:00",
+    "alt_labels": []
+  },
+  {
+    "label": "axiom-velocity-regularization",
+    "title": "**(Axiom EG-4): Velocity Regularization via Reward**",
+    "type": "axiom",
+    "axiom_class": "regularity",
+    "nl_summary": "The total reward function incorporates a quadratic penalty on velocity to bound kinetic energy, ensuring stability by preferentially eliminating high-velocity walkers during cloning and enabling dissipation in the kinetic stage.",
+    "core_statement": {
+      "text": "The total reward function R_total(x, v) := R_pos(x) - c_v_reg ||v||^2 where c_v_reg > 0.",
+      "latex": "R_{\\text{total}}(x, v) := R_{\\text{pos}}(x) - c_{v\\_reg} \\|v\\|^2 \\quad \\text{with} \\quad c_{v\\_reg} > 0"
+    },
+    "hypotheses": [
+      {
+        "text": "c_v_reg is a strictly positive constant.",
+        "latex": "c_{v_reg} > 0"
+      }
+    ],
+    "implications": [
+      {
+        "text": "During cloning, high-velocity walkers receive low rewards and are preferentially replaced, bounding the expansion of velocity variance V_Var,v.",
+        "latex": null
+      },
+      {
+        "text": "Prevents excessive kinetic energy growth, allowing the kinetic stage's Langevin friction to dominate and achieve net contraction of the Lyapunov function.",
+        "latex": null
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "c_{v_reg}",
+        "name": "velocity regularization coefficient",
+        "description": "Strictly positive constant scaling the quadratic penalty on velocity in the total reward function.",
+        "constraints": [
+          "c_{v_reg} > 0"
+        ],
+        "tags": [
+          "regularization",
+          "penalty",
+          "velocity",
+          "constant"
+        ]
+      },
+      {
+        "symbol": "R_{pos}",
+        "name": "positional reward function",
+        "description": "Reward component depending only on position x, integrated into the total reward.",
+        "constraints": [],
+        "tags": [
+          "reward",
+          "positional",
+          "function"
+        ]
+      },
+      {
+        "symbol": "\\|v\\|^2",
+        "name": "squared velocity norm",
+        "description": "Quadratic term representing kinetic energy, penalized in the reward.",
+        "constraints": [],
+        "tags": [
+          "velocity",
+          "kinetic",
+          "norm"
+        ]
+      }
+    ],
+    "failure_modes": [
+      {
+        "description": "If c_v_reg \u2264 0, no velocity penalization occurs.",
+        "impact": "Uncontrolled velocity variance expansion from cloning, leading to swarm instability and failure of dissipation."
+      },
+      {
+        "description": "If c_v_reg is too small relative to positional rewards, penalization is insufficient.",
+        "impact": "High velocities persist, overwhelming kinetic dissipation and preventing Lyapunov convergence."
+      }
+    ],
+    "tags": [
+      "velocity-regularization",
+      "reward-function",
+      "kinetic-energy",
+      "safety-mechanism",
+      "variance-bounding",
+      "cloning-operator",
+      "lyapunov-function",
+      "dissipation-framework"
+    ],
+    "content_markdown": ":label: axiom-velocity-regularization\n\nThe total reward function `R(x,v)` is designed to actively penalize high kinetic energy. It is composed of the positional reward `R_pos(x)` and a quadratic velocity regularization term:\n\n$$\nR_{\\text{total}}(x, v) := R_{\\text{pos}}(x) - c_{v\\_reg} \\|v\\|^2\n$$\n\nwhere `c_{v\\_reg}` is a strictly positive constant `c_{v\\_reg} > 0`.\n\n**Rationale:**\n\nThis axiom is a critical safety mechanism within the synergistic dissipation framework. While the cloning operator contracts positional variance $V_{\\text{Var},x}$ but causes bounded expansion of velocity variance $V_{\\text{Var},v}$, the velocity regularization term ensures this expansion remains controlled and bounded.\n\n1.  **Bounding Velocity Variance Expansion During Cloning:** A walker `i` that acquires an anomalously large velocity `v_i` contributes significantly to the $V_{\\text{Var},v}$ component of the Lyapunov function. The `-c_{v\\_reg} ||v_i||^{2}` term gives this walker an extremely low raw reward, making it \"unfit\" regardless of its position. It thus becomes a prime target for cloning. When cloned, its high velocity is reset to that of a companion, which is overwhelmingly likely to be much smaller. This mechanism ensures that while cloning may increase $V_{\\text{Var},v}$ through velocity resets, walkers with dangerously high velocities are preferentially removed, providing an upper bound on the expansion.\n\n2.  **Enabling Kinetic Stage Dissipation:** This mechanism acts as a robust safety net, preventing the kinetic energy of the swarm from growing to levels where the kinetic stage's Langevin friction term cannot overcome the expansion caused by cloning. It ensures that the velocity variance remains within a regime where the kinetic operator's dissipation can dominate, enabling the synergistic framework to achieve net contraction of the total Lyapunov function.\n\n**Implications and Trade-offs:**",
+    "raw_directive": "1240: These final axioms are assumptions about the user's choice of algorithmic parameters. They ensure the algorithm is configured to be active, to correctly interpret the signals it receives, and to remain dynamically stable.\n1241: \n1242: :::{prf:axiom} **(Axiom EG-4): Velocity Regularization via Reward**\n1243: :label: axiom-velocity-regularization\n1244: \n1245: The total reward function `R(x,v)` is designed to actively penalize high kinetic energy. It is composed of the positional reward `R_pos(x)` and a quadratic velocity regularization term:\n1246: \n1247: $$\n1248: R_{\\text{total}}(x, v) := R_{\\text{pos}}(x) - c_{v\\_reg} \\|v\\|^2\n1249: $$\n1250: \n1251: where `c_{v\\_reg}` is a strictly positive constant `c_{v\\_reg} > 0`.\n1252: \n1253: **Rationale:**\n1254: \n1255: This axiom is a critical safety mechanism within the synergistic dissipation framework. While the cloning operator contracts positional variance $V_{\\text{Var},x}$ but causes bounded expansion of velocity variance $V_{\\text{Var},v}$, the velocity regularization term ensures this expansion remains controlled and bounded.\n1256: \n1257: 1.  **Bounding Velocity Variance Expansion During Cloning:** A walker `i` that acquires an anomalously large velocity `v_i` contributes significantly to the $V_{\\text{Var},v}$ component of the Lyapunov function. The `-c_{v\\_reg} ||v_i||^{2}` term gives this walker an extremely low raw reward, making it \"unfit\" regardless of its position. It thus becomes a prime target for cloning. When cloned, its high velocity is reset to that of a companion, which is overwhelmingly likely to be much smaller. This mechanism ensures that while cloning may increase $V_{\\text{Var},v}$ through velocity resets, walkers with dangerously high velocities are preferentially removed, providing an upper bound on the expansion.\n1258: \n1259: 2.  **Enabling Kinetic Stage Dissipation:** This mechanism acts as a robust safety net, preventing the kinetic energy of the swarm from growing to levels where the kinetic stage's Langevin friction term cannot overcome the expansion caused by cloning. It ensures that the velocity variance remains within a regime where the kinetic operator's dissipation can dominate, enabling the synergistic framework to achieve net contraction of the total Lyapunov function.\n1260: \n1261: **Implications and Trade-offs:**\n1262: ",
+    "references": [],
+    "document_id": "03_cloning",
+    "section": "## 4. Foundational Assumptions and System Properties",
+    "span": {
+      "start_line": 1240,
+      "end_line": 1262,
+      "content_start": 1243,
+      "content_end": 1261,
+      "header_lines": [
+        1241
+      ]
+    },
+    "metadata": {
+      "label": "axiom-velocity-regularization"
+    },
+    "registry_context": {
+      "stage": "directives",
+      "document_id": "03_cloning",
+      "chapter_index": 4,
+      "chapter_file": "chapter_4.json",
+      "section_id": "## 4. Foundational Assumptions and System Properties"
+    },
+    "generated_at": "2025-11-09T10:55:47.623180+00:00",
+    "alt_labels": []
+  },
+  {
+    "label": "axiom-active-diversity",
+    "title": "**(Axiom EG-5): Active Diversity Signal**",
+    "type": "axiom",
+    "axiom_class": "regularity",
+    "nl_summary": "The diversity channel of the fitness potential is active, requiring the dynamics weight \u03b2 to be strictly positive.",
+    "core_statement": {
+      "text": "The dynamics weight \u03b2 is strictly positive",
+      "latex": "\\beta > 0"
+    },
+    "hypotheses": [],
+    "implications": [],
+    "parameters": [
+      {
+        "symbol": "\u03b2",
+        "name": "dynamics weight",
+        "description": "Weight for the diversity channel in the fitness potential.",
+        "constraints": [
+          "\u03b2 > 0"
+        ],
+        "tags": [
+          "diversity",
+          "dynamics",
+          "weight",
+          "positive"
+        ]
+      }
+    ],
+    "failure_modes": [],
+    "tags": [
+      "active-diversity",
+      "beta-positive",
+      "fitness-potential",
+      "dynamics-weight",
+      "diversity-channel"
+    ],
+    "content_markdown": ":label: axiom-active-diversity\n\nThe diversity channel of the fitness potential is active. The dynamics weight $\\beta$ is strictly positive:\n\n$$\n\\beta > 0\n$$",
+    "raw_directive": "1284: :::\n1285: \n1286: :::{prf:axiom} **(Axiom EG-5): Active Diversity Signal**\n1287: :label: axiom-active-diversity\n1288: \n1289: The diversity channel of the fitness potential is active. The dynamics weight $\\beta$ is strictly positive:\n1290: \n1291: $$\n1292: \\beta > 0\n1293: $$\n1294: ",
+    "references": [],
+    "document_id": "03_cloning",
+    "section": "## 4. Foundational Assumptions and System Properties",
+    "span": {
+      "start_line": 1284,
+      "end_line": 1294,
+      "content_start": 1287,
+      "content_end": 1293,
+      "header_lines": [
+        1285
+      ]
+    },
+    "metadata": {
+      "label": "axiom-active-diversity"
+    },
+    "registry_context": {
+      "stage": "directives",
+      "document_id": "03_cloning",
+      "chapter_index": 4,
+      "chapter_file": "chapter_4.json",
+      "section_id": "## 4. Foundational Assumptions and System Properties"
+    },
+    "generated_at": "2025-11-09T10:55:47.623180+00:00",
+    "alt_labels": []
+  }
+]

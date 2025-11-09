@@ -22,6 +22,7 @@ from typing import Sequence
 
 import click
 import flogging
+
 from mathster.agents.run_extraction import AGENT_CONFIG, run_agents_in_sequence
 
 

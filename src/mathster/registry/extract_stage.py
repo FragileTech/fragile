@@ -29,6 +29,7 @@ from collections import defaultdict
 from datetime import datetime, timezone
 import json
 import logging
+import operator
 from pathlib import Path
 import sys
 from typing import Iterable
@@ -161,7 +162,7 @@ def merge_extract_items(
     for entity_type, entries in sorted(files_by_type.items()):
         aggregated: list[dict] = []
 
-        for document_id, json_file, items in sorted(entries, key=lambda entry: entry[0]):
+        for document_id, json_file, items in sorted(entries, key=operator.itemgetter(0)):
             aggregated.extend(items)
             logger.debug(
                 "Added %s %s entries from %s (%s)",

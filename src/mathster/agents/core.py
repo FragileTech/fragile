@@ -31,8 +31,6 @@ from tqdm import tqdm
 from mathster.agents.signatures import (
     ExtractSignature,
     ExtractWithParametersSignature,
-    ImplicitReference,
-    Parameter,
     to_jsonable,
 )
 
@@ -61,8 +59,8 @@ __all__ = [
     "run_directive_extraction_loop",
     "safe_json_dumps",
     "safe_json_loads",
-    "to_jsonable",
     "strip_line_numbers",
+    "to_jsonable",
 ]
 
 

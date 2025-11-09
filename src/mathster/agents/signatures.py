@@ -10,12 +10,13 @@ from typing import Any, Literal
 import dspy
 from pydantic import BaseModel, Field
 
+
 __all__ = [
+    "ExtractSignature",
+    "ExtractWithParametersSignature",
     "ImplicitReference",
     "MathematicalTool",
     "Parameter",
-    "ExtractSignature",
-    "ExtractWithParametersSignature",
     "ParseAlgorithmDirectiveSplit",
     "ParseAssumptionDirectiveSplit",
     "ParseAxiomDirectiveSplit",
@@ -75,12 +76,16 @@ class MathematicalTool(BaseModel):
     """Structured description of a mathematical tool referenced in a proof."""
 
     toolName: str = Field(..., description="Commonly accepted name of the tool.")
-    field: str = Field(..., description="Primary mathematical discipline (e.g., Optimal Transport).")
+    field: str = Field(
+        ..., description="Primary mathematical discipline (e.g., Optimal Transport)."
+    )
     description: str = Field(..., description="Brief general-purpose definition of the tool.")
     roleInProof: str = Field(..., description="Specific role/use within this proof.")
-    levelOfAbstraction: Literal["Concept", "Technique", "Theorem/Lemma", "Notation"] | None = Field(
-        default=None,
-        description="Classification of the tool's nature.",
+    levelOfAbstraction: Literal["Concept", "Technique", "Theorem/Lemma", "Notation"] | None = (
+        Field(
+            default=None,
+            description="Classification of the tool's nature.",
+        )
     )
     relatedTools: list[str] = Field(
         default_factory=list,
@@ -338,6 +343,6 @@ def to_jsonable(value: Any) -> Any:
         return value.model_dump()
     if isinstance(value, dict):
         return {k: to_jsonable(v) for k, v in value.items()}
-    if isinstance(value, (list, tuple, set)):
+    if isinstance(value, list | tuple | set):
         return [to_jsonable(v) for v in value]
     return value
