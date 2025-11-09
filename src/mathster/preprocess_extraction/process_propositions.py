@@ -6,222 +6,20 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from pydantic import BaseModel, Field
-
+from mathster.preprocess_extraction.data_models import UnifiedProposition
 from mathster.preprocess_extraction.utils import (
     directive_lookup,
     load_directive_payload,
     load_extracted_items,
+    normalize_directive_template,
     resolve_document_directory,
     resolve_extract_directory,
     select_existing_file,
+    wrap_directive_item,
 )
 
 
 logger = logging.getLogger(__name__)
-
-
-# ---------- Small nested records from the extracted side ----------
-
-
-class Equation(BaseModel):
-    label: str | None = None
-    latex: str
-
-
-class Hypothesis(BaseModel):
-    text: str | None = None
-    latex: str | None = None
-
-
-class Variable(BaseModel):
-    symbol: str | None = None
-    name: str | None = None
-    description: str | None = None
-    constraints: list[str] | None = None
-    tags: list[str] | None = None
-
-
-class Conclusion(BaseModel):
-    text: str | None = None
-    latex: str | None = None
-
-
-class ProofStep(BaseModel):
-    kind: str | None = None
-    text: str | None = None
-    latex: str | None = None
-
-
-class Proof(BaseModel):
-    availability: str | None = None
-    steps: list[ProofStep] = Field(default_factory=list)
-
-
-# ---------- Registry/locator information from the raw side ----------
-
-
-class RegistryContext(BaseModel):
-    stage: str | None = None
-    document_id: str | None = None
-    chapter_index: int | None = None
-    chapter_file: str | None = None
-    section_id: str | None = None
-
-
-class RawLocator(BaseModel):
-    # Where this proposition lives in the source registry
-    section: str | None = None
-    start_line: int | None = None
-    end_line: int | None = None
-    header_lines: list[int] | None = None
-    content_start: int | None = None
-    content_end: int | None = None
-
-    # Verbatim blocks from the registry dump (optionally cleaned)
-    content: str | None = None
-    raw_directive: str | None = None
-
-    # Raw references list (if any present in the registry item)
-    references: list[Any] | None = None
-
-    # Book-keeping about where it was found
-    registry_context: RegistryContext | None = None
-
-
-# ---------- The unified Proposition model ----------
-
-
-class PropositionModel(BaseModel):
-    # Common identifiers / headings
-    type: str = Field(default="proposition", description="Canonical object type")
-    label: str = Field(..., description="Stable identifier, e.g. 'prop-…'")
-    title: str | None = None
-
-    # Extracted (semantic) content
-    nl_statement: str | None = None
-    equations: list[Equation] = Field(default_factory=list)
-    hypotheses: list[Hypothesis] = Field(default_factory=list)
-    conclusion: Conclusion | None = None
-    variables: list[Variable] = Field(default_factory=list)
-    implicit_assumptions: list[dict] | None = None  # keep as dicts to preserve 'confidence' etc.
-    local_refs: list[str] | None = None
-    proof: Proof | None = None
-    tags: list[str] = Field(default_factory=list)
-
-    # Raw (registry) sidecar info
-    raw: RawLocator = Field(default_factory=RawLocator)
-
-    # ---------- Builders & helpers ----------
-
-    @staticmethod
-    def _strip_numbered_prefixes(text: str | None) -> str | None:
-        """
-        Remove leading 'NNN: ' prefixes that appear at the start of each line
-        in the registry 'content' and 'raw_directive' blobs.
-        """
-        if not text:
-            return text
-        lines = []
-        for ln in text.splitlines():
-            # Remove a leading integer and a colon (e.g., '123: ') if present
-            if ln and ln[0].isdigit():
-                i = 0
-                while i < len(ln) and ln[i].isdigit():
-                    i += 1
-                # expect a colon after digits
-                if i < len(ln) and ln[i] == ":":
-                    # also remove following single space, if present
-                    j = i + 1
-                    if j < len(ln) and ln[j] == " ":
-                        j += 1
-                    ln = ln[j:]
-            lines.append(ln)
-        return "\n".join(lines)
-
-    @classmethod
-    def from_instances(
-        cls, raw_item: dict, extracted_item: dict, *, clean_numbered_content: bool = True
-    ) -> PropositionModel:
-        """
-        Create a unified PropositionModel by merging:
-          - raw_item: a single item dict from proposition.json["items"]
-          - extracted_item: a single dict from proposition_extracted.json
-        If labels disagree, a ValueError is raised.
-        """
-        # --- Validate identity / label
-        raw_label = raw_item.get("label") or (raw_item.get("metadata") or {}).get("label")
-        ext_label = extracted_item.get("label")
-        if not raw_label or not ext_label or raw_label != ext_label:
-            raise ValueError(
-                f"Label mismatch or missing: raw='{raw_label}' vs extracted='{ext_label}'"
-            )
-
-        # --- Title preference: prefer extracted if present, else raw
-        title = extracted_item.get("title") or raw_item.get("title")
-
-        # --- Build extracted content blocks
-        equations = [Equation(**e) for e in extracted_item.get("equations", []) or []]
-        hypotheses = [Hypothesis(**h) for h in extracted_item.get("hypotheses", []) or []]
-        variables = [Variable(**v) for v in extracted_item.get("variables", []) or []]
-        conclusion_block = extracted_item.get("conclusion") or None
-        conclusion = Conclusion(**conclusion_block) if isinstance(conclusion_block, dict) else None
-
-        proof_block = extracted_item.get("proof")
-        proof = Proof(**proof_block) if isinstance(proof_block, dict) else None
-
-        # --- Raw locator + content
-        reg_ctx_raw = raw_item.get("_registry_context") or {}
-        registry_context = RegistryContext(
-            stage=reg_ctx_raw.get("stage"),
-            document_id=reg_ctx_raw.get("document_id"),
-            chapter_index=reg_ctx_raw.get("chapter_index"),
-            chapter_file=reg_ctx_raw.get("chapter_file"),
-            section_id=reg_ctx_raw.get("section_id"),
-        )
-
-        content = raw_item.get("content")
-        raw_directive = raw_item.get("raw_directive")
-        if clean_numbered_content:
-            content = cls._strip_numbered_prefixes(content)
-            raw_directive = cls._strip_numbered_prefixes(raw_directive)
-
-        raw_locator = RawLocator(
-            section=raw_item.get("section"),
-            start_line=raw_item.get("start_line"),
-            end_line=raw_item.get("end_line"),
-            header_lines=raw_item.get("header_lines"),
-            content_start=raw_item.get("content_start"),
-            content_end=raw_item.get("content_end"),
-            content=content,
-            raw_directive=raw_directive,
-            references=raw_item.get("references"),
-            registry_context=registry_context,
-        )
-
-        # --- Merge tags (raw registry usually has none; we union to be safe)
-        tags = list(
-            dict.fromkeys((extracted_item.get("tags") or []) + (raw_item.get("tags") or []))
-        )
-
-        return cls(
-            type=extracted_item.get("type") or raw_item.get("directive_type") or "proposition",
-            label=raw_label,
-            title=title,
-            nl_statement=extracted_item.get("nl_statement"),
-            equations=equations,
-            hypotheses=hypotheses,
-            conclusion=conclusion,
-            variables=variables,
-            implicit_assumptions=extracted_item.get("implicit_assumptions"),
-            local_refs=extracted_item.get("local_refs"),
-            proof=proof,
-            tags=tags,
-            raw=raw_locator,
-        )
-
-
-# ---------- Build + CLI helpers ----------
 
 
 def _build_unified_propositions(
@@ -231,7 +29,7 @@ def _build_unified_propositions(
     if not extracted_items:
         return []
 
-    [item for item in directive_payload.get("items", []) or [] if isinstance(item, dict)]
+    template = normalize_directive_template(directive_payload)
     raw_lookup = directive_lookup(directive_payload)
     matched_labels: set[str] = set()
     missing: list[str] = []
@@ -251,7 +49,9 @@ def _build_unified_propositions(
             continue
 
         try:
-            unified_obj = PropositionModel.from_instances(raw_item, extracted)
+            # Standardize to match theorem/lemma/corollary pattern
+            directive_argument = wrap_directive_item(template, raw_item)
+            unified_obj = UnifiedProposition.from_instances(directive_argument, extracted)
         except Exception as exc:  # pragma: no cover - defensive logging
             logger.warning("Failed to merge proposition %s: %s", label, exc)
             continue

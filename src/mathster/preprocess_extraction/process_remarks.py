@@ -6,8 +6,14 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from pydantic import BaseModel, Field
-
+from mathster.preprocess_extraction.data_models import (
+    KeyPoint,
+    QuantitativeNote,
+    RawMetadata,
+    Recommendation,
+    RegistryContext,
+    UnifiedRemark,
+)
 from mathster.preprocess_extraction.utils import (
     directive_lookup,
     load_directive_payload,
@@ -16,188 +22,6 @@ from mathster.preprocess_extraction.utils import (
     resolve_extract_directory,
     select_existing_file,
 )
-
-
-try:
-    # Pydantic v2
-    from pydantic import ConfigDict
-
-    _PYDANTIC_V2 = True
-except Exception:
-    _PYDANTIC_V2 = False
-
-
-# ---------- Nested types (from the extracted representation) ----------
-
-
-class KeyPoint(BaseModel):
-    text: str
-    latex: str | None = None
-    importance: str | None = None  # e.g. "low" | "medium" | "high"
-
-
-class QuantitativeNote(BaseModel):
-    text: str
-    latex: str | None = None
-
-
-class Recommendation(BaseModel):
-    text: str
-    severity: str | None = None  # e.g. "low" | "medium" | "high"
-
-
-# ---------- Nested types (from the raw directive) ----------
-
-
-class RawMetadata(BaseModel):
-    # remark.json metadata includes {"label": "...", "class": "tip" | "note" | ...}
-    label: str | None = None
-    class_: str | None = Field(default=None, alias="class")
-
-
-class RegistryContext(BaseModel):
-    stage: str | None = None
-    document_id: str | None = None
-    chapter_index: int | None = None
-    chapter_file: str | None = None
-    section_id: str | None = None
-
-
-# ---------- Unified Remark ----------
-
-
-class UnifiedRemark(BaseModel):
-    # identifiers / headline
-    label: str
-    title: str | None = None
-    remark_type: str | None = (
-        None  # prefers extracted.remark_type, else raw.metadata.class, else raw.directive_type
-    )
-
-    # extracted-side semantics
-    nl_summary: str | None = None
-    key_points: list[KeyPoint] = Field(default_factory=list)
-    quantitative_notes: list[QuantitativeNote] = Field(default_factory=list)
-    recommendations: list[Recommendation] = Field(default_factory=list)
-    dependencies: list[str] = Field(default_factory=list)
-    tags: list[str] = Field(default_factory=list)
-    references: list[Any] = Field(default_factory=list)  # union of raw+extracted references
-
-    # raw-side payload / provenance
-    content: str | None = None
-    section: str | None = None
-    start_line: int | None = None
-    end_line: int | None = None
-    header_lines: list[int] = Field(default_factory=list)
-    content_start: int | None = None
-    content_end: int | None = None
-    raw_directive: str | None = None
-    directive_type: str | None = None
-
-    metadata: RawMetadata | None = None
-    # Keep the original key when (de)serializing so this round-trips to remark.json easily
-    registry_context: RegistryContext | None = Field(default=None, alias="_registry_context")
-
-    # Pydantic config
-    if _PYDANTIC_V2:
-        model_config = ConfigDict(populate_by_name=True, extra="ignore")
-    else:
-
-        class Config:
-            allow_population_by_field_name = True
-            extra = "ignore"
-
-    # ---------- merger helpers ----------
-
-    @staticmethod
-    def _dedupe(seq: list[Any]) -> list[Any]:
-        """Deduplicate while preserving order (for tags/references)."""
-        seen = set()
-        out = []
-        for x in seq:
-            k = x if isinstance(x, str | int | float | tuple) else repr(x)
-            if k in seen:
-                continue
-            seen.add(k)
-            out.append(x)
-        return out
-
-    @classmethod
-    def from_instances(
-        cls, raw: dict[str, Any] | None = None, extracted: dict[str, Any] | None = None
-    ) -> UnifiedRemark:
-        """
-        Merge a raw remark (from remark.json) and an extracted remark
-        (from remark_extracted.json) into a single UnifiedRemark.
-        Precedence: extracted fields override raw where overlapping.
-        """
-        raw = raw or {}
-        extracted = extracted or {}
-
-        # id/title/type
-        label = extracted.get("label") or raw.get("label") or ""
-        title = extracted.get("title") or raw.get("title")
-        remark_type = (
-            extracted.get("remark_type")
-            or (raw.get("metadata") or {}).get("class")
-            or raw.get("directive_type")
-        )
-
-        # references (normalize to strings where possible) + tags (union)
-        refs_raw = raw.get("references") or []
-        refs_ext = extracted.get("references") or []
-
-        def _norm_ref(r):
-            if isinstance(r, str):
-                return r
-            if isinstance(r, dict) and "label" in r:
-                return r["label"]
-            return r
-
-        references = cls._dedupe([_norm_ref(r) for r in list(refs_ext) + list(refs_raw)])
-        tags = cls._dedupe(
-            list(extracted.get("tags") or [])
-            + [t for t in [(raw.get("metadata") or {}).get("class"), remark_type, "remark"] if t]
-        )
-
-        return cls(
-            # headline
-            label=label,
-            title=title,
-            remark_type=remark_type,
-            # extracted
-            nl_summary=extracted.get("nl_summary"),
-            key_points=[
-                KeyPoint(**kp) for kp in extracted.get("key_points", []) if isinstance(kp, dict)
-            ],
-            quantitative_notes=[
-                QuantitativeNote(**qn)
-                for qn in extracted.get("quantitative_notes", [])
-                if isinstance(qn, dict)
-            ],
-            recommendations=[
-                Recommendation(**rec)
-                for rec in extracted.get("recommendations", [])
-                if isinstance(rec, dict)
-            ],
-            dependencies=list(extracted.get("dependencies") or []),
-            tags=tags,
-            references=references,
-            # raw payload / provenance
-            content=raw.get("content"),
-            section=raw.get("section"),
-            start_line=raw.get("start_line"),
-            end_line=raw.get("end_line"),
-            header_lines=list(raw.get("header_lines") or []),
-            content_start=raw.get("content_start"),
-            content_end=raw.get("content_end"),
-            raw_directive=raw.get("raw_directive"),
-            directive_type=raw.get("directive_type"),
-            metadata=RawMetadata(**(raw.get("metadata") or {})) if raw.get("metadata") else None,
-            registry_context=RegistryContext(**(raw.get("_registry_context") or {}))
-            if raw.get("_registry_context")
-            else None,
-        )
 
 
 logger = logging.getLogger(__name__)

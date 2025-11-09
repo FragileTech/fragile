@@ -49,8 +49,11 @@ Requirements:
 import asyncio
 from contextlib import asynccontextmanager
 import logging
+import os
 from pathlib import Path
-from typing import Any
+import shutil
+import subprocess
+from typing import Any, Awaitable, TypeVar
 
 from dotenv import load_dotenv
 from mcp import ClientSession
@@ -58,6 +61,10 @@ from mcp.client.stdio import stdio_client, StdioServerParameters
 
 
 logger = logging.getLogger(__name__)
+T = TypeVar("T")
+
+# Load environment variables early so GEMINI/OPENAI keys from .env are available.
+load_dotenv()
 
 
 class MCPConnectionError(Exception):
@@ -84,6 +91,7 @@ class BaseMCPClient:
         server_args: list[str] | None = None,
         env: dict[str, str] | None = None,
         auto_discover: bool = True,
+        connect_timeout: float = 20.0,
     ):
         """
         Initialize MCP client.
@@ -92,15 +100,17 @@ class BaseMCPClient:
             server_command: Command to execute MCP server (e.g., "gemini-cli")
                 If None and auto_discover=True, attempts to find server
             server_args: Arguments to pass to server (e.g., ["mcp-server"])
-            env: Environment variables for server process
+            env: Environment variable overrides for server process
             auto_discover: If True, attempts to find server in common locations
+            connect_timeout: Seconds to wait for MCP server initialization
 
         Raises:
             MCPConnectionError: If server not found and auto_discover fails
         """
         self.server_command = server_command
-        self.server_args = server_args or []
-        self.env = env
+        self.server_args = list(server_args or [])
+        self.env = env.copy() if env else None
+        self.connect_timeout = connect_timeout
         self._session: ClientSession | None = None
 
         if self.server_command is None and auto_discover:
@@ -124,6 +134,17 @@ class BaseMCPClient:
         """
         return None
 
+    def _compose_env(self) -> dict[str, str] | None:
+        """
+        Merge overrides with the current environment for subprocess execution.
+        """
+        if self.env is None:
+            return None
+
+        merged = dict(os.environ)
+        merged.update(self.env)
+        return merged
+
     @asynccontextmanager
     async def _connect(self):
         """
@@ -136,15 +157,26 @@ class BaseMCPClient:
             MCPConnectionError: If connection fails
         """
         server_params = StdioServerParameters(
-            command=self.server_command, args=self.server_args, env=self.env
+            command=self.server_command, args=self.server_args, env=self._compose_env()
         )
 
         try:
             async with stdio_client(server_params) as (read, write):
                 async with ClientSession(read, write) as session:
-                    # Initialize session
-                    await session.initialize()
-                    logger.info(f"Connected to MCP server: {self.server_command}")
+                    try:
+                        await asyncio.wait_for(session.initialize(), timeout=self.connect_timeout)
+                    except asyncio.TimeoutError as exc:
+                        raise MCPConnectionError(
+                            f"MCP server '{self.server_command}' did not respond within "
+                            f"{self.connect_timeout} seconds. Ensure the CLI is started "
+                            "in MCP stdio mode (e.g., `gemini mcp`)."
+                        ) from exc
+
+                    logger.info(
+                        "Connected to MCP server '%s' with args %s",
+                        self.server_command,
+                        self.server_args,
+                    )
                     yield session
         except Exception as e:
             raise MCPConnectionError(
@@ -231,8 +263,14 @@ class GeminiMCPClient(BaseMCPClient):
         ```
     """
 
+    DEFAULT_SERVER_ARGS = ["mcp"]
+
     def __init__(
-        self, server_command: str | None = "gemini", api_key: str | None = None, **kwargs
+        self,
+        server_command: str | None = None,
+        api_key: str | None = None,
+        server_args: list[str] | None = None,
+        **kwargs,
     ):
         """
         Initialize Gemini MCP client.
@@ -241,17 +279,21 @@ class GeminiMCPClient(BaseMCPClient):
             server_command: Path to gemini-cli executable
                 (default: auto-discover)
             api_key: Gemini API key (default: from GEMINI_API_KEY env var)
+            server_args: CLI arguments (default: ["mcp"])
             **kwargs: Additional arguments passed to BaseMCPClient
         """
-        # Set up environment with API key if provided
-        env = kwargs.get("env", {})
+        env_overrides = dict(kwargs.pop("env", {}) or {})
         if api_key:
-            env["GEMINI_API_KEY"] = api_key
-        kwargs["env"] = env or None
+            env_overrides["GEMINI_API_KEY"] = api_key
+        if env_overrides:
+            kwargs["env"] = env_overrides
 
-        # Default server args for gemini-cli
-        if "server_args" not in kwargs:
-            kwargs["server_args"] = []  # gemini-cli doesn't need special args
+        resolved_args = (
+            list(server_args)
+            if server_args is not None
+            else list(kwargs.pop("server_args", self.DEFAULT_SERVER_ARGS))
+        )
+        kwargs["server_args"] = resolved_args
 
         super().__init__(server_command=server_command, **kwargs)
 
@@ -260,46 +302,48 @@ class GeminiMCPClient(BaseMCPClient):
         Discover gemini-cli in common locations.
 
         Searches:
-        - ~/.local/bin/gemini-cli
-        - /usr/local/bin/gemini-cli
+        - ~/.local/bin/gemini or gemini-cli
+        - /usr/local/bin versions
         - npm global bin path
         - PATH environment variable
 
         Returns:
             str: Path to gemini-cli, or None if not found
         """
-        import shutil
-
         # Check common locations
         locations = [
+            Path.home() / ".local" / "bin" / "gemini",
             Path.home() / ".local" / "bin" / "gemini-cli",
+            Path("/usr/local/bin/gemini"),
             Path("/usr/local/bin/gemini-cli"),
+            Path("/usr/bin/gemini"),
             Path("/usr/bin/gemini-cli"),
         ]
 
         for path in locations:
             if path.exists() and path.is_file():
-                logger.info(f"Found gemini-cli at: {path}")
+                logger.info("Found gemini executable at: %s", path)
                 return str(path)
 
-        # Check PATH
-        found = shutil.which("gemini-cli")
-        if found:
-            logger.info(f"Found gemini-cli in PATH: {found}")
-            return found
+        # Check PATH for either binary name
+        for name in ("gemini-cli", "gemini"):
+            found = shutil.which(name)
+            if found:
+                logger.info("Found %s in PATH: %s", name, found)
+                return found
 
         # Try npm global bin
         try:
-            import subprocess
-
             result = subprocess.run(
                 ["npm", "bin", "-g"], capture_output=True, text=True, timeout=5, check=False
             )
             if result.returncode == 0:
-                npm_bin = Path(result.stdout.strip()) / "gemini-cli"
-                if npm_bin.exists():
-                    logger.info(f"Found gemini-cli in npm global bin: {npm_bin}")
-                    return str(npm_bin)
+                npm_bin = Path(result.stdout.strip())
+                for name in ("gemini-cli", "gemini"):
+                    candidate = npm_bin / name
+                    if candidate.exists():
+                        logger.info("Found %s in npm global bin: %s", name, candidate)
+                        return str(candidate)
         except Exception as e:
             logger.debug(f"Could not check npm global bin: {e}")
 
@@ -321,7 +365,7 @@ class GeminiMCPClient(BaseMCPClient):
             MCPConnectionError: If connection or call fails
         """
         return await self.call_tool(
-            tool_name="ask-gemini",  # Tool name from gemini-cli MCP server
+            tool_name="geminiChat",  # Tool name from @choplin/mcp-gemini-cli
             arguments={"model": model, "prompt": prompt},
         )
 
@@ -348,20 +392,37 @@ class CodexMCPClient(BaseMCPClient):
         ```
     """
 
-    def __init__(self, server_command: str | None = None, api_key: str | None = None, **kwargs):
+    DEFAULT_SERVER_ARGS = ["mcp"]
+
+    def __init__(
+        self,
+        server_command: str | None = None,
+        api_key: str | None = None,
+        server_args: list[str] | None = None,
+        **kwargs,
+    ):
         """
         Initialize Codex MCP client.
 
         Args:
             server_command: Path to codex MCP server executable
             api_key: OpenAI API key (default: from OPENAI_API_KEY env var)
+            server_args: Arguments to start the MCP server (default: ["mcp"])
             **kwargs: Additional arguments passed to BaseMCPClient
         """
         # Set up environment with API key if provided
-        env = kwargs.get("env", {})
+        env = dict(kwargs.pop("env", {}) or {})
         if api_key:
             env["OPENAI_API_KEY"] = api_key
-        kwargs["env"] = env or None
+        if env:
+            kwargs["env"] = env
+
+        resolved_args = (
+            list(server_args)
+            if server_args is not None
+            else list(kwargs.pop("server_args", self.DEFAULT_SERVER_ARGS))
+        )
+        kwargs["server_args"] = resolved_args
 
         super().__init__(server_command=server_command, **kwargs)
 
@@ -372,12 +433,20 @@ class CodexMCPClient(BaseMCPClient):
         Returns:
             str: Path to codex server, or None if not found
         """
-        import shutil
-
         # Common names for codex MCP servers
         server_names = ["codex", "codex-mcp", "openai-mcp"]
 
         for name in server_names:
+            common_paths = [
+                Path.home() / ".local" / "bin" / name,
+                Path("/usr/local/bin") / name,
+                Path("/usr/bin") / name,
+            ]
+            for path in common_paths:
+                if path.exists() and path.is_file():
+                    logger.info("Found codex server at: %s", path)
+                    return str(path)
+
             found = shutil.which(name)
             if found:
                 logger.info(f"Found codex server: {found}")
@@ -400,10 +469,113 @@ class CodexMCPClient(BaseMCPClient):
         Raises:
             MCPConnectionError: If connection or call fails
         """
-        # Note: Tool name may vary depending on MCP server implementation
-        # This is a placeholder - actual tool name should match server
         return await self.call_tool(
-            tool_name="ask",  # Or "codex", "complete", etc.
+            tool_name="codex",  # Tool name from codex mcp-server
+            arguments={"model": model, "prompt": prompt},
+        )
+
+
+class ClaudeCodeMCPClient(BaseMCPClient):
+    """
+    MCP client for Anthropic Claude Code via claude CLI server.
+
+    This client connects to the Claude Code MCP bridge exposed by the
+    `claude` CLI (part of @anthropic-ai/claude-agent-sdk).
+    """
+
+    DEFAULT_SERVER_ARGS = ["mcp"]
+
+    def __init__(
+        self,
+        server_command: str | None = None,
+        api_key: str | None = None,
+        server_args: list[str] | None = None,
+        tool_name: str = "ask-claude",
+        **kwargs,
+    ):
+        """
+        Initialize Claude Code MCP client.
+
+        Args:
+            server_command: Path to claude CLI executable (auto-discovers if None)
+            api_key: Anthropic API key (defaults to ANTHROPIC_API_KEY env var)
+            server_args: CLI arguments (default: ["mcp"])
+            tool_name: Name of the MCP tool to invoke (default: "ask-claude")
+            **kwargs: Passed to BaseMCPClient
+        """
+        env = dict(kwargs.pop("env", {}) or {})
+        if api_key:
+            env["ANTHROPIC_API_KEY"] = api_key
+        if env:
+            kwargs["env"] = env
+
+        resolved_args = (
+            list(server_args)
+            if server_args is not None
+            else list(kwargs.pop("server_args", self.DEFAULT_SERVER_ARGS))
+        )
+        kwargs["server_args"] = resolved_args
+
+        self.tool_name = tool_name
+
+        super().__init__(server_command=server_command, **kwargs)
+
+    def _discover_server(self) -> str | None:
+        """
+        Discover the claude CLI binary.
+
+        Searches ~/.local/bin, /usr/local/bin, PATH, and npm global bin.
+        """
+        candidate_names = ["claude", "claude-code", "claudecode"]
+        locations: list[Path] = []
+        for name in candidate_names:
+            locations.extend(
+                [
+                    Path.home() / ".local" / "bin" / name,
+                    Path("/usr/local/bin") / name,
+                    Path("/usr/bin") / name,
+                ]
+            )
+
+        for path in locations:
+            if path.exists() and path.is_file():
+                logger.info("Found Claude CLI at: %s", path)
+                return str(path)
+
+        for name in candidate_names:
+            found = shutil.which(name)
+            if found:
+                logger.info("Found Claude CLI in PATH: %s", found)
+                return found
+
+        # npm global bin fallback
+        try:
+            result = subprocess.run(
+                ["npm", "bin", "-g"], capture_output=True, text=True, timeout=5, check=False
+            )
+            if result.returncode == 0:
+                npm_bin = Path(result.stdout.strip())
+                for name in candidate_names:
+                    candidate = npm_bin / name
+                    if candidate.exists():
+                        logger.info("Found Claude CLI in npm global bin: %s", candidate)
+                        return str(candidate)
+        except Exception as exc:  # pragma: no cover - best effort
+            logger.debug("Could not inspect npm global bin for Claude CLI: %s", exc)
+
+        logger.warning("Claude CLI not found. Install the claude-agent-sdk CLI to enable Claude MCP.")
+        return None
+
+    async def ask(self, prompt: str, model: str = "claude-3-5-sonnet") -> str:
+        """
+        Ask Claude Code a question via MCP.
+
+        Args:
+            prompt: Task or question for Claude
+            model: Anthropic model identifier (default: claude-3-5-sonnet)
+        """
+        return await self.call_tool(
+            tool_name=self.tool_name,
             arguments={"model": model, "prompt": prompt},
         )
 
@@ -440,7 +612,7 @@ def sync_ask_gemini(
         client = GeminiMCPClient(server_command=server_command, api_key=api_key)
         return await client.ask(prompt=prompt, model=model)
 
-    return asyncio.run(_ask())
+    return _run_sync(_ask())
 
 
 def sync_ask_codex(
@@ -472,7 +644,57 @@ def sync_ask_codex(
         client = CodexMCPClient(server_command=server_command, api_key=api_key)
         return await client.ask(prompt=prompt, model=model)
 
-    return asyncio.run(_ask())
+    return _run_sync(_ask())
+
+
+def sync_ask_claude(
+    prompt: str,
+    model: str = "claude-3-5-sonnet",
+    server_command: str | None = None,
+    api_key: str | None = None,
+    tool_name: str = "ask-claude",
+) -> str:
+    """
+    Synchronous wrapper for Claude Code MCP client.
+
+    Args:
+        prompt: Question for Claude Code
+        model: Anthropic model to use
+        server_command: Optional explicit path to claude CLI
+        api_key: Optional Anthropic API key
+        tool_name: MCP tool name to invoke (default: ask-claude)
+    """
+
+    async def _ask():
+        client = ClaudeCodeMCPClient(
+            server_command=server_command,
+            api_key=api_key,
+            tool_name=tool_name,
+        )
+        return await client.ask(prompt=prompt, model=model)
+
+    return _run_sync(_ask())
+
+
+def _run_sync(awaitable: Awaitable[T]) -> T:
+    """
+    Execute an awaitable from synchronous code, guarding against active loops.
+
+    Raises:
+        RuntimeError: If called while an asyncio event loop is already running.
+    """
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        return asyncio.run(awaitable)
+
+    if loop.is_running():
+        raise RuntimeError(
+            "sync_ask_* helpers cannot be executed inside a running asyncio loop. "
+            "Await the async client methods instead."
+        )
+
+    return loop.run_until_complete(awaitable)
 
 
 # Example usage

@@ -309,7 +309,7 @@ class ParseTheoremDirectiveSplit(ExtractSignature):
         desc="Tiny local context to infer implicit assumptions.", optional=True
     )
 
-    type_str = dspy.OutputField(desc="One of: 'theorem','lemma','proposition',…")
+    type_str = dspy.OutputField(desc="One of: 'theorem','lemma','proposition','corollary")
     label_str = dspy.OutputField(desc="Directive label if present, else empty.")
     title_str = dspy.OutputField(desc="Human-facing title if present, else empty.")
     nl_statement_str = dspy.OutputField(desc="Concise natural-language statement only.")
