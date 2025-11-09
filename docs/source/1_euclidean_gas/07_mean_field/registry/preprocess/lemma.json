@@ -1,0 +1,242 @@
+[
+  {
+    "label": "lem-mass-conservation-transport",
+    "title": "Mass Conservation of Transport",
+    "type": "lemma",
+    "nl_statement": "Under reflecting boundary conditions on position and velocity boundaries, the integral of the adjoint transport operator applied to a function over the domain \u03a9 vanishes, conserving total mass.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\int_\\Omega L^\\dagger f(t,z)\\,\\mathrm{d}z = 0"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Reflecting boundary conditions are established on both position and velocity boundaries, as defined in Section 2.2.",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The integral of the adjoint transport operator over the domain vanishes.",
+      "latex": "\\int_\\Omega L^\\dagger f(t,z)\\,\\mathrm{d}z = 0"
+    },
+    "variables": [
+      {
+        "symbol": "L^\\dagger",
+        "name": "adjoint transport operator",
+        "description": "The adjoint of the transport operator acting on functions in phase space.",
+        "constraints": [],
+        "tags": [
+          "operator",
+          "adjoint"
+        ]
+      },
+      {
+        "symbol": "f",
+        "name": "density function",
+        "description": "A function representing density or distribution in phase space, depending on time and position-velocity.",
+        "constraints": [],
+        "tags": [
+          "function",
+          "density"
+        ]
+      },
+      {
+        "symbol": "\\Omega",
+        "name": "domain",
+        "description": "The phase space domain over which integration occurs.",
+        "constraints": [],
+        "tags": [
+          "domain",
+          "phase space"
+        ]
+      },
+      {
+        "symbol": "z",
+        "name": "phase variable",
+        "description": "The variable representing position and velocity in phase space.",
+        "constraints": [],
+        "tags": [
+          "variable",
+          "phase space"
+        ]
+      },
+      {
+        "symbol": "t",
+        "name": "time",
+        "description": "The time parameter for the function f.",
+        "constraints": [],
+        "tags": [
+          "time"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The transport operator is defined in a context with total mass conservation as a key property.",
+        "confidence": 1.0
+      },
+      {
+        "text": "The domain \u03a9 is bounded with reflecting boundaries that prevent mass flux.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "label": "proof-lem-mass-conservation-transport",
+      "title": null,
+      "type": "proof",
+      "proves": "lem-mass-conservation-transport",
+      "proof_type": "direct",
+      "proof_status": "complete",
+      "content_markdown": ":::{prf:proof}\n:label: proof-lem-mass-conservation-transport\n**Proof.**\nIntegrating $L^\\dagger f = -\\nabla \\cdot J[f]$ over $\\Omega$ and applying the divergence theorem yields:\n\n$$\n\\int_\\Omega L^\\dagger f\\, \\mathrm{d}z = - \\int_{\\partial\\Omega} J[f] \\cdot n\\, \\mathrm{d}S\n$$\n\nThe boundary of the phase space is $\\partial\\Omega = (\\partial X_{\\text{valid}} \\times V_{\\text{alg}}) \\cup (X_{\\text{valid}} \\times \\partial V_{\\text{alg}})$. The reflecting boundary conditions ensure that the normal component of the flux vanishes on both boundaries:\n\n*   On $\\partial V_{\\text{alg}}$: $J_v \\cdot n_v = 0$ (velocity reflection)\n*   On $\\partial X_{\\text{valid}}$: $J_x \\cdot n_x = 0$ (position reflection)",
+      "raw_directive": "580: \n581: :::\n582: :::{prf:proof}\n583: :label: proof-lem-mass-conservation-transport\n584: **Proof.**\n585: Integrating $L^\\dagger f = -\\nabla \\cdot J[f]$ over $\\Omega$ and applying the divergence theorem yields:\n586: \n587: $$\n588: \\int_\\Omega L^\\dagger f\\, \\mathrm{d}z = - \\int_{\\partial\\Omega} J[f] \\cdot n\\, \\mathrm{d}S\n589: $$\n590: \n591: The boundary of the phase space is $\\partial\\Omega = (\\partial X_{\\text{valid}} \\times V_{\\text{alg}}) \\cup (X_{\\text{valid}} \\times \\partial V_{\\text{alg}})$. The reflecting boundary conditions ensure that the normal component of the flux vanishes on both boundaries:\n592: \n593: *   On $\\partial V_{\\text{alg}}$: $J_v \\cdot n_v = 0$ (velocity reflection)\n594: *   On $\\partial X_{\\text{valid}}$: $J_x \\cdot n_x = 0$ (position reflection)\n595: \n596: Therefore, the boundary integral vanishes, proving the result.",
+      "strategy_summary": "Integrate the equation defining the adjoint operator over the phase space domain \u03a9 and apply the divergence theorem to convert the volume integral into a boundary flux integral. Show that the reflecting boundary conditions make the boundary integral vanish, yielding zero total flux and thus conservation.",
+      "conclusion": {
+        "text": "The boundary integral vanishes due to reflecting conditions, so \u222b_\u03a9 L\u2020 f dz = 0.",
+        "latex": "\\int_\\Omega L^\\dagger f \\, \\mathrm{d}z = 0"
+      },
+      "assumptions": [
+        {
+          "text": "Reflecting boundary conditions: J_v \u00b7 n_v = 0 on \u2202V_alg (velocity reflection) and J_x \u00b7 n_x = 0 on \u2202X_valid (position reflection).",
+          "latex": null
+        },
+        {
+          "text": "The adjoint operator satisfies L\u2020 f = -\u2207 \u00b7 J[f].",
+          "latex": "L^\\dagger f = -\\nabla \\cdot J[f]"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1.0,
+          "kind": "integration",
+          "text": "Integrate the equation L\u2020 f = -\u2207 \u00b7 J[f] over the domain \u03a9.",
+          "latex": "\\int_\\Omega L^\\dagger f \\, \\mathrm{d}z = \\int_\\Omega (-\\nabla \\cdot J[f]) \\, \\mathrm{d}z",
+          "references": [],
+          "derived_statement": null
+        },
+        {
+          "order": 2.0,
+          "kind": "theorem-application",
+          "text": "Apply the divergence theorem to the right-hand side.",
+          "latex": "\\int_\\Omega (-\\nabla \\cdot J[f]) \\, \\mathrm{d}z = - \\int_{\\partial \\Omega} J[f] \\cdot n \\, \\mathrm{d}S",
+          "references": [],
+          "derived_statement": "\\int_\\Omega L^\\dagger f \\, \\mathrm{d}z = - \\int_{\\partial \\Omega} J[f] \\cdot n \\, \\mathrm{d}S"
+        },
+        {
+          "order": 3.0,
+          "kind": "boundary-description",
+          "text": "The boundary \u2202\u03a9 consists of (\u2202X_valid \u00d7 V_alg) \u222a (X_valid \u00d7 \u2202V_alg).",
+          "latex": null,
+          "references": [],
+          "derived_statement": null
+        },
+        {
+          "order": 4.0,
+          "kind": "boundary-evaluation",
+          "text": "Under reflecting boundary conditions, the normal flux vanishes on both parts of the boundary.",
+          "latex": null,
+          "references": [],
+          "derived_statement": "\\int_{\\partial \\Omega} J[f] \\cdot n \\, \\mathrm{d}S = 0"
+        }
+      ],
+      "key_equations": [
+        {
+          "label": "eq-divergence-application",
+          "latex": "\\int_\\Omega L^\\dagger f\\, \\mathrm{d}z = - \\int_{\\partial\\Omega} J[f] \\cdot n\\, \\mathrm{d}S",
+          "role": "Key relation from integration and divergence theorem"
+        }
+      ],
+      "references": [],
+      "math_tools": [
+        {
+          "toolName": "Divergence Theorem",
+          "field": "Vector Calculus",
+          "description": "The theorem relates the flux of a vector field through a closed surface to the divergence of the field within the volume it encloses.",
+          "roleInProof": "Converts the volume integral of the divergence of the flux J[f] into a surface integral over the boundary \u2202\u03a9.",
+          "levelOfAbstraction": "Theorem/Lemma",
+          "relatedTools": []
+        }
+      ],
+      "cases": [
+        {
+          "name": "Velocity boundary",
+          "condition": "On \u2202V_alg: J_v \u00b7 n_v = 0 (velocity reflection)",
+          "summary": "Ensures no flux through the velocity boundary."
+        },
+        {
+          "name": "Position boundary",
+          "condition": "On \u2202X_valid: J_x \u00b7 n_x = 0 (position reflection)",
+          "summary": "Ensures no flux through the position boundary."
+        }
+      ],
+      "remarks": [],
+      "gaps": [],
+      "tags": [
+        "mass-conservation",
+        "divergence-theorem",
+        "boundary-conditions",
+        "transport-equation",
+        "reflecting-boundaries",
+        "phase-space",
+        "adjoint-operator"
+      ],
+      "document_id": "07_mean_field",
+      "section": "## 3. The Mass-Conserving Forward Equation (PDE)",
+      "span": {
+        "start_line": 580,
+        "end_line": 596,
+        "content_start": 582,
+        "content_end": 595,
+        "header_lines": [
+          581
+        ]
+      },
+      "metadata": {
+        "label": "proof-lem-mass-conservation-transport"
+      },
+      "registry_context": {
+        "stage": "directives",
+        "document_id": "07_mean_field",
+        "chapter_index": 3,
+        "chapter_file": "chapter_3.json",
+        "section_id": "## 3. The Mass-Conserving Forward Equation (PDE)"
+      },
+      "generated_at": "2025-11-09T10:55:47.649719+00:00",
+      "alt_labels": []
+    },
+    "tags": [
+      "mass conservation",
+      "transport operator",
+      "reflecting boundaries",
+      "boundary conditions",
+      "adjoint operator"
+    ],
+    "content_markdown": ":label: lem-mass-conservation-transport\n\nThe integral of the transport operator over the domain $\\Omega$ vanishes due to the reflecting boundary conditions on both position and velocity boundaries:\n\n$$\n\\int_\\Omega L^\\dagger f(t,z)\\,\\mathrm{d}z = 0",
+    "raw_directive": "570: With the reflecting boundary conditions established in Section 2.2, this transport operator conserves total mass. This is a crucial simplification over models with absorbing boundaries.\n571: \n572: :::{prf:lemma} Mass Conservation of Transport\n573: :label: lem-mass-conservation-transport\n574: \n575: The integral of the transport operator over the domain $\\Omega$ vanishes due to the reflecting boundary conditions on both position and velocity boundaries:\n576: \n577: $$\n578: \\int_\\Omega L^\\dagger f(t,z)\\,\\mathrm{d}z = 0\n579: $$",
+    "document_id": "07_mean_field",
+    "section": "## 3. The Mass-Conserving Forward Equation (PDE)",
+    "span": {
+      "start_line": 570,
+      "end_line": 579,
+      "content_start": 573,
+      "content_end": 578,
+      "header_lines": [
+        571
+      ]
+    },
+    "references": [],
+    "metadata": {
+      "label": "lem-mass-conservation-transport"
+    },
+    "registry_context": {
+      "stage": "directives",
+      "document_id": "07_mean_field",
+      "chapter_index": 3,
+      "chapter_file": "chapter_3.json",
+      "section_id": "## 3. The Mass-Conserving Forward Equation (PDE)"
+    },
+    "generated_at": "2025-11-09T10:55:47.649523+00:00",
+    "alt_labels": []
+  }
+]

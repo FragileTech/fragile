@@ -23,9 +23,6 @@ from typing import Sequence
 import click
 import flogging
 
-from mathster.agents.run_extraction import AGENT_CONFIG, run_agents_in_sequence
-
-
 flogging.setup(level="INFO")
 
 CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
@@ -59,6 +56,19 @@ def _discover_chapter_markdown_files(roots: Sequence[Path] | None = None) -> lis
             if CHAPTER_FILENAME_PATTERN.match(path.name):
                 matches.append(path)
     return sorted(set(matches))
+
+
+def _discover_preprocess_documents(roots: Sequence[Path] | None = None) -> list[Path]:
+    """Return document directories that appear to have extraction data."""
+    documents: list[Path] = []
+    for markdown_file in _discover_chapter_markdown_files(roots):
+        document_dir = markdown_file.parent / markdown_file.stem
+        registry_dir = document_dir / "registry"
+        if not registry_dir.exists():
+            continue
+        if (registry_dir / "extract").exists() or (registry_dir / "extraction").exists():
+            documents.append(document_dir)
+    return sorted(set(documents), key=lambda path: str(path))
 
 
 @cli.command(
@@ -119,6 +129,7 @@ def extract_command(
     log_level: str,
 ) -> None:
     """Invoke the DSPy extraction orchestrator directly."""
+    from mathster.agents.run_extraction import AGENT_CONFIG, run_agents_in_sequence
 
     logging.basicConfig(
         level=getattr(logging, log_level.upper(), logging.INFO),
@@ -232,6 +243,62 @@ def parse_command(
 
 
 @cli.command(
+    "preprocess",
+    help=(
+        "Run the preprocess-extraction stage (merging directives + extracts) for the "
+        "selected documents or, by default, every document with extraction data."
+    ),
+)
+@click.argument("documents", nargs=-1)
+@click.option(
+    "--log-level",
+    type=str,
+    default="INFO",
+    show_default=True,
+    help="Logging level for preprocess stage execution.",
+)
+def preprocess_command(documents: tuple[str, ...], log_level: str) -> None:
+    """Invoke mathster.preprocess_extraction.process_stage.run_all_stages."""
+    from mathster.preprocess_extraction.process_stage import run_all_stages
+
+    logging.basicConfig(
+        level=getattr(logging, log_level.upper(), logging.INFO),
+        format="%(levelname)s - %(message)s",
+    )
+
+    if documents:
+        targets: list[str | Path] = list(documents)
+    else:
+        discovered = _discover_preprocess_documents()
+        if not discovered:
+            msg = "No document registries with extraction data were found."
+            raise click.ClickException(msg)
+        click.echo(f"Discovered {len(discovered)} document registries with extraction data.")
+        targets = discovered
+
+    failures: list[tuple[str, str]] = []
+    for idx, target in enumerate(targets, start=1):
+        label = str(target)
+        click.echo(f"[{idx}/{len(targets)}] Running preprocess stages for {label}...")
+        try:
+            outputs = run_all_stages(target)
+        except Exception as exc:  # pragma: no cover - CLI surface
+            message = str(exc)
+            failures.append((label, message))
+            click.echo(f"  × {message}")
+            continue
+
+        for output_path in outputs:
+            click.echo(f"  → {output_path}")
+
+    if failures:
+        summary = "\n".join(f"  - {label}: {message}" for label, message in failures)
+        raise click.ClickException(
+            f"{len(failures)} document(s) failed during preprocessing:\n{summary}"
+        )
+
+
+@cli.command(
     "registry",
     help=(
         "Build directive registries for one document or batches (defaults to docs/source, "
@@ -289,7 +356,10 @@ def registry_command(
         process_batch,
         process_document,
     )
-    from mathster.registry.extract_stage import build_unified_extract_registry
+    from mathster.registry.extract_stage import (
+        build_unified_extract_registry,
+        build_unified_preprocess_registry,
+    )
 
     logging.basicConfig(
         level=logging.INFO if verbose else logging.WARNING,
@@ -300,6 +370,9 @@ def registry_command(
     if not target_path.exists():
         raise click.ClickException(f"Path does not exist: {target_path}")
 
+    any_success = False
+    all_success = False
+
     try:
         if build_unified_only:
             success = build_unified_registry(
@@ -307,6 +380,8 @@ def registry_command(
                 output_dir=unified_output,
                 verbose=verbose,
             )
+            any_success = success
+            all_success = success
         elif batch:
             results = process_batch(
                 target_path,
@@ -315,13 +390,28 @@ def registry_command(
                 build_unified=not no_unified,
                 unified_output=unified_output,
             )
-            success = all(results.values())
+            any_success = any(results.values())
+            all_success = all(results.values())
+            failed_docs = [doc for doc, ok in results.items() if not ok]
+            if failed_docs:
+                click.echo(
+                    "Some documents failed during directives-stage processing: "
+                    + ", ".join(sorted(failed_docs))
+                )
+            success = any_success
         else:
             success = process_document(target_path, force=force, verbose=verbose)
+            any_success = success
+            all_success = success
 
-        if success and not no_unified:
+        if any_success and not no_unified:
             # Build corpus-level extract registry after directives succeed.
             build_unified_extract_registry(
+                target_path,
+                output_dir=unified_output,
+                verbose=verbose,
+            )
+            build_unified_preprocess_registry(
                 target_path,
                 output_dir=unified_output,
                 verbose=verbose,

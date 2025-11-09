@@ -5,6 +5,8 @@ import logging
 from pathlib import Path
 from typing import Any, Sequence
 
+from mathster.preprocess_extraction.data_models import UnifiedProof
+
 
 logger = logging.getLogger(__name__)
 
@@ -146,3 +148,33 @@ def select_existing_file(candidates: Sequence[Path]) -> Path:
     raise FileNotFoundError(
         "None of the expected files were found: " + ", ".join(str(path) for path in candidates),
     )
+
+
+def build_proof_lookup(registry_dir: Path) -> dict[str, list[UnifiedProof]]:
+    """Return proofs keyed by the statement label they prove."""
+    proofs_by_statement: dict[str, list[UnifiedProof]] = {}
+
+    preprocess_path = registry_dir / "preprocess" / "proof.json"
+    if not preprocess_path.exists():
+        return proofs_by_statement
+
+    payload = load_json(preprocess_path)
+    if not isinstance(payload, list):
+        logger.warning("Unexpected preprocess proof payload format: %s", preprocess_path)
+        return proofs_by_statement
+
+    for entry in payload:
+        if not isinstance(entry, dict):
+            continue
+        try:
+            unified_proof = UnifiedProof(**entry)
+        except Exception as exc:  # pragma: no cover - defensive logging
+            label = entry.get("label", "<unknown>")
+            logger.warning("Failed to parse preprocess proof %s: %s", label, exc)
+            continue
+        statement_label = unified_proof.proves
+        if not statement_label:
+            continue
+        proofs_by_statement.setdefault(statement_label, []).append(unified_proof)
+
+    return proofs_by_statement

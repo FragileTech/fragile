@@ -45,19 +45,23 @@ logger = logging.getLogger(__name__)
 # ============================================================================
 
 
-def discover_extract_registries(docs_root: Path) -> list[Path]:
+def _discover_stage_registries(docs_root: Path, stage: str) -> list[Path]:
     """
-    Locate all ``registry/extract`` directories under a root path.
+    Locate all ``registry/<stage>`` directories under a root path.
 
     Args:
         docs_root: Root search directory (e.g., ``docs/source``).
+        stage: Stage folder name under each registry.
 
     Returns:
         Sorted list of directories that contain extraction outputs.
     """
-    extract_dirs: list[Path] = []
+    stage_dirs: list[Path] = []
 
-    for directory in docs_root.rglob("registry/extract"):
+    for registry_dir in docs_root.rglob("registry"):
+        if not registry_dir.is_dir():
+            continue
+        directory = registry_dir / stage
         if not directory.is_dir():
             continue
 
@@ -67,9 +71,19 @@ def discover_extract_registries(docs_root: Path) -> list[Path]:
         if document_dir.name in {"unified_registry", "combined_registry"}:
             continue
 
-        extract_dirs.append(directory)
+        stage_dirs.append(directory)
 
-    return sorted(extract_dirs)
+    return sorted(stage_dirs)
+
+
+def discover_extract_registries(docs_root: Path) -> list[Path]:
+    """Locate all ``registry/extract`` directories under a root path."""
+    return _discover_stage_registries(docs_root, "extract")
+
+
+def discover_preprocess_registries(docs_root: Path) -> list[Path]:
+    """Locate all ``registry/preprocess`` directories under a root path."""
+    return _discover_stage_registries(docs_root, "preprocess")
 
 
 # ============================================================================
@@ -102,11 +116,11 @@ def _normalise_items(payload: object, *, source: Path, document_id: str) -> list
     return []
 
 
-def load_extract_files_by_type(
-    extract_dirs: Iterable[Path],
+def load_stage_files_by_type(
+    stage_dirs: Iterable[Path],
 ) -> dict[str, list[tuple[str, Path, list[dict]]]]:
     """
-    Load every extract JSON file and group them by entity type (filename stem).
+    Load every stage JSON file and group them by entity type (filename stem).
 
     Returns:
         Mapping of ``entity_type`` -> list of tuples
@@ -114,7 +128,7 @@ def load_extract_files_by_type(
     """
     files_by_type: dict[str, list[tuple[str, Path, list[dict]]]] = defaultdict(list)
 
-    for directory in extract_dirs:
+    for directory in stage_dirs:
         document_path = directory.parent.parent
         document_id = extract_document_id(document_path)
 
@@ -144,6 +158,13 @@ def load_extract_files_by_type(
             files_by_type[entity_type].append((document_id, json_file, items))
 
     return files_by_type
+
+
+def load_extract_files_by_type(
+    extract_dirs: Iterable[Path],
+) -> dict[str, list[tuple[str, Path, list[dict]]]]:
+    """Compatibility wrapper for stage loader."""
+    return load_stage_files_by_type(extract_dirs)
 
 
 # ============================================================================
@@ -212,15 +233,16 @@ def _resolve_output_directory(docs_root: Path, output_dir: Path | None) -> Path:
     return project_root / "unified_registry"
 
 
-def write_unified_extracts(
+def _write_unified_stage(
+    stage: str,
     merged_items: dict[str, list[dict]],
     output_dir: Path,
 ) -> None:
     """
-    Persist merged extract files under ``output_dir/extract``.
+    Persist merged stage files under ``output_dir/<stage>``.
     """
-    extract_dir = output_dir / "extract"
-    extract_dir.mkdir(parents=True, exist_ok=True)
+    stage_dir = output_dir / stage
+    stage_dir.mkdir(parents=True, exist_ok=True)
 
     manifest = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -228,23 +250,87 @@ def write_unified_extracts(
     }
 
     for entity_type, items in merged_items.items():
-        output_path = extract_dir / f"{entity_type}.json"
+        output_path = stage_dir / f"{entity_type}.json"
         with open(output_path, "w", encoding="utf-8") as fh:
             json.dump(items, fh, indent=2, ensure_ascii=False)
 
         manifest["types"][entity_type] = {"count": len(items)}
         logger.info("Wrote %s entries to %s", len(items), output_path)
 
-    manifest_path = extract_dir / "_manifest.json"
+    manifest_path = stage_dir / "_manifest.json"
     with open(manifest_path, "w", encoding="utf-8") as fh:
         json.dump(manifest, fh, indent=2, ensure_ascii=False)
 
     logger.info("Manifest written to %s", manifest_path)
 
 
+def write_unified_extracts(
+    merged_items: dict[str, list[dict]],
+    output_dir: Path,
+) -> None:
+    """
+    Persist merged extract files under ``output_dir/extract``.
+    """
+    _write_unified_stage("extract", merged_items, output_dir)
+
+
+def write_unified_preprocess(
+    merged_items: dict[str, list[dict]],
+    output_dir: Path,
+) -> None:
+    """
+    Persist merged preprocess files under ``output_dir/preprocess``.
+    """
+    _write_unified_stage("preprocess", merged_items, output_dir)
+
+
 # ============================================================================
 # ORCHESTRATION
 # ============================================================================
+
+
+def _build_unified_stage_registry(
+    stage: str,
+    docs_root: Path,
+    output_dir: Path | None = None,
+    verbose: bool = False,
+) -> bool:
+    """
+    Build ``unified_registry/<stage>`` from all per-document stage files.
+    """
+    if verbose:
+        logging.basicConfig(level=logging.INFO, format="%(message)s")
+
+    stage_dirs = _discover_stage_registries(docs_root, stage)
+
+    if not stage_dirs:
+        logger.error("No registry/%s directories found under %s", stage, docs_root)
+        return False
+
+    logger.info("Discovered %s %s directories", len(stage_dirs), stage)
+
+    files_by_type = load_stage_files_by_type(stage_dirs)
+
+    if not files_by_type:
+        logger.error("No %s JSON files were discovered.", stage)
+        return False
+
+    merged_items = merge_extract_items(files_by_type)
+
+    if not merged_items:
+        logger.error("Nothing to merge after loading %s files.", stage)
+        return False
+
+    destination = _resolve_output_directory(docs_root, output_dir)
+    _write_unified_stage(stage, merged_items, destination)
+
+    logger.info(
+        "Unified %s registry complete: %s entity types written to %s",
+        stage,
+        len(merged_items),
+        destination / stage,
+    )
+    return True
 
 
 def build_unified_extract_registry(
@@ -255,38 +341,28 @@ def build_unified_extract_registry(
     """
     Build ``unified_registry/extract`` from all per-document extract files.
     """
-    if verbose:
-        logging.basicConfig(level=logging.INFO, format="%(message)s")
-
-    extract_dirs = discover_extract_registries(docs_root)
-
-    if not extract_dirs:
-        logger.error("No registry/extract directories found under %s", docs_root)
-        return False
-
-    logger.info("Discovered %s extract directories", len(extract_dirs))
-
-    files_by_type = load_extract_files_by_type(extract_dirs)
-
-    if not files_by_type:
-        logger.error("No extract JSON files were discovered.")
-        return False
-
-    merged_items = merge_extract_items(files_by_type)
-
-    if not merged_items:
-        logger.error("Nothing to merge after loading extract files.")
-        return False
-
-    destination = _resolve_output_directory(docs_root, output_dir)
-    write_unified_extracts(merged_items, destination)
-
-    logger.info(
-        "Unified extract registry complete: %s entity types written to %s",
-        len(merged_items),
-        destination / "extract",
+    return _build_unified_stage_registry(
+        "extract",
+        docs_root,
+        output_dir=output_dir,
+        verbose=verbose,
     )
-    return True
+
+
+def build_unified_preprocess_registry(
+    docs_root: Path,
+    output_dir: Path | None = None,
+    verbose: bool = False,
+) -> bool:
+    """
+    Build ``unified_registry/preprocess`` from all per-document preprocess files.
+    """
+    return _build_unified_stage_registry(
+        "preprocess",
+        docs_root,
+        output_dir=output_dir,
+        verbose=verbose,
+    )
 
 
 # ============================================================================

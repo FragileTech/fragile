@@ -109,14 +109,13 @@ def preprocess_document_assumptions(
 
     directive_candidates = [
         registry_dir / "directives" / "assumption.json",
-        registry_dir / "directives" / "assumption_raw.json",
     ]
     directives_path = select_existing_file(directive_candidates)
 
     extract_dir = resolve_extract_directory(registry_dir)
     extracted_candidates = [
         extract_dir / "assumption.json",
-        extract_dir / "assumption_extracted.json",
+
     ]
     extracted_path = select_existing_file(extracted_candidates)
 

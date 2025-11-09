@@ -15,6 +15,7 @@ from mathster.preprocess_extraction.utils import (
     resolve_document_directory,
     resolve_extract_directory,
     wrap_directive_item,
+    build_proof_lookup,
 )
 
 
@@ -93,7 +94,12 @@ def preprocess_document_theorems(
 
     directive_payload = load_directive_payload(directives_path)
     extracted_items = load_extracted_items(extracted_path)
-    unified_payload = _build_unified_theorems(directive_payload, extracted_items)
+    proof_lookup = build_proof_lookup(registry_dir)
+    UnifiedTheorem.attach_proof_lookup(proof_lookup)
+    try:
+        unified_payload = _build_unified_theorems(directive_payload, extracted_items)
+    finally:
+        UnifiedTheorem.attach_proof_lookup({})
 
     destination = output_path
     if destination is None:

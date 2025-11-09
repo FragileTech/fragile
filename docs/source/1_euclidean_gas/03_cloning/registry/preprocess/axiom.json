@@ -1,11 +1,14 @@
 [
   {
     "label": "axiom-domain-regularity",
-    "title": "**(Axiom EG-0): Regularity of the Domain**",
+    "title": "(Axiom EG-0): Regularity of the Domain",
     "type": "axiom",
     "axiom_class": "regularity",
     "nl_summary": "The single-walker state space \\(\\mathcal{X}\\) satisfies standard regularity conditions to ensure the validity of the construction.",
-    "core_statement": null,
+    "core_statement": {
+      "text": null,
+      "latex": null
+    },
     "hypotheses": [],
     "implications": [
       {
@@ -64,7 +67,7 @@
   },
   {
     "label": "axiom-lipschitz-fields",
-    "title": "**(Axiom EG-1): Lipschitz Regularity of Environmental Fields**",
+    "title": "(Axiom EG-1): Lipschitz Regularity of Environmental Fields",
     "type": "axiom",
     "axiom_class": "regularity",
     "nl_summary": "The force field F and steady flow field u are Lipschitz continuous on the compact valid domain X_valid, with finite Lipschitz constants L_F and L_u, ensuring local smoothness and global well-behavedness of the environmental fields.",
@@ -196,7 +199,7 @@
   },
   {
     "label": "axiom-safe-harbor",
-    "title": "**(Axiom EG-2): Existence of a Safe Harbor**",
+    "title": "(Axiom EG-2): Existence of a Safe Harbor",
     "type": "axiom",
     "axiom_class": "existence",
     "nl_summary": "Asserts the existence of a compact safe harbor set within the valid state space, buffered from boundaries, where positional rewards strictly exceed those outside, providing a stable high-reward region.",
@@ -301,7 +304,7 @@
   },
   {
     "label": "axiom-non-deceptive-landscape",
-    "title": "**(Axiom EG-3): Non-Deceptive Landscape**",
+    "title": "(Axiom EG-3): Non-Deceptive Landscape",
     "type": "axiom",
     "axiom_class": "regularity",
     "nl_summary": "The reward landscape is non-deceptive: positions separated by at least L_grad yield rewards differing by at least kappa_raw_r > 0.",
@@ -397,7 +400,7 @@
   },
   {
     "label": "axiom-velocity-regularization",
-    "title": "**(Axiom EG-4): Velocity Regularization via Reward**",
+    "title": "(Axiom EG-4): Velocity Regularization via Reward",
     "type": "axiom",
     "axiom_class": "regularity",
     "nl_summary": "The total reward function incorporates a quadratic penalty on velocity to bound kinetic energy, ensuring stability by preferentially eliminating high-velocity walkers during cloning and enabling dissipation in the kinetic stage.",
@@ -508,7 +511,7 @@
   },
   {
     "label": "axiom-active-diversity",
-    "title": "**(Axiom EG-5): Active Diversity Signal**",
+    "title": "(Axiom EG-5): Active Diversity Signal",
     "type": "axiom",
     "axiom_class": "regularity",
     "nl_summary": "The diversity channel of the fitness potential is active, requiring the dynamics weight \u03b2 to be strictly positive.",

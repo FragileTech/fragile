@@ -18,10 +18,14 @@ Design Philosophy:
 from __future__ import annotations
 
 import re
-from typing import Any
+import logging
+import re
+from typing import Any, ClassVar
 
 from pydantic import BaseModel, Field, field_validator
 
+
+logger = logging.getLogger(__name__)
 
 # ============================================================================
 # SECTION 1: SHARED NESTED MODELS
@@ -242,9 +246,9 @@ class UnifiedMathematicalEntity(BaseModel):
         default_factory=list,
         description="Cross-references to other entities",
     )
-    proof: Proof | None = Field(
+    proof: "UnifiedProof | None" = Field(
         default=None,
-        description="Proof structure (availability and steps)",
+        description="Attached proof object built from proof directives/extraction",
     )
     tags: list[str] = Field(
         default_factory=list,
@@ -298,6 +302,34 @@ class UnifiedMathematicalEntity(BaseModel):
     # ========================================================================
     # SHARED METHODS
     # ========================================================================
+
+    _proof_lookup: ClassVar[dict[str, list["UnifiedProof"]]] = {}
+
+    @classmethod
+    def attach_proof_lookup(cls, proof_lookup: dict[str, list["UnifiedProof"]] | None) -> None:
+        """Install a lookup of proofs keyed by the statements they prove."""
+        UnifiedMathematicalEntity._proof_lookup = proof_lookup or {}
+
+    @classmethod
+    def _select_proof_for_label(cls, label: str) -> "UnifiedProof | None":
+        proofs = UnifiedMathematicalEntity._proof_lookup.get(label)
+        if not proofs:
+            return None
+        if len(proofs) > 1:
+            logger.warning(
+                "Multiple proofs found for %s; selecting the longest entry.",
+                label,
+            )
+        return max(proofs, key=UnifiedMathematicalEntity._proof_length_score)
+
+    @staticmethod
+    def _proof_length_score(proof: "UnifiedProof") -> int:
+        """Heuristic length used to pick the most detailed proof."""
+        step_count = len(proof.steps or [])
+        step_text_len = sum(len(step.text or "") for step in proof.steps or [])
+        content_len = len(proof.content_markdown or proof.raw_directive or "")
+        summary_len = len(proof.strategy_summary or "")
+        return step_count * 1000 + step_text_len + content_len + summary_len
 
     @staticmethod
     def strip_line_numbers(text: str | None) -> str | None:
@@ -385,8 +417,7 @@ class UnifiedMathematicalEntity(BaseModel):
         ]
         local_refs = extracted.get("local_refs", []) or []
 
-        proof_data = extracted.get("proof")
-        proof = Proof(**proof_data) if isinstance(proof_data, dict) else None
+        proof = cls._select_proof_for_label(label)
 
         tags = extracted.get("tags", []) or []
         nl_statement = extracted.get("nl_statement")

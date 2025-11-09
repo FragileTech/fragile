@@ -1,0 +1,648 @@
+[
+  {
+    "label": "rem-note-hypocoercivity-analogy",
+    "title": "Analogy to Classical Hypocoercivity Theory",
+    "remark_type": "tip",
+    "nl_summary": "This remark establishes a conceptual parallel between the classical hypocoercivity framework for kinetic Fokker-Planck equations and the discrete stochastic model for fragile gas dynamics, emphasizing how neither individual operators achieve full dissipation alone, but their combination, balanced via an augmented Lyapunov functional, enables exponential convergence in phase space.",
+    "key_points": [
+      {
+        "text": "In classical hypocoercivity, the transport operator v · ∇_x drives position dynamics without dissipating velocity, while the collision operator L_v dissipates velocity but not position.",
+        "latex": null,
+        "importance": "high"
+      },
+      {
+        "text": "Neither classical operator contracts the full L^2 kinetic norm ||f||^2_{L^2} + ||∇_x f||^2_{L^2} alone.",
+        "latex": "||f||^2_{L^2} + ||\\nabla_x f||^2_{L^2}",
+        "importance": "medium"
+      },
+      {
+        "text": "An augmented norm ||f||^2_{L^2} + ε ||∇_x f||^2_{L^2} balances effects for exponential decay.",
+        "latex": "||f||^2_{L^2} + \\varepsilon ||\\nabla_x f||^2_{L^2}",
+        "importance": "high"
+      },
+      {
+        "text": "In the discrete framework, Ψ_clone contracts internal variance V_Var but may expand inter-swarm distance W_h^2.",
+        "latex": null,
+        "importance": "high"
+      },
+      {
+        "text": "Ψ_kin contracts W_h^2 via potential but may expand V_Var via noise.",
+        "latex": null,
+        "importance": "medium"
+      },
+      {
+        "text": "Augmented Lyapunov V_total = W_h^2 + c_V V_Var + c_B W_b enables synergistic dissipation for convergence.",
+        "latex": "V_{\\text{total}} = W_h^2 + c_V V_{\\text{Var}} + c_B W_b",
+        "importance": "high"
+      }
+    ],
+    "quantitative_notes": [],
+    "references": [],
+    "recommendations": [],
+    "dependencies": [
+      "sec-3.2",
+      "rem-operator-effects"
+    ],
+    "tags": [
+      "hypocoercivity",
+      "analogy",
+      "classical theory",
+      "kinetic PDEs",
+      "discrete stochastic",
+      "Lyapunov function",
+      "exponential convergence",
+      "operator synergy"
+    ]
+  },
+  {
+    "label": "rem-log-gap-bound-tightness",
+    "title": "On the Tightness of the Bound",
+    "remark_type": "note",
+    "nl_summary": "This note explains that the bound ln(1 + κ/V_max) is slightly conservative relative to the tighter bound ln(1 + κ/(V_max - κ)) from Step 4, but the difference is negligible when κ is much smaller than V_max, with an approximation provided.",
+    "key_points": [],
+    "quantitative_notes": [],
+    "references": [],
+    "recommendations": [
+      {
+        "text": "Use the tight bound when κ is not much smaller than V_max for precision.",
+        "severity": "low"
+      }
+    ],
+    "dependencies": [],
+    "tags": [
+      "bound tightness",
+      "conservative bound",
+      "approximation",
+      "kappa",
+      "V_max",
+      "negligible difference"
+    ]
+  },
+  {
+    "label": "rem-log-gap-bound-tight-at-vmin",
+    "title": "Why the Bound is Tight at $V_{\\min}$",
+    "remark_type": "note",
+    "nl_summary": "This remark explains why the upper bound $\\ln(1 + \\kappa/V_{\\min})$ on the log gap is tight, detailing the worst-case conditions: maximum mean separation by $\\kappa$, distributions positioned near $V_{\\min}$ for steepest log slope, and one deterministic distribution versus one maximally dispersed.",
+    "key_points": [],
+    "quantitative_notes": [
+      {
+        "text": "Upper bound on log gap",
+        "latex": "\\ln\\left(1 + \\frac{\\kappa}{V_{\\min}}\\right)"
+      }
+    ],
+    "references": [],
+    "recommendations": [],
+    "dependencies": [],
+    "tags": [
+      "tight-bound",
+      "log-gap",
+      "worst-case",
+      "V_min",
+      "kappa",
+      "deterministic",
+      "dispersed",
+      "logarithm-slope"
+    ]
+  },
+  {
+    "label": "rem-n-uniformity-delta-min-bound",
+    "title": "N-Uniformity of the Bound",
+    "remark_type": "note",
+    "nl_summary": "A note discussing the N-uniformity property of the bound.",
+    "key_points": [
+      {
+        "text": "Highlights the N-uniformity aspect of the bound.",
+        "latex": null,
+        "importance": null
+      }
+    ],
+    "quantitative_notes": [],
+    "references": [],
+    "recommendations": [],
+    "dependencies": [],
+    "tags": [
+      "n-uniformity",
+      "bound",
+      "delta-min",
+      "uniformity",
+      "note"
+    ]
+  },
+  {
+    "label": "rem-measurement-coupling",
+    "title": "Stochastic Coupling for Drift Analysis",
+    "remark_type": "remark",
+    "nl_summary": "This remark outlines the synchronous coupling technique applied to the randomness in drift analysis for two swarms (S_1, S_2), ensuring identical random pairing algorithms and coupled PRNG streams for corresponding walkers.",
+    "key_points": [
+      {
+        "text": "The same random pairing algorithm is applied to both swarms.",
+        "latex": null,
+        "importance": null
+      },
+      {
+        "text": "The PRNG streams are coupled so that walker i in swarm 1 and walker i in swarm 2 use the same random seed.",
+        "latex": null,
+        "importance": null
+      }
+    ],
+    "quantitative_notes": [],
+    "references": [],
+    "recommendations": [],
+    "dependencies": [
+      "chap-10",
+      "chap-11"
+    ],
+    "tags": [
+      "stochastic coupling",
+      "drift analysis",
+      "swarms",
+      "synchronous coupling",
+      "PRNG",
+      "random pairing"
+    ]
+  },
+  {
+    "label": "rem-position-velocity-update-difference",
+    "title": "Position Jitter vs. Velocity Collision Model",
+    "remark_type": "remark",
+    "nl_summary": "This remark explains the asymmetric handling of positions and velocities in the cloning operator: positions are updated with stochastic Gaussian jitter to break spatial correlations, while velocities use a deterministic inelastic collision model with random rotations to conserve momentum and dissipate energy controllably, leading to distinct mechanisms for desynchronization.",
+    "key_points": [
+      {
+        "text": "The cloning operator treats positions and velocities asymmetrically.",
+        "latex": null,
+        "importance": "high"
+      },
+      {
+        "text": "Position update: Stochastic Gaussian jitter with variance σ_x² breaks spatial correlations between swarms in the drift analysis.",
+        "latex": "σ_x^2",
+        "importance": "medium"
+      },
+      {
+        "text": "Velocity update: Deterministic inelastic collision model (with random rotation) conserves momentum and provides controlled energy dissipation via α_restitution.",
+        "latex": "α_{\\text{restitution}}",
+        "importance": "medium"
+      },
+      {
+        "text": "Positional desynchronization arises from explicit Gaussian noise.",
+        "latex": "\\mathcal{N}(0, σ_x^2 I_d)",
+        "importance": "high"
+      },
+      {
+        "text": "Velocity desynchronization arises from random rotations R_k in the collision model, which randomize directions while preserving or reducing magnitudes.",
+        "latex": "R_k",
+        "importance": "high"
+      }
+    ],
+    "quantitative_notes": [
+      {
+        "text": "Position jitter uses Gaussian noise with mean 0 and variance σ_x² in d dimensions.",
+        "latex": "\\mathcal{N}(0, σ_x^2 I_d)"
+      },
+      {
+        "text": "Velocity collision model includes restitution coefficient for energy dissipation.",
+        "latex": "α_{\\text{restitution}}"
+      },
+      {
+        "text": "Random rotations R_k in velocity updates.",
+        "latex": "R_k"
+      }
+    ],
+    "references": [],
+    "recommendations": [],
+    "dependencies": [],
+    "tags": [
+      "cloning-operator",
+      "position-jitter",
+      "velocity-collision",
+      "gaussian-noise",
+      "random-rotation",
+      "desynchronization",
+      "momentum-conservation",
+      "energy-dissipation"
+    ]
+  },
+  {
+    "label": "rem-coupling-benefits",
+    "title": "Synchronous Coupling Benefits",
+    "remark_type": "remark",
+    "nl_summary": "This remark highlights two key benefits of synchronous coupling in swarm simulations: the cancellation of common randomness to reduce divergence when decisions align, and the bounding of worst-case expansion by the maximum valid displacement even when decisions differ.",
+    "key_points": [
+      {
+        "text": "Common randomness cancels: When both swarms have walker i in similar states and both make the same cloning decision, much of the random perturbation is shared, reducing divergence.",
+        "latex": null,
+        "importance": "high"
+      },
+      {
+        "text": "Worst-case expansion is bounded: Even when the swarms make different decisions (e.g., walker i clones in swarm 1 but persists in swarm 2), the expansion is controlled by the maximum displacement D_valid.",
+        "latex": null,
+        "importance": "high"
+      }
+    ],
+    "quantitative_notes": [
+      {
+        "text": "Expansion controlled by maximum displacement",
+        "latex": "D_{\\text{valid}}"
+      }
+    ],
+    "references": [],
+    "recommendations": [],
+    "dependencies": [],
+    "tags": [
+      "synchronous coupling",
+      "randomness cancellation",
+      "expansion bound",
+      "swarm dynamics",
+      "cloning decision",
+      "divergence reduction"
+    ]
+  },
+  {
+    "label": "rem-synergistic-velocity-dissipation",
+    "title": "Synergistic Dissipation Enables Net Contraction",
+    "remark_type": "remark",
+    "nl_summary": "This remark explains that bounded expansion serves as a prerequisite for the synergistic dissipation framework. It references a proof in a companion document showing that the kinetic operator induces velocity contraction, with a dissipation rate proportional to the Langevin friction. When balanced with the cloning operator, this composition achieves net contraction in the velocity variance functional.",
+    "key_points": [
+      {
+        "text": "Bounded expansion is the prerequisite for the synergistic dissipation framework.",
+        "latex": null,
+        "importance": null
+      },
+      {
+        "text": "The kinetic operator provides velocity contraction, as proven in the companion document.",
+        "latex": "\\mathbb{E}_{\\text{kin}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_v V_{\\text{Var},v} + C'_v",
+        "importance": "high"
+      },
+      {
+        "text": "\\kappa_v > 0 is proportional to the Langevin friction \\gamma.",
+        "latex": null,
+        "importance": "medium"
+      },
+      {
+        "text": "Proper balancing of cloning and kinetic operators enables net contraction.",
+        "latex": "\\mathbb{E}_{\\text{clone} \\circ \\text{kin}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_v V_{\\text{Var},v} + (C_v + C'_v)",
+        "importance": "high"
+      }
+    ],
+    "quantitative_notes": [
+      {
+        "text": "Velocity contraction bound under kinetic operator",
+        "latex": "\\mathbb{E}_{\\text{kin}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_v V_{\\text{Var},v} + C'_v"
+      },
+      {
+        "text": "Net contraction bound under balanced composition",
+        "latex": "\\mathbb{E}_{\\text{clone} \\circ \\text{kin}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_v V_{\\text{Var},v} + (C_v + C'_v)"
+      }
+    ],
+    "references": [],
+    "recommendations": [],
+    "dependencies": [],
+    "tags": [
+      "synergistic",
+      "dissipation",
+      "contraction",
+      "velocity",
+      "kinetic",
+      "Langevin",
+      "framework"
+    ]
+  },
+  {
+    "label": "rem-drift-constants-dependencies",
+    "title": "Constants and Parameter Dependencies",
+    "remark_type": "remark",
+    "nl_summary": "This remark outlines the dependencies of key drift constants—contraction rate κ_x and expansion bound C_v—on various parameters, including measurement quality, cloning responsiveness, velocity domain size, restitution coefficient, and independence from system size N.",
+    "key_points": [
+      {
+        "text": "Contraction rate κ_x increases with measurement quality (larger ε leads to better diversity detection).",
+        "latex": "κ_x increases with ε (measurement quality)",
+        "importance": "high"
+      },
+      {
+        "text": "κ_x increases with cloning responsiveness (larger p_max and smaller ε_clone).",
+        "latex": "κ_x increases with p_max and decreases with ε_clone",
+        "importance": "high"
+      },
+      {
+        "text": "κ_x is independent of N due to N-uniformity from Keystone.",
+        "latex": "κ_x independent of N",
+        "importance": "medium"
+      },
+      {
+        "text": "Expansion bound C_v increases with V_max² (larger velocity domain).",
+        "latex": "C_v increases with V_max^2",
+        "importance": "high"
+      },
+      {
+        "text": "C_v increases with α_restitution (more elastic collisions).",
+        "latex": "C_v increases with α_restitution",
+        "importance": "high"
+      },
+      {
+        "text": "C_v decreases toward zero as α_restitution → 0 (perfectly inelastic collisions).",
+        "latex": "C_v → 0 as α_restitution → 0",
+        "importance": "high"
+      },
+      {
+        "text": "C_v is independent of N.",
+        "latex": "C_v independent of N",
+        "importance": "medium"
+      }
+    ],
+    "quantitative_notes": [
+      {
+        "text": "No explicit quantitative formulas provided; dependencies are qualitative trends.",
+        "latex": null
+      }
+    ],
+    "references": [],
+    "recommendations": [],
+    "dependencies": [],
+    "tags": [
+      "drift constants",
+      "kappa_x",
+      "C_v",
+      "parameter dependencies",
+      "contraction rate",
+      "expansion bound",
+      "measurement quality",
+      "cloning responsiveness"
+    ]
+  },
+  {
+    "label": "rem-barrier-geometric-penalty",
+    "title": "Barrier Function as Geometric Penalty",
+    "remark_type": "prf:remark",
+    "nl_summary": "The barrier function implements a geometric penalty that forms a soft wall near the boundary of the valid region, applying no penalty far from the boundary, increasing penalties near it to reduce fitness, and theoretically infinite at the boundary for dead walkers.",
+    "key_points": [
+      {
+        "text": "Far from boundary (d(x, ∂X_valid) > δ_safe): No penalty, φ_barrier(x) = 0",
+        "latex": "$d(x, \\partial \\mathcal{X}_{\\text{valid}}) > \\delta_{\\text{safe}}$: $\\varphi_{\\text{barrier}}(x) = 0$",
+        "importance": "high"
+      },
+      {
+        "text": "Near boundary (d(x, ∂X_valid) ≤ δ_safe): Penalty increases, reducing fitness",
+        "latex": "$d(x, \\partial \\mathcal{X}_{\\text{valid}}) \\leq \\delta_{\\text{safe}}$",
+        "importance": "high"
+      },
+      {
+        "text": "At boundary: Infinite penalty (though walkers at the boundary are dead, so this limit is never realized for alive walkers)",
+        "latex": null,
+        "importance": "medium"
+      }
+    ],
+    "quantitative_notes": [],
+    "references": [],
+    "recommendations": [],
+    "dependencies": [],
+    "tags": [
+      "barrier-function",
+      "geometric-penalty",
+      "soft-wall",
+      "boundary-distance",
+      "fitness-penalty",
+      "valid-region"
+    ]
+  },
+  {
+    "label": "rem-boundary-mass-relationship",
+    "title": "Relationship to Total Boundary Potential",
+    "remark_type": "remark",
+    "nl_summary": "This remark establishes a relationship between the total boundary potential \\(W_b(S_k)\\) and the boundary mass \\(M_{\\text{boundary}}(S_k)\\) for an exposed set \\(S_k\\), under the condition that all walkers outside \\(S_k\\) have barrier potentials at or below a threshold \\(\\phi_{\\text{thresh}}\\). It provides an upper bound involving the alive walkers fraction.",
+    "key_points": [
+      {
+        "text": "Condition on walkers outside the exposed set",
+        "latex": "All walkers outside the exposed set have $\\varphi_{\\text{barrier}}(x_i) \\leq \\phi_{\\text{thresh}}$",
+        "importance": "high"
+      },
+      {
+        "text": "Definition and bound for boundary potential",
+        "latex": "$W_b(S_k) = \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_k)} \\varphi_{\\text{barrier}}(x_i) \\leq M_{\\text{boundary}}(S_k) + \\frac{k_{\\text{alive}}}{N} \\phi_{\\text{thresh}}$",
+        "importance": "high"
+      }
+    ],
+    "quantitative_notes": [
+      {
+        "text": "Upper bound on boundary potential includes boundary mass plus threshold term scaled by alive fraction",
+        "latex": "$M_{\\text{boundary}}(S_k) + \\frac{k_{\\text{alive}}}{N} \\phi_{\\text{thresh}}$"
+      }
+    ],
+    "references": [],
+    "recommendations": [],
+    "dependencies": [],
+    "tags": [
+      "boundary potential",
+      "walkers",
+      "exposed set",
+      "threshold",
+      "inequality",
+      "mass"
+    ]
+  },
+  {
+    "label": "rem-progressive-safety",
+    "title": "Interpretation: Progressive Safety Enhancement",
+    "remark_type": "interpretation",
+    "nl_summary": "This remark interprets a theorem by explaining the Safe Harbor mechanism, which progressively enhances safety in a swarm system. It describes how boundary-near walkers with low fitness are replaced by interior clones, reducing boundary potential, with a state-independent contraction rate ensuring reliable correction.",
+    "key_points": [
+      {
+        "text": "When many walkers are near the boundary (W_b large), these walkers have low fitness and high cloning probability",
+        "latex": "W_b",
+        "importance": "high"
+      },
+      {
+        "text": "They are replaced by clones of interior walkers, pulling the boundary potential down",
+        "latex": null,
+        "importance": "medium"
+      },
+      {
+        "text": "The contraction rate κ_b is state-independent, ensuring consistent safety correction regardless of swarm configuration",
+        "latex": "\\kappa_b",
+        "importance": "high"
+      }
+    ],
+    "quantitative_notes": [
+      {
+        "text": "Contraction rate κ_b is state-independent",
+        "latex": "\\kappa_b"
+      },
+      {
+        "text": "Boundary walker count W_b influences fitness and cloning when large",
+        "latex": "W_b"
+      }
+    ],
+    "references": [],
+    "recommendations": [],
+    "dependencies": [
+      "thm-safe-harbor"
+    ],
+    "tags": [
+      "safe-harbor",
+      "progressive-safety",
+      "boundary-walkers",
+      "cloning",
+      "contraction-rate",
+      "swarm-safety"
+    ]
+  },
+  {
+    "label": "rem-safety-margin-tuning",
+    "title": "Safety Margin and Parameter Tuning",
+    "remark_type": "explanatory",
+    "nl_summary": "This remark outlines three strategies to arbitrarily reduce the equilibrium bound \\(C_b / \\kappa_b\\) in a boundary-constrained optimization setup by tuning parameters related to fitness weights, jitter variance, and barrier function buffers.",
+    "key_points": [],
+    "quantitative_notes": [],
+    "references": [],
+    "recommendations": [],
+    "dependencies": [],
+    "tags": [
+      "safety-margin",
+      "parameter-tuning",
+      "equilibrium-bound",
+      "barrier-function",
+      "jitter-variance",
+      "fitness-weight"
+    ]
+  },
+  {
+    "label": "rem-why-vw-expands",
+    "title": "Why Inter-Swarm Error Doesn't Contract Under Cloning",
+    "remark_type": "remark",
+    "nl_summary": "This remark explains why the cloning operator in swarm-based optimization cannot reduce the inter-swarm error metric V_W. It operates independently within each swarm without cross-swarm information, leading to decisions that may increase divergence, exacerbated by stochastic differences in swarm configurations even under synchronous coupling.",
+    "key_points": [
+      {
+        "text": "Intra-swarm mechanism: Cloning acts within each swarm independently. It compares walker i to its companion in the same swarm, not to the corresponding walker in the other swarm.",
+        "latex": null,
+        "importance": null
+      },
+      {
+        "text": "No inter-swarm communication: The fitness evaluation and companion selection have no information about the other swarm in the coupled analysis. They cannot \"know\" which direction reduces V_W.",
+        "latex": null,
+        "importance": null
+      },
+      {
+        "text": "Stochastic desynchronization: Even with synchronous coupling, different swarm configurations lead to different fitness landscapes, causing different cloning decisions that increase divergence.",
+        "latex": null,
+        "importance": null
+      }
+    ],
+    "quantitative_notes": [],
+    "references": [],
+    "recommendations": [],
+    "dependencies": [],
+    "tags": [
+      "cloning",
+      "swarm",
+      "error contraction",
+      "V_W",
+      "intra-swarm",
+      "desynchronization",
+      "fitness evaluation"
+    ]
+  },
+  {
+    "label": "rem-perfect-complementarity",
+    "title": "Perfect Complementarity",
+    "remark_type": "remark",
+    "nl_summary": "This remark highlights the exact complementarity between cloning and kinetic processes in a system, where cloning contracts certain aspects while kinetic expands them, and vice versa, with both contracting the boundary potential for layered safety.",
+    "key_points": [
+      {
+        "text": "Cloning contracts position and boundary aspects.",
+        "latex": null,
+        "importance": "core"
+      },
+      {
+        "text": "Kinetic expands diffusion and potential climb.",
+        "latex": null,
+        "importance": "core"
+      },
+      {
+        "text": "Cloning expands velocity and inter-swarm aspects.",
+        "latex": null,
+        "importance": "core"
+      },
+      {
+        "text": "Kinetic contracts friction and hypocoercivity.",
+        "latex": null,
+        "importance": "core"
+      },
+      {
+        "text": "Both cloning and kinetic contract the boundary potential for layered safety.",
+        "latex": null,
+        "importance": "core"
+      }
+    ],
+    "quantitative_notes": [],
+    "references": [],
+    "recommendations": [],
+    "dependencies": [],
+    "tags": [
+      "complementarity",
+      "cloning",
+      "kinetic",
+      "contraction",
+      "expansion",
+      "boundary",
+      "diffusion",
+      "friction",
+      "hypocoercivity"
+    ]
+  },
+  {
+    "label": "rem-tuning-guidance",
+    "title": "Tuning Guidance",
+    "remark_type": "remark",
+    "nl_summary": "This remark offers practical guidance for selecting coupling constants c_V and c_B to balance contraction rates across system components, preventing dominance in the drift inequality, with a safety factor of 2. It also provides adjustments for scenarios involving high boundary exposure or velocity variance.",
+    "key_points": [
+      {
+        "text": "Coupling constants balance contraction rates to ensure no single component dominates the drift inequality.",
+        "latex": null,
+        "importance": "high"
+      },
+      {
+        "text": "Factor of 2 in approximations provides a safety margin.",
+        "latex": null,
+        "importance": "medium"
+      },
+      {
+        "text": "Increase c_B for high boundary exposure to emphasize safety.",
+        "latex": null,
+        "importance": "high"
+      },
+      {
+        "text": "Increase friction γ for high velocity variance in the kinetic stage.",
+        "latex": null,
+        "importance": "high"
+      }
+    ],
+    "quantitative_notes": [
+      {
+        "text": "c_V ≈ κ_W / (2 κ_x)",
+        "latex": "c_V \\approx \\frac{\\kappa_W}{2\\kappa_x}"
+      },
+      {
+        "text": "c_B ≈ κ_W / (2 κ_b)",
+        "latex": "c_B \\approx \\frac{\\kappa_W}{2\\kappa_b}"
+      }
+    ],
+    "references": [],
+    "recommendations": [
+      {
+        "text": "Increase c_B to weight safety more heavily if experiencing high boundary exposure.",
+        "severity": "medium"
+      },
+      {
+        "text": "Increase friction γ in the kinetic stage if experiencing high velocity variance.",
+        "severity": "medium"
+      }
+    ],
+    "dependencies": [],
+    "tags": [
+      "tuning",
+      "coupling-constants",
+      "drift-inequality",
+      "boundary-exposure",
+      "velocity-variance",
+      "friction"
+    ]
+  }
+]

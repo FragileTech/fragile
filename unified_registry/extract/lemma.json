@@ -1,11 +1,9 @@
 [
   {
+    "type": "lemma",
     "label": "lem-wasserstein-decomposition",
     "title": "Decomposition of the Hypocoercive Wasserstein Distance",
-    "type": "lemma",
-    "nl_statement": "The squared hypocoercive Wasserstein distance between two empirical measures \u03bc\u2081 and \u03bc\u2082 decomposes exactly into the sum of location and structural error components.",
-    "content_markdown": ":label: lem-wasserstein-decomposition\n\nThe total inter-swarm error, as measured by the squared hypocoercive Wasserstein distance $W_h^2(\\mu_1, \\mu_2)$ between the two swarms' full empirical measures $\\mu_1$ and $\\mu_2$, decomposes exactly into the sum of the location and structural error components:\n\n$$\nW_h^2(\\mu_1, \\mu_2) = V_{\\text{loc}} + V_{\\text{struct}}",
-    "raw_directive": "466: A key result from optimal transport theory allows us to relate these components. The total distance between two distributions can be precisely decomposed into the distance between their centers of mass and the distance between their centered shapes.\n467: \n468: :::{prf:lemma} Decomposition of the Hypocoercive Wasserstein Distance\n469: :label: lem-wasserstein-decomposition\n470: \n471: The total inter-swarm error, as measured by the squared hypocoercive Wasserstein distance $W_h^2(\\mu_1, \\mu_2)$ between the two swarms' full empirical measures $\\mu_1$ and $\\mu_2$, decomposes exactly into the sum of the location and structural error components:\n472: \n473: $$\n474: W_h^2(\\mu_1, \\mu_2) = V_{\\text{loc}} + V_{\\text{struct}}\n475: $$",
+    "nl_statement": "The squared hypocoercive Wasserstein distance between two empirical measures μ₁ and μ₂ decomposes exactly into the sum of location and structural error components.",
     "equations": [
       {
         "label": null,
@@ -14,13 +12,13 @@
     ],
     "hypotheses": [],
     "conclusion": {
-      "text": "W_h^2(\u03bc\u2081, \u03bc\u2082) = V_loc + V_struct",
+      "text": "W_h^2(μ₁, μ₂) = V_loc + V_struct",
       "latex": "W_h^2(\\mu_1, \\mu_2) = V_{\\text{loc}} + V_{\\text{struct}}"
     },
     "variables": [
       {
         "symbol": "\\mu_1",
-        "name": "\u03bc\u2081",
+        "name": "μ₁",
         "description": "Empirical measure of the first swarm",
         "constraints": [
           "Probability measure"
@@ -32,7 +30,7 @@
       },
       {
         "symbol": "\\mu_2",
-        "name": "\u03bc\u2082",
+        "name": "μ₂",
         "description": "Empirical measure of the second swarm",
         "constraints": [
           "Probability measure"
@@ -79,7 +77,7 @@
     ],
     "implicit_assumptions": [
       {
-        "text": "\u03bc\u2081 and \u03bc\u2082 are probability measures on a space where the hypocoercive Wasserstein distance is defined",
+        "text": "μ₁ and μ₂ are probability measures on a space where the hypocoercive Wasserstein distance is defined",
         "confidence": 1.0
       },
       {
@@ -100,39 +98,13 @@
       "location-error",
       "structural-error",
       "swarms"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 3. The Augmented Hypocoercive Lyapunov Function",
-    "span": {
-      "start_line": 466,
-      "end_line": 475,
-      "content_start": 469,
-      "content_end": 474,
-      "header_lines": [
-        467
-      ]
-    },
-    "references": [],
-    "metadata": {
-      "label": "lem-wasserstein-decomposition"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 3,
-      "chapter_file": "chapter_3.json",
-      "section_id": "## 3. The Augmented Hypocoercive Lyapunov Function"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-sx-implies-variance",
     "title": "Structural Positional Error and Internal Variance",
-    "type": "lemma",
     "nl_statement": "The positional component of the structural error between the alive-walker distributions of two swarms is at most twice the sum of their physical internal positional variances of alive walkers.",
-    "content_markdown": ":label: lem-sx-implies-variance\n\nLet $k_1 := |\\mathcal{A}(S_1)|$ and $k_2 := |\\mathcal{A}(S_2)|$ denote the numbers of alive walkers in each swarm. Define:\n\n- $V_{\\text{x,struct}}$ as the positional component of the structural error between the two swarms' **alive-walker distributions**\n- $\\text{Var}_k(x) := \\frac{1}{k_{\\text{alive}}} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2$ as the **physical internal positional variance** of the **alive walkers** in swarm $k$ (note: this is $k_{\\text{alive}}$-normalized, representing the actual spread of alive walkers, distinct from the Lyapunov variance component $V_{Var,x}$ which is $N$-normalized)\n\nThen:\n\n$$\nV_{\\text{x,struct}} \\le 2(\\text{Var}_1(x) + \\text{Var}_2(x))\n$$",
-    "raw_directive": "622: The first step in our causal chain is to connect the state of the coupled system to the internal configuration of the individual swarms. A large mismatch in the geometric shapes of the two swarms, as measured by the positional component of the structural error ($V_{x,\\text{struct}}$), implies that at least one of the swarms must be internally spread out, i.e., have a large positional variance. This lemma makes that connection rigorous.\n623: \n624: :::{prf:lemma} Structural Positional Error and Internal Variance\n625: :label: lem-sx-implies-variance\n626: \n627: Let $k_1 := |\\mathcal{A}(S_1)|$ and $k_2 := |\\mathcal{A}(S_2)|$ denote the numbers of alive walkers in each swarm. Define:\n628: \n629: - $V_{\\text{x,struct}}$ as the positional component of the structural error between the two swarms' **alive-walker distributions**\n630: - $\\text{Var}_k(x) := \\frac{1}{k_{\\text{alive}}} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2$ as the **physical internal positional variance** of the **alive walkers** in swarm $k$ (note: this is $k_{\\text{alive}}$-normalized, representing the actual spread of alive walkers, distinct from the Lyapunov variance component $V_{Var,x}$ which is $N$-normalized)\n631: \n632: Then:\n633: \n634: $$\n635: V_{\\text{x,struct}} \\le 2(\\text{Var}_1(x) + \\text{Var}_2(x))\n636: $$\n637: ",
     "equations": [
       {
         "label": null,
@@ -284,39 +256,13 @@
       "alive walkers",
       "inequality",
       "causal chain"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 3. The Augmented Hypocoercive Lyapunov Function",
-    "span": {
-      "start_line": 622,
-      "end_line": 637,
-      "content_start": 625,
-      "content_end": 636,
-      "header_lines": [
-        623
-      ]
-    },
-    "references": [],
-    "metadata": {
-      "label": "lem-sx-implies-variance"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 3,
-      "chapter_file": "chapter_3.json",
-      "section_id": "## 3. The Augmented Hypocoercive Lyapunov Function"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-greedy-preserves-signal",
     "title": "Greedy Pairing Guarantees Signal Separation",
-    "type": "lemma",
     "nl_statement": "In a swarm state with high internal variance where alive walkers are partitioned into high-error and low-error sets, the sequential stochastic greedy pairing operator guarantees statistical separation in expected raw phase-space distances: large for high-error walkers and small for low-error walkers, with epsilon-dependent bounds.",
-    "content_markdown": ":label: lem-greedy-preserves-signal\n\nLet a swarm be in a state with high internal variance, such that its alive walkers `A_k` are partitioned into a high-error set `H_k` and a low-error set `L_k` as per {prf:ref}`def-geometric-partition`.\n\nThe Sequential Stochastic Greedy Pairing Operator ({prf:ref}`def-greedy-pairing-algorithm`) guarantees a statistical separation in the expected raw phase-space distance measurements for these two populations. Specifically, there exist N-uniform, $\\varepsilon$-dependent bounds such that:\n\n1.  For any high-error walker $i \\in H_k$, its expected raw distance is large:\n\n\n$$\n\\mathbb{E}[d_i \\mid S_t, i \\in H_k] \\ge D_H(\\epsilon)\n$$\n\n2.  For any low-error walker $j \\in L_k$, its expected raw distance is small:\n\n\n$$\n\\mathbb{E}[d_j \\mid S_t, j \\in L_k] \\le R_L(\\epsilon) + D_{\\mathrm{valid}} \\cdot c_k \\exp\\left(-\\frac{D_H(\\epsilon)^2 - R_L(\\epsilon)^2}{2\\epsilon^2}\\right)\n$$",
-    "raw_directive": "1528: With these formal definitions, we can now prove that the practical pairing algorithm reliably detects this structure.\n1529: \n1530: :::{prf:lemma} Greedy Pairing Guarantees Signal Separation\n1531: :label: lem-greedy-preserves-signal\n1532: \n1533: Let a swarm be in a state with high internal variance, such that its alive walkers `A_k` are partitioned into a high-error set `H_k` and a low-error set `L_k` as per {prf:ref}`def-geometric-partition`.\n1534: \n1535: The Sequential Stochastic Greedy Pairing Operator ({prf:ref}`def-greedy-pairing-algorithm`) guarantees a statistical separation in the expected raw phase-space distance measurements for these two populations. Specifically, there exist N-uniform, $\\varepsilon$-dependent bounds such that:\n1536: \n1537: 1.  For any high-error walker $i \\in H_k$, its expected raw distance is large:\n1538: \n1539: \n1540: $$\n1541: \\mathbb{E}[d_i \\mid S_t, i \\in H_k] \\ge D_H(\\epsilon)\n1542: $$\n1543: \n1544: 2.  For any low-error walker $j \\in L_k$, its expected raw distance is small:\n1545: \n1546: \n1547: $$\n1548: \\mathbb{E}[d_j \\mid S_t, j \\in L_k] \\le R_L(\\epsilon) + D_{\\mathrm{valid}} \\cdot c_k \\exp\\left(-\\frac{D_H(\\epsilon)^2 - R_L(\\epsilon)^2}{2\\epsilon^2}\\right)\n1549: $$\n1550: ",
     "equations": [
       {
         "label": null,
@@ -492,42 +438,13 @@
       "phase-space distance",
       "expected distance",
       "error sets"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 5. The Measurement and Interaction Pipeline",
-    "span": {
-      "start_line": 1528,
-      "end_line": 1550,
-      "content_start": 1531,
-      "content_end": 1549,
-      "header_lines": [
-        1529
-      ]
-    },
-    "references": [
-      "def-geometric-partition",
-      "def-greedy-pairing-algorithm"
-    ],
-    "metadata": {
-      "label": "lem-greedy-preserves-signal"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 5,
-      "chapter_file": "chapter_5.json",
-      "section_id": "## 5. The Measurement and Interaction Pipeline"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-patching-properties",
     "title": "Properties of the Patching Function",
-    "type": "lemma",
     "nl_statement": "Properties of the patching function.",
-    "content_markdown": ":::{prf:lemma} Properties of the Patching Function",
-    "raw_directive": "1809: :::\n1810: \n1811: :::{prf:lemma} Properties of the Patching Function\n1812: :label: lem-patching-properties",
     "equations": [],
     "hypotheses": [],
     "conclusion": {
@@ -545,39 +462,13 @@
       "patching",
       "properties",
       "lemma"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 5. The Measurement and Interaction Pipeline",
-    "span": {
-      "start_line": 1809,
-      "end_line": 1812,
-      "content_start": 1811,
-      "content_end": 1811,
-      "header_lines": [
-        1810
-      ]
-    },
-    "references": [],
-    "metadata": {
-      "label": "lem-patching-properties"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 5,
-      "chapter_file": "chapter_5.json",
-      "section_id": "## 5. The Measurement and Interaction Pipeline"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-compact-support-z-scores",
     "title": "Compact Support of Standardized Scores",
-    "type": "lemma",
     "nl_statement": "The standardized scores have compact support.",
-    "content_markdown": ":::{prf:lemma} Compact Support of Standardized Scores",
-    "raw_directive": "1830: :::\n1831: \n1832: :::{prf:lemma} Compact Support of Standardized Scores\n1833: :label: lem-compact-support-z-scores",
     "equations": [],
     "hypotheses": [],
     "conclusion": {
@@ -597,39 +488,13 @@
       "z-scores",
       "probability",
       "measure theory"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 5. The Measurement and Interaction Pipeline",
-    "span": {
-      "start_line": 1830,
-      "end_line": 1833,
-      "content_start": 1832,
-      "content_end": 1832,
-      "header_lines": [
-        1831
-      ]
-    },
-    "references": [],
-    "metadata": {
-      "label": "lem-compact-support-z-scores"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 5,
-      "chapter_file": "chapter_5.json",
-      "section_id": "## 5. The Measurement and Interaction Pipeline"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-logistic-properties",
     "title": "Verification of Axiomatic Properties",
-    "type": "lemma",
     "nl_statement": "Verification of axiomatic properties for the logistic model.",
-    "content_markdown": ":::{prf:lemma} Verification of Axiomatic Properties",
-    "raw_directive": "1855: :::\n1856: \n1857: :::{prf:lemma} Verification of Axiomatic Properties\n1858: :label: lem-logistic-properties",
     "equations": [],
     "hypotheses": [],
     "conclusion": {
@@ -649,39 +514,13 @@
       "properties",
       "verification",
       "lemma"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 5. The Measurement and Interaction Pipeline",
-    "span": {
-      "start_line": 1855,
-      "end_line": 1858,
-      "content_start": 1857,
-      "content_end": 1857,
-      "header_lines": [
-        1856
-      ]
-    },
-    "references": [],
-    "metadata": {
-      "label": "lem-logistic-properties"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 5,
-      "chapter_file": "chapter_5.json",
-      "section_id": "## 5. The Measurement and Interaction Pipeline"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-potential-bounds",
     "title": "Uniform Bounds of the Fitness Potential",
-    "type": "lemma",
     "nl_statement": "Any non-zero fitness potential \\(V_i\\) generated by this pipeline is uniformly bounded within a compact interval \\([V_{\\text{pot,min}}, V_{\\text{pot,max}}]\\), where the bounds are state-independent constants defined by the algorithmic parameters, with \\(V_{\\text{pot,min}} := \\eta^{\\alpha+\\beta}\\).",
-    "content_markdown": ":label: lem-potential-bounds\n\nAny non-zero fitness potential $V_i$ generated by this pipeline is uniformly bounded within a compact interval $[V_{\\text{pot,min}}, V_{\\text{pot,max}}]$. The bounds are state-independent constants defined by the algorithmic parameters:",
-    "raw_directive": "1886: :::\n1887: \n1888: :::{prf:lemma} Uniform Bounds of the Fitness Potential\n1889: :label: lem-potential-bounds\n1890: \n1891: Any non-zero fitness potential $V_i$ generated by this pipeline is uniformly bounded within a compact interval $[V_{\\text{pot,min}}, V_{\\text{pot,max}}]$. The bounds are state-independent constants defined by the algorithmic parameters:\n1892: *   $V_{\\text{pot,min}} := \\eta^{\\alpha+\\beta}$",
     "equations": [
       {
         "label": "V_pot_min_def",
@@ -785,39 +624,13 @@
       "state-independent",
       "compact-interval",
       "lemma"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 5. The Measurement and Interaction Pipeline",
-    "span": {
-      "start_line": 1886,
-      "end_line": 1892,
-      "content_start": 1889,
-      "content_end": 1891,
-      "header_lines": [
-        1887
-      ]
-    },
-    "references": [],
-    "metadata": {
-      "label": "lem-potential-bounds"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 5,
-      "chapter_file": "chapter_5.json",
-      "section_id": "## 5. The Measurement and Interaction Pipeline"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-V_Varx-implies-variance",
     "title": "Large $V_{\\text{Var},x}$ Implies Large Single-Swarm Positional Variance",
-    "type": "lemma",
     "nl_statement": "If the total intra-swarm positional variance component $V_{\\text{Var},x}(S_1, S_2)$ exceeds the threshold $R_{\\text{total_var},x}^2 > 0$, then at least one of the two swarms has an intra-swarm positional variance exceeding half that threshold.",
-    "content_markdown": ":label: lem-V_Varx-implies-variance\n\nLet $V_{Var,x}(S_1, S_2)$ be the total intra-swarm positional variance component of the Lyapunov function as defined in [](#def-full-synergistic-lyapunov-function):\n\n$$\nV_{Var,x}(S_1, S_2) = \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_1)} \\|\\delta_{x,1,i}\\|^2 + \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_2)} \\|\\delta_{x,2,i}\\|^2\n$$\n\nIf this component is large, such that $V_{Var,x} > R_{total\\_var,x}^2$ for some threshold $R_{total\\_var,x}^2 > 0$, then at least one swarm $k \\in \\{1, 2\\}$ must have a large sum of squared deviations:\n\n$$\n\\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2 > \\frac{R_{total\\_var,x}^2}{2}",
-    "raw_directive": "2322: The first step in the Keystone analysis is to connect the relevant component of the synergistic Lyapunov function to the state of a single swarm. As this document aims to prove the contractive nature of cloning on **positional error**, the Keystone mechanism is triggered specifically by the **positional variance component, $V_{\\text{Var},x}$**. The following lemma provides the simple but necessary guarantee that if this $V_{\\text{Var},x}$ term is large, then at least one of the two swarms must have a large internal positional variance.\n2323: \n2324: :::{prf:lemma} Large $V_{\\text{Var},x}$ Implies Large Single-Swarm Positional Variance\n2325: :label: lem-V_Varx-implies-variance\n2326: \n2327: Let $V_{Var,x}(S_1, S_2)$ be the total intra-swarm positional variance component of the Lyapunov function as defined in [](#def-full-synergistic-lyapunov-function):\n2328: \n2329: $$\n2330: V_{Var,x}(S_1, S_2) = \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_1)} \\|\\delta_{x,1,i}\\|^2 + \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_2)} \\|\\delta_{x,2,i}\\|^2\n2331: $$\n2332: \n2333: If this component is large, such that $V_{Var,x} > R_{total\\_var,x}^2$ for some threshold $R_{total\\_var,x}^2 > 0$, then at least one swarm $k \\in \\{1, 2\\}$ must have a large sum of squared deviations:\n2334: \n2335: $$\n2336: \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2 > \\frac{R_{total\\_var,x}^2}{2}\n2337: $$",
     "equations": [
       {
         "label": null,
@@ -927,39 +740,13 @@
       "positional",
       "cloning",
       "contractive"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 6. The Geometry of Error: From System Error to a Guaranteed Geometric Structure",
-    "span": {
-      "start_line": 2322,
-      "end_line": 2337,
-      "content_start": 2325,
-      "content_end": 2336,
-      "header_lines": [
-        2323
-      ]
-    },
-    "references": [],
-    "metadata": {
-      "label": "lem-V_Varx-implies-variance"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 6,
-      "chapter_file": "chapter_6.json",
-      "section_id": "## 6. The Geometry of Error: From System Error to a Guaranteed Geometric Structure"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-phase-space-packing",
     "title": "The Phase-Space Packing Lemma",
-    "type": "lemma",
-    "nl_statement": "For a swarm of k \u2265 2 walkers in a compact phase-space domain, the fraction of close pairs under the algorithmic distance is bounded above by a monotonically decreasing function of the swarm's total hypocoercive variance, assuming \u03bb_v \u2264 \u03bb_alg.",
-    "content_markdown": ":label: lem-phase-space-packing\n\nFor a swarm `k` consisting of $k \\geq 2$ walkers with phase-space states $\\{(x_i, v_i)\\}_{i=1}^k$ within a compact domain, define the **total hypocoercive variance** of the swarm as:\n\n$$\n\\mathrm{Var}_h(S_k) := \\mathrm{Var}_x(S_k) + \\lambda_v \\mathrm{Var}_v(S_k)\n$$\n\nFor any chosen proximity threshold $d_{\\text{close}} > 0$, let $N_{\\text{close}}$ be the number of unique pairs $(i, j)$ with $i<j$ and $d_{\\text{alg}}(i, j) < d_{\\text{close}}$, where $d_{\\text{alg}}(i, j)^2 := \\|x_i - x_j\\|^2 + \\lambda_{\\text{alg}} \\|v_i - v_j\\|^2$ is the algorithmic phase-space distance.\n\nThe fraction of such \"close pairs in phase space\", $f_{\\text{close}} = N_{\\text{close}} / \\binom{k}{2}$, is bounded above by a function of the swarm's hypocoercive variance. Specifically, assuming $\\lambda_v \\le \\lambda_{\\text{alg}}$ and defining the phase-space diameter $D_{\\text{valid}}^2 := D_x^2 + \\lambda_{\\text{alg}} D_v^2$ where $D_x$ and $D_v$ are the spatial and velocity domain diameters, there exists a continuous, monotonically decreasing function such that:\n\n$$\nf_{\\text{close}} \\le g(\\mathrm{Var}_h(S_k)) := \\frac{D_{\\text{valid}}^2 - 2\\mathrm{Var}_h(S_k)}{D_{\\text{valid}}^2 - d_{\\text{close}}^2}\n$$",
-    "raw_directive": "2430: Before analyzing the specific regimes of the $\\varepsilon$-dichotomy, we establish a precise, quantitative relationship between a swarm's global dispersion in phase space, as measured by its **total hypocoercive variance**, and its local phase-space clustering structure. This lemma generalizes the classical packing argument to phase space, proving that a swarm cannot be simultaneously spread out in the hypocoercive norm while being highly clustered under the algorithmic distance metric `d_alg`. This result is the foundational geometric constraint upon which both regimes of our analysis will depend.\n2431: \n2432: :::{prf:lemma} The Phase-Space Packing Lemma\n2433: :label: lem-phase-space-packing\n2434: \n2435: For a swarm `k` consisting of $k \\geq 2$ walkers with phase-space states $\\{(x_i, v_i)\\}_{i=1}^k$ within a compact domain, define the **total hypocoercive variance** of the swarm as:\n2436: \n2437: $$\n2438: \\mathrm{Var}_h(S_k) := \\mathrm{Var}_x(S_k) + \\lambda_v \\mathrm{Var}_v(S_k)\n2439: $$\n2440: \n2441: For any chosen proximity threshold $d_{\\text{close}} > 0$, let $N_{\\text{close}}$ be the number of unique pairs $(i, j)$ with $i<j$ and $d_{\\text{alg}}(i, j) < d_{\\text{close}}$, where $d_{\\text{alg}}(i, j)^2 := \\|x_i - x_j\\|^2 + \\lambda_{\\text{alg}} \\|v_i - v_j\\|^2$ is the algorithmic phase-space distance.\n2442: \n2443: The fraction of such \"close pairs in phase space\", $f_{\\text{close}} = N_{\\text{close}} / \\binom{k}{2}$, is bounded above by a function of the swarm's hypocoercive variance. Specifically, assuming $\\lambda_v \\le \\lambda_{\\text{alg}}$ and defining the phase-space diameter $D_{\\text{valid}}^2 := D_x^2 + \\lambda_{\\text{alg}} D_v^2$ where $D_x$ and $D_v$ are the spatial and velocity domain diameters, there exists a continuous, monotonically decreasing function such that:\n2444: \n2445: $$\n2446: f_{\\text{close}} \\le g(\\mathrm{Var}_h(S_k)) := \\frac{D_{\\text{valid}}^2 - 2\\mathrm{Var}_h(S_k)}{D_{\\text{valid}}^2 - d_{\\text{close}}^2}\n2447: $$\n2448: ",
+    "nl_statement": "For a swarm of k ≥ 2 walkers in a compact phase-space domain, the fraction of close pairs under the algorithmic distance is bounded above by a monotonically decreasing function of the swarm's total hypocoercive variance, assuming λ_v ≤ λ_alg.",
     "equations": [
       {
         "label": null,
@@ -984,7 +771,7 @@
     ],
     "hypotheses": [
       {
-        "text": "Swarm S_k consists of k \u2265 2 walkers with phase-space states {(x_i, v_i)} in a compact domain",
+        "text": "Swarm S_k consists of k ≥ 2 walkers with phase-space states {(x_i, v_i)} in a compact domain",
         "latex": null
       },
       {
@@ -992,7 +779,7 @@
         "latex": null
       },
       {
-        "text": "\u03bb_v \u2264 \u03bb_alg",
+        "text": "λ_v ≤ λ_alg",
         "latex": null
       },
       {
@@ -1001,7 +788,7 @@
       }
     ],
     "conclusion": {
-      "text": "There exists a continuous, monotonically decreasing function g such that f_close \u2264 g(Var_h(S_k)) = (D_valid^2 - 2 Var_h(S_k)) / (D_valid^2 - d_close^2)",
+      "text": "There exists a continuous, monotonically decreasing function g such that f_close ≤ g(Var_h(S_k)) = (D_valid^2 - 2 Var_h(S_k)) / (D_valid^2 - d_close^2)",
       "latex": "f_{\\text{close}} \\le g(\\mathrm{Var}_h(S_k)) := \\frac{D_{\\text{valid}}^2 - 2\\mathrm{Var}_h(S_k)}{D_{\\text{valid}}^2 - d_{\\text{close}}^2}"
     },
     "variables": [
@@ -1010,7 +797,7 @@
         "name": "number of walkers",
         "description": "Size of the swarm",
         "constraints": [
-          "k \u2265 2"
+          "k ≥ 2"
         ],
         "tags": [
           "swarm-size"
@@ -1050,18 +837,18 @@
         ]
       },
       {
-        "symbol": "\u03bb_v",
+        "symbol": "λ_v",
         "name": "velocity scaling in hypocoercive variance",
         "description": "Weight for velocity variance",
         "constraints": [
-          "\u03bb_v \u2264 \u03bb_alg"
+          "λ_v ≤ λ_alg"
         ],
         "tags": [
           "scaling"
         ]
       },
       {
-        "symbol": "\u03bb_alg",
+        "symbol": "λ_alg",
         "name": "velocity scaling in algorithmic distance",
         "description": "Weight for velocity in d_alg",
         "constraints": [],
@@ -1115,39 +902,13 @@
       "algorithmic-distance",
       "clustering",
       "variance-bound"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 6. The Geometry of Error: From System Error to a Guaranteed Geometric Structure",
-    "span": {
-      "start_line": 2430,
-      "end_line": 2448,
-      "content_start": 2433,
-      "content_end": 2447,
-      "header_lines": [
-        2431
-      ]
-    },
-    "references": [],
-    "metadata": {
-      "label": "lem-phase-space-packing"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 6,
-      "chapter_file": "chapter_6.json",
-      "section_id": "## 6. The Geometry of Error: From System Error to a Guaranteed Geometric Structure"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-var-x-implies-var-h",
     "title": "Positional Variance as a Lower Bound for Hypocoercive Variance",
-    "type": "lemma",
     "nl_statement": "For any swarm k, the total hypocoercive variance Var_h(S_k) is bounded below by the positional variance Var_x(S_k).",
-    "content_markdown": ":label: lem-var-x-implies-var-h\n\nFor any swarm `k`, its total hypocoercive variance is bounded below by its positional variance:\n\n$$\n\\mathrm{Var}_h(S_k) \\ge \\mathrm{Var}_x(S_k)\n$$",
-    "raw_directive": "2575: To connect this analysis back to the positional variance component of the Lyapunov function, we first establish a simple but crucial relationship.\n2576: \n2577: :::{prf:lemma} Positional Variance as a Lower Bound for Hypocoercive Variance\n2578: :label: lem-var-x-implies-var-h\n2579: \n2580: For any swarm `k`, its total hypocoercive variance is bounded below by its positional variance:\n2581: \n2582: $$\n2583: \\mathrm{Var}_h(S_k) \\ge \\mathrm{Var}_x(S_k)\n2584: $$\n2585: ",
     "equations": [
       {
         "label": null,
@@ -1161,7 +922,7 @@
       }
     ],
     "conclusion": {
-      "text": "Var_h(S_k) \u2265 Var_x(S_k)",
+      "text": "Var_h(S_k) ≥ Var_x(S_k)",
       "latex": "\\mathrm{Var}_h(S_k) \\ge \\mathrm{Var}_x(S_k)"
     },
     "variables": [
@@ -1222,39 +983,13 @@
       "swarm",
       "inequality",
       "lemma"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 6. The Geometry of Error: From System Error to a Guaranteed Geometric Structure",
-    "span": {
-      "start_line": 2575,
-      "end_line": 2585,
-      "content_start": 2578,
-      "content_end": 2584,
-      "header_lines": [
-        2576
-      ]
-    },
-    "references": [],
-    "metadata": {
-      "label": "lem-var-x-implies-var-h"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 6,
-      "chapter_file": "chapter_6.json",
-      "section_id": "## 6. The Geometry of Error: From System Error to a Guaranteed Geometric Structure"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-outlier-fraction-lower-bound",
     "title": "N-Uniform Lower Bound on the Outlier Fraction",
-    "type": "lemma",
-    "nl_statement": "For a swarm with k >= 2 alive walkers, if the hypocoercive variance Var_h(S_k) exceeds R_h^2 > 0, then the fraction of alive walkers in the global kinematic outlier set O_k is at least (1 - \u03b5_O) R_h^2 / D_h^2 > 0, independent of N.",
-    "content_markdown": ":label: lem-outlier-fraction-lower-bound\n\nLet $O_k$ be the **global kinematic outlier set** for a swarm `k` with `k >= 2` alive walkers, as defined in Section 6.3, with structural parameter $\\varepsilon_O \\in (0, 1)$.\n\nIf the swarm's internal hypocoercive variance is large, such that $\\mathrm{Var}_h(S_k) > R^2_h$ for some threshold $R^2_h > 0$, then the fraction of *alive* walkers in the outlier set is bounded below by a positive constant that is independent of `N`. Specifically:\n\n$$\n\\frac{|O_k|}{k} \\ge \\frac{(1-\\varepsilon_O) R^2_h}{D_h^2} =: f_O > 0\n$$",
-    "raw_directive": "2610: This lemma establishes the crucial bridge: the analysis in Section 6.2 guaranteed a large positional variance `Var_x`, and this lemma proves that such a condition is sufficient to guarantee a large hypocoercive variance `Var_h`, which is the relevant measure for the phase-space outlier set `O_k`. We can now proceed with the main result.\n2611: \n2612: :::{prf:lemma} N-Uniform Lower Bound on the Outlier Fraction\n2613: :label: lem-outlier-fraction-lower-bound\n2614: \n2615: Let $O_k$ be the **global kinematic outlier set** for a swarm `k` with `k >= 2` alive walkers, as defined in Section 6.3, with structural parameter $\\varepsilon_O \\in (0, 1)$.\n2616: \n2617: If the swarm's internal hypocoercive variance is large, such that $\\mathrm{Var}_h(S_k) > R^2_h$ for some threshold $R^2_h > 0$, then the fraction of *alive* walkers in the outlier set is bounded below by a positive constant that is independent of `N`. Specifically:\n2618: \n2619: $$\n2620: \\frac{|O_k|}{k} \\ge \\frac{(1-\\varepsilon_O) R^2_h}{D_h^2} =: f_O > 0\n2621: $$\n2622: ",
+    "nl_statement": "For a swarm with k >= 2 alive walkers, if the hypocoercive variance Var_h(S_k) exceeds R_h^2 > 0, then the fraction of alive walkers in the global kinematic outlier set O_k is at least (1 - ε_O) R_h^2 / D_h^2 > 0, independent of N.",
     "equations": [
       {
         "label": "ineq-outlier-fraction",
@@ -1267,7 +1002,7 @@
         "latex": null
       },
       {
-        "text": "Structural parameter \u03b5_O \u2208 (0, 1).",
+        "text": "Structural parameter ε_O ∈ (0, 1).",
         "latex": "\\varepsilon_O \\in (0, 1)"
       },
       {
@@ -1276,7 +1011,7 @@
       }
     ],
     "conclusion": {
-      "text": "The fraction of alive walkers in the outlier set is bounded below: |O_k|/k >= (1 - \u03b5_O) R_h^2 / D_h^2 =: f_O > 0, independent of N.",
+      "text": "The fraction of alive walkers in the outlier set is bounded below: |O_k|/k >= (1 - ε_O) R_h^2 / D_h^2 =: f_O > 0, independent of N.",
       "latex": "\\frac{|O_k|}{k} \\ge \\frac{(1-\\varepsilon_O) R^2_h}{D_h^2} =: f_O > 0"
     },
     "variables": [
@@ -1371,7 +1106,7 @@
         "confidence": 0.9
       },
       {
-        "text": "The outlier set O_k is defined using \u03b5_O and kinematic properties as per Section 6.3.",
+        "text": "The outlier set O_k is defined using ε_O and kinematic properties as per Section 6.3.",
         "confidence": 1.0
       },
       {
@@ -1392,39 +1127,13 @@
       "kinematic",
       "fraction",
       "uniform bound"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 6. The Geometry of Error: From System Error to a Guaranteed Geometric Structure",
-    "span": {
-      "start_line": 2610,
-      "end_line": 2622,
-      "content_start": 2613,
-      "content_end": 2621,
-      "header_lines": [
-        2611
-      ]
-    },
-    "references": [],
-    "metadata": {
-      "label": "lem-outlier-fraction-lower-bound"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 6,
-      "chapter_file": "chapter_6.json",
-      "section_id": "## 6. The Geometry of Error: From System Error to a Guaranteed Geometric Structure"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-outlier-cluster-fraction-lower-bound",
     "title": "N-Uniform Lower Bound on the Outlier-Cluster Fraction",
-    "type": "lemma",
     "nl_statement": "In the local-interaction regime, using the clustering-based definition of the high-error set with maximum cluster diameter \\(D_{\\text{diam}}(\\varepsilon) = c_d \\cdot \\varepsilon\\) where \\(c_d \\varepsilon < 2\\sqrt{R^2_{\\text{var}}}\\), if the swarm's internal positional variance satisfies \\(\\mathrm{Var}_x(S_k) > R^2_{\\text{var}}\\), then the fraction of alive walkers in the high-error set \\(H_k(\\varepsilon)\\) is bounded below by a positive constant \\(f_H(\\varepsilon) > 0\\) independent of \\(N\\) and \\(k\\).",
-    "content_markdown": ":label: lem-outlier-cluster-fraction-lower-bound\n\nLet the high-error set $H_k(\\varepsilon)$ be defined via the phase-space clustering-based approach (as $C_k(\\varepsilon)$ in {prf:ref}`def-unified-high-low-error-sets`) for the local-interaction regime, with maximum cluster diameter $D_diam(\\varepsilon) = c_d \u00b7 \\varepsilon$ where $c_d > 0$ is a fixed constant.\n\nFor any choice of $c_d$ and variance threshold $R^2_{\\text{var}}$ satisfying $c_d \u00b7 \\epsilon < 2\\sqrt{R^2_{\\text{var}}}$, there exists a positive constant $f_H(\\epsilon) > 0$, independent of `N` and `k`, such that:\n\nIf the swarm's internal positional variance is large, $\\mathrm{Var}_x(S_k) > R^2_{\\text{var}}$, then the fraction of *alive* walkers in the high-error set is bounded below:\n\n$$\n\\frac{|H_k(\\epsilon)|}{k} \\ge f_H(\\epsilon) > 0",
-    "raw_directive": "2716: With the clustering-based definition from Section 6.3 established, we can now prove the main result for this regime.\n2717: \n2718: :::{prf:lemma} N-Uniform Lower Bound on the Outlier-Cluster Fraction\n2719: :label: lem-outlier-cluster-fraction-lower-bound\n2720: \n2721: Let the high-error set $H_k(\\varepsilon)$ be defined via the phase-space clustering-based approach (as $C_k(\\varepsilon)$ in {prf:ref}`def-unified-high-low-error-sets`) for the local-interaction regime, with maximum cluster diameter $D_diam(\\varepsilon) = c_d \u00b7 \\varepsilon$ where $c_d > 0$ is a fixed constant.\n2722: \n2723: For any choice of $c_d$ and variance threshold $R^2_{\\text{var}}$ satisfying $c_d \u00b7 \\epsilon < 2\\sqrt{R^2_{\\text{var}}}$, there exists a positive constant $f_H(\\epsilon) > 0$, independent of `N` and `k`, such that:\n2724: \n2725: If the swarm's internal positional variance is large, $\\mathrm{Var}_x(S_k) > R^2_{\\text{var}}$, then the fraction of *alive* walkers in the high-error set is bounded below:\n2726: \n2727: $$\n2728: \\frac{|H_k(\\epsilon)|}{k} \\ge f_H(\\epsilon) > 0\n2729: $$",
     "equations": [
       {
         "label": null,
@@ -1432,10 +1141,7 @@
       }
     ],
     "hypotheses": [],
-    "conclusion": {
-      "text": null,
-      "latex": null
-    },
+    "conclusion": {},
     "variables": [
       {
         "symbol": "\\varepsilon",
@@ -1558,41 +1264,13 @@
       "variance",
       "swarm",
       "local-interaction"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 6. The Geometry of Error: From System Error to a Guaranteed Geometric Structure",
-    "span": {
-      "start_line": 2716,
-      "end_line": 2729,
-      "content_start": 2719,
-      "content_end": 2728,
-      "header_lines": [
-        2717
-      ]
-    },
-    "references": [
-      "def-unified-high-low-error-sets"
-    ],
-    "metadata": {
-      "label": "lem-outlier-cluster-fraction-lower-bound"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 6,
-      "chapter_file": "chapter_6.json",
-      "section_id": "## 6. The Geometry of Error: From System Error to a Guaranteed Geometric Structure"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-geometric-separation-of-partition",
     "title": "Geometric Separation of the Partition",
-    "type": "lemma",
-    "nl_statement": "Under large positional variance Var(x) > R_var\u00b2, the high-error set H_k(\u03b5) and low-error set L_k(\u03b5) for swarm k are geometrically separated in algorithmic phase space by D_H(\u03b5) > R_L(\u03b5) > 0, with low-error walkers forming clusters of size at least f_c k within radius R_L(\u03b5).",
-    "content_markdown": ":label: lem-geometric-separation-of-partition\n\nLet $H_k(\\epsilon)$ and $L_k(\\epsilon)$ be the unified high-error and low-error sets for swarm $k$ as defined in {prf:ref}`def-unified-high-low-error-sets`. Assume the swarm's internal positional variance is large: $\\mathrm{Var}(x) > R^2_{\\mathrm{var}}$.\n\nThen there exist N-uniform, $\\epsilon$-dependent constants $D_H(\\epsilon) > R_L(\\epsilon) > 0$ and a fractional constant $f_c > 0$ such that:\n\n**Part 1 (Separation Between Sets):** For any walker $i \\in H_k(\\epsilon)$ from a high-error cluster and any walker $j \\in L_k(\\epsilon)$ from a low-error cluster, their algorithmic distance is bounded below:\n\n$$\nd_{\\text{alg}}(i, j) \\ge D_H(\\epsilon)\n$$\n\n**Part 2 (Clustering of Low-Error Walkers):** For any walker $j \\in L_k(\\epsilon)$, there exists a non-empty subset of companion walkers $C_j \\subset L_k(\\epsilon) \\setminus \\{j\\}$ of minimum size $|C_j| \\ge f_c k$ such that all members of this cluster are within a small algorithmic radius:\n\n$$\nd_{\\text{alg}}(j, \\ell) \\le R_L(\\epsilon) \\quad \\text{for all } \\ell \\in C_j\n$$\n\nThe separation property $D_H(\\epsilon) > R_L(\\epsilon)$ ensures that the geometric signatures of the two sets are fundamentally distinct and non-overlapping **in the algorithmic phase space**.",
-    "raw_directive": "2890: #### 6.5.1. Main Lemma: Statement of Geometric Separation\n2891: \n2892: :::{prf:lemma} Geometric Separation of the Partition\n2893: :label: lem-geometric-separation-of-partition\n2894: \n2895: Let $H_k(\\epsilon)$ and $L_k(\\epsilon)$ be the unified high-error and low-error sets for swarm $k$ as defined in {prf:ref}`def-unified-high-low-error-sets`. Assume the swarm's internal positional variance is large: $\\mathrm{Var}(x) > R^2_{\\mathrm{var}}$.\n2896: \n2897: Then there exist N-uniform, $\\epsilon$-dependent constants $D_H(\\epsilon) > R_L(\\epsilon) > 0$ and a fractional constant $f_c > 0$ such that:\n2898: \n2899: **Part 1 (Separation Between Sets):** For any walker $i \\in H_k(\\epsilon)$ from a high-error cluster and any walker $j \\in L_k(\\epsilon)$ from a low-error cluster, their algorithmic distance is bounded below:\n2900: \n2901: $$\n2902: d_{\\text{alg}}(i, j) \\ge D_H(\\epsilon)\n2903: $$\n2904: \n2905: **Part 2 (Clustering of Low-Error Walkers):** For any walker $j \\in L_k(\\epsilon)$, there exists a non-empty subset of companion walkers $C_j \\subset L_k(\\epsilon) \\setminus \\{j\\}$ of minimum size $|C_j| \\ge f_c k$ such that all members of this cluster are within a small algorithmic radius:\n2906: \n2907: $$\n2908: d_{\\text{alg}}(j, \\ell) \\le R_L(\\epsilon) \\quad \\text{for all } \\ell \\in C_j\n2909: $$\n2910: \n2911: The separation property $D_H(\\epsilon) > R_L(\\epsilon)$ ensures that the geometric signatures of the two sets are fundamentally distinct and non-overlapping **in the algorithmic phase space**.\n2912: ",
+    "nl_statement": "Under large positional variance Var(x) > R_var², the high-error set H_k(ε) and low-error set L_k(ε) for swarm k are geometrically separated in algorithmic phase space by D_H(ε) > R_L(ε) > 0, with low-error walkers forming clusters of size at least f_c k within radius R_L(ε).",
     "equations": [
       {
         "label": null,
@@ -1613,22 +1291,22 @@
     ],
     "hypotheses": [
       {
-        "text": "H_k(\u03b5) and L_k(\u03b5) are the unified high-error and low-error sets for swarm k as defined in def-unified-high-low-error-sets",
+        "text": "H_k(ε) and L_k(ε) are the unified high-error and low-error sets for swarm k as defined in def-unified-high-low-error-sets",
         "latex": null
       },
       {
-        "text": "The swarm's internal positional variance is large: Var(x) > R_var\u00b2",
+        "text": "The swarm's internal positional variance is large: Var(x) > R_var²",
         "latex": "\\mathrm{Var}(x) > R^2_{\\mathrm{var}}"
       }
     ],
     "conclusion": {
-      "text": "There exist N-uniform, \u03b5-dependent constants D_H(\u03b5) > R_L(\u03b5) > 0 and a fractional constant f_c > 0 such that: (1) for any i \u2208 H_k(\u03b5) and j \u2208 L_k(\u03b5), d_alg(i, j) \u2265 D_H(\u03b5); (2) for any j \u2208 L_k(\u03b5), there exists C_j \u2282 L_k(\u03b5) \\ {j} with |C_j| \u2265 f_c k and d_alg(j, \u2113) \u2264 R_L(\u03b5) for all \u2113 \u2208 C_j. The separation D_H(\u03b5) > R_L(\u03b5) ensures non-overlapping geometric signatures in algorithmic phase space.",
+      "text": "There exist N-uniform, ε-dependent constants D_H(ε) > R_L(ε) > 0 and a fractional constant f_c > 0 such that: (1) for any i ∈ H_k(ε) and j ∈ L_k(ε), d_alg(i, j) ≥ D_H(ε); (2) for any j ∈ L_k(ε), there exists C_j ⊂ L_k(ε) \\ {j} with |C_j| ≥ f_c k and d_alg(j, ℓ) ≤ R_L(ε) for all ℓ ∈ C_j. The separation D_H(ε) > R_L(ε) ensures non-overlapping geometric signatures in algorithmic phase space.",
       "latex": null
     },
     "variables": [
       {
         "symbol": "H_k(\\epsilon)",
-        "name": "H_k(\u03b5)",
+        "name": "H_k(ε)",
         "description": "Unified high-error set for swarm k",
         "constraints": [
           "subset of walkers"
@@ -1640,7 +1318,7 @@
       },
       {
         "symbol": "L_k(\\epsilon)",
-        "name": "L_k(\u03b5)",
+        "name": "L_k(ε)",
         "description": "Unified low-error set for swarm k",
         "constraints": [
           "subset of walkers"
@@ -1652,7 +1330,7 @@
       },
       {
         "symbol": "\\epsilon",
-        "name": "\u03b5",
+        "name": "ε",
         "description": "Error threshold parameter",
         "constraints": [
           "positive real"
@@ -1676,11 +1354,11 @@
       },
       {
         "symbol": "D_H(\\epsilon)",
-        "name": "D_H(\u03b5)",
+        "name": "D_H(ε)",
         "description": "Lower bound constant for separation between high and low-error sets",
         "constraints": [
-          "> R_L(\u03b5) > 0",
-          "N-uniform, \u03b5-dependent"
+          "> R_L(ε) > 0",
+          "N-uniform, ε-dependent"
         ],
         "tags": [
           "constant",
@@ -1689,11 +1367,11 @@
       },
       {
         "symbol": "R_L(\\epsilon)",
-        "name": "R_L(\u03b5)",
+        "name": "R_L(ε)",
         "description": "Upper bound radius for low-error clustering",
         "constraints": [
           "> 0",
-          "N-uniform, \u03b5-dependent"
+          "N-uniform, ε-dependent"
         ],
         "tags": [
           "constant",
@@ -1737,8 +1415,8 @@
         "name": "C_j",
         "description": "Companion subset for low-error walker j",
         "constraints": [
-          "|C_j| \u2265 f_c k",
-          "subset of L_k(\u03b5) \\ {j}"
+          "|C_j| ≥ f_c k",
+          "subset of L_k(ε) \\ {j}"
         ],
         "tags": [
           "set",
@@ -1748,11 +1426,11 @@
     ],
     "implicit_assumptions": [
       {
-        "text": "Constants D_H(\u03b5) and R_L(\u03b5) are N-uniform and \u03b5-dependent",
+        "text": "Constants D_H(ε) and R_L(ε) are N-uniform and ε-dependent",
         "confidence": 1.0
       },
       {
-        "text": "f_c is a positive fractional constant independent of \u03b5 and N",
+        "text": "f_c is a positive fractional constant independent of ε and N",
         "confidence": 1.0
       },
       {
@@ -1779,41 +1457,13 @@
       "algorithmic-distance",
       "clustering",
       "variance"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 6. The Geometry of Error: From System Error to a Guaranteed Geometric Structure",
-    "span": {
-      "start_line": 2890,
-      "end_line": 2912,
-      "content_start": 2893,
-      "content_end": 2911,
-      "header_lines": [
-        2891
-      ]
-    },
-    "references": [
-      "def-unified-high-low-error-sets"
-    ],
-    "metadata": {
-      "label": "lem-geometric-separation-of-partition"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 6,
-      "chapter_file": "chapter_6.json",
-      "section_id": "## 6. The Geometry of Error: From System Error to a Guaranteed Geometric Structure"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-variance-to-gap",
     "title": "From Bounded Variance to a Guaranteed Gap",
-    "type": "lemma",
-    "nl_statement": "For a set of at least two real numbers with empirical variance bounded below by a positive constant \u03ba, the maximum absolute difference between any two numbers is at least \u221a(2\u03ba).",
-    "content_markdown": ":label: lem-variance-to-gap\n\nLet $\\{v_i\\}_{i=1}^k$ be a set of $k \\ge 2$ real numbers. If the empirical variance of this set is bounded below by a strictly positive constant, $\\text{Var}(\\{v_i\\}) \\geq \\kappa > 0$, then there must exist at least one pair of indices $(i, j)$ such that the gap between their values is bounded below:\n\n$$\n\\max_{i,j} |v_i - v_j| \\ge \\sqrt{2\\kappa}",
-    "raw_directive": "3593: The first step in the signal integrity proof is to show that the statistical property of variance, now proven in [](#thm-geometry-guarantees-variance), has a direct, concrete consequence: it forces a measurable separation between the raw values of at least two walkers.\n3594: \n3595: :::{prf:lemma} From Bounded Variance to a Guaranteed Gap\n3596: :label: lem-variance-to-gap\n3597: \n3598: Let $\\{v_i\\}_{i=1}^k$ be a set of $k \\ge 2$ real numbers. If the empirical variance of this set is bounded below by a strictly positive constant, $\\text{Var}(\\{v_i\\}) \\geq \\kappa > 0$, then there must exist at least one pair of indices $(i, j)$ such that the gap between their values is bounded below:\n3599: \n3600: $$\n3601: \\max_{i,j} |v_i - v_j| \\ge \\sqrt{2\\kappa}\n3602: $$",
+    "nl_statement": "For a set of at least two real numbers with empirical variance bounded below by a positive constant κ, the maximum absolute difference between any two numbers is at least √(2κ).",
     "equations": [
       {
         "label": null,
@@ -1883,39 +1533,13 @@
       "bounded",
       "real numbers",
       "empirical"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
-    "span": {
-      "start_line": 3593,
-      "end_line": 3602,
-      "content_start": 3596,
-      "content_end": 3601,
-      "header_lines": [
-        3594
-      ]
-    },
-    "references": [],
-    "metadata": {
-      "label": "lem-variance-to-gap"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 7,
-      "chapter_file": "chapter_7.json",
-      "section_id": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-rescale-derivative-lower-bound",
     "title": "Positive Derivative Bound for the Rescale Function",
-    "type": "lemma",
     "nl_statement": "The first derivative of the canonical logistic rescale function g_A(z) is uniformly bounded below by a strictly positive constant g'_min over the operational range Z_supp.",
-    "content_markdown": ":label: lem-rescale-derivative-lower-bound\n\nFor the Canonical Logistic Rescale function, the first derivative $g'_A(z)$ is uniformly bounded below by a strictly positive constant for all z-scores in the operational range $Z_{\\text{supp}}$. That is, there exists a constant $g'_{\\min} > 0$ such that:\n\n$$\n\\inf_{z \\in Z_{\\mathrm{supp}}} g'_A(z) = g'_{\\min} > 0\n$$",
-    "raw_directive": "3670: Next, we must prove that the rescale function `g_A` is sufficiently sensitive to preserve a standardized gap. This requires showing that its derivative is uniformly bounded below by a positive constant over its entire operational domain.\n3671: \n3672: :::{prf:lemma} Positive Derivative Bound for the Rescale Function\n3673: :label: lem-rescale-derivative-lower-bound\n3674: \n3675: For the Canonical Logistic Rescale function, the first derivative $g'_A(z)$ is uniformly bounded below by a strictly positive constant for all z-scores in the operational range $Z_{\\text{supp}}$. That is, there exists a constant $g'_{\\min} > 0$ such that:\n3676: \n3677: $$\n3678: \\inf_{z \\in Z_{\\mathrm{supp}}} g'_A(z) = g'_{\\min} > 0\n3679: $$\n3680: ",
     "equations": [
       {
         "label": null,
@@ -2001,39 +1625,13 @@
       "infimum",
       "z-score",
       "sensitivity"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
-    "span": {
-      "start_line": 3670,
-      "end_line": 3680,
-      "content_start": 3673,
-      "content_end": 3679,
-      "header_lines": [
-        3671
-      ]
-    },
-    "references": [],
-    "metadata": {
-      "label": "lem-rescale-derivative-lower-bound"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 7,
-      "chapter_file": "chapter_7.json",
-      "section_id": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-raw-gap-to-rescaled-gap",
     "title": "From Raw Measurement Gap to Rescaled Value Gap",
-    "type": "lemma",
-    "nl_statement": "For fixed system parameters and any swarm state S with k \u2265 2 alive walkers, if raw measurement values have a gap |v_a - v_b| \u2265 \u03ba_raw > 0, then rescaled values have |g_A(z_a) - g_A(z_b)| \u2265 \u03ba_rescaled(\u03ba_raw) > 0, where \u03ba_rescaled(\u03ba_raw) = (g'_min / \u03c3'_max) \u22c5 \u03ba_raw is independent of S and k.",
-    "content_markdown": ":label: lem-raw-gap-to-rescaled-gap\n\nLet the system parameters be fixed. There exists a function $\\kappa_rescaled(\\kappa_raw)$ such that for *any* swarm state `S` with $k \\geq 2$ alive walkers, if the raw measurement values contain a gap $|v\u2090 - v\u1d66| \\geq \\kappa_raw > 0$, then the corresponding rescaled values are guaranteed to have a gap:\n\n$$\n|g_A(z_a) - g_A(z_b)| \\ge \\kappa_{\\mathrm{rescaled}}(\\kappa_{\\mathrm{raw}}) > 0\n$$\n\nThe function $\\kappa_rescaled$ is independent of the swarm state `S` and its size `k`, and is defined as:\n\n$$\n\\kappa_{\\mathrm{rescaled}}(\\kappa_{\\mathrm{raw}}) := \\frac{g'_{\\min}}{\\sigma'_{\\max}} \\cdot \\kappa_{\\mathrm{raw}}",
-    "raw_directive": "3700: With the uniform bounds on the pipeline's components now established, we can prove the main result of this section: a guaranteed raw measurement gap is reliably transformed into a guaranteed rescaled value gap.\n3701: \n3702: :::{prf:lemma} From Raw Measurement Gap to Rescaled Value Gap\n3703: :label: lem-raw-gap-to-rescaled-gap\n3704: \n3705: Let the system parameters be fixed. There exists a function $\\kappa_rescaled(\\kappa_raw)$ such that for *any* swarm state `S` with $k \\geq 2$ alive walkers, if the raw measurement values contain a gap $|v\u2090 - v\u1d66| \\geq \\kappa_raw > 0$, then the corresponding rescaled values are guaranteed to have a gap:\n3706: \n3707: $$\n3708: |g_A(z_a) - g_A(z_b)| \\ge \\kappa_{\\mathrm{rescaled}}(\\kappa_{\\mathrm{raw}}) > 0\n3709: $$\n3710: \n3711: The function $\\kappa_rescaled$ is independent of the swarm state `S` and its size `k`, and is defined as:\n3712: \n3713: $$\n3714: \\kappa_{\\mathrm{rescaled}}(\\kappa_{\\mathrm{raw}}) := \\frac{g'_{\\min}}{\\sigma'_{\\max}} \\cdot \\kappa_{\\mathrm{raw}}\n3715: $$",
+    "nl_statement": "For fixed system parameters and any swarm state S with k ≥ 2 alive walkers, if raw measurement values have a gap |v_a - v_b| ≥ κ_raw > 0, then rescaled values have |g_A(z_a) - g_A(z_b)| ≥ κ_rescaled(κ_raw) > 0, where κ_rescaled(κ_raw) = (g'_min / σ'_max) ⋅ κ_raw is independent of S and k.",
     "equations": [
       {
         "label": null,
@@ -2050,16 +1648,16 @@
         "latex": null
       },
       {
-        "text": "Swarm state S has k \u2265 2 alive walkers.",
+        "text": "Swarm state S has k ≥ 2 alive walkers.",
         "latex": null
       },
       {
-        "text": "Raw measurement gap |v_a - v_b| \u2265 \u03ba_raw > 0.",
+        "text": "Raw measurement gap |v_a - v_b| ≥ κ_raw > 0.",
         "latex": "|v_a - v_b| \\ge \\kappa_{\\mathrm{raw}} > 0"
       }
     ],
     "conclusion": {
-      "text": "Rescaled value gap |g_A(z_a) - g_A(z_b)| \u2265 \u03ba_rescaled(\u03ba_raw) > 0 with \u03ba_rescaled independent of S and k.",
+      "text": "Rescaled value gap |g_A(z_a) - g_A(z_b)| ≥ κ_rescaled(κ_raw) > 0 with κ_rescaled independent of S and k.",
       "latex": "|g_A(z_a) - g_A(z_b)| \\ge \\kappa_{\\mathrm{rescaled}}(\\kappa_{\\mathrm{raw}}) > 0"
     },
     "variables": [
@@ -2160,7 +1758,7 @@
     ],
     "implicit_assumptions": [
       {
-        "text": "Uniform bounds g'_min and \u03c3'_max on pipeline components exist and are positive.",
+        "text": "Uniform bounds g'_min and σ'_max on pipeline components exist and are positive.",
         "confidence": 1.0
       },
       {
@@ -2180,39 +1778,13 @@
       "rescaling",
       "uniform bounds",
       "kappa"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
-    "span": {
-      "start_line": 3700,
-      "end_line": 3715,
-      "content_start": 3703,
-      "content_end": 3714,
-      "header_lines": [
-        3701
-      ]
-    },
-    "references": [],
-    "metadata": {
-      "label": "lem-raw-gap-to-rescaled-gap"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 7,
-      "chapter_file": "chapter_7.json",
-      "section_id": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-variance-to-mean-separation",
     "title": "From Total Variance to Mean Separation",
-    "type": "lemma",
     "nl_statement": "A set of real numbers in a compact interval with sufficiently large empirical variance, when partitioned into two substantial non-empty subsets, guarantees a statistically significant separation between the subset means, bounded below by an expression involving the variance and maximum possible variance.",
-    "content_markdown": ":label: lem-variance-to-mean-separation\n\nLet $\\mathcal{V} = \\{v_i\\}_{i=1}^k$ be a set of $k \\ge 2$ real numbers, with each element $v_i$ contained in the compact interval $[V_{\\min}, V_{\\max}]$. Let $\\mathcal{V}$ be partitioned into two disjoint, non-empty subsets, $H$ and $L$, with corresponding means $\\mu_H$ and $\\mu_L$. Let their fractional population sizes, $f_H = |H|/k$ and $f_L = |L|/k$, be bounded below by a strictly positive constant $f_{\\min} \\in (0, 1/2]$, such that $f_H \\ge f_{\\min}$ and $f_L \\ge f_{\\min}$.\n\nIf the empirical variance of the total set, $\\operatorname{Var}(\\mathcal{V})$, is bounded below by a strictly positive constant $\\kappa_{\\mathrm{var}} > 0$, then the squared difference between the subset means is bounded below by:\n\n$$\n(\\mu_H - \\mu_L)^2 \\ge \\frac{1}{f_H f_L} \\left( \\kappa_{\\mathrm{var}} - \\operatorname{Var}_{\\mathrm{max}} \\right)\n$$\n\nwhere $\\operatorname{Var}_{\\mathrm{max}} := \\frac{1}{4}(V_{\\max} - V_{\\min})^2$ is the maximum possible variance for any set of values on the interval.\n\nConsequently, if the guaranteed variance $\\kappa_{\\mathrm{var}}$ is sufficiently large to satisfy the **Signal-to-Noise Condition**, $\\kappa_{\\mathrm{var}} > \\operatorname{Var}_{\\mathrm{max}}$, then the mean separation is guaranteed to be positive:\n\n$$\n|\\mu_H - \\mu_L| \\ge \\frac{1}{\\sqrt{f_H f_L}} \\sqrt{\\kappa_{\\mathrm{var}} - \\operatorname{Var}_{\\mathrm{max}}} > 0",
-    "raw_directive": "3783: The following lemma provides this fundamental link. It proves, from first principles, that a sufficiently large variance within a population partitioned into two substantial subsets necessitates a statistically significant separation between the means of those subsets.\n3784: \n3785: :::{prf:lemma} **(From Total Variance to Mean Separation)**\n3786: :label: lem-variance-to-mean-separation\n3787: \n3788: Let $\\mathcal{V} = \\{v_i\\}_{i=1}^k$ be a set of $k \\ge 2$ real numbers, with each element $v_i$ contained in the compact interval $[V_{\\min}, V_{\\max}]$. Let $\\mathcal{V}$ be partitioned into two disjoint, non-empty subsets, $H$ and $L$, with corresponding means $\\mu_H$ and $\\mu_L$. Let their fractional population sizes, $f_H = |H|/k$ and $f_L = |L|/k$, be bounded below by a strictly positive constant $f_{\\min} \\in (0, 1/2]$, such that $f_H \\ge f_{\\min}$ and $f_L \\ge f_{\\min}$.\n3789: \n3790: If the empirical variance of the total set, $\\operatorname{Var}(\\mathcal{V})$, is bounded below by a strictly positive constant $\\kappa_{\\mathrm{var}} > 0$, then the squared difference between the subset means is bounded below by:\n3791: \n3792: $$\n3793: (\\mu_H - \\mu_L)^2 \\ge \\frac{1}{f_H f_L} \\left( \\kappa_{\\mathrm{var}} - \\operatorname{Var}_{\\mathrm{max}} \\right)\n3794: $$\n3795: \n3796: where $\\operatorname{Var}_{\\mathrm{max}} := \\frac{1}{4}(V_{\\max} - V_{\\min})^2$ is the maximum possible variance for any set of values on the interval.\n3797: \n3798: Consequently, if the guaranteed variance $\\kappa_{\\mathrm{var}}$ is sufficiently large to satisfy the **Signal-to-Noise Condition**, $\\kappa_{\\mathrm{var}} > \\operatorname{Var}_{\\mathrm{max}}$, then the mean separation is guaranteed to be positive:\n3799: \n3800: $$\n3801: |\\mu_H - \\mu_L| \\ge \\frac{1}{\\sqrt{f_H f_L}} \\sqrt{\\kappa_{\\mathrm{var}} - \\operatorname{Var}_{\\mathrm{max}}} > 0\n3802: $$",
     "equations": [
       {
         "label": null,
@@ -2462,39 +2034,13 @@
       "signal-noise",
       "population",
       "subsets"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
-    "span": {
-      "start_line": 3783,
-      "end_line": 3802,
-      "content_start": 3786,
-      "content_end": 3801,
-      "header_lines": [
-        3784
-      ]
-    },
-    "references": [],
-    "metadata": {
-      "label": "lem-variance-to-mean-separation"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 7,
-      "chapter_file": "chapter_7.json",
-      "section_id": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-log-gap-lower-bound",
     "title": "Lower Bound on Logarithmic Mean Gap",
-    "type": "lemma",
     "nl_statement": "If two random variables X and Y take values in the compact interval [V_min, V_max] with V_min > 0 and their means satisfy E[X] >= E[Y] + kappa for kappa > 0, then the difference in their expected logarithms satisfies E[ln X] - E[ln Y] >= ln(1 + kappa / V_max).",
-    "content_markdown": ":label: lem-log-gap-lower-bound\n\nLet $X$ and $Y$ be two random variables whose values are contained in the compact interval $[V_{\\min}, V_{\\max}]$, where $V_{\\min} > 0$. Let their means, $\\mu_X = \\mathbb{E}[X]$ and $\\mu_Y = \\mathbb{E}[Y]$, satisfy $\\mu_X \\ge \\mu_Y + \\kappa$ for some constant $\\kappa > 0$.\n\nThen the difference of their expected logarithms is bounded below as follows:\n\n$$\n\\mathbb{E}[\\ln(X)] - \\mathbb{E}[\\ln(Y)] \\ge \\ln\\left(1 + \\frac{\\kappa}{V_{\\max}}\\right)",
-    "raw_directive": "4032: This lemma establishes that a guaranteed separation in the means of two distributions implies a guaranteed, non-vanishing separation in their expected logarithms. The proof uses extremal distribution theory to find the worst-case scenario.\n4033: \n4034: :::{prf:lemma} Lower Bound on Logarithmic Mean Gap\n4035: :label: lem-log-gap-lower-bound\n4036: \n4037: Let $X$ and $Y$ be two random variables whose values are contained in the compact interval $[V_{\\min}, V_{\\max}]$, where $V_{\\min} > 0$. Let their means, $\\mu_X = \\mathbb{E}[X]$ and $\\mu_Y = \\mathbb{E}[Y]$, satisfy $\\mu_X \\ge \\mu_Y + \\kappa$ for some constant $\\kappa > 0$.\n4038: \n4039: Then the difference of their expected logarithms is bounded below as follows:\n4040: \n4041: $$\n4042: \\mathbb{E}[\\ln(X)] - \\mathbb{E}[\\ln(Y)] \\ge \\ln\\left(1 + \\frac{\\kappa}{V_{\\max}}\\right)\n4043: $$",
     "equations": [
       {
         "label": null,
@@ -2621,39 +2167,13 @@
       "mean-separation",
       "extremal-distributions",
       "compact-support"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
-    "span": {
-      "start_line": 4032,
-      "end_line": 4043,
-      "content_start": 4035,
-      "content_end": 4042,
-      "header_lines": [
-        4033
-      ]
-    },
-    "references": [],
-    "metadata": {
-      "label": "lem-log-gap-lower-bound"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 7,
-      "chapter_file": "chapter_7.json",
-      "section_id": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-log-gap-upper-bound",
     "title": "Upper Bound on Logarithmic Mean Gap",
-    "type": "lemma",
-    "nl_statement": "For random variables X and Y supported on the compact interval [V_min, V_max] with V_min > 0 and means satisfying |E[X] - E[Y]| \u2264 \u03ba for some \u03ba > 0, the absolute difference of their expected logarithms is at most ln(1 + \u03ba / V_min).",
-    "content_markdown": ":label: lem-log-gap-upper-bound\n\nLet $X$ and $Y$ be two random variables whose values are contained in the compact interval $[V_{\\min}, V_{\\max}]$, where $V_{\\min} > 0$. Let their means, $\\mu_X = \\mathbb{E}[X]$ and $\\mu_Y = \\mathbb{E}[Y]$, satisfy $|\\mu_X - \\mu_Y| \\le \\kappa$ for some constant $\\kappa > 0$.\n\nThen the absolute difference of their expected logarithms is bounded above as follows:\n\n$$\n|\\mathbb{E}[\\ln(X)] - \\mathbb{E}[\\ln(Y)]| \\le \\ln\\left(1 + \\frac{\\kappa}{V_{\\min}}\\right)",
-    "raw_directive": "4173: This lemma provides a symmetric result, capping the maximum possible logarithmic gap. This is essential for bounding the influence of the potentially adversarial reward signal, ensuring it cannot overwhelm the corrective diversity signal.\n4174: \n4175: :::{prf:lemma} Upper Bound on Logarithmic Mean Gap\n4176: :label: lem-log-gap-upper-bound\n4177: \n4178: Let $X$ and $Y$ be two random variables whose values are contained in the compact interval $[V_{\\min}, V_{\\max}]$, where $V_{\\min} > 0$. Let their means, $\\mu_X = \\mathbb{E}[X]$ and $\\mu_Y = \\mathbb{E}[Y]$, satisfy $|\\mu_X - \\mu_Y| \\le \\kappa$ for some constant $\\kappa > 0$.\n4179: \n4180: Then the absolute difference of their expected logarithms is bounded above as follows:\n4181: \n4182: $$\n4183: |\\mathbb{E}[\\ln(X)] - \\mathbb{E}[\\ln(Y)]| \\le \\ln\\left(1 + \\frac{\\kappa}{V_{\\min}}\\right)\n4184: $$",
+    "nl_statement": "For random variables X and Y supported on the compact interval [V_min, V_max] with V_min > 0 and means satisfying |E[X] - E[Y]| ≤ κ for some κ > 0, the absolute difference of their expected logarithms is at most ln(1 + κ / V_min).",
     "equations": [
       {
         "label": null,
@@ -2666,12 +2186,12 @@
         "latex": null
       },
       {
-        "text": "Their means \u03bc_X = E[X] and \u03bc_Y = E[Y] satisfy |\u03bc_X - \u03bc_Y| \u2264 \u03ba for some constant \u03ba > 0.",
+        "text": "Their means μ_X = E[X] and μ_Y = E[Y] satisfy |μ_X - μ_Y| ≤ κ for some constant κ > 0.",
         "latex": null
       }
     ],
     "conclusion": {
-      "text": "|E[ln(X)] - E[ln(Y)]| \u2264 ln(1 + \u03ba / V_min)",
+      "text": "|E[ln(X)] - E[ln(Y)]| ≤ ln(1 + κ / V_min)",
       "latex": "|\\mathbb{E}[\\ln(X)] - \\mathbb{E}[\\ln(Y)]| \\le \\ln\\left(1 + \\frac{\\kappa}{V_{\\min}}\\right)"
     },
     "variables": [
@@ -2699,7 +2219,7 @@
       },
       {
         "symbol": "\\mu_X",
-        "name": "\u03bc_X",
+        "name": "μ_X",
         "description": "expected value of X",
         "constraints": [],
         "tags": [
@@ -2708,7 +2228,7 @@
       },
       {
         "symbol": "\\mu_Y",
-        "name": "\u03bc_Y",
+        "name": "μ_Y",
         "description": "expected value of Y",
         "constraints": [],
         "tags": [
@@ -2737,10 +2257,10 @@
       },
       {
         "symbol": "\\kappa",
-        "name": "\u03ba",
+        "name": "κ",
         "description": "constant bounding the absolute difference of means",
         "constraints": [
-          "\u03ba > 0"
+          "κ > 0"
         ],
         "tags": [
           "constant",
@@ -2765,39 +2285,13 @@
       "random variables",
       "mean difference",
       "compact support"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
-    "span": {
-      "start_line": 4173,
-      "end_line": 4184,
-      "content_start": 4176,
-      "content_end": 4183,
-      "header_lines": [
-        4174
-      ]
-    },
-    "references": [],
-    "metadata": {
-      "label": "lem-log-gap-upper-bound"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 7,
-      "chapter_file": "chapter_7.json",
-      "section_id": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-unfit-fraction-lower-bound",
     "title": "N-Uniform Lower Bound on the Unfit Fraction",
-    "type": "lemma",
-    "nl_statement": "For a swarm of k \u2265 2 alive walkers whose fitness potential range is bounded below by the positive \u03b5-dependent constant \u03ba_{V,gap}(\u03b5), the fraction of alive walkers in the unfit set U_k is bounded below by the positive N-uniform \u03b5-dependent constant f_U(\u03b5) = \u03ba_{V,gap}(\u03b5) / (2(V_{pot,max} - V_{pot,min})).",
-    "content_markdown": ":label: lem-unfit-fraction-lower-bound\n\nLet a swarm `k` with `k >= 2` alive walkers have a fitness potential range that is bounded below by a positive, $\\varepsilon$-dependent constant: $V_{\\max,k} - V_{\\min,k} \\ge \\kappa_{V,\\text{gap}}(\\epsilon) > 0$.\n\nThe fraction of alive walkers in the unfit set $U_k$ is bounded below by a positive, N-uniform, $\\varepsilon$-dependent constant $f_U(\\epsilon) > 0$:\n\n$$\n\\frac{|U_k|}{k} \\ge \\frac{\\kappa_{V,\\text{gap}}(\\epsilon)}{2(V_{\\text{pot,max}} - V_{\\text{pot,min}})} =: f_U(\\epsilon)\n$$",
-    "raw_directive": "4570: :::\n4571: \n4572: :::{prf:lemma} N-Uniform Lower Bound on the Unfit Fraction\n4573: :label: lem-unfit-fraction-lower-bound\n4574: \n4575: Let a swarm `k` with `k >= 2` alive walkers have a fitness potential range that is bounded below by a positive, $\\varepsilon$-dependent constant: $V_{\\max,k} - V_{\\min,k} \\ge \\kappa_{V,\\text{gap}}(\\epsilon) > 0$.\n4576: \n4577: The fraction of alive walkers in the unfit set $U_k$ is bounded below by a positive, N-uniform, $\\varepsilon$-dependent constant $f_U(\\epsilon) > 0$:\n4578: \n4579: $$\n4580: \\frac{|U_k|}{k} \\ge \\frac{\\kappa_{V,\\text{gap}}(\\epsilon)}{2(V_{\\text{pot,max}} - V_{\\text{pot,min}})} =: f_U(\\epsilon)\n4581: $$\n4582: ",
+    "nl_statement": "For a swarm of k ≥ 2 alive walkers whose fitness potential range is bounded below by the positive ε-dependent constant κ_{V,gap}(ε), the fraction of alive walkers in the unfit set U_k is bounded below by the positive N-uniform ε-dependent constant f_U(ε) = κ_{V,gap}(ε) / (2(V_{pot,max} - V_{pot,min})).",
     "equations": [
       {
         "label": null,
@@ -2810,12 +2304,12 @@
     ],
     "hypotheses": [
       {
-        "text": "Swarm of k \u2265 2 alive walkers with fitness potential range bounded below by positive \u03b5-dependent constant",
+        "text": "Swarm of k ≥ 2 alive walkers with fitness potential range bounded below by positive ε-dependent constant",
         "latex": "V_{\\max,k} - V_{\\min,k} \\ge \\kappa_{V,\\text{gap}}(\\epsilon) > 0"
       }
     ],
     "conclusion": {
-      "text": "Fraction of alive walkers in unfit set U_k bounded below by positive N-uniform \u03b5-dependent constant f_U(\u03b5) > 0",
+      "text": "Fraction of alive walkers in unfit set U_k bounded below by positive N-uniform ε-dependent constant f_U(ε) > 0",
       "latex": "\\frac{|U_k|}{k} \\ge f_U(\\epsilon) = \\frac{\\kappa_{V,\\text{gap}}(\\epsilon)}{2(V_{\\text{pot,max}} - V_{\\text{pot,min}})}"
     },
     "variables": [
@@ -2834,7 +2328,7 @@
       {
         "symbol": "\\epsilon",
         "name": "epsilon",
-        "description": "Small positive parameter for \u03b5-dependence",
+        "description": "Small positive parameter for ε-dependence",
         "constraints": [],
         "tags": [
           "parameter",
@@ -2876,7 +2370,7 @@
       {
         "symbol": "\\kappa_{V,\\text{gap}}(\\epsilon)",
         "name": "fitness gap constant",
-        "description": "Positive \u03b5-dependent lower bound on potential range",
+        "description": "Positive ε-dependent lower bound on potential range",
         "constraints": [
           "> 0"
         ],
@@ -2888,7 +2382,7 @@
       {
         "symbol": "f_U(\\epsilon)",
         "name": "unfit fraction constant",
-        "description": "Positive N-uniform \u03b5-dependent lower bound on unfit fraction",
+        "description": "Positive N-uniform ε-dependent lower bound on unfit fraction",
         "constraints": [
           "> 0"
         ],
@@ -2942,39 +2436,13 @@
       "walkers",
       "fitness-potential",
       "epsilon-dependent"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
-    "span": {
-      "start_line": 4570,
-      "end_line": 4582,
-      "content_start": 4573,
-      "content_end": 4581,
-      "header_lines": [
-        4571
-      ]
-    },
-    "references": [],
-    "metadata": {
-      "label": "lem-unfit-fraction-lower-bound"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 7,
-      "chapter_file": "chapter_7.json",
-      "section_id": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-quantitative-keystone",
     "title": "The N-Uniform Quantitative Keystone Lemma",
-    "type": "lemma",
     "nl_statement": "Under foundational axioms, there exist constants independent of N such that for any pair of swarms, the averaged weighted squared error from both swarms lower bounds the structural variance minus a constant.",
-    "content_markdown": ":label: lem-quantitative-keystone\n\nUnder the foundational axioms laid out in Chapter 4, there exist:\n*   a structural error threshold $R^2_{\\text{spread}} > 0$,\n*   a minimum feedback coefficient $\\chi(\\epsilon) > 0$,\n*   and a constant offset $g_{\\max}(\\epsilon) \\ge 0$,\n\nall of which may depend on $\\epsilon$ but are independent of $N$, such that for any pair of swarms $(S_1, S_2)$:\n\n$$\n\\frac{1}{N}\\sum_{i \\in I_{11}} (p_{1,i} + p_{2,i})\\|\\Delta\\delta_{x,i}\\|^2 \\ge \\chi(\\epsilon) V_{\\text{struct}} - g_{\\max}(\\epsilon)\n$$",
-    "raw_directive": "4712: We begin by formally stating the main theorem. This lemma provides the quantitative link between the system's error and its corrective response, which will be the primary tool for the drift analysis in the subsequent chapters. The lemma considers the summed cloning probability from both swarms, $(p_{1,i} + p_{2,i})$, to capture the total corrective pressure. The proof will demonstrate that even when only one swarm is in a high-error state, the cloning pressure from that single swarm is sufficient to ensure the inequality holds.\n4713: \n4714: :::{prf:lemma} The N-Uniform Quantitative Keystone Lemma\n4715: :label: lem-quantitative-keystone\n4716: \n4717: Under the foundational axioms laid out in Chapter 4, there exist:\n4718: *   a structural error threshold $R^2_{\\text{spread}} > 0$,\n4719: *   a minimum feedback coefficient $\\chi(\\epsilon) > 0$,\n4720: *   and a constant offset $g_{\\max}(\\epsilon) \\ge 0$,\n4721: \n4722: all of which may depend on $\\epsilon$ but are independent of $N$, such that for any pair of swarms $(S_1, S_2)$:\n4723: \n4724: $$\n4725: \\frac{1}{N}\\sum_{i \\in I_{11}} (p_{1,i} + p_{2,i})\\|\\Delta\\delta_{x,i}\\|^2 \\ge \\chi(\\epsilon) V_{\\text{struct}} - g_{\\max}(\\epsilon)\n4726: $$\n4727: ",
     "equations": [
       {
         "label": null,
@@ -3148,39 +2616,13 @@
       "cloning",
       "drift",
       "feedback"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 8. The N-Uniform Quantitative Keystone Lemma",
-    "span": {
-      "start_line": 4712,
-      "end_line": 4727,
-      "content_start": 4715,
-      "content_end": 4726,
-      "header_lines": [
-        4713
-      ]
-    },
-    "references": [],
-    "metadata": {
-      "label": "lem-quantitative-keystone"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 8,
-      "chapter_file": "chapter_8.json",
-      "section_id": "## 8. The N-Uniform Quantitative Keystone Lemma"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-mean-companion-fitness-gap",
     "title": "Lower Bound on Mean Companion Fitness Gap",
-    "type": "lemma",
-    "nl_statement": "In a swarm of k \u2265 2 alive walkers with non-degenerate fitness potential range \u03ba_{V,gap}(\u03b5) > 0, partitioned into unfit and fit sets with positive fractions f_U and f_F, for any unfit walker i, the mean companion fitness exceeds its own fitness by at least (f_F/(k-1))(\u03bc_F - \u03bc_U) > 0, where \u03bc_F - \u03bc_U \u2265 (f_U/(f_F + f_U\u00b2/f_F)) \u03ba_{V,gap}(\u03b5), yielding an overall lower bound \u0394_min(\u03b5, f_U, f_F, k) > 0.",
-    "content_markdown": ":label: lem-mean-companion-fitness-gap\n\nLet a swarm $k$ with $k \\geq 2$ alive walkers have a non-degenerate fitness potential range $\\kappa_{V,\\text{gap}}(\\epsilon) > 0$. Let $U_k$ and $F_k$ denote the unfit and fit sets, with respective population fractions $f_U := |U_k|/k$ and $f_F := |F_k|/k$, where $f_U, f_F > 0$ and $f_U + f_F = 1$. Denote by $\\mu_U$ and $\\mu_F$ the mean fitness values of the two sets.\n\nFor any walker $i \\in U_k$ (unfit set), the difference between its mean companion fitness and its own fitness is bounded below by:\n\n$$\n\\mu_{\\text{comp},i} - V_{k,i} \\geq \\frac{f_F}{k-1} (\\mu_F - \\mu_U) > 0\n$$\n\nFurthermore, the gap between the mean fitness values of the two sets can be bounded in terms of the fitness range:\n\n$$\n\\mu_F - \\mu_U \\geq \\frac{f_U}{f_F + f_U^2/f_F} \\kappa_{V,\\text{gap}}(\\epsilon)\n$$\n\nCombining these yields an N-uniform lower bound:\n\n$$\n\\mu_{\\text{comp},i} - V_{k,i} \\geq \\frac{f_F f_U}{(k-1)(f_F + f_U^2/f_F)} \\kappa_{V,\\text{gap}}(\\epsilon) =: \\Delta_{\\min}(\\epsilon, f_U, f_F, k)\n$$",
-    "raw_directive": "4781: To establish a lower bound on cloning probabilities, we must first prove that unfit walkers have companions whose fitness is systematically higher. The following lemma provides the required quantitative guarantee.\n4782: \n4783: :::{prf:lemma} Lower Bound on Mean Companion Fitness Gap\n4784: :label: lem-mean-companion-fitness-gap\n4785: \n4786: Let a swarm $k$ with $k \\geq 2$ alive walkers have a non-degenerate fitness potential range $\\kappa_{V,\\text{gap}}(\\epsilon) > 0$. Let $U_k$ and $F_k$ denote the unfit and fit sets, with respective population fractions $f_U := |U_k|/k$ and $f_F := |F_k|/k$, where $f_U, f_F > 0$ and $f_U + f_F = 1$. Denote by $\\mu_U$ and $\\mu_F$ the mean fitness values of the two sets.\n4787: \n4788: For any walker $i \\in U_k$ (unfit set), the difference between its mean companion fitness and its own fitness is bounded below by:\n4789: \n4790: $$\n4791: \\mu_{\\text{comp},i} - V_{k,i} \\geq \\frac{f_F}{k-1} (\\mu_F - \\mu_U) > 0\n4792: $$\n4793: \n4794: Furthermore, the gap between the mean fitness values of the two sets can be bounded in terms of the fitness range:\n4795: \n4796: $$\n4797: \\mu_F - \\mu_U \\geq \\frac{f_U}{f_F + f_U^2/f_F} \\kappa_{V,\\text{gap}}(\\epsilon)\n4798: $$\n4799: \n4800: Combining these yields an N-uniform lower bound:\n4801: \n4802: $$\n4803: \\mu_{\\text{comp},i} - V_{k,i} \\geq \\frac{f_F f_U}{(k-1)(f_F + f_U^2/f_F)} \\kappa_{V,\\text{gap}}(\\epsilon) =: \\Delta_{\\min}(\\epsilon, f_U, f_F, k)\n4804: $$\n4805: ",
+    "nl_statement": "In a swarm of k ≥ 2 alive walkers with non-degenerate fitness potential range κ_{V,gap}(ε) > 0, partitioned into unfit and fit sets with positive fractions f_U and f_F, for any unfit walker i, the mean companion fitness exceeds its own fitness by at least (f_F/(k-1))(μ_F - μ_U) > 0, where μ_F - μ_U ≥ (f_U/(f_F + f_U²/f_F)) κ_{V,gap}(ε), yielding an overall lower bound Δ_min(ε, f_U, f_F, k) > 0.",
     "equations": [
       {
         "label": null,
@@ -3197,7 +2639,7 @@
     ],
     "hypotheses": [
       {
-        "text": "Swarm of k \u2265 2 alive walkers with non-degenerate fitness potential range \u03ba_{V,gap}(\u03b5) > 0.",
+        "text": "Swarm of k ≥ 2 alive walkers with non-degenerate fitness potential range κ_{V,gap}(ε) > 0.",
         "latex": null
       },
       {
@@ -3205,25 +2647,25 @@
         "latex": null
       },
       {
-        "text": "Mean fitness values \u03bc_U for U_k and \u03bc_F for F_k.",
+        "text": "Mean fitness values μ_U for U_k and μ_F for F_k.",
         "latex": null
       },
       {
-        "text": "For any walker i \u2208 U_k.",
+        "text": "For any walker i ∈ U_k.",
         "latex": null
       }
     ],
     "conclusion": {
-      "text": "The mean companion fitness gap for unfit walkers is bounded below by \u0394_min(\u03b5, f_U, f_F, k) > 0.",
+      "text": "The mean companion fitness gap for unfit walkers is bounded below by Δ_min(ε, f_U, f_F, k) > 0.",
       "latex": "\\mu_{\\text{comp},i} - V_{k,i} \\geq \\Delta_{\\min}(\\epsilon, f_U, f_F, k) > 0"
     },
     "variables": [
       {
         "symbol": "k",
         "name": "swarm size",
-        "description": "Number of alive walkers, integer \u2265 2.",
+        "description": "Number of alive walkers, integer ≥ 2.",
         "constraints": [
-          "k \u2265 2",
+          "k ≥ 2",
           "integer"
         ],
         "tags": [
@@ -3232,7 +2674,7 @@
         ]
       },
       {
-        "symbol": "\u03b5",
+        "symbol": "ε",
         "name": "epsilon",
         "description": "Parameter for fitness potential range.",
         "constraints": [],
@@ -3242,11 +2684,11 @@
         ]
       },
       {
-        "symbol": "\u03ba_{V,gap}(\u03b5)",
+        "symbol": "κ_{V,gap}(ε)",
         "name": "fitness gap",
         "description": "Non-degenerate fitness potential range, >0.",
         "constraints": [
-          "\u03ba_{V,gap}(\u03b5) > 0"
+          "κ_{V,gap}(ε) > 0"
         ],
         "tags": [
           "fitness",
@@ -3303,7 +2745,7 @@
         ]
       },
       {
-        "symbol": "\u03bc_U",
+        "symbol": "μ_U",
         "name": "mean unfit fitness",
         "description": "Mean fitness of unfit set.",
         "constraints": [],
@@ -3313,7 +2755,7 @@
         ]
       },
       {
-        "symbol": "\u03bc_F",
+        "symbol": "μ_F",
         "name": "mean fit fitness",
         "description": "Mean fitness of fit set.",
         "constraints": [],
@@ -3327,7 +2769,7 @@
         "name": "walker fitness",
         "description": "Fitness of walker i in swarm k.",
         "constraints": [
-          "i \u2208 U_k"
+          "i ∈ U_k"
         ],
         "tags": [
           "fitness",
@@ -3335,7 +2777,7 @@
         ]
       },
       {
-        "symbol": "\u03bc_{comp,i}",
+        "symbol": "μ_{comp,i}",
         "name": "mean companion fitness",
         "description": "Mean fitness of companions of walker i.",
         "constraints": [],
@@ -3345,7 +2787,7 @@
         ]
       },
       {
-        "symbol": "\u0394_min(\u03b5, f_U, f_F, k)",
+        "symbol": "Δ_min(ε, f_U, f_F, k)",
         "name": "minimum gap",
         "description": "N-uniform lower bound on fitness gap.",
         "constraints": [
@@ -3367,7 +2809,7 @@
         "confidence": 1.0
       },
       {
-        "text": "Fitness potential range is defined and non-degenerate for the given \u03b5.",
+        "text": "Fitness potential range is defined and non-degenerate for the given ε.",
         "confidence": 0.9
       }
     ],
@@ -3385,39 +2827,13 @@
       "gap",
       "unfit",
       "degenerate"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 8. The N-Uniform Quantitative Keystone Lemma",
-    "span": {
-      "start_line": 4781,
-      "end_line": 4805,
-      "content_start": 4784,
-      "content_end": 4804,
-      "header_lines": [
-        4782
-      ]
-    },
-    "references": [],
-    "metadata": {
-      "label": "lem-mean-companion-fitness-gap"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 8,
-      "chapter_file": "chapter_8.json",
-      "section_id": "## 8. The N-Uniform Quantitative Keystone Lemma"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-unfit-cloning-pressure",
     "title": "Guaranteed Cloning Pressure on the Unfit Set",
-    "type": "lemma",
-    "nl_statement": "For a swarm of at least two alive walkers with fitness potential range bounded below by \u03ba_{V,gap}(\u03b5) > 0, every walker in the unfit set has total cloning probability at least the positive constant p_u(\u03b5) > 0.",
-    "content_markdown": ":label: lem-unfit-cloning-pressure\n\nLet a swarm $k$ with $k \\geq 2$ alive walkers be in a state such that its fitness potential range is bounded below by $\\kappa_{V,\\text{gap}}(\\epsilon) > 0$. For any walker $i$ in the unfit set $U_k$, its total cloning probability is bounded below by a positive, N-uniform, and $\\epsilon$-dependent constant $p_u(\\epsilon) > 0$:\n\n$$\np_{k,i} = \\mathbb{E}_{c \\sim \\mathbb{C}_i(S_k)}[\\pi(S(V_{k,c}, V_{k,i}))] \\ge p_u(\\epsilon) > 0",
-    "raw_directive": "4948: :::\n4949: \n4950: :::{prf:lemma} Guaranteed Cloning Pressure on the Unfit Set\n4951: :label: lem-unfit-cloning-pressure\n4952: \n4953: Let a swarm $k$ with $k \\geq 2$ alive walkers be in a state such that its fitness potential range is bounded below by $\\kappa_{V,\\text{gap}}(\\epsilon) > 0$. For any walker $i$ in the unfit set $U_k$, its total cloning probability is bounded below by a positive, N-uniform, and $\\epsilon$-dependent constant $p_u(\\epsilon) > 0$:\n4954: \n4955: $$\n4956: p_{k,i} = \\mathbb{E}_{c \\sim \\mathbb{C}_i(S_k)}[\\pi(S(V_{k,c}, V_{k,i}))] \\ge p_u(\\epsilon) > 0\n4957: $$",
+    "nl_statement": "For a swarm of at least two alive walkers with fitness potential range bounded below by κ_{V,gap}(ε) > 0, every walker in the unfit set has total cloning probability at least the positive constant p_u(ε) > 0.",
     "equations": [
       {
         "label": null,
@@ -3426,11 +2842,11 @@
     ],
     "hypotheses": [
       {
-        "text": "Swarm k has k \u2265 2 alive walkers.",
+        "text": "Swarm k has k ≥ 2 alive walkers.",
         "latex": "k \\geq 2"
       },
       {
-        "text": "The fitness potential range of the swarm is bounded below by \u03ba_{V,gap}(\u03b5) > 0.",
+        "text": "The fitness potential range of the swarm is bounded below by κ_{V,gap}(ε) > 0.",
         "latex": "\\kappa_{V,\\text{gap}}(\\epsilon) > 0"
       },
       {
@@ -3439,7 +2855,7 @@
       }
     ],
     "conclusion": {
-      "text": "The total cloning probability p_{k,i} for walker i satisfies p_{k,i} \u2265 p_u(\u03b5) > 0, where p_u(\u03b5) is a positive, N-uniform, \u03b5-dependent constant.",
+      "text": "The total cloning probability p_{k,i} for walker i satisfies p_{k,i} ≥ p_u(ε) > 0, where p_u(ε) is a positive, N-uniform, ε-dependent constant.",
       "latex": "p_{k,i} = \\mathbb{E}_{c \\sim \\mathbb{C}_i(S_k)}[\\pi(S(V_{k,c}, V_{k,i}))] \\ge p_u(\\epsilon) > 0"
     },
     "variables": [
@@ -3448,7 +2864,7 @@
         "name": "swarm index",
         "description": "Index of the swarm.",
         "constraints": [
-          "k \u2265 2"
+          "k ≥ 2"
         ],
         "tags": [
           "swarm"
@@ -3459,7 +2875,7 @@
         "name": "walker index",
         "description": "Index of an unfit walker.",
         "constraints": [
-          "i \u2208 U_k"
+          "i ∈ U_k"
         ],
         "tags": [
           "walker",
@@ -3467,11 +2883,11 @@
         ]
       },
       {
-        "symbol": "\u03b5",
+        "symbol": "ε",
         "name": "error parameter",
         "description": "Small positive parameter controlling approximations.",
         "constraints": [
-          "\u03b5 > 0"
+          "ε > 0"
         ],
         "tags": [
           "epsilon",
@@ -3479,11 +2895,11 @@
         ]
       },
       {
-        "symbol": "p_u(\u03b5)",
+        "symbol": "p_u(ε)",
         "name": "lower bound constant",
-        "description": "Positive, N-uniform, \u03b5-dependent lower bound on cloning probability.",
+        "description": "Positive, N-uniform, ε-dependent lower bound on cloning probability.",
         "constraints": [
-          "p_u(\u03b5) > 0"
+          "p_u(ε) > 0"
         ],
         "tags": [
           "bound",
@@ -3491,11 +2907,11 @@
         ]
       },
       {
-        "symbol": "\u03ba_{V,gap}(\u03b5)",
+        "symbol": "κ_{V,gap}(ε)",
         "name": "fitness gap",
         "description": "Lower bound on the fitness potential range.",
         "constraints": [
-          "\u03ba_{V,gap}(\u03b5) > 0"
+          "κ_{V,gap}(ε) > 0"
         ],
         "tags": [
           "fitness",
@@ -3505,7 +2921,7 @@
     ],
     "implicit_assumptions": [
       {
-        "text": "The bound p_u(\u03b5) is independent of the swarm size N.",
+        "text": "The bound p_u(ε) is independent of the swarm size N.",
         "confidence": 0.9
       },
       {
@@ -3513,7 +2929,7 @@
         "confidence": 1.0
       },
       {
-        "text": "The cloning distribution \u2102_i(S_k) is well-defined and supports expectation.",
+        "text": "The cloning distribution ℂ_i(S_k) is well-defined and supports expectation.",
         "confidence": 1.0
       }
     ],
@@ -3529,39 +2945,13 @@
       "cloning probability",
       "fitness potential",
       "epsilon-dependent"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 8. The N-Uniform Quantitative Keystone Lemma",
-    "span": {
-      "start_line": 4948,
-      "end_line": 4957,
-      "content_start": 4951,
-      "content_end": 4956,
-      "header_lines": [
-        4949
-      ]
-    },
-    "references": [],
-    "metadata": {
-      "label": "lem-unfit-cloning-pressure"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 8,
-      "chapter_file": "chapter_8.json",
-      "section_id": "## 8. The N-Uniform Quantitative Keystone Lemma"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-variance-concentration-Hk",
     "title": "Variance Concentration in the High-Error Set",
-    "type": "lemma",
-    "nl_statement": "For a swarm in a high-error state with variance exceeding R\u00b2_var, the sum of squared deviations in the high-error set H_k(\u03b5) is at least a fixed positive fraction c_H of the total sum of squared deviations across the swarm.",
-    "content_markdown": ":label: lem-variance-concentration-Hk\n\nLet a swarm $k$ be in a high-error state, $\\text{Var}_k(x) > R^2_{\\text{var}}$. There exists a strictly positive, N-uniform constant $c_H \\in (0, 1]$ such that the sum of squared deviations from the mean for the walkers in the unified high-error set $H_k(\\epsilon)$ is bounded below by a fixed fraction of the total sum of squared deviations:\n\n$$\n\\sum_{i \\in H_k(\\epsilon)} \\|\\delta_{x,k,i}\\|^2 \\ge c_H \\sum_{i \\in \\mathcal{A}_k} \\|\\delta_{x,k,i}\\|^2",
-    "raw_directive": "5032: To make the proof self-contained, we first formalize a direct consequence of the geometric analysis in Chapter 6: that the high-error set, by its very nature, is responsible for a non-vanishing fraction of a swarm's internal variance.\n5033: \n5034: :::{prf:lemma} **(Variance Concentration in the High-Error Set)**\n5035: :label: lem-variance-concentration-Hk\n5036: \n5037: Let a swarm $k$ be in a high-error state, $\\text{Var}_k(x) > R^2_{\\text{var}}$. There exists a strictly positive, N-uniform constant $c_H \\in (0, 1]$ such that the sum of squared deviations from the mean for the walkers in the unified high-error set $H_k(\\epsilon)$ is bounded below by a fixed fraction of the total sum of squared deviations:\n5038: \n5039: $$\n5040: \\sum_{i \\in H_k(\\epsilon)} \\|\\delta_{x,k,i}\\|^2 \\ge c_H \\sum_{i \\in \\mathcal{A}_k} \\|\\delta_{x,k,i}\\|^2\n5041: $$",
+    "nl_statement": "For a swarm in a high-error state with variance exceeding R²_var, the sum of squared deviations in the high-error set H_k(ε) is at least a fixed positive fraction c_H of the total sum of squared deviations across the swarm.",
     "equations": [
       {
         "label": null,
@@ -3570,7 +2960,7 @@
     ],
     "hypotheses": [
       {
-        "text": "Swarm k is in a high-error state, i.e., Var_k(x) > R\u00b2_var",
+        "text": "Swarm k is in a high-error state, i.e., Var_k(x) > R²_var",
         "latex": "\\text{Var}_k(x) > R^2_{\\text{var}}"
       },
       {
@@ -3579,7 +2969,7 @@
       }
     ],
     "conclusion": {
-      "text": "The sum of squared deviations from the mean for walkers in H_k(\u03b5) is bounded below by c_H times the total sum of squared deviations",
+      "text": "The sum of squared deviations from the mean for walkers in H_k(ε) is bounded below by c_H times the total sum of squared deviations",
       "latex": "\\sum_{i \\in H_k(\\epsilon)} \\|\\delta_{x,k,i}\\|^2 \\ge c_H \\sum_{i \\in \\mathcal{A}_k} \\|\\delta_{x,k,i}\\|^2"
     },
     "variables": [
@@ -3595,7 +2985,7 @@
       {
         "symbol": "H_k(\\epsilon)",
         "name": "high-error set",
-        "description": "Unified set of walkers in swarm k with errors exceeding \u03b5",
+        "description": "Unified set of walkers in swarm k with errors exceeding ε",
         "constraints": [
           "subset of A_k"
         ],
@@ -3609,7 +2999,7 @@
         "name": "concentration constant",
         "description": "Strictly positive N-uniform constant bounding the variance fraction",
         "constraints": [
-          "c_H \u2208 (0,1]"
+          "c_H ∈ (0,1]"
         ],
         "tags": [
           "constant",
@@ -3659,15 +3049,15 @@
     ],
     "implicit_assumptions": [
       {
-        "text": "H_k(\u03b5) is non-empty and well-defined based on error thresholds from prior geometric analysis",
+        "text": "H_k(ε) is non-empty and well-defined based on error thresholds from prior geometric analysis",
         "confidence": 0.9
       },
       {
-        "text": "\u03b4_{x,k,i} represents deviations within Euclidean space, with norm ||\u00b7||\u00b2 being the squared Euclidean norm",
+        "text": "δ_{x,k,i} represents deviations within Euclidean space, with norm ||·||² being the squared Euclidean norm",
         "confidence": 1.0
       },
       {
-        "text": "N refers to the number of agents, and N-uniform means independent of N as N\u2192\u221e",
+        "text": "N refers to the number of agents, and N-uniform means independent of N as N→∞",
         "confidence": 0.8
       },
       {
@@ -3687,39 +3077,13 @@
       "concentration",
       "deviations",
       "N-uniform"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 8. The N-Uniform Quantitative Keystone Lemma",
-    "span": {
-      "start_line": 5032,
-      "end_line": 5041,
-      "content_start": 5035,
-      "content_end": 5040,
-      "header_lines": [
-        5033
-      ]
-    },
-    "references": [],
-    "metadata": {
-      "label": "lem-variance-concentration-Hk"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 8,
-      "chapter_file": "chapter_8.json",
-      "section_id": "## 8. The N-Uniform Quantitative Keystone Lemma"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-error-concentration-target-set",
     "title": "Error Concentration in the Target Set",
-    "type": "lemma",
-    "nl_statement": "For a swarm state (S\u2081, S\u2082) in the high-error regime with V_struct > R\u00b2_spread, where k is the high-variance swarm and I_target = I_{11} \u2229 U_k \u2229 H_k(\u03b5) is the critical target set, the average positional structural error in I_target is bounded below by c_err(\u03b5) V_struct - g_err(\u03b5).",
-    "content_markdown": ":label: lem-error-concentration-target-set\n\nLet a swarm state $(S_1, S_2)$ be in the high-error regime, such that $V_{\\mathrm{struct}} > R^2_{\\mathrm{spread}}$. Let $k$ be the high-variance swarm and let $I_{\\text{target}} := I_{11} \\cap U_k \\cap H_k(\\epsilon)$ be the critical target set.\n\nThe positional structural error concentrated within this target set is bounded below by a linear function of the total structural error:\n\n$$\n\\frac{1}{N}\\sum_{i \\in I_{\\text{target}}} \\|\\Delta\\delta_{x,i}\\|^2 \\ge c_{err}(\\epsilon)V_{\\mathrm{struct}} - g_{err}(\\epsilon)\n$$",
-    "raw_directive": "5153: We can now prove the main lemma of this section.\n5154: \n5155: :::{prf:lemma} Error Concentration in the Target Set\n5156: :label: lem-error-concentration-target-set\n5157: \n5158: Let a swarm state $(S_1, S_2)$ be in the high-error regime, such that $V_{\\mathrm{struct}} > R^2_{\\mathrm{spread}}$. Let $k$ be the high-variance swarm and let $I_{\\text{target}} := I_{11} \\cap U_k \\cap H_k(\\epsilon)$ be the critical target set.\n5159: \n5160: The positional structural error concentrated within this target set is bounded below by a linear function of the total structural error:\n5161: \n5162: $$\n5163: \\frac{1}{N}\\sum_{i \\in I_{\\text{target}}} \\|\\Delta\\delta_{x,i}\\|^2 \\ge c_{err}(\\epsilon)V_{\\mathrm{struct}} - g_{err}(\\epsilon)\n5164: $$\n5165: ",
+    "nl_statement": "For a swarm state (S₁, S₂) in the high-error regime with V_struct > R²_spread, where k is the high-variance swarm and I_target = I_{11} ∩ U_k ∩ H_k(ε) is the critical target set, the average positional structural error in I_target is bounded below by c_err(ε) V_struct - g_err(ε).",
     "equations": [
       {
         "label": "ineq-lem-error-concentration",
@@ -3728,11 +3092,11 @@
     ],
     "hypotheses": [
       {
-        "text": "Swarm state (S\u2081, S\u2082) is in the high-error regime",
+        "text": "Swarm state (S₁, S₂) is in the high-error regime",
         "latex": null
       },
       {
-        "text": "V_struct > R\u00b2_spread",
+        "text": "V_struct > R²_spread",
         "latex": "V_{\\mathrm{struct}} > R^2_{\\mathrm{spread}}"
       },
       {
@@ -3740,7 +3104,7 @@
         "latex": null
       },
       {
-        "text": "I_target := I_{11} \u2229 U_k \u2229 H_k(\u03b5) is the critical target set",
+        "text": "I_target := I_{11} ∩ U_k ∩ H_k(ε) is the critical target set",
         "latex": "I_{\\text{target}} := I_{11} \\cap U_k \\cap H_k(\\epsilon)"
       }
     ],
@@ -3751,7 +3115,7 @@
     "variables": [
       {
         "symbol": "S_1",
-        "name": "S\u2081",
+        "name": "S₁",
         "description": "First swarm component",
         "constraints": [],
         "tags": [
@@ -3760,7 +3124,7 @@
       },
       {
         "symbol": "S_2",
-        "name": "S\u2082",
+        "name": "S₂",
         "description": "Second swarm component",
         "constraints": [],
         "tags": [
@@ -3772,7 +3136,7 @@
         "name": "V_struct",
         "description": "Total structural error variance",
         "constraints": [
-          "> R\u00b2_spread"
+          "> R²_spread"
         ],
         "tags": [
           "variance",
@@ -3806,7 +3170,7 @@
         "name": "I_target",
         "description": "Critical target set",
         "constraints": [
-          "I_{11} \u2229 U_k \u2229 H_k(\u03b5)"
+          "I_{11} ∩ U_k ∩ H_k(ε)"
         ],
         "tags": [
           "set",
@@ -3814,7 +3178,7 @@
         ]
       },
       {
-        "symbol": "\u03b5",
+        "symbol": "ε",
         "name": "epsilon",
         "description": "Error parameter",
         "constraints": [],
@@ -3824,7 +3188,7 @@
         ]
       },
       {
-        "symbol": "\u0394\u03b4_{x,i}",
+        "symbol": "Δδ_{x,i}",
         "name": "Delta delta_x,i",
         "description": "Positional structural error for agent i",
         "constraints": [],
@@ -3844,9 +3208,9 @@
         ]
       },
       {
-        "symbol": "c_err(\u03b5)",
+        "symbol": "c_err(ε)",
         "name": "c_err(epsilon)",
-        "description": "Error concentration coefficient depending on \u03b5",
+        "description": "Error concentration coefficient depending on ε",
         "constraints": [],
         "tags": [
           "coefficient",
@@ -3854,9 +3218,9 @@
         ]
       },
       {
-        "symbol": "g_err(\u03b5)",
+        "symbol": "g_err(ε)",
         "name": "g_err(epsilon)",
-        "description": "Error gap term depending on \u03b5",
+        "description": "Error gap term depending on ε",
         "constraints": [],
         "tags": [
           "gap",
@@ -3866,11 +3230,11 @@
     ],
     "implicit_assumptions": [
       {
-        "text": "Swarm state (S\u2081, S\u2082) satisfies necessary positivity and boundedness conditions for errors and variances",
+        "text": "Swarm state (S₁, S₂) satisfies necessary positivity and boundedness conditions for errors and variances",
         "confidence": 0.8
       },
       {
-        "text": "Sets I_{11}, U_k, H_k(\u03b5) are non-empty and well-defined in the context",
+        "text": "Sets I_{11}, U_k, H_k(ε) are non-empty and well-defined in the context",
         "confidence": 0.9
       },
       {
@@ -3878,7 +3242,7 @@
         "confidence": 1.0
       },
       {
-        "text": "c_err(\u03b5) and g_err(\u03b5) are positive functions derived from prior analyses",
+        "text": "c_err(ε) and g_err(ε) are positive functions derived from prior analyses",
         "confidence": 0.7
       }
     ],
@@ -3895,39 +3259,13 @@
       "high-error regime",
       "variance",
       "inequality bound"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 8. The N-Uniform Quantitative Keystone Lemma",
-    "span": {
-      "start_line": 5153,
-      "end_line": 5165,
-      "content_start": 5156,
-      "content_end": 5164,
-      "header_lines": [
-        5154
-      ]
-    },
-    "references": [],
-    "metadata": {
-      "label": "lem-error-concentration-target-set"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 8,
-      "chapter_file": "chapter_8.json",
-      "section_id": "## 8. The N-Uniform Quantitative Keystone Lemma"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-dead-walker-clone-prob",
     "title": "Total Cloning Probability for Dead Walkers",
-    "type": "lemma",
-    "nl_statement": "Under the Axiom of Guaranteed Revival (\u03b5_clone \u00b7 p_max < \u03b7^{\u03b1+\u03b2}), any dead walker clones with probability 1.",
-    "content_markdown": ":label: lem-dead-walker-clone-prob\n\nUnder the Axiom of Guaranteed Revival ($\\varepsilon_{\\text{clone}} \\cdot p_{\\max} < \\eta^{\\alpha+\\beta}$), any dead walker clones with probability 1:\n\n$$\ni \\in \\mathcal{D}(S) \\implies p_i = 1",
-    "raw_directive": "6031: :::\n6032: \n6033: :::{prf:lemma} Total Cloning Probability for Dead Walkers\n6034: :label: lem-dead-walker-clone-prob\n6035: \n6036: Under the Axiom of Guaranteed Revival ($\\varepsilon_{\\text{clone}} \\cdot p_{\\max} < \\eta^{\\alpha+\\beta}$), any dead walker clones with probability 1:\n6037: \n6038: $$\n6039: i \\in \\mathcal{D}(S) \\implies p_i = 1\n6040: $$",
+    "nl_statement": "Under the Axiom of Guaranteed Revival (ε_clone · p_max < η^{α+β}), any dead walker clones with probability 1.",
     "equations": [
       {
         "label": null,
@@ -3936,7 +3274,7 @@
     ],
     "hypotheses": [
       {
-        "text": "Axiom of Guaranteed Revival: \u03b5_clone \u00b7 p_max < \u03b7^{\u03b1+\u03b2}",
+        "text": "Axiom of Guaranteed Revival: ε_clone · p_max < η^{α+β}",
         "latex": "\\varepsilon_{\\text{clone}} \\cdot p_{\\max} < \\eta^{\\alpha + \\beta}"
       },
       {
@@ -4038,39 +3376,13 @@
       "probability",
       "guaranteed-revival",
       "axiom"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 9.3. Decomposition into Sub-Operators",
-    "span": {
-      "start_line": 6031,
-      "end_line": 6040,
-      "content_start": 6034,
-      "content_end": 6039,
-      "header_lines": [
-        6032
-      ]
-    },
-    "references": [],
-    "metadata": {
-      "label": "lem-dead-walker-clone-prob"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 11,
-      "chapter_file": "chapter_11.json",
-      "section_id": "## 9.3. Decomposition into Sub-Operators"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-variance-change-decomposition",
     "title": "Variance Change Decomposition",
-    "type": "lemma",
     "nl_statement": "The total change in positional variance decomposes into sums over alive walker contributions and status change contributions for k from 1 to 2.",
-    "content_markdown": ":label: lem-variance-change-decomposition\n\nThe total change in positional variance can be decomposed as:\n\n$$\n\\Delta V_{\\text{Var},x} = \\sum_{k=1}^{2} \\left[\\underbrace{\\Delta V_{\\text{Var},x}^{(k,\\text{alive})}}_{\\text{alive walkers}} + \\underbrace{\\Delta V_{\\text{Var},x}^{(k,\\text{status})}}_{\\text{status changes}}\\right]\n$$\n\nwhere:\n\n1. **Alive walker contribution:**\n\n\n$$\n\\Delta V_{\\text{Var},x}^{(k,\\text{alive})} = \\frac{1}{N}\\sum_{i \\in \\mathcal{A}(S_k)} \\left[\\|\\delta'_{x,k,i}\\|^2 - \\|\\delta_{x,k,i}\\|^2\\right]\n$$\n\n   where $\\delta'_{x,k,i}$ is the centered position after cloning.\n\n2. **Status change contribution:**\n\n\n$$\n\\Delta V_{\\text{Var},x}^{(k,\\text{status})} = \\frac{1}{N}\\sum_{i \\in \\mathcal{D}(S_k)} \\|\\delta'_{x,k,i}\\|^2\n$$",
-    "raw_directive": "6389: ### 10.3.3. Variance Decomposition\n6390: \n6391: :::{prf:lemma} Variance Change Decomposition\n6392: :label: lem-variance-change-decomposition\n6393: \n6394: The total change in positional variance can be decomposed as:\n6395: \n6396: $$\n6397: \\Delta V_{\\text{Var},x} = \\sum_{k=1}^{2} \\left[\\underbrace{\\Delta V_{\\text{Var},x}^{(k,\\text{alive})}}_{\\text{alive walkers}} + \\underbrace{\\Delta V_{\\text{Var},x}^{(k,\\text{status})}}_{\\text{status changes}}\\right]\n6398: $$\n6399: \n6400: where:\n6401: \n6402: 1. **Alive walker contribution:**\n6403: \n6404: \n6405: $$\n6406: \\Delta V_{\\text{Var},x}^{(k,\\text{alive})} = \\frac{1}{N}\\sum_{i \\in \\mathcal{A}(S_k)} \\left[\\|\\delta'_{x,k,i}\\|^2 - \\|\\delta_{x,k,i}\\|^2\\right]\n6407: $$\n6408: \n6409:    where $\\delta'_{x,k,i}$ is the centered position after cloning.\n6410: \n6411: 2. **Status change contribution:**\n6412: \n6413: \n6414: $$\n6415: \\Delta V_{\\text{Var},x}^{(k,\\text{status})} = \\frac{1}{N}\\sum_{i \\in \\mathcal{D}(S_k)} \\|\\delta'_{x,k,i}\\|^2\n6416: $$\n6417: ",
     "equations": [
       {
         "label": null,
@@ -4198,39 +3510,13 @@
       "status-changes",
       "cloning",
       "centered-positions"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 10.3. Positional Variance Contraction",
-    "span": {
-      "start_line": 6389,
-      "end_line": 6417,
-      "content_start": 6392,
-      "content_end": 6416,
-      "header_lines": [
-        6390
-      ]
-    },
-    "references": [],
-    "metadata": {
-      "label": "lem-variance-change-decomposition"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 17,
-      "chapter_file": "chapter_17.json",
-      "section_id": "## 10.3. Positional Variance Contraction"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-keystone-contraction-alive",
     "title": "Keystone-Driven Contraction for Stably Alive Walkers",
-    "type": "lemma",
     "nl_statement": "For walkers in the stably alive set $I_{11}$, the expected change in their contribution to variance satisfies $\\mathbb{E}_{\\text{clone}}\\left[\\sum_{i \\in I_{11}} \\sum_{k=1,2} \\left(\\|\\delta'_{x,k,i}\\|^2 - \\|\\delta_{x,k,i}\\|^2\\right)\\right] \\leq -\\frac{\\chi(\\epsilon)}{2N} \\cdot V_{\\text{struct}} + \\frac{g_{\\max}(\\epsilon)}{N} + C_{\\text{pers}}$, where $\\chi(\\epsilon) > 0$ and $g_{\\max}(\\epsilon)$ are the Keystone constants, and $C_{\\text{pers}}$ accounts for persisting walkers.",
-    "content_markdown": ":label: lem-keystone-contraction-alive\n\nFor walkers in the stably alive set $I_{11}$, the expected change in their contribution to variance satisfies:\n\n$$\n\\mathbb{E}_{\\text{clone}}\\left[\\sum_{i \\in I_{11}} \\sum_{k=1,2} \\left(\\|\\delta'_{x,k,i}\\|^2 - \\|\\delta_{x,k,i}\\|^2\\right)\\right] \\leq -\\frac{\\chi(\\epsilon)}{2N} \\cdot V_{\\text{struct}} + \\frac{g_{\\max}(\\epsilon)}{N} + C_{\\text{pers}}\n$$\n\nwhere $\\chi(\\epsilon) > 0$ and $g_{\\max}(\\epsilon)$ are the Keystone constants ({prf:ref}`lem-quantitative-keystone`), and $C_{\\text{pers}}$ accounts for persisting walkers.",
-    "raw_directive": "6456: We now bound the contribution from walkers that are alive in both swarms (the stably alive set $I_{11}$).\n6457: \n6458: :::{prf:lemma} Keystone-Driven Contraction for Stably Alive Walkers\n6459: :label: lem-keystone-contraction-alive\n6460: \n6461: For walkers in the stably alive set $I_{11}$, the expected change in their contribution to variance satisfies:\n6462: \n6463: $$\n6464: \\mathbb{E}_{\\text{clone}}\\left[\\sum_{i \\in I_{11}} \\sum_{k=1,2} \\left(\\|\\delta'_{x,k,i}\\|^2 - \\|\\delta_{x,k,i}\\|^2\\right)\\right] \\leq -\\frac{\\chi(\\epsilon)}{2N} \\cdot V_{\\text{struct}} + \\frac{g_{\\max}(\\epsilon)}{N} + C_{\\text{pers}}\n6465: $$\n6466: \n6467: where $\\chi(\\epsilon) > 0$ and $g_{\\max}(\\epsilon)$ are the Keystone constants ({prf:ref}`lem-quantitative-keystone`), and $C_{\\text{pers}}$ accounts for persisting walkers.\n6468: ",
     "equations": [
       {
         "label": null,
@@ -4334,41 +3620,13 @@
       "variance",
       "walkers",
       "expected-change"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 10.3. Positional Variance Contraction",
-    "span": {
-      "start_line": 6456,
-      "end_line": 6468,
-      "content_start": 6459,
-      "content_end": 6467,
-      "header_lines": [
-        6457
-      ]
-    },
-    "references": [
-      "lem-quantitative-keystone"
-    ],
-    "metadata": {
-      "label": "lem-keystone-contraction-alive"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 17,
-      "chapter_file": "chapter_17.json",
-      "section_id": "## 10.3. Positional Variance Contraction"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-dead-walker-revival-bounded",
     "title": "Bounded Contribution from Dead Walker Revival",
-    "type": "lemma",
     "nl_statement": "The contribution to variance from revived dead walkers is bounded.",
-    "content_markdown": ":label: lem-dead-walker-revival-bounded\n\nThe contribution to variance from revived dead walkers is bounded:\n\n$$\n\\mathbb{E}_{\\text{clone}}\\left[\\sum_{k=1,2} \\Delta V_{\\text{Var},x}^{(k,\\text{status})}\\right] \\leq \\frac{2}{N} \\sum_{k=1,2} |\\mathcal{D}(S_k)| \\cdot D_{\\text{valid}}^2\n$$",
-    "raw_directive": "6557: ### 10.3.5. Bounding Status Change Contributions\n6558: \n6559: :::{prf:lemma} Bounded Contribution from Dead Walker Revival\n6560: :label: lem-dead-walker-revival-bounded\n6561: \n6562: The contribution to variance from revived dead walkers is bounded:\n6563: \n6564: $$\n6565: \\mathbb{E}_{\\text{clone}}\\left[\\sum_{k=1,2} \\Delta V_{\\text{Var},x}^{(k,\\text{status})}\\right] \\leq \\frac{2}{N} \\sum_{k=1,2} |\\mathcal{D}(S_k)| \\cdot D_{\\text{valid}}^2\n6566: $$\n6567: ",
     "equations": [
       {
         "label": null,
@@ -4459,39 +3717,13 @@
       "bounding",
       "cloning",
       "status change"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 10.3. Positional Variance Contraction",
-    "span": {
-      "start_line": 6557,
-      "end_line": 6567,
-      "content_start": 6560,
-      "content_end": 6566,
-      "header_lines": [
-        6558
-      ]
-    },
-    "references": [],
-    "metadata": {
-      "label": "lem-dead-walker-revival-bounded"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 17,
-      "chapter_file": "chapter_17.json",
-      "section_id": "## 10.3. Positional Variance Contraction"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-fitness-gradient-boundary",
     "title": "Fitness Gradient from Boundary Proximity",
-    "type": "lemma",
     "nl_statement": "Walkers closer to the boundary have systematically lower fitness potential than similar walkers farther from it, under the fitness evaluation pipeline.",
-    "content_markdown": ":label: lem-fitness-gradient-boundary\n\nConsider two walkers $i$ and $j$ with similar positions and velocities, except that walker $i$ is closer to the boundary than walker $j$. Specifically, let:\n\n$$\n\\varphi_{\\text{barrier}}(x_i) - \\varphi_{\\text{barrier}}(x_j) = \\Delta_{\\text{barrier}} > 0\n$$\n\nThen, under the fitness evaluation pipeline (Chapter 5), walker $i$ has systematically lower fitness potential:\n\n$$\nV_{\\text{fit},i} \\leq V_{\\text{fit},j} - f(\\Delta_{\\text{barrier}})\n$$",
-    "raw_directive": "7091: This raw reward feeds into the fitness potential calculation, so walkers near the boundary have systematically lower fitness.\n7092: \n7093: :::{prf:lemma} Fitness Gradient from Boundary Proximity\n7094: :label: lem-fitness-gradient-boundary\n7095: \n7096: Consider two walkers $i$ and $j$ with similar positions and velocities, except that walker $i$ is closer to the boundary than walker $j$. Specifically, let:\n7097: \n7098: $$\n7099: \\varphi_{\\text{barrier}}(x_i) - \\varphi_{\\text{barrier}}(x_j) = \\Delta_{\\text{barrier}} > 0\n7100: $$\n7101: \n7102: Then, under the fitness evaluation pipeline (Chapter 5), walker $i$ has systematically lower fitness potential:\n7103: \n7104: $$\n7105: V_{\\text{fit},i} \\leq V_{\\text{fit},j} - f(\\Delta_{\\text{barrier}})\n7106: $$\n7107: ",
     "equations": [
       {
         "label": null,
@@ -4634,39 +3866,13 @@
       "walkers",
       "proximity",
       "potential"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 11.2. The Boundary Barrier and Fitness Gradient",
-    "span": {
-      "start_line": 7091,
-      "end_line": 7107,
-      "content_start": 7094,
-      "content_end": 7106,
-      "header_lines": [
-        7092
-      ]
-    },
-    "references": [],
-    "metadata": {
-      "label": "lem-fitness-gradient-boundary"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 23,
-      "chapter_file": "chapter_23.json",
-      "section_id": "## 11.2. The Boundary Barrier and Fitness Gradient"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-boundary-enhanced-cloning",
     "title": "Enhanced Cloning Probability Near Boundary",
-    "type": "lemma",
     "nl_statement": "For any walker i in the boundary-exposed set \\mathcal{E}_{\\text{boundary}}(S), its cloning probability p_i satisfies p_i \\geq p_{\\text{boundary}}(\\phi_{\\text{thresh}}) > 0.",
-    "content_markdown": ":label: lem-boundary-enhanced-cloning\n\nFor any walker $i$ in the boundary-exposed set $\\mathcal{E}_{\\text{boundary}}(S)$, its cloning probability satisfies:\n\n$$\np_i \\geq p_{\\text{boundary}}(\\phi_{\\text{thresh}}) > 0\n$$",
-    "raw_directive": "7322: ### 11.4.1. Cloning Probability for Boundary-Exposed Walkers\n7323: \n7324: :::{prf:lemma} Enhanced Cloning Probability Near Boundary\n7325: :label: lem-boundary-enhanced-cloning\n7326: \n7327: For any walker $i$ in the boundary-exposed set $\\mathcal{E}_{\\text{boundary}}(S)$, its cloning probability satisfies:\n7328: \n7329: $$\n7330: p_i \\geq p_{\\text{boundary}}(\\phi_{\\text{thresh}}) > 0\n7331: $$\n7332: ",
     "equations": [
       {
         "label": null,
@@ -4674,10 +3880,7 @@
       }
     ],
     "hypotheses": [],
-    "conclusion": {
-      "text": null,
-      "latex": null
-    },
+    "conclusion": {},
     "variables": [
       {
         "symbol": "i",
@@ -4758,39 +3961,13 @@
       "walkers",
       "enhanced",
       "inequality"
-    ],
-    "document_id": "03_cloning",
-    "section": "## 11.4. Proof of Boundary Potential Contraction",
-    "span": {
-      "start_line": 7322,
-      "end_line": 7332,
-      "content_start": 7325,
-      "content_end": 7331,
-      "header_lines": [
-        7323
-      ]
-    },
-    "references": [],
-    "metadata": {
-      "label": "lem-boundary-enhanced-cloning"
-    },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 25,
-      "chapter_file": "chapter_25.json",
-      "section_id": "## 11.4. Proof of Boundary Potential Contraction"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    ]
   },
   {
+    "type": "lemma",
     "label": "lem-barrier-reduction-cloning",
     "title": "Expected Barrier Reduction for Cloned Walker",
-    "type": "lemma",
     "nl_statement": "When a boundary-exposed walker $i$ clones, the expected barrier penalty after cloning is at most the expected barrier penalty of its companion plus $C_{\\text{jitter}} = O(\\sigma_x^2)$. Furthermore, if the companion is from the safe interior, the expected barrier penalty is at most $C_{\\text{jitter}}$.",
-    "content_markdown": ":label: lem-barrier-reduction-cloning\n\nWhen a boundary-exposed walker $i$ clones, its expected barrier penalty after cloning satisfies:\n\n$$\n\\mathbb{E}[\\varphi_{\\text{barrier}}(x'_i) \\mid i \\text{ clones}] \\leq \\mathbb{E}[\\varphi_{\\text{barrier}}(x_{c_i})] + C_{\\text{jitter}}\n$$\n\nwhere $C_{\\text{jitter}} = O(\\sigma_x^2)$ accounts for the position jitter variance.\n\nFurthermore, if the companion is from the safe interior:\n\n$$\n\\mathbb{E}[\\varphi_{\\text{barrier}}(x'_i) \\mid c_i \\in \\mathcal{I}_{\\text{safe}}] \\leq C_{\\text{jitter}}",
-    "raw_directive": "7393: ### 11.4.2. Barrier Reduction from Cloning\n7394: \n7395: :::{prf:lemma} Expected Barrier Reduction for Cloned Walker\n7396: :label: lem-barrier-reduction-cloning\n7397: \n7398: When a boundary-exposed walker $i$ clones, its expected barrier penalty after cloning satisfies:\n7399: \n7400: $$\n7401: \\mathbb{E}[\\varphi_{\\text{barrier}}(x'_i) \\mid i \\text{ clones}] \\leq \\mathbb{E}[\\varphi_{\\text{barrier}}(x_{c_i})] + C_{\\text{jitter}}\n7402: $$\n7403: \n7404: where $C_{\\text{jitter}} = O(\\sigma_x^2)$ accounts for the position jitter variance.\n7405: \n7406: Furthermore, if the companion is from the safe interior:\n7407: \n7408: $$\n7409: \\mathbb{E}[\\varphi_{\\text{barrier}}(x'_i) \\mid c_i \\in \\mathcal{I}_{\\text{safe}}] \\leq C_{\\text{jitter}}\n7410: $$",
     "equations": [
       {
         "label": null,
@@ -4931,30 +4108,101 @@
       "expected-value",
       "jitter",
       "variance"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-mass-conservation-transport",
+    "title": "Mass Conservation of Transport",
+    "nl_statement": "Under reflecting boundary conditions on position and velocity boundaries, the integral of the adjoint transport operator applied to a function over the domain Ω vanishes, conserving total mass.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\int_\\Omega L^\\dagger f(t,z)\\,\\mathrm{d}z = 0"
+      }
     ],
-    "document_id": "03_cloning",
-    "section": "## 11.4. Proof of Boundary Potential Contraction",
-    "span": {
-      "start_line": 7393,
-      "end_line": 7410,
-      "content_start": 7396,
-      "content_end": 7409,
-      "header_lines": [
-        7394
-      ]
+    "hypotheses": [
+      {
+        "text": "Reflecting boundary conditions are established on both position and velocity boundaries, as defined in Section 2.2.",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The integral of the adjoint transport operator over the domain vanishes.",
+      "latex": "\\int_\\Omega L^\\dagger f(t,z)\\,\\mathrm{d}z = 0"
     },
-    "references": [],
-    "metadata": {
-      "label": "lem-barrier-reduction-cloning"
+    "variables": [
+      {
+        "symbol": "L^\\dagger",
+        "name": "adjoint transport operator",
+        "description": "The adjoint of the transport operator acting on functions in phase space.",
+        "constraints": [],
+        "tags": [
+          "operator",
+          "adjoint"
+        ]
+      },
+      {
+        "symbol": "f",
+        "name": "density function",
+        "description": "A function representing density or distribution in phase space, depending on time and position-velocity.",
+        "constraints": [],
+        "tags": [
+          "function",
+          "density"
+        ]
+      },
+      {
+        "symbol": "\\Omega",
+        "name": "domain",
+        "description": "The phase space domain over which integration occurs.",
+        "constraints": [],
+        "tags": [
+          "domain",
+          "phase space"
+        ]
+      },
+      {
+        "symbol": "z",
+        "name": "phase variable",
+        "description": "The variable representing position and velocity in phase space.",
+        "constraints": [],
+        "tags": [
+          "variable",
+          "phase space"
+        ]
+      },
+      {
+        "symbol": "t",
+        "name": "time",
+        "description": "The time parameter for the function f.",
+        "constraints": [],
+        "tags": [
+          "time"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The transport operator is defined in a context with total mass conservation as a key property.",
+        "confidence": 1.0
+      },
+      {
+        "text": "The domain Ω is bounded with reflecting boundaries that prevent mass flux.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
     },
-    "registry_context": {
-      "stage": "directives",
-      "document_id": "03_cloning",
-      "chapter_index": 25,
-      "chapter_file": "chapter_25.json",
-      "section_id": "## 11.4. Proof of Boundary Potential Contraction"
-    },
-    "generated_at": "2025-11-09T10:55:47.625252+00:00",
-    "alt_labels": []
+    "tags": [
+      "mass conservation",
+      "transport operator",
+      "reflecting boundaries",
+      "boundary conditions",
+      "adjoint operator"
+    ]
   }
 ]

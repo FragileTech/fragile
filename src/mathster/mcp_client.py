@@ -435,78 +435,13 @@ class CodexMCPClient(BaseMCPClient):
         )
 
 
-class ClaudeCodeMCPClient(BaseMCPClient):
-    """
-    MCP client for Anthropic Claude Code via claude CLI server.
-
-    This client connects to the Claude Code MCP bridge exposed by the
-    `claude` CLI (part of @anthropic-ai/claude-agent-sdk).
-    """
-
-    DEFAULT_SERVER_COMMAND = "claude"
-    DEFAULT_SERVER_ARGS = ["mcp", "serve"]
-
-    def __init__(
-        self,
-        server_command: str | None = None,
-        api_key: str | None = None,
-        server_args: list[str] | None = None,
-        tool_name: str = "ask-claude",
-        **kwargs,
-    ):
-        """
-        Initialize Claude Code MCP client.
-
-        Args:
-            server_command: Path to claude CLI executable
-                (default: "claude" - hardcoded)
-            api_key: Anthropic API key (defaults to ANTHROPIC_API_KEY env var)
-            server_args: CLI arguments (default: ["mcp", "serve"])
-            tool_name: Name of the MCP tool to invoke (default: "ask-claude")
-            **kwargs: Passed to BaseMCPClient
-        """
-        env = dict(kwargs.pop("env", {}) or {})
-        if api_key:
-            env["ANTHROPIC_API_KEY"] = api_key
-        if env:
-            kwargs["env"] = env
-
-        # Use hardcoded default if not specified
-        if server_command is None:
-            server_command = self.DEFAULT_SERVER_COMMAND
-
-        resolved_args = (
-            list(server_args)
-            if server_args is not None
-            else list(kwargs.pop("server_args", self.DEFAULT_SERVER_ARGS))
-        )
-        kwargs["server_args"] = resolved_args
-
-        self.tool_name = tool_name
-
-        super().__init__(server_command=server_command, **kwargs)
-
-    def _discover_server(self) -> str | None:
-        """
-        Return hardcoded MCP server command.
-
-        Returns:
-            str: Hardcoded "claude" command
-        """
-        return self.DEFAULT_SERVER_COMMAND
-
-    async def ask(self, prompt: str, model: str = "claude-3-5-sonnet") -> str:
-        """
-        Ask Claude Code a question via MCP.
-
-        Args:
-            prompt: Task or question for Claude
-            model: Anthropic model identifier (default: claude-3-5-sonnet)
-        """
-        return await self.call_tool(
-            tool_name=self.tool_name,
-            arguments={"model": model, "prompt": prompt},
-        )
+# Claude direct CLI client has been moved to agents_direct.py
+# Import it here for backward compatibility
+try:
+    from mathster.agents_direct import ClaudeDirectClient as ClaudeCodeMCPClient
+except ImportError:
+    # Fallback if agents_direct is not available
+    ClaudeCodeMCPClient = None  # type: ignore
 
 
 # Synchronous wrappers for non-async contexts

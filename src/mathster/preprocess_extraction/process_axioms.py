@@ -123,14 +123,12 @@ def preprocess_document_axioms(
 
     directive_candidates = [
         registry_dir / "directives" / "axiom.json",
-        registry_dir / "directives" / "axiom_raw.json",
     ]
     directives_path = select_existing_file(directive_candidates)
 
     extract_dir = resolve_extract_directory(registry_dir)
     extracted_candidates = [
         extract_dir / "axiom.json",
-        extract_dir / "axiom_extracted.json",
     ]
     extracted_path = select_existing_file(extracted_candidates)
 
