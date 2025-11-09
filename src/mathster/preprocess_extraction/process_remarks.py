@@ -77,7 +77,7 @@ def _build_unified_remarks(
             matched_labels.add(label)
 
         try:
-            unified_obj = UnifiedRemark.from_instances(raw=raw_item, extracted=extracted)
+            unified_obj = UnifiedRemark.from_instances(raw_item=raw_item, extracted_item=extracted)
         except Exception as exc:  # pragma: no cover - defensive logging
             identifier = extracted.get("label") or extracted.get("title") or "<unknown>"
             logger.warning("Failed to merge remark %s: %s", identifier, exc)

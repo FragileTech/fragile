@@ -263,7 +263,8 @@ class GeminiMCPClient(BaseMCPClient):
         ```
     """
 
-    DEFAULT_SERVER_ARGS = ["mcp"]
+    DEFAULT_SERVER_COMMAND = "mcp-gemini-cli"
+    DEFAULT_SERVER_ARGS = []
 
     def __init__(
         self,
@@ -276,10 +277,10 @@ class GeminiMCPClient(BaseMCPClient):
         Initialize Gemini MCP client.
 
         Args:
-            server_command: Path to gemini-cli executable
-                (default: auto-discover)
+            server_command: Path to mcp-gemini-cli executable
+                (default: "mcp-gemini-cli" - hardcoded)
             api_key: Gemini API key (default: from GEMINI_API_KEY env var)
-            server_args: CLI arguments (default: ["mcp"])
+            server_args: CLI arguments (default: [] - no args needed)
             **kwargs: Additional arguments passed to BaseMCPClient
         """
         env_overrides = dict(kwargs.pop("env", {}) or {})
@@ -287,6 +288,10 @@ class GeminiMCPClient(BaseMCPClient):
             env_overrides["GEMINI_API_KEY"] = api_key
         if env_overrides:
             kwargs["env"] = env_overrides
+
+        # Use hardcoded default if not specified
+        if server_command is None:
+            server_command = self.DEFAULT_SERVER_COMMAND
 
         resolved_args = (
             list(server_args)
@@ -299,56 +304,12 @@ class GeminiMCPClient(BaseMCPClient):
 
     def _discover_server(self) -> str | None:
         """
-        Discover gemini-cli in common locations.
-
-        Searches:
-        - ~/.local/bin/gemini or gemini-cli
-        - /usr/local/bin versions
-        - npm global bin path
-        - PATH environment variable
+        Return hardcoded MCP server command.
 
         Returns:
-            str: Path to gemini-cli, or None if not found
+            str: Hardcoded "mcp-gemini-cli" command
         """
-        # Check common locations
-        locations = [
-            Path.home() / ".local" / "bin" / "gemini",
-            Path.home() / ".local" / "bin" / "gemini-cli",
-            Path("/usr/local/bin/gemini"),
-            Path("/usr/local/bin/gemini-cli"),
-            Path("/usr/bin/gemini"),
-            Path("/usr/bin/gemini-cli"),
-        ]
-
-        for path in locations:
-            if path.exists() and path.is_file():
-                logger.info("Found gemini executable at: %s", path)
-                return str(path)
-
-        # Check PATH for either binary name
-        for name in ("gemini-cli", "gemini"):
-            found = shutil.which(name)
-            if found:
-                logger.info("Found %s in PATH: %s", name, found)
-                return found
-
-        # Try npm global bin
-        try:
-            result = subprocess.run(
-                ["npm", "bin", "-g"], capture_output=True, text=True, timeout=5, check=False
-            )
-            if result.returncode == 0:
-                npm_bin = Path(result.stdout.strip())
-                for name in ("gemini-cli", "gemini"):
-                    candidate = npm_bin / name
-                    if candidate.exists():
-                        logger.info("Found %s in npm global bin: %s", name, candidate)
-                        return str(candidate)
-        except Exception as e:
-            logger.debug(f"Could not check npm global bin: {e}")
-
-        logger.warning("gemini-cli not found. Install with: npm install -g @google/gemini-cli")
-        return None
+        return self.DEFAULT_SERVER_COMMAND
 
     async def ask(self, prompt: str, model: str = "gemini-2.5-pro") -> str:
         """
@@ -392,7 +353,8 @@ class CodexMCPClient(BaseMCPClient):
         ```
     """
 
-    DEFAULT_SERVER_ARGS = ["mcp"]
+    DEFAULT_SERVER_COMMAND = "codex"
+    DEFAULT_SERVER_ARGS = ["mcp-server"]
 
     def __init__(
         self,
@@ -405,9 +367,10 @@ class CodexMCPClient(BaseMCPClient):
         Initialize Codex MCP client.
 
         Args:
-            server_command: Path to codex MCP server executable
+            server_command: Path to codex executable
+                (default: "codex" - hardcoded)
             api_key: OpenAI API key (default: from OPENAI_API_KEY env var)
-            server_args: Arguments to start the MCP server (default: ["mcp"])
+            server_args: Arguments to start the MCP server (default: ["mcp-server"])
             **kwargs: Additional arguments passed to BaseMCPClient
         """
         # Set up environment with API key if provided
@@ -416,6 +379,10 @@ class CodexMCPClient(BaseMCPClient):
             env["OPENAI_API_KEY"] = api_key
         if env:
             kwargs["env"] = env
+
+        # Use hardcoded default if not specified
+        if server_command is None:
+            server_command = self.DEFAULT_SERVER_COMMAND
 
         resolved_args = (
             list(server_args)
@@ -428,40 +395,27 @@ class CodexMCPClient(BaseMCPClient):
 
     def _discover_server(self) -> str | None:
         """
-        Discover codex MCP server in common locations.
+        Return hardcoded MCP server command.
 
         Returns:
-            str: Path to codex server, or None if not found
+            str: Hardcoded "codex" command
         """
-        # Common names for codex MCP servers
-        server_names = ["codex", "codex-mcp", "openai-mcp"]
+        return self.DEFAULT_SERVER_COMMAND
 
-        for name in server_names:
-            common_paths = [
-                Path.home() / ".local" / "bin" / name,
-                Path("/usr/local/bin") / name,
-                Path("/usr/bin") / name,
-            ]
-            for path in common_paths:
-                if path.exists() and path.is_file():
-                    logger.info("Found codex server at: %s", path)
-                    return str(path)
-
-            found = shutil.which(name)
-            if found:
-                logger.info(f"Found codex server: {found}")
-                return found
-
-        logger.warning("Codex MCP server not found")
-        return None
-
-    async def ask(self, prompt: str, model: str = "gpt-5-codex") -> str:
+    async def ask(
+        self,
+        prompt: str,
+        model: str = "gpt-5-codex",
+        reasoning_effort: str | None = None,
+    ) -> str:
         """
         Ask Codex/GPT a question via MCP.
 
         Args:
             prompt: Question or prompt
             model: Model to use (default: gpt-5-codex)
+            reasoning_effort: Reasoning effort level - "low", "medium", or "high"
+                (passed via config object to Codex MCP server)
 
         Returns:
             str: Model response
@@ -469,9 +423,15 @@ class CodexMCPClient(BaseMCPClient):
         Raises:
             MCPConnectionError: If connection or call fails
         """
+        arguments = {"model": model, "prompt": prompt}
+
+        # Add reasoning effort via config object if specified
+        if reasoning_effort:
+            arguments["config"] = {"model_reasoning_effort": reasoning_effort}
+
         return await self.call_tool(
             tool_name="codex",  # Tool name from codex mcp-server
-            arguments={"model": model, "prompt": prompt},
+            arguments=arguments,
         )
 
 
@@ -483,7 +443,8 @@ class ClaudeCodeMCPClient(BaseMCPClient):
     `claude` CLI (part of @anthropic-ai/claude-agent-sdk).
     """
 
-    DEFAULT_SERVER_ARGS = ["mcp"]
+    DEFAULT_SERVER_COMMAND = "claude"
+    DEFAULT_SERVER_ARGS = ["mcp", "serve"]
 
     def __init__(
         self,
@@ -497,9 +458,10 @@ class ClaudeCodeMCPClient(BaseMCPClient):
         Initialize Claude Code MCP client.
 
         Args:
-            server_command: Path to claude CLI executable (auto-discovers if None)
+            server_command: Path to claude CLI executable
+                (default: "claude" - hardcoded)
             api_key: Anthropic API key (defaults to ANTHROPIC_API_KEY env var)
-            server_args: CLI arguments (default: ["mcp"])
+            server_args: CLI arguments (default: ["mcp", "serve"])
             tool_name: Name of the MCP tool to invoke (default: "ask-claude")
             **kwargs: Passed to BaseMCPClient
         """
@@ -508,6 +470,10 @@ class ClaudeCodeMCPClient(BaseMCPClient):
             env["ANTHROPIC_API_KEY"] = api_key
         if env:
             kwargs["env"] = env
+
+        # Use hardcoded default if not specified
+        if server_command is None:
+            server_command = self.DEFAULT_SERVER_COMMAND
 
         resolved_args = (
             list(server_args)
@@ -522,49 +488,12 @@ class ClaudeCodeMCPClient(BaseMCPClient):
 
     def _discover_server(self) -> str | None:
         """
-        Discover the claude CLI binary.
+        Return hardcoded MCP server command.
 
-        Searches ~/.local/bin, /usr/local/bin, PATH, and npm global bin.
+        Returns:
+            str: Hardcoded "claude" command
         """
-        candidate_names = ["claude", "claude-code", "claudecode"]
-        locations: list[Path] = []
-        for name in candidate_names:
-            locations.extend(
-                [
-                    Path.home() / ".local" / "bin" / name,
-                    Path("/usr/local/bin") / name,
-                    Path("/usr/bin") / name,
-                ]
-            )
-
-        for path in locations:
-            if path.exists() and path.is_file():
-                logger.info("Found Claude CLI at: %s", path)
-                return str(path)
-
-        for name in candidate_names:
-            found = shutil.which(name)
-            if found:
-                logger.info("Found Claude CLI in PATH: %s", found)
-                return found
-
-        # npm global bin fallback
-        try:
-            result = subprocess.run(
-                ["npm", "bin", "-g"], capture_output=True, text=True, timeout=5, check=False
-            )
-            if result.returncode == 0:
-                npm_bin = Path(result.stdout.strip())
-                for name in candidate_names:
-                    candidate = npm_bin / name
-                    if candidate.exists():
-                        logger.info("Found Claude CLI in npm global bin: %s", candidate)
-                        return str(candidate)
-        except Exception as exc:  # pragma: no cover - best effort
-            logger.debug("Could not inspect npm global bin for Claude CLI: %s", exc)
-
-        logger.warning("Claude CLI not found. Install the claude-agent-sdk CLI to enable Claude MCP.")
-        return None
+        return self.DEFAULT_SERVER_COMMAND
 
     async def ask(self, prompt: str, model: str = "claude-3-5-sonnet") -> str:
         """
