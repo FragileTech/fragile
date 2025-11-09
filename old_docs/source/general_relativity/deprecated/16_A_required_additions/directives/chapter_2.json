@@ -19,6 +19,10 @@
         "label": "thm-modified-einstein-equations"
       },
       "section": "## Addition 3: Modified Einstein Equations (New Section 4.6)",
+      "references": [
+        "thm-energy-momentum-source",
+        "thm-einstein-field-equations"
+      ],
       "raw_directive": "180: ### 4.6. Dissipative General Relativity\n181: \n182: :::{prf:theorem} Modified Einstein Field Equations with Sources\n183: :label: thm-modified-einstein-equations\n184: \n185: Given that $\\nabla_\\mu T^{\\mu\\nu} = J^\\nu$ ({prf:ref}`thm-energy-momentum-source`) and $\\nabla_\\mu G^{\\mu\\nu} = 0$ (Bianchi identity), the consistency argument in {prf:ref}`thm-einstein-field-equations` leads to:\n186: \n187: $$\n188: \\nabla_\\mu G^{\\mu\\nu} = \\kappa J^\\nu\n189: $$\n190: \n191: Equivalently, defining an **effective stress-energy tensor**:\n192: \n193: $$\n194: T_{\\mu\\nu}^{\\text{eff}} := T_{\\mu\\nu} + T_{\\mu\\nu}^{\\text{bath}}\n195: $$\n196: \n197: where $T_{\\mu\\nu}^{\\text{bath}}$ satisfies $\\nabla_\\mu T^{\\mu\\nu}_{\\text{bath}} = -J^\\nu$, the field equations become:\n198: \n199: $$\n200: G_{\\mu\\nu} = 8\\pi G \\, T_{\\mu\\nu}^{\\text{eff}}\n201: $$\n202: \n203: with $\\nabla_\\mu (T^{\\mu\\nu}_{\\text{eff}}) = 0$.\n204: "
     }
   ],

@@ -19,6 +19,9 @@
         "label": "alg-online-phase-detection"
       },
       "section": "## 6.5 Practical Phase Transition Detection",
+      "references": [
+        "alg-ruppeiner-curvature"
+      ],
       "raw_directive": "3186: For the Fragile Gas practitioner, curvature monitoring provides a real-time diagnostic:\n3187: \n3188: :::{prf:algorithm} Online Phase Transition Detection\n3189: :label: alg-online-phase-detection\n3190: \n3191: **During Adaptive Gas run:**\n3192: \n3193: 1. **Collect samples**: Every $K$ iterations, store $(x_k, v_k)$ snapshot\n3194: 2. **Estimate curvature**: Use Algorithm {prf:ref}`alg-ruppeiner-curvature` with importance reweighting\n3195: 3. **Track $R_{\\text{Rupp}}(t)$**: Plot curvature vs. iteration\n3196: 4. **Detect peaks**: If $|R_{\\text{Rupp}}(t)| > R_{\\text{threshold}}$, flag potential transition\n3197: 5. **Adjust parameters**: Optionally adapt $\\alpha, \\beta$ to steer toward/away from criticality\n3198: \n3199: **Use cases:**\n3200: - **Optimization**: Avoid getting stuck in local minima (indicated by negative curvature spikes)\n3201: - **Exploration**: Deliberately induce high curvature to explore phase space boundaries"
     }
   ],

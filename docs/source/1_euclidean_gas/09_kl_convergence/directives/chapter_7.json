@@ -19,6 +19,7 @@
         "label": "thm-tensorization"
       },
       "section": "## 3. Extension to the N-Particle System",
+      "references": [],
       "raw_directive": "848: where $\\Psi_{\\text{kin}}^{(i)}$ is the single-particle kinetic evolution.\n849: \n850: :::{prf:theorem} Tensorization of LSI\n851: :label: thm-tensorization\n852: \n853: If each single-particle kernel $K_i$ satisfies an LSI with constant $C_i$, then the product kernel $K = \\bigotimes_{i=1}^N K_i$ satisfies an LSI with constant:\n854: \n855: $$\n856: C_{\\text{product}} = \\max_{i=1, \\ldots, N} C_i\n857: $$"
     },
     {
@@ -37,6 +38,7 @@
         "label": "proof-tensorization"
       },
       "section": "## 3. Extension to the N-Particle System",
+      "references": [],
       "raw_directive": "859: :::\n860: \n861: :::{prf:proof}\n862: :label: proof-tensorization\n863: This is a classical result. For the product measure $\\pi = \\bigotimes_{i=1}^N \\pi_i$ and function $f(x_1, \\ldots, x_N)$:\n864: \n865: $$\n866: \\text{Ent}_\\pi(f^2) \\le \\sum_{i=1}^N \\mathbb{E}_{\\pi}\\left[\\text{Ent}_{\\pi_i}(f^2 | x_1, \\ldots, x_{i-1}, x_{i+1}, \\ldots, x_N)\\right]\n867: $$\n868: \n869: Each conditional entropy satisfies the single-particle LSI:\n870: \n871: $$\n872: \\text{Ent}_{\\pi_i}(f^2 | \\cdots) \\le C_i \\mathcal{E}_i(f, f | \\cdots)\n873: $$\n874: \n875: Summing over $i$ and taking $C = \\max_i C_i$:\n876: \n877: $$\n878: \\text{Ent}_\\pi(f^2) \\le C \\sum_{i=1}^N \\mathcal{E}_i(f, f) = C \\mathcal{E}_{\\text{product}}(f, f)\n879: $$"
     },
     {
@@ -55,6 +57,7 @@
         "label": "cor-n-particle-kinetic-lsi"
       },
       "section": "## 3. Extension to the N-Particle System",
+      "references": [],
       "raw_directive": "881: :::\n882: \n883: :::{prf:corollary} LSI for N-Particle Kinetic Operator\n884: :label: cor-n-particle-kinetic-lsi\n885: \n886: The N-particle kinetic operator $\\Psi_{\\text{kin}}^{\\otimes N}$ satisfies a discrete-time LSI with the **same constant** as the single-particle operator:\n887: \n888: $$\n889: C_{\\text{LSI}}^{\\text{kin}, N}(\\tau) = C_{\\text{LSI}}^{\\text{kin}}(\\tau)\n890: $$"
     }
   ],

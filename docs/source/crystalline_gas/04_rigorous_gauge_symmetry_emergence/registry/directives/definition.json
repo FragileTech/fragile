@@ -2,7 +2,7 @@
   "document_id": "04_rigorous_gauge_symmetry_emergence",
   "stage": "directives",
   "directive_type": "definition",
-  "generated_at": "2025-11-08T17:16:20.349492+00:00",
+  "generated_at": "2025-11-08T23:19:38.355063+00:00",
   "count": 13,
   "items": [
     {
@@ -21,6 +21,10 @@
         "label": "def-cg-algorithmic-force"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [
+        "def-cg-ascent-operator",
+        "def-cg-fitness-landscape"
+      ],
       "raw_directive": "13: Before constructing gauge fields, we identify the fundamental geometric quantities available from the Crystalline Gas dynamics.\n14: \n15: :::{prf:definition} Algorithmic Force\n16: :label: def-cg-algorithmic-force\n17: \n18: For walker $i$ undergoing geometric ascent ({prf:ref}`def-cg-ascent-operator`), the **algorithmic force** is\n19: \n20: $$\n21: F_i := \\eta \\cdot H_{\\Phi}(x_i)^{-1} \\Delta x_i \\in \\mathbb{R}^{d}\n22: $$\n23: \n24: where:\n25: - $\\Delta x_i = x_{j^*(i)} - x_i$ is the displacement toward the best companion\n26: - $H_{\\Phi}(x_i)^{-1}$ is the inverse Hessian (exists by {prf:ref}`def-cg-fitness-landscape`)\n27: - $\\eta \\in (0,1]$ is the step size parameter\n28: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +50,9 @@
         "label": "def-cg-momentum"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [
+        "def-cg-thermal-operator"
+      ],
       "raw_directive": "30: :::\n31: \n32: :::{prf:definition} Momentum and Phase Space Structure\n33: :label: def-cg-momentum\n34: \n35: For walker $i$ with velocity $v_i \\in \\mathbb{R}^{d}$, define:\n36: - **Momentum:** $p_i := m v_i \\in \\mathbb{R}^{d}$ where $m$ is the effective walker mass (set $m=1$ without loss of generality)\n37: - **Phase space state:** $(x_i, v_i) \\in \\Omega = \\mathbb{R}^{d} \\times \\mathbb{R}^{d}$\n38: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +78,9 @@
         "label": "def-cg-companion-direction"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [
+        "def-cg-ascent-operator"
+      ],
       "raw_directive": "40: :::\n41: \n42: :::{prf:definition} Companion Direction Vector\n43: :label: def-cg-companion-direction\n44: \n45: For walker $i$ with companion $j^*(i)$ (from {prf:ref}`def-cg-ascent-operator`), define:\n46: - **Direction vector:**\n47: \n48: $$\n49: \\hat{r}_{i,j^*(i)} := \\frac{x_{j^*(i)} - x_i}{\\|x_{j^*(i)} - x_i\\|} \\in S^{d-1}\n50: $$\n51: \n52: - **Companion distance:**\n53: \n54: $$\n55: d_{i,j^*(i)} := \\|x_{j^*(i)} - x_i\\|\n56: $$\n57: \n58: - **Fitness score:**\n59: \n60: $$\n61: S_{\\text{ascent}}(i \\to j^*(i)) := \\frac{\\Phi(x_{j^*(i)}) - \\Phi(x_i)}{\\Phi(x_i) + \\varepsilon_{\\text{reg}}}\n62: $$\n63: ",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +106,7 @@
         "label": "def-cg-force-momentum-tensor"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "85: We now construct the **SU(3) color gauge field** (8 gluons) from the tensor product of force and momentum.\n86: \n87: :::{prf:definition} Force-Momentum Tensor\n88: :label: def-cg-force-momentum-tensor\n89: \n90: For walker $i$ with force $F_i \\in \\mathbb{R}^{3}$ and momentum $p_i \\in \\mathbb{R}^{3}$, define the **outer product tensor**:\n91: \n92: $$\n93: T_i := F_i \\otimes p_i \\in \\mathbb{R}^{3 \\times 3}\n94: $$\n95: \n96: with components:\n97: \n98: $$\n99: (T_i)_{ab} = (F_i)_a \\cdot (p_i)_b \\quad \\text{for } a,b \\in \\{1,2,3\\}\n100: $$\n101: ",
       "_registry_context": {
         "stage": "directives",
@@ -121,6 +132,7 @@
         "label": "def-cg-traceless-projection"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "103: :::\n104: \n105: :::{prf:definition} Traceless Projection to SU(3)\n106: :label: def-cg-traceless-projection\n107: \n108: To obtain an SU(3)-valued object (which must be traceless), we define:\n109: \n110: $$\n111: T_i^{\\text{traceless}} := T_i - \\frac{1}{3} \\text{Tr}(T_i) \\cdot I_3\n112: $$\n113: \n114: where:\n115: - $\\text{Tr}(T_i) = \\sum_{a=1}^{3} (T_i)_{aa} = F_i \\cdot p_i$ (dot product)\n116: - $I_3$ is the $3 \\times 3$ identity matrix\n117: ",
       "_registry_context": {
         "stage": "directives",
@@ -146,6 +158,7 @@
         "label": "def-cg-su3-gauge-field"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "157: :::\n158: \n159: :::{prf:definition} SU(3) Color Gauge Field (Gluons)\n160: :label: def-cg-su3-gauge-field\n161: \n162: The **SU(3) color gauge potential** for the Crystalline Gas is defined as the Lie-algebra-valued 1-form:\n163: \n164: $$\n165: \\mathcal{A}_{\\mu}^{\\text{color}}(x) := \\sum_{a=1}^{8} A_{\\mu}^a(x) \\cdot \\lambda^a \\in \\mathfrak{su}(3) \\otimes T^*M\n166: $$\n167: \n168: where the individual gluon field components are:\n169: \n170: $$\n171: A_{\\mu}^a(x) := \\partial_{\\mu} \\varphi^a(x)\n172: $$\n173: \n174: Here:\n175: - $\\varphi^a(x)$ is the spatial field obtained by interpolating the discrete walker phases $\\varphi_i^a$\n176: - $\\partial_{\\mu}$ denotes spacetime derivative ($\\mu \\in \\{0,1,2,3\\}$)",
       "_registry_context": {
         "stage": "directives",
@@ -171,6 +184,7 @@
         "label": "def-cg-su2-phases"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "275: We now construct the **SU(2) weak gauge field** (W bosons and Z boson before mixing) from the geometric direction to the companion.\n276: \n277: :::{prf:definition} SU(2) Isospin Phases from Direction Vector\n278: :label: def-cg-su2-phases\n279: \n280: For walker $i$ with companion direction $\\hat{r}_{i,j^*(i)} \\in S^{2}$ and fitness score $S_{\\text{ascent}}(i \\to j^*(i))$, define the **three SU(2) isospin phases**:\n281: \n282: $$\n283: \\varphi_i^{(1)} := S_{\\text{ascent}} \\cdot \\hat{r}_x\n284: $$\n285: \n286: $$\n287: \\varphi_i^{(2)} := S_{\\text{ascent}} \\cdot \\hat{r}_y\n288: $$\n289: \n290: $$\n291: \\varphi_i^{(3)} := S_{\\text{ascent}} \\cdot \\hat{r}_z\n292: $$\n293: \n294: where $\\hat{r} = (\\hat{r}_x, \\hat{r}_y, \\hat{r}_z)$ are the Cartesian components of the unit direction vector.\n295: ",
       "_registry_context": {
         "stage": "directives",
@@ -196,6 +210,7 @@
         "label": "def-cg-su2-gauge-field"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "329: :::\n330: \n331: :::{prf:definition} SU(2) Weak Gauge Field\n332: :label: def-cg-su2-gauge-field\n333: \n334: The **SU(2) weak gauge potential** for the Crystalline Gas is:\n335: \n336: $$\n337: \\mathcal{W}_{\\mu}(x) := \\sum_{a=1}^{3} W_{\\mu}^a(x) \\cdot \\tau^a \\in \\mathfrak{su}(2) \\otimes T^*M\n338: $$\n339: \n340: where the individual weak boson field components are:\n341: \n342: $$\n343: W_{\\mu}^a(x) := \\partial_{\\mu} \\varphi^{(a)}(x) = \\partial_{\\mu} [S_{\\text{ascent}}(x) \\cdot \\hat{r}^a(x)]\n344: $$\n345: \n346: Expanding:\n347: \n348: $$\n349: W_{\\mu}^a = \\hat{r}^a \\cdot \\partial_{\\mu} S_{\\text{ascent}} + S_{\\text{ascent}} \\cdot \\partial_{\\mu} \\hat{r}^a\n350: $$\n351: \n352: The 3 components correspond to:\n353: - $W_{\\mu}^1, W_{\\mu}^2$: combine to form $W_{\\mu}^{\\pm} = (W_{\\mu}^1 \\mp i W_{\\mu}^2)/\\sqrt{2}$ (charged W bosons)",
       "_registry_context": {
         "stage": "directives",
@@ -221,6 +236,7 @@
         "label": "def-cg-u1-phase"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "409: Finally, we construct the **U(1) hypercharge gauge field** from a scalar quantity. In the Fragile Gas, this came from distance to a random companion. For the Crystalline Gas (which has no random selection), we use the **fitness landscape value** itself.\n410: \n411: :::{prf:definition} U(1) Hypercharge Phase from Fitness\n412: :label: def-cg-u1-phase\n413: \n414: For walker $i$ with fitness $\\Phi(x_i)$, define the **hypercharge phase**:\n415: \n416: $$\n417: \\varphi_i^{(Y)} := \\Phi(x_i)\n418: $$\n419: \n420: Alternatively, for better normalization, use the **regularized fitness**:\n421: \n422: $$\n423: \\varphi_i^{(Y)} := \\frac{\\Phi(x_i) - \\langle \\Phi \\rangle}{\\sigma_{\\Phi}} + \\eta\n424: $$\n425: \n426: where:\n427: - $\\langle \\Phi \\rangle$ is the mean fitness over all walkers\n428: - $\\sigma_{\\Phi}$ is the standard deviation\n429: - $\\eta > 0$ is a small regularization constant\n430: ",
       "_registry_context": {
         "stage": "directives",
@@ -246,6 +262,7 @@
         "label": "def-cg-u1-gauge-field"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "432: :::\n433: \n434: :::{prf:definition} U(1) Hypercharge Gauge Field\n435: :label: def-cg-u1-gauge-field\n436: \n437: The **U(1) hypercharge gauge potential** is:\n438: \n439: $$\n440: A_{\\mu}^{(Y)}(x) := \\partial_{\\mu} \\varphi^{(Y)}(x) = \\partial_{\\mu} \\Phi(x)\n441: $$\n442: \n443: Using the regularized version:\n444: \n445: $$\n446: A_{\\mu}^{(Y)}(x) = \\frac{1}{\\sigma_{\\Phi}} \\partial_{\\mu} \\Phi(x)\n447: $$\n448: \n449: Since this is U(1) (abelian), there is no commutator term in the field strength:\n450: \n451: $$\n452: F_{\\mu\\nu}^{(Y)} = \\partial_{\\mu} A_{\\nu}^{(Y)} - \\partial_{\\nu} A_{\\mu}^{(Y)}",
       "_registry_context": {
         "stage": "directives",
@@ -271,6 +288,7 @@
         "label": "def-cg-gauge-transformation"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "573: To verify that these are genuine gauge fields, we must show they transform correctly under local gauge transformations.\n574: \n575: :::{prf:definition} Local Gauge Transformation\n576: :label: def-cg-gauge-transformation\n577: \n578: A **local gauge transformation** is a spacetime-dependent group element:\n579: \n580: $$\n581: g(x) \\in G_{\\text{gauge}} = \\text{SU}(3) \\times \\text{SU}(2) \\times \\text{U}(1)\n582: $$\n583: \n584: Under such a transformation:\n585: \n586: **SU(3) color:**\n587: $$\n588: c(x) \\to U_3(x) c(x), \\quad U_3 \\in \\text{SU}(3)\n589: $$\n590: \n591: **SU(2) weak isospin:**\n592: $$\n593: \\psi_L(x) \\to U_2(x) \\psi_L(x), \\quad U_2 \\in \\text{SU}(2)\n594: $$\n595: \n596: **U(1) hypercharge:**\n597: $$\n598: \\psi(x) \\to e^{i Y \\alpha(x)} \\psi(x), \\quad \\alpha(x) \\in \\mathbb{R}\n599: $$\n600: ",
       "_registry_context": {
         "stage": "directives",
@@ -296,6 +314,7 @@
         "label": "def-cg-field-strength"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "700: Having established the gauge field structure, we now verify that the system satisfies the **Yang-Mills equations** at equilibrium.\n701: \n702: :::{prf:definition} Field Strength Tensors\n703: :label: def-cg-field-strength\n704: \n705: For each gauge group, the **field strength tensor** (curvature) is:\n706: \n707: **SU(3)_c:**\n708: $$\n709: F_{\\mu\\nu}^a = \\partial_{\\mu} A_{\\nu}^a - \\partial_{\\nu} A_{\\mu}^a + g_s \\sum_{bc} f^{abc} A_{\\mu}^b A_{\\nu}^c\n710: $$\n711: \n712: where $f^{abc}$ are the SU(3) structure constants.\n713: \n714: **SU(2)_L:**\n715: $$\n716: W_{\\mu\\nu}^a = \\partial_{\\mu} W_{\\nu}^a - \\partial_{\\nu} W_{\\mu}^a + g_2 \\sum_{bc} \\varepsilon^{abc} W_{\\mu}^b W_{\\nu}^c\n717: $$\n718: \n719: where $\\varepsilon^{abc}$ is the Levi-Civita symbol (SU(2) structure constants).\n720: \n721: **U(1)_Y:**\n722: $$\n723: F_{\\mu\\nu}^{(Y)} = \\partial_{\\mu} A_{\\nu}^{(Y)} - \\partial_{\\nu} A_{\\mu}^{(Y)}\n724: $$\n725: ",
       "_registry_context": {
         "stage": "directives",
@@ -321,6 +340,7 @@
         "label": "def-cg-yang-mills-equations"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "727: :::\n728: \n729: :::{prf:definition} Yang-Mills Equations\n730: :label: def-cg-yang-mills-equations\n731: \n732: The **Yang-Mills equations** with matter source $J^{\\mu}$ are:\n733: \n734: $$\n735: D_{\\mu} F^{\\mu\\nu} = J^{\\nu}\n736: $$\n737: \n738: where $D_{\\mu}$ is the **gauge-covariant derivative**:\n739: \n740: $$\n741: D_{\\mu} = \\partial_{\\mu} + i g_s \\sum_a A_{\\mu}^a \\lambda^a + i g_2 \\sum_a W_{\\mu}^a \\tau^a + i g_1 A_{\\mu}^{(Y)} Y\n742: $$\n743: \n744: For a **pure gauge theory** (no matter), the source vanishes:\n745: \n746: $$\n747: J^{\\mu} = 0 \\implies D_{\\mu} F^{\\mu\\nu} = 0\n748: $$\n749: ",
       "_registry_context": {
         "stage": "directives",

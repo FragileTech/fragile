@@ -19,6 +19,7 @@
         "label": "def-ruppeiner-scalar-curvature"
       },
       "section": "## 6.1 Scalar Curvature of Thermodynamic Manifolds",
+      "references": [],
       "raw_directive": "2879: For a 2D thermodynamic manifold (e.g., $(T, V)$ plane), the scalar curvature is uniquely determined by the metric.\n2880: \n2881: :::{prf:definition} Ruppeiner Scalar Curvature\n2882: :label: def-ruppeiner-scalar-curvature\n2883: \n2884: For a 2D metric $g_R$ with line element:\n2885: \n2886: $$\n2887: ds^2 = g_R^{TT} dT^2 + 2g_R^{TV} dT dV + g_R^{VV} dV^2\n2888: $$\n2889: \n2890: the **scalar curvature** (Ricci curvature in 2D) is:\n2891: \n2892: $$\n2893: R_{\\text{Rupp}} = -\\frac{1}{\\sqrt{\\det g_R}} \\left[\\frac{\\partial}{\\partial T}\\left(\\frac{1}{\\sqrt{\\det g_R}}\\frac{\\partial \\sqrt{\\det g_R}}{\\partial T}\\right) + \\frac{\\partial}{\\partial V}\\left(\\frac{1}{\\sqrt{\\det g_R}}\\frac{\\partial \\sqrt{\\det g_R}}{\\partial V}\\right)\\right]\n2894: $$\n2895: \n2896: Equivalently, using the Christoffel symbols $\\Gamma^k_{ij}$:\n2897: \n2898: $$\n2899: R_{\\text{Rupp}} = -\\frac{1}{\\det g_R}\\left[\\frac{\\partial(\\sqrt{\\det g_R} \\Gamma^T_{TT})}{\\partial T} + \\frac{\\partial(\\sqrt{\\det g_R} \\Gamma^V_{VV})}{\\partial V} + \\text{(mixed terms)}\\right]\n2900: $$\n2901: "
     },
     {
@@ -37,6 +38,7 @@
         "class": "tip"
       },
       "section": "## 6.1 Scalar Curvature of Thermodynamic Manifolds",
+      "references": [],
       "raw_directive": "2903: :::\n2904: \n2905: :::{prf:example} Ideal Gas Has Zero Curvature\n2906: :class: tip\n2907: \n2908: For an ideal gas with $S = Nk_B \\ln V + C_V \\ln T + \\text{const}$ (where $C_V = \\frac{3}{2}Nk_B$ for monatomic gas), the Ruppeiner metric in $(T, V)$ coordinates is:\n2909: \n2910: $$\n2911: g_R = \\begin{pmatrix}\n2912: \\frac{C_V}{T^2} & 0 \\\\\n2913: 0 & \\frac{Nk_B}{V^2}\n2914: \\end{pmatrix}\n2915: $$\n2916: \n2917: This metric is **non-degenerate** (det $\\neq$ 0). Computing the scalar curvature for this 2D metric yields:\n2918: \n2919: $$\n2920: R_{\\text{ideal}} = 0\n2921: $$\n2922: "
     }
   ],

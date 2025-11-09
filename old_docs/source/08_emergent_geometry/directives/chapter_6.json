@@ -19,6 +19,7 @@
         "label": "obs-emergent-metric"
       },
       "section": "## 6. Convergence on the Emergent Manifold (Geometric Perspective)",
+      "references": [],
       "raw_directive": "2453: We have proven convergence in the **flat state space** $\\mathcal{X} \\times \\mathbb{R}^d$ with anisotropic diffusion. But the anisotropic diffusion **defines an emergent Riemannian geometry**.\n2454: \n2455: :::{prf:observation} The Emergent Metric\n2456: :label: obs-emergent-metric\n2457: \n2458: The adaptive diffusion $D_{\\text{reg}}(x, S) = (H + \\epsilon_\\Sigma I)^{-1}$ is the **inverse** of a Riemannian metric:\n2459: \n2460: $$\n2461: g_{\\text{emergent}}(x, S) = H(x, S) + \\epsilon_\\Sigma I\n2462: $$\n2463: \n2464: This metric defines **geodesic distances** on the state space. Two points that are close in **Euclidean distance** may be far in **geodesic distance** if the Hessian $H$ is large (high curvature).\n2465: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "prop-rate-metric-ellipticity"
       },
       "section": "## 6. Convergence on the Emergent Manifold (Geometric Perspective)",
+      "references": [],
       "raw_directive": "2467: :::\n2468: \n2469: :::{prf:proposition} Convergence Rate Depends on Metric Ellipticity\n2470: :label: prop-rate-metric-ellipticity\n2471: \n2472: The convergence rate $\\kappa_{\\text{total}}$ depends on the **ellipticity constants** of the emergent metric:\n2473: \n2474: $$\n2475: \\kappa_{\\text{total}} = O(\\min\\{\\gamma \\tau, \\kappa_x, c_{\\min}\\})\n2476: $$\n2477: \n2478: where $c_{\\min} = \\epsilon_\\Sigma / (H_{\\max} + \\epsilon_\\Sigma)$ is the lower bound on the eigenvalues of $D_{\\text{reg}} = g_{\\text{emergent}}^{-1}$.\n2479: \n2480: **Interpretation**:\n2481: - **Well-conditioned manifold** ($H_{\\max} \\approx \\epsilon_\\Sigma$): $c_{\\min} \\approx \\epsilon_\\Sigma / 2$ \u2192 fast convergence\n2482: - **Ill-conditioned manifold** ($H_{\\max} \\gg \\epsilon_\\Sigma$): $c_{\\min} \\approx \\epsilon_\\Sigma / H_{\\max}$ \u2192 slower convergence (but still positive!)\n2483: "
     }
   ],

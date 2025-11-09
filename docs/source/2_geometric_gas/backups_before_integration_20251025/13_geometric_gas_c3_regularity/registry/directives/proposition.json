@@ -2,7 +2,7 @@
   "document_id": "13_geometric_gas_c3_regularity",
   "stage": "directives",
   "directive_type": "proposition",
-  "generated_at": "2025-11-08T17:16:20.287945+00:00",
+  "generated_at": "2025-11-08T23:19:38.321811+00:00",
   "count": 4,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "prop-scaling-kv3"
       },
       "section": "## 8. Main $C^3$ Regularity Theorem",
+      "references": [],
       "raw_directive": "1064: :::\n1065: \n1066: :::{prf:proposition} ρ-Scaling of Third Derivative Bound\n1067: :label: prop-scaling-kv3\n1068: \n1069: The third derivative bound satisfies:\n1070: \n1071: $$\n1072: K_{V,3}(\\rho) = O(\\rho^{-3}) \\quad \\text{as } \\rho \\to 0\n1073: $$\n1074: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "prop-scaling-k-v-3"
       },
       "section": "## 10. �-Scaling Analysis and Numerical Considerations",
+      "references": [],
       "raw_directive": "1267: ### 10.1. Asymptotic Scaling of $K_{V,3}(\\rho)$\n1268: \n1269: :::{prf:proposition} Scaling of Third-Derivative Bound\n1270: :label: prop-scaling-k-v-3\n1271: \n1272: For the Gaussian localization kernel $K_\\rho(x, x') = Z_\\rho(x)^{-1} \\exp(-\\|x-x'\\|^2/(2\\rho^2))$ with $C_{\\nabla^m K}(\\rho) = O(1)$, the third-derivative bound scales as:\n1273: \n1274: **Local regime ($\\rho \\to 0$):**\n1275: \n1276: $$\n1277: K_{V,3}(\\rho) = O(\\rho^{-3})\n1278: $$\n1279: \n1280: **Global regime ($\\rho \\to \\infty$):**\n1281: \n1282: $$\n1283: K_{V,3}(\\rho) = O(1)\n1284: $$\n1285: \n1286: **Intermediate regime ($0 < \\rho < \\infty$):**\n1287: \n1288: $$\n1289: K_{V,3}(\\rho) = O(\\rho^{-3}) \\quad \\text{(dominant term)}\n1290: $$",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "prop-timestep-constraint"
       },
       "section": "## 10. �-Scaling Analysis and Numerical Considerations",
+      "references": [],
       "raw_directive": "1380: ### 10.2. Numerical Stability and Time Step Constraints\n1381: \n1382: :::{prf:proposition} Time Step Constraint from $C^3$ Regularity\n1383: :label: prop-timestep-constraint\n1384: \n1385: For the BAOAB integrator to maintain $O(\\Delta t^2)$ weak error, the time step must satisfy:\n1386: \n1387: $$\n1388: \\Delta t \\lesssim \\frac{1}{\\sqrt{K_{V,3}(\\rho)}}\n1389: $$\n1390: \n1391: For small localization scales $\\rho \\to 0$, this gives:\n1392: \n1393: $$\n1394: \\Delta t \\lesssim \\rho^{3/2}\n1395: $$\n1396: ",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +99,7 @@
         "label": "prop-explicit-k-v-3"
       },
       "section": "## 10. �-Scaling Analysis and Numerical Considerations",
+      "references": [],
       "raw_directive": "1451: ### 10.3. Explicit Dependence of $K_{V,3}(\\rho)$ on Parameters\n1452: \n1453: :::{prf:proposition} Explicit Formula for $K_{V,3}(\\rho)$\n1454: :label: prop-explicit-k-v-3\n1455: \n1456: For the Gaussian kernel with constants $(d_{\\max}, d'_{\\max}, d''_{\\max}, d'''_{\\max}, A, L_{g'_A}, L_{g''_A}, L_{g'''_A}, \\sigma\\'_{\\min})$, the third-derivative bound is:\n1457: \n1458: $$\n1459: \\begin{aligned}\n1460: K_{V,3}(\\rho) = &\\, L_{g'_A} \\cdot \\frac{1}{\\sigma\\'_{\\min}} \\cdot \\left[d'''_{\\max} + \\frac{6 d''_{\\max}}{\\rho} + \\frac{6 d'_{\\max}}{\\rho^2} + \\frac{C_{\\max}}{\\rho^3}\\right] \\\\\n1461: &+ 3 L_{g''_A} \\cdot K_{Z,1}(\\rho) \\cdot K_{Z,2}(\\rho) + L_{g'''_A} \\cdot (K_{Z,1}(\\rho))^3\n1462: \\end{aligned}\n1463: $$\n1464: \n1465: where $C_{\\max}$ is a constant depending on $(d_{\\max}, d'_{\\max}, d''_{\\max}, d'''_{\\max})$ and kernel coefficients.\n1466: \n1467: **Asymptotic behavior:**\n1468: - As $\\rho \\to 0$: $K_{V,3}(\\rho) \\sim \\frac{L_{g'_A} C_{\\max}}{\\sigma\\'_{\\min} \\rho^3}$\n1469: - As $\\rho \\to \\infty$: $K_{V,3}(\\rho) \\sim \\frac{L_{g'_A} d'''_{\\max}}{\\sigma\\'_{\\min}}$\n1470: ",
       "_registry_context": {
         "stage": "directives",

@@ -19,6 +19,7 @@
         "label": "thm-lsi-qsd"
       },
       "section": "## 2. Log-Sobolev Inequality for the QSD",
+      "references": [],
       "raw_directive": "159: The core of hypocoercivity is relating Fisher information to KL divergence:\n160: \n161: :::{prf:theorem} Log-Sobolev Inequality (LSI) for QSD\n162: :label: thm-lsi-qsd\n163: \n164: There exists a constant $\\lambda_{\\text{LSI}} > 0$ such that for all probability densities $\\rho$ on $\\Omega$:\n165: \n166: $$\n167: D_{\\text{KL}}(\\rho \\| \\rho_\\infty) \\le \\frac{1}{2\\lambda_{\\text{LSI}}} I_v(\\rho \\| \\rho_\\infty)\n168: $$\n169: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "thm-lsi-constant-explicit"
       },
       "section": "## 2. Log-Sobolev Inequality for the QSD",
+      "references": [],
       "raw_directive": "219: The true QSD $\\rho_\\infty^x(v)$ is not exactly Gaussian, but it's close (bounded perturbation). Using perturbative LSI theory (Holley-Stroock):\n220: \n221: :::{prf:theorem} Explicit LSI Constant\n222: :label: thm-lsi-constant-explicit\n223: \n224: The LSI constant for the QSD satisfies:\n225: \n226: $$\n227: \\boxed{\\lambda_{\\text{LSI}} \\ge \\frac{\\alpha_{\\exp}}{1 + C_{\\Delta v}/\\alpha_{\\exp}}}\n228: $$\n229: \n230: where:\n231: - $\\alpha_{\\exp}$ is the exponential concentration rate from (R6)"
     },
     {
@@ -51,6 +53,7 @@
       "content": "234: \n235: :::{prf:proof}\n236: The proof follows from the Holley-Stroock perturbation theorem. The reference Gaussian measure $\\mu(v) = (2\\pi/\\alpha_{\\exp})^{-d/2} e^{-\\alpha_{\\exp}|v|^2/2}$ has LSI constant $\\lambda_0 = \\alpha_{\\exp}$.\n237: \n238: The log-ratio $\\log(\\rho_\\infty^x / \\mu)$ satisfies:\n239: \n240: $$\n241: \\left|\\Delta_v \\log \\frac{\\rho_\\infty^x}{\\mu}\\right| = |\\Delta_v \\log \\rho_\\infty^x - \\Delta_v \\log \\mu| = |\\Delta_v \\log \\rho_\\infty^x + \\alpha_{\\exp} d|\n242: $$\n243: \n244: Using $\\|\\Delta_v \\log \\rho_\\infty\\|_{L^\\infty} \\le C_{\\Delta v}$:\n245: \n246: $$\n247: \\left|\\Delta_v \\log \\frac{\\rho_\\infty^x}{\\mu}\\right| \\le C_{\\Delta v} + \\alpha_{\\exp} d\n248: $$\n249: \n250: The Holley-Stroock theorem gives:\n251: \n252: $$\n253: \\lambda_{\\text{LSI}} \\ge \\frac{\\lambda_0}{1 + C_{\\text{perturb}}/\\lambda_0}\n254: $$\n255: \n256: where $C_{\\text{perturb}} = C_{\\Delta v}$. Substituting $\\lambda_0 = \\alpha_{\\exp}$:\n257: \n258: $$\n259: \\lambda_{\\text{LSI}} \\ge \\frac{\\alpha_{\\exp}}{1 + C_{\\Delta v}/\\alpha_{\\exp}}",
       "metadata": {},
       "section": "## 2. Log-Sobolev Inequality for the QSD",
+      "references": [],
       "raw_directive": "233: :::\n234: \n235: :::{prf:proof}\n236: The proof follows from the Holley-Stroock perturbation theorem. The reference Gaussian measure $\\mu(v) = (2\\pi/\\alpha_{\\exp})^{-d/2} e^{-\\alpha_{\\exp}|v|^2/2}$ has LSI constant $\\lambda_0 = \\alpha_{\\exp}$.\n237: \n238: The log-ratio $\\log(\\rho_\\infty^x / \\mu)$ satisfies:\n239: \n240: $$\n241: \\left|\\Delta_v \\log \\frac{\\rho_\\infty^x}{\\mu}\\right| = |\\Delta_v \\log \\rho_\\infty^x - \\Delta_v \\log \\mu| = |\\Delta_v \\log \\rho_\\infty^x + \\alpha_{\\exp} d|\n242: $$\n243: \n244: Using $\\|\\Delta_v \\log \\rho_\\infty\\|_{L^\\infty} \\le C_{\\Delta v}$:\n245: \n246: $$\n247: \\left|\\Delta_v \\log \\frac{\\rho_\\infty^x}{\\mu}\\right| \\le C_{\\Delta v} + \\alpha_{\\exp} d\n248: $$\n249: \n250: The Holley-Stroock theorem gives:\n251: \n252: $$\n253: \\lambda_{\\text{LSI}} \\ge \\frac{\\lambda_0}{1 + C_{\\text{perturb}}/\\lambda_0}\n254: $$\n255: \n256: where $C_{\\text{perturb}} = C_{\\Delta v}$. Substituting $\\lambda_0 = \\alpha_{\\exp}$:\n257: \n258: $$\n259: \\lambda_{\\text{LSI}} \\ge \\frac{\\alpha_{\\exp}}{1 + C_{\\Delta v}/\\alpha_{\\exp}}\n260: $$"
     },
     {
@@ -69,6 +72,7 @@
         "label": "lem-fisher-bound"
       },
       "section": "## 2. Log-Sobolev Inequality for the QSD",
+      "references": [],
       "raw_directive": "303: **Simplified bound** (sufficient for hypocoercivity):\n304: \n305: :::{prf:lemma} Fisher Information Bound\n306: :label: lem-fisher-bound\n307: \n308: There exists a constant $c_F > 0$ such that:\n309: \n310: $$\n311: I_v(\\rho) \\ge c_F I_v(\\rho \\| \\rho_\\infty) - C_{\\text{rem}}\n312: $$\n313: \n314: where $c_F = 1/2$ and $C_{\\text{rem}} = 4C_{\\nabla v}^2$.\n315: \n316: Consequently:\n317: \n318: $$\n319: \\boxed{I_v(\\rho) \\ge 2\\lambda_{\\text{LSI}} D_{\\text{KL}}(\\rho \\| \\rho_\\infty) - C_{\\text{LSI}}}\n320: $$\n321: "
     }
   ],

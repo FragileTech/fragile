@@ -19,6 +19,7 @@
         "label": "def-wilson-loop-operator"
       },
       "section": "## 5. Wilson Loops and Holonomy",
+      "references": [],
       "raw_directive": "554: ### 5.1. Wilson Loop Observable\n555: \n556: :::{prf:definition} Wilson Loop Operator\n557: :label: def-wilson-loop-operator\n558: \n559: **Source:** [13_E_cst_ig_lattice_qft.md \u00a7 5.1, lines 650-676]\n560: \n561: For a closed loop $\\gamma$ in $\\mathcal{F}$ and gauge group $G$, the **Wilson loop** is:\n562: \n563: $$\n564: W[\\gamma] = \\text{Tr}\\left[\\prod_{\\text{edges } e \\in \\gamma} U(e)\\right]\n565: \n566: $$\n567: \n568: where:\n569: - $U(e)$: Parallel transport operator on edge $e$\n570: - Product taken in **path order** (starting at arbitrary base point)\n571: - Trace over gauge group representation (ensures gauge invariance)\n572: \n573: **Gauge invariance:** Under gauge transformation $\\Omega : \\mathcal{E} \\to G$:\n574: \n575: $$\n576: W[\\gamma] \\mapsto \\text{Tr}\\left[\\Omega(e_0) \\left(\\prod U(e)\\right) \\Omega(e_0)^\\dagger\\right] = W[\\gamma]\n577: \n578: $$\n579: \n580: (trace is cyclic, so base point cancels).\n581: \n582: **Physical interpretation:**\n583: - $W[\\gamma]$ measures **gauge field flux** through any surface bounded by $\\gamma$\n584: - In QED: $W[\\gamma] = e^{i q \\Phi_B}$ (Aharonov-Bohm effect)"
     },
     {
@@ -37,6 +38,7 @@
         "label": "prop-wilson-loop-area-law"
       },
       "section": "## 5. Wilson Loops and Holonomy",
+      "references": [],
       "raw_directive": "588: ### 5.2. Area Law and Confinement\n589: \n590: :::{prf:proposition} Wilson Loop Area Law\n591: :label: prop-wilson-loop-area-law\n592: \n593: **Source:** [13_E_cst_ig_lattice_qft.md \u00a7 5.3, lines 720-742]\n594: \n595: In **confining gauge theories** (e.g., QCD), large Wilson loops exhibit **area law behavior**:\n596: \n597: $$\n598: \\langle W[\\gamma] \\rangle \\sim e^{-\\sigma \\, \\text{Area}(\\gamma)}\n599: \n600: $$\n601: \n602: where:\n603: - $\\sigma$: String tension (physical constant, $\\sigma \\sim 1 \\, \\text{GeV}^2$ for QCD)\n604: - $\\text{Area}(\\gamma)$: Minimal area of surface bounded by loop $\\gamma$\n605: - $\\langle \\cdot \\rangle$: Expectation value in quantum vacuum state\n606: \n607: **Physical interpretation:** The area law arises from **flux tube formation** between quark-antiquark pairs\u2014flux is confined to a narrow tube, giving energy $\\propto$ length $\\propto$ area.\n608: \n609: **In CST+IG:** We can compute $\\langle W[\\gamma] \\rangle$ by:\n610: 1. Summing over all CST+IG realizations (different algorithm runs)\n611: 2. Computing $W[\\gamma]$ for each realization\n612: 3. Taking empirical average\n613: "
     }
   ],

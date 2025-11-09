@@ -2,7 +2,7 @@
   "document_id": "11_hk_convergence",
   "stage": "directives",
   "directive_type": "corollary",
-  "generated_at": "2025-11-08T17:16:20.200663+00:00",
+  "generated_at": "2025-11-08T23:19:38.271212+00:00",
   "count": 1,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "cor-conditional-mass-lower-bound"
       },
       "section": "## 5. Rigorous Proof of Bounded Density Ratio",
+      "references": [],
       "raw_directive": "2712: On the survival event $\\{\\tau_\\dagger = \\infty\\}$ (the system never dies), the mass lower bound holds **deterministically** for all time:\n2713: \n2714: :::{prf:corollary} Conditional Mass Lower Bound (Uniform in Time)\n2715: :label: cor-conditional-mass-lower-bound\n2716: \n2717: On the survival event $\\{\\tau_\\dagger = \\infty\\}$, for all $t \\geq t_{\\text{eq}}$:\n2718: \n2719: $$\n2720: \\|\\rho_t\\|_{L^1} \\geq c_{\\text{mass}} > 0\n2721: \n2722: $$\n2723: ",
       "_registry_context": {
         "stage": "directives",

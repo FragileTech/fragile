@@ -19,6 +19,9 @@
         "label": "thm-meanfield-kl-convergence-hybrid"
       },
       "section": "## Main Result",
+      "references": [
+        "thm-main-kl-convergence"
+      ],
       "raw_directive": "18: ## Main Result\n19: \n20: :::{prf:theorem} Exponential KL-Convergence via Mean-Field Analysis\n21: :label: thm-meanfield-kl-convergence-hybrid\n22: \n23: **Hypotheses**: Same as Theorem {prf:ref}`thm-main-kl-convergence` in [10_kl_convergence.md](10_kl_convergence.md):\n24: \n25: 1. $\\pi_{\\text{QSD}}$ is log-concave (Axiom 3.5)\n26: 2. Parameters satisfy Foster-Lyapunov conditions\n27: 3. Noise variance satisfies $\\delta^2 > \\delta_{\\min}^2$ (favorable regime)\n28: \n29: **Conclusion**:\n30: \n31: The discrete-time Markov chain $S_{t+1} = \\Psi_{\\text{total}}(S_t) := (\\Psi_{\\text{kin}}(\\tau) \\circ \\Psi_{\\text{clone}})(S_t)$ satisfies:\n32: \n33: $$\n34: D_{\\text{KL}}(\\mu_t \\| \\pi_{\\text{QSD}}) \\leq e^{-t/C_{\\text{LSI}}} D_{\\text{KL}}(\\mu_0 \\| \\pi_{\\text{QSD}})\n35: $$\n36: \n37: where the LSI constant is:\n38: \n39: $$\n40: C_{\\text{LSI}} = O\\left(\\frac{1}{\\alpha_{\\text{kin}} + \\beta_{\\text{clone}}}\\right)\n41: $$\n42: \n43: with:\n44: - $\\alpha_{\\text{kin}} = O(\\gamma \\kappa_{\\text{conf}})$ from kinetic operator\n45: - $\\beta_{\\text{clone}} = \\frac{\\lambda_{\\text{clone}}}{m_a} \\lambda_{\\text{corr}} \\lambda_{\\text{Poin}} (1 - \\epsilon_{\\text{ratio}})$ from mean-field cloning analysis"
     }
   ],

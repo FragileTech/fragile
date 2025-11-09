@@ -19,6 +19,9 @@
         "label": "prop-talagrand-cinf"
       },
       "section": "## 10. Advanced Functional Inequalities (Conditional Results)",
+      "references": [
+        "thm-cinf-regularity"
+      ],
       "raw_directive": "913: ### 10.1. Talagrand W_2 Inequality\n914: \n915: :::{prf:proposition} Talagrand Inequality (Conditional)\n916: :label: prop-talagrand-cinf\n917: \n918: Assume:\n919: 1. V_fit \u2208 C\u221e (Theorem {prf:ref}`thm-cinf-regularity`)\n920: 2. V_total uniformly convex: \u2207\u00b2V_total \u2265 \u03bb_Tal I\n921: 3. QSD \u03c0_QSD \u221d exp(-\u03b2 V_total) exists\n922: \n923: Then for any \u03bd with \u03bd \u226a \u03c0_QSD:\n924: \n925: $$\n926: W_2^2(\\nu, \\pi_{\\text{QSD}}) \\leq \\frac{2}{\\lambda_{\\text{Tal}}} D_{\\text{KL}}(\\nu \\| \\pi_{\\text{QSD}})\n927: $$\n928: "
     },
     {
@@ -37,6 +40,9 @@
         "label": "cor-wasserstein-convergence-cinf"
       },
       "section": "## 10. Advanced Functional Inequalities (Conditional Results)",
+      "references": [
+        "prop-talagrand-cinf"
+      ],
       "raw_directive": "930: :::\n931: \n932: :::{prf:corollary} Exponential Convergence in Wasserstein Distance\n933: :label: cor-wasserstein-convergence-cinf\n934: \n935: Under {prf:ref}`prop-talagrand-cinf` hypotheses:\n936: \n937: $$\n938: W_2(\\mu_t, \\pi_{\\text{QSD}}) \\leq e^{-\\lambda_{\\text{Tal}} t / 2} W_2(\\mu_0, \\pi_{\\text{QSD}})\n939: $$\n940: "
     },
     {
@@ -55,6 +61,10 @@
         "label": "prop-brascamp-lieb-cinf"
       },
       "section": "## 10. Advanced Functional Inequalities (Conditional Results)",
+      "references": [
+        "prop-talagrand-cinf",
+        "thm-cinf-regularity"
+      ],
       "raw_directive": "944: ### 10.2. Brascamp-Lieb Inequality\n945: \n946: :::{prf:proposition} Brascamp-Lieb Inequality (Conditional)\n947: :label: prop-brascamp-lieb-cinf\n948: \n949: Under {prf:ref}`prop-talagrand-cinf` hypotheses (C\u221e + uniform convexity):\n950: \n951: $$\n952: \\text{Var}_{\\pi_{\\text{QSD}}}[f] \\leq \\frac{1}{\\lambda_{\\min}(\\nabla^2 V_{\\text{total}})} \\int |\\nabla f|^2 \\, d\\pi_{\\text{QSD}}\n953: $$\n954: \n955: for all smooth f with \u03c0_QSD(f) = 0.\n956: \n957: **Interpretation**: Optimal Poincar\u00e9 constant C_Poinc = 1/\u03bb_min, sharp for uniformly convex log-concave measures.\n958: "
     },
     {
@@ -73,6 +83,7 @@
         "label": "prop-bakry-emery-gamma2-cinf"
       },
       "section": "## 10. Advanced Functional Inequalities (Conditional Results)",
+      "references": [],
       "raw_directive": "962: ### 10.3. Bakry-\u00c9mery \u0393_2 Criterion\n963: \n964: :::{prf:proposition} Bakry-\u00c9mery Curvature Condition (Conditional)\n965: :label: prop-bakry-emery-gamma2-cinf\n966: \n967: Assume V_fit \u2208 C\u221e and V_total uniformly convex with \u2207\u00b2V_total \u2265 \u03bb_BE I. Then:\n968: \n969: $$\n970: \\Gamma_2(f, f) \\geq \\lambda_{\\text{BE}} \\Gamma(f, f) \\quad \\forall \\text{ smooth } f\n971: $$\n972: \n973: where:\n974: - \u0393(f, g) = (1/2)[L(fg) - f Lg - g Lf] = \u27e8\u2207f, \u2207g\u27e9 (carr\u00e9 du champ)\n975: - \u0393_2(f, f) = (1/2)[L \u0393(f, f) - 2 \u0393(f, Lf)] (iterated carr\u00e9 du champ)\n976: \n977: **Implication**: \u0393_2 \u2265 \u03bb\u0393 implies:\n978: - Spectral gap \u03bb_gap \u2265 \u03bb_BE\n979: - LSI with constant 1/\u03bb_BE\n980: - Hypercontractivity (Nelson's theorem)\n981: "
     }
   ],

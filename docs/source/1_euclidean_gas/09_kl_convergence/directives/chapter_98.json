@@ -19,6 +19,7 @@
         "label": "thm-villani-hypocoercivity-recap"
       },
       "section": "## 0.3 Hypocoercive Extension Strategy",
+      "references": [],
       "raw_directive": "7195: ### Villani's Hypocoercivity (2009)\n7196: \n7197: :::{prf:theorem} Villani's Hypocoercivity (Informal)\n7198: :label: thm-villani-hypocoercivity-recap\n7199: \n7200: For the kinetic Fokker-Planck equation with **non-convex** confining potential $U$:\n7201: \n7202: If:\n7203: 1. $\\langle \\nabla U(x), x \\rangle \\geq \\alpha_U |x|^2$ for $|x|$ large (confinement)\n7204: 2. $\\gamma > 0$ (friction)\n7205: 3. $\\sigma_v^2 > 0$ (noise)\n7206: \n7207: Then there exists $\\lambda_{\\text{hypo}} = c \\cdot \\min(\\gamma, \\alpha_U/\\sigma_v^2) > 0$ such that:\n7208: \n7209: $$\n7210: D_{\\text{KL}}(\\rho_t \\| \\pi_{\\text{kin}}) \\leq e^{-\\lambda_{\\text{hypo}} t} D_{\\text{KL}}(\\rho_0 \\| \\pi_{\\text{kin}})\n7211: $$\n7212: "
     }
   ],

@@ -19,6 +19,10 @@
         "label": "rem-lovelock-emergent"
       },
       "section": "## Addition 5: Uniqueness Discussion (Expand Section 4.3)",
+      "references": [
+        "thm-einstein-field-equations",
+        "rem-lorentzian-from-riemannian"
+      ],
       "raw_directive": "298: ### 4.3. Uniqueness of the Proportionality (Expanded)\n299: \n300: :::{prf:remark} Lovelock's Theorem and Emergent Spacetimes\n301: :label: rem-lovelock-emergent\n302: \n303: The argument in {prf:ref}`thm-einstein-field-equations` that $G_{\\mu\\nu} = \\kappa T_{\\mu\\nu}$ relies on both tensors being:\n304: 1. Symmetric\n305: 2. Divergenceless (or having matched divergences)\n306: 3. Constructed from the metric and its derivatives\n307: \n308: **Lovelock's theorem** (Lovelock 1971) states that in 4D spacetime, the **only** such tensor (up to the cosmological constant term) is the Einstein tensor $G_{\\mu\\nu}$.\n309: \n310: **Applicability to Fractal Set**: Lovelock's theorem assumes:\n311: - Smooth $(d+1)$-dimensional pseudo-Riemannian manifold\n312: - Tensor is a local functional of the metric: $T[g] = F(g, \\partial g, \\partial^2 g)$\n313: - No additional fields beyond the metric\n314: \n315: For the Fractal Set:\n316: - \u2705 We have an emergent pseudo-Riemannian metric ({prf:ref}`rem-lorentzian-from-riemannian`)\n317: - \u26a0\ufe0f The manifold is emergent from discrete structure (continuum limit $N \\to \\infty$)\n318: - \u26a0\ufe0f $T_{\\mu\\nu}$ depends on the measure $\\mu_t$, not just the metric $g_{\\mu\\nu}$\n319: \n320: **Conclusion**: Lovelock's theorem does not directly apply because $T_{\\mu\\nu}$ is not a pure metric functional. However, it provides strong heuristic support: *if* we demand locality and metric-dependence, then $G_{\\mu\\nu}$ is the unique choice.\n321: "
     }
   ],

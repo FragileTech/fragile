@@ -19,6 +19,7 @@
         "label": "def-reward-measurement"
       },
       "section": "## 4. The Environment: State and Reward Measurement",
+      "references": [],
       "raw_directive": "1107: A walker determines the value of its location by evaluating the global Reward Function.\n1108: :::{prf:definition} Reward Measurement\n1109: :label: def-reward-measurement\n1110: The reward value $r_i$ for walker $i$ at position $x_i$ is the result of integrating the global Reward Function $R$ against the walker's **positional measure**, which is the Dirac delta measure $\\delta_{x_i}$ on $\\mathcal{X}$.\n1111: $$\n1112: r_i := \\mathbb{E}_{\\delta_{x_i}}[R] = \\int_{\\mathcal{X}} R(x) \\, d\\delta_{x_i}(x) = R(x_i)\n1113: $$\n1114: This formalizes the act of \"evaluating the reward\" as a measurement process."
     }
   ],

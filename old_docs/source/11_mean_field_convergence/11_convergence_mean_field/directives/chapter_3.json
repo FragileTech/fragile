@@ -19,6 +19,7 @@
         "label": "thm-stage1-mean-field"
       },
       "section": "## 3. Detailed Three-Stage Roadmap",
+      "references": [],
       "raw_directive": "223: #### Target Result\n224: \n225: :::{prf:theorem} Stage 1 Target: Hypocoercive LSI for Mean-Field Langevin\n226: :label: thm-stage1-mean-field\n227: \n228: For the above mean-field kinetic PDE, there exists $\\alpha_{\\text{kin}} > 0$ such that:\n229: \n230: $$\n231: D_{\\text{KL}}(\\rho \\| \\rho_{\\text{MB}}) \\le \\frac{1}{\\alpha_{\\text{kin}}} I_{\\text{kin}}[\\rho | \\rho_{\\text{MB}}]\n232: $$\n233: \n234: where $\\rho_{\\text{MB}} \\propto e^{-U(x) - |v|^2/(2T)}$ is the Maxwell-Boltzmann equilibrium and $I_{\\text{kin}}$ is the entropy production.\n235: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "thm-stage2-mean-field"
       },
       "section": "## 3. Detailed Three-Stage Roadmap",
+      "references": [],
       "raw_directive": "279: #### Target Result\n280: \n281: :::{prf:theorem} Stage 2 Target: Mean-Field Backbone KL-Convergence\n282: :label: thm-stage2-mean-field\n283: \n284: For the non-adaptive mean-field Euclidean Gas, there exists $\\alpha_{\\text{backbone}} > 0$ such that:\n285: \n286: $$\n287: D_{\\text{KL}}(\\rho_t \\| \\rho_{\\infty,0}) \\le D_{\\text{KL}}(\\rho_0 \\| \\rho_{\\infty,0}) \\cdot e^{-\\alpha_{\\text{backbone}} t}\n288: $$\n289: "
     },
     {
@@ -55,6 +57,7 @@
         "label": "lem-revival-kl-contraction"
       },
       "section": "## 3. Detailed Three-Stage Roadmap",
+      "references": [],
       "raw_directive": "309: **Objective**: Prove $\\mathcal{J}$ is KL-non-expansive.\n310: \n311: :::{prf:lemma} KL-Contraction of Revival Operator (Conjectured)\n312: :label: lem-revival-kl-contraction\n313: \n314: The revival operator $\\mathcal{R}[\\rho, m_d]$ satisfies:\n315: \n316: $$\n317: D_{\\text{KL}}(\\mathcal{R}(\\rho) \\| \\mathcal{R}(\\sigma)) \\le D_{\\text{KL}}(\\rho \\| \\sigma)\n318: $$\n319: "
     },
     {
@@ -73,6 +76,7 @@
         "label": "thm-composition-kl"
       },
       "section": "## 3. Detailed Three-Stage Roadmap",
+      "references": [],
       "raw_directive": "334: **Objective**: Prove composed operator $\\mathcal{J} \\circ \\mathcal{S}_{\\Delta t}$ contracts KL.\n335: \n336: :::{prf:theorem} Discrete-Time KL-Contraction for Composition\n337: :label: thm-composition-kl\n338: \n339: If $\\mathcal{S}_t$ satisfies a hypocoercive LSI and $\\mathcal{J}$ is KL-non-expansive, then:\n340: \n341: $$\n342: D_{\\text{KL}}(\\mathcal{J}(\\mathcal{S}_{\\Delta t}(\\rho)) \\| \\rho_\\infty) \\le (1 - \\alpha \\Delta t) D_{\\text{KL}}(\\rho \\| \\rho_\\infty) + O(\\Delta t^2)\n343: $$\n344: "
     },
     {
@@ -91,6 +95,7 @@
         "label": "thm-stage3-mean-field"
       },
       "section": "## 3. Detailed Three-Stage Roadmap",
+      "references": [],
       "raw_directive": "402: #### Target Result\n403: \n404: :::{prf:theorem} Stage 3 Target: KL-Convergence for Adaptive Mean-Field Gas\n405: :label: thm-stage3-mean-field\n406: \n407: For the Adaptive Gas with $\\epsilon_F < \\epsilon_F^*(\\rho)$, there exists $\\alpha_{\\text{adaptive}} > 0$ such that:\n408: \n409: $$\n410: D_{\\text{KL}}(\\rho_t \\| \\rho_\\infty) \\le D_{\\text{KL}}(\\rho_0 \\| \\rho_\\infty) \\cdot e^{-\\alpha_{\\text{adaptive}} t}\n411: $$\n412: "
     }
   ],

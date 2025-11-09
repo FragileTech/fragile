@@ -2,7 +2,7 @@
   "document_id": "19_geometric_gas_cinf_regularity_simplified",
   "stage": "directives",
   "directive_type": "proof",
-  "generated_at": "2025-11-08T17:16:20.303440+00:00",
+  "generated_at": "2025-11-08T23:19:38.328540+00:00",
   "count": 1,
   "items": [
     {
@@ -17,6 +17,7 @@
       "content": "329: ",
       "metadata": {},
       "section": "## 2. Mathematical Framework and Notation",
+      "references": [],
       "raw_directive": "328: :::\n329: \n330: :::{prf:proof}",
       "_registry_context": {
         "stage": "directives",

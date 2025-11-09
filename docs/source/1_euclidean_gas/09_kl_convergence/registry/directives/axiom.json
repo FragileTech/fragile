@@ -2,7 +2,7 @@
   "document_id": "09_kl_convergence",
   "stage": "directives",
   "directive_type": "axiom",
-  "generated_at": "2025-11-08T17:16:20.187561+00:00",
+  "generated_at": "2025-11-08T23:19:38.262256+00:00",
   "count": 4,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "axiom-qsd-log-concave"
       },
       "section": "## 3.5. Fundamental Axiom: Log-Concavity of the Quasi-Stationary Distribution (SUPERSEDED - Now Proven)",
+      "references": [],
       "raw_directive": "917: Before proceeding to analyze the cloning operator using optimal transport techniques, we must state a foundational assumption about the target distribution.\n918: \n919: :::{prf:axiom} Log-Concavity of the Quasi-Stationary Distribution (Historical - Now Proven)\n920: :label: axiom-qsd-log-concave\n921: \n922: **Historical Status (Pre-October 2025)**: Axiom (foundational assumption)\n923: \n924: **Current Status (October 2025)**: ✅ **PROVEN THEOREM** - See [../2_geometric_gas/15_geometric_gas_lsi_proof.md](../2_geometric_gas/15_geometric_gas_lsi_proof.md)\n925: \n926: **Proof Method**: Hypocoercivity with state-dependent diffusion (does NOT require log-concavity assumption)\n927: \n928: ---\n929: \n930: **Original Axiom Statement** (retained for context):\n931: \n932: Let $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}}(\\tau) \\circ \\Psi_{\\text{clone}}$ be the full Markov operator for the N-particle Euclidean Gas. Let $\\pi_{\\text{QSD}}$ be the unique quasi-stationary distribution of this process on the state space $\\mathcal{S}_N = (\\mathbb{R}^d \\times \\mathbb{R}^d)^N$.\n933: \n934: We assume that $\\pi_{\\text{QSD}}$ is a **log-concave** probability measure. That is, for any two swarm states $S_1, S_2 \\in \\mathcal{S}_N$ and any $\\lambda \\in (0,1)$:\n935: \n936: $$\n937: \\pi_{\\text{QSD}}(\\lambda S_1 + (1-\\lambda) S_2) \\geq \\pi_{\\text{QSD}}(S_1)^\\lambda \\cdot \\pi_{\\text{QSD}}(S_2)^{1-\\lambda}\n938: $$\n939: \n940: Equivalently, the density $p_{\\text{QSD}}(S)$ (with respect to Lebesgue measure) has the form:\n941: \n942: $$\n943: p_{\\text{QSD}}(S) = \\exp(-V_{\\text{QSD}}(S))\n944: $$\n945: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "axiom-qsd-log-concave-recap"
       },
       "section": "## Exponential Convergence for Non-Convex Fitness Landscapes: Hypocoercivity and Feynman-Kac Theory",
+      "references": [],
       "raw_directive": "5080: The unified KL-convergence proof in KL-convergence unification analysis establishes exponential convergence of the Euclidean Gas to its quasi-stationary distribution (QSD) under a critical assumption:\n5081: \n5082: :::{prf:axiom} Log-Concavity of the Quasi-Stationary Distribution (Historical Requirement - Now Proven)\n5083: :label: axiom-qsd-log-concave-recap\n5084: \n5085: **Current Status (October 2025)**: ✅ **PROVEN THEOREM** - No longer required as an axiom\n5086: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "axiom-confining-recap"
       },
       "section": "## Exponential Convergence for Non-Convex Fitness Landscapes: Hypocoercivity and Feynman-Kac Theory",
+      "references": [],
       "raw_directive": "5104: This document establishes exponential KL-convergence using a **strictly weaker assumption** that we **already have**:\n5105: \n5106: :::{prf:axiom} Confining Potential (from 04_convergence.md, Axiom 1.3.1)\n5107: :label: axiom-confining-recap\n5108: \n5109: The potential $U: \\mathcal{X} \\to \\mathbb{R}$ satisfies:\n5110: \n5111: $$\n5112: U(x) \\to +\\infty \\quad \\text{as} \\quad |x| \\to \\infty \\quad \\text{or} \\quad x \\to \\partial \\mathcal{X}\n5113: $$\n5114: \n5115: Equivalently, there exist constants $\\alpha_U > 0$ and $R_0 > 0$ such that:\n5116: \n5117: $$\n5118: \\langle \\nabla U(x), x \\rangle \\geq \\alpha_U |x|^2 \\quad \\text{for all} \\quad |x| \\geq R_0",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +99,7 @@
         "label": "axiom-confining-complete"
       },
       "section": "## Part 1: Mathematical Foundations",
+      "references": [],
       "raw_directive": "5192: Axiom 1.3.1 in [06_convergence](06_convergence) establishes:\n5193: \n5194: :::{prf:axiom} Confining Potential (Complete Statement)\n5195: :label: axiom-confining-complete\n5196: \n5197: The potential $U: \\mathcal{X}_{\\text{valid}} \\to \\mathbb{R}_{\\geq 0}$ satisfies:\n5198: \n5199: 1. **Smoothness**: $U \\in C^2(\\mathcal{X}_{\\text{valid}})$\n5200: 2. **Non-negativity**: $U(x) \\geq 0$ for all $x \\in \\mathcal{X}_{\\text{valid}}$\n5201: 3. **Interior flatness**: There exists $R_{\\text{safe}} > 0$ such that $U(x) = 0$ for $|x| < R_{\\text{safe}}$\n5202: 4. **Boundary growth**: For $|x| \\geq R_{\\text{safe}}$:\n5203: \n5204: $$\n5205: U(x) \\geq C_U (|x| - R_{\\text{safe}})^p\n5206: $$\n5207: \n5208: for some $C_U > 0$ and $p \\geq 2$\n5209: \n5210: 5. **Coercivity**: There exist $\\alpha_U > 0$ and $R_0 \\geq R_{\\text{safe}}$ such that:\n5211: \n5212: $$\n5213: \\langle \\nabla U(x), x \\rangle \\geq \\alpha_U |x|^2 \\quad \\text{for} \\quad |x| \\geq R_0",
       "_registry_context": {
         "stage": "directives",

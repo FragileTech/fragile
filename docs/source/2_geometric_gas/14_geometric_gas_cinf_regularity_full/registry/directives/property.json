@@ -2,7 +2,7 @@
   "document_id": "14_geometric_gas_cinf_regularity_full",
   "stage": "directives",
   "directive_type": "property",
-  "generated_at": "2025-11-08T17:16:20.245663+00:00",
+  "generated_at": "2025-11-08T23:19:38.296572+00:00",
   "count": 1,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "prop-dalg-locality"
       },
       "section": "## 5. Derivatives of Algorithmic Distance (Regularized Version)",
+      "references": [],
       "raw_directive": "1757: ---\n1758: \n1759: :::{prf:property} Locality of Algorithmic Distance\n1760: :label: prop-dalg-locality\n1761: \n1762: The regularized algorithmic distance $d_{\\text{alg}}(j,\\ell)$ depends only on the states of walkers $j$ and $\\ell$:\n1763: \n1764: $$\n1765: d_{\\text{alg}}(j,\\ell) = \\sqrt{\\|x_j - x_\\ell\\|^2 + \\lambda_{\\text{alg}} \\|v_j - v_\\ell\\|^2 + \\varepsilon_d^2}\n1766: \n1767: $$\n1768: \n1769: **Consequence (Derivative Locality)**: For any walker $i$ with $i \\neq j$ and $i \\neq \\ell$:\n1770: \n1771: $$\n1772: \\nabla_{x_i, v_i} d_{\\text{alg}}(j,\\ell) = 0\n1773: \n1774: $$\n1775: \n1776: since the expression for $d_{\\text{alg}}(j,\\ell)$ contains no dependence on $(x_i, v_i)$.\n1777: ",
       "_registry_context": {
         "stage": "directives",

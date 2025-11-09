@@ -19,6 +19,7 @@
         "label": "thm-dobrushin-established"
       },
       "section": "## 1.3 Status Convergence via Dobrushin",
+      "references": [],
       "raw_directive": "292: From [10_T_non_convex_extensions.md](10_T_non_convex_extensions.md), Part 3:\n293: \n294: :::{prf:theorem} Dobrushin Contraction (Established)\n295: :label: thm-dobrushin-established\n296: \n297: The full operator contracts in the **discrete status metric** $d_{\\text{status}}$ (number of alive/dead changes):\n298: \n299: $$\n300: \\mathbb{E}[d_{\\text{status}}(S_{t+1}, \\pi_{\\text{QSD}})] \\leq \\gamma \\cdot d_{\\text{status}}(S_t, \\pi_{\\text{QSD}}) + K\n301: $$\n302: \n303: where $\\gamma = (1 - \\lambda_{\\text{clone}}\\tau) < 1$.\n304: "
     }
   ],

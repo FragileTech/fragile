@@ -19,6 +19,7 @@
         "label": "thm-entropy-bound-debruijn"
       },
       "section": "## Rigorous Formulation",
+      "references": [],
       "raw_directive": "263: ## Rigorous Formulation\n264: \n265: :::{prf:theorem} Entropy Bound via De Bruijn Identity\n266: :label: thm-entropy-bound-debruijn\n267: \n268: **Hypotheses**:\n269: \n270: 1. $\\rho_\\mu \\in C^2(\\Omega)$ with $0 < \\rho_{\\min} \\leq \\rho_\\mu \\leq \\rho_{\\max} < \\infty$\n271: 2. $\\rho_\\mu$ satisfies a Log-Sobolev Inequality with constant $\\kappa > 0$:\n272:    $$2\\kappa D_{\\text{KL}}(p \\| \\rho_\\mu) \\leq I(p \\| \\rho_\\mu) \\quad \\forall p$$\n273: 3. $\\rho_{\\text{clone}}$ is the distribution after cloning (before noise)\n274: 4. $\\rho_{\\text{offspring}} = \\rho_{\\text{clone}} * G_{\\delta^2}$ (Gaussian convolution)\n275: \n276: **Conclusion**:\n277: \n278: $$\n279: D_{\\text{KL}}(\\rho_{\\text{offspring}} \\| \\rho_\\mu) \\leq e^{-\\kappa \\delta^2} \\cdot D_{\\text{KL}}(\\rho_{\\text{clone}} \\| \\rho_\\mu)\n280: $$"
     },
     {
@@ -33,6 +34,7 @@
       "content": "284: :::{prf:proof}\n285: \n286: **Step 1**: Define heat flow $\\rho_t = \\rho_{\\text{clone}} * G_t$ for $t \\in [0, \\delta^2]$.\n287: \n288: **Step 2**: By de Bruijn's identity:\n289: $$\\frac{d}{dt} D_{\\text{KL}}(\\rho_t \\| \\rho_\\mu) = -\\frac{1}{2} I(\\rho_t \\| \\rho_\\mu)$$\n290: \n291: **Step 3**: By LSI (Hypothesis 2):\n292: $$I(\\rho_t \\| \\rho_\\mu) \\geq 2\\kappa D_{\\text{KL}}(\\rho_t \\| \\rho_\\mu)$$\n293: \n294: **Step 4**: Combine to get Gr\u00f6nwall inequality:\n295: $$\\frac{d}{dt} D_{\\text{KL}}(\\rho_t \\| \\rho_\\mu) \\leq -\\kappa D_{\\text{KL}}(\\rho_t \\| \\rho_\\mu)$$\n296: \n297: **Step 5**: Integrate from $0$ to $\\delta^2$:\n298: $$D_{\\text{KL}}(\\rho_{\\delta^2} \\| \\rho_\\mu) \\leq e^{-\\kappa \\delta^2} D_{\\text{KL}}(\\rho_0 \\| \\rho_\\mu)$$\n299: ",
       "metadata": {},
       "section": "## Rigorous Formulation",
+      "references": [],
       "raw_directive": "282: :::\n283: \n284: :::{prf:proof}\n285: \n286: **Step 1**: Define heat flow $\\rho_t = \\rho_{\\text{clone}} * G_t$ for $t \\in [0, \\delta^2]$.\n287: \n288: **Step 2**: By de Bruijn's identity:\n289: $$\\frac{d}{dt} D_{\\text{KL}}(\\rho_t \\| \\rho_\\mu) = -\\frac{1}{2} I(\\rho_t \\| \\rho_\\mu)$$\n290: \n291: **Step 3**: By LSI (Hypothesis 2):\n292: $$I(\\rho_t \\| \\rho_\\mu) \\geq 2\\kappa D_{\\text{KL}}(\\rho_t \\| \\rho_\\mu)$$\n293: \n294: **Step 4**: Combine to get Gr\u00f6nwall inequality:\n295: $$\\frac{d}{dt} D_{\\text{KL}}(\\rho_t \\| \\rho_\\mu) \\leq -\\kappa D_{\\text{KL}}(\\rho_t \\| \\rho_\\mu)$$\n296: \n297: **Step 5**: Integrate from $0$ to $\\delta^2$:\n298: $$D_{\\text{KL}}(\\rho_{\\delta^2} \\| \\rho_\\mu) \\leq e^{-\\kappa \\delta^2} D_{\\text{KL}}(\\rho_0 \\| \\rho_\\mu)$$\n299: \n300: **Step 6**: Substitute $\\rho_0 = \\rho_{\\text{clone}}$ and $\\rho_{\\delta^2} = \\rho_{\\text{offspring}}$. $\\square$"
     }
   ],

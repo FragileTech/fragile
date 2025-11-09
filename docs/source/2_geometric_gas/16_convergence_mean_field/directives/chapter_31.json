@@ -19,6 +19,7 @@
         "label": "thm-exponential-convergence-local"
       },
       "section": "## 5. Assembling the Coercivity Gap",
+      "references": [],
       "raw_directive": "4641: **For exact exponential convergence to $\\rho_\\infty$**: We need $C_{\\text{offset}} = 0$, which requires tighter control of the constant terms. This is typically achieved by working in a **local basin** around $\\rho_\\infty$ where quadratic approximations are valid.\n4642: \n4643: :::{prf:theorem} Exponential Convergence (Local)\n4644: :label: thm-exponential-convergence-local\n4645: \n4646: Assume $\\delta > 0$ and that $\\rho_0$ satisfies $D_{\\text{KL}}(\\rho_0 \\| \\rho_\\infty) \\le \\epsilon_0$ for sufficiently small $\\epsilon_0$. Then:\n4647: \n4648: $$\n4649: D_{\\text{KL}}(\\rho_t \\| \\rho_\\infty) \\le e^{-\\alpha_{\\text{net}} t} D_{\\text{KL}}(\\rho_0 \\| \\rho_\\infty)\n4650: \n4651: $$\n4652: \n4653: where:\n4654: \n4655: $$\n4656: \\boxed{\\alpha_{\\text{net}} = \\frac{\\delta}{2}}\n4657: \n4658: $$\n4659: "
     }
   ],

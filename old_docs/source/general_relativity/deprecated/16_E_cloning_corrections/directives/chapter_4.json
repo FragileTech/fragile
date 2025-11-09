@@ -19,6 +19,7 @@
         "label": "cor-cloning-preserves-gr"
       },
       "section": "## 4. Implications for Einstein Equations",
+      "references": [],
       "raw_directive": "328: ## 4. Implications for Einstein Equations\n329: \n330: :::{prf:corollary} Cloning Preserves Einstein Equations at QSD\n331: :label: cor-cloning-preserves-gr\n332: \n333: At the quasi-stationary distribution, the cloning operator does not modify the form of the Einstein equations. The only effect is a renormalization of the temperature:\n334: \n335: $$\n336: T \\to T_{\\text{eff}} = T_{\\text{Langevin}} + T_{\\text{clone}}\n337: $$\n338: \n339: The field equations remain:\n340: \n341: $$\n342: G_{\\mu\\nu} = 8\\pi G T_{\\mu\\nu}\n343: $$\n344: \n345: where $T_{\\mu\\nu}$ is computed using $T_{\\text{eff}}$.\n346: \n347: **Physical Interpretation**:\n348: \n349: The cloning operator acts as an additional **heat source** for the walker gas, analogous to the Langevin noise $\\sigma_v$. At equilibrium, this extra heating is balanced by the friction $\\gamma$, yielding a modified fluctuation-dissipation relation:\n350: \n351: $$\n352: k_B T_{\\text{eff}} = \\frac{\\sigma_v^2 m}{2\\gamma} + \\frac{m\\delta^2}{2\\tau_{\\text{clone}}}\n353: $$\n354: \n355: Both terms contribute to the pressure $p = \\rho k_B T_{\\text{eff}} / m$, which appears in the spatial components $T_{ij}$ of the stress-energy tensor.\n356: "
     }
   ],

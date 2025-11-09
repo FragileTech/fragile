@@ -19,6 +19,7 @@
         "label": "def-fisher-metric-epsilon-machine"
       },
       "section": "## 12. Information-Geometric Characterization of \u03b5-Machines",
+      "references": [],
       "raw_directive": "2552: Closure theory identifies causal states as equivalence classes of histories. Information geometry provides a **metric structure** on these causal states, even when the state space is discrete or fractal.\n2553: \n2554: :::{prf:definition} Fisher Information Distance on \u03b5-Machine State Space\n2555: :label: def-fisher-metric-epsilon-machine\n2556: \n2557: Let $\\Sigma_\\varepsilon$ be the causal state space of an \u03b5-machine (which may be discrete, continuous, or fractal), and $P(\\sigma)$ the QSD-weighted probability distribution over causal states.\n2558: \n2559: **Fisher information distance:** For any two causal states $\\sigma, \\sigma' \\in \\Sigma_\\varepsilon$, define the **Fisher distance** via the Kullback-Leibler divergence between their conditional future distributions:\n2560: \n2561: $$\n2562: d_{\\text{Fisher}}(\\sigma, \\sigma') := \\sqrt{D_{\\text{KL}}(P(F \\mid \\sigma) \\| P(F \\mid \\sigma')) + D_{\\text{KL}}(P(F \\mid \\sigma') \\| P(F \\mid \\sigma))}\n2563: $$\n2564: \n2565: where:\n2566: - $F$ denotes future observations\n2567: - $D_{\\text{KL}}(p \\| q) := \\sum_f p(f) \\log \\frac{p(f)}{q(f)}$ is the KL-divergence (sum for discrete, integral for continuous)\n2568: - The symmetrized form uses the **Jeffreys divergence** to ensure $d_{\\text{Fisher}}(\\sigma, \\sigma') = d_{\\text{Fisher}}(\\sigma', \\sigma)$\n2569: \n2570: **Interpretation:** $d_{\\text{Fisher}}(\\sigma, \\sigma')$ measures how distinguishable the future prediction distributions are when conditioned on different causal states. High Fisher distance \u2192 causal states that are informationally distant \u2192 high predictive sensitivity.\n2571: \n2572: **Metric space structure:** $(\\Sigma_\\varepsilon, d_{\\text{Fisher}})$ is a metric space called the **\u03b5-machine information space**.\n2573: \n2574: **Connection to differential geometry:** For smooth parameter families $\\sigma(\\theta)$ where $\\Sigma_\\varepsilon$ is parameterized by $\\theta \\in \\mathbb{R}^m$, the Fisher distance induces the standard Fisher-Rao metric tensor in the limit:\n2575: \n2576: $$\n2577: g_{ij}(\\theta) = \\lim_{\\epsilon \\to 0} \\frac{d_{\\text{Fisher}}(\\sigma(\\theta), \\sigma(\\theta + \\epsilon e_i))^2}{2\\epsilon^2} = \\mathbb{E}\\left[ \\frac{\\partial \\log P(F \\mid \\theta)}{\\partial \\theta^i} \\cdot \\frac{\\partial \\log P(F \\mid \\theta)}{\\partial \\theta^j} \\right]\n2578: $$\n2579: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "thm-fisher-coarse-graining"
       },
       "section": "## 12. Information-Geometric Characterization of \u03b5-Machines",
+      "references": [],
       "raw_directive": "2591: **Theorem (Fisher Metric Functoriality):**\n2592: \n2593: :::{prf:theorem} Fisher Distance Contraction under Coarse-Graining\n2594: :label: thm-fisher-coarse-graining\n2595: \n2596: Let $\\pi: \\Sigma_\\varepsilon^{\\text{micro}} \\to \\Sigma_\\varepsilon^{\\text{macro}}$ be a coarse-graining map between causal state spaces.\n2597: \n2598: **Data processing inequality for Fisher distance:** For any two micro-causal states $\\sigma, \\sigma' \\in \\Sigma_\\varepsilon^{\\text{micro}}$:\n2599: \n2600: $$\n2601: d_{\\text{Fisher}}(\\pi(\\sigma), \\pi(\\sigma')) \\le d_{\\text{Fisher}}(\\sigma, \\sigma')\n2602: $$\n2603: \n2604: **Interpretation:** Coarse-graining is a **contraction** on the information space\u2014macro-causal states are never more distinguishable than the micro-causal states they aggregate.\n2605: \n2606: **Equality (computational closure criterion):** If $d_{\\text{Fisher}}(\\pi(\\sigma), \\pi(\\sigma')) = d_{\\text{Fisher}}(\\sigma, \\sigma')$ for all $\\sigma, \\sigma'$, then $\\pi$ is an **isometry** on the information space. This means **computational closure** holds: the coarse-graining preserves all predictive information.\n2607: \n2608: **Proof:**\n2609: \n2610: 1. **Data processing inequality for KL-divergence:** By the standard data processing inequality (Cover & Thomas, 2006), for any random variables $X, Y, Z$ forming a Markov chain $X \\to Y \\to Z$:\n2611: \n2612:    $$\n2613:    D_{\\text{KL}}(P_{Z \\mid X=x} \\| P_{Z \\mid X=x'}) \\le D_{\\text{KL}}(P_{Y \\mid X=x} \\| P_{Y \\mid X=x'})\n2614:    $$\n2615: \n2616: 2. **Apply to coarse-graining:** The Markov chain is: Future $F$ \u2192 Micro-causal state $\\sigma$ \u2192 Macro-causal state $\\pi(\\sigma)$. By the data processing inequality:\n2617: \n2618:    $$\n2619:    D_{\\text{KL}}(P(F \\mid \\pi(\\sigma)) \\| P(F \\mid \\pi(\\sigma'))) \\le D_{\\text{KL}}(P(F \\mid \\sigma) \\| P(F \\mid \\sigma'))\n2620:    $$\n2621: \n2622: 3. **Same inequality for reversed KL:** By symmetry:\n2623: \n2624:    $$\n2625:    D_{\\text{KL}}(P(F \\mid \\pi(\\sigma')) \\| P(F \\mid \\pi(\\sigma))) \\le D_{\\text{KL}}(P(F \\mid \\sigma') \\| P(F \\mid \\sigma))\n2626:    $$\n2627: \n2628: 4. **Sum and take square root:** Adding inequalities and taking square root preserves the inequality (since $\\sqrt{\\cdot}$ is monotone):\n2629: \n2630:    $$\n2631:    d_{\\text{Fisher}}(\\pi(\\sigma), \\pi(\\sigma')) = \\sqrt{D_{\\text{KL}}(\\cdot) + D_{\\text{KL}}(\\cdot)}_{\\text{macro}} \\le \\sqrt{D_{\\text{KL}}(\\cdot) + D_{\\text{KL}}(\\cdot)}_{\\text{micro}} = d_{\\text{Fisher}}(\\sigma, \\sigma')\n2632:    $$\n2633: "
     },
     {
@@ -55,6 +57,7 @@
         "label": "def-cst-ig-mutual-information"
       },
       "section": "## 12. Information-Geometric Characterization of \u03b5-Machines",
+      "references": [],
       "raw_directive": "2647: The Fractal Set has two edge types: CST (temporal) and IG (spatial). Their **mutual information** quantifies how much knowledge of one edge type reduces uncertainty about the other.\n2648: \n2649: :::{prf:definition} CST-IG Mutual Information\n2650: :label: def-cst-ig-mutual-information\n2651: \n2652: Let $E_{\\text{CST}}$ denote the set of CST edges (temporal evolution) and $E_{\\text{IG}}$ the set of IG edges (spatial coupling) in the Fractal Set.\n2653: \n2654: **Mutual information:**\n2655: \n2656: $$\n2657: I(E_{\\text{CST}}; E_{\\text{IG}}) := H(E_{\\text{CST}}) + H(E_{\\text{IG}}) - H(E_{\\text{CST}}, E_{\\text{IG}})\n2658: $$\n2659: \n2660: where:\n2661: - $H(E_{\\text{CST}}) = -\\sum P(e) \\log P(e)$: Entropy of CST edge configurations\n2662: - $H(E_{\\text{IG}}) = -\\sum P(e') \\log P(e')$: Entropy of IG edge configurations\n2663: - $H(E_{\\text{CST}}, E_{\\text{IG}})$: Joint entropy\n2664: "
     },
     {
@@ -73,6 +76,9 @@
         "label": "lem-causal-state-entropy-edges"
       },
       "section": "## 12. Information-Geometric Characterization of \u03b5-Machines",
+      "references": [
+        "def-causal-states-fractal-set"
+      ],
       "raw_directive": "2668: **Lemma (Causal State Entropy Equals Process Entropy):**\n2669: \n2670: :::{prf:lemma} Causal State Entropy from Edge Configurations\n2671: :label: lem-causal-state-entropy-edges\n2672: \n2673: For an ergodic Fractal Set process generated by the BAOAB Markov chain:\n2674: \n2675: $$\n2676: H(\\Sigma_\\varepsilon^{\\text{Fractal}}) = H(E_{\\text{CST}}, E_{\\text{IG}})\n2677: $$\n2678: \n2679: where the left side is the entropy of the causal state partition, and the right side is the joint entropy of CST and IG edge configurations under the QSD.\n2680: \n2681: **Proof:**\n2682: \n2683: 1. **\u03b5-machine as minimal sufficient statistic:** By construction (Definition {prf:ref}`def-causal-states-fractal-set` in \u00a73.2), the \u03b5-machine provides the minimal sufficient statistic for predicting the future given the past. The causal state $\\sigma$ is the equivalence class of pasts with identical conditional future distributions.\n2684: \n2685: 2. **Asymptotic equipartition property (AEP):** For an ergodic stochastic process, the entropy rate equals the entropy of the stationary distribution (Cover & Thomas, 2006, Theorem 4.2.1):\n2686: \n2687:    $$\n2688:    h = H(\\text{stationary distribution of process})\n2689:    $$\n2690: \n2691: 3. **Fractal Set process stationarity:** The BAOAB Markov chain converges to a unique QSD $\\mu_{\\text{QSD}}$ (Theorem 2.1 in [02_computational_equivalence.md](02_computational_equivalence.md)), which is ergodic. The Fractal Set process is the sequence of edge configurations $(E_{\\text{CST}}, E_{\\text{IG}})$ sampled from $\\mu_{\\text{QSD}}$.\n2692: \n2693: 4. **Causal states generate the process:** The causal state $\\sigma_k$ at time $k$ determines the joint distribution of future edge configurations. By the definition of causal equivalence, all pasts in the same causal state have identical conditional future distributions.\n2694: \n2695: 5. **Entropy equality:** The entropy of the minimal sufficient statistic (causal states) equals the entropy of the process (edge configurations) because the causal state is a **lossless compression** of the history:\n2696: \n2697:    $$\n2698:    H(\\Sigma_\\varepsilon^{\\text{Fractal}}) = H(\\text{sufficient statistic}) = H(\\text{process}) = H(E_{\\text{CST}}, E_{\\text{IG}})\n2699:    $$\n2700: "
     },
     {
@@ -91,6 +97,9 @@
         "label": "thm-mutual-info-decomposition"
       },
       "section": "## 12. Information-Geometric Characterization of \u03b5-Machines",
+      "references": [
+        "lem-causal-state-entropy-edges"
+      ],
       "raw_directive": "2708: **Theorem (CST-IG Mutual Information Bounds Statistical Complexity):**\n2709: \n2710: :::{prf:theorem} Mutual Information Decomposition of $C_\\mu^{\\text{Fractal}}$\n2711: :label: thm-mutual-info-decomposition\n2712: \n2713: The statistical complexity of the Fractal Set \u03b5-machine decomposes as:\n2714: \n2715: $$\n2716: C_\\mu^{\\text{Fractal}} = C_\\mu^{\\text{CST}} + C_\\mu^{\\text{IG}} - I(E_{\\text{CST}}; E_{\\text{IG}})\n2717: $$\n2718: \n2719: **Proof:**\n2720: \n2721: 1. **Apply Lemma {prf:ref}`lem-causal-state-entropy-edges`:**\n2722: \n2723:    $$\n2724:    C_\\mu^{\\text{Fractal}} = H(\\Sigma_\\varepsilon^{\\text{Fractal}}) = H(E_{\\text{CST}}, E_{\\text{IG}})\n2725:    $$\n2726: \n2727: 2. **Apply chain rule for entropy:**\n2728: \n2729:    $$\n2730:    H(E_{\\text{CST}}, E_{\\text{IG}}) = H(E_{\\text{CST}}) + H(E_{\\text{IG}} \\mid E_{\\text{CST}})\n2731:    $$\n2732: \n2733: 3. **Substitute definition of mutual information:** By definition, $I(E_{\\text{CST}}; E_{\\text{IG}}) = H(E_{\\text{IG}}) - H(E_{\\text{IG}} \\mid E_{\\text{CST}})$, so:\n2734: \n2735:    $$\n2736:    H(E_{\\text{IG}} \\mid E_{\\text{CST}}) = H(E_{\\text{IG}}) - I(E_{\\text{CST}}; E_{\\text{IG}})\n2737:    $$\n2738: \n2739: 4. **Combine:** Substituting into the chain rule:\n2740: \n2741:    $$\n2742:    H(E_{\\text{CST}}, E_{\\text{IG}}) = H(E_{\\text{CST}}) + H(E_{\\text{IG}}) - I(E_{\\text{CST}}; E_{\\text{IG}})\n2743:    $$\n2744: \n2745: 5. **Identify components:** Setting $C_\\mu^{\\text{CST}} := H(E_{\\text{CST}})$ and $C_\\mu^{\\text{IG}} := H(E_{\\text{IG}})$:\n2746: \n2747:    $$\n2748:    C_\\mu^{\\text{Fractal}} = C_\\mu^{\\text{CST}} + C_\\mu^{\\text{IG}} - I(E_{\\text{CST}}; E_{\\text{IG}})\n2749:    $$\n2750: "
     },
     {
@@ -109,6 +118,7 @@
         "label": "def-epsilon-machine-entropy-production"
       },
       "section": "## 12. Information-Geometric Characterization of \u03b5-Machines",
+      "references": [],
       "raw_directive": "2774: Closure theory is intimately connected to **non-equilibrium thermodynamics** via entropy production.\n2775: \n2776: :::{prf:definition} \u03b5-Machine Entropy Production Rate\n2777: :label: def-epsilon-machine-entropy-production\n2778: \n2779: The **entropy production rate** of an \u03b5-machine is:\n2780: \n2781: $$\n2782: \\dot{S}_{\\text{\u03b5-machine}} := \\sum_{\\sigma, \\sigma'} P(\\sigma) T(\\sigma' \\mid \\sigma) \\log \\frac{T(\\sigma' \\mid \\sigma)}{T(\\sigma \\mid \\sigma')}\n2783: $$\n2784: \n2785: where $T(\\sigma' \\mid \\sigma)$ is the transition probability between causal states, and $P(\\sigma)$ is the stationary distribution (QSD for Fractal Set).\n2786: "
     },
     {
@@ -127,6 +137,7 @@
         "label": "thm-entropy-production-preservation"
       },
       "section": "## 12. Information-Geometric Characterization of \u03b5-Machines",
+      "references": [],
       "raw_directive": "2798: **Theorem (Entropy Production under Computational Closure):**\n2799: \n2800: :::{prf:theorem} Entropy Production Preservation under Computational Closure\n2801: :label: thm-entropy-production-preservation\n2802: \n2803: If a coarse-graining $\\pi: \\Sigma_\\varepsilon^{\\text{micro}} \\to \\Sigma_\\varepsilon^{\\text{macro}}$ satisfies **computational closure**, then:\n2804: \n2805: $$\n2806: \\dot{S}_{\\text{macro}} = \\dot{S}_{\\text{micro}}\n2807: $$\n2808: \n2809: up to terms of order $O(\\varepsilon_{\\text{lump}}^2)$.\n2810: "
     },
     {
@@ -145,6 +156,9 @@
         "label": "def-rg-info-geometric-flow"
       },
       "section": "## 12. Information-Geometric Characterization of \u03b5-Machines",
+      "references": [
+        "def-fisher-metric-epsilon-machine"
+      ],
       "raw_directive": "2828: :::\n2829: \n2830: :::{prf:definition} RG Flow as Information-Geometric Gradient Flow\n2831: :label: def-rg-info-geometric-flow\n2832: \n2833: Let $\\mathcal{M}_{\\text{\u03b5-machine}}$ be a smooth parametric family of \u03b5-machines, parametrized by coupling constants $g \\in \\mathbb{R}^m$. Equip this family with the Fisher-Rao metric $g^{\\text{Fisher}}(g)$ (the limit form from Definition {prf:ref}`def-fisher-metric-epsilon-machine`).\n2834: \n2835: **RG flow:** A curve $\\varepsilon(a)$ in $\\mathcal{M}_{\\text{\u03b5-machine}}$ parametrized by lattice spacing $a$, satisfying:\n2836: \n2837: $$\n2838: \\frac{d\\varepsilon}{da} = -\\nabla^{g^{\\text{Fisher}}} \\mathcal{F}[\\varepsilon]\n2839: $$\n2840: \n2841: where $\\mathcal{F}[\\varepsilon]$ is a **free energy functional** on \u03b5-machine space, and $\\nabla^{g^{\\text{Fisher}}}$ is the gradient with respect to the Fisher metric.\n2842: \n2843: **Free energy:** The Wilsonian effective action (Chapter 9):\n2844: \n2845: $$\n2846: \\mathcal{F}[\\varepsilon] = -\\log Z[\\varepsilon] = -\\log \\sum_{\\text{micro-states}} e^{-S[\\text{micro-state}]}\n2847: $$\n2848: "
     },
     {
@@ -163,6 +177,7 @@
         "label": "thm-beta-function-fisher-gradient"
       },
       "section": "## 12. Information-Geometric Characterization of \u03b5-Machines",
+      "references": [],
       "raw_directive": "2852: **Theorem (Beta Function as Fisher Gradient):**\n2853: \n2854: :::{prf:theorem} Beta Function from Fisher Information Gradient\n2855: :label: thm-beta-function-fisher-gradient\n2856: \n2857: The RG beta function (\u00a74 and \u00a79) can be expressed as:\n2858: \n2859: $$\n2860: \\beta(g) = -g^{ij}_{\\text{Fisher}} \\frac{\\partial \\mathcal{F}}{\\partial g^j}\n2861: $$\n2862: \n2863: where $g$ is the coupling constant, $g^{ij}_{\\text{Fisher}}$ is the inverse Fisher metric on coupling space, and $\\mathcal{F}$ is the free energy.\n2864: \n2865: **Proof:** The RG flow minimizes the free energy $\\mathcal{F}$ along the information-geometric gradient. By the definition of gradient flow in Riemannian geometry:\n2866: \n2867: $$\n2868: \\frac{dg}{da} = -g^{ij} \\frac{\\partial \\mathcal{F}}{\\partial g^j}\n2869: $$\n2870: "
     }
   ],

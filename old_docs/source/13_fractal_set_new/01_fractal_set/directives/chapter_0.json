@@ -19,6 +19,7 @@
         "label": "def-node-spacetime"
       },
       "section": "## 1. Nodes: Spacetime Points with Scalar Data",
+      "references": [],
       "raw_directive": "17: ### 1.1. Node Definition\n18: \n19: :::{prf:definition} Spacetime Node\n20: :label: def-node-spacetime\n21: \n22: A **node** $n \\in \\mathcal{N}$ represents a single walker at a single discrete timestep. The node set is:\n23: \n24: $$\n25: \\mathcal{N} := \\{n_{i,t} : i \\in \\{1, \\ldots, N\\}, \\, t \\in \\{0, 1, \\ldots, T\\}\\},\n26: \n27: $$\n28: \n29: where:\n30: - $N$: Total number of walkers (fixed population size)\n31: - $T$: Total number of timesteps\n32: - $n_{i,t}$: Node representing walker $i$ at timestep $t$\n33: \n34: **Node cardinality:** $|\\mathcal{N}| = N \\times (T+1)$ (total spacetime points)\n35: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "def-node-attributes"
       },
       "section": "## 1. Nodes: Spacetime Points with Scalar Data",
+      "references": [],
       "raw_directive": "39: ### 1.2. Node Scalar Data Structure\n40: \n41: :::{prf:definition} Node Scalar Attributes\n42: :label: def-node-attributes\n43: \n44: Each node $n_{i,t} \\in \\mathcal{N}$ contains the following **scalar (frame-invariant)** quantities explicitly present in the Adaptive Gas SDE:\n45: \n46: **Identity:**\n47: - $\\text{walker\\_id}(n) = i \\in \\{1, \\ldots, N\\}$: Walker index\n48: - $\\text{timestep}(n) = t \\in \\{0, 1, \\ldots, T\\}$: Discrete timestep\n49: - $\\text{node\\_id}(n) = i + t \\cdot N \\in \\mathbb{N}$: Global unique identifier\n50: \n51: **Temporal Scalar:**\n52: - $t(n) := t \\cdot \\Delta t \\in \\mathbb{R}_{\\geq 0}$: Continuous time coordinate\n53: \n54: **Status Scalar:**\n55: - $s(n) \\in \\{0, 1\\}$: Survival status (1=alive in $A_k$, 0=dead/out-of-bounds)\n56: \n57: **Energy Scalars:**\n58: - $E_{\\text{kin}}(n) := \\frac{1}{2} \\|v(n)\\|^2 \\in \\mathbb{R}_{\\geq 0}$: Kinetic energy (scalar norm of velocity)\n59: - $U(n) := U(x(n)) \\in \\mathbb{R}$: Confining potential energy\n60: \n61: **Fitness Scalar:**\n62: - $\\Phi(n) := \\Phi(x(n)) \\in \\mathbb{R}$: Fitness value (objective function)\n63: \n64: **Virtual Reward Scalar:**\n65: - $V_{\\text{fit}}(n) := V_{\\text{fit}}[f_k, \\rho](x(n)) \\in \\mathbb{R}$: \u03c1-localized fitness potential\n66: \n67: **Localized Statistical Scalars:**\n68: - $\\mu_\\rho(n) := \\mu_\\rho[f_k, \\Phi, x(n)] \\in \\mathbb{R}$: Localized mean fitness in \u03c1-neighborhood\n69: - $\\sigma_\\rho(n) := \\sigma_\\rho[f_k, \\Phi, x(n)] \\in \\mathbb{R}_{\\geq 0}$: Localized standard deviation\n70: - $\\sigma'_\\rho(n) := \\sigma'_{\\text{patch}}(\\sigma^2_\\rho(n)) \\in \\mathbb{R}_{> 0}$: Regularized C\u00b9 standard deviation\n71: - $Z_\\rho(n) := Z_\\rho[f_k, \\Phi, x(n)] \\in \\mathbb{R}$: \u03c1-localized Z-score\n72: \n73: **Global Algorithm Parameters (scalars, fixed throughout):**\n74: - $\\epsilon_F \\in \\mathbb{R}_{\\geq 0}$: Adaptive force strength\n75: - $\\nu \\in \\mathbb{R}_{\\geq 0}$: Viscosity coefficient\n76: - $\\gamma \\in \\mathbb{R}_{> 0}$: Friction coefficient\n77: - $\\rho \\in \\mathbb{R}_{> 0}$: Localization scale"
     }
   ],

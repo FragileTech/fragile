@@ -19,6 +19,9 @@
         "label": "thm-computational-closure-eft-validity"
       },
       "section": "## 9. Implications for Lattice QFT and Effective Field Theory",
+      "references": [
+        "thm-observable-invariance-closure"
+      ],
       "raw_directive": "1526: Effective field theory (EFT) relies on the assumption that low-energy physics decouples from high-energy details. Closure theory makes this rigorous.\n1527: \n1528: :::{prf:theorem} Computational Closure \u21d4 EFT Validity\n1529: :label: thm-computational-closure-eft-validity\n1530: \n1531: An effective field theory at scale $\\Lambda$ is valid if and only if the RG transformation from the UV cutoff $\\Lambda_{\\text{UV}}$ to $\\Lambda$ satisfies computational closure.\n1532: \n1533: **Formal statement:** Let $\\mathcal{T}_{\\text{UV}}$ be the microscopic theory at scale $\\Lambda_{\\text{UV}}$ with \u03b5-machine $(\\Sigma_{\\varepsilon}^{\\text{UV}}, T_{\\varepsilon}^{\\text{UV}})$. Let $\\mathcal{T}_{\\text{EFT}}$ be the effective theory at scale $\\Lambda$ with \u03b5-machine $(\\Sigma_{\\varepsilon}^{\\text{EFT}}, T_{\\varepsilon}^{\\text{EFT}})$.\n1534: \n1535: The EFT is valid if:\n1536: \n1537: $$\n1538: \\Sigma_{\\varepsilon}^{\\text{EFT}} = \\pi(\\Sigma_{\\varepsilon}^{\\text{UV}})\n1539: \n1540: $$\n1541: \n1542: where $\\pi$ is the projection induced by the RG flow $\\mathcal{RG}_{b}$ with $b = \\Lambda_{\\text{UV}}/\\Lambda$.\n1543: \n1544: **Error bound:** The observables satisfy:\n1545: \n1546: $$\n1547: |\\langle \\mathcal{O} \\rangle_{\\text{UV}} - \\langle \\mathcal{O} \\rangle_{\\text{EFT}}| \\leq C \\cdot D_{\\text{KL}}(\\mu_{\\text{EFT}} \\| \\mathcal{R}_b \\mu_{\\text{UV}})^{1/2}\n1548: \n1549: $$\n1550: \n1551: (Theorem {prf:ref}`thm-observable-invariance-closure`).\n1552: \n1553: **Breakdown:** The EFT breaks down when computational closure fails, i.e., when the macro-\u03b5-machine cannot be obtained by coarse-graining the micro-\u03b5-machine. This happens when:\n1554: 1. The \u03c5-machine $\\Sigma_\\upsilon$ has more states than the macro-\u03b5-machine (information loss)"
     },
     {
@@ -37,6 +40,9 @@
         "label": "prop-gauge-invariant-observables-preserved"
       },
       "section": "## 9. Implications for Lattice QFT and Effective Field Theory",
+      "references": [
+        "thm-observable-invariance-closure"
+      ],
       "raw_directive": "1558: ### 9.2. Wilson Loops and Gauge Invariance\n1559: \n1560: :::{prf:proposition} Gauge-Invariant Observables Preserved\n1561: :label: prop-gauge-invariant-observables-preserved\n1562: \n1563: Wilson loops $W_C$ are **gauge-invariant** observables. Under computational closure, they are preserved:\n1564: \n1565: $$\n1566: \\langle W_C \\rangle_{\\text{micro}} = \\langle W_{\\tilde{C}} \\rangle_{\\text{macro}} + O(D_{\\text{KL}}^{1/2})\n1567: \n1568: $$\n1569: \n1570: where $\\tilde{C}$ is the coarse-grained loop on the block lattice.\n1571: \n1572: **Proof:**\n1573: \n1574: **Step 1:** Wilson loops are defined via parallel transport:\n1575: \n1576: $$\n1577: W_C = \\frac{1}{N_c} \\text{Tr} \\prod_{e \\in C} U_e\n1578: \n1579: $$\n1580: \n1581: (Definition 5.1.1 in [08_lattice_qft_framework.md](08_lattice_qft_framework.md)).\n1582: \n1583: **Step 2:** Under block-spin transformation, the macro-link variable $\\tilde{U}_{\\tilde{e}}$ is defined via:\n1584: \n1585: $$\n1586: \\tilde{U}_{\\tilde{e}} = \\arg\\min_{\\hat{U}} \\sum_{\\{e : e \\subset \\tilde{e}\\}} |U_e - \\hat{U}|^2\n1587: \n1588: $$\n1589: \n1590: (Definition 9.5.1 in [08_lattice_qft_framework.md](08_lattice_qft_framework.md)).\n1591: \n1592: **Step 3:** For gauge-invariant quantities, the coarse-graining commutes with the trace:\n1593: \n1594: $$\n1595: \\text{Tr} \\prod_{\\tilde{e} \\in \\tilde{C}} \\tilde{U}_{\\tilde{e}} \\approx \\text{Tr} \\prod_{e \\in C} U_e\n1596: \n1597: $$\n1598: "
     },
     {
@@ -55,6 +61,7 @@
         "label": "thm-beta-function-computational-closure"
       },
       "section": "## 9. Implications for Lattice QFT and Effective Field Theory",
+      "references": [],
       "raw_directive": "1604: The one-loop beta function derived in \u00a7 9.5 of [08_lattice_qft_framework.md](08_lattice_qft_framework.md) is an instance of computational closure.\n1605: \n1606: :::{prf:theorem} Beta Function from Computational Closure\n1607: :label: thm-beta-function-computational-closure\n1608: \n1609: The beta function for the gauge coupling:\n1610: \n1611: $$\n1612: \\beta(g) = -\\frac{g^3}{16\\pi^2} \\cdot \\frac{11N_c - 2N_f}{3}\n1613: \n1614: $$\n1615: \n1616: arises from requiring computational closure of the block-spin transformation on the \u03b5-machine.\n1617: \n1618: **Derivation:**\n1619: \n1620: **Step 1:** The micro-\u03b5-machine has transition probabilities determined by the BAOAB kernel with gauge coupling $g$.\n1621: \n1622: **Step 2:** Under block-spin transformation $\\mathcal{R}_b$, the macro-\u03b5-machine has transition probabilities determined by a modified BAOAB kernel.\n1623: \n1624: **Step 3:** Computational closure requires the macro-kernel to have the same functional form as the micro-kernel, but with renormalized coupling $g' = g + \\delta g$.\n1625: \n1626: **Step 4:** Solving for $\\delta g$ such that the macro-Wilson action matches the micro-Wilson action (via dimensional regularization and background-field Ward identity, \u00a7 9.5) yields:\n1627: \n1628: $$\n1629: g' = g \\left(1 - \\frac{g^2}{16\\pi^2} \\cdot \\frac{11N_c - 2N_f}{3} \\cdot \\log b \\right) + O(g^5)\n1630: \n1631: $$\n1632: \n1633: **Step 5:** Taking the continuum limit $b = e^{\\delta t}$ gives:\n1634: \n1635: $$\n1636: \\beta(g) = \\lim_{\\delta t \\to 0} \\frac{g' - g}{\\delta t} = -\\frac{g^3}{16\\pi^2} \\cdot \\frac{11N_c - 2N_f}{3}\n1637: \n1638: $$\n1639: "
     },
     {
@@ -73,6 +80,10 @@
         "label": "thm-continuum-limit-fixed-point"
       },
       "section": "## 9. Implications for Lattice QFT and Effective Field Theory",
+      "references": [
+        "cor-asymptotic-freedom-trivial-fixed-point",
+        "thm-fixed-points-epsilon-machine-isomorphism"
+      ],
       "raw_directive": "1645: ### 9.4. Continuum Limit and Universality\n1646: \n1647: :::{prf:theorem} Continuum Limit as Fixed Point\n1648: :label: thm-continuum-limit-fixed-point\n1649: \n1650: The continuum limit $a \\to 0$ of the Fractal Gas lattice QFT corresponds to flowing to the UV fixed point $g^* = 0$ under repeated RG transformations.\n1651: \n1652: At the fixed point, the \u03b5-machine is **scale-invariant**: all causal states are isomorphic across scales.\n1653: \n1654: **Proof:**\n1655: \n1656: **Step 1:** Asymptotic freedom implies $g(a) \\to 0$ as $a \\to 0$ (Corollary {prf:ref}`cor-asymptotic-freedom-trivial-fixed-point`).\n1657: \n1658: **Step 2:** At $g = 0$, the theory is free (no interactions), hence the \u03b5-machine is trivial: all walkers evolve independently.\n1659: \n1660: **Step 3:** The free \u03b5-machine is self-similar under coarse-graining (independent systems remain independent under averaging), hence is a fixed point.\n1661: "
     }
   ],

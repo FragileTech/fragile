@@ -19,6 +19,7 @@
         "label": "thm-quantitative-propagation-chaos"
       },
       "section": "## Part I: N-Particle to Mean-Field Error Bounds",
+      "references": [],
       "raw_directive": "60: Prove quantitative convergence of the N-particle system to the mean-field PDE with explicit rate.\n61: \n62: :::{prf:theorem} Quantitative Propagation of Chaos (Target)\n63: :label: thm-quantitative-propagation-chaos\n64: \n65: Let $\\nu_N^{QSD}$ be the quasi-stationary distribution of the N-particle system and let $\\rho_0$ be the mean-field invariant measure. For any Lipschitz observable $\\phi: \\Omega \\to \\mathbb{R}$ with constant $L_\\phi$, we have:\n66: \n67: $$\n68: \\left| \\mathbb{E}_{\\nu_N^{QSD}} \\left[ \\frac{1}{N} \\sum_{i=1}^N \\phi(z_i) \\right] - \\int_\\Omega \\phi(z) \\rho_0(z) dz \\right| \\leq C_{\\text{obs}} \\cdot \\frac{L_\\phi}{\\sqrt{N}}\n69: $$\n70: "
     },
     {
@@ -37,6 +38,9 @@
         "label": "lem-wasserstein-entropy"
       },
       "section": "## Part I: N-Particle to Mean-Field Error Bounds",
+      "references": [
+        "thm-n-uniform-lsi"
+      ],
       "raw_directive": "82: **Key Lemma** (to prove):\n83: \n84: :::{prf:lemma} Wasserstein-Entropy Inequality\n85: :label: lem-wasserstein-entropy\n86: \n87: Under the N-uniform LSI ({prf:ref}`thm-n-uniform-lsi`), the 2-Wasserstein distance between $\\nu_N^{QSD}$ and $\\rho_0^{\\otimes N}$ satisfies:\n88: \n89: $$\n90: W_2^2(\\nu_N^{QSD}, \\rho_0^{\\otimes N}) \\leq \\frac{2}{\\lambda_{\\text{LSI}}} \\cdot D_{KL}(\\nu_N^{QSD} \\| \\rho_0^{\\otimes N})\n91: $$\n92: "
     },
     {
@@ -55,6 +59,7 @@
         "label": "lem-quantitative-kl-bound"
       },
       "section": "## Part I: N-Particle to Mean-Field Error Bounds",
+      "references": [],
       "raw_directive": "110: **Key Lemma** (to prove):\n111: \n112: :::{prf:lemma} Quantitative KL Bound\n113: :label: lem-quantitative-kl-bound\n114: \n115: Let $\\mathcal{H}_N(t) := D_{KL}(\\mu_N(t) \\| \\rho_0^{\\otimes N})$ be the relative entropy at time $t$. Under the cloning mechanism with rate $\\lambda$ and the N-uniform LSI, we have:\n116: \n117: $$\n118: \\mathcal{H}_N(t) \\leq \\mathcal{H}_N(0) \\cdot e^{-\\lambda_{\\text{eff}} t} + \\frac{C_{\\text{int}}}{N}\n119: $$\n120: \n121: where $\\lambda_{\\text{eff}} = \\min(\\lambda, \\gamma \\kappa_{\\text{conf}} \\kappa_W \\delta^2)$ and $C_{\\text{int}}$ is the interaction complexity constant.\n122: "
     },
     {
@@ -73,6 +78,7 @@
         "label": "lem-lipschitz-observable-error"
       },
       "section": "## Part I: N-Particle to Mean-Field Error Bounds",
+      "references": [],
       "raw_directive": "139: **Key Lemma** (to prove):\n140: \n141: :::{prf:lemma} Empirical Measure Observable Error\n142: :label: lem-lipschitz-observable-error\n143: \n144: For any Lipschitz observable $\\phi: \\Omega \\to \\mathbb{R}$ with constant $L_\\phi$, the expected Wasserstein distance between the empirical measure and the target measure controls the observable error:\n145: \n146: $$\n147: \\left| \\mathbb{E}_{\\nu_N^{QSD}} \\left[ \\frac{1}{N} \\sum_{i=1}^N \\phi(z_i) \\right] - \\int_\\Omega \\phi(z) \\rho_0(z) dz \\right| \\leq L_\\phi \\cdot \\mathbb{E}_{\\nu_N^{QSD}} \\left[ W_1(\\bar{\\mu}_N, \\rho_0) \\right]\n148: $$\n149: \n150: where $\\bar{\\mu}_N = \\frac{1}{N}\\sum_{i=1}^N \\delta_{z_i}$ is the empirical measure.\n151: \n152: The proof proceeds in two steps:\n153: 1. Use Kantorovich-Rubinstein duality: $\\left| \\int \\phi d\\bar{\\mu}_N - \\int \\phi d\\rho_0 \\right| \\leq L_\\phi \\cdot W_1(\\bar{\\mu}_N, \\rho_0)$"
     }
   ],

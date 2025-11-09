@@ -1,7 +1,7 @@
 {
   "stage": "directives",
   "directive_type": "corollary",
-  "generated_at": "2025-11-08T17:16:20.404789+00:00",
+  "generated_at": "2025-11-08T23:19:38.396825+00:00",
   "source_documents": [
     "01_crystalline_gas_yang_mills_mass_gap_proof",
     "01_fragile_gas_framework",
@@ -17,7 +17,6 @@
     "11_geometric_gas",
     "11_geometric_gas",
     "11_hk_convergence",
-    "11_hk_convergence_bounded_density_rigorous_proof",
     "12_symmetries_geometric_gas",
     "13_geometric_gas_c3_regularity",
     "13_geometric_gas_c3_regularity",
@@ -29,8 +28,8 @@
     "19_geometric_gas_cinf_regularity_simplified",
     "20_geometric_gas_cinf_regularity_full"
   ],
-  "document_count": 25,
-  "total_count": 69,
+  "document_count": 24,
+  "total_count": 68,
   "items": [
     {
       "directive_type": "corollary",
@@ -48,6 +47,7 @@
         "label": "cor-cg-qsd-moments"
       },
       "section": "## 3. Existence and Uniqueness of the Quasi-Stationary Distribution",
+      "references": [],
       "raw_directive": "712: :::\n713: \n714: :::{prf:corollary} Finite Moments of QSD\n715: :label: cor-cg-qsd-moments\n716: \n717: The QSD $\\pi_{\\text{QSD}}$ has finite moments of all orders:\n718: \n719: $$\n720: \\int_{\\Sigma_N} \\|\\mathcal{S}\\|^p \\, \\pi_{\\text{QSD}}(\\mathrm{d}\\mathcal{S}) < \\infty\n721: $$\n722: ",
       "_registry_context": {
         "stage": "directives",
@@ -73,6 +73,10 @@
         "label": "cor-cg-area-law"
       },
       "section": "## 6. Confinement via the Area Law for Wilson Loops",
+      "references": [
+        "def-cg-dynamics",
+        "thm-cg-spectral-gap"
+      ],
       "raw_directive": "1865: :::\n1866: \n1867: :::{prf:corollary} Area Law for Crystalline Gas\n1868: :label: cor-cg-area-law\n1869: \n1870: The Crystalline Gas gauge theory ({prf:ref}`def-cg-dynamics`) exhibits an **area law** for Wilson loops:\n1871: \n1872: $$\n1873: \\langle W_{\\mathcal{C}} \\rangle_{\\pi_{\\text{QSD}}} \\leq e^{-\\sigma \\mathcal{A}(\\mathcal{C})}\n1874: $$\n1875: \n1876: where the string tension satisfies:\n1877: \n1878: $$\n1879: \\sigma \\geq c_0 \\cdot \\lambda_0 > 0\n1880: $$\n1881: \n1882: with $\\lambda_0$ from {prf:ref}`thm-cg-spectral-gap` and $c_0$ a universal constant.\n1883: ",
       "_registry_context": {
         "stage": "directives",
@@ -98,6 +102,7 @@
         "label": "cor-chain-rule-sigma-reg-var"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "2044: :::\n2045: :::{prf:corollary} Chain‑rule bound for \\sigma\\'_{\\text{reg}}\\circ \\mathrm{Var}\n2046: :label: cor-chain-rule-sigma-reg-var\n2047: \n2048: Under the conditions of the lemma and §8.2.2.9, the composite map \\sigma\\'_{\\text{reg}}\\circ\\mathrm{Var} is Lipschitz with\n2049: $$\n2050: \n2051: L_{\\sigma\\'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; L_{\\sigma\\'_{\\text{reg}}}\\,\\Big( L_{m_2,M}+2 V_{\\max} L_{\\mu,M}\\Big).\n2052: \n2053: $$\n2054: In particular, for the empirical aggregator of §6.2.2.a (see [](#lem-empirical-aggregator-properties)), $L_{\\mu,M}=1/\\sqrt{k}$ and $L_{m_2,M}=2V_{\\max}/\\sqrt{k}$, hence\n2055: $$\n2056: \n2057: L_{\\sigma\\'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; L_{\\sigma\\'_{\\text{reg}}}\\,\\Big( \\tfrac{2 V_{\\max}}{\\sqrt{k}} + 2 V_{\\max}\\,\\tfrac{1}{\\sqrt{k}}\\Big)\\n\\;=\\; \\frac{2 L_{\\sigma\\'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}.\n2058: \n2059: $$",
       "_registry_context": {
         "stage": "directives",
@@ -123,6 +128,7 @@
         "label": "cor-closed-form-lipschitz-composite"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "2060: :::\n2061: :::{prf:corollary} Closed‑form bound for $L_{g_A\\circ z}$ (empirical aggregator)\n2062: :label: cor-closed-form-lipschitz-composite\n2063: \n2064: Let $k=|\\mathcal A(\\mathcal S)|$ and assume $|v_i|\\le V_{\\max}$. For the empirical aggregator of §6.2.2.a (see [](#lem-empirical-aggregator-properties)) with the regularized standardization and piecewise rescale of §8.2.2, the composite map $g_A\\circ z$ is globally Lipschitz with\n2065: $$\n2066: \n2067: \\boxed{\\;L_{g_A\\circ z}\\;\\le\\; \\max\\{\\,L_P,\\,1\\,\\}\\;\\cdot\\; \\frac{2 L_{\\sigma\\'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}\\;}\n2068: \n2069: $$\n2070: where $L_P=\\|P'\\|_\\infty$ is the uniform derivative bound of the cubic patch from §8.2.2.5.",
       "_registry_context": {
         "stage": "directives",
@@ -148,6 +154,7 @@
         "label": "cor-pipeline-continuity-margin-stability"
       },
       "section": "## 13. Fitness potential operator",
+      "references": [],
       "raw_directive": "3986: \n3987:     \\|\\mathbf{z}_{*,1} - \\mathbf{z}_{*,2}\\|_2^2 \\le 2 C_{V,\\text{total}}^{(*)}\\cdot \\|\\Delta\\mathbf{v}_*\\|_2^2 + 2 C_{S,\\text{direct}}^{(*)} \\cdot n_c + 2 C_{S,\\text{indirect}}^{(*)}(\\mathcal{S}_1,\\mathcal{S}_2) \\cdot n_c^2,\n3988: \n3989: \n3990: $$\n3991: where $C_{V,\\text{total}}^{(*)}$ is defined in [](#def-lipschitz-value-error-coefficients) and $C_{S,\\text{direct}}^{(*)}$, $C_{S,\\text{indirect}}^{(*)}$ are from [](#def-lipschitz-structural-error-coefficients). The dependence on the swarm states is entirely through these deterministic coefficients.\n3992: 5.  **Assemble the Final Bound `F_pot,det`:**\n3993:     Combining the bounds from steps 2–4 yields the final deterministic function $F_{\\text{pot,det}}$. It is a sum of terms proportional to $\\|\\Delta\\mathbf{v}_r\\|^2$, $\\|\\Delta\\mathbf{v}_d\\|^2$, $n_c$, and $n_c^2$, with coefficients obtained by collecting $V_{\\text{pot,max}}$, $L_{F,*}$, and the standardization constants $C_{V,\\text{total}}^{(*)}$, $C_{S,\\text{direct}}^{(*)}$, $C_{S,\\text{indirect}}^{(*)}$. Since each constituent coefficient is finite by definition, $F_{\\text{pot,det}}$ is a well-defined, continuous bound on the deterministic error. This completes the proof.\n3994: **Q.E.D.**\n3995: :::\n3996: #### 12.3.3 Corollary: Pipeline Continuity Under Margin-Based Status Stability\n3997: :::{prf:corollary}\n3998: :label: cor-pipeline-continuity-margin-stability\n3999: ",
       "_registry_context": {
         "stage": "directives",
@@ -173,6 +180,7 @@
         "label": "cor-vvarx-to-high-error-fraction"
       },
       "section": "## 6. The Geometry of Error: From System Error to a Guaranteed Geometric Structure",
+      "references": [],
       "raw_directive": "2806: This corollary provides the final, synthesized result of our geometric analysis. It proves that a large **total intra-swarm positional variance ($V_{\\text{Var},x}$)** is sufficient to guarantee that a non-vanishing fraction of at least one of the swarms belongs to this high-error set, providing the clean, unified input required for the subsequent analysis. This directly aligns with the Keystone Principle's central thesis: the cloning operator contracts the positional variance component of the Lyapunov function.\n2807: \n2808: :::{prf:corollary} A Large Intra-Swarm Positional Variance Guarantees a Non-Vanishing High-Error Fraction\n2809: :label: cor-vvarx-to-high-error-fraction\n2810: \n2811: For any fixed interaction range $\\varepsilon > 0$, there exists a positional variance threshold $R^2_{\\text{total\\_var},x} > 0$ and a corresponding N-uniform constant $f_H(\\epsilon) > 0$ such that:\n2812: \n2813: If the total intra-swarm positional variance is large, $V_{\\text{Var},x} > R^2_{\\text{total\\_var},x}$, then the fraction of *alive* walkers in the unified high-error set of at least one of the swarms, $k \\in {1, 2}$, is bounded below:\n2814: \n2815: $$\n2816: \\frac{|H_k(\\epsilon)|}{k} \\ge f_H(\\epsilon) > 0\n2817: $$",
       "_registry_context": {
         "stage": "directives",
@@ -198,6 +206,7 @@
         "label": "cor-cloning-pressure-target-set"
       },
       "section": "## 8. The N-Uniform Quantitative Keystone Lemma",
+      "references": [],
       "raw_directive": "5007: This powerful lemma guarantees that every walker identified as \"unfit\" is under significant, quantifiable pressure to be cloned. We can now extend this guarantee directly to our critical target population.\n5008: \n5009: :::{prf:corollary} Cloning Pressure on the Target Set\n5010: :label: cor-cloning-pressure-target-set\n5011: \n5012: For any walker $i$ in the **critical target set**, $I_{\\text{target}} = I_{11} \\cap U_k \\cap H_k(\\epsilon)$, its total cloning probability in the high-variance swarm $k$ is also bounded below by the same N-uniform constant:\n5013: \n5014: $$\n5015: p_{k,i} \\ge p_u(\\epsilon) > 0\n5016: $$",
       "_registry_context": {
         "stage": "directives",
@@ -218,12 +227,15 @@
       ],
       "content_start": 6858,
       "content_end": 6864,
-      "content": "6858: :label: cor-structural-error-contraction\n6859: \n6860: Under the same conditions as Theorem 10.3.1, the structural error also contracts:\n6861: \n6862: $$\n6863: \\mathbb{E}_{\\text{clone}}[V_{\\text{struct}}(S'_1, S'_2)] \\leq (1 - \\kappa_{\\text{struct}}) V_{\\text{struct}}(S_1, S_2) + C_{\\text{struct}}\n6864: $$",
+      "content": "6858: :label: cor-structural-error-contraction\n6859: \n6860: Under the same conditions as {prf:ref}`thm-positional-variance-contraction`, the structural error also contracts:\n6861: \n6862: $$\n6863: \\mathbb{E}_{\\text{clone}}[V_{\\text{struct}}(S'_1, S'_2)] \\leq (1 - \\kappa_{\\text{struct}}) V_{\\text{struct}}(S_1, S_2) + C_{\\text{struct}}\n6864: $$",
       "metadata": {
         "label": "cor-structural-error-contraction"
       },
       "section": "## 10.5. Implications for Structural Error",
-      "raw_directive": "6855: The positional variance contraction has immediate consequences for the structural error $V_{\\text{struct}}$.\n6856: \n6857: :::{prf:corollary} Structural Error Contraction\n6858: :label: cor-structural-error-contraction\n6859: \n6860: Under the same conditions as Theorem 10.3.1, the structural error also contracts:\n6861: \n6862: $$\n6863: \\mathbb{E}_{\\text{clone}}[V_{\\text{struct}}(S'_1, S'_2)] \\leq (1 - \\kappa_{\\text{struct}}) V_{\\text{struct}}(S_1, S_2) + C_{\\text{struct}}\n6864: $$\n6865: ",
+      "references": [
+        "thm-positional-variance-contraction"
+      ],
+      "raw_directive": "6855: The positional variance contraction has immediate consequences for the structural error $V_{\\text{struct}}$.\n6856: \n6857: :::{prf:corollary} Structural Error Contraction\n6858: :label: cor-structural-error-contraction\n6859: \n6860: Under the same conditions as {prf:ref}`thm-positional-variance-contraction`, the structural error also contracts:\n6861: \n6862: $$\n6863: \\mathbb{E}_{\\text{clone}}[V_{\\text{struct}}(S'_1, S'_2)] \\leq (1 - \\kappa_{\\text{struct}}) V_{\\text{struct}}(S_1, S_2) + C_{\\text{struct}}\n6864: $$\n6865: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "03_cloning",
@@ -243,12 +255,15 @@
       ],
       "content_start": 7555,
       "content_end": 7561,
-      "content": "7555: :label: cor-bounded-boundary-exposure\n7556: \n7557: Under the drift inequality from Theorem 11.3.1, the long-term boundary exposure is bounded:\n7558: \n7559: $$\n7560: \\limsup_{t \\to \\infty} \\mathbb{E}[W_b(S_t)] \\leq \\frac{C_b}{\\kappa_b}\n7561: $$",
+      "content": "7555: :label: cor-bounded-boundary-exposure\n7556: \n7557: Under the drift inequality from {prf:ref}`thm-boundary-potential-contraction`, the long-term boundary exposure is bounded:\n7558: \n7559: $$\n7560: \\limsup_{t \\to \\infty} \\mathbb{E}[W_b(S_t)] \\leq \\frac{C_b}{\\kappa_b}\n7561: $$",
       "metadata": {
         "label": "cor-bounded-boundary-exposure"
       },
       "section": "## 11.5. Implications for Extinction Probability",
-      "raw_directive": "7552: The boundary potential contraction has important consequences for swarm survival.\n7553: \n7554: :::{prf:corollary} Bounded Boundary Exposure in Equilibrium\n7555: :label: cor-bounded-boundary-exposure\n7556: \n7557: Under the drift inequality from Theorem 11.3.1, the long-term boundary exposure is bounded:\n7558: \n7559: $$\n7560: \\limsup_{t \\to \\infty} \\mathbb{E}[W_b(S_t)] \\leq \\frac{C_b}{\\kappa_b}\n7561: $$\n7562: ",
+      "references": [
+        "thm-boundary-potential-contraction"
+      ],
+      "raw_directive": "7552: The boundary potential contraction has important consequences for swarm survival.\n7553: \n7554: :::{prf:corollary} Bounded Boundary Exposure in Equilibrium\n7555: :label: cor-bounded-boundary-exposure\n7556: \n7557: Under the drift inequality from {prf:ref}`thm-boundary-potential-contraction`, the long-term boundary exposure is bounded:\n7558: \n7559: $$\n7560: \\limsup_{t \\to \\infty} \\mathbb{E}[W_b(S_t)] \\leq \\frac{C_b}{\\kappa_b}\n7561: $$\n7562: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "03_cloning",
@@ -273,6 +288,7 @@
         "label": "cor-extinction-suppression"
       },
       "section": "## 11.5. Implications for Extinction Probability",
+      "references": [],
       "raw_directive": "7595: :::\n7596: \n7597: :::{prf:corollary} Exponentially Suppressed Extinction Probability\n7598: :label: cor-extinction-suppression\n7599: \n7600: The boundary potential contraction exponentially suppresses the probability of catastrophic boundary crossing events. Specifically, for any $\\epsilon > 0$, there exists $N_0$ such that for all $N > N_0$:\n7601: \n7602: $$\n7603: P(\\text{extinction in one step}) = O(e^{-N \\cdot \\text{const}})\n7604: $$\n7605: ",
       "_registry_context": {
         "stage": "directives",
@@ -298,6 +314,7 @@
         "label": "cor-component-bounds-vw"
       },
       "section": "## 12.2. Inter-Swarm Error Under Cloning",
+      "references": [],
       "raw_directive": "7976: For completeness, we state the separate bounds on the location and structural components.\n7977: \n7978: :::{prf:corollary} Component-Wise Bounds on Inter-Swarm Error\n7979: :label: cor-component-bounds-vw\n7980: \n7981: The location and structural error components satisfy:\n7982: \n7983: $$\n7984: \\begin{aligned}\n7985: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] &\\leq C_{\\text{loc}} \\\\\n7986: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}] &\\leq C_{\\text{struct}}\n7987: \\end{aligned}\n7988: $$\n7989: ",
       "_registry_context": {
         "stage": "directives",
@@ -323,6 +340,7 @@
         "label": "cor-cg-pure-yang-mills-vacuum"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "791: :::\n792: \n793: :::{prf:corollary} Pure Yang-Mills Vacuum at Equilibrium\n794: :label: cor-cg-pure-yang-mills-vacuum\n795: \n796: The quasi-stationary distribution $\\pi_{\\text{QSD}}$ of the Crystalline Gas corresponds to a **pure Yang-Mills vacuum** with no matter coupling. That is, the gauge field dynamics satisfy:\n797: \n798: $$\n799: D_{\\mu} F^{\\mu\\nu}_{\\text{color}} = 0 \\quad \\text{(SU(3) gluodynamics)}\n800: $$\n801: \n802: $$\n803: D_{\\mu} W^{\\mu\\nu} = 0 \\quad \\text{(SU(2) weak gauge dynamics)}\n804: $$\n805: \n806: $$\n807: \\partial_{\\mu} F^{\\mu\\nu}_{\\text{hyper}} = 0 \\quad \\text{(U(1) Maxwell dynamics)}\n808: $$\n809: ",
       "_registry_context": {
         "stage": "directives",
@@ -348,6 +366,7 @@
         "label": "cor-between-group-dominance"
       },
       "section": "## 3. Variance Decomposition and Cross-Swarm Analysis",
+      "references": [],
       "raw_directive": "352: :::\n353: \n354: :::{prf:corollary} Between-Group Variance Dominance\n355: :label: cor-between-group-dominance\n356: \n357: For a high-error swarm satisfying $V_{\\text{struct}} > R^2_{\\text{spread}}$, the between-group variance term dominates:\n358: \n359: $$\n360: f_I f_J \\|\\mu_x(I_k) - \\mu_x(J_k)\\|^2 \\geq c_{\\text{sep}}(\\varepsilon) V_{\\text{struct}}\n361: \n362: $$\n363: \n364: for some N-uniform constant $c_{\\text{sep}}(\\varepsilon) > 0$.\n365: \n366: **Proof:**\n367: \n368: This follows from the Phase-Space Packing Lemma (Lemma 6.4.1 in [03_cloning](03_cloning), line 2409).\n369: \n370: By the clustering construction (Definition 6.3, line 2351), the high-error set $H_k$ consists of outlier clusters with high between-cluster variance contribution. Since $I_k \\subseteq H_k$ (target set is subset of high-error), the spatial separation between $I_k$ and $J_k$ (which contains all low-error walkers $L_k$) must be substantial.\n371: \n372: Specifically, from the Phase-Space Packing Lemma with $d_{\\text{close}} = D_{\\text{diam}}(\\varepsilon) = c_d \\varepsilon$:\n373: \n374: If $\\text{Var}_h(S_k) > R^2_{\\text{pack}} := \\varepsilon^2 / 2$, then not all pairs can be close in phase space. This forces:\n375: \n376: $$\n377: \\|\\mu_x(I_k) - \\mu_x(J_k)\\|^2 \\geq c_{\\text{pack}}(\\varepsilon) \\text{Var}_x(S_k)\n378: \n379: $$\n380: \n381: for some geometric constant $c_{\\text{pack}}(\\varepsilon) > 0$.\n382: \n383: Using $\\text{Var}_x(S_k) \\geq V_{\\text{struct}} / (1 + \\lambda_v)$ (position component of hypocoercive variance) and $f_I f_J \\geq f_{UH} (1 - f_{UH}) \\geq f_{UH}/2$ (for $f_{UH} \\leq 1/2$):\n384: \n385: $$\n386: f_I f_J \\|\\mu_x(I_k) - \\mu_x(J_k)\\|^2 \\geq \\frac{f_{UH}}{2} \\cdot c_{\\text{pack}}(\\varepsilon) \\cdot \\frac{V_{\\text{struct}}}{1 + \\lambda_v} =: c_{\\text{sep}}(\\varepsilon) V_{\\text{struct}}\n387: \n388: $$\n389: ",
       "_registry_context": {
         "stage": "directives",
@@ -373,6 +392,9 @@
         "label": "cor-average-cloning"
       },
       "section": "## 5. Expected Distance Change Under Cloning",
+      "references": [
+        "lem-target-cloning-pressure"
+      ],
       "raw_directive": "835: :::\n836: \n837: :::{prf:corollary} Average Cloning Pressure Bound\n838: :label: cor-average-cloning\n839: \n840: The average cloning probability in the target set satisfies:\n841: \n842: $$\n843: \\bar{p}_I = \\frac{1}{|I_1|} \\sum_{i \\in I_1} p_{1,i} \\geq p_u(\\varepsilon)\n844: \n845: $$\n846: ",
       "_registry_context": {
         "stage": "directives",
@@ -398,6 +420,10 @@
         "label": "cor-quadratic-scaling-wasserstein"
       },
       "section": "## Section 4 Updates: Quadratic Scaling Fixes",
+      "references": [
+        "prop-exact-distance-change",
+        "lem-outlier-alignment"
+      ],
       "raw_directive": "1084: ---\n1085: \n1086: :::{prf:corollary} Quadratic Scaling for Separated Swarms\n1087: :label: cor-quadratic-scaling-wasserstein\n1088: \n1089: For two swarms $S_1, S_2$ with barycenters $\\bar{x}_1, \\bar{x}_2$ at distance $L = \\|\\bar{x}_1 - \\bar{x}_2\\|$, consider the synchronous coupling where walker $i \\in S_1$ (outlier) clones from walker $\\pi(i) \\in S_2$ (companion).\n1090: \n1091: The global barycenter is $\\bar{x} \\approx \\frac{\\bar{x}_1 + \\bar{x}_2}{2}$ (assuming equal swarm sizes).\n1092: \n1093: **Then:**\n1094: \n1095: $$\n1096: D_{ii} - D_{ji} \\approx L^2\n1097: $$\n1098: \n1099: More precisely:\n1100: \n1101: $$\n1102: D_{ii} - D_{ji} \\geq \\frac{L^2}{2} - C_{\\text{err}}\n1103: $$\n1104: \n1105: where $C_{\\text{err}} = O(L R_H + R_H^2)$ for separated swarms with $L \\gg R_H$.\n1106: \n1107: **Proof:**\n1108: \n1109: By Proposition {prf:ref}`prop-exact-distance-change`:\n1110: \n1111: $$\n1112: D_{ii} - D_{ji} = -(N-1)\\|x_{2,\\pi(i)} - x_{1,i}\\|^2 - 2N\\langle x_{2,\\pi(i)} - x_{1,i}, x_{1,i} - \\bar{x} \\rangle\n1113: $$\n1114: \n1115: **First term (quadratic in $L$):**\n1116: \n1117: The distance between outlier in $S_1$ and companion in $S_2$ is approximately:\n1118: \n1119: $$\n1120: \\|x_{2,\\pi(i)} - x_{1,i}\\| \\approx \\|\\bar{x}_2 - \\bar{x}_1\\| + O(R_L + R_H) = L + O(R_H)\n1121: $$\n1122: \n1123: Therefore:\n1124: \n1125: $$\n1126: \\|x_{2,\\pi(i)} - x_{1,i}\\|^2 \\geq L^2 - 2L R_H\n1127: $$\n1128: \n1129: So:\n1130: \n1131: $$\n1132: -(N-1)\\|x_{2,\\pi(i)} - x_{1,i}\\|^2 \\leq -(N-1)L^2 + 2(N-1)LR_H\n1133: $$\n1134: \n1135: **Second term (also quadratic!):**\n1136: \n1137: The outlier position relative to global barycenter:\n1138: \n1139: $$\n1140: x_{1,i} - \\bar{x} \\approx (x_{1,i} - \\bar{x}_1) + \\left(\\bar{x}_1 - \\frac{\\bar{x}_1 + \\bar{x}_2}{2}\\right) = (x_{1,i} - \\bar{x}_1) + \\frac{\\bar{x}_1 - \\bar{x}_2}{2}\n1141: $$\n1142: \n1143: The displacement from companion to outlier:\n1144: \n1145: $$\n1146: x_{2,\\pi(i)} - x_{1,i} \\approx (\\bar{x}_2 - \\bar{x}_1) + O(R_H)\n1147: $$\n1148: \n1149: **Inner product:**\n1150: \n1151: $$\n1152: \\begin{aligned}\n1153: \\langle x_{2,\\pi(i)} - x_{1,i}, x_{1,i} - \\bar{x} \\rangle &\\approx \\left\\langle \\bar{x}_2 - \\bar{x}_1, (x_{1,i} - \\bar{x}_1) + \\frac{\\bar{x}_1 - \\bar{x}_2}{2} \\right\\rangle \\\\\n1154: &= \\langle \\bar{x}_2 - \\bar{x}_1, x_{1,i} - \\bar{x}_1 \\rangle + \\left\\langle \\bar{x}_2 - \\bar{x}_1, \\frac{\\bar{x}_1 - \\bar{x}_2}{2} \\right\\rangle \\\\\n1155: &= \\langle \\bar{x}_2 - \\bar{x}_1, x_{1,i} - \\bar{x}_1 \\rangle - \\frac{L^2}{2}\n1156: \\end{aligned}\n1157: $$\n1158: \n1159: **Use Outlier Alignment:** By Lemma {prf:ref}`lem-outlier-alignment`:\n1160: \n1161: $$\n1162: \\langle x_{1,i} - \\bar{x}_1, \\bar{x}_1 - \\bar{x}_2 \\rangle \\geq \\eta R_H L\n1163: $$\n1164: \n1165: Therefore:\n1166: \n1167: $$\n1168: \\langle \\bar{x}_2 - \\bar{x}_1, x_{1,i} - \\bar{x}_1 \\rangle = -\\langle x_{1,i} - \\bar{x}_1, \\bar{x}_1 - \\bar{x}_2 \\rangle \\leq -\\eta R_H L\n1169: $$\n1170: \n1171: So:\n1172: \n1173: $$\n1174: \\langle x_{2,\\pi(i)} - x_{1,i}, x_{1,i} - \\bar{x} \\rangle \\leq -\\eta R_H L - \\frac{L^2}{2}\n1175: $$\n1176: \n1177: Therefore:\n1178: \n1179: $$\n1180: -2N\\langle x_{2,\\pi(i)} - x_{1,i}, x_{1,i} - \\bar{x} \\rangle \\geq 2N\\eta R_H L + NL^2\n1181: $$\n1182: \n1183: **Combine both terms:**\n1184: \n1185: $$\n1186: D_{ii} - D_{ji} \\geq -(N-1)L^2 + 2(N-1)LR_H + 2N\\eta R_H L + NL^2\n1187: $$\n1188: \n1189: $$\n1190: = L^2[-(N-1) + N] + 2LR_H[(N-1) + N\\eta]\n1191: $$\n1192: \n1193: $$\n1194: = L^2 + 2LR_H[(N-1) + N\\eta]\n1195: $$\n1196: \n1197: For $N$ large and $L \\gg R_H$:\n1198: \n1199: $$\n1200: D_{ii} - D_{ji} \\geq L^2 + O(NLR_H)\n1201: $$\n1202: \n1203: For the Wasserstein-2 distance per pair (dividing by number of pairs), we get:\n1204: \n1205: $$\n1206: \\frac{D_{ii} - D_{ji}}{N} \\geq \\frac{L^2}{N} + O(LR_H)\n1207: $$\n1208: \n1209: For the empirical measure contraction, the relevant quantity is the total squared distance, which is $O(NL^2)$, giving:\n1210: \n1211: $$\n1212: \\frac{D_{ii} - D_{ji}}{D_{ii} + D_{jj}} \\approx \\frac{L^2}{2L^2} = \\frac{1}{2} = O(1)\n1213: $$\n1214: ",
       "_registry_context": {
         "stage": "directives",
@@ -423,6 +449,7 @@
         "label": "cor-large-separation-contraction"
       },
       "section": "## 5. Unified Single-Pair Lemma",
+      "references": [],
       "raw_directive": "1992: For the main theorem, we use a simplified bound that holds asymptotically for large $L$.\n1993: \n1994: :::{prf:corollary} Large Separation Single-Pair Contraction\n1995: :label: cor-large-separation-contraction\n1996: \n1997: For swarms with separation $L > L_0(\\delta, \\varepsilon)$ where $L_0 = \\max\\left(D_{\\min}, \\frac{2\\sqrt{d}\\delta}{\\sqrt{\\kappa_B f_{UH} q_{\\min}}}\\right)$, the single-pair contraction simplifies to:\n1998: \n1999: $$\n2000: \\mathbb{E}[D'_{i\\pi(i)} \\mid M, T] \\leq \\left(1 - \\frac{\\kappa_{\\text{pair}}}{2}\\right) D_{i\\pi(i)} + C_W\n2001: $$\n2002: ",
       "_registry_context": {
         "stage": "directives",
@@ -448,6 +475,7 @@
         "label": "cor-net-velocity-contraction"
       },
       "section": "## 5. Velocity Variance Dissipation via Langevin Friction",
+      "references": [],
       "raw_directive": "2289: ### 5.5. Balancing with Cloning Expansion\n2290: \n2291: :::{prf:corollary} Net Velocity Variance Contraction for Composed Operator\n2292: :label: cor-net-velocity-contraction\n2293: \n2294: From 03_cloning.md, the cloning operator satisfies:\n2295: \n2296: $$\n2297: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n2298: \n2299: $$\n2300: \n2301: Combining with the kinetic dissipation:\n2302: \n2303: $$\n2304: \\mathbb{E}_{\\text{clone} \\circ \\text{kin}}[\\Delta V_{\\text{Var},v}] \\leq -2\\gamma V_{\\text{Var},v} \\tau + (d\\sigma_{\\max}^2 \\tau + C_v)\n2305: \n2306: $$\n2307: \n2308: **For net contraction, we need:**\n2309: \n2310: $$\n2311: 2\\gamma V_{\\text{Var},v} \\tau > d\\sigma_{\\max}^2 \\tau + C_v\n2312: \n2313: $$\n2314: \n2315: **This holds when:**\n2316: \n2317: $$\n2318: V_{\\text{Var},v} > \\frac{d\\sigma_{\\max}^2}{2\\gamma} + \\frac{C_v}{2\\gamma\\tau}\n2319: \n2320: $$\n2321: \n2322: **Equilibrium bound:**\n2323: At equilibrium where $\\mathbb{E}[\\Delta V_{\\text{Var},v}] = 0$:\n2324: \n2325: $$\n2326: V_{\\text{Var},v}^{\\text{eq}} \\approx \\frac{d\\sigma_{\\max}^2}{2\\gamma} + \\frac{C_v}{2\\gamma\\tau}\n2327: \n2328: $$\n2329: \n2330: **Interpretation:** The equilibrium velocity variance is determined by the balance between:\n2331: - Thermal noise injection ($\\sigma_{\\max}^2$)\n2332: - Friction dissipation ($\\gamma$)",
       "_registry_context": {
         "stage": "directives",
@@ -473,6 +501,7 @@
         "label": "cor-net-positional-contraction"
       },
       "section": "## 6. Positional Diffusion and Bounded Expansion",
+      "references": [],
       "raw_directive": "2697: ### 6.5. Balancing with Cloning Contraction\n2698: \n2699: :::{prf:corollary} Net Positional Variance Contraction for Composed Operator\n2700: :label: cor-net-positional-contraction\n2701: \n2702: From 03_cloning.md Theorem 10.3.1, the cloning operator satisfies:\n2703: \n2704: $$\n2705: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x\n2706: \n2707: $$\n2708: \n2709: Combining with kinetic expansion:\n2710: \n2711: $$\n2712: \\mathbb{E}_{\\text{clone} \\circ \\text{kin}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + (C_x + C_{\\text{kin},x}\\tau)\n2713: \n2714: $$\n2715: \n2716: **For net contraction:**\n2717: \n2718: $$\n2719: \\kappa_x V_{\\text{Var},x} > C_x + C_{\\text{kin},x}\\tau\n2720: \n2721: $$\n2722: \n2723: **This holds when:**\n2724: \n2725: $$\n2726: V_{\\text{Var},x} > \\frac{C_x + C_{\\text{kin},x}\\tau}{\\kappa_x}\n2727: \n2728: $$\n2729: ",
       "_registry_context": {
         "stage": "directives",
@@ -498,6 +527,7 @@
         "label": "cor-total-boundary-safety"
       },
       "section": "## 7. Boundary Potential Contraction via Confining Potential",
+      "references": [],
       "raw_directive": "3174: ### 7.5. Layered Safety Architecture\n3175: \n3176: :::{prf:corollary} Total Boundary Safety from Dual Mechanisms\n3177: :label: cor-total-boundary-safety\n3178: \n3179: Combining the Safe Harbor mechanism from cloning (03_cloning.md, Ch 11) with the confining potential:\n3180: \n3181: **From cloning:**\n3182: \n3183: $$\n3184: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\leq -\\kappa_b W_b + C_b\n3185: \n3186: $$\n3187: \n3188: **From kinetics:**\n3189: \n3190: $$\n3191: \\mathbb{E}_{\\text{kin}}[\\Delta W_b] \\leq -\\kappa_{\\text{pot}} W_b \\tau + C_{\\text{pot}}\\tau\n3192: \n3193: $$\n3194: \n3195: **Combined:**\n3196: \n3197: $$\n3198: \\mathbb{E}_{\\text{total}}[\\Delta W_b] \\leq -(\\kappa_b + \\kappa_{\\text{pot}}\\tau) W_b + (C_b + C_{\\text{pot}}\\tau)\n3199: \n3200: $$\n3201: ",
       "_registry_context": {
         "stage": "directives",
@@ -523,6 +553,7 @@
         "label": "cor-os4-area-law"
       },
       "section": "## OS4: Clustering (Exponential Decay of Correlations)",
+      "references": [],
       "raw_directive": "526: ### Connection to Wilson Loop Area Law\n527: \n528: :::{prf:corollary} Area Law from Clustering\n529: :label: cor-os4-area-law\n530: \n531: The exponential clustering of gauge field correlations implies the **area law** for Wilson loops.\n532: \n533: For a rectangular loop $\\mathcal{C}$ with spatial area $A$ and perimeter $\\ell$:\n534: \n535: $$\n536: \\langle W(\\mathcal{C}) \\rangle_{\\pi_{\\text{QSD}}} \\leq \\exp(-m_{\\text{gap}} \\cdot A)\n537: $$\n538: ",
       "_registry_context": {
         "stage": "directives",
@@ -548,6 +579,7 @@
         "label": "cor-w2-convergence-thermodynamic-limit"
       },
       "section": "## **6. Justification of the Mean-Field Model: Propagation of Chaos and the Thermodynamic Limit**",
+      "references": [],
       "raw_directive": "2168: :::\n2169: \n2170: :::{prf:corollary} Wasserstein-2 Convergence in the Thermodynamic Limit\n2171: :label: cor-w2-convergence-thermodynamic-limit\n2172: \n2173: The convergence of marginals to the mean-field QSD holds in the stronger Wasserstein-2 metric:\n2174: \n2175: $$\n2176: \\lim_{N \\to \\infty} W_2(\\mu_N, \\mu_\\infty) = 0\n2177: \n2178: $$\n2179: ",
       "_registry_context": {
         "stage": "directives",
@@ -573,6 +605,7 @@
         "label": "cor-n-particle-kinetic-lsi"
       },
       "section": "## 3. Extension to the N-Particle System",
+      "references": [],
       "raw_directive": "881: :::\n882: \n883: :::{prf:corollary} LSI for N-Particle Kinetic Operator\n884: :label: cor-n-particle-kinetic-lsi\n885: \n886: The N-particle kinetic operator $\\Psi_{\\text{kin}}^{\\otimes N}$ satisfies a discrete-time LSI with the **same constant** as the single-particle operator:\n887: \n888: $$\n889: C_{\\text{LSI}}^{\\text{kin}, N}(\\tau) = C_{\\text{LSI}}^{\\text{kin}}(\\tau)\n890: $$",
       "_registry_context": {
         "stage": "directives",
@@ -598,6 +631,7 @@
         "label": "cor-quantitative-lsi-final"
       },
       "section": "## 5. The Composition Theorem: Entropy-Transport Lyapunov Function",
+      "references": [],
       "raw_directive": "1811: ### 5.6. Explicit Constants and Parameter Conditions\n1812: \n1813: :::{prf:corollary} Quantitative LSI Constant\n1814: :label: cor-quantitative-lsi-final\n1815: \n1816: For the N-particle Euclidean Gas with parameters:\n1817: - Friction $\\gamma > 0$\n1818: - Confining potential convexity $\\kappa_{\\text{conf}} > 0$\n1819: - Cloning Wasserstein contraction $\\kappa_W > 0$ (from Keystone Principle)\n1820: - Kinetic time step $\\tau > 0$\n1821: - Maximum velocity $v_{\\max}$\n1822: - Domain radius $r_{\\text{valid}}$\n1823: \n1824: the system satisfies an LSI provided:\n1825: \n1826: **Seesaw condition:**\n1827: \n1828: $$\n1829: \\kappa_W > \\frac{\\beta}{1 + \\beta} \\quad \\text{where} \\quad \\beta = O\\left(\\frac{\\tau v_{\\max}^2}{r_{\\text{valid}}^2}\\right)\n1830: $$\n1831: \n1832: The LSI constant is:\n1833: \n1834: $$\n1835: C_{\\text{LSI}} = O\\left(\\frac{1}{\\min(\\gamma, \\kappa_{\\text{conf}}) \\cdot \\kappa_W}\\right)\n1836: $$\n1837: \n1838: **Practical interpretation:**\n1839: - Small time steps $\\tau$ reduce $\\beta$, making the seesaw condition easier to satisfy\n1840: - Strong cloning contraction $\\kappa_W$ (high fitness signal) ensures LSI",
       "_registry_context": {
         "stage": "directives",
@@ -623,6 +657,7 @@
         "label": "cor-adaptive-lsi"
       },
       "section": "## 7. Extension to the Adaptive Model",
+      "references": [],
       "raw_directive": "1994: ### 7.2. ρ-Dependent LSI Constants\n1995: \n1996: :::{prf:corollary} LSI for the ρ-Localized Geometric Gas\n1997: :label: cor-adaptive-lsi\n1998: \n1999: For the geometric gas with localization scale $\\rho > 0$, the LSI constant depends on $\\rho$ via:\n2000: \n2001: $$\n2002: C_{\\text{LSI}}(\\rho) \\le \\frac{C_{\\text{LSI}}^{\\text{backbone}}}{1 - \\epsilon_F \\cdot C_{\\text{adapt}}(\\rho)}\n2003: $$\n2004: \n2005: where $C_{\\text{adapt}}(\\rho) = O(F_{\\text{adapt,max}}(\\rho) / \\kappa_x)$ quantifies the perturbation strength.\n2006: \n2007: **Critical threshold:** Stability requires:\n2008: \n2009: $$\n2010: \\epsilon_F < \\epsilon_F^*(\\rho) = \\frac{1}{C_{\\text{adapt}}(\\rho)}\n2011: $$",
       "_registry_context": {
         "stage": "directives",
@@ -648,6 +683,9 @@
         "label": "cor-n-uniform-lsi"
       },
       "section": "## 9. Conclusion",
+      "references": [
+        "thm-main-kl-convergence"
+      ],
       "raw_directive": "2134: ### 9.6. N-Uniform LSI: Scalability to Large Swarms\n2135: \n2136: :::{prf:corollary} N-Uniform Logarithmic Sobolev Inequality\n2137: :label: cor-n-uniform-lsi\n2138: \n2139: Under the same conditions as Theorem {prf:ref}`thm-main-kl-convergence`, the LSI constant for the N-particle Euclidean Gas is **uniform in N**. That is, there exists a constant $C_{\\text{LSI}}^{\\max} < \\infty$ such that:\n2140: \n2141: $$\n2142: \\sup_{N \\geq 2} C_{\\text{LSI}}(N) \\leq C_{\\text{LSI}}^{\\max}\n2143: $$\n2144: \n2145: **Explicit bound**:\n2146: \n2147: $$\n2148: C_{\\text{LSI}}^{\\max} = O\\left(\\frac{1}{\\min(\\gamma, \\kappa_{\\text{conf}}) \\cdot \\kappa_{W,\\min} \\cdot \\delta^2}\\right)\n2149: $$\n2150: ",
       "_registry_context": {
         "stage": "directives",
@@ -673,6 +711,9 @@
         "label": "cor-n-particle-hypocoercive"
       },
       "section": "## Part 2: Approach 1 - Hypocoercivity for Non-Convex Kinetic Systems",
+      "references": [
+        "axiom-confining-complete"
+      ],
       "raw_directive": "5765: $$\n5766: \n5767: :::{prf:corollary} N-Particle Hypocoercive LSI\n5768: :label: cor-n-particle-hypocoercive\n5769: \n5770: For the N-particle kinetic operator with confining potential $U$ (Axiom {prf:ref}`axiom-confining-complete`), **without requiring convexity**:\n5771: \n5772: $$\n5773: D_{\\text{KL}}(\\mu_S^{(N)} \\| \\pi_{\\text{kin}}^{\\otimes N}) \\leq (1 - \\tau \\lambda_{\\text{hypo}}) D_{\\text{KL}}(\\mu_0^{(N)} \\| \\pi_{\\text{kin}}^{\\otimes N})\n5774: $$\n5775: \n5776: Moreover, the LSI constant is **uniform in N**:\n5777: \n5778: $$\n5779: C_{\\text{LSI}}^{\\text{kin}}(N, \\tau) = C_{\\text{LSI}}^{\\text{kin}}(1, \\tau)",
       "_registry_context": {
         "stage": "directives",
@@ -698,6 +739,7 @@
         "label": "cor-mean-field-lsi"
       },
       "section": "## A1.3 N-Uniform Log-Sobolev Inequality",
+      "references": [],
       "raw_directive": "636: ### A1.3.2 Implications for Mean-Field LSI\n637: \n638: :::{prf:corollary} Mean-Field LSI from N-Uniform Bounds\n639: :label: cor-mean-field-lsi\n640: \n641: The mean-field density $\\rho_\\infty$ (limit of $\\mu_N$ as $N \\to \\infty$) satisfies:\n642: \n643: $$\n644: D_{\\text{KL}}(\\nu \\| \\rho_\\infty) \\leq C_{\\text{LSI}}^{\\text{MF}} \\cdot I(\\nu \\| \\rho_\\infty)\n645: $$\n646: ",
       "_registry_context": {
         "stage": "directives",
@@ -723,6 +765,7 @@
         "label": "cor-wellposed"
       },
       "section": "## 4. Uniform Ellipticity and Well-Posedness",
+      "references": [],
       "raw_directive": "1005: ### 4.3. Corollary: Well-Posedness of the Hybrid SDE\n1006: \n1007: :::{prf:corollary} Existence and Uniqueness of Solutions\n1008: :label: cor-wellposed\n1009: ",
       "_registry_context": {
         "stage": "directives",
@@ -748,6 +791,9 @@
         "label": "cor-total-perturbation"
       },
       "section": "## 6. Boundedness of the Adaptive Perturbations",
+      "references": [
+        "lem-adaptive-force-bounded"
+      ],
       "raw_directive": "1651: Combining the three lemmas, we obtain the total perturbation bound:\n1652: \n1653: :::{prf:corollary} Total Perturbation Bound (ρ-Dependent)\n1654: :label: cor-total-perturbation\n1655: \n1656: The total perturbative contribution to the Stratonovich drift of $V_{\\text{total}}$ satisfies:\n1657: \n1658: $$\n1659: A_{\\text{perturb}}(S) \\le \\epsilon_F K_F(\\rho) (V_{\\text{total}}(S) + 1) + C_{\\text{diff,0}}(\\rho) + C_{\\text{diff,1}}(\\rho) V_{\\text{total}}(S)\n1660: \n1661: $$\n1662: \n1663: where **all constants are ρ-dependent**:\n1664: - The adaptive force contributes $O(\\epsilon_F V_{\\text{total}})$ with coefficient $K_F(\\rho)$ (Lemma {prf:ref}`lem-adaptive-force-bounded`)\n1665: - The viscous force contributes a negative (stabilizing) term $\\le 0$ (Lemma [](#lem-viscous-dissipative))\n1666: - The adaptive diffusion contributes $C_{\\text{diff,0}}(\\rho) + C_{\\text{diff,1}}(\\rho) V_{\\text{total}}$ (Lemma [](#lem-diffusion-bounded)), where the diffusion tensor depends on $H(\\rho) = \\nabla^2 V_{\\text{fit}}[f_k, \\rho]$\n1667: \n1668: Combining these and absorbing constants:\n1669: \n1670: $$\n1671: A_{\\text{perturb}}(S) \\le (\\epsilon_F K_F(\\rho) + C_{\\text{diff,1}}(\\rho)) V_{\\text{total}}(S) + (\\epsilon_F K_F(\\rho) + C_{\\text{diff,0}}(\\rho))\n1672: \n1673: $$\n1674: \n1675: **ρ-Dependence Interpretation:**\n1676: - All perturbation bounds depend on ρ through the localized fitness potential $V_{\\text{fit}}[f_k, \\rho]$\n1677: - For any fixed ρ > 0, all bounds are finite\n1678: - As ρ → ∞, the bounds recover those of the global backbone model",
       "_registry_context": {
         "stage": "directives",
@@ -773,6 +819,7 @@
         "label": "cor-exp-convergence"
       },
       "section": "## 7. Foster-Lyapunov Drift for the Full Adaptive System",
+      "references": [],
       "raw_directive": "1882: ### 7.3. Corollary: Exponential Convergence to the QSD\n1883: \n1884: :::{prf:corollary} Exponential Convergence\n1885: :label: cor-exp-convergence\n1886: \n1887: Under the conditions of Theorem [](#thm-fl-drift-adaptive), the empirical distribution $\\mu_N(t)$ of the adaptive swarm converges exponentially fast to the unique Quasi-Stationary Distribution (QSD) $\\pi_{\\text{QSD}}$ in the Lyapunov distance:\n1888: \n1889: $$\n1890: \\mathbb{E}[V_{\\text{total}}(\\mu_N(t))] \\le (1 - \\kappa_{\\text{total}})^t V_{\\text{total}}(\\mu_N(0)) + \\frac{C_{\\text{total}}}{\\kappa_{\\text{total}}}\n1891: \n1892: $$\n1893: ",
       "_registry_context": {
         "stage": "directives",
@@ -798,6 +845,9 @@
         "label": "cor-entropy-convergence-lsi"
       },
       "section": "## 8. The Logarithmic Sobolev Inequality: A Conjectured Strengthening",
+      "references": [
+        "thm-lsi-adaptive-gas"
+      ],
       "raw_directive": "2235: Now that Theorem {prf:ref}`thm-lsi-adaptive-gas` (N-particle) and Theorem {prf:ref}`thm-lsi-mean-field` (mean-field limit) have been proven, they yield several powerful consequences. We state these as established results.\n2236: \n2237: :::{prf:corollary} Exponential Convergence in Relative Entropy\n2238: :label: cor-entropy-convergence-lsi\n2239: \n2240: By Theorem {prf:ref}`thm-lsi-adaptive-gas`, let $\\mu_t$ denote the law of the N-particle system at time $t$, starting from an initial distribution $\\mu_0$ with finite entropy. Then:\n2241: \n2242: $$\n2243: \\text{Ent}_{\\nu_N^{\\text{QSD}}}(\\mu_t) \\le \\text{Ent}_{\\nu_N^{\\text{QSD}}}(\\mu_0) \\cdot \\exp\\left( -\\frac{t}{C_{\\text{LSI}}} \\right)\n2244: \n2245: $$\n2246: \n2247: where $C_{\\text{LSI}}$ is the LSI constant from Theorem `thm-lsi-adaptive-gas`.\n2248: ",
       "_registry_context": {
         "stage": "directives",
@@ -823,6 +873,10 @@
         "label": "cor-geometric-ergodicity-lsi"
       },
       "section": "## 8. The Logarithmic Sobolev Inequality: A Conjectured Strengthening",
+      "references": [
+        "thm-lsi-adaptive-gas",
+        "cor-entropy-convergence-lsi"
+      ],
       "raw_directive": "2270: :::\n2271: \n2272: :::{prf:corollary} Geometric Ergodicity via LSI\n2273: :label: cor-geometric-ergodicity-lsi\n2274: \n2275: By Theorem {prf:ref}`thm-lsi-adaptive-gas`, exponential convergence in relative entropy implies geometric ergodicity. Specifically, by Pinsker's inequality:\n2276: \n2277: $$\n2278: \\|\\mu_t - \\nu_N^{\\text{QSD}}\\|_{\\text{TV}} \\le \\sqrt{2 \\, \\text{Ent}_{\\nu_N^{\\text{QSD}}}(\\mu_t)}\n2279: \n2280: $$\n2281: \n2282: Combining with Corollary {prf:ref}`cor-entropy-convergence-lsi`:\n2283: \n2284: $$\n2285: \\|\\mu_t - \\nu_N^{\\text{QSD}}\\|_{\\text{TV}} \\le \\sqrt{2 \\, \\text{Ent}_{\\nu_N^{\\text{QSD}}}(\\mu_0)} \\cdot \\exp\\left( -\\frac{t}{2C_{\\text{LSI}}} \\right)\n2286: \n2287: $$\n2288: ",
       "_registry_context": {
         "stage": "directives",
@@ -848,6 +902,10 @@
         "label": "cor-axioms-verified"
       },
       "section": "## Appendix A: Regularity of the ρ-Localized Fitness Potential",
+      "references": [
+        "thm-c1-regularity",
+        "thm-c2-regularity"
+      ],
       "raw_directive": "3528: ### A.5. Corollary: Implications for the Main Text\n3529: \n3530: :::{prf:corollary} Verification of Axioms 3.2.1 and 3.2.3\n3531: :label: cor-axioms-verified\n3532: \n3533: **1. Axiom of Bounded Adaptive Force (Axiom 3.2.1):** By Theorem {prf:ref}`thm-c1-regularity`, the adaptive force $\\mathbf{F}_{\\text{adapt}} = \\epsilon_F \\nabla V_{\\text{fit}}[f_k, \\rho]$ satisfies:\n3534: \n3535: $$\n3536: \\|\\mathbf{F}_{\\text{adapt}}(x_i, S)\\| \\le \\epsilon_F F_{\\text{adapt,max}}(\\rho) < \\infty\n3537: \n3538: $$\n3539: \n3540: for all swarm states $S$ and all $i \\in \\{1, \\ldots, N\\}$. This bound is N-uniform and depends only on ρ and the problem parameters.\n3541: \n3542: **2. Axiom of Uniform Ellipticity (Axiom 3.2.3):** By Theorem {prf:ref}`thm-c2-regularity`, the Hessian $H_i(S) = \\nabla^2 V_{\\text{fit}}[f_k, \\rho](x_i)$ satisfies:\n3543: \n3544: $$\n3545: \\|H_i(S)\\| \\le H_{\\max}(\\rho) < \\infty\n3546: \n3547: $$\n3548: \n3549: Therefore, the regularized metric $G_{\\text{reg}} = (H + \\epsilon_\\Sigma I)^{-1}$ has eigenvalues bounded by:\n3550: \n3551: $$\n3552: \\frac{1}{H_{\\max}(\\rho) + \\epsilon_\\Sigma} \\le \\lambda_{\\min}(G_{\\text{reg}}) \\le \\lambda_{\\max}(G_{\\text{reg}}) \\le \\frac{1}{\\epsilon_\\Sigma}\n3553: \n3554: $$\n3555: \n3556: establishing uniform ellipticity with ρ-dependent lower bound $c_{\\min}(\\rho) = 1/(H_{\\max}(\\rho) + \\epsilon_\\Sigma)$.\n3557: ",
       "_registry_context": {
         "stage": "directives",
@@ -873,6 +931,7 @@
         "label": "cor-wellposed"
       },
       "section": "## 4. Uniform Ellipticity and Well-Posedness",
+      "references": [],
       "raw_directive": "930: ### 4.3. Corollary: Well-Posedness of the Hybrid SDE\n931: \n932: :::{prf:corollary} Existence and Uniqueness of Solutions\n933: :label: cor-wellposed\n934: ",
       "_registry_context": {
         "stage": "directives",
@@ -898,6 +957,9 @@
         "label": "cor-total-perturbation"
       },
       "section": "## 6. Boundedness of the Adaptive Perturbations",
+      "references": [
+        "lem-adaptive-force-bounded"
+      ],
       "raw_directive": "1471: Combining the three lemmas, we obtain the total perturbation bound:\n1472: \n1473: :::{prf:corollary} Total Perturbation Bound (ρ-Dependent)\n1474: :label: cor-total-perturbation\n1475: \n1476: The total perturbative contribution to the Stratonovich drift of $V_{\\text{total}}$ satisfies:\n1477: \n1478: $$\n1479: A_{\\text{perturb}}(S) \\le \\epsilon_F K_F(\\rho) (V_{\\text{total}}(S) + 1) + C_{\\text{diff,0}}(\\rho) + C_{\\text{diff,1}}(\\rho) V_{\\text{total}}(S)\n1480: $$\n1481: \n1482: where **all constants are ρ-dependent**:\n1483: - The adaptive force contributes $O(\\epsilon_F V_{\\text{total}})$ with coefficient $K_F(\\rho)$ (Lemma {prf:ref}`lem-adaptive-force-bounded`)\n1484: - The viscous force contributes a negative (stabilizing) term $\\le 0$ (Lemma [](#lem-viscous-dissipative))\n1485: - The adaptive diffusion contributes $C_{\\text{diff,0}}(\\rho) + C_{\\text{diff,1}}(\\rho) V_{\\text{total}}$ (Lemma [](#lem-diffusion-bounded)), where the diffusion tensor depends on $H(\\rho) = \\nabla^2 V_{\\text{fit}}[f_k, \\rho]$\n1486: \n1487: Combining these and absorbing constants:\n1488: \n1489: $$\n1490: A_{\\text{perturb}}(S) \\le (\\epsilon_F K_F(\\rho) + C_{\\text{diff,1}}(\\rho)) V_{\\text{total}}(S) + (\\epsilon_F K_F(\\rho) + C_{\\text{diff,0}}(\\rho))\n1491: $$\n1492: \n1493: **ρ-Dependence Interpretation:**\n1494: - All perturbation bounds depend on ρ through the localized fitness potential $V_{\\text{fit}}[f_k, \\rho]$\n1495: - For any fixed ρ > 0, all bounds are finite\n1496: - As ρ → ∞, the bounds recover those of the global backbone model",
       "_registry_context": {
         "stage": "directives",
@@ -923,6 +985,7 @@
         "label": "cor-exp-convergence"
       },
       "section": "## 7. Foster-Lyapunov Drift for the Full Adaptive System",
+      "references": [],
       "raw_directive": "1682: ### 7.3. Corollary: Exponential Convergence to the QSD\n1683: \n1684: :::{prf:corollary} Exponential Convergence\n1685: :label: cor-exp-convergence\n1686: \n1687: Under the conditions of Theorem [](#thm-fl-drift-adaptive), the empirical distribution $\\mu_N(t)$ of the adaptive swarm converges exponentially fast to the unique Quasi-Stationary Distribution (QSD) $\\pi_{\\text{QSD}}$ in the Lyapunov distance:\n1688: \n1689: $$\n1690: \\mathbb{E}[V_{\\text{total}}(\\mu_N(t))] \\le (1 - \\kappa_{\\text{total}})^t V_{\\text{total}}(\\mu_N(0)) + \\frac{C_{\\text{total}}}{\\kappa_{\\text{total}}}\n1691: $$\n1692: ",
       "_registry_context": {
         "stage": "directives",
@@ -948,6 +1011,9 @@
         "label": "cor-entropy-convergence-lsi"
       },
       "section": "## 8. The Logarithmic Sobolev Inequality: A Conjectured Strengthening",
+      "references": [
+        "thm-lsi-adaptive-gas"
+      ],
       "raw_directive": "2001: Now that Theorem {prf:ref}`thm-lsi-adaptive-gas` (N-particle) and Theorem {prf:ref}`thm-lsi-mean-field` (mean-field limit) have been proven, they yield several powerful consequences. We state these as established results.\n2002: \n2003: :::{prf:corollary} Exponential Convergence in Relative Entropy\n2004: :label: cor-entropy-convergence-lsi\n2005: \n2006: By Theorem {prf:ref}`thm-lsi-adaptive-gas`, let $\\mu_t$ denote the law of the N-particle system at time $t$, starting from an initial distribution $\\mu_0$ with finite entropy. Then:\n2007: \n2008: $$\n2009: \\text{Ent}_{\\nu_N^{\\text{QSD}}}(\\mu_t) \\le \\text{Ent}_{\\nu_N^{\\text{QSD}}}(\\mu_0) \\cdot \\exp\\left( -\\frac{t}{C_{\\text{LSI}}} \\right)\n2010: $$\n2011: \n2012: where $C_{\\text{LSI}}$ is the LSI constant from Theorem `thm-lsi-adaptive-gas`.\n2013: ",
       "_registry_context": {
         "stage": "directives",
@@ -973,6 +1039,10 @@
         "label": "cor-geometric-ergodicity-lsi"
       },
       "section": "## 8. The Logarithmic Sobolev Inequality: A Conjectured Strengthening",
+      "references": [
+        "thm-lsi-adaptive-gas",
+        "cor-entropy-convergence-lsi"
+      ],
       "raw_directive": "2031: :::\n2032: \n2033: :::{prf:corollary} Geometric Ergodicity via LSI\n2034: :label: cor-geometric-ergodicity-lsi\n2035: \n2036: By Theorem {prf:ref}`thm-lsi-adaptive-gas`, exponential convergence in relative entropy implies geometric ergodicity. Specifically, by Pinsker's inequality:\n2037: \n2038: $$\n2039: \\|\\mu_t - \\nu_N^{\\text{QSD}}\\|_{\\text{TV}} \\le \\sqrt{2 \\, \\text{Ent}_{\\nu_N^{\\text{QSD}}}(\\mu_t)}\n2040: $$\n2041: \n2042: Combining with Corollary {prf:ref}`cor-entropy-convergence-lsi`:\n2043: \n2044: $$\n2045: \\|\\mu_t - \\nu_N^{\\text{QSD}}\\|_{\\text{TV}} \\le \\sqrt{2 \\, \\text{Ent}_{\\nu_N^{\\text{QSD}}}(\\mu_0)} \\cdot \\exp\\left( -\\frac{t}{2C_{\\text{LSI}}} \\right)\n2046: $$\n2047: ",
       "_registry_context": {
         "stage": "directives",
@@ -998,6 +1068,10 @@
         "label": "cor-axioms-verified"
       },
       "section": "## Appendix A: Regularity of the ρ-Localized Fitness Potential",
+      "references": [
+        "thm-c1-regularity",
+        "thm-c2-regularity"
+      ],
       "raw_directive": "3051: ### A.5. Corollary: Implications for the Main Text\n3052: \n3053: :::{prf:corollary} Verification of Axioms 3.2.1 and 3.2.3\n3054: :label: cor-axioms-verified\n3055: \n3056: **1. Axiom of Bounded Adaptive Force (Axiom 3.2.1):** By Theorem {prf:ref}`thm-c1-regularity`, the adaptive force $\\mathbf{F}_{\\text{adapt}} = \\epsilon_F \\nabla V_{\\text{fit}}[f_k, \\rho]$ satisfies:\n3057: \n3058: $$\n3059: \\|\\mathbf{F}_{\\text{adapt}}(x_i, S)\\| \\le \\epsilon_F F_{\\text{adapt,max}}(\\rho) < \\infty\n3060: $$\n3061: \n3062: for all swarm states $S$ and all $i \\in \\{1, \\ldots, N\\}$. This bound is N-uniform and depends only on ρ and the problem parameters.\n3063: \n3064: **2. Axiom of Uniform Ellipticity (Axiom 3.2.3):** By Theorem {prf:ref}`thm-c2-regularity`, the Hessian $H_i(S) = \\nabla^2 V_{\\text{fit}}[f_k, \\rho](x_i)$ satisfies:\n3065: \n3066: $$\n3067: \\|H_i(S)\\| \\le H_{\\max}(\\rho) < \\infty\n3068: $$\n3069: \n3070: Therefore, the regularized metric $G_{\\text{reg}} = (H + \\epsilon_\\Sigma I)^{-1}$ has eigenvalues bounded by:\n3071: \n3072: $$\n3073: \\frac{1}{H_{\\max}(\\rho) + \\epsilon_\\Sigma} \\le \\lambda_{\\min}(G_{\\text{reg}}) \\le \\lambda_{\\max}(G_{\\text{reg}}) \\le \\frac{1}{\\epsilon_\\Sigma}\n3074: $$\n3075: \n3076: establishing uniform ellipticity with ρ-dependent lower bound $c_{\\min}(\\rho) = 1/(H_{\\max}(\\rho) + \\epsilon_\\Sigma)$.\n3077: ",
       "_registry_context": {
         "stage": "directives",
@@ -1023,6 +1097,7 @@
         "label": "cor-conditional-mass-lower-bound"
       },
       "section": "## 5. Rigorous Proof of Bounded Density Ratio",
+      "references": [],
       "raw_directive": "2712: On the survival event $\\{\\tau_\\dagger = \\infty\\}$ (the system never dies), the mass lower bound holds **deterministically** for all time:\n2713: \n2714: :::{prf:corollary} Conditional Mass Lower Bound (Uniform in Time)\n2715: :label: cor-conditional-mass-lower-bound\n2716: \n2717: On the survival event $\\{\\tau_\\dagger = \\infty\\}$, for all $t \\geq t_{\\text{eq}}$:\n2718: \n2719: $$\n2720: \\|\\rho_t\\|_{L^1} \\geq c_{\\text{mass}} > 0\n2721: \n2722: $$\n2723: ",
       "_registry_context": {
         "stage": "directives",
@@ -1030,31 +1105,6 @@
         "chapter_index": 5,
         "chapter_file": "chapter_5.json",
         "section_id": "## 5. Rigorous Proof of Bounded Density Ratio"
-      }
-    },
-    {
-      "directive_type": "corollary",
-      "label": "cor-conditional-mass-lower-bound",
-      "title": "Conditional Mass Lower Bound (Uniform in Time)",
-      "start_line": 815,
-      "end_line": 826,
-      "header_lines": [
-        816
-      ],
-      "content_start": 818,
-      "content_end": 825,
-      "content": "818: :label: cor-conditional-mass-lower-bound\n819: \n820: On the survival event $\\{\\tau_\\dagger = \\infty\\}$, for all $t \\geq t_{\\text{eq}}$:\n821: \n822: $$\n823: \\|\\rho_t\\|_{L^1} \\geq c_{\\text{mass}} > 0\n824: \n825: $$",
-      "metadata": {
-        "label": "cor-conditional-mass-lower-bound"
-      },
-      "section": "## 4. Stochastic Mass Conservation and High-Probability Bounds",
-      "raw_directive": "815: On the survival event $\\{\\tau_\\dagger = \\infty\\}$ (the system never dies), the mass lower bound holds **deterministically** for all time:\n816: \n817: :::{prf:corollary} Conditional Mass Lower Bound (Uniform in Time)\n818: :label: cor-conditional-mass-lower-bound\n819: \n820: On the survival event $\\{\\tau_\\dagger = \\infty\\}$, for all $t \\geq t_{\\text{eq}}$:\n821: \n822: $$\n823: \\|\\rho_t\\|_{L^1} \\geq c_{\\text{mass}} > 0\n824: \n825: $$\n826: ",
-      "_registry_context": {
-        "stage": "directives",
-        "document_id": "11_hk_convergence_bounded_density_rigorous_proof",
-        "chapter_index": 4,
-        "chapter_file": "chapter_4.json",
-        "section_id": "## 4. Stochastic Mass Conservation and High-Probability Bounds"
       }
     },
     {
@@ -1073,6 +1123,7 @@
         "label": "cor-qsd-exchangeable"
       },
       "section": "## 3. Flat Algorithmic Space Symmetries",
+      "references": [],
       "raw_directive": "323: :::\n324: \n325: :::{prf:corollary} Exchangeability of the QSD\n326: :label: cor-qsd-exchangeable\n327: \n328: The quasi-stationary distribution $\\pi_{\\text{QSD}}$ is **exchangeable**: for any measurable set $A \\subset \\Sigma_N$ and permutation $\\sigma \\in S_N$:\n329: \n330: $$\n331: \\pi_{\\text{QSD}}(A) = \\pi_{\\text{QSD}}(\\sigma(A))\n332: ",
       "_registry_context": {
         "stage": "directives",
@@ -1098,6 +1149,7 @@
         "label": "cor-dimensionless-ratio"
       },
       "section": "## 3. Flat Algorithmic Space Symmetries",
+      "references": [],
       "raw_directive": "514: :::\n515: \n516: :::{prf:corollary} Dimensionless Parameter\n517: :label: cor-dimensionless-ratio\n518: ",
       "_registry_context": {
         "stage": "directives",
@@ -1123,6 +1175,9 @@
         "label": "cor-baoab-validity"
       },
       "section": "## 9. Stability Implications and Corollaries",
+      "references": [
+        "thm-c3-regularity"
+      ],
       "raw_directive": "1857: ### 9.1. BAOAB Discretization Validity\n1858: \n1859: :::{prf:corollary} BAOAB Discretization Validity\n1860: :label: cor-baoab-validity\n1861: \n1862: **Hypotheses:** Consider the adaptive Langevin SDE with:\n1863: 1. Fitness potential $V_{\\text{fit}}[f_k, \\rho] \\in C^3(\\mathcal{X})$ with bounded derivatives (Theorem {prf:ref}`thm-c3-regularity`)\n1864: 2. Friction coefficient $\\gamma > 0$\n1865: 3. Temperature $T > 0$ (or equivalently, noise scale $\\sigma > 0$)\n1866: 4. Time step $\\Delta t$ satisfying the stability criterion:\n1867: $$\n1868: \\Delta t \\le \\Delta t_{\\max}(\\rho, \\gamma) := \\min\\left( \\frac{1}{2\\gamma}, \\frac{\\rho^{3/2}}{K_{V,3}(\\rho)^{1/2}} \\right)\n1869: $$\n1870: \n1871: **Conclusion:** The BAOAB splitting integrator applied to the adaptive SDE has:\n1872: \n1873: 1. **Weak error bound:** $\\mathbb{E}[f(X_n)] - \\mathbb{E}_{\\pi_{\\text{QSD}}}[f] = O(\\Delta t^2)$ for smooth test functions $f$\n1874: 2. **Stability:** The discrete-time Markov chain remains ergodic with invariant measure approximating $\\pi_{\\text{QSD}}$\n1875: 3. **Foster-Lyapunov preservation:** The drift inequality $\\mathcal{L}V \\le -\\lambda V + b$ for the continuous SDE translates to the discrete chain with error $O(\\Delta t^3)$\n1876: ",
       "_registry_context": {
         "stage": "directives",
@@ -1148,6 +1203,7 @@
         "label": "cor-lyapunov-c3"
       },
       "section": "## 9. Stability Implications and Corollaries",
+      "references": [],
       "raw_directive": "1896: ### 9.2. Foster-Lyapunov Preservation\n1897: \n1898: :::{prf:corollary} $C^3$ Regularity of Total Lyapunov Function\n1899: :label: cor-lyapunov-c3\n1900: \n1901: The total Lyapunov function $V_{\\text{total}}(S) = V_{\\text{pos}}(S) + \\lambda_v V_{\\text{vel}}(S)$ used in the Foster-Lyapunov analysis satisfies $V_{\\text{total}} \\in C^3$ with N-uniform bounds:\n1902: $$\n1903: \\|\\nabla^3 V_{\\text{total}}\\| \\le K_{\\text{total},3} < \\infty\n1904: $$\n1905: \n1906: where $K_{\\text{total},3}$ depends on the third-derivative bounds of the confining potential $U(x)$, the fitness potential $V_{\\text{fit}}[f_k, \\rho]$, and the quadratic velocity term.\n1907: ",
       "_registry_context": {
         "stage": "directives",
@@ -1173,6 +1229,7 @@
         "label": "cor-smooth-perturbation"
       },
       "section": "## 9. Stability Implications and Corollaries",
+      "references": [],
       "raw_directive": "1948: ### 9.3. Smooth Perturbation Theory\n1949: \n1950: :::{prf:corollary} $C^3$ Perturbation Structure\n1951: :label: cor-smooth-perturbation\n1952: \n1953: The adaptive force $\\mathbf{F}_{\\text{adapt}}(x_i, S) = \\epsilon_F \\nabla V_{\\text{fit}}[f_k, \\rho](x_i)$ is a **$C^3$ perturbation** of the backbone system, with:\n1954: $$\n1955: \\|\\nabla \\mathbf{F}_{\\text{adapt}}\\| = \\epsilon_F \\|\\nabla^2 V_{\\text{fit}}\\| \\le \\epsilon_F H_{\\max}(\\rho)\n1956: $$\n1957: $$\n1958: \\|\\nabla^2 \\mathbf{F}_{\\text{adapt}}\\| = \\epsilon_F \\|\\nabla^3 V_{\\text{fit}}\\| \\le \\epsilon_F K_{V,3}(\\rho)\n1959: $$\n1960: ",
       "_registry_context": {
         "stage": "directives",
@@ -1198,6 +1255,9 @@
         "label": "cor-regularity-hierarchy"
       },
       "section": "## 9. Stability Implications and Corollaries",
+      "references": [
+        "thm-c3-regularity"
+      ],
       "raw_directive": "1984: ### 9.4. Compactness and Regularity Hierarchy\n1985: \n1986: :::{prf:corollary} Regularity Hierarchy Complete\n1987: :label: cor-regularity-hierarchy\n1988: \n1989: The fitness potential $V_{\\text{fit}}[f_k, \\rho]$ satisfies the complete regularity hierarchy:\n1990: $$\n1991: V_{\\text{fit}} \\in C^1 \\cap C^2 \\cap C^3\n1992: $$\n1993: \n1994: with k-uniform and N-uniform bounds at each level:\n1995: \n1996: | Regularity | Bound                                                      | Theorem                              |\n1997: |------------|------------------------------------------------------------|--------------------------------------|\n1998: | Cp         | $\\|V_{\\text{fit}}\\| \\le A$                                 | Axiom 3.2.1                          |\n1999: | $C^3$      | $\\|\\nabla V_{\\text{fit}}\\| \\le F_{\\text{adapt,max}}(\\rho)$ | Theorem A.1                          |\n2000: | $C^3$      | $\\|\\nabla^2 V_{\\text{fit}}\\| \\le H_{\\max}(\\rho)$           | Theorem A.2                          |\n2001: | $C^3$      | $\\|\\nabla^3 V_{\\text{fit}}\\| \\le K_{V,3}(\\rho)$            | Theorem {prf:ref}`thm-c3-regularity` |\n2002: ",
       "_registry_context": {
         "stage": "directives",
@@ -1223,6 +1283,9 @@
         "label": "cor-baoab-validity"
       },
       "section": "## 9. Stability Implications and Corollaries",
+      "references": [
+        "thm-c3-regularity"
+      ],
       "raw_directive": "1112: ### 9.1. BAOAB Discretization Validity\n1113: \n1114: :::{prf:corollary} BAOAB Discretization Validity\n1115: :label: cor-baoab-validity\n1116: \n1117: **Hypotheses:** Consider the adaptive Langevin SDE with:\n1118: 1. Fitness potential $V_{\\text{fit}}[f_k, \\rho] \\in C^3(\\mathcal{X})$ with bounded derivatives (Theorem {prf:ref}`thm-c3-regularity`)\n1119: 2. Friction coefficient $\\gamma > 0$\n1120: 3. Temperature $T > 0$ (or equivalently, noise scale $\\sigma > 0$)\n1121: 4. Time step $\\Delta t$ satisfying the stability criterion:\n1122: \n1123: $$\n1124: \\Delta t \\le \\Delta t_{\\max}(\\rho, \\gamma) := \\min\\left( \\frac{1}{2\\gamma}, \\frac{\\rho^{3/2}}{K_{V,3}(\\rho)^{1/2}} \\right)\n1125: $$\n1126: \n1127: **Conclusion:** The BAOAB splitting integrator applied to the adaptive SDE has:\n1128: \n1129: 1. **Weak error bound:** $\\mathbb{E}[f(X_n)] - \\mathbb{E}_{\\pi_{\\text{QSD}}}[f] = O(\\Delta t^2)$ for smooth test functions $f$\n1130: 2. **Stability:** The discrete-time Markov chain remains ergodic with invariant measure approximating $\\pi_{\\text{QSD}}$\n1131: 3. **Foster-Lyapunov preservation:** The drift inequality $\\mathcal{L}V \\le -\\lambda V + b$ for the continuous SDE translates to the discrete chain with error $O(\\Delta t^3)$\n1132: ",
       "_registry_context": {
         "stage": "directives",
@@ -1248,6 +1311,7 @@
         "label": "cor-lyapunov-c3"
       },
       "section": "## 9. Stability Implications and Corollaries",
+      "references": [],
       "raw_directive": "1150: ### 9.2. Foster-Lyapunov Preservation\n1151: \n1152: :::{prf:corollary} $C^3$ Regularity of Total Lyapunov Function\n1153: :label: cor-lyapunov-c3\n1154: \n1155: The total Lyapunov function $V_{\\text{total}}(S) = V_{\\text{pos}}(S) + \\lambda_v V_{\\text{vel}}(S)$ used in the Foster-Lyapunov analysis satisfies $V_{\\text{total}} \\in C^3$ with N-uniform bounds:\n1156: \n1157: $$\n1158: \\|\\nabla^3 V_{\\text{total}}\\| \\le K_{\\text{total},3} < \\infty\n1159: $$\n1160: \n1161: where $K_{\\text{total},3}$ depends on the third-derivative bounds of the confining potential $U(x)$, the fitness potential $V_{\\text{fit}}[f_k, \\rho]$, and the quadratic velocity term.\n1162: ",
       "_registry_context": {
         "stage": "directives",
@@ -1273,6 +1337,7 @@
         "label": "cor-smooth-perturbation"
       },
       "section": "## 9. Stability Implications and Corollaries",
+      "references": [],
       "raw_directive": "1204: ### 9.3. Smooth Perturbation Theory\n1205: \n1206: :::{prf:corollary} $C^3$ Perturbation Structure\n1207: :label: cor-smooth-perturbation\n1208: \n1209: The adaptive force $\\mathbf{F}_{\\text{adapt}}(x_i, S) = \\epsilon_F \\nabla V_{\\text{fit}}[f_k, \\rho](x_i)$ is a **$C^3$ perturbation** of the backbone system, with:\n1210: \n1211: $$\n1212: \\|\\nabla \\mathbf{F}_{\\text{adapt}}\\| = \\epsilon_F \\|\\nabla^2 V_{\\text{fit}}\\| \\le \\epsilon_F H_{\\max}(\\rho)\n1213: $$\n1214: \n1215: $$\n1216: \\|\\nabla^2 \\mathbf{F}_{\\text{adapt}}\\| = \\epsilon_F \\|\\nabla^3 V_{\\text{fit}}\\| \\le \\epsilon_F K_{V,3}(\\rho)\n1217: $$\n1218: ",
       "_registry_context": {
         "stage": "directives",
@@ -1298,6 +1363,9 @@
         "label": "cor-regularity-hierarchy"
       },
       "section": "## 9. Stability Implications and Corollaries",
+      "references": [
+        "thm-c3-regularity"
+      ],
       "raw_directive": "1240: ### 9.4. Compactness and Regularity Hierarchy\n1241: \n1242: :::{prf:corollary} Regularity Hierarchy Complete\n1243: :label: cor-regularity-hierarchy\n1244: \n1245: The fitness potential $V_{\\text{fit}}[f_k, \\rho]$ satisfies the complete regularity hierarchy:\n1246: \n1247: $$\n1248: V_{\\text{fit}} \\in C^1 \\cap C^2 \\cap C^3\n1249: $$\n1250: \n1251: with k-uniform and N-uniform bounds at each level:\n1252: \n1253: | Regularity | Bound | Theorem |\n1254: |------------|-------|---------|\n1255: | Cp | $\\|V_{\\text{fit}}\\| \\le A$ | Axiom 3.2.1 |\n1256: | $C^3$ | $\\|\\nabla V_{\\text{fit}}\\| \\le F_{\\text{adapt,max}}(\\rho)$ | Theorem A.1 |\n1257: | $C^3$ | $\\|\\nabla^2 V_{\\text{fit}}\\| \\le H_{\\max}(\\rho)$ | Theorem A.2 |\n1258: | $C^3$ | $\\|\\nabla^3 V_{\\text{fit}}\\| \\le K_{V,3}(\\rho)$ | Theorem {prf:ref}`thm-c3-regularity` |\n1259: ",
       "_registry_context": {
         "stage": "directives",
@@ -1323,6 +1391,9 @@
         "label": "cor-hessian-lipschitz"
       },
       "section": "## 9. Stability Implications and Corollaries",
+      "references": [
+        "thm-c3-regularity"
+      ],
       "raw_directive": "903: ## 9. Stability Implications and Corollaries\n904: \n905: :::{prf:corollary} Hessian Lipschitz Continuity\n906: :label: cor-hessian-lipschitz\n907: \n908: The Hessian $\\nabla^2 V_{\\text{fit}}$ is Lipschitz continuous:\n909: \n910: $$\n911: \\|\\nabla^2 V_{\\text{fit}}(x) - \\nabla^2 V_{\\text{fit}}(y)\\| \\le K_{V,3}(\\rho) \\|x - y\\|\n912: \n913: $$\n914: \n915: where $K_{V,3}(\\rho) = O(\\rho^{-3})$ is the third-derivative bound from C³ regularity (see {prf:ref}`thm-c3-regularity` in [13_geometric_gas_c3_regularity.md](13_geometric_gas_c3_regularity.md)).\n916: ",
       "_registry_context": {
         "stage": "directives",
@@ -1348,6 +1419,7 @@
         "label": "cor-fourth-order-integrators"
       },
       "section": "## 9. Stability Implications and Corollaries",
+      "references": [],
       "raw_directive": "938: :::\n939: \n940: :::{prf:corollary} Fourth-Order Integrator Compatibility\n941: :label: cor-fourth-order-integrators\n942: ",
       "_registry_context": {
         "stage": "directives",
@@ -1373,6 +1445,7 @@
         "label": "cor-brascamp-lieb"
       },
       "section": "## 9. Stability Implications and Corollaries",
+      "references": [],
       "raw_directive": "944: :::\n945: \n946: :::{prf:corollary} Brascamp-Lieb Inequality (Conditional)\n947: :label: cor-brascamp-lieb\n948: \n949: **Hypothesis:** Assume the fitness potential is uniformly convex: $\\nabla^2 V_{\\text{fit}}(x) \\ge \\lambda_{\\rho} I$ for some $\\lambda_{\\rho} > 0$ and all $x \\in \\mathcal{X}$.\n950: \n951: **Conclusion:** The QSD $\\pi_{\\text{QSD}}$ satisfies the Brascamp-Lieb inequality:\n952: \n953: $$\n954: \\text{Var}_{\\pi_{\\text{QSD}}}[f] \\le \\int_{\\mathcal{X}} \\frac{(\\nabla f)^2}{\\lambda_{\\min}(\\nabla^2 V_{\\text{fit}})} d\\pi_{\\text{QSD}} \\le \\frac{1}{\\lambda_{\\rho}} \\|\\nabla f\\|^2_{L^2(\\pi_{\\text{QSD}})}\n955: \n956: $$\n957: \n958: enabling sharp concentration inequalities.\n959: ",
       "_registry_context": {
         "stage": "directives",
@@ -1398,6 +1471,7 @@
         "label": "cor-effective-interaction-radius-full"
       },
       "section": "## 4. Exponential Locality and Effective Interactions",
+      "references": [],
       "raw_directive": "1404: :::\n1405: \n1406: :::{prf:corollary} Effective Interaction Radius\n1407: :label: cor-effective-interaction-radius-full\n1408: \n1409: Define the **effective interaction radius** by setting the tail probability to $\\delta = 1/k$:\n1410: \n1411: $$\n1412: R_{\\text{eff}} = \\sqrt{R_{\\max}^2 + 2\\varepsilon_c^2 \\log(k^2)} = \\varepsilon_c \\sqrt{C_{\\text{comp}}^2 + 2\\log(k^2)}\n1413: \n1414: $$\n1415: \n1416: Then:\n1417: \n1418: $$\n1419: \\mathbb{P}(d_{\\text{alg}}(i, c(i)) > R_{\\text{eff}}) \\leq \\frac{1}{k}\n1420: \n1421: $$\n1422: ",
       "_registry_context": {
         "stage": "directives",
@@ -1423,6 +1497,7 @@
         "label": "cor-gevrey-1-fitness-potential-full"
       },
       "section": "## 12. Fitness Potential: Composition with Rescale Function",
+      "references": [],
       "raw_directive": "4675: :::\n4676: \n4677: :::{prf:corollary} Gevrey-1 Classification\n4678: :label: cor-gevrey-1-fitness-potential-full\n4679: \n4680: The fitness potential $V_{\\text{fit}}$ belongs to the **Gevrey-1 class**, meaning it is **real-analytic** with convergent Taylor series in a neighborhood of each point.\n4681: \n4682: Specifically, for any compact set $K \\subset \\mathcal{X} \\times \\mathbb{R}^d$:\n4683: \n4684: $$\n4685: \\sup_{(x,v) \\in K} \\|\\nabla^m V_{\\text{fit}}(x,v)\\| \\leq A \\cdot B^m \\cdot m!\n4686: \n4687: $$\n4688: ",
       "_registry_context": {
         "stage": "directives",
@@ -1448,6 +1523,9 @@
         "label": "cor-exponential-qsd-companion-dependent-full"
       },
       "section": "## 15. Logarithmic Sobolev Inequality",
+      "references": [
+        "conj-lsi-companion-dependent-full"
+      ],
       "raw_directive": "5058: :::\n5059: \n5060: :::{prf:corollary} Exponential Convergence to QSD (Conditional)\n5061: :label: cor-exponential-qsd-companion-dependent-full\n5062: \n5063: **If** {prf:ref}`conj-lsi-companion-dependent-full` holds, then the Geometric Gas with companion-dependent fitness converges exponentially to its unique quasi-stationary distribution:\n5064: \n5065: $$\n5066: \\|\\rho_t - \\nu_{\\text{QSD}}\\|_{L^2(\\mu)} \\leq e^{-\\lambda_{\\text{gap}} t} \\|\\rho_0 - \\nu_{\\text{QSD}}\\|_{L^2(\\mu)}\n5067: \n5068: $$\n5069: \n5070: where $\\lambda_{\\text{gap}} \\geq \\alpha > 0$ is the **spectral gap**, independent of $N$ and $k$.\n5071: ",
       "_registry_context": {
         "stage": "directives",
@@ -1473,6 +1551,7 @@
         "label": "cor-gevrey-closure"
       },
       "section": "## Appendix A: Combinatorial Proof of Gevrey-1 Bounds via Faà di Bruno Formula",
+      "references": [],
       "raw_directive": "5461: ### A.3 General Principle: Factorial Preservation Under Composition\n5462: \n5463: :::{prf:corollary} Gevrey-1 Closure Under Smooth Composition\n5464: :label: cor-gevrey-closure\n5465: \n5466: If $f: \\mathbb{R}^k \\to \\mathbb{R}$ is Gevrey-1 (satisfies $\\|\\nabla^m f\\| \\leq C_f m! \\rho^{-m}$) and $g_1, \\ldots, g_k: \\mathbb{R}^d \\to \\mathbb{R}$ are each Gevrey-1 with $\\|\\nabla^m g_i\\| \\leq C_i m! \\sigma^{-m}$, then the composition:\n5467: \n5468: $$\n5469: h(x) = f(g_1(x), \\ldots, g_k(x))\n5470: \n5471: $$\n5472: \n5473: is Gevrey-1 with:\n5474: \n5475: $$\n5476: \\|\\nabla^m h\\| \\leq C_h m! \\cdot \\max(\\rho, \\sigma)^{-m}\n5477: \n5478: $$\n5479: ",
       "_registry_context": {
         "stage": "directives",
@@ -1498,6 +1577,7 @@
         "label": "cor-hypoelliptic-regularity"
       },
       "section": "## 2. Smoothness and Positivity (R2, R3)",
+      "references": [],
       "raw_directive": "1795: **Consequence** (Hörmander 1967, Theorem 1.1):\n1796: \n1797: :::{prf:corollary} Hypoelliptic Regularity\n1798: :label: cor-hypoelliptic-regularity\n1799: \n1800: If $\\mathcal{L}_{\\text{kin}}[\\rho] = f$ with $f \\in C^\\infty(\\Omega)$, then $\\rho \\in C^\\infty(\\Omega)$.\n1801: ",
       "_registry_context": {
         "stage": "directives",
@@ -1523,6 +1603,7 @@
         "label": "cor-hypoelliptic-regularity"
       },
       "section": "## 2. Smoothness and Positivity (R2, R3)",
+      "references": [],
       "raw_directive": "1401: **Consequence** (Hörmander 1967, Theorem 1.1):\n1402: \n1403: :::{prf:corollary} Hypoelliptic Regularity\n1404: :label: cor-hypoelliptic-regularity\n1405: \n1406: If $\\mathcal{L}_{\\text{kin}}[\\rho] = f$ with $f \\in C^\\infty(\\Omega)$, then $\\rho \\in C^\\infty(\\Omega)$.\n1407: ",
       "_registry_context": {
         "stage": "directives",
@@ -1548,6 +1629,7 @@
         "label": "cor-explicit-convergence-time"
       },
       "section": "## 7. Explicit Convergence Constants and Algorithmic Parameter Dependence",
+      "references": [],
       "raw_directive": "2437: ### 7.5. Convergence Time Bounds\n2438: \n2439: :::{prf:corollary} Explicit Convergence Time\n2440: :label: cor-explicit-convergence-time\n2441: \n2442: From the Foster-Lyapunov condition and geometric ergodicity (Theorem [](#thm-main-convergence)), the **mixing time** to reach $\\epsilon$-accuracy in total variation is:\n2443: \n2444: $$\n2445: t_{\\text{mix}}(\\epsilon) = O\\left( \\frac{1}{\\kappa_{\\text{total}}} \\log\\left( \\frac{C_\\pi (1 + V_{\\text{total}}(S_0, S_0))}{\\epsilon} \\right) \\right)\n2446: $$\n2447: \n2448: where $C_\\pi$ is the geometric ergodicity constant.\n2449: \n2450: **Number of algorithm iterations** required:\n2451: \n2452: $$\n2453: n_{\\text{iter}}(\\epsilon) = \\left\\lceil \\frac{t_{\\text{mix}}(\\epsilon)}{\\tau} \\right\\rceil = O\\left( \\frac{1}{\\kappa_{\\text{total}} \\tau} \\log\\left( \\frac{C_\\pi V(S_0)}{\\epsilon} \\right) \\right)\n2454: $$\n2455: \n2456: **Explicit parameter dependence**: Using Theorem [](#thm-explicit-total-rate):\n2457: \n2458: $$\n2459: n_{\\text{iter}}(\\epsilon) = O\\left( \\frac{1}{\\min\\{\\kappa_x, \\min\\{\\gamma, c_{\\min}\\}\\tau, \\kappa_b\\} \\cdot \\tau} \\log\\left( \\frac{C_\\pi V(S_0)}{\\epsilon} \\right) \\right)\n2460: $$\n2461: ",
       "_registry_context": {
         "stage": "directives",
@@ -1573,6 +1655,7 @@
         "label": "cor-derivatives-continuous-cinf"
       },
       "section": "## 6. Main Theorem: C∞ Regularity",
+      "references": [],
       "raw_directive": "723: :::\n724: \n725: :::{prf:corollary} Continuity of All Derivatives\n726: :label: cor-derivatives-continuous-cinf\n727: \n728: All derivatives ∇^m V_fit (m ≥ 1) are continuous functions of (x_i, S, ρ).\n729: ",
       "_registry_context": {
         "stage": "directives",
@@ -1598,6 +1681,9 @@
         "label": "cor-compact-bounds-cinf"
       },
       "section": "## 6. Main Theorem: C∞ Regularity",
+      "references": [
+        "thm-cinf-regularity"
+      ],
       "raw_directive": "731: :::\n732: \n733: :::{prf:corollary} Uniform Bounds on Compact Sets\n734: :label: cor-compact-bounds-cinf\n735: \n736: For any compact K ⊆ X and any ρ_min ≤ ρ ≤ ρ_max:\n737: \n738: $$\n739: \\sup_{x_i \\in K, S, \\rho \\in [\\rho_{\\min}, \\rho_{\\max}]} \\|\\nabla^m V_{\\text{fit}}\\| \\leq C(K, \\rho_{\\min}, \\rho_{\\max}, m) < \\infty\n740: $$\n741: \n742: k-uniform and N-uniform.\n743: ",
       "_registry_context": {
         "stage": "directives",
@@ -1623,6 +1709,7 @@
         "label": "cor-instantaneous-smoothing-cinf"
       },
       "section": "## 9. Hypoellipticity and Smooth Transition Densities",
+      "references": [],
       "raw_directive": "883: :::\n884: \n885: :::{prf:corollary} Instantaneous Smoothing\n886: :label: cor-instantaneous-smoothing-cinf\n887: \n888: For any initial distribution μ_0 (possibly singular, e.g., δ_{w_0}), the time-evolved distribution μ_t = e^{tL} μ_0 has a C∞ density for all t > 0.\n889: ",
       "_registry_context": {
         "stage": "directives",
@@ -1648,6 +1735,9 @@
         "label": "cor-wasserstein-convergence-cinf"
       },
       "section": "## 10. Advanced Functional Inequalities (Conditional Results)",
+      "references": [
+        "prop-talagrand-cinf"
+      ],
       "raw_directive": "930: :::\n931: \n932: :::{prf:corollary} Exponential Convergence in Wasserstein Distance\n933: :label: cor-wasserstein-convergence-cinf\n934: \n935: Under {prf:ref}`prop-talagrand-cinf` hypotheses:\n936: \n937: $$\n938: W_2(\\mu_t, \\pi_{\\text{QSD}}) \\leq e^{-\\lambda_{\\text{Tal}} t / 2} W_2(\\mu_0, \\pi_{\\text{QSD}})\n939: $$\n940: ",
       "_registry_context": {
         "stage": "directives",
@@ -1673,6 +1763,7 @@
         "label": "cor-effective-interaction-radius-full"
       },
       "section": "## 4. Exponential Locality and Effective Interactions",
+      "references": [],
       "raw_directive": "1407: :::\n1408: \n1409: :::{prf:corollary} Effective Interaction Radius\n1410: :label: cor-effective-interaction-radius-full\n1411: \n1412: Define the **effective interaction radius** by setting the tail probability to $\\delta = 1/k$:\n1413: \n1414: $$\n1415: R_{\\text{eff}} = \\sqrt{R_{\\max}^2 + 2\\varepsilon_c^2 \\log(k^2)} = \\varepsilon_c \\sqrt{C_{\\text{comp}}^2 + 2\\log(k^2)}\n1416: \n1417: $$\n1418: \n1419: Then:\n1420: \n1421: $$\n1422: \\mathbb{P}(d_{\\text{alg}}(i, c(i)) > R_{\\text{eff}}) \\leq \\frac{1}{k}\n1423: \n1424: $$\n1425: ",
       "_registry_context": {
         "stage": "directives",
@@ -1698,6 +1789,7 @@
         "label": "cor-gevrey-1-fitness-potential-full"
       },
       "section": "## 12. Fitness Potential: Composition with Rescale Function",
+      "references": [],
       "raw_directive": "4679: :::\n4680: \n4681: :::{prf:corollary} Gevrey-1 Classification\n4682: :label: cor-gevrey-1-fitness-potential-full\n4683: \n4684: The fitness potential $V_{\\text{fit}}$ belongs to the **Gevrey-1 class**, meaning it is **real-analytic** with convergent Taylor series in a neighborhood of each point.\n4685: \n4686: Specifically, for any compact set $K \\subset \\mathcal{X} \\times \\mathbb{R}^d$:\n4687: \n4688: $$\n4689: \\sup_{(x,v) \\in K} \\|\\nabla^m V_{\\text{fit}}(x,v)\\| \\leq A \\cdot B^m \\cdot m!\n4690: \n4691: $$\n4692: ",
       "_registry_context": {
         "stage": "directives",
@@ -1723,6 +1815,9 @@
         "label": "cor-exponential-qsd-companion-dependent-full"
       },
       "section": "## 15. Logarithmic Sobolev Inequality",
+      "references": [
+        "conj-lsi-companion-dependent-full"
+      ],
       "raw_directive": "5022: :::\n5023: \n5024: :::{prf:corollary} Exponential Convergence to QSD (Conditional)\n5025: :label: cor-exponential-qsd-companion-dependent-full\n5026: \n5027: **If** {prf:ref}`conj-lsi-companion-dependent-full` holds, then the Geometric Gas with companion-dependent fitness converges exponentially to its unique quasi-stationary distribution:\n5028: \n5029: $$\n5030: \\|\\rho_t - \\nu_{\\text{QSD}}\\|_{L^2(\\mu)} \\leq e^{-\\lambda_{\\text{gap}} t} \\|\\rho_0 - \\nu_{\\text{QSD}}\\|_{L^2(\\mu)}\n5031: \n5032: $$\n5033: \n5034: where $\\lambda_{\\text{gap}} \\geq \\alpha > 0$ is the **spectral gap**, independent of $N$ and $k$.\n5035: ",
       "_registry_context": {
         "stage": "directives",
@@ -1748,6 +1843,7 @@
         "label": "cor-gevrey-closure"
       },
       "section": "## Appendix A: Combinatorial Proof of Gevrey-1 Bounds via Faà di Bruno Formula",
+      "references": [],
       "raw_directive": "5454: ### A.3 General Principle: Factorial Preservation Under Composition\n5455: \n5456: :::{prf:corollary} Gevrey-1 Closure Under Smooth Composition\n5457: :label: cor-gevrey-closure\n5458: \n5459: If $f: \\mathbb{R}^k \\to \\mathbb{R}$ is Gevrey-1 (satisfies $\\|\\nabla^m f\\| \\leq C_f m! \\rho^{-m}$) and $g_1, \\ldots, g_k: \\mathbb{R}^d \\to \\mathbb{R}$ are each Gevrey-1 with $\\|\\nabla^m g_i\\| \\leq C_i m! \\sigma^{-m}$, then the composition:\n5460: \n5461: $$\n5462: h(x) = f(g_1(x), \\ldots, g_k(x))\n5463: \n5464: $$\n5465: \n5466: is Gevrey-1 with:\n5467: \n5468: $$\n5469: \\|\\nabla^m h\\| \\leq C_h m! \\cdot \\max(\\rho, \\sigma)^{-m}\n5470: \n5471: $$\n5472: ",
       "_registry_context": {
         "stage": "directives",

@@ -2,7 +2,7 @@
   "document_id": "20_geometric_gas_cinf_regularity_full",
   "stage": "directives",
   "directive_type": "conjecture",
-  "generated_at": "2025-11-08T17:16:20.313330+00:00",
+  "generated_at": "2025-11-08T23:19:38.333283+00:00",
   "count": 1,
   "items": [
     {
@@ -21,6 +21,9 @@
         "label": "conj-lsi-companion-dependent-full"
       },
       "section": "## 15. Logarithmic Sobolev Inequality",
+      "references": [
+        "thm-main-complete-cinf-geometric-gas-full"
+      ],
       "raw_directive": "4952: ## 15. Logarithmic Sobolev Inequality\n4953: \n4954: :::{prf:conjecture} LSI for Companion-Dependent Geometric Gas\n4955: :label: conj-lsi-companion-dependent-full\n4956: \n4957: We conjecture that under the assumptions of {prf:ref}`thm-main-complete-cinf-geometric-gas-full`, the Geometric Gas satisfies a **Logarithmic Sobolev Inequality** with constant $\\alpha > 0$:\n4958: \n4959: $$\n4960: \\text{Ent}_\\mu(\\rho) \\leq \\frac{1}{\\alpha} \\mathcal{E}(\\rho, \\rho)\n4961: \n4962: $$\n4963: \n4964: where:\n4965: - $\\text{Ent}_\\mu(\\rho) = \\int \\rho \\log(\\rho/\\mu) d\\mu$ (relative entropy)\n4966: - $\\mathcal{E}(\\rho, \\rho) = -\\int \\rho \\mathcal{L}_{\\text{geo}} \\log \\rho \\, d\\mu$ (Dirichlet form)\n4967: ",
       "_registry_context": {
         "stage": "directives",

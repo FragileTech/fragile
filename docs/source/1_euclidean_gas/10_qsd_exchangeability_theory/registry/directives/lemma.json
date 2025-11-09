@@ -2,7 +2,7 @@
   "document_id": "10_qsd_exchangeability_theory",
   "stage": "directives",
   "directive_type": "lemma",
-  "generated_at": "2025-11-08T17:16:20.195898+00:00",
+  "generated_at": "2025-11-08T23:19:38.268348+00:00",
   "count": 1,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "lem-conditional-gaussian-qsd-euclidean"
       },
       "section": "## A1.3 N-Uniform Log-Sobolev Inequality",
+      "references": [],
       "raw_directive": "581: **Key technical lemma**:\n582: \n583: :::{prf:lemma} Conditional Gaussian Structure (Euclidean Gas)\n584: :label: lem-conditional-gaussian-qsd-euclidean\n585: \n586: For fixed positions $\\mathbf{x} = (x_1, \\ldots, x_N)$, the conditional velocity distribution in the Euclidean Gas is a product of independent Gaussians:\n587: \n588: $$\n589: \\pi_N(\\mathbf{v} | \\mathbf{x}) = \\prod_{i=1}^N \\mathcal{N}(0, \\Sigma_{v_i})\n590: $$\n591: \n592: where each $\\Sigma_{v_i}$ is the stationary covariance for the individual Langevin dynamics (no coupling between walkers).\n593: \n594: For the Euclidean Gas with constant diffusion $\\sigma I$, the conditional covariance is:\n595: \n596: $$\n597: \\Sigma_{v_i} = \\frac{\\sigma^2}{2\\gamma} I\n598: $$\n599: \n600: **N-uniform eigenvalue bound**:\n601: \n602: $$\n603: \\lambda_{\\max}(\\Sigma_{v_i}) = \\frac{\\sigma^2}{2\\gamma}\n604: $$\n605: ",
       "_registry_context": {
         "stage": "directives",

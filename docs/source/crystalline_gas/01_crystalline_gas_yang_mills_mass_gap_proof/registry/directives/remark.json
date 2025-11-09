@@ -2,7 +2,7 @@
   "document_id": "01_crystalline_gas_yang_mills_mass_gap_proof",
   "stage": "directives",
   "directive_type": "remark",
-  "generated_at": "2025-11-08T17:16:20.345602+00:00",
+  "generated_at": "2025-11-08T23:19:38.351974+00:00",
   "count": 22,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "rem-fitness-interpretation"
       },
       "section": "## 2. The Crystalline Gas Algorithm",
+      "references": [],
       "raw_directive": "188: :::\n189: \n190: :::{prf:remark} Physical Interpretation\n191: :label: rem-fitness-interpretation\n192: \n193: The fitness landscape $\\Phi$ encodes the \"desirability\" of positions in state space. Regions with high $\\Phi(x)$ are preferred, and the algorithm drives walkers toward these regions. The strict concavity ensures a unique global maximum, which serves as the attractor for the dynamics. The coercivity condition ensures that walkers do not escape to infinity, providing effective confinement despite working on unbounded $\\mathbb{R}^{d}$.\n194: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "rem-metric-regularity"
       },
       "section": "## 2. The Crystalline Gas Algorithm",
+      "references": [],
       "raw_directive": "287: :::\n288: \n289: :::{prf:remark} Metric Tensor and Regularity\n290: :label: rem-metric-regularity\n291: \n292: Since $\\Phi$ is strictly concave with $H_{\\Phi}(x) \\preceq -\\kappa I$, we have $-H_{\\Phi}(x) \\succeq \\kappa I \\succ 0$. Thus, the emergent metric tensor:\n293: \n294: $$\n295: g(x) := (-H_{\\Phi}(x) + \\varepsilon_{\\text{reg}} I)^{-1}\n296: $$\n297: \n298: is positive definite and well-defined for all $x \\in \\mathbb{R}^{d}$. The metric satisfies:\n299: \n300: $$\n301: \\kappa^{-1} I \\preceq g(x) \\preceq (\\kappa + \\varepsilon_{\\text{reg}})^{-1} I\n302: $$\n303: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "rem-ascent-interpretation"
       },
       "section": "## 2. The Crystalline Gas Algorithm",
+      "references": [],
       "raw_directive": "305: :::\n306: \n307: :::{prf:remark} Physical Interpretation: Collective Gradient Ascent\n308: :label: rem-ascent-interpretation\n309: \n310: The geometric ascent operator encodes **collective fitness optimization** in the emergent Riemannian geometry:\n311: \n312: 1. **Collective Potential:** $\\Psi = \\frac{1}{\\beta}\\log \\sum_j e^{\\beta \\Phi(x_j)}$ is the smooth maximum (log-sum-exp) of all walker fitness values, providing a global measure of swarm quality.\n313: \n314: 2. **Weighted Gradient:** Each walker $i$ moves along $\\nabla_{x_i} \\Psi = p_i \\nabla \\Phi(x_i)$, where $p_i = \\frac{e^{\\beta\\Phi(x_i)}}{\\sum_k e^{\\beta\\Phi(x_k)}}$. High-fitness walkers have larger weights and contribute more to the collective ascent.\n315: \n316: 3. **Riemannian Ascent:** The metric tensor $g = (-H_\\Phi + \\varepsilon I)^{-1}$ preconditions the gradient, creating a **second-order optimization method** (natural gradient) that accounts for the landscape's curvature. This curvature generates the **Yang-Mills gauge fields** (Section 4).\n317: ",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +99,7 @@
         "label": "rem-noise-anisotropy"
       },
       "section": "## 2. The Crystalline Gas Algorithm",
+      "references": [],
       "raw_directive": "363: :::\n364: \n365: :::{prf:remark} Anisotropic Position Noise vs. Ornstein-Uhlenbeck Velocity Dynamics\n366: :label: rem-noise-anisotropy\n367: \n368: The position noise is **anisotropic** and **state-dependent**, scaled by $\\Sigma_{\\text{reg}}(x)$, which is the inverse square root of the regularized Hessian. This coupling between diffusion and geometry is **Axiom V (Geometrization of Information)** from the foundational framework.\n369: \n370: In contrast, the velocity update follows **Ornstein-Uhlenbeck (OU) dynamics** with friction coefficient $\\gamma_{\\text{fric}}$. This is the \"O-step\" of the **BAOAB integrator** used in molecular dynamics. The OU process has:\n371: - **Friction term**: $c_1 v_i' = e^{-\\gamma_{\\text{fric}} \\Delta t} v_i'$ (exponential decay toward zero)\n372: - **Noise term**: $c_2 \\xi_i^{(v)} = \\sigma_v \\sqrt{1 - e^{-2\\gamma_{\\text{fric}} \\Delta t}} \\xi_i^{(v)}$ (Gaussian fluctuation)\n373: - **Invariant measure**: $\\pi(v) \\propto \\exp(-\\|v\\|^2/(2\\sigma_v^2))$ (Maxwell-Boltzmann distribution)\n374: - **Spectral gap**: $\\lambda_{\\text{gap}}^{(v)} = \\gamma_{\\text{fric}} > 0$ (exponential convergence to equilibrium)\n375: \n376: The friction term is **crucial** for establishing a spectral gap in velocity space. Without it, free Brownian motion has continuous spectrum with no gap.\n377: \n378: The anisotropic position noise ensures that:\n379: - In directions of high curvature (large $|-H_{\\Phi}|$), diffusion is suppressed\n380: - In directions of low curvature (small $|-H_{\\Phi}|$), diffusion is enhanced\n381: ",
       "_registry_context": {
         "stage": "directives",
@@ -121,6 +125,7 @@
         "label": "rem-cg-sde-connection"
       },
       "section": "## 2. The Crystalline Gas Algorithm",
+      "references": [],
       "raw_directive": "383: :::\n384: \n385: :::{prf:remark} Connection to SDEs\n386: :label: rem-cg-sde-connection\n387: \n388: In the continuous-time limit $\\Delta t \\to 0$, the Crystalline Gas dynamics formally converge to a system of coupled stochastic differential equations (SDEs):\n389: \n390: $$\n391: \\begin{aligned}\n392: \\mathrm{d}x_i &= v_i \\, \\mathrm{d}t + \\sigma_x \\Sigma_{\\text{reg}}(x_i) \\, \\mathrm{d}W_i^{(x)} + \\eta \\, g(x_i) \\nabla_{x_i} \\Psi(x) \\, \\mathrm{d}t \\\\\n393: \\mathrm{d}v_i &= -\\gamma_{\\text{fric}} v_i \\, \\mathrm{d}t + \\sigma_v \\sqrt{2\\gamma_{\\text{fric}}} \\, \\mathrm{d}W_i^{(v)}\n394: \\end{aligned}\n395: $$\n396: \n397: where:\n398: - $W_i^{(x)}, W_i^{(v)}$ are independent $d$-dimensional Brownian motions\n399: - $\\Psi(x) = \\frac{1}{\\beta}\\log\\sum_{j=1}^N e^{\\beta\\Phi(x_j)}$ is the log-sum-exp collective potential\n400: - $g(x_i) = (-H_{\\Phi}(x_i) + \\varepsilon_{\\text{reg}} I)^{-1}$ is the emergent Riemannian metric\n401: - $\\nabla_{x_i} \\Psi = p_i \\nabla\\Phi(x_i)$ with $p_i = \\frac{e^{\\beta\\Phi(x_i)}}{\\sum_k e^{\\beta\\Phi(x_k)}}$\n402: - The friction term $-\\gamma_{\\text{fric}} v_i$ ensures **velocity confinement** (necessary for spectral gap)\n403: \n404: The velocity equation is an **Ornstein-Uhlenbeck (OU) process** with invariant measure $\\pi(v) \\propto \\exp(-\\|v\\|^2/(2\\sigma_v^2))$ and spectral gap $\\lambda_{\\text{gap}}^{(v)} = \\gamma_{\\text{fric}} > 0$.\n405: ",
       "_registry_context": {
         "stage": "directives",
@@ -146,6 +151,7 @@
         "label": "rem-cg-markov-history"
       },
       "section": "## 2. The Crystalline Gas Algorithm",
+      "references": [],
       "raw_directive": "450: :::\n451: \n452: :::{prf:remark} Markov Assumption and History\n453: :label: rem-cg-markov-history\n454: \n455: The Crystalline Gas is **Markovian:** the next state $\\mathcal{S}(t + \\Delta t)$ depends only on the current state $\\mathcal{S}(t)$, not on the full history $\\{\\mathcal{S}(s) : s < t\\}$.\n456: ",
       "_registry_context": {
         "stage": "directives",
@@ -171,6 +177,7 @@
         "label": "rem-cg-convergence-simplicity"
       },
       "section": "## 3. Existence and Uniqueness of the Quasi-Stationary Distribution",
+      "references": [],
       "raw_directive": "585: :::\n586: \n587: :::{prf:remark} Simplicity of Convergence Proof\n588: :label: rem-cg-convergence-simplicity\n589: \n590: The convergence proof for the Crystalline Gas is **elementary** and relies on standard techniques:\n591: \n592: 1. **No Cloning:** The algorithm has no genealogical structure, avoiding population dynamics\n593: 2. **Deterministic Ascent:** The geometric ascent is a standard gradient flow with well-understood convergence properties\n594: 3. **Standard Lyapunov Theory:** The proof reduces to verifying a single drift inequality, which follows from elementary estimates\n595: ",
       "_registry_context": {
         "stage": "directives",
@@ -196,6 +203,7 @@
         "label": "rem-velocity-isotropy-consequence"
       },
       "section": "## 3. Existence and Uniqueness of the Quasi-Stationary Distribution",
+      "references": [],
       "raw_directive": "700: :::\n701: \n702: :::{prf:remark} Consequence for Gauge Currents\n703: :label: rem-velocity-isotropy-consequence\n704: \n705: The vanishing of $\\mathbb{E}_{\\pi_{\\text{QSD}}}[v_i]$ is **crucial** for establishing that the QSD corresponds to a **pure Yang-Mills vacuum** with no matter fields (see Section 4). In QFT language, this means the **Noether current vanishes**:\n706: \n707: $$\n708: \\langle J_{\\mu} \\rangle_{\\text{QSD}} = 0\n709: $$\n710: ",
       "_registry_context": {
         "stage": "directives",
@@ -221,6 +229,7 @@
         "label": "rem-cg-gauge-force-interpretation"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "896: :::\n897: \n898: :::{prf:remark} Physical Interpretation of Gauge Force\n899: :label: rem-cg-gauge-force-interpretation\n900: \n901: The gauge force has a natural interpretation:\n902: \n903: 1. **Color Matching:** The force compares the color observable $|\\Psi_i\\rangle$ at site $i$ with the transported observable $U_{ij}|\\Psi_j\\rangle$ from neighbor $j$\n904: \n905: 2. **Parallel Transport:** The link variable $U_{ij}$ \"rotates\" the color vector $|\\Psi_j\\rangle$ from $j$'s local color basis to $i$'s local color basis before comparison\n906: \n907: 3. **Attractive/Repulsive:** When $U_{ij}|\\Psi_j\\rangle$ and $|\\Psi_i\\rangle$ are similar, the force is small (walkers are \"color-aligned\"). When they differ, the force drives alignment.\n908: ",
       "_registry_context": {
         "stage": "directives",
@@ -246,6 +255,7 @@
         "label": "rem-cg-edge-vs-node-centric"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "1055: :::\n1056: \n1057: :::{prf:remark} Comparison with Previous Framework\n1058: :label: rem-cg-edge-vs-node-centric\n1059: \n1060: The edge-centric framework resolves the critical flaw of the node-centric approach:\n1061: \n1062: **Node-Centric (Old, Invalid):**\n1063: - Gauge field derived from walker observables: $A_\\mu \\sim \\varphi_i(x_i, v_i)$\n1064: - One-way causality: Walkers → Field (no feedback)\n1065: - Gauge transformations have no physical effect\n1066: - **Not a true gauge theory**\n1067: \n1068: **Edge-Centric (New, Valid):**\n1069: - Gauge field $\\{U_{ij}\\}$ is fundamental, independent of walker states\n1070: - Two-way causality: Walkers ↔ Field (feedback loop)\n1071: - Force law depends explicitly on $\\{U_{ij}\\}$ via parallel transport\n1072: - Field evolves via Wilson action minimization\n1073: - **True gauge theory with full covariance**\n1074: ",
       "_registry_context": {
         "stage": "directives",
@@ -271,6 +281,7 @@
         "label": "rem-cg-vs-lattice-qcd"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "1112: :::\n1113: \n1114: :::{prf:remark} Comparison with Standard Lattice Gauge Theory\n1115: :label: rem-cg-vs-lattice-qcd\n1116: \n1117: The Crystalline Gas is a variant of Lattice Gauge Theory with key differences:\n1118: \n1119: **Standard Lattice QCD:**\n1120: - Fixed cubic lattice in Euclidean spacetime\n1121: - Link variables $U_{\\mu}(x)$ on edges of the lattice\n1122: - Wilson action with plaquettes\n1123: - Static lattice structure\n1124: \n1125: **Crystalline Gas:**\n1126: - **Dynamic lattice** defined by walker positions (changes with time)\n1127: - Link variables $U_{ij}$ on edges of the walker graph\n1128: - Same Wilson action functional\n1129: - Lattice evolves according to fitness landscape\n1130: \n1131: **Advantage:** The dynamic lattice provides a natural mechanism for the lattice to explore configuration space, potentially accessing configurations that fixed-lattice Monte Carlo might miss.\n1132: ",
       "_registry_context": {
         "stage": "directives",
@@ -296,6 +307,7 @@
         "label": "rem-cg-extension-other-groups"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "1134: :::\n1135: \n1136: :::{prf:remark} Extension to Other Gauge Groups\n1137: :label: rem-cg-extension-other-groups\n1138: \n1139: The edge-centric framework can be extended to other gauge groups:\n1140: \n1141: - **SU(N):** Replace $3\\times 3$ matrices with $N\\times N$ matrices in SU(N)\n1142: - **Other Lie Groups:** Use appropriate link variables $U_{ij} \\in G$ for gauge group $G$\n1143: ",
       "_registry_context": {
         "stage": "directives",
@@ -321,6 +333,9 @@
         "label": "rem-cg-area-law-to-mass-gap"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [
+        "thm-cg-spectral-gap"
+      ],
       "raw_directive": "1171: :::\n1172: \n1173: :::{prf:remark} From Area Law to Mass Gap\n1174: :label: rem-cg-area-law-to-mass-gap\n1175: \n1176: The area law is the **hallmark of confinement** in gauge theories. It implies:\n1177: \n1178: 1. **Confinement:** Color charges cannot be separated to infinite distance (potential grows linearly with separation)\n1179: \n1180: 2. **Mass Gap:** The two-point correlation function decays exponentially:\n1181:    $$\n1182:    \\langle A_\\mu^a(x) A_\\nu^b(y) \\rangle \\sim \\exp(-m_{\\text{gap}} \\|x - y\\|)\n1183:    $$\n1184:    where $m_{\\text{gap}} > 0$ is the mass of the lightest glueball\n1185: \n1186: 3. **Quantitative Bound:** From the spectral gap $\\lambda_0$ ({prf:ref}`thm-cg-spectral-gap`), we derive:\n1187:    $$\n1188:    m_{\\text{gap}} \\geq \\frac{\\lambda_0}{3\\sigma_v\\sqrt{d}}\n1189:    $$\n1190:    where $\\sigma_v$ is the walker velocity scale\n1191: ",
       "_registry_context": {
         "stage": "directives",
@@ -346,6 +361,7 @@
         "label": "rem-cg-gauge-extensions"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "1219: :::\n1220: \n1221: :::{prf:remark} Note on Gauge Group Extensions\n1222: :label: rem-cg-gauge-extensions\n1223: \n1224: The CMI Yang-Mills Millennium Problem specifically requires proving existence and mass gap for gauge group SU(N) with $N \\geq 2$. **Our edge-centric SU(3) construction in Section 4.2 fully satisfies this requirement.**\n1225: \n1226: The SU(2) and U(1) extensions described in Sections 4.5-4.6 are **optional** and demonstrate the generality of the framework. They are **not required** for the Millennium Prize solution, which is complete with SU(3) alone.\n1227: \n1228: For a unified $\\text{SU}(3)_c \\times \\text{SU}(2)_L \\times \\text{U}(1)_Y$ Standard Model gauge group, one would need to:\n1229: 1. Add SU(2) link variables $V_{ij} \\in \\text{SU}(2)$ on the walker graph\n1230: 2. Add U(1) phase variables $\\theta_{ij} \\in \\text{U}(1)$ on edges\n1231: 3. Extend the Wilson action to include all three gauge groups\n1232: 4. Extend the gauge-covariant force law to include all interactions\n1233: ",
       "_registry_context": {
         "stage": "directives",
@@ -371,6 +387,7 @@
         "label": "rem-spectral-gap-interpretation"
       },
       "section": "## 5. The Spectral Gap",
+      "references": [],
       "raw_directive": "1285: :::\n1286: \n1287: :::{prf:remark} Interpretation of Spectral Gap\n1288: :label: rem-spectral-gap-interpretation\n1289: \n1290: The spectral gap is the smallest non-zero eigenvalue of the operator $-L_{\\text{CG}}$ (which is positive semi-definite). It controls the decay of correlations:\n1291: \n1292: $$\n1293: |\\mathbb{E}_{\\mu_t}[f g] - \\mathbb{E}_{\\pi_{\\text{QSD}}}[f] \\mathbb{E}_{\\pi_{\\text{QSD}}}[g]| \\leq C \\cdot e^{-\\lambda_{\\text{gap}} t} \\cdot \\|f\\|_{L^2} \\|g\\|_{L^2}\n1294: $$\n1295: ",
       "_registry_context": {
         "stage": "directives",
@@ -396,6 +413,11 @@
         "label": "rem-discrete-vs-continuous"
       },
       "section": "## 5. The Spectral Gap",
+      "references": [
+        "thm-bakry-emery",
+        "thm-foster-lyapunov",
+        "thm-ou-spectral-gap"
+      ],
       "raw_directive": "1409: :::\n1410: \n1411: :::{prf:remark} Application to Discrete-Time Chains\n1412: :label: rem-discrete-vs-continuous\n1413: \n1414: The Bakry-Émery criterion (Theorem {prf:ref}`thm-bakry-emery`) is stated for **continuous-time diffusions**. For discrete-time Markov chains like Crystalline Gas, we must either:\n1415: \n1416: 1. **Pass to continuous-time limit** ($\\Delta t \\to 0$) and apply Bakry-Émery to the limiting SDE, then bound the discrete chain's spectral gap in terms of the continuous limit.\n1417: \n1418: 2. **Use Foster-Lyapunov** (Theorem {prf:ref}`thm-foster-lyapunov`) which applies directly to discrete chains.\n1419: \n1420: 3. **Use discrete Bakry-Émery** variants (e.g., Caputo et al. 2009) which extend the $\\Gamma_2$ calculus to finite-difference operators.\n1421: ",
       "_registry_context": {
         "stage": "directives",
@@ -421,6 +443,12 @@
         "label": "rem-cg-gauge-field-spectral-gap"
       },
       "section": "## 5. The Spectral Gap",
+      "references": [
+        "def-cg-link-variables",
+        "def-cg-field-update",
+        "def-cg-wilson-action",
+        "thm-cg-spectral-gap"
+      ],
       "raw_directive": "1633: :::\n1634: \n1635: :::{prf:remark} Spectral Gap with Gauge Field Dynamics\n1636: :label: rem-cg-gauge-field-spectral-gap\n1637: \n1638: **Extended State Space**: With the edge-centric SU(3) framework ({prf:ref}`def-cg-link-variables`), the full system state space is:\n1639: \n1640: $$\n1641: \\Omega_{\\text{full}} = \\Sigma_N \\times \\mathcal{U}_{\\mathcal{E}}\n1642: $$\n1643: \n1644: where:\n1645: - $\\Sigma_N = (\\mathbb{R}^d \\times \\mathbb{R}^d)^N$ is the walker phase space (positions + velocities)\n1646: - $\\mathcal{U}_{\\mathcal{E}} = \\{U_{ij} \\in \\text{SU}(3) : (i,j) \\in \\mathcal{E}\\}$ is the gauge field configuration space (link variables on edges)\n1647: \n1648: The full generator decomposes as:\n1649: \n1650: $$\n1651: L_{\\text{full}} = L_{\\text{walkers}} + L_{\\text{links}}\n1652: $$\n1653: \n1654: where:\n1655: - $L_{\\text{walkers}}$ is the walker dynamics analyzed above (matter force + thermal noise)\n1656: - $L_{\\text{links}}$ is the gauge field relaxation dynamics ({prf:ref}`def-cg-field-update`)\n1657: \n1658: **Key Observation**: The link variable dynamics are **local relaxation** to minimize the Wilson action ({prf:ref}`def-cg-wilson-action`). This is a fast local equilibration process: each $U_{ij}$ relaxes to minimize $S_W[\\{U_{ij}\\}]$ via gradient descent on SU(3).\n1659: \n1660: **Timescale Separation**: Gauge field relaxation is typically much faster than walker diffusion:\n1661: - **Link updates**: Local optimization on compact manifold SU(3) → fast convergence (timescale $\\sim \\alpha_{\\text{gauge}}^{-1}$)\n1662: - **Walker dynamics**: Global exploration of $\\mathbb{R}^d$ → slower convergence (timescale $\\sim \\lambda_{\\text{gap}}^{-1}$)\n1663: \n1664: When $\\alpha_{\\text{gauge}} \\gg \\lambda_{\\text{gap}}$, the gauge field equilibrates instantaneously relative to walker motion. In this regime, the link variables \"slave\" to the walker configuration, and the full system spectral gap is dominated by the walker spectral gap:\n1665: \n1666: $$\n1667: \\lambda_{\\text{gap}}^{\\text{full}} \\approx \\lambda_{\\text{gap}}^{\\text{walkers}} = \\lambda_0\n1668: $$\n1669: \n1670: **Rigorous Lower Bound**: Even without assuming timescale separation, the spectral gap for the walker degrees of freedom provides a **lower bound** for the full system:\n1671: \n1672: $$\n1673: \\lambda_{\\text{gap}}^{\\text{full}} \\geq \\lambda_0 \\wedge \\lambda_{\\text{gauge}}\n1674: $$\n1675: \n1676: where $\\lambda_{\\text{gauge}}$ is the spectral gap for link variable relaxation. Since $\\lambda_{\\text{gauge}} > 0$ (SU(3) is compact and Wilson action is bounded below), the full system possesses a uniform spectral gap.\n1677: ",
       "_registry_context": {
         "stage": "directives",
@@ -446,6 +474,7 @@
         "label": "rem-cg-lsi-comparison"
       },
       "section": "## 5. The Spectral Gap",
+      "references": [],
       "raw_directive": "1679: :::\n1680: \n1681: :::{prf:remark} Comparison with LSI Approach\n1682: :label: rem-cg-lsi-comparison\n1683: \n1684: For the Fragile Gas and more complex models, the spectral gap is established via the **Logarithmic Sobolev Inequality (LSI)**, which is a **stronger** property than a spectral gap. The LSI approach requires proving:\n1685: \n1686: $$\n1687: \\text{Ent}_{\\pi}(f^2) \\leq C_{\\text{LSI}} \\cdot \\langle \\Gamma(f, f), f^2 \\rangle_{\\pi}\n1688: $$\n1689: \n1690: This involves intricate hypocoercivity estimates, Wasserstein contraction, and the interplay between cloning and diffusion (see docs/source/1_euclidean_gas/09_kl_convergence.md for details).\n1691: ",
       "_registry_context": {
         "stage": "directives",
@@ -471,6 +500,12 @@
         "label": "rem-cg-wilson-loop-edge-centric"
       },
       "section": "## 6. Confinement via the Area Law for Wilson Loops",
+      "references": [
+        "def-cg-link-variables",
+        "thm-cg-gauge-covariance",
+        "def-cg-wilson-action",
+        "def-cg-information-graph"
+      ],
       "raw_directive": "1719: :::\n1720: \n1721: :::{prf:remark} Wilson Loops in the Edge-Centric Framework\n1722: :label: rem-cg-wilson-loop-edge-centric\n1723: \n1724: In the edge-centric SU(3) framework ({prf:ref}`def-cg-link-variables`), Wilson loops are constructed directly from the link variables $U_{ij} \\in \\text{SU}(3)$ on the walker information graph.\n1725: \n1726: **Construction**: Let $\\mathcal{C} = (i_1, i_2, \\ldots, i_n, i_1)$ be a closed path on the walker graph (a sequence of connected edges). The **Wilson loop** around $\\mathcal{C}$ is:\n1727: \n1728: $$\n1729: W_{\\mathcal{C}} := \\text{Tr}(U_{\\mathcal{C}})\n1730: $$\n1731: \n1732: where the **path-ordered product** is:\n1733: \n1734: $$\n1735: U_{\\mathcal{C}} := U_{i_1 i_2} \\cdot U_{i_2 i_3} \\cdots U_{i_{n-1} i_n} \\cdot U_{i_n i_1}\n1736: $$\n1737: \n1738: **Key Properties**:\n1739: 1. **Gauge Invariance**: Under local gauge transformation $G: i \\mapsto G_i \\in \\text{SU}(3)$, the link variables transform as $U_{ij} \\to G_i U_{ij} G_j^\\dagger$ ({prf:ref}`thm-cg-gauge-covariance`). The Wilson loop transforms as:\n1740: \n1741:    $$\n1742:    U_{\\mathcal{C}} \\to G_{i_1} U_{\\mathcal{C}} G_{i_1}^\\dagger\n1743:    $$\n1744: \n1745:    Therefore $\\text{Tr}(U_{\\mathcal{C}})$ is **gauge-invariant**: $\\text{Tr}(G_{i_1} U_{\\mathcal{C}} G_{i_1}^\\dagger) = \\text{Tr}(U_{\\mathcal{C}})$ ✓\n1746: \n1747: 2. **Area Enclosed**: For a closed path on the walker graph, the **minimal area** $\\mathcal{A}(\\mathcal{C})$ is the area of the minimal surface in $\\mathbb{R}^3$ whose boundary is the walker positions $\\{x_{i_1}, x_{i_2}, \\ldots, x_{i_n}\\}$.\n1748: \n1749: 3. **Wilson Action**: The Wilson action ({prf:ref}`def-cg-wilson-action`) penalizes field configurations where Wilson loops around plaquettes deviate from the identity, driving the system toward confinement.\n1750: ",
       "_registry_context": {
         "stage": "directives",
@@ -496,6 +531,7 @@
         "label": "rem-wilson-order-parameter"
       },
       "section": "## 6. Confinement via the Area Law for Wilson Loops",
+      "references": [],
       "raw_directive": "1776: :::\n1777: \n1778: :::{prf:remark} Wilson Loop as Order Parameter\n1779: :label: rem-wilson-order-parameter\n1780: \n1781: The Wilson loop is the **order parameter** distinguishing confined and deconfined phases:\n1782: - Area law $\\Rightarrow$ Confinement\n1783: - Perimeter law $\\Rightarrow$ Deconfinement\n1784: ",
       "_registry_context": {
         "stage": "directives",
@@ -521,6 +557,9 @@
         "label": "rem-string-tension-meaning"
       },
       "section": "## 6. Confinement via the Area Law for Wilson Loops",
+      "references": [
+        "thm-cg-spectral-gap"
+      ],
       "raw_directive": "1945: \n1946: \n1947: :::{prf:remark} Physical Meaning of String Tension\n1948: :label: rem-string-tension-meaning\n1949: \n1950: The string tension $\\sigma$ has dimensions of energy per length. It represents the energy cost per unit length of \"string\" connecting a quark-antiquark pair. In QCD, $\\sigma \\approx 1 \\, \\text{GeV/fm}$ (giga-electron-volts per femtometer).\n1951: \n1952: For the Crystalline Gas, the string tension is determined by algorithmic parameters:\n1953: \n1954: $$\n1955: \\sigma \\approx \\frac{\\kappa \\eta}{2} \\wedge \\frac{\\sigma_x^2}{2d} \\wedge \\gamma_{\\text{fric}}\n1956: $$\n1957: ",
       "_registry_context": {
         "stage": "directives",
@@ -546,6 +585,9 @@
         "label": "rem-mass-gap-vs-string-tension"
       },
       "section": "## 7. The Mass Gap",
+      "references": [
+        "cor-cg-area-law"
+      ],
       "raw_directive": "2087: :::\n2088: \n2089: :::{prf:remark} Relation to String Tension\n2090: :label: rem-mass-gap-vs-string-tension\n2091: \n2092: The mass gap scaling $\\Delta_{\\text{YM}} \\sim \\sqrt{\\sigma}$ is a classic result in flux-tube models and is supported by lattice QCD simulations. The square-root dependence arises from the interplay between the string tension (which favors larger loops to minimize curvature) and quantum fluctuations (which favor smaller loops to minimize zero-point energy).\n2093: \n2094: For the Crystalline Gas:\n2095: \n2096: $$\n2097: \\sigma \\geq c_0 \\lambda_0 \\geq c_0 \\left( \\frac{\\kappa \\eta}{2} \\wedge \\frac{\\sigma_x^2}{2d} \\wedge \\gamma_{\\text{fric}} \\right)\n2098: $$\n2099: \n2100: from {prf:ref}`cor-cg-area-law`, so:\n2101: \n2102: $$\n2103: \\Delta_{\\text{YM}} \\geq c_{\\text{gb}} \\sqrt{c_0 \\lambda_0} > 0\n2104: $$\n2105: ",
       "_registry_context": {
         "stage": "directives",

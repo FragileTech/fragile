@@ -19,6 +19,9 @@
         "label": "prop-ricci-metric-functional"
       },
       "section": "## 2. Application to Emergent Spacetime",
+      "references": [
+        "thm-ricci-from-scutoids"
+      ],
       "raw_directive": "71: **Critical Question**: Does this scutoid-based $R_{\\mu\\nu}$ depend only on the emergent metric $g_{\\mu\\nu}$ and its derivatives, as required by Lovelock's theorem?\n72: \n73: :::{prf:proposition} Ricci Tensor as Metric Functional\n74: :label: prop-ricci-metric-functional\n75: \n76: The Ricci tensor $R_{\\mu\\nu}$ derived from scutoid plaquettes is a functional of the emergent metric $g_{\\mu\\nu}$ and its first two derivatives:\n77: \n78: $$\n79: R_{\\mu\\nu} = R_{\\mu\\nu}[g, \\partial g, \\partial^2 g]\n80: $$\n81: \n82: **Proof Sketch**:\n83: \n84: Both the scutoid geometry and the emergent metric arise from the same underlying walker measure $\\mu_t(x, v)$:\n85: \n86: 1. **Emergent metric**: $g_{ij}(x) = H_{ij}(x) + \\varepsilon \\delta_{ij}$ where $H_{ij} = \\mathbb{E}_{\\mu_t}[\\partial_k \\Psi^i \\partial_k \\Psi^j \\mid x]$\n87: \n88: 2. **Scutoid Voronoi cells**: The tessellation is determined by walker positions $\\{x_1, \\ldots, x_N\\}$ drawn from the spatial density $\\rho_t(x) = \\int \\mu_t(x, v) dv$\n89: \n90: **Key Insight**: In the continuum limit ($N \\to \\infty$), both geometric quantities are fully determined by the spatial density $\\rho_t(x)$ and its derivatives. Specifically:\n91: \n92: - The metric $g_{ij}$ encodes the second-order structure of the fitness landscape weighted by $\\rho_t$\n93: - The Voronoi tessellation is determined by $\\rho_t$ and converges to a Riemannian manifold with metric $g_{ij}$\n94: - The angle deficits $\\theta_P$ are computed from the induced metric on plaquettes\n95: \n96: Therefore, $R_{\\mu\\nu}$ from scutoids depends on the measure $\\mu_t$ **only through** the metric $g_{\\mu\\nu}[\\mu_t]$.\n97: \n98: **Rigorous Justification** (deferred): A complete proof requires showing:\n99: \n100: 1. The Voronoi tessellation of a density $\\rho(x)$ on a Riemannian manifold $(M, g)$ converges to the manifold structure in the limit of dense sampling\n101: 2. The discrete angle deficits converge to the Riemann curvature tensor: $\\theta_P \\to R_{\\mu\\nu\\rho\\sigma}$\n102: 3. This convergence depends only on $g$ and not on other details of $\\rho$\n103: \n104: This is a deep result in discrete differential geometry (Regge calculus, Cartan's moving frames). We cite {prf:ref}`thm-ricci-from-scutoids` as establishing this connection in Chapter 15."
     },
     {
@@ -37,6 +40,7 @@
         "label": "cor-uniqueness-g-mu-nu"
       },
       "section": "## 2. Application to Emergent Spacetime",
+      "references": [],
       "raw_directive": "119: Therefore, **assuming {prf:ref}`prop-ricci-metric-functional`**, the Einstein tensor $G_{\\mu\\nu} = R_{\\mu\\nu} - \\frac{1}{2}Rg_{\\mu\\nu}$ satisfies all conditions of Lovelock's theorem.\n120: \n121: :::{prf:corollary} Uniqueness of Gravitational Tensor\n122: :label: cor-uniqueness-g-mu-nu\n123: "
     }
   ],

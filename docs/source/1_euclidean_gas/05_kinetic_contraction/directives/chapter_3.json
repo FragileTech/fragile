@@ -19,6 +19,7 @@
         "label": "def-kinetic-operator-stratonovich"
       },
       "section": "## 3. The Kinetic Operator with Stratonovich Formulation",
+      "references": [],
       "raw_directive": "176: ### 3.2. The Kinetic SDE\n177: \n178: :::{prf:definition} The Kinetic Operator (Stratonovich Form)\n179: :label: def-kinetic-operator-stratonovich\n180: \n181: The kinetic operator $\\Psi_{\\text{kin}}$ evolves the swarm for a time interval $\\tau > 0$ according to the coupled Stratonovich SDEs:\n182: \n183: $$\n184: \\begin{aligned}\n185: dx_t &= v_t \\, dt \\\\\n186: dv_t &= F(x_t) \\, dt - \\gamma(v_t - u(x_t)) \\, dt + \\Sigma(x_t, v_t) \\circ dW_t\n187: \\end{aligned}\n188: \n189: $$\n190: \n191: where:\n192: \n193: **Deterministic Terms:**\n194: - $F(x) = -\\nabla U(x)$: Force field from the **confining potential** $U: \\mathcal{X}_{\\text{valid}} \\to \\mathbb{R}_{\\geq 0}$\n195: - $\\gamma > 0$: **Friction coefficient**\n196: - $u(x)$: **Local drift velocity** (typically $u \\equiv 0$ for simplicity)\n197: \n198: **Stochastic Term:**\n199: - $\\Sigma(x,v): \\mathcal{X}_{\\text{valid}} \\times \\mathbb{R}^d \\to \\mathbb{R}^{d \\times d}$: **Diffusion tensor**\n200: - $W_t$: Standard $d$-dimensional Brownian motion\n201: - $\\circ$: **Stratonovich product**\n202: \n203: **Boundary Condition:**\n204: After evolving for time $\\tau$, the walker status is updated:\n205: \n206: $$\n207: s_i^{(t+1)} = \\mathbf{1}_{\\mathcal{X}_{\\text{valid}}}(x_i(t+\\tau))\n208: \n209: $$\n210: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "rem-stratonovich-ito-equivalence"
       },
       "section": "## 3. The Kinetic Operator with Stratonovich Formulation",
+      "references": [],
       "raw_directive": "212: :::\n213: \n214: :::{prf:remark} Relationship to It\u00f4 Formulation\n215: :label: rem-stratonovich-ito-equivalence\n216: \n217: The equivalent It\u00f4 SDE includes a correction term:\n218: \n219: $$\n220: dv_t = \\left[F(x_t) - \\gamma(v_t - u(x_t)) + \\underbrace{\\frac{1}{2}\\sum_{j=1}^d \\Sigma_j(x_t,v_t) \\cdot \\nabla_v \\Sigma_j(x_t,v_t)}_{\\text{Stratonovich correction}}\\right] dt + \\Sigma(x_t,v_t) \\, dW_t\n221: \n222: $$\n223: \n224: where $\\Sigma_j$ is the $j$-th column of $\\Sigma$.\n225: "
     },
     {
@@ -55,6 +57,7 @@
         "label": "axiom-confining-potential"
       },
       "section": "## 3. The Kinetic Operator with Stratonovich Formulation",
+      "references": [],
       "raw_directive": "233: #### 3.3.1. The Confining Potential\n234: \n235: :::{prf:axiom} Globally Confining Potential\n236: :label: axiom-confining-potential\n237: \n238: The potential function $U: \\mathcal{X}_{\\text{valid}} \\to \\mathbb{R}_{\\geq 0}$ satisfies:\n239: \n240: **1. Smoothness:**\n241: \n242: $$\n243: U \\in C^2(\\mathcal{X}_{\\text{valid}})\n244: \n245: $$\n246: \n247: **2. Coercivity (Confinement):**\n248: There exist constants $\\alpha_U > 0$ and $R_U < \\infty$ such that:\n249: \n250: $$\n251: \\langle x, \\nabla U(x) \\rangle \\geq \\alpha_U \\|x\\|^2 - R_U \\quad \\forall x \\in \\mathcal{X}_{\\text{valid}}\n252: \n253: $$\n254: \n255: This ensures the force field $F(x) = -\\nabla U(x)$ drives walkers back toward the origin when $\\|x\\|$ is large.\n256: \n257: **3. Bounded Force Near Interior:**\n258: For some constants $F_{\\max} < \\infty$ and interior ball $B(0, r_{\\text{interior}}) \\subset \\mathcal{X}_{\\text{valid}}$:\n259: \n260: $$\n261: \\|F(x)\\| = \\|\\nabla U(x)\\| \\leq F_{\\max} \\quad \\forall x \\in B(0, r_{\\text{interior}})\n262: \n263: $$\n264: \n265: **4. Compatibility with Boundary Barrier (Quantitative):**\n266: Near the boundary, $U(x)$ grows to create an inward-pointing force with quantifiable strength. There exist constants $\\alpha_{\\text{boundary}} > 0$ and $\\delta_{\\text{boundary}} > 0$ such that:\n267: \n268: $$\n269: \\langle \\vec{n}(x), F(x) \\rangle \\leq -\\alpha_{\\text{boundary}} \\quad \\text{for all } x \\text{ with } \\text{dist}(x, \\partial\\mathcal{X}_{\\text{valid}}) < \\delta_{\\text{boundary}}\n270: \n271: $$\n272: \n273: where $\\vec{n}(x)$ is the outward unit normal at the closest boundary point.\n274: "
     },
     {
@@ -73,6 +76,7 @@
         "label": "ex-canonical-confining-potential"
       },
       "section": "## 3. The Kinetic Operator with Stratonovich Formulation",
+      "references": [],
       "raw_directive": "276: :::\n277: \n278: :::{prf:example} Canonical Confining Potential\n279: :label: ex-canonical-confining-potential\n280: \n281: A standard choice is the **smoothly regularized harmonic potential**:\n282: \n283: $$\n284: U(x) = \\begin{cases}\n285: 0 & \\text{if } \\|x\\| \\leq r_{\\text{interior}} \\\\\n286: \\frac{\\kappa}{2}(\\|x\\| - r_{\\text{interior}})^2 & \\text{if } r_{\\text{interior}} < \\|x\\| < r_{\\text{boundary}} \\\\\n287: +\\infty & \\text{if } \\|x\\| \\geq r_{\\text{boundary}}\n288: \\end{cases}\n289: \n290: $$\n291: \n292: where $r_{\\text{interior}} < r_{\\text{boundary}} = \\text{radius of } \\mathcal{X}_{\\text{valid}}$.\n293: \n294: This potential satisfies all axiom requirements:\n295: - **Coercivity**: $\\alpha_U = \\kappa$ (from quadratic growth)\n296: - **Interior safety**: $F = 0$ for $\\|x\\| \\leq r_{\\text{interior}}$\n297: - **Inward force**: $F(x) = -\\kappa(\\|x\\| - r_{\\text{interior}})\\frac{x}{\\|x\\|}$ for $r_{\\text{interior}} < \\|x\\| < r_{\\text{boundary}}$"
     },
     {
@@ -91,6 +95,7 @@
         "label": "axiom-diffusion-tensor"
       },
       "section": "## 3. The Kinetic Operator with Stratonovich Formulation",
+      "references": [],
       "raw_directive": "301: #### 3.3.2. The Diffusion Tensor\n302: \n303: :::{prf:axiom} Anisotropic Diffusion Tensor\n304: :label: axiom-diffusion-tensor\n305: \n306: The velocity diffusion tensor $\\Sigma: \\mathcal{X}_{\\text{valid}} \\times \\mathbb{R}^d \\to \\mathbb{R}^{d \\times d}$ satisfies:\n307: \n308: **1. Uniform Ellipticity:**\n309: \n310: $$\n311: \\lambda_{\\min}(\\Sigma(x,v)\\Sigma(x,v)^T) \\geq \\sigma_{\\min}^2 > 0 \\quad \\forall (x,v)\n312: \n313: $$\n314: \n315: This ensures the diffusion is **non-degenerate** in all directions.\n316: \n317: **2. Bounded Eigenvalues:**\n318: \n319: $$\n320: \\lambda_{\\max}(\\Sigma(x,v)\\Sigma(x,v)^T) \\leq \\sigma_{\\max}^2 < \\infty \\quad \\forall (x,v)\n321: \n322: $$\n323: \n324: This prevents **infinite noise** in any direction.\n325: \n326: **3. Lipschitz Continuity:**\n327: \n328: $$\n329: \\|\\Sigma(x_1,v_1) - \\Sigma(x_2,v_2)\\|_F \\leq L_\\Sigma(\\|x_1-x_2\\| + \\|v_1-v_2\\|)\n330: \n331: $$\n332: \n333: where $\\|\\cdot\\|_F$ is the Frobenius norm.\n334: \n335: **4. Regularity:**\n336: \n337: $$\n338: \\Sigma \\in C^1(\\mathcal{X}_{\\text{valid}} \\times \\mathbb{R}^d)\n339: \n340: $$\n341: \n342: **Canonical Instantiations:**\n343: \n344: a) **Isotropic (Primary Case):**\n345: \n346: $$\n347: \\Sigma(x,v) = \\sigma_v I_d\n348: \n349: $$\n350: \n351: All directions receive equal thermal noise $\\sigma_v > 0$.\n352: \n353: b) **Position-Dependent:**\n354: \n355: $$\n356: \\Sigma(x,v) = \\sigma(x) I_d\n357: \n358: $$\n359: \n360: Noise intensity varies with position (e.g., higher near boundary for enhanced exploration).\n361: \n362: c) **Hessian-Based (Future Work):**\n363: \n364: $$\n365: \\Sigma(x,v) = (H_{\\text{fitness}}(x,v) + \\epsilon I_d)^{-1/2}\n366: \n367: $$\n368: "
     },
     {
@@ -109,6 +114,7 @@
         "label": "rem-uniform-ellipticity-importance"
       },
       "section": "## 3. The Kinetic Operator with Stratonovich Formulation",
+      "references": [],
       "raw_directive": "370: :::\n371: \n372: :::{prf:remark} Why Uniform Ellipticity Matters\n373: :label: rem-uniform-ellipticity-importance\n374: \n375: The uniform ellipticity condition $\\lambda_{\\min} \\geq \\sigma_{\\min}^2 > 0$ is **critical** for:\n376: \n377: 1. **Ergodicity:** Ensures all velocity directions are explored\n378: 2. **Hypocoercivity:** Allows diffusion in velocity to induce contraction in position\n379: 3. **Coupling arguments:** Synchronous coupling between two swarms remains correlated\n380: "
     },
     {
@@ -127,6 +133,7 @@
         "label": "axiom-friction-timestep"
       },
       "section": "## 3. The Kinetic Operator with Stratonovich Formulation",
+      "references": [],
       "raw_directive": "384: #### 3.3.3. Friction and Timestep Parameters\n385: \n386: :::{prf:axiom} Friction and Integration Parameters\n387: :label: axiom-friction-timestep\n388: \n389: **1. Friction Coefficient:**\n390: \n391: $$\n392: \\gamma > 0\n393: \n394: $$\n395: \n396: Physically, $\\gamma$ is the inverse of the **relaxation time** for velocity. Larger $\\gamma$ \u2192 faster velocity dissipation.\n397: \n398: **2. Timestep:**\n399: \n400: $$\n401: \\tau \\in (0, \\tau_{\\max}]\n402: \n403: $$\n404: \n405: where $\\tau_{\\max}$ depends on the domain size and friction:\n406: \n407: $$\n408: \\tau_{\\max} \\lesssim \\min\\left(\\frac{1}{\\gamma}, \\frac{r_{\\text{valid}}^2}{\\sigma_v^2}\\right)\n409: \n410: $$\n411: \n412: This ensures numerical stability and prevents walkers from crossing the domain in a single step.\n413: \n414: **3. Fluctuation-Dissipation Balance (Optional):**\n415: \n416: For physical systems at temperature $T$:\n417: \n418: $$\n419: \\sigma_v^2 = 2\\gamma k_B T / m\n420: \n421: $$\n422: \n423: where $k_B$ is Boltzmann's constant and $m$ is the particle mass. This ensures the invariant velocity distribution is $\\sim e^{-\\frac{m\\|v\\|^2}{2k_B T}}$.\n424: "
     },
     {
@@ -140,12 +147,15 @@
       ],
       "content_start": 433,
       "content_end": 446,
-      "content": "433: :label: prop-fokker-planck-kinetic\n434: \n435: Let $\\rho(x,v,t)$ be the probability density of a single walker at time $t$. Under the kinetic SDE (Definition 3.2.1), $\\rho$ evolves according to:\n436: \n437: $$\n438: \\partial_t \\rho = -v \\cdot \\nabla_x \\rho - \\nabla_v \\cdot [(F(x) - \\gamma v) \\rho] + \\frac{1}{2}\\sum_{i,j} \\partial_{v_i}\\partial_{v_j}[(\\Sigma\\Sigma^T)_{ij} \\rho]\n439: \n440: $$\n441: \n442: **Key Terms:**\n443: \n444: 1. **Transport:** $-v \\cdot \\nabla_x \\rho$ (position advection by velocity)\n445: 2. **Drift:** $-\\nabla_v \\cdot [(F(x) - \\gamma v)\\rho]$ (force and friction)\n446: 3. **Diffusion:** $\\frac{1}{2}\\text{Tr}(\\Sigma\\Sigma^T \\nabla_v^2 \\rho)$ (thermal noise)",
+      "content": "433: :label: prop-fokker-planck-kinetic\n434: \n435: Let $\\rho(x,v,t)$ be the probability density of a single walker at time $t$. Under the kinetic SDE ({prf:ref}`def-kinetic-operator-stratonovich`), $\\rho$ evolves according to:\n436: \n437: $$\n438: \\partial_t \\rho = -v \\cdot \\nabla_x \\rho - \\nabla_v \\cdot [(F(x) - \\gamma v) \\rho] + \\frac{1}{2}\\sum_{i,j} \\partial_{v_i}\\partial_{v_j}[(\\Sigma\\Sigma^T)_{ij} \\rho]\n439: \n440: $$\n441: \n442: **Key Terms:**\n443: \n444: 1. **Transport:** $-v \\cdot \\nabla_x \\rho$ (position advection by velocity)\n445: 2. **Drift:** $-\\nabla_v \\cdot [(F(x) - \\gamma v)\\rho]$ (force and friction)\n446: 3. **Diffusion:** $\\frac{1}{2}\\text{Tr}(\\Sigma\\Sigma^T \\nabla_v^2 \\rho)$ (thermal noise)",
       "metadata": {
         "label": "prop-fokker-planck-kinetic"
       },
       "section": "## 3. The Kinetic Operator with Stratonovich Formulation",
-      "raw_directive": "430: The kinetic operator induces evolution of the swarm's probability density.\n431: \n432: :::{prf:proposition} Fokker-Planck Equation for the Kinetic Operator\n433: :label: prop-fokker-planck-kinetic\n434: \n435: Let $\\rho(x,v,t)$ be the probability density of a single walker at time $t$. Under the kinetic SDE (Definition 3.2.1), $\\rho$ evolves according to:\n436: \n437: $$\n438: \\partial_t \\rho = -v \\cdot \\nabla_x \\rho - \\nabla_v \\cdot [(F(x) - \\gamma v) \\rho] + \\frac{1}{2}\\sum_{i,j} \\partial_{v_i}\\partial_{v_j}[(\\Sigma\\Sigma^T)_{ij} \\rho]\n439: \n440: $$\n441: \n442: **Key Terms:**\n443: \n444: 1. **Transport:** $-v \\cdot \\nabla_x \\rho$ (position advection by velocity)\n445: 2. **Drift:** $-\\nabla_v \\cdot [(F(x) - \\gamma v)\\rho]$ (force and friction)\n446: 3. **Diffusion:** $\\frac{1}{2}\\text{Tr}(\\Sigma\\Sigma^T \\nabla_v^2 \\rho)$ (thermal noise)\n447: "
+      "references": [
+        "def-kinetic-operator-stratonovich"
+      ],
+      "raw_directive": "430: The kinetic operator induces evolution of the swarm's probability density.\n431: \n432: :::{prf:proposition} Fokker-Planck Equation for the Kinetic Operator\n433: :label: prop-fokker-planck-kinetic\n434: \n435: Let $\\rho(x,v,t)$ be the probability density of a single walker at time $t$. Under the kinetic SDE ({prf:ref}`def-kinetic-operator-stratonovich`), $\\rho$ evolves according to:\n436: \n437: $$\n438: \\partial_t \\rho = -v \\cdot \\nabla_x \\rho - \\nabla_v \\cdot [(F(x) - \\gamma v) \\rho] + \\frac{1}{2}\\sum_{i,j} \\partial_{v_i}\\partial_{v_j}[(\\Sigma\\Sigma^T)_{ij} \\rho]\n439: \n440: $$\n441: \n442: **Key Terms:**\n443: \n444: 1. **Transport:** $-v \\cdot \\nabla_x \\rho$ (position advection by velocity)\n445: 2. **Drift:** $-\\nabla_v \\cdot [(F(x) - \\gamma v)\\rho]$ (force and friction)\n446: 3. **Diffusion:** $\\frac{1}{2}\\text{Tr}(\\Sigma\\Sigma^T \\nabla_v^2 \\rho)$ (thermal noise)\n447: "
     },
     {
       "directive_type": "proof",
@@ -163,6 +173,7 @@
         "label": "proof-prop-fokker-planck-kinetic"
       },
       "section": "## 3. The Kinetic Operator with Stratonovich Formulation",
+      "references": [],
       "raw_directive": "449: :::\n450: \n451: :::{prf:proof}\n452: :label: proof-prop-fokker-planck-kinetic\n453: **Proof.**\n454: \n455: This follows from standard SDE theory. For Stratonovich SDEs, the Fokker-Planck equation is derived by:\n456: \n457: 1. Converting to It\u00f4 form (adding the Stratonovich correction)\n458: 2. Applying the It\u00f4-to-Fokker-Planck correspondence\n459: \n460: For our isotropic case where Stratonovich = It\u00f4, the derivation is immediate from It\u00f4's lemma applied to test functions.\n461: "
     },
     {
@@ -181,6 +192,7 @@
         "label": "rem-formal-invariant-measure"
       },
       "section": "## 3. The Kinetic Operator with Stratonovich Formulation",
+      "references": [],
       "raw_directive": "463: :::\n464: \n465: :::{prf:remark} Formal Invariant Measure (Without Boundary)\n466: :label: rem-formal-invariant-measure\n467: \n468: On the **unbounded domain** $\\mathbb{R}^d \\times \\mathbb{R}^d$ without the boundary condition, the Fokker-Planck equation admits the formal invariant density:\n469: \n470: $$\n471: \\rho_{\\infty}(x,v) \\propto e^{-U(x) - \\frac{1}{2\\sigma_v^2/\\gamma}\\|v\\|^2}\n472: \n473: $$\n474: \n475: This is the **canonical Gibbs distribution** for position and velocity.\n476: "
     },
     {
@@ -199,6 +211,7 @@
         "label": "def-baoab-integrator"
       },
       "section": "## 3. The Kinetic Operator with Stratonovich Formulation",
+      "references": [],
       "raw_directive": "482: For practical implementation, the Stratonovich SDE is discretized using splitting schemes.\n483: \n484: :::{prf:definition} BAOAB Integrator for Stratonovich Langevin\n485: :label: def-baoab-integrator\n486: \n487: The **BAOAB splitting scheme** (Leimkuhler & Matthews, 2013) is a symmetric, second-order accurate integrator for underdamped Langevin dynamics:\n488: \n489: **B-step (velocity drift from force):**\n490: \n491: $$\n492: v^{(1)} = v^{(0)} + \\frac{\\tau}{2} F(x^{(0)})\n493: \n494: $$\n495: \n496: **A-step (position update):**\n497: \n498: $$\n499: x^{(1)} = x^{(0)} + \\frac{\\tau}{2} v^{(1)}\n500: \n501: $$\n502: \n503: **O-step (Ornstein-Uhlenbeck for friction + noise):**\n504: \n505: $$\n506: v^{(2)} = e^{-\\gamma \\tau} v^{(1)} + \\sqrt{\\frac{\\sigma_v^2}{\\gamma}(1 - e^{-2\\gamma\\tau})} \\, \\xi\n507: \n508: $$\n509: \n510: where $\\xi \\sim \\mathcal{N}(0, I_d)$.\n511: \n512: **A-step (position update, continued):**\n513: \n514: $$\n515: x^{(2)} = x^{(1)} + \\frac{\\tau}{2} v^{(2)}\n516: \n517: $$\n518: \n519: **B-step (velocity drift, continued):**\n520: \n521: $$\n522: v^{(3)} = v^{(2)} + \\frac{\\tau}{2} F(x^{(2)})\n523: \n524: $$\n525: \n526: **Output:** $(x^{(2)}, v^{(3)})$\n527: \n528: **Advantages:**\n529: - Symplectic (preserves phase space volume)\n530: - Second-order accurate in $\\tau$\n531: - Correct invariant distribution in the $\\tau \\to 0$ limit"
     }
   ],

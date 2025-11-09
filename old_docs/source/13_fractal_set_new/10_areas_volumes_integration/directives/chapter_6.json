@@ -19,6 +19,7 @@
         "label": "ex-wilson-action-computation"
       },
       "section": "## 7. Applications and Examples",
+      "references": [],
       "raw_directive": "892: ### 7.1. Wilson Loop Action Computation\n893: \n894: :::{prf:example} Computing Wilson Action for Lattice QFT\n895: :label: ex-wilson-action-computation\n896: \n897: From {doc}`08_lattice_qft_framework.md`, the Wilson action is:\n898: \n899: $$\n900: S_{\\text{Wilson}}[\\mathcal{F}] = \\sum_{P \\in \\text{Plaquettes}} \\left(1 - \\text{Re}[W[P]]\\right) \\cdot A_g(P)\n901: $$\n902: \n903: **Algorithm:**\n904: \n905: 1. **Identify plaquettes:** Find all elementary cycles in CST+IG\n906: 2. **For each plaquette $P$:**\n907:    - Extract 4 vertex positions\n908:    - Compute $A_g(P)$ using fan triangulation\n909:    - Compute Wilson loop $W[P]$ (parallel transport around $P$)\n910:    - Add $(1 - \\text{Re}[W[P]]) \\cdot A_g(P)$ to total\n911: \n912: 3. **Result:** Total gauge action\n913: \n914: **Physical interpretation:** Measures \"roughness\" of gauge field weighted by plaquette size.\n915: \n916: **Code:**\n917: ```python\n918: def compute_wilson_action(fractal_set, gauge_field, metric):\n919:     total_action = 0.0\n920: \n921:     for plaquette in fractal_set.find_plaquettes():\n922:         # Extract vertices\n923:         vertices = np.array([e.position for e in plaquette.episodes])\n924: \n925:         # Compute area\n926:         area = compute_riemannian_area_fan(vertices, metric)\n927: \n928:         # Compute Wilson loop\n929:         W = compute_wilson_loop(plaquette, gauge_field)\n930: \n931:         # Add to action\n932:         total_action += (1 - np.real(W)) * area\n933: \n934:     return total_action"
     },
     {
@@ -37,6 +38,7 @@
         "label": "ex-curvature-from-area-defect"
       },
       "section": "## 7. Applications and Examples",
+      "references": [],
       "raw_directive": "938: ### 7.2. Curvature Estimation via Area Defect\n939: \n940: :::{prf:example} Measuring Scalar Curvature from Plaquettes\n941: :label: ex-curvature-from-area-defect\n942: \n943: **Goal:** Estimate scalar curvature $R(x)$ at position $x$ from nearby plaquettes.\n944: \n945: **Method:**\n946: \n947: 1. **Find plaquettes near $x$:** Select all plaquettes $P$ with centroid within distance $\\epsilon$ of $x$\n948: \n949: 2. **For each plaquette:**\n950:    - Compute Euclidean area: $A_E(P) = \\text{FanTriangulation}(P, g=I)$\n951:    - Compute Riemannian area: $A_g(P) = \\text{FanTriangulation}(P, g)$\n952:    - Compute ratio: $r(P) = A_g(P) / A_E(P)$\n953: \n954: 3. **Estimate curvature:**\n955: \n956: $$\n957: R(x) \\approx \\frac{6(r_{\\text{avg}} - 1)}{A_{\\text{avg}}}\n958: $$\n959: \n960: where $r_{\\text{avg}} = \\frac{1}{N_P} \\sum_P r(P)$ and $A_{\\text{avg}} = \\frac{1}{N_P} \\sum_P A_E(P)$.\n961: \n962: **Physical interpretation:**\n963: - $R > 0$: Locally sphere-like (fitness landscape has well)\n964: - $R < 0$: Locally saddle-like (fitness landscape has pass)\n965: - $R \\approx 0$: Locally flat\n966: "
     },
     {
@@ -55,6 +57,7 @@
         "label": "ex-algorithmic-entropy"
       },
       "section": "## 7. Applications and Examples",
+      "references": [],
       "raw_directive": "970: ### 7.3. Entropy and Information Content\n971: \n972: :::{prf:example} Algorithmic Entropy from Accessible Volume\n973: :label: ex-algorithmic-entropy\n974: \n975: The **algorithmic entropy** measures the \"effective dimensionality\" of the search space.\n976: \n977: **Definition:**\n978: \n979: $$\n980: S_{\\text{alg}} := \\log V_g(\\mathcal{A})\n981: $$\n982: \n983: where $\\mathcal{A} = \\{x : U(x) < U_{\\text{kill}}\\}$ is the alive set.\n984: \n985: **Discrete computation:**\n986: \n987: 1. **Convex hull:** Compute convex hull of all episode positions\n988: 2. **Simplicial decomposition:** Tetrahedralize (3D) or generalize\n989: 3. **Sum volumes:** $V_g(\\mathcal{A}) \\approx \\sum_{S} V_g(S)$\n990: 4. **Entropy:** $S_{\\text{alg}} = \\log V_g(\\mathcal{A})$\n991: \n992: **Use case:** Track $S_{\\text{alg}}(t)$ over time to measure:\n993: - Early exploration: $S$ increases rapidly (finding new regions)\n994: - Convergence: $S$ plateaus (explored all accessible regions)\n995: - Exploitation: $S$ decreases (focusing on high-fitness region)\n996: "
     }
   ],

@@ -19,6 +19,7 @@
         "label": "def-causal-set-volume"
       },
       "section": "## 5. Causal Set Mathematical Machinery on Fractal Set",
+      "references": [],
       "raw_directive": "416: ### 5.1. Causal Set Volume (D'Alembertian)\n417: \n418: :::{prf:definition} Causal Set Volume Element\n419: :label: def-causal-set-volume\n420: \n421: The **causal set volume** of an element $e \\in E$ is:\n422: \n423: $$\n424: V_{\\text{CST}}(e) := \\frac{1}{\\rho_0} \\sum_{e' \\in E} \\mathbb{1}_{e' \\prec e}\n425: $$\n426: \n427: where $\\rho_0$ is a reference density scale.\n428: \n429: For the Fractal Set, using adaptive density:\n430: \n431: $$\n432: V_{\\text{Fractal}}(e) := \\frac{1}{\\bar{\\rho}} \\sum_{e' \\in E} \\mathbb{1}_{e' \\prec e}\n433: $$\n434: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "prop-volume-convergence"
       },
       "section": "## 5. Causal Set Mathematical Machinery on Fractal Set",
+      "references": [],
       "raw_directive": "436: :::\n437: \n438: :::{prf:proposition} Volume Element Converges to Continuum\n439: :label: prop-volume-convergence\n440: \n441: For episodes $e_i$ at spacetime point $(t_i, x_i)$:\n442: \n443: $$\n444: \\lim_{N \\to \\infty} V_{\\text{Fractal}}(e_i) = \\int_{-\\infty}^{t_i} dt \\int_{J^-(x_i, t)} \\sqrt{\\det g(x)} \\, dx\n445: $$\n446: "
     },
     {
@@ -55,6 +57,7 @@
         "label": "def-discrete-dalembertian"
       },
       "section": "## 5. Causal Set Mathematical Machinery on Fractal Set",
+      "references": [],
       "raw_directive": "450: ### 5.2. Causal Set d'Alembertian\n451: \n452: :::{prf:definition} Discrete d'Alembertian on Fractal Set\n453: :label: def-discrete-dalembertian\n454: \n455: The **causal set d'Alembertian** (Benincasa-Dowker operator) acting on a function $f: E \\to \\mathbb{R}$ is:\n456: \n457: $$\n458: (\\Box_{\\text{CST}} f)(e) := \\frac{2}{\\ell^2} \\sum_{e' \\in I^+(e)} \\sum_{e'' \\in I^-(e)} \\frac{f(e') - 2f(e) + f(e'')}{\\sqrt{|I(e'', e')| \\cdot |I(e, e')|}}\n459: $$\n460: \n461: where:\n462: - $I^+(e) = \\{e' : e \\prec e'\\}$ is the causal future\n463: - $I^-(e) = \\{e' : e' \\prec e\\}$ is the causal past"
     },
     {
@@ -73,6 +76,7 @@
         "label": "thm-dalembertian-convergence"
       },
       "section": "## 5. Causal Set Mathematical Machinery on Fractal Set",
+      "references": [],
       "raw_directive": "465: :::\n466: \n467: :::{prf:theorem} d'Alembertian Convergence on Fractal Set\n468: :label: thm-dalembertian-convergence\n469: \n470: For smooth functions $f: M \\to \\mathbb{R}$ on the emergent spacetime manifold $M = \\mathbb{R} \\times \\mathcal{X}$:\n471: \n472: $$\n473: \\lim_{N \\to \\infty} (\\Box_{\\text{CST}} f)(e_i) = (\\Box_{g_{\\mu\\nu}} f)(t_i, x_i) + O(N^{-1/2})\n474: $$\n475: \n476: where $\\Box_{g_{\\mu\\nu}} = g^{\\mu\\nu} \\nabla_\\mu \\nabla_\\nu$ is the continuum d'Alembertian for the Lorentzian metric:\n477: \n478: $$\n479: ds^2 = -c^2 dt^2 + g_{ij}(x) dx^i dx^j"
     },
     {
@@ -87,6 +91,7 @@
       "content": "482: \n483: :::{prf:proof}\n484: **Sketch**:\n485: \n486: 1. The Benincasa-Dowker operator is designed to approximate the continuum d'Alembertian through the causal structure.\n487: \n488: 2. For the Fractal Set, the causal intervals $I(e_1, e_2)$ contain $\\sim \\rho(x) \\cdot V_{\\text{Lorentz}}(I)$ episodes, where $V_{\\text{Lorentz}}$ is the Lorentzian volume.\n489: \n490: 3. The adaptive density $\\rho(x) = \\sqrt{\\det g(x)} \\psi(x)$ ensures proper weighting of the causal structure.\n491: \n492: 4. As $N \\to \\infty$, the discrete operator converges to the continuum d'Alembertian by the Central Limit Theorem and the Law of Large Numbers.\n493: \n494: **Detailed proof**: See Benincasa & Dowker (2010), \"The Scalar Curvature of a Causal Set\", *Phys. Rev. Lett.* **104**, 181301, adapted to non-uniform sprinkling density.",
       "metadata": {},
       "section": "## 5. Causal Set Mathematical Machinery on Fractal Set",
+      "references": [],
       "raw_directive": "481: :::\n482: \n483: :::{prf:proof}\n484: **Sketch**:\n485: \n486: 1. The Benincasa-Dowker operator is designed to approximate the continuum d'Alembertian through the causal structure.\n487: \n488: 2. For the Fractal Set, the causal intervals $I(e_1, e_2)$ contain $\\sim \\rho(x) \\cdot V_{\\text{Lorentz}}(I)$ episodes, where $V_{\\text{Lorentz}}$ is the Lorentzian volume.\n489: \n490: 3. The adaptive density $\\rho(x) = \\sqrt{\\det g(x)} \\psi(x)$ ensures proper weighting of the causal structure.\n491: \n492: 4. As $N \\to \\infty$, the discrete operator converges to the continuum d'Alembertian by the Central Limit Theorem and the Law of Large Numbers.\n493: \n494: **Detailed proof**: See Benincasa & Dowker (2010), \"The Scalar Curvature of a Causal Set\", *Phys. Rev. Lett.* **104**, 181301, adapted to non-uniform sprinkling density.\n495: "
     },
     {
@@ -105,6 +110,7 @@
         "label": "def-myrheim-meyer-fractal"
       },
       "section": "## 5. Causal Set Mathematical Machinery on Fractal Set",
+      "references": [],
       "raw_directive": "499: ### 5.3. Causal Set Dimensions and Curvature\n500: \n501: :::{prf:definition} Myrheim-Meyer Dimension on Fractal Set\n502: :label: def-myrheim-meyer-fractal\n503: \n504: The **Myrheim-Meyer dimension estimator** for the Fractal Set is:\n505: \n506: $$\n507: d_{\\text{MM}}(e_1, e_2) := \\frac{\\ln \\mathbb{E}[|I(e_1, e_2)|]}{\\ln \\mathbb{E}[\\sqrt{|I(e_1, e_3)| \\cdot |I(e_3, e_2)|}]}\n508: $$\n509: \n510: where $e_3$ is a random element with $e_1 \\prec e_3 \\prec e_2$.\n511: \n512: **Expected value**: For the Fractal Set in a $d$-dimensional manifold:\n513: \n514: $$\n515: \\mathbb{E}[d_{\\text{MM}}(e_1, e_2)] = d + O(\\Delta t^{-1})\n516: $$\n517: "
     },
     {
@@ -123,6 +129,7 @@
         "label": "prop-ricci-scalar-causal-set"
       },
       "section": "## 5. Causal Set Mathematical Machinery on Fractal Set",
+      "references": [],
       "raw_directive": "519: :::\n520: \n521: :::{prf:proposition} Ricci Scalar from Causal Set\n522: :label: prop-ricci-scalar-causal-set\n523: \n524: The **Ricci scalar curvature** can be estimated from the Fractal Set via:\n525: \n526: $$\n527: R_{\\text{CST}}(e) := \\lim_{\\delta \\to 0} \\frac{6}{\\delta^2} \\left(1 - \\frac{\\mathbb{E}[|I_\\delta(e)|]}{V_{\\text{flat}}(\\delta)}\\right)\n528: $$\n529: \n530: where:\n531: - $I_\\delta(e) = \\{e' : e' \\prec e, t - t' < \\delta\\}$ is a small causal interval\n532: - $V_{\\text{flat}}(\\delta) = (c\\delta)^d \\Omega_d / d!$ is the flat-space volume of a causal diamond with temporal extent $\\delta$\n533: - $\\Omega_d$ is the volume of the unit $d$-ball\n534: \n535: **Convergence**: For the Fractal Set:\n536: \n537: $$\n538: \\lim_{N \\to \\infty, \\delta \\to 0} R_{\\text{CST}}(e_i) = R(t_i, x_i)\n539: $$\n540: "
     }
   ],

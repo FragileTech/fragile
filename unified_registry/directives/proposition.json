@@ -1,7 +1,7 @@
 {
   "stage": "directives",
   "directive_type": "proposition",
-  "generated_at": "2025-11-08T17:16:20.405181+00:00",
+  "generated_at": "2025-11-08T23:19:38.397162+00:00",
   "source_documents": [
     "01_fragile_gas_framework",
     "03_cloning",
@@ -45,6 +45,7 @@
         "label": "prop-w2-bound-no-offset"
       },
       "section": "## 18. Swarm Update Operator: A Composition of Measures",
+      "references": [],
       "raw_directive": "5096: We now recast the continuity bound in the 2-Wasserstein metric on the output space, which removes additive offsets that arise from independent randomness.\n5097: :::{prf:definition} Wasserstein-2 on the output space (quotient)\n5098: :label: def-w2-output-metric\n5099: Let $(\\overline{\\Sigma}_N, \\overline d_{\\text{Disp},\\mathcal{Y}})$ denote the $N$-particle quotient state space with the displacement metric. For two probability measures $\\mu,\\nu$ on $\\overline{\\Sigma}_N$, define\n5100: $$\n5101: \n5102: W_2^2(\\mu,\\nu) := \\inf_{\\pi\\in\\Pi(\\mu,\\nu)} \\int \\overline d_{\\text{Disp},\\mathcal{Y}}(s',\\tilde s')^2\\,\\mathrm{d}\\pi(s',\\tilde s'),\n5103: \n5104: $$\n5105: where $\\Pi(\\mu,\\nu)$ is the set of couplings with marginals $\\mu$ and $\\nu$.\n5106: :::\n5107: :::{prf:proposition} W2 continuity bound without offset (for $k\\ge 2$)",
       "_registry_context": {
         "stage": "directives",
@@ -70,6 +71,7 @@
         "label": "prop-psi-markov-kernel"
       },
       "section": "## 18. Swarm Update Operator: A Composition of Measures",
+      "references": [],
       "raw_directive": "5132: $$\n5133: Repeating the stagewise bounds from Section 17.2.4 under this synchronous coupling yields the same linear and sub-linear dependencies on $V_{\\text{in}}=d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2$, while eliminating additive offsets that originate solely from independent randomness. In particular, when $\\mathcal{S}_1=\\mathcal{S}_2$, we have $F(\\mathcal{S}_1,\\Xi)=F(\\mathcal{S}_1,\\Xi)$ almost surely and the expectation on the right-hand side is zero. This gives the stated bound with no constant term.\n5134: The coefficients $C_{\\Psi,L}, C_{\\Psi,H}$ are exactly those defined in 17.2.4.1, and $\\alpha_H^{\\mathrm{global}}$ is as in 17.2.4. The inequality follows by combining the intermediate estimates with the unification lemma (17.2.4.3).\n5135: **Q.E.D.**",
       "_registry_context": {
         "stage": "directives",
@@ -95,6 +97,7 @@
         "label": "prop-coefficient-regularity"
       },
       "section": "## 18. Swarm Update Operator: A Composition of Measures",
+      "references": [],
       "raw_directive": "5148: :label: proof-prop-psi-markov-kernel\n5149: Let $F_{\\text{clone}},F_{\\text{pert}},F_{\\text{status}}$ denote the measurable stage maps and let $\\mathcal{K}_{\\text{clone}},\\mathcal{K}_{\\text{pert}},\\mathcal{K}_{\\text{status}}$ be their noise kernels. For each fixed input, pushforward of a measurable kernel under a measurable map yields a measurable kernel. By composition, the concatenation of these stagewise kernels is a measurable kernel (standard closure of Markov kernels under composition on measurable spaces). Thus $\\Psi$ is a Markov kernel on $(\\Sigma_N,\\mathcal{B}(\\Sigma_N))$.\n5150: Moreover, the synchronous coupling used in [](#subsec-w2-coupling-offset-removal) is realized by taking the product probability space for the stagewise noises and identifying the same noise coordinate for the paired inputs. Hence the $W_2$ bound in [](#prop-w2-bound-no-offset) is a continuity statement for the Markov kernel $\\Psi$ viewed as a map $\\mathcal{S}\\mapsto \\Psi(\\mathcal{S},\\cdot)$.\n5151: **Q.E.D.**\n5152: :::\n5153: :::{prf:remark}\n5154: :label: rem-context-5056\n5155: Feller-type (continuity-preserving) properties for $\\Psi$ follow from the stagewise measurability and continuity assumptions stated in Section 2 for the operators and aggregators; on compact (or sublevel) sets these imply boundedness and continuity of the induced kernel maps.\n5156: :::\n5157: ##### 17.2.4.6. Regularity of State-Dependent Coefficients on Sublevel Sets",
       "_registry_context": {
         "stage": "directives",
@@ -120,6 +123,7 @@
         "label": "prop-barrier-existence"
       },
       "section": "## 2. The Coupled State Space and State Differences",
+      "references": [],
       "raw_directive": "208: Under the assumption of a regular domain, we can state and prove the existence of our desired barrier function.\n209: \n210: :::{prf:proposition} Existence of a Global Smooth Barrier Function\n211: :label: prop-barrier-existence\n212: \n213: Let $\\mathcal{X}_{\\text{valid}}$ satisfy the conditions of Axiom EG-0. Then there exists a function $\\varphi: \\mathcal{X}_{\\text{valid}} \\to \\mathbb{R}$ with the following properties:\n214: 1.  **Smoothness:** $\\varphi(x)$ is $C^{\\infty}$-smooth on $\\mathcal{X}_{\\text{valid}}$.\n215: 2.  **Positivity:** $\\varphi(x)$ is strictly positive for all $x \\in \\mathcal{X}_{\\text{valid}}$.",
       "_registry_context": {
         "stage": "directives",
@@ -145,6 +149,7 @@
         "label": "prop-lyapunov-necessity"
       },
       "section": "## 3. The Augmented Hypocoercive Lyapunov Function",
+      "references": [],
       "raw_directive": "918: The inclusion of both $W_h^2$ (inter-swarm error) and $V_{\\text{Var}}$ (intra-swarm error) in the Lyapunov function is not merely convenient but mathematically necessary. This subsection explains why the specific weighted-sum structure is required for proving convergence.\n919: \n920: :::{prf:proposition} Necessity of the Augmented Lyapunov Structure\n921: :label: prop-lyapunov-necessity\n922: \n923: The Lyapunov function $V_{\\text{total}} = W_h^2 + c_V V_{\\text{Var}} + c_B W_b$ with three distinct weighted components is mathematically necessary for the following reasons:\n924: \n925: **1. Complementary Information Content**\n926: \n927: The two kinematic components measure fundamentally different aspects of swarm error:\n928: \n929: - **$W_h^2(\\mu_1, \\mu_2)$**: Measures how far apart the two swarms are **as distributions**. This is the squared Wasserstein distance between the full empirical measures $\\mu_1$ and $\\mu_2$. It quantifies the minimal transport cost to transform one swarm's distribution into the other's.\n930: \n931: - **$V_{\\text{Var}}(S_1, S_2)$**: Measures the **internal dispersion within each swarm**. This is the sum of the internal variances (positional and velocity) of each swarm's alive-walker population.\n932: \n933: These quantities contain **non-redundant information**:\n934: - A system can have **small $W_h^2$ but large $V_{\\text{Var}}$**: Both swarms have similar empirical measures (so Wasserstein distance is small), but each swarm is internally highly dispersed (large variance).\n935: - A system can have **small $V_{\\text{Var}}$ but large $W_h^2$**: Both swarms are internally tight clusters (small variance), but the two tight clusters are far apart in phase space (large Wasserstein distance).\n936: \n937: **2. Operator-Specific Targeting**\n938: \n939: The two stochastic operators act on fundamentally different error components:\n940: \n941: - **The Cloning Operator $\\Psi_{\\text{clone}}$**: Acts **within** each swarm independently. It selects walkers based on their fitness **relative to their own swarm's distribution**. The cloning mechanism directly targets $V_{\\text{Var}}$ by eliminating low-fitness walkers and duplicating high-fitness walkers, thereby reducing the internal spread of each swarm's distribution.\n942: \n943: - **The Kinetic Operator $\\Psi_{\\text{kin}}$**: Contains a drift term $F(x)$ (the negative gradient of a confining potential) that acts on walker positions. This drift causes walkers in both swarms to move toward regions of lower potential, thereby moving both swarms' barycenters toward the same equilibrium. This directly targets $W_h^2$ by reducing the distance between the swarms' centers of mass.\n944: \n945: **3. Synergistic Dissipation Necessity**\n946: \n947: Neither operator can contract the full hypocoercive norm $\\|\\!(\\delta x, \\delta v)\\!\\|_h^2 = \\|\\delta x\\|^2 + \\lambda_v \\|\\delta v\\|^2$ in both position and velocity simultaneously:\n948: \n949: - **Velocity Desynchronization from Cloning**: When the cloning operator duplicates a walker, it adds Gaussian jitter to the velocity: $v_{\\text{new}} = v_{\\text{parent}} + \\mathcal{N}(0, \\delta^2 I_d)$. This randomization **breaks velocity correlations** between swarms, causing the velocity component of the structural error to increase (expansion of the velocity-related parts of $W_h^2$). Additionally, the cloning mechanism creates a distribution of velocities within each swarm that may increase $V_{\\text{Var},v}$.\n950: \n951: - **Positional Diffusion from Kinetic Noise**: The Langevin equation for the kinetic step includes a diffusion term: $dx = (\\text{drift terms}) \\, dt + \\sigma \\, dW$. This stochastic noise **desynchronizes positions** between the two swarms' trajectories, causing positional components to expand. It also contributes to an increase in $V_{\\text{Var},x}$ within each swarm.\n952: \n953: **4. The Weighted Sum as a Solution**\n954: \n955: The augmented Lyapunov function resolves this by allowing us to **balance expansions against contractions**:\n956: \n957: $$\n958: \\mathbb{E}[V_{\\text{total}}(t+1) - V_{\\text{total}}(t)] = \\underbrace{\\mathbb{E}[\\Delta W_h^2]}_{\\Psi_{\\text{clone}}: +, \\ \\Psi_{\\text{kin}}: -} + c_V \\underbrace{\\mathbb{E}[\\Delta V_{\\text{Var}}]}_{\\Psi_{\\text{clone}}: -, \\ \\Psi_{\\text{kin}}: +} + c_B \\underbrace{\\mathbb{E}[\\Delta W_b]}_{\\text{both: } -}\n959: $$\n960: \n961: By choosing the coupling constant $c_V$ appropriately, we can ensure that:\n962: - The **strong contraction** of $V_{\\text{Var}}$ under $\\Psi_{\\text{clone}}$ (weighted by $c_V$) **dominates** the bounded expansion of $W_h^2$ under $\\Psi_{\\text{clone}}$.\n963: - The **strong contraction** of $W_h^2$ under $\\Psi_{\\text{kin}}$ **dominates** the bounded expansion of $c_V V_{\\text{Var}}$ under $\\Psi_{\\text{kin}}$.\n964: \n965: This yields **net negative drift**: $\\mathbb{E}[V_{\\text{total}}(t+1) - V_{\\text{total}}(t)] \\leq -\\kappa V_{\\text{total}}(t) + C$ for some $\\kappa > 0$.\n966: \n967: **5. The Boundary Term $W_b$**\n968: \n969: The term $c_B W_b$ ensures that walkers near the boundary $\\partial \\mathcal{X}_{\\text{valid}}$ are penalized. Both operators have mechanisms that contract this term:\n970: - **$\\Psi_{\\text{clone}}$**: Walkers near the boundary have lower survival probability and are thus eliminated and replaced by clones of interior walkers.\n971: - **$\\Psi_{\\text{kin}}$**: The confining potential $U(x)$ and force field $F(x) = -\\nabla U(x)$ push walkers away from the boundary.\n972: ",
       "_registry_context": {
         "stage": "directives",
@@ -170,6 +175,7 @@
         "label": "prop-bounded-velocity-expansion"
       },
       "section": "## 5. The Measurement and Interaction Pipeline",
+      "references": [],
       "raw_directive": "2084: The following proposition formalizes the key property that enables the synergistic dissipation framework: the expansion of velocity variance caused by cloning is uniformly bounded.\n2085: \n2086: :::{prf:proposition} Bounded Velocity Variance Expansion from Cloning\n2087: :label: prop-bounded-velocity-expansion\n2088: \n2089: For any cloning event where a fraction $f_{\\text{clone}}$ of walkers are cloned with restitution coefficient $\\alpha_{\\text{restitution}}$, the change in internal velocity variance from the velocity resets is bounded:\n2090: \n2091: $$\n2092: \\Delta V_{Var,v} \\leq f_{\\text{clone}} \\cdot C_{\\text{reset}} \\cdot V_{\\max,\\text{KE}}\n2093: $$\n2094: ",
       "_registry_context": {
         "stage": "directives",
@@ -195,6 +201,7 @@
         "label": "prop-satisfiability-of-snr-gamma"
       },
       "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
+      "references": [],
       "raw_directive": "3481: This section provides the formal proof that this condition, which we call the **Signal-to-Noise Condition**, is not an unstated assumption but a satisfiable criterion that can be met by a valid choice of the algorithm's user-defined parameters. We prove this by introducing a **Signal Gain** parameter, $\\gamma$, which acts as a sensitivity knob for the algorithm. This proves that the system is fundamentally \"learnable\": the signal generated by geometric error can always be amplified sufficiently to overcome the worst-case statistical noise, ensuring that a true difference between the high-error and low-error populations is always detectable.\n3482: \n3483: :::{prf:proposition} **(Satisfiability of the Signal-to-Noise Condition via Signal Gain)**\n3484: :label: prop-satisfiability-of-snr-gamma\n3485: \n3486: Let the rescaled diversity values be defined as $d'_i = g_A(\\gamma · z_{d,i}) + \\eta$, where $\\gamma > 0$ is a user-defined **Signal Gain** parameter and `g_A` is any function satisfying the **Axiom of a Well-Behaved Rescale Function**.\n3487: \n3488: For any system in a high-error state (`Var(x) > R^{2}_var`) that generates a non-zero raw distance signal ($\\kappa_meas(d) > 0$), there exists a sufficiently large choice of $\\gamma$ that satisfies the **Signal-to-Noise Condition**:\n3489: \n3490: $$\n3491: \\kappa_{\\mathrm{var}}(d') > \\operatorname{Var}_{\\max}(d')\n3492: $$\n3493: ",
       "_registry_context": {
         "stage": "directives",
@@ -220,6 +227,7 @@
         "label": "prop-corrective-signal-bound"
       },
       "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
+      "references": [],
       "raw_directive": "4296: This proposition forges the complete link from a macroscopic state of high geometric error to a guaranteed, non-vanishing corrective signal in the logarithmic space of the fitness potential.\n4297: \n4298: :::{prf:proposition} **(Lower Bound on the Corrective Diversity Signal)**\n4299: :label: prop-corrective-signal-bound\n4300: \n4301: Let a swarm state be in the high-error regime, such that the variance of its rescaled diversity values, `d'`, is bounded below, $\\operatorname{Var}(d') \\ge \\kappa_{d', \\text{var}} > 0$. Let the system parameters be chosen such that the Signal-to-Noise Condition of [](#lem-variance-to-mean-separation) is satisfied, i.e., $\\kappa_{d', \\text{var}} > \\operatorname{Var}_{\\max}(d')$.\n4302: \n4303: Then the expected logarithmic gap in the diversity signal between the high-error population $H_k$ and the low-error population $L_k$ is bounded below by a strictly positive, N-uniform constant:\n4304: \n4305: $$\n4306: \\mathbb{E}[\\ln(d')|H_k] - \\mathbb{E}[\\ln(d')|L_k] \\ge \\ln\\left(1 + \\frac{\\kappa_{d', \\text{mean}}}{g_{A,\\max}+\\eta}\\right) > 0\n4307: $$\n4308: ",
       "_registry_context": {
         "stage": "directives",
@@ -245,6 +253,7 @@
         "label": "prop-adversarial-signal-bound-naive"
       },
       "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
+      "references": [],
       "raw_directive": "4342: Before deriving the final stability condition, it is instructive to first establish a \"naive\" upper bound on the adversarial reward signal. This bound considers the absolute worst-case scenario allowed by the range of the rescale function, without yet invoking the axioms that constrain the reward landscape's structure. This will serve as a baseline to demonstrate the critical importance of those axioms.\n4343: \n4344: :::{prf:proposition} **(Worst-Case Upper Bound on the Adversarial Reward Signal)**\n4345: :label: prop-adversarial-signal-bound-naive\n4346: \n4347: For any swarm state, the maximum possible expected logarithmic gap in the rescaled reward signal, $r'$, between the low-error and high-error populations is uniformly bounded above by a constant derived only from the rescale function's range:\n4348: \n4349: $$\n4350: \\mathbb{E}[\\ln(r')|L_k] - \\mathbb{E}[\\ln(r')|H_k] \\le \\ln\\left(1 + \\frac{g_{A,\\max}}{\\eta}\\right)\n4351: $$",
       "_registry_context": {
         "stage": "directives",
@@ -270,6 +279,7 @@
         "label": "prop-raw-reward-mean-gap-bound"
       },
       "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
+      "references": [],
       "raw_directive": "4405: The following propositions build a chain of reasoning from the Lipschitz continuity of the raw reward function to a final, tight bound on the expected logarithmic gap.\n4406: \n4407: :::{prf:proposition} **(Lipschitz Bound on the Raw Reward Mean Gap)**\n4408: :label: prop-raw-reward-mean-gap-bound\n4409: \n4410: Let the reward function's positional component, $R_{\\text{pos}}(x)$, be Lipschitz continuous on the valid domain $\\mathcal{X}_{\\text{valid}}$ with constant $L_{R}$, as per the **Axiom of Reward Regularity**. Let the diameter of $\\mathcal{X}_{\\text{valid}}$ be $D_{\\text{valid}}$.\n4411: \n4412: For any swarm, the absolute difference between the mean raw rewards of the high-error population $H_k$ and the low-error population $L_k$ is uniformly bounded:\n4413: \n4414: $$\n4415: |\\mu_R(L_k) - \\mu_R(H_k)| \\le L_{R} \\cdot D_{\\mathrm{valid}} =: \\kappa_{\\mathrm{raw},r,\\text{adv}}\n4416: $$",
       "_registry_context": {
         "stage": "directives",
@@ -295,6 +305,7 @@
         "label": "prop-log-reward-gap-axiom-bound"
       },
       "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
+      "references": [],
       "raw_directive": "4442: This raw reward gap now propagates through the measurement pipeline.\n4443: \n4444: :::{prf:proposition} **(Axiom-Based Bound on the Logarithmic Reward Gap)**\n4445: :label: prop-log-reward-gap-axiom-bound\n4446: \n4447: Under the **Axiom of Reward Regularity**, the expected logarithmic gap in the rescaled reward signal is bounded by:\n4448: \n4449: $$\n4450: \\mathbb{E}[\\ln(r')|L_k] - \\mathbb{E}[\\ln(r')|H_k] \\le \\ln\\left(1 + \\frac{\\kappa_{\\mathrm{rescaled}}(L_R \\cdot D_{\\mathrm{valid}})}{\\eta}\\right)\n4451: $$\n4452: ",
       "_registry_context": {
         "stage": "directives",
@@ -320,6 +331,7 @@
         "label": "prop-n-uniformity-keystone"
       },
       "section": "## 8. The N-Uniform Quantitative Keystone Lemma",
+      "references": [],
       "raw_directive": "5561: We now provide a formal verification that both Keystone constants, $\\chi(\\epsilon)$ and $g_{\\max}(\\epsilon)$, are **strictly independent of the swarm size N**, establishing that they are $O(1)$ as $N \\to \\infty$.\n5562: \n5563: :::{prf:proposition} N-Uniformity of Keystone Constants\n5564: :label: prop-n-uniformity-keystone\n5565: \n5566: The Keystone constants $\\chi(\\epsilon)$ and $g_{\\max}(\\epsilon)$ are strictly independent of the swarm size $N$. More precisely, for any fixed choice of system parameters ($\\epsilon$, domain, pipeline parameters, etc.), there exist finite positive constants $\\chi_0(\\epsilon)$ and $g_0(\\epsilon)$ such that for all $N \\geq 2$:\n5567: \n5568: $$\n5569: \\chi(\\epsilon) = \\chi_0(\\epsilon) \\quad \\text{and} \\quad g_{\\max}(\\epsilon) = g_0(\\epsilon)\n5570: $$\n5571: ",
       "_registry_context": {
         "stage": "directives",
@@ -345,6 +357,7 @@
         "label": "prop-expected-displacement-cloning"
       },
       "section": "## 9.5. Key Quantities for Drift Analysis",
+      "references": [],
       "raw_directive": "6246: :::\n6247: \n6248: :::{prf:proposition} Expected Displacement Under Cloning\n6249: :label: prop-expected-displacement-cloning\n6250: \n6251: For walker $i$ with cloning probability $p_i$, the expected squared position displacement satisfies:\n6252: \n6253: $$\n6254: \\mathbb{E}[\\|\\Delta x_i\\|^2 \\mid S] \\leq p_i \\cdot D_{\\text{max}}^2\n6255: $$\n6256: \n6257: where $D_{\\text{max}}$ is the maximum distance in the valid domain (or a suitable bound on the jitter kernel range).\n6258: ",
       "_registry_context": {
         "stage": "directives",
@@ -370,6 +383,7 @@
         "label": "prop-kinetic-necessity"
       },
       "section": "## 12.3. The Complete Lyapunov Drift Under Cloning",
+      "references": [],
       "raw_directive": "8187: ### 12.3.3. Why Cloning Alone Cannot Achieve Convergence\n8188: \n8189: :::{prf:proposition} Necessity of the Kinetic Operator\n8190: :label: prop-kinetic-necessity\n8191: \n8192: The cloning operator alone cannot guarantee convergence to a quasi-stationary distribution. Specifically:\n8193: \n8194: 1. **Velocity variance accumulation:** The bounded expansion $+C_v$ per step can accumulate without bound over infinite time if not countered.\n8195: \n8196: 2. **Inter-swarm divergence:** The bounded expansion $+C_W$ means the two coupled swarms can drift arbitrarily far apart without inter-swarm correction.\n8197: \n8198: 3. **No velocity equilibrium:** Cloning has no mechanism to dissipate kinetic energy toward a target distribution - it only redistributes it through collisions.\n8199: \n8200: Therefore, the **kinetic operator is essential** to:\n8201: - Contract $V_{\\text{Var},v}$ via Langevin friction (overcoming $C_v$)\n8202: - Contract $V_W$ via hypocoercive drift and confining potential (overcoming $C_W$)",
       "_registry_context": {
         "stage": "directives",
@@ -395,6 +409,7 @@
         "label": "prop-coupling-constant-existence"
       },
       "section": "## 12.4. The Synergistic Dissipation Framework",
+      "references": [],
       "raw_directive": "8335: ### 12.4.3. Parameter Balancing\n8336: \n8337: :::{prf:proposition} Existence of Valid Coupling Constants\n8338: :label: prop-coupling-constant-existence\n8339: \n8340: There exist coupling constants $c_V, c_B > 0$ that satisfy the synergistic drift condition, provided the algorithmic parameters satisfy:\n8341: \n8342: **Cloning Parameters:**\n8343: - Sufficient measurement quality: $\\epsilon > \\epsilon_{\\min}$ for detectable variance\n8344: - Sufficient cloning responsiveness: $\\varepsilon_{\\text{clone}}$ small, $p_{\\max}$ large\n8345: - Sufficient fitness weight on rewards: $\\beta > 0$ for boundary detection\n8346: \n8347: **Kinetic Parameters:**\n8348: - Sufficient friction: $\\gamma > \\gamma_{\\min}$ for velocity dissipation\n8349: - Sufficient confinement: $\\|\\nabla U(x)\\|$ large enough far from equilibrium\n8350: - Small enough noise: $\\sigma_v^2$ to prevent excessive velocity heating\n8351: \n8352: **Balance Condition:**\n8353: \n8354: $$\n8355: \\frac{\\kappa_x}{\\text{(kinetic diffusion)}} > 1, \\quad \\frac{\\kappa_v}{\\text{(cloning velocity expansion)}} > 1, \\quad \\frac{\\kappa_W}{C_W} > 1\n8356: $$",
       "_registry_context": {
         "stage": "directives",
@@ -420,6 +435,7 @@
         "label": "prop-cg-color-amplitude-phase"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "178: :::\n179: \n180: :::{prf:proposition} Amplitude-Phase Factorization\n181: :label: prop-cg-color-amplitude-phase\n182: \n183: Each color phase $\\varphi_i^a$ can be written in amplitude-phase form:\n184: \n185: $$\n186: \\varphi_i^a = \\rho_i \\cdot \\theta_i^a\n187: $$\n188: \n189: where:\n190: - **Amplitude (common to all colors):**\n191: \n192: $$\n193: \\rho_i := \\|F_i\\| \\cdot \\|p_i\\| = \\|F_i \\otimes p_i\\|\n194: $$\n195: \n196: - **Phase (distinguishes colors):**\n197: \n198: $$\n199: \\theta_i^a := \\frac{\\varphi_i^a}{\\rho_i} = \\frac{\\text{Tr}(T_i^{\\text{traceless}} \\cdot \\lambda^a)}{2 \\|F_i\\| \\cdot \\|p_i\\|}\n200: $$\n201: \n202: The 8 phases $\\{\\theta_i^a\\}_{a=1}^{8}$ are unit-normalized:\n203: \n204: $$\n205: \\sum_{a=1}^{8} (\\theta_i^a)^2 = 1",
       "_registry_context": {
         "stage": "directives",
@@ -445,6 +461,7 @@
         "label": "prop-cg-su2-geometry"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "297: :::\n298: \n299: :::{prf:proposition} Geometric Origin of SU(2)\n300: :label: prop-cg-su2-geometry\n301: \n302: The 3-component direction vector $\\hat{r} \\in S^{2}$ naturally encodes SU(2) structure through the **Hopf fibration**:\n303: \n304: $$\n305: S^{3} \\to S^{2}, \\quad \\text{with fiber } S^{1} \\cong \\text{U}(1)\n306: $$\n307: \n308: Specifically, $S^{2} \\cong \\text{SU}(2)/\\text{U}(1)$, so rotations of $\\hat{r}$ on the sphere correspond to SU(2) gauge transformations modulo U(1) phase.\n309: ",
       "_registry_context": {
         "stage": "directives",
@@ -470,6 +487,7 @@
         "label": "prop-cg-chirality"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "355: :::\n356: \n357: :::{prf:proposition} Chirality and Left/Right-Handed Structure\n358: :label: prop-cg-chirality\n359: \n360: Walkers in the Crystalline Gas naturally separate into **left-handed (doublet)** and **right-handed (singlet)** representations of SU(2)_L based on the fitness comparison:\n361: \n362: **Left-handed (couples to SU(2)_L):**\n363: - Condition: $\\Phi(x_{j^*(i)}) > \\Phi(x_i)$ (companion has higher fitness)\n364: - Equivalently: $S_{\\text{ascent}} > 0$\n365: - Weak isospin: $T_3 = \\frac{1}{2} \\cdot \\text{sign}(\\hat{r}_z)$\n366:   - $T_3 = +1/2$ if companion is in $+z$ hemisphere\n367:   - $T_3 = -1/2$ if companion is in $-z$ hemisphere\n368: \n369: **Right-handed (decouples from SU(2)_L):**\n370: - Condition: $\\Phi(x_{j^*(i)}) \\leq \\Phi(x_i)$ (walker is local optimum)\n371: - Equivalently: $S_{\\text{ascent}} \\leq 0$\n372: - Weak isospin: $T_3 = 0$\n373: ",
       "_registry_context": {
         "stage": "directives",
@@ -495,6 +513,10 @@
         "label": "prop-cg-hypercharge-assignment"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [
+        "prop-cg-chirality",
+        "lem-cg-velocity-isotropy"
+      ],
       "raw_directive": "454: :::\n455: \n456: :::{prf:proposition} Hypercharge Assignment via Gell-Mann-Nishijima Formula\n457: :label: prop-cg-hypercharge-assignment\n458: \n459: The hypercharge $Y$ of walker $i$ is related to its electric charge $Q$ and weak isospin $T_3$ by:\n460: \n461: $$\n462: Y = 2(Q - T_3)\n463: $$\n464: \n465: where:\n466: - $Q$ is determined by the fitness value $\\Phi(x_i)$ (normalized as \"charge\")\n467: - $T_3 = \\pm 1/2$ or $0$ from the SU(2) structure ({prf:ref}`prop-cg-chirality`)\n468: \n469: For walkers at equilibrium with $\\langle T_3 \\rangle = 0$ (velocity isotropy, {prf:ref}`lem-cg-velocity-isotropy`), we have:\n470: \n471: $$\n472: \\langle Y \\rangle = 2 \\langle Q \\rangle = 0\n473: $$\n474: ",
       "_registry_context": {
         "stage": "directives",
@@ -520,6 +542,7 @@
         "label": "prop-exact-distance-change"
       },
       "section": "## Section 4 Updates: Quadratic Scaling Fixes",
+      "references": [],
       "raw_directive": "994: This is the key mathematical insight that resolves the scaling mismatch. Instead of geometric approximations, we use the exact algebraic formula.\n995: \n996: :::{prf:proposition} Exact Distance Change for Cloning\n997: :label: prop-exact-distance-change\n998: \n999: Let $S$ be a swarm with $N$ walkers at positions $\\{x_1, \\ldots, x_N\\}$ and global barycenter $\\bar{x} = \\frac{1}{N}\\sum_{p=1}^N x_p$.\n1000: \n1001: When the cloning operator replaces walker $i$ with a clone of walker $j$ (position $x'_i = x_j + \\zeta$ where $\\zeta$ is jitter), the change in sum of squared distances to all other walkers is:\n1002: \n1003: $$\n1004: \\Delta D_i := \\sum_{k \\neq i} \\|x'_k - x'_\\ell\\|^2 - \\sum_{k \\neq i} \\|x_k - x_\\ell\\|^2\n1005: $$\n1006: \n1007: **Exact Formula (pre-jitter):**\n1008: \n1009: $$\n1010: \\Delta D_i = -(N-1)\\|x_j - x_i\\|^2 - 2N\\langle x_j - x_i, x_i - \\bar{x}\\rangle\n1011: $$\n1012: \n1013: **With jitter:** Add $O(N \\delta^2)$ variance.\n1014: \n1015: **Proof:**\n1016: \n1017: Only distances involving walker $i$ change. The change is:\n1018: \n1019: $$\n1020: \\Delta D_i = \\sum_{k \\neq i} (\\|x_j - x_k\\|^2 - \\|x_i - x_k\\|^2)\n1021: $$\n1022: \n1023: **Key identity:** For any vectors $a, b, c$:\n1024: \n1025: $$\n1026: \\|a - c\\|^2 - \\|b - c\\|^2 = \\|a - b\\|^2 + 2\\langle a - b, b - c \\rangle\n1027: $$\n1028: \n1029: **Proof of identity:**\n1030: \n1031: $$\n1032: \\|a-c\\|^2 - \\|b-c\\|^2 = (\\|a\\|^2 - 2\\langle a,c\\rangle + \\|c\\|^2) - (\\|b\\|^2 - 2\\langle b,c\\rangle + \\|c\\|^2)\n1033: $$\n1034: \n1035: $$\n1036: = \\|a\\|^2 - \\|b\\|^2 - 2\\langle a-b, c\\rangle\n1037: $$\n1038: \n1039: $$\n1040: = \\|a-b\\|^2 + 2\\langle a,b\\rangle - 2\\langle a,c\\rangle - 2\\langle b, -c\\rangle\n1041: $$\n1042: \n1043: $$\n1044: = \\|a-b\\|^2 + 2\\langle a-b, b\\rangle - 2\\langle a-b, c\\rangle\n1045: $$\n1046: \n1047: $$\n1048: = \\|a-b\\|^2 + 2\\langle a-b, b-c\\rangle\n1049: $$\n1050: \n1051: **Apply identity:** With $a = x_j, b = x_i, c = x_k$:\n1052: \n1053: $$\n1054: \\|x_j - x_k\\|^2 - \\|x_i - x_k\\|^2 = \\|x_j - x_i\\|^2 + 2\\langle x_j - x_i, x_i - x_k \\rangle\n1055: $$\n1056: \n1057: **Sum over $k \\neq i$:**\n1058: \n1059: $$\n1060: \\Delta D_i = (N-1)\\|x_j - x_i\\|^2 + 2\\langle x_j - x_i, \\sum_{k \\neq i}(x_i - x_k) \\rangle\n1061: $$\n1062: \n1063: **Simplify the sum:**\n1064: \n1065: $$\n1066: \\sum_{k \\neq i}(x_i - x_k) = (N-1)x_i - \\sum_{k \\neq i} x_k = (N-1)x_i - (N\\bar{x} - x_i) = N(x_i - \\bar{x})\n1067: $$\n1068: \n1069: **Therefore:**\n1070: \n1071: $$\n1072: \\Delta D_i = (N-1)\\|x_j - x_i\\|^2 + 2N\\langle x_j - x_i, x_i - \\bar{x} \\rangle\n1073: $$\n1074: \n1075: For Wasserstein distance, we care about $D_{ii} - D_{ji}$ (replacing $i$ with clone from $j$), which has opposite sign:\n1076: \n1077: $$\n1078: D_{ii} - D_{ji} = -\\Delta D_i = -(N-1)\\|x_j - x_i\\|^2 - 2N\\langle x_j - x_i, x_i - \\bar{x} \\rangle\n1079: $$\n1080: ",
       "_registry_context": {
         "stage": "directives",
@@ -545,6 +568,10 @@
         "label": "prop-case-b-quadratic-bound"
       },
       "section": "## Section 4 Updates: Quadratic Scaling Fixes",
+      "references": [
+        "prop-exact-distance-change",
+        "cor-quadratic-scaling-wasserstein"
+      ],
       "raw_directive": "1348: **REPLACE THE ENTIRE CURRENT SECTION 4.4 WITH THIS:**\n1349: \n1350: :::{prf:proposition} Quadratic Geometric Bound for Case B\n1351: :label: prop-case-b-quadratic-bound\n1352: \n1353: For Case B with walker $i \\in H_1$ (outlier in swarm 1) and companion $j = \\pi(i) \\in L_1$ (low-error in swarm 1), the distance difference satisfies:\n1354: \n1355: $$\n1356: D_{ii} - D_{ji} \\geq c_B L^2 - C_{\\text{err}}\n1357: $$\n1358: \n1359: where:\n1360: - $c_B = \\frac{1}{2N}$ is the quadratic constant\n1361: - $C_{\\text{err}} = O(N L R_H)$ is the error term\n1362: - For $L \\gg R_H$, the quadratic term dominates\n1363: \n1364: **Proof:**\n1365: \n1366: We use the Exact Distance Change Identity (Proposition {prf:ref}`prop-exact-distance-change`).\n1367: \n1368: **Apply Corollary {prf:ref}`cor-quadratic-scaling-wasserstein`:**\n1369: \n1370: For outlier $i \\in S_1$ cloning from companion $\\pi(i) \\in S_2$:\n1371: \n1372: $$\n1373: D_{ii} - D_{ji} \\geq L^2 + O(NLR_H)\n1374: $$\n1375: \n1376: **Accounting for empirical measure normalization:**\n1377: \n1378: The Wasserstein-2 distance for empirical measures involves summing over all pairs and normalizing:\n1379: \n1380: $$\n1381: W_2^2(\\mu_1, \\mu_2) = \\frac{1}{N^2} \\sum_{i,j} \\|x_{1,i} - x_{2,j}\\|^2\n1382: $$\n1383: \n1384: For a single pair contribution:\n1385: \n1386: $$\n1387: \\frac{D_{ii} - D_{ji}}{N} \\geq \\frac{L^2}{N} + O(LR_H)\n1388: $$\n1389: \n1390: **For the contraction analysis:**\n1391: \n1392: The relevant quantity is the ratio of contraction term to total distance:\n1393: \n1394: $$\n1395: \\frac{D_{ii} - D_{ji}}{D_{ii} + D_{jj}} \\approx \\frac{L^2}{2L^2} = \\frac{1}{2}\n1396: $$\n1397: \n1398: This is $O(1)$ and **independent of $L$**!\n1399: \n1400: **Setting constants:**\n1401: \n1402: $$\n1403: c_B = \\frac{1}{2N}, \\quad C_{\\text{err}} = 2N L R_H\n1404: $$\n1405: \n1406: For $L > D_{\\min} = 10R_H$, the ratio $C_{\\text{err}}/(c_B L^2) = O(R_H/L) < 1/10$, so the quadratic term dominates.\n1407: ",
       "_registry_context": {
         "stage": "directives",
@@ -570,6 +597,7 @@
         "label": "prop-explicit-kappa-pair"
       },
       "section": "## 5. Unified Single-Pair Lemma",
+      "references": [],
       "raw_directive": "1897: For practical implementation and verification, we provide explicit formulas for all constants.\n1898: \n1899: :::{prf:proposition} Explicit Single-Pair Contraction Constant\n1900: :label: prop-explicit-kappa-pair\n1901: \n1902: Under the stated axioms, the single-pair contraction constant satisfies:\n1903: \n1904: $$\n1905: \\kappa_{\\text{pair}} \\geq \\frac{1}{4} \\cdot \\frac{p_u \\eta_{\\text{geo}}}{2} \\cdot f_{UH}(\\varepsilon) \\cdot q_{\\min}(\\varepsilon)\n1906: $$\n1907: \n1908: where:\n1909: - $p_u = \\exp(-\\beta \\Delta V_{\\max})$ (minimum survival probability)\n1910: - $\\eta_{\\text{geo}} = \\frac{c_0^2}{2(1 + 2c_H)^2}$ (geometric efficiency)\n1911: - $f_{UH}(\\varepsilon) \\geq \\varepsilon^2 / 4$ (unfit-high-error overlap fraction)\n1912: - $q_{\\min}(\\varepsilon) \\geq \\exp(-\\beta V_{\\max}) / Z$ (minimum Gibbs weight)\n1913: \n1914: **Concrete Lower Bound**: For parameter regime $\\varepsilon = 0.1$, $\\beta = 1$, $\\Delta V_{\\max} = 10$:\n1915: $$\n1916: \\kappa_{\\text{pair}} \\geq \\frac{1}{4} \\cdot \\frac{e^{-10} \\cdot c_0^2}{4(1 + 2c_H)^2} \\cdot \\frac{0.01}{4} \\cdot \\frac{e^{-V_{\\max}}}{Z}\n1917: $$\n1918: ",
       "_registry_context": {
         "stage": "directives",
@@ -595,6 +623,7 @@
         "label": "prop-matching-conditional-contraction"
       },
       "section": "## 6. Sum Over Matching",
+      "references": [],
       "raw_directive": "2067: ### 6.2. Linearity of Expectation\n2068: \n2069: :::{prf:proposition} Matching-Conditional Contraction\n2070: :label: prop-matching-conditional-contraction\n2071: \n2072: For a fixed matching $M$:\n2073: \n2074: $$\n2075: \\mathbb{E}[W_2^2(\\mu_{S_1'}, \\mu_{S_2'}) \\mid M, S_1, S_2] \\leq \\gamma_{\\text{pair}} W_2^2(\\mu_{S_1}, \\mu_{S_2}) + C_{\\text{pair}}\n2076: $$\n2077: ",
       "_registry_context": {
         "stage": "directives",
@@ -620,6 +649,7 @@
         "label": "prop-full-expectation-matching"
       },
       "section": "## 7. Integration Over Matching Distribution",
+      "references": [],
       "raw_directive": "2108: The coupling is **asymmetric**: $P(M | S_1)$ depends only on $S_1$, not $S_2$.\n2109: \n2110: :::{prf:proposition} Full Expectation Over Matching\n2111: :label: prop-full-expectation-matching\n2112: \n2113: Taking expectation over the matching distribution:\n2114: \n2115: $$\n2116: \\mathbb{E}_{M \\sim P(\\cdot | S_1)}[\\mathbb{E}[W_2^2(\\mu_{S_1'}, \\mu_{S_2'}) \\mid M]] \\leq \\gamma_{\\text{pair}} W_2^2(\\mu_{S_1}, \\mu_{S_2}) + C_{\\text{pair}}",
       "_registry_context": {
         "stage": "directives",
@@ -645,6 +675,7 @@
         "label": "prop-n-uniformity"
       },
       "section": "## 8. Main Wasserstein-2 Contraction Theorem",
+      "references": [],
       "raw_directive": "2448: A critical property for mean-field limit is that the contraction constant $\\kappa_W$ is **independent of the number of walkers $N$**.\n2449: \n2450: :::{prf:proposition} N-Uniformity of Contraction Constant\n2451: :label: prop-n-uniformity\n2452: \n2453: The contraction constant $\\kappa_W$ is independent of $N$ in the following sense:\n2454: \n2455: For each component:\n2456: 1. $p_u = \\exp(-\\beta \\Delta V_{\\max})$ ✓ **N-independent** (fitness bounds from axioms)\n2457: 2. $\\eta_{\\text{geo}} = \\frac{c_0^2}{2(1 + 2c_H)^2}$ ✓ **N-independent** (geometric constants)\n2458: 3. $f_{UH}(\\varepsilon)$ is a **fraction** ✓ **N-independent** (ratio of walker counts)\n2459: 4. $q_{\\min}(\\varepsilon)$ appears to scale as $1/N^2$ ✗ **BUT** see below\n2460: \n2461: **Resolution of $q_{\\min}$ N-Dependence**:\n2462: \n2463: The minimum matching probability is:\n2464: $$\n2465: q_{\\min} = \\min_{i,j} \\frac{\\exp(-\\beta V_{\\text{fit},1,i}) \\exp(-\\beta V_{\\text{fit},2,j})}{Z_1 Z_2}\n2466: $$\n2467: \n2468: where $Z_k = \\sum_{\\ell=1}^N \\exp(-\\beta V_{\\text{fit},k,\\ell}) \\sim N$ for large $N$.\n2469: \n2470: Thus, $q_{\\min} \\sim 1/N^2$, which seems to make $\\kappa_W \\sim 1/N^2$.\n2471: \n2472: **However**, in the expectation over matching:\n2473: $$\n2474: \\mathbb{E}_\\pi[\\kappa_{\\text{pair}}] = \\sum_{i=1}^N \\sum_{j=1}^N q_{ij} \\cdot \\kappa_{\\text{pair}}(i, j)\n2475: $$\n2476: \n2477: The sum has $N^2$ terms, each with weight $q_{ij} \\sim 1/N^2$, giving **cancellation**:\n2478: $$\n2479: \\sum_{i,j} q_{ij} = 1 \\quad \\text{(normalization)}\n2480: $$\n2481: \n2482: Therefore, the **effective** contraction constant is:\n2483: $$\n2484: \\kappa_W^{\\text{eff}} = \\sum_{i,j} q_{ij} \\cdot \\kappa_{\\text{pair}}(i, j)\n2485: $$\n2486: \n2487: For pairs in Case B (which occur with fraction $f_{UH}$):\n2488: $$\n2489: \\kappa_W^{\\text{eff}} \\geq f_{UH} \\cdot \\min_{\\text{Case B pairs}} \\kappa_{\\text{pair}}(i, j)\n2490: $$\n2491: ",
       "_registry_context": {
         "stage": "directives",
@@ -665,12 +696,15 @@
       ],
       "content_start": 433,
       "content_end": 446,
-      "content": "433: :label: prop-fokker-planck-kinetic\n434: \n435: Let $\\rho(x,v,t)$ be the probability density of a single walker at time $t$. Under the kinetic SDE (Definition 3.2.1), $\\rho$ evolves according to:\n436: \n437: $$\n438: \\partial_t \\rho = -v \\cdot \\nabla_x \\rho - \\nabla_v \\cdot [(F(x) - \\gamma v) \\rho] + \\frac{1}{2}\\sum_{i,j} \\partial_{v_i}\\partial_{v_j}[(\\Sigma\\Sigma^T)_{ij} \\rho]\n439: \n440: $$\n441: \n442: **Key Terms:**\n443: \n444: 1. **Transport:** $-v \\cdot \\nabla_x \\rho$ (position advection by velocity)\n445: 2. **Drift:** $-\\nabla_v \\cdot [(F(x) - \\gamma v)\\rho]$ (force and friction)\n446: 3. **Diffusion:** $\\frac{1}{2}\\text{Tr}(\\Sigma\\Sigma^T \\nabla_v^2 \\rho)$ (thermal noise)",
+      "content": "433: :label: prop-fokker-planck-kinetic\n434: \n435: Let $\\rho(x,v,t)$ be the probability density of a single walker at time $t$. Under the kinetic SDE ({prf:ref}`def-kinetic-operator-stratonovich`), $\\rho$ evolves according to:\n436: \n437: $$\n438: \\partial_t \\rho = -v \\cdot \\nabla_x \\rho - \\nabla_v \\cdot [(F(x) - \\gamma v) \\rho] + \\frac{1}{2}\\sum_{i,j} \\partial_{v_i}\\partial_{v_j}[(\\Sigma\\Sigma^T)_{ij} \\rho]\n439: \n440: $$\n441: \n442: **Key Terms:**\n443: \n444: 1. **Transport:** $-v \\cdot \\nabla_x \\rho$ (position advection by velocity)\n445: 2. **Drift:** $-\\nabla_v \\cdot [(F(x) - \\gamma v)\\rho]$ (force and friction)\n446: 3. **Diffusion:** $\\frac{1}{2}\\text{Tr}(\\Sigma\\Sigma^T \\nabla_v^2 \\rho)$ (thermal noise)",
       "metadata": {
         "label": "prop-fokker-planck-kinetic"
       },
       "section": "## 3. The Kinetic Operator with Stratonovich Formulation",
-      "raw_directive": "430: The kinetic operator induces evolution of the swarm's probability density.\n431: \n432: :::{prf:proposition} Fokker-Planck Equation for the Kinetic Operator\n433: :label: prop-fokker-planck-kinetic\n434: \n435: Let $\\rho(x,v,t)$ be the probability density of a single walker at time $t$. Under the kinetic SDE (Definition 3.2.1), $\\rho$ evolves according to:\n436: \n437: $$\n438: \\partial_t \\rho = -v \\cdot \\nabla_x \\rho - \\nabla_v \\cdot [(F(x) - \\gamma v) \\rho] + \\frac{1}{2}\\sum_{i,j} \\partial_{v_i}\\partial_{v_j}[(\\Sigma\\Sigma^T)_{ij} \\rho]\n439: \n440: $$\n441: \n442: **Key Terms:**\n443: \n444: 1. **Transport:** $-v \\cdot \\nabla_x \\rho$ (position advection by velocity)\n445: 2. **Drift:** $-\\nabla_v \\cdot [(F(x) - \\gamma v)\\rho]$ (force and friction)\n446: 3. **Diffusion:** $\\frac{1}{2}\\text{Tr}(\\Sigma\\Sigma^T \\nabla_v^2 \\rho)$ (thermal noise)\n447: ",
+      "references": [
+        "def-kinetic-operator-stratonovich"
+      ],
+      "raw_directive": "430: The kinetic operator induces evolution of the swarm's probability density.\n431: \n432: :::{prf:proposition} Fokker-Planck Equation for the Kinetic Operator\n433: :label: prop-fokker-planck-kinetic\n434: \n435: Let $\\rho(x,v,t)$ be the probability density of a single walker at time $t$. Under the kinetic SDE ({prf:ref}`def-kinetic-operator-stratonovich`), $\\rho$ evolves according to:\n436: \n437: $$\n438: \\partial_t \\rho = -v \\cdot \\nabla_x \\rho - \\nabla_v \\cdot [(F(x) - \\gamma v) \\rho] + \\frac{1}{2}\\sum_{i,j} \\partial_{v_i}\\partial_{v_j}[(\\Sigma\\Sigma^T)_{ij} \\rho]\n439: \n440: $$\n441: \n442: **Key Terms:**\n443: \n444: 1. **Transport:** $-v \\cdot \\nabla_x \\rho$ (position advection by velocity)\n445: 2. **Drift:** $-\\nabla_v \\cdot [(F(x) - \\gamma v)\\rho]$ (force and friction)\n446: 3. **Diffusion:** $\\frac{1}{2}\\text{Tr}(\\Sigma\\Sigma^T \\nabla_v^2 \\rho)$ (thermal noise)\n447: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "05_kinetic_contraction",
@@ -695,6 +729,7 @@
         "label": "prop-complete-drift-summary"
       },
       "section": "## 3. Synergistic Composition and Foster-Lyapunov Condition",
+      "references": [],
       "raw_directive": "247: We summarize all drift results:\n248: \n249: :::{prf:proposition} Complete Drift Characterization\n250: :label: prop-complete-drift-summary\n251: \n252: | Component | $\\mathbb{E}_{\\text{clone}}[\\Delta \\cdot]$ | $\\mathbb{E}_{\\text{kin}}[\\Delta \\cdot]$ |\n253: |:----------|:------------------------------------------|:----------------------------------------|\n254: | $V_W$ | $\\leq C_W$ | $\\leq -\\kappa_W V_W \\tau + C_W'\\tau$ |\n255: | $V_{\\text{Var},x}$ | $\\leq -\\kappa_x V_{\\text{Var},x} + C_x$ | $\\leq C_{\\text{kin},x}\\tau$ |\n256: | $V_{\\text{Var},v}$ | $\\leq C_v$ | $\\leq -2\\gamma V_{\\text{Var},v}\\tau + d\\sigma_{\\max}^2\\tau$ |\n257: | $W_b$ | $\\leq -\\kappa_b W_b + C_b$ | $\\leq -\\kappa_{\\text{pot}} W_b \\tau + C_{\\text{pot}}\\tau$ |\n258: \n259: **Sources:**\n260: - Cloning drifts: 03_cloning.md Theorem 12.3.1",
       "_registry_context": {
         "stage": "directives",
@@ -720,6 +755,7 @@
         "label": "prop-qsd-properties"
       },
       "section": "## 4. Main Convergence Theorem and Quasi-Stationary Distribution",
+      "references": [],
       "raw_directive": "1019: ### 4.6. Physical Interpretation of the QSD\n1020: \n1021: :::{prf:proposition} Properties of the Quasi-Stationary Distribution\n1022: :label: prop-qsd-properties\n1023: \n1024: The QSD $\\nu_{\\text{QSD}}$ satisfies:\n1025: \n1026: **1. Position Distribution:**\n1027: \n1028: The marginal position distribution is approximately:\n1029: $$\n1030: \\rho_{\\text{pos}}(x) \\propto e^{-U(x) - \\varphi_{\\text{barrier}}(x)} \\quad \\text{for } x \\in \\mathcal{X}_{\\text{valid}}\n1031: $$\n1032: \n1033: Walkers are concentrated in low-potential regions, avoiding the boundary.\n1034: \n1035: **2. Velocity Distribution:**\n1036: \n1037: The marginal velocity distribution approaches:\n1038: $$\n1039: \\rho_{\\text{vel}}(v) \\propto e^{-\\frac{\\|v\\|^2}{2\\sigma_v^2/\\gamma}}\n1040: $$\n1041: \n1042: The Gibbs distribution at effective temperature $\\sigma_v^2/\\gamma$.\n1043: \n1044: **3. Correlations:**\n1045: \n1046: Position-velocity correlations decay exponentially:\n1047: $$\n1048: \\mathbb{E}_{\\nu_{\\text{QSD}}}[\\langle x - \\bar{x}, v - \\bar{v}\\rangle] = O(e^{-\\gamma \\Delta t})\n1049: $$\n1050: \n1051: over time separation $\\Delta t$.\n1052: \n1053: **4. Internal Variance:**\n1054: \n1055: The equilibrium variances satisfy:\n1056: $$\n1057: V_{\\text{Var},x}^{\\text{QSD}} = O(C_x/\\kappa_x), \\quad V_{\\text{Var},v}^{\\text{QSD}} = O(\\sigma_v^2/\\gamma)\n1058: $$\n1059: ",
       "_registry_context": {
         "stage": "directives",
@@ -745,6 +781,7 @@
         "label": "prop-velocity-rate-explicit"
       },
       "section": "## 5. Explicit Parameter Dependence and Convergence Rates",
+      "references": [],
       "raw_directive": "1241: **Explicit expansion:**\n1242: \n1243: :::{prf:proposition} Velocity Dissipation Rate (Parameter-Explicit)\n1244: :label: prop-velocity-rate-explicit\n1245: \n1246: The velocity variance dissipation rate and equilibrium constant are:\n1247: \n1248: $$\n1249: \\kappa_v = 2\\gamma - O(\\tau)\n1250: $$\n1251: \n1252: $$\n1253: C_v' = \\frac{d \\sigma_v^2}{\\gamma} + O(\\tau \\sigma_v^2)\n1254: $$\n1255: \n1256: **Proof:**\n1257: \n1258: From the BAOAB scheme (Eq. 1.15), the O-step gives:\n1259: \n1260: $$\n1261: v_{n+1/2} = e^{-\\gamma \\tau} v_n + \\sqrt{\\frac{\\sigma_v^2}{\\gamma}(1 - e^{-2\\gamma\\tau})} \\xi_n\n1262: $$\n1263: \n1264: The expected variance after this step is:\n1265: \n1266: $$\n1267: \\mathbb{E}[\\|v_{n+1/2}\\|^2] = e^{-2\\gamma\\tau} \\mathbb{E}[\\|v_n\\|^2] + d \\frac{\\sigma_v^2}{\\gamma}(1 - e^{-2\\gamma\\tau})\n1268: $$\n1269: \n1270: Expanding $e^{-2\\gamma\\tau} = 1 - 2\\gamma\\tau + 2\\gamma^2\\tau^2 + O(\\tau^3)$:\n1271: \n1272: $$\n1273: \\mathbb{E}[\\|v_{n+1/2}\\|^2] = (1 - 2\\gamma\\tau + 2\\gamma^2\\tau^2) \\mathbb{E}[\\|v_n\\|^2] + d \\sigma_v^2 (2\\tau - 2\\gamma\\tau^2 + O(\\tau^3))\n1274: $$\n1275: \n1276: $$\n1277: = \\mathbb{E}[\\|v_n\\|^2] - 2\\gamma\\tau \\mathbb{E}[\\|v_n\\|^2] + 2d\\sigma_v^2 \\tau + O(\\tau^2)\n1278: $$\n1279: \n1280: The swarm-averaged variance is:\n1281: \n1282: $$\n1283: V_{\\text{Var},v} = \\frac{1}{N}\\sum_{i=1}^N \\|v_i - \\bar{v}\\|^2 = \\frac{1}{N}\\sum_{i=1}^N \\|v_i\\|^2 - \\|\\bar{v}\\|^2\n1284: $$\n1285: \n1286: The expected drift is:\n1287: \n1288: $$\n1289: \\mathbb{E}[\\Delta V_{\\text{Var},v}] = -2\\gamma\\tau V_{\\text{Var},v} + 2d\\sigma_v^2 \\tau + O(\\tau^2 V_{\\text{Var},v} + \\tau^2 \\sigma_v^2)\n1290: $$\n1291: \n1292: Dividing by $\\tau$ and taking the continuous limit:\n1293: \n1294: $$\n1295: \\frac{d}{dt}\\mathbb{E}[V_{\\text{Var},v}] = -2\\gamma V_{\\text{Var},v} + 2d\\sigma_v^2 + O(\\tau)\n1296: $$\n1297: \n1298: Thus:\n1299: - **Rate**: $\\kappa_v = 2\\gamma - O(\\tau)$\n1300: - **Constant**: $C_v' = 2d\\sigma_v^2 + O(\\tau \\sigma_v^2) = \\frac{d\\sigma_v^2}{\\gamma} \\cdot 2\\gamma + O(\\tau\\sigma_v^2)$\n1301: \n1302: **Equilibrium**: Setting the drift to zero gives:\n1303: \n1304: $$\n1305: V_{\\text{Var},v}^{\\text{eq}} = \\frac{C_v'}{\\kappa_v} = \\frac{d\\sigma_v^2}{\\gamma}(1 + O(\\tau))\n1306: $$\n1307: ",
       "_registry_context": {
         "stage": "directives",
@@ -770,6 +807,7 @@
         "label": "prop-position-rate-explicit"
       },
       "section": "## 5. Explicit Parameter Dependence and Convergence Rates",
+      "references": [],
       "raw_directive": "1329: **Explicit expansion:**\n1330: \n1331: :::{prf:proposition} Positional Contraction Rate (Parameter-Explicit)\n1332: :label: prop-position-rate-explicit\n1333: \n1334: The positional variance contraction rate depends on the cloning rate $\\lambda$ and the fitness-variance correlation:\n1335: \n1336: $$\n1337: \\kappa_x = \\lambda \\cdot \\mathbb{E}\\left[\\frac{\\text{Cov}(f_i, \\|x_i - \\bar{x}\\|^2)}{\\mathbb{E}[\\|x_i - \\bar{x}\\|^2]}\\right] + O(\\tau)\n1338: $$\n1339: \n1340: The equilibrium constant is:\n1341: \n1342: $$\n1343: C_x = O\\left(\\frac{\\sigma_v^2 \\tau^3}{\\gamma}\\right) + O(\\tau \\sigma_x^2)\n1344: $$\n1345: \n1346: where $\\sigma_x^2 \\sim \\sigma_v^2 \\tau^2$ is the effective positional diffusion.\n1347: \n1348: **Proof:**\n1349: \n1350: From the Keystone Principle (03_cloning.md, Theorem 5.1), the cloning operator contracts positional variance via the fitness-variance anti-correlation:\n1351: \n1352: $$\n1353: \\mathbb{E}[\\Delta V_{\\text{Var},x}^{\\text{clone}}] = -\\lambda \\cdot \\frac{\\sum_{i=1}^N f_i \\|x_i - \\bar{x}\\|^2}{\\sum_{j=1}^N f_j} + \\lambda \\cdot \\frac{(\\sum_{i=1}^N f_i \\|x_i - \\bar{x}\\|)^2}{(\\sum_{j=1}^N f_j)^2}\n1354: $$\n1355: \n1356: For large $N$ and centered distribution:\n1357: \n1358: $$\n1359: \\mathbb{E}[\\Delta V_{\\text{Var},x}^{\\text{clone}}] \\approx -\\lambda \\cdot \\text{Cov}(f_i, \\|x_i - \\bar{x}\\|^2) + O(1/N)\n1360: $$\n1361: \n1362: Normalizing by $V_{\\text{Var},x} = \\mathbb{E}[\\|x_i - \\bar{x}\\|^2]$:\n1363: \n1364: $$\n1365: \\kappa_x = \\lambda \\cdot \\frac{\\text{Cov}(f_i, \\|x_i - \\bar{x}\\|^2)}{V_{\\text{Var},x}}\n1366: $$\n1367: \n1368: The kinetic operator expands positional variance via:\n1369: \n1370: $$\n1371: \\mathbb{E}[\\Delta V_{\\text{Var},x}^{\\text{kin}}] = \\mathbb{E}\\left[\\frac{1}{N}\\sum_{i=1}^N (v_i - \\bar{v}) \\cdot (x_i - \\bar{x})\\right] \\tau + O(\\tau^2)\n1372: $$\n1373: \n1374: For thermalized velocities ($\\mathbb{E}[v \\mid x]$ weakly correlated):\n1375: \n1376: $$\n1377: \\mathbb{E}[\\Delta V_{\\text{Var},x}^{\\text{kin}}] \\lesssim \\sqrt{V_{\\text{Var},x} V_{\\text{Var},v}} \\tau\n1378: $$\n1379: \n1380: Using $V_{\\text{Var},v} \\sim \\sigma_v^2/\\gamma$:\n1381: \n1382: $$\n1383: C_x \\sim \\sqrt{V_{\\text{Var},x}} \\cdot \\frac{\\sigma_v}{\\sqrt{\\gamma}} \\tau + O(\\tau^2)\n1384: $$\n1385: \n1386: For equilibrium $V_{\\text{Var},x}^{\\text{eq}} = C_x/\\kappa_x$, we get:\n1387: \n1388: $$\n1389: C_x \\sim \\frac{\\sigma_v^2 \\tau^2}{\\gamma \\kappa_x} + O(\\tau^2)\n1390: $$\n1391: \n1392: Assuming $\\kappa_x \\sim \\lambda$:\n1393: \n1394: $$\n1395: C_x \\sim \\frac{\\sigma_v^2 \\tau^2}{\\gamma \\lambda}\n1396: $$\n1397: \n1398: **Higher-order correction:** The $O(\\tau)$ in $\\kappa_x$ comes from positional diffusion during BAB steps:\n1399: \n1400: $$\n1401: \\Delta x = v \\tau + O(\\tau^2), \\quad \\Delta V_{\\text{Var},x} \\sim 2\\langle v, x - \\bar{x}\\rangle \\tau + O(\\tau^2)\n1402: $$\n1403: ",
       "_registry_context": {
         "stage": "directives",
@@ -795,6 +833,7 @@
         "label": "prop-wasserstein-rate-explicit"
       },
       "section": "## 5. Explicit Parameter Dependence and Convergence Rates",
+      "references": [],
       "raw_directive": "1427: **Explicit expansion:**\n1428: \n1429: :::{prf:proposition} Wasserstein Contraction Rate (Parameter-Explicit)\n1430: :label: prop-wasserstein-rate-explicit\n1431: \n1432: The Wasserstein contraction rate depends on friction and the spectral gap of the potential:\n1433: \n1434: $$\n1435: \\kappa_W = \\frac{c_{\\text{hypo}}^2 \\gamma}{1 + \\gamma^2/\\lambda_{\\min}^2}\n1436: $$\n1437: \n1438: where:\n1439: - $c_{\\text{hypo}} \\sim 0.1 - 1$ is the hypocoercivity constant (from proof in Section 2)\n1440: - $\\lambda_{\\min}$ is the smallest eigenvalue of the Hessian $\\nabla^2 U(x)$ in the relevant region\n1441: \n1442: The equilibrium constant is:\n1443: \n1444: $$\n1445: C_W' = O\\left(\\frac{\\sigma_v^2 \\tau}{\\gamma N^{1/d}}\\right) + O(\\tau^2)\n1446: $$\n1447: \n1448: **Proof:**\n1449: \n1450: From Theorem 2.1 (Hypocoercive Wasserstein Contraction), the continuous-time generator satisfies:\n1451: \n1452: $$\n1453: \\frac{d}{dt}\\mathbb{E}[V_W] \\leq -\\kappa_W V_W + \\text{Source terms}\n1454: $$\n1455: \n1456: The hypocoercive rate comes from the interplay of:\n1457: 1. **Velocity equilibration** (rate $\\sim \\gamma$)\n1458: 2. **Positional mixing** (rate $\\sim \\lambda_{\\min}$)\n1459: \n1460: The optimal rate is achieved when these are balanced:\n1461: \n1462: $$\n1463: \\kappa_W \\sim \\frac{\\gamma \\lambda_{\\min}}{\\gamma + \\lambda_{\\min}}\n1464: $$\n1465: \n1466: For underdamped dynamics ($\\gamma \\ll \\lambda_{\\min}$):\n1467: \n1468: $$\n1469: \\kappa_W \\sim \\gamma\n1470: $$\n1471: \n1472: For overdamped dynamics ($\\gamma \\gg \\lambda_{\\min}$):\n1473: \n1474: $$\n1475: \\kappa_W \\sim \\lambda_{\\min}\n1476: $$\n1477: \n1478: The explicit formula with hypocoercivity constant $c_{\\text{hypo}}$ from the proof:\n1479: \n1480: $$\n1481: \\kappa_W = c_{\\text{hypo}}^2 \\cdot \\frac{\\gamma \\lambda_{\\min}}{\\gamma + \\lambda_{\\min}} = \\frac{c_{\\text{hypo}}^2 \\gamma}{1 + \\gamma/\\lambda_{\\min}}\n1482: $$\n1483: \n1484: The source term $C_W'$ comes from:\n1485: 1. **Stochastic noise**: Each particle receives independent kicks of size $\\sim \\sigma_v \\sqrt{\\tau}$, contributing:\n1486: \n1487: $$\n1488: \\Delta W_2 \\sim \\frac{1}{\\sqrt{N}} \\sigma_v \\sqrt{\\tau}\n1489: $$\n1490: \n1491: (Law of large numbers for empirical measures)\n1492: \n1493: 2. **Discretization error**: The BAOAB scheme introduces $O(\\tau^2)$ weak error per step.\n1494: \n1495: Combining:\n1496: \n1497: $$\n1498: C_W' \\sim \\frac{\\sigma_v^2 \\tau}{N^{1/d}} + O(\\tau^2)\n1499: $$\n1500: ",
       "_registry_context": {
         "stage": "directives",
@@ -820,6 +859,7 @@
         "label": "prop-boundary-rate-explicit"
       },
       "section": "## 5. Explicit Parameter Dependence and Convergence Rates",
+      "references": [],
       "raw_directive": "1526: **Explicit expansion:**\n1527: \n1528: :::{prf:proposition} Boundary Contraction Rate (Parameter-Explicit)\n1529: :label: prop-boundary-rate-explicit\n1530: \n1531: The boundary contraction rate depends on the cloning rate and boundary stiffness:\n1532: \n1533: $$\n1534: \\kappa_b = \\min\\left(\\lambda \\cdot \\frac{\\Delta f_{\\text{boundary}}}{f_{\\text{typical}}}, \\kappa_{\\text{wall}}\\right)\n1535: $$\n1536: \n1537: where:\n1538: - $\\Delta f_{\\text{boundary}} = f(\\text{interior}) - f(\\text{near boundary})$ is the fitness gap\n1539: - $\\kappa_{\\text{wall}} = \\kappa_{\\text{pot}} + \\gamma$ is the confining potential's contraction rate\n1540: \n1541: The equilibrium constant is:\n1542: \n1543: $$\n1544: C_b = O\\left(\\frac{\\sigma_v^2 \\tau}{d_{\\text{safe}}^2}\\right) + O(\\tau^2)\n1545: $$\n1546: \n1547: **Proof:**\n1548: \n1549: From the Safe Harbor Theorem (03_cloning.md, Section 7), the cloning operator removes walkers near the boundary at rate:\n1550: \n1551: $$\n1552: \\kappa_b^{\\text{clone}} = \\lambda \\cdot P(\\text{walker is near boundary}) \\cdot \\frac{\\Delta f_{\\text{boundary}}}{\\mathbb{E}[f]}\n1553: $$\n1554: \n1555: For walkers inside the Safe Harbor region ($|x - \\bar{x}| \\geq d_{\\text{safe}}$), the fitness deficit is:\n1556: \n1557: $$\n1558: \\Delta f_{\\text{boundary}} \\sim \\varphi_{\\text{barrier}}(x) - \\varphi_{\\text{barrier}}(\\bar{x}) \\sim \\kappa_{\\text{wall}} (x - \\bar{x})^2\n1559: $$\n1560: \n1561: Thus:\n1562: \n1563: $$\n1564: \\kappa_b^{\\text{clone}} \\sim \\lambda \\cdot \\frac{\\kappa_{\\text{wall}} d_{\\text{safe}}^2}{f_{\\text{typical}}}\n1565: $$\n1566: \n1567: The kinetic operator also contracts via the confining potential:\n1568: \n1569: $$\n1570: \\kappa_b^{\\text{kin}} = \\kappa_{\\text{pot}} + \\gamma\n1571: $$\n1572: \n1573: where $\\kappa_{\\text{pot}}$ comes from:\n1574: \n1575: $$\n1576: -\\nabla \\varphi_{\\text{barrier}}(x) = -\\kappa_{\\text{wall}} (x - x_{\\partial})\n1577: $$\n1578: \n1579: and $\\gamma$ from velocity damping.\n1580: \n1581: The total rate is the minimum:\n1582: \n1583: $$\n1584: \\kappa_b = \\min(\\kappa_b^{\\text{clone}}, \\kappa_b^{\\text{kin}})\n1585: $$\n1586: \n1587: The source term $C_b$ comes from thermal kicks pushing walkers outward:\n1588: \n1589: $$\n1590: \\Delta x \\sim v \\tau \\sim \\frac{\\sigma_v}{\\sqrt{\\gamma}} \\sqrt{\\tau} \\cdot \\tau = \\frac{\\sigma_v \\tau^{3/2}}{\\sqrt{\\gamma}}\n1591: $$\n1592: \n1593: The probability of reaching the boundary from distance $d_{\\text{safe}}$ in one step is:\n1594: \n1595: $$\n1596: P(\\text{reach boundary}) \\sim \\frac{\\sigma_v \\tau^{3/2}}{\\sqrt{\\gamma} d_{\\text{safe}}}\n1597: $$\n1598: \n1599: The expected increase in $W_b$ per step is:\n1600: \n1601: $$\n1602: C_b \\sim \\frac{\\sigma_v^2 \\tau}{d_{\\text{safe}}^2} + O(\\tau^2)",
       "_registry_context": {
         "stage": "directives",
@@ -845,6 +885,7 @@
         "label": "prop-mixing-time-explicit"
       },
       "section": "## 5. Explicit Parameter Dependence and Convergence Rates",
+      "references": [],
       "raw_directive": "1863: Using the explicit rates, we can estimate the time to reach equilibrium.\n1864: \n1865: :::{prf:proposition} Mixing Time (Parameter-Explicit)\n1866: :label: prop-mixing-time-explicit\n1867: \n1868: The time to reach $\\epsilon$-proximity to equilibrium is:\n1869: \n1870: $$\n1871: T_{\\text{mix}}(\\epsilon) = \\frac{1}{\\kappa_{\\text{total}}} \\ln\\left(\\frac{V_{\\text{total}}^{\\text{init}}}{\\epsilon C_{\\text{total}}}\\right)\n1872: $$\n1873: \n1874: For typical initialization $V_{\\text{total}}^{\\text{init}} \\sim O(1)$ and target $\\epsilon = 0.01$:\n1875: \n1876: $$\n1877: T_{\\text{mix}} \\sim \\frac{5}{\\kappa_{\\text{total}}} = \\frac{5}{\\min(\\lambda, 2\\gamma, \\kappa_W, \\kappa_b)}\n1878: $$\n1879: \n1880: **Proof:**\n1881: \n1882: From the Foster-Lyapunov condition:\n1883: \n1884: $$\n1885: \\mathbb{E}[V_{\\text{total}}(t)] \\leq e^{-\\kappa_{\\text{total}} t} V_{\\text{total}}^{\\text{init}} + \\frac{C_{\\text{total}}}{\\kappa_{\\text{total}}}(1 - e^{-\\kappa_{\\text{total}} t})\n1886: $$\n1887: \n1888: At equilibrium:\n1889: \n1890: $$\n1891: \\mathbb{E}[V_{\\text{total}}^{\\text{eq}}] = \\frac{C_{\\text{total}}}{\\kappa_{\\text{total}}}\n1892: $$\n1893: \n1894: The error decays as:\n1895: \n1896: $$\n1897: |\\mathbb{E}[V_{\\text{total}}(t)] - V_{\\text{total}}^{\\text{eq}}| \\leq e^{-\\kappa_{\\text{total}} t} V_{\\text{total}}^{\\text{init}}\n1898: $$\n1899: \n1900: To reach $\\epsilon$-accuracy:\n1901: \n1902: $$\n1903: e^{-\\kappa_{\\text{total}} T_{\\text{mix}}} V_{\\text{total}}^{\\text{init}} = \\epsilon \\cdot V_{\\text{total}}^{\\text{eq}} = \\epsilon \\frac{C_{\\text{total}}}{\\kappa_{\\text{total}}}\n1904: $$\n1905: \n1906: Solving:\n1907: \n1908: $$\n1909: T_{\\text{mix}} = \\frac{1}{\\kappa_{\\text{total}}} \\ln\\left(\\frac{V_{\\text{total}}^{\\text{init}} \\kappa_{\\text{total}}}{\\epsilon C_{\\text{total}}}\\right)\n1910: $$\n1911: \n1912: For $V_{\\text{total}}^{\\text{init}} / C_{\\text{total}} \\sim O(1)$:\n1913: \n1914: $$\n1915: T_{\\text{mix}} \\sim \\frac{\\ln(1/\\epsilon)}{\\kappa_{\\text{total}}}\n1916: $$\n1917: ",
       "_registry_context": {
         "stage": "directives",
@@ -870,6 +911,7 @@
         "label": "prop-parameter-classification"
       },
       "section": "## 6. Spectral Analysis of Parameter Coupling",
+      "references": [],
       "raw_directive": "2257: Before constructing the full sensitivity matrix, we classify parameters by their **primary mechanism of action**:\n2258: \n2259: :::{prf:proposition} Parameter Classification\n2260: :label: prop-parameter-classification\n2261: \n2262: Parameters can be grouped into five functional classes:\n2263: \n2264: **Class A: Direct Rate Controllers**\n2265: \n2266: These parameters have **first-order effects** on convergence rates:\n2267: \n2268: - $\\lambda$ → $\\kappa_x$ (proportional), $\\kappa_b$ (proportional if cloning-limited)\n2269: - $\\gamma$ → $\\kappa_v$ (proportional), $\\kappa_W$ (via hypocoercivity), $\\kappa_b$ (additive if kinetic-limited)\n2270: - $\\kappa_{\\text{wall}}$ → $\\kappa_b$ (additive if kinetic-limited)\n2271: \n2272: **Effect:** Increasing these parameters directly increases one or more convergence rates.\n2273: \n2274: **Class B: Indirect Rate Modifiers**\n2275: \n2276: These parameters affect rates through **second-order mechanisms**:\n2277: \n2278: - $\\alpha_{\\text{rest}}$ → $C_v$ (equilibrium constant): elastic collisions increase velocity variance expansion\n2279: - $\\sigma_x$ → $C_x, C_b$ (equilibrium constants): position jitter increases variance and boundary re-entry\n2280: - $\\tau$ → $\\kappa_i$ (penalty via discretization error $-O(\\tau)$), $C_i$ (noise accumulation $+O(\\tau)$)\n2281: \n2282: **Effect:** These control equilibrium widths or introduce systematic errors, affecting effective rates indirectly.\n2283: \n2284: **Class C: Geometric Structure Parameters**\n2285: \n2286: These parameters modify the **fitness-variance correlation** $c_{\\text{fit}}$:\n2287: \n2288: - $\\lambda_{\\text{alg}}$ → $\\kappa_x$ (via companion selection quality)\n2289: - $\\epsilon_c, \\epsilon_d$ → $\\kappa_x$ (via pairing selectivity)\n2290: \n2291: **Effect:** Determine how effectively the cloning operator identifies high-variance walkers for resampling.\n2292: \n2293: **Class D: Pure Equilibrium Parameters**\n2294: \n2295: These parameters **only affect equilibrium constants**, not convergence rates:\n2296: \n2297: - $\\sigma_v$ → $C_i$ for all $i$ (thermal noise sets equilibrium width)\n2298: - $N$ → $C_W$ (law of large numbers: $C_W \\propto N^{-1/d}$)\n2299: \n2300: **Effect:** Control exploration-exploitation trade-off without changing convergence speed.\n2301: \n2302: **Class E: Safety/Feasibility Constraints**\n2303: \n2304: These parameters enforce **physical constraints**:\n2305: \n2306: - $d_{\\text{safe}}$ → $C_b$ (thermal escape probability)\n2307: ",
       "_registry_context": {
         "stage": "directives",
@@ -895,6 +937,7 @@
         "label": "prop-condition-number-rate"
       },
       "section": "## 6. Spectral Analysis of Parameter Coupling",
+      "references": [],
       "raw_directive": "2687: **Condition number:**\n2688: \n2689: :::{prf:proposition} Condition Number of Rate Sensitivity\n2690: :label: prop-condition-number-rate\n2691: \n2692: $$\n2693: \\kappa(M_\\kappa) = \\frac{\\sigma_1}{\\sigma_4} = \\frac{1.58}{0.29} \\approx 5.4\n2694: $$\n2695: \n2696: This is a **moderately well-conditioned** matrix:\n2697: - Not too sensitive (would have $\\kappa > 100$ for ill-conditioned)\n2698: - Not too insensitive (would have $\\kappa < 2$ if all parameters had equal effect)\n2699: ",
       "_registry_context": {
         "stage": "directives",
@@ -920,6 +963,7 @@
         "label": "prop-restitution-friction-coupling"
       },
       "section": "## 6. Spectral Analysis of Parameter Coupling",
+      "references": [],
       "raw_directive": "2881: where $f(\\alpha_{\\text{rest}})$ quantifies the energy retained in inelastic collisions.\n2882: \n2883: :::{prf:proposition} Restitution-Friction Coupling\n2884: :label: prop-restitution-friction-coupling\n2885: \n2886: For a target velocity equilibrium width $V_{\\text{eq}}^{\\text{target}}$, the optimal friction is:\n2887: \n2888: $$\n2889: \\gamma^*(\\alpha_{\\text{rest}}) = \\frac{d\\sigma_v^2}{V_{\\text{eq}}^{\\text{target}}} \\cdot (1 + f(\\alpha_{\\text{rest}}))\n2890: $$\n2891: \n2892: **Explicit formula for $f$:** Empirically, from the collision model:\n2893: \n2894: $$\n2895: f(\\alpha) \\approx \\frac{\\alpha^2}{2 - \\alpha^2}\n2896: $$\n2897: \n2898: Thus:\n2899: \n2900: $$\n2901: \\gamma^*(\\alpha_{\\text{rest}}) = \\frac{d\\sigma_v^2}{V_{\\text{eq}}^{\\text{target}}} \\cdot \\frac{2}{2 - \\alpha_{\\text{rest}}^2}\n2902: $$\n2903: \n2904: **Extreme cases:**\n2905: - **Perfectly inelastic** ($\\alpha = 0$): $\\gamma^* = d\\sigma_v^2 / V_{\\text{eq}}^{\\text{target}}$ (minimum friction needed)\n2906: - **Perfectly elastic** ($\\alpha = 1$): $\\gamma^* = 2d\\sigma_v^2 / V_{\\text{eq}}^{\\text{target}}$ (need double the friction to compensate)\n2907: \n2908: **Trade-off curve** in $(\\alpha, \\gamma)$ space:\n2909: \n2910: For fixed $V_{\\text{eq}} = 0.1$, $\\sigma_v = 0.2$, $d = 10$:\n2911: \n2912: | $\\alpha_{\\text{rest}}$ | $f(\\alpha)$ | $\\gamma^*$ | Computational cost | Exploration |\n2913: |------------------------|-------------|------------|-------------------|-------------|\n2914: | 0.0 (inelastic)        | 0.0         | 0.40       | Low (deterministic collapse) | Low (velocities collapse) |\n2915: | 0.3                    | 0.047       | 0.42       | Low               | Moderate |\n2916: | 0.5                    | 0.143       | 0.46       | Moderate          | Moderate |\n2917: | 0.7                    | 0.326       | 0.53       | Moderate-High     | High |\n2918: | 1.0 (elastic)          | 1.0         | 0.80       | High (random rotations) | Very High |\n2919: \n2920: **Interpretation:**\n2921: - Low $\\alpha$: Cheap (low friction needed) but poor exploration (kinetic energy dissipates quickly)\n2922: - High $\\alpha$: Expensive (high friction needed) but rich exploration (kinetic energy preserved)",
       "_registry_context": {
         "stage": "directives",
@@ -945,6 +989,7 @@
         "label": "prop-jitter-cloning-coupling"
       },
       "section": "## 6. Spectral Analysis of Parameter Coupling",
+      "references": [],
       "raw_directive": "2936: For small $\\sigma_x$, the second term dominates. For large $\\sigma_x$, the first term dominates.\n2937: \n2938: :::{prf:proposition} Position Jitter - Cloning Rate Coupling\n2939: :label: prop-jitter-cloning-coupling\n2940: \n2941: For a target positional variance $V_{\\text{Var},x}^{\\text{target}}$, the iso-variance curve in $(\\sigma_x, \\lambda)$ space is:\n2942: \n2943: $$\n2944: \\lambda^*(\\sigma_x) = \\frac{\\sigma_x^2 + \\sigma_v^2\\tau^2/\\gamma}{V_{\\text{Var},x}^{\\text{target}}}\n2945: $$\n2946: \n2947: **Limiting behaviors:**\n2948: \n2949: $$\n2950: \\lambda^*(\\sigma_x) \\approx \\begin{cases}\n2951: \\frac{\\sigma_v^2\\tau^2}{\\gamma V_{\\text{Var},x}^{\\text{target}}} & \\text{if } \\sigma_x \\ll \\sigma_v\\tau/\\sqrt{\\gamma} \\quad \\text{(clean cloning)} \\\\\n2952: \\frac{\\sigma_x^2}{V_{\\text{Var},x}^{\\text{target}}} & \\text{if } \\sigma_x \\gg \\sigma_v\\tau/\\sqrt{\\gamma} \\quad \\text{(noisy cloning)}\n2953: \\end{cases}\n2954: $$\n2955: \n2956: **Crossover point:** $\\sigma_x^* = \\sigma_v\\tau/\\sqrt{\\gamma}$\n2957: \n2958: **Numerical example:** $\\sigma_v = 0.2$, $\\tau = 0.01$, $\\gamma = 0.3$, target $V_{\\text{Var},x} = 0.05$:\n2959: \n2960: | $\\sigma_x$ | Regime | $\\lambda^*$ | Comments |\n2961: |-----------|--------|-------------|----------|\n2962: | 0.001 | Clean | 0.027 | Minimal cloning, low communication cost |\n2963: | 0.002 | Clean | 0.027 | Jitter negligible |\n2964: | 0.004 (crossover) | Transition | 0.031 | Jitter starts mattering |\n2965: | 0.01 | Noisy | 0.20 | High cloning needed to compensate noise |\n2966: | 0.02 | Noisy | 0.80 | Very frequent cloning required |\n2967: \n2968: **Trade-offs:**\n2969: - **Clean cloning** ($\\sigma_x$ small):\n2970:   - ✅ Low $\\lambda$ → less communication overhead\n2971:   - ❌ Walkers cluster tightly → risk of premature convergence\n2972:   - Best for: Exploitation phases, local refinement\n2973: \n2974: - **Noisy cloning** ($\\sigma_x$ large):\n2975:   - ✅ Maintains diversity automatically\n2976:   - ✅ Better exploration\n2977:   - ❌ High $\\lambda$ → more communication overhead",
       "_registry_context": {
         "stage": "directives",
@@ -970,6 +1015,7 @@
         "label": "prop-phase-space-pairing"
       },
       "section": "## 6. Spectral Analysis of Parameter Coupling",
+      "references": [],
       "raw_directive": "2985: **Mechanism:** The fitness-variance correlation depends on how well the companion pairing identifies positional outliers despite velocity noise.\n2986: \n2987: :::{prf:proposition} Phase-Space Pairing Quality\n2988: :label: prop-phase-space-pairing\n2989: \n2990: The fitness-variance correlation coefficient is:\n2991: \n2992: $$\n2993: c_{\\text{fit}}(\\lambda_{\\text{alg}}, \\epsilon_c) \\approx c_0 \\cdot \\left(1 + \\frac{\\lambda_{\\text{alg}} \\sigma_v^2}{\\sigma_x^2}\\right)^{-1/2} \\cdot \\left(1 + \\frac{\\epsilon_c^2}{\\sigma_x^2}\\right)^{-1}\n2994: $$\n2995: \n2996: where $c_0 \\approx 0.5-0.8$ is the baseline correlation in position-only mode with tight pairing.\n2997: \n2998: **Physical interpretation:**\n2999: \n3000: **Term 1:** $\\left(1 + \\frac{\\lambda_{\\text{alg}} \\sigma_v^2}{\\sigma_x^2}\\right)^{-1/2}$\n3001: - **Effect of velocity weighting**: When $\\lambda_{\\text{alg}} > 0$, velocity differences contaminate positional signal\n3002: - Degradation factor: $\\sqrt{1 + \\text{noise-to-signal ratio}}$\n3003: - For good performance: $\\lambda_{\\text{alg}} \\sigma_v^2 / \\sigma_x^2 < 1$\n3004: \n3005: **Term 2:** $\\left(1 + \\frac{\\epsilon_c^2}{\\sigma_x^2}\\right)^{-1}$\n3006: - **Effect of pairing range**: Large $\\epsilon_c$ allows mismatched pairs\n3007: - Selectivity degrades when $\\epsilon_c > \\sigma_x$ (range exceeds typical separation)\n3008: - For good performance: $\\epsilon_c < \\sigma_x$\n3009: \n3010: **Optimal curve:** For fixed correlation target $c_{\\text{target}}$:\n3011: \n3012: $$\n3013: \\epsilon_c^*(\\lambda_{\\text{alg}}) = \\sigma_x \\sqrt{\\frac{c_0}{c_{\\text{target}}} \\left(1 + \\frac{\\lambda_{\\text{alg}} \\sigma_v^2}{\\sigma_x^2}\\right)^{1/2} - 1}\n3014: $$\n3015: \n3016: **Numerical example:** $\\sigma_x = 0.01$, $\\sigma_v = 0.2$, target $c_{\\text{fit}} = 0.6$:\n3017: \n3018: | $\\lambda_{\\text{alg}}$ | Noise ratio | $\\epsilon_c^*$ | Comments                                       |\n3019: |------------------------|-------------|----------------|------------------------------------------------|\n3020: | 0 (position-only)      | 0           | 0.0024         | Tightest pairing possible                      |\n3021: | 0.001                  | 0.04        | 0.0025         | Minimal velocity effect                        |\n3022: | 0.01                   | 0.4         | 0.0034         | Moderate coupling                              |\n3023: | 0.1                    | 4.0         | 0.0092         | Strong velocity coupling, loose pairing needed |\n3024: | 1.0                    | 40.0        | 0.031          | Dominant velocity, very loose pairing          |\n3025: ",
       "_registry_context": {
         "stage": "directives",
@@ -995,6 +1041,9 @@
         "label": "prop-hypocoercivity-piecewise"
       },
       "section": "## Part 2: Approach 1 - Hypocoercivity for Non-Convex Kinetic Systems",
+      "references": [
+        "axiom-confining-complete"
+      ],
       "raw_directive": "5423: **Solution**: Use smooth approximation and stability under perturbation.\n5424: \n5425: :::{prf:proposition} Hypocoercivity for Piecewise Smooth Confining Potentials\n5426: :label: prop-hypocoercivity-piecewise\n5427: \n5428: Let $U: \\mathcal{X}_{\\text{valid}} \\to [0, +\\infty]$ be a confining potential satisfying Axiom {prf:ref}`axiom-confining-complete` with:\n5429: 1. $U$ is piecewise $C^2$ on the interior\n5430: 2. $U = +\\infty$ on the boundary $\\partial \\mathcal{X}$\n5431: 3. Coercivity: $\\langle x, \\nabla U(x) \\rangle \\geq \\alpha_U \\|x\\|^2 - R_U$ where smooth\n5432: \n5433: Then the Langevin dynamics with potential $U$ satisfies hypocoercive exponential convergence:\n5434: \n5435: $$\n5436: D_{\\text{KL}}(\\rho_t \\| \\pi_{\\text{kin}}) \\leq e^{-\\lambda_{\\text{hypo}} t} D_{\\text{KL}}(\\rho_0 \\| \\pi_{\\text{kin}})\n5437: $$\n5438: \n5439: where:\n5440: \n5441: $$\n5442: \\lambda_{\\text{hypo}} = c \\cdot \\min\\left(\\gamma, \\frac{\\alpha_U}{\\sigma_v^2}\\right)\n5443: $$\n5444: ",
       "_registry_context": {
         "stage": "directives",
@@ -1020,6 +1069,9 @@
         "label": "prop-marginal-mixture"
       },
       "section": "## A1.1 QSD Structure: Exchangeability",
+      "references": [
+        "thm-hewitt-savage-representation"
+      ],
       "raw_directive": "185: :::\n186: \n187: :::{prf:proposition} Marginal as Mixture Average\n188: :label: prop-marginal-mixture\n189: \n190: From the finite de Finetti representation ({prf:ref}`thm-hewitt-savage-representation`) with $k=1$:\n191: \n192: $$\n193: \\mu_N = \\int_{\\mathcal{P}(\\Omega)} \\mu \\, d\\mathcal{Q}_N(\\mu)\n194: $$\n195: \n196: where $\\mu_N$ is the single-particle marginal of $\\pi_N$. This is an **exact** representation (the bound $k(k-1)/(2N) = 0$ for $k=1$).\n197: ",
       "_registry_context": {
         "stage": "directives",
@@ -1045,6 +1097,7 @@
         "label": "prop-limiting-regimes"
       },
       "section": "## 1. The Unified Measurement Pipeline",
+      "references": [],
       "raw_directive": "321: ### 1.0.5. Analysis of Limiting Regimes\n322: \n323: :::{prf:proposition} Limiting Behavior of the Unified Pipeline\n324: :label: prop-limiting-regimes\n325: \n326: The ρ-parameterized framework interpolates between two well-understood regimes:\n327: \n328: **1. Global Backbone Regime (ρ → ∞):**\n329: \n330: For the N-particle system with alive walker set $A_k$:\n331: \n332: $$\n333: \\lim_{\\rho \\to \\infty} w_{ij}(\\rho) = \\frac{1}{k} \\quad \\text{for all } i, j \\in A_k\n334: \n335: $$\n336: \n337: $$\n338: \\lim_{\\rho \\to \\infty} \\mu_\\rho[f_k, d, x_i] = \\frac{1}{k}\\sum_{j \\in A_k} d(x_j) =: \\mu[f_k, d]\n339: \n340: $$\n341: \n342: $$\n343: \\lim_{\\rho \\to \\infty} \\sigma^2_\\rho[f_k, d, x_i] = \\frac{1}{k}\\sum_{j \\in A_k} [d(x_j) - \\mu[f_k, d]]^2 =: \\sigma^2[f_k, d]\n344: \n345: $$\n346: \n347: In this limit, all alive walkers use identical **k-normalized global statistics**, and the fitness potential becomes position-independent in its statistical weights. This **exactly recovers the backbone model** from `03_cloning.md` and `04_convergence.md`, which uses the empirical distribution over $A_k$ only.\n348: \n349: **2. Hyper-Local Regime (ρ → 0):**\n350: \n351: $$\n352: \\lim_{\\rho \\to 0} K_\\rho(x, x') = \\delta(x - x')\n353: \n354: $$\n355: \n356: In this limit, the moments become point evaluations (up to the nearest neighbor in the discrete case), and the fitness potential responds purely to infinitesimal local structure. This is the regime required for Hessian-based geometric adaptation.\n357: \n358: **3. Intermediate Regime (0 < ρ < ∞):**\n359: \n360: For finite ρ, the pipeline balances local geometric sensitivity with statistical robustness. The optimal choice of ρ trades off:\n361: - **Smaller ρ:** More sensitive to local structure, but higher variance in moment estimates\n362: - **Larger ρ:** More statistically robust, but loses geometric localization\n363: ",
       "_registry_context": {
         "stage": "directives",
@@ -1070,6 +1123,10 @@
         "label": "prop-bounded-adaptive-force"
       },
       "section": "## 3. The Complete Axiomatic Framework",
+      "references": [
+        "def-localized-mean-field-moments",
+        "thm-c1-regularity"
+      ],
       "raw_directive": "587: These \"axioms\" are fundamentally different. They are not assumptions about the environment, but rather **properties of the algorithm's adaptive components that must be (and can be) proven**. They state that the adaptive terms are \"well-behaved\" enough to be treated as bounded perturbations.\n588: \n589: :::{prf:proposition} k-Uniform Boundedness of the Adaptive Force (ρ-Dependent)\n590: :label: prop-bounded-adaptive-force\n591: \n592: The adaptive force $\\mathbf{F}_{\\text{adapt}} = \\epsilon_F \\nabla V_{\\text{fit}}[f_k, \\rho]$ is uniformly bounded. There exists a finite, state-independent constant $F_{\\text{adapt,max}}(\\rho)$ such that:\n593: \n594: $$\n595: \\sup_{S \\in \\Sigma_N, i \\in A_k} \\|\\mathbf{F}_{\\text{adapt}}(x_i, S)\\| \\le F_{\\text{adapt,max}}(\\rho) < \\infty\n596: \n597: $$\n598: \n599: **ρ-Dependence:** The bound $F_{\\text{adapt,max}}(\\rho)$ depends on the localization scale ρ through:\n600: 1. The localized moments $\\mu_\\rho$ and $\\sigma'_\\rho$ computed over $f_k$ (Definition {prf:ref}`def-localized-mean-field-moments`)\n601: 2. The derivatives of the localization kernel $K_\\rho(x, x')$\n602: 3. The rescale function $g_A$ and its derivatives\n603: \n604: **Proof:** The complete rigorous proof is provided in **Appendix A, Theorem A.1** (Theorem {prf:ref}`thm-c1-regularity`). The proof establishes that:\n605: \n606: \n607: \n608: $$\n609: F_{\\text{adapt,max}}(\\rho) = L_{g_A} \\cdot \\left[ \\frac{2d'_{\\max}}{\\sigma\\'_{\\min}} \\left(1 + \\frac{2d_{\\max} C_{\\nabla K}(\\rho)}{\\rho d'_{\\max}}\\right) + \\frac{4d_{\\max}^2 L_{\\sigma\\'_{\\text{reg}}}}{\\sigma'^2_{\\min,\\text{bound}}} \\cdot C_{\\mu,V}(\\rho) \\right]\n610: \n611: $$\n612: \n613:     where $C_{\\mu,V}(\\rho) = O(1/\\rho)$ is **independent of N** and bounds the derivatives of the localized moments.\n614: \n615: **Critical k-Uniformity:** The bound is **uniform in k** (and thus in N) due to the telescoping property $\\sum_{j \\in A_k} \\nabla w_{ij} = 0$ of the normalized localization weights computed over alive walkers, combined with the fact that only $k_{\\text{eff}}(\\rho) = O(1)$ alive walkers effectively contribute to the ρ-localized measurements. The key technical steps involve applying the chain rule to $V_{\\text{fit}} = g_A \\circ Z_\\rho$ and using the normalized weight constraints to eliminate k-dependence (and thus N-dependence).\n616: ",
       "_registry_context": {
         "stage": "directives",
@@ -1095,6 +1152,10 @@
         "label": "prop-ueph-by-construction"
       },
       "section": "## 3. The Complete Axiomatic Framework",
+      "references": [
+        "thm-ueph",
+        "thm-c2-regularity"
+      ],
       "raw_directive": "625: :::\n626: \n627: :::{prf:proposition} k-Uniform Ellipticity by Construction (Proven in Chapter 4)\n628: :label: prop-ueph-by-construction\n629: \n630: The regularized diffusion tensor $\\Sigma_{\\text{reg}} = (H + \\epsilon_\\Sigma I)^{-1/2}$ is **uniformly elliptic by construction**.\n631: \n632: **Statement:** The eigenvalues of the induced metric $G_{\\text{reg}} = (H + \\epsilon_\\Sigma I)^{-1}$ are uniformly bounded:\n633: \n634: $$\n635: c_{\\min}(\\rho) I \\preceq G_{\\text{reg}}(S) \\preceq c_{\\max}(\\rho) I \\quad \\forall S \\in \\Sigma_N, \\, \\forall k, \\, \\forall N\n636: \n637: $$\n638: \n639: where $c_{\\min}(\\rho)$ and $c_{\\max}(\\rho)$ are **k-uniform** (and thus **N-uniform**) constants that depend only on ρ and the regularization parameter $\\epsilon_\\Sigma$.\n640: \n641: **Proof:** See **Chapter 4, Theorem 4.1** (Theorem {prf:ref}`thm-ueph`), which provides the complete rigorous proof based on the C² regularity established in **Appendix A, Theorem A.2** (Theorem {prf:ref}`thm-c2-regularity`).\n642: ",
       "_registry_context": {
         "stage": "directives",
@@ -1120,6 +1181,12 @@
         "label": "prop-diversity-signal-rho"
       },
       "section": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model",
+      "references": [
+        "lem-raw-to-rescaled-gap-rho",
+        "thm-signal-generation-adaptive",
+        "lem-variance-to-gap-adaptive",
+        "lem-log-gap-bounds-adaptive"
+      ],
       "raw_directive": "3894: #### B.4.2. ρ-Dependent Lower Bound on Corrective Diversity Signal\n3895: \n3896: :::{prf:proposition} Lower Bound on Corrective Diversity Signal (ρ-Dependent)\n3897: :label: prop-diversity-signal-rho\n3898: \n3899: For a swarm satisfying $\\text{Var}(x) > R^2$ and $\\mathbb{E}[\\text{Var}(d)] > \\kappa_{\\text{meas}}$, the mean logarithmic rescaled distance satisfies:\n3900: \n3901: $$\n3902: \\mathbb{E}[\\log d'] \\ge \\kappa_{d',\\text{mean}}(\\epsilon, \\rho)\n3903: \n3904: $$\n3905: \n3906: where:\n3907: \n3908: $$\n3909: \\kappa_{d',\\text{mean}}(\\epsilon, \\rho) := \\log g_A\\left( \\frac{\\kappa_{\\text{rescaled}}(\\kappa_{\\text{meas}}, \\rho)}{2} \\right) - \\log(A)\n3910: \n3911: $$\n3912: \n3913: and $\\kappa_{\\text{rescaled}}(\\kappa_{\\text{meas}}, \\rho)$ is from Lemma {prf:ref}`lem-raw-to-rescaled-gap-rho`.\n3914: \n3915: **Proof:**\n3916: \n3917: **Step 1: From Structural Variance to Raw Distance Variance.** By Theorem {prf:ref}`thm-signal-generation-adaptive` (Hypothesis 1), if $\\text{Var}(x) > R^2$, then:\n3918: \n3919: $$\n3920: \\mathbb{E}[\\text{Var}(d)] > \\kappa_{\\text{meas}} > 0\n3921: \n3922: $$\n3923: \n3924: This is the raw variance in the pairwise distance measurements before any statistical processing.\n3925: \n3926: **Step 2: From Variance to Gap.** By Lemma {prf:ref}`lem-variance-to-gap-adaptive`, any random variable with variance $\\sigma^2 > 0$ must have a gap to its mean:\n3927: \n3928: $$\n3929: \\max_i |d_i - \\mu[d]| \\ge \\sigma[d] \\ge \\sqrt{\\kappa_{\\text{meas}}}\n3930: \n3931: $$\n3932: \n3933: Therefore, $\\kappa_{\\text{raw}} := \\sqrt{\\kappa_{\\text{meas}}}$ bounds the raw gap.\n3934: \n3935: **Step 3: Propagation Through ρ-Localized Pipeline.** By Lemma {prf:ref}`lem-raw-to-rescaled-gap-rho`, the raw gap propagates to a rescaled gap:\n3936: \n3937: $$\n3938: \\max_i |d'_i - \\mu[d']| \\ge \\kappa_{\\text{rescaled}}(\\kappa_{\\text{raw}}, \\rho) = g'_{\\min} \\cdot \\frac{\\kappa_{\\text{raw}}}{\\sigma'_{\\rho,\\max}}\n3939: \n3940: $$\n3941: \n3942: where $g'_{\\min}$ is the minimum derivative of the rescale function and $\\sigma'_{\\rho,\\max} = d_{\\max}$ is the worst-case bound on the localized standard deviation.\n3943: \n3944: **Step 4: From Gap to Logarithmic Mean.** By Lemma {prf:ref}`lem-log-gap-bounds-adaptive`, if the rescaled measurements $d' \\in [0, A]$ have mean $\\mu[d']$ and gap $\\ge \\kappa_{\\text{rescaled}}$, then:\n3945: \n3946: $$\n3947: \\mathbb{E}[\\log d'] \\ge \\log(\\mu[d'] - \\kappa_{\\text{rescaled}}/2)\n3948: \n3949: $$\n3950: \n3951: Since $\\mu[d'] \\le A$ and the gap is at least $\\kappa_{\\text{rescaled}}$, we have:\n3952: \n3953: $$\n3954: \\mathbb{E}[\\log d'] \\ge \\log g_A\\left( \\frac{\\kappa_{\\text{rescaled}}(\\kappa_{\\text{meas}}, \\rho)}{2} \\right) - \\log(A) =: \\kappa_{d',\\text{mean}}(\\epsilon, \\rho)\n3955: \n3956: $$\n3957: ",
       "_registry_context": {
         "stage": "directives",
@@ -1145,6 +1212,7 @@
         "label": "prop-reward-bias-rho"
       },
       "section": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model",
+      "references": [],
       "raw_directive": "3961: #### B.4.3. ρ-Dependent Upper Bound on Adversarial Reward Bias\n3962: \n3963: :::{prf:proposition} Axiom-Based Bound on Logarithmic Reward Gap (ρ-Dependent)\n3964: :label: prop-reward-bias-rho\n3965: \n3966: Under the foundational axioms (specifically, Axiom EG-5: Active Diversity Signal), the adversarial logarithmic reward bias satisfies:\n3967: \n3968: $$\n3969: |\\mathbb{E}[\\log r'] - \\log r'_{\\text{high}}| \\le \\kappa_{r',\\text{mean,adv}}(\\rho)\n3970: \n3971: $$\n3972: \n3973: where $\\kappa_{r',\\text{mean,adv}}(\\rho)$ is a ρ-dependent constant that can be bounded through the pipeline analysis.\n3974: \n3975: **Proof:**\n3976: \n3977: **Step 1: Reward Bounded and Active (Axiom EG-5).** By the Active Diversity Signal axiom from `03_cloning.md`, the reward function $r: \\mathcal{X} \\to \\mathbb{R}$ satisfies:\n3978: - Boundedness: $0 \\le r(x) \\le r_{\\max}$ for all $x$\n3979: - Activity: There exists a non-trivial gap in reward values across the domain\n3980: \n3981: **Step 2: ρ-Localized Rescaling of Rewards.** The rescaled rewards are:\n3982: \n3983: $$\n3984: r'_i = g_A(Z_\\rho[f_k, r, x_i])\n3985: \n3986: $$\n3987: \n3988: where the Z-score uses the ρ-localized moments for the reward function $r$ instead of distance $d$.\n3989: \n3990: **Step 3: Lipschitz Control.** By the Lipschitz property of $g_A$ and the bounded Z-scores:\n3991: \n3992: $$\n3993: |r'_i - r'_j| \\le L_{g_A} |Z_\\rho^{(i)} - Z_\\rho^{(j)}| \\le L_{g_A} \\cdot \\frac{2r_{\\max}}{\\sigma'_{\\rho,\\min}}\n3994: \n3995: $$\n3996: \n3997: where $\\sigma'_{\\rho,\\min}$ is a lower bound on the localized standard deviation for reward measurements (which exists because rewards have non-trivial variance by Axiom EG-5 and the regularization ensures $\\sigma'_\\rho \\ge \\sigma\\'_{\\min}$).\n3998: \n3999: **Step 4: Logarithmic Gap Bound.** Since rescaled rewards lie in $[0, A]$ and have Lipschitz-controlled variation:\n4000: \n4001: $$\n4002: |\\mathbb{E}[\\log r'] - \\log r'_{\\text{high}}| \\le \\log(A) - \\log(A - L_{g_A} r_{\\max} / \\sigma'_{\\rho,\\min})\n4003: \n4004: $$\n4005: \n4006: Expanding for small perturbations and using worst-case bounds:\n4007: \n4008: $$\n4009: \\kappa_{r',\\text{mean,adv}}(\\rho) := \\frac{L_{g_A} r_{\\max}}{A \\cdot \\sigma'_{\\rho,\\min}} + O\\left(\\frac{r_{\\max}^2}{\\sigma'^2_{\\rho,\\min}}\\right)\n4010: \n4011: $$\n4012: ",
       "_registry_context": {
         "stage": "directives",
@@ -1170,6 +1238,7 @@
         "label": "prop-limiting-regimes"
       },
       "section": "## 1. The Unified Measurement Pipeline",
+      "references": [],
       "raw_directive": "308: ### 1.0.5. Analysis of Limiting Regimes\n309: \n310: :::{prf:proposition} Limiting Behavior of the Unified Pipeline\n311: :label: prop-limiting-regimes\n312: \n313: The ρ-parameterized framework interpolates between two well-understood regimes:\n314: \n315: **1. Global Backbone Regime (ρ → ∞):**\n316: \n317: For the N-particle system with alive walker set $A_k$:\n318: \n319: $$\n320: \\lim_{\\rho \\to \\infty} w_{ij}(\\rho) = \\frac{1}{k} \\quad \\text{for all } i, j \\in A_k\n321: $$\n322: \n323: $$\n324: \\lim_{\\rho \\to \\infty} \\mu_\\rho[f_k, d, x_i] = \\frac{1}{k}\\sum_{j \\in A_k} d(x_j) =: \\mu[f_k, d]\n325: $$\n326: \n327: $$\n328: \\lim_{\\rho \\to \\infty} \\sigma^2_\\rho[f_k, d, x_i] = \\frac{1}{k}\\sum_{j \\in A_k} [d(x_j) - \\mu[f_k, d]]^2 =: \\sigma^2[f_k, d]\n329: $$\n330: \n331: In this limit, all alive walkers use identical **k-normalized global statistics**, and the fitness potential becomes position-independent in its statistical weights. This **exactly recovers the backbone model** from `03_cloning.md` and `04_convergence.md`, which uses the empirical distribution over $A_k$ only.\n332: \n333: **2. Hyper-Local Regime (ρ → 0):**\n334: \n335: $$\n336: \\lim_{\\rho \\to 0} K_\\rho(x, x') = \\delta(x - x')\n337: $$\n338: \n339: In this limit, the moments become point evaluations (up to the nearest neighbor in the discrete case), and the fitness potential responds purely to infinitesimal local structure. This is the regime required for Hessian-based geometric adaptation.\n340: \n341: **3. Intermediate Regime (0 < ρ < ∞):**\n342: \n343: For finite ρ, the pipeline balances local geometric sensitivity with statistical robustness. The optimal choice of ρ trades off:\n344: - **Smaller ρ:** More sensitive to local structure, but higher variance in moment estimates\n345: - **Larger ρ:** More statistically robust, but loses geometric localization\n346: ",
       "_registry_context": {
         "stage": "directives",
@@ -1195,6 +1264,10 @@
         "label": "prop:bounded-adaptive-force"
       },
       "section": "## 3. The Complete Axiomatic Framework",
+      "references": [
+        "def-localized-mean-field-moments",
+        "thm-c1-regularity"
+      ],
       "raw_directive": "560: These \"axioms\" are fundamentally different. They are not assumptions about the environment, but rather **properties of the algorithm's adaptive components that must be (and can be) proven**. They state that the adaptive terms are \"well-behaved\" enough to be treated as bounded perturbations.\n561: \n562: :::{prf:proposition} k-Uniform Boundedness of the Adaptive Force (ρ-Dependent)\n563: :label: prop:bounded-adaptive-force\n564: \n565: The adaptive force $\\mathbf{F}_{\\text{adapt}} = \\epsilon_F \\nabla V_{\\text{fit}}[f_k, \\rho]$ is uniformly bounded. There exists a finite, state-independent constant $F_{\\text{adapt,max}}(\\rho)$ such that:\n566: \n567: $$\n568: \\sup_{S \\in \\Sigma_N, i \\in A_k} \\|\\mathbf{F}_{\\text{adapt}}(x_i, S)\\| \\le F_{\\text{adapt,max}}(\\rho) < \\infty\n569: $$\n570: \n571: **ρ-Dependence:** The bound $F_{\\text{adapt,max}}(\\rho)$ depends on the localization scale ρ through:\n572: 1. The localized moments $\\mu_\\rho$ and $\\sigma'_\\rho$ computed over $f_k$ (Definition {prf:ref}`def-localized-mean-field-moments`)\n573: 2. The derivatives of the localization kernel $K_\\rho(x, x')$\n574: 3. The rescale function $g_A$ and its derivatives\n575: \n576: **Proof:** The complete rigorous proof is provided in **Appendix A, Theorem A.1** (Theorem {prf:ref}`thm-c1-regularity`). The proof establishes that:\n577: \n578: \n579: \n580: $$\n581: F_{\\text{adapt,max}}(\\rho) = L_{g_A} \\cdot \\left[ \\frac{2d'_{\\max}}{\\sigma\\'_{\\min}} \\left(1 + \\frac{2d_{\\max} C_{\\nabla K}(\\rho)}{\\rho d'_{\\max}}\\right) + \\frac{4d_{\\max}^2 L_{\\sigma\\'_{\\text{reg}}}}{\\sigma'^2_{\\min,\\text{bound}}} \\cdot C_{\\mu,V}(\\rho) \\right]\n582: $$\n583: \n584:     where $C_{\\mu,V}(\\rho) = O(1/\\rho)$ is **independent of N** and bounds the derivatives of the localized moments.\n585: \n586: **Critical k-Uniformity:** The bound is **uniform in k** (and thus in N) due to the telescoping property $\\sum_{j \\in A_k} \\nabla w_{ij} = 0$ of the normalized localization weights computed over alive walkers, combined with the fact that only $k_{\\text{eff}}(\\rho) = O(1)$ alive walkers effectively contribute to the ρ-localized measurements. The key technical steps involve applying the chain rule to $V_{\\text{fit}} = g_A \\circ Z_\\rho$ and using the normalized weight constraints to eliminate k-dependence (and thus N-dependence).\n587: ",
       "_registry_context": {
         "stage": "directives",
@@ -1220,6 +1293,10 @@
         "label": "prop:ueph-by-construction"
       },
       "section": "## 3. The Complete Axiomatic Framework",
+      "references": [
+        "thm-ueph",
+        "thm-c2-regularity"
+      ],
       "raw_directive": "596: :::\n597: \n598: :::{prf:proposition} k-Uniform Ellipticity by Construction (Proven in Chapter 4)\n599: :label: prop:ueph-by-construction\n600: \n601: The regularized diffusion tensor $\\Sigma_{\\text{reg}} = (H + \\epsilon_\\Sigma I)^{-1/2}$ is **uniformly elliptic by construction**.\n602: \n603: **Statement:** The eigenvalues of the induced metric $G_{\\text{reg}} = (H + \\epsilon_\\Sigma I)^{-1}$ are uniformly bounded:\n604: \n605: $$\n606: c_{\\min}(\\rho) I \\preceq G_{\\text{reg}}(S) \\preceq c_{\\max}(\\rho) I \\quad \\forall S \\in \\Sigma_N, \\, \\forall k, \\, \\forall N\n607: $$\n608: \n609: where $c_{\\min}(\\rho)$ and $c_{\\max}(\\rho)$ are **k-uniform** (and thus **N-uniform**) constants that depend only on ρ and the regularization parameter $\\epsilon_\\Sigma$.\n610: \n611: **Proof:** See **Chapter 4, Theorem 4.1** (Theorem {prf:ref}`thm-ueph`), which provides the complete rigorous proof based on the C² regularity established in **Appendix A, Theorem A.2** (Theorem {prf:ref}`thm-c2-regularity`).\n612: ",
       "_registry_context": {
         "stage": "directives",
@@ -1245,6 +1322,12 @@
         "label": "prop-diversity-signal-rho"
       },
       "section": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model",
+      "references": [
+        "lem-raw-to-rescaled-gap-rho",
+        "thm-signal-generation-adaptive",
+        "lem-variance-to-gap-adaptive",
+        "lem-log-gap-bounds-adaptive"
+      ],
       "raw_directive": "3289: #### B.4.2. ρ-Dependent Lower Bound on Corrective Diversity Signal\n3290: \n3291: :::{prf:proposition} Lower Bound on Corrective Diversity Signal (ρ-Dependent)\n3292: :label: prop-diversity-signal-rho\n3293: \n3294: For a swarm satisfying $\\text{Var}(x) > R^2$ and $\\mathbb{E}[\\text{Var}(d)] > \\kappa_{\\text{meas}}$, the mean logarithmic rescaled distance satisfies:\n3295: \n3296: $$\n3297: \\mathbb{E}[\\log d'] \\ge \\kappa_{d',\\text{mean}}(\\epsilon, \\rho)\n3298: $$\n3299: \n3300: where:\n3301: \n3302: $$\n3303: \\kappa_{d',\\text{mean}}(\\epsilon, \\rho) := \\log g_A\\left( \\frac{\\kappa_{\\text{rescaled}}(\\kappa_{\\text{meas}}, \\rho)}{2} \\right) - \\log(A)\n3304: $$\n3305: \n3306: and $\\kappa_{\\text{rescaled}}(\\kappa_{\\text{meas}}, \\rho)$ is from Lemma {prf:ref}`lem-raw-to-rescaled-gap-rho`.\n3307: \n3308: **Proof:**\n3309: \n3310: **Step 1: From Structural Variance to Raw Distance Variance.** By Theorem {prf:ref}`thm-signal-generation-adaptive` (Hypothesis 1), if $\\text{Var}(x) > R^2$, then:\n3311: \n3312: $$\n3313: \\mathbb{E}[\\text{Var}(d)] > \\kappa_{\\text{meas}} > 0\n3314: $$\n3315: \n3316: This is the raw variance in the pairwise distance measurements before any statistical processing.\n3317: \n3318: **Step 2: From Variance to Gap.** By Lemma {prf:ref}`lem-variance-to-gap-adaptive`, any random variable with variance $\\sigma^2 > 0$ must have a gap to its mean:\n3319: \n3320: $$\n3321: \\max_i |d_i - \\mu[d]| \\ge \\sigma[d] \\ge \\sqrt{\\kappa_{\\text{meas}}}\n3322: $$\n3323: \n3324: Therefore, $\\kappa_{\\text{raw}} := \\sqrt{\\kappa_{\\text{meas}}}$ bounds the raw gap.\n3325: \n3326: **Step 3: Propagation Through ρ-Localized Pipeline.** By Lemma {prf:ref}`lem-raw-to-rescaled-gap-rho`, the raw gap propagates to a rescaled gap:\n3327: \n3328: $$\n3329: \\max_i |d'_i - \\mu[d']| \\ge \\kappa_{\\text{rescaled}}(\\kappa_{\\text{raw}}, \\rho) = g'_{\\min} \\cdot \\frac{\\kappa_{\\text{raw}}}{\\sigma'_{\\rho,\\max}}\n3330: $$\n3331: \n3332: where $g'_{\\min}$ is the minimum derivative of the rescale function and $\\sigma'_{\\rho,\\max} = d_{\\max}$ is the worst-case bound on the localized standard deviation.\n3333: \n3334: **Step 4: From Gap to Logarithmic Mean.** By Lemma {prf:ref}`lem-log-gap-bounds-adaptive`, if the rescaled measurements $d' \\in [0, A]$ have mean $\\mu[d']$ and gap $\\ge \\kappa_{\\text{rescaled}}$, then:\n3335: \n3336: $$\n3337: \\mathbb{E}[\\log d'] \\ge \\log(\\mu[d'] - \\kappa_{\\text{rescaled}}/2)\n3338: $$\n3339: \n3340: Since $\\mu[d'] \\le A$ and the gap is at least $\\kappa_{\\text{rescaled}}$, we have:\n3341: \n3342: $$\n3343: \\mathbb{E}[\\log d'] \\ge \\log g_A\\left( \\frac{\\kappa_{\\text{rescaled}}(\\kappa_{\\text{meas}}, \\rho)}{2} \\right) - \\log(A) =: \\kappa_{d',\\text{mean}}(\\epsilon, \\rho)\n3344: $$\n3345: ",
       "_registry_context": {
         "stage": "directives",
@@ -1270,6 +1353,7 @@
         "label": "prop-reward-bias-rho"
       },
       "section": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model",
+      "references": [],
       "raw_directive": "3349: #### B.4.3. ρ-Dependent Upper Bound on Adversarial Reward Bias\n3350: \n3351: :::{prf:proposition} Axiom-Based Bound on Logarithmic Reward Gap (ρ-Dependent)\n3352: :label: prop-reward-bias-rho\n3353: \n3354: Under the foundational axioms (specifically, Axiom EG-5: Active Diversity Signal), the adversarial logarithmic reward bias satisfies:\n3355: \n3356: $$\n3357: |\\mathbb{E}[\\log r'] - \\log r'_{\\text{high}}| \\le \\kappa_{r',\\text{mean,adv}}(\\rho)\n3358: $$\n3359: \n3360: where $\\kappa_{r',\\text{mean,adv}}(\\rho)$ is a ρ-dependent constant that can be bounded through the pipeline analysis.\n3361: \n3362: **Proof:**\n3363: \n3364: **Step 1: Reward Bounded and Active (Axiom EG-5).** By the Active Diversity Signal axiom from `03_cloning.md`, the reward function $r: \\mathcal{X} \\to \\mathbb{R}$ satisfies:\n3365: - Boundedness: $0 \\le r(x) \\le r_{\\max}$ for all $x$\n3366: - Activity: There exists a non-trivial gap in reward values across the domain\n3367: \n3368: **Step 2: ρ-Localized Rescaling of Rewards.** The rescaled rewards are:\n3369: \n3370: $$\n3371: r'_i = g_A(Z_\\rho[f_k, r, x_i])\n3372: $$\n3373: \n3374: where the Z-score uses the ρ-localized moments for the reward function $r$ instead of distance $d$.\n3375: \n3376: **Step 3: Lipschitz Control.** By the Lipschitz property of $g_A$ and the bounded Z-scores:\n3377: \n3378: $$\n3379: |r'_i - r'_j| \\le L_{g_A} |Z_\\rho^{(i)} - Z_\\rho^{(j)}| \\le L_{g_A} \\cdot \\frac{2r_{\\max}}{\\sigma'_{\\rho,\\min}}\n3380: $$\n3381: \n3382: where $\\sigma'_{\\rho,\\min}$ is a lower bound on the localized standard deviation for reward measurements (which exists because rewards have non-trivial variance by Axiom EG-5 and the regularization ensures $\\sigma'_\\rho \\ge \\sigma\\'_{\\min}$).\n3383: \n3384: **Step 4: Logarithmic Gap Bound.** Since rescaled rewards lie in $[0, A]$ and have Lipschitz-controlled variation:\n3385: \n3386: $$\n3387: |\\mathbb{E}[\\log r'] - \\log r'_{\\text{high}}| \\le \\log(A) - \\log(A - L_{g_A} r_{\\max} / \\sigma'_{\\rho,\\min})\n3388: $$\n3389: \n3390: Expanding for small perturbations and using worst-case bounds:\n3391: \n3392: $$\n3393: \\kappa_{r',\\text{mean,adv}}(\\rho) := \\frac{L_{g_A} r_{\\max}}{A \\cdot \\sigma'_{\\rho,\\min}} + O\\left(\\frac{r_{\\max}^2}{\\sigma'^2_{\\rho,\\min}}\\right)\n3394: $$\n3395: ",
       "_registry_context": {
         "stage": "directives",
@@ -1296,6 +1380,15 @@
         "label": "thm-bounded-density-ratio-main"
       },
       "section": "## 5. Rigorous Proof of Bounded Density Ratio",
+      "references": [
+        "thm-mean-field-limit-informal",
+        "prop-poc-mass",
+        "lem-mass-lower-bound-high-prob",
+        "lem-linfty-full-operator",
+        "lem-linearization-qsd",
+        "lem-l1-to-linfty-near-qsd",
+        "lem-gaussian-kernel-lower-bound"
+      ],
       "raw_directive": "2740: #### 4.5. Propagation-of-Chaos Control of the Mass Coordinate\n2741: \n2742: :::{prf:proposition} Propagation-of-Chaos Mass Concentration\n2743: :label: prop-poc-mass\n2744: \n2745: Let $\\mu_t^N$ be the empirical measure of the $N$-walker Euclidean Gas and $\\rho_t$ the solution of the McKean-Vlasov PDE with the same initial data. Then for every $t > 0$ and every $\\epsilon > 0$ there exist constants $C_{\\text{pc}}, \\beta_{\\text{pc}} > 0$ (depending on $t$ and the physical parameters but not on $N$) such that\n2746: \n2747: $$\n2748: \\mathbb{P}\\left( \\sup_{0 \\leq s \\leq t} \\left| \\|\\mu_s^N\\|_{L^1} - \\|\\rho_s\\|_{L^1} \\right| > \\epsilon \\right)\n2749: \\leq C_{\\text{pc}} \\exp\\!\\left( - \\beta_{\\text{pc}} N \\epsilon^2 \\right).\n2750: $$\n2751: \n2752: **Proof**:\n2753: \n2754: Write $k_s := N \\|\\mu_s^N\\|_{L^1}$ for the number of alive walkers. The proof has two components.\n2755: \n2756: **Step 1: Mean-field bias control**  \n2757: Section 3 of `07_mean_field.md` (see Theorem {prf:ref}`thm-mean-field-limit-informal` and the quantitative estimates in its proof) yields\n2758: \n2759: $$\n2760: \\left| \\mathbb{E}\\left[\\frac{k_s}{N}\\right] - \\|\\rho_s\\|_{L^1} \\right| \\leq \\frac{C_{\\text{bias}}(t)}{N}\n2761: \\qquad \\forall s \\in [0, t],\n2762: $$\n2763: \n2764: where $C_{\\text{bias}}(t)$ depends continuously on $t$ and the model parameters. This follows from the classical propagation-of-chaos estimates (Fournier & Méléard 2004, Theorem 1.1), because the birth/death rates are globally Lipschitz on the compact phase space.\n2765: \n2766: **Step 2: Martingale concentration for $k_s$**  \n2767: The Doob decomposition of $k_s$ reads\n2768: \n2769: $$\n2770: \\frac{k_s}{N} = \\frac{k_0}{N} + M_s + \\int_0^s \\left( \\lambda_{\\text{rev}} \\frac{N - k_r}{N} - \\frac{1}{N} \\sum_{i=1}^N c(z_r^{(i)}) \\right) dr,\n2771: $$\n2772: \n2773: where $M_s$ is a càdlàg martingale with jumps bounded by $1/N$. The predictable quadratic variation satisfies\n2774: \n2775: $$\n2776: \\langle M \\rangle_s \\leq \\frac{(\\lambda_{\\text{rev}} + c_{\\max}) s}{N} =: \\frac{\\Lambda s}{N}.\n2777: $$\n2778: \n2779: Freedman’s inequality for martingales with bounded jumps (Freedman 1975) therefore gives, for any $\\eta > 0$,\n2780: \n2781: $$\n2782: \\mathbb{P}\\left( \\sup_{0 \\leq r \\leq s} |M_r| \\geq \\eta \\right)\n2783: \\leq 2 \\exp\\!\\left( - \\frac{N \\eta^2}{2(\\Lambda s + \\eta)} \\right)\n2784: \\leq 2 \\exp\\!\\left( - \\frac{N \\eta^2}{4 \\Lambda t + 2} \\right)\n2785: = 2 \\exp\\!\\left( - \\beta_{\\text{mart}} N \\eta^2 \\right),\n2786: $$\n2787: \n2788: for all $s \\leq t$, where $\\beta_{\\text{mart}} := \\big(4 \\Lambda t + 2\\big)^{-1}$.\n2789: \n2790: **Step 3: Union bound and choice of parameters**  \n2791: For any $\\epsilon > 0$,\n2792: \n2793: $$\n2794: \\left\\{ \\sup_{0 \\leq s \\leq t} \\left| \\frac{k_s}{N} - \\|\\rho_s\\|_{L^1} \\right| > \\epsilon \\right\\}\n2795: \\subseteq \\left\\{ \\sup_{0 \\leq s \\leq t} |M_s| > \\frac{\\epsilon}{2} \\right\\}\n2796: \\cup \\left\\{ \\sup_{0 \\leq s \\leq t} \\left| \\mathbb{E}\\left[\\frac{k_s}{N}\\right] - \\|\\rho_s\\|_{L^1} \\right| > \\frac{\\epsilon}{2} \\right\\}.\n2797: $$\n2798: \n2799: The bias term is zero whenever $\\epsilon \\geq 2 C_{\\text{bias}}(t)/N$, and otherwise it contributes at most the trivial probability $1 \\leq e^{\\beta_{\\text{mart}} N \\epsilon^2}$, which we absorb into the constant $C_{\\text{pc}}$. Combining the two contributions and setting\n2800: \n2801: $$\n2802: \\beta_{\\text{pc}} := \\frac{1}{4 \\Lambda t + 2}, \\qquad\n2803: C_{\\text{pc}} := 2 e^{\\beta_{\\text{pc}} (2 C_{\\text{bias}}(t))^2},\n2804: $$\n2805: \n2806: gives the claimed inequality. $\\square$\n2807: \n2808: **Connection to Section 4.3**: Taking $\\epsilon = c_{\\text{early}}$ in Proposition {prf:ref}`prop-poc-mass` furnishes the early-time mass floor used in Lemma {prf:ref}`lem-mass-lower-bound-high-prob`, thereby linking the discrete alive count $k_t/N$ to the continuum mass $\\|\\rho_t\\|_{L^1}$ with exponentially high probability in $N$.\n2809: \n2810: \n2811: \n2812: ### 5. Main Theorem: Bounded Density Ratio\n2813: \n2814: We now assemble the results from Sections 2-4 into the main theorem.\n2815: \n2816: :::{prf:theorem} Bounded Density Ratio for the Euclidean Gas (RIGOROUS)\n2817: :label: thm-bounded-density-ratio-main\n2818: \n2819: **Assumptions**:\n2820: - Euclidean Gas dynamics with parameters $(\\gamma, \\sigma_v, \\sigma_x, U, R)$ from `02_euclidean_gas.md`\n2821: - Cloning position jitter $\\sigma_x > 0$ (`03_cloning.md` line 6022)\n2822: - Initial density $\\|f_0\\|_\\infty \\leq M_0 < \\infty$\n2823: - Number of walkers $N \\geq N_0$ sufficiently large\n2824: \n2825: Then there exists a finite constant $M = M(\\gamma, \\sigma_v, \\sigma_x, U, R, M_0, N) < \\infty$ such that:\n2826: \n2827: $$\n2828: \\sup_{t \\geq 0} \\sup_{x \\in \\mathcal{X}_{\\text{valid}}} \\frac{d\\tilde{\\mu}_t}{d\\tilde{\\pi}_{\\text{QSD}}}(x) \\leq M\n2829: \n2830: $$\n2831: \n2832: where $\\tilde{\\mu}_t = \\mu_t / \\|\\mu_t\\|$ is the normalized empirical measure and $\\tilde{\\pi}_{\\text{QSD}}$ is the normalized quasi-stationary distribution.\n2833: \n2834: **Explicit Formula**:\n2835: \n2836: $$\n2837: M = \\max(M_1, M_2) < \\infty\n2838: \n2839: $$\n2840: \n2841: where:\n2842: - $M_1 = \\dfrac{C_{\\text{hypo}}(M_0, T_0, \\gamma, \\sigma_v, \\sigma_x, U, R)}{c_{\\sigma_x, R} \\cdot c_{\\text{mass}}}$ is the **early-time bound** (Regime 1)\n2843: - $M_2 = \\dfrac{C_{\\text{late}}^{\\text{total}}}{c_{\\sigma_x, R} \\cdot c_{\\text{mass}}}$ is the **late-time bound** (Regime 2)\n2844: \n2845: **Component constants**:\n2846: - $C_{\\text{hypo}}$ is the hypoelliptic smoothing constant (Lemma {prf:ref}`lem-linfty-full-operator`)\n2847: - $C_{\\text{late}}^{\\text{total}} = C_\\pi + C_{\\text{late}}$ where $C_{\\text{late}}$ is from the Nash-Aronson estimate (Lemmas {prf:ref}`lem-linearization-qsd`, {prf:ref}`lem-l1-to-linfty-near-qsd`)\n2848: - $c_{\\sigma_x, R} = (2\\pi\\sigma_x^2)^{-d/2} \\exp(-(2R)^2 / (2\\sigma_x^2))$ (Lemma {prf:ref}`lem-gaussian-kernel-lower-bound`)\n2849: - $c_{\\text{mass}} = \\min\\!\\left(c_{\\text{early}}, \\frac{m_{\\text{eq}}}{2}\\right)$ (Lemma {prf:ref}`lem-mass-lower-bound-high-prob`)\n2850: - $T_0 = O(\\kappa_{\\text{QSD}}^{-1})$ is the equilibration time\n2851: \n2852: **Key Property**: Both $M_1$ and $M_2$ are finite and time-independent, yielding a uniform bound for all $t \\geq 0$.\n2853: \n2854: **Probability Statement**:\n2855: - **Finite horizon**: For any fixed $T < \\infty$, the bound holds with probability $\\geq 1 - CT e^{-\\delta N}$ for all $t \\in [0, T]$.\n2856: - **Infinite horizon (asymptotic)**: The bound holds **deterministically for all $t \\geq 0$** on the survival event $\\{\\tau_\\dagger = \\infty\\}$ (see Section 4.4).\n2857: ",
       "_registry_context": {
         "stage": "directives",
@@ -1321,6 +1414,9 @@
         "label": "prop-interaction-complexity-bound"
       },
       "section": "## Part I: Mean-Field Convergence via Relative Entropy",
+      "references": [
+        "lem-quantitative-kl-bound"
+      ],
       "raw_directive": "288: The following proposition completes the proof of {prf:ref}`lem-quantitative-kl-bound` by establishing that the interaction complexity constant is finite and independent of $N$.\n289: \n290: :::{prf:proposition} Boundedness of Interaction Complexity Constant\n291: :label: prop-interaction-complexity-bound\n292: \n293: The interaction complexity constant appearing in {prf:ref}`lem-quantitative-kl-bound`, which arises from the KL-divergence evolution equation:\n294: \n295: $$\n296: |R_N(k)| \\leq \\frac{C_{\\text{int}}}{N}\n297: $$\n298: \n299: is finite and independent of $N$. Specifically:\n300: \n301: $$\n302: C_{\\text{int}} \\leq \\lambda \\cdot L_{\\log \\rho_0} \\cdot \\text{diam}(\\Omega)\n303: $$\n304: \n305: where:\n306: - $\\lambda$: cloning rate\n307: - $L_{\\log \\rho_0}$: Lipschitz constant of $\\log \\rho_0$ (the log-density of the mean-field QSD)\n308: - $\\text{diam}(\\Omega)$: effective diameter of the state space\n309: ",
       "_registry_context": {
         "stage": "directives",
@@ -1346,6 +1442,7 @@
         "label": "prop-finite-second-moment-meanfield"
       },
       "section": "## Part I: Mean-Field Convergence via Relative Entropy",
+      "references": [],
       "raw_directive": "498: The Fournier-Guillin bound requires that the mean-field invariant measure $\\rho_0$ has finite second moment. We now prove this.\n499: \n500: :::{prf:proposition} Finite Second Moment of Mean-Field QSD\n501: :label: prop-finite-second-moment-meanfield\n502: \n503: The mean-field invariant measure $\\rho_0$ of the McKean-Vlasov PDE has finite second moment:\n504: \n505: $$\n506: C_{\\text{var}}(\\rho_0) := \\int_\\Omega |z - \\bar{z}|^2 d\\rho_0(z) < \\infty\n507: $$\n508: \n509: where $\\bar{z} = \\int_\\Omega z d\\rho_0(z)$ is the mean.\n510: \n511: More explicitly, both the position and velocity moments are finite:\n512: \n513: $$\n514: \\int_\\Omega (|x|^2 + |v|^2) d\\rho_0(z) < \\infty",
       "_registry_context": {
         "stage": "directives",
@@ -1371,6 +1468,9 @@
         "label": "prop-fourth-moment-baoab"
       },
       "section": "## Part II: Time Discretization Error Bounds",
+      "references": [
+        "def-confined-potential"
+      ],
       "raw_directive": "743: Before proving weak convergence, we need uniform moment bounds for the BAOAB iterates.\n744: \n745: :::{prf:proposition} Fourth-Moment Uniform Bounds for BAOAB\n746: :label: prop-fourth-moment-baoab\n747: \n748: Let $\\{Z_k\\}_{k \\geq 0}$ be the BAOAB chain with step size $\\Delta t$ initialized from the continuous-time invariant measure $\\nu^{\\text{cont}}$. Under the confinement axiom ({prf:ref}`def-confined-potential`), there exists a constant $M_4 < \\infty$ independent of $\\Delta t$ (for $\\Delta t$ sufficiently small) such that:\n749: \n750: $$\n751: \\sup_{k \\geq 0} \\mathbb{E}_{\\nu^{\\text{cont}}} [|Z_k|^4] \\leq M_4\n752: $$\n753: ",
       "_registry_context": {
         "stage": "directives",
@@ -1396,6 +1496,7 @@
         "label": "prop-mixing-rate-relationship"
       },
       "section": "## Part III: Cloning Mechanism Error Bounds",
+      "references": [],
       "raw_directive": "2120: ---\n2121: \n2122: :::{prf:proposition} Relationship Between Continuous and Discrete Mixing Rates\n2123: :label: prop-mixing-rate-relationship\n2124: \n2125: Let $\\mathcal{L}$ be a generator with spectral gap $\\lambda_1 > 0$ (so the continuous-time semigroup $\\mathcal{P}^t = e^{t\\mathcal{L}}$ has mixing rate $\\kappa_{\\text{mix}}^{\\text{cont}} = \\lambda_1$).\n2126: \n2127: For any fixed time step $\\tau > 0$, the discrete-time Markov chain with transition kernel $\\mathcal{P}^\\tau = e^{\\tau \\mathcal{L}}$ is geometrically ergodic with mixing rate:\n2128: \n2129: $$\n2130: \\kappa_{\\text{mix}}^{\\text{discrete}}(\\tau) = -\\frac{1}{\\tau} \\log(1 - \\lambda_1(\\tau))\n2131: $$\n2132: \n2133: where $\\lambda_1(\\tau) = 1 - e^{-\\tau \\lambda_1}$ is the spectral gap of the discrete operator $I - \\mathcal{P}^\\tau$.\n2134: \n2135: For small $\\tau$, we have:\n2136: \n2137: $$\n2138: \\kappa_{\\text{mix}}^{\\text{discrete}}(\\tau) = \\lambda_1 + O(\\tau) = \\kappa_{\\text{mix}}^{\\text{cont}} + O(\\tau)\n2139: $$\n2140: ",
       "_registry_context": {
         "stage": "directives",
@@ -1421,6 +1522,9 @@
         "label": "prop-quantitative-explicit-constants"
       },
       "section": "## Part IV: Total Error Bound",
+      "references": [
+        "lem-quantitative-kl-bound"
+      ],
       "raw_directive": "2627: For practical implementation, we provide explicit formulas for the constants in terms of system parameters.\n2628: \n2629: :::{prf:proposition} Explicit Constant Formulas\n2630: :label: prop-quantitative-explicit-constants\n2631: \n2632: Under the framework axioms, the error constants admit the following explicit bounds:\n2633: \n2634: **1. Mean-field constant:**\n2635: \n2636: $$\n2637: C_{\\text{MF}} = \\sqrt{C_{\\text{var}} + C' \\cdot C_{\\text{int}}}\n2638: $$\n2639: \n2640: where:\n2641: - $C_{\\text{var}}$ is the variance constant from the Fournier-Guillin bound for empirical measure fluctuations\n2642:   - Depends on metric properties and observable regularity\n2643: - $C_{\\text{int}}$ is the interaction complexity constant from {prf:ref}`lem-quantitative-kl-bound`\n2644:   - Quantifies the strength of particle interactions through the diversity companion probability\n2645:   - Explicit form: $C_{\\text{int}} = \\lambda L_{\\log \\rho_0} \\cdot \\text{diam}(\\Omega)$\n2646:   - Depends on system parameters: $\\gamma, \\sigma, \\lambda, \\delta, \\beta, \\kappa_{\\text{conf}}$\n2647: - $C'$ is a universal constant from the propagation of chaos proof\n2648: \n2649: **2. Discretization constant:**\n2650: \n2651: $$\n2652: C_{\\text{discrete}} = \\frac{C_{\\text{split}} \\cdot C_{\\text{poisson}}}{\\kappa_{\\text{mix}}^{\\text{cont}}}\n2653: $$\n2654: \n2655: where:\n2656: - $C_{\\text{split}} = \\frac{1}{2} \\lambda \\beta C_{\\text{chaos}} \\max(C_F, \\sigma^2, \\|\\nabla^2 U\\|_\\infty)$ (commutator bound)\n2657: - $C_{\\text{chaos}}$: propagation of chaos constant (Sznitman, typically $O(1)$)\n2658: - $C_{\\text{poisson}}$: Poisson equation regularity constant (depends on $\\gamma, \\sigma, \\|\\nabla^3 U\\|_\\infty$)\n2659: - $\\kappa_{\\text{mix}}^{\\text{cont}} = \\min(\\kappa_{\\text{hypo}}, \\lambda)$ (smaller of hypocoercivity gap and cloning rate)\n2660: \n2661: **Typical parameter values** (for optimization tasks):\n2662: - Friction: $\\gamma = 0.1$ to $1.0$\n2663: - Noise scale: $\\sigma = 0.1$ to $1.0$\n2664: - Cloning rate: $\\lambda = 0.01$ to $0.1$\n2665: - Cloning noise: $\\delta = 0.1$ to $0.3$\n2666: - Fitness weight: $\\beta = 1$ to $10$\n2667: \n2668: **Order-of-magnitude estimates:**\n2669: - $C_{\\text{MF}} \\sim O(10)$ for typical problems\n2670: - $C_{\\text{discrete}} \\sim O(1)$ to $O(10)$ depending on mixing rate",
       "_registry_context": {
         "stage": "directives",
@@ -1446,6 +1550,7 @@
         "label": "prop-h-theorem"
       },
       "section": "## 3. Flat Algorithmic Space Symmetries",
+      "references": [],
       "raw_directive": "565: :::\n566: \n567: :::{prf:proposition} H-Theorem for Geometric Gas\n568: :label: prop-h-theorem\n569: \n570: Let $H(f_t | \\pi_{\\text{QSD}})$ denote the relative entropy (Kullback-Leibler divergence) of the swarm distribution $f_t$ to the QSD. Then:\n571: \n572: $$\n573: \\frac{d}{dt} H(f_t | \\pi_{\\text{QSD}}) \\le -\\kappa_{\\text{total}} H(f_t | \\pi_{\\text{QSD}})\n574: \n575: $$\n576: \n577: where $\\kappa_{\\text{total}} > 0$ is the exponential convergence rate from `08_emergent_geometry.md`.\n578: ",
       "_registry_context": {
         "stage": "directives",
@@ -1471,6 +1576,7 @@
         "label": "prop-scaling-kv3"
       },
       "section": "## 8. Main $C^3$ Regularity Theorem",
+      "references": [],
       "raw_directive": "1804: :::\n1805: \n1806: :::{prf:proposition} ρ-Scaling of Third Derivative Bound\n1807: :label: prop-scaling-kv3\n1808: \n1809: The third derivative bound satisfies:\n1810: $$\n1811: K_{V,3}(\\rho) = O(\\rho^{6d-3}) \\quad \\text{as } \\rho \\to 0\n1812: $$\n1813: ",
       "_registry_context": {
         "stage": "directives",
@@ -1496,6 +1602,7 @@
         "label": "prop-scaling-k-v-3"
       },
       "section": "## 10. ρ-Scaling Analysis and Numerical Considerations",
+      "references": [],
       "raw_directive": "2010: ### 10.1. Asymptotic Scaling of $K_{V,3}(\\rho)$\n2011: \n2012: :::{prf:proposition} Scaling of Third-Derivative Bound\n2013: :label: prop-scaling-k-v-3\n2014: \n2015: For the Gaussian localization kernel $K_\\rho(x, x') = Z_\\rho(x)^{-1} \\exp(-\\|x-x'\\|^2/(2\\rho^2))$ with $C_{\\nabla^m K}(\\rho) = O(1)$, the third-derivative bound scales as:\n2016: \n2017: **Local regime ($\\rho \\to 0$):**\n2018: $$\n2019: K_{V,3}(\\rho) = O(\\rho^{6d-3})\n2020: $$\n2021: \n2022: where the $\\rho^{6d-3}$ scaling incorporates the $k_{\\text{eff}}^{(\\rho)} = O(\\rho^{2d})$ factor appearing at each of three derivative orders.\n2023: \n2024: **Global regime ($\\rho \\to \\infty$):**\n2025: $$\n2026: K_{V,3}(\\rho) = O(\\rho^{6d})\n2027: $$\n2028: \n2029: **Intermediate regime ($0 < \\rho < \\infty$):**\n2030: $$\n2031: K_{V,3}(\\rho) = O(\\rho^{6d-3}) \\quad \\text{(dominant term for small } \\rho\\text{)}\n2032: $$",
       "_registry_context": {
         "stage": "directives",
@@ -1521,6 +1628,7 @@
         "label": "prop-timestep-constraint"
       },
       "section": "## 10. ρ-Scaling Analysis and Numerical Considerations",
+      "references": [],
       "raw_directive": "2115: ### 10.2. Numerical Stability and Time Step Constraints\n2116: \n2117: :::{prf:proposition} Time Step Constraint from $C^3$ Regularity\n2118: :label: prop-timestep-constraint\n2119: \n2120: For the BAOAB integrator to maintain $O(\\Delta t^2)$ weak error, the time step must satisfy:\n2121: $$\n2122: \\Delta t \\lesssim \\frac{1}{\\sqrt{K_{V,3}(\\rho)}}\n2123: $$\n2124: \n2125: For small localization scales $\\rho \\to 0$, this gives:\n2126: $$\n2127: \\Delta t \\lesssim \\rho^{3/2}\n2128: $$\n2129: ",
       "_registry_context": {
         "stage": "directives",
@@ -1546,6 +1654,7 @@
         "label": "prop-explicit-k-v-3"
       },
       "section": "## 10. ρ-Scaling Analysis and Numerical Considerations",
+      "references": [],
       "raw_directive": "2182: ### 10.3. Explicit Dependence of $K_{V,3}(\\rho)$ on Parameters\n2183: \n2184: :::{prf:proposition} Explicit Formula for $K_{V,3}(\\rho)$\n2185: :label: prop-explicit-k-v-3\n2186: \n2187: For the Gaussian kernel with constants $(d_{\\max}, d'_{\\max}, d''_{\\max}, d'''_{\\max}, A, L_{g'_A}, L_{g''_A}, L_{g'''_A}, \\sigma\\'_{\\min})$, the third-derivative bound is:\n2188: $$\n2189: \\begin{aligned}\n2190: K_{V,3}(\\rho) = &\\, L_{g'_A} \\cdot \\frac{1}{\\sigma\\'_{\\min}} \\cdot \\left[d'''_{\\max} + \\frac{6 d''_{\\max}}{\\rho} + \\frac{6 d'_{\\max}}{\\rho^2} + \\frac{C_{\\max}}{\\rho^3}\\right] \\\\\n2191: &+ 3 L_{g''_A} \\cdot K_{Z,1}(\\rho) \\cdot K_{Z,2}(\\rho) + L_{g'''_A} \\cdot (K_{Z,1}(\\rho))^3\n2192: \\end{aligned}\n2193: $$\n2194: \n2195: where $C_{\\max}$ is a constant depending on $(d_{\\max}, d'_{\\max}, d''_{\\max}, d'''_{\\max})$ and kernel coefficients.\n2196: \n2197: **Asymptotic behavior:**\n2198: - As $\\rho \\to 0$: $K_{V,3}(\\rho) \\sim \\frac{L_{g'_A} C_{\\max}}{\\sigma\\'_{\\min} \\rho^3}$\n2199: - As $\\rho \\to \\infty$: $K_{V,3}(\\rho) \\sim \\frac{L_{g'_A} d'''_{\\max}}{\\sigma\\'_{\\min}}$\n2200: ",
       "_registry_context": {
         "stage": "directives",
@@ -1571,6 +1680,7 @@
         "label": "prop-scaling-kv3"
       },
       "section": "## 8. Main $C^3$ Regularity Theorem",
+      "references": [],
       "raw_directive": "1064: :::\n1065: \n1066: :::{prf:proposition} ρ-Scaling of Third Derivative Bound\n1067: :label: prop-scaling-kv3\n1068: \n1069: The third derivative bound satisfies:\n1070: \n1071: $$\n1072: K_{V,3}(\\rho) = O(\\rho^{-3}) \\quad \\text{as } \\rho \\to 0\n1073: $$\n1074: ",
       "_registry_context": {
         "stage": "directives",
@@ -1596,6 +1706,7 @@
         "label": "prop-scaling-k-v-3"
       },
       "section": "## 10. �-Scaling Analysis and Numerical Considerations",
+      "references": [],
       "raw_directive": "1267: ### 10.1. Asymptotic Scaling of $K_{V,3}(\\rho)$\n1268: \n1269: :::{prf:proposition} Scaling of Third-Derivative Bound\n1270: :label: prop-scaling-k-v-3\n1271: \n1272: For the Gaussian localization kernel $K_\\rho(x, x') = Z_\\rho(x)^{-1} \\exp(-\\|x-x'\\|^2/(2\\rho^2))$ with $C_{\\nabla^m K}(\\rho) = O(1)$, the third-derivative bound scales as:\n1273: \n1274: **Local regime ($\\rho \\to 0$):**\n1275: \n1276: $$\n1277: K_{V,3}(\\rho) = O(\\rho^{-3})\n1278: $$\n1279: \n1280: **Global regime ($\\rho \\to \\infty$):**\n1281: \n1282: $$\n1283: K_{V,3}(\\rho) = O(1)\n1284: $$\n1285: \n1286: **Intermediate regime ($0 < \\rho < \\infty$):**\n1287: \n1288: $$\n1289: K_{V,3}(\\rho) = O(\\rho^{-3}) \\quad \\text{(dominant term)}\n1290: $$",
       "_registry_context": {
         "stage": "directives",
@@ -1621,6 +1732,7 @@
         "label": "prop-timestep-constraint"
       },
       "section": "## 10. �-Scaling Analysis and Numerical Considerations",
+      "references": [],
       "raw_directive": "1380: ### 10.2. Numerical Stability and Time Step Constraints\n1381: \n1382: :::{prf:proposition} Time Step Constraint from $C^3$ Regularity\n1383: :label: prop-timestep-constraint\n1384: \n1385: For the BAOAB integrator to maintain $O(\\Delta t^2)$ weak error, the time step must satisfy:\n1386: \n1387: $$\n1388: \\Delta t \\lesssim \\frac{1}{\\sqrt{K_{V,3}(\\rho)}}\n1389: $$\n1390: \n1391: For small localization scales $\\rho \\to 0$, this gives:\n1392: \n1393: $$\n1394: \\Delta t \\lesssim \\rho^{3/2}\n1395: $$\n1396: ",
       "_registry_context": {
         "stage": "directives",
@@ -1646,6 +1758,7 @@
         "label": "prop-explicit-k-v-3"
       },
       "section": "## 10. �-Scaling Analysis and Numerical Considerations",
+      "references": [],
       "raw_directive": "1451: ### 10.3. Explicit Dependence of $K_{V,3}(\\rho)$ on Parameters\n1452: \n1453: :::{prf:proposition} Explicit Formula for $K_{V,3}(\\rho)$\n1454: :label: prop-explicit-k-v-3\n1455: \n1456: For the Gaussian kernel with constants $(d_{\\max}, d'_{\\max}, d''_{\\max}, d'''_{\\max}, A, L_{g'_A}, L_{g''_A}, L_{g'''_A}, \\sigma\\'_{\\min})$, the third-derivative bound is:\n1457: \n1458: $$\n1459: \\begin{aligned}\n1460: K_{V,3}(\\rho) = &\\, L_{g'_A} \\cdot \\frac{1}{\\sigma\\'_{\\min}} \\cdot \\left[d'''_{\\max} + \\frac{6 d''_{\\max}}{\\rho} + \\frac{6 d'_{\\max}}{\\rho^2} + \\frac{C_{\\max}}{\\rho^3}\\right] \\\\\n1461: &+ 3 L_{g''_A} \\cdot K_{Z,1}(\\rho) \\cdot K_{Z,2}(\\rho) + L_{g'''_A} \\cdot (K_{Z,1}(\\rho))^3\n1462: \\end{aligned}\n1463: $$\n1464: \n1465: where $C_{\\max}$ is a constant depending on $(d_{\\max}, d'_{\\max}, d''_{\\max}, d'''_{\\max})$ and kernel coefficients.\n1466: \n1467: **Asymptotic behavior:**\n1468: - As $\\rho \\to 0$: $K_{V,3}(\\rho) \\sim \\frac{L_{g'_A} C_{\\max}}{\\sigma\\'_{\\min} \\rho^3}$\n1469: - As $\\rho \\to \\infty$: $K_{V,3}(\\rho) \\sim \\frac{L_{g'_A} d'''_{\\max}}{\\sigma\\'_{\\min}}$\n1470: ",
       "_registry_context": {
         "stage": "directives",
@@ -1671,6 +1784,7 @@
         "label": "prop-bakry-emery-gamma2"
       },
       "section": "## 9. Stability Implications and Corollaries",
+      "references": [],
       "raw_directive": "982: :::\n983: \n984: :::{prf:proposition} Bakry-Émery Γ₂ Criterion (Conditional)\n985: :label: prop-bakry-emery-gamma2\n986: \n987: C⁴ regularity of $V_{\\text{fit}}$ ensures the Langevin generator $\\mathcal{L} = \\Delta - \\nabla V_{\\text{fit}} \\cdot \\nabla$ admits a well-defined Γ₂ operator:\n988: \n989: $$\n990: \\Gamma_2(f, f) = \\frac{1}{2}\\mathcal{L}(\\Gamma(f, f)) - \\Gamma(f, \\mathcal{L} f)\n991: \n992: $$\n993: \n994: where $\\Gamma(f, f) = \\|\\nabla f\\|^2$.\n995: \n996: **Curvature hypothesis:** If the fitness potential satisfies the **Bakry-Émery curvature condition**:\n997: \n998: $$\n999: \\Gamma_2(f, f) \\ge \\lambda_{\\text{BE}} \\Gamma(f, f) \\quad \\text{for some } \\lambda_{\\text{BE}} > 0\n1000: \n1001: $$\n1002: \n1003: (which is equivalent to $\\text{Hess}(V_{\\text{fit}}) \\ge \\lambda_{\\text{BE}} I$ for the Langevin generator), then the semigroup $P_t$ is **hypercontractive**:\n1004: \n1005: $$\n1006: \\|P_t f\\|_{L^q} \\le \\|f\\|_{L^p} \\quad \\text{for } q = 1 + (p - 1)e^{2\\lambda_{\\text{BE}} t}\n1007: \n1008: $$\n1009: ",
       "_registry_context": {
         "stage": "directives",
@@ -1696,6 +1810,7 @@
         "label": "prop-scaling-k-v-4"
       },
       "section": "## 10. ρ-Scaling Analysis",
+      "references": [],
       "raw_directive": "1013: ## 10. ρ-Scaling Analysis\n1014: \n1015: :::{prf:proposition} Fourth-Derivative Scaling\n1016: :label: prop-scaling-k-v-4\n1017: \n1018: **Local regime ($\\rho \\to 0$):** $K_{V,4}(\\rho) = O(\\rho^{-3})$\n1019: ",
       "_registry_context": {
         "stage": "directives",
@@ -1721,6 +1836,7 @@
         "label": "prop-timestep-c4"
       },
       "section": "## 10. ρ-Scaling Analysis",
+      "references": [],
       "raw_directive": "1053: :::\n1054: \n1055: :::{prf:proposition} Time Step Constraint (Corrected)\n1056: :label: prop-timestep-c4\n1057: \n1058: For numerical stability, both BAOAB and fourth-order integrators have the **same ρ-dependent constraint**: $\\Delta t \\lesssim \\rho^{3/2}$\n1059: ",
       "_registry_context": {
         "stage": "directives",
@@ -1746,6 +1862,7 @@
         "label": "prop-factorial-sqrt-composition"
       },
       "section": "## Appendix A: Combinatorial Proof of Gevrey-1 Bounds via Faà di Bruno Formula",
+      "references": [],
       "raw_directive": "5333: We prove the Gevrey-1 bound for $\\sigma'_{\\text{reg}}(V) = \\sqrt{V + \\eta_{\\min}^2}$ as a concrete example.\n5334: \n5335: :::{prf:proposition} Factorial Growth for Composition with Square Root\n5336: :label: prop-factorial-sqrt-composition\n5337: \n5338: For $\\sigma'(V) = \\sqrt{V + c^2}$ where $c = \\eta_{\\min} > 0$ and $V \\in C^m$ with $\\|\\nabla^k V\\| \\leq M_k$, the $m$-th derivative satisfies:\n5339: \n5340: $$\n5341: \\|\\nabla^m \\sigma'(V)\\| \\leq C_{\\sigma,m} \\cdot m!\n5342: \n5343: $$\n5344: ",
       "_registry_context": {
         "stage": "directives",
@@ -1771,6 +1888,7 @@
         "label": "prop-velocity-gradient-uniform"
       },
       "section": "## 3. Bounded Log-Derivatives via Bernstein Method (R4, R5)",
+      "references": [],
       "raw_directive": "1934: ### 3.2. Velocity Gradient Bound (R4 - Velocity Part)\n1935: \n1936: :::{prf:proposition} Uniform Velocity Gradient Bound\n1937: :label: prop-velocity-gradient-uniform\n1938: \n1939: Under Assumptions A1-A4 with $U \\in C^3(\\mathcal{X})$ (bounded $\\nabla^2 U$, $\\nabla^3 U$), there exists $C_v < \\infty$ such that:\n1940: \n1941: $$\n1942: |\\nabla_v \\log \\rho_\\infty(x,v)| \\le C_v\n1943: \n1944: $$\n1945: ",
       "_registry_context": {
         "stage": "directives",
@@ -1796,6 +1914,7 @@
         "label": "prop-complete-gradient-bounds"
       },
       "section": "## 3. Bounded Log-Derivatives via Bernstein Method (R4, R5)",
+      "references": [],
       "raw_directive": "2316: ### 3.3. Spatial Gradient and Laplacian Bounds (R4/R5)\n2317: \n2318: :::{prf:proposition} Complete Gradient and Laplacian Bounds\n2319: :label: prop-complete-gradient-bounds\n2320: \n2321: Under Assumptions A1-A4 with $U \\in C^3(\\mathcal{X})$, there exist constants $C_x, C_\\Delta < \\infty$ such that:\n2322: \n2323: $$\n2324: |\\nabla_x \\log \\rho_\\infty(x,v)| \\le C_x, \\quad |\\Delta_v \\log \\rho_\\infty(x,v)| \\le C_\\Delta\n2325: \n2326: $$\n2327: ",
       "_registry_context": {
         "stage": "directives",
@@ -1821,6 +1940,7 @@
         "label": "prop-velocity-gradient-uniform"
       },
       "section": "## 3. Bounded Log-Derivatives via Bernstein Method (R4, R5)",
+      "references": [],
       "raw_directive": "1537: ### 3.2. Velocity Gradient Bound (R4 - Velocity Part)\n1538: \n1539: :::{prf:proposition} Uniform Velocity Gradient Bound\n1540: :label: prop-velocity-gradient-uniform\n1541: \n1542: Under Assumptions A1-A4 with $U \\in C^3(\\mathcal{X})$ (bounded $\\nabla^2 U$, $\\nabla^3 U$), there exists $C_v < \\infty$ such that:\n1543: \n1544: $$\n1545: |\\nabla_v \\log \\rho_\\infty(x,v)| \\le C_v\n1546: $$\n1547: ",
       "_registry_context": {
         "stage": "directives",
@@ -1846,6 +1966,7 @@
         "label": "prop-complete-gradient-bounds"
       },
       "section": "## 3. Bounded Log-Derivatives via Bernstein Method (R4, R5)",
+      "references": [],
       "raw_directive": "1879: ### 3.3. Spatial Gradient and Laplacian Bounds (R4/R5)\n1880: \n1881: :::{prf:proposition} Complete Gradient and Laplacian Bounds\n1882: :label: prop-complete-gradient-bounds\n1883: \n1884: Under Assumptions A1-A4 with $U \\in C^3(\\mathcal{X})$, there exist constants $C_x, C_\\Delta < \\infty$ such that:\n1885: \n1886: $$\n1887: |\\nabla_x \\log \\rho_\\infty(x,v)| \\le C_x, \\quad |\\Delta_v \\log \\rho_\\infty(x,v)| \\le C_\\Delta\n1888: $$\n1889: ",
       "_registry_context": {
         "stage": "directives",
@@ -1871,6 +1992,7 @@
         "label": "prop-lipschitz-diffusion"
       },
       "section": "## 3. The Emergent Geometry Framework",
+      "references": [],
       "raw_directive": "411: The diffusion tensor varies smoothly with the state.\n412: \n413: :::{prf:proposition} Lipschitz Continuity of Adaptive Diffusion\n414: :label: prop-lipschitz-diffusion\n415: \n416: The adaptive diffusion tensor is Lipschitz continuous:\n417: \n418: $$\n419: \\|\\Sigma_{\\text{reg}}(x_1, S_1) - \\Sigma_{\\text{reg}}(x_2, S_2)\\|_F \\le L_\\Sigma \\cdot d_{\\text{state}}((x_1, S_1), (x_2, S_2))\n420: $$\n421: \n422: where $\\|\\cdot\\|_F$ is the Frobenius norm, $d_{\\text{state}}$ is an appropriate state-space metric, and $L_\\Sigma$ depends on:\n423: - The Lipschitz constant of the fitness Hessian $\\nabla^2 V_{\\text{fit}}$\n424: - The regularization $\\epsilon_\\Sigma$",
       "_registry_context": {
         "stage": "directives",
@@ -1896,6 +2018,7 @@
         "label": "prop-rate-metric-ellipticity"
       },
       "section": "## 8. Convergence on the Emergent Manifold (Geometric Perspective)",
+      "references": [],
       "raw_directive": "2629: :::\n2630: \n2631: :::{prf:proposition} Convergence Rate Depends on Metric Ellipticity\n2632: :label: prop-rate-metric-ellipticity\n2633: \n2634: The convergence rate $\\kappa_{\\text{total}}$ depends on the **ellipticity constants** of the emergent metric:\n2635: \n2636: $$\n2637: \\kappa_{\\text{total}} = O(\\min\\{\\gamma \\tau, \\kappa_x, c_{\\min}\\})\n2638: $$\n2639: \n2640: where $c_{\\min} = \\epsilon_\\Sigma / (H_{\\max} + \\epsilon_\\Sigma)$ is the lower bound on the eigenvalues of $D_{\\text{reg}} = g_{\\text{emergent}}^{-1}$.\n2641: \n2642: **Interpretation**:\n2643: - **Well-conditioned manifold** ($H_{\\max} \\approx \\epsilon_\\Sigma$): $c_{\\min} \\approx \\epsilon_\\Sigma / 2$ → fast convergence\n2644: - **Ill-conditioned manifold** ($H_{\\max} \\gg \\epsilon_\\Sigma$): $c_{\\min} \\approx \\epsilon_\\Sigma / H_{\\max}$ → slower convergence (but still positive!)\n2645: ",
       "_registry_context": {
         "stage": "directives",
@@ -1921,6 +2044,7 @@
         "label": "prop-geodesics-fitness"
       },
       "section": "## 11. Explicit Derivation of the Emergent Metric from Algorithmic Parameters",
+      "references": [],
       "raw_directive": "3273: :::\n3274: \n3275: :::{prf:proposition} Geodesics Favor High-Fitness Regions\n3276: :label: prop-geodesics-fitness\n3277: \n3278: The geodesics of the emergent metric $g(x, S)$ are **biased toward high-fitness regions**. Specifically:\n3279: \n3280: 1. **Shorter distances in high-fitness regions:** For two points $x_1, x_2 \\in \\mathcal{X}$, the Riemannian distance:\n3281: \n3282: $$\n3283: d_g(x_1, x_2) = \\inf_{\\gamma: x_1 \\to x_2} \\int_0^1 \\sqrt{g_{ab}(\\gamma(t), S) \\dot{\\gamma}^a(t) \\dot{\\gamma}^b(t)} \\, dt\n3284: $$\n3285: \n3286: is **smaller** when the path passes through regions of high $V_{\\text{fit}}$ (low curvature, low metric eigenvalues).\n3287: \n3288: 2. **Geodesics avoid high-curvature regions:** The metric eigenvalues are largest where the Hessian $H$ has large positive eigenvalues, which occurs where the fitness landscape is **most convexly curved**. Geodesics bend away from these regions of high metric density to minimize path length.\n3289: \n3290: 3. **Connection to natural gradient:** The inverse metric $g^{-1} = D_{\\text{reg}}$ defines the **natural gradient**:\n3291: \n3292: $$\n3293: \\nabla^{\\text{nat}} V_{\\text{fit}} = g^{-1} \\nabla V_{\\text{fit}}\n3294: $$\n3295: ",
       "_registry_context": {
         "stage": "directives",
@@ -1946,6 +2070,7 @@
         "label": "prop-gevrey-regularization-cinf"
       },
       "section": "## 7. Gevrey-1 Classification",
+      "references": [],
       "raw_directive": "805: :::\n806: \n807: :::{prf:proposition} Gevrey Regularization Property\n808: :label: prop-gevrey-regularization-cinf\n809: \n810: If d ∈ G^s(X) for some s ≥ 1, then V_fit ∈ G^{min(s, 1)}(X). In particular:\n811: - d real analytic (s < 1) → V_fit ∈ G¹\n812: - d ∈ G¹ → V_fit ∈ G¹ (preserved)\n813: - d ∈ G^s (s > 1) → V_fit ∈ G¹ (regularization)\n814: \n815: **Interpretation**: The Gaussian localization kernel **regularizes** the measurement to at least Gevrey-1, regardless of input regularity (as long as d ∈ C∞). Analogous to heat kernel smoothing.\n816: ",
       "_registry_context": {
         "stage": "directives",
@@ -1971,6 +2096,7 @@
         "label": "prop-gaussian-tail-bounds-cinf"
       },
       "section": "## 9. Hypoellipticity and Smooth Transition Densities",
+      "references": [],
       "raw_directive": "891: :::\n892: \n893: :::{prf:proposition} Gaussian Tail Bounds (Conditional)\n894: :label: prop-gaussian-tail-bounds-cinf\n895: \n896: Under the confining potential hypothesis (lim U = +∞), the transition density satisfies:\n897: \n898: $$\n899: p_t(w, w') \\leq C_t \\cdot \\exp\\left(-\\frac{d(w, w')^2}{D t}\\right)\n900: $$\n901: \n902: for constants C_t, D > 0, where d(w, w') is the hypoelliptic distance.\n903: ",
       "_registry_context": {
         "stage": "directives",
@@ -1996,6 +2122,9 @@
         "label": "prop-talagrand-cinf"
       },
       "section": "## 10. Advanced Functional Inequalities (Conditional Results)",
+      "references": [
+        "thm-cinf-regularity"
+      ],
       "raw_directive": "913: ### 10.1. Talagrand W_2 Inequality\n914: \n915: :::{prf:proposition} Talagrand Inequality (Conditional)\n916: :label: prop-talagrand-cinf\n917: \n918: Assume:\n919: 1. V_fit ∈ C∞ (Theorem {prf:ref}`thm-cinf-regularity`)\n920: 2. V_total uniformly convex: ∇²V_total ≥ λ_Tal I\n921: 3. QSD π_QSD ∝ exp(-β V_total) exists\n922: \n923: Then for any ν with ν ≪ π_QSD:\n924: \n925: $$\n926: W_2^2(\\nu, \\pi_{\\text{QSD}}) \\leq \\frac{2}{\\lambda_{\\text{Tal}}} D_{\\text{KL}}(\\nu \\| \\pi_{\\text{QSD}})\n927: $$\n928: ",
       "_registry_context": {
         "stage": "directives",
@@ -2021,6 +2150,10 @@
         "label": "prop-brascamp-lieb-cinf"
       },
       "section": "## 10. Advanced Functional Inequalities (Conditional Results)",
+      "references": [
+        "prop-talagrand-cinf",
+        "thm-cinf-regularity"
+      ],
       "raw_directive": "944: ### 10.2. Brascamp-Lieb Inequality\n945: \n946: :::{prf:proposition} Brascamp-Lieb Inequality (Conditional)\n947: :label: prop-brascamp-lieb-cinf\n948: \n949: Under {prf:ref}`prop-talagrand-cinf` hypotheses (C∞ + uniform convexity):\n950: \n951: $$\n952: \\text{Var}_{\\pi_{\\text{QSD}}}[f] \\leq \\frac{1}{\\lambda_{\\min}(\\nabla^2 V_{\\text{total}})} \\int |\\nabla f|^2 \\, d\\pi_{\\text{QSD}}\n953: $$\n954: \n955: for all smooth f with π_QSD(f) = 0.\n956: \n957: **Interpretation**: Optimal Poincaré constant C_Poinc = 1/λ_min, sharp for uniformly convex log-concave measures.\n958: ",
       "_registry_context": {
         "stage": "directives",
@@ -2046,6 +2179,7 @@
         "label": "prop-bakry-emery-gamma2-cinf"
       },
       "section": "## 10. Advanced Functional Inequalities (Conditional Results)",
+      "references": [],
       "raw_directive": "962: ### 10.3. Bakry-Émery Γ_2 Criterion\n963: \n964: :::{prf:proposition} Bakry-Émery Curvature Condition (Conditional)\n965: :label: prop-bakry-emery-gamma2-cinf\n966: \n967: Assume V_fit ∈ C∞ and V_total uniformly convex with ∇²V_total ≥ λ_BE I. Then:\n968: \n969: $$\n970: \\Gamma_2(f, f) \\geq \\lambda_{\\text{BE}} \\Gamma(f, f) \\quad \\forall \\text{ smooth } f\n971: $$\n972: \n973: where:\n974: - Γ(f, g) = (1/2)[L(fg) - f Lg - g Lf] = ⟨∇f, ∇g⟩ (carré du champ)\n975: - Γ_2(f, f) = (1/2)[L Γ(f, f) - 2 Γ(f, Lf)] (iterated carré du champ)\n976: \n977: **Implication**: Γ_2 ≥ λΓ implies:\n978: - Spectral gap λ_gap ≥ λ_BE\n979: - LSI with constant 1/λ_BE\n980: - Hypercontractivity (Nelson's theorem)\n981: ",
       "_registry_context": {
         "stage": "directives",
@@ -2071,6 +2205,7 @@
         "label": "prop-factorial-sqrt-composition"
       },
       "section": "## Appendix A: Combinatorial Proof of Gevrey-1 Bounds via Faà di Bruno Formula",
+      "references": [],
       "raw_directive": "5328: We prove the Gevrey-1 bound for $\\sigma'_{\\text{reg}}(V) = \\sqrt{V + \\eta_{\\min}^2}$ as a concrete example.\n5329: \n5330: :::{prf:proposition} Factorial Growth for Composition with Square Root\n5331: :label: prop-factorial-sqrt-composition\n5332: \n5333: For $\\sigma'(V) = \\sqrt{V + c^2}$ where $c = \\eta_{\\min} > 0$ and $V \\in C^m$ with $\\|\\nabla^k V\\| \\leq M_k$, the $m$-th derivative satisfies:\n5334: \n5335: $$\n5336: \\|\\nabla^m \\sigma'(V)\\| \\leq C_{\\sigma,m} \\cdot m!\n5337: \n5338: $$\n5339: ",
       "_registry_context": {
         "stage": "directives",

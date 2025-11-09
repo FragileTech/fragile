@@ -19,6 +19,7 @@
         "label": "thm-fl-recap"
       },
       "section": "## 0.1 The Problem: Foster-Lyapunov \u2260 LSI",
+      "references": [],
       "raw_directive": "54: From [04_convergence.md](../04_convergence.md), Theorem `thm-foster-lyapunov-main`:\n55: \n56: :::{prf:theorem} Foster-Lyapunov Drift (Unconditional)\n57: :label: thm-fl-recap\n58: \n59: The composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}} \\circ \\Psi_{\\text{clone}}$ satisfies:\n60: \n61: $$\n62: \\mathbb{E}[V_{\\text{total}}(S') \\mid S] \\leq (1 - \\kappa_{\\text{total}}\\tau) V_{\\text{total}}(S) + C_{\\text{total}}\n63: $$\n64: \n65: where:\n66: - $V_{\\text{total}} = V_W + c_V V_{\\text{Var}} + c_B W_b$ is a synergistic Lyapunov function\n67: - $\\kappa_{\\text{total}} > 0$ is independent of N\n68: - $C_{\\text{total}} < \\infty$ is the constant drift term\n69: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "thm-lsi-target"
       },
       "section": "## 0.1 The Problem: Foster-Lyapunov \u2260 LSI",
+      "references": [],
       "raw_directive": "75: ### What We Want\n76: \n77: :::{prf:theorem} Logarithmic Sobolev Inequality (Target)\n78: :label: thm-lsi-target\n79: \n80: For all smooth functions $f: \\mathcal{S}_N \\to \\mathbb{R}$ with $\\int f^2 d\\pi_{\\text{QSD}} = 1$:\n81: \n82: $$\n83: \\text{Ent}_{\\pi_{\\text{QSD}}}(f^2) \\leq C_{\\text{LSI}} \\cdot \\mathbb{E}_{\\pi_{\\text{QSD}}}[|\\nabla f|^2]\n84: $$\n85: \n86: where:\n87: - $\\text{Ent}_{\\pi}(g) = \\int g \\log(g/\\int g) d\\pi$ is the relative entropy\n88: - $|\\nabla f|^2 = \\sum_{i=1}^N |\\nabla_{x_i} f|^2 + |\\nabla_{v_i} f|^2$ is the squared gradient"
     },
     {
@@ -55,6 +57,7 @@
         "label": "ex-fl-no-lsi"
       },
       "section": "## 0.1 The Problem: Foster-Lyapunov \u2260 LSI",
+      "references": [],
       "raw_directive": "94: **Foster-Lyapunov DOES NOT imply LSI** in general. Counter-example:\n95: \n96: :::{prf:example} Random Walk on \u2124\n97: :label: ex-fl-no-lsi\n98: \n99: Consider a lazy random walk on the integers with transition:\n100: $$\n101: P(x, x \\pm 1) = \\frac{1}{4}, \\quad P(x, x) = \\frac{1}{2}\n102: $$\n103: \n104: and stationary measure $\\pi$ geometric: $\\pi(x) \\propto e^{-|x|}$.\n105: \n106: **Has Foster-Lyapunov**: With $V(x) = |x|$:\n107: $$\n108: \\mathbb{E}[V(X_{t+1})] \\leq (1 - c)V(X_t) + C\n109: $$\n110: "
     }
   ],

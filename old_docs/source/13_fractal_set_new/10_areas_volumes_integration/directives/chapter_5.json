@@ -19,6 +19,7 @@
         "label": "thm-fan-triangulation-error"
       },
       "section": "## 6. Error Analysis and Convergence",
+      "references": [],
       "raw_directive": "828: ### 6.1. Discretization Error for Fan Triangulation\n829: \n830: :::{prf:theorem} Fan Triangulation Error Bound\n831: :label: thm-fan-triangulation-error\n832: \n833: Let $\\Sigma \\subset (\\mathcal{X}, g)$ be a smooth 2D surface with true Riemannian area $A_{\\text{true}}$.\n834: \n835: Let $C = (x_0, \\ldots, x_{n-1})$ be a polygonal approximation of $\\partial \\Sigma$ with $n$ vertices and maximum edge length $h := \\max_i \\|x_{i+1} - x_i\\|$.\n836: \n837: Assume:\n838: 1. Metric $g \\in C^3(\\Sigma)$\n839: 2. Hausdorff distance $d_H(C, \\partial \\Sigma) \\leq h$\n840: 3. Surface curvature bounded: $\\|K\\|_\\infty \\leq K_{\\max}$\n841: \n842: Then the fan triangulation area $A_{\\text{fan}}$ satisfies:\n843: \n844: $$\n845: |A_{\\text{fan}} - A_{\\text{true}}| \\leq C \\cdot h^2 \\cdot (1 + K_{\\max} A_{\\text{true}})\n846: $$\n847: \n848: where $C$ depends on $\\|g\\|_{C^3}$ and $n$.\n849: \n850: **Proof sketch:**\n851: 1. Each triangle introduces error from replacing $g(x)$ with $g(x_c)$: $O(h^2 \\|\\nabla g\\|)$\n852: 2. Curvature of $\\Sigma$ causes geometric error: $O(h^2 K_{\\max})$\n853: 3. Summing $n \\sim h^{-1}$ triangles gives total error $O(h^2)$\n854: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "thm-monte-carlo-error-riemannian"
       },
       "section": "## 6. Error Analysis and Convergence",
+      "references": [],
       "raw_directive": "858: ### 6.2. Monte Carlo Integration Error\n859: \n860: :::{prf:theorem} Monte Carlo Error for Riemannian Integrals\n861: :label: thm-monte-carlo-error-riemannian\n862: \n863: Let $I[f] = \\int f(x) \\sqrt{\\det g(x)} \\, dx$ and let $\\{x_i\\}_{i=1}^N$ be i.i.d. samples from $\\rho \\propto \\sqrt{\\det g} e^{-U/T}$.\n864: \n865: The Monte Carlo estimator is:\n866: \n867: $$\n868: \\hat{I}_N[f] := \\frac{Z}{N} \\sum_{i=1}^N f(x_i)\n869: $$\n870: \n871: where $Z$ is estimated separately.\n872: \n873: **Error bound:** With probability $\\geq 1 - \\delta$:\n874: \n875: $$\n876: |I[f] - \\hat{I}_N[f]| \\leq \\frac{\\sigma[f]}{\\sqrt{N}} \\cdot t_{\\alpha/2}\n877: $$\n878: \n879: where:\n880: - $\\sigma[f] := \\sqrt{\\text{Var}_\\rho[f]}$ is standard deviation\n881: - $t_{\\alpha/2}$ is critical value for confidence level $1-\\delta$\n882: \n883: **Convergence rate:** $O(N^{-1/2})$ regardless of dimension (Monte Carlo advantage)\n884: "
     }
   ],

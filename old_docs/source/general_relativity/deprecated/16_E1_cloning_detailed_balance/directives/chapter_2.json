@@ -19,6 +19,7 @@
         "label": "def-qsd-cloning"
       },
       "section": "## 2. QSD as Stationary Distribution",
+      "references": [],
       "raw_directive": "78: ## 2. QSD as Stationary Distribution\n79: \n80: :::{prf:definition} Quasi-Stationary Distribution\n81: :label: def-qsd-cloning\n82: \n83: A measure $\\mu_{\\text{QSD}}$ is a quasi-stationary distribution if it satisfies:\n84: \n85: $$\n86: (\\mathcal{L}_{\\text{Langevin}}^* + \\mathcal{L}_{\\text{clone}}^*) \\mu_{\\text{QSD}} = -\\lambda_{\\text{QSD}} \\mu_{\\text{QSD}}\n87: $$\n88: \n89: where $\\lambda_{\\text{QSD}} \\geq 0$ is the **extinction rate** (probability per unit time that the entire swarm dies).\n90: \n91: **Interpretation**: The QSD is the stationary distribution **conditioned on survival**. It balances:\n92: - Langevin drift and diffusion\n93: - Cloning birth-death processes\n94: - Extinction events"
     }
   ],

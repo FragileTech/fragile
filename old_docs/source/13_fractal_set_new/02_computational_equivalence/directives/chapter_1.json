@@ -19,6 +19,7 @@
         "label": "def-swarm-state-vector"
       },
       "section": "## 1. The Discrete-Time Markov Chain",
+      "references": [],
       "raw_directive": "77: ### 1.1. State Space and Dynamics\n78: \n79: :::{prf:definition} Swarm State Vector\n80: :label: def-swarm-state-vector\n81: \n82: The **swarm state** at discrete time $k$ is:\n83: \n84: $$\n85: Z_k := (X_k, V_k) \\in \\mathcal{X}^N \\times \\mathbb{R}^{Nd}\n86: \n87: $$\n88: \n89: where:\n90: - $X_k = (x_{1,k}, \\ldots, x_{N,k}) \\in \\mathcal{X}^N$: Positions of all $N$ walkers\n91: - $V_k = (v_{1,k}, \\ldots, v_{N,k}) \\in \\mathbb{R}^{Nd}$: Velocities of all $N$ walkers\n92: - $\\mathcal{X} \\subset \\mathbb{R}^d$: State space (typically a bounded domain)\n93: \n94: **Alive walker set:** $A_k \\subseteq \\{1, \\ldots, N\\}$ with $|A_k| = k_{\\text{alive}}$\n95: "
     },
     {
@@ -37,6 +38,10 @@
         "label": "def-baoab-kernel"
       },
       "section": "## 1. The Discrete-Time Markov Chain",
+      "references": [
+        "def-baoab-integrator",
+        "def-hybrid-sde"
+      ],
       "raw_directive": "97: :::\n98: \n99: :::{prf:definition} BAOAB Transition Kernel\n100: :label: def-baoab-kernel\n101: \n102: The **discrete-time evolution** from $Z_k$ to $Z_{k+1}$ follows the **BAOAB splitting scheme** from {prf:ref}`def-baoab-integrator`:\n103: \n104: **For each walker $i \\in A_k$ (alive walkers only):**\n105: \n106: **B-step:** $v_i^{(1)} = v_i^{(0)} + \\frac{\\Delta t}{2} \\mathbf{F}_{\\text{total}}(x_i^{(0)}, Z_k)$\n107: \n108: **A-step:** $x_i^{(1)} = x_i^{(0)} + \\frac{\\Delta t}{2} v_i^{(1)}$\n109: \n110: **O-step:** $v_i^{(2)} = e^{-\\gamma \\Delta t} v_i^{(1)} + \\sqrt{\\frac{1}{\\gamma}(1 - e^{-2\\gamma \\Delta t})} \\, \\Sigma_{\\text{reg}}(x_i^{(1)}, Z_k) \\xi_i$\n111: \n112: where $\\xi_i \\sim \\mathcal{N}(0, I_d)$ i.i.d.\n113: \n114: **A-step:** $x_i^{(2)} = x_i^{(1)} + \\frac{\\Delta t}{2} v_i^{(2)}$\n115: \n116: **B-step:** $v_i^{(3)} = v_i^{(2)} + \\frac{\\Delta t}{2} \\mathbf{F}_{\\text{total}}(x_i^{(2)}, Z_k)$\n117: \n118: **Output:** $(x_{i,k+1}, v_{i,k+1}) = (x_i^{(2)}, v_i^{(3)})$\n119: \n120: where the **total force** is:\n121: \n122: $$\n123: \\mathbf{F}_{\\text{total}}(x_i, Z) := \\mathbf{F}_{\\text{stable}}(x_i) + \\mathbf{F}_{\\text{adapt}}(x_i, Z) + \\mathbf{F}_{\\text{viscous}}(x_i, Z) - \\gamma v_i\n124: \n125: $$\n126: \n127: from {prf:ref}`def-hybrid-sde` in `07_adaptative_gas.md`.\n128: \n129: **Transition kernel:** The map $Z_k \\mapsto Z_{k+1}$ defines a Markov transition kernel:\n130: \n131: $$\n132: P_{\\Delta t}(z, A) := \\mathbb{P}(Z_{k+1} \\in A \\mid Z_k = z)\n133: \n134: $$\n135: "
     },
     {
@@ -55,6 +60,7 @@
         "label": "rem-fractal-set-path"
       },
       "section": "## 1. The Discrete-Time Markov Chain",
+      "references": [],
       "raw_directive": "137: :::\n138: \n139: :::{prf:remark} Fractal Set as Path History\n140: :label: rem-fractal-set-path\n141: \n142: Each **CST edge** $(n_{i,k}, n_{i,k+1})$ in the Fractal Set stores the data from one BAOAB step:\n143: - Velocity spinors: $\\psi_{v,k}, \\psi_{v,k+1}$\n144: - Force spinors: $\\psi_{\\mathbf{F}_{\\text{stable}}}, \\psi_{\\mathbf{F}_{\\text{adapt}}}, \\psi_{\\mathbf{F}_{\\text{viscous}}}$\n145: - Diffusion tensor: $\\psi_{\\Sigma_{\\text{reg}}}$\n146: "
     }
   ],

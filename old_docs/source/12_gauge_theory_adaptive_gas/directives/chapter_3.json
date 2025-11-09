@@ -19,6 +19,7 @@
         "label": "def-state-spatial-config"
       },
       "section": "## 3. The Braid Group and Gauge Connection",
+      "references": [],
       "raw_directive": "264: We must carefully distinguish between the full state configuration space and the spatial (position-only) configuration space.\n265: \n266: :::{prf:definition} State and Spatial Configuration Spaces\n267: :label: def-state-spatial-config\n268: \n269: The **state configuration space** is the orbifold of full walker states:\n270: \n271: $$\n272: \\mathcal{M}_{\\text{config}}^{\\text{state}} = \\Sigma_N / S_N = \\left[(\\mathcal{X} \\times \\mathcal{V} \\times \\{0,1\\})^N\\right] / S_N\n273: \n274: $$\n275: \n276: where $\\mathcal{X}$ is position space, $\\mathcal{V}$ is velocity space, and $\\{0,1\\}$ is alive/dead status.\n277: \n278: The **spatial configuration space** is the orbifold of positions only:\n279: \n280: $$\n281: \\mathcal{M}_{\\text{config}}^{\\text{spatial}} = \\mathcal{X}^N / S_N\n282: \n283: $$\n284: \n285: The **projection map** forgets velocities and status:\n286: \n287: $$\n288: p: \\mathcal{M}_{\\text{config}}^{\\text{state}} \\to \\mathcal{M}_{\\text{config}}^{\\text{spatial}}, \\quad [(x_1, v_1, s_1), \\ldots, (x_N, v_N, s_N)] \\mapsto [x_1, \\ldots, x_N]\n289: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "def-nonsingular-loci"
       },
       "section": "## 3. The Braid Group and Gauge Connection",
+      "references": [],
       "raw_directive": "291: :::\n292: \n293: :::{prf:definition} Non-Singular Loci\n294: :label: def-nonsingular-loci\n295: \n296: The **non-singular state configuration space** consists of states where no two walkers are identical:\n297: \n298: $$\n299: \\mathcal{M}'^{\\text{state}}_{\\text{config}} = \\{[\\mathcal{S}] \\in \\mathcal{M}_{\\text{config}}^{\\text{state}} : w_i \\neq w_j \\text{ for all } i \\neq j\\}\n300: \n301: $$\n302: \n303: The **non-singular spatial configuration space** consists of positions where no two walkers coincide:\n304: \n305: $$\n306: \\mathcal{M}'^{\\text{spatial}}_{\\text{config}} = \\{[x_1, \\ldots, x_N] \\in \\mathcal{M}_{\\text{config}}^{\\text{spatial}} : x_i \\neq x_j \\text{ for all } i \\neq j\\}\n307: \n308: $$\n309: "
     },
     {
@@ -55,6 +57,7 @@
         "label": "prop-spatial-config-topology"
       },
       "section": "## 3. The Braid Group and Gauge Connection",
+      "references": [],
       "raw_directive": "311: :::\n312: \n313: :::{prf:proposition} Topology of Spatial Configuration Space\n314: :label: prop-spatial-config-topology\n315: \n316: The fundamental group of the non-singular spatial configuration space is the **braid group**:\n317: \n318: $$\n319: \\pi_1(\\mathcal{M}'^{\\text{spatial}}_{\\text{config}}) \\cong B_N(\\mathcal{X})\n320: \n321: $$\n322: "
     },
     {
@@ -69,6 +72,7 @@
       "content": "325: \n326: :::{prf:proof}\n327: **Classical result**: This is a foundational theorem in algebraic topology (Artin, Fox-Neuwirth). The configuration space of $N$ unordered distinct points in $\\mathbb{R}^d$ has fundamental group isomorphic to the braid group $B_N$.\n328: \n329: **Detailed construction**: A loop $\\gamma: [0,1] \\to \\mathcal{M}'^{\\text{spatial}}_{\\text{config}}$ with $\\gamma(0) = \\gamma(1) = [x_1^0, \\ldots, x_N^0]$ corresponds to $N$ continuous paths $x_i(t)$ in $\\mathcal{X}$ that avoid collisions ($x_i(t) \\neq x_j(t)$ for $i \\neq j$) and return to the same unordered set at $t=1$.",
       "metadata": {},
       "section": "## 3. The Braid Group and Gauge Connection",
+      "references": [],
       "raw_directive": "324: :::\n325: \n326: :::{prf:proof}\n327: **Classical result**: This is a foundational theorem in algebraic topology (Artin, Fox-Neuwirth). The configuration space of $N$ unordered distinct points in $\\mathbb{R}^d$ has fundamental group isomorphic to the braid group $B_N$.\n328: \n329: **Detailed construction**: A loop $\\gamma: [0,1] \\to \\mathcal{M}'^{\\text{spatial}}_{\\text{config}}$ with $\\gamma(0) = \\gamma(1) = [x_1^0, \\ldots, x_N^0]$ corresponds to $N$ continuous paths $x_i(t)$ in $\\mathcal{X}$ that avoid collisions ($x_i(t) \\neq x_j(t)$ for $i \\neq j$) and return to the same unordered set at $t=1$.\n330: "
     },
     {
@@ -87,6 +91,7 @@
         "label": "thm-fundamental-group-isomorphism"
       },
       "section": "## 3. The Braid Group and Gauge Connection",
+      "references": [],
       "raw_directive": "332: :::\n333: \n334: :::{prf:theorem} Fundamental Group Isomorphism\n335: :label: thm-fundamental-group-isomorphism\n336: \n337: The projection $p: \\mathcal{M}'^{\\text{state}}_{\\text{config}} \\to \\mathcal{M}'^{\\text{spatial}}_{\\text{config}}$ induces an isomorphism on fundamental groups:\n338: \n339: $$\n340: p_*: \\pi_1(\\mathcal{M}'^{\\text{state}}_{\\text{config}}) \\xrightarrow{\\cong} \\pi_1(\\mathcal{M}'^{\\text{spatial}}_{\\text{config}}) \\cong B_N(\\mathcal{X})\n341: \n342: $$\n343: "
     },
     {
@@ -101,6 +106,7 @@
       "content": "346: \n347: :::{prf:proof}\n348: We use the **long exact sequence of homotopy groups** for a fiber bundle.\n349: \n350: **Step 1: Identify the fiber**. For a point $[x_1, \\ldots, x_N] \\in \\mathcal{M}'^{\\text{spatial}}_{\\text{config}}$ with all positions distinct, the fiber is:\n351: \n352: $$\n353: F = p^{-1}([x_1, \\ldots, x_N]) = (\\mathcal{V} \\times \\{0,1\\})^N / S_N^{\\text{fix}}\n354: \n355: $$\n356: \n357: where $S_N^{\\text{fix}}$ is the subgroup of permutations that fix the position ordering (trivial for generic positions).\n358: \n359: For generic points (all $x_i$ distinct), the fiber is simply:\n360: \n361: $$\n362: F \\cong (\\mathcal{V} \\times \\{0,1\\})^N\n363: \n364: $$\n365: \n366: since the permutation action is free.\n367: \n368: **Step 2: Show fiber is contractible**. The velocity space $\\mathcal{V} = \\{v \\in \\mathbb{R}^d : \\|v\\| \\le V_{\\text{alg}}\\}$ is a closed ball, which is contractible. The discrete space $\\{0,1\\}$ is also contractible (to either point). Therefore:\n369: \n370: $$\n371: F = (\\mathcal{V})^N \\times (\\{0,1\\})^N \\text{ is contractible}\n372: \n373: $$\n374: \n375: **Step 3: Apply the long exact sequence**. For a fiber bundle $F \\to E \\xrightarrow{p} B$ with contractible fiber, the long exact sequence of homotopy groups gives:\n376: \n377: $$\n378: \\cdots \\to \\pi_1(F) \\to \\pi_1(E) \\xrightarrow{p_*} \\pi_1(B) \\to \\pi_0(F) \\to \\cdots\n379: \n380: $$\n381: \n382: Since $F$ is contractible, $\\pi_1(F) = 0$ and $\\pi_0(F) = \\{*\\}$ (single component). The sequence simplifies to:\n383: \n384: $$\n385: 0 \\to \\pi_1(\\mathcal{M}'^{\\text{state}}_{\\text{config}}) \\xrightarrow{p_*} \\pi_1(\\mathcal{M}'^{\\text{spatial}}_{\\text{config}}) \\to 0\n386: \n387: $$\n388: \n389: This is exact, so $p_*$ is an **isomorphism**:\n390: \n391: $$\n392: \\pi_1(\\mathcal{M}'^{\\text{state}}_{\\text{config}}) \\cong \\pi_1(\\mathcal{M}'^{\\text{spatial}}_{\\text{config}}) \\cong B_N(\\mathcal{X})\n393: \n394: $$",
       "metadata": {},
       "section": "## 3. The Braid Group and Gauge Connection",
+      "references": [],
       "raw_directive": "345: :::\n346: \n347: :::{prf:proof}\n348: We use the **long exact sequence of homotopy groups** for a fiber bundle.\n349: \n350: **Step 1: Identify the fiber**. For a point $[x_1, \\ldots, x_N] \\in \\mathcal{M}'^{\\text{spatial}}_{\\text{config}}$ with all positions distinct, the fiber is:\n351: \n352: $$\n353: F = p^{-1}([x_1, \\ldots, x_N]) = (\\mathcal{V} \\times \\{0,1\\})^N / S_N^{\\text{fix}}\n354: \n355: $$\n356: \n357: where $S_N^{\\text{fix}}$ is the subgroup of permutations that fix the position ordering (trivial for generic positions).\n358: \n359: For generic points (all $x_i$ distinct), the fiber is simply:\n360: \n361: $$\n362: F \\cong (\\mathcal{V} \\times \\{0,1\\})^N\n363: \n364: $$\n365: \n366: since the permutation action is free.\n367: \n368: **Step 2: Show fiber is contractible**. The velocity space $\\mathcal{V} = \\{v \\in \\mathbb{R}^d : \\|v\\| \\le V_{\\text{alg}}\\}$ is a closed ball, which is contractible. The discrete space $\\{0,1\\}$ is also contractible (to either point). Therefore:\n369: \n370: $$\n371: F = (\\mathcal{V})^N \\times (\\{0,1\\})^N \\text{ is contractible}\n372: \n373: $$\n374: \n375: **Step 3: Apply the long exact sequence**. For a fiber bundle $F \\to E \\xrightarrow{p} B$ with contractible fiber, the long exact sequence of homotopy groups gives:\n376: \n377: $$\n378: \\cdots \\to \\pi_1(F) \\to \\pi_1(E) \\xrightarrow{p_*} \\pi_1(B) \\to \\pi_0(F) \\to \\cdots\n379: \n380: $$\n381: \n382: Since $F$ is contractible, $\\pi_1(F) = 0$ and $\\pi_0(F) = \\{*\\}$ (single component). The sequence simplifies to:\n383: \n384: $$\n385: 0 \\to \\pi_1(\\mathcal{M}'^{\\text{state}}_{\\text{config}}) \\xrightarrow{p_*} \\pi_1(\\mathcal{M}'^{\\text{spatial}}_{\\text{config}}) \\to 0\n386: \n387: $$\n388: \n389: This is exact, so $p_*$ is an **isomorphism**:\n390: \n391: $$\n392: \\pi_1(\\mathcal{M}'^{\\text{state}}_{\\text{config}}) \\cong \\pi_1(\\mathcal{M}'^{\\text{spatial}}_{\\text{config}}) \\cong B_N(\\mathcal{X})\n393: \n394: $$\n395: "
     },
     {
@@ -119,6 +125,7 @@
         "label": "def-braid-group"
       },
       "section": "## 3. The Braid Group and Gauge Connection",
+      "references": [],
       "raw_directive": "399: ### 3.2. The Braid Group and Permutation Homomorphism\n400: \n401: :::{prf:definition} Braid Group\n402: :label: def-braid-group\n403: \n404: The **$N$-strand braid group** $B_N$ is the group of isotopy classes of braids on $N$ strands.\n405: \n406: **Algebraic presentation**: $B_N$ is generated by $N-1$ generators $\\{\\sigma_1, \\ldots, \\sigma_{N-1}\\}$ (elementary braids crossing strand $i$ over strand $i+1$) subject to:\n407: \n408: 1. **Far commutativity**: $\\sigma_i \\sigma_j = \\sigma_j \\sigma_i$ for $|i - j| \\geq 2$\n409: 2. **Braid relation**: $\\sigma_i \\sigma_{i+1} \\sigma_i = \\sigma_{i+1} \\sigma_i \\sigma_{i+1}$ for all $i$\n410: "
     },
     {
@@ -137,6 +144,7 @@
         "label": "thm-braid-to-permutation"
       },
       "section": "## 3. The Braid Group and Gauge Connection",
+      "references": [],
       "raw_directive": "412: :::\n413: \n414: :::{prf:theorem} Canonical Homomorphism to Permutations\n415: :label: thm-braid-to-permutation\n416: \n417: There exists a canonical surjective group homomorphism:\n418: \n419: $$\n420: \\rho: B_N \\to S_N\n421: \n422: $$\n423: \n424: that maps each braid to the **net permutation** it induces on the strands.\n425: \n426: **Explicit formula on generators**:\n427: \n428: $$\n429: \\rho(\\sigma_i) = \\tau_i = (i \\, i+1) \\in S_N\n430: \n431: $$\n432: \n433: the transposition swapping positions $i$ and $i+1$.\n434: \n435: The **kernel** of $\\rho$ is the **pure braid group** $P_N$:\n436: \n437: $$\n438: 1 \\to P_N \\to B_N \\xrightarrow{\\rho} S_N \\to 1\n439: \n440: $$\n441: "
     },
     {
@@ -151,6 +159,7 @@
       "content": "444: \n445: :::{prf:proof}\n446: **Well-definedness**: The assignment $\\rho(\\sigma_i) = (i \\, i+1)$ extends to a group homomorphism because:\n447: - Far commutativity: $(i \\, i+1)$ and $(j \\, j+1)$ commute when $|i - j| \\geq 2$ \u2713\n448: - Braid relation: Both sides give the 3-cycle $(i \\, i+1 \\, i+2)$ \u2713\n449: \n450: **Surjectivity**: Any permutation in $S_N$ can be written as a product of adjacent transpositions, so $\\rho$ is surjective.",
       "metadata": {},
       "section": "## 3. The Braid Group and Gauge Connection",
+      "references": [],
       "raw_directive": "443: :::\n444: \n445: :::{prf:proof}\n446: **Well-definedness**: The assignment $\\rho(\\sigma_i) = (i \\, i+1)$ extends to a group homomorphism because:\n447: - Far commutativity: $(i \\, i+1)$ and $(j \\, j+1)$ commute when $|i - j| \\geq 2$ \u2713\n448: - Braid relation: Both sides give the 3-cycle $(i \\, i+1 \\, i+2)$ \u2713\n449: \n450: **Surjectivity**: Any permutation in $S_N$ can be written as a product of adjacent transpositions, so $\\rho$ is surjective.\n451: "
     },
     {
@@ -169,6 +178,10 @@
         "label": "def-parallel-transport-braid"
       },
       "section": "## 3. The Braid Group and Gauge Connection",
+      "references": [
+        "thm-braid-to-permutation",
+        "def-state-spatial-config"
+      ],
       "raw_directive": "457: We now define the gauge connection rigorously as a rule for parallel transport along paths in the **spatial configuration space** $\\mathcal{M}'^{\\text{spatial}}_{\\text{config}}$.\n458: \n459: :::{prf:definition} Parallel Transport Along Spatial Paths\n460: :label: def-parallel-transport-braid\n461: \n462: Let $\\gamma: [0,1] \\to \\mathcal{M}'^{\\text{spatial}}_{\\text{config}}$ be a path in the non-singular spatial configuration space with $\\gamma(0) = [x_1^0, \\ldots, x_N^0]$ and $\\gamma(1) = [x_1^1, \\ldots, x_N^1]$.\n463: \n464: The **parallel transport map** acts on the fibers of the state configuration space:\n465: \n466: $$\n467: \\mathcal{T}_\\gamma: p^{-1}([x_1^0, \\ldots, x_N^0]) \\to p^{-1}([x_1^1, \\ldots, x_N^1])\n468: \n469: $$\n470: \n471: defined by:\n472: \n473: $$\n474: \\mathcal{T}_\\gamma(\\mathcal{S}) = \\rho([\\gamma]) \\cdot \\mathcal{S}\n475: \n476: $$\n477: \n478: where:\n479: - $[\\gamma] \\in B_N(\\mathcal{X})$ is the braid class represented by the spatial path $\\gamma$\n480: - $\\rho([\\gamma]) \\in S_N$ is the permutation induced by the braid (via Theorem {prf:ref}`thm-braid-to-permutation`)\n481: - The action $\\cdot$ is the natural $S_N$-action on $\\Sigma_N$\n482: - $p$ is the projection from state to spatial configuration space (Definition {prf:ref}`def-state-spatial-config`)\n483: "
     },
     {
@@ -187,6 +200,7 @@
         "class": "note"
       },
       "section": "## 3. The Braid Group and Gauge Connection",
+      "references": [],
       "raw_directive": "485: :::\n486: \n487: :::{prf:remark} Global vs. Local Parallel Transport\n488: :class: note\n489: \n490: The definition of parallel transport via $\\mathcal{T}_\\gamma(\\mathcal{S}) = \\rho([\\gamma]) \\cdot \\mathcal{S}$ is **global**: it depends on the entire path $\\gamma$ through its homotopy class $[\\gamma] \\in B_N(\\mathcal{X})$.\n491: \n492: **Standard definition**: In differential geometry, a connection is typically defined **locally** via horizontal subspaces or a connection 1-form, specifying how to lift infinitesimal path segments.\n493: \n494: **Why the global definition is valid**: Our connection is **flat** (zero curvature in the differential-geometric sense). For flat connections, parallel transport depends only on the homotopy class of the path, not its specific parametrization. This allows the equivalent and more convenient global definition via $\\rho: \\pi_1(\\mathcal{M}'^{\\text{spatial}}_{\\text{config}}) = B_N(\\mathcal{X}) \\to S_N$.\n495: "
     },
     {
@@ -205,6 +219,7 @@
         "label": "thm-parallel-transport-well-defined"
       },
       "section": "## 3. The Braid Group and Gauge Connection",
+      "references": [],
       "raw_directive": "497: :::\n498: \n499: :::{prf:theorem} Well-Definedness of Parallel Transport\n500: :label: thm-parallel-transport-well-defined\n501: "
     },
     {
@@ -219,6 +234,7 @@
       "content": "504: \n505: :::{prf:proof}\n506: **Well-definedness on fibers**: Fix spatial positions $[x_1, \\ldots, x_N] \\in \\mathcal{M}'^{\\text{spatial}}_{\\text{config}}$. The fiber $p^{-1}([x_1, \\ldots, x_N])$ consists of all states $(x_{\\sigma(1)}, v_1, s_1, \\ldots, x_{\\sigma(N)}, v_N, s_N)$ for $\\sigma \\in S_N$.\n507: \n508: If $\\mathcal{S}, \\mathcal{S}'$ lie in the same fiber, they differ by a permutation: $\\mathcal{S}' = \\sigma \\cdot \\mathcal{S}$ for some $\\sigma \\in S_N$. Then:\n509: \n510: $$\n511: \\mathcal{T}_\\gamma(\\mathcal{S}') = \\rho([\\gamma]) \\cdot (\\sigma \\cdot \\mathcal{S}) = (\\rho([\\gamma]) \\circ \\sigma) \\cdot \\mathcal{S}\n512: \n513: $$\n514: \n515: Both $\\mathcal{T}_\\gamma(\\mathcal{S})$ and $\\mathcal{T}_\\gamma(\\mathcal{S}')$ lie in the same fiber over the endpoint of $\\gamma$, so the map is well-defined as a map between fibers.\n516: \n517: **Flatness**: The holonomy around any closed loop $\\gamma$ in $\\mathcal{M}'^{\\text{spatial}}_{\\text{config}}$ with $\\gamma(0) = \\gamma(1)$ is the permutation $\\rho([\\gamma]) \\in S_N$. Since $\\rho: B_N(\\mathcal{X}) \\to S_N$ is a group homomorphism, holonomies compose:\n518: \n519: $$\n520: \\text{Hol}(\\gamma_1 \\star \\gamma_2) = \\rho([\\gamma_1 \\star \\gamma_2]) = \\rho([\\gamma_1]) \\circ \\rho([\\gamma_2]) = \\text{Hol}(\\gamma_1) \\circ \\text{Hol}(\\gamma_2)\n521: \n522: $$",
       "metadata": {},
       "section": "## 3. The Braid Group and Gauge Connection",
+      "references": [],
       "raw_directive": "503: :::\n504: \n505: :::{prf:proof}\n506: **Well-definedness on fibers**: Fix spatial positions $[x_1, \\ldots, x_N] \\in \\mathcal{M}'^{\\text{spatial}}_{\\text{config}}$. The fiber $p^{-1}([x_1, \\ldots, x_N])$ consists of all states $(x_{\\sigma(1)}, v_1, s_1, \\ldots, x_{\\sigma(N)}, v_N, s_N)$ for $\\sigma \\in S_N$.\n507: \n508: If $\\mathcal{S}, \\mathcal{S}'$ lie in the same fiber, they differ by a permutation: $\\mathcal{S}' = \\sigma \\cdot \\mathcal{S}$ for some $\\sigma \\in S_N$. Then:\n509: \n510: $$\n511: \\mathcal{T}_\\gamma(\\mathcal{S}') = \\rho([\\gamma]) \\cdot (\\sigma \\cdot \\mathcal{S}) = (\\rho([\\gamma]) \\circ \\sigma) \\cdot \\mathcal{S}\n512: \n513: $$\n514: \n515: Both $\\mathcal{T}_\\gamma(\\mathcal{S})$ and $\\mathcal{T}_\\gamma(\\mathcal{S}')$ lie in the same fiber over the endpoint of $\\gamma$, so the map is well-defined as a map between fibers.\n516: \n517: **Flatness**: The holonomy around any closed loop $\\gamma$ in $\\mathcal{M}'^{\\text{spatial}}_{\\text{config}}$ with $\\gamma(0) = \\gamma(1)$ is the permutation $\\rho([\\gamma]) \\in S_N$. Since $\\rho: B_N(\\mathcal{X}) \\to S_N$ is a group homomorphism, holonomies compose:\n518: \n519: $$\n520: \\text{Hol}(\\gamma_1 \\star \\gamma_2) = \\rho([\\gamma_1 \\star \\gamma_2]) = \\rho([\\gamma_1]) \\circ \\rho([\\gamma_2]) = \\text{Hol}(\\gamma_1) \\circ \\text{Hol}(\\gamma_2)\n521: \n522: $$\n523: "
     },
     {
@@ -237,6 +253,7 @@
         "label": "def-holonomy-braid"
       },
       "section": "## 3. The Braid Group and Gauge Connection",
+      "references": [],
       "raw_directive": "527: ### 3.4. Holonomy and Curvature\n528: \n529: :::{prf:definition} Holonomy for Closed Loops\n530: :label: def-holonomy-braid\n531: \n532: For a closed loop $\\gamma: [0,1] \\to \\mathcal{M}'_{\\text{config}}$ with $\\gamma(0) = \\gamma(1) = [\\mathcal{S}_0]$, the **holonomy** is the permutation:\n533: \n534: $$\n535: \\text{Hol}(\\gamma) = \\rho([\\gamma]) \\in S_N\n536: \n537: $$\n538: "
     },
     {
@@ -255,6 +272,7 @@
         "label": "thm-holonomy-topological"
       },
       "section": "## 3. The Braid Group and Gauge Connection",
+      "references": [],
       "raw_directive": "540: :::\n541: \n542: :::{prf:theorem} Topological Origin of Holonomy\n543: :label: thm-holonomy-topological\n544: \n545: The holonomy depends only on the **homotopy class** of the loop $\\gamma$ in $\\pi_1(\\mathcal{M}'_{\\text{config}}) \\cong B_N$:\n546: \n547: $$\n548: \\text{Hol}: \\pi_1(\\mathcal{M}'_{\\text{config}}) \\to S_N\n549: \n550: $$\n551: "
     },
     {
@@ -269,6 +287,7 @@
       "content": "554: ",
       "metadata": {},
       "section": "## 3. The Braid Group and Gauge Connection",
+      "references": [],
       "raw_directive": "553: :::\n554: \n555: :::{prf:proof}"
     },
     {
@@ -287,6 +306,7 @@
         "label": "def-curvature-braid"
       },
       "section": "## 3. The Braid Group and Gauge Connection",
+      "references": [],
       "raw_directive": "557: :::\n558: \n559: :::{prf:definition} Curvature and Flatness\n560: :label: def-curvature-braid\n561: \n562: The gauge connection is **flat** on the non-singular configuration space $\\mathcal{M}'_{\\text{config}}$ in the sense that:\n563: \n564: $$\n565: \\text{Hol}(\\gamma \\star \\gamma') = \\text{Hol}(\\gamma) \\circ \\text{Hol}(\\gamma')\n566: \n567: $$\n568: \n569: for all loops $\\gamma, \\gamma'$ (holonomies compose as group elements).\n570: \n571: However, the connection has **non-trivial global topology**: there exist loops $\\gamma$ such that:\n572: \n573: $$\n574: \\text{Hol}(\\gamma) \\neq e\n575: \n576: $$\n577: "
     }
   ],

@@ -19,6 +19,7 @@
         "label": "def-bh-entanglement-ig"
       },
       "section": "## 9. Quantum Effects and Unitarity",
+      "references": [],
       "raw_directive": "3900: ### 9.2. Entanglement Structure and IG\n3901: \n3902: :::{prf:definition} Entanglement Entropy from IG\n3903: :label: def-bh-entanglement-ig\n3904: \n3905: For a spatial region $A \\subset \\mathcal{X}$, the **entanglement entropy** between $A$ and its complement $A^c$ is:\n3906: \n3907: $$\n3908: S_{\\text{ent}}(A) = \\sum_{\\substack{w_i \\in A \\\\ w_j \\in A^c}} w_{ij} \\ln w_{ij}\n3909: \n3910: $$\n3911: \n3912: where $w_{ij}$ are IG edge weights.\n3913: \n3914: For a black hole, taking $A = B_H$ (interior), this gives the black hole entropy:\n3915: \n3916: $$\n3917: S_{\\text{ent}}(B_H) = S_{\\text{BH}} = \\frac{A_H}{4G_N}\n3918: "
     }
   ],

@@ -2,7 +2,7 @@
   "document_id": "18_emergent_geometry",
   "stage": "directives",
   "directive_type": "corollary",
-  "generated_at": "2025-11-08T17:16:20.270245+00:00",
+  "generated_at": "2025-11-08T23:19:38.308665+00:00",
   "count": 1,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "cor-explicit-convergence-time"
       },
       "section": "## 7. Explicit Convergence Constants and Algorithmic Parameter Dependence",
+      "references": [],
       "raw_directive": "2437: ### 7.5. Convergence Time Bounds\n2438: \n2439: :::{prf:corollary} Explicit Convergence Time\n2440: :label: cor-explicit-convergence-time\n2441: \n2442: From the Foster-Lyapunov condition and geometric ergodicity (Theorem [](#thm-main-convergence)), the **mixing time** to reach $\\epsilon$-accuracy in total variation is:\n2443: \n2444: $$\n2445: t_{\\text{mix}}(\\epsilon) = O\\left( \\frac{1}{\\kappa_{\\text{total}}} \\log\\left( \\frac{C_\\pi (1 + V_{\\text{total}}(S_0, S_0))}{\\epsilon} \\right) \\right)\n2446: $$\n2447: \n2448: where $C_\\pi$ is the geometric ergodicity constant.\n2449: \n2450: **Number of algorithm iterations** required:\n2451: \n2452: $$\n2453: n_{\\text{iter}}(\\epsilon) = \\left\\lceil \\frac{t_{\\text{mix}}(\\epsilon)}{\\tau} \\right\\rceil = O\\left( \\frac{1}{\\kappa_{\\text{total}} \\tau} \\log\\left( \\frac{C_\\pi V(S_0)}{\\epsilon} \\right) \\right)\n2454: $$\n2455: \n2456: **Explicit parameter dependence**: Using Theorem [](#thm-explicit-total-rate):\n2457: \n2458: $$\n2459: n_{\\text{iter}}(\\epsilon) = O\\left( \\frac{1}{\\min\\{\\kappa_x, \\min\\{\\gamma, c_{\\min}\\}\\tau, \\kappa_b\\} \\cdot \\tau} \\log\\left( \\frac{C_\\pi V(S_0)}{\\epsilon} \\right) \\right)\n2460: $$\n2461: ",
       "_registry_context": {
         "stage": "directives",

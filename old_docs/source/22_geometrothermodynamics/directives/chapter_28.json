@@ -19,6 +19,9 @@
         "label": "alg-comprehensive-validation"
       },
       "section": "## 8.3 Validation Tests",
+      "references": [
+        "thm-ruppeiner-convergence"
+      ],
       "raw_directive": "3587: Before trusting geometric results, validate the pipeline:\n3588: \n3589: :::{prf:algorithm} Comprehensive Validation Suite\n3590: :label: alg-comprehensive-validation\n3591: \n3592: **Test 1: Ideal Gas Benchmark**\n3593: - Run on ideal gas with known thermodynamics\n3594: - Expected: $R_{\\text{Rupp}} \\approx 0$ (flat geometry)\n3595: - Expected: $g_W = T \\cdot g_R$ (conformal duality)\n3596: \n3597: **Test 2: Van der Waals Gas**\n3598: - Run near critical point $(T_c, P_c)$\n3599: - Expected: $R_{\\text{Rupp}} \\to -\\infty$ (negative divergence at liquid-gas transition)\n3600: - Compare to analytical prediction\n3601: \n3602: **Test 3: Ising Model (if applicable)**\n3603: - Run Monte Carlo Ising on 2D lattice\n3604: - Expected: $R_{\\text{Rupp}} \\to +\\infty$ at Curie temperature $T_c$\n3605: - Match critical exponent $\\alpha$ from $R \\sim |T - T_c|^{-\\alpha'}$\n3606: \n3607: **Test 4: Convergence Study**\n3608: - Vary $N$: $10^3, 10^4, 10^5, 10^6$\n3609: - Plot $\\log \\|\\hat{g}_R - g_R^{\\text{true}}\\|$ vs. $\\log N$\n3610: - Expected slope: $-2/(d+4)$ (Theorem {prf:ref}`thm-ruppeiner-convergence`)\n3611: \n3612: **Test 5: Cross-Validation**\n3613: - Split QSD samples: training/test sets\n3614: - Estimate metric on training, evaluate likelihood on test\n3615: - High likelihood \u2192 good density estimation\n3616: "
     }
   ],

@@ -19,6 +19,7 @@
         "label": "lem-derivatives-companion-distance-full"
       },
       "section": "## 7. Companion-Dependent Measurements: Handling N-Body Coupling",
+      "references": [],
       "raw_directive": "3288: ### 7.1 Derivative Structure of Companion-Dependent Measurements\n3289: \n3290: :::{prf:lemma} Derivatives of Companion-Dependent Distance\n3291: :label: lem-derivatives-companion-distance-full\n3292: \n3293: For measurement $d_j = d_{\\text{alg}}(j, c(j))$ where $c(j)$ is selected via softmax, the derivative with respect to $x_i$ is:\n3294: \n3295: $$\n3296: \\frac{\\partial d_j}{\\partial x_i} = \\sum_{\\ell \\in \\mathcal{A} \\setminus \\{j\\}} \\mathbb{P}(c(j) = \\ell) \\cdot \\frac{\\partial d_{\\text{alg}}(j, \\ell)}{\\partial x_i}\n3297: + \\sum_{\\ell \\in \\mathcal{A} \\setminus \\{j\\}} d_{\\text{alg}}(j, \\ell) \\cdot \\frac{\\partial \\mathbb{P}(c(j) = \\ell)}{\\partial x_i}\n3298: \n3299: $$\n3300: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "proof-lem-derivatives-companion-distance-full"
       },
       "section": "## 7. Companion-Dependent Measurements: Handling N-Body Coupling",
+      "references": [],
       "raw_directive": "3302: :::\n3303: \n3304: :::{prf:proof}\n3305: :label: proof-lem-derivatives-companion-distance-full\n3306: \n3307: Since $d_j = \\sum_\\ell \\mathbb{P}(c(j) = \\ell) \\cdot d_{\\text{alg}}(j, \\ell)$ (expectation over softmax):\n3308: \n3309: $$\n3310: \\frac{\\partial d_j}{\\partial x_i} = \\sum_\\ell \\frac{\\partial}{\\partial x_i} [\\mathbb{P}(c(j) = \\ell) \\cdot d_{\\text{alg}}(j, \\ell)]\n3311: \n3312: $$\n3313: "
     },
     {
@@ -55,6 +57,9 @@
         "label": "thm-cluster-localized-derivative-bounds-full"
       },
       "section": "## 7. Companion-Dependent Measurements: Handling N-Body Coupling",
+      "references": [
+        "def-smooth-phase-space-partition-full"
+      ],
       "raw_directive": "3319: The key to controlling this N-body coupling is the **smooth clustering framework**:\n3320: \n3321: :::{prf:theorem} Cluster-Localized Derivative Bounds\n3322: :label: thm-cluster-localized-derivative-bounds-full\n3323: \n3324: Using the smooth partition $\\{\\psi_m\\}$ from {prf:ref}`def-smooth-phase-space-partition-full`, the derivative $\\partial d_j / \\partial x_i$ satisfies:\n3325: \n3326: $$\n3327: \\left\\|\\frac{\\partial d_j}{\\partial x_i}\\right\\| \\leq \\sum_{m,m'=1}^M \\psi_m(x_i, v_i) \\cdot \\psi_{m'}(x_j, v_j) \\cdot C_{i \\leftrightarrow j}^{(m,m')}\n3328: \n3329: $$\n3330: \n3331: where:\n3332: - **Intra-cluster coupling** ($m = m'$): $C_{i \\leftrightarrow j}^{(m,m)} = \\mathcal{O}(1)$ when $d_{\\text{alg}}(i,j) \\leq 2\\varepsilon_c$"
     },
     {
@@ -73,6 +78,12 @@
         "label": "proof-thm-cluster-localized-derivative-bounds-full"
       },
       "section": "## 7. Companion-Dependent Measurements: Handling N-Body Coupling",
+      "references": [
+        "def-smooth-phase-space-partition-full",
+        "lem-companion-measurement-derivatives-full",
+        "lem-derivatives-companion-distance-full",
+        "lem-companion-availability-enforcement"
+      ],
       "raw_directive": "3334: :::\n3335: \n3336: :::{prf:proof}\n3337: :label: proof-thm-cluster-localized-derivative-bounds-full\n3338: \n3339: **Step 1: Partition of unity decomposition.**\n3340: \n3341: Using the smooth partition $\\{\\psi_m\\}_{m=1}^M$ from {prf:ref}`def-smooth-phase-space-partition-full`, we have:\n3342: \n3343: $$\n3344: 1 = \\sum_{m=1}^M \\psi_m(x_i, v_i) \\quad \\text{and} \\quad 1 = \\sum_{m'=1}^M \\psi_{m'}(x_j, v_j)\n3345: \n3346: $$\n3347: \n3348: Therefore, for any function $F(x_i, v_i, x_j, v_j)$:\n3349: \n3350: $$\n3351: F = \\sum_{m,m'=1}^M \\psi_m(x_i, v_i) \\cdot \\psi_{m'}(x_j, v_j) \\cdot F\n3352: \n3353: $$\n3354: \n3355: Applying this to $\\partial d_j / \\partial x_i$:\n3356: \n3357: $$\n3358: \\frac{\\partial d_j}{\\partial x_i} = \\sum_{m,m'=1}^M \\psi_m(x_i, v_i) \\psi_{m'}(x_j, v_j) \\frac{\\partial d_j}{\\partial x_i}\n3359: \n3360: $$\n3361: \n3362: **Step 2: Intra-cluster bound** ($m = m'$).\n3363: \n3364: When walkers $i$ and $j$ both have non-zero membership in the same cluster $m$:\n3365: - Walker $i$ satisfies: $\\psi_m(x_i, v_i) > 0 \\Rightarrow d_{\\text{alg}}(i, \\text{center}_m) \\leq 2\\varepsilon_c$ (support of $\\psi_m$)\n3366: - Walker $j$ satisfies: $\\psi_m(x_j, v_j) > 0 \\Rightarrow d_{\\text{alg}}(j, \\text{center}_m) \\leq 2\\varepsilon_c$\n3367: \n3368: By the triangle inequality:\n3369: \n3370: $$\n3371: d_{\\text{alg}}(i, j) \\leq d_{\\text{alg}}(i, \\text{center}_m) + d_{\\text{alg}}(j, \\text{center}_m) \\leq 4\\varepsilon_c\n3372: \n3373: $$\n3374: \n3375: From Lemma {prf:ref}`lem-companion-measurement-derivatives-full`:\n3376: \n3377: $$\n3378: \\left\\|\\frac{\\partial d_j}{\\partial x_i}\\right\\| \\leq C_{d_j,1} \\cdot \\max(1, \\varepsilon_d \\varepsilon_c^{-1}) = \\mathcal{O}(1)\n3379: \n3380: $$\n3381: \n3382: Therefore: $C_{i \\leftrightarrow j}^{(m,m)} = C_{d_j,1} = \\mathcal{O}(1)$.\n3383: \n3384: **Step 3: Inter-cluster bound** ($m \\neq m'$).\n3385: \n3386: When walkers belong to different clusters ($m \\neq m'$):\n3387: - Walker $i$ in cluster $m$: $d_{\\text{alg}}(i, \\text{center}_m) \\leq 2\\varepsilon_c$\n3388: - Walker $j$ in cluster $m'$: $d_{\\text{alg}}(j, \\text{center}_{m'}) \\leq 2\\varepsilon_c$\n3389: \n3390: By the triangle inequality (lower bound):\n3391: \n3392: $$\n3393: d_{\\text{alg}}(i, j) \\geq D_{\\text{sep}}(m, m') - 4\\varepsilon_c\n3394: \n3395: $$\n3396: \n3397: where $D_{\\text{sep}}(m, m') := d_{\\text{alg}}(\\text{center}_m, \\text{center}_{m'})$ is the cluster separation distance.\n3398: \n3399: The derivative involves the softmax probability (from Lemma {prf:ref}`lem-derivatives-companion-distance-full`). The key term is:\n3400: \n3401: $$\n3402: \\frac{\\partial \\mathbb{P}(c(j) = \\ell)}{\\partial x_i} \\sim \\mathbb{P}(c(j) = \\ell) \\cdot \\nabla_{x_i} \\left[-\\frac{d_{\\text{alg}}^2(j, \\ell)}{2\\varepsilon_c^2}\\right]\n3403: \n3404: $$\n3405: \n3406: For walkers $i, j$ in different clusters, the softmax probability for walker $i$ to be the companion of walker $j$ is exponentially suppressed:\n3407: \n3408: $$\n3409: \\mathbb{P}(c(j) = i) \\leq \\frac{\\exp(-d_{\\text{alg}}^2(i,j)/(2\\varepsilon_c^2))}{\\exp(-R_{\\max}^2/(2\\varepsilon_c^2))} \\leq \\exp\\left(-\\frac{(D_{\\text{sep}} - 4\\varepsilon_c)^2 - R_{\\max}^2}{2\\varepsilon_c^2}\\right)\n3410: \n3411: $$\n3412: \n3413: where we used the partition function lower bound from {prf:ref}`lem-companion-availability-enforcement`.\n3414: \n3415: For well-separated clusters ($D_{\\text{sep}} \\gg \\varepsilon_c$), this gives:\n3416: \n3417: $$\n3418: C_{i \\leftrightarrow j}^{(m,m')} = \\mathcal{O}\\left(\\exp\\left(-\\frac{D_{\\text{sep}}^2(m,m')}{2\\varepsilon_c^2}\\right)\\right)\n3419: \n3420: $$\n3421: \n3422: **Conclusion**: The decomposition splits the derivative into:\n3423: - **Intra-cluster terms** ($m = m'$): $\\mathcal{O}(1)$ contributions from nearby walkers\n3424: - **Inter-cluster terms** ($m \\neq m'$): Exponentially suppressed contributions from distant walkers\n3425: "
     }
   ],

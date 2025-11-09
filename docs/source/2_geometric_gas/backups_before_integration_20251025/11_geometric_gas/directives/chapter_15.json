@@ -19,6 +19,7 @@
         "label": "thm-signal-generation-adaptive"
       },
       "section": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model",
+      "references": [],
       "raw_directive": "3122: ### B.2. Hypothesis 1: Signal Generation (Geometry-Based)\n3123: \n3124: :::{prf:theorem} Signal Generation for the Adaptive Model\n3125: :label: thm-signal-generation-adaptive\n3126: \n3127: For the adaptive model with \u03c1-localized measurements, the Signal Generation Hypothesis holds identically to the backbone model:\n3128: \n3129: **Statement:** If the structural variance satisfies $\\text{Var}(x) > R^2$ for sufficiently large $R$, then the raw pairwise distance measurements satisfy:\n3130: \n3131: $$\n3132: \\mathbb{E}[\\text{Var}(d)] > \\kappa_{\\text{meas}} > 0\n3133: $$\n3134: \n3135: where $\\kappa_{\\text{meas}}$ is a positive constant independent of $N$, $\\rho$, and the swarm state $S$.\n3136: \n3137: **Proof:** This result follows directly from Theorem 7.2.1 of `03_cloning.md`. The proof relies only on:\n3138: 1. The variance-to-diversity geometric partition (Chapter 6 of `03_cloning.md`)\n3139: 2. The properties of the pairing algorithm\n3140: 3. The raw distance measurements $d_i = \\|x_i - x_{\\text{pair}(i)}\\|$\n3141: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "lem-variance-to-gap-adaptive"
       },
       "section": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model",
+      "references": [],
       "raw_directive": "3157: #### B.3.1. The Variance-to-Gap Lemma (Universal)\n3158: \n3159: :::{prf:lemma} Variance-to-Gap (from 03_cloning.md, Lemma 7.3.1)\n3160: :label: lem-variance-to-gap-adaptive\n3161: \n3162: For any random variable $X$ with mean $\\mu$ and variance $\\sigma^2 > 0$:\n3163: \n3164: $$\n3165: \\max_{x \\in \\text{supp}(X)} |x - \\mu| \\ge \\sigma\n3166: $$\n3167: "
     },
     {
@@ -55,6 +57,7 @@
         "label": "lem-rho-pipeline-bounds"
       },
       "section": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model",
+      "references": [],
       "raw_directive": "3173: #### B.3.2. Uniform Bounds on \u03c1-Dependent Pipeline Components\n3174: \n3175: :::{prf:lemma} Uniform Bounds on the \u03c1-Localized Pipeline\n3176: :label: lem-rho-pipeline-bounds\n3177: \n3178: For the \u03c1-localized rescaling pipeline with bounded measurements $d \\in [0, d_{\\max}]$:\n3179: \n3180: **1. Upper Bound on Localized Standard Deviation:**\n3181: \n3182: $$\n3183: \\sigma'_\\rho[f, d, x] \\le \\sigma'_{\\rho,\\max} := d_{\\max}\n3184: $$\n3185: \n3186: for all $f, x, \\rho$. This bound is **N-uniform** and **\u03c1-dependent** (it could be tighter for specific \u03c1, but this worst-case bound suffices).\n3187: \n3188: **2. Lower Bound on Rescale Derivative:**\n3189: \n3190: $$\n3191: g'_A(z) \\ge g'_{\\min} > 0\n3192: $$\n3193: \n3194: for all $z \\in \\mathbb{R}$, where $g_A$ is the smooth, monotone rescale function. This bound is **\u03c1-independent**.\n3195: \n3196: **Proof:**\n3197: \n3198: **Part 1:** The localized standard deviation is bounded by the range of the measurement function:\n3199: \n3200: $$\n3201: \\sigma'_\\rho[f, d, x] = \\max\\{\\sigma_\\rho[f, d, x], \\kappa_{\\text{var,min}}\\} \\le \\max_{x \\in \\mathcal{X}} d(x) = d_{\\max}\n3202: $$\n3203: \n3204: This holds for all \u03c1 because even in the hyper-local limit, the standard deviation of bounded measurements remains bounded.\n3205: "
     },
     {
@@ -73,6 +76,7 @@
         "label": "lem-raw-to-rescaled-gap-rho"
       },
       "section": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model",
+      "references": [],
       "raw_directive": "3209: #### B.3.3. Raw-Gap to Rescaled-Gap Propagation (\u03c1-Dependent)\n3210: \n3211: :::{prf:lemma} Raw-Gap to Rescaled-Gap for \u03c1-Localized Pipeline\n3212: :label: lem-raw-to-rescaled-gap-rho\n3213: \n3214: If the raw measurements satisfy:\n3215: \n3216: $$\n3217: \\max_{i \\in \\{1, \\ldots, N\\}} |d_i - \\mu_\\rho[f_k, d, x_{\\text{ref}}]| \\ge \\kappa_{\\text{raw}}\n3218: $$\n3219: \n3220: for some reference point $x_{\\text{ref}}$ and raw gap $\\kappa_{\\text{raw}} > 0$, then the rescaled measurements satisfy:\n3221: \n3222: $$\n3223: \\max_{i \\in \\{1, \\ldots, N\\}} |d'_i - \\mu[d']| \\ge \\kappa_{\\text{rescaled}}(\\kappa_{\\text{raw}}, \\rho)\n3224: $$\n3225: \n3226: where:\n3227: \n3228: $$\n3229: \\kappa_{\\text{rescaled}}(\\kappa_{\\text{raw}}, \\rho) := g'_{\\min} \\cdot \\frac{\\kappa_{\\text{raw}}}{\\sigma'_{\\rho,\\max}}\n3230: $$\n3231: \n3232: **Proof:** By the Mean Value Theorem applied to the composition $d'_i = g_A(Z_\\rho[f_k, d, x_i])$:\n3233: \n3234: $$\n3235: |d'_i - d'_j| \\ge g'_{\\min} \\cdot |Z_\\rho[f_k, d, x_i] - Z_\\rho[f_k, d, x_j]|\n3236: $$\n3237: \n3238: The Z-score difference satisfies:\n3239: \n3240: $$\n3241: |Z_\\rho[f_k, d, x_i] - Z_\\rho[f_k, d, x_j]| \\ge \\frac{|d_i - d_j|}{\\sigma'_{\\rho,\\max}}\n3242: $$\n3243: \n3244: Combining these and using the raw gap:\n3245: \n3246: $$\n3247: \\max_{i,j} |d'_i - d'_j| \\ge g'_{\\min} \\cdot \\frac{\\kappa_{\\text{raw}}}{\\sigma'_{\\rho,\\max}}\n3248: $$\n3249: "
     },
     {
@@ -91,6 +95,7 @@
         "label": "lem-log-gap-bounds-adaptive"
       },
       "section": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model",
+      "references": [],
       "raw_directive": "3265: #### B.4.1. Foundational Statistical Lemmas (\u03c1-Independent)\n3266: \n3267: :::{prf:lemma} Logarithmic Gap Bounds (from 03_cloning.md, Lemma 7.5.1)\n3268: :label: lem-log-gap-bounds-adaptive\n3269: \n3270: For any random variable $X \\in [a, b]$ with mean $\\mu$ and $a < \\mu < b$:\n3271: \n3272: **Lower Bound:**\n3273: \n3274: $$\n3275: \\mathbb{E}[\\log X] \\le \\log \\mu\n3276: $$\n3277: \n3278: **Upper Bound (Gap to Extremal Point):**\n3279: \n3280: $$\n3281: |\\log b - \\mathbb{E}[\\log X]| \\ge \\log(b) - \\log(\\mu)\n3282: $$\n3283: "
     },
     {
@@ -109,6 +114,12 @@
         "label": "prop-diversity-signal-rho"
       },
       "section": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model",
+      "references": [
+        "lem-raw-to-rescaled-gap-rho",
+        "thm-signal-generation-adaptive",
+        "lem-variance-to-gap-adaptive",
+        "lem-log-gap-bounds-adaptive"
+      ],
       "raw_directive": "3289: #### B.4.2. \u03c1-Dependent Lower Bound on Corrective Diversity Signal\n3290: \n3291: :::{prf:proposition} Lower Bound on Corrective Diversity Signal (\u03c1-Dependent)\n3292: :label: prop-diversity-signal-rho\n3293: \n3294: For a swarm satisfying $\\text{Var}(x) > R^2$ and $\\mathbb{E}[\\text{Var}(d)] > \\kappa_{\\text{meas}}$, the mean logarithmic rescaled distance satisfies:\n3295: \n3296: $$\n3297: \\mathbb{E}[\\log d'] \\ge \\kappa_{d',\\text{mean}}(\\epsilon, \\rho)\n3298: $$\n3299: \n3300: where:\n3301: \n3302: $$\n3303: \\kappa_{d',\\text{mean}}(\\epsilon, \\rho) := \\log g_A\\left( \\frac{\\kappa_{\\text{rescaled}}(\\kappa_{\\text{meas}}, \\rho)}{2} \\right) - \\log(A)\n3304: $$\n3305: \n3306: and $\\kappa_{\\text{rescaled}}(\\kappa_{\\text{meas}}, \\rho)$ is from Lemma {prf:ref}`lem-raw-to-rescaled-gap-rho`.\n3307: \n3308: **Proof:**\n3309: \n3310: **Step 1: From Structural Variance to Raw Distance Variance.** By Theorem {prf:ref}`thm-signal-generation-adaptive` (Hypothesis 1), if $\\text{Var}(x) > R^2$, then:\n3311: \n3312: $$\n3313: \\mathbb{E}[\\text{Var}(d)] > \\kappa_{\\text{meas}} > 0\n3314: $$\n3315: \n3316: This is the raw variance in the pairwise distance measurements before any statistical processing.\n3317: \n3318: **Step 2: From Variance to Gap.** By Lemma {prf:ref}`lem-variance-to-gap-adaptive`, any random variable with variance $\\sigma^2 > 0$ must have a gap to its mean:\n3319: \n3320: $$\n3321: \\max_i |d_i - \\mu[d]| \\ge \\sigma[d] \\ge \\sqrt{\\kappa_{\\text{meas}}}\n3322: $$\n3323: \n3324: Therefore, $\\kappa_{\\text{raw}} := \\sqrt{\\kappa_{\\text{meas}}}$ bounds the raw gap.\n3325: \n3326: **Step 3: Propagation Through \u03c1-Localized Pipeline.** By Lemma {prf:ref}`lem-raw-to-rescaled-gap-rho`, the raw gap propagates to a rescaled gap:\n3327: \n3328: $$\n3329: \\max_i |d'_i - \\mu[d']| \\ge \\kappa_{\\text{rescaled}}(\\kappa_{\\text{raw}}, \\rho) = g'_{\\min} \\cdot \\frac{\\kappa_{\\text{raw}}}{\\sigma'_{\\rho,\\max}}\n3330: $$\n3331: \n3332: where $g'_{\\min}$ is the minimum derivative of the rescale function and $\\sigma'_{\\rho,\\max} = d_{\\max}$ is the worst-case bound on the localized standard deviation.\n3333: \n3334: **Step 4: From Gap to Logarithmic Mean.** By Lemma {prf:ref}`lem-log-gap-bounds-adaptive`, if the rescaled measurements $d' \\in [0, A]$ have mean $\\mu[d']$ and gap $\\ge \\kappa_{\\text{rescaled}}$, then:\n3335: \n3336: $$\n3337: \\mathbb{E}[\\log d'] \\ge \\log(\\mu[d'] - \\kappa_{\\text{rescaled}}/2)\n3338: $$\n3339: \n3340: Since $\\mu[d'] \\le A$ and the gap is at least $\\kappa_{\\text{rescaled}}$, we have:\n3341: \n3342: $$\n3343: \\mathbb{E}[\\log d'] \\ge \\log g_A\\left( \\frac{\\kappa_{\\text{rescaled}}(\\kappa_{\\text{meas}}, \\rho)}{2} \\right) - \\log(A) =: \\kappa_{d',\\text{mean}}(\\epsilon, \\rho)\n3344: $$\n3345: "
     },
     {
@@ -127,6 +138,7 @@
         "label": "prop-reward-bias-rho"
       },
       "section": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model",
+      "references": [],
       "raw_directive": "3349: #### B.4.3. \u03c1-Dependent Upper Bound on Adversarial Reward Bias\n3350: \n3351: :::{prf:proposition} Axiom-Based Bound on Logarithmic Reward Gap (\u03c1-Dependent)\n3352: :label: prop-reward-bias-rho\n3353: \n3354: Under the foundational axioms (specifically, Axiom EG-5: Active Diversity Signal), the adversarial logarithmic reward bias satisfies:\n3355: \n3356: $$\n3357: |\\mathbb{E}[\\log r'] - \\log r'_{\\text{high}}| \\le \\kappa_{r',\\text{mean,adv}}(\\rho)\n3358: $$\n3359: \n3360: where $\\kappa_{r',\\text{mean,adv}}(\\rho)$ is a \u03c1-dependent constant that can be bounded through the pipeline analysis.\n3361: \n3362: **Proof:**\n3363: \n3364: **Step 1: Reward Bounded and Active (Axiom EG-5).** By the Active Diversity Signal axiom from `03_cloning.md`, the reward function $r: \\mathcal{X} \\to \\mathbb{R}$ satisfies:\n3365: - Boundedness: $0 \\le r(x) \\le r_{\\max}$ for all $x$\n3366: - Activity: There exists a non-trivial gap in reward values across the domain\n3367: \n3368: **Step 2: \u03c1-Localized Rescaling of Rewards.** The rescaled rewards are:\n3369: \n3370: $$\n3371: r'_i = g_A(Z_\\rho[f_k, r, x_i])\n3372: $$\n3373: \n3374: where the Z-score uses the \u03c1-localized moments for the reward function $r$ instead of distance $d$.\n3375: \n3376: **Step 3: Lipschitz Control.** By the Lipschitz property of $g_A$ and the bounded Z-scores:\n3377: \n3378: $$\n3379: |r'_i - r'_j| \\le L_{g_A} |Z_\\rho^{(i)} - Z_\\rho^{(j)}| \\le L_{g_A} \\cdot \\frac{2r_{\\max}}{\\sigma'_{\\rho,\\min}}\n3380: $$\n3381: \n3382: where $\\sigma'_{\\rho,\\min}$ is a lower bound on the localized standard deviation for reward measurements (which exists because rewards have non-trivial variance by Axiom EG-5 and the regularization ensures $\\sigma'_\\rho \\ge \\sigma\\'_{\\min}$).\n3383: \n3384: **Step 4: Logarithmic Gap Bound.** Since rescaled rewards lie in $[0, A]$ and have Lipschitz-controlled variation:\n3385: \n3386: $$\n3387: |\\mathbb{E}[\\log r'] - \\log r'_{\\text{high}}| \\le \\log(A) - \\log(A - L_{g_A} r_{\\max} / \\sigma'_{\\rho,\\min})\n3388: $$\n3389: \n3390: Expanding for small perturbations and using worst-case bounds:\n3391: \n3392: $$\n3393: \\kappa_{r',\\text{mean,adv}}(\\rho) := \\frac{L_{g_A} r_{\\max}}{A \\cdot \\sigma'_{\\rho,\\min}} + O\\left(\\frac{r_{\\max}^2}{\\sigma'^2_{\\rho,\\min}}\\right)\n3394: $$\n3395: "
     },
     {
@@ -145,6 +157,10 @@
         "label": "thm-stability-condition-rho"
       },
       "section": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model",
+      "references": [
+        "prop-diversity-signal-rho",
+        "prop-reward-bias-rho"
+      ],
       "raw_directive": "3399: #### B.4.4. The \u03c1-Dependent Stability Condition\n3400: \n3401: :::{prf:theorem} \u03c1-Dependent Stability Condition for Intelligent Targeting\n3402: :label: thm-stability-condition-rho\n3403: \n3404: For the adaptive model with localization scale \u03c1 > 0, the Intelligent Targeting Hypothesis is satisfied if the system parameters satisfy:\n3405: \n3406: $$\n3407: \\kappa_{d',\\text{mean}}(\\epsilon, \\rho) > \\kappa_{r',\\text{mean,adv}}(\\rho)\n3408: $$\n3409: \n3410: This condition ensures that the corrective diversity signal dominates the adversarial reward bias, guaranteeing that high-error walkers are reliably identified as low-fitness.\n3411: \n3412: **Explicit Form:** Substituting the expressions from Propositions {prf:ref}`prop-diversity-signal-rho` and {prf:ref}`prop-reward-bias-rho`:\n3413: \n3414: $$\n3415: \\log g_A\\left( \\frac{\\kappa_{\\text{rescaled}}(\\kappa_{\\text{meas}}, \\rho)}{2} \\right) > \\kappa_{r',\\text{mean,adv}}(\\rho) + \\log(A)\n3416: $$\n3417: \n3418: **Interpretation:**\n3419: - The left side is the **corrective signal strength**, which depends on \u03c1 through the signal propagation constant $\\kappa_{\\text{rescaled}}(\\kappa_{\\text{meas}}, \\rho)$\n3420: - The right side is the **adversarial bias**, which also depends on \u03c1 through the local reward statistics\n3421: - For any fixed \u03c1 > 0, both sides are finite positive constants"
     },
     {
@@ -163,6 +179,11 @@
         "label": "thm-keystone-adaptive"
       },
       "section": "## Appendix B: Verification of the Keystone Principle for the Adaptive Model",
+      "references": [
+        "thm-stability-condition-rho",
+        "thm-signal-generation-adaptive",
+        "lem-raw-to-rescaled-gap-rho"
+      ],
       "raw_directive": "3427: Having verified all three hypotheses, we can now state the main result of this chapter.\n3428: \n3429: :::{prf:theorem} Keystone Lemma for the \u03c1-Localized Adaptive Model\n3430: :label: thm-keystone-adaptive\n3431: \n3432: For the adaptive model with localization scale \u03c1 > 0 satisfying the \u03c1-Dependent Stability Condition (Theorem {prf:ref}`thm-stability-condition-rho`), the **N-Uniform Quantitative Keystone Lemma** from `03_cloning.md` (Theorem 8.1) holds:\n3433: \n3434: $$\n3435: \\frac{1}{N} \\sum_{i \\in I_{11}} (p_{1,i} + p_{2,i}) \\|\\Delta \\delta_{x,i}\\|^2 \\ge \\chi(\\epsilon, \\rho) \\cdot V_{\\text{struct}}(S) - g_{\\max}(\\epsilon, \\rho)\n3436: $$\n3437: \n3438: where:\n3439: - $\\chi(\\epsilon, \\rho) > 0$ is the **\u03c1-dependent structural reduction coefficient**\n3440: - $g_{\\max}(\\epsilon, \\rho)$ is the **\u03c1-dependent geometric negligibility bound**\n3441: - Both constants are uniform in $N$ and depend continuously on \u03c1\n3442: \n3443: **Proof:** Direct application of Theorem 8.1 from `03_cloning.md`. All three hypotheses have been verified:\n3444: 1. Signal Generation (Theorem {prf:ref}`thm-signal-generation-adaptive`) \u2713\n3445: 2. Signal Integrity (Lemma {prf:ref}`lem-raw-to-rescaled-gap-rho`) \u2713\n3446: 3. Intelligent Targeting (Theorem {prf:ref}`thm-stability-condition-rho`) \u2713\n3447: "
     }
   ],

@@ -19,6 +19,7 @@
         "label": "obs-temporal-coherence"
       },
       "section": "## 1. The Inefficiency of Batch Processing",
+      "references": [],
       "raw_directive": "33: The walker configuration between timesteps t and t+\u0394t is **highly correlated**:\n34: \n35: :::{prf:observation} Temporal Coherence of Walker Configurations\n36: :label: obs-temporal-coherence\n37: \n38: For small timestep \u0394t, the walker configuration exhibits strong temporal coherence:\n39: \n40: 1. **Most walkers move locally**: Approximately N(1 - p_clone) walkers evolve via the SDE, moving a small distance ~v\u00b7\u0394t\n41: 2. **Few walkers teleport**: Only ~N\u00b7p_clone walkers are involved in cloning events (non-local jumps)\n42: 3. **Small perturbation**: The Delaunay triangulation DT(t+\u0394t) is a small perturbation of DT(t)\n43: "
     }
   ],

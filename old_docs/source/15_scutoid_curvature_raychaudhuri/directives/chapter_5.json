@@ -19,6 +19,7 @@
         "label": "def-geodesic-congruence"
       },
       "section": "## Section 3: Raychaudhuri Equation as Geometric Identity",
+      "references": [],
       "raw_directive": "731: The **Raychaudhuri equation** is a fundamental result in differential geometry and general relativity, governing how volumes of geodesic congruences evolve under the influence of curvature. It was discovered by Amal Kumar Raychaudhuri in 1955 and is central to the Penrose-Hawking singularity theorems.\n732: \n733: :::{prf:definition} Geodesic Congruence\n734: :label: def-geodesic-congruence\n735: \n736: A **geodesic congruence** is a family of geodesics $\\{\\gamma_\\alpha(t)\\}_{\\alpha \\in A}$ indexed by a parameter $\\alpha$, such that through each point $x \\in \\mathcal{X}$ passes exactly one geodesic. The **velocity field** $u^\\mu(x)$ is the tangent vector field to the congruence:\n737: \n738: $$\n739: u^\\mu(x) = \\frac{dx^\\mu}{dt}\\Big|_{\\gamma_\\alpha(t) \\ni x}\n740: $$\n741: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "def-expansion-shear-rotation"
       },
       "section": "## Section 3: Raychaudhuri Equation as Geometric Identity",
+      "references": [],
       "raw_directive": "749: While the cloning events create **singularities**, the geodesic structure between cloning events is well-defined. The Raychaudhuri equation governs the smooth evolution between singularities.\n750: \n751: :::{prf:definition} Expansion, Shear, and Rotation\n752: :label: def-expansion-shear-rotation\n753: \n754: The **kinematic decomposition** of a geodesic congruence splits the covariant derivative of the velocity field into three parts:\n755: \n756: $$\n757: \\nabla_\\mu u_\\nu = \\frac{1}{d}\\theta \\, g_{\\mu\\nu} + \\sigma_{\\mu\\nu} + \\omega_{\\mu\\nu}\n758: $$\n759: \n760: where:\n761: 1. **Expansion scalar**: $\\theta = \\nabla_\\mu u^\\mu$ (trace part, measures volume growth rate)\n762: 2. **Shear tensor**: $\\sigma_{\\mu\\nu} = \\frac{1}{2}(\\nabla_\\mu u_\\nu + \\nabla_\\nu u_\\mu) - \\frac{1}{d}\\theta \\, g_{\\mu\\nu}$ (traceless symmetric part, measures distortion)"
     },
     {
@@ -55,6 +57,7 @@
         "label": "thm-raychaudhuri-classical"
       },
       "section": "## Section 3: Raychaudhuri Equation as Geometric Identity",
+      "references": [],
       "raw_directive": "770: - **Rotation** $\\omega_{\\mu\\nu} \\neq 0$: Geodesics twist around each other (vortex-like motion)\n771: \n772: :::{prf:theorem} Raychaudhuri Equation (Classical)\n773: :label: thm-raychaudhuri-classical\n774: \n775: For a geodesic congruence with velocity field $u^\\mu$ in a Riemannian manifold with Ricci tensor $R_{\\mu\\nu}$, the expansion scalar $\\theta$ satisfies:\n776: \n777: $$\n778: \\frac{d\\theta}{dt} = -\\frac{1}{d}\\theta^2 - \\sigma_{\\mu\\nu}\\sigma^{\\mu\\nu} + \\omega_{\\mu\\nu}\\omega^{\\mu\\nu} - R_{\\mu\\nu}u^\\mu u^\\nu\n779: $$\n780: \n781: where:\n782: - $\\sigma^{\\mu\\nu} = g^{\\mu\\alpha}g^{\\nu\\beta}\\sigma_{\\alpha\\beta}$ (raising indices with metric)\n783: - $\\omega^{\\mu\\nu} = g^{\\mu\\alpha}g^{\\nu\\beta}\\omega_{\\alpha\\beta}$"
     },
     {
@@ -73,6 +76,7 @@
         "label": "def-volume-expansion"
       },
       "section": "## Section 3: Raychaudhuri Equation as Geometric Identity",
+      "references": [],
       "raw_directive": "805: We now derive the Raychaudhuri equation directly from the scutoid geometry by studying how Voronoi cell volumes change from $t$ to $t + \\Delta t$.\n806: \n807: :::{prf:definition} Voronoi Cell Volume and Expansion\n808: :label: def-volume-expansion\n809: \n810: For a walker $i$ at time $t$, let $V_i(t)$ denote the **volume** of its Voronoi cell $\\text{Vor}_i(t)$ computed in the emergent metric $g_{ab}(x, S_t)$:\n811: \n812: $$\n813: V_i(t) = \\int_{\\text{Vor}_i(t)} \\sqrt{\\det g(x, S_t)} \\, d^d x\n814: $$\n815: \n816: The **volume expansion rate** is:\n817: \n818: $$\n819: \\theta_i = \\frac{1}{V_i(t)} \\frac{dV_i}{dt} = \\lim_{\\Delta t \\to 0} \\frac{V_i(t + \\Delta t) - V_i(t)}{V_i(t) \\, \\Delta t}\n820: $$"
     },
     {
@@ -91,6 +95,7 @@
         "label": "lem-volume-from-boundary"
       },
       "section": "## Section 3: Raychaudhuri Equation as Geometric Identity",
+      "references": [],
       "raw_directive": "828: $$\n829: \n830: :::{prf:lemma} Volume Change from Boundary Deformation\n831: :label: lem-volume-from-boundary\n832: \n833: The volume change of a Voronoi cell from $t$ to $t + \\Delta t$ can be expressed as a boundary integral:\n834: \n835: $$\n836: \\frac{dV_i}{dt} = \\int_{\\partial \\text{Vor}_i(t)} u^\\mu n_\\mu \\, dA\n837: $$\n838: "
     },
     {
@@ -109,6 +114,7 @@
         "label": "prop-expansion-from-divergence"
       },
       "section": "## Section 3: Raychaudhuri Equation as Geometric Identity",
+      "references": [],
       "raw_directive": "842: **Proof**: This is the **Reynolds transport theorem** (also called Leibniz integral rule for moving domains). The volume change is determined by how fast the boundary moves outward (positive $u^\\mu n_\\mu$) or inward (negative $u^\\mu n_\\mu$). Integrating over the entire boundary gives the total volume change rate. $\\square$\n843: \n844: :::{prf:proposition} Expansion from Geodesic Divergence\n845: :label: prop-expansion-from-divergence\n846: \n847: The expansion scalar $\\theta_i$ equals the divergence of the velocity field:\n848: \n849: $$\n850: \\theta_i = \\nabla_\\mu u^\\mu\n851: $$\n852: "
     },
     {
@@ -127,6 +133,9 @@
         "label": "thm-raychaudhuri-scutoid"
       },
       "section": "## Section 3: Raychaudhuri Equation as Geometric Identity",
+      "references": [
+        "thm-riemann-scutoid-dictionary"
+      ],
       "raw_directive": "878: We now prove the main result: the Raychaudhuri equation emerges as a **geometric identity** from the scutoid tessellation structure.\n879: \n880: :::{prf:theorem} Raychaudhuri-Scutoid Equation (Crown Jewel 2)\n881: :label: thm-raychaudhuri-scutoid\n882: \n883: For a walker $i$ at time $t$ in the Fragile Gas with emergent metric $g_{ab}(x, S_t)$, the expansion scalar $\\theta_i$ (measuring the volume growth rate of the Voronoi cell) satisfies the Raychaudhuri equation:\n884: \n885: $$\n886: \\frac{d\\theta_i}{dt} = -\\frac{1}{d}\\theta_i^2 - \\sigma_{\\mu\\nu}\\sigma^{\\mu\\nu} + \\omega_{\\mu\\nu}\\omega^{\\mu\\nu} - R_{\\mu\\nu}u^\\mu u^\\nu\n887: $$\n888: \n889: where:\n890: - $\\theta_i = \\frac{1}{V_i}\\frac{dV_i}{dt}$ is the expansion scalar (volume growth rate)\n891: - $\\sigma_{\\mu\\nu}$ is the shear tensor (traceless symmetric part of boundary deformation)\n892: - $\\omega_{\\mu\\nu}$ is the rotation tensor (antisymmetric part of boundary deformation)\n893: - $R_{\\mu\\nu}$ is the Ricci tensor from scutoid plaquettes (Theorem {prf:ref}`thm-riemann-scutoid-dictionary`)\n894: - $u^\\mu$ is the velocity field of walker trajectories\n895: "
     },
     {
@@ -145,6 +154,7 @@
         "label": "axiom-cloning-perturbation"
       },
       "section": "## Section 3: Raychaudhuri Equation as Geometric Identity",
+      "references": [],
       "raw_directive": "1041: We now state these foundational elements precisely.\n1042: \n1043: :::{prf:axiom} Cloning Perturbation Axiom\n1044: :label: axiom-cloning-perturbation\n1045: \n1046: When a parent walker at position $x_j \\in \\mathbb{R}^d$ undergoes cloning at time $t$, it produces a child walker at position $x_i$ such that the displacement vector $\\varepsilon := x_i - x_j$ satisfies:\n1047: \n1048: $$\n1049: \\mathbb{E}[|\\varepsilon|] \\leq \\frac{K \\ell_{\\text{cell}}}{N^{1/d}}\n1050: $$\n1051: \n1052: where:\n1053: - $\\ell_{\\text{cell}} \\sim (D^d/N)^{1/d}$ is the characteristic Voronoi cell size\n1054: - $N$ is the total number of walkers\n1055: - $D$ is the domain diameter\n1056: - $K = O(1)$ is a dimensionless constant\n1057: - The expectation is over the cloning mechanism's stochasticity\n1058: \n1059: **Physical Interpretation**: Cloning produces a child \"near\" the parent on the scale of inter-walker spacing. The $N^{-1/d}$ suppression reflects that cloning perturbations are local in physical space, not merely local relative to cell size. As $N \\to \\infty$, the perturbation becomes infinitesimal relative to the domain scale $D$.\n1060: \n1061: **Algorithmic Realization**: In the Fragile Gas implementation (Chapter 2), cloning involves:\n1062: 1. Selecting a parent based on fitness\n1063: 2. Perturbing the parent's position by noise of scale $\\sigma_{\\text{clone}} \\sim \\ell_{\\text{cell}}/N^{1/d}$\n1064: 3. Replacing the lowest-fitness walker with the child\n1065: "
     },
     {
@@ -163,6 +173,7 @@
         "label": "thm-well-spaced"
       },
       "section": "## Section 3: Raychaudhuri Equation as Geometric Identity",
+      "references": [],
       "raw_directive": "1067: :::\n1068: \n1069: :::{prf:theorem} Well-Spaced Point Set Theorem (Asymptotic Regularity)\n1070: :label: thm-well-spaced\n1071: \n1072: The Fragile Gas dynamics with cloning and kinetic operators produce walker configurations that are **asymptotically well-spaced** in the following sense:\n1073: \n1074: For any $\\varepsilon > 0$, there exists $T_{\\varepsilon} < \\infty$ such that for all $t > T_{\\varepsilon}$ and with probability at least $1 - \\varepsilon$, the walker configuration satisfies:\n1075: \n1076: $$\n1077: \\delta_{\\min}(\\varepsilon) \\left(\\frac{D^d}{N}\\right)^{1/d} \\leq \\min_{j \\neq i} |x_i - x_j| \\leq \\text{diam}(\\text{Vor}_i) \\leq \\delta_{\\max}(\\varepsilon) \\left(\\frac{D^d}{N}\\right)^{1/d}\n1078: $$\n1079: \n1080: for all walkers $i$, where:\n1081: - $\\text{Vor}_i$ is the Voronoi cell of walker $i$\n1082: - $\\delta_{\\min}(\\varepsilon), \\delta_{\\max}(\\varepsilon)$ are $\\varepsilon$-dependent constants satisfying $\\delta_{\\min}(\\varepsilon) \\to c_{\\min}(d) > 0$ and $\\delta_{\\max}(\\varepsilon) \\to c_{\\max}(d) < \\infty$ as $\\varepsilon \\to 0$\n1083: \n1084: **Consequence**: Well-spaced point sets have Voronoi tessellations with:\n1085: - Bounded number of neighbors: $|\\mathcal{N}_i| \\leq C(d)$ for a constant $C(d)$ depending only on dimension"
     },
     {
@@ -181,6 +192,9 @@
         "label": "lem-voronoi-regularity"
       },
       "section": "## Section 3: Raychaudhuri Equation as Geometric Identity",
+      "references": [
+        "thm-well-spaced"
+      ],
       "raw_directive": "1185: **Remark (Explicit Constants)**: For $d=2$ (planar case) and uniform fitness landscapes, numerical simulations give $\\delta_{\\min} \\approx 0.5$ and $\\delta_{\\max} \\approx 2.0$, consistent with hexagonal packing (Chapter 18, Example 18.1.4). For $d=3$, tetrakaidecahedral packing gives $\\delta_{\\min} \\approx 0.6$ and $\\delta_{\\max} \\approx 1.8$.\n1186: \n1187: :::{prf:lemma} Voronoi Tessellation Regularity for Fragile Gas\n1188: :label: lem-voronoi-regularity\n1189: \n1190: Consider the Fragile Gas algorithm in $d$-dimensional space with $N$ walkers confined to a bounded domain $\\Omega \\subset \\mathbb{R}^d$ with diameter $D$. Under Theorem {prf:ref}`thm-well-spaced` (asymptotic well-spacing) and the **non-degeneracy condition** that no $d+2$ walkers lie on a common $(d-1)$-sphere, the Voronoi tessellation satisfies the following regularity bounds:\n1191: \n1192: 1. **Cell size bounds**: Each Voronoi cell $V_i$ satisfies:\n1193: \n1194: \n1195: $$\n1196: \\frac{C_1 D^d}{N} \\leq \\text{Vol}(V_i) \\leq \\frac{C_2 D^d}{N}\n1197: $$\n1198: \n1199:    where $C_1, C_2 > 0$ are dimension-dependent constants.\n1200: \n1201: 2. **Neighbor count bounds**: Each walker has a bounded number of neighbors:\n1202: \n1203: \n1204: $$\n1205: n_{\\min}(d) \\leq |\\mathcal{N}_i| \\leq n_{\\max}(d)\n1206: $$\n1207: \n1208:    where $n_{\\min}(d) = d+1$ (simplex) and $n_{\\max}(d) = C(d)$ depends only on dimension (guaranteed by Theorem {prf:ref}`thm-well-spaced`).\n1209: \n1210: 3. **Facet area bounds**: Each facet $f$ of a Voronoi cell satisfies:\n1211: \n1212: \n1213: $$\n1214: \\frac{C_3 D^{d-1}}{N^{(d-1)/d}} \\leq \\text{Area}(f) \\leq \\frac{C_4 D^{d-1}}{N^{(d-1)/d}}\n1215: $$\n1216: \n1217: 4. **Velocity gradient bounds**: Under the smooth fitness landscape condition $\\|\\nabla^2 F\\| \\leq L_F$ (bounded Hessian), the emergent velocity field from the adaptive gas dynamics satisfies:\n1218: \n1219: \n1220: $$\n1221: \\|\\nabla u\\| \\leq L_u := C_5 L_F\n1222: $$\n1223: "
     },
     {
@@ -199,6 +213,7 @@
         "label": "thm-curvature-jump"
       },
       "section": "## Section 3: Raychaudhuri Equation as Geometric Identity",
+      "references": [],
       "raw_directive": "1272: In pathological cases (e.g., non-smooth fitness, wall boundaries), additional care is required, but the framework remains valid in a distributional sense.\n1273: \n1274: :::{prf:theorem} Integrated Curvature Jump from Cloning (d-Dimensional)\n1275: :label: thm-curvature-jump\n1276: \n1277: **Jump Operator Definition**: For a cloning event where parent walker $j$ at time $t^-$ is replaced by child walker $i$ at time $t^+$ (following the same lineage), we define the jump operator for any quantity $X$ associated with the walker's Voronoi cell:\n1278: \n1279: $$\n1280: [X] := X_i(t^+) - X_j(t^-)\n1281: $$\n1282: \n1283: At such a cloning event in $d$-dimensional space, the **integrated Ricci scalar** over the affected $(d-1)$-dimensional Voronoi boundary undergoes a jump:\n1284: \n1285: $$\n1286: \\left[ \\int_{\\partial V} R \\, d\\sigma \\right] = C_g(d) \\, \\Delta N + O(1/N)\n1287: $$\n1288: \n1289: where:\n1290: - $\\Delta N := |\\mathcal{N}_i(t^+)| - |\\mathcal{N}_j(t^-)| \\in \\mathbb{Z}$ is the change in number of neighbors\n1291: - $\\partial V$ denotes the $(d-1)$-dimensional boundary of the Voronoi cell\n1292: - $d\\sigma$ is the $(d-1)$-dimensional surface measure\n1293: - $C_g(d) > 0$ is a **dimensionless geometric constant** given explicitly below\n1294: \n1295: **Explicit Formula for $C_g(d)$**:\n1296: \n1297: $$\n1298: C_g(d) = \\frac{\\Omega_{d-1}}{n^*(d)}\n1299: $$\n1300: \n1301: where:\n1302: - $\\Omega_{d-1}$ is the volume of the unit $(d-1)$-sphere\n1303: - $n^*(d)$ is the ideal coordination number for $d$-dimensional space\n1304: \n1305: **Dimension-Specific Values** (for regular tessellations):\n1306: - $d=2$: $\\Omega_1 = 2\\pi$, $n^*(2)=6$ \u2192 $C_g(2) = 2\\pi/6 = \\pi/3$\n1307: - $d=3$: $\\Omega_2 = 4\\pi$, $n^*(3)=14$ \u2192 $C_g(3) = 4\\pi/14 = 2\\pi/7$\n1308: - General $d$: $\\Omega_{d-1} = \\frac{2\\pi^{d/2}}{\\Gamma(d/2)}$, $n^*(d) \\approx 2^d$ (kissing number bound)\n1309: "
     },
     {
@@ -217,6 +232,11 @@
         "label": "lem-reynolds-decomposition"
       },
       "section": "## Section 3: Raychaudhuri Equation as Geometric Identity",
+      "references": [
+        "axiom-cloning-perturbation",
+        "thm-well-spaced",
+        "lem-voronoi-regularity"
+      ],
       "raw_directive": "1404: The Raychaudhuri equation immediately implies a **focusing theorem**: under certain conditions, walker volumes must decrease, leading to collapse onto fitness peaks. We first establish the mathematical machinery needed to analyze curvature singularities.\n1405: \n1406: :::{prf:lemma} Reynolds Transport Decomposition for Cloning Events\n1407: :label: lem-reynolds-decomposition\n1408: \n1409: Consider a cloning event in $d$-dimensional space where parent walker $j$ with Voronoi cell $V_j$ at time $t^-$ is replaced by child walker $i$ with Voronoi cell $V_i$ at time $t^+$. Let $\\mathcal{F}_{\\text{new}}$ denote the set of $\\Delta N$ newly created boundary facets, and $\\mathcal{F}_{\\text{retained}}$ the set of facets retained from parent to child.\n1410: \n1411: Then the jump in volume rate decomposes as:\n1412: \n1413: $$\n1414: \\left[\\frac{dV}{dt}\\right] = \\underbrace{\\int_{\\mathcal{F}_{\\text{new}}} u_n \\, d\\sigma}_{\\text{new facet contribution}} + \\underbrace{\\int_{\\mathcal{F}_{\\text{retained}}} [u_n] \\, d\\sigma}_{\\text{retained facet contribution}} + O(1/N^2)\n1415: $$\n1416: \n1417: Furthermore, under the **regularity conditions** stated below, the retained-facet contribution satisfies:\n1418: \n1419: $$\n1420: \\mathbb{E}\\left[\\left| \\int_{\\mathcal{F}_{\\text{retained}}} [u_n] \\, d\\sigma \\right|\\right] \\leq C \\cdot \\frac{1}{N^{1/d}} \\cdot \\left| \\int_{\\mathcal{F}_{\\text{new}}} u_n \\, d\\sigma \\right|\n1421: $$\n1422: \n1423: where $C = O(1)$ is a constant depending on the tessellation geometry and algorithm parameters. For $d \\geq 2$, this gives at least $O(1/\\sqrt{N})$ suppression.\n1424: \n1425: **Regularity Conditions:** These are guaranteed by:\n1426: - Axiom {prf:ref}`axiom-cloning-perturbation` (parent-child separation)\n1427: - Axiom {prf:ref}`thm-well-spaced` (well-spaced point set)"
     },
     {
@@ -235,6 +255,9 @@
         "label": "lem-expansion-jump-cloning"
       },
       "section": "## Section 3: Raychaudhuri Equation as Geometric Identity",
+      "references": [
+        "thm-curvature-jump"
+      ],
       "raw_directive": "1551: **Remark (Convergence Rate)**: The $N^{-1/d}$ suppression improves with dimension: $O(1/\\sqrt{N})$ in 2D, $O(1/N^{1/3})$ in 3D, approaching $O(1/N)$ as $d \\to \\infty$. This reflects that in higher dimensions, walkers are more isolated, making cloning perturbations relatively smaller.\n1552: \n1553: :::{prf:lemma} Expansion Jump at Cloning Events (d-Dimensional)\n1554: :label: lem-expansion-jump-cloning\n1555: \n1556: At a cloning event in $d$-dimensional space where parent walker $j$ at time $t^-$ is replaced by child walker $i$ at time $t^+$, the expansion scalar undergoes a discrete jump:\n1557: \n1558: $$\n1559: [\\theta]_{\\text{clone}} = \\theta_i(t^+) - \\theta_j(t^-) = -\\mathcal{D}(d) \\left[ \\int_{\\partial V} R \\, d\\sigma \\right] + O(1/N)\n1560: $$\n1561: \n1562: where:\n1563: - $\\left[ \\int_{\\partial V} R \\, d\\sigma \\right]$ is the integrated Ricci scalar jump over the $(d-1)$-dimensional boundary (Proposition {prf:ref}`thm-curvature-jump`)\n1564: - $\\mathcal{D}(d) > 0$ is a **transport coefficient** with dimensions $[1/T]$ defined by:\n1565: \n1566: $$\n1567: \\mathcal{D}(d) = \\frac{|\\langle u_n \\rangle|}{C_g(d) \\cdot \\ell_{\\text{cell}}}\n1568: $$\n1569: \n1570: where:\n1571: - $|\\langle u_n \\rangle|_{\\text{in}}$ is the **average inward normal velocity** across newly created facets at a void-filling cloning event, formally defined as:\n1572: \n1573: $$\n1574: |\\langle u_n \\rangle|_{\\text{in}} := \\frac{1}{\\Delta N} \\sum_{k \\in \\text{new facets}} |u_n^k|\n1575: $$\n1576: \n1577: where the sum is over the $\\Delta N$ newly created boundary facets and $u_n^k < 0$ is the outward normal velocity (negative for inward motion)\n1578: \n1579: - $\\ell_{\\text{cell}} \\sim V^{1/d}$ is the characteristic cell size (volume to the $1/d$ power)\n1580: - $C_g(d) > 0$ is the dimensionless geometric constant from Proposition {prf:ref}`thm-curvature-jump`\n1581: \n1582: **Physical Interpretation**: The negative sign ensures that a positive integrated curvature jump (increasing neighbors via void-filling) leads to a **decrease** in expansion (stronger contraction), while negative jumps (losing neighbors) weaken contraction. The transport coefficient $\\mathcal{D}(d)$ quantifies how boundary kinematics mediate the coupling between integrated geometric curvature and volumetric expansion.\n1583: "
     },
     {
@@ -253,6 +276,10 @@
         "label": "thm-focusing-fragile-gas"
       },
       "section": "## Section 3: Raychaudhuri Equation as Geometric Identity",
+      "references": [
+        "thm-well-spaced",
+        "thm-curvature-jump"
+      ],
       "raw_directive": "1694: **This formulation is valid in any dimension $d \\geq 2$.** $\\square$\n1695: \n1696: :::{prf:theorem} Focusing Theorem for Fragile Gas\n1697: :label: thm-focusing-fragile-gas\n1698: \n1699: Using the Well-Spaced Theorem ({prf:ref}`thm-well-spaced`) and the Curvature Jump Theorem ({prf:ref}`thm-curvature-jump`) hold, we have the following result:\n1700: \n1701: Consider a walker lineage in the Fragile Gas undergoing cloning events at discrete times $t_0 < t_1 < t_2 < \\cdots < t_n < \\cdots$. Let $\\theta_n^-$ denote the expansion scalar just before the $n$-th cloning event, and $\\theta_n^+$ the expansion after the cloning-induced curvature singularity.\n1702: \n1703: Suppose the following conditions hold:\n1704: \n1705: 1. **Positive smooth Ricci curvature**: Between cloning events, $R_{\\mu\\nu}u^\\mu u^\\nu \\geq \\kappa_{\\text{smooth}} > 0$\n1706: 2. **Positive integrated curvature jumps at cloning**: Each cloning event increases neighbor count, contributing $\\left[\\int_{\\partial V} R \\, d\\sigma\\right]_n \\geq \\kappa_{\\text{jump}} > 0$ (dimensionless, Proposition {prf:ref}`thm-curvature-jump`)\n1707: 3. **Negligible rotation and shear**: $\\omega_{\\mu\\nu}\\omega^{\\mu\\nu} + \\sigma_{\\mu\\nu}\\sigma^{\\mu\\nu} \\leq \\varepsilon \\ll \\kappa_{\\text{smooth}}$\n1708: 4. **Initial contraction**: $\\theta_0^- < 0$ (volume decreasing initially)\n1709: \n1710: Then the sequence $\\{|\\theta_n^-|\\}$ diverges in finite time. Specifically, there exists $N_{\\text{focus}} < \\infty$ such that:\n1711: \n1712: $$\n1713: |\\theta_n^-| \\to \\infty \\quad \\text{as } n \\to N_{\\text{focus}}\n1714: $$\n1715: \n1716: and the total time to focusing is:\n1717: \n1718: $$\n1719: t_{\\text{focus}} = \\sum_{n=0}^{N_{\\text{focus}}-1} (t_{n+1} - t_n) < \\infty\n1720: $$\n1721: "
     }
   ],

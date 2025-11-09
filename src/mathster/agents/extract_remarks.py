@@ -26,74 +26,16 @@ import dspy
 
 from mathster.agents.core import (
     DirectiveAgentPaths,
-    ExtractSignature,
     LATEX_FENCE_PATTERN,
     METADATA_PATTERN,
     run_directive_extraction_loop,
-    to_jsonable,
     URI_PATTERN,
 )
+from mathster.agents.signatures import ParseRemarkDirectiveSplit, to_jsonable
 
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
-
-# --------------------------------------------------------------------------------------
-# DSPy Signature
-# --------------------------------------------------------------------------------------
-
-
-class ParseRemarkDirectiveSplit(ExtractSignature):
-    """
-    Convert a `::{prf:remark}` directive into structured content.
-
-    INPUT
-    -----
-    - directive_text (str): directive block (header → closing fence).
-    - context_hints (str, optional): small nearby snippet for extra cues.
-
-    OUTPUT FIELDS
-    -------------
-    - label_str (str): Remark label (e.g., `rem-margin-stability`).
-    - title_str (str): Heading if present.
-    - remark_type_str (str): Classification (motivation/design choice/caveat/etc.).
-    - nl_summary_str (str): concise summary (1–3 sentences).
-
-    - key_points_json (json array):
-        [{"text": <string|null>, "latex": <string|null>, "importance": <string|null>} ...]
-
-    - quantitative_notes_json (json array):
-        [{"text": <string|null>, "latex": <string|null>} ...] capturing bounds/equations.
-
-    - references (list[str]):
-        Labels cited inside the remark.
-
-    - recommendations_json (json array):
-        [{"text": <string|null>, "severity": <string|null>} ...] for actionable advice.
-
-    - dependencies_json (json array of str):
-        Concepts/sections the remark depends on or clarifies.
-    """
-
-    directive_text = dspy.InputField(desc="Raw remark directive text.")
-    context_hints = dspy.InputField(desc="Optional nearby prose.", optional=True)
-
-    label_str = dspy.OutputField(desc="Remark label.")
-    title_str = dspy.OutputField(desc="Title if present.")
-    remark_type_str = dspy.OutputField(desc="Remark classification.")
-    nl_summary_str = dspy.OutputField(desc="Natural-language summary.")
-
-    key_points_json = dspy.OutputField(
-        desc='JSON array [{"text": str|null, "latex": str|null, "importance": str|null}, ...]'
-    )
-    quantitative_notes_json = dspy.OutputField(
-        desc='JSON array [{"text": str|null, "latex": str|null}, ...]'
-    )
-    recommendations_json = dspy.OutputField(
-        desc='JSON array [{"text": str|null, "severity": str|null}, ...]'
-    )
-    dependencies_json = dspy.OutputField(desc='JSON array of strings ["sec-2.1","rem-other",...]')
 
 
 # --------------------------------------------------------------------------------------

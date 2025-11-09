@@ -19,6 +19,10 @@
         "label": "def-walker-state-manifold"
       },
       "section": "## 1. Path Space Foundations",
+      "references": [
+        "def-valid-state-space",
+        "def-emergent-metric"
+      ],
       "raw_directive": "179: Before defining path space, we must specify the underlying state space for individual walker configurations.\n180: \n181: :::{prf:definition} Walker State Manifold\n182: :label: def-walker-state-manifold\n183: \n184: The **walker state manifold** is the product space:\n185: \n186: $$\n187: \\mathcal{M} := \\mathcal{X} \\times \\mathbb{R}^{d_{\\text{space}}}\n188: $$\n189: \n190: where:\n191: 1. $\\mathcal{X} \\subset \\mathbb{R}^{d_{\\text{space}}}$ is the **spatial domain** (valid state space from {prf:ref}`def-valid-state-space`)\n192: 2. $\\mathbb{R}^{d_{\\text{space}}}$ is the **velocity space**\n193: 3. The total dimension is $d_{\\mathcal{M}} = 2d_{\\text{space}}$\n194: \n195: **Riemannian Structure (QSD-Averaged):**\n196: \n197: To construct a well-defined path space, we use a **frozen metric** obtained by averaging the emergent metric from Chapter 8 over the quasi-stationary distribution:\n198: \n199: $$\n200: \\bar{g}(x) := \\mathbb{E}_{S \\sim \\rho_{\\text{QSD}}}[g(x, S)]\n201: $$\n202: \n203: where $g(x, S)$ is the emergent metric from {prf:ref}`def-emergent-metric`.\n204: \n205: The manifold $\\mathcal{M}$ then carries the **static product metric**:\n206: \n207: $$\n208: g_{\\mathcal{M}} = \\bar{g}_{\\mathcal{X}} \\oplus g_{\\mathbb{R}^{d_{\\text{space}}}}\n209: $$\n210: \n211: where:\n212: - $\\bar{g}_{\\mathcal{X}}(x) = \\bar{g}(x)$ is the **QSD-averaged emergent metric** on spatial domain\n213: - $g_{\\mathbb{R}^{d_{\\text{space}}}} = I_{d_{\\text{space}}}$ is the kinetic metric (with $m=1$ in mass units)\n214: \n215: **Volume Element:**\n216: \n217: The Riemannian volume element is:\n218: \n219: $$\n220: d\\mu_{\\mathcal{M}}(x, v) = \\sqrt{\\det \\bar{g}(x)} \\, dx \\, dv\n221: $$\n222: "
     },
     {
@@ -33,6 +37,7 @@
       "content": "225: \n226: :::{prf:remark} Justification for Frozen Metric\n227: The QSD-averaged metric $\\bar{g}(x)$ provides a self-consistent background geometry for path space analysis. This averaging captures the typical geometric structure experienced by the swarm at equilibrium, while removing the explicit dependence on the instantaneous swarm configuration $S$.\n228: \n229: **Trade-off:**\n230: \n231: - **Gain:** Well-defined path space with static Riemannian structure, enabling rigorous application of calculus of variations and differential geometry\n232: - **Loss:** The metric no longer adapts dynamically during transient evolution",
       "metadata": {},
       "section": "## 1. Path Space Foundations",
+      "references": [],
       "raw_directive": "224: :::\n225: \n226: :::{prf:remark} Justification for Frozen Metric\n227: The QSD-averaged metric $\\bar{g}(x)$ provides a self-consistent background geometry for path space analysis. This averaging captures the typical geometric structure experienced by the swarm at equilibrium, while removing the explicit dependence on the instantaneous swarm configuration $S$.\n228: \n229: **Trade-off:**\n230: \n231: - **Gain:** Well-defined path space with static Riemannian structure, enabling rigorous application of calculus of variations and differential geometry\n232: - **Loss:** The metric no longer adapts dynamically during transient evolution\n233: "
     },
     {
@@ -47,6 +52,7 @@
       "content": "236: \n237: :::{prf:remark} Physical Interpretation\n238: The split $\\mathcal{M} = \\mathcal{X} \\times \\mathbb{R}^{d_{\\text{space}}}$ reflects the **Hamiltonian structure** of underdamped Langevin dynamics:\n239: - $x \\in \\mathcal{X}$: Configuration (generalized positions)\n240: - $v \\in \\mathbb{R}^{d_{\\text{space}}}$: Velocities (generalized momenta divided by mass)",
       "metadata": {},
       "section": "## 1. Path Space Foundations",
+      "references": [],
       "raw_directive": "235: :::\n236: \n237: :::{prf:remark} Physical Interpretation\n238: The split $\\mathcal{M} = \\mathcal{X} \\times \\mathbb{R}^{d_{\\text{space}}}$ reflects the **Hamiltonian structure** of underdamped Langevin dynamics:\n239: - $x \\in \\mathcal{X}$: Configuration (generalized positions)\n240: - $v \\in \\mathbb{R}^{d_{\\text{space}}}$: Velocities (generalized momenta divided by mass)\n241: "
     },
     {
@@ -65,6 +71,7 @@
         "label": "def-path-space"
       },
       "section": "## 1. Path Space Foundations",
+      "references": [],
       "raw_directive": "245: ### 1.2. Path Space: Definition and Topology\n246: \n247: :::{prf:definition} Path Space\n248: :label: def-path-space\n249: \n250: The **path space** of the Fragile Gas is:\n251: \n252: $$\n253: \\mathcal{P} := C([0,T], \\mathcal{M})\n254: $$\n255: \n256: the space of **continuous paths** $\\gamma: [0,T] \\to \\mathcal{M}$ where $[0,T]$ is a finite time interval.\n257: \n258: **Components:**\n259: \n260: Each path $\\gamma \\in \\mathcal{P}$ decomposes as:\n261: \n262: $$\n263: \\gamma(t) = (x(t), v(t)) \\quad \\text{with} \\quad x: [0,T] \\to \\mathcal{X}, \\quad v: [0,T] \\to \\mathbb{R}^d\n264: $$\n265: \n266: **Topology:**\n267: \n268: $\\mathcal{P}$ is endowed with the **supremum norm** (uniform convergence topology):\n269: \n270: $$\n271: \\|\\gamma\\|_{\\infty} := \\sup_{t \\in [0,T]} \\|\\gamma(t)\\|_{\\mathcal{M}}\n272: $$\n273: \n274: where $\\|\\cdot\\|_{\\mathcal{M}}$ is the norm induced by $g_{\\mathcal{M}}$.\n275: \n276: **Metric:**\n277: \n278: The induced metric on $\\mathcal{P}$ is:\n279: \n280: $$\n281: d_{\\infty}(\\gamma_1, \\gamma_2) := \\sup_{t \\in [0,T]} d_{\\mathcal{M}}(\\gamma_1(t), \\gamma_2(t))\n282: $$\n283: "
     },
     {
@@ -83,6 +90,7 @@
         "label": "thm-path-space-polish"
       },
       "section": "## 1. Path Space Foundations",
+      "references": [],
       "raw_directive": "285: :::\n286: \n287: :::{prf:theorem} Path Space is a Polish Space\n288: :label: thm-path-space-polish\n289: \n290: The path space $(\\mathcal{P}, d_{\\infty})$ is a **Polish space** (complete separable metric space).\n291: \n292: **Proof Sketch:**\n293: 1. **Completeness**: Arzel\u00e0-Ascoli theorem ensures Cauchy sequences of equicontinuous uniformly bounded paths converge\n294: 2. **Separability**: Piecewise linear paths with rational breakpoints form a countable dense subset\n295: "
     },
     {
@@ -97,6 +105,7 @@
       "content": "298: \n299: :::{prf:remark} Importance of Polish Property\n300: Polishness ensures:\n301: - Well-defined Wiener measure (constructed via Kolmogorov extension theorem)\n302: - Skorokhod representation theorem applies",
       "metadata": {},
       "section": "## 1. Path Space Foundations",
+      "references": [],
       "raw_directive": "297: :::\n298: \n299: :::{prf:remark} Importance of Polish Property\n300: Polishness ensures:\n301: - Well-defined Wiener measure (constructed via Kolmogorov extension theorem)\n302: - Skorokhod representation theorem applies\n303: - Tight sequences of path measures have convergent subsequences"
     },
     {
@@ -115,6 +124,7 @@
         "label": "def-wiener-measure-path-space"
       },
       "section": "## 1. Path Space Foundations",
+      "references": [],
       "raw_directive": "309: The stochastic dynamics of the Fragile Gas kinetic operator generate a **probability measure** on path space.\n310: \n311: :::{prf:definition} Wiener Measure\n312: :label: def-wiener-measure-path-space\n313: \n314: Let $W_t$ be a standard $d_{\\text{space}}$-dimensional Brownian motion starting at $0$. The **Wiener measure** $\\mathcal{W}$ on $\\mathcal{P}_W := C([0,T], \\mathbb{R}^{d_{\\text{space}}})$ is the induced probability measure:\n315: \n316: $$\n317: \\mathcal{W}(A) := \\mathbb{P}(W \\in A) \\quad \\text{for Borel sets } A \\subset \\mathcal{P}_W\n318: $$\n319: \n320: **Finite-Dimensional Distributions:**\n321: \n322: For any $0 \\leq t_1 < t_2 < \\cdots < t_n \\leq T$, the joint distribution is:\n323: \n324: $$\n325: (W_{t_1}, W_{t_2} - W_{t_1}, \\ldots, W_{t_n} - W_{t_{n-1}}) \\sim \\prod_{i=1}^n \\mathcal{N}(0, (t_i - t_{i-1}) I_{d_{\\text{space}}})\n326: $$\n327: \n328: **Support:**\n329: "
     },
     {
@@ -133,6 +143,7 @@
         "label": "prop-kinetic-operator-path-measure"
       },
       "section": "## 1. Path Space Foundations",
+      "references": [],
       "raw_directive": "331: :::\n332: \n333: :::{prf:proposition} Law of the Kinetic Operator\n334: :label: prop-kinetic-operator-path-measure\n335: \n336: The kinetic operator from Chapter 4 generates a path measure $\\mathbb{P}_{\\text{kin}}$ on $\\mathcal{P}$ given by the solution to:\n337: \n338: $$\n339: \\begin{cases}\n340: dx_t = v_t \\, dt \\\\\n341: dv_t = F(x_t) dt - \\gamma v_t dt + \\sqrt{2\\gamma T} \\, dW_t\n342: \\end{cases}\n343: $$\n344: \n345: where $F(x) = -\\nabla U_{\\text{eff}}(x)$ is the force from the effective potential, $T = \\sigma_v^2/\\gamma$ is the effective temperature, and $\\sqrt{2\\gamma T} = \\sqrt{2}\\sigma_v$ is the noise amplitude.\n346: \n347: **Regularity Assumptions:**\n348: \n349: For the SDE to have a unique strong solution and for Girsanov's theorem to apply, we require:\n350: \n351: 1. **Global Lipschitz continuity**: There exists $L > 0$ such that for all $x, y \\in \\mathcal{X}$:\n352: \n353: $$\n354: \\|\\nabla U_{\\text{eff}}(x) - \\nabla U_{\\text{eff}}(y)\\| \\leq L \\|x - y\\|\n355: $$\n356: \n357: 2. **Linear growth**: There exist constants $C_1, C_2 > 0$ such that:\n358: \n359: $$\n360: \\|\\nabla U_{\\text{eff}}(x)\\| \\leq C_1 \\|x\\| + C_2\n361: $$\n362: \n363: 3. **Novikov condition**: For well-defined Girsanov change of measure, the exponential martingale must be integrable:\n364: \n365: $$\n366: \\mathbb{E}\\left[\\exp\\left(\\frac{1}{2}\\int_0^T \\frac{\\|F(x_t)\\|^2}{2\\gamma T} dt\\right)\\right] < \\infty\n367: $$\n368: \n369: **Framework Connection:**\n370: \n371: These conditions are satisfied when:\n372: - The state space $\\mathcal{X}$ is bounded (confining potential), OR\n373: - The effective potential $U_{\\text{eff}}$ grows at most quadratically at infinity (ensured by `ax-qsd-log-concave` when $U_{\\text{eff}}$ is strongly convex)\n374: \n375: See Chapter 4 for verification that the Fragile Gas kinetic operator satisfies these hypotheses.\n376: \n377: **Absolutely Continuous with Respect to Wiener Measure:**\n378: \n379: Under the above regularity conditions, Girsanov's theorem (\u00d8ksendal, 2003, Theorem 8.6.6) guarantees the law $\\mathbb{P}_{\\text{kin}}$ is absolutely continuous with respect to the Wiener measure on velocity space:\n380: \n381: $$\n382: \\frac{d\\mathbb{P}_{\\text{kin}}}{d\\mathcal{W}} \\propto \\exp\\left(-S_{\\text{OM}}[\\gamma]\\right)\n383: $$\n384: \n385: where $S_{\\text{OM}}$ is the Onsager-Machlup action (defined in \u00a72). The proportionality constant is the normalization factor (partition function).\n386: "
     },
     {
@@ -151,6 +162,7 @@
         "label": "def-cameron-martin-space"
       },
       "section": "## 1. Path Space Foundations",
+      "references": [],
       "raw_directive": "392: While path space $\\mathcal{P}$ is infinite-dimensional, it has a well-defined **tangent space** at each path.\n393: \n394: :::{prf:definition} Cameron-Martin Space\n395: :label: def-cameron-martin-space\n396: \n397: The **Cameron-Martin space** $H \\subset \\mathcal{P}$ is the Hilbert space of absolutely continuous paths $h: [0,T] \\to \\mathcal{M}$ with:\n398: \n399: $$\n400: h(0) = 0 \\quad \\text{and} \\quad \\int_0^T \\|\\dot{h}(t)\\|^2_{\\mathcal{M}} dt < \\infty\n401: $$\n402: \n403: **Inner Product:**\n404: \n405: $$\n406: \\langle h_1, h_2 \\rangle_H := \\int_0^T \\langle \\dot{h}_1(t), \\dot{h}_2(t) \\rangle_{\\mathcal{M}} dt\n407: $$\n408: \n409: **Norm:**\n410: \n411: $$\n412: \\|h\\|_H := \\sqrt{\\int_0^T \\|\\dot{h}(t)\\|^2_{\\mathcal{M}} dt}\n413: $$\n414: \n415: **Tangent Space Interpretation:**\n416: \n417: $H$ is the tangent space to $\\mathcal{P}$ at any path $\\gamma$:\n418: \n419: $$\n420: T_\\gamma \\mathcal{P} = H\n421: $$\n422: \n423: **Physical Interpretation:**\n424: "
     },
     {
@@ -169,6 +181,7 @@
         "label": "thm-cameron-martin"
       },
       "section": "## 1. Path Space Foundations",
+      "references": [],
       "raw_directive": "426: :::\n427: \n428: :::{prf:theorem} Cameron-Martin Theorem\n429: :label: thm-cameron-martin\n430: \n431: Let $\\gamma$ be a Brownian path with law $\\mathcal{W}$, and let $h \\in H$ be a Cameron-Martin path. Then:\n432: \n433: $$\n434: \\gamma + h \\sim \\mathcal{W}_h\n435: $$\n436: \n437: where $\\mathcal{W}_h$ is absolutely continuous with respect to $\\mathcal{W}$:\n438: \n439: $$\n440: \\frac{d\\mathcal{W}_h}{d\\mathcal{W}} = \\exp\\left(\\int_0^T \\langle \\dot{h}(t), d\\gamma(t) \\rangle - \\frac{1}{2}\\|h\\|_H^2\\right)\n441: $$\n442: \n443: **Consequence:**\n444: \n445: Deterministic shifts in Cameron-Martin directions yield equivalent measures (up to a Radon-Nikodym derivative). This is the foundation of the Girsanov theorem used in stochastic optimal control.\n446: "
     },
     {
@@ -187,6 +200,9 @@
         "label": "def-path-sobolev-spaces"
       },
       "section": "## 1. Path Space Foundations",
+      "references": [
+        "def-cameron-martin-space"
+      ],
       "raw_directive": "452: For variational calculus, we need differentiable paths.\n453: \n454: :::{prf:definition} Path Sobolev Spaces (Manifold-Valued)\n455: :label: def-path-sobolev-spaces\n456: \n457: For paths taking values in a Riemannian manifold $(\\mathcal{M}, g)$, we define Sobolev spaces using **covariant derivatives** along the path.\n458: \n459: **Notation:**\n460: - Let $\\nabla_t$ denote the covariant derivative along a path $\\gamma(t)$ with respect to the Levi-Civita connection on $\\mathcal{M}$\n461: - For a vector field $V(t) \\in T_{\\gamma(t)}\\mathcal{M}$ along $\\gamma$, $\\nabla_t V$ is its covariant derivative\n462: \n463: **Definition:**\n464: \n465: For $k \\geq 1$, the **$k$-th order Sobolev space** of $\\mathcal{M}$-valued paths is:\n466: \n467: $$\n468: W^{k,2}([0,T], \\mathcal{M}) := \\left\\{ \\gamma: [0,T] \\to \\mathcal{M} \\text{ absolutely continuous} : \\nabla_t^j \\dot{\\gamma} \\in L^2([0,T], T\\mathcal{M}), \\, j = 0, \\ldots, k-1 \\right\\}\n469: $$\n470: \n471: where:\n472: - $\\dot{\\gamma}(t) \\in T_{\\gamma(t)}\\mathcal{M}$ is the velocity vector (exists a.e. for absolutely continuous paths)\n473: - $\\nabla_t^j$ denotes $j$-fold covariant differentiation along $\\gamma$\n474: \n475: **Norm:**\n476: \n477: $$\n478: \\|\\gamma\\|_{W^{k,2}}^2 := \\int_0^T \\|\\gamma(t)\\|_g^2 dt + \\sum_{j=1}^k \\int_0^T \\|\\nabla_t^j \\dot{\\gamma}(t)\\|_g^2 dt\n479: $$\n480: \n481: where $\\|\\cdot\\|_g$ is the Riemannian metric on $\\mathcal{M}$.\n482: \n483: **Special Case: Euclidean Space $\\mathcal{M} = \\mathbb{R}^d$**\n484: \n485: When $\\mathcal{M} = \\mathbb{R}^d$ with the flat metric, covariant derivatives reduce to ordinary derivatives:\n486: \n487: $$\n488: W^{k,2}([0,T], \\mathbb{R}^d) = \\left\\{ \\gamma \\in L^2([0,T], \\mathbb{R}^d) : \\gamma^{(j)} \\in L^2([0,T], \\mathbb{R}^d), \\, j = 1, \\ldots, k \\right\\}\n489: $$\n490: \n491: $$\n492: \\|\\gamma\\|_{W^{k,2}}^2 = \\sum_{j=0}^k \\int_0^T \\|\\gamma^{(j)}(t)\\|^2 dt\n493: $$\n494: \n495: **Connection to Cameron-Martin Space:**\n496: \n497: The Cameron-Martin space {prf:ref}`def-cameron-martin-space` is the Sobolev space with zero initial condition:\n498: \n499: $$\n500: H = W^{1,2}_0([0,T], \\mathcal{M}) := \\{ \\gamma \\in W^{1,2} : \\gamma(0) = 0_{\\mathcal{M}} \\}\n501: $$\n502: \n503: **Boundary Conditions:**\n504: \n505: For variational problems with fixed endpoints:\n506: \n507: $$\n508: W^{k,2}_{x_0,x_T}([0,T], \\mathcal{M}) := \\{ \\gamma \\in W^{k,2} : \\gamma(0) = x_0, \\, \\gamma(T) = x_T \\}\n509: $$\n510: \n511: :::{note}\n512: **Coordinate-Free Formulation:** The covariant derivative definition ensures the Sobolev space is **coordinate-independent** and intrinsic to the manifold geometry. In local coordinates $(U, \\varphi)$ around a point on $\\gamma$, the covariant derivative involves Christoffel symbols:\n513: \n514: $$\n515: \\nabla_t V^i = \\frac{dV^i}{dt} + \\Gamma^i_{jk} \\dot{\\gamma}^j V^k\n516: $$\n517: "
     },
     {
@@ -201,6 +217,7 @@
       "content": "523: \n524: :::{prf:remark} Sobolev Embedding\n525: By Sobolev embedding theorems:\n526: \n527: $$\n528: W^{k,2}([0,T], \\mathcal{M}) \\hookrightarrow C^{k-1}([0,T], \\mathcal{M}) \\quad \\text{for } k \\geq 2\n529: $$",
       "metadata": {},
       "section": "## 1. Path Space Foundations",
+      "references": [],
       "raw_directive": "522: :::\n523: \n524: :::{prf:remark} Sobolev Embedding\n525: By Sobolev embedding theorems:\n526: \n527: $$\n528: W^{k,2}([0,T], \\mathcal{M}) \\hookrightarrow C^{k-1}([0,T], \\mathcal{M}) \\quad \\text{for } k \\geq 2\n529: $$\n530: "
     }
   ],

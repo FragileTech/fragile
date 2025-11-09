@@ -19,6 +19,7 @@
         "label": "prop-velocity-gradient-uniform"
       },
       "section": "## 3. Bounded Log-Derivatives via Bernstein Method (R4, R5)",
+      "references": [],
       "raw_directive": "513: ### 3.2. Velocity Gradient Bound (R4 - Velocity Part)\n514: \n515: :::{prf:proposition} Uniform Velocity Gradient Bound\n516: :label: prop-velocity-gradient-uniform\n517: \n518: Under Assumptions A1-A4 with $U \\in C^3(\\mathcal{X})$ (bounded $\\nabla^2 U$, $\\nabla^3 U$), there exists $C_v < \\infty$ such that:\n519: \n520: $$\n521: |\\nabla_v \\log \\rho_\\infty(x,v)| \\le C_v\n522: $$\n523: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "prop-complete-gradient-bounds"
       },
       "section": "## 3. Bounded Log-Derivatives via Bernstein Method (R4, R5)",
+      "references": [],
       "raw_directive": "855: ### 3.3. Spatial Gradient and Laplacian Bounds (R4/R5)\n856: \n857: :::{prf:proposition} Complete Gradient and Laplacian Bounds\n858: :label: prop-complete-gradient-bounds\n859: \n860: Under Assumptions A1-A4 with $U \\in C^3(\\mathcal{X})$, there exist constants $C_x, C_\\Delta < \\infty$ such that:\n861: \n862: $$\n863: |\\nabla_x \\log \\rho_\\infty(x,v)| \\le C_x, \\quad |\\Delta_v \\log \\rho_\\infty(x,v)| \\le C_\\Delta\n864: $$\n865: "
     }
   ],

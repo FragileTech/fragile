@@ -19,6 +19,13 @@
         "label": "thm-cinf-regularity"
       },
       "section": "## 6. Main Theorem: C\u221e Regularity",
+      "references": [
+        "assump-cinf-primitives",
+        "thm-c1-established-cinf",
+        "thm-c4-established-cinf",
+        "thm-inductive-step-cinf",
+        "lem-telescoping-all-orders-cinf"
+      ],
       "raw_directive": "695: Combining base cases and inductive step:\n696: \n697: :::{prf:theorem} C\u221e Regularity of the Fitness Potential\n698: :label: thm-cinf-regularity\n699: \n700: Under Assumption {prf:ref}`assump-cinf-primitives` (C\u221e regularity of primitives), the \u03c1-localized fitness potential V_fit[f_k, \u03c1](x_i) is **infinitely differentiable** (smooth) with **k-uniform** and **N-uniform** bounds:\n701: \n702: $$\n703: \\|\\nabla^m_{x_i} V_{\\text{fit}}[f_k, \\rho](x_i)\\| \\leq K_{V,m}(\\rho) < \\infty \\quad \\forall m \\geq 1\n704: $$\n705: \n706: for all k \u2208 {1, ..., N}, all N \u2265 1, all \u03c1 > 0, and all swarm configurations S.\n707: \n708: Moreover, the bounds exhibit **Gevrey-1 scaling**:\n709: \n710: $$\n711: K_{V,m}(\\rho) = O(m! \\cdot \\rho^{-m}) \\quad \\text{as } \\rho \\to 0\n712: $$\n713: \n714: with proportionality constant C(\u03c1_0) depending on \u03c1_0 but independent of m, k, N for \u03c1 \u2264 \u03c1_0.\n715: \n716: **Proof**:\n717: \n718: **Base cases**: Theorems {prf:ref}`thm-c1-established-cinf` through {prf:ref}`thm-c4-established-cinf` establish V_fit \u2208 C^m for m \u2208 {1, 2, 3, 4} with K_{V,m}(\u03c1) = O(\u03c1^{-m}).\n719: \n720: **Inductive step**: Theorem {prf:ref}`thm-inductive-step-cinf` proves C^m \u2192 C^{m+1} for all m \u2265 4 with K_{V,m+1}(\u03c1) = O((m+1)! \u00b7 \u03c1^{-(m+1)}).\n721: "
     },
     {
@@ -37,6 +44,7 @@
         "label": "cor-derivatives-continuous-cinf"
       },
       "section": "## 6. Main Theorem: C\u221e Regularity",
+      "references": [],
       "raw_directive": "723: :::\n724: \n725: :::{prf:corollary} Continuity of All Derivatives\n726: :label: cor-derivatives-continuous-cinf\n727: \n728: All derivatives \u2207^m V_fit (m \u2265 1) are continuous functions of (x_i, S, \u03c1).\n729: "
     },
     {
@@ -55,6 +63,9 @@
         "label": "cor-compact-bounds-cinf"
       },
       "section": "## 6. Main Theorem: C\u221e Regularity",
+      "references": [
+        "thm-cinf-regularity"
+      ],
       "raw_directive": "731: :::\n732: \n733: :::{prf:corollary} Uniform Bounds on Compact Sets\n734: :label: cor-compact-bounds-cinf\n735: \n736: For any compact K \u2286 X and any \u03c1_min \u2264 \u03c1 \u2264 \u03c1_max:\n737: \n738: $$\n739: \\sup_{x_i \\in K, S, \\rho \\in [\\rho_{\\min}, \\rho_{\\max}]} \\|\\nabla^m V_{\\text{fit}}\\| \\leq C(K, \\rho_{\\min}, \\rho_{\\max}, m) < \\infty\n740: $$\n741: \n742: k-uniform and N-uniform.\n743: "
     }
   ],

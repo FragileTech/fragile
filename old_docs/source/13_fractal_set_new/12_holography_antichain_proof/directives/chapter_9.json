@@ -19,6 +19,11 @@
         "label": "cor-area-law-unconditional"
       },
       "section": "## 7. Application to Holographic Principle",
+      "references": [
+        "thm-antichain-surface-main",
+        "thm-area-law-holography",
+        "conj-antichain-surface"
+      ],
       "raw_directive": "1786: ### 7.1. Informational Area Law (Now Unconditional)\n1787: \n1788: :::{prf:corollary} Informational Area Law (Proven)\n1789: :label: cor-area-law-unconditional\n1790: \n1791: At QSD with **uniform fitness** $V_{\\text{fit}} = V_0$ (marginal-stability regime), the informational geometry (IG) entropy and CST area are proportional:\n1792: \n1793: $$\n1794: S_{\\text{IG}}(A) = \\frac{\\text{Area}_{\\text{CST}}(\\gamma_A)}{4G_N}\n1795: $$\n1796: \n1797: where:\n1798: - $S_{\\text{IG}}(A) = H[\\mathcal{A} : \\bar{\\mathcal{A}}]$ is the IG cross-entropy\n1799: - $\\text{Area}_{\\text{CST}}(\\gamma_A) = |\\gamma_A| / \\rho_0$ is the CST discrete area\n1800: - $G_N$ is Newton's constant (emergent from parameters)\n1801: \n1802: **Source**: This follows immediately from {prf:ref}`thm-antichain-surface-main` and {prf:ref}`thm-area-law-holography` in {doc}`12_holography.md`.\n1803: "
     },
     {
@@ -37,6 +42,12 @@
         "label": "rem-holography-implications"
       },
       "section": "## 7. Application to Holographic Principle",
+      "references": [
+        "thm-antichain-surface-main",
+        "thm-first-law-holography",
+        "thm-einstein-emergent",
+        "thm-ads-cft-main"
+      ],
       "raw_directive": "1807: ### 7.2. Connection to AdS/CFT Correspondence\n1808: \n1809: :::{prf:remark} Implications for Holography Derivation\n1810: :label: rem-holography-implications\n1811: \n1812: The antichain-surface correspondence ({prf:ref}`thm-antichain-surface-main`) completes the **algorithmic derivation of holography**:\n1813: \n1814: **1. Area Law** (now proven): $S_{\\text{IG}}(A) = \\text{Area}(\\partial A) / (4G_N)$\n1815: \n1816: **2. First Law** ({prf:ref}`thm-first-law-holography` in {doc}`12_holography.md`): $\\delta S_{\\text{IG}} = \\beta \\delta E_{\\text{swarm}}$\n1817: \n1818: **3. Einstein Equations** ({prf:ref}`thm-einstein-emergent` in {doc}`12_holography.md`): Follow from thermodynamics via Jacobson's method\n1819: \n1820: **4. AdS/CFT** ({prf:ref}`thm-ads-cft-main` in {doc}`12_holography.md`): Bulk gravity = boundary CFT\n1821: \n1822: All four components are now **rigorously established** starting from the Fragile Gas axioms.\n1823: \n1824: **Next step**: The remaining task is to prove:\n1825: - Lorentz covariance emerges from QSD-Riemannian volume measure \u2705 (already done in {doc}`12_holography.md`)\n1826: - CFT structure from n-point functions \u2705 (already done in {doc}`../21_conformal_fields.md`)"
     }
   ],

@@ -19,6 +19,7 @@
         "label": "thm-composition-standalone"
       },
       "section": "## Section 3: Composition",
+      "references": [],
       "raw_directive": "4789: ## Section 3: Composition\n4790: \n4791: :::{prf:theorem} Composition of Kinetic and Cloning Operators\n4792: :label: thm-composition-standalone\n4793: \n4794: For the composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{clone}} \\circ \\Psi_{\\text{kin}}$:\n4795: \n4796: $$\n4797: D_{\\text{KL}}(\\mu_{t+1} \\| \\pi) \\leq [1 - \\tau(\\alpha_{\\text{kin}} + \\beta_{\\text{clone}})] D_{\\text{KL}}(\\mu_t \\| \\pi) + C_{\\text{total}} + O(\\tau^2)\n4798: $$\n4799: \n4800: where:\n4801: $$\n4802: C_{\\text{total}} = C_{\\text{ent}} + O(e^{-\\kappa \\delta^2})\n4803: $$"
     },
     {
@@ -37,6 +38,10 @@
         "label": "proof-composition-standalone"
       },
       "section": "## Section 3: Composition",
+      "references": [
+        "thm-kinetic-lsi-standalone",
+        "lem-cloning-contraction-standalone"
+      ],
       "raw_directive": "4805: :::\n4806: \n4807: :::{prf:proof}\n4808: :label: proof-composition-standalone\n4809: \n4810: **Step 1**: Apply kinetic operator:\n4811: \n4812: $$\n4813: \\mu_t \\xrightarrow{\\Psi_{\\text{kin}}} \\mu_{t+1/2}\n4814: $$\n4815: \n4816: By Theorem {prf:ref}`thm-kinetic-lsi-standalone`:\n4817: \n4818: $$\n4819: D_{\\text{KL}}(\\mu_{t+1/2} \\| \\pi) \\leq (1 - \\alpha_{\\text{kin}} \\tau) D_{\\text{KL}}(\\mu_t \\| \\pi) + O(\\tau^2)\n4820: $$\n4821: \n4822: **Step 2**: Apply cloning operator:\n4823: \n4824: $$\n4825: \\mu_{t+1/2} \\xrightarrow{\\Psi_{\\text{clone}}} \\mu_{t+1}\n4826: $$\n4827: \n4828: By Lemma {prf:ref}`lem-cloning-contraction-standalone`:\n4829: \n4830: $$\n4831: D_{\\text{KL}}(\\mu_{t+1} \\| \\pi) \\leq (1 - \\tau \\beta_{\\text{clone}}) D_{\\text{KL}}(\\mu_{t+1/2} \\| \\pi) + C_{\\text{ent}} + O(e^{-\\kappa \\delta^2}) + O(\\tau^2)\n4832: $$\n4833: \n4834: **Step 3**: Compose:\n4835: \n4836: $$\n4837: \\begin{aligned}\n4838: D_{\\text{KL}}(\\mu_{t+1} \\| \\pi) &\\leq (1 - \\tau \\beta_{\\text{clone}}) [(1 - \\alpha_{\\text{kin}} \\tau) D_{\\text{KL}}(\\mu_t \\| \\pi) + O(\\tau^2)] + C_{\\text{ent}} + O(e^{-\\kappa \\delta^2}) + O(\\tau^2) \\\\\n4839: &= (1 - \\tau \\beta_{\\text{clone}})(1 - \\alpha_{\\text{kin}} \\tau) D_{\\text{KL}}(\\mu_t \\| \\pi) + C_{\\text{total}} + O(\\tau^2) \\\\\n4840: &= [1 - \\tau(\\alpha_{\\text{kin}} + \\beta_{\\text{clone}}) + \\tau^2 \\alpha_{\\text{kin}} \\beta_{\\text{clone}}] D_{\\text{KL}}(\\mu_t \\| \\pi) + C_{\\text{total}} + O(\\tau^2) \\\\\n4841: &= [1 - \\tau(\\alpha_{\\text{kin}} + \\beta_{\\text{clone}})] D_{\\text{KL}}(\\mu_t \\| \\pi) + C_{\\text{total}} + O(\\tau^2)\n4842: \\end{aligned}\n4843: $$\n4844: \n4845: where we absorbed $\\tau^2 \\alpha_{\\text{kin}} \\beta_{\\text{clone}}$ into $O(\\tau^2)$.\n4846: \n4847: $\\square$"
     }
   ],

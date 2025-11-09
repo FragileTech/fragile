@@ -2,7 +2,7 @@
   "document_id": "18_emergent_geometry",
   "stage": "directives",
   "directive_type": "proposition",
-  "generated_at": "2025-11-08T17:16:20.272470+00:00",
+  "generated_at": "2025-11-08T23:19:38.311452+00:00",
   "count": 3,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "prop-lipschitz-diffusion"
       },
       "section": "## 3. The Emergent Geometry Framework",
+      "references": [],
       "raw_directive": "411: The diffusion tensor varies smoothly with the state.\n412: \n413: :::{prf:proposition} Lipschitz Continuity of Adaptive Diffusion\n414: :label: prop-lipschitz-diffusion\n415: \n416: The adaptive diffusion tensor is Lipschitz continuous:\n417: \n418: $$\n419: \\|\\Sigma_{\\text{reg}}(x_1, S_1) - \\Sigma_{\\text{reg}}(x_2, S_2)\\|_F \\le L_\\Sigma \\cdot d_{\\text{state}}((x_1, S_1), (x_2, S_2))\n420: $$\n421: \n422: where $\\|\\cdot\\|_F$ is the Frobenius norm, $d_{\\text{state}}$ is an appropriate state-space metric, and $L_\\Sigma$ depends on:\n423: - The Lipschitz constant of the fitness Hessian $\\nabla^2 V_{\\text{fit}}$\n424: - The regularization $\\epsilon_\\Sigma$",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "prop-rate-metric-ellipticity"
       },
       "section": "## 8. Convergence on the Emergent Manifold (Geometric Perspective)",
+      "references": [],
       "raw_directive": "2629: :::\n2630: \n2631: :::{prf:proposition} Convergence Rate Depends on Metric Ellipticity\n2632: :label: prop-rate-metric-ellipticity\n2633: \n2634: The convergence rate $\\kappa_{\\text{total}}$ depends on the **ellipticity constants** of the emergent metric:\n2635: \n2636: $$\n2637: \\kappa_{\\text{total}} = O(\\min\\{\\gamma \\tau, \\kappa_x, c_{\\min}\\})\n2638: $$\n2639: \n2640: where $c_{\\min} = \\epsilon_\\Sigma / (H_{\\max} + \\epsilon_\\Sigma)$ is the lower bound on the eigenvalues of $D_{\\text{reg}} = g_{\\text{emergent}}^{-1}$.\n2641: \n2642: **Interpretation**:\n2643: - **Well-conditioned manifold** ($H_{\\max} \\approx \\epsilon_\\Sigma$): $c_{\\min} \\approx \\epsilon_\\Sigma / 2$ → fast convergence\n2644: - **Ill-conditioned manifold** ($H_{\\max} \\gg \\epsilon_\\Sigma$): $c_{\\min} \\approx \\epsilon_\\Sigma / H_{\\max}$ → slower convergence (but still positive!)\n2645: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "prop-geodesics-fitness"
       },
       "section": "## 11. Explicit Derivation of the Emergent Metric from Algorithmic Parameters",
+      "references": [],
       "raw_directive": "3273: :::\n3274: \n3275: :::{prf:proposition} Geodesics Favor High-Fitness Regions\n3276: :label: prop-geodesics-fitness\n3277: \n3278: The geodesics of the emergent metric $g(x, S)$ are **biased toward high-fitness regions**. Specifically:\n3279: \n3280: 1. **Shorter distances in high-fitness regions:** For two points $x_1, x_2 \\in \\mathcal{X}$, the Riemannian distance:\n3281: \n3282: $$\n3283: d_g(x_1, x_2) = \\inf_{\\gamma: x_1 \\to x_2} \\int_0^1 \\sqrt{g_{ab}(\\gamma(t), S) \\dot{\\gamma}^a(t) \\dot{\\gamma}^b(t)} \\, dt\n3284: $$\n3285: \n3286: is **smaller** when the path passes through regions of high $V_{\\text{fit}}$ (low curvature, low metric eigenvalues).\n3287: \n3288: 2. **Geodesics avoid high-curvature regions:** The metric eigenvalues are largest where the Hessian $H$ has large positive eigenvalues, which occurs where the fitness landscape is **most convexly curved**. Geodesics bend away from these regions of high metric density to minimize path length.\n3289: \n3290: 3. **Connection to natural gradient:** The inverse metric $g^{-1} = D_{\\text{reg}}$ defines the **natural gradient**:\n3291: \n3292: $$\n3293: \\nabla^{\\text{nat}} V_{\\text{fit}} = g^{-1} \\nabla V_{\\text{fit}}\n3294: $$\n3295: ",
       "_registry_context": {
         "stage": "directives",

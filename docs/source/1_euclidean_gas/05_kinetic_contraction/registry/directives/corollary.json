@@ -2,7 +2,7 @@
   "document_id": "05_kinetic_contraction",
   "stage": "directives",
   "directive_type": "corollary",
-  "generated_at": "2025-11-08T17:16:20.147567+00:00",
+  "generated_at": "2025-11-08T23:19:38.245947+00:00",
   "count": 3,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "cor-net-velocity-contraction"
       },
       "section": "## 5. Velocity Variance Dissipation via Langevin Friction",
+      "references": [],
       "raw_directive": "2289: ### 5.5. Balancing with Cloning Expansion\n2290: \n2291: :::{prf:corollary} Net Velocity Variance Contraction for Composed Operator\n2292: :label: cor-net-velocity-contraction\n2293: \n2294: From 03_cloning.md, the cloning operator satisfies:\n2295: \n2296: $$\n2297: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n2298: \n2299: $$\n2300: \n2301: Combining with the kinetic dissipation:\n2302: \n2303: $$\n2304: \\mathbb{E}_{\\text{clone} \\circ \\text{kin}}[\\Delta V_{\\text{Var},v}] \\leq -2\\gamma V_{\\text{Var},v} \\tau + (d\\sigma_{\\max}^2 \\tau + C_v)\n2305: \n2306: $$\n2307: \n2308: **For net contraction, we need:**\n2309: \n2310: $$\n2311: 2\\gamma V_{\\text{Var},v} \\tau > d\\sigma_{\\max}^2 \\tau + C_v\n2312: \n2313: $$\n2314: \n2315: **This holds when:**\n2316: \n2317: $$\n2318: V_{\\text{Var},v} > \\frac{d\\sigma_{\\max}^2}{2\\gamma} + \\frac{C_v}{2\\gamma\\tau}\n2319: \n2320: $$\n2321: \n2322: **Equilibrium bound:**\n2323: At equilibrium where $\\mathbb{E}[\\Delta V_{\\text{Var},v}] = 0$:\n2324: \n2325: $$\n2326: V_{\\text{Var},v}^{\\text{eq}} \\approx \\frac{d\\sigma_{\\max}^2}{2\\gamma} + \\frac{C_v}{2\\gamma\\tau}\n2327: \n2328: $$\n2329: \n2330: **Interpretation:** The equilibrium velocity variance is determined by the balance between:\n2331: - Thermal noise injection ($\\sigma_{\\max}^2$)\n2332: - Friction dissipation ($\\gamma$)",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "cor-net-positional-contraction"
       },
       "section": "## 6. Positional Diffusion and Bounded Expansion",
+      "references": [],
       "raw_directive": "2697: ### 6.5. Balancing with Cloning Contraction\n2698: \n2699: :::{prf:corollary} Net Positional Variance Contraction for Composed Operator\n2700: :label: cor-net-positional-contraction\n2701: \n2702: From 03_cloning.md Theorem 10.3.1, the cloning operator satisfies:\n2703: \n2704: $$\n2705: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x\n2706: \n2707: $$\n2708: \n2709: Combining with kinetic expansion:\n2710: \n2711: $$\n2712: \\mathbb{E}_{\\text{clone} \\circ \\text{kin}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + (C_x + C_{\\text{kin},x}\\tau)\n2713: \n2714: $$\n2715: \n2716: **For net contraction:**\n2717: \n2718: $$\n2719: \\kappa_x V_{\\text{Var},x} > C_x + C_{\\text{kin},x}\\tau\n2720: \n2721: $$\n2722: \n2723: **This holds when:**\n2724: \n2725: $$\n2726: V_{\\text{Var},x} > \\frac{C_x + C_{\\text{kin},x}\\tau}{\\kappa_x}\n2727: \n2728: $$\n2729: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "cor-total-boundary-safety"
       },
       "section": "## 7. Boundary Potential Contraction via Confining Potential",
+      "references": [],
       "raw_directive": "3174: ### 7.5. Layered Safety Architecture\n3175: \n3176: :::{prf:corollary} Total Boundary Safety from Dual Mechanisms\n3177: :label: cor-total-boundary-safety\n3178: \n3179: Combining the Safe Harbor mechanism from cloning (03_cloning.md, Ch 11) with the confining potential:\n3180: \n3181: **From cloning:**\n3182: \n3183: $$\n3184: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\leq -\\kappa_b W_b + C_b\n3185: \n3186: $$\n3187: \n3188: **From kinetics:**\n3189: \n3190: $$\n3191: \\mathbb{E}_{\\text{kin}}[\\Delta W_b] \\leq -\\kappa_{\\text{pot}} W_b \\tau + C_{\\text{pot}}\\tau\n3192: \n3193: $$\n3194: \n3195: **Combined:**\n3196: \n3197: $$\n3198: \\mathbb{E}_{\\text{total}}[\\Delta W_b] \\leq -(\\kappa_b + \\kappa_{\\text{pot}}\\tau) W_b + (C_b + C_{\\text{pot}}\\tau)\n3199: \n3200: $$\n3201: ",
       "_registry_context": {
         "stage": "directives",

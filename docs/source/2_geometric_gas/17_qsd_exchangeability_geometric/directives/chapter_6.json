@@ -19,6 +19,7 @@
         "label": "thm-lsi-geometric"
       },
       "section": "## 6. N-Uniform LSI for Geometric Gas",
+      "references": [],
       "raw_directive": "277: ### 6.1. LSI with Viscous Coupling\n278: \n279: :::{prf:theorem} N-Uniform LSI for Geometric Gas QSD\n280: :label: thm-lsi-geometric\n281: \n282: The QSD $\\pi_N$ of the Geometric Gas satisfies a Log-Sobolev inequality:\n283: \n284: $$\n285: D_{\\text{KL}}(\\nu \\| \\pi_N) \\leq C_{\\text{LSI}}(\\rho) \\cdot I(\\nu \\| \\pi_N)\n286: $$\n287: \n288: where the LSI constant $C_{\\text{LSI}}(\\rho)$ is:\n289: - **Independent of $N$** for all $N \\geq 2$\n290: - **Independent of $\\nu$** for all $\\nu \\geq 0$ (viscous coupling is unconditionally stable)"
     }
   ],

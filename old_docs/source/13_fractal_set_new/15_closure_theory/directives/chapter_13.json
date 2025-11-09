@@ -19,6 +19,9 @@
         "label": "def-observable-dependent-closure"
       },
       "section": "## 13. Generalized Closure Measurement Theory",
+      "references": [
+        "def-epsilon-lumpability-scutoid"
+      ],
       "raw_directive": "2882: So far, closure has been defined in terms of **all possible future observations**. In practice, we care about specific observables.\n2883: \n2884: :::{prf:definition} Observable-Dependent Computational Closure\n2885: :label: def-observable-dependent-closure\n2886: \n2887: Let $\\mathcal{O}: \\Omega \\to \\mathbb{R}$ be a physical observable, and $\\pi: \\Omega_{\\text{micro}} \\to \\Omega_{\\text{macro}}$ a coarse-graining.\n2888: \n2889: **$\\mathcal{O}$-Computational Closure:** The coarse-graining satisfies **computational closure with respect to $\\mathcal{O}$** if:\n2890: \n2891: $$\n2892: \\mathbb{E}[\\mathcal{O}(X_{k+\\ell}) \\mid H_k^{\\text{macro}}] = \\mathbb{E}[\\mathcal{O}(X_{k+\\ell}) \\mid H_k^{\\text{micro}} \\text{ projected to macro}]\n2893: $$\n2894: \n2895: for all future times $\\ell > 0$, where $H_k$ denotes the history up to time $k$.\n2896: \n2897: **Error bound:**\n2898: \n2899: $$\n2900: \\left| \\mathbb{E}[\\mathcal{O} \\mid H_k^{\\text{macro}}] - \\mathbb{E}[\\mathcal{O} \\mid H_k^{\\text{micro}}] \\right| \\le L_{\\mathcal{O}} \\cdot \\varepsilon_{\\text{lump}}\n2901: $$\n2902: \n2903: where:\n2904: - $L_{\\mathcal{O}}$ is the Lipschitz constant of $\\mathcal{O}$"
     },
     {
@@ -37,6 +40,7 @@
         "label": "thm-observable-closure-hierarchy"
       },
       "section": "## 13. Generalized Closure Measurement Theory",
+      "references": [],
       "raw_directive": "2916: **Theorem (Observable Hierarchy):**\n2917: \n2918: :::{prf:theorem} Observable Closure Hierarchy\n2919: :label: thm-observable-closure-hierarchy\n2920: \n2921: For observables $\\mathcal{O}_1, \\mathcal{O}_2$ with Lipschitz constants $L_1 < L_2$:\n2922: \n2923: $$\n2924: \\text{If } \\mathcal{O}_2\\text{-closure holds, then } \\mathcal{O}_1\\text{-closure holds}\n2925: $$\n2926: \n2927: **Proof:** By the error bound:\n2928: \n2929: $$\n2930: \\left| \\mathbb{E}[\\mathcal{O}_1] - \\mathbb{E}[\\mathcal{O}_1^{\\text{macro}}] \\right| \\le L_1 \\varepsilon_{\\text{lump}} \\le L_2 \\varepsilon_{\\text{lump}} = \\left| \\mathbb{E}[\\mathcal{O}_2] - \\mathbb{E}[\\mathcal{O}_2^{\\text{macro}}] \\right|\n2931: $$\n2932: "
     },
     {
@@ -55,6 +59,7 @@
         "label": "alg-closure-verification"
       },
       "section": "## 13. Generalized Closure Measurement Theory",
+      "references": [],
       "raw_directive": "2942: **Practical algorithm:** Given a Fragile Gas simulation, how do we **verify** that a coarse-graining satisfies computational closure?\n2943: \n2944: :::{prf:algorithm} Multi-Scale Closure Verification\n2945: :label: alg-closure-verification\n2946: \n2947: **Input:**\n2948: - Micro-scale simulation data $\\{Z_k^{\\text{micro}}\\}_{k=0}^T$ (e.g., full swarm or Fractal Set)\n2949: - Coarse-graining map $\\pi: \\Omega_{\\text{micro}} \\to \\Omega_{\\text{macro}}$ (e.g., scutoid aggregation)\n2950: - Observable $\\mathcal{O}: \\Omega \\to \\mathbb{R}$ (e.g., scutoid fraction $\\phi$)\n2951: - Target error tolerance $\\epsilon_{\\text{tol}}$\n2952: \n2953: **Output:**\n2954: - Closure verification: YES/NO\n2955: - Error estimates: $\\{\\varepsilon_{\\text{lump}}(b)\\}$ for different block sizes $b$\n2956: - Recommended block size $b^*$ achieving $\\varepsilon_{\\text{lump}} < \\epsilon_{\\text{tol}}$\n2957: \n2958: :::{warning}\n2959: **Computational Complexity:** Steps 4 and 5 (computing statistical complexity $C_\\mu$ and Fisher distances $d_{\\text{Fisher}}$) are **computationally intensive** and may be intractable for complex systems:\n2960: \n2961: - **Step 4:** Computing $C_\\mu = H(\\Sigma_\\varepsilon)$ requires identifying all causal states and their probabilities, which is **NP-hard** in the general case (estimating causal states from finite data is an open problem in computational mechanics).\n2962: - **Step 5:** Computing Fisher distances requires estimating high-dimensional conditional probability distributions $P(F \\mid \\sigma)$ and their KL-divergences, which suffers from the curse of dimensionality.\n2963: "
     }
   ],

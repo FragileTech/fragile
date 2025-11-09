@@ -19,6 +19,9 @@
         "label": "thm-complete-j-vanishing"
       },
       "section": "## 5. Summary and Implications",
+      "references": [
+        "thm-convergence-qsd-recall"
+      ],
       "raw_directive": "518: ## 5. Summary and Implications\n519: \n520: :::{prf:theorem} Complete Vanishing of Source at QSD\n521: :label: thm-complete-j-vanishing\n522: \n523: The full energy-momentum source term, including all contributions, vanishes at the quasi-stationary distribution:\n524: \n525: $$\n526: J^\\nu[\\mu_{\\text{QSD}}] = J^\\nu_{\\text{kin}} + J^\\nu_{\\text{adapt}} + J^\\nu_{\\text{visc}} + J^\\nu_{\\text{clone}} = 0\n527: $$\n528: \n529: **Component contributions**:\n530: - $J^\\nu_{\\text{kin}} = 0$: Exact cancellation via equipartition (friction = noise)\n531: - $J^\\nu_{\\text{adapt}} = 0$: Higher-order in $\\epsilon_F$, negligible at fitness peaks\n532: - $J^\\nu_{\\text{visc}} = 0$: Vanishes for isotropic distribution with no bulk flow\n533: - $J^\\nu_{\\text{clone}} = 0$: Balanced fluctuations average to zero\n534: \n535: **Convergence rate**: For $t \\gg \\tau_{\\text{relax}}$:\n536: \n537: $$\n538: |J^\\nu[\\mu_t]| \\leq C_J e^{-\\kappa_{\\text{QSD}} t}\n539: $$\n540: "
     }
   ],

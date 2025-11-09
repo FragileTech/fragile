@@ -2,7 +2,7 @@
   "document_id": "08_propagation_chaos",
   "stage": "directives",
   "directive_type": "corollary",
-  "generated_at": "2025-11-08T17:16:20.163484+00:00",
+  "generated_at": "2025-11-08T23:19:38.255573+00:00",
   "count": 1,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "cor-w2-convergence-thermodynamic-limit"
       },
       "section": "## **6. Justification of the Mean-Field Model: Propagation of Chaos and the Thermodynamic Limit**",
+      "references": [],
       "raw_directive": "2168: :::\n2169: \n2170: :::{prf:corollary} Wasserstein-2 Convergence in the Thermodynamic Limit\n2171: :label: cor-w2-convergence-thermodynamic-limit\n2172: \n2173: The convergence of marginals to the mean-field QSD holds in the stronger Wasserstein-2 metric:\n2174: \n2175: $$\n2176: \\lim_{N \\to \\infty} W_2(\\mu_N, \\mu_\\infty) = 0\n2177: \n2178: $$\n2179: ",
       "_registry_context": {
         "stage": "directives",

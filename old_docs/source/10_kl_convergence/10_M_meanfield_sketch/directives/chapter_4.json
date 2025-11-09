@@ -19,6 +19,7 @@
         "label": "lem-sinh-bound-global"
       },
       "section": "## PART A: Potential Energy Reduction (\ud83d\udea7 INCOMPLETE)",
+      "references": [],
       "raw_directive": "225: **Apply the global sinh inequality**:\n226: \n227: :::{prf:lemma} Sinh Inequality\n228: :label: lem-sinh-bound-global\n229: \n230: For all $z \\in \\mathbb{R}$:\n231: \n232: $$\n233: \\frac{\\sinh(z)}{z} \\geq 1\n234: $$\n235: "
     },
     {
@@ -33,6 +34,7 @@
       "content": "238: ",
       "metadata": {},
       "section": "## PART A: Potential Energy Reduction (\ud83d\udea7 INCOMPLETE)",
+      "references": [],
       "raw_directive": "237: :::\n238: \n239: :::{prf:proof}"
     }
   ],

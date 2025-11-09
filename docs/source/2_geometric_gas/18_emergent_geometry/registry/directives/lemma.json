@@ -2,7 +2,7 @@
   "document_id": "18_emergent_geometry",
   "stage": "directives",
   "directive_type": "lemma",
-  "generated_at": "2025-11-08T17:16:20.270786+00:00",
+  "generated_at": "2025-11-08T23:19:38.309474+00:00",
   "count": 4,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "lem-ito-correction-bound"
       },
       "section": "## 5. Anisotropic Kinetic Operator Analysis",
+      "references": [],
       "raw_directive": "943: Before proving the drift inequalities, we must analyze the **Itô correction term** that arises from the state-dependent diffusion tensor.\n944: \n945: :::{prf:lemma} Itô Correction Term Bound\n946: :label: lem-ito-correction-bound\n947: \n948: For the kinetic SDE with adaptive diffusion (Definition [](#def-d-kinetic-operator-adaptive)), the Itô correction term in the drift is:\n949: \n950: $$\n951: b_{\\text{correction}}(x, v, S) = \\frac{1}{2}\\sum_{j=1}^d \\left( D_x \\Sigma_{\\text{reg}}^{(\\cdot,j)}(x,S) \\right) \\Sigma_{\\text{reg}}^{(\\cdot,j)}(x,S)\n952: $$\n953: \n954: where $\\Sigma_{\\text{reg}}^{(\\cdot,j)}$ is the $j$-th column of $\\Sigma_{\\text{reg}}$ and $D_x$ is the Jacobian with respect to $x$.\n955: \n956: This term satisfies the bound:\n957: \n958: $$\n959: \\|b_{\\text{correction}}(x, v, S)\\| \\le C_{\\text{Itô}} := \\frac{1}{2} d \\cdot \\|\\nabla_x \\Sigma_{\\text{reg}}\\|_\\infty \\cdot c_{\\max}^{1/2}\n960: $$\n961: \n962: where:\n963: - $\\|\\nabla_x \\Sigma_{\\text{reg}}\\|_\\infty$ is the supremum of the operator norm of the Jacobian of $\\Sigma_{\\text{reg}}$ over the state space\n964: - $c_{\\max}^{1/2} = 1/\\sqrt{\\epsilon_\\Sigma}$ is the upper bound on $\\|\\Sigma_{\\text{reg}}\\|_{\\text{op}}$\n965: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,9 @@
         "label": "lem-companion-flux-balance"
       },
       "section": "## 13. Companion Selection Flux Balance at Stationarity",
+      "references": [
+        "thm-qsd-spatial-riemannian-volume"
+      ],
       "raw_directive": "3829: This section proves a critical result connecting the microscopic companion selection dynamics to the emergent Riemannian geometry at the quasi-stationary distribution (QSD).\n3830: \n3831: :::{prf:lemma} Companion Flux Balance at QSD\n3832: :label: lem-companion-flux-balance\n3833: \n3834: At the quasi-stationary distribution (QSD), the companion selection flux satisfies a geometric balance condition. For any walker $i$ in the alive set:\n3835: \n3836: $$\n3837: \\sum_{j \\in \\mathcal{A}, j \\neq i} P_{\\text{comp}}(i|j; S) \\cdot p_j(S) = p_i(S) \\cdot \\sqrt{\\frac{\\det g(x_i)}{\\langle \\det g \\rangle}}\n3838: $$\n3839: \n3840: where:\n3841: - $P_{\\text{comp}}(i|j; S) \\propto 1/d_{\\text{alg}}(j,i)^{2+\\nu}$ is the companion selection probability\n3842: - $p_i(S) = \\mathbb{E}_{c \\sim P_{\\text{comp}}}[\\text{clip}(S_i(c)/p_{\\max})]$ is the cloning probability\n3843: - $g(x_i)$ is the emergent Riemannian metric at position $x_i$\n3844: - $\\langle \\det g \\rangle = \\frac{1}{|\\mathcal{A}|}\\sum_{k \\in \\mathcal{A}} \\sqrt{\\det g(x_k)}$ is the mean metric determinant\n3845: \n3846: **Physical interpretation**: The left side is the **rate at which walker $i$ is selected as a companion** by all other walkers. The right side is the **rate at which walker $i$ selects companions**, weighted by the local geometric volume factor $\\sqrt{\\det g(x_i)}$.\n3847: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +75,7 @@
         "label": "lem-velocity-marginalization"
       },
       "section": "## Appendix A: Supporting Theorems",
+      "references": [],
       "raw_directive": "4088: This lemma justifies treating velocities as thermalized on the timescale of spatial dynamics.\n4089: \n4090: :::{prf:lemma} Fast Velocity Thermalization Justifies Annealed Approximation\n4091: :label: lem-velocity-marginalization\n4092: \n4093: Consider the full Langevin dynamics on phase space $(x, v) \\in \\mathcal{X} \\times \\mathbb{R}^d$. Under the assumptions of geometric ergodicity (Chapter 4), there is a **timescale separation**:\n4094: \n4095: $$\n4096: \\tau_v \\ll \\tau_x\n4097: $$\n4098: \n4099: where:\n4100: - $\\tau_v \\sim \\gamma^{-1}$: Velocity thermalization time\n4101: - $\\tau_x \\sim \\epsilon_c^{-2}$: Spatial exploration time (diffusion)\n4102: \n4103: with $\\epsilon_c = \\sqrt{T/\\gamma}$ the thermal coherence length.\n4104: ",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +101,9 @@
         "label": "lem-companion-bias-riemannian"
       },
       "section": "## Appendix A: Supporting Theorems",
+      "references": [
+        "thm-qsd-spatial-riemannian-volume"
+      ],
       "raw_directive": "4142: This lemma connects the microscopic companion selection mechanism to the macroscopic Riemannian measure.\n4143: \n4144: :::{prf:lemma} Continuum Limit via Saddle-Point Approximation\n4145: :label: lem-companion-bias-riemannian\n4146: \n4147: In the continuum limit $N \\to \\infty$ with the QSD spatial marginal given by Theorem {prf:ref}`thm-qsd-spatial-riemannian-volume`, the companion selection dynamics satisfy:\n4148: \n4149: $$\n4150: g(X) = \\prod_{i=1}^N \\sqrt{\\det g(x_i)} \\cdot \\left(1 + O(1/\\sqrt{N})\\right)\n4151: $$\n4152: \n4153: where $g(x)$ is the Riemannian metric tensor on the state space.\n4154: \n4155: **Consequence**: The corrected stationary distribution reduces to:\n4156: \n4157: $$\n4158: \\pi'(X) = \\frac{1}{Z'} \\prod_{i=1}^N \\left[\\sqrt{\\det g(x_i)} \\exp\\left(-\\beta H_{\\text{eff}}(x_i, v_i)\\right)\\right]\n4159: $$\n4160: ",
       "_registry_context": {
         "stage": "directives",

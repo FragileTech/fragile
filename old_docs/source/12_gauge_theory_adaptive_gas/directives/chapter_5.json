@@ -19,6 +19,7 @@
         "label": "thm-transition-descends"
       },
       "section": "## 5. Gauge-Invariant Dynamics",
+      "references": [],
       "raw_directive": "795: ## 5. Gauge-Invariant Dynamics\n796: \n797: :::{prf:theorem} Transition Operator Descends to Configuration Space\n798: :label: thm-transition-descends\n799: \n800: The Adaptive Gas transition operator $\\Psi: \\Sigma_N \\to \\mathcal{P}(\\Sigma_N)$ is gauge-invariant:\n801: \n802: $$\n803: \\Psi(\\sigma \\cdot \\mathcal{S}, \\cdot) = (\\sigma \\cdot)_* \\Psi(\\mathcal{S}, \\cdot)\n804: \n805: $$\n806: \n807: for all $\\sigma \\in S_N$, where $(\\sigma \\cdot)_*$ is the push-forward map on probability measures.\n808: \n809: Therefore, $\\Psi$ descends to a well-defined operator:\n810: \n811: $$\n812: \\bar{\\Psi}: \\mathcal{M}_{\\text{config}} \\to \\mathcal{P}(\\mathcal{M}_{\\text{config}})\n813: "
     },
     {
@@ -33,6 +34,7 @@
       "content": "816: ",
       "metadata": {},
       "section": "## 5. Gauge-Invariant Dynamics",
+      "references": [],
       "raw_directive": "815: :::\n816: \n817: :::{prf:proof}"
     }
   ],

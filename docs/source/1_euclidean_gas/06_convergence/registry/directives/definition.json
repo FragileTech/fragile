@@ -2,7 +2,7 @@
   "document_id": "06_convergence",
   "stage": "directives",
   "directive_type": "definition",
-  "generated_at": "2025-11-08T17:16:20.153606+00:00",
+  "generated_at": "2025-11-08T23:19:38.249365+00:00",
   "count": 8,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "def-full-lyapunov-recall"
       },
       "section": "## 3. Synergistic Composition and Foster-Lyapunov Condition",
+      "references": [],
       "raw_directive": "227: ### 3.2. The Full Lyapunov Function (Recall)\n228: \n229: :::{prf:definition} Synergistic Lyapunov Function (Recall)\n230: :label: def-full-lyapunov-recall\n231: \n232: From 03_cloning.md Definition 3.3.1:\n233: \n234: $$\n235: V_{\\text{total}}(S_1, S_2) = V_W(S_1, S_2) + c_V V_{\\text{Var}}(S_1, S_2) + c_B W_b(S_1, S_2)\n236: $$\n237: \n238: where:\n239: - $V_W = V_{\\text{loc}} + V_{\\text{struct}}$: Inter-swarm error\n240: - $V_{\\text{Var}} = V_{\\text{Var},x} + V_{\\text{Var},v}$: Intra-swarm variance\n241: - $W_b$: Boundary potential",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "def-cemetery-state"
       },
       "section": "## 4. Main Convergence Theorem and Quasi-Stationary Distribution",
+      "references": [],
       "raw_directive": "576: ### 4.2. The Cemetery State and Absorption\n577: \n578: :::{prf:definition} The Cemetery State\n579: :label: def-cemetery-state\n580: \n581: The **cemetery state** $\\dagger$ is the absorbing state where all walkers are dead:\n582: \n583: $$\\dagger := \\{(x_i, v_i, 0) : i = 1, \\ldots, N\\}$$\n584: \n585: Once the swarm enters this state, it remains there forever (no walkers to clone or evolve).\n586: \n587: **Extended State Space:**\n588: $$\\bar{\\Sigma}_N := \\Sigma_N \\cup \\{\\dagger\\}$$\n589: \n590: The Euclidean Gas is a **Markov chain on $\\bar{\\Sigma}_N$** with:\n591: - **Transient states:** All configurations with $|\\mathcal{A}(S)| \\geq 1$",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "def-qsd"
       },
       "section": "## 4. Main Convergence Theorem and Quasi-Stationary Distribution",
+      "references": [],
       "raw_directive": "611: ### 4.3. Quasi-Stationary Distributions\n612: \n613: :::{prf:definition} Quasi-Stationary Distribution (QSD)\n614: :label: def-qsd\n615: \n616: A **quasi-stationary distribution** is a probability measure $\\nu_{\\text{QSD}}$ on the alive state space $\\Sigma_N^{\\text{alive}} := \\{S : |\\mathcal{A}(S)| \\geq 1\\}$ such that:\n617: \n618: $$\n619: P(S_{t+1} \\in A \\mid S_t \\sim \\nu_{\\text{QSD}}, \\text{not absorbed}) = \\nu_{\\text{QSD}}(A)\n620: $$\n621: \n622: for all measurable sets $A \\subseteq \\Sigma_N^{\\text{alive}}$.\n623: \n624: **Intuition:** $\\nu_{\\text{QSD}}$ is the \"equilibrium conditioned on survival.\" If the swarm starts from $\\nu_{\\text{QSD}}$ and survives for one more step, it remains distributed according to $\\nu_{\\text{QSD}}$.\n625: ",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +99,7 @@
         "label": "def-complete-parameter-space"
       },
       "section": "## 6. Spectral Analysis of Parameter Coupling",
+      "references": [],
       "raw_directive": "2205: From the analysis in Chapter 7 and the cloning operator specification in 03_cloning.md, the **complete tunable parameter space** consists of:\n2206: \n2207: :::{prf:definition} Complete Parameter Space\n2208: :label: def-complete-parameter-space\n2209: \n2210: The Euclidean Gas algorithm is controlled by the parameter vector:\n2211: \n2212: $$\n2213: \\mathbf{P} = (\\lambda, \\sigma_x, \\alpha_{\\text{rest}}, \\lambda_{\\text{alg}}, \\epsilon_c, \\epsilon_d, \\gamma, \\sigma_v, \\tau, N, \\kappa_{\\text{wall}}, d_{\\text{safe}}) \\in \\mathbb{R}_{+}^{12}\n2214: $$\n2215: \n2216: where:\n2217: \n2218: **Cloning Operator Parameters:**\n2219: 1. $\\lambda \\in (0, 1]$ - **Cloning rate**: frequency of resampling events\n2220: 2. $\\sigma_x > 0$ - **Position jitter**: Gaussian noise variance added to cloned positions $x'_i = x_{c_i} + \\sigma_x \\zeta_i^x$\n2221: 3. $\\alpha_{\\text{rest}} \\in [0, 1]$ - **Restitution coefficient**: interpolates between perfectly inelastic ($\\alpha=0$) and perfectly elastic ($\\alpha=1$) velocity collisions\n2222: 4. $\\lambda_{\\text{alg}} \\geq 0$ - **Algorithmic distance weight**: controls velocity component in companion selection metric $d_{\\text{alg}}(i,j)^2 = \\|x_i - x_j\\|^2 + \\lambda_{\\text{alg}} \\|v_i - v_j\\|^2$\n2223: 5. $\\epsilon_c > 0$ - **Companion selection range**: softmax temperature for cloning companion pairing\n2224: 6. $\\epsilon_d > 0$ - **Diversity measurement range**: softmax temperature for diversity companion pairing\n2225: \n2226: **Langevin Dynamics Parameters:**\n2227: 7. $\\gamma > 0$ - **Friction coefficient**: velocity damping rate in Langevin equation\n2228: 8. $\\sigma_v > 0$ - **Velocity noise intensity**: thermal fluctuation strength\n2229: 9. $\\tau > 0$ - **Integration timestep**: BAOAB discretization parameter\n2230: \n2231: **System Parameters:**\n2232: 10. $N \\in \\mathbb{N}$ - **Swarm size**: number of walkers\n2233: 11. $\\kappa_{\\text{wall}} > 0$ - **Boundary potential stiffness**: confining force strength\n2234: 12. $d_{\\text{safe}} > 0$ - **Safe Harbor distance**: threshold for boundary danger zone\n2235: \n2236: **Landscape Parameters (given, not tunable):**\n2237: - $\\lambda_{\\min} > 0$ - minimum eigenvalue of Hessian $\\nabla^2 U(x)$\n2238: - $\\lambda_{\\max} > 0$ - maximum eigenvalue of Hessian $\\nabla^2 U(x)$",
       "_registry_context": {
         "stage": "directives",
@@ -121,6 +125,7 @@
         "label": "def-rate-sensitivity-matrix"
       },
       "section": "## 6. Spectral Analysis of Parameter Coupling",
+      "references": [],
       "raw_directive": "2333: #### 6.3.1. Rate Sensitivity Matrix $M_\\kappa$\n2334: \n2335: :::{prf:definition} Log-Sensitivity Matrix for Convergence Rates\n2336: :label: def-rate-sensitivity-matrix\n2337: \n2338: The **rate sensitivity matrix** $M_\\kappa \\in \\mathbb{R}^{4 \\times 12}$ is defined by:\n2339: \n2340: $$\n2341: (M_\\kappa)_{ij} = \\frac{\\partial \\log \\kappa_i}{\\partial \\log P_j}\\bigg|_{P_0}\n2342: $$\n2343: \n2344: where $\\kappa = (\\kappa_x, \\kappa_v, \\kappa_W, \\kappa_b)$ and $\\mathbf{P}$ is the parameter vector.\n2345: \n2346: **Physical meaning:** $(M_\\kappa)_{ij}$ is the **elasticity** of rate $i$ with respect to parameter $j$: a 1% increase in $P_j$ causes approximately $(M_\\kappa)_{ij}$% increase in $\\kappa_i$.\n2347: \n2348: **Small perturbation formula:**\n2349: \n2350: $$\n2351: \\frac{\\delta \\kappa_i}{\\kappa_i} \\approx \\sum_{j=1}^{12} (M_\\kappa)_{ij} \\frac{\\delta P_j}{P_j} + O(\\|\\delta \\mathbf{P}\\|^2)",
       "_registry_context": {
         "stage": "directives",
@@ -146,6 +151,7 @@
         "label": "def-equilibrium-sensitivity-matrix"
       },
       "section": "## 6. Spectral Analysis of Parameter Coupling",
+      "references": [],
       "raw_directive": "2506: Similarly, we construct the matrix for equilibrium constants:\n2507: \n2508: :::{prf:definition} Equilibrium Constant Sensitivity Matrix\n2509: :label: def-equilibrium-sensitivity-matrix\n2510: \n2511: $$\n2512: (M_C)_{ij} = \\frac{\\partial \\log C_i}{\\partial \\log P_j}\\bigg|_{P_0}\n2513: $$\n2514: ",
       "_registry_context": {
         "stage": "directives",
@@ -171,6 +177,7 @@
         "label": "def-parameter-optimization"
       },
       "section": "## 6. Spectral Analysis of Parameter Coupling",
+      "references": [],
       "raw_directive": "2707: #### 6.5.1. Optimization Problem Formulation\n2708: \n2709: :::{prf:definition} Parameter Optimization Problem\n2710: :label: def-parameter-optimization\n2711: \n2712: $$\n2713: \\max_{\\mathbf{P} \\in \\mathbb{R}_{+}^{12}} \\kappa_{\\text{total}}(\\mathbf{P}) = \\max_{\\mathbf{P}} \\left[\\min(\\kappa_x, \\kappa_v, \\kappa_W, \\kappa_b) \\cdot (1 - \\epsilon_{\\text{coupling}}(\\mathbf{P}))\\right]\n2714: $$\n2715: \n2716: **Subject to:**\n2717: \n2718: 1. **Stability constraints:**\n2719:    $$\n2720:    \\gamma \\tau < 0.5, \\quad \\sqrt{\\lambda_{\\max}} \\tau < 1.0\n2721:    $$\n2722: \n2723: 2. **Feasibility constraints:**\n2724:    $$\n2725:    d_{\\text{safe}} > 3\\sqrt{C_x/\\kappa_x}, \\quad \\text{all } P_i > 0\n2726:    $$\n2727: \n2728: 3. **Cost budget** (optional):\n2729:    $$\n2730:    N \\leq N_{\\max}, \\quad \\lambda \\leq \\lambda_{\\max}\n2731:    $$\n2732: \n2733: 4. **Physical bounds:**\n2734:    $$\n2735:    \\alpha_{\\text{rest}} \\in [0, 1]",
       "_registry_context": {
         "stage": "directives",
@@ -196,6 +203,7 @@
         "label": "def-pareto-optimality"
       },
       "section": "## 6. Spectral Analysis of Parameter Coupling",
+      "references": [],
       "raw_directive": "3411: When multiple objectives compete (speed vs. cost vs. robustness), compute the Pareto frontier.\n3412: \n3413: :::{prf:definition} Pareto Optimality in Parameter Space\n3414: :label: def-pareto-optimality\n3415: \n3416: A parameter choice $\\mathbf{P}^*$ is **Pareto optimal** if there exists no other $\\mathbf{P}$ such that:\n3417: - $\\kappa_{\\text{total}}(\\mathbf{P}) \\geq \\kappa_{\\text{total}}(\\mathbf{P}^*)$ (at least as fast)\n3418: - $\\text{Cost}(\\mathbf{P}) \\leq \\text{Cost}(\\mathbf{P}^*)$ (at most as expensive)\n3419: - At least one inequality is strict\n3420: ",
       "_registry_context": {
         "stage": "directives",

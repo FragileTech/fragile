@@ -2,7 +2,7 @@
   "document_id": "14_geometric_gas_c4_regularity",
   "stage": "directives",
   "directive_type": "assumption",
-  "generated_at": "2025-11-08T17:16:20.322708+00:00",
+  "generated_at": "2025-11-08T23:19:38.340315+00:00",
   "count": 6,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "assump-c4-measurement"
       },
       "section": "## 3. C⁴ Regularity Assumptions",
+      "references": [],
       "raw_directive": "319: ## 3. C⁴ Regularity Assumptions\n320: \n321: :::{prf:assumption} C⁴ Measurement Function\n322: :label: assump-c4-measurement\n323: \n324: The measurement function $d: \\mathcal{X} \\to \\mathbb{R}$ is C⁴ with bounded derivatives:\n325: $\\|\\nabla^m d\\| \\le d^{(m)}_{\\max} < \\infty$ for $m = 1, 2, 3, 4$.\n326: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "assump-c4-kernel"
       },
       "section": "## 3. C⁴ Regularity Assumptions",
+      "references": [],
       "raw_directive": "328: :::\n329: \n330: :::{prf:assumption} C⁴ Localization Kernel\n331: :label: assump-c4-kernel\n332: \n333: The Gaussian kernel $K_\\rho(x, x') = \\exp(-\\|x - x'\\|^2/(2\\rho^2))$ satisfies:\n334: \n335: $$\n336: \\|\\nabla^m_x K_\\rho(x, x')\\| \\le C_{\\nabla^m K}(\\rho) \\cdot K_\\rho(x, x')\n337: \n338: $$\n339: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "assump-c4-rescale"
       },
       "section": "## 3. C⁴ Regularity Assumptions",
+      "references": [],
       "raw_directive": "341: :::\n342: \n343: :::{prf:assumption} C⁴ Rescale Function\n344: :label: assump-c4-rescale\n345: \n346: The rescale function $g_A: \\mathbb{R} \\to [0, A]$ is C⁴ with globally bounded derivatives:",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +99,7 @@
         "label": "assump-c4-regularized-std"
       },
       "section": "## 3. C⁴ Regularity Assumptions",
+      "references": [],
       "raw_directive": "348: :::\n349: \n350: :::{prf:assumption} C^∞ Regularized Standard Deviation\n351: :label: assump-c4-regularized-std\n352: \n353: $\\sigma'_{\\text{reg}}(V) = \\sqrt{V + \\sigma'^2_{\\min}}$ is C^∞ with:\n354: \n355: $$\n356: |(\\sigma'_{\\text{reg}})^{(4)}(V)| \\le \\frac{15}{16\\sigma'^7_{\\min}}\n357: \n358: $$",
       "_registry_context": {
         "stage": "directives",
@@ -121,6 +125,7 @@
         "label": "assump-c4-bounded-measurement"
       },
       "section": "## 3. C⁴ Regularity Assumptions",
+      "references": [],
       "raw_directive": "360: :::\n361: \n362: :::{prf:assumption} Bounded Measurement Range\n363: :label: assump-c4-bounded-measurement\n364: \n365: The measurement function values are uniformly bounded:\n366: \n367: $$\n368: |d(x)| \\le d_{\\max} < \\infty \\quad \\forall x \\in \\mathcal{X}_{\\text{valid}}\n369: \n370: $$\n371: \n372: This ensures that centered quantities like $|d(x_i) - \\mu_\\rho|$ remain bounded by $2d_{\\max}$.\n373: ",
       "_registry_context": {
         "stage": "directives",
@@ -146,6 +151,10 @@
         "label": "assump-c4-qsd-bounded-density"
       },
       "section": "## 3. C⁴ Regularity Assumptions",
+      "references": [
+        "lem-mean-fourth-derivative",
+        "lem-variance-fourth-derivative"
+      ],
       "raw_directive": "375: :::\n376: \n377: :::{prf:assumption} QSD Bounded Density (Regularity Condition R2)\n378: :label: assump-c4-qsd-bounded-density\n379: \n380: The quasi-stationary distribution (QSD) has bounded density:\n381: \n382: $$\n383: 0 < \\rho_{\\min} \\le \\rho_{\\text{QSD}}(x, v) \\le \\rho_{\\max} < \\infty \\quad \\forall (x, v) \\in \\mathcal{X}_{\\text{valid}} \\times B_R(0)\n384: \n385: $$\n386: \n387: for some velocity ball radius $R > 0$.\n388: \n389: **Justification**: This assumption follows from the Foster-Lyapunov convergence conditions established in [06_convergence.md](../1_euclidean_gas/06_convergence.md) Chapter 4. The Foster-Lyapunov drift guarantees exponential convergence to a unique quasi-stationary distribution (QSD) with bounded density on the valid state space. This ensures the walker distribution is well-behaved and prevents pathological concentrations.\n390: \n391: **Usage**: This assumption is critical for sum-to-integral transitions in the centered moment scaling arguments (Lemmas {prf:ref}`lem-mean-fourth-derivative` and {prf:ref}`lem-variance-fourth-derivative`). The bounded density guarantees that discrete sums over walkers can be controlled by continuous integrals weighted by $\\rho_{\\text{QSD}}$.",
       "_registry_context": {
         "stage": "directives",

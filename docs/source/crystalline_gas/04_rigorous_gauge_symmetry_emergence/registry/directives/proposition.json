@@ -2,7 +2,7 @@
   "document_id": "04_rigorous_gauge_symmetry_emergence",
   "stage": "directives",
   "directive_type": "proposition",
-  "generated_at": "2025-11-08T17:16:20.350990+00:00",
+  "generated_at": "2025-11-08T23:19:38.356194+00:00",
   "count": 4,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "prop-cg-color-amplitude-phase"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "178: :::\n179: \n180: :::{prf:proposition} Amplitude-Phase Factorization\n181: :label: prop-cg-color-amplitude-phase\n182: \n183: Each color phase $\\varphi_i^a$ can be written in amplitude-phase form:\n184: \n185: $$\n186: \\varphi_i^a = \\rho_i \\cdot \\theta_i^a\n187: $$\n188: \n189: where:\n190: - **Amplitude (common to all colors):**\n191: \n192: $$\n193: \\rho_i := \\|F_i\\| \\cdot \\|p_i\\| = \\|F_i \\otimes p_i\\|\n194: $$\n195: \n196: - **Phase (distinguishes colors):**\n197: \n198: $$\n199: \\theta_i^a := \\frac{\\varphi_i^a}{\\rho_i} = \\frac{\\text{Tr}(T_i^{\\text{traceless}} \\cdot \\lambda^a)}{2 \\|F_i\\| \\cdot \\|p_i\\|}\n200: $$\n201: \n202: The 8 phases $\\{\\theta_i^a\\}_{a=1}^{8}$ are unit-normalized:\n203: \n204: $$\n205: \\sum_{a=1}^{8} (\\theta_i^a)^2 = 1",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "prop-cg-su2-geometry"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "297: :::\n298: \n299: :::{prf:proposition} Geometric Origin of SU(2)\n300: :label: prop-cg-su2-geometry\n301: \n302: The 3-component direction vector $\\hat{r} \\in S^{2}$ naturally encodes SU(2) structure through the **Hopf fibration**:\n303: \n304: $$\n305: S^{3} \\to S^{2}, \\quad \\text{with fiber } S^{1} \\cong \\text{U}(1)\n306: $$\n307: \n308: Specifically, $S^{2} \\cong \\text{SU}(2)/\\text{U}(1)$, so rotations of $\\hat{r}$ on the sphere correspond to SU(2) gauge transformations modulo U(1) phase.\n309: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "prop-cg-chirality"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "355: :::\n356: \n357: :::{prf:proposition} Chirality and Left/Right-Handed Structure\n358: :label: prop-cg-chirality\n359: \n360: Walkers in the Crystalline Gas naturally separate into **left-handed (doublet)** and **right-handed (singlet)** representations of SU(2)_L based on the fitness comparison:\n361: \n362: **Left-handed (couples to SU(2)_L):**\n363: - Condition: $\\Phi(x_{j^*(i)}) > \\Phi(x_i)$ (companion has higher fitness)\n364: - Equivalently: $S_{\\text{ascent}} > 0$\n365: - Weak isospin: $T_3 = \\frac{1}{2} \\cdot \\text{sign}(\\hat{r}_z)$\n366:   - $T_3 = +1/2$ if companion is in $+z$ hemisphere\n367:   - $T_3 = -1/2$ if companion is in $-z$ hemisphere\n368: \n369: **Right-handed (decouples from SU(2)_L):**\n370: - Condition: $\\Phi(x_{j^*(i)}) \\leq \\Phi(x_i)$ (walker is local optimum)\n371: - Equivalently: $S_{\\text{ascent}} \\leq 0$\n372: - Weak isospin: $T_3 = 0$\n373: ",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +99,10 @@
         "label": "prop-cg-hypercharge-assignment"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [
+        "prop-cg-chirality",
+        "lem-cg-velocity-isotropy"
+      ],
       "raw_directive": "454: :::\n455: \n456: :::{prf:proposition} Hypercharge Assignment via Gell-Mann-Nishijima Formula\n457: :label: prop-cg-hypercharge-assignment\n458: \n459: The hypercharge $Y$ of walker $i$ is related to its electric charge $Q$ and weak isospin $T_3$ by:\n460: \n461: $$\n462: Y = 2(Q - T_3)\n463: $$\n464: \n465: where:\n466: - $Q$ is determined by the fitness value $\\Phi(x_i)$ (normalized as \"charge\")\n467: - $T_3 = \\pm 1/2$ or $0$ from the SU(2) structure ({prf:ref}`prop-cg-chirality`)\n468: \n469: For walkers at equilibrium with $\\langle T_3 \\rangle = 0$ (velocity isotropy, {prf:ref}`lem-cg-velocity-isotropy`), we have:\n470: \n471: $$\n472: \\langle Y \\rangle = 2 \\langle Q \\rangle = 0\n473: $$\n474: ",
       "_registry_context": {
         "stage": "directives",

@@ -19,6 +19,7 @@
         "label": "lem-electric-field-correspondence"
       },
       "section": "## Critical Issues Identified",
+      "references": [],
       "raw_directive": "39: \n40: ```markdown\n41: :::{prf:lemma} Electric Field Lattice-Continuum Correspondence\n42: :label: lem-electric-field-correspondence\n43: \n44: For a gauge field on an irregular lattice edge $e$ connecting sites $i,j$ separated by distance $d_{ij} = \\|x_i - x_j\\|$, the lattice electric field $E_e^{(a)}$ is related to the continuum electric field $E_k^{(a)}(x)$ by:\n45: \n46: $$\n47: E_e^{(a)} = \\frac{d_{ij}}{g^2} E_k^{(a)}(x_{ij})\n48: $$\n49: \n50: where $x_{ij} = \\frac{1}{2}(x_i + x_j)$ is the midpoint.\n51: \n52: **Proof**: From the source Hamiltonian normalization, the lattice electric field is defined as the canonical momentum:\n53: \n54: $$\n55: E_e^{(a)} = \\frac{\\partial H_{\\text{gauge}}}{\\partial \\dot{A}_e^{(a)}}\n56: $$\n57: \n58: The continuum electric field is $E_k = -F_{0k} = \\partial_0 A_k - D_k A_0$. For temporal gauge ($A_0 = 0$):\n59: \n60: $$\n61: E_k^{(a)}(x) = \\partial_0 A_k^{(a)}(x) = \\dot{A}_k^{(a)}(x)\n62: $$\n63: \n64: The lattice field $A_e$ is the line integral: $A_e \\sim \\int_i^j A_k dx^k \\approx d_{ij} A_k(x_{ij})$.\n65: \n66: Taking time derivatives and matching to the source Hamiltonian coefficient: $E_e = \\frac{d_{ij}}{g^2}\\dot{A}_k = \\frac{d_{ij}}{g^2} E_k$.\n67: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "lem-wilson-irregular-cycles"
       },
       "section": "## Critical Issues Identified",
+      "references": [],
       "raw_directive": "96: \n97: ```markdown\n98: :::{prf:lemma} Wilson Loop Area Law for Irregular Cycles\n99: :label: lem-wilson-irregular-cycles\n100: \n101: For an elementary cycle $\\square$ in the Interaction Graph connecting walkers $(i \\to j \\to k \\to \\ell \\to i)$ with edge lengths $d_{ij}, d_{jk}, d_{k\\ell}, d_{\\ell i}$, the Wilson loop satisfies:\n102: \n103: $$\n104: U_{\\square} = \\exp\\left(ig \\mathcal{A}_{\\square} \\bar{F}_{ij}^{(a)} \\tau^{(a)} + O(d^3)\\right)\n105: $$\n106: \n107: where:\n108: - $\\mathcal{A}_{\\square} = \\frac{1}{2}|\\vec{r}_{ij} \\times \\vec{r}_{ik}|$ is the **projected area** of the cycle onto its best-fit plane\n109: - $\\bar{F}_{ij}^{(a)} = \\frac{1}{\\mathcal{A}_{\\square}}\\int_{\\square} F_{ij}^{(a)} dA$ is the **average field strength** over the cycle\n110: "
     }
   ],

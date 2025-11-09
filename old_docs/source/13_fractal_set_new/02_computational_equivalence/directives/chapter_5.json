@@ -19,6 +19,7 @@
         "label": "rem-fisher-difficulty"
       },
       "section": "## 5. Information-Theoretic Analysis of Discretization",
+      "references": [],
       "raw_directive": "704: ::::\n705: \n706: :::{prf:remark} Why This Theorem is Difficult\n707: :label: rem-fisher-difficulty\n708: \n709: An initial proof attempt (reviewed by dual independent analysis) revealed critical issues:\n710: \n711: 1. **Invalid decomposition**: Cannot treat $I_x$ and $I_v$ separately because $(x,v)$ are coupled under Langevin dynamics\n712: 2. **Push-forward complexity**: Each BAOAB substep (B-A-O-A-B) requires rigorous Jacobian analysis for the score transformation $\\nabla \\log(d\\mu/d\\pi)$ under push-forward\n713: 3. **Shear effects**: The A-step $x' = x + \\frac{\\Delta t}{2}v$ is a shear transformation (not translation), requiring mixed derivative bounds\n714: 4. **Relative Fisher**: Fisher information is computed **relative to $\\pi(x,v) \\propto e^{-H(x,v)}$**, not Lebesgue measure, requiring hypocoercivity techniques\n715: "
     }
   ],

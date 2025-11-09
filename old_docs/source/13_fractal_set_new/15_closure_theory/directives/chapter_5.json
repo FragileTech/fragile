@@ -19,6 +19,7 @@
         "label": "def-epsilon-machine-coarse-graining"
       },
       "section": "## 5. Computational Closure and RG Flow",
+      "references": [],
       "raw_directive": "770: We now establish the connection between computational closure and RG flow.\n771: \n772: :::{prf:definition} \u03b5-Machine Coarse-Graining Map\n773: :label: def-epsilon-machine-coarse-graining\n774: \n775: Given the micro-\u03b5-machine $(\\Sigma_\\varepsilon, T_\\varepsilon)$ for $\\{Z_k\\}$ and the macro-\u03b5-machine $(\\tilde{\\Sigma}_\\varepsilon, \\tilde{T}_\\varepsilon)$ for $\\{\\tilde{Z}_k\\}$, define the **projection map**:\n776: \n777: $$\n778: \\pi: \\Sigma_\\varepsilon \\to \\tilde{\\Sigma}_\\varepsilon\n779: \n780: $$\n781: \n782: by:\n783: \n784: $$\n785: \\pi(\\sigma) := \\text{causal state of } \\mathcal{R}_b(\\sigma)\n786: \n787: $$\n788: \n789: where $\\mathcal{R}_b(\\sigma)$ means: apply the channel to any representative micro-state $z \\in \\sigma$, then determine which macro causal state the result belongs to.\n790: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "lem-projection-well-defined"
       },
       "section": "## 5. Computational Closure and RG Flow",
+      "references": [],
       "raw_directive": "792: :::\n793: \n794: :::{prf:lemma} Projection Map is Well-Defined\n795: :label: lem-projection-well-defined\n796: \n797: The projection map $\\pi$ is well-defined: if $z, z' \\in \\sigma$ (same micro causal state), then $\\mathcal{R}_b(z)$ and $\\mathcal{R}_b(z')$ belong to the same macro causal state.\n798: \n799: **Proof:**\n800: \n801: **Step 1:** By definition, $z \\sim_\\varepsilon z'$ means they have identical future distributions:\n802: \n803: $$\n804: P(\\overrightarrow{Z} \\mid Z = z) = P(\\overrightarrow{Z} \\mid Z = z')\n805: \n806: $$\n807: \n808: **Step 2:** Apply the channel $\\mathcal{R}_b$ to the futures:\n809: \n810: $$\n811: P(\\overrightarrow{\\tilde{Z}} \\mid Z = z) = \\int P(\\overrightarrow{\\tilde{Z}} \\mid \\overrightarrow{Z}) P(\\overrightarrow{Z} \\mid Z = z) d\\overrightarrow{Z}\n812: \n813: $$\n814: \n815: Similarly for $z'$.\n816: \n817: **Step 3:** Since $P(\\overrightarrow{Z} \\mid z) = P(\\overrightarrow{Z} \\mid z')$, and the channel is deterministic on the macro-level (modulo averaging noise), we have:\n818: \n819: $$\n820: P(\\overrightarrow{\\tilde{Z}} \\mid z) = P(\\overrightarrow{\\tilde{Z}} \\mid z')\n821: \n822: $$\n823: "
     },
     {
@@ -55,6 +57,7 @@
         "label": "def-computational-closure-rg"
       },
       "section": "## 5. Computational Closure and RG Flow",
+      "references": [],
       "raw_directive": "827: ### 5.2. Computational Closure Condition\n828: \n829: :::{prf:definition} Computational Closure for RG\n830: :label: def-computational-closure-rg\n831: \n832: The renormalization transformation $\\mathcal{R}_b$ satisfies **computational closure** if the diagram commutes:\n833: \n834: $$\n835: \\begin{array}{ccc}\n836: \\Sigma_\\varepsilon & \\xrightarrow{T_\\varepsilon} & \\Sigma_\\varepsilon \\\\\n837: \\downarrow \\pi & & \\downarrow \\pi \\\\\n838: \\tilde{\\Sigma}_\\varepsilon & \\xrightarrow{\\tilde{T}_\\varepsilon} & \\tilde{\\Sigma}_\\varepsilon\n839: \\end{array}\n840: \n841: $$\n842: \n843: Formally:\n844: \n845: $$\n846: \\pi(T_\\varepsilon(\\sigma, a)) = \\tilde{T}_\\varepsilon(\\pi(\\sigma), \\mathcal{R}_b(a))\n847: \n848: $$\n849: \n850: for all micro causal states $\\sigma$ and observables $a$.\n851: "
     },
     {
@@ -73,6 +76,9 @@
         "label": "thm-computational-closure-sufficient"
       },
       "section": "## 5. Computational Closure and RG Flow",
+      "references": [
+        "def-strong-lumpability-preliminary"
+      ],
       "raw_directive": "853: :::\n854: \n855: :::{prf:theorem} Computational Closure from Lumpability\n856: :label: thm-computational-closure-sufficient\n857: \n858: **Statement:** If the partition induced by $\\mathcal{R}_b$ is strongly lumpable (Definition {prf:ref}`def-strong-lumpability-preliminary`), then computational closure holds.\n859: \n860: **Proof:**\n861: \n862: **Step 1 (Lumpability implies well-defined projection):** By strong lumpability, for all micro-states $z, z'$ in the same macro-state $\\tilde{z}$ (i.e., $\\mathcal{R}_b(z) = \\mathcal{R}_b(z') = \\tilde{z}$), the transition probabilities to any macro-state $\\tilde{z}'$ are equal:\n863: \n864: $$\n865: \\int_{z'' : \\mathcal{R}_b(z'') = \\tilde{z}'} \\mathbb{P}(z, dz'') = \\int_{z'' : \\mathcal{R}_b(z'') = \\tilde{z}'} \\mathbb{P}(z', dz'')\n866: \n867: $$\n868: \n869: **Step 2 (Micro causal states refine macro-partition):** Suppose $z, z'$ are in the same micro-causal state: $P(\\overrightarrow{Z} \\mid z) = P(\\overrightarrow{Z} \\mid z')$. We must show they map to the same macro-causal state.\n870: \n871: Applying the channel to both sides:\n872: \n873: $$\n874: P(\\overrightarrow{\\tilde{Z}} \\mid z) = \\int P(\\overrightarrow{\\tilde{Z}} \\mid \\overrightarrow{Z}) P(\\overrightarrow{Z} \\mid z) d\\overrightarrow{Z}\n875: \n876: $$\n877: \n878: Since $P(\\overrightarrow{Z} \\mid z) = P(\\overrightarrow{Z} \\mid z')$ and the channel $\\mathcal{R}_b$ is the same for both:\n879: \n880: $$\n881: P(\\overrightarrow{\\tilde{Z}} \\mid z) = P(\\overrightarrow{\\tilde{Z}} \\mid z')\n882: \n883: $$\n884: \n885: Therefore, $\\mathcal{R}_b(z)$ and $\\mathcal{R}_b(z')$ have identical macro-futures, hence are in the same macro-causal state. The projection $\\pi: \\Sigma_\\varepsilon \\to \\tilde{\\Sigma}_\\varepsilon$ is well-defined.\n886: \n887: **Step 3 (Commutation diagram):** We must verify $\\pi \\circ T_\\varepsilon = \\tilde{T}_\\varepsilon \\circ \\pi$.\n888: \n889: Consider a micro-causal state $\\sigma$ and an observable $a$. The micro-transition is:\n890: \n891: $$\n892: T_\\varepsilon(\\sigma' \\mid \\sigma, a) = \\int_{z \\in \\sigma} \\int_{z' \\in \\sigma'} \\mathbb{P}(z, dz') \\cdot \\mathbb{1}_{o(z')=a} \\cdot \\frac{d\\mu_{\\text{QSD}}(z)}{\\mu_{\\text{QSD}}(\\sigma)}\n893: \n894: $$\n895: \n896: Applying $\\pi$ to the result means determining which macro-causal state $\\sigma'$ maps to.\n897: \n898: The macro-transition is:\n899: \n900: $$\n901: \\tilde{T}_\\varepsilon(\\tilde{\\sigma}' \\mid \\tilde{\\sigma}, \\tilde{a}) = \\int_{\\tilde{z} \\in \\tilde{\\sigma}} \\int_{\\tilde{z}' \\in \\tilde{\\sigma}'} \\tilde{\\mathbb{P}}(\\tilde{z}, d\\tilde{z}') \\cdot \\mathbb{1}_{\\tilde{o}(\\tilde{z}')=\\tilde{a}} \\cdot \\frac{d\\tilde{\\mu}_{\\text{QSD}}(\\tilde{z})}{\\tilde{\\mu}_{\\text{QSD}}(\\tilde{\\sigma})}\n902: \n903: $$\n904: \n905: **Step 4 (Kernel push-forward):** By lumpability, the macro-kernel is the lumped version of the micro-kernel:\n906: \n907: $$\n908: \\tilde{\\mathbb{P}}(\\tilde{z}, \\tilde{z}') = \\sum_{\\sigma: \\pi(\\sigma) = \\tilde{z}} \\sum_{\\sigma': \\pi(\\sigma') = \\tilde{z}'} \\int_{z \\in \\sigma} \\int_{z' \\in \\sigma'} \\mathbb{P}(z, dz') \\cdot \\frac{d\\mu_{\\text{QSD}}(z)}{\\mu_{\\text{QSD}}(\\sigma)}\n909: \n910: $$\n911: \n912: This is well-defined by lumpability (independent of choice of $z \\in \\sigma$).\n913: \n914: **Step 5 (Commutation):** Substituting the lumped kernel into the macro-transition formula and simplifying yields:\n915: \n916: $$\n917: \\tilde{T}_\\varepsilon(\\pi(\\sigma'), \\tilde{a}) = \\pi(T_\\varepsilon(\\sigma', a))\n918: \n919: $$\n920: "
     },
     {
@@ -91,6 +97,7 @@
         "class": "note"
       },
       "section": "## 5. Computational Closure and RG Flow",
+      "references": [],
       "raw_directive": "922: :::\n923: \n924: :::{prf:remark} Avoidance of Pseudo-Inverses\n925: :class: note\n926: \n927: **Why we avoid $\\mathcal{R}_b^{-1}$:** The original formulation \"$\\tilde{\\mathbb{P}} = \\mathcal{R}_b \\circ \\mathbb{P} \\circ \\mathcal{R}_b^{-1}$\" is problematic because:\n928: \n929: 1. $\\mathcal{R}_b$ is not invertible (many-to-one map)\n930: 2. Even defining a \"disintegration\" or \"pseudo-inverse\" requires choosing a conditional measure $P(Z \\mid \\tilde{Z})$, which is not canonical\n931: 3. The formula obscures the actual requirement: **lumpability**\n932: "
     },
     {
@@ -109,6 +116,10 @@
         "label": "thm-lumpability-closure-equivalence"
       },
       "section": "## 5. Computational Closure and RG Flow",
+      "references": [
+        "thm-computational-closure-sufficient",
+        "prop-closure-implies-lumpability"
+      ],
       "raw_directive": "934: :::\n935: \n936: :::{prf:theorem} Equivalence of Strong Lumpability and Computational Closure\n937: :label: thm-lumpability-closure-equivalence\n938: \n939: For the renormalization map $\\mathcal{R}_b: \\Omega \\to \\tilde{\\Omega}$ and BAOAB transition kernel $\\mathbb{P}$, the following are equivalent:\n940: \n941: 1. The partition induced by $\\mathcal{R}_b$ is **strongly lumpable** with respect to $\\mathbb{P}$\n942: 2. The renormalization transformation satisfies **computational closure**\n943: \n944: **Proof:**\n945: \n946: $(1 \\Rightarrow 2)$: This is Theorem {prf:ref}`thm-computational-closure-sufficient`.\n947: \n948: $(2 \\Rightarrow 1)$: This is Proposition {prf:ref}`prop-closure-implies-lumpability` (\u00a77.1).\n949: "
     },
     {
@@ -127,6 +138,7 @@
         "class": "note"
       },
       "section": "## 5. Computational Closure and RG Flow",
+      "references": [],
       "raw_directive": "951: :::\n952: \n953: :::{prf:remark} Significance of the Equivalence\n954: :class: note\n955: \n956: **This equivalence is a central result of the framework.** It establishes that:\n957: \n958: - **Computational closure** (an information-theoretic property about predictive models) is **mathematically equivalent to**\n959: - **Strong lumpability** (a measure-theoretic property of Markov chains)\n960: \n961: **Implications:**\n962: \n963: 1. **Unification**: Two seemingly distinct concepts from different fields (computational mechanics vs. stochastic processes) are revealed to be the same.\n964: \n965: 2. **Dual characterization**: We can prove closure either by:\n966:    - Showing the macro-\u03b5-machine is a coarse-graining of the micro-\u03b5-machine (computational mechanics approach)\n967:    - Showing transition probabilities factor through partition classes (Markov chain approach)\n968: \n969: 3. **RG interpretation**: Renormalization group flow preserves predictive power **if and only if** the coarse-graining is lumpable.\n970: "
     },
     {
@@ -145,6 +157,7 @@
         "label": "def-parametrized-epsilon-machine"
       },
       "section": "## 5. Computational Closure and RG Flow",
+      "references": [],
       "raw_directive": "976: The key insight: the RG beta function describes how the **parameters of the \u03b5-machine** evolve under coarse-graining.\n977: \n978: :::{prf:definition} Parametrized \u03b5-Machine Family\n979: :label: def-parametrized-epsilon-machine\n980: \n981: A **parametrized family** of \u03b5-machines is a collection $\\{(\\Sigma_\\varepsilon(g), T_\\varepsilon(g))\\}_{g \\in \\mathcal{G}}$ indexed by parameters $g = (g_1, \\ldots, g_m) \\in \\mathcal{G}$.\n982: \n983: For the Fractal Gas:\n984: - $g$ includes coupling constants (gauge coupling, cloning noise scale, friction, etc.)\n985: - The lattice spacing $a$ is an implicit parameter"
     },
     {
@@ -163,6 +176,9 @@
         "label": "thm-rg-flow-epsilon-machine"
       },
       "section": "## 5. Computational Closure and RG Flow",
+      "references": [
+        "thm-computational-closure-sufficient"
+      ],
       "raw_directive": "987: :::\n988: \n989: :::{prf:theorem} RG Flow as \u03b5-Machine Parameter Flow\n990: :label: thm-rg-flow-epsilon-machine\n991: \n992: Let $\\mathcal{R}_b$ be the block-spin channel with block size $b$ (lattice spacing $a \\to ba$). Define the **RG flow** $\\mathcal{RG}_b: \\mathcal{G} \\to \\mathcal{G}$ by:\n993: \n994: $$\n995: g' = \\mathcal{RG}_b(g)\n996: \n997: $$\n998: \n999: where $g'$ is the set of parameters such that:\n1000: \n1001: $$\n1002: (\\tilde{\\Sigma}_\\varepsilon, \\tilde{T}_\\varepsilon) = (\\Sigma_\\varepsilon(g'), T_\\varepsilon(g'))\n1003: \n1004: $$\n1005: \n1006: (the macro-\u03b5-machine at spacing $ba$ equals the \u03b5-machine with parameters $g'$).\n1007: \n1008: **Continuum limit:** Taking $b = e^{\\delta t}$ for infinitesimal $\\delta t$, the **beta function** is:\n1009: \n1010: $$\n1011: \\beta(g) := \\lim_{\\delta t \\to 0} \\frac{\\mathcal{RG}_{e^{\\delta t}}(g) - g}{\\delta t} = \\frac{dg}{d\\log a}\n1012: \n1013: $$\n1014: \n1015: **Proof:**\n1016: \n1017: **Step 1:** By computational closure (Theorem {prf:ref}`thm-computational-closure-sufficient`), the macro-\u03b5-machine is a coarse-graining of the micro-\u03b5-machine.\n1018: \n1019: **Step 2:** The parameters $g'$ are determined by matching the macro-transition probabilities. By the lumped kernel formula (Theorem {prf:ref}`thm-computational-closure-sufficient`, Step 4):\n1020: \n1021: $$\n1022: \\tilde{T}_\\varepsilon(\\tilde{\\sigma}' \\mid \\tilde{\\sigma}, \\tilde{a}; g') = \\sum_{\\sigma \\in \\pi^{-1}(\\tilde{\\sigma})} \\frac{\\mu_{\\text{QSD}}(\\sigma)}{\\mu_{\\text{QSD}}(\\pi^{-1}(\\tilde{\\sigma}))} \\sum_{\\sigma' \\in \\pi^{-1}(\\tilde{\\sigma}')} T_\\varepsilon(\\sigma' \\mid \\sigma, a; g)\n1023: \n1024: $$\n1025: \n1026: where $\\frac{\\mu_{\\text{QSD}}(\\sigma)}{\\mu_{\\text{QSD}}(\\pi^{-1}(\\tilde{\\sigma}))}$ is the conditional probability weight (fraction of QSD mass in macro-state $\\tilde{\\sigma}$ that resides in micro-causal-state $\\sigma$).\n1027: \n1028: **Step 3:** For the Fractal Gas, the transition probabilities are determined by the BAOAB kernel, which depends on $g = (g_{\\text{gauge}}, \\gamma, \\sigma, \\ldots)$.\n1029: \n1030: **Step 4:** Solving for $g'$ such that the macro-kernel matches the parametrized form yields the RG flow.\n1031: "
     },
     {
@@ -181,6 +197,7 @@
         "label": "cor-beta-function-lattice-qft"
       },
       "section": "## 5. Computational Closure and RG Flow",
+      "references": [],
       "raw_directive": "1033: :::\n1034: \n1035: :::{prf:corollary} Beta Function from Lattice QFT\n1036: :label: cor-beta-function-lattice-qft\n1037: \n1038: For the gauge coupling $g_{\\text{gauge}}$ in the Fractal Gas lattice QFT (\u00a7 9.5 of [08_lattice_qft_framework.md](08_lattice_qft_framework.md)), the beta function derived from computational closure matches the one-loop perturbative result:\n1039: \n1040: $$\n1041: \\beta(g) = -\\frac{g^3}{16\\pi^2} \\cdot \\frac{11N_c - 2N_f}{3} + O(g^5)\n1042: \n1043: $$\n1044: "
     },
     {
@@ -199,6 +216,9 @@
         "class": "warning"
       },
       "section": "## 5. Computational Closure and RG Flow",
+      "references": [
+        "thm-rg-flow-epsilon-machine"
+      ],
       "raw_directive": "1046: :::\n1047: \n1048: :::{prf:remark} Assumption of Renormalizability\n1049: :class: warning\n1050: \n1051: **Critical assumption in Theorem {prf:ref}`thm-rg-flow-epsilon-machine`:** We assume that the macro-\u03b5-machine $(\\tilde{\\Sigma}_\\varepsilon, \\tilde{T}_\\varepsilon)$ can be written in the same parametric form as the micro-\u03b5-machine, i.e., $(\\tilde{\\Sigma}_\\varepsilon, \\tilde{T}_\\varepsilon) = (\\Sigma_\\varepsilon(g'), T_\\varepsilon(g'))$ for some $g' \\in \\mathcal{G}$.\n1052: \n1053: This is the **definition of renormalizability**: a theory is renormalizable if coarse-graining produces a new theory within the same functional class, differing only in parameter values.\n1054: \n1055: **Two approaches:**\n1056: \n1057: 1. **Assume renormalizability a priori** (as we do here). This is justified for theories known to be renormalizable (e.g., non-Abelian gauge theories). The existence of $g'$ is then a modeling assumption, validated by the success of RG methods.\n1058: \n1059: 2. **Prove renormalizability from first principles**. This requires showing that the block-spin channel $\\mathcal{R}_b$ applied to a BAOAB kernel with parameters $g$ yields a new BAOAB kernel with parameters $g'$. This is technically challenging and requires detailed analysis of the Wilson action structure (partially done in \u00a7 9.5 of [08_lattice_qft_framework.md](08_lattice_qft_framework.md)).\n1060: \n1061: **Current status:** We assume renormalizability and demonstrate its consequences. Proving it rigorously from the Fractal Set dynamics is left to future work.\n1062: "
     }
   ],

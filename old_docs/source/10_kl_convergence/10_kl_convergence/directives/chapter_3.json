@@ -19,6 +19,7 @@
         "label": "thm-tensorization"
       },
       "section": "## 3. Extension to the N-Particle System",
+      "references": [],
       "raw_directive": "505: where $\\Psi_{\\text{kin}}^{(i)}$ is the single-particle kinetic evolution.\n506: \n507: :::{prf:theorem} Tensorization of LSI\n508: :label: thm-tensorization\n509: \n510: If each single-particle kernel $K_i$ satisfies an LSI with constant $C_i$, then the product kernel $K = \\bigotimes_{i=1}^N K_i$ satisfies an LSI with constant:\n511: \n512: $$\n513: C_{\\text{product}} = \\max_{i=1, \\ldots, N} C_i\n514: $$"
     },
     {
@@ -33,6 +34,7 @@
       "content": "517: \n518: :::{prf:proof}\n519: This is a classical result. For the product measure $\\pi = \\bigotimes_{i=1}^N \\pi_i$ and function $f(x_1, \\ldots, x_N)$:\n520: \n521: $$\n522: \\text{Ent}_\\pi(f^2) \\le \\sum_{i=1}^N \\mathbb{E}_{\\pi}\\left[\\text{Ent}_{\\pi_i}(f^2 | x_1, \\ldots, x_{i-1}, x_{i+1}, \\ldots, x_N)\\right]\n523: $$\n524: \n525: Each conditional entropy satisfies the single-particle LSI:\n526: \n527: $$\n528: \\text{Ent}_{\\pi_i}(f^2 | \\cdots) \\le C_i \\mathcal{E}_i(f, f | \\cdots)\n529: $$\n530: \n531: Summing over $i$ and taking $C = \\max_i C_i$:\n532: \n533: $$\n534: \\text{Ent}_\\pi(f^2) \\le C \\sum_{i=1}^N \\mathcal{E}_i(f, f) = C \\mathcal{E}_{\\text{product}}(f, f)",
       "metadata": {},
       "section": "## 3. Extension to the N-Particle System",
+      "references": [],
       "raw_directive": "516: :::\n517: \n518: :::{prf:proof}\n519: This is a classical result. For the product measure $\\pi = \\bigotimes_{i=1}^N \\pi_i$ and function $f(x_1, \\ldots, x_N)$:\n520: \n521: $$\n522: \\text{Ent}_\\pi(f^2) \\le \\sum_{i=1}^N \\mathbb{E}_{\\pi}\\left[\\text{Ent}_{\\pi_i}(f^2 | x_1, \\ldots, x_{i-1}, x_{i+1}, \\ldots, x_N)\\right]\n523: $$\n524: \n525: Each conditional entropy satisfies the single-particle LSI:\n526: \n527: $$\n528: \\text{Ent}_{\\pi_i}(f^2 | \\cdots) \\le C_i \\mathcal{E}_i(f, f | \\cdots)\n529: $$\n530: \n531: Summing over $i$ and taking $C = \\max_i C_i$:\n532: \n533: $$\n534: \\text{Ent}_\\pi(f^2) \\le C \\sum_{i=1}^N \\mathcal{E}_i(f, f) = C \\mathcal{E}_{\\text{product}}(f, f)\n535: $$"
     },
     {
@@ -51,6 +53,7 @@
         "label": "cor-n-particle-kinetic-lsi"
       },
       "section": "## 3. Extension to the N-Particle System",
+      "references": [],
       "raw_directive": "537: :::\n538: \n539: :::{prf:corollary} LSI for N-Particle Kinetic Operator\n540: :label: cor-n-particle-kinetic-lsi\n541: \n542: The N-particle kinetic operator $\\Psi_{\\text{kin}}^{\\otimes N}$ satisfies a discrete-time LSI with the **same constant** as the single-particle operator:\n543: \n544: $$\n545: C_{\\text{LSI}}^{\\text{kin}, N}(\\tau) = C_{\\text{LSI}}^{\\text{kin}}(\\tau)\n546: $$"
     }
   ],

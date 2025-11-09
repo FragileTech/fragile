@@ -2,7 +2,7 @@
   "document_id": "20_geometric_gas_cinf_regularity_full",
   "stage": "directives",
   "directive_type": "proposition",
-  "generated_at": "2025-11-08T17:16:20.318627+00:00",
+  "generated_at": "2025-11-08T23:19:38.338090+00:00",
   "count": 1,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "prop-factorial-sqrt-composition"
       },
       "section": "## Appendix A: Combinatorial Proof of Gevrey-1 Bounds via Faà di Bruno Formula",
+      "references": [],
       "raw_directive": "5328: We prove the Gevrey-1 bound for $\\sigma'_{\\text{reg}}(V) = \\sqrt{V + \\eta_{\\min}^2}$ as a concrete example.\n5329: \n5330: :::{prf:proposition} Factorial Growth for Composition with Square Root\n5331: :label: prop-factorial-sqrt-composition\n5332: \n5333: For $\\sigma'(V) = \\sqrt{V + c^2}$ where $c = \\eta_{\\min} > 0$ and $V \\in C^m$ with $\\|\\nabla^k V\\| \\leq M_k$, the $m$-th derivative satisfies:\n5334: \n5335: $$\n5336: \\|\\nabla^m \\sigma'(V)\\| \\leq C_{\\sigma,m} \\cdot m!\n5337: \n5338: $$\n5339: ",
       "_registry_context": {
         "stage": "directives",

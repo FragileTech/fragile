@@ -19,6 +19,10 @@
         "label": "thm-continuous-drift-established"
       },
       "section": "## 2. Discrete Lyapunov Drift: The Core Technical Result",
+      "references": [
+        "def-full-synergistic-lyapunov-function",
+        "thm-foster-lyapunov-main"
+      ],
       "raw_directive": "156: From {prf:ref}`thm-foster-lyapunov-main`, the continuous SDE generator satisfies:\n157: \n158: :::{prf:theorem} Continuous Foster-Lyapunov Drift (Established)\n159: :label: thm-continuous-drift-established\n160: \n161: Let $\\mathcal{L} = \\mathcal{L}_{\\text{kin}} + \\mathcal{L}_{\\text{clone}}$ be the generator of the Adaptive Gas SDE. Let $V_{\\text{total}}$ be the synergistic Lyapunov function from {prf:ref}`def-full-synergistic-lyapunov-function`.\n162: \n163: Then for all swarm states $Z \\in \\mathcal{X}^N \\times \\mathbb{R}^{Nd}$:\n164: \n165: $$\n166: \\mathcal{L}V_{\\text{total}}(Z) \\leq -\\kappa_{\\text{total}} V_{\\text{total}}(Z) + C_{\\text{total}}\n167: \n168: $$\n169: \n170: where:\n171: - $\\kappa_{\\text{total}} > 0$: Total drift coefficient (explicit formula in {prf:ref}`thm-foster-lyapunov-main`)\n172: - $C_{\\text{total}} > 0$: Constant (bounded on compact sets)\n173: "
     },
     {
@@ -37,6 +41,10 @@
         "label": "lem-baoab-error-bound"
       },
       "section": "## 2. Discrete Lyapunov Drift: The Core Technical Result",
+      "references": [
+        "def-full-synergistic-lyapunov-function",
+        "def-baoab-integrator"
+      ],
       "raw_directive": "179: ### 2.2. Discretization Error Bound\n180: \n181: :::{prf:lemma} BAOAB Discretization Error for Composite Lyapunov Functions\n182: :label: lem-baoab-error-bound\n183: \n184: Let $V_{\\text{total}} = V_W + c_V V_{\\text{Var}} + c_B W_b$ be the synergistic Lyapunov function from {prf:ref}`def-full-synergistic-lyapunov-function`. The barrier component $W_b$ involves $\\varphi_{\\text{barrier}}(x)$ which diverges at $\\partial \\mathcal{X}_{\\text{valid}}$, so $V_{\\text{total}} \\notin C^3$ globally.\n185: \n186: **Modified assumptions:**\n187: 1. **Decomposition regularity**: Each component $V_W, V_{\\text{Var}}$ is $C^3$ with locally bounded derivatives\n188: 2. **Barrier growth**: $W_b = \\frac{1}{N}\\sum_i \\varphi_{\\text{barrier}}(x_i)$ where $\\varphi$ is smooth in $\\mathcal{X}_{\\text{valid}}$ with controlled growth: $|\\nabla^k \\varphi(x)| \\leq C_k \\varphi(x)^{1 + \\alpha_k}$ for $k \\leq 3$, for some $\\alpha_k \\geq 0$\n189: 3. Force/diffusion Lipschitz: $\\mathbf{F}_{\\text{total}}$ and $\\Sigma_{\\text{reg}}$ are Lipschitz (guaranteed by axioms)\n190: \n191: **Result:** For the BAOAB update $Z_k \\mapsto Z_{k+1}$ from state $Z_k = z$:\n192: \n193: $$\n194: \\mathbb{E}[V_{\\text{total}}(Z_{k+1}) \\mid Z_k = z] = V_{\\text{total}}(z) + \\Delta t \\, \\mathcal{L}V_{\\text{total}}(z) + E_{\\text{BAOAB}}(z, \\Delta t)\n195: \n196: $$\n197: \n198: where the error term satisfies:\n199: \n200: $$\n201: |E_{\\text{BAOAB}}(z, \\Delta t)| \\leq \\Delta t^2 \\cdot \\left( K_1 V_{\\text{total}}(z) + K_2 \\right)\n202: \n203: $$\n204: \n205: for constants $K_1, K_2 > 0$ depending on:\n206: - Lipschitz constants $L_F, L_\\Sigma$ of forces and diffusion\n207: - Local derivative bounds on $V_W, V_{\\text{Var}}$\n208: - Growth exponents $\\alpha_k$ of $\\varphi_{\\text{barrier}}$\n209: - Friction coefficient $\\gamma$\n210: - Timestep constraint: $\\Delta t < \\tau_{\\max}$ (from {prf:ref}`def-baoab-integrator`)\n211: \n212: **Key insight**: The controlled growth condition $|\\nabla^k \\varphi| \\leq C_k \\varphi^{1+\\alpha_k}$ ensures that even though $\\varphi$ diverges at the boundary, its derivatives grow **polynomially in $\\varphi$**, not exponentially. This allows bounding the discretization error in terms of $W_b$ itself.\n213: "
     },
     {
@@ -55,6 +63,7 @@
         "label": "rem-baoab-advantage"
       },
       "section": "## 2. Discrete Lyapunov Drift: The Core Technical Result",
+      "references": [],
       "raw_directive": "215: :::\n216: \n217: :::{prf:remark} BAOAB vs. Euler-Maruyama\n218: :label: rem-baoab-advantage\n219: \n220: **Why BAOAB is better:**\n221: \n222: 1. **Order of accuracy:** BAOAB is second-order, Euler-Maruyama is order 0.5 (weak)\n223: 2. **Symplectic structure:** BAOAB preserves phase space volume exactly\n224: 3. **Energy conservation:** Better for Hamiltonian systems\n225: 4. **Error constants:** $K_1, K_2$ are typically smaller for BAOAB\n226: "
     },
     {
@@ -73,6 +82,11 @@
         "label": "thm-discrete-drift-baoab"
       },
       "section": "## 2. Discrete Lyapunov Drift: The Core Technical Result",
+      "references": [
+        "def-baoab-integrator",
+        "lem-baoab-error-bound",
+        "thm-continuous-drift-established"
+      ],
       "raw_directive": "230: ### 2.3. Discrete Foster-Lyapunov Drift\n231: \n232: :::{prf:theorem} Discrete Lyapunov Drift for BAOAB\n233: :label: thm-discrete-drift-baoab\n234: \n235: Let $\\{Z_k\\}_{k \\geq 0}$ be the discrete-time Markov chain generated by BAOAB. Let:\n236: \n237: $$\n238: \\Delta t < \\Delta t_{\\max} := \\min\\left(\\tau_{\\max}, \\frac{1}{K_1}, \\frac{\\kappa_{\\text{total}}}{2K_1}\\right)\n239: \n240: $$\n241: \n242: where $\\tau_{\\max}$ is from {prf:ref}`def-baoab-integrator` and $K_1$ is from {prf:ref}`lem-baoab-error-bound`.\n243: \n244: Then for all $z \\in \\mathcal{X}^N \\times \\mathbb{R}^{Nd}$:\n245: \n246: $$\n247: \\mathbb{E}[V_{\\text{total}}(Z_{k+1}) \\mid Z_k = z] - V_{\\text{total}}(z) \\leq -\\frac{\\kappa_{\\text{total}} \\Delta t}{2} V_{\\text{total}}(z) + (C_{\\text{total}} + K_2) \\Delta t\n248: \n249: $$\n250: \n251: **Proof:**\n252: \n253: Combine {prf:ref}`thm-continuous-drift-established` and {prf:ref}`lem-baoab-error-bound`:\n254: \n255: $$\n256: \\begin{aligned}\n257: \\mathbb{E}[\\Delta V] &= \\mathbb{E}[V(Z_{k+1}) - V(Z_k) \\mid Z_k = z] \\\\\n258: &= \\Delta t \\, \\mathcal{L}V(z) + E_{\\text{BAOAB}}(z, \\Delta t) \\\\\n259: &\\leq \\Delta t \\, (-\\kappa_{\\text{total}} V(z) + C_{\\text{total}}) + \\Delta t^2 (K_1 V(z) + K_2) \\\\\n260: &= \\Delta t V(z) (-\\kappa_{\\text{total}} + \\Delta t K_1) + \\Delta t (C_{\\text{total}} + \\Delta t K_2)\n261: \\end{aligned}\n262: \n263: $$\n264: \n265: For $\\Delta t < \\kappa_{\\text{total}} / (2K_1)$, we have $-\\kappa_{\\text{total}} + \\Delta t K_1 < -\\kappa_{\\text{total}}/2$, yielding:\n266: \n267: $$\n268: \\mathbb{E}[\\Delta V] \\leq -\\frac{\\kappa_{\\text{total}} \\Delta t}{2} V(z) + (C_{\\text{total}} + K_2) \\Delta t \\quad \\blacksquare\n269: "
     },
     {
@@ -91,6 +105,7 @@
         "label": "rem-discrete-contraction"
       },
       "section": "## 2. Discrete Lyapunov Drift: The Core Technical Result",
+      "references": [],
       "raw_directive": "271: :::\n272: \n273: :::{prf:remark} Discrete Contraction Rate\n274: :label: rem-discrete-contraction\n275: \n276: Define the **discrete contraction coefficient**:\n277: \n278: $$\n279: \\rho_{\\text{discrete}} := 1 - \\frac{\\kappa_{\\text{total}} \\Delta t}{2}\n280: \n281: $$\n282: \n283: Then the drift can be rewritten as:\n284: \n285: $$\n286: \\mathbb{E}[V(Z_{k+1})] \\leq \\rho_{\\text{discrete}} \\, V(Z_k) + C'_{\\text{discrete}}\n287: \n288: $$\n289: \n290: where $C'_{\\text{discrete}} = (C_{\\text{total}} + K_2) \\Delta t$.\n291: \n292: **For small $\\Delta t$:**\n293: \n294: $$\n295: \\rho_{\\text{discrete}} \\approx 1 - \\kappa_{\\text{total}} \\Delta t \\approx e^{-\\kappa_{\\text{total}} \\Delta t} =: \\rho_{\\text{continuous}}\n296: \n297: $$\n298: "
     }
   ],

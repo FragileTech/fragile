@@ -19,6 +19,7 @@
         "label": "lem-no-momentum-source-cloning"
       },
       "section": "## 2. Stress-Energy Tensor Analysis",
+      "references": [],
       "raw_directive": "35: ### 2.1 Momentum Conservation\n36: \n37: :::{prf:lemma} No Momentum Source from Cloning\n38: :label: lem-no-momentum-source-cloning\n39: \n40: The cloning operator conserves total four-momentum exactly:\n41: \n42: $$\n43: \\sum_{i=1}^N p_i^\\mu \\bigg|_{\\text{after}} = \\sum_{i=1}^N p_i^\\mu \\bigg|_{\\text{before}}\n44: $$\n45: \n46: **Consequence**: There is **no source term** $J^\\mu_{\\text{clone}}$ in the energy-momentum conservation law. The cloning operator does not modify:\n47: \n48: $$\n49: \\nabla_\\mu T^{\\mu\\nu} = J^\\nu_{\\text{Langevin}}\n50: $$\n51: \n52: where $J^\\nu_{\\text{Langevin}}$ is the friction-noise source from the kinetic operator (Appendix B)."
     },
     {
@@ -37,6 +38,7 @@
         "label": "prop-cloning-cooling"
       },
       "section": "## 2. Stress-Energy Tensor Analysis",
+      "references": [],
       "raw_directive": "64: ### 2.2 Energy Dissipation\n65: \n66: :::{prf:proposition} Cloning Energy Sink\n67: :label: prop-cloning-cooling\n68: \n69: The cloning operator dissipates kinetic energy at rate:\n70: \n71: $$\n72: \\frac{dE_{\\text{kin}}}{dt}\\bigg|_{\\text{clone}} = -\\frac{1 - \\alpha_{\\text{rest}}^2}{2\\tau_{\\text{clone}}} m\\langle \\|v_{\\text{rel}}\\|^2 \\rangle_{\\text{collision groups}} < 0\n73: $$\n74: \n75: where $\\tau_{\\text{clone}}$ is the average time between cloning events and $v_{\\text{rel}}$ is relative velocity within collision groups.\n76: \n77: **Physical Interpretation**: Cloning acts as an **effective friction** that reduces the temperature:\n78: \n79: $$\n80: \\frac{dT}{dt}\\bigg|_{\\text{clone}} = -\\gamma_{\\text{clone}}(T - T_{\\text{target}})\n81: $$\n82: \n83: where $\\gamma_{\\text{clone}} \\sim (1 - \\alpha_{\\text{rest}}^2)/\\tau_{\\text{clone}}$."
     }
   ],

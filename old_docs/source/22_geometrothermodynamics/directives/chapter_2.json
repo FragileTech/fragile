@@ -19,6 +19,7 @@
         "label": "def-thermodynamic-phase-space"
       },
       "section": "## 2. Contact Geometry and Thermodynamic Phase Space",
+      "references": [],
       "raw_directive": "569: This section establishes the contact geometric formulation of Fragile Gas thermodynamics.\n570: \n571: :::{prf:definition} Thermodynamic Phase Space\n572: :label: def-thermodynamic-phase-space\n573: \n574: The **thermodynamic phase space** $\\mathcal{T}$ of the Fragile Gas is the $(2n+1)$-dimensional manifold:\n575: \n576: $$\n577: \\mathcal{T} = \\{(U, S, V, N, T, P, \\mu) \\in \\mathbb{R}^{2n+1} : \\text{thermodynamic relations satisfied}\\}\n578: $$\n579: \n580: where $n$ is the number of extensive variables (here $n = 3$ for $(U, V, N)$, though $N$ is often fixed).\n581: \n582: The manifold $\\mathcal{T}$ is equipped with a **contact structure** (defined below), making it a contact manifold.\n583: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "def-contact-form-thermodynamics"
       },
       "section": "## 2. Contact Geometry and Thermodynamic Phase Space",
+      "references": [],
       "raw_directive": "585: :::\n586: \n587: :::{prf:definition} Contact 1-Form for Thermodynamics\n588: :label: def-contact-form-thermodynamics\n589: \n590: The **contact 1-form** on thermodynamic phase space $\\mathcal{T}$ is:\n591: \n592: $$\n593: \\theta = dU - T dS + P dV - \\mu dN\n594: $$\n595: \n596: This 1-form encodes the **First Law of Thermodynamics**: for thermodynamic processes satisfying the First Law, we have $\\theta = 0$ along the process trajectory.\n597: \n598: The **contact structure** is given by the codimension-1 distribution:\n599: \n600: $$\n601: \\xi = \\ker(\\theta) = \\{v \\in T\\mathcal{T} : \\theta(v) = 0\\}\n602: $$\n603: "
     },
     {
@@ -55,6 +57,7 @@
         "label": "prop-thermodynamic-contact-structure"
       },
       "section": "## 2. Contact Geometry and Thermodynamic Phase Space",
+      "references": [],
       "raw_directive": "605: :::\n606: \n607: :::{prf:proposition} Thermodynamic Phase Space is Contact\n608: :label: prop-thermodynamic-contact-structure\n609: \n610: The thermodynamic phase space $\\mathcal{T}$ with contact 1-form $\\theta = dU - T dS + P dV - \\mu dN$ satisfies the contact condition:\n611: \n612: $$\n613: \\theta \\wedge d\\theta \\wedge d\\theta \\wedge d\\theta \\neq 0\n614: $$\n615: "
     },
     {
@@ -69,6 +72,7 @@
       "content": "619: :::{prf:proof}\n620: \n621: **Step 1: Compute the differential $d\\theta$.**\n622: \n623: $$\n624: d\\theta = d(dU - T dS + P dV - \\mu dN) = -dT \\wedge dS + dP \\wedge dV - d\\mu \\wedge dN\n625: $$\n626: \n627: (using $d(dU) = 0$ and the product rule for differentials).\n628: \n629: **Step 2: Compute $d\\theta \\wedge d\\theta$.**\n630: \n631: $$\n632: d\\theta \\wedge d\\theta = (-dT \\wedge dS + dP \\wedge dV - d\\mu \\wedge dN) \\wedge (-dT \\wedge dS + dP \\wedge dV - d\\mu \\wedge dN)\n633: $$\n634: \n635: Using antisymmetry of the wedge product and $(dA \\wedge dB) \\wedge (dA \\wedge dB) = 0$:\n636: \n637: $$\n638: d\\theta \\wedge d\\theta = 2(dT \\wedge dS \\wedge dP \\wedge dV - dT \\wedge dS \\wedge d\\mu \\wedge dN - dP \\wedge dV \\wedge d\\mu \\wedge dN)\n639: $$\n640: \n641: **Step 3: Compute $\\theta \\wedge (d\\theta)^3$.**\n642: \n643: For $n = 3$, we need to compute the wedge product of the contact form with the cube of its differential. From Step 2:\n644: \n645: $$\n646: d\\theta = -dT \\wedge dS + dP \\wedge dV - d\\mu \\wedge dN\n647: $$\n648: \n649: Computing $(d\\theta)^2$:\n650: \n651: $$\n652: d\\theta \\wedge d\\theta = (-dT \\wedge dS + dP \\wedge dV - d\\mu \\wedge dN)^2\n653: $$\n654: \n655: Using antisymmetry $(dA \\wedge dB) \\wedge (dA \\wedge dB) = 0$, the cross terms survive:\n656: \n657: $$\n658: d\\theta \\wedge d\\theta = 2(dT \\wedge dS \\wedge dP \\wedge dV - dT \\wedge dS \\wedge d\\mu \\wedge dN + dP \\wedge dV \\wedge d\\mu \\wedge dN)\n659: $$\n660: \n661: Then $(d\\theta)^3 = d\\theta \\wedge (d\\theta)^2$. After expansion (which is algebraically tedious), the result is:\n662: \n663: $$\n664: (d\\theta)^3 = 6 \\cdot dT \\wedge dS \\wedge dP \\wedge dV \\wedge d\\mu \\wedge dN\n665: $$\n666: \n667: Now computing $\\theta \\wedge (d\\theta)^3$:\n668: \n669: $$\n670: \\theta \\wedge (d\\theta)^3 = (dU - T dS + P dV - \\mu dN) \\wedge (6 \\cdot dT \\wedge dS \\wedge dP \\wedge dV \\wedge d\\mu \\wedge dN)\n671: $$\n672: \n673: **Key observation:** The 6-form $dT \\wedge dS \\wedge dP \\wedge dV \\wedge d\\mu \\wedge dN$ involves all variables except $U$. Therefore, only the $dU$ term in $\\theta$ contributes (the other terms produce wedge products with repeated forms, which vanish). Thus:\n674: \n675: $$\n676: \\theta \\wedge (d\\theta)^3 = 6 \\cdot dU \\wedge dT \\wedge dS \\wedge dP \\wedge dV \\wedge d\\mu \\wedge dN\n677: $$\n678: \n679: **Step 4: Non-degeneracy.**",
       "metadata": {},
       "section": "## 2. Contact Geometry and Thermodynamic Phase Space",
+      "references": [],
       "raw_directive": "617: :::\n618: \n619: :::{prf:proof}\n620: \n621: **Step 1: Compute the differential $d\\theta$.**\n622: \n623: $$\n624: d\\theta = d(dU - T dS + P dV - \\mu dN) = -dT \\wedge dS + dP \\wedge dV - d\\mu \\wedge dN\n625: $$\n626: \n627: (using $d(dU) = 0$ and the product rule for differentials).\n628: \n629: **Step 2: Compute $d\\theta \\wedge d\\theta$.**\n630: \n631: $$\n632: d\\theta \\wedge d\\theta = (-dT \\wedge dS + dP \\wedge dV - d\\mu \\wedge dN) \\wedge (-dT \\wedge dS + dP \\wedge dV - d\\mu \\wedge dN)\n633: $$\n634: \n635: Using antisymmetry of the wedge product and $(dA \\wedge dB) \\wedge (dA \\wedge dB) = 0$:\n636: \n637: $$\n638: d\\theta \\wedge d\\theta = 2(dT \\wedge dS \\wedge dP \\wedge dV - dT \\wedge dS \\wedge d\\mu \\wedge dN - dP \\wedge dV \\wedge d\\mu \\wedge dN)\n639: $$\n640: \n641: **Step 3: Compute $\\theta \\wedge (d\\theta)^3$.**\n642: \n643: For $n = 3$, we need to compute the wedge product of the contact form with the cube of its differential. From Step 2:\n644: \n645: $$\n646: d\\theta = -dT \\wedge dS + dP \\wedge dV - d\\mu \\wedge dN\n647: $$\n648: \n649: Computing $(d\\theta)^2$:\n650: \n651: $$\n652: d\\theta \\wedge d\\theta = (-dT \\wedge dS + dP \\wedge dV - d\\mu \\wedge dN)^2\n653: $$\n654: \n655: Using antisymmetry $(dA \\wedge dB) \\wedge (dA \\wedge dB) = 0$, the cross terms survive:\n656: \n657: $$\n658: d\\theta \\wedge d\\theta = 2(dT \\wedge dS \\wedge dP \\wedge dV - dT \\wedge dS \\wedge d\\mu \\wedge dN + dP \\wedge dV \\wedge d\\mu \\wedge dN)\n659: $$\n660: \n661: Then $(d\\theta)^3 = d\\theta \\wedge (d\\theta)^2$. After expansion (which is algebraically tedious), the result is:\n662: \n663: $$\n664: (d\\theta)^3 = 6 \\cdot dT \\wedge dS \\wedge dP \\wedge dV \\wedge d\\mu \\wedge dN\n665: $$\n666: \n667: Now computing $\\theta \\wedge (d\\theta)^3$:\n668: \n669: $$\n670: \\theta \\wedge (d\\theta)^3 = (dU - T dS + P dV - \\mu dN) \\wedge (6 \\cdot dT \\wedge dS \\wedge dP \\wedge dV \\wedge d\\mu \\wedge dN)\n671: $$\n672: \n673: **Key observation:** The 6-form $dT \\wedge dS \\wedge dP \\wedge dV \\wedge d\\mu \\wedge dN$ involves all variables except $U$. Therefore, only the $dU$ term in $\\theta$ contributes (the other terms produce wedge products with repeated forms, which vanish). Thus:\n674: \n675: $$\n676: \\theta \\wedge (d\\theta)^3 = 6 \\cdot dU \\wedge dT \\wedge dS \\wedge dP \\wedge dV \\wedge d\\mu \\wedge dN\n677: $$\n678: \n679: **Step 4: Non-degeneracy.**\n680: "
     },
     {
@@ -87,6 +91,7 @@
         "label": "def-legendre-submanifold"
       },
       "section": "## 2. Contact Geometry and Thermodynamic Phase Space",
+      "references": [],
       "raw_directive": "686: The power of contact geometry lies in its natural description of Legendre transforms via **Legendre submanifolds**.\n687: \n688: :::{prf:definition} Legendre Submanifold\n689: :label: def-legendre-submanifold\n690: \n691: An $n$-dimensional submanifold $L \\subset \\mathcal{T}$ is a **Legendre submanifold** if:\n692: \n693: 1. $\\theta|_L = 0$ (the contact form restricts to zero on $L$)\n694: 2. $\\dim(L) = n$ (maximal dimension satisfying condition 1)\n695: "
     },
     {
@@ -105,6 +110,7 @@
         "label": "thm-potentials-are-legendre"
       },
       "section": "## 2. Contact Geometry and Thermodynamic Phase Space",
+      "references": [],
       "raw_directive": "697: :::\n698: \n699: :::{prf:theorem} Thermodynamic Potentials are Legendre Submanifolds\n700: :label: thm-potentials-are-legendre\n701: \n702: For the Fragile Gas thermodynamic phase space $(\\mathcal{T}, \\theta)$ with $\\theta = dU - T dS + P dV - \\mu dN$, the following are Legendre submanifolds:\n703: \n704: **1. Energy Hypersurface:**\n705: \n706: $$\n707: L_U = \\{(S, V, N, U(S, V, N), T, P, \\mu) : T = \\frac{\\partial U}{\\partial S}, P = -\\frac{\\partial U}{\\partial V}, \\mu = \\frac{\\partial U}{\\partial N}\\}\n708: $$\n709: \n710: **2. Entropy Hypersurface:**\n711: \n712: $$\n713: L_S = \\{(U, V, N, S(U, V, N), T, P, \\mu) : T = \\left(\\frac{\\partial S}{\\partial U}\\right)^{-1}, \\ldots\\}\n714: $$\n715: \n716: **3. Helmholtz Free Energy Hypersurface:**\n717: \n718: $$\n719: L_F = \\{(T, V, N, F(T, V, N), S, P, \\mu) : S = -\\frac{\\partial F}{\\partial T}, P = -\\frac{\\partial F}{\\partial V}, \\mu = \\frac{\\partial F}{\\partial N}\\}\n720: $$\n721: "
     },
     {
@@ -119,6 +125,7 @@
       "content": "725: :::{prf:proof}\n726: \n727: We prove the statement for $L_U$ (energy representation); the others follow analogously.\n728: \n729: **Step 1: Parametrize the submanifold.**\n730: \n731: On $L_U$, we use $(S, V, N)$ as coordinates. The point in phase space is:\n732: \n733: $$\n734: (S, V, N, U(S, V, N), T(S, V, N), P(S, V, N), \\mu(S, V, N))\n735: $$\n736: \n737: where $T = \\partial U / \\partial S$, $P = -\\partial U / \\partial V$, $\\mu = \\partial U / \\partial N$.\n738: \n739: **Step 2: Restrict the contact form to $L_U$.**\n740: \n741: $$\n742: \\theta|_{L_U} = dU - T dS + P dV - \\mu dN\n743: $$\n744: \n745: Computing the differential of $U$ on $L_U$ using the chain rule:\n746: \n747: $$\n748: dU = \\frac{\\partial U}{\\partial S} dS + \\frac{\\partial U}{\\partial V} dV + \\frac{\\partial U}{\\partial N} dN = T dS - P dV + \\mu dN\n749: $$\n750: \n751: Substituting into $\\theta|_{L_U}$:\n752: \n753: $$\n754: \\theta|_{L_U} = (T dS - P dV + \\mu dN) - T dS + P dV - \\mu dN = 0\n755: $$\n756: \n757: **Step 3: Verify dimension.**",
       "metadata": {},
       "section": "## 2. Contact Geometry and Thermodynamic Phase Space",
+      "references": [],
       "raw_directive": "723: :::\n724: \n725: :::{prf:proof}\n726: \n727: We prove the statement for $L_U$ (energy representation); the others follow analogously.\n728: \n729: **Step 1: Parametrize the submanifold.**\n730: \n731: On $L_U$, we use $(S, V, N)$ as coordinates. The point in phase space is:\n732: \n733: $$\n734: (S, V, N, U(S, V, N), T(S, V, N), P(S, V, N), \\mu(S, V, N))\n735: $$\n736: \n737: where $T = \\partial U / \\partial S$, $P = -\\partial U / \\partial V$, $\\mu = \\partial U / \\partial N$.\n738: \n739: **Step 2: Restrict the contact form to $L_U$.**\n740: \n741: $$\n742: \\theta|_{L_U} = dU - T dS + P dV - \\mu dN\n743: $$\n744: \n745: Computing the differential of $U$ on $L_U$ using the chain rule:\n746: \n747: $$\n748: dU = \\frac{\\partial U}{\\partial S} dS + \\frac{\\partial U}{\\partial V} dV + \\frac{\\partial U}{\\partial N} dN = T dS - P dV + \\mu dN\n749: $$\n750: \n751: Substituting into $\\theta|_{L_U}$:\n752: \n753: $$\n754: \\theta|_{L_U} = (T dS - P dV + \\mu dN) - T dS + P dV - \\mu dN = 0\n755: $$\n756: \n757: **Step 3: Verify dimension.**\n758: "
     },
     {
@@ -137,6 +144,7 @@
         "class": "tip"
       },
       "section": "## 2. Contact Geometry and Thermodynamic Phase Space",
+      "references": [],
       "raw_directive": "760: :::\n761: \n762: :::{prf:remark} Geometric Meaning of Legendre Transform\n763: :class: tip\n764: \n765: A **Legendre transform** between thermodynamic potentials (e.g., $U(S, V, N) \\leftrightarrow F(T, V, N)$) corresponds geometrically to projecting one Legendre submanifold onto the base of another. This is a **contact transformation**: it preserves the contact structure while changing coordinates.\n766: "
     },
     {
@@ -155,6 +163,7 @@
         "label": "def-reeb-vector-field"
       },
       "section": "## 2. Contact Geometry and Thermodynamic Phase Space",
+      "references": [],
       "raw_directive": "772: Contact manifolds come equipped with a canonical vector field called the **Reeb vector field**, which plays the role of thermodynamic flow.\n773: \n774: :::{prf:definition} Reeb Vector Field for Thermodynamics\n775: :label: def-reeb-vector-field\n776: \n777: The **Reeb vector field** $R$ on $(\\mathcal{T}, \\theta)$ is the unique vector field satisfying:\n778: \n779: $$\n780: \\theta(R) = 1, \\quad \\iota_R d\\theta = 0\n781: $$\n782: \n783: where $\\iota_R$ denotes interior product (contraction).\n784: "
     },
     {
@@ -173,6 +182,7 @@
         "label": "prop-reeb-explicit"
       },
       "section": "## 2. Contact Geometry and Thermodynamic Phase Space",
+      "references": [],
       "raw_directive": "786: :::\n787: \n788: :::{prf:proposition} Explicit Reeb Vector Field for Fragile Gas\n789: :label: prop-reeb-explicit\n790: \n791: For the contact form $\\theta = dU - T dS + P dV - \\mu dN$ on thermodynamic phase space, the Reeb vector field is:\n792: \n793: $$\n794: R = \\frac{\\partial}{\\partial U}\n795: $$\n796: "
     },
     {
@@ -187,6 +197,7 @@
       "content": "800: :::{prf:proof}\n801: \n802: **Step 1: Verify $\\theta(R) = 1$.**\n803: \n804: $$\n805: \\theta\\left(\\frac{\\partial}{\\partial U}\\right) = (dU - T dS + P dV - \\mu dN)\\left(\\frac{\\partial}{\\partial U}\\right) = 1\n806: $$\n807: \n808: since $dU(\\partial/\\partial U) = 1$ and $dS(\\partial/\\partial U) = 0$, etc.\n809: \n810: **Step 2: Verify $\\iota_R d\\theta = 0$.**\n811: \n812: Recall $d\\theta = -dT \\wedge dS + dP \\wedge dV - d\\mu \\wedge dN$. Computing the interior product:\n813: \n814: $$\n815: \\iota_{\\partial/\\partial U} d\\theta = -\\frac{\\partial T}{\\partial U} dS + \\frac{\\partial P}{\\partial U} dV - \\frac{\\partial \\mu}{\\partial U} dN\n816: $$\n817: \n818: On the Legendre submanifold $L_U$ (where thermodynamic relations hold), we have:\n819: \n820: $$\n821: \\frac{\\partial T}{\\partial U} = \\frac{\\partial^2 U}{\\partial S \\partial U}, \\quad \\text{etc.}\n822: $$",
       "metadata": {},
       "section": "## 2. Contact Geometry and Thermodynamic Phase Space",
+      "references": [],
       "raw_directive": "798: :::\n799: \n800: :::{prf:proof}\n801: \n802: **Step 1: Verify $\\theta(R) = 1$.**\n803: \n804: $$\n805: \\theta\\left(\\frac{\\partial}{\\partial U}\\right) = (dU - T dS + P dV - \\mu dN)\\left(\\frac{\\partial}{\\partial U}\\right) = 1\n806: $$\n807: \n808: since $dU(\\partial/\\partial U) = 1$ and $dS(\\partial/\\partial U) = 0$, etc.\n809: \n810: **Step 2: Verify $\\iota_R d\\theta = 0$.**\n811: \n812: Recall $d\\theta = -dT \\wedge dS + dP \\wedge dV - d\\mu \\wedge dN$. Computing the interior product:\n813: \n814: $$\n815: \\iota_{\\partial/\\partial U} d\\theta = -\\frac{\\partial T}{\\partial U} dS + \\frac{\\partial P}{\\partial U} dV - \\frac{\\partial \\mu}{\\partial U} dN\n816: $$\n817: \n818: On the Legendre submanifold $L_U$ (where thermodynamic relations hold), we have:\n819: \n820: $$\n821: \\frac{\\partial T}{\\partial U} = \\frac{\\partial^2 U}{\\partial S \\partial U}, \\quad \\text{etc.}\n822: $$\n823: "
     },
     {
@@ -205,6 +216,7 @@
         "class": "note"
       },
       "section": "## 2. Contact Geometry and Thermodynamic Phase Space",
+      "references": [],
       "raw_directive": "825: :::\n826: \n827: :::{prf:remark} Thermodynamic Cycles and Entropy Production\n828: :class: note\n829: \n830: The integral curves of the Reeb vector field $R$ describe **reversible thermodynamic cycles** at constant total energy. For irreversible processes (like the Fragile Gas cloning operator), the flow is not along $R$, but has a component transverse to the Legendre submanifold, corresponding to **entropy production**.\n831: "
     }
   ],

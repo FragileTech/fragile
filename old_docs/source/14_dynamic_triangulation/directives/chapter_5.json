@@ -19,6 +19,7 @@
         "label": "thm-online-high-dim"
       },
       "section": "## 5. Extension to Higher Dimensions",
+      "references": [],
       "raw_directive": "692: ### 5.2 Online Algorithm in Arbitrary Dimension\n693: \n694: :::{prf:theorem} Online Triangulation in d Dimensions\n695: :label: thm-online-high-dim\n696: \n697: The online triangulation algorithm generalizes to arbitrary dimension d:\n698: \n699: **Per-Walker Update Complexity**:\n700: 1. **SDE move (Type 1)**: O(d) Lawson flips on average\n701: 2. **Cloning (Type 2)**: O(log N) point location + O(d) flips\n702: \n703: **Per-Timestep Complexity**:\n704: \n705: $$\n706: T(N, d, p_{\\text{clone}}) = O(N \\cdot d) + O(p_{\\text{clone}} \\cdot N \\cdot \\log N)\n707: \n708: $$\n709: \n710: **For fixed dimension d**:\n711: \n712: $$\n713: \\bar{T}(N, d) = O(N \\cdot d) \\quad \\text{(amortized)}\n714: \n715: $$\n716: \n717: **Speedup vs. Batch**:\n718: \n719: $$\n720: \\text{Speedup} = \\frac{N^{\\lceil d/2 \\rceil}}{N \\cdot d} = \\frac{N^{\\lceil d/2 \\rceil - 1}}{d}\n721: \n722: $$\n723: \n724: **Example (d=4, N=10\u2076)**:\n725: - Batch: O(N\u00b2) \u2248 10\u00b9\u00b2 operations\n726: - Online: O(N \u00b7 4) \u2248 4 \u00d7 10\u2076 operations"
     }
   ],

@@ -19,6 +19,7 @@
         "label": "alg-antichain-detection"
       },
       "section": "## 9. Computational Verification",
+      "references": [],
       "raw_directive": "1914: ### 9.1. Algorithm for Antichain Detection\n1915: \n1916: :::{prf:algorithm} Compute Minimal Separating Antichain\n1917: :label: alg-antichain-detection\n1918: \n1919: **Input**:\n1920: - Fractal Set $\\mathcal{F} = (\\mathcal{N}, E_{\\text{CST}})$\n1921: - Spatial region $A \\subset \\mathcal{X}$\n1922: \n1923: **Output**: Minimal separating antichain $\\gamma_A$\n1924: \n1925: **Procedure**:\n1926: \n1927: 1. **Initialize**: $\\gamma_A = \\emptyset$, $\\text{Visited} = \\emptyset$\n1928: \n1929: 2. **For each episode** $e_i \\in \\mathcal{N}$ with $x_i \\in A$ (inside $A$):\n1930:    - If $e_i$ has no descendants in $A$ but has descendants in $\\bar{A}$:\n1931:      - Add $e_i$ to $\\gamma_A$\n1932: \n1933: 3. **Minimality check**: Iterate through $\\gamma_A$ and remove any episode $e_j$ such that removing $e_j$ still leaves a separating antichain\n1934: \n1935: 4. **Return** $\\gamma_A$\n1936: "
     },
     {
@@ -37,6 +38,9 @@
         "label": "alg-surface-integral-compute"
       },
       "section": "## 9. Computational Verification",
+      "references": [
+        "alg-fan-triangulation-area"
+      ],
       "raw_directive": "1938: :::\n1939: \n1940: :::{prf:algorithm} Compute Surface Integral for Comparison\n1941: :label: alg-surface-integral-compute\n1942: \n1943: **Input**:\n1944: - Surface $\\partial A_{\\min}$ (triangulated mesh)\n1945: - QSD density $\\rho_{\\text{spatial}}(x)$\n1946: - Metric $g(x)$\n1947: \n1948: **Output**: $\\int_{\\partial A_{\\min}} \\rho_{\\text{spatial}}(x) \\, d\\Sigma_g(x)$\n1949: \n1950: **Procedure**:\n1951: \n1952: 1. **For each triangle** $T \\in \\text{mesh}(\\partial A_{\\min})$:\n1953:    - Compute centroid $x_c = (x_0 + x_1 + x_2) / 3$\n1954:    - Evaluate $\\rho_c = \\rho_{\\text{spatial}}(x_c)$\n1955:    - Compute Riemannian area $A_g(T)$ using fan triangulation ({prf:ref}`alg-fan-triangulation-area` from {doc}`10_areas_volumes_integration.md`)\n1956:    - Add $\\rho_c \\cdot A_g(T)$ to total\n1957: \n1958: 2. **Return** total\n1959: "
     },
     {
@@ -55,6 +59,7 @@
         "label": "rem-numerical-validation"
       },
       "section": "## 9. Computational Verification",
+      "references": [],
       "raw_directive": "1963: ### 9.2. Numerical Validation Protocol\n1964: \n1965: :::{prf:remark} Testing Strategy\n1966: :label: rem-numerical-validation\n1967: \n1968: **Test 1: Uniform density flat space**\n1969: - Set $g = I$ (Euclidean), $U_{\\text{eff}} = \\text{const}$\n1970: - Expect $|\\gamma_A| / N \\to \\rho_0 \\cdot \\text{Area}(\\partial A)$\n1971: - Verify for spheres, cubes, ellipsoids\n1972: \n1973: **Test 2: Gaussian fitness landscape**\n1974: - $U_{\\text{eff}}(x) = \\|x\\|^2 / 2$ (quadratic potential)\n1975: - $g = I + \\epsilon H$ with $H = \\nabla^2 U$\n1976: - Compare $|\\gamma_A| / N$ with computed surface integral\n1977: \n1978: **Test 3: Convergence rate**\n1979: - Vary $N \\in \\{100, 1000, 10000, 100000\\}$\n1980: - Plot $\\log(\\text{error})$ vs. $\\log(N)$\n1981: - Verify slope $\\approx -1/d$\n1982: "
     }
   ],

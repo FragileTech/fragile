@@ -2,7 +2,7 @@
   "document_id": "16_convergence_mean_field",
   "stage": "directives",
   "directive_type": "conjecture",
-  "generated_at": "2025-11-08T17:16:20.297308+00:00",
+  "generated_at": "2025-11-08T23:19:38.323913+00:00",
   "count": 1,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "conj-ldp-mean-field"
       },
       "section": "## 1. Why Mean-Field KL-Convergence is Valuable",
+      "references": [],
       "raw_directive": "210: For McKean-Vlasov systems, KL-divergence is the **fundamental** metric:\n211: \n212: :::{prf:conjecture} Large Deviations Principle for Mean-Field Limit (Unproven)\n213: :label: conj-ldp-mean-field\n214: \n215: As $N \\to \\infty$, the empirical measure $\\mu_N = \\frac{1}{N} \\sum_{i=1}^N \\delta_{(x_i, v_i)}$ is conjectured to satisfy a large deviations principle with rate function:\n216: \n217: $$\n218: I(\\rho) = \\begin{cases}\n219: D_{\\text{KL}}(\\rho \\| \\rho_\\infty) & \\text{if } \\rho \\ll \\rho_\\infty \\\\\n220: +\\infty & \\text{otherwise}\n221: \\end{cases}\n222: $$\n223: \n224: This means deviations from the mean-field limit $\\rho_\\infty$ would be exponentially suppressed with probability $\\sim e^{-N \\cdot D_{\\text{KL}}}$.\n225: \n226: **Status**: This LDP has **not been proven** for systems with state-dependent killing and proportional revival. Standard LDP results (Dawson-Gärtner, Dupuis-Ellis) apply to conservative systems or systems with fixed jump rates, not QSD-conditioned dynamics.\n227: ",
       "_registry_context": {
         "stage": "directives",

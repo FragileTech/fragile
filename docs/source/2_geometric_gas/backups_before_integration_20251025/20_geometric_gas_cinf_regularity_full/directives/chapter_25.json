@@ -19,6 +19,9 @@
         "label": "conj-lsi-companion-dependent-full"
       },
       "section": "## 15. Logarithmic Sobolev Inequality",
+      "references": [
+        "thm-main-complete-cinf-geometric-gas-full"
+      ],
       "raw_directive": "4952: ## 15. Logarithmic Sobolev Inequality\n4953: \n4954: :::{prf:conjecture} LSI for Companion-Dependent Geometric Gas\n4955: :label: conj-lsi-companion-dependent-full\n4956: \n4957: We conjecture that under the assumptions of {prf:ref}`thm-main-complete-cinf-geometric-gas-full`, the Geometric Gas satisfies a **Logarithmic Sobolev Inequality** with constant $\\alpha > 0$:\n4958: \n4959: $$\n4960: \\text{Ent}_\\mu(\\rho) \\leq \\frac{1}{\\alpha} \\mathcal{E}(\\rho, \\rho)\n4961: \n4962: $$\n4963: \n4964: where:\n4965: - $\\text{Ent}_\\mu(\\rho) = \\int \\rho \\log(\\rho/\\mu) d\\mu$ (relative entropy)\n4966: - $\\mathcal{E}(\\rho, \\rho) = -\\int \\rho \\mathcal{L}_{\\text{geo}} \\log \\rho \\, d\\mu$ (Dirichlet form)\n4967: "
     },
     {
@@ -37,6 +40,9 @@
         "label": "cor-exponential-qsd-companion-dependent-full"
       },
       "section": "## 15. Logarithmic Sobolev Inequality",
+      "references": [
+        "conj-lsi-companion-dependent-full"
+      ],
       "raw_directive": "5022: :::\n5023: \n5024: :::{prf:corollary} Exponential Convergence to QSD (Conditional)\n5025: :label: cor-exponential-qsd-companion-dependent-full\n5026: \n5027: **If** {prf:ref}`conj-lsi-companion-dependent-full` holds, then the Geometric Gas with companion-dependent fitness converges exponentially to its unique quasi-stationary distribution:\n5028: \n5029: $$\n5030: \\|\\rho_t - \\nu_{\\text{QSD}}\\|_{L^2(\\mu)} \\leq e^{-\\lambda_{\\text{gap}} t} \\|\\rho_0 - \\nu_{\\text{QSD}}\\|_{L^2(\\mu)}\n5031: \n5032: $$\n5033: \n5034: where $\\lambda_{\\text{gap}} \\geq \\alpha > 0$ is the **spectral gap**, independent of $N$ and $k$.\n5035: "
     },
     {
@@ -51,6 +57,9 @@
       "content": "5038: ",
       "metadata": {},
       "section": "## 15. Logarithmic Sobolev Inequality",
+      "references": [
+        "thm-main-cinf-regularity-fitness-potential-full"
+      ],
       "raw_directive": "5037: :::\n5038: \n5039: :::{prf:proof}"
     }
   ],

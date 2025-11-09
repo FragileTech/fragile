@@ -2,7 +2,7 @@
   "document_id": "05_kinetic_contraction",
   "stage": "directives",
   "directive_type": "definition",
-  "generated_at": "2025-11-08T17:16:20.147844+00:00",
+  "generated_at": "2025-11-08T23:19:38.246168+00:00",
   "count": 6,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "def-kinetic-operator-stratonovich"
       },
       "section": "## 3. The Kinetic Operator with Stratonovich Formulation",
+      "references": [],
       "raw_directive": "176: ### 3.2. The Kinetic SDE\n177: \n178: :::{prf:definition} The Kinetic Operator (Stratonovich Form)\n179: :label: def-kinetic-operator-stratonovich\n180: \n181: The kinetic operator $\\Psi_{\\text{kin}}$ evolves the swarm for a time interval $\\tau > 0$ according to the coupled Stratonovich SDEs:\n182: \n183: $$\n184: \\begin{aligned}\n185: dx_t &= v_t \\, dt \\\\\n186: dv_t &= F(x_t) \\, dt - \\gamma(v_t - u(x_t)) \\, dt + \\Sigma(x_t, v_t) \\circ dW_t\n187: \\end{aligned}\n188: \n189: $$\n190: \n191: where:\n192: \n193: **Deterministic Terms:**\n194: - $F(x) = -\\nabla U(x)$: Force field from the **confining potential** $U: \\mathcal{X}_{\\text{valid}} \\to \\mathbb{R}_{\\geq 0}$\n195: - $\\gamma > 0$: **Friction coefficient**\n196: - $u(x)$: **Local drift velocity** (typically $u \\equiv 0$ for simplicity)\n197: \n198: **Stochastic Term:**\n199: - $\\Sigma(x,v): \\mathcal{X}_{\\text{valid}} \\times \\mathbb{R}^d \\to \\mathbb{R}^{d \\times d}$: **Diffusion tensor**\n200: - $W_t$: Standard $d$-dimensional Brownian motion\n201: - $\\circ$: **Stratonovich product**\n202: \n203: **Boundary Condition:**\n204: After evolving for time $\\tau$, the walker status is updated:\n205: \n206: $$\n207: s_i^{(t+1)} = \\mathbf{1}_{\\mathcal{X}_{\\text{valid}}}(x_i(t+\\tau))\n208: \n209: $$\n210: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "def-baoab-integrator"
       },
       "section": "## 3. The Kinetic Operator with Stratonovich Formulation",
+      "references": [],
       "raw_directive": "482: For practical implementation, the Stratonovich SDE is discretized using splitting schemes.\n483: \n484: :::{prf:definition} BAOAB Integrator for Stratonovich Langevin\n485: :label: def-baoab-integrator\n486: \n487: The **BAOAB splitting scheme** (Leimkuhler & Matthews, 2013) is a symmetric, second-order accurate integrator for underdamped Langevin dynamics:\n488: \n489: **B-step (velocity drift from force):**\n490: \n491: $$\n492: v^{(1)} = v^{(0)} + \\frac{\\tau}{2} F(x^{(0)})\n493: \n494: $$\n495: \n496: **A-step (position update):**\n497: \n498: $$\n499: x^{(1)} = x^{(0)} + \\frac{\\tau}{2} v^{(1)}\n500: \n501: $$\n502: \n503: **O-step (Ornstein-Uhlenbeck for friction + noise):**\n504: \n505: $$\n506: v^{(2)} = e^{-\\gamma \\tau} v^{(1)} + \\sqrt{\\frac{\\sigma_v^2}{\\gamma}(1 - e^{-2\\gamma\\tau})} \\, \\xi\n507: \n508: $$\n509: \n510: where $\\xi \\sim \\mathcal{N}(0, I_d)$.\n511: \n512: **A-step (position update, continued):**\n513: \n514: $$\n515: x^{(2)} = x^{(1)} + \\frac{\\tau}{2} v^{(2)}\n516: \n517: $$\n518: \n519: **B-step (velocity drift, continued):**\n520: \n521: $$\n522: v^{(3)} = v^{(2)} + \\frac{\\tau}{2} F(x^{(2)})\n523: \n524: $$\n525: \n526: **Output:** $(x^{(2)}, v^{(3)})$\n527: \n528: **Advantages:**\n529: - Symplectic (preserves phase space volume)\n530: - Second-order accurate in $\\tau$\n531: - Correct invariant distribution in the $\\tau \\to 0$ limit",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "def-hypocoercive-norm"
       },
       "section": "## 4. Hypocoercive Contraction of Inter-Swarm Error",
+      "references": [],
       "raw_directive": "1362: To analyze hypocoercivity, we must work with a specially designed norm that couples position and velocity.\n1363: \n1364: :::{prf:definition} The Hypocoercive Norm\n1365: :label: def-hypocoercive-norm\n1366: \n1367: For the coupled swarm state $(S_1, S_2)$, define the **hypocoercive norm squared** on the phase-space difference:\n1368: \n1369: $$\n1370: \\|\\!(\\Delta x, \\Delta v)\\!\\|_h^2 := \\|\\Delta x\\|^2 + \\lambda_v \\|\\Delta v\\|^2 + b \\langle \\Delta x, \\Delta v \\rangle\n1371: \n1372: $$\n1373: \n1374: where:\n1375: - $\\Delta x = x_1 - x_2$: Position difference\n1376: - $\\Delta v = v_1 - v_2$: Velocity difference\n1377: - $\\lambda_v > 0$: Velocity weight (of order $1/\\gamma$)\n1378: - $b \\in \\mathbb{R}$: Coupling coefficient (chosen appropriately)\n1379: \n1380: **For the empirical measures:** The hypocoercive Wasserstein distance is:\n1381: \n1382: $$\n1383: V_W(\\mu_1, \\mu_2) = W_h^2(\\mu_1, \\mu_2)\n1384: \n1385: $$\n1386: \n1387: where $W_h$ is the Wasserstein-2 distance with cost $\\|\\!(\\Delta x, \\Delta v)\\!\\|_h^2$.\n1388: \n1389: **Decomposition (from 03_cloning.md):**\n1390: \n1391: $$\n1392: V_W = V_{\\text{loc}} + V_{\\text{struct}}\n1393: \n1394: $$",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +99,7 @@
         "label": "def-velocity-variance-recall"
       },
       "section": "## 5. Velocity Variance Dissipation via Langevin Friction",
+      "references": [],
       "raw_directive": "1981: ### 5.2. Velocity Variance Definition (Recall)\n1982: \n1983: :::{prf:definition} Velocity Variance Component (Recall)\n1984: :label: def-velocity-variance-recall\n1985: \n1986: From 03_cloning.md Definition 3.3.1, the velocity variance component of the Lyapunov function is:\n1987: \n1988: $$\n1989: V_{\\text{Var},v}(S_1, S_2) = \\frac{1}{N}\\sum_{k=1,2} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{v,k,i}\\|^2\n1990: \n1991: $$\n1992: \n1993: where $\\delta_{v,k,i} = v_{k,i} - \\mu_{v,k}$ is the centered velocity of walker $i$ in swarm $k$.\n1994: ",
       "_registry_context": {
         "stage": "directives",
@@ -121,6 +125,7 @@
         "label": "def-positional-variance-recall"
       },
       "section": "## 6. Positional Diffusion and Bounded Expansion",
+      "references": [],
       "raw_directive": "2387: ### 6.2. Positional Variance (Recall)\n2388: \n2389: :::{prf:definition} Positional Variance Component (Recall)\n2390: :label: def-positional-variance-recall\n2391: \n2392: From 03_cloning.md Definition 3.3.1:\n2393: \n2394: $$\n2395: V_{\\text{Var},x}(S_1, S_2) = \\frac{1}{N}\\sum_{k=1,2} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2\n2396: \n2397: $$\n2398: ",
       "_registry_context": {
         "stage": "directives",
@@ -146,6 +151,7 @@
         "label": "def-boundary-potential-recall"
       },
       "section": "## 7. Boundary Potential Contraction via Confining Potential",
+      "references": [],
       "raw_directive": "2758: ### 7.2. Boundary Potential (Recall)\n2759: \n2760: :::{prf:definition} Boundary Potential (Recall)\n2761: :label: def-boundary-potential-recall\n2762: \n2763: From 03_cloning.md Definition 3.3.1:\n2764: \n2765: $$\n2766: W_b(S_1, S_2) = \\frac{1}{N}\\sum_{k=1,2} \\sum_{i \\in \\mathcal{A}(S_k)} \\varphi_{\\text{barrier}}(x_{k,i})\n2767: \n2768: $$\n2769: \n2770: where $\\varphi_{\\text{barrier}}: \\mathcal{X}_{\\text{valid}} \\to \\mathbb{R}_{\\geq 0}$ is the smooth barrier function that:\n2771: - Equals zero in the safe interior",
       "_registry_context": {
         "stage": "directives",

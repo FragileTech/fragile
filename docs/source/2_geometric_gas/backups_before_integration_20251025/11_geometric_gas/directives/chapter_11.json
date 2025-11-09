@@ -19,6 +19,7 @@
         "label": "def-n-particle-generator-lsi"
       },
       "section": "## 8. The Logarithmic Sobolev Inequality: A Conjectured Strengthening",
+      "references": [],
       "raw_directive": "1742: Before stating the main theorem, we formally define the key mathematical objects for the LSI proof.\n1743: \n1744: :::{prf:definition} The N-Particle Generator for the Adaptive System\n1745: :label: def-n-particle-generator-lsi\n1746: \n1747: The infinitesimal generator $\\mathcal{L}_N$ for the N-particle Geometric Viscous Fluid Model acts on sufficiently smooth test functions $f: (\\mathcal{X} \\times \\mathbb{R}^d)^N \\to \\mathbb{R}$ as:\n1748: \n1749: $$\n1750: \\mathcal{L}_N f = \\mathcal{L}_{\\text{kin},N} f + \\mathcal{L}_{\\text{clone},N} f\n1751: $$\n1752: \n1753: where:\n1754: \n1755: **Kinetic Part:**\n1756: \n1757: $$\n1758: \\mathcal{L}_{\\text{kin},N} f = \\sum_{i=1}^N \\left[ v_i \\cdot \\nabla_{x_i} f + \\mathbf{F}_{\\text{total}}(x_i, S) \\cdot \\nabla_{v_i} f + \\frac{1}{2} \\text{Tr}\\left( D_{\\text{reg}}(x_i, S) \\nabla^2_{v_i} f \\right) \\right]\n1759: $$\n1760: \n1761: with total force:\n1762: \n1763: $$\n1764: \\mathbf{F}_{\\text{total}}(x_i, S) = -\\nabla U(x_i) + \\epsilon_F \\nabla V_{\\text{fit}}(S) + \\mathbf{F}_{\\text{viscous}}(x_i, S) - \\gamma v_i\n1765: $$\n1766: \n1767: and regularized diffusion matrix:\n1768: \n1769: $$\n1770: D_{\\text{reg}}(x_i, S) = \\Sigma_{\\text{reg}}(x_i, S) \\Sigma_{\\text{reg}}(x_i, S)^T = (H_i(S) + \\epsilon_\\Sigma I)^{-1}\n1771: $$\n1772: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "def-entropy-fisher-lsi"
       },
       "section": "## 8. The Logarithmic Sobolev Inequality: A Conjectured Strengthening",
+      "references": [],
       "raw_directive": "1774: :::\n1775: \n1776: :::{prf:definition} Relative Entropy and Fisher Information\n1777: :label: def-entropy-fisher-lsi\n1778: \n1779: Let $\\mu$ and $\\nu$ be probability measures on $(\\mathcal{X} \\times \\mathbb{R}^d)^N$ with $\\mu \\ll \\nu$ (absolutely continuous). Denote the Radon-Nikodym derivative by $h = d\\mu/d\\nu$.\n1780: \n1781: 1. **Relative Entropy (Kullback-Leibler divergence):**\n1782: \n1783: $$\n1784: \\text{Ent}_\\nu(\\mu) := \\int h \\log h \\, d\\nu = \\int h \\log h \\, d\\nu\n1785: $$\n1786: \n1787: For a function $f$, we define $\\text{Ent}_\\nu(f^2) := \\text{Ent}_\\nu(\\mu_f)$ where $d\\mu_f = f^2/\\int f^2 d\\nu \\, d\\nu$.\n1788: \n1789: 2. **Carr\u00e9 du Champ (Fisher Information):**\n1790: \n1791: $$\n1792: \\Gamma_N(f) := \\frac{1}{2} \\left( \\mathcal{L}_N(f^2) - 2f \\mathcal{L}_N f \\right)\n1793: $$\n1794: \n1795: For the kinetic part with anisotropic diffusion $D_{\\text{reg}}$:\n1796: \n1797: $$\n1798: \\Gamma_N(f) = \\frac{1}{2} \\sum_{i=1}^N \\text{Tr}\\left( D_{\\text{reg}}(x_i, S) \\nabla_{v_i} f \\otimes \\nabla_{v_i} f \\right)\n1799: $$\n1800: \n1801: This can be written more explicitly as:\n1802: \n1803: $$\n1804: \\Gamma_N(f) = \\frac{1}{2} \\sum_{i=1}^N \\left\\langle \\nabla_{v_i} f, D_{\\text{reg}}(x_i, S) \\nabla_{v_i} f \\right\\rangle\n1805: $$\n1806: \n1807: where the diffusion matrix $D_{\\text{reg}} = (H_i + \\epsilon_\\Sigma I)^{-1}$ is symmetric and positive definite by construction.\n1808: "
     },
     {
@@ -55,6 +57,7 @@
         "label": "def-lsi"
       },
       "section": "## 8. The Logarithmic Sobolev Inequality: A Conjectured Strengthening",
+      "references": [],
       "raw_directive": "1810: :::\n1811: \n1812: :::{prf:definition} Logarithmic Sobolev Inequality (LSI)\n1813: :label: def-lsi\n1814: \n1815: A probability measure $\\nu$ on $(\\mathcal{X} \\times \\mathbb{R}^d)^N$ satisfies a **Logarithmic Sobolev Inequality** with constant $C_{\\text{LSI}} > 0$ if for every sufficiently smooth function $f$:\n1816: \n1817: $$\n1818: \\text{Ent}_\\nu(f^2) \\le C_{\\text{LSI}} \\int \\Gamma_N(f) \\, d\\nu\n1819: $$\n1820: \n1821: **Equivalent Formulation (Relative Entropy):** For probability measures $\\mu \\ll \\nu$ with density $h$:\n1822: \n1823: $$\n1824: \\int h \\log h \\, d\\nu \\le C_{\\text{LSI}} \\int \\frac{\\langle \\mathcal{A} h, \\mathcal{A} h \\rangle}{h} \\, d\\nu\n1825: $$\n1826: "
     },
     {
@@ -73,6 +76,7 @@
         "label": "thm-lsi-adaptive-gas"
       },
       "section": "## 8. The Logarithmic Sobolev Inequality: A Conjectured Strengthening",
+      "references": [],
       "raw_directive": "1832: We are now ready to state the main result of this chapter.\n1833: \n1834: :::{prf:theorem} N-Uniform Log-Sobolev Inequality for the Geometric Viscous Fluid Model\n1835: :label: thm-lsi-adaptive-gas\n1836: \n1837: Let $\\nu_N^{\\text{QSD}}$ be the unique quasi-stationary distribution of the N-particle Geometric Viscous Fluid Model with parameters satisfying the conditions of Theorem [](#thm-fl-drift-adaptive) (sufficiently small $\\epsilon_F$, arbitrary $\\nu > 0$, and regularization $\\epsilon_\\Sigma > H_{\\max}$).\n1838: \n1839: There exists a constant $C_{\\text{LSI}}(\\rho) > 0$, **independent of the number of walkers $N$**, such that for every sufficiently smooth function $f$ on the N-particle state space:\n1840: \n1841: $$\n1842: \\text{Ent}_{\\nu_N^{\\text{QSD}}}(f^2) \\le C_{\\text{LSI}}(\\rho) \\int \\Gamma_N(f) \\, d\\nu_N^{\\text{QSD}}\n1843: $$\n1844: \n1845: The constant $C_{\\text{LSI}}(\\rho)$ depends only on:\n1846: - The convexity constant $\\kappa_{\\text{conf}}$ of the confining potential (Axiom [](#ax:confining-potential-hybrid))\n1847: - The uniform ellipticity bounds $c_{\\min}(\\rho)$ and $c_{\\max}(\\rho)$ from Theorem [](#thm-ueph) (N-uniform)\n1848: - The localization radius $\\rho$ and algorithm parameters $(\\gamma, \\epsilon_\\Sigma, \\epsilon_F)$\n1849: \n1850: and **not** on $N$, the swarm state $S$, or the viscous coupling strength $\\nu$ (which can be arbitrarily large).\n1851: "
     },
     {
@@ -91,6 +95,9 @@
         "label": "cor-entropy-convergence-lsi"
       },
       "section": "## 8. The Logarithmic Sobolev Inequality: A Conjectured Strengthening",
+      "references": [
+        "thm-lsi-adaptive-gas"
+      ],
       "raw_directive": "2001: Now that Theorem {prf:ref}`thm-lsi-adaptive-gas` (N-particle) and Theorem {prf:ref}`thm-lsi-mean-field` (mean-field limit) have been proven, they yield several powerful consequences. We state these as established results.\n2002: \n2003: :::{prf:corollary} Exponential Convergence in Relative Entropy\n2004: :label: cor-entropy-convergence-lsi\n2005: \n2006: By Theorem {prf:ref}`thm-lsi-adaptive-gas`, let $\\mu_t$ denote the law of the N-particle system at time $t$, starting from an initial distribution $\\mu_0$ with finite entropy. Then:\n2007: \n2008: $$\n2009: \\text{Ent}_{\\nu_N^{\\text{QSD}}}(\\mu_t) \\le \\text{Ent}_{\\nu_N^{\\text{QSD}}}(\\mu_0) \\cdot \\exp\\left( -\\frac{t}{C_{\\text{LSI}}} \\right)\n2010: $$\n2011: \n2012: where $C_{\\text{LSI}}$ is the LSI constant from Theorem `thm-lsi-adaptive-gas`.\n2013: "
     },
     {
@@ -105,6 +112,7 @@
       "content": "2016: \n2017: :::{prf:proof}\n2018: The LSI, combined with the entropy dissipation identity:\n2019: \n2020: $$\n2021: \\frac{d}{dt} \\text{Ent}_{\\nu_N^{\\text{QSD}}}(\\mu_t) = -\\mathcal{I}[\\mu_t]\n2022: $$\n2023: \n2024: where $\\mathcal{I}[\\mu] := \\int \\Gamma_N(\\sqrt{h}) \\, d\\nu$ is the Fisher information and $h = d\\mu/d\\nu$, yields:\n2025: \n2026: $$\n2027: \\frac{d}{dt} \\text{Ent} \\le -\\frac{1}{C_{\\text{LSI}}} \\text{Ent}\n2028: $$",
       "metadata": {},
       "section": "## 8. The Logarithmic Sobolev Inequality: A Conjectured Strengthening",
+      "references": [],
       "raw_directive": "2015: :::\n2016: \n2017: :::{prf:proof}\n2018: The LSI, combined with the entropy dissipation identity:\n2019: \n2020: $$\n2021: \\frac{d}{dt} \\text{Ent}_{\\nu_N^{\\text{QSD}}}(\\mu_t) = -\\mathcal{I}[\\mu_t]\n2022: $$\n2023: \n2024: where $\\mathcal{I}[\\mu] := \\int \\Gamma_N(\\sqrt{h}) \\, d\\nu$ is the Fisher information and $h = d\\mu/d\\nu$, yields:\n2025: \n2026: $$\n2027: \\frac{d}{dt} \\text{Ent} \\le -\\frac{1}{C_{\\text{LSI}}} \\text{Ent}\n2028: $$\n2029: "
     },
     {
@@ -123,6 +131,10 @@
         "label": "cor-geometric-ergodicity-lsi"
       },
       "section": "## 8. The Logarithmic Sobolev Inequality: A Conjectured Strengthening",
+      "references": [
+        "thm-lsi-adaptive-gas",
+        "cor-entropy-convergence-lsi"
+      ],
       "raw_directive": "2031: :::\n2032: \n2033: :::{prf:corollary} Geometric Ergodicity via LSI\n2034: :label: cor-geometric-ergodicity-lsi\n2035: \n2036: By Theorem {prf:ref}`thm-lsi-adaptive-gas`, exponential convergence in relative entropy implies geometric ergodicity. Specifically, by Pinsker's inequality:\n2037: \n2038: $$\n2039: \\|\\mu_t - \\nu_N^{\\text{QSD}}\\|_{\\text{TV}} \\le \\sqrt{2 \\, \\text{Ent}_{\\nu_N^{\\text{QSD}}}(\\mu_t)}\n2040: $$\n2041: \n2042: Combining with Corollary {prf:ref}`cor-entropy-convergence-lsi`:\n2043: \n2044: $$\n2045: \\|\\mu_t - \\nu_N^{\\text{QSD}}\\|_{\\text{TV}} \\le \\sqrt{2 \\, \\text{Ent}_{\\nu_N^{\\text{QSD}}}(\\mu_0)} \\cdot \\exp\\left( -\\frac{t}{2C_{\\text{LSI}}} \\right)\n2046: $$\n2047: "
     },
     {
@@ -141,6 +153,7 @@
         "label": "rem-concentration-lsi"
       },
       "section": "## 8. The Logarithmic Sobolev Inequality: A Conjectured Strengthening",
+      "references": [],
       "raw_directive": "2069: :::\n2070: \n2071: :::{prf:remark} Concentration of Measure\n2072: :label: rem-concentration-lsi\n2073: \n2074: An additional benefit of the LSI is that it implies strong concentration properties for the QSD. For any Lipschitz function $\\phi: (\\mathcal{X} \\times \\mathbb{R}^d)^N \\to \\mathbb{R}$ with Lipschitz constant $L_\\phi$:\n2075: \n2076: $$\n2077: \\nu_N^{\\text{QSD}}\\left( \\left| \\phi - \\mathbb{E}_{\\nu_N^{\\text{QSD}}}[\\phi] \\right| \\ge t \\right) \\le 2 \\exp\\left( -\\frac{t^2}{2 C_{\\text{LSI}} L_\\phi^2} \\right)\n2078: $$\n2079: \n2080: This Gaussian concentration inequality (a consequence of the LSI via Herbst's argument) guarantees that observables under the QSD are tightly concentrated around their mean, with deviations occurring with exponentially small probability. This is a **much stronger statement** than what can be derived from the Foster-Lyapunov analysis alone.\n2081: "
     }
   ],

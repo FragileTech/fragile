@@ -26,76 +26,16 @@ import dspy
 
 from mathster.agents.core import (
     DirectiveAgentPaths,
-    ExtractSignature,
     LATEX_FENCE_PATTERN,
     METADATA_PATTERN,
     run_directive_extraction_loop,
-    to_jsonable,
     URI_PATTERN,
 )
+from mathster.agents.signatures import ParseAlgorithmDirectiveSplit, to_jsonable
 
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
-
-# --------------------------------------------------------------------------------------
-# DSPy Signature
-# --------------------------------------------------------------------------------------
-
-
-class ParseAlgorithmDirectiveSplit(ExtractSignature):
-    """
-    Convert a `::{prf:algorithm}` directive into a structured representation.
-
-    INPUT
-    -----
-    - directive_text (str): Algorithm directive text (header/title/body/fence).
-    - context_hints (str, optional): Nearby prose snippet for added context.
-
-    OUTPUT FIELDS
-    -------------
-    - label_str (str): Algorithm label (`alg-*`).
-    - title_str (str): Algorithm name/title.
-    - complexity_str (str): Claimed complexity class if mentioned (O(n log n), etc.).
-    - nl_summary_str (str): Brief natural-language description.
-
-    - signature_json (json object):
-        {"input": [<string>, ...], "output": [<string>, ...], "parameters": [<string>, ...]}
-
-    - steps_json (json array):
-        [{"order": <int|null>, "text": <string|null>, "latex": <string|null>, "comment": <string|null>} ...]
-
-    - guard_conditions_json (json array):
-        [{"text": <string|null>, "latex": <string|null>} ...] (preconditions, invariants).
-
-    - references (list[str]):
-        Labels cited in the algorithm.
-
-    - failure_modes_json (json array):
-        [{"description": <string|null>, "impact": <string|null>} ...]
-    """
-
-    directive_text = dspy.InputField(desc="Raw algorithm directive text.")
-    context_hints = dspy.InputField(desc="Optional context window.", optional=True)
-
-    label_str = dspy.OutputField(desc="Algorithm label.")
-    title_str = dspy.OutputField(desc="Title if present.")
-    complexity_str = dspy.OutputField(desc="Complexity classification.")
-    nl_summary_str = dspy.OutputField(desc="Concise summary of the algorithm.")
-
-    signature_json = dspy.OutputField(
-        desc='JSON object {"input": [str,...], "output": [str,...], "parameters": [str,...]}'
-    )
-    steps_json = dspy.OutputField(
-        desc='JSON array [{"order": int|null, "text": str|null, "latex": str|null, "comment": str|null}, ...]'
-    )
-    guard_conditions_json = dspy.OutputField(
-        desc='JSON array [{"text": str|null, "latex": str|null}, ...]'
-    )
-    failure_modes_json = dspy.OutputField(
-        desc='JSON array [{"description": str|null, "impact": str|null}, ...]'
-    )
 
 
 # --------------------------------------------------------------------------------------

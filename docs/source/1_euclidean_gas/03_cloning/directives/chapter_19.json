@@ -14,12 +14,15 @@
       ],
       "content_start": 6858,
       "content_end": 6864,
-      "content": "6858: :label: cor-structural-error-contraction\n6859: \n6860: Under the same conditions as Theorem 10.3.1, the structural error also contracts:\n6861: \n6862: $$\n6863: \\mathbb{E}_{\\text{clone}}[V_{\\text{struct}}(S'_1, S'_2)] \\leq (1 - \\kappa_{\\text{struct}}) V_{\\text{struct}}(S_1, S_2) + C_{\\text{struct}}\n6864: $$",
+      "content": "6858: :label: cor-structural-error-contraction\n6859: \n6860: Under the same conditions as {prf:ref}`thm-positional-variance-contraction`, the structural error also contracts:\n6861: \n6862: $$\n6863: \\mathbb{E}_{\\text{clone}}[V_{\\text{struct}}(S'_1, S'_2)] \\leq (1 - \\kappa_{\\text{struct}}) V_{\\text{struct}}(S_1, S_2) + C_{\\text{struct}}\n6864: $$",
       "metadata": {
         "label": "cor-structural-error-contraction"
       },
       "section": "## 10.5. Implications for Structural Error",
-      "raw_directive": "6855: The positional variance contraction has immediate consequences for the structural error $V_{\\text{struct}}$.\n6856: \n6857: :::{prf:corollary} Structural Error Contraction\n6858: :label: cor-structural-error-contraction\n6859: \n6860: Under the same conditions as Theorem 10.3.1, the structural error also contracts:\n6861: \n6862: $$\n6863: \\mathbb{E}_{\\text{clone}}[V_{\\text{struct}}(S'_1, S'_2)] \\leq (1 - \\kappa_{\\text{struct}}) V_{\\text{struct}}(S_1, S_2) + C_{\\text{struct}}\n6864: $$\n6865: "
+      "references": [
+        "thm-positional-variance-contraction"
+      ],
+      "raw_directive": "6855: The positional variance contraction has immediate consequences for the structural error $V_{\\text{struct}}$.\n6856: \n6857: :::{prf:corollary} Structural Error Contraction\n6858: :label: cor-structural-error-contraction\n6859: \n6860: Under the same conditions as {prf:ref}`thm-positional-variance-contraction`, the structural error also contracts:\n6861: \n6862: $$\n6863: \\mathbb{E}_{\\text{clone}}[V_{\\text{struct}}(S'_1, S'_2)] \\leq (1 - \\kappa_{\\text{struct}}) V_{\\text{struct}}(S_1, S_2) + C_{\\text{struct}}\n6864: $$\n6865: "
     },
     {
       "directive_type": "proof",
@@ -32,12 +35,15 @@
       ],
       "content_start": 6869,
       "content_end": 6883,
-      "content": "6869: :::{prf:proof}\n6870: :label: proof-cor-structural-error-contraction\n6871: **Proof.**\n6872: \n6873: By Lemma 3.2.4:\n6874: \n6875: $$\n6876: V_{\\text{struct}} \\leq 2(\\text{Var}_1(x) + \\text{Var}_2(x))\n6877: $$\n6878: \n6879: where $\\text{Var}_k(x) = \\frac{1}{k_{\\text{alive}}} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2$.\n6880: \n6881: The contraction of $V_{\\text{Var},x}$ (which is proportional to the sum of these variances) immediately implies contraction of $V_{\\text{struct}}$.\n6882: \n6883: The constant $\\kappa_{\\text{struct}}$ depends on $\\kappa_x$ and the relationship between $N$-normalized and $k_{\\text{alive}}$-normalized variances.",
+      "content": "6869: :::{prf:proof}\n6870: :label: proof-cor-structural-error-contraction\n6871: **Proof.**\n6872: \n6873: By {prf:ref}`lem-sx-implies-variance`:\n6874: \n6875: $$\n6876: V_{\\text{struct}} \\leq 2(\\text{Var}_1(x) + \\text{Var}_2(x))\n6877: $$\n6878: \n6879: where $\\text{Var}_k(x) = \\frac{1}{k_{\\text{alive}}} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2$.\n6880: \n6881: The contraction of $V_{\\text{Var},x}$ (which is proportional to the sum of these variances) immediately implies contraction of $V_{\\text{struct}}$.\n6882: \n6883: The constant $\\kappa_{\\text{struct}}$ depends on $\\kappa_x$ and the relationship between $N$-normalized and $k_{\\text{alive}}$-normalized variances.",
       "metadata": {
         "label": "proof-cor-structural-error-contraction"
       },
       "section": "## 10.5. Implications for Structural Error",
-      "raw_directive": "6867: :::\n6868: \n6869: :::{prf:proof}\n6870: :label: proof-cor-structural-error-contraction\n6871: **Proof.**\n6872: \n6873: By Lemma 3.2.4:\n6874: \n6875: $$\n6876: V_{\\text{struct}} \\leq 2(\\text{Var}_1(x) + \\text{Var}_2(x))\n6877: $$\n6878: \n6879: where $\\text{Var}_k(x) = \\frac{1}{k_{\\text{alive}}} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2$.\n6880: \n6881: The contraction of $V_{\\text{Var},x}$ (which is proportional to the sum of these variances) immediately implies contraction of $V_{\\text{struct}}$.\n6882: \n6883: The constant $\\kappa_{\\text{struct}}$ depends on $\\kappa_x$ and the relationship between $N$-normalized and $k_{\\text{alive}}$-normalized variances.\n6884: "
+      "references": [
+        "lem-sx-implies-variance"
+      ],
+      "raw_directive": "6867: :::\n6868: \n6869: :::{prf:proof}\n6870: :label: proof-cor-structural-error-contraction\n6871: **Proof.**\n6872: \n6873: By {prf:ref}`lem-sx-implies-variance`:\n6874: \n6875: $$\n6876: V_{\\text{struct}} \\leq 2(\\text{Var}_1(x) + \\text{Var}_2(x))\n6877: $$\n6878: \n6879: where $\\text{Var}_k(x) = \\frac{1}{k_{\\text{alive}}} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2$.\n6880: \n6881: The contraction of $V_{\\text{Var},x}$ (which is proportional to the sum of these variances) immediately implies contraction of $V_{\\text{struct}}$.\n6882: \n6883: The constant $\\kappa_{\\text{struct}}$ depends on $\\kappa_x$ and the relationship between $N$-normalized and $k_{\\text{alive}}$-normalized variances.\n6884: "
     }
   ],
   "validation": {

@@ -100,6 +100,20 @@ Second line of content.
         # Content should not include metadata lines
         assert ":label:" not in hints[0].content
 
+    def test_reference_extraction(self):
+        """DirectiveHint should capture inline label references."""
+        text = """:::{prf:theorem} Uses references
+:label: thm-uses-ref
+
+By Definition {prf:ref}`def-lipschitz` and Section {ref}`Stage 2 <sec-eg-stage2>`.
+:::
+"""
+
+        hints = extract_jupyter_directives(text)
+
+        assert len(hints) == 1
+        assert hints[0].references == ["def-lipschitz", "sec-eg-stage2"]
+
 
 class TestDirectiveExtractorModule:
     """Test the preprocessing.directive_extractor module."""
@@ -136,6 +150,8 @@ Content.
         assert hint_dict["label"] == "def-test"
         assert "start_line" in hint_dict
         assert "metadata" in hint_dict
+        assert "references" in hint_dict
+        assert hint_dict["references"] == []
 
 
 class TestSplitIntoSectionsGranularity:

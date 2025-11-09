@@ -19,6 +19,7 @@
         "label": "thm-hk-convergence-main"
       },
       "section": "## 1. Main Theorem (Statement)",
+      "references": [],
       "raw_directive": "56: ## 1. Main Theorem (Statement)\n57: \n58: :::{prf:theorem} Exponential HK-Convergence of the Fragile Gas\n59: :label: thm-hk-convergence-main\n60: \n61: Let the Fragile Gas evolve under the composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}} \\circ \\Psi_{\\text{clone}}$ on the space of sub-probability measures representing the alive swarm. Let $\\mu_t$ denote the empirical measure at time $t$ and $\\pi_{\\text{QSD}}$ denote the quasi-stationary distribution.\n62: \n63: Then $\\Psi_{\\text{total}}$ is a strict contraction in the Hellinger-Kantorovich metric. Specifically, there exist constants $\\kappa_{HK} > 0$ and $C_{HK} < \\infty$ such that:\n64: \n65: $$\n66: \\mathbb{E}[d_{HK}^2(\\mu_{t+1}, \\pi_{\\text{QSD}})] \\leq (1 - \\kappa_{HK}) d_{HK}^2(\\mu_t, \\pi_{\\text{QSD}}) + C_{HK}\n67: $$\n68: \n69: **Implication (Exponential Convergence):**\n70: \n71: $$\n72: d_{HK}(\\mu_t, \\pi_{\\text{QSD}}) \\leq e^{-\\kappa_{HK} t/2} \\cdot d_{HK}(\\mu_0, \\pi_{\\text{QSD}}) + \\sqrt{\\frac{C_{HK}}{\\kappa_{HK}}}"
     }
   ],

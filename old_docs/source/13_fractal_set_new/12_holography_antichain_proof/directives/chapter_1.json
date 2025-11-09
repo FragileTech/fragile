@@ -19,6 +19,9 @@
         "label": "def-cst-review"
       },
       "section": "## 1. Preliminaries and Setup",
+      "references": [
+        "prop-cst-causal-set-structure"
+      ],
       "raw_directive": "33: ### 1.1. Fractal Set and CST Review\n34: \n35: :::{prf:definition} Causal Spacetime Tree (CST)\n36: :label: def-cst-review\n37: \n38: From {doc}`01_fractal_set.md`, the **CST** is a directed acyclic graph $\\mathcal{G}_{\\text{CST}} = (\\mathcal{N}, E_{\\text{CST}})$ where:\n39: \n40: - **Nodes**: Episodes $\\mathcal{N} = \\{e_i\\}$ with positions $x_i = \\Phi(e_i) \\in \\mathcal{X}$ and time labels $t_i$\n41: - **Edges**: $(e_i, e_j) \\in E_{\\text{CST}}$ if $e_j$ is a direct descendant of $e_i$ (via survival or cloning)\n42: - **Partial order**: $e_i \\prec e_j$ if there exists a directed path from $e_i$ to $e_j$\n43: \n44: **Causal structure**: The CST satisfies causal set axioms ({prf:ref}`prop-cst-causal-set-structure` from {doc}`04_rigorous_additions.md`):\n45: - Reflexive: $e \\prec e$\n46: - Antisymmetric: $e_i \\prec e_j$ and $e_j \\prec e_i \\Rightarrow i = j$"
     },
     {
@@ -37,6 +40,7 @@
         "label": "def-separating-antichain"
       },
       "section": "## 1. Preliminaries and Setup",
+      "references": [],
       "raw_directive": "48: :::\n49: \n50: :::{prf:definition} Separating Antichain\n51: :label: def-separating-antichain\n52: \n53: For a spatial region $A \\subset \\mathcal{X}$, a **separating antichain** $\\gamma_A$ is a subset of episodes $\\gamma_A \\subset \\mathcal{N}$ such that:\n54: \n55: 1. **Antichain property**: No two episodes in $\\gamma_A$ are causally related ($e_i, e_j \\in \\gamma_A \\Rightarrow e_i \\not\\prec e_j$)\n56: 2. **Separating property**: Every causal chain starting in $A$ (episodes with $x_i \\in A$) and ending outside $A$ must pass through $\\gamma_A$\n57: \n58: **Minimal antichain**: $\\gamma_A$ is **minimal** if $|\\gamma_A|$ is minimized among all separating antichains.\n59: "
     },
     {
@@ -55,6 +59,9 @@
         "label": "def-voronoi-at-time"
       },
       "section": "## 1. Preliminaries and Setup",
+      "references": [
+        "def-riemannian-voronoi"
+      ],
       "raw_directive": "63: ### 1.2. Scutoid Tessellation and Voronoi Cells\n64: \n65: :::{prf:definition} Voronoi Tessellation at Fixed Time\n66: :label: def-voronoi-at-time\n67: \n68: From {prf:ref}`def-riemannian-voronoi` in {doc}`../14_scutoid_geometry_framework.md`:\n69: \n70: For a swarm state at time $t$ with alive set $\\mathcal{A}(t) = \\{i : e_i \\text{ alive at } t\\}$, the **Riemannian Voronoi cell** of walker $i$ is:\n71: \n72: $$\n73: \\text{Vor}_i(t) = \\left\\{ x \\in \\mathcal{X} : d_g(x, x_i(t)) \\le d_g(x, x_j(t)) \\, \\forall j \\in \\mathcal{A}(t) \\right\\}\n74: $$\n75: \n76: where $d_g$ is the geodesic distance in the emergent Riemannian manifold $(\\mathcal{X}, g(\\cdot, t))$.\n77: \n78: **Tessellation**: $\\mathcal{V}_t = \\{\\text{Vor}_i(t) : i \\in \\mathcal{A}(t)\\}$ partitions the valid domain:\n79: \n80: $$\n81: \\bigcup_{i \\in \\mathcal{A}(t)} \\text{Vor}_i(t) = \\mathcal{X}_{\\text{valid}}"
     },
     {
@@ -73,6 +80,9 @@
         "label": "rem-qsd-density-review"
       },
       "section": "## 1. Preliminaries and Setup",
+      "references": [
+        "thm-qsd-spatial-riemannian-volume"
+      ],
       "raw_directive": "83: :::\n84: \n85: :::{prf:remark} QSD Spatial Density\n86: :label: rem-qsd-density-review\n87: \n88: From {prf:ref}`thm-qsd-spatial-riemannian-volume` in {doc}`04_rigorous_additions.md`:\n89: \n90: At QSD, episodes are distributed in space with density:\n91: \n92: $$\n93: \\rho_{\\text{spatial}}(x) = \\int_{\\mathbb{R}^d} \\pi_{\\text{QSD}}(x, v) \\, dv \\propto \\sqrt{\\det g(x)} \\, \\exp\\left( -\\frac{U_{\\text{eff}}(x)}{T} \\right)\n94: $$\n95: \n96: **Critical property**: The factor $\\sqrt{\\det g(x)}$ means episodes sample from the **Riemannian volume measure**.\n97: \n98: **Normalization**: For the proof, we normalize so that:\n99: \n100: $$\n101: \\int_{\\mathcal{X}} \\rho_{\\text{spatial}}(x) \\, dx = 1\n102: $$\n103: \n104: Then the expected number of walkers in region $B$ is:\n105: \n106: $$\n107: \\mathbb{E}[N_B] = N \\int_B \\rho_{\\text{spatial}}(x) \\, dx"
     }
   ],

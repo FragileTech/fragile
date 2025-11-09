@@ -2,7 +2,7 @@
   "document_id": "10_qsd_exchangeability_theory",
   "stage": "directives",
   "directive_type": "proposition",
-  "generated_at": "2025-11-08T17:16:20.196748+00:00",
+  "generated_at": "2025-11-08T23:19:38.268960+00:00",
   "count": 1,
   "items": [
     {
@@ -21,6 +21,9 @@
         "label": "prop-marginal-mixture"
       },
       "section": "## A1.1 QSD Structure: Exchangeability",
+      "references": [
+        "thm-hewitt-savage-representation"
+      ],
       "raw_directive": "185: :::\n186: \n187: :::{prf:proposition} Marginal as Mixture Average\n188: :label: prop-marginal-mixture\n189: \n190: From the finite de Finetti representation ({prf:ref}`thm-hewitt-savage-representation`) with $k=1$:\n191: \n192: $$\n193: \\mu_N = \\int_{\\mathcal{P}(\\Omega)} \\mu \\, d\\mathcal{Q}_N(\\mu)\n194: $$\n195: \n196: where $\\mu_N$ is the single-particle marginal of $\\pi_N$. This is an **exact** representation (the bound $k(k-1)/(2N) = 0$ for $k=1$).\n197: ",
       "_registry_context": {
         "stage": "directives",

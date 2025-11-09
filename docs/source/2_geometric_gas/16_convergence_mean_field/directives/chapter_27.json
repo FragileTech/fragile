@@ -19,6 +19,7 @@
         "label": "def-modified-fisher"
       },
       "section": "## 1. Modified Fisher Information and Auxiliary Functional",
+      "references": [],
       "raw_directive": "3943: Following hypocoercivity theory, we introduce a **weighted combination**:\n3944: \n3945: :::{prf:definition} Modified Fisher Information\n3946: :label: def-modified-fisher\n3947: \n3948: For a parameter $\\theta > 0$, the **modified Fisher information** is:\n3949: \n3950: $$\n3951: I_\\theta(\\rho) := I_v(\\rho) + \\theta I_x(\\rho) = \\int_\\Omega \\rho \\left(|\\nabla_v \\log \\rho|^2 + \\theta |\\nabla_x \\log \\rho|^2\\right) dx dv\n3952: \n3953: $$\n3954: "
     }
   ],

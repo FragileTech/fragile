@@ -19,6 +19,7 @@
         "label": "lem-drift-condition-corrected"
       },
       "section": "## 4. Exponential Concentration (R6)",
+      "references": [],
       "raw_directive": "2563: Moreover, the simple Lyapunov $V = |x|^2 + |v|^2$ does NOT satisfy a drift condition due to the cross-term $x \\cdot v$. We need a **quadratic form** that handles this coupling.\n2564: \n2565: :::{prf:lemma} Drift Condition with Quadratic Lyapunov\n2566: :label: lem-drift-condition-corrected\n2567: \n2568: Under Assumptions A1 (confinement) and A3 (friction), there exist constants $a, b, c > 0$ such that the quadratic Lyapunov function:\n2569: \n2570: $$\n2571: V(x,v) = a|x|^2 + 2b x \\cdot v + c|v|^2\n2572: \n2573: $$\n2574: \n2575: satisfies a drift condition with respect to the **adjoint operator** $\\mathcal{L}^*$:\n2576: \n2577: $$\n2578: \\mathcal{L}^*[V] \\le -\\beta V + C\n2579: \n2580: $$\n2581: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "thm-exponential-tails"
       },
       "section": "## 4. Exponential Concentration (R6)",
+      "references": [],
       "raw_directive": "2756: ### 4.3. Main Exponential Concentration Result\n2757: \n2758: :::{prf:theorem} Exponential Tails for QSD\n2759: :label: thm-exponential-tails\n2760: \n2761: Under Assumptions A1-A4, the QSD $\\rho_\\infty$ satisfies:\n2762: \n2763: $$\n2764: \\rho_\\infty(x,v) \\le C e^{-\\alpha(|x|^2 + |v|^2)}\n2765: \n2766: $$\n2767: \n2768: for some constants $\\alpha, C > 0$ depending on $\\gamma$, $\\sigma^2$, $\\kappa_{\\text{conf}}$, and $\\kappa_{\\max}$.\n2769: "
     }
   ],

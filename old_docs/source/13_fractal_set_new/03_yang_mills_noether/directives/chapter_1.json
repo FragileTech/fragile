@@ -19,6 +19,7 @@
         "label": "axiom-effective-lagrangian"
       },
       "section": "## 2. Effective Field Theory Formulation",
+      "references": [],
       "raw_directive": "230: ### 2.1. Postulates and Scope\n231: \n232: :::{prf:axiom} Effective Lagrangian Postulate\n233: :label: axiom-effective-lagrangian\n234: \n235: We postulate an **effective Lagrangian** for the cloning interaction based on symmetry principles. This Lagrangian is not derived from first principles but is constructed to:\n236: \n237: 1. Respect the SU(2)_weak \u00d7 U(1)_fitness symmetry structure\n238: 2. Reproduce the cloning probabilities in appropriate limits\n239: 3. Enable systematic Noether current derivation\n240: \n241: **Status**: This is a **phenomenological model** (effective field theory), not a fundamental derivation. Future work should derive this from the stochastic path integral in {doc}`13_fractal_set/00_full_set.md` \u00a77.5.\n242: "
     },
     {
@@ -37,6 +38,9 @@
         "label": "def-effective-matter-lagrangian"
       },
       "section": "## 2. Effective Field Theory Formulation",
+      "references": [
+        "def-fitness-operator"
+      ],
       "raw_directive": "246: ### 2.2. Matter Action on Interaction Hilbert Space\n247: \n248: :::{prf:definition} Effective Matter Lagrangian\n249: :label: def-effective-matter-lagrangian\n250: \n251: For each cloning interaction pair $(i,j)$ with interaction state $|\\Psi_{ij}\\rangle \\in \\mathbb{C}^2 \\otimes \\mathbb{C}^{N-1}$, we postulate the **matter Lagrangian**:\n252: \n253: $$\n254: \\mathcal{L}_{\\text{matter}}(i,j) = \\bar{\\Psi}_{ij} (i\\gamma^\\mu \\partial_\\mu - m_{\\text{eff}}) \\Psi_{ij}\n255: $$\n256: \n257: where:\n258: \n259: **1. Field content:**\n260: - $\\Psi_{ij}$: Interaction spinor field on $\\mathbb{C}^2 \\otimes \\mathbb{C}^{N-1}$\n261: - $\\bar{\\Psi}_{ij} = \\Psi_{ij}^\\dagger \\gamma^0$: Dirac adjoint\n262: \n263: **2. Dirac operator in $(1+d)$-dimensional spacetime:**\n264: - $\\gamma^\\mu$: Dirac gamma matrices satisfying $\\{\\gamma^\\mu, \\gamma^\\nu\\} = 2\\eta^{\\mu\\nu}$\n265: - $\\eta^{\\mu\\nu} = \\text{diag}(1, -1, \\ldots, -1)$: Lorentzian metric\n266: - $\\partial_\\mu$: Discrete derivative on Fractal Set lattice (\u00a72.4)\n267: \n268: **3. Effective mass:**\n269: \n270: $$\n271: m_{\\text{eff}} = \\langle \\Psi_{ij} | \\hat{S}_{ij} | \\Psi_{ij} \\rangle\n272: $$\n273: \n274: where $\\hat{S}_{ij}$ is the cloning score operator ({prf:ref}`def-fitness-operator`).\n275: \n276: **Physical interpretation**:\n277: - Kinetic term $\\bar{\\Psi} i\\gamma^\\mu \\partial_\\mu \\Psi$: Evolution along Fractal Set edges\n278: - Mass term $m_{\\text{eff}} \\bar{\\Psi}\\Psi$: Fitness comparison determines \"mass\" (stability)\n279: - Positive $m_{\\text{eff}}$: Walker $i$ is fitter (favors $i \\to j$ cloning)"
     },
     {
@@ -55,6 +59,7 @@
         "class": "tip"
       },
       "section": "## 2. Effective Field Theory Formulation",
+      "references": [],
       "raw_directive": "281: :::\n282: \n283: :::{prf:remark} Effective Mass from Fitness Landscape\n284: :class: tip\n285: \n286: The effective mass $m_{\\text{eff}}$ is **dynamical** and **state-dependent**:\n287: \n288: $$\n289: m_{\\text{eff}}(i,j) = \\sum_k |\\psi_{ik}^{(\\text{div})}|^2 V_{\\text{fit}}(i|k) - \\sum_k |\\psi_{jk}^{(\\text{div})}|^2 V_{\\text{fit}}(j|k)\n290: $$\n291: "
     },
     {
@@ -73,6 +78,7 @@
         "label": "def-su2-gauge-field"
       },
       "section": "## 2. Effective Field Theory Formulation",
+      "references": [],
       "raw_directive": "295: ### 2.3. Gauge Field and Covariant Derivative\n296: \n297: :::{prf:definition} SU(2) Gauge Field from Algorithmic Phases\n298: :label: def-su2-gauge-field\n299: \n300: The SU(2) gauge field is constructed from the algorithmic geometry of the Fractal Set.\n301: \n302: **1. Connection 1-form:**\n303: \n304: From the cloning amplitude phase $\\theta_{ij}^{(\\text{SU}(2))}$ in {doc}`13_fractal_set/00_full_set.md` \u00a77.10, define the **connection 1-form**:\n305: \n306: $$\n307: A_e^{(a)} T^a := \\frac{i}{\\tau} \\log U_e\n308: $$\n309: \n310: where $U_e$ is the parallel transport operator along edge $e$ (to be defined precisely below) and $T^a = \\sigma^a/2$ are the SU(2) generators (Pauli matrices).\n311: \n312: **2. Link variable (parallel transport):**\n313: \n314: For edge $e = (n_j, n_i)$ in the Fractal Set, the **link variable** is:\n315: \n316: $$\n317: U_{ij} := \\mathcal{P} \\exp\\left(i \\int_j^i A_\\mu dx^\\mu\\right) \\in \\text{SU}(2)\n318: $$\n319: \n320: where $\\mathcal{P}$ denotes path ordering.\n321: \n322: **Discrete approximation** on Fractal Set:\n323: \n324: $$\n325: U_{ij} = \\exp\\left(i\\tau \\sum_{a=1}^3 A_e^{(a)} T^a\\right)\n326: $$\n327: \n328: where $\\tau$ is the lattice coupling parameter (related to edge length).\n329: \n330: **3. Algorithmic phase identification:**\n331: \n332: From {doc}`13_fractal_set/00_full_set.md`, the cloning amplitude has phase:\n333: \n334: $$\n335: \\theta_{ij}^{(\\text{SU}(2))} = -\\frac{d_{\\text{alg}}^2(i,j)}{2\\epsilon_c^2 \\hbar_{\\text{eff}}}\n336: $$\n337: \n338: We identify:\n339: \n340: $$\n341: \\tau \\sum_{a=1}^3 A_e^{(a)} T^a \\approx \\theta_{ij}^{(\\text{SU}(2))} \\cdot I_2 + O(\\tau^2)\n342: $$\n343: \n344: For small $\\tau$, the gauge field is approximately:\n345: \n346: $$\n347: A_e^{(3)} \\approx \\frac{\\theta_{ij}^{(\\text{SU}(2))}}{\\tau}, \\quad A_e^{(1)} \\approx A_e^{(2)} \\approx 0\n348: $$\n349: \n350: (dominant contribution in the $\\sigma^3$ direction).\n351: \n352: **4. Gauge transformation:**\n353: \n354: Under local SU(2) transformation $U_i \\in \\text{SU}(2)$ at node $i$:\n355: \n356: $$\n357: U_{ij} \\to U_i U_{ij} U_j^\\dagger\n358: $$\n359: \n360: $$\n361: A_\\mu \\to U A_\\mu U^\\dagger + \\frac{i}{g} U \\partial_\\mu U^\\dagger\n362: $$\n363: \n364: **5. Covariant derivative:**\n365: \n366: The gauge-covariant derivative acting on $\\Psi_{ij}$ is:\n367: \n368: $$\n369: D_\\mu \\Psi_{ij} = \\partial_\\mu \\Psi_{ij} - ig \\sum_{a=1}^3 A_\\mu^{(a)} (T^a \\otimes I_{\\text{div}}) \\Psi_{ij}\n370: $$\n371: \n372: where $T^a$ acts on the isospin $\\mathbb{C}^2$ factor and $I_{\\text{div}}$ is identity on $\\mathbb{C}^{N-1}$.\n373: \n374: **Gauge covariance:**\n375: \n376: $$\n377: D_\\mu \\Psi_{ij} \\to (U \\otimes I_{\\text{div}}) D_\\mu \\Psi_{ij}\n378: $$\n379: "
     },
     {
@@ -91,6 +97,7 @@
         "class": "important"
       },
       "section": "## 2. Effective Field Theory Formulation",
+      "references": [],
       "raw_directive": "381: :::\n382: \n383: :::{prf:remark} Grounding in Algorithmic Geometry\n384: :class: important\n385: \n386: The key innovation here is that the SU(2) gauge field is **not introduced ad hoc** but is **identified** with the phase structure of the cloning amplitude, which itself comes from the algorithmic distance:\n387: \n388: $$\n389: d_{\\text{alg}}^2(i,j) = \\|x_i - x_j\\|^2 + \\lambda_v \\|v_i - v_j\\|^2\n390: $$\n391: "
     },
     {
@@ -109,6 +116,7 @@
         "label": "def-discrete-derivatives"
       },
       "section": "## 2. Effective Field Theory Formulation",
+      "references": [],
       "raw_directive": "395: ### 2.4. Discrete Spacetime Derivatives\n396: \n397: :::{prf:definition} Discrete Derivatives on Fractal Set Lattice\n398: :label: def-discrete-derivatives\n399: \n400: The Fractal Set is a discrete spacetime lattice with non-uniform structure. Derivatives must be defined carefully.\n401: \n402: **1. Temporal derivative (along CST edges):**\n403: \n404: For a field $\\Phi(n_{i,t})$ on nodes, the temporal derivative is:\n405: \n406: $$\n407: \\partial_0 \\Phi(n_{i,t}) := \\frac{\\Phi(n_{i,t+1}) - \\Phi(n_{i,t})}{\\Delta t}\n408: $$\n409: \n410: **2. Spatial derivative (emergent manifold):**\n411: \n412: Spatial derivatives use the localization kernel $K_\\rho$ to define a discrete gradient:\n413: \n414: $$\n415: \\partial_k \\Phi(n_{i,t}) := \\frac{1}{\\rho} \\sum_{j \\in A_t} w_{ij} K_\\rho(y_i, y_j) \\cdot (\\Phi(n_{j,t}) - \\Phi(n_{i,t})) \\cdot \\hat{e}_k(y_i \\to y_j)\n416: $$\n417: \n418: where:\n419: - $K_\\rho(y_i, y_j) = \\exp(-d_{\\text{alg}}^2(y_i, y_j)/(2\\rho^2))$: localization kernel\n420: - $\\hat{e}_k(y_i \\to y_j)$: unit vector from $y_i$ to $y_j$ projected onto axis $k$\n421: - $w_{ij}$: normalization weights ensuring $\\sum_j w_{ij} = 1$\n422: \n423: **3. Discrete divergence:**\n424: \n425: For a 4-current $J^\\mu$:\n426: \n427: $$\n428: \\nabla_{\\text{discrete}} \\cdot J := \\partial_0 J^0 + \\sum_{k=1}^d \\partial_k J^k\n429: $$\n430: \n431: **4. Discrete d'Alembertian:**\n432: \n433: $$\n434: \\Box_{\\text{discrete}} = \\partial_0^2 - \\sum_{k=1}^d \\partial_k^2\n435: $$\n436: "
     }
   ],

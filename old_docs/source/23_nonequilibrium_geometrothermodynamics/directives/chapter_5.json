@@ -19,6 +19,9 @@
         "label": "def-entropy-production-functional"
       },
       "section": "## 5. Non-Equilibrium Thermodynamic Potentials",
+      "references": [
+        "thm-crooks-fluctuation-theorem"
+      ],
       "raw_directive": "1658: We now connect the path action to thermodynamic quantities.\n1659: \n1660: :::{prf:definition} Entropy Production Functional\n1661: :label: def-entropy-production-functional\n1662: \n1663: The **entropy production** along a path $\\gamma \\in \\mathcal{P}$ is defined as:\n1664: \n1665: $$\n1666: \\Sigma[\\gamma] := S_{\\text{OM}}[\\gamma] = \\frac{1}{4\\gamma T}\\int_0^T \\left\\| \\dot{v}_t + \\nabla U_{\\text{eff}}(x_t) + \\gamma v_t \\right\\|^2 dt\n1667: $$\n1668: \n1669: This can be written in terms of the **entropy production rate**:\n1670: \n1671: $$\n1672: \\Sigma[\\gamma] = \\int_0^T \\sigma_t dt\n1673: $$\n1674: \n1675: where:\n1676: \n1677: $$\n1678: \\sigma_t := \\frac{1}{4\\gamma T} \\left\\| \\dot{v}_t + \\nabla U_{\\text{eff}}(x_t) + \\gamma v_t \\right\\|^2 = L_{\\text{OM}}(x_t, v_t, \\dot{v}_t)\n1679: $$\n1680: \n1681: is the Onsager-Machlup Lagrangian density.\n1682: \n1683: **Non-Negativity:**\n1684: \n1685: $\\Sigma[\\gamma] \\geq 0$ always, with equality if and only if $\\gamma$ is a deterministic trajectory satisfying $\\dot{v}_t + \\nabla U_{\\text{eff}}(x_t) + \\gamma v_t = 0$.\n1686: \n1687: **Physical Interpretation:**\n1688: \n1689: The entropy production $\\Sigma[\\gamma]$ measures the irreversibility of the path. It equals the logarithm of the ratio of forward to reverse path probabilities (Crooks relation, {prf:ref}`thm-crooks-fluctuation-theorem`).\n1690: \n1691: :::{note}\n1692: **Alignment with Standard Literature:** This definition follows the convention of Sekimoto (2010) and Seifert (2012), where the entropy production is identified directly with the Onsager-Machlup action. Some earlier sources use $\\Sigma = 2 S_{\\text{OM}}$, but the modern consensus equates them. This ensures:\n1693: - Path probability: $P[\\gamma] \\propto \\exp(-\\Sigma[\\gamma])$"
     },
     {
@@ -37,6 +40,9 @@
         "label": "thm-entropy-production-path-probability"
       },
       "section": "## 5. Non-Equilibrium Thermodynamic Potentials",
+      "references": [
+        "def-path-measure"
+      ],
       "raw_directive": "1696: :::\n1697: \n1698: :::{prf:theorem} Entropy Production and Path Probability\n1699: :label: thm-entropy-production-path-probability\n1700: \n1701: The path measure {prf:ref}`def-path-measure` can be written as:\n1702: \n1703: $$\n1704: \\frac{d\\mathbb{P}_{\\text{path}}[\\gamma]}{d\\mathcal{W}} = \\exp\\left(-\\Sigma[\\gamma]\\right) = \\exp\\left(-S_{\\text{OM}}[\\gamma]\\right)\n1705: $$\n1706: \n1707: where $\\mathcal{W}$ is the Wiener measure.\n1708: \n1709: **Interpretation:**\n1710: \n1711: Paths with **high entropy production** are exponentially suppressed. The most probable paths minimize irreversibility.\n1712: \n1713: **Connection to Detailed Balance:**\n1714: "
     },
     {
@@ -55,6 +61,7 @@
         "label": "def-work-heat-functionals"
       },
       "section": "## 5. Non-Equilibrium Thermodynamic Potentials",
+      "references": [],
       "raw_directive": "1718: ### 5.2. Non-Equilibrium Work and Heat\n1719: \n1720: :::{prf:definition} Work and Heat Functionals (Autonomous Systems)\n1721: :label: def-work-heat-functionals\n1722: \n1723: For a path $\\gamma \\in \\mathcal{P}$ in a system with **time-independent potential** $U(x)$, define:\n1724: \n1725: **1. Conservative Work (Potential Energy Change):**\n1726: \n1727: $$\n1728: W_{\\text{cons}}[\\gamma] := \\int_0^T F(x_t) \\cdot v_t \\, dt = -\\int_0^T \\nabla U_{\\text{eff}}(x_t) \\cdot v_t \\, dt = U_{\\text{eff}}(x_0) - U_{\\text{eff}}(x_T)\n1729: $$\n1730: \n1731: This is the work done **by** the conservative force along the path.\n1732: \n1733: **2. Heat Dissipated:**\n1734: \n1735: $$\n1736: Q[\\gamma] := \\int_0^T \\gamma \\|v_t\\|^2 dt\n1737: $$\n1738: \n1739: (Energy dissipated to the thermal bath via friction)\n1740: \n1741: **3. Total Mechanical Energy Change:**\n1742: \n1743: $$\n1744: \\Delta E[\\gamma] = E[\\gamma(T)] - E[\\gamma(0)]\n1745: $$\n1746: \n1747: where $E(x, v) = \\frac{1}{2}\\|v\\|^2 + U(x)$ is the mechanical energy (with $m=1$).\n1748: \n1749: **First Law for Autonomous Paths:**\n1750: \n1751: $$\n1752: \\Delta E[\\gamma] = W_{\\text{cons}}[\\gamma] - Q[\\gamma]\n1753: $$\n1754: "
     },
     {
@@ -69,6 +76,9 @@
       "content": "1757: \n1758: :::{prf:remark} Distinction from Non-Equilibrium Work\n1759: **Important:** The \"work\" $W_{\\text{cons}}$ defined above applies only to **autonomous systems** where the potential does not explicitly depend on time.\n1760: \n1761: For **non-autonomous systems** (e.g., external protocols varying a control parameter $\\lambda_t$), the relevant quantity for fluctuation theorems is the **protocol work** (defined in {prf:ref}`thm-jarzynski-langevin-rigorous`):\n1762: \n1763: $$\n1764: W_{\\text{protocol}}[\\gamma] := \\int_0^T \\frac{\\partial U(x_t, \\lambda_t)}{\\partial \\lambda_t} \\dot{\\lambda}_t dt\n1765: $$\n1766: \n1767: This measures the work done **on** the system by varying the external parameter.\n1768: \n1769: **Relationship:** For a protocol that changes the potential from $U(x, 0)$ to $U(x, 1)$, we have:\n1770: \n1771: $$\n1772: W_{\\text{protocol}}[\\gamma] = U(x_T, 1) - U(x_0, 0) - W_{\\text{cons}}[\\gamma]\n1773: $$",
       "metadata": {},
       "section": "## 5. Non-Equilibrium Thermodynamic Potentials",
+      "references": [
+        "thm-jarzynski-langevin-rigorous"
+      ],
       "raw_directive": "1756: :::\n1757: \n1758: :::{prf:remark} Distinction from Non-Equilibrium Work\n1759: **Important:** The \"work\" $W_{\\text{cons}}$ defined above applies only to **autonomous systems** where the potential does not explicitly depend on time.\n1760: \n1761: For **non-autonomous systems** (e.g., external protocols varying a control parameter $\\lambda_t$), the relevant quantity for fluctuation theorems is the **protocol work** (defined in {prf:ref}`thm-jarzynski-langevin-rigorous`):\n1762: \n1763: $$\n1764: W_{\\text{protocol}}[\\gamma] := \\int_0^T \\frac{\\partial U(x_t, \\lambda_t)}{\\partial \\lambda_t} \\dot{\\lambda}_t dt\n1765: $$\n1766: \n1767: This measures the work done **on** the system by varying the external parameter.\n1768: \n1769: **Relationship:** For a protocol that changes the potential from $U(x, 0)$ to $U(x, 1)$, we have:\n1770: \n1771: $$\n1772: W_{\\text{protocol}}[\\gamma] = U(x_T, 1) - U(x_0, 0) - W_{\\text{cons}}[\\gamma]\n1773: $$\n1774: "
     },
     {
@@ -83,6 +93,7 @@
       "content": "1777: \n1778: :::{prf:remark} Stochastic Work Distribution\n1779: The work is **path-dependent** and **fluctuates** between realizations. The work distribution is:\n1780: \n1781: $$\n1782: P(W) = \\int_{\\mathcal{P}} \\delta(W - W[\\gamma]) \\, d\\mathbb{P}_{\\text{path}}[\\gamma]\n1783: $$",
       "metadata": {},
       "section": "## 5. Non-Equilibrium Thermodynamic Potentials",
+      "references": [],
       "raw_directive": "1776: :::\n1777: \n1778: :::{prf:remark} Stochastic Work Distribution\n1779: The work is **path-dependent** and **fluctuates** between realizations. The work distribution is:\n1780: \n1781: $$\n1782: P(W) = \\int_{\\mathcal{P}} \\delta(W - W[\\gamma]) \\, d\\mathbb{P}_{\\text{path}}[\\gamma]\n1783: $$\n1784: "
     },
     {
@@ -101,6 +112,7 @@
         "label": "def-nonequilibrium-free-energy"
       },
       "section": "## 5. Non-Equilibrium Thermodynamic Potentials",
+      "references": [],
       "raw_directive": "1788: ### 5.3. Non-Equilibrium Free Energy\n1789: \n1790: :::{prf:definition} Non-Equilibrium Helmholtz Free Energy\n1791: :label: def-nonequilibrium-free-energy\n1792: \n1793: For a **time-dependent distribution** $\\rho_t(x, v)$ (not necessarily QSD), define the **instantaneous Helmholtz free energy**:\n1794: \n1795: $$\n1796: F_t := \\int_{\\mathcal{M}} \\rho_t(x, v) \\left[U(x) + \\frac{1}{2}\\|v\\|^2\\right] d\\mu + T S_t\n1797: $$\n1798: \n1799: where:\n1800: \n1801: $$\n1802: S_t := -\\int_{\\mathcal{M}} \\rho_t \\log \\rho_t \\, d\\mu\n1803: $$\n1804: \n1805: is the **Gibbs entropy** (note: not entropy production!).\n1806: \n1807: **Path-Dependent Free Energy:**\n1808: \n1809: For a specific path $\\gamma$, the \"free energy cost\" is:\n1810: \n1811: $$\n1812: \\Delta F[\\gamma] := F(\\gamma(T)) - F(\\gamma(0))\n1813: $$\n1814: \n1815: where $F(x, v) = U(x) + \\frac{1}{2}m\\|v\\|^2 - T S_{\\text{local}}(x, v)$ is a local free energy density.\n1816: \n1817: **Challenge:**\n1818: "
     },
     {
@@ -119,6 +131,7 @@
         "label": "thm-jarzynski-equality"
       },
       "section": "## 5. Non-Equilibrium Thermodynamic Potentials",
+      "references": [],
       "raw_directive": "1824: One of the most profound results in non-equilibrium thermodynamics is the **Jarzynski equality**, which relates the work distribution to free energy differences.\n1825: \n1826: :::{prf:theorem} Jarzynski Equality for Fragile Gas\n1827: :label: thm-jarzynski-equality\n1828: \n1829: Consider a **time-dependent protocol** where the confining potential is varied: $U(x) \\to U(x, \\lambda_t)$ with $\\lambda_0 = 0$, $\\lambda_T = 1$. Let $\\Delta F_{\\text{eq}} = F_{\\text{eq}}(\\lambda=1) - F_{\\text{eq}}(\\lambda=0)$ be the equilibrium free energy difference.\n1830: \n1831: Then:\n1832: \n1833: $$\n1834: \\left\\langle e^{-W[\\gamma] / T} \\right\\rangle_{\\text{paths}} = e^{-\\Delta F_{\\text{eq}} / T}\n1835: $$\n1836: \n1837: where the average is over all paths $\\gamma$ starting from the equilibrium distribution at $\\lambda = 0$.\n1838: \n1839: **Consequence:**\n1840: \n1841: The free energy difference can be computed from **non-equilibrium work measurements**:\n1842: \n1843: $$\n1844: \\Delta F_{\\text{eq}} = -T \\log \\left\\langle e^{-W / T} \\right\\rangle\n1845: $$\n1846: "
     },
     {
@@ -133,6 +146,9 @@
       "content": "1850: :::{prf:proof} (Sketch - See Appendix A for rigorous derivation)\n1851: \n1852: The Jarzynski equality for underdamped Langevin dynamics is highly technical and requires careful treatment of protocol work, time-reversal symmetry, and kinetic energy accounting.\n1853: \n1854: **Key Conceptual Steps:**\n1855: \n1856: 1. **Work Definition:** For time-dependent potential $U(x, \\lambda_t)$ with protocol $\\lambda: [0,\\tau] \\to [0,1]$, the **protocol work** is:\n1857: \n1858: $$\n1859: W[\\gamma] = \\int_0^\\tau \\frac{\\partial U(x_t, \\lambda_t)}{\\partial \\lambda} \\frac{d\\lambda}{dt} dt\n1860: $$\n1861: \n1862: This is NOT simply the mechanical energy change $\\Delta H[\\gamma]$, which includes both protocol work and heat dissipation.\n1863: \n1864: 2. **Crooks Relation:** Time-reversal symmetry of the underlying dynamics gives the fluctuation theorem:\n1865: \n1866: $$\n1867: \\frac{P_F[W]}{P_R[-W]} = e^{(W - \\Delta F_{\\text{eq}})/T}\n1868: $$\n1869: \n1870: where $P_F[W]$ is the forward work distribution and $P_R[-W]$ is the time-reversed (backward) work distribution.\n1871: \n1872: 3. **Jarzynski Equality:** Integrating the Crooks relation over all work values and using normalization $\\int P_R[-W] d(-W) = 1$:\n1873: \n1874: $$\n1875: \\left\\langle e^{-W/T} \\right\\rangle_F = \\int e^{-W/T} P_F[W] dW = \\int e^{-\\Delta F_{\\text{eq}}/T} P_R[-W] d(-W) = e^{-\\Delta F_{\\text{eq}}/T}\n1876: $$\n1877: \n1878: **Critical Technical Issues** (see Appendix A {prf:ref}`thm-jarzynski-langevin-rigorous`):\n1879: - Underdamped dynamics require careful boundary term accounting from kinetic energy contributions\n1880: - The Onsager-Machlup action transforms non-trivially under time-reversal $t \\to \\tau - t$, $v \\to -v$\n1881: - Initial and final Boltzmann factors must be included correctly",
       "metadata": {},
       "section": "## 5. Non-Equilibrium Thermodynamic Potentials",
+      "references": [
+        "thm-jarzynski-langevin-rigorous"
+      ],
       "raw_directive": "1848: :::\n1849: \n1850: :::{prf:proof} (Sketch - See Appendix A for rigorous derivation)\n1851: \n1852: The Jarzynski equality for underdamped Langevin dynamics is highly technical and requires careful treatment of protocol work, time-reversal symmetry, and kinetic energy accounting.\n1853: \n1854: **Key Conceptual Steps:**\n1855: \n1856: 1. **Work Definition:** For time-dependent potential $U(x, \\lambda_t)$ with protocol $\\lambda: [0,\\tau] \\to [0,1]$, the **protocol work** is:\n1857: \n1858: $$\n1859: W[\\gamma] = \\int_0^\\tau \\frac{\\partial U(x_t, \\lambda_t)}{\\partial \\lambda} \\frac{d\\lambda}{dt} dt\n1860: $$\n1861: \n1862: This is NOT simply the mechanical energy change $\\Delta H[\\gamma]$, which includes both protocol work and heat dissipation.\n1863: \n1864: 2. **Crooks Relation:** Time-reversal symmetry of the underlying dynamics gives the fluctuation theorem:\n1865: \n1866: $$\n1867: \\frac{P_F[W]}{P_R[-W]} = e^{(W - \\Delta F_{\\text{eq}})/T}\n1868: $$\n1869: \n1870: where $P_F[W]$ is the forward work distribution and $P_R[-W]$ is the time-reversed (backward) work distribution.\n1871: \n1872: 3. **Jarzynski Equality:** Integrating the Crooks relation over all work values and using normalization $\\int P_R[-W] d(-W) = 1$:\n1873: \n1874: $$\n1875: \\left\\langle e^{-W/T} \\right\\rangle_F = \\int e^{-W/T} P_F[W] dW = \\int e^{-\\Delta F_{\\text{eq}}/T} P_R[-W] d(-W) = e^{-\\Delta F_{\\text{eq}}/T}\n1876: $$\n1877: \n1878: **Critical Technical Issues** (see Appendix A {prf:ref}`thm-jarzynski-langevin-rigorous`):\n1879: - Underdamped dynamics require careful boundary term accounting from kinetic energy contributions\n1880: - The Onsager-Machlup action transforms non-trivially under time-reversal $t \\to \\tau - t$, $v \\to -v$\n1881: - Initial and final Boltzmann factors must be included correctly\n1882: "
     },
     {
@@ -151,6 +167,7 @@
         "label": "thm-crooks-fluctuation-theorem"
       },
       "section": "## 5. Non-Equilibrium Thermodynamic Potentials",
+      "references": [],
       "raw_directive": "1886: ### 5.5. Crooks Fluctuation Theorem\n1887: \n1888: :::{prf:theorem} Crooks Fluctuation Theorem\n1889: :label: thm-crooks-fluctuation-theorem\n1890: \n1891: Let $P_F(W)$ be the work distribution for a **forward protocol** ($\\lambda: 0 \\to 1$) and $P_R(W)$ the work distribution for the **reverse protocol** ($\\lambda: 1 \\to 0$). Then:\n1892: \n1893: $$\n1894: \\frac{P_F(W)}{P_R(-W)} = e^{(W - \\Delta F)/T}\n1895: $$\n1896: \n1897: **Consequences:**\n1898: \n1899: 1. Setting $W = \\Delta F$ gives $P_F(\\Delta F) = P_R(-\\Delta F)$ (detailed fluctuation theorem)\n1900: 2. Integrating recovers Jarzynski equality\n1901: 3. Violations of the second law ($W < 0$) are possible but exponentially suppressed\n1902: \n1903: **Interpretation:**\n1904: "
     },
     {
@@ -165,6 +182,7 @@
       "content": "1907: \n1908: :::{prf:corollary} Second Law as Inequality\n1909: From Crooks theorem and Jensen's inequality:\n1910: \n1911: $$\n1912: \\langle W \\rangle \\geq \\Delta F\n1913: $$\n1914: \n1915: with equality only at equilibrium (reversible processes).",
       "metadata": {},
       "section": "## 5. Non-Equilibrium Thermodynamic Potentials",
+      "references": [],
       "raw_directive": "1906: :::\n1907: \n1908: :::{prf:corollary} Second Law as Inequality\n1909: From Crooks theorem and Jensen's inequality:\n1910: \n1911: $$\n1912: \\langle W \\rangle \\geq \\Delta F\n1913: $$\n1914: \n1915: with equality only at equilibrium (reversible processes).\n1916: "
     }
   ],

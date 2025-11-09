@@ -2,7 +2,7 @@
   "document_id": "05_osterwalder_schrader_verification",
   "stage": "directives",
   "directive_type": "lemma",
-  "generated_at": "2025-11-08T17:16:20.355837+00:00",
+  "generated_at": "2025-11-08T23:19:38.358249+00:00",
   "count": 5,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "lem-os-gaussian-reflection-invariant"
       },
       "section": "## OS2: Reflection Positivity",
+      "references": [],
       "raw_directive": "43: We begin with the simpler technical lemma.\n44: \n45: :::{prf:lemma} Gaussian Kernel is Reflection Invariant\n46: :label: lem-os-gaussian-reflection-invariant\n47: \n48: The Gaussian interaction kernel used in companion selection:\n49: \n50: $$\n51: K(x, y) := \\exp\\left(-\\frac{\\|x - y\\|^2}{2\\sigma^2}\\right)\n52: $$\n53: \n54: satisfies reflection invariance for any reflection operator $\\theta_\\mu$:\n55: \n56: $$\n57: K(\\theta_\\mu x, \\theta_\\mu y) = K(x, y)\n58: $$\n59: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "lem-os-psd-kernel-reflection-positive"
       },
       "section": "## OS2: Reflection Positivity",
+      "references": [],
       "raw_directive": "118: This is the key functional analysis result connecting kernel properties to measure properties.\n119: \n120: :::{prf:lemma} Reflection Positivity from Positive Semidefinite Kernels\n121: :label: lem-os-psd-kernel-reflection-positive\n122: \n123: Let $K: \\mathbb{R}^4 \\times \\mathbb{R}^4 \\to \\mathbb{R}$ be a **positive semidefinite kernel**:\n124: \n125: $$\n126: \\sum_{i,j=1}^{N} c_i \\cdot K(x_i, x_j) \\cdot c_j \\geq 0 \\quad \\forall N \\in \\mathbb{N}, \\, c_1, \\ldots, c_N \\in \\mathbb{R}, \\, x_1, \\ldots, x_N \\in \\mathbb{R}^4\n127: $$\n128: \n129: Suppose $K$ is reflection-invariant: $K(\\theta x, \\theta y) = K(x, y)$ for the time reflection $\\theta$.\n130: \n131: Let $P$ be a Markov kernel on $\\mathbb{R}^4$ constructed using $K$ (e.g., companion selection with Gaussian weights), and let $\\pi$ be an invariant measure for $P$.\n132: \n133: Then $\\pi$ satisfies **reflection positivity**: for any test function $f \\in \\mathcal{S}(\\mathcal{H}_+)$,\n134: \n135: $$\n136: \\langle f, \\theta f \\rangle_\\pi := \\int_{\\mathbb{R}^{4N}} f(\\mathcal{S}) \\cdot \\overline{f(\\theta \\mathcal{S})} \\, d\\pi(\\mathcal{S}) \\geq 0\n137: $$\n138: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "lem-os-gaussian-exponential-decay"
       },
       "section": "## OS4: Clustering (Exponential Decay of Correlations)",
+      "references": [],
       "raw_directive": "361: ### Lemma: Exponential Decay of Companion Correlations\n362: \n363: :::{prf:lemma} Gaussian Kernel Induces Exponential Clustering\n364: :label: lem-os-gaussian-exponential-decay\n365: \n366: For walkers at positions $x, y \\in \\mathbb{R}^4$ with $\\|x - y\\| = r$, the companion interaction strength decays exponentially:\n367: \n368: $$\n369: K(x, y) = \\exp\\left(-\\frac{r^2}{2\\sigma^2}\\right) \\leq \\exp\\left(-\\frac{r}{2\\sigma}\\right)\n370: $$\n371: \n372: for $r \\geq \\sigma$.\n373: \n374: This establishes an **exponential suppression** with decay rate:\n375: \n376: $$\n377: m_{\\text{corr}} := \\frac{1}{2\\sigma}",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +99,7 @@
         "label": "lem-os0-gauge-fields-bounded"
       },
       "section": "## OS0: Regularity (Tempered Distributions)",
+      "references": [],
       "raw_directive": "576: ### Gauge Field Boundedness\n577: \n578: :::{prf:lemma} Gauge Fields are Bounded Observables\n579: :label: lem-os0-gauge-fields-bounded\n580: \n581: The gauge fields $A_\\mu^a(x)$ constructed from Crystalline Gas walker observables (Section 4) are **bounded** at QSD:\n582: \n583: $$\n584: |A_\\mu^a(x)| \\leq C_{\\text{gauge}} < \\infty\n585: $$\n586: ",
       "_registry_context": {
         "stage": "directives",
@@ -121,6 +125,7 @@
         "label": "lem-os1-operators-covariant"
       },
       "section": "## OS1: Euclidean Invariance",
+      "references": [],
       "raw_directive": "776: ### Operator Euclidean Invariance\n777: \n778: :::{prf:lemma} Crystalline Gas Operators are Euclidean Covariant\n779: :label: lem-os1-operators-covariant\n780: \n781: The three Crystalline Gas operators are **Euclidean covariant**:\n782: \n783: 1. **Geometric ascent**: $\\Psi_{\\text{ascent}}(Rx) = R \\cdot \\Psi_{\\text{ascent}}(x)$\n784: 2. **Thermal fluctuation**: $\\Psi_{\\text{thermal}}(Rx) \\overset{d}{=} R \\cdot \\Psi_{\\text{thermal}}(x)$\n785: 3. **Companion interaction**: Uses metric $d_{\\mathcal{X}}(x, y) = \\|x - y\\|$, which is SO(4)-invariant\n786: ",
       "_registry_context": {
         "stage": "directives",

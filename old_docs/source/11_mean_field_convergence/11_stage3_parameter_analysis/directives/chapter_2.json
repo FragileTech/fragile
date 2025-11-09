@@ -19,6 +19,7 @@
         "label": "thm-alpha-net-explicit"
       },
       "section": "## 2. Explicit Convergence Rate Formula",
+      "references": [],
       "raw_directive": "282: Substituting the expressions from Section 1:\n283: \n284: :::{prf:theorem} Mean-Field Convergence Rate (Explicit)\n285: :label: thm-alpha-net-explicit\n286: \n287: The mean-field convergence rate as a function of simulation parameters is:\n288: \n289: $$\n290: \\begin{aligned}\n291: \\alpha_{\\text{net}}(\\tau, \\gamma, \\sigma, \\lambda_{\\text{revive}}, \\kappa_{\\max}, L_U) \\approx \\frac{1}{2} \\Bigg[\n292: &\\frac{\\gamma \\sigma^2}{1 + \\gamma/\\lambda_{\\min} + \\lambda_{\\text{revive}}/(M_\\infty \\gamma)} \\\\\n293: &- \\frac{2\\gamma}{\\sigma^2} \\left(\\sqrt{\\frac{\\kappa_{\\max}}{\\sigma^2}} + \\sqrt{\\frac{L_U}{\\gamma}} + \\gamma\\right) \\sigma\\tau\\sqrt{2d} \\\\\n294: &- \\frac{2\\gamma L_U^3}{\\sigma^4(1 + \\gamma/\\lambda_{\\min})} \\\\\n295: &- (C_{\\nabla x} + \\gamma) \\sqrt{2d\\sigma^2/\\gamma} \\\\\n296: &- 2\\kappa_{\\max} - \\frac{\\kappa_0(\\lambda_{\\text{revive}} + \\kappa_0)^2}{\\lambda_{\\text{revive}}^2}\n297: \\Bigg]\n298: \\end{aligned}\n299: $$"
     },
     {
@@ -37,6 +38,7 @@
         "label": "thm-optimal-parameter-scaling"
       },
       "section": "## 2. Explicit Convergence Rate Formula",
+      "references": [],
       "raw_directive": "366: This balances killing and revival, minimizing the dead/alive ratio fluctuations.\n367: \n368: :::{prf:theorem} Optimal Parameter Scaling\n369: :label: thm-optimal-parameter-scaling\n370: \n371: For a landscape with Lipschitz constant $L_U$ and minimum Hessian eigenvalue $\\lambda_{\\min}$, the optimal parameter scaling is:\n372: \n373: $$\n374: \\begin{aligned}\n375: \\gamma^* &\\sim L_U^{3/7} \\\\\n376: \\sigma^* &\\sim L_U^{9/14} \\\\\n377: \\tau^* &\\sim L_U^{-12/7} \\\\\n378: \\lambda_{\\text{revive}}^* &\\sim \\kappa_{\\max}\n379: \\end{aligned}\n380: $$\n381: \n382: yielding convergence rate:\n383: \n384: $$\n385: \\alpha_{\\text{net}}^* \\sim \\gamma^* \\sim L_U^{3/7}\n386: $$"
     }
   ],

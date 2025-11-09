@@ -19,6 +19,7 @@
         "label": "def-multilayer-stability"
       },
       "section": "## 2. Multi-Layered Stability Analysis",
+      "references": [],
       "raw_directive": "234: ### 2.1. The Three Mechanisms of Stability\n235: \n236: :::{prf:definition} Multi-Layered Stability\n237: :label: def-multilayer-stability\n238: \n239: The Ricci Gas achieves stability through three nested mechanisms:\n240: \n241: **Layer 1: Global Push-Pull Balance**\n242: - **Aggregation**: Kinetic force $F = +\\epsilon_R \\nabla R$ pulls walkers together\n243: - **Dispersion**: Cloning reward $\\propto 1/R$ pushes walkers apart\n244: - **Effect**: Prevents total collapse of swarm to a single point\n245: \n246: **Layer 2: Internal Cluster Pressure**\n247: - **Aggregation**: Same kinetic force tries to compress clusters\n248: - **Dispersion**: Diversity signal $(d')^\\beta$ decreases in dense clusters \u2192 reduces fitness\n249: - **Effect**: Creates internal pressure preventing zero-variance collapse\n250: \n251: **Layer 3: Singularity Regulation via Status Killing**\n252: - **Mechanism**: Walkers die when $R > R_{\\text{crit}}$\n253: - **Effect**: Hard boundary prevents true mathematical singularity\n254: - **Revival**: Dead walkers immediately revive via cloning from flat regions\n255: - **Interpretation**: \"Bouncing singularity\" with information teleportation"
     }
   ],

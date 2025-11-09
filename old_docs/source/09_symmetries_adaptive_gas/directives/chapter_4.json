@@ -19,6 +19,7 @@
         "label": "thm-noether-adaptive"
       },
       "section": "## 4. Conservation Laws and Noether's Theorem",
+      "references": [],
       "raw_directive": "954: Classical Noether's theorem states: **continuous symmetries imply conserved quantities**. We adapt this to the Adaptive Gas.\n955: \n956: :::{prf:theorem} Noether's Theorem for the Adaptive Gas\n957: :label: thm-noether-adaptive\n958: \n959: Let $\\{T_s\\}_{s \\in \\mathbb{R}}$ be a one-parameter group of transformations acting on $\\Sigma_N$ such that:\n960: \n961: $$\n962: \\Psi(T_s(\\mathcal{S}), \\cdot) = T_s \\circ \\Psi(\\mathcal{S}, \\cdot)\n963: \n964: $$\n965: \n966: for all $s$ (continuous symmetry).\n967: \n968: Define the **infinitesimal generator**:\n969: \n970: $$\n971: Q(\\mathcal{S}) = \\left.\\frac{d}{ds}\\right|_{s=0} T_s(\\mathcal{S})\n972: \n973: $$\n974: \n975: Then the **Noether charge**:\n976: \n977: $$\n978: J(\\mathcal{S}) = \\langle \\mathcal{S}, Q(\\mathcal{S}) \\rangle\n979: \n980: $$\n981: \n982: satisfies:\n983: \n984: $$\n985: \\mathbb{E}[J(\\mathcal{S}_{t+1}) | \\mathcal{S}_t] = J(\\mathcal{S}_t)\n986: \n987: $$\n988: "
     },
     {
@@ -33,6 +34,7 @@
       "content": "991: \n992: :::{prf:proof}\n993: **Infinitesimal symmetry**: For small $s$, the symmetry condition gives:\n994: \n995: $$\n996: \\Psi(T_s(\\mathcal{S}), \\cdot) \\approx \\Psi(\\mathcal{S} + sQ(\\mathcal{S}), \\cdot) = T_s(\\Psi(\\mathcal{S}, \\cdot))\n997: \n998: $$\n999: \n1000: Expanding to first order in $s$:\n1001: \n1002: $$\n1003: \\Psi(\\mathcal{S}, \\cdot) + s \\mathcal{L}[Q(\\mathcal{S})] = \\Psi(\\mathcal{S}, \\cdot) + s Q(\\Psi(\\mathcal{S}, \\cdot))\n1004: \n1005: $$\n1006: \n1007: where $\\mathcal{L}$ is the generator of the Markov chain.\n1008: \n1009: Therefore:\n1010: \n1011: $$\n1012: \\mathcal{L}[Q(\\mathcal{S})] = Q(\\Psi(\\mathcal{S}, \\cdot))\n1013: \n1014: $$\n1015: \n1016: **Conservation**: Taking expectation:\n1017: \n1018: $$\n1019: \\mathbb{E}[Q(\\mathcal{S}_{t+1})] = \\mathbb{E}[\\mathcal{L} Q(\\mathcal{S}_t)] = \\mathbb{E}[Q(\\mathcal{S}_t)]\n1020: \n1021: $$\n1022: \n1023: The Noether charge $J = \\langle \\mathcal{S}, Q \\rangle$ then satisfies:\n1024: \n1025: $$\n1026: \\mathbb{E}[J(\\mathcal{S}_{t+1})] = J(\\mathcal{S}_t)\n1027: \n1028: $$",
       "metadata": {},
       "section": "## 4. Conservation Laws and Noether's Theorem",
+      "references": [],
       "raw_directive": "990: :::\n991: \n992: :::{prf:proof}\n993: **Infinitesimal symmetry**: For small $s$, the symmetry condition gives:\n994: \n995: $$\n996: \\Psi(T_s(\\mathcal{S}), \\cdot) \\approx \\Psi(\\mathcal{S} + sQ(\\mathcal{S}), \\cdot) = T_s(\\Psi(\\mathcal{S}, \\cdot))\n997: \n998: $$\n999: \n1000: Expanding to first order in $s$:\n1001: \n1002: $$\n1003: \\Psi(\\mathcal{S}, \\cdot) + s \\mathcal{L}[Q(\\mathcal{S})] = \\Psi(\\mathcal{S}, \\cdot) + s Q(\\Psi(\\mathcal{S}, \\cdot))\n1004: \n1005: $$\n1006: \n1007: where $\\mathcal{L}$ is the generator of the Markov chain.\n1008: \n1009: Therefore:\n1010: \n1011: $$\n1012: \\mathcal{L}[Q(\\mathcal{S})] = Q(\\Psi(\\mathcal{S}, \\cdot))\n1013: \n1014: $$\n1015: \n1016: **Conservation**: Taking expectation:\n1017: \n1018: $$\n1019: \\mathbb{E}[Q(\\mathcal{S}_{t+1})] = \\mathbb{E}[\\mathcal{L} Q(\\mathcal{S}_t)] = \\mathbb{E}[Q(\\mathcal{S}_t)]\n1020: \n1021: $$\n1022: \n1023: The Noether charge $J = \\langle \\mathcal{S}, Q \\rangle$ then satisfies:\n1024: \n1025: $$\n1026: \\mathbb{E}[J(\\mathcal{S}_{t+1})] = J(\\mathcal{S}_t)\n1027: \n1028: $$\n1029: "
     },
     {
@@ -51,6 +53,7 @@
         "label": "thm-total-probability-conservation"
       },
       "section": "## 4. Conservation Laws and Noether's Theorem",
+      "references": [],
       "raw_directive": "1033: ### 4.2. Conserved Quantities in the Adaptive Gas\n1034: \n1035: :::{prf:theorem} Conservation of Total Probability\n1036: :label: thm-total-probability-conservation\n1037: \n1038: The **total probability** (alive + dead walkers) is exactly conserved:\n1039: \n1040: $$\n1041: \\int_{\\Sigma_N} \\mathcal{P}_t(d\\mathcal{S}) + \\mathcal{P}_t(\\mathcal{S}_\\emptyset) = 1\n1042: \n1043: $$\n1044: "
     },
     {
@@ -65,6 +68,7 @@
       "content": "1047: ",
       "metadata": {},
       "section": "## 4. Conservation Laws and Noether's Theorem",
+      "references": [],
       "raw_directive": "1046: :::\n1047: \n1048: :::{prf:proof}"
     },
     {
@@ -83,6 +87,7 @@
         "label": "thm-center-of-mass-quasi-conservation"
       },
       "section": "## 4. Conservation Laws and Noether's Theorem",
+      "references": [],
       "raw_directive": "1050: :::\n1051: \n1052: :::{prf:theorem} Quasi-Conservation of Center of Mass (Bounded Domain)\n1053: :label: thm-center-of-mass-quasi-conservation\n1054: \n1055: For the Adaptive Gas on a **periodic domain** $\\mathcal{X} = \\mathbb{T}^d$ with position-independent reward $R(v)$, the **center of mass**:\n1056: \n1057: $$\n1058: X_{\\text{CM}}(t) = \\frac{1}{N}\\sum_{i=1}^N x_i(t)\n1059: \n1060: $$\n1061: \n1062: satisfies:\n1063: \n1064: $$\n1065: \\mathbb{E}[X_{\\text{CM}}(t+\\tau)] = X_{\\text{CM}}(t) + \\frac{1}{N}\\sum_{i=1}^N \\mathbb{E}[v_i(t)] \\tau + O(\\tau^2)\n1066: \n1067: $$\n1068: \n1069: (center of mass drifts with mean velocity, no force).\n1070: \n1071: For **bounded domains**, center of mass is not conserved due to boundary effects, but satisfies a **confinement bound**:\n1072: \n1073: $$\n1074: \\mathbb{E}[\\|X_{\\text{CM}}(t) - X_0\\|^2] \\le C(1 + t)\n1075: \n1076: $$\n1077: "
     },
     {
@@ -97,6 +102,7 @@
       "content": "1080: \n1081: :::{prf:proof}\n1082: **Periodic case**: By translation invariance, the force $F(x) = \\nabla R(x)$ is position-independent. The kinetic equation gives:\n1083: \n1084: $$\n1085: \\frac{dx_i}{dt} = v_i\n1086: \n1087: $$\n1088: \n1089: Averaging over $i$ and taking expectation:\n1090: \n1091: $$\n1092: \\frac{d}{dt} \\mathbb{E}[X_{\\text{CM}}] = \\frac{1}{N}\\sum_i \\mathbb{E}[v_i]\n1093: \n1094: $$\n1095: \n1096: Since the dynamics are translation-invariant, $\\mathbb{E}[v_i]$ is constant in the QSD, giving linear drift.",
       "metadata": {},
       "section": "## 4. Conservation Laws and Noether's Theorem",
+      "references": [],
       "raw_directive": "1079: :::\n1080: \n1081: :::{prf:proof}\n1082: **Periodic case**: By translation invariance, the force $F(x) = \\nabla R(x)$ is position-independent. The kinetic equation gives:\n1083: \n1084: $$\n1085: \\frac{dx_i}{dt} = v_i\n1086: \n1087: $$\n1088: \n1089: Averaging over $i$ and taking expectation:\n1090: \n1091: $$\n1092: \\frac{d}{dt} \\mathbb{E}[X_{\\text{CM}}] = \\frac{1}{N}\\sum_i \\mathbb{E}[v_i]\n1093: \n1094: $$\n1095: \n1096: Since the dynamics are translation-invariant, $\\mathbb{E}[v_i]$ is constant in the QSD, giving linear drift.\n1097: "
     },
     {
@@ -115,6 +121,7 @@
         "label": "thm-angular-momentum-decay"
       },
       "section": "## 4. Conservation Laws and Noether's Theorem",
+      "references": [],
       "raw_directive": "1099: :::\n1100: \n1101: :::{prf:theorem} Angular Momentum Decay in Rotationally Symmetric Systems\n1102: :label: thm-angular-momentum-decay\n1103: \n1104: For a rotationally symmetric system where:\n1105: 1. The domain and reward are $SO(d)$-symmetric\n1106: 2. **The emergent Hessian is rotationally symmetric**: $R^T H(x, S) R = H(x, S)$ for all $R \\in SO(d)$\n1107: 3. The external force is radial: $F(x) = f(\\|x\\|) \\frac{x}{\\|x\\|}$\n1108: \n1109: The **expected total angular momentum**:\n1110: \n1111: $$\n1112: L(\\mathcal{S}) = \\sum_{i=1}^N x_i \\times v_i\n1113: \n1114: $$\n1115: \n1116: decays exponentially due to friction:\n1117: \n1118: $$\n1119: \\frac{d}{dt}\\mathbb{E}[L(t)] = -\\gamma \\mathbb{E}[L(t)]\n1120: \n1121: $$\n1122: \n1123: implying:\n1124: \n1125: $$\n1126: \\mathbb{E}[L(t)] = L(0) \\, e^{-\\gamma t}\n1127: \n1128: $$\n1129: "
     },
     {
@@ -129,6 +136,7 @@
       "content": "1132: \n1133: :::{prf:proof}\n1134: We derive the evolution equation for the expected angular momentum by analyzing each component of the dynamics.\n1135: \n1136: **Step 1: Velocity SDE from BAOAB Langevin dynamics**\n1137: \n1138: The continuous-time limit of the BAOAB integrator for walker $i$ gives the underdamped Langevin SDE (see `02_euclidean_gas.md`):\n1139: \n1140: $$\n1141: dx_i = v_i \\, dt\n1142: \n1143: $$\n1144: \n1145: $$\n1146: dv_i = F(x_i) \\, dt - \\gamma v_i \\, dt + \\Sigma_{\\text{reg}}(x_i, S) \\, dW_i\n1147: \n1148: $$\n1149: \n1150: where:\n1151: - $F(x_i) = \\nabla R(x_i)$ is the external force (gradient of reward)\n1152: - $\\gamma > 0$ is the friction coefficient\n1153: - $\\Sigma_{\\text{reg}}$ is the adaptive diffusion tensor\n1154: - $dW_i$ is a $d$-dimensional Brownian motion\n1155: \n1156: **Step 2: Evolution of angular momentum**\n1157: \n1158: The angular momentum of walker $i$ is $L_i = x_i \\times v_i$. Its differential is:\n1159: \n1160: $$\n1161: dL_i = dx_i \\times v_i + x_i \\times dv_i\n1162: \n1163: $$\n1164: \n1165: Substituting the SDEs:\n1166: \n1167: $$\n1168: dL_i = (v_i \\, dt) \\times v_i + x_i \\times [F(x_i) \\, dt - \\gamma v_i \\, dt + \\Sigma_{\\text{reg}} \\, dW_i]\n1169: \n1170: $$\n1171: \n1172: Since $v_i \\times v_i = 0$:\n1173: \n1174: $$\n1175: dL_i = x_i \\times F(x_i) \\, dt - \\gamma (x_i \\times v_i) \\, dt + x_i \\times (\\Sigma_{\\text{reg}} \\, dW_i)\n1176: \n1177: $$\n1178: \n1179: $$\n1180: = x_i \\times F(x_i) \\, dt - \\gamma L_i \\, dt + x_i \\times (\\Sigma_{\\text{reg}} \\, dW_i)\n1181: \n1182: $$\n1183: \n1184: **Step 3: Radial force has zero torque**\n1185: \n1186: For rotationally symmetric potential, the force is radial:\n1187: \n1188: $$\n1189: F(x_i) = f(\\|x_i\\|) \\frac{x_i}{\\|x_i\\|}\n1190: \n1191: $$\n1192: \n1193: Therefore:\n1194: \n1195: $$\n1196: x_i \\times F(x_i) = x_i \\times \\left(f(\\|x_i\\|) \\frac{x_i}{\\|x_i\\|}\\right) = 0\n1197: \n1198: $$\n1199: \n1200: (parallel vectors have zero cross product).\n1201: \n1202: **Step 4: Stochastic torque has zero expectation**\n1203: \n1204: The stochastic term $x_i \\times (\\Sigma_{\\text{reg}} dW_i)$ is a martingale:\n1205: \n1206: $$\n1207: \\mathbb{E}[x_i \\times (\\Sigma_{\\text{reg}} dW_i) | \\mathcal{F}_t] = 0\n1208: \n1209: $$\n1210: \n1211: by the martingale property of Brownian motion.\n1212: \n1213: **Step 5: Expected angular momentum evolution**\n1214: \n1215: Taking expectation of $dL_i$:\n1216: \n1217: $$\n1218: \\mathbb{E}[dL_i] = \\mathbb{E}[x_i \\times F(x_i)] \\, dt - \\gamma \\mathbb{E}[L_i] \\, dt + \\mathbb{E}[x_i \\times (\\Sigma_{\\text{reg}} dW_i)]\n1219: \n1220: $$\n1221: \n1222: $$\n1223: = 0 - \\gamma \\mathbb{E}[L_i] \\, dt + 0\n1224: \n1225: $$\n1226: \n1227: Therefore:\n1228: \n1229: $$\n1230: \\frac{d}{dt}\\mathbb{E}[L_i] = -\\gamma \\mathbb{E}[L_i]\n1231: \n1232: $$\n1233: \n1234: **Step 6: Total angular momentum**\n1235: \n1236: Summing over all walkers:\n1237: \n1238: $$\n1239: \\frac{d}{dt}\\mathbb{E}[L(t)] = \\frac{d}{dt}\\mathbb{E}\\left[\\sum_{i=1}^N L_i\\right] = \\sum_{i=1}^N \\frac{d}{dt}\\mathbb{E}[L_i] = -\\gamma \\sum_{i=1}^N \\mathbb{E}[L_i] = -\\gamma \\mathbb{E}[L(t)]\n1240: \n1241: $$\n1242: \n1243: **Step 7: Solution**\n1244: \n1245: This first-order linear ODE has the solution:\n1246: \n1247: $$\n1248: \\mathbb{E}[L(t)] = \\mathbb{E}[L(0)] \\, e^{-\\gamma t}\n1249: \n1250: $$",
       "metadata": {},
       "section": "## 4. Conservation Laws and Noether's Theorem",
+      "references": [],
       "raw_directive": "1131: :::\n1132: \n1133: :::{prf:proof}\n1134: We derive the evolution equation for the expected angular momentum by analyzing each component of the dynamics.\n1135: \n1136: **Step 1: Velocity SDE from BAOAB Langevin dynamics**\n1137: \n1138: The continuous-time limit of the BAOAB integrator for walker $i$ gives the underdamped Langevin SDE (see `02_euclidean_gas.md`):\n1139: \n1140: $$\n1141: dx_i = v_i \\, dt\n1142: \n1143: $$\n1144: \n1145: $$\n1146: dv_i = F(x_i) \\, dt - \\gamma v_i \\, dt + \\Sigma_{\\text{reg}}(x_i, S) \\, dW_i\n1147: \n1148: $$\n1149: \n1150: where:\n1151: - $F(x_i) = \\nabla R(x_i)$ is the external force (gradient of reward)\n1152: - $\\gamma > 0$ is the friction coefficient\n1153: - $\\Sigma_{\\text{reg}}$ is the adaptive diffusion tensor\n1154: - $dW_i$ is a $d$-dimensional Brownian motion\n1155: \n1156: **Step 2: Evolution of angular momentum**\n1157: \n1158: The angular momentum of walker $i$ is $L_i = x_i \\times v_i$. Its differential is:\n1159: \n1160: $$\n1161: dL_i = dx_i \\times v_i + x_i \\times dv_i\n1162: \n1163: $$\n1164: \n1165: Substituting the SDEs:\n1166: \n1167: $$\n1168: dL_i = (v_i \\, dt) \\times v_i + x_i \\times [F(x_i) \\, dt - \\gamma v_i \\, dt + \\Sigma_{\\text{reg}} \\, dW_i]\n1169: \n1170: $$\n1171: \n1172: Since $v_i \\times v_i = 0$:\n1173: \n1174: $$\n1175: dL_i = x_i \\times F(x_i) \\, dt - \\gamma (x_i \\times v_i) \\, dt + x_i \\times (\\Sigma_{\\text{reg}} \\, dW_i)\n1176: \n1177: $$\n1178: \n1179: $$\n1180: = x_i \\times F(x_i) \\, dt - \\gamma L_i \\, dt + x_i \\times (\\Sigma_{\\text{reg}} \\, dW_i)\n1181: \n1182: $$\n1183: \n1184: **Step 3: Radial force has zero torque**\n1185: \n1186: For rotationally symmetric potential, the force is radial:\n1187: \n1188: $$\n1189: F(x_i) = f(\\|x_i\\|) \\frac{x_i}{\\|x_i\\|}\n1190: \n1191: $$\n1192: \n1193: Therefore:\n1194: \n1195: $$\n1196: x_i \\times F(x_i) = x_i \\times \\left(f(\\|x_i\\|) \\frac{x_i}{\\|x_i\\|}\\right) = 0\n1197: \n1198: $$\n1199: \n1200: (parallel vectors have zero cross product).\n1201: \n1202: **Step 4: Stochastic torque has zero expectation**\n1203: \n1204: The stochastic term $x_i \\times (\\Sigma_{\\text{reg}} dW_i)$ is a martingale:\n1205: \n1206: $$\n1207: \\mathbb{E}[x_i \\times (\\Sigma_{\\text{reg}} dW_i) | \\mathcal{F}_t] = 0\n1208: \n1209: $$\n1210: \n1211: by the martingale property of Brownian motion.\n1212: \n1213: **Step 5: Expected angular momentum evolution**\n1214: \n1215: Taking expectation of $dL_i$:\n1216: \n1217: $$\n1218: \\mathbb{E}[dL_i] = \\mathbb{E}[x_i \\times F(x_i)] \\, dt - \\gamma \\mathbb{E}[L_i] \\, dt + \\mathbb{E}[x_i \\times (\\Sigma_{\\text{reg}} dW_i)]\n1219: \n1220: $$\n1221: \n1222: $$\n1223: = 0 - \\gamma \\mathbb{E}[L_i] \\, dt + 0\n1224: \n1225: $$\n1226: \n1227: Therefore:\n1228: \n1229: $$\n1230: \\frac{d}{dt}\\mathbb{E}[L_i] = -\\gamma \\mathbb{E}[L_i]\n1231: \n1232: $$\n1233: \n1234: **Step 6: Total angular momentum**\n1235: \n1236: Summing over all walkers:\n1237: \n1238: $$\n1239: \\frac{d}{dt}\\mathbb{E}[L(t)] = \\frac{d}{dt}\\mathbb{E}\\left[\\sum_{i=1}^N L_i\\right] = \\sum_{i=1}^N \\frac{d}{dt}\\mathbb{E}[L_i] = -\\gamma \\sum_{i=1}^N \\mathbb{E}[L_i] = -\\gamma \\mathbb{E}[L(t)]\n1240: \n1241: $$\n1242: \n1243: **Step 7: Solution**\n1244: \n1245: This first-order linear ODE has the solution:\n1246: \n1247: $$\n1248: \\mathbb{E}[L(t)] = \\mathbb{E}[L(0)] \\, e^{-\\gamma t}\n1249: \n1250: $$\n1251: "
     },
     {
@@ -147,6 +155,7 @@
         "label": "cor-frictionless-angular-momentum"
       },
       "section": "## 4. Conservation Laws and Noether's Theorem",
+      "references": [],
       "raw_directive": "1253: :::\n1254: \n1255: :::{prf:corollary} Frictionless Limit: Angular Momentum Conservation\n1256: :label: cor-frictionless-angular-momentum\n1257: \n1258: In the **frictionless limit** $\\gamma \\to 0$ (Hamiltonian dynamics), angular momentum is conserved:\n1259: \n1260: $$\n1261: \\frac{d}{dt}\\mathbb{E}[L(t)] = 0 \\quad \\Rightarrow \\quad \\mathbb{E}[L(t)] = \\mathbb{E}[L(0)]\n1262: \n1263: $$\n1264: "
     },
     {
@@ -165,6 +174,7 @@
         "class": "warning"
       },
       "section": "## 4. Conservation Laws and Noether's Theorem",
+      "references": [],
       "raw_directive": "1266: :::\n1267: \n1268: :::{prf:remark} Breaking of Angular Momentum Conservation\n1269: :class: warning\n1270: \n1271: **Generic Adaptive Gas**: For fitness landscapes with **anisotropic Hessian** $H(x, S)$ (e.g., from clustered walkers), the diffusion tensor $D_{\\text{reg}} = (H + \\epsilon_\\Sigma I)^{-1}$ is also anisotropic. The stochastic noise then exerts a **non-zero systematic torque**, breaking angular momentum conservation.\n1272: \n1273: This is a fundamental difference from the Euclidean Gas (isotropic noise $\\sigma_v I$), where angular momentum is always conserved for radially symmetric potentials.\n1274: "
     },
     {
@@ -183,6 +193,7 @@
         "label": "prop-energy-non-conservation"
       },
       "section": "## 4. Conservation Laws and Noether's Theorem",
+      "references": [],
       "raw_directive": "1280: Unlike Hamiltonian systems, the Adaptive Gas does **not** conserve energy.\n1281: \n1282: :::{prf:proposition} Energy Non-Conservation\n1283: :label: prop-energy-non-conservation\n1284: \n1285: Define the **total energy**:\n1286: \n1287: $$\n1288: E(\\mathcal{S}) = \\sum_{i \\in \\mathcal{A}} \\left(\\frac{1}{2}m \\|v_i\\|^2 - R(x_i, v_i)\\right)\n1289: \n1290: $$\n1291: \n1292: Then:\n1293: \n1294: $$\n1295: \\mathbb{E}[E(\\mathcal{S}_{t+1}) | \\mathcal{S}_t] \\neq E(\\mathcal{S}_t)\n1296: \n1297: $$\n1298: \n1299: in general. Energy is **not** conserved due to:\n1300: 1. **Friction** in the Langevin operator\n1301: 2. **Cloning** creating/destroying walkers"
     },
     {
@@ -197,6 +208,7 @@
       "content": "1304: \n1305: :::{prf:proof}\n1306: **Kinetic dissipation**: The BAOAB integrator includes the O-step (Ornstein-Uhlenbeck):\n1307: \n1308: $$\n1309: v' = c_1 v + c_2 \\xi\n1310: \n1311: $$\n1312: \n1313: where $c_1 = e^{-\\gamma \\tau} < 1$ (friction) and $\\xi \\sim \\mathcal{N}(0, I)$ (noise). Taking expectation:\n1314: \n1315: $$\n1316: \\mathbb{E}[\\|v'\\|^2] = c_1^2 \\|v\\|^2 + c_2^2 d\n1317: \n1318: $$\n1319: \n1320: For $c_1 < 1$, the kinetic energy **decays** deterministically, then is **replenished** stochastically by noise to maintain equilibrium temperature $T = c_2^2/(2(1-c_1^2))$.\n1321: \n1322: **Cloning**: When walker $i$ clones walker $j$, the energy changes by:\n1323: \n1324: $$\n1325: \\Delta E = \\left(\\frac{1}{2}m \\|v_j\\|^2 - R(x_j)\\right) - \\left(\\frac{1}{2}m \\|v_i\\|^2 - R(x_i)\\right)\n1326: \n1327: $$\n1328: \n1329: This is non-zero generically, violating energy conservation.",
       "metadata": {},
       "section": "## 4. Conservation Laws and Noether's Theorem",
+      "references": [],
       "raw_directive": "1303: :::\n1304: \n1305: :::{prf:proof}\n1306: **Kinetic dissipation**: The BAOAB integrator includes the O-step (Ornstein-Uhlenbeck):\n1307: \n1308: $$\n1309: v' = c_1 v + c_2 \\xi\n1310: \n1311: $$\n1312: \n1313: where $c_1 = e^{-\\gamma \\tau} < 1$ (friction) and $\\xi \\sim \\mathcal{N}(0, I)$ (noise). Taking expectation:\n1314: \n1315: $$\n1316: \\mathbb{E}[\\|v'\\|^2] = c_1^2 \\|v\\|^2 + c_2^2 d\n1317: \n1318: $$\n1319: \n1320: For $c_1 < 1$, the kinetic energy **decays** deterministically, then is **replenished** stochastically by noise to maintain equilibrium temperature $T = c_2^2/(2(1-c_1^2))$.\n1321: \n1322: **Cloning**: When walker $i$ clones walker $j$, the energy changes by:\n1323: \n1324: $$\n1325: \\Delta E = \\left(\\frac{1}{2}m \\|v_j\\|^2 - R(x_j)\\right) - \\left(\\frac{1}{2}m \\|v_i\\|^2 - R(x_i)\\right)\n1326: \n1327: $$\n1328: \n1329: This is non-zero generically, violating energy conservation.\n1330: "
     },
     {
@@ -215,6 +227,9 @@
         "class": "note"
       },
       "section": "## 4. Conservation Laws and Noether's Theorem",
+      "references": [
+        "prop-h-theorem"
+      ],
       "raw_directive": "1332: :::\n1333: \n1334: :::{prf:remark} Thermodynamic Interpretation\n1335: :class: note\n1336: \n1337: The Adaptive Gas can be viewed as a **non-equilibrium thermodynamic system**:\n1338: - **Heat bath**: The Langevin noise at temperature $T = \\sigma_v^2$\n1339: - **Work**: The fitness-driven cloning and adaptive forces\n1340: - **Entropy production**: The H-theorem (Proposition {prf:ref}`prop-h-theorem`)\n1341: "
     }
   ],

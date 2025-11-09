@@ -2,7 +2,7 @@
   "document_id": "12_symmetries_geometric_gas",
   "stage": "directives",
   "directive_type": "remark",
-  "generated_at": "2025-11-08T17:16:20.228712+00:00",
+  "generated_at": "2025-11-08T23:19:38.284791+00:00",
   "count": 1,
   "items": [
     {
@@ -23,6 +23,7 @@
         "class": "warning"
       },
       "section": "## 3. Flat Algorithmic Space Symmetries",
+      "references": [],
       "raw_directive": "400: :::\n401: \n402: :::{prf:remark} Breaking of Translation Symmetry\n403: :label: rem-warning-translation-symmetry-breaking\n404: :class: warning\n405: \n406: **Generic case**: For bounded domains $\\mathcal{X}_{\\text{valid}} \\subset \\mathbb{R}^d$ with walls, translation symmetry is **broken** except for special directions (e.g., periodic boundaries).\n407: \n408: **Periodic domains**: If $\\mathcal{X} = \\mathbb{T}^d$ (the $d$-dimensional torus) and $R(x + e_i) = R(x)$ for lattice vectors, then full $\\mathbb{Z}^d$ translation symmetry holds.\n409: ",
       "_registry_context": {
         "stage": "directives",

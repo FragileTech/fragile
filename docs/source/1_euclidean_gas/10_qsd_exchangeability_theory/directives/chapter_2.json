@@ -19,6 +19,7 @@
         "label": "thm-n-uniform-lsi-exchangeable"
       },
       "section": "## A1.3 N-Uniform Log-Sobolev Inequality",
+      "references": [],
       "raw_directive": "533: ### A1.3.1 LSI for Exchangeable Measures\n534: \n535: :::{prf:theorem} N-Uniform LSI via Hypocoercivity\n536: :label: thm-n-uniform-lsi-exchangeable\n537: \n538: The QSD $\\pi_N$ satisfies a Log-Sobolev inequality:\n539: \n540: $$\n541: D_{\\text{KL}}(\\nu \\| \\pi_N) \\leq C_{\\text{LSI}} \\cdot I(\\nu \\| \\pi_N)\n542: $$\n543: "
     },
     {
@@ -37,6 +38,9 @@
         "label": "proof-thm-n-uniform-lsi-exchangeable"
       },
       "section": "## A1.3 N-Uniform Log-Sobolev Inequality",
+      "references": [
+        "lem-conditional-gaussian-qsd-euclidean"
+      ],
       "raw_directive": "547: :::\n548: \n549: :::{prf:proof}\n550: :label: proof-thm-n-uniform-lsi-exchangeable\n551: \n552: The proof of N-uniform LSI for the Euclidean Gas QSD is developed in detail in **Chapter 9: KL Convergence** (`09_kl_convergence.md`). We outline the key steps:\n553: \n554: **Main Observation**: The proof does NOT use tensorization (Bakry-\u00c9mery), which would require product structure $\\pi_N = \\mu^{\\otimes N}$. Since the QSD is exchangeable but not a product measure (due to cloning-induced correlations), tensorization fails. Instead, we use **hypocoercivity theory** combined with perturbation analysis.\n555: \n556: **Step 1: Kinetic Component - Hypocoercive LSI**\n557: \n558: For the Langevin kinetic operator $\\mathcal{L}_{\\text{kin}}$ acting on positions and velocities, we establish LSI via **Villani's hypocoercivity method** (Villani 2009, Baudoin 2017):\n559: \n560: 1. **Velocity dissipation**: The friction term $-\\gamma v_i \\cdot \\nabla_{v_i}$ provides direct dissipation in velocity space\n561: 2. **Transport coupling**: The drift term $v_i \\cdot \\nabla_{x_i}$ couples position and velocity\n562: 3. **Conditional Gaussian structure**: By {prf:ref}`lem-conditional-gaussian-qsd-euclidean`, velocities conditioned on positions are independent Gaussians with N-uniform covariance bounds\n563: \n564: These combine to yield an LSI for the kinetic component with constant $C_{\\text{kin}}$ independent of $N$.\n565: \n566: **Step 2: Cloning Component - Wasserstein Contraction**\n567: \n568: The cloning operator $\\mathcal{L}_{\\text{clone}}$ contracts the Wasserstein distance (established in `03_cloning.md`, Keystone Principle). This contraction property, combined with the Otto calculus and Wasserstein gradient flow structure, implies that cloning **preserves** or **improves** LSI constants (Diaconis-Saloff-Coste 1996, Markov chain spectral gap theory).\n569: \n570: **Step 3: Perturbation Theory (Holley-Stroock)**\n571: \n572: The full generator is $\\mathcal{L} = \\mathcal{L}_{\\text{kin}} + \\mathcal{L}_{\\text{clone}}$. We apply the **Holley-Stroock perturbation theorem** for LSI under additive perturbations of generators:\n573: \n574: If $\\nu$ satisfies LSI with constant $C_1$ under generator $\\mathcal{L}_1$, and $\\mathcal{L}_2$ is a \"controlled perturbation,\" then $\\nu$ satisfies LSI under $\\mathcal{L}_1 + \\mathcal{L}_2$ with constant $C \\leq C_1 + \\epsilon(C_1, \\|\\mathcal{L}_2\\|)$.\n575: \n576: Since cloning preserves LSI and the kinetic LSI constant is N-uniform, the combined LSI constant $C_{\\text{LSI}}$ is also N-uniform.\n577: "
     },
     {
@@ -55,6 +59,7 @@
         "label": "lem-conditional-gaussian-qsd-euclidean"
       },
       "section": "## A1.3 N-Uniform Log-Sobolev Inequality",
+      "references": [],
       "raw_directive": "581: **Key technical lemma**:\n582: \n583: :::{prf:lemma} Conditional Gaussian Structure (Euclidean Gas)\n584: :label: lem-conditional-gaussian-qsd-euclidean\n585: \n586: For fixed positions $\\mathbf{x} = (x_1, \\ldots, x_N)$, the conditional velocity distribution in the Euclidean Gas is a product of independent Gaussians:\n587: \n588: $$\n589: \\pi_N(\\mathbf{v} | \\mathbf{x}) = \\prod_{i=1}^N \\mathcal{N}(0, \\Sigma_{v_i})\n590: $$\n591: \n592: where each $\\Sigma_{v_i}$ is the stationary covariance for the individual Langevin dynamics (no coupling between walkers).\n593: \n594: For the Euclidean Gas with constant diffusion $\\sigma I$, the conditional covariance is:\n595: \n596: $$\n597: \\Sigma_{v_i} = \\frac{\\sigma^2}{2\\gamma} I\n598: $$\n599: \n600: **N-uniform eigenvalue bound**:\n601: \n602: $$\n603: \\lambda_{\\max}(\\Sigma_{v_i}) = \\frac{\\sigma^2}{2\\gamma}\n604: $$\n605: "
     },
     {
@@ -73,6 +78,7 @@
         "label": "proof-lem-conditional-gaussian-qsd-euclidean"
       },
       "section": "## A1.3 N-Uniform Log-Sobolev Inequality",
+      "references": [],
       "raw_directive": "607: :::\n608: \n609: :::{prf:proof}\n610: :label: proof-lem-conditional-gaussian-qsd-euclidean\n611: For fixed positions, the velocity dynamics of walker $i$ is:\n612: \n613: $$\n614: dv_i = -\\gamma v_i \\, dt + \\sigma \\, dW_i\n615: $$\n616: \n617: This is a standard Ornstein-Uhlenbeck process (no coupling to other walkers in Euclidean Gas). The stationary distribution is Gaussian $\\mathcal{N}(0, \\Sigma_{v_i})$ where:\n618: \n619: $$\n620: \\gamma \\Sigma_{v_i} + \\Sigma_{v_i} \\gamma = \\sigma^2 I \\implies \\Sigma_{v_i} = \\frac{\\sigma^2}{2\\gamma} I\n621: $$\n622: \n623: Since the Wiener processes $W_i$ are independent and the dynamics are uncoupled, the conditional distribution factorizes:\n624: \n625: $$\n626: \\pi_N(\\mathbf{v} | \\mathbf{x}) = \\prod_{i=1}^N \\pi_i(v_i | x_i)\n627: $$\n628: "
     },
     {
@@ -91,6 +97,7 @@
         "label": "cor-mean-field-lsi"
       },
       "section": "## A1.3 N-Uniform Log-Sobolev Inequality",
+      "references": [],
       "raw_directive": "636: ### A1.3.2 Implications for Mean-Field LSI\n637: \n638: :::{prf:corollary} Mean-Field LSI from N-Uniform Bounds\n639: :label: cor-mean-field-lsi\n640: \n641: The mean-field density $\\rho_\\infty$ (limit of $\\mu_N$ as $N \\to \\infty$) satisfies:\n642: \n643: $$\n644: D_{\\text{KL}}(\\nu \\| \\rho_\\infty) \\leq C_{\\text{LSI}}^{\\text{MF}} \\cdot I(\\nu \\| \\rho_\\infty)\n645: $$\n646: "
     },
     {
@@ -109,6 +116,10 @@
         "label": "proof-cor-mean-field-lsi"
       },
       "section": "## A1.3 N-Uniform Log-Sobolev Inequality",
+      "references": [
+        "thm-n-uniform-lsi-exchangeable",
+        "thm-propagation-chaos-qsd"
+      ],
       "raw_directive": "650: :::\n651: \n652: :::{prf:proof}\n653: :label: proof-cor-mean-field-lsi\n654: \n655: This corollary follows by taking the $N \\to \\infty$ limit in the finite-N LSI established in {prf:ref}`thm-n-uniform-lsi-exchangeable`.\n656: \n657: **Step 1: N-Uniform Bounds**\n658: \n659: From {prf:ref}`thm-n-uniform-lsi-exchangeable`, for each $N \\geq 2$, the single-particle marginal $\\mu_N$ satisfies LSI with constant $C_{\\text{LSI}}^{(N)}$ that is uniformly bounded:\n660: \n661: $$\n662: \\sup_{N \\geq 2} C_{\\text{LSI}}^{(N)} < \\infty\n663: $$\n664: \n665: Define $C_{\\text{LSI}}^{\\text{MF}} := \\limsup_{N \\to \\infty} C_{\\text{LSI}}^{(N)} < \\infty$.\n666: \n667: **Step 2: Weak Convergence**\n668: \n669: By {prf:ref}`thm-propagation-chaos-qsd`, the single-particle marginals converge weakly:\n670: \n671: $$\n672: \\mu_N \\Rightarrow \\rho_\\infty \\quad \\text{as } N \\to \\infty\n673: $$\n674: \n675: **Step 3: Lower Semicontinuity of Fisher Information**\n676: \n677: The Fisher information functional $I(\\nu \\| \\cdot)$ is **lower semicontinuous** with respect to weak convergence of the reference measure (standard result in information theory, see Bakry-\u00c9mery 1985, Villani 2009):\n678: \n679: $$\n680: I(\\nu \\| \\rho_\\infty) \\leq \\liminf_{N \\to \\infty} I(\\nu \\| \\mu_N)\n681: $$\n682: \n683: for any absolutely continuous $\\nu \\ll \\rho_\\infty$.\n684: \n685: **Step 4: Continuity of KL-Divergence**\n686: \n687: The KL-divergence $D_{\\text{KL}}(\\nu \\| \\cdot)$ is **continuous** with respect to weak convergence of the reference measure (Pinsker's inequality + weak convergence):\n688: \n689: $$\n690: D_{\\text{KL}}(\\nu \\| \\rho_\\infty) = \\lim_{N \\to \\infty} D_{\\text{KL}}(\\nu \\| \\mu_N)\n691: $$\n692: \n693: **Step 5: Pass to the Limit**\n694: \n695: For each $N$, the LSI for $\\mu_N$ states:\n696: \n697: $$\n698: D_{\\text{KL}}(\\nu \\| \\mu_N) \\leq C_{\\text{LSI}}^{(N)} \\cdot I(\\nu \\| \\mu_N)\n699: $$\n700: \n701: Taking $\\liminf_{N \\to \\infty}$ on both sides and using Steps 3-4:\n702: \n703: $$\n704: D_{\\text{KL}}(\\nu \\| \\rho_\\infty) = \\lim_{N \\to \\infty} D_{\\text{KL}}(\\nu \\| \\mu_N) \\leq \\limsup_{N \\to \\infty} C_{\\text{LSI}}^{(N)} \\cdot \\liminf_{N \\to \\infty} I(\\nu \\| \\mu_N) \\leq C_{\\text{LSI}}^{\\text{MF}} \\cdot I(\\nu \\| \\rho_\\infty)\n705: $$\n706: "
     }
   ],

@@ -40,98 +40,16 @@ import dspy
 
 from mathster.agents.core import (
     DirectiveAgentPaths,
-    ExtractSignature,
     LATEX_FENCE_PATTERN,
     METADATA_PATTERN,
     run_directive_extraction_loop,
-    to_jsonable,
     URI_PATTERN,
 )
+from mathster.agents.signatures import ParseProofDirectiveSplit, to_jsonable
 
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
-# --------------------------------------------------------------------------------------
-# DSPy Signature
-# --------------------------------------------------------------------------------------
-
-
-class ParseProofDirectiveSplit(ExtractSignature):
-    """
-    Convert a `::{prf:proof}` directive into a structured description.
-
-    INPUT
-    -----
-    - directive_text (str): Raw directive (header/body/closing fence) with no unrelated text.
-    - context_hints (str, optional): Tiny snippet of nearby prose for inferring missing cues.
-
-    OUTPUT FIELDS
-    -------------
-    - label_str (str): Proof label (expected format `proof-*`).
-    - proves_label_str (str): Label of the statement being proved (e.g., `thm-...`, `lem-...`).
-    - proof_type_str (str): Dominant technique (direct, contradiction, induction, reference, other).
-    - proof_status_str (str): `complete`, `sketch`, `omitted`, or `by-reference`.
-    - strategy_summary_str (str): One- or two-sentence plan overview.
-
-    - conclusion_json (json object):
-        {"text": <string|null>, "latex": <string|null>}
-
-    - assumptions_json (json array):
-        [{"text": <string|null>, "latex": <string|null>} ...]
-
-    - steps_json (json array):
-        [{"order": <int|null>, "kind": <string|null>, "text": <string|null>,
-          "latex": <string|null>, "references": [<string>, ...],
-          "derived_statement": <string|null>} ...]
-
-    - key_equations_json (json array):
-        [{"label": <string|null>, "latex": <string>, "role": <string|null>} ...]
-
-    - references (list[str]):
-        ["thm-aux", "lem-helper", ...]
-
-    - cases_json (json array):
-        [{"name": <string|null>, "condition": <string|null>, "summary": <string|null>} ...]
-
-    - remarks_json (json array):
-        [{"type": <string|null>, "text": <string|null>} ...]
-
-    - gaps_json (json array):
-        [{"description": <string>, "severity": <string|null>, "location_hint": <string|null>} ...]
-
-    All LaTeX fragments must be fence-free; omit metadata like line numbers.
-    """
-
-    directive_text = dspy.InputField(desc="Raw proof directive text (header/body).")
-    context_hints = dspy.InputField(desc="Optional nearby prose window.", optional=True)
-
-    label_str = dspy.OutputField(desc="Proof label (`proof-*`).")
-    proves_label_str = dspy.OutputField(desc="Label proved (e.g., `thm-main`).")
-    proof_type_str = dspy.OutputField(
-        desc="Technique: direct/contradiction/induction/reference/construction/variational/probabilistic/other."
-    )
-    proof_status_str = dspy.OutputField(desc="Status: complete/sketch/omitted/by-reference.")
-    strategy_summary_str = dspy.OutputField(desc="Short strategy description (1-2 sentences).")
-
-    conclusion_json = dspy.OutputField(desc='JSON object {"text": str|null, "latex": str|null}.')
-    assumptions_json = dspy.OutputField(
-        desc='JSON array [{"text": str|null, "latex": str|null}, ...].'
-    )
-    steps_json = dspy.OutputField(
-        desc='JSON array [{"order": int|null, "kind": str|null, "text": str|null, "latex": str|null, "references": [str,...], "derived_statement": str|null}, ...].'
-    )
-    key_equations_json = dspy.OutputField(
-        desc='JSON array [{"label": str|null, "latex": str, "role": str|null}, ...].'
-    )
-    cases_json = dspy.OutputField(
-        desc='JSON array [{"name": str|null, "condition": str|null, "summary": str|null}, ...].'
-    )
-    remarks_json = dspy.OutputField(desc='JSON array [{"type": str|null, "text": str|null}, ...].')
-    gaps_json = dspy.OutputField(
-        desc='JSON array [{"description": str, "severity": str|null, "location_hint": str|null}, ...].'
-    )
-
 
 # --------------------------------------------------------------------------------------
 # Reward helpers
@@ -173,6 +91,7 @@ _STEP_KINDS = {
     "remark",
     "other",
 }
+_ALLOWED_TOOL_LEVELS = {"concept", "technique", "theorem/lemma", "notation"}
 
 
 def _json_loads(payload: Any, default):
@@ -227,6 +146,10 @@ def proof_reward(args: dict[str, Any], pred) -> float:
     assumptions = _json_loads(getattr(pred, "assumptions_json", None), [])
     steps = _json_loads(getattr(pred, "steps_json", None), [])
     key_equations = _json_loads(getattr(pred, "key_equations_json", None), [])
+    raw_math_tools = getattr(pred, "math_tools", None)
+    math_tools = _json_loads(raw_math_tools, []) if isinstance(raw_math_tools, str) else (
+        raw_math_tools if isinstance(raw_math_tools, list) else []
+    )
     references = _json_loads(getattr(pred, "references", None), [])
     cases = _json_loads(getattr(pred, "cases_json", None), [])
     remarks = _json_loads(getattr(pred, "remarks_json", None), [])
@@ -349,7 +272,36 @@ def proof_reward(args: dict[str, Any], pred) -> float:
             part += 0.03
     score += min(part, 0.05)
 
-    # 10) Anti-metadata bonus (0.05)
+    # 10) Math tools (0.05)
+    part = 0.0
+    if isinstance(math_tools, list):
+        part += 0.02
+        valid_tools = True
+        for tool in math_tools[:10]:
+            if not isinstance(tool, dict):
+                valid_tools = False
+                break
+            if not all(
+                _nonempty(tool.get(key))
+                for key in ("toolName", "field", "description", "roleInProof")
+            ):
+                valid_tools = False
+                break
+            level = tool.get("levelOfAbstraction")
+            if level and level.strip().lower() not in _ALLOWED_TOOL_LEVELS:
+                valid_tools = False
+                break
+            related = tool.get("relatedTools")
+            if related is not None and (
+                not isinstance(related, list) or not all(isinstance(r, str) for r in related)
+            ):
+                valid_tools = False
+                break
+        if valid_tools and math_tools:
+            part += 0.03
+    score += min(part, 0.05)
+
+    # 11) Anti-metadata bonus (0.05)
     part = 0.05
     text_blobs = [label_str, proves_label_str, strategy_summary_str]
     for bucket in (assumptions, steps, key_equations, cases, remarks, gaps):
@@ -366,6 +318,12 @@ def proof_reward(args: dict[str, Any], pred) -> float:
             val = conclusion.get(key)
             if isinstance(val, str):
                 text_blobs.append(val)
+    for tool in math_tools if isinstance(math_tools, list) else []:
+        if isinstance(tool, dict):
+            for key in ("toolName", "description", "roleInProof", "field"):
+                val = tool.get(key)
+                if isinstance(val, str):
+                    text_blobs.append(val)
     for tag in tags if isinstance(tags, list) else []:
         if isinstance(tag, str):
             text_blobs.append(tag)
@@ -403,6 +361,7 @@ def assemble_output(res) -> dict[str, Any]:
         "steps": as_json(res.steps_json, []),
         "key_equations": as_json(res.key_equations_json, []),
         "references": as_json(res.references, []),
+        "math_tools": as_json(getattr(res, "math_tools", None), []),
         "cases": as_json(res.cases_json, []),
         "remarks": as_json(res.remarks_json, []),
         "gaps": as_json(res.gaps_json, []),

@@ -19,6 +19,13 @@
         "label": "thm-emergent-general-relativity"
       },
       "section": "## 6. Summary and Physical Implications",
+      "references": [
+        "def-stress-energy-continuum",
+        "thm-interaction-kernel-fitness-proportional",
+        "cor-force-balance-fdt-qsd",
+        "thm-einstein-field-equations",
+        "prop-gravitational-constant"
+      ],
       "raw_directive": "1908: ### 6.1. What We Have Proven\n1909: \n1910: :::{prf:theorem} Emergent General Relativity (Main Result)\n1911: :label: thm-emergent-general-relativity\n1912: \n1913: The mean-field limit of the Fractal Set dynamics satisfies Einstein's field equations:\n1914: \n1915: $$\n1916: R_{\\mu\\nu} - \\frac{1}{2}R g_{\\mu\\nu} = 8\\pi G \\, T_{\\mu\\nu}\n1917: \n1918: $$\n1919: \n1920: where:\n1921: \n1922: 1. **Metric** $g_{\\mu\\nu} = H_{\\mu\\nu} + \\varepsilon \\delta_{\\mu\\nu}$ emerges from fitness Hessian ([08_emergent_geometry.md](08_emergent_geometry.md))\n1923: \n1924: 2. **Ricci tensor** $R_{\\mu\\nu}$ is computed from scutoid plaquette holonomy ([15_scutoid_curvature_raychaudhuri.md](15_scutoid_curvature_raychaudhuri.md))\n1925: \n1926: 3. **Stress-energy** $T_{\\mu\\nu}$ is the expectation of walker four-momentum flux over the McKean-Vlasov measure ({prf:ref}`def-stress-energy-continuum`)\n1927: \n1928: 4. **Interaction kernel proportionality** $K_\\varepsilon(x,y) \\propto V_{\\text{fit}}(x) \\cdot V_{\\text{fit}}(y)$ is proven via extended fluctuation-dissipation theorem applied to cloning dynamics ({prf:ref}`thm-interaction-kernel-fitness-proportional`)\n1929: \n1930: 5. **Conservation** $\\nabla_\\mu T^{\\mu\\nu} = 0$ at QSD follows from detailed balance and force compensation ({prf:ref}`cor-force-balance-fdt-qsd`), proven rigorously using FDT\n1931: \n1932: 6. **Proportionality** $G_{\\mu\\nu} = 8\\pi G T_{\\mu\\nu}$ follows from Raychaudhuri-mediated consistency ({prf:ref}`thm-einstein-field-equations`)\n1933: \n1934: 7. **Gravitational constant** $G = \\ell_{\\text{typ}}^d/(8\\pi N T)$ is derived from dimensional matching ({prf:ref}`prop-gravitational-constant`)\n1935: "
     },
     {
@@ -37,6 +44,7 @@
         "label": "prop-testable-predictions-gr"
       },
       "section": "## 6. Summary and Physical Implications",
+      "references": [],
       "raw_directive": "1973: If the Fractal Set framework describes physical reality at the Planck scale, several predictions follow:\n1974: \n1975: :::{prf:proposition} Testable Predictions from Emergent GR\n1976: :label: prop-testable-predictions-gr\n1977: \n1978: 1. **Lorentz violation at Planck scale**: Dispersion relation modifications:\n1979: \n1980: $$\n1981: E^2 = p^2 c^2 + m^2 c^4 + \\alpha \\frac{E^3}{\\ell_{\\text{Planck}} c^2}\n1982: \n1983: $$\n1984:    Observable in gamma-ray bursts, ultra-high-energy cosmic rays\n1985: \n1986: 2. **Discreteness effects in gravitational waves**: High-frequency modes ($\\omega \\gtrsim \\ell_{\\text{Planck}}^{-1}$) experience dispersion\n1987: \n1988: 3. **Modified black hole thermodynamics**: Entropy corrections from discrete causal structure\n1989: \n1990: 4. **Cosmological phase transitions**: Early universe transitions between exploration/exploitation regimes\n1991: "
     }
   ],

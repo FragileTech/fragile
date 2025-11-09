@@ -2,7 +2,7 @@
   "document_id": "01_yang_mills_dynamic_lattice",
   "stage": "directives",
   "directive_type": "lemma",
-  "generated_at": "2025-11-08T17:16:20.327710+00:00",
+  "generated_at": "2025-11-08T23:19:38.342929+00:00",
   "count": 6,
   "items": [
     {
@@ -21,6 +21,9 @@
         "label": "lem-dynamics-regularity"
       },
       "section": "## The Minimal Dynamic Lattice Gauge Theory (MDLGT)",
+      "references": [
+        "lem-uniform-force-bounds"
+      ],
       "raw_directive": "144: :::\n145: \n146: :::{prf:lemma} Regularity of the MDLGT Dynamics\n147: :label: lem-dynamics-regularity\n148: \n149: The MDLGT dynamics (constrained Langevin + heat bath) are well-defined on $\\Sigma_N$ despite the fiber bundle singularities.\n150: \n151: **Proof Sketch**:\n152: \n153: 1. **Node dynamics well-defined**: The gradient $\\nabla_{x_i} H$ exists and is bounded everywhere by {prf:ref}`lem-uniform-force-bounds`, since $H$ depends only on pairwise distances $\\|x_i - x_j\\|$ (smooth except at collisions, which are excluded by hard-core repulsion).\n154: \n155: 2. **Topology changes have measure zero**: The constrained Langevin dynamics induce a continuous diffusion on $\\mathcal{B}_N$. The set of co-spherical configurations is an algebraic variety of codimension $\\geq 1$ in $\\mathbb{R}^{4N}$, hence has Lebesgue measure zero. Under the diffusion, such sets are visited with probability zero.\n156: \n157: 3. **Gauge field updates well-defined**: For any fixed node configuration $\\mathbf{x}$, the heat bath algorithm samples from the conditional Boltzmann distribution on $(\\text{SU}(N_c))^{E_N(\\mathbf{x})}$, which is well-defined by compactness of SU($N_c$).\n158: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +49,7 @@
         "label": "lem-uniform-force-bounds"
       },
       "section": "## Proof of Theorem 1: Invariant Measure Existence",
+      "references": [],
       "raw_directive": "548: **Step 2: Deterministic Force Bounds**\n549: \n550: :::{prf:lemma} Uniform Force Bounds\n551: :label: lem-uniform-force-bounds\n552: \n553: For any configuration satisfying the hard-core constraint $\\min_{i \\neq j}\\|x_i - x_j\\| \\geq r_{\\min}$:\n554: \n555: 1. **Node forces are uniformly bounded**:\n556: \n557: $$\n558: \\sup_{\\mathbf{x} : \\min_{i \\neq j}\\|x_i - x_j\\| \\geq r_{\\min}} \\|\\nabla_{x_i} H_{\\text{nodes}}(\\mathbf{x})\\| \\leq C_F(N) := (N-1) \\sup_{r > 0} |V'_{\\text{pair}}(r)| < \\infty\n559: \n560: $$\n561: \n562: 2. **Gauge forces are bounded for any gauge field**:\n563: \n564: $$\n565: \\sup_{\\mathbf{x}, \\mathbf{U} : \\min_{i \\neq j}\\|x_i - x_j\\| \\geq r_{\\min}} \\|\\nabla_{x_i} H_{\\text{gauge}}(\\mathbf{x}, \\mathbf{U})\\| \\leq C_G(N, N_c, \\beta_{\\text{gauge}}, r_{\\min}) < \\infty\n566: \n567: $$\n568: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +75,7 @@
         "label": "lem-gauge-force-bound"
       },
       "section": "## Proof of Theorem 1: Invariant Measure Existence",
+      "references": [],
       "raw_directive": "593: For the gauge field term, we first establish that the weight gradient is bounded:\n594: \n595: :::{prf:lemma} Bounded Gradient of Plaquette Weights\n596: :label: lem-gauge-force-bound\n597: \n598: For triangular plaquettes $\\Delta$ in a Delaunay triangulation satisfying:\n599: - Hard-core exclusion: edge lengths in $[r_{\\min}, R_{\\text{cut}}]$\n600: - Shape regularity: aspect ratio $\\rho(\\Delta) \\leq \\rho_{\\max}$, area $A(\\Delta) \\geq A_{\\min}$\n601: \n602: the gradient of the weight function $w(\\Delta) = \\exp(−(\\rho(\\Delta) − 1)^2/(2\\sigma_{\\text{shape}}^2))$ satisfies:\n603: \n604: $$\n605: \\|\\nabla_{x_i} w(\\Delta)\\| \\leq C_w(\\rho_{\\max}, r_{\\min}, R_{\\text{cut}}, A_{\\min}, \\sigma_{\\text{shape}})\n606: \n607: $$\n608: ",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +101,7 @@
         "label": "lem-strong-coupling-random"
       },
       "section": "## Proof of Theorem 2: Finite-N Mass Gap",
+      "references": [],
       "raw_directive": "827: With shape-regularity established, we can now extend Wilson's theorem.\n828: \n829: :::{prf:lemma} Strong-Coupling Mass Gap for Shape-Regular Random Lattices\n830: :label: lem-strong-coupling-random\n831: \n832: **Sketch: expansion into full proof in progress (estimated 30-50 pages)**\n833: \n834: Consider an ensemble of lattices with the following properties:\n835: - Bounded coordination $K$\n836: - Edge lengths in $[r_{\\min}, R_{\\text{cut}}]$\n837: - Simplex aspect ratio $\\leq \\rho_{\\max}$\n838: - Plaquette area $\\geq A_{\\min}$\n839: \n840: Then there exists a critical coupling $\\beta_c = \\beta_c(K, r_{\\min}, R_{\\text{cut}}, \\rho_{\\max}, A_{\\min}) > 0$ such that for all $\\beta_{\\text{gauge}} < \\beta_c$, the ensemble-averaged Wilson loop observables satisfy:\n841: \n842: $$\n843: \\mathbb{E}_{\\text{lattice}}\\left[\\langle W_C \\rangle_{\\text{gauge}}\\right] \\leq e^{-\\Delta_{\\text{eff}} \\cdot \\text{Area}(C)}\n844: \n845: $$\n846: ",
       "_registry_context": {
         "stage": "directives",
@@ -121,6 +127,7 @@
         "label": "lem-reflection-positivity-symmetrized"
       },
       "section": "## Proof of Theorem 4: Osterwalder-Schrader Axioms",
+      "references": [],
       "raw_directive": "1133: This is the most technically challenging axiom. The key steps are:\n1134: \n1135: :::{prf:lemma} Reflection Positivity via Symmetrized Configurations\n1136: :label: lem-reflection-positivity-symmetrized\n1137: \n1138: **Sketch: expansion into full proof in progress (estimated 20-40 pages)**\n1139: ",
       "_registry_context": {
         "stage": "directives",
@@ -146,6 +153,9 @@
         "label": "lem-clustering"
       },
       "section": "## Proof of Theorem 4: Osterwalder-Schrader Axioms",
+      "references": [
+        "thm-continuum-limit"
+      ],
       "raw_directive": "1204: **OS3: Cluster Property (Exponential Decay)**\n1205: \n1206: :::{prf:lemma} Clustering from Mass Gap\n1207: :label: lem-clustering\n1208: \n1209: The mass gap $\\Delta > 0$ established in {prf:ref}`thm-continuum-limit` implies exponential decay of correlation functions:\n1210: \n1211: $$\n1212: |\\langle W_{C_1} W_{C_2} \\rangle - \\langle W_{C_1}\\rangle \\langle W_{C_2}\\rangle| \\leq C e^{-\\Delta \\cdot d(C_1, C_2)}\n1213: \n1214: $$\n1215: ",
       "_registry_context": {
         "stage": "directives",

@@ -19,6 +19,7 @@
         "label": "thm-cloning-antisymmetry"
       },
       "section": "## 7. Fermionic Structure from Cloning Antisymmetry",
+      "references": [],
       "raw_directive": "672: ### 7.1. Antisymmetric Cloning Kernel\n673: \n674: :::{prf:theorem} Cloning Scores Exhibit Antisymmetric Structure\n675: :label: thm-cloning-antisymmetry\n676: \n677: **Source:** [13_D_fractal_set_emergent_qft_comprehensive.md \u00a7 4.2, lines 294-322] \u2705 **GEMINI VALIDATED**\n678: \n679: The cloning scores (Chapter 3) satisfy:\n680: \n681: $$\n682: S_i(j) := \\frac{V_j - V_i}{V_i + \\varepsilon_{\\text{clone}}}\n683: \n684: $$\n685: \n686: **Antisymmetry in numerators:**\n687: \n688: $$\n689: S_i(j) \\propto (V_j - V_i), \\quad S_j(i) \\propto (V_i - V_j)\n690: \n691: $$\n692: \n693: $$\n694: \\boxed{S_i(j) + S_j(i) \\cdot \\frac{V_i + \\varepsilon}{V_j + \\varepsilon} \\propto 0}\n695: \n696: $$\n697: \n698: **For small $\\varepsilon$** ($\\varepsilon \\ll V_i, V_j$):\n699: \n700: $$\n701: S_i(j) \\approx -S_j(i) \\quad \\text{(approximately antisymmetric)}\n702: \n703: $$\n704: \n705: **Exact antisymmetry:**\n706: \n707: $$\n708: \\text{numerator of } S_i(j) = -(\\text{numerator of } S_j(i))\n709: \n710: $$\n711: \n712: This is the **algorithmic signature of fermionic structure**.\n713: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "def-fermionic-kernel"
       },
       "section": "## 7. Fermionic Structure from Cloning Antisymmetry",
+      "references": [],
       "raw_directive": "715: :::\n716: \n717: :::{prf:definition} Antisymmetric Fermionic Kernel\n718: :label: def-fermionic-kernel\n719: \n720: **Source:** [13_D_fractal_set_emergent_qft_comprehensive.md \u00a7 4.3, lines 329-356]\n721: \n722: Define the **antisymmetric kernel**:\n723: \n724: $$\n725: \\tilde{K}(i, j) := K(i, j) - K(j, i)\n726: \n727: $$\n728: \n729: where $K(i,j)$ is the cloning kernel (probability $i$ clones from $j$).\n730: \n731: From cloning scores:\n732: \n733: $$\n734: K(i, j) \\propto \\max(0, S_i(j))\n735: \n736: $$\n737: \n738: **Antisymmetric part:**\n739: \n740: $$\n741: \\tilde{K}(i, j) = K(i, j) - K(j, i) \\propto S_i(j) - S_j(i)\n742: \n743: $$\n744: \n745: For non-zero fitness differences ($V_i \\neq V_j$):\n746: \n747: $$\n748: \\tilde{K}(i, j) \\neq 0 \\quad \\text{(non-trivial antisymmetry)}\n749: \n750: $$\n751: "
     },
     {
@@ -55,6 +57,7 @@
         "label": "thm-algorithmic-exclusion"
       },
       "section": "## 7. Fermionic Structure from Cloning Antisymmetry",
+      "references": [],
       "raw_directive": "755: ### 7.2. Algorithmic Exclusion Principle\n756: \n757: :::{prf:theorem} Algorithmic Exclusion Principle\n758: :label: thm-algorithmic-exclusion\n759: \n760: **Source:** [13_D_fractal_set_emergent_qft_comprehensive.md \u00a7 5.1, lines 364-386] \u2705 **GEMINI VALIDATED**\n761: \n762: For any walker pair $(i, j)$:\n763: \n764: **Case 1:** $V_i < V_j$ (i less fit)\n765: - $S_i(j) > 0$ \u2192 Walker $i$ **can** clone from $j$\n766: - $S_j(i) < 0$ \u2192 Walker $j$ **cannot** clone from $i$\n767: \n768: **Case 2:** $V_i > V_j$ (j less fit)\n769: - $S_i(j) < 0$ \u2192 Walker $i$ **cannot** clone from $j$\n770: - $S_j(i) > 0$ \u2192 Walker $j$ **can** clone from $i$\n771: \n772: **Case 3:** $V_i = V_j$ (equal fitness)\n773: - $S_i(j) = 0$, $S_j(i) = 0$ \u2192 Neither clones\n774: \n775: **Exclusion principle:** **At most one walker per pair can clone in any given direction.**\n776: \n777: This is analogous to Pauli exclusion: \"Two fermions cannot occupy the same state.\"\n778: "
     },
     {
@@ -73,6 +76,7 @@
         "label": "thm-exclusion-anticommuting"
       },
       "section": "## 7. Fermionic Structure from Cloning Antisymmetry",
+      "references": [],
       "raw_directive": "780: :::\n781: \n782: :::{prf:postulate} Grassmann Variables for Algorithmic Exclusion\n783: :label: thm-exclusion-anticommuting\n784: \n785: **Source:** [13_D_fractal_set_emergent_qft_comprehensive.md \u00a7 5.2, lines 393-418]\n786: \n787: To model the algorithmic exclusion principle in a path integral formulation, we **postulate** that episodes are described by anticommuting (Grassmann) field variables.\n788: \n789: **Motivation:**\n790: \n791: 1. **Cloning event** $i \\to j$: Represents transition amplitude\n792: 2. **Double counting problem:** Naively, both $i \\to j$ and $j \\to i$ are \"possible transitions\"\n793: 3. **Exclusion resolves it:** Only one direction allowed (determined by fitness comparison)\n794: 4. **Path integral:** To avoid overcounting, antisymmetric variables provide the standard mathematical formalism\n795: \n796: **Postulate:** Episodes are assigned Grassmann-valued fields $\\psi_i, \\psi_j$ satisfying anticommutation relations.\n797: \n798: **Grassmann variables:** $\\psi_i, \\psi_j$ with $\\{\\psi_i, \\psi_j\\} = 0$\n799: \n800: **Amplitude for $i \\to j$:**\n801: \n802: $$\n803: \\mathcal{A}(i \\to j) \\propto \\bar{\\psi}_i S_i(j) \\psi_j\n804: \n805: $$\n806: \n807: **Amplitude for $j \\to i$:**\n808: \n809: $$\n810: \\mathcal{A}(j \\to i) \\propto \\bar{\\psi}_j S_j(i) \\psi_i = -\\bar{\\psi}_i S_j(i) \\psi_j\n811: \n812: $$\n813: "
     },
     {
@@ -92,6 +96,7 @@
         "label": "thm-temporal-fermion-operator-kms"
       },
       "section": "## 7. Fermionic Structure from Cloning Antisymmetry",
+      "references": [],
       "raw_directive": "817: ### 7.3. Fermionic Action on Fractal Set\n818: \n819: :::{prf:definition} Conjectured Discrete Fermionic Action\n820: :label: def-discrete-fermionic-action\n821: \n822: **Status: Partially Conjectural** - Spatial component is rigorously derived, temporal component is proposed but not yet derived.\n823: \n824: **Source:** [13_D_fractal_set_emergent_qft_comprehensive.md \u00a7 6.1, lines 426-450]\n825: \n826: On the Fractal Set $\\mathcal{F}$, the fermionic action has **spatial** and **temporal** components:\n827: \n828: $$\n829: \\boxed{S_{\\text{fermion}} = S_{\\text{fermion}}^{\\text{spatial}} + S_{\\text{fermion}}^{\\text{temporal}}}\n830: \n831: $$\n832: \n833: **Spatial component** (IG edges):\n834: \n835: $$\n836: S_{\\text{fermion}}^{\\text{spatial}} = -\\sum_{(i,j) \\in E_{\\text{IG}}} \\bar{\\psi}_i \\tilde{K}_{ij} \\psi_j\n837: \n838: $$\n839: \n840: where:\n841: - $\\bar{\\psi}_i, \\psi_j$: Grassmann fields on episodes $i, j$\n842: - $\\tilde{K}_{ij} = K_{ij} - K_{ji}$: Antisymmetric cloning kernel (spatial correlations)\n843: - Sum over IG edges (simultaneously alive episodes)\n844: \n845: **Temporal component** (CST edges):\n846: \n847: $$\n848: S_{\\text{fermion}}^{\\text{temporal}} = -\\sum_{(i \\to j) \\in E_{\\text{CST}}} \\bar{\\psi}_i D_t \\psi_j\n849: \n850: $$\n851: \n852: where:\n853: - $(i \\to j)$: CST edges (parent-child relations)\n854: - $D_t$: Discrete time derivative (forward difference)\n855: - Encodes temporal propagation of fermions along genealogy\n856: \n857: #### 7.3.1. Temporal Operator D_t: Rigorous Derivation\n858: \n859: The temporal fermionic operator is derived from the QSD's thermal structure via the Onsager-Machlup path integral formulation.\n860: \n861: :::{prf:theorem} Temporal Fermionic Operator from KMS Condition\n862: :label: thm-temporal-fermion-operator-kms\n863: \n864: For a CST parent-child edge $(e_i \\to e_j)$, the temporal fermionic operator is:\n865: \n866: $$\n867: D_t \\psi_j := \\frac{\\psi_j - U_{ij}\\psi_i}{\\Delta t_i}\n868: \n869: $$\n870: \n871: where the **parallel transport operator** is:\n872: \n873: $$\n874: U_{ij} = \\exp\\left(i\\theta_{ij}^{\\text{fit}}\\right), \\quad \\theta_{ij}^{\\text{fit}} = -\\frac{\\epsilon_F}{T}\\int_{t_i^{\\text{b}}}^{t_i^{\\text{d}}} V_{\\text{fit}}(x_i(t), \\mathcal{S}_t) \\, dt\n875: \n876: $$\n877: \n878: with:\n879: - $\\Delta t_i = t_i^{\\text{d}} - t_i^{\\text{b}}$: Episode lifetime\n880: - $V_{\\text{fit}}(x, \\mathcal{S})$: Fitness potential (real-valued)\n881: - $\\epsilon_F, T$: Fitness strength and temperature parameters\n882: - $\\theta_{ij}^{\\text{fit}}$: **Real-valued phase** ensuring $U_{ij}$ is unitary ($|U_{ij}| = 1$)\n883: "
     },
     {
@@ -110,6 +115,7 @@
         "label": "def-episode-path-cst-dt"
       },
       "section": "## 7. Fermionic Structure from Cloning Antisymmetry",
+      "references": [],
       "raw_directive": "911: **Foundation**: This derivation relies on the **Kubo-Martin-Schwinger (KMS) condition**, a defining property of quantum thermal equilibrium that is formally proven for the system's QSD in {prf:ref}`thm-qsd-kms-condition` (\u00a79.3.4b).\n912: \n913: :::{prf:definition} Episode Path on CST Edge\n914: :label: def-episode-path-cst-dt\n915: \n916: For a CST edge $(e_i \\to e_j)$, the **episode path** is:\n917: \n918: $$\n919: \\gamma_i: [t_i^{\\text{b}}, t_i^{\\text{d}}] \\to \\mathcal{X} \\times \\mathbb{R}^d, \\quad \\gamma_i(t) = (x_i(t), v_i(t))\n920: \n921: $$\n922: "
     },
     {
@@ -128,6 +134,9 @@
         "label": "thm-fitness-wick-rotation-dt"
       },
       "section": "## 7. Fermionic Structure from Cloning Antisymmetry",
+      "references": [
+        "thm-qsd-kms-condition"
+      ],
       "raw_directive": "924: :::\n925: \n926: :::{prf:theorem} Fitness Action Under Wick Rotation\n927: :label: thm-fitness-wick-rotation-dt\n928: \n929: Under analytical continuation $t \\to -i\\tau$ justified by the QSD's KMS condition ({prf:ref}`thm-qsd-kms-condition`), the fitness action transforms:\n930: \n931: $$\n932: S_{\\text{fitness}}[t] = -\\frac{\\epsilon_F}{T}\\int_{t_i^b}^{t_i^d} V_{\\text{fit}}(x_i(t)) \\, dt \\to iS_{\\text{fitness}}^E[\\tau]\n933: \n934: $$\n935: \n936: where $S_{\\text{fitness}}^E$ is the Euclidean (real-valued) fitness action.\n937: \n938: For fermionic fields (Grassmann-valued), the path integral amplitude includes opposite sign:\n939: \n940: $$\n941: \\mathcal{A}_{\\text{fermion}} \\propto \\exp(+S_{\\text{fitness}}) \\to \\exp(+iS_{\\text{fitness}}^E) = \\exp(i\\theta_{ij}^{\\text{fit}})\n942: \n943: $$\n944: \n945: where the **real-valued phase** is:\n946: \n947: $$\n948: \\theta_{ij}^{\\text{fit}} = S_{\\text{fitness}}^E[\\tau] = -\\frac{\\epsilon_F}{T}\\int_{\\tau_i^b}^{\\tau_i^d} V_{\\text{fit}}(x_i(\\tau), \\mathcal{S}(\\tau)) \\, d\\tau\n949: \n950: $$\n951: \n952: **Key point**: After Wick rotation $t \\to -i\\tau$, the phase $\\theta_{ij}^{\\text{fit}}$ is real-valued (Euclidean action), ensuring the parallel transport $U_{ij} = \\exp(i\\theta_{ij}^{\\text{fit}})$ is unitary.\n953: "
     },
     {
@@ -146,6 +155,7 @@
         "label": "def-grassmann-norm-dt"
       },
       "section": "## 7. Fermionic Structure from Cloning Antisymmetry",
+      "references": [],
       "raw_directive": "957: ##### Part II: Hermiticity via Grassmann Operator Norm\n958: \n959: :::{prf:definition} Grassmann Norm via Coefficient Space\n960: :label: def-grassmann-norm-dt\n961: \n962: Grassmann fields $\\psi_i$ with generators $\\xi_\\alpha$ satisfying $\\{\\xi_\\alpha, \\xi_\\beta\\} = 0$ have representation:\n963: \n964: $$\n965: \\psi_i = \\sum_\\alpha c_{i,\\alpha} \\xi_\\alpha, \\quad c_{i,\\alpha} \\in \\mathbb{C}\n966: \n967: $$\n968: \n969: The **norm** is defined on coefficient space $\\mathbb{C}^M$:\n970: \n971: $$\n972: \\|\\psi\\|^2 := \\sum_{i=1}^M |c_i|^2\n973: \n974: $$\n975: "
     },
     {
@@ -164,6 +174,7 @@
         "label": "thm-hermiticity-dt-complete"
       },
       "section": "## 7. Fermionic Structure from Cloning Antisymmetry",
+      "references": [],
       "raw_directive": "977: :::\n978: \n979: :::{prf:theorem} Approximate Hermiticity with Operator Norm\n980: :label: thm-hermiticity-dt-complete\n981: \n982: The temporal fermionic action satisfies:\n983: \n984: $$\n985: \\left\\|S_{\\text{fermion}}^{\\text{temporal}} - (S_{\\text{fermion}}^{\\text{temporal}})^\\dagger\\right\\| \\leq C \\frac{\\sqrt{\\log N}}{\\sqrt{N}}\n986: \n987: $$\n988: \n989: with probability $1 - N^{-p}$ for any $p > 0$.\n990: \n991: **Proof sketch**:\n992: \n993: 1. Operator norm: $\\|D - D^\\dagger\\| = \\sup_{\\|\\psi\\|=1} |\\langle \\psi, (D - D^\\dagger)\\psi \\rangle|$\n994: 2. Grassmann nilpotency: $\\bar{\\psi}_i\\psi_i = 0$ eliminates diagonal terms\n995: 3. Quadratic form: $\\langle \\psi, (D - D^\\dagger)\\psi \\rangle = \\sum_{(i \\to j)} \\frac{\\bar{\\psi}_i\\psi_j}{\\Delta t_i}(1 - U_{ij}^*)$\n996: 4. Unitarity: $|1 - U_{ij}^*| = |1 - e^{-i\\theta_{ij}}| \\approx |\\theta_{ij}|$ for small phases (using $U_{ij}^\\dagger U_{ij} = 1$)\n997: 5. Key bound: $\\sum_{ij} |\\bar{\\psi}_i\\psi_j|^2 = (\\sum_i |c_i|^2)(\\sum_j |c_j|^2) = \\|\\psi\\|^4 = 1$ for normalized $\\psi$\n998: 6. Cauchy-Schwarz: $|\\langle \\psi, (D - D^\\dagger)\\psi \\rangle| \\leq \\sqrt{\\sum|\\bar{\\psi}_i\\psi_j|^2} \\sqrt{\\sum\\theta_{ij}^2} \\leq \\sqrt{C\\log N/N}$\n999: 7. Concentration inequality: $\\sum\\theta_{ij}^2 \\leq C\\log N/N$ (from Keystone Principle fitness variance control)\n1000: \n1001: **Q.E.D.** $\\square$\n1002: \n1003: **Note on Hermiticity**: The reality of the full action follows from unitarity of $U_{ij}$ and lattice boundary conditions, which ensure forward and backward discrete derivatives are negative adjoints: $\\vec{\\partial}^\\dagger = -\\overleftarrow{\\partial}$.\n1004: "
     },
     {
@@ -182,6 +193,7 @@
         "label": "thm-continuum-limit-dt"
       },
       "section": "## 7. Fermionic Structure from Cloning Antisymmetry",
+      "references": [],
       "raw_directive": "1008: ##### Part III: Continuum Limit\n1009: \n1010: :::{prf:theorem} Continuum Limit of Temporal Operator\n1011: :label: thm-continuum-limit-dt\n1012: \n1013: For $\\psi \\in H^2(\\mathcal{X} \\times [0,T])$ (Sobolev space), as $N \\to \\infty$ with $\\max_i \\Delta t_i \\to 0$:\n1014: \n1015: $$\n1016: S_{\\text{fermion}}^{\\text{temporal,(N)}} \\to \\int_0^T dt \\int_{\\mathcal{X}} dx \\, \\rho_{\\text{QSD}}(x) \\, \\bar{\\psi}(x,t) \\gamma^0 \\left(\\partial_t + i\\frac{\\epsilon_F V_{\\text{fit}}(x)}{T}\\right) \\psi(x,t)\n1017: \n1018: $$\n1019: \n1020: with error:\n1021: \n1022: $$\n1023: \\left|S^{(N)} - S^{(\\infty)}\\right| \\leq C_1 \\|\\psi\\|_{H^2} \\Delta t_{\\max} + C_2 \\|\\psi\\|_{H^1} \\frac{\\sqrt{\\log N}}{\\sqrt{N}}\n1024: \n1025: $$\n1026: "
     },
     {
@@ -200,6 +212,7 @@
         "label": "def-temporal-gauge-field-dt"
       },
       "section": "## 7. Fermionic Structure from Cloning Antisymmetry",
+      "references": [],
       "raw_directive": "1030: ##### Part IV: Gauge Covariance\n1031: \n1032: :::{prf:definition} Temporal Gauge Field from Fitness\n1033: :label: def-temporal-gauge-field-dt\n1034: \n1035: The fitness potential defines a temporal U(1) gauge field:\n1036: \n1037: $$\n1038: A_0(x, \\mathcal{S}_t) := -\\frac{\\epsilon_F V_{\\text{fit}}(x, \\mathcal{S}_t)}{T}\n1039: \n1040: $$\n1041: \n1042: The parallel transport is:\n1043: \n1044: $$\n1045: U_{ij} = \\exp\\left(i \\int_{t_i^b}^{t_i^d} A_0(x_i(t), \\mathcal{S}_t) \\, dt\\right) = \\exp\\left(i\\theta_{ij}^{\\text{fit}}\\right)\n1046: \n1047: $$\n1048: \n1049: where $\\theta_{ij}^{\\text{fit}} = \\int_{t_i^b}^{t_i^d} A_0 \\, dt = -\\frac{\\epsilon_F}{T}\\int_{t_i^b}^{t_i^d} V_{\\text{fit}} \\, dt$ (real phase).\n1050: "
     },
     {
@@ -218,6 +231,9 @@
         "label": "conj-dirac-from-cloning"
       },
       "section": "## 7. Fermionic Structure from Cloning Antisymmetry",
+      "references": [
+        "thm-laplacian-convergence-curved"
+      ],
       "raw_directive": "1093: :::\n1094: \n1095: :::{prf:conjecture} Continuum Limit: Dirac Fermions from Cloning\n1096: :label: conj-dirac-from-cloning\n1097: \n1098: **Source:** [13_D_fractal_set_emergent_qft_comprehensive.md \u00a7 6.2, lines 453-473]\n1099: \n1100: In the continuum limit ($N \\to \\infty$, $\\Delta V \\to 0$, $\\tau \\to 0$), the discrete fermionic action converges to:\n1101: \n1102: $$\n1103: S_{\\text{fermion}} \\to \\int \\bar{\\psi}(x) \\, \\gamma^\\mu \\partial_\\mu \\psi(x) \\, d^d x\n1104: \n1105: $$\n1106: \n1107: where:\n1108: - $\\psi(x)$: Dirac spinor field\n1109: - $\\gamma^\\mu$: Dirac gamma matrices\n1110: - Spatial part ($\\tilde{K}_{ij}$ on IG) \u2192 $\\gamma^i \\partial_i \\psi$\n1111: - Temporal part ($D_t$ on CST) \u2192 $\\gamma^0 \\partial_0 \\psi$\n1112: \n1113: **Convergence mechanism:**\n1114: \n1115: **Spatial derivatives:** From graph Laplacian convergence (Theorem {prf:ref}`thm-laplacian-convergence-curved`), the IG-based antisymmetric kernel converges to:\n1116: \n1117: $$\n1118: \\sum_{j \\in \\text{IG}(i)} \\tilde{K}_{ij} \\psi_j \\to \\gamma^i \\partial_i \\psi(x_i)\n1119: \n1120: $$\n1121: \n1122: **Temporal derivatives:** From CST forward differences:\n1123: \n1124: $$\n1125: \\sum_{j : i \\to j} D_t \\psi_j \\to \\gamma^0 \\partial_0 \\psi(x_i, t_i)\n1126: \n1127: $$\n1128: \n1129: **Status:** \u26a0\ufe0f Conjectured, not proven\n1130: \n1131: **Required proofs:**\n1132: 1. Convergence of discrete kernel $\\tilde{K}_{ij}$ to continuum spatial Dirac operator\n1133: 2. Convergence of discrete temporal operator $D_t$ to continuum time derivative\n1134: 3. Emergence of Lorentz structure from fitness dynamics\n1135: 4. Identification of spinor components with walker modes\n1136: "
     }
   ],

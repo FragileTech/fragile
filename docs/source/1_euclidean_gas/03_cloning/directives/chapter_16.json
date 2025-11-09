@@ -19,6 +19,7 @@
         "label": "def-coupled-cloning-expectation"
       },
       "section": "## 10.2. The Coupled Expectation Framework",
+      "references": [],
       "raw_directive": "6324: To analyze the drift of the Lyapunov function components, we work with two copies of the swarm evolving under synchronous coupling.\n6325: \n6326: :::{prf:definition} Coupled Cloning Expectation\n6327: :label: def-coupled-cloning-expectation\n6328: \n6329: Consider two swarms $(S_1, S_2)$ in the coupled state space. Let $(S'_1, S'_2)$ be the output swarms after applying $\\Psi_{\\text{clone}}$ to each independently, using **synchronous coupling** of all randomness:\n6330: \n6331: - Same PRNG seeds for companion selection\n6332: - Same pairing algorithm random choices\n6333: - Same threshold samples $T_i$ for each walker index $i$\n6334: - Same Gaussian jitters $\\zeta_i^x$ for position updates (when both walkers clone)\n6335: - Same rotation operators $R_i$ for velocity collisions (when both walkers participate in collisions)\n6336: \n6337: For any function $f: \\Sigma_N \\times \\Sigma_N \\to \\mathbb{R}$, the **coupled cloning expectation** is:\n6338: \n6339: $$\n6340: \\mathbb{E}_{\\text{clone}}[f(S'_1, S'_2) \\mid S_1, S_2] := \\mathbb{E}[f(S'_1, S'_2) \\mid S_1, S_2, \\text{coupling}]\n6341: $$"
     },
     {
@@ -37,6 +38,7 @@
         "label": "rem-coupling-benefits"
       },
       "section": "## 10.2. The Coupled Expectation Framework",
+      "references": [],
       "raw_directive": "6343: :::\n6344: \n6345: :::{prf:remark} Synchronous Coupling Benefits\n6346: :label: rem-coupling-benefits\n6347: \n6348: The synchronous coupling ensures that:\n6349: \n6350: 1. **Common randomness cancels:** When both swarms have walker $i$ in similar states and both make the same cloning decision, much of the random perturbation is shared, reducing divergence.\n6351: \n6352: 2. **Worst-case expansion is bounded:** Even when the swarms make different decisions (e.g., walker $i$ clones in swarm 1 but persists in swarm 2), the expansion is controlled by the maximum displacement $D_{\\text{valid}}$.\n6353: "
     }
   ],

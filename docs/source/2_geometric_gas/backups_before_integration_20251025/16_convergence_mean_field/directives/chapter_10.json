@@ -19,6 +19,7 @@
         "label": "prob-gemini-collaboration-tasks"
       },
       "section": "## 5. Decision Point and Path Forward",
+      "references": [],
       "raw_directive": "918: Based on these preliminary findings, I recommend the following investigations with Gemini:\n919: \n920: :::{prf:problem} Critical Tasks for Gemini Collaboration\n921: :label: prob-gemini-collaboration-tasks\n922: \n923: 1. **Refine the two-state counterexample**: Develop a rigorous lower-dimensional model where calculations are exact. Determine precisely when KL-non-expansiveness holds.\n924: \n925: 2. **Investigate joint operator**: Instead of analyzing $\\mathcal{R}$ alone, study the composed operator $\\mathcal{J} = $ (killing + revival). Does the killing term compensate for revival's entropy increase?\n926: \n927: 3. **Explore alternative formulations**: Can we reformulate the revival operator to make KL-properties more transparent? E.g., as a Bayesian update with explicit noise?\n928: \n929: 4. **Check literature**: Has anyone studied KL-properties of proportional resampling operators in McKean-Vlasov systems? Search for related results in QSD theory, population dynamics, branching processes.\n930: "
     }
   ],

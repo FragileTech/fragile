@@ -1,7 +1,7 @@
 {
   "stage": "directives",
   "directive_type": "construction",
-  "generated_at": "2025-11-08T17:16:20.404736+00:00",
+  "generated_at": "2025-11-08T23:19:38.396784+00:00",
   "source_documents": [
     "14_geometric_gas_cinf_regularity_full",
     "20_geometric_gas_cinf_regularity_full"
@@ -25,6 +25,7 @@
         "label": "const-mollified-partition-full"
       },
       "section": "## 3. Smooth Phase-Space Clustering",
+      "references": [],
       "raw_directive": "1135: :::\n1136: \n1137: :::{prf:construction} Mollified Partition via Smooth Cutoffs\n1138: :label: const-mollified-partition-full\n1139: \n1140: We construct $\\psi_m$ using **smooth bump functions**:\n1141: \n1142: **Step 1: Smooth cutoff function.**\n1143: \n1144: Define $\\phi: \\mathbb{R}_{\\geq 0} \\to [0,1]$ by:\n1145: \n1146: $$\n1147: \\phi(r) = \\begin{cases}\n1148: \\exp\\left(-\\frac{1}{1 - (r/R)^2}\\right) & \\text{if } r < R \\\\\n1149: 0 & \\text{if } r \\geq R\n1150: \\end{cases}\n1151: \n1152: $$\n1153: \n1154: This is C^∞ with compact support $[0, R]$ and $\\phi(r) = 1$ near $r = 0$.\n1155: \n1156: **Step 2: Localized bump functions.**\n1157: \n1158: For cluster $m$ with center $(y_m, u_m)$, define:\n1159: \n1160: $$\n1161: \\tilde{\\psi}_m(x, v) = \\phi\\left(d_{\\text{alg}}((x,v), (y_m, u_m)) / (2\\varepsilon_c)\\right)\n1162: \n1163: $$\n1164: \n1165: This satisfies:\n1166: - $\\tilde{\\psi}_m \\in C^\\infty$ (composition of smooth functions)\n1167: - $\\text{supp}(\\tilde{\\psi}_m) \\subset B((y_m, u_m), 2\\varepsilon_c)$ (compact support)\n1168: - $\\tilde{\\psi}_m \\geq \\exp(-1)$ on $B((y_m, u_m), \\varepsilon_c)$ (positive core)\n1169: \n1170: **Step 3: Normalization to partition of unity.**\n1171: \n1172: Define:\n1173: \n1174: $$\n1175: \\psi_m(x, v) = \\frac{\\tilde{\\psi}_m(x, v)}{\\sum_{m'=1}^M \\tilde{\\psi}_{m'}(x, v)}\n1176: \n1177: $$\n1178: \n1179: By construction:\n1180: - $\\sum_{m=1}^M \\psi_m = 1$ (partition identity)\n1181: - Each $\\psi_m \\in C^\\infty$ (quotient of smooth functions with non-vanishing denominator)",
       "_registry_context": {
         "stage": "directives",
@@ -50,6 +51,7 @@
         "label": "const-mollified-partition-full"
       },
       "section": "## 3. Smooth Phase-Space Clustering",
+      "references": [],
       "raw_directive": "1159: :::\n1160: \n1161: :::{prf:construction} Mollified Partition via Smooth Cutoffs\n1162: :label: const-mollified-partition-full\n1163: \n1164: We construct $\\psi_m$ using **smooth bump functions**:\n1165: \n1166: **Step 1: Smooth cutoff function.**\n1167: \n1168: Define $\\phi: \\mathbb{R}_{\\geq 0} \\to [0,1]$ by:\n1169: \n1170: $$\n1171: \\phi(r) = \\begin{cases}\n1172: \\exp\\left(-\\frac{1}{1 - (r/R)^2}\\right) & \\text{if } r < R \\\\\n1173: 0 & \\text{if } r \\geq R\n1174: \\end{cases}\n1175: \n1176: $$\n1177: \n1178: This is C^∞ with compact support $[0, R]$ and $\\phi(r) = 1$ near $r = 0$.\n1179: \n1180: **Step 2: Localized bump functions.**\n1181: \n1182: For cluster $m$ with center $(y_m, u_m)$, define:\n1183: \n1184: $$\n1185: \\tilde{\\psi}_m(x, v) = \\phi\\left(d_{\\text{alg}}((x,v), (y_m, u_m)) / (2\\varepsilon_c)\\right)\n1186: \n1187: $$\n1188: \n1189: This satisfies:\n1190: - $\\tilde{\\psi}_m \\in C^\\infty$ (composition of smooth functions)\n1191: - $\\text{supp}(\\tilde{\\psi}_m) \\subset B((y_m, u_m), 2\\varepsilon_c)$ (compact support)\n1192: - $\\tilde{\\psi}_m \\geq \\exp(-1)$ on $B((y_m, u_m), \\varepsilon_c)$ (positive core)\n1193: \n1194: **Step 3: Normalization to partition of unity.**\n1195: \n1196: Define:\n1197: \n1198: $$\n1199: \\psi_m(x, v) = \\frac{\\tilde{\\psi}_m(x, v)}{\\sum_{m'=1}^M \\tilde{\\psi}_{m'}(x, v)}\n1200: \n1201: $$\n1202: \n1203: By construction:\n1204: - $\\sum_{m=1}^M \\psi_m = 1$ (partition identity)\n1205: - Each $\\psi_m \\in C^\\infty$ (quotient of smooth functions with non-vanishing denominator)",
       "_registry_context": {
         "stage": "directives",

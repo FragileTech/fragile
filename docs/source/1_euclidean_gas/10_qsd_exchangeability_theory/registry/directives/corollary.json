@@ -2,7 +2,7 @@
   "document_id": "10_qsd_exchangeability_theory",
   "stage": "directives",
   "directive_type": "corollary",
-  "generated_at": "2025-11-08T17:16:20.195479+00:00",
+  "generated_at": "2025-11-08T23:19:38.268017+00:00",
   "count": 1,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "cor-mean-field-lsi"
       },
       "section": "## A1.3 N-Uniform Log-Sobolev Inequality",
+      "references": [],
       "raw_directive": "636: ### A1.3.2 Implications for Mean-Field LSI\n637: \n638: :::{prf:corollary} Mean-Field LSI from N-Uniform Bounds\n639: :label: cor-mean-field-lsi\n640: \n641: The mean-field density $\\rho_\\infty$ (limit of $\\mu_N$ as $N \\to \\infty$) satisfies:\n642: \n643: $$\n644: D_{\\text{KL}}(\\nu \\| \\rho_\\infty) \\leq C_{\\text{LSI}}^{\\text{MF}} \\cdot I(\\nu \\| \\rho_\\infty)\n645: $$\n646: ",
       "_registry_context": {
         "stage": "directives",

@@ -19,6 +19,7 @@
         "label": "thm-qsd-existence"
       },
       "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "references": [],
       "raw_directive": "2346: ### 9.1. Theorem: Geometric Ergodicity and the QSD\n2347: \n2348: :::{prf:theorem} Existence and Uniqueness of the QSD\n2349: :label: thm-qsd-existence\n2350: \n2351: The Geometric Viscous Fluid Model, composed with the cloning operator $\\Psi_{\\text{clone}}$, admits a unique Quasi-Stationary Distribution (QSD) $\\pi_{\\text{QSD}}$ on the phase space $\\mathcal{X} \\times \\mathbb{R}^d$.\n2352: \n2353: Moreover, for any initial distribution $\\mu_0$, the law of the swarm at time $t$ converges exponentially fast to $\\pi_{\\text{QSD}}$ in total variation:\n2354: \n2355: $$\n2356: \\|\\mu_t - \\pi_{\\text{QSD}}\\|_{\\text{TV}} \\le C_{\\text{TV}} (1 - \\kappa_{\\text{total}})^t\n2357: \n2358: $$\n2359: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "proof-thm-qsd-existence"
       },
       "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "references": [],
       "raw_directive": "2361: :::\n2362: \n2363: :::{prf:proof} Proof sketch\n2364: :label: proof-thm-qsd-existence\n2365: \n2366: The Foster-Lyapunov drift condition (Theorem [](#thm-fl-drift-adaptive)) implies:\n2367: 1. **Petite set property:** The swarm is irreducible and aperiodic by the same arguments as in [04_convergence.md](../1_euclidean_gas/06_convergence.md) (positive diffusion, global potential, cloning operator mixing).\n2368: 2. **Geometric ergodicity:** By the standard Foster-Lyapunov theorem (Meyn & Tweedie, Chapter 15), the drift condition implies the existence of a unique invariant measure $\\pi_{\\text{QSD}}$ and exponential convergence in the Lyapunov norm.\n2369: 3. **Total variation convergence:** By the relationship between Lyapunov convergence and total variation (Theorem 16.0.1 in Meyn & Tweedie), geometric ergodicity in the Lyapunov norm implies exponential convergence in total variation.\n2370: "
     },
     {
@@ -55,6 +57,7 @@
         "label": "conj-wfr-convergence"
       },
       "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "references": [],
       "raw_directive": "2376: The Wasserstein-Fisher-Rao (WFR) metric is a natural geometric framework for analyzing the convergence of probability distributions evolving under reaction-diffusion dynamics. We now state a formal conjecture regarding WFR convergence for the adaptive system.\n2377: \n2378: :::{prf:conjecture} Convergence in the WFR Metric\n2379: :label: conj-wfr-convergence\n2380: \n2381: The composition of the kinetic evolution $\\Psi_{\\text{kin,adapt}}$ and the cloning selection $\\Psi_{\\text{clone}}$ is a contraction in the Wasserstein-Fisher-Rao (WFR) metric. Consequently, the empirical distribution converges in WFR distance:\n2382: \n2383: $$\n2384: \\text{WFR}(\\mu_t, \\pi_{\\text{QSD}}) \\le C_{\\text{WFR}} e^{-\\lambda_{\\text{WFR}} t}\n2385: \n2386: $$\n2387: "
     },
     {
@@ -73,6 +76,7 @@
         "label": "rem-wfr-analogy"
       },
       "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "references": [],
       "raw_directive": "2414: :::\n2415: \n2416: :::{prf:remark} Formal Analogy and Evidence\n2417: :label: rem-wfr-analogy\n2418: \n2419: Despite the lack of a complete proof, there is strong formal evidence for the conjecture:\n2420: \n2421: **Structural analogy:** The adaptive system has the form of a **gradient flow in WFR space**:\n2422: - The kinetic evolution is a gradient flow of the free energy in Wasserstein space\n2423: - The cloning operator is a gradient flow of relative entropy in Fisher-Rao space\n2424: - The WFR metric naturally interpolates between these two geometries\n2425: \n2426: **Partial results:**\n2427: - For the **backbone system** (without adaptive terms), W\u2082 contractivity follows from standard theory\n2428: - For **simplified selection operators** (e.g., resampling with absolute fitness), FR contractivity is well-established\n2429: - The uniform ellipticity (Theorem [](#thm-ueph)) provides the regularity needed for Wasserstein contractivity\n2430: \n2431: **What would complete the proof:**\n2432: 1. Extend W\u2082 contraction theory to uniformly elliptic, state-dependent diffusions (possible via Otto calculus)\n2433: 2. Prove FR contractivity for competitive, state-dependent selection operators\n2434: 3. Apply the Chizat-Peyr\u00e9-Schmitzer WFR theory to verify the composition\n2435: "
     },
     {
@@ -91,6 +95,7 @@
         "label": "thm-lsi-mean-field"
       },
       "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "references": [],
       "raw_directive": "2461: The natural next question is: **Does the LSI survive in the mean-field limit as $N \\to \\infty$?** This section discusses this open problem.\n2462: \n2463: :::{prf:theorem} Logarithmic Sobolev Inequality for the Mean-Field Generator\n2464: :label: thm-lsi-mean-field\n2465: \n2466: For the mean-field limit of the Geometric Viscous Fluid Model (as $N \\to \\infty$), the mean-field generator $\\mathcal{L}_{\\text{MF}}$ satisfies a logarithmic Sobolev inequality with respect to its unique stationary state $\\rho_{\\text{QSD}}$. There exists a constant $\\lambda_{\\text{LSI}} > 0$ such that for all probability densities $f \\in H^1_w(\\mathcal{X} \\times \\mathbb{R}^d)$:\n2467: \n2468: $$\n2469: \\text{Ent}_{\\rho_{\\text{QSD}}}(f) \\le \\frac{1}{2\\lambda_{\\text{LSI}}} D(f)\n2470: \n2471: $$\n2472: \n2473: where:\n2474: - $\\text{Ent}_{\\rho}(f) := \\int f \\log(f / \\rho) \\, dx \\, dv$ is the relative entropy.\n2475: - $D(f) := -\\int (\\mathcal{L}_{\\text{MF}} f) \\log(f / \\rho_{\\text{QSD}}) \\, dx \\, dv$ is the entropy dissipation (Fisher information).\n2476: "
     },
     {
@@ -109,6 +114,7 @@
         "label": "lem-dissipation-decomp"
       },
       "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "references": [],
       "raw_directive": "2544: **Step 1: Decomposition of Entropy Dissipation**\n2545: \n2546: :::{prf:lemma} Decomposition of Entropy Dissipation\n2547: :label: lem-dissipation-decomp\n2548: \n2549: The total entropy dissipation can be decomposed as:\n2550: \n2551: $$\n2552: D(f) = D_{\\text{kin}}(f) + D_{\\text{clone}}(f) + D_{\\text{boundary}}(f)\n2553: \n2554: $$\n2555: \n2556: where:\n2557: - $D_{\\text{kin}}(f) = \\int f \\|\\nabla_v \\log(f / \\rho_{\\text{QSD}})\\|^2_{G_{\\text{reg}}} \\, dx \\, dv$ is the kinetic dissipation.\n2558: - $D_{\\text{clone}}(f) \\ge 0$ is the dissipation from the selection/cloning mechanism.\n2559: - $D_{\\text{boundary}}(f) \\ge 0$ is the dissipation from boundary flux.\n2560: "
     },
     {
@@ -127,6 +133,7 @@
         "label": "def-microlocal"
       },
       "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "references": [],
       "raw_directive": "2564: **Step 2: Hypocoercive Decomposition**\n2565: \n2566: :::{prf:definition} Microlocal Decomposition\n2567: :label: def-microlocal\n2568: \n2569: For any function $h = f / \\rho_{\\text{QSD}}$, define:\n2570: - **Hydrodynamic projection:** $\\Pi h(x) := \\int_{\\mathbb{R}^d} h(x, v) \\rho_{\\text{QSD}}(v | x) \\, dv$\n2571: - **Microscopic fluctuation:** $(I - \\Pi) h := h - \\Pi h$\n2572: "
     },
     {
@@ -145,6 +152,7 @@
         "label": "lem-micro-coercivity"
       },
       "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "references": [],
       "raw_directive": "2578: The core technical work involves proving three lemmas:\n2579: \n2580: :::{prf:lemma} Microscopic Coercivity (Step A)\n2581: :label: lem-micro-coercivity\n2582: \n2583: There exists $\\lambda_{\\text{mic}} > 0$ such that:\n2584: \n2585: $$\n2586: D_{\\text{kin}}(h \\cdot \\rho_{\\text{QSD}}) \\ge \\lambda_{\\text{mic}} \\|(I - \\Pi) h\\|^2_{L^2(\\rho_{\\text{QSD}})}\n2587: \n2588: $$\n2589: "
     },
     {
@@ -163,6 +171,9 @@
         "label": "lem-macro-transport"
       },
       "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "references": [
+        "lem-micro-coercivity"
+      ],
       "raw_directive": "2591: :::\n2592: \n2593: :::{prf:lemma} Macroscopic Transport in Absorption Form (Step B)\n2594: :label: lem-macro-transport\n2595: \n2596: **Assumption A1 (Uniform Convexity)**: The confining potential $U(x)$ satisfies:\n2597: \n2598: $$\n2599: \\nabla^2 U(x) \\succeq \\kappa_{\\text{conf}} I \\quad \\text{for all } x \\in \\mathcal{X}\n2600: \n2601: $$\n2602: \n2603: for some constant $\\kappa_{\\text{conf}} > 0$.\n2604: \n2605: **Assumption A2 (Centered Velocities)**: The conditional velocity mean under the QSD vanishes:\n2606: \n2607: $$\n2608: \\int v \\rho_{\\text{QSD}}(v | x) \\, dv = 0 \\quad \\text{for all } x \\in \\mathcal{X}\n2609: \n2610: $$\n2611: \n2612: **Assumption A3 (Bounded Perturbation)**: The position marginal $\\rho_x(x) := \\int \\rho_{\\text{QSD}}(x, v) \\, dv$ satisfies:\n2613: \n2614: $$\n2615: \\left\\| \\log\\left(\\frac{\\rho_x}{\\mu_{\\text{Gibbs}}}\\right) \\right\\|_{L^\\infty(\\mathcal{X})} < \\infty\n2616: \n2617: $$\n2618: \n2619: where $\\mu_{\\text{Gibbs}}(dx) \\propto e^{-U(x)} dx$ is the Gibbs measure.\n2620: \n2621: Under these assumptions, there exist constants $C_1, C_{\\text{aux}} > 0$ such that for all $h \\in H^1(\\rho_{\\text{QSD}})$ with $\\int h \\rho_{\\text{QSD}} = 1$:\n2622: \n2623: $$\n2624: \\|\\Pi h - 1\\|^2_{L^2(\\rho_x)} \\le C_1 \\left| \\langle (I - \\Pi) h, v \\cdot \\nabla_x (\\Pi h) \\rangle_{L^2(\\rho_{\\text{QSD}})} \\right| + C_{\\text{aux}} \\|(I - \\Pi) h\\|^2_{L^2(\\rho_{\\text{QSD}})}\n2625: \n2626: $$\n2627: \n2628: where:\n2629: \n2630: $$\n2631: C_1 = \\frac{2}{\\sqrt{\\kappa_x c_v}}, \\quad C_{\\text{aux}} = \\frac{1}{\\kappa_x c_v}\n2632: \n2633: $$\n2634: \n2635: with:\n2636: - $\\kappa_x \\ge \\kappa_{\\text{conf}} e^{-2 C_{\\text{pert}}}$ (position Poincar\u00e9 constant)\n2637: - $c_v = \\frac{\\sigma^2}{2\\gamma}$ (velocity covariance lower bound)\n2638: "
     },
     {
@@ -181,6 +192,7 @@
         "label": "proof-lem-macro-transport"
       },
       "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "references": [],
       "raw_directive": "2640: :::\n2641: \n2642: :::{prf:proof}\n2643: :label: proof-lem-macro-transport\n2644: \n2645: This proof follows the classical hypocoercivity approach of Villani (2009) adapted to the QSD setting. The key steps are:\n2646: \n2647: **Preliminary Lemmas**:\n2648: \n2649: *Lemma A (Position Poincar\u00e9)*: Under Assumptions A1 (uniform convexity) and A3 (bounded perturbation), the position marginal $\\rho_x$ satisfies a Poincar\u00e9 inequality:\n2650: \n2651: $$\n2652: \\|a\\|^2_{L^2(\\rho_x)} \\le \\frac{1}{\\kappa_x} \\|\\nabla_x a\\|^2_{L^2(\\rho_x)}\n2653: \n2654: $$\n2655: \n2656: for all mean-zero $a \\in H^1(\\rho_x)$, where $\\kappa_x \\ge \\kappa_{\\text{conf}} e^{-2 C_{\\text{pert}}}$ by the Holley-Stroock perturbation theorem.\n2657: \n2658: *Lemma B (Velocity Covariance)*: Under Assumption A2 (centered velocities), the conditional velocity covariance satisfies:\n2659: \n2660: $$\n2661: \\Sigma_v(x) := \\int v v^\\top \\rho_{\\text{QSD}}(v | x) \\, dv \\succeq c_v I\n2662: \n2663: $$\n2664: \n2665: where $c_v = \\frac{\\sigma^2}{2\\gamma}$ (derived via Lyapunov equation for the Ornstein-Uhlenbeck velocity process).\n2666: \n2667: *Lemma C (Orthogonality)*: Under Assumption A2, for any function $a(x)$ depending only on position:\n2668: \n2669: $$\n2670: \\Pi[v \\cdot \\nabla_x a] = 0\n2671: \n2672: $$\n2673: \n2674: **Main Proof**:\n2675: \n2676: **Step 1**: Apply position Poincar\u00e9 to the centered macroscopic part $a(x) := \\Pi h(x) - 1$. By normalization $\\int h \\rho_{\\text{QSD}} = 1$, we have $\\int a \\rho_x = 0$, so:\n2677: \n2678: $$\n2679: \\|\\Pi h - 1\\|^2_{L^2(\\rho_x)} \\le \\frac{1}{\\kappa_x} \\|\\nabla_x (\\Pi h)\\|^2_{L^2(\\rho_x)}\n2680: \n2681: $$\n2682: \n2683: **Step 2**: Express position gradient via transport energy. Using the velocity covariance lower bound:\n2684: \n2685: $$\n2686: \\|\\nabla_x (\\Pi h)\\|^2_{L^2(\\rho_x)} \\le \\frac{1}{c_v} \\|v \\cdot \\nabla_x (\\Pi h)\\|^2_{L^2(\\rho_{\\text{QSD}})}\n2687: \n2688: $$\n2689: \n2690: **Step 3**: Combine Steps 1-2 to obtain macroscopic coercivity:\n2691: \n2692: $$\n2693: \\|\\Pi h - 1\\|^2_{L^2(\\rho_x)} \\le \\frac{1}{\\kappa_x c_v} \\|v \\cdot \\nabla_x (\\Pi h)\\|^2_{L^2(\\rho_{\\text{QSD}})}\n2694: \n2695: $$\n2696: \n2697: **Step 4**: Apply absorption technique. By Lemma C, $v \\cdot \\nabla_x (\\Pi h)$ is purely microscopic ($\\Pi[v \\cdot \\nabla_x (\\Pi h)] = 0$), so by Cauchy-Schwarz:\n2698: \n2699: $$\n2700: \\|v \\cdot \\nabla_x (\\Pi h)\\|_{L^2} \\ge \\frac{|\\langle (I - \\Pi) h, v \\cdot \\nabla_x (\\Pi h) \\rangle_{L^2}|}{\\|(I - \\Pi) h\\|_{L^2}}\n2701: \n2702: $$\n2703: \n2704: Using Young's inequality $ab \\le \\frac{a^2}{2\\epsilon} + \\frac{\\epsilon b^2}{2}$ with optimal choice $\\epsilon = 1$ yields the absorption form:\n2705: \n2706: $$\n2707: \\|\\Pi h - 1\\|^2_{L^2(\\rho_x)} \\le \\frac{2}{\\sqrt{\\kappa_x c_v}} |\\langle (I - \\Pi) h, v \\cdot \\nabla_x (\\Pi h) \\rangle_{L^2}| + \\frac{1}{\\kappa_x c_v} \\|(I - \\Pi) h\\|^2_{L^2}\n2708: \n2709: $$\n2710: \n2711: with $C_1 = \\frac{2}{\\sqrt{\\kappa_x c_v}}$ and $C_{\\text{aux}} = \\frac{1}{\\kappa_x c_v}$.\n2712: \n2713: **References**: Villani (2009, Memoirs AMS), H\u00e9rau-Nier (2004, ARMA), Bakry-Gentil-Ledoux (2014), Holley-Stroock (1987). \u220e"
     },
     {
@@ -199,6 +211,7 @@
         "label": "lem-micro-reg"
       },
       "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "references": [],
       "raw_directive": "2741: :::\n2742: \n2743: :::{prf:lemma} Microscopic Regularization (Step C)\n2744: :label: lem-micro-reg\n2745: \n2746: There exists $C_2 > 0$ such that:\n2747: \n2748: $$\n2749: \\left| \\langle (I - \\Pi) h, v \\cdot \\nabla_x (\\Pi h) \\rangle_{L^2(\\rho_{\\text{QSD}})} \\right| \\le C_2 \\sqrt{D_{\\text{kin}}(h \\cdot \\rho_{\\text{QSD}})}\n2750: \n2751: $$\n2752: "
     }
   ],

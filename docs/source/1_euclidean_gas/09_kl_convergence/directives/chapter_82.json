@@ -19,6 +19,7 @@
         "label": "axiom-qsd-log-concave-recap"
       },
       "section": "## Exponential Convergence for Non-Convex Fitness Landscapes: Hypocoercivity and Feynman-Kac Theory",
+      "references": [],
       "raw_directive": "5080: The unified KL-convergence proof in KL-convergence unification analysis establishes exponential convergence of the Euclidean Gas to its quasi-stationary distribution (QSD) under a critical assumption:\n5081: \n5082: :::{prf:axiom} Log-Concavity of the Quasi-Stationary Distribution (Historical Requirement - Now Proven)\n5083: :label: axiom-qsd-log-concave-recap\n5084: \n5085: **Current Status (October 2025)**: \u2705 **PROVEN THEOREM** - No longer required as an axiom\n5086: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "axiom-confining-recap"
       },
       "section": "## Exponential Convergence for Non-Convex Fitness Landscapes: Hypocoercivity and Feynman-Kac Theory",
+      "references": [],
       "raw_directive": "5104: This document establishes exponential KL-convergence using a **strictly weaker assumption** that we **already have**:\n5105: \n5106: :::{prf:axiom} Confining Potential (from 04_convergence.md, Axiom 1.3.1)\n5107: :label: axiom-confining-recap\n5108: \n5109: The potential $U: \\mathcal{X} \\to \\mathbb{R}$ satisfies:\n5110: \n5111: $$\n5112: U(x) \\to +\\infty \\quad \\text{as} \\quad |x| \\to \\infty \\quad \\text{or} \\quad x \\to \\partial \\mathcal{X}\n5113: $$\n5114: \n5115: Equivalently, there exist constants $\\alpha_U > 0$ and $R_0 > 0$ such that:\n5116: \n5117: $$\n5118: \\langle \\nabla U(x), x \\rangle \\geq \\alpha_U |x|^2 \\quad \\text{for all} \\quad |x| \\geq R_0"
     },
     {
@@ -55,6 +57,9 @@
         "label": "thm-nonconvex-informal"
       },
       "section": "## Exponential Convergence for Non-Convex Fitness Landscapes: Hypocoercivity and Feynman-Kac Theory",
+      "references": [
+        "axiom-confining-recap"
+      ],
       "raw_directive": "5130: ### 0.3. Main Theoretical Contribution\n5131: \n5132: :::{prf:theorem} Exponential KL Convergence for Non-Convex Fitness (Informal)\n5133: :label: thm-nonconvex-informal\n5134: \n5135: For the N-particle Euclidean Gas with a **confining potential** (Axiom {prf:ref}`axiom-confining-recap`) but **no convexity assumption**:\n5136: \n5137: $$\n5138: D_{\\text{KL}}(\\mu_t \\| \\pi_{\\text{QSD}}) \\leq e^{-\\lambda t} D_{\\text{KL}}(\\mu_0 \\| \\pi_{\\text{QSD}})\n5139: $$\n5140: \n5141: where:\n5142: \n5143: $$\n5144: \\lambda = c \\cdot \\min\\left(\\gamma, \\frac{\\alpha_U}{\\sigma_v^2}\\right) - C \\cdot L_g \\cdot G_{\\max}\n5145: $$\n5146: "
     }
   ],

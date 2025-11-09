@@ -19,6 +19,7 @@
         "label": "def-su2-link-variables"
       },
       "section": "## 4. Discrete Yang-Mills Action",
+      "references": [],
       "raw_directive": "808: ### 4.1. SU(2) Link Variables and Parallel Transport\n809: \n810: :::{prf:definition} SU(2) Link Variables on Fractal Set\n811: :label: def-su2-link-variables\n812: \n813: For each edge $e = (n_j, n_i)$ in the Fractal Set (CST or IG edge), define the **SU(2) link variable**:\n814: \n815: $$\n816: U_{ij}(e) = \\exp\\left(i\\tau \\sum_{a=1}^3 A_e^{(a)} T^a\\right) \\in \\text{SU}(2)\n817: $$\n818: \n819: where:\n820: - $A_e^{(a)}$: Gauge field components along edge $e$ (three real numbers)\n821: - $T^a = \\sigma^a/2$: Pauli matrices (SU(2) generators)\n822: - $\\tau$: Lattice coupling parameter\n823: \n824: **Physical interpretation**: $U_{ij}$ is the parallel transport operator from node $j$ to node $i$.\n825: \n826: **Gauge transformation:**\n827: \n828: $$\n829: U_{ij} \\to U_i U_{ij} U_j^\\dagger\n830: $$\n831: \n832: **Connection to cloning amplitude:**\n833: \n834: From {doc}`13_fractal_set/00_full_set.md` \u00a77.10, the cloning amplitude factorizes as:\n835: \n836: $$\n837: \\Psi(i \\to j) = A_{ij}^{\\text{SU}(2)} \\cdot K_{\\text{eff}}(i,j)\n838: $$\n839: \n840: where $A_{ij}^{\\text{SU}(2)}$ contains the SU(2) structure. We relate:\n841: \n842: $$\n843: A_{ij}^{\\text{SU}(2)} = \\langle \u2193 | \\otimes \\langle \\psi_j | U_{ij} | \u2191 \\rangle \\otimes | \\psi_i \\rangle\n844: $$\n845: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "def-discrete-field-strength"
       },
       "section": "## 4. Discrete Yang-Mills Action",
+      "references": [],
       "raw_directive": "849: ### 4.2. Field Strength and Plaquettes\n850: \n851: :::{prf:definition} Discrete Field Strength (Plaquette Curvature)\n852: :label: def-discrete-field-strength\n853: \n854: For each **plaquette** $\\square$ (elementary closed loop with 4 edges) in the Fractal Set, define the **plaquette variable**:\n855: \n856: $$\n857: U_{\\square} = U_{12} U_{23} U_{34} U_{41}\n858: $$\n859: \n860: where $1,2,3,4$ are the four nodes in cyclic order and $U_{ij}$ are the link variables.\n861: \n862: The **field strength** is:\n863: \n864: $$\n865: F_{\\square} = \\frac{1}{i\\tau^2} \\log U_{\\square} \\in \\mathfrak{su}(2)\n866: $$\n867: \n868: **Expansion in generators:**\n869: \n870: $$\n871: F_{\\square} = \\sum_{a=1}^3 F_{\\square}^{(a)} T^a\n872: $$\n873: \n874: where:\n875: \n876: $$\n877: F_{\\square}^{(a)} = 2 \\text{Tr}(T^a F_{\\square}) = \\text{Tr}(\\sigma^a F_{\\square})\n878: $$\n879: \n880: **Continuum limit**: As $\\tau \\to 0$:\n881: \n882: $$\n883: F_{\\square}^{(a)} \\to F_{\\mu\\nu}^{(a)} = \\partial_\\mu A_\\nu^{(a)} - \\partial_\\nu A_\\mu^{(a)} + g \\epsilon^{abc} A_\\mu^{(b)} A_\\nu^{(c)}\n884: $$\n885: \n886: (Yang-Mills field strength).\n887: \n888: **Gauge invariance:**\n889: \n890: $$\n891: U_{\\square} \\to V_1 U_{\\square} V_1^\\dagger \\quad \\Rightarrow \\quad \\text{Tr}(U_{\\square}) = \\text{Tr}(V_1 U_{\\square} V_1^\\dagger) = \\text{Tr}(U_{\\square})\n892: $$\n893: "
     },
     {
@@ -55,6 +57,7 @@
         "label": "def-fractal-set-plaquettes"
       },
       "section": "## 4. Discrete Yang-Mills Action",
+      "references": [],
       "raw_directive": "895: :::\n896: \n897: :::{prf:definition} Fractal Set Plaquette Types\n898: :label: def-fractal-set-plaquettes\n899: \n900: The Fractal Set has three types of plaquettes:\n901: \n902: **1. Temporal plaquettes** (CST \u00d7 CST):\n903: \n904: $$\n905: \\square_{\\text{temp}}(i,j,t) = (n_{i,t}, n_{i,t+1}, n_{j,t+1}, n_{j,t})\n906: $$\n907: \n908: - **Edges**: Two CST edges (time evolution of $i$ and $j$) plus two spatial connections\n909: - **Count**: $\\binom{N}{2} \\times T$\n910: \n911: **2. Spatial plaquettes** (IG \u00d7 CST):\n912: \n913: $$\n914: \\square_{\\text{space}}(i \\to j, t) = (n_{i,t}, n_{j,t}, n_{j,t+1}, n_{i,t+1})\n915: $$\n916: \n917: - **Edges**:\n918:   - $(n_{i,t}, n_{j,t})$: IG edge (cloning interaction)\n919:   - $(n_{j,t}, n_{j,t+1})$: CST edge (time evolution of $j$)\n920:   - $(n_{j,t+1}, n_{i,t+1})$: IG edge at $t+1$ or spatial connection\n921:   - $(n_{i,t+1}, n_{i,t})$: CST edge backwards (time evolution of $i$, reversed)\n922: - **Count**: $O(N^2 T)$\n923: \n924: **3. Mixed plaquettes** (IG \u00d7 IG):\n925: \n926: $$\n927: \\square_{\\text{mixed}}(i,j,k,t) = (n_{i,t}, n_{j,t}, n_{k,t}, n_{i,t})\n928: $$\n929: \n930: - **Edges**: Three IG edges forming a triangle\n931: - **Count**: $O(N^3)$ per timestep (rare, requires dense interaction graph)\n932: "
     },
     {
@@ -73,6 +76,7 @@
         "label": "def-discrete-ym-action"
       },
       "section": "## 4. Discrete Yang-Mills Action",
+      "references": [],
       "raw_directive": "936: ### 4.3. Wilson Plaquette Action\n937: \n938: :::{prf:definition} Discrete Yang-Mills Action\n939: :label: def-discrete-ym-action\n940: \n941: The **discrete Yang-Mills action** on the Fractal Set is:\n942: \n943: $$\n944: S_{\\text{YM}} = \\frac{1}{g^2} \\sum_{\\square} S_{\\square}\n945: $$\n946: \n947: where:\n948: \n949: $$\n950: S_{\\square} = 2\\left(1 - \\frac{1}{2}\\text{Tr}(U_{\\square})\\right)\n951: $$\n952: \n953: is the **plaquette action** (Wilson action).\n954: \n955: **Expansion for small fields**: For $||A_e|| \\ll 1$:\n956: \n957: $$\n958: U_{\\square} \\approx I + i\\tau^2 \\sum_a F_{\\square}^{(a)} T^a - \\frac{\\tau^4}{2} \\sum_a (F_{\\square}^{(a)})^2 T^a T^a + O(\\tau^6)\n959: $$\n960: \n961: Taking the trace:\n962: \n963: $$\n964: \\text{Tr}(U_{\\square}) = 2 - \\frac{\\tau^4}{4}\\sum_{a=1}^3 (F_{\\square}^{(a)})^2 + O(\\tau^6)\n965: $$\n966: \n967: Therefore:\n968: \n969: $$\n970: S_{\\square} = \\frac{\\tau^4}{4}\\sum_{a=1}^3 (F_{\\square}^{(a)})^2 + O(\\tau^6)\n971: $$\n972: \n973: **Continuum limit**: As $\\tau \\to 0$:\n974: \n975: $$\n976: S_{\\text{YM}} \\to \\frac{1}{4g^2} \\int d^{d+1}x \\sum_{a=1}^3 F_{\\mu\\nu}^{(a)} F^{(a),\\mu\\nu}\n977: $$\n978: \n979: (standard Yang-Mills action).\n980: \n981: **Physical interpretation**:\n982: - $\\text{Tr}(U_{\\square}) = 2$: Flat connection (no curvature)\n983: - $\\text{Tr}(U_{\\square}) < 2$: Non-zero field strength (gauge field present)"
     },
     {
@@ -91,6 +95,7 @@
         "label": "thm-ym-action-gauge-invariant"
       },
       "section": "## 4. Discrete Yang-Mills Action",
+      "references": [],
       "raw_directive": "985: :::\n986: \n987: :::{prf:theorem} Gauge Invariance of Yang-Mills Action\n988: :label: thm-ym-action-gauge-invariant\n989: \n990: The discrete Yang-Mills action $S_{\\text{YM}}$ is **exactly gauge-invariant** under local SU(2) transformations.\n991: \n992: **Proof**: Under $U_i \\to V_i U_i V_i^\\dagger$ at each node:\n993: \n994: $$\n995: U_{ij} \\to V_i U_{ij} V_j^\\dagger\n996: $$\n997: \n998: For plaquette $\\square = (1,2,3,4)$:\n999: \n1000: $$\n1001: U_{\\square}' = (V_1 U_{12} V_2^\\dagger)(V_2 U_{23} V_3^\\dagger)(V_3 U_{34} V_4^\\dagger)(V_4 U_{41} V_1^\\dagger)\n1002: $$\n1003: \n1004: $$\n1005: = V_1 U_{12} U_{23} U_{34} U_{41} V_1^\\dagger = V_1 U_{\\square} V_1^\\dagger\n1006: $$\n1007: \n1008: Therefore:\n1009: \n1010: $$\n1011: \\text{Tr}(U_{\\square}') = \\text{Tr}(V_1 U_{\\square} V_1^\\dagger) = \\text{Tr}(U_{\\square})\n1012: $$\n1013: "
     }
   ],

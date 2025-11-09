@@ -19,6 +19,9 @@
         "label": "lem-patch-chain-rule"
       },
       "section": "## 6. Third Derivatives of Regularized Standard Deviation",
+      "references": [
+        "assump-c3-patch"
+      ],
       "raw_directive": "1436: The Z-score denominator involves the regularized standard deviation $\\sigma\\'_{\\text{reg}}(V_\\rho^{(i)})$, which is a composition requiring the chain rule.\n1437: \n1438: :::{prf:lemma} Chain Rule for Regularized Standard Deviation\n1439: :label: lem-patch-chain-rule\n1440: \n1441: Let $\\sigma\\'_{\\text{reg}}: \\mathbb{R}_{\\ge 0} \\to \\mathbb{R}_{>0}$ satisfy Assumption {prf:ref}`assump-c3-patch` ($C^3$ regularity). For a smooth function $V: \\mathbb{R}^d \\to \\mathbb{R}_{\\ge 0}$, the composition $h(x) := \\sigma\\'_{\\text{reg}}(V(x))$ has third derivative given by the **Fa\u00e0 di Bruno formula**:\n1442: $$\n1443: \\nabla^3 h = (\\sigma\\'_{\\text{reg}})'''(V) \\cdot (\\nabla V)^{\\otimes 3} + 3(\\sigma\\'_{\\text{reg}})''(V) \\cdot \\text{sym}(\\nabla V \\otimes \\nabla^2 V) + (\\sigma\\'_{\\text{reg}})'(V) \\cdot \\nabla^3 V\n1444: $$\n1445: \n1446: where $\\text{sym}(\\nabla V \\otimes \\nabla^2 V)$ denotes the symmetrized tensor product (sum over all permutations).\n1447: \n1448: More explicitly, using index notation for clarity:\n1449: $$\n1450: \\frac{\\partial^3 h}{\\partial x_i \\partial x_j \\partial x_k} = (\\sigma\\'_{\\text{reg}})'''(V) \\frac{\\partial V}{\\partial x_i} \\frac{\\partial V}{\\partial x_j} \\frac{\\partial V}{\\partial x_k} + (\\sigma\\'_{\\text{reg}})''(V) \\left[\\frac{\\partial V}{\\partial x_i} \\frac{\\partial^2 V}{\\partial x_j \\partial x_k} + \\text{perms}\\right] + (\\sigma\\'_{\\text{reg}})'(V) \\frac{\\partial^3 V}{\\partial x_i \\partial x_j \\partial x_k}\n1451: $$\n1452: \n1453: **Norm bound:**\n1454: $$\n1455: \\|\\nabla^3 h\\| \\le L_{\\sigma\\'\\'\\'_{\\text{reg}}} \\cdot \\|\\nabla V\\|^3 + 3 L_{\\sigma\\'\\'_{\\text{reg}}} \\cdot \\|\\nabla V\\| \\cdot \\|\\nabla^2 V\\| + L_{\\sigma\\'_{\\text{reg}}} \\cdot \\|\\nabla^3 V\\|\n1456: $$\n1457: "
     },
     {
@@ -37,6 +40,7 @@
         "label": "proof-lem-patch-chain-rule"
       },
       "section": "## 6. Third Derivatives of Regularized Standard Deviation",
+      "references": [],
       "raw_directive": "1459: :::\n1460: \n1461: :::{prf:proof}\n1462: :label: proof-lem-patch-chain-rule\n1463: \n1464: This is a direct application of the multivariable chain rule for third derivatives. The composition $h = \\sigma\\'_{\\text{reg}} \\circ V$ requires:\n1465: \n1466: **First derivative:**\n1467: $$\n1468: \\nabla h = (\\sigma\\'_{\\text{reg}})'(V) \\cdot \\nabla V\n1469: $$\n1470: \n1471: **Second derivative:**\n1472: $$\n1473: \\nabla^2 h = (\\sigma\\'_{\\text{reg}})''(V) \\cdot (\\nabla V) \\otimes (\\nabla V) + (\\sigma\\'_{\\text{reg}})'(V) \\cdot \\nabla^2 V\n1474: $$\n1475: \n1476: **Third derivative:**\n1477: \n1478: Differentiate the second derivative expression:\n1479: $$\n1480: \\nabla^3 h = \\nabla[(\\sigma\\'_{\\text{reg}})''(V) \\cdot (\\nabla V)^2] + \\nabla[(\\sigma\\'_{\\text{reg}})'(V) \\cdot \\nabla^2 V]\n1481: $$\n1482: \n1483: The first term gives $(\\sigma\\'_{\\text{reg}})''(V) \\cdot [(\\nabla V)^3 + \\text{mixed terms}]$ after applying the product rule.\n1484: \n1485: The second term gives $(\\sigma\\'_{\\text{reg}})'(V) \\cdot \\nabla^3 V$ plus lower-order cross-terms.\n1486: \n1487: Taking the norm and using the bounds:\n1488: $$\n1489: \\|\\nabla^3 h\\| \\le L_{\\sigma\\'\\'_{\\text{reg}}} \\cdot \\|\\nabla V\\|^3 + 3 L_{\\sigma\\'_{\\text{reg}}} \\cdot \\|\\nabla V\\| \\cdot \\|\\nabla^2 V\\| + L_{\\sigma\\'_{\\text{reg}}} \\cdot \\|\\nabla^3 V\\|\n1490: $$\n1491: "
     },
     {
@@ -55,6 +59,11 @@
         "label": "lem-patch-third-derivative"
       },
       "section": "## 6. Third Derivatives of Regularized Standard Deviation",
+      "references": [
+        "lem-variance-gradient",
+        "lem-variance-hessian",
+        "lem-variance-third-derivative"
+      ],
       "raw_directive": "1493: :::\n1494: \n1495: :::{prf:lemma} Third Derivative Bound for Regularized Standard Deviation\n1496: :label: lem-patch-third-derivative\n1497: \n1498: The regularized standard deviation $\\sigma'_{\\rho}^{(i)} := \\sigma\\'_{\\text{reg}}(V_\\rho^{(i)})$ satisfies:\n1499: $$\n1500: \\|\\nabla^3_{x_i} \\sigma'_{\\rho}^{(i)}\\| \\le L_{\\sigma\\'\\'\\'_{\\text{reg}}} \\cdot (C_{V,\\nabla}(\\rho))^3 + 3 L_{\\sigma\\'\\'_{\\text{reg}}} \\cdot C_{V,\\nabla}(\\rho) \\cdot C_{V,\\nabla^2}(\\rho) + L_{\\sigma\\'_{\\text{reg}}} \\cdot C_{V,\\nabla^3}(\\rho)\n1501: $$\n1502: \n1503: where $C_{V,\\nabla}(\\rho)$, $C_{V,\\nabla^2}(\\rho)$, $C_{V,\\nabla^3}(\\rho)$ are the bounds from Lemmas {prf:ref}`lem-variance-gradient`, {prf:ref}`lem-variance-hessian`, and {prf:ref}`lem-variance-third-derivative` (the latter two from Appendix A of [11_geometric_gas.md](11_geometric_gas.md) and Lemma {prf:ref}`lem-variance-third-derivative` above).\n1504: "
     },
     {
@@ -73,6 +82,9 @@
         "label": "proof-lem-patch-third-derivative"
       },
       "section": "## 6. Third Derivatives of Regularized Standard Deviation",
+      "references": [
+        "lem-patch-chain-rule"
+      ],
       "raw_directive": "1506: :::\n1507: \n1508: :::{prf:proof}\n1509: :label: proof-lem-patch-third-derivative\n1510: "
     }
   ],

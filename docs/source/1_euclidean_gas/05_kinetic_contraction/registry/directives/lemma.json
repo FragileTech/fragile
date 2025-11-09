@@ -2,7 +2,7 @@
   "document_id": "05_kinetic_contraction",
   "stage": "directives",
   "directive_type": "lemma",
-  "generated_at": "2025-11-08T17:16:20.148306+00:00",
+  "generated_at": "2025-11-08T23:19:38.246607+00:00",
   "count": 2,
   "items": [
     {
@@ -21,6 +21,9 @@
         "label": "lem-location-error-drift-kinetic"
       },
       "section": "## 4. Hypocoercive Contraction of Inter-Swarm Error",
+      "references": [
+        "axiom-confining-potential"
+      ],
       "raw_directive": "1460: ### 4.5. Location Error Drift\n1461: \n1462: :::{prf:lemma} Drift of Location Error Under Kinetics\n1463: :label: lem-location-error-drift-kinetic\n1464: \n1465: The location error $V_{\\text{loc}} = \\|\\Delta\\mu_x\\|^2 + \\lambda_v\\|\\Delta\\mu_v\\|^2 + b\\langle\\Delta\\mu_x, \\Delta\\mu_v\\rangle$ satisfies:\n1466: \n1467: $$\n1468: \\mathbb{E}[\\Delta V_{\\text{loc}}] \\leq -\\left[\\frac{\\alpha_{\\text{eff}}}{2} + \\gamma \\lambda_v - \\frac{b^2}{4\\lambda_v}\\right] V_{\\text{loc}} \\tau + C_{\\text{loc}}' \\tau\n1469: \n1470: $$\n1471: \n1472: where:\n1473: - $\\alpha_{\\text{eff}} = \\alpha_{\\text{eff}}(\\gamma, \\alpha_U, L_F, \\sigma_{\\min})$ is the effective contraction rate from hypocoercivity (not requiring convexity)\n1474: - $C_{\\text{loc}}' = O(\\sigma_{\\max}^2 + n_{\\text{status}})$ accounts for noise and status changes\n1475: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +49,7 @@
         "label": "lem-structural-error-drift-kinetic"
       },
       "section": "## 4. Hypocoercive Contraction of Inter-Swarm Error",
+      "references": [],
       "raw_directive": "1721: ### 4.6. Structural Error Drift\n1722: \n1723: :::{prf:lemma} Drift of Structural Error Under Kinetics\n1724: :label: lem-structural-error-drift-kinetic\n1725: \n1726: The structural error $V_{\\text{struct}} = W_h^2(\\tilde{\\mu}_1, \\tilde{\\mu}_2)$ (Wasserstein distance between centered measures) satisfies:\n1727: \n1728: $$\n1729: \\mathbb{E}[\\Delta V_{\\text{struct}}] \\leq -\\kappa_{\\text{struct}} V_{\\text{struct}} \\tau + C_{\\text{struct}}' \\tau\n1730: \n1731: $$\n1732: ",
       "_registry_context": {
         "stage": "directives",

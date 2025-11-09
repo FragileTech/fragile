@@ -19,6 +19,7 @@
         "label": "rem-observation-common-kernel-structure"
       },
       "section": "## 5.7 Statistical Equivalence and Unified Regularity Theorem",
+      "references": [],
       "raw_directive": "2801: ### 5.7.1 Matching the Analytical Structure\n2802: \n2803: :::{prf:remark} Common Exponential Kernel Structure\n2804: :label: rem-observation-common-kernel-structure\n2805: \n2806: Both mechanisms express expected measurements as **quotients of exponentially weighted sums**:\n2807: \n2808: **Softmax**:\n2809: \n2810: $$\n2811: d_j = \\frac{\\sum_{\\ell \\in \\mathcal{A} \\setminus \\{j\\}} d_{\\text{alg}}(j,\\ell) \\exp(-d_{\\text{alg}}^2(j,\\ell)/(2\\varepsilon_c^2))}{\\sum_{\\ell \\in \\mathcal{A} \\setminus \\{j\\}} \\exp(-d_{\\text{alg}}^2(j,\\ell)/(2\\varepsilon_c^2))}\n2812: \n2813: $$\n2814: \n2815: **Diversity Pairing** (idealized):\n2816: \n2817: $$\n2818: \\bar{d}_j = \\frac{\\sum_{M \\in \\mathcal{M}_k} d_{\\text{alg}}(j, M(j)) W(M)}{\\sum_{M' \\in \\mathcal{M}_k} W(M')}\n2819: \n2820: $$\n2821: \n2822: where $W(M) = \\prod_{(i,\\ell) \\in M} \\exp(-d_{\\text{alg}}^2(i,\\ell)/(2\\varepsilon_{\\text{pair}}^2))$.\n2823: \n2824: **Key Similarity**: Both are:\n2825: - Smooth quotients (denominator bounded below by companion availability)\n2826: - Exponentially localized (exponential concentration around nearby companions)"
     },
     {
@@ -37,6 +38,12 @@
         "label": "thm-statistical-equivalence-companion-mechanisms"
       },
       "section": "## 5.7 Statistical Equivalence and Unified Regularity Theorem",
+      "references": [
+        "assump-uniform-density-full",
+        "lem-companion-availability-enforcement",
+        "lem-derivatives-companion-distance-full",
+        "thm-diversity-pairing-measurement-regularity"
+      ],
       "raw_directive": "2841: ### 5.7.2 Qualitative Statistical Equivalence\n2842: \n2843: :::{prf:theorem} Qualitative Statistical Equivalence of Companion Mechanisms\n2844: :label: thm-statistical-equivalence-companion-mechanisms\n2845: \n2846: Let $\\Delta_j(S) := \\mathbb{E}_{\\text{softmax}}[d_j | S] - \\mathbb{E}_{\\text{pair}}[d_j | S]$.\n2847: \n2848: Under Assumption {prf:ref}`assump-uniform-density-full` and Lemma {prf:ref}`lem-companion-availability-enforcement`, the following hold for every configuration $S$ and walker $j$:\n2849: \n2850: 1. **Uniform boundedness**:\n2851: \n2852: $$\n2853: |\\Delta_j(S)| \\leq D_{\\max} := \\text{diam}(\\mathcal{X} \\times V)\n2854: \n2855: $$\n2856: \n2857: 2. **Gevrey-1 regularity with identical parameter dependence**:\n2858: \n2859: $$\n2860: \\|\\nabla^m \\Delta_j\\| \\leq \\left(C_{d,m}^{(\\text{soft})} + C_{d,m}^{(\\text{pair})}\\right) m! \\max(\\rho^{-m}, \\varepsilon_d^{1-m})\n2861: \n2862: $$\n2863: \n2864: where $C_{d,m}^{(\\text{soft})}$ (resp. $C_{d,m}^{(\\text{pair})}$) are the k-uniform constants from Lemma {prf:ref}`lem-derivatives-companion-distance-full` and Theorem {prf:ref}`thm-diversity-pairing-measurement-regularity`.\n2865: \n2866: 3. **Implementation-independence**: Every downstream quantity computed from $d_j$ (localized means, variances, Z-scores, and $V_{\\text{fit}}$) retains the same derivative bounds whether softmax or diversity pairing is used, because the entire pipeline depends on $d_j$ only through sums of the form $\\sum_j w_{ij}(\\rho) d_j$ with $\\sum_j w_{ij} = 1$.\n2867: "
     },
     {
@@ -55,6 +62,10 @@
         "label": "proof-thm-statistical-equivalence-companion-mechanisms"
       },
       "section": "## 5.7 Statistical Equivalence and Unified Regularity Theorem",
+      "references": [
+        "lem-derivatives-companion-distance-full",
+        "thm-diversity-pairing-measurement-regularity"
+      ],
       "raw_directive": "2869: :::\n2870: \n2871: :::{prf:proof}\n2872: :label: proof-thm-statistical-equivalence-companion-mechanisms\n2873: \n2874: 1. **Boundedness**: Both expectations lie in $[0, D_{\\max}]$ because $d_{\\text{alg}}(j, \\ell)$ is bounded on the compact phase space. Hence $|\\Delta_j| \\leq D_{\\max}$.\n2875: \n2876: 2. **Regularity**: The \"softmax\" expectation satisfies Lemma {prf:ref}`lem-derivatives-companion-distance-full`, while the diversity-pairing expectation satisfies Theorem {prf:ref}`thm-diversity-pairing-measurement-regularity`. Taking differences and using the triangle inequality gives the bound above with constants independent of $k$.\n2877: \n2878: 3. **Propagation through the pipeline**: Every subsequent stage of the proof (Sections 6\u201312) is affine in $d_j$ at the level of first principles, so replacing $d_j$ by $d_j + \\Delta_j$ perturbs each stage by at most the same derivative bound furnished in Step 2. Thus both mechanisms yield identical regularity statements for $V_{\\text{fit}}$.\n2879: "
     },
     {
@@ -73,6 +84,7 @@
         "label": "thm-unified-cinf-regularity-both-mechanisms"
       },
       "section": "## 5.7 Statistical Equivalence and Unified Regularity Theorem",
+      "references": [],
       "raw_directive": "2902: ### 5.7.3 Unified Main Theorem\n2903: \n2904: :::{prf:theorem} C^\u221e Regularity of Companion-Dependent Fitness Potential (Both Mechanisms)\n2905: :label: thm-unified-cinf-regularity-both-mechanisms\n2906: \n2907: Under the framework assumptions (kinetic regularization providing density bound, companion availability, regularization parameters $\\varepsilon_d, \\varepsilon_c > 0$), the fitness potential:\n2908: \n2909: $$\n2910: V_{\\text{fit}}(x_i, v_i) = g_A\\left(Z_\\rho\\left(\\mu_\\rho^{(i)}, \\sigma_\\rho^{2(i)}\\right)\\right)\n2911: \n2912: $$\n2913: \n2914: computed with **either** companion selection mechanism (independent softmax or diversity pairing) is **C^\u221e** for all $(x_i, v_i) \\in \\mathcal{X} \\times \\mathbb{R}^d$.\n2915: \n2916: **Derivative Bounds** (k-uniform Gevrey-1): For all $m \\geq 0$:\n2917: \n2918: $$\n2919: \\|\\nabla^m_{x_i, v_i} V_{\\text{fit}}\\|_\\infty \\leq C_{V,m} \\cdot \\max(\\rho^{-m}, \\varepsilon_d^{1-m}, \\eta_{\\min}^{1-m})\n2920: \n2921: $$\n2922: \n2923: where $C_{V,m} = \\mathcal{O}(m!)$ (Gevrey-1) is **k-uniform** (independent of swarm size $k$ or $N$) and depends only on:\n2924: - Algorithmic parameters: $\\rho$ (localization scale), $\\varepsilon_c$ (companion selection temperature), $\\varepsilon_d$ (distance regularization), $\\eta_{\\min}$ (variance regularization\u2014see \u00a712.3 for derivation from quotient rule in $\\sigma'_\\rho = \\sqrt{\\sigma_\\rho^2 + \\eta^2}$)\n2925: - Dimension: $d$\n2926: - Density bound: $\\rho_{\\max}$ (derived from kinetic dynamics)\n2927: \n2928: **Mechanism Equivalence**:\n2929: - **Regularity class**: IDENTICAL - Both mechanisms achieve C^\u221e with k-uniform Gevrey-1 bounds\n2930: - **Quantitative difference**: $\\|V_{\\text{fit}}^{\\text{soft}} - V_{\\text{fit}}^{\\text{pair}}\\| = O(k^{-1} \\log^{d+1/2} k)$\n2931:   - **Practical significance**: Depends on dimension $d$ (see \u00a75.7.2 for dimension-dependent assessment)"
     },
     {
@@ -91,6 +103,11 @@
         "label": "proof-thm-unified-cinf-regularity-both-mechanisms"
       },
       "section": "## 5.7 Statistical Equivalence and Unified Regularity Theorem",
+      "references": [
+        "lem-companion-measurement-derivatives-full",
+        "thm-diversity-pairing-measurement-regularity",
+        "thm-statistical-equivalence-companion-mechanisms"
+      ],
       "raw_directive": "2933: :::\n2934: \n2935: :::{prf:proof}\n2936: :label: proof-thm-unified-cinf-regularity-both-mechanisms\n2937: \n2938: **Proof Structure**:\n2939: \n2940: 1. **Softmax mechanism** (\u00a75.5): Proven in Lemma {prf:ref}`lem-companion-measurement-derivatives-full` + propagation through stages 2-6\n2941: 2. **Diversity pairing** (\u00a75.6): Proven in Theorem {prf:ref}`thm-diversity-pairing-measurement-regularity` + same propagation\n2942: 3. **Statistical equivalence** (\u00a75.7.2): Theorem {prf:ref}`thm-statistical-equivalence-companion-mechanisms` establishes mechanisms differ by $O(k^{-1} \\log^{d+1/2} k)$ (worst-case)"
     }
   ],

@@ -2,7 +2,7 @@
   "document_id": "17_qsd_exchangeability_geometric",
   "stage": "directives",
   "directive_type": "lemma",
-  "generated_at": "2025-11-08T17:16:20.265311+00:00",
+  "generated_at": "2025-11-08T23:19:38.306095+00:00",
   "count": 2,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "lem-conditional-multivariate-gaussian-geometric"
       },
       "section": "## 2. Conditional Velocity Distribution with Viscous Coupling",
+      "references": [],
       "raw_directive": "39: ### 2.1. Multivariate Gaussian Structure\n40: \n41: :::{prf:lemma} Conditional Velocity Distribution - Multivariate Gaussian (Geometric Gas)\n42: :label: lem-conditional-multivariate-gaussian-geometric\n43: \n44: For the QSD $\\pi_N$ of the Geometric Gas, the conditional distribution of velocities given positions is a **multivariate Gaussian** (not a product):\n45: \n46: $$\n47: \\pi_N(\\mathbf{v} | \\mathbf{x}) = \\mathcal{N}(0, \\Sigma_{\\mathbf{v}}(\\mathbf{x}))\n48: $$\n49: \n50: where the covariance matrix $\\Sigma_{\\mathbf{v}}(\\mathbf{x}) \\in \\mathbb{R}^{3N \\times 3N}$ is the solution to the continuous Lyapunov equation:\n51: \n52: $$\n53: A(\\mathbf{x}) \\Sigma_{\\mathbf{v}}(\\mathbf{x}) + \\Sigma_{\\mathbf{v}}(\\mathbf{x}) A(\\mathbf{x})^T = B(\\mathbf{x}) B(\\mathbf{x})^T\n54: $$\n55: \n56: where:\n57: - $A(\\mathbf{x}) = \\gamma I_{3N} + \\nu \\mathcal{L}_{\\text{norm}}(\\mathbf{x}) \\otimes I_3$ is the drift matrix (friction + viscous coupling)",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "lem-eigenvalue-bound-geometric"
       },
       "section": "## 3. N-Uniform Eigenvalue Bound via Lyapunov Comparison",
+      "references": [],
       "raw_directive": "111: ### 3.1. Main Result\n112: \n113: :::{prf:lemma} N-Uniform Eigenvalue Bound for Conditional Covariance (Geometric Gas)\n114: :label: lem-eigenvalue-bound-geometric\n115: \n116: For fixed positions $\\mathbf{x}$, the largest eigenvalue of the conditional velocity covariance satisfies:\n117: \n118: $$\n119: \\lambda_{\\max}(\\Sigma_{\\mathbf{v}}(\\mathbf{x})) \\leq \\frac{c_{\\max}^2(\\rho)}{2\\gamma}\n120: $$\n121: ",
       "_registry_context": {
         "stage": "directives",

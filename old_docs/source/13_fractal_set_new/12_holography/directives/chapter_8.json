@@ -19,6 +19,13 @@
         "label": "thm-holography-complete"
       },
       "section": "## 6. Summary and Implications",
+      "references": [
+        "thm-area-law-holography",
+        "thm-first-law-holography",
+        "thm-einstein-equations-holography",
+        "thm-ads-geometry",
+        "thm-ads-cft-correspondence"
+      ],
       "raw_directive": "2446: ### 6.1. Main Results Proven\n2447: \n2448: :::{prf:theorem} Complete Proof of Holographic Principle (Summary)\n2449: :label: thm-holography-complete\n2450: \n2451: The Fragile Gas framework rigorously proves:\n2452: \n2453: 1. **Informational Area Law** ({prf:ref}`thm-area-law-holography`):\n2454:    $$\n2455:    S_{\\text{IG}}(A) = \\frac{\\text{Area}_{\\text{CST}}(\\partial A)}{4G_N}\n2456:    $$\n2457: \n2458: 2. **First Law of Entanglement** ({prf:ref}`thm-first-law-holography`):\n2459:    $$\n2460:    \\delta S_{\\text{IG}} = \\beta \\cdot \\delta E_{\\text{swarm}}\n2461:    $$\n2462: \n2463: 3. **Einstein's Equations** ({prf:ref}`thm-einstein-equations-holography`):\n2464:    $$\n2465:    G_{\\mu\\nu} + \\Lambda_{\\text{eff}} g_{\\mu\\nu} = 8\\pi G_N T_{\\mu\\nu}\n2466:    $$\n2467: \n2468: 4. **AdS Geometry** ({prf:ref}`thm-ads-geometry`):\n2469:    $$\n2470:    \\Lambda_{\\text{eff}} < 0 \\quad \\text{(UV regime)}\n2471:    $$\n2472: \n2473: 5. **AdS/CFT Correspondence** ({prf:ref}`thm-ads-cft-correspondence`):\n2474:    $$\n2475:    Z_{\\text{gravity}}[\\text{CST}] = Z_{\\text{CFT}}[\\text{IG}]\n2476:    $$\n2477: "
     },
     {
@@ -37,6 +44,7 @@
         "label": "pred-computational-holography"
       },
       "section": "## 6. Summary and Implications",
+      "references": [],
       "raw_directive": "2495: ### 6.3. Falsifiable Predictions\n2496: \n2497: :::{prf:prediction} Computational Verification of Holography\n2498: :label: pred-computational-holography\n2499: \n2500: Implementing the Fragile Gas algorithm with parameters tuned to the marginal-stability AdS regime should exhibit:\n2501: \n2502: 1. **Area law**: Measured $S_{\\text{IG}}(A)$ vs. measured $|\\gamma_A|$ should be linear with slope $1/(4G_N)$\n2503: \n2504: 2. **Conformal invariance**: 2-point correlation functions $G_{\\text{IG}}^{(2)}(x, y)$ should satisfy:\n2505:    $$\n2506:    G^{(2)}(\\lambda x, \\lambda y) = \\lambda^{-2\\Delta} G^{(2)}(x, y)\n2507:    $$\n2508: \n2509: 3. **Negative curvature**: CST should exhibit hyperbolic geometry (negative scalar curvature)\n2510: \n2511: 4. **Wilson loops**: Area law scaling $\\langle W[\\gamma] \\rangle \\sim e^{-\\sigma \\text{Area}(\\gamma)}$ with string tension $\\sigma > 0$\n2512: "
     }
   ],

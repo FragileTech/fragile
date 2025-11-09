@@ -43,37 +43,37 @@ AGENT_CONFIG: dict[str, dict[str, object]] = {
     },
     "definitions": {
         "runner": extract_definitions.run_agent,
-        "threshold": 0.90,
+        "threshold": 0.95,
         "max_tokens": 12000,
     },
     "proofs": {
         "runner": extract_proofs.run_agent,
-        "threshold": 0.90,
+        "threshold": 0.95,
         "max_tokens": 16000,
     },
     "assumptions": {
         "runner": extract_assumptions.run_agent,
-        "threshold": 0.90,
+        "threshold": 0.95,
         "max_tokens": 16000,
     },
     "axioms": {
         "runner": extract_axioms.run_agent,
-        "threshold": 0.90,
+        "threshold": 0.95,
         "max_tokens": 16000,
     },
     "remarks": {
         "runner": extract_remarks.run_agent,
-        "threshold": 0.90,
+        "threshold": 0.95,
         "max_tokens": 16000,
     },
     "conjectures": {
         "runner": extract_conjectures.run_agent,
-        "threshold": 0.90,
+        "threshold": 0.95,
         "max_tokens": 16000,
     },
     "algorithms": {
         "runner": extract_algorithms.run_agent,
-        "threshold": 0.90,
+        "threshold": 0.95,
         "max_tokens": 16000,
     },
 }
@@ -91,7 +91,7 @@ def run_agents_in_sequence(
     """
     Execute each requested agent sequentially.
     """
-
+    logger.info("Running agents %s on document: %s", agent_names, doc_path)
     for name in agent_names:
         config = AGENT_CONFIG[name]
         runner: AgentRunner = config["runner"]  # type: ignore[assignment]
@@ -137,7 +137,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--lm",
-        default="gemini/gemini-flash-lite-latest",
+        default="xai/grok-4-fast-reasoning-latest",
         help="LM spec to use for every agent.",
     )
     parser.add_argument(

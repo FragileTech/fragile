@@ -2,7 +2,7 @@
   "document_id": "19_geometric_gas_cinf_regularity_simplified",
   "stage": "directives",
   "directive_type": "assumption",
-  "generated_at": "2025-11-08T17:16:20.302415+00:00",
+  "generated_at": "2025-11-08T23:19:38.327102+00:00",
   "count": 1,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "assump-cinf-primitives"
       },
       "section": "## 3. C∞ Regularity Assumptions on Primitive Functions",
+      "references": [],
       "raw_directive": "336: ## 3. C∞ Regularity Assumptions on Primitive Functions\n337: \n338: :::{prf:assumption} C∞ Regularity of Primitives\n339: :label: assump-cinf-primitives\n340: \n341: 1. **Measurement**: d ∈ C∞(X) with sup_x ||∇^m d(x)|| ≤ C_d^{(m)} < ∞ for all m ≥ 0\n342: \n343: 2. **Localization kernel**: K_ρ(r) = exp(-r²/(2ρ²)) is real analytic with Hermite bounds:\n344:    |d^m K_ρ / dr^m| ≤ C_Herm · m! · ρ^{-m} · exp(-r²/(4ρ²))\n345: \n346: 3. **Rescale function**: g_A ∈ C∞(ℝ) with sup_z |g_A^{(m)}(z)| ≤ C_{g,m} < ∞ for all m ≥ 1\n347: \n348: 4. **Regularized std dev**: σ'_reg ∈ C∞(ℝ_{≥0}) with sup_{σ²} |d^m σ'_reg / d(σ²)^m| ≤ C_{σ',m} < ∞ and σ'_reg ≥ ε_σ > 0\n349: ",
       "_registry_context": {
         "stage": "directives",

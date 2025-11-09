@@ -19,6 +19,9 @@
         "label": "thm-boundary-always-ads"
       },
       "section": "## 4. Resolution of the de Sitter Conjecture",
+      "references": [
+        "thm-ig-pressure-universal"
+      ],
       "raw_directive": "252: **Clarified statement**:\n253: \n254: :::{prf:theorem} Holographic Boundary is Always AdS\n255: :label: thm-boundary-always-ads\n256: \n257: For a localized system with spatial horizon at radius $L$, the **holographic boundary vacuum** (measured by IG pressure) satisfies:\n258: \n259: $$\n260: \\Lambda_{\\text{holo}} = \\frac{8\\pi G_N}{c^2}\\frac{\\Pi_{\\text{IG}}}{L} < 0 \\quad \\forall \\varepsilon_c > 0\n261: $$\n262: \n263: **Proof**: Rigorous position-space calculation in {prf:ref}`thm-ig-pressure-universal` (12_holography.md) shows:\n264: \n265: $$\n266: \\Pi_{\\text{IG}}(L) = -\\frac{C_0 \\rho_0^2 (2\\pi)^{d/2} \\varepsilon_c^{d+2}}{8L^2} < 0\n267: $$\n268: "
     },
     {
@@ -37,6 +40,9 @@
         "label": "thm-bulk-can-be-ds"
       },
       "section": "## 4. Resolution of the de Sitter Conjecture",
+      "references": [
+        "thm-raychaudhuri-scutoid"
+      ],
       "raw_directive": "270: :::\n271: \n272: :::{prf:theorem} Bulk Can Be dS During Exploration\n273: :label: thm-bulk-can-be-ds\n274: \n275: In the **exploration-dominated regime** where walkers spread volumetrically, the **bulk effective cosmological constant** can be positive:\n276: \n277: $$\n278: \\Lambda_{\\text{eff}} = \\Lambda_{\\text{bulk}}^{\\text{(QSD)}} + \\Lambda_{\\text{exploration}} = 0 + \\Lambda_{\\text{exploration}} > 0\n279: $$\n280: \n281: **Mechanism**:\n282: \n283: 1. **Defocusing geometry** during exploration: Walkers avoid clustering, creating negative Ricci curvature along geodesics\n284: \n285: 2. **Raychaudhuri expansion**: From {prf:ref}`thm-raychaudhuri-scutoid` (15_scutoid_curvature_raychaudhuri.md):\n286: \n287:    $$\n288:    \\frac{d\\theta}{dt} = -\\frac{1}{d}\\theta^2 - R_{\\mu\\nu}u^\\mu u^\\nu + \\text{(shear/rotation)}\n289:    $$\n290: \n291:    With $R_{\\mu\\nu}u^\\mu u^\\nu < 0$ (defocusing), expansion $\\theta$ can grow, generating volumetric inflation\n292: \n293: 3. **Effective field equation**: Non-equilibrium source term modifies Einstein equations:\n294: \n295:    $$\n296:    G_{\\mu\\nu} + \\Lambda_{\\text{eff}} g_{\\mu\\nu} = \\kappa (T_{\\mu\\nu} + \\mathcal{J}_\\mu u_\\nu)\n297:    $$\n298: \n299:    where $\\mathcal{J}_\\mu \\neq 0$ out of equilibrium\n300: \n301: **Physical examples**:\n302: - Early-universe inflation (algorithmic exploration of vacuum structure)\n303: - Current dark energy era (residual exploration dynamics)\n304: - Monte Carlo expansion phase in simulated annealing\n305: \n306: **Status**: Mechanism is qualitatively established. Quantitative calculation requires:\n307: - Solving non-equilibrium McKean-Vlasov PDE away from QSD\n308: - Computing $\\mathcal{J}_\\mu$ as function of exploration parameters ($\\alpha$, fitness flatness)"
     }
   ],

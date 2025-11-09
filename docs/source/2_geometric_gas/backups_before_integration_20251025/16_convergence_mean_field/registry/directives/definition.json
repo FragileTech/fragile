@@ -2,7 +2,7 @@
   "document_id": "16_convergence_mean_field",
   "stage": "directives",
   "directive_type": "definition",
-  "generated_at": "2025-11-08T17:16:20.297889+00:00",
+  "generated_at": "2025-11-08T23:19:38.324208+00:00",
   "count": 4,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "def-revival-operator-formal"
       },
       "section": "## 1. Rigorous Formulation of the Mean-Field Revival Operator",
+      "references": [],
       "raw_directive": "438: ### 1.2. Revival Operator Definition\n439: \n440: :::{prf:definition} Mean-Field Revival Operator (Formal)\n441: :label: def-revival-operator-formal\n442: \n443: The **revival operator** $\\mathcal{R}: \\mathcal{P}(\\Omega) \\times [0,1] \\to \\mathcal{M}^+(\\Omega)$ (where $\\mathcal{M}^+$ denotes non-negative measures) is defined by:\n444: \n445: $$\n446: \\mathcal{R}[\\rho, m_d](x,v) := \\lambda_{\\text{revive}} \\cdot m_d \\cdot \\frac{\\rho(x,v)}{\\|\\rho\\|_{L^1}}\n447: $$\n448: \n449: where $\\|\\rho\\|_{L^1} = \\int_\\Omega \\rho(x,v) \\, dx dv$ is the total alive mass.\n450: \n451: **Properties**:\n452: 1. **Mass injection**: $\\int_\\Omega \\mathcal{R}[\\rho, m_d] = \\lambda_{\\text{revive}} m_d$ (transfers mass from dead to alive)\n453: 2. **Proportionality**: Revival samples proportionally to current alive density\n454: 3. **Normalization**: The factor $1/\\|\\rho\\|_{L^1}$ ensures the distribution shape is preserved\n455: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "def-combined-jump-operator"
       },
       "section": "## 1. Rigorous Formulation of the Mean-Field Revival Operator",
+      "references": [],
       "raw_directive": "474: For the discrete-time analysis, we consider the **composed** operator that handles both killing and revival in one time step $\\Delta t$:\n475: \n476: :::{prf:definition} Combined Jump Operator\n477: :label: def-combined-jump-operator\n478: \n479: Define the **jump operator** $\\mathcal{J}: \\mathcal{P}(\\Omega) \\to \\mathcal{P}(\\Omega)$ that acts over a small time interval $\\Delta t$:\n480: \n481: $$\n482: \\mathcal{J}(\\rho) := (1 - \\int_\\Omega \\kappa_{\\text{kill}} \\rho \\cdot \\Delta t) \\cdot \\frac{\\rho - \\kappa_{\\text{kill}} \\rho \\cdot \\Delta t}{\\text{(normalization)}} + \\mathcal{R}[\\rho, m_d] \\cdot \\Delta t\n483: $$\n484: \n485: This operator:\n486: 1. **Removes mass** via killing: $\\rho \\mapsto \\rho - \\kappa_{\\text{kill}} \\rho \\cdot \\Delta t$\n487: 2. **Adds mass** via revival: Injects $\\mathcal{R}[\\rho, m_d] \\cdot \\Delta t$\n488: 3. **Conserves total mass**: $\\int \\mathcal{J}(\\rho) = \\int \\rho$ (in the two-population model)\n489: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "def-qsd-mean-field"
       },
       "section": "## 0. Problem Setup",
+      "references": [],
       "raw_directive": "1083: ### 0.2. Definition of QSD\n1084: \n1085: :::{prf:definition} Quasi-Stationary Distribution (QSD)\n1086: :label: def-qsd-mean-field\n1087: \n1088: A probability measure $\\rho_\\infty \\in \\mathcal{P}(\\Omega)$ is a **quasi-stationary distribution** for the mean-field generator $\\mathcal{L}$ if:\n1089: \n1090: 1. **Stationarity**: $\\mathcal{L}[\\rho_\\infty] = 0$\n1091: 2. **Normalization**: $\\|\\rho_\\infty\\|_{L^1} = M_\\infty < 1$ (mass less than 1 due to killing)\n1092: 3. **Support**: $\\text{supp}(\\rho_\\infty) \\subseteq \\Omega$ (concentrated on alive region)",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +99,7 @@
         "label": "def-modified-fisher"
       },
       "section": "## 1. Modified Fisher Information and Auxiliary Functional",
+      "references": [],
       "raw_directive": "3334: Following hypocoercivity theory, we introduce a **weighted combination**:\n3335: \n3336: :::{prf:definition} Modified Fisher Information\n3337: :label: def-modified-fisher\n3338: \n3339: For a parameter $\\theta > 0$, the **modified Fisher information** is:\n3340: \n3341: $$\n3342: I_\\theta(\\rho) := I_v(\\rho) + \\theta I_x(\\rho) = \\int_\\Omega \\rho \\left(|\\nabla_v \\log \\rho|^2 + \\theta |\\nabla_x \\log \\rho|^2\\right) dx dv\n3343: $$\n3344: ",
       "_registry_context": {
         "stage": "directives",

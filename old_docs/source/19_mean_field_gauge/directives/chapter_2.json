@@ -19,6 +19,7 @@
         "label": "def-one-param-symmetry"
       },
       "section": "## 2. Continuous Symmetries and Noether's Theorem",
+      "references": [],
       "raw_directive": "281: We now develop the machinery to identify and analyze continuous symmetries.\n282: \n283: :::{prf:definition} One-Parameter Symmetry Group\n284: :label: def-one-param-symmetry\n285: \n286: A **one-parameter group of transformations** acting on phase space is a smooth map:\n287: \n288: $$\n289: g_s: \\Omega \\to \\Omega, \\quad s \\in \\mathbb{R}\n290: $$\n291: \n292: such that:\n293: 1. $g_0 = \\text{id}$ (identity at $s = 0$)\n294: 2. $g_{s_1} \\circ g_{s_2} = g_{s_1 + s_2}$ (group property)\n295: 3. $g_s$ is smooth in both $s$ and $z$\n296: \n297: **Infinitesimal Generator:**\n298: \n299: $$\n300: X = \\left. \\frac{d}{ds} g_s \\right|_{s=0}\n301: $$\n302: \n303: is a vector field on $\\Omega$.\n304: \n305: **Induced Action on Densities:**\n306: \n307: For $f \\in \\mathcal{F}$, define the **push-forward density**:\n308: \n309: $$\n310: (g_s)_* f(z) = f(g_{-s}(z)) \\cdot \\left| \\det \\frac{\\partial g_{-s}}{\\partial z} \\right|\n311: $$\n312: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "def-mckean-vlasov-symmetry"
       },
       "section": "## 2. Continuous Symmetries and Noether's Theorem",
+      "references": [],
       "raw_directive": "314: :::\n315: \n316: :::{prf:definition} Symmetry of the McKean-Vlasov System\n317: :label: def-mckean-vlasov-symmetry\n318: \n319: The transformation $g_s$ is a **symmetry** of the McKean-Vlasov system if:\n320: \n321: $$\n322: \\partial_t [(g_s)_* f] = \\mathcal{L}[(g_s)_* f]\n323: $$\n324: \n325: for all solutions $f(z, t)$ of $\\partial_t f = \\mathcal{L}[f]$.\n326: \n327: **Equivalent Condition (Commutation):**\n328: \n329: $$\n330: [g_s, \\partial_t] = [\\mathcal{L}, g_s]\n331: $$\n332: \n333: where $[\\cdot, \\cdot]$ denotes the commutator of operators.\n334: \n335: **Infinitesimal Condition:**\n336: \n337: If $X$ is the infinitesimal generator of $g_s$, then $g_s$ is a symmetry if and only if:\n338: \n339: $$\n340: \\mathcal{L}_X \\mathcal{L}[f] = \\mathcal{L}[\\mathcal{L}_X f]\n341: $$\n342: "
     },
     {
@@ -55,6 +57,7 @@
         "label": "thm-time-translation-symmetry"
       },
       "section": "## 2. Continuous Symmetries and Noether's Theorem",
+      "references": [],
       "raw_directive": "348: The most fundamental continuous symmetry is time translation.\n349: \n350: :::{prf:theorem} Time Translation is a Symmetry\n351: :label: thm-time-translation-symmetry\n352: \n353: If all operators in the McKean-Vlasov system are **time-independent** (i.e., $L^\\dagger, c, B, S$ do not depend explicitly on $t$), then **time translation** is a continuous symmetry.\n354: \n355: **Transformation:**\n356: \n357: $$\n358: g_s^{(t)}(t, z) = (t + s, z)\n359: $$\n360: \n361: **Infinitesimal Generator:**\n362: \n363: $$\n364: X^{(t)} = \\partial_t\n365: $$\n366: \n367: **Invariance:**\n368: \n369: $$\n370: \\partial_t f(z, t + s) = \\mathcal{L}[f(z, t + s)]\n371: $$\n372: "
     },
     {
@@ -69,6 +72,7 @@
       "content": "375: \n376: :::{prf:proof}\n377: This is immediate from the autonomous structure of the PDE. If $f(z, t)$ satisfies $\\partial_t f = \\mathcal{L}[f]$, then for any constant shift $s$:\n378: \n379: $$\n380: \\frac{\\partial}{\\partial t} f(z, t + s) = \\left. \\frac{\\partial f(z, \\tau)}{\\partial \\tau} \\right|_{\\tau = t + s} = \\mathcal{L}[f(z, t + s)]\n381: $$",
       "metadata": {},
       "section": "## 2. Continuous Symmetries and Noether's Theorem",
+      "references": [],
       "raw_directive": "374: :::\n375: \n376: :::{prf:proof}\n377: This is immediate from the autonomous structure of the PDE. If $f(z, t)$ satisfies $\\partial_t f = \\mathcal{L}[f]$, then for any constant shift $s$:\n378: \n379: $$\n380: \\frac{\\partial}{\\partial t} f(z, t + s) = \\left. \\frac{\\partial f(z, \\tau)}{\\partial \\tau} \\right|_{\\tau = t + s} = \\mathcal{L}[f(z, t + s)]\n381: $$\n382: "
     },
     {
@@ -87,6 +91,7 @@
         "label": "thm-noether-energy-conservation"
       },
       "section": "## 2. Continuous Symmetries and Noether's Theorem",
+      "references": [],
       "raw_directive": "384: :::\n385: \n386: :::{prf:theorem} Noether's Theorem: Energy Conservation (Formal)\n387: :label: thm-noether-energy-conservation\n388: \n389: Time translation symmetry implies the existence of a **conserved energy functional** $\\mathcal{E}[f]$ satisfying:\n390: \n391: $$\n392: \\frac{d}{dt} \\mathcal{E}[f(t)] = 0\n393: $$\n394: \n395: for all solutions of the McKean-Vlasov equation.\n396: \n397: **Explicit Form (Hamiltonian Case):**\n398: \n399: If the system admits a Hamiltonian structure $\\mathcal{L}[f] = \\{\\mathcal{H}[f], f\\}$ (Poisson bracket), then:\n400: \n401: $$\n402: \\mathcal{E}[f] = \\mathcal{H}[f]\n403: $$\n404: "
     },
     {
@@ -101,6 +106,7 @@
       "content": "407: \n408: :::{prf:proof}\n409: **Sketch:** (Full proof requires specification of the variational structure of the McKean-Vlasov equation)\n410: \n411: 1. Time translation symmetry corresponds to invariance of the action functional $\\mathcal{A}[f] = \\int_0^T \\mathcal{L}(f, \\partial_t f, t) dt$ under $t \\mapsto t + s$.\n412: \n413: 2. Noether's theorem states that for each continuous symmetry, there exists a conserved current $J^\\mu$ satisfying $\\partial_\\mu J^\\mu = 0$.\n414: \n415: 3. For time translation, the conserved quantity is the Hamiltonian (energy).",
       "metadata": {},
       "section": "## 2. Continuous Symmetries and Noether's Theorem",
+      "references": [],
       "raw_directive": "406: :::\n407: \n408: :::{prf:proof}\n409: **Sketch:** (Full proof requires specification of the variational structure of the McKean-Vlasov equation)\n410: \n411: 1. Time translation symmetry corresponds to invariance of the action functional $\\mathcal{A}[f] = \\int_0^T \\mathcal{L}(f, \\partial_t f, t) dt$ under $t \\mapsto t + s$.\n412: \n413: 2. Noether's theorem states that for each continuous symmetry, there exists a conserved current $J^\\mu$ satisfying $\\partial_\\mu J^\\mu = 0$.\n414: \n415: 3. For time translation, the conserved quantity is the Hamiltonian (energy).\n416: "
     },
     {
@@ -119,6 +125,7 @@
         "class": "warning"
       },
       "section": "## 2. Continuous Symmetries and Noether's Theorem",
+      "references": [],
       "raw_directive": "418: :::\n419: \n420: :::{prf:remark} Limitations of Energy Conservation\n421: :class: warning\n422: \n423: **Dissipation and Stochasticity:**\n424: \n425: The McKean-Vlasov equation for the Adaptive Gas is **dissipative** (due to the friction term $\\gamma \\nabla_v \\cdot (vf)$) and **stochastic** (diffusion $\\sigma_v^2 \\Delta_v f$).\n426: \n427: Therefore, the \"energy\" conserved by Noether's theorem is **not** the mechanical energy $\\int \\frac{1}{2}\\|v\\|^2 f dz$, which decreases due to friction.\n428: \n429: Instead, the conserved quantity is the **free energy** or **entropy production functional**, which balances dissipation against diffusion. The precise form depends on the variational structure.\n430: "
     }
   ],

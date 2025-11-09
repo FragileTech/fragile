@@ -2,7 +2,7 @@
   "document_id": "11_geometric_gas",
   "stage": "directives",
   "directive_type": "axiom",
-  "generated_at": "2025-11-08T17:16:20.277998+00:00",
+  "generated_at": "2025-11-08T23:19:38.314015+00:00",
   "count": 4,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "ax:confining-potential-hybrid"
       },
       "section": "## 3. The Complete Axiomatic Framework",
+      "references": [],
       "raw_directive": "532: These are the foundational axioms, inherited from the original framework, that guarantee the existence of the underlying stable system which we are perturbing.\n533: \n534: :::{prf:axiom} Axiom of a Globally Confining Potential\n535: :label: ax:confining-potential-hybrid\n536: \n537: The potential `U(x)` used to define the stability force `F_stable = -∇U(x)` must satisfy the **Axiom of a Globally Confining Potential** as stated in `04_convergence.md` (Axiom 1.3.1). It must be smooth, coercive, and compatible with the boundary.",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "ax:positive-friction-hybrid"
       },
       "section": "## 3. The Complete Axiomatic Framework",
+      "references": [],
       "raw_directive": "539: :::\n540: \n541: :::{prf:axiom} Axiom of Positive Friction\n542: :label: ax:positive-friction-hybrid\n543: \n544: The bulk friction coefficient `γ` must be a strictly positive constant: `γ > 0`.",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "ax:cloning-env-hybrid"
       },
       "section": "## 3. The Complete Axiomatic Framework",
+      "references": [],
       "raw_directive": "546: :::\n547: \n548: :::{prf:axiom} Foundational Cloning and Environmental Axioms\n549: :label: ax:cloning-env-hybrid\n550: \n551: All foundational axioms related to the cloning operator's pipeline and the environment, as defined in `03_cloning.md` (Chapter 4), must hold. This includes:\n552: *   **Axiom EG-2 (Safe Harbor):** Ensures the cloning operator provides boundary safety.\n553: *   **Axiom EG-4 (Velocity Regularization):** Ensures the velocity domain is bounded.\n554: *   **Axiom EG-5 (Active Diversity Signal):** Ensures the Keystone Principle is active.",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +99,7 @@
         "label": "ax:viscous-kernel"
       },
       "section": "## 3. The Complete Axiomatic Framework",
+      "references": [],
       "raw_directive": "589: :::\n590: \n591: :::{prf:axiom} Axiom of a Well-Behaved Viscous Kernel\n592: :label: ax:viscous-kernel\n593: \n594: The kernel `K(r)` used in the viscous force `F_viscous` must be a non-negative, bounded, and decaying function of the distance `r = ||x_i - x_j||`. For example, a Gaussian kernel `K(r) = exp(-r² / 2l²)`.",
       "_registry_context": {
         "stage": "directives",

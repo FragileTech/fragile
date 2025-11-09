@@ -2,7 +2,7 @@
   "document_id": "12_symmetries_geometric_gas",
   "stage": "directives",
   "directive_type": "example",
-  "generated_at": "2025-11-08T17:16:20.227972+00:00",
+  "generated_at": "2025-11-08T23:19:38.284173+00:00",
   "count": 1,
   "items": [
     {
@@ -23,6 +23,7 @@
         "class": "tip"
       },
       "section": "## 3. Flat Algorithmic Space Symmetries",
+      "references": [],
       "raw_directive": "463: :::\n464: \n465: :::{prf:example} Radially Symmetric Fitness Landscapes\n466: :label: ex-radial-fitness\n467: :class: tip\n468: \n469: Consider a reward of the form:\n470: \n471: $$\n472: R(x, v) = f(\\|x\\|, \\|v\\|)\n473: \n474: $$\n475: \n476: on the ball $\\mathcal{X}_{\\text{valid}} = \\{x : \\|x\\| \\le R_0\\}$. This system has **full $SO(d)$ rotational symmetry**.\n477: ",
       "_registry_context": {
         "stage": "directives",

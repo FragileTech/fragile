@@ -19,6 +19,7 @@
         "label": "prob-explicit-kl-condition"
       },
       "section": "## 3. Direct Proof Attempts",
+      "references": [],
       "raw_directive": "895: 3. Value of $\\lambda_{\\text{revive}}$\n896: \n897: :::{prf:problem} Open Question from Explicit Calculation\n898: :label: prob-explicit-kl-condition\n899: \n900: The KL-non-expansiveness of $\\mathcal{R}$ is equivalent to:\n901: \n902: $$\n903: \\lambda (1-m_\\rho) \\log \\frac{1-m_\\rho}{1-m_\\sigma} \\le m_\\rho \\log \\frac{m_\\rho}{m_\\sigma}\n904: \n905: $$\n906: \n907: plus a term involving the normalized KL-divergences.\n908: \n909: **Special case** ($m_\\rho = m_\\sigma$): Both log terms vanish, and we get:\n910: \n911: $$\n912: \\lambda (1-m_\\rho) D_{\\text{KL}}(\\tilde{\\rho} \\| \\tilde{\\sigma}) \\le m_\\rho D_{\\text{KL}}(\\tilde{\\rho} \\| \\tilde{\\sigma})\n913: \n914: $$\n915: \n916: This holds iff $\\lambda (1 - m_\\rho) \\le m_\\rho$, i.e., $\\lambda \\le \\frac{m_\\rho}{1 - m_\\rho}$.\n917: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "lem-wasserstein-revival"
       },
       "section": "## 3. Direct Proof Attempts",
+      "references": [],
       "raw_directive": "951: **Modified approach**: View $\\mathcal{R}$ as a **Markov kernel** (resampling) and use the Kantorovich duality for random maps.\n952: \n953: :::{prf:lemma} Wasserstein Contraction for Proportional Resampling (Conjecture)\n954: :label: lem-wasserstein-revival\n955: \n956: If $\\mathcal{R}$ is viewed as resampling from $\\tilde{\\rho} = \\rho / \\|\\rho\\|_{L^1}$, then:\n957: \n958: $$\n959: W_2(\\mathcal{R}(\\rho), \\mathcal{R}(\\sigma)) \\le \\lambda (1-m) W_2(\\tilde{\\rho}, \\tilde{\\sigma})\n960: \n961: $$\n962: \n963: for some average dead mass $m \\approx (m_\\rho + m_\\sigma)/2$.\n964: "
     }
   ],

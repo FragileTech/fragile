@@ -2,7 +2,7 @@
   "document_id": "14_geometric_gas_cinf_regularity_full",
   "stage": "directives",
   "directive_type": "remark",
-  "generated_at": "2025-11-08T17:16:20.246037+00:00",
+  "generated_at": "2025-11-08T23:19:38.297163+00:00",
   "count": 3,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "rem-observation-common-kernel-structure"
       },
       "section": "## 5.7 Statistical Equivalence and Unified Regularity Theorem",
+      "references": [],
       "raw_directive": "2801: ### 5.7.1 Matching the Analytical Structure\n2802: \n2803: :::{prf:remark} Common Exponential Kernel Structure\n2804: :label: rem-observation-common-kernel-structure\n2805: \n2806: Both mechanisms express expected measurements as **quotients of exponentially weighted sums**:\n2807: \n2808: **Softmax**:\n2809: \n2810: $$\n2811: d_j = \\frac{\\sum_{\\ell \\in \\mathcal{A} \\setminus \\{j\\}} d_{\\text{alg}}(j,\\ell) \\exp(-d_{\\text{alg}}^2(j,\\ell)/(2\\varepsilon_c^2))}{\\sum_{\\ell \\in \\mathcal{A} \\setminus \\{j\\}} \\exp(-d_{\\text{alg}}^2(j,\\ell)/(2\\varepsilon_c^2))}\n2812: \n2813: $$\n2814: \n2815: **Diversity Pairing** (idealized):\n2816: \n2817: $$\n2818: \\bar{d}_j = \\frac{\\sum_{M \\in \\mathcal{M}_k} d_{\\text{alg}}(j, M(j)) W(M)}{\\sum_{M' \\in \\mathcal{M}_k} W(M')}\n2819: \n2820: $$\n2821: \n2822: where $W(M) = \\prod_{(i,\\ell) \\in M} \\exp(-d_{\\text{alg}}^2(i,\\ell)/(2\\varepsilon_{\\text{pair}}^2))$.\n2823: \n2824: **Key Similarity**: Both are:\n2825: - Smooth quotients (denominator bounded below by companion availability)\n2826: - Exponentially localized (exponential concentration around nearby companions)",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "rem-simplified-vs-full-final"
       },
       "section": "## 16. Comparison to Simplified Model",
+      "references": [],
       "raw_directive": "5101: ## 16. Comparison to Simplified Model\n5102: \n5103: :::{prf:remark} Simplified vs Full Model\n5104: :label: rem-simplified-vs-full-final\n5105: \n5106: | **Aspect** | **Simplified Model** (Doc 19) | **Full Model** (This Document) |\n5107: |------------|-------------------------------|--------------------------------|\n5108: | **Measurement** | $d_i = d(x_i)$ (position-only) | $d_i = d_{\\text{alg}}(i, c(i))$ (companion-dependent) |\n5109: | **Fitness Pipeline** | Single-stage | Six-stage: weights → mean → variance → std dev → Z-score → rescale |\n5110: | **Walker Coupling** | None | N-body coupling via softmax companion selection |\n5111: | **Proof Strategy** | Direct telescoping | Smooth clustering + partition of unity |\n5112: | **Key Mechanism** | $\\sum_j \\nabla^m w_{ij} = 0$ | Same + exponential locality |\n5113: | **Framework Assumptions** | None required | Minimum companion availability, uniform density |\n5114: | **Regularity Class** | Gevrey-1 | Gevrey-1 (preserved through pipeline) |\n5115: | **k-uniformity** | Immediate | Non-trivial (exponential localization + density bounds) |\n5116: | **Document Length** | ~1,000 lines | ~2,000+ lines (full pipeline analysis) |\n5117: | **Physical Realism** | Lower | Higher (true algorithmic model) |\n5118: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "rem-rho-tradeoffs"
       },
       "section": "## 16.5 Parameter Dependence and Practical Trade-offs",
+      "references": [],
       "raw_directive": "5201: ### 16.5.4 Trade-Off Summary\n5202: \n5203: :::{prf:remark} Localization Scale Trade-offs\n5204: :label: rem-rho-tradeoffs\n5205: \n5206: **Small ρ** (hyper-local, $\\rho \\ll \\text{diam}(\\mathcal{X})$):\n5207: - ✓ **Pros**: Sharp localization, better low-order derivative bounds (m < 2d), geometric adaptation\n5208: - ✗ **Cons**: High-order derivatives explode (m > 2d), numerical stiffness, small time steps for high-order integrators\n5209: \n5210: **Large ρ** (global backbone, $\\rho \\sim \\text{diam}(\\mathcal{X})$):\n5211: - ✓ **Pros**: Uniform derivative bounds, stable high-order behavior, larger time steps\n5212: - ✗ **Cons**: Loses geometric information, weak adaptation, reverts to global statistics\n5213: \n5214: **Optimal choice** (depends on application):\n5215: - **Exploration phase** (early optimization): Large ρ for stability\n5216: - **Exploitation phase** (near optima): Small ρ for geometric adaptation\n5217: - **Adaptive schedule**: $\\rho(t) = \\rho_0 \\cdot e^{-\\gamma t}$ (annealing from global to local)\n5218: ",
       "_registry_context": {
         "stage": "directives",

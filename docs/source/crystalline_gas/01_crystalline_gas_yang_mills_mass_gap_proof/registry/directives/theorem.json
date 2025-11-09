@@ -2,7 +2,7 @@
   "document_id": "01_crystalline_gas_yang_mills_mass_gap_proof",
   "stage": "directives",
   "directive_type": "theorem",
-  "generated_at": "2025-11-08T17:16:20.346750+00:00",
+  "generated_at": "2025-11-08T23:19:38.352919+00:00",
   "count": 22,
   "items": [
     {
@@ -21,6 +21,9 @@
         "label": "thm-cg-invariant-existence"
       },
       "section": "## 3. Existence and Uniqueness of the Quasi-Stationary Distribution",
+      "references": [
+        "def-cg-markov-kernel"
+      ],
       "raw_directive": "486: :::\n487: \n488: :::{prf:theorem} Existence and Uniqueness of Invariant Measure\n489: :label: thm-cg-invariant-existence\n490: \n491: The Crystalline Gas Markov kernel $P_{\\text{CG}}$ ({prf:ref}`def-cg-markov-kernel`) admits a **unique invariant probability measure** $\\pi_{\\text{QSD}} \\in \\mathcal{P}(\\Sigma_N)$.\n492: \n493: Moreover, for any initial distribution $\\mu_0 \\in \\mathcal{P}(\\Sigma_N)$ with finite second moment:\n494: \n495: $$\n496: \\int_{\\Sigma_N} \\|\\mathcal{S}\\|^2 \\, \\mu_0(\\mathrm{d}\\mathcal{S}) < \\infty\n497: $$\n498: \n499: the law $\\mu_t$ of $\\mathcal{S}(t)$ converges exponentially to $\\pi_{\\text{QSD}}$ in total variation distance:\n500: \n501: $$\n502: \\|\\mu_t - \\pi_{\\text{QSD}}\\|_{\\text{TV}} \\leq C \\cdot e^{-\\lambda_0 t} \\cdot (1 + \\|\\mathcal{S}_0\\|^2)\n503: $$\n504: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +49,7 @@
         "label": "thm-cg-gauge-covariance"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "988: We now rigorously prove that the edge-centric framework constitutes a true gauge theory: both the force law and field action are gauge-covariant.\n989: \n990: :::{prf:theorem} Gauge Covariance of Edge-Centric Dynamics\n991: :label: thm-cg-gauge-covariance\n992: \n993: The Crystalline Gas with edge-centric SU(3) gauge field is **fully gauge-covariant**:\n994: \n995: 1. **Force Law Covariance:** The gauge force $F_i^{\\text{gauge}}$ transforms as a proper 3-vector under local SU(3) gauge transformations\n996: 2. **Action Invariance:** The Wilson action $S_W[\\{U_{ij}\\}]$ is gauge-invariant\n997: \n998: **Proof:**\n999: \n1000: **Part 1: Force Law Covariance**\n1001: \n1002: A local SU(3) gauge transformation assigns to each walker $i$ a matrix $G(x_i) \\in \\text{SU}(3)$. Under this transformation:\n1003: \n1004: - Color observable: $|\\Psi_i\\rangle \\to |\\Psi_i\\rangle' = G(x_i) |\\Psi_i\\rangle$\n1005: - Link variable: $U_{ij} \\to U_{ij}' = G(x_i) U_{ij} G(x_j)^\\dagger$\n1006: \n1007: Consider the transported term in the gauge force:\n1008: \n1009: $$\n1010: \\begin{aligned}\n1011: U_{ij}' |\\Psi_j\\rangle' &= [G(x_i) U_{ij} G(x_j)^\\dagger] [G(x_j) |\\Psi_j\\rangle] \\\\\n1012: &= G(x_i) U_{ij} [G(x_j)^\\dagger G(x_j)] |\\Psi_j\\rangle \\\\\n1013: &= G(x_i) U_{ij} |\\Psi_j\\rangle \\quad (\\text{since } G^\\dagger G = I)\n1014: \\end{aligned}\n1015: $$\n1016: \n1017: Therefore, the gauge force transforms as:\n1018: \n1019: $$\n1020: \\begin{aligned}\n1021: F_i^{\\text{gauge}}' &= \\nu \\sum_j K_\\rho(x_i, x_j) [\\text{Re}(U_{ij}' |\\Psi_j\\rangle') - \\text{Re}(|\\Psi_i\\rangle')] \\\\\n1022: &= \\nu \\sum_j K_\\rho(x_i, x_j) [\\text{Re}(G(x_i) U_{ij} |\\Psi_j\\rangle) - \\text{Re}(G(x_i) |\\Psi_i\\rangle)] \\\\\n1023: &= G(x_i) \\cdot F_i^{\\text{gauge}}\n1024: \\end{aligned}\n1025: $$\n1026: \n1027: where the last line uses linearity of $\\text{Re}(\\cdot)$ and the fact that $G(x_i)$ can be factored out.\n1028: \n1029: **Result:** $F_i^{\\text{gauge}}$ transforms as a color vector at site $i$, exactly as required for gauge covariance. ✓\n1030: \n1031: **Part 2: Action Invariance**\n1032: \n1033: The Wilson loop around any closed path $\\mathcal{L} = (i_1 \\to i_2 \\to \\cdots \\to i_k \\to i_1)$ transforms as:\n1034: \n1035: $$\n1036: \\begin{aligned}\n1037: U_{\\mathcal{L}}' &= U_{i_1 i_2}' U_{i_2 i_3}' \\cdots U_{i_k i_1}' \\\\\n1038: &= [G(x_{i_1}) U_{i_1 i_2} G(x_{i_2})^\\dagger] [G(x_{i_2}) U_{i_2 i_3} G(x_{i_3})^\\dagger] \\cdots \\\\\n1039: &= G(x_{i_1}) U_{i_1 i_2} U_{i_2 i_3} \\cdots U_{i_k i_1} G(x_{i_1})^\\dagger \\\\\n1040: &= G(x_{i_1}) U_{\\mathcal{L}} G(x_{i_1})^\\dagger\n1041: \\end{aligned}\n1042: $$\n1043: \n1044: where the middle terms telescope due to $G^\\dagger G = I$.\n1045: \n1046: Therefore, the trace is gauge-invariant:\n1047: \n1048: $$\n1049: \\text{Tr}(U_{\\mathcal{L}}') = \\text{Tr}(G(x_{i_1}) U_{\\mathcal{L}} G(x_{i_1})^\\dagger) = \\text{Tr}(U_{\\mathcal{L}})\n1050: $$\n1051: \n1052: using the cyclic property of the trace.\n1053: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +75,13 @@
         "label": "thm-cg-complete-su3-yangmills"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [
+        "def-cg-gauge-covariant-force",
+        "def-cg-wilson-action",
+        "def-cg-field-update",
+        "thm-cg-gauge-covariance",
+        "thm-cg-spectral-gap"
+      ],
       "raw_directive": "1082: The edge-centric construction provides a complete, mathematically rigorous SU(3) Yang-Mills gauge theory:\n1083: \n1084: :::{prf:theorem} Complete SU(3) Yang-Mills Theory from Crystalline Gas\n1085: :label: thm-cg-complete-su3-yangmills\n1086: \n1087: The Crystalline Gas with edge-centric gauge field satisfies all requirements for a pure SU(3) Yang-Mills theory:\n1088: \n1089: 1. **Gauge Group:** SU(3) with 8 generators (8 gluons)\n1090: \n1091: 2. **Fundamental Degrees of Freedom:**\n1092:    - Matter: Walkers with positions $x_i \\in \\mathbb{R}^3$ and momenta $p_i \\in \\mathbb{R}^3$\n1093:    - Gauge Field: Link variables $U_{ij} \\in \\text{SU}(3)$ on edges of the walker graph\n1094: \n1095: 3. **Dynamics:**\n1096:    - Matter dynamics: $F_i^{\\text{total}} = F_i^{\\text{matter}} + F_i^{\\text{gauge}}$ ({prf:ref}`def-cg-gauge-covariant-force`)\n1097:    - Field dynamics: Wilson action minimization ({prf:ref}`def-cg-wilson-action`, {prf:ref}`def-cg-field-update`)\n1098: \n1099: 4. **Gauge Covariance:** Both force law and action are fully gauge-covariant ({prf:ref}`thm-cg-gauge-covariance`)\n1100: \n1101: 5. **Yang-Mills Field Strength:** Defined via Wilson loops:\n1102:    $$\n1103:    F_{\\mathcal{P}} = 1 - \\frac{1}{3}\\text{Re}(\\text{Tr}(U_{\\mathcal{P}})) \\geq 0\n1104:    $$\n1105:    for plaquette $\\mathcal{P}$. Non-zero when $U_{\\mathcal{P}} \\neq I_3$.\n1106: \n1107: 6. **Confinement Mechanism:** Area law for large Wilson loops (proven in Section 6) implies confinement\n1108: \n1109: 7. **Mass Gap:** Spectral gap ({prf:ref}`thm-cg-spectral-gap`) + Area law → Mass gap $\\Delta_{\\text{YM}} > 0$ (Section 7)\n1110: ",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +107,9 @@
         "label": "thm-cg-area-law-from-wilson"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [
+        "thm-cg-spectral-gap"
+      ],
       "raw_directive": "1151: The Wilson action directly connects to confinement and mass gap through the **area law for Wilson loops**.\n1152: \n1153: :::{prf:theorem} Area Law from Wilson Action\n1154: :label: thm-cg-area-law-from-wilson\n1155: \n1156: For a large Wilson loop $\\mathcal{C}$ enclosing area $A$, the expectation value under the equilibrium measure decays exponentially with the area:\n1157: \n1158: $$\n1159: \\langle \\text{Tr}(U_{\\mathcal{C}}) \\rangle \\sim \\exp(-\\sigma \\cdot A)\n1160: $$\n1161: \n1162: where $\\sigma > 0$ is the **string tension**.\n1163: \n1164: **Sketch of Proof:** (Full proof in Section 6)\n1165: \n1166: 1. The Wilson action $S_W$ favors configurations with $U_{\\mathcal{P}} \\approx I_3$ for all plaquettes\n1167: 2. For a large loop $\\mathcal{C}$, the number of plaquettes enclosed is proportional to the area $A$\n1168: 3. By the spectral gap ({prf:ref}`thm-cg-spectral-gap`), the system equilibrates to minimize $S_W$\n1169: 4. The Boltzmann weight $\\exp(-S_W)$ implies exponential suppression with area",
       "_registry_context": {
         "stage": "directives",
@@ -121,6 +135,10 @@
         "label": "thm-cg-yangmills-summary"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [
+        "thm-cg-gauge-covariance",
+        "thm-cg-area-law-from-wilson"
+      ],
       "raw_directive": "1241: The Crystalline Gas with edge-centric gauge field provides:\n1242: \n1243: :::{prf:theorem} Complete Yang-Mills Theory Summary\n1244: :label: thm-cg-yangmills-summary\n1245: \n1246: **Core Result (CMI Problem):**\n1247: - **Gauge Group:** SU(3) with edge-centric link variables $U_{ij} \\in \\text{SU}(3)$\n1248: - **Dynamics:** Matter-field feedback via gauge-covariant force and Wilson action\n1249: - **Gauge Covariance:** Rigorously proven ({prf:ref}`thm-cg-gauge-covariance`)\n1250: - **Confinement:** Area law from Wilson action ({prf:ref}`thm-cg-area-law-from-wilson`)\n1251: - **Mass Gap:** Derived from spectral gap (Sections 5-7)\n1252: \n1253: **Optional Extensions:**\n1254: - SU(2) weak isospin from ascent direction (Section 4.5)\n1255: - U(1) hypercharge from fitness scalar (would require additional structure)\n1256: - Full Standard Model gauge group (future work)\n1257: ",
       "_registry_context": {
         "stage": "directives",
@@ -146,6 +164,7 @@
         "label": "thm-ou-spectral-gap"
       },
       "section": "## 5. The Spectral Gap",
+      "references": [],
       "raw_directive": "1301: Before proving our main spectral gap result, we state the foundational theorems from the literature that we will use.\n1302: \n1303: :::{prf:theorem} Ornstein-Uhlenbeck Spectral Gap\n1304: :label: thm-ou-spectral-gap\n1305: \n1306: **(Pavliotis 2014, Theorem 3.24; Bakry-Gentil-Ledoux 2014, Example 4.4.3)**\n1307: \n1308: Consider the Ornstein-Uhlenbeck (OU) process in $\\mathbb{R}^d$:\n1309: \n1310: $$\n1311: \\mathrm{d}V_t = -\\gamma V_t \\, \\mathrm{d}t + \\sigma \\sqrt{2\\gamma} \\, \\mathrm{d}W_t\n1312: $$\n1313: \n1314: with friction coefficient $\\gamma > 0$ and noise amplitude $\\sigma > 0$. The corresponding generator is:\n1315: \n1316: $$\n1317: L_{\\text{OU}} = -\\gamma v \\cdot \\nabla_v + \\gamma \\sigma^2 \\Delta_v\n1318: $$\n1319: \n1320: This process has:\n1321: 1. **Invariant measure**: $\\pi_{\\text{OU}}(v) \\propto \\exp(-\\|v\\|^2/(2\\sigma^2))$ (Gaussian with variance $\\sigma^2 I_d$)\n1322: 2. **Spectral gap**: $\\lambda_{\\text{gap}}^{\\text{OU}} = \\gamma$ (independent of dimension $d$ and noise level $\\sigma$)\n1323: 3. **Exponential convergence**: For any initial distribution $\\mu_0$,\n1324: \n1325: $$\n1326: \\|\\mu_t - \\pi_{\\text{OU}}\\|_{L^2(\\pi_{\\text{OU}})} \\leq e^{-\\gamma t} \\|\\mu_0 - \\pi_{\\text{OU}}\\|_{L^2(\\pi_{\\text{OU}})}\n1327: $$\n1328: \n1329: **Discrete-time version**: For the discrete OU update $V_{n+1} = c_1 V_n + c_2 \\xi_n$ with $c_1 = e^{-\\gamma \\Delta t}$ and $c_2 = \\sigma\\sqrt{1 - c_1^2}$, the discrete spectral gap satisfies:\n1330: \n1331: $$\n1332: \\lambda_{\\text{gap}}^{\\text{discrete}} = \\frac{1 - c_1}{\\Delta t} = \\frac{1 - e^{-\\gamma \\Delta t}}{\\Delta t} \\to \\gamma \\quad \\text{as } \\Delta t \\to 0\n1333: $$\n1334: ",
       "_registry_context": {
         "stage": "directives",
@@ -171,6 +190,7 @@
         "label": "thm-foster-lyapunov"
       },
       "section": "## 5. The Spectral Gap",
+      "references": [],
       "raw_directive": "1336: :::\n1337: \n1338: :::{prf:theorem} Foster-Lyapunov Drift Criterion\n1339: :label: thm-foster-lyapunov\n1340: \n1341: **(Meyn-Tweedie 2009, Theorem 15.0.1; Hairer-Mattingly 2011)**\n1342: \n1343: Let $P$ be a Markov transition kernel on a state space $X$ with invariant measure $\\pi$. Suppose there exists:\n1344: - A **Lyapunov function** $V : X \\to [0, \\infty)$ with compact sublevel sets $\\{V \\leq R\\}$\n1345: - Constants $\\beta \\in (0, 1)$ and $b < \\infty$\n1346: - A **small set** $C \\subseteq X$ (i.e., $P^m(x, \\cdot) \\geq \\delta \\nu(\\cdot)$ for all $x \\in C$ and some $m \\geq 1$, $\\delta > 0$, probability measure $\\nu$)\n1347: \n1348: such that the **drift condition** holds:\n1349: \n1350: $$\n1351: P V(x) \\leq (1 - \\beta) V(x) + b \\cdot \\mathbb{1}_C(x) \\quad \\forall x \\in X\n1352: $$\n1353: \n1354: Then:\n1355: 1. **Geometric ergodicity**: The chain converges exponentially fast to $\\pi$:\n1356: \n1357: $$\n1358: \\|P^n(x, \\cdot) - \\pi\\|_{\\text{TV}} \\leq M(x) \\rho^n\n1359: $$\n1360: \n1361: for some $M(x) < \\infty$ (typically $M(x) \\sim V(x)$) and $\\rho < 1$.\n1362: \n1363: 2. **Spectral gap lower bound**: The spectral gap satisfies:\n1364: \n1365: $$\n1366: \\lambda_{\\text{gap}} \\geq -\\log(1 - \\beta)\n1367: $$\n1368: ",
       "_registry_context": {
         "stage": "directives",
@@ -196,6 +216,7 @@
         "label": "thm-bakry-emery"
       },
       "section": "## 5. The Spectral Gap",
+      "references": [],
       "raw_directive": "1370: :::\n1371: \n1372: :::{prf:theorem} Bakry-Émery Criterion (Continuous Diffusions)\n1373: :label: thm-bakry-emery\n1374: \n1375: **(Bakry-Émery 1985; Bakry-Gentil-Ledoux 2014, Theorem 4.3.1)**\n1376: \n1377: Consider a diffusion process on $\\mathbb{R}^d$ with generator:\n1378: \n1379: $$\n1380: L f = \\text{div}(a \\nabla f) + b \\cdot \\nabla f\n1381: $$\n1382: \n1383: where $a(x) \\succeq 0$ is the diffusion tensor and $b(x)$ is the drift. Define the **carré du champ operators**:\n1384: \n1385: $$\n1386: \\Gamma(f, g) := \\frac{1}{2}(L(fg) - f Lg - g Lf) = \\nabla f \\cdot a \\nabla g\n1387: $$\n1388: \n1389: $$\n1390: \\Gamma_2(f, f) := \\frac{1}{2}(L\\Gamma(f, f) - 2\\Gamma(f, Lf))\n1391: $$\n1392: \n1393: **If** there exists $\\rho > 0$ such that:\n1394: \n1395: $$\n1396: \\Gamma_2(f, f) \\geq \\rho \\, \\Gamma(f, f) \\quad \\forall f \\in C_c^{\\infty}(\\mathbb{R}^d)\n1397: $$\n1398: \n1399: **Then**:\n1400: 1. The process has a unique invariant measure $\\pi$ with $\\int e^{V/\\rho} \\, \\mathrm{d}\\pi < \\infty$ for some potential $V$\n1401: 2. **Spectral gap**: $\\lambda_{\\text{gap}} \\geq \\rho$\n1402: 3. **Poincaré inequality**: For all $f$ with $\\int f \\, \\mathrm{d}\\pi = 0$,\n1403: \n1404: $$\n1405: \\text{Var}_{\\pi}(f) \\leq \\frac{1}{\\rho} \\int \\Gamma(f, f) \\, \\mathrm{d}\\pi\n1406: $$\n1407: ",
       "_registry_context": {
         "stage": "directives",
@@ -221,6 +242,11 @@
         "label": "thm-cg-spectral-gap"
       },
       "section": "## 5. The Spectral Gap",
+      "references": [
+        "def-cg-dynamics",
+        "def-cg-thermal-operator",
+        "def-cg-fitness-landscape"
+      ],
       "raw_directive": "1425: ### 5.2 Main Result: Uniform Spectral Gap\n1426: \n1427: :::{prf:theorem} Spectral Gap for Crystalline Gas\n1428: :label: thm-cg-spectral-gap\n1429: \n1430: The Crystalline Gas dynamics ({prf:ref}`def-cg-dynamics`) possess a **uniform spectral gap**:\n1431: \n1432: $$\n1433: \\lambda_{\\text{gap}} \\geq \\lambda_0 > 0\n1434: $$\n1435: \n1436: where $\\lambda_0$ is a constant depending only on the algorithm parameters $(\\Phi, \\eta, \\sigma_x, \\sigma_v, \\gamma_{\\text{fric}}, \\varepsilon_c, \\varepsilon_{\\text{reg}}, \\Delta t)$, and is **independent of the number of walkers $N$**.\n1437: \n1438: Explicitly, we have the lower bound:\n1439: \n1440: $$\n1441: \\lambda_0 \\geq \\frac{\\kappa \\eta}{2} \\wedge \\frac{\\sigma_x^2}{2 d} \\wedge \\gamma_{\\text{fric}}\n1442: $$\n1443: ",
       "_registry_context": {
         "stage": "directives",
@@ -246,6 +272,7 @@
         "label": "thm-spectral-gap-implies-area-law"
       },
       "section": "## 6. Confinement via the Area Law for Wilson Loops",
+      "references": [],
       "raw_directive": "1790: The key theorem connecting spectral gaps to confinement is a classic result from constructive field theory, originally due to Glimm, Jaffe, and Spencer in the 1970s.\n1791: \n1792: :::{prf:theorem} Spectral Gap Implies Area Law (Glimm-Jaffe-Spencer)\n1793: :label: thm-spectral-gap-implies-area-law\n1794: \n1795: **(Glimm & Jaffe 1987, Chapter 19-20; Seiler 1982, Chapter 3; Balian-Drouffe-Itzykson 1975)**\n1796: \n1797: Let $L$ be the generator of a Markov process on a lattice gauge configuration space with a **uniform spectral gap** $\\lambda_{\\text{gap}} > 0$ (independent of lattice size). Let $W_{\\mathcal{C}}$ be the Wilson loop operator for a spatial loop $\\mathcal{C}$ of minimal enclosed area $\\mathcal{A}(\\mathcal{C})$.\n1798: \n1799: **Assumptions:**\n1800: 1. **Spectral gap**: $\\lambda_{\\text{gap}} > 0$ uniform in system size\n1801: 2. **Local interactions**: Gauge field Hamiltonian is sum of local terms\n1802: 3. **Reflection positivity** (OS2 axiom): Gauge measure respects Euclidean reflection symmetry\n1803: 4. **Clustering property** (OS4 axiom): Correlations decay exponentially at rate $\\geq \\lambda_{\\text{gap}}$\n1804: \n1805: **Then** the expectation value of $W_{\\mathcal{C}}$ under the invariant measure $\\pi$ satisfies the **area law**:\n1806: \n1807: $$\n1808: \\langle W_{\\mathcal{C}} \\rangle_{\\pi} \\leq e^{-\\sigma \\mathcal{A}(\\mathcal{C})}\n1809: $$\n1810: \n1811: where the **string tension** $\\sigma$ is bounded below by:\n1812: \n1813: $$\n1814: \\sigma \\geq c_0 \\cdot \\lambda_{\\text{gap}}\n1815: $$\n1816: ",
       "_registry_context": {
         "stage": "directives",
@@ -271,6 +298,9 @@
         "label": "thm-mass-gap-from-confinement"
       },
       "section": "## 7. The Mass Gap",
+      "references": [
+        "cor-cg-area-law"
+      ],
       "raw_directive": "1998: :::\n1999: \n2000: :::{prf:theorem} Mass Gap from Confinement\n2001: :label: thm-mass-gap-from-confinement\n2002: \n2003: Let $\\sigma > 0$ be the string tension from the area law ({prf:ref}`cor-cg-area-law`). Then the Yang-Mills theory has a mass gap:\n2004: \n2005: $$\n2006: \\Delta_{\\text{YM}} \\geq c_{\\text{gb}} \\cdot \\sqrt{\\sigma}\n2007: $$\n2008: \n2009: where $c_{\\text{gb}} > 0$ is a constant depending on the spatial dimension $d$ and the gauge group, but independent of the ultraviolet cutoff or lattice spacing.\n2010: \n2011: In particular:\n2012: \n2013: $$\n2014: \\Delta_{\\text{YM}} > 0",
       "_registry_context": {
         "stage": "directives",
@@ -296,6 +326,12 @@
         "label": "thm-main-yang-mills-mass-gap"
       },
       "section": "## 7. The Mass Gap",
+      "references": [
+        "def-cg-dynamics",
+        "def-cg-fitness-landscape",
+        "thm-cg-invariant-existence",
+        "thm-cg-spectral-gap"
+      ],
       "raw_directive": "2111: We can now state the main theorem of this paper.\n2112: \n2113: :::{prf:theorem} Yang-Mills Mass Gap (Main Result)\n2114: :label: thm-main-yang-mills-mass-gap\n2115: \n2116: The Crystalline Gas algorithm ({prf:ref}`def-cg-dynamics`) with fitness landscape satisfying {prf:ref}`def-cg-fitness-landscape` generates a four-dimensional $\\text{SU}(2) \\times \\text{SU}(3)$ Yang-Mills theory satisfying:\n2117: \n2118: 1. **Existence:** The theory is rigorously defined via the quasi-stationary distribution $\\pi_{\\text{QSD}}$ ({prf:ref}`thm-cg-invariant-existence`), whose correlation functions satisfy the Osterwalder-Schrader axioms of quantum field theory.\n2119: \n2120: 2. **Mass Gap:** The spectrum of the quantum Hamiltonian has a gap:\n2121: \n2122: $$\n2123: \\Delta_{\\text{YM}} := \\inf\\{\\text{Spec}(H) \\setminus \\{0\\}\\} > 0\n2124: $$\n2125: \n2126: Explicitly:\n2127: \n2128: $$\n2129: \\Delta_{\\text{YM}} \\geq c_{\\text{gb}} \\sqrt{c_0 \\lambda_0}\n2130: $$\n2131: \n2132: where:\n2133: - $\\lambda_0 \\geq \\frac{\\kappa \\eta}{2} \\wedge \\frac{\\sigma_x^2}{2d} \\wedge \\gamma_{\\text{fric}}$ is the spectral gap ({prf:ref}`thm-cg-spectral-gap`)\n2134: - $c_0, c_{\\text{gb}} > 0$ are universal constants\n2135: \n2136: 3. **Confinement:** The theory exhibits confinement via the area law:\n2137: \n2138: $$\n2139: \\langle W_{\\mathcal{C}} \\rangle_{\\pi_{\\text{QSD}}} \\leq e^{-\\sigma \\mathcal{A}(\\mathcal{C})}\n2140: $$\n2141: \n2142: with string tension $\\sigma \\geq c_0 \\lambda_0 > 0$.\n2143: ",
       "_registry_context": {
         "stage": "directives",
@@ -321,6 +357,9 @@
         "label": "thm-os2-reflection-positivity"
       },
       "section": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+      "references": [
+        "def-cg-ascent-operator"
+      ],
       "raw_directive": "2229: #### Main Result\n2230: \n2231: :::{prf:theorem} Reflection Positivity for Crystalline Gas\n2232: :label: thm-os2-reflection-positivity\n2233: \n2234: The Crystalline Gas with gradient-based ascent ({prf:ref}`def-cg-ascent-operator`) satisfies the Osterwalder-Schrader reflection positivity axiom (OS2):\n2235: \n2236: $$\n2237: \\langle f, \\theta f \\rangle_{\\pi_{\\text{QSD}}} \\geq 0 \\quad \\forall f \\in \\mathcal{S}(\\mathcal{H}_+)\n2238: $$\n2239: ",
       "_registry_context": {
         "stage": "directives",
@@ -346,6 +385,9 @@
         "label": "thm-spectral-gap-implies-decay"
       },
       "section": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+      "references": [
+        "def-spectral-gap"
+      ],
       "raw_directive": "2349: We now rigorously derive OS4 from the spectral gap proven in Theorem {prf:ref}`thm-cg-spectral-gap`.\n2350: \n2351: :::{prf:theorem} Spectral Gap Implies Exponential Correlation Decay\n2352: :label: thm-spectral-gap-implies-decay\n2353: \n2354: Let $P$ be a Markov operator on a state space $X$ with invariant measure $\\pi$ and spectral gap $\\lambda_{\\text{gap}} > 0$ (as defined in {prf:ref}`def-spectral-gap`).\n2355: \n2356: **Then** for any observables $f, g : X \\to \\mathbb{R}$ with zero mean under $\\pi$ (i.e., $\\langle f \\rangle_{\\pi} = \\langle g \\rangle_{\\pi} = 0$), the time-correlation function decays exponentially:\n2357: \n2358: $$\n2359: \\left| \\langle f, P^n g \\rangle_{\\pi} \\right| \\leq e^{-\\lambda_{\\text{gap}} n} \\|f\\|_{L^2(\\pi)} \\|g\\|_{L^2(\\pi)}\n2360: $$\n2361: \n2362: where $P^n$ is the $n$-step Markov operator.\n2363: \n2364: **Proof**: This is a standard consequence of the spectral gap. The generator $L = P - I$ has eigenvalues $0 = \\mu_0 > \\mu_1 \\geq \\mu_2 \\geq \\ldots$, with $|\\mu_1| \\leq 1 - \\lambda_{\\text{gap}}$. Expanding $g$ in the eigenbasis of $L$:\n2365: \n2366: $$\n2367: g = \\langle g \\rangle_{\\pi} + \\sum_{k=1}^{\\infty} c_k \\phi_k\n2368: $$\n2369: \n2370: where $\\phi_k$ are eigenfunctions with $P \\phi_k = (1 + \\mu_k) \\phi_k$. Then:\n2371: \n2372: $$\n2373: P^n g = \\langle g \\rangle_{\\pi} + \\sum_{k=1}^{\\infty} c_k (1 + \\mu_k)^n \\phi_k\n2374: $$\n2375: \n2376: Since $f$ has zero mean, $\\langle f, \\mathbf{1} \\rangle_{\\pi} = 0$, so:\n2377: \n2378: $$\n2379: \\langle f, P^n g \\rangle_{\\pi} = \\sum_{k=1}^{\\infty} c_k (1 + \\mu_k)^n \\langle f, \\phi_k \\rangle_{\\pi}\n2380: $$\n2381: \n2382: Using $|1 + \\mu_k| \\leq 1 - \\lambda_{\\text{gap}} < 1$ and Cauchy-Schwarz:\n2383: \n2384: $$\n2385: \\left| \\langle f, P^n g \\rangle_{\\pi} \\right| \\leq (1 - \\lambda_{\\text{gap}})^n \\sum_{k=1}^{\\infty} |c_k| |\\langle f, \\phi_k \\rangle_{\\pi}| \\leq e^{-\\lambda_{\\text{gap}} n} \\|f\\|_{L^2} \\|g\\|_{L^2}\n2386: $$\n2387: ",
       "_registry_context": {
         "stage": "directives",
@@ -371,6 +413,10 @@
         "label": "thm-os4-clustering"
       },
       "section": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+      "references": [
+        "def-os4-axiom",
+        "thm-cg-spectral-gap"
+      ],
       "raw_directive": "2417: :::\n2418: \n2419: :::{prf:theorem} OS4 Clustering for Crystalline Gas\n2420: :label: thm-os4-clustering\n2421: \n2422: The Crystalline Gas gauge theory satisfies the **OS4 clustering axiom** ({prf:ref}`def-os4-axiom`) with mass gap:\n2423: \n2424: $$\n2425: m_{\\text{gap}} \\geq c_{\\text{LR}} \\cdot \\lambda_{\\text{gap}}\n2426: $$\n2427: \n2428: where $c_{\\text{LR}} = \\min\\left(\\frac{1}{2v_{\\max}}, \\frac{\\mu}{2}\\right) > 0$ depends on the velocity distribution and Lieb-Robinson bound parameters.\n2429: \n2430: **Explicitly**:\n2431: \n2432: $$\n2433: m_{\\text{gap}} \\geq \\frac{c_{\\text{LR}}}{2v_{\\max}} \\cdot \\lambda_0 = \\frac{c_{\\text{LR}}}{2v_{\\max}} \\left( \\frac{\\kappa \\eta}{2} \\wedge \\frac{\\sigma_x^2}{2d} \\wedge \\gamma_{\\text{fric}} \\right)\n2434: $$\n2435: ",
       "_registry_context": {
         "stage": "directives",
@@ -396,6 +442,7 @@
         "label": "thm-os0-regularity"
       },
       "section": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+      "references": [],
       "raw_directive": "2533: The remaining three axioms follow more directly from the algorithmic construction.\n2534: \n2535: :::{prf:theorem} OS0: Regularity Axiom\n2536: :label: thm-os0-regularity\n2537: ",
       "_registry_context": {
         "stage": "directives",
@@ -421,6 +468,7 @@
         "label": "thm-os1-euclidean-invariance"
       },
       "section": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+      "references": [],
       "raw_directive": "2561: :::\n2562: \n2563: :::{prf:theorem} OS1: Euclidean Invariance\n2564: :label: thm-os1-euclidean-invariance\n2565: \n2566: Assuming the fitness potential $\\Phi$ is rotationally invariant ($\\Phi(Rx) = \\Phi(x)$ for $R \\in \\text{SO}(4)$), the QSD satisfies:\n2567: \n2568: $$\n2569: \\pi_{\\text{QSD}}(g \\cdot \\mathcal{S}) = \\pi_{\\text{QSD}}(\\mathcal{S}) \\quad \\forall g \\in E(4)",
       "_registry_context": {
         "stage": "directives",
@@ -446,6 +494,7 @@
         "label": "thm-os3-permutation-symmetry"
       },
       "section": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+      "references": [],
       "raw_directive": "2580: :::\n2581: \n2582: :::{prf:theorem} OS3: Permutation Symmetry\n2583: :label: thm-os3-permutation-symmetry\n2584: ",
       "_registry_context": {
         "stage": "directives",
@@ -471,6 +520,7 @@
         "label": "thm-os-wightman-reconstruction"
       },
       "section": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+      "references": [],
       "raw_directive": "2600: | **OS4** (Clustering) | $\\|\\mathcal{S}_{n+m} - \\mathcal{S}_n \\cdot \\mathcal{S}_m\\| \\leq C e^{-m_{\\text{gap}} R}$ | Exponential decay of Gaussian kernel | ✓ **PROVEN** |\n2601: \n2602: :::{prf:theorem} Wightman Reconstruction and CMI Prize Verification\n2603: :label: thm-os-wightman-reconstruction\n2604: \n2605: By the **Osterwalder-Schrader reconstruction theorem** (Osterwalder & Schrader, 1973, 1975), the verified axioms OS0-OS4 imply the existence of a **relativistic quantum Yang-Mills theory** in Minkowski spacetime $\\mathbb{R}^{1,3}$ satisfying the Wightman axioms:\n2606: \n2607: 1. **Relativistic covariance** (Poincaré symmetry)\n2608: 2. **Spectrum condition** (positive energy)\n2609: 3. **Locality** (microcausality)\n2610: 4. **Vacuum state** exists and is unique\n2611: 5. **Mass gap**: $m_{\\text{gap}} = \\frac{1}{2\\sigma} > 0$\n2612: \n2613: This quantum theory is obtained by **Wick rotation** $x^0 \\to -it$ followed by analytic continuation.\n2614: \n2615: The Clay Mathematics Institute requires proving that Yang-Mills theory on $\\mathbb{R}^{1,3}$ satisfies:\n2616: \n2617: 1. ✅ **Existence**: A quantum Yang-Mills theory exists (OS reconstruction)\n2618: 2. ✅ **Mass gap**: The spectrum has a gap $m > 0$ above the vacuum (OS4 clustering)\n2619: 3. ✅ **Axioms**: The theory satisfies Wightman axioms (OS0-OS4 → Wightman)\n2620: ",
       "_registry_context": {
         "stage": "directives",
@@ -496,6 +546,9 @@
         "label": "thm-continuum-limit-strategy"
       },
       "section": "## 9. Conclusion and Discussion",
+      "references": [
+        "thm-cg-spectral-gap"
+      ],
       "raw_directive": "2691: **Resolution Strategy**: Combine **Balaban's multi-scale renormalization group** (Balaban, *Commun. Math. Phys.* 109, 249–301, 1987) with **constructive field theory techniques** (Brydges-Yau cluster expansions).\n2692: \n2693: :::{prf:theorem} Continuum Limit via Block-Spin Renormalization (Proof Outline)\n2694: :label: thm-continuum-limit-strategy\n2695: \n2696: **Geometric Prerequisite**: The walker equilibrium distribution $\\pi_{\\text{QSD}}$ satisfies strong regularity: with probability $1 - e^{-cV}$, the walker configuration forms an **(R,ρ)-Delone set** with minimal spacing $\\rho > 0$ and maximal hole size $R < \\infty$.\n2697: \n2698: $$\n2699: \\mathbb{P}_{\\pi_{\\text{QSD}}} \\left[ \\min_{i \\neq j} \\|x_i - x_j\\| \\geq \\rho, \\, \\max_x \\min_i \\|x - x_i\\| \\leq R \\right] \\geq 1 - e^{-cV}\n2700: $$\n2701: \n2702: **Proof approach**:\n2703: \n2704: 1. **Geometric Control**: Use the spectral gap $\\lambda_0$ ({prf:ref}`thm-cg-spectral-gap`) to prove exponential mixing for walker positions. Apply Dobrushin-Shlosman uniqueness condition to establish uniform density bounds. Derive Delone parameters via Azuma-Hoeffding concentration for local walker counts:\n2705: \n2706:    $$\n2707:    \\mathbb{P}\\left[ \\left| \\frac{1}{V_L} \\sum_{i : x_i \\in \\Lambda_L} 1 - \\frac{N}{V} \\right| > \\epsilon \\right] \\leq 2 e^{-c \\epsilon^2 V_L}\n2708:    $$\n2709: \n2710: 2. **Block-Spin Renormalization Group**: For length scale $L$, cover $\\mathbb{R}^3$ with cubes of size $L$. Define \"block link variables\" $\\tilde{U}_{\\alpha\\beta}$ by averaging microscopic link variables within blocks via gauge-covariant parallel transport. The RG map is:\n2711: \n2712:    $$\n2713:    S_{\\text{eff}}[\\{\\tilde{U}\\}] = -\\log \\int \\mathcal{D}U \\, e^{-S_W[\\{U\\}]} \\prod_{\\alpha,\\beta} \\delta(\\tilde{U}_{\\alpha\\beta} - \\text{Avg}_{\\alpha\\beta}[\\{U\\}])\n2714:    $$\n2715: \n2716: 3. **Asymptotic Freedom (UV Regime)**: For small bare coupling $g_0 \\sim a^{(d-4)/2}$ (dimensional analysis), prove the effective coupling flows according to the SU(3) β-function:\n2717: \n2718:    $$\n2719:    \\beta(g) = -\\frac{11 N_c}{3(4\\pi)^2} g^3 + O(g^5), \\quad N_c = 3\n2720:    $$\n2721: \n2722:    This requires showing the random lattice corrections enter only as irrelevant (higher-dimension) operators. Use Balaban's gauge-fixing procedure to control the RG flow.\n2723: \n2724: 4. **Mass Generation (IR Regime)**: Prove the RG flow drives the system into a \"confined\" phase where cluster expansion techniques apply. Show the effective action develops a mass term:\n2725: \n2726:    $$\n2727:    S_{\\text{eff}}^{\\text{IR}} \\supset \\frac{m_{\\text{eff}}^2}{2} \\int \\text{Tr}(A_\\mu A^\\mu)\n2728:    $$\n2729: \n2730:    with $m_{\\text{eff}} > 0$ independent of the UV cutoff $a$.\n2731: \n2732: 5. **Convergence of Schwinger Functions**: Using controlled RG flow, prove Schwinger functions converge as $a \\to 0$:\n2733: \n2734:    $$\n2735:    \\mathcal{S}_n^{(a)}(x_1, \\ldots, x_n) \\to \\mathcal{S}_n(x_1, \\ldots, x_n)\n2736:    $$\n2737: \n2738:    with the limit satisfying OS axioms. Use Brydges-Yau determinant bounds for SU(3) heat kernel to control measure normalization.\n2739: \n2740: **Key References**:\n2741: - Balaban, T. (1987). *Renormalization Group Approach to Lattice Gauge Field Theories.* Comm. Math. Phys. 109, 249–301.\n2742: - Brydges, D., & Yau, H.-T. (1990). *Grad φ Perturbations of Massless Gaussian Fields.* Comm. Math. Phys. 129, 351–392.\n2743: - Magnen, J., Rivasseau, V., & Sénéor, R. (1991). *Construction of YM₄ with an Infrared Cutoff.* Comm. Math. Phys. 155, 325–383.\n2744: ",
       "_registry_context": {
         "stage": "directives",
@@ -521,6 +574,9 @@
         "label": "thm-area-law-random-lattice"
       },
       "section": "## 9. Conclusion and Discussion",
+      "references": [
+        "thm-continuum-limit-strategy"
+      ],
       "raw_directive": "2752: **Resolution Strategy**: Extend cluster expansion to random lattices via **quenched disorder analysis** after proving geometric regularity.\n2753: \n2754: :::{prf:theorem} Area Law on Random Lattice (Proof Outline)\n2755: :label: thm-area-law-random-lattice\n2756: \n2757: Assume the walker configuration satisfies the Delone property from {prf:ref}`thm-continuum-limit-strategy`. Then the **area law** holds with high probability over lattice configurations:\n2758: \n2759: $$\n2760: \\mathbb{E}_{\\pi_{\\text{QSD}}} [W_{\\mathcal{C}}] \\leq e^{-\\sigma_{\\text{eff}} \\mathcal{A}(\\mathcal{C})}\n2761: $$\n2762: \n2763: where $\\sigma_{\\text{eff}} \\geq \\sigma_0 / 2$ and $\\sigma_0 = c_0 \\lambda_0$ is the string tension on a regular lattice.\n2764: \n2765: **Proof approach**:\n2766: \n2767: 1. **Reference Lattice Coupling**: For each \"good\" walker configuration $\\{x_i\\}$ (satisfying Delone property), construct a measurable map to a nearest-regular lattice via optimal transport. Prove bi-Lipschitz distortion $\\leq 1 + \\epsilon$ with $\\epsilon \\ll 1$.\n2768: \n2769: 2. **Adapted Cluster Expansion**: Rewrite the Yang-Mills partition function as:\n2770: \n2771:    $$\n2772:    Z = \\sum_{\\text{polymers } P} w(P, \\{x_i\\}) \\cdot \\text{activity}(P)\n2773:    $$\n2774: \n2775:    where polymers are connected sets of plaquettes on the random graph. The activity depends on both gauge configuration and geometry:\n2776: \n2777:    $$\n2778:    \\text{activity}(P) = \\prod_{p \\in P} \\left( \\frac{\\beta_{\\text{gauge}}}{3} \\text{Re}(\\text{Tr}(U_p)) \\right) \\cdot \\text{geometric factor}(P, \\{x_i\\})\n2779:    $$\n2780: \n2781: 3. **Geometric Factor Control**: Use Delone property to bound the geometric correction:\n2782: \n2783:    $$\n2784:    | \\text{geometric factor}(P, \\{x_i\\}) | \\leq (1 + C\\epsilon)^{|P|}\n2785:    $$\n2786: \n2787:    where $|P|$ is the number of plaquettes in $P$ and $\\epsilon$ is the lattice distortion parameter.\n2788: \n2789: 4. **Convergence of Polymer Sum**: Prove convergence of the cluster expansion after averaging over lattice disorder:\n2790: \n2791:    $$\n2792:    \\mathbb{E}_{\\pi_{\\text{QSD}}} \\left[ \\sum_{P \\ni p_0} |\\text{activity}(P)| e^{\\alpha |P|} \\right] < \\infty\n2793:    $$\n2794: \n2795:    for sufficiently small coupling $\\beta_{\\text{gauge}}$. Use large deviation bounds for walker distribution to show \"bad\" configurations (large distortion) have exponentially small probability.\n2796: \n2797: 5. **Area Law Derivation**: Apply generalized Glimm-Jaffe-Spencer argument on the random lattice. The Wilson loop expectation factors as:\n2798: \n2799:    $$\n2800:    \\mathbb{E}[W_{\\mathcal{C}}] = \\sum_{\\text{surfaces } \\Sigma : \\partial \\Sigma = \\mathcal{C}} \\mathbb{E} \\left[ \\prod_{p \\in \\Sigma} U_p \\right]\n2801:    $$\n2802: \n2803:    The cluster expansion shows each surface contributes $\\sim e^{-\\sigma_{\\text{eff}} |\\Sigma|}$, yielding the area law.\n2804: \n2805: **Key References**:\n2806: - Biskup, M. (2007). *Reflection Positivity and Phase Transitions in Lattice Spin Models.* Methods of Contemporary Mathematical Statistical Physics, 1–86.\n2807: - Aizenman, M., & Graf, G. M. (1988). *Localization Bounds for Multiparticle Systems.* Comm. Math. Phys. 178, 561–583.\n2808: - Liggett, T. M., Schonmann, R. H., & Stacey, A. M. (1997). *Domination by Product Measures.* Ann. Probab. 25, 71–95.\n2809: ",
       "_registry_context": {
         "stage": "directives",
@@ -546,6 +602,7 @@
         "label": "thm-os2-rigorous"
       },
       "section": "## 9. Conclusion and Discussion",
+      "references": [],
       "raw_directive": "2817: **Resolution Strategy**: Use **transfer matrix formalism** with **Feynman-Kac factorization** to construct a Hilbert space representation.\n2818: \n2819: :::{prf:theorem} Reflection Positivity via Transfer Matrix (Proof Outline)\n2820: :label: thm-os2-rigorous\n2821: \n2822: Assume the fitness potential $\\Phi$ is **reflection-symmetric**: $\\Phi(\\theta x) = \\Phi(x)$ where $\\theta$ reflects a spatial coordinate. Then the Crystalline Gas dynamics satisfy OS2.\n2823: \n2824: **Proof approach**:\n2825: \n2826: 1. **Hilbert Space Construction**: Define $\\mathcal{H} = L^2(\\Omega_+, d\\mu_+)$ where $\\Omega_+$ is the space of configurations on a single time slice and $d\\mu_+$ is the natural measure.\n2827: \n2828: 2. **Reflection Operator**: Define reflection $(\\Theta f)(x, U) = f(\\theta x, \\theta U)$ where:\n2829:    - $\\theta x = (\\theta x_1, \\ldots, \\theta x_N)$ reflects walker positions\n2830:    - $\\theta U$ reflects link variables: $(\\theta U)_{ij} = U_{\\theta(i) \\theta(j)}$\n2831: \n2832: 3. **Transfer Matrix Factorization**: The single time-step kernel $K(x', U' | x, U)$ must factor as:\n2833: \n2834:    $$\n2835:    K(x', U' | x, U) = \\int dz \\, B(x', U' | z) B^*(z | x, U)\n2836:    $$\n2837: \n2838:    This ensures the transfer matrix $T$ is positive: $T = B^\\dagger B$.\n2839: \n2840: 4. **Verification for Thermal Operator**: The Gaussian noise term with covariance $\\Sigma_{\\text{reg}}(x) = (-H_\\Phi(x) + \\varepsilon I)^{-1/2}$ is reflection-positive if:\n2841: \n2842:    $$\n2843:    H_\\Phi(\\theta x) = H_\\Phi(x) \\quad (\\text{Hessian is reflection-symmetric})\n2844:    $$\n2845: \n2846:    This follows from $\\Phi(\\theta x) = \\Phi(x)$ by taking derivatives. The Mehler kernel:\n2847: \n2848:    $$\n2849:    K_{\\text{thermal}}(x' | x) = (\\det \\Sigma_{\\text{reg}}(x))^{-1/2} \\exp\\left( -\\frac{1}{2} (x' - x)^T \\Sigma_{\\text{reg}}(x)^{-1} (x' - x) \\right)\n2850:    $$\n2851: \n2852:    satisfies $K_{\\text{thermal}}(\\theta x' | \\theta x) = K_{\\text{thermal}}(x' | x)$, ensuring reflection positivity.\n2853: \n2854: 5. **Verification for Ascent Operator**: The deterministic drift $x \\mapsto x + \\Delta t \\cdot \\eta \\cdot g(x) \\nabla \\Psi(x)$ generates a composition operator. Use Lie-Trotter splitting to write:\n2855: \n2856:    $$\n2857:    T_{\\text{ascent}} = e^{\\Delta t \\hat{A}}\n2858:    $$\n2859: \n2860:    where $\\hat{A}$ is the generator. Show $\\hat{A}$ is anti-self-adjoint under reflection: $\\Theta \\hat{A} \\Theta = -\\hat{A}^*$. This ensures $T_{\\text{ascent}}$ preserves reflection positivity.\n2861: \n2862: 6. **Composition**: Prove the full operator $T = T_{\\text{ascent}} T_{\\text{thermal}}$ satisfies:\n2863: \n2864:    $$\n2865:    \\langle f, \\Theta T f \\rangle_{\\mathcal{H}} \\geq 0 \\quad \\forall f \\in \\mathcal{H}\n2866:    $$\n2867: \n2868:    This may require connecting to the continuous-time SDE:\n2869: \n2870:    $$\n2871:    dX_t = \\eta \\cdot g(X_t) \\nabla\\Psi(X_t) \\, dt + \\Sigma_{\\text{reg}}(X_t) \\, dW_t\n2872:    $$\n2873: \n2874:    using the Feynman-Kac formula to show the continuous-time semigroup is reflection-positive, then taking the discrete Trotterization.\n2875: \n2876: **Key References**:\n2877: - Osterwalder, K., & Schrader, R. (1973, 1975). *Axioms for Euclidean Green's Functions.* Comm. Math. Phys. 31, 83–112; 42, 281–305.\n2878: - Fröhlich, J. (1982). *On the Triviality of λφ⁴ Theories and the Approach to the Critical Point.* Nucl. Phys. B 200, 281–296.\n2879: - Simon, B. (1974). *The P(φ)₂ Euclidean (Quantum) Field Theory.* Princeton University Press.\n2880: - Hairer, M., & Mattingly, J. C. (2011). *Yet Another Look at Harris' Ergodic Theorem for Markov Chains.* Seminar on Stochastic Analysis, Random Fields and Applications VI, 109–117.\n2881: ",
       "_registry_context": {
         "stage": "directives",

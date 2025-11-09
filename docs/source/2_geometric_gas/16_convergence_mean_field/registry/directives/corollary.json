@@ -2,7 +2,7 @@
   "document_id": "16_convergence_mean_field",
   "stage": "directives",
   "directive_type": "corollary",
-  "generated_at": "2025-11-08T17:16:20.261649+00:00",
+  "generated_at": "2025-11-08T23:19:38.302691+00:00",
   "count": 1,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "cor-hypoelliptic-regularity"
       },
       "section": "## 2. Smoothness and Positivity (R2, R3)",
+      "references": [],
       "raw_directive": "1795: **Consequence** (Hörmander 1967, Theorem 1.1):\n1796: \n1797: :::{prf:corollary} Hypoelliptic Regularity\n1798: :label: cor-hypoelliptic-regularity\n1799: \n1800: If $\\mathcal{L}_{\\text{kin}}[\\rho] = f$ with $f \\in C^\\infty(\\Omega)$, then $\\rho \\in C^\\infty(\\Omega)$.\n1801: ",
       "_registry_context": {
         "stage": "directives",

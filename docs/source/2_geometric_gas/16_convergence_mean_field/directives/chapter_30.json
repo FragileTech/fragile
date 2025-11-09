@@ -19,6 +19,7 @@
         "label": "lem-entropy-l1-bound"
       },
       "section": "## 4. Bounding the Jump Expansion",
+      "references": [],
       "raw_directive": "4453: **Lemma (Entropy moment bound)**:\n4454: \n4455: :::{prf:lemma} Entropy $L^1$ Bound\n4456: :label: lem-entropy-l1-bound\n4457: \n4458: For any $\\rho, \\rho_\\infty \\in \\mathcal{P}(\\Omega)$:\n4459: \n4460: $$\n4461: \\int \\rho \\left|\\log \\frac{\\rho}{\\rho_\\infty}\\right| \\le 2 D_{\\text{KL}}(\\rho \\| \\rho_\\infty) + C_{\\text{const}}\n4462: \n4463: $$\n4464: "
     }
   ],

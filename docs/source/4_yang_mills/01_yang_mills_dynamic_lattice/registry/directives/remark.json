@@ -2,7 +2,7 @@
   "document_id": "01_yang_mills_dynamic_lattice",
   "stage": "directives",
   "directive_type": "remark",
-  "generated_at": "2025-11-08T17:16:20.328387+00:00",
+  "generated_at": "2025-11-08T23:19:38.343501+00:00",
   "count": 1,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "rem-fiber-bundle-structure"
       },
       "section": "## The Minimal Dynamic Lattice Gauge Theory (MDLGT)",
+      "references": [],
       "raw_directive": "115: The state space $\\Sigma_N$ has a rich mathematical structure that must be properly characterized to rigorously define dynamics and measures.\n116: \n117: :::{prf:remark} Fiber Bundle Structure of $\\Sigma_N$\n118: :label: rem-fiber-bundle-structure\n119: \n120: The state space $\\Sigma_N$ is naturally a fiber bundle:\n121: \n122: **Base Space**: The constrained node configuration space modulo rotations:\n123: \n124: $$\n125: \\mathcal{B}_N := \\left\\{\\mathbf{x} \\in (\\mathbb{R}^4)^N : \\sum_{i=1}^N x_i = 0\\right\\} / SO(4)\n126: $$\n127: \n128: where we quotient by the rotation group SO(4) because the Hamiltonian depends only on relative coordinates $x_i - x_j$ and their norms, which are rotationally invariant.\n129: \n130: **Fiber**: Over each node configuration $\\mathbf{x} \\in \\mathcal{B}_N$, the gauge field lives in:\n131: \n132: $$\n133: \\mathcal{F}(\\mathbf{x}) := (\\text{SU}(N_c))^{E_N(\\mathbf{x})}\n134: $$\n135: \n136: The dimension of this fiber is $|E_N(\\mathbf{x})| \\cdot \\dim(\\text{SU}(N_c)) = |E_N(\\mathbf{x})| \\cdot (N_c^2 - 1)$, which varies with the graph structure.\n137: \n138: **Singularities**: The fiber dimension changes at configurations where the Delaunay triangulation topology changes. In $\\mathbb{R}^4$, such topology changes occur when $d+2 = 6$ points become co-spherical (lie on a common 3-sphere), causing a 4-simplex to \"flip\" and reconnect differently. These singularities form a measure-zero algebraic variety in $\\mathbb{R}^{4N}$.\n139: \n140: **Well-Posedness**: Despite these singularities, the dynamics and invariant measure are well-defined:\n141: 1. The Hamiltonian $H(\\mathbf{x}, \\mathbf{U})$ is smooth everywhere (depends only on distances and gauge fields)\n142: 2. Topology changes occur with probability zero under the continuous diffusion",
       "_registry_context": {
         "stage": "directives",

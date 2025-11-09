@@ -2,7 +2,7 @@
   "document_id": "18_emergent_geometry",
   "stage": "directives",
   "directive_type": "theorem",
-  "generated_at": "2025-11-08T17:16:20.272982+00:00",
+  "generated_at": "2025-11-08T23:19:38.312098+00:00",
   "count": 17,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "thm-main-informal"
       },
       "section": "## 2. Background and Motivation",
+      "references": [],
       "raw_directive": "259: ### 2.5. Main Result (Informal)\n260: \n261: :::{prf:theorem} Main Theorem (Informal)\n262: :label: thm-main-informal\n263: \n264: The Geometric Gas with uniformly elliptic anisotropic diffusion is geometrically ergodic on its state space $\\mathcal{X} \\times \\mathbb{R}^d$. There exists a unique quasi-stationary distribution (QSD) $\\pi_{\\text{QSD}}$, and the Markov chain converges exponentially fast:\n265: \n266: $$\n267: \\left\\| \\mathcal{L}(S_t \\mid S_0) - \\pi_{\\text{QSD}} \\right\\|_{\\text{TV}} \\le C_\\pi (1 + V_{\\text{total}}(S_0)) e^{-\\kappa_{\\text{total}} t}\n268: $$\n269: \n270: where:\n271: - $\\kappa_{\\text{total}} = O(\\min\\{\\gamma \\tau, \\kappa_x^{\\text{clone}}, c_{\\min}\\underline{\\lambda} - C_1 L_\\Sigma - C_2|\\nabla\\Sigma_{\\text{reg}}|_\\infty\\}) > 0$\n272: - All constants are **independent of $N$**\n273: - $c_{\\min}$ is the ellipticity lower bound from regularization\n274: - $L_\\Sigma$ is the Lipschitz constant of $\\Sigma_{\\text{reg}}$",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "thm-uniform-ellipticity"
       },
       "section": "## 3. The Emergent Geometry Framework",
+      "references": [],
       "raw_directive": "353: :::\n354: \n355: :::{prf:theorem} Uniform Ellipticity by Construction (from `11_geometric_gas.md`)\n356: :label: thm-uniform-ellipticity\n357: \n358: For all swarm states $S$ and all walkers $i$, the diffusion matrix satisfies:\n359: \n360: $$\n361: c_{\\min} I \\preceq D_{\\text{reg}}(x_i, S) \\preceq c_{\\max} I\n362: $$\n363: \n364: where:\n365: \n366: $$\n367: c_{\\min} = \\frac{1}{\\lambda_{\\max}(H) + \\epsilon_\\Sigma}, \\quad c_{\\max} = \\frac{1}{\\epsilon_\\Sigma - \\Lambda_-}\n368: $$\n369: \n370: and $\\lambda_{\\max}(H)$ is the maximum eigenvalue of the unregularized Hessian over the compact state space $\\mathcal{X}_{\\text{valid}}$.\n371: \n372: **Simplified form when $H \\succeq 0$ (positive semi-definite)**:\n373: \n374: When the Hessian is guaranteed to be positive semi-definite (i.e., $\\Lambda_- = 0$), the bounds simplify to:\n375: \n376: $$\n377: c_{\\min} = \\frac{1}{\\lambda_{\\max}(H) + \\epsilon_\\Sigma}, \\quad c_{\\max} = \\frac{1}{\\epsilon_\\Sigma}\n378: $$\n379: \n380: **Equivalently (in terms of diffusion tensor $\\Sigma_{\\text{reg}}$)**:\n381: \n382: $$\n383: \\frac{1}{\\sqrt{\\lambda_{\\max}(H) + \\epsilon_\\Sigma}} I \\preceq \\Sigma_{\\text{reg}}(x_i, S) \\preceq \\frac{1}{\\sqrt{\\epsilon_\\Sigma - \\Lambda_-}} I\n384: $$\n385: \n386: **Proof**: If $A = H + \\epsilon_\\Sigma I$ is SPD, the eigenvalues of $D = A^{-1}$ are $\\{1/(\\lambda_i(H) + \\epsilon_\\Sigma)\\}$. Therefore:\n387: \n388: $$\n389: \\lambda_{\\min}(D) = \\frac{1}{\\lambda_{\\max}(H) + \\epsilon_\\Sigma}, \\quad \\lambda_{\\max}(D) = \\frac{1}{\\lambda_{\\min}(H) + \\epsilon_\\Sigma} \\le \\frac{1}{\\epsilon_\\Sigma - \\Lambda_-}\n390: $$\n391: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "thm-coordinate-invariance"
       },
       "section": "## 3. The Emergent Geometry Framework",
+      "references": [],
       "raw_directive": "640: #### 3.6.3. Invariance of Convergence Constants\n641: \n642: :::{prf:theorem} Invariance Under Coordinate Changes (Refined)\n643: :label: thm-coordinate-invariance\n644: \n645: Let $\\Psi: (\\mathbb{R}^d, D_{\\text{flat}}) \\to (M, g)$ be a $C^2$ diffeomorphism relating flat space with anisotropic diffusion to a Riemannian manifold. If the Jacobian $d\\Psi$ and its inverse have bounded operator norms:\n646: \n647: $$\n648: \\|d\\Psi\\|_{\\text{op}}, \\|(d\\Psi)^{-1}\\|_{\\text{op}} \\le K\n649: $$\n650: \n651: and the push-forward relation holds:\n652: \n653: $$\n654: D_{\\text{flat}}(x) = (d\\Psi_x^{-1})^T g(\\Psi(x))^{-1} (d\\Psi_x^{-1})\n655: $$\n656: \n657: then:\n658: \n659: 1. **TV distances match exactly**: $\\|\\mathcal{L}^{\\text{flat}}(X_t) - \\pi^{\\text{flat}}\\|_{\\text{TV}} = \\|\\mathcal{L}^{\\text{curved}}(Y_t) - \\pi^{\\text{curved}}\\|_{\\text{TV}}$\n660: \n661: 2. **Lyapunov drift inequalities are preserved up to condition-number factors**: If $\\mathbb{E}[\\Delta V_{\\text{flat}}(X)] \\le -\\kappa V_{\\text{flat}}(X) + C$, then with $V_{\\text{curved}} = V_{\\text{flat}} \\circ \\Psi^{-1}$:\n662: \n663: $$\n664: \\mathbb{E}[\\Delta V_{\\text{curved}}(Y)] \\le -\\kappa' V_{\\text{curved}}(Y) + C'\n665: $$\n666: \n667: where $\\kappa' \\asymp \\kappa/\\text{cond}(d\\Psi)^2$ and $C' \\asymp C \\cdot \\text{cond}(d\\Psi)^2$.\n668: ",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +99,7 @@
         "label": "thm-main-convergence"
       },
       "section": "## 4. Main Theorem and Proof Strategy",
+      "references": [],
       "raw_directive": "825: ### 4.2. Main Convergence Theorem\n826: \n827: :::{prf:theorem} Geometric Ergodicity of the Geometric Gas\n828: :label: thm-main-convergence\n829: \n830: Consider the Geometric Gas with:\n831: 1. Adaptive diffusion $\\Sigma_{\\text{reg}}(x_i, S)$ satisfying uniform ellipticity (Theorem [](#thm-uniform-ellipticity))\n832: 2. Confining potential $U(x)$ satisfying coercivity (Axiom 1.3.1 from `../1_euclidean_gas/06_convergence.md`)\n833: 3. Regularization $\\epsilon_\\Sigma > 0$ large enough that $c_{\\min} \\ge c_{\\min}^*$ for some threshold $c_{\\min}^*$\n834: \n835: Then there exist coupling constants $c_V, c_B > 0$ and **N-uniform** constants $\\kappa_{\\text{total}} > 0$, $C_{\\text{total}} < \\infty$ such that:\n836: \n837: **1. Foster-Lyapunov Condition:**\n838: \n839: $$\n840: \\mathbb{E}[V_{\\text{total}}(S_1', S_2') \\mid S_1, S_2] \\le (1 - \\kappa_{\\text{total}}) V_{\\text{total}}(S_1, S_2) + C_{\\text{total}}\n841: $$\n842: \n843: for all coupled states $(S_1, S_2)$ with $N_{\\text{alive},k}(S_k) \\ge 1$.\n844: \n845: **2. Geometric Ergodicity:**\n846: \n847: There exists a unique quasi-stationary distribution (QSD) $\\pi_{\\text{QSD}}$ such that:\n848: \n849: $$\n850: \\left\\| \\mathcal{L}(S_t \\mid S_0) - \\pi_{\\text{QSD}} \\right\\|_{\\text{TV}} \\le C_\\pi (1 + V_{\\text{total}}(S_0, S_0)) \\rho^t\n851: $$\n852: \n853: where $\\rho = 1 - \\kappa_{\\text{total}} < 1$ and $C_\\pi < \\infty$ are **independent of $N$**.\n854: \n855: **3. Explicit Rate:**\n856: \n857: $$\n858: \\kappa_{\\text{total}} = O\\left(\\min\\left\\{\\gamma \\tau, \\, \\kappa_x^{\\text{clone}}, \\, c_{\\min}\\right\\}\\right)\n859: $$\n860: \n861: where:\n862: - $\\gamma \\tau$ is the kinetic contraction rate (friction × timestep)\n863: - $\\kappa_x^{\\text{clone}}$ is the cloning position variance contraction rate (from `../1_euclidean_gas/03_cloning.md`)",
       "_registry_context": {
         "stage": "directives",
@@ -121,6 +125,7 @@
         "label": "thm-velocity-variance-anisotropic"
       },
       "section": "## 5. Anisotropic Kinetic Operator Analysis",
+      "references": [],
       "raw_directive": "1028: The first result is straightforward: friction dissipates velocity variance even with anisotropic noise.\n1029: \n1030: :::{prf:theorem} Velocity Variance Contraction (Anisotropic)\n1031: :label: thm-velocity-variance-anisotropic\n1032: \n1033: For the kinetic operator with adaptive diffusion, the velocity variance difference satisfies:\n1034: \n1035: $$\n1036: \\mathbb{E}[V_{\\text{Var},v}(S'_1, S'_2) \\mid S_1, S_2] \\le V_{\\text{Var},v}(S_1, S_2) + \\tau \\left[ -2\\gamma V_{\\text{Var},v}(S_1, S_2) + C'_v \\right]\n1037: $$\n1038: \n1039: where:\n1040: - $\\gamma > 0$ is the friction coefficient\n1041: - $C'_v = O(c_{\\max} d)$ depends on the upper diffusion bound (independent of $N$)\n1042: - Both constants are **N-uniform** (independent of swarm size and current state)\n1043: \n1044: Rearranging:\n1045: \n1046: $$\n1047: \\mathbb{E}[\\Delta V_{\\text{Var},v}] \\le -\\kappa'_v \\tau V_{\\text{Var},v} + C'_v \\tau\n1048: $$\n1049: ",
       "_registry_context": {
         "stage": "directives",
@@ -146,6 +151,7 @@
         "label": "thm-location-error-anisotropic"
       },
       "section": "## 5. Anisotropic Kinetic Operator Analysis",
+      "references": [],
       "raw_directive": "1280: #### 3.2.3. Location Error Drift (Anisotropic Case)\n1281: \n1282: :::{prf:theorem} Location Error Contraction (Anisotropic)\n1283: :label: thm-location-error-anisotropic\n1284: \n1285: The location error $V_{\\text{loc}}(S_1, S_2) = \\|(\\Delta \\mu_x, \\Delta \\mu_v)\\|_h^2$ satisfies:\n1286: \n1287: $$\n1288: \\mathbb{E}[\\Delta V_{\\text{loc}}] \\le -\\kappa_{\\text{loc}} \\tau V_{\\text{loc}} + C_{\\text{loc}} \\tau\n1289: $$\n1290: \n1291: where:\n1292: - $\\kappa_{\\text{loc}} = O(\\min\\{\\gamma, c_{\\min}\\}) > 0$ is the hypocoercive contraction rate\n1293: - $C_{\\text{loc}} = O(c_{\\max}^2 + n_{\\text{status}})$ is the expansion from noise and status changes",
       "_registry_context": {
         "stage": "directives",
@@ -171,6 +177,7 @@
         "label": "thm-structural-error-anisotropic"
       },
       "section": "## 5. Anisotropic Kinetic Operator Analysis",
+      "references": [],
       "raw_directive": "1568: #### 3.2.4. Structural Error Drift (Anisotropic Case)\n1569: \n1570: :::{prf:theorem} Structural Error Contraction (Anisotropic)\n1571: :label: thm-structural-error-anisotropic\n1572: \n1573: The structural error $V_{\\text{struct}}(S_1, S_2) = W_h^2(\\tilde{\\mu}_1, \\tilde{\\mu}_2)$ (Wasserstein distance between centered measures) satisfies:\n1574: \n1575: $$\n1576: \\mathbb{E}[\\Delta V_{\\text{struct}}] \\le -\\kappa_{\\text{struct}} \\tau V_{\\text{struct}} + C_{\\text{struct}} \\tau\n1577: $$\n1578: \n1579: where:\n1580: - $\\kappa_{\\text{struct}} = O(\\min\\{\\gamma, c_{\\min}\\}) > 0$",
       "_registry_context": {
         "stage": "directives",
@@ -196,6 +203,7 @@
         "label": "thm-hypocoercive-main"
       },
       "section": "## 5. Anisotropic Kinetic Operator Analysis",
+      "references": [],
       "raw_directive": "1789: #### 3.2.5. Main Hypocoercive Theorem (Assembly)\n1790: \n1791: :::{prf:theorem} Hypocoercive Contraction for Geometric Gas\n1792: :label: thm-hypocoercive-main\n1793: \n1794: The inter-swarm Wasserstein distance $V_W(S_1, S_2) = V_{\\text{loc}} + V_{\\text{struct}}$ satisfies:\n1795: \n1796: $$\n1797: \\mathbb{E}[\\Delta V_W] \\le -\\kappa'_W \\tau V_W + C'_W \\tau\n1798: $$\n1799: \n1800: where:\n1801: - $\\kappa'_W = \\min\\{\\kappa_{\\text{loc}}, \\kappa_{\\text{struct}}\\} = O(\\min\\{\\gamma, c_{\\min}\\}) > 0$\n1802: - $C'_W = C_{\\text{loc}} + C_{\\text{struct}} = O(c_{\\max}^2)$",
       "_registry_context": {
         "stage": "directives",
@@ -221,6 +229,7 @@
         "label": "thm-position-variance-expansion"
       },
       "section": "## 5. Anisotropic Kinetic Operator Analysis",
+      "references": [],
       "raw_directive": "1825: ### 5.4. Position Variance Expansion (Bounded)\n1826: \n1827: :::{prf:theorem} Position Variance Expansion\n1828: :label: thm-position-variance-expansion\n1829: \n1830: The position variance difference satisfies:\n1831: \n1832: $$\n1833: \\mathbb{E}[\\Delta V_{\\text{Var},x}] \\le C'_x \\tau\n1834: $$\n1835: ",
       "_registry_context": {
         "stage": "directives",
@@ -246,6 +255,7 @@
         "label": "thm-boundary-contraction"
       },
       "section": "## 5. Anisotropic Kinetic Operator Analysis",
+      "references": [],
       "raw_directive": "1865: ### 5.5. Boundary Potential Contraction\n1866: \n1867: :::{prf:theorem} Boundary Potential Contraction\n1868: :label: thm-boundary-contraction\n1869: \n1870: The boundary potential satisfies:\n1871: \n1872: $$\n1873: \\mathbb{E}[\\Delta W_b] \\le -\\kappa'_b \\tau W_b + C'_b \\tau\n1874: $$\n1875: ",
       "_registry_context": {
         "stage": "directives",
@@ -271,6 +281,7 @@
         "label": "thm-foster-lyapunov-adaptive"
       },
       "section": "## 6. Operator Composition and Foster-Lyapunov Condition",
+      "references": [],
       "raw_directive": "1935: ### 6.2. Synergistic Composition\n1936: \n1937: :::{prf:theorem} Foster-Lyapunov Condition for Geometric Gas\n1938: :label: thm-foster-lyapunov-adaptive\n1939: \n1940: There exist coupling constants $c_V, c_B > 0$ such that the total Lyapunov function $V_{\\text{total}} = c_V V_{\\text{inter}} + c_B W_b$ satisfies:\n1941: \n1942: $$\n1943: \\mathbb{E}[V_{\\text{total}}(S''_1, S''_2) \\mid S_1, S_2] \\le (1 - \\kappa_{\\text{total}}) V_{\\text{total}}(S_1, S_2) + C_{\\text{total}}\n1944: $$\n1945: \n1946: where $S' = \\Psi_{\\text{clone}}(S)$, $S'' = \\Psi_{\\text{kin}}(S')$, and:\n1947: - $\\kappa_{\\text{total}} = O(\\min\\{\\gamma \\tau, \\kappa_x, c_{\\min}\\}) > 0$\n1948: - $C_{\\text{total}} < \\infty$",
       "_registry_context": {
         "stage": "directives",
@@ -296,6 +307,7 @@
         "label": "thm-explicit-total-rate"
       },
       "section": "## 7. Explicit Convergence Constants and Algorithmic Parameter Dependence",
+      "references": [],
       "raw_directive": "2224: ### 7.2. Main Theorem: Explicit Total Convergence Rate\n2225: \n2226: :::{prf:theorem} Total Convergence Rate with Full Parameter Dependence\n2227: :label: thm-explicit-total-rate\n2228: \n2229: The total convergence rate $\\kappa_{\\text{total}}$ from the Foster-Lyapunov condition (Theorem [](#thm-foster-lyapunov-adaptive)) has the explicit form:\n2230: \n2231: $$\n2232: \\kappa_{\\text{total}} = \\min\\left\\{ \\kappa_x, \\quad \\min\\left\\{\\gamma, \\frac{\\epsilon_\\Sigma}{\\lambda_{\\max}(H) + \\epsilon_\\Sigma}\\right\\} \\tau, \\quad \\kappa_b + O(\\alpha_U) \\tau \\right\\}\n2233: $$\n2234: \n2235: where:\n2236: - $\\gamma > 0$: Friction coefficient in kinetic SDE\n2237: - $\\tau > 0$: Kinetic timestep duration\n2238: - $\\epsilon_\\Sigma > 0$: Diffusion regularization parameter\n2239: - $\\lambda_{\\max}(H)$: Maximum eigenvalue of fitness Hessian over state space\n2240: - $\\kappa_x > 0$: Cloning position variance contraction rate (problem-dependent)\n2241: - $\\kappa_b > 0$: Cloning boundary contraction rate (problem-dependent)\n2242: - $\\alpha_U > 0$: Confining potential strength (from Axiom 1.3.1)\n2243: ",
       "_registry_context": {
         "stage": "directives",
@@ -321,6 +333,7 @@
         "label": "thm-explicit-total-constant"
       },
       "section": "## 7. Explicit Convergence Constants and Algorithmic Parameter Dependence",
+      "references": [],
       "raw_directive": "2292: ### 7.3. Explicit Additive Constants\n2293: \n2294: :::{prf:theorem} Total Expansion Constant with Full Parameter Dependence\n2295: :label: thm-explicit-total-constant\n2296: \n2297: The total expansion constant $C_{\\text{total}}$ from the Foster-Lyapunov condition has the explicit form:\n2298: \n2299: $$\n2300: C_{\\text{total}} = c_V \\left[ \\frac{2d}{\\epsilon_\\Sigma} + \\frac{4d}{\\gamma \\epsilon_\\Sigma} + NC_{\\text{Itô}}^2 + O(V_{\\max}^2) + O(\\|F\\|_\\infty) + C_v + C_W + C_x \\right] + c_B \\left[ C_b + O\\left(\\frac{\\|F\\|_\\infty^2}{\\alpha_U}\\right) \\right]\n2301: $$\n2302: \n2303: where:\n2304: - $d$: Dimension of state space $\\mathcal{X}$\n2305: - $\\epsilon_\\Sigma$: Regularization parameter\n2306: - $\\gamma$: Friction coefficient\n2307: - $C_{\\text{Itô}} = \\frac{1}{2}d \\cdot \\|\\nabla_x \\Sigma_{\\text{reg}}\\|_\\infty \\cdot c_{\\max}^{1/2}$: Itô correction bound (from Lemma [](#lem-ito-correction-bound))\n2308: - $V_{\\max}$: Maximum velocity (from velocity squashing map)\n2309: - $\\|F\\|_\\infty$: Supremum of confining force $F(x) = -\\nabla U(x)$\n2310: - $\\alpha_U$: Confining potential strength\n2311: - $C_v, C_W, C_x, C_b$: Cloning expansion constants (problem-dependent, from `../1_euclidean_gas/03_cloning.md`)\n2312: - $c_V, c_B$: Lyapunov coupling constants (chosen to satisfy Foster-Lyapunov condition)\n2313: ",
       "_registry_context": {
         "stage": "directives",
@@ -346,6 +359,7 @@
         "label": "thm-explicit-hessian"
       },
       "section": "## 11. Explicit Derivation of the Emergent Metric from Algorithmic Parameters",
+      "references": [],
       "raw_directive": "2828: The metric emerges from the **curvature** of the fitness landscape, encoded in the Hessian. We now derive the Hessian explicitly using the chain rule.\n2829: \n2830: :::{prf:theorem} Explicit Hessian Formula\n2831: :label: thm-explicit-hessian\n2832: \n2833: The Hessian of the fitness potential with respect to position $x \\in \\mathcal{X}$ is:\n2834: \n2835: $$\n2836: H(x, S) = \\nabla^2_x V_{\\text{fit}}[f_k, \\rho](x) = g''_A(Z) \\, \\nabla_x Z \\otimes \\nabla_x Z + g'_A(Z) \\, \\nabla^2_x Z\n2837: $$\n2838: \n2839: where:\n2840: - $Z = Z_\\rho[f_k, d, x]$ is the localized Z-score\n2841: - $g'_A(Z)$ and $g''_A(Z)$ are the first and second derivatives of the rescale function\n2842: - $\\nabla_x Z$ and $\\nabla^2_x Z$ are the gradient and Hessian of the Z-score with respect to $x$\n2843: \n2844: **Expanded Form:**\n2845: \n2846: $$\n2847: H(x, S) = \\frac{g''_A(Z)}{\\sigma'^2_\\rho} \\nabla_x d \\otimes \\nabla_x d + \\frac{g'_A(Z)}{\\sigma'_\\rho} \\nabla^2_x d + \\text{(moment correction terms)}\n2848: $$\n2849: ",
       "_registry_context": {
         "stage": "directives",
@@ -371,6 +385,7 @@
         "label": "thm-uniform-ellipticity-explicit"
       },
       "section": "## 11. Explicit Derivation of the Emergent Metric from Algorithmic Parameters",
+      "references": [],
       "raw_directive": "3029: :::\n3030: \n3031: :::{prf:theorem} Uniform Ellipticity from Regularization\n3032: :label: thm-uniform-ellipticity-explicit\n3033: \n3034: For any choice of algorithmic parameters $(d, \\rho, \\kappa_{\\text{var,min}}, g_A, A, \\epsilon_\\Sigma)$, the metric $g(x, S)$ is **uniformly elliptic** with explicit bounds:\n3035: \n3036: $$\n3037: c_{\\min}(\\rho) I \\preceq g(x, S) \\preceq c_{\\max} I\n3038: $$\n3039: \n3040: where:\n3041: \n3042: $$\n3043: c_{\\min}(\\rho) = \\epsilon_\\Sigma - \\Lambda_-(\\rho), \\quad c_{\\max} = H_{\\max}(\\rho) + \\epsilon_\\Sigma\n3044: $$\n3045: \n3046: and:\n3047: - $\\Lambda_-(\\rho) \\ge 0$ is the **spectral floor**: the maximum magnitude of negative eigenvalues of $H(x, S)$ over all states\n3048: - $H_{\\max}(\\rho)$ is the **spectral ceiling**: the maximum eigenvalue of $H(x, S)$ over all states\n3049: \n3050: **Sufficient Condition for Positive Definiteness:** If $\\epsilon_\\Sigma > \\Lambda_-(\\rho)$, then $g(x, S) \\succ 0$ for all $x, S$.\n3051: \n3052: **Inverse Bounds (Diffusion Tensor):**\n3053: \n3054: $$\n3055: \\frac{1}{c_{\\max}} I \\preceq D_{\\text{reg}}(x, S) \\preceq \\frac{1}{c_{\\min}(\\rho)} I\n3056: $$\n3057: \n3058: **Square Root Bounds (Diffusion Coefficient Matrix):**\n3059: \n3060: $$\n3061: \\frac{1}{\\sqrt{c_{\\max}}} I \\preceq \\Sigma_{\\text{reg}}(x, S) \\preceq \\frac{1}{\\sqrt{c_{\\min}(\\rho)}} I\n3062: $$",
       "_registry_context": {
         "stage": "directives",
@@ -396,6 +411,7 @@
         "label": "thm-algorithmic-tunability"
       },
       "section": "## 11. Explicit Derivation of the Emergent Metric from Algorithmic Parameters",
+      "references": [],
       "raw_directive": "3417: $$\n3418: \n3419: :::{prf:theorem} Algorithmic Tunability of the Emergent Geometry\n3420: :label: thm-algorithmic-tunability\n3421: \n3422: The emergent Riemannian geometry is **completely determined** by the algorithmic parameters. Specifically:\n3423: \n3424: **1. Localization Scale $\\rho$:** Controls the spatial extent of geometric structure.\n3425: - Small $\\rho$: Hyper-local geometry, responds to fine-scale features\n3426: - Large $\\rho$: Global geometry, averages over entire landscape\n3427: \n3428: **2. Regularization $\\epsilon_\\Sigma$:** Controls the deviation from Euclidean geometry.\n3429: - Small $\\epsilon_\\Sigma$: Strong geometric adaptation, metric dominated by Hessian $H$\n3430: - Large $\\epsilon_\\Sigma$: Weak geometric adaptation, metric nearly Euclidean $g \\approx \\epsilon_\\Sigma I$\n3431: \n3432: **3. Variance Regularization $\\kappa_{\\text{var,min}}$:** Controls the conditioning of the Z-score.\n3433: - Small $\\kappa_{\\text{var,min}}$: Sensitive to variance collapse, large Hessian bounds\n3434: - Large $\\kappa_{\\text{var,min}}$: Robust to variance collapse, bounded Hessian\n3435: \n3436: **4. Measurement Function $d$:** Determines **what geometric structure emerges**.\n3437: - Reward: Geometry encodes value landscape\n3438: - Diversity: Geometry encodes novelty structure\n3439: - Custom metrics: User-defined geometric inductive biases\n3440: \n3441: **5. Rescale Function $g_A$:** Controls the **amplification** of curvature.\n3442: - Linear: Direct Hessian of Z-score\n3443: - Sigmoid: Saturated curvature, bounded $g''_A$\n3444: - Custom: Tailored curvature profiles\n3445: ",
       "_registry_context": {
         "stage": "directives",
@@ -421,6 +437,7 @@
         "label": "thm-qsd-spatial-riemannian-volume"
       },
       "section": "## Appendix A: Supporting Theorems",
+      "references": [],
       "raw_directive": "3990: This foundational result explains why the spatial marginal of the QSD naturally encodes Riemannian geometry.\n3991: \n3992: :::{prf:theorem} QSD Spatial Marginal is Riemannian Volume Measure\n3993: :label: thm-qsd-spatial-riemannian-volume\n3994: \n3995: Consider the Geometric Gas SDE from `11_geometric_gas.md` with state space $\\mathcal{X} \\times \\mathbb{R}^d$ and quasi-stationary distribution $\\pi_{\\text{QSD}}$.\n3996: \n3997: The **spatial marginal** of the QSD (integrating out velocities) is:\n3998: \n3999: $$\n4000: \\rho_{\\text{spatial}}(x) = \\int_{\\mathbb{R}^d} \\pi_{\\text{QSD}}(x, v) \\, dv \\propto \\sqrt{\\det g(x)} \\, \\exp\\left( -\\frac{U_{\\text{eff}}(x)}{T} \\right)\n4001: $$\n4002: \n4003: where:\n4004: - $g(x) = D(x)^{-1}$ is the emergent Riemannian metric (inverse diffusion tensor)\n4005: - $D(x) = \\Sigma_{\\text{reg}}(x) \\Sigma_{\\text{reg}}(x)^T$ is the position-dependent diffusion tensor\n4006: - $U_{\\text{eff}}(x) = U(x) + T \\log Z_{\\text{kin}}$ is the effective potential (confining + entropic)\n4007: - $T = 1/\\gamma$ is the effective temperature\n4008: ",
       "_registry_context": {
         "stage": "directives",

@@ -2,7 +2,7 @@
   "document_id": "05_kinetic_contraction",
   "stage": "directives",
   "directive_type": "proposition",
-  "generated_at": "2025-11-08T17:16:20.149511+00:00",
+  "generated_at": "2025-11-08T23:19:38.247472+00:00",
   "count": 1,
   "items": [
     {
@@ -16,12 +16,15 @@
       ],
       "content_start": 433,
       "content_end": 446,
-      "content": "433: :label: prop-fokker-planck-kinetic\n434: \n435: Let $\\rho(x,v,t)$ be the probability density of a single walker at time $t$. Under the kinetic SDE (Definition 3.2.1), $\\rho$ evolves according to:\n436: \n437: $$\n438: \\partial_t \\rho = -v \\cdot \\nabla_x \\rho - \\nabla_v \\cdot [(F(x) - \\gamma v) \\rho] + \\frac{1}{2}\\sum_{i,j} \\partial_{v_i}\\partial_{v_j}[(\\Sigma\\Sigma^T)_{ij} \\rho]\n439: \n440: $$\n441: \n442: **Key Terms:**\n443: \n444: 1. **Transport:** $-v \\cdot \\nabla_x \\rho$ (position advection by velocity)\n445: 2. **Drift:** $-\\nabla_v \\cdot [(F(x) - \\gamma v)\\rho]$ (force and friction)\n446: 3. **Diffusion:** $\\frac{1}{2}\\text{Tr}(\\Sigma\\Sigma^T \\nabla_v^2 \\rho)$ (thermal noise)",
+      "content": "433: :label: prop-fokker-planck-kinetic\n434: \n435: Let $\\rho(x,v,t)$ be the probability density of a single walker at time $t$. Under the kinetic SDE ({prf:ref}`def-kinetic-operator-stratonovich`), $\\rho$ evolves according to:\n436: \n437: $$\n438: \\partial_t \\rho = -v \\cdot \\nabla_x \\rho - \\nabla_v \\cdot [(F(x) - \\gamma v) \\rho] + \\frac{1}{2}\\sum_{i,j} \\partial_{v_i}\\partial_{v_j}[(\\Sigma\\Sigma^T)_{ij} \\rho]\n439: \n440: $$\n441: \n442: **Key Terms:**\n443: \n444: 1. **Transport:** $-v \\cdot \\nabla_x \\rho$ (position advection by velocity)\n445: 2. **Drift:** $-\\nabla_v \\cdot [(F(x) - \\gamma v)\\rho]$ (force and friction)\n446: 3. **Diffusion:** $\\frac{1}{2}\\text{Tr}(\\Sigma\\Sigma^T \\nabla_v^2 \\rho)$ (thermal noise)",
       "metadata": {
         "label": "prop-fokker-planck-kinetic"
       },
       "section": "## 3. The Kinetic Operator with Stratonovich Formulation",
-      "raw_directive": "430: The kinetic operator induces evolution of the swarm's probability density.\n431: \n432: :::{prf:proposition} Fokker-Planck Equation for the Kinetic Operator\n433: :label: prop-fokker-planck-kinetic\n434: \n435: Let $\\rho(x,v,t)$ be the probability density of a single walker at time $t$. Under the kinetic SDE (Definition 3.2.1), $\\rho$ evolves according to:\n436: \n437: $$\n438: \\partial_t \\rho = -v \\cdot \\nabla_x \\rho - \\nabla_v \\cdot [(F(x) - \\gamma v) \\rho] + \\frac{1}{2}\\sum_{i,j} \\partial_{v_i}\\partial_{v_j}[(\\Sigma\\Sigma^T)_{ij} \\rho]\n439: \n440: $$\n441: \n442: **Key Terms:**\n443: \n444: 1. **Transport:** $-v \\cdot \\nabla_x \\rho$ (position advection by velocity)\n445: 2. **Drift:** $-\\nabla_v \\cdot [(F(x) - \\gamma v)\\rho]$ (force and friction)\n446: 3. **Diffusion:** $\\frac{1}{2}\\text{Tr}(\\Sigma\\Sigma^T \\nabla_v^2 \\rho)$ (thermal noise)\n447: ",
+      "references": [
+        "def-kinetic-operator-stratonovich"
+      ],
+      "raw_directive": "430: The kinetic operator induces evolution of the swarm's probability density.\n431: \n432: :::{prf:proposition} Fokker-Planck Equation for the Kinetic Operator\n433: :label: prop-fokker-planck-kinetic\n434: \n435: Let $\\rho(x,v,t)$ be the probability density of a single walker at time $t$. Under the kinetic SDE ({prf:ref}`def-kinetic-operator-stratonovich`), $\\rho$ evolves according to:\n436: \n437: $$\n438: \\partial_t \\rho = -v \\cdot \\nabla_x \\rho - \\nabla_v \\cdot [(F(x) - \\gamma v) \\rho] + \\frac{1}{2}\\sum_{i,j} \\partial_{v_i}\\partial_{v_j}[(\\Sigma\\Sigma^T)_{ij} \\rho]\n439: \n440: $$\n441: \n442: **Key Terms:**\n443: \n444: 1. **Transport:** $-v \\cdot \\nabla_x \\rho$ (position advection by velocity)\n445: 2. **Drift:** $-\\nabla_v \\cdot [(F(x) - \\gamma v)\\rho]$ (force and friction)\n446: 3. **Diffusion:** $\\frac{1}{2}\\text{Tr}(\\Sigma\\Sigma^T \\nabla_v^2 \\rho)$ (thermal noise)\n447: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "05_kinetic_contraction",

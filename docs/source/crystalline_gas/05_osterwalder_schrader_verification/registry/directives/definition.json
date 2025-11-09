@@ -2,7 +2,7 @@
   "document_id": "05_osterwalder_schrader_verification",
   "stage": "directives",
   "directive_type": "definition",
-  "generated_at": "2025-11-08T17:16:20.355461+00:00",
+  "generated_at": "2025-11-08T23:19:38.358069+00:00",
   "count": 3,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "def-os-reflection-operator"
       },
       "section": "## OS2: Reflection Positivity",
+      "references": [],
       "raw_directive": "9: ### Preliminary: Reflection Operator\n10: \n11: :::{prf:definition} Euclidean Reflection Operator\n12: :label: def-os-reflection-operator\n13: \n14: For a coordinate direction $\\mu \\in \\{0, 1, 2, 3\\}$, the **reflection operator** $\\theta_\\mu: \\mathbb{R}^4 \\to \\mathbb{R}^4$ is defined by:\n15: \n16: $$\n17: \\theta_\\mu(x^0, x^1, x^2, x^3) := (x^0, \\ldots, -x^\\mu, \\ldots, x^3)\n18: $$\n19: \n20: For the **time direction** (choosing $\\mu = 0$), we write:\n21: \n22: $$\n23: \\theta(x^0, \\vec{x}) := (-x^0, \\vec{x})\n24: $$\n25: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "def-os-half-space"
       },
       "section": "## OS2: Reflection Positivity",
+      "references": [],
       "raw_directive": "27: :::\n28: \n29: :::{prf:definition} Half-Space and Test Functions\n30: :label: def-os-half-space\n31: \n32: The **time-positive half-space** is:\n33: \n34: $$\n35: \\mathcal{H}_+ := \\{x \\in \\mathbb{R}^4 : x^0 \\geq 0\\}\n36: $$\n37: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "def-os-interaction-scale"
       },
       "section": "## OS4: Clustering (Exponential Decay of Correlations)",
+      "references": [],
       "raw_directive": "345: ### Gaussian Kernel Scale Parameter\n346: \n347: :::{prf:definition} Companion Interaction Scale\n348: :label: def-os-interaction-scale\n349: \n350: The Crystalline Gas companion interaction kernel has a **scale parameter** $\\sigma > 0$:\n351: \n352: $$\n353: K(x, y) = \\exp\\left(-\\frac{\\|x - y\\|^2}{2\\sigma^2}\\right)\n354: $$\n355: \n356: This sets the **correlation length scale** for walker interactions:\n357: - Walkers separated by $\\|x - y\\| \\ll \\sigma$ are **strongly coupled**",
       "_registry_context": {
         "stage": "directives",

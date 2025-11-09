@@ -2,7 +2,7 @@
   "document_id": "05_osterwalder_schrader_verification",
   "stage": "directives",
   "directive_type": "theorem",
-  "generated_at": "2025-11-08T17:16:20.356953+00:00",
+  "generated_at": "2025-11-08T23:19:38.358947+00:00",
   "count": 6,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "thm-os2-reflection-positivity"
       },
       "section": "## OS2: Reflection Positivity",
+      "references": [],
       "raw_directive": "257: ### Main Theorem: OS2 Verification\n258: \n259: :::{prf:theorem} Reflection Positivity for Crystalline Gas QSD\n260: :label: thm-os2-reflection-positivity\n261: \n262: The quasi-stationary distribution $\\pi_{\\text{QSD}}$ of the Crystalline Gas satisfies the Osterwalder-Schrader **reflection positivity axiom (OS2)**.\n263: \n264: Specifically, for any Schwartz test function $f \\in \\mathcal{S}(\\mathcal{H}_+)$ supported in the time-positive half-space:\n265: \n266: $$\n267: \\langle f, \\theta f \\rangle_{\\pi_{\\text{QSD}}} := \\int_{\\Sigma_N} f(\\mathcal{S}) \\cdot \\overline{f(\\theta \\mathcal{S})} \\, d\\pi_{\\text{QSD}}(\\mathcal{S}) \\geq 0\n268: $$\n269: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "thm-os4-clustering"
       },
       "section": "## OS4: Clustering (Exponential Decay of Correlations)",
+      "references": [],
       "raw_directive": "400: ### Propagation to N-Point Functions\n401: \n402: :::{prf:theorem} Clustering of Gauge Field Correlations\n403: :label: thm-os4-clustering\n404: \n405: The $n$-point correlation functions of gauge fields $A_\\mu^a(x)$ at QSD satisfy **exponential clustering**:\n406: \n407: For configurations $(x_1, \\ldots, x_n)$ and $(y_1, \\ldots, y_m)$ with spatial separation $R := \\min_{i,j} \\|x_i - y_j\\|$:\n408: \n409: $$\n410: \\left| \\mathcal{S}_{n+m}(x_1, \\ldots, x_n, y_1, \\ldots, y_m) - \\mathcal{S}_n(x_1, \\ldots, x_n) \\cdot \\mathcal{S}_m(y_1, \\ldots, y_m) \\right|\n411: $$\n412: \n413: $$\n414: \\leq C_{n,m} \\cdot \\exp\\left(-m_{\\text{gap}} \\cdot R\\right)\n415: $$\n416: \n417: where the **mass gap** is:\n418: \n419: $$\n420: m_{\\text{gap}} := \\frac{1}{2\\sigma}\n421: $$\n422: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "thm-os0-regularity"
       },
       "section": "## OS0: Regularity (Tempered Distributions)",
+      "references": [],
       "raw_directive": "677: ### Schwinger Functions as Tempered Distributions\n678: \n679: :::{prf:theorem} OS0: Regularity Axiom for Crystalline Gas\n680: :label: thm-os0-regularity\n681: \n682: The $n$-point Schwinger functions:\n683: \n684: $$\n685: \\mathcal{S}_n(x_1, \\ldots, x_n) := \\int_{\\Sigma_N} \\prod_{j=1}^{n} A_{\\mu_j}^{a_j}(x_j) \\, d\\pi_{\\text{QSD}}(\\mathcal{S})\n686: $$\n687: \n688: are **tempered distributions** in $\\mathcal{S}'(\\mathbb{R}^{4n})$.\n689: \n690: Specifically, there exist constants $C_n, M_n > 0$ such that:\n691: \n692: $$\n693: |\\mathcal{S}_n(x_1, \\ldots, x_n)| \\leq C_n \\prod_{j=1}^{n} (1 + \\|x_j\\|^2)^{M_n}",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +99,7 @@
         "label": "thm-os1-euclidean-invariance"
       },
       "section": "## OS1: Euclidean Invariance",
+      "references": [],
       "raw_directive": "871: ### QSD Euclidean Invariance\n872: \n873: :::{prf:theorem} OS1: Euclidean Invariance for Crystalline Gas\n874: :label: thm-os1-euclidean-invariance\n875: \n876: The quasi-stationary distribution $\\pi_{\\text{QSD}}$ is invariant under the Euclidean group $E(4) = \\text{SO}(4) \\ltimes \\mathbb{R}^4$:\n877: \n878: $$\n879: \\pi_{\\text{QSD}}(g \\cdot \\mathcal{S}) = \\pi_{\\text{QSD}}(\\mathcal{S})\n880: $$\n881: \n882: for all $g = (R, a) \\in E(4)$ and swarm configurations $\\mathcal{S} \\in \\Sigma_N$.\n883: \n884: Consequently, the Schwinger functions satisfy:\n885: \n886: $$\n887: \\mathcal{S}_n(g \\cdot x_1, \\ldots, g \\cdot x_n) = \\mathcal{S}_n(x_1, \\ldots, x_n)",
       "_registry_context": {
         "stage": "directives",
@@ -121,6 +125,7 @@
         "label": "thm-os3-permutation-symmetry"
       },
       "section": "## OS3: Symmetry (Permutation Invariance)",
+      "references": [],
       "raw_directive": "972: The symmetry axiom states that Schwinger functions are symmetric under permutation of identical field insertions. This is essentially trivial for bosonic gauge fields.\n973: \n974: :::{prf:theorem} OS3: Permutation Symmetry for Crystalline Gas\n975: :label: thm-os3-permutation-symmetry\n976: \n977: For any permutation $\\sigma \\in S_n$ and field insertions with identical Lorentz and gauge indices:\n978: \n979: $$\n980: \\mathcal{S}_n(x_{\\sigma(1)}, \\ldots, x_{\\sigma(n)}) = \\mathcal{S}_n(x_1, \\ldots, x_n)\n981: $$\n982: \n983: More generally, for gauge fields with different indices:\n984: \n985: $$\n986: \\mathcal{S}_n\\left(A_{\\mu_1}^{a_1}(x_1), \\ldots, A_{\\mu_n}^{a_n}(x_n)\\right)\n987: $$\n988: \n989: is symmetric under permutations $\\sigma$ that preserve the index structure:\n990: \n991: $$\n992: (\\mu_{\\sigma(j)}, a_{\\sigma(j)}, x_{\\sigma(j)}) = (\\mu_j, a_j, x_j)",
       "_registry_context": {
         "stage": "directives",
@@ -146,6 +151,7 @@
         "label": "thm-os-wightman-reconstruction"
       },
       "section": "## Complete Osterwalder-Schrader Verification",
+      "references": [],
       "raw_directive": "1049: ### Implications for CMI Millennium Prize\n1050: \n1051: :::{prf:theorem} Wightman Reconstruction\n1052: :label: thm-os-wightman-reconstruction\n1053: \n1054: By the **Osterwalder-Schrader reconstruction theorem** (Osterwalder & Schrader, 1973, 1975), the verified axioms OS0-OS4 imply the existence of a **relativistic quantum Yang-Mills theory** in Minkowski spacetime $\\mathbb{R}^{1,3}$ satisfying the Wightman axioms:\n1055: \n1056: 1. **Relativistic covariance** (Poincaré symmetry)\n1057: 2. **Spectrum condition** (positive energy)\n1058: 3. **Locality** (microcausality)\n1059: 4. **Vacuum state** exists and is unique\n1060: 5. **Mass gap**: $m_{\\text{gap}} = \\frac{1}{2\\sigma} > 0$\n1061: ",
       "_registry_context": {
         "stage": "directives",

@@ -1,0 +1,308 @@
+[
+  {
+    "label": "assumption-regularity-summary",
+    "title": "Summary of Regularity Assumptions",
+    "scope": "model",
+    "nl_summary": "A set of five technical assumptions (H1 through H5) detailing the required regularity (smoothness, boundedness, continuity) of the spatial domains, potential functions, flow fields, physical constants, and algorithmic functions necessary for the rigorous analysis of the coupled mean-field system.",
+    "bullet_items": [],
+    "conditions": [
+      {
+        "type": "Satisfied By",
+        "text": "Canonical Euclidean Gas"
+      }
+    ],
+    "parameters": [],
+    "references": [],
+    "notes": [
+      {
+        "type": "Context",
+        "text": "These assumptions are prerequisites for proving the existence, uniqueness, and long-term behavior of solutions to the coupled mean-field system."
+      }
+    ],
+    "tags": [
+      "regularity",
+      "well-posedness",
+      "smoothness",
+      "Lipschitz",
+      "physical parameters",
+      "canonical Euclidean gas"
+    ]
+  },
+  {
+    "label": "assumption-domain-regularity",
+    "title": "Regularity of the Valid Domain",
+    "scope": "model",
+    "nl_summary": "The valid position domain $X_{\\text{valid}} \\subset \\mathbb{R}^d$ is assumed to be an open, bounded set with a $C^3$ boundary. Its signed distance function is $C^2$ near the boundary, allowing for the definition of a unit inward normal vector $n_x(x)$.",
+    "bullet_items": [
+      {
+        "name": "Smoothness",
+        "text": "$X_{\\text{valid}}$ is an open, bounded domain with $C^3$ boundary $\\partial X_{\\text{valid}}$."
+      },
+      {
+        "name": "Distance Function",
+        "text": "The signed distance function $d(x) := \\text{dist}(x, \\partial X_{\\text{valid}})$ is $C^2$ in a tubular neighborhood $\\mathcal{T}_\\delta := \\{x \\in X_{\\text{valid}} : d(x) < \\delta\\}$ for some $\\delta > 0$."
+      },
+      {
+        "name": "Unit Inward Normal",
+        "text": "The unit inward normal vector is $n_x(x) = -\\nabla d(x)$ for $x \\in \\mathcal{T}_\\delta$."
+      }
+    ],
+    "conditions": [
+      {
+        "type": "smoothness",
+        "text": "$X_{\\text{valid}}$ is open and bounded.",
+        "latex": "$X_{\\text{valid}} \\subset \\mathbb{R}^d$ is open and bounded."
+      },
+      {
+        "type": "boundary_regularity",
+        "text": "The boundary $\\partial X_{\\text{valid}}$ is $C^3$.",
+        "latex": "\\partial X_{\\text{valid}} \\in C^3"
+      },
+      {
+        "type": "distance_function_regularity",
+        "text": "The signed distance function $d(x)$ is $C^2$ in $\\mathcal{T}_\\delta$.",
+        "latex": "d(x) \\in C^2 \\text{ in } \\mathcal{T}_\\delta"
+      },
+      {
+        "type": "normal_definition",
+        "text": "The unit inward normal $n_x(x) = -\\nabla d(x)$ is defined for $x \\in \\mathcal{T}_\\delta$."
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "d",
+        "description": "The dimension of the space ($\\mathbb{R}^d$)",
+        "constraints": [
+          "integer > 0"
+        ],
+        "tags": [
+          "dimension"
+        ]
+      },
+      {
+        "symbol": "X_{\text{valid}}",
+        "description": "The valid position domain in $\\mathbb{R}^d$",
+        "constraints": [
+          "open",
+          "bounded subset of $\\mathbb{R}^d$"
+        ],
+        "tags": [
+          "domain"
+        ]
+      },
+      {
+        "symbol": "∂X_{\text{valid}}",
+        "description": "The boundary of the valid domain",
+        "constraints": [
+          "C^3 continuous"
+        ],
+        "tags": [
+          "boundary"
+        ]
+      },
+      {
+        "symbol": "d(x)",
+        "description": "The signed distance function to the boundary",
+        "constraints": [
+          "C^2 in \\mathcal{T}_\\delta"
+        ],
+        "tags": [
+          "distance function"
+        ]
+      },
+      {
+        "symbol": "Ⅎ_\\delta",
+        "description": "A tubular neighborhood of the boundary",
+        "constraints": [
+          "\\{x \\in X_{\\text{valid}} : d(x) < \\delta\\}"
+        ],
+        "tags": [
+          "neighborhood"
+        ]
+      },
+      {
+        "symbol": "\\delta",
+        "description": "Positive constant defining the tubular neighborhood size",
+        "constraints": [
+          "\\delta > 0"
+        ],
+        "tags": [
+          "constant"
+        ]
+      },
+      {
+        "symbol": "n_x(x)",
+        "description": "The unit inward normal vector at $x$",
+        "constraints": [
+          "-\\nabla d(x)"
+        ],
+        "tags": [
+          "normal vector"
+        ]
+      }
+    ],
+    "references": [],
+    "notes": [],
+    "tags": [
+      "geometry",
+      "domain",
+      "regularity",
+      "smoothness",
+      "boundary",
+      "distance function"
+    ]
+  },
+  {
+    "label": "assumption-integrator-regularity",
+    "title": "Regularity of the Discrete Integrator",
+    "scope": "model",
+    "nl_summary": "Assumes a specific mathematical form for the position update produced by the discrete kinetic integrator (BAOAB), defining it in terms of current state, time step, mass, force, and a remainder term $R_{\\text{pos}}$.",
+    "bullet_items": [
+      {
+        "name": "Position Update Formula",
+        "text": "The discrete kinetic integrator (BAOAB) position update $x^+(\\tau; x,v)$ is given by:",
+        "latex": "x^+(\\tau; x,v) = x + v\\tau + \\frac{\\tau^2}{2m}F(x) + R_{\\text{pos}}(\\tau; x,v)"
+      }
+    ],
+    "conditions": [],
+    "parameters": [
+      {
+        "symbol": "\\tau",
+        "description": "Time step size.",
+        "constraints": [],
+        "tags": [
+          "time step"
+        ]
+      },
+      {
+        "symbol": "x",
+        "description": "Current position.",
+        "constraints": [],
+        "tags": [
+          "position"
+        ]
+      },
+      {
+        "symbol": "v",
+        "description": "Current velocity.",
+        "constraints": [],
+        "tags": [
+          "velocity"
+        ]
+      },
+      {
+        "symbol": "m",
+        "description": "Mass.",
+        "constraints": [],
+        "tags": [
+          "mass"
+        ]
+      },
+      {
+        "symbol": "F(x)",
+        "description": "Force as a function of position.",
+        "constraints": [],
+        "tags": [
+          "force"
+        ]
+      },
+      {
+        "symbol": "x^+",
+        "description": "Next position after the integration step.",
+        "constraints": [],
+        "tags": [
+          "position",
+          "output"
+        ]
+      },
+      {
+        "symbol": "R_{\\text{pos}}(\\tau; x,v)",
+        "description": "Position error/remainder term for the discrete integrator.",
+        "constraints": [],
+        "tags": [
+          "remainder",
+          "error"
+        ]
+      }
+    ],
+    "references": [],
+    "notes": [
+      {
+        "type": "Note",
+        "text": "This specific form implies that the integrator has a known structure, likely related to a specific order of approximation where the leading terms are standard Euler/Verlet steps."
+      }
+    ],
+    "tags": [
+      "integrator",
+      "position update",
+      "BAOAB",
+      "kinetic"
+    ]
+  },
+  {
+    "label": "assump-density-regularity-killing",
+    "title": "Density Regularity",
+    "scope": "local",
+    "nl_summary": "The phase-space density $f^\\tau(x,v)$ at the start of a discrete timestep must be bounded in $L^\\infty$ by $M_f$ and must be continuously differentiable ($C^1$) in space ($\\Omega$), with its spatial gradient also bounded in $L^\\infty$ by $M_{\\nabla f}$.",
+    "bullet_items": [],
+    "conditions": [],
+    "parameters": [
+      {
+        "symbol": "f^\tau(x,v)",
+        "description": "The phase-space density at the start of a discrete timestep.",
+        "constraints": [],
+        "tags": [
+          "density",
+          "phase-space"
+        ]
+      },
+      {
+        "symbol": "\tau",
+        "description": "Discrete timestep index.",
+        "constraints": [],
+        "tags": [
+          "timestep"
+        ]
+      },
+      {
+        "symbol": "\\Omega",
+        "description": "Spatial domain.",
+        "constraints": [],
+        "tags": [
+          "domain"
+        ]
+      },
+      {
+        "symbol": "M_f",
+        "description": "Positive constant bounding the $L^\\infty$ norm of the density.",
+        "constraints": [
+          "M_f > 0"
+        ],
+        "tags": [
+          "bound",
+          "constant"
+        ]
+      },
+      {
+        "symbol": "M_{\nabla f}",
+        "description": "Positive constant bounding the $L^\\infty$ norm of the gradient of the density.",
+        "constraints": [
+          "M_{\nabla f} > 0"
+        ],
+        "tags": [
+          "bound",
+          "constant",
+          "gradient"
+        ]
+      }
+    ],
+    "references": [],
+    "notes": [],
+    "tags": [
+      "density",
+      "regularity",
+      "boundedness",
+      "initial condition"
+    ]
+  }
+]

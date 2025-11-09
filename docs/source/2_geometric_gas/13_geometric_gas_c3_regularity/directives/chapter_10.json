@@ -19,6 +19,9 @@
         "label": "cor-baoab-validity"
       },
       "section": "## 9. Stability Implications and Corollaries",
+      "references": [
+        "thm-c3-regularity"
+      ],
       "raw_directive": "1857: ### 9.1. BAOAB Discretization Validity\n1858: \n1859: :::{prf:corollary} BAOAB Discretization Validity\n1860: :label: cor-baoab-validity\n1861: \n1862: **Hypotheses:** Consider the adaptive Langevin SDE with:\n1863: 1. Fitness potential $V_{\\text{fit}}[f_k, \\rho] \\in C^3(\\mathcal{X})$ with bounded derivatives (Theorem {prf:ref}`thm-c3-regularity`)\n1864: 2. Friction coefficient $\\gamma > 0$\n1865: 3. Temperature $T > 0$ (or equivalently, noise scale $\\sigma > 0$)\n1866: 4. Time step $\\Delta t$ satisfying the stability criterion:\n1867: $$\n1868: \\Delta t \\le \\Delta t_{\\max}(\\rho, \\gamma) := \\min\\left( \\frac{1}{2\\gamma}, \\frac{\\rho^{3/2}}{K_{V,3}(\\rho)^{1/2}} \\right)\n1869: $$\n1870: \n1871: **Conclusion:** The BAOAB splitting integrator applied to the adaptive SDE has:\n1872: \n1873: 1. **Weak error bound:** $\\mathbb{E}[f(X_n)] - \\mathbb{E}_{\\pi_{\\text{QSD}}}[f] = O(\\Delta t^2)$ for smooth test functions $f$\n1874: 2. **Stability:** The discrete-time Markov chain remains ergodic with invariant measure approximating $\\pi_{\\text{QSD}}$\n1875: 3. **Foster-Lyapunov preservation:** The drift inequality $\\mathcal{L}V \\le -\\lambda V + b$ for the continuous SDE translates to the discrete chain with error $O(\\Delta t^3)$\n1876: "
     },
     {
@@ -37,6 +40,9 @@
         "label": "proof-cor-baoab-validity"
       },
       "section": "## 9. Stability Implications and Corollaries",
+      "references": [
+        "thm-c3-regularity"
+      ],
       "raw_directive": "1878: :::\n1879: \n1880: :::{prf:proof}\n1881: :label: proof-cor-baoab-validity\n1882: "
     },
     {
@@ -55,6 +61,7 @@
         "label": "cor-lyapunov-c3"
       },
       "section": "## 9. Stability Implications and Corollaries",
+      "references": [],
       "raw_directive": "1896: ### 9.2. Foster-Lyapunov Preservation\n1897: \n1898: :::{prf:corollary} $C^3$ Regularity of Total Lyapunov Function\n1899: :label: cor-lyapunov-c3\n1900: \n1901: The total Lyapunov function $V_{\\text{total}}(S) = V_{\\text{pos}}(S) + \\lambda_v V_{\\text{vel}}(S)$ used in the Foster-Lyapunov analysis satisfies $V_{\\text{total}} \\in C^3$ with N-uniform bounds:\n1902: $$\n1903: \\|\\nabla^3 V_{\\text{total}}\\| \\le K_{\\text{total},3} < \\infty\n1904: $$\n1905: \n1906: where $K_{\\text{total},3}$ depends on the third-derivative bounds of the confining potential $U(x)$, the fitness potential $V_{\\text{fit}}[f_k, \\rho]$, and the quadratic velocity term.\n1907: "
     },
     {
@@ -73,6 +80,7 @@
         "label": "proof-cor-lyapunov-c3"
       },
       "section": "## 9. Stability Implications and Corollaries",
+      "references": [],
       "raw_directive": "1909: :::\n1910: \n1911: :::{prf:proof}\n1912: :label: proof-cor-lyapunov-c3\n1913: \n1914: **Step 1: Structure of $V_{\\text{total}}$.**\n1915: \n1916: From [11_geometric_gas.md](11_geometric_gas.md) Chapter 5, the total Lyapunov function is:\n1917: $$\n1918: V_{\\text{total}}(S) = V_{\\text{pos}}(S) + \\lambda_v V_{\\text{vel}}(S)\n1919: $$\n1920: \n1921: where:\n1922: - $V_{\\text{pos}}(S) = \\sum_{i=1}^N U(x_i) + \\frac{1}{N}\\sum_{i,j} \\|x_i - x_j\\|^2$ (position variances and confinement)\n1923: - $V_{\\text{vel}}(S) = \\sum_{i=1}^N \\|v_i\\|^2$ (kinetic energy)\n1924: \n1925: **Step 2: Third derivatives of each component.**\n1926: \n1927: **Position term:**\n1928: - The confining potential $U(x)$ is assumed smooth (typically quadratic or polynomial), so $U \\in C^3$ with bounded third derivatives.\n1929: - The pairwise distance term $\\|x_i - x_j\\|^2$ is a polynomial, hence $C^\\infty$.\n1930: \n1931: **Velocity term:**\n1932: - $V_{\\text{vel}}$ is quadratic in velocities, so $\\nabla^3_{v_i} V_{\\text{vel}} = 0$ (all third derivatives vanish).\n1933: \n1934: **Fitness contribution:**\n1935: - The adaptive force is $\\mathbf{F}_{\\text{adapt}} = \\epsilon_F \\nabla V_{\\text{fit}}[f_k, \\rho]$, which appears in the drift term of the SDE.\n1936: - The Foster-Lyapunov analysis involves $\\nabla V_{\\text{total}} \\cdot \\mathbf{F}_{\\text{adapt}}$, requiring up to second derivatives of $\\mathbf{F}_{\\text{adapt}}$, which are bounded by $\\epsilon_F K_{V,3}(\\rho)$.\n1937: \n1938: **Step 3: Combine bounds.**\n1939: \n1940: Since each component has bounded third derivatives, $V_{\\text{total}} \\in C^3$ with:\n1941: $$\n1942: K_{\\text{total},3} = \\max(\\|\\nabla^3 U\\|, \\|\\nabla^3 V_{\\text{fit}}\\|, 0) = \\max(\\|\\nabla^3 U\\|, K_{V,3}(\\rho))\n1943: $$\n1944: "
     },
     {
@@ -91,6 +99,7 @@
         "label": "cor-smooth-perturbation"
       },
       "section": "## 9. Stability Implications and Corollaries",
+      "references": [],
       "raw_directive": "1948: ### 9.3. Smooth Perturbation Theory\n1949: \n1950: :::{prf:corollary} $C^3$ Perturbation Structure\n1951: :label: cor-smooth-perturbation\n1952: \n1953: The adaptive force $\\mathbf{F}_{\\text{adapt}}(x_i, S) = \\epsilon_F \\nabla V_{\\text{fit}}[f_k, \\rho](x_i)$ is a **$C^3$ perturbation** of the backbone system, with:\n1954: $$\n1955: \\|\\nabla \\mathbf{F}_{\\text{adapt}}\\| = \\epsilon_F \\|\\nabla^2 V_{\\text{fit}}\\| \\le \\epsilon_F H_{\\max}(\\rho)\n1956: $$\n1957: $$\n1958: \\|\\nabla^2 \\mathbf{F}_{\\text{adapt}}\\| = \\epsilon_F \\|\\nabla^3 V_{\\text{fit}}\\| \\le \\epsilon_F K_{V,3}(\\rho)\n1959: $$\n1960: "
     },
     {
@@ -109,6 +118,10 @@
         "label": "proof-cor-smooth-perturbation"
       },
       "section": "## 9. Stability Implications and Corollaries",
+      "references": [
+        "thm-c2-regularity",
+        "thm-c3-regularity"
+      ],
       "raw_directive": "1962: :::\n1963: \n1964: :::{prf:proof}\n1965: :label: proof-cor-smooth-perturbation\n1966: \n1967: The adaptive force is $\\mathbf{F}_{\\text{adapt}} = \\epsilon_F \\nabla V_{\\text{fit}}$. Differentiating:\n1968: - $\\nabla \\mathbf{F}_{\\text{adapt}} = \\epsilon_F \\nabla^2 V_{\\text{fit}}$: Bounded by $\\epsilon_F H_{\\max}(\\rho)$ (Theorem {prf:ref}`thm-c2-regularity`)\n1969: - $\\nabla^2 \\mathbf{F}_{\\text{adapt}} = \\epsilon_F \\nabla^3 V_{\\text{fit}}$: Bounded by $\\epsilon_F K_{V,3}(\\rho)$ (Theorem {prf:ref}`thm-c3-regularity`)\n1970: "
     },
     {
@@ -127,6 +140,9 @@
         "label": "cor-regularity-hierarchy"
       },
       "section": "## 9. Stability Implications and Corollaries",
+      "references": [
+        "thm-c3-regularity"
+      ],
       "raw_directive": "1984: ### 9.4. Compactness and Regularity Hierarchy\n1985: \n1986: :::{prf:corollary} Regularity Hierarchy Complete\n1987: :label: cor-regularity-hierarchy\n1988: \n1989: The fitness potential $V_{\\text{fit}}[f_k, \\rho]$ satisfies the complete regularity hierarchy:\n1990: $$\n1991: V_{\\text{fit}} \\in C^1 \\cap C^2 \\cap C^3\n1992: $$\n1993: \n1994: with k-uniform and N-uniform bounds at each level:\n1995: \n1996: | Regularity | Bound                                                      | Theorem                              |\n1997: |------------|------------------------------------------------------------|--------------------------------------|\n1998: | Cp         | $\\|V_{\\text{fit}}\\| \\le A$                                 | Axiom 3.2.1                          |\n1999: | $C^3$      | $\\|\\nabla V_{\\text{fit}}\\| \\le F_{\\text{adapt,max}}(\\rho)$ | Theorem A.1                          |\n2000: | $C^3$      | $\\|\\nabla^2 V_{\\text{fit}}\\| \\le H_{\\max}(\\rho)$           | Theorem A.2                          |\n2001: | $C^3$      | $\\|\\nabla^3 V_{\\text{fit}}\\| \\le K_{V,3}(\\rho)$            | Theorem {prf:ref}`thm-c3-regularity` |\n2002: "
     }
   ],

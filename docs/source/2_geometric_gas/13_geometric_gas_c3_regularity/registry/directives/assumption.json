@@ -2,7 +2,7 @@
   "document_id": "13_geometric_gas_c3_regularity",
   "stage": "directives",
   "directive_type": "assumption",
-  "generated_at": "2025-11-08T17:16:20.232915+00:00",
+  "generated_at": "2025-11-08T23:19:38.286346+00:00",
   "count": 3,
   "items": [
     {
@@ -21,6 +21,9 @@
         "label": "assump-c3-measurement-companion"
       },
       "section": "## 3. $C^3$ Regularity Assumptions",
+      "references": [
+        "lem-derivative-locality-c3"
+      ],
       "raw_directive": "922: To establish $C^3$ regularity of the fitness potential, we require natural smoothness conditions on the primitive functions in the pipeline. These assumptions extend the $C^3$ conditions from Appendix A to the third-order setting.\n923: \n924: :::{prf:assumption} Companion-Dependent Measurements with Regularization\n925: :label: assump-c3-measurement-companion\n926: \n927: The measurement for each walker $j \\in \\mathcal{A}$ is the expected algorithmic distance to its companion:\n928: $$\n929: d_j = \\mathbb{E}[d_{\\text{alg}}(j, c(j))] = \\sum_{\\ell \\in \\mathcal{A} \\setminus \\{j\\}} \\mathbb{P}(c(j) = \\ell) \\cdot d_{\\text{alg}}(j, \\ell)\n930: $$\n931: \n932: where:\n933: 1. **Algorithmic distance**: $d_{\\text{alg}}(i,j) = \\sqrt{\\|x_i - x_j\\|^2 + \\lambda_{\\text{alg}}\\|v_i - v_j\\|^2 + \\varepsilon_d^2}$ with regularization $\\varepsilon_d > 0$\n934: 2. **Companion selection**: $\\mathbb{P}(c(j) = \\ell)$ via softmax (§2.5.2)\n935: 3. **Companion availability**: Partition function $Z_j^{(\\text{comp})} \\geq Z_{\\min} > 0$ (§2.5.2)\n936: \n937: **C³ regularity properties** (from Lemma {prf:ref}`lem-derivative-locality-c3`):\n938: - $d_{\\text{alg}}$ is C^∞ with third derivative bound $\\|\\nabla^3 d_{\\text{alg}}\\| \\leq C \\varepsilon_d^{-2}$\n939: - Companion-dependent measurement $d_j$ inherits third derivative bound:\n940: $$\n941: \\|\\nabla^3_{x_i} d_j\\| \\leq C_{d,3} \\varepsilon_d^{-2}\n942: $$\n943: \n944: where $C_{d,3}$ is **k-uniform** (independent of $k$ and $N$) due to derivative locality.\n945: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +49,7 @@
         "label": "assump-c3-kernel"
       },
       "section": "## 3. $C^3$ Regularity Assumptions",
+      "references": [],
       "raw_directive": "947: :::\n948: \n949: :::{prf:assumption} Localization Kernel $C^3$ Regularity\n950: :label: assump-c3-kernel\n951: \n952: The localization kernel $K_\\rho: (\\mathcal{X} \\times \\mathbb{R}^d) \\times (\\mathcal{X} \\times \\mathbb{R}^d) \\to [0, 1]$ is defined using the algorithmic distance:\n953: $$\n954: K_\\rho(i, j) := \\frac{1}{Z_i(\\rho)} \\exp\\left(-d_{\\text{alg}}^2(i,j)/(2\\rho^2)\\right)\n955: $$\n956: \n957: where $d_{\\text{alg}}(i,j) = \\sqrt{\\|x_i - x_j\\|^2 + \\lambda_{\\text{alg}}\\|v_i - v_j\\|^2 + \\varepsilon_d^2}$ and $Z_i(\\rho) = \\sum_{\\ell \\in \\mathcal{A}} \\exp(-d_{\\text{alg}}^2(i,\\ell)/(2\\rho^2))$.\n958: \n959: The kernel is three times continuously differentiable in walker $i$'s coordinates $(x_i, v_i)$ with bounds:\n960: \n961: 1. $|K_\\rho(i, j)| \\le 1$\n962: 2. $\\|\\nabla_{x_i} K_\\rho(i, j)\\| \\le C_{\\nabla K}(\\rho) / \\rho$\n963: 3. $\\|\\nabla^2_{x_i} K_\\rho(i, j)\\| \\le C_{\\nabla^2 K}(\\rho) / \\rho^2$\n964: 4. $\\|\\nabla^3_{x_i} K_\\rho(i, j)\\| \\le C_{\\nabla^3 K}(\\rho) / \\rho^3$\n965: \n966: where $C_{\\nabla K}(\\rho), C_{\\nabla^2 K}(\\rho), C_{\\nabla^3 K}(\\rho)$ are $O(1)$ constants.\n967: \n968: **Justification:** The Gaussian kernel with $d_{\\text{alg}}$ distance inherits C^∞ regularity from $d_{\\text{alg}}$. Direct calculation shows:\n969: - $\\nabla^m_{x_i} K_\\rho$ involves products of Hermite polynomials (degree $\\le m$) with the exponential and derivatives of $d_{\\text{alg}}$\n970: - Each derivative introduces a factor of $1/\\rho$ from the Gaussian\n971: - The regularization $\\varepsilon_d > 0$ ensures $d_{\\text{alg}} \\geq \\varepsilon_d > 0$ (no singularities)\n972: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +75,7 @@
         "label": "assump-c3-rescale"
       },
       "section": "## 3. $C^3$ Regularity Assumptions",
+      "references": [],
       "raw_directive": "974: :::\n975: \n976: :::{prf:assumption} Rescale Function $C^3$ Regularity\n977: :label: assump-c3-rescale\n978: \n979: The rescale function $g_A: \\mathbb{R} \\to [0, A]$ is a strictly increasing sigmoid function that is three times continuously differentiable. We impose the following conditions on its derivatives:\n980: \n981: 1. **Upper bounds on derivatives**:\n982: \n983: $$\n984: |g_A(z)| \\leq A, \\quad |g'_A(z)| \\leq L_{g'_A}, \\quad |g''_A(z)| \\leq L_{g''_A}, \\quad |g'''_A(z)| \\leq L_{g'''_A}\n985: $$\n986: \n987: for all $z \\in \\mathbb{R}$, where $A, L_{g'_A}, L_{g''_A}, L_{g'''_A} < \\infty$ are constants.\n988: \n989: 2. **Strictly positive lower bound on derivative**:\n990: \n991: $$\n992: g'_A(z) \\geq g'_{\\min} > 0\n993: $$\n994: \n995: for all $z \\in \\mathbb{R}$, where $g'_{\\min}$ is a positive constant.\n996: ",
       "_registry_context": {
         "stage": "directives",

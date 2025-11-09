@@ -44,13 +44,12 @@ import flogging
 
 from mathster.agents.core import (
     DirectiveAgentPaths,
-    ExtractWithParametersSignature,
     LATEX_FENCE_PATTERN,
     METADATA_PATTERN,
     run_directive_extraction_loop,
-    to_jsonable,
     URI_PATTERN,
 )
+from mathster.agents.signatures import ParseDefinitionDirectiveSplit, to_jsonable
 
 
 flogging.setup(level="INFO")
@@ -58,78 +57,6 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 # --------------------------------------------------------------------------------------
-# DSPy Signature
-# --------------------------------------------------------------------------------------
-
-
-class ParseDefinitionDirectiveSplit(ExtractWithParametersSignature):
-    """
-    Transform a raw `::{prf:definition}` directive into a structured bundle.
-
-    INPUT
-    -----
-    - directive_text (str): Verbatim directive block (header/title/body + fences).
-    - context_hints (str, optional): Small snippet of nearby prose helpful for
-      inferring the scope or motivation of the definition.
-
-    OUTPUT FIELDS
-    -------------
-    - label_str (str):      Definition label (must match def-* pattern if present).
-    - term_str (str):       Canonical term being defined.
-    - object_type_str (str):Category of object (set/function/operator/process/other).
-    - nl_definition_str (str): Short natural-language paraphrase.
-
-    - formal_conditions_json (json array):
-        [{"text": <string|null>, "latex": <string|null>} ...] capturing displayed
-        equations or bulletized criteria.
-
-    - properties_json (json array):
-        [{"name": <string|null>, "description": <string|null>}, ...] summarizing
-        qualitative properties or requirements.
-
-    - parameters (list[Parameter]):
-        Provided by the shared signature to capture introduced symbols.
-
-    - examples_json (json array):
-        [{"text": <string|null>, "latex": <string|null>} ...] illustrating canonical
-        instances if the directive provides them.
-
-    - references (list[str]):
-        ["def-other", "thm-foo", ...] capturing labels cited in the directive.
-
-    - notes_json (json array):
-        [{"type": <string|null>, "text": <string|null>} ...] for remarks, intuition,
-        or usage guidance explicitly stated.
-
-    Rules: omit metadata, keep LaTeX fence-free, only include content actually
-    present in the directive or tiny context window.
-    """
-
-    directive_text = dspy.InputField(desc="Raw definition directive text (header/body).")
-    context_hints = dspy.InputField(
-        desc="Optional nearby prose for scope/motivation.", optional=True
-    )
-
-    label_str = dspy.OutputField(desc="Definition label (def-*).")
-    term_str = dspy.OutputField(desc="Term being defined.")
-    object_type_str = dspy.OutputField(
-        desc="Category of mathematical object (set/function/operator/process/other)."
-    )
-    nl_definition_str = dspy.OutputField(desc="Concise natural-language paraphrase.")
-
-    formal_conditions_json = dspy.OutputField(
-        desc='JSON array [{"text": str|null, "latex": str|null}, ...]'
-    )
-    properties_json = dspy.OutputField(
-        desc='JSON array [{"name": str|null, "description": str|null}, ...]'
-    )
-    examples_json = dspy.OutputField(
-        desc='JSON array [{"text": str|null, "latex": str|null}, ...]'
-    )
-    notes_json = dspy.OutputField(desc='JSON array [{"type": str|null, "text": str|null}, ...]')
-    # references/tags provided via ExtractWithParametersSignature
-
-
 # --------------------------------------------------------------------------------------
 # Reward helpers
 # --------------------------------------------------------------------------------------

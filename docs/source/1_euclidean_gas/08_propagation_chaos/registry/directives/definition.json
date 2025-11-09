@@ -2,7 +2,7 @@
   "document_id": "08_propagation_chaos",
   "stage": "directives",
   "directive_type": "definition",
-  "generated_at": "2025-11-08T17:16:20.163737+00:00",
+  "generated_at": "2025-11-08T23:19:38.255778+00:00",
   "count": 3,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "def-sequence-of-qsds"
       },
       "section": "## 2. Formal Setup: The Sequence of N-Particle Stationary Measures",
+      "references": [],
       "raw_directive": "125: The analysis in `06_convergence.md` established, via a Foster-Lyapunov drift condition, that for any fixed, finite number of walkers $N \\ge 2$, the Euclidean Gas Markov process converges exponentially fast to a unique statistical equilibrium, conditioned on survival. This foundational result provides us with a countably infinite sequence of well-defined N-particle stationary measures. Our strategy is to leverage this sequence to construct the stationary state of the continuous mean-field model. We begin by formally defining these measures.\n126: \n127: :::{prf:definition} Sequence of N-Particle QSDs and their Marginals\n128: :label: def-sequence-of-qsds\n129: \n130: 1.  **The N-Particle Quasi-Stationary Distribution.** For each integer $N \\ge 2$, let $\\nu_N^{QSD} \\in \\mathcal{P}(\\Sigma_N)$ be the **unique Quasi-Stationary Distribution** for the N-particle Euclidean Gas, whose existence and uniqueness were established in `06_convergence.md`. This is a probability measure on the full N-particle state space $\\Sigma_N = (\\mathbb{R}^d \\times \\mathbb{R}^d \\times \\{0,1\\})^N$, describing the long-term statistical behavior of surviving swarm trajectories.\n131: \n132: 2.  **The First Marginal Measure.** Let $\\mu_N \\in \\mathcal{P}(\\Omega)$ be the **first marginal** of the N-particle measure $\\nu_N^{QSD}$. This measure represents the probability distribution of a single, typical particle (e.g., walker $i=1$) when the entire N-particle swarm is in its quasi-stationary equilibrium state. Formally, for any measurable set $A \\subseteq \\Omega$:\n133:     $$\n134:     \\mu_N(A) := \\nu_N^{QSD}(\\{ S \\in \\Sigma_N \\mid (x_1, v_1) \\in A \\})",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "def-uniqueness-weighted-sobolev-h1w"
       },
       "section": "## **5. Uniqueness of the Weak Solution via Contraction Mapping**",
+      "references": [],
       "raw_directive": "859: To prove uniqueness via contraction mapping, we must first establish the appropriate function space. Standard Sobolev spaces are insufficient because they do not control the tail behavior of probability densities on unbounded domains. We require a **weighted Sobolev space** that enforces both local regularity and decay at infinity.\n860: \n861: :::{prf:definition} Weighted Sobolev Space $H^1_w(\\Omega)$\n862: :label: def-uniqueness-weighted-sobolev-h1w\n863: \n864: Let $w(z) = w(x,v) = 1 + \\|x\\|^2 + \\|v\\|^2$ be a polynomial weight function. The weighted Sobolev space $H^1_w(\\Omega)$ consists of all measurable functions $\\rho: \\Omega \\to \\mathbb{R}_{\\ge 0}$ such that:\n865: \n866: $$\n867: \\|\\rho\\|_{H^1_w}^2 := \\int_{\\Omega} \\left[\\rho(z)^2 + \\|\\nabla_z \\rho(z)\\|^2\\right] w(z) \\, dz < \\infty\n868: \n869: $$\n870: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "def-sequence-of-qsds-summary"
       },
       "section": "## **6. Justification of the Mean-Field Model: Propagation of Chaos and the Thermodynamic Limit**",
+      "references": [],
       "raw_directive": "1949: The foundation of our constructive proof is the sequence of well-behaved equilibria that exist for any finite number of walkers, $N$. We begin by formally defining these measures, which are the primary objects of our analysis.\n1950: \n1951: :::{prf:definition} Sequence of N-Particle QSDs and their Marginals (Summary)\n1952: :label: def-sequence-of-qsds-summary\n1953: \n1954: 1.  **The N-Particle Quasi-Stationary Distribution.** For each integer $N \\ge 2$, let $\\nu_N^{QSD} \\in \\mathcal{P}(\\Sigma_N)$ be the **unique Quasi-Stationary Distribution** for the N-particle Euclidean Gas, whose existence and uniqueness were established in `06_convergence.md`. This is a probability measure on the full N-particle state space $\\Sigma_N = (\\Omega \\times \\{0,1\\})^N$, describing the long-term statistical behavior of surviving swarm trajectories.\n1955: \n1956: 2.  **The First Marginal Measure.** Let $\\mu_N \\in \\mathcal{P}(\\Omega)$ be the **first marginal** of the N-particle measure $\\nu_N^{QSD}$. This measure represents the probability distribution of a single, typical particle (e.g., walker $i=1$) when the entire N-particle swarm is in its quasi-stationary equilibrium state. Formally, for any measurable set $A \\subseteq \\Omega$:\n1957:     $$\n1958:     \\mu_N(A) := \\nu_N^{QSD}(\\{ S \\in \\Sigma_N \\mid (x_1, v_1) \\in A \\})",
       "_registry_context": {
         "stage": "directives",

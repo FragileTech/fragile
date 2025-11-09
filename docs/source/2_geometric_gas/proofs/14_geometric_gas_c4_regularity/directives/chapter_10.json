@@ -19,6 +19,7 @@
         "label": "prop-scaling-k-v-4"
       },
       "section": "## 10. \u03c1-Scaling Analysis",
+      "references": [],
       "raw_directive": "1013: ## 10. \u03c1-Scaling Analysis\n1014: \n1015: :::{prf:proposition} Fourth-Derivative Scaling\n1016: :label: prop-scaling-k-v-4\n1017: \n1018: **Local regime ($\\rho \\to 0$):** $K_{V,4}(\\rho) = O(\\rho^{-3})$\n1019: "
     },
     {
@@ -37,6 +38,11 @@
         "label": "proof-prop-scaling-k-v-4"
       },
       "section": "## 10. \u03c1-Scaling Analysis",
+      "references": [
+        "thm-c4-regularity",
+        "lem-mean-fourth-derivative",
+        "lem-variance-fourth-derivative"
+      ],
       "raw_directive": "1021: :::\n1022: \n1023: :::{prf:proof}\n1024: :label: proof-prop-scaling-k-v-4\n1025: \n1026: From Theorem {prf:ref}`thm-c4-regularity`, the fourth-derivative bound is:\n1027: \n1028: $$\n1029: K_{V,4}(\\rho) = L_{g^{(4)}_A} (K_{Z,1})^4 + 6 L_{g'''_A} (K_{Z,1})^2 K_{Z,2} + 3 L_{g''_A} (K_{Z,2})^2 + 4 L_{g''_A} K_{Z,1} K_{Z,3} + L_{g'_A} K_{Z,4}\n1030: \n1031: $$\n1032: \n1033: Each $K_{Z,m}(\\rho)$ depends on:\n1034: - Weight derivatives: $C_{w,m}(\\rho) = O(\\rho^{-m})$ (Gaussian kernel)\n1035: - Mean derivatives: $C_{\\mu,\\nabla^m}(\\rho) = O(\\rho^{-(m-1)})$ for $m \\ge 1$ (Lemma {prf:ref}`lem-mean-fourth-derivative`)\n1036: - Variance derivatives: $C_{V,\\nabla^m}(\\rho) = O(\\rho^{-(m-1)})$ for $m \\ge 1$ (Lemma {prf:ref}`lem-variance-fourth-derivative`)\n1037: \n1038: **Local regime ($\\rho \\to 0$):** The Gaussian kernel localizes to infinitesimal neighborhoods. Weight derivatives scale as $C_{w,m}(\\rho) \\sim 1/\\rho^m$. The key insight is that centered moments introduce an $O(\\rho)$ factor (see Step 5 in Lemma {prf:ref}`lem-mean-fourth-derivative`), giving $C_{\\mu,\\nabla^m}(\\rho) = O(\\rho^{-(m-1)})$. Therefore:\n1039: \n1040: $$\n1041: K_{Z,4}(\\rho) = O(\\rho^{-3}) \\implies K_{V,4}(\\rho) = O(\\rho^{-3})\n1042: \n1043: $$\n1044: \n1045: **Global regime ($\\rho \\to \\infty$):** The localization kernel becomes uniform over the state space. All walkers contribute equally, and derivatives decay exponentially:\n1046: \n1047: $$\n1048: C_{w,m}(\\rho) \\to 0 \\text{ exponentially fast} \\implies K_{V,4}(\\rho) \\to O(1)\n1049: \n1050: $$\n1051: "
     },
     {
@@ -55,6 +61,7 @@
         "label": "prop-timestep-c4"
       },
       "section": "## 10. \u03c1-Scaling Analysis",
+      "references": [],
       "raw_directive": "1053: :::\n1054: \n1055: :::{prf:proposition} Time Step Constraint (Corrected)\n1056: :label: prop-timestep-c4\n1057: \n1058: For numerical stability, both BAOAB and fourth-order integrators have the **same \u03c1-dependent constraint**: $\\Delta t \\lesssim \\rho^{3/2}$\n1059: "
     },
     {
@@ -73,6 +80,7 @@
         "label": "proof-prop-timestep-c4"
       },
       "section": "## 10. \u03c1-Scaling Analysis",
+      "references": [],
       "raw_directive": "1061: :::\n1062: \n1063: :::{prf:proof}\n1064: :label: proof-prop-timestep-c4\n1065: \n1066: **Step 1: Stability for BAOAB (2nd order).** The BAOAB integrator requires controlling the third derivative:\n1067: \n1068: $$\n1069: \\Delta t \\lesssim K_{V,3}(\\rho)^{-1/2} \\sim (\\rho^{-3})^{-1/2} = \\rho^{3/2}\n1070: \n1071: $$\n1072: \n1073: **Step 2: Stability for 4th-order integrators (heuristic).** For a fourth-order method, stability depends on the fifth derivative $K_{V,5}(\\rho)$, which we have NOT proven. However, note:\n1074: \n1075: 1. The **error constant** for 4th-order methods depends on $K_{V,5}$\n1076: 2. The **stability** still depends on lower derivatives $K_{V,3}, K_{V,4}$\n1077: 3. Since $K_{V,4} = O(\\rho^{-3})$ (same as $K_{V,3}$), the **stability constraint** remains $\\Delta t \\lesssim \\rho^{3/2}$\n1078: \n1079: **Key insight:** C\u2074 regularity does NOT change the time-step constraint for the existing BAOAB integrator. It enables:\n1080: - Higher-order integrators (with potentially better error constants, not stability)\n1081: - Advanced functional inequalities (Brascamp-Lieb, \u0393\u2082)\n1082: - Sharper error bounds (via $K_{V,4}$ instead of $K_{V,3}$)\n1083: \n1084: But the **practical time-step limit** remains $\\Delta t \\lesssim \\rho^{3/2}$ for both 2nd and 4th order methods.\n1085: "
     }
   ],

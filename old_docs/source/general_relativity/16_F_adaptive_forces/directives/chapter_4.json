@@ -19,6 +19,7 @@
         "label": "prop-adaptive-source"
       },
       "section": "## 4. Modified Conservation Law",
+      "references": [],
       "raw_directive": "135: The adaptive force creates a **non-conservative** contribution to the energy-momentum tensor because $V_{\\text{fit}}[\\rho]$ depends on the walker distribution $\\rho_t(x)$, which evolves in time.\n136: \n137: :::{prf:proposition} Adaptive Force Source Term\n138: :label: prop-adaptive-source\n139: \n140: The adaptive force contributes a source term to the energy-momentum conservation law:\n141: \n142: $$\n143: J^\\nu_{\\text{adapt}} = \\varepsilon_F \\int \\left[\\frac{\\partial V_{\\text{fit}}}{\\partial \\rho} \\frac{\\partial \\rho}{\\partial t} \\right] v^\\nu \\mu_t \\, dv\n144: $$\n145: \n146: This accounts for the fact that the fitness landscape $V_{\\text{fit}}[\\rho_t]$ is evolving as the density changes.\n147: \n148: **Magnitude**: Since $V_{\\text{fit}}$ depends on $\\rho$ through the localized integral $\\int K_\\rho(x, x') \\Psi(x') \\rho(x') dx'$:\n149: \n150: $$\n151: \\left|\\frac{\\partial V_{\\text{fit}}}{\\partial \\rho}\\right| \\sim \\|\\Psi\\|_{\\infty}\n152: $$\n153: \n154: Therefore:\n155: \n156: $$\n157: |J^\\nu_{\\text{adapt}}| \\leq C_{\\text{adapt}} \\varepsilon_F \\left\\|\\frac{\\partial \\rho}{\\partial t}\\right\\| = O(\\varepsilon_F)\n158: $$\n159: \n160: At QSD, $\\partial \\rho / \\partial t \\to 0$, so $J^\\nu_{\\text{adapt}} \\to 0$."
     }
   ],

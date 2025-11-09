@@ -2,7 +2,7 @@
   "document_id": "14_geometric_gas_cinf_regularity_full",
   "stage": "directives",
   "directive_type": "corollary",
-  "generated_at": "2025-11-08T17:16:20.242306+00:00",
+  "generated_at": "2025-11-08T23:19:38.292335+00:00",
   "count": 4,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "cor-effective-interaction-radius-full"
       },
       "section": "## 4. Exponential Locality and Effective Interactions",
+      "references": [],
       "raw_directive": "1404: :::\n1405: \n1406: :::{prf:corollary} Effective Interaction Radius\n1407: :label: cor-effective-interaction-radius-full\n1408: \n1409: Define the **effective interaction radius** by setting the tail probability to $\\delta = 1/k$:\n1410: \n1411: $$\n1412: R_{\\text{eff}} = \\sqrt{R_{\\max}^2 + 2\\varepsilon_c^2 \\log(k^2)} = \\varepsilon_c \\sqrt{C_{\\text{comp}}^2 + 2\\log(k^2)}\n1413: \n1414: $$\n1415: \n1416: Then:\n1417: \n1418: $$\n1419: \\mathbb{P}(d_{\\text{alg}}(i, c(i)) > R_{\\text{eff}}) \\leq \\frac{1}{k}\n1420: \n1421: $$\n1422: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "cor-gevrey-1-fitness-potential-full"
       },
       "section": "## 12. Fitness Potential: Composition with Rescale Function",
+      "references": [],
       "raw_directive": "4675: :::\n4676: \n4677: :::{prf:corollary} Gevrey-1 Classification\n4678: :label: cor-gevrey-1-fitness-potential-full\n4679: \n4680: The fitness potential $V_{\\text{fit}}$ belongs to the **Gevrey-1 class**, meaning it is **real-analytic** with convergent Taylor series in a neighborhood of each point.\n4681: \n4682: Specifically, for any compact set $K \\subset \\mathcal{X} \\times \\mathbb{R}^d$:\n4683: \n4684: $$\n4685: \\sup_{(x,v) \\in K} \\|\\nabla^m V_{\\text{fit}}(x,v)\\| \\leq A \\cdot B^m \\cdot m!\n4686: \n4687: $$\n4688: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,9 @@
         "label": "cor-exponential-qsd-companion-dependent-full"
       },
       "section": "## 15. Logarithmic Sobolev Inequality",
+      "references": [
+        "conj-lsi-companion-dependent-full"
+      ],
       "raw_directive": "5058: :::\n5059: \n5060: :::{prf:corollary} Exponential Convergence to QSD (Conditional)\n5061: :label: cor-exponential-qsd-companion-dependent-full\n5062: \n5063: **If** {prf:ref}`conj-lsi-companion-dependent-full` holds, then the Geometric Gas with companion-dependent fitness converges exponentially to its unique quasi-stationary distribution:\n5064: \n5065: $$\n5066: \\|\\rho_t - \\nu_{\\text{QSD}}\\|_{L^2(\\mu)} \\leq e^{-\\lambda_{\\text{gap}} t} \\|\\rho_0 - \\nu_{\\text{QSD}}\\|_{L^2(\\mu)}\n5067: \n5068: $$\n5069: \n5070: where $\\lambda_{\\text{gap}} \\geq \\alpha > 0$ is the **spectral gap**, independent of $N$ and $k$.\n5071: ",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +101,7 @@
         "label": "cor-gevrey-closure"
       },
       "section": "## Appendix A: Combinatorial Proof of Gevrey-1 Bounds via Faà di Bruno Formula",
+      "references": [],
       "raw_directive": "5461: ### A.3 General Principle: Factorial Preservation Under Composition\n5462: \n5463: :::{prf:corollary} Gevrey-1 Closure Under Smooth Composition\n5464: :label: cor-gevrey-closure\n5465: \n5466: If $f: \\mathbb{R}^k \\to \\mathbb{R}$ is Gevrey-1 (satisfies $\\|\\nabla^m f\\| \\leq C_f m! \\rho^{-m}$) and $g_1, \\ldots, g_k: \\mathbb{R}^d \\to \\mathbb{R}$ are each Gevrey-1 with $\\|\\nabla^m g_i\\| \\leq C_i m! \\sigma^{-m}$, then the composition:\n5467: \n5468: $$\n5469: h(x) = f(g_1(x), \\ldots, g_k(x))\n5470: \n5471: $$\n5472: \n5473: is Gevrey-1 with:\n5474: \n5475: $$\n5476: \\|\\nabla^m h\\| \\leq C_h m! \\cdot \\max(\\rho, \\sigma)^{-m}\n5477: \n5478: $$\n5479: ",
       "_registry_context": {
         "stage": "directives",

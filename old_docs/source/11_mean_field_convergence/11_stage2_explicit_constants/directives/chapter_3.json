@@ -19,6 +19,7 @@
         "label": "lem-kinetic-energy-bound"
       },
       "section": "## 3. Bounding Coupling and Remainder Terms",
+      "references": [],
       "raw_directive": "385: **Lemma (Kinetic energy bound)**:\n386: \n387: :::{prf:lemma} Kinetic Energy Control\n388: :label: lem-kinetic-energy-bound\n389: \n390: The kinetic energy is controlled by the velocity Fisher information and KL divergence:\n391: \n392: $$\n393: E_v[\\rho] \\le E_v[\\rho_\\infty] + C_v D_{\\text{KL}}(\\rho \\| \\rho_\\infty) + \\frac{C_v'}{\\gamma} I_v(\\rho)\n394: $$\n395: "
     }
   ],

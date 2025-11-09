@@ -2,7 +2,7 @@
   "document_id": "11_geometric_gas",
   "stage": "directives",
   "directive_type": "conjecture",
-  "generated_at": "2025-11-08T17:16:20.278469+00:00",
+  "generated_at": "2025-11-08T23:19:38.314273+00:00",
   "count": 1,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "conj-wfr-convergence"
       },
       "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "references": [],
       "raw_directive": "2131: The Wasserstein-Fisher-Rao (WFR) metric is a natural geometric framework for analyzing the convergence of probability distributions evolving under reaction-diffusion dynamics. We now state a formal conjecture regarding WFR convergence for the adaptive system.\n2132: \n2133: :::{prf:conjecture} Convergence in the WFR Metric\n2134: :label: conj-wfr-convergence\n2135: \n2136: The composition of the kinetic evolution $\\Psi_{\\text{kin,adapt}}$ and the cloning selection $\\Psi_{\\text{clone}}$ is a contraction in the Wasserstein-Fisher-Rao (WFR) metric. Consequently, the empirical distribution converges in WFR distance:\n2137: \n2138: $$\n2139: \\text{WFR}(\\mu_t, \\pi_{\\text{QSD}}) \\le C_{\\text{WFR}} e^{-\\lambda_{\\text{WFR}} t}\n2140: $$\n2141: ",
       "_registry_context": {
         "stage": "directives",

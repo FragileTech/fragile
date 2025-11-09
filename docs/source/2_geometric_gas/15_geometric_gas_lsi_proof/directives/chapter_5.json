@@ -19,6 +19,7 @@
         "label": "def-qsd-adaptive"
       },
       "section": "## 3. Mathematical Preliminaries",
+      "references": [],
       "raw_directive": "323: ### 3.3. The Quasi-Stationary Distribution (QSD)\n324: \n325: :::{prf:definition} Quasi-Stationary Distribution (QSD)\n326: :label: def-qsd-adaptive\n327: \n328: A probability measure $\\pi_N$ on $\\Sigma_N$ is a **quasi-stationary distribution** for the Geometric Gas if:\n329: \n330: 1. **Invariance:** $\\mathcal{L}^* \\pi_N = 0$ (where $\\mathcal{L}^*$ is the adjoint in $L^2(\\Sigma_N, \\text{vol})$)\n331: 2. **Ergodicity:** $\\pi_N$ is the unique such invariant measure\n332: 3. **Attraction:** For any initial $\\mu_0 \\in \\mathcal{P}(\\Sigma_N)$, $\\mu_t \\to \\pi_N$ as $t \\to \\infty$"
     },
     {
@@ -37,6 +38,7 @@
         "label": "def-lsi-adaptive"
       },
       "section": "## 3. Mathematical Preliminaries",
+      "references": [],
       "raw_directive": "344: ### 3.4. Log-Sobolev Inequality (LSI)\n345: \n346: :::{prf:definition} Log-Sobolev Inequality\n347: :label: def-lsi-adaptive\n348: \n349: A probability measure $\\mu$ on $\\Sigma_N$ satisfies a **Log-Sobolev Inequality** with constant $C_{\\text{LSI}} > 0$ if, for all smooth $f: \\Sigma_N \\to \\mathbb{R}_+$ with $\\int f^2 d\\mu = 1$:\n350: \n351: $$\n352: \\text{Ent}_\\mu(f^2) \\leq C_{\\text{LSI}} \\int \\Gamma_{\\Sigma_{\\text{reg}}}(f, f) \\, d\\mu\n353: $$\n354: \n355: where:\n356: - **Entropy functional:** $\\text{Ent}_\\mu(f^2) := \\int f^2 \\log(f^2) d\\mu$\n357: - **Carr\u00e9 du champ operator:** $\\Gamma_{\\Sigma_{\\text{reg}}}(f, f) := \\frac{1}{2} \\sum_{i=1}^N \\|\\Sigma_{\\text{reg}}(x_i, S) \\nabla_{v_i} f\\|^2$"
     }
   ],

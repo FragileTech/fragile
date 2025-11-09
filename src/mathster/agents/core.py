@@ -26,9 +26,15 @@ from pathlib import Path
 import re
 from typing import Any, Callable, Iterable, Iterator, Sequence
 
-import dspy
-from pydantic import BaseModel, Field
 from tqdm import tqdm
+
+from mathster.agents.signatures import (
+    ExtractSignature,
+    ExtractWithParametersSignature,
+    ImplicitReference,
+    Parameter,
+    to_jsonable,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -61,68 +67,6 @@ __all__ = [
 
 
 # --------------------------------------------------------------------------------------
-# Dspy output fields shared across multiple agents
-# --------------------------------------------------------------------------------------
-
-class ImplicitReference(BaseModel):
-    label: str = Field(..., description="Label of the referenced artifact.")
-    context: str | None = Field(
-        default=None,
-        description="Optional brief context describing how the reference is used.",
-    )
-    tags: list[str] = Field(
-        default_factory=list,
-        description='array of 3-10 keyword strings for search (e.g., ["greedy","pairing","diversity"]).',
-    )
-class ExtractSignature(dspy.Signature):
-    """Shared base signature for directive extraction agents."""
-
-    label_str: str = dspy.OutputField(desc="Directive label if present, else empty.")
-    title_str: str = dspy.OutputField(desc="Human-facing title if present, else empty.")
-    references: list[str] = dspy.OutputField(
-        desc='JSON array of labels referencing other artifacts (e.g., ["def-...", "thm-...", ...])'
-    )
-    tags: list[str] = dspy.OutputField(
-        desc='JSON array of 3-10 keyword strings for search (e.g., ["greedy","pairing","diversity"]).'
-    )
-    implicit_references: list[ImplicitReference] = dspy.OutputField(
-        desc='JSON array of objects representing references with no explicit label [{"label": str, "context": str|null, "tags": [str,...]}, ...]'
-    )
-
-
-class Parameter(BaseModel):
-    symbol: str = Field(..., description="Parameter symbol.")
-    description: str | None = Field(default=None, description="Parameter description.")
-    constraints: list[str] = Field(default_factory=list, description="Parameter constraints.")
-    tags: list[str] = Field(
-        default_factory=list,
-        description='array of 3-10 keyword strings for search (e.g., ["greedy","pairing","diversity"]).',
-    )
-
-
-class ExtractWithParametersSignature(ExtractSignature):
-    """Extension of ExtractSignature including parameter extraction."""
-
-    parameters: list[Parameter] = dspy.OutputField(
-        desc='JSON array [{"symbol": str, "description": str|null, "constraints": [str,...], "tags": [str,...]}, ...]'
-    )
-
-
-def to_jsonable(value: Any) -> Any:
-    """
-    Convert nested BaseModel/list/dict structures into JSON-serializable primitives.
-    """
-
-    if isinstance(value, BaseModel):
-        return value.model_dump()
-    if isinstance(value, dict):
-        return {k: to_jsonable(v) for k, v in value.items()}
-    if isinstance(value, (list, tuple, set)):
-        return [to_jsonable(v) for v in value]
-    return value
-
-
-# --------------------------------------------------------------------------------------
 # Regular expressions & constants shared across reward functions and text utilities
 # --------------------------------------------------------------------------------------
 
@@ -152,7 +96,7 @@ class DirectiveAgentPaths:
     registry_path:
         Path to the registry ``*.json`` (e.g., ``registry/directives/theorem.json``).
     extract_path:
-        Output destination (e.g., ``extract/theorem.json``).
+        Output destination (e.g., ``registry/extract/theorem.json``).
     """
 
     document_path: Path
@@ -185,7 +129,7 @@ class DirectiveAgentPaths:
         doc_path = Path(document_path)
         doc_folder = doc_path.parent / doc_path.stem
         registry = doc_folder / "registry" / "directives" / f"{directive_basename}.json"
-        extract_dir = doc_folder / "extract"
+        extract_dir = doc_folder / "registry" / "extract"
         output_name = output_basename or directive_basename
         extract = extract_dir / f"{output_name}.json"
         return cls(document_path=doc_path, registry_path=registry, extract_path=extract)

@@ -26,78 +26,16 @@ import dspy
 
 from mathster.agents.core import (
     DirectiveAgentPaths,
-    ExtractWithParametersSignature,
     LATEX_FENCE_PATTERN,
     METADATA_PATTERN,
     run_directive_extraction_loop,
-    to_jsonable,
     URI_PATTERN,
 )
+from mathster.agents.signatures import ParseAxiomDirectiveSplit, to_jsonable
 
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
-
-# --------------------------------------------------------------------------------------
-# DSPy Signature
-# --------------------------------------------------------------------------------------
-
-
-class ParseAxiomDirectiveSplit(ExtractWithParametersSignature):
-    """
-    Convert a `::{prf:axiom}` directive into structured semantic content.
-
-    INPUT
-    -----
-    - directive_text (str): Raw directive body (header/title/body/closing fence).
-    - context_hints (str, optional): Nearby prose snippet for hints.
-
-    OUTPUT FIELDS
-    -------------
-    - label_str (str): Axiom label (`def-axiom-*` or `axiom-*` per registry conventions).
-    - title_str (str): Human-facing title if present.
-    - axiom_class_str (str): Category (structural/regularity/probabilistic/etc.).
-    - nl_summary_str (str): Natural-language restatement (1–3 sentences).
-
-    - core_statement_json (json object):
-        {"text": <string|null>, "latex": <string|null>}
-
-    - hypotheses_json (json array):
-        [{"text": <string|null>, "latex": <string|null>} ...]
-
-    - implications_json (json array):
-        [{"text": <string|null>, "latex": <string|null>} ...]
-
-    - parameters (list[Parameter]):
-        Provided via shared signature to document symbol metadata.
-
-    - references (list[str]):
-        Labels cited in the axiom (definitions, theorems, figures, etc.).
-
-    - failure_modes_json (json array):
-        [{"description": <string|null>, "impact": <string|null>} ...]
-
-    Rules: no metadata (line numbers, timestamps); keep LaTeX fence-free.
-    """
-
-    directive_text = dspy.InputField(desc="Raw axiom directive text.")
-    context_hints = dspy.InputField(desc="Optional nearby context snippet.", optional=True)
-    axiom_class_str = dspy.OutputField(desc="Classification (structural, regularity, etc.).")
-    nl_summary_str = dspy.OutputField(desc="Concise natural-language summary.")
-
-    core_statement_json = dspy.OutputField(
-        desc='JSON object {"text": str|null, "latex": str|null}'
-    )
-    hypotheses_json = dspy.OutputField(
-        desc='JSON array [{"text": str|null, "latex": str|null}, ...]'
-    )
-    implications_json = dspy.OutputField(
-        desc='JSON array [{"text": str|null, "latex": str|null}, ...]'
-    )
-    failure_modes_json = dspy.OutputField(
-        desc='JSON array [{"description": str|null, "impact": str|null}, ...]'
-    )
 
 
 # --------------------------------------------------------------------------------------

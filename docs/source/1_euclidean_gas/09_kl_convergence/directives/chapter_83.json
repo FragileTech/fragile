@@ -19,6 +19,7 @@
         "label": "axiom-confining-complete"
       },
       "section": "## Part 1: Mathematical Foundations",
+      "references": [],
       "raw_directive": "5192: Axiom 1.3.1 in [06_convergence](06_convergence) establishes:\n5193: \n5194: :::{prf:axiom} Confining Potential (Complete Statement)\n5195: :label: axiom-confining-complete\n5196: \n5197: The potential $U: \\mathcal{X}_{\\text{valid}} \\to \\mathbb{R}_{\\geq 0}$ satisfies:\n5198: \n5199: 1. **Smoothness**: $U \\in C^2(\\mathcal{X}_{\\text{valid}})$\n5200: 2. **Non-negativity**: $U(x) \\geq 0$ for all $x \\in \\mathcal{X}_{\\text{valid}}$\n5201: 3. **Interior flatness**: There exists $R_{\\text{safe}} > 0$ such that $U(x) = 0$ for $|x| < R_{\\text{safe}}$\n5202: 4. **Boundary growth**: For $|x| \\geq R_{\\text{safe}}$:\n5203: \n5204: $$\n5205: U(x) \\geq C_U (|x| - R_{\\text{safe}})^p\n5206: $$\n5207: \n5208: for some $C_U > 0$ and $p \\geq 2$\n5209: \n5210: 5. **Coercivity**: There exist $\\alpha_U > 0$ and $R_0 \\geq R_{\\text{safe}}$ such that:\n5211: \n5212: $$\n5213: \\langle \\nabla U(x), x \\rangle \\geq \\alpha_U |x|^2 \\quad \\text{for} \\quad |x| \\geq R_0"
     }
   ],

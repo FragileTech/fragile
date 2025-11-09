@@ -19,6 +19,7 @@
         "label": "alg-fan-triangulation"
       },
       "section": "## 1. Fan Triangulation for Riemannian Area",
+      "references": [],
       "raw_directive": "35: ### 1.1. Algorithm Statement\n36: \n37: :::{prf:algorithm} Fan Triangulation for Cycle Area\n38: :label: alg-fan-triangulation\n39: \n40: **Input:**\n41: - Cycle $C = \\{e_0, e_1, \\ldots, e_{n-1}\\}$ with positions $\\Phi(e_i) \\in \\mathbb{R}^d$\n42: - Metric function $G: \\mathcal{X} \\times \\mathcal{S} \\to \\mathbb{R}^{d \\times d}$ (positive definite)\n43: - Current swarm state $S$ (for metric evaluation)\n44: \n45: **Output:** Riemannian area $A(C)$\n46: \n47: **Procedure:**\n48: \n49: 1. **Compute centroid:**\n50: \n51: $$\n52: x_c = \\frac{1}{n} \\sum_{i=0}^{n-1} \\Phi(e_i)\n53: $$\n54: \n55: 2. **Evaluate metric at centroid:**\n56: \n57: $$\n58: G_c = G(x_c, S)\n59: $$\n60: \n61: 3. **For each triangle** $T_i = (x_c, \\Phi(e_i), \\Phi(e_{i+1}))$:\n62: \n63:    a. Compute edge vectors:\n64: \n65: $$\n66: v_1 = \\Phi(e_i) - x_c, \\quad v_2 = \\Phi(e_{i+1}) - x_c\n67: $$\n68: \n69:    b. Compute Riemannian inner products:\n70: \n71: $$\n72: \\begin{aligned}\n73: \\langle v_1, v_1 \\rangle_G &= v_1^T G_c v_1 \\\\\n74: \\langle v_2, v_2 \\rangle_G &= v_2^T G_c v_2 \\\\\n75: \\langle v_1, v_2 \\rangle_G &= v_1^T G_c v_2\n76: \\end{aligned}\n77: $$\n78: \n79:    c. Compute triangle area (Riemannian Gram determinant):\n80: \n81: $$\n82: A_i = \\frac{1}{2} \\sqrt{\\langle v_1, v_1 \\rangle_G \\cdot \\langle v_2, v_2 \\rangle_G - \\langle v_1, v_2 \\rangle_G^2}\n83: $$\n84: \n85: 4. **Sum all triangles:**\n86: \n87: $$\n88: A(C) = \\sum_{i=0}^{n-1} A_i\n89: $$\n90: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "thm-fan-base-independence"
       },
       "section": "## 1. Fan Triangulation for Riemannian Area",
+      "references": [],
       "raw_directive": "96: ### 1.2. Proof of Base Independence\n97: \n98: :::{prf:theorem} Fan Triangulation is Base-Independent\n99: :label: thm-fan-base-independence\n100: \n101: The choice of base vertex (centroid vs. arbitrary vertex) does **not** affect the total area, up to $O(d^2)$ curvature corrections.\n102: \n103: **Statement:** For cycle $C$ embedded in Riemannian manifold $(\\mathcal{X}, G)$:\n104: \n105: $$\n106: A_{\\text{centroid}}(C) \\approx A_{\\text{vertex}}(C) \\quad \\text{(error } O(R \\cdot \\text{diam}(C)^3) \\text{)}\n107: $$\n108: \n109: where $R = \\|\\text{Riemann}(x)\\|$ is the curvature scale.\n110: \n111: **Proof Sketch:**\n112: \n113: 1. **Flat space:** Exact equality (shoelace formula independent of base)\n114: 2. **Curved space:** Metric varies as $G(x + \\delta x) = G(x) + O(\\|\\nabla G\\| \\cdot \\|\\delta x\\|)$\n115: 3. **Centroid minimizes** $\\sum_i \\|x - \\Phi(e_i)\\|^2$ \u2192 smallest metric variation\n116: 4. **Error bound:** Using Taylor expansion of $G$ around base point:\n117: \n118: $$\n119: |A_{\\text{base}_1}(C) - A_{\\text{base}_2}(C)| \\leq C_d \\cdot R \\cdot \\text{diam}(C)^3\n120: $$\n121: "
     }
   ],

@@ -2,7 +2,7 @@
   "document_id": "05_kinetic_contraction",
   "stage": "directives",
   "directive_type": "example",
-  "generated_at": "2025-11-08T17:16:20.148134+00:00",
+  "generated_at": "2025-11-08T23:19:38.246461+00:00",
   "count": 1,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "ex-canonical-confining-potential"
       },
       "section": "## 3. The Kinetic Operator with Stratonovich Formulation",
+      "references": [],
       "raw_directive": "276: :::\n277: \n278: :::{prf:example} Canonical Confining Potential\n279: :label: ex-canonical-confining-potential\n280: \n281: A standard choice is the **smoothly regularized harmonic potential**:\n282: \n283: $$\n284: U(x) = \\begin{cases}\n285: 0 & \\text{if } \\|x\\| \\leq r_{\\text{interior}} \\\\\n286: \\frac{\\kappa}{2}(\\|x\\| - r_{\\text{interior}})^2 & \\text{if } r_{\\text{interior}} < \\|x\\| < r_{\\text{boundary}} \\\\\n287: +\\infty & \\text{if } \\|x\\| \\geq r_{\\text{boundary}}\n288: \\end{cases}\n289: \n290: $$\n291: \n292: where $r_{\\text{interior}} < r_{\\text{boundary}} = \\text{radius of } \\mathcal{X}_{\\text{valid}}$.\n293: \n294: This potential satisfies all axiom requirements:\n295: - **Coercivity**: $\\alpha_U = \\kappa$ (from quadratic growth)\n296: - **Interior safety**: $F = 0$ for $\\|x\\| \\leq r_{\\text{interior}}$\n297: - **Inward force**: $F(x) = -\\kappa(\\|x\\| - r_{\\text{interior}})\\frac{x}{\\|x\\|}$ for $r_{\\text{interior}} < \\|x\\| < r_{\\text{boundary}}$",
       "_registry_context": {
         "stage": "directives",

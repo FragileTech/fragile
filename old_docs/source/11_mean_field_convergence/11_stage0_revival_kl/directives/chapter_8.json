@@ -19,6 +19,7 @@
         "label": "thm-stage0-complete"
       },
       "section": "## 8. Stage 0 Conclusion",
+      "references": [],
       "raw_directive": "687: ### 8.1. Main Result\n688: \n689: :::{prf:theorem} Stage 0 COMPLETE (VERIFIED)\n690: :label: thm-stage0-complete\n691: \n692: 1. Revival operator is KL-expansive \u2713\n693: 2. Joint jump operator not unconditionally contractive \u2713\n694: 3. KL-convergence requires kinetic dominance \u2713\n695: "
     }
   ],

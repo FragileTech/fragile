@@ -19,6 +19,7 @@
         "label": "conj-effective-temperature-qsd"
       },
       "section": "## 6. Energy Balance at QSD",
+      "references": [],
       "raw_directive": "353: is a **complicated function** determined by the full balance of heating and cooling.\n354: \n355: :::{prf:conjecture} Effective Temperature at QSD\n356: :label: conj-effective-temperature-qsd\n357: \n358: At the QSD, the effective temperature satisfies a modified fluctuation-dissipation relation:\n359: \n360: $$\n361: k_B T_{\\text{eff}} = \\frac{m\\sigma_v^2}{2(\\gamma + \\gamma_{\\text{clone}})}\n362: $$\n363: \n364: where:\n365: \n366: $$\n367: \\gamma_{\\text{clone}} = \\frac{(1 - \\alpha_{\\text{rest}}^2)}{\\tau_{\\text{clone}}} \\langle n_{\\text{collision}} \\rangle\n368: $$\n369: \n370: and $\\langle n_{\\text{collision}} \\rangle$ is the average number of walkers per collision group.\n371: \n372: **Justification**: Both Langevin friction ($\\gamma$) and cloning dissipation ($\\gamma_{\\text{clone}}$) act to reduce velocity variance. At equilibrium, they combine additively to give an effective friction.\n373: \n374: **Status**: This is a **conjecture** requiring verification by:\n375: 1. Solving the full Fokker-Planck equation at QSD\n376: 2. Computing $\\langle n_{\\text{collision}} \\rangle$ from the birth-death process\n377: 3. Verifying the velocity distribution is Maxwellian with $T_{\\text{eff}}$"
     }
   ],

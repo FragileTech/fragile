@@ -2,7 +2,7 @@
   "document_id": "09_kl_convergence",
   "stage": "directives",
   "directive_type": "observation",
-  "generated_at": "2025-11-08T17:16:20.189290+00:00",
+  "generated_at": "2025-11-08T23:19:38.263967+00:00",
   "count": 1,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "rem-observation-composition-failure"
       },
       "section": "## Part 4: Unified Theorem - Combining Both Approaches",
+      "references": [],
       "raw_directive": "6505: **The gap**: Status convergence proves that the **alive/dead structure** of the swarm converges to the QSD pattern, but does NOT directly imply that the **spatial distribution** of alive walkers converges to the QSD's spatial distribution.\n6506: \n6507: :::{prf:observation} Why Composition Fails\n6508: :label: rem-observation-composition-failure\n6509: \n6510: The fundamental issue is that the kinetic operator $\\Psi_{\\text{kin}}$ and the full Euclidean Gas operator $\\Psi_{\\text{EG}}$ have **different stationary distributions**:\n6511: \n6512: **Kinetic operator alone**:\n6513: $$\n6514: \\pi_{\\text{kin}}(x, v) \\propto e^{-(U(x) + |v|^2/2)/\\theta}\n6515: $$\n6516: \n6517: **Full Euclidean Gas** (kinetic + cloning):\n6518: $$\n6519: \\pi_{\\text{QSD}}(x, v, \\mathcal{A}) \\propto e^{g(x,v,S)} \\cdot e^{-(U(x) + |v|^2/2)/\\theta}\n6520: $$\n6521: \n6522: The fitness weighting $e^{g(x,v,S)}$ creates a **different target distribution**. The kinetic operator drives the system toward $\\pi_{\\text{kin}}$, but the cloning operator pulls it toward fitness-weighted regions.\n6523: \n6524: These two operators are **fundamentally coupled**—neither has $\\pi_{\\text{QSD}}$ as its individual fixed point. The QSD emerges from their interplay.\n6525: ",
       "_registry_context": {
         "stage": "directives",

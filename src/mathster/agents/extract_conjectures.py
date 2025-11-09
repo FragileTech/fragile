@@ -26,79 +26,16 @@ import dspy
 
 from mathster.agents.core import (
     DirectiveAgentPaths,
-    ExtractWithParametersSignature,
     LATEX_FENCE_PATTERN,
     METADATA_PATTERN,
     run_directive_extraction_loop,
-    to_jsonable,
     URI_PATTERN,
 )
+from mathster.agents.signatures import ParseConjectureDirectiveSplit, to_jsonable
 
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
-
-# --------------------------------------------------------------------------------------
-# DSPy Signature
-# --------------------------------------------------------------------------------------
-
-
-class ParseConjectureDirectiveSplit(ExtractWithParametersSignature):
-    """
-    Convert a `::{prf:conjecture}` directive into a structured representation.
-
-    INPUT
-    -----
-    - directive_text (str): directive body (header→closing fence).
-    - context_hints (str, optional): short snippet of nearby prose.
-
-    OUTPUT FIELDS
-    -------------
-    - label_str (str): Conjecture label (e.g., `conj-ldp-mean-field`).
-    - title_str (str): Heading/title if present.
-    - conjecture_type_str (str): Nature of conjecture (analytic/probabilistic/etc.).
-    - status_str (str): Stated status (open/folklore/partial progress/etc.).
-    - nl_summary_str (str): concise natural-language summary (1–3 sentences).
-
-    - statement_json (json object):
-        {"text": <string|null>, "latex": <string|null>}
-
-    - evidence_json (json array):
-        [{"text": <string|null>, "latex": <string|null>} ...] capturing heuristic support.
-
-    - obstacles_json (json array):
-        [{"text": <string|null>, "latex": <string|null>} ...] for known difficulties.
-
-    - parameters (list[Parameter]):
-        Provided via the shared signature to describe the symbols involved.
-
-    - references (list[str]):
-        Labels cited in the conjecture.
-
-    - recommended_paths_json (json array):
-        [{"text": <string|null>, "priority": <string|null>} ...] lines of attack if suggested.
-    """
-
-    directive_text = dspy.InputField(desc="Raw conjecture directive text.")
-    context_hints = dspy.InputField(desc="Optional nearby prose.", optional=True)
-
-    label_str = dspy.OutputField(desc="Conjecture label.")
-    title_str = dspy.OutputField(desc="Title if present.")
-    conjecture_type_str = dspy.OutputField(desc="Conjecture classification.")
-    status_str = dspy.OutputField(desc="Status (open/partial/etc.).")
-    nl_summary_str = dspy.OutputField(desc="Concise summary.")
-
-    statement_json = dspy.OutputField(desc='JSON object {"text": str|null, "latex": str|null}')
-    evidence_json = dspy.OutputField(
-        desc='JSON array [{"text": str|null, "latex": str|null}, ...]'
-    )
-    obstacles_json = dspy.OutputField(
-        desc='JSON array [{"text": str|null, "latex": str|null}, ...]'
-    )
-    recommended_paths_json = dspy.OutputField(
-        desc='JSON array [{"text": str|null, "priority": str|null}, ...]'
-    )
 
 
 # --------------------------------------------------------------------------------------

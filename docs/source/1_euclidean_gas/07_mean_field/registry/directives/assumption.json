@@ -2,7 +2,7 @@
   "document_id": "07_mean_field",
   "stage": "directives",
   "directive_type": "assumption",
-  "generated_at": "2025-11-08T17:16:20.158936+00:00",
+  "generated_at": "2025-11-08T23:19:38.252766+00:00",
   "count": 4,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "assumption-regularity-summary"
       },
       "section": "## 4. Analysis and Properties of the Mean-Field Equations",
+      "references": [],
       "raw_directive": "756: The rigorous analysis of the coupled mean-field system—proving the existence, uniqueness, and long-term behavior of its solutions—requires a set of standing technical assumptions on the regularity of its constituent parts.\n757: \n758: :::{prf:assumption} Summary of Regularity Assumptions\n759: :label: assumption-regularity-summary\n760: \n761: The well-posedness of the coupled mean-field system relies on the following assumptions, which are satisfied by the Canonical Euclidean Gas:\n762: *   **(H1)** The domains $X_{\\text{valid}}$ and $V_{\\text{alg}}$ are bounded and have smooth ($C^2$) boundaries.\n763: *   **(H2)** The reward potential $R_{\\text{pos}}$ is $C^2$, making the force field $F$ globally Lipschitz.\n764: *   **(H3)** The flow field $u$ is $C^1$, and all physical parameters ($m, \\gamma_{\\text{fric}}, \\Theta, \\sigma_x$) are finite and positive.\n765: *   **(H4)** All algorithmic functions (e.g., the rescale function, companion selection) are measurable and satisfy the continuity properties established in the abstract framework.\n766: *   **(H5)** The killing rate function $c(z)$ is smooth ($C^\\infty$), non-negative, and has compact support in a neighborhood of $\\partial X_{\\text{valid}}$.",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "assumption-domain-regularity"
       },
       "section": "## 4. Analysis and Properties of the Mean-Field Equations",
+      "references": [],
       "raw_directive": "798: We work with the following precise geometric and regularity framework:\n799: \n800: :::{prf:assumption} Regularity of the Valid Domain\n801: :label: assumption-domain-regularity\n802: \n803: The valid position domain $X_{\\text{valid}} \\subset \\mathbb{R}^d$ satisfies:\n804: \n805: 1. **Smoothness**: $X_{\\text{valid}}$ is an open, bounded domain with $C^3$ boundary $\\partial X_{\\text{valid}}$.\n806: 2. **Distance Function**: The signed distance function $d(x) := \\text{dist}(x, \\partial X_{\\text{valid}})$ is $C^2$ in a tubular neighborhood $\\mathcal{T}_\\delta := \\{x \\in X_{\\text{valid}} : d(x) < \\delta\\}$ for some $\\delta > 0$.\n807: 3. **Unit Inward Normal**: For each $x \\in \\mathcal{T}_\\delta$, let $n_x(x) = -\\nabla d(x)$ denote the unit inward normal vector (pointing into $X_{\\text{valid}}$).",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "assumption-integrator-regularity"
       },
       "section": "## 4. Analysis and Properties of the Mean-Field Equations",
+      "references": [],
       "raw_directive": "809: :::\n810: \n811: :::{prf:assumption} Regularity of the Discrete Integrator\n812: :label: assumption-integrator-regularity\n813: \n814: The discrete kinetic integrator (BAOAB) produces position updates of the form:\n815: \n816: $$\n817: x^+(\\tau; x,v) = x + v\\tau + \\frac{\\tau^2}{2m}F(x) + R_{\\text{pos}}(\\tau; x,v)\n818: $$\n819: ",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +99,7 @@
         "label": "assumption-density-regularity-killing"
       },
       "section": "## 4. Analysis and Properties of the Mean-Field Equations",
+      "references": [],
       "raw_directive": "821: :::\n822: \n823: :::{prf:assumption} Density Regularity\n824: :label: assumption-density-regularity-killing\n825: \n826: The phase-space density $f^\\tau(x,v)$ at the start of a discrete timestep satisfies:\n827: \n828: 1. **Boundedness**: $\\|f^\\tau\\|_{L^\\infty(\\Omega)} \\le M_f$ for some $M_f > 0$.\n829: 2. **Spatial Regularity**: $f^\\tau \\in C^1(\\Omega)$ with $\\|\\nabla_x f^\\tau\\|_{L^\\infty} \\le M_{\\nabla f}$.",
       "_registry_context": {
         "stage": "directives",

@@ -2,7 +2,7 @@
   "document_id": "20_geometric_gas_cinf_regularity_full",
   "stage": "directives",
   "directive_type": "remark",
-  "generated_at": "2025-11-08T17:16:20.318802+00:00",
+  "generated_at": "2025-11-08T23:19:38.338282+00:00",
   "count": 5,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "rem-log-k-absorption-mechanism"
       },
       "section": "## 1. Introduction",
+      "references": [],
       "raw_directive": "135: :::\n136: \n137: :::{prf:remark} Explicit Mechanism of (log k)^d Absorption\n138: :label: rem-log-k-absorption-mechanism\n139: \n140: The claim that the $(log k)^d$ factor is \"absorbed into Gevrey-1 constants\" requires explicit justification.\n141: \n142: **Where does (log k)^d appear?**\n143: \n144: Only in the $j=i$ term of the localized mean derivative:\n145: \n146: $$\n147: \\nabla^m \\mu_\\rho^{(i)} = \\nabla^m \\left(\\sum_{j \\in \\mathcal{A}} w_{ij}(\\rho) d_j\\right) = \\nabla^m(w_{ii} d_i) + \\sum_{j \\neq i} \\nabla^m(w_{ij} d_j)\n148: $$\n149: \n150: For $j = i$: The measurement $d_i = \\mathbb{E}[d_{\\text{alg}}(i, c(i))]$ involves a sum over $k_{\\text{eff}}^{(\\varepsilon_c)} = O((\\log k)^d)$ effective companions. By the product and chain rules:\n151: \n152: $$\n153: \\|\\nabla^m (w_{ii} d_i)\\| \\leq C_w \\cdot C_d \\cdot m! \\cdot \\rho^{-m} \\cdot k_{\\text{eff}}^{(\\varepsilon_c)}\n154: $$\n155: \n156: For $j \\neq i$: **Derivative locality** (§7.1) eliminates the $\\ell$-sum—only $\\ell=i$ contributes to $\\nabla_{x_i} d_j$, so there's NO $(log k)^d$ factor for these terms.\n157: \n158: **How is (log k)^d absorbed?**\n159: \n160: The Gevrey-1 structure of $C_{V,m}$ is:\n161: \n162: $$\n163: C_{V,m} = \\tilde{C}_m \\cdot (1 + c \\cdot k_{\\text{eff}}^{(\\varepsilon_c)} / m!) \\cdot \\max(\\rho^{-m}, \\varepsilon_d^{1-m})\n164: $$\n165: \n166: For $m \\geq 2$, the regularization term $\\varepsilon_d^{1-m}$ dominates. Since $\\varepsilon_d \\ll \\varepsilon_c$ (typically $\\varepsilon_d / \\varepsilon_c = 10^{-3}$):\n167: \n168: $$\n169: \\varepsilon_d^{1-m} = \\varepsilon_c^{1-m} \\cdot (10^{-3})^{1-m} = \\varepsilon_c^{1-m} \\cdot 10^{3(m-1)}\n170: $$\n171: \n172: The ratio $(log k)^d / m!$ for practical $k \\leq 10^6$ (where $(\\log k)^d \\leq 20^d$ for $d \\leq 20$):\n173: \n174: $$\n175: \\frac{(\\log k)^d}{m!} \\leq \\frac{20^d}{m!}\n176: $$\n177: \n178: For $m \\geq d+2$, the factorial $m!$ dominates exponentially. For example:\n179: - $d=10, m=15$: $(log 1000)^{10} / 15! \\approx 10^{10} / 10^{12} = 10^{-2}$\n180: - $d=20, m=25$: $(log 1000)^{20} / 25! \\approx 10^{20} / 10^{25} = 10^{-5}$\n181: \n182: **Conclusion**: The $(log k)^d$ factor from the $j=i$ term is sub-leading compared to:\n183: 1. The factorial growth $m!$ (Gevrey-1)\n184: 2. The regularization blowup $\\varepsilon_d^{1-m}$ (bottleneck for $m \\geq 2$)\n185: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,9 @@
         "label": "rem-keystone-condition-contraction-full"
       },
       "section": "## 2. Companion Selection Mechanisms: Framework Context",
+      "references": [
+        "doc-03-cloning"
+      ],
       "raw_directive": "767: :::\n768: \n769: :::{prf:remark} Keystone Parameter Condition for Contraction\n770: :label: rem-keystone-condition-contraction-full\n771: \n772: The fixed-point iteration $\\rho_{\\max}^{(n+1)} = T(\\rho_{\\max}^{(n)})$ where $T(\\rho) = C_{\\text{QSD}} \\cdot C_{\\text{FK}}(L_V(\\rho), \\gamma, T, V_{\\max})$ is a contraction if:\n773: \n774: $$\n775: \\frac{dT}{d\\rho} = C_{\\text{QSD}} \\cdot \\frac{\\partial C_{\\text{FK}}}{\\partial L_V} \\cdot \\frac{dL_V}{d\\rho} < 1\n776: \n777: $$\n778: \n779: **Explicit Keystone condition**: From Fokker-Planck theory (Bogachev-Krylov-Röckner, 2001), the density bound satisfies:\n780: \n781: $$\n782: C_{\\text{FK}}(L_V, \\gamma, T, V_{\\max}) \\leq \\frac{C_0}{\\text{Vol}(\\mathcal{X} \\times V)} \\cdot \\exp\\left(\\frac{A_{\\text{fit}} \\cdot L_{\\phi}}{\\gamma T}\\right)\n783: \n784: $$\n785: \n786: where:\n787: - $A_{\\text{fit}}$: Fitness amplitude (maximum $|\\nabla V_{\\text{fit}}|$)\n788: - $L_{\\phi}$: Lipschitz constant of projection map $\\phi: \\mathcal{Y} \\to \\mathcal{X}$ (equals 1 for Euclidean phase space)\n789: - $\\gamma T$: Kinetic diffusion coefficient\n790: \n791: For the fixed point to exist, the **Keystone parameter regime** ({prf:ref}`doc-03-cloning`, Theorem 3.5) requires:\n792: \n793: $$\n794: \\frac{A_{\\text{fit}} \\cdot L_{\\phi}}{\\gamma T} < C_{\\text{contract}}\n795: \n796: $$\n797: \n798: where $C_{\\text{contract}}$ is a critical threshold (typically $C_{\\text{contract}} \\approx 1$-$2$ depending on domain geometry).\n799: \n800: **Verification for Geometric Gas**:\n801: - $A_{\\text{fit}} = \\mathcal{O}(A)$ (rescale function amplitude)\n802: - $L_{\\phi} = 1$ (Euclidean phase space)\n803: - Keystone regime: $\\gamma T \\gg A$ (high kinetic diffusion relative to fitness amplitude)\n804: \n805: Therefore: $A/(γT) \\ll 1$, ensuring contraction and fixed-point existence.\n806: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +75,7 @@
         "label": "rem-lipschitz-implies-convergence"
       },
       "section": "## 5.7 Statistical Equivalence and Unified Regularity Theorem",
+      "references": [],
       "raw_directive": "2938: :::\n2939: \n2940: :::{prf:remark} Implications for Quantitative Equivalence\n2941: :label: rem-lipschitz-implies-convergence\n2942: \n2943: This lemma shows that **IF** measurements differ by $\\|\\Delta\\|_\\infty = O(k^{-\\alpha})$, **THEN** fitness potentials differ by $O(k^{-\\alpha}) + O(k^{-2\\alpha})$.\n2944: \n2945: For the softmax vs pairing comparison:\n2946: - **What's established**: Both mechanisms have identical analytical structure (C^∞ with same Gevrey-1 bounds)\n2947: - **What's needed**: Quantitative bound $\\|\\Delta\\|_\\infty = O(k^{-\\alpha})$ via coupling analysis\n2948: - **What follows**: If coupling bound is established, Lipschitz stability immediately gives fitness convergence\n2949: ",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +101,7 @@
         "label": "rem-simplified-vs-full-final"
       },
       "section": "## 16. Comparison to Simplified Model",
+      "references": [],
       "raw_directive": "5045: ## 16. Comparison to Simplified Model\n5046: \n5047: :::{prf:remark} Simplified vs Full Model\n5048: :label: rem-simplified-vs-full-final\n5049: \n5050: | **Aspect** | **Simplified Model** (Doc 19) | **Full Model** (This Document) |\n5051: |------------|-------------------------------|--------------------------------|\n5052: | **Measurement** | $d_i = d(x_i)$ (position-only) | $d_i = d_{\\text{alg}}(i, c(i))$ (companion-dependent) |\n5053: | **Fitness Pipeline** | Single-stage | Six-stage: weights → mean → variance → std dev → Z-score → rescale |\n5054: | **Walker Coupling** | None | N-body coupling via softmax companion selection |\n5055: | **Proof Strategy** | Direct telescoping | Smooth clustering + partition of unity |\n5056: | **Key Mechanism** | $\\sum_j \\nabla^m w_{ij} = 0$ | Same + exponential locality |\n5057: | **Framework Assumptions** | None required | Minimum companion availability, uniform density |\n5058: | **Regularity Class** | Gevrey-1 | Gevrey-1 (preserved through pipeline) |\n5059: | **k-uniformity** | Immediate | Non-trivial (exponential localization + density bounds) |\n5060: | **Document Length** | ~1,000 lines | ~2,000+ lines (full pipeline analysis) |\n5061: | **Physical Realism** | Lower | Higher (true algorithmic model) |\n5062: ",
       "_registry_context": {
         "stage": "directives",
@@ -121,6 +127,7 @@
         "label": "rem-rho-tradeoffs"
       },
       "section": "## 16.5 Parameter Dependence and Practical Trade-offs",
+      "references": [],
       "raw_directive": "5136: ### 16.5.4 Trade-Off Summary\n5137: \n5138: :::{prf:remark} Localization Scale Trade-offs\n5139: :label: rem-rho-tradeoffs\n5140: \n5141: **Small ρ** (hyper-local, $\\rho \\ll \\text{diam}(\\mathcal{X})$):\n5142: - ✓ **Pros**: Sharp localization, better low-order derivative bounds (m < 2d), geometric adaptation\n5143: - ✗ **Cons**: High-order derivatives explode (m > 2d), numerical stiffness, small time steps for high-order integrators\n5144: \n5145: **Large ρ** (global backbone, $\\rho \\sim \\text{diam}(\\mathcal{X})$):\n5146: - ✓ **Pros**: Uniform derivative bounds, stable high-order behavior, larger time steps\n5147: - ✗ **Cons**: Loses geometric information, weak adaptation, reverts to global statistics\n5148: \n5149: **Optimal choice** (depends on application):\n5150: - **Exploration phase** (early optimization): Large ρ for stability\n5151: - **Exploitation phase** (near optima): Small ρ for geometric adaptation\n5152: - **Adaptive schedule**: $\\rho(t) = \\rho_0 \\cdot e^{-\\gamma t}$ (annealing from global to local)\n5153: ",
       "_registry_context": {
         "stage": "directives",

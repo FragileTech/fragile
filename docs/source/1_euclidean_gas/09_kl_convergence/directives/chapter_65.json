@@ -19,6 +19,7 @@
         "label": "def-discrete-dirichlet"
       },
       "section": "## Step 4: Discrete-Time LSI Formulation",
+      "references": [],
       "raw_directive": "4108: ## Step 4: Discrete-Time LSI Formulation\n4109: \n4110: :::{prf:definition} Discrete Dirichlet Form\n4111: :label: def-discrete-dirichlet\n4112: \n4113: For a Markov operator $\\Psi$ with stationary distribution $\\pi$, define the discrete Dirichlet form:\n4114: \n4115: $$\n4116: \\mathcal{E}_{\\Psi}(f, f) := \\mathbb{E}_\\pi[(f - \\Psi f)^2]\n4117: $$\n4118: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "thm-discrete-lsi-hybrid"
       },
       "section": "## Step 4: Discrete-Time LSI Formulation",
+      "references": [],
       "raw_directive": "4120: :::\n4121: \n4122: :::{prf:theorem} Discrete-Time LSI\n4123: :label: thm-discrete-lsi-hybrid\n4124: \n4125: If a Markov operator $\\Psi$ satisfies the contraction:\n4126: \n4127: $$\n4128: D_{\\text{KL}}(\\Psi \\# \\mu \\| \\pi) \\leq (1 - \\epsilon) D_{\\text{KL}}(\\mu \\| \\pi) + C\n4129: $$\n4130: \n4131: for some $\\epsilon > 0$, then $\\Psi$ satisfies a discrete-time Log-Sobolev inequality:\n4132: \n4133: $$\n4134: D_{\\text{KL}}(\\mu \\| \\pi) \\leq \\frac{1}{\\epsilon} \\text{Ent}_\\pi[\\mu] + \\frac{C}{\\epsilon}\n4135: $$\n4136: \n4137: where $\\text{Ent}_\\pi[\\mu]$ is the relative entropy production.\n4138: "
     }
   ],

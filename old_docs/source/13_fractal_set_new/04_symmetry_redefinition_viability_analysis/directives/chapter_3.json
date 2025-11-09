@@ -19,6 +19,7 @@
         "label": "def-algorithmic-distance-recap"
       },
       "section": "## 2. Mathematical Framework: The Fragile Gas Measurement Pipeline",
+      "references": [],
       "raw_directive": "146: ### 2.1. Algorithmic Distance Metric\n147: \n148: :::{prf:definition} Algorithmic Distance for Intra-Swarm Proximity\n149: :label: def-algorithmic-distance-recap\n150: \n151: For two walkers i and j with states w_i = (x_i, v_i, s_i) and w_j = (x_j, v_j, s_j), the **algorithmic distance** is:\n152: \n153: $$\n154: d_{\\text{alg}}(i,j) := \\sqrt{\\|x_i - x_j\\|^2 + \\lambda_{\\text{alg}} \\|v_i - v_j\\|^2}\n155: $$\n156: \n157: where \u03bb_alg \u2265 0 is a hyperparameter determining the velocity contribution.\n158: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "def-diversity-pairing-recap"
       },
       "section": "## 2. Mathematical Framework: The Fragile Gas Measurement Pipeline",
+      "references": [],
       "raw_directive": "166: #### 2.2.1. Diversity Companion Selection (for Measurement)\n167: \n168: :::{prf:definition} Diversity Pairing Operator\n169: :label: def-diversity-pairing-recap\n170: \n171: The **diversity pairing operator** creates a companion map c_div : A_t \u2192 A_t for the alive set A_t at timestep t.\n172: \n173: **Purpose:** Measure geometric diversity for the fitness potential calculation.\n174: \n175: **Interaction scale:** \u03b5_d > 0 (diversity interaction range).\n176: \n177: **Procedure** (Sequential Stochastic Greedy Pairing, {doc}`../1_euclidean_gas/03_cloning.md` \u00a75.1.2):\n178: 1. Initialize unpaired set U \u2190 A_t\n179: 2. While |U| > 1:\n180:    - Select walker i from U\n181:    - For each j \u2208 U \\\\ {i}, compute weight: w_ij = exp(-d_alg^2(i,j)/(2\u03b5_d^2))\n182:    - Sample c_div(i) ~ Categorical(w_ij / \u03a3_k w_ik)\n183:    - Remove both i and c_div(i) from U\n184: 3. Return companion map c_div\n185: \n186: **Output:** For each walker i \u2208 A_t, a diversity companion c_div(i) \u2208 A_t \\\\ {i}.\n187: "
     },
     {
@@ -55,6 +57,7 @@
         "label": "def-cloning-companion-recap"
       },
       "section": "## 2. Mathematical Framework: The Fragile Gas Measurement Pipeline",
+      "references": [],
       "raw_directive": "191: #### 2.2.2. Cloning Companion Selection (for Action)\n192: \n193: :::{prf:definition} Cloning Companion Operator\n194: :label: def-cloning-companion-recap\n195: \n196: The **cloning companion operator** independently samples a companion c_clone(i) for each walker i when determining cloning probabilities.\n197: \n198: **Purpose:** Select a target for fitness comparison in the cloning decision.\n199: \n200: **Interaction scale:** \u03b5_c > 0 (cloning interaction range, typically different from \u03b5_d).\n201: \n202: **Procedure** (Independent Softmax, {doc}`../1_euclidean_gas/03_cloning.md` \u00a75.7.1):\n203: \n204: For alive walker i \u2208 A_t:\n205: \n206: $$\n207: P(c_{\\text{clone}}(i) = j \\mid i \\in A_t) = \\frac{\\exp\\left(-\\frac{d_{\\text{alg}}^2(i,j)}{2\\epsilon_c^2}\\right)}{\\sum_{k \\in A_t \\setminus \\{i\\}} \\exp\\left(-\\frac{d_{\\text{alg}}^2(i,k)}{2\\epsilon_c^2}\\right)}\n208: $$\n209: \n210: **Key independence property:**\n211: - c_clone(i) is sampled **after** the fitness potential V_fit has been computed\n212: - c_clone(i) does **not** affect the computation of V_fit"
     },
     {
@@ -73,6 +76,7 @@
         "class": "important"
       },
       "section": "## 2. Mathematical Framework: The Fragile Gas Measurement Pipeline",
+      "references": [],
       "raw_directive": "214: :::\n215: \n216: :::{prf:remark} Independence of Companion Selections\n217: :class: important\n218: \n219: The two companion selections are **independent and non-circular**:\n220: \n221: **Diversity pairing:** Used for distance measurement \u2192 feeds into fitness V_fit\n222: **Cloning companion:** Uses fitness V_fit \u2192 determines cloning probability\n223: \n224: **Causal flow:**\n225: \n226: $$\n227: \\text{c}_{\\text{div}}(i) \\to d_i \\to z_{d,i} \\to d'_i \\to V_{\\text{fit},i}\n228: $$\n229: \n230: $$\n231: r_i \\to z_{r,i} \\to r'_i \\to V_{\\text{fit},i}\n232: $$\n233: \n234: $$\n235: V_{\\text{fit},i} + \\text{c}_{\\text{clone}}(i) \\to S_i(\\text{c}_{\\text{clone}}(i)) \\to \\text{cloning decision}\n236: $$\n237: "
     },
     {
@@ -91,6 +95,7 @@
         "label": "def-raw-measurements"
       },
       "section": "## 2. Mathematical Framework: The Fragile Gas Measurement Pipeline",
+      "references": [],
       "raw_directive": "245: #### Stage 1-2: Raw Measurement\n246: \n247: :::{prf:definition} Raw Measurements\n248: :label: def-raw-measurements\n249: \n250: For walker i \u2208 A_t at timestep t:\n251: \n252: **Raw distance:**\n253: \n254: $$\n255: d_i := d_{\\text{alg}}(i, c_{\\text{div}}(i))\n256: $$\n257: \n258: **Raw reward:**\n259: \n260: $$\n261: r_i := R(x_i, v_i) - c_{v_{\\text{reg}}} \\|v_i\\|^2\n262: $$\n263: "
     },
     {
@@ -109,6 +114,7 @@
         "label": "def-swarm-statistics"
       },
       "section": "## 2. Mathematical Framework: The Fragile Gas Measurement Pipeline",
+      "references": [],
       "raw_directive": "267: #### Stage 3: Swarm Aggregation\n268: \n269: :::{prf:definition} Swarm Statistics\n270: :label: def-swarm-statistics\n271: \n272: Given the raw distance vector d = (d_1, ..., d_k) and raw reward vector r = (r_1, ..., r_k) for k alive walkers:\n273: \n274: **Distance statistics:**\n275: \n276: $$\n277: \\mu_d := \\frac{1}{k} \\sum_{i \\in A_t} d_i, \\quad \\sigma_d^2 := \\frac{1}{k} \\sum_{i \\in A_t} (d_i - \\mu_d)^2\n278: $$\n279: \n280: **Regularized distance standard deviation:**\n281: \n282: $$\n283: \\sigma'_d := \\sigma'_{\\text{patch}}(\\sigma_d^2) := \\max\\left(\\sigma_d, \\sigma_{\\min,\\text{patch}}\\right)\n284: $$\n285: \n286: where \u03c3_min,patch > 0 is a regularization constant.\n287: \n288: **Reward statistics:** \u03bc_r and \u03c3'_r computed analogously.\n289: "
     },
     {
@@ -127,6 +133,7 @@
         "label": "def-zscore-standardization"
       },
       "section": "## 2. Mathematical Framework: The Fragile Gas Measurement Pipeline",
+      "references": [],
       "raw_directive": "293: #### Stage 4: Standardization (Z-scores)\n294: \n295: :::{prf:definition} Z-Score Standardization\n296: :label: def-zscore-standardization\n297: \n298: For each alive walker i \u2208 A_t:\n299: \n300: **Distance z-score:**\n301: \n302: $$\n303: z_{d,i} := \\frac{d_i - \\mu_d}{\\sigma'_d}\n304: $$\n305: \n306: **Reward z-score:**\n307: \n308: $$\n309: z_{r,i} := \\frac{r_i - \\mu_r}{\\sigma'_r}\n310: $$\n311: \n312: **Properties:**\n313: 1. Translation invariance: If all d_i \u2192 d_i + c, then z_d,i unchanged (\u03bc_d shifts by c)\n314: 2. Scale invariance: If all d_i \u2192 \u03bb \u00b7 d_i, then z_d,i unchanged (both numerator and denominator scale)"
     },
     {
@@ -145,6 +152,7 @@
         "label": "def-logistic-rescale-recap"
       },
       "section": "## 2. Mathematical Framework: The Fragile Gas Measurement Pipeline",
+      "references": [],
       "raw_directive": "318: #### Stage 5: Rescaling\n319: \n320: :::{prf:definition} Logistic Rescale Function\n321: :label: def-logistic-rescale-recap\n322: \n323: The **canonical logistic rescale function** g_A : \u211d \u2192 (0, 2) is:\n324: \n325: $$\n326: g_A(z) := \\frac{2}{1 + e^{-z}}\n327: $$\n328: "
     },
     {
@@ -163,6 +171,7 @@
         "label": "def-collective-fields"
       },
       "section": "## 2. Mathematical Framework: The Fragile Gas Measurement Pipeline",
+      "references": [],
       "raw_directive": "332: #### Stage 6: Collective Field Construction\n333: \n334: :::{prf:definition} Collective Local Field Values\n335: :label: def-collective-fields\n336: \n337: For walker i \u2208 A_t, the **collective local field values** are:\n338: \n339: **Diversity field:**\n340: \n341: $$\n342: d'_i := g_A(z_{d,i}) + \\eta = g_A\\left(\\frac{d_i - \\mu_d}{\\sigma'_d}\\right) + \\eta\n343: $$\n344: \n345: **Reward field:**\n346: \n347: $$\n348: r'_i := g_A(z_{r,i}) + \\eta = g_A\\left(\\frac{r_i - \\mu_r}{\\sigma'_r}\\right) + \\eta\n349: $$\n350: \n351: where \u03b7 > 0 is a floor constant.\n352: \n353: **Fitness potential:**\n354: \n355: $$\n356: V_{\\text{fit},i} := (d'_i)^\\beta \\cdot (r'_i)^\\alpha\n357: $$\n358: "
     },
     {
@@ -181,6 +190,7 @@
         "class": "note"
       },
       "section": "## 2. Mathematical Framework: The Fragile Gas Measurement Pipeline",
+      "references": [],
       "raw_directive": "360: :::\n361: \n362: :::{prf:remark} Nature of Collective Fields\n363: :class: note\n364: \n365: The quantities d'_i and r'_i are **neither single-particle nor pairwise** quantities. They are **collective local field values**:\n366: \n367: 1. **Local:** Associated with a specific walker i\n368: 2. **Collective:** Depend on the entire swarm through (\u03bc_d, \u03c3'_d, \u03bc_r, \u03c3'_r)\n369: 3. **Field:** Assign a value to each point in the swarm configuration space\n370: \n371: This is a novel structure not commonly seen in standard gauge theories, where fields are typically either:\n372: - External background fields (constant or slowly varying)\n373: - Dynamical gauge fields (independent degrees of freedom)\n374: - Matter fields (local particle properties)\n375: "
     },
     {
@@ -199,6 +209,7 @@
         "label": "def-cloning-score-recap"
       },
       "section": "## 2. Mathematical Framework: The Fragile Gas Measurement Pipeline",
+      "references": [],
       "raw_directive": "379: ### 2.4. Cloning Score and Decision\n380: \n381: :::{prf:definition} Cloning Score\n382: :label: def-cloning-score-recap\n383: \n384: After fitness values V_fit,i have been computed for all walkers, the **cloning score** for walker i with respect to cloning companion c_clone(i) = j is:\n385: \n386: $$\n387: S_i(j) := \\frac{V_{\\text{fit},j} - V_{\\text{fit},i}}{V_{\\text{fit},i} + \\varepsilon_{\\text{clone}}}\n388: $$\n389: \n390: where \u03b5_clone > 0 is a regularization constant.\n391: \n392: **Interpretation:**\n393: - S_i(j) > 0: Companion j is fitter than i \u2192 i likely to clone (copy j's state)\n394: - S_i(j) < 0: Walker i is fitter than j \u2192 i unlikely to clone"
     }
   ],

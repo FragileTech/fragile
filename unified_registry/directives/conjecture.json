@@ -1,7 +1,7 @@
 {
   "stage": "directives",
   "directive_type": "conjecture",
-  "generated_at": "2025-11-08T17:16:20.404702+00:00",
+  "generated_at": "2025-11-08T23:19:38.396747+00:00",
   "source_documents": [
     "11_geometric_gas",
     "11_geometric_gas",
@@ -29,6 +29,7 @@
         "label": "conj-wfr-convergence"
       },
       "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "references": [],
       "raw_directive": "2376: The Wasserstein-Fisher-Rao (WFR) metric is a natural geometric framework for analyzing the convergence of probability distributions evolving under reaction-diffusion dynamics. We now state a formal conjecture regarding WFR convergence for the adaptive system.\n2377: \n2378: :::{prf:conjecture} Convergence in the WFR Metric\n2379: :label: conj-wfr-convergence\n2380: \n2381: The composition of the kinetic evolution $\\Psi_{\\text{kin,adapt}}$ and the cloning selection $\\Psi_{\\text{clone}}$ is a contraction in the Wasserstein-Fisher-Rao (WFR) metric. Consequently, the empirical distribution converges in WFR distance:\n2382: \n2383: $$\n2384: \\text{WFR}(\\mu_t, \\pi_{\\text{QSD}}) \\le C_{\\text{WFR}} e^{-\\lambda_{\\text{WFR}} t}\n2385: \n2386: $$\n2387: ",
       "_registry_context": {
         "stage": "directives",
@@ -54,6 +55,7 @@
         "label": "conj-wfr-convergence"
       },
       "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "references": [],
       "raw_directive": "2131: The Wasserstein-Fisher-Rao (WFR) metric is a natural geometric framework for analyzing the convergence of probability distributions evolving under reaction-diffusion dynamics. We now state a formal conjecture regarding WFR convergence for the adaptive system.\n2132: \n2133: :::{prf:conjecture} Convergence in the WFR Metric\n2134: :label: conj-wfr-convergence\n2135: \n2136: The composition of the kinetic evolution $\\Psi_{\\text{kin,adapt}}$ and the cloning selection $\\Psi_{\\text{clone}}$ is a contraction in the Wasserstein-Fisher-Rao (WFR) metric. Consequently, the empirical distribution converges in WFR distance:\n2137: \n2138: $$\n2139: \\text{WFR}(\\mu_t, \\pi_{\\text{QSD}}) \\le C_{\\text{WFR}} e^{-\\lambda_{\\text{WFR}} t}\n2140: $$\n2141: ",
       "_registry_context": {
         "stage": "directives",
@@ -79,6 +81,9 @@
         "label": "conj-lsi-companion-dependent-full"
       },
       "section": "## 15. Logarithmic Sobolev Inequality",
+      "references": [
+        "thm-main-complete-cinf-geometric-gas-full"
+      ],
       "raw_directive": "4988: ## 15. Logarithmic Sobolev Inequality\n4989: \n4990: :::{prf:conjecture} LSI for Companion-Dependent Geometric Gas\n4991: :label: conj-lsi-companion-dependent-full\n4992: \n4993: We conjecture that under the assumptions of {prf:ref}`thm-main-complete-cinf-geometric-gas-full`, the Geometric Gas satisfies a **Logarithmic Sobolev Inequality** with constant $\\alpha > 0$:\n4994: \n4995: $$\n4996: \\text{Ent}_\\mu(\\rho) \\leq \\frac{1}{\\alpha} \\mathcal{E}(\\rho, \\rho)\n4997: \n4998: $$\n4999: \n5000: where:\n5001: - $\\text{Ent}_\\mu(\\rho) = \\int \\rho \\log(\\rho/\\mu) d\\mu$ (relative entropy)\n5002: - $\\mathcal{E}(\\rho, \\rho) = -\\int \\rho \\mathcal{L}_{\\text{geo}} \\log \\rho \\, d\\mu$ (Dirichlet form)\n5003: ",
       "_registry_context": {
         "stage": "directives",
@@ -104,6 +109,7 @@
         "label": "conj-ldp-mean-field"
       },
       "section": "## 1. Why Mean-Field KL-Convergence is Valuable",
+      "references": [],
       "raw_directive": "213: For McKean-Vlasov systems, KL-divergence is the **fundamental** metric:\n214: \n215: :::{prf:conjecture} Large Deviations Principle for Mean-Field Limit (Unproven)\n216: :label: conj-ldp-mean-field\n217: \n218: As $N \\to \\infty$, the empirical measure $\\mu_N = \\frac{1}{N} \\sum_{i=1}^N \\delta_{(x_i, v_i)}$ is conjectured to satisfy a large deviations principle with rate function:\n219: \n220: $$\n221: I(\\rho) = \\begin{cases}\n222: D_{\\text{KL}}(\\rho \\| \\rho_\\infty) & \\text{if } \\rho \\ll \\rho_\\infty \\\\\n223: +\\infty & \\text{otherwise}\n224: \\end{cases}\n225: \n226: $$\n227: \n228: This means deviations from the mean-field limit $\\rho_\\infty$ would be exponentially suppressed with probability $\\sim e^{-N \\cdot D_{\\text{KL}}}$.\n229: \n230: **Status**: This LDP has **not been proven** for systems with state-dependent killing and proportional revival. Standard LDP results (Dawson-Gärtner, Dupuis-Ellis) apply to conservative systems or systems with fixed jump rates, not QSD-conditioned dynamics.\n231: ",
       "_registry_context": {
         "stage": "directives",
@@ -129,6 +135,7 @@
         "label": "conj-ldp-mean-field"
       },
       "section": "## 1. Why Mean-Field KL-Convergence is Valuable",
+      "references": [],
       "raw_directive": "210: For McKean-Vlasov systems, KL-divergence is the **fundamental** metric:\n211: \n212: :::{prf:conjecture} Large Deviations Principle for Mean-Field Limit (Unproven)\n213: :label: conj-ldp-mean-field\n214: \n215: As $N \\to \\infty$, the empirical measure $\\mu_N = \\frac{1}{N} \\sum_{i=1}^N \\delta_{(x_i, v_i)}$ is conjectured to satisfy a large deviations principle with rate function:\n216: \n217: $$\n218: I(\\rho) = \\begin{cases}\n219: D_{\\text{KL}}(\\rho \\| \\rho_\\infty) & \\text{if } \\rho \\ll \\rho_\\infty \\\\\n220: +\\infty & \\text{otherwise}\n221: \\end{cases}\n222: $$\n223: \n224: This means deviations from the mean-field limit $\\rho_\\infty$ would be exponentially suppressed with probability $\\sim e^{-N \\cdot D_{\\text{KL}}}$.\n225: \n226: **Status**: This LDP has **not been proven** for systems with state-dependent killing and proportional revival. Standard LDP results (Dawson-Gärtner, Dupuis-Ellis) apply to conservative systems or systems with fixed jump rates, not QSD-conditioned dynamics.\n227: ",
       "_registry_context": {
         "stage": "directives",
@@ -154,6 +161,9 @@
         "label": "conj-lsi-companion-dependent-full"
       },
       "section": "## 15. Logarithmic Sobolev Inequality",
+      "references": [
+        "thm-main-complete-cinf-geometric-gas-full"
+      ],
       "raw_directive": "4952: ## 15. Logarithmic Sobolev Inequality\n4953: \n4954: :::{prf:conjecture} LSI for Companion-Dependent Geometric Gas\n4955: :label: conj-lsi-companion-dependent-full\n4956: \n4957: We conjecture that under the assumptions of {prf:ref}`thm-main-complete-cinf-geometric-gas-full`, the Geometric Gas satisfies a **Logarithmic Sobolev Inequality** with constant $\\alpha > 0$:\n4958: \n4959: $$\n4960: \\text{Ent}_\\mu(\\rho) \\leq \\frac{1}{\\alpha} \\mathcal{E}(\\rho, \\rho)\n4961: \n4962: $$\n4963: \n4964: where:\n4965: - $\\text{Ent}_\\mu(\\rho) = \\int \\rho \\log(\\rho/\\mu) d\\mu$ (relative entropy)\n4966: - $\\mathcal{E}(\\rho, \\rho) = -\\int \\rho \\mathcal{L}_{\\text{geo}} \\log \\rho \\, d\\mu$ (Dirichlet form)\n4967: ",
       "_registry_context": {
         "stage": "directives",

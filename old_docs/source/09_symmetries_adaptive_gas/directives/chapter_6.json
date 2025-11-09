@@ -19,6 +19,7 @@
         "label": "prop-manifold-discovery"
       },
       "section": "## 6. Physical Interpretation and Applications",
+      "references": [],
       "raw_directive": "1551: ### 6.2. Emergent Geometry and Manifold Learning\n1552: \n1553: :::{prf:proposition} Adaptive Gas as Manifold Discovery\n1554: :label: prop-manifold-discovery\n1555: \n1556: Suppose the state space $\\mathcal{X}$ contains a **low-dimensional manifold** $\\mathcal{M} \\subset \\mathcal{X}$ where the reward is concentrated.\n1557: \n1558: The emergent metric $g(x, S)$ **automatically discovers** $\\mathcal{M}$:\n1559: - **On $\\mathcal{M}$**: $\\lambda_{\\min}(H) \\approx 0$ (flat directions tangent to $\\mathcal{M}$) \u2192 large diffusion\n1560: - **Off $\\mathcal{M}$**: $\\lambda(H)$ large (steep potential) \u2192 small diffusion\n1561: "
     },
     {
@@ -33,6 +34,7 @@
       "content": "1564: \n1565: :::{prf:proof}\n1566: This follows from the **second-order Laplace approximation**. Near a high-reward region, the fitness potential $V_{\\text{fit}}$ has a local maximum. The Hessian $H$ measures the **curvature** of this peak.\n1567: \n1568: Directions tangent to a **level set** of $V_{\\text{fit}}$ (i.e., along a manifold of near-optimal states) have small curvature (small eigenvalues). The diffusion is large in these directions, allowing the swarm to explore the manifold.\n1569: \n1570: Directions **normal** to the manifold (orthogonal to level sets) have large curvature. The diffusion is small, preventing escape from the manifold.",
       "metadata": {},
       "section": "## 6. Physical Interpretation and Applications",
+      "references": [],
       "raw_directive": "1563: :::\n1564: \n1565: :::{prf:proof}\n1566: This follows from the **second-order Laplace approximation**. Near a high-reward region, the fitness potential $V_{\\text{fit}}$ has a local maximum. The Hessian $H$ measures the **curvature** of this peak.\n1567: \n1568: Directions tangent to a **level set** of $V_{\\text{fit}}$ (i.e., along a manifold of near-optimal states) have small curvature (small eigenvalues). The diffusion is large in these directions, allowing the swarm to explore the manifold.\n1569: \n1570: Directions **normal** to the manifold (orthogonal to level sets) have large curvature. The diffusion is small, preventing escape from the manifold.\n1571: "
     },
     {
@@ -51,6 +53,9 @@
         "class": "tip"
       },
       "section": "## 6. Physical Interpretation and Applications",
+      "references": [
+        "thm-permutation-symmetry"
+      ],
       "raw_directive": "1575: ### 6.3. Applications: Symmetry-Constrained Optimization\n1576: \n1577: :::{prf:example} Equivariant Neural Network Optimization\n1578: :class: tip\n1579: \n1580: Consider optimizing a **neural network** with rotational symmetry (e.g., convolutional layers on images).\n1581: \n1582: **State space**: Parameter space $\\mathcal{X} = \\mathbb{R}^p$ of network weights.\n1583: \n1584: **Reward**: Validation accuracy $R(\\theta)$.\n1585: \n1586: **Symmetry**: The loss function is invariant under **permutations of hidden units** (exchangeability).\n1587: \n1588: **Adaptive Gas with symmetry**:\n1589: - The permutation invariance (Theorem {prf:ref}`thm-permutation-symmetry`) ensures the algorithm **respects the symmetry** of the loss landscape\n1590: - The emergent metric $g(\\theta, S)$ automatically identifies **flat directions** (redundant parameterizations due to symmetry)\n1591: - The QSD concentrates on the **orbit space** $\\mathcal{X}/G$ rather than the full parameter space\n1592: "
     }
   ],

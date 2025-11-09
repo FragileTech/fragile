@@ -2,7 +2,7 @@
   "document_id": "04_wasserstein_contraction_ASSEMBLED",
   "stage": "directives",
   "directive_type": "remark",
-  "generated_at": "2025-11-08T17:16:20.335319+00:00",
+  "generated_at": "2025-11-08T23:19:38.347435+00:00",
   "count": 9,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "rem-asymmetric-coupling"
       },
       "section": "## 1. Synchronous Coupling Construction",
+      "references": [],
       "raw_directive": "401: :::\n402: \n403: :::{prf:remark} Asymmetric Coupling\n404: :label: rem-asymmetric-coupling\n405: \n406: The coupling is **asymmetric**: the matching distribution $P(M | S_1)$ depends only on swarm $S_1$, not $S_2$. This is standard practice in coupling arguments and simplifies analysis while maintaining sufficient correlation for contraction.\n407: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "rem-jitter-cancellation"
       },
       "section": "## 1. Synchronous Coupling Construction",
+      "references": [],
       "raw_directive": "409: :::\n410: \n411: :::{prf:remark} Jitter Cancellation in Clone-Clone Case\n412: :label: rem-jitter-cancellation\n413: \n414: The most powerful feature of this coupling is **jitter cancellation**. If walker $i$ clones in **both** swarms (which happens in Case A with consistent fitness ordering), then:\n415: \n416: $$\n417: \\|x'_{1,i} - x'_{2,i}\\|^2 = \\|(x_{1,\\pi(i)} + \\zeta_i) - (x_{2,\\pi(i)} + \\zeta_i)\\|^2 = \\|x_{1,\\pi(i)} - x_{2,\\pi(i)}\\|^2\n418: $$\n419: \n420: The jitter **cancels exactly** due to synchronization! This is the strongest form of contraction.\n421: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,9 @@
         "label": "rem-coupling-sufficiency"
       },
       "section": "## 1. Synchronous Coupling Construction",
+      "references": [
+        "def-synchronous-cloning-coupling"
+      ],
       "raw_directive": "425: ### 1.3. Coupling Properties\n426: \n427: :::{prf:remark} Synchronous Coupling Sufficiency\n428: :label: rem-coupling-sufficiency\n429: \n430: The synchronous coupling {prf:ref}`def-synchronous-cloning-coupling` provides sufficient correlation to prove Wasserstein-2 contraction. By using shared randomness (matching $M$, thresholds $T_i$, jitter $\\zeta_i$), the coupling eliminates extrinsic variance sources and maximizes correlation between paired walkers.\n431: \n432: **Key Properties:**\n433: 1. **Jitter cancellation**: When both walkers clone, the shared jitter $\\zeta_i$ cancels exactly\n434: 2. **Maximum correlation**: Using the same matching and thresholds minimizes $\\mathbb{E}[\\sum_i \\|x'_{1,i} - x'_{2,i}\\|^2]$\n435: 3. **Tractable analysis**: The synchronous structure allows explicit calculation of contraction factors\n436: ",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +101,7 @@
         "label": "rem-valley-depth"
       },
       "section": "## 2. Foundational Lemmas for Outlier Alignment",
+      "references": [],
       "raw_directive": "519: :::\n520: \n521: :::{prf:remark} Quantitative Bounds\n522: :label: rem-valley-depth\n523: \n524: For swarms at distance $L > D_{\\min}$, the valley depth can be bounded using framework parameters:\n525: \n526: $$\n527: \\Delta_{\\text{valley}} \\geq \\kappa_{\\text{valley}}(\\varepsilon) \\cdot V_{\\text{pot,min}}\n528: $$\n529: ",
       "_registry_context": {
         "stage": "directives",
@@ -121,6 +127,7 @@
         "label": "rem-asymptotic-exactness"
       },
       "section": "## 2. Foundational Lemmas for Outlier Alignment",
+      "references": [],
       "raw_directive": "752: :::\n753: \n754: :::{prf:remark} Asymptotic Exactness\n755: :label: rem-asymptotic-exactness\n756: \n757: For $L \\to \\infty$, the survival probability of wrong-side outliers vanishes exponentially:\n758: \n759: $$\n760: \\mathbb{P}(\\text{survive} \\mid M_1) \\leq e^{-c L/R_H}\n761: $$\n762: ",
       "_registry_context": {
         "stage": "directives",
@@ -146,6 +153,7 @@
         "label": "rem-emergent-property"
       },
       "section": "## 2. Foundational Lemmas for Outlier Alignment",
+      "references": [],
       "raw_directive": "764: :::\n765: \n766: :::{prf:remark} Why This is Emergent, Not Axiomatic\n767: :label: rem-emergent-property\n768: \n769: The Outlier Alignment property is **not** an additional axiom. It is a **consequence** of:\n770: 1. The Confining Potential axiom (Axiom 2.1.1)\n771: 2. The Environmental Richness axiom (Axiom 4.1.1)\n772: 3. The cloning operator definition (survival $\\propto$ fitness)\n773: 4. The Geometric Partition structure (Keystone Principle)\n774: ",
       "_registry_context": {
         "stage": "directives",
@@ -171,6 +179,7 @@
         "label": "rem-projection-implies-quadratic"
       },
       "section": "## Section 4 Updates: Quadratic Scaling Fixes",
+      "references": [],
       "raw_directive": "1330: :::\n1331: \n1332: :::{prf:remark} Implications for Contraction\n1333: :label: rem-projection-implies-quadratic\n1334: \n1335: This lemma shows that the \"linear\" terms like $\\eta R_H L$ from the geometric bound are actually quadratic when $R_H \\sim L$:\n1336: \n1337: $$\n1338: \\eta R_H L \\geq \\eta (c_0 L - c_1) L = \\eta c_0 L^2 - \\eta c_1 L \\sim O(L^2)\n1339: $$\n1340: ",
       "_registry_context": {
         "stage": "directives",
@@ -196,6 +205,7 @@
         "label": "rem-linear-vs-quadratic"
       },
       "section": "## Section 4 Updates: Quadratic Scaling Fixes",
+      "references": [],
       "raw_directive": "1409: :::\n1410: \n1411: :::{prf:remark} Comparison with Linear Bound\n1412: :label: rem-linear-vs-quadratic\n1413: \n1414: The previous analysis derived $D_{ii} - D_{ji} \\geq \\eta R_H L$, which appeared linear in $L$. However:\n1415: \n1416: 1. **Via Exact Identity:** We now have $D_{ii} - D_{ji} \\approx L^2$ directly\n1417: 2. **Via High-Error Projection:** $R_H \\geq c_0 L$, so $\\eta R_H L \\geq \\eta c_0 L^2$\n1418: ",
       "_registry_context": {
         "stage": "directives",
@@ -221,6 +231,7 @@
         "label": "rem-case-b-frequency"
       },
       "section": "## Section 4 Updates: Quadratic Scaling Fixes",
+      "references": [],
       "raw_directive": "1521: :::\n1522: \n1523: :::{prf:remark} Typical Values\n1524: :label: rem-case-b-frequency\n1525: \n1526: From the Keystone Principle analysis in [03_cloning.md](03_cloning.md):\n1527: - $f_{UH}(\\varepsilon) \\geq 0.1$ (at least 10% unfit-high-error overlap)\n1528: - $q_{\\min}(\\varepsilon) \\geq 0.01$ (matching has at least 1% probability for any configuration)\n1529: \n1530: Therefore:\n1531: $$\n1532: \\mathbb{P}(\\text{Case B}) \\gtrsim 0.001\n1533: $$\n1534: ",
       "_registry_context": {
         "stage": "directives",

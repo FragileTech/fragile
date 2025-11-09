@@ -19,6 +19,7 @@
         "label": "def-qsd-mean-field"
       },
       "section": "## 0. Problem Setup",
+      "references": [],
       "raw_directive": "1435: ### 0.2. Definition of QSD\n1436: \n1437: :::{prf:definition} Quasi-Stationary Distribution (QSD)\n1438: :label: def-qsd-mean-field\n1439: \n1440: A probability measure $\\rho_\\infty \\in \\mathcal{P}(\\Omega)$ is a **quasi-stationary distribution** for the mean-field generator $\\mathcal{L}$ if:\n1441: \n1442: 1. **Stationarity**: $\\mathcal{L}[\\rho_\\infty] = 0$\n1443: 2. **Normalization**: $\\|\\rho_\\infty\\|_{L^1} = M_\\infty < 1$ (mass less than 1 due to killing)\n1444: 3. **Support**: $\\text{supp}(\\rho_\\infty) \\subseteq \\Omega$ (concentrated on alive region)"
     }
   ],

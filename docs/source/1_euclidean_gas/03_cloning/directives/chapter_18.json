@@ -19,6 +19,7 @@
         "label": "thm-velocity-variance-bounded-expansion"
       },
       "section": "## 10.4. Velocity Variance Bounded Expansion",
+      "references": [],
       "raw_directive": "6745: We now prove that the velocity variance expansion from cloning is uniformly bounded.\n6746: \n6747: :::{prf:theorem} Bounded Velocity Variance Expansion from Cloning\n6748: :label: thm-velocity-variance-bounded-expansion\n6749: \n6750: There exists a state-independent constant $C_v < \\infty$ such that for any swarm $S$:\n6751: \n6752: $$\n6753: \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},v}(S')] \\leq V_{\\text{Var},v}(S) + C_v\n6754: $$\n6755: \n6756: Equivalently, the one-step drift satisfies:\n6757: \n6758: $$\n6759: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n6760: $$"
     },
     {
@@ -37,6 +38,7 @@
         "label": "proof-thm-velocity-variance-bounded-expansion"
       },
       "section": "## 10.4. Velocity Variance Bounded Expansion",
+      "references": [],
       "raw_directive": "6764: ### 10.4.1. Proof\n6765: \n6766: :::{prf:proof}\n6767: :label: proof-thm-velocity-variance-bounded-expansion\n6768: **Proof.**\n6769: \n6770: The proof analyzes how the inelastic collision model affects velocity variance.\n6771: \n6772: **Step 1: Velocity domain boundedness**\n6773: \n6774: By Axiom EG-4 (velocity regularization), all walker velocities in viable swarms satisfy:\n6775: \n6776: $$\n6777: \\|v_i\\| \\leq V_{\\max} := \\sqrt{\\max\\left\\{\\frac{2F_{\\max}}{\\gamma}, V_{\\text{thresh}}^2\\right\\}}\n6778: $$\n6779: \n6780: This bound is state-independent, depending only on physical parameters.\n6781: \n6782: **Step 2: Per-walker velocity change**\n6783: \n6784: When walker $i$ participates in an $(M+1)$-particle inelastic collision, its velocity changes from $v_i$ to:\n6785: \n6786: $$\n6787: v'_i = V_{\\text{COM}} + \\alpha_{\\text{restitution}} \\cdot R_i(u_i)\n6788: $$\n6789: \n6790: where $u_i = v_i - V_{\\text{COM}}$ and $R_i$ is a random rotation.\n6791: \n6792: The squared velocity change is bounded:\n6793: \n6794: $$\n6795: \\|v'_i - v_i\\|^2 = \\|\\alpha_{\\text{restitution}} \\cdot R_i(u_i) - u_i\\|^2 \\leq (\\alpha_{\\text{restitution}} + 1)^2 \\|u_i\\|^2\n6796: $$\n6797: \n6798: Since $\\|u_i\\| \\leq 2V_{\\max}$ (difference of two bounded velocities):\n6799: \n6800: $$\n6801: \\|v'_i - v_i\\|^2 \\leq 4(\\alpha_{\\text{restitution}} + 1)^2 V_{\\max}^2\n6802: $$\n6803: \n6804: **Step 3: Variance change decomposition**\n6805: \n6806: The velocity variance changes due to:\n6807: \n6808: 1. **Direct velocity resets** for cloned walkers (bounded by Step 2)\n6809: 2. **Barycenter shift** affecting centered velocities (bounded by total momentum conservation)\n6810: 3. **Random rotations** redistributing kinetic energy (bounded by elastic limit)\n6811: \n6812: Each contribution is bounded by constants depending only on $V_{\\max}$, $\\alpha_{\\text{restitution}}$, and $N$.\n6813: \n6814: **Step 4: Total bounded expansion**\n6815: \n6816: Summing over all walkers and using $N$-normalization:\n6817: \n6818: $$\n6819: \\mathbb{E}[\\Delta V_{\\text{Var},v}] \\leq \\frac{1}{N} \\sum_{i=1}^N p_i \\cdot 4(\\alpha_{\\text{restitution}} + 1)^2 V_{\\max}^2 + C_{\\text{bary}}\n6820: $$\n6821: \n6822: Since $p_i \\in [0,1]$ and $\\sum_i p_i \\leq N$ (at most all walkers clone):\n6823: \n6824: $$\n6825: \\mathbb{E}[\\Delta V_{\\text{Var},v}] \\leq 4(\\alpha_{\\text{restitution}} + 1)^2 V_{\\max}^2 + C_{\\text{bary}} =: C_v\n6826: $$\n6827: \n6828: This constant is **state-independent** and **$N$-independent** (the $N$ cancels in the normalization).\n6829: "
     },
     {
@@ -55,6 +57,7 @@
         "label": "rem-synergistic-velocity-dissipation"
       },
       "section": "## 10.4. Velocity Variance Bounded Expansion",
+      "references": [],
       "raw_directive": "6831: :::\n6832: \n6833: :::{prf:remark} Synergistic Dissipation Enables Net Contraction\n6834: :label: rem-synergistic-velocity-dissipation\n6835: \n6836: This bounded expansion is the prerequisite for the synergistic dissipation framework. The companion document will prove that the kinetic operator provides velocity contraction:\n6837: \n6838: $$\n6839: \\mathbb{E}_{\\text{kin}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_v V_{\\text{Var},v} + C'_v\n6840: $$\n6841: \n6842: for some $\\kappa_v > 0$ proportional to the Langevin friction $\\gamma$.\n6843: \n6844: When properly balanced:\n6845: \n6846: $$\n6847: \\mathbb{E}_{\\text{clone} \\circ \\text{kin}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_v V_{\\text{Var},v} + (C_v + C'_v)\n6848: $$\n6849: "
     }
   ],

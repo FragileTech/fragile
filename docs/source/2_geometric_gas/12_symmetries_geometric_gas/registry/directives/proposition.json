@@ -2,7 +2,7 @@
   "document_id": "12_symmetries_geometric_gas",
   "stage": "directives",
   "directive_type": "proposition",
-  "generated_at": "2025-11-08T17:16:20.228552+00:00",
+  "generated_at": "2025-11-08T23:19:38.284642+00:00",
   "count": 1,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "prop-h-theorem"
       },
       "section": "## 3. Flat Algorithmic Space Symmetries",
+      "references": [],
       "raw_directive": "565: :::\n566: \n567: :::{prf:proposition} H-Theorem for Geometric Gas\n568: :label: prop-h-theorem\n569: \n570: Let $H(f_t | \\pi_{\\text{QSD}})$ denote the relative entropy (Kullback-Leibler divergence) of the swarm distribution $f_t$ to the QSD. Then:\n571: \n572: $$\n573: \\frac{d}{dt} H(f_t | \\pi_{\\text{QSD}}) \\le -\\kappa_{\\text{total}} H(f_t | \\pi_{\\text{QSD}})\n574: \n575: $$\n576: \n577: where $\\kappa_{\\text{total}} > 0$ is the exponential convergence rate from `08_emergent_geometry.md`.\n578: ",
       "_registry_context": {
         "stage": "directives",

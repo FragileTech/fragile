@@ -2,7 +2,7 @@
   "document_id": "19_geometric_gas_cinf_regularity_simplified",
   "stage": "directives",
   "directive_type": "remark",
-  "generated_at": "2025-11-08T17:16:20.303913+00:00",
+  "generated_at": "2025-11-08T23:19:38.329361+00:00",
   "count": 4,
   "items": [
     {
@@ -21,6 +21,9 @@
         "label": "rmk-verification-primitives-cinf"
       },
       "section": "## 3. C∞ Regularity Assumptions on Primitive Functions",
+      "references": [
+        "assump-cinf-primitives"
+      ],
       "raw_directive": "351: :::\n352: \n353: :::{prf:remark} Verification for Standard Choices\n354: :label: rmk-verification-primitives-cinf\n355: \n356: - Gaussian kernel: Real analytic (entire function), Hermite bounds classical\n357: - Sigmoid g_A(z) = A/(1 + e^{-z}): Real analytic, derivatives decay exponentially\n358: - Square root regularization σ'_reg(σ²) = √(σ² + ε_σ²): Real analytic on ℝ_{≥0}\n359: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +49,7 @@
         "label": "rmk-k-uniformity-mechanism-cinf"
       },
       "section": "## 4. Base Cases: C¹, C², C³, C⁴ Regularity (Established Results)",
+      "references": [],
       "raw_directive": "403: :::\n404: \n405: :::{prf:remark} k-Uniformity Mechanism\n406: :label: rmk-k-uniformity-mechanism-cinf\n407: \n408: The k-uniformity proven in C³ ([13_geometric_gas_c3_regularity.md](13_geometric_gas_c3_regularity.md) § 5.2, Lemmas 5.2-5.3) and C⁴ ([14_geometric_gas_c4_regularity.md](14_geometric_gas_c4_regularity.md) § 5, Lemmas 5.1-5.2) relies on the telescoping identity:\n409: \n410: $$\n411: \\sum_{j \\in A_k} \\nabla^m w_{ij}(\\rho) = 0 \\quad \\text{for all } m \\geq 1\n412: $$\n413: \n414: This follows from differentiating ∑_j w_ij = 1 identically. The consequence is that sums like ∑_j ∇^m w_ij · d(x_j) can be rewritten as **centered sums**:\n415: \n416: $$\n417: \\sum_j \\nabla^m w_{ij} \\cdot d(x_j) = \\sum_j \\nabla^m w_{ij} \\cdot (d(x_j) - \\mu_\\rho)\n418: $$\n419: \n420: Since |d(x_j) - μ_ρ| ≤ diam(d) is uniformly bounded (X is compact), the sum scales as O(||∇^m w_ij||), not O(k · ||∇^m w_ij||). This prevents linear growth in k and ensures k-uniformity.\n421: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +75,7 @@
         "label": "rmk-factorial-no-explosion"
       },
       "section": "## 5. Inductive Step: From C^m to C^{m+1}",
+      "references": [],
       "raw_directive": "676: :::\n677: \n678: :::{prf:remark} Why Factorial Growth Doesn't Explode\n679: :label: rmk-factorial-no-explosion\n680: \n681: The potential concern is that iterating the Faà di Bruno formula m times could yield (m!)^m growth. This doesn't happen because:\n682: \n683: 1. **Telescoping cancellation**: The centered sums ∑_j ∇^m w_ij · (d_j - μ_ρ) have leading-order terms that cancel, preventing naive k · (m!) growth\n684: 2. **Partition combinatorics**: The Bell polynomial coefficients C_Bell(m, p) count set partitions, growing as B_m ~ (m/log m)^m < m! but with favorable structure for our quotient\n685: 3. **Hermite sub-factorial bounds**: |H_m(y)| · e^{-y²/2} ≤ C · √(m!), not m!, provides a \"cushion\" against exponential blowup\n686: 4. **Empirical verification**: C³ and C⁴ exhibit single-factorial growth, confirming the pattern\n687: ",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +101,7 @@
         "label": "rmk-gevrey-not-analytic-cinf"
       },
       "section": "## 7. Gevrey-1 Classification",
+      "references": [],
       "raw_directive": "791: :::\n792: \n793: :::{prf:remark} Why Gevrey-1, Not Real Analytic?\n794: :label: rmk-gevrey-not-analytic-cinf\n795: \n796: Despite the Gaussian kernel being real analytic, V_fit fails real analyticity due to:\n797: \n798: 1. **Variable alive set**: The sum ∑_{j ∈ A_k} involves k-dependent number of terms, where k changes as walkers die. Not a finite composition of analytic functions.\n799: \n800: 2. **Normalization non-analyticity**: w_ij = K_ij / (∑_ℓ K_iℓ) has denominator depending on alive set. While smooth, may fail holomorphic extension if zeros of denominator cluster near real axis.\n801: \n802: 3. **Hermite polynomial growth**: Bounds |H_m(y)| ~ √(m!) are **sub-factorial**, insufficient to guarantee Taylor series convergence.\n803: ",
       "_registry_context": {
         "stage": "directives",

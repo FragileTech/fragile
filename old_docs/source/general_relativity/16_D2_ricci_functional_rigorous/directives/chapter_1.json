@@ -19,6 +19,7 @@
         "label": "def-voronoi-rigorous"
       },
       "section": "## 1. Mathematical Preliminaries",
+      "references": [],
       "raw_directive": "16: ### 1.1 Voronoi Tessellation and CVT\n17: \n18: :::{prf:definition} Voronoi Tessellation\n19: :label: def-voronoi-rigorous\n20: \n21: Given $N$ generator points $\\{x_i\\}_{i=1}^N$ in a domain $\\Omega \\subset \\mathbb{R}^d$, the **Voronoi cell** of $x_i$ is:\n22: \n23: $$\n24: \\mathcal{V}_i := \\{x \\in \\Omega : \\|x - x_i\\| < \\|x - x_j\\| \\,\\forall j \\neq i\\}\n25: $$\n26: \n27: The collection $\\{\\mathcal{V}_i\\}_{i=1}^N$ forms a **Voronoi tessellation** of $\\Omega$."
     },
     {
@@ -37,6 +38,7 @@
         "label": "def-cvt"
       },
       "section": "## 1. Mathematical Preliminaries",
+      "references": [],
       "raw_directive": "29: :::\n30: \n31: :::{prf:definition} Centroidal Voronoi Tessellation (CVT)\n32: :label: def-cvt\n33: \n34: A Voronoi tessellation $\\{\\mathcal{V}_i\\}$ with generators $\\{x_i\\}$ is a **Centroidal Voronoi Tessellation** with respect to density $\\rho(x)$ if:\n35: \n36: $$\n37: x_i = \\frac{\\int_{\\mathcal{V}_i} x \\, \\rho(x) \\, dx}{\\int_{\\mathcal{V}_i} \\rho(x) \\, dx} \\quad \\forall i\n38: $$\n39: \n40: i.e., each generator is the **mass centroid** of its Voronoi cell.\n41: \n42: **Energy Functional**: CVT minimizes the energy functional:\n43: \n44: $$\n45: \\mathcal{E}[\\{x_i\\}, \\{\\mathcal{V}_i\\}] = \\sum_{i=1}^N \\int_{\\mathcal{V}_i} \\|x - x_i\\|^2 \\rho(x) \\, dx\n46: $$"
     },
     {
@@ -55,6 +57,7 @@
         "label": "thm-cvt-convergence"
       },
       "section": "## 1. Mathematical Preliminaries",
+      "references": [],
       "raw_directive": "50: **Key Theorem** (Du-Faber-Gunzburger, 1999):\n51: \n52: :::{prf:theorem} CVT Convergence to Continuum\n53: :label: thm-cvt-convergence\n54: \n55: Let $\\rho(x) > 0$ be a smooth density on $\\Omega \\subset \\mathbb{R}^d$. Let $\\{x_i^N\\}_{i=1}^N$ be a CVT for $\\rho$ with $N$ generators.\n56: \n57: Then as $N \\to \\infty$:\n58: \n59: $$\n60: \\max_{i} \\text{diam}(\\mathcal{V}_i) = O(N^{-1/d})\n61: $$\n62: \n63: and the CVT energy satisfies:\n64: \n65: $$\n66: \\mathcal{E}[\\{x_i^N\\}] = \\mathcal{E}_{\\infty}[\\rho] + O(N^{-(2+d)/d})\n67: $$\n68: \n69: where $\\mathcal{E}_{\\infty}[\\rho]$ is the limiting continuum energy functional.\n70: \n71: **Reference**: Du, Q., Faber, V., Gunzburger, M. (1999). \"Centroidal Voronoi tessellations: Applications and algorithms\". *SIAM Review* **41**(4), 637-676."
     },
     {
@@ -73,6 +76,7 @@
         "label": "def-wasserstein-2"
       },
       "section": "## 1. Mathematical Preliminaries",
+      "references": [],
       "raw_directive": "75: ### 1.2 Optimal Transport and Monge-Amp\u00e8re Equation\n76: \n77: :::{prf:definition} Wasserstein-2 Distance\n78: :label: def-wasserstein-2\n79: \n80: For probability measures $\\mu, \\nu$ on $\\mathbb{R}^d$, the **Wasserstein-2 distance** is:\n81: \n82: $$\n83: W_2(\\mu, \\nu)^2 := \\inf_{\\gamma \\in \\Gamma(\\mu, \\nu)} \\int_{\\mathbb{R}^d \\times \\mathbb{R}^d} \\|x - y\\|^2 \\, d\\gamma(x, y)\n84: $$\n85: \n86: where $\\Gamma(\\mu, \\nu)$ is the set of all couplings (joint measures with marginals $\\mu$, $\\nu$)."
     },
     {
@@ -91,6 +95,7 @@
         "label": "prop-cvt-optimal-transport"
       },
       "section": "## 1. Mathematical Preliminaries",
+      "references": [],
       "raw_directive": "90: **Connection to CVT**:\n91: \n92: :::{prf:proposition} CVT as Discrete Optimal Transport\n93: :label: prop-cvt-optimal-transport\n94: \n95: The CVT energy functional is the discrete approximation to the Wasserstein-2 distance:\n96: \n97: $$\n98: \\mathcal{E}[\\{x_i\\}] = W_2(\\rho_{\\text{empirical}}, \\rho_{\\text{target}})^2 + O(N^{-1/d})\n99: $$\n100: \n101: where:\n102: - $\\rho_{\\text{empirical}} = \\frac{1}{N}\\sum_{i=1}^N \\delta_{x_i}$ is the empirical measure of generators\n103: - $\\rho_{\\text{target}} = \\rho(x)$ is the target continuous density\n104: \n105: **Reference**: Villani, C. (2009). *Optimal Transport: Old and New*. Springer, Theorem 2.30."
     },
     {
@@ -109,6 +114,7 @@
         "label": "thm-brenier-mccann"
       },
       "section": "## 1. Mathematical Preliminaries",
+      "references": [],
       "raw_directive": "109: **Monge-Amp\u00e8re PDE**:\n110: \n111: :::{prf:theorem} Brenier-McCann Theorem\n112: :label: thm-brenier-mccann\n113: \n114: Let $\\rho_0, \\rho_1$ be probability densities on $\\mathbb{R}^d$ with $\\rho_0, \\rho_1 > 0$ and smooth. Then there exists a unique optimal transport map $T: \\mathbb{R}^d \\to \\mathbb{R}^d$ such that:\n115: \n116: $$\n117: T_\\# \\rho_0 = \\rho_1\n118: $$\n119: \n120: (i.e., $\\rho_1(T(x)) \\det(\\nabla T(x)) = \\rho_0(x)$)\n121: \n122: and $T = \\nabla \\phi$ for a convex potential $\\phi: \\mathbb{R}^d \\to \\mathbb{R}$ satisfying the **Monge-Amp\u00e8re equation**:\n123: \n124: $$\n125: \\det(\\nabla^2 \\phi(x)) = \\frac{\\rho_0(x)}{\\rho_1(\\nabla \\phi(x))}\n126: $$\n127: \n128: **Reference**: Brenier, Y. (1991). \"Polar factorization and monotone rearrangement of vector-valued functions\". *Comm. Pure Appl. Math.* **44**, 375-417."
     }
   ],

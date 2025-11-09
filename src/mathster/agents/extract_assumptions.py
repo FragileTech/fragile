@@ -26,77 +26,16 @@ import dspy
 
 from mathster.agents.core import (
     DirectiveAgentPaths,
-    ExtractWithParametersSignature,
     LATEX_FENCE_PATTERN,
     METADATA_PATTERN,
     run_directive_extraction_loop,
-    to_jsonable,
     URI_PATTERN,
 )
+from mathster.agents.signatures import ParseAssumptionDirectiveSplit, to_jsonable
 
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
-
-# --------------------------------------------------------------------------------------
-# DSPy Signature
-# --------------------------------------------------------------------------------------
-
-
-class ParseAssumptionDirectiveSplit(ExtractWithParametersSignature):
-    """
-    Convert a `::{prf:assumption}` directive into structured analysis artifacts.
-
-    INPUT
-    -----
-    - directive_text (str): Exact directive body (header/title/body/closing fence).
-    - context_hints (str, optional): Tiny snippet of nearby prose (≤ ~320 chars).
-
-    OUTPUT FIELDS
-    -------------
-    - label_str (str):         Directive label (assump-*).
-    - title_str (str):         Short title/headline if present.
-    - scope_str (str):         Scope classification (global/local/model/regime/etc.).
-    - nl_summary_str (str):    A concise natural-language summary (1–3 sentences).
-
-    - bullet_items_json (json array):
-        [{"name": <string|null>, "text": <string|null>, "latex": <string|null>} ...]
-        representing enumerated assumptions or clauses.
-
-    - conditions_json (json array):
-        [{"type": <string|null>, "text": <string|null>, "latex": <string|null>} ...]
-        for inequalities, bounds, or cases.
-
-    - parameters (list[Parameter]):
-        Provided by the shared signature; captures all parameter metadata.
-
-    - references (list[str]):
-        Labels cited in the assumption (definitions, theorems, axioms, etc.).
-
-    - notes_json (json array):
-        [{"type": <string|null>, "text": <string|null>} ...] capturing remarks, motivations,
-        or qualitative commentary embedded in the directive.
-
-    Rules: omit metadata, keep LaTeX fence-free, and only include content present
-    in the directive or the supplied context window.
-    """
-
-    directive_text = dspy.InputField(desc="Raw assumption directive text.")
-    context_hints = dspy.InputField(desc="Optional nearby prose.", optional=True)
-
-    label_str = dspy.OutputField(desc="Directive label (`assump-*`).")
-    title_str = dspy.OutputField(desc="Title/heading if present.")
-    scope_str = dspy.OutputField(desc="Scope classification (global/local/model/etc.).")
-    nl_summary_str = dspy.OutputField(desc="Concise natural-language summary.")
-
-    bullet_items_json = dspy.OutputField(
-        desc='JSON array [{"name": str|null, "text": str|null, "latex": str|null}, ...]'
-    )
-    conditions_json = dspy.OutputField(
-        desc='JSON array [{"type": str|null, "text": str|null, "latex": str|null}, ...]'
-    )
-    notes_json = dspy.OutputField(desc='JSON array [{"type": str|null, "text": str|null}, ...]')
 
 
 # --------------------------------------------------------------------------------------

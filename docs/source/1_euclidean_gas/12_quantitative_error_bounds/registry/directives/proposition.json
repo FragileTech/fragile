@@ -2,7 +2,7 @@
   "document_id": "12_quantitative_error_bounds",
   "stage": "directives",
   "directive_type": "proposition",
-  "generated_at": "2025-11-08T17:16:20.208651+00:00",
+  "generated_at": "2025-11-08T23:19:38.276744+00:00",
   "count": 5,
   "items": [
     {
@@ -21,6 +21,9 @@
         "label": "prop-interaction-complexity-bound"
       },
       "section": "## Part I: Mean-Field Convergence via Relative Entropy",
+      "references": [
+        "lem-quantitative-kl-bound"
+      ],
       "raw_directive": "288: The following proposition completes the proof of {prf:ref}`lem-quantitative-kl-bound` by establishing that the interaction complexity constant is finite and independent of $N$.\n289: \n290: :::{prf:proposition} Boundedness of Interaction Complexity Constant\n291: :label: prop-interaction-complexity-bound\n292: \n293: The interaction complexity constant appearing in {prf:ref}`lem-quantitative-kl-bound`, which arises from the KL-divergence evolution equation:\n294: \n295: $$\n296: |R_N(k)| \\leq \\frac{C_{\\text{int}}}{N}\n297: $$\n298: \n299: is finite and independent of $N$. Specifically:\n300: \n301: $$\n302: C_{\\text{int}} \\leq \\lambda \\cdot L_{\\log \\rho_0} \\cdot \\text{diam}(\\Omega)\n303: $$\n304: \n305: where:\n306: - $\\lambda$: cloning rate\n307: - $L_{\\log \\rho_0}$: Lipschitz constant of $\\log \\rho_0$ (the log-density of the mean-field QSD)\n308: - $\\text{diam}(\\Omega)$: effective diameter of the state space\n309: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +49,7 @@
         "label": "prop-finite-second-moment-meanfield"
       },
       "section": "## Part I: Mean-Field Convergence via Relative Entropy",
+      "references": [],
       "raw_directive": "498: The Fournier-Guillin bound requires that the mean-field invariant measure $\\rho_0$ has finite second moment. We now prove this.\n499: \n500: :::{prf:proposition} Finite Second Moment of Mean-Field QSD\n501: :label: prop-finite-second-moment-meanfield\n502: \n503: The mean-field invariant measure $\\rho_0$ of the McKean-Vlasov PDE has finite second moment:\n504: \n505: $$\n506: C_{\\text{var}}(\\rho_0) := \\int_\\Omega |z - \\bar{z}|^2 d\\rho_0(z) < \\infty\n507: $$\n508: \n509: where $\\bar{z} = \\int_\\Omega z d\\rho_0(z)$ is the mean.\n510: \n511: More explicitly, both the position and velocity moments are finite:\n512: \n513: $$\n514: \\int_\\Omega (|x|^2 + |v|^2) d\\rho_0(z) < \\infty",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +75,9 @@
         "label": "prop-fourth-moment-baoab"
       },
       "section": "## Part II: Time Discretization Error Bounds",
+      "references": [
+        "def-confined-potential"
+      ],
       "raw_directive": "743: Before proving weak convergence, we need uniform moment bounds for the BAOAB iterates.\n744: \n745: :::{prf:proposition} Fourth-Moment Uniform Bounds for BAOAB\n746: :label: prop-fourth-moment-baoab\n747: \n748: Let $\\{Z_k\\}_{k \\geq 0}$ be the BAOAB chain with step size $\\Delta t$ initialized from the continuous-time invariant measure $\\nu^{\\text{cont}}$. Under the confinement axiom ({prf:ref}`def-confined-potential`), there exists a constant $M_4 < \\infty$ independent of $\\Delta t$ (for $\\Delta t$ sufficiently small) such that:\n749: \n750: $$\n751: \\sup_{k \\geq 0} \\mathbb{E}_{\\nu^{\\text{cont}}} [|Z_k|^4] \\leq M_4\n752: $$\n753: ",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +103,7 @@
         "label": "prop-mixing-rate-relationship"
       },
       "section": "## Part III: Cloning Mechanism Error Bounds",
+      "references": [],
       "raw_directive": "2120: ---\n2121: \n2122: :::{prf:proposition} Relationship Between Continuous and Discrete Mixing Rates\n2123: :label: prop-mixing-rate-relationship\n2124: \n2125: Let $\\mathcal{L}$ be a generator with spectral gap $\\lambda_1 > 0$ (so the continuous-time semigroup $\\mathcal{P}^t = e^{t\\mathcal{L}}$ has mixing rate $\\kappa_{\\text{mix}}^{\\text{cont}} = \\lambda_1$).\n2126: \n2127: For any fixed time step $\\tau > 0$, the discrete-time Markov chain with transition kernel $\\mathcal{P}^\\tau = e^{\\tau \\mathcal{L}}$ is geometrically ergodic with mixing rate:\n2128: \n2129: $$\n2130: \\kappa_{\\text{mix}}^{\\text{discrete}}(\\tau) = -\\frac{1}{\\tau} \\log(1 - \\lambda_1(\\tau))\n2131: $$\n2132: \n2133: where $\\lambda_1(\\tau) = 1 - e^{-\\tau \\lambda_1}$ is the spectral gap of the discrete operator $I - \\mathcal{P}^\\tau$.\n2134: \n2135: For small $\\tau$, we have:\n2136: \n2137: $$\n2138: \\kappa_{\\text{mix}}^{\\text{discrete}}(\\tau) = \\lambda_1 + O(\\tau) = \\kappa_{\\text{mix}}^{\\text{cont}} + O(\\tau)\n2139: $$\n2140: ",
       "_registry_context": {
         "stage": "directives",
@@ -121,6 +129,9 @@
         "label": "prop-quantitative-explicit-constants"
       },
       "section": "## Part IV: Total Error Bound",
+      "references": [
+        "lem-quantitative-kl-bound"
+      ],
       "raw_directive": "2627: For practical implementation, we provide explicit formulas for the constants in terms of system parameters.\n2628: \n2629: :::{prf:proposition} Explicit Constant Formulas\n2630: :label: prop-quantitative-explicit-constants\n2631: \n2632: Under the framework axioms, the error constants admit the following explicit bounds:\n2633: \n2634: **1. Mean-field constant:**\n2635: \n2636: $$\n2637: C_{\\text{MF}} = \\sqrt{C_{\\text{var}} + C' \\cdot C_{\\text{int}}}\n2638: $$\n2639: \n2640: where:\n2641: - $C_{\\text{var}}$ is the variance constant from the Fournier-Guillin bound for empirical measure fluctuations\n2642:   - Depends on metric properties and observable regularity\n2643: - $C_{\\text{int}}$ is the interaction complexity constant from {prf:ref}`lem-quantitative-kl-bound`\n2644:   - Quantifies the strength of particle interactions through the diversity companion probability\n2645:   - Explicit form: $C_{\\text{int}} = \\lambda L_{\\log \\rho_0} \\cdot \\text{diam}(\\Omega)$\n2646:   - Depends on system parameters: $\\gamma, \\sigma, \\lambda, \\delta, \\beta, \\kappa_{\\text{conf}}$\n2647: - $C'$ is a universal constant from the propagation of chaos proof\n2648: \n2649: **2. Discretization constant:**\n2650: \n2651: $$\n2652: C_{\\text{discrete}} = \\frac{C_{\\text{split}} \\cdot C_{\\text{poisson}}}{\\kappa_{\\text{mix}}^{\\text{cont}}}\n2653: $$\n2654: \n2655: where:\n2656: - $C_{\\text{split}} = \\frac{1}{2} \\lambda \\beta C_{\\text{chaos}} \\max(C_F, \\sigma^2, \\|\\nabla^2 U\\|_\\infty)$ (commutator bound)\n2657: - $C_{\\text{chaos}}$: propagation of chaos constant (Sznitman, typically $O(1)$)\n2658: - $C_{\\text{poisson}}$: Poisson equation regularity constant (depends on $\\gamma, \\sigma, \\|\\nabla^3 U\\|_\\infty$)\n2659: - $\\kappa_{\\text{mix}}^{\\text{cont}} = \\min(\\kappa_{\\text{hypo}}, \\lambda)$ (smaller of hypocoercivity gap and cloning rate)\n2660: \n2661: **Typical parameter values** (for optimization tasks):\n2662: - Friction: $\\gamma = 0.1$ to $1.0$\n2663: - Noise scale: $\\sigma = 0.1$ to $1.0$\n2664: - Cloning rate: $\\lambda = 0.01$ to $0.1$\n2665: - Cloning noise: $\\delta = 0.1$ to $0.3$\n2666: - Fitness weight: $\\beta = 1$ to $10$\n2667: \n2668: **Order-of-magnitude estimates:**\n2669: - $C_{\\text{MF}} \\sim O(10)$ for typical problems\n2670: - $C_{\\text{discrete}} \\sim O(1)$ to $O(10)$ depending on mixing rate",
       "_registry_context": {
         "stage": "directives",

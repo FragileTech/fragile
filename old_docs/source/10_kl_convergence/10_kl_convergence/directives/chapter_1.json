@@ -19,6 +19,7 @@
         "label": "def-relative-entropy"
       },
       "section": "## 1. Preliminaries and Functional Inequalities",
+      "references": [],
       "raw_directive": "100: ### 1.1. Basic Definitions\n101: \n102: :::{prf:definition} Relative Entropy and Fisher Information\n103: :label: def-relative-entropy\n104: \n105: For probability measures $\\mu, \\pi$ on a measurable space $(\\mathcal{X}, \\mathcal{F})$ with $\\mu \\ll \\pi$, the **relative entropy** (KL-divergence) is:\n106: \n107: $$\n108: D_{\\text{KL}}(\\mu \\| \\pi) := \\int \\frac{d\\mu}{d\\pi} \\log \\frac{d\\mu}{d\\pi} \\, d\\pi = \\int \\log \\frac{d\\mu}{d\\pi} \\, d\\mu\n109: $$\n110: \n111: The **entropy** of a density $f$ with respect to $\\pi$ is:\n112: \n113: $$\n114: \\text{Ent}_\\pi(f) := \\int f \\log f \\, d\\pi - \\left(\\int f \\, d\\pi\\right) \\log \\left(\\int f \\, d\\pi\\right)\n115: $$\n116: \n117: For a probability density $\\rho = d\\mu/d\\pi$, we have $D_{\\text{KL}}(\\mu \\| \\pi) = \\text{Ent}_\\pi(\\rho)$.\n118: \n119: The **Fisher information** of $\\mu$ with respect to a diffusion generator $\\mathcal{L}$ is:\n120: \n121: $$\n122: I(\\mu \\| \\pi) := \\int \\left|\\nabla \\log \\frac{d\\mu}{d\\pi}\\right|^2 \\frac{d\\mu}{d\\pi} \\, d\\pi = 4 \\int \\left|\\nabla \\sqrt{\\frac{d\\mu}{d\\pi}}\\right|^2 d\\pi\n123: $$"
     },
     {
@@ -37,6 +38,7 @@
         "label": "def-lsi-continuous"
       },
       "section": "## 1. Preliminaries and Functional Inequalities",
+      "references": [],
       "raw_directive": "125: :::\n126: \n127: :::{prf:definition} Logarithmic Sobolev Inequality (LSI)\n128: :label: def-lsi-continuous\n129: \n130: A probability measure $\\pi$ on $\\mathbb{R}^d$ with generator $\\mathcal{L}$ satisfies a **logarithmic Sobolev inequality** with constant $C_{\\text{LSI}} > 0$ if for all smooth functions $f > 0$ with $\\int f^2 d\\pi = 1$:\n131: \n132: $$\n133: \\text{Ent}_\\pi(f^2) \\le 2C_{\\text{LSI}} \\cdot \\mathcal{E}(f, f)\n134: $$\n135: \n136: where $\\mathcal{E}(f, f) := -\\int f \\mathcal{L} f \\, d\\pi$ is the Dirichlet form.\n137: \n138: **Equivalent formulation:** For all $f > 0$:\n139: \n140: $$\n141: \\int f^2 \\log f^2 \\, d\\pi - \\left(\\int f^2 d\\pi\\right) \\log\\left(\\int f^2 d\\pi\\right) \\le 2C_{\\text{LSI}} \\int |\\nabla f|^2 \\, d\\pi\n142: $$"
     },
     {
@@ -55,6 +57,7 @@
         "label": "def-discrete-lsi"
       },
       "section": "## 1. Preliminaries and Functional Inequalities",
+      "references": [],
       "raw_directive": "144: :::\n145: \n146: :::{prf:definition} Discrete-Time LSI\n147: :label: def-discrete-lsi\n148: \n149: A Markov kernel $K: \\mathcal{X} \\to \\mathcal{P}(\\mathcal{X})$ with invariant measure $\\pi$ satisfies a **discrete-time LSI** with constant $C_{\\text{LSI}} > 0$ if for all functions $f: \\mathcal{X} \\to \\mathbb{R}_{>0}$:\n150: \n151: $$\n152: \\text{Ent}_\\pi(K f^2) \\le e^{-\\tau/C_{\\text{LSI}}} \\cdot \\text{Ent}_\\pi(f^2)\n153: $$\n154: \n155: where $(Kf)(x) := \\int f(y) K(x, dy)$ and $\\tau$ is the discrete time step.\n156: \n157: **Equivalent formulation via Dirichlet form:** For all $f$:\n158: \n159: $$\n160: \\text{Ent}_\\pi(f^2) \\le C_{\\text{LSI}} \\cdot \\mathcal{E}_K(f, f)\n161: $$\n162: "
     },
     {
@@ -73,6 +76,7 @@
         "label": "thm-bakry-emery"
       },
       "section": "## 1. Preliminaries and Functional Inequalities",
+      "references": [],
       "raw_directive": "166: ### 1.2. Classical Results\n167: \n168: :::{prf:theorem} Bakry-\u00c9mery Criterion for LSI\n169: :label: thm-bakry-emery\n170: \n171: Let $\\pi$ be a probability measure on $\\mathbb{R}^d$ with smooth density and generator\n172: \n173: $$\n174: \\mathcal{L} = \\Delta - \\nabla U \\cdot \\nabla\n175: $$\n176: \n177: If the potential $U$ satisfies the **Bakry-\u00c9mery criterion**\n178: \n179: $$\n180: \\text{Hess}(U) \\succeq \\rho I \\quad \\text{for some } \\rho > 0\n181: $$\n182: "
     },
     {
@@ -87,6 +91,7 @@
       "content": "185: \n186: :::{prf:proof}\n187: This is the classical result of Bakry-\u00c9mery (1985). The $\\Gamma_2$ calculus yields:\n188: \n189: $$\n190: \\Gamma_2(f, f) := \\frac{1}{2}\\mathcal{L}(\\Gamma(f, f)) - \\Gamma(f, \\mathcal{L} f) \\ge \\rho \\Gamma(f, f)\n191: $$",
       "metadata": {},
       "section": "## 1. Preliminaries and Functional Inequalities",
+      "references": [],
       "raw_directive": "184: :::\n185: \n186: :::{prf:proof}\n187: This is the classical result of Bakry-\u00c9mery (1985). The $\\Gamma_2$ calculus yields:\n188: \n189: $$\n190: \\Gamma_2(f, f) := \\frac{1}{2}\\mathcal{L}(\\Gamma(f, f)) - \\Gamma(f, \\mathcal{L} f) \\ge \\rho \\Gamma(f, f)\n191: $$\n192: "
     }
   ],

@@ -1,7 +1,7 @@
 {
   "stage": "directives",
   "directive_type": "example",
-  "generated_at": "2025-11-08T17:16:20.404883+00:00",
+  "generated_at": "2025-11-08T23:19:38.396905+00:00",
   "source_documents": [
     "01_crystalline_gas_yang_mills_mass_gap_proof",
     "05_kinetic_contraction",
@@ -27,6 +27,9 @@
         "label": "ex-quadratic-fitness"
       },
       "section": "## 2. The Crystalline Gas Algorithm",
+      "references": [
+        "def-cg-fitness-landscape"
+      ],
       "raw_directive": "196: :::\n197: \n198: :::{prf:example} Quadratic Fitness Landscape\n199: :label: ex-quadratic-fitness\n200: \n201: The simplest example satisfying {prf:ref}`def-cg-fitness-landscape` is the **quadratic potential**\n202: \n203: $$\n204: \\Phi(x) = \\Phi_0 - \\frac{\\kappa}{2} \\|x - x_0\\|^2\n205: $$\n206: \n207: where $\\Phi_0 \\in \\mathbb{R}$, $\\kappa > 0$, and $x_0 \\in \\mathbb{R}^{d}$ is the unique global maximum. This potential has:\n208: - Constant Hessian: $H_{\\Phi}(x) = -\\kappa I$\n209: - Linear gradient: $\\nabla \\Phi(x) = -\\kappa(x - x_0)$\n210: - All higher derivatives vanish: $\\nabla^k \\Phi(x) = 0$ for $k \\geq 3$\n211: ",
       "_registry_context": {
         "stage": "directives",
@@ -52,6 +55,7 @@
         "label": "ex-canonical-confining-potential"
       },
       "section": "## 3. The Kinetic Operator with Stratonovich Formulation",
+      "references": [],
       "raw_directive": "276: :::\n277: \n278: :::{prf:example} Canonical Confining Potential\n279: :label: ex-canonical-confining-potential\n280: \n281: A standard choice is the **smoothly regularized harmonic potential**:\n282: \n283: $$\n284: U(x) = \\begin{cases}\n285: 0 & \\text{if } \\|x\\| \\leq r_{\\text{interior}} \\\\\n286: \\frac{\\kappa}{2}(\\|x\\| - r_{\\text{interior}})^2 & \\text{if } r_{\\text{interior}} < \\|x\\| < r_{\\text{boundary}} \\\\\n287: +\\infty & \\text{if } \\|x\\| \\geq r_{\\text{boundary}}\n288: \\end{cases}\n289: \n290: $$\n291: \n292: where $r_{\\text{interior}} < r_{\\text{boundary}} = \\text{radius of } \\mathcal{X}_{\\text{valid}}$.\n293: \n294: This potential satisfies all axiom requirements:\n295: - **Coercivity**: $\\alpha_U = \\kappa$ (from quadratic growth)\n296: - **Interior safety**: $F = 0$ for $\\|x\\| \\leq r_{\\text{interior}}$\n297: - **Inward force**: $F(x) = -\\kappa(\\|x\\| - r_{\\text{interior}})\\frac{x}{\\|x\\|}$ for $r_{\\text{interior}} < \\|x\\| < r_{\\text{boundary}}$",
       "_registry_context": {
         "stage": "directives",
@@ -77,6 +81,7 @@
         "label": "ex-fl-no-lsi"
       },
       "section": "## 0.1 The Problem: Foster-Lyapunov ≠ LSI",
+      "references": [],
       "raw_directive": "7126: **Foster-Lyapunov DOES NOT imply LSI** in general. Counter-example:\n7127: \n7128: :::{prf:example} Random Walk on ℤ\n7129: :label: ex-fl-no-lsi\n7130: \n7131: Consider a lazy random walk on the integers with transition:\n7132: $$\n7133: P(x, x \\pm 1) = \\frac{1}{4}, \\quad P(x, x) = \\frac{1}{2}\n7134: $$\n7135: \n7136: and stationary measure $\\pi$ geometric: $\\pi(x) \\propto e^{-|x|}$.\n7137: \n7138: **Has Foster-Lyapunov**: With $V(x) = |x|$:\n7139: $$\n7140: \\mathbb{E}[V(X_{t+1})] \\leq (1 - c)V(X_t) + C\n7141: $$\n7142: ",
       "_registry_context": {
         "stage": "directives",
@@ -104,6 +109,7 @@
         "class": "tip"
       },
       "section": "## 3. Flat Algorithmic Space Symmetries",
+      "references": [],
       "raw_directive": "463: :::\n464: \n465: :::{prf:example} Radially Symmetric Fitness Landscapes\n466: :label: ex-radial-fitness\n467: :class: tip\n468: \n469: Consider a reward of the form:\n470: \n471: $$\n472: R(x, v) = f(\\|x\\|, \\|v\\|)\n473: \n474: $$\n475: \n476: on the ball $\\mathcal{X}_{\\text{valid}} = \\{x : \\|x\\| \\le R_0\\}$. This system has **full $SO(d)$ rotational symmetry**.\n477: ",
       "_registry_context": {
         "stage": "directives",

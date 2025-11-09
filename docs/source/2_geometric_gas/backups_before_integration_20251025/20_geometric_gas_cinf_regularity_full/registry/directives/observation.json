@@ -2,7 +2,7 @@
   "document_id": "20_geometric_gas_cinf_regularity_full",
   "stage": "directives",
   "directive_type": "observation",
-  "generated_at": "2025-11-08T17:16:20.315842+00:00",
+  "generated_at": "2025-11-08T23:19:38.335618+00:00",
   "count": 1,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "obs-common-kernel-structure"
       },
       "section": "## 5.7 Statistical Equivalence and Unified Regularity Theorem",
+      "references": [],
       "raw_directive": "2530: ### 5.7.1 Matching the Analytical Structure\n2531: \n2532: :::{prf:observation} Common Exponential Kernel Structure\n2533: :label: obs-common-kernel-structure\n2534: \n2535: Both mechanisms express expected measurements as **quotients of exponentially weighted sums**:\n2536: \n2537: **Softmax**:\n2538: \n2539: $$\n2540: d_j = \\frac{\\sum_{\\ell \\in \\mathcal{A} \\setminus \\{j\\}} d_{\\text{alg}}(j,\\ell) \\exp(-d_{\\text{alg}}^2(j,\\ell)/(2\\varepsilon_c^2))}{\\sum_{\\ell \\in \\mathcal{A} \\setminus \\{j\\}} \\exp(-d_{\\text{alg}}^2(j,\\ell)/(2\\varepsilon_c^2))}\n2541: \n2542: $$\n2543: \n2544: **Diversity Pairing** (idealized):\n2545: \n2546: $$\n2547: \\bar{d}_j = \\frac{\\sum_{M \\in \\mathcal{M}_k} d_{\\text{alg}}(j, M(j)) W(M)}{\\sum_{M' \\in \\mathcal{M}_k} W(M')}\n2548: \n2549: $$\n2550: \n2551: where $W(M) = \\prod_{(i,\\ell) \\in M} \\exp(-d_{\\text{alg}}^2(i,\\ell)/(2\\varepsilon_{\\text{pair}}^2))$.\n2552: \n2553: **Key Similarity**: Both are:\n2554: - Smooth quotients (denominator bounded below by companion availability)\n2555: - Exponentially localized (exponential concentration around nearby companions)",
       "_registry_context": {
         "stage": "directives",

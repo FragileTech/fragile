@@ -19,6 +19,7 @@
         "label": "def-adaptive-generator-cinf"
       },
       "section": "## 8. Spectral Implications: Essential Self-Adjointness",
+      "references": [],
       "raw_directive": "822: ## 8. Spectral Implications: Essential Self-Adjointness\n823: \n824: :::{prf:definition} Adaptive Langevin Generator\n825: :label: def-adaptive-generator-cinf\n826: \n827: The **infinitesimal generator** of the adaptive Langevin dynamics on extended state w = (x, v):\n828: \n829: $$\n830: \\mathcal{L} f(x, v) = v \\cdot \\nabla_x f + [-\\nabla U(x) - \\epsilon_F \\nabla V_{\\text{fit}}(x) - \\gamma v] \\cdot \\nabla_v f + \\frac{\\gamma}{2\\beta} \\Delta_v f\n831: $$\n832: \n833: where:\n834: - U(x): confining potential (backbone)\n835: - \u03b5_F \u2207V_fit(x): adaptive force\n836: - \u03b3: friction\n837: - \u0394_v: velocity Laplacian (thermal noise)\n838: "
     },
     {
@@ -37,6 +38,9 @@
         "label": "thm-essential-self-adjoint-cinf"
       },
       "section": "## 8. Spectral Implications: Essential Self-Adjointness",
+      "references": [
+        "thm-cinf-regularity"
+      ],
       "raw_directive": "840: :::\n841: \n842: :::{prf:theorem} Essential Self-Adjointness (Conditional)\n843: :label: thm-essential-self-adjoint-cinf\n844: \n845: Assume:\n846: 1. V_fit \u2208 C\u221e(X) (Theorem {prf:ref}`thm-cinf-regularity`)\n847: 2. U \u2208 C\u221e(X) with lim_{||x|| \u2192 \u221e} U(x) = +\u221e (confining)\n848: 3. V_total = U + \u03b5_F V_fit satisfies liminf_{||x|| \u2192 \u221e} V_total(x) / ||x||\u00b2 > 0\n849: \n850: Then the generator L is **essentially self-adjoint** on C_c^\u221e(X \u00d7 \u211d^d).\n851: \n852: **Implication**:\n853: - Unique time evolution: e^{tL} uniquely determined\n854: - Spectral theorem applies: L admits spectral decomposition\n855: - No pathological behaviors\n856: \n857: **Proof outline**: Apply Segal-Nelson theorem for Schr\u00f6dinger-type operators:\n858: 1. C_c^\u221e dense in L\u00b2 (true for \u211d^d)\n859: 2. L symmetric on C_c^\u221e (integration by parts requires C\u221e coefficients - verified by our theorem)\n860: 3. V_total grows at most quadratically (ensures semiboundedness)\n861: "
     }
   ],

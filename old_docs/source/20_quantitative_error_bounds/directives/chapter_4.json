@@ -19,6 +19,7 @@
         "label": "thm-total-error-bound"
       },
       "section": "## Part IV: Combined Error Bound",
+      "references": [],
       "raw_directive": "325: Combine all error sources into a single quantitative bound.\n326: \n327: :::{prf:theorem} Total Quantitative Error Bound (Target)\n328: :label: thm-total-error-bound\n329: \n330: For any Lipschitz observable $\\phi: \\Omega \\to \\mathbb{R}$ with constant $L_\\phi$, the empirical average from the N-particle discrete-time Fragile Gas approximates the mean-field invariant measure with error:\n331: \n332: $$\n333: \\left| \\mathbb{E}_{\\nu_N^{QSD}} \\left[ \\frac{1}{N} \\sum_{i=1}^N \\phi(z_i) \\right] - \\int_\\Omega \\phi(z) \\rho_0(z) dz \\right| \\leq L_\\phi \\left( \\frac{C_1}{\\sqrt{N}} + C_2 \\Delta t \\right)\n334: $$\n335: \n336: where:\n337: - $C_1 = C_1(\\gamma, \\sigma, \\lambda, \\alpha, \\beta, \\Omega)$: Particle number scaling (mean-field convergence)\n338: - $C_2 = C_2(\\gamma, \\sigma, \\lambda, \\delta, \\kappa_W, \\|U\\|_{C^4})$: Time discretization and cloning mechanism errors (both $O(\\Delta t)$)\n339: \n340: The constants can be computed explicitly from system parameters.\n341: \n342: **Note**: The $O(\\Delta t)$ term combines two sources:\n343: 1. Invariant measure error from BAOAB time discretization (order $p-1 = 1$ for weak order $p=2$)"
     }
   ],

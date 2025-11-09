@@ -2,7 +2,7 @@
   "document_id": "19_geometric_gas_cinf_regularity_simplified",
   "stage": "directives",
   "directive_type": "proposition",
-  "generated_at": "2025-11-08T17:16:20.303613+00:00",
+  "generated_at": "2025-11-08T23:19:38.328859+00:00",
   "count": 5,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "prop-gevrey-regularization-cinf"
       },
       "section": "## 7. Gevrey-1 Classification",
+      "references": [],
       "raw_directive": "805: :::\n806: \n807: :::{prf:proposition} Gevrey Regularization Property\n808: :label: prop-gevrey-regularization-cinf\n809: \n810: If d ∈ G^s(X) for some s ≥ 1, then V_fit ∈ G^{min(s, 1)}(X). In particular:\n811: - d real analytic (s < 1) → V_fit ∈ G¹\n812: - d ∈ G¹ → V_fit ∈ G¹ (preserved)\n813: - d ∈ G^s (s > 1) → V_fit ∈ G¹ (regularization)\n814: \n815: **Interpretation**: The Gaussian localization kernel **regularizes** the measurement to at least Gevrey-1, regardless of input regularity (as long as d ∈ C∞). Analogous to heat kernel smoothing.\n816: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "prop-gaussian-tail-bounds-cinf"
       },
       "section": "## 9. Hypoellipticity and Smooth Transition Densities",
+      "references": [],
       "raw_directive": "891: :::\n892: \n893: :::{prf:proposition} Gaussian Tail Bounds (Conditional)\n894: :label: prop-gaussian-tail-bounds-cinf\n895: \n896: Under the confining potential hypothesis (lim U = +∞), the transition density satisfies:\n897: \n898: $$\n899: p_t(w, w') \\leq C_t \\cdot \\exp\\left(-\\frac{d(w, w')^2}{D t}\\right)\n900: $$\n901: \n902: for constants C_t, D > 0, where d(w, w') is the hypoelliptic distance.\n903: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,9 @@
         "label": "prop-talagrand-cinf"
       },
       "section": "## 10. Advanced Functional Inequalities (Conditional Results)",
+      "references": [
+        "thm-cinf-regularity"
+      ],
       "raw_directive": "913: ### 10.1. Talagrand W_2 Inequality\n914: \n915: :::{prf:proposition} Talagrand Inequality (Conditional)\n916: :label: prop-talagrand-cinf\n917: \n918: Assume:\n919: 1. V_fit ∈ C∞ (Theorem {prf:ref}`thm-cinf-regularity`)\n920: 2. V_total uniformly convex: ∇²V_total ≥ λ_Tal I\n921: 3. QSD π_QSD ∝ exp(-β V_total) exists\n922: \n923: Then for any ν with ν ≪ π_QSD:\n924: \n925: $$\n926: W_2^2(\\nu, \\pi_{\\text{QSD}}) \\leq \\frac{2}{\\lambda_{\\text{Tal}}} D_{\\text{KL}}(\\nu \\| \\pi_{\\text{QSD}})\n927: $$\n928: ",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +101,10 @@
         "label": "prop-brascamp-lieb-cinf"
       },
       "section": "## 10. Advanced Functional Inequalities (Conditional Results)",
+      "references": [
+        "prop-talagrand-cinf",
+        "thm-cinf-regularity"
+      ],
       "raw_directive": "944: ### 10.2. Brascamp-Lieb Inequality\n945: \n946: :::{prf:proposition} Brascamp-Lieb Inequality (Conditional)\n947: :label: prop-brascamp-lieb-cinf\n948: \n949: Under {prf:ref}`prop-talagrand-cinf` hypotheses (C∞ + uniform convexity):\n950: \n951: $$\n952: \\text{Var}_{\\pi_{\\text{QSD}}}[f] \\leq \\frac{1}{\\lambda_{\\min}(\\nabla^2 V_{\\text{total}})} \\int |\\nabla f|^2 \\, d\\pi_{\\text{QSD}}\n953: $$\n954: \n955: for all smooth f with π_QSD(f) = 0.\n956: \n957: **Interpretation**: Optimal Poincaré constant C_Poinc = 1/λ_min, sharp for uniformly convex log-concave measures.\n958: ",
       "_registry_context": {
         "stage": "directives",
@@ -121,6 +130,7 @@
         "label": "prop-bakry-emery-gamma2-cinf"
       },
       "section": "## 10. Advanced Functional Inequalities (Conditional Results)",
+      "references": [],
       "raw_directive": "962: ### 10.3. Bakry-Émery Γ_2 Criterion\n963: \n964: :::{prf:proposition} Bakry-Émery Curvature Condition (Conditional)\n965: :label: prop-bakry-emery-gamma2-cinf\n966: \n967: Assume V_fit ∈ C∞ and V_total uniformly convex with ∇²V_total ≥ λ_BE I. Then:\n968: \n969: $$\n970: \\Gamma_2(f, f) \\geq \\lambda_{\\text{BE}} \\Gamma(f, f) \\quad \\forall \\text{ smooth } f\n971: $$\n972: \n973: where:\n974: - Γ(f, g) = (1/2)[L(fg) - f Lg - g Lf] = ⟨∇f, ∇g⟩ (carré du champ)\n975: - Γ_2(f, f) = (1/2)[L Γ(f, f) - 2 Γ(f, Lf)] (iterated carré du champ)\n976: \n977: **Implication**: Γ_2 ≥ λΓ implies:\n978: - Spectral gap λ_gap ≥ λ_BE\n979: - LSI with constant 1/λ_BE\n980: - Hypercontractivity (Nelson's theorem)\n981: ",
       "_registry_context": {
         "stage": "directives",

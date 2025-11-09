@@ -19,6 +19,7 @@
         "label": "rem-observation-emergent-metric"
       },
       "section": "## 8. Convergence on the Emergent Manifold (Geometric Perspective)",
+      "references": [],
       "raw_directive": "2615: We have proven convergence in the **flat state space** $\\mathcal{X} \\times \\mathbb{R}^d$ with anisotropic diffusion. But the anisotropic diffusion **defines an emergent Riemannian geometry**.\n2616: \n2617: :::{prf:observation} The Emergent Metric\n2618: :label: rem-observation-emergent-metric\n2619: \n2620: The adaptive diffusion $D_{\\text{reg}}(x, S) = (H + \\epsilon_\\Sigma I)^{-1}$ is the **inverse** of a Riemannian metric:\n2621: \n2622: $$\n2623: g_{\\text{emergent}}(x, S) = H(x, S) + \\epsilon_\\Sigma I\n2624: $$\n2625: \n2626: This metric defines **geodesic distances** on the state space. Two points that are close in **Euclidean distance** may be far in **geodesic distance** if the Hessian $H$ is large (high curvature).\n2627: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "prop-rate-metric-ellipticity"
       },
       "section": "## 8. Convergence on the Emergent Manifold (Geometric Perspective)",
+      "references": [],
       "raw_directive": "2629: :::\n2630: \n2631: :::{prf:proposition} Convergence Rate Depends on Metric Ellipticity\n2632: :label: prop-rate-metric-ellipticity\n2633: \n2634: The convergence rate $\\kappa_{\\text{total}}$ depends on the **ellipticity constants** of the emergent metric:\n2635: \n2636: $$\n2637: \\kappa_{\\text{total}} = O(\\min\\{\\gamma \\tau, \\kappa_x, c_{\\min}\\})\n2638: $$\n2639: \n2640: where $c_{\\min} = \\epsilon_\\Sigma / (H_{\\max} + \\epsilon_\\Sigma)$ is the lower bound on the eigenvalues of $D_{\\text{reg}} = g_{\\text{emergent}}^{-1}$.\n2641: \n2642: **Interpretation**:\n2643: - **Well-conditioned manifold** ($H_{\\max} \\approx \\epsilon_\\Sigma$): $c_{\\min} \\approx \\epsilon_\\Sigma / 2$ \u2192 fast convergence\n2644: - **Ill-conditioned manifold** ($H_{\\max} \\gg \\epsilon_\\Sigma$): $c_{\\min} \\approx \\epsilon_\\Sigma / H_{\\max}$ \u2192 slower convergence (but still positive!)\n2645: "
     }
   ],

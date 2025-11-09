@@ -2,7 +2,7 @@
   "document_id": "11_hk_convergence",
   "stage": "directives",
   "directive_type": "axiom",
-  "generated_at": "2025-11-08T17:16:20.200393+00:00",
+  "generated_at": "2025-11-08T23:19:38.270977+00:00",
   "count": 1,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "ax-bounded-density-ratio-rigorous"
       },
       "section": "## 5. Rigorous Proof of Bounded Density Ratio",
+      "references": [],
       "raw_directive": "1925: The Hellinger-Kantorovich convergence theory developed in this document establishes exponential convergence of the Euclidean Gas to its quasi-stationary distribution. However, the main theorem (Theorem {prf:ref}`thm-hk-convergence-main-assembly`) is conditional on the bounded density ratio assumption:\n1926: \n1927: :::{prf:axiom} Bounded Density Ratio\n1928: :label: ax-bounded-density-ratio-rigorous\n1929: \n1930: There exists $M < \\infty$ such that for all $t \\geq 0$ and all $x \\in \\mathcal{X}_{\\text{valid}}$:\n1931: \n1932: $$\n1933: \\frac{d\\tilde{\\mu}_t}{d\\tilde{\\pi}_{\\text{QSD}}}(x) \\leq M\n1934: \n1935: $$\n1936: ",
       "_registry_context": {
         "stage": "directives",

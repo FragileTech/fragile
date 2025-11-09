@@ -2,7 +2,7 @@
   "document_id": "14_geometric_gas_c4_regularity",
   "stage": "directives",
   "directive_type": "proposition",
-  "generated_at": "2025-11-08T17:16:20.324251+00:00",
+  "generated_at": "2025-11-08T23:19:38.341661+00:00",
   "count": 3,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "prop-bakry-emery-gamma2"
       },
       "section": "## 9. Stability Implications and Corollaries",
+      "references": [],
       "raw_directive": "982: :::\n983: \n984: :::{prf:proposition} Bakry-Émery Γ₂ Criterion (Conditional)\n985: :label: prop-bakry-emery-gamma2\n986: \n987: C⁴ regularity of $V_{\\text{fit}}$ ensures the Langevin generator $\\mathcal{L} = \\Delta - \\nabla V_{\\text{fit}} \\cdot \\nabla$ admits a well-defined Γ₂ operator:\n988: \n989: $$\n990: \\Gamma_2(f, f) = \\frac{1}{2}\\mathcal{L}(\\Gamma(f, f)) - \\Gamma(f, \\mathcal{L} f)\n991: \n992: $$\n993: \n994: where $\\Gamma(f, f) = \\|\\nabla f\\|^2$.\n995: \n996: **Curvature hypothesis:** If the fitness potential satisfies the **Bakry-Émery curvature condition**:\n997: \n998: $$\n999: \\Gamma_2(f, f) \\ge \\lambda_{\\text{BE}} \\Gamma(f, f) \\quad \\text{for some } \\lambda_{\\text{BE}} > 0\n1000: \n1001: $$\n1002: \n1003: (which is equivalent to $\\text{Hess}(V_{\\text{fit}}) \\ge \\lambda_{\\text{BE}} I$ for the Langevin generator), then the semigroup $P_t$ is **hypercontractive**:\n1004: \n1005: $$\n1006: \\|P_t f\\|_{L^q} \\le \\|f\\|_{L^p} \\quad \\text{for } q = 1 + (p - 1)e^{2\\lambda_{\\text{BE}} t}\n1007: \n1008: $$\n1009: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "prop-scaling-k-v-4"
       },
       "section": "## 10. ρ-Scaling Analysis",
+      "references": [],
       "raw_directive": "1013: ## 10. ρ-Scaling Analysis\n1014: \n1015: :::{prf:proposition} Fourth-Derivative Scaling\n1016: :label: prop-scaling-k-v-4\n1017: \n1018: **Local regime ($\\rho \\to 0$):** $K_{V,4}(\\rho) = O(\\rho^{-3})$\n1019: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "prop-timestep-c4"
       },
       "section": "## 10. ρ-Scaling Analysis",
+      "references": [],
       "raw_directive": "1053: :::\n1054: \n1055: :::{prf:proposition} Time Step Constraint (Corrected)\n1056: :label: prop-timestep-c4\n1057: \n1058: For numerical stability, both BAOAB and fourth-order integrators have the **same ρ-dependent constraint**: $\\Delta t \\lesssim \\rho^{3/2}$\n1059: ",
       "_registry_context": {
         "stage": "directives",

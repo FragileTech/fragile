@@ -2,7 +2,7 @@
   "document_id": "12_symmetries_geometric_gas",
   "stage": "directives",
   "directive_type": "corollary",
-  "generated_at": "2025-11-08T17:16:20.227367+00:00",
+  "generated_at": "2025-11-08T23:19:38.283671+00:00",
   "count": 2,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "cor-qsd-exchangeable"
       },
       "section": "## 3. Flat Algorithmic Space Symmetries",
+      "references": [],
       "raw_directive": "323: :::\n324: \n325: :::{prf:corollary} Exchangeability of the QSD\n326: :label: cor-qsd-exchangeable\n327: \n328: The quasi-stationary distribution $\\pi_{\\text{QSD}}$ is **exchangeable**: for any measurable set $A \\subset \\Sigma_N$ and permutation $\\sigma \\in S_N$:\n329: \n330: $$\n331: \\pi_{\\text{QSD}}(A) = \\pi_{\\text{QSD}}(\\sigma(A))\n332: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "cor-dimensionless-ratio"
       },
       "section": "## 3. Flat Algorithmic Space Symmetries",
+      "references": [],
       "raw_directive": "514: :::\n515: \n516: :::{prf:corollary} Dimensionless Parameter\n517: :label: cor-dimensionless-ratio\n518: ",
       "_registry_context": {
         "stage": "directives",

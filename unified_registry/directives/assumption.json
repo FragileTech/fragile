@@ -1,13 +1,12 @@
 {
   "stage": "directives",
   "directive_type": "assumption",
-  "generated_at": "2025-11-08T17:16:20.404618+00:00",
+  "generated_at": "2025-11-08T23:19:38.396670+00:00",
   "source_documents": [
     "01_fragile_gas_framework",
     "04_wasserstein_contraction_ASSEMBLED",
     "05_osterwalder_schrader_verification",
     "07_mean_field",
-    "11_hk_convergence_original",
     "13_geometric_gas_c3_regularity",
     "13_geometric_gas_c3_regularity",
     "14_geometric_gas_c4_regularity",
@@ -18,8 +17,8 @@
     "19_geometric_gas_cinf_regularity_simplified",
     "20_geometric_gas_cinf_regularity_full"
   ],
-  "document_count": 14,
-  "total_count": 30,
+  "document_count": 13,
+  "total_count": 28,
   "items": [
     {
       "directive_type": "assumption",
@@ -37,6 +36,7 @@
         "label": "def-ambient-euclidean"
       },
       "section": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
+      "references": [],
       "raw_directive": "314:     These structures, formally defined in subsequent sections, give rise to a set of fixed **environmental constants**, including the reward bound ($R_{\\max}$), reward Lipschitz constant ($L_R$), the diameter of the projected valid domain ($D_{\\mathrm{valid}} := \\operatorname{diam}_{d_{\\mathcal{Y}}}(\\varphi(\\mathcal{X}_{\\mathrm{valid}}))$), the diameter of the entire algorithmic space ($D_{\\mathcal{Y}} := \\operatorname{diam}_{d_{\\mathcal{Y}}}(\\mathcal{Y})$), and the **Projection Map Lipschitz Constant ($L_{\\varphi}$)**.\n315: \n316: :::{prf:assumption} Ambient Euclidean Structure and Reference Measures\n317: :label: def-ambient-euclidean\n318: \n319: - The spaces $\\mathcal{X} \\subset \\mathbb{R}^d$ and $\\mathcal{Y} \\subset \\mathbb{R}^m$ are finite-dimensional Euclidean domains with Lebesgue reference measures $\\lambda_d$ and $\\lambda_m$.\n320: - All linear-algebraic objects (means, variances, covariances) and kernel densities are defined with respect to these Euclidean structures and Lebesgue measures. In particular, KDE normalizations use the standard Euclidean constants (e.g., $\\int \\exp(-\\|y\\|_2^2/(2\\sigma^2))\\,dy = (2\\pi\\sigma^2)^{m/2}$).",
       "_registry_context": {
         "stage": "directives",
@@ -62,6 +62,7 @@
         "label": "assump-regime-validity"
       },
       "section": "## 8. Main Wasserstein-2 Contraction Theorem",
+      "references": [],
       "raw_directive": "2527: The theorem applies under the following conditions:\n2528: \n2529: :::{prf:assumption} Regime of Validity for Wasserstein-2 Contraction\n2530: :label: assump-regime-validity\n2531: \n2532: 1. **Separation Requirement**: $L = \\|\\bar{x}_1 - \\bar{x}_2\\| > L_0(\\delta, \\varepsilon)$\n2533:    - Physical meaning: Swarms must be sufficiently separated for geometric partition to work\n2534:    - Typical value: $L_0 \\sim 100$ for $d=10$, $\\delta=0.1$\n2535: \n2536: 2. **Confining Potential** (Axiom 2.1.1):\n2537:    $$\n2538:    U(x) \\to +\\infty \\text{ as } \\|x\\| \\to \\infty\n2539:    $$\n2540:    - Ensures swarms don't escape to infinity\n2541:    - Guarantees fitness valley exists between local maxima\n2542: \n2543: 3. **Environmental Richness** (Axiom 4.1.1):\n2544:    $$\n2545:    \\exists x_{\\text{valley}} \\in [\\bar{x}_1, \\bar{x}_2]: \\quad F(x_{\\text{valley}}) < \\min(F(\\bar{x}_1), F(\\bar{x}_2)) - \\Delta_{\\text{valley}}\n2546:    $$\n2547:    - Ensures separated swarms are at distinct fitness peaks\n2548:    - Required for outlier alignment mechanism\n2549: \n2550: 4. **Bounded Virtual Rewards** (Axiom 1.2):\n2551:    $$\n2552:    \\|V_{\\text{fit},k,i} - V_{\\text{fit},k,j}\\| \\leq \\Delta V_{\\max}\n2553:    $$\n2554:    - Ensures minimum survival probability $p_u > 0$\n2555:    - Required for N-uniformity\n2556: \n2557: 5. **Small Noise Regime**: $\\delta \\ll L$\n2558:    - Ensures Case A expansion $\\varepsilon_A = O(\\delta^2/L^2)$ is negligible\n2559:    - Typical: $\\delta/L < 0.01$\n2560: \n2561: 6. **Moderate Exploitation**: $\\beta = O(1)$\n2562:    - Too small: No fitness-based selection (no cloning advantage)\n2563:    - Too large: Deterministic selection (no randomness, potential stagnation)",
       "_registry_context": {
         "stage": "directives",
@@ -87,6 +88,7 @@
         "label": "assump-os1-isotropic-potential"
       },
       "section": "## OS1: Euclidean Invariance",
+      "references": [],
       "raw_directive": "756: ### Isotropic Fitness Potential\n757: \n758: :::{prf:assumption} Isotropic Potential Landscape\n759: :label: assump-os1-isotropic-potential\n760: \n761: The fitness potential $\\Phi: \\mathbb{R}^4 \\to \\mathbb{R}$ is **rotationally invariant**:\n762: \n763: $$\n764: \\Phi(Rx) = \\Phi(x)\n765: $$\n766: \n767: for all rotations $R \\in \\text{SO}(4)$ and $x \\in \\mathbb{R}^4$.\n768: ",
       "_registry_context": {
         "stage": "directives",
@@ -112,6 +114,7 @@
         "label": "assumption-regularity-summary"
       },
       "section": "## 4. Analysis and Properties of the Mean-Field Equations",
+      "references": [],
       "raw_directive": "756: The rigorous analysis of the coupled mean-field system—proving the existence, uniqueness, and long-term behavior of its solutions—requires a set of standing technical assumptions on the regularity of its constituent parts.\n757: \n758: :::{prf:assumption} Summary of Regularity Assumptions\n759: :label: assumption-regularity-summary\n760: \n761: The well-posedness of the coupled mean-field system relies on the following assumptions, which are satisfied by the Canonical Euclidean Gas:\n762: *   **(H1)** The domains $X_{\\text{valid}}$ and $V_{\\text{alg}}$ are bounded and have smooth ($C^2$) boundaries.\n763: *   **(H2)** The reward potential $R_{\\text{pos}}$ is $C^2$, making the force field $F$ globally Lipschitz.\n764: *   **(H3)** The flow field $u$ is $C^1$, and all physical parameters ($m, \\gamma_{\\text{fric}}, \\Theta, \\sigma_x$) are finite and positive.\n765: *   **(H4)** All algorithmic functions (e.g., the rescale function, companion selection) are measurable and satisfy the continuity properties established in the abstract framework.\n766: *   **(H5)** The killing rate function $c(z)$ is smooth ($C^\\infty$), non-negative, and has compact support in a neighborhood of $\\partial X_{\\text{valid}}$.",
       "_registry_context": {
         "stage": "directives",
@@ -137,6 +140,7 @@
         "label": "assumption-domain-regularity"
       },
       "section": "## 4. Analysis and Properties of the Mean-Field Equations",
+      "references": [],
       "raw_directive": "798: We work with the following precise geometric and regularity framework:\n799: \n800: :::{prf:assumption} Regularity of the Valid Domain\n801: :label: assumption-domain-regularity\n802: \n803: The valid position domain $X_{\\text{valid}} \\subset \\mathbb{R}^d$ satisfies:\n804: \n805: 1. **Smoothness**: $X_{\\text{valid}}$ is an open, bounded domain with $C^3$ boundary $\\partial X_{\\text{valid}}$.\n806: 2. **Distance Function**: The signed distance function $d(x) := \\text{dist}(x, \\partial X_{\\text{valid}})$ is $C^2$ in a tubular neighborhood $\\mathcal{T}_\\delta := \\{x \\in X_{\\text{valid}} : d(x) < \\delta\\}$ for some $\\delta > 0$.\n807: 3. **Unit Inward Normal**: For each $x \\in \\mathcal{T}_\\delta$, let $n_x(x) = -\\nabla d(x)$ denote the unit inward normal vector (pointing into $X_{\\text{valid}}$).",
       "_registry_context": {
         "stage": "directives",
@@ -162,6 +166,7 @@
         "label": "assumption-integrator-regularity"
       },
       "section": "## 4. Analysis and Properties of the Mean-Field Equations",
+      "references": [],
       "raw_directive": "809: :::\n810: \n811: :::{prf:assumption} Regularity of the Discrete Integrator\n812: :label: assumption-integrator-regularity\n813: \n814: The discrete kinetic integrator (BAOAB) produces position updates of the form:\n815: \n816: $$\n817: x^+(\\tau; x,v) = x + v\\tau + \\frac{\\tau^2}{2m}F(x) + R_{\\text{pos}}(\\tau; x,v)\n818: $$\n819: ",
       "_registry_context": {
         "stage": "directives",
@@ -187,6 +192,7 @@
         "label": "assumption-density-regularity-killing"
       },
       "section": "## 4. Analysis and Properties of the Mean-Field Equations",
+      "references": [],
       "raw_directive": "821: :::\n822: \n823: :::{prf:assumption} Density Regularity\n824: :label: assumption-density-regularity-killing\n825: \n826: The phase-space density $f^\\tau(x,v)$ at the start of a discrete timestep satisfies:\n827: \n828: 1. **Boundedness**: $\\|f^\\tau\\|_{L^\\infty(\\Omega)} \\le M_f$ for some $M_f > 0$.\n829: 2. **Spatial Regularity**: $f^\\tau \\in C^1(\\Omega)$ with $\\|\\nabla_x f^\\tau\\|_{L^\\infty} \\le M_{\\nabla f}$.",
       "_registry_context": {
         "stage": "directives",
@@ -194,56 +200,6 @@
         "chapter_index": 4,
         "chapter_file": "chapter_4.json",
         "section_id": "## 4. Analysis and Properties of the Mean-Field Equations"
-      }
-    },
-    {
-      "directive_type": "assumption",
-      "label": "thm-bounded-density-ratio",
-      "title": "Bounded Density Ratio for the Euclidean Gas (Justified)",
-      "start_line": 1880,
-      "end_line": 1915,
-      "header_lines": [
-        1881
-      ],
-      "content_start": 1883,
-      "content_end": 1914,
-      "content": "1883: :label: thm-bounded-density-ratio\n1884: \n1885: **Status**: This is presented as a **justified assumption** rather than a theorem. The arguments below identify all key mechanisms and provide strong heuristic support, but a complete rigorous proof remains future work.\n1886: \n1887: **References**: [03_cloning.md](03_cloning), [04_kinetics.md](04_kinetics), [06_convergence.md](06_convergence)\n1888: \n1889: Consider the Euclidean Gas dynamics with parameters:\n1890: - State space: $\\mathcal{X} = B_R(0) \\subset \\mathbb{R}^d$ (ball of radius $R$)\n1891: - Cloning position jitter: $\\sigma_x > 0$ ([03_cloning.md](03_cloning), line 6022)\n1892: - Langevin noise: $\\sigma^2 > 0$ ([04_kinetics.md](04_kinetics))\n1893: - Potential: $U : \\mathcal{X} \\to \\mathbb{R}$ with regularity conditions\n1894: - Friction: $\\gamma > 0$\n1895: - Initial density: $\\rho_0 = d\\mu_0/dx$ with $\\|\\rho_0\\|_\\infty \\leq M_0 < \\infty$\n1896: \n1897: Then there exists a finite constant $M = M(\\gamma, \\sigma_x, \\sigma, U, R, M_0, T) < \\infty$ such that for all $t \\in [0, T]$:\n1898: \n1899: $$\n1900: \\sup_{t \\in [0,T]} \\sup_{x \\in \\mathcal{X}_{\\text{valid}}} \\frac{d\\tilde{\\mu}_t}{d\\tilde{\\pi}_{\\text{QSD}}}(x) \\leq M\n1901: \n1902: $$\n1903: \n1904: where $\\tilde{\\mu}_t = \\mu_t / \\|\\mu_t\\|$ is the normalized empirical measure and $\\tilde{\\pi}_{\\text{QSD}}$ is the normalized quasi-stationary distribution.\n1905: \n1906: Furthermore:\n1907: \n1908: $$\n1909: M = \\frac{C_{\\text{hypo}}(M_0, T, \\gamma, \\sigma, U, R)}{c_{\\sigma_x, R} \\cdot c_{\\text{mass}}}\n1910: \n1911: $$\n1912: \n1913: where:\n1914: - $C_{\\text{hypo}}$ is the hypoelliptic smoothing constant",
-      "metadata": {
-        "label": "thm-bounded-density-ratio"
-      },
-      "section": "## 5. Justification for the Bounded Density Ratio Assumption",
-      "raw_directive": "1880: ### 5.1. Statement of the Result\n1881: \n1882: :::{prf:assumption} Bounded Density Ratio for the Euclidean Gas (Justified)\n1883: :label: thm-bounded-density-ratio\n1884: \n1885: **Status**: This is presented as a **justified assumption** rather than a theorem. The arguments below identify all key mechanisms and provide strong heuristic support, but a complete rigorous proof remains future work.\n1886: \n1887: **References**: [03_cloning.md](03_cloning), [04_kinetics.md](04_kinetics), [06_convergence.md](06_convergence)\n1888: \n1889: Consider the Euclidean Gas dynamics with parameters:\n1890: - State space: $\\mathcal{X} = B_R(0) \\subset \\mathbb{R}^d$ (ball of radius $R$)\n1891: - Cloning position jitter: $\\sigma_x > 0$ ([03_cloning.md](03_cloning), line 6022)\n1892: - Langevin noise: $\\sigma^2 > 0$ ([04_kinetics.md](04_kinetics))\n1893: - Potential: $U : \\mathcal{X} \\to \\mathbb{R}$ with regularity conditions\n1894: - Friction: $\\gamma > 0$\n1895: - Initial density: $\\rho_0 = d\\mu_0/dx$ with $\\|\\rho_0\\|_\\infty \\leq M_0 < \\infty$\n1896: \n1897: Then there exists a finite constant $M = M(\\gamma, \\sigma_x, \\sigma, U, R, M_0, T) < \\infty$ such that for all $t \\in [0, T]$:\n1898: \n1899: $$\n1900: \\sup_{t \\in [0,T]} \\sup_{x \\in \\mathcal{X}_{\\text{valid}}} \\frac{d\\tilde{\\mu}_t}{d\\tilde{\\pi}_{\\text{QSD}}}(x) \\leq M\n1901: \n1902: $$\n1903: \n1904: where $\\tilde{\\mu}_t = \\mu_t / \\|\\mu_t\\|$ is the normalized empirical measure and $\\tilde{\\pi}_{\\text{QSD}}$ is the normalized quasi-stationary distribution.\n1905: \n1906: Furthermore:\n1907: \n1908: $$\n1909: M = \\frac{C_{\\text{hypo}}(M_0, T, \\gamma, \\sigma, U, R)}{c_{\\sigma_x, R} \\cdot c_{\\text{mass}}}\n1910: \n1911: $$\n1912: \n1913: where:\n1914: - $C_{\\text{hypo}}$ is the hypoelliptic smoothing constant\n1915: - $c_{\\sigma_x, R} = (2\\pi \\sigma_x^2)^{-d/2} \\exp(-(2R)^2/(2\\sigma_x^2))$ is the Gaussian mollification lower bound",
-      "_registry_context": {
-        "stage": "directives",
-        "document_id": "11_hk_convergence_original",
-        "chapter_index": 5,
-        "chapter_file": "chapter_5.json",
-        "section_id": "## 5. Justification for the Bounded Density Ratio Assumption"
-      }
-    },
-    {
-      "directive_type": "assumption",
-      "label": "thm-bounded-density-summary",
-      "title": "Bounded Density Ratio (Justified Assumption - Summary)",
-      "start_line": 2411,
-      "end_line": 2455,
-      "header_lines": [
-        2412
-      ],
-      "content_start": 2414,
-      "content_end": 2454,
-      "content": "2414: :label: thm-bounded-density-summary\n2415: \n2416: **Status**: The following is a **well-justified assumption** supported by strong heuristic arguments. A complete rigorous proof remains future work.\n2417: \n2418: For the Euclidean Gas with:\n2419: - **Cloning position jitter** $\\sigma_x > 0$ ([03_cloning.md](03_cloning), Section 4.2.2)\n2420: - **Langevin noise** $\\sigma^2 > 0$ ([04_kinetics.md](04_kinetics))\n2421: - **Bounded initial density** $M_0 < \\infty$\n2422: \n2423: we assume there exists a finite constant $M_\\infty < \\infty$ such that:\n2424: \n2425: $$\n2426: \\sup_{t \\geq 0} \\sup_{x \\in \\mathcal{X}_{\\text{valid}}} \\frac{d\\tilde{\\mu}_t}{d\\tilde{\\pi}_{\\text{QSD}}}(x) \\leq M_\\infty\n2427: \n2428: $$\n2429: \n2430: where $\\tilde{\\mu}_t$ is the normalized empirical measure and $\\tilde{\\pi}_{\\text{QSD}}$ is the normalized quasi-stationary distribution.\n2431: \n2432: **Justification Structure**: This assumption is supported through a four-step analysis identifying all key mechanisms:\n2433: \n2434: **Step 1: Hypoelliptic L^∞ Bound** (Section 5.3, Lemma {prf:ref}`lem-hypoelliptic-density-bound`)\n2435: - Heuristic argument for $\\|\\rho_t\\|_\\infty \\leq C_{\\text{hypo}}(M_0, T, \\gamma, \\sigma, U, R)$ using Hörmander's theorem\n2436: - Sketch controls each operator component (kinetic, cloning, killing, revival)\n2437: - References: [06_convergence.md](06_convergence), Section 4.4.1; [09_kl_convergence.md](09_kl_convergence), Section 2\n2438: - **Gap**: Complete proof would require parabolic regularity theory adapted to non-local McKean-Vlasov structure\n2439: \n2440: **Step 2: Gaussian Mollification** (Section 5.4, Lemma {prf:ref}`lem-gaussian-lower-bound`)\n2441: - Argument that Gaussian convolution provides uniform lower bound: $\\rho_{\\text{post-clone}}(x) \\geq c_{\\sigma_x, R} \\|\\rho_{\\text{pre}}\\|_{L^1}$\n2442: - Reference: [03_cloning.md](03_cloning), Section 4.2.2 (position jitter mechanism)\n2443: \n2444: **Step 3: QSD Uniform Lower Bound** (Section 5.4.1, Lemma {prf:ref}`lem-qsd-lower-bound`)\n2445: - Argument that $\\pi_{\\text{QSD}}(x) \\geq c_\\pi > 0$ via:\n2446:   - φ-Irreducibility ([06_convergence.md](06_convergence), Section 6.4.1)\n2447:   - Full support of invariant measure (Meyn & Tweedie 2009)\n2448:   - Smooth density + compact domain → positive infimum\n2449: - **Gap**: Relies on positive mass lower bound $c_{\\text{mass}} > 0$ which is not rigorously established (see Issue #3)\n2450: \n2451: **Step 4: Density Ratio Assembly** (Section 5.5)\n2452: - Explicit normalization algebra showing $m_{\\text{eq}}$ cancellation\n2453: - Finite time bound estimate: $M = C_{\\text{hypo}} / (c_{\\sigma_x, R} \\cdot c_{\\text{mass}})$\n2454: - Infinite time extension (Section 5.5.1): $M_\\infty = \\max(M_1, 3/2)$ via QSD convergence",
-      "metadata": {
-        "label": "thm-bounded-density-summary"
-      },
-      "section": "## 5. Justification for the Bounded Density Ratio Assumption",
-      "raw_directive": "2411: ### 5.8. Summary\n2412: \n2413: :::{prf:assumption} Bounded Density Ratio (Justified Assumption - Summary)\n2414: :label: thm-bounded-density-summary\n2415: \n2416: **Status**: The following is a **well-justified assumption** supported by strong heuristic arguments. A complete rigorous proof remains future work.\n2417: \n2418: For the Euclidean Gas with:\n2419: - **Cloning position jitter** $\\sigma_x > 0$ ([03_cloning.md](03_cloning), Section 4.2.2)\n2420: - **Langevin noise** $\\sigma^2 > 0$ ([04_kinetics.md](04_kinetics))\n2421: - **Bounded initial density** $M_0 < \\infty$\n2422: \n2423: we assume there exists a finite constant $M_\\infty < \\infty$ such that:\n2424: \n2425: $$\n2426: \\sup_{t \\geq 0} \\sup_{x \\in \\mathcal{X}_{\\text{valid}}} \\frac{d\\tilde{\\mu}_t}{d\\tilde{\\pi}_{\\text{QSD}}}(x) \\leq M_\\infty\n2427: \n2428: $$\n2429: \n2430: where $\\tilde{\\mu}_t$ is the normalized empirical measure and $\\tilde{\\pi}_{\\text{QSD}}$ is the normalized quasi-stationary distribution.\n2431: \n2432: **Justification Structure**: This assumption is supported through a four-step analysis identifying all key mechanisms:\n2433: \n2434: **Step 1: Hypoelliptic L^∞ Bound** (Section 5.3, Lemma {prf:ref}`lem-hypoelliptic-density-bound`)\n2435: - Heuristic argument for $\\|\\rho_t\\|_\\infty \\leq C_{\\text{hypo}}(M_0, T, \\gamma, \\sigma, U, R)$ using Hörmander's theorem\n2436: - Sketch controls each operator component (kinetic, cloning, killing, revival)\n2437: - References: [06_convergence.md](06_convergence), Section 4.4.1; [09_kl_convergence.md](09_kl_convergence), Section 2\n2438: - **Gap**: Complete proof would require parabolic regularity theory adapted to non-local McKean-Vlasov structure\n2439: \n2440: **Step 2: Gaussian Mollification** (Section 5.4, Lemma {prf:ref}`lem-gaussian-lower-bound`)\n2441: - Argument that Gaussian convolution provides uniform lower bound: $\\rho_{\\text{post-clone}}(x) \\geq c_{\\sigma_x, R} \\|\\rho_{\\text{pre}}\\|_{L^1}$\n2442: - Reference: [03_cloning.md](03_cloning), Section 4.2.2 (position jitter mechanism)\n2443: \n2444: **Step 3: QSD Uniform Lower Bound** (Section 5.4.1, Lemma {prf:ref}`lem-qsd-lower-bound`)\n2445: - Argument that $\\pi_{\\text{QSD}}(x) \\geq c_\\pi > 0$ via:\n2446:   - φ-Irreducibility ([06_convergence.md](06_convergence), Section 6.4.1)\n2447:   - Full support of invariant measure (Meyn & Tweedie 2009)\n2448:   - Smooth density + compact domain → positive infimum\n2449: - **Gap**: Relies on positive mass lower bound $c_{\\text{mass}} > 0$ which is not rigorously established (see Issue #3)\n2450: \n2451: **Step 4: Density Ratio Assembly** (Section 5.5)\n2452: - Explicit normalization algebra showing $m_{\\text{eq}}$ cancellation\n2453: - Finite time bound estimate: $M = C_{\\text{hypo}} / (c_{\\sigma_x, R} \\cdot c_{\\text{mass}})$\n2454: - Infinite time extension (Section 5.5.1): $M_\\infty = \\max(M_1, 3/2)$ via QSD convergence\n2455: ",
-      "_registry_context": {
-        "stage": "directives",
-        "document_id": "11_hk_convergence_original",
-        "chapter_index": 5,
-        "chapter_file": "chapter_5.json",
-        "section_id": "## 5. Justification for the Bounded Density Ratio Assumption"
       }
     },
     {
@@ -262,6 +218,9 @@
         "label": "assump-c3-measurement-companion"
       },
       "section": "## 3. $C^3$ Regularity Assumptions",
+      "references": [
+        "lem-derivative-locality-c3"
+      ],
       "raw_directive": "922: To establish $C^3$ regularity of the fitness potential, we require natural smoothness conditions on the primitive functions in the pipeline. These assumptions extend the $C^3$ conditions from Appendix A to the third-order setting.\n923: \n924: :::{prf:assumption} Companion-Dependent Measurements with Regularization\n925: :label: assump-c3-measurement-companion\n926: \n927: The measurement for each walker $j \\in \\mathcal{A}$ is the expected algorithmic distance to its companion:\n928: $$\n929: d_j = \\mathbb{E}[d_{\\text{alg}}(j, c(j))] = \\sum_{\\ell \\in \\mathcal{A} \\setminus \\{j\\}} \\mathbb{P}(c(j) = \\ell) \\cdot d_{\\text{alg}}(j, \\ell)\n930: $$\n931: \n932: where:\n933: 1. **Algorithmic distance**: $d_{\\text{alg}}(i,j) = \\sqrt{\\|x_i - x_j\\|^2 + \\lambda_{\\text{alg}}\\|v_i - v_j\\|^2 + \\varepsilon_d^2}$ with regularization $\\varepsilon_d > 0$\n934: 2. **Companion selection**: $\\mathbb{P}(c(j) = \\ell)$ via softmax (§2.5.2)\n935: 3. **Companion availability**: Partition function $Z_j^{(\\text{comp})} \\geq Z_{\\min} > 0$ (§2.5.2)\n936: \n937: **C³ regularity properties** (from Lemma {prf:ref}`lem-derivative-locality-c3`):\n938: - $d_{\\text{alg}}$ is C^∞ with third derivative bound $\\|\\nabla^3 d_{\\text{alg}}\\| \\leq C \\varepsilon_d^{-2}$\n939: - Companion-dependent measurement $d_j$ inherits third derivative bound:\n940: $$\n941: \\|\\nabla^3_{x_i} d_j\\| \\leq C_{d,3} \\varepsilon_d^{-2}\n942: $$\n943: \n944: where $C_{d,3}$ is **k-uniform** (independent of $k$ and $N$) due to derivative locality.\n945: ",
       "_registry_context": {
         "stage": "directives",
@@ -287,6 +246,7 @@
         "label": "assump-c3-kernel"
       },
       "section": "## 3. $C^3$ Regularity Assumptions",
+      "references": [],
       "raw_directive": "947: :::\n948: \n949: :::{prf:assumption} Localization Kernel $C^3$ Regularity\n950: :label: assump-c3-kernel\n951: \n952: The localization kernel $K_\\rho: (\\mathcal{X} \\times \\mathbb{R}^d) \\times (\\mathcal{X} \\times \\mathbb{R}^d) \\to [0, 1]$ is defined using the algorithmic distance:\n953: $$\n954: K_\\rho(i, j) := \\frac{1}{Z_i(\\rho)} \\exp\\left(-d_{\\text{alg}}^2(i,j)/(2\\rho^2)\\right)\n955: $$\n956: \n957: where $d_{\\text{alg}}(i,j) = \\sqrt{\\|x_i - x_j\\|^2 + \\lambda_{\\text{alg}}\\|v_i - v_j\\|^2 + \\varepsilon_d^2}$ and $Z_i(\\rho) = \\sum_{\\ell \\in \\mathcal{A}} \\exp(-d_{\\text{alg}}^2(i,\\ell)/(2\\rho^2))$.\n958: \n959: The kernel is three times continuously differentiable in walker $i$'s coordinates $(x_i, v_i)$ with bounds:\n960: \n961: 1. $|K_\\rho(i, j)| \\le 1$\n962: 2. $\\|\\nabla_{x_i} K_\\rho(i, j)\\| \\le C_{\\nabla K}(\\rho) / \\rho$\n963: 3. $\\|\\nabla^2_{x_i} K_\\rho(i, j)\\| \\le C_{\\nabla^2 K}(\\rho) / \\rho^2$\n964: 4. $\\|\\nabla^3_{x_i} K_\\rho(i, j)\\| \\le C_{\\nabla^3 K}(\\rho) / \\rho^3$\n965: \n966: where $C_{\\nabla K}(\\rho), C_{\\nabla^2 K}(\\rho), C_{\\nabla^3 K}(\\rho)$ are $O(1)$ constants.\n967: \n968: **Justification:** The Gaussian kernel with $d_{\\text{alg}}$ distance inherits C^∞ regularity from $d_{\\text{alg}}$. Direct calculation shows:\n969: - $\\nabla^m_{x_i} K_\\rho$ involves products of Hermite polynomials (degree $\\le m$) with the exponential and derivatives of $d_{\\text{alg}}$\n970: - Each derivative introduces a factor of $1/\\rho$ from the Gaussian\n971: - The regularization $\\varepsilon_d > 0$ ensures $d_{\\text{alg}} \\geq \\varepsilon_d > 0$ (no singularities)\n972: ",
       "_registry_context": {
         "stage": "directives",
@@ -312,6 +272,7 @@
         "label": "assump-c3-rescale"
       },
       "section": "## 3. $C^3$ Regularity Assumptions",
+      "references": [],
       "raw_directive": "974: :::\n975: \n976: :::{prf:assumption} Rescale Function $C^3$ Regularity\n977: :label: assump-c3-rescale\n978: \n979: The rescale function $g_A: \\mathbb{R} \\to [0, A]$ is a strictly increasing sigmoid function that is three times continuously differentiable. We impose the following conditions on its derivatives:\n980: \n981: 1. **Upper bounds on derivatives**:\n982: \n983: $$\n984: |g_A(z)| \\leq A, \\quad |g'_A(z)| \\leq L_{g'_A}, \\quad |g''_A(z)| \\leq L_{g''_A}, \\quad |g'''_A(z)| \\leq L_{g'''_A}\n985: $$\n986: \n987: for all $z \\in \\mathbb{R}$, where $A, L_{g'_A}, L_{g''_A}, L_{g'''_A} < \\infty$ are constants.\n988: \n989: 2. **Strictly positive lower bound on derivative**:\n990: \n991: $$\n992: g'_A(z) \\geq g'_{\\min} > 0\n993: $$\n994: \n995: for all $z \\in \\mathbb{R}$, where $g'_{\\min}$ is a positive constant.\n996: ",
       "_registry_context": {
         "stage": "directives",
@@ -337,6 +298,7 @@
         "label": "assump-c3-measurement"
       },
       "section": "## 3. $C^3$ Regularity Assumptions",
+      "references": [],
       "raw_directive": "233: To establish $C^3$ regularity of the fitness potential, we require natural smoothness conditions on the primitive functions in the pipeline. These assumptions extend the $C^3$ conditions from Appendix A to the third-order setting.\n234: \n235: :::{prf:assumption} Measurement Function $C^3$ Regularity\n236: :label: assump-c3-measurement\n237: \n238: The measurement function $d: \\mathcal{X} \\to \\mathbb{R}$ is three times continuously differentiable with uniformly bounded derivatives:\n239: \n240: $$\n241: |d(x)| \\le d_{\\max}, \\quad \\|\\nabla d(x)\\| \\le d'_{\\max}, \\quad \\|\\nabla^2 d(x)\\| \\le d''_{\\max}, \\quad \\|\\nabla^3 d(x)\\| \\le d'''_{\\max}\n242: $$\n243: \n244: for all $x \\in \\mathcal{X}$, where $d_{\\max}, d'_{\\max}, d''_{\\max}, d'''_{\\max} < \\infty$ are constants.\n245: ",
       "_registry_context": {
         "stage": "directives",
@@ -362,6 +324,7 @@
         "label": "assump-c3-kernel"
       },
       "section": "## 3. $C^3$ Regularity Assumptions",
+      "references": [],
       "raw_directive": "247: :::\n248: \n249: :::{prf:assumption} Localization Kernel $C^3$ Regularity\n250: :label: assump-c3-kernel\n251: \n252: The localization kernel $K_\\rho: \\mathcal{X} \\times \\mathcal{X} \\to [0, 1]$ is three times continuously differentiable in its first argument with bounds:\n253: \n254: 1. $|K_\\rho(x, x')| \\le 1$\n255: 2. $\\|\\nabla_x K_\\rho(x, x')\\| \\le C_{\\nabla K}(\\rho) / \\rho$\n256: 3. $\\|\\nabla^2_x K_\\rho(x, x')\\| \\le C_{\\nabla^2 K}(\\rho) / \\rho^2$\n257: 4. $\\|\\nabla^3_x K_\\rho(x, x')\\| \\le C_{\\nabla^3 K}(\\rho) / \\rho^3$\n258: \n259: where $C_{\\nabla K}(\\rho), C_{\\nabla^2 K}(\\rho), C_{\\nabla^3 K}(\\rho)$ are $O(1)$ functions of $\\rho$ (typically constants for Gaussian kernels).\n260: \n261: **Justification:** For the standard Gaussian kernel $K_\\rho(x, x') = Z_\\rho(x)^{-1} \\exp(-\\|x-x'\\|^2/(2\\rho^2))$, direct calculation shows:\n262: - $\\nabla^m_x K_\\rho$ involves products of Hermite polynomials (degree $\\le m$) with the exponential\n263: - Each derivative introduces a factor of $1/\\rho$\n264: - The Hermite polynomial coefficients are $O(1)$\n265: ",
       "_registry_context": {
         "stage": "directives",
@@ -387,6 +350,7 @@
         "label": "assump-c3-rescale"
       },
       "section": "## 3. $C^3$ Regularity Assumptions",
+      "references": [],
       "raw_directive": "267: :::\n268: \n269: :::{prf:assumption} Rescale Function $C^3$ Regularity\n270: :label: assump-c3-rescale\n271: \n272: The rescale function $g_A: \\mathbb{R} \\to [0, A]$ is three times continuously differentiable with bounded derivatives:\n273: \n274: $$\n275: |g_A(z)| \\le A, \\quad |g'_A(z)| \\le L_{g'_A}, \\quad |g''_A(z)| \\le L_{g''_A}, \\quad |g'''_A(z)| \\le L_{g'''_A}\n276: $$\n277: \n278: for all $z \\in \\mathbb{R}$, where $A, L_{g'_A}, L_{g''_A}, L_{g'''_A} < \\infty$ are constants.\n279: ",
       "_registry_context": {
         "stage": "directives",
@@ -412,6 +376,9 @@
         "label": "assump-c3-patch"
       },
       "section": "## 3. $C^3$ Regularity Assumptions",
+      "references": [
+        "lem-patch-chain-rule"
+      ],
       "raw_directive": "281: :::\n282: \n283: :::{prf:assumption} Regularized Standard Deviation $C^\\infty$ Regularity\n284: :label: assump-c3-patch\n285: \n286: The regularized standard deviation function is defined as:\n287: \n288: $$\n289: \\sigma\\'_{\\text{reg}}(V) := \\sqrt{V + \\sigma\\'^2_{\\min}}\n290: $$\n291: \n292: where $\\sigma\\'_{\\min} = \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2} > 0$ is the regularization parameter.\n293: \n294: This function is **infinitely differentiable** ($C^\\infty$) with explicit derivative bounds:\n295: \n296: 1. **Positive lower bound:** $\\sigma\\'_{\\text{reg}}(V) \\ge \\sigma\\'_{\\min} > 0$ for all $V \\ge 0$\n297: 2. **Bounded first derivative:** $|(\\sigma\\'_{\\text{reg}})'(V)| \\le L_{\\sigma\\'_{\\text{reg}}} = \\frac{1}{2\\sigma\\'_{\\min}}$ for all $V \\ge 0$\n298: 3. **Bounded second derivative:** $|(\\sigma\\'_{\\text{reg}})''(V)| \\le L_{\\sigma''_{\\text{reg}}} = \\frac{1}{4\\sigma\\'^3_{\\min}}$ for all $V \\ge 0$\n299: 4. **Bounded third derivative:** $|(\\sigma\\'_{\\text{reg}})'''(V)| \\le L_{\\sigma'''_{\\text{reg}}} = \\frac{3}{8\\sigma\\'^5_{\\min}}$ for all $V \\ge 0$\n300: \n301: **Derivation:** Direct computation of derivatives:\n302: \n303: $$\n304: (\\sigma\\'_{\\text{reg}})'(V) = \\frac{1}{2\\sqrt{V + \\sigma\\'^2_{\\min}}}, \\quad\n305: (\\sigma\\'_{\\text{reg}})''(V) = -\\frac{1}{4(V + \\sigma\\'^2_{\\min})^{3/2}}, \\quad\n306: (\\sigma\\'_{\\text{reg}})'''(V) = \\frac{3}{8(V + \\sigma\\'^2_{\\min})^{5/2}}\n307: $$\n308: \n309: Since $V \\ge 0$, all bounds are achieved at $V = 0$.\n310: ",
       "_registry_context": {
         "stage": "directives",
@@ -437,6 +404,7 @@
         "label": "assump-c4-measurement"
       },
       "section": "## 3. C⁴ Regularity Assumptions",
+      "references": [],
       "raw_directive": "319: ## 3. C⁴ Regularity Assumptions\n320: \n321: :::{prf:assumption} C⁴ Measurement Function\n322: :label: assump-c4-measurement\n323: \n324: The measurement function $d: \\mathcal{X} \\to \\mathbb{R}$ is C⁴ with bounded derivatives:\n325: $\\|\\nabla^m d\\| \\le d^{(m)}_{\\max} < \\infty$ for $m = 1, 2, 3, 4$.\n326: ",
       "_registry_context": {
         "stage": "directives",
@@ -462,6 +430,7 @@
         "label": "assump-c4-kernel"
       },
       "section": "## 3. C⁴ Regularity Assumptions",
+      "references": [],
       "raw_directive": "328: :::\n329: \n330: :::{prf:assumption} C⁴ Localization Kernel\n331: :label: assump-c4-kernel\n332: \n333: The Gaussian kernel $K_\\rho(x, x') = \\exp(-\\|x - x'\\|^2/(2\\rho^2))$ satisfies:\n334: \n335: $$\n336: \\|\\nabla^m_x K_\\rho(x, x')\\| \\le C_{\\nabla^m K}(\\rho) \\cdot K_\\rho(x, x')\n337: \n338: $$\n339: ",
       "_registry_context": {
         "stage": "directives",
@@ -487,6 +456,7 @@
         "label": "assump-c4-rescale"
       },
       "section": "## 3. C⁴ Regularity Assumptions",
+      "references": [],
       "raw_directive": "341: :::\n342: \n343: :::{prf:assumption} C⁴ Rescale Function\n344: :label: assump-c4-rescale\n345: \n346: The rescale function $g_A: \\mathbb{R} \\to [0, A]$ is C⁴ with globally bounded derivatives:",
       "_registry_context": {
         "stage": "directives",
@@ -512,6 +482,7 @@
         "label": "assump-c4-regularized-std"
       },
       "section": "## 3. C⁴ Regularity Assumptions",
+      "references": [],
       "raw_directive": "348: :::\n349: \n350: :::{prf:assumption} C^∞ Regularized Standard Deviation\n351: :label: assump-c4-regularized-std\n352: \n353: $\\sigma'_{\\text{reg}}(V) = \\sqrt{V + \\sigma'^2_{\\min}}$ is C^∞ with:\n354: \n355: $$\n356: |(\\sigma'_{\\text{reg}})^{(4)}(V)| \\le \\frac{15}{16\\sigma'^7_{\\min}}\n357: \n358: $$",
       "_registry_context": {
         "stage": "directives",
@@ -537,6 +508,7 @@
         "label": "assump-c4-bounded-measurement"
       },
       "section": "## 3. C⁴ Regularity Assumptions",
+      "references": [],
       "raw_directive": "360: :::\n361: \n362: :::{prf:assumption} Bounded Measurement Range\n363: :label: assump-c4-bounded-measurement\n364: \n365: The measurement function values are uniformly bounded:\n366: \n367: $$\n368: |d(x)| \\le d_{\\max} < \\infty \\quad \\forall x \\in \\mathcal{X}_{\\text{valid}}\n369: \n370: $$\n371: \n372: This ensures that centered quantities like $|d(x_i) - \\mu_\\rho|$ remain bounded by $2d_{\\max}$.\n373: ",
       "_registry_context": {
         "stage": "directives",
@@ -562,6 +534,10 @@
         "label": "assump-c4-qsd-bounded-density"
       },
       "section": "## 3. C⁴ Regularity Assumptions",
+      "references": [
+        "lem-mean-fourth-derivative",
+        "lem-variance-fourth-derivative"
+      ],
       "raw_directive": "375: :::\n376: \n377: :::{prf:assumption} QSD Bounded Density (Regularity Condition R2)\n378: :label: assump-c4-qsd-bounded-density\n379: \n380: The quasi-stationary distribution (QSD) has bounded density:\n381: \n382: $$\n383: 0 < \\rho_{\\min} \\le \\rho_{\\text{QSD}}(x, v) \\le \\rho_{\\max} < \\infty \\quad \\forall (x, v) \\in \\mathcal{X}_{\\text{valid}} \\times B_R(0)\n384: \n385: $$\n386: \n387: for some velocity ball radius $R > 0$.\n388: \n389: **Justification**: This assumption follows from the Foster-Lyapunov convergence conditions established in [06_convergence.md](../1_euclidean_gas/06_convergence.md) Chapter 4. The Foster-Lyapunov drift guarantees exponential convergence to a unique quasi-stationary distribution (QSD) with bounded density on the valid state space. This ensures the walker distribution is well-behaved and prevents pathological concentrations.\n390: \n391: **Usage**: This assumption is critical for sum-to-integral transitions in the centered moment scaling arguments (Lemmas {prf:ref}`lem-mean-fourth-derivative` and {prf:ref}`lem-variance-fourth-derivative`). The bounded density guarantees that discrete sums over walkers can be controlled by continuous integrals weighted by $\\rho_{\\text{QSD}}$.",
       "_registry_context": {
         "stage": "directives",
@@ -587,6 +563,10 @@
         "label": "assump-uniform-density-full"
       },
       "section": "## 2. Companion Selection Mechanisms: Framework Context",
+      "references": [
+        "verif-density-bound-consistency-full",
+        "lem-sum-to-integral-bound-full"
+      ],
       "raw_directive": "855: \n856: \n857: :::{prf:assumption} Uniform Density Bound\n858: :label: assump-uniform-density-full\n859: \n860: The phase-space density of alive walkers in the quasi-stationary distribution is uniformly bounded:\n861: \n862: $$\n863: \\rho_{\\text{phase}}^{\\text{QSD}}(x,v) \\leq \\rho_{\\max}^* < \\infty\n864: \n865: $$\n866: \n867: where $\\rho_{\\max}^*$ is the self-consistent density bound guaranteed to exist by the Fixed-Point Theorem {prf:ref}`verif-density-bound-consistency-full`.\n868: \n869: **Status**: This assumption is now justified and non-circular. The value $\\rho_{\\max}^*$ is a characteristic of the system parameters ($\\gamma, T, \\varepsilon_c, \\rho$, etc.) but is independent of the number of walkers $k$ or the specific configuration, making it a k-uniform bound.\n870: \n871: **Consequence for walker distributions**: The uniform density bound ensures the number of walkers in any phase-space ball of radius $r$ is bounded:\n872: \n873: $$\n874: \\#\\{j \\in \\mathcal{A} : d_{\\text{alg}}(i,j) \\leq r\\} \\leq \\rho_{\\max}^* \\cdot \\text{Vol}(B(0, r)) = \\mathcal{O}(r^{2d})\n875: \n876: $$\n877: ",
       "_registry_context": {
         "stage": "directives",
@@ -612,6 +592,7 @@
         "label": "assump-rescale-function-cinf-full"
       },
       "section": "## 12. Fitness Potential: Composition with Rescale Function",
+      "references": [],
       "raw_directive": "4525: ### 12.1 Assumptions on Rescale Function\n4526: \n4527: :::{prf:assumption} Rescale Function C^∞ Regularity\n4528: :label: assump-rescale-function-cinf-full\n4529: \n4530: The rescale function $g_A: \\mathbb{R} \\to [0, A]$ is C^∞ with **globally bounded derivatives**:\n4531: \n4532: For all $m \\geq 1$:\n4533: \n4534: $$\n4535: \\|g_A^{(m)}\\|_\\infty := \\sup_{z \\in \\mathbb{R}} |g_A^{(m)}(z)| \\leq L_{g,m} < \\infty\n4536: \n4537: $$\n4538: \n4539: where $L_{g,m} = \\mathcal{O}(m!)$ (Gevrey-1 growth).\n4540: \n4541: **Examples**:\n4542: 1. **Sigmoid**: $g_A(z) = A / (1 + e^{-z})$ has all derivatives globally bounded\n4543: 2. **Tanh-based**: $g_A(z) = A(1 + \\tanh(z))/2$ has all derivatives globally bounded",
       "_registry_context": {
         "stage": "directives",
@@ -637,6 +618,7 @@
         "label": "assump-qsd-existence"
       },
       "section": "## 1. QSD Existence and Uniqueness (R1)",
+      "references": [],
       "raw_directive": "1505: ### 1.2. Assumptions\n1506: \n1507: :::{prf:assumption} Framework Assumptions\n1508: :label: assump-qsd-existence\n1509: \n1510: We assume:\n1511: \n1512: **A1 (Confinement)**: The potential $U: \\mathcal{X} \\to \\mathbb{R}$ satisfies:\n1513: - $U(x) \\to +\\infty$ as $x \\to \\partial \\mathcal{X}$ or $|x| \\to \\infty$\n1514: - $\\nabla^2 U(x) \\ge \\kappa_{\\text{conf}} I_d$ for some $\\kappa_{\\text{conf}} > 0$ (strong convexity)\n1515: \n1516: **A2 (Killing near boundaries)**: The killing rate $\\kappa_{\\text{kill}}: \\mathcal{X} \\to \\mathbb{R}_+$ satisfies:\n1517: - $\\kappa_{\\text{kill}}(x) = 0$ on a compact subset $K \\subset \\mathcal{X}$ (safe region)\n1518: - $\\kappa_{\\text{kill}}(x) \\ge \\kappa_0 > 0$ near $\\partial \\mathcal{X}$ (strong killing near boundaries)\n1519: - $\\kappa_{\\text{kill}} \\in C^2(\\mathcal{X})$ with bounded derivatives\n1520: \n1521: **A3 (Bounded parameters)**:\n1522: - Friction coefficient: $\\gamma > 0$\n1523: - Diffusion coefficient: $\\sigma^2 > 0$\n1524: - Revival rate: $0 < \\lambda_{\\text{revive}} < \\infty$\n1525: \n1526: **A4 (Domain)**: The alive region $\\mathcal{X} \\subset \\mathbb{R}^d_x$ is either:\n1527: - Bounded with smooth boundary, OR",
       "_registry_context": {
         "stage": "directives",
@@ -662,6 +644,7 @@
         "label": "assump-qsd-existence"
       },
       "section": "## 1. QSD Existence and Uniqueness (R1)",
+      "references": [],
       "raw_directive": "1146: ### 1.2. Assumptions\n1147: \n1148: :::{prf:assumption} Framework Assumptions\n1149: :label: assump-qsd-existence\n1150: \n1151: We assume:\n1152: \n1153: **A1 (Confinement)**: The potential $U: \\mathcal{X} \\to \\mathbb{R}$ satisfies:\n1154: - $U(x) \\to +\\infty$ as $x \\to \\partial \\mathcal{X}$ or $|x| \\to \\infty$\n1155: - $\\nabla^2 U(x) \\ge \\kappa_{\\text{conf}} I_d$ for some $\\kappa_{\\text{conf}} > 0$ (strong convexity)\n1156: \n1157: **A2 (Killing near boundaries)**: The killing rate $\\kappa_{\\text{kill}}: \\mathcal{X} \\to \\mathbb{R}_+$ satisfies:\n1158: - $\\kappa_{\\text{kill}}(x) = 0$ on a compact subset $K \\subset \\mathcal{X}$ (safe region)\n1159: - $\\kappa_{\\text{kill}}(x) \\ge \\kappa_0 > 0$ near $\\partial \\mathcal{X}$ (strong killing near boundaries)\n1160: - $\\kappa_{\\text{kill}} \\in C^2(\\mathcal{X})$ with bounded derivatives\n1161: \n1162: **A3 (Bounded parameters)**:\n1163: - Friction coefficient: $\\gamma > 0$\n1164: - Diffusion coefficient: $\\sigma^2 > 0$\n1165: - Revival rate: $0 < \\lambda_{\\text{revive}} < \\infty$\n1166: \n1167: **A4 (Domain)**: The alive region $\\mathcal{X} \\subset \\mathbb{R}^d_x$ is either:\n1168: - Bounded with smooth boundary, OR",
       "_registry_context": {
         "stage": "directives",
@@ -687,6 +670,7 @@
         "label": "assump-spectral-floor"
       },
       "section": "## 3. The Emergent Geometry Framework",
+      "references": [],
       "raw_directive": "341: The regularization $\\epsilon_\\Sigma I$ ensures the diffusion is well-behaved.\n342: \n343: :::{prf:assumption} Spectral Floor (Standing Assumption)\n344: :label: assump-spectral-floor\n345: \n346: There exists $\\Lambda_- \\ge 0$ such that for all swarm states $S$ and walkers $i$:\n347: \n348: $$\n349: \\lambda_{\\min}(H(x_i, S)) \\ge -\\Lambda_-\n350: $$\n351: ",
       "_registry_context": {
         "stage": "directives",
@@ -712,6 +696,7 @@
         "label": "assump-cinf-primitives"
       },
       "section": "## 3. C∞ Regularity Assumptions on Primitive Functions",
+      "references": [],
       "raw_directive": "336: ## 3. C∞ Regularity Assumptions on Primitive Functions\n337: \n338: :::{prf:assumption} C∞ Regularity of Primitives\n339: :label: assump-cinf-primitives\n340: \n341: 1. **Measurement**: d ∈ C∞(X) with sup_x ||∇^m d(x)|| ≤ C_d^{(m)} < ∞ for all m ≥ 0\n342: \n343: 2. **Localization kernel**: K_ρ(r) = exp(-r²/(2ρ²)) is real analytic with Hermite bounds:\n344:    |d^m K_ρ / dr^m| ≤ C_Herm · m! · ρ^{-m} · exp(-r²/(4ρ²))\n345: \n346: 3. **Rescale function**: g_A ∈ C∞(ℝ) with sup_z |g_A^{(m)}(z)| ≤ C_{g,m} < ∞ for all m ≥ 1\n347: \n348: 4. **Regularized std dev**: σ'_reg ∈ C∞(ℝ_{≥0}) with sup_{σ²} |d^m σ'_reg / d(σ²)^m| ≤ C_{σ',m} < ∞ and σ'_reg ≥ ε_σ > 0\n349: ",
       "_registry_context": {
         "stage": "directives",
@@ -737,6 +722,10 @@
         "label": "assump-uniform-density-full"
       },
       "section": "## 2. Companion Selection Mechanisms: Framework Context",
+      "references": [
+        "lem-deterministic-packing-from-keystone-full",
+        "lem-sum-to-integral-bound-full"
+      ],
       "raw_directive": "979: :::\n980: \n981: :::{prf:assumption} Uniform Density Bound\n982: :label: assump-uniform-density-full\n983: \n984: The phase-space density of alive walkers in the quasi-stationary distribution is uniformly bounded:\n985: \n986: $$\n987: \\rho_{\\text{phase}}^{\\text{QSD}}(x,v) \\leq \\rho_{\\max} < \\infty\n988: \n989: $$\n990: \n991: where $\\mathcal{X}$ is the spatial domain and $V$ is the velocity domain (bounded by velocity squashing).\n992: \n993: **Status**: This follows from Lemma {prf:ref}`lem-deterministic-packing-from-keystone-full`, which derives $\\rho_{\\max}$ from Keystone ergodicity, kinetic diffusion, and C³ regularity. The bound is **deterministic** (holds on the entire QSD support, not just with high probability) and **k-uniform** (independent of swarm size).\n994: \n995: **Consequence for walker distributions**: By Lemma {prf:ref}`lem-deterministic-packing-from-keystone-full`, the deterministic local packing bound ensures that for **all configurations** in $\\text{supp}(\\pi_{\\text{QSD}})$:\n996: \n997: $$\n998: \\#\\{j \\in \\mathcal{A} : d_{\\text{alg}}(i,j) \\leq r\\} \\leq \\rho_{\\max} \\cdot \\text{Vol}(B(0, r)) = \\mathcal{O}(r^{2d})\n999: \n1000: $$\n1001: ",
       "_registry_context": {
         "stage": "directives",
@@ -762,6 +751,7 @@
         "label": "assump-rescale-function-cinf-full"
       },
       "section": "## 12. Fitness Potential: Composition with Rescale Function",
+      "references": [],
       "raw_directive": "4533: ### 12.1 Assumptions on Rescale Function\n4534: \n4535: :::{prf:assumption} Rescale Function C^∞ Regularity\n4536: :label: assump-rescale-function-cinf-full\n4537: \n4538: The rescale function $g_A: \\mathbb{R} \\to [0, A]$ is C^∞ with **globally bounded derivatives**:\n4539: \n4540: For all $m \\geq 1$:\n4541: \n4542: $$\n4543: \\|g_A^{(m)}\\|_\\infty := \\sup_{z \\in \\mathbb{R}} |g_A^{(m)}(z)| \\leq L_{g,m} < \\infty\n4544: \n4545: $$\n4546: \n4547: where $L_{g,m} = \\mathcal{O}(m!)$ (Gevrey-1 growth).\n4548: \n4549: **Examples**:\n4550: 1. **Sigmoid**: $g_A(z) = A / (1 + e^{-z})$ has all derivatives globally bounded\n4551: 2. **Tanh-based**: $g_A(z) = A(1 + \\tanh(z))/2$ has all derivatives globally bounded",
       "_registry_context": {
         "stage": "directives",

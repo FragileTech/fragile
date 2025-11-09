@@ -19,6 +19,7 @@
         "label": "thm-revival-kl-expansive"
       },
       "section": "## 7. Gemini's Expert Analysis and Verification",
+      "references": [],
       "raw_directive": "1198: **Conclusion**: Since $D_{\\text{KL}} \\ge 0$, $\\lambda > 0$, $m_d > 0$, and $\\|\\rho\\|_{L^1} > 0$, the entropy production is **strictly positive**.\n1199: \n1200: :::{prf:theorem} Revival Operator is KL-Expansive (VERIFIED)\n1201: :label: thm-revival-kl-expansive\n1202: \n1203: The mean-field revival operator $\\mathcal{R}[\\rho, m_d]$ **increases** the KL-divergence to the invariant measure $\\pi$:\n1204: \n1205: $$\n1206: \\frac{d}{dt} D_{\\text{KL}}(\\rho \\| \\pi) \\Big|_{\\text{revival}} > 0 \\quad \\text{for all } \\rho \\neq \\pi, \\, m_d > 0\n1207: \n1208: $$\n1209: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "thm-joint-not-contractive"
       },
       "section": "## 7. Gemini's Expert Analysis and Verification",
+      "references": [],
       "raw_directive": "1224: - **Negative** when $\\|\\rho\\|_{L^1} > \\frac{\\lambda}{\\lambda + \\kappa}$ (contractive above equilibrium)\n1225: \n1226: :::{prf:theorem} Joint Jump Operator NOT Unconditionally Contractive (VERIFIED)\n1227: :label: thm-joint-not-contractive\n1228: "
     }
   ],

@@ -19,6 +19,7 @@
         "label": "def-voronoi-rigorous-app"
       },
       "section": "## Appendix D: Ricci Tensor as Metric Functional - Rigorous Proof",
+      "references": [],
       "raw_directive": "2110: #### D.2.1. Voronoi Tessellation and CVT\n2111: \n2112: :::{prf:definition} Voronoi Tessellation\n2113: :label: def-voronoi-rigorous-app\n2114: \n2115: Given $N$ generator points $\\{x_i\\}_{i=1}^N$ in a domain $\\Omega \\subset \\mathbb{R}^d$, the **Voronoi cell** of $x_i$ is:\n2116: \n2117: $$\n2118: \\mathcal{V}_i := \\{x \\in \\Omega : \\|x - x_i\\| < \\|x - x_j\\| \\,\\forall j \\neq i\\}\n2119: \n2120: $$\n2121: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "def-cvt-app"
       },
       "section": "## Appendix D: Ricci Tensor as Metric Functional - Rigorous Proof",
+      "references": [],
       "raw_directive": "2123: :::\n2124: \n2125: :::{prf:definition} Centroidal Voronoi Tessellation (CVT)\n2126: :label: def-cvt-app\n2127: \n2128: A Voronoi tessellation $\\{\\mathcal{V}_i\\}$ with generators $\\{x_i\\}$ is a **Centroidal Voronoi Tessellation** with respect to density $\\rho(x)$ if:\n2129: \n2130: $$\n2131: x_i = \\frac{\\int_{\\mathcal{V}_i} x \\, \\rho(x) \\, dx}{\\int_{\\mathcal{V}_i} \\rho(x) \\, dx} \\quad \\forall i\n2132: \n2133: $$\n2134: \n2135: i.e., each generator is the **mass centroid** of its Voronoi cell.\n2136: \n2137: **Energy Functional**: CVT minimizes the energy functional:\n2138: \n2139: $$\n2140: \\mathcal{E}[\\{x_i\\}, \\{\\mathcal{V}_i\\}] = \\sum_{i=1}^N \\int_{\\mathcal{V}_i} \\|x - x_i\\|^2 \\rho(x) \\, dx\n2141: "
     },
     {
@@ -55,6 +57,7 @@
         "label": "thm-cvt-convergence-app"
       },
       "section": "## Appendix D: Ricci Tensor as Metric Functional - Rigorous Proof",
+      "references": [],
       "raw_directive": "2145: **Key Theorem** (Du-Faber-Gunzburger, 1999):\n2146: \n2147: :::{prf:theorem} CVT Convergence to Continuum\n2148: :label: thm-cvt-convergence-app\n2149: \n2150: Let $\\rho(x) > 0$ be a smooth density on $\\Omega \\subset \\mathbb{R}^d$. Let $\\{x_i^N\\}_{i=1}^N$ be a CVT for $\\rho$ with $N$ generators.\n2151: \n2152: Then as $N \\to \\infty$:\n2153: \n2154: $$\n2155: \\max_{i} \\text{diam}(\\mathcal{V}_i) = O(N^{-1/d})\n2156: \n2157: $$\n2158: \n2159: and the CVT energy satisfies:\n2160: \n2161: $$\n2162: \\mathcal{E}[\\{x_i^N\\}] = \\mathcal{E}_{\\infty}[\\rho] + O(N^{-(2+d)/d})\n2163: \n2164: $$\n2165: \n2166: where $\\mathcal{E}_{\\infty}[\\rho]$ is the limiting continuum energy functional.\n2167: "
     },
     {
@@ -73,6 +76,7 @@
         "label": "def-wasserstein-2-app"
       },
       "section": "## Appendix D: Ricci Tensor as Metric Functional - Rigorous Proof",
+      "references": [],
       "raw_directive": "2171: #### D.2.2. Optimal Transport and Monge-Amp\u00e8re Equation\n2172: \n2173: :::{prf:definition} Wasserstein-2 Distance\n2174: :label: def-wasserstein-2-app\n2175: \n2176: For probability measures $\\mu, \\nu$ on $\\mathbb{R}^d$, the **Wasserstein-2 distance** is:\n2177: \n2178: $$\n2179: W_2(\\mu, \\nu)^2 := \\inf_{\\gamma \\in \\Gamma(\\mu, \\nu)} \\int_{\\mathbb{R}^d \\times \\mathbb{R}^d} \\|x - y\\|^2 \\, d\\gamma(x, y)\n2180: \n2181: $$\n2182: "
     },
     {
@@ -91,6 +95,7 @@
         "label": "prop-cvt-optimal-transport-app"
       },
       "section": "## Appendix D: Ricci Tensor as Metric Functional - Rigorous Proof",
+      "references": [],
       "raw_directive": "2186: **Connection to CVT**:\n2187: \n2188: :::{prf:proposition} CVT as Discrete Optimal Transport\n2189: :label: prop-cvt-optimal-transport-app\n2190: \n2191: The CVT energy functional is the discrete approximation to the Wasserstein-2 distance:\n2192: \n2193: $$\n2194: \\mathcal{E}[\\{x_i\\}] = W_2(\\rho_{\\text{empirical}}, \\rho_{\\text{target}})^2 + O(N^{-1/d})\n2195: \n2196: $$\n2197: \n2198: where:\n2199: - $\\rho_{\\text{empirical}} = \\frac{1}{N}\\sum_{i=1}^N \\delta_{x_i}$ is the empirical measure of generators\n2200: - $\\rho_{\\text{target}} = \\rho(x)$ is the target continuous density\n2201: "
     },
     {
@@ -109,6 +114,7 @@
         "label": "thm-brenier-mccann-app"
       },
       "section": "## Appendix D: Ricci Tensor as Metric Functional - Rigorous Proof",
+      "references": [],
       "raw_directive": "2205: **Monge-Amp\u00e8re PDE**:\n2206: \n2207: :::{prf:theorem} Brenier-McCann Theorem\n2208: :label: thm-brenier-mccann-app\n2209: \n2210: Let $\\rho_0, \\rho_1$ be probability densities on $\\mathbb{R}^d$ with $\\rho_0, \\rho_1 > 0$ and smooth. Then there exists a unique optimal transport map $T: \\mathbb{R}^d \\to \\mathbb{R}^d$ such that:\n2211: \n2212: $$\n2213: T_\\# \\rho_0 = \\rho_1\n2214: \n2215: $$\n2216: \n2217: (i.e., $\\rho_1(T(x)) \\det(\\nabla T(x)) = \\rho_0(x)$)\n2218: \n2219: and $T = \\nabla \\phi$ for a convex potential $\\phi: \\mathbb{R}^d \\to \\mathbb{R}$ satisfying the **Monge-Amp\u00e8re equation**:\n2220: \n2221: $$\n2222: \\det(\\nabla^2 \\phi(x)) = \\frac{\\rho_0(x)}{\\rho_1(\\nabla \\phi(x))}\n2223: \n2224: $$\n2225: "
     },
     {
@@ -127,6 +133,7 @@
         "label": "def-ot-metric-app"
       },
       "section": "## Appendix D: Ricci Tensor as Metric Functional - Rigorous Proof",
+      "references": [],
       "raw_directive": "2233: #### D.3.1. Optimal Transport Metric\n2234: \n2235: :::{prf:definition} Optimal Transport Induced Metric\n2236: :label: def-ot-metric-app\n2237: \n2238: Given a density $\\rho(x)$ on $\\Omega$ and a reference density $\\rho_0$ (e.g., uniform), the optimal transport map $T = \\nabla \\phi$ from $\\rho_0$ to $\\rho$ induces a metric:\n2239: \n2240: $$\n2241: g_{ij}^{\\text{OT}}(x) := \\nabla^2_{ij} \\phi(x)\n2242: \n2243: $$\n2244: \n2245: where $\\phi$ satisfies the Monge-Amp\u00e8re equation:\n2246: \n2247: $$\n2248: \\det(\\nabla^2 \\phi) = \\frac{\\rho_0}{\\rho \\circ \\nabla \\phi}\n2249: "
     },
     {
@@ -145,6 +152,7 @@
         "label": "prop-cvt-encodes-metric-app"
       },
       "section": "## Appendix D: Ricci Tensor as Metric Functional - Rigorous Proof",
+      "references": [],
       "raw_directive": "2257: The CVT tessellation encodes a **discrete approximation** to this optimal transport metric.\n2258: \n2259: :::{prf:proposition} CVT Encodes Optimal Transport Metric\n2260: :label: prop-cvt-encodes-metric-app\n2261: \n2262: Let $\\{x_i\\}_{i=1}^N$ be a CVT for density $\\rho$ with $N$ generators. Define the **discrete second fundamental form**:\n2263: \n2264: $$\n2265: H_{ij}^{\\text{CVT}}(x_i) := \\frac{1}{|\\mathcal{V}_i|} \\int_{\\mathcal{V}_i} (x - x_i)_i (x - x_i)_j \\rho(x) \\, dx\n2266: \n2267: $$\n2268: \n2269: This is the covariance matrix of points in cell $\\mathcal{V}_i$ weighted by $\\rho$.\n2270: \n2271: Then as $N \\to \\infty$:\n2272: \n2273: $$\n2274: H_{ij}^{\\text{CVT}}(x) \\to c \\cdot g_{ij}^{\\text{OT}}(x) + O(N^{-1/d})\n2275: \n2276: $$\n2277: \n2278: for a constant $c > 0$ depending on dimension $d$.\n2279: \n2280: **Proof Sketch**: The CVT generators $\\{x_i\\}$ approximate the optimal transport map via the discrete measure $\\rho_{\\text{empirical}} = \\frac{1}{N}\\sum_{i=1}^N \\delta_{x_i}$. The second moment matrix $H^{\\text{CVT}}$ measures the local distortion of the Voronoi cells, which in the continuum limit equals the Hessian of the transport potential: $H^{\\text{CVT}} \\approx \\nabla^2 \\phi = g^{\\text{OT}}$.\n2281: "
     },
     {
@@ -163,6 +171,9 @@
         "label": "lem-emergent-equals-ot-app"
       },
       "section": "## Appendix D: Ricci Tensor as Metric Functional - Rigorous Proof",
+      "references": [
+        "prop-cvt-encodes-metric-app"
+      ],
       "raw_directive": "2313: $$\n2314: \n2315: :::{prf:lemma} Emergent Metric = Optimal Transport Metric (Rigorous)\n2316: :label: lem-emergent-equals-ot-app\n2317: \n2318: At the quasi-stationary distribution, the emergent metric from expected Hessian equals the optimal transport metric from CVT geometry:\n2319: \n2320: $$\n2321: g_{ij}^{\\text{emergent}}[\\rho_t](x) = c_T \\cdot g_{ij}^{\\text{OT}}[\\rho_t](x) + \\varepsilon \\delta_{ij} + O(N^{-1/d})\n2322: \n2323: $$\n2324: \n2325: where $c_T = k_B T$ is a constant proportionality factor.\n2326: \n2327: **Rigorous Proof**:\n2328: \n2329: We establish this through a **variational characterization** showing both metrics arise from the same energy functional.\n2330: \n2331: **Step 1: QSD as Free Energy Minimizer**\n2332: \n2333: From {doc}`../04_convergence.md` (QSD convergence theory), the quasi-stationary distribution $\\mu_{\\text{QSD}}$ minimizes the **free energy functional**:\n2334: \n2335: $$\n2336: \\mathcal{F}[\\mu] = \\int_{\\mathcal{X} \\times \\mathcal{V}} \\left[U(x) + \\frac{1}{2}m\\|v\\|^2 + k_B T \\log \\mu(x,v)\\right] \\mu(x,v) \\, dx dv\n2337: \n2338: $$\n2339: \n2340: subject to normalization $\\int \\mu = 1$ and boundary conditions.\n2341: \n2342: At equilibrium, integrating over velocity yields the spatial free energy:\n2343: \n2344: $$\n2345: \\mathcal{F}_{\\text{spatial}}[\\rho] = \\int_{\\mathcal{X}} \\left[U(x) + k_B T \\rho(x) \\log \\rho(x)\\right] \\rho(x) \\, dx\n2346: \n2347: $$\n2348: \n2349: where $\\rho(x) = \\int \\mu(x,v) dv$ is the spatial density.\n2350: \n2351: **Step 2: Fitness Potential from Free Energy**\n2352: \n2353: The fitness potential $\\Psi(x)$ is defined as the effective potential at QSD. From the free energy:\n2354: \n2355: $$\n2356: \\frac{\\delta \\mathcal{F}_{\\text{spatial}}}{\\delta \\rho(x)} = U(x) + k_B T(\\log \\rho(x) + 1) = \\text{const}\n2357: \n2358: $$\n2359: \n2360: at equilibrium. This gives:\n2361: \n2362: $$\n2363: \\rho_{\\text{QSD}}(x) \\propto \\exp\\left(-\\frac{U(x)}{k_B T}\\right)\n2364: \n2365: $$\n2366: \n2367: Define the **effective potential**:\n2368: \n2369: $$\n2370: \\Psi_{\\text{eff}}(x) := U(x) = -k_B T \\log \\rho_{\\text{QSD}}(x) + \\text{const}\n2371: \n2372: $$\n2373: \n2374: **Step 3: Expected Hessian from Effective Potential**\n2375: \n2376: The emergent metric Hessian is ({doc}`../08_emergent_geometry.md`):\n2377: \n2378: $$\n2379: H_{ij}[\\mu_t](x) = \\mathbb{E}_{x' \\sim \\rho_t, \\,\\|x'-x\\| < \\delta}\\left[\\frac{\\partial^2 \\Psi_{\\text{eff}}}{\\partial x^i \\partial x^j}\\bigg|_{x'}\\right]\n2380: \n2381: $$\n2382: \n2383: **Rigorous justification of local approximation**: For $\\Psi_{\\text{eff}} \\in C^3(\\mathcal{X})$ and the distribution $\\rho_t$ supported on $B_\\delta(x) := \\{x' : \\|x'-x\\| < \\delta\\}$, Taylor expansion gives:\n2384: \n2385: $$\n2386: \\frac{\\partial^2 \\Psi_{\\text{eff}}}{\\partial x^i \\partial x^j}(x') = \\frac{\\partial^2 \\Psi_{\\text{eff}}}{\\partial x^i \\partial x^j}(x) + O(\\delta)\n2387: \n2388: $$\n2389: \n2390: Therefore:\n2391: \n2392: $$\n2393: \\begin{align}\n2394: H_{ij}(x) &= \\int_{B_\\delta(x)} \\frac{\\partial^2 \\Psi_{\\text{eff}}}{\\partial x^i \\partial x^j}(x') \\frac{\\rho_t(x')}{\\int_{B_\\delta(x)} \\rho_t} dx' \\\\\n2395: &= \\frac{\\partial^2 \\Psi_{\\text{eff}}}{\\partial x^i \\partial x^j}(x) + O(\\delta) \\\\\n2396: &= -k_B T \\frac{\\partial^2}{\\partial x^i \\partial x^j} \\log \\rho_t(x) + O(\\delta)\n2397: \\end{align}\n2398: \n2399: $$\n2400: \n2401: where the error $O(\\delta)$ vanishes in the continuum limit as $\\delta \\to 0$ with $N \\to \\infty$ while keeping the typical walker density constant.\n2402: \n2403: **Step 4: Optimal Transport Metric from Wasserstein Geometry**\n2404: \n2405: Consider the optimal transport from a reference measure $\\rho_0 = \\text{const}$ to $\\rho_t$. The transport potential $\\phi$ satisfies the **Monge-Amp\u00e8re equation**:\n2406: \n2407: $$\n2408: \\det(\\nabla^2 \\phi) = \\frac{\\rho_0}{\\rho_t \\circ \\nabla \\phi}\n2409: \n2410: $$\n2411: \n2412: with transport map $T = \\nabla \\phi$.\n2413: \n2414: **Key identity** (from optimal transport theory, Villani 2009, Theorem 12.49): The optimal transport potential $\\phi$ and the density $\\rho_t$ satisfy:\n2415: \n2416: $$\n2417: \\phi(x) = -\\int_{x_0}^x \\nabla V_{\\text{KL}}(x') \\cdot dx'\n2418: \n2419: $$\n2420: \n2421: where $V_{\\text{KL}}(x)$ is the **Kullback-Leibler potential**:\n2422: \n2423: $$\n2424: V_{\\text{KL}}(x) = k_B T \\log \\rho_t(x) + \\text{const}\n2425: \n2426: $$\n2427: \n2428: Therefore:\n2429: \n2430: $$\n2431: \\nabla^2 \\phi(x) = -\\nabla^2 V_{\\text{KL}}(x) = -k_B T \\nabla^2 \\log \\rho_t(x)\n2432: \n2433: $$\n2434: \n2435: The optimal transport metric is:\n2436: \n2437: $$\n2438: g_{ij}^{\\text{OT}} := \\nabla^2_{ij} \\phi = -k_B T \\frac{\\partial^2}{\\partial x^i \\partial x^j} \\log \\rho_t\n2439: \n2440: $$\n2441: \n2442: **Step 5: Comparison**\n2443: \n2444: From Steps 3 and 4:\n2445: \n2446: $$\n2447: H_{ij}[\\mu_t](x) = -k_B T \\frac{\\partial^2 \\log \\rho_t}{\\partial x^i \\partial x^j} = g_{ij}^{\\text{OT}}(x)\n2448: \n2449: $$\n2450: \n2451: Therefore:\n2452: \n2453: $$\n2454: g_{ij}^{\\text{emergent}} = H_{ij} + \\varepsilon \\delta_{ij} = g_{ij}^{\\text{OT}} + \\varepsilon \\delta_{ij}\n2455: \n2456: $$\n2457: \n2458: Combined with CVT convergence ({prf:ref}`prop-cvt-encodes-metric-app`), which gives $g^{\\text{CVT}} = g^{\\text{OT}} + O(N^{-1/d})$:\n2459: \n2460: $$\n2461: \\boxed{g_{ij}^{\\text{emergent}}[\\rho_t] = g_{ij}^{\\text{OT}}[\\rho_t] + \\varepsilon \\delta_{ij} + O(N^{-1/d})}\n2462: \n2463: $$\n2464: "
     },
     {
@@ -181,6 +192,7 @@
         "label": "def-regge-curvature-app"
       },
       "section": "## Appendix D: Ricci Tensor as Metric Functional - Rigorous Proof",
+      "references": [],
       "raw_directive": "2488: #### D.4.1. Regge Curvature on Simplicial Complexes\n2489: \n2490: :::{prf:definition} Regge Curvature\n2491: :label: def-regge-curvature-app\n2492: \n2493: Let $\\mathcal{T}$ be a simplicial complex (triangulation or Voronoi dual) in $d$ dimensions. For each $(d-2)$-simplex (hinge) $h$, define the **deficit angle**:\n2494: \n2495: $$\n2496: \\theta_h := 2\\pi - \\sum_{\\sigma \\supset h} \\alpha_\\sigma(h)\n2497: \n2498: $$\n2499: \n2500: where $\\alpha_\\sigma(h)$ is the dihedral angle at $h$ in $d$-simplex $\\sigma$.\n2501: \n2502: The **Regge curvature** concentrated at hinge $h$ is:\n2503: \n2504: $$\n2505: R_{\\text{Regge}}(h) := \\frac{\\theta_h}{|h|}\n2506: \n2507: $$\n2508: "
     },
     {
@@ -199,6 +211,7 @@
         "label": "thm-regge-convergence-rigorous-app"
       },
       "section": "## Appendix D: Ricci Tensor as Metric Functional - Rigorous Proof",
+      "references": [],
       "raw_directive": "2512: **Connection to Riemannian Curvature**:\n2513: \n2514: :::{prf:theorem} Regge Calculus Convergence\n2515: :label: thm-regge-convergence-rigorous-app\n2516: \n2517: Let $(M, g)$ be a smooth Riemannian $d$-manifold. Let $\\{\\mathcal{T}_N\\}$ be a sequence of triangulations with mesh size $\\delta_N \\to 0$ as $N \\to \\infty$.\n2518: \n2519: Assume the triangulations are **shape-regular**: There exist constants $0 < c_{\\min} < c_{\\max}$ such that all simplices $\\sigma$ satisfy:\n2520: \n2521: $$\n2522: c_{\\min} \\leq \\frac{\\text{inradius}(\\sigma)}{\\text{diameter}(\\sigma)} \\leq c_{\\max}\n2523: \n2524: $$\n2525: \n2526: Then the Regge curvature converges to the Riemannian sectional curvature:\n2527: \n2528: $$\n2529: R_{\\text{Regge}}(h_N) \\to K_g(P) \\quad \\text{as } N \\to \\infty\n2530: \n2531: $$\n2532: \n2533: where $P$ is the 2-plane containing $h_N$ and $K_g(P)$ is the sectional curvature.\n2534: \n2535: **Convergence Rate**: If $g \\in C^{k,\\alpha}$ with $k \\geq 3$, then:\n2536: \n2537: $$\n2538: |R_{\\text{Regge}}(h_N) - K_g(P)| = O(\\delta_N^2)\n2539: \n2540: $$\n2541: "
     },
     {
@@ -217,6 +230,7 @@
         "label": "lem-cvt-shape-regular-app"
       },
       "section": "## Appendix D: Ricci Tensor as Metric Functional - Rigorous Proof",
+      "references": [],
       "raw_directive": "2547: **Issue**: The theorem above assumes **shape-regular** triangulations. Are Voronoi tessellations shape-regular?\n2548: \n2549: :::{prf:lemma} CVT Shape Regularity\n2550: :label: lem-cvt-shape-regular-app\n2551: \n2552: Let $\\rho(x)$ be a smooth, positive density on a compact domain $\\Omega$ with $\\inf_\\Omega \\rho > 0$ and $\\sup_\\Omega \\rho < \\infty$.\n2553: \n2554: Then the Centroidal Voronoi Tessellation for $\\rho$ with $N$ generators is **quasi-uniform** in the sense:\n2555: \n2556: $$\n2557: \\frac{\\max_i \\text{diam}(\\mathcal{V}_i)}{\\min_j \\text{diam}(\\mathcal{V}_j)} = O(1)\n2558: \n2559: $$\n2560: \n2561: as $N \\to \\infty$.\n2562: \n2563: **Proof Sketch**: For CVT, the generator distribution approximates $\\rho$ via $\\frac{1}{N}\\sum_{i=1}^N \\delta_{x_i} \\approx \\frac{\\rho}{\\int \\rho}$. If $\\rho$ is bounded above and below, then generators are **quasi-uniformly** distributed: no region is over-sampled or under-sampled by more than a constant factor. This implies all Voronoi cells have comparable size $|\\mathcal{V}_i| \\sim N^{-1}$ and comparable shape (roughly isotropic), satisfying the shape-regularity condition.\n2564: "
     },
     {
@@ -235,6 +249,12 @@
         "label": "thm-scutoid-ricci-convergence-app"
       },
       "section": "## Appendix D: Ricci Tensor as Metric Functional - Rigorous Proof",
+      "references": [
+        "lem-emergent-equals-ot-app",
+        "lem-cvt-shape-regular-app",
+        "thm-regge-convergence-rigorous-app",
+        "thm-riemann-scutoid-dictionary"
+      ],
       "raw_directive": "2568: #### D.4.3. Application to Scutoid Ricci Tensor\n2569: \n2570: :::{prf:theorem} Scutoid Ricci Tensor Converges to Riemannian Ricci Tensor\n2571: :label: thm-scutoid-ricci-convergence-app\n2572: \n2573: Let $\\rho_t(x)$ be a smooth, positive spatial density from the Fractal Set at time $t$. Let $\\{x_i\\}_{i=1}^N$ be walkers distributed according to $\\rho_t$, forming a Voronoi tessellation $\\{\\mathcal{V}_i\\}$.\n2574: \n2575: Define the scutoid Ricci tensor as in {doc}`../15_scutoid_curvature_raychaudhuri.md`:\n2576: \n2577: $$\n2578: R_{\\mu\\nu}^{\\text{scutoid}} = \\lim_{\\Delta x \\to 0} \\frac{1}{\\text{Vol}(\\mathcal{B}_\\mu)} \\sum_{P \\ni x^\\mu} \\theta_P n_P^\\mu n_P^\\nu\n2579: \n2580: $$\n2581: \n2582: Then as $N \\to \\infty$:\n2583: \n2584: $$\n2585: R_{\\mu\\nu}^{\\text{scutoid}}[\\rho_t](x) \\to R_{\\mu\\nu}[g[\\rho_t]](x)\n2586: \n2587: $$\n2588: \n2589: where $R_{\\mu\\nu}[g]$ is the **Riemannian Ricci tensor** of the metric $g_{ij}[\\rho_t]$ defined by optimal transport / CVT ({prf:ref}`lem-emergent-equals-ot-app`).\n2590: \n2591: **Convergence Rate**:\n2592: \n2593: $$\n2594: \\left|R_{\\mu\\nu}^{\\text{scutoid}} - R_{\\mu\\nu}[g]\\right| = O(N^{-1/d})\n2595: \n2596: $$\n2597: \n2598: assuming $\\rho_t \\in C^{3,\\alpha}$.\n2599: \n2600: **Proof**:\n2601: \n2602: **Step 1**: By {prf:ref}`lem-cvt-shape-regular-app`, the Voronoi tessellation is shape-regular.\n2603: \n2604: **Step 2**: By {prf:ref}`thm-regge-convergence-rigorous-app`, the Regge curvature (deficit angles) converges to the sectional curvature $K_g$ of the metric $g$.\n2605: \n2606: **Step 3**: **Connection between scutoid definition and Regge calculus**.\n2607: \n2608: The scutoid Ricci tensor is defined ({doc}`../15_scutoid_curvature_raychaudhuri.md`, {prf:ref}`thm-riemann-scutoid-dictionary`) as:\n2609: \n2610: $$\n2611: R_{\\mu\\nu}^{\\text{scutoid}}(x) = \\lim_{\\text{Vol}\\to 0} \\frac{1}{\\text{Vol}(\\mathcal{B}_x)} \\sum_{P \\ni x} \\theta_P \\, n_P^\\mu n_P^\\nu\n2612: \n2613: $$\n2614: \n2615: where the sum is over plaquettes $P$ (2-faces in the Voronoi dual) containing point $x$, $\\theta_P$ is the deficit angle at plaquette $P$, and $n_P^\\mu$ is the normal vector.\n2616: \n2617: In Regge calculus, the Ricci tensor at a hinge (d-2 dimensional face) is computed as:\n2618: \n2619: $$\n2620: R_{\\mu\\nu}^{\\text{Regge}} = \\frac{\\theta_h}{\\text{Vol}(h)} \\, n_h^\\mu n_h^\\nu\n2621: \n2622: $$\n2623: \n2624: where $h$ is the hinge and $\\theta_h$ is the deficit angle.\n2625: \n2626: **Key identification**: For a simplicial complex dual to the Voronoi tessellation:\n2627: - Voronoi vertices (walker positions) \u2192 Dual simplices\n2628: - Voronoi edges \u2192 Dual (d-1)-faces\n2629: - Voronoi 2-faces (plaquettes) \u2192 Dual hinges (d-2)-faces\n2630: \n2631: Therefore, the scutoid curvature definition (sum over plaquettes) is **exactly** the Regge curvature for the dual simplicial complex. This identification allows us to apply Regge convergence theorems directly.\n2632: \n2633: **Step 4**: The convergence rate follows from:\n2634: - CVT mesh size: $\\delta_N = O(N^{-1/d})$\n2635: - CVT quantization error dominates: $O(N^{-1/d})$ (Graf & Luschgy, 2000)\n2636: "
     },
     {
@@ -253,6 +273,12 @@
         "label": "thm-ricci-metric-functional-rigorous-main"
       },
       "section": "## Appendix D: Ricci Tensor as Metric Functional - Rigorous Proof",
+      "references": [
+        "thm-uniqueness-lovelock-fragile",
+        "prop-cvt-encodes-metric-app",
+        "lem-emergent-equals-ot-app",
+        "thm-scutoid-ricci-convergence-app"
+      ],
       "raw_directive": "2640: ### D.5. Main Result: Ricci Tensor as Metric Functional\n2641: \n2642: :::{prf:theorem} Ricci Tensor Depends Only on Metric (Rigorous)\n2643: :label: thm-ricci-metric-functional-rigorous-main\n2644: \n2645: The Ricci tensor derived from scutoid plaquettes depends on the walker measure $\\mu_t(x, v)$ **only through** the emergent metric $g_{\\mu\\nu}[\\mu_t]$:\n2646: \n2647: $$\n2648: R_{\\mu\\nu}^{\\text{scutoid}}[\\mu_t] = R_{\\mu\\nu}[g[\\mu_t], \\partial g, \\partial^2 g] + O(N^{-1/d})\n2649: \n2650: $$\n2651: \n2652: where:\n2653: - $g_{ij}[\\mu_t](x) = H_{ij}[\\mu_t](x) + \\varepsilon \\delta_{ij}$ is the emergent metric from expected Hessian ({doc}`../08_emergent_geometry.md`)\n2654: - $R_{\\mu\\nu}[g, \\partial g, \\partial^2 g]$ is the **Riemannian Ricci tensor** computed from $g$ and its derivatives\n2655: \n2656: **Consequently**, for the purpose of Lovelock's theorem ({prf:ref}`thm-uniqueness-lovelock-fragile`), the scutoid Ricci tensor satisfies the required property:\n2657: \n2658: $$\n2659: R_{\\mu\\nu} = R_{\\mu\\nu}[g_{\\alpha\\beta}]\n2660: \n2661: $$\n2662: \n2663: **Proof**:\n2664: \n2665: This follows by combining the three main results:\n2666: \n2667: 1. **CVT encodes optimal transport metric** ({prf:ref}`prop-cvt-encodes-metric-app`):\n2668:    $$\n2669:    g_{ij}^{\\text{CVT}}[\\rho_t] = g_{ij}^{\\text{OT}}[\\rho_t] + O(N^{-1/d})\n2670:    $$\n2671: \n2672: 2. **Emergent metric = OT metric** ({prf:ref}`lem-emergent-equals-ot-app`):\n2673:    $$\n2674:    g_{ij}^{\\text{emergent}}[\\mu_t] = g_{ij}^{\\text{OT}}[\\rho_t] + \\varepsilon \\delta_{ij} + O(N^{-1/d})\n2675:    $$\n2676:    where $\\rho_t(x) = \\int \\mu_t(x, v) dv$ is the spatial density.\n2677: \n2678: 3. **Scutoid Ricci converges to Riemannian Ricci** ({prf:ref}`thm-scutoid-ricci-convergence-app`):\n2679:    $$\n2680:    R_{\\mu\\nu}^{\\text{scutoid}}[\\rho_t] = R_{\\mu\\nu}[g^{\\text{CVT}}[\\rho_t]] + O(N^{-1/d})\n2681:    $$\n2682: \n2683: Combining (1) + (2):\n2684: \n2685: $$\n2686: g^{\\text{emergent}}[\\mu_t] = g^{\\text{CVT}}[\\rho_t] + O(N^{-1/d})\n2687: \n2688: $$\n2689: \n2690: Therefore, by (3):\n2691: \n2692: $$\n2693: R_{\\mu\\nu}^{\\text{scutoid}}[\\mu_t] = R_{\\mu\\nu}[g^{\\text{emergent}}[\\mu_t]] + O(N^{-1/d})\n2694: \n2695: $$\n2696: \n2697: Since the Ricci tensor $R_{\\mu\\nu}[g]$ is a function of $g$ and its derivatives (via Christoffel symbols), we have:\n2698: \n2699: $$\n2700: \\boxed{R_{\\mu\\nu}^{\\text{scutoid}}[\\mu_t] = R_{\\mu\\nu}[g[\\mu_t], \\partial g, \\partial^2 g] + O(N^{-1/d})}\n2701: \n2702: $$\n2703: \n2704: **Crucially**, the dependence on $\\mu_t$ factors through:\n2705: \n2706: $$\n2707: \\mu_t \\xrightarrow{\\text{marginal}} \\rho_t = \\int \\mu_t dv \\xrightarrow{\\text{OT/CVT}} g[\\rho_t] \\xrightarrow{\\text{Regge}} R_{\\mu\\nu}[g]\n2708: \n2709: $$\n2710: \n2711: There is **no additional dependence** on the velocity distribution or higher-order moments of $\\mu_t$\u2014only on the spatial density $\\rho_t$, and then only through the metric $g[\\rho_t]$.\n2712: "
     },
     {
@@ -271,6 +297,11 @@
         "label": "cor-lovelock-satisfied-app"
       },
       "section": "## Appendix D: Ricci Tensor as Metric Functional - Rigorous Proof",
+      "references": [
+        "thm-ricci-metric-functional-rigorous-main",
+        "thm-uniqueness-lovelock-fragile",
+        "thm-source-term-vanishes-qsd"
+      ],
       "raw_directive": "2716: ### D.6. Implications for Lovelock's Theorem\n2717: \n2718: :::{prf:corollary} Scutoid Geometry Satisfies Lovelock Preconditions\n2719: :label: cor-lovelock-satisfied-app\n2720: \n2721: The emergent spacetime geometry from the Fractal Set satisfies all preconditions for Lovelock's uniqueness theorem:\n2722: \n2723: 1. \u2705 **Metric dependence**: $R_{\\mu\\nu} = R_{\\mu\\nu}[g, \\partial g, \\partial^2 g]$ (proven in {prf:ref}`thm-ricci-metric-functional-rigorous-main`)\n2724: \n2725: 2. \u2705 **Second-order derivatives**: The Riemannian Ricci tensor involves $\\partial^2 g$ through Christoffel symbols (standard result in differential geometry)\n2726: \n2727: 3. \u2705 **Linearity in $\\partial^2 g$**: The Ricci tensor is linear in second derivatives plus quadratic terms in first derivatives (standard)\n2728: \n2729: **Consequence**: By Lovelock's theorem ({prf:ref}`thm-uniqueness-lovelock-fragile`), the Einstein tensor:\n2730: \n2731: $$\n2732: G_{\\mu\\nu} = R_{\\mu\\nu} - \\frac{1}{2}R g_{\\mu\\nu}\n2733: \n2734: $$\n2735: \n2736: is the **unique** symmetric, divergence-free rank-2 tensor in 4D spacetime that depends only on $g$ and its first two derivatives.\n2737: \n2738: **Combined with the conservation law** $\\nabla_\\mu T^{\\mu\\nu} = 0$ at QSD ({prf:ref}`thm-source-term-vanishes-qsd`), this establishes the uniqueness of:\n2739: \n2740: $$\n2741: G_{\\mu\\nu} = 8\\pi G T_{\\mu\\nu}\n2742: \n2743: $$\n2744: "
     }
   ],

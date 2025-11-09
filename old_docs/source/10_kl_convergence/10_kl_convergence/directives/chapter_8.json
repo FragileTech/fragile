@@ -19,6 +19,7 @@
         "label": "thm-lsi-perturbation"
       },
       "section": "## 7. Extension to the Adaptive Model",
+      "references": [],
       "raw_directive": "1585: - Anisotropic diffusion $\\Sigma_{\\text{reg}}(x, S)$\n1586: \n1587: :::{prf:theorem} LSI Stability Under Bounded Perturbations\n1588: :label: thm-lsi-perturbation\n1589: \n1590: If the backbone generator $\\mathcal{L}_0$ satisfies an LSI with constant $C_0$, and the perturbed generator is $\\mathcal{L}_\\epsilon = \\mathcal{L}_0 + \\epsilon \\mathcal{V}$ where $\\mathcal{V}$ is a bounded operator with:\n1591: \n1592: $$\n1593: \\|\\mathcal{V} f\\|_{L^2(\\pi)} \\le K \\|f\\|_{H^1(\\pi)}\n1594: $$\n1595: \n1596: then for $\\epsilon < \\epsilon^* = 1/(2KC_0)$, the perturbed generator satisfies an LSI with constant:\n1597: \n1598: $$\n1599: C_\\epsilon \\le \\frac{C_0}{1 - 2\\epsilon K C_0}\n1600: $$"
     },
     {
@@ -33,6 +34,7 @@
       "content": "1603: \n1604: :::{prf:proof}\n1605: Standard perturbation theory for functional inequalities. The key is that the adaptive terms are **bounded** (see Axiom 3.5 in [07_adaptative_gas.md](07_adaptative_gas.md)):\n1606: \n1607: $$\n1608: \\|\\mathbf{F}_{\\text{adapt}}\\| \\le F_{\\text{adapt,max}}(\\rho)\n1609: $$",
       "metadata": {},
       "section": "## 7. Extension to the Adaptive Model",
+      "references": [],
       "raw_directive": "1602: :::\n1603: \n1604: :::{prf:proof}\n1605: Standard perturbation theory for functional inequalities. The key is that the adaptive terms are **bounded** (see Axiom 3.5 in [07_adaptative_gas.md](07_adaptative_gas.md)):\n1606: \n1607: $$\n1608: \\|\\mathbf{F}_{\\text{adapt}}\\| \\le F_{\\text{adapt,max}}(\\rho)\n1609: $$\n1610: "
     },
     {
@@ -51,6 +53,7 @@
         "label": "cor-adaptive-lsi"
       },
       "section": "## 7. Extension to the Adaptive Model",
+      "references": [],
       "raw_directive": "1614: ### 7.2. \u03c1-Dependent LSI Constants\n1615: \n1616: :::{prf:corollary} LSI for the \u03c1-Localized Adaptive Gas\n1617: :label: cor-adaptive-lsi\n1618: \n1619: For the adaptive gas with localization scale $\\rho > 0$, the LSI constant depends on $\\rho$ via:\n1620: \n1621: $$\n1622: C_{\\text{LSI}}(\\rho) \\le \\frac{C_{\\text{LSI}}^{\\text{backbone}}}{1 - \\epsilon_F \\cdot C_{\\text{adapt}}(\\rho)}\n1623: $$\n1624: \n1625: where $C_{\\text{adapt}}(\\rho) = O(F_{\\text{adapt,max}}(\\rho) / \\kappa_x)$ quantifies the perturbation strength.\n1626: \n1627: **Critical threshold:** Stability requires:\n1628: \n1629: $$\n1630: \\epsilon_F < \\epsilon_F^*(\\rho) = \\frac{1}{C_{\\text{adapt}}(\\rho)}\n1631: $$"
     }
   ],

@@ -19,6 +19,7 @@
         "label": "thm-main-explicit-rate"
       },
       "section": "## 10. Conclusion",
+      "references": [],
       "raw_directive": "4845: ## 10. Conclusion\n4846: \n4847: :::{prf:theorem} Main Result: Explicit Convergence Rate\n4848: :label: thm-main-explicit-rate\n4849: \n4850: Under the assumptions of Stage 0.5 (QSD regularity R1-R6) and the parameter condition:\n4851: \n4852: $$\n4853: \\sigma^2 > \\sigma_{\\text{crit}}^2 := \\frac{2\\lambda_{\\text{LSI}} C_{\\text{Fisher}}^{\\text{coup}} + C_{\\text{KL}}^{\\text{coup}} + A_{\\text{jump}}}{\\lambda_{\\text{LSI}}}\n4854: \n4855: $$\n4856: \n4857: the mean-field Euclidean Gas converges exponentially to the QSD with rate:\n4858: \n4859: $$\n4860: \\boxed{\\alpha_{\\text{net}} = \\frac{1}{2}\\left(\\lambda_{\\text{LSI}} \\sigma^2 - 2\\lambda_{\\text{LSI}} C_{\\text{Fisher}}^{\\text{coup}} - C_{\\text{KL}}^{\\text{coup}} - A_{\\text{jump}}\\right)}\n4861: \n4862: $$\n4863: "
     }
   ],

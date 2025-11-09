@@ -19,6 +19,9 @@
         "label": "def-riemannian-volume-element"
       },
       "section": "## 1. Mathematical Foundations",
+      "references": [
+        "thm-qsd-riemannian-volume-main"
+      ],
       "raw_directive": "29: ### 1.1. Riemannian Volume Element\n30: \n31: :::{prf:definition} Riemannian Volume Element on Emergent Manifold\n32: :label: def-riemannian-volume-element\n33: \n34: Let $(\\mathcal{X}, g)$ be the emergent Riemannian manifold from the Adaptive Gas, where:\n35: \n36: - $\\mathcal{X} \\subseteq \\mathbb{R}^d$ is the state space\n37: - $g(x) = H(x) + \\epsilon_\\Sigma I$ is the emergent metric tensor (inverse diffusion)\n38: - $H(x) = -\\nabla^2 \\Phi(x)$ is the fitness Hessian\n39: \n40: The **Riemannian volume element** at point $x \\in \\mathcal{X}$ is:\n41: \n42: $$\n43: dV_g(x) := \\sqrt{\\det g(x)} \\, dx\n44: $$\n45: \n46: where $dx = dx_1 \\wedge \\cdots \\wedge dx_d$ is the Euclidean volume element.\n47: \n48: **Physical interpretation:**\n49: - $\\sqrt{\\det g(x)}$: Jacobian factor relating Euclidean to Riemannian volume\n50: - Large $\\sqrt{\\det g}$: \"Stretched\" region (high curvature, hard to explore)\n51: - Small $\\sqrt{\\det g}$: \"Compressed\" region (low curvature, easy to explore)\n52: \n53: **Connection to QSD:** From {prf:ref}`thm-qsd-riemannian-volume-main` in {doc}`05_qsd_stratonovich_foundations.md`:\n54: \n55: $$\n56: \\rho_{\\text{spatial}}(x) \\propto \\sqrt{\\det g(x)} \\, e^{-U_{\\text{eff}}(x)/T}\n57: $$\n58: \n59: Episodes naturally sample from this measure.\n60: "
     },
     {
@@ -37,6 +40,7 @@
         "label": "def-induced-volume-form"
       },
       "section": "## 1. Mathematical Foundations",
+      "references": [],
       "raw_directive": "64: ### 1.2. Submanifold Volume Forms\n65: \n66: :::{prf:definition} Induced Volume Form on k-Dimensional Submanifold\n67: :label: def-induced-volume-form\n68: \n69: Let $\\Sigma \\subset \\mathcal{X}$ be a $k$-dimensional submanifold embedded in the $d$-dimensional Riemannian manifold $(\\mathcal{X}, g)$.\n70: \n71: **Parametrization:** Let $\\varphi: U \\subset \\mathbb{R}^k \\to \\Sigma \\subset \\mathcal{X}$ be a smooth parametrization with $\\varphi(u) = x(u_1, \\ldots, u_k)$.\n72: \n73: **Tangent vectors:**\n74: \n75: $$\n76: \\frac{\\partial x}{\\partial u_i} =: \\partial_i x \\in T_x \\mathcal{X}, \\quad i = 1, \\ldots, k\n77: $$\n78: \n79: **Induced metric tensor:** The **pullback metric** $g_\\Sigma$ on $\\Sigma$ is:\n80: \n81: $$\n82: (g_\\Sigma)_{ij}(u) := g\\left(\\partial_i x, \\partial_j x\\right) = (\\partial_i x)^T g(x(u)) (\\partial_j x)\n83: $$\n84: \n85: **Induced volume form:**\n86: \n87: $$\n88: dV_{g_\\Sigma}(u) := \\sqrt{\\det g_\\Sigma(u)} \\, du_1 \\wedge \\cdots \\wedge du_k\n89: $$\n90: \n91: **Riemannian volume of $\\Sigma$:**\n92: \n93: $$\n94: \\text{Vol}_g(\\Sigma) := \\int_U \\sqrt{\\det g_\\Sigma(u)} \\, du\n95: $$\n96: \n97: **Special cases:**\n98: - $k=1$ (curve): Arc length $L = \\int \\sqrt{g(\\dot{\\gamma}, \\dot{\\gamma})} \\, dt$\n99: - $k=2$ (surface): Area $A = \\int \\sqrt{\\det g_\\Sigma} \\, du \\, dv$\n100: - $k=3$ (3D region): Volume $V = \\int \\sqrt{\\det g_\\Sigma} \\, du \\, dv \\, dw$\n101: - $k=d$ (full manifold): Total volume $\\text{Vol}_g(\\mathcal{X}) = \\int \\sqrt{\\det g} \\, dx$\n102: "
     },
     {
@@ -55,6 +59,9 @@
         "label": "def-discrete-riemannian-integration"
       },
       "section": "## 1. Mathematical Foundations",
+      "references": [
+        "thm-qsd-riemannian-volume-main"
+      ],
       "raw_directive": "106: ### 1.3. Discrete Approximation via Episode Sampling\n107: \n108: :::{prf:definition} Discrete Approximation of Riemannian Integrals\n109: :label: def-discrete-riemannian-integration\n110: \n111: Let $\\{e_i\\}_{i=1}^N$ be episodes with positions $x_i = \\Phi(e_i) \\in \\mathcal{X}$ sampled from the QSD.\n112: \n113: For a continuous function $f: \\mathcal{X} \\to \\mathbb{R}$, the **discrete approximation** of the Riemannian integral is:\n114: \n115: $$\n116: \\int_{\\mathcal{X}} f(x) \\, dV_g(x) \\approx \\frac{1}{N} \\sum_{i=1}^N f(x_i) \\cdot w_{\\text{vol}}(x_i)\n117: $$\n118: \n119: where $w_{\\text{vol}}(x_i)$ is a **volume weight** accounting for local sampling density.\n120: \n121: **Two methods for volume weights:**\n122: \n123: **Method 1: Uniform weighting (if episodes sample from $\\sqrt{\\det g}$)**\n124: \n125: If $\\rho_{\\text{episodes}}(x) \\propto \\sqrt{\\det g(x)}$ (proven in {prf:ref}`thm-qsd-riemannian-volume-main`):\n126: \n127: $$\n128: w_{\\text{vol}}(x_i) = 1\n129: $$\n130: \n131: The factor $\\sqrt{\\det g}$ is **already incorporated** in the sampling density.\n132: \n133: **Method 2: Explicit reweighting (for non-QSD distributions)**\n134: \n135: If episodes sample from arbitrary density $\\rho(x)$:\n136: \n137: $$\n138: w_{\\text{vol}}(x_i) = \\frac{\\sqrt{\\det g(x_i)}}{\\rho(x_i)}\n139: $$\n140: \n141: Importance sampling correction.\n142: \n143: **Convergence:** As $N \\to \\infty$:\n144: \n145: $$\n146: \\frac{1}{N} \\sum_{i=1}^N f(x_i) \\xrightarrow{a.s.} \\int_{\\mathcal{X}} f(x) \\, \\rho(x) \\, dx\n147: $$\n148: \n149: By strong law of large numbers. If $\\rho \\propto \\sqrt{\\det g}$, this gives the Riemannian integral.\n150: "
     }
   ],

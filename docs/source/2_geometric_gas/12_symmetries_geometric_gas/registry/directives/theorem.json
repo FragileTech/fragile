@@ -2,7 +2,7 @@
   "document_id": "12_symmetries_geometric_gas",
   "stage": "directives",
   "directive_type": "theorem",
-  "generated_at": "2025-11-08T17:16:20.228869+00:00",
+  "generated_at": "2025-11-08T23:19:38.284929+00:00",
   "count": 5,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "thm-permutation-symmetry"
       },
       "section": "## 3. Flat Algorithmic Space Symmetries",
+      "references": [],
       "raw_directive": "247: The most fundamental symmetry is the **exchangeability** of walkers.\n248: \n249: :::{prf:theorem} Permutation Invariance\n250: :label: thm-permutation-symmetry\n251: \n252: The Geometric Gas transition operator $\\Psi$ is **exactly invariant** under the action of the symmetric group $S_N$. For any permutation $\\sigma \\in S_N$:\n253: \n254: $$\n255: \\Psi(\\sigma(\\mathcal{S}_t), \\cdot) = \\sigma \\circ \\Psi(\\mathcal{S}_t, \\cdot)\n256: \n257: $$\n258: \n259: Equivalently, the transition kernel satisfies:\n260: \n261: $$\n262: P(\\mathcal{S}_{t+1} | \\mathcal{S}_t) = P(\\sigma(\\mathcal{S}_{t+1}) | \\sigma(\\mathcal{S}_t))\n263: \n264: $$\n265: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "thm-translation-equivariance"
       },
       "section": "## 3. Flat Algorithmic Space Symmetries",
+      "references": [],
       "raw_directive": "344: Euclidean translations interact with the reward function and domain boundaries.\n345: \n346: :::{prf:theorem} Conditional Translation Equivariance\n347: :label: thm-translation-equivariance\n348: \n349: Suppose the reward function $R(x, v)$ and domain $\\mathcal{X}_{\\text{valid}}$ satisfy:\n350: \n351: $$\n352: R(x + a, v) = R(x, v), \\quad x + a \\in \\mathcal{X}_{\\text{valid}} \\iff x \\in \\mathcal{X}_{\\text{valid}}\n353: \n354: $$\n355: \n356: for some $a \\in \\mathbb{R}^d$. Then the transition operator is **translation-equivariant**:\n357: \n358: $$\n359: \\Psi(T_a(\\mathcal{S}), \\cdot) = T_a \\circ \\Psi(\\mathcal{S}, \\cdot)\n360: \n361: $$\n362: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "thm-rotation-equivariance"
       },
       "section": "## 3. Flat Algorithmic Space Symmetries",
+      "references": [],
       "raw_directive": "413: ### 3.3. Rotation and Orthogonal Symmetries\n414: \n415: :::{prf:theorem} Rotational Equivariance\n416: :label: thm-rotation-equivariance\n417: \n418: Suppose:\n419: 1. The domain is rotationally symmetric: $Rx \\in \\mathcal{X}_{\\text{valid}} \\iff x \\in \\mathcal{X}_{\\text{valid}}$ for all $R \\in SO(d)$\n420: 2. The reward is rotation-invariant: $R(Rx, Rv) = R(x, v)$ for all $R \\in SO(d)$\n421: \n422: Then the Geometric Gas is **rotationally equivariant**:\n423: \n424: $$\n425: \\Psi(\\mathcal{R}(\\mathcal{S}), \\cdot) = \\mathcal{R} \\circ \\Psi(\\mathcal{S}, \\cdot)\n426: \n427: $$\n428: ",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +99,7 @@
         "label": "thm-fitness-scaling"
       },
       "section": "## 3. Flat Algorithmic Space Symmetries",
+      "references": [],
       "raw_directive": "481: ### 3.4. Scaling Symmetries\n482: \n483: :::{prf:theorem} Fitness Potential Scaling Symmetry\n484: :label: thm-fitness-scaling\n485: \n486: The fitness potential $V_{\\text{fit}}$ is **scale-invariant** under simultaneous rescaling of the exponents and floor parameter. Specifically, for any $c > 0$:\n487: \n488: $$\n489: V_{\\text{fit}}[\\alpha, \\beta, \\eta](x, v, S) = V_{\\text{fit}}[c\\alpha, c\\beta, \\eta^c](x, v, S)^{1/c}\n490: \n491: $$\n492: ",
       "_registry_context": {
         "stage": "directives",
@@ -121,6 +125,7 @@
         "label": "thm-irreversibility"
       },
       "section": "## 3. Flat Algorithmic Space Symmetries",
+      "references": [],
       "raw_directive": "524: Unlike conservative physical systems, the Geometric Gas is **irreversible**.\n525: \n526: :::{prf:theorem} Time-Reversal Asymmetry\n527: :label: thm-irreversibility\n528: \n529: The Geometric Gas is **not time-reversible**. There exists no time-reversal operator $\\mathcal{T}$ such that:\n530: \n531: $$\n532: \\mathcal{T} \\circ \\Psi \\circ \\mathcal{T}^{-1} = \\Psi^{-1}\n533: \n534: $$\n535: ",
       "_registry_context": {
         "stage": "directives",

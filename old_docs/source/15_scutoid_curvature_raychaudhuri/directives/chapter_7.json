@@ -19,6 +19,7 @@
         "label": "def-emergent-gravity"
       },
       "section": "## Section 4: Physical Interpretation and Phase Transitions",
+      "references": [],
       "raw_directive": "1864: The Raychaudhuri equation (Theorem {prf:ref}`thm-raychaudhuri-scutoid`) reveals a profound connection: **the fitness landscape acts as an emergent gravitational potential**. This is not a loose analogy\u2014it is a precise mathematical correspondence.\n1865: \n1866: :::{prf:definition} Emergent Gravitational Potential\n1867: :label: def-emergent-gravity\n1868: \n1869: In the Fragile Gas, the **emergent gravitational potential** $\\Phi(x)$ is defined by the relationship:\n1870: \n1871: $$\n1872: R_{\\mu\\nu}u^\\mu u^\\nu = -\\nabla^2 \\Phi(x)\n1873: $$\n1874: \n1875: where $R_{\\mu\\nu}$ is the Ricci tensor and $\\nabla^2$ is the Laplacian in the emergent metric $g_{ab}$. For the emergent metric $g_{ab} = H_{ab} + \\varepsilon I_{ab}$, we have:\n1876: \n1877: $$\n1878: \\Phi(x) \\approx -\\frac{1}{\\varepsilon} f(x) + \\text{const}\n1879: $$\n1880: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "def-geometric-phases"
       },
       "section": "## Section 4: Physical Interpretation and Phase Transitions",
+      "references": [],
       "raw_directive": "1998: The Raychaudhuri equation provides a geometric criterion for phase transitions between exploration and exploitation.\n1999: \n2000: :::{prf:definition} Geometric Phase Classification\n2001: :label: def-geometric-phases\n2002: \n2003: At time $t$ and position $x$, the swarm is in one of three **geometric phases**:\n2004: \n2005: 1. **Exploration phase**: $R_{\\mu\\nu}u^\\mu u^\\nu < 0$ (negative Ricci curvature along geodesics)\n2006:    - Voronoi cells are **expanding** (on average)\n2007:    - Walkers spread out, exploring new regions\n2008:    - Analogous to **cosmological expansion** in general relativity\n2009: \n2010: 2. **Exploitation phase**: $R_{\\mu\\nu}u^\\mu u^\\nu > 0$ (positive Ricci curvature along geodesics)\n2011:    - Voronoi cells are **contracting** (on average)\n2012:    - Walkers collapse toward fitness peaks\n2013:    - Analogous to **gravitational collapse** in general relativity\n2014: \n2015: 3. **Critical phase**: $R_{\\mu\\nu}u^\\mu u^\\nu = 0$ (zero Ricci curvature along geodesics)\n2016:    - Transition point between expansion and contraction"
     },
     {
@@ -55,6 +57,7 @@
         "label": "prop-thermal-control-phases"
       },
       "section": "## Section 4: Physical Interpretation and Phase Transitions",
+      "references": [],
       "raw_directive": "2026: where $\\langle \\cdot \\rangle$ denotes average over all cloning events at time $t$.\n2027: \n2028: :::{prf:proposition} Thermal Control of Phase Transitions\n2029: :label: prop-thermal-control-phases\n2030: \n2031: The regularization parameter $\\varepsilon$ (thermal energy scale) controls the phase transition:\n2032: \n2033: 1. **High temperature** ($\\varepsilon \\gg \\|H\\|$): $R_{\\mu\\nu}u^\\mu u^\\nu < 0$ \u2192 Exploration phase\n2034: 2. **Low temperature** ($\\varepsilon \\ll \\|H\\|$): $R_{\\mu\\nu}u^\\mu u^\\nu > 0$ \u2192 Exploitation phase\n2035: 3. **Critical temperature** ($\\varepsilon \\sim \\|H\\|$): $R_{\\mu\\nu}u^\\mu u^\\nu \\approx 0$ \u2192 Phase transition\n2036: "
     },
     {
@@ -73,6 +76,7 @@
         "label": "def-shear-rotation-regimes"
       },
       "section": "## Section 4: Physical Interpretation and Phase Transitions",
+      "references": [],
       "raw_directive": "2054: The shear tensor $\\sigma_{\\mu\\nu}$ and rotation tensor $\\omega_{\\mu\\nu}$ encode fine geometric structures in the swarm dynamics.\n2055: \n2056: :::{prf:definition} Shear-Dominated and Rotation-Dominated Regimes\n2057: :label: def-shear-rotation-regimes\n2058: \n2059: At time $t$ and position $x$, define:\n2060: \n2061: 1. **Shear parameter**: $\\Sigma = \\sqrt{\\sigma_{\\mu\\nu}\\sigma^{\\mu\\nu} / \\theta^2}$\n2062: 2. **Rotation parameter**: $\\Omega = \\sqrt{\\omega_{\\mu\\nu}\\omega^{\\mu\\nu} / \\theta^2}$\n2063: \n2064: The swarm dynamics are classified as:\n2065: - **Shear-dominated**: $\\Sigma \\gg \\Omega$ (anisotropic contraction/expansion)\n2066: - **Rotation-dominated**: $\\Omega \\gg \\Sigma$ (vortex-like structures)"
     },
     {
@@ -91,6 +95,7 @@
         "label": "thm-geometric-info-equivalence"
       },
       "section": "## Section 4: Physical Interpretation and Phase Transitions",
+      "references": [],
       "raw_directive": "2085: **Question**: How does the geometric phase classification (Definition {prf:ref}`def-geometric-phases`) relate to the information-theoretic classification?\n2086: \n2087: :::{prf:theorem} Equivalence of Geometric and Information-Theoretic Phases\n2088: :label: thm-geometric-info-equivalence\n2089: \n2090: For the Fragile Gas with emergent metric $g_{ab} = H_{ab} + \\varepsilon I_{ab}$, the following are equivalent (up to $O(1/N)$ corrections):\n2091: \n2092: 1. **Geometric contraction**: $R_{\\mu\\nu}u^\\mu u^\\nu > 0$ (exploitation phase)\n2093: 2. **Information-theoretic contraction**: $\\frac{d}{dt} D_{\\text{KL}}(\\mu_t \\| \\mu_*) < 0$ (converging to QSD)\n2094: \n2095: Furthermore, the rate of KL divergence decrease is proportional to the average Ricci curvature:\n2096: \n2097: $$\n2098: \\frac{d}{dt} D_{\\text{KL}}(\\mu_t \\| \\mu_*) \\approx -\\langle R_{\\mu\\nu}u^\\mu u^\\nu \\rangle + O(\\sigma^2, \\omega^2)\n2099: $$\n2100: "
     }
   ],

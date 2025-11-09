@@ -19,6 +19,7 @@
         "label": "rem-rho-tradeoffs"
       },
       "section": "## 16.5 Parameter Dependence and Practical Trade-offs",
+      "references": [],
       "raw_directive": "5201: ### 16.5.4 Trade-Off Summary\n5202: \n5203: :::{prf:remark} Localization Scale Trade-offs\n5204: :label: rem-rho-tradeoffs\n5205: \n5206: **Small \u03c1** (hyper-local, $\\rho \\ll \\text{diam}(\\mathcal{X})$):\n5207: - \u2713 **Pros**: Sharp localization, better low-order derivative bounds (m < 2d), geometric adaptation\n5208: - \u2717 **Cons**: High-order derivatives explode (m > 2d), numerical stiffness, small time steps for high-order integrators\n5209: \n5210: **Large \u03c1** (global backbone, $\\rho \\sim \\text{diam}(\\mathcal{X})$):\n5211: - \u2713 **Pros**: Uniform derivative bounds, stable high-order behavior, larger time steps\n5212: - \u2717 **Cons**: Loses geometric information, weak adaptation, reverts to global statistics\n5213: \n5214: **Optimal choice** (depends on application):\n5215: - **Exploration phase** (early optimization): Large \u03c1 for stability\n5216: - **Exploitation phase** (near optima): Small \u03c1 for geometric adaptation\n5217: - **Adaptive schedule**: $\\rho(t) = \\rho_0 \\cdot e^{-\\gamma t}$ (annealing from global to local)\n5218: "
     }
   ],

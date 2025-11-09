@@ -1,7 +1,7 @@
 {
   "stage": "directives",
   "directive_type": "remark",
-  "generated_at": "2025-11-08T17:16:20.405225+00:00",
+  "generated_at": "2025-11-08T23:19:38.397201+00:00",
   "source_documents": [
     "01_crystalline_gas_yang_mills_mass_gap_proof",
     "01_fragile_gas_framework",
@@ -42,6 +42,7 @@
         "label": "rem-fitness-interpretation"
       },
       "section": "## 2. The Crystalline Gas Algorithm",
+      "references": [],
       "raw_directive": "188: :::\n189: \n190: :::{prf:remark} Physical Interpretation\n191: :label: rem-fitness-interpretation\n192: \n193: The fitness landscape $\\Phi$ encodes the \"desirability\" of positions in state space. Regions with high $\\Phi(x)$ are preferred, and the algorithm drives walkers toward these regions. The strict concavity ensures a unique global maximum, which serves as the attractor for the dynamics. The coercivity condition ensures that walkers do not escape to infinity, providing effective confinement despite working on unbounded $\\mathbb{R}^{d}$.\n194: ",
       "_registry_context": {
         "stage": "directives",
@@ -67,6 +68,7 @@
         "label": "rem-metric-regularity"
       },
       "section": "## 2. The Crystalline Gas Algorithm",
+      "references": [],
       "raw_directive": "287: :::\n288: \n289: :::{prf:remark} Metric Tensor and Regularity\n290: :label: rem-metric-regularity\n291: \n292: Since $\\Phi$ is strictly concave with $H_{\\Phi}(x) \\preceq -\\kappa I$, we have $-H_{\\Phi}(x) \\succeq \\kappa I \\succ 0$. Thus, the emergent metric tensor:\n293: \n294: $$\n295: g(x) := (-H_{\\Phi}(x) + \\varepsilon_{\\text{reg}} I)^{-1}\n296: $$\n297: \n298: is positive definite and well-defined for all $x \\in \\mathbb{R}^{d}$. The metric satisfies:\n299: \n300: $$\n301: \\kappa^{-1} I \\preceq g(x) \\preceq (\\kappa + \\varepsilon_{\\text{reg}})^{-1} I\n302: $$\n303: ",
       "_registry_context": {
         "stage": "directives",
@@ -92,6 +94,7 @@
         "label": "rem-ascent-interpretation"
       },
       "section": "## 2. The Crystalline Gas Algorithm",
+      "references": [],
       "raw_directive": "305: :::\n306: \n307: :::{prf:remark} Physical Interpretation: Collective Gradient Ascent\n308: :label: rem-ascent-interpretation\n309: \n310: The geometric ascent operator encodes **collective fitness optimization** in the emergent Riemannian geometry:\n311: \n312: 1. **Collective Potential:** $\\Psi = \\frac{1}{\\beta}\\log \\sum_j e^{\\beta \\Phi(x_j)}$ is the smooth maximum (log-sum-exp) of all walker fitness values, providing a global measure of swarm quality.\n313: \n314: 2. **Weighted Gradient:** Each walker $i$ moves along $\\nabla_{x_i} \\Psi = p_i \\nabla \\Phi(x_i)$, where $p_i = \\frac{e^{\\beta\\Phi(x_i)}}{\\sum_k e^{\\beta\\Phi(x_k)}}$. High-fitness walkers have larger weights and contribute more to the collective ascent.\n315: \n316: 3. **Riemannian Ascent:** The metric tensor $g = (-H_\\Phi + \\varepsilon I)^{-1}$ preconditions the gradient, creating a **second-order optimization method** (natural gradient) that accounts for the landscape's curvature. This curvature generates the **Yang-Mills gauge fields** (Section 4).\n317: ",
       "_registry_context": {
         "stage": "directives",
@@ -117,6 +120,7 @@
         "label": "rem-noise-anisotropy"
       },
       "section": "## 2. The Crystalline Gas Algorithm",
+      "references": [],
       "raw_directive": "363: :::\n364: \n365: :::{prf:remark} Anisotropic Position Noise vs. Ornstein-Uhlenbeck Velocity Dynamics\n366: :label: rem-noise-anisotropy\n367: \n368: The position noise is **anisotropic** and **state-dependent**, scaled by $\\Sigma_{\\text{reg}}(x)$, which is the inverse square root of the regularized Hessian. This coupling between diffusion and geometry is **Axiom V (Geometrization of Information)** from the foundational framework.\n369: \n370: In contrast, the velocity update follows **Ornstein-Uhlenbeck (OU) dynamics** with friction coefficient $\\gamma_{\\text{fric}}$. This is the \"O-step\" of the **BAOAB integrator** used in molecular dynamics. The OU process has:\n371: - **Friction term**: $c_1 v_i' = e^{-\\gamma_{\\text{fric}} \\Delta t} v_i'$ (exponential decay toward zero)\n372: - **Noise term**: $c_2 \\xi_i^{(v)} = \\sigma_v \\sqrt{1 - e^{-2\\gamma_{\\text{fric}} \\Delta t}} \\xi_i^{(v)}$ (Gaussian fluctuation)\n373: - **Invariant measure**: $\\pi(v) \\propto \\exp(-\\|v\\|^2/(2\\sigma_v^2))$ (Maxwell-Boltzmann distribution)\n374: - **Spectral gap**: $\\lambda_{\\text{gap}}^{(v)} = \\gamma_{\\text{fric}} > 0$ (exponential convergence to equilibrium)\n375: \n376: The friction term is **crucial** for establishing a spectral gap in velocity space. Without it, free Brownian motion has continuous spectrum with no gap.\n377: \n378: The anisotropic position noise ensures that:\n379: - In directions of high curvature (large $|-H_{\\Phi}|$), diffusion is suppressed\n380: - In directions of low curvature (small $|-H_{\\Phi}|$), diffusion is enhanced\n381: ",
       "_registry_context": {
         "stage": "directives",
@@ -142,6 +146,7 @@
         "label": "rem-cg-sde-connection"
       },
       "section": "## 2. The Crystalline Gas Algorithm",
+      "references": [],
       "raw_directive": "383: :::\n384: \n385: :::{prf:remark} Connection to SDEs\n386: :label: rem-cg-sde-connection\n387: \n388: In the continuous-time limit $\\Delta t \\to 0$, the Crystalline Gas dynamics formally converge to a system of coupled stochastic differential equations (SDEs):\n389: \n390: $$\n391: \\begin{aligned}\n392: \\mathrm{d}x_i &= v_i \\, \\mathrm{d}t + \\sigma_x \\Sigma_{\\text{reg}}(x_i) \\, \\mathrm{d}W_i^{(x)} + \\eta \\, g(x_i) \\nabla_{x_i} \\Psi(x) \\, \\mathrm{d}t \\\\\n393: \\mathrm{d}v_i &= -\\gamma_{\\text{fric}} v_i \\, \\mathrm{d}t + \\sigma_v \\sqrt{2\\gamma_{\\text{fric}}} \\, \\mathrm{d}W_i^{(v)}\n394: \\end{aligned}\n395: $$\n396: \n397: where:\n398: - $W_i^{(x)}, W_i^{(v)}$ are independent $d$-dimensional Brownian motions\n399: - $\\Psi(x) = \\frac{1}{\\beta}\\log\\sum_{j=1}^N e^{\\beta\\Phi(x_j)}$ is the log-sum-exp collective potential\n400: - $g(x_i) = (-H_{\\Phi}(x_i) + \\varepsilon_{\\text{reg}} I)^{-1}$ is the emergent Riemannian metric\n401: - $\\nabla_{x_i} \\Psi = p_i \\nabla\\Phi(x_i)$ with $p_i = \\frac{e^{\\beta\\Phi(x_i)}}{\\sum_k e^{\\beta\\Phi(x_k)}}$\n402: - The friction term $-\\gamma_{\\text{fric}} v_i$ ensures **velocity confinement** (necessary for spectral gap)\n403: \n404: The velocity equation is an **Ornstein-Uhlenbeck (OU) process** with invariant measure $\\pi(v) \\propto \\exp(-\\|v\\|^2/(2\\sigma_v^2))$ and spectral gap $\\lambda_{\\text{gap}}^{(v)} = \\gamma_{\\text{fric}} > 0$.\n405: ",
       "_registry_context": {
         "stage": "directives",
@@ -167,6 +172,7 @@
         "label": "rem-cg-markov-history"
       },
       "section": "## 2. The Crystalline Gas Algorithm",
+      "references": [],
       "raw_directive": "450: :::\n451: \n452: :::{prf:remark} Markov Assumption and History\n453: :label: rem-cg-markov-history\n454: \n455: The Crystalline Gas is **Markovian:** the next state $\\mathcal{S}(t + \\Delta t)$ depends only on the current state $\\mathcal{S}(t)$, not on the full history $\\{\\mathcal{S}(s) : s < t\\}$.\n456: ",
       "_registry_context": {
         "stage": "directives",
@@ -192,6 +198,7 @@
         "label": "rem-cg-convergence-simplicity"
       },
       "section": "## 3. Existence and Uniqueness of the Quasi-Stationary Distribution",
+      "references": [],
       "raw_directive": "585: :::\n586: \n587: :::{prf:remark} Simplicity of Convergence Proof\n588: :label: rem-cg-convergence-simplicity\n589: \n590: The convergence proof for the Crystalline Gas is **elementary** and relies on standard techniques:\n591: \n592: 1. **No Cloning:** The algorithm has no genealogical structure, avoiding population dynamics\n593: 2. **Deterministic Ascent:** The geometric ascent is a standard gradient flow with well-understood convergence properties\n594: 3. **Standard Lyapunov Theory:** The proof reduces to verifying a single drift inequality, which follows from elementary estimates\n595: ",
       "_registry_context": {
         "stage": "directives",
@@ -217,6 +224,7 @@
         "label": "rem-velocity-isotropy-consequence"
       },
       "section": "## 3. Existence and Uniqueness of the Quasi-Stationary Distribution",
+      "references": [],
       "raw_directive": "700: :::\n701: \n702: :::{prf:remark} Consequence for Gauge Currents\n703: :label: rem-velocity-isotropy-consequence\n704: \n705: The vanishing of $\\mathbb{E}_{\\pi_{\\text{QSD}}}[v_i]$ is **crucial** for establishing that the QSD corresponds to a **pure Yang-Mills vacuum** with no matter fields (see Section 4). In QFT language, this means the **Noether current vanishes**:\n706: \n707: $$\n708: \\langle J_{\\mu} \\rangle_{\\text{QSD}} = 0\n709: $$\n710: ",
       "_registry_context": {
         "stage": "directives",
@@ -242,6 +250,7 @@
         "label": "rem-cg-gauge-force-interpretation"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "896: :::\n897: \n898: :::{prf:remark} Physical Interpretation of Gauge Force\n899: :label: rem-cg-gauge-force-interpretation\n900: \n901: The gauge force has a natural interpretation:\n902: \n903: 1. **Color Matching:** The force compares the color observable $|\\Psi_i\\rangle$ at site $i$ with the transported observable $U_{ij}|\\Psi_j\\rangle$ from neighbor $j$\n904: \n905: 2. **Parallel Transport:** The link variable $U_{ij}$ \"rotates\" the color vector $|\\Psi_j\\rangle$ from $j$'s local color basis to $i$'s local color basis before comparison\n906: \n907: 3. **Attractive/Repulsive:** When $U_{ij}|\\Psi_j\\rangle$ and $|\\Psi_i\\rangle$ are similar, the force is small (walkers are \"color-aligned\"). When they differ, the force drives alignment.\n908: ",
       "_registry_context": {
         "stage": "directives",
@@ -267,6 +276,7 @@
         "label": "rem-cg-edge-vs-node-centric"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "1055: :::\n1056: \n1057: :::{prf:remark} Comparison with Previous Framework\n1058: :label: rem-cg-edge-vs-node-centric\n1059: \n1060: The edge-centric framework resolves the critical flaw of the node-centric approach:\n1061: \n1062: **Node-Centric (Old, Invalid):**\n1063: - Gauge field derived from walker observables: $A_\\mu \\sim \\varphi_i(x_i, v_i)$\n1064: - One-way causality: Walkers → Field (no feedback)\n1065: - Gauge transformations have no physical effect\n1066: - **Not a true gauge theory**\n1067: \n1068: **Edge-Centric (New, Valid):**\n1069: - Gauge field $\\{U_{ij}\\}$ is fundamental, independent of walker states\n1070: - Two-way causality: Walkers ↔ Field (feedback loop)\n1071: - Force law depends explicitly on $\\{U_{ij}\\}$ via parallel transport\n1072: - Field evolves via Wilson action minimization\n1073: - **True gauge theory with full covariance**\n1074: ",
       "_registry_context": {
         "stage": "directives",
@@ -292,6 +302,7 @@
         "label": "rem-cg-vs-lattice-qcd"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "1112: :::\n1113: \n1114: :::{prf:remark} Comparison with Standard Lattice Gauge Theory\n1115: :label: rem-cg-vs-lattice-qcd\n1116: \n1117: The Crystalline Gas is a variant of Lattice Gauge Theory with key differences:\n1118: \n1119: **Standard Lattice QCD:**\n1120: - Fixed cubic lattice in Euclidean spacetime\n1121: - Link variables $U_{\\mu}(x)$ on edges of the lattice\n1122: - Wilson action with plaquettes\n1123: - Static lattice structure\n1124: \n1125: **Crystalline Gas:**\n1126: - **Dynamic lattice** defined by walker positions (changes with time)\n1127: - Link variables $U_{ij}$ on edges of the walker graph\n1128: - Same Wilson action functional\n1129: - Lattice evolves according to fitness landscape\n1130: \n1131: **Advantage:** The dynamic lattice provides a natural mechanism for the lattice to explore configuration space, potentially accessing configurations that fixed-lattice Monte Carlo might miss.\n1132: ",
       "_registry_context": {
         "stage": "directives",
@@ -317,6 +328,7 @@
         "label": "rem-cg-extension-other-groups"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "1134: :::\n1135: \n1136: :::{prf:remark} Extension to Other Gauge Groups\n1137: :label: rem-cg-extension-other-groups\n1138: \n1139: The edge-centric framework can be extended to other gauge groups:\n1140: \n1141: - **SU(N):** Replace $3\\times 3$ matrices with $N\\times N$ matrices in SU(N)\n1142: - **Other Lie Groups:** Use appropriate link variables $U_{ij} \\in G$ for gauge group $G$\n1143: ",
       "_registry_context": {
         "stage": "directives",
@@ -342,6 +354,9 @@
         "label": "rem-cg-area-law-to-mass-gap"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [
+        "thm-cg-spectral-gap"
+      ],
       "raw_directive": "1171: :::\n1172: \n1173: :::{prf:remark} From Area Law to Mass Gap\n1174: :label: rem-cg-area-law-to-mass-gap\n1175: \n1176: The area law is the **hallmark of confinement** in gauge theories. It implies:\n1177: \n1178: 1. **Confinement:** Color charges cannot be separated to infinite distance (potential grows linearly with separation)\n1179: \n1180: 2. **Mass Gap:** The two-point correlation function decays exponentially:\n1181:    $$\n1182:    \\langle A_\\mu^a(x) A_\\nu^b(y) \\rangle \\sim \\exp(-m_{\\text{gap}} \\|x - y\\|)\n1183:    $$\n1184:    where $m_{\\text{gap}} > 0$ is the mass of the lightest glueball\n1185: \n1186: 3. **Quantitative Bound:** From the spectral gap $\\lambda_0$ ({prf:ref}`thm-cg-spectral-gap`), we derive:\n1187:    $$\n1188:    m_{\\text{gap}} \\geq \\frac{\\lambda_0}{3\\sigma_v\\sqrt{d}}\n1189:    $$\n1190:    where $\\sigma_v$ is the walker velocity scale\n1191: ",
       "_registry_context": {
         "stage": "directives",
@@ -367,6 +382,7 @@
         "label": "rem-cg-gauge-extensions"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "1219: :::\n1220: \n1221: :::{prf:remark} Note on Gauge Group Extensions\n1222: :label: rem-cg-gauge-extensions\n1223: \n1224: The CMI Yang-Mills Millennium Problem specifically requires proving existence and mass gap for gauge group SU(N) with $N \\geq 2$. **Our edge-centric SU(3) construction in Section 4.2 fully satisfies this requirement.**\n1225: \n1226: The SU(2) and U(1) extensions described in Sections 4.5-4.6 are **optional** and demonstrate the generality of the framework. They are **not required** for the Millennium Prize solution, which is complete with SU(3) alone.\n1227: \n1228: For a unified $\\text{SU}(3)_c \\times \\text{SU}(2)_L \\times \\text{U}(1)_Y$ Standard Model gauge group, one would need to:\n1229: 1. Add SU(2) link variables $V_{ij} \\in \\text{SU}(2)$ on the walker graph\n1230: 2. Add U(1) phase variables $\\theta_{ij} \\in \\text{U}(1)$ on edges\n1231: 3. Extend the Wilson action to include all three gauge groups\n1232: 4. Extend the gauge-covariant force law to include all interactions\n1233: ",
       "_registry_context": {
         "stage": "directives",
@@ -392,6 +408,7 @@
         "label": "rem-spectral-gap-interpretation"
       },
       "section": "## 5. The Spectral Gap",
+      "references": [],
       "raw_directive": "1285: :::\n1286: \n1287: :::{prf:remark} Interpretation of Spectral Gap\n1288: :label: rem-spectral-gap-interpretation\n1289: \n1290: The spectral gap is the smallest non-zero eigenvalue of the operator $-L_{\\text{CG}}$ (which is positive semi-definite). It controls the decay of correlations:\n1291: \n1292: $$\n1293: |\\mathbb{E}_{\\mu_t}[f g] - \\mathbb{E}_{\\pi_{\\text{QSD}}}[f] \\mathbb{E}_{\\pi_{\\text{QSD}}}[g]| \\leq C \\cdot e^{-\\lambda_{\\text{gap}} t} \\cdot \\|f\\|_{L^2} \\|g\\|_{L^2}\n1294: $$\n1295: ",
       "_registry_context": {
         "stage": "directives",
@@ -417,6 +434,11 @@
         "label": "rem-discrete-vs-continuous"
       },
       "section": "## 5. The Spectral Gap",
+      "references": [
+        "thm-bakry-emery",
+        "thm-foster-lyapunov",
+        "thm-ou-spectral-gap"
+      ],
       "raw_directive": "1409: :::\n1410: \n1411: :::{prf:remark} Application to Discrete-Time Chains\n1412: :label: rem-discrete-vs-continuous\n1413: \n1414: The Bakry-Émery criterion (Theorem {prf:ref}`thm-bakry-emery`) is stated for **continuous-time diffusions**. For discrete-time Markov chains like Crystalline Gas, we must either:\n1415: \n1416: 1. **Pass to continuous-time limit** ($\\Delta t \\to 0$) and apply Bakry-Émery to the limiting SDE, then bound the discrete chain's spectral gap in terms of the continuous limit.\n1417: \n1418: 2. **Use Foster-Lyapunov** (Theorem {prf:ref}`thm-foster-lyapunov`) which applies directly to discrete chains.\n1419: \n1420: 3. **Use discrete Bakry-Émery** variants (e.g., Caputo et al. 2009) which extend the $\\Gamma_2$ calculus to finite-difference operators.\n1421: ",
       "_registry_context": {
         "stage": "directives",
@@ -442,6 +464,12 @@
         "label": "rem-cg-gauge-field-spectral-gap"
       },
       "section": "## 5. The Spectral Gap",
+      "references": [
+        "def-cg-link-variables",
+        "def-cg-field-update",
+        "def-cg-wilson-action",
+        "thm-cg-spectral-gap"
+      ],
       "raw_directive": "1633: :::\n1634: \n1635: :::{prf:remark} Spectral Gap with Gauge Field Dynamics\n1636: :label: rem-cg-gauge-field-spectral-gap\n1637: \n1638: **Extended State Space**: With the edge-centric SU(3) framework ({prf:ref}`def-cg-link-variables`), the full system state space is:\n1639: \n1640: $$\n1641: \\Omega_{\\text{full}} = \\Sigma_N \\times \\mathcal{U}_{\\mathcal{E}}\n1642: $$\n1643: \n1644: where:\n1645: - $\\Sigma_N = (\\mathbb{R}^d \\times \\mathbb{R}^d)^N$ is the walker phase space (positions + velocities)\n1646: - $\\mathcal{U}_{\\mathcal{E}} = \\{U_{ij} \\in \\text{SU}(3) : (i,j) \\in \\mathcal{E}\\}$ is the gauge field configuration space (link variables on edges)\n1647: \n1648: The full generator decomposes as:\n1649: \n1650: $$\n1651: L_{\\text{full}} = L_{\\text{walkers}} + L_{\\text{links}}\n1652: $$\n1653: \n1654: where:\n1655: - $L_{\\text{walkers}}$ is the walker dynamics analyzed above (matter force + thermal noise)\n1656: - $L_{\\text{links}}$ is the gauge field relaxation dynamics ({prf:ref}`def-cg-field-update`)\n1657: \n1658: **Key Observation**: The link variable dynamics are **local relaxation** to minimize the Wilson action ({prf:ref}`def-cg-wilson-action`). This is a fast local equilibration process: each $U_{ij}$ relaxes to minimize $S_W[\\{U_{ij}\\}]$ via gradient descent on SU(3).\n1659: \n1660: **Timescale Separation**: Gauge field relaxation is typically much faster than walker diffusion:\n1661: - **Link updates**: Local optimization on compact manifold SU(3) → fast convergence (timescale $\\sim \\alpha_{\\text{gauge}}^{-1}$)\n1662: - **Walker dynamics**: Global exploration of $\\mathbb{R}^d$ → slower convergence (timescale $\\sim \\lambda_{\\text{gap}}^{-1}$)\n1663: \n1664: When $\\alpha_{\\text{gauge}} \\gg \\lambda_{\\text{gap}}$, the gauge field equilibrates instantaneously relative to walker motion. In this regime, the link variables \"slave\" to the walker configuration, and the full system spectral gap is dominated by the walker spectral gap:\n1665: \n1666: $$\n1667: \\lambda_{\\text{gap}}^{\\text{full}} \\approx \\lambda_{\\text{gap}}^{\\text{walkers}} = \\lambda_0\n1668: $$\n1669: \n1670: **Rigorous Lower Bound**: Even without assuming timescale separation, the spectral gap for the walker degrees of freedom provides a **lower bound** for the full system:\n1671: \n1672: $$\n1673: \\lambda_{\\text{gap}}^{\\text{full}} \\geq \\lambda_0 \\wedge \\lambda_{\\text{gauge}}\n1674: $$\n1675: \n1676: where $\\lambda_{\\text{gauge}}$ is the spectral gap for link variable relaxation. Since $\\lambda_{\\text{gauge}} > 0$ (SU(3) is compact and Wilson action is bounded below), the full system possesses a uniform spectral gap.\n1677: ",
       "_registry_context": {
         "stage": "directives",
@@ -467,6 +495,7 @@
         "label": "rem-cg-lsi-comparison"
       },
       "section": "## 5. The Spectral Gap",
+      "references": [],
       "raw_directive": "1679: :::\n1680: \n1681: :::{prf:remark} Comparison with LSI Approach\n1682: :label: rem-cg-lsi-comparison\n1683: \n1684: For the Fragile Gas and more complex models, the spectral gap is established via the **Logarithmic Sobolev Inequality (LSI)**, which is a **stronger** property than a spectral gap. The LSI approach requires proving:\n1685: \n1686: $$\n1687: \\text{Ent}_{\\pi}(f^2) \\leq C_{\\text{LSI}} \\cdot \\langle \\Gamma(f, f), f^2 \\rangle_{\\pi}\n1688: $$\n1689: \n1690: This involves intricate hypocoercivity estimates, Wasserstein contraction, and the interplay between cloning and diffusion (see docs/source/1_euclidean_gas/09_kl_convergence.md for details).\n1691: ",
       "_registry_context": {
         "stage": "directives",
@@ -492,6 +521,12 @@
         "label": "rem-cg-wilson-loop-edge-centric"
       },
       "section": "## 6. Confinement via the Area Law for Wilson Loops",
+      "references": [
+        "def-cg-link-variables",
+        "thm-cg-gauge-covariance",
+        "def-cg-wilson-action",
+        "def-cg-information-graph"
+      ],
       "raw_directive": "1719: :::\n1720: \n1721: :::{prf:remark} Wilson Loops in the Edge-Centric Framework\n1722: :label: rem-cg-wilson-loop-edge-centric\n1723: \n1724: In the edge-centric SU(3) framework ({prf:ref}`def-cg-link-variables`), Wilson loops are constructed directly from the link variables $U_{ij} \\in \\text{SU}(3)$ on the walker information graph.\n1725: \n1726: **Construction**: Let $\\mathcal{C} = (i_1, i_2, \\ldots, i_n, i_1)$ be a closed path on the walker graph (a sequence of connected edges). The **Wilson loop** around $\\mathcal{C}$ is:\n1727: \n1728: $$\n1729: W_{\\mathcal{C}} := \\text{Tr}(U_{\\mathcal{C}})\n1730: $$\n1731: \n1732: where the **path-ordered product** is:\n1733: \n1734: $$\n1735: U_{\\mathcal{C}} := U_{i_1 i_2} \\cdot U_{i_2 i_3} \\cdots U_{i_{n-1} i_n} \\cdot U_{i_n i_1}\n1736: $$\n1737: \n1738: **Key Properties**:\n1739: 1. **Gauge Invariance**: Under local gauge transformation $G: i \\mapsto G_i \\in \\text{SU}(3)$, the link variables transform as $U_{ij} \\to G_i U_{ij} G_j^\\dagger$ ({prf:ref}`thm-cg-gauge-covariance`). The Wilson loop transforms as:\n1740: \n1741:    $$\n1742:    U_{\\mathcal{C}} \\to G_{i_1} U_{\\mathcal{C}} G_{i_1}^\\dagger\n1743:    $$\n1744: \n1745:    Therefore $\\text{Tr}(U_{\\mathcal{C}})$ is **gauge-invariant**: $\\text{Tr}(G_{i_1} U_{\\mathcal{C}} G_{i_1}^\\dagger) = \\text{Tr}(U_{\\mathcal{C}})$ ✓\n1746: \n1747: 2. **Area Enclosed**: For a closed path on the walker graph, the **minimal area** $\\mathcal{A}(\\mathcal{C})$ is the area of the minimal surface in $\\mathbb{R}^3$ whose boundary is the walker positions $\\{x_{i_1}, x_{i_2}, \\ldots, x_{i_n}\\}$.\n1748: \n1749: 3. **Wilson Action**: The Wilson action ({prf:ref}`def-cg-wilson-action`) penalizes field configurations where Wilson loops around plaquettes deviate from the identity, driving the system toward confinement.\n1750: ",
       "_registry_context": {
         "stage": "directives",
@@ -517,6 +552,7 @@
         "label": "rem-wilson-order-parameter"
       },
       "section": "## 6. Confinement via the Area Law for Wilson Loops",
+      "references": [],
       "raw_directive": "1776: :::\n1777: \n1778: :::{prf:remark} Wilson Loop as Order Parameter\n1779: :label: rem-wilson-order-parameter\n1780: \n1781: The Wilson loop is the **order parameter** distinguishing confined and deconfined phases:\n1782: - Area law $\\Rightarrow$ Confinement\n1783: - Perimeter law $\\Rightarrow$ Deconfinement\n1784: ",
       "_registry_context": {
         "stage": "directives",
@@ -542,6 +578,9 @@
         "label": "rem-string-tension-meaning"
       },
       "section": "## 6. Confinement via the Area Law for Wilson Loops",
+      "references": [
+        "thm-cg-spectral-gap"
+      ],
       "raw_directive": "1945: \n1946: \n1947: :::{prf:remark} Physical Meaning of String Tension\n1948: :label: rem-string-tension-meaning\n1949: \n1950: The string tension $\\sigma$ has dimensions of energy per length. It represents the energy cost per unit length of \"string\" connecting a quark-antiquark pair. In QCD, $\\sigma \\approx 1 \\, \\text{GeV/fm}$ (giga-electron-volts per femtometer).\n1951: \n1952: For the Crystalline Gas, the string tension is determined by algorithmic parameters:\n1953: \n1954: $$\n1955: \\sigma \\approx \\frac{\\kappa \\eta}{2} \\wedge \\frac{\\sigma_x^2}{2d} \\wedge \\gamma_{\\text{fric}}\n1956: $$\n1957: ",
       "_registry_context": {
         "stage": "directives",
@@ -567,6 +606,9 @@
         "label": "rem-mass-gap-vs-string-tension"
       },
       "section": "## 7. The Mass Gap",
+      "references": [
+        "cor-cg-area-law"
+      ],
       "raw_directive": "2087: :::\n2088: \n2089: :::{prf:remark} Relation to String Tension\n2090: :label: rem-mass-gap-vs-string-tension\n2091: \n2092: The mass gap scaling $\\Delta_{\\text{YM}} \\sim \\sqrt{\\sigma}$ is a classic result in flux-tube models and is supported by lattice QCD simulations. The square-root dependence arises from the interplay between the string tension (which favors larger loops to minimize curvature) and quantum fluctuations (which favor smaller loops to minimize zero-point energy).\n2093: \n2094: For the Crystalline Gas:\n2095: \n2096: $$\n2097: \\sigma \\geq c_0 \\lambda_0 \\geq c_0 \\left( \\frac{\\kappa \\eta}{2} \\wedge \\frac{\\sigma_x^2}{2d} \\wedge \\gamma_{\\text{fric}} \\right)\n2098: $$\n2099: \n2100: from {prf:ref}`cor-cg-area-law`, so:\n2101: \n2102: $$\n2103: \\Delta_{\\text{YM}} \\geq c_{\\text{gb}} \\sqrt{c_0 \\lambda_0} > 0\n2104: $$\n2105: ",
       "_registry_context": {
         "stage": "directives",
@@ -592,6 +634,7 @@
         "label": "rem-closure-cemetery"
       },
       "section": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
+      "references": [],
       "raw_directive": "480: :::\n481: \n482: :::{prf:remark}\n483: :label: rem-closure-cemetery",
       "_registry_context": {
         "stage": "directives",
@@ -617,6 +660,7 @@
         "label": "rem-margin-stability"
       },
       "section": "## 3. Axiomatic Foundations: A Parametric Debugging Framework",
+      "references": [],
       "raw_directive": "1086: :::\n1087: \n1088: :::{prf:remark}\n1089: :label: rem-margin-stability\n1090: This axiom expresses a deterministic stability of the status update in terms of the positional component alone. It is strictly stronger than the trivial consequence of the identity\n1091: \n1092: $$\n1093: d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2 = \\tfrac{1}{N}\\,\\Delta_{\\text{pos}}^2 + \\tfrac{\\lambda_{\\mathrm{status}}}{N}\\,n_c,\n1094: $$\n1095: \n1096: which would otherwise allow a tautological “margin” by tuning $\\lambda_{\\mathrm{status}}$.\n1097: n_c\\;\\le\\; \\frac{N}{\\lambda_{\\mathrm{status}}}\\, d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2,\\qquad\n1098: n_c^2\\;\\le\\; \\left(\\frac{N}{\\lambda_{\\mathrm{status}}}\\right)^2 d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^4.\n1099: \n1100: $$",
       "_registry_context": {
         "stage": "directives",
@@ -642,6 +686,7 @@
         "label": "rem-maximal-cemetery-distance-design-choice"
       },
       "section": "## 7. Swarm Measuring",
+      "references": [],
       "raw_directive": "1453: :::\n1454: :::{prf:remark} Maximal cemetery distance (design choice)\n1455: :label: rem-maximal-cemetery-distance-design-choice\n1456: This convention selects a maximal, state‑independent distance to the cemetery law so that absorption events represent the largest possible jump in distributional metrics. It simplifies comparisons (no ad‑hoc offsets) and keeps $W_p(\\nu,\\delta_{\\dagger})$ constant across all living $\\nu$.",
       "_registry_context": {
         "stage": "directives",
@@ -667,6 +712,7 @@
         "label": "rem-cubic-hermite-construction"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "1845: :::\n1846: :::{prf:remark}\n1847: :label: rem-cubic-hermite-construction\n1848: This construction is the standard monotone cubic Hermite approach (PCHIP/PCHIM). The global derivative bound $L_P\\approx 1.0054$ from §8.2.2.5 provides an explicit Lipschitz constant for the rescale segment.",
       "_registry_context": {
         "stage": "directives",
@@ -692,6 +738,7 @@
         "label": "rem-cloning-scope-companion-convention"
       },
       "section": "## 16. The Cloning Transition Measure",
+      "references": [],
       "raw_directive": "4350: This unified definition handles both alive and dead walkers. For a **dead walker** $i \\in \\mathcal{D}_t$, its potential $V_{\\text{fit},i} = 0$. Its cloning companion $c_{\\text{clone}}(i)$ is drawn from the alive set $\\mathcal{A}_t$, making its potential $V_{\\text{fit},c_{\\text{clone}}(i)} > 0$. The score simplifies to $S_i = V_{\\text{fit},c_{\\text{clone}}(i)} / \\varepsilon$. Since the **Global Constraint** $\\varepsilon \\cdot p_{\\max} < \\eta^{(\\alpha+\\beta)}$ is satisfied, the minimum possible score for a dead walker is guaranteed to be greater than the maximum possible threshold: $S_{i, \\min} > (\\eta^{\\alpha+\\beta})/\\varepsilon > p_{\\max}$. Because $T_{\\text{clone}}$ is always sampled from $[0, p_{\\max}]$, the condition $S_i > T_{\\text{clone}}$ is always met. This results in a \"Clone\" action with probability 1, ensuring the revival mechanism remains an emergent and guaranteed property of the framework.\n4351: :::\n4352: :::{admonition} Randomness discipline for cloning\n4353: :class: note\n4354: - For each walker $i$, independently sample the cloning companion index $c_{\\text{clone}}(i)\\sim \\mathbb C_i(\\mathcal S)$ (with replacement) using an independent uniform $U_i^{\\mathrm{comp}}$.",
       "_registry_context": {
         "stage": "directives",
@@ -717,6 +764,7 @@
         "label": "rem-phoenix-effect"
       },
       "section": "## 17. The Revival State: Dynamics at $k=1$",
+      "references": [],
       "raw_directive": "4650:     We relate the input displacement components to the total input squared displacement $V_{\\text{in}}$ using the definitions from [](#def-displacement-components):\n4651:     *   $\\Delta_{\\text{pos}}^2 \\le N \\cdot V_{\\text{in}}$\n4652:     *   $n_c \\le \\frac{N}{\\lambda_{\\text{status}}} \\cdot V_{\\text{in}}$\n4653:     *   $n_c^2 \\le \\left(\\frac{N}{\\lambda_{\\text{status}}}\\right)^2 \\cdot V_{\\text{in}}^2$\n4654:     Substituting these into the bound for $F_{\\text{pot}}$ shows that $F_{\\text{pot}}$ is bounded by a quadratic function of $V_{\\text{in}}$: $F_{\\text{pot}} <= B_2 V_{\\text{in}}^2 + B_1 V_{\\text{in}} + B_0$.\n4655: 5.  **Finalize the Bound on the L1-Norm.**\n4656:     The term $\\sqrt{F_{\\text{pot}}}$ is therefore bounded by $\\sqrt{B_2 V_{\\text{in}}^2 + B_1 V_{\\text{in}} + B_0}$, which is asymptotically linear in $V_{\\text{in}}$ for large $V_{\\text{in}}$. Applying [](#lem-subadditivity-power) with $\\alpha=1/2$ yields $\\sqrt{a+b} \\le \\sqrt{a} + \\sqrt{b}$, so we can bound $\\sqrt{F_{\\text{pot}}}$ by a sum of linear and square-root terms of $V_{\\text{in}}$.\n4657:     Combining all terms, the total L1-norm $\\|\\DeltaP\\|_1$ is bounded by an expression of the form $C'_P V_{\\text{in}} + H'_P sqrt(V_{\\text{in}}) + K'_P$. Absorbing the term **2N** into the constant offset gives the final result as stated in the sub-lemma.\n4658: **Q.E.D.**",
       "_registry_context": {
         "stage": "directives",
@@ -742,6 +790,7 @@
         "label": "rem-remark-context-4997"
       },
       "section": "## 18. Swarm Update Operator: A Composition of Measures",
+      "references": [],
       "raw_directive": "5079: \n5080: $$\n5081: 2. If $V\\ge 1$, then $V^{p_k}\\le V^{p_{\\max}}$ for every $k$, hence\n5082: $$",
       "_registry_context": {
         "stage": "directives",
@@ -767,6 +816,7 @@
         "label": "rem-remark-context-5042"
       },
       "section": "## 18. Swarm Update Operator: A Composition of Measures",
+      "references": [],
       "raw_directive": "5126: $$\n5127: By definition of $W_2$, for any coupling $\\pi$ we have $W_2^2\\le \\mathbb{E}_{\\pi}[\\overline d_{\\text{Disp},\\mathcal{Y}}^2]$, hence\n5128: $$\n5129: ",
       "_registry_context": {
         "stage": "directives",
@@ -792,6 +842,7 @@
         "label": "rem-context-5056"
       },
       "section": "## 18. Swarm Update Operator: A Composition of Measures",
+      "references": [],
       "raw_directive": "5142: :label: subsec-measurability-markov-kernel\n5143: :::{prf:proposition} The Swarm Update defines a Markov kernel\n5144: :label: prop-psi-markov-kernel\n5145: Let $(\\Sigma_N,\\mathcal{B}(\\Sigma_N))$ be the measurable state space. Assume each stage of the update—cloning, perturbation, and status update—is defined by a measurable map with respect to its inputs and driven by a measurable noise kernel on a Polish probability space. Then the full Swarm Update Operator $\\Psi$ is a Markov kernel on $\\Sigma_N$; i.e., for each $\\mathcal{S}\\in\\Sigma_N$, $\\Psi(\\mathcal{S},\\cdot)$ is a probability measure on $\\Sigma_N$, and for each measurable $A\\in\\mathcal{B}(\\Sigma_N)$, the map $\\mathcal{S}\\mapsto \\Psi(\\mathcal{S},A)$ is measurable.",
       "_registry_context": {
         "stage": "directives",
@@ -818,6 +869,7 @@
         "label": "proof-prop-coefficient-regularity-2"
       },
       "section": "## 18. Swarm Update Operator: A Composition of Measures",
+      "references": [],
       "raw_directive": "5163: \n5164: (\\mathcal{S}_1,\\mathcal{S}_2)\\mapsto C_{\\text{clone},L/H},\\ K_{\\text{clone}},\\ C_{\\Psi,L/H},\\ K_{\\Psi},\\ C_{S,\\text{direct}},\\ C_{S,\\text{indirect}},\\ C_{V,\\text{total}}\n5165: \n5166: $$\n5167: are bounded on $\\mathcal{K}_R$ and jointly continuous in $(\\mathcal{S}_1,\\mathcal{S}_2)$.\n5168: :::\n5169: :::{prf:proof}\n5170: :label: proof-prop-coefficient-regularity\n5171: By definitions in Sections 11.3 and 17.2.4.1, each coefficient is obtained from the stagewise Lipschitz/Hölder functions and bounded parameters via finite sums, products, maxima, and composition with continuous operations (including the map $x\\mapsto x^{\\alpha}$ for $\\alpha\\in(0,1]$). Under assumptions (i)–(iii), the inputs to these algebraic operations are bounded and continuous on $\\mathcal{K}_R$ by the aggregator axioms and the properties of the patched $\\sigma'$ (see [](#lem-sigma-reg-derivative-bounds)). Continuity is preserved under sums, products, and composition; boundedness follows from continuity on compact (or closed, bounded) sets. Hence all listed coefficients are bounded on $\\mathcal{K}_R$ and jointly continuous in $(\\mathcal{S}_1,\\mathcal{S}_2)$.\n5172: **Q.E.D.**\n5173: :::",
       "_registry_context": {
         "stage": "directives",
@@ -843,6 +895,7 @@
         "label": "rem-fiber-bundle-structure"
       },
       "section": "## The Minimal Dynamic Lattice Gauge Theory (MDLGT)",
+      "references": [],
       "raw_directive": "115: The state space $\\Sigma_N$ has a rich mathematical structure that must be properly characterized to rigorously define dynamics and measures.\n116: \n117: :::{prf:remark} Fiber Bundle Structure of $\\Sigma_N$\n118: :label: rem-fiber-bundle-structure\n119: \n120: The state space $\\Sigma_N$ is naturally a fiber bundle:\n121: \n122: **Base Space**: The constrained node configuration space modulo rotations:\n123: \n124: $$\n125: \\mathcal{B}_N := \\left\\{\\mathbf{x} \\in (\\mathbb{R}^4)^N : \\sum_{i=1}^N x_i = 0\\right\\} / SO(4)\n126: $$\n127: \n128: where we quotient by the rotation group SO(4) because the Hamiltonian depends only on relative coordinates $x_i - x_j$ and their norms, which are rotationally invariant.\n129: \n130: **Fiber**: Over each node configuration $\\mathbf{x} \\in \\mathcal{B}_N$, the gauge field lives in:\n131: \n132: $$\n133: \\mathcal{F}(\\mathbf{x}) := (\\text{SU}(N_c))^{E_N(\\mathbf{x})}\n134: $$\n135: \n136: The dimension of this fiber is $|E_N(\\mathbf{x})| \\cdot \\dim(\\text{SU}(N_c)) = |E_N(\\mathbf{x})| \\cdot (N_c^2 - 1)$, which varies with the graph structure.\n137: \n138: **Singularities**: The fiber dimension changes at configurations where the Delaunay triangulation topology changes. In $\\mathbb{R}^4$, such topology changes occur when $d+2 = 6$ points become co-spherical (lie on a common 3-sphere), causing a 4-simplex to \"flip\" and reconnect differently. These singularities form a measure-zero algebraic variety in $\\mathbb{R}^{4N}$.\n139: \n140: **Well-Posedness**: Despite these singularities, the dynamics and invariant measure are well-defined:\n141: 1. The Hamiltonian $H(\\mathbf{x}, \\mathbf{U})$ is smooth everywhere (depends only on distances and gauge fields)\n142: 2. Topology changes occur with probability zero under the continuous diffusion",
       "_registry_context": {
         "stage": "directives",
@@ -870,6 +923,7 @@
         "class": "tip"
       },
       "section": "## 3. The Augmented Hypocoercive Lyapunov Function",
+      "references": [],
       "raw_directive": "974: :::\n975: \n976: :::{prf:remark} Analogy to Classical Hypocoercivity Theory\n977: :label: rem-note-hypocoercivity-analogy\n978: :class: tip\n979: \n980: This structure is the **discrete stochastic analogue** of the classical hypocoercivity framework for kinetic PDEs (Villani, 2009; Dolbeault-Mouhot-Schmeiser, 2015):\n981: \n982: **Classical Hypocoercivity (Kinetic Fokker-Planck)**:\n983: - The transport operator $v \\cdot \\nabla_x$ generates dynamics in $x$ but is neutral on the velocity distribution.\n984: - The collision operator $\\mathcal{L}_v$ generates dissipation in $v$ but does not directly affect $x$.\n985: - Neither operator alone contracts the full kinetic norm $\\|f\\|^2_{L^2} + \\|\\nabla_x f\\|^2_{L^2}$.\n986: - The augmented norm $\\|f\\|^2_{L^2} + \\varepsilon \\|\\nabla_x f\\|^2_{L^2}$ allows proving exponential decay by balancing the operators' effects.\n987: \n988: **Our Discrete Stochastic Framework (Fragile Gas)**:\n989: - The cloning operator $\\Psi_{\\text{clone}}$ contracts $V_{\\text{Var}}$ (internal swarm structure) but may expand $W_h^2$ (inter-swarm distance via velocity resets).\n990: - The kinetic operator $\\Psi_{\\text{kin}}$ contracts $W_h^2$ (via confining potential) but may expand $V_{\\text{Var}}$ (via diffusion noise).\n991: - Neither operator alone contracts the full phase-space error.\n992: - The augmented Lyapunov $V_{\\text{total}} = W_h^2 + c_V V_{\\text{Var}} + c_B W_b$ allows proving exponential convergence by balancing the operators' synergistic dissipation.\n993: ",
       "_registry_context": {
         "stage": "directives",
@@ -897,6 +951,7 @@
         "class": "note"
       },
       "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
+      "references": [],
       "raw_directive": "4156: :::\n4157: \n4158: :::{prf:remark} On the Tightness of the Bound\n4159: :label: rem-log-gap-bound-tightness\n4160: :class: note\n4161: \n4162: The stated bound $\\ln(1 + \\kappa/V_{\\max})$ is slightly conservative compared to the tight bound $\\ln(1 + \\kappa/(V_{\\max} - \\kappa))$ derived in Step 4. For most practical applications where $\\kappa \\ll V_{\\max}$, the difference is negligible:\n4163: \n4164: $$\n4165: \\frac{\\kappa}{V_{\\max} - \\kappa} \\approx \\frac{\\kappa}{V_{\\max}}\\left(1 + \\frac{\\kappa}{V_{\\max}}\\right)\n4166: $$\n4167: ",
       "_registry_context": {
         "stage": "directives",
@@ -924,6 +979,7 @@
         "class": "note"
       },
       "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
+      "references": [],
       "raw_directive": "4276: :::\n4277: \n4278: :::{prf:remark} Why the Bound is Tight at $V_{\\min}$\n4279: :label: rem-log-gap-bound-tight-at-vmin\n4280: :class: note\n4281: \n4282: The upper bound $\\ln(1 + \\kappa/V_{\\min})$ is achieved in the worst-case scenario where:\n4283: 1. The means are separated by the maximum allowed gap $\\kappa$\n4284: 2. Both distributions are positioned at the bottom of the range near $V_{\\min}$, where the logarithm has the steepest slope\n4285: 3. One distribution is deterministic (maximizing its expected log) while the other is maximally dispersed (minimizing its expected log)\n4286: ",
       "_registry_context": {
         "stage": "directives",
@@ -951,6 +1007,7 @@
         "class": "note"
       },
       "section": "## 8. The N-Uniform Quantitative Keystone Lemma",
+      "references": [],
       "raw_directive": "4941: :::\n4942: \n4943: :::{prf:remark} N-Uniformity of the Bound\n4944: :label: rem-n-uniformity-delta-min-bound\n4945: :class: note\n4946: ",
       "_registry_context": {
         "stage": "directives",
@@ -976,6 +1033,7 @@
         "label": "rem-measurement-coupling"
       },
       "section": "## 9.3. Decomposition into Sub-Operators",
+      "references": [],
       "raw_directive": "5887: :::\n5888: \n5889: :::{prf:remark} Stochastic Coupling for Drift Analysis\n5890: :label: rem-measurement-coupling\n5891: \n5892: When analyzing two swarms $(S_1, S_2)$ in the drift analysis (Chapters 10-11), we use **synchronous coupling** of the randomness:\n5893: - The same random pairing algorithm is applied to both swarms\n5894: - The PRNG streams are coupled so that walker $i$ in swarm 1 and walker $i$ in swarm 2 use the same random seed",
       "_registry_context": {
         "stage": "directives",
@@ -1001,6 +1059,7 @@
         "label": "rem-position-velocity-update-difference"
       },
       "section": "## 9.3. Decomposition into Sub-Operators",
+      "references": [],
       "raw_directive": "6156: :::\n6157: \n6158: :::{prf:remark} Position Jitter vs. Velocity Collision Model\n6159: :label: rem-position-velocity-update-difference\n6160: \n6161: The cloning operator treats positions and velocities asymmetrically:\n6162: \n6163: 1. **Position:** Stochastic Gaussian jitter with variance $\\sigma_x^2$ breaks spatial correlations between swarms in the drift analysis.\n6164: \n6165: 2. **Velocity:** Deterministic inelastic collision model (with random rotation) conserves momentum and provides controlled energy dissipation via $\\alpha_{\\text{restitution}}$.\n6166: \n6167: This design choice has important implications:\n6168: \n6169: - **Positional desynchronization** comes from explicit Gaussian noise $\\mathcal{N}(0, \\sigma_x^2 I_d)$\n6170: - **Velocity desynchronization** comes from the random rotations $R_k$ in the collision model, which randomize velocity directions while preserving or reducing magnitudes",
       "_registry_context": {
         "stage": "directives",
@@ -1026,6 +1085,7 @@
         "label": "rem-coupling-benefits"
       },
       "section": "## 10.2. The Coupled Expectation Framework",
+      "references": [],
       "raw_directive": "6343: :::\n6344: \n6345: :::{prf:remark} Synchronous Coupling Benefits\n6346: :label: rem-coupling-benefits\n6347: \n6348: The synchronous coupling ensures that:\n6349: \n6350: 1. **Common randomness cancels:** When both swarms have walker $i$ in similar states and both make the same cloning decision, much of the random perturbation is shared, reducing divergence.\n6351: \n6352: 2. **Worst-case expansion is bounded:** Even when the swarms make different decisions (e.g., walker $i$ clones in swarm 1 but persists in swarm 2), the expansion is controlled by the maximum displacement $D_{\\text{valid}}$.\n6353: ",
       "_registry_context": {
         "stage": "directives",
@@ -1051,6 +1111,7 @@
         "label": "rem-synergistic-velocity-dissipation"
       },
       "section": "## 10.4. Velocity Variance Bounded Expansion",
+      "references": [],
       "raw_directive": "6831: :::\n6832: \n6833: :::{prf:remark} Synergistic Dissipation Enables Net Contraction\n6834: :label: rem-synergistic-velocity-dissipation\n6835: \n6836: This bounded expansion is the prerequisite for the synergistic dissipation framework. The companion document will prove that the kinetic operator provides velocity contraction:\n6837: \n6838: $$\n6839: \\mathbb{E}_{\\text{kin}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_v V_{\\text{Var},v} + C'_v\n6840: $$\n6841: \n6842: for some $\\kappa_v > 0$ proportional to the Langevin friction $\\gamma$.\n6843: \n6844: When properly balanced:\n6845: \n6846: $$\n6847: \\mathbb{E}_{\\text{clone} \\circ \\text{kin}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_v V_{\\text{Var},v} + (C_v + C'_v)\n6848: $$\n6849: ",
       "_registry_context": {
         "stage": "directives",
@@ -1076,6 +1137,7 @@
         "label": "rem-drift-constants-dependencies"
       },
       "section": "## 10.6. Summary of Variance Drift Inequalities",
+      "references": [],
       "raw_directive": "6976: :::\n6977: \n6978: :::{prf:remark} Constants and Parameter Dependencies\n6979: :label: rem-drift-constants-dependencies\n6980: \n6981: The drift constants have the following dependencies:\n6982: \n6983: **Contraction rate $\\kappa_x$:**\n6984: - Increases with measurement quality (larger $\\epsilon$ → better diversity detection)\n6985: - Increases with cloning responsiveness (larger $p_{\\max}$ and smaller $\\varepsilon_{\\text{clone}}$)\n6986: - Independent of $N$ (N-uniformity from Keystone)\n6987: \n6988: **Expansion bound $C_v$:**\n6989: - Increases with $V_{\\max}^2$ (larger velocity domain)\n6990: - Increases with $\\alpha_{\\text{restitution}}$ (more elastic collisions)\n6991: - Decreases toward zero as $\\alpha_{\\text{restitution}} \\to 0$ (perfectly inelastic)\n6992: - Independent of $N$\n6993: ",
       "_registry_context": {
         "stage": "directives",
@@ -1101,6 +1163,7 @@
         "label": "rem-barrier-geometric-penalty"
       },
       "section": "## 11.2. The Boundary Barrier and Fitness Gradient",
+      "references": [],
       "raw_directive": "7067: :::\n7068: \n7069: :::{prf:remark} Barrier Function as Geometric Penalty\n7070: :label: rem-barrier-geometric-penalty\n7071: \n7072: The barrier function creates a \"soft wall\" around the boundary:\n7073: \n7074: - **Far from boundary** ($d(x, \\partial \\mathcal{X}_{\\text{valid}}) > \\delta_{\\text{safe}}$): No penalty, $\\varphi_{\\text{barrier}}(x) = 0$\n7075: \n7076: - **Near boundary** ($d(x, \\partial \\mathcal{X}_{\\text{valid}}) \\leq \\delta_{\\text{safe}}$): Penalty increases, reducing fitness\n7077: \n7078: - **At boundary:** Infinite penalty (though walkers at the boundary are dead, so this limit is never realized for alive walkers)\n7079: ",
       "_registry_context": {
         "stage": "directives",
@@ -1126,6 +1189,7 @@
         "label": "rem-boundary-mass-relationship"
       },
       "section": "## 11.2. The Boundary Barrier and Fitness Gradient",
+      "references": [],
       "raw_directive": "7274: :::\n7275: \n7276: :::{prf:remark} Relationship to Total Boundary Potential\n7277: :label: rem-boundary-mass-relationship\n7278: \n7279: If all walkers outside the exposed set have $\\varphi_{\\text{barrier}}(x_i) \\leq \\phi_{\\text{thresh}}$, then:\n7280: \n7281: $$\n7282: W_b(S_k) = \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_k)} \\varphi_{\\text{barrier}}(x_i) \\leq M_{\\text{boundary}}(S_k) + \\frac{k_{\\text{alive}}}{N} \\phi_{\\text{thresh}}\n7283: $$\n7284: ",
       "_registry_context": {
         "stage": "directives",
@@ -1151,6 +1215,7 @@
         "label": "rem-progressive-safety"
       },
       "section": "## 11.3. Main Theorem: Boundary Potential Contraction",
+      "references": [],
       "raw_directive": "7305: :::\n7306: \n7307: :::{prf:remark} Interpretation: Progressive Safety Enhancement\n7308: :label: rem-progressive-safety\n7309: \n7310: This theorem formalizes the Safe Harbor mechanism:\n7311: \n7312: - **When many walkers are near the boundary** ($W_b$ large), these walkers have low fitness and high cloning probability\n7313: - **They are replaced by clones of interior walkers**, pulling the boundary potential down\n7314: - **The contraction rate $\\kappa_b$ is state-independent**, ensuring consistent safety correction regardless of swarm configuration",
       "_registry_context": {
         "stage": "directives",
@@ -1176,6 +1241,7 @@
         "label": "rem-safety-margin-tuning"
       },
       "section": "## 11.5. Implications for Extinction Probability",
+      "references": [],
       "raw_directive": "7706: :::\n7707: \n7708: :::{prf:remark} Safety Margin and Parameter Tuning\n7709: :label: rem-safety-margin-tuning\n7710: \n7711: The equilibrium bound $C_b/\\kappa_b$ can be made arbitrarily small by:\n7712: \n7713: 1. **Increasing $\\kappa_b$:** Use larger weight $\\beta$ on the reward component in fitness, making boundary penalties more salient\n7714: \n7715: 2. **Decreasing $C_b$:** Use smaller position jitter variance $\\sigma_x^2$ to reduce re-entry into boundary regions after cloning\n7716: \n7717: 3. **Widening safe interior:** Choose barrier function parameters to increase $\\delta_{\\text{safe}}$, providing more buffer before penalties activate\n7718: ",
       "_registry_context": {
         "stage": "directives",
@@ -1201,6 +1267,7 @@
         "label": "rem-why-vw-expands"
       },
       "section": "## 12.2. Inter-Swarm Error Under Cloning",
+      "references": [],
       "raw_directive": "7958: :::\n7959: \n7960: :::{prf:remark} Why Inter-Swarm Error Doesn't Contract Under Cloning\n7961: :label: rem-why-vw-expands\n7962: \n7963: The cloning operator **cannot contract** $V_W$ because:\n7964: \n7965: 1. **Intra-swarm mechanism:** Cloning acts **within** each swarm independently. It compares walker $i$ to its companion in the **same swarm**, not to the corresponding walker in the other swarm.\n7966: \n7967: 2. **No inter-swarm communication:** The fitness evaluation and companion selection have no information about the other swarm in the coupled analysis. They cannot \"know\" which direction reduces $V_W$.\n7968: \n7969: 3. **Stochastic desynchronization:** Even with synchronous coupling, different swarm configurations lead to different fitness landscapes, causing different cloning decisions that increase divergence.\n7970: ",
       "_registry_context": {
         "stage": "directives",
@@ -1226,6 +1293,7 @@
         "label": "rem-perfect-complementarity"
       },
       "section": "## 12.4. The Synergistic Dissipation Framework",
+      "references": [],
       "raw_directive": "8219: | $W_b$ (boundary) | $-\\kappa_b W_b$ (contraction) | $-\\kappa_{\\text{pot}} W_b$ (contraction) | Strong contraction |\n8220: \n8221: :::{prf:remark} Perfect Complementarity\n8222: :label: rem-perfect-complementarity\n8223: \n8224: Notice the **exact complementarity**:\n8225: - What cloning **contracts** (position, boundary), kinetic **expands** (diffusion, potential climb)\n8226: - What cloning **expands** (velocity, inter-swarm), kinetic **contracts** (friction, hypocoercivity)\n8227: - Both **contract** the boundary potential (layered safety)\n8228: ",
       "_registry_context": {
         "stage": "directives",
@@ -1251,6 +1319,7 @@
         "label": "rem-tuning-guidance"
       },
       "section": "## 12.4. The Synergistic Dissipation Framework",
+      "references": [],
       "raw_directive": "8375: :::\n8376: \n8377: :::{prf:remark} Tuning Guidance\n8378: :label: rem-tuning-guidance\n8379: \n8380: In practice, the coupling constants are chosen as:\n8381: \n8382: $$\n8383: c_V \\approx \\frac{\\kappa_W}{2\\kappa_x}, \\quad c_B \\approx \\frac{\\kappa_W}{2\\kappa_b}\n8384: $$\n8385: \n8386: This balances the contraction rates across components, ensuring no single component dominates the drift inequality. The factor of 2 provides safety margin.\n8387: \n8388: If the system is experiencing:\n8389: - **High boundary exposure:** Increase $c_B$ to weight safety more heavily\n8390: - **High velocity variance:** Increase friction $\\gamma$ in kinetic stage",
       "_registry_context": {
         "stage": "directives",
@@ -1276,6 +1345,7 @@
         "label": "rem-cg-geometric-inventory"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "65: :::\n66: \n67: :::{prf:remark} Available Geometric Structures\n68: :label: rem-cg-geometric-inventory\n69: \n70: The Crystalline Gas provides the following fundamental objects:\n71: 1. **Two 3-vectors:** $F_i, p_i \\in \\mathbb{R}^{3}$ (assuming $d=3$ for Standard Model correspondence)\n72: 2. **One unit vector:** $\\hat{r}_{i,j^*(i)} \\in S^{2}$\n73: 3. **Two scalars:** $S_{\\text{ascent}}, \\Phi(x_i) \\in \\mathbb{R}$\n74: \n75: From these, we will construct:\n76: - **8-component object** for SU(3): via tensor product $F \\otimes p$\n77: - **3-component object** for SU(2): via direction vector $\\hat{r}$",
       "_registry_context": {
         "stage": "directives",
@@ -1301,6 +1371,7 @@
         "label": "rem-cg-su3-physical"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "249: :::\n250: \n251: :::{prf:remark} Physical Interpretation of SU(3) Structure\n252: :label: rem-cg-su3-physical\n253: \n254: The SU(3) color structure emerges naturally because:\n255: \n256: 1. **Tensor product structure:** $F \\otimes p$ is a rank-2 tensor in 3D space, naturally living in the adjoint representation of SU(3)\n257: \n258: 2. **Traceless condition:** Removing the trace projects from U(3) to SU(3), ensuring no overall \"baryon number\" charge\n259: \n260: 3. **8 gluons:** The 8 independent components of $T^{\\text{traceless}}$ correspond exactly to the 8 gluons: $(r\\bar{g}, r\\bar{b}, g\\bar{b}, \\ldots)$\n261: \n262: 4. **Coupling strength:** The amplitude $\\rho_i = \\|F\\| \\cdot \\|p\\|$ gives the **strong coupling constant**:\n263: \n264: $$\n265: g_s \\propto \\|F\\| \\cdot \\|p\\| \\propto \\|\\nabla \\Phi\\| \\cdot \\|v\\|\n266: $$\n267: ",
       "_registry_context": {
         "stage": "directives",
@@ -1326,6 +1397,7 @@
         "label": "rem-cg-su2-nonabelian"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "383: :::\n384: \n385: :::{prf:remark} Non-Abelian Structure of SU(2)\n386: :label: rem-cg-su2-nonabelian\n387: \n388: The SU(2) field strength tensor includes the crucial **commutator term**:\n389: \n390: $$\n391: W_{\\mu\\nu}^a = \\partial_{\\mu} W_{\\nu}^a - \\partial_{\\nu} W_{\\mu}^a + g_2 \\varepsilon^{abc} W_{\\mu}^b W_{\\nu}^c\n392: $$\n393: \n394: where $g_2$ is the weak coupling constant and $\\varepsilon^{abc}$ is the Levi-Civita symbol.\n395: \n396: The $\\varepsilon^{abc}$ structure arises geometrically from the **curl of the direction vector**:\n397: \n398: $$\n399: \\partial_{\\mu} \\hat{r} \\times \\partial_{\\nu} \\hat{r} = \\sum_{abc} \\varepsilon^{abc} (\\partial_{\\mu} \\hat{r}^b)(\\partial_{\\nu} \\hat{r}^c) \\hat{e}_a\n400: $$\n401: ",
       "_registry_context": {
         "stage": "directives",
@@ -1351,6 +1423,7 @@
         "label": "rem-cg-u1-alternative"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "494: :::\n495: \n496: :::{prf:remark} Alternative: U(1) from Companion Distance\n497: :label: rem-cg-u1-alternative\n498: \n499: An alternative construction uses the **distance to companion** $d_{i,j^*(i)}$ instead of fitness:\n500: \n501: $$\n502: \\varphi_i^{(Y)} := g_A\\left(\\frac{d_{i,j^*(i)} - \\langle d \\rangle}{\\sigma_d}\\right) + \\eta\n503: $$\n504: \n505: where $g_A(z) = 2/(1 + e^{-z})$ is the logistic rescaling function from the Fragile Gas.\n506: \n507: This has the advantage of being **geometrically distinct** from the SU(2) structure (which uses direction, not distance), more closely mirroring the Fragile Gas construction.\n508: ",
       "_registry_context": {
         "stage": "directives",
@@ -1376,6 +1449,7 @@
         "label": "rem-cg-vs-standard-model"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "554: :::\n555: \n556: :::{prf:remark} Comparison to Standard Model\n557: :label: rem-cg-vs-standard-model\n558: \n559: The Crystalline Gas gauge group matches the **electroweak sector of the Standard Model**:\n560: - SU(3)_c: Quantum Chromodynamics (strong nuclear force)\n561: - SU(2)_L: Weak isospin (weak nuclear force, chiral)\n562: - U(1)_Y: Hypercharge (electroweak unification)\n563: \n564: The photon and Z boson arise from electroweak symmetry breaking (mixing of $W_{\\mu}^3$ and $A_{\\mu}^{(Y)}$), which would require extending to the Higgs sector (not needed for the mass gap proof).\n565: ",
       "_registry_context": {
         "stage": "directives",
@@ -1401,6 +1475,7 @@
         "label": "rem-cg-cmi-verification"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "829: :::\n830: \n831: :::{prf:remark} Relation to CMI Problem Statement\n832: :label: rem-cg-cmi-verification\n833: \n834: The Clay Mathematics Institute problem asks for:\n835: \n836: 1. **A mathematically rigorous construction of a four-dimensional Yang-Mills theory** satisfying the Wightman axioms (or equivalent Osterwalder-Schrader axioms)\n837: \n838: 2. **A proof that the theory has a mass gap** $\\Delta > 0$ in the spectrum\n839: \n840: We have now established:\n841: - ✅ **Gauge group:** SU(3)_c × SU(2)_L × U(1)_Y (product of compact simple groups)\n842: - ✅ **Gauge fields:** Rigorously constructed from algorithmic quantities\n843: - ✅ **Pure gauge theory:** Noether current vanishes at QSD\n844: - ✅ **Yang-Mills equations:** Satisfied at equilibrium\n845: \n846: The remaining steps are:\n847: - Verify Osterwalder-Schrader axioms (requires checking correlation functions)\n848: - Prove spectral gap (Section 5)\n849: - Derive area law from spectral gap (Section 6)",
       "_registry_context": {
         "stage": "directives",
@@ -1426,6 +1501,7 @@
         "label": "rem-why-target-sets"
       },
       "section": "## 2. Cluster-Preserving Coupling",
+      "references": [],
       "raw_directive": "181: :::\n182: \n183: :::{prf:remark} Why These Sets?\n184: :label: rem-why-target-sets\n185: \n186: The target set $I_k$ represents the walkers that are:\n187: 1. **Unfit** ($U_k$): Lower than average fitness → high cloning probability\n188: 2. **High-error** ($H_k$): Geometrically outliers → contribute to structural error\n189: \n190: By Theorem 7.6.1 ([03_cloning](03_cloning), Section 7.6.2), the Stability Condition guarantees a **non-vanishing overlap** between these sets. This is the crucial population that:\n191: - Is **targeted** by the cloning mechanism (unfit)\n192: - **Causes** the structural error (high-error)\n193: ",
       "_registry_context": {
         "stage": "directives",
@@ -1451,6 +1527,7 @@
         "label": "rem-empirical-measures"
       },
       "section": "## 2. Cluster-Preserving Coupling",
+      "references": [],
       "raw_directive": "195: :::\n196: \n197: :::{prf:remark} Empirical Measures and Framework Properties\n198: :label: rem-empirical-measures\n199: \n200: **Notational Precision**: This document analyzes the $N$-particle empirical measures $\\mu_1, \\mu_2$, which are discrete probability measures supported on $N$ walkers. The clustering algorithm, fitness function $F(x)$, and potential landscape are properties defined at the population level.\n201: \n202: **Relationship to Continuum Limit**: The fitness function $F(x)$ and its valley structure are properties of the continuum state space $\\mathcal{X}$, while the clusters $I_k, J_k$ are finite-sample objects constructed from the empirical distribution. The proofs in this document use properties of the limiting landscape (e.g., Confining Potential axiom, fitness valleys) to reason about finite-sample cluster behavior.\n203: \n204: **Approximation Errors**: For finite $N$, there are approximation errors $O(1/\\sqrt{N})$ when estimating continuum properties (like the potential $F(x)$) from empirical measures. These errors are absorbed into:\n205: 1. The noise term $C_W = O(d\\delta^2)$ in the contraction inequality\n206: 2. The clustering threshold $\\varepsilon$, which depends on $N$ implicitly through the error tolerance\n207: \n208: **N-Uniformity Justification**: The key result is that these finite-sample approximation errors do not affect the *sign* or *N-independence* of the contraction constant $\\kappa_W > 0$. This is because:\n209: - The clustering algorithm thresholds (Definition 6.3) are calibrated to maintain $O(1)$ cluster fractions\n210: - The framework axioms (Confining Potential, Environmental Richness) provide $O(1)$ landscape features that dominate the finite-sample noise\n211: - All critical bounds ($f_{UH}, p_u, c_{\\text{sep}}$) are proven N-uniform in [03_cloning](03_cloning) precisely to account for these approximation effects\n212: ",
       "_registry_context": {
         "stage": "directives",
@@ -1476,6 +1553,7 @@
         "label": "rem-coupling-advantages"
       },
       "section": "## 2. Cluster-Preserving Coupling",
+      "references": [],
       "raw_directive": "254: :::\n255: \n256: :::{prf:remark} Why This Coupling Works\n257: :label: rem-coupling-advantages\n258: \n259: **Advantages over single-walker coupling**:\n260: \n261: 1. **No $q_{\\min}$ dependence**: We average over all possible matchings within each population. The population-level expectation is well-defined even though individual matching probabilities vanish.\n262: \n263: 2. **Robust to perturbations**: Small changes in individual walker positions don't affect the population partition (clusters are stable).\n264: \n265: 3. **Framework-consistent**: Uses the exact same cluster definitions (Definition 6.3) that appear in the Keystone Lemma proof.\n266: ",
       "_registry_context": {
         "stage": "directives",
@@ -1501,6 +1579,7 @@
         "label": "rem-variance-wasserstein-interpretation"
       },
       "section": "## 3. Variance Decomposition and Cross-Swarm Analysis",
+      "references": [],
       "raw_directive": "509: :::\n510: \n511: :::{prf:remark} Interpretation of the Link\n512: :label: rem-variance-wasserstein-interpretation\n513: \n514: This lemma establishes that for separated swarms, the structural variance (internal swarm spread) and the Wasserstein distance (between-swarm measure distance) are of the same order. Both quantify the \"distance\" between the two empirical distributions, but from different perspectives:\n515: \n516: - $V_{\\text{struct}}$: Measures variance/spread of the swarm configuration\n517: - $W_2^2$: Measures optimal transport cost between measures\n518: ",
       "_registry_context": {
         "stage": "directives",
@@ -1526,6 +1605,7 @@
         "label": "rem-static-robust"
       },
       "section": "## 4. Cluster-Level Outlier Alignment",
+      "references": [],
       "raw_directive": "692: :::\n693: \n694: :::{prf:remark} Why This Proof is Static and Robust\n695: :label: rem-static-robust\n696: \n697: This proof uses **only**:\n698: 1. Fitness valley (geometric property of landscape)\n699: 2. Stability Condition (proven axiom from framework)\n700: 3. Phase-Space Packing (geometric bound on clustering)\n701: \n702: **No dynamics, no survival probabilities, no individual walker tracking.**\n703: ",
       "_registry_context": {
         "stage": "directives",
@@ -1551,6 +1631,7 @@
         "label": "rem-asymmetric-coupling"
       },
       "section": "## 1. Synchronous Coupling Construction",
+      "references": [],
       "raw_directive": "401: :::\n402: \n403: :::{prf:remark} Asymmetric Coupling\n404: :label: rem-asymmetric-coupling\n405: \n406: The coupling is **asymmetric**: the matching distribution $P(M | S_1)$ depends only on swarm $S_1$, not $S_2$. This is standard practice in coupling arguments and simplifies analysis while maintaining sufficient correlation for contraction.\n407: ",
       "_registry_context": {
         "stage": "directives",
@@ -1576,6 +1657,7 @@
         "label": "rem-jitter-cancellation"
       },
       "section": "## 1. Synchronous Coupling Construction",
+      "references": [],
       "raw_directive": "409: :::\n410: \n411: :::{prf:remark} Jitter Cancellation in Clone-Clone Case\n412: :label: rem-jitter-cancellation\n413: \n414: The most powerful feature of this coupling is **jitter cancellation**. If walker $i$ clones in **both** swarms (which happens in Case A with consistent fitness ordering), then:\n415: \n416: $$\n417: \\|x'_{1,i} - x'_{2,i}\\|^2 = \\|(x_{1,\\pi(i)} + \\zeta_i) - (x_{2,\\pi(i)} + \\zeta_i)\\|^2 = \\|x_{1,\\pi(i)} - x_{2,\\pi(i)}\\|^2\n418: $$\n419: \n420: The jitter **cancels exactly** due to synchronization! This is the strongest form of contraction.\n421: ",
       "_registry_context": {
         "stage": "directives",
@@ -1601,6 +1683,9 @@
         "label": "rem-coupling-sufficiency"
       },
       "section": "## 1. Synchronous Coupling Construction",
+      "references": [
+        "def-synchronous-cloning-coupling"
+      ],
       "raw_directive": "425: ### 1.3. Coupling Properties\n426: \n427: :::{prf:remark} Synchronous Coupling Sufficiency\n428: :label: rem-coupling-sufficiency\n429: \n430: The synchronous coupling {prf:ref}`def-synchronous-cloning-coupling` provides sufficient correlation to prove Wasserstein-2 contraction. By using shared randomness (matching $M$, thresholds $T_i$, jitter $\\zeta_i$), the coupling eliminates extrinsic variance sources and maximizes correlation between paired walkers.\n431: \n432: **Key Properties:**\n433: 1. **Jitter cancellation**: When both walkers clone, the shared jitter $\\zeta_i$ cancels exactly\n434: 2. **Maximum correlation**: Using the same matching and thresholds minimizes $\\mathbb{E}[\\sum_i \\|x'_{1,i} - x'_{2,i}\\|^2]$\n435: 3. **Tractable analysis**: The synchronous structure allows explicit calculation of contraction factors\n436: ",
       "_registry_context": {
         "stage": "directives",
@@ -1626,6 +1711,7 @@
         "label": "rem-valley-depth"
       },
       "section": "## 2. Foundational Lemmas for Outlier Alignment",
+      "references": [],
       "raw_directive": "519: :::\n520: \n521: :::{prf:remark} Quantitative Bounds\n522: :label: rem-valley-depth\n523: \n524: For swarms at distance $L > D_{\\min}$, the valley depth can be bounded using framework parameters:\n525: \n526: $$\n527: \\Delta_{\\text{valley}} \\geq \\kappa_{\\text{valley}}(\\varepsilon) \\cdot V_{\\text{pot,min}}\n528: $$\n529: ",
       "_registry_context": {
         "stage": "directives",
@@ -1651,6 +1737,7 @@
         "label": "rem-asymptotic-exactness"
       },
       "section": "## 2. Foundational Lemmas for Outlier Alignment",
+      "references": [],
       "raw_directive": "752: :::\n753: \n754: :::{prf:remark} Asymptotic Exactness\n755: :label: rem-asymptotic-exactness\n756: \n757: For $L \\to \\infty$, the survival probability of wrong-side outliers vanishes exponentially:\n758: \n759: $$\n760: \\mathbb{P}(\\text{survive} \\mid M_1) \\leq e^{-c L/R_H}\n761: $$\n762: ",
       "_registry_context": {
         "stage": "directives",
@@ -1676,6 +1763,7 @@
         "label": "rem-emergent-property"
       },
       "section": "## 2. Foundational Lemmas for Outlier Alignment",
+      "references": [],
       "raw_directive": "764: :::\n765: \n766: :::{prf:remark} Why This is Emergent, Not Axiomatic\n767: :label: rem-emergent-property\n768: \n769: The Outlier Alignment property is **not** an additional axiom. It is a **consequence** of:\n770: 1. The Confining Potential axiom (Axiom 2.1.1)\n771: 2. The Environmental Richness axiom (Axiom 4.1.1)\n772: 3. The cloning operator definition (survival $\\propto$ fitness)\n773: 4. The Geometric Partition structure (Keystone Principle)\n774: ",
       "_registry_context": {
         "stage": "directives",
@@ -1701,6 +1789,7 @@
         "label": "rem-projection-implies-quadratic"
       },
       "section": "## Section 4 Updates: Quadratic Scaling Fixes",
+      "references": [],
       "raw_directive": "1330: :::\n1331: \n1332: :::{prf:remark} Implications for Contraction\n1333: :label: rem-projection-implies-quadratic\n1334: \n1335: This lemma shows that the \"linear\" terms like $\\eta R_H L$ from the geometric bound are actually quadratic when $R_H \\sim L$:\n1336: \n1337: $$\n1338: \\eta R_H L \\geq \\eta (c_0 L - c_1) L = \\eta c_0 L^2 - \\eta c_1 L \\sim O(L^2)\n1339: $$\n1340: ",
       "_registry_context": {
         "stage": "directives",
@@ -1726,6 +1815,7 @@
         "label": "rem-linear-vs-quadratic"
       },
       "section": "## Section 4 Updates: Quadratic Scaling Fixes",
+      "references": [],
       "raw_directive": "1409: :::\n1410: \n1411: :::{prf:remark} Comparison with Linear Bound\n1412: :label: rem-linear-vs-quadratic\n1413: \n1414: The previous analysis derived $D_{ii} - D_{ji} \\geq \\eta R_H L$, which appeared linear in $L$. However:\n1415: \n1416: 1. **Via Exact Identity:** We now have $D_{ii} - D_{ji} \\approx L^2$ directly\n1417: 2. **Via High-Error Projection:** $R_H \\geq c_0 L$, so $\\eta R_H L \\geq \\eta c_0 L^2$\n1418: ",
       "_registry_context": {
         "stage": "directives",
@@ -1751,6 +1841,7 @@
         "label": "rem-case-b-frequency"
       },
       "section": "## Section 4 Updates: Quadratic Scaling Fixes",
+      "references": [],
       "raw_directive": "1521: :::\n1522: \n1523: :::{prf:remark} Typical Values\n1524: :label: rem-case-b-frequency\n1525: \n1526: From the Keystone Principle analysis in [03_cloning.md](03_cloning.md):\n1527: - $f_{UH}(\\varepsilon) \\geq 0.1$ (at least 10% unfit-high-error overlap)\n1528: - $q_{\\min}(\\varepsilon) \\geq 0.01$ (matching has at least 1% probability for any configuration)\n1529: \n1530: Therefore:\n1531: $$\n1532: \\mathbb{P}(\\text{Case B}) \\gtrsim 0.001\n1533: $$\n1534: ",
       "_registry_context": {
         "stage": "directives",
@@ -1776,6 +1867,7 @@
         "label": "rem-stratonovich-ito-equivalence"
       },
       "section": "## 3. The Kinetic Operator with Stratonovich Formulation",
+      "references": [],
       "raw_directive": "212: :::\n213: \n214: :::{prf:remark} Relationship to Itô Formulation\n215: :label: rem-stratonovich-ito-equivalence\n216: \n217: The equivalent Itô SDE includes a correction term:\n218: \n219: $$\n220: dv_t = \\left[F(x_t) - \\gamma(v_t - u(x_t)) + \\underbrace{\\frac{1}{2}\\sum_{j=1}^d \\Sigma_j(x_t,v_t) \\cdot \\nabla_v \\Sigma_j(x_t,v_t)}_{\\text{Stratonovich correction}}\\right] dt + \\Sigma(x_t,v_t) \\, dW_t\n221: \n222: $$\n223: \n224: where $\\Sigma_j$ is the $j$-th column of $\\Sigma$.\n225: ",
       "_registry_context": {
         "stage": "directives",
@@ -1801,6 +1893,7 @@
         "label": "rem-uniform-ellipticity-importance"
       },
       "section": "## 3. The Kinetic Operator with Stratonovich Formulation",
+      "references": [],
       "raw_directive": "370: :::\n371: \n372: :::{prf:remark} Why Uniform Ellipticity Matters\n373: :label: rem-uniform-ellipticity-importance\n374: \n375: The uniform ellipticity condition $\\lambda_{\\min} \\geq \\sigma_{\\min}^2 > 0$ is **critical** for:\n376: \n377: 1. **Ergodicity:** Ensures all velocity directions are explored\n378: 2. **Hypocoercivity:** Allows diffusion in velocity to induce contraction in position\n379: 3. **Coupling arguments:** Synchronous coupling between two swarms remains correlated\n380: ",
       "_registry_context": {
         "stage": "directives",
@@ -1826,6 +1919,7 @@
         "label": "rem-formal-invariant-measure"
       },
       "section": "## 3. The Kinetic Operator with Stratonovich Formulation",
+      "references": [],
       "raw_directive": "463: :::\n464: \n465: :::{prf:remark} Formal Invariant Measure (Without Boundary)\n466: :label: rem-formal-invariant-measure\n467: \n468: On the **unbounded domain** $\\mathbb{R}^d \\times \\mathbb{R}^d$ without the boundary condition, the Fokker-Planck equation admits the formal invariant density:\n469: \n470: $$\n471: \\rho_{\\infty}(x,v) \\propto e^{-U(x) - \\frac{1}{2\\sigma_v^2/\\gamma}\\|v\\|^2}\n472: \n473: $$\n474: \n475: This is the **canonical Gibbs distribution** for position and velocity.\n476: ",
       "_registry_context": {
         "stage": "directives",
@@ -1846,12 +1940,16 @@
       ],
       "content_start": 1342,
       "content_end": 1355,
-      "content": "1342: :class: important\n1343: \n1344: **Critical clarification:** The hypocoercive contraction proven in this chapter uses **only**:\n1345: 1. **Coercivity** of $U$ (Axiom 3.3.1) - confinement at infinity\n1346: 2. **Lipschitz continuity** of forces on compact regions\n1347: 3. **Friction-transport coupling** through the hypocoercive norm\n1348: 4. **Non-degenerate noise** (Axiom 3.3.2)\n1349: \n1350: We do **NOT** assume:\n1351: - Convexity of $U$ (monotonicity of forces)\n1352: - Strong convexity (uniform lower bound on $\\nabla^2 U$)\n1353: - Dissipativity outside the boundary\n1354: \n1355: The proof works for **W-shaped potentials**, **multi-well landscapes**, and any coercive potential. The effective contraction rate $\\alpha_{\\text{eff}}$ depends on $\\min(\\gamma, \\alpha_U)$ but not on convexity moduli.",
+      "content": "1342: :class: important\n1343: \n1344: **Critical clarification:** The hypocoercive contraction proven in this chapter uses **only**:\n1345: 1. **Coercivity** of $U$ ({prf:ref}`axiom-confining-potential`) - confinement at infinity\n1346: 2. **Lipschitz continuity** of forces on compact regions\n1347: 3. **Friction-transport coupling** through the hypocoercive norm\n1348: 4. **Non-degenerate noise** ({prf:ref}`axiom-diffusion-tensor`)\n1349: \n1350: We do **NOT** assume:\n1351: - Convexity of $U$ (monotonicity of forces)\n1352: - Strong convexity (uniform lower bound on $\\nabla^2 U$)\n1353: - Dissipativity outside the boundary\n1354: \n1355: The proof works for **W-shaped potentials**, **multi-well landscapes**, and any coercive potential. The effective contraction rate $\\alpha_{\\text{eff}}$ depends on $\\min(\\gamma, \\alpha_U)$ but not on convexity moduli.",
       "metadata": {
         "class": "important"
       },
       "section": "## 4. Hypocoercive Contraction of Inter-Swarm Error",
-      "raw_directive": "1339: This chapter proves that this hypocoercive mechanism contracts the inter-swarm Wasserstein distance $V_W$.\n1340: \n1341: :::{prf:remark} No Convexity Required\n1342: :class: important\n1343: \n1344: **Critical clarification:** The hypocoercive contraction proven in this chapter uses **only**:\n1345: 1. **Coercivity** of $U$ (Axiom 3.3.1) - confinement at infinity\n1346: 2. **Lipschitz continuity** of forces on compact regions\n1347: 3. **Friction-transport coupling** through the hypocoercive norm\n1348: 4. **Non-degenerate noise** (Axiom 3.3.2)\n1349: \n1350: We do **NOT** assume:\n1351: - Convexity of $U$ (monotonicity of forces)\n1352: - Strong convexity (uniform lower bound on $\\nabla^2 U$)\n1353: - Dissipativity outside the boundary\n1354: \n1355: The proof works for **W-shaped potentials**, **multi-well landscapes**, and any coercive potential. The effective contraction rate $\\alpha_{\\text{eff}}$ depends on $\\min(\\gamma, \\alpha_U)$ but not on convexity moduli.\n1356: ",
+      "references": [
+        "axiom-confining-potential",
+        "axiom-diffusion-tensor"
+      ],
+      "raw_directive": "1339: This chapter proves that this hypocoercive mechanism contracts the inter-swarm Wasserstein distance $V_W$.\n1340: \n1341: :::{prf:remark} No Convexity Required\n1342: :class: important\n1343: \n1344: **Critical clarification:** The hypocoercive contraction proven in this chapter uses **only**:\n1345: 1. **Coercivity** of $U$ ({prf:ref}`axiom-confining-potential`) - confinement at infinity\n1346: 2. **Lipschitz continuity** of forces on compact regions\n1347: 3. **Friction-transport coupling** through the hypocoercive norm\n1348: 4. **Non-degenerate noise** ({prf:ref}`axiom-diffusion-tensor`)\n1349: \n1350: We do **NOT** assume:\n1351: - Convexity of $U$ (monotonicity of forces)\n1352: - Strong convexity (uniform lower bound on $\\nabla^2 U$)\n1353: - Dissipativity outside the boundary\n1354: \n1355: The proof works for **W-shaped potentials**, **multi-well landscapes**, and any coercive potential. The effective contraction rate $\\alpha_{\\text{eff}}$ depends on $\\min(\\gamma, \\alpha_U)$ but not on convexity moduli.\n1356: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "05_kinetic_contraction",
@@ -1876,6 +1974,7 @@
         "label": "rem-coupling-term-intuition"
       },
       "section": "## 4. Hypocoercive Contraction of Inter-Swarm Error",
+      "references": [],
       "raw_directive": "1396: :::\n1397: \n1398: :::{prf:remark} Intuition for the Coupling Term\n1399: :label: rem-coupling-term-intuition\n1400: \n1401: The coupling term $b\\langle \\Delta x, \\Delta v \\rangle$ is the key to hypocoercivity:\n1402: \n1403: - **Without coupling** ($b = 0$): Position and velocity evolve independently in the norm. The degenerate noise in $v$ doesn't help regularize $x$.\n1404: \n1405: - **With coupling** ($b \\neq 0$): The cross term creates a \"rotation\" in the $(x,v)$ phase space. Even though noise only enters in $v$, the coupling allows dissipation to \"leak\" into the $x$ coordinate.\n1406: ",
       "_registry_context": {
         "stage": "directives",
@@ -1901,6 +2000,7 @@
         "label": "rem-prerequisite-drifts"
       },
       "section": "## 2. Document Overview and Prerequisites",
+      "references": [],
       "raw_directive": "165: - {prf:ref}`thm-boundary-potential-contraction-kinetic` (Section 05:5.3): Boundary potential contraction via confining potential\n166: \n167: :::{prf:remark} Summary of Required Operator Drifts\n168: :label: rem-prerequisite-drifts\n169: \n170: The following drift inequalities are established in the prerequisite documents and used throughout:\n171: \n172: | Component          | Cloning Drift (03_cloning.md)           | Kinetic Drift (05_kinetic_contraction.md)                   |\n173: |:-------------------|:----------------------------------------|:------------------------------------------------------------|\n174: | $V_W$              | $\\leq C_W$                              | $\\leq -\\kappa_W V_W \\tau + C_W'\\tau$                        |\n175: | $V_{\\text{Var},x}$ | $\\leq -\\kappa_x V_{\\text{Var},x} + C_x$ | $\\leq C_{\\text{kin},x}\\tau$                                 |\n176: | $V_{\\text{Var},v}$ | $\\leq C_v$                              | $\\leq -2\\gamma V_{\\text{Var},v}\\tau + d\\sigma_{\\max}^2\\tau$ |\n177: | $W_b$              | $\\leq -\\kappa_b W_b + C_b$              | $\\leq -\\kappa_{\\text{pot}} W_b \\tau + C_{\\text{pot}}\\tau$   |\n178: ",
       "_registry_context": {
         "stage": "directives",
@@ -1926,6 +2026,7 @@
         "label": "rem-extinction-inevitable"
       },
       "section": "## 4. Main Convergence Theorem and Quasi-Stationary Distribution",
+      "references": [],
       "raw_directive": "593: :::\n594: \n595: :::{prf:remark} Why Extinction is Inevitable (Eventually)\n596: :label: rem-extinction-inevitable\n597: \n598: The use of **unbounded Gaussian noise** means:\n599: \n600: $$P(\\text{all } N \\text{ walkers cross boundary in one step} \\mid S) > 0$$\n601: \n602: for ANY state $S$, no matter how safe. This is because Gaussian tails extend to infinity, so there's always a positive (though perhaps tiny) probability of a coherent, large-deviation event.\n603: \n604: Therefore:\n605: - **Absorption is certain:** $P(\\text{reach } \\dagger \\text{ eventually}) = 1$\n606: - **No true stationary distribution** on $\\Sigma_N$\n607: ",
       "_registry_context": {
         "stage": "directives",
@@ -1951,6 +2052,7 @@
         "label": "rem-qsd-vs-true-stationarity"
       },
       "section": "## **4. Identification of the Limit Point**",
+      "references": [],
       "raw_directive": "527: #### **The QSD Stationarity Condition with Extinction Rate**\n528: \n529: :::{prf:remark} QSD Stationarity vs. True Stationarity\n530: :label: rem-qsd-vs-true-stationarity\n531: \n532: For a finite N-particle system, the Quasi-Stationary Distribution $\\nu_N^{QSD}$ satisfies a **modified stationarity condition** that accounts for the non-zero probability of eventual extinction. For any test function $\\Phi: \\Sigma_N \\to \\mathbb{R}$:\n533: \n534: $$\n535: \\mathbb{E}_{\\nu_N^{QSD}}[\\mathcal{L}_N \\Phi] = -\\lambda_N \\mathbb{E}_{\\nu_N^{QSD}}[\\Phi]\n536: \n537: $$\n538: \n539: where $\\lambda_N > 0$ is the **extinction rate** (also called the survival rate or quasi-stationary eigenvalue). This rate characterizes how quickly the conditioned process escapes from the quasi-stationary state toward the absorbing boundary.\n540: ",
       "_registry_context": {
         "stage": "directives",
@@ -1976,6 +2078,7 @@
         "label": "rem-extinction-rate-physical-interpretation"
       },
       "section": "## **4. Identification of the Limit Point**",
+      "references": [],
       "raw_directive": "674: :::\n675: \n676: :::{prf:remark} Physical Interpretation\n677: :label: rem-extinction-rate-physical-interpretation",
       "_registry_context": {
         "stage": "directives",
@@ -2001,6 +2104,7 @@
         "label": "rem-uniqueness-completeness-constraint-set"
       },
       "section": "## **5. Uniqueness of the Weak Solution via Contraction Mapping**",
+      "references": [],
       "raw_directive": "897: $$\n898: \n899: :::{prf:remark} Completeness of the Constraint Set $\\mathcal{P}$\n900: :label: rem-uniqueness-completeness-constraint-set\n901: \n902: The space $\\mathcal{P}$ is a closed subset of the Banach space $H^1_w(\\Omega)$, hence complete. This follows from:\n903: \n904: 1. **Non-negativity**: The set $\\{\\rho \\in H^1_w : \\rho \\ge 0 \\text{ a.e.}\\}$ is closed because if $\\rho_n \\to \\rho$ in $H^1_w$, then $\\rho_n \\to \\rho$ in $L^2_w$, and a subsequence converges almost everywhere. The limit of non-negative functions is non-negative a.e.\n905: \n906: 2. **Normalization**: The set $\\{\\rho \\in H^1_w : \\int \\rho = 1\\}$ is closed because the functional $\\rho \\mapsto \\int \\rho dz$ is continuous with respect to the $H^1_w$ norm (by Sobolev embedding $H^1_w \\hookrightarrow L^1$).\n907: \n908: 3. **Intersection of closed sets**: $\\mathcal{P}$ is the intersection of these two closed sets, hence closed.\n909: ",
       "_registry_context": {
         "stage": "directives",
@@ -2026,6 +2130,7 @@
         "label": "rem-uniqueness-proof-technique"
       },
       "section": "## **5. Uniqueness of the Weak Solution via Contraction Mapping**",
+      "references": [],
       "raw_directive": "1892: :::\n1893: \n1894: :::{prf:remark}\n1895: :label: rem-uniqueness-proof-technique\n1896: The proof structure demonstrates a powerful technique in nonlinear analysis: when global Lipschitz continuity fails, we can still prove uniqueness by:\n1897: \n1898: 1. **Proving a priori bounds**: Any fixed point must lie in a bounded ball (Lemma [](#lem-uniqueness-fixed-point-boundedness))\n1899: 2. **Local contraction**: The operator is a contraction on this bounded ball (Theorem [](#thm-uniqueness-contraction-solution-operator))\n1900: 3. **Bootstrapping to global uniqueness**: Since all fixed points lie in the ball, local uniqueness implies global uniqueness\n1901: ",
       "_registry_context": {
         "stage": "directives",
@@ -2051,6 +2156,7 @@
         "label": "rem-uniqueness-algorithm-connection"
       },
       "section": "## **5. Uniqueness of the Weak Solution via Contraction Mapping**",
+      "references": [],
       "raw_directive": "1903: :::\n1904: \n1905: :::{prf:remark}\n1906: :label: rem-uniqueness-algorithm-connection\n1907: This uniqueness proof reveals a deep connection between the algorithm's design parameters and the mathematical well-posedness of the model. The condition\n1908: \n1909: $$\n1910: \\sigma_v^2 > \\frac{(C_S + C_B)(1 + R^*) + L_c + C}{\\gamma}\n1911: \n1912: $$\n1913: ",
       "_registry_context": {
         "stage": "directives",
@@ -2076,6 +2182,7 @@
         "label": "rem-note-kinetic-non-reversibility"
       },
       "section": "## 2. The Hypoelliptic Kinetic Operator",
+      "references": [],
       "raw_directive": "578: :::\n579: \n580: :::{prf:remark}\n581: :label: rem-note-kinetic-non-reversibility\n582: ",
       "_registry_context": {
         "stage": "directives",
@@ -2097,13 +2204,16 @@
       ],
       "content_start": 951,
       "content_end": 1025,
-      "content": "951: :class: note\n952: \n953: This axiom is the cornerstone of our LSI proof, as it enables the use of powerful optimal transport techniques:\n954: \n955: 1. **HWI Inequality (Section 4.2):** The Otto-Villani inequality $H(\\mu|\\pi) \\leq W_2(\\mu,\\pi)\\sqrt{I(\\mu|\\pi)}$ requires log-concavity of $\\pi$\n956: \n957: 2. **Displacement Convexity (Lemma 5.2):** McCann's displacement convexity of entropy along Wasserstein geodesics requires log-concavity of the reference measure\n958: \n959: Without log-concavity, the entire entropy-transport Lyapunov function analysis (Section 5) becomes invalid.\n960: \n961: **Heuristic Support:**\n962: \n963: The axiom rests on the following observations:\n964: \n965: - **Kinetic regularization:** The kinetic operator $\\Psi_{\\text{kin}}$ preserves log-concavity. For a harmonic confining potential $U(x) = \\frac{\\kappa}{2}\\|x - x^*\\|^2$, the kinetic operator's invariant measure is explicitly log-concave (Gaussian):\n966: \n967: $$\n968: \\pi_{\\text{kin}}(x, v) = \\mathcal{N}\\left(x^*, \\frac{\\theta}{\\kappa} I\\right) \\otimes \\mathcal{N}(0, \\theta I)\n969: $$\n970: \n971: - **Diffusive smoothing:** The Langevin dynamics component with Gaussian noise $\\mathcal{N}(0, \\sigma^2 I)$ is a strongly regularizing operation that promotes log-concavity\n972: \n973: - **Cloning as perturbation:** The cloning operator can be viewed as a small perturbation (controlled by cloning frequency and noise $\\delta^2$) of the log-concave kinetic dynamics\n974: \n975: The axiom conjectures that the regularizing effect of the kinetic operator is sufficiently strong to overcome any non-log-concave-preserving effects of the cloning operator.\n976: \n977: **Potential Failure Modes:**\n978: \n979: Critical examination reveals scenarios where this axiom is likely to fail:\n980: \n981: 1. **Multi-modal fitness landscapes:** If the fitness function $g(x, v, S)$ induces a highly multi-modal or non-log-concave reward landscape (e.g., multiple disjoint high-reward regions), the cloning operator will concentrate mass in disconnected regions. This multi-peaked structure is fundamentally incompatible with log-concavity, which requires a single mode.\n982: \n983: 2. **Excessive cloning rate:** If the cloning frequency is too high relative to the kinetic relaxation timescale, the resampling dynamics dominate the Langevin diffusion. The system has insufficient time to \"re-convexify\" between disruptive cloning events, allowing non-log-concave features to persist.\n984: \n985: 3. **Insufficient post-cloning noise:** If $\\delta^2$ (the variance of inelastic collision noise) is too small, cloned walkers remain tightly clustered near their parents, creating sharp local concentrations of probability mass. Such delta-function-like features are incompatible with smooth log-concave densities.\n986: \n987: **Plausibility Condition:**\n988: \n989: The axiom is most plausible in a **separation of timescales regime**:\n990: \n991: Let $\\tau_{\\text{relax}}^{\\text{kin}}$ be the characteristic relaxation time for the kinetic operator to approach its stationary measure, and let $\\tau_{\\text{clone}}$ be the average time between cloning events for a single walker. The axiom is expected to hold when:\n992: \n993: $$\n994: \\tau_{\\text{clone}} \\gg \\tau_{\\text{relax}}^{\\text{kin}}\n995: $$\n996: \n997: This condition ensures the system has sufficient time to re-equilibrate via kinetic diffusion between disruptive cloning steps.\n998: \n999: **Connection to Model Parameters:**\n1000: \n1001: This timescale separation can be expressed in terms of the model's physical parameters:\n1002: \n1003: - **Kinetic relaxation rate:** Governed by $\\lambda_{\\text{kin}} = \\min(\\gamma, \\kappa_{\\text{conf}})$ where $\\gamma$ is the friction coefficient and $\\kappa_{\\text{conf}}$ is the confinement strength. Thus $\\tau_{\\text{relax}}^{\\text{kin}} \\sim 1/\\lambda_{\\text{kin}}$.\n1004: \n1005: - **Cloning timescale:** Inversely proportional to the average cloning probability $\\bar{p}_{\\text{clone}}$, which depends on the fitness function $g$ and the diversity of the swarm.\n1006: \n1007: Therefore, the axiom is more plausible for:\n1008: - **Strong friction** $\\gamma \\gg 1$ (fast velocity equilibration)\n1009: - **Strong confinement** $\\kappa_{\\text{conf}} \\gg 1$ (tight spatial concentration)\n1010: - **Smooth fitness landscapes** where $g(x, v, S)$ is itself approximately log-concave\n1011: - **Moderate cloning rates** ensuring $\\bar{p}_{\\text{clone}} \\cdot \\lambda_{\\text{kin}}^{-1} \\ll 1$\n1012: \n1013: **Future Work:**\n1014: \n1015: A rigorous proof or disproof of this axiom is a significant open problem. The focus should be on:\n1016: \n1017: 1. **Defining the validity regime:** Rigorously characterize the parameter space $(\\gamma, \\kappa_{\\text{conf}}, \\delta^2, g)$ where log-concavity holds, using the timescale separation condition as a starting point\n1018: \n1019: 2. **Perturbative analysis:** Prove log-concavity in the limit $\\bar{p}_{\\text{clone}} \\to 0$ (cloning as rare perturbation) or $\\kappa_{\\text{conf}} \\to \\infty$ (extremely tight confinement), using continuity arguments to extend to nearby parameter regimes\n1020: \n1021: 3. **Numerical verification:** Empirically validate log-concavity of the QSD marginals for small N (e.g., N=2,3) using Monte Carlo estimation, specifically testing the parameter regimes identified above\n1022: \n1023: 4. **Counterexamples:** Construct explicit examples where the axiom fails (e.g., highly multi-modal fitness functions, low friction regimes) to sharpen the boundaries of the validity regime\n1024: \n1025: 5. **PDE analysis:** Study the principal eigenfunction of the full generator using tools from the analysis of degenerate parabolic-elliptic operators, potentially leveraging perturbation theory",
+      "content": "951: :class: note\n952: \n953: This axiom is the cornerstone of our LSI proof, as it enables the use of powerful optimal transport techniques:\n954: \n955: 1. **HWI Inequality (Section 4.2):** The Otto-Villani inequality $H(\\mu|\\pi) \\leq W_2(\\mu,\\pi)\\sqrt{I(\\mu|\\pi)}$ requires log-concavity of $\\pi$\n956: \n957: 2. **Displacement Convexity** ({prf:ref}`lem-entropy-transport-dissipation`): McCann's displacement convexity of entropy along Wasserstein geodesics requires log-concavity of the reference measure\n958: \n959: Without log-concavity, the entire entropy-transport Lyapunov function analysis (Section 5) becomes invalid.\n960: \n961: **Heuristic Support:**\n962: \n963: The axiom rests on the following observations:\n964: \n965: - **Kinetic regularization:** The kinetic operator $\\Psi_{\\text{kin}}$ preserves log-concavity. For a harmonic confining potential $U(x) = \\frac{\\kappa}{2}\\|x - x^*\\|^2$, the kinetic operator's invariant measure is explicitly log-concave (Gaussian):\n966: \n967: $$\n968: \\pi_{\\text{kin}}(x, v) = \\mathcal{N}\\left(x^*, \\frac{\\theta}{\\kappa} I\\right) \\otimes \\mathcal{N}(0, \\theta I)\n969: $$\n970: \n971: - **Diffusive smoothing:** The Langevin dynamics component with Gaussian noise $\\mathcal{N}(0, \\sigma^2 I)$ is a strongly regularizing operation that promotes log-concavity\n972: \n973: - **Cloning as perturbation:** The cloning operator can be viewed as a small perturbation (controlled by cloning frequency and noise $\\delta^2$) of the log-concave kinetic dynamics\n974: \n975: The axiom conjectures that the regularizing effect of the kinetic operator is sufficiently strong to overcome any non-log-concave-preserving effects of the cloning operator.\n976: \n977: **Potential Failure Modes:**\n978: \n979: Critical examination reveals scenarios where this axiom is likely to fail:\n980: \n981: 1. **Multi-modal fitness landscapes:** If the fitness function $g(x, v, S)$ induces a highly multi-modal or non-log-concave reward landscape (e.g., multiple disjoint high-reward regions), the cloning operator will concentrate mass in disconnected regions. This multi-peaked structure is fundamentally incompatible with log-concavity, which requires a single mode.\n982: \n983: 2. **Excessive cloning rate:** If the cloning frequency is too high relative to the kinetic relaxation timescale, the resampling dynamics dominate the Langevin diffusion. The system has insufficient time to \"re-convexify\" between disruptive cloning events, allowing non-log-concave features to persist.\n984: \n985: 3. **Insufficient post-cloning noise:** If $\\delta^2$ (the variance of inelastic collision noise) is too small, cloned walkers remain tightly clustered near their parents, creating sharp local concentrations of probability mass. Such delta-function-like features are incompatible with smooth log-concave densities.\n986: \n987: **Plausibility Condition:**\n988: \n989: The axiom is most plausible in a **separation of timescales regime**:\n990: \n991: Let $\\tau_{\\text{relax}}^{\\text{kin}}$ be the characteristic relaxation time for the kinetic operator to approach its stationary measure, and let $\\tau_{\\text{clone}}$ be the average time between cloning events for a single walker. The axiom is expected to hold when:\n992: \n993: $$\n994: \\tau_{\\text{clone}} \\gg \\tau_{\\text{relax}}^{\\text{kin}}\n995: $$\n996: \n997: This condition ensures the system has sufficient time to re-equilibrate via kinetic diffusion between disruptive cloning steps.\n998: \n999: **Connection to Model Parameters:**\n1000: \n1001: This timescale separation can be expressed in terms of the model's physical parameters:\n1002: \n1003: - **Kinetic relaxation rate:** Governed by $\\lambda_{\\text{kin}} = \\min(\\gamma, \\kappa_{\\text{conf}})$ where $\\gamma$ is the friction coefficient and $\\kappa_{\\text{conf}}$ is the confinement strength. Thus $\\tau_{\\text{relax}}^{\\text{kin}} \\sim 1/\\lambda_{\\text{kin}}$.\n1004: \n1005: - **Cloning timescale:** Inversely proportional to the average cloning probability $\\bar{p}_{\\text{clone}}$, which depends on the fitness function $g$ and the diversity of the swarm.\n1006: \n1007: Therefore, the axiom is more plausible for:\n1008: - **Strong friction** $\\gamma \\gg 1$ (fast velocity equilibration)\n1009: - **Strong confinement** $\\kappa_{\\text{conf}} \\gg 1$ (tight spatial concentration)\n1010: - **Smooth fitness landscapes** where $g(x, v, S)$ is itself approximately log-concave\n1011: - **Moderate cloning rates** ensuring $\\bar{p}_{\\text{clone}} \\cdot \\lambda_{\\text{kin}}^{-1} \\ll 1$\n1012: \n1013: **Future Work:**\n1014: \n1015: A rigorous proof or disproof of this axiom is a significant open problem. The focus should be on:\n1016: \n1017: 1. **Defining the validity regime:** Rigorously characterize the parameter space $(\\gamma, \\kappa_{\\text{conf}}, \\delta^2, g)$ where log-concavity holds, using the timescale separation condition as a starting point\n1018: \n1019: 2. **Perturbative analysis:** Prove log-concavity in the limit $\\bar{p}_{\\text{clone}} \\to 0$ (cloning as rare perturbation) or $\\kappa_{\\text{conf}} \\to \\infty$ (extremely tight confinement), using continuity arguments to extend to nearby parameter regimes\n1020: \n1021: 3. **Numerical verification:** Empirically validate log-concavity of the QSD marginals for small N (e.g., N=2,3) using Monte Carlo estimation, specifically testing the parameter regimes identified above\n1022: \n1023: 4. **Counterexamples:** Construct explicit examples where the axiom fails (e.g., highly multi-modal fitness functions, low friction regimes) to sharpen the boundaries of the validity regime\n1024: \n1025: 5. **PDE analysis:** Study the principal eigenfunction of the full generator using tools from the analysis of degenerate parabolic-elliptic operators, potentially leveraging perturbation theory",
       "metadata": {
         "label": "rem-note-log-concavity-motivation",
         "class": "note"
       },
       "section": "## 3.5. Fundamental Axiom: Log-Concavity of the Quasi-Stationary Distribution (SUPERSEDED - Now Proven)",
-      "raw_directive": "947: :::\n948: \n949: :::{prf:remark} Motivation and Justification\n950: :label: rem-note-log-concavity-motivation\n951: :class: note\n952: \n953: This axiom is the cornerstone of our LSI proof, as it enables the use of powerful optimal transport techniques:\n954: \n955: 1. **HWI Inequality (Section 4.2):** The Otto-Villani inequality $H(\\mu|\\pi) \\leq W_2(\\mu,\\pi)\\sqrt{I(\\mu|\\pi)}$ requires log-concavity of $\\pi$\n956: \n957: 2. **Displacement Convexity (Lemma 5.2):** McCann's displacement convexity of entropy along Wasserstein geodesics requires log-concavity of the reference measure\n958: \n959: Without log-concavity, the entire entropy-transport Lyapunov function analysis (Section 5) becomes invalid.\n960: \n961: **Heuristic Support:**\n962: \n963: The axiom rests on the following observations:\n964: \n965: - **Kinetic regularization:** The kinetic operator $\\Psi_{\\text{kin}}$ preserves log-concavity. For a harmonic confining potential $U(x) = \\frac{\\kappa}{2}\\|x - x^*\\|^2$, the kinetic operator's invariant measure is explicitly log-concave (Gaussian):\n966: \n967: $$\n968: \\pi_{\\text{kin}}(x, v) = \\mathcal{N}\\left(x^*, \\frac{\\theta}{\\kappa} I\\right) \\otimes \\mathcal{N}(0, \\theta I)\n969: $$\n970: \n971: - **Diffusive smoothing:** The Langevin dynamics component with Gaussian noise $\\mathcal{N}(0, \\sigma^2 I)$ is a strongly regularizing operation that promotes log-concavity\n972: \n973: - **Cloning as perturbation:** The cloning operator can be viewed as a small perturbation (controlled by cloning frequency and noise $\\delta^2$) of the log-concave kinetic dynamics\n974: \n975: The axiom conjectures that the regularizing effect of the kinetic operator is sufficiently strong to overcome any non-log-concave-preserving effects of the cloning operator.\n976: \n977: **Potential Failure Modes:**\n978: \n979: Critical examination reveals scenarios where this axiom is likely to fail:\n980: \n981: 1. **Multi-modal fitness landscapes:** If the fitness function $g(x, v, S)$ induces a highly multi-modal or non-log-concave reward landscape (e.g., multiple disjoint high-reward regions), the cloning operator will concentrate mass in disconnected regions. This multi-peaked structure is fundamentally incompatible with log-concavity, which requires a single mode.\n982: \n983: 2. **Excessive cloning rate:** If the cloning frequency is too high relative to the kinetic relaxation timescale, the resampling dynamics dominate the Langevin diffusion. The system has insufficient time to \"re-convexify\" between disruptive cloning events, allowing non-log-concave features to persist.\n984: \n985: 3. **Insufficient post-cloning noise:** If $\\delta^2$ (the variance of inelastic collision noise) is too small, cloned walkers remain tightly clustered near their parents, creating sharp local concentrations of probability mass. Such delta-function-like features are incompatible with smooth log-concave densities.\n986: \n987: **Plausibility Condition:**\n988: \n989: The axiom is most plausible in a **separation of timescales regime**:\n990: \n991: Let $\\tau_{\\text{relax}}^{\\text{kin}}$ be the characteristic relaxation time for the kinetic operator to approach its stationary measure, and let $\\tau_{\\text{clone}}$ be the average time between cloning events for a single walker. The axiom is expected to hold when:\n992: \n993: $$\n994: \\tau_{\\text{clone}} \\gg \\tau_{\\text{relax}}^{\\text{kin}}\n995: $$\n996: \n997: This condition ensures the system has sufficient time to re-equilibrate via kinetic diffusion between disruptive cloning steps.\n998: \n999: **Connection to Model Parameters:**\n1000: \n1001: This timescale separation can be expressed in terms of the model's physical parameters:\n1002: \n1003: - **Kinetic relaxation rate:** Governed by $\\lambda_{\\text{kin}} = \\min(\\gamma, \\kappa_{\\text{conf}})$ where $\\gamma$ is the friction coefficient and $\\kappa_{\\text{conf}}$ is the confinement strength. Thus $\\tau_{\\text{relax}}^{\\text{kin}} \\sim 1/\\lambda_{\\text{kin}}$.\n1004: \n1005: - **Cloning timescale:** Inversely proportional to the average cloning probability $\\bar{p}_{\\text{clone}}$, which depends on the fitness function $g$ and the diversity of the swarm.\n1006: \n1007: Therefore, the axiom is more plausible for:\n1008: - **Strong friction** $\\gamma \\gg 1$ (fast velocity equilibration)\n1009: - **Strong confinement** $\\kappa_{\\text{conf}} \\gg 1$ (tight spatial concentration)\n1010: - **Smooth fitness landscapes** where $g(x, v, S)$ is itself approximately log-concave\n1011: - **Moderate cloning rates** ensuring $\\bar{p}_{\\text{clone}} \\cdot \\lambda_{\\text{kin}}^{-1} \\ll 1$\n1012: \n1013: **Future Work:**\n1014: \n1015: A rigorous proof or disproof of this axiom is a significant open problem. The focus should be on:\n1016: \n1017: 1. **Defining the validity regime:** Rigorously characterize the parameter space $(\\gamma, \\kappa_{\\text{conf}}, \\delta^2, g)$ where log-concavity holds, using the timescale separation condition as a starting point\n1018: \n1019: 2. **Perturbative analysis:** Prove log-concavity in the limit $\\bar{p}_{\\text{clone}} \\to 0$ (cloning as rare perturbation) or $\\kappa_{\\text{conf}} \\to \\infty$ (extremely tight confinement), using continuity arguments to extend to nearby parameter regimes\n1020: \n1021: 3. **Numerical verification:** Empirically validate log-concavity of the QSD marginals for small N (e.g., N=2,3) using Monte Carlo estimation, specifically testing the parameter regimes identified above\n1022: \n1023: 4. **Counterexamples:** Construct explicit examples where the axiom fails (e.g., highly multi-modal fitness functions, low friction regimes) to sharpen the boundaries of the validity regime\n1024: \n1025: 5. **PDE analysis:** Study the principal eigenfunction of the full generator using tools from the analysis of degenerate parabolic-elliptic operators, potentially leveraging perturbation theory\n1026: ",
+      "references": [
+        "lem-entropy-transport-dissipation"
+      ],
+      "raw_directive": "947: :::\n948: \n949: :::{prf:remark} Motivation and Justification\n950: :label: rem-note-log-concavity-motivation\n951: :class: note\n952: \n953: This axiom is the cornerstone of our LSI proof, as it enables the use of powerful optimal transport techniques:\n954: \n955: 1. **HWI Inequality (Section 4.2):** The Otto-Villani inequality $H(\\mu|\\pi) \\leq W_2(\\mu,\\pi)\\sqrt{I(\\mu|\\pi)}$ requires log-concavity of $\\pi$\n956: \n957: 2. **Displacement Convexity** ({prf:ref}`lem-entropy-transport-dissipation`): McCann's displacement convexity of entropy along Wasserstein geodesics requires log-concavity of the reference measure\n958: \n959: Without log-concavity, the entire entropy-transport Lyapunov function analysis (Section 5) becomes invalid.\n960: \n961: **Heuristic Support:**\n962: \n963: The axiom rests on the following observations:\n964: \n965: - **Kinetic regularization:** The kinetic operator $\\Psi_{\\text{kin}}$ preserves log-concavity. For a harmonic confining potential $U(x) = \\frac{\\kappa}{2}\\|x - x^*\\|^2$, the kinetic operator's invariant measure is explicitly log-concave (Gaussian):\n966: \n967: $$\n968: \\pi_{\\text{kin}}(x, v) = \\mathcal{N}\\left(x^*, \\frac{\\theta}{\\kappa} I\\right) \\otimes \\mathcal{N}(0, \\theta I)\n969: $$\n970: \n971: - **Diffusive smoothing:** The Langevin dynamics component with Gaussian noise $\\mathcal{N}(0, \\sigma^2 I)$ is a strongly regularizing operation that promotes log-concavity\n972: \n973: - **Cloning as perturbation:** The cloning operator can be viewed as a small perturbation (controlled by cloning frequency and noise $\\delta^2$) of the log-concave kinetic dynamics\n974: \n975: The axiom conjectures that the regularizing effect of the kinetic operator is sufficiently strong to overcome any non-log-concave-preserving effects of the cloning operator.\n976: \n977: **Potential Failure Modes:**\n978: \n979: Critical examination reveals scenarios where this axiom is likely to fail:\n980: \n981: 1. **Multi-modal fitness landscapes:** If the fitness function $g(x, v, S)$ induces a highly multi-modal or non-log-concave reward landscape (e.g., multiple disjoint high-reward regions), the cloning operator will concentrate mass in disconnected regions. This multi-peaked structure is fundamentally incompatible with log-concavity, which requires a single mode.\n982: \n983: 2. **Excessive cloning rate:** If the cloning frequency is too high relative to the kinetic relaxation timescale, the resampling dynamics dominate the Langevin diffusion. The system has insufficient time to \"re-convexify\" between disruptive cloning events, allowing non-log-concave features to persist.\n984: \n985: 3. **Insufficient post-cloning noise:** If $\\delta^2$ (the variance of inelastic collision noise) is too small, cloned walkers remain tightly clustered near their parents, creating sharp local concentrations of probability mass. Such delta-function-like features are incompatible with smooth log-concave densities.\n986: \n987: **Plausibility Condition:**\n988: \n989: The axiom is most plausible in a **separation of timescales regime**:\n990: \n991: Let $\\tau_{\\text{relax}}^{\\text{kin}}$ be the characteristic relaxation time for the kinetic operator to approach its stationary measure, and let $\\tau_{\\text{clone}}$ be the average time between cloning events for a single walker. The axiom is expected to hold when:\n992: \n993: $$\n994: \\tau_{\\text{clone}} \\gg \\tau_{\\text{relax}}^{\\text{kin}}\n995: $$\n996: \n997: This condition ensures the system has sufficient time to re-equilibrate via kinetic diffusion between disruptive cloning steps.\n998: \n999: **Connection to Model Parameters:**\n1000: \n1001: This timescale separation can be expressed in terms of the model's physical parameters:\n1002: \n1003: - **Kinetic relaxation rate:** Governed by $\\lambda_{\\text{kin}} = \\min(\\gamma, \\kappa_{\\text{conf}})$ where $\\gamma$ is the friction coefficient and $\\kappa_{\\text{conf}}$ is the confinement strength. Thus $\\tau_{\\text{relax}}^{\\text{kin}} \\sim 1/\\lambda_{\\text{kin}}$.\n1004: \n1005: - **Cloning timescale:** Inversely proportional to the average cloning probability $\\bar{p}_{\\text{clone}}$, which depends on the fitness function $g$ and the diversity of the swarm.\n1006: \n1007: Therefore, the axiom is more plausible for:\n1008: - **Strong friction** $\\gamma \\gg 1$ (fast velocity equilibration)\n1009: - **Strong confinement** $\\kappa_{\\text{conf}} \\gg 1$ (tight spatial concentration)\n1010: - **Smooth fitness landscapes** where $g(x, v, S)$ is itself approximately log-concave\n1011: - **Moderate cloning rates** ensuring $\\bar{p}_{\\text{clone}} \\cdot \\lambda_{\\text{kin}}^{-1} \\ll 1$\n1012: \n1013: **Future Work:**\n1014: \n1015: A rigorous proof or disproof of this axiom is a significant open problem. The focus should be on:\n1016: \n1017: 1. **Defining the validity regime:** Rigorously characterize the parameter space $(\\gamma, \\kappa_{\\text{conf}}, \\delta^2, g)$ where log-concavity holds, using the timescale separation condition as a starting point\n1018: \n1019: 2. **Perturbative analysis:** Prove log-concavity in the limit $\\bar{p}_{\\text{clone}} \\to 0$ (cloning as rare perturbation) or $\\kappa_{\\text{conf}} \\to \\infty$ (extremely tight confinement), using continuity arguments to extend to nearby parameter regimes\n1020: \n1021: 3. **Numerical verification:** Empirically validate log-concavity of the QSD marginals for small N (e.g., N=2,3) using Monte Carlo estimation, specifically testing the parameter regimes identified above\n1022: \n1023: 4. **Counterexamples:** Construct explicit examples where the axiom fails (e.g., highly multi-modal fitness functions, low friction regimes) to sharpen the boundaries of the validity regime\n1024: \n1025: 5. **PDE analysis:** Study the principal eigenfunction of the full generator using tools from the analysis of degenerate parabolic-elliptic operators, potentially leveraging perturbation theory\n1026: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "09_kl_convergence",
@@ -2130,6 +2240,9 @@
         "class": "important"
       },
       "section": "## 3.5. Fundamental Axiom: Log-Concavity of the Quasi-Stationary Distribution (SUPERSEDED - Now Proven)",
+      "references": [
+        "lem-log-concave-yang-mills"
+      ],
       "raw_directive": "1144: :::\n1145: \n1146: :::{prf:remark} Implications for Millennium Prize\n1147: :label: rem-important-millennium-prize\n1148: :class: important\n1149: \n1150: Lemma {prf:ref}`lem-log-concave-yang-mills` **removes the conditional nature** of the Yang-Mills mass gap proof:\n1151: \n1152: 1. The LSI proof (this document) assumes log-concavity\n1153: 2. We have **proven** log-concavity holds for Yang-Mills vacuum\n1154: 3. Therefore, the LSI **unconditionally applies** to Yang-Mills\n1155: 4. The mass gap $\\Delta_{\\text{YM}} > 0$ follows from LSI\n1156: \n1157: **Status**: The Yang-Mills solution is **not** conditional on an unproven axiom. The \"axiom\" is a proven lemma for this specific physical system.\n1158: ",
       "_registry_context": {
         "stage": "directives",
@@ -2155,6 +2268,7 @@
         "label": "rem-note-hwi-bridge"
       },
       "section": "## 4. The Cloning Operator and Entropy Contraction via Optimal Transport",
+      "references": [],
       "raw_directive": "1229: :::\n1230: \n1231: :::{prf:remark}\n1232: :label: rem-note-hwi-bridge\n1233: \n1234: The HWI inequality provides a **bridge** between:\n1235: - Wasserstein contraction (geometric, metric space)\n1236: - Entropy convergence (information-theoretic)\n1237: - Fisher information (local regularity)\n1238: ",
       "_registry_context": {
         "stage": "directives",
@@ -2180,6 +2294,7 @@
         "label": "rem-cloning-sublinear"
       },
       "section": "## 4. The Cloning Operator and Entropy Contraction via Optimal Transport",
+      "references": [],
       "raw_directive": "1405: :::\n1406: \n1407: :::{prf:remark} Interpretation\n1408: :label: rem-cloning-sublinear\n1409: \n1410: **Key insight:** The cloning operator alone does **not** satisfy a full LSI. It provides:\n1411: 1. **Wasserstein contraction** (linear in $W_2^2$)\n1412: 2. **Sublinear entropy contraction** (via HWI)\n1413: \n1414: The **linear entropy contraction** emerges only when composed with the kinetic operator, which:\n1415: - Provides diffusion to control Fisher information\n1416: - Converts Wasserstein contraction to entropy contraction via the gradient flow structure\n1417: ",
       "_registry_context": {
         "stage": "directives",
@@ -2205,6 +2320,7 @@
         "label": "rem-note-entropy-transport-innovation"
       },
       "section": "## 5. The Composition Theorem: Entropy-Transport Lyapunov Function",
+      "references": [],
       "raw_directive": "1571: :::\n1572: \n1573: :::{prf:remark}\n1574: :label: rem-note-entropy-transport-innovation\n1575: \n1576: This lemma is the **key technical innovation**. It shows that the geometric contraction in Wasserstein space (already proven in [06_convergence](06_convergence)) drives entropy dissipation. The constant $\\alpha$ depends on:\n1577: - $\\kappa_{\\text{conf}}$: convexity of confining potential (controls displacement convexity)",
       "_registry_context": {
         "stage": "directives",
@@ -2230,6 +2346,7 @@
         "label": "rem-kl-tv-comparison"
       },
       "section": "## 6. KL-Divergence Convergence",
+      "references": [],
       "raw_directive": "1934: ### 6.3. Comparison with Foster-Lyapunov Result\n1935: \n1936: :::{prf:remark} Relationship Between KL and TV Convergence Rates\n1937: :label: rem-kl-tv-comparison\n1938: \n1939: The Foster-Lyapunov proof establishes TV convergence with rate $\\lambda_{\\text{TV}}$. The KL convergence rate is:\n1940: \n1941: $$\n1942: \\lambda_{\\text{KL}} = \\frac{1}{C_{\\text{LSI}}} = \\Theta(\\gamma \\kappa_{\\text{conf}} \\kappa_x)\n1943: $$\n1944: \n1945: **Relationship:**\n1946: - KL-convergence **implies** TV-convergence via Pinsker's inequality: $\\|P_t - \\pi\\|_{\\text{TV}} \\le \\sqrt{D_{\\text{KL}}(P_t \\| \\pi)/2}$\n1947: - The rates may differ: typically $\\lambda_{\\text{KL}} \\le \\lambda_{\\text{TV}}$ (KL is stronger, may be slower)\n1948: - For this system, both are $O(\\gamma \\kappa_{\\text{conf}})$, suggesting **matched rates**\n1949: \n1950: **Additional information from KL-convergence:**\n1951: - Gaussian tail bounds via Herbst argument\n1952: - Concentration of measure around the QSD",
       "_registry_context": {
         "stage": "directives",
@@ -2255,6 +2372,7 @@
         "label": "rem-concentration-lsi"
       },
       "section": "## 8. The Logarithmic Sobolev Inequality: A Conjectured Strengthening",
+      "references": [],
       "raw_directive": "2310: :::\n2311: \n2312: :::{prf:remark} Concentration of Measure\n2313: :label: rem-concentration-lsi\n2314: \n2315: An additional benefit of the LSI is that it implies strong concentration properties for the QSD. For any Lipschitz function $\\phi: (\\mathcal{X} \\times \\mathbb{R}^d)^N \\to \\mathbb{R}$ with Lipschitz constant $L_\\phi$:\n2316: \n2317: $$\n2318: \\nu_N^{\\text{QSD}}\\left( \\left| \\phi - \\mathbb{E}_{\\nu_N^{\\text{QSD}}}[\\phi] \\right| \\ge t \\right) \\le 2 \\exp\\left( -\\frac{t^2}{2 C_{\\text{LSI}} L_\\phi^2} \\right)\n2319: \n2320: $$\n2321: \n2322: This Gaussian concentration inequality (a consequence of the LSI via Herbst's argument) guarantees that observables under the QSD are tightly concentrated around their mean, with deviations occurring with exponentially small probability. This is a **much stronger statement** than what can be derived from the Foster-Lyapunov analysis alone.\n2323: ",
       "_registry_context": {
         "stage": "directives",
@@ -2280,6 +2398,7 @@
         "label": "rem-wfr-analogy"
       },
       "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "references": [],
       "raw_directive": "2414: :::\n2415: \n2416: :::{prf:remark} Formal Analogy and Evidence\n2417: :label: rem-wfr-analogy\n2418: \n2419: Despite the lack of a complete proof, there is strong formal evidence for the conjecture:\n2420: \n2421: **Structural analogy:** The adaptive system has the form of a **gradient flow in WFR space**:\n2422: - The kinetic evolution is a gradient flow of the free energy in Wasserstein space\n2423: - The cloning operator is a gradient flow of relative entropy in Fisher-Rao space\n2424: - The WFR metric naturally interpolates between these two geometries\n2425: \n2426: **Partial results:**\n2427: - For the **backbone system** (without adaptive terms), W₂ contractivity follows from standard theory\n2428: - For **simplified selection operators** (e.g., resampling with absolute fitness), FR contractivity is well-established\n2429: - The uniform ellipticity (Theorem [](#thm-ueph)) provides the regularity needed for Wasserstein contractivity\n2430: \n2431: **What would complete the proof:**\n2432: 1. Extend W₂ contraction theory to uniformly elliptic, state-dependent diffusions (possible via Otto calculus)\n2433: 2. Prove FR contractivity for competitive, state-dependent selection operators\n2434: 3. Apply the Chizat-Peyré-Schmitzer WFR theory to verify the composition\n2435: ",
       "_registry_context": {
         "stage": "directives",
@@ -2305,6 +2424,7 @@
         "label": "rem-concentration-lsi"
       },
       "section": "## 8. The Logarithmic Sobolev Inequality: A Conjectured Strengthening",
+      "references": [],
       "raw_directive": "2069: :::\n2070: \n2071: :::{prf:remark} Concentration of Measure\n2072: :label: rem-concentration-lsi\n2073: \n2074: An additional benefit of the LSI is that it implies strong concentration properties for the QSD. For any Lipschitz function $\\phi: (\\mathcal{X} \\times \\mathbb{R}^d)^N \\to \\mathbb{R}$ with Lipschitz constant $L_\\phi$:\n2075: \n2076: $$\n2077: \\nu_N^{\\text{QSD}}\\left( \\left| \\phi - \\mathbb{E}_{\\nu_N^{\\text{QSD}}}[\\phi] \\right| \\ge t \\right) \\le 2 \\exp\\left( -\\frac{t^2}{2 C_{\\text{LSI}} L_\\phi^2} \\right)\n2078: $$\n2079: \n2080: This Gaussian concentration inequality (a consequence of the LSI via Herbst's argument) guarantees that observables under the QSD are tightly concentrated around their mean, with deviations occurring with exponentially small probability. This is a **much stronger statement** than what can be derived from the Foster-Lyapunov analysis alone.\n2081: ",
       "_registry_context": {
         "stage": "directives",
@@ -2330,6 +2450,7 @@
         "label": "rem-wfr-analogy"
       },
       "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "references": [],
       "raw_directive": "2168: :::\n2169: \n2170: :::{prf:remark} Formal Analogy and Evidence\n2171: :label: rem-wfr-analogy\n2172: \n2173: Despite the lack of a complete proof, there is strong formal evidence for the conjecture:\n2174: \n2175: **Structural analogy:** The adaptive system has the form of a **gradient flow in WFR space**:\n2176: - The kinetic evolution is a gradient flow of the free energy in Wasserstein space\n2177: - The cloning operator is a gradient flow of relative entropy in Fisher-Rao space\n2178: - The WFR metric naturally interpolates between these two geometries\n2179: \n2180: **Partial results:**\n2181: - For the **backbone system** (without adaptive terms), W₂ contractivity follows from standard theory\n2182: - For **simplified selection operators** (e.g., resampling with absolute fitness), FR contractivity is well-established\n2183: - The uniform ellipticity (Theorem [](#thm-ueph)) provides the regularity needed for Wasserstein contractivity\n2184: \n2185: **What would complete the proof:**\n2186: 1. Extend W₂ contraction theory to uniformly elliptic, state-dependent diffusions (possible via Otto calculus)\n2187: 2. Prove FR contractivity for competitive, state-dependent selection operators\n2188: 3. Apply the Chizat-Peyré-Schmitzer WFR theory to verify the composition\n2189: ",
       "_registry_context": {
         "stage": "directives",
@@ -2355,6 +2476,7 @@
         "label": "rem-rate-interpretation"
       },
       "section": "## Part IV: Total Error Bound",
+      "references": [],
       "raw_directive": "2528: ### Interpretation and Practical Implications\n2529: \n2530: :::{prf:remark} Rate Interpretation\n2531: :label: rem-rate-interpretation\n2532: \n2533: The total error bound reveals two competing sources:\n2534: \n2535: 1. **Statistical error** ($O(1/\\sqrt{N})$): From finite-sample approximation of the mean-field limit\n2536:    - Dominant for small $N$ (e.g., $N = 100 \\Rightarrow$ error $\\approx 0.1 C_{\\text{MF}}$)\n2537:    - Reduced by increasing swarm size\n2538:    - Intrinsic to particle approximations (cannot be eliminated)\n2539: \n2540: 2. **Discretization error** ($O(\\Delta t)$): From operator splitting and time discretization\n2541:    - Dominant for coarse time steps\n2542:    - Reduced by decreasing $\\Delta t$\n2543:    - First-order due to non-commutativity $[\\mathcal{L}_{\\text{Langevin}}, \\mathcal{L}_{\\text{clone}}] \\neq 0$\n2544: \n2545: **Balanced regime**: To achieve overall error $\\varepsilon$, balance the two terms:\n2546: \n2547: $$\n2548: \\frac{C_{\\text{MF}}}{\\sqrt{N}} \\approx C_{\\text{discrete}} \\Delta t \\approx \\frac{\\varepsilon}{2}\n2549: $$\n2550: \n2551: This gives the scaling relationship:\n2552: \n2553: $$\n2554: \\Delta t \\sim \\frac{1}{\\sqrt{N}}\n2555: $$\n2556: \n2557: **Example**: For $\\varepsilon = 0.01$ and $C_{\\text{MF}} \\approx C_{\\text{discrete}} \\approx 1$:\n2558: - Choose $N = 10^4$ walkers $\\Rightarrow$ statistical error $\\approx 0.01$\n2559: - Choose $\\Delta t = 0.01$ $\\Rightarrow$ discretization error $\\approx 0.01$\n2560: - Total error $\\approx 0.02$ (factor of 2 from triangle inequality)",
       "_registry_context": {
         "stage": "directives",
@@ -2380,6 +2502,9 @@
         "label": "rem-higher-order-splitting"
       },
       "section": "## Part IV: Total Error Bound",
+      "references": [
+        "thm-error-propagation"
+      ],
       "raw_directive": "2562: :::\n2563: \n2564: :::{prf:remark} Higher-Order Splitting Methods\n2565: :label: rem-higher-order-splitting\n2566: \n2567: Can we further reduce the discretization error $O(\\Delta t)$ using higher-order splitting methods?\n2568: \n2569: **General principle:** For ergodic systems with a unique invariant measure, the relationship between local and global errors is:\n2570: - A symmetric integrator with local weak error $O((\\Delta t)^{p+1})$ for even $p$\n2571: - Produces an invariant measure error of $O((\\Delta t)^p)$\n2572: \n2573: This is proven via the Poisson equation argument in Part III ({prf:ref}`thm-error-propagation`): roughly, one derivative is lost when integrating local errors over infinite time.\n2574: \n2575: **Strang splitting** (second-order symmetric):\n2576: \n2577: $$\n2578: \\mathcal{T}^{\\Delta t}_{\\text{Strang}} = \\mathcal{T}_{\\text{Langevin}}^{\\Delta t/2} \\circ \\mathcal{T}_{\\text{clone}}^{\\Delta t} \\circ \\mathcal{T}_{\\text{Langevin}}^{\\Delta t/2}\n2579: $$\n2580: \n2581: This is symmetric and achieves:\n2582: - **Local weak error**: $O((\\Delta t)^3)$ (second-order method with $p=2$)\n2583: - **Global invariant measure error**: $O((\\Delta t)^2)$ (applying the general principle)\n2584: \n2585: Therefore, Strang splitting improves the discretization term to:\n2586: \n2587: $$\n2588: C_{\\text{discrete}}^{(2)} (\\Delta t)^2\n2589: $$\n2590: \n2591: where $C_{\\text{discrete}}^{(2)}$ is typically larger than $C_{\\text{discrete}}$ due to higher-order commutator contributions, but the $(\\Delta t)^2$ dependence makes it substantially smaller for reasonable time steps.\n2592: \n2593: **Practical assessment:**\n2594: - For $\\Delta t = 0.01$ and constants $C_{\\text{discrete}} \\approx C_{\\text{discrete}}^{(2)} \\approx 1$:\n2595:   - First-order (Lie): discretization error $\\sim 0.01$\n2596:   - Second-order (Strang): discretization error $\\sim 0.0001$\n2597: - For large $N$ (e.g., $N = 10^4$): mean-field error $\\sim 0.01$\n2598: - **Trade-off**: Strang splitting can reduce discretization error below the mean-field error, but this requires smaller $\\Delta t$ or provides benefit only when $N$ is very large\n2599: - **Recommendation**: For moderate $N$ (e.g., $N \\lesssim 10^4$), simple Lie splitting suffices. For very large $N$ where mean-field error becomes small, Strang splitting can provide meaningful improvement\n2600: \n2601: **Cost**: Strang splitting requires splitting the BAOAB step and increases computational overhead by ~50%.",
       "_registry_context": {
         "stage": "directives",
@@ -2405,6 +2530,7 @@
         "label": "rem-optimality-mean-field-rate"
       },
       "section": "## Part IV: Total Error Bound",
+      "references": [],
       "raw_directive": "2603: :::\n2604: \n2605: :::{prf:remark} Optimality of the Mean-Field Rate\n2606: :label: rem-optimality-mean-field-rate\n2607: \n2608: The $O(1/\\sqrt{N})$ rate is **optimal** for empirical measure convergence in mean-field particle systems.\n2609: \n2610: **Why?** This is the rate of the **Central Limit Theorem**:\n2611: \n2612: $$\n2613: \\sqrt{N} (\\bar{\\mu}_N - \\rho_0) \\xrightarrow{d} \\mathcal{N}(0, \\Sigma)\n2614: $$\n2615: \n2616: where $\\Sigma$ is the covariance operator of the limiting Gaussian process.\n2617: \n2618: **Implication**: No particle method can achieve better than $O(1/\\sqrt{N})$ convergence without additional structure (e.g., multilevel methods, variance reduction).\n2619: \n2620: **Reference**: Sznitman (1991), \"Topics in propagation of chaos\" - Section 6 on optimal rates.",
       "_registry_context": {
         "stage": "directives",
@@ -2432,6 +2558,7 @@
         "class": "warning"
       },
       "section": "## 3. Flat Algorithmic Space Symmetries",
+      "references": [],
       "raw_directive": "400: :::\n401: \n402: :::{prf:remark} Breaking of Translation Symmetry\n403: :label: rem-warning-translation-symmetry-breaking\n404: :class: warning\n405: \n406: **Generic case**: For bounded domains $\\mathcal{X}_{\\text{valid}} \\subset \\mathbb{R}^d$ with walls, translation symmetry is **broken** except for special directions (e.g., periodic boundaries).\n407: \n408: **Periodic domains**: If $\\mathcal{X} = \\mathbb{T}^d$ (the $d$-dimensional torus) and $R(x + e_i) = R(x)$ for lattice vectors, then full $\\mathbb{Z}^d$ translation symmetry holds.\n409: ",
       "_registry_context": {
         "stage": "directives",
@@ -2457,6 +2584,7 @@
         "label": "rem-observation-common-kernel-structure"
       },
       "section": "## 5.7 Statistical Equivalence and Unified Regularity Theorem",
+      "references": [],
       "raw_directive": "2801: ### 5.7.1 Matching the Analytical Structure\n2802: \n2803: :::{prf:remark} Common Exponential Kernel Structure\n2804: :label: rem-observation-common-kernel-structure\n2805: \n2806: Both mechanisms express expected measurements as **quotients of exponentially weighted sums**:\n2807: \n2808: **Softmax**:\n2809: \n2810: $$\n2811: d_j = \\frac{\\sum_{\\ell \\in \\mathcal{A} \\setminus \\{j\\}} d_{\\text{alg}}(j,\\ell) \\exp(-d_{\\text{alg}}^2(j,\\ell)/(2\\varepsilon_c^2))}{\\sum_{\\ell \\in \\mathcal{A} \\setminus \\{j\\}} \\exp(-d_{\\text{alg}}^2(j,\\ell)/(2\\varepsilon_c^2))}\n2812: \n2813: $$\n2814: \n2815: **Diversity Pairing** (idealized):\n2816: \n2817: $$\n2818: \\bar{d}_j = \\frac{\\sum_{M \\in \\mathcal{M}_k} d_{\\text{alg}}(j, M(j)) W(M)}{\\sum_{M' \\in \\mathcal{M}_k} W(M')}\n2819: \n2820: $$\n2821: \n2822: where $W(M) = \\prod_{(i,\\ell) \\in M} \\exp(-d_{\\text{alg}}^2(i,\\ell)/(2\\varepsilon_{\\text{pair}}^2))$.\n2823: \n2824: **Key Similarity**: Both are:\n2825: - Smooth quotients (denominator bounded below by companion availability)\n2826: - Exponentially localized (exponential concentration around nearby companions)",
       "_registry_context": {
         "stage": "directives",
@@ -2482,6 +2610,7 @@
         "label": "rem-simplified-vs-full-final"
       },
       "section": "## 16. Comparison to Simplified Model",
+      "references": [],
       "raw_directive": "5101: ## 16. Comparison to Simplified Model\n5102: \n5103: :::{prf:remark} Simplified vs Full Model\n5104: :label: rem-simplified-vs-full-final\n5105: \n5106: | **Aspect** | **Simplified Model** (Doc 19) | **Full Model** (This Document) |\n5107: |------------|-------------------------------|--------------------------------|\n5108: | **Measurement** | $d_i = d(x_i)$ (position-only) | $d_i = d_{\\text{alg}}(i, c(i))$ (companion-dependent) |\n5109: | **Fitness Pipeline** | Single-stage | Six-stage: weights → mean → variance → std dev → Z-score → rescale |\n5110: | **Walker Coupling** | None | N-body coupling via softmax companion selection |\n5111: | **Proof Strategy** | Direct telescoping | Smooth clustering + partition of unity |\n5112: | **Key Mechanism** | $\\sum_j \\nabla^m w_{ij} = 0$ | Same + exponential locality |\n5113: | **Framework Assumptions** | None required | Minimum companion availability, uniform density |\n5114: | **Regularity Class** | Gevrey-1 | Gevrey-1 (preserved through pipeline) |\n5115: | **k-uniformity** | Immediate | Non-trivial (exponential localization + density bounds) |\n5116: | **Document Length** | ~1,000 lines | ~2,000+ lines (full pipeline analysis) |\n5117: | **Physical Realism** | Lower | Higher (true algorithmic model) |\n5118: ",
       "_registry_context": {
         "stage": "directives",
@@ -2507,6 +2636,7 @@
         "label": "rem-rho-tradeoffs"
       },
       "section": "## 16.5 Parameter Dependence and Practical Trade-offs",
+      "references": [],
       "raw_directive": "5201: ### 16.5.4 Trade-Off Summary\n5202: \n5203: :::{prf:remark} Localization Scale Trade-offs\n5204: :label: rem-rho-tradeoffs\n5205: \n5206: **Small ρ** (hyper-local, $\\rho \\ll \\text{diam}(\\mathcal{X})$):\n5207: - ✓ **Pros**: Sharp localization, better low-order derivative bounds (m < 2d), geometric adaptation\n5208: - ✗ **Cons**: High-order derivatives explode (m > 2d), numerical stiffness, small time steps for high-order integrators\n5209: \n5210: **Large ρ** (global backbone, $\\rho \\sim \\text{diam}(\\mathcal{X})$):\n5211: - ✓ **Pros**: Uniform derivative bounds, stable high-order behavior, larger time steps\n5212: - ✗ **Cons**: Loses geometric information, weak adaptation, reverts to global statistics\n5213: \n5214: **Optimal choice** (depends on application):\n5215: - **Exploration phase** (early optimization): Large ρ for stability\n5216: - **Exploitation phase** (near optima): Small ρ for geometric adaptation\n5217: - **Adaptive schedule**: $\\rho(t) = \\rho_0 \\cdot e^{-\\gamma t}$ (annealing from global to local)\n5218: ",
       "_registry_context": {
         "stage": "directives",
@@ -2532,6 +2662,7 @@
         "class": "note"
       },
       "section": "## 3. The Emergent Geometry Framework",
+      "references": [],
       "raw_directive": "325: :::\n326: \n327: :::{prf:remark} Why This is a Riemannian Metric\n328: :class: note\n329: \n330: The regularized Hessian $g(x_i, S) = H_i(S) + \\epsilon_\\Sigma I$ defines a Riemannian metric on the state space. In differential geometry, this is precisely the metric induced by a potential function (the fitness). In information geometry, this is analogous to the **Fisher information metric**.\n331: \n332: **Geometric interpretation** (using the standard convention $D = g^{-1}$):\n333: - **Flat directions** (small Hessian eigenvalues): Small metric eigenvalues → **large diffusion** → more exploration\n334: - **Curved directions** (large Hessian eigenvalues): Large metric eigenvalues → **small diffusion** → more exploitation\n335: ",
       "_registry_context": {
         "stage": "directives",
@@ -2557,6 +2688,7 @@
         "label": "rem-comparison-isotropic"
       },
       "section": "## 3. The Emergent Geometry Framework",
+      "references": [],
       "raw_directive": "557: :::\n558: \n559: :::{prf:remark} Comparison to Isotropic Case\n560: :label: rem-comparison-isotropic\n561: \n562: The **isotropic Euclidean Gas** (`../1_euclidean_gas/06_convergence.md`) uses $\\Sigma = \\sigma_v I$. The convergence proof relies heavily on this simplification:\n563: - Noise contribution to Lyapunov drift: $\\text{Tr}(\\sigma_v^2 I \\cdot \\nabla^2 V) = \\sigma_v^2 \\text{Tr}(\\nabla^2 V)$ is **constant**\n564: - Synchronous coupling: Both swarms use **identical** noise tensor $\\sigma_v I$\n565: \n566: The **Geometric Gas** uses $\\Sigma = \\Sigma_{\\text{reg}}(x_i, S)$. The challenges:\n567: - Noise contribution: $\\text{Tr}(D_{\\text{reg}}(x_i, S) \\cdot \\nabla^2 V)$ is **state-dependent**\n568: - Synchronous coupling: Must handle **different** noise tensors $\\Sigma_{\\text{reg}}(x_{1,i}, S_1) \\neq \\Sigma_{\\text{reg}}(x_{2,i}, S_2)$\n569: ",
       "_registry_context": {
         "stage": "directives",
@@ -2582,6 +2714,7 @@
         "label": "rem-coupling-essential"
       },
       "section": "## 5. Anisotropic Kinetic Operator Analysis",
+      "references": [],
       "raw_directive": "1238: :::\n1239: \n1240: :::{prf:remark} Why Coupling is Essential\n1241: :label: rem-coupling-essential\n1242: \n1243: The cross term $b \\langle \\Delta x, \\Delta v \\rangle$ is **crucial for hypocoercivity**:\n1244: \n1245: - **Without coupling** ($b = 0$): Position and velocity errors are independent. Since noise acts only on $v$, the position error $\\|\\Delta x\\|^2$ has **no direct dissipation**.\n1246: \n1247: - **With coupling** ($b \\neq 0$): The position error is \"rotated\" into the velocity space via the coupling. The velocity noise then dissipates the rotated error, which propagates back to positions via $\\dot{x} = v$.\n1248: ",
       "_registry_context": {
         "stage": "directives",
@@ -2607,6 +2740,7 @@
         "class": "note"
       },
       "section": "## 11. Explicit Derivation of the Emergent Metric from Algorithmic Parameters",
+      "references": [],
       "raw_directive": "2814: :::\n2815: \n2816: :::{prf:remark} Algorithmic Meaning of the Fitness Potential\n2817: :class: note\n2818: \n2819: The fitness potential $V_{\\text{fit}}[f_k, \\rho](x)$ encodes **relative performance in a local neighborhood**:\n2820: - High values indicate positions where the measurement $d(x)$ is **above the local mean** (good regions)\n2821: - Low values indicate positions **below the local mean** (poor regions)\n2822: - The Z-score normalization makes this **scale-invariant**: fitness depends on relative position, not absolute measurement values",
       "_registry_context": {
         "stage": "directives",
@@ -2632,6 +2766,7 @@
         "class": "note"
       },
       "section": "## 11. Explicit Derivation of the Emergent Metric from Algorithmic Parameters",
+      "references": [],
       "raw_directive": "2979: :::\n2980: \n2981: :::{prf:remark} Geometric Interpretation of the Hessian Terms\n2982: :class: note\n2983: \n2984: The two terms in the Hessian have distinct geometric meanings:\n2985: \n2986: **1. Rank-1 Term (Outer Product):** $g''_A(Z) \\, \\nabla_x Z \\otimes \\nabla_x Z$\n2987: - Dominant when the rescale function has high curvature ($g''_A$ large)\n2988: - Aligned with the **gradient direction** of the fitness landscape\n2989: - Creates **anisotropy along level sets**: high curvature perpendicular to level sets\n2990: \n2991: **2. Full Hessian Term:** $g'_A(Z) \\, \\nabla^2_x Z$\n2992: - Captures the **intrinsic curvature** of the Z-score manifold\n2993: - Depends on second derivatives of the measurement function $d(x)$\n2994: - Reflects the **geometry of the problem**, not just the fitness magnitude\n2995: ",
       "_registry_context": {
         "stage": "directives",
@@ -2657,6 +2792,7 @@
         "class": "important"
       },
       "section": "## 11. Explicit Derivation of the Emergent Metric from Algorithmic Parameters",
+      "references": [],
       "raw_directive": "3198: :::\n3199: \n3200: :::{prf:remark} Algorithmic Control of Ellipticity\n3201: :class: important\n3202: \n3203: The ellipticity bounds are **fully controlled by algorithmic parameters**:\n3204: \n3205: **1. Regularization Parameter $\\epsilon_\\Sigma$:**\n3206: - **Lower bound:** $c_{\\min}(\\rho) = \\epsilon_\\Sigma - \\Lambda_-(\\rho)$\n3207: - Larger $\\epsilon_\\Sigma$ → stronger regularization → more isotropic diffusion\n3208: - Must satisfy $\\epsilon_\\Sigma > \\Lambda_-(\\rho)$ for positive definiteness\n3209: \n3210: **2. Localization Scale $\\rho$:**\n3211: - Affects $H_{\\max}(\\rho)$ through the $O(1/\\rho)$ moment correction terms\n3212: - Smaller $\\rho$ → tighter localization → larger $H_{\\max}(\\rho)$ → wider ellipticity gap\n3213: - Larger $\\rho$ → global averaging → more stable $H$ → narrower ellipticity gap\n3214: \n3215: **3. Variance Regularization $\\kappa_{\\text{var,min}}$:**\n3216: - Appears in denominator of Hessian bound\n3217: - Larger $\\kappa_{\\text{var,min}}$ → smaller $H_{\\max}(\\rho)$ → better conditioning\n3218: \n3219: **4. Measurement Regularity $(d'_{\\max}, d''_{\\max})$:**\n3220: - Smoother measurement functions → smaller Hessian bounds\n3221: - Choice of $d$ (reward, diversity, etc.) directly affects geometry\n3222: \n3223: **5. Rescale Function $(g_A, g'_{\\max}, g''_{\\max})$:**\n3224: - Bounds on derivatives control curvature amplification\n3225: - Saturating rescales (e.g., sigmoid) naturally bound curvature\n3226: \n3227: The convergence rate depends on $c_{\\min}(\\rho)$ (see Chapter 5), so there is a **design tradeoff**:\n3228: - **Large $\\epsilon_\\Sigma$:** Strong convergence guarantees, but less geometric adaptation",
       "_registry_context": {
         "stage": "directives",
@@ -2682,6 +2818,9 @@
         "label": "rmk-verification-primitives-cinf"
       },
       "section": "## 3. C∞ Regularity Assumptions on Primitive Functions",
+      "references": [
+        "assump-cinf-primitives"
+      ],
       "raw_directive": "351: :::\n352: \n353: :::{prf:remark} Verification for Standard Choices\n354: :label: rmk-verification-primitives-cinf\n355: \n356: - Gaussian kernel: Real analytic (entire function), Hermite bounds classical\n357: - Sigmoid g_A(z) = A/(1 + e^{-z}): Real analytic, derivatives decay exponentially\n358: - Square root regularization σ'_reg(σ²) = √(σ² + ε_σ²): Real analytic on ℝ_{≥0}\n359: ",
       "_registry_context": {
         "stage": "directives",
@@ -2707,6 +2846,7 @@
         "label": "rmk-k-uniformity-mechanism-cinf"
       },
       "section": "## 4. Base Cases: C¹, C², C³, C⁴ Regularity (Established Results)",
+      "references": [],
       "raw_directive": "403: :::\n404: \n405: :::{prf:remark} k-Uniformity Mechanism\n406: :label: rmk-k-uniformity-mechanism-cinf\n407: \n408: The k-uniformity proven in C³ ([13_geometric_gas_c3_regularity.md](13_geometric_gas_c3_regularity.md) § 5.2, Lemmas 5.2-5.3) and C⁴ ([14_geometric_gas_c4_regularity.md](14_geometric_gas_c4_regularity.md) § 5, Lemmas 5.1-5.2) relies on the telescoping identity:\n409: \n410: $$\n411: \\sum_{j \\in A_k} \\nabla^m w_{ij}(\\rho) = 0 \\quad \\text{for all } m \\geq 1\n412: $$\n413: \n414: This follows from differentiating ∑_j w_ij = 1 identically. The consequence is that sums like ∑_j ∇^m w_ij · d(x_j) can be rewritten as **centered sums**:\n415: \n416: $$\n417: \\sum_j \\nabla^m w_{ij} \\cdot d(x_j) = \\sum_j \\nabla^m w_{ij} \\cdot (d(x_j) - \\mu_\\rho)\n418: $$\n419: \n420: Since |d(x_j) - μ_ρ| ≤ diam(d) is uniformly bounded (X is compact), the sum scales as O(||∇^m w_ij||), not O(k · ||∇^m w_ij||). This prevents linear growth in k and ensures k-uniformity.\n421: ",
       "_registry_context": {
         "stage": "directives",
@@ -2732,6 +2872,7 @@
         "label": "rmk-factorial-no-explosion"
       },
       "section": "## 5. Inductive Step: From C^m to C^{m+1}",
+      "references": [],
       "raw_directive": "676: :::\n677: \n678: :::{prf:remark} Why Factorial Growth Doesn't Explode\n679: :label: rmk-factorial-no-explosion\n680: \n681: The potential concern is that iterating the Faà di Bruno formula m times could yield (m!)^m growth. This doesn't happen because:\n682: \n683: 1. **Telescoping cancellation**: The centered sums ∑_j ∇^m w_ij · (d_j - μ_ρ) have leading-order terms that cancel, preventing naive k · (m!) growth\n684: 2. **Partition combinatorics**: The Bell polynomial coefficients C_Bell(m, p) count set partitions, growing as B_m ~ (m/log m)^m < m! but with favorable structure for our quotient\n685: 3. **Hermite sub-factorial bounds**: |H_m(y)| · e^{-y²/2} ≤ C · √(m!), not m!, provides a \"cushion\" against exponential blowup\n686: 4. **Empirical verification**: C³ and C⁴ exhibit single-factorial growth, confirming the pattern\n687: ",
       "_registry_context": {
         "stage": "directives",
@@ -2757,6 +2898,7 @@
         "label": "rmk-gevrey-not-analytic-cinf"
       },
       "section": "## 7. Gevrey-1 Classification",
+      "references": [],
       "raw_directive": "791: :::\n792: \n793: :::{prf:remark} Why Gevrey-1, Not Real Analytic?\n794: :label: rmk-gevrey-not-analytic-cinf\n795: \n796: Despite the Gaussian kernel being real analytic, V_fit fails real analyticity due to:\n797: \n798: 1. **Variable alive set**: The sum ∑_{j ∈ A_k} involves k-dependent number of terms, where k changes as walkers die. Not a finite composition of analytic functions.\n799: \n800: 2. **Normalization non-analyticity**: w_ij = K_ij / (∑_ℓ K_iℓ) has denominator depending on alive set. While smooth, may fail holomorphic extension if zeros of denominator cluster near real axis.\n801: \n802: 3. **Hermite polynomial growth**: Bounds |H_m(y)| ~ √(m!) are **sub-factorial**, insufficient to guarantee Taylor series convergence.\n803: ",
       "_registry_context": {
         "stage": "directives",
@@ -2782,6 +2924,7 @@
         "label": "rem-log-k-absorption-mechanism"
       },
       "section": "## 1. Introduction",
+      "references": [],
       "raw_directive": "135: :::\n136: \n137: :::{prf:remark} Explicit Mechanism of (log k)^d Absorption\n138: :label: rem-log-k-absorption-mechanism\n139: \n140: The claim that the $(log k)^d$ factor is \"absorbed into Gevrey-1 constants\" requires explicit justification.\n141: \n142: **Where does (log k)^d appear?**\n143: \n144: Only in the $j=i$ term of the localized mean derivative:\n145: \n146: $$\n147: \\nabla^m \\mu_\\rho^{(i)} = \\nabla^m \\left(\\sum_{j \\in \\mathcal{A}} w_{ij}(\\rho) d_j\\right) = \\nabla^m(w_{ii} d_i) + \\sum_{j \\neq i} \\nabla^m(w_{ij} d_j)\n148: $$\n149: \n150: For $j = i$: The measurement $d_i = \\mathbb{E}[d_{\\text{alg}}(i, c(i))]$ involves a sum over $k_{\\text{eff}}^{(\\varepsilon_c)} = O((\\log k)^d)$ effective companions. By the product and chain rules:\n151: \n152: $$\n153: \\|\\nabla^m (w_{ii} d_i)\\| \\leq C_w \\cdot C_d \\cdot m! \\cdot \\rho^{-m} \\cdot k_{\\text{eff}}^{(\\varepsilon_c)}\n154: $$\n155: \n156: For $j \\neq i$: **Derivative locality** (§7.1) eliminates the $\\ell$-sum—only $\\ell=i$ contributes to $\\nabla_{x_i} d_j$, so there's NO $(log k)^d$ factor for these terms.\n157: \n158: **How is (log k)^d absorbed?**\n159: \n160: The Gevrey-1 structure of $C_{V,m}$ is:\n161: \n162: $$\n163: C_{V,m} = \\tilde{C}_m \\cdot (1 + c \\cdot k_{\\text{eff}}^{(\\varepsilon_c)} / m!) \\cdot \\max(\\rho^{-m}, \\varepsilon_d^{1-m})\n164: $$\n165: \n166: For $m \\geq 2$, the regularization term $\\varepsilon_d^{1-m}$ dominates. Since $\\varepsilon_d \\ll \\varepsilon_c$ (typically $\\varepsilon_d / \\varepsilon_c = 10^{-3}$):\n167: \n168: $$\n169: \\varepsilon_d^{1-m} = \\varepsilon_c^{1-m} \\cdot (10^{-3})^{1-m} = \\varepsilon_c^{1-m} \\cdot 10^{3(m-1)}\n170: $$\n171: \n172: The ratio $(log k)^d / m!$ for practical $k \\leq 10^6$ (where $(\\log k)^d \\leq 20^d$ for $d \\leq 20$):\n173: \n174: $$\n175: \\frac{(\\log k)^d}{m!} \\leq \\frac{20^d}{m!}\n176: $$\n177: \n178: For $m \\geq d+2$, the factorial $m!$ dominates exponentially. For example:\n179: - $d=10, m=15$: $(log 1000)^{10} / 15! \\approx 10^{10} / 10^{12} = 10^{-2}$\n180: - $d=20, m=25$: $(log 1000)^{20} / 25! \\approx 10^{20} / 10^{25} = 10^{-5}$\n181: \n182: **Conclusion**: The $(log k)^d$ factor from the $j=i$ term is sub-leading compared to:\n183: 1. The factorial growth $m!$ (Gevrey-1)\n184: 2. The regularization blowup $\\varepsilon_d^{1-m}$ (bottleneck for $m \\geq 2$)\n185: ",
       "_registry_context": {
         "stage": "directives",
@@ -2807,6 +2950,9 @@
         "label": "rem-keystone-condition-contraction-full"
       },
       "section": "## 2. Companion Selection Mechanisms: Framework Context",
+      "references": [
+        "doc-03-cloning"
+      ],
       "raw_directive": "767: :::\n768: \n769: :::{prf:remark} Keystone Parameter Condition for Contraction\n770: :label: rem-keystone-condition-contraction-full\n771: \n772: The fixed-point iteration $\\rho_{\\max}^{(n+1)} = T(\\rho_{\\max}^{(n)})$ where $T(\\rho) = C_{\\text{QSD}} \\cdot C_{\\text{FK}}(L_V(\\rho), \\gamma, T, V_{\\max})$ is a contraction if:\n773: \n774: $$\n775: \\frac{dT}{d\\rho} = C_{\\text{QSD}} \\cdot \\frac{\\partial C_{\\text{FK}}}{\\partial L_V} \\cdot \\frac{dL_V}{d\\rho} < 1\n776: \n777: $$\n778: \n779: **Explicit Keystone condition**: From Fokker-Planck theory (Bogachev-Krylov-Röckner, 2001), the density bound satisfies:\n780: \n781: $$\n782: C_{\\text{FK}}(L_V, \\gamma, T, V_{\\max}) \\leq \\frac{C_0}{\\text{Vol}(\\mathcal{X} \\times V)} \\cdot \\exp\\left(\\frac{A_{\\text{fit}} \\cdot L_{\\phi}}{\\gamma T}\\right)\n783: \n784: $$\n785: \n786: where:\n787: - $A_{\\text{fit}}$: Fitness amplitude (maximum $|\\nabla V_{\\text{fit}}|$)\n788: - $L_{\\phi}$: Lipschitz constant of projection map $\\phi: \\mathcal{Y} \\to \\mathcal{X}$ (equals 1 for Euclidean phase space)\n789: - $\\gamma T$: Kinetic diffusion coefficient\n790: \n791: For the fixed point to exist, the **Keystone parameter regime** ({prf:ref}`doc-03-cloning`, Theorem 3.5) requires:\n792: \n793: $$\n794: \\frac{A_{\\text{fit}} \\cdot L_{\\phi}}{\\gamma T} < C_{\\text{contract}}\n795: \n796: $$\n797: \n798: where $C_{\\text{contract}}$ is a critical threshold (typically $C_{\\text{contract}} \\approx 1$-$2$ depending on domain geometry).\n799: \n800: **Verification for Geometric Gas**:\n801: - $A_{\\text{fit}} = \\mathcal{O}(A)$ (rescale function amplitude)\n802: - $L_{\\phi} = 1$ (Euclidean phase space)\n803: - Keystone regime: $\\gamma T \\gg A$ (high kinetic diffusion relative to fitness amplitude)\n804: \n805: Therefore: $A/(γT) \\ll 1$, ensuring contraction and fixed-point existence.\n806: ",
       "_registry_context": {
         "stage": "directives",
@@ -2832,6 +2978,7 @@
         "label": "rem-lipschitz-implies-convergence"
       },
       "section": "## 5.7 Statistical Equivalence and Unified Regularity Theorem",
+      "references": [],
       "raw_directive": "2938: :::\n2939: \n2940: :::{prf:remark} Implications for Quantitative Equivalence\n2941: :label: rem-lipschitz-implies-convergence\n2942: \n2943: This lemma shows that **IF** measurements differ by $\\|\\Delta\\|_\\infty = O(k^{-\\alpha})$, **THEN** fitness potentials differ by $O(k^{-\\alpha}) + O(k^{-2\\alpha})$.\n2944: \n2945: For the softmax vs pairing comparison:\n2946: - **What's established**: Both mechanisms have identical analytical structure (C^∞ with same Gevrey-1 bounds)\n2947: - **What's needed**: Quantitative bound $\\|\\Delta\\|_\\infty = O(k^{-\\alpha})$ via coupling analysis\n2948: - **What follows**: If coupling bound is established, Lipschitz stability immediately gives fitness convergence\n2949: ",
       "_registry_context": {
         "stage": "directives",
@@ -2857,6 +3004,7 @@
         "label": "rem-simplified-vs-full-final"
       },
       "section": "## 16. Comparison to Simplified Model",
+      "references": [],
       "raw_directive": "5045: ## 16. Comparison to Simplified Model\n5046: \n5047: :::{prf:remark} Simplified vs Full Model\n5048: :label: rem-simplified-vs-full-final\n5049: \n5050: | **Aspect** | **Simplified Model** (Doc 19) | **Full Model** (This Document) |\n5051: |------------|-------------------------------|--------------------------------|\n5052: | **Measurement** | $d_i = d(x_i)$ (position-only) | $d_i = d_{\\text{alg}}(i, c(i))$ (companion-dependent) |\n5053: | **Fitness Pipeline** | Single-stage | Six-stage: weights → mean → variance → std dev → Z-score → rescale |\n5054: | **Walker Coupling** | None | N-body coupling via softmax companion selection |\n5055: | **Proof Strategy** | Direct telescoping | Smooth clustering + partition of unity |\n5056: | **Key Mechanism** | $\\sum_j \\nabla^m w_{ij} = 0$ | Same + exponential locality |\n5057: | **Framework Assumptions** | None required | Minimum companion availability, uniform density |\n5058: | **Regularity Class** | Gevrey-1 | Gevrey-1 (preserved through pipeline) |\n5059: | **k-uniformity** | Immediate | Non-trivial (exponential localization + density bounds) |\n5060: | **Document Length** | ~1,000 lines | ~2,000+ lines (full pipeline analysis) |\n5061: | **Physical Realism** | Lower | Higher (true algorithmic model) |\n5062: ",
       "_registry_context": {
         "stage": "directives",
@@ -2882,6 +3030,7 @@
         "label": "rem-rho-tradeoffs"
       },
       "section": "## 16.5 Parameter Dependence and Practical Trade-offs",
+      "references": [],
       "raw_directive": "5136: ### 16.5.4 Trade-Off Summary\n5137: \n5138: :::{prf:remark} Localization Scale Trade-offs\n5139: :label: rem-rho-tradeoffs\n5140: \n5141: **Small ρ** (hyper-local, $\\rho \\ll \\text{diam}(\\mathcal{X})$):\n5142: - ✓ **Pros**: Sharp localization, better low-order derivative bounds (m < 2d), geometric adaptation\n5143: - ✗ **Cons**: High-order derivatives explode (m > 2d), numerical stiffness, small time steps for high-order integrators\n5144: \n5145: **Large ρ** (global backbone, $\\rho \\sim \\text{diam}(\\mathcal{X})$):\n5146: - ✓ **Pros**: Uniform derivative bounds, stable high-order behavior, larger time steps\n5147: - ✗ **Cons**: Loses geometric information, weak adaptation, reverts to global statistics\n5148: \n5149: **Optimal choice** (depends on application):\n5150: - **Exploration phase** (early optimization): Large ρ for stability\n5151: - **Exploitation phase** (near optima): Small ρ for geometric adaptation\n5152: - **Adaptive schedule**: $\\rho(t) = \\rho_0 \\cdot e^{-\\gamma t}$ (annealing from global to local)\n5153: ",
       "_registry_context": {
         "stage": "directives",

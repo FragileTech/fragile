@@ -19,6 +19,7 @@
         "label": "thm-cloning-mechanism-error"
       },
       "section": "## Part III: Cloning Mechanism Error Bounds",
+      "references": [],
       "raw_directive": "255: Quantify the error introduced by the discrete cloning mechanism compared to the theoretical idealized resampling.\n256: \n257: :::{prf:theorem} Cloning Mechanism Error (Target)\n258: :label: thm-cloning-mechanism-error\n259: \n260: Let $\\nu_N^{\\text{ideal}}$ be the QSD under idealized instantaneous resampling and let $\\nu_N^{\\text{discrete}}$ be the QSD under the discrete cloning mechanism. For any Lipschitz observable $\\phi$ with constant $L_\\phi$, we have:\n261: \n262: $$\n263: \\left| \\mathbb{E}_{\\nu_N^{\\text{discrete}}} [\\phi] - \\mathbb{E}_{\\nu_N^{\\text{ideal}}} [\\phi] \\right| \\leq C_{\\text{clone}} \\cdot L_\\phi \\cdot \\Delta t\n264: $$\n265: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "lem-discrete-cloning-approximation"
       },
       "section": "## Part III: Cloning Mechanism Error Bounds",
+      "references": [],
       "raw_directive": "275: **Key Lemma** (to prove):\n276: \n277: :::{prf:lemma} Discrete Cloning Approximation\n278: :label: lem-discrete-cloning-approximation\n279: "
     },
     {
@@ -55,6 +57,9 @@
         "label": "lem-inelastic-collision-error"
       },
       "section": "## Part III: Cloning Mechanism Error Bounds",
+      "references": [
+        "def-clone-inelastic-collision"
+      ],
       "raw_directive": "296: **Key Lemma** (to prove):\n297: \n298: :::{prf:lemma} Inelastic Collision Error\n299: :label: lem-inelastic-collision-error\n300: \n301: The momentum redistribution via inelastic collisions ({prf:ref}`def-clone-inelastic-collision`) satisfies:\n302: \n303: $$\n304: \\mathbb{E}[\\|v_{\\text{new}}^{(i)} - v_{\\text{target}}^{(i)}\\|^2] \\leq C_{\\text{inel}} \\cdot \\delta^2\n305: $$\n306: "
     }
   ],

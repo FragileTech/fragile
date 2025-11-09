@@ -19,6 +19,7 @@
         "label": "thm-faa-di-bruno-appendix"
       },
       "section": "## Appendix A: Combinatorial Proof of Gevrey-1 Bounds via Fa\u00e0 di Bruno Formula",
+      "references": [],
       "raw_directive": "5288: ### A.1 Statement of the Fa\u00e0 di Bruno Formula\n5289: \n5290: :::{prf:theorem} Fa\u00e0 di Bruno Formula for Higher-Order Chain Rule\n5291: :label: thm-faa-di-bruno-appendix\n5292: \n5293: For smooth functions $f: \\mathbb{R} \\to \\mathbb{R}$ and $g: \\mathbb{R}^d \\to \\mathbb{R}$, the $m$-th derivative of the composition $h = f \\circ g$ is:\n5294: \n5295: $$\n5296: \\nabla^m h(x) = \\sum_{\\pi \\in \\mathcal{P}_m} f^{(|\\pi|)}(g(x)) \\cdot B_\\pi(\\nabla g(x), \\nabla^2 g(x), \\ldots, \\nabla^m g(x))\n5297: \n5298: $$\n5299: \n5300: where:\n5301: - $\\mathcal{P}_m$ is the set of all partitions of $\\{1, 2, \\ldots, m\\}$\n5302: - $|\\pi|$ is the number of blocks in partition $\\pi$\n5303: - $B_\\pi$ is the **Bell polynomial** associated with partition $\\pi$\n5304: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "proof-thm-faa-di-bruno-appendix"
       },
       "section": "## Appendix A: Combinatorial Proof of Gevrey-1 Bounds via Fa\u00e0 di Bruno Formula",
+      "references": [],
       "raw_directive": "5306: :::\n5307: \n5308: :::{prf:proof}\n5309: :label: proof-thm-faa-di-bruno-appendix\n5310: "
     },
     {
@@ -55,6 +57,7 @@
         "label": "prop-factorial-sqrt-composition"
       },
       "section": "## Appendix A: Combinatorial Proof of Gevrey-1 Bounds via Fa\u00e0 di Bruno Formula",
+      "references": [],
       "raw_directive": "5333: We prove the Gevrey-1 bound for $\\sigma'_{\\text{reg}}(V) = \\sqrt{V + \\eta_{\\min}^2}$ as a concrete example.\n5334: \n5335: :::{prf:proposition} Factorial Growth for Composition with Square Root\n5336: :label: prop-factorial-sqrt-composition\n5337: \n5338: For $\\sigma'(V) = \\sqrt{V + c^2}$ where $c = \\eta_{\\min} > 0$ and $V \\in C^m$ with $\\|\\nabla^k V\\| \\leq M_k$, the $m$-th derivative satisfies:\n5339: \n5340: $$\n5341: \\|\\nabla^m \\sigma'(V)\\| \\leq C_{\\sigma,m} \\cdot m!\n5342: \n5343: $$\n5344: "
     },
     {
@@ -73,6 +76,7 @@
         "label": "proof-prop-factorial-sqrt-composition"
       },
       "section": "## Appendix A: Combinatorial Proof of Gevrey-1 Bounds via Fa\u00e0 di Bruno Formula",
+      "references": [],
       "raw_directive": "5346: :::\n5347: \n5348: :::{prf:proof}\n5349: :label: proof-prop-factorial-sqrt-composition\n5350: \n5351: **Step 1: Derivatives of the outer function $f(s) = \\sqrt{s}$.**\n5352: \n5353: For $s \\geq c^2 > 0$, the $n$-th derivative of $f(s) = s^{1/2}$ is:\n5354: \n5355: $$\n5356: f^{(n)}(s) = \\frac{d^n}{ds^n} s^{1/2} = \\frac{(-1)^{n-1} \\cdot (2n-3)!!}{2^n} \\cdot s^{1/2 - n}\n5357: \n5358: $$\n5359: \n5360: where $(2n-3)!! = 1 \\cdot 3 \\cdot 5 \\cdots (2n-3)$ is the double factorial.\n5361: \n5362: **Key fact**: The double factorial satisfies:\n5363: \n5364: $$\n5365: (2n-3)!! = \\frac{(2n-2)!}{2^{n-1} (n-1)!} = \\mathcal{O}\\left(\\frac{n!}{2^{n-1}}\\right)\n5366: \n5367: $$\n5368: \n5369: Therefore:\n5370: \n5371: $$\n5372: |f^{(n)}(s)| \\leq \\frac{(2n-3)!!}{2^n \\cdot c^{n-1}} \\leq \\frac{C \\cdot n!}{2^{2n-1} \\cdot c^{n-1}} = \\mathcal{O}(n!) \\cdot c^{-(n-1)}\n5373: \n5374: $$\n5375: \n5376: **Step 2: Applying Fa\u00e0 di Bruno formula.**\n5377: \n5378: For $\\sigma'(V(x)) = f(V(x) + c^2)$, let $g(x) = V(x) + c^2$. Then:\n5379: \n5380: $$\n5381: \\nabla^m \\sigma'(V) = \\sum_{\\pi \\in \\mathcal{P}_m} f^{(|\\pi|)}(g) \\cdot B_\\pi(\\nabla g, \\nabla^2 g, \\ldots, \\nabla^m g)\n5382: \n5383: $$\n5384: \n5385: **Step 3: Bounding each partition contribution.**\n5386: \n5387: For partition $\\pi$ with $|\\pi| = \\ell$ blocks, the Bell polynomial $B_\\pi$ is a product:\n5388: \n5389: $$\n5390: B_\\pi = \\prod_{B \\in \\pi} \\nabla^{|B|} g\n5391: \n5392: $$\n5393: \n5394: where $B$ ranges over blocks of $\\pi$ and $\\sum_{B \\in \\pi} |B| = m$.\n5395: \n5396: Using $\\|\\nabla^k g\\| = \\|\\nabla^k V\\| \\leq M_k$:\n5397: \n5398: $$\n5399: \\|B_\\pi\\| \\leq \\prod_{B \\in \\pi} M_{|B|}\n5400: \n5401: $$\n5402: \n5403: **Step 4: Counting partitions and summing.**\n5404: \n5405: For fixed $\\ell$, the number of partitions of $m$ elements into $\\ell$ non-empty blocks is the **Stirling number of the second kind** $S(m, \\ell)$, which satisfies:\n5406: \n5407: $$\n5408: S(m, \\ell) \\leq \\frac{\\ell^m}{\\ell!}\n5409: \n5410: $$\n5411: \n5412: Combining:\n5413: \n5414: $$\n5415: \\begin{aligned}\n5416: \\|\\nabla^m \\sigma'\\| &\\leq \\sum_{\\ell=1}^m |f^{(\\ell)}(g)| \\cdot \\sum_{\\pi: |\\pi|=\\ell} \\|B_\\pi\\| \\\\\n5417: &\\leq \\sum_{\\ell=1}^m \\frac{C \\ell!}{c^{\\ell-1}} \\cdot S(m,\\ell) \\cdot (\\text{bound on } B_\\pi)\n5418: \\end{aligned}\n5419: \n5420: $$\n5421: \n5422: **Step 5: Worst-case scenario - all derivatives contribute.**\n5423: \n5424: The dominant contribution comes from $\\ell = 1$ (single block, using $\\nabla^m V$ directly):\n5425: \n5426: $$\n5427: \\|\\nabla^m \\sigma'\\| \\geq |f^{(1)}(g)| \\cdot \\|\\nabla^m V\\| \\sim \\frac{1}{c} M_m\n5428: \n5429: $$\n5430: \n5431: But the total sum over all partitions gives:\n5432: \n5433: $$\n5434: \\|\\nabla^m \\sigma'\\| \\leq C \\sum_{\\ell=1}^m \\ell! \\cdot c^{-(\\ell-1)} \\cdot \\frac{\\ell^m}{\\ell!} \\cdot \\prod_k M_k^{(\\text{multiplicity})}\n5435: \n5436: $$\n5437: \n5438: **Step 6: Factorial bound emerges.**\n5439: \n5440: The key observation is that the Stirling numbers and factorial from $f^{(\\ell)}$ **combine multiplicatively**, not additively. The dominant term in the sum is $\\ell = m$ (each derivative appears once):\n5441: \n5442: $$\n5443: \\|\\nabla^m \\sigma'\\| \\leq C \\cdot m! \\cdot c^{-(m-1)} \\cdot \\prod_{k=1}^m M_k^{(a_k)}\n5444: \n5445: $$\n5446: \n5447: where $\\sum k \\cdot a_k = m$ (partition constraint) and $\\sum a_k = m$ (Bell polynomial structure).\n5448: \n5449: For $M_k = \\mathcal{O}(k!)$ (Gevrey-1 input), this gives:\n5450: \n5451: $$\n5452: \\|\\nabla^m \\sigma'\\| \\leq C \\cdot m! \\cdot (\\text{poly}(m)) = \\mathcal{O}(m!)\n5453: \n5454: $$\n5455: \n5456: where the polynomial factor comes from combining products of factorial-growth inputs.\n5457: "
     },
     {
@@ -91,6 +95,7 @@
         "label": "cor-gevrey-closure"
       },
       "section": "## Appendix A: Combinatorial Proof of Gevrey-1 Bounds via Fa\u00e0 di Bruno Formula",
+      "references": [],
       "raw_directive": "5461: ### A.3 General Principle: Factorial Preservation Under Composition\n5462: \n5463: :::{prf:corollary} Gevrey-1 Closure Under Smooth Composition\n5464: :label: cor-gevrey-closure\n5465: \n5466: If $f: \\mathbb{R}^k \\to \\mathbb{R}$ is Gevrey-1 (satisfies $\\|\\nabla^m f\\| \\leq C_f m! \\rho^{-m}$) and $g_1, \\ldots, g_k: \\mathbb{R}^d \\to \\mathbb{R}$ are each Gevrey-1 with $\\|\\nabla^m g_i\\| \\leq C_i m! \\sigma^{-m}$, then the composition:\n5467: \n5468: $$\n5469: h(x) = f(g_1(x), \\ldots, g_k(x))\n5470: \n5471: $$\n5472: \n5473: is Gevrey-1 with:\n5474: \n5475: $$\n5476: \\|\\nabla^m h\\| \\leq C_h m! \\cdot \\max(\\rho, \\sigma)^{-m}\n5477: \n5478: $$\n5479: "
     },
     {
@@ -109,6 +114,9 @@
         "label": "proof-cor-gevrey-closure"
       },
       "section": "## Appendix A: Combinatorial Proof of Gevrey-1 Bounds via Fa\u00e0 di Bruno Formula",
+      "references": [
+        "thm-faa-di-bruno-appendix"
+      ],
       "raw_directive": "5481: :::\n5482: \n5483: :::{prf:proof}\n5484: :label: proof-cor-gevrey-closure"
     }
   ],

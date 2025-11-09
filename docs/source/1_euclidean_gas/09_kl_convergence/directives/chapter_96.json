@@ -19,6 +19,7 @@
         "label": "thm-fl-recap"
       },
       "section": "## 0.1 The Problem: Foster-Lyapunov \u2260 LSI",
+      "references": [],
       "raw_directive": "7086: From [06_convergence](06_convergence), Theorem `thm-foster-lyapunov-main`:\n7087: \n7088: :::{prf:theorem} Foster-Lyapunov Drift (Unconditional)\n7089: :label: thm-fl-recap\n7090: \n7091: The composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}} \\circ \\Psi_{\\text{clone}}$ satisfies:\n7092: \n7093: $$\n7094: \\mathbb{E}[V_{\\text{total}}(S') \\mid S] \\leq (1 - \\kappa_{\\text{total}}\\tau) V_{\\text{total}}(S) + C_{\\text{total}}\n7095: $$\n7096: \n7097: where:\n7098: - $V_{\\text{total}} = V_W + c_V V_{\\text{Var}} + c_B W_b$ is a synergistic Lyapunov function\n7099: - $\\kappa_{\\text{total}} > 0$ is independent of N\n7100: - $C_{\\text{total}} < \\infty$ is the constant drift term\n7101: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "thm-lsi-target"
       },
       "section": "## 0.1 The Problem: Foster-Lyapunov \u2260 LSI",
+      "references": [],
       "raw_directive": "7107: ### What We Want\n7108: \n7109: :::{prf:theorem} Logarithmic Sobolev Inequality (Target)\n7110: :label: thm-lsi-target\n7111: \n7112: For all smooth functions $f: \\mathcal{S}_N \\to \\mathbb{R}$ with $\\int f^2 d\\pi_{\\text{QSD}} = 1$:\n7113: \n7114: $$\n7115: \\text{Ent}_{\\pi_{\\text{QSD}}}(f^2) \\leq C_{\\text{LSI}} \\cdot \\mathbb{E}_{\\pi_{\\text{QSD}}}[|\\nabla f|^2]\n7116: $$\n7117: \n7118: where:\n7119: - $\\text{Ent}_{\\pi}(g) = \\int g \\log(g/\\int g) d\\pi$ is the relative entropy\n7120: - $|\\nabla f|^2 = \\sum_{i=1}^N |\\nabla_{x_i} f|^2 + |\\nabla_{v_i} f|^2$ is the squared gradient"
     },
     {
@@ -55,6 +57,7 @@
         "label": "ex-fl-no-lsi"
       },
       "section": "## 0.1 The Problem: Foster-Lyapunov \u2260 LSI",
+      "references": [],
       "raw_directive": "7126: **Foster-Lyapunov DOES NOT imply LSI** in general. Counter-example:\n7127: \n7128: :::{prf:example} Random Walk on \u2124\n7129: :label: ex-fl-no-lsi\n7130: \n7131: Consider a lazy random walk on the integers with transition:\n7132: $$\n7133: P(x, x \\pm 1) = \\frac{1}{4}, \\quad P(x, x) = \\frac{1}{2}\n7134: $$\n7135: \n7136: and stationary measure $\\pi$ geometric: $\\pi(x) \\propto e^{-|x|}$.\n7137: \n7138: **Has Foster-Lyapunov**: With $V(x) = |x|$:\n7139: $$\n7140: \\mathbb{E}[V(X_{t+1})] \\leq (1 - c)V(X_t) + C\n7141: $$\n7142: "
     }
   ],

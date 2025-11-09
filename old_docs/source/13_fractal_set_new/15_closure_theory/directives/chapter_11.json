@@ -19,6 +19,7 @@
         "label": "def-representation-space"
       },
       "section": "## 11. Multi-Representation Closure Theory",
+      "references": [],
       "raw_directive": "2226: ### 11.2. Representation Space and Projection Maps\n2227: \n2228: :::{prf:definition} Fragile Gas Representation Space\n2229: :label: def-representation-space\n2230: \n2231: The **representation space** $\\mathfrak{R}$ is the collection of all mathematical structures encoding Fragile Gas dynamics:\n2232: \n2233: $$\n2234: \\mathfrak{R} := \\{\\mathcal{R}_{\\text{swarm}}, \\mathcal{R}_{\\text{Fractal}}, \\mathcal{R}_{\\text{scutoid}}, \\mathcal{R}_{\\text{lattice}}, \\mathcal{R}_{\\text{mean-field}}\\}\n2235: $$\n2236: \n2237: **Each representation** $\\mathcal{R} \\in \\mathfrak{R}$ consists of:\n2238: 1. **State space** $\\Omega_{\\mathcal{R}}$: Set of all possible configurations\n2239: 2. **Dynamics** $\\Psi_{\\mathcal{R}}: \\Omega_{\\mathcal{R}} \\to \\Omega_{\\mathcal{R}}$: Evolution operator (possibly stochastic)\n2240: 3. **Observable algebra** $\\mathcal{A}_{\\mathcal{R}}$: Set of measurable functions on $\\Omega_{\\mathcal{R}}$\n2241: 4. **Information structure** $\\mathcal{I}_{\\mathcal{R}}$: Graph or geometric structure encoding correlations\n2242: \n2243: **Projection maps** between representations:\n2244: \n2245: $$\n2246: \\pi_{\\mathcal{R} \\to \\mathcal{R}'}: \\Omega_{\\mathcal{R}} \\to \\Omega_{\\mathcal{R}'}\n2247: $$\n2248: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "def-swarm-epsilon-machine"
       },
       "section": "## 11. Multi-Representation Closure Theory",
+      "references": [],
       "raw_directive": "2267: #### 11.3.1. Swarm Representation \u03b5-Machine\n2268: \n2269: :::{prf:definition} Swarm \u03b5-Machine\n2270: :label: def-swarm-epsilon-machine\n2271: \n2272: **State space:** $\\Omega_{\\text{swarm}} = \\mathcal{X}^N \\times \\mathbb{R}^{Nd}$\n2273: \n2274: **Past:** Trajectory history $H_k^{\\text{swarm}} = \\{(X_0, V_0), \\ldots, (X_k, V_k)\\}$\n2275: \n2276: **Future:** Future trajectories $F_k^{\\text{swarm}} = \\{(X_{k+1}, V_{k+1}), (X_{k+2}, V_{k+2}), \\ldots\\}$\n2277: \n2278: **Causal states:** Two pasts $H, H'$ are in the same causal state $\\sigma \\in \\Sigma_\\varepsilon^{\\text{swarm}}$ if:\n2279: \n2280: $$\n2281: P(F_k^{\\text{swarm}} \\mid H) = P(F_k^{\\text{swarm}} \\mid H')\n2282: $$\n2283: \n2284: **\u03b5-Machine:** Markov chain on $\\Sigma_\\varepsilon^{\\text{swarm}}$ with transitions:\n2285: \n2286: $$\n2287: P(\\sigma' \\mid \\sigma, x_{k+1}, v_{k+1}) = \\frac{\\sum_{H \\in \\sigma} P(x_{k+1}, v_{k+1} \\mid H) \\cdot P(H)}{\\sum_{H \\in \\sigma} P(H)}\n2288: $$\n2289: \n2290: **Statistical complexity:**\n2291: \n2292: $$\n2293: C_\\mu^{\\text{swarm}} := H(\\Sigma_\\varepsilon^{\\text{swarm}}) = -\\sum_{\\sigma \\in \\Sigma_\\varepsilon^{\\text{swarm}}} P(\\sigma) \\log P(\\sigma)\n2294: $$\n2295: "
     },
     {
@@ -55,6 +57,7 @@
         "label": "def-fractal-epsilon-machine-review"
       },
       "section": "## 11. Multi-Representation Closure Theory",
+      "references": [],
       "raw_directive": "2303: This was already defined in \u00a73. We recapitulate the key points:\n2304: \n2305: :::{prf:definition} Fractal Set \u03b5-Machine (Review from \u00a73.2)\n2306: :label: def-fractal-epsilon-machine-review\n2307: \n2308: **State space:** $\\Omega_{\\text{Fractal}} = \\text{Episodes} \\times \\text{IG adjacency}$\n2309: \n2310: **Past:** $H_{\\text{Fractal}}(e) = \\{e_0 \\to e_1 \\to \\cdots \\to e_n = e\\}$ (genealogy on CST) + IG neighborhood at each time\n2311: \n2312: **Future:** Descendant paths in CST + future IG evolutions\n2313: \n2314: **Causal states:** Two episodes $e, e'$ are in the same causal state if:\n2315: \n2316: $$\n2317: P(F_{\\text{CST}}(e), F_{\\text{IG}}(e) \\mid H_{\\text{full}}(e)) = P(F_{\\text{CST}}(e'), F_{\\text{IG}}(e') \\mid H_{\\text{full}}(e'))\n2318: $$\n2319: \n2320: **Key distinction from swarm:** The Fractal Set \u03b5-machine uses **episodic genealogy** (parent-child relations in CST) rather than continuous trajectories. This encodes *cloning events* explicitly as branching nodes.\n2321: "
     },
     {
@@ -73,6 +76,7 @@
         "label": "def-scutoid-epsilon-machine"
       },
       "section": "## 11. Multi-Representation Closure Theory",
+      "references": [],
       "raw_directive": "2335: #### 11.3.3. Scutoid \u03b5-Machine\n2336: \n2337: :::{prf:definition} Scutoid \u03b5-Machine\n2338: :label: def-scutoid-epsilon-machine\n2339: \n2340: **State space:** $\\Omega_{\\text{scutoid}} = \\{\\text{Scutoid tessellations of } \\mathcal{X} \\times [0,T]\\}$\n2341: \n2342: **Configuration:** $Z_{\\text{scutoid}} = \\{\\mathcal{S}_i(t)\\}_{i=1}^N$, where each $\\mathcal{S}_i(t)$ is a 4D scutoid cell\n2343: \n2344: **Past:** Scutoid history $H_k^{\\text{scutoid}} = \\{Z_{\\text{scutoid}}(0), \\ldots, Z_{\\text{scutoid}}(k)\\}$\n2345: \n2346: **Causal states:** Two scutoid histories are equivalent if they induce the same conditional distribution over future scutoid tessellations\n2347: \n2348: **Key observables:**\n2349: - Scutoid fraction: $\\phi(t) = \\frac{1}{N}\\sum_i \\mathbb{1}[\\text{scutoid}]_i$\n2350: - Mean Gaussian curvature: $\\bar{K}(t) = \\frac{1}{N}\\sum_i K_{\\Sigma}^i$\n2351: - Topological charge: $\\chi_{\\text{tot}}(t) = \\sum_i \\chi_{\\text{scutoid}}^i$\n2352: "
     },
     {
@@ -91,6 +95,10 @@
         "label": "thm-scutoid-fractal-equivalence"
       },
       "section": "## 11. Multi-Representation Closure Theory",
+      "references": [
+        "def-scutoid-construction",
+        "lem-causal-state-entropy-edges"
+      ],
       "raw_directive": "2356: **Theorem (Scutoid-Fractal Equivalence):**\n2357: \n2358: :::{prf:theorem} Scutoid and Fractal Set \u03b5-Machines have Equal Statistical Complexity\n2359: :label: thm-scutoid-fractal-equivalence\n2360: \n2361: Under the scutoid construction map $\\pi_{\\text{Fractal} \\to \\text{scutoid}}$ (Definition {prf:ref}`def-scutoid-construction` in [14_scutoid_geometry_framework.md](14_scutoid_geometry_framework.md)):\n2362: \n2363: $$\n2364: C_\\mu^{\\text{scutoid}} = C_\\mu^{\\text{Fractal}}\n2365: $$\n2366: \n2367: **Proof:**\n2368: \n2369: 1. **Lossless state encoding:** The scutoid tessellation provides a **lossless geometric encoding** of the Fractal Set state space (Reconstruction Theorem 4.1 in [01_fractal_set.md](01_fractal_set.md)). All walker trajectories, cloning events, and correlations can be uniquely reconstructed from scutoid geometry:\n2370:    - CST edges: Scutoid vertical boundaries encode temporal evolution\n2371:    - IG edges: Scutoid horizontal adjacencies encode spatial coupling\n2372: \n2373: 2. **Entropy preservation:** Since the map $\\pi_{\\text{Fractal} \\to \\text{scutoid}}$ is bijective on the state space $\\Omega_{\\text{Fractal}} \\cong \\Omega_{\\text{scutoid}}$, the joint entropy of configurations is preserved:\n2374: \n2375:    $$\n2376:    H(\\Omega_{\\text{scutoid}}) = H(\\Omega_{\\text{Fractal}})\n2377:    $$\n2378: \n2379: 3. **Statistical complexity equality:** By Lemma {prf:ref}`lem-causal-state-entropy-edges`, the statistical complexity equals the process entropy. Since the process entropy is preserved by lossless encoding:\n2380: \n2381:    $$\n2382:    C_\\mu^{\\text{scutoid}} = H(\\Sigma_\\varepsilon^{\\text{scutoid}}) = H(\\Omega_{\\text{scutoid}}) = H(\\Omega_{\\text{Fractal}}) = H(\\Sigma_\\varepsilon^{\\text{Fractal}}) = C_\\mu^{\\text{Fractal}}\n2383:    $$\n2384: "
     },
     {
@@ -109,6 +117,7 @@
         "label": "def-lattice-epsilon-machine"
       },
       "section": "## 11. Multi-Representation Closure Theory",
+      "references": [],
       "raw_directive": "2402: #### 11.3.4. Lattice QFT \u03b5-Machine\n2403: \n2404: :::{prf:definition} Lattice QFT \u03b5-Machine\n2405: :label: def-lattice-epsilon-machine\n2406: \n2407: **State space:** $\\Omega_{\\text{lattice}} = \\mathbb{R}^{|V|}$ where $V$ is the set of lattice sites\n2408: \n2409: **Field configuration:** $\\phi := (\\phi_{n})_{n \\in V}$ with $\\phi_n \\in \\mathbb{R}$ (scalar field)\n2410: \n2411: **Dynamics:** Wilson action evolution (Eq. 9.4.1 in [08_lattice_qft_framework.md](08_lattice_qft_framework.md)):\n2412: \n2413: $$\n2414: S[\\phi] = \\sum_{\\langle n, m \\rangle} \\frac{1}{2}(\\phi_n - \\phi_m)^2 + \\sum_n V(\\phi_n)\n2415: $$\n2416: \n2417: **Past:** Field configuration history $H_k^{\\text{lattice}} = \\{\\phi^{(0)}, \\ldots, \\phi^{(k)}\\}$\n2418: \n2419: **Causal states:** Two field histories are equivalent if they predict the same distribution over future field configurations\n2420: \n2421: **Statistical complexity:** $C_\\mu^{\\text{lattice}}$ measures the entropy of gauge-invariant field configurations\n2422: "
     },
     {
@@ -127,6 +136,7 @@
         "label": "thm-lattice-scutoid-coarse-graining"
       },
       "section": "## 11. Multi-Representation Closure Theory",
+      "references": [],
       "raw_directive": "2426: **Theorem (Lattice-Scutoid Coarse-Graining):**\n2427: \n2428: :::{prf:theorem} Lattice QFT \u03b5-Machine as Coarse-Grained Scutoid \u03b5-Machine\n2429: :label: thm-lattice-scutoid-coarse-graining\n2430: \n2431: Under the projection $\\pi_{\\text{scutoid} \\to \\text{lattice}}$ that maps scutoid centers-of-mass to lattice sites:\n2432: \n2433: $$\n2434: C_\\mu^{\\text{lattice}} \\le C_\\mu^{\\text{scutoid}}\n2435: $$\n2436: \n2437: with equality if and only if **computational closure** holds:\n2438: \n2439: $$\n2440: P(\\text{future lattice configs} \\mid \\text{lattice past}) = P(\\text{future lattice configs} \\mid \\text{scutoid past projected to lattice})\n2441: $$\n2442: "
     },
     {
@@ -145,6 +155,7 @@
         "label": "def-mean-field-epsilon-machine"
       },
       "section": "## 11. Multi-Representation Closure Theory",
+      "references": [],
       "raw_directive": "2446: #### 11.3.5. Mean-Field Limit \u03b5-Machine\n2447: \n2448: :::{prf:definition} Mean-Field \u03b5-Machine\n2449: :label: def-mean-field-epsilon-machine\n2450: \n2451: **State space:** $\\Omega_{\\text{MF}} = \\mathcal{P}(\\mathcal{X} \\times \\mathbb{R}^d)$, the space of probability measures on phase space\n2452: \n2453: **Mean-field measure:** $\\mu_t \\in \\mathcal{P}(\\mathcal{X} \\times \\mathbb{R}^d)$ satisfying the McKean-Vlasov PDE (Theorem 5.1 in [05_mean_field.md](../05_mean_field.md))\n2454: \n2455: **Dynamics:** Nonlinear Fokker-Planck equation:\n2456: \n2457: $$\n2458: \\partial_t \\mu_t = -\\nabla_x \\cdot (v \\mu_t) + \\nabla_v \\cdot \\left[ \\left(\\gamma v - F[\\mu_t] \\right) \\mu_t \\right] + \\frac{\\sigma^2}{2} \\Delta_v \\mu_t\n2459: $$\n2460: \n2461: where $F[\\mu_t] = -\\nabla U + \\epsilon_F \\nabla V[\\mu_t]$ is the self-consistent force field.\n2462: \n2463: **Past:** Measure trajectory history $H_k^{\\text{MF}} = \\{\\mu_0, \\ldots, \\mu_k\\}$\n2464: \n2465: **Causal states:** Two measure histories are equivalent if they predict the same distribution over future measures\n2466: \n2467: **Statistical complexity:** $C_\\mu^{\\text{MF}}$ is the entropy of the measure flow on Wasserstein space\n2468: "
     },
     {
@@ -163,6 +174,7 @@
         "label": "thm-mean-field-limit-epsilon-machine"
       },
       "section": "## 11. Multi-Representation Closure Theory",
+      "references": [],
       "raw_directive": "2472: **Theorem (Swarm-Mean-Field \u03b5-Machine Convergence):**\n2473: \n2474: :::{prf:theorem} Mean-Field \u03b5-Machine as $N \\to \\infty$ Limit\n2475: :label: thm-mean-field-limit-epsilon-machine\n2476: \n2477: Under the propagation of chaos assumptions (Theorem 6.1 in [06_propagation_chaos.md](../06_propagation_chaos.md)):\n2478: \n2479: $$\n2480: \\lim_{N \\to \\infty} C_\\mu^{\\text{swarm}} = C_\\mu^{\\text{MF}}\n2481: $$\n2482: \n2483: and the causal states converge in the Wasserstein sense:\n2484: \n2485: $$\n2486: W_2(\\Sigma_\\varepsilon^{\\text{swarm}}, \\Sigma_\\varepsilon^{\\text{MF}}) \\to 0 \\quad \\text{as } N \\to \\infty\n2487: $$\n2488: "
     },
     {
@@ -181,6 +193,7 @@
         "label": "def-representation-equivalence"
       },
       "section": "## 11. Multi-Representation Closure Theory",
+      "references": [],
       "raw_directive": "2492: ### 11.4. Representation Equivalence and Information Functors\n2493: \n2494: :::{prf:definition} Representation Equivalence\n2495: :label: def-representation-equivalence\n2496: \n2497: Two representations $\\mathcal{R}, \\mathcal{R}' \\in \\mathfrak{R}$ are **informationally equivalent** if there exist projections $\\pi: \\Omega_{\\mathcal{R}} \\to \\Omega_{\\mathcal{R}'}$ and $\\pi': \\Omega_{\\mathcal{R}'} \\to \\Omega_{\\mathcal{R}}$ such that:\n2498: \n2499: $$\n2500: C_\\mu^{\\mathcal{R}} = C_\\mu^{\\mathcal{R}'} \\quad \\text{and} \\quad \\Sigma_\\varepsilon^{\\mathcal{R}} \\cong \\Sigma_\\varepsilon^{\\mathcal{R}'}\n2501: $$\n2502: \n2503: In this case, the \u03b5-machines are **isomorphic**: causal states are in bijection, and transition probabilities are preserved.\n2504: "
     },
     {
@@ -199,6 +212,7 @@
         "label": "thm-fractal-set-universality"
       },
       "section": "## 11. Multi-Representation Closure Theory",
+      "references": [],
       "raw_directive": "2508: **Theorem (Fractal Set as Universal Representation):**\n2509: \n2510: :::{prf:theorem} Fractal Set Universality\n2511: :label: thm-fractal-set-universality\n2512: \n2513: The Fractal Set representation $(CST, IG)$ is **informationally equivalent** to the swarm representation $(X, V)$ in the sense that:\n2514: \n2515: $$\n2516: C_\\mu^{\\text{Fractal}} = C_\\mu^{\\text{swarm}} \\quad \\text{and} \\quad \\Sigma_\\varepsilon^{\\text{Fractal}} \\cong \\Sigma_\\varepsilon^{\\text{swarm}}\n2517: $$\n2518: "
     }
   ],

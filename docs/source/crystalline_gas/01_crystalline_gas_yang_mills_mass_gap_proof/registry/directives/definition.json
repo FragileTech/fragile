@@ -2,7 +2,7 @@
   "document_id": "01_crystalline_gas_yang_mills_mass_gap_proof",
   "stage": "directives",
   "directive_type": "definition",
-  "generated_at": "2025-11-08T17:16:20.342472+00:00",
+  "generated_at": "2025-11-08T23:19:38.349528+00:00",
   "count": 26,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "def-cg-walker-state-space"
       },
       "section": "## 2. The Crystalline Gas Algorithm",
+      "references": [],
       "raw_directive": "94: ### 2.1 The State Space and Configuration Space\n95: \n96: :::{prf:definition} Walker State Space\n97: :label: def-cg-walker-state-space\n98: \n99: Let $d \\geq 3$ be the spatial dimension. The **walker state space** is the phase space\n100: \n101: $$\n102: \\Omega := \\mathcal{X} \\times \\mathcal{V} = \\mathbb{R}^{d} \\times \\mathbb{R}^{d}\n103: $$\n104: \n105: A **walker** is a point $w = (x, v) \\in \\Omega$ consisting of:\n106: - **Position:** $x \\in \\mathcal{X} = \\mathbb{R}^{d}$\n107: - **Velocity:** $v \\in \\mathcal{V} = \\mathbb{R}^{d}$\n108: \n109: The state space $\\Omega$ is equipped with the product metric\n110: \n111: $$\n112: d_{\\Omega}(w_1, w_2) := \\sqrt{\\|x_1 - x_2\\|^2 + \\|v_1 - v_2\\|^2}\n113: $$\n114: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "def-cg-configuration-space"
       },
       "section": "## 2. The Crystalline Gas Algorithm",
+      "references": [],
       "raw_directive": "116: :::\n117: \n118: :::{prf:definition} Swarm Configuration Space\n119: :label: def-cg-configuration-space\n120: \n121: Fix $N \\geq 2$ entities (walkers). The **swarm configuration space** is\n122: \n123: $$\n124: \\Sigma_N := \\Omega^N = (\\mathbb{R}^{d} \\times \\mathbb{R}^{d})^N\n125: $$\n126: \n127: A **swarm configuration** is an ordered $N$-tuple\n128: \n129: $$\n130: \\mathcal{S} = (w_1, \\ldots, w_N) \\in \\Sigma_N\n131: $$\n132: \n133: We denote by $\\mathcal{S}_x = (x_1, \\ldots, x_N) \\in (\\mathbb{R}^{d})^N$ and $\\mathcal{S}_v = (v_1, \\ldots, v_N) \\in (\\mathbb{R}^{d})^N$ the position and velocity projections.\n134: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "def-cg-fitness-landscape"
       },
       "section": "## 2. The Crystalline Gas Algorithm",
+      "references": [],
       "raw_directive": "144: The dynamics of the Crystalline Gas are governed by a **fitness landscape** $\\Phi : \\mathcal{X} \\to \\mathbb{R}$, which plays the role of a potential function guiding the stochastic ascent.\n145: \n146: :::{prf:definition} Fitness Landscape\n147: :label: def-cg-fitness-landscape\n148: \n149: The **fitness landscape** is a smooth function\n150: \n151: $$\n152: \\Phi : \\mathbb{R}^{d} \\to \\mathbb{R}\n153: $$\n154: \n155: satisfying the following properties:\n156: \n157: 1. **Smoothness:** $\\Phi \\in C^{\\infty}(\\mathbb{R}^{d})$\n158: \n159: 2. **Strict Concavity:** The Hessian $H_{\\Phi}(x) := \\nabla^2 \\Phi(x)$ satisfies\n160: \n161: $$\n162: H_{\\Phi}(x) \\preceq -\\kappa I \\quad \\text{for all } x \\in \\mathbb{R}^{d}\n163: $$\n164: \n165: for some constant $\\kappa > 0$, where $A \\preceq B$ means $B - A$ is positive semi-definite, and $I$ is the identity matrix.\n166: \n167: 3. **Coercivity:** There exists $R_0 > 0$ such that\n168: \n169: $$\n170: \\Phi(x) \\leq \\Phi(0) - \\frac{\\kappa}{4} \\|x\\|^2 \\quad \\text{for all } \\|x\\| \\geq R_0\n171: $$\n172: \n173: 4. **Bounded Gradient:** The gradient satisfies\n174: \n175: $$\n176: \\|\\nabla \\Phi(x)\\| \\leq L_{\\Phi}(1 + \\|x\\|) \\quad \\text{for all } x \\in \\mathbb{R}^{d}\n177: $$\n178: \n179: for some constant $L_{\\Phi} > 0$.\n180: \n181: 5. **Bounded Higher Derivatives:** For all $k \\geq 3$, there exists $C_k > 0$ such that\n182: \n183: $$\n184: \\|\\nabla^k \\Phi(x)\\| \\leq C_k \\quad \\text{for all } x \\in \\mathbb{R}^{d}\n185: $$\n186: ",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +99,7 @@
         "label": "def-cg-dynamics"
       },
       "section": "## 2. The Crystalline Gas Algorithm",
+      "references": [],
       "raw_directive": "217: The Crystalline Gas evolves through a discrete-time Markov process on $\\Sigma_N$. Each time step consists of two operators applied sequentially: **Geometric Ascent** followed by **Thermal Fluctuation**.\n218: \n219: :::{prf:definition} Crystalline Gas Dynamics\n220: :label: def-cg-dynamics\n221: \n222: Let $\\mathcal{S}(t) = (w_1(t), \\ldots, w_N(t)) \\in \\Sigma_N$ denote the swarm configuration at discrete time $t \\in \\mathbb{N} \\cdot \\Delta t$. The **Crystalline Gas update operator** is the composition\n223: \n224: $$\n225: \\Psi_{\\text{CG}} := \\Psi_{\\text{thermal}} \\circ \\Psi_{\\text{ascent}}\n226: $$\n227: \n228: where $\\Psi_{\\text{ascent}}$ and $\\Psi_{\\text{thermal}}$ are defined below. The time evolution is given by\n229: \n230: $$\n231: \\mathcal{S}(t + \\Delta t) = \\Psi_{\\text{CG}}(\\mathcal{S}(t))",
       "_registry_context": {
         "stage": "directives",
@@ -121,6 +125,10 @@
         "label": "def-cg-ascent-operator"
       },
       "section": "## 2. The Crystalline Gas Algorithm",
+      "references": [
+        "def-cg-fitness-landscape",
+        "def-cg-gauge-covariant-force"
+      ],
       "raw_directive": "235: #### 2.3.1 The Geometric Ascent Operator\n236: \n237: :::{prf:definition} Geometric Ascent Operator\n238: :label: def-cg-ascent-operator\n239: \n240: The **Geometric Ascent operator** $\\Psi_{\\text{ascent}} : \\Sigma_N \\to \\Sigma_N$ updates the position of each walker according to a Hessian-informed gradient ascent step on a collective fitness potential.\n241: \n242: For each walker $i \\in \\{1, \\ldots, N\\}$, given configuration $\\mathcal{S} = (w_1, \\ldots, w_N)$ with $w_i = (x_i, v_i)$:\n243: \n244: 1. **Define Collective Fitness Potential:** Let\n245: \n246: $$\n247: \\Psi(x_1, \\ldots, x_N) := \\frac{1}{\\beta} \\log \\sum_{j=1}^N e^{\\beta \\Phi(x_j)}\n248: $$\n249: \n250: where:\n251: - $\\Phi : \\mathbb{R}^d \\to \\mathbb{R}$ is the fitness landscape ({prf:ref}`def-cg-fitness-landscape`)\n252: - $\\beta > 0$ is the **inverse temperature parameter** (controls selection strength)\n253: \n254: This is the **log-sum-exp** (smooth maximum) of individual fitness values.\n255: \n256: 2. **Compute Gradient:** The gradient of $\\Psi$ with respect to walker $i$'s position is:\n257: \n258: $$\n259: \\nabla_{x_i} \\Psi(x) = \\frac{e^{\\beta \\Phi(x_i)}}{\\sum_{k=1}^N e^{\\beta \\Phi(x_k)}} \\nabla \\Phi(x_i) = p_i \\cdot \\nabla \\Phi(x_i)\n260: $$\n261: \n262: where $p_i := \\frac{e^{\\beta \\Phi(x_i)}}{\\sum_{k=1}^N e^{\\beta \\Phi(x_k)}}$ is the softmax weight of walker $i$.\n263: \n264: 3. **Gradient Ascent Update:** Update the walker state via\n265: \n266: $$\n267: \\begin{aligned}\n268: x_i' &= x_i + \\eta \\cdot (-H_{\\Phi}(x_i) + \\varepsilon_{\\text{reg}} I)^{-1} \\nabla_{x_i} \\Psi(x) \\\\\n269: v_i' &= v_i + \\frac{1}{\\Delta t}(x_i' - x_i)\n270: \\end{aligned}\n271: $$\n272: \n273: where:\n274: - $\\eta \\in (0, 1]$ is the **step size parameter**\n275: - $(-H_{\\Phi}(x_i) + \\varepsilon_{\\text{reg}} I)^{-1}$ is the **emergent metric tensor** at $x_i$\n276: - The velocity update reflects the displacement with timescale $\\Delta t$\n277: \n278: The updated configuration is $\\mathcal{S}' = (w_1', \\ldots, w_N')$ with $w_i' = (x_i', v_i')$.\n279: \n280: **Note:** This defines the **matter force** from the fitness landscape. The full dynamics in Section 4 includes an additional **gauge force** that mediates interactions through SU(3) link variables, yielding:\n281: \n282: $$\n283: F_i^{\\text{total}} = F_i^{\\text{matter}} + F_i^{\\text{gauge}}\n284: $$\n285: ",
       "_registry_context": {
         "stage": "directives",
@@ -146,6 +154,7 @@
         "label": "def-cg-thermal-operator"
       },
       "section": "## 2. The Crystalline Gas Algorithm",
+      "references": [],
       "raw_directive": "321: #### 2.3.2 The Thermal Fluctuation Operator\n322: \n323: :::{prf:definition} Thermal Fluctuation Operator\n324: :label: def-cg-thermal-operator\n325: \n326: The **Thermal Fluctuation operator** $\\Psi_{\\text{thermal}} : \\Sigma_N \\to \\Sigma_N$ adds state-dependent Gaussian noise to each walker's position and velocity.\n327: \n328: For each walker $i \\in \\{1, \\ldots, N\\}$, given configuration $\\mathcal{S}' = (w_1', \\ldots, w_N')$ from the ascent step with $w_i' = (x_i', v_i')$:\n329: \n330: 1. **Define Diffusion Tensor:** Let\n331: \n332: $$\n333: \\Sigma_{\\text{reg}}(x) := (-H_{\\Phi}(x) + \\varepsilon_{\\text{reg}} I)^{-1/2}\n334: $$\n335: \n336: where $\\varepsilon_{\\text{reg}} > 0$ is the **regularization parameter**. The square root is well-defined since $-H_{\\Phi}(x) + \\varepsilon_{\\text{reg}} I \\succ 0$ is positive definite (because $H_\\Phi(x) \\preceq -\\kappa I$ implies $-H_\\Phi(x) \\succeq \\kappa I$, so $-H_\\Phi(x) + \\varepsilon_{\\text{reg}} I \\succeq (\\kappa + \\varepsilon_{\\text{reg}}) I \\succ 0$).\n337: \n338: 2. **Sample Noise:** Draw independent Gaussian random vectors\n339: \n340: $$\n341: \\xi_i^{(x)}, \\xi_i^{(v)} \\sim \\mathcal{N}(0, I_d) \\in \\mathbb{R}^{d}\n342: $$\n343: \n344: where $I_d$ is the $d \\times d$ identity matrix.\n345: \n346: 3. **Stochastic Update (BAOAB O-step):** Update the walker state via\n347: \n348: $$\n349: \\begin{aligned}\n350: x_i(t + \\Delta t) &= x_i' + \\sqrt{\\Delta t} \\cdot \\sigma_x \\cdot \\Sigma_{\\text{reg}}(x_i') \\xi_i^{(x)} \\\\\n351: v_i(t + \\Delta t) &= c_1 \\, v_i' + c_2 \\, \\xi_i^{(v)}\n352: \\end{aligned}\n353: $$\n354: \n355: where:\n356: - $\\sigma_x > 0$ is the **position noise scale**\n357: - $\\sigma_v > 0$ is the **velocity noise scale**\n358: - $\\gamma_{\\text{fric}} > 0$ is the **friction coefficient**\n359: - $c_1 := e^{-\\gamma_{\\text{fric}} \\Delta t}$ is the **friction decay factor**\n360: - $c_2 := \\sigma_v \\sqrt{1 - c_1^2}$ is the **equipartition noise amplitude**\n361: ",
       "_registry_context": {
         "stage": "directives",
@@ -171,6 +180,9 @@
         "label": "def-cg-markov-kernel"
       },
       "section": "## 2. The Crystalline Gas Algorithm",
+      "references": [
+        "def-cg-thermal-operator"
+      ],
       "raw_directive": "409: ### 2.4 The Markov Transition Kernel\n410: \n411: :::{prf:definition} Crystalline Gas Markov Kernel\n412: :label: def-cg-markov-kernel\n413: \n414: The Crystalline Gas dynamics define a discrete-time Markov process on $\\Sigma_N$ with transition kernel $P_{\\text{CG}} : \\Sigma_N \\times \\mathcal{B}(\\Sigma_N) \\to [0, 1]$ given by\n415: \n416: $$\n417: P_{\\text{CG}}(\\mathcal{S}, A) := \\mathbb{P}(\\Psi_{\\text{CG}}(\\mathcal{S}) \\in A)\n418: $$\n419: \n420: for all $\\mathcal{S} \\in \\Sigma_N$ and $A \\in \\mathcal{B}(\\Sigma_N)$, where the probability is with respect to the random noise $\\{\\xi_i^{(x)}, \\xi_i^{(v)}\\}_{i=1}^N$ in the thermal fluctuation operator {prf:ref}`def-cg-thermal-operator`.\n421: \n422: The kernel satisfies:\n423: 1. **Feller Property:** For any bounded continuous $f : \\Sigma_N \\to \\mathbb{R}$, the function $P_{\\text{CG}} f : \\Sigma_N \\to \\mathbb{R}$ defined by\n424: \n425: $$\n426: (P_{\\text{CG}} f)(\\mathcal{S}) := \\int_{\\Sigma_N} f(\\mathcal{S}') \\, P_{\\text{CG}}(\\mathcal{S}, \\mathrm{d}\\mathcal{S}')\n427: $$\n428: \n429: is bounded and continuous.\n430: \n431: 2. **Irreducibility:** For any $\\mathcal{S}_0, \\mathcal{S}_1 \\in \\Sigma_N$ and any $\\varepsilon > 0$, there exists $n \\in \\mathbb{N}$ such that\n432: \n433: $$\n434: P_{\\text{CG}}^{(n)}(\\mathcal{S}_0, B_{\\varepsilon}(\\mathcal{S}_1)) > 0\n435: $$\n436: \n437: where $B_{\\varepsilon}(\\mathcal{S}_1)$ is the $\\varepsilon$-ball around $\\mathcal{S}_1$.\n438: ",
       "_registry_context": {
         "stage": "directives",
@@ -196,6 +208,7 @@
         "label": "def-cg-invariant-measure"
       },
       "section": "## 3. Existence and Uniqueness of the Quasi-Stationary Distribution",
+      "references": [],
       "raw_directive": "468: ### 3.1 The Invariant Measure and QSD\n469: \n470: :::{prf:definition} Invariant Measure\n471: :label: def-cg-invariant-measure\n472: \n473: A probability measure $\\pi \\in \\mathcal{P}(\\Sigma_N)$ is **invariant** (or **stationary**) for the Markov kernel $P_{\\text{CG}}$ if\n474: \n475: $$\n476: \\pi(A) = \\int_{\\Sigma_N} P_{\\text{CG}}(\\mathcal{S}, A) \\, \\pi(\\mathrm{d}\\mathcal{S})\n477: $$\n478: \n479: for all $A \\in \\mathcal{B}(\\Sigma_N)$.\n480: \n481: Equivalently, for any bounded measurable function $f : \\Sigma_N \\to \\mathbb{R}$:\n482: \n483: $$\n484: \\int_{\\Sigma_N} f \\, \\mathrm{d}\\pi = \\int_{\\Sigma_N} (P_{\\text{CG}} f) \\, \\mathrm{d}\\pi",
       "_registry_context": {
         "stage": "directives",
@@ -221,6 +234,9 @@
         "label": "def-cg-matter-force"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [
+        "def-cg-ascent-operator"
+      ],
       "raw_directive": "770: The Crystalline Gas matter sector consists of walkers with physical degrees of freedom (position, momentum) and an emergent **color observable** that encodes their interaction state.\n771: \n772: :::{prf:definition} Matter Force (Fitness Landscape)\n773: :label: def-cg-matter-force\n774: \n775: For walker $i$ undergoing geometric ascent ({prf:ref}`def-cg-ascent-operator`), the **matter force** from the fitness landscape is:\n776: \n777: $$\n778: F_i^{\\text{matter}} := \\eta \\cdot g(x_i) \\nabla_{x_i} \\Psi = \\eta \\cdot (-H_{\\Phi}(x_i) + \\varepsilon_{\\text{reg}} I)^{-1} \\cdot p_i \\nabla\\Phi(x_i) \\in \\mathbb{R}^{3}\n779: $$\n780: \n781: where:\n782: - $\\Psi = \\frac{1}{\\beta}\\log\\sum_j e^{\\beta\\Phi(x_j)}$ is the collective fitness potential\n783: - $p_i = \\frac{e^{\\beta\\Phi(x_i)}}{\\sum_k e^{\\beta\\Phi(x_k)}}$ is the softmax weight\n784: - $g(x_i) = (-H_{\\Phi}(x_i) + \\varepsilon_{\\text{reg}} I)^{-1}$ is the emergent Riemannian metric\n785: - $\\eta \\in (0,1]$ is the step size parameter\n786: - We assume $d=3$ for Standard Model correspondence\n787: ",
       "_registry_context": {
         "stage": "directives",
@@ -246,6 +262,9 @@
         "label": "def-cg-momentum"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [
+        "def-cg-thermal-operator"
+      ],
       "raw_directive": "789: :::\n790: \n791: :::{prf:definition} Momentum and Phase Space Structure\n792: :label: def-cg-momentum\n793: \n794: For walker $i$ with velocity $v_i \\in \\mathbb{R}^{3}$, define:\n795: - **Momentum:** $p_i := m v_i \\in \\mathbb{R}^{3}$ where $m$ is the effective walker mass (set $m=1$ without loss of generality)\n796: - **Phase space state:** $(x_i, v_i) \\in \\Omega = \\mathbb{R}^{3} \\times \\mathbb{R}^{3}$\n797: ",
       "_registry_context": {
         "stage": "directives",
@@ -271,6 +290,9 @@
         "label": "def-cg-color-observable"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [
+        "def-cg-matter-force"
+      ],
       "raw_directive": "799: :::\n800: \n801: :::{prf:definition} Color Observable (SU(3) Charge)\n802: :label: def-cg-color-observable\n803: \n804: For walker $i$, the **color observable** is a complex 3-vector that encodes the walker's total interaction state:\n805: \n806: $$\n807: |\\Psi_i\\rangle := F_i^{\\text{matter}} + \\frac{i}{\\hbar_{\\text{eff}}} p_i \\in \\mathbb{C}^{3}\n808: $$\n809: \n810: where:\n811: - $F_i^{\\text{matter}} \\in \\mathbb{R}^{3}$ is the matter force from {prf:ref}`def-cg-matter-force`\n812: - $p_i \\in \\mathbb{R}^{3}$ is the momentum\n813: - $\\hbar_{\\text{eff}}$ is an effective dimensionless constant (set $\\hbar_{\\text{eff}} = 1$ without loss of generality)\n814: \n815: This complex 3-vector lives in a local $\\mathbb{C}^{3}$ **color space** attached to walker $i$. It serves as the **SU(3) charge** for gauge field interactions.\n816: \n817: **Physical Interpretation:**\n818: - The real part $\\text{Re}(|\\Psi_i\\rangle) = F_i^{\\text{matter}}$ encodes the walker's response to the fitness landscape\n819: - The imaginary part $\\text{Im}(|\\Psi_i\\rangle) = p_i$ encodes the walker's kinetic state",
       "_registry_context": {
         "stage": "directives",
@@ -296,6 +318,7 @@
         "label": "def-cg-information-graph"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "827: We now construct the **SU(3) color gauge field** as a **fundamental degree of freedom** living on the edges of the walker interaction graph. This creates a true gauge theory with bidirectional feedback between matter (walkers) and field (link variables).\n828: \n829: :::{prf:definition} Walker Information Graph\n830: :label: def-cg-information-graph\n831: \n832: The walkers form a **dynamic information graph** $\\mathcal{G} = (\\mathcal{V}, \\mathcal{E})$ where:\n833: \n834: - **Nodes (Vertices):** $\\mathcal{V} = \\{1, 2, \\ldots, N\\}$ are the walkers\n835: - **Edges:** $(i, j) \\in \\mathcal{E}$ if walkers $i$ and $j$ are within interaction range:\n836: \n837: $$\n838: (i, j) \\in \\mathcal{E} \\quad \\Leftrightarrow \\quad \\|x_i - x_j\\| \\leq \\varepsilon_c\n839: $$\n840: \n841: where $\\varepsilon_c > 0$ is the interaction cutoff radius.\n842: ",
       "_registry_context": {
         "stage": "directives",
@@ -321,6 +344,7 @@
         "label": "def-cg-link-variables"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "844: :::\n845: \n846: :::{prf:definition} Link Variables (SU(3) Gauge Field)\n847: :label: def-cg-link-variables\n848: \n849: On every edge $(i, j) \\in \\mathcal{E}$, there exists a **fundamental degree of freedom** called the **link variable**:\n850: \n851: $$\n852: U_{ij} \\in \\text{SU}(3)\n853: $$\n854: \n855: The set of all link variables $\\{U_{ij}\\}_{(i,j) \\in \\mathcal{E}}$ **is the SU(3) gauge field**.\n856: \n857: **Key Properties:**\n858: - $U_{ij}$ is a $3 \\times 3$ special unitary matrix: $U_{ij}^\\dagger U_{ij} = I_3$ and $\\det(U_{ij}) = 1$\n859: - Hermitian symmetry: $U_{ji} = U_{ij}^\\dagger$\n860: - $U_{ij}$ is **NOT** calculated from walker states; it is an independent variable of the system\n861: - $U_{ij}$ acts as the **parallel transport operator** for color vectors from site $j$ to site $i$\n862: \n863: **Physical Interpretation:**\n864: - $U_{ij}$ encodes how the local color basis at $x_j$ relates to the local color basis at $x_i$\n865: - When $U_{ij} = I_3$, the field is \"flat\" between $i$ and $j$",
       "_registry_context": {
         "stage": "directives",
@@ -346,6 +370,9 @@
         "label": "def-cg-gauge-covariant-force"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [
+        "def-cg-color-observable"
+      ],
       "raw_directive": "871: The gauge field mediates forces between walkers. The force on walker $i$ depends on the parallel-transported color observables of its neighbors.\n872: \n873: :::{prf:definition} Parallel Transport and Gauge-Covariant Force\n874: :label: def-cg-gauge-covariant-force\n875: \n876: For walker $i$, the **total force** includes both the matter force and a **gauge force** mediated by the SU(3) field:\n877: \n878: $$\n879: F_i^{\\text{total}} = F_i^{\\text{matter}} + F_i^{\\text{gauge}}\n880: $$\n881: \n882: The **gauge force** is defined as:\n883: \n884: $$\n885: F_i^{\\text{gauge}} := \\nu \\sum_{j : (i,j) \\in \\mathcal{E}} K_\\rho(x_i, x_j) \\left[ \\text{Re}(U_{ij} |\\Psi_j\\rangle) - \\text{Re}(|\\Psi_i\\rangle) \\right]\n886: $$\n887: \n888: where:\n889: - $\\nu > 0$ is the gauge coupling strength\n890: - $K_\\rho(x_i, x_j) = \\exp(-\\|x_i - x_j\\|^2/(2\\rho^2))$ is the interaction kernel\n891: - $|\\Psi_j\\rangle$ is the color observable of walker $j$ from {prf:ref}`def-cg-color-observable`\n892: - $U_{ij} |\\Psi_j\\rangle \\in \\mathbb{C}^{3}$ is the **parallel-transported** color observable of $j$ to site $i$\n893: - $\\text{Re}(\\cdot)$ takes the real part component-wise\n894: ",
       "_registry_context": {
         "stage": "directives",
@@ -371,6 +398,7 @@
         "label": "def-cg-wilson-loop"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "914: The gauge field evolves to minimize an action functional that measures the \"curvature\" of the field configuration.\n915: \n916: :::{prf:definition} Wilson Loop and Plaquette\n917: :label: def-cg-wilson-loop\n918: \n919: A **loop** $\\mathcal{L} = (i_1 \\to i_2 \\to \\cdots \\to i_k \\to i_1)$ in the walker graph is a closed path of edges. The **Wilson loop** (holonomy) around $\\mathcal{L}$ is:\n920: \n921: $$\n922: U_{\\mathcal{L}} := U_{i_1 i_2} U_{i_2 i_3} \\cdots U_{i_k i_1} \\in \\text{SU}(3)\n923: $$\n924: \n925: The simplest loops are **plaquettes**: loops formed by 4 walkers (elementary squares in the graph).\n926: \n927: **Gauge Invariance:** Under local gauge transformations $U_{ij} \\to G(x_i) U_{ij} G(x_j)^\\dagger$, the Wilson loop transforms as:\n928: \n929: $$\n930: U_{\\mathcal{L}} \\to G(x_{i_1}) U_{\\mathcal{L}} G(x_{i_1})^\\dagger\n931: $$\n932: ",
       "_registry_context": {
         "stage": "directives",
@@ -396,6 +424,7 @@
         "label": "def-cg-wilson-action"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "934: :::\n935: \n936: :::{prf:definition} Wilson Action (Field Energy)\n937: :label: def-cg-wilson-action\n938: \n939: The **Wilson action** measures the total \"field energy\" stored in the gauge field configuration $\\{U_{ij}\\}$:\n940: \n941: $$\n942: S_W[\\{U_{ij}\\}] := \\sum_{\\text{plaquettes } \\mathcal{P}} \\beta_{\\text{gauge}} \\left[ 1 - \\frac{1}{3} \\text{Re}(\\text{Tr}(U_{\\mathcal{P}})) \\right]\n943: $$\n944: \n945: where:\n946: - The sum runs over all elementary plaquettes in the walker graph\n947: - $\\beta_{\\text{gauge}} > 0$ is the inverse gauge coupling (analogous to $1/g^2$ in lattice QFT)\n948: - $U_{\\mathcal{P}}$ is the ordered product of link variables around plaquette $\\mathcal{P}$\n949: \n950: **Physical Interpretation:**\n951: - When $U_{\\mathcal{P}} \\approx I_3$ (identity), the field is \"flat\" and $S_W \\approx 0$\n952: - When $U_{\\mathcal{P}}$ is far from identity, the field has high curvature and $S_W$ is large\n953: - Minimizing $S_W$ favors smooth field configurations",
       "_registry_context": {
         "stage": "directives",
@@ -421,6 +450,7 @@
         "label": "def-cg-field-update"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "955: :::\n956: \n957: :::{prf:definition} Field Update Rule (Link Dynamics)\n958: :label: def-cg-field-update\n959: \n960: The link variables evolve to minimize the Wilson action. Two standard methods from Lattice Gauge Theory:\n961: \n962: **Method A: Monte Carlo Heat Bath**\n963: \n964: For each link $U_{ij}$:\n965: 1. Compute the **staple** $S_{ij}$: the sum of all plaquettes containing $U_{ij}$ with $U_{ij}$ removed\n966: 2. The effective action for $U_{ij}$ given fixed neighbors is $S_{\\text{eff}}(U_{ij}) \\propto \\text{Re}(\\text{Tr}(U_{ij} S_{ij}^\\dagger))$\n967: 3. Sample a new $U_{ij}$ from the Boltzmann distribution:\n968: \n969: $$\n970: P(U_{ij}) \\propto \\exp\\left(-\\beta_{\\text{gauge}} S_{\\text{eff}}(U_{ij})\\right)\n971: $$\n972: \n973: **Method B: Langevin Dynamics on SU(3)**\n974: \n975: Define a \"force\" on $U_{ij}$ as the gradient of the action on the SU(3) manifold:\n976: \n977: $$\n978: \\frac{dU_{ij}}{dt} = -\\gamma_{\\text{field}} \\frac{\\delta S_W}{\\delta U_{ij}} + \\sqrt{2\\gamma_{\\text{field}}/\\beta_{\\text{gauge}}} \\, \\xi_{ij}(t)\n979: $$\n980: \n981: where $\\xi_{ij}(t)$ is Gaussian noise on $\\mathfrak{su}(3)$ (the Lie algebra).\n982: ",
       "_registry_context": {
         "stage": "directives",
@@ -446,6 +476,7 @@
         "label": "def-cg-ascent-direction-su2"
       },
       "section": "## 4. Emergence of SU(2) × SU(3) Gauge Symmetry and Pure Yang-Mills Dynamics",
+      "references": [],
       "raw_directive": "1199: The edge-centric framework for SU(3) can be extended to include additional gauge groups. For completeness, we sketch how SU(2) weak isospin fields could be constructed using the ascent direction geometry.\n1200: \n1201: :::{prf:definition} Ascent Direction Vector\n1202: :label: def-cg-ascent-direction-su2\n1203: \n1204: For walker $i$, the gradient-based ascent defines a natural geometric direction via the Riemannian gradient of the collective potential:\n1205: \n1206: $$\n1207: \\vec{v}_{\\text{ascent}}(i) := g(x_i) \\nabla_{x_i} \\Psi = (-H_{\\Phi}(x_i) + \\varepsilon_{\\text{reg}} I)^{-1} \\cdot \\tilde{p}_i \\nabla\\Phi(x_i) \\in \\mathbb{R}^{3}\n1208: $$\n1209: \n1210: where $\\tilde{p}_i = \\frac{e^{\\beta\\Phi(x_i)}}{\\sum_{k=1}^N e^{\\beta\\Phi(x_k)}}$ (softmax weight).\n1211: \n1212: **Normalized ascent direction:**\n1213: \n1214: $$\n1215: \\hat{v}_{\\text{ascent}}(i) := \\frac{\\vec{v}_{\\text{ascent}}(i)}{\\|\\vec{v}_{\\text{ascent}}(i)\\|} \\in S^{2}\n1216: $$\n1217: ",
       "_registry_context": {
         "stage": "directives",
@@ -471,6 +502,7 @@
         "label": "def-spectral-gap"
       },
       "section": "## 5. The Spectral Gap",
+      "references": [],
       "raw_directive": "1268: \n1269: \n1270: :::{prf:definition} Spectral Gap\n1271: :label: def-spectral-gap\n1272: \n1273: The **spectral gap** $\\lambda_{\\text{gap}}$ of the generator $L_{\\text{CG}}$ is defined as\n1274: \n1275: $$\n1276: \\lambda_{\\text{gap}} := \\inf \\left\\{ \\frac{\\langle f, -L_{\\text{CG}} f \\rangle_{\\pi_{\\text{QSD}}}}{\\langle f, f \\rangle_{\\pi_{\\text{QSD}}}} \\; : \\; f \\in \\mathcal{D}(L_{\\text{CG}}), \\; \\langle f, 1 \\rangle_{\\pi_{\\text{QSD}}} = 0 \\right\\}\n1277: $$\n1278: \n1279: where:\n1280: - $\\mathcal{D}(L_{\\text{CG}})$ is the domain of $L_{\\text{CG}}$ (smooth functions with appropriate boundary conditions)\n1281: - $\\langle f, g \\rangle_{\\pi_{\\text{QSD}}} := \\int_{\\Sigma_N} f(\\mathcal{S}) g(\\mathcal{S}) \\, \\pi_{\\text{QSD}}(\\mathrm{d}\\mathcal{S})$ is the $L^2(\\pi_{\\text{QSD}})$ inner product\n1282: - The condition $\\langle f, 1 \\rangle_{\\pi_{\\text{QSD}}} = 0$ means $f$ has zero mean\n1283: ",
       "_registry_context": {
         "stage": "directives",
@@ -496,6 +528,7 @@
         "label": "def-cg-wilson-loop"
       },
       "section": "## 6. Confinement via the Area Law for Wilson Loops",
+      "references": [],
       "raw_directive": "1701: ### 6.1 Wilson Loops\n1702: \n1703: :::{prf:definition} Wilson Loop Operator\n1704: :label: def-cg-wilson-loop\n1705: \n1706: Let $\\mathcal{C}$ be a closed curve (loop) in spacetime. The **Wilson loop** is the operator\n1707: \n1708: $$\n1709: W_{\\mathcal{C}} := \\text{Tr} \\left[ \\mathcal{P} \\exp \\left( i g \\oint_{\\mathcal{C}} A_{\\mu} \\, \\mathrm{d}x^{\\mu} \\right) \\right]\n1710: $$\n1711: \n1712: where:\n1713: - $A_{\\mu}$ is the gauge field (Lie-algebra-valued)\n1714: - $g$ is the coupling constant\n1715: - $\\mathcal{P}$ denotes path-ordering\n1716: - The trace is over the gauge group representation\n1717: ",
       "_registry_context": {
         "stage": "directives",
@@ -521,6 +554,7 @@
         "label": "def-area-perimeter-law"
       },
       "section": "## 6. Confinement via the Area Law for Wilson Loops",
+      "references": [],
       "raw_directive": "1752: :::\n1753: \n1754: :::{prf:definition} Area Law vs. Perimeter Law\n1755: :label: def-area-perimeter-law\n1756: \n1757: The expectation value $\\langle W_{\\mathcal{C}} \\rangle$ of the Wilson loop exhibits one of two behaviors:\n1758: \n1759: 1. **Perimeter Law (Deconfinement):**\n1760: \n1761: $$\n1762: \\langle W_{\\mathcal{C}} \\rangle \\sim e^{-\\mu \\mathcal{L}(\\mathcal{C})}\n1763: $$\n1764: \n1765: where $\\mathcal{L}(\\mathcal{C})$ is the length (perimeter) of the loop. This occurs in the deconfined phase (e.g., high temperature or Abelian theories).\n1766: \n1767: 2. **Area Law (Confinement):**\n1768: \n1769: $$\n1770: \\langle W_{\\mathcal{C}} \\rangle \\sim e^{-\\sigma \\mathcal{A}(\\mathcal{C})}\n1771: $$\n1772: \n1773: where $\\mathcal{A}(\\mathcal{C})$ is the minimal area enclosed by the loop, and $\\sigma > 0$ is the **string tension**. This occurs in the confined phase of non-Abelian gauge theories.\n1774: ",
       "_registry_context": {
         "stage": "directives",
@@ -546,6 +580,7 @@
         "label": "def-cg-glueball"
       },
       "section": "## 7. The Mass Gap",
+      "references": [],
       "raw_directive": "1967: ### 7.1 Glueballs and the Spectrum\n1968: \n1969: :::{prf:definition} Glueball States\n1970: :label: def-cg-glueball\n1971: \n1972: In a pure Yang-Mills theory (without quarks), the **glueball** is the lightest bound state of gluons. Glueballs are characterized by their quantum numbers:\n1973: - **Spin** $J$ (angular momentum)\n1974: - **Parity** $P = \\pm 1$\n1975: - **Charge conjugation** $C = \\pm 1$ (for neutral states)\n1976: \n1977: The **glueball spectrum** is the set of energy eigenvalues $\\{E_n\\}$ of these bound states, ordered as:\n1978: \n1979: $$\n1980: 0 = E_0 < E_1 \\leq E_2 \\leq \\cdots\n1981: $$\n1982: ",
       "_registry_context": {
         "stage": "directives",
@@ -571,6 +606,7 @@
         "label": "def-mass-gap"
       },
       "section": "## 7. The Mass Gap",
+      "references": [],
       "raw_directive": "1984: :::\n1985: \n1986: :::{prf:definition} Mass Gap\n1987: :label: def-mass-gap\n1988: \n1989: The **mass gap** $\\Delta_{\\text{YM}}$ is the energy of the lightest non-trivial excitation above the vacuum:\n1990: \n1991: $$\n1992: \\Delta_{\\text{YM}} := E_1 - E_0 = E_1\n1993: $$\n1994: \n1995: where $E_1$ is the mass of the lightest glueball (typically the $0^{++}$ scalar glueball).\n1996: ",
       "_registry_context": {
         "stage": "directives",
@@ -596,6 +632,7 @@
         "label": "def-os-reflection-operator"
       },
       "section": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+      "references": [],
       "raw_directive": "2197: #### Preliminary Definitions\n2198: \n2199: :::{prf:definition} Euclidean Reflection Operator\n2200: :label: def-os-reflection-operator\n2201: \n2202: For a coordinate direction $\\mu \\in \\{0, 1, 2, 3\\}$, the **reflection operator** $\\theta_\\mu: \\mathbb{R}^4 \\to \\mathbb{R}^4$ is defined by:\n2203: \n2204: $$\n2205: \\theta_\\mu(x^0, x^1, x^2, x^3) := (x^0, \\ldots, -x^\\mu, \\ldots, x^3)\n2206: $$\n2207: \n2208: For the **time direction** (choosing $\\mu = 0$), we write:\n2209: \n2210: $$\n2211: \\theta(x^0, \\vec{x}) := (-x^0, \\vec{x})\n2212: $$\n2213: ",
       "_registry_context": {
         "stage": "directives",
@@ -621,6 +658,7 @@
         "label": "def-os-half-space"
       },
       "section": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+      "references": [],
       "raw_directive": "2215: :::\n2216: \n2217: :::{prf:definition} Half-Space and Test Functions\n2218: :label: def-os-half-space\n2219: \n2220: The **time-positive half-space** is:\n2221: \n2222: $$\n2223: \\mathcal{H}_+ := \\{x \\in \\mathbb{R}^4 : x^0 \\geq 0\\}\n2224: $$\n2225: ",
       "_registry_context": {
         "stage": "directives",
@@ -646,6 +684,7 @@
         "label": "def-os4-axiom"
       },
       "section": "## 8. Osterwalder-Schrader Axiom Verification and CMI Criteria",
+      "references": [],
       "raw_directive": "2325: #### 8.3.1 OS4 Axiom Statement\n2326: \n2327: :::{prf:definition} OS4 Axiom (Clustering)\n2328: :label: def-os4-axiom\n2329: \n2330: **(Osterwalder-Schrader 1973, Axiom OS4)**\n2331: \n2332: The Schwinger functions (Euclidean correlation functions) satisfy **exponential clustering**: for any gauge-invariant observables $\\mathcal{O}_1, \\mathcal{O}_2$ supported on regions separated by distance $R$:\n2333: \n2334: $$\n2335: \\left| \\langle \\mathcal{O}_1 \\mathcal{O}_2 \\rangle_{\\pi} - \\langle \\mathcal{O}_1 \\rangle_{\\pi} \\langle \\mathcal{O}_2 \\rangle_{\\pi} \\right| \\leq C_{\\mathcal{O}_1, \\mathcal{O}_2} \\cdot e^{-m_{\\text{gap}} R}\n2336: $$\n2337: \n2338: where:\n2339: - $\\pi$ is the invariant measure (QSD for Crystalline Gas)\n2340: - $R = \\inf\\{d(x,y) : x \\in \\text{supp}(\\mathcal{O}_1), y \\in \\text{supp}(\\mathcal{O}_2)\\}$ is the separation distance\n2341: - $m_{\\text{gap}} > 0$ is the **mass gap** (correlation length)\n2342: - $C_{\\mathcal{O}_1, \\mathcal{O}_2} < \\infty$ depends on the observables but not on $R$\n2343: ",
       "_registry_context": {
         "stage": "directives",

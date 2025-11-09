@@ -2,7 +2,7 @@
   "document_id": "14_geometric_gas_c4_regularity",
   "stage": "directives",
   "directive_type": "lemma",
-  "generated_at": "2025-11-08T17:16:20.323363+00:00",
+  "generated_at": "2025-11-08T23:19:38.340863+00:00",
   "count": 6,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "lem-weight-fourth-derivative"
       },
       "section": "## 4. Fourth Derivatives of Localization Weights",
+      "references": [],
       "raw_directive": "395: ## 4. Fourth Derivatives of Localization Weights\n396: \n397: :::{prf:lemma} Fourth Derivative of Localization Weights\n398: :label: lem-weight-fourth-derivative\n399: \n400: $$\n401: \\|\\nabla^4_{x_i} w_{ij}(\\rho)\\| \\le C_{w,4}(\\rho) = O(\\rho^{-4})\n402: \n403: $$\n404: \n405: where the constant $C_{w,4}(\\rho)$ is derived from the quotient rule applied to:\n406: \n407: $$\n408: w_{ij}(\\rho) = \\frac{K_\\rho(x_i, x_j)}{\\sum_{j' \\in A_k} K_\\rho(x_i, x_{j'})}\n409: \n410: $$\n411: \n412: The fourth derivative involves sums of products of kernel derivatives up to order 4, with dominant term $C_{\\nabla^4 K}(\\rho) = 24/\\rho^4$ from the Gaussian kernel.\n413: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "lem-weight-telescoping-fourth"
       },
       "section": "## 4. Fourth Derivatives of Localization Weights",
+      "references": [],
       "raw_directive": "427: :::\n428: \n429: :::{prf:lemma} Telescoping Property for Fourth Derivative\n430: :label: lem-weight-telescoping-fourth\n431: \n432: $$\n433: \\sum_{j \\in A_k} \\nabla^4_{x_i} w_{ij}(\\rho) = 0\n434: \n435: $$\n436: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "lem-mean-fourth-derivative"
       },
       "section": "## 5. Fourth Derivatives of Localized Moments",
+      "references": [],
       "raw_directive": "455: ## 5. Fourth Derivatives of Localized Moments\n456: \n457: :::{prf:lemma} Fourth Derivative of Localized Mean\n458: :label: lem-mean-fourth-derivative\n459: \n460: The localized mean $\\mu_\\rho[f_k, d, x_i] = \\sum_{j \\in A_k} w_{ij}(\\rho) d(x_j)$ satisfies:\n461: \n462: $$\n463: \\|\\nabla^4_{x_i} \\mu_\\rho\\| \\le C_{\\mu,\\nabla^4}(\\rho) = d^{(4)}_{\\max} + \\frac{12 d'_{\\max} C_{\\nabla^3 K}(\\rho)}{\\rho^3} + \\frac{24 d''_{\\max} C_{\\nabla^2 K}(\\rho)}{\\rho^2} + \\frac{24 d'''_{\\max} C_{\\nabla K}(\\rho)}{\\rho} + 2 d_{\\max} C_{w,4}(\\rho)\n464: \n465: $$\n466: ",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +99,7 @@
         "label": "lem-variance-fourth-derivative"
       },
       "section": "## 5. Fourth Derivatives of Localized Moments",
+      "references": [],
       "raw_directive": "552: :::\n553: \n554: :::{prf:lemma} Fourth Derivative of Localized Variance\n555: :label: lem-variance-fourth-derivative\n556: \n557: The localized variance $\\sigma^2_\\rho[f_k, d, x_i] = \\sum_{j \\in A_k} w_{ij}(\\rho) [d(x_j) - \\mu_\\rho[f_k, d, x_i]]^2$ satisfies:\n558: \n559: $$\n560: \\|\\nabla^4_{x_i} \\sigma^2_\\rho\\| \\le C_{V,\\nabla^4}(\\rho) = O(\\rho^{-3})\n561: \n562: $$\n563: ",
       "_registry_context": {
         "stage": "directives",
@@ -121,6 +125,7 @@
         "label": "lem-reg-fourth-chain"
       },
       "section": "## 6. Fourth Derivative Chain Rule for Regularized Standard Deviation",
+      "references": [],
       "raw_directive": "687: ## 6. Fourth Derivative Chain Rule for Regularized Standard Deviation\n688: \n689: :::{prf:lemma} Chain Rule for $\\sigma'_{\\text{reg}}$\n690: :label: lem-reg-fourth-chain\n691: \n692: For $h(x) = \\sigma'_{\\text{reg}}(V(x))$ where $V(x) = \\sigma^2_\\rho[f_k, d, x]$, the fourth derivative is:\n693: \n694: $$\n695: \\begin{align}\n696: \\nabla^4 h = \\,&(\\sigma'_{\\text{reg}})^{(4)}(V) \\cdot (\\nabla V)^{\\otimes 4} + 6 (\\sigma'_{\\text{reg}})^{(3)}(V) \\cdot (\\nabla V)^{\\otimes 2} \\otimes \\nabla^2 V \\\\\n697: &+ 3 (\\sigma'_{\\text{reg}})^{(2)}(V) \\cdot (\\nabla^2 V)^{\\otimes 2} + 4 (\\sigma'_{\\text{reg}})^{(2)}(V) \\cdot \\nabla V \\otimes \\nabla^3 V \\\\\n698: &+ (\\sigma'_{\\text{reg}})^{(1)}(V) \\cdot \\nabla^4 V\n699: \\end{align}\n700: \n701: $$\n702: \n703: **Norm bound:**\n704: \n705: $$\n706: \\|\\nabla^4 h\\| \\le \\frac{15}{16\\sigma'^7_{\\min}} \\|\\nabla V\\|^4 + \\frac{6 \\cdot 3}{8\\sigma'^5_{\\min}} \\|\\nabla V\\|^2 \\|\\nabla^2 V\\| + \\frac{3}{4\\sigma'^3_{\\min}} \\|\\nabla^2 V\\|^2 + \\frac{4}{4\\sigma'^3_{\\min}} \\|\\nabla V\\| \\|\\nabla^3 V\\| + \\frac{1}{2\\sigma'_{\\min}} \\|\\nabla^4 V\\|\n707: \n708: $$\n709: \n710: Simplifying:\n711: \n712: $$\n713: \\|\\nabla^4 h\\| \\le \\frac{15}{16\\sigma'^7_{\\min}} \\|\\nabla V\\|^4 + \\frac{9}{4\\sigma'^5_{\\min}} \\|\\nabla V\\|^2 \\|\\nabla^2 V\\| + \\frac{3}{4\\sigma'^3_{\\min}} \\|\\nabla^2 V\\|^2 + \\frac{1}{\\sigma'^3_{\\min}} \\|\\nabla V\\| \\|\\nabla^3 V\\| + \\frac{1}{2\\sigma'_{\\min}} \\|\\nabla^4 V\\|\n714: \n715: $$",
       "_registry_context": {
         "stage": "directives",
@@ -146,6 +151,7 @@
         "label": "lem-zscore-fourth-derivative"
       },
       "section": "## 7. Fourth Derivative of the Z-Score",
+      "references": [],
       "raw_directive": "733: ## 7. Fourth Derivative of the Z-Score\n734: \n735: :::{prf:lemma} Fourth Derivative of Z-Score\n736: :label: lem-zscore-fourth-derivative\n737: \n738: The Z-score $Z_\\rho[f_k, d, x_i] = \\frac{d(x_i) - \\mu_\\rho[f_k, d, x_i]}{\\sigma'_{\\text{reg}}(\\sigma^2_\\rho[f_k, d, x_i])}$ satisfies:\n739: \n740: $$\n741: \\|\\nabla^4_{x_i} Z_\\rho\\| \\le K_{Z,4}(\\rho) = O(\\rho^{-3})\n742: \n743: $$\n744: ",
       "_registry_context": {
         "stage": "directives",

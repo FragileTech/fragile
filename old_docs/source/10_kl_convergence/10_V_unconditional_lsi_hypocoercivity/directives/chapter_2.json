@@ -19,6 +19,7 @@
         "label": "thm-bakry-emery-classical"
       },
       "section": "## 0.2 Why Classical Bakry-\u00c9mery Fails",
+      "references": [],
       "raw_directive": "118: The classical Bakry-\u00c9mery criterion (Bakry-\u00c9mery 1985) states:\n119: \n120: :::{prf:theorem} Classical Bakry-\u00c9mery Criterion\n121: :label: thm-bakry-emery-classical\n122: \n123: Let $L$ be a diffusion generator on $\\mathbb{R}^d$ with invariant measure $\\pi$. Define:\n124: - **Carr\u00e9 du champ**: $\\Gamma(f, f) = \\frac{1}{2}(L(f^2) - 2f Lf) = |\\nabla f|^2$\n125: - **Iterated carr\u00e9 du champ**: $\\Gamma_2(f, f) = \\frac{1}{2}(L\\Gamma(f,f) - 2\\Gamma(f, Lf))$\n126: \n127: If there exists $\\rho > 0$ such that for all smooth $f$:\n128: $$\n129: \\Gamma_2(f, f) \\geq \\rho \\cdot \\Gamma(f, f)\n130: $$\n131: "
     }
   ],

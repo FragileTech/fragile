@@ -2,7 +2,7 @@
   "document_id": "07_mean_field",
   "stage": "directives",
   "directive_type": "lemma",
-  "generated_at": "2025-11-08T17:16:20.159829+00:00",
+  "generated_at": "2025-11-08T23:19:38.253719+00:00",
   "count": 1,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "lem-mass-conservation-transport"
       },
       "section": "## 3. The Mass-Conserving Forward Equation (PDE)",
+      "references": [],
       "raw_directive": "570: With the reflecting boundary conditions established in Section 2.2, this transport operator conserves total mass. This is a crucial simplification over models with absorbing boundaries.\n571: \n572: :::{prf:lemma} Mass Conservation of Transport\n573: :label: lem-mass-conservation-transport\n574: \n575: The integral of the transport operator over the domain $\\Omega$ vanishes due to the reflecting boundary conditions on both position and velocity boundaries:\n576: \n577: $$\n578: \\int_\\Omega L^\\dagger f(t,z)\\,\\mathrm{d}z = 0\n579: $$",
       "_registry_context": {
         "stage": "directives",

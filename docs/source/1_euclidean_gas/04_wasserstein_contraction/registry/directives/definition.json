@@ -2,7 +2,7 @@
   "document_id": "04_wasserstein_contraction",
   "stage": "directives",
   "directive_type": "definition",
-  "generated_at": "2025-11-08T17:16:20.143044+00:00",
+  "generated_at": "2025-11-08T23:19:38.243547+00:00",
   "count": 2,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "def-target-complement"
       },
       "section": "## 2. Cluster-Preserving Coupling",
+      "references": [],
       "raw_directive": "144: We first recall the cluster-based partition from [03_cloning](03_cloning).\n145: \n146: :::{prf:definition} Target Set and Complement\n147: :label: def-target-complement\n148: \n149: For a swarm $S_k$ with alive set $\\mathcal{A}_k$, define:\n150: \n151: **Target Set** (from [03_cloning](03_cloning), Section 8.2):\n152: \n153: $$\n154: I_k(\\varepsilon) := U_k \\cap H_k(\\varepsilon)\n155: \n156: $$\n157: where:\n158: - $U_k$ is the unfit set (Definition 7.6.1.0, line 4499): walkers with fitness $\\leq$ mean\n159: - $H_k(\\varepsilon)$ is the unified high-error set (Definition 6.3, line 2351): outlier clusters in phase space\n160: \n161: **Complement Set**:\n162: \n163: $$\n164: J_k(\\varepsilon) := \\mathcal{A}_k \\setminus I_k(\\varepsilon)\n165: \n166: $$\n167: \n168: **Population fractions**:\n169: \n170: $$\n171: f_I(\\varepsilon) := \\frac{|I_k|}{k}, \\quad f_J(\\varepsilon) := \\frac{|J_k|}{k} = 1 - f_I(\\varepsilon)\n172: \n173: $$\n174: \n175: **Guaranteed lower bound** (Theorem 7.6.1, line 4572):\n176: \n177: $$\n178: f_I(\\varepsilon) \\geq f_{UH}(\\varepsilon) > 0 \\quad \\text{(N-uniform)}\n179: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "def-cluster-coupling"
       },
       "section": "## 2. Cluster-Preserving Coupling",
+      "references": [],
       "raw_directive": "218: Instead of coupling individual walkers, we couple at the **population level**.\n219: \n220: :::{prf:definition} Cluster-Preserving Coupling\n221: :label: def-cluster-coupling\n222: \n223: For two swarms $(S_1, S_2)$ with partitions $(I_1, J_1)$ and $(I_2, J_2)$, the **cluster-preserving coupling** evolves them to $(S_1', S_2')$ using the following procedure:\n224: \n225: **Step 1: Independent Cluster Partitions**\n226: \n227: For each swarm $k \\in \\{1, 2\\}$ independently:\n228: 1. Apply the clustering algorithm from Definition 6.3 in [03_cloning](03_cloning) with parameter $\\varepsilon$\n229: 2. Compute unfit set $U_k$ (walkers with $V_{k,i} \\leq \\mu_{V,k}$)\n230: 3. Form target set $I_k = U_k \\cap H_k(\\varepsilon)$ and complement $J_k$\n231: \n232: **Step 2: Population-Level Matching**\n233: \n234: Within each population pair $(I_1, I_2)$ and $(J_1, J_2)$:\n235: 1. Use any matching distribution (e.g., Gibbs, uniform, or optimal transport)\n236: 2. **Key**: We only care about **population-level expectations**, not individual matchings\n237: \n238: **Step 3: Shared Cloning Randomness**\n239: \n240: For each matched pair of walkers $(i_1, i_2)$:\n241: 1. Sample shared threshold: $T \\sim \\text{Uniform}(0, p_{\\max})$\n242: 2. Walker $i$ in swarm $k$ clones if $T < p_{k,i}$\n243: 3. If cloning, sample shared jitter: $\\zeta \\sim \\mathcal{N}(0, \\delta^2 I_d)$\n244: \n245: **Step 4: Update Positions**\n246: \n247: $$\n248: x'_{k,i} = \\begin{cases}\n249: x_{k, \\pi(i)} + \\zeta & \\text{if } T < p_{k,i} \\text{ (clone)} \\\\\n250: x_{k,i} & \\text{if } T \\geq p_{k,i} \\text{ (persist)}\n251: \\end{cases}\n252: ",
       "_registry_context": {
         "stage": "directives",

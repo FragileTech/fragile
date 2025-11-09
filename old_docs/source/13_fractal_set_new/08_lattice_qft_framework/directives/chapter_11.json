@@ -19,6 +19,7 @@
         "label": "pred-adaptive-gas-confinement"
       },
       "section": "## 11. Physical Predictions",
+      "references": [],
       "raw_directive": "5501: ### 11.1. Confinement in Fitness Landscapes\n5502: \n5503: :::{prf:prediction} Adaptive Gas Exhibits Confinement\n5504: :label: pred-adaptive-gas-confinement\n5505: \n5506: **Source:** [13_E_cst_ig_lattice_qft.md \u00a7 11.1, lines 1549-1577]\n5507: \n5508: **Hypothesis:** The Adaptive Gas in multi-modal fitness landscapes exhibits **confinement-like behavior**, analogous to quark confinement in QCD.\n5509: \n5510: **Observable:** Measure Wilson loops on CST+IG for different loop sizes $R$:\n5511: \n5512: $$\n5513: \\langle W[R] \\rangle \\sim e^{-\\sigma R^2}\n5514: \n5515: $$\n5516: \n5517: (area law with string tension $\\sigma > 0$).\n5518: \n5519: **Physical interpretation:** Walkers trapped in fitness basins are analogous to confined quarks\u2014attempting to separate them costs energy $\\propto$ distance (fitness penalty).\n5520: \n5521: **Prediction:** String tension related to **barrier height**:\n5522: \n5523: $$\n5524: \\sigma \\sim \\frac{\\Delta \\Phi_{\\text{fit}}}{\\delta^2}\n5525: \n5526: $$\n5527: \n5528: where $\\Delta \\Phi_{\\text{fit}}$ is barrier height and $\\delta$ is cloning noise scale.\n5529: \n5530: **Experimental test:**\n5531: 1. Design fitness landscape with known barrier heights\n5532: 2. Run Adaptive Gas, construct CST+IG\n5533: 3. Measure $\\sigma$ from Wilson loop scaling"
     },
     {
@@ -37,6 +38,7 @@
         "label": "pred-confinement-deconfinement-transition"
       },
       "section": "## 11. Physical Predictions",
+      "references": [],
       "raw_directive": "5537: ### 11.2. Phase Transitions in Parameter Space\n5538: \n5539: :::{prf:prediction} Confinement-Deconfinement Transition\n5540: :label: pred-confinement-deconfinement-transition\n5541: \n5542: **Source:** [13_E_cst_ig_lattice_qft.md \u00a7 11.2, lines 1581-1602]\n5543: \n5544: **Hypothesis:** As algorithmic parameters vary (cloning noise $\\delta$, selection pressure $T$), the CST+IG lattice undergoes **phase transition** from confined to deconfined phase.\n5545: \n5546: **Order parameter:** String tension $\\sigma(\\delta, T)$\n5547: \n5548: **Phase diagram:**\n5549: \n5550: | **Phase** | **Parameters** | **$\\sigma$** | **Physics** |\n5551: |-----------|----------------|--------------|-------------|\n5552: | **Confined** | Small $\\delta$, low $T$ | $\\sigma > 0$ | Walkers trapped, area law |\n5553: | **Deconfined** | Large $\\delta$, high $T$ | $\\sigma = 0$ | Walkers free, perimeter law |\n5554: | **Critical point** | $\\delta_c(T)$ | $\\sigma \\to 0^+$ | Phase transition |\n5555: "
     }
   ],

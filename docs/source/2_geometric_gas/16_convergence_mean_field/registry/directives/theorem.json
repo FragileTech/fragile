@@ -2,7 +2,7 @@
   "document_id": "16_convergence_mean_field",
   "stage": "directives",
   "directive_type": "theorem",
-  "generated_at": "2025-11-08T17:16:20.263453+00:00",
+  "generated_at": "2025-11-08T23:19:38.304773+00:00",
   "count": 18,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "thm-finite-n-lsi-preservation"
       },
       "section": "## 2. Analysis of the Finite-N to Mean-Field Transition",
+      "references": [],
       "raw_directive": "525: From [09_kl_convergence.md](../1_euclidean_gas/09_kl_convergence.md), the finite-N cloning operator $\\Psi_{\\text{clone}}$ satisfies:\n526: \n527: :::{prf:theorem} Finite-N LSI Preservation (Proven)\n528: :label: thm-finite-n-lsi-preservation\n529: \n530: The N-particle cloning operator $\\Psi_{\\text{clone}}: \\Sigma_N \\to \\Sigma_N$ **preserves the LSI** with controlled constant degradation. Specifically, if a distribution $\\mu$ on $\\Sigma_N$ satisfies:\n531: \n532: $$\n533: D_{\\text{KL}}(\\mu \\| \\pi) \\le C_{\\text{LSI}} \\cdot I(\\mu \\| \\pi)\n534: \n535: $$\n536: \n537: then the push-forward $\\Psi_{\\text{clone}}^* \\mu$ satisfies:\n538: \n539: $$\n540: D_{\\text{KL}}(\\Psi_{\\text{clone}}^* \\mu \\| \\Psi_{\\text{clone}}^* \\pi) \\le C'_{\\text{LSI}} \\cdot I(\\Psi_{\\text{clone}}^* \\mu \\| \\Psi_{\\text{clone}}^* \\pi)\n541: \n542: $$\n543: \n544: where $C'_{\\text{LSI}} = C_{\\text{LSI}} \\cdot (1 + O(\\delta^2))$ for cloning noise variance $\\delta^2$.\n545: \n546: **Key mechanism**: The cloning operator introduces small Gaussian noise ($\\delta \\xi$) when copying walkers, which regularizes the Fisher information and prevents LSI constant blow-up.\n547: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "thm-data-processing"
       },
       "section": "## 2. Analysis of the Finite-N to Mean-Field Transition",
+      "references": [],
       "raw_directive": "588: This is analogous to updating a prior $\\rho$ by conditioning on the event \"walker survives.\" Bayesian updates are known to be KL-contractive:\n589: \n590: :::{prf:theorem} Data Processing Inequality (Standard Result)\n591: :label: thm-data-processing\n592: \n593: For any Markov kernel $K: \\mathcal{X} \\to \\mathcal{P}(\\mathcal{Y})$ and probability measures $\\rho, \\sigma \\in \\mathcal{P}(\\mathcal{X})$:\n594: \n595: $$\n596: D_{\\text{KL}}(K \\rho \\| K \\sigma) \\le D_{\\text{KL}}(\\rho \\| \\sigma)\n597: \n598: $$\n599: \n600: where the push-forward measure is $(K\\rho)(B) = \\int_{\\mathcal{X}} K(x, B) \\, \\rho(dx)$ for measurable $B \\subseteq \\mathcal{Y}$.\n601: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "thm-revival-kl-expansive"
       },
       "section": "## 7. Gemini's Expert Analysis and Verification",
+      "references": [],
       "raw_directive": "1198: **Conclusion**: Since $D_{\\text{KL}} \\ge 0$, $\\lambda > 0$, $m_d > 0$, and $\\|\\rho\\|_{L^1} > 0$, the entropy production is **strictly positive**.\n1199: \n1200: :::{prf:theorem} Revival Operator is KL-Expansive (VERIFIED)\n1201: :label: thm-revival-kl-expansive\n1202: \n1203: The mean-field revival operator $\\mathcal{R}[\\rho, m_d]$ **increases** the KL-divergence to the invariant measure $\\pi$:\n1204: \n1205: $$\n1206: \\frac{d}{dt} D_{\\text{KL}}(\\rho \\| \\pi) \\Big|_{\\text{revival}} > 0 \\quad \\text{for all } \\rho \\neq \\pi, \\, m_d > 0\n1207: \n1208: $$\n1209: ",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +99,7 @@
         "label": "thm-joint-not-contractive"
       },
       "section": "## 7. Gemini's Expert Analysis and Verification",
+      "references": [],
       "raw_directive": "1224: - **Negative** when $\\|\\rho\\|_{L^1} > \\frac{\\lambda}{\\lambda + \\kappa}$ (contractive above equilibrium)\n1225: \n1226: :::{prf:theorem} Joint Jump Operator NOT Unconditionally Contractive (VERIFIED)\n1227: :label: thm-joint-not-contractive\n1228: ",
       "_registry_context": {
         "stage": "directives",
@@ -121,6 +125,7 @@
         "label": "thm-stage0-complete"
       },
       "section": "## 8. Stage 0 Conclusion",
+      "references": [],
       "raw_directive": "1253: ### 8.1. Main Result\n1254: \n1255: :::{prf:theorem} Stage 0 COMPLETE (VERIFIED)\n1256: :label: thm-stage0-complete\n1257: \n1258: 1. **Revival operator is KL-expansive**:\n1259: \n1260: $$\n1261: \\frac{d}{dt} D_{\\text{KL}}(\\rho \\| \\pi)\\bigg|_{\\text{revival}} = \\lambda_{\\text{revive}} m_d \\left(1 + \\frac{D_{\\text{KL}}(\\rho \\| \\pi)}{\\|\\rho\\|}\\right) > 0\n1262: \n1263: $$\n1264: \n1265: for all $\\rho \\not\\propto \\pi$ with $m_d > 0$.\n1266: \n1267: 2. **Joint jump operator not unconditionally contractive**: The combined operator's entropy production sign depends on the mass level $\\|\\rho\\|$ and can be either positive or negative.\n1268: ",
       "_registry_context": {
         "stage": "directives",
@@ -146,6 +151,7 @@
         "label": "thm-qsd-existence-corrected"
       },
       "section": "## 1. QSD Existence and Uniqueness (R1)",
+      "references": [],
       "raw_directive": "1574: ### 1.4. Main Existence Theorem (Corrected)\n1575: \n1576: :::{prf:theorem} QSD Existence via Nonlinear Fixed-Point\n1577: :label: thm-qsd-existence-corrected\n1578: \n1579: Under Assumptions A1-A4, there exists a quasi-stationary distribution $\\rho_\\infty \\in \\mathcal{P}(\\Omega)$ satisfying $\\mathcal{L}[\\rho_\\infty] = 0$ with $\\|\\rho_\\infty\\|_{L^1} = M_\\infty < 1$.\n1580: ",
       "_registry_context": {
         "stage": "directives",
@@ -171,6 +177,7 @@
         "label": "thm-qsd-stability"
       },
       "section": "## 1. QSD Existence and Uniqueness (R1)",
+      "references": [],
       "raw_directive": "1715: We now apply the **Champagnat-Villemonais stability theorem** (Champagnat & Villemonais 2017, Theorem 2.2):\n1716: \n1717: :::{prf:theorem} QSD Stability (Champagnat-Villemonais)\n1718: :label: thm-qsd-stability\n1719: \n1720: Let $\\{\\mathcal{L}_n\\}$ be a sequence of operators with QSDs $\\{\\rho_n\\}$ and absorption rates $\\{\\lambda_n\\}$. Suppose:\n1721: 1. $\\mathcal{L}_n \\to \\mathcal{L}_\\infty$ in resolvent sense\n1722: 2. The QSDs satisfy uniform moment bounds: $\\sup_n \\int V \\rho_n < \\infty$ for some Lyapunov $V$\n1723: 3. The absorption rates $\\lambda_n$ are uniformly bounded away from zero\n1724: ",
       "_registry_context": {
         "stage": "directives",
@@ -196,6 +203,7 @@
         "label": "thm-qsd-smoothness"
       },
       "section": "## 2. Smoothness and Positivity (R2, R3)",
+      "references": [],
       "raw_directive": "1820: 4. Repeat: $\\rho_\\infty \\in C^\\infty$\n1821: \n1822: :::{prf:theorem} QSD Smoothness\n1823: :label: thm-qsd-smoothness\n1824: \n1825: Under Assumptions A1-A4 with $\\kappa_{\\text{kill}} \\in C^\\infty(\\mathcal{X})$, the QSD $\\rho_\\infty$ belongs to $C^\\infty(\\Omega)$.\n1826: ",
       "_registry_context": {
         "stage": "directives",
@@ -221,6 +229,7 @@
         "label": "thm-qsd-positivity"
       },
       "section": "## 2. Smoothness and Positivity (R2, R3)",
+      "references": [],
       "raw_directive": "1830: ### 2.3. Strict Positivity via Irreducibility\n1831: \n1832: :::{prf:theorem} QSD Strict Positivity\n1833: :label: thm-qsd-positivity\n1834: \n1835: Under Assumptions A1-A4, the QSD $\\rho_\\infty$ satisfies $\\rho_\\infty(x,v) > 0$ for all $(x,v) \\in \\Omega$.\n1836: ",
       "_registry_context": {
         "stage": "directives",
@@ -246,6 +255,7 @@
         "label": "thm-exponential-tails"
       },
       "section": "## 4. Exponential Concentration (R6)",
+      "references": [],
       "raw_directive": "2756: ### 4.3. Main Exponential Concentration Result\n2757: \n2758: :::{prf:theorem} Exponential Tails for QSD\n2759: :label: thm-exponential-tails\n2760: \n2761: Under Assumptions A1-A4, the QSD $\\rho_\\infty$ satisfies:\n2762: \n2763: $$\n2764: \\rho_\\infty(x,v) \\le C e^{-\\alpha(|x|^2 + |v|^2)}\n2765: \n2766: $$\n2767: \n2768: for some constants $\\alpha, C > 0$ depending on $\\gamma$, $\\sigma^2$, $\\kappa_{\\text{conf}}$, and $\\kappa_{\\max}$.\n2769: ",
       "_registry_context": {
         "stage": "directives",
@@ -271,6 +281,7 @@
         "label": "thm-corrected-kl-convergence"
       },
       "section": "## 4. Main Theorem (Corrected)",
+      "references": [],
       "raw_directive": "3685: ## 4. Main Theorem (Corrected)\n3686: \n3687: :::{prf:theorem} KL-Convergence for Mean-Field Euclidean Gas (CORRECTED)\n3688: :label: thm-corrected-kl-convergence\n3689: \n3690: If the kinetic dominance condition holds:\n3691: \n3692: $$\n3693: \\sigma^2 \\gamma \\kappa_{\\text{conf}} > C_0 \\max\\left(\\frac{\\lambda}{M_\\infty}, \\bar{\\kappa}\\right)\n3694: \n3695: $$\n3696: \n3697: then the mean-field Euclidean Gas converges exponentially to its QSD:\n3698: \n3699: $$\n3700: D_{\\text{KL}}(\\rho_t \\| \\rho_\\infty) \\le e^{-\\alpha_{\\text{net}} t} D_{\\text{KL}}(\\rho_0 \\| \\rho_\\infty) + \\frac{B_{\\text{jump}}}{\\alpha_{\\text{net}}} (1 - e^{-\\alpha_{\\text{net}} t})\n3701: \n3702: $$\n3703: \n3704: where $\\alpha_{\\text{net}} = \\alpha_{\\text{kin}} - A_{\\text{jump}} > 0$.\n3705: ",
       "_registry_context": {
         "stage": "directives",
@@ -296,6 +307,7 @@
         "label": "thm-lsi-qsd"
       },
       "section": "## 2. Log-Sobolev Inequality for the QSD",
+      "references": [],
       "raw_directive": "3995: The core of hypocoercivity is relating Fisher information to KL divergence:\n3996: \n3997: :::{prf:theorem} Log-Sobolev Inequality (LSI) for QSD\n3998: :label: thm-lsi-qsd\n3999: \n4000: There exists a constant $\\lambda_{\\text{LSI}} > 0$ such that for all probability densities $\\rho$ on $\\Omega$:\n4001: \n4002: $$\n4003: D_{\\text{KL}}(\\rho \\| \\rho_\\infty) \\le \\frac{1}{2\\lambda_{\\text{LSI}}} I_v(\\rho \\| \\rho_\\infty)\n4004: \n4005: $$\n4006: ",
       "_registry_context": {
         "stage": "directives",
@@ -321,6 +333,7 @@
         "label": "thm-lsi-constant-explicit"
       },
       "section": "## 2. Log-Sobolev Inequality for the QSD",
+      "references": [],
       "raw_directive": "4061: The true QSD $\\rho_\\infty^x(v)$ is not exactly Gaussian, but it's close (bounded perturbation). Using perturbative LSI theory (Holley-Stroock):\n4062: \n4063: :::{prf:theorem} Explicit LSI Constant\n4064: :label: thm-lsi-constant-explicit\n4065: \n4066: The LSI constant for the QSD satisfies:\n4067: \n4068: $$\n4069: \\boxed{\\lambda_{\\text{LSI}} \\ge \\frac{\\alpha_{\\exp}}{1 + C_{\\Delta v}/\\alpha_{\\exp}}}\n4070: \n4071: $$\n4072: \n4073: where:\n4074: - $\\alpha_{\\exp}$ is the exponential concentration rate from (R6)",
       "_registry_context": {
         "stage": "directives",
@@ -346,6 +359,7 @@
         "label": "thm-exponential-convergence-local"
       },
       "section": "## 5. Assembling the Coercivity Gap",
+      "references": [],
       "raw_directive": "4641: **For exact exponential convergence to $\\rho_\\infty$**: We need $C_{\\text{offset}} = 0$, which requires tighter control of the constant terms. This is typically achieved by working in a **local basin** around $\\rho_\\infty$ where quadratic approximations are valid.\n4642: \n4643: :::{prf:theorem} Exponential Convergence (Local)\n4644: :label: thm-exponential-convergence-local\n4645: \n4646: Assume $\\delta > 0$ and that $\\rho_0$ satisfies $D_{\\text{KL}}(\\rho_0 \\| \\rho_\\infty) \\le \\epsilon_0$ for sufficiently small $\\epsilon_0$. Then:\n4647: \n4648: $$\n4649: D_{\\text{KL}}(\\rho_t \\| \\rho_\\infty) \\le e^{-\\alpha_{\\text{net}} t} D_{\\text{KL}}(\\rho_0 \\| \\rho_\\infty)\n4650: \n4651: $$\n4652: \n4653: where:\n4654: \n4655: $$\n4656: \\boxed{\\alpha_{\\text{net}} = \\frac{\\delta}{2}}\n4657: \n4658: $$\n4659: ",
       "_registry_context": {
         "stage": "directives",
@@ -371,6 +385,7 @@
         "label": "thm-main-explicit-rate"
       },
       "section": "## 10. Conclusion",
+      "references": [],
       "raw_directive": "4845: ## 10. Conclusion\n4846: \n4847: :::{prf:theorem} Main Result: Explicit Convergence Rate\n4848: :label: thm-main-explicit-rate\n4849: \n4850: Under the assumptions of Stage 0.5 (QSD regularity R1-R6) and the parameter condition:\n4851: \n4852: $$\n4853: \\sigma^2 > \\sigma_{\\text{crit}}^2 := \\frac{2\\lambda_{\\text{LSI}} C_{\\text{Fisher}}^{\\text{coup}} + C_{\\text{KL}}^{\\text{coup}} + A_{\\text{jump}}}{\\lambda_{\\text{LSI}}}\n4854: \n4855: $$\n4856: \n4857: the mean-field Euclidean Gas converges exponentially to the QSD with rate:\n4858: \n4859: $$\n4860: \\boxed{\\alpha_{\\text{net}} = \\frac{1}{2}\\left(\\lambda_{\\text{LSI}} \\sigma^2 - 2\\lambda_{\\text{LSI}} C_{\\text{Fisher}}^{\\text{coup}} - C_{\\text{KL}}^{\\text{coup}} - A_{\\text{jump}}\\right)}\n4861: \n4862: $$\n4863: ",
       "_registry_context": {
         "stage": "directives",
@@ -396,6 +411,7 @@
         "label": "thm-alpha-net-explicit"
       },
       "section": "## 2. Explicit Convergence Rate Formula",
+      "references": [],
       "raw_directive": "5167: Substituting the expressions from Section 1:\n5168: \n5169: :::{prf:theorem} Mean-Field Convergence Rate (Explicit)\n5170: :label: thm-alpha-net-explicit\n5171: \n5172: The mean-field convergence rate as a function of simulation parameters is:\n5173: \n5174: $$\n5175: \\begin{aligned}\n5176: \\alpha_{\\text{net}}(\\tau, \\gamma, \\sigma, \\lambda_{\\text{revive}}, \\kappa_{\\max}, L_U) \\approx \\frac{1}{2} \\Bigg[\n5177: &\\frac{\\gamma \\sigma^2}{1 + \\gamma/\\lambda_{\\min} + \\lambda_{\\text{revive}}/(M_\\infty \\gamma)} \\\\\n5178: &- \\frac{2\\gamma}{\\sigma^2} \\left(\\sqrt{\\frac{\\kappa_{\\max}}{\\sigma^2}} + \\sqrt{\\frac{L_U}{\\gamma}} + \\gamma\\right) \\sigma\\tau\\sqrt{2d} \\\\\n5179: &- \\frac{2\\gamma L_U^3}{\\sigma^4(1 + \\gamma/\\lambda_{\\min})} \\\\\n5180: &- (C_{\\nabla x} + \\gamma) \\sqrt{2d\\sigma^2/\\gamma} \\\\\n5181: &- 2\\kappa_{\\max} - \\frac{\\kappa_0(\\lambda_{\\text{revive}} + \\kappa_0)^2}{\\lambda_{\\text{revive}}^2}\n5182: \\Bigg]\n5183: \\end{aligned}\n5184: \n5185: $$",
       "_registry_context": {
         "stage": "directives",
@@ -421,6 +437,7 @@
         "label": "thm-optimal-parameter-scaling"
       },
       "section": "## 2. Explicit Convergence Rate Formula",
+      "references": [],
       "raw_directive": "5260: This balances killing and revival, minimizing the dead/alive ratio fluctuations.\n5261: \n5262: :::{prf:theorem} Optimal Parameter Scaling\n5263: :label: thm-optimal-parameter-scaling\n5264: \n5265: For a landscape with Lipschitz constant $L_U$ and minimum Hessian eigenvalue $\\lambda_{\\min}$, the optimal parameter scaling is:\n5266: \n5267: $$\n5268: \\begin{aligned}\n5269: \\gamma^* &\\sim L_U^{3/7} \\\\\n5270: \\sigma^* &\\sim L_U^{9/14} \\\\\n5271: \\tau^* &\\sim L_U^{-12/7} \\\\\n5272: \\lambda_{\\text{revive}}^* &\\sim \\kappa_{\\max}\n5273: \\end{aligned}\n5274: \n5275: $$\n5276: \n5277: yielding convergence rate:\n5278: \n5279: $$\n5280: \\alpha_{\\text{net}}^* \\sim \\gamma^* \\sim L_U^{3/7}\n5281: \n5282: $$",
       "_registry_context": {
         "stage": "directives",
@@ -446,6 +463,7 @@
         "label": "thm-mean-field-lsi-main"
       },
       "section": "## 1. Main Theorem Statement",
+      "references": [],
       "raw_directive": "6063: ## 1. Main Theorem Statement\n6064: \n6065: :::{prf:theorem} Exponential KL-Convergence in the Mean-Field Limit\n6066: :label: thm-mean-field-lsi-main\n6067: \n6068: Let $\\rho_t$ be the solution to the mean-field McKean-Vlasov-Fokker-Planck PDE for the Euclidean Gas:\n6069: \n6070: $$\n6071: \\frac{\\partial \\rho}{\\partial t} = \\mathcal{L}[\\rho] = \\mathcal{L}_{\\text{kin}}[\\rho] + \\mathcal{L}_{\\text{jump}}[\\rho]\n6072: \n6073: $$\n6074: \n6075: where:\n6076: - $\\mathcal{L}_{\\text{kin}}$ is the kinetic operator (Langevin dynamics)\n6077: - $\\mathcal{L}_{\\text{jump}}$ is the mean-field jump operator (killing + revival)\n6078: \n6079: Let $\\rho_\\infty$ be the unique Quasi-Stationary Distribution (QSD) satisfying the regularity properties R1-R6 established in Stage 0.5.\n6080: \n6081: **Assume** the **Kinetic Dominance Condition** holds:\n6082: \n6083: $$\n6084: \\delta := \\lambda_{\\text{LSI}} \\sigma^2 - 2\\lambda_{\\text{LSI}}C_{\\text{Fisher}}^{\\text{coup}} - C_{\\text{KL}}^{\\text{coup}} - A_{\\text{jump}} > 0\n6085: \n6086: $$\n6087: \n6088: where:\n6089: - $\\lambda_{\\text{LSI}}$ is the Log-Sobolev constant of the QSD (Stage 2, Section 1.2)\n6090: - $\\sigma$ is the diffusion strength\n6091: - $C_{\\text{Fisher}}^{\\text{coup}}$ is the coupling Fisher information bound (Stage 2, Section 1.3)\n6092: - $C_{\\text{KL}}^{\\text{coup}}$ is the coupling KL bound (Stage 2, Section 1.3)\n6093: - $A_{\\text{jump}}$ is the jump operator expansion coefficient (Stage 2, Section 1.4)\n6094: \n6095: **Then** for any initial density $\\rho_0$ with finite relative entropy $D_{\\text{KL}}(\\rho_0 \\| \\rho_\\infty) < \\infty$, the solution converges exponentially to the QSD:\n6096: \n6097: $$\n6098: D_{\\text{KL}}(\\rho_t \\| \\rho_\\infty) \\le e^{-\\delta t} D_{\\text{KL}}(\\rho_0 \\| \\rho_\\infty) + \\frac{C_{\\text{offset}}}{\\delta} (1 - e^{-\\delta t})\n6099: \n6100: $$\n6101: \n6102: where the offset constant is:\n6103: \n6104: $$\n6105: C_{\\text{offset}} := \\frac{\\sigma^2}{2} C_{\\text{LSI}} + C_0^{\\text{coup}} + B_{\\text{jump}}\n6106: \n6107: $$\n6108: \n6109: with:\n6110: - $C_{\\text{LSI}}$ from the LSI remainder (Stage 2, Lemma `lem-fisher-bound`)\n6111: - $C_0^{\\text{coup}}$ from the coupling constant bound (Stage 2, Section 3.3)\n6112: - $B_{\\text{jump}}$ from the jump operator bound (Stage 2, Section 4.4)\n6113: \n6114: **Asymptotic behavior**: As $t \\to \\infty$,\n6115: \n6116: $$\n6117: D_{\\text{KL}}(\\rho_t \\| \\rho_\\infty) \\to \\frac{C_{\\text{offset}}}{\\delta}\n6118: \n6119: $$\n6120: \n6121: **Important**: The system converges exponentially to a **residual neighborhood** of the QSD with radius $C_{\\text{offset}}/\\delta$ in KL-divergence. For true convergence to the QSD (zero residual), $C_{\\text{offset}}$ must vanish, which occurs in local basins near equilibrium where higher-order remainder terms become negligible.\n6122: \n6123: **Convergence rate**: The effective rate is $\\alpha_{\\text{net}} = \\delta$, with explicit formula:\n6124: \n6125: $$\n6126: \\alpha_{\\text{net}} = \\lambda_{\\text{LSI}} \\sigma^2 - 2\\lambda_{\\text{LSI}}C_{\\text{Fisher}}^{\\text{coup}} - C_{\\text{KL}}^{\\text{coup}} - A_{\\text{jump}}\n6127: \n6128: $$\n6129: ",
       "_registry_context": {
         "stage": "directives",

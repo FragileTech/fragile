@@ -19,6 +19,7 @@
         "label": "thm-yang-mills-final"
       },
       "section": "## 16. Final Completion Assessment",
+      "references": [],
       "raw_directive": "3017: From \u00a77-9 (already complete):\n3018: \n3019: :::{prf:theorem} Emergent Yang-Mills Theory (FINAL)\n3020: :label: thm-yang-mills-final\n3021: \n3022: The Adaptive Gas generates a **Yang-Mills theory** with gauge group $G = SU(2)$ in the continuum limit.\n3023: \n3024: **Gauge field**:\n3025: \n3026: $$\n3027: A_\\mu = -\\frac{1}{e} J_\\mu^{\\text{Noether}}\n3028: $$\n3029: \n3030: where $J_\\mu^{\\text{Noether}}$ is the Noether current from walker permutation symmetry $S_N \\to SU(2)$.\n3031: \n3032: **Field strength**:\n3033: \n3034: $$\n3035: F_{\\mu\\nu} = \\partial_\\mu A_\\nu - \\partial_\\nu A_\\mu + e [A_\\mu, A_\\nu]\n3036: $$\n3037: \n3038: **Yang-Mills action**:\n3039: \n3040: $$\n3041: S_{\\text{YM}} = -\\frac{1}{4} \\int d^4 x \\, \\text{Tr}(F_{\\mu\\nu} F^{\\mu\\nu})\n3042: $$\n3043: "
     }
   ],

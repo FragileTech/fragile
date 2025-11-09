@@ -19,6 +19,7 @@
         "label": "thm-main-informal"
       },
       "section": "## 0. Introduction",
+      "references": [],
       "raw_directive": "73: ### 0.5. Main Result (Informal)\n74: \n75: :::{prf:theorem} Main Theorem (Informal)\n76: :label: thm-main-informal\n77: \n78: The Adaptive Gas with uniformly elliptic anisotropic diffusion is geometrically ergodic on its state space $\\mathcal{X} \\times \\mathbb{R}^d$. There exists a unique quasi-stationary distribution (QSD) $\\pi_{\\text{QSD}}$, and the Markov chain converges exponentially fast:\n79: \n80: $$\n81: \\left\\| \\mathcal{L}(S_t \\mid S_0) - \\pi_{\\text{QSD}} \\right\\|_{\\text{TV}} \\le C_\\pi (1 + V_{\\text{total}}(S_0)) e^{-\\kappa_{\\text{total}} t}\n82: $$\n83: \n84: where:\n85: - $\\kappa_{\\text{total}} = O(\\min\\{\\gamma \\tau, \\kappa_x^{\\text{clone}}, c_{\\min}\\underline{\\lambda} - C_1 L_\\Sigma - C_2|\\nabla\\Sigma_{\\text{reg}}|_\\infty\\}) > 0$\n86: - All constants are **independent of $N$**\n87: - $c_{\\min}$ is the ellipticity lower bound from regularization\n88: - $L_\\Sigma$ is the Lipschitz constant of $\\Sigma_{\\text{reg}}$"
     }
   ],

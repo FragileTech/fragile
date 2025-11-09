@@ -2,7 +2,7 @@
   "document_id": "16_convergence_mean_field",
   "stage": "directives",
   "directive_type": "observation",
-  "generated_at": "2025-11-08T17:16:20.298592+00:00",
+  "generated_at": "2025-11-08T23:19:38.324703+00:00",
   "count": 1,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "obs-revival-rate-constraint"
       },
       "section": "## 4. Counterexample Search and Failure Modes",
+      "references": [],
       "raw_directive": "852: **Conclusion**: If $\\lambda \\le 1$, contraction holds. If $\\lambda > 1$, expansion!\n853: \n854: :::{prf:observation} Revival Rate Constraint\n855: :label: obs-revival-rate-constraint\n856: \n857: In the two-state model, KL-non-expansiveness requires $\\lambda_{\\text{revive}} \\le 1$.\n858: \n859: **Physical interpretation**: Revival rate must not exceed the death rate (on average) for stability.\n860: ",
       "_registry_context": {
         "stage": "directives",

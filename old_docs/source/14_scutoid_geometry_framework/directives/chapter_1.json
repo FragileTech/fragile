@@ -19,6 +19,7 @@
         "label": "def-swarm-spacetime"
       },
       "section": "## 1. Mathematical Foundations",
+      "references": [],
       "raw_directive": "72: We work with the emergent Riemannian structure defined by the Adaptive Gas.\n73: \n74: :::{prf:definition} Swarm Spacetime Manifold\n75: :label: def-swarm-spacetime\n76: \n77: The **swarm spacetime manifold** is the $(d+1)$-dimensional product manifold:\n78: \n79: $$\n80: \\mathcal{M} = \\mathcal{X} \\times [0, T]\n81: $$\n82: \n83: where:\n84: - $\\mathcal{X} \\subset \\mathbb{R}^d$ is the **spatial configuration space** (state space where walkers live)\n85: - $[0, T]$ is the **temporal domain** (algorithmic time)\n86: - Local coordinates: $(x, t)$ where $x \\in \\mathcal{X}$, $t \\in [0, T]$\n87: \n88: The manifold is equipped with a **spacetime metric** $g_{\\text{ST}}$ with signature $(+, +, \\ldots, +, +)$ (Riemannian, not Lorentzian).\n89: \n90: **Spatial metric**: From Chapter 8 (Emergent Geometry), the spatial slice at time $t$ has metric:\n91: \n92: $$\n93: g(x, t) = g(x, S_t) = H(x, S_t) + \\epsilon_\\Sigma I\n94: $$\n95: \n96: where $H = \\nabla^2 V_{\\text{fit}}$ is the fitness Hessian and $S_t$ is the swarm state at time $t$.\n97: \n98: **Spacetime metric**: We adopt the **product metric**:\n99: \n100: $$\n101: g_{\\text{ST}} = g_{ij}(x, t) \\, dx^i \\otimes dx^j + dt \\otimes dt\n102: $$\n103: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "def-riemannian-voronoi"
       },
       "section": "## 1. Mathematical Foundations",
+      "references": [],
       "raw_directive": "113: Before defining scutoids (which connect time slices), we establish the spatial tessellation at a single time.\n114: \n115: :::{prf:definition} Riemannian Voronoi Diagram\n116: :label: def-riemannian-voronoi\n117: \n118: For a swarm state $S_t = \\{(x_i, v_i, s_i)\\}_{i=1}^N$ with alive set $\\mathcal{A}(t)$, the **Riemannian Voronoi cell** of walker $i \\in \\mathcal{A}(t)$ is:\n119: \n120: $$\n121: \\text{Vor}_i(t) = \\left\\{ x \\in \\mathcal{X} : d_g(x, x_i) \\le d_g(x, x_j) \\text{ for all } j \\in \\mathcal{A}(t) \\right\\}\n122: $$\n123: \n124: where $d_g(x, x_i)$ is the **geodesic distance** in the Riemannian manifold $(\\mathcal{X}, g(\\cdot, t))$.\n125: \n126: The **Voronoi tessellation** at time $t$ is:\n127: \n128: $$\n129: \\mathcal{V}_t = \\{\\text{Vor}_i(t) : i \\in \\mathcal{A}(t)\\}\n130: $$\n131: "
     },
     {
@@ -55,6 +57,7 @@
         "label": "rem-curved-voronoi"
       },
       "section": "## 1. Mathematical Foundations",
+      "references": [],
       "raw_directive": "133: :::\n134: \n135: :::{prf:remark} Curved vs. Flat Voronoi Cells\n136: :label: rem-curved-voronoi\n137: "
     },
     {
@@ -73,6 +76,7 @@
         "label": "def-prismatoid-classical"
       },
       "section": "## 1. Mathematical Foundations",
+      "references": [],
       "raw_directive": "143: We now define the geometric objects that will form our spacetime cells.\n144: \n145: :::{prf:definition} Prismatoid (Classical Definition)\n146: :label: def-prismatoid-classical\n147: \n148: A **prismatoid** in $\\mathbb{R}^{d+1}$ is a polytope $P$ with the following properties:\n149: \n150: 1. **Vertices on two parallel hyperplanes**: All vertices lie on either $H_0 = \\{(x, t) : t = t_0\\}$ or $H_1 = \\{(x, t) : t = t_1\\}$\n151: 2. **Top and bottom faces**: The intersections $F_{\\text{top}} = P \\cap H_1$ and $F_{\\text{bottom}} = P \\cap H_0$ are $(d)$-dimensional polytopes (polygons in 2D, polyhedra in 3D)\n152: 3. **Side faces**: Lateral faces connecting the top and bottom are ruled surfaces (swept out by line segments)\n153: \n154: **Special cases**:\n155: - **Prism**: $F_{\\text{top}} \\cong F_{\\text{bottom}}$ (congruent top/bottom) and vertical edges\n156: - **Frustum**: $F_{\\text{top}} \\sim F_{\\text{bottom}}$ (similar but different sizes), edges converge to a point"
     },
     {
@@ -91,6 +95,7 @@
         "label": "def-scutoid-biological"
       },
       "section": "## 1. Mathematical Foundations",
+      "references": [],
       "raw_directive": "158: :::\n159: \n160: :::{prf:definition} Scutoid (Biological Definition)\n161: :label: def-scutoid-biological\n162: \n163: A **scutoid** is a prismatoid with the addition of **mid-level vertices**: vertices that lie on an intermediate hyperplane $H_{\\text{mid}} = \\{(x, t) : t = t_{\\text{mid}}\\}$ where $t_0 < t_{\\text{mid}} < t_1$.\n164: \n165: **Topological consequence**: The presence of mid-level vertices forces:\n166: 1. **Neighbor changes**: The set of adjacent cells at the top face differs from the set at the bottom face\n167: 2. **Curved faces**: Some lateral faces must be **non-planar** (curved 2-surfaces in 3D)\n168: 3. **Branching edges**: Edges can merge or split at mid-level vertices (Y-shaped connections)\n169: "
     },
     {
@@ -109,6 +114,7 @@
         "label": "ex-canonical-scutoid"
       },
       "section": "## 1. Mathematical Foundations",
+      "references": [],
       "raw_directive": "171: :::\n172: \n173: :::{prf:example} The Canonical Scutoid in $\\mathbb{R}^3$\n174: :label: ex-canonical-scutoid\n175: \n176: Consider a scutoid connecting two parallel planes $z = 0$ and $z = 1$ in $\\mathbb{R}^3$:\n177: \n178: **Bottom face** ($z = 0$): Pentagonal polygon with neighbors A, B, C, D, E\n179: \n180: **Top face** ($z = 1$): Hexagonal polygon with neighbors A, B, C, D, E, **F** (new neighbor)\n181: \n182: **Mid-level vertex**: At $(x_{\\text{mid}}, y_{\\text{mid}}, z = 1/2)$, where the boundary meets the new neighbor F\n183: \n184: **Physical interpretation**: As we move from bottom to top, the cell \"opens up\" to accommodate a new neighbor, creating a concave face connecting to F.\n185: "
     },
     {
@@ -127,6 +133,7 @@
         "label": "def-neighbor-segments"
       },
       "section": "## 1. Mathematical Foundations",
+      "references": [],
       "raw_directive": "191: Before defining scutoids in Riemannian manifolds, we must rigorously specify how to connect the boundaries of Voronoi cells at different times.\n192: \n193: :::{prf:definition} Neighbor-Preserving Boundary Segments\n194: :label: def-neighbor-segments\n195: \n196: For a Voronoi cell $\\text{Vor}_i(t)$ with neighbor set $\\mathcal{N}_i(t)$, decompose the boundary into **neighbor-interface segments**:\n197: \n198: $$\n199: \\partial \\text{Vor}_i(t) = \\bigcup_{k \\in \\mathcal{N}_i(t)} \\Gamma_{i,k}(t)\n200: $$\n201: \n202: where $\\Gamma_{i,k}(t) = \\partial \\text{Vor}_i(t) \\cap \\partial \\text{Vor}_k(t)$ is the **interface segment** between cells $i$ and $k$.\n203: "
     },
     {
@@ -145,6 +152,7 @@
         "label": "def-boundary-correspondence"
       },
       "section": "## 1. Mathematical Foundations",
+      "references": [],
       "raw_directive": "205: :::\n206: \n207: :::{prf:definition} Boundary Correspondence Map\n208: :label: def-boundary-correspondence\n209: \n210: Let $F_{\\text{bottom}} = \\text{Vor}_j(t)$ and $F_{\\text{top}} = \\text{Vor}_i(t + \\Delta t)$ be the bottom and top faces of a spacetime cell, with neighbor sets $\\mathcal{N}_j(t)$ and $\\mathcal{N}_i(t + \\Delta t)$ respectively.\n211: \n212: Define the **shared neighbor set**:\n213: \n214: $$\n215: \\mathcal{N}_{\\text{shared}} = \\mathcal{N}_j(t) \\cap \\mathcal{N}_i(t + \\Delta t)\n216: $$\n217: \n218: For each $k \\in \\mathcal{N}_{\\text{shared}}$, the **boundary correspondence map** $\\phi_k: \\Gamma_{j,k}(t) \\to \\Gamma_{i,k}(t + \\Delta t)$ is defined by **arc-length rescaling**:\n219: \n220: 1. **Arc-length parameterizations**: Let $\\gamma_{j,k}: [0, L_j] \\to \\Gamma_{j,k}(t)$ and $\\gamma_{i,k}: [0, L_i] \\to \\Gamma_{i,k}(t + \\Delta t)$ be **arc-length parameterizations** of the boundary segments, where $L_j$ and $L_i$ are the total arc lengths (Riemannian lengths in the respective spatial metrics $g(\\cdot, t)$ and $g(\\cdot, t + \\Delta t)$).\n221: \n222: 2. **Map definition**:\n223: \n224: $$\n225: \\phi_k(\\gamma_{j,k}(s)) = \\gamma_{i,k}\\left(s \\cdot \\frac{L_i}{L_j}\\right) \\quad \\text{for } s \\in [0, L_j]\n226: $$\n227: \n228: This maps the point at arc-length $s$ on the bottom segment to the point at rescaled arc-length $s \\cdot (L_i/L_j)$ on the top segment.\n229: \n230: **Well-definedness assumptions**:\n231: - Each segment $\\Gamma_{j,k}(t)$ and $\\Gamma_{i,k}(t + \\Delta t)$ is a **connected, $(d-1)$-dimensional hypersurface** (the interface between two Voronoi cells)\n232: - For small $\\Delta t$ and generic walker configurations, these segments are **non-degenerate** (positive $(d-1)$-dimensional measure)\n233: - **Degenerate cases**: When a Voronoi interface degenerates to a single point or lower-dimensional set, the correspondence map is undefined. Such configurations have **measure zero** in the space of swarm configurations and are excluded from the generic construction.\n234: \n235: **Interpretation**: The map $\\phi_k$ simply rescales arc length to connect corresponding points on the two segments. It is **purely topological** (does not depend on geodesics or spacetime dynamics), providing a canonical correspondence for shared-neighbor interfaces.\n236: \n237: **Lost neighbors**: For $\\ell \\in \\mathcal{N}_j(t) \\setminus \\mathcal{N}_i(t + \\Delta t)$, the segment $\\Gamma_{j,\\ell}(t)$ has **no corresponding segment** on the top face, so $\\phi_\\ell$ is **undefined**. These are the locations where mid-level structure arises.\n238: "
     },
     {
@@ -163,6 +171,7 @@
         "label": "def-riemannian-scutoid"
       },
       "section": "## 1. Mathematical Foundations",
+      "references": [],
       "raw_directive": "244: We now extend scutoid geometry to curved spaces with the boundary correspondence map.\n245: \n246: :::{prf:definition} Riemannian Scutoid (Rigorous Definition)\n247: :label: def-riemannian-scutoid\n248: \n249: Let $(\\mathcal{M}, g_{\\text{ST}})$ be the swarm spacetime manifold. A **Riemannian scutoid** $\\mathcal{S}_{i, t}$ associated with walker $i$ between times $t$ and $t + \\Delta t$ is a $(d+1)$-dimensional region in $\\mathcal{M}$ constructed as follows:\n250: \n251: 1. **Top face**: $F_{\\text{top}} = \\text{Vor}_i(t + \\Delta t) \\times \\{t + \\Delta t\\}$ (Voronoi cell at time $t + \\Delta t$)\n252: \n253: 2. **Bottom face**: $F_{\\text{bottom}} = \\text{Vor}_j(t) \\times \\{t\\}$ where $j$ is the **parent** of episode $i$ (the walker whose Voronoi cell at time $t$ contains the birth position of episode $i$)\n254: \n255: 3. **Shared neighbor set**: $\\mathcal{N}_{\\text{shared}} = \\mathcal{N}_j(t) \\cap \\mathcal{N}_i(t + \\Delta t)$\n256: \n257: 4. **Lateral faces (neighbor-preserving)**: For each $k \\in \\mathcal{N}_{\\text{shared}}$, construct the **ruled surface** $\\Sigma_k$ swept out by spacetime geodesics:\n258: \n259: $$\n260: \\Sigma_k = \\bigcup_{p \\in \\Gamma_{j,k}(t)} \\gamma_{p \\to \\phi_k(p)}\n261: $$\n262: \n263: where $\\gamma_{p \\to \\phi_k(p)}: [t, t + \\Delta t] \\to \\mathcal{M}$ is the **spacetime geodesic** connecting $(p, t)$ to $(\\phi_k(p), t + \\Delta t)$ in the metric $g_{\\text{ST}}$\n264: \n265: 5. **Mid-level structure** (if $\\mathcal{N}_j(t) \\neq \\mathcal{N}_i(t + \\Delta t)$):\n266:    - **Temporal coordinate**: $t_{\\text{mid}} = t + \\Delta t/2$ (the algorithmic cloning timestep)\n267:    - For each lost neighbor $\\ell \\in \\mathcal{N}_j(t) \\setminus \\mathcal{N}_i(t + \\Delta t)$:\n268:      - The segment $\\Gamma_{j,\\ell}(t)$ on the bottom has no corresponding top segment\n269:      - Define a **mid-level edge** at time $t_{\\text{mid}}$ connecting to gained neighbors\n270:    - For each gained neighbor $m \\in \\mathcal{N}_i(t + \\Delta t) \\setminus \\mathcal{N}_j(t)$:\n271:      - The segment $\\Gamma_{i,m}(t + \\Delta t)$ on the top has no corresponding bottom segment\n272:      - Connect via geodesics to the mid-level edge\n273: \n274:    The **mid-level vertices** are the branching points where geodesics from lost neighbors meet geodesics to gained neighbors. Their **spatial coordinates** represent the birth positions of newly cloned walkers.\n275: \n276: 6. **Cell volume**: The closure of the union of all lateral faces and top/bottom faces:\n277: \n278: $$\n279: \\mathcal{S}_{i,t} = \\overline{\\left( F_{\\text{bottom}} \\cup F_{\\text{top}} \\cup \\bigcup_{k \\in \\mathcal{N}_{\\text{shared}}} \\Sigma_k \\cup \\Sigma_{\\text{mid}} \\right)}\n280: $$\n281: \n282: where $\\Sigma_{\\text{mid}}$ denotes the mid-level structure (if present)\n283: \n284: 7. **Riemannian volume**:\n285: \n286: $$\n287: \\text{Vol}(\\mathcal{S}_{i,t}) = \\int_{\\mathcal{S}_{i,t}} \\sqrt{\\det(g_{\\text{ST}})} \\, dx^1 \\cdots dx^d \\, dt\n288: $$\n289: \n290: **Topological classification**:\n291: - **Prism**: $\\mathcal{N}_j(t) = \\mathcal{N}_i(t + \\Delta t)$ (same neighbors, no mid-level structure)\n292: - **Simple scutoid**: $|\\mathcal{N}_j(t) \\triangle \\mathcal{N}_i(t + \\Delta t)| = 2$ (one neighbor lost, one gained)"
     },
     {
@@ -181,6 +190,7 @@
         "label": "prop-algorithmic-midpoint"
       },
       "section": "## 1. Mathematical Foundations",
+      "references": [],
       "raw_directive": "294: :::\n295: \n296: :::{prf:proposition} Algorithmic Origin of Mid-Level Vertices\n297: :label: prop-algorithmic-midpoint\n298: \n299: The temporal coordinate $t_{\\text{mid}} = t + \\Delta t/2$ of the mid-level vertices in the scutoid tessellation corresponds to the **algorithmic timestep** at which cloning and neighbor-swapping events occur, as defined in the Euclidean Gas update rule (Chapter 2, Algorithm 2.1).\n300: \n301: **Proof**: The Euclidean Gas algorithm has an explicit two-stage structure:\n302: 1. **Cloning phase** ($t \\to t + \\Delta t/2$): Algorithm 2.1, Stage 3 produces the post-cloning state $(x_i^{(t+1/2)}, v_i^{(t+1/2)})$, where walkers are replaced via cloning\n303: 2. **Kinetic phase** ($t + \\Delta t/2 \\to t + \\Delta t$): Algorithm 2.1, Stage 4-5 applies Langevin dynamics (BAOAB integrator)\n304: \n305: At time $t + \\Delta t/2$:\n306: - Dead walkers have been replaced by clones from high-fitness parents\n307: - The Voronoi neighbor topology changes: $\\mathcal{N}_i(t) \\neq \\mathcal{N}_{i'}(t + \\Delta t/2)$\n308: - The **spatial coordinates** of mid-level vertices are the cloning birth positions: $x_{i'}^{(t+1/2)} = x_{\\text{parent}}^{(t)} + \\xi$ (with Gaussian jitter $\\xi$)\n309: "
     },
     {
@@ -199,6 +209,7 @@
         "label": "rem-intrinsic-geometry"
       },
       "section": "## 1. Mathematical Foundations",
+      "references": [],
       "raw_directive": "311: :::\n312: \n313: :::{prf:remark} Scutoid Geometry as Intrinsic Algorithmic Structure\n314: :label: rem-intrinsic-geometry\n315: \n316: The correspondence between scutoid geometry and the Fragile Gas algorithm is not merely descriptive\u2014it reveals that **discrete-time birth-death algorithms possess intrinsic spacetime geometry**. The scutoid framework doesn't impose an external geometric interpretation; rather, it discovers the natural geometric structure already present in the algorithm's control flow.\n317: \n318: This elevates the scutoid tessellation from a visualization tool to a mathematical fact: the Fragile Gas \"lives\" in a spacetime with scutoid cells, just as general relativistic matter lives in a curved Lorentzian manifold.\n319: "
     },
     {
@@ -217,6 +228,7 @@
         "label": "rem-geodesic-ruling"
       },
       "section": "## 1. Mathematical Foundations",
+      "references": [],
       "raw_directive": "321: :::\n322: \n323: :::{prf:remark} Why Geodesic Ruling?\n324: :label: rem-geodesic-ruling\n325: \n326: In Euclidean space, the lateral faces of a prismatoid are ruled by straight lines (distance-minimizing paths). In a Riemannian manifold, the natural generalization is **geodesic ruling**: the faces are swept out by geodesics connecting corresponding points on the top and bottom boundaries.\n327: \n328: This choice has several advantages:\n329: 1. **Minimizes area**: Geodesics are length-minimizing \u2192 geodesic ruling minimizes face area\n330: 2. **Respects geometry**: Geodesics are the natural \"straight lines\" in curved space"
     },
     {
@@ -235,6 +247,9 @@
         "label": "prop-scutoid-face-curvature"
       },
       "section": "## 1. Mathematical Foundations",
+      "references": [
+        "def-riemannian-scutoid"
+      ],
       "raw_directive": "336: The curvature of scutoid faces encodes information about the underlying spacetime geometry.\n337: \n338: :::{prf:proposition} Scutoid Face Curvature Formula (Smooth Regions)\n339: :label: prop-scutoid-face-curvature\n340: \n341: Let $\\Sigma_k \\subset \\mathcal{M}$ be a **neighbor-preserving lateral face** (from Definition {prf:ref}`def-riemannian-scutoid`, item 4) of a Riemannian scutoid, corresponding to shared neighbor $k \\in \\mathcal{N}_{\\text{shared}}$.\n342: \n343: **Smoothness condition**: Consider a **smooth region** of $\\Sigma_k$ (away from mid-level vertices and edges), parameterized by $(u, v) \\mapsto \\sigma(u, v)$ where:\n344: - $u \\in [0, 1]$ parametrizes the **spatial direction** (along the boundary curve $\\Gamma_{j,k}$)\n345: - $v \\in [0, 1]$ parametrizes the **temporal direction** ($v = 0$ at bottom, $v = 1$ at top)\n346: \n347: Define tangent vectors:\n348: - $X = \\partial \\sigma / \\partial u$ (spatial tangent)\n349: - $T = \\partial \\sigma / \\partial v$ (temporal tangent)\n350: \n351: On the smooth portions of $\\Sigma_k$, the **intrinsic Gaussian curvature** is related to the **sectional curvature** of the ambient spacetime $\\mathcal{M}$ by the **Gauss equation**:\n352: \n353: $$\n354: K_{\\Sigma}(u, v) = K_{\\mathcal{M}}(X, T) + \\det(\\text{II})\n355: $$\n356: \n357: where:\n358: - $K_{\\Sigma}$ is the Gaussian curvature of the surface $\\Sigma_k$ (defined at smooth points)\n359: - $K_{\\mathcal{M}}(X, T) = \\frac{R(X, T, T, X)}{g(X, X)g(T, T) - g(X, T)^2}$ is the sectional curvature of $\\mathcal{M}$ along the plane spanned by $X$ and $T$\n360: - $\\text{II}$ is the second fundamental form (extrinsic curvature of $\\Sigma_k$ in $\\mathcal{M}$)\n361: - $R$ is the Riemann curvature tensor of $g_{\\text{ST}}$\n362: \n363: **Non-smooth regions**: At mid-level vertices and the edges originating from them, the surface $\\Sigma_k$ is non-differentiable (contains creases). The curvature at these points must be analyzed using **distributional curvature** or **polyhedral Gauss-Bonnet theory** (see {cite}`Alexandrov1958` for angles defects in polyhedral surfaces).\n364: \n365: **Interpretation**: The curvature we observe on smooth portions of a scutoid face is the sum of:\n366: 1. The **intrinsic curvature** of the ambient spacetime (sectional curvature)"
     },
     {
@@ -253,6 +268,7 @@
         "label": "cor-curvature-from-scutoids"
       },
       "section": "## 1. Mathematical Foundations",
+      "references": [],
       "raw_directive": "368: :::\n369: \n370: :::{prf:corollary} Statistical Estimation of Sectional Curvature\n371: :label: cor-curvature-from-scutoids\n372: \n373: By averaging the face curvatures $K_{\\Sigma}$ over many scutoid faces in a spacetime region $\\mathcal{R} \\subset \\mathcal{M}$, we can obtain a **statistical estimate** of the average sectional curvature in that region.\n374: \n375: **Procedure**:\n376: 1. Construct scutoid tessellation from algorithmic log\n377: 2. For each smooth face region $\\Sigma_k$, measure Gaussian curvature $K_{\\Sigma}$ (discrete differential geometry)\n378: 3. Estimate second fundamental form $\\text{II}$ from face embedding\n379: 4. Extract sectional curvature samples: $K_{\\mathcal{M}}(X_i, T_i) \\approx K_{\\Sigma,i} - \\det(\\text{II}_i)$\n380: 5. Compute spatial average:\n381: \n382: $$\n383: \\langle K_{\\mathcal{M}} \\rangle_{\\mathcal{R}} = \\frac{1}{|\\mathcal{F}_{\\mathcal{R}}|} \\sum_{i \\in \\mathcal{F}_{\\mathcal{R}}} K_{\\mathcal{M}}(X_i, T_i)\n384: $$\n385: \n386: where $\\mathcal{F}_{\\mathcal{R}}$ is the set of smooth face samples in region $\\mathcal{R}$\n387: \n388: **Limitations**: This provides constraints on the Riemann curvature tensor, not a complete reconstruction. Full tensor recovery would require dense sampling of all 2-planes at each point, which is not feasible from a discrete, sparse tessellation.\n389: \n390: **Utility**: The average sectional curvature is sufficient for many applications, including:\n391: - Detecting regions of high/low curvature (fitness landscape features)\n392: - Validating the emergent Riemannian structure"
     }
   ],

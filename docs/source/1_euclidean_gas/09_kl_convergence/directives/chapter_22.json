@@ -19,6 +19,7 @@
         "label": "lem-sinh-bound-global"
       },
       "section": "## Proof Sketch",
+      "references": [],
       "raw_directive": "2494: **Apply the global sinh inequality**:\n2495: \n2496: :::{prf:lemma} Sinh Inequality\n2497: :label: lem-sinh-bound-global\n2498: \n2499: For all $z \\in \\mathbb{R}$:\n2500: \n2501: $$\n2502: \\frac{\\sinh(z)}{z} \\geq 1\n2503: $$\n2504: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "proof-sinh-bound-global"
       },
       "section": "## Proof Sketch",
+      "references": [],
       "raw_directive": "2506: :::\n2507: \n2508: :::{prf:proof}\n2509: :label: proof-sinh-bound-global"
     }
   ],

@@ -1,0 +1,72 @@
+[
+  {
+    "type": "lemma",
+    "label": "lem-mass-conservation-transport",
+    "title": "Mass Conservation of Transport",
+    "nl_statement": "The integral of the adjoint transport operator over the domain $\\Omega$ vanishes when reflecting boundary conditions are imposed.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\int_{\\Omega} L^\\dagger f(t,z)\\,\\mathrm{d}z = 0"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "The boundary conditions are reflecting on both position and velocity boundaries.",
+        "latex": null
+      },
+      {
+        "text": "The domain is $\\Omega$.",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The integral of the transport operator over the domain $\\Omega$ vanishes.",
+      "latex": "\\int_{\\Omega} L^\\dagger f(t,z)\\,\\mathrm{d}z = 0"
+    },
+    "variables": [
+      {
+        "symbol": "\\Omega",
+        "description": null,
+        "constraints": [],
+        "tags": [
+          "domain"
+        ]
+      },
+      {
+        "symbol": "L^\\dagger",
+        "description": null,
+        "constraints": [],
+        "tags": [
+          "operator"
+        ]
+      },
+      {
+        "symbol": "f(t,z)",
+        "description": null,
+        "constraints": [],
+        "tags": [
+          "function"
+        ]
+      }
+    ],
+    "implicit_assumptions": [],
+    "local_refs": [],
+    "proof": {
+      "availability": "in context",
+      "steps": [
+        {
+          "kind": "context",
+          "text": "The vanishing integral is due to the reflecting boundary conditions established in Section 2.2.",
+          "latex": null
+        }
+      ]
+    },
+    "tags": [
+      "conservation",
+      "mass",
+      "transport operator",
+      "reflecting boundary conditions"
+    ]
+  }
+]

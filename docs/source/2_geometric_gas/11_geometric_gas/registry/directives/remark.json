@@ -2,7 +2,7 @@
   "document_id": "11_geometric_gas",
   "stage": "directives",
   "directive_type": "remark",
-  "generated_at": "2025-11-08T17:16:20.225406+00:00",
+  "generated_at": "2025-11-08T23:19:38.282425+00:00",
   "count": 2,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "rem-concentration-lsi"
       },
       "section": "## 8. The Logarithmic Sobolev Inequality: A Conjectured Strengthening",
+      "references": [],
       "raw_directive": "2310: :::\n2311: \n2312: :::{prf:remark} Concentration of Measure\n2313: :label: rem-concentration-lsi\n2314: \n2315: An additional benefit of the LSI is that it implies strong concentration properties for the QSD. For any Lipschitz function $\\phi: (\\mathcal{X} \\times \\mathbb{R}^d)^N \\to \\mathbb{R}$ with Lipschitz constant $L_\\phi$:\n2316: \n2317: $$\n2318: \\nu_N^{\\text{QSD}}\\left( \\left| \\phi - \\mathbb{E}_{\\nu_N^{\\text{QSD}}}[\\phi] \\right| \\ge t \\right) \\le 2 \\exp\\left( -\\frac{t^2}{2 C_{\\text{LSI}} L_\\phi^2} \\right)\n2319: \n2320: $$\n2321: \n2322: This Gaussian concentration inequality (a consequence of the LSI via Herbst's argument) guarantees that observables under the QSD are tightly concentrated around their mean, with deviations occurring with exponentially small probability. This is a **much stronger statement** than what can be derived from the Foster-Lyapunov analysis alone.\n2323: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "rem-wfr-analogy"
       },
       "section": "## 9. Main Convergence Theorems and Physical Interpretation",
+      "references": [],
       "raw_directive": "2414: :::\n2415: \n2416: :::{prf:remark} Formal Analogy and Evidence\n2417: :label: rem-wfr-analogy\n2418: \n2419: Despite the lack of a complete proof, there is strong formal evidence for the conjecture:\n2420: \n2421: **Structural analogy:** The adaptive system has the form of a **gradient flow in WFR space**:\n2422: - The kinetic evolution is a gradient flow of the free energy in Wasserstein space\n2423: - The cloning operator is a gradient flow of relative entropy in Fisher-Rao space\n2424: - The WFR metric naturally interpolates between these two geometries\n2425: \n2426: **Partial results:**\n2427: - For the **backbone system** (without adaptive terms), W₂ contractivity follows from standard theory\n2428: - For **simplified selection operators** (e.g., resampling with absolute fitness), FR contractivity is well-established\n2429: - The uniform ellipticity (Theorem [](#thm-ueph)) provides the regularity needed for Wasserstein contractivity\n2430: \n2431: **What would complete the proof:**\n2432: 1. Extend W₂ contraction theory to uniformly elliptic, state-dependent diffusions (possible via Otto calculus)\n2433: 2. Prove FR contractivity for competitive, state-dependent selection operators\n2434: 3. Apply the Chizat-Peyré-Schmitzer WFR theory to verify the composition\n2435: ",
       "_registry_context": {
         "stage": "directives",

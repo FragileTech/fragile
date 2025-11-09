@@ -1,7 +1,7 @@
 {
   "stage": "directives",
   "directive_type": "notation",
-  "generated_at": "2025-11-08T17:16:20.404972+00:00",
+  "generated_at": "2025-11-08T23:19:38.396982+00:00",
   "source_documents": [
     "13_geometric_gas_c3_regularity",
     "14_geometric_gas_cinf_regularity_full",
@@ -26,6 +26,7 @@
         "label": "notation-keff-superscripts"
       },
       "section": "## 1. Introduction",
+      "references": [],
       "raw_directive": "226: :::\n227: \n228: :::{prf:notation} k_eff Superscript Convention\n229: :label: notation-keff-superscripts\n230: \n231: When we write \"$k_{\\text{eff}}$\" without superscript, the scale should be clear from context:\n232: - If discussing softmax, companion selection, or measurements $d_j$: assume $k_{\\text{eff}}^{(\\varepsilon_c)}$\n233: - If discussing localization weights $w_{ij}$, localized moments $\\mu_\\rho, \\sigma_\\rho$: assume $k_{\\text{eff}}^{(\\rho)}$\n234: \n235: For clarity in proofs, **always use superscript notation** $k_{\\text{eff}}^{(\\varepsilon_c)}$ or $k_{\\text{eff}}^{(\\rho)}$.\n236: ",
       "_registry_context": {
         "stage": "directives",
@@ -51,6 +52,7 @@
         "label": "notation-keff-superscripts"
       },
       "section": "## 1. Introduction",
+      "references": [],
       "raw_directive": "203: :::\n204: \n205: :::{prf:notation} k_eff Superscript Convention\n206: :label: notation-keff-superscripts\n207: \n208: When we write \"$k_{\\text{eff}}$\" without superscript, the scale should be clear from context:\n209: - If discussing softmax, companion selection, or measurements $d_j$: assume $k_{\\text{eff}}^{(\\varepsilon_c)}$\n210: - If discussing localization weights $w_{ij}$, localized moments $\\mu_\\rho, \\sigma_\\rho$: assume $k_{\\text{eff}}^{(\\rho)}$\n211: \n212: For clarity in proofs, **always use superscript notation** $k_{\\text{eff}}^{(\\varepsilon_c)}$ or $k_{\\text{eff}}^{(\\rho)}$.\n213: ",
       "_registry_context": {
         "stage": "directives",
@@ -76,6 +78,7 @@
         "label": "notation-keff-superscripts"
       },
       "section": "## 1. Introduction",
+      "references": [],
       "raw_directive": "243: :::\n244: \n245: :::{prf:notation} k_eff Superscript Convention\n246: :label: notation-keff-superscripts\n247: \n248: When we write \"$k_{\\text{eff}}$\" without superscript, the scale should be clear from context:\n249: - If discussing softmax, companion selection, or measurements $d_j$: assume $k_{\\text{eff}}^{(\\varepsilon_c)}$\n250: - If discussing localization weights $w_{ij}$, localized moments $\\mu_\\rho, \\sigma_\\rho$: assume $k_{\\text{eff}}^{(\\rho)}$\n251: \n252: For clarity in proofs, **always use superscript notation** $k_{\\text{eff}}^{(\\varepsilon_c)}$ or $k_{\\text{eff}}^{(\\rho)}$.\n253: ",
       "_registry_context": {
         "stage": "directives",

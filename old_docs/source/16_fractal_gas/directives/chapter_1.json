@@ -19,6 +19,7 @@
         "label": "def-ricci-kde"
       },
       "section": "## 1. Mathematical Framework",
+      "references": [],
       "raw_directive": "87: Following `07_adaptative_gas.md` and `08_emergent_geometry.md`, define:\n88: \n89: :::{prf:definition} Kernel Density Estimator\n90: :label: def-ricci-kde\n91: \n92: For a swarm state $S = \\{(x_i, v_i, s_i)\\}_{i=1}^N$ and smoothing kernel $K_\\ell(x) = \\ell^{-d} K(x/\\ell)$, the **smoothed swarm density** is:\n93: \n94: $$\n95: \\rho(x, S) = \\frac{1}{N} \\sum_{i \\in \\mathcal{A}} K_\\ell(x - x_i)\n96: $$\n97: \n98: where $\\mathcal{A}$ is the alive set and $\\ell > 0$ is the bandwidth (Planck length).\n99: \n100: **Standard choice:** Gaussian kernel $K(x) = (2\\pi)^{-d/2} \\exp(-\\|x\\|^2/2)$ ensures $C^\\infty$ smoothness."
     },
     {
@@ -37,6 +38,7 @@
         "label": "def-ricci-metric"
       },
       "section": "## 1. Mathematical Framework",
+      "references": [],
       "raw_directive": "102: :::\n103: \n104: :::{prf:definition} Fitness Potential and Emergent Metric\n105: :label: def-ricci-metric\n106: \n107: The **fitness potential** is constructed from the smoothed density via the standard measurement pipeline:\n108: \n109: $$\n110: V_{\\text{fit}}(x, S) = \\left( d'(x, S) \\right)^\\beta \\left( r'(x, S) \\right)^\\alpha\n111: $$\n112: \n113: where $d'$ and $r'$ are the logistic-rescaled standardized diversity and reward.\n114: \n115: The **emergent Riemannian metric** on state space $\\mathcal{X} \\subseteq \\mathbb{R}^3$ is:\n116: \n117: $$\n118: g(x, S) = H(x, S) + \\epsilon_\\Sigma I\n119: $$\n120: \n121: where $H(x, S) = \\nabla^2 V_{\\text{fit}}(x, S)$ is the Hessian and $\\epsilon_\\Sigma > 0$ ensures uniform ellipticity."
     },
     {
@@ -55,6 +57,7 @@
         "label": "def-ricci-proxy-3d"
       },
       "section": "## 1. Mathematical Framework",
+      "references": [],
       "raw_directive": "127: For $d = 3$ (3D physics simulations), we use a computationally efficient Ricci scalar proxy:\n128: \n129: :::{prf:definition} Ricci Curvature Proxy (3D)\n130: :label: def-ricci-proxy-3d\n131: \n132: The **3D Ricci scalar proxy** is defined as:\n133: \n134: $$\n135: R(x, S) = \\text{tr}(H(x, S)) - \\lambda_{\\min}(H(x, S))\n136: $$\n137: \n138: where $\\lambda_{\\min}$ is the minimum eigenvalue of the $3 \\times 3$ Hessian matrix.\n139: \n140: **Geometric interpretation:**\n141: - $\\text{tr}(H) = \\Delta V_{\\text{fit}}$ measures average local curvature (concavity/convexity)\n142: - $\\lambda_{\\min}(H)$ measures curvature in the most negative direction (expansion)\n143: - $R \\approx 0$: Flat region (low concentration)\n144: - $R > 0$: Positive curvature (high concentration, convex potential well)\n145: - $R < 0$: Negative curvature (saddle region, expansion along some directions)"
     },
     {
@@ -73,6 +76,7 @@
         "label": "lem-ricci-smoothness"
       },
       "section": "## 1. Mathematical Framework",
+      "references": [],
       "raw_directive": "147: :::\n148: \n149: :::{prf:lemma} Smoothness of Ricci Proxy\n150: :label: lem-ricci-smoothness\n151: \n152: If $V_{\\text{fit}}$ is constructed via KDE with a $C^\\infty$ kernel, then:\n153: 1. $H(x, S)$ is $C^\\infty$ in $x$\n154: 2. Eigenvalues $\\lambda_i(H)$ are continuous and piecewise $C^\\infty$ (smooth except at crossings)\n155: 3. $R(x, S)$ is piecewise $C^\\infty$ in $x$\n156: 4. $\\nabla R(x, S)$ exists almost everywhere and is Lipschitz continuous"
     },
     {
@@ -87,6 +91,7 @@
       "content": "159: ",
       "metadata": {},
       "section": "## 1. Mathematical Framework",
+      "references": [],
       "raw_directive": "158: :::\n159: \n160: :::{prf:proof} Sketch"
     },
     {
@@ -105,6 +110,7 @@
         "label": "alg-ricci-gas"
       },
       "section": "## 1. Mathematical Framework",
+      "references": [],
       "raw_directive": "164: ### 1.3. The Ricci Fragile Gas Algorithm\n165: \n166: :::{prf:algorithm} Ricci Fragile Gas Update\n167: :label: alg-ricci-gas\n168: \n169: Given swarm state $\\mathcal{S}_t = (w_1, \\ldots, w_N)$ with walkers $w_i = (x_i, v_i, s_i)$:\n170: \n171: **Stage 1: Cemetery check**\n172: - If all walkers dead, return cemetery state; otherwise continue\n173: \n174: **Stage 2: Compute emergent geometry**\n175: - For each alive walker $i \\in \\mathcal{A}_t$:\n176:   - Compute smoothed density $\\rho(x_i, S_t)$ via KDE\n177:   - Compute fitness potential $V_{\\text{fit}}(x_i, S_t)$\n178:   - Compute Hessian $H_i = \\nabla^2 V_{\\text{fit}}(x_i, S_t)$\n179:   - Compute Ricci proxy $R_i = \\text{tr}(H_i) - \\lambda_{\\min}(H_i)$\n180: \n181: **Stage 3: Ricci-based reward (dispersive push)**\n182: - Set reward: $\\text{Reward}_i = 1 / (R_i + \\epsilon_R)$\n183: - Sample potential companions $c_{\\text{pot}}(i)$ from algorithmic distance kernel\n184: - Compute algorithmic distances $d_i = d_{\\text{alg}}(i, c_{\\text{pot}}(i))$\n185: - Apply patched standardization to $(\\text{Reward}_i, d_i)$\n186: - Apply logistic rescale \u2192 $(r'_i, d'_i)$\n187: - Compute cloning fitness $V_{\\text{fit},i} = (d'_i)^\\beta (r'_i)^\\alpha$\n188: \n189: **Stage 4: Clone/Persist gate**\n190: - Sample clone companions $c_{\\text{clone}}(i)$\n191: - Compute canonical score $S_i = (V_{\\text{fit},c} - V_{\\text{fit},i})/(V_{\\text{fit},i} + \\epsilon_{\\text{clone}})$\n192: - Clone if $S_i > T_i$ where $T_i \\sim \\text{Unif}(0, p_{\\max})$\n193: - Cloned walker: $x_i \\leftarrow x_c + \\mathcal{N}(0, \\sigma_x^2 I)$, $v_i \\leftarrow v_c$\n194: \n195: **Stage 5: Ricci-driven Langevin perturbation (aggregative pull)**\n196: - Apply BAOAB integrator with curvature-driven force:\n197: \n198: $$\n199: \\begin{aligned}\n200: v_i^{(1/2)} &\\leftarrow v_i + \\frac{\\tau}{2} \\left( F_{\\text{orig}}(x_i) + \\epsilon_R \\nabla R(x_i, S_t) \\right) \\\\\n201: x_i^{(1)} &\\leftarrow x_i + \\frac{\\tau}{2} v_i^{(1/2)} \\\\\n202: v_i^{(2)} &\\leftarrow e^{-\\gamma \\tau} v_i^{(1/2)} + \\sqrt{1 - e^{-2\\gamma\\tau}} \\Sigma_{\\text{reg}}(x_i, S_t) \\xi_i \\\\\n203: x_i^{(2)} &\\leftarrow x_i^{(1)} + \\frac{\\tau}{2} v_i^{(2)} \\\\\n204: v_i^+ &\\leftarrow v_i^{(2)} + \\frac{\\tau}{2} \\left( F_{\\text{orig}}(x_i^{(2)}) + \\epsilon_R \\nabla R(x_i^{(2)}, S_t) \\right)\n205: \\end{aligned}\n206: $$\n207: \n208: where $\\Sigma_{\\text{reg}} = (H + \\epsilon_\\Sigma I)^{-1/2}$ is the adaptive diffusion tensor.\n209: \n210: **Stage 6: Status refresh and singularity regulation**\n211: - Set $s_i^{(t+1)} = \\mathbf{1}_{\\mathcal{X}_{\\text{valid}}}(x_i^+) \\cdot \\mathbf{1}_{R(x_i^+) < R_{\\text{crit}}}$\n212: - Walkers entering high-curvature regions ($R > R_{\\text{crit}}$) are marked dead\n213: - Dead walkers revive via cloning from low-curvature regions \u2192 \"bouncing singularity\"\n214: \n215: **Output:** $\\mathcal{S}_{t+1}$"
     }
   ],

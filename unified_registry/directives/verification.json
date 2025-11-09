@@ -1,7 +1,7 @@
 {
   "stage": "directives",
   "directive_type": "verification",
-  "generated_at": "2025-11-08T17:16:20.405312+00:00",
+  "generated_at": "2025-11-08T23:19:38.397275+00:00",
   "source_documents": [
     "20_geometric_gas_cinf_regularity_full"
   ],
@@ -24,6 +24,10 @@
         "label": "verif-density-bound-consistency-full"
       },
       "section": "## 2. Companion Selection Mechanisms: Framework Context",
+      "references": [
+        "assump-uniform-density-full",
+        "lem-fokker-planck-density-bound-conservative-full"
+      ],
       "raw_directive": "738: :::\n739: \n740: :::{prf:verification} A Posteriori Consistency of Density Assumption\n741: :label: verif-density-bound-consistency-full\n742: \n743: We verify that the assumed density bound ρ_max is **self-consistent** with the derived C³ regularity.\n744: \n745: **Logical structure**:\n746: 1. **Assume** ρ_max (Assumption {prf:ref}`assump-uniform-density-full` below)\n747: 2. **Derive** C³ regularity using ρ_max (doc-13, companion availability, bounded sums)\n748: 3. **Extract** Lipschitz constant L_V from C³ bounds (doc-13 Theorem 8.1)\n749: 4. **Compute** Fokker-Planck bound C_FK(L_V, γ, T, V_max) (Lemma {prf:ref}`lem-fokker-planck-density-bound-conservative-full`)\n750: 5. **Check** whether C_FK is compatible with assumed ρ_max\n751: \n752: **Consistency condition**:\n753: \n754: $$\n755: C_{\\text{FK}}(L_V(\\rho_{\\max}), \\gamma, T, V_{\\max}) \\leq C_{\\text{QSD}} \\cdot \\rho_{\\max}\n756: $$\n757: \n758: **Interpretation**: If this inequality holds for a chosen value of ρ_max, the assumption set is **consistent**. The fixed point ρ_max* satisfying:\n759: \n760: $$\n761: \\rho_{\\max}^* = C_{\\text{QSD}} \\cdot C_{\\text{FK}}(L_V(\\rho_{\\max}^*), \\gamma, T, V_{\\max})\n762: $$\n763: \n764: provides a self-consistent density bound.\n765: ",
       "_registry_context": {
         "stage": "directives",

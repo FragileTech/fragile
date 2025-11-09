@@ -19,6 +19,7 @@
         "label": "thm-regge-convergence"
       },
       "section": "## 2. Regge Calculus and Continuum Limit",
+      "references": [],
       "raw_directive": "91: The connection between discrete geometry (scutoids) and continuum geometry (Riemannian metric) is rigorously established by **Regge calculus**, a formulation of general relativity on piecewise-flat simplicial complexes.\n92: \n93: :::{prf:theorem} Regge Calculus Convergence (Standard Result)\n94: :label: thm-regge-convergence\n95: \n96: Let $(M, g)$ be a smooth Riemannian manifold. Let $\\mathcal{T}_N$ be a sequence of triangulations (or Voronoi tessellations) of $M$ with mesh size $\\delta_N \\to 0$ as $N \\to \\infty$.\n97: \n98: Define the **deficit angle** $\\theta_e$ on each edge (or plaquette) $e$ of the tessellation. Then:\n99: \n100: $$\n101: \\lim_{\\delta_N \\to 0} \\frac{\\text{(deficit angle sum around point)}}{\\text{(local volume)}} = R_{\\mu\\nu}[g]\n102: $$\n103: \n104: where $R_{\\mu\\nu}[g]$ is the Ricci curvature tensor of the smooth metric $g$.\n105: \n106: **References**:\n107: - Regge, T. (1961). \"General relativity without coordinates\". *Nuovo Cimento* **19**, 558-571.\n108: - Cheeger, J., M\u00fcller, W., Schrader, R. (1984). \"On the curvature of piecewise flat spaces\". *Comm. Math. Phys.* **92**, 405-454."
     }
   ],

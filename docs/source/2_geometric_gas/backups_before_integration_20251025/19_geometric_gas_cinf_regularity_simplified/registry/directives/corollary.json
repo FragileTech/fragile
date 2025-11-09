@@ -2,7 +2,7 @@
   "document_id": "19_geometric_gas_cinf_regularity_simplified",
   "stage": "directives",
   "directive_type": "corollary",
-  "generated_at": "2025-11-08T17:16:20.302629+00:00",
+  "generated_at": "2025-11-08T23:19:38.327425+00:00",
   "count": 4,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "cor-derivatives-continuous-cinf"
       },
       "section": "## 6. Main Theorem: C∞ Regularity",
+      "references": [],
       "raw_directive": "723: :::\n724: \n725: :::{prf:corollary} Continuity of All Derivatives\n726: :label: cor-derivatives-continuous-cinf\n727: \n728: All derivatives ∇^m V_fit (m ≥ 1) are continuous functions of (x_i, S, ρ).\n729: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,9 @@
         "label": "cor-compact-bounds-cinf"
       },
       "section": "## 6. Main Theorem: C∞ Regularity",
+      "references": [
+        "thm-cinf-regularity"
+      ],
       "raw_directive": "731: :::\n732: \n733: :::{prf:corollary} Uniform Bounds on Compact Sets\n734: :label: cor-compact-bounds-cinf\n735: \n736: For any compact K ⊆ X and any ρ_min ≤ ρ ≤ ρ_max:\n737: \n738: $$\n739: \\sup_{x_i \\in K, S, \\rho \\in [\\rho_{\\min}, \\rho_{\\max}]} \\|\\nabla^m V_{\\text{fit}}\\| \\leq C(K, \\rho_{\\min}, \\rho_{\\max}, m) < \\infty\n740: $$\n741: \n742: k-uniform and N-uniform.\n743: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +75,7 @@
         "label": "cor-instantaneous-smoothing-cinf"
       },
       "section": "## 9. Hypoellipticity and Smooth Transition Densities",
+      "references": [],
       "raw_directive": "883: :::\n884: \n885: :::{prf:corollary} Instantaneous Smoothing\n886: :label: cor-instantaneous-smoothing-cinf\n887: \n888: For any initial distribution μ_0 (possibly singular, e.g., δ_{w_0}), the time-evolved distribution μ_t = e^{tL} μ_0 has a C∞ density for all t > 0.\n889: ",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +101,9 @@
         "label": "cor-wasserstein-convergence-cinf"
       },
       "section": "## 10. Advanced Functional Inequalities (Conditional Results)",
+      "references": [
+        "prop-talagrand-cinf"
+      ],
       "raw_directive": "930: :::\n931: \n932: :::{prf:corollary} Exponential Convergence in Wasserstein Distance\n933: :label: cor-wasserstein-convergence-cinf\n934: \n935: Under {prf:ref}`prop-talagrand-cinf` hypotheses:\n936: \n937: $$\n938: W_2(\\mu_t, \\pi_{\\text{QSD}}) \\leq e^{-\\lambda_{\\text{Tal}} t / 2} W_2(\\mu_0, \\pi_{\\text{QSD}})\n939: $$\n940: ",
       "_registry_context": {
         "stage": "directives",

@@ -19,6 +19,11 @@
         "label": "rem-lorentzian-structure-stress-energy"
       },
       "section": "## Addition 1: Lorentz Covariance from Causal Set Theory (Insert after Section 1.2)",
+      "references": [
+        "def-stress-energy-discrete",
+        "def-stress-energy-continuum",
+        "rem-lorentzian-from-riemannian"
+      ],
       "raw_directive": "9: ### 1.4. Lorentzian Structure and Proper Four-Vectors\n10: \n11: :::{prf:remark} Emergent Lorentzian Metric\n12: :label: rem-lorentzian-structure-stress-energy\n13: \n14: The stress-energy tensor construction in {prf:ref}`def-stress-energy-discrete` and {prf:ref}`def-stress-energy-continuum` relies on the **emergent Lorentzian metric** established in [13_fractal_set_new/11_causal_sets.md](13_fractal_set_new/11_causal_sets.md).\n15: \n16: From {prf:ref}`rem-lorentzian-from-riemannian`, the emergent Riemannian metric $g_{ij}(x) = H_{ij}(x) + \\varepsilon \\delta_{ij}$ on the spatial slice $\\mathcal{X}$ is promoted to a Lorentzian metric on spacetime $M = \\mathbb{R} \\times \\mathcal{X}$:\n17: \n18: $$\n19: ds^2 = -c^2 dt^2 + g_{ij}(x) dx^i dx^j\n20: $$\n21: \n22: where $c = \\ell_{\\text{typ}}/\\Delta t$ is the effective \"speed of light\" set by the algorithm's spatial/temporal scales.\n23: \n24: **Four-velocity**: For a walker with spatial velocity $v^i(t)$, the proper four-velocity is:\n25: \n26: $$\n27: u^\\mu = \\gamma_v (c, v^i)\n28: $$\n29: \n30: where $\\gamma_v = 1/\\sqrt{1 - \\|v\\|^2/c^2}$ is the Lorentz factor.\n31: \n32: **Four-momentum**: The proper four-momentum is:\n33: \n34: $$\n35: p^\\mu = m u^\\mu = m \\gamma_v (c, v^i)\n36: $$\n37: \n38: where $m$ is the walker \"mass\" (set to 1 in our units).\n39: \n40: **Energy-momentum relation**:\n41: \n42: $$\n43: p_\\mu p^\\mu = g_{\\mu\\nu} p^\\mu p^\\nu = -m^2 c^2\n44: $$\n45: \n46: This reduces to:\n47: \n48: $$\n49: -\\gamma_v^2 c^2 + g_{ij} \\gamma_v^2 v^i v^j = -c^2 + \\gamma_v^2 (\\|v\\|^2 - c^2) = -c^2\n50: $$\n51: "
     }
   ],

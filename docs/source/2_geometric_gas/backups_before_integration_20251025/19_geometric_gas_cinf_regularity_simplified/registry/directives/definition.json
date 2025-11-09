@@ -2,7 +2,7 @@
   "document_id": "19_geometric_gas_cinf_regularity_simplified",
   "stage": "directives",
   "directive_type": "definition",
-  "generated_at": "2025-11-08T17:16:20.302876+00:00",
+  "generated_at": "2025-11-08T23:19:38.327755+00:00",
   "count": 6,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "def-simplified-measurement-cinf"
       },
       "section": "## 2. Mathematical Framework and Notation",
+      "references": [],
       "raw_directive": "203: - **Empirical measure**: f_k = (1/k) ∑_{j ∈ A_k} δ_{x_j}\n204: \n205: :::{prf:definition} Simplified Measurement Function\n206: :label: def-simplified-measurement-cinf\n207: \n208: The **simplified measurement function** d: X → ℝ depends only on position. We assume d ∈ C∞(X) with bounded derivatives:\n209: \n210: $$\n211: \\sup_{x \\in X} \\|\\nabla^m d(x)\\| \\leq C_d^{(m)} < \\infty \\quad \\forall m \\geq 0\n212: $$\n213: \n214: **Examples**: Distance to target set d(x) = dist(x, T) (smoothed), reward landscape d(x) = R(x), entropy proxy d(x) = -log π_ref(x).\n215: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "def-localization-kernel-cinf"
       },
       "section": "## 2. Mathematical Framework and Notation",
+      "references": [],
       "raw_directive": "221: The fitness potential is computed through a six-stage pipeline:\n222: \n223: :::{prf:definition} Localization Kernel\n224: :label: def-localization-kernel-cinf\n225: \n226: The **Gaussian localization kernel**:\n227: \n228: $$\n229: K_\\rho(r) = \\exp\\left(-\\frac{r^2}{2\\rho^2}\\right)\n230: $$\n231: \n232: is real analytic with Hermite polynomial derivatives:\n233: \n234: $$\n235: \\frac{d^m}{dr^m} K_\\rho(r) = H_m\\left(\\frac{r}{\\rho}\\right) \\cdot \\rho^{-m} \\cdot K_\\rho(r)\n236: $$\n237: \n238: Derivative bounds:\n239: \n240: $$\n241: \\left| \\frac{d^m}{dr^m} K_\\rho(r) \\right| \\leq C_{\\text{Herm}} \\cdot m! \\cdot \\rho^{-m} \\cdot \\exp\\left(-\\frac{r^2}{4\\rho^2}\\right)\n242: $$\n243: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "def-localization-weights-cinf"
       },
       "section": "## 2. Mathematical Framework and Notation",
+      "references": [],
       "raw_directive": "245: :::\n246: \n247: :::{prf:definition} Localization Weights\n248: :label: def-localization-weights-cinf\n249: \n250: Unnormalized weight:\n251: \n252: $$\n253: \\tilde{w}_{ij}(\\rho) = K_\\rho(d(x_i)) \\cdot K_\\rho(\\|x_i - x_j\\|)\n254: $$\n255: \n256: Normalized weight:\n257: \n258: $$\n259: w_{ij}(\\rho) = \\frac{\\tilde{w}_{ij}(\\rho)}{\\sum_{\\ell \\in A_k} \\tilde{w}_{i\\ell}(\\rho)}\n260: $$\n261: \n262: Normalization condition:\n263: \n264: $$\n265: \\sum_{j \\in A_k} w_{ij}(\\rho) = 1 \\quad \\text{(identically for all } x_i, S, \\rho \\text{)}",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +99,7 @@
         "label": "def-pipeline-cinf"
       },
       "section": "## 2. Mathematical Framework and Notation",
+      "references": [],
       "raw_directive": "267: :::\n268: \n269: :::{prf:definition} Localized Moments, Regularized Std Dev, Z-Score, Fitness Potential\n270: :label: def-pipeline-cinf\n271: \n272: **Localized mean**:\n273: \n274: $$\n275: \\mu_\\rho[f_k, x_i] = \\sum_{j \\in A_k} w_{ij}(\\rho) \\cdot d(x_j)\n276: $$\n277: \n278: **Localized variance**:\n279: \n280: $$\n281: \\sigma^2_\\rho[f_k, x_i] = \\sum_{j \\in A_k} w_{ij}(\\rho) \\cdot (d(x_j) - \\mu_\\rho)^2\n282: $$\n283: \n284: **Regularized standard deviation**: σ'_reg: ℝ_{≥0} → [ε_σ, ∞) satisfying:\n285: 1. σ'_reg ∈ C∞ with bounded derivatives: sup_{σ²} |d^m σ'_reg / d(σ²)^m| ≤ C_{σ',m}\n286: 2. σ'_reg(σ²) ≥ ε_σ > 0 (prevents division by zero)\n287: 3. σ'_reg(σ²) ~ √(σ²) as σ² → ∞\n288: \n289: **Z-score**:\n290: \n291: $$\n292: Z_\\rho[f_k, d, x_i] = \\frac{d(x_i) - \\mu_\\rho[f_k, x_i]}{\\sigma'_{\\text{reg}}(\\sigma^2_\\rho[f_k, x_i])}\n293: $$\n294: \n295: **Fitness potential**:\n296: \n297: $$\n298: V_{\\text{fit}}[f_k, \\rho](x_i) = g_A(Z_\\rho[f_k, d, x_i])\n299: $$\n300: ",
       "_registry_context": {
         "stage": "directives",
@@ -121,6 +125,7 @@
         "label": "def-gevrey-class-cinf"
       },
       "section": "## 7. Gevrey-1 Classification",
+      "references": [],
       "raw_directive": "749: ## 7. Gevrey-1 Classification\n750: \n751: :::{prf:definition} Gevrey Classes\n752: :label: def-gevrey-class-cinf\n753: \n754: A function f: U → ℝ (U ⊆ ℝ^d open) belongs to **Gevrey class G^s** (s ≥ 1) if for every compact K ⊆ U, there exist C_K, A_K > 0 such that:\n755: \n756: $$\n757: \\sup_{x \\in K} \\|\\nabla^m f(x)\\| \\leq C_K \\cdot A_K^m \\cdot (m!)^s \\quad \\forall m \\geq 0\n758: $$\n759: \n760: **Special cases**:\n761: - s < 1: Real analytic (convergent Taylor series)\n762: - s = 1: **Gevrey-1** (borderline, \"analytic-Gevrey\")\n763: - s > 1: Smooth but not analytic",
       "_registry_context": {
         "stage": "directives",
@@ -146,6 +151,7 @@
         "label": "def-adaptive-generator-cinf"
       },
       "section": "## 8. Spectral Implications: Essential Self-Adjointness",
+      "references": [],
       "raw_directive": "822: ## 8. Spectral Implications: Essential Self-Adjointness\n823: \n824: :::{prf:definition} Adaptive Langevin Generator\n825: :label: def-adaptive-generator-cinf\n826: \n827: The **infinitesimal generator** of the adaptive Langevin dynamics on extended state w = (x, v):\n828: \n829: $$\n830: \\mathcal{L} f(x, v) = v \\cdot \\nabla_x f + [-\\nabla U(x) - \\epsilon_F \\nabla V_{\\text{fit}}(x) - \\gamma v] \\cdot \\nabla_v f + \\frac{\\gamma}{2\\beta} \\Delta_v f\n831: $$\n832: \n833: where:\n834: - U(x): confining potential (backbone)\n835: - ε_F ∇V_fit(x): adaptive force\n836: - γ: friction\n837: - Δ_v: velocity Laplacian (thermal noise)\n838: ",
       "_registry_context": {
         "stage": "directives",

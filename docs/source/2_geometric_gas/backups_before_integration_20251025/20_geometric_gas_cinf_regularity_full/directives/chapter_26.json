@@ -19,6 +19,7 @@
         "label": "rem-simplified-vs-full-final"
       },
       "section": "## 16. Comparison to Simplified Model",
+      "references": [],
       "raw_directive": "5045: ## 16. Comparison to Simplified Model\n5046: \n5047: :::{prf:remark} Simplified vs Full Model\n5048: :label: rem-simplified-vs-full-final\n5049: \n5050: | **Aspect** | **Simplified Model** (Doc 19) | **Full Model** (This Document) |\n5051: |------------|-------------------------------|--------------------------------|\n5052: | **Measurement** | $d_i = d(x_i)$ (position-only) | $d_i = d_{\\text{alg}}(i, c(i))$ (companion-dependent) |\n5053: | **Fitness Pipeline** | Single-stage | Six-stage: weights \u2192 mean \u2192 variance \u2192 std dev \u2192 Z-score \u2192 rescale |\n5054: | **Walker Coupling** | None | N-body coupling via softmax companion selection |\n5055: | **Proof Strategy** | Direct telescoping | Smooth clustering + partition of unity |\n5056: | **Key Mechanism** | $\\sum_j \\nabla^m w_{ij} = 0$ | Same + exponential locality |\n5057: | **Framework Assumptions** | None required | Minimum companion availability, uniform density |\n5058: | **Regularity Class** | Gevrey-1 | Gevrey-1 (preserved through pipeline) |\n5059: | **k-uniformity** | Immediate | Non-trivial (exponential localization + density bounds) |\n5060: | **Document Length** | ~1,000 lines | ~2,000+ lines (full pipeline analysis) |\n5061: | **Physical Realism** | Lower | Higher (true algorithmic model) |\n5062: "
     }
   ],

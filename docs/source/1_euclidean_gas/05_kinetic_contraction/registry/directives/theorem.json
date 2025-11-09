@@ -2,7 +2,7 @@
   "document_id": "05_kinetic_contraction",
   "stage": "directives",
   "directive_type": "theorem",
-  "generated_at": "2025-11-08T17:16:20.149997+00:00",
+  "generated_at": "2025-11-08T23:19:38.247871+00:00",
   "count": 4,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "thm-inter-swarm-contraction-kinetic"
       },
       "section": "## 4. Hypocoercive Contraction of Inter-Swarm Error",
+      "references": [],
       "raw_directive": "1410: ### 4.3. Main Theorem: Hypocoercive Contraction\n1411: \n1412: :::{prf:theorem} Inter-Swarm Error Contraction Under Kinetic Operator\n1413: :label: thm-inter-swarm-contraction-kinetic\n1414: \n1415: Under the axioms of Chapter 3, there exist constants $\\kappa_W > 0$, $C_W' < \\infty$, and hypocoercive parameters $(\\lambda_v, b)$, all independent of $N$, such that:\n1416: \n1417: $$\n1418: \\mathbb{E}_{\\text{kin}}[V_W(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_W \\tau) V_W(S_1, S_2) + C_W' \\tau\n1419: \n1420: $$\n1421: \n1422: where $\\tau$ is the timestep and $S'_1, S'_2$ are the outputs after the kinetic evolution.\n1423: \n1424: **Equivalently (one-step drift):**\n1425: \n1426: $$\n1427: \\mathbb{E}_{\\text{kin}}[\\Delta V_W] \\leq -\\kappa_W V_W + C_W'\n1428: \n1429: $$\n1430: \n1431: **Key Properties:**\n1432: \n1433: 1. **Contraction rate** $\\kappa_W$ scales as:\n1434:    \n1435: $$\n1436: \\kappa_W \\sim \\min(\\gamma, \\alpha_U, \\sigma_{\\min}^2)\n1437: \n1438: $$\n1439:    where $\\gamma$ is friction, $\\alpha_U$ is the confinement strength, and $\\sigma_{\\min}^2$ is the minimum diffusion eigenvalue.\n1440: \n1441: 2. **Expansion bound** $C_W'$ accounts for:\n1442:    - Bounded noise injection ($\\sim \\sigma_{\\max}^2$)\n1443:    - Status changes (deaths creating divergence)\n1444:    - Boundary effects\n1445: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "thm-velocity-variance-contraction-kinetic"
       },
       "section": "## 5. Velocity Variance Dissipation via Langevin Friction",
+      "references": [],
       "raw_directive": "1998: ### 5.3. Main Theorem: Velocity Dissipation\n1999: \n2000: :::{prf:theorem} Velocity Variance Contraction Under Kinetic Operator\n2001: :label: thm-velocity-variance-contraction-kinetic\n2002: \n2003: Under the axioms of Chapter 3, the velocity variance satisfies:\n2004: \n2005: $$\n2006: \\mathbb{E}_{\\text{kin}}[\\Delta V_{\\text{Var},v}] \\leq -2\\gamma V_{\\text{Var},v} \\tau + \\sigma_{\\max}^2 d \\tau\n2007: \n2008: $$\n2009: \n2010: where:\n2011: - $\\gamma > 0$ is the friction coefficient\n2012: - $\\sigma_{\\max}^2$ is the maximum eigenvalue of $\\Sigma\\Sigma^T$\n2013: - $d$ is the spatial dimension\n2014: \n2015: **Equivalently:**\n2016: \n2017: $$\n2018: \\mathbb{E}_{\\text{kin}}[V_{\\text{Var},v}(S')] \\leq (1 - 2\\gamma\\tau) V_{\\text{Var},v}(S) + \\sigma_{\\max}^2 d \\tau\n2019: \n2020: $$\n2021: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "thm-positional-variance-bounded-expansion"
       },
       "section": "## 6. Positional Diffusion and Bounded Expansion",
+      "references": [],
       "raw_directive": "2402: ### 6.3. Main Theorem: Bounded Positional Expansion\n2403: \n2404: :::{prf:theorem} Bounded Positional Variance Expansion Under Kinetics\n2405: :label: thm-positional-variance-bounded-expansion\n2406: \n2407: Under the axioms of Chapter 3, the positional variance satisfies:\n2408: \n2409: $$\n2410: \\mathbb{E}_{\\text{kin}}[\\Delta V_{\\text{Var},x}] \\leq C_{\\text{kin},x} \\tau\n2411: \n2412: $$\n2413: \n2414: where:\n2415: \n2416: $$\n2417: C_{\\text{kin},x} = \\mathbb{E}[\\|v\\|^2] + \\frac{1}{2}\\sigma_{\\max}^2 \\tau + O(\\tau^2)\n2418: \n2419: $$\n2420: \n2421: The constant $C_{\\text{kin},x}$ is **state-independent** when velocity variance is bounded (which is ensured by Chapter 5).\n2422: ",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +99,7 @@
         "label": "thm-boundary-potential-contraction-kinetic"
       },
       "section": "## 7. Boundary Potential Contraction via Confining Potential",
+      "references": [],
       "raw_directive": "2775: ### 7.3. Main Theorem: Potential-Driven Safety\n2776: \n2777: :::{prf:theorem} Boundary Potential Contraction Under Kinetic Operator\n2778: :label: thm-boundary-potential-contraction-kinetic\n2779: \n2780: Under the axioms of Chapter 3, particularly the confining potential axiom, the boundary potential satisfies:\n2781: \n2782: $$\n2783: \\mathbb{E}_{\\text{kin}}[\\Delta W_b] \\leq -\\kappa_{\\text{pot}} W_b \\tau + C_{\\text{pot}} \\tau\n2784: \n2785: $$\n2786: \n2787: where:\n2788: - $\\kappa_{\\text{pot}} > 0$ depends on the strength of the confining force near the boundary\n2789: - $C_{\\text{pot}}$ accounts for noise-induced boundary approach\n2790: ",
       "_registry_context": {
         "stage": "directives",

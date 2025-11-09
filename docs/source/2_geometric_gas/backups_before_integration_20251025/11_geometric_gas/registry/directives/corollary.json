@@ -2,7 +2,7 @@
   "document_id": "11_geometric_gas",
   "stage": "directives",
   "directive_type": "corollary",
-  "generated_at": "2025-11-08T17:16:20.278733+00:00",
+  "generated_at": "2025-11-08T23:19:38.314515+00:00",
   "count": 6,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "cor-wellposed"
       },
       "section": "## 4. Uniform Ellipticity and Well-Posedness",
+      "references": [],
       "raw_directive": "930: ### 4.3. Corollary: Well-Posedness of the Hybrid SDE\n931: \n932: :::{prf:corollary} Existence and Uniqueness of Solutions\n933: :label: cor-wellposed\n934: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,9 @@
         "label": "cor-total-perturbation"
       },
       "section": "## 6. Boundedness of the Adaptive Perturbations",
+      "references": [
+        "lem-adaptive-force-bounded"
+      ],
       "raw_directive": "1471: Combining the three lemmas, we obtain the total perturbation bound:\n1472: \n1473: :::{prf:corollary} Total Perturbation Bound (ρ-Dependent)\n1474: :label: cor-total-perturbation\n1475: \n1476: The total perturbative contribution to the Stratonovich drift of $V_{\\text{total}}$ satisfies:\n1477: \n1478: $$\n1479: A_{\\text{perturb}}(S) \\le \\epsilon_F K_F(\\rho) (V_{\\text{total}}(S) + 1) + C_{\\text{diff,0}}(\\rho) + C_{\\text{diff,1}}(\\rho) V_{\\text{total}}(S)\n1480: $$\n1481: \n1482: where **all constants are ρ-dependent**:\n1483: - The adaptive force contributes $O(\\epsilon_F V_{\\text{total}})$ with coefficient $K_F(\\rho)$ (Lemma {prf:ref}`lem-adaptive-force-bounded`)\n1484: - The viscous force contributes a negative (stabilizing) term $\\le 0$ (Lemma [](#lem-viscous-dissipative))\n1485: - The adaptive diffusion contributes $C_{\\text{diff,0}}(\\rho) + C_{\\text{diff,1}}(\\rho) V_{\\text{total}}$ (Lemma [](#lem-diffusion-bounded)), where the diffusion tensor depends on $H(\\rho) = \\nabla^2 V_{\\text{fit}}[f_k, \\rho]$\n1486: \n1487: Combining these and absorbing constants:\n1488: \n1489: $$\n1490: A_{\\text{perturb}}(S) \\le (\\epsilon_F K_F(\\rho) + C_{\\text{diff,1}}(\\rho)) V_{\\text{total}}(S) + (\\epsilon_F K_F(\\rho) + C_{\\text{diff,0}}(\\rho))\n1491: $$\n1492: \n1493: **ρ-Dependence Interpretation:**\n1494: - All perturbation bounds depend on ρ through the localized fitness potential $V_{\\text{fit}}[f_k, \\rho]$\n1495: - For any fixed ρ > 0, all bounds are finite\n1496: - As ρ → ∞, the bounds recover those of the global backbone model",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +75,7 @@
         "label": "cor-exp-convergence"
       },
       "section": "## 7. Foster-Lyapunov Drift for the Full Adaptive System",
+      "references": [],
       "raw_directive": "1682: ### 7.3. Corollary: Exponential Convergence to the QSD\n1683: \n1684: :::{prf:corollary} Exponential Convergence\n1685: :label: cor-exp-convergence\n1686: \n1687: Under the conditions of Theorem [](#thm-fl-drift-adaptive), the empirical distribution $\\mu_N(t)$ of the adaptive swarm converges exponentially fast to the unique Quasi-Stationary Distribution (QSD) $\\pi_{\\text{QSD}}$ in the Lyapunov distance:\n1688: \n1689: $$\n1690: \\mathbb{E}[V_{\\text{total}}(\\mu_N(t))] \\le (1 - \\kappa_{\\text{total}})^t V_{\\text{total}}(\\mu_N(0)) + \\frac{C_{\\text{total}}}{\\kappa_{\\text{total}}}\n1691: $$\n1692: ",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +101,9 @@
         "label": "cor-entropy-convergence-lsi"
       },
       "section": "## 8. The Logarithmic Sobolev Inequality: A Conjectured Strengthening",
+      "references": [
+        "thm-lsi-adaptive-gas"
+      ],
       "raw_directive": "2001: Now that Theorem {prf:ref}`thm-lsi-adaptive-gas` (N-particle) and Theorem {prf:ref}`thm-lsi-mean-field` (mean-field limit) have been proven, they yield several powerful consequences. We state these as established results.\n2002: \n2003: :::{prf:corollary} Exponential Convergence in Relative Entropy\n2004: :label: cor-entropy-convergence-lsi\n2005: \n2006: By Theorem {prf:ref}`thm-lsi-adaptive-gas`, let $\\mu_t$ denote the law of the N-particle system at time $t$, starting from an initial distribution $\\mu_0$ with finite entropy. Then:\n2007: \n2008: $$\n2009: \\text{Ent}_{\\nu_N^{\\text{QSD}}}(\\mu_t) \\le \\text{Ent}_{\\nu_N^{\\text{QSD}}}(\\mu_0) \\cdot \\exp\\left( -\\frac{t}{C_{\\text{LSI}}} \\right)\n2010: $$\n2011: \n2012: where $C_{\\text{LSI}}$ is the LSI constant from Theorem `thm-lsi-adaptive-gas`.\n2013: ",
       "_registry_context": {
         "stage": "directives",
@@ -121,6 +129,10 @@
         "label": "cor-geometric-ergodicity-lsi"
       },
       "section": "## 8. The Logarithmic Sobolev Inequality: A Conjectured Strengthening",
+      "references": [
+        "thm-lsi-adaptive-gas",
+        "cor-entropy-convergence-lsi"
+      ],
       "raw_directive": "2031: :::\n2032: \n2033: :::{prf:corollary} Geometric Ergodicity via LSI\n2034: :label: cor-geometric-ergodicity-lsi\n2035: \n2036: By Theorem {prf:ref}`thm-lsi-adaptive-gas`, exponential convergence in relative entropy implies geometric ergodicity. Specifically, by Pinsker's inequality:\n2037: \n2038: $$\n2039: \\|\\mu_t - \\nu_N^{\\text{QSD}}\\|_{\\text{TV}} \\le \\sqrt{2 \\, \\text{Ent}_{\\nu_N^{\\text{QSD}}}(\\mu_t)}\n2040: $$\n2041: \n2042: Combining with Corollary {prf:ref}`cor-entropy-convergence-lsi`:\n2043: \n2044: $$\n2045: \\|\\mu_t - \\nu_N^{\\text{QSD}}\\|_{\\text{TV}} \\le \\sqrt{2 \\, \\text{Ent}_{\\nu_N^{\\text{QSD}}}(\\mu_0)} \\cdot \\exp\\left( -\\frac{t}{2C_{\\text{LSI}}} \\right)\n2046: $$\n2047: ",
       "_registry_context": {
         "stage": "directives",
@@ -146,6 +158,10 @@
         "label": "cor-axioms-verified"
       },
       "section": "## Appendix A: Regularity of the ρ-Localized Fitness Potential",
+      "references": [
+        "thm-c1-regularity",
+        "thm-c2-regularity"
+      ],
       "raw_directive": "3051: ### A.5. Corollary: Implications for the Main Text\n3052: \n3053: :::{prf:corollary} Verification of Axioms 3.2.1 and 3.2.3\n3054: :label: cor-axioms-verified\n3055: \n3056: **1. Axiom of Bounded Adaptive Force (Axiom 3.2.1):** By Theorem {prf:ref}`thm-c1-regularity`, the adaptive force $\\mathbf{F}_{\\text{adapt}} = \\epsilon_F \\nabla V_{\\text{fit}}[f_k, \\rho]$ satisfies:\n3057: \n3058: $$\n3059: \\|\\mathbf{F}_{\\text{adapt}}(x_i, S)\\| \\le \\epsilon_F F_{\\text{adapt,max}}(\\rho) < \\infty\n3060: $$\n3061: \n3062: for all swarm states $S$ and all $i \\in \\{1, \\ldots, N\\}$. This bound is N-uniform and depends only on ρ and the problem parameters.\n3063: \n3064: **2. Axiom of Uniform Ellipticity (Axiom 3.2.3):** By Theorem {prf:ref}`thm-c2-regularity`, the Hessian $H_i(S) = \\nabla^2 V_{\\text{fit}}[f_k, \\rho](x_i)$ satisfies:\n3065: \n3066: $$\n3067: \\|H_i(S)\\| \\le H_{\\max}(\\rho) < \\infty\n3068: $$\n3069: \n3070: Therefore, the regularized metric $G_{\\text{reg}} = (H + \\epsilon_\\Sigma I)^{-1}$ has eigenvalues bounded by:\n3071: \n3072: $$\n3073: \\frac{1}{H_{\\max}(\\rho) + \\epsilon_\\Sigma} \\le \\lambda_{\\min}(G_{\\text{reg}}) \\le \\lambda_{\\max}(G_{\\text{reg}}) \\le \\frac{1}{\\epsilon_\\Sigma}\n3074: $$\n3075: \n3076: establishing uniform ellipticity with ρ-dependent lower bound $c_{\\min}(\\rho) = 1/(H_{\\max}(\\rho) + \\epsilon_\\Sigma)$.\n3077: ",
       "_registry_context": {
         "stage": "directives",

@@ -19,6 +19,7 @@
         "label": "def-two-time-evolutions"
       },
       "section": "## 1. Mathematical Framework",
+      "references": [],
       "raw_directive": "73: A crucial distinction must be made clear:\n74: \n75: :::{prf:definition} Two Time Evolutions in Open Quantum Systems\n76: :label: def-two-time-evolutions\n77: \n78: Our framework has **two distinct concepts of time**:\n79: \n80: 1.  **System Evolution (Lindbladian)**: The physical, irreversible evolution of the open system's density matrix:\n81: \n82: $$\n83: \\rho(t) = e^{t\\mathcal{L}}(\\rho_0) \\quad \\text{where } \\mathcal{L}(\\rho) = -i[H,\\rho] + \\mathcal{L}_{\\text{diss}}[\\rho]\n84: $$\n85: \n86: This is a **completely positive trace-preserving (CPTP)** map, NOT an automorphism. It describes how the system approaches thermal equilibrium.\n87: \n88: 2.  **Equilibrium Dynamics (Hamiltonian Automorphism)**: The reversible, unitary time translation symmetry of observables *at equilibrium*:\n89: \n90: $$\n91: \\alpha_t(A) = e^{iHt} A e^{-iHt}\n92: $$\n93: \n94: This **is** an automorphism group $\\{\\alpha_t\\}_{t \\in \\mathbb{R}}$. It uses only the Hamiltonian $H$ from the unitary part of the Lindbladian. The dissipator $\\mathcal{L}_{\\text{diss}}$ does **not** affect $\\alpha_t$."
     },
     {
@@ -37,6 +38,7 @@
         "label": "def-kms-state"
       },
       "section": "## 1. Mathematical Framework",
+      "references": [],
       "raw_directive": "107: The central goal is to prove that our quasi-stationary distribution $\\rho_{\\text{QSD}}$ is a **Kubo-Martin-Schwinger (KMS) state** at temperature $T$.\n108: \n109: :::{prf:definition} KMS State at Temperature $T$\n110: :label: def-kms-state\n111: \n112: Let $\\mathcal{A}$ be a C*-algebra of observables and $\\alpha_t: \\mathcal{A} \\to \\mathcal{A}$ a one-parameter automorphism group. A state $\\omega: \\mathcal{A} \\to \\mathbb{C}$ is a **KMS state at inverse temperature $\\beta = 1/T$** if:\n113: \n114: For all $A, B \\in \\mathcal{A}$, the function $F_{A,B}(t) = \\omega(A \\alpha_t(B))$ extends to an analytic function in the complex strip $S_\\beta = \\{z \\in \\mathbb{C} \\mid 0 < \\text{Im}(z) < \\beta\\}$, and satisfies the boundary condition:\n115: \n116: $$\n117: \\omega(A \\alpha_t(B)) = \\omega(\\alpha_{t+i\\beta}(B) A) \\quad \\forall t \\in \\mathbb{R}\n118: $$"
     },
     {
@@ -55,6 +57,7 @@
         "label": "thm-kms-simplified"
       },
       "section": "## 1. Mathematical Framework",
+      "references": [],
       "raw_directive": "122: For our density matrix $\\rho_{\\text{QSD}}$, the state is $\\omega_\\beta(A) = \\text{Tr}(\\rho_{\\text{QSD}} A)$. The automorphism group is $\\alpha_t(A) = e^{iHt} A e^{-iHt}$.\n123: \n124: :::{prf:theorem} Simplified KMS Condition for Density Matrices\n125: :label: thm-kms-simplified\n126: \n127: For a density matrix $\\rho$ and automorphism $\\alpha_t(A) = e^{iHt} A e^{-iHt}$, the KMS condition at inverse temperature $\\beta$ is equivalent to:\n128: \n129: $$\n130: \\boxed{ \\text{Tr}(\\rho A B) = \\text{Tr}(\\rho B e^{-\\beta H} A e^{\\beta H}) \\quad \\forall A, B \\in \\mathcal{A} }\n131: $$\n132: \n133: This holds if and only if $\\rho$ is the **Gibbs state**:\n134: \n135: $$\n136: \\rho = \\frac{e^{-\\beta H}}{\\text{Tr}(e^{-\\beta H})} =: \\rho_{\\text{Gibbs}}(\\beta)\n137: $$"
     },
     {
@@ -69,6 +72,7 @@
       "content": "140: \n141: :::{prf:proof}\n142: If $\\rho = \\rho_{\\text{Gibbs}}$, then by cyclicity of the trace:\n143: \n144: $$\n145: \\text{Tr}(\\rho_{\\text{Gibbs}} A B) = \\frac{1}{Z} \\text{Tr}(e^{-\\beta H} A B) = \\frac{1}{Z} \\text{Tr}(B e^{-\\beta H} A) = \\frac{1}{Z} \\text{Tr}(e^{-\\beta H} B e^{\\beta H} e^{-\\beta H} A e^{\\beta H} e^{-\\beta H})\n146: $$\n147: \n148: where we inserted $e^{\\beta H} e^{-\\beta H} = I$ twice. Using cyclicity again:\n149: \n150: $$\n151: = \\frac{1}{Z} \\text{Tr}(e^{-\\beta H} B e^{\\beta H} A e^{-\\beta H} e^{\\beta H}) = \\text{Tr}(\\rho_{\\text{Gibbs}} B e^{\\beta H} A e^{-\\beta H})\n152: $$",
       "metadata": {},
       "section": "## 1. Mathematical Framework",
+      "references": [],
       "raw_directive": "139: :::\n140: \n141: :::{prf:proof}\n142: If $\\rho = \\rho_{\\text{Gibbs}}$, then by cyclicity of the trace:\n143: \n144: $$\n145: \\text{Tr}(\\rho_{\\text{Gibbs}} A B) = \\frac{1}{Z} \\text{Tr}(e^{-\\beta H} A B) = \\frac{1}{Z} \\text{Tr}(B e^{-\\beta H} A) = \\frac{1}{Z} \\text{Tr}(e^{-\\beta H} B e^{\\beta H} e^{-\\beta H} A e^{\\beta H} e^{-\\beta H})\n146: $$\n147: \n148: where we inserted $e^{\\beta H} e^{-\\beta H} = I$ twice. Using cyclicity again:\n149: \n150: $$\n151: = \\frac{1}{Z} \\text{Tr}(e^{-\\beta H} B e^{\\beta H} A e^{-\\beta H} e^{\\beta H}) = \\text{Tr}(\\rho_{\\text{Gibbs}} B e^{\\beta H} A e^{-\\beta H})\n152: $$\n153: "
     },
     {
@@ -87,6 +91,7 @@
         "label": "def-fractal-set-regions"
       },
       "section": "## 1. Mathematical Framework",
+      "references": [],
       "raw_directive": "167: The Haag-Kastler axioms are formulated in terms of a **net of local algebras** $\\{\\mathcal{A}(O)\\}$ assigned to spacetime regions $O$.\n168: \n169: :::{prf:definition} Spacetime Regions on the Fractal Set\n170: :label: def-fractal-set-regions\n171: \n172: Our base spacetime is the **Fractal Set** $\\mathcal{F} = \\{(x_i, t_i)\\}_{i=1}^N$, a discrete causal set. A **spacetime region** is simply a subset:\n173: \n174: $$\n175: O \\subseteq \\mathcal{F}\n176: $$\n177: \n178: **Spacelike separation**: Two points $i, j \\in \\mathcal{F}$ are **spacelike separated** if neither $i \\prec j$ nor $j \\prec i$ in the causal order (see {doc}`13_fractal_set_new/07_discrete_symmetries_gauge.md`).\n179: "
     },
     {
@@ -105,6 +110,7 @@
         "label": "def-local-algebras-fractal-set"
       },
       "section": "## 1. Mathematical Framework",
+      "references": [],
       "raw_directive": "181: :::\n182: \n183: :::{prf:definition} Local Algebras from Fock Space Operators\n184: :label: def-local-algebras-fractal-set\n185: \n186: Recall from \u00a712 the corrected Fock space construction with creation/annihilation operators $\\psi^\\dagger(x,v), \\psi(x,v)$ satisfying canonical commutation relations:\n187: \n188: $$\n189: [\\psi(x,v), \\psi^\\dagger(x',v')] = \\delta(x-x') \\delta(v-v')\n190: $$\n191: \n192: For a discrete causal set, we discretize the labels. For each point $i \\in \\mathcal{F}$, define operators:\n193: \n194: $$\n195: a_i^\\dagger := \\psi^\\dagger(x_i, v_i), \\quad a_i := \\psi(x_i, v_i)\n196: $$\n197: \n198: The **local algebra** for region $O \\subseteq \\mathcal{F}$ is the **von Neumann algebra** generated by all operators associated with points in $O$:\n199: \n200: $$\n201: \\mathcal{A}(O) := \\{ a_i, a_i^\\dagger \\mid i \\in O \\}''\n202: $$\n203: "
     },
     {
@@ -123,6 +129,7 @@
         "label": "axiom-hk-isotony"
       },
       "section": "## 1. Mathematical Framework",
+      "references": [],
       "raw_directive": "214: We now state the five axioms that must be verified:\n215: \n216: :::{prf:axiom} HK1: Isotony\n217: :label: axiom-hk-isotony\n218: \n219: For any two regions $O_1, O_2 \\subseteq \\mathcal{F}$:\n220: \n221: $$\n222: O_1 \\subseteq O_2 \\implies \\mathcal{A}(O_1) \\subseteq \\mathcal{A}(O_2)\n223: $$"
     },
     {
@@ -141,6 +148,7 @@
         "label": "axiom-hk-locality"
       },
       "section": "## 1. Mathematical Framework",
+      "references": [],
       "raw_directive": "225: :::\n226: \n227: :::{prf:axiom} HK2: Locality (Microcausality)\n228: :label: axiom-hk-locality\n229: \n230: Let $O_1, O_2 \\subseteq \\mathcal{F}$ be **spacelike separated**. Then for all $A \\in \\mathcal{A}(O_1)$ and $B \\in \\mathcal{A}(O_2)$:\n231: \n232: $$\n233: [A, B] = 0\n234: $$"
     },
     {
@@ -159,6 +167,7 @@
         "label": "axiom-hk-covariance"
       },
       "section": "## 1. Mathematical Framework",
+      "references": [],
       "raw_directive": "236: :::\n237: \n238: :::{prf:axiom} HK3: Covariance\n239: :label: axiom-hk-covariance\n240: \n241: Let $G$ be the symmetry group of the Fractal Set (automorphisms of the causal structure). There exists a unitary representation $U: G \\to \\mathcal{U}(\\mathcal{H})$ such that for all $g \\in G$ and all regions $O \\subseteq \\mathcal{F}$:\n242: \n243: $$\n244: \\mathcal{A}(gO) = U_g \\mathcal{A}(O) U_g^\\dagger\n245: $$"
     },
     {
@@ -177,6 +186,7 @@
         "label": "axiom-hk-kms-state"
       },
       "section": "## 1. Mathematical Framework",
+      "references": [],
       "raw_directive": "247: :::\n248: \n249: :::{prf:axiom} HK4: Existence of a KMS State\n250: :label: axiom-hk-kms-state\n251: "
     },
     {
@@ -195,6 +205,7 @@
         "label": "axiom-hk-time-slice"
       },
       "section": "## 1. Mathematical Framework",
+      "references": [],
       "raw_directive": "253: :::\n254: \n255: :::{prf:axiom} HK5: Time-Slice Axiom\n256: :label: axiom-hk-time-slice\n257: \n258: Let $S \\subseteq \\mathcal{F}$ be a **Cauchy surface** (a subset intersecting every inextendible causal curve exactly once). Then:\n259: \n260: $$\n261: \\mathcal{A}(S) = \\mathcal{A}(\\mathcal{F})\n262: $$\n263: "
     }
   ],

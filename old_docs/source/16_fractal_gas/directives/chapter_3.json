@@ -19,6 +19,7 @@
         "label": "def-ricci-mf-pde"
       },
       "section": "## 3. Phase Transition Theory",
+      "references": [],
       "raw_directive": "278: In the $N \\to \\infty$ limit with KDE smoothing, the swarm density $\\rho(x, t)$ satisfies:\n279: \n280: :::{prf:definition} Ricci-Gas Mean-Field PDE\n281: :label: def-ricci-mf-pde\n282: \n283: $$\n284: \\frac{\\partial \\rho}{\\partial t} = D \\Delta \\rho - \\alpha \\nabla \\cdot \\left( \\rho \\nabla R[\\rho] \\right) + \\left( k(R[\\rho]) - \\langle k(R) \\rangle_\\rho \\right) \\rho\n285: $$\n286: \n287: where:\n288: - $D$: Effective diffusion constant (from Langevin noise)\n289: - $\\alpha = \\epsilon_R$: Aggregation strength\n290: - $R[\\rho](x) = \\text{tr}(H[\\rho](x)) - \\lambda_{\\min}(H[\\rho](x))$: Ricci functional\n291: - $k(R) = 1/(R + \\epsilon_R)$: Cloning rate\n292: - $\\langle k(R) \\rangle_\\rho = \\int k(R[\\rho](x)) \\rho(x) dx$: Mean cloning rate"
     },
     {
@@ -37,6 +38,7 @@
         "label": "conj-critical-alpha"
       },
       "section": "## 3. Phase Transition Theory",
+      "references": [],
       "raw_directive": "296: ### 3.2. The Critical Parameter Hypothesis\n297: \n298: :::{prf:conjecture} Existence of Critical Phase Transition\n299: :label: conj-critical-alpha\n300: \n301: There exists a critical feedback strength $\\alpha_c > 0$ such that:\n302: \n303: **Subcritical Phase** ($\\alpha < \\alpha_c$):\n304: 1. Solutions to the mean-field PDE exist globally in time\n305: 2. $\\rho(x, t) \\to \\rho_{\\infty}(x)$ as $t \\to \\infty$ (unique QSD)\n306: 3. $\\rho_{\\infty}$ is a smooth, diffuse distribution\n307: 4. The system satisfies a Logarithmic Sobolev Inequality (LSI):\n308:    $$\n309:    \\text{Ent}(\\rho) \\leq \\frac{1}{2 \\lambda_{\\text{LSI}}} \\mathcal{I}(\\rho)\n310:    $$\n311:    with $\\lambda_{\\text{LSI}}(\\alpha) > 0$ for $\\alpha < \\alpha_c$\n312: 5. Exponential convergence: $\\|\\rho(t) - \\rho_\\infty\\|_{L^1} \\leq C e^{-\\lambda_{\\text{LSI}} t}$\n313: \n314: **Critical Point** ($\\alpha = \\alpha_c$):\n315: 1. $\\lambda_{\\text{LSI}}(\\alpha_c) = 0$ (LSI constant vanishes)\n316: 2. Polynomial (slow) convergence to QSD\n317: 3. Power-law correlations emerge\n318: \n319: **Supercritical Phase** ($\\alpha > \\alpha_c$):\n320: 1. For certain initial conditions $\\rho_0$, solutions blow up in finite time:\n321:    $$\n322:    \\lim_{t \\to T^*} \\|\\rho(\\cdot, t)\\|_{L^\\infty} = \\infty\n323:    $$\n324: 2. Regularized solutions (with $\\ell > 0$) form concentrated structures\n325: 3. LSI does not hold (entropy production can be positive)\n326: 4. QSD exhibits pattern formation (multiple peaks, fractal-like structure)"
     },
     {
@@ -55,6 +57,7 @@
         "label": "def-ricci-free-energy"
       },
       "section": "## 3. Phase Transition Theory",
+      "references": [],
       "raw_directive": "334: **Step 1: Construct a Free Energy Functional**\n335: \n336: :::{prf:definition} Free Energy\n337: :label: def-ricci-free-energy\n338: \n339: $$\n340: \\mathcal{F}[\\rho] = \\int \\rho \\log \\rho \\, dx - \\alpha \\int \\rho R[\\rho] \\, dx + \\frac{D}{2} \\int |\\nabla \\rho|^2 / \\rho \\, dx\n341: $$\n342: \n343: The first term is entropy (favors dispersion), the second is potential energy (favors aggregation), the third penalizes large gradients."
     }
   ],

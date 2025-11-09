@@ -2,7 +2,7 @@
   "document_id": "18_emergent_geometry",
   "stage": "directives",
   "directive_type": "assumption",
-  "generated_at": "2025-11-08T17:16:20.270040+00:00",
+  "generated_at": "2025-11-08T23:19:38.308390+00:00",
   "count": 1,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "assump-spectral-floor"
       },
       "section": "## 3. The Emergent Geometry Framework",
+      "references": [],
       "raw_directive": "341: The regularization $\\epsilon_\\Sigma I$ ensures the diffusion is well-behaved.\n342: \n343: :::{prf:assumption} Spectral Floor (Standing Assumption)\n344: :label: assump-spectral-floor\n345: \n346: There exists $\\Lambda_- \\ge 0$ such that for all swarm states $S$ and walkers $i$:\n347: \n348: $$\n349: \\lambda_{\\min}(H(x_i, S)) \\ge -\\Lambda_-\n350: $$\n351: ",
       "_registry_context": {
         "stage": "directives",

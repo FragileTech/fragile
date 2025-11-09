@@ -19,6 +19,10 @@
         "label": "thm-hypoellipticity-cinf"
       },
       "section": "## 9. Hypoellipticity and Smooth Transition Densities",
+      "references": [
+        "def-adaptive-generator-cinf",
+        "thm-cinf-regularity"
+      ],
       "raw_directive": "867: ## 9. Hypoellipticity and Smooth Transition Densities\n868: \n869: :::{prf:theorem} Hypoellipticity via H\u00f6rmander's Criterion\n870: :label: thm-hypoellipticity-cinf\n871: \n872: The adaptive Langevin generator L (Definition {prf:ref}`def-adaptive-generator-cinf`) is **hypoelliptic**: for all t > 0, the transition density p_t(w, w') is C\u221e in both arguments.\n873: \n874: **H\u00f6rmander's condition**: L = \u2211_i Y_i\u00b2 + Y_0 where:\n875: - Y_i = \u2202_{v_i} (thermal noise directions)\n876: - Y_0 = v \u00b7 \u2207_x - (\u2207V_total + \u03b3v) \u00b7 \u2207_v (drift)\n877: \n878: The Lie bracket [Y_0, Y_i] = \u2202_{x_i} (position derivative) is independent of thermal noise. The Lie algebra spans the full tangent space T(X \u00d7 \u211d^d), satisfying H\u00f6rmander's bracket condition.\n879: \n880: **Conclusion**: By H\u00f6rmander's theorem (H\u00f6rmander, Acta Math. 1967), L is hypoelliptic, and p_t(w, w') \u2208 C\u221e for t > 0.\n881: "
     },
     {
@@ -37,6 +41,7 @@
         "label": "cor-instantaneous-smoothing-cinf"
       },
       "section": "## 9. Hypoellipticity and Smooth Transition Densities",
+      "references": [],
       "raw_directive": "883: :::\n884: \n885: :::{prf:corollary} Instantaneous Smoothing\n886: :label: cor-instantaneous-smoothing-cinf\n887: \n888: For any initial distribution \u03bc_0 (possibly singular, e.g., \u03b4_{w_0}), the time-evolved distribution \u03bc_t = e^{tL} \u03bc_0 has a C\u221e density for all t > 0.\n889: "
     },
     {
@@ -55,6 +60,7 @@
         "label": "prop-gaussian-tail-bounds-cinf"
       },
       "section": "## 9. Hypoellipticity and Smooth Transition Densities",
+      "references": [],
       "raw_directive": "891: :::\n892: \n893: :::{prf:proposition} Gaussian Tail Bounds (Conditional)\n894: :label: prop-gaussian-tail-bounds-cinf\n895: \n896: Under the confining potential hypothesis (lim U = +\u221e), the transition density satisfies:\n897: \n898: $$\n899: p_t(w, w') \\leq C_t \\cdot \\exp\\left(-\\frac{d(w, w')^2}{D t}\\right)\n900: $$\n901: \n902: for constants C_t, D > 0, where d(w, w') is the hypoelliptic distance.\n903: "
     }
   ],

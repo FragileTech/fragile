@@ -19,6 +19,7 @@
         "label": "thm-composition-reference"
       },
       "section": "## Step 3: Composition via Existing Theorem",
+      "references": [],
       "raw_directive": "275: ## Step 3: Composition via Existing Theorem\n276: \n277: :::{prf:theorem} Composition of LSI Operators (Reference)\n278: :label: thm-composition-reference\n279: \n280: If $\\Psi_1$ and $\\Psi_2$ are Markov operators on $\\mathcal{P}(\\Omega)$ satisfying:\n281: \n282: 1. $D_{\\text{KL}}(\\Psi_1 \\# \\mu \\| \\pi) \\leq (1 - \\alpha_1 \\tau) D_{\\text{KL}}(\\mu \\| \\pi) + C_1$\n283: 2. $D_{\\text{KL}}(\\Psi_2 \\# \\nu \\| \\pi) \\leq (1 - \\alpha_2 \\tau) D_{\\text{KL}}(\\nu \\| \\pi) + C_2$\n284: \n285: Then the composition $\\Psi_{\\text{total}} = \\Psi_2 \\circ \\Psi_1$ satisfies:\n286: \n287: $$\n288: D_{\\text{KL}}(\\Psi_{\\text{total}} \\# \\mu \\| \\pi) \\leq [1 - \\tau(\\alpha_1 + \\alpha_2)] D_{\\text{KL}}(\\mu \\| \\pi) + C_1 + C_2 + O(\\tau^2)\n289: $$\n290: \n291: **Proof**: See Theorem 6.3 (Composition Theorem, lines 1148-1215) of [10_kl_convergence.md](10_kl_convergence.md).\n292: "
     }
   ],

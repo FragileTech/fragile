@@ -19,6 +19,7 @@
         "label": "thm-corrected-kl-convergence"
       },
       "section": "## 4. Main Theorem (Corrected)",
+      "references": [],
       "raw_directive": "590: ## 4. Main Theorem (Corrected)\n591: \n592: :::{prf:theorem} KL-Convergence for Mean-Field Euclidean Gas (CORRECTED)\n593: :label: thm-corrected-kl-convergence\n594: \n595: If the kinetic dominance condition holds:\n596: \n597: $$\n598: \\sigma^2 \\gamma \\kappa_{\\text{conf}} > C_0 \\max\\left(\\frac{\\lambda}{M_\\infty}, \\bar{\\kappa}\\right)\n599: $$\n600: \n601: then the mean-field Euclidean Gas converges exponentially to its QSD:\n602: \n603: $$\n604: D_{\\text{KL}}(\\rho_t \\| \\rho_\\infty) \\le e^{-\\alpha_{\\text{net}} t} D_{\\text{KL}}(\\rho_0 \\| \\rho_\\infty) + \\frac{B_{\\text{jump}}}{\\alpha_{\\text{net}}} (1 - e^{-\\alpha_{\\text{net}} t})\n605: $$\n606: \n607: where $\\alpha_{\\text{net}} = \\alpha_{\\text{kin}} - A_{\\text{jump}} > 0$.\n608: "
     }
   ],

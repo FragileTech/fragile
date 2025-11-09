@@ -19,6 +19,12 @@
         "label": "thm-main-complete-cinf-geometric-gas-full"
       },
       "section": "## 13. Main Theorem: Complete Statement",
+      "references": [
+        "lem-companion-availability-enforcement",
+        "assump-uniform-density-full",
+        "assump-rescale-function-cinf-full",
+        "verif-density-bound-consistency-full"
+      ],
       "raw_directive": "4798: We now state the complete main theorem, synthesizing all previous results.\n4799: \n4800: :::{prf:theorem} C^\u221e Regularity of Geometric Gas with Companion-Dependent Fitness (Complete)\n4801: :label: thm-main-complete-cinf-geometric-gas-full\n4802: \n4803: Consider the Geometric Gas algorithm with **regularized** companion-dependent measurements:\n4804: \n4805: $$\n4806: d_j = d_{\\text{alg}}(j, c(j)) = \\sqrt{\\|x_j - x_{c(j)}\\|^2 + \\lambda_{\\text{alg}} \\|v_j - v_{c(j)}\\|^2 + \\varepsilon_d^2}\n4807: \n4808: $$\n4809: \n4810: where:\n4811: - $\\varepsilon_d > 0$ is the **distance regularization parameter** (eliminates singularity at walker collisions)\n4812: - Companions $c(j) \\in \\mathcal{A} \\setminus \\{j\\}$ are selected via softmax:\n4813: \n4814: $$\n4815: \\mathbb{P}(c(j) = \\ell) = \\frac{\\exp(-d_{\\text{alg}}^2(j,\\ell)/(2\\varepsilon_c^2))}{\\sum_{\\ell' \\in \\mathcal{A} \\setminus \\{j\\}} \\exp(-d_{\\text{alg}}^2(j,\\ell')/(2\\varepsilon_c^2))}\n4816: \n4817: $$\n4818: \n4819: Under the framework assumptions:\n4820: - {prf:ref}`lem-companion-availability-enforcement` (minimum companion within $\\mathcal{O}(\\varepsilon_c)$)\n4821: - {prf:ref}`assump-uniform-density-full` (bounded phase-space density)\n4822: - {prf:ref}`assump-rescale-function-cinf-full` (C^\u221e rescale function)\n4823: \n4824: The **complete fitness potential**:\n4825: \n4826: $$\n4827: V_{\\text{fit}}(x_i, v_i) = g_A\\left(\\frac{d_i - \\mu_\\rho^{(i)}}{\\sigma'_\\rho(i)}\\right)\n4828: \n4829: $$\n4830: \n4831: where:\n4832: - $\\mu_\\rho^{(i)} = \\sum_{j} w_{ij}(\\rho) d_j$ (localized mean)\n4833: - $\\sigma'_\\rho(i) = \\sqrt{\\sum_j w_{ij}(\\rho)(d_j - \\mu_\\rho)^2 + \\eta_{\\min}^2}$ (regularized std dev)\n4834: - $w_{ij}(\\rho) = \\exp(-d_{\\text{alg}}^2(i,j)/(2\\rho^2)) / Z_i(\\rho)$ (localization weights)\n4835: \n4836: is **infinitely differentiable** (C^\u221e) with respect to $(x_i, v_i)$ for all walkers $i \\in \\mathcal{A}$.\n4837: \n4838: **Derivative Bounds**: For all $m \\geq 1$:\n4839: \n4840: $$\n4841: \\|\\nabla^m V_{\\text{fit}}\\|_\\infty \\leq C_{\\text{Gev}}^m \\cdot m! \\cdot \\rho_{\\max}^{m} \\cdot \\rho^{2dm} \\cdot \\eta_{\\min}^{-(2m+1)} \\cdot \\max(\\rho^{-m}, \\varepsilon_d^{1-m})\n4842: \n4843: $$\n4844: \n4845: where:\n4846: - $C_{\\text{Gev}}$ depends only on $d$, $\\lambda_{\\text{alg}}$, and the C^\u221e norms of $g_A$\n4847: - $\\rho_{\\max}$ is the self-consistent density bound from Theorem {prf:ref}`verif-density-bound-consistency-full`\n4848: - The constants grow factorially with $m$ (Gevrey-1 classification)\n4849: - Polynomial growth $\\rho^{2dm}$ from localization and $\\rho_{\\max}^m$ from density bound\n4850: - Inverse polynomial growth $\\eta_{\\min}^{-(2m+1)}$ from Z-score denominator regularization\n4851: - The $\\max(\\rho^{-m}, \\varepsilon_d^{1-m})$ term: for $m \\geq 2$, typically $\\varepsilon_d^{1-m}$ dominates (distance regularization bottleneck)\n4852: \n4853: **Parameter dependencies exhibit**:\n4854: - **Factorial growth** in derivative order $m$ (Gevrey-1)\n4855: - **Polynomial growth** in dimension via $\\rho^{2dm}$ (exponential locality)\n4856: - **Inverse super-polynomial growth** in $\\eta_{\\min}^{-(2m+1)}$ (Z-score regularization)\n4857: - **Inverse polynomial growth** in $\\varepsilon_d^{1-m}$ for $m \\geq 2$ (distance regularization)\n4858: \n4859: The constant is **independent of** (uniformity properties):\n4860: 1. Total swarm size $N$ (N-uniformity: bounds do not grow with total swarm population)\n4861: 2. Number of alive walkers $k = |\\mathcal{A}|$ (k-uniformity: independent of how many walkers remain alive)\n4862: 3. Walker index $i$ (permutation invariance: all walkers treated symmetrically)\n4863: 4. Walker configurations (uniform over state space: bounds hold regardless of walker positions)\n4864: "
     },
     {
@@ -37,6 +43,22 @@
         "label": "proof-thm-main-complete-cinf-geometric-gas-full"
       },
       "section": "## 13. Main Theorem: Complete Statement",
+      "references": [
+        "const-mollified-partition-full",
+        "lem-softmax-tail-corrected-full",
+        "lem-effective-companion-count-corrected-full",
+        "lem-dalg-derivative-bounds-full",
+        "lem-gaussian-kernel-derivatives-full",
+        "lem-localization-weight-derivatives-full",
+        "lem-telescoping-localization-weights-full",
+        "lem-derivatives-companion-distance-full",
+        "lem-mth-derivative-localized-mean-full",
+        "thm-mth-derivative-localized-variance-full",
+        "lem-properties-regularized-std-dev-full",
+        "thm-cinf-regularity-zscore-full",
+        "thm-main-cinf-regularity-fitness-potential-full",
+        "cor-gevrey-1-fitness-potential-full"
+      ],
       "raw_directive": "4866: :::\n4867: \n4868: :::{prf:proof}\n4869: :label: proof-thm-main-complete-cinf-geometric-gas-full\n4870: \n4871: **Summary of proof architecture**:\n4872: \n4873: 1. **Part I (\u00a72-4)**: Smooth clustering framework\n4874:    - Partition of unity construction ({prf:ref}`const-mollified-partition-full`)\n4875:    - Exponential locality ({prf:ref}`lem-softmax-tail-corrected-full`)\n4876:    - Effective interactions ({prf:ref}`lem-effective-companion-count-corrected-full`)\n4877:    - Derivative bounds for $d_{\\text{alg}}$ ({prf:ref}`lem-dalg-derivative-bounds-full`)\n4878: \n4879: 2. **Part II (\u00a75-6)**: Localization weights\n4880:    - Gaussian kernel derivatives ({prf:ref}`lem-gaussian-kernel-derivatives-full`)\n4881:    - Quotient rule for weights ({prf:ref}`lem-localization-weight-derivatives-full`)\n4882:    - Telescoping identity ({prf:ref}`lem-telescoping-localization-weights-full`)\n4883:    - Companion coupling analysis ({prf:ref}`lem-derivatives-companion-distance-full`)\n4884: \n4885: 3. **Part III (\u00a77-8)**: Localized moments\n4886:    - Localized mean inductive bounds ({prf:ref}`lem-mth-derivative-localized-mean-full`)\n4887:    - Localized variance inductive bounds ({prf:ref}`thm-mth-derivative-localized-variance-full`)\n4888:    - k-uniformity via telescoping and exponential localization\n4889: \n4890: 4. **Part IV (\u00a79-10)**: Regularization and Z-score\n4891:    - Regularized std dev with positive lower bound ({prf:ref}`lem-properties-regularized-std-dev-full`)\n4892:    - Z-score quotient rule ({prf:ref}`thm-cinf-regularity-zscore-full`)\n4893:    - Uniform bounds from non-vanishing denominator\n4894: \n4895: 5. **Part V (\u00a711-12)**: Final composition\n4896:    - Chain rule with Fa\u00e0 di Bruno formula ({prf:ref}`thm-main-cinf-regularity-fitness-potential-full`)\n4897:    - Gevrey-1 classification ({prf:ref}`cor-gevrey-1-fitness-potential-full`)\n4898:    - N-uniform and k-uniform bounds established\n4899: "
     }
   ],

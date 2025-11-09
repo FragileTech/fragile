@@ -2,7 +2,7 @@
   "document_id": "14_geometric_gas_c4_regularity",
   "stage": "directives",
   "directive_type": "corollary",
-  "generated_at": "2025-11-08T17:16:20.323094+00:00",
+  "generated_at": "2025-11-08T23:19:38.340651+00:00",
   "count": 3,
   "items": [
     {
@@ -21,6 +21,9 @@
         "label": "cor-hessian-lipschitz"
       },
       "section": "## 9. Stability Implications and Corollaries",
+      "references": [
+        "thm-c3-regularity"
+      ],
       "raw_directive": "903: ## 9. Stability Implications and Corollaries\n904: \n905: :::{prf:corollary} Hessian Lipschitz Continuity\n906: :label: cor-hessian-lipschitz\n907: \n908: The Hessian $\\nabla^2 V_{\\text{fit}}$ is Lipschitz continuous:\n909: \n910: $$\n911: \\|\\nabla^2 V_{\\text{fit}}(x) - \\nabla^2 V_{\\text{fit}}(y)\\| \\le K_{V,3}(\\rho) \\|x - y\\|\n912: \n913: $$\n914: \n915: where $K_{V,3}(\\rho) = O(\\rho^{-3})$ is the third-derivative bound from C³ regularity (see {prf:ref}`thm-c3-regularity` in [13_geometric_gas_c3_regularity.md](13_geometric_gas_c3_regularity.md)).\n916: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +49,7 @@
         "label": "cor-fourth-order-integrators"
       },
       "section": "## 9. Stability Implications and Corollaries",
+      "references": [],
       "raw_directive": "938: :::\n939: \n940: :::{prf:corollary} Fourth-Order Integrator Compatibility\n941: :label: cor-fourth-order-integrators\n942: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +75,7 @@
         "label": "cor-brascamp-lieb"
       },
       "section": "## 9. Stability Implications and Corollaries",
+      "references": [],
       "raw_directive": "944: :::\n945: \n946: :::{prf:corollary} Brascamp-Lieb Inequality (Conditional)\n947: :label: cor-brascamp-lieb\n948: \n949: **Hypothesis:** Assume the fitness potential is uniformly convex: $\\nabla^2 V_{\\text{fit}}(x) \\ge \\lambda_{\\rho} I$ for some $\\lambda_{\\rho} > 0$ and all $x \\in \\mathcal{X}$.\n950: \n951: **Conclusion:** The QSD $\\pi_{\\text{QSD}}$ satisfies the Brascamp-Lieb inequality:\n952: \n953: $$\n954: \\text{Var}_{\\pi_{\\text{QSD}}}[f] \\le \\int_{\\mathcal{X}} \\frac{(\\nabla f)^2}{\\lambda_{\\min}(\\nabla^2 V_{\\text{fit}})} d\\pi_{\\text{QSD}} \\le \\frac{1}{\\lambda_{\\rho}} \\|\\nabla f\\|^2_{L^2(\\pi_{\\text{QSD}})}\n955: \n956: $$\n957: \n958: enabling sharp concentration inequalities.\n959: ",
       "_registry_context": {
         "stage": "directives",

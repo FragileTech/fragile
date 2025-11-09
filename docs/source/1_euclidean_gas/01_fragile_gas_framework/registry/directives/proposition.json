@@ -2,7 +2,7 @@
   "document_id": "01_fragile_gas_framework",
   "stage": "directives",
   "directive_type": "proposition",
-  "generated_at": "2025-11-08T17:16:20.109299+00:00",
+  "generated_at": "2025-11-08T23:19:38.223447+00:00",
   "count": 3,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "prop-w2-bound-no-offset"
       },
       "section": "## 18. Swarm Update Operator: A Composition of Measures",
+      "references": [],
       "raw_directive": "5096: We now recast the continuity bound in the 2-Wasserstein metric on the output space, which removes additive offsets that arise from independent randomness.\n5097: :::{prf:definition} Wasserstein-2 on the output space (quotient)\n5098: :label: def-w2-output-metric\n5099: Let $(\\overline{\\Sigma}_N, \\overline d_{\\text{Disp},\\mathcal{Y}})$ denote the $N$-particle quotient state space with the displacement metric. For two probability measures $\\mu,\\nu$ on $\\overline{\\Sigma}_N$, define\n5100: $$\n5101: \n5102: W_2^2(\\mu,\\nu) := \\inf_{\\pi\\in\\Pi(\\mu,\\nu)} \\int \\overline d_{\\text{Disp},\\mathcal{Y}}(s',\\tilde s')^2\\,\\mathrm{d}\\pi(s',\\tilde s'),\n5103: \n5104: $$\n5105: where $\\Pi(\\mu,\\nu)$ is the set of couplings with marginals $\\mu$ and $\\nu$.\n5106: :::\n5107: :::{prf:proposition} W2 continuity bound without offset (for $k\\ge 2$)",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "prop-psi-markov-kernel"
       },
       "section": "## 18. Swarm Update Operator: A Composition of Measures",
+      "references": [],
       "raw_directive": "5132: $$\n5133: Repeating the stagewise bounds from Section 17.2.4 under this synchronous coupling yields the same linear and sub-linear dependencies on $V_{\\text{in}}=d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2$, while eliminating additive offsets that originate solely from independent randomness. In particular, when $\\mathcal{S}_1=\\mathcal{S}_2$, we have $F(\\mathcal{S}_1,\\Xi)=F(\\mathcal{S}_1,\\Xi)$ almost surely and the expectation on the right-hand side is zero. This gives the stated bound with no constant term.\n5134: The coefficients $C_{\\Psi,L}, C_{\\Psi,H}$ are exactly those defined in 17.2.4.1, and $\\alpha_H^{\\mathrm{global}}$ is as in 17.2.4. The inequality follows by combining the intermediate estimates with the unification lemma (17.2.4.3).\n5135: **Q.E.D.**",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "prop-coefficient-regularity"
       },
       "section": "## 18. Swarm Update Operator: A Composition of Measures",
+      "references": [],
       "raw_directive": "5148: :label: proof-prop-psi-markov-kernel\n5149: Let $F_{\\text{clone}},F_{\\text{pert}},F_{\\text{status}}$ denote the measurable stage maps and let $\\mathcal{K}_{\\text{clone}},\\mathcal{K}_{\\text{pert}},\\mathcal{K}_{\\text{status}}$ be their noise kernels. For each fixed input, pushforward of a measurable kernel under a measurable map yields a measurable kernel. By composition, the concatenation of these stagewise kernels is a measurable kernel (standard closure of Markov kernels under composition on measurable spaces). Thus $\\Psi$ is a Markov kernel on $(\\Sigma_N,\\mathcal{B}(\\Sigma_N))$.\n5150: Moreover, the synchronous coupling used in [](#subsec-w2-coupling-offset-removal) is realized by taking the product probability space for the stagewise noises and identifying the same noise coordinate for the paired inputs. Hence the $W_2$ bound in [](#prop-w2-bound-no-offset) is a continuity statement for the Markov kernel $\\Psi$ viewed as a map $\\mathcal{S}\\mapsto \\Psi(\\mathcal{S},\\cdot)$.\n5151: **Q.E.D.**\n5152: :::\n5153: :::{prf:remark}\n5154: :label: rem-context-5056\n5155: Feller-type (continuity-preserving) properties for $\\Psi$ follow from the stagewise measurability and continuity assumptions stated in Section 2 for the operators and aggregators; on compact (or sublevel) sets these imply boundedness and continuity of the induced kernel maps.\n5156: :::\n5157: ##### 17.2.4.6. Regularity of State-Dependent Coefficients on Sublevel Sets",
       "_registry_context": {
         "stage": "directives",

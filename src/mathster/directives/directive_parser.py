@@ -51,6 +51,7 @@ class DirectiveHint:
     content: str  # Raw content between directive markers
     metadata: dict  # All :field: values (class, nonumber, name, etc.)
     section: str  # Section identifier where this appears
+    references: list[str]  # Labels referenced inside the directive content
 
     def to_dict(self) -> dict:
         """Convert to dictionary for JSON serialization."""
@@ -66,6 +67,7 @@ class DirectiveHint:
             "content": self.content,
             "metadata": self.metadata,
             "section": self.section,
+            "references": self.references,
         }
 
 
@@ -84,6 +86,56 @@ class DocumentSection:
     end_line: int  # Line number where section ends (1-indexed)
     content: str  # Full markdown content of the section
     directives: list[DirectiveHint]  # Directive hints found in this section
+
+
+# =============================================================================
+# REFERENCE EXTRACTION
+# =============================================================================
+
+REFERENCE_INLINE_PATTERN = re.compile(r"\{(?P<role>[\w:-]+)\}`(?P<body>[^`]+)`")
+REFERENCE_ROLE_NAMES = {"ref", "prf:ref", "numref"}
+
+
+def extract_label_references(text: str | None) -> list[str]:
+    """
+    Extract all label references from directive content.
+
+    Supports common MyST inline roles such as ``{prf:ref}`label`` and
+    ``{ref}`Title <label>``. Returns a list of unique labels preserving the
+    order in which they appear.
+    """
+    if not text:
+        return []
+
+    references: list[str] = []
+    seen: set[str] = set()
+
+    for match in REFERENCE_INLINE_PATTERN.finditer(text):
+        role = match.group("role").strip().lower()
+        if role not in REFERENCE_ROLE_NAMES and not role.endswith(":ref"):
+            continue
+
+        candidate = _clean_reference_target(match.group("body"))
+        if candidate and candidate not in seen:
+            references.append(candidate)
+            seen.add(candidate)
+
+    return references
+
+
+def _clean_reference_target(body: str) -> str | None:
+    """Extract the label portion from a MyST inline role body."""
+    body = body.strip()
+    if not body:
+        return None
+
+    angle_match = re.search(r"<([^<>`]+)>", body)
+    if angle_match:
+        candidate = angle_match.group(1).strip()
+        if candidate:
+            return candidate
+
+    return body or None
 
 
 # =============================================================================
@@ -208,6 +260,7 @@ def extract_jupyter_directives(
                     content = "\n".join(content_lines).strip()
                 else:
                     content = ""
+                references = extract_label_references(content)
 
                 directives.append(
                     DirectiveHint(
@@ -222,6 +275,7 @@ def extract_jupyter_directives(
                         content=content,
                         metadata=metadata,
                         section=section_id,
+                        references=references,
                     )
                 )
 

@@ -19,6 +19,7 @@
         "label": "thm-fl-established"
       },
       "section": "## 1.1 Foster-Lyapunov Drift Condition",
+      "references": [],
       "raw_directive": "221: From [04_convergence.md](../04_convergence.md), we have proven:\n222: \n223: :::{prf:theorem} Synergistic Foster-Lyapunov (Established)\n224: :label: thm-fl-established\n225: \n226: Under the foundational axioms:\n227: - Confining potential: $\\langle \\nabla U, x \\rangle \\geq \\alpha_U |x|^2$\n228: - Positive friction: $\\gamma > 0$\n229: - Positive noise: $\\sigma_v^2 > 0$\n230: \n231: The composed operator satisfies:\n232: \n233: $$\n234: \\mathbb{E}[V_{\\text{total}}(S_{t+1})] \\leq (1 - \\kappa_{\\text{total}}\\tau) V_{\\text{total}}(S_t) + C_{\\text{total}}\n235: $$\n236: \n237: with:\n238: $$\n239: \\kappa_{\\text{total}} = \\min\\left(\\frac{\\kappa_W\\tau}{2}, \\frac{c_V\\kappa_x}{2}, \\frac{c_V\\gamma\\tau}{2}, \\frac{c_B(\\kappa_b + \\kappa_{\\text{pot}}\\tau)}{2}\\right) > 0\n240: $$\n241: "
     }
   ],

@@ -19,6 +19,7 @@
         "label": "lem-telescoping-derivatives"
       },
       "section": "## 2. Mathematical Framework and Notation",
+      "references": [],
       "raw_directive": "197: A bound is **k-uniform** if it is independent of the alive walker count $k = |A_k|$. The key technical tool for proving k-uniformity is the **telescoping property** of normalized weights:\n198: \n199: :::{prf:lemma} Telescoping Identity for Derivatives\n200: :label: lem-telescoping-derivatives\n201: \n202: For any derivative order $m \\in \\{1, 2, 3\\}$, the localization weights satisfy:\n203: \n204: $$\n205: \\sum_{j \\in A_k} \\nabla^m_{x_i} w_{ij}(\\rho) = 0\n206: $$\n207: "
     }
   ],

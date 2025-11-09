@@ -2,7 +2,7 @@
   "document_id": "04_wasserstein_contraction_ASSEMBLED",
   "stage": "directives",
   "directive_type": "theorem",
-  "generated_at": "2025-11-08T17:16:20.335727+00:00",
+  "generated_at": "2025-11-08T23:19:38.347788+00:00",
   "count": 3,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "thm-main-contraction-summary"
       },
       "section": "## 0. Wasserstein-2 Contraction for the Cloning Operator",
+      "references": [],
       "raw_directive": "18: This document proves that the **cloning operator** $\\Psi_{\\text{clone}}$ in the Fragile Gas framework induces Wasserstein-2 ($W_2$) contraction between swarm distributions, provided the swarms are sufficiently separated.\n19: \n20: :::{prf:theorem} Wasserstein-2 Contraction (Main Theorem)\n21: :label: thm-main-contraction-summary\n22: \n23: Let $\\mu_1, \\mu_2$ be two empirical swarm distributions over $N$ walkers in state space $\\mathcal{X} = \\mathbb{R}^d$. Suppose:\n24: 1. Both swarms satisfy the Fragile Gas axioms (Confining Potential, Environmental Richness, Bounded Virtual Rewards)\n25: 2. The swarms have separation $L := \\|\\bar{x}_1 - \\bar{x}_2\\| > L_0(\\delta, \\varepsilon)$, where $L_0$ is the separation threshold\n26: \n27: Then, applying the cloning operator contracts the Wasserstein-2 distance:\n28: \n29: $$\n30: W_2^2(\\Psi_{\\text{clone}}(\\mu_1), \\Psi_{\\text{clone}}(\\mu_2)) \\leq (1 - \\kappa_W) W_2^2(\\mu_1, \\mu_2) + C_W\n31: $$\n32: \n33: where:\n34: - **Contraction constant** (N-uniform):\n35:   $$\n36:   \\kappa_W = \\frac{1}{2} \\cdot \\frac{p_u \\eta_{\\text{geo}}}{2} \\cdot f_{UH}(\\varepsilon) \\cdot q_{\\min}(\\varepsilon) > 0\n37:   $$\n38: \n39: - **Noise constant**:\n40:   $$\n41:   C_W = 4d\\delta^2\n42:   $$\n43: \n44: - **Separation threshold**:\n45:   $$\n46:   L_0 = \\max\\left(D_{\\min}, \\frac{2\\sqrt{d}\\delta}{\\sqrt{\\kappa_B f_{UH} q_{\\min}}}\\right)\n47:   $$\n48: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "thm-single-pair-contraction"
       },
       "section": "## 5. Unified Single-Pair Lemma",
+      "references": [],
       "raw_directive": "1766: Now we combine Case A and Case B using the explicit probability lower bound from Lemma 4.6.\n1767: \n1768: :::{prf:theorem} Single-Pair Expected Contraction\n1769: :label: thm-single-pair-contraction\n1770: \n1771: For a matched pair $(i, \\pi(i))$ drawn from the synchronous coupling matching distribution $M$ for swarms $S_1$, $S_2$ with separation $L > D_{\\min}$, the expected post-cloning squared distance satisfies:\n1772: \n1773: $$\n1774: \\mathbb{E}[D'_{i\\pi(i)} \\mid M, T] \\leq (1 - \\kappa_{\\text{pair}}) D_{i\\pi(i)} + C_W\n1775: $$\n1776: \n1777: where:\n1778: $$\n1779: \\kappa_{\\text{pair}} := \\mathbb{P}(\\text{Case B} \\mid M) \\cdot \\kappa_B - \\mathbb{P}(\\text{Case A} \\mid M) \\cdot \\varepsilon_A\n1780: $$\n1781: \n1782: with:\n1783: - $\\kappa_B = \\frac{p_u \\eta_{\\text{geo}}}{2}$ (Case B contraction constant)\n1784: - $\\varepsilon_A = \\frac{4d\\delta^2}{L^2}$ (Case A expansion rate, vanishes for large $L$)\n1785: - $\\mathbb{P}(\\text{Case B} \\mid M) \\geq f_{UH}(\\varepsilon) \\cdot q_{\\min}(\\varepsilon) > 0$ (from Lemma 4.6)\n1786: - $\\mathbb{P}(\\text{Case A} \\mid M) \\leq 1 - f_{UH}(\\varepsilon) \\cdot q_{\\min}(\\varepsilon)$\n1787: \n1788: **N-Uniformity**: For sufficiently large separation $L > L_{\\min}(\\varepsilon)$ where $\\varepsilon_A < \\frac{\\kappa_B}{2}$, we have:\n1789: \n1790: $$\n1791: \\kappa_{\\text{pair}} \\geq \\frac{\\kappa_B f_{UH}(\\varepsilon) q_{\\min}(\\varepsilon)}{2} > 0\n1792: $$\n1793: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "thm-main-wasserstein-contraction"
       },
       "section": "## 8. Main Wasserstein-2 Contraction Theorem",
+      "references": [],
       "raw_directive": "2183: ### 8.1. Statement of Main Result\n2184: \n2185: :::{prf:theorem} Wasserstein-2 Contraction for Cloning Operator\n2186: :label: thm-main-wasserstein-contraction\n2187: \n2188: Let $\\mu_1, \\mu_2$ be two swarm distributions over $N$ walkers in state space $\\mathcal{X} = \\mathbb{R}^d$ satisfying the Fragile Gas axioms. Let $\\Psi_{\\text{clone}}$ denote the cloning operator with parameters:\n2189: - Virtual reward weights $(\\alpha, \\beta)$\n2190: - Jitter noise scale $\\delta$\n2191: - Confining potential $U: \\mathbb{R}^d \\to \\mathbb{R}$\n2192: - Environmental fitness $F: \\mathbb{R}^d \\to \\mathbb{R}$\n2193: \n2194: Suppose the swarms have separation:\n2195: $$\n2196: L := \\|\\bar{x}_1 - \\bar{x}_2\\| > L_0(\\delta, \\varepsilon)\n2197: $$\n2198: \n2199: where $L_0 = \\max\\left(D_{\\min}, \\frac{2\\sqrt{d}\\delta}{\\sqrt{\\kappa_B f_{UH} q_{\\min}}}\\right)$ is the separation threshold.\n2200: \n2201: Then the Wasserstein-2 distance contracts in expectation:\n2202: $$\n2203: W_2^2(\\Psi_{\\text{clone}}(\\mu_1), \\Psi_{\\text{clone}}(\\mu_2)) \\leq (1 - \\kappa_W) W_2^2(\\mu_1, \\mu_2) + C_W\n2204: $$\n2205: \n2206: where:\n2207: $$\n2208: \\kappa_W = \\frac{1}{2} \\cdot \\frac{p_u \\eta_{\\text{geo}}}{2} \\cdot f_{UH}(\\varepsilon) \\cdot q_{\\min}(\\varepsilon)\n2209: $$\n2210: \n2211: $$\n2212: C_W = 4d\\delta^2\n2213: $$\n2214: ",
       "_registry_context": {
         "stage": "directives",

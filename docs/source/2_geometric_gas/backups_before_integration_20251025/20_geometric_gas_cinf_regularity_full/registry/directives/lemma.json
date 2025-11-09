@@ -2,7 +2,7 @@
   "document_id": "20_geometric_gas_cinf_regularity_full",
   "stage": "directives",
   "directive_type": "lemma",
-  "generated_at": "2025-11-08T17:16:20.314396+00:00",
+  "generated_at": "2025-11-08T23:19:38.334273+00:00",
   "count": 24,
   "items": [
     {
@@ -21,6 +21,9 @@
         "label": "lem-velocity-squashing-compact-domain-full"
       },
       "section": "## 2. Companion Selection Mechanisms: Framework Context",
+      "references": [
+        "doc-02-euclidean-gas"
+      ],
       "raw_directive": "618: Each step depends only on previous steps. The assumption ρ_max is **explicit** and **validated for consistency**.\n619: \n620: :::{prf:lemma} Velocity Squashing Ensures Compact Phase Space\n621: :label: lem-velocity-squashing-compact-domain-full\n622: \n623: The Geometric Gas algorithmic velocity is defined via a smooth squashing map (see {prf:ref}`doc-02-euclidean-gas` §4.2):\n624: \n625: $$\n626: v_{\\text{alg}} = \\psi(v) = V_{\\max} \\cdot \\tanh(v / V_{\\max})\n627: $$\n628: \n629: where v is the dynamical velocity evolved by the kinetic operator.\n630: \n631: **Properties**:\n632: 1. **Boundedness**: ‖ψ(v)‖ < V_max for all v ∈ ℝ^d (compact image V = B(0, V_max))\n633: 2. **Smoothness**: ψ ∈ C^∞ with ‖∇^m ψ‖ ≤ C_ψ,m V_max^{1-m} (Gevrey-1)\n634: 3. **Near-identity**: ψ(v) ≈ v for ‖v‖ ≪ V_max (non-intrusive)\n635: \n636: **Consequence**: The phase space 𝒳 × V is compact (𝒳 is assumed compact, V is bounded by squashing).\n637: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +49,9 @@
         "label": "lem-fokker-planck-density-bound-conservative-full"
       },
       "section": "## 2. Companion Selection Mechanisms: Framework Context",
+      "references": [
+        "lem-velocity-squashing-compact-domain-full"
+      ],
       "raw_directive": "639: :::\n640: \n641: :::{prf:lemma} Fokker-Planck Density Bound from Lipschitz Drift (Conservative Case)\n642: :label: lem-fokker-planck-density-bound-conservative-full\n643: \n644: Consider the **conservative** Fokker-Planck equation on compact phase space 𝒳 × V:\n645: \n646: $$\n647: \\frac{\\partial \\rho}{\\partial t} = -\\psi(v) \\cdot \\nabla_x \\rho + \\nabla_v \\cdot \\left(\\gamma v \\rho + \\nabla_x V_{\\text{fit}} \\cdot \\rho\\right) + \\gamma T \\Delta_v \\rho\n648: $$\n649: \n650: **Note**: This PDE does NOT include cloning source/sink terms. It describes the conservative Langevin dynamics.\n651: \n652: Assume:\n653: - V_fit has Lipschitz gradient: ‖∇_x V_fit‖ ≤ L_V (from C³ regularity, doc-13)\n654: - Velocity domain is compact: ‖v‖ ≤ V_max (from Lemma {prf:ref}`lem-velocity-squashing-compact-domain-full`)\n655: - Spatial domain 𝒳 is compact\n656: - Kinetic diffusion γT > 0 (non-degenerate)\n657: \n658: Then the invariant measure ρ_∞ (if it exists) satisfies:\n659: \n660: $$\n661: \\rho_{\\infty}(x,v) \\leq C_{\\text{FK}}(\\gamma, T, L_V, V_{\\max}, \\text{Vol}(\\mathcal{X})) < \\infty\n662: $$\n663: \n664: where C_FK is uniform over the compact domain.\n665: ",
       "_registry_context": {
         "stage": "directives",
@@ -72,6 +78,12 @@
         "label": "verif-c3-independence-revised"
       },
       "section": "## 2. Companion Selection Mechanisms: Framework Context",
+      "references": [
+        "lem-fokker-planck-density-bound-conservative-full",
+        "assump-uniform-density-full",
+        "doc-13-geometric-gas-c3-regularity",
+        "lem-companion-availability-enforcement"
+      ],
       "raw_directive": "685: :::\n686: \n687: :::{prf:lemma} QSD Density Bound with Cloning (Conditional Statement)\n688: :label: lem-qsd-density-bound-with-cloning-full\n689: \n690: The Geometric Gas dynamics include cloning (birth-death process conditioned on alive set non-empty). The QSD satisfies:\n691: \n692: **Conditional result**: If the QSD π_QSD exists and is unique (established via Keystone Principle ergodicity), then under the following:\n693: \n694: 1. The **conservative** Fokker-Planck invariant measure has density bound ρ_FK ≤ C_FK (Lemma {prf:ref}`lem-fokker-planck-density-bound-conservative-full`)\n695: 2. The cloning rate λ_clone is finite\n696: 3. The domain 𝒳 × V is compact (velocity squashing)\n697: \n698: The QSD density satisfies:\n699: \n700: $$\n701: \\rho_{\\text{QSD}}(x,v) \\leq C_{\\text{QSD}} \\cdot C_{\\text{FK}}\n702: $$\n703: \n704: where C_QSD depends on λ_clone and domain volume, but is **finite**.\n705: \n706: **Rigorous proof**: A complete proof requires analyzing the generator of the conditioned process (QSD generator = Fokker-Planck generator + cloning source/sink + ground state projection). This is subject of ongoing research in QSD theory for interacting particle systems (see Champagnat-Villemonais 2017, *Exponential convergence to quasi-stationary distribution*; Cloez-Thai 2018, *Quantitative results for QSD convergence*).\n707: \n708: **For this document**: We state ρ_max as an explicit assumption (Assumption {prf:ref}`assump-uniform-density-full`) below and validate consistency.\n709: \n710: :::{prf:verification} Independence of C³ Regularity Analysis\n711: :label: verif-c3-independence-revised\n712: \n713: To ensure the logical chain is non-circular, we verify that the C³ regularity proof in {prf:ref}`doc-13-geometric-gas-c3-regularity` uses only:\n714: \n715: **Allowed inputs**:\n716: 1. **Companion availability** (Lemma {prf:ref}`lem-companion-availability-enforcement`) - derived below from Keystone + volume\n717: 2. **Bounded measurements**: d_alg ≤ diam(𝒳 × V) < ∞ (from compact domain)\n718: 3. **Regularization**: ε_d > 0 eliminates singularities\n719: 4. **Rescale function**: g_A ∈ C³ with bounded derivatives\n720: 5. **Density bound**: ρ_max (now EXPLICITLY ASSUMED, see below)\n721: \n722: **Critically, doc-13 does NOT assume**:\n723: - ✗ C^∞ regularity\n724: - ✗ k-uniform bounds at all orders\n725: - ✗ Anything from this document (doc-20)\n726: \n727: **Verification method**: Direct inspection of doc-13 confirms only the above five inputs are used.\n728: \n729: **Conclusion**: The logical chain is:\n730: 1. **Companion availability** ← Keystone + volume (§2.4 below, NO density assumption)\n731: 2. **C³ regularity** ← Companion availability + **ρ_max assumption** + elementary bounds\n732: 3. **Lipschitz gradient L_V** ← C³\n733: 4. **Fokker-Planck bound C_FK** ← L_V + compact domain + velocity squashing\n734: 5. **Consistency check** ← C_FK(L_V(ρ_max)) should have fixed point ρ_max*\n735: 6. **C^∞ regularity** ← ρ_max* + C³ + advanced machinery (this document)\n736: ",
       "_registry_context": {
         "stage": "directives",
@@ -97,6 +109,7 @@
         "label": "lem-companion-availability-enforcement"
       },
       "section": "## 2. Companion Selection Mechanisms: Framework Context",
+      "references": [],
       "raw_directive": "814: With the approach to the density bound clarified (explicit assumption with a posteriori validation, §2.3.5 above), we now state the three framework assumptions:\n815: \n816: :::{prf:lemma} Partition Function Lower Bound from Compactness\n817: :label: lem-companion-availability-enforcement\n818: \n819: For any walker $i \\in \\mathcal{A}$ in the alive set with $k \\geq 2$, the softmax partition function satisfies:\n820: \n821: $$\n822: Z_i = \\sum_{\\ell \\in \\mathcal{A} \\setminus \\{i\\}} \\exp\\left(-\\frac{d_{\\text{alg}}^2(i,\\ell)}{2\\varepsilon_c^2}\\right) \\geq \\exp\\left(-\\frac{D_{\\max}^2}{2\\varepsilon_c^2}\\right) =: Z_{\\min} > 0\n823: \n824: $$\n825: \n826: where $D_{\\max} = \\text{diam}(\\mathcal{X} \\times V)$ is the phase-space diameter (finite by compactness).\n827: \n828: **Key properties**:\n829: 1. **Non-vanishing**: $Z_{\\min} > 0$ is strictly positive for all $i \\in \\mathcal{A}$\n830: 2. **k-uniform**: The bound depends only on domain diameter $D_{\\max}$ and parameter $\\varepsilon_c$, **not on the number of walkers** $k$ or $N$",
       "_registry_context": {
         "stage": "directives",
@@ -122,6 +135,10 @@
         "label": "lem-deterministic-packing-from-keystone-full"
       },
       "section": "## 2. Companion Selection Mechanisms: Framework Context",
+      "references": [
+        "doc-03-cloning",
+        "lem-sum-to-integral-bound-full"
+      ],
       "raw_directive": "889: :::\n890: \n891: :::{prf:lemma} Deterministic Local Packing Bound from Keystone Ergodicity\n892: :label: lem-deterministic-packing-from-keystone-full\n893: \n894: Under the Keystone Principle ({prf:ref}`doc-03-cloning`, Theorem 3.5) with kinetic diffusion (temperature $T > 0$, friction $\\gamma > 0$), the quasi-stationary distribution (QSD) satisfies a **deterministic uniform local packing bound**:\n895: \n896: For all swarm configurations $(x, v) \\in \\text{supp}(\\pi_{\\text{QSD}})$ in the support of the QSD, all walkers $i \\in \\mathcal{A}$, and all radii $r > 0$:\n897: \n898: $$\n899: \\#\\left\\{j \\in \\mathcal{A} : d_{\\text{alg}}(i,j) \\leq r\\right\\} \\leq \\rho_{\\max} \\cdot \\text{Vol}(B(0, r))\n900: $$\n901: \n902: where:\n903: - $\\rho_{\\max} = C_{\\text{erg}}(\\gamma, T, A_{\\text{fit}}, \\text{Vol}(\\mathcal{X} \\times V))$ is a **deterministic constant** depending only on kinetic parameters and domain volume\n904: - $\\text{Vol}(B(0, r))$ is the phase-space volume of a ball of radius $r$ in the algorithmic metric\n905: - The bound holds **for all configurations**, not just with high probability\n906: \n907: **Key Properties**:\n908: 1. **Deterministic**: No probabilistic qualifier; holds on the entire QSD support\n909: 2. **k-uniform**: $\\rho_{\\max}$ is independent of the number of alive walkers $k$ or total swarm size $N$\n910: 3. **Universal**: Applies to all swarm configurations that have non-zero probability under the QSD\n911: \n912: **Physical Mechanism**: The deterministic packing bound arises from three synergistic mechanisms:\n913: 1. **Kinetic diffusion** ($T > 0$): Continuously injects random momentum, preventing walkers from remaining arbitrarily close\n914: 2. **Cloning diversity enforcement**: Preferentially removes walkers with low algorithmic diversity (those too close to companions)\n915: 3. **Keystone ergodicity**: Ensures pathological clustering states have measure zero in the QSD\n916: ",
       "_registry_context": {
         "stage": "directives",
@@ -147,6 +164,9 @@
         "label": "lem-sum-to-integral-bound-full"
       },
       "section": "## 2. Companion Selection Mechanisms: Framework Context",
+      "references": [
+        "assump-uniform-density-full"
+      ],
       "raw_directive": "1009: The following lemma makes the sum-to-integral approximation **explicit**.\n1010: \n1011: :::{prf:lemma} Sum-to-Integral Bound with Exponential Weights\n1012: :label: lem-sum-to-integral-bound-full\n1013: \n1014: Under {prf:ref}`assump-uniform-density-full`, for any walker $i \\in \\mathcal{A}$ and any function $f : \\mathcal{X} \\times \\mathbb{R}^d \\to \\mathbb{R}$ with $|f| \\leq M$:\n1015: \n1016: $$\n1017: \\sum_{j \\in \\mathcal{A}} f(x_j, v_j) \\exp\\left(-\\frac{d_{\\text{alg}}^2(i,j)}{2\\varepsilon_c^2}\\right)\n1018: \\leq \\rho_{\\max} \\cdot M \\cdot \\int_{\\mathcal{X} \\times \\mathbb{R}^d} \\exp\\left(-\\frac{d_{\\text{alg}}^2(i,y)}{2\\varepsilon_c^2}\\right) dy\\,du\n1019: \n1020: $$\n1021: \n1022: **Key consequence for Gaussian integrals**: When $f \\equiv 1$:\n1023: \n1024: $$\n1025: \\sum_{j \\in \\mathcal{A}} \\exp\\left(-\\frac{d_{\\text{alg}}^2(i,j)}{2\\varepsilon_c^2}\\right)\n1026: \\leq \\rho_{\\max} \\cdot (2\\pi\\varepsilon_c^2)^d \\cdot C_{\\lambda}\n1027: \n1028: $$\n1029: \n1030: where $C_{\\lambda} = (1 + \\lambda_{\\text{alg}})^{d/2}$ accounts for the velocity component in $d_{\\text{alg}}$.\n1031: ",
       "_registry_context": {
         "stage": "directives",
@@ -172,6 +192,7 @@
         "label": "lem-partition-derivative-bounds-full"
       },
       "section": "## 3. Smooth Phase-Space Clustering",
+      "references": [],
       "raw_directive": "1207: :::\n1208: \n1209: :::{prf:lemma} Derivative Bounds for Partition Functions\n1210: :label: lem-partition-derivative-bounds-full\n1211: \n1212: The partition functions $\\psi_m$ satisfy:\n1213: \n1214: $$\n1215: \\|\\nabla^n \\psi_m\\|_\\infty \\leq C_{\\psi,n} \\cdot \\varepsilon_c^{-n}\n1216: \n1217: $$\n1218: ",
       "_registry_context": {
         "stage": "directives",
@@ -197,6 +218,9 @@
         "label": "lem-effective-cluster-size-bounds-full"
       },
       "section": "## 3. Smooth Phase-Space Clustering",
+      "references": [
+        "assump-uniform-density-full"
+      ],
       "raw_directive": "1299: :::\n1300: \n1301: :::{prf:lemma} Bounds on Effective Cluster Size\n1302: :label: lem-effective-cluster-size-bounds-full\n1303: \n1304: Under {prf:ref}`assump-uniform-density-full`:\n1305: \n1306: $$\n1307: k_m^{\\text{eff}} \\leq \\rho_{\\max} \\cdot \\text{Vol}(B(y_m, 2\\varepsilon_c)) = C_{\\text{vol}} \\cdot \\rho_{\\max} \\cdot \\varepsilon_c^{2d}\n1308: \n1309: $$\n1310: \n1311: where $C_{\\text{vol}}$ is the volume constant for phase-space balls.\n1312: \n1313: Moreover, the total effective population sums to $k$:\n1314: \n1315: $$\n1316: \\sum_{m=1}^M k_m^{\\text{eff}} = \\sum_{m=1}^M \\sum_{j \\in \\mathcal{A}} \\psi_m(x_j, v_j) = \\sum_{j \\in \\mathcal{A}} \\underbrace{\\sum_{m=1}^M \\psi_m(x_j, v_j)}_{= 1} = k\n1317: ",
       "_registry_context": {
         "stage": "directives",
@@ -222,6 +246,9 @@
         "label": "lem-softmax-tail-corrected-full"
       },
       "section": "## 4. Exponential Locality and Effective Interactions",
+      "references": [
+        "lem-companion-availability-enforcement"
+      ],
       "raw_directive": "1365: ### 4.1 Softmax Concentration Bounds\n1366: \n1367: :::{prf:lemma} Softmax Tail Bound\n1368: :label: lem-softmax-tail-corrected-full\n1369: \n1370: Under {prf:ref}`lem-companion-availability-enforcement`, for walker $i \\in \\mathcal{A}$ with companion $c(i)$ selected via softmax:\n1371: \n1372: $$\n1373: \\mathbb{P}(d_{\\text{alg}}(i, c(i)) > R \\mid \\mathcal{F}_t) \\leq k \\cdot \\exp\\left(-\\frac{R^2 - R_{\\max}^2}{2\\varepsilon_c^2}\\right)\n1374: \n1375: $$\n1376: ",
       "_registry_context": {
         "stage": "directives",
@@ -247,6 +274,9 @@
         "label": "lem-effective-companion-count-corrected-full"
       },
       "section": "## 4. Exponential Locality and Effective Interactions",
+      "references": [
+        "assump-uniform-density-full"
+      ],
       "raw_directive": "1440: ### 4.2 Effective Number of Interacting Companions\n1441: \n1442: :::{prf:lemma} Effective Companion Count\n1443: :label: lem-effective-companion-count-corrected-full\n1444: \n1445: Under {prf:ref}`assump-uniform-density-full`, the effective number of companions within $R_{\\text{eff}}$ is:\n1446: \n1447: $$\n1448: k_{\\text{eff}}(i) := \\sum_{\\ell \\in \\mathcal{A} \\setminus \\{i\\}} \\mathbb{1}_{d_{\\text{alg}}(i,\\ell) \\leq R_{\\text{eff}}} \\leq \\rho_{\\max} \\cdot C_{\\text{vol}} \\cdot R_{\\text{eff}}^{2d}\n1449: \n1450: $$\n1451: \n1452: Substituting $R_{\\text{eff}} = \\mathcal{O}(\\varepsilon_c \\sqrt{\\log k})$:\n1453: \n1454: $$\n1455: k_{\\text{eff}}(i) = \\mathcal{O}(\\varepsilon_c^{2d} \\cdot (\\log k)^d)\n1456: \n1457: $$\n1458: ",
       "_registry_context": {
         "stage": "directives",
@@ -272,6 +302,7 @@
         "label": "lem-softmax-derivative-locality-full"
       },
       "section": "## 4. Exponential Locality and Effective Interactions",
+      "references": [],
       "raw_directive": "1474: The previous sections established exponential concentration for the **probabilities** $P(c(i) = \\ell)$. We now prove that **derivatives** of these probabilities also decay exponentially.\n1475: \n1476: :::{prf:lemma} Exponential Locality of Softmax Derivatives\n1477: :label: lem-softmax-derivative-locality-full\n1478: \n1479: For the softmax companion selection with temperature $\\varepsilon_c$, all derivatives of the companion probability satisfy:\n1480: \n1481: $$\n1482: \\left|\\nabla^\\alpha_{x_i} P(c(j) = \\ell \\mid \\mathcal{F}_t)\\right| \\leq C_{|\\alpha|} \\cdot \\varepsilon_c^{-2|\\alpha|} \\cdot P(c(j) = \\ell \\mid \\mathcal{F}_t) \\cdot \\exp\\left(-\\frac{d_{\\text{alg}}^2(j, \\ell)}{4\\varepsilon_c^2}\\right)\n1483: \n1484: $$\n1485: \n1486: where $C_{|\\alpha|} = O(|\\alpha|!)$ (Gevrey-1 growth) and the bound is **k-uniform**.\n1487: ",
       "_registry_context": {
         "stage": "directives",
@@ -297,6 +328,7 @@
         "label": "lem-dalg-derivative-bounds-full"
       },
       "section": "## 5. Derivatives of Algorithmic Distance (Regularized Version)",
+      "references": [],
       "raw_directive": "1575: We now establish the derivative structure for the **regularized** algorithmic distance, which eliminates the singularity at walker collisions.\n1576: \n1577: :::{prf:lemma} Higher Derivatives of Regularized Algorithmic Distance\n1578: :label: lem-dalg-derivative-bounds-full\n1579: \n1580: The **regularized** algorithmic distance:\n1581: \n1582: $$\n1583: d_{\\text{alg}}(i,j) = \\sqrt{\\|x_i - x_j\\|^2 + \\lambda_{\\text{alg}} \\|v_i - v_j\\|^2 + \\varepsilon_d^2}\n1584: \n1585: $$\n1586: \n1587: where $\\varepsilon_d > 0$ is the regularization parameter, has the following properties:\n1588: \n1589: 1. **Uniform Lower Bound**: $d_{\\text{alg}}(i,j) \\geq \\varepsilon_d > 0$ for all walker configurations (no singularity)\n1590: \n1591: 2. **C^∞ Regularity**: $d_{\\text{alg}}$ is C^∞ with **uniform** derivative bounds:\n1592: \n1593: **First derivative**:\n1594: \n1595: $$\n1596: \\nabla_{x_i} d_{\\text{alg}}(i,j) = \\frac{x_i - x_j}{d_{\\text{alg}}(i,j)}, \\quad \\|\\nabla_{x_i} d_{\\text{alg}}(i,j)\\| \\leq 1\n1597: \n1598: $$\n1599: \n1600: **Second derivative** (Hessian):\n1601: \n1602: $$\n1603: \\nabla^2_{x_i} d_{\\text{alg}}(i,j) = \\frac{1}{d_{\\text{alg}}(i,j)} \\left(I - \\frac{(x_i - x_j) \\otimes (x_i - x_j)}{d_{\\text{alg}}^2(i,j)}\\right)\n1604: \n1605: $$\n1606: \n1607: $$\n1608: \\|\\nabla^2_{x_i} d_{\\text{alg}}(i,j)\\| \\leq \\frac{1}{\\varepsilon_d} \\quad \\text{(uniform bound using } d_{\\text{alg}} \\geq \\varepsilon_d\\text{)}\n1609: \n1610: $$\n1611: \n1612: **General bound**: For derivative order $n \\geq 1$:\n1613: \n1614: $$\n1615: \\|\\nabla^n_{x_i} d_{\\text{alg}}(i,j)\\| \\leq C_{d,n} \\cdot \\varepsilon_d^{1-n}\n1616: \n1617: $$\n1618: ",
       "_registry_context": {
         "stage": "directives",
@@ -322,6 +354,7 @@
         "label": "lem-companion-measurement-derivatives-full"
       },
       "section": "## 5.5 Companion-Dependent Measurements with Softmax Coupling",
+      "references": [],
       "raw_directive": "1771: ### 5.5.2 High-Order Derivatives via Faà di Bruno Formula\n1772: \n1773: :::{prf:lemma} Derivatives of Companion-Dependent Measurements\n1774: :label: lem-companion-measurement-derivatives-full\n1775: \n1776: For any walker $i \\in \\mathcal{A}$ (taking derivatives with respect to $x_i$), the companion-dependent measurement for walker $j \\neq i$ satisfies:\n1777: \n1778: $$\n1779: \\|\\nabla^n_{x_i} d_j\\| \\leq C_{d_j,n} \\cdot \\max(\\varepsilon_d^{1-n}, \\varepsilon_d \\varepsilon_c^{-n})\n1780: \n1781: $$\n1782: \n1783: where $C_{d_j,n} = \\mathcal{O}(n!)$ (Gevrey-1) is **k-uniform** (independent of the number of alive walkers).\n1784: \n1785: **For typical parameters** where $\\varepsilon_d \\ll \\varepsilon_c$ and $n \\geq 2$, this simplifies to:\n1786: \n1787: $$\n1788: \\|\\nabla^n_{x_i} d_j\\| \\leq C_{d_j,n} \\cdot \\varepsilon_d^{1-n}\n1789: \n1790: $$\n1791: ",
       "_registry_context": {
         "stage": "directives",
@@ -347,6 +380,7 @@
         "label": "lem-self-measurement-derivatives-full"
       },
       "section": "## 5.5 Companion-Dependent Measurements with Softmax Coupling",
+      "references": [],
       "raw_directive": "2040: :::\n2041: \n2042: :::{prf:lemma} Derivatives of Self-Measurement (j=i case)\n2043: :label: lem-self-measurement-derivatives-full\n2044: \n2045: For walker $i \\in \\mathcal{A}$, the **self-measurement** $d_i = d_{\\text{alg}}(i, c(i))$ where $c(i)$ is selected via softmax satisfies:\n2046: \n2047: $$\n2048: \\|\\nabla^n_{x_i} d_i\\| \\leq C_{d_i,n} \\cdot \\max(\\varepsilon_d^{1-n}, \\varepsilon_d \\varepsilon_c^{-n})\n2049: \n2050: $$\n2051: \n2052: where $C_{d_i,n} = \\mathcal{O}(n!)$ (Gevrey-1) is **k-uniform** (independent of the number of alive walkers).\n2053: \n2054: **For typical parameters** where $\\varepsilon_d \\ll \\varepsilon_c$ and $n \\geq 2$:\n2055: \n2056: $$\n2057: \\|\\nabla^n_{x_i} d_i\\| \\leq C_{d_i,n} \\cdot \\varepsilon_d^{1-n}\n2058: \n2059: $$\n2060: ",
       "_registry_context": {
         "stage": "directives",
@@ -372,6 +406,9 @@
         "label": "lem-greedy-ideal-equivalence"
       },
       "section": "## 5.6 Diversity Pairing Mechanism Analysis",
+      "references": [
+        "thm-diversity-pairing-measurement-regularity"
+      ],
       "raw_directive": "2471: ### 5.6.4 Transfer from Idealized to Greedy Pairing\n2472: \n2473: :::{prf:lemma} Statistical Equivalence Preserves C^∞ Regularity\n2474: :label: lem-greedy-ideal-equivalence\n2475: \n2476: The Sequential Stochastic Greedy Pairing and the Idealized Spatially-Aware Pairing produce statistically equivalent measurements:\n2477: \n2478: $$\n2479: \\mathbb{E}_{\\text{greedy}}[d_i | S] = \\mathbb{E}_{\\text{ideal}}[d_i | S] + O(k^{-\\beta})\n2480: \n2481: $$\n2482: ",
       "_registry_context": {
         "stage": "directives",
@@ -397,6 +434,7 @@
         "label": "lem-lipschitz-pipeline-stability-full"
       },
       "section": "## 5.7 Statistical Equivalence and Unified Regularity Theorem",
+      "references": [],
       "raw_directive": "2757: This section establishes that **if** measurements differ by $\\|\\Delta\\|_\\infty$, then the fitness potential difference can be bounded via Lipschitz stability analysis through the nonlinear pipeline stages. This provides the foundation for quantitative equivalence analysis (future work).\n2758: \n2759: :::{prf:lemma} Lipschitz Stability of Nonlinear Pipeline\n2760: :label: lem-lipschitz-pipeline-stability-full\n2761: \n2762: Let $\\{d_j\\}_{j \\in \\mathcal{A}}$ and $\\{\\tilde{d}_j\\}_{j \\in \\mathcal{A}}$ be two sets of measurements satisfying the same bounds (bounded by $\\text{diam}(\\mathcal{X} \\times V)$, C^∞ with Gevrey-1 constants). Define:\n2763: \n2764: $$\n2765: \\|\\Delta\\|_\\infty := \\max_{j \\in \\mathcal{A}} |d_j - \\tilde{d}_j|\n2766: \n2767: $$\n2768: \n2769: Then the fitness potentials computed from these measurements satisfy:\n2770: \n2771: $$\n2772: |V_{\\text{fit}}[d] - V_{\\text{fit}}[\\tilde{d}]| \\leq L_V \\cdot (\\|\\Delta\\|_\\infty + \\|\\Delta\\|_\\infty^2)\n2773: \n2774: $$\n2775: \n2776: where $L_V$ is a Lipschitz constant depending on:\n2777: - Regularization parameters: $\\eta_{\\min}$ (prevents division by zero), $\\rho$ (localization scale)\n2778: - Domain bounds: $\\text{diam}(\\mathcal{X} \\times V)$, $\\rho_{\\max}$\n2779: - Rescale function: $\\|g_A'\\|_\\infty$\n2780: ",
       "_registry_context": {
         "stage": "directives",
@@ -422,6 +460,7 @@
         "label": "lem-gaussian-kernel-derivatives-full"
       },
       "section": "## 6. Structure of Localization Weights",
+      "references": [],
       "raw_directive": "3027: ### 6.1 Derivative Bounds for Localization Kernel\n3028: \n3029: :::{prf:lemma} Gaussian Kernel Derivatives\n3030: :label: lem-gaussian-kernel-derivatives-full\n3031: \n3032: The Gaussian kernel $K_\\rho(i,j) = \\exp(-d_{\\text{alg}}^2(i,j)/(2\\rho^2))$ satisfies:\n3033: \n3034: For derivative order $n \\geq 1$:\n3035: \n3036: $$\n3037: \\|\\nabla^n_{x_i} K_\\rho(i,j)\\| \\leq C_{K,n} \\cdot \\rho^{-n} \\cdot K_\\rho(i,j)\n3038: \n3039: $$\n3040: ",
       "_registry_context": {
         "stage": "directives",
@@ -447,6 +486,7 @@
         "label": "lem-localization-weight-derivatives-full"
       },
       "section": "## 6. Structure of Localization Weights",
+      "references": [],
       "raw_directive": "3062: ### 6.2 Localization Weights: Quotient Rule Analysis\n3063: \n3064: :::{prf:lemma} Localization Weight Derivatives\n3065: :label: lem-localization-weight-derivatives-full\n3066: \n3067: The localization weights $w_{ij}(\\rho) = K_\\rho(i,j) / Z_i(\\rho)$ satisfy:\n3068: \n3069: $$\n3070: \\|\\nabla^n_{x_i} w_{ij}(\\rho)\\| \\leq C_{w,n} \\cdot \\rho^{-n}\n3071: \n3072: $$\n3073: ",
       "_registry_context": {
         "stage": "directives",
@@ -472,6 +512,7 @@
         "label": "lem-telescoping-localization-weights-full"
       },
       "section": "## 6. Structure of Localization Weights",
+      "references": [],
       "raw_directive": "3164: ### 6.3 Telescoping Identity for Smooth Weights\n3165: \n3166: :::{prf:lemma} Telescoping for Localization Weights\n3167: :label: lem-telescoping-localization-weights-full\n3168: \n3169: For walker $i$ and any derivative order $n \\geq 1$:\n3170: \n3171: $$\n3172: \\sum_{j \\in \\mathcal{A}} \\nabla^n_{x_i} w_{ij}(\\rho) = 0\n3173: ",
       "_registry_context": {
         "stage": "directives",
@@ -497,6 +538,7 @@
         "label": "lem-derivatives-companion-distance-full"
       },
       "section": "## 7. Companion-Dependent Measurements: Handling N-Body Coupling",
+      "references": [],
       "raw_directive": "3311: ### 7.1 Derivative Structure of Companion-Dependent Measurements\n3312: \n3313: :::{prf:lemma} Derivatives of Companion-Dependent Distance\n3314: :label: lem-derivatives-companion-distance-full\n3315: \n3316: For measurement $d_j = d_{\\text{alg}}(j, c(j))$ where $c(j)$ is selected via softmax, the derivative with respect to $x_i$ is:\n3317: \n3318: $$\n3319: \\frac{\\partial d_j}{\\partial x_i} = \\sum_{\\ell \\in \\mathcal{A} \\setminus \\{j\\}} \\mathbb{P}(c(j) = \\ell) \\cdot \\frac{\\partial d_{\\text{alg}}(j, \\ell)}{\\partial x_i}\n3320: + \\sum_{\\ell \\in \\mathcal{A} \\setminus \\{j\\}} d_{\\text{alg}}(j, \\ell) \\cdot \\frac{\\partial \\mathbb{P}(c(j) = \\ell)}{\\partial x_i}\n3321: \n3322: $$\n3323: ",
       "_registry_context": {
         "stage": "directives",
@@ -522,6 +564,7 @@
         "label": "lem-first-derivative-localized-mean-full"
       },
       "section": "## 8. Localized Mean: Derivative Expansion",
+      "references": [],
       "raw_directive": "3470: ### 8.1 First Derivative: Telescoping with Companion Coupling\n3471: \n3472: :::{prf:lemma} First Derivative of Localized Mean\n3473: :label: lem-first-derivative-localized-mean-full\n3474: \n3475: $$\n3476: \\|\\nabla_{x_i} \\mu_\\rho^{(i)}\\| \\leq C_{\\mu,1}(\\rho) \\cdot \\rho^{-1}\n3477: \n3478: $$\n3479: ",
       "_registry_context": {
         "stage": "directives",
@@ -547,6 +590,7 @@
         "label": "lem-mth-derivative-localized-mean-full"
       },
       "section": "## 8. Localized Mean: Derivative Expansion",
+      "references": [],
       "raw_directive": "3647: We now establish the general pattern for arbitrary derivative order $m$.\n3648: \n3649: :::{prf:lemma} m-th Derivative of Localized Mean\n3650: :label: lem-mth-derivative-localized-mean-full\n3651: \n3652: For derivative order $m \\geq 1$:\n3653: \n3654: $$\n3655: \\|\\nabla^m_{x_i} \\mu_\\rho^{(i)}\\| \\leq C_{\\mu,m}(\\rho) \\cdot \\rho^{-m}\n3656: \n3657: $$\n3658: ",
       "_registry_context": {
         "stage": "directives",
@@ -572,6 +616,7 @@
         "label": "lem-first-derivative-localized-variance-full"
       },
       "section": "## 9. Localized Variance: Full Derivative Analysis",
+      "references": [],
       "raw_directive": "3834: ### 9.1 Structure and First Derivative\n3835: \n3836: :::{prf:lemma} First Derivative of Localized Variance\n3837: :label: lem-first-derivative-localized-variance-full\n3838: \n3839: $$\n3840: \\|\\nabla_{x_i} \\sigma_\\rho^{2(i)}\\| \\leq C_{\\sigma^2,1}(\\rho) \\cdot \\rho^{-1}\n3841: \n3842: $$\n3843: ",
       "_registry_context": {
         "stage": "directives",
@@ -597,6 +642,7 @@
         "label": "lem-properties-regularized-std-dev-full"
       },
       "section": "## 10. Regularized Standard Deviation",
+      "references": [],
       "raw_directive": "4296: ### 10.1 Smoothness and Lower Bounds\n4297: \n4298: :::{prf:lemma} Properties of Regularized Standard Deviation\n4299: :label: lem-properties-regularized-std-dev-full\n4300: \n4301: The function $\\sigma'_\\rho(i) = \\sqrt{\\sigma_\\rho^{2(i)} + \\eta_{\\min}^2}$ satisfies:\n4302: \n4303: 1. **Positive lower bound**: $\\sigma'_\\rho(i) \\geq \\eta_{\\min} > 0$ for all configurations\n4304: \n4305: 2. **C^∞ regularity**: $\\sigma'_\\rho \\in C^\\infty$ as a composition of C^∞ functions\n4306: \n4307: 3. **Derivative bounds**: For $m \\geq 1$,\n4308: \n4309: $$\n4310: \\|\\nabla^m \\sigma'_\\rho(i)\\| \\leq C_{\\sigma',m}(\\rho) \\cdot \\rho^{-m}\n4311: \n4312: $$\n4313: ",
       "_registry_context": {
         "stage": "directives",

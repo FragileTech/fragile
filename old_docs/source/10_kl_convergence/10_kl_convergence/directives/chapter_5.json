@@ -19,6 +19,7 @@
         "label": "lem-cloning-conditional-independence"
       },
       "section": "## 4. The Cloning Operator and Entropy Contraction via Optimal Transport",
+      "references": [],
       "raw_directive": "826: The key structural property is:\n827: \n828: :::{prf:lemma} Conditional Independence of Cloning\n829: :label: lem-cloning-conditional-independence\n830: \n831: Conditioned on the alive set $\\mathcal{A}(S)$ and the virtual rewards $\\{r_i^{\\text{virt}}\\}_{i \\in \\mathcal{A}}$, the cloning operator acts **independently** on each dead walker:\n832: \n833: $$\n834: \\Psi_{\\text{clone}}(S) | \\mathcal{A}, \\{r_i^{\\text{virt}}\\} = \\prod_{i \\in \\mathcal{D}} K_i^{\\text{clone}}(w_i | \\mathcal{A}, \\{r_j^{\\text{virt}}\\}_{j \\in \\mathcal{A}})\n835: $$\n836: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "thm-hwi-inequality"
       },
       "section": "## 4. The Cloning Operator and Entropy Contraction via Optimal Transport",
+      "references": [],
       "raw_directive": "842: The direct path from variance contraction to LSI via entropy estimates is **invalid** (as Gemini correctly identified). Instead, we use the **optimal transport approach** via the HWI inequality.\n843: \n844: :::{prf:theorem} The HWI Inequality (Otto-Villani)\n845: :label: thm-hwi-inequality\n846: \n847: For probability measures $\\mu, \\pi$ on $\\mathbb{R}^d$ with $\\mu \\ll \\pi$ and $\\pi$ log-concave, the following inequality holds:\n848: \n849: $$\n850: H(\\mu | \\pi) \\le W_2(\\mu, \\pi) \\sqrt{I(\\mu | \\pi)}\n851: $$\n852: \n853: where:\n854: - $H(\\mu | \\pi) := D_{\\text{KL}}(\\mu \\| \\pi)$ is the relative entropy\n855: - $W_2(\\mu, \\pi)$ is the 2-Wasserstein distance\n856: - $I(\\mu | \\pi)$ is the Fisher information\n857: "
     },
     {
@@ -51,6 +53,7 @@
       "content": "860: \n861: :::{prf:remark}\n862: The HWI inequality provides a **bridge** between:\n863: - Wasserstein contraction (geometric, metric space)\n864: - Entropy convergence (information-theoretic)\n865: - Fisher information (local regularity)",
       "metadata": {},
       "section": "## 4. The Cloning Operator and Entropy Contraction via Optimal Transport",
+      "references": [],
       "raw_directive": "859: :::\n860: \n861: :::{prf:remark}\n862: The HWI inequality provides a **bridge** between:\n863: - Wasserstein contraction (geometric, metric space)\n864: - Entropy convergence (information-theoretic)\n865: - Fisher information (local regularity)\n866: "
     },
     {
@@ -69,6 +72,7 @@
         "label": "lem-cloning-wasserstein-contraction"
       },
       "section": "## 4. The Cloning Operator and Entropy Contraction via Optimal Transport",
+      "references": [],
       "raw_directive": "870: ### 4.3. Wasserstein Contraction of the Cloning Operator\n871: \n872: :::{prf:lemma} Wasserstein-2 Contraction for Cloning\n873: :label: lem-cloning-wasserstein-contraction\n874: \n875: The cloning operator with Gaussian noise contracts the 2-Wasserstein distance. Specifically, for two swarm states $S_1, S_2$:\n876: \n877: $$\n878: \\mathbb{E}[W_2^2(\\mu_{S_1'}, \\mu_{S_2'})] \\le (1 - \\kappa_W) W_2^2(\\mu_{S_1}, \\mu_{S_2}) + C_W\n879: $$\n880: "
     },
     {
@@ -83,6 +87,7 @@
       "content": "884: :::{prf:proof}\n885: \n886: **Status: \u2705 RIGOROUSLY PROVEN**\n887: \n888: The complete proof is provided in [03_wasserstein_contraction_complete.md](03_wasserstein_contraction_complete.md). The proof establishes:\n889: \n890: 1. **Synchronous coupling:** Walkers from two swarms are paired using a shared matching $M$, shared cloning thresholds, and shared jitter noise to maximize correlation\n891: \n892: 2. **Outlier Alignment Lemma:** Proved that outliers in separated swarms align directionally away from each other - an **emergent property** from cloning dynamics, not an additional axiom\n893: \n894: 3. **Case Analysis:**\n895:    - **Case A** (consistent fitness ordering): Exploits jitter cancellation when walkers clone in both swarms\n896:    - **Case B** (mixed fitness ordering): Uses Outlier Alignment to prove strong contraction with corrected scaling\n897: \n898: 4. **Integration:** Summed over all pairs in matching, then integrated over matching distribution $P(M|S_1)$\n899: \n900: The explicit constants are:\n901: - $\\kappa_W = \\frac{p_u \\eta}{2} > 0$: Wasserstein contraction rate (N-uniform)\n902:   - $p_u > 0$: uniform cloning probability for unfit walkers (Lemma 8.3.2, [03_cloning.md](03_cloning.md))\n903:   - $\\eta > 0$: Outlier Alignment constant",
       "metadata": {},
       "section": "## 4. The Cloning Operator and Entropy Contraction via Optimal Transport",
+      "references": [],
       "raw_directive": "882: :::\n883: \n884: :::{prf:proof}\n885: \n886: **Status: \u2705 RIGOROUSLY PROVEN**\n887: \n888: The complete proof is provided in [03_wasserstein_contraction_complete.md](03_wasserstein_contraction_complete.md). The proof establishes:\n889: \n890: 1. **Synchronous coupling:** Walkers from two swarms are paired using a shared matching $M$, shared cloning thresholds, and shared jitter noise to maximize correlation\n891: \n892: 2. **Outlier Alignment Lemma:** Proved that outliers in separated swarms align directionally away from each other - an **emergent property** from cloning dynamics, not an additional axiom\n893: \n894: 3. **Case Analysis:**\n895:    - **Case A** (consistent fitness ordering): Exploits jitter cancellation when walkers clone in both swarms\n896:    - **Case B** (mixed fitness ordering): Uses Outlier Alignment to prove strong contraction with corrected scaling\n897: \n898: 4. **Integration:** Summed over all pairs in matching, then integrated over matching distribution $P(M|S_1)$\n899: \n900: The explicit constants are:\n901: - $\\kappa_W = \\frac{p_u \\eta}{2} > 0$: Wasserstein contraction rate (N-uniform)\n902:   - $p_u > 0$: uniform cloning probability for unfit walkers (Lemma 8.3.2, [03_cloning.md](03_cloning.md))\n903:   - $\\eta > 0$: Outlier Alignment constant\n904: - $C_W < \\infty$: Additive constant (state-independent)"
     },
     {
@@ -101,6 +106,7 @@
         "label": "lem-cloning-fisher-info"
       },
       "section": "## 4. The Cloning Operator and Entropy Contraction via Optimal Transport",
+      "references": [],
       "raw_directive": "908: ### 4.4. Fisher Information Control via Gaussian Smoothing\n909: \n910: :::{prf:lemma} Fisher Information Bound After Cloning\n911: :label: lem-cloning-fisher-info\n912: \n913: For the cloning operator with Gaussian noise parameter $\\delta > 0$, the Fisher information after one cloning step is bounded:\n914: \n915: $$\n916: I(\\mu_{S'} | \\pi) \\le \\frac{C_I}{\\delta^2}\n917: $$\n918: "
     },
     {
@@ -115,6 +121,7 @@
       "content": "921: \n922: :::{prf:proof}\n923: **Step 1: Decomposition**\n924: \n925: The cloning operator consists of resampling followed by Gaussian convolution with variance $\\delta^2 I$.\n926: \n927: **Step 2: Gaussian smoothing regularizes Fisher information**\n928: \n929: For any measure $\\mu$ and Gaussian kernel $G_\\delta$:\n930: \n931: $$\n932: I(\\mu * G_\\delta | \\pi) = \\int \\left\\| \\nabla \\log \\frac{d(\\mu * G_\\delta)}{d\\pi} \\right\\|^2 d(\\mu * G_\\delta)\n933: $$\n934: \n935: By the Young convolution inequality and properties of Gaussian derivatives:\n936: \n937: $$\n938: \\nabla (\\mu * G_\\delta) = \\mu * (\\nabla G_\\delta)\n939: $$\n940: \n941: The gradient of the Gaussian satisfies:\n942: \n943: $$\n944: \\|\\nabla G_\\delta(x)\\| \\le \\frac{C_d}{\\delta^{d+1}} e^{-|x|^2/(4\\delta^2)}\n945: $$\n946: \n947: **Step 3: Bounded domain control**\n948: \n949: On the bounded domain $\\mathcal{X}_{\\text{valid}}$ with diameter $D$:\n950: \n951: $$\n952: I(\\mu * G_\\delta | \\pi) \\le \\frac{C(d, D, N)}{\\delta^2}\n953: $$",
       "metadata": {},
       "section": "## 4. The Cloning Operator and Entropy Contraction via Optimal Transport",
+      "references": [],
       "raw_directive": "920: :::\n921: \n922: :::{prf:proof}\n923: **Step 1: Decomposition**\n924: \n925: The cloning operator consists of resampling followed by Gaussian convolution with variance $\\delta^2 I$.\n926: \n927: **Step 2: Gaussian smoothing regularizes Fisher information**\n928: \n929: For any measure $\\mu$ and Gaussian kernel $G_\\delta$:\n930: \n931: $$\n932: I(\\mu * G_\\delta | \\pi) = \\int \\left\\| \\nabla \\log \\frac{d(\\mu * G_\\delta)}{d\\pi} \\right\\|^2 d(\\mu * G_\\delta)\n933: $$\n934: \n935: By the Young convolution inequality and properties of Gaussian derivatives:\n936: \n937: $$\n938: \\nabla (\\mu * G_\\delta) = \\mu * (\\nabla G_\\delta)\n939: $$\n940: \n941: The gradient of the Gaussian satisfies:\n942: \n943: $$\n944: \\|\\nabla G_\\delta(x)\\| \\le \\frac{C_d}{\\delta^{d+1}} e^{-|x|^2/(4\\delta^2)}\n945: $$\n946: \n947: **Step 3: Bounded domain control**\n948: \n949: On the bounded domain $\\mathcal{X}_{\\text{valid}}$ with diameter $D$:\n950: \n951: $$\n952: I(\\mu * G_\\delta | \\pi) \\le \\frac{C(d, D, N)}{\\delta^2}\n953: $$\n954: "
     },
     {
@@ -133,6 +140,7 @@
         "label": "thm-cloning-entropy-contraction"
       },
       "section": "## 4. The Cloning Operator and Entropy Contraction via Optimal Transport",
+      "references": [],
       "raw_directive": "958: ### 4.5. Entropy Contraction via HWI\n959: \n960: :::{prf:theorem} Entropy Contraction for the Cloning Operator\n961: :label: thm-cloning-entropy-contraction\n962: \n963: For the cloning operator $\\Psi_{\\text{clone}}$ with Gaussian noise variance $\\delta^2 > 0$, the relative entropy contracts:\n964: \n965: $$\n966: D_{\\text{KL}}(\\mu_{S'} \\| \\pi_{\\text{QSD}}) \\le \\left(1 - \\frac{\\kappa_W^2 \\delta^2}{2C_I}\\right) D_{\\text{KL}}(\\mu_S \\| \\pi_{\\text{QSD}}) + C_{\\text{clone}}\n967: $$\n968: "
     },
     {
@@ -147,6 +155,11 @@
       "content": "971: \n972: :::{prf:proof}\n973: **Step 1: Apply the HWI inequality**\n974: \n975: From Theorem {prf:ref}`thm-hwi-inequality`:\n976: \n977: $$\n978: D_{\\text{KL}}(\\mu_{S'} \\| \\pi) \\le W_2(\\mu_{S'}, \\pi) \\sqrt{I(\\mu_{S'} | \\pi)}\n979: $$\n980: \n981: **Step 2: Bound Wasserstein distance**\n982: \n983: From Lemma {prf:ref}`lem-cloning-wasserstein-contraction`:\n984: \n985: $$\n986: W_2^2(\\mu_{S'}, \\pi) \\le (1 - \\kappa_W) W_2^2(\\mu_S, \\pi) + C_W\n987: $$\n988: \n989: **Step 3: Bound Fisher information**\n990: \n991: From Lemma {prf:ref}`lem-cloning-fisher-info`:\n992: \n993: $$\n994: I(\\mu_{S'} | \\pi) \\le \\frac{C_I}{\\delta^2}\n995: $$\n996: \n997: **Step 4: Combine the bounds**\n998: \n999: $$\n1000: D_{\\text{KL}}(\\mu_{S'} \\| \\pi) \\le \\sqrt{(1 - \\kappa_W) W_2^2(\\mu_S, \\pi) + C_W} \\cdot \\sqrt{\\frac{C_I}{\\delta^2}}\n1001: $$\n1002: \n1003: $$\n1004: \\le \\sqrt{1 - \\kappa_W} \\cdot W_2(\\mu_S, \\pi) \\cdot \\frac{\\sqrt{C_I}}{\\delta} + \\text{const}\n1005: $$\n1006: \n1007: **Step 5: Control initial Wasserstein by entropy**\n1008: \n1009: By the reverse Talagrand inequality (Villani, 2009), for log-concave $\\pi$:\n1010: \n1011: $$\n1012: W_2^2(\\mu, \\pi) \\le \\frac{2}{\\lambda_{\\min}(\\text{Hess} \\log \\pi)} D_{\\text{KL}}(\\mu \\| \\pi)\n1013: $$\n1014: \n1015: where $\\lambda_{\\min} \\ge \\kappa_{\\text{conf}}$ is the convexity constant of the confining potential.\n1016: \n1017: **Step 6: Final entropy contraction**\n1018: \n1019: Combining all bounds:\n1020: \n1021: $$\n1022: D_{\\text{KL}}(\\mu_{S'} \\| \\pi) \\le \\sqrt{1 - \\kappa_W} \\cdot \\sqrt{\\frac{2}{\\kappa_{\\text{conf}}} D_{\\text{KL}}(\\mu_S \\| \\pi)} \\cdot \\frac{\\sqrt{C_I}}{\\delta}\n1023: $$\n1024: \n1025: For small $\\kappa_W$, using $(1 - \\kappa_W)^{1/2} \\approx 1 - \\kappa_W/2$:\n1026: \n1027: $$\n1028: D_{\\text{KL}}(\\mu_{S'} \\| \\pi) \\le \\left(1 - \\frac{\\kappa_W}{2}\\right) \\cdot \\frac{\\sqrt{2C_I}}{\\delta\\sqrt{\\kappa_{\\text{conf}}}} \\sqrt{D_{\\text{KL}}(\\mu_S \\| \\pi)}\n1029: $$",
       "metadata": {},
       "section": "## 4. The Cloning Operator and Entropy Contraction via Optimal Transport",
+      "references": [
+        "thm-hwi-inequality",
+        "lem-cloning-wasserstein-contraction",
+        "lem-cloning-fisher-info"
+      ],
       "raw_directive": "970: :::\n971: \n972: :::{prf:proof}\n973: **Step 1: Apply the HWI inequality**\n974: \n975: From Theorem {prf:ref}`thm-hwi-inequality`:\n976: \n977: $$\n978: D_{\\text{KL}}(\\mu_{S'} \\| \\pi) \\le W_2(\\mu_{S'}, \\pi) \\sqrt{I(\\mu_{S'} | \\pi)}\n979: $$\n980: \n981: **Step 2: Bound Wasserstein distance**\n982: \n983: From Lemma {prf:ref}`lem-cloning-wasserstein-contraction`:\n984: \n985: $$\n986: W_2^2(\\mu_{S'}, \\pi) \\le (1 - \\kappa_W) W_2^2(\\mu_S, \\pi) + C_W\n987: $$\n988: \n989: **Step 3: Bound Fisher information**\n990: \n991: From Lemma {prf:ref}`lem-cloning-fisher-info`:\n992: \n993: $$\n994: I(\\mu_{S'} | \\pi) \\le \\frac{C_I}{\\delta^2}\n995: $$\n996: \n997: **Step 4: Combine the bounds**\n998: \n999: $$\n1000: D_{\\text{KL}}(\\mu_{S'} \\| \\pi) \\le \\sqrt{(1 - \\kappa_W) W_2^2(\\mu_S, \\pi) + C_W} \\cdot \\sqrt{\\frac{C_I}{\\delta^2}}\n1001: $$\n1002: \n1003: $$\n1004: \\le \\sqrt{1 - \\kappa_W} \\cdot W_2(\\mu_S, \\pi) \\cdot \\frac{\\sqrt{C_I}}{\\delta} + \\text{const}\n1005: $$\n1006: \n1007: **Step 5: Control initial Wasserstein by entropy**\n1008: \n1009: By the reverse Talagrand inequality (Villani, 2009), for log-concave $\\pi$:\n1010: \n1011: $$\n1012: W_2^2(\\mu, \\pi) \\le \\frac{2}{\\lambda_{\\min}(\\text{Hess} \\log \\pi)} D_{\\text{KL}}(\\mu \\| \\pi)\n1013: $$\n1014: \n1015: where $\\lambda_{\\min} \\ge \\kappa_{\\text{conf}}$ is the convexity constant of the confining potential.\n1016: \n1017: **Step 6: Final entropy contraction**\n1018: \n1019: Combining all bounds:\n1020: \n1021: $$\n1022: D_{\\text{KL}}(\\mu_{S'} \\| \\pi) \\le \\sqrt{1 - \\kappa_W} \\cdot \\sqrt{\\frac{2}{\\kappa_{\\text{conf}}} D_{\\text{KL}}(\\mu_S \\| \\pi)} \\cdot \\frac{\\sqrt{C_I}}{\\delta}\n1023: $$\n1024: \n1025: For small $\\kappa_W$, using $(1 - \\kappa_W)^{1/2} \\approx 1 - \\kappa_W/2$:\n1026: \n1027: $$\n1028: D_{\\text{KL}}(\\mu_{S'} \\| \\pi) \\le \\left(1 - \\frac{\\kappa_W}{2}\\right) \\cdot \\frac{\\sqrt{2C_I}}{\\delta\\sqrt{\\kappa_{\\text{conf}}}} \\sqrt{D_{\\text{KL}}(\\mu_S \\| \\pi)}\n1029: $$\n1030: "
     },
     {
@@ -165,6 +178,7 @@
         "label": "rem-cloning-sublinear"
       },
       "section": "## 4. The Cloning Operator and Entropy Contraction via Optimal Transport",
+      "references": [],
       "raw_directive": "1032: :::\n1033: \n1034: :::{prf:remark} Interpretation\n1035: :label: rem-cloning-sublinear\n1036: \n1037: **Key insight:** The cloning operator alone does **not** satisfy a full LSI. It provides:\n1038: 1. **Wasserstein contraction** (linear in $W_2^2$)\n1039: 2. **Sublinear entropy contraction** (via HWI)\n1040: \n1041: The **linear entropy contraction** emerges only when composed with the kinetic operator, which:\n1042: - Provides diffusion to control Fisher information\n1043: - Converts Wasserstein contraction to entropy contraction via the gradient flow structure\n1044: "
     }
   ],

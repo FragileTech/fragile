@@ -2,7 +2,7 @@
   "document_id": "09_kl_convergence",
   "stage": "directives",
   "directive_type": "lemma",
-  "generated_at": "2025-11-08T17:16:20.188689+00:00",
+  "generated_at": "2025-11-08T23:19:38.263444+00:00",
   "count": 14,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "lem-hypocoercive-dissipation"
       },
       "section": "## 2. The Hypoelliptic Kinetic Operator",
+      "references": [],
       "raw_directive": "612: The key insight of hypocoercivity is that while $\\mathcal{L}_{\\text{kin}}$ does not dissipate $\\|\\nabla_x f\\|^2$ directly, the coupling $v \\cdot \\nabla_x$ transfers dissipation from velocity to position.\n613: \n614: :::{prf:lemma} Dissipation of the Hypocoercive Norm\n615: :label: lem-hypocoercive-dissipation\n616: \n617: For the kinetic generator $\\mathcal{L}_{\\text{kin}}$ with harmonic potential $U(x) = \\frac{\\kappa}{2}|x - x^*|^2$, there exist constants $\\lambda, \\mu > 0$ such that:\n618: \n619: $$\n620: \\frac{d}{dt} \\mathcal{E}_{\\text{hypo}}(f_t, f_t) \\le -2\\alpha \\mathcal{E}_{\\text{hypo}}(f_t, f_t)\n621: $$\n622: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,9 @@
         "label": "lem-log-concave-yang-mills"
       },
       "section": "## 3.5. Fundamental Axiom: Log-Concavity of the Quasi-Stationary Distribution (SUPERSEDED - Now Proven)",
+      "references": [
+        "def-log-concavity-condition"
+      ],
       "raw_directive": "1073: ### Verification for Specific Physical Systems\n1074: \n1075: :::{prf:lemma} Log-Concavity for Pure Yang-Mills Vacuum\n1076: :label: lem-log-concave-yang-mills\n1077: \n1078: For the Yang-Mills vacuum state, the log-concavity condition {prf:ref}`def-log-concavity-condition` is **satisfied**.\n1079: \n1080: **Proof:**\n1081: \n1082: **Step 1: Simplify the system**\n1083: \n1084: For the Yang-Mills vacuum:\n1085: - **Uniform reward**: $r(x) = r_0 = \\text{constant}$ (no preferred field configuration in vacuum)\n1086: - **Quadratic confinement**: $U(x) = \\frac{\\kappa_{\\text{conf}}}{2}\\|x\\|^2$ (harmonic confining potential)\n1087: \n1088: **Step 2: Analyze fitness potential**\n1089: \n1090: With uniform reward, the fitness potential simplifies dramatically:\n1091: $$\n1092: V_{\\text{fit}}(x) = \\text{Rescale}(Z_r(x)) + \\beta \\cdot \\text{Rescale}(Z_d(x))\n1093: $$\n1094: \n1095: where $Z_r(x) = 0$ (no reward gradient) and $Z_d(x)$ is the diversity Z-score (distance to companions).\n1096: \n1097: For uniform reward:\n1098: $$\n1099: V_{\\text{fit}}(x) \\approx \\beta \\cdot f(d(x, \\text{swarm center}))\n1100: $$\n1101: \n1102: where $f$ is a smooth, slowly-varying function.\n1103: \n1104: **Step 3: Compute emergent metric**\n1105: \n1106: $$\n1107: H(x) = \\nabla^2 V_{\\text{fit}}(x) \\approx \\beta \\cdot \\nabla^2 f\n1108: $$\n1109: \n1110: For a smooth diversity term, $\\|\\nabla^2 f\\| = O(1)$ is bounded. With regularization:\n1111: $$\n1112: g(x) = H(x) + \\epsilon_\\Sigma I \\approx \\beta \\cdot O(1) + \\epsilon_\\Sigma I \\approx \\text{const} \\cdot I\n1113: $$\n1114: \n1115: **The metric is approximately flat**: $g(x) \\approx c I$ for some constant $c > 0$.\n1116: \n1117: **Step 4: Analyze effective potential**\n1118: \n1119: $$\n1120: U_{\\text{eff}}(x) = U(x) - \\epsilon_F V_{\\text{fit}}(x) = \\frac{\\kappa_{\\text{conf}}}{2}\\|x\\|^2 - \\epsilon_F \\beta f(d(x, \\text{center}))\n1121: $$\n1122: \n1123: For $\\epsilon_F$ small (weak adaptive force), the confining term dominates:\n1124: $$\n1125: U_{\\text{eff}}(x) \\approx \\frac{\\kappa_{\\text{conf}}}{2}\\|x\\|^2 \\quad \\text{(quadratic)}\n1126: $$\n1127: \n1128: **Step 5: QSD formula**\n1129: \n1130: $$\n1131: \\rho_{\\text{QSD}}(x) \\approx \\text{const} \\cdot \\exp\\left(-\\frac{\\kappa_{\\text{conf}}\\|x\\|^2}{2T}\\right)\n1132: $$\n1133: \n1134: **This is a Gaussian distribution**, which is the canonical example of a log-concave probability measure.\n1135: \n1136: **Step 6: Perturbation argument**\n1137: \n1138: The small corrections from non-zero $\\epsilon_F$ are **smooth perturbations** of the Gaussian. By continuity of log-concavity under small perturbations in the supremum norm:\n1139: $$\n1140: \\|\\rho_{\\text{pert}} - \\rho_{\\text{Gaussian}}\\|_{\\infty} = O(\\epsilon_F) \\implies \\rho_{\\text{pert}} \\text{ is log-concave}\n1141: $$\n1142: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +75,7 @@
         "label": "lem-cloning-conditional-independence"
       },
       "section": "## 4. The Cloning Operator and Entropy Contraction via Optimal Transport",
+      "references": [],
       "raw_directive": "1196: The key structural property is:\n1197: \n1198: :::{prf:lemma} Conditional Independence of Cloning\n1199: :label: lem-cloning-conditional-independence\n1200: \n1201: Conditioned on the alive set $\\mathcal{A}(S)$ and the virtual rewards $\\{r_i^{\\text{virt}}\\}_{i \\in \\mathcal{A}}$, the cloning operator acts **independently** on each dead walker:\n1202: \n1203: $$\n1204: \\Psi_{\\text{clone}}(S) | \\mathcal{A}, \\{r_i^{\\text{virt}}\\} = \\prod_{i \\in \\mathcal{D}} K_i^{\\text{clone}}(w_i | \\mathcal{A}, \\{r_j^{\\text{virt}}\\}_{j \\in \\mathcal{A}})\n1205: $$\n1206: ",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +101,7 @@
         "label": "lem-cloning-wasserstein-contraction"
       },
       "section": "## 4. The Cloning Operator and Entropy Contraction via Optimal Transport",
+      "references": [],
       "raw_directive": "1242: ### 4.3. Wasserstein Contraction of the Cloning Operator\n1243: \n1244: :::{prf:lemma} Wasserstein-2 Contraction for Cloning\n1245: :label: lem-cloning-wasserstein-contraction\n1246: \n1247: The cloning operator with Gaussian noise contracts the 2-Wasserstein distance. Specifically, for two swarm states $S_1, S_2$:\n1248: \n1249: $$\n1250: \\mathbb{E}[W_2^2(\\mu_{S_1'}, \\mu_{S_2'})] \\le (1 - \\kappa_W) W_2^2(\\mu_{S_1}, \\mu_{S_2}) + C_W\n1251: $$\n1252: ",
       "_registry_context": {
         "stage": "directives",
@@ -121,6 +127,7 @@
         "label": "lem-cloning-fisher-info"
       },
       "section": "## 4. The Cloning Operator and Entropy Contraction via Optimal Transport",
+      "references": [],
       "raw_directive": "1279: ### 4.4. Fisher Information Control via Gaussian Smoothing\n1280: \n1281: :::{prf:lemma} Fisher Information Bound After Cloning\n1282: :label: lem-cloning-fisher-info\n1283: \n1284: For the cloning operator with Gaussian noise parameter $\\delta > 0$, the Fisher information after one cloning step is bounded:\n1285: \n1286: $$\n1287: I(\\mu_{S'} | \\pi) \\le \\frac{C_I}{\\delta^2}\n1288: $$\n1289: ",
       "_registry_context": {
         "stage": "directives",
@@ -146,6 +153,7 @@
         "label": "lem-entropy-transport-dissipation"
       },
       "section": "## 5. The Composition Theorem: Entropy-Transport Lyapunov Function",
+      "references": [],
       "raw_directive": "1449: The crucial technical result is that cloning dissipates entropy proportional to the Wasserstein distance squared:\n1450: \n1451: :::{prf:lemma} Entropy-Transport Dissipation Inequality\n1452: :label: lem-entropy-transport-dissipation\n1453: \n1454: For the cloning operator $\\Psi_{\\text{clone}}$ with parameters satisfying the Keystone Principle (Theorem 8.1 in [03_cloning](03_cloning)), there exists $\\alpha > 0$ such that:\n1455: \n1456: $$\n1457: D_{\\text{KL}}(\\mu' \\| \\pi) \\le D_{\\text{KL}}(\\mu \\| \\pi) - \\alpha \\cdot W_2^2(\\mu, \\pi) + C_{\\text{clone}}\n1458: $$\n1459: ",
       "_registry_context": {
         "stage": "directives",
@@ -171,6 +179,9 @@
         "label": "lem-kinetic-evolution-bounds"
       },
       "section": "## 5. The Composition Theorem: Entropy-Transport Lyapunov Function",
+      "references": [
+        "thm-kinetic-lsi"
+      ],
       "raw_directive": "1581: ### 5.3. Evolution of the Kinetic Operator on Entropy and Transport\n1582: \n1583: :::{prf:lemma} Kinetic Evolution Bounds\n1584: :label: lem-kinetic-evolution-bounds\n1585: \n1586: For the kinetic operator $\\Psi_{\\text{kin}}(\\tau)$ from Theorem {prf:ref}`thm-kinetic-lsi`, we have:\n1587: \n1588: **Entropy contraction:**\n1589: \n1590: $$\n1591: D_{\\text{KL}}(\\mu'' \\| \\pi) \\le e^{-\\rho_k} D_{\\text{KL}}(\\mu' \\| \\pi)\n1592: $$\n1593: \n1594: where $\\rho_k = \\alpha\\tau/C_0$ with $\\alpha = \\min(\\gamma/2, \\kappa_{\\text{conf}}/4)$ and $C_0 = O(1/\\min(\\gamma, \\kappa_{\\text{conf}}))$.\n1595: \n1596: **Wasserstein expansion bound:**\n1597: \n1598: $$\n1599: W_2^2(\\mu'', \\pi) \\le (1 + \\beta) W_2^2(\\mu', \\pi)\n1600: $$\n1601: ",
       "_registry_context": {
         "stage": "directives",
@@ -191,12 +202,15 @@
       ],
       "content_start": 2315,
       "content_end": 2347,
-      "content": "2315: :label: lem-mean-field-cloning-sketch\n2316: \n2317: **Hypotheses:**\n2318: \n2319: 1. $\\mu, \\pi$ are probability measures on $\\Omega = X_{\\text{valid}} \\times V_{\\text{alg}} \\subset \\mathbb{R}^{2d}$ with smooth densities:\n2320:    - $\\rho_\\mu, \\rho_\\pi \\in C^2(\\Omega)$\n2321:    - $\\rho_\\mu, \\rho_\\pi > 0$ on $\\Omega$ (strictly positive)\n2322: \n2323: 2. $\\pi = \\pi_{\\text{QSD}}$ is log-concave (Axiom 3.5):\n2324:    $$\\rho_\\pi(z) = \\exp(-V_{\\text{QSD}}(z))$$\n2325:    for convex $V_{\\text{QSD}}$\n2326: \n2327: 3. $T_{\\text{clone}}: \\mathcal{P}(\\Omega) \\to \\mathcal{P}(\\Omega)$ is the mean-field cloning operator with:\n2328:    - Generator: $S[\\rho] = S_{\\text{src}}[\\rho] - S_{\\text{sink}}[\\rho]$\n2329:    - Post-cloning noise variance: $\\delta^2$\n2330:    - Cloning probability: $P_{\\text{clone}}(V_i, V_j) = \\min(1, V_j/V_i) \\cdot \\lambda_{\\text{clone}}$\n2331: \n2332: 4. **Fitness-QSD Anti-Correlation**:\n2333:    $$\\log V[z] = -\\lambda_{\\text{corr}} V_{\\text{QSD}}(z) + \\log V_0$$\n2334:    for $\\lambda_{\\text{corr}} > 0$\n2335: \n2336: 5. **Regularity bounds**:\n2337:    - $0 < \\rho_{\\min} \\leq \\rho_\\mu(z) \\leq \\rho_{\\max} < \\infty$\n2338:    - $0 < V_{\\min} \\leq V[z] \\leq V_{\\max} < \\infty$\n2339: \n2340: **Conclusion (Conjectured):**\n2341: \n2342: For $\\mu' = T_{\\text{clone}} \\# \\mu$ with infinitesimal time step $\\tau$:\n2343: \n2344: $$\n2345: D_{\\text{KL}}(\\mu' \\| \\pi) - D_{\\text{KL}}(\\mu \\| \\pi) \\leq -\\tau \\beta \\, D_{\\text{KL}}(\\mu \\| \\pi) + C_{\\text{ent}} + O(\\tau^2)\n2346: $$\n2347: ",
+      "content": "2315: :label: lem-mean-field-cloning-sketch\n2316: \n2317: **Hypotheses:**\n2318: \n2319: 1. $\\mu, \\pi$ are probability measures on $\\Omega = X_{\\text{valid}} \\times V_{\\text{alg}} \\subset \\mathbb{R}^{2d}$ with smooth densities:\n2320:    - $\\rho_\\mu, \\rho_\\pi \\in C^2(\\Omega)$\n2321:    - $\\rho_\\mu, \\rho_\\pi > 0$ on $\\Omega$ (strictly positive)\n2322: \n2323: 2. $\\pi = \\pi_{\\text{QSD}}$ is log-concave ({prf:ref}`axiom-qsd-log-concave`):\n2324:    $$\\rho_\\pi(z) = \\exp(-V_{\\text{QSD}}(z))$$\n2325:    for convex $V_{\\text{QSD}}$\n2326: \n2327: 3. $T_{\\text{clone}}: \\mathcal{P}(\\Omega) \\to \\mathcal{P}(\\Omega)$ is the mean-field cloning operator with:\n2328:    - Generator: $S[\\rho] = S_{\\text{src}}[\\rho] - S_{\\text{sink}}[\\rho]$\n2329:    - Post-cloning noise variance: $\\delta^2$\n2330:    - Cloning probability: $P_{\\text{clone}}(V_i, V_j) = \\min(1, V_j/V_i) \\cdot \\lambda_{\\text{clone}}$\n2331: \n2332: 4. **Fitness-QSD Anti-Correlation**:\n2333:    $$\\log V[z] = -\\lambda_{\\text{corr}} V_{\\text{QSD}}(z) + \\log V_0$$\n2334:    for $\\lambda_{\\text{corr}} > 0$\n2335: \n2336: 5. **Regularity bounds**:\n2337:    - $0 < \\rho_{\\min} \\leq \\rho_\\mu(z) \\leq \\rho_{\\max} < \\infty$\n2338:    - $0 < V_{\\min} \\leq V[z] \\leq V_{\\max} < \\infty$\n2339: \n2340: **Conclusion (Conjectured):**\n2341: \n2342: For $\\mu' = T_{\\text{clone}} \\# \\mu$ with infinitesimal time step $\\tau$:\n2343: \n2344: $$\n2345: D_{\\text{KL}}(\\mu' \\| \\pi) - D_{\\text{KL}}(\\mu \\| \\pi) \\leq -\\tau \\beta \\, D_{\\text{KL}}(\\mu \\| \\pi) + C_{\\text{ent}} + O(\\tau^2)\n2346: $$\n2347: ",
       "metadata": {
         "label": "lem-mean-field-cloning-sketch"
       },
       "section": "## Lemma Statement",
-      "raw_directive": "2312: ## Lemma Statement\n2313: \n2314: :::{prf:lemma} Entropy Dissipation Under Cloning (Mean-Field Sketch)\n2315: :label: lem-mean-field-cloning-sketch\n2316: \n2317: **Hypotheses:**\n2318: \n2319: 1. $\\mu, \\pi$ are probability measures on $\\Omega = X_{\\text{valid}} \\times V_{\\text{alg}} \\subset \\mathbb{R}^{2d}$ with smooth densities:\n2320:    - $\\rho_\\mu, \\rho_\\pi \\in C^2(\\Omega)$\n2321:    - $\\rho_\\mu, \\rho_\\pi > 0$ on $\\Omega$ (strictly positive)\n2322: \n2323: 2. $\\pi = \\pi_{\\text{QSD}}$ is log-concave (Axiom 3.5):\n2324:    $$\\rho_\\pi(z) = \\exp(-V_{\\text{QSD}}(z))$$\n2325:    for convex $V_{\\text{QSD}}$\n2326: \n2327: 3. $T_{\\text{clone}}: \\mathcal{P}(\\Omega) \\to \\mathcal{P}(\\Omega)$ is the mean-field cloning operator with:\n2328:    - Generator: $S[\\rho] = S_{\\text{src}}[\\rho] - S_{\\text{sink}}[\\rho]$\n2329:    - Post-cloning noise variance: $\\delta^2$\n2330:    - Cloning probability: $P_{\\text{clone}}(V_i, V_j) = \\min(1, V_j/V_i) \\cdot \\lambda_{\\text{clone}}$\n2331: \n2332: 4. **Fitness-QSD Anti-Correlation**:\n2333:    $$\\log V[z] = -\\lambda_{\\text{corr}} V_{\\text{QSD}}(z) + \\log V_0$$\n2334:    for $\\lambda_{\\text{corr}} > 0$\n2335: \n2336: 5. **Regularity bounds**:\n2337:    - $0 < \\rho_{\\min} \\leq \\rho_\\mu(z) \\leq \\rho_{\\max} < \\infty$\n2338:    - $0 < V_{\\min} \\leq V[z] \\leq V_{\\max} < \\infty$\n2339: \n2340: **Conclusion (Conjectured):**\n2341: \n2342: For $\\mu' = T_{\\text{clone}} \\# \\mu$ with infinitesimal time step $\\tau$:\n2343: \n2344: $$\n2345: D_{\\text{KL}}(\\mu' \\| \\pi) - D_{\\text{KL}}(\\mu \\| \\pi) \\leq -\\tau \\beta \\, D_{\\text{KL}}(\\mu \\| \\pi) + C_{\\text{ent}} + O(\\tau^2)\n2346: $$\n2347: \n2348: where $\\beta > 0$ (contraction rate) and $C_{\\text{ent}} < 0$ (favorable entropy term) depend on the parameters.",
+      "references": [
+        "axiom-qsd-log-concave"
+      ],
+      "raw_directive": "2312: ## Lemma Statement\n2313: \n2314: :::{prf:lemma} Entropy Dissipation Under Cloning (Mean-Field Sketch)\n2315: :label: lem-mean-field-cloning-sketch\n2316: \n2317: **Hypotheses:**\n2318: \n2319: 1. $\\mu, \\pi$ are probability measures on $\\Omega = X_{\\text{valid}} \\times V_{\\text{alg}} \\subset \\mathbb{R}^{2d}$ with smooth densities:\n2320:    - $\\rho_\\mu, \\rho_\\pi \\in C^2(\\Omega)$\n2321:    - $\\rho_\\mu, \\rho_\\pi > 0$ on $\\Omega$ (strictly positive)\n2322: \n2323: 2. $\\pi = \\pi_{\\text{QSD}}$ is log-concave ({prf:ref}`axiom-qsd-log-concave`):\n2324:    $$\\rho_\\pi(z) = \\exp(-V_{\\text{QSD}}(z))$$\n2325:    for convex $V_{\\text{QSD}}$\n2326: \n2327: 3. $T_{\\text{clone}}: \\mathcal{P}(\\Omega) \\to \\mathcal{P}(\\Omega)$ is the mean-field cloning operator with:\n2328:    - Generator: $S[\\rho] = S_{\\text{src}}[\\rho] - S_{\\text{sink}}[\\rho]$\n2329:    - Post-cloning noise variance: $\\delta^2$\n2330:    - Cloning probability: $P_{\\text{clone}}(V_i, V_j) = \\min(1, V_j/V_i) \\cdot \\lambda_{\\text{clone}}$\n2331: \n2332: 4. **Fitness-QSD Anti-Correlation**:\n2333:    $$\\log V[z] = -\\lambda_{\\text{corr}} V_{\\text{QSD}}(z) + \\log V_0$$\n2334:    for $\\lambda_{\\text{corr}} > 0$\n2335: \n2336: 5. **Regularity bounds**:\n2337:    - $0 < \\rho_{\\min} \\leq \\rho_\\mu(z) \\leq \\rho_{\\max} < \\infty$\n2338:    - $0 < V_{\\min} \\leq V[z] \\leq V_{\\max} < \\infty$\n2339: \n2340: **Conclusion (Conjectured):**\n2341: \n2342: For $\\mu' = T_{\\text{clone}} \\# \\mu$ with infinitesimal time step $\\tau$:\n2343: \n2344: $$\n2345: D_{\\text{KL}}(\\mu' \\| \\pi) - D_{\\text{KL}}(\\mu \\| \\pi) \\leq -\\tau \\beta \\, D_{\\text{KL}}(\\mu \\| \\pi) + C_{\\text{ent}} + O(\\tau^2)\n2346: $$\n2347: \n2348: where $\\beta > 0$ (contraction rate) and $C_{\\text{ent}} < 0$ (favorable entropy term) depend on the parameters.",
       "_registry_context": {
         "stage": "directives",
         "document_id": "09_kl_convergence",
@@ -221,6 +235,7 @@
         "label": "lem-sinh-bound-global"
       },
       "section": "## Proof Sketch",
+      "references": [],
       "raw_directive": "2494: **Apply the global sinh inequality**:\n2495: \n2496: :::{prf:lemma} Sinh Inequality\n2497: :label: lem-sinh-bound-global\n2498: \n2499: For all $z \\in \\mathbb{R}$:\n2500: \n2501: $$\n2502: \\frac{\\sinh(z)}{z} \\geq 1\n2503: $$\n2504: ",
       "_registry_context": {
         "stage": "directives",
@@ -246,6 +261,7 @@
         "label": "lem-meanfield-cloning-dissipation-hybrid"
       },
       "section": "## Step 2: Cloning Operator Contraction (Mean-Field Proof)",
+      "references": [],
       "raw_directive": "3887: This is the **new contribution** of the mean-field approach. We prove:\n3888: \n3889: :::{prf:lemma} Mean-Field Cloning Entropy Dissipation\n3890: :label: lem-meanfield-cloning-dissipation-hybrid\n3891: \n3892: **Hypotheses**:\n3893: \n3894: 1. $\\mu, \\pi$ are probability measures on $\\Omega \\subset \\mathbb{R}^{2d}$ with smooth densities $\\rho_\\mu, \\rho_\\pi \\in C^2(\\Omega)$\n3895: 2. $\\pi = \\pi_{\\text{QSD}}$ is log-concave: $\\rho_\\pi = e^{-V_{\\text{QSD}}}$ for convex $V_{\\text{QSD}}$\n3896: 3. $T_{\\text{clone}}: \\mathcal{P}(\\Omega) \\to \\mathcal{P}(\\Omega)$ is the mean-field cloning operator\n3897: 4. Fitness-QSD anti-correlation: $\\log V[z] = -\\lambda_{\\text{corr}} V_{\\text{QSD}}(z) + \\log V_0$ with $\\lambda_{\\text{corr}} > 0$\n3898: 5. Regularity: $0 < \\rho_{\\min} \\leq \\rho_\\mu \\leq \\rho_{\\max} < \\infty$ and $0 < V_{\\min} \\leq V[z] \\leq V_{\\max} < \\infty$\n3899: 6. Noise regime: $\\delta^2 > \\delta_{\\min}^2$\n3900: \n3901: **Conclusion**:\n3902: \n3903: For $\\mu' = T_{\\text{clone}} \\# \\mu$ with infinitesimal time step $\\tau$:\n3904: \n3905: $$\n3906: D_{\\text{KL}}(\\mu' \\| \\pi) \\leq (1 - \\tau \\beta_{\\text{clone}}) D_{\\text{KL}}(\\mu \\| \\pi) + C_{\\text{ent}} + O(e^{-\\kappa \\delta^2}) + O(\\tau^2)\n3907: $$\n3908: \n3909: where:\n3910: $$\n3911: \\beta_{\\text{clone}} := \\frac{\\lambda_{\\text{clone}}}{m_a} \\lambda_{\\text{corr}} \\lambda_{\\text{Poin}} (1 - \\epsilon_{\\text{ratio}}) > 0\n3912: $$\n3913: \n3914: and:\n3915: $$\n3916: C_{\\text{ent}} := \\tau \\lambda_{\\text{clone}} \\left[\\log\\left(\\frac{\\rho_{\\max}}{\\rho_{\\min}}\\right) - \\frac{d}{2} \\log(2\\pi e \\delta^2)\\right] < 0\n3917: $$",
       "_registry_context": {
         "stage": "directives",
@@ -271,6 +287,7 @@
         "label": "lem-cloning-contraction-standalone"
       },
       "section": "## Section 2: Cloning Operator LSI (Mean-Field Generator Analysis)",
+      "references": [],
       "raw_directive": "4531: ### 2.3. Main Lemma\n4532: \n4533: :::{prf:lemma} Mean-Field Cloning Contraction\n4534: :label: lem-cloning-contraction-standalone\n4535: \n4536: Under Hypotheses 1-4, for infinitesimal time step $\\tau$:\n4537: \n4538: $$\n4539: D_{\\text{KL}}(\\mu' \\| \\pi) \\leq (1 - \\tau \\beta_{\\text{clone}}) D_{\\text{KL}}(\\mu \\| \\pi) + C_{\\text{ent}} + O(e^{-\\kappa \\delta^2}) + O(\\tau^2)\n4540: $$\n4541: \n4542: where:\n4543: $$\n4544: \\beta_{\\text{clone}} = \\frac{\\lambda_{\\text{clone}}}{m_a} \\lambda_{\\text{corr}} \\lambda_{\\text{Poin}} (1 - \\epsilon_{\\text{ratio}})\n4545: $$\n4546: \n4547: and:\n4548: $$\n4549: C_{\\text{ent}} = \\tau \\lambda_{\\text{clone}} \\left[\\log\\left(\\frac{\\rho_{\\max}}{\\rho_{\\min}}\\right) - \\frac{d}{2} \\log(2\\pi e \\delta^2)\\right] < 0\n4550: $$\n4551: \n4552: for $\\delta^2 > \\delta_{\\min}^2$.",
       "_registry_context": {
         "stage": "directives",
@@ -296,6 +313,9 @@
         "label": "lem-kinetic-lsi-hypocoercive"
       },
       "section": "## Part 2: Approach 1 - Hypocoercivity for Non-Convex Kinetic Systems",
+      "references": [
+        "axiom-confining-complete"
+      ],
       "raw_directive": "5697: From Section 1.7.3 of [06_convergence](06_convergence), the discrete-time weak error analysis gives:\n5698: \n5699: :::{prf:lemma} Hypocoercive LSI for Discrete-Time Kinetic Operator\n5700: :label: lem-kinetic-lsi-hypocoercive\n5701: \n5702: For the BAOAB integrator with time step $\\tau$ and confining potential $U$ (Axiom {prf:ref}`axiom-confining-complete`), **without requiring convexity**:\n5703: \n5704: $$\n5705: D_{\\text{KL}}(\\mu_{t+\\tau} \\| \\pi_{\\text{kin}}) \\leq (1 - \\tau \\lambda_{\\text{hypo}}) D_{\\text{KL}}(\\mu_t \\| \\pi_{\\text{kin}}) + O(\\tau^2)\n5706: $$\n5707: \n5708: where:\n5709: \n5710: $$\n5711: \\lambda_{\\text{hypo}} = c \\cdot \\min\\left(\\gamma, \\frac{\\alpha_U}{\\sigma_v^2}\\right)\n5712: $$\n5713: \n5714: where $c > 0$ is a universal constant (for BAOAB integrator, $c \\approx 1/4$).\n5715: \n5716: Equivalently, the kinetic operator satisfies a discrete-time LSI with constant:\n5717: \n5718: $$\n5719: C_{\\text{LSI}}^{\\text{kin}}(\\tau) = \\frac{1 - e^{-2\\lambda_{\\text{hypo}} \\tau}}{2\\lambda_{\\text{hypo}}} + O(\\tau^2)",
       "_registry_context": {
         "stage": "directives",
@@ -321,6 +341,7 @@
         "label": "lem-softmax-lipschitz-status"
       },
       "section": "## Part 3: Dobrushin Contraction for the Full Dynamics",
+      "references": [],
       "raw_directive": "5942: The framework's Theorem {prf:ref}`thm-total-error-status-bound` in [01_fragile_gas_framework](../01_fragile_gas_framework.md) proves Lipschitz continuity for **uniform random companion selection**. However, the greedy pairing uses **softmax-weighted selection** based on algorithmic distance, so we must extend the proof to this case.\n5943: \n5944: :::{prf:lemma} Lipschitz Continuity of Softmax-Weighted Companion Selection\n5945: :label: lem-softmax-lipschitz-status\n5946: \n5947: Let $\\mathcal{S}_1, \\mathcal{S}_2$ be two swarms with $d_{\\text{status}}(\\mathcal{S}_1, \\mathcal{S}_2) = n_c$ status changes. For a walker $i$ alive in both swarms, let $\\text{Comp}_i^{(1)}, \\text{Comp}_i^{(2)}$ be the probability distributions over companions selected by the Sequential Stochastic Greedy Pairing algorithm in each swarm.\n5948: \n5949: For any bounded function $f: \\mathcal{X} \\times \\mathcal{V} \\to \\mathbb{R}$ with $|f| \\leq M_f$, the expected value under the softmax-weighted companion selection satisfies:\n5950: \n5951: $$\n5952: |\\mathbb{E}_{j \\sim \\text{Comp}_i^{(1)}}[f(x_j, v_j)] - \\mathbb{E}_{j \\sim \\text{Comp}_i^{(2)}}[f(x_j, v_j)]| \\leq C_{\\text{softmax}} \\cdot \\frac{M_f \\cdot n_c}{k}\n5953: $$\n5954: ",
       "_registry_context": {
         "stage": "directives",
@@ -346,6 +367,7 @@
         "label": "lem-kinetic-lsi-established"
       },
       "section": "## 1.2 Hypocoercivity for Kinetic Operator",
+      "references": [],
       "raw_directive": "7285: From non-convex extensions analysis, Part 2:\n7286: \n7287: :::{prf:lemma} Hypocoercive LSI for Ψ_kin (Established)\n7288: :label: lem-kinetic-lsi-established\n7289: \n7290: The kinetic operator $\\Psi_{\\text{kin}}$ (Langevin dynamics) satisfies an LSI **with respect to its own invariant measure** $\\pi_{\\text{kin}}$:\n7291: \n7292: $$\n7293: \\text{Ent}_{\\pi_{\\text{kin}}}(f^2) \\leq C_{\\text{LSI}}^{\\text{kin}} \\cdot \\mathbb{E}_{\\pi_{\\text{kin}}}[|\\nabla f|^2]\n7294: $$\n7295: \n7296: where:\n7297: $$\n7298: C_{\\text{LSI}}^{\\text{kin}} = \\frac{1}{2\\lambda_{\\text{hypo}}}, \\quad \\lambda_{\\text{hypo}} = c \\cdot \\min\\left(\\gamma, \\frac{\\alpha_U}{\\sigma_v^2}\\right)\n7299: $$\n7300: \n7301: **Crucially**: This holds for **non-convex** $U(x)$ via hypocoercivity.\n7302: ",
       "_registry_context": {
         "stage": "directives",

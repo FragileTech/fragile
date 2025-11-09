@@ -19,6 +19,7 @@
         "label": "thm-holographic-main"
       },
       "section": "## 0. Introduction",
+      "references": [],
       "raw_directive": "7: ### 0.1. Main Result\n8: \n9: :::{prf:theorem} Holographic Principle from Fractal Gas\n10: :label: thm-holographic-main\n11: \n12: The Fragile Gas framework, at its quasi-stationary distribution (QSD) with marginal stability conditions, generates:\n13: \n14: 1. **Bulk Gravity Theory**: Emergent spacetime geometry satisfying Einstein's equations with negative cosmological constant (AdS\u2085) **in the UV/holographic regime** ($\\varepsilon_c \\ll L$)\n15: 2. **Boundary Quantum Field Theory**: Conformal field theory on the boundary with quantum vacuum structure\n16: 3. **Holographic Dictionary**: One-to-one correspondence between bulk observables (CST) and boundary observables (IG), including:\n17:    - Area law: $S_{\\text{IG}}(A) = \\frac{\\text{Area}_{\\text{CST}}(\\partial A)}{4G_N}$\n18:    - Entropy-energy relation: $\\delta S_{\\text{IG}} = \\beta \\cdot \\delta E_{\\text{swarm}}$\n19:    - Ryu-Takayanagi formula for entanglement entropy\n20: \n21: **Regime of validity**: The proof establishes AdS geometry at the holographic boundary for all correlation lengths $\\varepsilon_c$. The holographic calculation measures **boundary vacuum structure** ($\\Lambda_{\\text{holo}} < 0$), which is distinct from **bulk cosmological constant**. Observed universe expansion arises from bulk non-equilibrium dynamics (see {doc}`18_holographic_vs_bulk_lambda`).\n22: "
     }
   ],

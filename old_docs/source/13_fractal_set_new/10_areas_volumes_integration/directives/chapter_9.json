@@ -19,6 +19,11 @@
         "label": "thm-complete-volume-framework"
       },
       "section": "## 9. Summary and Key Takeaways",
+      "references": [
+        "alg-fan-triangulation-area",
+        "alg-tetrahedral-volume",
+        "alg-simplicial-decomposition"
+      ],
       "raw_directive": "1610: ### 9.1. Main Results\n1611: \n1612: :::{prf:theorem} Complete Framework for Riemannian Volumes on Fractal Set\n1613: :label: thm-complete-volume-framework\n1614: \n1615: The following computational framework is established:\n1616: \n1617: **1. Two-dimensional areas (plaquettes, surfaces):**\n1618: - Algorithm: Fan triangulation {prf:ref}`alg-fan-triangulation-area`\n1619: - Error: $O(h^2)$ for mesh size $h$\n1620: - Use: Wilson loop action, curvature estimation\n1621: \n1622: **2. Three-dimensional volumes (regions, cells):**\n1623: - Algorithm: Delaunay tetrahedral decomposition {prf:ref}`alg-tetrahedral-volume`\n1624: - Formula: Gram determinant for tetrahedra\n1625: - Use: Phase space volume, entropy\n1626: \n1627: **3. General d-dimensional volumes:**\n1628: - Algorithm: Simplicial decomposition {prf:ref}`alg-simplicial-decomposition`\n1629: - Formula: $V_g(S) = \\frac{1}{d!} \\sqrt{\\det G}$ for d-simplex\n1630: - Use: High-dimensional state spaces\n1631: \n1632: **4. Monte Carlo integration:**\n1633: - Direct integration if episodes sample from $\\sqrt{\\det g}$ (QSD)\n1634: - Importance sampling correction for arbitrary distributions\n1635: - Convergence: $O(N^{-1/2})$ regardless of dimension\n1636: "
     }
   ],

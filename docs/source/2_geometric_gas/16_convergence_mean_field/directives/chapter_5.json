@@ -19,6 +19,7 @@
         "label": "prob-revival-kl-mean-field"
       },
       "section": "## 0. Executive Summary",
+      "references": [],
       "raw_directive": "362: ### 0.1. The Central Question\n363: \n364: :::{prf:problem} Main Research Question\n365: :label: prob-revival-kl-mean-field\n366: \n367: Let $\\mathcal{R}[\\rho, m_d]$ be the mean-field revival operator defined in [05_mean_field.md](../1_euclidean_gas/07_mean_field.md):\n368: \n369: $$\n370: \\mathcal{R}[\\rho, m_d](x,v) = \\lambda_{\\text{revive}} \\cdot m_d \\cdot \\frac{\\rho(x,v)}{\\int_\\Omega \\rho}\n371: \n372: $$\n373: \n374: where $m_d = 1 - \\int_\\Omega \\rho$ is the dead mass and $\\lambda_{\\text{revive}}$ is the revival rate.\n375: \n376: **Question**: Is $\\mathcal{R}$ **KL-non-expansive**? That is, does it satisfy:\n377: \n378: $$\n379: D_{\\text{KL}}(\\mathcal{R}(\\rho) \\| \\mathcal{R}(\\sigma)) \\le D_{\\text{KL}}(\\rho \\| \\sigma)\n380: \n381: $$\n382: \n383: for all alive densities $\\rho, \\sigma \\in \\mathcal{P}(\\Omega)$ with $\\int \\rho = \\int \\sigma < 1$?\n384: \n385: **Status**: **RESOLVED** - See Section 7 and Stage 2\n386: "
     }
   ],

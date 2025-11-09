@@ -19,6 +19,7 @@
         "label": "def-d-coupled-state"
       },
       "section": "## 2. Main Theorem and Proof Strategy",
+      "references": [],
       "raw_directive": "572: To prove geometric ergodicity, we must show that **two independent copies** of the swarm converge to each other. This requires a Lyapunov function on the **coupled state space**.\n573: \n574: :::{prf:definition} Coupled Swarm State\n575: :label: def-d-coupled-state\n576: \n577: A **coupled swarm state** consists of two independent swarms evolving under the same transition kernel:\n578: \n579: $$\n580: (S_1, S_2) \\in (\\mathcal{X} \\times \\mathbb{R}^d \\times \\{0,1\\})^{2N}\n581: $$\n582: "
     },
     {
@@ -39,6 +40,7 @@
         "class": "note"
       },
       "section": "## 2. Main Theorem and Proof Strategy",
+      "references": [],
       "raw_directive": "584: :::\n585: \n586: :::{prf:definition} Coupled Lyapunov Function (from `03_cloning.md` and `04_convergence.md`)\n587: :label: def-d-coupled-lyapunov\n588: \n589: The **total Lyapunov function** is:\n590: \n591: $$\n592: V_{\\text{total}}(S_1, S_2) = c_V V_{\\text{inter}}(S_1, S_2) + c_B V_{\\text{boundary}}(S_1, S_2)\n593: $$\n594: \n595: where $c_V, c_B > 0$ are **coupling constants** to be chosen.\n596: \n597: **Inter-Swarm Component:**\n598: \n599: $$\n600: V_{\\text{inter}}(S_1, S_2) = V_W(S_1, S_2) + V_{\\text{Var},x}(S_1, S_2) + V_{\\text{Var},v}(S_1, S_2)\n601: $$\n602: \n603: where:\n604: \n605: **1. Wasserstein-2 Distance** (with hypocoercive cost):\n606: \n607: $$\n608: V_W(S_1, S_2) = W_h^2(\\mu_1, \\mu_2)\n609: $$\n610: \n611: where $\\mu_k$ is the empirical measure of alive walkers in swarm $k$, and $W_h$ is the Wasserstein-2 distance with respect to the **hypocoercive norm** (defined in Section 3.2):\n612: \n613: $$\n614: \\|((\\Delta x, \\Delta v))\\|_h^2 = \\|\\Delta x\\|^2 + \\lambda_v \\|\\Delta v\\|^2 + b \\langle \\Delta x, \\Delta v \\rangle\n615: $$\n616: \n617: **2. Position Variance Sum:**\n618: \n619: $$\n620: V_{\\text{Var},x}(S_1, S_2) = V_{\\text{Var},x}(S_1) + V_{\\text{Var},x}(S_2)\n621: $$\n622: \n623: where $V_{\\text{Var},x}(S_k) = \\frac{1}{N} \\sum_{i: s_{k,i}=1} \\|x_{k,i} - \\bar{x}_k\\|^2$.\n624: \n625: :::{admonition} Normalization by $N$ (not $N_{\\text{alive}}$)\n626: :class: note\n627: "
     },
     {
@@ -57,6 +59,7 @@
         "label": "thm-main-convergence"
       },
       "section": "## 2. Main Theorem and Proof Strategy",
+      "references": [],
       "raw_directive": "663: ### 2.2. Main Convergence Theorem\n664: \n665: :::{prf:theorem} Geometric Ergodicity of the Adaptive Gas\n666: :label: thm-main-convergence\n667: \n668: Consider the Adaptive Gas with:\n669: 1. Adaptive diffusion $\\Sigma_{\\text{reg}}(x_i, S)$ satisfying uniform ellipticity (Theorem [](#thm-uniform-ellipticity))\n670: 2. Confining potential $U(x)$ satisfying coercivity (Axiom 1.3.1 from `04_convergence.md`)\n671: 3. Regularization $\\epsilon_\\Sigma > 0$ large enough that $c_{\\min} \\ge c_{\\min}^*$ for some threshold $c_{\\min}^*$\n672: \n673: Then there exist coupling constants $c_V, c_B > 0$ and **N-uniform** constants $\\kappa_{\\text{total}} > 0$, $C_{\\text{total}} < \\infty$ such that:\n674: \n675: **1. Foster-Lyapunov Condition:**\n676: \n677: $$\n678: \\mathbb{E}[V_{\\text{total}}(S_1', S_2') \\mid S_1, S_2] \\le (1 - \\kappa_{\\text{total}}) V_{\\text{total}}(S_1, S_2) + C_{\\text{total}}\n679: $$\n680: \n681: for all coupled states $(S_1, S_2)$ with $N_{\\text{alive},k}(S_k) \\ge 1$.\n682: \n683: **2. Geometric Ergodicity:**\n684: \n685: There exists a unique quasi-stationary distribution (QSD) $\\pi_{\\text{QSD}}$ such that:\n686: \n687: $$\n688: \\left\\| \\mathcal{L}(S_t \\mid S_0) - \\pi_{\\text{QSD}} \\right\\|_{\\text{TV}} \\le C_\\pi (1 + V_{\\text{total}}(S_0, S_0)) \\rho^t\n689: $$\n690: \n691: where $\\rho = 1 - \\kappa_{\\text{total}} < 1$ and $C_\\pi < \\infty$ are **independent of $N$**.\n692: \n693: **3. Explicit Rate:**\n694: \n695: $$\n696: \\kappa_{\\text{total}} = O\\left(\\min\\left\\{\\gamma \\tau, \\, \\kappa_x^{\\text{clone}}, \\, c_{\\min}\\right\\}\\right)\n697: $$\n698: \n699: where:\n700: - $\\gamma \\tau$ is the kinetic contraction rate (friction \u00d7 timestep)\n701: - $\\kappa_x^{\\text{clone}}$ is the cloning position variance contraction rate (from `03_cloning.md`)"
     }
   ],

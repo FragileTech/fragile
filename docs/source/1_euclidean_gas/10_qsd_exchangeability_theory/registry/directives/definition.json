@@ -2,7 +2,7 @@
   "document_id": "10_qsd_exchangeability_theory",
   "stage": "directives",
   "directive_type": "definition",
-  "generated_at": "2025-11-08T17:16:20.195707+00:00",
+  "generated_at": "2025-11-08T23:19:38.268200+00:00",
   "count": 1,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "def-single-particle-marginal"
       },
       "section": "## A1.1 QSD Structure: Exchangeability",
+      "references": [],
       "raw_directive": "173: ### A1.1.3 Single-Particle Marginal\n174: \n175: :::{prf:definition} Single-Particle Marginal\n176: :label: def-single-particle-marginal\n177: \n178: The single-particle marginal of $\\pi_N$ is:\n179: \n180: $$\n181: \\mu_N(A) := \\pi_N(\\{(w_1, \\ldots, w_N) : w_1 \\in A\\})\n182: $$\n183: ",
       "_registry_context": {
         "stage": "directives",

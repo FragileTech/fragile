@@ -3,7 +3,8 @@
 This module exposes a Click-based CLI that consolidates the most common
 operations used throughout the mathematical document pipeline:
 
-- ``mathster extract``: Stage 1 raw extraction via ``RawDocumentParser``.
+- ``mathster extract``: Run DSPy-based directive extraction agents via
+  ``agents/run_extraction.py``.
 - ``mathster parse``: Directive hint extraction (structural parsing only).
 - ``mathster validate``: Schema/relationship/framework validation helpers.
 
@@ -21,6 +22,7 @@ from typing import Sequence
 
 import click
 import flogging
+from mathster.agents.run_extraction import AGENT_CONFIG, run_agents_in_sequence
 
 
 flogging.setup(level="INFO")
@@ -37,33 +39,6 @@ def _resolve_version() -> str:
         return importlib.metadata.version("fragile")
     except importlib.metadata.PackageNotFoundError:  # pragma: no cover - local dev fallback
         return "0.0.dev0"
-
-
-def _print_extraction_summary(result: dict) -> None:
-    """Render Stage 1 extraction statistics."""
-    stats = result.get("statistics", {})
-    entities = stats.get("entities_extracted", {})
-    click.echo("")
-    click.echo("📊 Extraction Summary")
-    click.echo("---------------------")
-    click.echo(f"Total entities: {stats.get('total_entities', 0)}")
-    for key in (
-        "definitions",
-        "theorems",
-        "axioms",
-        "proofs",
-        "equations",
-        "parameters",
-        "remarks",
-        "citations",
-    ):
-        click.echo(f"{key.capitalize():>12}: {entities.get(key, 0)}")
-    click.echo("")
-    click.echo(f"Output directory: {result.get('output_dir', '<unknown>')}/raw_data/")
-    elapsed = result.get("elapsed_seconds")
-    if elapsed is not None:
-        click.echo(f"Elapsed time: {elapsed:.1f}s")
-    click.echo("")
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
@@ -87,7 +62,7 @@ def _discover_chapter_markdown_files(roots: Sequence[Path] | None = None) -> lis
 
 @cli.command(
     "extract",
-    help="Stage 1: Raw extraction from one document or every detected chapter.",
+    help="Run the Mathster extraction agents for one or more documents.",
 )
 @click.argument(
     "sources",
@@ -95,27 +70,59 @@ def _discover_chapter_markdown_files(roots: Sequence[Path] | None = None) -> lis
     type=click.Path(exists=True, dir_okay=False, path_type=Path),
 )
 @click.option(
-    "--output-dir",
-    type=click.Path(file_okay=False, dir_okay=True, path_type=Path),
-    default=None,
-    help="Optional output directory (defaults to <document_dir>/<stem>).",
+    "--agent",
+    "agents",
+    multiple=True,
+    help="Subset of agents to run (repeat option for multiple; defaults to all).",
 )
 @click.option(
-    "--model",
+    "--lm",
     type=str,
-    default="claude-sonnet-4",
+    default="gemini/gemini-flash-lite-latest",
     show_default=True,
-    help="LLM identifier used during extraction.",
+    help="LM spec forwarded to run_extraction.py.",
 )
-@click.option("-v", "--verbose", is_flag=True, help="Enable verbose logging output.")
+@click.option(
+    "--passes",
+    type=int,
+    default=5,
+    show_default=True,
+    help="Number of DSPy Refine passes per agent.",
+)
+@click.option(
+    "--threshold",
+    type=float,
+    default=None,
+    help="Override reward threshold for all agents.",
+)
+@click.option(
+    "--max-tokens",
+    type=int,
+    default=None,
+    help="Override max tokens for all agents.",
+)
+@click.option(
+    "--log-level",
+    type=str,
+    default="INFO",
+    show_default=True,
+    help="Logging level for extraction agents.",
+)
 def extract_command(
-    sources: tuple[Path, ...], output_dir: Path | None, model: str, verbose: bool
+    sources: tuple[Path, ...],
+    agents: tuple[str, ...],
+    lm: str,
+    passes: int,
+    threshold: float | None,
+    max_tokens: int | None,
+    log_level: str,
 ) -> None:
-    """Invoke the RawDocumentParser entry point."""
-    from fragile.agents.raw_document_parser import RawDocumentParser
+    """Invoke the DSPy extraction orchestrator directly."""
 
-    if verbose:
-        logging.getLogger().setLevel(logging.DEBUG)
+    logging.basicConfig(
+        level=getattr(logging, log_level.upper(), logging.INFO),
+        format="%(levelname)s - %(message)s",
+    )
 
     source_list = list(sources)
     if not source_list:
@@ -128,18 +135,22 @@ def extract_command(
             f"{', '.join(str(root) for root in DEFAULT_CHAPTER_ROOTS if root.exists())}."
         )
 
-    if output_dir is not None and len(source_list) != 1:
-        msg = "--output-dir can only be used with a single document."
-        raise click.ClickException(msg)
+    agent_list = list(agents) if agents else list(AGENT_CONFIG.keys())
 
     for idx, source in enumerate(source_list, start=1):
-        click.echo(f"[{idx}/{len(source_list)}] Extracting {source}...")
-        parser = RawDocumentParser(source_path=source, output_dir=output_dir, model=model)
+        click.echo(f"[{idx}/{len(source_list)}] Running extraction agents for {source}...")
+
         try:
-            result = parser.extract()
+            run_agents_in_sequence(
+                doc_path=str(source),
+                agent_names=agent_list,
+                lm_spec=lm,
+                passes=passes,
+                threshold_override=threshold,
+                max_tokens_override=max_tokens,
+            )
         except Exception as exc:  # pragma: no cover - CLI surface
             raise click.ClickException(f"{source}: {exc}") from exc
-        _print_extraction_summary(result)
 
 
 @cli.command(
@@ -277,6 +288,7 @@ def registry_command(
         process_batch,
         process_document,
     )
+    from mathster.registry.extract_stage import build_unified_extract_registry
 
     logging.basicConfig(
         level=logging.INFO if verbose else logging.WARNING,
@@ -305,6 +317,14 @@ def registry_command(
             success = all(results.values())
         else:
             success = process_document(target_path, force=force, verbose=verbose)
+
+        if success and not no_unified:
+            # Build corpus-level extract registry after directives succeed.
+            build_unified_extract_registry(
+                target_path,
+                output_dir=unified_output,
+                verbose=verbose,
+            )
     except Exception as exc:  # pragma: no cover - CLI surface
         raise click.ClickException(str(exc)) from exc
 

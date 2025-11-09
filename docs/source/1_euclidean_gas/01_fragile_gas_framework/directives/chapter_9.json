@@ -19,6 +19,7 @@
         "label": "def-axiom-rescale-function"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "1633: :::\n1634: :::{prf:axiom} Axiom of a Well-Behaved Rescale Function\n1635: :label: def-axiom-rescale-function\n1636: Any function $g_A: \\mathbb{R} \\to \\mathbb{R}_{>0}$ chosen for the rescale transformation must satisfy the following properties to be considered valid within the Fragile framework. The user is responsible for proving that their chosen function complies with these conditions.\n1637: *   **1. $C^1$ Smoothness:** The function $g_A(z)$ must be continuously differentiable on its entire domain $\\mathbb{R}$. This ensures that the fitness potential is a smooth function of the standardized scores, which is critical for the stability of the cloning dynamics.\n1638: *   **2. Monotonicity:** The function must be monotonically non-decreasing. This is equivalent to its first derivative being non-negative for all inputs:\n1639: $$\n1640: \n1641:     g'_A(z) \\ge 0 \\quad \\forall z \\in \\mathbb{R}\n1642: \n1643: \n1644: $$\n1645: This property is essential to guarantee that a higher (better) standardized score never results in a lower fitness potential component.\n1646: *   **3. Uniform Boundedness:** The function's range must be a bounded interval $(0, g_{A,\\max}]$ for some finite constant $g_{A,\\max} > 0$. This prevents the fitness potential from becoming infinite, which is a non-negotiable requirement for the stability of the selection and cloning operators.\n1647: *   **4. Global Lipschitz Continuity:** The function must be globally Lipschitz continuous. For a $C^1$ function, this is equivalent to its first derivative being uniformly bounded. There must exist a finite constant $L_{g_A}$, the Lipschitz constant, such that:\n1648: $$\n1649: \n1650:     \\sup_{z \\in \\mathbb{R}} |g'_A(z)| = L_{g_A} < \\infty\n1651: \n1652: \n1653: $$\n1654: This property is the cornerstone for proving the mean-square continuity of the composite Fitness Potential Operator, as it ensures that small changes in the standardized scores cannot be pathologically amplified.\n1655: *   **Framework Application:** Any function satisfying these four conditions can be used as a rescale function. The subsequent sections provide two distinct examples of valid functions: an asymmetric piecewise function and a canonical logistic function, along with proofs that they satisfy this axiom. The specific choice of function and its corresponding constants, $g_{A,\\max}$ and $L_{g_A}$, will affect the quantitative continuity bounds of the full system."
     },
     {
@@ -37,6 +38,7 @@
         "label": "def-asymmetric-rescale-function"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "1667: #### 8.2.1 Definition of the Asymmetric Rescale Function\n1668: :::{prf:definition} Smooth Piecewise Rescale Function\n1669: :label: def-asymmetric-rescale-function\n1670: The rescale function is parameterized by the **Rescale Saturation Threshold ($z_{\\max}$)**, which defines the upper saturation limit. For the function to be well-posed with distinct segments, this parameter must satisfy the constraint $z_{\\max} > 1$.\n1671: The **Smooth Piecewise Rescale Function** $g_A: \\mathbb{R} \\to \\mathbb{R}_{>0}$ is defined as:\n1672: $$\n1673: \n1674: g_A(z) :=\n1675: \\begin{cases}\n1676: \\exp(z), & z \\le 0 \\\\\n1677: \\log(1 + z) + 1, & 0 < z < z_{\\max} - 1 \\\\\n1678: P(z), & z_{\\max} - 1 \\le z \\le z_{\\max} \\\\\n1679: \\log(1 + z_{\\max}) + 1, & z > z_{\\max}\n1680: \\end{cases}\n1681: \n1682: $$\n1683: The function $P(z)$ is a unique cubic polynomial defined on the interval $[z_{\\max}-1, z_{\\max}]$. It serves as a $C^1$ (continuously differentiable) patch that smoothly connects the logarithmic curve to the constant saturation value. Its four coefficients are uniquely determined by solving for the following four boundary conditions:\n1684: 1.  **Match Value at Start:** $P(z_{\\max}-1) = \\log(z_{\\max}) + 1$\n1685: 2.  **Match Slope at Start:** $P'(z_{\\max}-1) = 1 / z_{\\max}$\n1686: 3.  **Match Value at End:** $P(z_{\\max}) = \\log(1 + z_{\\max}) + 1$\n1687: 4.  **Match Slope at End:** $P'(z_{\\max}) = 0$\n1688: This construction ensures that $g_A(z)$ is continuously differentiable across its entire domain."
     },
     {
@@ -55,6 +57,7 @@
         "label": "lem-cubic-patch-uniqueness"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "1693: The construction of the $Smooth Piecewise Rescale Function$ relies on the existence of a unique cubic polynomial that seamlessly connects the logarithmic and constant segments. The following lemma provides the formal proof that such a polynomial is always uniquely determined by the specified boundary conditions.\n1694: :::{prf:lemma} Existence and Uniqueness of the Smooth Rescale Patch\n1695: :label: lem-cubic-patch-uniqueness\n1696: For any $z_max > 1$, there exists a unique cubic polynomial $P(z)$ that satisfies the four $C\u00b9$ boundary conditions specified in [](#def-asymmetric-rescale-function)."
     },
     {
@@ -73,6 +76,7 @@
         "label": "proof-lem-cubic-patch-uniqueness"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "1697: :::\n1698: :::{prf:proof}\n1699: :label: proof-lem-cubic-patch-uniqueness\n1700: **Proof.**\n1701: Let the generic cubic polynomial be $P(z) = az\u00b3 + bz\u00b2 + cz + d$, and its derivative be $P'(z) = 3az\u00b2 + 2bz + c$. The four boundary conditions are defined at the endpoints of the interval, $z\u2080 = z_max - 1$ and $z\u2081 = z_max$. Let the required values and derivatives at these points be:\n1702: *   $y\u2080 = P(z\u2080) = log(z_max) + 1$\n1703: *   $y'\u2080 = P'(z\u2080) = 1/z_max$\n1704: *   $y\u2081 = P(z\u2081) = log(1 + z_max) + 1$\n1705: *   $y'\u2081 = P'(z\u2081) = 0$\n1706: 1.  **Formulate as a System of Linear Equations:**\n1707:     The four boundary conditions create a system of four linear equations for the four unknown coefficients $(a, b, c, d)$:\n1708:     1.  $a z\u2080\u00b3 + b z\u2080\u00b2 + c z\u2080 + d = y\u2080$\n1709:     2.  $3a z\u2080\u00b2 + 2b z\u2080 + c + 0d = y'\u2080$\n1710:     3.  $a z\u2081\u00b3 + b z\u2081\u00b2 + c z\u2081 + d = y\u2081$\n1711:     4.  $3a z\u2081\u00b2 + 2b z\u2081 + c + 0d = y'\u2081$\n1712: 2.  **Represent as a Matrix Equation:**\n1713:     This system can be written in the matrix form $M * **x** = **y**$, where $**x** = [a, b, c, d]\u1d40$:\n1714: $$\n1715: \n1716:     \\begin{pmatrix}\n1717:     z\u2080\u00b3 & z\u2080\u00b2 & z\u2080 & 1 \\\\\n1718:     3z\u2080\u00b2 & 2z\u2080 & 1 & 0 \\\\\n1719:     z\u2081\u00b3 & z\u2081\u00b2 & z\u2081 & 1 \\\\\n1720:     3z\u2081\u00b2 & 2z\u2081 & 1 & 0\n1721:     \\end{pmatrix}\n1722:     \\begin{pmatrix} a \\\\ b \\\\ c \\\\ d \\end{pmatrix}\n1723:     =\n1724:     \\begin{pmatrix} y\u2080 \\\\ y'\u2080 \\\\ y\u2081 \\\\ y'\u2081 \\end{pmatrix}\n1725: \n1726: \n1727: $$\n1728: 3.  **Prove Uniqueness of the Solution:**\n1729:     A unique solution for the coefficients $(a, b, c, d)$ exists if and only if the determinant of the coefficient matrix $M$ is non-zero. The matrix $M$ is a confluent Vandermonde matrix. Its determinant has a known closed-form solution:\n1730: $$\n1731: \n1732:     \\det(M) = (z\u2081 - z\u2080)\u2074\n1733: \n1734: \n1735: $$\n1736: From the problem definition, $z\u2081 - z\u2080 = z_max - (z_max - 1) = 1$.\n1737:     Therefore, $det(M) = 1\u2074 = 1$.\n1738: 4.  **Conclusion:**\n1739:     Since the determinant of the coefficient matrix is $1$, it is non-zero. This guarantees that the matrix is invertible and the system of linear equations has exactly one unique solution for $(a, b, c, d)$. Consequently, the cubic polynomial $P(z)$ that satisfies the four boundary conditions not only exists but is also unique for any valid choice of $z_max$.\n1740: **Q.E.D.**"
     },
     {
@@ -91,6 +95,7 @@
         "label": "lem-cubic-patch-coefficients"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "1743: To analyze the properties of the derivative of the polynomial patch $P(z)$, we must first find its explicit coefficients. While [](#lem-cubic-patch-uniqueness) guarantees their existence and uniqueness, the following lemma provides their exact form in terms of the single governing parameter, $z_{\\max}$.\n1744: :::{prf:lemma} Explicit Coefficients of the Smooth Rescale Patch\n1745: :label: lem-cubic-patch-coefficients\n1746: Let the cubic polynomial patch $P(z)$ be defined on the interval $[z_{\\max}-1, z_{\\max}]$. Let this interval be normalized by the variable $s = z - (z_{\\max}-1)$, such that $z \\in [z_{\\max}-1, z_{\\max}]$ corresponds to $s \\in [0, 1]$. In this normalized coordinate system, the polynomial can be written as:\n1747: $$\n1748: \n1749: P(z(s)) = Q(s) = As^3 + Bs^2 + Cs + D\n1750: \n1751: $$\n1752: The four coefficients, $A, B, C, D$, are uniquely determined by the boundary conditions and the parameter $z_{\\max} > 1$:\n1753: *   $A = \\frac{1}{z_{\\max}} - 2\\log\\left(1 + \\frac{1}{z_{\\max}}\\right)$\n1754: *   $B = 3\\log\\left(1 + \\frac{1}{z_{\\max}}\\right) - \\frac{2}{z_{\\max}}$\n1755: *   $C = \\frac{1}{z_{\\max}}$\n1756: *   $D = \\log(z_{\\max}) + 1$"
     },
     {
@@ -109,6 +114,7 @@
         "label": "proof-lem-cubic-patch-coefficients"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "1757: :::\n1758: :::{prf:proof}\n1759: :label: proof-lem-cubic-patch-coefficients\n1760: **Proof.**\n1761: Let the interval be $[z_0, z_1]$, where $z_0 = z_{\\max}-1$ and $z_1 = z_{\\max}$. The four boundary conditions from [](#def-asymmetric-rescale-function) are:\n1762: *   $y_0 = P(z_0) = \\log(z_{\\max}) + 1$\n1763: *   $y'_0 = P'(z_0) = 1/z_{\\max}$\n1764: *   $y_1 = P(z_1) = \\log(1 + z_{\\max}) + 1$\n1765: *   $y'_1 = P'(z_1) = 0$\n1766: We define the polynomial $Q(s)$ for $s = z-z_0 \\in [0, 1]$. Its derivative is $Q'(s) = 3As^2 + 2Bs + C$. The boundary conditions are transformed into conditions on $Q(s)$ at $s=0$ and $s=1$.\n1767: 1.  **Condition at $s=0$:**\n1768:     *   The value at the start of the interval must match: $Q(0) = y_0$.\n1769:         $A(0)^3 + B(0)^2 + C(0) + D = y_0 \\implies D = y_0 = \\log(z_{\\max}) + 1$.\n1770:     *   The derivative at the start must also match. Note that by the chain rule, $P'(z) = \\frac{d}{dz}Q(z-z_0) = Q'(z-z_0)$.\n1771:         $Q'(0) = y'_0 \\implies 3A(0)^2 + 2B(0) + C = y'_0 \\implies C = y'_0 = \\frac{1}{z_{\\max}}$.\n1772: 2.  **Condition at $s=1$:**\n1773:     *   The value at the end of the interval must match: $Q(1) = y_1$.\n1774:         $A(1)^3 + B(1)^2 + C(1) + D = y_1 \\implies A + B + C + D = y_1$.\n1775:     *   The derivative at the end must match: $Q'(1) = y'_1$.\n1776:         $3A(1)^2 + 2B(1) + C = y'_1 \\implies 3A + 2B + C = y'_1$.\n1777: 3.  **Solve the System for A and B:**\n1778:     We now have a system of two linear equations for the two remaining unknown coefficients, $A$ and $B$.\n1779:     *   From the value condition at $s=1$: $A + B = y_1 - D - C = y_1 - y_0 - y'_0$.\n1780:     *   From the derivative condition at $s=1$: $3A + 2B = y'_1 - C = y'_1 - y'_0$.\n1781:     Let's define the change in value, $\\Delta y = y_1 - y_0 = \\log(1+z_{\\max}) - \\log(z_{\\max}) = \\log(1+1/z_{\\max})$. The system becomes:\n1782:     1. $A + B = \\Delta y - y'_0$\n1783:     2. $3A + 2B = y'_1 - y'_0$\n1784:     Multiply the first equation by 2:\n1785:     $2A + 2B = 2\\Delta y - 2y'_0$\n1786:     Subtract this from the second equation to solve for $A$:\n1787:     $A = (y'_1 - y'_0) - (2\\Delta y - 2y'_0) = y'_1 + y'_0 - 2\\Delta y$\n1788:     Substitute the known values ($y'_1=0, y'_0=1/z_{\\max}, \\Delta y=\\log(1+1/z_{\\max}))$:\n1789:     $A = 0 + \\frac{1}{z_{\\max}} - 2\\log\\left(1 + \\frac{1}{z_{\\max}}\\right)$\n1790:     Now, solve for $B$ using the first equation:\n1791:     $B = (\\Delta y - y'_0) - A = (\\Delta y - y'_0) - (y'_1 + y'_0 - 2\\Delta y) = 3\\Delta y - 2y'_0 - y'_1$\n1792:     Substitute the known values:\n1793:     $B = 3\\log\\left(1 + \\frac{1}{z_{\\max}}\\right) - \\frac{2}{z_{\\max}} - 0$\n1794:     The expressions for $A, B, C, D$ match those stated in the lemma. This completes the proof.\n1795: **Q.E.D.**"
     },
     {
@@ -127,6 +133,7 @@
         "label": "lem-cubic-patch-derivative"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "1798: Having derived the explicit coefficients for the cubic polynomial patch, we can now define the exact functional form of its first derivative. This isolates the quadratic function whose bounds we must analyze to establish the global Lipschitz continuity of the complete rescale function.\n1799: :::{prf:lemma} Explicit Form of the Polynomial Patch Derivative\n1800: :label: lem-cubic-patch-derivative\n1801: Let $P(z)$ be the cubic polynomial patch on the interval $[z_{\\max}-1, z_{\\max}]$, and let $s = z - (z_{\\max}-1)$ be the normalized coordinate on $[0, 1]$. The first derivative of the polynomial, $P'(z)$, is a quadratic function of the normalized coordinate $s$, given by:\n1802: $$\n1803: \n1804: P'(z(s)) = 3\\left(\\frac{1}{z_{\\max}} - 2\\log\\left(1 + \\frac{1}{z_{\\max}}\\right)\\right)s^2 + 2\\left(3\\log\\left(1 + \\frac{1}{z_{\\max}}\\right) - \\frac{2}{z_{\\max}}\\right)s + \\frac{1}{z_{\\max}}\n1805: \n1806: $$"
     },
     {
@@ -145,6 +152,7 @@
         "label": "proof-lem-cubic-patch-derivative"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "1807: :::\n1808: :::{prf:proof}\n1809: :label: proof-lem-cubic-patch-derivative\n1810: **Proof.**\n1811: The proof is a direct substitution of the coefficients found in [](#lem-cubic-patch-coefficients) into the general form for the derivative of a cubic polynomial expressed in the normalized coordinate system.\n1812: 1.  **Recall the Polynomial and its Derivative:**\n1813:     From [](#lem-cubic-patch-coefficients), the polynomial patch is expressed as $Q(s) = As^3 + Bs^2 + Cs + D$ for $s \\in [0, 1]$. Its derivative with respect to $s$ is:\n1814: $$\n1815: \n1816:     Q'(s) = 3As^2 + 2Bs + C\n1817: \n1818: \n1819: $$\n1820: By the chain rule, $P'(z) = Q'(s)$.\n1821: 2.  **Substitute the Explicit Coefficients:**\n1822:     We substitute the explicit expressions for the coefficients $A, B,$ and $C$ as determined in [](#lem-cubic-patch-coefficients):\n1823:     *   $A = \\frac{1}{z_{\\max}} - 2\\log\\left(1 + \\frac{1}{z_{\\max}}\\right)$\n1824:     *   $B = 3\\log\\left(1 + \\frac{1}{z_{\\max}}\\right) - \\frac{2}{z_{\\max}}$\n1825:     *   $C = \\frac{1}{z_{\\max}}$\n1826:     Substituting these into the expression for $Q'(s)$ yields:\n1827: $$\n1828: \n1829:     P'(z(s)) = 3\\left(\\frac{1}{z_{\\max}} - 2\\log\\left(1 + \\frac{1}{z_{\\max}}\\right)\\right)s^2 + 2\\left(3\\log\\left(1 + \\frac{1}{z_{\\max}}\\right) - \\frac{2}{z_{\\max}}\\right)s + \\frac{1}{z_{\\max}}\n1830: \n1831: \n1832: $$\n1833: This provides the exact analytical form of the derivative on the interval of interest.\n1834: **Q.E.D.**"
     },
     {
@@ -163,6 +171,7 @@
         "label": "lem-polynomial-patch-monotonicity"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "1836: ##### 8.2.2.4 Lemma: Monotonicity of the Polynomial Patch (Fritsch\u2013Carlson/Hyman)\n1837: :::{prf:lemma} Monotonicity of the Polynomial Patch\n1838: :label: lem-polynomial-patch-monotonicity\n1839: Let $z_0=z_{\\max}-1$, $z_1=z_{\\max}$, $y_0=\\log(z_{\\max})+1$, $y_1=\\log(1+z_{\\max})+1$, and endpoint slopes $m_0=P'(z_0)=1/z_{\\max}$, $m_1=P'(z_1)=0$. Set the secant $\\Delta:=(y_1-y_0)/(z_1-z_0)=\\log(1+1/z_{\\max})>0$. Then the Hermite cubic $P$ on $[z_0,z_1]$ with $(y_0,m_0),(y_1,m_1)$ is monotonically non\u2011decreasing."
     },
     {
@@ -181,6 +190,7 @@
         "label": "proof-lem-polynomial-patch-monotonicity"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "1840: :::\n1841: :::{prf:proof}\n1842: :label: proof-lem-polynomial-patch-monotonicity\n1843: By Fritsch\u2013Carlson/Hyman sufficient conditions for monotone cubic Hermite interpolation, it suffices that $m_0,m_1\\ge 0$ and $m_0, m_1 \\le 3\\Delta$ on the interval. Here $m_1=0$ and $m_0=1/z_{\\max}>0$. Moreover, for all $z_{\\max}>1$, $1/z_{\\max} \\le 1 < 3\\log(1+1/z_{\\max})=3\\Delta$. Thus $0\\le m_0,m_1\\le 3\\Delta$, and the interpolant is monotone on $[z_0,z_1]$ by the cited criterion.\n1844: **Q.E.D.**"
     },
     {
@@ -199,6 +209,7 @@
         "label": "rem-cubic-hermite-construction"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "1845: :::\n1846: :::{prf:remark}\n1847: :label: rem-cubic-hermite-construction\n1848: This construction is the standard monotone cubic Hermite approach (PCHIP/PCHIM). The global derivative bound $L_P\\approx 1.0054$ from \u00a78.2.2.5 provides an explicit Lipschitz constant for the rescale segment."
     },
     {
@@ -217,6 +228,7 @@
         "label": "lem-cubic-patch-derivative-bounds"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "1850: ##### 8.2.2.5 Lemma: Bounds on the Polynomial Patch Derivative\n1851: :::{prf:lemma} Bounds on the Polynomial Patch Derivative\n1852: :label: lem-cubic-patch-derivative-bounds\n1853: Let $P'(z(s))$ be the derivative of the cubic patch on the interval $s \\in [0, 1]$, as defined in [](#lem-cubic-patch-derivative). This derivative is uniformly bounded on its domain for any choice of $z_{\\max} > 1$. Specifically, it satisfies:\n1854: $$\n1855: \n1856: 0 \\le P'(z(s)) \\le L_P\n1857: \n1858: $$\n1859: where $L_P$ is a constant slightly greater than 1, given by:\n1860: $$\n1861: \n1862: L_P = 1 + \\frac{(3\\log(2)-2)^2}{3(2\\log(2)-1)} \\approx 1.0054\n1863: \n1864: $$"
     },
     {
@@ -235,6 +247,7 @@
         "label": "proof-lem-cubic-patch-derivative-bounds"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "1865: :::\n1866: :::{prf:proof}\n1867: :label: proof-lem-cubic-patch-derivative-bounds\n1868: **Proof.**\n1869: The proof proceeds by analyzing the function $q(s, x) = P'(z(s))$ for $s \\in [0, 1]$ and $x = 1/z_{\\max} \\in (0, 1)$.\n1870: 1.  **Non-Negativity (Monotonicity):**\n1871:     As formally established in [](#lem-polynomial-patch-monotonicity), the polynomial patch $P(z)$ is monotonically non-decreasing. Since the function is proven to be monotonic, its first derivative must be non-negative. Therefore, we have $P'(z(s)) \\ge 0$ for all $s \\in [0, 1]$. The minimum value is 0, achieved at the boundary $s=1$.\n1872: 2.  **Analysis for the Upper Bound:**\n1873:     To find the maximum value of $P'(z(s))$, we must find the supremum of the function $q(s, x)$ over its two-dimensional domain $s \\in [0,1], x \\in (0, 1)$. From [](#lem-cubic-patch-derivative), the function can be expressed in terms of $s$ and $x$:\n1874: $$\n1875: \n1876:     q(s, x) = 3\\left(x - 2\\log\\left(1 + x\\right)\\right)s^2 + 2\\left(3\\log\\left(1 + x\\right) - 2x\\right)s + x\n1877: \n1878: \n1879: $$\n1880: *   **Dependence on $x = 1/z_{\\max}$:** We first analyze the partial derivative of $q$ with respect to $x$ to determine where its maximum is located.\n1881: $$\n1882: \n1883:         \\frac{\\partial q}{\\partial x} = (3s^2 - 4s + 1) + \\frac{6s - 6s^2}{1+x} = (3s-1)(s-1) + \\frac{6s(1-s)}{1+x}\n1884: \n1885: \n1886: $$\n1887: We factor out the non-negative term $(1-s)$:\n1888: $$\n1889: \n1890:         \\frac{\\partial q}{\\partial x} = -(1-s)(3s-1) + \\frac{6s(1-s)}{1+x} = (1-s)\\left[ -(3s-1) + \\frac{6s}{1+x} \\right] = (1-s)\\left[ 1 - 3s + \\frac{6s}{1+x} \\right]\n1891: \n1892: \n1893: $$\n1894: Let the term in the brackets be $T(s,x) = 1 - 3s + \\frac{6s}{1+x}$. Since $x \\in (0, 1)$, we have $1+x \\in (1,2)$, which implies that the coefficient of $s$, $\\frac{6}{1+x}$, is in the range $(3, 6)$. The derivative of $T$ with respect to $s$ is $\\frac{\\partial T}{\\partial s} = -3 + \\frac{6}{1+x} > 0$. Thus, for any fixed $x$, $T(s,x)$ is monotonically increasing in $s$. Its minimum value on the interval $s \\in [0,1]$ must occur at $s=0$, which gives $T(0,x)=1$. Since the term $T(s,x)$ is always greater than or equal to 1, and the factor $(1-s)$ is non-negative on the domain, the entire partial derivative is non-negative: $\\frac{\\partial q}{\\partial x} \\ge 0$. This proves that for any fixed $s$, the function $q(s,x)$ is monotonically increasing with $x$.\n1895:     *   **Finding the Supremum:** Because $q(s,x)$ is increasing in $x$, its supremum over the domain must occur at the boundary where $x \\to 1$ (which corresponds to $z_{\\max} \\to 1^+$). We therefore analyze the function in this limit:\n1896: $$\n1897: \n1898:         q_{sup}(s) = \\lim_{x \\to 1} q(s,x) = (6s(1-s))\\log(2) + (3s-1)(s-1)\n1899: \n1900: \n1901: $$\n1902: This is a quadratic function of $s$:\n1903: $$\n1904: \n1905:         q_{sup}(s) = (3 - 6\\log(2))s^2 + (6\\log(2) - 4)s + 1\n1906: \n1907: \n1908: $$\n1909: *   **Maximize the Bounding Quadratic:** This is a downward-opening parabola, as its leading coefficient $(3 - 6\\log(2)) \\approx -1.15$ is negative. Its maximum value occurs at its vertex, $s_v = \\frac{-(6\\log(2)-4)}{2(3-6\\log(2))} = \\frac{4-6\\log(2)}{6-12\\log(2)} \\approx 0.068$. Since this vertex lies within the interval $[0,1]$, the maximum of the function is the value at this vertex. The value of a quadratic $as^2+bs+c$ at its vertex $s_v = -b/(2a)$ is given by $c - b^2/(4a)$.\n1910: $$\n1911: \n1912:         \\max_s q_{sup}(s) = 1 - \\frac{(6\\log(2)-4)^2}{4(3-6\\log(2))} = 1 - \\frac{4(3\\log(2)-2)^2}{12(1-2\\log(2))} = 1 + \\frac{(3\\log(2)-2)^2}{3(2\\log(2)-1)}\n1913: \n1914: \n1915: $$\n1916: Substituting the approximate values gives:\n1917: $$\n1918: \n1919:         L_P = 1 + \\frac{(2.079 - 2)^2}{3(1.386 - 1)} \\approx 1 + \\frac{0.00624}{1.158} \\approx 1.0054\n1920: \n1921: \n1922: $$\n1923: 3.  **Conclusion:**\n1924:     The derivative of the polynomial patch is bounded below by 0 and its supremum is the constant $L_P \\approx 1.0054$. Therefore, $0 \\le P'(z(s)) \\le L_P$. This proves the derivative is uniformly bounded on its domain.\n1925: **Q.E.D.**"
     },
     {
@@ -253,6 +266,7 @@
         "label": "lem-rescale-monotonicity"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "1928: A critical property of the rescale function $g_A(z)$ is that it must be monotonically non-decreasing. This ensures that a higher standardized score always results in a higher (or equal) rescaled value, preserving the intended ordering of walker potentials. The following lemma formalizes this property for the entire function.\n1929: :::{prf:lemma} Monotonicity of the Smooth Rescale Function\n1930: :label: lem-rescale-monotonicity\n1931: The $Smooth Piecewise Rescale Function$ $g_A(z)$ is monotonically non-decreasing on $\u211d$."
     },
     {
@@ -271,6 +285,7 @@
         "label": "proof-lem-rescale-monotonicity"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "1932: :::\n1933: :::{prf:proof}\n1934: :label: proof-lem-rescale-monotonicity\n1935: **Proof.**\n1936: To prove that $g_A(z)$ is monotonically non-decreasing, we must show that its first derivative, $g'_A(z)$, is non-negative for all $z \u2208 \u211d$. We have already established in [](#lem-rescale-monotonicity) that $g_A(z)$ is $C\u00b9$, so its derivative is well-defined and continuous everywhere. We now analyze the sign of $g'_A(z)$ on each of the four segments of its piecewise definition.\n1937: 1.  **For $z \u2264 0$:**\n1938:     The function is $g_A(z) = \\exp(z)$. The derivative is:\n1939: $$\n1940: \n1941:     g'_A(z) = \\exp(z)\n1942: \n1943: \n1944: $$\n1945: The exponential function is strictly positive for all real inputs. Thus, $g'_A(z) > 0$ on this interval.\n1946: 2.  **For $0 < z < z_{\\max} - 1$:**\n1947:     The function is $g_A(z) = \\log(1 + z) + 1$. The derivative is:\n1948: $$\n1949: \n1950:     g'_A(z) = \\frac{1}{1 + z}\n1951: \n1952: \n1953: $$\n1954: Since $z > 0$ for this interval, the denominator $1 + z$ is always strictly greater than 1. Therefore, $g'_A(z) > 0$ on this interval.\n1955: 3.  **For $z_{\\max} - 1 \u2264 z \u2264 z_{\\max}$:**\n1956:     The function is the cubic polynomial patch $g_A(z) = P(z)$. As formally proven in [](#lem-cubic-patch-derivative-bounds), its derivative $P'(z)$ is non-negative on this interval. Therefore, $g'_A(z) = P'(z) \u2265 0$ on this interval.\n1957: 4.  **For $z > z_{\\max}$:**\n1958:     The function is the constant $g_A(z) = \\log(1 + z_{\\max}) + 1$. The derivative is:\n1959: $$\n1960: \n1961:     g'_A(z) = 0\n1962: \n1963: \n1964: $$\n1965: The derivative is non-negative on this interval.\n1966: 5.  **Conclusion:**\n1967:     We have shown that $g'_A(z) \u2265 0$ for all $z \u2208 \u211d$. Since the derivative is non-negative everywhere, the function $g_A(z)$ is monotonically non-decreasing across its entire domain.\n1968: **Q.E.D.**"
     },
     {
@@ -289,6 +304,7 @@
         "label": "thm-rescale-function-lipschitz"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "1970: ##### 8.2.2.7 Theorem: Global Lipschitz Continuity of the Smooth Rescale Function\n1971: :::{prf:theorem} Global Lipschitz Continuity of the Smooth Rescale Function\n1972: :label: thm-rescale-function-lipschitz\n1973: The **Smooth Piecewise Rescale Function** $g_A(z)$ is globally Lipschitz continuous on $\\mathbb{R}$. Its Lipschitz constant, $L_{g_A}$, is the supremum of the absolute value of its first derivative, and is given by:\n1974: $$\n1975: \n1976: \\boxed{\n1977: L_{g_A} = \\sup_{z \\in \\mathbb{R}} |g'_A(z)| = L_P = 1 + \\frac{(3\\log(2)-2)^2}{3(2\\log(2)-1)} \\approx 1.0054\n1978: }\n1979: \n1980: $$\n1981: where $L_P$ is the uniform upper bound on the derivative of the polynomial patch from [](#lem-cubic-patch-derivative-bounds)."
     },
     {
@@ -307,6 +323,7 @@
         "label": "proof-thm-rescale-function-lipschitz"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "1982: :::\n1983: :::{prf:proof}\n1984: :label: proof-thm-rescale-function-lipschitz\n1985: **Proof.**\n1986: A function that is continuously differentiable on $\\mathbb{R}$ is globally Lipschitz if the absolute value of its first derivative is uniformly bounded. We analyze each segment of $g_A$:\n1987: 1.  **$z \\le 0$:** $g'_A(z) = \\exp(z)$, whose supremum on $(-\\infty, 0]$ is $1$.\n1988: 2.  **$0 < z < z_{\\max} - 1$:** $g'_A(z) = 1/(1+z)$, whose supremum on this interval is $1$ (as $z \\to 0^+$).\n1989: 3.  **$z_{\\max}-1 \\le z \\le z_{\\max}$:** $g'_A(z) = P'(z)$; by [](#lem-cubic-patch-derivative-bounds), $0 \\le P'(z) \\le L_P$.\n1990: 4.  **$z > z_{\\max}$:** $g'_A(z) = 0$.\n1991: Taking the supremum over segments yields $L_{g_A} = \\max\\{1, 1, L_P, 0\\} = L_P$, completing the proof.\n1992: **Q.E.D.**"
     },
     {
@@ -325,6 +342,7 @@
         "label": "lem-lipschitz-constant-of-the-patched-standardization"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "1995: ##### 8.2.2.8 Global Lipschitz bound for the standardized map\n1996: :::{prf:lemma} Lipschitz constant of the patched standardization\n1997: :label: lem-lipschitz-constant-of-the-patched-standardization\n1998: Let $z=\\sigma\\'_{\\text{reg}}(\\cdot)$ denote the patched standardization of raw values with variance floor $\\varepsilon_{\\text{std}}>0$, and let $g_A$ be the piecewise rescale in \u00a78.2.2. Then $g_A\\circ z$ is globally Lipschitz. In particular, if the variance functional of the chosen aggregator is $L_{\\mathrm{var}}$\u2011Lipschitz (see \u00a78.2.2.10), then\n1999: $$\n2000: \n2001: L_{g_A\\circ z}\\;\\le\\; L_{g_A}\\cdot L_{z},\\qquad L_{g_A}\\le \\max\\{L_P,1\\},\\quad L_{z}\\le L_{\\sigma\\'_{\\text{reg}}}\\,L_{\\mathrm{var}}.\n2002: \n2003: $$\n2004: Here $L_P=\\|P'\\|_\\infty$ is the uniform derivative bound from [](#lem-cubic-patch-derivative-bounds). The factor $L_{\\sigma\\'_{\\text{reg}}}$ is the global Lipschitz constant of the regularized standard deviation, provided by [](#lem-sigma-patch-derivative-bound)."
     },
     {
@@ -343,6 +361,7 @@
         "label": "lem-sigma-patch-derivative-bound"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "2006: ##### 8.2.2.9 Lemma: Patched standard deviation derivative bound\n2007: :::{prf:lemma} Derivative bound for \\sigma\\'_{\\text{reg}}\n2008: :label: lem-sigma-patch-derivative-bound\n2009: Let $\\sigma\\'_{\\text{reg}}(V) = \\sqrt{V + \\sigma'^2_{\\min}}$ be the regularized standard deviation from [](#def-statistical-properties-measurement), where $\\sigma'_{\\min} = \\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2}$. Its global derivative bound is:\n2010: $$\n2011: \n2012: L_{\\sigma\\'_{\\text{reg}}}=\\sup_{V\\ge 0}\\big|\\,(\\sigma\\'_{\\text{reg}})'(V)\\,\\big|= \\frac{1}{2\\sigma'_{\\min}} = \\frac{1}{2\\sqrt{\\kappa_{\\text{var,min}} + \\varepsilon_{\\text{std}}^2}}\n2013: \n2014: $$\n2015: as established in [](#lem-sigma-reg-derivative-bounds)."
     },
     {
@@ -361,6 +380,7 @@
         "label": "lem-lipschitz-bound-for-the-variance-functional"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "2017: ##### 8.2.2.10 Lemma: Lipschitz constant of the empirical variance\n2018: :::{prf:lemma} Lipschitz bound for the variance functional\n2019: :label: lem-lipschitz-bound-for-the-variance-functional\n2020: Let $\\mu(\\mathbf v)$ and $m_2(\\mathbf v)$ denote, respectively, the (aggregator) mean and second raw moment computed from a value vector $\\mathbf v\\in\\mathbb{R}^k$ over the alive set. Assume the moment maps are Lipschitz in $\\mathbf v$ with constants $L_{\\mu,M}$ and $L_{m_2,M}$ as in \u00a76.2.1, and suppose $|v_i|\\le V_{\\max}$. Define the variance functional $\\mathrm{Var}(\\mathbf v):=m_2(\\mathbf v) - \\mu(\\mathbf v)^2$. Then, for all $\\mathbf v_1,\\mathbf v_2$,\n2021: $$\n2022: \n2023: \\big|\\,\\mathrm{Var}(\\mathbf v_1)-\\mathrm{Var}(\\mathbf v_2)\\,\\big|\\;\\le\\;\\Big( L_{m_2,M}\\; +\\; 2 V_{\\max}\\,L_{\\mu,M}\\Big)\\,\\|\\mathbf v_1-\\mathbf v_2\\|_2.\n2024: \n2025: $$\n2026: In particular, the variance functional is $L_{\\mathrm{var}}$\u2011Lipschitz with $L_{\\mathrm{var}}:=L_{m_2,M}+2 V_{\\max} L_{\\mu,M}$."
     },
     {
@@ -379,6 +399,7 @@
         "label": "proof-lem-lipschitz-bound-for-the-variance-functional"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "2027: :::\n2028: :::{prf:proof}\n2029: :label: proof-lem-lipschitz-bound-for-the-variance-functional\n2030: By the triangle inequality,\n2031: $$\n2032: \n2033: \\big|\\,\\mathrm{Var}(\\mathbf v_1)-\\mathrm{Var}(\\mathbf v_2)\\,\\big|\\;\\le\\; |m_2(\\mathbf v_1)-m_2(\\mathbf v_2)|\\; +\\; |\\mu(\\mathbf v_1)^2-\\mu(\\mathbf v_2)^2|.\n2034: \n2035: $$\n2036: The first term is bounded by $L_{m_2,M}\\,\\|\\mathbf v_1-\\mathbf v_2\\|_2$. For the second, factor the difference of squares:\n2037: $$\n2038: \n2039: |\\mu(\\mathbf v_1)^2-\\mu(\\mathbf v_2)^2|\\;=\\; |\\mu(\\mathbf v_1)+\\mu(\\mathbf v_2)|\\,\\cdot\\,|\\mu(\\mathbf v_1)-\\mu(\\mathbf v_2)|.\n2040: \n2041: $$\n2042: With $|\\mu(\\mathbf v_j)|\\le V_{\\max}$, we have $|\\mu(\\mathbf v_1)+\\mu(\\mathbf v_2)|\\le 2 V_{\\max}$, while $|\\mu(\\mathbf v_1)-\\mu(\\mathbf v_2)|\\le L_{\\mu,M}\\,\\|\\mathbf v_1-\\mathbf v_2\\|_2$. Combine to obtain the stated bound.\n2043: **Q.E.D.**"
     },
     {
@@ -397,6 +418,7 @@
         "label": "cor-chain-rule-sigma-reg-var"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "2044: :::\n2045: :::{prf:corollary} Chain\u2011rule bound for \\sigma\\'_{\\text{reg}}\\circ \\mathrm{Var}\n2046: :label: cor-chain-rule-sigma-reg-var\n2047: \n2048: Under the conditions of the lemma and \u00a78.2.2.9, the composite map \\sigma\\'_{\\text{reg}}\\circ\\mathrm{Var} is Lipschitz with\n2049: $$\n2050: \n2051: L_{\\sigma\\'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; L_{\\sigma\\'_{\\text{reg}}}\\,\\Big( L_{m_2,M}+2 V_{\\max} L_{\\mu,M}\\Big).\n2052: \n2053: $$\n2054: In particular, for the empirical aggregator of \u00a76.2.2.a (see [](#lem-empirical-aggregator-properties)), $L_{\\mu,M}=1/\\sqrt{k}$ and $L_{m_2,M}=2V_{\\max}/\\sqrt{k}$, hence\n2055: $$\n2056: \n2057: L_{\\sigma\\'_{\\text{reg}}\\circ\\mathrm{Var}}\\;\\le\\; L_{\\sigma\\'_{\\text{reg}}}\\,\\Big( \\tfrac{2 V_{\\max}}{\\sqrt{k}} + 2 V_{\\max}\\,\\tfrac{1}{\\sqrt{k}}\\Big)\\n\\;=\\; \\frac{2 L_{\\sigma\\'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}.\n2058: \n2059: $$"
     },
     {
@@ -415,6 +437,7 @@
         "label": "cor-closed-form-lipschitz-composite"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "2060: :::\n2061: :::{prf:corollary} Closed\u2011form bound for $L_{g_A\\circ z}$ (empirical aggregator)\n2062: :label: cor-closed-form-lipschitz-composite\n2063: \n2064: Let $k=|\\mathcal A(\\mathcal S)|$ and assume $|v_i|\\le V_{\\max}$. For the empirical aggregator of \u00a76.2.2.a (see [](#lem-empirical-aggregator-properties)) with the regularized standardization and piecewise rescale of \u00a78.2.2, the composite map $g_A\\circ z$ is globally Lipschitz with\n2065: $$\n2066: \n2067: \\boxed{\\;L_{g_A\\circ z}\\;\\le\\; \\max\\{\\,L_P,\\,1\\,\\}\\;\\cdot\\; \\frac{2 L_{\\sigma\\'_{\\text{reg}}} V_{\\max}}{\\sqrt{k}}\\;}\n2068: \n2069: $$\n2070: where $L_P=\\|P'\\|_\\infty$ is the uniform derivative bound of the cubic patch from \u00a78.2.2.5."
     },
     {
@@ -433,6 +456,7 @@
         "label": "proof-cor-closed-form-lipschitz-composite"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "2071: :::\n2072: :::{prf:proof}\n2073: :label: proof-cor-closed-form-lipschitz-composite\n2074: Combine the bound on $L_{\\sigma\\'_{\\text{reg}}\\circ\\mathrm{Var}}$ with the Lipschitz constant for $g_A$ from [](#thm-rescale-function-lipschitz) and apply the chain rule.\n2075: **Q.E.D.**"
     },
     {
@@ -451,6 +475,7 @@
         "label": "def-canonical-logistic-rescale-function-example"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "2078: #### 8.3.1. Definition: Canonical Logistic Rescale Function\n2079: :::{prf:definition} Canonical Logistic Rescale Function\n2080: :label: def-canonical-logistic-rescale-function-example\n2081: The **Canonical Logistic Rescale Function** $g_A: \\mathbb{R} \\to \\mathbb{R}_{>0}$ is defined as:\n2082: $$\n2083: \n2084: g_A(z) := \\frac{2}{1 + e^{-z}}\n2085: \n2086: $$"
     },
     {
@@ -469,6 +494,7 @@
         "label": "thm-canonical-logistic-validity"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "2088: #### 8.3.2. Theorem: The Canonical Logistic Function is a Valid Rescale Function\n2089: :::{prf:theorem} The Canonical Logistic Function is a Valid Rescale Function\n2090: :label: thm-canonical-logistic-validity\n2091: The **Canonical Logistic Rescale Function** defined in [](#def-canonical-logistic-rescale-function-example) satisfies all four conditions of the **Axiom of a Well-Behaved Rescale Function** ([](#def-axiom-rescale-function))."
     },
     {
@@ -487,6 +513,7 @@
         "label": "proof-thm-canonical-logistic-validity"
       },
       "section": "## 9. Rescale Transformation",
+      "references": [],
       "raw_directive": "2092: :::\n2093: :::{prf:proof}\n2094: :label: proof-thm-canonical-logistic-validity\n2095: **Proof.**\n2096: The proof consists of verifying each of the four axiomatic conditions, which was previously done in $02_relativistic_gas.md$ and is consolidated here.\n2097: 1.  **$C^1$ Smoothness:** The function is a composition of the exponential function, addition, and division. As the denominator is always non-zero, the function is infinitely differentiable ($C^\\infty$) and therefore $C^1$.\n2098: 2.  **Monotonicity:** The first derivative is $g'_A(z) = 2e^{-z} / (1+e^{-z})^2$. Since $e^{-z} > 0$ and the denominator is a squared real number, $g'_A(z) > 0$ for all $z$. The function is strictly increasing, which satisfies the axiom.\n2099: 3.  **Uniform Boundedness:** We analyze the limits:\n2100:     *   As $z \\to \\infty$, $e^{-z} \\to 0$, so $g_A(z) \\to 2 / (1+0) = 2$.\n2101:     *   As $z \\to -\\infty$, $e^{-z} \\to \\infty$, so $g_A(z) \\to 0$.\n2102:     The range is the open interval $(0, 2)$. The function is uniformly bounded with $g_{A,\\max} = 2$.\n2103: 4.  **Global Lipschitz Continuity:** As proven previously, the derivative $g'_A(z)$ has a global maximum at $z=0$, where its value is $g'_A(0) = \\frac{1}{2}$. The derivative is uniformly bounded by this value. The function is therefore globally Lipschitz with constant $L_{g_A} = \\frac{1}{2}$.\n2104: Since all four conditions are met, the Canonical Logistic Rescale Function is a valid instantiation.\n2105: **Q.E.D.**"
     }
   ],

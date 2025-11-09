@@ -19,6 +19,7 @@
         "label": "def-empirical-metric"
       },
       "section": "## 3. Metric Tensor Estimation",
+      "references": [],
       "raw_directive": "540: ### 3.1. Local Covariance Matrix Computation\n541: \n542: :::{prf:definition} Empirical Metric from IG Edges\n543: :label: def-empirical-metric\n544: \n545: For episode $e_i$ at position $x_i = \\Phi(e_i)$, the **local covariance matrix** from IG neighbors is:\n546: \n547: $$\n548: \\Sigma_i = \\frac{1}{|\\mathcal{N}_{\\text{IG}}(e_i)|} \\sum_{e_j \\in \\mathcal{N}_{\\text{IG}}(e_i)} w_{ij} \\cdot \\Delta x_{ij} \\Delta x_{ij}^T\n549: $$\n550: \n551: where:\n552: - $\\mathcal{N}_{\\text{IG}}(e_i) = \\{e_j : (e_i \\sim e_j) \\in E_{\\text{IG}}\\}$ (IG neighbors)\n553: - $\\Delta x_{ij} = \\Phi(e_j) - \\Phi(e_i)$ (displacement vector)\n554: - $w_{ij} = 1 / ((\\Delta t_{ij})^2 + \\|\\Delta x_{ij}\\|^2)$ (algorithmic weight)\n555: \n556: **Relationship to metric:**\n557: \n558: $$\n559: \\Sigma_i^{-1} \\approx G(x_i, S) + O(1/N)\n560: $$\n561: "
     }
   ],

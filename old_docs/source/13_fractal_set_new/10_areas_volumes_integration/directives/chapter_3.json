@@ -19,6 +19,7 @@
         "label": "def-d-simplex-volume"
       },
       "section": "## 4. General d-Dimensional Volume Forms",
+      "references": [],
       "raw_directive": "485: ### 4.1. Simplex Volume in Arbitrary Dimension\n486: \n487: :::{prf:definition} Riemannian Volume of d-Simplex\n488: :label: def-d-simplex-volume\n489: \n490: Let $S = (x_0, x_1, \\ldots, x_d)$ be a $d$-simplex in $\\mathbb{R}^d$ with vertices $x_i \\in \\mathcal{X}$.\n491: \n492: **Metric at centroid:**\n493: \n494: $$\n495: g_c := g\\left(\\frac{1}{d+1} \\sum_{i=0}^d x_i\\right)\n496: $$\n497: \n498: **Edge vectors:**\n499: \n500: $$\n501: v_i := x_i - x_0 \\quad \\text{for } i = 1, \\ldots, d\n502: $$\n503: \n504: **Gram matrix:** $d \\times d$ matrix:\n505: \n506: $$\n507: G_{ij} := \\langle v_i, v_j \\rangle_g = v_i^T g_c v_j\n508: $$\n509: \n510: **Riemannian volume:**\n511: \n512: $$\n513: V_g(S) := \\frac{1}{d!} \\sqrt{\\det G}\n514: $$\n515: \n516: **Special cases:**\n517: - $d=1$: Length $L = \\sqrt{\\langle v_1, v_1 \\rangle_g}$\n518: - $d=2$: Area $A = \\frac{1}{2} \\sqrt{\\det G}$ (triangle)\n519: - $d=3$: Volume $V = \\frac{1}{6} \\sqrt{\\det G}$ (tetrahedron)\n520: - $d=4$: Hypervolume $V = \\frac{1}{24} \\sqrt{\\det G}$ (pentatope)\n521: "
     },
     {
@@ -37,6 +38,7 @@
         "label": "alg-simplicial-decomposition"
       },
       "section": "## 4. General d-Dimensional Volume Forms",
+      "references": [],
       "raw_directive": "523: :::\n524: \n525: :::{prf:algorithm} Simplicial Decomposition for General Volumes\n526: :label: alg-simplicial-decomposition\n527: \n528: **Input:**\n529: - Episodes $\\{e_i\\}_{i=1}^N$ with positions $x_i \\in \\mathbb{R}^d$\n530: - Convex region $\\Omega \\subset \\mathcal{X}$\n531: - Dimension $k \\leq d$ (dimension of volume to compute)\n532: \n533: **Output:** $k$-dimensional Riemannian volume $V_g^{(k)}(\\Omega)$\n534: \n535: **Procedure:**\n536: \n537: **Step 1: Compute $k$-dimensional Delaunay simplicial complex**\n538: \n539: Use generalized Delaunay algorithm to decompose $\\Omega$ into $k$-simplices:\n540: \n541: $$\n542: \\Omega = \\bigcup_{j=1}^{N_{\\text{simp}}} S_j\n543: $$\n544: \n545: **Step 2: Compute volume of each simplex**\n546: \n547: $$\n548: V_j := V_g(S_j) \\quad \\text{(using Definition }\\ref{def-d-simplex-volume}\\text{)}\n549: $$\n550: \n551: **Step 3: Sum**\n552: \n553: $$\n554: V_g^{(k)}(\\Omega) := \\sum_{j=1}^{N_{\\text{simp}}} V_j\n555: $$\n556: \n557: **Complexity:** $O(N \\log N + N_{\\text{simp}} \\cdot k^3)$ where $N_{\\text{simp}} = O(N^{k/d})$\n558: \n559: **Implementation:**\n560: - 2D: `scipy.spatial.Delaunay` (triangles)\n561: - 3D: `scipy.spatial.Delaunay` (tetrahedra)"
     },
     {
@@ -55,6 +57,7 @@
         "label": "prop-monte-carlo-riemannian"
       },
       "section": "## 4. General d-Dimensional Volume Forms",
+      "references": [],
       "raw_directive": "565: ### 4.2. Direct Integration Over Episode Distribution\n566: \n567: :::{prf:proposition} Monte Carlo Integration with Riemannian Measure\n568: :label: prop-monte-carlo-riemannian\n569: \n570: Let $f: \\mathcal{X} \\to \\mathbb{R}$ be a continuous function. The **Riemannian integral** is:\n571: \n572: $$\n573: I[f] := \\int_{\\mathcal{X}} f(x) \\, dV_g(x) = \\int_{\\mathcal{X}} f(x) \\sqrt{\\det g(x)} \\, dx\n574: $$\n575: \n576: **Method 1: Direct Monte Carlo (if episodes sample from $\\sqrt{\\det g}$)**\n577: \n578: If $\\{x_i\\}_{i=1}^N$ are sampled i.i.d. from $\\rho(x) \\propto \\sqrt{\\det g(x)} e^{-U_{\\text{eff}}/T}$ (QSD):\n579: \n580: $$\n581: I[f] \\approx \\frac{Z}{N} \\sum_{i=1}^N f(x_i)\n582: $$\n583: \n584: where $Z = \\int \\sqrt{\\det g} e^{-U_{\\text{eff}}/T} dx$ is unknown but can be estimated.\n585: \n586: **Method 2: Importance Sampling Correction**\n587: \n588: If episodes sample from arbitrary $\\rho(x) \\neq \\sqrt{\\det g}$:\n589: \n590: $$\n591: I[f] = \\int f(x) \\frac{\\sqrt{\\det g(x)}}{\\rho(x)} \\rho(x) \\, dx \\approx \\frac{1}{N} \\sum_{i=1}^N f(x_i) \\frac{\\sqrt{\\det g(x_i)}}{\\rho(x_i)}\n592: $$\n593: \n594: **Variance:**\n595: \n596: $$\n597: \\text{Var}\\left[\\frac{1}{N} \\sum f(x_i)\\right] = \\frac{1}{N} \\text{Var}_\\rho[f] = O(N^{-1})\n598: $$\n599: \n600: Standard Monte Carlo convergence rate.\n601: "
     }
   ],

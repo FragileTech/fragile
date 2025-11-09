@@ -2,7 +2,7 @@
   "document_id": "13_geometric_gas_c3_regularity",
   "stage": "directives",
   "directive_type": "lemma",
-  "generated_at": "2025-11-08T17:16:20.286886+00:00",
+  "generated_at": "2025-11-08T23:19:38.320691+00:00",
   "count": 7,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "lem-telescoping-derivatives"
       },
       "section": "## 2. Mathematical Framework and Notation",
+      "references": [],
       "raw_directive": "197: A bound is **k-uniform** if it is independent of the alive walker count $k = |A_k|$. The key technical tool for proving k-uniformity is the **telescoping property** of normalized weights:\n198: \n199: :::{prf:lemma} Telescoping Identity for Derivatives\n200: :label: lem-telescoping-derivatives\n201: \n202: For any derivative order $m \\in \\{1, 2, 3\\}$, the localization weights satisfy:\n203: \n204: $$\n205: \\sum_{j \\in A_k} \\nabla^m_{x_i} w_{ij}(\\rho) = 0\n206: $$\n207: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "lem-weight-third-derivative"
       },
       "section": "## 4. Third Derivatives of Localization Weights",
+      "references": [],
       "raw_directive": "327: The localization weights $w_{ij}(\\rho)$ are the fundamental building blocks of the �-localized pipeline. We now establish bounds on their third derivatives.\n328: \n329: :::{prf:lemma} Third Derivative of Localization Weights\n330: :label: lem-weight-third-derivative\n331: \n332: The localization weights $w_{ij}(\\rho) = K_\\rho(x_i, x_j) / Z_i(\\rho)$ where $Z_i(\\rho) = \\sum_{\\ell \\in A_k} K_\\rho(x_i, x_\\ell)$ satisfy:\n333: \n334: $$\n335: \\|\\nabla^3_{x_i} w_{ij}(\\rho)\\| \\le C_{w,3}(\\rho)\n336: $$\n337: \n338: where\n339: \n340: $$\n341: C_{w,3}(\\rho) := \\frac{C_{\\nabla^3 K}(\\rho)}{\\rho^3} + \\frac{12 C_{\\nabla K}(\\rho) C_{\\nabla^2 K}(\\rho)}{\\rho^3} + \\frac{16 C_{\\nabla K}(\\rho)^3}{\\rho^3}\n342: $$\n343: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "lem-mean-third-derivative"
       },
       "section": "## 5. Third Derivatives of Localized Moments",
+      "references": [],
       "raw_directive": "442: ### 5.1. Third Derivative of Localized Mean\n443: \n444: :::{prf:lemma} k-Uniform Third Derivative of Localized Mean\n445: :label: lem-mean-third-derivative\n446: \n447: The localized mean $\\mu_\\rho^{(i)} := \\mu_\\rho[f_k, d, x_i] = \\sum_{j \\in A_k} w_{ij}(\\rho) \\, d(x_j)$ satisfies:\n448: \n449: $$\n450: \\|\\nabla^3_{x_i} \\mu_\\rho^{(i)}\\| \\le d'''_{\\max} + \\frac{6 d'_{\\max} C_{\\nabla^2 K}(\\rho)}{\\rho^2} + \\frac{6 d''_{\\max} C_{\\nabla K}(\\rho)}{\\rho} + 2 d_{\\max} C_{w,3}(\\rho)\n451: $$\n452: ",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +99,9 @@
         "label": "lem-variance-third-derivative"
       },
       "section": "## 5. Third Derivatives of Localized Moments",
+      "references": [
+        "lem-mean-third-derivative"
+      ],
       "raw_directive": "551: ### 5.2. Third Derivative of Localized Variance\n552: \n553: :::{prf:lemma} k-Uniform Third Derivative of Localized Variance\n554: :label: lem-variance-third-derivative\n555: \n556: The localized variance $V_\\rho^{(i)} := \\sigma^2_\\rho[f_k, d, x_i]$ satisfies:\n557: \n558: $$\n559: \\|\\nabla^3_{x_i} V_\\rho^{(i)}\\| \\le C_{V,\\nabla^3}(\\rho)\n560: $$\n561: \n562: where $C_{V,\\nabla^3}(\\rho)$ is a k-uniform constant depending on:\n563: - Measurement function bounds $(d_{\\max}, d'_{\\max}, d''_{\\max}, d'''_{\\max})$\n564: - Kernel derivative bounds $(C_{\\nabla K}(\\rho)/\\rho, C_{\\nabla^2 K}(\\rho)/\\rho^2, C_{w,3}(\\rho))$\n565: - First and second derivatives of $\\mu_\\rho^{(i)}$ (from previous lemmas)\n566: \n567: Explicitly:\n568: \n569: $$\n570: \\begin{aligned}\n571: C_{V,\\nabla^3}(\\rho) := &\\, 6 d_{\\max} d'''_{\\max} + 12 d'_{\\max} d''_{\\max} + 8 d_{\\max}^2 C_{w,3}(\\rho) \\\\\n572: &+ 12 d_{\\max} d'_{\\max} \\frac{C_{\\nabla^2 K}(\\rho)}{\\rho^2} + 24 d_{\\max}^2 \\frac{C_{\\nabla K}(\\rho) C_{\\nabla^2 K}(\\rho)}{\\rho^3} \\\\\n573: &+ 6 d_{\\max} \\cdot C_{\\mu,\\nabla^3}(\\rho)\n574: \\end{aligned}\n575: $$\n576: ",
       "_registry_context": {
         "stage": "directives",
@@ -121,6 +127,9 @@
         "label": "lem-patch-chain-rule"
       },
       "section": "## 6. Third Derivatives of Regularized Standard Deviation",
+      "references": [
+        "assump-c3-patch"
+      ],
       "raw_directive": "668: The Z-score denominator involves the regularized standard deviation $\\sigma\\'_{\\text{reg}}(V_\\rho^{(i)})$, which is a composition requiring the chain rule.\n669: \n670: :::{prf:lemma} Chain Rule for Regularized Standard Deviation\n671: :label: lem-patch-chain-rule\n672: \n673: Let $\\sigma\\'_{\\text{reg}}: \\mathbb{R}_{\\ge 0} \\to \\mathbb{R}_{>0}$ satisfy Assumption {prf:ref}`assump-c3-patch` ($C^3$ regularity). For a smooth function $V: \\mathbb{R}^d \\to \\mathbb{R}_{\\ge 0}$, the composition $h(x) := \\sigma\\'_{\\text{reg}}(V(x))$ has third derivative given by the **Faà di Bruno formula**:\n674: \n675: $$\n676: \\nabla^3 h = (\\sigma\\'_{\\text{reg}})'''(V) \\cdot (\\nabla V)^{\\otimes 3} + 3(\\sigma\\'_{\\text{reg}})''(V) \\cdot \\text{sym}(\\nabla V \\otimes \\nabla^2 V) + (\\sigma\\'_{\\text{reg}})'(V) \\cdot \\nabla^3 V\n677: $$\n678: \n679: where $\\text{sym}(\\nabla V \\otimes \\nabla^2 V)$ denotes the symmetrized tensor product (sum over all permutations).\n680: \n681: More explicitly, using index notation for clarity:\n682: \n683: $$\n684: \\frac{\\partial^3 h}{\\partial x_i \\partial x_j \\partial x_k} = (\\sigma\\'_{\\text{reg}})'''(V) \\frac{\\partial V}{\\partial x_i} \\frac{\\partial V}{\\partial x_j} \\frac{\\partial V}{\\partial x_k} + (\\sigma\\'_{\\text{reg}})''(V) \\left[\\frac{\\partial V}{\\partial x_i} \\frac{\\partial^2 V}{\\partial x_j \\partial x_k} + \\text{perms}\\right] + (\\sigma\\'_{\\text{reg}})'(V) \\frac{\\partial^3 V}{\\partial x_i \\partial x_j \\partial x_k}\n685: $$\n686: \n687: **Norm bound:**\n688: \n689: $$\n690: \\|\\nabla^3 h\\| \\le L_{\\sigma\\'\\'\\'_{\\text{reg}}} \\cdot \\|\\nabla V\\|^3 + 3 L_{\\sigma\\'\\'_{\\text{reg}}} \\cdot \\|\\nabla V\\| \\cdot \\|\\nabla^2 V\\| + L_{\\sigma\\'_{\\text{reg}}} \\cdot \\|\\nabla^3 V\\|\n691: $$\n692: ",
       "_registry_context": {
         "stage": "directives",
@@ -146,6 +155,11 @@
         "label": "lem-patch-third-derivative"
       },
       "section": "## 6. Third Derivatives of Regularized Standard Deviation",
+      "references": [
+        "lem-variance-gradient",
+        "lem-variance-hessian",
+        "lem-variance-third-derivative"
+      ],
       "raw_directive": "730: :::\n731: \n732: :::{prf:lemma} Third Derivative Bound for Regularized Standard Deviation\n733: :label: lem-patch-third-derivative\n734: \n735: The regularized standard deviation $\\sigma'_{\\rho}^{(i)} := \\sigma\\'_{\\text{reg}}(V_\\rho^{(i)})$ satisfies:\n736: \n737: $$\n738: \\|\\nabla^3_{x_i} \\sigma'_{\\rho}^{(i)}\\| \\le L_{\\sigma\\'\\'\\'_{\\text{reg}}} \\cdot (C_{V,\\nabla}(\\rho))^3 + 3 L_{\\sigma\\'\\'_{\\text{reg}}} \\cdot C_{V,\\nabla}(\\rho) \\cdot C_{V,\\nabla^2}(\\rho) + L_{\\sigma\\'_{\\text{reg}}} \\cdot C_{V,\\nabla^3}(\\rho)\n739: $$\n740: \n741: where $C_{V,\\nabla}(\\rho)$, $C_{V,\\nabla^2}(\\rho)$, $C_{V,\\nabla^3}(\\rho)$ are the bounds from Lemmas {prf:ref}`lem-variance-gradient`, {prf:ref}`lem-variance-hessian`, and {prf:ref}`lem-variance-third-derivative` (the latter two from Appendix A of [11_geometric_gas.md](11_geometric_gas.md) and Lemma {prf:ref}`lem-variance-third-derivative` above).\n742: ",
       "_registry_context": {
         "stage": "directives",
@@ -171,6 +185,9 @@
         "label": "lem-zscore-third-derivative"
       },
       "section": "## 7. Third Derivative of the Z-Score",
+      "references": [
+        "lem-patch-third-derivative"
+      ],
       "raw_directive": "760: The Z-score $Z_\\rho[f_k, d, x_i] = (d(x_i) - \\mu_\\rho^{(i)}) / \\sigma'_{\\rho}^{(i)}$ is a quotient of smooth functions. We now compute its third derivative.\n761: \n762: :::{prf:lemma} k-Uniform Third Derivative of Z-Score\n763: :label: lem-zscore-third-derivative\n764: \n765: The Z-score $Z_\\rho^{(i)} := Z_\\rho[f_k, d, x_i]$ satisfies:\n766: \n767: $$\n768: \\|\\nabla^3_{x_i} Z_\\rho^{(i)}\\| \\le K_{Z,3}(\\rho)\n769: $$\n770: \n771: where $K_{Z,3}(\\rho)$ is a k-uniform constant:\n772: \n773: $$\n774: \\begin{aligned}\n775: K_{Z,3}(\\rho) := &\\, \\frac{1}{\\sigma\\'_{\\min}} \\Big[C_{u,\\nabla^3}(\\rho) + 3 C_{u,\\nabla}(\\rho) C_{v,\\nabla^2}(\\rho) \\\\\n776: &\\quad + 3 C_{u,\\nabla^2}(\\rho) C_{v,\\nabla}(\\rho) + 6 C_{u,\\nabla}(\\rho) (C_{v,\\nabla}(\\rho))^2 \\\\\n777: &\\quad + (d_{\\max} + C_{\\mu,\\nabla}(\\rho)) C_{v,\\nabla^3}(\\rho) \\Big]\n778: \\end{aligned}\n779: $$\n780: \n781: where:\n782: - $u(x_i) := d(x_i) - \\mu_\\rho^{(i)}$ (numerator)\n783: - $v(x_i) := \\sigma'_{\\rho}^{(i)}$ (denominator)\n784: - $C_{u,\\nabla^m}(\\rho)$ are bounds on $\\nabla^m u$ (from measurement and mean)\n785: - $C_{v,\\nabla^m}(\\rho)$ are bounds on $\\nabla^m v$ (from Lemma {prf:ref}`lem-patch-third-derivative`)\n786: ",
       "_registry_context": {
         "stage": "directives",

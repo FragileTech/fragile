@@ -19,6 +19,7 @@
         "label": "thm-exp-convergence-standalone"
       },
       "section": "## Section 4: Exponential Convergence",
+      "references": [],
       "raw_directive": "4854: ## Section 4: Exponential Convergence\n4855: \n4856: :::{prf:theorem} Exponential KL Convergence\n4857: :label: thm-exp-convergence-standalone\n4858: \n4859: For the iterated dynamics $\\mu_{t+1} = \\Psi_{\\text{total}}(\\mu_t)$:\n4860: \n4861: $$\n4862: D_{\\text{KL}}(\\mu_t \\| \\pi) \\leq e^{-\\lambda t} D_{\\text{KL}}(\\mu_0 \\| \\pi) + C_\\infty\n4863: $$\n4864: \n4865: where:\n4866: $$\n4867: \\lambda = \\tau(\\alpha_{\\text{kin}} + \\beta_{\\text{clone}})\n4868: $$\n4869: \n4870: and:\n4871: $$\n4872: C_\\infty = \\frac{C_{\\text{total}}}{\\alpha_{\\text{kin}} + \\beta_{\\text{clone}}}\n4873: $$"
     },
     {
@@ -37,6 +38,9 @@
         "label": "proof-exp-convergence-standalone"
       },
       "section": "## Section 4: Exponential Convergence",
+      "references": [
+        "thm-composition-standalone"
+      ],
       "raw_directive": "4875: :::\n4876: \n4877: :::{prf:proof}\n4878: :label: proof-exp-convergence-standalone\n4879: \n4880: **Step 1**: Iterate the contraction from Theorem {prf:ref}`thm-composition-standalone`:\n4881: \n4882: Let $\\epsilon := \\tau(\\alpha_{\\text{kin}} + \\beta_{\\text{clone}})$. Then:\n4883: \n4884: $$\n4885: D_{\\text{KL}}(\\mu_{t+1} \\| \\pi) \\leq (1 - \\epsilon) D_{\\text{KL}}(\\mu_t \\| \\pi) + C_{\\text{total}}\n4886: $$\n4887: \n4888: **Step 2**: Unroll the recursion:\n4889: \n4890: $$\n4891: \\begin{aligned}\n4892: D_{\\text{KL}}(\\mu_t \\| \\pi) &\\leq (1 - \\epsilon)^t D_{\\text{KL}}(\\mu_0 \\| \\pi) + C_{\\text{total}} \\sum_{k=0}^{t-1} (1 - \\epsilon)^k \\\\\n4893: &= (1 - \\epsilon)^t D_{\\text{KL}}(\\mu_0 \\| \\pi) + C_{\\text{total}} \\frac{1 - (1 - \\epsilon)^t}{\\epsilon}\n4894: \\end{aligned}\n4895: $$\n4896: \n4897: **Step 3**: Take the limit $t \\to \\infty$:\n4898: \n4899: $$\n4900: \\lim_{t \\to \\infty} D_{\\text{KL}}(\\mu_t \\| \\pi) \\leq \\frac{C_{\\text{total}}}{\\epsilon} = C_\\infty\n4901: $$\n4902: \n4903: **Step 4**: Approximate $(1 - \\epsilon)^t$:\n4904: \n4905: For small $\\epsilon = \\tau(\\alpha_{\\text{kin}} + \\beta_{\\text{clone}})$:\n4906: \n4907: $$\n4908: (1 - \\epsilon)^t = e^{t \\log(1 - \\epsilon)} \\approx e^{-\\epsilon t} = e^{-\\lambda t}\n4909: $$\n4910: \n4911: where $\\lambda = \\epsilon$.\n4912: \n4913: **Step 5**: Final bound:\n4914: \n4915: $$\n4916: D_{\\text{KL}}(\\mu_t \\| \\pi) \\leq e^{-\\lambda t} D_{\\text{KL}}(\\mu_0 \\| \\pi) + C_\\infty \\left(1 - e^{-\\lambda t}\\right) \\leq e^{-\\lambda t} D_{\\text{KL}}(\\mu_0 \\| \\pi) + C_\\infty\n4917: $$\n4918: \n4919: $\\square$"
     }
   ],

@@ -2,7 +2,7 @@
   "document_id": "13_geometric_gas_c3_regularity",
   "stage": "directives",
   "directive_type": "corollary",
-  "generated_at": "2025-11-08T17:16:20.286463+00:00",
+  "generated_at": "2025-11-08T23:19:38.320265+00:00",
   "count": 4,
   "items": [
     {
@@ -21,6 +21,9 @@
         "label": "cor-baoab-validity"
       },
       "section": "## 9. Stability Implications and Corollaries",
+      "references": [
+        "thm-c3-regularity"
+      ],
       "raw_directive": "1112: ### 9.1. BAOAB Discretization Validity\n1113: \n1114: :::{prf:corollary} BAOAB Discretization Validity\n1115: :label: cor-baoab-validity\n1116: \n1117: **Hypotheses:** Consider the adaptive Langevin SDE with:\n1118: 1. Fitness potential $V_{\\text{fit}}[f_k, \\rho] \\in C^3(\\mathcal{X})$ with bounded derivatives (Theorem {prf:ref}`thm-c3-regularity`)\n1119: 2. Friction coefficient $\\gamma > 0$\n1120: 3. Temperature $T > 0$ (or equivalently, noise scale $\\sigma > 0$)\n1121: 4. Time step $\\Delta t$ satisfying the stability criterion:\n1122: \n1123: $$\n1124: \\Delta t \\le \\Delta t_{\\max}(\\rho, \\gamma) := \\min\\left( \\frac{1}{2\\gamma}, \\frac{\\rho^{3/2}}{K_{V,3}(\\rho)^{1/2}} \\right)\n1125: $$\n1126: \n1127: **Conclusion:** The BAOAB splitting integrator applied to the adaptive SDE has:\n1128: \n1129: 1. **Weak error bound:** $\\mathbb{E}[f(X_n)] - \\mathbb{E}_{\\pi_{\\text{QSD}}}[f] = O(\\Delta t^2)$ for smooth test functions $f$\n1130: 2. **Stability:** The discrete-time Markov chain remains ergodic with invariant measure approximating $\\pi_{\\text{QSD}}$\n1131: 3. **Foster-Lyapunov preservation:** The drift inequality $\\mathcal{L}V \\le -\\lambda V + b$ for the continuous SDE translates to the discrete chain with error $O(\\Delta t^3)$\n1132: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +49,7 @@
         "label": "cor-lyapunov-c3"
       },
       "section": "## 9. Stability Implications and Corollaries",
+      "references": [],
       "raw_directive": "1150: ### 9.2. Foster-Lyapunov Preservation\n1151: \n1152: :::{prf:corollary} $C^3$ Regularity of Total Lyapunov Function\n1153: :label: cor-lyapunov-c3\n1154: \n1155: The total Lyapunov function $V_{\\text{total}}(S) = V_{\\text{pos}}(S) + \\lambda_v V_{\\text{vel}}(S)$ used in the Foster-Lyapunov analysis satisfies $V_{\\text{total}} \\in C^3$ with N-uniform bounds:\n1156: \n1157: $$\n1158: \\|\\nabla^3 V_{\\text{total}}\\| \\le K_{\\text{total},3} < \\infty\n1159: $$\n1160: \n1161: where $K_{\\text{total},3}$ depends on the third-derivative bounds of the confining potential $U(x)$, the fitness potential $V_{\\text{fit}}[f_k, \\rho]$, and the quadratic velocity term.\n1162: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +75,7 @@
         "label": "cor-smooth-perturbation"
       },
       "section": "## 9. Stability Implications and Corollaries",
+      "references": [],
       "raw_directive": "1204: ### 9.3. Smooth Perturbation Theory\n1205: \n1206: :::{prf:corollary} $C^3$ Perturbation Structure\n1207: :label: cor-smooth-perturbation\n1208: \n1209: The adaptive force $\\mathbf{F}_{\\text{adapt}}(x_i, S) = \\epsilon_F \\nabla V_{\\text{fit}}[f_k, \\rho](x_i)$ is a **$C^3$ perturbation** of the backbone system, with:\n1210: \n1211: $$\n1212: \\|\\nabla \\mathbf{F}_{\\text{adapt}}\\| = \\epsilon_F \\|\\nabla^2 V_{\\text{fit}}\\| \\le \\epsilon_F H_{\\max}(\\rho)\n1213: $$\n1214: \n1215: $$\n1216: \\|\\nabla^2 \\mathbf{F}_{\\text{adapt}}\\| = \\epsilon_F \\|\\nabla^3 V_{\\text{fit}}\\| \\le \\epsilon_F K_{V,3}(\\rho)\n1217: $$\n1218: ",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +101,9 @@
         "label": "cor-regularity-hierarchy"
       },
       "section": "## 9. Stability Implications and Corollaries",
+      "references": [
+        "thm-c3-regularity"
+      ],
       "raw_directive": "1240: ### 9.4. Compactness and Regularity Hierarchy\n1241: \n1242: :::{prf:corollary} Regularity Hierarchy Complete\n1243: :label: cor-regularity-hierarchy\n1244: \n1245: The fitness potential $V_{\\text{fit}}[f_k, \\rho]$ satisfies the complete regularity hierarchy:\n1246: \n1247: $$\n1248: V_{\\text{fit}} \\in C^1 \\cap C^2 \\cap C^3\n1249: $$\n1250: \n1251: with k-uniform and N-uniform bounds at each level:\n1252: \n1253: | Regularity | Bound | Theorem |\n1254: |------------|-------|---------|\n1255: | Cp | $\\|V_{\\text{fit}}\\| \\le A$ | Axiom 3.2.1 |\n1256: | $C^3$ | $\\|\\nabla V_{\\text{fit}}\\| \\le F_{\\text{adapt,max}}(\\rho)$ | Theorem A.1 |\n1257: | $C^3$ | $\\|\\nabla^2 V_{\\text{fit}}\\| \\le H_{\\max}(\\rho)$ | Theorem A.2 |\n1258: | $C^3$ | $\\|\\nabla^3 V_{\\text{fit}}\\| \\le K_{V,3}(\\rho)$ | Theorem {prf:ref}`thm-c3-regularity` |\n1259: ",
       "_registry_context": {
         "stage": "directives",

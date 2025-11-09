@@ -19,6 +19,7 @@
         "label": "axiom-local-gauge-transformation"
       },
       "section": "## 5. Three Theoretical Interpretations",
+      "references": [],
       "raw_directive": "856: To establish this interpretation, the following must be proven:\n857: \n858: :::{prf:axiom} Local Gauge Transformation (To Be Defined)\n859: :label: axiom-local-gauge-transformation\n860: \n861: Define a local U(1) gauge transformation on walker states:\n862: \n863: $$\n864: |\\psi_i(t)\\rangle \\to |\\psi'_i(t)\\rangle = e^{i\\alpha_i(t)} |\\psi_i(t)\\rangle\n865: $$\n866: \n867: where \u03b1_i(t) is an arbitrary smooth function of walker index i and time t.\n868: "
     },
     {
@@ -37,6 +38,9 @@
         "label": "prop-collective-field-transformation"
       },
       "section": "## 5. Three Theoretical Interpretations",
+      "references": [
+        "axiom-local-gauge-transformation"
+      ],
       "raw_directive": "870: :::\n871: \n872: :::{prf:proposition} Non-Trivial Transformation of Collective Fields (To Be Proven)\n873: :label: prop-collective-field-transformation\n874: \n875: Under the local gauge transformation {prf:ref}`axiom-local-gauge-transformation`, prove that the collective fields transform as:\n876: \n877: $$\n878: d'_i \\to d'_i + \\Delta_i[\\alpha] + O(\\alpha^2)\n879: $$\n880: \n881: $$\n882: r'_i \\to r'_i + \\Gamma_i[\\alpha] + O(\\alpha^2)\n883: $$\n884: \n885: where \u0394_i[\u03b1] and \u0393_i[\u03b1] are non-zero functionals depending on the gauge parameter \u03b1 and its derivatives.\n886: "
     },
     {
@@ -55,6 +59,9 @@
         "label": "thm-observable-gauge-invariance"
       },
       "section": "## 5. Three Theoretical Interpretations",
+      "references": [
+        "prop-collective-field-transformation"
+      ],
       "raw_directive": "888: :::\n889: \n890: :::{prf:theorem} Gauge Invariance of Physical Observables (To Be Proven)\n891: :label: thm-observable-gauge-invariance\n892: \n893: Assuming {prf:ref}`prop-collective-field-transformation` holds, prove that physical observables are gauge-invariant:\n894: \n895: 1. **Total cloning probability:**\n896: \n897: $$\n898: P_{\\text{total}}(i,j) := P_{\\text{clone}}(i \\to j) + P_{\\text{clone}}(j \\to i)\n899: $$\n900: \n901: is gauge-invariant (as claimed in {doc}`03_yang_mills_noether.md` Proposition 1.3).\n902: \n903: 2. **Fitness potential expectation:**\n904: \n905: $$\n906: \\langle V_{\\text{fit}} \\rangle := \\frac{1}{k} \\sum_{i \\in A_t} V_{\\text{fit},i}\n907: $$\n908: \n909: is gauge-invariant.\n910: "
     },
     {
@@ -73,6 +80,7 @@
         "label": "thm-yang-mills-action"
       },
       "section": "## 5. Three Theoretical Interpretations",
+      "references": [],
       "raw_directive": "912: :::\n913: \n914: :::{prf:theorem} Yang-Mills Action Construction (To Be Proven)\n915: :label: thm-yang-mills-action\n916: \n917: Assuming gauge covariance of collective fields, construct a gauge-invariant Yang-Mills action:\n918: \n919: $$\n920: S[\\psi, d', r'] = \\int dt \\sum_i \\mathcal{L}_{\\text{matter}}(\\psi_i, D_\\mu \\psi_i) + \\mathcal{L}_{\\text{gauge}}(F_{\\mu\\nu})\n921: $$\n922: \n923: where:\n924: - $D_\\mu$ is the gauge-covariant derivative constructed from d'_i and r'_i\n925: - $F_{\\mu\\nu}$ is the field strength tensor\n926: - The action is invariant under combined gauge transformation of \u03c8_i and the collective fields\n927: "
     }
   ],

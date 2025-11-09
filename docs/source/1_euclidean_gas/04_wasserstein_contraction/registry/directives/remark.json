@@ -2,7 +2,7 @@
   "document_id": "04_wasserstein_contraction",
   "stage": "directives",
   "directive_type": "remark",
-  "generated_at": "2025-11-08T17:16:20.144073+00:00",
+  "generated_at": "2025-11-08T23:19:38.244445+00:00",
   "count": 5,
   "items": [
     {
@@ -21,6 +21,7 @@
         "label": "rem-why-target-sets"
       },
       "section": "## 2. Cluster-Preserving Coupling",
+      "references": [],
       "raw_directive": "181: :::\n182: \n183: :::{prf:remark} Why These Sets?\n184: :label: rem-why-target-sets\n185: \n186: The target set $I_k$ represents the walkers that are:\n187: 1. **Unfit** ($U_k$): Lower than average fitness → high cloning probability\n188: 2. **High-error** ($H_k$): Geometrically outliers → contribute to structural error\n189: \n190: By Theorem 7.6.1 ([03_cloning](03_cloning), Section 7.6.2), the Stability Condition guarantees a **non-vanishing overlap** between these sets. This is the crucial population that:\n191: - Is **targeted** by the cloning mechanism (unfit)\n192: - **Causes** the structural error (high-error)\n193: ",
       "_registry_context": {
         "stage": "directives",
@@ -46,6 +47,7 @@
         "label": "rem-empirical-measures"
       },
       "section": "## 2. Cluster-Preserving Coupling",
+      "references": [],
       "raw_directive": "195: :::\n196: \n197: :::{prf:remark} Empirical Measures and Framework Properties\n198: :label: rem-empirical-measures\n199: \n200: **Notational Precision**: This document analyzes the $N$-particle empirical measures $\\mu_1, \\mu_2$, which are discrete probability measures supported on $N$ walkers. The clustering algorithm, fitness function $F(x)$, and potential landscape are properties defined at the population level.\n201: \n202: **Relationship to Continuum Limit**: The fitness function $F(x)$ and its valley structure are properties of the continuum state space $\\mathcal{X}$, while the clusters $I_k, J_k$ are finite-sample objects constructed from the empirical distribution. The proofs in this document use properties of the limiting landscape (e.g., Confining Potential axiom, fitness valleys) to reason about finite-sample cluster behavior.\n203: \n204: **Approximation Errors**: For finite $N$, there are approximation errors $O(1/\\sqrt{N})$ when estimating continuum properties (like the potential $F(x)$) from empirical measures. These errors are absorbed into:\n205: 1. The noise term $C_W = O(d\\delta^2)$ in the contraction inequality\n206: 2. The clustering threshold $\\varepsilon$, which depends on $N$ implicitly through the error tolerance\n207: \n208: **N-Uniformity Justification**: The key result is that these finite-sample approximation errors do not affect the *sign* or *N-independence* of the contraction constant $\\kappa_W > 0$. This is because:\n209: - The clustering algorithm thresholds (Definition 6.3) are calibrated to maintain $O(1)$ cluster fractions\n210: - The framework axioms (Confining Potential, Environmental Richness) provide $O(1)$ landscape features that dominate the finite-sample noise\n211: - All critical bounds ($f_{UH}, p_u, c_{\\text{sep}}$) are proven N-uniform in [03_cloning](03_cloning) precisely to account for these approximation effects\n212: ",
       "_registry_context": {
         "stage": "directives",
@@ -71,6 +73,7 @@
         "label": "rem-coupling-advantages"
       },
       "section": "## 2. Cluster-Preserving Coupling",
+      "references": [],
       "raw_directive": "254: :::\n255: \n256: :::{prf:remark} Why This Coupling Works\n257: :label: rem-coupling-advantages\n258: \n259: **Advantages over single-walker coupling**:\n260: \n261: 1. **No $q_{\\min}$ dependence**: We average over all possible matchings within each population. The population-level expectation is well-defined even though individual matching probabilities vanish.\n262: \n263: 2. **Robust to perturbations**: Small changes in individual walker positions don't affect the population partition (clusters are stable).\n264: \n265: 3. **Framework-consistent**: Uses the exact same cluster definitions (Definition 6.3) that appear in the Keystone Lemma proof.\n266: ",
       "_registry_context": {
         "stage": "directives",
@@ -96,6 +99,7 @@
         "label": "rem-variance-wasserstein-interpretation"
       },
       "section": "## 3. Variance Decomposition and Cross-Swarm Analysis",
+      "references": [],
       "raw_directive": "509: :::\n510: \n511: :::{prf:remark} Interpretation of the Link\n512: :label: rem-variance-wasserstein-interpretation\n513: \n514: This lemma establishes that for separated swarms, the structural variance (internal swarm spread) and the Wasserstein distance (between-swarm measure distance) are of the same order. Both quantify the \"distance\" between the two empirical distributions, but from different perspectives:\n515: \n516: - $V_{\\text{struct}}$: Measures variance/spread of the swarm configuration\n517: - $W_2^2$: Measures optimal transport cost between measures\n518: ",
       "_registry_context": {
         "stage": "directives",
@@ -121,6 +125,7 @@
         "label": "rem-static-robust"
       },
       "section": "## 4. Cluster-Level Outlier Alignment",
+      "references": [],
       "raw_directive": "692: :::\n693: \n694: :::{prf:remark} Why This Proof is Static and Robust\n695: :label: rem-static-robust\n696: \n697: This proof uses **only**:\n698: 1. Fitness valley (geometric property of landscape)\n699: 2. Stability Condition (proven axiom from framework)\n700: 3. Phase-Space Packing (geometric bound on clustering)\n701: \n702: **No dynamics, no survival probabilities, no individual walker tracking.**\n703: ",
       "_registry_context": {
         "stage": "directives",

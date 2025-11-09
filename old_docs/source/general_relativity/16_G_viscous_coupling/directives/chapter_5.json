@@ -19,6 +19,7 @@
         "label": "thm-viscous-qsd"
       },
       "section": "## 5. QSD Equilibrium Analysis",
+      "references": [],
       "raw_directive": "201: At the quasi-stationary distribution, viscous effects simplify dramatically.\n202: \n203: :::{prf:theorem} Viscous Coupling at QSD\n204: :label: thm-viscous-qsd\n205: \n206: At the quasi-stationary distribution with no bulk flow ($u = 0$) and isotropic velocity distribution, the viscous coupling contributes only to the **effective friction coefficient**:\n207: \n208: $$\n209: \\gamma_{\\text{eff}} = \\gamma + \\Delta \\gamma_{\\text{viscous}}\n210: $$\n211: \n212: where:\n213: \n214: $$\n215: \\Delta \\gamma_{\\text{viscous}} = \\nu \\int K(r) \\rho_{\\text{QSD}}(r) \\, dr > 0\n216: $$\n217: \n218: **Consequence**: The stress-energy tensor at QSD is:\n219: \n220: $$\n221: T_{\\mu\\nu}[\\mu_{\\text{QSD}}] = m\\rho \\frac{k_B T_{\\text{eff}}}{m} g_{\\mu\\nu}\n222: $$\n223: \n224: where $T_{\\text{eff}}$ is determined by the modified fluctuation-dissipation relation:\n225: \n226: $$\n227: k_B T_{\\text{eff}} = \\frac{\\sigma_v^2 m}{2\\gamma_{\\text{eff}}}\n228: $$\n229: \n230: The Einstein equations remain:\n231: \n232: $$\n233: G_{\\mu\\nu} = 8\\pi G T_{\\mu\\nu}\n234: $$\n235: \n236: with no modifications to the tensor structure."
     }
   ],
