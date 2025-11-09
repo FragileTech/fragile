@@ -62,7 +62,8 @@ class Parameter(BaseModel):
     """Structured representation for directive parameters."""
 
     symbol: str = Field(..., description="Parameter symbol.")
-    description: str | None = Field(default=None, description="Parameter description.")
+    name: str = Field(..., description="Parameter name.")
+    description: str = Field(..., description="Short parameter description.")
     constraints: list[str] = Field(default_factory=list, description="Parameter constraints.")
     tags: list[str] = Field(
         default_factory=list,

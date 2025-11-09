@@ -78,7 +78,7 @@ def _discover_chapter_markdown_files(roots: Sequence[Path] | None = None) -> lis
 @click.option(
     "--lm",
     type=str,
-    default="gemini/gemini-flash-lite-latest",
+    default="xai/grok-4-fast-reasoning-latest",
     show_default=True,
     help="LM spec forwarded to run_extraction.py.",
 )

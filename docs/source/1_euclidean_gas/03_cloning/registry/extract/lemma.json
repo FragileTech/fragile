@@ -1,0 +1,4113 @@
+[
+  {
+    "type": "lemma",
+    "label": "lem-wasserstein-decomposition",
+    "title": "Decomposition of the Hypocoercive Wasserstein Distance",
+    "nl_statement": "The squared hypocoercive Wasserstein distance between two empirical measures μ₁ and μ₂ decomposes exactly into the sum of location and structural error components.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "W_h^2(\\mu_1, \\mu_2) = V_{\\text{loc}} + V_{\\text{struct}}"
+      }
+    ],
+    "hypotheses": [],
+    "conclusion": {
+      "text": "W_h^2(μ₁, μ₂) = V_loc + V_struct",
+      "latex": "W_h^2(\\mu_1, \\mu_2) = V_{\\text{loc}} + V_{\\text{struct}}"
+    },
+    "variables": [
+      {
+        "symbol": "\\mu_1",
+        "name": "μ₁",
+        "description": "Empirical measure of the first swarm",
+        "constraints": [
+          "Probability measure"
+        ],
+        "tags": [
+          "measure",
+          "swarm"
+        ]
+      },
+      {
+        "symbol": "\\mu_2",
+        "name": "μ₂",
+        "description": "Empirical measure of the second swarm",
+        "constraints": [
+          "Probability measure"
+        ],
+        "tags": [
+          "measure",
+          "swarm"
+        ]
+      },
+      {
+        "symbol": "W_h",
+        "name": "W_h",
+        "description": "Hypocoercive Wasserstein distance",
+        "constraints": [],
+        "tags": [
+          "distance",
+          "hypocoercive"
+        ]
+      },
+      {
+        "symbol": "V_{\\text{loc}}",
+        "name": "V_loc",
+        "description": "Location error component",
+        "constraints": [
+          "Non-negative"
+        ],
+        "tags": [
+          "error",
+          "location"
+        ]
+      },
+      {
+        "symbol": "V_{\\text{struct}}",
+        "name": "V_struct",
+        "description": "Structural error component",
+        "constraints": [
+          "Non-negative"
+        ],
+        "tags": [
+          "error",
+          "structural"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "μ₁ and μ₂ are probability measures on a space where the hypocoercive Wasserstein distance is defined",
+        "confidence": 1.0
+      },
+      {
+        "text": "V_loc and V_struct are the distances between centers of mass and centered shapes, respectively",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not-provided",
+      "steps": []
+    },
+    "tags": [
+      "optimal-transport",
+      "wasserstein-distance",
+      "decomposition",
+      "hypocoercive",
+      "location-error",
+      "structural-error",
+      "swarms"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-sx-implies-variance",
+    "title": "Structural Positional Error and Internal Variance",
+    "nl_statement": "The positional component of the structural error between the alive-walker distributions of two swarms is at most twice the sum of their physical internal positional variances of alive walkers.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "k_1 := |\\mathcal{A}(S_1)| \\quad k_2 := |\\mathcal{A}(S_2)|"
+      },
+      {
+        "label": null,
+        "latex": "V_{\\text{x,struct}} \\text{ as the positional component of the structural error between the two swarms' alive-walker distributions}"
+      },
+      {
+        "label": null,
+        "latex": "\\text{Var}_k(x) := \\frac{1}{k_{\\text{alive}}} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2 \\text{ as the physical internal positional variance of the alive walkers in swarm } k"
+      },
+      {
+        "label": null,
+        "latex": "V_{\\text{x,struct}} \\le 2(\\text{Var}_1(x) + \\text{Var}_2(x))"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Let $k_1 := |\\mathcal{A}(S_1)|$ and $k_2 := |\\mathcal{A}(S_2)|$ denote the numbers of alive walkers in each swarm.",
+        "latex": "k_1 := |\\mathcal{A}(S_1)|, \\quad k_2 := |\\mathcal{A}(S_2)|"
+      },
+      {
+        "text": "$V_{\\text{x,struct}}$ is the positional component of the structural error between the two swarms' alive-walker distributions.",
+        "latex": "V_{\\text{x,struct}} \\text{ as the positional component of the structural error between the two swarms' alive-walker distributions}"
+      },
+      {
+        "text": "$\\text{Var}_k(x) := \\frac{1}{k_{\\text{alive}}} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2$ is the physical internal positional variance of the alive walkers in swarm $k$ (distinct from the $N$-normalized Lyapunov variance component $V_{\\text{Var},x}$).",
+        "latex": "\\text{Var}_k(x) := \\frac{1}{k_{\\text{alive}}} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2"
+      }
+    ],
+    "conclusion": {
+      "text": "$V_{\\text{x,struct}} \\le 2(\\text{Var}_1(x) + \\text{Var}_2(x))$",
+      "latex": "V_{\\text{x,struct}} \\le 2(\\text{Var}_1(x) + \\text{Var}_2(x))"
+    },
+    "variables": [
+      {
+        "symbol": "k_1",
+        "name": "number of alive walkers in swarm 1",
+        "description": "Size of the alive set in swarm 1",
+        "constraints": [
+          "positive integer"
+        ],
+        "tags": [
+          "swarm 1",
+          "alive walkers"
+        ]
+      },
+      {
+        "symbol": "k_2",
+        "name": "number of alive walkers in swarm 2",
+        "description": "Size of the alive set in swarm 2",
+        "constraints": [
+          "positive integer"
+        ],
+        "tags": [
+          "swarm 2",
+          "alive walkers"
+        ]
+      },
+      {
+        "symbol": "V_{\\text{x,struct}}",
+        "name": "positional structural error",
+        "description": "Positional component of the structural error between alive-walker distributions",
+        "constraints": [
+          "non-negative"
+        ],
+        "tags": [
+          "error",
+          "positional"
+        ]
+      },
+      {
+        "symbol": "\\text{Var}_k(x)",
+        "name": "internal positional variance for swarm k",
+        "description": "k_alive-normalized variance of positions of alive walkers in swarm k",
+        "constraints": [
+          "non-negative"
+        ],
+        "tags": [
+          "variance",
+          "internal",
+          "positional"
+        ]
+      },
+      {
+        "symbol": "\\text{Var}_1(x)",
+        "name": "internal positional variance for swarm 1",
+        "description": "Variance for alive walkers in swarm 1",
+        "constraints": [
+          "non-negative"
+        ],
+        "tags": [
+          "swarm 1",
+          "variance"
+        ]
+      },
+      {
+        "symbol": "\\text{Var}_2(x)",
+        "name": "internal positional variance for swarm 2",
+        "description": "Variance for alive walkers in swarm 2",
+        "constraints": [
+          "non-negative"
+        ],
+        "tags": [
+          "swarm 2",
+          "variance"
+        ]
+      },
+      {
+        "symbol": "\\delta_{x,k,i}",
+        "name": "position deviation for walker i in swarm k",
+        "description": "Position vector of alive walker i relative to center or reference",
+        "constraints": [],
+        "tags": [
+          "position",
+          "deviation"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "Swarms $S_1$ and $S_2$ are defined with alive walker sets $\\mathcal{A}(S_k)$ non-empty.",
+        "confidence": 0.9
+      },
+      {
+        "text": "The norm $\\|| \\cdot \\||$ is the Euclidean norm on positions.",
+        "confidence": 0.95
+      },
+      {
+        "text": "The structural error is defined such that its positional component measures mismatch in alive-walker distributions.",
+        "confidence": 1.0
+      },
+      {
+        "text": "Variances are computed with respect to a common reference frame for positions.",
+        "confidence": 0.8
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not-provided",
+      "steps": []
+    },
+    "tags": [
+      "structural error",
+      "positional variance",
+      "swarms",
+      "alive walkers",
+      "inequality",
+      "causal chain"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-greedy-preserves-signal",
+    "title": "Greedy Pairing Guarantees Signal Separation",
+    "nl_statement": "In a swarm state with high internal variance where alive walkers are partitioned into high-error and low-error sets, the sequential stochastic greedy pairing operator guarantees statistical separation in expected raw phase-space distances: large for high-error walkers and small for low-error walkers, with epsilon-dependent bounds.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\mathbb{E}[d_i \\mid S_t, i \\in H_k] \\ge D_H(\\epsilon)"
+      },
+      {
+        "label": null,
+        "latex": "\\mathbb{E}[d_j \\mid S_t, j \\in L_k] \\le R_L(\\epsilon) + D_{\\mathrm{valid}} \\cdot c_k \\exp\\left(-\\frac{D_H(\\epsilon)^2 - R_L(\\epsilon)^2}{2\\epsilon^2}\\right)"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "A swarm is in a state with high internal variance.",
+        "latex": null
+      },
+      {
+        "text": "Its alive walkers $A_k$ are partitioned into a high-error set $H_k$ and a low-error set $L_k$ as per def-geometric-partition.",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The Sequential Stochastic Greedy Pairing Operator guarantees statistical separation in expected raw phase-space distance measurements: (1) For high-error walkers $i \\in H_k$, $\\mathbb{E}[d_i \\mid S_t, i \\in H_k] \\ge D_H(\\epsilon)$; (2) For low-error walkers $j \\in L_k$, $\\mathbb{E}[d_j \\mid S_t, j \\in L_k] \\le R_L(\\epsilon) + D_{\\mathrm{valid}} \\cdot c_k \\exp\\left(-\\frac{D_H(\\epsilon)^2 - R_L(\\epsilon)^2}{2\\epsilon^2}\\right)$, with N-uniform, $\\varepsilon$-dependent bounds.",
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "A_k",
+        "name": "alive walkers",
+        "description": "Set of alive walkers in the swarm at iteration k.",
+        "constraints": [],
+        "tags": [
+          "swarm",
+          "walkers"
+        ]
+      },
+      {
+        "symbol": "H_k",
+        "name": "high-error set",
+        "description": "Partition of alive walkers with high error.",
+        "constraints": [
+          "high-error"
+        ],
+        "tags": [
+          "partition",
+          "error"
+        ]
+      },
+      {
+        "symbol": "L_k",
+        "name": "low-error set",
+        "description": "Partition of alive walkers with low error.",
+        "constraints": [
+          "low-error"
+        ],
+        "tags": [
+          "partition",
+          "error"
+        ]
+      },
+      {
+        "symbol": "S_t",
+        "name": "state",
+        "description": "Swarm state at time t.",
+        "constraints": [
+          "high internal variance"
+        ],
+        "tags": [
+          "swarm",
+          "state"
+        ]
+      },
+      {
+        "symbol": "\\epsilon",
+        "name": "epsilon",
+        "description": "Noise or error parameter.",
+        "constraints": [],
+        "tags": [
+          "noise",
+          "bound"
+        ]
+      },
+      {
+        "symbol": "D_H(\\epsilon)",
+        "name": "high distance bound",
+        "description": "Lower bound on expected distance for high-error walkers, dependent on epsilon.",
+        "constraints": [
+          "N-uniform"
+        ],
+        "tags": [
+          "bound",
+          "distance"
+        ]
+      },
+      {
+        "symbol": "R_L(\\epsilon)",
+        "name": "low radius bound",
+        "description": "Upper bound related to low-error set radius, dependent on epsilon.",
+        "constraints": [
+          "N-uniform"
+        ],
+        "tags": [
+          "bound",
+          "radius"
+        ]
+      },
+      {
+        "symbol": "D_{\\mathrm{valid}}",
+        "name": "valid distance",
+        "description": "Nominal valid pairing distance.",
+        "constraints": [],
+        "tags": [
+          "distance",
+          "valid"
+        ]
+      },
+      {
+        "symbol": "c_k",
+        "name": "constant",
+        "description": "Iteration-dependent constant for the exponential term.",
+        "constraints": [],
+        "tags": [
+          "constant"
+        ]
+      },
+      {
+        "symbol": "d_i",
+        "name": "raw distance i",
+        "description": "Raw phase-space distance for walker i.",
+        "constraints": [],
+        "tags": [
+          "distance",
+          "measurement"
+        ]
+      },
+      {
+        "symbol": "d_j",
+        "name": "raw distance j",
+        "description": "Raw phase-space distance for walker j.",
+        "constraints": [],
+        "tags": [
+          "distance",
+          "measurement"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The partition into H_k and L_k is well-defined based on geometric criteria from def-geometric-partition.",
+        "confidence": 0.9
+      },
+      {
+        "text": "The swarm state has sufficiently high internal variance to enable separation.",
+        "confidence": 0.8
+      },
+      {
+        "text": "Distances are measured in phase-space with Gaussian noise of variance epsilon^2.",
+        "confidence": 0.7
+      }
+    ],
+    "local_refs": [
+      "def-geometric-partition",
+      "def-greedy-pairing-algorithm"
+    ],
+    "proof": {
+      "availability": "not-provided",
+      "steps": []
+    },
+    "tags": [
+      "greedy pairing",
+      "signal separation",
+      "internal variance",
+      "walkers",
+      "phase-space distance",
+      "expected distance",
+      "error sets"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-patching-properties",
+    "title": "Properties of the Patching Function",
+    "nl_statement": "Properties of the patching function.",
+    "equations": [],
+    "hypotheses": [],
+    "conclusion": {
+      "text": null,
+      "latex": null
+    },
+    "variables": [],
+    "implicit_assumptions": [],
+    "local_refs": [],
+    "proof": {
+      "availability": "absent",
+      "steps": []
+    },
+    "tags": [
+      "patching",
+      "properties",
+      "lemma"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-compact-support-z-scores",
+    "title": "Compact Support of Standardized Scores",
+    "nl_statement": "The standardized scores have compact support.",
+    "equations": [],
+    "hypotheses": [],
+    "conclusion": {
+      "text": null,
+      "latex": null
+    },
+    "variables": [],
+    "implicit_assumptions": [],
+    "local_refs": [],
+    "proof": {
+      "availability": "none",
+      "steps": []
+    },
+    "tags": [
+      "compact support",
+      "standardized scores",
+      "z-scores",
+      "probability",
+      "measure theory"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-logistic-properties",
+    "title": "Verification of Axiomatic Properties",
+    "nl_statement": "Verification of axiomatic properties for the logistic model.",
+    "equations": [],
+    "hypotheses": [],
+    "conclusion": {
+      "text": null,
+      "latex": null
+    },
+    "variables": [],
+    "implicit_assumptions": [],
+    "local_refs": [],
+    "proof": {
+      "availability": "none",
+      "steps": []
+    },
+    "tags": [
+      "logistic",
+      "axiomatic",
+      "properties",
+      "verification",
+      "lemma"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-potential-bounds",
+    "title": "Uniform Bounds of the Fitness Potential",
+    "nl_statement": "Any non-zero fitness potential \\(V_i\\) generated by this pipeline is uniformly bounded within a compact interval \\([V_{\\text{pot,min}}, V_{\\text{pot,max}}]\\), where the bounds are state-independent constants defined by the algorithmic parameters, with \\(V_{\\text{pot,min}} := \\eta^{\\alpha+\\beta}\\).",
+    "equations": [
+      {
+        "label": "V_pot_min_def",
+        "latex": "V_{\\text{pot,min}} := \\eta^{\\alpha + \\beta}"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "V_i is a non-zero fitness potential generated by the pipeline",
+        "latex": "V_i \\neq 0"
+      }
+    ],
+    "conclusion": {
+      "text": "V_i is uniformly bounded within [V_{\\text{pot,min}}, V_{\\text{pot,max}}], where the bounds are state-independent constants defined by algorithmic parameters",
+      "latex": "V_i \\in [V_{\\text{pot,min}}, V_{\\text{pot,max}}]"
+    },
+    "variables": [
+      {
+        "symbol": "V_i",
+        "name": "fitness potential",
+        "description": "Non-zero fitness potential value generated by the pipeline",
+        "constraints": [
+          "non-zero"
+        ],
+        "tags": [
+          "fitness",
+          "variable"
+        ]
+      },
+      {
+        "symbol": "V_{\\text{pot,min}}",
+        "name": "minimum potential bound",
+        "description": "State-independent lower bound for fitness potentials",
+        "constraints": [],
+        "tags": [
+          "bound",
+          "constant"
+        ]
+      },
+      {
+        "symbol": "V_{\\text{pot,max}}",
+        "name": "maximum potential bound",
+        "description": "State-independent upper bound for fitness potentials",
+        "constraints": [],
+        "tags": [
+          "bound",
+          "constant"
+        ]
+      },
+      {
+        "symbol": "\\eta",
+        "name": "eta parameter",
+        "description": "Algorithmic parameter used in bound definition",
+        "constraints": [],
+        "tags": [
+          "parameter"
+        ]
+      },
+      {
+        "symbol": "\\alpha",
+        "name": "alpha parameter",
+        "description": "Algorithmic parameter used in bound definition",
+        "constraints": [],
+        "tags": [
+          "parameter"
+        ]
+      },
+      {
+        "symbol": "\\beta",
+        "name": "beta parameter",
+        "description": "Algorithmic parameter used in bound definition",
+        "constraints": [],
+        "tags": [
+          "parameter"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "Algorithmic parameters \\eta, \\alpha, \\beta are positive real numbers ensuring a compact interval",
+        "confidence": 0.9
+      },
+      {
+        "text": "The pipeline generates fitness potentials V_i based on these parameters",
+        "confidence": 1.0
+      },
+      {
+        "text": "V_{\\text{pot,max}} is defined analogously to V_{\\text{pot,min}} elsewhere",
+        "confidence": 0.8
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not-provided",
+      "steps": []
+    },
+    "tags": [
+      "uniform-bounds",
+      "fitness-potential",
+      "algorithmic-parameters",
+      "state-independent",
+      "compact-interval",
+      "lemma"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-V_Varx-implies-variance",
+    "title": "Large $V_{\\text{Var},x}$ Implies Large Single-Swarm Positional Variance",
+    "nl_statement": "If the total intra-swarm positional variance component $V_{\\text{Var},x}(S_1, S_2)$ exceeds the threshold $R_{\\text{total_var},x}^2 > 0$, then at least one of the two swarms has an intra-swarm positional variance exceeding half that threshold.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "V_{\\text{Var},x}(S_1, S_2) = \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_1)} \\|\\delta_{x,1,i}\\|^2 + \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_2)} \\|\\delta_{x,2,i}\\|^2"
+      },
+      {
+        "label": null,
+        "latex": "\\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2 > \\frac{R_{\\text{total_var},x}^2}{2}"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "$V_{\\text{Var},x}(S_1, S_2) > R_{\\text{total_var},x}^2$ for some $R_{\\text{total_var},x}^2 > 0$",
+        "latex": "V_{\\text{Var},x} > R_{\\text{total_var},x}^2"
+      }
+    ],
+    "conclusion": {
+      "text": "At least one swarm $k \\in \\{1, 2\\}$ satisfies $\\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2 > \\frac{R_{\\text{total_var},x}^2}{2}$",
+      "latex": "\\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2 > \\frac{R_{\\text{total_var},x}^2}{2}"
+    },
+    "variables": [
+      {
+        "symbol": "S_1",
+        "name": "Swarm 1",
+        "description": "The first swarm of agents",
+        "constraints": [],
+        "tags": [
+          "swarm"
+        ]
+      },
+      {
+        "symbol": "S_2",
+        "name": "Swarm 2",
+        "description": "The second swarm of agents",
+        "constraints": [],
+        "tags": [
+          "swarm"
+        ]
+      },
+      {
+        "symbol": "N",
+        "name": "Number of agents per swarm",
+        "description": "The size of each swarm",
+        "constraints": [
+          "N > 0"
+        ],
+        "tags": [
+          "count",
+          "size"
+        ]
+      },
+      {
+        "symbol": "\\delta_{x,k,i}",
+        "name": "Positional deviation",
+        "description": "The positional deviation of agent i in swarm k from the swarm mean",
+        "constraints": [],
+        "tags": [
+          "position",
+          "deviation",
+          "error"
+        ]
+      },
+      {
+        "symbol": "R_{\\text{total_var},x}",
+        "name": "Total variance threshold",
+        "description": "A positive threshold for the total variance",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "threshold",
+          "variance"
+        ]
+      },
+      {
+        "symbol": "V_{\\text{Var},x}",
+        "name": "Intra-swarm positional variance component",
+        "description": "The variance term in the synergistic Lyapunov function",
+        "constraints": [],
+        "tags": [
+          "lyapunov",
+          "variance"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "Each swarm has exactly N agents, i.e., $|\\mathcal{A}(S_1)| = |\\mathcal{A}(S_2)| = N$",
+        "confidence": null
+      },
+      {
+        "text": "Positional deviations $\\delta_{x,k,i}$ are computed relative to the mean position of each swarm",
+        "confidence": null
+      }
+    ],
+    "local_refs": [
+      "def-full-synergistic-lyapunov-function"
+    ],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "variance",
+      "lyapunov",
+      "swarm",
+      "positional",
+      "cloning",
+      "contractive"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-phase-space-packing",
+    "title": "The Phase-Space Packing Lemma",
+    "nl_statement": "For a swarm of k ≥ 2 walkers in a compact phase-space domain, the fraction of close pairs under the algorithmic distance is bounded above by a monotonically decreasing function of the swarm's total hypocoercive variance, assuming λ_v ≤ λ_alg.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\mathrm{Var}_h(S_k) := \\mathrm{Var}_x(S_k) + \\lambda_v \\mathrm{Var}_v(S_k)"
+      },
+      {
+        "label": null,
+        "latex": "d_{\\text{alg}}(i, j)^2 := \\|x_i - x_j\\|^2 + \\lambda_{\\text{alg}} \\|v_i - v_j\\|^2"
+      },
+      {
+        "label": null,
+        "latex": "f_{\\text{close}} = N_{\\text{close}} / \\binom{k}{2}"
+      },
+      {
+        "label": null,
+        "latex": "D_{\\text{valid}}^2 := D_x^2 + \\lambda_{\\text{alg}} D_v^2"
+      },
+      {
+        "label": null,
+        "latex": "f_{\\text{close}} \\le g(\\mathrm{Var}_h(S_k)) := \\frac{D_{\\text{valid}}^2 - 2\\mathrm{Var}_h(S_k)}{D_{\\text{valid}}^2 - d_{\\text{close}}^2}"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Swarm S_k consists of k ≥ 2 walkers with phase-space states {(x_i, v_i)} in a compact domain",
+        "latex": null
+      },
+      {
+        "text": "Proximity threshold d_close > 0 is chosen",
+        "latex": null
+      },
+      {
+        "text": "λ_v ≤ λ_alg",
+        "latex": null
+      },
+      {
+        "text": "D_x and D_v are the spatial and velocity domain diameters",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "There exists a continuous, monotonically decreasing function g such that f_close ≤ g(Var_h(S_k)) = (D_valid^2 - 2 Var_h(S_k)) / (D_valid^2 - d_close^2)",
+      "latex": "f_{\\text{close}} \\le g(\\mathrm{Var}_h(S_k)) := \\frac{D_{\\text{valid}}^2 - 2\\mathrm{Var}_h(S_k)}{D_{\\text{valid}}^2 - d_{\\text{close}}^2}"
+    },
+    "variables": [
+      {
+        "symbol": "k",
+        "name": "number of walkers",
+        "description": "Size of the swarm",
+        "constraints": [
+          "k ≥ 2"
+        ],
+        "tags": [
+          "swarm-size"
+        ]
+      },
+      {
+        "symbol": "x_i",
+        "name": "position of walker i",
+        "description": "Spatial coordinate in phase space",
+        "constraints": [
+          "within compact domain of diameter D_x"
+        ],
+        "tags": [
+          "position"
+        ]
+      },
+      {
+        "symbol": "v_i",
+        "name": "velocity of walker i",
+        "description": "Velocity coordinate in phase space",
+        "constraints": [
+          "within compact domain of diameter D_v"
+        ],
+        "tags": [
+          "velocity"
+        ]
+      },
+      {
+        "symbol": "d_close",
+        "name": "proximity threshold",
+        "description": "Threshold for close pairs under d_alg",
+        "constraints": [
+          "d_close > 0"
+        ],
+        "tags": [
+          "threshold"
+        ]
+      },
+      {
+        "symbol": "λ_v",
+        "name": "velocity scaling in hypocoercive variance",
+        "description": "Weight for velocity variance",
+        "constraints": [
+          "λ_v ≤ λ_alg"
+        ],
+        "tags": [
+          "scaling"
+        ]
+      },
+      {
+        "symbol": "λ_alg",
+        "name": "velocity scaling in algorithmic distance",
+        "description": "Weight for velocity in d_alg",
+        "constraints": [],
+        "tags": [
+          "scaling"
+        ]
+      },
+      {
+        "symbol": "D_x",
+        "name": "spatial domain diameter",
+        "description": "Diameter of the position domain",
+        "constraints": [],
+        "tags": [
+          "diameter"
+        ]
+      },
+      {
+        "symbol": "D_v",
+        "name": "velocity domain diameter",
+        "description": "Diameter of the velocity domain",
+        "constraints": [],
+        "tags": [
+          "diameter"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "Var_x(S_k) and Var_v(S_k) are well-defined variances of positions and velocities",
+        "confidence": 0.9
+      },
+      {
+        "text": "The domain is compact, ensuring finite diameters D_x and D_v",
+        "confidence": 1.0
+      },
+      {
+        "text": "d_alg defines a metric on phase space",
+        "confidence": 0.8
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not-provided",
+      "steps": []
+    },
+    "tags": [
+      "phase-space",
+      "packing-lemma",
+      "hypocoercive-variance",
+      "swarm-dispersion",
+      "algorithmic-distance",
+      "clustering",
+      "variance-bound"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-var-x-implies-var-h",
+    "title": "Positional Variance as a Lower Bound for Hypocoercive Variance",
+    "nl_statement": "For any swarm k, the total hypocoercive variance Var_h(S_k) is bounded below by the positional variance Var_x(S_k).",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\mathrm{Var}_h(S_k) \\ge \\mathrm{Var}_x(S_k)"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "For any swarm k",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "Var_h(S_k) ≥ Var_x(S_k)",
+      "latex": "\\mathrm{Var}_h(S_k) \\ge \\mathrm{Var}_x(S_k)"
+    },
+    "variables": [
+      {
+        "symbol": "k",
+        "name": "swarm index",
+        "description": "Index labeling a specific swarm.",
+        "constraints": [],
+        "tags": [
+          "index"
+        ]
+      },
+      {
+        "symbol": "S_k",
+        "name": "swarm k",
+        "description": "The k-th swarm configuration.",
+        "constraints": [],
+        "tags": [
+          "swarm"
+        ]
+      },
+      {
+        "symbol": "Var_h",
+        "name": "hypocoercive variance",
+        "description": "Total hypocoercive variance function.",
+        "constraints": [],
+        "tags": [
+          "variance",
+          "hypocoercive"
+        ]
+      },
+      {
+        "symbol": "Var_x",
+        "name": "positional variance",
+        "description": "Positional variance component.",
+        "constraints": [],
+        "tags": [
+          "variance",
+          "positional"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "Var_h and Var_x are defined non-negative variance measures for swarms.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "variance",
+      "hypocoercive",
+      "positional",
+      "swarm",
+      "inequality",
+      "lemma"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-outlier-fraction-lower-bound",
+    "title": "N-Uniform Lower Bound on the Outlier Fraction",
+    "nl_statement": "For a swarm with k >= 2 alive walkers, if the hypocoercive variance Var_h(S_k) exceeds R_h^2 > 0, then the fraction of alive walkers in the global kinematic outlier set O_k is at least (1 - ε_O) R_h^2 / D_h^2 > 0, independent of N.",
+    "equations": [
+      {
+        "label": "ineq-outlier-fraction",
+        "latex": "\\frac{|O_k|}{k} \\ge \\frac{(1-\\varepsilon_O) R^2_h}{D_h^2} =: f_O > 0"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Swarm k has k >= 2 alive walkers.",
+        "latex": null
+      },
+      {
+        "text": "Structural parameter ε_O ∈ (0, 1).",
+        "latex": "\\varepsilon_O \\in (0, 1)"
+      },
+      {
+        "text": "Hypocoercive variance Var_h(S_k) > R_h^2 for some R_h^2 > 0.",
+        "latex": "\\mathrm{Var}_h(S_k) > R^2_h \\; \\text{for some} \\; R^2_h > 0"
+      }
+    ],
+    "conclusion": {
+      "text": "The fraction of alive walkers in the outlier set is bounded below: |O_k|/k >= (1 - ε_O) R_h^2 / D_h^2 =: f_O > 0, independent of N.",
+      "latex": "\\frac{|O_k|}{k} \\ge \\frac{(1-\\varepsilon_O) R^2_h}{D_h^2} =: f_O > 0"
+    },
+    "variables": [
+      {
+        "symbol": "O_k",
+        "name": "global kinematic outlier set",
+        "description": "Set of outliers for swarm k.",
+        "constraints": [
+          "|O_k| <= k"
+        ],
+        "tags": [
+          "outlier",
+          "set"
+        ]
+      },
+      {
+        "symbol": "k",
+        "name": "number of alive walkers",
+        "description": "Size of the swarm.",
+        "constraints": [
+          "k >= 2"
+        ],
+        "tags": [
+          "swarm",
+          "size"
+        ]
+      },
+      {
+        "symbol": "\\varepsilon_O",
+        "name": "structural parameter",
+        "description": "Parameter for outlier set definition.",
+        "constraints": [
+          "\\varepsilon_O \\in (0,1)"
+        ],
+        "tags": [
+          "structural",
+          "parameter"
+        ]
+      },
+      {
+        "symbol": "\\mathrm{Var}_h(S_k)",
+        "name": "hypocoercive variance",
+        "description": "Internal variance measure for swarm S_k.",
+        "constraints": [
+          "> R_h^2"
+        ],
+        "tags": [
+          "variance",
+          "hypocoercive"
+        ]
+      },
+      {
+        "symbol": "R_h^2",
+        "name": "variance threshold",
+        "description": "Positive threshold for large variance.",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "threshold",
+          "variance"
+        ]
+      },
+      {
+        "symbol": "D_h^2",
+        "name": "hypocoercive diameter",
+        "description": "Scaling factor in the bound.",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "diameter",
+          "scaling"
+        ]
+      },
+      {
+        "symbol": "f_O",
+        "name": "outlier fraction lower bound",
+        "description": "Positive constant independent of N.",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "bound",
+          "fraction"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "D_h^2 > 0 is a fixed positive constant from the model.",
+        "confidence": 0.9
+      },
+      {
+        "text": "The outlier set O_k is defined using ε_O and kinematic properties as per Section 6.3.",
+        "confidence": 1.0
+      },
+      {
+        "text": "The hypocoercive variance relates to phase-space measures.",
+        "confidence": 0.8
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "outlier set",
+      "hypocoercive variance",
+      "lower bound",
+      "swarm",
+      "kinematic",
+      "fraction",
+      "uniform bound"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-outlier-cluster-fraction-lower-bound",
+    "title": "N-Uniform Lower Bound on the Outlier-Cluster Fraction",
+    "nl_statement": "In the local-interaction regime, using the clustering-based definition of the high-error set with maximum cluster diameter \\(D_{\\text{diam}}(\\varepsilon) = c_d \\cdot \\varepsilon\\) where \\(c_d \\varepsilon < 2\\sqrt{R^2_{\\text{var}}}\\), if the swarm's internal positional variance satisfies \\(\\mathrm{Var}_x(S_k) > R^2_{\\text{var}}\\), then the fraction of alive walkers in the high-error set \\(H_k(\\varepsilon)\\) is bounded below by a positive constant \\(f_H(\\varepsilon) > 0\\) independent of \\(N\\) and \\(k\\).",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\frac{|H_k(\\epsilon)|}{k} \\ge f_H(\\epsilon) > 0"
+      }
+    ],
+    "hypotheses": [],
+    "conclusion": {},
+    "variables": [
+      {
+        "symbol": "\\varepsilon",
+        "name": "epsilon",
+        "description": "Error threshold parameter.",
+        "constraints": [
+          "positive"
+        ],
+        "tags": [
+          "error",
+          "threshold"
+        ]
+      },
+      {
+        "symbol": "k",
+        "name": "k",
+        "description": "Number of walkers in the swarm subset \\(S_k\\).",
+        "constraints": [
+          "positive integer"
+        ],
+        "tags": [
+          "walkers",
+          "count"
+        ]
+      },
+      {
+        "symbol": "H_k(\\varepsilon)",
+        "name": "high-error set",
+        "description": "Set of walkers in high-error clusters based on phase-space clustering.",
+        "constraints": [],
+        "tags": [
+          "set",
+          "high-error",
+          "clustering"
+        ]
+      },
+      {
+        "symbol": "c_d",
+        "name": "c_d",
+        "description": "Fixed positive constant scaling the cluster diameter.",
+        "constraints": [
+          "positive"
+        ],
+        "tags": [
+          "constant",
+          "diameter"
+        ]
+      },
+      {
+        "symbol": "R^2_{\\text{var}}",
+        "name": "variance threshold",
+        "description": "Threshold for internal positional variance.",
+        "constraints": [
+          "positive"
+        ],
+        "tags": [
+          "variance",
+          "threshold"
+        ]
+      },
+      {
+        "symbol": "S_k",
+        "name": "swarm subset",
+        "description": "Subset of k walkers in the swarm.",
+        "constraints": [],
+        "tags": [
+          "swarm",
+          "subset"
+        ]
+      },
+      {
+        "symbol": "\\mathrm{Var}_x(S_k)",
+        "name": "positional variance",
+        "description": "Internal positional variance of the swarm subset \\(S_k\\).",
+        "constraints": [],
+        "tags": [
+          "variance",
+          "positional"
+        ]
+      },
+      {
+        "symbol": "f_H(\\varepsilon)",
+        "name": "lower bound constant",
+        "description": "Positive constant bounding the high-error fraction, independent of N and k.",
+        "constraints": [
+          "positive"
+        ],
+        "tags": [
+          "constant",
+          "lower-bound"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The swarm consists of alive walkers.",
+        "confidence": 0.9
+      },
+      {
+        "text": "N represents a large system size, uniform across bounds.",
+        "confidence": 0.8
+      },
+      {
+        "text": "The phase-space clustering approach is well-defined in the local-interaction regime.",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [
+      "def-unified-high-low-error-sets"
+    ],
+    "proof": {
+      "availability": "not-provided",
+      "steps": []
+    },
+    "tags": [
+      "clustering",
+      "high-error-set",
+      "lower-bound",
+      "outlier-fraction",
+      "variance",
+      "swarm",
+      "local-interaction"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-geometric-separation-of-partition",
+    "title": "Geometric Separation of the Partition",
+    "nl_statement": "Under large positional variance Var(x) > R_var², the high-error set H_k(ε) and low-error set L_k(ε) for swarm k are geometrically separated in algorithmic phase space by D_H(ε) > R_L(ε) > 0, with low-error walkers forming clusters of size at least f_c k within radius R_L(ε).",
+    "equations": [
+      {
+        "label": null,
+        "latex": "d_{\\text{alg}}(i, j) \\ge D_H(\\epsilon)"
+      },
+      {
+        "label": null,
+        "latex": "d_{\\text{alg}}(j, \\ell) \\le R_L(\\epsilon)"
+      },
+      {
+        "label": null,
+        "latex": "D_H(\\epsilon) > R_L(\\epsilon) > 0"
+      },
+      {
+        "label": null,
+        "latex": "\\mathrm{Var}(x) > R^2_{\\mathrm{var}}"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "H_k(ε) and L_k(ε) are the unified high-error and low-error sets for swarm k as defined in def-unified-high-low-error-sets",
+        "latex": null
+      },
+      {
+        "text": "The swarm's internal positional variance is large: Var(x) > R_var²",
+        "latex": "\\mathrm{Var}(x) > R^2_{\\mathrm{var}}"
+      }
+    ],
+    "conclusion": {
+      "text": "There exist N-uniform, ε-dependent constants D_H(ε) > R_L(ε) > 0 and a fractional constant f_c > 0 such that: (1) for any i ∈ H_k(ε) and j ∈ L_k(ε), d_alg(i, j) ≥ D_H(ε); (2) for any j ∈ L_k(ε), there exists C_j ⊂ L_k(ε) \\ {j} with |C_j| ≥ f_c k and d_alg(j, ℓ) ≤ R_L(ε) for all ℓ ∈ C_j. The separation D_H(ε) > R_L(ε) ensures non-overlapping geometric signatures in algorithmic phase space.",
+      "latex": null
+    },
+    "variables": [
+      {
+        "symbol": "H_k(\\epsilon)",
+        "name": "H_k(ε)",
+        "description": "Unified high-error set for swarm k",
+        "constraints": [
+          "subset of walkers"
+        ],
+        "tags": [
+          "set",
+          "high-error"
+        ]
+      },
+      {
+        "symbol": "L_k(\\epsilon)",
+        "name": "L_k(ε)",
+        "description": "Unified low-error set for swarm k",
+        "constraints": [
+          "subset of walkers"
+        ],
+        "tags": [
+          "set",
+          "low-error"
+        ]
+      },
+      {
+        "symbol": "\\epsilon",
+        "name": "ε",
+        "description": "Error threshold parameter",
+        "constraints": [
+          "positive real"
+        ],
+        "tags": [
+          "parameter",
+          "error"
+        ]
+      },
+      {
+        "symbol": "k",
+        "name": "k",
+        "description": "Swarm index or size",
+        "constraints": [
+          "positive integer"
+        ],
+        "tags": [
+          "swarm",
+          "index"
+        ]
+      },
+      {
+        "symbol": "D_H(\\epsilon)",
+        "name": "D_H(ε)",
+        "description": "Lower bound constant for separation between high and low-error sets",
+        "constraints": [
+          "> R_L(ε) > 0",
+          "N-uniform, ε-dependent"
+        ],
+        "tags": [
+          "constant",
+          "separation"
+        ]
+      },
+      {
+        "symbol": "R_L(\\epsilon)",
+        "name": "R_L(ε)",
+        "description": "Upper bound radius for low-error clustering",
+        "constraints": [
+          "> 0",
+          "N-uniform, ε-dependent"
+        ],
+        "tags": [
+          "constant",
+          "radius"
+        ]
+      },
+      {
+        "symbol": "f_c",
+        "name": "f_c",
+        "description": "Fractional constant for minimum cluster size",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "constant",
+          "fractional"
+        ]
+      },
+      {
+        "symbol": "d_{\\text{alg}}",
+        "name": "d_alg",
+        "description": "Algorithmic distance metric",
+        "constraints": [],
+        "tags": [
+          "distance",
+          "algorithmic"
+        ]
+      },
+      {
+        "symbol": "R_{\\mathrm{var}}",
+        "name": "R_var",
+        "description": "Variance threshold radius",
+        "constraints": [],
+        "tags": [
+          "variance",
+          "threshold"
+        ]
+      },
+      {
+        "symbol": "C_j",
+        "name": "C_j",
+        "description": "Companion subset for low-error walker j",
+        "constraints": [
+          "|C_j| ≥ f_c k",
+          "subset of L_k(ε) \\ {j}"
+        ],
+        "tags": [
+          "set",
+          "cluster"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "Constants D_H(ε) and R_L(ε) are N-uniform and ε-dependent",
+        "confidence": 1.0
+      },
+      {
+        "text": "f_c is a positive fractional constant independent of ε and N",
+        "confidence": 1.0
+      },
+      {
+        "text": "Swarm consists of N walkers with positional variance defined",
+        "confidence": 0.9
+      },
+      {
+        "text": "Algorithmic phase space is well-defined for distance metric d_alg",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [
+      "def-unified-high-low-error-sets"
+    ],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "geometric-separation",
+      "swarm-partition",
+      "high-error",
+      "low-error",
+      "algorithmic-distance",
+      "clustering",
+      "variance"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-variance-to-gap",
+    "title": "From Bounded Variance to a Guaranteed Gap",
+    "nl_statement": "For a set of at least two real numbers with empirical variance bounded below by a positive constant κ, the maximum absolute difference between any two numbers is at least √(2κ).",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\max_{i,j} |v_i - v_j| \\ge \\sqrt{2\\kappa}"
+      }
+    ],
+    "hypotheses": [],
+    "conclusion": {
+      "text": "There exists at least one pair of indices $(i, j)$ such that the maximum gap is bounded below: $\\max_{i,j} |v_i - v_j| \\ge \\sqrt{2\\kappa}$",
+      "latex": "\\max_{i,j} |v_i - v_j| \\ge \\sqrt{2\\kappa}"
+    },
+    "variables": [
+      {
+        "symbol": "k",
+        "name": "number of elements",
+        "description": "The number of real numbers in the set, an integer at least 2.",
+        "constraints": [
+          "k \\ge 2"
+        ],
+        "tags": [
+          "integer",
+          "size"
+        ]
+      },
+      {
+        "symbol": "v_i",
+        "name": "set values",
+        "description": "The real numbers in the set, indexed from 1 to k.",
+        "constraints": [
+          "real numbers"
+        ],
+        "tags": [
+          "variables",
+          "values"
+        ]
+      },
+      {
+        "symbol": "\\kappa",
+        "name": "variance lower bound",
+        "description": "A strictly positive constant bounding the empirical variance from below.",
+        "constraints": [
+          "\\kappa > 0"
+        ],
+        "tags": [
+          "positive",
+          "bound"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The empirical variance is defined as $\\frac{1}{k} \\sum_{i=1}^k (v_i - \\bar{v})^2$, where $\\bar{v}$ is the mean.",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [
+      "thm-geometry-guarantees-variance"
+    ],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "variance",
+      "gap",
+      "separation",
+      "bounded",
+      "real numbers",
+      "empirical"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-rescale-derivative-lower-bound",
+    "title": "Positive Derivative Bound for the Rescale Function",
+    "nl_statement": "The first derivative of the canonical logistic rescale function g_A(z) is uniformly bounded below by a strictly positive constant g'_min over the operational range Z_supp.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\inf_{z \\in Z_{\\mathrm{supp}}} g'_A(z) = g'_{\\min} > 0"
+      }
+    ],
+    "hypotheses": [],
+    "conclusion": {
+      "text": "there exists a constant g'_{\\min} > 0 such that \\inf_{z \\in Z_{\\mathrm{supp}}} g'_A(z) = g'_{\\min} > 0",
+      "latex": "\\inf_{z \\in Z_{\\mathrm{supp}}} g'_A(z) = g'_{\\min} > 0"
+    },
+    "variables": [
+      {
+        "symbol": "g'_A",
+        "name": "first derivative of rescale function",
+        "description": "derivative of the canonical logistic rescale function g_A",
+        "constraints": [],
+        "tags": [
+          "derivative",
+          "rescale"
+        ]
+      },
+      {
+        "symbol": "z",
+        "name": "z-score",
+        "description": "input variable in the operational range",
+        "constraints": [
+          "z \\in Z_{\\mathrm{supp}}"
+        ],
+        "tags": [
+          "z-score",
+          "input"
+        ]
+      },
+      {
+        "symbol": "Z_{\\mathrm{supp}}",
+        "name": "operational range",
+        "description": "domain of z-scores where g_A operates",
+        "constraints": [],
+        "tags": [
+          "domain",
+          "support"
+        ]
+      },
+      {
+        "symbol": "g'_{\\min}",
+        "name": "minimum derivative bound",
+        "description": "strictly positive lower bound for g'_A(z)",
+        "constraints": [
+          "g'_{\\min} > 0"
+        ],
+        "tags": [
+          "bound",
+          "positive"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The canonical logistic rescale function g_A is differentiable on Z_supp",
+        "confidence": 1.0
+      },
+      {
+        "text": "Z_supp is a non-empty interval where g_A is defined and operational",
+        "confidence": 1.0
+      },
+      {
+        "text": "g_A is the canonical logistic function used for rescaling",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "rescale",
+      "derivative",
+      "lower bound",
+      "logistic",
+      "canonical",
+      "infimum",
+      "z-score",
+      "sensitivity"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-raw-gap-to-rescaled-gap",
+    "title": "From Raw Measurement Gap to Rescaled Value Gap",
+    "nl_statement": "For fixed system parameters and any swarm state S with k ≥ 2 alive walkers, if raw measurement values have a gap |v_a - v_b| ≥ κ_raw > 0, then rescaled values have |g_A(z_a) - g_A(z_b)| ≥ κ_rescaled(κ_raw) > 0, where κ_rescaled(κ_raw) = (g'_min / σ'_max) ⋅ κ_raw is independent of S and k.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "|g_A(z_a) - g_A(z_b)| \\ge \\kappa_{\\mathrm{rescaled}}(\\kappa_{\\mathrm{raw}}) > 0"
+      },
+      {
+        "label": null,
+        "latex": "\\kappa_{\\mathrm{rescaled}}(\\kappa_{\\mathrm{raw}}) := \\frac{g'_{\\min}}{\\sigma'_{\\max}} \\cdot \\kappa_{\\mathrm{raw}}"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "System parameters are fixed.",
+        "latex": null
+      },
+      {
+        "text": "Swarm state S has k ≥ 2 alive walkers.",
+        "latex": null
+      },
+      {
+        "text": "Raw measurement gap |v_a - v_b| ≥ κ_raw > 0.",
+        "latex": "|v_a - v_b| \\ge \\kappa_{\\mathrm{raw}} > 0"
+      }
+    ],
+    "conclusion": {
+      "text": "Rescaled value gap |g_A(z_a) - g_A(z_b)| ≥ κ_rescaled(κ_raw) > 0 with κ_rescaled independent of S and k.",
+      "latex": "|g_A(z_a) - g_A(z_b)| \\ge \\kappa_{\\mathrm{rescaled}}(\\kappa_{\\mathrm{raw}}) > 0"
+    },
+    "variables": [
+      {
+        "symbol": "\\kappa_{\\mathrm{raw}}",
+        "name": "raw gap threshold",
+        "description": "Positive threshold for raw measurement gap.",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "threshold",
+          "raw"
+        ]
+      },
+      {
+        "symbol": "\\kappa_{\\mathrm{rescaled}}",
+        "name": "rescaled gap function",
+        "description": "Function mapping raw gap to guaranteed rescaled gap.",
+        "constraints": [],
+        "tags": [
+          "function",
+          "rescaled"
+        ]
+      },
+      {
+        "symbol": "k",
+        "name": "number of alive walkers",
+        "description": "Size of swarm state with alive agents.",
+        "constraints": [
+          ">= 2"
+        ],
+        "tags": [
+          "swarm",
+          "size"
+        ]
+      },
+      {
+        "symbol": "S",
+        "name": "swarm state",
+        "description": "State of the walker swarm.",
+        "constraints": [],
+        "tags": [
+          "swarm",
+          "state"
+        ]
+      },
+      {
+        "symbol": "v_a, v_b",
+        "name": "raw measurements",
+        "description": "Raw measurement values for agents a and b.",
+        "constraints": [],
+        "tags": [
+          "raw",
+          "value"
+        ]
+      },
+      {
+        "symbol": "z_a, z_b",
+        "name": "rescaled positions",
+        "description": "Rescaled positions corresponding to measurements.",
+        "constraints": [],
+        "tags": [
+          "rescaled",
+          "position"
+        ]
+      },
+      {
+        "symbol": "g_A",
+        "name": "rescaling function",
+        "description": "Function g_A applied to rescaled positions.",
+        "constraints": [],
+        "tags": [
+          "rescaling",
+          "function"
+        ]
+      },
+      {
+        "symbol": "g'_{\\min}",
+        "name": "minimum derivative of g",
+        "description": "Uniform lower bound on derivative of rescaling function.",
+        "constraints": [],
+        "tags": [
+          "derivative",
+          "min bound"
+        ]
+      },
+      {
+        "symbol": "\\sigma'_{\\max}",
+        "name": "maximum derivative of sigma",
+        "description": "Uniform upper bound on derivative of sigma function.",
+        "constraints": [],
+        "tags": [
+          "derivative",
+          "max bound"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "Uniform bounds g'_min and σ'_max on pipeline components exist and are positive.",
+        "confidence": 1.0
+      },
+      {
+        "text": "Rescaling pipeline transforms raw measurements v to rescaled positions z via invertible functions.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not-provided",
+      "steps": []
+    },
+    "tags": [
+      "swarm",
+      "measurement",
+      "gap",
+      "rescaling",
+      "uniform bounds",
+      "kappa"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-variance-to-mean-separation",
+    "title": "From Total Variance to Mean Separation",
+    "nl_statement": "A set of real numbers in a compact interval with sufficiently large empirical variance, when partitioned into two substantial non-empty subsets, guarantees a statistically significant separation between the subset means, bounded below by an expression involving the variance and maximum possible variance.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\operatorname{Var}_{\\mathrm{max}} := \\frac{1}{4}(V_{\\max} - V_{\\min})^2"
+      },
+      {
+        "label": null,
+        "latex": "(\\mu_H - \\mu_L)^2 \\ge \\frac{1}{f_H f_L} \\left( \\kappa_{\\mathrm{var}} - \\operatorname{Var}_{\\mathrm{max}} \\right)"
+      },
+      {
+        "label": null,
+        "latex": "|\\mu_H - \\mu_L| \\ge \\frac{1}{\\sqrt{f_H f_L}} \\sqrt{\\kappa_{\\mathrm{var}} - \\operatorname{Var}_{\\mathrm{max}}} > 0"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Set $\\mathcal{V} = \\{v_i\\}_{i=1}^k$ with $k \\ge 2$ real numbers, each $v_i \\in [V_{\\min}, V_{\\max}]$ (compact interval).",
+        "latex": "\\mathcal{V} = \\{v_i\\}_{i=1}^k, \\, k \\ge 2, \\, v_i \\in [V_{\\min}, V_{\\max}]"
+      },
+      {
+        "text": "$\\mathcal{V}$ partitioned into disjoint non-empty subsets $H$ and $L$ with means $\\mu_H$ and $\\mu_L$.",
+        "latex": "\\mathcal{V} = H \\sqcup L, \\, H, L \\neq \\emptyset, \\, \\mu_H = \\frac{1}{|H|} \\sum_{v \\in H} v, \\, \\mu_L = \\frac{1}{|L|} \\sum_{v \\in L} v"
+      },
+      {
+        "text": "Fractional sizes $f_H = |H|/k \\ge f_{\\min} > 0$ and $f_L = |L|/k \\ge f_{\\min}$, with $f_{\\min} \\in (0, 1/2]$.",
+        "latex": "f_H = |H|/k \\ge f_{\\min}, \\, f_L = |L|/k \\ge f_{\\min}, \\, f_{\\min} \\in (0, 1/2]"
+      },
+      {
+        "text": "Empirical variance $\\operatorname{Var}(\\mathcal{V}) \\ge \\kappa_{\\mathrm{var}} > 0$.",
+        "latex": "\\operatorname{Var}(\\mathcal{V}) \\ge \\kappa_{\\mathrm{var}} > 0"
+      }
+    ],
+    "conclusion": {
+      "text": "Squared mean difference bounded below: $(\\mu_H - \\mu_L)^2 \\ge \\frac{1}{f_H f_L} (\\kappa_{\\mathrm{var}} - \\operatorname{Var}_{\\mathrm{max}})$. If $\\kappa_{\\mathrm{var}} > \\operatorname{Var}_{\\mathrm{max}}$, then positive separation: $|\\mu_H - \\mu_L| \\ge \\frac{1}{\\sqrt{f_H f_L}} \\sqrt{\\kappa_{\\mathrm{var}} - \\operatorname{Var}_{\\mathrm{max}}} > 0$.",
+      "latex": "(\\mu_H - \\mu_L)^2 \\ge \\frac{1}{f_H f_L} (\\kappa_{\\mathrm{var}} - \\operatorname{Var}_{\\mathrm{max}}); \\, \\text{if } \\kappa_{\\mathrm{var}} > \\operatorname{Var}_{\\mathrm{max}}, \\, |\\mu_H - \\mu_L| \\ge \\frac{1}{\\sqrt{f_H f_L}} \\sqrt{\\kappa_{\\mathrm{var}} - \\operatorname{Var}_{\\mathrm{max}}} > 0"
+    },
+    "variables": [
+      {
+        "symbol": "k",
+        "name": "population size",
+        "description": "Number of elements in the set $\\mathcal{V}$.",
+        "constraints": [
+          "k \\ge 2"
+        ],
+        "tags": [
+          "size",
+          "integer"
+        ]
+      },
+      {
+        "symbol": "\\mathcal{V}",
+        "name": "set of values",
+        "description": "Finite set of real numbers $\\mathcal{V} = \\{v_i\\}_{i=1}^k$.",
+        "constraints": [
+          "finite",
+          "real-valued"
+        ],
+        "tags": [
+          "set",
+          "data"
+        ]
+      },
+      {
+        "symbol": "v_i",
+        "name": "element",
+        "description": "Individual value in $\\mathcal{V}$.",
+        "constraints": [
+          "v_i \\in [V_{\\min}, V_{\\max}]"
+        ],
+        "tags": [
+          "value",
+          "bounded"
+        ]
+      },
+      {
+        "symbol": "V_{\\min}",
+        "name": "minimum bound",
+        "description": "Lower bound of the compact interval containing all $v_i$.",
+        "constraints": [
+          "real"
+        ],
+        "tags": [
+          "bound",
+          "interval"
+        ]
+      },
+      {
+        "symbol": "V_{\\max}",
+        "name": "maximum bound",
+        "description": "Upper bound of the compact interval containing all $v_i$.",
+        "constraints": [
+          "real",
+          "V_{\\max} \\ge V_{\\min}"
+        ],
+        "tags": [
+          "bound",
+          "interval"
+        ]
+      },
+      {
+        "symbol": "H",
+        "name": "high subset",
+        "description": "One non-empty subset in the partition of $\\mathcal{V}$.",
+        "constraints": [
+          "non-empty",
+          "disjoint from L"
+        ],
+        "tags": [
+          "subset",
+          "partition"
+        ]
+      },
+      {
+        "symbol": "L",
+        "name": "low subset",
+        "description": "The other non-empty subset in the partition of $\\mathcal{V}$.",
+        "constraints": [
+          "non-empty",
+          "disjoint from H"
+        ],
+        "tags": [
+          "subset",
+          "partition"
+        ]
+      },
+      {
+        "symbol": "\\mu_H",
+        "name": "mean of H",
+        "description": "Arithmetic mean of values in subset H.",
+        "constraints": [],
+        "tags": [
+          "mean",
+          "statistic"
+        ]
+      },
+      {
+        "symbol": "\\mu_L",
+        "name": "mean of L",
+        "description": "Arithmetic mean of values in subset L.",
+        "constraints": [],
+        "tags": [
+          "mean",
+          "statistic"
+        ]
+      },
+      {
+        "symbol": "f_H",
+        "name": "fractional size of H",
+        "description": "Proportion $|H|/k$.",
+        "constraints": [
+          "f_H \\ge f_{\\min} > 0",
+          "f_H + f_L = 1"
+        ],
+        "tags": [
+          "fraction",
+          "size"
+        ]
+      },
+      {
+        "symbol": "f_L",
+        "name": "fractional size of L",
+        "description": "Proportion $|L|/k$.",
+        "constraints": [
+          "f_L \\ge f_{\\min} > 0",
+          "f_H + f_L = 1"
+        ],
+        "tags": [
+          "fraction",
+          "size"
+        ]
+      },
+      {
+        "symbol": "f_{\\min}",
+        "name": "minimum fraction",
+        "description": "Strictly positive lower bound on subset fractions.",
+        "constraints": [
+          "f_{\\min} \\in (0, 1/2]"
+        ],
+        "tags": [
+          "bound",
+          "fraction"
+        ]
+      },
+      {
+        "symbol": "\\kappa_{\\mathrm{var}}",
+        "name": "variance lower bound",
+        "description": "Strictly positive constant bounding variance from below.",
+        "constraints": [
+          "\\kappa_{\\mathrm{var}} > 0"
+        ],
+        "tags": [
+          "variance",
+          "threshold"
+        ]
+      },
+      {
+        "symbol": "\\operatorname{Var}(\\mathcal{V})",
+        "name": "empirical variance",
+        "description": "Variance of the set $\\mathcal{V}$.",
+        "constraints": [
+          "\\ge \\kappa_{\\mathrm{var}}"
+        ],
+        "tags": [
+          "variance",
+          "empirical"
+        ]
+      },
+      {
+        "symbol": "\\operatorname{Var}_{\\mathrm{max}}",
+        "name": "maximum variance",
+        "description": "Upper bound on variance for values in [V_min, V_max], equal to (1/4)(V_max - V_min)^2.",
+        "constraints": [],
+        "tags": [
+          "variance",
+          "bound"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The subsets H and L cover the entire set V (i.e., V = H union L).",
+        "confidence": 1.0
+      },
+      {
+        "text": "The means mu_H and mu_L are well-defined since H and L are non-empty.",
+        "confidence": 1.0
+      },
+      {
+        "text": "Empirical variance is the standard sample variance (possibly population variance, as k is total size).",
+        "confidence": 0.9
+      },
+      {
+        "text": "The signal-to-noise condition kappa_var > Var_max ensures positive separation.",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not-provided",
+      "steps": []
+    },
+    "tags": [
+      "variance",
+      "mean-separation",
+      "partition",
+      "statistical",
+      "signal-noise",
+      "population",
+      "subsets"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-log-gap-lower-bound",
+    "title": "Lower Bound on Logarithmic Mean Gap",
+    "nl_statement": "If two random variables X and Y take values in the compact interval [V_min, V_max] with V_min > 0 and their means satisfy E[X] >= E[Y] + kappa for kappa > 0, then the difference in their expected logarithms satisfies E[ln X] - E[ln Y] >= ln(1 + kappa / V_max).",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\mathbb{E}[\\ln(X)] - \\mathbb{E}[\\ln(Y)] \\ge \\ln\\left(1 + \\frac{\\kappa}{V_{\\max}}\\right)"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "X and Y are random variables taking values in the compact interval [V_min, V_max] with V_min > 0.",
+        "latex": null
+      },
+      {
+        "text": "The means satisfy mu_X = E[X] >= mu_Y = E[Y] + kappa for some constant kappa > 0.",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "E[ln(X)] - E[ln(Y)] >= ln(1 + kappa / V_max)",
+      "latex": "\\mathbb{E}[\\ln(X)] - \\mathbb{E}[\\ln(Y)] \\ge \\ln\\left(1 + \\frac{\\kappa}{V_{\\max}}\\right)"
+    },
+    "variables": [
+      {
+        "symbol": "X",
+        "name": "X",
+        "description": "First random variable.",
+        "constraints": [
+          "Supported on [V_min, V_max]"
+        ],
+        "tags": [
+          "random-variable"
+        ]
+      },
+      {
+        "symbol": "Y",
+        "name": "Y",
+        "description": "Second random variable.",
+        "constraints": [
+          "Supported on [V_min, V_max]"
+        ],
+        "tags": [
+          "random-variable"
+        ]
+      },
+      {
+        "symbol": "V_{\\min}",
+        "name": "V_min",
+        "description": "Lower bound of the support interval.",
+        "constraints": [
+          "V_min > 0"
+        ],
+        "tags": [
+          "bound"
+        ]
+      },
+      {
+        "symbol": "V_{\\max}",
+        "name": "V_max",
+        "description": "Upper bound of the support interval.",
+        "constraints": [],
+        "tags": [
+          "bound"
+        ]
+      },
+      {
+        "symbol": "\\mu_X",
+        "name": "mu_X",
+        "description": "Mean of X.",
+        "constraints": [],
+        "tags": [
+          "mean"
+        ]
+      },
+      {
+        "symbol": "\\mu_Y",
+        "name": "mu_Y",
+        "description": "Mean of Y.",
+        "constraints": [],
+        "tags": [
+          "mean"
+        ]
+      },
+      {
+        "symbol": "\\kappa",
+        "name": "kappa",
+        "description": "Positive constant for mean separation.",
+        "constraints": [
+          "kappa > 0"
+        ],
+        "tags": [
+          "separation"
+        ]
+      },
+      {
+        "symbol": "\\mathbb{E}",
+        "name": "E",
+        "description": "Expectation operator.",
+        "constraints": [],
+        "tags": [
+          "expectation"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The supports ensure X and Y are positive, allowing the logarithm to be well-defined.",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not-provided",
+      "steps": [
+        {
+          "kind": "sketch",
+          "text": "The proof uses extremal distribution theory to find the worst-case scenario.",
+          "latex": null
+        }
+      ]
+    },
+    "tags": [
+      "log-gap",
+      "lower-bound",
+      "random-variables",
+      "mean-separation",
+      "extremal-distributions",
+      "compact-support"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-log-gap-upper-bound",
+    "title": "Upper Bound on Logarithmic Mean Gap",
+    "nl_statement": "For random variables X and Y supported on the compact interval [V_min, V_max] with V_min > 0 and means satisfying |E[X] - E[Y]| ≤ κ for some κ > 0, the absolute difference of their expected logarithms is at most ln(1 + κ / V_min).",
+    "equations": [
+      {
+        "label": null,
+        "latex": "|\\mathbb{E}[\\ln(X)] - \\mathbb{E}[\\ln(Y)]| \\le \\ln\\left(1 + \\frac{\\kappa}{V_{\\min}}\\right)"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "X and Y are random variables whose values are contained in the compact interval [V_min, V_max], where V_min > 0.",
+        "latex": null
+      },
+      {
+        "text": "Their means μ_X = E[X] and μ_Y = E[Y] satisfy |μ_X - μ_Y| ≤ κ for some constant κ > 0.",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "|E[ln(X)] - E[ln(Y)]| ≤ ln(1 + κ / V_min)",
+      "latex": "|\\mathbb{E}[\\ln(X)] - \\mathbb{E}[\\ln(Y)]| \\le \\ln\\left(1 + \\frac{\\kappa}{V_{\\min}}\\right)"
+    },
+    "variables": [
+      {
+        "symbol": "X",
+        "name": "X",
+        "description": "random variable with values in [V_min, V_max]",
+        "constraints": [
+          "values in [V_min, V_max]"
+        ],
+        "tags": [
+          "random variable"
+        ]
+      },
+      {
+        "symbol": "Y",
+        "name": "Y",
+        "description": "random variable with values in [V_min, V_max]",
+        "constraints": [
+          "values in [V_min, V_max]"
+        ],
+        "tags": [
+          "random variable"
+        ]
+      },
+      {
+        "symbol": "\\mu_X",
+        "name": "μ_X",
+        "description": "expected value of X",
+        "constraints": [],
+        "tags": [
+          "mean"
+        ]
+      },
+      {
+        "symbol": "\\mu_Y",
+        "name": "μ_Y",
+        "description": "expected value of Y",
+        "constraints": [],
+        "tags": [
+          "mean"
+        ]
+      },
+      {
+        "symbol": "V_{\\min}",
+        "name": "V_min",
+        "description": "minimum value of the support interval, positive",
+        "constraints": [
+          "V_min > 0"
+        ],
+        "tags": [
+          "lower bound"
+        ]
+      },
+      {
+        "symbol": "V_{\\max}",
+        "name": "V_max",
+        "description": "maximum value of the support interval",
+        "constraints": [],
+        "tags": [
+          "upper bound"
+        ]
+      },
+      {
+        "symbol": "\\kappa",
+        "name": "κ",
+        "description": "constant bounding the absolute difference of means",
+        "constraints": [
+          "κ > 0"
+        ],
+        "tags": [
+          "constant",
+          "bound"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The expectations E[X], E[Y], E[ln(X)], and E[ln(Y)] exist (guaranteed by compact support).",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "upper bound",
+      "logarithmic gap",
+      "random variables",
+      "mean difference",
+      "compact support"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-unfit-fraction-lower-bound",
+    "title": "N-Uniform Lower Bound on the Unfit Fraction",
+    "nl_statement": "For a swarm of k ≥ 2 alive walkers whose fitness potential range is bounded below by the positive ε-dependent constant κ_{V,gap}(ε), the fraction of alive walkers in the unfit set U_k is bounded below by the positive N-uniform ε-dependent constant f_U(ε) = κ_{V,gap}(ε) / (2(V_{pot,max} - V_{pot,min})).",
+    "equations": [
+      {
+        "label": null,
+        "latex": "V_{\\max,k} - V_{\\min,k} \\ge \\kappa_{V,\\text{gap}}(\\epsilon) > 0"
+      },
+      {
+        "label": null,
+        "latex": "\\frac{|U_k|}{k} \\ge \\frac{\\kappa_{V,\\text{gap}}(\\epsilon)}{2(V_{\\text{pot,max}} - V_{\\text{pot,min}})} =: f_U(\\epsilon)"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Swarm of k ≥ 2 alive walkers with fitness potential range bounded below by positive ε-dependent constant",
+        "latex": "V_{\\max,k} - V_{\\min,k} \\ge \\kappa_{V,\\text{gap}}(\\epsilon) > 0"
+      }
+    ],
+    "conclusion": {
+      "text": "Fraction of alive walkers in unfit set U_k bounded below by positive N-uniform ε-dependent constant f_U(ε) > 0",
+      "latex": "\\frac{|U_k|}{k} \\ge f_U(\\epsilon) = \\frac{\\kappa_{V,\\text{gap}}(\\epsilon)}{2(V_{\\text{pot,max}} - V_{\\text{pot,min}})}"
+    },
+    "variables": [
+      {
+        "symbol": "k",
+        "name": "swarm size",
+        "description": "Number of alive walkers in the swarm",
+        "constraints": [
+          "k \\ge 2"
+        ],
+        "tags": [
+          "swarm",
+          "alive-walkers"
+        ]
+      },
+      {
+        "symbol": "\\epsilon",
+        "name": "epsilon",
+        "description": "Small positive parameter for ε-dependence",
+        "constraints": [],
+        "tags": [
+          "parameter",
+          "dependence"
+        ]
+      },
+      {
+        "symbol": "U_k",
+        "name": "unfit set",
+        "description": "Set of unfit walkers in the swarm",
+        "constraints": [],
+        "tags": [
+          "unfit",
+          "set"
+        ]
+      },
+      {
+        "symbol": "V_{\\max,k}",
+        "name": "max fitness potential",
+        "description": "Maximum fitness potential in swarm k",
+        "constraints": [],
+        "tags": [
+          "fitness",
+          "potential",
+          "max"
+        ]
+      },
+      {
+        "symbol": "V_{\\min,k}",
+        "name": "min fitness potential",
+        "description": "Minimum fitness potential in swarm k",
+        "constraints": [],
+        "tags": [
+          "fitness",
+          "potential",
+          "min"
+        ]
+      },
+      {
+        "symbol": "\\kappa_{V,\\text{gap}}(\\epsilon)",
+        "name": "fitness gap constant",
+        "description": "Positive ε-dependent lower bound on potential range",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "gap",
+          "constant"
+        ]
+      },
+      {
+        "symbol": "f_U(\\epsilon)",
+        "name": "unfit fraction constant",
+        "description": "Positive N-uniform ε-dependent lower bound on unfit fraction",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "fraction",
+          "lower-bound"
+        ]
+      },
+      {
+        "symbol": "V_{\\text{pot,max}}",
+        "name": "global max potential",
+        "description": "Global maximum fitness potential",
+        "constraints": [],
+        "tags": [
+          "global",
+          "potential",
+          "max"
+        ]
+      },
+      {
+        "symbol": "V_{\\text{pot,min}}",
+        "name": "global min potential",
+        "description": "Global minimum fitness potential",
+        "constraints": [],
+        "tags": [
+          "global",
+          "potential",
+          "min"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "Fitness potentials are real-valued and bounded globally by V_{pot,max} and V_{pot,min}",
+        "confidence": 0.9
+      },
+      {
+        "text": "The unfit set U_k is a subset of the alive walkers",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not-provided",
+      "steps": []
+    },
+    "tags": [
+      "unfit-fraction",
+      "lower-bound",
+      "swarm",
+      "walkers",
+      "fitness-potential",
+      "epsilon-dependent"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-quantitative-keystone",
+    "title": "The N-Uniform Quantitative Keystone Lemma",
+    "nl_statement": "Under foundational axioms, there exist constants independent of N such that for any pair of swarms, the averaged weighted squared error from both swarms lower bounds the structural variance minus a constant.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\frac{1}{N}\\sum_{i \\in I_{11}} (p_{1,i} + p_{2,i})\\|\\Delta\\delta_{x,i}\\||^2 \\ge \\chi(\\epsilon) V_{\\text{struct}} - g_{\\max}(\\epsilon)"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Foundational axioms from Chapter 4 hold",
+        "latex": null
+      },
+      {
+        "text": "For any pair of swarms (S_1, S_2)",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "There exist R^2_{spread} > 0, \\chi(\\epsilon) > 0, g_{max}(\\epsilon) \\ge 0 independent of N such that the inequality holds",
+      "latex": "there exist: * a structural error threshold $R^2_{\\text{spread}} > 0$, * a minimum feedback coefficient $\\chi(\\epsilon) > 0$, * and a constant offset $g_{\\max}(\\epsilon) \\ge 0$, all of which may depend on $\\epsilon$ but are independent of $N$, such that for any pair of swarms $(S_1, S_2)$: $$ \\frac{1}{N}\\sum_{i \\in I_{11}} (p_{1,i} + p_{2,i})\\|\\Delta\\delta_{x,i}\\||^2 \\ge \\chi(\\epsilon) V_{\\text{struct}} - g_{\\max}(\\epsilon) $$"
+    },
+    "variables": [
+      {
+        "symbol": "N",
+        "name": "Number of agents",
+        "description": "Dimension or size parameter, independent constants do not depend on it",
+        "constraints": [
+          "positive integer"
+        ],
+        "tags": [
+          "dimension",
+          "size",
+          "uniform"
+        ]
+      },
+      {
+        "symbol": "\\\\epsilon",
+        "name": "Error parameter",
+        "description": "Small error tolerance parameter",
+        "constraints": [
+          "0 < \\\\epsilon < 1"
+        ],
+        "tags": [
+          "error",
+          "tolerance",
+          "feedback"
+        ]
+      },
+      {
+        "symbol": "p_{1,i}",
+        "name": "Cloning probability swarm 1",
+        "description": "Cloning probability for agent i in swarm 1",
+        "constraints": [
+          "0 \\\\le p_{1,i} \\\\le 1"
+        ],
+        "tags": [
+          "cloning",
+          "probability",
+          "swarm"
+        ]
+      },
+      {
+        "symbol": "p_{2,i}",
+        "name": "Cloning probability swarm 2",
+        "description": "Cloning probability for agent i in swarm 2",
+        "constraints": [
+          "0 \\\\le p_{2,i} \\\\le 1"
+        ],
+        "tags": [
+          "cloning",
+          "probability",
+          "swarm"
+        ]
+      },
+      {
+        "symbol": "\\\\Delta \\\\delta_{x,i}",
+        "name": "Error deviation",
+        "description": "Delta in position deviation for agent i",
+        "constraints": [
+          "vector in R^d"
+        ],
+        "tags": [
+          "error",
+          "deviation",
+          "position"
+        ]
+      },
+      {
+        "symbol": "V_{struct}",
+        "name": "Structural variance",
+        "description": "Measure of structural error or spread",
+        "constraints": [
+          "non-negative"
+        ],
+        "tags": [
+          "variance",
+          "structural",
+          "error"
+        ]
+      },
+      {
+        "symbol": "R^2_{spread}",
+        "name": "Structural error threshold",
+        "description": "Threshold for structural spread",
+        "constraints": [
+          "positive"
+        ],
+        "tags": [
+          "threshold",
+          "spread",
+          "error"
+        ]
+      },
+      {
+        "symbol": "\\\\chi(\\\\epsilon)",
+        "name": "Feedback coefficient",
+        "description": "Minimum feedback strength depending on epsilon",
+        "constraints": [
+          "positive"
+        ],
+        "tags": [
+          "feedback",
+          "coefficient",
+          "minimum"
+        ]
+      },
+      {
+        "symbol": "g_{max}(\\\\epsilon)",
+        "name": "Constant offset",
+        "description": "Maximum growth or offset term depending on epsilon",
+        "constraints": [
+          "non-negative"
+        ],
+        "tags": [
+          "offset",
+          "constant",
+          "bound"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "Cloning pressure from one swarm suffices even if the other is in low-error state",
+        "confidence": 0.9
+      },
+      {
+        "text": "I_{11} represents a relevant index set for high-error agents",
+        "confidence": 0.8
+      },
+      {
+        "text": "Norms and sums are well-defined under the axioms",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "deferred",
+      "steps": [
+        {
+          "kind": "outline",
+          "text": "Proof demonstrates that even with one high-error swarm, cloning pressure ensures the inequality.",
+          "latex": null
+        }
+      ]
+    },
+    "tags": [
+      "keystone",
+      "quantitative",
+      "uniform",
+      "swarms",
+      "error",
+      "cloning",
+      "drift",
+      "feedback"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-mean-companion-fitness-gap",
+    "title": "Lower Bound on Mean Companion Fitness Gap",
+    "nl_statement": "In a swarm of k ≥ 2 alive walkers with non-degenerate fitness potential range κ_{V,gap}(ε) > 0, partitioned into unfit and fit sets with positive fractions f_U and f_F, for any unfit walker i, the mean companion fitness exceeds its own fitness by at least (f_F/(k-1))(μ_F - μ_U) > 0, where μ_F - μ_U ≥ (f_U/(f_F + f_U²/f_F)) κ_{V,gap}(ε), yielding an overall lower bound Δ_min(ε, f_U, f_F, k) > 0.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\mu_{\\text{comp},i} - V_{k,i} \\geq \\frac{f_F}{k-1} (\\mu_F - \\mu_U) > 0"
+      },
+      {
+        "label": null,
+        "latex": "\\mu_F - \\mu_U \\geq \\frac{f_U}{f_F + f_U^2/f_F} \\kappa_{V,\\text{gap}}(\\epsilon)"
+      },
+      {
+        "label": null,
+        "latex": "\\mu_{\\text{comp},i} - V_{k,i} \\geq \\frac{f_F f_U}{(k-1)(f_F + f_U^2/f_F)} \\kappa_{V,\\text{gap}}(\\epsilon) =: \\Delta_{\\min}(\\epsilon, f_U, f_F, k)"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Swarm of k ≥ 2 alive walkers with non-degenerate fitness potential range κ_{V,gap}(ε) > 0.",
+        "latex": null
+      },
+      {
+        "text": "Unfit set U_k and fit set F_k with fractions f_U = |U_k|/k > 0, f_F = |F_k|/k > 0, f_U + f_F = 1.",
+        "latex": null
+      },
+      {
+        "text": "Mean fitness values μ_U for U_k and μ_F for F_k.",
+        "latex": null
+      },
+      {
+        "text": "For any walker i ∈ U_k.",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The mean companion fitness gap for unfit walkers is bounded below by Δ_min(ε, f_U, f_F, k) > 0.",
+      "latex": "\\mu_{\\text{comp},i} - V_{k,i} \\geq \\Delta_{\\min}(\\epsilon, f_U, f_F, k) > 0"
+    },
+    "variables": [
+      {
+        "symbol": "k",
+        "name": "swarm size",
+        "description": "Number of alive walkers, integer ≥ 2.",
+        "constraints": [
+          "k ≥ 2",
+          "integer"
+        ],
+        "tags": [
+          "swarm",
+          "population"
+        ]
+      },
+      {
+        "symbol": "ε",
+        "name": "epsilon",
+        "description": "Parameter for fitness potential range.",
+        "constraints": [],
+        "tags": [
+          "parameter",
+          "gap"
+        ]
+      },
+      {
+        "symbol": "κ_{V,gap}(ε)",
+        "name": "fitness gap",
+        "description": "Non-degenerate fitness potential range, >0.",
+        "constraints": [
+          "κ_{V,gap}(ε) > 0"
+        ],
+        "tags": [
+          "fitness",
+          "range"
+        ]
+      },
+      {
+        "symbol": "U_k",
+        "name": "unfit set",
+        "description": "Set of unfit walkers.",
+        "constraints": [
+          "|U_k| / k = f_U > 0"
+        ],
+        "tags": [
+          "unfit",
+          "set"
+        ]
+      },
+      {
+        "symbol": "F_k",
+        "name": "fit set",
+        "description": "Set of fit walkers.",
+        "constraints": [
+          "|F_k| / k = f_F > 0",
+          "f_U + f_F = 1"
+        ],
+        "tags": [
+          "fit",
+          "set"
+        ]
+      },
+      {
+        "symbol": "f_U",
+        "name": "unfit fraction",
+        "description": "Population fraction of unfit walkers.",
+        "constraints": [
+          "f_U > 0"
+        ],
+        "tags": [
+          "fraction",
+          "unfit"
+        ]
+      },
+      {
+        "symbol": "f_F",
+        "name": "fit fraction",
+        "description": "Population fraction of fit walkers.",
+        "constraints": [
+          "f_F > 0"
+        ],
+        "tags": [
+          "fraction",
+          "fit"
+        ]
+      },
+      {
+        "symbol": "μ_U",
+        "name": "mean unfit fitness",
+        "description": "Mean fitness of unfit set.",
+        "constraints": [],
+        "tags": [
+          "mean",
+          "fitness"
+        ]
+      },
+      {
+        "symbol": "μ_F",
+        "name": "mean fit fitness",
+        "description": "Mean fitness of fit set.",
+        "constraints": [],
+        "tags": [
+          "mean",
+          "fitness"
+        ]
+      },
+      {
+        "symbol": "V_{k,i}",
+        "name": "walker fitness",
+        "description": "Fitness of walker i in swarm k.",
+        "constraints": [
+          "i ∈ U_k"
+        ],
+        "tags": [
+          "fitness",
+          "walker"
+        ]
+      },
+      {
+        "symbol": "μ_{comp,i}",
+        "name": "mean companion fitness",
+        "description": "Mean fitness of companions of walker i.",
+        "constraints": [],
+        "tags": [
+          "mean",
+          "companion"
+        ]
+      },
+      {
+        "symbol": "Δ_min(ε, f_U, f_F, k)",
+        "name": "minimum gap",
+        "description": "N-uniform lower bound on fitness gap.",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "lower bound",
+          "gap"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "Walkers have assigned fitness values V_{k,i}.",
+        "confidence": 1.0
+      },
+      {
+        "text": "Companions for walker i are the other k-1 walkers.",
+        "confidence": 1.0
+      },
+      {
+        "text": "Fitness potential range is defined and non-degenerate for the given ε.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "swarm",
+      "walkers",
+      "fitness",
+      "companion",
+      "lower bound",
+      "gap",
+      "unfit",
+      "degenerate"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-unfit-cloning-pressure",
+    "title": "Guaranteed Cloning Pressure on the Unfit Set",
+    "nl_statement": "For a swarm of at least two alive walkers with fitness potential range bounded below by κ_{V,gap}(ε) > 0, every walker in the unfit set has total cloning probability at least the positive constant p_u(ε) > 0.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "p_{k,i} = \\mathbb{E}_{c \\sim \\mathbb{C}_i(S_k)}[\\pi(S(V_{k,c}, V_{k,i}))] \\ge p_u(\\epsilon) > 0"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Swarm k has k ≥ 2 alive walkers.",
+        "latex": "k \\geq 2"
+      },
+      {
+        "text": "The fitness potential range of the swarm is bounded below by κ_{V,gap}(ε) > 0.",
+        "latex": "\\kappa_{V,\\text{gap}}(\\epsilon) > 0"
+      },
+      {
+        "text": "Walker i is in the unfit set U_k.",
+        "latex": "i \\in U_k"
+      }
+    ],
+    "conclusion": {
+      "text": "The total cloning probability p_{k,i} for walker i satisfies p_{k,i} ≥ p_u(ε) > 0, where p_u(ε) is a positive, N-uniform, ε-dependent constant.",
+      "latex": "p_{k,i} = \\mathbb{E}_{c \\sim \\mathbb{C}_i(S_k)}[\\pi(S(V_{k,c}, V_{k,i}))] \\ge p_u(\\epsilon) > 0"
+    },
+    "variables": [
+      {
+        "symbol": "k",
+        "name": "swarm index",
+        "description": "Index of the swarm.",
+        "constraints": [
+          "k ≥ 2"
+        ],
+        "tags": [
+          "swarm"
+        ]
+      },
+      {
+        "symbol": "i",
+        "name": "walker index",
+        "description": "Index of an unfit walker.",
+        "constraints": [
+          "i ∈ U_k"
+        ],
+        "tags": [
+          "walker",
+          "unfit"
+        ]
+      },
+      {
+        "symbol": "ε",
+        "name": "error parameter",
+        "description": "Small positive parameter controlling approximations.",
+        "constraints": [
+          "ε > 0"
+        ],
+        "tags": [
+          "epsilon",
+          "approximation"
+        ]
+      },
+      {
+        "symbol": "p_u(ε)",
+        "name": "lower bound constant",
+        "description": "Positive, N-uniform, ε-dependent lower bound on cloning probability.",
+        "constraints": [
+          "p_u(ε) > 0"
+        ],
+        "tags": [
+          "bound",
+          "cloning"
+        ]
+      },
+      {
+        "symbol": "κ_{V,gap}(ε)",
+        "name": "fitness gap",
+        "description": "Lower bound on the fitness potential range.",
+        "constraints": [
+          "κ_{V,gap}(ε) > 0"
+        ],
+        "tags": [
+          "fitness",
+          "gap"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The bound p_u(ε) is independent of the swarm size N.",
+        "confidence": 0.9
+      },
+      {
+        "text": "All walkers have defined fitness potentials V_{k,j}.",
+        "confidence": 1.0
+      },
+      {
+        "text": "The cloning distribution ℂ_i(S_k) is well-defined and supports expectation.",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "swarm",
+      "walkers",
+      "unfit set",
+      "cloning probability",
+      "fitness potential",
+      "epsilon-dependent"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-variance-concentration-Hk",
+    "title": "Variance Concentration in the High-Error Set",
+    "nl_statement": "For a swarm in a high-error state with variance exceeding R²_var, the sum of squared deviations in the high-error set H_k(ε) is at least a fixed positive fraction c_H of the total sum of squared deviations across the swarm.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\sum_{i \\in H_k(\\epsilon)} \\|\\delta_{x,k,i}\\|^2 \\ge c_H \\sum_{i \\in \\mathcal{A}_k} \\|\\delta_{x,k,i}\\|^2"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Swarm k is in a high-error state, i.e., Var_k(x) > R²_var",
+        "latex": "\\text{Var}_k(x) > R^2_{\\text{var}}"
+      },
+      {
+        "text": "There exists a strictly positive N-uniform constant c_H in (0,1]",
+        "latex": "c_H \\in (0, 1]"
+      }
+    ],
+    "conclusion": {
+      "text": "The sum of squared deviations from the mean for walkers in H_k(ε) is bounded below by c_H times the total sum of squared deviations",
+      "latex": "\\sum_{i \\in H_k(\\epsilon)} \\|\\delta_{x,k,i}\\|^2 \\ge c_H \\sum_{i \\in \\mathcal{A}_k} \\|\\delta_{x,k,i}\\|^2"
+    },
+    "variables": [
+      {
+        "symbol": "k",
+        "name": "swarm index",
+        "description": "Index identifying the swarm",
+        "constraints": [],
+        "tags": [
+          "swarm"
+        ]
+      },
+      {
+        "symbol": "H_k(\\epsilon)",
+        "name": "high-error set",
+        "description": "Unified set of walkers in swarm k with errors exceeding ε",
+        "constraints": [
+          "subset of A_k"
+        ],
+        "tags": [
+          "high-error",
+          "set"
+        ]
+      },
+      {
+        "symbol": "c_H",
+        "name": "concentration constant",
+        "description": "Strictly positive N-uniform constant bounding the variance fraction",
+        "constraints": [
+          "c_H ∈ (0,1]"
+        ],
+        "tags": [
+          "constant",
+          "N-uniform"
+        ]
+      },
+      {
+        "symbol": "\\delta_{x,k,i}",
+        "name": "position deviation",
+        "description": "Squared deviation of walker i's position from the swarm mean",
+        "constraints": [],
+        "tags": [
+          "deviation",
+          "position"
+        ]
+      },
+      {
+        "symbol": "\\mathcal{A}_k",
+        "name": "swarm agents",
+        "description": "Set of all agents/walkers in swarm k",
+        "constraints": [],
+        "tags": [
+          "agents",
+          "swarm"
+        ]
+      },
+      {
+        "symbol": "R^2_{\\text{var}}",
+        "name": "variance threshold",
+        "description": "Threshold defining high-error state",
+        "constraints": [],
+        "tags": [
+          "threshold",
+          "variance"
+        ]
+      },
+      {
+        "symbol": "\\epsilon",
+        "name": "error parameter",
+        "description": "Error level parameter for defining H_k",
+        "constraints": [],
+        "tags": [
+          "error",
+          "parameter"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "H_k(ε) is non-empty and well-defined based on error thresholds from prior geometric analysis",
+        "confidence": 0.9
+      },
+      {
+        "text": "δ_{x,k,i} represents deviations within Euclidean space, with norm ||·||² being the squared Euclidean norm",
+        "confidence": 1.0
+      },
+      {
+        "text": "N refers to the number of agents, and N-uniform means independent of N as N→∞",
+        "confidence": 0.8
+      },
+      {
+        "text": "The swarm model assumes independent or structured walker positions contributing to variance",
+        "confidence": 0.7
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "variance",
+      "high-error set",
+      "swarm",
+      "concentration",
+      "deviations",
+      "N-uniform"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-error-concentration-target-set",
+    "title": "Error Concentration in the Target Set",
+    "nl_statement": "For a swarm state (S₁, S₂) in the high-error regime with V_struct > R²_spread, where k is the high-variance swarm and I_target = I_{11} ∩ U_k ∩ H_k(ε) is the critical target set, the average positional structural error in I_target is bounded below by c_err(ε) V_struct - g_err(ε).",
+    "equations": [
+      {
+        "label": "ineq-lem-error-concentration",
+        "latex": "\\frac{1}{N}\\sum_{i \\in I_{\\text{target}}} \\|\\Delta\\delta_{x,i}\\|^2 \\ge c_{err}(\\epsilon)V_{\\mathrm{struct}} - g_{err}(\\epsilon)"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Swarm state (S₁, S₂) is in the high-error regime",
+        "latex": null
+      },
+      {
+        "text": "V_struct > R²_spread",
+        "latex": "V_{\\mathrm{struct}} > R^2_{\\mathrm{spread}}"
+      },
+      {
+        "text": "k is the high-variance swarm",
+        "latex": null
+      },
+      {
+        "text": "I_target := I_{11} ∩ U_k ∩ H_k(ε) is the critical target set",
+        "latex": "I_{\\text{target}} := I_{11} \\cap U_k \\cap H_k(\\epsilon)"
+      }
+    ],
+    "conclusion": {
+      "text": "The positional structural error concentrated within this target set is bounded below by a linear function of the total structural error",
+      "latex": "\\frac{1}{N}\\sum_{i \\in I_{\\text{target}}} \\|\\Delta\\delta_{x,i}\\|^2 \\ge c_{err}(\\epsilon)V_{\\mathrm{struct}} - g_{err}(\\epsilon)"
+    },
+    "variables": [
+      {
+        "symbol": "S_1",
+        "name": "S₁",
+        "description": "First swarm component",
+        "constraints": [],
+        "tags": [
+          "swarm"
+        ]
+      },
+      {
+        "symbol": "S_2",
+        "name": "S₂",
+        "description": "Second swarm component",
+        "constraints": [],
+        "tags": [
+          "swarm"
+        ]
+      },
+      {
+        "symbol": "V_struct",
+        "name": "V_struct",
+        "description": "Total structural error variance",
+        "constraints": [
+          "> R²_spread"
+        ],
+        "tags": [
+          "variance",
+          "structural"
+        ]
+      },
+      {
+        "symbol": "R_spread",
+        "name": "R_spread",
+        "description": "Spread radius",
+        "constraints": [],
+        "tags": [
+          "spread",
+          "radius"
+        ]
+      },
+      {
+        "symbol": "k",
+        "name": "k",
+        "description": "High-variance swarm index",
+        "constraints": [
+          "high-variance"
+        ],
+        "tags": [
+          "swarm",
+          "index"
+        ]
+      },
+      {
+        "symbol": "I_target",
+        "name": "I_target",
+        "description": "Critical target set",
+        "constraints": [
+          "I_{11} ∩ U_k ∩ H_k(ε)"
+        ],
+        "tags": [
+          "set",
+          "target"
+        ]
+      },
+      {
+        "symbol": "ε",
+        "name": "epsilon",
+        "description": "Error parameter",
+        "constraints": [],
+        "tags": [
+          "epsilon",
+          "error"
+        ]
+      },
+      {
+        "symbol": "Δδ_{x,i}",
+        "name": "Delta delta_x,i",
+        "description": "Positional structural error for agent i",
+        "constraints": [],
+        "tags": [
+          "error",
+          "positional"
+        ]
+      },
+      {
+        "symbol": "N",
+        "name": "N",
+        "description": "Total number of agents",
+        "constraints": [],
+        "tags": [
+          "agents",
+          "total"
+        ]
+      },
+      {
+        "symbol": "c_err(ε)",
+        "name": "c_err(epsilon)",
+        "description": "Error concentration coefficient depending on ε",
+        "constraints": [],
+        "tags": [
+          "coefficient",
+          "error"
+        ]
+      },
+      {
+        "symbol": "g_err(ε)",
+        "name": "g_err(epsilon)",
+        "description": "Error gap term depending on ε",
+        "constraints": [],
+        "tags": [
+          "gap",
+          "error"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "Swarm state (S₁, S₂) satisfies necessary positivity and boundedness conditions for errors and variances",
+        "confidence": 0.8
+      },
+      {
+        "text": "Sets I_{11}, U_k, H_k(ε) are non-empty and well-defined in the context",
+        "confidence": 0.9
+      },
+      {
+        "text": "N is the total number of agents in the swarm",
+        "confidence": 1.0
+      },
+      {
+        "text": "c_err(ε) and g_err(ε) are positive functions derived from prior analyses",
+        "confidence": 0.7
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not-provided",
+      "steps": []
+    },
+    "tags": [
+      "error concentration",
+      "target set",
+      "structural error",
+      "swarm state",
+      "high-error regime",
+      "variance",
+      "inequality bound"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-dead-walker-clone-prob",
+    "title": "Total Cloning Probability for Dead Walkers",
+    "nl_statement": "Under the Axiom of Guaranteed Revival (ε_clone · p_max < η^{α+β}), any dead walker clones with probability 1.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "i \\in \\mathcal{D}(S) \\implies p_i = 1"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Axiom of Guaranteed Revival: ε_clone · p_max < η^{α+β}",
+        "latex": "\\varepsilon_{\\text{clone}} \\cdot p_{\\max} < \\eta^{\\alpha + \\beta}"
+      },
+      {
+        "text": "i is a dead walker in state S",
+        "latex": "i \\in \\mathcal{D}(S)"
+      }
+    ],
+    "conclusion": {
+      "text": "The cloning probability for dead walker i is 1",
+      "latex": "p_i = 1"
+    },
+    "variables": [
+      {
+        "symbol": "i",
+        "name": "walker index",
+        "description": "Index of a walker in the system",
+        "constraints": [
+          "i \\in \\mathcal{D}(S)"
+        ],
+        "tags": [
+          "index",
+          "dead"
+        ]
+      },
+      {
+        "symbol": "p_i",
+        "name": "cloning probability",
+        "description": "Cloning probability for walker i",
+        "constraints": [],
+        "tags": [
+          "probability"
+        ]
+      },
+      {
+        "symbol": "\\varepsilon_{\\text{clone}}",
+        "name": "cloning error",
+        "description": "Error parameter in cloning process",
+        "constraints": [],
+        "tags": [
+          "error"
+        ]
+      },
+      {
+        "symbol": "p_{\\max}",
+        "name": "maximum probability",
+        "description": "Upper bound on probabilities in the system",
+        "constraints": [],
+        "tags": [
+          "maximum"
+        ]
+      },
+      {
+        "symbol": "\\eta",
+        "name": "eta parameter",
+        "description": "Base parameter in exponential bound",
+        "constraints": [],
+        "tags": [
+          "base"
+        ]
+      },
+      {
+        "symbol": "\\alpha",
+        "name": "alpha exponent",
+        "description": "Exponent in the revival bound",
+        "constraints": [],
+        "tags": [
+          "exponent"
+        ]
+      },
+      {
+        "symbol": "\\beta",
+        "name": "beta exponent",
+        "description": "Exponent in the revival bound",
+        "constraints": [],
+        "tags": [
+          "exponent"
+        ]
+      },
+      {
+        "symbol": "\\mathcal{D}(S)",
+        "name": "dead walkers set",
+        "description": "Set of dead walkers in state S",
+        "constraints": [],
+        "tags": [
+          "set",
+          "dead"
+        ]
+      }
+    ],
+    "implicit_assumptions": [],
+    "local_refs": [],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "dead-walker",
+      "cloning",
+      "probability",
+      "guaranteed-revival",
+      "axiom"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-variance-change-decomposition",
+    "title": "Variance Change Decomposition",
+    "nl_statement": "The total change in positional variance decomposes into sums over alive walker contributions and status change contributions for k from 1 to 2.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\Delta V_{\\text{Var},x} = \\sum_{k=1}^{2} \\left[\\Delta V_{\\text{Var},x}^{(k,\\text{alive})} + \\Delta V_{\\text{Var},x}^{(k,\\text{status})}\\right]"
+      },
+      {
+        "label": null,
+        "latex": "\\Delta V_{\\text{Var},x}^{(k,\\text{alive})} = \\frac{1}{N}\\sum_{i \\in \\mathcal{A}(S_k)} \\left[\\|\\delta'_{x,k,i}\\|^2 - \\|\\delta_{x,k,i}\\|^2\\right]"
+      },
+      {
+        "label": null,
+        "latex": "\\Delta V_{\\text{Var},x}^{(k,\\text{status})} = \\frac{1}{N}\\sum_{i \\in \\mathcal{D}(S_k)} \\|\\delta'_{x,k,i}\\|^2"
+      }
+    ],
+    "hypotheses": [],
+    "conclusion": {
+      "text": "The total change in positional variance can be decomposed as \\Delta V_{\\text{Var},x} = \\sum_{k=1}^{2} \\left[\\Delta V_{\\text{Var},x}^{(k,\\text{alive})} + \\Delta V_{\\text{Var},x}^{(k,\\text{status})}\\right], with the specified contributions from alive walkers and status changes.",
+      "latex": "\\Delta V_{\\text{Var},x} = \\sum_{k=1}^{2} \\left[\\Delta V_{\\text{Var},x}^{(k,\\text{alive})} + \\Delta V_{\\text{Var},x}^{(k,\\text{status})}\\right]"
+    },
+    "variables": [
+      {
+        "symbol": "\\Delta V_{\\text{Var},x}",
+        "name": "total-variance-change",
+        "description": "Total change in positional variance.",
+        "constraints": [],
+        "tags": [
+          "variance"
+        ]
+      },
+      {
+        "symbol": "N",
+        "name": "total-walkers",
+        "description": "Total number of walkers.",
+        "constraints": [
+          "positive-integer"
+        ],
+        "tags": [
+          "count"
+        ]
+      },
+      {
+        "symbol": "k",
+        "name": "dimension-index",
+        "description": "Index for dimensions, from 1 to 2.",
+        "constraints": [
+          "k \\in {1,2}"
+        ],
+        "tags": [
+          "index"
+        ]
+      },
+      {
+        "symbol": "\\mathcal{A}(S_k)",
+        "name": "alive-set",
+        "description": "Set of alive walkers in state S_k.",
+        "constraints": [],
+        "tags": [
+          "alive"
+        ]
+      },
+      {
+        "symbol": "\\mathcal{D}(S_k)",
+        "name": "dead-set",
+        "description": "Set of dead or status-changed walkers in state S_k.",
+        "constraints": [],
+        "tags": [
+          "status-change"
+        ]
+      },
+      {
+        "symbol": "\\delta_{x,k,i}",
+        "name": "centered-position",
+        "description": "Centered position of walker i in dimension k before update.",
+        "constraints": [],
+        "tags": [
+          "position"
+        ]
+      },
+      {
+        "symbol": "\\delta'_{x,k,i}",
+        "name": "updated-centered-position",
+        "description": "Centered position of walker i in dimension k after cloning or update.",
+        "constraints": [],
+        "tags": [
+          "position"
+        ]
+      },
+      {
+        "symbol": "S_k",
+        "name": "state-k",
+        "description": "State associated with dimension k.",
+        "constraints": [],
+        "tags": [
+          "state"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "N is the fixed total number of walkers.",
+        "confidence": 1.0
+      },
+      {
+        "text": "Positions are in a vector space with Euclidean norm.",
+        "confidence": 0.9
+      },
+      {
+        "text": "\\delta_{x,k,i} represents centered deviations from the mean position.",
+        "confidence": 1.0
+      },
+      {
+        "text": "The decomposition applies in the context of a walker simulation with cloning and status updates.",
+        "confidence": 0.8
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not-provided",
+      "steps": []
+    },
+    "tags": [
+      "variance-decomposition",
+      "positional-variance",
+      "alive-walkers",
+      "status-changes",
+      "cloning",
+      "centered-positions"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-keystone-contraction-alive",
+    "title": "Keystone-Driven Contraction for Stably Alive Walkers",
+    "nl_statement": "For walkers in the stably alive set $I_{11}$, the expected change in their contribution to variance satisfies $\\mathbb{E}_{\\text{clone}}\\left[\\sum_{i \\in I_{11}} \\sum_{k=1,2} \\left(\\|\\delta'_{x,k,i}\\|^2 - \\|\\delta_{x,k,i}\\|^2\\right)\\right] \\leq -\\frac{\\chi(\\epsilon)}{2N} \\cdot V_{\\text{struct}} + \\frac{g_{\\max}(\\epsilon)}{N} + C_{\\text{pers}}$, where $\\chi(\\epsilon) > 0$ and $g_{\\max}(\\epsilon)$ are the Keystone constants, and $C_{\\text{pers}}$ accounts for persisting walkers.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\mathbb{E}_{\\text{clone}}\\left[\\sum_{i \\in I_{11}} \\sum_{k=1,2} \\left(\\|\\delta'_{x,k,i}\\|^2 - \\|\\delta_{x,k,i}\\|^2\\right)\\right] \\leq -\\frac{\\chi(\\epsilon)}{2N} \\cdot V_{\\text{struct}} + \\frac{g_{\\max}(\\epsilon)}{N} + C_{\\text{pers}}"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Walkers in the stably alive set $I_{11}$",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": null,
+      "latex": "\\mathbb{E}_{\\text{clone}}\\left[\\sum_{i \\in I_{11}} \\sum_{k=1,2} \\left(\\|\\delta'_{x,k,i}\\|^2 - \\|\\delta_{x,k,i}\\|^2\\right)\\right] \\leq -\\frac{\\chi(\\epsilon)}{2N} \\cdot V_{\\text{struct}} + \\frac{g_{\\max}(\\epsilon)}{N} + C_{\\text{pers}}"
+    },
+    "variables": [
+      {
+        "symbol": "I_{11}",
+        "name": "stably alive set",
+        "description": "Set of walkers alive in both swarms",
+        "constraints": [],
+        "tags": [
+          "set",
+          "walkers"
+        ]
+      },
+      {
+        "symbol": "\\chi(\\epsilon)",
+        "name": "chi epsilon",
+        "description": "Positive Keystone constant",
+        "constraints": [
+          "\\chi(\\epsilon) > 0"
+        ],
+        "tags": [
+          "constant",
+          "keystone"
+        ]
+      },
+      {
+        "symbol": "g_{\\max}(\\epsilon)",
+        "name": "g max epsilon",
+        "description": "Maximum Keystone constant",
+        "constraints": [],
+        "tags": [
+          "constant",
+          "keystone"
+        ]
+      },
+      {
+        "symbol": "V_{\\text{struct}}",
+        "name": "structural variance",
+        "description": "Structural component of variance",
+        "constraints": [],
+        "tags": [
+          "variance"
+        ]
+      },
+      {
+        "symbol": "C_{\\text{pers}}",
+        "name": "persistence constant",
+        "description": "Term accounting for persisting walkers",
+        "constraints": [],
+        "tags": [
+          "constant",
+          "persistence"
+        ]
+      },
+      {
+        "symbol": "N",
+        "name": "number of walkers",
+        "description": "Total number of walkers per swarm",
+        "constraints": [],
+        "tags": [
+          "parameter",
+          "scale"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "Definitions of delta vectors and cloning process from context",
+        "confidence": 0.9
+      },
+      {
+        "text": "Keystone constants defined in referenced lemma",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [
+      "lem-quantitative-keystone"
+    ],
+    "proof": {
+      "availability": "not-provided",
+      "steps": []
+    },
+    "tags": [
+      "keystone",
+      "contraction",
+      "stably-alive",
+      "variance",
+      "walkers",
+      "expected-change"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-dead-walker-revival-bounded",
+    "title": "Bounded Contribution from Dead Walker Revival",
+    "nl_statement": "The contribution to variance from revived dead walkers is bounded.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\mathbb{E}_{\\text{clone}}\\left[\\sum_{k=1,2} \\Delta V_{\\text{Var},x}^{(k,\\text{status})}\\right] \\leq \\frac{2}{N} \\sum_{k=1,2} |\\mathcal{D}(S_k)| \\cdot D_{\\text{valid}}^2"
+      }
+    ],
+    "hypotheses": [],
+    "conclusion": {
+      "text": "The contribution to variance from revived dead walkers is bounded.",
+      "latex": "\\mathbb{E}_{\\text{clone}}\\left[\\sum_{k=1,2} \\Delta V_{\\text{Var},x}^{(k,\\text{status})}\\right] \\leq \\frac{2}{N} \\sum_{k=1,2} |\\mathcal{D}(S_k)| \\cdot D_{\\text{valid}}^2"
+    },
+    "variables": [
+      {
+        "symbol": "N",
+        "name": "N",
+        "description": "Number of clones or particles.",
+        "constraints": [],
+        "tags": [
+          "cloning"
+        ]
+      },
+      {
+        "symbol": "\\mathcal{D}(S_k)",
+        "name": "\\mathcal{D}(S_k)",
+        "description": "Size of the dead set for state S_k.",
+        "constraints": [
+          "k=1,2"
+        ],
+        "tags": [
+          "dead set"
+        ]
+      },
+      {
+        "symbol": "D_{\\text{valid}}",
+        "name": "D_valid",
+        "description": "Bound on valid displacements or similar.",
+        "constraints": [],
+        "tags": [
+          "displacement"
+        ]
+      },
+      {
+        "symbol": "\\Delta V_{\\text{Var},x}^{(k,\\text{status})}",
+        "name": "\\Delta V_{Var,x}^{(k,status)}",
+        "description": "Change in variance due to status update for walker k.",
+        "constraints": [
+          "k=1,2"
+        ],
+        "tags": [
+          "variance",
+          "status"
+        ]
+      },
+      {
+        "symbol": "\\mathbb{E}_{\\text{clone}}",
+        "name": "E_clone",
+        "description": "Expectation over cloning process.",
+        "constraints": [],
+        "tags": [
+          "expectation",
+          "cloning"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The process involves two walkers (k=1,2) with dead sets \\mathcal{D}(S_k).",
+        "confidence": 0.9
+      },
+      {
+        "text": "N is a positive integer representing the number of clones.",
+        "confidence": 0.8
+      },
+      {
+        "text": "D_valid is a non-negative bound on relevant quantities.",
+        "confidence": 0.8
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "variance",
+      "dead walkers",
+      "revival",
+      "bounding",
+      "cloning",
+      "status change"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-fitness-gradient-boundary",
+    "title": "Fitness Gradient from Boundary Proximity",
+    "nl_statement": "Walkers closer to the boundary have systematically lower fitness potential than similar walkers farther from it, under the fitness evaluation pipeline.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\varphi_{\\text{barrier}}(x_i) - \\varphi_{\\text{barrier}}(x_j) = \\Delta_{\\text{barrier}} > 0"
+      },
+      {
+        "label": null,
+        "latex": "V_{\\text{fit},i} \\leq V_{\\text{fit},j} - f(\\Delta_{\\text{barrier}})"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Two walkers i and j with similar positions and velocities, except that walker i is closer to the boundary than walker j.",
+        "latex": null
+      },
+      {
+        "text": "\\varphi_{\\text{barrier}}(x_i) - \\varphi_{\\text{barrier}}(x_j) = \\Delta_{\\text{barrier}} > 0",
+        "latex": "\\varphi_{\\text{barrier}}(x_i) - \\varphi_{\\text{barrier}}(x_j) = \\Delta_{\\text{barrier}} > 0"
+      }
+    ],
+    "conclusion": {
+      "text": "Under the fitness evaluation pipeline, walker i has systematically lower fitness potential",
+      "latex": "V_{\\text{fit},i} \\leq V_{\\text{fit},j} - f(\\Delta_{\\text{barrier}})"
+    },
+    "variables": [
+      {
+        "symbol": "i",
+        "name": "walker i",
+        "description": "Walker closer to the boundary",
+        "constraints": [
+          "closer to boundary"
+        ],
+        "tags": [
+          "walker"
+        ]
+      },
+      {
+        "symbol": "j",
+        "name": "walker j",
+        "description": "Walker farther from the boundary",
+        "constraints": [
+          "farther from boundary"
+        ],
+        "tags": [
+          "walker"
+        ]
+      },
+      {
+        "symbol": "x_i",
+        "name": "position i",
+        "description": "Position of walker i",
+        "constraints": [],
+        "tags": [
+          "position"
+        ]
+      },
+      {
+        "symbol": "x_j",
+        "name": "position j",
+        "description": "Position of walker j",
+        "constraints": [],
+        "tags": [
+          "position"
+        ]
+      },
+      {
+        "symbol": "\\varphi_{\\text{barrier}}",
+        "name": "barrier potential",
+        "description": "Potential function measuring proximity to boundary",
+        "constraints": [],
+        "tags": [
+          "potential",
+          "barrier"
+        ]
+      },
+      {
+        "symbol": "\\Delta_{\\text{barrier}}",
+        "name": "barrier difference",
+        "description": "Difference in barrier potential between i and j",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "difference",
+          "barrier"
+        ]
+      },
+      {
+        "symbol": "V_{\\text{fit},i}",
+        "name": "fitness potential i",
+        "description": "Fitness potential for walker i",
+        "constraints": [],
+        "tags": [
+          "fitness"
+        ]
+      },
+      {
+        "symbol": "V_{\\text{fit},j}",
+        "name": "fitness potential j",
+        "description": "Fitness potential for walker j",
+        "constraints": [],
+        "tags": [
+          "fitness"
+        ]
+      },
+      {
+        "symbol": "f",
+        "name": "penalty function",
+        "description": "Function applying penalty based on barrier difference",
+        "constraints": [],
+        "tags": [
+          "function",
+          "penalty"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "Walkers i and j have similar positions and velocities apart from boundary proximity",
+        "confidence": 1.0
+      },
+      {
+        "text": "Fitness evaluation pipeline integrates barrier proximity into fitness calculation as per Chapter 5",
+        "confidence": 0.9
+      },
+      {
+        "text": "f is a positive decreasing function of \\Delta_{\\text{barrier}}",
+        "confidence": 0.8
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "fitness",
+      "boundary",
+      "gradient",
+      "walkers",
+      "proximity",
+      "potential"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-boundary-enhanced-cloning",
+    "title": "Enhanced Cloning Probability Near Boundary",
+    "nl_statement": "For any walker i in the boundary-exposed set \\mathcal{E}_{\\text{boundary}}(S), its cloning probability p_i satisfies p_i \\geq p_{\\text{boundary}}(\\phi_{\\text{thresh}}) > 0.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "p_i \\geq p_{\\text{boundary}}(\\phi_{\\text{thresh}}) > 0"
+      }
+    ],
+    "hypotheses": [],
+    "conclusion": {},
+    "variables": [
+      {
+        "symbol": "i",
+        "name": "walker index",
+        "description": "Index of a walker in the boundary-exposed set",
+        "constraints": [
+          "i \\in \\mathcal{E}_{\\text{boundary}}(S)"
+        ],
+        "tags": [
+          "walker",
+          "index"
+        ]
+      },
+      {
+        "symbol": "S",
+        "name": "system configuration",
+        "description": "The system or set defining the boundary-exposed walkers",
+        "constraints": [],
+        "tags": [
+          "system",
+          "configuration"
+        ]
+      },
+      {
+        "symbol": "\\mathcal{E}_{\\text{boundary}}(S)",
+        "name": "boundary-exposed set",
+        "description": "Set of walkers exposed to the boundary in system S",
+        "constraints": [],
+        "tags": [
+          "set",
+          "boundary",
+          "exposed"
+        ]
+      },
+      {
+        "symbol": "p_i",
+        "name": "cloning probability",
+        "description": "Cloning probability for walker i",
+        "constraints": [
+          "p_i \\geq 0"
+        ],
+        "tags": [
+          "probability",
+          "cloning"
+        ]
+      },
+      {
+        "symbol": "p_{\\text{boundary}}",
+        "name": "boundary cloning probability function",
+        "description": "Function giving minimum cloning probability near boundary",
+        "constraints": [],
+        "tags": [
+          "function",
+          "boundary",
+          "probability"
+        ]
+      },
+      {
+        "symbol": "\\phi_{\\text{thresh}}",
+        "name": "threshold phase",
+        "description": "Threshold value for the phase or angle parameter",
+        "constraints": [],
+        "tags": [
+          "threshold",
+          "phase"
+        ]
+      }
+    ],
+    "implicit_assumptions": [],
+    "local_refs": [],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "cloning probability",
+      "boundary-exposed",
+      "walkers",
+      "enhanced",
+      "inequality"
+    ]
+  },
+  {
+    "type": "lemma",
+    "label": "lem-barrier-reduction-cloning",
+    "title": "Expected Barrier Reduction for Cloned Walker",
+    "nl_statement": "When a boundary-exposed walker $i$ clones, the expected barrier penalty after cloning is at most the expected barrier penalty of its companion plus $C_{\\text{jitter}} = O(\\sigma_x^2)$. Furthermore, if the companion is from the safe interior, the expected barrier penalty is at most $C_{\\text{jitter}}$.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\mathbb{E}[\\varphi_{\\text{barrier}}(x'_i) \\mid i \\text{ clones}] \\leq \\mathbb{E}[\\varphi_{\\text{barrier}}(x_{c_i})] + C_{\\text{jitter}}"
+      },
+      {
+        "label": null,
+        "latex": "C_{\\text{jitter}} = O(\\sigma_x^2)"
+      },
+      {
+        "label": null,
+        "latex": "\\mathbb{E}[\\varphi_{\\text{barrier}}(x'_i) \\mid c_i \\in \\mathcal{I}_{\\text{safe}}] \\leq C_{\\text{jitter}}"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "a boundary-exposed walker $i$ clones",
+        "latex": null
+      },
+      {
+        "text": "the companion $c_i$ is from the safe interior $\\mathcal{I}_{\\text{safe}}$ (for the second bound)",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": null,
+      "latex": "\\mathbb{E}[\\varphi_{\\text{barrier}}(x'_i) \\mid i \\text{ clones}] \\leq \\mathbb{E}[\\varphi_{\\text{barrier}}(x_{c_i})] + C_{\\text{jitter}} \\quad \\text{and} \\quad \\mathbb{E}[\\varphi_{\\text{barrier}}(x'_i) \\mid c_i \\in \\mathcal{I}_{\\text{safe}}] \\leq C_{\\text{jitter}}"
+    },
+    "variables": [
+      {
+        "symbol": "i",
+        "name": "walker index",
+        "description": "Index of the boundary-exposed walker that clones",
+        "constraints": [
+          "boundary-exposed"
+        ],
+        "tags": [
+          "walker"
+        ]
+      },
+      {
+        "symbol": "x'_i",
+        "name": "cloned walker position",
+        "description": "Position of the cloned walker after cloning",
+        "constraints": [],
+        "tags": [
+          "position"
+        ]
+      },
+      {
+        "symbol": "\\varphi_{\\text{barrier}}",
+        "name": "barrier penalty function",
+        "description": "Function measuring the barrier penalty at a position",
+        "constraints": [],
+        "tags": [
+          "barrier",
+          "function"
+        ]
+      },
+      {
+        "symbol": "x_{c_i}",
+        "name": "companion position",
+        "description": "Position of the companion walker used in cloning",
+        "constraints": [],
+        "tags": [
+          "position",
+          "companion"
+        ]
+      },
+      {
+        "symbol": "c_i",
+        "name": "companion index",
+        "description": "Index of the companion walker",
+        "constraints": [],
+        "tags": [
+          "companion"
+        ]
+      },
+      {
+        "symbol": "C_{\\text{jitter}}",
+        "name": "jitter constant",
+        "description": "Constant bounding the jitter effect, equal to O(\\sigma_x^2)",
+        "constraints": [
+          "O(\\sigma_x^2)"
+        ],
+        "tags": [
+          "jitter",
+          "constant"
+        ]
+      },
+      {
+        "symbol": "\\sigma_x",
+        "name": "position jitter standard deviation",
+        "description": "Standard deviation of the position jitter in cloning",
+        "constraints": [],
+        "tags": [
+          "jitter",
+          "variance"
+        ]
+      },
+      {
+        "symbol": "\\mathcal{I}_{\\text{safe}}",
+        "name": "safe interior set",
+        "description": "Set of safe interior positions or walkers",
+        "constraints": [
+          "safe",
+          "interior"
+        ],
+        "tags": [
+          "safe",
+          "interior"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "Cloning involves selecting a companion walker and adding position jitter.",
+        "confidence": 0.9
+      },
+      {
+        "text": "The barrier function \\varphi_{\\text{barrier}} is non-negative and penalizes boundary proximity.",
+        "confidence": 0.8
+      },
+      {
+        "text": "Walkers are positioned in a space with defined boundaries and safe interior.",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "barrier",
+      "cloning",
+      "walker",
+      "expected-value",
+      "jitter",
+      "variance"
+    ]
+  }
+]

@@ -4,20 +4,60 @@
     "proves": "lem-mass-conservation-transport",
     "proof_type": "direct",
     "proof_status": "complete",
-    "strategy_summary": "The proof relies on integrating the continuity equation ($L^\\dagger f = -\\nabla \\cdot J[f]$) over the domain $\\Omega$ and using the divergence theorem to convert the volume integral into a surface integral, which is then shown to vanish due to specified boundary conditions on $\\partial\\Omega$.",
-    "conclusion": {},
-    "assumptions": [],
-    "steps": [],
-    "key_equations": [
+    "strategy_summary": "Integrate the equation defining the adjoint operator over the phase space domain Ω and apply the divergence theorem to convert the volume integral into a boundary flux integral. Show that the reflecting boundary conditions make the boundary integral vanish, yielding zero total flux and thus conservation.",
+    "conclusion": {
+      "text": "The boundary integral vanishes due to reflecting conditions, so ∫_Ω L† f dz = 0.",
+      "latex": "\\int_\\Omega L^\\dagger f \\, \\mathrm{d}z = 0"
+    },
+    "assumptions": [
       {
-        "label": "eq:adj-div",
-        "latex": "L^\\dagger f = -\\nabla \\cdot J[f]",
-        "role": "Adjoint operator definition via divergence of flux"
+        "text": "Reflecting boundary conditions: J_v · n_v = 0 on ∂V_alg (velocity reflection) and J_x · n_x = 0 on ∂X_valid (position reflection).",
+        "latex": null
       },
       {
-        "label": "eq:div-theorem",
+        "text": "The adjoint operator satisfies L† f = -∇ · J[f].",
+        "latex": "L^\\dagger f = -\\nabla \\cdot J[f]"
+      }
+    ],
+    "steps": [
+      {
+        "order": 1,
+        "kind": "integration",
+        "text": "Integrate the equation L† f = -∇ · J[f] over the domain Ω.",
+        "latex": "\\int_\\Omega L^\\dagger f \\, \\mathrm{d}z = \\int_\\Omega (-\\nabla \\cdot J[f]) \\, \\mathrm{d}z",
+        "references": [],
+        "derived_statement": null
+      },
+      {
+        "order": 2,
+        "kind": "theorem-application",
+        "text": "Apply the divergence theorem to the right-hand side.",
+        "latex": "\\int_\\Omega (-\\nabla \\cdot J[f]) \\, \\mathrm{d}z = - \\int_{\\partial \\Omega} J[f] \\cdot n \\, \\mathrm{d}S",
+        "references": [],
+        "derived_statement": "\\int_\\Omega L^\\dagger f \\, \\mathrm{d}z = - \\int_{\\partial \\Omega} J[f] \\cdot n \\, \\mathrm{d}S"
+      },
+      {
+        "order": 3,
+        "kind": "boundary-description",
+        "text": "The boundary ∂Ω consists of (∂X_valid × V_alg) ∪ (X_valid × ∂V_alg).",
+        "latex": null,
+        "references": [],
+        "derived_statement": null
+      },
+      {
+        "order": 4,
+        "kind": "boundary-evaluation",
+        "text": "Under reflecting boundary conditions, the normal flux vanishes on both parts of the boundary.",
+        "latex": null,
+        "references": [],
+        "derived_statement": "\\int_{\\partial \\Omega} J[f] \\cdot n \\, \\mathrm{d}S = 0"
+      }
+    ],
+    "key_equations": [
+      {
+        "label": "eq-divergence-application",
         "latex": "\\int_\\Omega L^\\dagger f\\, \\mathrm{d}z = - \\int_{\\partial\\Omega} J[f] \\cdot n\\, \\mathrm{d}S",
-        "role": "Result of applying Divergence Theorem"
+        "role": "Key relation from integration and divergence theorem"
       }
     ],
     "references": [],
@@ -25,39 +65,34 @@
       {
         "toolName": "Divergence Theorem",
         "field": "Vector Calculus",
-        "description": "Relates the flux of a vector field through a closed surface to the divergence of the field inside the volume enclosed by the surface.",
-        "roleInProof": "Used to transform the volume integral of the divergence of the flux ($-\nabla \\cdot J[f]$) into a surface integral over the boundary $\\partial\\Omega$.",
+        "description": "The theorem relates the flux of a vector field through a closed surface to the divergence of the field within the volume it encloses.",
+        "roleInProof": "Converts the volume integral of the divergence of the flux J[f] into a surface integral over the boundary ∂Ω.",
         "levelOfAbstraction": "Theorem/Lemma",
-        "relatedTools": []
-      },
-      {
-        "toolName": "Integration over Domain",
-        "field": "Analysis",
-        "description": "The process of computing the integral of a function over a specified region $\\Omega$.",
-        "roleInProof": "The first step: integrating the defining equation of the adjoint operator ($L^\\dagger f$) over the phase space $\\Omega$.",
-        "levelOfAbstraction": "Technique",
         "relatedTools": []
       }
     ],
     "cases": [
       {
-        "name": "Velocity Boundary",
-        "condition": "On $\\partial V_{\\text{alg}}$",
-        "summary": "The normal component of the flux $J_v \\cdot n_v$ vanishes due to velocity reflection."
+        "name": "Velocity boundary",
+        "condition": "On ∂V_alg: J_v · n_v = 0 (velocity reflection)",
+        "summary": "Ensures no flux through the velocity boundary."
       },
       {
-        "name": "Position Boundary",
-        "condition": "On $\\partial X_{\\text{valid}}$",
-        "summary": "The normal component of the flux $J_x \\cdot n_x$ vanishes due to position reflection."
+        "name": "Position boundary",
+        "condition": "On ∂X_valid: J_x · n_x = 0 (position reflection)",
+        "summary": "Ensures no flux through the position boundary."
       }
     ],
     "remarks": [],
     "gaps": [],
     "tags": [
-      "conservation law",
-      "divergence theorem",
-      "boundary conditions",
-      "Liouville's theorem generalization"
+      "mass-conservation",
+      "divergence-theorem",
+      "boundary-conditions",
+      "transport-equation",
+      "reflecting-boundaries",
+      "phase-space",
+      "adjoint-operator"
     ]
   },
   {
@@ -65,106 +100,30 @@
     "proves": "thm-mass-conservation",
     "proof_type": "direct",
     "proof_status": "complete",
-    "strategy_summary": "The proof computes the time derivative of the total mass by integrating the governing PDE for the alive component ($f$) over the domain $\\Omega$. It then substitutes known results for the integral contributions of transport, killing, revival, and cloning terms, showing that the resulting expression sums to zero when combined with the time derivative of the dead mass.",
-    "conclusion": {
-      "text": "The total mass $m_a(t) + m_d(t)$ is conserved for all time.",
-      "latex": "\\frac{\\mathrm{d}}{\\mathrm{d}t}\\left[m_a(t) + m_d(t)\\right] = 0"
-    },
-    "assumptions": [
-      {
-        "text": "The definition of alive mass $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$ and dead mass $m_d(t)$."
-      },
-      {
-        "text": "The known integral properties for the transport term: $\\int_\\Omega L^\\dagger f\\,\\mathrm{d}z = 0$ (from {prf:ref}`lem-mass-conservation-transport`)."
-      },
-      {
-        "text": "The definition of the killing integral: $\\int_\\Omega c(z)f\\,\\mathrm{d}z = k_{\\text{killed}}[f]$."
-      },
-      {
-        "text": "The integral representation of the revival operator: $\\int_\\Omega B[f, m_d]\\,\\mathrm{d}z = \\lambda_{\\text{revive}} m_d(t)$ (from {prf:ref}`def-revival-operator`)."
-      },
-      {
-        "text": "The integral property for the cloning generator: $\\int_\\Omega S[f]\\,\\mathrm{d}z = 0$ (from {prf:ref}`def-cloning-generator`)."
-      },
-      {
-        "text": "The governing equation for the time derivative of the dead mass $\\partial_t m_d$ is $k_{\\text{killed}}[f] - \\lambda_{\\text{rev}} m_d(t)$."
-      }
-    ],
-    "steps": [
-      {
-        "order": 1,
-        "kind": "computation",
-        "text": "Compute the time derivative of the alive mass $m_a(t)$ by integrating $\\partial_t f$ over $\\Omega$.",
-        "latex": "\\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = \\int_\\Omega \\partial_t f\\,\\mathrm{d}z = \\int_\\Omega L^\\dagger f\\,\\mathrm{d}z - \\int_\\Omega c(z)f\\,\\mathrm{d}z + \\int_\\Omega B[f, m_d]\\,\\mathrm{d}z + \\int_\\Omega S[f]\\,\\mathrm{d}z"
-      },
-      {
-        "order": 2,
-        "kind": "substitution",
-        "text": "Evaluate the transport term integral using the result from {prf:ref}`lem-mass-conservation-transport`.",
-        "references": [
-          "lem-mass-conservation-transport"
-        ],
-        "derived_statement": "\\int_\\Omega L^\\dagger f\\,\\mathrm{d}z = 0"
-      },
-      {
-        "order": 3,
-        "kind": "substitution",
-        "text": "Substitute the definition of the killed mass.",
-        "references": [],
-        "derived_statement": "\\int_\\Omega c(z)f\\,\\mathrm{d}z = k_{\\text{killed}}[f]"
-      },
-      {
-        "order": 4,
-        "kind": "substitution",
-        "text": "Substitute the integral definition of the revival operator from {prf:ref}`def-revival-operator`.",
-        "references": [
-          "def-revival-operator"
-        ],
-        "derived_statement": "\\int_\\Omega B[f, m_d]\\,\\mathrm{d}z = \\lambda_{\\text{revive}} m_d(t)"
-      },
-      {
-        "order": 5,
-        "kind": "substitution",
-        "text": "Substitute the result for the internal cloning term from {prf:ref}`def-cloning-generator`.",
-        "references": [
-          "def-cloning-generator"
-        ],
-        "derived_statement": "\\int_\\Omega S[f]\\,\\mathrm{d}z = 0"
-      },
-      {
-        "order": 6,
-        "kind": "conclusion",
-        "text": "Combine the results to find the expression for $\\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t)$.",
-        "derived_statement": "\\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = -k_{\\text{killed}}[f] + \\lambda_{\\text{rev}} m_d(t)"
-      },
-      {
-        "order": 7,
-        "kind": "assumption",
-        "text": "State the known time derivative for the dead mass $m_d(t)$.",
-        "derived_statement": "\\frac{\\mathrm{d}}{\\mathrm{d}t}m_d(t) = k_{\\text{killed}}[f] - \\lambda_{\\text{rev}} m_d(t)"
-      },
-      {
-        "order": 8,
-        "kind": "addition",
-        "text": "Sum the time derivatives of $m_a(t)$ and $m_d(t)$ to find the derivative of the total mass.",
-        "derived_statement": "\\frac{\\mathrm{d}}{\\mathrm{d}t}\\left[m_a(t) + m_d(t)\\right] = \\left[-k_{\\text{killed}}[f] + \\lambda_{\\text{rev}} m_d(t)\\right] + \\left[k_{\\text{killed}}[f] - \\lambda_{\\text{rev}} m_d(t)\\right] = 0"
-      }
-    ],
+    "strategy_summary": "The proof directly computes the time derivatives of the alive mass \\(m_a(t)\\) and dead mass \\(m_d(t)\\) by integrating the governing equations over the domain \\(\\Omega\\), applies properties of the transport, killing, revival, and cloning operators to simplify each term, and shows that the sum of the derivatives is zero, conserving total mass.",
+    "conclusion": {},
+    "assumptions": [],
+    "steps": [],
     "key_equations": [
       {
-        "label": "eq-dma-dt",
-        "latex": "\\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = 0 - k_{\\text{killed}}[f] + \\lambda_{\\text{rev}} m_d(t) + 0",
-        "role": "Intermediate result for the rate of change of alive mass."
+        "label": "eq-da",
+        "latex": "\\frac{\\mathrm{d}}{\\mathrm{d}t} m_a(t) = \\int_\\Omega L^\\dagger f \\, \\mathrm{d}z - \\int_\\Omega c(z) f \\, \\mathrm{d}z + \\int_\\Omega B[f, m_d] \\, \\mathrm{d}z + \\int_\\Omega S[f] \\, \\mathrm{d}z",
+        "role": "Time derivative of alive mass"
       },
       {
-        "label": "eq-dmd-dt",
-        "latex": "\\frac{\\mathrm{d}}{\\mathrm{d}t}m_d(t) = k_{\\text{killed}}[f] - \\lambda_{\\text{rev}} m_d(t)",
-        "role": "Intermediate result for the rate of change of dead mass (assumed/given)."
+        "label": "eq-simplified-da",
+        "latex": "\\frac{\\mathrm{d}}{\\mathrm{d}t} m_a(t) = -k_{\\text{killed}}[f] + \\lambda_{\\text{rev}} m_d(t)",
+        "role": "Simplified alive mass derivative"
       },
       {
-        "label": "eq-total-mass-conservation",
-        "latex": "\\frac{\\mathrm{d}}{\\mathrm{d}t}\\left[m_a(t) + m_d(t)\\right] = 0",
-        "role": "Final result showing total mass conservation."
+        "label": "eq-dd",
+        "latex": "\\frac{\\mathrm{d}}{\\mathrm{d}t} m_d(t) = k_{\\text{killed}}[f] - \\lambda_{\\text{rev}} m_d(t)",
+        "role": "Dead mass derivative"
+      },
+      {
+        "label": "eq-total",
+        "latex": "\\frac{\\mathrm{d}}{\\mathrm{d}t} [m_a(t) + m_d(t)] = 0",
+        "role": "Conservation of total mass"
       }
     ],
     "references": [
@@ -174,152 +133,457 @@
     ],
     "math_tools": [
       {
-        "toolName": "Integration",
-        "field": "Analysis",
-        "description": "The process of finding the area under a curve or summing contributions over a continuous domain.",
-        "roleInProof": "Used to calculate the total alive mass $m_a(t)$ and to evaluate the contribution of the source/sink terms (like $\\int_\\Omega (\\ldots) \\,\\mathrm{d}z$).",
+        "toolName": "Adjoint Transport Operator",
+        "field": "Partial Differential Equations",
+        "description": "The adjoint operator \\(L^\\dagger\\) associated with a transport equation, which preserves integrals under appropriate boundary conditions.",
+        "roleInProof": "Used to show that the transport term integrates to zero over \\(\\Omega\\) due to reflective boundaries.",
         "levelOfAbstraction": "Technique",
-        "relatedTools": []
+        "relatedTools": [
+          "Divergence Theorem"
+        ]
       },
       {
-        "toolName": "Divergence Theorem / Integration by Parts (Implied)",
-        "field": "Vector Calculus",
-        "description": "A generalization of the fundamental theorem of calculus relating the integral of a vector field's divergence over a volume to the surface integral of the field over the boundary.",
-        "roleInProof": "Implied in the evaluation of the transport term $\\int_\\Omega L^\\dagger f\\,\\mathrm{d}z = 0$ (reflecting boundaries).",
+        "toolName": "Mass Conservation via Integration",
+        "field": "Analysis",
+        "description": "Integrating evolution equations over a domain to derive balance laws for total quantities like mass.",
+        "roleInProof": "Applied to compute time derivatives of masses by integrating \\(\\partial_t f\\) and the dead mass equation.",
         "levelOfAbstraction": "Technique",
-        "relatedTools": []
+        "relatedTools": [
+          "Fundamental Theorem of Calculus"
+        ]
+      },
+      {
+        "toolName": "Linear Operators on Function Spaces",
+        "field": "Functional Analysis",
+        "description": "Operators such as killing, revival, and cloning that act linearly on densities and preserve or transfer mass.",
+        "roleInProof": "Properties of these operators (e.g., integral of revival equals \\(\\lambda_{\text{rev}} m_d\\)) are used to evaluate terms in the mass derivatives.",
+        "levelOfAbstraction": "Concept",
+        "relatedTools": [
+          "Adjoint Transport Operator"
+        ]
       }
     ],
-    "cases": [],
+    "cases": [
+      {
+        "name": "Alive mass",
+        "condition": null,
+        "summary": "Compute and simplify \\(\\frac{\\mathrm{d}}{\\mathrm{d}t} m_a(t)\\) using operator properties to get \\(-k_{\\text{killed}}[f] + \\lambda_{\\text{rev}} m_d(t)\\)."
+      },
+      {
+        "name": "Dead mass",
+        "condition": null,
+        "summary": "Directly from the equation, \\(\\frac{\\mathrm{d}}{\\mathrm{d}t} m_d(t) = k_{\\text{killed}}[f] - \\lambda_{\\text{rev}} m_d(t)\\)."
+      }
+    ],
     "remarks": [
       {
-        "type": "Interpretation",
-        "text": "The zero integral for the transport term $\\int_\\Omega L^\\dagger f\\,\\mathrm{d}z = 0$ implies that the transport mechanism conserves mass flux across the spatial boundary of $\\Omega$ (due to the reflecting boundary conditions assumed for $L$).",
-        "location_hint": "Step 2"
+        "type": "conclusion",
+        "text": "This shows total mass conservation holds due to balancing of killing and revival terms."
       }
     ],
     "gaps": [],
     "tags": [
-      "mass conservation",
-      "time derivative",
+      "mass-conservation",
+      "time-derivative",
       "integration",
-      "transport",
-      "killing",
+      "transport-operator",
       "revival",
-      "cloning"
+      "cloning",
+      "conservation-law"
     ]
   },
   {
     "label": "proof-thm-killing-rate-consistency-part-i",
     "proves": "thm-killing-rate-consistency-part-i",
-    "proof_type": "direct",
+    "proof_type": "probabilistic",
     "proof_status": "complete",
-    "strategy_summary": "The proof approximates the BAOAB update step as a Gaussian random variable whose noise scales as $O(\\tau^{3/2})$. It then analyzes the exit probability $p_{\\text{exit}}$ for different locations relative to the boundary $\\delta$. For interior points or inward drift, $p_{\\text{exit}}$ decays super-exponentially, yielding a zero limit for the scaled rate. For outward drift in the boundary layer, the exit probability transitions from 0 to 1 sharply around the ballistic crossing time $\\tau_* = d(x)/v_n$, leading to a killing rate $c(x,v) = v_n/d(x)$.",
-    "conclusion": {},
-    "assumptions": [],
-    "steps": [],
-    "key_equations": [],
-    "references": [],
-    "math_tools": [
+    "strategy_summary": "The proof analyzes the one-step displacement under the BAOAB integrator as a Gaussian random variable, projects it onto the boundary normal to obtain the exit probability via the Gaussian tail integral, and computes the asymptotic limit of the normalized exit probability as tau approaches zero in interior and boundary layer regimes, yielding the ballistic killing rate in the drift-dominated case.",
+    "conclusion": {
+      "text": "Combining all cases: c(x,v) = v_n^+ / d(x) if d(x) < δ, else 0.",
+      "latex": "c(x,v) = \\begin{cases} \\frac{v_n^+}{d(x)} & \\text{if } d(x) < \\delta \\\\ 0 & \\text{if } d(x) \\ge \\delta \\end{cases}"
+    },
+    "assumptions": [
       {
-        "toolName": "Taylor Expansion",
-        "field": "Analysis",
-        "description": "Approximating functions (like $e^{-\\gamma\\tau}$) by their polynomial series expansion around zero.",
-        "roleInProof": "Used to simplify the BAOAB update formula for small $\\tau$, revealing the scaling of the mean and variance.",
-        "levelOfAbstraction": "Technique",
-        "relatedTools": []
+        "text": "Fixed (x,v) in Ω",
+        "latex": null
       },
       {
+        "text": "Small timestep τ → 0",
+        "latex": null
+      },
+      {
+        "text": "Boundary layer thickness δ > 0 fixed",
+        "latex": null
+      },
+      {
+        "text": "BAOAB integrator parameters: m, γ, Θ > 0",
+        "latex": null
+      },
+      {
+        "text": "ξ ~ N(0, I_d) independent Gaussian noise",
+        "latex": null
+      },
+      {
+        "text": "x in valid domain X_valid with distance d(x) to boundary",
+        "latex": null
+      }
+    ],
+    "steps": [
+      {
+        "order": 1,
+        "kind": "characterization",
+        "text": "Characterize x+ as a Gaussian random variable by expanding the BAOAB update for small τ, identifying mean μ_x(τ) = x + vτ + O(τ²) and std dev σ_x(τ) = O(τ^{3/2}).",
+        "latex": null,
+        "references": [
+          "def-baoab-update-rule"
+        ],
+        "derived_statement": "x^+ = μ_x(τ) + σ_x(τ) ξ"
+      },
+      {
+        "order": 2,
+        "kind": "formulation",
+        "text": "Formulate the exit probability as a Gaussian tail integral in the normal direction Z_n with mean μ_n = v_n τ + O(τ²) and variance σ_n² = C_σ τ³ + O(τ⁴), where p_exit = (1/2) erfc( (d(x) - μ_n) / (√2 σ_n) ).",
+        "latex": null,
+        "references": [],
+        "derived_statement": "p_exit(x,v,τ) = ½ erfc( (d(x) - μ_n) / (√2 σ_n) )"
+      },
+      {
+        "order": 3,
+        "kind": "limit computation",
+        "text": "Compute lim_{τ→0} (1/τ) p_exit in different cases: super-exponential decay to 0 for interior and inward velocity cases; ballistic limit v_n / d(x) for outward velocity in boundary layer via asymptotic analysis of erfc in drift-dominated regime.",
+        "latex": null,
+        "references": [],
+        "derived_statement": "lim_{τ→0} (1/τ) p_exit = c(x,v) = v_n^+ / d(x) if d(x) < δ, else 0"
+      }
+    ],
+    "key_equations": [
+      {
+        "label": "eq-baoab-expansion",
+        "latex": "x^+(\\tau; x,v) = x + v\\tau + \\frac{\\tau^2}{2m}F(x) + \\frac{\\tau}{2}u_{n+1/2} + \\frac{\\tau^{3/2}}{2}\\sigma_v\\sqrt{2\\gamma}\\,\\xi + O(\\tau^3)",
+        "role": "Expansion of position update showing O(τ) drift and O(τ^{3/2}) noise"
+      },
+      {
+        "label": "eq-gaussian-x",
+        "latex": "x^+ = \\mu_x(\\tau) + \\sigma_x(\\tau)\\,\\xi",
+        "role": "Gaussian form of displacement"
+      },
+      {
+        "label": "eq-zn-params",
+        "latex": "\\mu_n = v_n \\tau + O(\\tau^2), \\quad \\sigma_n^2 = C_\\sigma \\tau^3 + O(\\tau^4)",
+        "role": "Parameters of normal displacement"
+      },
+      {
+        "label": "eq-pexit-erfc",
+        "latex": "p_{\\text{exit}}(x,v,\\tau) = \\frac{1}{2}\\text{erfc}\\left(\\frac{d(x) - \\mu_n}{\\sqrt{2}\\sigma_n}\\right)",
+        "role": "Exit probability expression"
+      },
+      {
+        "label": "eq-killing-rate",
+        "latex": "c(x,v) = \\begin{cases} \\frac{v_n^+}{d(x)} & \\text{if } d(x) < \\delta \\\\ 0 & \\text{if } d(x) \\ge \\delta \\end{cases}",
+        "role": "Final killing rate formula"
+      }
+    ],
+    "references": [
+      "def-baoab-update-rule"
+    ],
+    "math_tools": [
+      {
         "toolName": "Gaussian Distribution",
-        "field": "Probability Theory",
-        "description": "A continuous probability distribution characterized by its mean and variance.",
-        "roleInProof": "The position $x^+$ after one time step is approximated as a Gaussian random variable $\\mu_x(\\tau) + \\sigma_x(\\tau)\\xi$.",
+        "field": "Probability",
+        "description": "The normal distribution modeling the displacement after one timestep.",
+        "roleInProof": "Used to characterize the stochastic update x+ and compute the exit probability as a tail probability.",
         "levelOfAbstraction": "Concept",
         "relatedTools": [
-          "Normal Distribution"
+          "Complementary Error Function"
         ]
       },
       {
         "toolName": "Complementary Error Function (erfc)",
-        "field": "Analysis",
-        "description": "Related to the cumulative distribution function of the standard normal distribution, $\\text{erfc}(z) = 1 - \\text{erf}(z) = \\mathbb{P}(Z > z)$ for $Z \\sim \\mathcal{N}(0, 1/2)$.",
-        "roleInProof": "Used to express the probability of a 1D Gaussian random variable $Z_n$ exceeding a boundary $d(x)$.",
+        "field": "Special Functions",
+        "description": "The integral representation of the Gaussian tail probability, with known asymptotic expansions for large arguments.",
+        "roleInProof": "Formulates the exact exit probability p_exit and enables asymptotic analysis in drift-dominated and diffusive regimes.",
         "levelOfAbstraction": "Technique",
         "relatedTools": [
-          "Gaussian Tail Integral"
+          "Gaussian Distribution",
+          "Asymptotic Expansion"
         ]
       },
       {
         "toolName": "Asymptotic Expansion",
         "field": "Analysis",
-        "description": "Approximating a function near a limit point using leading-order terms.",
-        "roleInProof": "Used to analyze the behavior of $\\text{erfc}(z)$ when $z \\to \\infty$ (Case 1) and when $z$ approaches zero from the negative side (Case 2b).",
+        "description": "Series approximations for small/large parameters, including Taylor expansions and tail asymptotics.",
+        "roleInProof": "Approximates the BAOAB update for small tau and the erfc argument in various regimes to derive the limit of p_exit / tau.",
         "levelOfAbstraction": "Technique",
         "relatedTools": [
-          "Laplace's Method"
+          "Complementary Error Function"
         ]
       },
       {
-        "toolName": "Heaviside Function Approximation",
-        "field": "Applied Mathematics",
-        "description": "Approximating a discontinuous step function using a continuous function whose derivative concentrates probability mass.",
-        "roleInProof": "Used to justify that the limiting scaled exit probability $(1/\\tau)p_{\\text{exit}}(\\tau)$ behaves like a Dirac delta function concentrated at the ballistic crossing time $\\tau_*$.",
-        "levelOfAbstraction": "Technique",
+        "toolName": "First-Passage Time Analysis",
+        "field": "Stochastic Processes",
+        "description": "Study of hitting times for stochastic processes, including ballistic and diffusive limits.",
+        "roleInProof": "Provides the physical and mathematical framework for interpreting the killing rate c(x,v) as the continuous-time exit flux.",
+        "levelOfAbstraction": "Theorem/Lemma",
         "relatedTools": [
-          "Dirac Delta Function"
+          "Gaussian Distribution",
+          "large deviations theory"
         ]
       }
     ],
-    "cases": [],
-    "remarks": [],
-    "gaps": [],
+    "cases": [
+      {
+        "name": "Interior Points",
+        "condition": "d(x) ≥ δ",
+        "summary": "Super-exponential decay of p_exit leads to lim (1/τ) p_exit = 0"
+      },
+      {
+        "name": "Boundary Layer Inward Velocity",
+        "condition": "d(x) < δ, v_n ≤ 0",
+        "summary": "Drift away from boundary causes super-exponential decay, lim (1/τ) p_exit = 0"
+      },
+      {
+        "name": "Boundary Layer Outward Velocity",
+        "condition": "d(x) < δ, v_n > 0",
+        "summary": "Drift-dominated regime with ballistic crossing, lim (1/τ) p_exit = v_n / d(x) via asymptotic erfc analysis"
+      }
+    ],
+    "remarks": [
+      {
+        "type": "interpretation",
+        "text": "The result corresponds to the ballistic limit in kinetic theory, where diffusion is negligible compared to deterministic drift, representing the instantaneous probability flux across the boundary."
+      },
+      {
+        "type": "reference",
+        "text": "See Risken (Ch. 5) for continuous-time flux, Gardiner (Sec. 5.3) for short-time asymptotics, Redner for physical introduction."
+      }
+    ],
+    "gaps": [
+      {
+        "description": "Full rigor for the limit lim_{τ→0} (1/τ) erfc(...) in the ballistic regime relies on Laplace's method or large deviations theory, which is sketched but not fully derived here.",
+        "severity": "medium",
+        "location_hint": "Asymptotic Analysis of erfc subsection"
+      }
+    ],
     "tags": [
-      "pointwise convergence",
       "BAOAB integrator",
-      "Gaussian approximation",
-      "boundary crossing",
-      "drift-diffusion",
-      "Fokker-Planck"
+      "exit probability",
+      "Gaussian displacement",
+      "asymptotic analysis",
+      "drift-dominated regime",
+      "ballistic limit",
+      "killing rate",
+      "pointwise convergence"
     ]
   },
   {
     "label": "proof-thm-killing-rate-consistency-part-ii",
-    "proves": "thm-killing-rate-consistency",
+    "proves": "thm-killing-rate-consistency-part-ii",
     "proof_type": "direct",
     "proof_status": "complete",
-    "strategy_summary": "The proof decomposes the total error $E(\\tau)$ into a density error $E_2(\\tau)$ bounded using Hölder's inequality, and a pointwise convergence error $E_1(\\tau)$. $E_1(\\tau)$ is further split into interior ($E_{1,\\text{int}} = o(\\tau^m)$) and boundary layer ($E_{1,\\text{bd}}$) contributions. The boundary layer error is quantified by analyzing the difference between the continuous exit probability (approximated by erfc) and the ballistic approximation, yielding an overall $O(\\sqrt{\\tau})$ bound.",
-    "conclusion": {},
-    "assumptions": [],
-    "steps": [],
-    "key_equations": [],
+    "strategy_summary": "The proof decomposes the error E(τ) into a pointwise rate error E1(τ) and a density approximation error E2(τ), bounding E2 using Hölder's inequality and the L1 convergence of densities, while splitting E1 into interior and boundary contributions; the interior error is super-exponentially small, and the boundary error is analyzed via asymptotic expansion of the erfc transition in the exit probability, yielding an O(√τ) bound that combines with the density term.",
+    "conclusion": {
+      "text": "|E(τ)| ≤ C(√τ + ||f^τ - f||_{L^1})",
+      "latex": "|E(\\tau)| \\le C\\left(\\sqrt{\\tau} + \\|f^\\tau - f\\|_{L^1}\\right)"
+    },
+    "assumptions": [
+      {
+        "text": "The killing rate c(x,v) is bounded: ||c||_{L^∞} ≤ M_v / δ, where M_v = ||v||_{max} and δ is the boundary layer thickness.",
+        "latex": null
+      },
+      {
+        "text": "The densities converge: ||f^τ - f||_{L^1} → 0 as τ → 0.",
+        "latex": null
+      },
+      {
+        "text": "The domain Ω has a smooth boundary, with d(x) the signed distance to the boundary, and velocities v with outward normal component v_n > 0 in the boundary layer.",
+        "latex": null
+      },
+      {
+        "text": "The drift term leads to Gaussian position noise of order O(τ^{3/2}) in the BAOAB scheme, resulting in transition width Δτ ~ O(√τ).",
+        "latex": null
+      }
+    ],
+    "steps": [
+      {
+        "order": 1,
+        "kind": "definition",
+        "text": "Define the error E(τ) as the difference between the discrete and continuous killing rates.",
+        "latex": "E(\\tau) := \\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) - K_{\\text{continuous}}",
+        "references": [],
+        "derived_statement": null
+      },
+      {
+        "order": 2,
+        "kind": "decomposition",
+        "text": "Decompose E(τ) into E1(τ) (pointwise rate error weighted by f^τ) and E2(τ) (density error weighted by c).",
+        "latex": "E(\\tau) = E_1(\\tau) + E_2(\\tau)",
+        "references": [],
+        "derived_statement": null
+      },
+      {
+        "order": 3,
+        "kind": "bound",
+        "text": "Bound E2(τ) using Hölder's inequality and boundedness of c.",
+        "latex": "|E_2(\\tau)| \\le \\frac{M_v}{\\delta} \\|f^\\tau - f\\|_{L^1}",
+        "references": [],
+        "derived_statement": null
+      },
+      {
+        "order": 4,
+        "kind": "split",
+        "text": "Split E1(τ) into interior (d(x) ≥ δ) and boundary layer (d(x) < δ) integrals: E1 = E_{1,int} + E_{1,bd}.",
+        "latex": null,
+        "references": [],
+        "derived_statement": null
+      },
+      {
+        "order": 5,
+        "kind": "analysis",
+        "text": "In the interior, p_exit = o(τ^m) and c=0, so E_{1,int} = o(τ^m) for any m > 0.",
+        "latex": null,
+        "references": [],
+        "derived_statement": "E_{1,\\text{int}} = o(\\tau^m)"
+      },
+      {
+        "order": 6,
+        "kind": "analysis",
+        "text": "In the boundary layer, approximate p_exit via erfc transition from Part (i), compare to ballistic step function, and estimate pointwise error using asymptotic expansion.",
+        "latex": "\\left|\\frac{1}{\\tau}p_{\\text{exit}} - c(x,v)\\right| \\le C_1 \\sqrt{\\tau}",
+        "references": [
+          "proof-thm-killing-rate-consistency-part-i"
+        ],
+        "derived_statement": null
+      },
+      {
+        "order": 7,
+        "kind": "integration",
+        "text": "Integrate the pointwise bound over the boundary layer to bound |E_{1,bd}| ≤ C_1 √τ ⋅ M_f ⋅ |T_δ|.",
+        "latex": null,
+        "references": [],
+        "derived_statement": null
+      },
+      {
+        "order": 8,
+        "kind": "combination",
+        "text": "Combine all bounds to obtain the uniform error estimate.",
+        "latex": "|E(\\tau)| \\le C\\left(\\sqrt{\\tau} + \\|f^\\tau - f\\|_{L^1}\\right)",
+        "references": [],
+        "derived_statement": null
+      }
+    ],
+    "key_equations": [
+      {
+        "label": "eq-error-def",
+        "latex": "E(\\tau) := \\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) - K_{\\text{continuous}}",
+        "role": "Defines the main error term between discrete and continuous killing rates."
+      },
+      {
+        "label": "eq-decomposition",
+        "latex": "\\begin{aligned} E(\\tau) &= \\int_{\\Omega} \\left[\\frac{1}{\\tau} p_{\\text{exit}}(x,v,\\tau) - c(x,v)\\right] f^\\tau(x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v \\\\ &\\quad + \\int_{\\Omega} c(x,v) [f^\\tau(x,v) - f(x,v)]\\,\\mathrm{d}x\\,\\mathrm{d}v \\\\ &=: E_1(\\tau) + E_2(\\tau) \\end{aligned}",
+        "role": "Decomposes the error into pointwise and density components."
+      },
+      {
+        "label": "eq-e2-bound",
+        "latex": "|E_2(\\tau)| \\le \\|c\\|_{L^\\infty} \\|f^\\tau - f\\|_{L^1} \\le \\frac{M_v}{\\delta} \\|f^\\tau - f\\|_{L^1}",
+        "role": "Provides the bound for the density error term."
+      },
+      {
+        "label": "eq-pointwise-bound",
+        "latex": "\\left|\\frac{1}{\\tau}p_{\\text{exit}}(x,v,\\tau) - c(x,v)\\right| \\le C_1 \\sqrt{\\tau}",
+        "role": "Key pointwise error estimate in the boundary layer."
+      },
+      {
+        "label": "eq-erfc-expansion",
+        "latex": "\\text{erfc}(\\zeta) \\approx 1 - \\frac{2}{\\sqrt{\\pi}}\\zeta + O(\\zeta^2)",
+        "role": "Asymptotic expansion used for the transition error analysis."
+      },
+      {
+        "label": "eq-final-bound",
+        "latex": "|E(\\tau)| \\le C\\left(\\sqrt{\\tau} + \\|f^\\tau - f\\|_{L^1}\\right)",
+        "role": "Final uniform convergence bound with error rate."
+      }
+    ],
     "references": [],
     "math_tools": [
       {
         "toolName": "Hölder's Inequality",
         "field": "Functional Analysis",
-        "description": "An inequality relating different norms of functions, often used to bound integrals of products.",
-        "roleInProof": "Used to bound the density error term $E_2(\\tau)$ based on $L^\\infty$ bound on $c$ and $L^1$ norm of the density difference.",
+        "description": "An inequality that bounds the L1 norm of a product of functions using their L1 and L∞ norms.",
+        "roleInProof": "Used to bound the density error term |E2(τ)| ≤ ||c||_{L^∞} ||f^τ - f||_{L^1}.",
         "levelOfAbstraction": "Theorem/Lemma",
-        "relatedTools": []
+        "relatedTools": [
+          "L1 norm",
+          "L∞ norm"
+        ]
       },
       {
-        "toolName": "Error Function (erfc)",
+        "toolName": "Complementary Error Function (erfc)",
         "field": "Special Functions",
-        "description": "The complementary error function, $\\text{erfc}(z) = 1 - \\text{erf}(z) = \\frac{2}{\\sqrt{\\pi}}\\int_z^\\infty e^{-t^2} dt$.",
-        "roleInProof": "Used to model the transition region of the exit probability $p_{\\text{exit}}(\\tau)$ near the crossing time, specifically its Taylor expansion for analysis.",
+        "description": "The complementary error function erfc(z) = (2/√π) ∫_z^∞ exp(-t²) dt, used to represent Gaussian tail probabilities.",
+        "roleInProof": "Approximates the smooth transition in the exit probability p_exit(τ), enabling pointwise error estimates in the boundary layer.",
         "levelOfAbstraction": "Concept",
-        "relatedTools": []
+        "relatedTools": [
+          "Gaussian integral",
+          "asymptotic-expansion"
+        ]
+      },
+      {
+        "toolName": "Asymptotic Expansion",
+        "field": "Asymptotics",
+        "description": "A technique for approximating functions via series expansions in powers of a small parameter, often for error analysis.",
+        "roleInProof": "Applied to expand erfc near the transition point ζ=0 and estimate the O(√τ) pointwise error in (1/τ)p_exit - c(x,v).",
+        "levelOfAbstraction": "Technique",
+        "relatedTools": [
+          "Taylor expansion",
+          "erfc"
+        ]
+      },
+      {
+        "toolName": "Boundary Layer Analysis",
+        "field": "Applied Mathematics",
+        "description": "A method to handle rapid variations near boundaries by rescaling and asymptotic matching.",
+        "roleInProof": "Splits the integral for E1(τ) into interior (small error) and boundary layer (O(√τ) error) regions.",
+        "levelOfAbstraction": "Technique",
+        "relatedTools": [
+          "asymptotic-expansion",
+          "erfc-approximation"
+        ]
       }
     ],
-    "cases": [],
-    "remarks": [],
-    "gaps": [],
+    "cases": [
+      {
+        "name": "interior region",
+        "condition": "d(x) \\ge \\delta",
+        "summary": "Both p_exit and c are negligible (super-exponentially small), yielding E_{1,int} = o(\\tau^m) for any m > 0."
+      },
+      {
+        "name": "boundary layer",
+        "condition": "d(x) < \\delta and v_n > 0",
+        "summary": "Exit probability transition analyzed via erfc approximation vs. ballistic step, leading to pointwise O(\\sqrt{\\tau}) error, integrated to bound E_{1,bd}."
+      }
+    ],
+    "remarks": [
+      {
+        "type": "note",
+        "text": "The √τ error arises from the Gaussian tail approximation in the drift-dominated regime. While the pointwise limit is exact (ballistic v_n/d(x)), the convergence rate is limited by the width of the transition region ∼ O(τ^{1/2}). This is the correct convergence rate for BAOAB with O(τ^{3/2}) position noise."
+      }
+    ],
+    "gaps": [
+      {
+        "description": "Explicit dependence of constant C_1 on geometry and parameters (e.g., v_n / (d(x) √C_σ)) is sketched but not fully derived; relies on qualitative O(1) bounds in the transition region.",
+        "severity": "minor",
+        "location_hint": "Quantitative estimate in boundary layer, erfc expansion"
+      }
+    ],
     "tags": [
-      "convergence",
-      "error_bound",
-      "discrete_approximation",
-      "exit_probability",
-      "boundary_layer"
+      "uniform-convergence",
+      "error-bound",
+      "exit-probability",
+      "boundary-layer",
+      "Holder-inequality",
+      "erfc-approximation",
+      "asymptotic-expansion",
+      "BAOAB-scheme"
     ]
   }
 ]

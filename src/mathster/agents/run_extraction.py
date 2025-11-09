@@ -108,8 +108,9 @@ def run_agents_in_sequence(
         )
 
         logger.info(
-            "Running %s agent (threshold=%.3f, passes=%s, max_tokens=%s)...",
+            "Running %s agent (model=%s, threshold=%.3f, passes=%s, max_tokens=%s)...",
             name,
+            lm_spec,
             threshold,
             passes,
             max_tokens,

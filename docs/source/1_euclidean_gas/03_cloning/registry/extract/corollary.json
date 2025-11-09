@@ -1,0 +1,653 @@
+[
+  {
+    "type": "corollary",
+    "label": "cor-vvarx-to-high-error-fraction",
+    "title": "A Large Intra-Swarm Positional Variance Guarantees a Non-Vanishing High-Error Fraction",
+    "nl_statement": "For fixed interaction range ε > 0, there exists variance threshold R²_total_var,x > 0 and constant f_H(ε) > 0 such that if total intra-swarm positional variance V_Var,x > R²_total_var,x, then the fraction of alive walkers in the high-error set H_k(ε) for at least one swarm k ∈ {1,2} satisfies |H_k(ε)| / N_k ≥ f_H(ε) > 0.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\frac{|H_k(\\epsilon)|}{N_k} \\ge f_H(\\epsilon) > 0"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Fixed interaction range ε > 0",
+        "latex": "\\varepsilon > 0"
+      },
+      {
+        "text": "Exists positional variance threshold R²_total_var,x > 0 and N-uniform constant f_H(ε) > 0",
+        "latex": "R^2_{\\text{total_var},x} > 0, \\ f_H(\\epsilon) > 0"
+      },
+      {
+        "text": "Total intra-swarm positional variance is large: V_Var,x > R²_total_var,x",
+        "latex": "V_{\\text{Var},x} > R^2_{\\text{total_var},x}"
+      }
+    ],
+    "conclusion": {
+      "text": "Fraction of alive walkers in unified high-error set of at least one swarm k ∈ {1,2} is bounded below: |H_k(ε)| / N_k ≥ f_H(ε) > 0",
+      "latex": "\\frac{|H_k(\\epsilon)|}{N_k} \\ge f_H(\\epsilon) > 0"
+    },
+    "variables": [
+      {
+        "symbol": "\\varepsilon",
+        "name": "interaction range",
+        "description": "Fixed positive interaction range parameter",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "range",
+          "interaction"
+        ]
+      },
+      {
+        "symbol": "R^2_{\\text{total_var},x}",
+        "name": "positional variance threshold",
+        "description": "Threshold for total intra-swarm positional variance",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "threshold",
+          "variance"
+        ]
+      },
+      {
+        "symbol": "f_H(\\varepsilon)",
+        "name": "high-error fraction constant",
+        "description": "N-uniform positive constant bounding the high-error fraction",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "constant",
+          "fraction"
+        ]
+      },
+      {
+        "symbol": "V_{\\text{Var},x}",
+        "name": "total intra-swarm positional variance",
+        "description": "Measure of positional spread within swarms",
+        "constraints": [],
+        "tags": [
+          "variance",
+          "positional"
+        ]
+      },
+      {
+        "symbol": "H_k(\\varepsilon)",
+        "name": "unified high-error set",
+        "description": "Set of alive walkers in high-error configuration for swarm k",
+        "constraints": [],
+        "tags": [
+          "high-error",
+          "set"
+        ]
+      },
+      {
+        "symbol": "N_k",
+        "name": "number of alive walkers in swarm k",
+        "description": "Count of alive walkers in swarm k ∈ {1,2}",
+        "constraints": [],
+        "tags": [
+          "walkers",
+          "alive"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "Two swarms with alive walkers (k=1,2)",
+        "confidence": 1.0
+      },
+      {
+        "text": "High-error set H_k(ε) is well-defined for interaction range ε",
+        "confidence": 0.9
+      },
+      {
+        "text": "Positional variance V_Var,x is computed in x-dimension",
+        "confidence": 0.8
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "swarm",
+      "positional variance",
+      "high-error set",
+      "corollary",
+      "geometric analysis",
+      "Lyapunov function",
+      "cloning operator"
+    ]
+  },
+  {
+    "type": "corollary",
+    "label": "cor-cloning-pressure-target-set",
+    "title": "Cloning Pressure on the Target Set",
+    "nl_statement": "For any walker i in the critical target set I_target = I_11 ∩ U_k ∩ H_k(ε), its total cloning probability p_{k,i} in the high-variance swarm k is bounded below by the N-uniform constant p_u(ε) > 0.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "p_{k,i} \\ge p_u(\\epsilon) > 0"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Walker i is in the critical target set I_target = I_11 ∩ U_k ∩ H_k(ε)",
+        "latex": "i \\in I_{\\text{target}} = I_{11} \\cap U_k \\cap H_k(\\epsilon)"
+      }
+    ],
+    "conclusion": {
+      "text": "The total cloning probability p_{k,i} in swarm k is bounded below by p_u(ε) > 0",
+      "latex": "p_{k,i} \\ge p_u(\\epsilon) > 0"
+    },
+    "variables": [
+      {
+        "symbol": "i",
+        "name": "walker index",
+        "description": "Index of a walker in the critical target set",
+        "constraints": [
+          "i \\in I_{\\text{target}}"
+        ],
+        "tags": [
+          "walker",
+          "index"
+        ]
+      },
+      {
+        "symbol": "k",
+        "name": "swarm index",
+        "description": "Index of the high-variance swarm",
+        "constraints": [
+          "high-variance"
+        ],
+        "tags": [
+          "swarm",
+          "high-variance"
+        ]
+      },
+      {
+        "symbol": "\\epsilon",
+        "name": "epsilon",
+        "description": "Parameter defining the high-variance threshold",
+        "constraints": [],
+        "tags": [
+          "parameter",
+          "threshold"
+        ]
+      },
+      {
+        "symbol": "p_{k,i}",
+        "name": "cloning probability",
+        "description": "Total cloning probability for walker i in swarm k",
+        "constraints": [
+          ">= p_u(\\epsilon)"
+        ],
+        "tags": [
+          "probability",
+          "cloning"
+        ]
+      },
+      {
+        "symbol": "p_u(\\epsilon)",
+        "name": "uniform lower bound",
+        "description": "N-uniform constant lower bound on cloning probability",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "bound",
+          "constant",
+          "uniform"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The critical target set I_target is a non-empty subset of unfit walkers in high-variance swarms",
+        "confidence": 0.95
+      },
+      {
+        "text": "The previous lemma provides the bound p_u(ε) > 0 for unfit walkers in U_k",
+        "confidence": 1.0
+      },
+      {
+        "text": "All referenced sets I_11, U_k, H_k(ε) are well-defined and disjoint where necessary",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "cloning pressure",
+      "target set",
+      "probability bound",
+      "high-variance swarm",
+      "N-uniform",
+      "walker",
+      "corollary"
+    ]
+  },
+  {
+    "type": "corollary",
+    "label": "cor-structural-error-contraction",
+    "title": "Structural Error Contraction",
+    "nl_statement": "Under the same conditions as the positional variance contraction theorem, the structural error satisfies \\(\\mathbb{E}_{\\text{clone}}[V_{\\text{struct}}(S'_1, S'_2)] \\leq (1 - \\kappa_{\\text{struct}}) V_{\\text{struct}}(S_1, S_2) + C_{\\text{struct}}\\).",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\mathbb{E}_{\\text{clone}}[V_{\\text{struct}}(S'_1, S'_2)] \\leq (1 - \\kappa_{\\text{struct}}) V_{\\text{struct}}(S_1, S_2) + C_{\\text{struct}}"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Under the same conditions as Theorem thm-positional-variance-contraction",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The structural error contracts: $\\mathbb{E}_{\\text{clone}}[V_{\\text{struct}}(S'_1, S'_2)] \\leq (1 - \\kappa_{\\text{struct}}) V_{\\text{struct}}(S_1, S_2) + C_{\\text{struct}}$",
+      "latex": "\\mathbb{E}_{\\text{clone}}[V_{\\text{struct}}(S'_1, S'_2)] \\leq (1 - \\kappa_{\\text{struct}}) V_{\\text{struct}}(S_1, S_2) + C_{\\text{struct}}"
+    },
+    "variables": [
+      {
+        "symbol": "V_{\\text{struct}}",
+        "name": "structural error",
+        "description": "Measure of structural difference between structures",
+        "constraints": [],
+        "tags": [
+          "error",
+          "structural"
+        ]
+      },
+      {
+        "symbol": "S_1",
+        "name": "structure 1",
+        "description": "Initial structure",
+        "constraints": [],
+        "tags": [
+          "structure"
+        ]
+      },
+      {
+        "symbol": "S_2",
+        "name": "structure 2",
+        "description": "Initial structure",
+        "constraints": [],
+        "tags": [
+          "structure"
+        ]
+      },
+      {
+        "symbol": "S'_1",
+        "name": "cloned structure 1",
+        "description": "Cloned version of S_1",
+        "constraints": [],
+        "tags": [
+          "structure",
+          "cloned"
+        ]
+      },
+      {
+        "symbol": "S'_2",
+        "name": "cloned structure 2",
+        "description": "Cloned version of S_2",
+        "constraints": [],
+        "tags": [
+          "structure",
+          "cloned"
+        ]
+      },
+      {
+        "symbol": "\\kappa_{\\text{struct}}",
+        "name": "structural contraction rate",
+        "description": "Contraction parameter for structural error",
+        "constraints": [],
+        "tags": [
+          "rate",
+          "contraction"
+        ]
+      },
+      {
+        "symbol": "C_{\\text{struct}}",
+        "name": "structural constant",
+        "description": "Additive constant in contraction inequality",
+        "constraints": [],
+        "tags": [
+          "constant"
+        ]
+      },
+      {
+        "symbol": "\\mathbb{E}_{\\text{clone}}",
+        "name": "expectation over clones",
+        "description": "Expectation with respect to cloning process",
+        "constraints": [],
+        "tags": [
+          "expectation",
+          "cloning"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "Conditions from thm-positional-variance-contraction hold, including properties of cloning process and structures",
+        "confidence": 1.0
+      }
+    ],
+    "local_refs": [
+      "thm-positional-variance-contraction"
+    ],
+    "proof": {
+      "availability": "immediate consequence of thm-positional-variance-contraction",
+      "steps": []
+    },
+    "tags": [
+      "structural error",
+      "contraction",
+      "variance",
+      "cloning",
+      "expectation"
+    ]
+  },
+  {
+    "type": "corollary",
+    "label": "cor-bounded-boundary-exposure",
+    "title": "Bounded Boundary Exposure in Equilibrium",
+    "nl_statement": "Under the drift inequality, the long-term boundary exposure is bounded by C_b / κ_b.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\limsup_{t \\to \\infty} \\mathbb{E}[W_b(S_t)] \\leq \\frac{C_b}{\\kappa_b}"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "Under the drift inequality from thm-boundary-potential-contraction",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "The long-term boundary exposure is bounded",
+      "latex": "\\limsup_{t \\to \\infty} \\mathbb{E}[W_b(S_t)] \\leq \\frac{C_b}{\\kappa_b}"
+    },
+    "variables": [
+      {
+        "symbol": "W_b",
+        "name": "boundary potential",
+        "description": "Boundary exposure function for swarm state",
+        "constraints": [],
+        "tags": [
+          "exposure"
+        ]
+      },
+      {
+        "symbol": "S_t",
+        "name": "swarm state",
+        "description": "Swarm configuration at time t",
+        "constraints": [],
+        "tags": [
+          "state"
+        ]
+      },
+      {
+        "symbol": "t",
+        "name": "time",
+        "description": "Continuous time parameter",
+        "constraints": [
+          "t >= 0"
+        ],
+        "tags": [
+          "time"
+        ]
+      },
+      {
+        "symbol": "C_b",
+        "name": "constant C_b",
+        "description": "Positive constant in drift bound",
+        "constraints": [
+          "C_b > 0"
+        ],
+        "tags": [
+          "constant"
+        ]
+      },
+      {
+        "symbol": "\\kappa_b",
+        "name": "kappa_b",
+        "description": "Positive contraction rate",
+        "constraints": [
+          "\\kappa_b > 0"
+        ],
+        "tags": [
+          "rate"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "The swarm system satisfies the conditions for the referenced drift inequality",
+        "confidence": 1.0
+      },
+      {
+        "text": "Long-term equilibrium behavior exists",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [
+      "thm-boundary-potential-contraction"
+    ],
+    "proof": {
+      "availability": "not-provided",
+      "steps": []
+    },
+    "tags": [
+      "boundary-exposure",
+      "equilibrium",
+      "drift-inequality",
+      "swarm-survival",
+      "potential-contraction",
+      "long-term-bound"
+    ]
+  },
+  {
+    "type": "corollary",
+    "label": "cor-extinction-suppression",
+    "title": "Exponentially Suppressed Extinction Probability",
+    "nl_statement": "The boundary potential contraction exponentially suppresses the probability of catastrophic boundary crossing events. Specifically, for any ε > 0, there exists N₀ such that for all N > N₀, the probability of extinction in one step is O(e^{-N · const}).",
+    "equations": [
+      {
+        "label": null,
+        "latex": "P(\\text{extinction in one step}) = O(e^{-N \\cdot \\text{const}})"
+      }
+    ],
+    "hypotheses": [
+      {
+        "text": "for any ε > 0, there exists N₀ such that for all N > N₀ under boundary potential contraction",
+        "latex": null
+      }
+    ],
+    "conclusion": {
+      "text": "P(extinction in one step) = O(e^{-N · const})",
+      "latex": "P(\\text{extinction in one step}) = O(e^{-N \\cdot \\text{const}})"
+    },
+    "variables": [
+      {
+        "symbol": "\\epsilon",
+        "name": "epsilon",
+        "description": "arbitrary positive number for the bound",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "positive",
+          "arbitrary"
+        ]
+      },
+      {
+        "symbol": "N_0",
+        "name": "N zero",
+        "description": "threshold size depending on ε",
+        "constraints": [],
+        "tags": [
+          "threshold"
+        ]
+      },
+      {
+        "symbol": "N",
+        "name": "N",
+        "description": "system size",
+        "constraints": [
+          "> N_0"
+        ],
+        "tags": [
+          "large",
+          "size"
+        ]
+      },
+      {
+        "symbol": "\\text{const}",
+        "name": "const",
+        "description": "positive constant in the exponent",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "constant",
+          "positive"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "Boundary potential contraction mechanism is active.",
+        "confidence": 1.0
+      },
+      {
+        "text": "The constant in the exponent is positive.",
+        "confidence": 1.0
+      },
+      {
+        "text": "N is a large integer representing system size.",
+        "confidence": 0.9
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "exponential suppression",
+      "extinction probability",
+      "boundary potential",
+      "catastrophic events",
+      "asymptotic bound",
+      "large N"
+    ]
+  },
+  {
+    "type": "corollary",
+    "label": "cor-component-bounds-vw",
+    "title": "Component-Wise Bounds on Inter-Swarm Error",
+    "nl_statement": "The expected location and structural error components under the clone measure are bounded by constants C_loc and C_struct, respectively.",
+    "equations": [
+      {
+        "label": null,
+        "latex": "\\begin{aligned}\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] &\\leq C_{\\text{loc}} \\\\\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}] &\\leq C_{\\text{struct}}\n\\end{aligned}"
+      }
+    ],
+    "hypotheses": [],
+    "conclusion": {
+      "text": "The location and structural error components satisfy \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] \\leq C_{\\text{loc}} and \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}] \\leq C_{\\text{struct}}.",
+      "latex": "\\begin{aligned}\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] &\\leq C_{\\text{loc}} \\\\\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}] &\\leq C_{\\text{struct}}\n\\end{aligned}"
+    },
+    "variables": [
+      {
+        "symbol": "\\Delta V_{\\text{loc}}",
+        "name": "location error",
+        "description": "Change in potential due to location errors.",
+        "constraints": [],
+        "tags": [
+          "error",
+          "location"
+        ]
+      },
+      {
+        "symbol": "C_{\\text{loc}}",
+        "name": "location bound constant",
+        "description": "Upper bound constant for location error expectation.",
+        "constraints": [
+          "positive"
+        ],
+        "tags": [
+          "constant",
+          "bound"
+        ]
+      },
+      {
+        "symbol": "\\Delta V_{\\text{struct}}",
+        "name": "structural error",
+        "description": "Change in potential due to structural errors.",
+        "constraints": [],
+        "tags": [
+          "error",
+          "structural"
+        ]
+      },
+      {
+        "symbol": "C_{\\text{struct}}",
+        "name": "structural bound constant",
+        "description": "Upper bound constant for structural error expectation.",
+        "constraints": [
+          "positive"
+        ],
+        "tags": [
+          "constant",
+          "bound"
+        ]
+      },
+      {
+        "symbol": "\\mathbb{E}_{\\text{clone}}",
+        "name": "clone expectation",
+        "description": "Expectation with respect to the clone measure.",
+        "constraints": [],
+        "tags": [
+          "expectation",
+          "measure"
+        ]
+      }
+    ],
+    "implicit_assumptions": [
+      {
+        "text": "C_loc and C_struct are non-negative constants defined in prior context.",
+        "confidence": 0.9
+      },
+      {
+        "text": "The clone measure is a probability measure over configurations.",
+        "confidence": 0.8
+      }
+    ],
+    "local_refs": [],
+    "proof": {
+      "availability": "not provided",
+      "steps": []
+    },
+    "tags": [
+      "inter-swarm",
+      "error",
+      "bounds",
+      "location",
+      "structural",
+      "expectation",
+      "clone"
+    ]
+  }
+]

@@ -3,70 +3,95 @@
     "type": "lemma",
     "label": "lem-mass-conservation-transport",
     "title": "Mass Conservation of Transport",
-    "nl_statement": "The integral of the adjoint transport operator over the domain $\\Omega$ vanishes when reflecting boundary conditions are imposed.",
+    "nl_statement": "Under reflecting boundary conditions on position and velocity boundaries, the integral of the adjoint transport operator applied to a function over the domain Ω vanishes, conserving total mass.",
     "equations": [
       {
         "label": null,
-        "latex": "\\int_{\\Omega} L^\\dagger f(t,z)\\,\\mathrm{d}z = 0"
+        "latex": "\\int_\\Omega L^\\dagger f(t,z)\\,\\mathrm{d}z = 0"
       }
     ],
     "hypotheses": [
       {
-        "text": "The boundary conditions are reflecting on both position and velocity boundaries.",
-        "latex": null
-      },
-      {
-        "text": "The domain is $\\Omega$.",
+        "text": "Reflecting boundary conditions are established on both position and velocity boundaries, as defined in Section 2.2.",
         "latex": null
       }
     ],
     "conclusion": {
-      "text": "The integral of the transport operator over the domain $\\Omega$ vanishes.",
-      "latex": "\\int_{\\Omega} L^\\dagger f(t,z)\\,\\mathrm{d}z = 0"
+      "text": "The integral of the adjoint transport operator over the domain vanishes.",
+      "latex": "\\int_\\Omega L^\\dagger f(t,z)\\,\\mathrm{d}z = 0"
     },
     "variables": [
       {
-        "symbol": "\\Omega",
-        "description": null,
-        "constraints": [],
-        "tags": [
-          "domain"
-        ]
-      },
-      {
         "symbol": "L^\\dagger",
-        "description": null,
+        "name": "adjoint transport operator",
+        "description": "The adjoint of the transport operator acting on functions in phase space.",
         "constraints": [],
         "tags": [
-          "operator"
+          "operator",
+          "adjoint"
         ]
       },
       {
-        "symbol": "f(t,z)",
-        "description": null,
+        "symbol": "f",
+        "name": "density function",
+        "description": "A function representing density or distribution in phase space, depending on time and position-velocity.",
         "constraints": [],
         "tags": [
-          "function"
+          "function",
+          "density"
+        ]
+      },
+      {
+        "symbol": "\\Omega",
+        "name": "domain",
+        "description": "The phase space domain over which integration occurs.",
+        "constraints": [],
+        "tags": [
+          "domain",
+          "phase space"
+        ]
+      },
+      {
+        "symbol": "z",
+        "name": "phase variable",
+        "description": "The variable representing position and velocity in phase space.",
+        "constraints": [],
+        "tags": [
+          "variable",
+          "phase space"
+        ]
+      },
+      {
+        "symbol": "t",
+        "name": "time",
+        "description": "The time parameter for the function f.",
+        "constraints": [],
+        "tags": [
+          "time"
         ]
       }
     ],
-    "implicit_assumptions": [],
+    "implicit_assumptions": [
+      {
+        "text": "The transport operator is defined in a context with total mass conservation as a key property.",
+        "confidence": 1.0
+      },
+      {
+        "text": "The domain Ω is bounded with reflecting boundaries that prevent mass flux.",
+        "confidence": 0.9
+      }
+    ],
     "local_refs": [],
     "proof": {
-      "availability": "in context",
-      "steps": [
-        {
-          "kind": "context",
-          "text": "The vanishing integral is due to the reflecting boundary conditions established in Section 2.2.",
-          "latex": null
-        }
-      ]
+      "availability": "not provided",
+      "steps": []
     },
     "tags": [
-      "conservation",
-      "mass",
+      "mass conservation",
       "transport operator",
-      "reflecting boundary conditions"
+      "reflecting boundaries",
+      "boundary conditions",
+      "adjoint operator"
     ]
   }
 ]

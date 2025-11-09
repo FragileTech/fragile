@@ -1,0 +1,125 @@
+[
+  {
+    "label": "alg-greedy-pairing",
+    "title": "Sequential Stochastic Greedy Pairing Algorithm",
+    "complexity": "O(k^2)",
+    "nl_summary": "A sequential stochastic greedy algorithm that pairs walkers from a list by iteratively selecting an unpaired walker and sampling a companion from the remaining set using probabilities based on a Gaussian kernel of their state distances, until fewer than two walkers remain.",
+    "signature": {
+      "input": [
+        "alive_walkers",
+        "epsilon_d"
+      ],
+      "output": [
+        "companion_map"
+      ],
+      "parameters": []
+    },
+    "steps": [
+      {
+        "order": 1,
+        "text": "unpaired_set ← a set containing all walkers from alive_walkers"
+      },
+      {
+        "order": 2,
+        "text": "companion_map ← an empty dictionary"
+      },
+      {
+        "order": 3,
+        "text": "WHILE len(unpaired_set) > 1:"
+      },
+      {
+        "order": 4,
+        "text": "i ← unpaired_set.pop()  // Select and remove a walker"
+      },
+      {
+        "order": 5,
+        "text": "// Prepare to compute the probability distribution",
+        "comment": "Prepare to compute the probability distribution"
+      },
+      {
+        "order": 6,
+        "text": "companions ← list(unpaired_set)"
+      },
+      {
+        "order": 7,
+        "text": "weights ← empty list of floats"
+      },
+      {
+        "order": 9,
+        "text": "FOR j IN companions:"
+      },
+      {
+        "order": 10,
+        "text": "dist_sq = algorithmic_distance(i.state, j.state)^2"
+      },
+      {
+        "order": 11,
+        "text": "weight = exp(-dist_sq / (2 * epsilon_d^2))"
+      },
+      {
+        "order": 12,
+        "text": "weights.append(weight)"
+      },
+      {
+        "order": 13,
+        "text": "// Normalize weights to get probabilities",
+        "comment": "Normalize weights to get probabilities"
+      },
+      {
+        "order": 14,
+        "text": "total_weight = sum(weights)"
+      },
+      {
+        "order": 15,
+        "text": "probabilities = [w / total_weight for w in weights]"
+      },
+      {
+        "order": 16,
+        "text": "// Sample the companion based on the probabilities",
+        "comment": "Sample the companion based on the probabilities"
+      },
+      {
+        "order": 17,
+        "text": "c_i ← sample_from(companions, probabilities)"
+      },
+      {
+        "order": 18,
+        "text": "// Finalize the pair",
+        "comment": "Finalize the pair"
+      },
+      {
+        "order": 19,
+        "text": "unpaired_set.remove(c_i)"
+      },
+      {
+        "order": 20,
+        "text": "companion_map[i] ← c_i"
+      },
+      {
+        "order": 21,
+        "text": "companion_map[c_i] ← i"
+      }
+    ],
+    "guard_conditions": [],
+    "references": [],
+    "failure_modes": [
+      {
+        "description": "Odd number of walkers results in one unpaired walker",
+        "impact": "Incomplete pairing, potential oversight in downstream processes"
+      },
+      {
+        "description": "All distances infinite or weights sum to zero",
+        "impact": "Division by zero error in probability normalization, algorithm halts"
+      }
+    ],
+    "tags": [
+      "greedy",
+      "pairing",
+      "stochastic",
+      "sequential",
+      "diversity",
+      "sampling",
+      "walkers"
+    ]
+  }
+]

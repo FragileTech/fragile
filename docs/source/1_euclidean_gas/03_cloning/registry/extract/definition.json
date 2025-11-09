@@ -1,0 +1,2992 @@
+[
+  {
+    "label": "def-single-swarm-space",
+    "term": "Single-Walker and Swarm State Spaces",
+    "object_type": "state space",
+    "nl_definition": "A walker is a tuple combining position (and velocity in the Euclidean Gas) with survival status; a swarm is an N-tuple of such walker states, and the single-swarm state space is the Cartesian product of individual walker state spaces.",
+    "formal_conditions": [
+      {
+        "text": "A walker is a tuple (x, s) where x ∈ \\mathcal{X} is position and s ∈ {0, 1} is survival status.",
+        "latex": "(x, s),\\ x \\in \\mathcal{X},\\ s \\in \\{0, 1\\}"
+      },
+      {
+        "text": "In the Euclidean Gas, the full state is (x, v, s) ∈ ℝ^d × ℝ^d × {0, 1}, with kinematic state (x, v).",
+        "latex": "(x, v, s) \\in \\mathbb{R}^d \\times \\mathbb{R}^d \\times \\{0, 1\\}"
+      },
+      {
+        "text": "A swarm configuration S is an N-tuple of walker states.",
+        "latex": "S := \\left( (x_1, v_1, s_1), (x_2, v_2, s_2), \\dots, (x_N, v_N, s_N) \\right)"
+      },
+      {
+        "text": "The single-swarm state space Σ_N is the Cartesian product.",
+        "latex": "\\Sigma_N := \\left( \\mathbb{R}^d \\times \\mathbb{R}^d \\times \\{0, 1\\} \\right)^N"
+      }
+    ],
+    "properties": [
+      {
+        "name": "Cartesian product structure",
+        "description": "The swarm state space is the product of individual walker state spaces, allowing independent variation of each walker's state."
+      },
+      {
+        "name": "Finite dimensionality",
+        "description": "For fixed N and d, Σ_N is a finite-dimensional space with 2^N possible survival configurations."
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "N",
+        "name": "number of walkers",
+        "description": "The number of walkers in the swarm configuration",
+        "constraints": [
+          "N is a positive integer"
+        ],
+        "tags": [
+          "swarm size"
+        ]
+      },
+      {
+        "symbol": "d",
+        "name": "spatial dimension",
+        "description": "The dimension of the position and velocity spaces in the Euclidean Gas",
+        "constraints": [
+          "d is a positive integer"
+        ],
+        "tags": [
+          "dimension"
+        ]
+      },
+      {
+        "symbol": "\\mathcal{X}",
+        "name": "position space",
+        "description": "General state space for walker position in the abstract Fragile Gas",
+        "constraints": [
+          "\\mathcal{X} is a measurable space"
+        ],
+        "tags": [
+          "position",
+          "abstract"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "clarification",
+        "text": "The definition is abstract for the Fragile Gas framework using general \\mathcal{X}, but specialized to Euclidean Gas with velocity in ℝ^d."
+      },
+      {
+        "type": "extension",
+        "text": "The kinematic state (x, v) captures position and velocity, relevant for motion dynamics in the Euclidean case."
+      }
+    ],
+    "tags": [
+      "walker",
+      "swarm",
+      "state space",
+      "survival status",
+      "kinematic state",
+      "Euclidean Gas",
+      "Fragile Gas"
+    ]
+  },
+  {
+    "label": "def-coupled-state-space",
+    "term": "coupled state space",
+    "object_type": "set",
+    "nl_definition": "The Cartesian product of the state space Σ_N with itself, consisting of ordered pairs (S₁, S₂) where each S_i is a configuration of N particles with positions, velocities, and spins.",
+    "formal_conditions": [
+      {
+        "text": "S₁ ∈ Σ_N and S₂ ∈ Σ_N",
+        "latex": "S_1 \\in \\Sigma_N, \\; S_2 \\in \\Sigma_N"
+      },
+      {
+        "text": "Each S_i = ((x_{i,1}, v_{i,1}, s_{i,1}), …, (x_{i,N}, v_{i,N}, s_{i,N}))",
+        "latex": "S_i = \\left( (x_{i,1}, v_{i,1}, s_{i,1}), \\dots, (x_{i,N}, v_{i,N}, s_{i,N}) \\right) \\in \\Sigma_N \\; (i=1,2)"
+      }
+    ],
+    "properties": [
+      {
+        "name": "product structure",
+        "description": "Direct product of two identical state spaces for comparing trajectories"
+      },
+      {
+        "name": "element composition",
+        "description": "Pairs of N-tuples, each tuple containing position x, velocity v, and spin s for particles"
+      }
+    ],
+    "parameters": [],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "context",
+        "text": "Used in synchronous coupling to minimize distance between trajectories; expectations taken w.r.t. shared randomness"
+      }
+    ],
+    "tags": [
+      "coupled state space",
+      "Euclidean gas",
+      "Cartesian product",
+      "swarm configuration",
+      "synchronous coupling"
+    ]
+  },
+  {
+    "label": "def-state-difference-vectors",
+    "term": "state difference vectors",
+    "object_type": "vectors",
+    "nl_definition": "For a pair of swarm states (S₁, S₂) in Σ_N × Σ_N, the state difference vectors consist of the position difference Δx_i = x_{1,i} - x_{2,i} and velocity difference Δv_i = v_{1,i} - v_{2,i} for each walker i from 1 to N, each in ℝ^d.",
+    "formal_conditions": [
+      {
+        "text": "Position difference vector",
+        "latex": "\\Delta x_i := x_{1,i} - x_{2,i} \\in \\mathbb{R}^d"
+      },
+      {
+        "text": "Velocity difference vector",
+        "latex": "\\Delta v_i := v_{1,i} - v_{2,i} \\in \\mathbb{R}^d"
+      }
+    ],
+    "properties": [],
+    "parameters": [
+      {
+        "symbol": "i",
+        "name": "walker index",
+        "description": "Index of the walker in the swarm",
+        "constraints": [
+          "i ∈ {1, …, N}"
+        ],
+        "tags": [
+          "index",
+          "walker"
+        ]
+      },
+      {
+        "symbol": "N",
+        "name": "number of walkers",
+        "description": "Total number of walkers in each swarm",
+        "constraints": [
+          "N ≥ 1"
+        ],
+        "tags": [
+          "dimension",
+          "size"
+        ]
+      },
+      {
+        "symbol": "d",
+        "name": "spatial dimension",
+        "description": "Dimension of the position and velocity spaces",
+        "constraints": [
+          "d ≥ 1"
+        ],
+        "tags": [
+          "dimension",
+          "space"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [],
+    "tags": [
+      "state difference",
+      "position difference",
+      "velocity difference",
+      "swarm",
+      "walker",
+      "hypocoercivity"
+    ]
+  },
+  {
+    "label": "def-barycentres-and-centered-vectors",
+    "term": "barycentres and centered vectors",
+    "object_type": "centers and deviations",
+    "nl_definition": "For each swarm in a coupled state, the barycentres are the average positions and velocities computed only over alive walkers, and the centered vectors are the individual alive walkers' positions and velocities relative to these swarm barycentres.",
+    "formal_conditions": [
+      {
+        "latex": "\\mu_{x,k} := \\frac{1}{k_{\\text{alive}}} \\sum_{i \\in \\mathcal{A}(S_k)} x_{k,i}"
+      },
+      {
+        "latex": "\\mu_{v,k} := \\frac{1}{k_{\\text{alive}}} \\sum_{i \\in \\mathcal{A}(S_k)} v_{k,i}"
+      },
+      {
+        "latex": "\\delta_{x,k,i} := x_{k,i} - \\mu_{x,k}"
+      },
+      {
+        "latex": "\\delta_{v,k,i} := v_{k,i} - \\mu_{v,k}"
+      }
+    ],
+    "properties": [
+      {
+        "name": "Sum to zero",
+        "description": "By construction, the centered vectors for alive walkers in any swarm sum to zero: \\sum_{i \\in \\mathcal{A}(S_k)} \\delta_{x,k,i} = 0 and \\sum_{i \\in \\mathcal{A}(S_k)} \\delta_{v,k,i} = 0."
+      },
+      {
+        "name": "Alive walkers only",
+        "description": "Dead walkers do not contribute to the barycentres, variances, or any statistical quantities."
+      }
+    ],
+    "parameters": [],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "convention",
+        "text": "Dead walkers (i \\notin \\mathcal{A}(S_k)) do not contribute to barycentres, variances, or any statistical quantities."
+      },
+      {
+        "type": "important",
+        "text": "Dead walkers retain their last known position (x_i, v_i) but have status s_i = 0. Including them in statistical calculations would distort the geometric properties: (1) Physical Interpretation: Dead walkers represent \"failed\" exploration paths. Their positions are historical artifacts, not part of the current active swarm distribution. (2) Cloning Operator Target: The cloning operator \\Psi_{\\text{clone}} acts on the fitness and geometric distribution of alive walkers. The variance it contracts is specifically the variance of the alive population."
+      }
+    ],
+    "tags": [
+      "barycentre",
+      "centered vectors",
+      "alive walkers",
+      "center of mass",
+      "swarm statistics",
+      "deviations"
+    ]
+  },
+  {
+    "label": "def-location-error-component",
+    "term": "location error component",
+    "object_type": "quadratic form",
+    "nl_definition": "For any pair of swarm configurations with barycenters $(\\mu_{x,1}, \\mu_{v,1})$ and $(\\mu_{x,2}, \\mu_{v,2})$, the location error component $V_{\\text{loc}}$ measures the hypocoercive quadratic error between the differences $\\Delta\\mu_x = \\mu_{x,1} - \\mu_{x,2}$ and $\\Delta\\mu_v = \\mu_{v,1} - \\mu_{v,2}$.",
+    "formal_conditions": [
+      {
+        "text": "Defined for pairs of swarm configurations $(S_1, S_2)$ with barycenters $(\\mu_{x,1}, \\mu_{v,1})$ and $(\\mu_{x,2}, \\mu_{v,2})$",
+        "latex": null
+      },
+      {
+        "text": "$V_{\\text{loc}} := \\|\\Delta\\mu_x\\|^2 + \\lambda_v \\|\\Delta\\mu_v\\|^2 + b \\langle \\Delta\\mu_x, \\Delta\\mu_v \\rangle$ where $\\Delta\\mu_x = \\mu_{x,1} - \\mu_{x,2}$ and $\\Delta\\mu_v = \\mu_{v,1} - \\mu_{v,2}$",
+        "latex": "V_{\\text{loc}} := \\|\\Delta\\mu_x\\|^2 + \\lambda_v\\|\\Delta\\mu_v\\|^2 + b\\langle\\Delta\\mu_x, \\Delta\\mu_v\\rangle"
+      }
+    ],
+    "properties": [
+      {
+        "name": "permutation-invariant",
+        "description": "Invariant under permutations of particles within each swarm, as it depends only on the centers of mass."
+      }
+    ],
+    "parameters": [],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "explanation",
+        "text": "The distance between the swarms' centers of mass is an intrinsically permutation-invariant quantity. We define the location error as the hypocoercive quadratic form applied to the difference between the barycenters of the two swarms."
+      }
+    ],
+    "tags": [
+      "location error",
+      "barycenter",
+      "swarm configuration",
+      "quadratic form",
+      "hypocoercive",
+      "permutation invariant",
+      "energy component"
+    ]
+  },
+  {
+    "label": "def-structural-error-component",
+    "term": "structural error component",
+    "object_type": "error measure",
+    "nl_definition": "The structural error component $V_{\\text{struct}}$ is the squared hypocoercive Wasserstein distance between the centered empirical measures $\\tilde{\\mu}_1$ and $\\tilde{\\mu}_2$ of two swarms $S_1$ and $S_2$, computed over alive walkers only.",
+    "formal_conditions": [
+      {
+        "text": null,
+        "latex": "\\tilde{\\mu}_k := \\frac{1}{k_{\\text{alive}}} \\sum_{i \\in \\mathcal{A}(S_k)} \\delta_{(\\delta_{x,k,i}, \\delta_{v,k,i})}\\quad k_{\\text{alive}} = |\\mathcal{A}(S_k)|"
+      },
+      {
+        "text": null,
+        "latex": "V_{\\text{struct}} := W_h^2(\\tilde{\\mu}_1, \\tilde{\\mu}_2) = \\inf_{\\gamma \\in \\Gamma(\\tilde{\\mu}_1, \\tilde{\\mu}_2)} \\int c(\\delta_{z,1}, \\delta_{z,2}) \\, d\\gamma(\\delta_{z,1}, \\delta_{z,2})"
+      }
+    ],
+    "properties": [],
+    "parameters": [],
+    "examples": [],
+    "related_refs": [
+      "def-barycentres-and-centered-vectors"
+    ],
+    "notes": [
+      {
+        "type": "explanation",
+        "text": "The structural error measures the mismatch between the \"shapes\" of the two swarms. The shape of a swarm is described by the set of its centered vectors, $\\{\\delta_{z,k,i}\\}$. To compare these shapes in a permutation-invariant way, we find the optimal matching between the centered vectors of the two swarms and measure the residual error of that matching. This is equivalent to the hypocoercive Wasserstein distance between the centered empirical measures."
+      }
+    ],
+    "tags": [
+      "structural error",
+      "wasserstein distance",
+      "hypocoercive",
+      "swarms",
+      "centered measures",
+      "empirical measures",
+      "optimal matching"
+    ]
+  },
+  {
+    "label": "def-full-synergistic-lyapunov-function",
+    "term": "total synergistic Lyapunov function",
+    "object_type": "Lyapunov function",
+    "nl_definition": "A permutation-invariant function measuring the combined inter-swarm distance, intra-swarm dispersion in position and velocity (over alive walkers, normalized by total swarm size N), and boundary proximity penalty for alive walkers in paired swarm configurations.",
+    "formal_conditions": [
+      {
+        "text": "Defined for swarm configurations (S₁, S₂) with empirical measures (μ₁, μ₂)",
+        "latex": null
+      },
+      {
+        "text": "V_total(S₁, S₂) = W_h²(μ₁, μ₂) + c_V V_Var(S₁, S₂) + c_B W_b(S₁, S₂)",
+        "latex": "V_{\\mathrm{total}}(S_1, S_2) := W_h^2(\\mu_1, \\mu_2) + c_V V_{Var}(S_1, S_2) + c_B W_b(S_1, S_2)"
+      },
+      {
+        "text": "V_Var(S₁, S₂) = V_Var,x(S₁, S₂) + λ_v V_Var,v(S₁, S₂)",
+        "latex": "V_{Var}(S_1, S_2) = V_{Var,x}(S_1, S_2) + \\lambda_v V_{Var,v}(S_1, S_2)"
+      },
+      {
+        "text": "V_Var,x(S₁, S₂) = (1/N) ∑_{i ∈ A(S₁)} ||δ_{x,1,i}||² + (1/N) ∑_{i ∈ A(S₂)} ||δ_{x,2,i}||²",
+        "latex": "V_{Var,x}(S_1, S_2) := \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_1)} \\|\\delta_{x,1,i}\\|^2 + \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_2)} \\|\\delta_{x,2,i}\\|^2"
+      },
+      {
+        "text": "V_Var,v(S₁, S₂) = (1/N) ∑_{i ∈ A(S₁)} ||δ_{v,1,i}||² + (1/N) ∑_{i ∈ A(S₂)} ||δ_{v,2,i}||²",
+        "latex": "V_{Var,v}(S_1, S_2) := \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_1)} \\|\\delta_{v,1,i}\\|^2 + \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_2)} \\|\\delta_{v,2,i}\\|^2"
+      },
+      {
+        "text": "W_b(S₁, S₂) = (1/N) ∑_{i ∈ A(S₁)} φ_barrier(x_{1,i}) + (1/N) ∑_{i ∈ A(S₂)} φ_barrier(x_{2,i})",
+        "latex": "W_b(S_1, S_2) := \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_1)} \\varphi_{\\text{barrier}}(x_{1,i}) + \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_2)} \\varphi_{\\text{barrier}}(x_{2,i})"
+      }
+    ],
+    "properties": [
+      {
+        "name": "Inter-Swarm Error Component",
+        "description": "Squared hypocoercive 2-Wasserstein distance W_h²(μ₁, μ₂), decomposable into location (V_loc) and structural (V_struct) errors measuring permutation-invariant phase-space distance between swarms."
+      },
+      {
+        "name": "Intra-Swarm Error Component",
+        "description": "Variance term V_Var capturing internal dispersion within each swarm, targeting synergistic contraction via cloning (positional) and kinetic (velocity) operators, summed over alive walkers and normalized by N."
+      },
+      {
+        "name": "Boundary Potential Component",
+        "description": "Penalty term W_b using barrier function φ_barrier to discourage alive walkers from approaching boundaries, normalized by N and excluding dead walkers."
+      },
+      {
+        "name": "Normalization",
+        "description": "All variance and boundary terms normalized by total swarm size N for analytical tractability in drift analysis, scaling with alive fraction k_alive/N."
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "λ_v",
+        "name": "velocity variance weight",
+        "description": "Positive weighting factor for the velocity component in the intra-swarm variance.",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "weight",
+          "velocity"
+        ]
+      },
+      {
+        "symbol": "c_V",
+        "name": "variance coupling constant",
+        "description": "Positive constant balancing the intra-swarm variance term in the Lyapunov function.",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "coupling",
+          "variance"
+        ]
+      },
+      {
+        "symbol": "c_B",
+        "name": "boundary coupling constant",
+        "description": "Positive constant balancing the boundary potential term in the Lyapunov function.",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "coupling",
+          "boundary"
+        ]
+      },
+      {
+        "symbol": "b",
+        "name": "hypocoercive parameter",
+        "description": "Hypocoercive parameter used in the definition of the hypocoercive Wasserstein distance.",
+        "constraints": [],
+        "tags": [
+          "hypocoercive",
+          "parameter"
+        ]
+      },
+      {
+        "symbol": "N",
+        "name": "total swarm size",
+        "description": "Fixed total number of walkers in each swarm, used for normalization.",
+        "constraints": [
+          "> 0",
+          "integer"
+        ],
+        "tags": [
+          "swarm",
+          "normalization"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [
+      "def-barycentres-and-centered-vectors",
+      "lem-wasserstein-decomposition",
+      "prop-barrier-existence"
+    ],
+    "notes": [
+      {
+        "type": "important",
+        "text": "Normalization by N vs. k_alive: Uses total swarm size N for mathematical simplicity in expectations, avoiding ratios of random variables; interprets as mean-field disorder per walker slot, assuming viability with k_alive/N bounded away from zero via axioms and contractive properties."
+      },
+      {
+        "type": "see-also",
+        "text": "W_h² decomposes per Lemma on Wasserstein decomposition; δ vectors from definition of barycenters and centered vectors; φ_barrier from barrier existence proposition."
+      },
+      {
+        "type": "analysis",
+        "text": "Designed for hypocoercive drift analysis; parameters b, λ_v for hypocoercivity; c_V, c_B as small coupling constants for balancing in inequalities."
+      }
+    ],
+    "tags": [
+      "lyapunov-function",
+      "synergistic",
+      "hypocoercive",
+      "swarm-dynamics",
+      "wasserstein-distance",
+      "intra-swarm-variance",
+      "boundary-potential"
+    ]
+  },
+  {
+    "label": "def-variance-conversions",
+    "term": "variance notation conversions",
+    "object_type": "conversion formulas",
+    "nl_definition": "Formulas defining and converting between three variance measures for a swarm k: the un-normalized sum of squared positional deviations S_k, the physical internal variance Var_k(x) normalized by the number of alive walkers, and the Lyapunov variance component V_{Var,x}(S_k) normalized by total walker slots N.",
+    "formal_conditions": [
+      {
+        "text": "Un-normalized Sum of Squared Deviations",
+        "latex": "S_k := \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2"
+      },
+      {
+        "text": "Physical Internal Variance (k-normalized)",
+        "latex": "\\text{Var}_k(x) := \\frac{1}{k_{\\text{alive}}} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2 = \\frac{S_k}{k_{\\text{alive}}}"
+      },
+      {
+        "text": "Lyapunov Variance Component (N-normalized)",
+        "latex": "V_{\\text{Var},x}(S_k) := \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2 = \\frac{S_k}{N}"
+      },
+      {
+        "text": "Basic Conversion",
+        "latex": "S_k = k_{\\text{alive}} \\cdot \\text{Var}_k(x) = N \\cdot V_{\\text{Var},x}(S_k)"
+      },
+      {
+        "text": "From physical to Lyapunov",
+        "latex": "V_{\\text{Var},x}(S_k) = \\frac{k_{\\text{alive}}}{N} \\cdot \\text{Var}_k(x)"
+      },
+      {
+        "text": "From Lyapunov to physical",
+        "latex": "\\text{Var}_k(x) = \\frac{N}{k_{\\text{alive}}} \\cdot V_{\\text{Var},x}(S_k)"
+      }
+    ],
+    "properties": [
+      {
+        "name": "Un-normalized Sum of Squared Deviations",
+        "description": "Total positional variance without any normalization."
+      },
+      {
+        "name": "Physical Internal Variance",
+        "description": "Average squared deviation per alive walker - the standard statistical variance."
+      },
+      {
+        "name": "Lyapunov Variance Component",
+        "description": "Mean-field contribution to system disorder per walker slot."
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "N",
+        "name": "Total walker slots",
+        "description": "Total number of walker slots in the swarm",
+        "constraints": [
+          "positive integer"
+        ],
+        "tags": [
+          "swarm",
+          "total"
+        ]
+      },
+      {
+        "symbol": "k_alive",
+        "name": "Number of alive walkers",
+        "description": "Number of alive walkers in swarm k, equal to |A(S_k)|",
+        "constraints": [
+          "integer",
+          "0 <= k_alive <= N"
+        ],
+        "tags": [
+          "swarm",
+          "alive"
+        ]
+      },
+      {
+        "symbol": "S_k",
+        "name": "Un-normalized Sum of Squared Deviations",
+        "description": "Total positional variance without normalization",
+        "constraints": [
+          "non-negative real"
+        ],
+        "tags": [
+          "variance",
+          "unnormalized"
+        ]
+      },
+      {
+        "symbol": "Var_k(x)",
+        "name": "Physical Internal Variance",
+        "description": "k-normalized average squared deviation per alive walker",
+        "constraints": [
+          "non-negative real"
+        ],
+        "tags": [
+          "variance",
+          "internal"
+        ]
+      },
+      {
+        "symbol": "V_{Var,x}(S_k)",
+        "name": "Lyapunov Variance Component",
+        "description": "N-normalized mean-field contribution to system disorder per walker slot",
+        "constraints": [
+          "non-negative real"
+        ],
+        "tags": [
+          "variance",
+          "lyapunov"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "conversion guide",
+        "text": "When converting between notations in proofs: - From S_k to V_{Var,x}(S_k): divide by N - From Var_k(x) to V_{Var,x}(S_k): multiply by k_alive / N"
+      }
+    ],
+    "tags": [
+      "variance",
+      "notation",
+      "conversion",
+      "swarm",
+      "normalization",
+      "lyapunov",
+      "walkers",
+      "deviations"
+    ]
+  },
+  {
+    "label": "def-algorithmic-distance-metric",
+    "term": "algorithmic distance",
+    "object_type": "metric",
+    "nl_definition": "The squared algorithmic distance between two walkers is the sum of the squared Euclidean norm of their position difference and a weighted squared Euclidean norm of their velocity difference.",
+    "formal_conditions": [
+      {
+        "text": "For any two walkers $i$ and $j$ with states $(x_i, v_i)$ and $(x_j, v_j)$",
+        "latex": null
+      },
+      {
+        "text": null,
+        "latex": "d_{\\text{alg}}(i, j)^2 := \\|x_i - x_j\\|^2 + \\lambda_{\\text{alg}} \\|v_i - v_j\\|^2"
+      }
+    ],
+    "properties": [],
+    "parameters": [
+      {
+        "symbol": "\\lambda_{\\text{alg}}",
+        "name": "lambda_alg",
+        "description": "Weighting factor for the velocity difference component in the algorithmic distance metric.",
+        "constraints": [],
+        "tags": [
+          "weight",
+          "parameter",
+          "velocity"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "context",
+        "text": "This metric quantifies proximity between walkers and is central to intra-swarm measurements, including companion selection for diversity and cloning."
+      }
+    ],
+    "tags": [
+      "distance",
+      "metric",
+      "algorithmic",
+      "companion-selection",
+      "walkers",
+      "position",
+      "velocity",
+      "euclidean"
+    ]
+  },
+  {
+    "label": "def-spatial-pairing-operator-diversity",
+    "term": "Spatially-Aware Pairing Operator",
+    "object_type": "operator",
+    "nl_definition": "An operator that maps the alive set of walkers to a probability distribution over all possible perfect matchings, where probabilities are assigned based on the product of edge weights computed from exponential decay of squared algorithmic distances between paired walkers, normalized by the partition function.",
+    "formal_conditions": [
+      {
+        "text": "Edge weight assignment",
+        "latex": "w_{ij} := \\exp\\left(-\\frac{d_{\\text{alg}}(i, j)^2}{2\\epsilon_d^2}\\right)"
+      },
+      {
+        "text": "Quality of a matching M",
+        "latex": "W(M) := \\prod_{(i,j) \\in M} w_{ij}"
+      },
+      {
+        "text": "Probability of selecting matching M",
+        "latex": "P(M) = \\frac{W(M)}{\\sum_{M' \\in \\mathcal{M}_k} W(M')}"
+      },
+      {
+        "text": "Input alive set size",
+        "latex": "k = |\\mathcal{A}_t|"
+      },
+      {
+        "text": "Domain",
+        "latex": "\\mathbb{P}_{\\text{pair}}: \\mathcal{A}_t \\to \\text{Dist}(\\mathcal{M}_k)"
+      }
+    ],
+    "properties": [
+      {
+        "name": "Inputs",
+        "description": "The alive set of walkers \\mathcal{A}_t = \\{w_1, w_2, \\dots, w_k\\} and \\varepsilon_d > 0 (Interaction Range for Diversity)."
+      },
+      {
+        "name": "Output",
+        "description": "A probability distribution over the set of all possible perfect matchings \\mathcal{M}_k."
+      },
+      {
+        "name": "Weight Function",
+        "description": "Gaussian-like weight based on algorithmic distance d_{\\text{alg}}(i,j)."
+      },
+      {
+        "name": "Normalization",
+        "description": "Probabilities sum to 1 via the partition function \\sum_{M' \\in \\mathcal{M}_k} W(M')."
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "\\varepsilon_d",
+        "name": "Interaction Range for Diversity",
+        "description": "The Interaction Range for Diversity.",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "diversity",
+          "range",
+          "parameter"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "context",
+        "text": "For the purposes of theoretical analysis, it is useful to model the pairing as a single, collective draw from a probability distribution over all possible perfect matchings of the alive set. This idealized model captures the physical intent of the operator—to strongly favor pairings between walkers that are close in the algorithmic space."
+      }
+    ],
+    "tags": [
+      "spatial",
+      "pairing",
+      "operator",
+      "idealized",
+      "diversity",
+      "probability",
+      "matching",
+      "swarm",
+      "walkers"
+    ]
+  },
+  {
+    "label": "def-greedy-pairing-algorithm",
+    "term": "Sequential Stochastic Greedy Pairing Operator",
+    "object_type": "algorithm",
+    "nl_definition": "An iterative stochastic algorithm that constructs a matching among alive walkers by sequentially selecting an unpaired walker, computing proximity-based probabilities over remaining unpaired walkers, sampling a companion, and updating the companion map until at most one walker remains unpaired.",
+    "formal_conditions": [
+      {
+        "text": "Initialize unpaired set U ← A_t and empty companion map c.",
+        "latex": null
+      },
+      {
+        "text": "While |U| > 1: Select arbitrary i from U and remove it.",
+        "latex": null
+      },
+      {
+        "text": "For each j in U, compute weight w_{ij} = exp(-d_alg(i, j)^2 / (2 ε_d^2)).",
+        "latex": "w_{ij} := \\exp\\left(-\\frac{d_{\\text{alg}}(i, j)^2}{2\\epsilon_d^2}\\right)"
+      },
+      {
+        "text": "Form probability P(choose j) = w_{ij} / sum_{l in U} w_{il}.",
+        "latex": null
+      },
+      {
+        "text": "Sample c_i from this distribution, remove c_i from U.",
+        "latex": null
+      },
+      {
+        "text": "Set c(i) ← c_i and c(c_i) ← i.",
+        "latex": null
+      },
+      {
+        "text": "Return companion map c.",
+        "latex": null
+      }
+    ],
+    "properties": [
+      {
+        "name": "Output",
+        "description": "Generates a companion map c: A_t → A_t, a perfect matching if k even, or maximal matching if k odd."
+      },
+      {
+        "name": "Complexity",
+        "description": "Reduces computational complexity from factorial to quadratic by iterative greedy selection."
+      },
+      {
+        "name": "Stochasticity",
+        "description": "Companion selection is probabilistic based on proximity weights."
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "A_t",
+        "name": "Set of Alive Walkers",
+        "description": "The set of k alive walkers at time t.",
+        "constraints": [
+          "finite set",
+          "|A_t| = k"
+        ],
+        "tags": [
+          "walkers",
+          "set"
+        ]
+      },
+      {
+        "symbol": "\\varepsilon_d",
+        "name": "Interaction Range for Diversity",
+        "description": "Positive parameter controlling the scale of proximity in selection weights.",
+        "constraints": [
+          "\\varepsilon_d > 0"
+        ],
+        "tags": [
+          "range",
+          "diversity",
+          "parameter"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "motivation",
+        "text": "This algorithm builds the matching iteratively. It selects an unpaired walker, computes a probability distribution over all other currently unpaired walkers based on proximity, samples a companion, and removes the new pair from the pool. This reduces the computational complexity from factorial to quadratic, making it practical for large swarms."
+      }
+    ],
+    "tags": [
+      "greedy",
+      "pairing",
+      "stochastic",
+      "sequential",
+      "algorithm",
+      "matching",
+      "walkers",
+      "proximity"
+    ]
+  },
+  {
+    "label": "def-geometric-partition",
+    "term": "geometric partitioning",
+    "object_type": "partition",
+    "nl_definition": "A phase-space partitioning of a high-variance swarm (with Var(x) > R_var^2) into two non-empty N-uniform sets: a high-error set of kinematically isolated walkers and a low-error set forming dense local clusters, for a given interaction range ε.",
+    "formal_conditions": [
+      {
+        "text": "The swarm S satisfies Var(x) > R_var^2, where x denotes positions.",
+        "latex": "\\operatorname{Var}(x) > R_{\\var}^2"
+      },
+      {
+        "text": "S is partitioned into non-empty, N-uniform sets H_k and L_k (disjoint union).",
+        "latex": "S = H_k \\sqcup L_k, \\, |H_k| \\geq cN, \\, |L_k| \\geq cN \\, (c > 0 \\, N\\text{-uniform})"
+      },
+      {
+        "text": "For H_k (high-error): exists D_H(ε) > 0 such that ∀ i ∈ H_k, ∀ j ≠ i, d_alg(i, j) > D_H(ε) (kinematically isolated).",
+        "latex": "\\exists D_H(\\varepsilon) > 0: \\, \\forall i \\in H_k, \\, \\forall j \\neq i, \\, d_{\\alg}(i,j) > D_H(\\varepsilon)"
+      },
+      {
+        "text": "For L_k (low-error): ∀ j ∈ L_k, ∃ C_j ⊂ L_k non-empty with |C_j| ≥ f_c k (f_c > 0 N-uniform) s.t. all in C_j within algorithmic radius R_L(ε) < D_H(ε) from j.",
+        "latex": "\\forall j \\in L_k, \\, \\exists C_j \\subset L_k, \\, |C_j| \\geq f_c k \\, (f_c > 0 \\, N\\text{-uniform}), \\, \\forall i \\in C_j, \\, d_{\\alg}(i,j) \\leq R_L(\\varepsilon) < D_H(\\varepsilon)"
+      }
+    ],
+    "properties": [
+      {
+        "name": "High-Error Set H_k",
+        "description": "Consists of kinematically isolated walkers, separated from all others by at least D_H(ε) in algorithmic distance."
+      },
+      {
+        "name": "Low-Error Set L_k",
+        "description": "Consists of walkers each belonging to a dense local cluster of at least f_c k others within R_L(ε)."
+      },
+      {
+        "name": "N-Uniformity",
+        "description": "Both H_k and L_k are non-empty with sizes bounded below by a positive fraction of the total swarm size N."
+      },
+      {
+        "name": "Phase-Space Basis",
+        "description": "Defined using local (cluster isolation) and global (variance) properties for interaction range ε."
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "\\varepsilon",
+        "name": "interaction range",
+        "description": "The given interaction range defining the swarm's phase-space structure.",
+        "constraints": [],
+        "tags": [
+          "range",
+          "interaction"
+        ]
+      },
+      {
+        "symbol": "R_{\\var}^2",
+        "name": "variance threshold",
+        "description": "Threshold determining high-variance state: Var(x) > R_{\\var}^2.",
+        "constraints": [
+          "R_{\\var}^2 > 0"
+        ],
+        "tags": [
+          "threshold",
+          "variance"
+        ]
+      },
+      {
+        "symbol": "k",
+        "name": "set index",
+        "description": "Index parameterizing the partitioned sets H_k and L_k.",
+        "constraints": [],
+        "tags": [
+          "index",
+          "partition"
+        ]
+      },
+      {
+        "symbol": "f_c",
+        "name": "cluster fraction",
+        "description": "Positive N-uniform fraction bounding the minimum size of local clusters in L_k.",
+        "constraints": [
+          "f_c > 0",
+          "N-uniform"
+        ],
+        "tags": [
+          "fraction",
+          "cluster"
+        ]
+      },
+      {
+        "symbol": "D_H(\\varepsilon)",
+        "name": "isolation distance",
+        "description": "Positive distance ensuring kinematic isolation for members of H_k.",
+        "constraints": [
+          "D_H(\\varepsilon) > 0"
+        ],
+        "tags": [
+          "distance",
+          "isolation"
+        ]
+      },
+      {
+        "symbol": "R_L(\\varepsilon)",
+        "name": "cluster radius",
+        "description": "Algorithmic radius for dense clusters in L_k, smaller than the isolation distance.",
+        "constraints": [
+          "R_L(\\varepsilon) < D_H(\\varepsilon)"
+        ],
+        "tags": [
+          "radius",
+          "cluster"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [
+      "cor-vvarx-to-high-error-fraction"
+    ],
+    "notes": [
+      {
+        "type": "proof-reference",
+        "text": "Existence guaranteed by cor-vvarx-to-high-error-fraction."
+      },
+      {
+        "type": "future-proof",
+        "text": "Full detailed proof provided in Chapter 6."
+      },
+      {
+        "type": "context",
+        "text": "Applies to swarms in high-variance states based on phase-space structure."
+      }
+    ],
+    "tags": [
+      "geometric-partitioning",
+      "high-variance-swarms",
+      "phase-space-structure",
+      "high-error-set",
+      "low-error-set",
+      "kinematic-isolation",
+      "dense-clusters",
+      "N-uniform"
+    ]
+  },
+  {
+    "label": "def-raw-value-operators",
+    "term": "Raw Value Operators",
+    "object_type": "Operators",
+    "nl_definition": "Operators that deterministically measure raw reward and paired distance for alive walkers after fixing the companion map.",
+    "formal_conditions": [
+      {
+        "text": "The Reward Measurement Operator (V_R): The raw reward for each alive walker i is its direct, individual measurement of the reward function, which explicitly includes both positional and velocity components: r_i := R(x_i, v_i) = R_pos(x_i) - c_{v_reg} ||v_i||^2 where R_pos(x_i) is the positional reward and c_{v_reg} > 0 is the velocity regularization coefficient from Axiom EG-4.",
+        "latex": "r_i := R(x_i, v_i) = R_{\\text{pos}}(x_i) - c_{v_{\\reg}} \\|v_i\\|^2"
+      },
+      {
+        "text": "The Paired Distance Measurement Operator (V_D): Given the Companion Map c(i) generated by the pairing operator, the raw distance for each alive walker i is deterministically defined as the algorithmic distance to its assigned companion: d_i := d_alg(i, c(i))",
+        "latex": "d_i := d_{\\text{alg}}(i, c(i))"
+      }
+    ],
+    "properties": [
+      {
+        "name": "Deterministic",
+        "description": "Measurements are deterministic once the companion map is fixed by the pairing operator."
+      },
+      {
+        "name": "Individual",
+        "description": "Reward measurement is direct and individual for each walker, including position and velocity components."
+      },
+      {
+        "name": "Paired",
+        "description": "Distance measurement uses the assigned companion from the map."
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "c_{v_reg}",
+        "name": "velocity regularization coefficient",
+        "description": "Positive coefficient penalizing walker velocity in reward function",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "regularization",
+          "velocity",
+          "coefficient"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "introductory",
+        "text": "Once the Companion Map c(i) is fixed for the timestep by the pairing operator, the measurement of raw values for each walker becomes a deterministic process."
+      }
+    ],
+    "tags": [
+      "raw-value",
+      "operators",
+      "reward",
+      "distance",
+      "measurement",
+      "walkers",
+      "pairing"
+    ]
+  },
+  {
+    "label": "def-swarm-aggregation-operator",
+    "term": "Swarm Aggregation Operator",
+    "object_type": "operator",
+    "nl_definition": "An operator that processes raw reward and distance vectors from the k alive walkers to compute summary statistics, specifically the mean and standard deviation, for subsequent standardization.",
+    "formal_conditions": [],
+    "properties": [],
+    "parameters": [
+      {
+        "symbol": "k",
+        "name": "k",
+        "description": "The number of alive walkers providing the raw reward and distance vectors.",
+        "constraints": [],
+        "tags": [
+          "walkers"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [],
+    "tags": [
+      "swarm",
+      "aggregation",
+      "operator",
+      "walkers",
+      "reward",
+      "distance",
+      "standardization",
+      "statistics"
+    ]
+  },
+  {
+    "label": "def-patched-std-dev-function",
+    "term": "\\sigma'_{\\text{patch}}",
+    "object_type": "function",
+    "nl_definition": "A C^1 smooth replacement for the standard square-root function, designed to be globally Lipschitz and bounded away from zero, defined piecewise in terms of the raw variance V.",
+    "formal_conditions": [],
+    "properties": [],
+    "parameters": [
+      {
+        "symbol": "\\kappa_{\\text{var,min}}",
+        "name": "minimum variance threshold",
+        "description": "The lower bound threshold for variance to ensure stability.",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "threshold",
+          "variance",
+          "minimum"
+        ]
+      },
+      {
+        "symbol": "\\varepsilon_{\\mathrm{std}}",
+        "name": "standard deviation epsilon",
+        "description": "Regularization parameter added to prevent zero or near-zero standard deviation.",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "epsilon",
+          "regularization",
+          "stability"
+        ]
+      },
+      {
+        "symbol": "P",
+        "name": "smoothing polynomial",
+        "description": "A C^1 smooth polynomial used for interpolation in the transition region.",
+        "constraints": [
+          "C^1 smooth"
+        ],
+        "tags": [
+          "polynomial",
+          "interpolation",
+          "smooth"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [],
+    "tags": [
+      "standard-deviation",
+      "patched",
+      "smooth-function",
+      "lipschitz",
+      "variance"
+    ]
+  },
+  {
+    "label": "def-standardization-operator",
+    "term": "N-Dimensional Standardization Operator",
+    "object_type": "operator",
+    "nl_definition": "The N-Dimensional Standardization Operator, denoted z, maps a swarm state S, a raw value vector v, and an aggregation operator M to an N-dimensional vector of standardized Z-scores.",
+    "formal_conditions": [
+      {
+        "text": "Aggregate the alive components v_A to get a measure μ_v = M(S, v_A).",
+        "latex": "\\mu_v = M(S, v_A)"
+      },
+      {
+        "text": "Compute the mean μ_A = E[μ_v] and the patched standard deviation σ'_A = σ'_patch(Var[μ_v]).",
+        "latex": "\\mu_A = \\mathbb{E}[\\mu_v], \\quad \\sigma'_A = \\sigma'_{\\text{patch}}(\\text{Var}[\\mu_v])"
+      },
+      {
+        "text": "For each alive walker i, compute its Z-score: z_i = (v_i - μ_A) / σ'_A.",
+        "latex": "z_i = \\frac{v_i - \\mu_A}{\\sigma'_A}"
+      }
+    ],
+    "properties": [
+      {
+        "name": "Input Dependencies",
+        "description": "Relies on alive components from swarm state S and aggregation via M."
+      },
+      {
+        "name": "Output Type",
+        "description": "Produces N-dimensional vector of Z-scores for alive walkers."
+      },
+      {
+        "name": "Robustness",
+        "description": "Uses patched standard deviation for handling variance in robust statistics."
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "S",
+        "name": "swarm state",
+        "description": "The current state of the swarm, including information about alive components.",
+        "constraints": [],
+        "tags": [
+          "swarm",
+          "state"
+        ]
+      },
+      {
+        "symbol": "v",
+        "name": "raw value vector",
+        "description": "The N-dimensional vector of raw values for the walkers.",
+        "constraints": [],
+        "tags": [
+          "vector",
+          "raw",
+          "values"
+        ]
+      },
+      {
+        "symbol": "M",
+        "name": "aggregation operator",
+        "description": "The operator used to aggregate values from alive components.",
+        "constraints": [],
+        "tags": [
+          "aggregation",
+          "operator"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "context",
+        "text": "This operator uses the robust statistics from the previous stage to convert the raw value vectors into standardized Z-scores."
+      }
+    ],
+    "tags": [
+      "standardization",
+      "z-score",
+      "operator",
+      "swarm-state",
+      "aggregation",
+      "robust-statistics",
+      "normalization"
+    ]
+  },
+  {
+    "label": "def-logistic-rescale",
+    "term": "Canonical Logistic Rescale Function",
+    "object_type": "function",
+    "nl_definition": "A function from the real numbers to the open interval (0, 2) given by the formula g_A(z) = 2 / (1 + e^{-z}).",
+    "formal_conditions": [
+      {
+        "text": null,
+        "latex": "g_A(z) := \\frac{2}{1 + e^{-z}}"
+      },
+      {
+        "text": "Domain and codomain",
+        "latex": "g_A: \\mathbb{R} \\to (0, 2)"
+      }
+    ],
+    "properties": [],
+    "parameters": [],
+    "examples": [],
+    "related_refs": [],
+    "notes": [],
+    "tags": [
+      "logistic",
+      "rescale",
+      "canonical",
+      "sigmoid",
+      "function",
+      "exponential"
+    ]
+  },
+  {
+    "label": "def-fitness-potential-operator",
+    "term": "Fitness Potential Operator",
+    "object_type": "operator",
+    "nl_definition": "The Fitness Potential Operator Φ_pipeline maps a swarm state S and raw measurement vectors r and d to an N-dimensional fitness potential vector V_fit by computing Z-scores for rewards and diversity, rescaling them with a floor η, and combining via weighted powers using α and β.",
+    "formal_conditions": [
+      {
+        "text": "Compute reward Z-scores: z_r = z(S, r, R_agg)",
+        "latex": "\\mathbf{z}_r = z(S, \\mathbf{r}, R_{agg})"
+      },
+      {
+        "text": "Compute diversity Z-scores: z_d = z(S, d, M_D)",
+        "latex": "\\mathbf{z}_d = z(S, \\mathbf{d}, M_D)"
+      },
+      {
+        "text": "For each alive walker i, compute rescaled reward: r'_i := g_A(z_{r,i}) + η",
+        "latex": "r'_i := g_A(z_{r,i}) + \\eta"
+      },
+      {
+        "text": "For each alive walker i, compute rescaled diversity: d'_i := g_A(z_{d,i}) + η",
+        "latex": "d'_i := g_A(z_{d,i}) + \\eta"
+      },
+      {
+        "text": "For each alive walker i, combine: V_i := (d'_i)^β · (r'_i)^α",
+        "latex": "V_i := (d'_i)^\\beta \\cdot (r'_i)^\\alpha"
+      }
+    ],
+    "properties": [
+      {
+        "name": "Input Dependencies",
+        "description": "Depends on swarm state S for contextual Z-scoring and raw vectors r, d of dimension N."
+      },
+      {
+        "name": "Output",
+        "description": "N-dimensional vector V_fit, with components defined only for alive walkers."
+      },
+      {
+        "name": "Positivity",
+        "description": "Ensured by adding floor η to rescaled components before exponentiation."
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "S",
+        "name": "Swarm State",
+        "description": "The current state of the swarm, used in Z-score computations.",
+        "constraints": [],
+        "tags": [
+          "swarm",
+          "state"
+        ]
+      },
+      {
+        "symbol": "r",
+        "name": "Reward Vector",
+        "description": "Raw N-dimensional reward measurement vector.",
+        "constraints": [],
+        "tags": [
+          "reward",
+          "vector"
+        ]
+      },
+      {
+        "symbol": "d",
+        "name": "Diversity Vector",
+        "description": "Raw N-dimensional diversity measurement vector.",
+        "constraints": [],
+        "tags": [
+          "diversity",
+          "vector"
+        ]
+      },
+      {
+        "symbol": "R_agg",
+        "name": "Reward Aggregation",
+        "description": "Aggregation parameter for reward Z-score computation.",
+        "constraints": [],
+        "tags": [
+          "aggregation",
+          "reward"
+        ]
+      },
+      {
+        "symbol": "M_D",
+        "name": "Diversity Metric",
+        "description": "Metric parameter for diversity Z-score computation.",
+        "constraints": [],
+        "tags": [
+          "metric",
+          "diversity"
+        ]
+      },
+      {
+        "symbol": "η",
+        "name": "Floor Value",
+        "description": "Minimum additive value for rescaled components to ensure positivity.",
+        "constraints": [
+          "η ≥ 0"
+        ],
+        "tags": [
+          "floor",
+          "positivity"
+        ]
+      },
+      {
+        "symbol": "α",
+        "name": "Reward Weight",
+        "description": "Exponent weighting the reward component in the final combination.",
+        "constraints": [],
+        "tags": [
+          "weight",
+          "exponent",
+          "reward"
+        ]
+      },
+      {
+        "symbol": "β",
+        "name": "Diversity Weight",
+        "description": "Exponent weighting the diversity component in the final combination.",
+        "constraints": [],
+        "tags": [
+          "weight",
+          "exponent",
+          "diversity"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "clarification",
+        "text": "Computations are performed only for alive walkers in the swarm; dead walkers may have V_i = 0 or undefined."
+      },
+      {
+        "type": "dependency",
+        "text": "Relies on prior definitions of Z-score function z and rescaling function g_A."
+      }
+    ],
+    "tags": [
+      "fitness",
+      "potential",
+      "operator",
+      "swarm",
+      "z-score",
+      "rescaling",
+      "reward",
+      "diversity",
+      "pipeline"
+    ]
+  },
+  {
+    "label": "def-cloning-companion-operator",
+    "term": "Companion Selection Operator for Cloning",
+    "object_type": "operator",
+    "nl_definition": "An operator that, for each walker i in a swarm state S, defines a probability measure C_i(S) to sample a companion c_i independently, using phase-space-aware softmax selection for alive walkers or uniform selection over alive walkers for dead walkers, parameterized by interaction range ε_c.",
+    "formal_conditions": [
+      {
+        "text": null,
+        "latex": "If i \\in \\mathcal{A}_k: P(c_i = j \\mid i \\in \\mathcal{A}_k) := \\frac{\\exp\\left(-\\frac{d_{\\text{alg}}(i, j)^2}{2\\epsilon_c^2}\\right)}{\\sum_{l \\in \\mathcal{A}_k \\setminus \\{i\\}} \\exp\\left(-\\frac{d_{\\text{alg}}(i, l)^2}{2\\epsilon_c^2}\\right)}, \\quad \\forall j \\in \\mathcal{A}_k \\setminus \\{i\\}"
+      },
+      {
+        "text": null,
+        "latex": "If i \\in \\mathcal{D}_k: P(c_i = j \\mid i \\in \\mathcal{D}_k) := \\frac{1}{k}, \\quad \\forall j \\in \\mathcal{A}_k"
+      }
+    ],
+    "properties": [
+      {
+        "name": "Inputs",
+        "description": "Swarm state S (defining \\mathcal{A}_k and \\mathcal{D}_k) and interaction range \\varepsilon_c > 0."
+      },
+      {
+        "name": "Operation for alive walkers",
+        "description": "Phase-space-aware selection via softmax on algorithmic distances to other alive walkers."
+      },
+      {
+        "name": "Operation for dead walkers",
+        "description": "Uniform random selection from all k alive walkers."
+      },
+      {
+        "name": "Independence",
+        "description": "Companions c_i are sampled independently for each i."
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "S",
+        "name": "swarm state",
+        "description": "Current state of the swarm, defining alive and dead walkers.",
+        "constraints": [],
+        "tags": [
+          "swarm",
+          "state"
+        ]
+      },
+      {
+        "symbol": "ε_c",
+        "name": "interaction range",
+        "description": "Positive parameter controlling the cloning interaction range.",
+        "constraints": [
+          "ε_c > 0"
+        ],
+        "tags": [
+          "range",
+          "cloning",
+          "positive"
+        ]
+      },
+      {
+        "symbol": "i",
+        "name": "walker index",
+        "description": "Index of the walker for which the companion is selected.",
+        "constraints": [],
+        "tags": [
+          "walker",
+          "index"
+        ]
+      },
+      {
+        "symbol": "k",
+        "name": "number of alive walkers",
+        "description": "Size of the set of alive walkers A_k.",
+        "constraints": [
+          "k ≥ 1"
+        ],
+        "tags": [
+          "alive",
+          "count"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [],
+    "tags": [
+      "cloning",
+      "companion",
+      "selection",
+      "operator",
+      "probability",
+      "measure",
+      "softmax",
+      "uniform",
+      "alive",
+      "dead"
+    ]
+  },
+  {
+    "label": "def-cloning-score",
+    "term": "Canonical Cloning Score",
+    "object_type": "score function",
+    "nl_definition": "Once a companion c_i has been selected for walker i, the Canonical Cloning Score S_i(c_i) is calculated as the normalized difference between the fitness of the companion and the walker, adjusted by a small epsilon term.",
+    "formal_conditions": [
+      {
+        "text": "Definition formula",
+        "latex": "S_i(c_i) := \\frac{V_{\\text{fit},c_i} - V_{\\text{fit},i}}{V_{\\text{fit},i} + \\varepsilon_{\\mathrm{clone}}}"
+      }
+    ],
+    "properties": [],
+    "parameters": [
+      {
+        "symbol": "S_i(c_i)",
+        "name": "cloning_score",
+        "description": "The canonical cloning score for walker i and companion c_i",
+        "constraints": [],
+        "tags": [
+          "score"
+        ]
+      },
+      {
+        "symbol": "V_{fit,c_i}",
+        "name": "companion_fitness",
+        "description": "Fitness value of the selected companion c_i",
+        "constraints": [],
+        "tags": [
+          "fitness"
+        ]
+      },
+      {
+        "symbol": "V_{fit,i}",
+        "name": "walker_fitness",
+        "description": "Fitness value of walker i",
+        "constraints": [],
+        "tags": [
+          "fitness"
+        ]
+      },
+      {
+        "symbol": "\\varepsilon_{clone}",
+        "name": "clone_epsilon",
+        "description": "Small epsilon parameter for cloning to avoid division by zero",
+        "constraints": [],
+        "tags": [
+          "epsilon",
+          "regularization"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [],
+    "tags": [
+      "cloning score",
+      "canonical",
+      "fitness",
+      "walker",
+      "companion",
+      "selection"
+    ]
+  },
+  {
+    "label": "def-cloning-probability",
+    "term": "total cloning probability",
+    "object_type": "probability",
+    "nl_definition": "The total cloning probability p_i for a walker i is its unconditional probability of being marked for cloning, computed as the expectation over the random selection of companion c_i and threshold T_i.",
+    "formal_conditions": [
+      {
+        "text": "p_i := E_{c_i ~ C_i(S)} [ P_{T_i ~ U(0, p_max)} ( S_i(c_i) > T_i ) ]",
+        "latex": "p_i := \\mathbb{E}_{c_i \\sim \\mathcal{C}_i(S)} \\left[ \\mathbb{P}_{T_i \\sim U(0,p_{\\max})} \\left( S_i(c_i) > T_i \\right) \\right]"
+      },
+      {
+        "text": "p_i = E_{c_i ~ C_i(S)} [ min(1, max(0, S_i(c_i) / p_max )) ]",
+        "latex": "p_i = \\mathbb{E}_{c_i \\sim \\mathcal{C}_i(S)}\\left[\\min\\left(1, \\max\\left(0, \\frac{S_i(c_i)}{p_{\\max}}\\right)\\right)\\right]"
+      }
+    ],
+    "properties": [
+      {
+        "name": "unconditional probability",
+        "description": "Marginalizes over companion selection and threshold randomness"
+      },
+      {
+        "name": "bounded",
+        "description": "Always satisfies 0 ≤ p_i ≤ 1 due to min-max clipping"
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "p_i",
+        "name": "total cloning probability",
+        "description": "Unconditional probability of walker i being marked for cloning",
+        "constraints": [
+          "0 ≤ p_i ≤ 1"
+        ],
+        "tags": [
+          "probability"
+        ]
+      },
+      {
+        "symbol": "i",
+        "name": "walker index",
+        "description": "Identifier for the walker",
+        "constraints": [],
+        "tags": [
+          "walker",
+          "index"
+        ]
+      },
+      {
+        "symbol": "c_i",
+        "name": "companion",
+        "description": "Randomly selected companion for walker i",
+        "constraints": [],
+        "tags": [
+          "companion"
+        ]
+      },
+      {
+        "symbol": "S_i(c_i)",
+        "name": "score",
+        "description": "Score of companion c_i for walker i",
+        "constraints": [],
+        "tags": [
+          "score"
+        ]
+      },
+      {
+        "symbol": "T_i",
+        "name": "threshold",
+        "description": "Random threshold drawn from uniform distribution",
+        "constraints": [
+          "0 < T_i < p_max"
+        ],
+        "tags": [
+          "threshold"
+        ]
+      },
+      {
+        "symbol": "p_max",
+        "name": "maximum probability",
+        "description": "Upper bound for the threshold distribution",
+        "constraints": [
+          "0 < p_max ≤ 1"
+        ],
+        "tags": [
+          "maximum",
+          "bound"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "simplification",
+        "text": "The inner probability for a fixed companion evaluates to min(1, max(0, S_i(c_i)/p_max))"
+      },
+      {
+        "type": "interpretation",
+        "text": "Represents the expected cloning rate for walker i across possible companions and thresholds"
+      }
+    ],
+    "tags": [
+      "cloning",
+      "probability",
+      "expectation",
+      "walker",
+      "companion",
+      "threshold",
+      "score"
+    ]
+  },
+  {
+    "label": "def-cloning-decision",
+    "term": "Stochastic Cloning Decision",
+    "object_type": "decision process",
+    "nl_definition": "A decision mechanism involving stochastic cloning, as introduced in section 5.7.3.",
+    "formal_conditions": [],
+    "properties": [],
+    "parameters": [],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "warning",
+        "text": "The directive appears incomplete; no formal definition body is provided."
+      }
+    ],
+    "tags": [
+      "stochastic",
+      "cloning",
+      "decision",
+      "probability",
+      "reproduction"
+    ]
+  },
+  {
+    "label": "def-inelastic-collision-update",
+    "term": "Inelastic Collision State Update",
+    "object_type": "state update process",
+    "nl_definition": "A simultaneous, momentum-conserving update for groups of cloners selecting the same companion, resetting cloner positions with jitter and applying an inelastic velocity collapse with tunable restitution to control kinetic energy dissipation.",
+    "formal_conditions": [],
+    "properties": [
+      {
+        "name": "Momentum Conservation",
+        "description": "The total momentum of the (M+1)-particle interacting system is conserved through the center-of-mass velocity."
+      },
+      {
+        "name": "Position Jitter",
+        "description": "Cloners' positions are reset to the companion's position plus independent Gaussian noise."
+      },
+      {
+        "name": "Tunable Dissipation",
+        "description": "Internal kinetic energy reduced by factor α_restitution², allowing control over velocity variance expansion."
+      },
+      {
+        "name": "Uninvolved Walkers",
+        "description": "Walkers not participating in cloning remain unchanged."
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "α_restitution",
+        "name": "coefficient of restitution",
+        "description": "Fixed algorithmic parameter in [0,1] representing the coefficient of restitution, controlling energy dissipation in the inelastic collapse.",
+        "constraints": [
+          "∈ [0,1]"
+        ],
+        "tags": [
+          "restitution",
+          "dissipation",
+          "hyperparameter"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "analysis",
+        "text": "If α_restitution = 1, perfectly elastic collision: magnitudes of relative velocities preserved, kinetic energy conserved, but velocity reset causes bounded variance expansion."
+      },
+      {
+        "type": "analysis",
+        "text": "If α_restitution = 0, perfectly inelastic: all walkers in group get identical V_{COM,c} velocity, maximizing dissipation of internal kinetic energy."
+      },
+      {
+        "type": "analysis",
+        "text": "For α_restitution ∈ (0,1), intermediate dissipation: internal kinetic energy reduced by α_restitution², balancing kinetic diversity and variance control."
+      }
+    ],
+    "tags": [
+      "inelastic-collision",
+      "cloning-update",
+      "momentum-conservation",
+      "velocity-reset",
+      "restitution-parameter"
+    ]
+  },
+  {
+    "label": "def-unified-high-low-error-sets",
+    "term": "Unified High-Error Set H_k(ε) and Low-Error Set L_k(ε)",
+    "object_type": "sets",
+    "nl_definition": "A partition of the alive set A_k into a high-error set H_k(ε), consisting of walkers in small invalid clusters or outlier clusters with high phase-space variance contribution, and a complementary low-error set L_k(ε), constructed via hierarchical clustering on phase-space distances with statistical validity and outlier detection.",
+    "formal_conditions": [
+      {
+        "text": "Partition A_k into clusters {G_1, ..., G_M} using complete-linkage hierarchical clustering with max diameter D_diam(ε) = c_d · ε, where diam(G_m) = max_{i,j ∈ G_m} d_alg(i,j) ≤ D_diam(ε) and d_alg(i,j)^2 = ||x_i - x_j||^2 + λ_alg ||v_i - v_j||^2.",
+        "latex": "Partition $\\mathcal{A}_k$ into clusters $\\{G_1, \\ldots, G_M\\}$ using complete-linkage hierarchical clustering with max diameter $D_{\\text{diam}}(\\epsilon) = c_d \\cdot \\epsilon$, where $\\text{diam}(G_m) = \\max_{i,j \\in G_m} d_{\\text{alg}}(i, j) \\le D_{\\text{diam}}(\\epsilon)$ and $d_{\\text{alg}}(i, j)^2 := \\|x_i - x_j\\|^2 + \\lambda_{\\text{alg}} \\|v_i - v_j\\|^2$."
+      },
+      {
+        "text": "Impose minimum cluster size k_min = max(5, ⌈0.05k⌉); clusters with |G_m| < k_min are invalid and their walkers go to H_k(ε).",
+        "latex": "Impose minimum cluster size $k_{\\min} := \\max(5, \\lceil 0.05k \\rceil)$; clusters with $|G_m| < k_{\\min}$ are invalid."
+      },
+      {
+        "text": "For valid clusters (|G_m| ≥ k_min), compute center (μ_{x,m}, μ_{v,m}) and Contrib(G_m) = |G_m| (||μ_{x,m} - μ_x||^2 + λ_v ||μ_{v,m} - μ_v||^2), where (μ_x, μ_v) is global center. Identify outlier indices O_M such that sum_{m ∈ O_M} Contrib(G_m) ≥ (1 - ε_O) total valid contribution.",
+        "latex": "For valid clusters, compute $\\text{Contrib}(G_m) := |G_m| \\left(\\||\\mu_{x,m} - \\mu_x\\|^2 + \\lambda_v \\||\\mu_{v,m} - \\mu_v\\|^2\\right)$. Identify $O_M$ s.t. $\\sum_{m \\in O_M} \\text{Contrib}(G_m) \\ge (1-\\varepsilon_O) \\sum_{\\substack{m=1 \\ |G_m| \\ge k_{\\min}}}^M \\text{Contrib}(G_m)$."
+      },
+      {
+        "text": "H_k(ε) = union of G_m for m ∈ O_M and invalid m; L_k(ε) = A_k \\ H_k(ε).",
+        "latex": "$H_k(\\epsilon) := \\left(\\bigcup_{m \\in O_M} G_m\\right) \\cup \\left(\\bigcup_{\\substack{m: |G_m| < k_{\\min}}} G_m\\right)$; $L_k(\\epsilon) := \\mathcal{A}_k \\setminus H_k(\\epsilon)$."
+      }
+    ],
+    "properties": [
+      {
+        "name": "Partition Property",
+        "description": "H_k(ε) and L_k(ε) form a partition of A_k: disjoint and their union is A_k."
+      },
+      {
+        "name": "Unified Approach",
+        "description": "Applies consistently across all interaction regimes, capturing global outliers and local clustering via phase-space measures."
+      },
+      {
+        "name": "Statistical Validity",
+        "description": "Invalid small clusters (|G_m| < k_min) are treated as high-error to ensure reliable statistics."
+      },
+      {
+        "name": "Outlier Detection",
+        "description": "Based on hypocoercive variance contribution, selecting clusters covering (1 - ε_O) of total valid contribution."
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "k",
+        "name": "swarm index",
+        "description": "Index of the swarm step",
+        "constraints": [
+          "k ≥ 2"
+        ],
+        "tags": [
+          "swarm",
+          "step"
+        ]
+      },
+      {
+        "symbol": "ε",
+        "name": "error parameter",
+        "description": "Threshold parameter controlling cluster diameter and error scale",
+        "constraints": [],
+        "tags": [
+          "error",
+          "threshold"
+        ]
+      },
+      {
+        "symbol": "c_d",
+        "name": "diameter constant",
+        "description": "Fixed constant scaling the maximum cluster diameter D_diam(ε)",
+        "constraints": [
+          "c_d > 0",
+          "typically c_d = 2"
+        ],
+        "tags": [
+          "clustering",
+          "diameter"
+        ]
+      },
+      {
+        "symbol": "k_min",
+        "name": "minimum cluster size",
+        "description": "Minimum size for statistically valid clusters, defined as max(5, ⌈0.05k⌉)",
+        "constraints": [
+          "k_min ≥ 5"
+        ],
+        "tags": [
+          "cluster",
+          "validity"
+        ]
+      },
+      {
+        "symbol": "ε_O",
+        "name": "outlier fraction parameter",
+        "description": "Structural parameter determining the fraction of total contribution for outlier clusters",
+        "constraints": [
+          "ε_O ∈ (0,1)",
+          "typically ε_O = 0.1"
+        ],
+        "tags": [
+          "outlier",
+          "contribution"
+        ]
+      },
+      {
+        "symbol": "λ_alg",
+        "name": "algorithmic velocity weight",
+        "description": "Weight parameter in the phase-space distance d_alg",
+        "constraints": [],
+        "tags": [
+          "distance",
+          "velocity"
+        ]
+      },
+      {
+        "symbol": "λ_v",
+        "name": "variance velocity weight",
+        "description": "Weight parameter in the contribution variance calculation",
+        "constraints": [],
+        "tags": [
+          "variance",
+          "velocity"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "construction",
+        "text": "The clustering uses complete-linkage hierarchical method for phase-space partitioning."
+      },
+      {
+        "type": "parameters",
+        "text": "Constants like c_d=2, ε_O=0.1 are typical; λ_alg and λ_v are fixed algorithmic parameters."
+      },
+      {
+        "type": "motivation",
+        "text": "Links swarm state to algorithm signals via global kinematic dispersion and local phase-space density."
+      }
+    ],
+    "tags": [
+      "swarm",
+      "phase-space",
+      "clustering",
+      "error-sets",
+      "high-error",
+      "low-error",
+      "partition",
+      "kinematic-dispersion"
+    ]
+  },
+  {
+    "label": "def-max-patched-std",
+    "term": "maximum patched standard deviation",
+    "object_type": "bound",
+    "nl_definition": "The maximum value that the patched standard deviation function can attain over its entire possible input domain.",
+    "formal_conditions": [
+      {
+        "text": "σ'_max := sup_{0 ≤ V ≤ V_max^2} σ'_patch(V)",
+        "latex": "\\sigma'_{\\max} := \\sup_{0 \\le V \\le V_{\\max}^2} \\sigma'_{\\mathrm{patch}}(V)"
+      }
+    ],
+    "properties": [
+      {
+        "name": "upper bound",
+        "description": "provides a uniform upper bound on the patched standard deviation σ'_patch(V) for all admissible V in [0, V_max^2]"
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "V_{\\max}",
+        "name": "V_max",
+        "description": "uniform upper bound on a raw measurement's absolute value (either V_{\\max}^{(R)} for rewards or D_{\\text{valid}} for distances)",
+        "constraints": [],
+        "tags": [
+          "upper bound",
+          "measurement",
+          "reward",
+          "distance"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "context",
+        "text": "This definition establishes a uniform upper bound on the patched standard deviation for use in the denominator of the standardization formula."
+      }
+    ],
+    "tags": [
+      "patched",
+      "standard deviation",
+      "maximum",
+      "bound",
+      "supremum",
+      "standardization"
+    ]
+  },
+  {
+    "label": "def-unfit-set",
+    "term": "Unfit Set",
+    "object_type": "set",
+    "nl_definition": "The unfit set of a swarm is the subset of its alive walkers whose individual fitness potentials are at most the swarm's average fitness potential.",
+    "formal_conditions": [
+      {
+        "text": null,
+        "latex": "U_k := \\{ i \\in \\mathcal{A}_k \\mid V_{k,i} \\le \\mu_{V,k} \\}"
+      },
+      {
+        "text": "where \\mu_{V,k} = \\frac{1}{k} \\sum_{j \\in \\mathcal{A}_k} V_{k,j}",
+        "latex": "\\mu_{V,k} = \\frac{1}{k} \\sum_{j \\in \\mathcal{A}_k} V_{k,j}"
+      }
+    ],
+    "properties": [],
+    "parameters": [
+      {
+        "symbol": "k",
+        "name": "swarm index",
+        "description": "Identifier for the swarm.",
+        "constraints": [],
+        "tags": [
+          "swarm"
+        ]
+      },
+      {
+        "symbol": "\\mathcal{A}_k",
+        "name": "alive set",
+        "description": "The set of alive walkers in swarm k.",
+        "constraints": [],
+        "tags": [
+          "alive",
+          "walkers"
+        ]
+      },
+      {
+        "symbol": "V_{k,i}",
+        "name": "fitness potential",
+        "description": "Fitness potential of walker i in swarm k.",
+        "constraints": [],
+        "tags": [
+          "fitness",
+          "potential"
+        ]
+      },
+      {
+        "symbol": "\\mu_{V,k}",
+        "name": "mean fitness potential",
+        "description": "Average fitness potential across alive walkers in swarm k, defined as \\frac{1}{k} \\sum_{j \\in \\mathcal{A}_k} V_{k,j}.",
+        "constraints": [],
+        "tags": [
+          "mean",
+          "average"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [
+      "thm-geometry-guarantees-variance"
+    ],
+    "notes": [
+      {
+        "type": "context",
+        "text": "Used in proofs involving fitness distribution imbalances in swarms."
+      }
+    ],
+    "tags": [
+      "unfit-set",
+      "swarm",
+      "fitness-potential",
+      "mean-fitness",
+      "alive-walkers",
+      "population-subset"
+    ]
+  },
+  {
+    "label": "def-critical-target-set",
+    "term": "critical target set",
+    "object_type": "set",
+    "nl_definition": "For a state in the high-error regime, with k the index of the high-variance swarm, the critical target set I_target is the set of walkers that are simultaneously stably alive in both swarms, unfit in swarm k, and high-error in swarm k.",
+    "formal_conditions": [
+      {
+        "text": "I_target := I_11 ∩ U_k ∩ H_k(ε)",
+        "latex": "I_{\\text{target}} := I_{11} \\cap U_k \\cap H_k(\\epsilon)"
+      }
+    ],
+    "properties": [
+      {
+        "name": "intersection",
+        "description": "intersection of sets of stably alive walkers (I_11), unfit walkers (U_k), and high-error walkers (H_k(ε))"
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "k",
+        "name": "swarm index",
+        "description": "index of the high-variance swarm",
+        "constraints": [
+          "k is the index for the high-variance swarm in the high-error regime"
+        ],
+        "tags": [
+          "swarm",
+          "high-variance"
+        ]
+      },
+      {
+        "symbol": "\\epsilon",
+        "name": "error parameter",
+        "description": "parameter defining the high-error threshold in H_k",
+        "constraints": [
+          "\\epsilon > 0, small"
+        ],
+        "tags": [
+          "error",
+          "threshold"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "motivation",
+        "text": "This set represents walkers that are alive in both swarms (contributing to contractive force), unfit (targeted for cloning), and high-error (source of the problem), concentrating the corrective cloning action."
+      }
+    ],
+    "tags": [
+      "critical target set",
+      "high-variance swarm",
+      "unfit walkers",
+      "high-error walkers",
+      "intersection",
+      "stably alive",
+      "corrective cloning"
+    ]
+  },
+  {
+    "label": "def-cloning-operator-formal",
+    "term": "cloning operator $\\Psi_{\\text{clone}}$",
+    "object_type": "Markov transition kernel",
+    "nl_definition": "A stochastic operator that maps a swarm configuration with at least one alive walker to a probability distribution over new all-alive swarm configurations, defined as the composition of measure, fitness, decision, and update sub-operators.",
+    "formal_conditions": [
+      {
+        "text": "Input requires at least one alive walker",
+        "latex": "$|\\mathcal{A}(S)| \\geq 1$"
+      },
+      {
+        "text": "Output configurations have all walkers alive",
+        "latex": "$s'_i = 1$ for all $i \\in \\{1, \\ldots, N\\}$"
+      },
+      {
+        "text": "Operator composition",
+        "latex": "$\\Psi_{\\text{clone}} = \\Psi_{\\text{update}} \\circ \\Psi_{\\text{decision}} \\circ \\Psi_{\\text{fitness}} \\circ \\Psi_{\\text{measure}}$"
+      }
+    ],
+    "properties": [
+      {
+        "name": "Domain",
+        "description": "Swarm configurations $S \\in \\Sigma_N$ with $|\\mathcal{A}(S)| \\geq 1$"
+      },
+      {
+        "name": "Range",
+        "description": "Probability measures on all-alive configurations in $\\Sigma_N$"
+      },
+      {
+        "name": "Stochastic Structure",
+        "description": "Composition of deterministic and stochastic sub-operators"
+      },
+      {
+        "name": "All-Alive Output",
+        "description": "By construction, all output walkers have status $s'_i = 1$"
+      }
+    ],
+    "parameters": [],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "construction",
+        "text": "The operator ensures all output configurations are intermediate all-alive states."
+      }
+    ],
+    "tags": [
+      "cloning",
+      "operator",
+      "Markov",
+      "kernel",
+      "swarm",
+      "stochastic",
+      "transition",
+      "probability"
+    ]
+  },
+  {
+    "label": "def-measurement-operator",
+    "term": "measurement operator",
+    "object_type": "operator",
+    "nl_definition": "A stochastic operator that takes a swarm configuration S and outputs an N-dimensional raw distance vector d by sampling a spatially-aware pairing of alive agents and computing algorithmic distances along the pairing, setting distances to zero for dead agents.",
+    "formal_conditions": [
+      {
+        "text": "Input: Swarm configuration S with alive set A(S) of size k = |A(S)|.",
+        "latex": null
+      },
+      {
+        "text": "Sample a pairing π: A(S) → A(S) from the spatially-aware random pairing distribution.",
+        "latex": "\\pi \\sim P_{\\text{pair}}(S, \\cdot)"
+      },
+      {
+        "text": "For each alive walker i ∈ A(S), compute d_i = d_alg(x_i, x_π(i)).",
+        "latex": "d_i = d_{\\text{alg}}(x_i, x_{\\pi(i)})"
+      },
+      {
+        "text": "For dead walkers i ∉ A(S), set d_i = 0 deterministically.",
+        "latex": "d_i = 0"
+      },
+      {
+        "text": "Output: The N-dimensional raw distance vector d = (d_1, …, d_N) ∈ R^N_{≥0}.",
+        "latex": "\\mathbf{d} = (d_1, \\ldots, d_N) \\in \\mathbb{R}^N_{\\geq 0}"
+      }
+    ],
+    "properties": [
+      {
+        "name": "Correlated Measurements",
+        "description": "The pairing π is sampled once per swarm, creating correlations between measurements."
+      },
+      {
+        "name": "Distribution Dependency",
+        "description": "The distribution of d depends only on S and the algorithmic parameters (ε_p, ℓ_p)."
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "S",
+        "name": "Swarm",
+        "description": "Input swarm configuration with alive set A(S) of size k",
+        "constraints": [],
+        "tags": [
+          "input"
+        ]
+      },
+      {
+        "symbol": "\\epsilon_p",
+        "name": "epsilon_p",
+        "description": "Algorithmic parameter for pairing distribution",
+        "constraints": [],
+        "tags": [
+          "parameter"
+        ]
+      },
+      {
+        "symbol": "\\ell_p",
+        "name": "ell_p",
+        "description": "Algorithmic parameter for pairing distribution",
+        "constraints": [],
+        "tags": [
+          "parameter"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [
+      "def-standardization-operator"
+    ],
+    "notes": [],
+    "tags": [
+      "stochastic",
+      "measurement",
+      "operator",
+      "pairing",
+      "distance",
+      "swarm",
+      "diversity"
+    ]
+  },
+  {
+    "label": "def-fitness-operator",
+    "term": "Fitness Evaluation Operator",
+    "object_type": "operator",
+    "nl_definition": "A deterministic operator that transforms a swarm configuration and raw distance vector into a fitness potential vector by computing boundary proximity rewards, applying rescaling and z-score normalization over alive walkers, and combining normalized components with dynamics weights.",
+    "formal_conditions": [
+      {
+        "text": "Input: Swarm configuration S and raw distance vector d ∈ ℝ^N_{≥0}",
+        "latex": "S, \\mathbf{d} \\in \\mathbb{R}^N_{\\geq 0}"
+      },
+      {
+        "text": "Compute raw rewards r_i = g_A(x_i) = φ_barrier(x_i) for each walker i, yielding r = (r_1, …, r_N)",
+        "latex": "r_i = g_A(x_i) = \\varphi_{\\text{barrier}}(x_i), \\quad \\mathbf{r} = (r_1, \\ldots, r_N)"
+      },
+      {
+        "text": "Rescale: \\tilde{d}_i = d_i + η, \\tilde{r}_i = r_i + η",
+        "latex": "\\tilde{d}_i = d_i + \\eta, \\quad \\tilde{r}_i = r_i + \\eta"
+      },
+      {
+        "text": "Z-score over alive walkers i ∈ A(S): means \\bar{d}, \\bar{r} and std devs σ_d, σ_r with k = |A(S)|",
+        "latex": "\\bar{d} = \\frac{1}{k} \\sum_{i \\in \\mathcal{A}(S)} \\tilde{d}_i, \\quad \\sigma_d = \\sqrt{\\frac{1}{k} \\sum_{i \\in \\mathcal{A}(S)} (\\tilde{d}_i - \\bar{d})^2} \\quad (similarly for r)"
+      },
+      {
+        "text": "Z-scores for alive: z_{d,i} = (\\tilde{d}_i - \\bar{d}) / (σ_d + σ_stab), similarly for z_{r,i}; zero for dead",
+        "latex": "z_{d,i} = \\frac{\\tilde{d}_i - \\bar{d}}{\\sigma_d + \\sigma_{\\text{stab}}}, \\quad z_{r,i} = \\frac{\\tilde{r}_i - \\bar{r}}{\\sigma_r + \\sigma_{\\text{stab}}} \\quad (i \\in \\mathcal{A}(S)); \\ 0 \\ otherwise"
+      },
+      {
+        "text": "Rescaled components: r'_i = g_A(z_{r,i}) + η, d'_i = g_A(z_{d,i}) + η",
+        "latex": "r'_i := g_A(z_{r,i}) + \\eta, \\quad d'_i := g_A(z_{d,i}) + \\eta"
+      },
+      {
+        "text": "Fitness: V_{fit,i} = (d'_i)^β · (r'_i)^α if alive, else 0",
+        "latex": "V_{\\text{fit},i} = \\begin{cases} (d'_i)^{\\beta} \\cdot (r'_i)^{\\alpha} & i \\in \\mathcal{A}(S) \\\\ 0 & \\text{otherwise} \\end{cases}"
+      },
+      {
+        "text": "Output: V_{fit} = (V_{fit,1}, …, V_{fit,N}) ∈ ℝ^N_{≥0}",
+        "latex": "\\mathbf{V}_{\\text{fit}} = (V_{\\text{fit},1}, \\ldots, V_{\\text{fit},N}) \\in \\mathbb{R}^N_{\\geq 0}"
+      }
+    ],
+    "properties": [
+      {
+        "name": "Deterministic",
+        "description": "The operator produces the same output given fixed inputs S and d"
+      },
+      {
+        "name": "Bounded",
+        "description": "For alive walkers, V_{fit,i} ∈ [0, V_{pot,max}] where V_{pot,max} = (g_{A,max} + η)^{α+β}"
+      },
+      {
+        "name": "Alive-Only Normalization",
+        "description": "Empirical statistics computed exclusively over alive walkers A(S)"
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "S",
+        "name": "Swarm Configuration",
+        "description": "Current state of the swarm including walker positions and alive status",
+        "constraints": [],
+        "tags": [
+          "input",
+          "swarm"
+        ]
+      },
+      {
+        "symbol": "d",
+        "name": "Raw Distance Vector",
+        "description": "Vector of non-negative raw distances for N walkers",
+        "constraints": [
+          "d ∈ ℝ^N_{≥0}"
+        ],
+        "tags": [
+          "input",
+          "distance"
+        ]
+      },
+      {
+        "symbol": "η",
+        "name": "Floor Parameter",
+        "description": "Positive additive floor for rescaling to avoid zero or negative values",
+        "constraints": [
+          "η > 0"
+        ],
+        "tags": [
+          "floor",
+          "rescaling"
+        ]
+      },
+      {
+        "symbol": "σ_stab",
+        "name": "Stability Constant",
+        "description": "Small positive constant added to standard deviations for numerical stability",
+        "constraints": [
+          "σ_stab > 0"
+        ],
+        "tags": [
+          "stability",
+          "normalization"
+        ]
+      },
+      {
+        "symbol": "α",
+        "name": "Reward Weight",
+        "description": "Exponent weight for the rescaled reward component in fitness potential",
+        "constraints": [],
+        "tags": [
+          "weight",
+          "reward",
+          "exponent"
+        ]
+      },
+      {
+        "symbol": "β",
+        "name": "Distance Weight",
+        "description": "Exponent weight for the rescaled distance component in fitness potential",
+        "constraints": [],
+        "tags": [
+          "weight",
+          "distance",
+          "exponent"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "clarification",
+        "text": "Dead walkers receive zero fitness potential, ensuring selection favors alive ones"
+      },
+      {
+        "type": "dependency",
+        "text": "Requires predefined functions g_A and φ_barrier, as well as system parameters η, σ_stab, α, β"
+      }
+    ],
+    "tags": [
+      "fitness-evaluation",
+      "operator",
+      "swarm",
+      "deterministic",
+      "z-score-normalization",
+      "boundary-proximity",
+      "rescaling"
+    ]
+  },
+  {
+    "label": "def-decision-operator",
+    "term": "Cloning Decision Operator",
+    "object_type": "stochastic operator",
+    "nl_definition": "A stochastic process that assigns companions to walkers in a swarm based on their status and computes cloning scores from fitness differences, then decides cloning or persistence via threshold comparison, producing companion and action vectors.",
+    "formal_conditions": [
+      {
+        "text": "For alive walker i, companion c_i sampled from softmax over other alive walkers using algorithmic distances.",
+        "latex": "P(c_i = j) = \\frac{\\exp\\left(-\\frac{d_{\\text{alg}}(x_i, x_j)^2}{2\\epsilon_c^2}\\right)}{\\sum_{\\ell \\in \\mathcal{A}(S) \\setminus \\{i\\}} \\exp\\left(-\\frac{d_{\\text{alg}}(x_i, x_\\ell)^2}{2\\epsilon_c^2}\\right)} \\quad \\text{for } j \\in \\mathcal{A}(S) \\setminus \\{i\\}"
+      },
+      {
+        "text": "For dead walker i, companion c_i sampled uniformly from alive walkers.",
+        "latex": "P(c_i = j) = \\frac{1}{k} \\quad \\text{for all } j \\in \\mathcal{A}(S)"
+      },
+      {
+        "text": "Cloning score S_i computed as normalized fitness difference.",
+        "latex": "S_i = \\frac{V_{\\text{fit},c_i} - V_{\\text{fit},i}}{V_{\\text{fit},i} + \\varepsilon_{\\text{clone}}}"
+      },
+      {
+        "text": "Decision: Sample T_i ~ Uniform(0, p_max); clone if S_i > T_i, else persist.",
+        "latex": "a_i = \\text{clone if } S_i > T_i, \\text{ else persist}"
+      },
+      {
+        "text": "Total cloning probability p_i averages over companion and threshold randomness.",
+        "latex": "p_i := P(\\text{walker } i \\text{ clones} \\mid S, \\mathbf{V}_{\\text{fit}} )"
+      }
+    ],
+    "properties": [
+      {
+        "name": "Input",
+        "description": "Swarm configuration S and fitness potential vector V_fit"
+      },
+      {
+        "name": "Output",
+        "description": "Companion assignment vector c and binary action vector a indicating clone or persist for each walker"
+      },
+      {
+        "name": "Stochastic Elements",
+        "description": "Companion selection via softmax or uniform, and independent uniform threshold sampling for decisions"
+      },
+      {
+        "name": "Key Quantity",
+        "description": "Total cloning probability p_i for each walker, used in drift analysis"
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "S",
+        "name": "Swarm configuration",
+        "description": "Current state of the swarm including positions and statuses of walkers",
+        "constraints": [],
+        "tags": [
+          "input",
+          "swarm"
+        ]
+      },
+      {
+        "symbol": "\\mathbf{V}_{\\text{fit}}",
+        "name": "Fitness potential vector",
+        "description": "Vector of fitness potentials V_fit,i for each walker i",
+        "constraints": [],
+        "tags": [
+          "input",
+          "fitness",
+          "vector"
+        ]
+      },
+      {
+        "symbol": "\\epsilon_c",
+        "name": "Companion selection scale",
+        "description": "Scale parameter for the softmax distribution in companion selection",
+        "constraints": [
+          "\\epsilon_c > 0"
+        ],
+        "tags": [
+          "hyperparameter",
+          "scale",
+          "companion"
+        ]
+      },
+      {
+        "symbol": "\\varepsilon_{\\text{clone}}",
+        "name": "Cloning epsilon",
+        "description": "Small positive constant to avoid division by zero in cloning score",
+        "constraints": [
+          "\\varepsilon_{\\text{clone}} > 0"
+        ],
+        "tags": [
+          "hyperparameter",
+          "regularization"
+        ]
+      },
+      {
+        "symbol": "p_{\\max}",
+        "name": "Maximum cloning probability",
+        "description": "Upper bound for the uniform threshold sampling",
+        "constraints": [
+          "0 < p_{\\max} \\leq 1"
+        ],
+        "tags": [
+          "hyperparameter",
+          "probability"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "note",
+        "text": "The operator processes each walker independently but with shared randomness in companion selection probabilities."
+      },
+      {
+        "type": "note",
+        "text": "The total probability p_i is the expected cloning rate conditional on current swarm state and fitnesses, essential for analyzing population drift."
+      }
+    ],
+    "tags": [
+      "stochastic operator",
+      "cloning decision",
+      "swarm",
+      "walker",
+      "fitness potential",
+      "companion selection",
+      "cloning score",
+      "drift analysis"
+    ]
+  },
+  {
+    "label": "def-update-operator",
+    "term": "State Update Operator",
+    "object_type": "operator",
+    "nl_definition": "An operator that updates a swarm's positions, velocities, and statuses based on cloning and persistence actions, involving deterministic grouping of cloners, stochastic position jittering with Gaussian noise, momentum-conserving inelastic collisions for velocities without jitter, and setting all output statuses to alive.",
+    "formal_conditions": [
+      {
+        "text": "Deterministic Grouping: For each unique companion j in \\mathcal{A}(S), identify cloners I_j = {i : a_i = clone and c_i = j}, with M_j = |I_j|.",
+        "latex": "I_j := \\{i \\in \\{1, \\ldots, N\\} : a_i = \\text{clone} \\text{ and } c_i = j\\}, \\quad M_j = |I_j|"
+      },
+      {
+        "text": "Position Updates for Cloners: For each i in I_j, x'_i = x_j + \\sigma_x \\zeta_i^x where \\zeta_i^x \\sim \\mathcal{N}(0, I_d); companion x'_j = x_j.",
+        "latex": "x'_i = x_j + \\sigma_x \\zeta_i^x \\quad \\zeta_i^x \\sim \\mathcal{N}(0, I_d), \\quad x'_j = x_j"
+      },
+      {
+        "text": "Velocity Updates - Center-of-Mass: V_{COM,j} = 1/(M_j + 1) (v_j + \\sum_{i \\in I_j} v_i).",
+        "latex": "V_{\\text{COM},j} = \\frac{1}{M_j + 1}\\left(v_j + \\sum_{i \\in I_j} v_i\\right)"
+      },
+      {
+        "text": "Velocity Updates - Relative Velocities: For k in I_j \\cup {j}, u_k = v_k - V_{COM,j}; u'_k = \\alpha_{restitution} \\cdot R_k(u_k) where R_k is random orthogonal transformation preserving magnitude.",
+        "latex": "u_k = v_k - V_{\\text{COM},j}, \\quad u'_k = \\alpha_{\\text{restitution}} \\cdot R_k(u_k)"
+      },
+      {
+        "text": "Velocity Updates - Lab Frame: v'_k = V_{COM,j} + u'_k.",
+        "latex": "v'_k = V_{\\text{COM},j} + u'_k"
+      },
+      {
+        "text": "Persisting Walkers: For a_i = persist, x'_i = x_i, v'_i = v_i.",
+        "latex": "x'_i = x_i, \\quad v'_i = v_i"
+      },
+      {
+        "text": "Status Update: s'_i = 1 for all i in {1, ..., N}.",
+        "latex": "s'_i = 1 \\quad \\forall i \\in \\{1, \\ldots, N\\}"
+      }
+    ],
+    "properties": [
+      {
+        "name": "Deterministic Grouping",
+        "description": "Groups cloners by unique companions before updates."
+      },
+      {
+        "name": "Stochastic Position Jitter",
+        "description": "Adds Gaussian noise to cloner positions relative to companion, with scale \\sigma_x."
+      },
+      {
+        "name": "Inelastic Collision Model",
+        "description": "Updates velocities via momentum conservation, restitution coefficient \\alpha_{restitution}, and random orthogonal rotations, without velocity jitter."
+      },
+      {
+        "name": "Persistence",
+        "description": "Unchanged positions and velocities for persisting walkers."
+      },
+      {
+        "name": "Universal Alive Status",
+        "description": "All output walkers are set to alive status."
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "S",
+        "name": "Swarm configuration",
+        "description": "Current state of the swarm including positions x, velocities v, and statuses s for N walkers.",
+        "constraints": [],
+        "tags": [
+          "input",
+          "swarm"
+        ]
+      },
+      {
+        "symbol": "\\mathbf{c}",
+        "name": "Companion vector",
+        "description": "Vector assigning each walker i a companion j in \\mathcal{A}(S) for cloning actions.",
+        "constraints": [],
+        "tags": [
+          "input",
+          "companion"
+        ]
+      },
+      {
+        "symbol": "\\mathbf{a}",
+        "name": "Action vector",
+        "description": "Vector specifying actions for each walker i, such as 'clone' or 'persist'.",
+        "constraints": [],
+        "tags": [
+          "input",
+          "action"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "clarification",
+        "text": "No Gaussian jitter is added to velocities; only positions receive jitter during cloning."
+      },
+      {
+        "type": "parameter",
+        "text": "Parameters like \\sigma_x (jitter scale) and \\alpha_{restitution} (restitution coefficient) are assumed defined elsewhere."
+      }
+    ],
+    "tags": [
+      "swarm",
+      "update",
+      "operator",
+      "cloning",
+      "inelastic collision",
+      "gaussian jitter",
+      "velocity update",
+      "position reset"
+    ]
+  },
+  {
+    "label": "def-key-operator-outputs",
+    "term": "Key Operator Outputs",
+    "object_type": "quantities",
+    "nl_definition": "Central quantities in the drift analysis for a swarm S and its output S' under the cloning operator Ψ_clone, including cloning probabilities, position displacements, velocity perturbations, and centered displacements for coupled swarms.",
+    "formal_conditions": [
+      {
+        "text": "Total Cloning Probability for each walker i",
+        "latex": "$$p_i = P(\\text{walker } i \\text{ clones} \\mid S)$$"
+      },
+      {
+        "text": "Position Displacement for each walker i",
+        "latex": "$$\\Delta x_i := x'_i - x_i$$ For cloners, $$\\Delta x_i = x_{c_i} - x_i + \\sigma_x \\zeta_i^x$$ where $\\zeta_i^x \\sim \\mathcal{N}(0, I_d)$."
+      },
+      {
+        "text": "Velocity Perturbation for each walker i in cloning event",
+        "latex": "$$\\Delta v_i := v'_i - v_i$$ Expected squared change depends on $\\mathbb{E}[\\|V_{\\text{COM},j} - v_i\\|^2]$, $\\alpha_{\\text{restitution}}$, and $R_i$."
+      },
+      {
+        "text": "Centered Displacements for coupled swarms (S_1, S_2)",
+        "latex": "$$\\Delta\\delta_{x,i} := \\delta_{x,1,i} - \\delta_{x,2,i}$$"
+      }
+    ],
+    "properties": [
+      {
+        "name": "Dependence on Swarm State",
+        "description": "All quantities depend on the input swarm S and its walker positions/velocities."
+      },
+      {
+        "name": "Stochastic Elements",
+        "description": "Incorporate random variables like ζ_i^x ~ N(0, I_d) and random rotations R_i."
+      },
+      {
+        "name": "Coupling Relevance",
+        "description": "Centered displacements apply specifically to paired swarms for comparative analysis."
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "p_i",
+        "name": "Total Cloning Probability",
+        "description": "Probability that walker i clones given the input swarm S",
+        "constraints": [],
+        "tags": [
+          "probability",
+          "cloning"
+        ]
+      },
+      {
+        "symbol": "Δx_i",
+        "name": "Position Displacement",
+        "description": "Change in position for walker i, specifically for cloners Δx_i = x_{c_i} - x_i + σ_x ζ_i^x where ζ_i^x ~ N(0, I_d)",
+        "constraints": [
+          "For cloners"
+        ],
+        "tags": [
+          "displacement",
+          "position"
+        ]
+      },
+      {
+        "symbol": "Δv_i",
+        "name": "Velocity Perturbation",
+        "description": "Change in velocity for walker i participating in cloning, from inelastic collision depending on center-of-mass shift, restitution coefficient α_restitution, and random rotation R_i",
+        "constraints": [
+          "For cloning participants"
+        ],
+        "tags": [
+          "velocity",
+          "perturbation",
+          "collision"
+        ]
+      },
+      {
+        "symbol": "Δδ_{x,i}",
+        "name": "Centered Displacements",
+        "description": "Difference in position displacements for coupled swarms (S_1, S_2): δ_{x,1,i} - δ_{x,2,i}",
+        "constraints": [],
+        "tags": [
+          "coupled",
+          "displacement",
+          "centered"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "context",
+        "text": "These quantities are used in subsequent drift analysis for swarm evolution under cloning."
+      }
+    ],
+    "tags": [
+      "swarm",
+      "cloning",
+      "drift analysis",
+      "probability",
+      "displacement",
+      "velocity perturbation",
+      "coupled swarms"
+    ]
+  },
+  {
+    "label": "def-coupled-cloning-expectation",
+    "term": "Coupled Cloning Expectation",
+    "object_type": "expectation operator",
+    "nl_definition": "The expected value of a function f applied to the output swarms (S'_1, S'_2) obtained by independently applying the cloning operation Ψ_clone to input swarms (S_1, S_2), where all sources of randomness in the cloning processes are synchronously coupled.",
+    "formal_conditions": [
+      {
+        "text": "Same PRNG seeds for companion selection",
+        "latex": null
+      },
+      {
+        "text": "Same pairing algorithm random choices",
+        "latex": null
+      },
+      {
+        "text": "Same threshold samples T_i for each walker index i",
+        "latex": null
+      },
+      {
+        "text": "Same Gaussian jitters ζ_i^x for position updates (when both walkers clone)",
+        "latex": null
+      },
+      {
+        "text": "Same rotation operators R_i for velocity collisions (when both walkers participate in collisions)",
+        "latex": null
+      }
+    ],
+    "properties": [],
+    "parameters": [
+      {
+        "symbol": "S_1",
+        "name": "first swarm",
+        "description": "A swarm in the coupled state space.",
+        "constraints": [],
+        "tags": [
+          "swarm"
+        ]
+      },
+      {
+        "symbol": "S_2",
+        "name": "second swarm",
+        "description": "A swarm in the coupled state space.",
+        "constraints": [],
+        "tags": [
+          "swarm"
+        ]
+      },
+      {
+        "symbol": "f",
+        "name": "test function",
+        "description": "A function f: Σ_N × Σ_N → ℝ.",
+        "constraints": [],
+        "tags": [
+          "function",
+          "test"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [],
+    "tags": [
+      "coupled",
+      "cloning",
+      "expectation",
+      "synchronous",
+      "swarm",
+      "randomness",
+      "PRNG"
+    ]
+  },
+  {
+    "label": "def-boundary-potential-recall",
+    "term": "boundary potential",
+    "object_type": "function",
+    "nl_definition": "The boundary potential is the average value of a smooth barrier function applied to the states of agents in two swarms, promoting safety by penalizing proximity to the boundary of the valid state space.",
+    "formal_conditions": [
+      {
+        "text": "Interior safety: \\varphi_{\\text{barrier}}(x) = 0 for x in the safe interior region (distance > \\delta_{\\text{safe}} from boundary)",
+        "latex": "\\varphi_{\\text{barrier}}(x) = 0 \\ \\forall x \\in \\text{interior (dist}(x, \\partial \\mathcal{X}_{\\text{valid}}) > \\delta_{\\text{safe}})"
+      },
+      {
+        "text": "Boundary growth: \\varphi_{\\text{barrier}}(x) \\to \\infty as x \\to \\partial \\mathcal{X}_{\\text{valid}}",
+        "latex": "\\varphi_{\\text{barrier}}(x) \\to \\infty \\ \\text{as} \\ x \\to \\partial \\mathcal{X}_{\\text{valid}}"
+      },
+      {
+        "text": "Smoothness: \\varphi_{\\text{barrier}} \\in C^2(\\mathcal{X}_{\\text{valid}}) with bounded derivatives in the interior",
+        "latex": "\\varphi_{\\text{barrier}} \\in C^2(\\mathcal{X}_{\\text{valid}}), \\ \\text{bounded derivatives in interior}"
+      }
+    ],
+    "properties": [
+      {
+        "name": "Non-negativity",
+        "description": "W_b(S_1, S_2) \\geq 0 due to \\varphi_{\\text{barrier}} \\geq 0"
+      },
+      {
+        "name": "Averaged sum",
+        "description": "Computed as average over agents in each swarm"
+      },
+      {
+        "name": "Recall definition",
+        "description": "Component of the full synergistic Lyapunov function"
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "S_1",
+        "name": "S_1",
+        "description": "State of the first swarm",
+        "constraints": [],
+        "tags": [
+          "swarm-state"
+        ]
+      },
+      {
+        "symbol": "S_2",
+        "name": "S_2",
+        "description": "State of the second swarm",
+        "constraints": [],
+        "tags": [
+          "swarm-state"
+        ]
+      },
+      {
+        "symbol": "N",
+        "name": "N",
+        "description": "Number of agents in each swarm",
+        "constraints": [
+          "N > 0",
+          "integer"
+        ],
+        "tags": [
+          "agent-count"
+        ]
+      },
+      {
+        "symbol": "\\varphi_{\\text{barrier}}",
+        "name": "varphi_barrier",
+        "description": "Smooth barrier function mapping valid states to non-negative reals",
+        "constraints": [
+          "\\varphi_{\\text{barrier}}: \\mathcal{X}_{\\text{valid}} \\to \\mathbb{R}_{\\geq 0}"
+        ],
+        "tags": [
+          "barrier",
+          "smooth"
+        ]
+      },
+      {
+        "symbol": "\\mathcal{A}(S_1)",
+        "name": "A(S_1)",
+        "description": "Set of agent indices in swarm S_1",
+        "constraints": [],
+        "tags": [
+          "agent-set"
+        ]
+      },
+      {
+        "symbol": "x_{1,i}",
+        "name": "x_{1,i}",
+        "description": "State of the i-th agent in S_1",
+        "constraints": [
+          "i \\in \\mathcal{A}(S_1)"
+        ],
+        "tags": [
+          "agent-state"
+        ]
+      },
+      {
+        "symbol": "x_{2,i}",
+        "name": "x_{2,i}",
+        "description": "State of the i-th agent in S_2",
+        "constraints": [
+          "i \\in \\mathcal{A}(S_2)"
+        ],
+        "tags": [
+          "agent-state"
+        ]
+      },
+      {
+        "symbol": "\\delta_{\\text{safe}}",
+        "name": "delta_safe",
+        "description": "Safety distance threshold from boundary",
+        "constraints": [
+          "\\delta_{\\text{safe}} > 0"
+        ],
+        "tags": [
+          "safety-threshold"
+        ]
+      },
+      {
+        "symbol": "\\mathcal{X}_{\\text{valid}}",
+        "name": "X_valid",
+        "description": "Valid state space",
+        "constraints": [],
+        "tags": [
+          "state-space"
+        ]
+      },
+      {
+        "symbol": "\\partial \\mathcal{X}_{\\text{valid}}",
+        "name": "partial X_valid",
+        "description": "Boundary of the valid state space",
+        "constraints": [],
+        "tags": [
+          "boundary"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [
+      "def-full-synergistic-lyapunov-function"
+    ],
+    "notes": [
+      {
+        "type": "recall",
+        "text": "This definition is recalled from the full synergistic Lyapunov function for context in the barrier analysis."
+      }
+    ],
+    "tags": [
+      "boundary-potential",
+      "barrier-function",
+      "safety",
+      "lyapunov-component",
+      "multi-agent",
+      "swarm",
+      "smoothness"
+    ]
+  },
+  {
+    "label": "def-boundary-exposed-set",
+    "term": "boundary-exposed set",
+    "object_type": "set",
+    "nl_definition": "The boundary-exposed set of a swarm is the collection of its alive walkers whose barrier penalty exceeds a specified positive threshold, signaling dangerous proximity to the boundary; associated is the boundary-exposed mass, averaging these penalties normalized by the total number of walkers.",
+    "formal_conditions": [
+      {
+        "text": "The boundary-exposed set",
+        "latex": "\\mathcal{E}_{\\text{boundary}}(S) := \\{i \\in \\mathcal{A}(S) : \\varphi_{\\text{barrier}}(x_i) > \\phi_{\\text{thresh}}\\}"
+      },
+      {
+        "text": "The boundary-exposed mass",
+        "latex": "M_{\\text{boundary}}(S) := \\frac{1}{N} \\sum_{i \\in \\mathcal{E}_{\\text{boundary}}(S)} \\varphi_{\\text{barrier}}(x_i)"
+      }
+    ],
+    "properties": [
+      {
+        "name": "membership condition",
+        "description": "An index i belongs to the set if it is an alive walker and its barrier penalty φ_barrier(x_i) > φ_thresh"
+      },
+      {
+        "name": "mass computation",
+        "description": "Average barrier penalty over exposed walkers, normalized by total walker count N"
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "S",
+        "name": "swarm",
+        "description": "The swarm of walkers",
+        "constraints": [],
+        "tags": [
+          "swarm"
+        ]
+      },
+      {
+        "symbol": "\\phi_{\\text{thresh}}",
+        "name": "threshold",
+        "description": "Positive threshold for barrier penalty",
+        "constraints": [
+          "> 0"
+        ],
+        "tags": [
+          "threshold",
+          "positive"
+        ]
+      }
+    ],
+    "examples": [],
+    "related_refs": [],
+    "notes": [
+      {
+        "type": "explanation",
+        "text": "These are alive walkers whose barrier penalty exceeds the threshold, indicating dangerous proximity to the boundary."
+      }
+    ],
+    "tags": [
+      "boundary",
+      "exposed",
+      "set",
+      "swarm",
+      "walkers",
+      "proximity",
+      "threshold",
+      "barrier",
+      "mass"
+    ]
+  }
+]
