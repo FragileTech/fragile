@@ -1,4 +1,4 @@
-.PHONY: help install sync clean clean-docs test cov no-cov doctest debug style check lint typing build-docs serve-docs docs sphinx pdf transform-enriched build-registry build-chapter-registries build-all-registries clean-registries all
+.PHONY: help install sync clean clean-docs test cov no-cov doctest debug style check lint typing build-docs serve-docs docs sphinx pdf transform-enriched build-registry build-chapter-registries build-all-registries clean-registries all update
 
 # Default target - show help
 help:
@@ -149,3 +149,6 @@ build-all-registries: transform-enriched build-registry
 # Complete workflow
 all: lint build-docs test
 	@echo "✓ All checks passed!"
+
+update:
+	uv run mathster parse && uv run mathster preprocess && uv run mathster registry

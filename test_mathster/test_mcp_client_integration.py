@@ -12,14 +12,14 @@ import os
 import shlex
 from typing import Sequence
 
-import pytest
 from dotenv import load_dotenv
+import pytest
 
+from mathster.agents_direct import ClaudeDirectClient
 from mathster.mcp_client import (
     CodexMCPClient,
     GeminiMCPClient,
 )
-from mathster.agents_direct import ClaudeDirectClient
 
 
 # Ensure .env-based settings (API keys, MCP commands) are available during tests.
@@ -126,10 +126,13 @@ def test_claude_client_live_roundtrip():
 
 
 @pytest.mark.integration
-@pytest.mark.parametrize("model", [
-    "gemini-2.5-flash",
-    "gemini-2.5-flash-lite",
-])
+@pytest.mark.parametrize(
+    "model",
+    [
+        "gemini-2.5-flash",
+        "gemini-2.5-flash-lite",
+    ],
+)
 def test_gemini_models(model):
     """Test Gemini MCP client with Flash model variants (not Pro)."""
 
@@ -149,10 +152,13 @@ def test_gemini_models(model):
 
 
 @pytest.mark.integration
-@pytest.mark.parametrize("reasoning_effort", [
-    "low",
-    "medium",
-])
+@pytest.mark.parametrize(
+    "reasoning_effort",
+    [
+        "low",
+        "medium",
+    ],
+)
 def test_codex_reasoning_effort(reasoning_effort):
     """Test Codex MCP client with low/medium reasoning effort (not high)."""
 
@@ -166,16 +172,21 @@ def test_codex_reasoning_effort(reasoning_effort):
             model="gpt-5-codex",
             reasoning_effort=reasoning_effort,
         )
-        assert "OK" in response.strip(), f"Expected 'OK' in response with {reasoning_effort}: {response}"
+        assert (
+            "OK" in response.strip()
+        ), f"Expected 'OK' in response with {reasoning_effort}: {response}"
 
     asyncio.run(_run())
 
 
 @pytest.mark.integration
-@pytest.mark.parametrize("model", [
-    "sonnet",
-    "haiku",
-])
+@pytest.mark.parametrize(
+    "model",
+    [
+        "sonnet",
+        "haiku",
+    ],
+)
 def test_claude_models(model):
     """Test Claude CLI client with different model variants (using aliases)."""
 

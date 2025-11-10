@@ -4,16 +4,9 @@ import argparse
 import json
 import logging
 from pathlib import Path
-import re
 from typing import Any
 
 from mathster.preprocess_extraction.data_models import (
-    Condition,
-    Example,
-    NamedProperty,
-    Note,
-    Parameter,
-    Span,
     UnifiedDefinition,
 )
 from mathster.preprocess_extraction.utils import (

@@ -61,7 +61,7 @@ With the arena defined, we can now introduce the central object of our analysis.
 :::{prf:definition} Phase-Space Density
 :label: def-phase-space-density
 
-The state of the swarm's **alive population** at time $t \ge 0$ is described by the **phase-space sub-probability density** $f: [0, \infty) \times \Omega \to [0, \infty)$. For any time $t$, $f(t, \cdot, \cdot)$ is a function on the phase space such that for any measurable subset $A \subseteq \Omega$, the mass of alive walkers in $A$ is given by the integral:
+The state of the swarm's **alive population** at time $t \ge 0$ is described by the **phase-space sub-probability density** $f: [0, \infty) \times \Omega \to [0, \infty)$, where $\Omega$ is the single-particle phase space (see {prf:ref}`def-mean-field-phase-space`). For any time $t$, $f(t, \cdot, \cdot)$ is a function on the phase space such that for any measurable subset $A \subseteq \Omega$, the mass of alive walkers in $A$ is given by the integral:
 
 $$
 \text{Alive mass in } A = \int_A f(t, z) dz.
@@ -116,7 +116,7 @@ In the N-particle system, measurements are aggregated by computing empirical sta
 :::{prf:definition} Mean-Field Statistical Moments
 :label: def-mean-field-moments
 
-Let $f(t, \cdot)$ be the phase-space density at time $t$, with total alive mass $m_a(t) = \int_\Omega f(t,z)\,\mathrm{d}z$. The statistical moments required for the standardization pipeline are defined as the following **functionals** of $f$. The notation $\mu[f]$ emphasizes that these are numbers that depend on the entire *shape* of the function $f$.
+Let $f(t, \cdot)$ be the phase-space density (see {prf:ref}`def-phase-space-density`) at time $t$, with total alive mass $m_a(t) = \int_\Omega f(t,z)\,\mathrm{d}z$. The statistical moments required for the standardization pipeline are defined as the following **functionals** of $f$. The notation $\mu[f]$ emphasizes that these are numbers that depend on the entire *shape* of the function $f$.
 
 The moments are computed with respect to the **normalized density of the alive population**, which is $f(t,z) / m_a(t)$. This normalization is critical for ensuring the mean-field model is a faithful limit of the N-particle system, where statistics are computed by averaging over the $k$ alive walkers.
 
@@ -157,7 +157,7 @@ In the discrete N-particle algorithm, there exists an absorbing "cemetery state"
 
 **Justification and implications:**
 
-*   **Mathematical necessity:** This assumption ensures that all moment functionals $\mu_R[f], \sigma_R[f], \mu_D[f], \sigma_D[f]$ remain well-defined and bounded as $m_a \to 0$. Without it, the fitness potential $V[f]$ would be undefined at $m_a = 0$, and the PDE would not extend continuously to the boundary of the state space.
+*   **Mathematical necessity:** This assumption ensures that all moment functionals (see {prf:ref}`def-mean-field-moments`) $\mu_R[f], \sigma_R[f], \mu_D[f], \sigma_D[f]$ remain well-defined and bounded as $m_a \to 0$. Without it, the fitness potential $V[f]$ would be undefined at $m_a = 0$, and the PDE would not extend continuously to the boundary of the state space.
 
 *   **Physical interpretation:** If the system reaches $m_a = 0$, there is no information remaining about the spatial distribution of the (extinct) alive population. The choice of $f_{\text{ref}}$ represents a "default" reinitialization profile for the revival mechanism. The uniform distribution is a natural choice reflecting maximum entropy.
 
@@ -176,7 +176,7 @@ To ensure the numerical stability and continuity guarantees of the N-particle al
 :::{prf:definition} Mean-Field Regularized Standard Deviation
 :label: def-mean-field-patched-std
 
-The **Mean-Field Regularized Standard Deviations** are functionals of the density $f$, obtained by applying the `Regularized Standard Deviation` function from the abstract framework (*Chapter 1, Def. 11.1.2*) to the mean-field variance functionals:
+The **Mean-Field Regularized Standard Deviations** are functionals of the density $f$, obtained by applying the `Regularized Standard Deviation` function from the abstract framework (*Chapter 1, Def. 11.1.2*) to the mean-field variance functionals (see {prf:ref}`def-mean-field-moments`):
 
 $$
 \widehat{\sigma}_R[f](t) := \sigma\'_{\text{reg}}(\sigma_R^2[f](t)), \qquad \widehat{\sigma}_D[f](t) := \sigma\'_{\text{reg}}(\sigma_D^2[f](t))
@@ -193,7 +193,7 @@ We construct this potential in two steps, mirroring the discrete algorithm. Firs
 :::{prf:definition} Mean-Field Z-Scores
 :label: def-mean-field-z-scores
 
-For a particle at state $z$ and a potential companion at state $z_c$, the mean-field Z-scores at time $t$ are defined using the density-dependent functionals derived in Section 1.2:
+For a particle at state $z$ and a potential companion at state $z_c$, the mean-field Z-scores at time $t$ are defined using the density-dependent functionals derived in Section 1.2. The means $\mu_R[f]$ and $\mu_D[f]$ are from {prf:ref}`def-mean-field-moments`, and the regularized standard deviations $\widehat{\sigma}_R[f]$ and $\widehat{\sigma}_D[f]$ are from {prf:ref}`def-mean-field-patched-std`:
 
 $$
 \widetilde{r}[f](z,t) := \frac{R(z) - \mu_R[f](t)}{\widehat{\sigma}_R[f](t)}, \qquad \widetilde{d}[f](z,z_c,t) := \frac{d_{\mathcal{Y}}(\varphi(z),\varphi(z_c)) - \mu_D[f](t)}{\widehat{\sigma}_D[f](t)}
@@ -206,7 +206,7 @@ The final fitness potential combines the contributions from the reward and diver
 :::{prf:definition} Mean-Field Fitness Potential
 :label: def-mean-field-fitness-potential
 
-The **Mean-Field Fitness Potential**, denoted $V[f](z, z_c, t)$, is a functional of the density $f$ that determines the fitness of a particle at state $z$ relative to a companion at $z_c$. It is constructed by applying the canonical `Rescale Transformation` $g_A$ (*Chapter 1, Sec. 8*) to the mean-field Z-scores:
+The **Mean-Field Fitness Potential**, denoted $V[f](z, z_c, t)$, is a functional of the density $f$ that determines the fitness of a particle at state $z$ relative to a companion at $z_c$. It is constructed by applying the canonical `Rescale Transformation` $g_A$ (*Chapter 1, Sec. 8*) to the mean-field Z-scores (see {prf:ref}`def-mean-field-z-scores`):
 
 $$
 V[f](z,z_c,t) := \left(g_A(\widetilde{d}[f](z,z_c,t)) + \eta\right)^{\beta} \cdot \left(g_A(\widetilde{r}[f](z,t)) + \eta\right)^{\alpha}
@@ -235,7 +235,7 @@ The composite nature of the discrete-time update, $\Psi = \Psi_{\text{kin}} \cir
 $$
 \mathcal{L}_{\text{FG}} := \mathcal{L}_{\text{kin}} + \mathcal{L}_{\text{clone}}
 $$
-where $\mathcal{L}_{\text{kin}}$ is a local, second-order differential operator representing the diffusive kinetic motion, and $\mathcal{L}_{\text{clone}}$ is a non-local, integro-differential operator representing the discontinuous jump process of cloning and revival.
+where $\mathcal{L}_{\text{kin}}$ (see {prf:ref}`def-kinetic-generator`) is a local, second-order differential operator representing the diffusive kinetic motion, and $\mathcal{L}_{\text{clone}}$ is a non-local, integro-differential operator representing the discontinuous jump process of cloning and revival.
 
 ### 2.1. The Underlying Discrete-Time Integrator: BAOAB Splitting
 
@@ -295,7 +295,7 @@ An optional velocity cap, $\psi_v$, is applied after the final B-step to ensure 
 :class: important
 :label: remark-fidelity-generator
 :open:
-This explicit definition of the BAOAB integrator provides the rigorous foundation for the continuous generator that follows. Each part of the BAOAB scheme corresponds directly to a term in the Fokker-Planck operator that we will derive in the next section:
+This explicit definition of the BAOAB integrator (see {prf:ref}`def-baoab-update-rule`) provides the rigorous foundation for the continuous generator that follows. Each part of the BAOAB scheme corresponds directly to a term in the Fokker-Planck operator that we will derive in the next section:
 
 *   The **B-steps** (force kicks) and the drift part of the **O-step** correspond to the advection in velocity space, represented by the term $\nabla_v \cdot (A_v f)$.
 *   The **A-steps** (position drifts) correspond to the advection in position space, represented by the term $\nabla_x \cdot (v f)$.
@@ -311,7 +311,7 @@ Between cloning events and death/revival transitions, the state of each alive wa
 :::{prf:definition} Kinetic Transport Operator
 :label: def-kinetic-generator
 
-The kinetic evolution of a single alive walker $i$ is governed by the underdamped Langevin SDE on the phase space $\Omega$:
+The kinetic evolution of a single alive walker $i$ is governed by the underdamped Langevin SDE on the phase space $\Omega$ (see {prf:ref}`def-mean-field-phase-space`), which is the continuous-time limit of the BAOAB integrator (see {prf:ref}`def-baoab-update-rule`):
 
 $$
 \mathrm d x_i = v_i\,\mathrm dt,\qquad
@@ -378,7 +378,7 @@ This is the instantaneous rate at which alive mass transitions to dead mass.
 :::{prf:definition} Revival Operator
 :label: def-revival-operator
 
-Revival is modeled as a source term that re-injects mass from the dead population back into the alive population. The dead population acts as a reservoir from which revival occurs at a constant rate. Dead walkers are instantly revived by cloning from alive companions, so the spatial profile of the re-injected mass is simply **proportional to the current alive density**, mirroring the discrete algorithm's revival mechanism.
+Revival is modeled as a source term that re-injects mass from the dead population back into the alive population. The dead population acts as a reservoir from which revival occurs at a constant rate. The mass killed by the killing operator (see {prf:ref}`def-killing-operator`) flows into this dead reservoir. Dead walkers are instantly revived by cloning from alive companions, so the spatial profile of the re-injected mass is simply **proportional to the current alive density**, mirroring the discrete algorithm's revival mechanism.
 
 The **Revival Operator** is defined as:
 
@@ -497,7 +497,7 @@ This is exactly the form of the cloning operator stated below.
 :::{prf:definition} Internal Cloning Operator (Derived Form)
 :label: def-cloning-generator
 
-The **Internal Cloning Operator**, $S[f]$, is the mean-field limit of the discrete cloning mechanism. It is a mass-neutral, non-local operator that decomposes into sink and source terms:
+The **Internal Cloning Operator**, $S[f]$, is the mean-field limit of the discrete cloning mechanism. It is distinct from the revival operator (see {prf:ref}`def-revival-operator`), which handles dead-to-alive transitions, while this operator redistributes mass within the alive population. It is a mass-neutral, non-local operator that decomposes into sink and source terms:
 
 $$
 S[f](t, z) = S_{\text{src}}[f](t, z) - S_{\text{sink}}[f](t, z)
@@ -518,7 +518,7 @@ where:
     $$
 
 Here:
-- $P_{\text{clone}}[f/m_a](z_d, z_c)$ is the cloning probability depending on fitness values computed from the normalized alive density $f/m_a$
+- $P_{\text{clone}}[f/m_a](z_d, z_c)$ is the cloning probability depending on fitness values (see {prf:ref}`def-mean-field-fitness-potential`) computed from the normalized alive density $f/m_a$
 - $Q_\delta(z \mid z_c)$ is the jitter kernel (Gaussian in position, delta in velocity)
 - $\tau$ is the discrete timestep, and $1/\tau$ converts per-step probabilities to continuous rates
 
@@ -543,13 +543,13 @@ Thus $\int_{\Omega} S[f]\,\mathrm{d}z = 0$, confirming mass conservation.
 
 ## 3. The Mass-Conserving Forward Equation (PDE)
 
-With the infinitesimal generator of the continuous-time Markov process now defined, we can derive the final mean-field equation that governs the evolution of the phase-space probability density $f(t,z)$. This is achieved by translating the generator $\mathcal{L}_{\text{FG}}$ into its corresponding forward equation, which describes how the density $f$ changes over time.
+With the infinitesimal generator of the continuous-time Markov process now defined, we can derive the final mean-field equation that governs the evolution of the phase-space probability density $f(t,z)$ (see {prf:ref}`def-phase-space-density`). This is achieved by translating the generator $\mathcal{L}_{\text{FG}}$ into its corresponding forward equation, which describes how the density $f$ changes over time.
 
 Our derivation is guided by the fundamental physical principle of **conservation of probability**. The rate of change of probability mass within any region of the phase space must equal the net flux of probability across the region's boundary, plus any local creation or destruction of probability mass. The kinetic generator $\mathcal{L}_{\text{kin}}$ will give rise to the flux term, while the cloning generator $\mathcal{L}_{\text{clone}}$ will correspond to the local source and sink terms. A crucial third term will emerge from the boundary conditions to ensure that the total probability mass is conserved over time.
 
 ### 3.1. The Transport Operator ($L^\dagger$) is Mass-Conservative
 
-The kinetic part of the evolution, described by the generator $\mathcal{L}_{\text{kin}}$, corresponds to a local transport of probability density via drift and diffusion. Its representation in the forward equation is given by the formal adjoint of $\mathcal{L}_{\text{kin}}$, which is the Fokker-Planck operator.
+The kinetic part of the evolution, described by the generator $\mathcal{L}_{\text{kin}}$ (see {prf:ref}`def-kinetic-generator`), corresponds to a local transport of probability density via drift and diffusion. Its representation in the forward equation is given by the formal adjoint of $\mathcal{L}_{\text{kin}}$, which is the Fokker-Planck operator.
 
 :::{prf:definition} Transport Operator and Probability Flux
 :label: def-transport-operator
@@ -572,7 +572,7 @@ With the reflecting boundary conditions established in Section 2.2, this transpo
 :::{prf:lemma} Mass Conservation of Transport
 :label: lem-mass-conservation-transport
 
-The integral of the transport operator over the domain $\Omega$ vanishes due to the reflecting boundary conditions on both position and velocity boundaries:
+The integral of the transport operator (see {prf:ref}`def-transport-operator`) over the domain $\Omega$ vanishes due to the reflecting boundary conditions on both position and velocity boundaries:
 
 $$
 \int_\Omega L^\dagger f(t,z)\,\mathrm{d}z = 0
@@ -601,7 +601,7 @@ Therefore, the boundary integral vanishes, proving the result.
 
 The three reaction operators defined in Section 2.3—interior killing ($-c(z)f$), revival ($B[f, m_d]$), and internal cloning ($S[f]$)—combine to describe all non-kinetic modifications to the alive population. Their key properties, established in Section 2.3, are:
 
-1.  **Interior Killing**: Removes alive mass at rate $k_{\text{killed}}[f] = \int_\Omega c(z)f \,\mathrm{d}z$, which flows into the dead population
+1.  **Interior Killing** (see {prf:ref}`def-killing-operator`): Removes alive mass at rate $k_{\text{killed}}[f] = \int_\Omega c(z)f \,\mathrm{d}z$, which flows into the dead population
 2.  **Revival**: Re-injects mass from the dead reservoir at rate $\lambda_{\text{rev}} m_d(t)$, distributed according to $g[f/m_a]$
 3.  **Internal Cloning**: Redistributes alive mass neutrally, $\int_\Omega S[f]\,\mathrm{d}z = 0$
 
@@ -624,6 +624,8 @@ $$
 }
 $$ (eq-mean-field-pde-main)
 
+where $L^\dagger$ is the transport operator (see {prf:ref}`def-transport-operator`), $c(z)$ is the killing rate (see {prf:ref}`def-killing-operator`), $B[f, m_d]$ is the revival operator (see {prf:ref}`def-revival-operator`), and $S[f]$ is the internal cloning operator (see {prf:ref}`def-cloning-generator`).
+
 **Equation for the Dead Mass:**
 
 $$
@@ -633,6 +635,8 @@ $$
 $$ (eq-dead-mass-ode)
 
 subject to initial conditions $f(0, \cdot) = f_0$ and $m_d(0) = 1 - \int_\Omega f_0$, where $m_a(0) + m_d(0) = 1$.
+
+The total alive mass is $m_a(t) = \int_\Omega f(t,z)\,\mathrm{d}z$, and the system conserves the total population: $m_a(t) + m_d(t) = 1$ for all $t$ (see {prf:ref}`thm-mass-conservation`).
 
 In explicit form, the equation for $f$ is:
 
@@ -646,8 +650,6 @@ where:
 *   $\lambda_{\text{revive}} > 0$ is the revival rate (free parameter, typical values 0.1-5)
 *   $B[f, m_d] = \lambda_{\text{revive}} m_d(t) f/m_a$ is the revival operator
 *   $S[f]$ is the mass-neutral internal cloning operator
-
-The total alive mass is $m_a(t) = \int_\Omega f(t,z)\,\mathrm{d}z$, and the system conserves the total population: $m_a(t) + m_d(t) = 1$ for all $t$.
 :::
 
 :::{dropdown} 📖 **Complete Rigorous Proof**
@@ -673,7 +675,7 @@ The primary property of this coupled system is that it conserves **total populat
 :::{prf:theorem} Total Mass Conservation and Population Dynamics
 :label: thm-mass-conservation
 
-Any sufficiently regular solution $(f(t,z), m_d(t))$ to the Mean-Field Equations satisfies the following properties:
+Any sufficiently regular solution $(f(t,z), m_d(t))$ to the Mean-Field Equations (see {prf:ref}`thm-mean-field-equation`) satisfies the following properties:
 
 **1. Total Mass Conservation:** The total population is conserved for all time $t>0$:
 
@@ -739,15 +741,15 @@ The derivation in the preceding sections has culminated in a **coupled system of
 
 ### 4.1. Key Properties of the Coupled System
 
-The Mean-Field Equations for the Euclidean Gas form a coupled system of a PDE (for $f$) and an ODE (for $m_d$), whose properties are a direct reflection of the algorithm's core mechanics.
+The Mean-Field Equations for the Euclidean Gas (see {prf:ref}`thm-mean-field-equation`) form a coupled system of a PDE (for $f$) and an ODE (for $m_d$), whose properties are a direct reflection of the algorithm's core mechanics.
 
-*   **Non-Linearity:** The system is fundamentally non-linear. The cloning operator $S[f]$ contains terms that are quadratic in the density $f$, a direct consequence of the pairwise interactions between walkers and their companions. Furthermore, the fitness potential $V[f]$ that drives the cloning decision depends on the global moments of $f$, introducing an additional layer of non-linear feedback. The revival operator $B[f, m_d]$ couples the PDE and ODE through the dead mass $m_d(t)$.
+*   **Non-Linearity:** The system is fundamentally non-linear. The cloning operator $S[f]$ contains terms that are quadratic in the density $f$, a direct consequence of the pairwise interactions between walkers and their companions. Furthermore, the fitness potential $V[f]$ that drives the cloning decision depends on the global moments of $f$ (see {prf:ref}`def-mean-field-moments`), introducing an additional layer of non-linear feedback. The revival operator $B[f, m_d]$ couples the PDE and ODE through the dead mass $m_d(t)$.
 
-*   **Non-Locality:** The dynamics are non-local in two distinct ways. First, the fitness potential is non-local in measurement: the potential at a single point $z$ depends on integrals over the entire population, reflecting the global nature of the standardization pipeline. Second, the cloning operator is non-local in action: the source term $S_{\text{src}}[f]$ creates new particles at a location determined by a companion that can be anywhere in the domain.
+*   **Non-Locality:** The dynamics are non-local in two distinct ways. First, the fitness potential (see {prf:ref}`def-mean-field-fitness-potential`) is non-local in measurement: the potential at a single point $z$ depends on integrals over the entire population, reflecting the global nature of the standardization pipeline. Second, the cloning operator is non-local in action: the source term $S_{\text{src}}[f]$ creates new particles at a location determined by a companion that can be anywhere in the domain.
 
-*   **Hypoellipticity and Confinement:** The transport operator $L^\dagger$ is a kinetic Fokker-Planck operator. It is degenerate, as diffusion acts only on the velocity variables, making it hypoelliptic rather than elliptic. This structure is known to induce regularization and drive the velocity distribution towards a local equilibrium (a Maxwellian-like distribution), a property known as hypocoercivity. This is the source of the system's intrinsic thermalization. The velocity-capping mechanism, modeled as a reflecting boundary, ensures the density remains confined to the velocity domain $V_{\text{alg}}$.
+*   **Hypoellipticity and Confinement:** The transport operator $L^\dagger$ (see {prf:ref}`def-transport-operator`) is a kinetic Fokker-Planck operator. It is degenerate, as diffusion acts only on the velocity variables, making it hypoelliptic rather than elliptic. This structure is known to induce regularization and drive the velocity distribution towards a local equilibrium (a Maxwellian-like distribution), a property known as hypocoercivity. This is the source of the system's intrinsic thermalization. The velocity-capping mechanism, modeled as a reflecting boundary, ensures the density remains confined to the velocity domain $V_{\text{alg}}$.
 
-*   **Coupled Reaction-Diffusion Structure:** The system has the form of a coupled reaction-diffusion system. The PDE for $f$ has the form of a reaction-diffusion PDE with non-local reaction terms. The kinetic operator $L^\dagger$ provides the diffusion (with reflecting boundaries), while the killing $-c(z)f$, revival $B[f, m_d]$, and cloning $S[f]$ terms provide the reactions. The ODE for $m_d$ describes the evolution of the dead reservoir. This structure is well-studied in PDE theory and enables the application of standard analytical techniques for coupled systems.
+*   **Coupled Reaction-Diffusion Structure:** The system has the form of a coupled reaction-diffusion system. The PDE for $f$ has the form of a reaction-diffusion PDE with non-local reaction terms. The kinetic operator $L^\dagger$ provides the diffusion (with reflecting boundaries), while the killing $-c(z)f$ (see {prf:ref}`def-killing-operator`), revival $B[f, m_d]$, and cloning $S[f]$ terms provide the reactions. The ODE for $m_d$ describes the evolution of the dead reservoir. This structure is well-studied in PDE theory and enables the application of standard analytical techniques for coupled systems.
 
 *   **Total Mass Conservation with Dynamic Equilibrium:** As proven in {prf:ref}`thm-mass-conservation`, the coupled system conserves the total population $m_a(t) + m_d(t) = 1$. However, unlike a model with instantaneous revival, the alive and dead masses can exchange and evolve towards a non-trivial **stationary state** where $\mathrm{d}/\mathrm{d}t\, m_a = 0$ and $\mathrm{d}/\mathrm{d}t\, m_d = 0$. At this stationary state, the killing and revival rates are balanced: $k_{\text{killed}}[f_\infty] = \lambda_{\text{revive}} m_{d,\infty}$. This faithfully represents the discrete algorithm's behavior where the number of alive walkers $k$ fluctuates and converges to a stationary distribution.
 
@@ -759,7 +761,7 @@ The rigorous analysis of the coupled mean-field system—proving the existence, 
 :label: assumption-regularity-summary
 
 The well-posedness of the coupled mean-field system relies on the following assumptions, which are satisfied by the Canonical Euclidean Gas:
-*   **(H1)** The domains $X_{\text{valid}}$ and $V_{\text{alg}}$ are bounded and have smooth ($C^2$) boundaries.
+*   **(H1)** The domains $X_{\text{valid}}$ and $V_{\text{alg}}$ that comprise the phase space {prf:ref}`def-mean-field-phase-space` are bounded and have smooth ($C^2$) boundaries.
 *   **(H2)** The reward potential $R_{\text{pos}}$ is $C^2$, making the force field $F$ globally Lipschitz.
 *   **(H3)** The flow field $u$ is $C^1$, and all physical parameters ($m, \gamma_{\text{fric}}, \Theta, \sigma_x$) are finite and positive.
 *   **(H4)** All algorithmic functions (e.g., the rescale function, companion selection) are measurable and satisfy the continuity properties established in the abstract framework.
@@ -767,7 +769,7 @@ The well-posedness of the coupled mean-field system relies on the following assu
 *   **(H6)** The revival rate $\lambda_{\text{revive}} > 0$ is a free positive constant independent of the timestep $\tau$ (typical values: 0.1-5).
 :::
 
-Under these assumptions, the coupled mean-field system is of a class for which analytical tools have been developed. This system now serves as the formal starting point for addressing critical questions about the algorithm's macroscopic behavior:
+Under these assumptions, the coupled mean-field system (see {prf:ref}`thm-mean-field-equation`) is of a class for which analytical tools have been developed. This system now serves as the formal starting point for addressing critical questions about the algorithm's macroscopic behavior:
 1.  **Existence and Uniqueness:** Proving that a well-behaved solution $(f(t,z), m_d(t))$ exists for all time and is unique for given initial conditions $(f_0, m_{d,0})$.
 2.  **Stationary States:** Investigating the existence and properties of stationary solutions $(f_\infty(z), m_{d,\infty})$ that satisfy $\partial_t f = 0$ and $\mathrm{d}/\mathrm{d}t\, m_d = 0$. At the stationary state, the killing and revival rates balance: $k_{\text{killed}}[f_\infty] = \lambda_{\text{revive}} m_{d,\infty}$.
 3.  **Convergence to Equilibrium:** Proving that any initial state $(f_0, m_{d,0})$ converges to the unique stationary state $(f_\infty, m_{d,\infty})$ as $t \to \infty$.
@@ -785,7 +787,7 @@ $$
 
 We can interpret each operator on the right-hand side as a discrete stage of the algorithm:
 *   $e^{\tau\mathcal{L}_{\text{clone}}}$ represents the evolution of the system for time $\tau$ under only the cloning/revival jump process. This corresponds to the action of the cloning operator, $\Psi_{\text{clone}}$.
-*   $e^{\tau\mathcal{L}_{\text{kin}}}$ represents the evolution for time $\tau$ under only the kinetic Langevin SDE. This corresponds to the action of the kinetic operator, $\Psi_{\text{kin}}$.
+*   $e^{\tau\mathcal{L}_{\text{kin}}}$ represents the evolution for time $\tau$ under only the kinetic Langevin SDE (see {prf:ref}`def-kinetic-generator`). This corresponds to the action of the kinetic operator, $\Psi_{\text{kin}}$.
 
 The discrete-time **Swarm Update Operator**, $\Psi = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$, is therefore a first-order operator splitting scheme for integrating the continuous forward equation. This confirms that our mean-field PDE is not merely an analogy but the direct continuous-time limit of the N-particle algorithm, providing a rigorous foundation for the subsequent analysis of the system's macroscopic properties.
 
@@ -800,7 +802,7 @@ We work with the following precise geometric and regularity framework:
 :::{prf:assumption} Regularity of the Valid Domain
 :label: assumption-domain-regularity
 
-The valid position domain $X_{\text{valid}} \subset \mathbb{R}^d$ satisfies:
+The valid position domain $X_{\text{valid}} \subset \mathbb{R}^d$ (from the phase space {prf:ref}`def-mean-field-phase-space`) satisfies:
 
 1. **Smoothness**: $X_{\text{valid}}$ is an open, bounded domain with $C^3$ boundary $\partial X_{\text{valid}}$.
 2. **Distance Function**: The signed distance function $d(x) := \text{dist}(x, \partial X_{\text{valid}})$ is $C^2$ in a tubular neighborhood $\mathcal{T}_\delta := \{x \in X_{\text{valid}} : d(x) < \delta\}$ for some $\delta > 0$.
@@ -811,7 +813,7 @@ The valid position domain $X_{\text{valid}} \subset \mathbb{R}^d$ satisfies:
 :::{prf:assumption} Regularity of the Discrete Integrator
 :label: assumption-integrator-regularity
 
-The discrete kinetic integrator (BAOAB) produces position updates of the form:
+The discrete kinetic integrator (see {prf:ref}`def-baoab-update-rule`) produces position updates of the form:
 
 $$
 x^+(\tau; x,v) = x + v\tau + \frac{\tau^2}{2m}F(x) + R_{\text{pos}}(\tau; x,v)
@@ -823,7 +825,7 @@ where the remainder satisfies $\|R_{\text{pos}}(\tau; x,v)\| \le C_R \tau^{5/2}$
 :::{prf:assumption} Density Regularity
 :label: assumption-density-regularity-killing
 
-The phase-space density $f^\tau(x,v)$ at the start of a discrete timestep satisfies:
+The phase-space density $f^\tau(x,v)$ (see {prf:ref}`def-phase-space-density`) at the start of a discrete timestep satisfies:
 
 1. **Boundedness**: $\|f^\tau\|_{L^\infty(\Omega)} \le M_f$ for some $M_f > 0$.
 2. **Spatial Regularity**: $f^\tau \in C^1(\Omega)$ with $\|\nabla_x f^\tau\|_{L^\infty} \le M_{\nabla f}$.
@@ -835,7 +837,7 @@ The phase-space density $f^\tau(x,v)$ at the start of a discrete timestep satisf
 :::{prf:theorem} Consistency of the Interior Killing Rate Approximation
 :label: thm-killing-rate-consistency
 
-Under Assumptions [](#asmp-domain-regularity), [](#asmp-integrator-regularity), and [](#asmp-density-regularity-killing), there exists a smooth killing rate function $c \in C^\infty_c(\Omega)$ with compact support in $\mathcal{T}_\delta$ such that:
+Under the regularity assumptions (see {prf:ref}`assumption-domain-regularity`, {prf:ref}`assumption-integrator-regularity`, and {prf:ref}`assumption-density-regularity-killing`), there exists a smooth killing rate function $c \in C^\infty_c(\Omega)$ (see {prf:ref}`def-killing-operator`) with compact support in $\mathcal{T}_\delta$ such that:
 
 **Part (i): Pointwise Convergence of the Exit Rate**
 
@@ -1334,12 +1336,12 @@ The theorem predicts convergence at rate $O(\sqrt{\tau} + N^{-1/d})$ (where the 
 
 #### 4.4.4. Connection to the Main Mean-Field Result
 
-The killing rate consistency theorem (Theorem [](#thm-killing-rate-consistency)) provides the final piece needed to justify our mean-field model. Combined with the standard kinetic theory arguments for the transport operator $L^\dagger$ (Section 2.2) and the Law of Large Numbers for the cloning operators (Section 2.3), we obtain:
+The killing rate consistency theorem (see {prf:ref}`thm-killing-rate-consistency`) provides the final piece needed to justify our mean-field model. Combined with the standard kinetic theory arguments for the transport operator $L^\dagger$ from the kinetic generator (see {prf:ref}`def-kinetic-generator`) and the Law of Large Numbers for the cloning operators (Section 2.3), we obtain:
 
 :::{prf:theorem} Mean-Field Limit (Informal Statement)
 :label: thm-mean-field-limit-informal
 
-Let $(X_i^\tau(t), V_i^\tau(t))_{i=1}^N$ be the $N$-particle discrete Fragile Gas dynamics with timestep $\tau$, and let:
+Let $(X_i^\tau(t), V_i^\tau(t))_{i=1}^N$ be the $N$-particle discrete Fragile Gas dynamics (see {prf:ref}`def-baoab-update-rule` for the kinetic integrator) with timestep $\tau$, and let:
 
 $$
 f_N^\tau(t, x, v) := \frac{1}{N} \sum_{i=1}^N \delta(x - X_i^\tau(t), v - V_i^\tau(t))
@@ -1351,7 +1353,7 @@ $$
 f_N^\tau(t, \cdot, \cdot) \xrightarrow{\text{weak}} f(t, \cdot, \cdot)
 $$
 
-where $f$ solves the mean-field PDE (Equations [](#eq-mean-field-pde-main) and [](#eq-dead-mass-ode)).
+where $f$ solves the mean-field PDE (see {prf:ref}`thm-mean-field-equation`, Equations [](#eq-mean-field-pde-main) and [](#eq-dead-mass-ode)).
 :::
 
 :::{note}

@@ -1,7 +1,7 @@
 {
   "stage": "directives",
   "directive_type": "assumption",
-  "generated_at": "2025-11-09T21:44:26.364179+00:00",
+  "generated_at": "2025-11-10T13:24:29.648877+00:00",
   "source_documents": [
     "01_fragile_gas_framework",
     "04_wasserstein_contraction_ASSEMBLED",
@@ -102,20 +102,22 @@
       "directive_type": "assumption",
       "label": "assumption-regularity-summary",
       "title": "Summary of Regularity Assumptions",
-      "start_line": 756,
-      "end_line": 766,
+      "start_line": 758,
+      "end_line": 768,
       "header_lines": [
-        757
+        759
       ],
-      "content_start": 759,
-      "content_end": 765,
-      "content": "759: :label: assumption-regularity-summary\n760: \n761: The well-posedness of the coupled mean-field system relies on the following assumptions, which are satisfied by the Canonical Euclidean Gas:\n762: *   **(H1)** The domains $X_{\\text{valid}}$ and $V_{\\text{alg}}$ are bounded and have smooth ($C^2$) boundaries.\n763: *   **(H2)** The reward potential $R_{\\text{pos}}$ is $C^2$, making the force field $F$ globally Lipschitz.\n764: *   **(H3)** The flow field $u$ is $C^1$, and all physical parameters ($m, \\gamma_{\\text{fric}}, \\Theta, \\sigma_x$) are finite and positive.\n765: *   **(H4)** All algorithmic functions (e.g., the rescale function, companion selection) are measurable and satisfy the continuity properties established in the abstract framework.",
+      "content_start": 761,
+      "content_end": 767,
+      "content": "761: :label: assumption-regularity-summary\n762: \n763: The well-posedness of the coupled mean-field system relies on the following assumptions, which are satisfied by the Canonical Euclidean Gas:\n764: *   **(H1)** The domains $X_{\\text{valid}}$ and $V_{\\text{alg}}$ that comprise the phase space {prf:ref}`def-mean-field-phase-space` are bounded and have smooth ($C^2$) boundaries.\n765: *   **(H2)** The reward potential $R_{\\text{pos}}$ is $C^2$, making the force field $F$ globally Lipschitz.\n766: *   **(H3)** The flow field $u$ is $C^1$, and all physical parameters ($m, \\gamma_{\\text{fric}}, \\Theta, \\sigma_x$) are finite and positive.\n767: *   **(H4)** All algorithmic functions (e.g., the rescale function, companion selection) are measurable and satisfy the continuity properties established in the abstract framework.",
       "metadata": {
         "label": "assumption-regularity-summary"
       },
       "section": "## 4. Analysis and Properties of the Mean-Field Equations",
-      "references": [],
-      "raw_directive": "756: The rigorous analysis of the coupled mean-field system—proving the existence, uniqueness, and long-term behavior of its solutions—requires a set of standing technical assumptions on the regularity of its constituent parts.\n757: \n758: :::{prf:assumption} Summary of Regularity Assumptions\n759: :label: assumption-regularity-summary\n760: \n761: The well-posedness of the coupled mean-field system relies on the following assumptions, which are satisfied by the Canonical Euclidean Gas:\n762: *   **(H1)** The domains $X_{\\text{valid}}$ and $V_{\\text{alg}}$ are bounded and have smooth ($C^2$) boundaries.\n763: *   **(H2)** The reward potential $R_{\\text{pos}}$ is $C^2$, making the force field $F$ globally Lipschitz.\n764: *   **(H3)** The flow field $u$ is $C^1$, and all physical parameters ($m, \\gamma_{\\text{fric}}, \\Theta, \\sigma_x$) are finite and positive.\n765: *   **(H4)** All algorithmic functions (e.g., the rescale function, companion selection) are measurable and satisfy the continuity properties established in the abstract framework.\n766: *   **(H5)** The killing rate function $c(z)$ is smooth ($C^\\infty$), non-negative, and has compact support in a neighborhood of $\\partial X_{\\text{valid}}$.",
+      "references": [
+        "def-mean-field-phase-space"
+      ],
+      "raw_directive": "758: The rigorous analysis of the coupled mean-field system—proving the existence, uniqueness, and long-term behavior of its solutions—requires a set of standing technical assumptions on the regularity of its constituent parts.\n759: \n760: :::{prf:assumption} Summary of Regularity Assumptions\n761: :label: assumption-regularity-summary\n762: \n763: The well-posedness of the coupled mean-field system relies on the following assumptions, which are satisfied by the Canonical Euclidean Gas:\n764: *   **(H1)** The domains $X_{\\text{valid}}$ and $V_{\\text{alg}}$ that comprise the phase space {prf:ref}`def-mean-field-phase-space` are bounded and have smooth ($C^2$) boundaries.\n765: *   **(H2)** The reward potential $R_{\\text{pos}}$ is $C^2$, making the force field $F$ globally Lipschitz.\n766: *   **(H3)** The flow field $u$ is $C^1$, and all physical parameters ($m, \\gamma_{\\text{fric}}, \\Theta, \\sigma_x$) are finite and positive.\n767: *   **(H4)** All algorithmic functions (e.g., the rescale function, companion selection) are measurable and satisfy the continuity properties established in the abstract framework.\n768: *   **(H5)** The killing rate function $c(z)$ is smooth ($C^\\infty$), non-negative, and has compact support in a neighborhood of $\\partial X_{\\text{valid}}$.",
       "_registry_context": {
         "stage": "directives",
         "document_id": "07_mean_field",
@@ -128,20 +130,22 @@
       "directive_type": "assumption",
       "label": "assumption-domain-regularity",
       "title": "Regularity of the Valid Domain",
-      "start_line": 798,
-      "end_line": 807,
+      "start_line": 800,
+      "end_line": 809,
       "header_lines": [
-        799
+        801
       ],
-      "content_start": 801,
-      "content_end": 806,
-      "content": "801: :label: assumption-domain-regularity\n802: \n803: The valid position domain $X_{\\text{valid}} \\subset \\mathbb{R}^d$ satisfies:\n804: \n805: 1. **Smoothness**: $X_{\\text{valid}}$ is an open, bounded domain with $C^3$ boundary $\\partial X_{\\text{valid}}$.\n806: 2. **Distance Function**: The signed distance function $d(x) := \\text{dist}(x, \\partial X_{\\text{valid}})$ is $C^2$ in a tubular neighborhood $\\mathcal{T}_\\delta := \\{x \\in X_{\\text{valid}} : d(x) < \\delta\\}$ for some $\\delta > 0$.",
+      "content_start": 803,
+      "content_end": 808,
+      "content": "803: :label: assumption-domain-regularity\n804: \n805: The valid position domain $X_{\\text{valid}} \\subset \\mathbb{R}^d$ (from the phase space {prf:ref}`def-mean-field-phase-space`) satisfies:\n806: \n807: 1. **Smoothness**: $X_{\\text{valid}}$ is an open, bounded domain with $C^3$ boundary $\\partial X_{\\text{valid}}$.\n808: 2. **Distance Function**: The signed distance function $d(x) := \\text{dist}(x, \\partial X_{\\text{valid}})$ is $C^2$ in a tubular neighborhood $\\mathcal{T}_\\delta := \\{x \\in X_{\\text{valid}} : d(x) < \\delta\\}$ for some $\\delta > 0$.",
       "metadata": {
         "label": "assumption-domain-regularity"
       },
       "section": "## 4. Analysis and Properties of the Mean-Field Equations",
-      "references": [],
-      "raw_directive": "798: We work with the following precise geometric and regularity framework:\n799: \n800: :::{prf:assumption} Regularity of the Valid Domain\n801: :label: assumption-domain-regularity\n802: \n803: The valid position domain $X_{\\text{valid}} \\subset \\mathbb{R}^d$ satisfies:\n804: \n805: 1. **Smoothness**: $X_{\\text{valid}}$ is an open, bounded domain with $C^3$ boundary $\\partial X_{\\text{valid}}$.\n806: 2. **Distance Function**: The signed distance function $d(x) := \\text{dist}(x, \\partial X_{\\text{valid}})$ is $C^2$ in a tubular neighborhood $\\mathcal{T}_\\delta := \\{x \\in X_{\\text{valid}} : d(x) < \\delta\\}$ for some $\\delta > 0$.\n807: 3. **Unit Inward Normal**: For each $x \\in \\mathcal{T}_\\delta$, let $n_x(x) = -\\nabla d(x)$ denote the unit inward normal vector (pointing into $X_{\\text{valid}}$).",
+      "references": [
+        "def-mean-field-phase-space"
+      ],
+      "raw_directive": "800: We work with the following precise geometric and regularity framework:\n801: \n802: :::{prf:assumption} Regularity of the Valid Domain\n803: :label: assumption-domain-regularity\n804: \n805: The valid position domain $X_{\\text{valid}} \\subset \\mathbb{R}^d$ (from the phase space {prf:ref}`def-mean-field-phase-space`) satisfies:\n806: \n807: 1. **Smoothness**: $X_{\\text{valid}}$ is an open, bounded domain with $C^3$ boundary $\\partial X_{\\text{valid}}$.\n808: 2. **Distance Function**: The signed distance function $d(x) := \\text{dist}(x, \\partial X_{\\text{valid}})$ is $C^2$ in a tubular neighborhood $\\mathcal{T}_\\delta := \\{x \\in X_{\\text{valid}} : d(x) < \\delta\\}$ for some $\\delta > 0$.\n809: 3. **Unit Inward Normal**: For each $x \\in \\mathcal{T}_\\delta$, let $n_x(x) = -\\nabla d(x)$ denote the unit inward normal vector (pointing into $X_{\\text{valid}}$).",
       "_registry_context": {
         "stage": "directives",
         "document_id": "07_mean_field",
@@ -154,20 +158,22 @@
       "directive_type": "assumption",
       "label": "assumption-integrator-regularity",
       "title": "Regularity of the Discrete Integrator",
-      "start_line": 809,
-      "end_line": 819,
+      "start_line": 811,
+      "end_line": 821,
       "header_lines": [
-        810
+        812
       ],
-      "content_start": 812,
-      "content_end": 818,
-      "content": "812: :label: assumption-integrator-regularity\n813: \n814: The discrete kinetic integrator (BAOAB) produces position updates of the form:\n815: \n816: $$\n817: x^+(\\tau; x,v) = x + v\\tau + \\frac{\\tau^2}{2m}F(x) + R_{\\text{pos}}(\\tau; x,v)\n818: $$",
+      "content_start": 814,
+      "content_end": 820,
+      "content": "814: :label: assumption-integrator-regularity\n815: \n816: The discrete kinetic integrator (see {prf:ref}`def-baoab-update-rule`) produces position updates of the form:\n817: \n818: $$\n819: x^+(\\tau; x,v) = x + v\\tau + \\frac{\\tau^2}{2m}F(x) + R_{\\text{pos}}(\\tau; x,v)\n820: $$",
       "metadata": {
         "label": "assumption-integrator-regularity"
       },
       "section": "## 4. Analysis and Properties of the Mean-Field Equations",
-      "references": [],
-      "raw_directive": "809: :::\n810: \n811: :::{prf:assumption} Regularity of the Discrete Integrator\n812: :label: assumption-integrator-regularity\n813: \n814: The discrete kinetic integrator (BAOAB) produces position updates of the form:\n815: \n816: $$\n817: x^+(\\tau; x,v) = x + v\\tau + \\frac{\\tau^2}{2m}F(x) + R_{\\text{pos}}(\\tau; x,v)\n818: $$\n819: ",
+      "references": [
+        "def-baoab-update-rule"
+      ],
+      "raw_directive": "811: :::\n812: \n813: :::{prf:assumption} Regularity of the Discrete Integrator\n814: :label: assumption-integrator-regularity\n815: \n816: The discrete kinetic integrator (see {prf:ref}`def-baoab-update-rule`) produces position updates of the form:\n817: \n818: $$\n819: x^+(\\tau; x,v) = x + v\\tau + \\frac{\\tau^2}{2m}F(x) + R_{\\text{pos}}(\\tau; x,v)\n820: $$\n821: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "07_mean_field",
@@ -180,20 +186,22 @@
       "directive_type": "assumption",
       "label": "assumption-density-regularity-killing",
       "title": "Density Regularity",
-      "start_line": 821,
-      "end_line": 829,
+      "start_line": 823,
+      "end_line": 831,
       "header_lines": [
-        822
+        824
       ],
-      "content_start": 824,
-      "content_end": 828,
-      "content": "824: :label: assumption-density-regularity-killing\n825: \n826: The phase-space density $f^\\tau(x,v)$ at the start of a discrete timestep satisfies:\n827: \n828: 1. **Boundedness**: $\\|f^\\tau\\|_{L^\\infty(\\Omega)} \\le M_f$ for some $M_f > 0$.",
+      "content_start": 826,
+      "content_end": 830,
+      "content": "826: :label: assumption-density-regularity-killing\n827: \n828: The phase-space density $f^\\tau(x,v)$ (see {prf:ref}`def-phase-space-density`) at the start of a discrete timestep satisfies:\n829: \n830: 1. **Boundedness**: $\\|f^\\tau\\|_{L^\\infty(\\Omega)} \\le M_f$ for some $M_f > 0$.",
       "metadata": {
         "label": "assumption-density-regularity-killing"
       },
       "section": "## 4. Analysis and Properties of the Mean-Field Equations",
-      "references": [],
-      "raw_directive": "821: :::\n822: \n823: :::{prf:assumption} Density Regularity\n824: :label: assumption-density-regularity-killing\n825: \n826: The phase-space density $f^\\tau(x,v)$ at the start of a discrete timestep satisfies:\n827: \n828: 1. **Boundedness**: $\\|f^\\tau\\|_{L^\\infty(\\Omega)} \\le M_f$ for some $M_f > 0$.\n829: 2. **Spatial Regularity**: $f^\\tau \\in C^1(\\Omega)$ with $\\|\\nabla_x f^\\tau\\|_{L^\\infty} \\le M_{\\nabla f}$.",
+      "references": [
+        "def-phase-space-density"
+      ],
+      "raw_directive": "823: :::\n824: \n825: :::{prf:assumption} Density Regularity\n826: :label: assumption-density-regularity-killing\n827: \n828: The phase-space density $f^\\tau(x,v)$ (see {prf:ref}`def-phase-space-density`) at the start of a discrete timestep satisfies:\n829: \n830: 1. **Boundedness**: $\\|f^\\tau\\|_{L^\\infty(\\Omega)} \\le M_f$ for some $M_f > 0$.\n831: 2. **Spatial Regularity**: $f^\\tau \\in C^1(\\Omega)$ with $\\|\\nabla_x f^\\tau\\|_{L^\\infty} \\le M_{\\nabla f}$.",
       "_registry_context": {
         "stage": "directives",
         "document_id": "07_mean_field",

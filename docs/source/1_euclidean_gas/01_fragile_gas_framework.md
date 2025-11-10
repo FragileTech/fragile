@@ -319,6 +319,8 @@ These values define the static "universe" in which the algorithm operates.
 - The spaces $\mathcal{X} \subset \mathbb{R}^d$ and $\mathcal{Y} \subset \mathbb{R}^m$ are finite-dimensional Euclidean domains with Lebesgue reference measures $\lambda_d$ and $\lambda_m$.
 - All linear-algebraic objects (means, variances, covariances) and kernel densities are defined with respect to these Euclidean structures and Lebesgue measures. In particular, KDE normalizations use the standard Euclidean constants (e.g., $\int \exp(-\|y\|_2^2/(2\sigma^2))\,dy = (2\pi\sigma^2)^{m/2}$).
 - The ambient dimensions $d$ and $m$ are fixed throughout.
+
+This assumption provides the foundational Euclidean structure used throughout the framework. Referenced by {prf:ref}`02_euclidean_gas` for axiom-by-axiom validation of the Euclidean Gas implementation.
 :::
 
 :::{prf:definition} Reference Noise and Kernel Families
@@ -627,6 +629,8 @@ $$
 $$
 
 In particular, $S_i > p_{\max}$ surely, hence $S_i > T_{\text{clone}}$ for every threshold realization. The conclusion holds also when $|\mathcal A(\mathcal S)|=1$ (single‑survivor case) since the companion selection measure assigns the unique alive index to every dead walker (cf. [](#def-companion-selection-measure)).
+
+This revival guarantee is applied in {prf:ref}`02_euclidean_gas` to verify the Euclidean Gas satisfies the viability axioms.
 :::
 ```{admonition} k=1 edge case
 :class: note
@@ -1582,6 +1586,8 @@ $$
 E \le \frac{2 M_f}{|S_1|} \cdot n_c
 
 $$
+
+This general error bound is applied in {prf:ref}`02_euclidean_gas` for distance operator analysis and in {prf:ref}`09_kl_convergence` for KL-divergence convergence proofs.
 :::
 :::{prf:proof}
 :label: proof-thm-total-error-status-bound
@@ -1979,6 +1985,8 @@ L_{g_A} = \sup_{z \in \mathbb{R}} |g'_A(z)| = L_P = 1 + \frac{(3\log(2)-2)^2}{3(
 
 $$
 where $L_P$ is the uniform upper bound on the derivative of the polynomial patch from [](#lem-cubic-patch-derivative-bounds).
+
+This Lipschitz continuity result enables the standardization and rescale continuity analysis in {prf:ref}`02_euclidean_gas`.
 :::
 :::{prf:proof}
 :label: proof-thm-rescale-function-lipschitz
@@ -2084,6 +2092,8 @@ $$
 g_A(z) := \frac{2}{1 + e^{-z}}
 
 $$
+
+This canonical rescale function is used in {prf:ref}`02_euclidean_gas` as the standard choice for the logistic rescaling step in the Euclidean Gas implementation.
 :::
 #### 8.3.2. Theorem: The Canonical Logistic Function is a Valid Rescale Function
 :::{prf:theorem} The Canonical Logistic Function is a Valid Rescale Function
@@ -2831,6 +2841,8 @@ where $\sigma'_{\min} := \sqrt{\kappa_{\text{var,min}} + \varepsilon_{\text{std}
 2. **Positive Lower Bound:** $\sigma'_{\text{reg}}(V) \ge \sigma'_{\min} > 0$ for all $V \ge 0$, preventing division by zero.
 3. **Asymptotic Behavior:** For large $V \gg \sigma'^2_{\min}$, the regularized function closely approximates the natural square root: $\sigma'_{\text{reg}}(V) \approx \sqrt{V} + \frac{\sigma'^2_{\min}}{2\sqrt{V}}$.
 4. **Monotonicity:** The function is strictly increasing, with $\sigma'_{\text{reg}}(0) = \sigma'_{\min}$ and $\lim_{V \to \infty} \sigma'_{\text{reg}}(V) = \infty$.
+
+This regularized standardization operator is applied in {prf:ref}`02_euclidean_gas` for the patched standardization step that produces standardized reward and distance scores.
 ::{prf:lemma} Derivative Bounds for Regularized Standard Deviation
 :label: lem-sigma-reg-derivative-bounds
 The regularized standard deviation $\sigma'_{	ext{reg}}(V) = \sqrt{V + \sigma'^2_{\min}}$ has explicit derivative bounds for all orders. For the first three derivatives:
@@ -2899,6 +2911,8 @@ L_{\sigma',M}(\mathcal{S}) := L_{\sigma\'_{\text{reg}}} \cdot \left( L_{m_2,M}(\
 $$
 
 and $L_{\sigma\'_{\text{reg}}} = \frac{1}{2\sigma'_{\min}}$ is the finite, global Lipschitz constant of the Regularized Standard Deviation Function from [](#lem-sigma-reg-derivative-bounds).
+
+This value continuity lemma is applied in {prf:ref}`02_euclidean_gas` for bounding standardization error with respect to reward and distance value changes.
 :::
 :::{prf:proof}
 :label: proof-lem-stats-value-continuity
@@ -2931,6 +2945,7 @@ L_{\sigma',S}(\mathcal{S}_1, \mathcal{S}_2) := L_{\sigma\'_{\text{reg}}} \cdot \
 }
 $$
 
+This structural continuity lemma is applied in {prf:ref}`02_euclidean_gas` for analyzing standardization error with respect to walker status changes.
 :::
 :::{prf:proof}
 :label: proof-lem-stats-structural-continuity
@@ -2950,6 +2965,7 @@ $$
 \|\mathbf{z}\|_2^2 \le k \left( \frac{2V_{\max}}{\varepsilon_{\mathrm{std}}} \right)^2
 $$
 
+This universal bound on standardized vector norms is applied in {prf:ref}`02_euclidean_gas` for bounding the magnitude of standardized reward and distance scores in error analysis.
 :::
 :::{prf:proof}
 :label: proof-thm-z-score-norm-bound
@@ -5210,6 +5226,8 @@ A **Fragile Swarm**, denoted $\mathcal{F}$, is a tuple that encapsulates a compl
 3.  **The Concrete Operator Choices:** The specific, user-chosen functions for the **Reward Aggregation Operator** ($R_{agg}$) and the **Distance Aggregation Operator** ($M_D$).
 4.  **The Concrete Noise Measure Choices:** The specific, user-chosen probability measures for the **Perturbation Measure** ($\mathcal{P}_\sigma$) and the **Cloning Measure** ($\mathcal{Q}_\delta$).
 A Fragile Swarm instantiation must satisfy all axioms defined in Section 2 for the analytical framework to apply. It represents a single, well-defined point in the algorithm's vast parameter space.
+
+The concrete instantiation for the Euclidean Gas is provided in {prf:ref}`02_euclidean_gas`, where all parameters and operators are specified with explicit values.
 :::
 ### 18.2 The Fragile Gas Algorithm
 The **Fragile Gas** is the algorithm that describes the temporal evolution of a swarm of N walkers. It generates a trajectory of swarm states by repeatedly applying the Swarm Update Operator, which is fully parameterized by a specific Fragile Swarm instantiation.
@@ -5231,6 +5249,8 @@ $$
 $$
 **Output:**
 The algorithm outputs the full trajectory of swarm states: $(\mathcal{S}_0, \mathcal{S}_1, \dots, \mathcal{S}_T)$.
+
+This general algorithm definition is instantiated as the Euclidean Gas in {prf:ref}`02_euclidean_gas` with axiom-by-axiom validation.
 :::
 ## 20. Canonical Instantiation and Axiom Validation
 The preceding framework is built upon a comprehensive set of axioms that a user's specific instantiation of the algorithm must satisfy for the stability and convergence guarantees to hold. A critical question for the rigor of the entire framework is whether these axioms are satisfiable in practice for any non-trivial system, or if they are mutually exclusive or so restrictive as to be vacuous.

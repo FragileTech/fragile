@@ -4,19 +4,9 @@ import argparse
 import json
 import logging
 from pathlib import Path
-import re
 from typing import Any
 
 from mathster.preprocess_extraction.data_models import (
-    CaseItem,
-    Conclusion,
-    Gap,
-    KeyEquation,
-    MathTool,
-    ProofAssumption,
-    ProofStep,
-    Remark,
-    Span,
     UnifiedProof,
 )
 from mathster.preprocess_extraction.utils import (
@@ -32,7 +22,6 @@ from mathster.preprocess_extraction.utils import (
 
 
 logger = logging.getLogger(__name__)
-
 
 
 def _build_unified_proofs(

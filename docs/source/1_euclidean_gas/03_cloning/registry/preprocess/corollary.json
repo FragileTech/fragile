@@ -118,8 +118,8 @@
       "proves": "cor-vvarx-to-high-error-fraction",
       "proof_type": "reference",
       "proof_status": "complete",
-      "content_markdown": ":label: proof-cor-vvarx-to-high-error-fraction\n\n**Proof.**\n\nThis corollary is a direct synthesis of the lemmas established in this chapter.\n\n**1. From Total Positional Variance to Single-Swarm Positional Variance:**\nBy **{prf:ref}`lem-V_Varx-implies-variance`** (labeled $lem-V_{\\text{Var}}x-implies-variance$), if the total intra-swarm positional variance is large, $V_{\\text{Var},x} > R^2_{\\text{total\\_var},x}$, then at least one of the two swarms, say swarm `k`, must have a large internal positional variance:\n\n$$\n\\mathrm{Var}_x(S_k) > \\frac{R^2_{\\text{total\\_var},x}}{2}\n$$\n\nWe define the threshold $R^2_{\\text{var}} := R^2_{\\text{total\\_var},x} / 2$.\n\n**2. From Positional Variance to Hypocoercive Variance:**\nSince the hypocoercive variance satisfies $\\mathrm{Var}_h(S_k) = \\mathrm{Var}_x(S_k) + \\lambda_v \\mathrm{Var}_v(S_k) \\ge \\mathrm{Var}_x(S_k)$ (as established in the bridging lemma of Section 6.4.2), the condition $\\mathrm{Var}_x(S_k) > R^2_{\\text{var}}$ is sufficient to guarantee that the total hypocoercive variance is also large:\n\n$$\n\\mathrm{Var}_h(S_k) > R^2_{\\text{var}}\n$$\n\nThis satisfies the necessary premise for the lemmas governing both regimes of the $\\varepsilon$-dichotomy.\n\n**3. From Hypocoercive Variance to a High-Error Fraction:**\nWith the condition $\\mathrm{Var}_h(S_k) > R^2_{\\text{var}}$ met, we can now invoke the results of the $\\varepsilon$-dichotomy analysis:\n\n*   **If the swarm is in the large-$\\varepsilon$ regime** (where $\\varepsilon > D_swarm$): By {prf:ref}`def-unified-high-low-error-sets`, $H_k(\\epsilon) = O_k$ in this regime. **{prf:ref}`lem-outlier-fraction-lower-bound`** guarantees that the fraction of walkers in the global kinematic outlier set is bounded below by a positive, N-uniform constant: $|H_k(\\epsilon)|/k \\ge f_O > 0$.\n\n*   **If the swarm is in the small-$\\varepsilon$ regime** (where $\\varepsilon \\leq D_swarm$): By {prf:ref}`def-unified-high-low-error-sets`, $H_k(\\epsilon) = C_k(\\epsilon)$ (the clustering-based outlier set) in this regime. **{prf:ref}`lem-outlier-cluster-fraction-lower-bound`** guarantees that the fraction of walkers in the outlier clusters is bounded below by a positive, N-uniform constant: $|H_k(\\epsilon)|/k \\ge f_{H,\\text{cluster}}(\\epsilon) > 0$.\n\n**4. Define the Unified Lower Bound:**\nWe can define a single, unified lower bound $f_H(\\epsilon)$ that is valid for all regimes by taking the minimum of the bounds from the two cases:\n\n$$\nf_H(\\epsilon) := \\min(f_O, f_{H,\\text{cluster}}(\\epsilon))\n$$\n\nSince both $f_O$ and $f_{H,\\text{cluster}}(\\epsilon)$ are strictly positive, N-uniform constants, their minimum $f_H(\\epsilon)$ is also a strictly positive, N-uniform constant.\n\n**5. Conclusion:**\nWe have rigorously shown that for any $\\varepsilon > 0$, if the total intra-swarm positional variance $V_{\\text{Var},x}$ is sufficiently large, then at least one swarm `k` is guaranteed to have a large hypocoercive variance, which in turn guarantees that the fraction of alive walkers in its unified high-error set $H_k(\\epsilon)$ is bounded below by the positive, N-uniform constant $f_H(\\epsilon)$. This establishes the direct causal link from the Lyapunov function's positional variance component to the guaranteed existence of a substantial high-error population.",
-      "raw_directive": "2818: \n2819: :::\n2820: :::{prf:proof}\n2821: :label: proof-cor-vvarx-to-high-error-fraction\n2822: \n2823: **Proof.**\n2824: \n2825: This corollary is a direct synthesis of the lemmas established in this chapter.\n2826: \n2827: **1. From Total Positional Variance to Single-Swarm Positional Variance:**\n2828: By **{prf:ref}`lem-V_Varx-implies-variance`** (labeled $lem-V_{\\text{Var}}x-implies-variance$), if the total intra-swarm positional variance is large, $V_{\\text{Var},x} > R^2_{\\text{total\\_var},x}$, then at least one of the two swarms, say swarm `k`, must have a large internal positional variance:\n2829: \n2830: $$\n2831: \\mathrm{Var}_x(S_k) > \\frac{R^2_{\\text{total\\_var},x}}{2}\n2832: $$\n2833: \n2834: We define the threshold $R^2_{\\text{var}} := R^2_{\\text{total\\_var},x} / 2$.\n2835: \n2836: **2. From Positional Variance to Hypocoercive Variance:**\n2837: Since the hypocoercive variance satisfies $\\mathrm{Var}_h(S_k) = \\mathrm{Var}_x(S_k) + \\lambda_v \\mathrm{Var}_v(S_k) \\ge \\mathrm{Var}_x(S_k)$ (as established in the bridging lemma of Section 6.4.2), the condition $\\mathrm{Var}_x(S_k) > R^2_{\\text{var}}$ is sufficient to guarantee that the total hypocoercive variance is also large:\n2838: \n2839: $$\n2840: \\mathrm{Var}_h(S_k) > R^2_{\\text{var}}\n2841: $$\n2842: \n2843: This satisfies the necessary premise for the lemmas governing both regimes of the $\\varepsilon$-dichotomy.\n2844: \n2845: **3. From Hypocoercive Variance to a High-Error Fraction:**\n2846: With the condition $\\mathrm{Var}_h(S_k) > R^2_{\\text{var}}$ met, we can now invoke the results of the $\\varepsilon$-dichotomy analysis:\n2847: \n2848: *   **If the swarm is in the large-$\\varepsilon$ regime** (where $\\varepsilon > D_swarm$): By {prf:ref}`def-unified-high-low-error-sets`, $H_k(\\epsilon) = O_k$ in this regime. **{prf:ref}`lem-outlier-fraction-lower-bound`** guarantees that the fraction of walkers in the global kinematic outlier set is bounded below by a positive, N-uniform constant: $|H_k(\\epsilon)|/k \\ge f_O > 0$.\n2849: \n2850: *   **If the swarm is in the small-$\\varepsilon$ regime** (where $\\varepsilon \\leq D_swarm$): By {prf:ref}`def-unified-high-low-error-sets`, $H_k(\\epsilon) = C_k(\\epsilon)$ (the clustering-based outlier set) in this regime. **{prf:ref}`lem-outlier-cluster-fraction-lower-bound`** guarantees that the fraction of walkers in the outlier clusters is bounded below by a positive, N-uniform constant: $|H_k(\\epsilon)|/k \\ge f_{H,\\text{cluster}}(\\epsilon) > 0$.\n2851: \n2852: **4. Define the Unified Lower Bound:**\n2853: We can define a single, unified lower bound $f_H(\\epsilon)$ that is valid for all regimes by taking the minimum of the bounds from the two cases:\n2854: \n2855: $$\n2856: f_H(\\epsilon) := \\min(f_O, f_{H,\\text{cluster}}(\\epsilon))\n2857: $$\n2858: \n2859: Since both $f_O$ and $f_{H,\\text{cluster}}(\\epsilon)$ are strictly positive, N-uniform constants, their minimum $f_H(\\epsilon)$ is also a strictly positive, N-uniform constant.\n2860: \n2861: **5. Conclusion:**\n2862: We have rigorously shown that for any $\\varepsilon > 0$, if the total intra-swarm positional variance $V_{\\text{Var},x}$ is sufficiently large, then at least one swarm `k` is guaranteed to have a large hypocoercive variance, which in turn guarantees that the fraction of alive walkers in its unified high-error set $H_k(\\epsilon)$ is bounded below by the positive, N-uniform constant $f_H(\\epsilon)$. This establishes the direct causal link from the Lyapunov function's positional variance component to the guaranteed existence of a substantial high-error population.\n2863: ",
+      "content_markdown": ":label: proof-cor-vvarx-to-high-error-fraction\n\n**Proof.**\n\nThis corollary is a direct synthesis of the lemmas established in this chapter.\n\n**1. From Total Positional Variance to Single-Swarm Positional Variance:**\nBy **{prf:ref}`lem-V_Varx-implies-variance`** (labeled $lem-V_{\\text{Var}}x-implies-variance$), if the total intra-swarm positional variance is large, $V_{\\text{Var},x} > R^2_{\\text{total\\_var},x}$, then at least one of the two swarms, say swarm `k`, must have a large internal positional variance:\n\n$$\n\\mathrm{Var}_x(S_k) > \\frac{R^2_{\\text{total\\_var},x}}{2}\n$$\n\nWe define the threshold $R^2_{\\text{var}} := R^2_{\\text{total\\_var},x} / 2$.\n\n**2. From Positional Variance to Hypocoercive Variance:**\nSince the hypocoercive variance satisfies $\\mathrm{Var}_h(S_k) = \\mathrm{Var}_x(S_k) + \\lambda_v \\mathrm{Var}_v(S_k) \\ge \\mathrm{Var}_x(S_k)$ (as established in {prf:ref}`lem-var-x-implies-var-h`), the condition $\\mathrm{Var}_x(S_k) > R^2_{\\text{var}}$ is sufficient to guarantee that the total hypocoercive variance is also large:\n\n$$\n\\mathrm{Var}_h(S_k) > R^2_{\\text{var}}\n$$\n\nThis satisfies the necessary premise for the lemmas governing both regimes of the $\\varepsilon$-dichotomy.\n\n**3. From Hypocoercive Variance to a High-Error Fraction:**\nWith the condition $\\mathrm{Var}_h(S_k) > R^2_{\\text{var}}$ met, we can now invoke the results of the $\\varepsilon$-dichotomy analysis:\n\n*   **If the swarm is in the large-$\\varepsilon$ regime** (where $\\varepsilon > D_swarm$): By {prf:ref}`def-unified-high-low-error-sets`, $H_k(\\epsilon) = O_k$ in this regime. **{prf:ref}`lem-outlier-fraction-lower-bound`** guarantees that the fraction of walkers in the global kinematic outlier set is bounded below by a positive, N-uniform constant: $|H_k(\\epsilon)|/k \\ge f_O > 0$.\n\n*   **If the swarm is in the small-$\\varepsilon$ regime** (where $\\varepsilon \\leq D_swarm$): By {prf:ref}`def-unified-high-low-error-sets`, $H_k(\\epsilon) = C_k(\\epsilon)$ (the clustering-based outlier set) in this regime. **{prf:ref}`lem-outlier-cluster-fraction-lower-bound`** guarantees that the fraction of walkers in the outlier clusters is bounded below by a positive, N-uniform constant: $|H_k(\\epsilon)|/k \\ge f_{H,\\text{cluster}}(\\epsilon) > 0$.\n\n**4. Define the Unified Lower Bound:**\nWe can define a single, unified lower bound $f_H(\\epsilon)$ that is valid for all regimes by taking the minimum of the bounds from the two cases:\n\n$$\nf_H(\\epsilon) := \\min(f_O, f_{H,\\text{cluster}}(\\epsilon))\n$$\n\nSince both $f_O$ and $f_{H,\\text{cluster}}(\\epsilon)$ are strictly positive, N-uniform constants, their minimum $f_H(\\epsilon)$ is also a strictly positive, N-uniform constant.\n\n**5. Conclusion:**\nWe have rigorously shown that for any $\\varepsilon > 0$, if the total intra-swarm positional variance $V_{\\text{Var},x}$ is sufficiently large, then at least one swarm `k` is guaranteed to have a large hypocoercive variance, which in turn guarantees that the fraction of alive walkers in its unified high-error set $H_k(\\epsilon)$ is bounded below by the positive, N-uniform constant $f_H(\\epsilon)$. This establishes the direct causal link from the Lyapunov function's positional variance component to the guaranteed existence of a substantial high-error population.",
+      "raw_directive": "2818: \n2819: :::\n2820: :::{prf:proof}\n2821: :label: proof-cor-vvarx-to-high-error-fraction\n2822: \n2823: **Proof.**\n2824: \n2825: This corollary is a direct synthesis of the lemmas established in this chapter.\n2826: \n2827: **1. From Total Positional Variance to Single-Swarm Positional Variance:**\n2828: By **{prf:ref}`lem-V_Varx-implies-variance`** (labeled $lem-V_{\\text{Var}}x-implies-variance$), if the total intra-swarm positional variance is large, $V_{\\text{Var},x} > R^2_{\\text{total\\_var},x}$, then at least one of the two swarms, say swarm `k`, must have a large internal positional variance:\n2829: \n2830: $$\n2831: \\mathrm{Var}_x(S_k) > \\frac{R^2_{\\text{total\\_var},x}}{2}\n2832: $$\n2833: \n2834: We define the threshold $R^2_{\\text{var}} := R^2_{\\text{total\\_var},x} / 2$.\n2835: \n2836: **2. From Positional Variance to Hypocoercive Variance:**\n2837: Since the hypocoercive variance satisfies $\\mathrm{Var}_h(S_k) = \\mathrm{Var}_x(S_k) + \\lambda_v \\mathrm{Var}_v(S_k) \\ge \\mathrm{Var}_x(S_k)$ (as established in {prf:ref}`lem-var-x-implies-var-h`), the condition $\\mathrm{Var}_x(S_k) > R^2_{\\text{var}}$ is sufficient to guarantee that the total hypocoercive variance is also large:\n2838: \n2839: $$\n2840: \\mathrm{Var}_h(S_k) > R^2_{\\text{var}}\n2841: $$\n2842: \n2843: This satisfies the necessary premise for the lemmas governing both regimes of the $\\varepsilon$-dichotomy.\n2844: \n2845: **3. From Hypocoercive Variance to a High-Error Fraction:**\n2846: With the condition $\\mathrm{Var}_h(S_k) > R^2_{\\text{var}}$ met, we can now invoke the results of the $\\varepsilon$-dichotomy analysis:\n2847: \n2848: *   **If the swarm is in the large-$\\varepsilon$ regime** (where $\\varepsilon > D_swarm$): By {prf:ref}`def-unified-high-low-error-sets`, $H_k(\\epsilon) = O_k$ in this regime. **{prf:ref}`lem-outlier-fraction-lower-bound`** guarantees that the fraction of walkers in the global kinematic outlier set is bounded below by a positive, N-uniform constant: $|H_k(\\epsilon)|/k \\ge f_O > 0$.\n2849: \n2850: *   **If the swarm is in the small-$\\varepsilon$ regime** (where $\\varepsilon \\leq D_swarm$): By {prf:ref}`def-unified-high-low-error-sets`, $H_k(\\epsilon) = C_k(\\epsilon)$ (the clustering-based outlier set) in this regime. **{prf:ref}`lem-outlier-cluster-fraction-lower-bound`** guarantees that the fraction of walkers in the outlier clusters is bounded below by a positive, N-uniform constant: $|H_k(\\epsilon)|/k \\ge f_{H,\\text{cluster}}(\\epsilon) > 0$.\n2851: \n2852: **4. Define the Unified Lower Bound:**\n2853: We can define a single, unified lower bound $f_H(\\epsilon)$ that is valid for all regimes by taking the minimum of the bounds from the two cases:\n2854: \n2855: $$\n2856: f_H(\\epsilon) := \\min(f_O, f_{H,\\text{cluster}}(\\epsilon))\n2857: $$\n2858: \n2859: Since both $f_O$ and $f_{H,\\text{cluster}}(\\epsilon)$ are strictly positive, N-uniform constants, their minimum $f_H(\\epsilon)$ is also a strictly positive, N-uniform constant.\n2860: \n2861: **5. Conclusion:**\n2862: We have rigorously shown that for any $\\varepsilon > 0$, if the total intra-swarm positional variance $V_{\\text{Var},x}$ is sufficiently large, then at least one swarm `k` is guaranteed to have a large hypocoercive variance, which in turn guarantees that the fraction of alive walkers in its unified high-error set $H_k(\\epsilon)$ is bounded below by the positive, N-uniform constant $f_H(\\epsilon)$. This establishes the direct causal link from the Lyapunov function's positional variance component to the guaranteed existence of a substantial high-error population.\n2863: ",
       "strategy_summary": "The proof chains implications from total positional variance to individual swarm variance, then to hypocoercive variance, and finally applies regime-specific lemmas from the epsilon-dichotomy to establish a uniform lower bound on the high-error fraction in at least one swarm.",
       "conclusion": {
         "text": "We have rigorously shown that for any \u03b5 > 0, if the total intra-swarm positional variance V_{Var,x} is sufficiently large, then at least one swarm k is guaranteed to have a large hypocoercive variance, which in turn guarantees that the fraction of alive walkers in its unified high-error set H_k(\u03b5) is bounded below by the positive, N-uniform constant f_H(\u03b5). This establishes the direct causal link from the Lyapunov function's positional variance component to the guaranteed existence of a substantial high-error population.",
@@ -208,6 +208,7 @@
       ],
       "references": [
         "lem-V_Varx-implies-variance",
+        "lem-var-x-implies-var-h",
         "def-unified-high-low-error-sets",
         "lem-outlier-fraction-lower-bound",
         "lem-outlier-cluster-fraction-lower-bound"
@@ -294,7 +295,7 @@
         "chapter_file": "chapter_6.json",
         "section_id": "## 6. The Geometry of Error: From System Error to a Guaranteed Geometric Structure"
       },
-      "generated_at": "2025-11-09T10:55:47.626397+00:00",
+      "generated_at": "2025-11-10T12:23:04.016510+00:00",
       "alt_labels": []
     },
     "tags": [
@@ -319,7 +320,13 @@
         2807
       ]
     },
-    "references": [],
+    "references": [
+      "lem-V_Varx-implies-variance",
+      "lem-var-x-implies-var-h",
+      "def-unified-high-low-error-sets",
+      "lem-outlier-fraction-lower-bound",
+      "lem-outlier-cluster-fraction-lower-bound"
+    ],
     "metadata": {
       "label": "cor-vvarx-to-high-error-fraction"
     },
@@ -330,7 +337,7 @@
       "chapter_file": "chapter_6.json",
       "section_id": "## 6. The Geometry of Error: From System Error to a Guaranteed Geometric Structure"
     },
-    "generated_at": "2025-11-09T10:55:47.623536+00:00",
+    "generated_at": "2025-11-10T12:23:04.013158+00:00",
     "alt_labels": []
   },
   {
@@ -519,7 +526,7 @@
         "chapter_file": "chapter_8.json",
         "section_id": "## 8. The N-Uniform Quantitative Keystone Lemma"
       },
-      "generated_at": "2025-11-09T10:55:47.626397+00:00",
+      "generated_at": "2025-11-10T12:23:04.016510+00:00",
       "alt_labels": []
     },
     "tags": [
@@ -531,8 +538,8 @@
       "walker",
       "corollary"
     ],
-    "content_markdown": ":label: cor-cloning-pressure-target-set\n\nFor any walker $i$ in the **critical target set**, $I_{\\text{target}} = I_{11} \\cap U_k \\cap H_k(\\epsilon)$, its total cloning probability in the high-variance swarm $k$ is also bounded below by the same N-uniform constant:\n\n$$\np_{k,i} \\ge p_u(\\epsilon) > 0",
-    "raw_directive": "5007: This powerful lemma guarantees that every walker identified as \"unfit\" is under significant, quantifiable pressure to be cloned. We can now extend this guarantee directly to our critical target population.\n5008: \n5009: :::{prf:corollary} Cloning Pressure on the Target Set\n5010: :label: cor-cloning-pressure-target-set\n5011: \n5012: For any walker $i$ in the **critical target set**, $I_{\\text{target}} = I_{11} \\cap U_k \\cap H_k(\\epsilon)$, its total cloning probability in the high-variance swarm $k$ is also bounded below by the same N-uniform constant:\n5013: \n5014: $$\n5015: p_{k,i} \\ge p_u(\\epsilon) > 0\n5016: $$",
+    "content_markdown": ":label: cor-cloning-pressure-target-set\n\nFor any walker $i$ in the **critical target set** (see {prf:ref}`def-critical-target-set`), $I_{\\text{target}} = I_{11} \\cap U_k \\cap H_k(\\epsilon)$, its total cloning probability in the high-variance swarm $k$ is also bounded below by the same N-uniform constant:\n\n$$\np_{k,i} \\ge p_u(\\epsilon) > 0",
+    "raw_directive": "5007: This powerful lemma guarantees that every walker identified as \"unfit\" is under significant, quantifiable pressure to be cloned. We can now extend this guarantee directly to our critical target population.\n5008: \n5009: :::{prf:corollary} Cloning Pressure on the Target Set\n5010: :label: cor-cloning-pressure-target-set\n5011: \n5012: For any walker $i$ in the **critical target set** (see {prf:ref}`def-critical-target-set`), $I_{\\text{target}} = I_{11} \\cap U_k \\cap H_k(\\epsilon)$, its total cloning probability in the high-variance swarm $k$ is also bounded below by the same N-uniform constant:\n5013: \n5014: $$\n5015: p_{k,i} \\ge p_u(\\epsilon) > 0\n5016: $$",
     "document_id": "03_cloning",
     "section": "## 8. The N-Uniform Quantitative Keystone Lemma",
     "span": {
@@ -544,7 +551,10 @@
         5008
       ]
     },
-    "references": [],
+    "references": [
+      "def-critical-target-set",
+      "lem-mean-companion-fitness-gap"
+    ],
     "metadata": {
       "label": "cor-cloning-pressure-target-set"
     },
@@ -555,7 +565,7 @@
       "chapter_file": "chapter_8.json",
       "section_id": "## 8. The N-Uniform Quantitative Keystone Lemma"
     },
-    "generated_at": "2025-11-09T10:55:47.623536+00:00",
+    "generated_at": "2025-11-10T12:23:04.013158+00:00",
     "alt_labels": []
   },
   {
@@ -675,7 +685,7 @@
       "proof_type": "reference",
       "proof_status": "sketch",
       "content_markdown": ":::{prf:proof}\n:label: proof-cor-structural-error-contraction\n**Proof.**\n\nBy {prf:ref}`lem-sx-implies-variance`:\n\n$$\nV_{\\text{struct}} \\leq 2(\\text{Var}_1(x) + \\text{Var}_2(x))\n$$\n\nwhere $\\text{Var}_k(x) = \\frac{1}{k_{\\text{alive}}} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2$.\n\nThe contraction of $V_{\\text{Var},x}$ (which is proportional to the sum of these variances) immediately implies contraction of $V_{\\text{struct}}$.\n\nThe constant $\\kappa_{\\text{struct}}$ depends on $\\kappa_x$ and the relationship between $N$-normalized and $k_{\\text{alive}}$-normalized variances.",
-      "raw_directive": "6867: :::\n6868: \n6869: :::{prf:proof}\n6870: :label: proof-cor-structural-error-contraction\n6871: **Proof.**\n6872: \n6873: By {prf:ref}`lem-sx-implies-variance`:\n6874: \n6875: $$\n6876: V_{\\text{struct}} \\leq 2(\\text{Var}_1(x) + \\text{Var}_2(x))\n6877: $$\n6878: \n6879: where $\\text{Var}_k(x) = \\frac{1}{k_{\\text{alive}}} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2$.\n6880: \n6881: The contraction of $V_{\\text{Var},x}$ (which is proportional to the sum of these variances) immediately implies contraction of $V_{\\text{struct}}$.\n6882: \n6883: The constant $\\kappa_{\\text{struct}}$ depends on $\\kappa_x$ and the relationship between $N$-normalized and $k_{\\text{alive}}$-normalized variances.\n6884: ",
+      "raw_directive": "6871: :::\n6872: \n6873: :::{prf:proof}\n6874: :label: proof-cor-structural-error-contraction\n6875: **Proof.**\n6876: \n6877: By {prf:ref}`lem-sx-implies-variance`:\n6878: \n6879: $$\n6880: V_{\\text{struct}} \\leq 2(\\text{Var}_1(x) + \\text{Var}_2(x))\n6881: $$\n6882: \n6883: where $\\text{Var}_k(x) = \\frac{1}{k_{\\text{alive}}} \\sum_{i \\in \\mathcal{A}(S_k)} \\|\\delta_{x,k,i}\\|^2$.\n6884: \n6885: The contraction of $V_{\\text{Var},x}$ (which is proportional to the sum of these variances) immediately implies contraction of $V_{\\text{struct}}$.\n6886: \n6887: The constant $\\kappa_{\\text{struct}}$ depends on $\\kappa_x$ and the relationship between $N$-normalized and $k_{\\text{alive}}$-normalized variances.\n6888: ",
       "strategy_summary": "The proof references a lemma to bound the structural variance by the sum of individual variances and argues that contraction in the individual variances directly implies contraction in the structural variance, with the contraction constant depending on related parameters.",
       "conclusion": {
         "text": "The structural variance V_struct contracts with constant \u03ba_struct depending on \u03ba_x and normalization relationships.",
@@ -774,12 +784,12 @@
       "document_id": "03_cloning",
       "section": "## 10.5. Implications for Structural Error",
       "span": {
-        "start_line": 6867,
-        "end_line": 6884,
-        "content_start": 6869,
-        "content_end": 6883,
+        "start_line": 6871,
+        "end_line": 6888,
+        "content_start": 6873,
+        "content_end": 6887,
         "header_lines": [
-          6868
+          6872
         ]
       },
       "metadata": {
@@ -792,7 +802,7 @@
         "chapter_file": "chapter_19.json",
         "section_id": "## 10.5. Implications for Structural Error"
       },
-      "generated_at": "2025-11-09T10:55:47.626397+00:00",
+      "generated_at": "2025-11-10T12:23:04.016510+00:00",
       "alt_labels": []
     },
     "tags": [
@@ -803,20 +813,21 @@
       "expectation"
     ],
     "content_markdown": ":label: cor-structural-error-contraction\n\nUnder the same conditions as {prf:ref}`thm-positional-variance-contraction`, the structural error also contracts:\n\n$$\n\\mathbb{E}_{\\text{clone}}[V_{\\text{struct}}(S'_1, S'_2)] \\leq (1 - \\kappa_{\\text{struct}}) V_{\\text{struct}}(S_1, S_2) + C_{\\text{struct}}\n$$",
-    "raw_directive": "6855: The positional variance contraction has immediate consequences for the structural error $V_{\\text{struct}}$.\n6856: \n6857: :::{prf:corollary} Structural Error Contraction\n6858: :label: cor-structural-error-contraction\n6859: \n6860: Under the same conditions as {prf:ref}`thm-positional-variance-contraction`, the structural error also contracts:\n6861: \n6862: $$\n6863: \\mathbb{E}_{\\text{clone}}[V_{\\text{struct}}(S'_1, S'_2)] \\leq (1 - \\kappa_{\\text{struct}}) V_{\\text{struct}}(S_1, S_2) + C_{\\text{struct}}\n6864: $$\n6865: ",
+    "raw_directive": "6859: The positional variance contraction has immediate consequences for the structural error $V_{\\text{struct}}$.\n6860: \n6861: :::{prf:corollary} Structural Error Contraction\n6862: :label: cor-structural-error-contraction\n6863: \n6864: Under the same conditions as {prf:ref}`thm-positional-variance-contraction`, the structural error also contracts:\n6865: \n6866: $$\n6867: \\mathbb{E}_{\\text{clone}}[V_{\\text{struct}}(S'_1, S'_2)] \\leq (1 - \\kappa_{\\text{struct}}) V_{\\text{struct}}(S_1, S_2) + C_{\\text{struct}}\n6868: $$\n6869: ",
     "document_id": "03_cloning",
     "section": "## 10.5. Implications for Structural Error",
     "span": {
-      "start_line": 6855,
-      "end_line": 6865,
-      "content_start": 6858,
-      "content_end": 6864,
+      "start_line": 6859,
+      "end_line": 6869,
+      "content_start": 6862,
+      "content_end": 6868,
       "header_lines": [
-        6856
+        6860
       ]
     },
     "references": [
-      "thm-positional-variance-contraction"
+      "thm-positional-variance-contraction",
+      "lem-sx-implies-variance"
     ],
     "metadata": {
       "label": "cor-structural-error-contraction"
@@ -828,7 +839,7 @@
       "chapter_file": "chapter_19.json",
       "section_id": "## 10.5. Implications for Structural Error"
     },
-    "generated_at": "2025-11-09T10:55:47.623536+00:00",
+    "generated_at": "2025-11-10T12:23:04.013158+00:00",
     "alt_labels": []
   },
   {
@@ -926,7 +937,7 @@
       "proof_type": "direct",
       "proof_status": "complete",
       "content_markdown": ":::{prf:proof}\n:label: proof-cor-bounded-boundary-exposure\n**Proof.**\n\nFrom the Foster-Lyapunov drift condition:\n\n$$\n\\mathbb{E}[W_b(S_{t+1})] \\leq (1 - \\kappa_b) W_b(S_t) + C_b\n$$\n\nTaking expectations and iterating:\n\n$$\n\\mathbb{E}[W_b(S_t)] \\leq (1 - \\kappa_b)^t W_b(S_0) + C_b \\sum_{j=0}^{t-1} (1 - \\kappa_b)^j\n$$\n\nAs $t \\to \\infty$, the geometric series converges:\n\n$$\n\\sum_{j=0}^{\\infty} (1 - \\kappa_b)^j = \\frac{1}{\\kappa_b}\n$$\n\nTherefore:\n\n$$\n\\limsup_{t \\to \\infty} \\mathbb{E}[W_b(S_t)] \\leq \\frac{C_b}{\\kappa_b}\n$$",
-      "raw_directive": "7564: :::\n7565: \n7566: :::{prf:proof}\n7567: :label: proof-cor-bounded-boundary-exposure\n7568: **Proof.**\n7569: \n7570: From the Foster-Lyapunov drift condition:\n7571: \n7572: $$\n7573: \\mathbb{E}[W_b(S_{t+1})] \\leq (1 - \\kappa_b) W_b(S_t) + C_b\n7574: $$\n7575: \n7576: Taking expectations and iterating:\n7577: \n7578: $$\n7579: \\mathbb{E}[W_b(S_t)] \\leq (1 - \\kappa_b)^t W_b(S_0) + C_b \\sum_{j=0}^{t-1} (1 - \\kappa_b)^j\n7580: $$\n7581: \n7582: As $t \\to \\infty$, the geometric series converges:\n7583: \n7584: $$\n7585: \\sum_{j=0}^{\\infty} (1 - \\kappa_b)^j = \\frac{1}{\\kappa_b}\n7586: $$\n7587: \n7588: Therefore:\n7589: \n7590: $$\n7591: \\limsup_{t \\to \\infty} \\mathbb{E}[W_b(S_t)] \\leq \\frac{C_b}{\\kappa_b}\n7592: $$\n7593: ",
+      "raw_directive": "7572: :::\n7573: \n7574: :::{prf:proof}\n7575: :label: proof-cor-bounded-boundary-exposure\n7576: **Proof.**\n7577: \n7578: From the Foster-Lyapunov drift condition:\n7579: \n7580: $$\n7581: \\mathbb{E}[W_b(S_{t+1})] \\leq (1 - \\kappa_b) W_b(S_t) + C_b\n7582: $$\n7583: \n7584: Taking expectations and iterating:\n7585: \n7586: $$\n7587: \\mathbb{E}[W_b(S_t)] \\leq (1 - \\kappa_b)^t W_b(S_0) + C_b \\sum_{j=0}^{t-1} (1 - \\kappa_b)^j\n7588: $$\n7589: \n7590: As $t \\to \\infty$, the geometric series converges:\n7591: \n7592: $$\n7593: \\sum_{j=0}^{\\infty} (1 - \\kappa_b)^j = \\frac{1}{\\kappa_b}\n7594: $$\n7595: \n7596: Therefore:\n7597: \n7598: $$\n7599: \\limsup_{t \\to \\infty} \\mathbb{E}[W_b(S_t)] \\leq \\frac{C_b}{\\kappa_b}\n7600: $$\n7601: ",
       "strategy_summary": "The proof iterates the Foster-Lyapunov drift inequality to express the expected Lyapunov function value as a geometric decay term plus a summed constant, then takes the limit as time goes to infinity, where the decay vanishes and the infinite geometric series sums to yield the desired bound.",
       "conclusion": {
         "text": "The limsup of the expected Lyapunov function value is bounded by C_b / kappa_b.",
@@ -1065,12 +1076,12 @@
       "document_id": "03_cloning",
       "section": "## 11.5. Implications for Extinction Probability",
       "span": {
-        "start_line": 7564,
-        "end_line": 7593,
-        "content_start": 7566,
-        "content_end": 7592,
+        "start_line": 7572,
+        "end_line": 7601,
+        "content_start": 7574,
+        "content_end": 7600,
         "header_lines": [
-          7565
+          7573
         ]
       },
       "metadata": {
@@ -1083,7 +1094,7 @@
         "chapter_file": "chapter_26.json",
         "section_id": "## 11.5. Implications for Extinction Probability"
       },
-      "generated_at": "2025-11-09T10:55:47.626397+00:00",
+      "generated_at": "2025-11-10T12:23:04.016510+00:00",
       "alt_labels": []
     },
     "tags": [
@@ -1095,16 +1106,16 @@
       "long-term-bound"
     ],
     "content_markdown": ":label: cor-bounded-boundary-exposure\n\nUnder the drift inequality from {prf:ref}`thm-boundary-potential-contraction`, the long-term boundary exposure is bounded:\n\n$$\n\\limsup_{t \\to \\infty} \\mathbb{E}[W_b(S_t)] \\leq \\frac{C_b}{\\kappa_b}\n$$",
-    "raw_directive": "7552: The boundary potential contraction has important consequences for swarm survival.\n7553: \n7554: :::{prf:corollary} Bounded Boundary Exposure in Equilibrium\n7555: :label: cor-bounded-boundary-exposure\n7556: \n7557: Under the drift inequality from {prf:ref}`thm-boundary-potential-contraction`, the long-term boundary exposure is bounded:\n7558: \n7559: $$\n7560: \\limsup_{t \\to \\infty} \\mathbb{E}[W_b(S_t)] \\leq \\frac{C_b}{\\kappa_b}\n7561: $$\n7562: ",
+    "raw_directive": "7560: The boundary potential contraction has important consequences for swarm survival.\n7561: \n7562: :::{prf:corollary} Bounded Boundary Exposure in Equilibrium\n7563: :label: cor-bounded-boundary-exposure\n7564: \n7565: Under the drift inequality from {prf:ref}`thm-boundary-potential-contraction`, the long-term boundary exposure is bounded:\n7566: \n7567: $$\n7568: \\limsup_{t \\to \\infty} \\mathbb{E}[W_b(S_t)] \\leq \\frac{C_b}{\\kappa_b}\n7569: $$\n7570: ",
     "document_id": "03_cloning",
     "section": "## 11.5. Implications for Extinction Probability",
     "span": {
-      "start_line": 7552,
-      "end_line": 7562,
-      "content_start": 7555,
-      "content_end": 7561,
+      "start_line": 7560,
+      "end_line": 7570,
+      "content_start": 7563,
+      "content_end": 7569,
       "header_lines": [
-        7553
+        7561
       ]
     },
     "references": [
@@ -1120,7 +1131,7 @@
       "chapter_file": "chapter_26.json",
       "section_id": "## 11.5. Implications for Extinction Probability"
     },
-    "generated_at": "2025-11-09T10:55:47.623536+00:00",
+    "generated_at": "2025-11-10T12:23:04.013158+00:00",
     "alt_labels": []
   },
   {
@@ -1214,7 +1225,7 @@
       "proof_type": "probabilistic",
       "proof_status": "complete",
       "content_markdown": ":::{prf:proof}\n:label: proof-cor-extinction-suppression\n**Proof.**\n\nWe establish exponential suppression of extinction probability through a concentration inequality argument.\n\n**Step 1: Setup and Definitions.**\n\nConsider a swarm in the quasi-stationary regime where $W_b \\leq C_b/\\kappa_b$. Recall the barrier function $\\varphi_{\\text{barrier}}(x)$ has the property:\n\n$$\n\\varphi_{\\text{barrier}}(x) \\to \\infty \\quad \\text{as} \\quad x \\to \\partial \\mathcal{X}_{\\text{valid}}\n$$\n\nDefine $\\mathcal{X}_{\\text{extinct}} := \\{x \\in \\mathcal{X}_{\\text{valid}} : d(x, \\partial \\mathcal{X}_{\\text{valid}}) < d_{\\text{extinct}}\\}$ as the boundary layer where walkers are marked as dead (typically $d_{\\text{extinct}} = \\delta$ is the cloning jitter radius).\n\n**Step 2: Barrier Value in the Extinction Zone.**\n\nSince $\\varphi_{\\text{barrier}}$ grows to infinity at the boundary and is continuous, there exists a minimum barrier value $\\varphi_{\\min} > 0$ in the extinction zone:\n\n$$\n\\varphi_{\\min} := \\inf_{x \\in \\mathcal{X}_{\\text{extinct}}} \\varphi_{\\text{barrier}}(x) > 0\n$$\n\nThis constant depends only on the geometry of $\\mathcal{X}_{\\text{valid}}$ and the barrier function construction.\n\n**Step 3: Walker Distribution from Bounded $W_b$.**\n\nIf the average barrier value satisfies:\n\n$$\nW_b = \\frac{1}{N} \\sum_{i=1}^N \\varphi_{\\text{barrier}}(x_i) \\leq \\frac{C_b}{\\kappa_b}\n$$\n\nthen the number of walkers in the extinction zone can be bounded. Let $N_{\\text{ext}}$ denote the number of walkers with $x_i \\in \\mathcal{X}_{\\text{extinct}}$. Then:\n\n$$\nN_{\\text{ext}} \\cdot \\varphi_{\\min} \\leq \\sum_{i=1}^N \\varphi_{\\text{barrier}}(x_i) = N \\cdot W_b \\leq N \\cdot \\frac{C_b}{\\kappa_b}\n$$\n\nTherefore:\n\n$$\nN_{\\text{ext}} \\leq N \\cdot \\frac{C_b}{\\kappa_b \\varphi_{\\min}}\n$$\n\n**Step 4: Extinction Requires All Walkers to Cross.**\n\nFor total extinction in one step, all $N$ walkers must transition from their current positions into $\\mathcal{X}_{\\text{extinct}}$ simultaneously. The number of walkers that must make this crossing is at least:\n\n$$\nN_{\\text{cross}} := N - N_{\\text{ext}} \\geq N \\left(1 - \\frac{C_b}{\\kappa_b \\varphi_{\\min}}\\right) =: N \\cdot f_{\\text{safe}}\n$$\n\nwhere $f_{\\text{safe}} \\in (0, 1)$ is the fraction of walkers in the safe interior (bounded away from zero for sufficiently large $\\varphi_{\\min}$).\n\n**Step 5: Concentration Inequality for Boundary Crossing.**\n\nEach walker's position update includes bounded perturbation noise (from cloning jitter or kinetic diffusion) with characteristic scale $\\sigma_{\\text{noise}}$. For a walker at distance $d > d_{\\text{extinct}} + 2\\sigma_{\\text{noise}}$ from the boundary to cross into the extinction zone requires a deviation of at least $\\Delta d := d - d_{\\text{extinct}} > 2\\sigma_{\\text{noise}}$.\n\nBy Hoeffding's inequality (or Gaussian tail bounds if using Gaussian noise), the probability that any single safe walker crosses the boundary in one step is:\n\n$$\np_{\\text{cross}} \\leq \\exp\\left(-\\frac{(\\Delta d)^2}{2\\sigma_{\\text{noise}}^2}\\right)\n$$\n\n**Step 6: Union Bound for Total Extinction.**\n\nFor all $N \\cdot f_{\\text{safe}}$ safe walkers to simultaneously cross requires:\n\n$$\nP(\\text{extinction}) \\leq p_{\\text{cross}}^{N \\cdot f_{\\text{safe}}} = \\exp\\left(-N \\cdot f_{\\text{safe}} \\cdot \\frac{(\\Delta d)^2}{2\\sigma_{\\text{noise}}^2}\\right)\n$$\n\nDefining the rate constant:\n\n$$\nc_{\\text{extinct}} := f_{\\text{safe}} \\cdot \\frac{(\\Delta d)^2}{2\\sigma_{\\text{noise}}^2} > 0\n$$\n\nwe obtain:\n\n$$\nP(\\text{extinction}) \\leq \\exp(-N \\cdot c_{\\text{extinct}})\n$$\n\n**Step 7: Parameter Dependence.**\n\nThe rate constant $c_{\\text{extinct}}$ is bounded below by:\n\n$$\nc_{\\text{extinct}} \\geq \\left(1 - \\frac{C_b}{\\kappa_b \\varphi_{\\min}}\\right) \\cdot \\frac{d_{\\text{safe}}^2}{2\\sigma_{\\text{noise}}^2}\n$$\n\nwhere $d_{\\text{safe}}$ is the typical distance from the safe interior to the extinction zone. This remains strictly positive when $C_b/(\\kappa_b \\varphi_{\\min}) < 1$, which is guaranteed by the equilibrium bound.",
-      "raw_directive": "7607: :::\n7608: \n7609: :::{prf:proof}\n7610: :label: proof-cor-extinction-suppression\n7611: **Proof.**\n7612: \n7613: We establish exponential suppression of extinction probability through a concentration inequality argument.\n7614: \n7615: **Step 1: Setup and Definitions.**\n7616: \n7617: Consider a swarm in the quasi-stationary regime where $W_b \\leq C_b/\\kappa_b$. Recall the barrier function $\\varphi_{\\text{barrier}}(x)$ has the property:\n7618: \n7619: $$\n7620: \\varphi_{\\text{barrier}}(x) \\to \\infty \\quad \\text{as} \\quad x \\to \\partial \\mathcal{X}_{\\text{valid}}\n7621: $$\n7622: \n7623: Define $\\mathcal{X}_{\\text{extinct}} := \\{x \\in \\mathcal{X}_{\\text{valid}} : d(x, \\partial \\mathcal{X}_{\\text{valid}}) < d_{\\text{extinct}}\\}$ as the boundary layer where walkers are marked as dead (typically $d_{\\text{extinct}} = \\delta$ is the cloning jitter radius).\n7624: \n7625: **Step 2: Barrier Value in the Extinction Zone.**\n7626: \n7627: Since $\\varphi_{\\text{barrier}}$ grows to infinity at the boundary and is continuous, there exists a minimum barrier value $\\varphi_{\\min} > 0$ in the extinction zone:\n7628: \n7629: $$\n7630: \\varphi_{\\min} := \\inf_{x \\in \\mathcal{X}_{\\text{extinct}}} \\varphi_{\\text{barrier}}(x) > 0\n7631: $$\n7632: \n7633: This constant depends only on the geometry of $\\mathcal{X}_{\\text{valid}}$ and the barrier function construction.\n7634: \n7635: **Step 3: Walker Distribution from Bounded $W_b$.**\n7636: \n7637: If the average barrier value satisfies:\n7638: \n7639: $$\n7640: W_b = \\frac{1}{N} \\sum_{i=1}^N \\varphi_{\\text{barrier}}(x_i) \\leq \\frac{C_b}{\\kappa_b}\n7641: $$\n7642: \n7643: then the number of walkers in the extinction zone can be bounded. Let $N_{\\text{ext}}$ denote the number of walkers with $x_i \\in \\mathcal{X}_{\\text{extinct}}$. Then:\n7644: \n7645: $$\n7646: N_{\\text{ext}} \\cdot \\varphi_{\\min} \\leq \\sum_{i=1}^N \\varphi_{\\text{barrier}}(x_i) = N \\cdot W_b \\leq N \\cdot \\frac{C_b}{\\kappa_b}\n7647: $$\n7648: \n7649: Therefore:\n7650: \n7651: $$\n7652: N_{\\text{ext}} \\leq N \\cdot \\frac{C_b}{\\kappa_b \\varphi_{\\min}}\n7653: $$\n7654: \n7655: **Step 4: Extinction Requires All Walkers to Cross.**\n7656: \n7657: For total extinction in one step, all $N$ walkers must transition from their current positions into $\\mathcal{X}_{\\text{extinct}}$ simultaneously. The number of walkers that must make this crossing is at least:\n7658: \n7659: $$\n7660: N_{\\text{cross}} := N - N_{\\text{ext}} \\geq N \\left(1 - \\frac{C_b}{\\kappa_b \\varphi_{\\min}}\\right) =: N \\cdot f_{\\text{safe}}\n7661: $$\n7662: \n7663: where $f_{\\text{safe}} \\in (0, 1)$ is the fraction of walkers in the safe interior (bounded away from zero for sufficiently large $\\varphi_{\\min}$).\n7664: \n7665: **Step 5: Concentration Inequality for Boundary Crossing.**\n7666: \n7667: Each walker's position update includes bounded perturbation noise (from cloning jitter or kinetic diffusion) with characteristic scale $\\sigma_{\\text{noise}}$. For a walker at distance $d > d_{\\text{extinct}} + 2\\sigma_{\\text{noise}}$ from the boundary to cross into the extinction zone requires a deviation of at least $\\Delta d := d - d_{\\text{extinct}} > 2\\sigma_{\\text{noise}}$.\n7668: \n7669: By Hoeffding's inequality (or Gaussian tail bounds if using Gaussian noise), the probability that any single safe walker crosses the boundary in one step is:\n7670: \n7671: $$\n7672: p_{\\text{cross}} \\leq \\exp\\left(-\\frac{(\\Delta d)^2}{2\\sigma_{\\text{noise}}^2}\\right)\n7673: $$\n7674: \n7675: **Step 6: Union Bound for Total Extinction.**\n7676: \n7677: For all $N \\cdot f_{\\text{safe}}$ safe walkers to simultaneously cross requires:\n7678: \n7679: $$\n7680: P(\\text{extinction}) \\leq p_{\\text{cross}}^{N \\cdot f_{\\text{safe}}} = \\exp\\left(-N \\cdot f_{\\text{safe}} \\cdot \\frac{(\\Delta d)^2}{2\\sigma_{\\text{noise}}^2}\\right)\n7681: $$\n7682: \n7683: Defining the rate constant:\n7684: \n7685: $$\n7686: c_{\\text{extinct}} := f_{\\text{safe}} \\cdot \\frac{(\\Delta d)^2}{2\\sigma_{\\text{noise}}^2} > 0\n7687: $$\n7688: \n7689: we obtain:\n7690: \n7691: $$\n7692: P(\\text{extinction}) \\leq \\exp(-N \\cdot c_{\\text{extinct}})\n7693: $$\n7694: \n7695: **Step 7: Parameter Dependence.**\n7696: \n7697: The rate constant $c_{\\text{extinct}}$ is bounded below by:\n7698: \n7699: $$\n7700: c_{\\text{extinct}} \\geq \\left(1 - \\frac{C_b}{\\kappa_b \\varphi_{\\min}}\\right) \\cdot \\frac{d_{\\text{safe}}^2}{2\\sigma_{\\text{noise}}^2}\n7701: $$\n7702: \n7703: where $d_{\\text{safe}}$ is the typical distance from the safe interior to the extinction zone. This remains strictly positive when $C_b/(\\kappa_b \\varphi_{\\min}) < 1$, which is guaranteed by the equilibrium bound.\n7704: ",
+      "raw_directive": "7615: :::\n7616: \n7617: :::{prf:proof}\n7618: :label: proof-cor-extinction-suppression\n7619: **Proof.**\n7620: \n7621: We establish exponential suppression of extinction probability through a concentration inequality argument.\n7622: \n7623: **Step 1: Setup and Definitions.**\n7624: \n7625: Consider a swarm in the quasi-stationary regime where $W_b \\leq C_b/\\kappa_b$. Recall the barrier function $\\varphi_{\\text{barrier}}(x)$ has the property:\n7626: \n7627: $$\n7628: \\varphi_{\\text{barrier}}(x) \\to \\infty \\quad \\text{as} \\quad x \\to \\partial \\mathcal{X}_{\\text{valid}}\n7629: $$\n7630: \n7631: Define $\\mathcal{X}_{\\text{extinct}} := \\{x \\in \\mathcal{X}_{\\text{valid}} : d(x, \\partial \\mathcal{X}_{\\text{valid}}) < d_{\\text{extinct}}\\}$ as the boundary layer where walkers are marked as dead (typically $d_{\\text{extinct}} = \\delta$ is the cloning jitter radius).\n7632: \n7633: **Step 2: Barrier Value in the Extinction Zone.**\n7634: \n7635: Since $\\varphi_{\\text{barrier}}$ grows to infinity at the boundary and is continuous, there exists a minimum barrier value $\\varphi_{\\min} > 0$ in the extinction zone:\n7636: \n7637: $$\n7638: \\varphi_{\\min} := \\inf_{x \\in \\mathcal{X}_{\\text{extinct}}} \\varphi_{\\text{barrier}}(x) > 0\n7639: $$\n7640: \n7641: This constant depends only on the geometry of $\\mathcal{X}_{\\text{valid}}$ and the barrier function construction.\n7642: \n7643: **Step 3: Walker Distribution from Bounded $W_b$.**\n7644: \n7645: If the average barrier value satisfies:\n7646: \n7647: $$\n7648: W_b = \\frac{1}{N} \\sum_{i=1}^N \\varphi_{\\text{barrier}}(x_i) \\leq \\frac{C_b}{\\kappa_b}\n7649: $$\n7650: \n7651: then the number of walkers in the extinction zone can be bounded. Let $N_{\\text{ext}}$ denote the number of walkers with $x_i \\in \\mathcal{X}_{\\text{extinct}}$. Then:\n7652: \n7653: $$\n7654: N_{\\text{ext}} \\cdot \\varphi_{\\min} \\leq \\sum_{i=1}^N \\varphi_{\\text{barrier}}(x_i) = N \\cdot W_b \\leq N \\cdot \\frac{C_b}{\\kappa_b}\n7655: $$\n7656: \n7657: Therefore:\n7658: \n7659: $$\n7660: N_{\\text{ext}} \\leq N \\cdot \\frac{C_b}{\\kappa_b \\varphi_{\\min}}\n7661: $$\n7662: \n7663: **Step 4: Extinction Requires All Walkers to Cross.**\n7664: \n7665: For total extinction in one step, all $N$ walkers must transition from their current positions into $\\mathcal{X}_{\\text{extinct}}$ simultaneously. The number of walkers that must make this crossing is at least:\n7666: \n7667: $$\n7668: N_{\\text{cross}} := N - N_{\\text{ext}} \\geq N \\left(1 - \\frac{C_b}{\\kappa_b \\varphi_{\\min}}\\right) =: N \\cdot f_{\\text{safe}}\n7669: $$\n7670: \n7671: where $f_{\\text{safe}} \\in (0, 1)$ is the fraction of walkers in the safe interior (bounded away from zero for sufficiently large $\\varphi_{\\min}$).\n7672: \n7673: **Step 5: Concentration Inequality for Boundary Crossing.**\n7674: \n7675: Each walker's position update includes bounded perturbation noise (from cloning jitter or kinetic diffusion) with characteristic scale $\\sigma_{\\text{noise}}$. For a walker at distance $d > d_{\\text{extinct}} + 2\\sigma_{\\text{noise}}$ from the boundary to cross into the extinction zone requires a deviation of at least $\\Delta d := d - d_{\\text{extinct}} > 2\\sigma_{\\text{noise}}$.\n7676: \n7677: By Hoeffding's inequality (or Gaussian tail bounds if using Gaussian noise), the probability that any single safe walker crosses the boundary in one step is:\n7678: \n7679: $$\n7680: p_{\\text{cross}} \\leq \\exp\\left(-\\frac{(\\Delta d)^2}{2\\sigma_{\\text{noise}}^2}\\right)\n7681: $$\n7682: \n7683: **Step 6: Union Bound for Total Extinction.**\n7684: \n7685: For all $N \\cdot f_{\\text{safe}}$ safe walkers to simultaneously cross requires:\n7686: \n7687: $$\n7688: P(\\text{extinction}) \\leq p_{\\text{cross}}^{N \\cdot f_{\\text{safe}}} = \\exp\\left(-N \\cdot f_{\\text{safe}} \\cdot \\frac{(\\Delta d)^2}{2\\sigma_{\\text{noise}}^2}\\right)\n7689: $$\n7690: \n7691: Defining the rate constant:\n7692: \n7693: $$\n7694: c_{\\text{extinct}} := f_{\\text{safe}} \\cdot \\frac{(\\Delta d)^2}{2\\sigma_{\\text{noise}}^2} > 0\n7695: $$\n7696: \n7697: we obtain:\n7698: \n7699: $$\n7700: P(\\text{extinction}) \\leq \\exp(-N \\cdot c_{\\text{extinct}})\n7701: $$\n7702: \n7703: **Step 7: Parameter Dependence.**\n7704: \n7705: The rate constant $c_{\\text{extinct}}$ is bounded below by:\n7706: \n7707: $$\n7708: c_{\\text{extinct}} \\geq \\left(1 - \\frac{C_b}{\\kappa_b \\varphi_{\\min}}\\right) \\cdot \\frac{d_{\\text{safe}}^2}{2\\sigma_{\\text{noise}}^2}\n7709: $$\n7710: \n7711: where $d_{\\text{safe}}$ is the typical distance from the safe interior to the extinction zone. This remains strictly positive when $C_b/(\\kappa_b \\varphi_{\\min}) < 1$, which is guaranteed by the equilibrium bound.\n7712: ",
       "strategy_summary": "The proof bounds the fraction of walkers near the extinction boundary using a barrier function and the equilibrium condition on average barrier values, then applies Hoeffding's inequality to show that the probability of all remaining walkers simultaneously crossing into extinction decays exponentially with the swarm size N.",
       "conclusion": {
         "text": "The probability of total extinction in one step satisfies P(extinction) \u2264 exp(-N \u00b7 c_extinct) where c_extinct > 0 depends on the safe fraction and noise parameters.",
@@ -1366,12 +1377,12 @@
       "document_id": "03_cloning",
       "section": "## 11.5. Implications for Extinction Probability",
       "span": {
-        "start_line": 7607,
-        "end_line": 7704,
-        "content_start": 7609,
-        "content_end": 7703,
+        "start_line": 7615,
+        "end_line": 7712,
+        "content_start": 7617,
+        "content_end": 7711,
         "header_lines": [
-          7608
+          7616
         ]
       },
       "metadata": {
@@ -1384,7 +1395,7 @@
         "chapter_file": "chapter_26.json",
         "section_id": "## 11.5. Implications for Extinction Probability"
       },
-      "generated_at": "2025-11-09T10:55:47.626397+00:00",
+      "generated_at": "2025-11-10T12:23:04.016510+00:00",
       "alt_labels": []
     },
     "tags": [
@@ -1395,20 +1406,22 @@
       "asymptotic bound",
       "large N"
     ],
-    "content_markdown": ":label: cor-extinction-suppression\n\nThe boundary potential contraction exponentially suppresses the probability of catastrophic boundary crossing events. Specifically, for any $\\epsilon > 0$, there exists $N_0$ such that for all $N > N_0$:\n\n$$\nP(\\text{extinction in one step}) = O(e^{-N \\cdot \\text{const}})\n$$",
-    "raw_directive": "7595: :::\n7596: \n7597: :::{prf:corollary} Exponentially Suppressed Extinction Probability\n7598: :label: cor-extinction-suppression\n7599: \n7600: The boundary potential contraction exponentially suppresses the probability of catastrophic boundary crossing events. Specifically, for any $\\epsilon > 0$, there exists $N_0$ such that for all $N > N_0$:\n7601: \n7602: $$\n7603: P(\\text{extinction in one step}) = O(e^{-N \\cdot \\text{const}})\n7604: $$\n7605: ",
+    "content_markdown": ":label: cor-extinction-suppression\n\nAs a consequence of {prf:ref}`thm-boundary-potential-contraction`, the boundary potential contraction exponentially suppresses the probability of catastrophic boundary crossing events. Specifically, for any $\\epsilon > 0$, there exists $N_0$ such that for all $N > N_0$:\n\n$$\nP(\\text{extinction in one step}) = O(e^{-N \\cdot \\text{const}})\n$$",
+    "raw_directive": "7603: :::\n7604: \n7605: :::{prf:corollary} Exponentially Suppressed Extinction Probability\n7606: :label: cor-extinction-suppression\n7607: \n7608: As a consequence of {prf:ref}`thm-boundary-potential-contraction`, the boundary potential contraction exponentially suppresses the probability of catastrophic boundary crossing events. Specifically, for any $\\epsilon > 0$, there exists $N_0$ such that for all $N > N_0$:\n7609: \n7610: $$\n7611: P(\\text{extinction in one step}) = O(e^{-N \\cdot \\text{const}})\n7612: $$\n7613: ",
     "document_id": "03_cloning",
     "section": "## 11.5. Implications for Extinction Probability",
     "span": {
-      "start_line": 7595,
-      "end_line": 7605,
-      "content_start": 7598,
-      "content_end": 7604,
+      "start_line": 7603,
+      "end_line": 7613,
+      "content_start": 7606,
+      "content_end": 7612,
       "header_lines": [
-        7596
+        7604
       ]
     },
-    "references": [],
+    "references": [
+      "thm-boundary-potential-contraction"
+    ],
     "metadata": {
       "label": "cor-extinction-suppression"
     },
@@ -1419,7 +1432,7 @@
       "chapter_file": "chapter_26.json",
       "section_id": "## 11.5. Implications for Extinction Probability"
     },
-    "generated_at": "2025-11-09T10:55:47.623536+00:00",
+    "generated_at": "2025-11-10T12:23:04.013158+00:00",
     "alt_labels": []
   },
   {
@@ -1515,20 +1528,22 @@
       "expectation",
       "clone"
     ],
-    "content_markdown": ":label: cor-component-bounds-vw\n\nThe location and structural error components satisfy:\n\n$$\n\\begin{aligned}\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] &\\leq C_{\\text{loc}} \\\\\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}] &\\leq C_{\\text{struct}}\n\\end{aligned}\n$$",
-    "raw_directive": "7976: For completeness, we state the separate bounds on the location and structural components.\n7977: \n7978: :::{prf:corollary} Component-Wise Bounds on Inter-Swarm Error\n7979: :label: cor-component-bounds-vw\n7980: \n7981: The location and structural error components satisfy:\n7982: \n7983: $$\n7984: \\begin{aligned}\n7985: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] &\\leq C_{\\text{loc}} \\\\\n7986: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}] &\\leq C_{\\text{struct}}\n7987: \\end{aligned}\n7988: $$\n7989: ",
+    "content_markdown": ":label: cor-component-bounds-vw\n\nAs a decomposition of {prf:ref}`thm-inter-swarm-bounded-expansion`, the location and structural error components satisfy:\n\n$$\n\\begin{aligned}\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] &\\leq C_{\\text{loc}} \\\\\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}] &\\leq C_{\\text{struct}}\n\\end{aligned}\n$$",
+    "raw_directive": "7984: For completeness, we state the separate bounds on the location and structural components.\n7985: \n7986: :::{prf:corollary} Component-Wise Bounds on Inter-Swarm Error\n7987: :label: cor-component-bounds-vw\n7988: \n7989: As a decomposition of {prf:ref}`thm-inter-swarm-bounded-expansion`, the location and structural error components satisfy:\n7990: \n7991: $$\n7992: \\begin{aligned}\n7993: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] &\\leq C_{\\text{loc}} \\\\\n7994: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}] &\\leq C_{\\text{struct}}\n7995: \\end{aligned}\n7996: $$\n7997: ",
     "document_id": "03_cloning",
     "section": "## 12.2. Inter-Swarm Error Under Cloning",
     "span": {
-      "start_line": 7976,
-      "end_line": 7989,
-      "content_start": 7979,
-      "content_end": 7988,
+      "start_line": 7984,
+      "end_line": 7997,
+      "content_start": 7987,
+      "content_end": 7996,
       "header_lines": [
-        7977
+        7985
       ]
     },
-    "references": [],
+    "references": [
+      "thm-inter-swarm-bounded-expansion"
+    ],
     "metadata": {
       "label": "cor-component-bounds-vw"
     },
@@ -1539,7 +1554,7 @@
       "chapter_file": "chapter_30.json",
       "section_id": "## 12.2. Inter-Swarm Error Under Cloning"
     },
-    "generated_at": "2025-11-09T10:55:47.623536+00:00",
+    "generated_at": "2025-11-10T12:23:04.013158+00:00",
     "alt_labels": []
   }
 ]

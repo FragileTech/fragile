@@ -14,8 +14,6 @@ from typing import Any
 class MCPConnectionError(Exception):
     """Raised when CLI command execution fails."""
 
-    pass
-
 
 class ClaudeDirectClient:
     """

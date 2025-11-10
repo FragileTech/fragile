@@ -1,7 +1,7 @@
 {
   "stage": "directives",
   "directive_type": "theorem",
-  "generated_at": "2025-11-09T21:44:26.364893+00:00",
+  "generated_at": "2025-11-10T13:24:29.649708+00:00",
   "source_documents": [
     "01_crystalline_gas_yang_mills_mass_gap_proof",
     "01_fragile_gas_framework",
@@ -1638,7 +1638,7 @@
       "references": [
         "prop-corrective-signal-bound"
       ],
-      "raw_directive": "4512: With a rigorous, axiom-based bound on the adversarial reward signal now established, we can state the corrected and final stability condition.\n4513: \n4514: :::{prf:theorem} **(The Corrected Stability Condition for Intelligent Adaptation)**\n4515: :label: thm-stability-condition-final-corrected\n4516: \n4517: Let a swarm `k$ be in a high-error state. The algorithm's targeting mechanism is intelligent (i.e., $\\mathbb{E}[\\ln(V_{\\text{fit}})|H_k] < \\mathbb{E}[\\ln(V_{\\text{fit}})|L_k]$) if and only if the system parameters satisfy the following **Corrected Stability Condition**:\n4518: $$\n4519: \\beta \\ln\\left(1 + \\frac{\\kappa_{d', \\text{mean}}}{g_{A,\\max}+\\eta}\\right) > \\alpha \\ln\\left(1 + \\frac{\\kappa_{\\mathrm{rescaled}}(L_{R} \\cdot D_{\\mathrm{valid}})}{\\eta}\\right)\n4520: $$",
+      "raw_directive": "4512: With a rigorous, axiom-based bound on the adversarial reward signal now established (based on {prf:ref}`axiom-non-deceptive-landscape`), we can state the corrected and final stability condition (derived in {prf:ref}`thm-derivation-of-stability-condition`).\n4513: \n4514: :::{prf:theorem} **(The Corrected Stability Condition for Intelligent Adaptation)**\n4515: :label: thm-stability-condition-final-corrected\n4516: \n4517: Let a swarm `k$ be in a high-error state. The algorithm's targeting mechanism is intelligent (i.e., $\\mathbb{E}[\\ln(V_{\\text{fit}})|H_k] < \\mathbb{E}[\\ln(V_{\\text{fit}})|L_k]$) if and only if the system parameters satisfy the following **Corrected Stability Condition**:\n4518: $$\n4519: \\beta \\ln\\left(1 + \\frac{\\kappa_{d', \\text{mean}}}{g_{A,\\max}+\\eta}\\right) > \\alpha \\ln\\left(1 + \\frac{\\kappa_{\\mathrm{rescaled}}(L_{R} \\cdot D_{\\mathrm{valid}})}{\\eta}\\right)\n4520: $$",
       "_registry_context": {
         "stage": "directives",
         "document_id": "03_cloning",
@@ -1677,20 +1677,20 @@
       "directive_type": "theorem",
       "label": "thm-cloning-operator-composition",
       "title": "Compositional Structure of $\\Psi_{\\text{clone}}$",
-      "start_line": 6176,
-      "end_line": 6198,
+      "start_line": 6178,
+      "end_line": 6200,
       "header_lines": [
-        6177
+        6179
       ],
-      "content_start": 6179,
-      "content_end": 6197,
-      "content": "6179: :label: thm-cloning-operator-composition\n6180: \n6181: The cloning operator admits the following compositional representation:\n6182: \n6183: $$\n6184: \\Psi_{\\text{clone}}(S, \\cdot) = \\int_{\\mathbf{d}} \\int_{\\mathbf{c}, \\mathbf{a}} \\Psi_{\\text{update}}(S, \\mathbf{c}, \\mathbf{a}, \\cdot) \\, dP_{\\text{decision}}(S, \\mathbf{V}_{\\text{fit}}(\\mathbf{d}), \\mathbf{c}, \\mathbf{a}) \\, dP_{\\text{measure}}(S, \\mathbf{d})\n6185: $$\n6186: \n6187: where:\n6188: - $P_{\\text{measure}}(S, \\cdot)$ is the distribution of raw distance vectors from $\\Psi_{\\text{measure}}$\n6189: - $\\mathbf{V}_{\\text{fit}}(\\mathbf{d})$ is the deterministic fitness vector from $\\Psi_{\\text{fitness}}$ given $S$ and $\\mathbf{d}$\n6190: - $P_{\\text{decision}}(S, \\mathbf{V}_{\\text{fit}}, \\cdot)$ is the joint distribution of companion assignments and actions\n6191: - $\\Psi_{\\text{update}}(S, \\mathbf{c}, \\mathbf{a}, \\cdot)$ is the (possibly stochastic) output distribution given the actions\n6192: \n6193: This composition is a proper Markov kernel: for any measurable set $A \\subseteq \\Sigma_N$,\n6194: \n6195: $$\n6196: \\Psi_{\\text{clone}}(S, A) = P(S' \\in A \\mid S)\n6197: $$",
+      "content_start": 6181,
+      "content_end": 6199,
+      "content": "6181: :label: thm-cloning-operator-composition\n6182: \n6183: The cloning operator admits the following compositional representation:\n6184: \n6185: $$\n6186: \\Psi_{\\text{clone}}(S, \\cdot) = \\int_{\\mathbf{d}} \\int_{\\mathbf{c}, \\mathbf{a}} \\Psi_{\\text{update}}(S, \\mathbf{c}, \\mathbf{a}, \\cdot) \\, dP_{\\text{decision}}(S, \\mathbf{V}_{\\text{fit}}(\\mathbf{d}), \\mathbf{c}, \\mathbf{a}) \\, dP_{\\text{measure}}(S, \\mathbf{d})\n6187: $$\n6188: \n6189: where:\n6190: - $P_{\\text{measure}}(S, \\cdot)$ is the distribution of raw distance vectors from $\\Psi_{\\text{measure}}$\n6191: - $\\mathbf{V}_{\\text{fit}}(\\mathbf{d})$ is the deterministic fitness vector from $\\Psi_{\\text{fitness}}$ given $S$ and $\\mathbf{d}$\n6192: - $P_{\\text{decision}}(S, \\mathbf{V}_{\\text{fit}}, \\cdot)$ is the joint distribution of companion assignments and actions\n6193: - $\\Psi_{\\text{update}}(S, \\mathbf{c}, \\mathbf{a}, \\cdot)$ is the (possibly stochastic) output distribution given the actions\n6194: \n6195: This composition is a proper Markov kernel: for any measurable set $A \\subseteq \\Sigma_N$,\n6196: \n6197: $$\n6198: \\Psi_{\\text{clone}}(S, A) = P(S' \\in A \\mid S)\n6199: $$",
       "metadata": {
         "label": "thm-cloning-operator-composition"
       },
       "section": "## 9.4. Complete Operator Specification",
       "references": [],
-      "raw_directive": "6176: We now assemble the complete operator from its components.\n6177: \n6178: :::{prf:theorem} Compositional Structure of $\\Psi_{\\text{clone}}$\n6179: :label: thm-cloning-operator-composition\n6180: \n6181: The cloning operator admits the following compositional representation:\n6182: \n6183: $$\n6184: \\Psi_{\\text{clone}}(S, \\cdot) = \\int_{\\mathbf{d}} \\int_{\\mathbf{c}, \\mathbf{a}} \\Psi_{\\text{update}}(S, \\mathbf{c}, \\mathbf{a}, \\cdot) \\, dP_{\\text{decision}}(S, \\mathbf{V}_{\\text{fit}}(\\mathbf{d}), \\mathbf{c}, \\mathbf{a}) \\, dP_{\\text{measure}}(S, \\mathbf{d})\n6185: $$\n6186: \n6187: where:\n6188: - $P_{\\text{measure}}(S, \\cdot)$ is the distribution of raw distance vectors from $\\Psi_{\\text{measure}}$\n6189: - $\\mathbf{V}_{\\text{fit}}(\\mathbf{d})$ is the deterministic fitness vector from $\\Psi_{\\text{fitness}}$ given $S$ and $\\mathbf{d}$\n6190: - $P_{\\text{decision}}(S, \\mathbf{V}_{\\text{fit}}, \\cdot)$ is the joint distribution of companion assignments and actions\n6191: - $\\Psi_{\\text{update}}(S, \\mathbf{c}, \\mathbf{a}, \\cdot)$ is the (possibly stochastic) output distribution given the actions\n6192: \n6193: This composition is a proper Markov kernel: for any measurable set $A \\subseteq \\Sigma_N$,\n6194: \n6195: $$\n6196: \\Psi_{\\text{clone}}(S, A) = P(S' \\in A \\mid S)\n6197: $$\n6198: ",
+      "raw_directive": "6178: We now assemble the complete operator from its components.\n6179: \n6180: :::{prf:theorem} Compositional Structure of $\\Psi_{\\text{clone}}$\n6181: :label: thm-cloning-operator-composition\n6182: \n6183: The cloning operator admits the following compositional representation:\n6184: \n6185: $$\n6186: \\Psi_{\\text{clone}}(S, \\cdot) = \\int_{\\mathbf{d}} \\int_{\\mathbf{c}, \\mathbf{a}} \\Psi_{\\text{update}}(S, \\mathbf{c}, \\mathbf{a}, \\cdot) \\, dP_{\\text{decision}}(S, \\mathbf{V}_{\\text{fit}}(\\mathbf{d}), \\mathbf{c}, \\mathbf{a}) \\, dP_{\\text{measure}}(S, \\mathbf{d})\n6187: $$\n6188: \n6189: where:\n6190: - $P_{\\text{measure}}(S, \\cdot)$ is the distribution of raw distance vectors from $\\Psi_{\\text{measure}}$\n6191: - $\\mathbf{V}_{\\text{fit}}(\\mathbf{d})$ is the deterministic fitness vector from $\\Psi_{\\text{fitness}}$ given $S$ and $\\mathbf{d}$\n6192: - $P_{\\text{decision}}(S, \\mathbf{V}_{\\text{fit}}, \\cdot)$ is the joint distribution of companion assignments and actions\n6193: - $\\Psi_{\\text{update}}(S, \\mathbf{c}, \\mathbf{a}, \\cdot)$ is the (possibly stochastic) output distribution given the actions\n6194: \n6195: This composition is a proper Markov kernel: for any measurable set $A \\subseteq \\Sigma_N$,\n6196: \n6197: $$\n6198: \\Psi_{\\text{clone}}(S, A) = P(S' \\in A \\mid S)\n6199: $$\n6200: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "03_cloning",
@@ -1703,20 +1703,20 @@
       "directive_type": "theorem",
       "label": "thm-positional-variance-contraction",
       "title": "Positional Variance Contraction Under Cloning",
-      "start_line": 6361,
-      "end_line": 6376,
+      "start_line": 6363,
+      "end_line": 6378,
       "header_lines": [
-        6362
+        6364
       ],
-      "content_start": 6364,
-      "content_end": 6375,
-      "content": "6364: :label: thm-positional-variance-contraction\n6365: \n6366: Under the foundational axioms (Chapter 4), there exist constants $\\kappa_x > 0$, $C_x < \\infty$, and a structural error threshold $R^2_{\\text{spread}} > 0$, all independent of $N$, such that for any pair of swarms $(S_1, S_2)$:\n6367: \n6368: $$\n6369: \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},x}(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_x) V_{\\text{Var},x}(S_1, S_2) + C_x\n6370: $$\n6371: \n6372: Furthermore, when $V_{\\text{Var},x}(S_1, S_2) > \\tilde{C}_x$ for a sufficiently large threshold $\\tilde{C}_x$, the contraction becomes strict:\n6373: \n6374: $$\n6375: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] := \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},x}(S'_1, S'_2) - V_{\\text{Var},x}(S_1, S_2)] < 0",
+      "content_start": 6366,
+      "content_end": 6377,
+      "content": "6366: :label: thm-positional-variance-contraction\n6367: \n6368: Under the foundational axioms (Chapter 4), there exist constants $\\kappa_x > 0$, $C_x < \\infty$, and a structural error threshold $R^2_{\\text{spread}} > 0$, all independent of $N$, such that for any pair of swarms $(S_1, S_2)$:\n6369: \n6370: $$\n6371: \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},x}(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_x) V_{\\text{Var},x}(S_1, S_2) + C_x\n6372: $$\n6373: \n6374: Furthermore, when $V_{\\text{Var},x}(S_1, S_2) > \\tilde{C}_x$ for a sufficiently large threshold $\\tilde{C}_x$, the contraction becomes strict:\n6375: \n6376: $$\n6377: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] := \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},x}(S'_1, S'_2) - V_{\\text{Var},x}(S_1, S_2)] < 0",
       "metadata": {
         "label": "thm-positional-variance-contraction"
       },
       "section": "## 10.3. Positional Variance Contraction",
       "references": [],
-      "raw_directive": "6361: ### 10.3.1. Main Theorem\n6362: \n6363: :::{prf:theorem} Positional Variance Contraction Under Cloning\n6364: :label: thm-positional-variance-contraction\n6365: \n6366: Under the foundational axioms (Chapter 4), there exist constants $\\kappa_x > 0$, $C_x < \\infty$, and a structural error threshold $R^2_{\\text{spread}} > 0$, all independent of $N$, such that for any pair of swarms $(S_1, S_2)$:\n6367: \n6368: $$\n6369: \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},x}(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_x) V_{\\text{Var},x}(S_1, S_2) + C_x\n6370: $$\n6371: \n6372: Furthermore, when $V_{\\text{Var},x}(S_1, S_2) > \\tilde{C}_x$ for a sufficiently large threshold $\\tilde{C}_x$, the contraction becomes strict:\n6373: \n6374: $$\n6375: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] := \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},x}(S'_1, S'_2) - V_{\\text{Var},x}(S_1, S_2)] < 0\n6376: $$",
+      "raw_directive": "6363: ### 10.3.1. Main Theorem\n6364: \n6365: :::{prf:theorem} Positional Variance Contraction Under Cloning\n6366: :label: thm-positional-variance-contraction\n6367: \n6368: Under the foundational axioms (Chapter 4), there exist constants $\\kappa_x > 0$, $C_x < \\infty$, and a structural error threshold $R^2_{\\text{spread}} > 0$, all independent of $N$, such that for any pair of swarms $(S_1, S_2)$:\n6369: \n6370: $$\n6371: \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},x}(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_x) V_{\\text{Var},x}(S_1, S_2) + C_x\n6372: $$\n6373: \n6374: Furthermore, when $V_{\\text{Var},x}(S_1, S_2) > \\tilde{C}_x$ for a sufficiently large threshold $\\tilde{C}_x$, the contraction becomes strict:\n6375: \n6376: $$\n6377: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] := \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},x}(S'_1, S'_2) - V_{\\text{Var},x}(S_1, S_2)] < 0\n6378: $$",
       "_registry_context": {
         "stage": "directives",
         "document_id": "03_cloning",
@@ -1729,20 +1729,20 @@
       "directive_type": "theorem",
       "label": "thm-velocity-variance-bounded-expansion",
       "title": "Bounded Velocity Variance Expansion from Cloning",
-      "start_line": 6745,
-      "end_line": 6760,
+      "start_line": 6749,
+      "end_line": 6764,
       "header_lines": [
-        6746
+        6750
       ],
-      "content_start": 6748,
-      "content_end": 6759,
-      "content": "6748: :label: thm-velocity-variance-bounded-expansion\n6749: \n6750: There exists a state-independent constant $C_v < \\infty$ such that for any swarm $S$:\n6751: \n6752: $$\n6753: \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},v}(S')] \\leq V_{\\text{Var},v}(S) + C_v\n6754: $$\n6755: \n6756: Equivalently, the one-step drift satisfies:\n6757: \n6758: $$\n6759: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v",
+      "content_start": 6752,
+      "content_end": 6763,
+      "content": "6752: :label: thm-velocity-variance-bounded-expansion\n6753: \n6754: There exists a state-independent constant $C_v < \\infty$ such that for any swarm $S$:\n6755: \n6756: $$\n6757: \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},v}(S')] \\leq V_{\\text{Var},v}(S) + C_v\n6758: $$\n6759: \n6760: Equivalently, the one-step drift satisfies:\n6761: \n6762: $$\n6763: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v",
       "metadata": {
         "label": "thm-velocity-variance-bounded-expansion"
       },
       "section": "## 10.4. Velocity Variance Bounded Expansion",
       "references": [],
-      "raw_directive": "6745: We now prove that the velocity variance expansion from cloning is uniformly bounded.\n6746: \n6747: :::{prf:theorem} Bounded Velocity Variance Expansion from Cloning\n6748: :label: thm-velocity-variance-bounded-expansion\n6749: \n6750: There exists a state-independent constant $C_v < \\infty$ such that for any swarm $S$:\n6751: \n6752: $$\n6753: \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},v}(S')] \\leq V_{\\text{Var},v}(S) + C_v\n6754: $$\n6755: \n6756: Equivalently, the one-step drift satisfies:\n6757: \n6758: $$\n6759: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n6760: $$",
+      "raw_directive": "6749: We now prove that the velocity variance expansion from cloning is uniformly bounded.\n6750: \n6751: :::{prf:theorem} Bounded Velocity Variance Expansion from Cloning\n6752: :label: thm-velocity-variance-bounded-expansion\n6753: \n6754: There exists a state-independent constant $C_v < \\infty$ such that for any swarm $S$:\n6755: \n6756: $$\n6757: \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},v}(S')] \\leq V_{\\text{Var},v}(S) + C_v\n6758: $$\n6759: \n6760: Equivalently, the one-step drift satisfies:\n6761: \n6762: $$\n6763: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n6764: $$",
       "_registry_context": {
         "stage": "directives",
         "document_id": "03_cloning",
@@ -1755,20 +1755,20 @@
       "directive_type": "theorem",
       "label": "thm-complete-variance-drift",
       "title": "Complete Variance Drift Characterization for Cloning",
-      "start_line": 6890,
-      "end_line": 6918,
+      "start_line": 6894,
+      "end_line": 6922,
       "header_lines": [
-        6891
+        6895
       ],
-      "content_start": 6893,
-      "content_end": 6917,
-      "content": "6893: :label: thm-complete-variance-drift\n6894: \n6895: The cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the variance components of the Lyapunov function:\n6896: \n6897: **1. Positional Variance (Strong Contraction):**\n6898: \n6899: $$\n6900: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x\n6901: $$\n6902: \n6903: where $\\kappa_x > 0$ is $N$-independent (from Keystone Principle).\n6904: \n6905: **2. Velocity Variance (Bounded Expansion):**\n6906: \n6907: $$\n6908: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n6909: $$\n6910: \n6911: where $C_v < \\infty$ is a state-independent constant.\n6912: \n6913: **3. Total Internal Variance:**\n6914: \n6915: $$\n6916: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var}}] = \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_x V_{\\text{Var},x} + (C_x + C_v)\n6917: $$",
+      "content_start": 6897,
+      "content_end": 6921,
+      "content": "6897: :label: thm-complete-variance-drift\n6898: \n6899: The cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the variance components of the Lyapunov function:\n6900: \n6901: **1. Positional Variance (Strong Contraction):**\n6902: \n6903: $$\n6904: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x\n6905: $$\n6906: \n6907: where $\\kappa_x > 0$ is $N$-independent (from Keystone Principle).\n6908: \n6909: **2. Velocity Variance (Bounded Expansion):**\n6910: \n6911: $$\n6912: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n6913: $$\n6914: \n6915: where $C_v < \\infty$ is a state-independent constant.\n6916: \n6917: **3. Total Internal Variance:**\n6918: \n6919: $$\n6920: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var}}] = \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_x V_{\\text{Var},x} + (C_x + C_v)\n6921: $$",
       "metadata": {
         "label": "thm-complete-variance-drift"
       },
       "section": "## 10.6. Summary of Variance Drift Inequalities",
       "references": [],
-      "raw_directive": "6890: We conclude by summarizing the main drift results for the variance components under $\\Psi_{\\text{clone}}$.\n6891: \n6892: :::{prf:theorem} Complete Variance Drift Characterization for Cloning\n6893: :label: thm-complete-variance-drift\n6894: \n6895: The cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the variance components of the Lyapunov function:\n6896: \n6897: **1. Positional Variance (Strong Contraction):**\n6898: \n6899: $$\n6900: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x\n6901: $$\n6902: \n6903: where $\\kappa_x > 0$ is $N$-independent (from Keystone Principle).\n6904: \n6905: **2. Velocity Variance (Bounded Expansion):**\n6906: \n6907: $$\n6908: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n6909: $$\n6910: \n6911: where $C_v < \\infty$ is a state-independent constant.\n6912: \n6913: **3. Total Internal Variance:**\n6914: \n6915: $$\n6916: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var}}] = \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_x V_{\\text{Var},x} + (C_x + C_v)\n6917: $$\n6918: ",
+      "raw_directive": "6894: We conclude by summarizing the main drift results for the variance components under $\\Psi_{\\text{clone}}$.\n6895: \n6896: :::{prf:theorem} Complete Variance Drift Characterization for Cloning\n6897: :label: thm-complete-variance-drift\n6898: \n6899: The cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the variance components of the Lyapunov function:\n6900: \n6901: **1. Positional Variance (Strong Contraction):**\n6902: \n6903: $$\n6904: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x\n6905: $$\n6906: \n6907: where $\\kappa_x > 0$ is $N$-independent (from Keystone Principle).\n6908: \n6909: **2. Velocity Variance (Bounded Expansion):**\n6910: \n6911: $$\n6912: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n6913: $$\n6914: \n6915: where $C_v < \\infty$ is a state-independent constant.\n6916: \n6917: **3. Total Internal Variance:**\n6918: \n6919: $$\n6920: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var}}] = \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_x V_{\\text{Var},x} + (C_x + C_v)\n6921: $$\n6922: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "03_cloning",
@@ -1781,20 +1781,20 @@
       "directive_type": "theorem",
       "label": "thm-boundary-potential-contraction",
       "title": "Boundary Potential Contraction Under Cloning",
-      "start_line": 7288,
-      "end_line": 7303,
+      "start_line": 7292,
+      "end_line": 7307,
       "header_lines": [
-        7289
+        7293
       ],
-      "content_start": 7291,
-      "content_end": 7302,
-      "content": "7291: :label: thm-boundary-potential-contraction\n7292: \n7293: Under the foundational axioms (Chapter 4) including the Safe Harbor Axiom (Axiom 4.3), there exist constants $\\kappa_b > 0$ and $C_b < \\infty$, both independent of $N$, such that for any pair of swarms $(S_1, S_2)$:\n7294: \n7295: $$\n7296: \\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_b) W_b(S_1, S_2) + C_b\n7297: $$\n7298: \n7299: Furthermore, when $W_b(S_1, S_2) > \\tilde{C}_b$ for a sufficiently large threshold $\\tilde{C}_b$, the contraction becomes strict:\n7300: \n7301: $$\n7302: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] := \\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) - W_b(S_1, S_2)] < 0",
+      "content_start": 7295,
+      "content_end": 7306,
+      "content": "7295: :label: thm-boundary-potential-contraction\n7296: \n7297: Under the foundational axioms (Chapter 4) including the Safe Harbor Axiom (Axiom 4.3), there exist constants $\\kappa_b > 0$ and $C_b < \\infty$, both independent of $N$, such that for any pair of swarms $(S_1, S_2)$:\n7298: \n7299: $$\n7300: \\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_b) W_b(S_1, S_2) + C_b\n7301: $$\n7302: \n7303: Furthermore, when $W_b(S_1, S_2) > \\tilde{C}_b$ for a sufficiently large threshold $\\tilde{C}_b$, the contraction becomes strict:\n7304: \n7305: $$\n7306: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] := \\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) - W_b(S_1, S_2)] < 0",
       "metadata": {
         "label": "thm-boundary-potential-contraction"
       },
       "section": "## 11.3. Main Theorem: Boundary Potential Contraction",
       "references": [],
-      "raw_directive": "7288: ## 11.3. Main Theorem: Boundary Potential Contraction\n7289: \n7290: :::{prf:theorem} Boundary Potential Contraction Under Cloning\n7291: :label: thm-boundary-potential-contraction\n7292: \n7293: Under the foundational axioms (Chapter 4) including the Safe Harbor Axiom (Axiom 4.3), there exist constants $\\kappa_b > 0$ and $C_b < \\infty$, both independent of $N$, such that for any pair of swarms $(S_1, S_2)$:\n7294: \n7295: $$\n7296: \\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_b) W_b(S_1, S_2) + C_b\n7297: $$\n7298: \n7299: Furthermore, when $W_b(S_1, S_2) > \\tilde{C}_b$ for a sufficiently large threshold $\\tilde{C}_b$, the contraction becomes strict:\n7300: \n7301: $$\n7302: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] := \\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) - W_b(S_1, S_2)] < 0\n7303: $$",
+      "raw_directive": "7292: ## 11.3. Main Theorem: Boundary Potential Contraction\n7293: \n7294: :::{prf:theorem} Boundary Potential Contraction Under Cloning\n7295: :label: thm-boundary-potential-contraction\n7296: \n7297: Under the foundational axioms (Chapter 4) including the Safe Harbor Axiom (Axiom 4.3), there exist constants $\\kappa_b > 0$ and $C_b < \\infty$, both independent of $N$, such that for any pair of swarms $(S_1, S_2)$:\n7298: \n7299: $$\n7300: \\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_b) W_b(S_1, S_2) + C_b\n7301: $$\n7302: \n7303: Furthermore, when $W_b(S_1, S_2) > \\tilde{C}_b$ for a sufficiently large threshold $\\tilde{C}_b$, the contraction becomes strict:\n7304: \n7305: $$\n7306: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] := \\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) - W_b(S_1, S_2)] < 0\n7307: $$",
       "_registry_context": {
         "stage": "directives",
         "document_id": "03_cloning",
@@ -1807,20 +1807,20 @@
       "directive_type": "theorem",
       "label": "thm-complete-boundary-drift",
       "title": "Complete Boundary Potential Drift Characterization",
-      "start_line": 7724,
-      "end_line": 7745,
+      "start_line": 7732,
+      "end_line": 7753,
       "header_lines": [
-        7725
+        7733
       ],
-      "content_start": 7727,
-      "content_end": 7744,
-      "content": "7727: :label: thm-complete-boundary-drift\n7728: \n7729: The cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the boundary potential:\n7730: \n7731: $$\n7732: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\leq -\\kappa_b W_b + C_b\n7733: $$\n7734: \n7735: where:\n7736: - $\\kappa_b = p_{\\text{boundary}}(\\phi_{\\text{thresh}}) > 0$ is the minimum cloning probability for boundary-exposed walkers\n7737: - $C_b = O(\\sigma_x^2 + N^{-1})$ accounts for position jitter and dead walker revival\n7738: - Both constants are **$N$-independent** in the large-$N$ limit\n7739: \n7740: **Key Properties:**\n7741: \n7742: 1. **Unconditional contraction:** The drift is negative for all states with $W_b > C_b/\\kappa_b$\n7743: \n7744: 2. **Strengthening near danger:** The contraction rate $\\kappa_b$ increases with boundary proximity (through $\\phi_{\\text{thresh}}$)",
+      "content_start": 7735,
+      "content_end": 7752,
+      "content": "7735: :label: thm-complete-boundary-drift\n7736: \n7737: The cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the boundary potential:\n7738: \n7739: $$\n7740: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\leq -\\kappa_b W_b + C_b\n7741: $$\n7742: \n7743: where:\n7744: - $\\kappa_b = p_{\\text{boundary}}(\\phi_{\\text{thresh}}) > 0$ is the minimum cloning probability for boundary-exposed walkers\n7745: - $C_b = O(\\sigma_x^2 + N^{-1})$ accounts for position jitter and dead walker revival\n7746: - Both constants are **$N$-independent** in the large-$N$ limit\n7747: \n7748: **Key Properties:**\n7749: \n7750: 1. **Unconditional contraction:** The drift is negative for all states with $W_b > C_b/\\kappa_b$\n7751: \n7752: 2. **Strengthening near danger:** The contraction rate $\\kappa_b$ increases with boundary proximity (through $\\phi_{\\text{thresh}}$)",
       "metadata": {
         "label": "thm-complete-boundary-drift"
       },
       "section": "## 11.6. Summary and Drift Inequality",
       "references": [],
-      "raw_directive": "7724: We conclude by stating the complete boundary potential drift result.\n7725: \n7726: :::{prf:theorem} Complete Boundary Potential Drift Characterization\n7727: :label: thm-complete-boundary-drift\n7728: \n7729: The cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the boundary potential:\n7730: \n7731: $$\n7732: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\leq -\\kappa_b W_b + C_b\n7733: $$\n7734: \n7735: where:\n7736: - $\\kappa_b = p_{\\text{boundary}}(\\phi_{\\text{thresh}}) > 0$ is the minimum cloning probability for boundary-exposed walkers\n7737: - $C_b = O(\\sigma_x^2 + N^{-1})$ accounts for position jitter and dead walker revival\n7738: - Both constants are **$N$-independent** in the large-$N$ limit\n7739: \n7740: **Key Properties:**\n7741: \n7742: 1. **Unconditional contraction:** The drift is negative for all states with $W_b > C_b/\\kappa_b$\n7743: \n7744: 2. **Strengthening near danger:** The contraction rate $\\kappa_b$ increases with boundary proximity (through $\\phi_{\\text{thresh}}$)\n7745: ",
+      "raw_directive": "7732: We conclude by stating the complete boundary potential drift result.\n7733: \n7734: :::{prf:theorem} Complete Boundary Potential Drift Characterization\n7735: :label: thm-complete-boundary-drift\n7736: \n7737: The cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the boundary potential:\n7738: \n7739: $$\n7740: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\leq -\\kappa_b W_b + C_b\n7741: $$\n7742: \n7743: where:\n7744: - $\\kappa_b = p_{\\text{boundary}}(\\phi_{\\text{thresh}}) > 0$ is the minimum cloning probability for boundary-exposed walkers\n7745: - $C_b = O(\\sigma_x^2 + N^{-1})$ accounts for position jitter and dead walker revival\n7746: - Both constants are **$N$-independent** in the large-$N$ limit\n7747: \n7748: **Key Properties:**\n7749: \n7750: 1. **Unconditional contraction:** The drift is negative for all states with $W_b > C_b/\\kappa_b$\n7751: \n7752: 2. **Strengthening near danger:** The contraction rate $\\kappa_b$ increases with boundary proximity (through $\\phi_{\\text{thresh}}$)\n7753: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "03_cloning",
@@ -1833,20 +1833,20 @@
       "directive_type": "theorem",
       "label": "thm-inter-swarm-bounded-expansion",
       "title": "Bounded Expansion of Inter-Swarm Wasserstein Distance",
-      "start_line": 7845,
-      "end_line": 7862,
+      "start_line": 7853,
+      "end_line": 7870,
       "header_lines": [
-        7846
+        7854
       ],
-      "content_start": 7848,
-      "content_end": 7861,
-      "content": "7848: :label: thm-inter-swarm-bounded-expansion\n7849: \n7850: For the coupled cloning operator acting on two swarms $(S_1, S_2)$, the expected change in the hypocoercive Wasserstein distance satisfies:\n7851: \n7852: $$\n7853: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W\n7854: $$\n7855: \n7856: where $V_W = W_h^2(\\mu_1, \\mu_2) = V_{\\text{loc}} + V_{\\text{struct}}$ is the total inter-swarm error and $C_W < \\infty$ is a state-independent constant.\n7857: \n7858: Equivalently:\n7859: \n7860: $$\n7861: \\mathbb{E}_{\\text{clone}}[V_W(S'_1, S'_2)] \\leq V_W(S_1, S_2) + C_W",
+      "content_start": 7856,
+      "content_end": 7869,
+      "content": "7856: :label: thm-inter-swarm-bounded-expansion\n7857: \n7858: For the coupled cloning operator acting on two swarms $(S_1, S_2)$, the expected change in the hypocoercive Wasserstein distance satisfies:\n7859: \n7860: $$\n7861: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W\n7862: $$\n7863: \n7864: where $V_W = W_h^2(\\mu_1, \\mu_2) = V_{\\text{loc}} + V_{\\text{struct}}$ is the total inter-swarm error and $C_W < \\infty$ is a state-independent constant.\n7865: \n7866: Equivalently:\n7867: \n7868: $$\n7869: \\mathbb{E}_{\\text{clone}}[V_W(S'_1, S'_2)] \\leq V_W(S_1, S_2) + C_W",
       "metadata": {
         "label": "thm-inter-swarm-bounded-expansion"
       },
       "section": "## 12.2. Inter-Swarm Error Under Cloning",
       "references": [],
-      "raw_directive": "7845: ### 12.2.1. Bounded Expansion of Inter-Swarm Error\n7846: \n7847: :::{prf:theorem} Bounded Expansion of Inter-Swarm Wasserstein Distance\n7848: :label: thm-inter-swarm-bounded-expansion\n7849: \n7850: For the coupled cloning operator acting on two swarms $(S_1, S_2)$, the expected change in the hypocoercive Wasserstein distance satisfies:\n7851: \n7852: $$\n7853: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W\n7854: $$\n7855: \n7856: where $V_W = W_h^2(\\mu_1, \\mu_2) = V_{\\text{loc}} + V_{\\text{struct}}$ is the total inter-swarm error and $C_W < \\infty$ is a state-independent constant.\n7857: \n7858: Equivalently:\n7859: \n7860: $$\n7861: \\mathbb{E}_{\\text{clone}}[V_W(S'_1, S'_2)] \\leq V_W(S_1, S_2) + C_W\n7862: $$",
+      "raw_directive": "7853: ### 12.2.1. Bounded Expansion of Inter-Swarm Error\n7854: \n7855: :::{prf:theorem} Bounded Expansion of Inter-Swarm Wasserstein Distance\n7856: :label: thm-inter-swarm-bounded-expansion\n7857: \n7858: For the coupled cloning operator acting on two swarms $(S_1, S_2)$, the expected change in the hypocoercive Wasserstein distance satisfies:\n7859: \n7860: $$\n7861: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W\n7862: $$\n7863: \n7864: where $V_W = W_h^2(\\mu_1, \\mu_2) = V_{\\text{loc}} + V_{\\text{struct}}$ is the total inter-swarm error and $C_W < \\infty$ is a state-independent constant.\n7865: \n7866: Equivalently:\n7867: \n7868: $$\n7869: \\mathbb{E}_{\\text{clone}}[V_W(S'_1, S'_2)] \\leq V_W(S_1, S_2) + C_W\n7870: $$",
       "_registry_context": {
         "stage": "directives",
         "document_id": "03_cloning",
@@ -1859,14 +1859,14 @@
       "directive_type": "theorem",
       "label": "thm-complete-wasserstein-drift",
       "title": "Complete Wasserstein Decomposition Drift",
-      "start_line": 7991,
-      "end_line": 8030,
+      "start_line": 7999,
+      "end_line": 8038,
       "header_lines": [
-        7992
+        8000
       ],
-      "content_start": 7994,
-      "content_end": 8029,
-      "content": "7994: :label: thm-complete-wasserstein-drift\n7995: \n7996: The total inter-swarm Wasserstein distance $V_W = V_{\\text{loc}} + V_{\\text{struct}}$ satisfies a combined drift inequality under the cloning operator:\n7997: \n7998: $$\n7999: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W\n8000: $$\n8001: \n8002: where $C_W < \\infty$ is a state-independent constant satisfying:\n8003: \n8004: $$\n8005: C_W = C_{\\text{loc}} + C_{\\text{struct}}\n8006: $$\n8007: \n8008: **Component Bounds:**\n8009: \n8010: From {prf:ref}`cor-component-bounds-vw`, the individual components satisfy:\n8011: \n8012: $$\n8013: \\begin{aligned}\n8014: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] &\\leq C_{\\text{loc}} \\\\\n8015: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}] &\\leq C_{\\text{struct}}\n8016: \\end{aligned}\n8017: $$\n8018: \n8019: where:\n8020: - $C_{\\text{loc}}$ arises from barycenter desynchronization due to differential cloning rates\n8021: - $C_{\\text{struct}}$ arises from jitter noise and structural rearrangement during cloning\n8022: \n8023: **Note on Kinetic Contraction:**\n8024: \n8025: While the cloning operator allows bounded expansion of $V_W$, the **kinetic operator** provides contraction. From hypocoercive analysis (Chapter 4 of companion document):\n8026: \n8027: $$\n8028: \\mathbb{E}_{\\text{kin}}[\\Delta V_W] \\leq -\\kappa_W^{\\text{kin}} \\tau V_W + C_W^{\\text{kin}} \\tau\n8029: $$",
+      "content_start": 8002,
+      "content_end": 8037,
+      "content": "8002: :label: thm-complete-wasserstein-drift\n8003: \n8004: The total inter-swarm Wasserstein distance $V_W = V_{\\text{loc}} + V_{\\text{struct}}$ satisfies a combined drift inequality under the cloning operator:\n8005: \n8006: $$\n8007: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W\n8008: $$\n8009: \n8010: where $C_W < \\infty$ is a state-independent constant satisfying:\n8011: \n8012: $$\n8013: C_W = C_{\\text{loc}} + C_{\\text{struct}}\n8014: $$\n8015: \n8016: **Component Bounds:**\n8017: \n8018: From {prf:ref}`cor-component-bounds-vw`, the individual components satisfy:\n8019: \n8020: $$\n8021: \\begin{aligned}\n8022: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] &\\leq C_{\\text{loc}} \\\\\n8023: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}] &\\leq C_{\\text{struct}}\n8024: \\end{aligned}\n8025: $$\n8026: \n8027: where:\n8028: - $C_{\\text{loc}}$ arises from barycenter desynchronization due to differential cloning rates\n8029: - $C_{\\text{struct}}$ arises from jitter noise and structural rearrangement during cloning\n8030: \n8031: **Note on Kinetic Contraction:**\n8032: \n8033: While the cloning operator allows bounded expansion of $V_W$, the **kinetic operator** provides contraction. From hypocoercive analysis (Chapter 4 of companion document):\n8034: \n8035: $$\n8036: \\mathbb{E}_{\\text{kin}}[\\Delta V_W] \\leq -\\kappa_W^{\\text{kin}} \\tau V_W + C_W^{\\text{kin}} \\tau\n8037: $$",
       "metadata": {
         "label": "thm-complete-wasserstein-drift"
       },
@@ -1874,7 +1874,7 @@
       "references": [
         "cor-component-bounds-vw"
       ],
-      "raw_directive": "7991: :::\n7992: \n7993: :::{prf:theorem} Complete Wasserstein Decomposition Drift\n7994: :label: thm-complete-wasserstein-drift\n7995: \n7996: The total inter-swarm Wasserstein distance $V_W = V_{\\text{loc}} + V_{\\text{struct}}$ satisfies a combined drift inequality under the cloning operator:\n7997: \n7998: $$\n7999: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W\n8000: $$\n8001: \n8002: where $C_W < \\infty$ is a state-independent constant satisfying:\n8003: \n8004: $$\n8005: C_W = C_{\\text{loc}} + C_{\\text{struct}}\n8006: $$\n8007: \n8008: **Component Bounds:**\n8009: \n8010: From {prf:ref}`cor-component-bounds-vw`, the individual components satisfy:\n8011: \n8012: $$\n8013: \\begin{aligned}\n8014: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] &\\leq C_{\\text{loc}} \\\\\n8015: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}] &\\leq C_{\\text{struct}}\n8016: \\end{aligned}\n8017: $$\n8018: \n8019: where:\n8020: - $C_{\\text{loc}}$ arises from barycenter desynchronization due to differential cloning rates\n8021: - $C_{\\text{struct}}$ arises from jitter noise and structural rearrangement during cloning\n8022: \n8023: **Note on Kinetic Contraction:**\n8024: \n8025: While the cloning operator allows bounded expansion of $V_W$, the **kinetic operator** provides contraction. From hypocoercive analysis (Chapter 4 of companion document):\n8026: \n8027: $$\n8028: \\mathbb{E}_{\\text{kin}}[\\Delta V_W] \\leq -\\kappa_W^{\\text{kin}} \\tau V_W + C_W^{\\text{kin}} \\tau\n8029: $$\n8030: ",
+      "raw_directive": "7999: :::\n8000: \n8001: :::{prf:theorem} Complete Wasserstein Decomposition Drift\n8002: :label: thm-complete-wasserstein-drift\n8003: \n8004: The total inter-swarm Wasserstein distance $V_W = V_{\\text{loc}} + V_{\\text{struct}}$ satisfies a combined drift inequality under the cloning operator:\n8005: \n8006: $$\n8007: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W\n8008: $$\n8009: \n8010: where $C_W < \\infty$ is a state-independent constant satisfying:\n8011: \n8012: $$\n8013: C_W = C_{\\text{loc}} + C_{\\text{struct}}\n8014: $$\n8015: \n8016: **Component Bounds:**\n8017: \n8018: From {prf:ref}`cor-component-bounds-vw`, the individual components satisfy:\n8019: \n8020: $$\n8021: \\begin{aligned}\n8022: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] &\\leq C_{\\text{loc}} \\\\\n8023: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}] &\\leq C_{\\text{struct}}\n8024: \\end{aligned}\n8025: $$\n8026: \n8027: where:\n8028: - $C_{\\text{loc}}$ arises from barycenter desynchronization due to differential cloning rates\n8029: - $C_{\\text{struct}}$ arises from jitter noise and structural rearrangement during cloning\n8030: \n8031: **Note on Kinetic Contraction:**\n8032: \n8033: While the cloning operator allows bounded expansion of $V_W$, the **kinetic operator** provides contraction. From hypocoercive analysis (Chapter 4 of companion document):\n8034: \n8035: $$\n8036: \\mathbb{E}_{\\text{kin}}[\\Delta V_W] \\leq -\\kappa_W^{\\text{kin}} \\tau V_W + C_W^{\\text{kin}} \\tau\n8037: $$\n8038: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "03_cloning",
@@ -1887,20 +1887,22 @@
       "directive_type": "theorem",
       "label": "thm-complete-cloning-drift",
       "title": "Complete Drift Inequality for the Cloning Operator",
-      "start_line": 8083,
-      "end_line": 8117,
+      "start_line": 8091,
+      "end_line": 8125,
       "header_lines": [
-        8084
+        8092
       ],
-      "content_start": 8086,
-      "content_end": 8116,
-      "content": "8086: :label: thm-complete-cloning-drift\n8087: \n8088: Under the foundational axioms (Chapter 4), the cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the synergistic Lyapunov function:\n8089: \n8090: $$\n8091: V_{\\text{total}}(S_1, S_2) = V_W(S_1, S_2) + c_V V_{\\text{Var}}(S_1, S_2) + c_B W_b(S_1, S_2)\n8092: $$\n8093: \n8094: **Individual Component Drifts:**\n8095: \n8096: $$\n8097: \\begin{aligned}\n8098: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] &\\leq C_W \\quad &\\text{(bounded expansion)} \\\\\n8099: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] &\\leq -\\kappa_x V_{\\text{Var},x} + C_x \\quad &\\text{(strong contraction)} \\\\\n8100: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] &\\leq C_v \\quad &\\text{(bounded expansion)} \\\\\n8101: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] &\\leq -\\kappa_b W_b + C_b \\quad &\\text{(strong contraction)}\n8102: \\end{aligned}\n8103: $$\n8104: \n8105: **Combined Drift:**\n8106: \n8107: $$\n8108: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] \\leq C_W + c_V(-\\kappa_x V_{\\text{Var},x} + C_v + C_x) + c_B(-\\kappa_b W_b + C_b)\n8109: $$\n8110: \n8111: **Critical Property - Partial Contraction:**\n8112: \n8113: When $V_{\\text{Var},x}$ and $W_b$ are sufficiently large relative to the expansion terms, the drift becomes negative:\n8114: \n8115: $$\n8116: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] < 0 \\quad \\text{when } c_V V_{\\text{Var},x} + c_B W_b > \\frac{C_W + c_V(C_v + C_x) + c_B C_b}{\\min(\\kappa_x, \\kappa_b)}",
+      "content_start": 8094,
+      "content_end": 8124,
+      "content": "8094: :label: thm-complete-cloning-drift\n8095: \n8096: Under the foundational axioms (Chapter 4), the cloning operator $\\Psi_{\\text{clone}}$ (see {prf:ref}`def-cloning-operator-formal`) induces the following drift on the synergistic Lyapunov function:\n8097: \n8098: $$\n8099: V_{\\text{total}}(S_1, S_2) = V_W(S_1, S_2) + c_V V_{\\text{Var}}(S_1, S_2) + c_B W_b(S_1, S_2)\n8100: $$\n8101: \n8102: **Individual Component Drifts:**\n8103: \n8104: $$\n8105: \\begin{aligned}\n8106: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] &\\leq C_W \\quad &\\text{(bounded expansion)} \\\\\n8107: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] &\\leq -\\kappa_x V_{\\text{Var},x} + C_x \\quad &\\text{(strong contraction)} \\\\\n8108: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] &\\leq C_v \\quad &\\text{(bounded expansion)} \\\\\n8109: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] &\\leq -\\kappa_b W_b + C_b \\quad &\\text{(strong contraction)}\n8110: \\end{aligned}\n8111: $$\n8112: \n8113: **Combined Drift:**\n8114: \n8115: $$\n8116: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] \\leq C_W + c_V(-\\kappa_x V_{\\text{Var},x} + C_v + C_x) + c_B(-\\kappa_b W_b + C_b)\n8117: $$\n8118: \n8119: **Critical Property - Partial Contraction:**\n8120: \n8121: When $V_{\\text{Var},x}$ and $W_b$ are sufficiently large relative to the expansion terms, the drift becomes negative:\n8122: \n8123: $$\n8124: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] < 0 \\quad \\text{when } c_V V_{\\text{Var},x} + c_B W_b > \\frac{C_W + c_V(C_v + C_x) + c_B C_b}{\\min(\\kappa_x, \\kappa_b)}",
       "metadata": {
         "label": "thm-complete-cloning-drift"
       },
       "section": "## 12.3. The Complete Lyapunov Drift Under Cloning",
-      "references": [],
-      "raw_directive": "8083: ### 12.3.1. Main Result\n8084: \n8085: :::{prf:theorem} Complete Drift Inequality for the Cloning Operator\n8086: :label: thm-complete-cloning-drift\n8087: \n8088: Under the foundational axioms (Chapter 4), the cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the synergistic Lyapunov function:\n8089: \n8090: $$\n8091: V_{\\text{total}}(S_1, S_2) = V_W(S_1, S_2) + c_V V_{\\text{Var}}(S_1, S_2) + c_B W_b(S_1, S_2)\n8092: $$\n8093: \n8094: **Individual Component Drifts:**\n8095: \n8096: $$\n8097: \\begin{aligned}\n8098: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] &\\leq C_W \\quad &\\text{(bounded expansion)} \\\\\n8099: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] &\\leq -\\kappa_x V_{\\text{Var},x} + C_x \\quad &\\text{(strong contraction)} \\\\\n8100: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] &\\leq C_v \\quad &\\text{(bounded expansion)} \\\\\n8101: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] &\\leq -\\kappa_b W_b + C_b \\quad &\\text{(strong contraction)}\n8102: \\end{aligned}\n8103: $$\n8104: \n8105: **Combined Drift:**\n8106: \n8107: $$\n8108: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] \\leq C_W + c_V(-\\kappa_x V_{\\text{Var},x} + C_v + C_x) + c_B(-\\kappa_b W_b + C_b)\n8109: $$\n8110: \n8111: **Critical Property - Partial Contraction:**\n8112: \n8113: When $V_{\\text{Var},x}$ and $W_b$ are sufficiently large relative to the expansion terms, the drift becomes negative:\n8114: \n8115: $$\n8116: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] < 0 \\quad \\text{when } c_V V_{\\text{Var},x} + c_B W_b > \\frac{C_W + c_V(C_v + C_x) + c_B C_b}{\\min(\\kappa_x, \\kappa_b)}\n8117: $$",
+      "references": [
+        "def-cloning-operator-formal"
+      ],
+      "raw_directive": "8091: ### 12.3.1. Main Result\n8092: \n8093: :::{prf:theorem} Complete Drift Inequality for the Cloning Operator\n8094: :label: thm-complete-cloning-drift\n8095: \n8096: Under the foundational axioms (Chapter 4), the cloning operator $\\Psi_{\\text{clone}}$ (see {prf:ref}`def-cloning-operator-formal`) induces the following drift on the synergistic Lyapunov function:\n8097: \n8098: $$\n8099: V_{\\text{total}}(S_1, S_2) = V_W(S_1, S_2) + c_V V_{\\text{Var}}(S_1, S_2) + c_B W_b(S_1, S_2)\n8100: $$\n8101: \n8102: **Individual Component Drifts:**\n8103: \n8104: $$\n8105: \\begin{aligned}\n8106: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] &\\leq C_W \\quad &\\text{(bounded expansion)} \\\\\n8107: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] &\\leq -\\kappa_x V_{\\text{Var},x} + C_x \\quad &\\text{(strong contraction)} \\\\\n8108: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] &\\leq C_v \\quad &\\text{(bounded expansion)} \\\\\n8109: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] &\\leq -\\kappa_b W_b + C_b \\quad &\\text{(strong contraction)}\n8110: \\end{aligned}\n8111: $$\n8112: \n8113: **Combined Drift:**\n8114: \n8115: $$\n8116: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] \\leq C_W + c_V(-\\kappa_x V_{\\text{Var},x} + C_v + C_x) + c_B(-\\kappa_b W_b + C_b)\n8117: $$\n8118: \n8119: **Critical Property - Partial Contraction:**\n8120: \n8121: When $V_{\\text{Var},x}$ and $W_b$ are sufficiently large relative to the expansion terms, the drift becomes negative:\n8122: \n8123: $$\n8124: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] < 0 \\quad \\text{when } c_V V_{\\text{Var},x} + c_B W_b > \\frac{C_W + c_V(C_v + C_x) + c_B C_b}{\\min(\\kappa_x, \\kappa_b)}\n8125: $$",
       "_registry_context": {
         "stage": "directives",
         "document_id": "03_cloning",
@@ -1913,20 +1915,20 @@
       "directive_type": "theorem",
       "label": "thm-synergistic-foster-lyapunov-preview",
       "title": "Synergistic Foster-Lyapunov Condition (Preview)",
-      "start_line": 8232,
-      "end_line": 8247,
+      "start_line": 8240,
+      "end_line": 8255,
       "header_lines": [
-        8233
+        8241
       ],
-      "content_start": 8235,
-      "content_end": 8246,
-      "content": "8235: :label: thm-synergistic-foster-lyapunov-preview\n8236: \n8237: When the coupling constants $c_V$ and $c_B$ are chosen appropriately, the composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}} \\circ \\Psi_{\\text{clone}}$ satisfies a Foster-Lyapunov drift condition:\n8238: \n8239: $$\n8240: \\mathbb{E}_{\\text{total}}[V_{\\text{total}}(S')] \\leq (1 - \\kappa_{\\text{total}}) V_{\\text{total}}(S) + C_{\\text{total}}\n8241: $$\n8242: \n8243: for some $\\kappa_{\\text{total}} > 0$ and $C_{\\text{total}} < \\infty$, both independent of $N$.\n8244: \n8245: **Consequence:** This drift condition implies:\n8246: 1. **Geometric ergodicity** of the Markov chain on the alive state space",
+      "content_start": 8243,
+      "content_end": 8254,
+      "content": "8243: :label: thm-synergistic-foster-lyapunov-preview\n8244: \n8245: When the coupling constants $c_V$ and $c_B$ are chosen appropriately, the composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}} \\circ \\Psi_{\\text{clone}}$ satisfies a Foster-Lyapunov drift condition:\n8246: \n8247: $$\n8248: \\mathbb{E}_{\\text{total}}[V_{\\text{total}}(S')] \\leq (1 - \\kappa_{\\text{total}}) V_{\\text{total}}(S) + C_{\\text{total}}\n8249: $$\n8250: \n8251: for some $\\kappa_{\\text{total}} > 0$ and $C_{\\text{total}} < \\infty$, both independent of $N$.\n8252: \n8253: **Consequence:** This drift condition implies:\n8254: 1. **Geometric ergodicity** of the Markov chain on the alive state space",
       "metadata": {
         "label": "thm-synergistic-foster-lyapunov-preview"
       },
       "section": "## 12.4. The Synergistic Dissipation Framework",
       "references": [],
-      "raw_directive": "8232: ### 12.4.2. The Synergistic Drift Inequality\n8233: \n8234: :::{prf:theorem} Synergistic Foster-Lyapunov Condition (Preview)\n8235: :label: thm-synergistic-foster-lyapunov-preview\n8236: \n8237: When the coupling constants $c_V$ and $c_B$ are chosen appropriately, the composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}} \\circ \\Psi_{\\text{clone}}$ satisfies a Foster-Lyapunov drift condition:\n8238: \n8239: $$\n8240: \\mathbb{E}_{\\text{total}}[V_{\\text{total}}(S')] \\leq (1 - \\kappa_{\\text{total}}) V_{\\text{total}}(S) + C_{\\text{total}}\n8241: $$\n8242: \n8243: for some $\\kappa_{\\text{total}} > 0$ and $C_{\\text{total}} < \\infty$, both independent of $N$.\n8244: \n8245: **Consequence:** This drift condition implies:\n8246: 1. **Geometric ergodicity** of the Markov chain on the alive state space\n8247: 2. **Exponential convergence** to the quasi-stationary distribution",
+      "raw_directive": "8240: ### 12.4.2. The Synergistic Drift Inequality\n8241: \n8242: :::{prf:theorem} Synergistic Foster-Lyapunov Condition (Preview)\n8243: :label: thm-synergistic-foster-lyapunov-preview\n8244: \n8245: When the coupling constants $c_V$ and $c_B$ are chosen appropriately, the composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}} \\circ \\Psi_{\\text{clone}}$ satisfies a Foster-Lyapunov drift condition:\n8246: \n8247: $$\n8248: \\mathbb{E}_{\\text{total}}[V_{\\text{total}}(S')] \\leq (1 - \\kappa_{\\text{total}}) V_{\\text{total}}(S) + C_{\\text{total}}\n8249: $$\n8250: \n8251: for some $\\kappa_{\\text{total}} > 0$ and $C_{\\text{total}} < \\infty$, both independent of $N$.\n8252: \n8253: **Consequence:** This drift condition implies:\n8254: 1. **Geometric ergodicity** of the Markov chain on the alive state space\n8255: 2. **Exponential convergence** to the quasi-stationary distribution",
       "_registry_context": {
         "stage": "directives",
         "document_id": "03_cloning",
@@ -1939,20 +1941,20 @@
       "directive_type": "theorem",
       "label": "thm-main-results-summary",
       "title": "Main Results of the Cloning Analysis (Summary)",
-      "start_line": 8398,
-      "end_line": 8431,
+      "start_line": 8406,
+      "end_line": 8439,
       "header_lines": [
-        8399
+        8407
       ],
-      "content_start": 8401,
-      "content_end": 8430,
-      "content": "8401: :label: thm-main-results-summary\n8402: \n8403: This document has established the following results for the cloning operator $\\Psi_{\\text{clone}}$:\n8404: \n8405: **1. The Keystone Principle (Chapters 5-8):**\n8406: - Large internal positional variance → detectable geometric structure\n8407: - Geometric structure → reliable fitness signal (N-uniform)\n8408: - Fitness signal → corrective cloning pressure\n8409: - **Result:** $\\frac{1}{N}\\sum_{i \\in I_{11}} (p_{1,i} + p_{2,i})\\|\\Delta\\delta_{x,i}\\|^2 \\geq \\chi(\\epsilon) V_{\\text{struct}} - g_{\\max}(\\epsilon)$\n8410: \n8411: **2. Positional Variance Contraction (Chapter 10):**\n8412: - The Keystone Principle translates to rigorous drift inequality\n8413: - **Result:** $\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x$\n8414: - Contraction rate $\\kappa_x > 0$ is **N-uniform**\n8415: \n8416: **3. Velocity Variance Bounded Expansion (Chapter 10):**\n8417: - Inelastic collisions cause state-independent perturbation\n8418: - **Result:** $\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v$\n8419: - Expansion is **bounded**, not growing with system state or size\n8420: \n8421: **4. Boundary Potential Contraction (Chapter 11):**\n8422: - Safe Harbor mechanism systematically removes boundary-proximate walkers\n8423: - **Result:** $\\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\leq -\\kappa_b W_b + C_b$\n8424: - Provides **exponentially suppressed extinction probability**\n8425: \n8426: **5. Complete Characterization (Chapter 12):**\n8427: - All drift constants are **N-independent** (scalable to large swarms)\n8428: - Cloning provides **partial contraction** of the Lyapunov function\n8429: - Requires **kinetic operator** to overcome bounded expansions\n8430: - Foundation for **synergistic Foster-Lyapunov condition**",
+      "content_start": 8409,
+      "content_end": 8438,
+      "content": "8409: :label: thm-main-results-summary\n8410: \n8411: This document has established the following results for the cloning operator $\\Psi_{\\text{clone}}$:\n8412: \n8413: **1. The Keystone Principle (Chapters 5-8):**\n8414: - Large internal positional variance → detectable geometric structure\n8415: - Geometric structure → reliable fitness signal (N-uniform)\n8416: - Fitness signal → corrective cloning pressure\n8417: - **Result:** $\\frac{1}{N}\\sum_{i \\in I_{11}} (p_{1,i} + p_{2,i})\\|\\Delta\\delta_{x,i}\\|^2 \\geq \\chi(\\epsilon) V_{\\text{struct}} - g_{\\max}(\\epsilon)$\n8418: \n8419: **2. Positional Variance Contraction (Chapter 10):**\n8420: - The Keystone Principle translates to rigorous drift inequality\n8421: - **Result:** $\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x$\n8422: - Contraction rate $\\kappa_x > 0$ is **N-uniform**\n8423: \n8424: **3. Velocity Variance Bounded Expansion (Chapter 10):**\n8425: - Inelastic collisions cause state-independent perturbation\n8426: - **Result:** $\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v$\n8427: - Expansion is **bounded**, not growing with system state or size\n8428: \n8429: **4. Boundary Potential Contraction (Chapter 11):**\n8430: - Safe Harbor mechanism systematically removes boundary-proximate walkers\n8431: - **Result:** $\\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\leq -\\kappa_b W_b + C_b$\n8432: - Provides **exponentially suppressed extinction probability**\n8433: \n8434: **5. Complete Characterization (Chapter 12):**\n8435: - All drift constants are **N-independent** (scalable to large swarms)\n8436: - Cloning provides **partial contraction** of the Lyapunov function\n8437: - Requires **kinetic operator** to overcome bounded expansions\n8438: - Foundation for **synergistic Foster-Lyapunov condition**",
       "metadata": {
         "label": "thm-main-results-summary"
       },
       "section": "## 12.5. Summary of Main Results",
       "references": [],
-      "raw_directive": "8398: ### 12.5.1. Theoretical Contributions\n8399: \n8400: :::{prf:theorem} Main Results of the Cloning Analysis (Summary)\n8401: :label: thm-main-results-summary\n8402: \n8403: This document has established the following results for the cloning operator $\\Psi_{\\text{clone}}$:\n8404: \n8405: **1. The Keystone Principle (Chapters 5-8):**\n8406: - Large internal positional variance → detectable geometric structure\n8407: - Geometric structure → reliable fitness signal (N-uniform)\n8408: - Fitness signal → corrective cloning pressure\n8409: - **Result:** $\\frac{1}{N}\\sum_{i \\in I_{11}} (p_{1,i} + p_{2,i})\\|\\Delta\\delta_{x,i}\\|^2 \\geq \\chi(\\epsilon) V_{\\text{struct}} - g_{\\max}(\\epsilon)$\n8410: \n8411: **2. Positional Variance Contraction (Chapter 10):**\n8412: - The Keystone Principle translates to rigorous drift inequality\n8413: - **Result:** $\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x$\n8414: - Contraction rate $\\kappa_x > 0$ is **N-uniform**\n8415: \n8416: **3. Velocity Variance Bounded Expansion (Chapter 10):**\n8417: - Inelastic collisions cause state-independent perturbation\n8418: - **Result:** $\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v$\n8419: - Expansion is **bounded**, not growing with system state or size\n8420: \n8421: **4. Boundary Potential Contraction (Chapter 11):**\n8422: - Safe Harbor mechanism systematically removes boundary-proximate walkers\n8423: - **Result:** $\\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\leq -\\kappa_b W_b + C_b$\n8424: - Provides **exponentially suppressed extinction probability**\n8425: \n8426: **5. Complete Characterization (Chapter 12):**\n8427: - All drift constants are **N-independent** (scalable to large swarms)\n8428: - Cloning provides **partial contraction** of the Lyapunov function\n8429: - Requires **kinetic operator** to overcome bounded expansions\n8430: - Foundation for **synergistic Foster-Lyapunov condition**\n8431: ",
+      "raw_directive": "8406: ### 12.5.1. Theoretical Contributions\n8407: \n8408: :::{prf:theorem} Main Results of the Cloning Analysis (Summary)\n8409: :label: thm-main-results-summary\n8410: \n8411: This document has established the following results for the cloning operator $\\Psi_{\\text{clone}}$:\n8412: \n8413: **1. The Keystone Principle (Chapters 5-8):**\n8414: - Large internal positional variance → detectable geometric structure\n8415: - Geometric structure → reliable fitness signal (N-uniform)\n8416: - Fitness signal → corrective cloning pressure\n8417: - **Result:** $\\frac{1}{N}\\sum_{i \\in I_{11}} (p_{1,i} + p_{2,i})\\|\\Delta\\delta_{x,i}\\|^2 \\geq \\chi(\\epsilon) V_{\\text{struct}} - g_{\\max}(\\epsilon)$\n8418: \n8419: **2. Positional Variance Contraction (Chapter 10):**\n8420: - The Keystone Principle translates to rigorous drift inequality\n8421: - **Result:** $\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x$\n8422: - Contraction rate $\\kappa_x > 0$ is **N-uniform**\n8423: \n8424: **3. Velocity Variance Bounded Expansion (Chapter 10):**\n8425: - Inelastic collisions cause state-independent perturbation\n8426: - **Result:** $\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v$\n8427: - Expansion is **bounded**, not growing with system state or size\n8428: \n8429: **4. Boundary Potential Contraction (Chapter 11):**\n8430: - Safe Harbor mechanism systematically removes boundary-proximate walkers\n8431: - **Result:** $\\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\leq -\\kappa_b W_b + C_b$\n8432: - Provides **exponentially suppressed extinction probability**\n8433: \n8434: **5. Complete Characterization (Chapter 12):**\n8435: - All drift constants are **N-independent** (scalable to large swarms)\n8436: - Cloning provides **partial contraction** of the Lyapunov function\n8437: - Requires **kinetic operator** to overcome bounded expansions\n8438: - Foundation for **synergistic Foster-Lyapunov condition**\n8439: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "03_cloning",
@@ -2820,19 +2822,25 @@
       "label": "thm-mean-field-equation",
       "title": "The Mean-Field Equations for the Euclidean Gas",
       "start_line": 612,
-      "end_line": 649,
+      "end_line": 651,
       "header_lines": [
         613
       ],
       "content_start": 615,
-      "content_end": 648,
-      "content": "615: :label: thm-mean-field-equation\n616: \n617: The evolution of the Euclidean Gas in the mean-field limit is governed by a coupled system of equations for the alive density $f(t,z)$ and the dead mass $m_d(t)$:\n618: \n619: **Equation for the Alive Density:**\n620: \n621: $$\n622: \\boxed{\n623: \\partial_t f = L^\\dagger f - c(z)f + B[f, m_d] + S[f]\n624: }\n625: $$ (eq-mean-field-pde-main)\n626: \n627: **Equation for the Dead Mass:**\n628: \n629: $$\n630: \\boxed{\n631: \\frac{\\mathrm{d}}{\\mathrm{d}t} m_d(t) = \\int_{\\Omega} c(z)f(t,z)\\,\\mathrm{d}z - \\lambda_{\\text{rev}} m_d(t)\n632: }\n633: $$ (eq-dead-mass-ode)\n634: \n635: subject to initial conditions $f(0, \\cdot) = f_0$ and $m_d(0) = 1 - \\int_\\Omega f_0$, where $m_a(0) + m_d(0) = 1$.\n636: \n637: In explicit form, the equation for $f$ is:\n638: \n639: $$\n640: \\partial_t f(t,z) = -\\nabla\\cdot(A(z) f(t,z)) + \\nabla\\cdot(\\mathsf{D}\\nabla f(t,z)) - c(z)f(t,z) + \\lambda_{\\text{revive}} m_d(t) \\frac{f(t,z)}{m_a(t)} + S[f](t,z)\n641: $$\n642: \n643: where:\n644: *   $A(z)$ is the drift field and $\\mathsf{D}$ is the diffusion tensor from the kinetic transport (with reflecting boundaries)\n645: *   $c(z)$ is the interior killing rate (zero in interior, positive near boundary)\n646: *   $\\lambda_{\\text{revive}} > 0$ is the revival rate (free parameter, typical values 0.1-5)\n647: *   $B[f, m_d] = \\lambda_{\\text{revive}} m_d(t) f/m_a$ is the revival operator\n648: *   $S[f]$ is the mass-neutral internal cloning operator",
+      "content_end": 650,
+      "content": "615: :label: thm-mean-field-equation\n616: \n617: The evolution of the Euclidean Gas in the mean-field limit is governed by a coupled system of equations for the alive density $f(t,z)$ and the dead mass $m_d(t)$:\n618: \n619: **Equation for the Alive Density:**\n620: \n621: $$\n622: \\boxed{\n623: \\partial_t f = L^\\dagger f - c(z)f + B[f, m_d] + S[f]\n624: }\n625: $$ (eq-mean-field-pde-main)\n626: \n627: where $L^\\dagger$ is the transport operator (see {prf:ref}`def-transport-operator`), $c(z)$ is the killing rate (see {prf:ref}`def-killing-operator`), $B[f, m_d]$ is the revival operator (see {prf:ref}`def-revival-operator`), and $S[f]$ is the internal cloning operator (see {prf:ref}`def-cloning-generator`).\n628: \n629: **Equation for the Dead Mass:**\n630: \n631: $$\n632: \\boxed{\n633: \\frac{\\mathrm{d}}{\\mathrm{d}t} m_d(t) = \\int_{\\Omega} c(z)f(t,z)\\,\\mathrm{d}z - \\lambda_{\\text{rev}} m_d(t)\n634: }\n635: $$ (eq-dead-mass-ode)\n636: \n637: subject to initial conditions $f(0, \\cdot) = f_0$ and $m_d(0) = 1 - \\int_\\Omega f_0$, where $m_a(0) + m_d(0) = 1$.\n638: \n639: The total alive mass is $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$, and the system conserves the total population: $m_a(t) + m_d(t) = 1$ for all $t$ (see {prf:ref}`thm-mass-conservation`).\n640: \n641: In explicit form, the equation for $f$ is:\n642: \n643: $$\n644: \\partial_t f(t,z) = -\\nabla\\cdot(A(z) f(t,z)) + \\nabla\\cdot(\\mathsf{D}\\nabla f(t,z)) - c(z)f(t,z) + \\lambda_{\\text{revive}} m_d(t) \\frac{f(t,z)}{m_a(t)} + S[f](t,z)\n645: $$\n646: \n647: where:\n648: *   $A(z)$ is the drift field and $\\mathsf{D}$ is the diffusion tensor from the kinetic transport (with reflecting boundaries)\n649: *   $c(z)$ is the interior killing rate (zero in interior, positive near boundary)\n650: *   $\\lambda_{\\text{revive}} > 0$ is the revival rate (free parameter, typical values 0.1-5)",
       "metadata": {
         "label": "thm-mean-field-equation"
       },
       "section": "## 3. The Mass-Conserving Forward Equation (PDE)",
-      "references": [],
-      "raw_directive": "612: By assembling all operators—kinetic transport, interior killing, revival, and internal cloning—we arrive at a **coupled system** that describes the evolution of both the alive density and the dead mass.\n613: \n614: :::{prf:theorem} The Mean-Field Equations for the Euclidean Gas\n615: :label: thm-mean-field-equation\n616: \n617: The evolution of the Euclidean Gas in the mean-field limit is governed by a coupled system of equations for the alive density $f(t,z)$ and the dead mass $m_d(t)$:\n618: \n619: **Equation for the Alive Density:**\n620: \n621: $$\n622: \\boxed{\n623: \\partial_t f = L^\\dagger f - c(z)f + B[f, m_d] + S[f]\n624: }\n625: $$ (eq-mean-field-pde-main)\n626: \n627: **Equation for the Dead Mass:**\n628: \n629: $$\n630: \\boxed{\n631: \\frac{\\mathrm{d}}{\\mathrm{d}t} m_d(t) = \\int_{\\Omega} c(z)f(t,z)\\,\\mathrm{d}z - \\lambda_{\\text{rev}} m_d(t)\n632: }\n633: $$ (eq-dead-mass-ode)\n634: \n635: subject to initial conditions $f(0, \\cdot) = f_0$ and $m_d(0) = 1 - \\int_\\Omega f_0$, where $m_a(0) + m_d(0) = 1$.\n636: \n637: In explicit form, the equation for $f$ is:\n638: \n639: $$\n640: \\partial_t f(t,z) = -\\nabla\\cdot(A(z) f(t,z)) + \\nabla\\cdot(\\mathsf{D}\\nabla f(t,z)) - c(z)f(t,z) + \\lambda_{\\text{revive}} m_d(t) \\frac{f(t,z)}{m_a(t)} + S[f](t,z)\n641: $$\n642: \n643: where:\n644: *   $A(z)$ is the drift field and $\\mathsf{D}$ is the diffusion tensor from the kinetic transport (with reflecting boundaries)\n645: *   $c(z)$ is the interior killing rate (zero in interior, positive near boundary)\n646: *   $\\lambda_{\\text{revive}} > 0$ is the revival rate (free parameter, typical values 0.1-5)\n647: *   $B[f, m_d] = \\lambda_{\\text{revive}} m_d(t) f/m_a$ is the revival operator\n648: *   $S[f]$ is the mass-neutral internal cloning operator\n649: ",
+      "references": [
+        "def-transport-operator",
+        "def-killing-operator",
+        "def-revival-operator",
+        "def-cloning-generator",
+        "thm-mass-conservation"
+      ],
+      "raw_directive": "612: By assembling all operators—kinetic transport, interior killing, revival, and internal cloning—we arrive at a **coupled system** that describes the evolution of both the alive density and the dead mass.\n613: \n614: :::{prf:theorem} The Mean-Field Equations for the Euclidean Gas\n615: :label: thm-mean-field-equation\n616: \n617: The evolution of the Euclidean Gas in the mean-field limit is governed by a coupled system of equations for the alive density $f(t,z)$ and the dead mass $m_d(t)$:\n618: \n619: **Equation for the Alive Density:**\n620: \n621: $$\n622: \\boxed{\n623: \\partial_t f = L^\\dagger f - c(z)f + B[f, m_d] + S[f]\n624: }\n625: $$ (eq-mean-field-pde-main)\n626: \n627: where $L^\\dagger$ is the transport operator (see {prf:ref}`def-transport-operator`), $c(z)$ is the killing rate (see {prf:ref}`def-killing-operator`), $B[f, m_d]$ is the revival operator (see {prf:ref}`def-revival-operator`), and $S[f]$ is the internal cloning operator (see {prf:ref}`def-cloning-generator`).\n628: \n629: **Equation for the Dead Mass:**\n630: \n631: $$\n632: \\boxed{\n633: \\frac{\\mathrm{d}}{\\mathrm{d}t} m_d(t) = \\int_{\\Omega} c(z)f(t,z)\\,\\mathrm{d}z - \\lambda_{\\text{rev}} m_d(t)\n634: }\n635: $$ (eq-dead-mass-ode)\n636: \n637: subject to initial conditions $f(0, \\cdot) = f_0$ and $m_d(0) = 1 - \\int_\\Omega f_0$, where $m_a(0) + m_d(0) = 1$.\n638: \n639: The total alive mass is $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$, and the system conserves the total population: $m_a(t) + m_d(t) = 1$ for all $t$ (see {prf:ref}`thm-mass-conservation`).\n640: \n641: In explicit form, the equation for $f$ is:\n642: \n643: $$\n644: \\partial_t f(t,z) = -\\nabla\\cdot(A(z) f(t,z)) + \\nabla\\cdot(\\mathsf{D}\\nabla f(t,z)) - c(z)f(t,z) + \\lambda_{\\text{revive}} m_d(t) \\frac{f(t,z)}{m_a(t)} + S[f](t,z)\n645: $$\n646: \n647: where:\n648: *   $A(z)$ is the drift field and $\\mathsf{D}$ is the diffusion tensor from the kinetic transport (with reflecting boundaries)\n649: *   $c(z)$ is the interior killing rate (zero in interior, positive near boundary)\n650: *   $\\lambda_{\\text{revive}} > 0$ is the revival rate (free parameter, typical values 0.1-5)\n651: *   $B[f, m_d] = \\lambda_{\\text{revive}} m_d(t) f/m_a$ is the revival operator",
       "_registry_context": {
         "stage": "directives",
         "document_id": "07_mean_field",
@@ -2845,20 +2853,22 @@
       "directive_type": "theorem",
       "label": "thm-mass-conservation",
       "title": "Total Mass Conservation and Population Dynamics",
-      "start_line": 671,
-      "end_line": 691,
+      "start_line": 673,
+      "end_line": 693,
       "header_lines": [
-        672
+        674
       ],
-      "content_start": 674,
-      "content_end": 690,
-      "content": "674: :label: thm-mass-conservation\n675: \n676: Any sufficiently regular solution $(f(t,z), m_d(t))$ to the Mean-Field Equations satisfies the following properties:\n677: \n678: **1. Total Mass Conservation:** The total population is conserved for all time $t>0$:\n679: \n680: $$\n681: \\frac{\\mathrm{d}}{\\mathrm{d}t}\\left[m_a(t) + m_d(t)\\right] = 0\n682: $$\n683: \n684: where $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$. This implies that $m_a(t) + m_d(t) = 1$ for all $t$ if this holds initially.\n685: \n686: **2. Alive Population Dynamics:** The alive mass evolves according to the balance between killing and revival:\n687: \n688: $$\n689: \\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = \\lambda_{\\text{rev}} m_d(t) - k_{\\text{killed}}[f](t)\n690: $$",
+      "content_start": 676,
+      "content_end": 692,
+      "content": "676: :label: thm-mass-conservation\n677: \n678: Any sufficiently regular solution $(f(t,z), m_d(t))$ to the Mean-Field Equations (see {prf:ref}`thm-mean-field-equation`) satisfies the following properties:\n679: \n680: **1. Total Mass Conservation:** The total population is conserved for all time $t>0$:\n681: \n682: $$\n683: \\frac{\\mathrm{d}}{\\mathrm{d}t}\\left[m_a(t) + m_d(t)\\right] = 0\n684: $$\n685: \n686: where $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$. This implies that $m_a(t) + m_d(t) = 1$ for all $t$ if this holds initially.\n687: \n688: **2. Alive Population Dynamics:** The alive mass evolves according to the balance between killing and revival:\n689: \n690: $$\n691: \\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = \\lambda_{\\text{rev}} m_d(t) - k_{\\text{killed}}[f](t)\n692: $$",
       "metadata": {
         "label": "thm-mass-conservation"
       },
       "section": "## 3. The Mass-Conserving Forward Equation (PDE)",
-      "references": [],
-      "raw_directive": "671: The primary property of this coupled system is that it conserves **total population mass** while allowing the alive and dead populations to exchange mass and reach a dynamic equilibrium.\n672: \n673: :::{prf:theorem} Total Mass Conservation and Population Dynamics\n674: :label: thm-mass-conservation\n675: \n676: Any sufficiently regular solution $(f(t,z), m_d(t))$ to the Mean-Field Equations satisfies the following properties:\n677: \n678: **1. Total Mass Conservation:** The total population is conserved for all time $t>0$:\n679: \n680: $$\n681: \\frac{\\mathrm{d}}{\\mathrm{d}t}\\left[m_a(t) + m_d(t)\\right] = 0\n682: $$\n683: \n684: where $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$. This implies that $m_a(t) + m_d(t) = 1$ for all $t$ if this holds initially.\n685: \n686: **2. Alive Population Dynamics:** The alive mass evolves according to the balance between killing and revival:\n687: \n688: $$\n689: \\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = \\lambda_{\\text{rev}} m_d(t) - k_{\\text{killed}}[f](t)\n690: $$\n691: ",
+      "references": [
+        "thm-mean-field-equation"
+      ],
+      "raw_directive": "673: The primary property of this coupled system is that it conserves **total population mass** while allowing the alive and dead populations to exchange mass and reach a dynamic equilibrium.\n674: \n675: :::{prf:theorem} Total Mass Conservation and Population Dynamics\n676: :label: thm-mass-conservation\n677: \n678: Any sufficiently regular solution $(f(t,z), m_d(t))$ to the Mean-Field Equations (see {prf:ref}`thm-mean-field-equation`) satisfies the following properties:\n679: \n680: **1. Total Mass Conservation:** The total population is conserved for all time $t>0$:\n681: \n682: $$\n683: \\frac{\\mathrm{d}}{\\mathrm{d}t}\\left[m_a(t) + m_d(t)\\right] = 0\n684: $$\n685: \n686: where $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$. This implies that $m_a(t) + m_d(t) = 1$ for all $t$ if this holds initially.\n687: \n688: **2. Alive Population Dynamics:** The alive mass evolves according to the balance between killing and revival:\n689: \n690: $$\n691: \\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = \\lambda_{\\text{rev}} m_d(t) - k_{\\text{killed}}[f](t)\n692: $$\n693: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "07_mean_field",
@@ -2871,20 +2881,25 @@
       "directive_type": "theorem",
       "label": "thm-killing-rate-consistency",
       "title": "Consistency of the Interior Killing Rate Approximation",
-      "start_line": 833,
-      "end_line": 890,
+      "start_line": 835,
+      "end_line": 892,
       "header_lines": [
-        834
+        836
       ],
-      "content_start": 836,
-      "content_end": 889,
-      "content": "836: :label: thm-killing-rate-consistency\n837: \n838: Under Assumptions [](#asmp-domain-regularity), [](#asmp-integrator-regularity), and [](#asmp-density-regularity-killing), there exists a smooth killing rate function $c \\in C^\\infty_c(\\Omega)$ with compact support in $\\mathcal{T}_\\delta$ such that:\n839: \n840: **Part (i): Pointwise Convergence of the Exit Rate**\n841: \n842: For each $(x,v) \\in \\Omega$, define the discrete exit probability:\n843: \n844: $$\n845: p_{\\text{exit}}(x,v,\\tau) := \\mathbb{P}\\left(x^+(\\tau; x,v) \\notin X_{\\text{valid}}\\right)\n846: $$\n847: \n848: Then:\n849: \n850: $$\n851: \\lim_{\\tau \\to 0} \\frac{1}{\\tau} p_{\\text{exit}}(x,v,\\tau) = c(x,v)\n852: $$\n853: \n854: where the killing rate is given explicitly by:\n855: \n856: $$\n857: c(x,v) = \\begin{cases}\n858: \\frac{(v \\cdot n_x(x))^+}{d(x)} \\cdot \\mathbf{1}_{d(x) < \\delta} & \\text{if } x \\in \\mathcal{T}_\\delta \\\\\n859: 0 & \\text{otherwise}\n860: \\end{cases}\n861: $$\n862: \n863: with $(v \\cdot n_x(x))^+ := \\max(v \\cdot n_x(x), 0)$ denoting the outward normal velocity component.\n864: \n865: **Part (ii): Uniform Convergence of the Expected Killing Fraction**\n866: \n867: Define the expected killing fraction in a discrete timestep as:\n868: \n869: $$\n870: K_{\\text{discrete}}(\\tau) := \\int_{\\Omega} p_{\\text{exit}}(x,v,\\tau) f^\\tau(x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v\n871: $$\n872: \n873: and the continuous killing rate as:\n874: \n875: $$\n876: K_{\\text{continuous}} := \\int_{\\Omega} c(x,v) f(x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v\n877: $$\n878: \n879: Then:\n880: \n881: $$\n882: \\lim_{\\tau \\to 0} \\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) = K_{\\text{continuous}}\n883: $$\n884: \n885: with the error bound:\n886: \n887: $$\n888: \\left|\\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) - K_{\\text{continuous}}\\right| \\le C \\left(\\sqrt{\\tau} + \\|f^\\tau - f\\|_{L^1}\\right)\n889: $$",
+      "content_start": 838,
+      "content_end": 891,
+      "content": "838: :label: thm-killing-rate-consistency\n839: \n840: Under the regularity assumptions (see {prf:ref}`assumption-domain-regularity`, {prf:ref}`assumption-integrator-regularity`, and {prf:ref}`assumption-density-regularity-killing`), there exists a smooth killing rate function $c \\in C^\\infty_c(\\Omega)$ (see {prf:ref}`def-killing-operator`) with compact support in $\\mathcal{T}_\\delta$ such that:\n841: \n842: **Part (i): Pointwise Convergence of the Exit Rate**\n843: \n844: For each $(x,v) \\in \\Omega$, define the discrete exit probability:\n845: \n846: $$\n847: p_{\\text{exit}}(x,v,\\tau) := \\mathbb{P}\\left(x^+(\\tau; x,v) \\notin X_{\\text{valid}}\\right)\n848: $$\n849: \n850: Then:\n851: \n852: $$\n853: \\lim_{\\tau \\to 0} \\frac{1}{\\tau} p_{\\text{exit}}(x,v,\\tau) = c(x,v)\n854: $$\n855: \n856: where the killing rate is given explicitly by:\n857: \n858: $$\n859: c(x,v) = \\begin{cases}\n860: \\frac{(v \\cdot n_x(x))^+}{d(x)} \\cdot \\mathbf{1}_{d(x) < \\delta} & \\text{if } x \\in \\mathcal{T}_\\delta \\\\\n861: 0 & \\text{otherwise}\n862: \\end{cases}\n863: $$\n864: \n865: with $(v \\cdot n_x(x))^+ := \\max(v \\cdot n_x(x), 0)$ denoting the outward normal velocity component.\n866: \n867: **Part (ii): Uniform Convergence of the Expected Killing Fraction**\n868: \n869: Define the expected killing fraction in a discrete timestep as:\n870: \n871: $$\n872: K_{\\text{discrete}}(\\tau) := \\int_{\\Omega} p_{\\text{exit}}(x,v,\\tau) f^\\tau(x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v\n873: $$\n874: \n875: and the continuous killing rate as:\n876: \n877: $$\n878: K_{\\text{continuous}} := \\int_{\\Omega} c(x,v) f(x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v\n879: $$\n880: \n881: Then:\n882: \n883: $$\n884: \\lim_{\\tau \\to 0} \\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) = K_{\\text{continuous}}\n885: $$\n886: \n887: with the error bound:\n888: \n889: $$\n890: \\left|\\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) - K_{\\text{continuous}}\\right| \\le C \\left(\\sqrt{\\tau} + \\|f^\\tau - f\\|_{L^1}\\right)\n891: $$",
       "metadata": {
         "label": "thm-killing-rate-consistency"
       },
       "section": "## 4. Analysis and Properties of the Mean-Field Equations",
-      "references": [],
-      "raw_directive": "833: #### 4.4.2. Main Theorem: Killing Rate Approximation\n834: \n835: :::{prf:theorem} Consistency of the Interior Killing Rate Approximation\n836: :label: thm-killing-rate-consistency\n837: \n838: Under Assumptions [](#asmp-domain-regularity), [](#asmp-integrator-regularity), and [](#asmp-density-regularity-killing), there exists a smooth killing rate function $c \\in C^\\infty_c(\\Omega)$ with compact support in $\\mathcal{T}_\\delta$ such that:\n839: \n840: **Part (i): Pointwise Convergence of the Exit Rate**\n841: \n842: For each $(x,v) \\in \\Omega$, define the discrete exit probability:\n843: \n844: $$\n845: p_{\\text{exit}}(x,v,\\tau) := \\mathbb{P}\\left(x^+(\\tau; x,v) \\notin X_{\\text{valid}}\\right)\n846: $$\n847: \n848: Then:\n849: \n850: $$\n851: \\lim_{\\tau \\to 0} \\frac{1}{\\tau} p_{\\text{exit}}(x,v,\\tau) = c(x,v)\n852: $$\n853: \n854: where the killing rate is given explicitly by:\n855: \n856: $$\n857: c(x,v) = \\begin{cases}\n858: \\frac{(v \\cdot n_x(x))^+}{d(x)} \\cdot \\mathbf{1}_{d(x) < \\delta} & \\text{if } x \\in \\mathcal{T}_\\delta \\\\\n859: 0 & \\text{otherwise}\n860: \\end{cases}\n861: $$\n862: \n863: with $(v \\cdot n_x(x))^+ := \\max(v \\cdot n_x(x), 0)$ denoting the outward normal velocity component.\n864: \n865: **Part (ii): Uniform Convergence of the Expected Killing Fraction**\n866: \n867: Define the expected killing fraction in a discrete timestep as:\n868: \n869: $$\n870: K_{\\text{discrete}}(\\tau) := \\int_{\\Omega} p_{\\text{exit}}(x,v,\\tau) f^\\tau(x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v\n871: $$\n872: \n873: and the continuous killing rate as:\n874: \n875: $$\n876: K_{\\text{continuous}} := \\int_{\\Omega} c(x,v) f(x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v\n877: $$\n878: \n879: Then:\n880: \n881: $$\n882: \\lim_{\\tau \\to 0} \\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) = K_{\\text{continuous}}\n883: $$\n884: \n885: with the error bound:\n886: \n887: $$\n888: \\left|\\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) - K_{\\text{continuous}}\\right| \\le C \\left(\\sqrt{\\tau} + \\|f^\\tau - f\\|_{L^1}\\right)\n889: $$\n890: ",
+      "references": [
+        "assumption-domain-regularity",
+        "assumption-integrator-regularity",
+        "assumption-density-regularity-killing",
+        "def-killing-operator"
+      ],
+      "raw_directive": "835: #### 4.4.2. Main Theorem: Killing Rate Approximation\n836: \n837: :::{prf:theorem} Consistency of the Interior Killing Rate Approximation\n838: :label: thm-killing-rate-consistency\n839: \n840: Under the regularity assumptions (see {prf:ref}`assumption-domain-regularity`, {prf:ref}`assumption-integrator-regularity`, and {prf:ref}`assumption-density-regularity-killing`), there exists a smooth killing rate function $c \\in C^\\infty_c(\\Omega)$ (see {prf:ref}`def-killing-operator`) with compact support in $\\mathcal{T}_\\delta$ such that:\n841: \n842: **Part (i): Pointwise Convergence of the Exit Rate**\n843: \n844: For each $(x,v) \\in \\Omega$, define the discrete exit probability:\n845: \n846: $$\n847: p_{\\text{exit}}(x,v,\\tau) := \\mathbb{P}\\left(x^+(\\tau; x,v) \\notin X_{\\text{valid}}\\right)\n848: $$\n849: \n850: Then:\n851: \n852: $$\n853: \\lim_{\\tau \\to 0} \\frac{1}{\\tau} p_{\\text{exit}}(x,v,\\tau) = c(x,v)\n854: $$\n855: \n856: where the killing rate is given explicitly by:\n857: \n858: $$\n859: c(x,v) = \\begin{cases}\n860: \\frac{(v \\cdot n_x(x))^+}{d(x)} \\cdot \\mathbf{1}_{d(x) < \\delta} & \\text{if } x \\in \\mathcal{T}_\\delta \\\\\n861: 0 & \\text{otherwise}\n862: \\end{cases}\n863: $$\n864: \n865: with $(v \\cdot n_x(x))^+ := \\max(v \\cdot n_x(x), 0)$ denoting the outward normal velocity component.\n866: \n867: **Part (ii): Uniform Convergence of the Expected Killing Fraction**\n868: \n869: Define the expected killing fraction in a discrete timestep as:\n870: \n871: $$\n872: K_{\\text{discrete}}(\\tau) := \\int_{\\Omega} p_{\\text{exit}}(x,v,\\tau) f^\\tau(x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v\n873: $$\n874: \n875: and the continuous killing rate as:\n876: \n877: $$\n878: K_{\\text{continuous}} := \\int_{\\Omega} c(x,v) f(x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v\n879: $$\n880: \n881: Then:\n882: \n883: $$\n884: \\lim_{\\tau \\to 0} \\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) = K_{\\text{continuous}}\n885: $$\n886: \n887: with the error bound:\n888: \n889: $$\n890: \\left|\\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) - K_{\\text{continuous}}\\right| \\le C \\left(\\sqrt{\\tau} + \\|f^\\tau - f\\|_{L^1}\\right)\n891: $$\n892: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "07_mean_field",
@@ -2897,20 +2912,23 @@
       "directive_type": "theorem",
       "label": "thm-mean-field-limit-informal",
       "title": "Mean-Field Limit (Informal Statement)",
-      "start_line": 1337,
-      "end_line": 1353,
+      "start_line": 1339,
+      "end_line": 1355,
       "header_lines": [
-        1338
+        1340
       ],
-      "content_start": 1340,
-      "content_end": 1352,
-      "content": "1340: :label: thm-mean-field-limit-informal\n1341: \n1342: Let $(X_i^\\tau(t), V_i^\\tau(t))_{i=1}^N$ be the $N$-particle discrete Fragile Gas dynamics with timestep $\\tau$, and let:\n1343: \n1344: $$\n1345: f_N^\\tau(t, x, v) := \\frac{1}{N} \\sum_{i=1}^N \\delta(x - X_i^\\tau(t), v - V_i^\\tau(t))\n1346: $$\n1347: \n1348: be the empirical density. Then, in the joint limit $N \\to \\infty, \\tau \\to 0$ with $\\tau = O(N^{-\\alpha})$ for $\\alpha > 0$:\n1349: \n1350: $$\n1351: f_N^\\tau(t, \\cdot, \\cdot) \\xrightarrow{\\text{weak}} f(t, \\cdot, \\cdot)\n1352: $$",
+      "content_start": 1342,
+      "content_end": 1354,
+      "content": "1342: :label: thm-mean-field-limit-informal\n1343: \n1344: Let $(X_i^\\tau(t), V_i^\\tau(t))_{i=1}^N$ be the $N$-particle discrete Fragile Gas dynamics (see {prf:ref}`def-baoab-update-rule` for the kinetic integrator) with timestep $\\tau$, and let:\n1345: \n1346: $$\n1347: f_N^\\tau(t, x, v) := \\frac{1}{N} \\sum_{i=1}^N \\delta(x - X_i^\\tau(t), v - V_i^\\tau(t))\n1348: $$\n1349: \n1350: be the empirical density. Then, in the joint limit $N \\to \\infty, \\tau \\to 0$ with $\\tau = O(N^{-\\alpha})$ for $\\alpha > 0$:\n1351: \n1352: $$\n1353: f_N^\\tau(t, \\cdot, \\cdot) \\xrightarrow{\\text{weak}} f(t, \\cdot, \\cdot)\n1354: $$",
       "metadata": {
         "label": "thm-mean-field-limit-informal"
       },
       "section": "## 4. Analysis and Properties of the Mean-Field Equations",
-      "references": [],
-      "raw_directive": "1337: The killing rate consistency theorem (Theorem [](#thm-killing-rate-consistency)) provides the final piece needed to justify our mean-field model. Combined with the standard kinetic theory arguments for the transport operator $L^\\dagger$ (Section 2.2) and the Law of Large Numbers for the cloning operators (Section 2.3), we obtain:\n1338: \n1339: :::{prf:theorem} Mean-Field Limit (Informal Statement)\n1340: :label: thm-mean-field-limit-informal\n1341: \n1342: Let $(X_i^\\tau(t), V_i^\\tau(t))_{i=1}^N$ be the $N$-particle discrete Fragile Gas dynamics with timestep $\\tau$, and let:\n1343: \n1344: $$\n1345: f_N^\\tau(t, x, v) := \\frac{1}{N} \\sum_{i=1}^N \\delta(x - X_i^\\tau(t), v - V_i^\\tau(t))\n1346: $$\n1347: \n1348: be the empirical density. Then, in the joint limit $N \\to \\infty, \\tau \\to 0$ with $\\tau = O(N^{-\\alpha})$ for $\\alpha > 0$:\n1349: \n1350: $$\n1351: f_N^\\tau(t, \\cdot, \\cdot) \\xrightarrow{\\text{weak}} f(t, \\cdot, \\cdot)\n1352: $$\n1353: ",
+      "references": [
+        "def-baoab-update-rule",
+        "thm-mean-field-equation"
+      ],
+      "raw_directive": "1339: The killing rate consistency theorem (see {prf:ref}`thm-killing-rate-consistency`) provides the final piece needed to justify our mean-field model. Combined with the standard kinetic theory arguments for the transport operator $L^\\dagger$ from the kinetic generator (see {prf:ref}`def-kinetic-generator`) and the Law of Large Numbers for the cloning operators (Section 2.3), we obtain:\n1340: \n1341: :::{prf:theorem} Mean-Field Limit (Informal Statement)\n1342: :label: thm-mean-field-limit-informal\n1343: \n1344: Let $(X_i^\\tau(t), V_i^\\tau(t))_{i=1}^N$ be the $N$-particle discrete Fragile Gas dynamics (see {prf:ref}`def-baoab-update-rule` for the kinetic integrator) with timestep $\\tau$, and let:\n1345: \n1346: $$\n1347: f_N^\\tau(t, x, v) := \\frac{1}{N} \\sum_{i=1}^N \\delta(x - X_i^\\tau(t), v - V_i^\\tau(t))\n1348: $$\n1349: \n1350: be the empirical density. Then, in the joint limit $N \\to \\infty, \\tau \\to 0$ with $\\tau = O(N^{-\\alpha})$ for $\\alpha > 0$:\n1351: \n1352: $$\n1353: f_N^\\tau(t, \\cdot, \\cdot) \\xrightarrow{\\text{weak}} f(t, \\cdot, \\cdot)\n1354: $$\n1355: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "07_mean_field",

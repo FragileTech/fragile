@@ -18,17 +18,110 @@ import importlib.metadata
 import logging
 from pathlib import Path
 import re
-from typing import Sequence
 
 import click
 import flogging
 
-flogging.setup(level="INFO")
+from mathster.iterators import discover_chapter_markdown_files, discover_registry_folders
+
+
+flogging.setup(level="INFO", allow_trailing_dot=True)
 
 CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
 
 CHAPTER_FILENAME_PATTERN = re.compile(r"^\d{2}_.+\.md$")
 DEFAULT_CHAPTER_ROOTS: tuple[Path, ...] = (Path("docs/source"), Path("old_docs/source"))
+
+
+def _normalize_document_argument(value: str | Path | None) -> str:
+    """Convert CLI document inputs (id/path/.md) into a document_id string."""
+
+    if value is None:
+        return ""
+
+    text = str(value).strip()
+    if not text:
+        return ""
+
+    candidate = Path(text)
+    suffix = candidate.suffix.lower()
+    if suffix == ".md":
+        return candidate.stem
+    if suffix:
+        return candidate.stem
+
+    return candidate.name or text
+
+
+def _locate_markdown_file(document: str | Path | None) -> Path | None:
+    """Best-effort resolution of a document argument into a markdown file."""
+
+    if document is None:
+        return None
+
+    text = str(document).strip()
+    if not text:
+        return None
+
+    raw = Path(text).expanduser()
+    candidates: list[Path] = []
+
+    def _add_candidate(path: Path) -> None:
+        path = path.expanduser()
+        if path not in candidates:
+            candidates.append(path)
+
+    _add_candidate(raw)
+    if raw.suffix != ".md":
+        _add_candidate(raw.with_suffix(".md"))
+
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate
+
+    if raw.is_absolute():
+        return None
+
+    rel_variations = [raw]
+    if raw.suffix != ".md":
+        rel_variations.append(raw.with_suffix(".md"))
+
+    stem_name = raw.stem if raw.suffix else raw.name
+
+    for root in DEFAULT_CHAPTER_ROOTS:
+        if not root.exists():
+            continue
+        for rel in rel_variations:
+            _add_candidate(root / rel)
+        if stem_name:
+            _add_candidate(root / stem_name)
+            _add_candidate(root / f"{stem_name}.md")
+
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate
+
+    if stem_name:
+        for root in DEFAULT_CHAPTER_ROOTS:
+            if not root.exists():
+                continue
+            match = next(root.rglob(f"{stem_name}.md"), None)
+            if match:
+                return match
+
+    return None
+
+
+def _run_parsing_stage(markdown_file: Path) -> dict:
+    """Execute the directive parsing stage for ``markdown_file``."""
+    from mathster.directives.command import run_directive_extraction
+
+    return run_directive_extraction(
+        markdown_file=markdown_file,
+        output_dir=None,
+        preview=False,
+        validate=True,
+    )
 
 
 def _resolve_version() -> str:
@@ -43,32 +136,6 @@ def _resolve_version() -> str:
 @click.version_option(version=_resolve_version(), message="%(prog)s %(version)s")
 def cli() -> None:
     """Mathster toolkit CLI."""
-
-
-def _discover_chapter_markdown_files(roots: Sequence[Path] | None = None) -> list[Path]:
-    """Return all chapter markdown files (pattern ``NN_chapter_name.md``)."""
-    roots = roots or DEFAULT_CHAPTER_ROOTS
-    matches: list[Path] = []
-    for root in roots:
-        if not root.exists():
-            continue
-        for path in root.rglob("*.md"):
-            if CHAPTER_FILENAME_PATTERN.match(path.name):
-                matches.append(path)
-    return sorted(set(matches))
-
-
-def _discover_preprocess_documents(roots: Sequence[Path] | None = None) -> list[Path]:
-    """Return document directories that appear to have extraction data."""
-    documents: list[Path] = []
-    for markdown_file in _discover_chapter_markdown_files(roots):
-        document_dir = markdown_file.parent / markdown_file.stem
-        registry_dir = document_dir / "registry"
-        if not registry_dir.exists():
-            continue
-        if (registry_dir / "extract").exists() or (registry_dir / "extraction").exists():
-            documents.append(document_dir)
-    return sorted(set(documents), key=lambda path: str(path))
 
 
 @cli.command(
@@ -138,7 +205,7 @@ def extract_command(
 
     source_list = list(sources)
     if not source_list:
-        source_list = _discover_chapter_markdown_files()
+        source_list = discover_chapter_markdown_files()
         if not source_list:
             msg = "No chapter markdown files were found (pattern NN_chapter-name.md)."
             raise click.ClickException(msg)
@@ -204,7 +271,7 @@ def parse_command(
 
     source_list = list(markdown_files)
     if not source_list:
-        source_list = _discover_chapter_markdown_files()
+        source_list = discover_chapter_markdown_files()
         if not source_list:
             msg = "No chapter markdown files were found (pattern NN_chapter-name.md)."
             raise click.ClickException(msg)
@@ -269,12 +336,12 @@ def preprocess_command(documents: tuple[str, ...], log_level: str) -> None:
     if documents:
         targets: list[str | Path] = list(documents)
     else:
-        discovered = _discover_preprocess_documents()
-        if not discovered:
+        registry_dirs = discover_registry_folders()
+        if not registry_dirs:
             msg = "No document registries with extraction data were found."
             raise click.ClickException(msg)
-        click.echo(f"Discovered {len(discovered)} document registries with extraction data.")
-        targets = discovered
+        targets = list(dict.fromkeys(registry_dir.parent for registry_dir in registry_dirs))
+        click.echo(f"Discovered {len(targets)} document registries with extraction data.")
 
     failures: list[tuple[str, str]] = []
     for idx, target in enumerate(targets, start=1):
@@ -296,6 +363,70 @@ def preprocess_command(documents: tuple[str, ...], log_level: str) -> None:
         raise click.ClickException(
             f"{len(failures)} document(s) failed during preprocessing:\n{summary}"
         )
+
+
+@cli.command(
+    "connectivity",
+    help=(
+        "Refresh directives via parsing and generate a markdown connectivity report "
+        "for a document (uses preprocess registries when available, otherwise falls "
+        "back to directives)."
+    ),
+)
+@click.argument("document", type=str)
+@click.option(
+    "--preprocess-dir",
+    type=click.Path(file_okay=False, dir_okay=True, path_type=Path, exists=True),
+    default=None,
+    help="Explicit preprocess registry directory; overrides auto-discovery.",
+)
+def connectivity_command(document: str, preprocess_dir: Path | None) -> None:
+    """CLI entry point for document connectivity reports."""
+    from mathster.reports.document_connectivity_report import (
+        generate_document_connectivity_report,
+    )
+
+    markdown_file = _locate_markdown_file(document)
+    if markdown_file is None:
+        raise click.ClickException(
+            f"Unable to locate markdown file for '{document}'. Provide a valid .md path or document id."
+        )
+
+    document_id = _normalize_document_argument(document)
+    if not document_id:
+        raise click.ClickException("Document identifier must be a non-empty string.")
+
+    if preprocess_dir is not None:
+        preprocess_dir = preprocess_dir.expanduser()
+
+    click.echo(f"Parsing directives for {markdown_file} to refresh connectivity data...")
+    try:
+        _run_parsing_stage(markdown_file)
+    except Exception as exc:  # pragma: no cover - CLI surface
+        raise click.ClickException(f"Parsing stage failed for {markdown_file}: {exc}") from exc
+
+    doc_workspace = markdown_file.parent / markdown_file.stem
+    doc_workspace.mkdir(parents=True, exist_ok=True)
+
+    click.echo(f"Building registry/directives for {doc_workspace}...")
+    try:
+        from mathster.registry.directives_stage import process_document
+
+        process_document(doc_workspace, force=True, verbose=False)
+    except Exception as exc:  # pragma: no cover - CLI surface
+        raise click.ClickException(
+            f"Directive registry build failed for {doc_workspace}: {exc}"
+        ) from exc
+
+    try:
+        report = generate_document_connectivity_report(
+            document_id=document_id,
+            preprocess_dir=preprocess_dir,
+        )
+    except (FileNotFoundError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    click.echo(report)
 
 
 @cli.command(
@@ -371,7 +502,6 @@ def registry_command(
         raise click.ClickException(f"Path does not exist: {target_path}")
 
     any_success = False
-    all_success = False
 
     try:
         if build_unified_only:
@@ -381,7 +511,6 @@ def registry_command(
                 verbose=verbose,
             )
             any_success = success
-            all_success = success
         elif batch:
             results = process_batch(
                 target_path,
@@ -391,7 +520,7 @@ def registry_command(
                 unified_output=unified_output,
             )
             any_success = any(results.values())
-            all_success = all(results.values())
+            all(results.values())
             failed_docs = [doc for doc, ok in results.items() if not ok]
             if failed_docs:
                 click.echo(
@@ -402,7 +531,6 @@ def registry_command(
         else:
             success = process_document(target_path, force=force, verbose=verbose)
             any_success = success
-            all_success = success
 
         if any_success and not no_unified:
             # Build corpus-level extract registry after directives succeed.
@@ -421,122 +549,6 @@ def registry_command(
 
     if not success:
         msg = "Directive registry build failed"
-        raise click.ClickException(msg)
-
-
-@cli.command("validate", help="Validate refined or pipeline entities.")
-@click.option(
-    "--refined-dir",
-    type=click.Path(exists=True, file_okay=False, path_type=Path),
-    required=True,
-    help="Directory containing refined_data/ or pipeline_data/ exports.",
-)
-@click.option(
-    "--mode",
-    type=click.Choice(["schema", "relationships", "framework", "complete"]),
-    default="schema",
-    show_default=True,
-    help="Validation scope.",
-)
-@click.option(
-    "-e",
-    "--entity-type",
-    "entity_types",
-    type=click.Choice([
-        "theorems",
-        "axioms",
-        "objects",
-        "parameters",
-        "mathster",
-        "remarks",
-        "equations",
-    ]),
-    multiple=True,
-    help="Limit validation to selected entity types.",
-)
-@click.option(
-    "--output-report",
-    type=click.Path(file_okay=True, dir_okay=False, path_type=Path),
-    help="Optional markdown summary output path.",
-)
-@click.option(
-    "--output-json",
-    type=click.Path(file_okay=True, dir_okay=False, path_type=Path),
-    help="Optional JSON summary output path.",
-)
-@click.option("--strict", is_flag=True, help="Treat warnings as errors.")
-@click.option(
-    "--glossary",
-    type=click.Path(exists=True, dir_okay=False, path_type=Path),
-    default=Path("docs/glossary.md"),
-    show_default=True,
-    help="Glossary file used for framework validation.",
-)
-@click.option(
-    "--validation-mode",
-    type=click.Choice(["refined", "pipeline"]),
-    default="refined",
-    show_default=True,
-    help="Schema validation mode (refined_data vs. pipeline_data).",
-)
-def validate_command(
-    refined_dir: Path,
-    mode: str,
-    entity_types: tuple[str, ...],
-    output_report: Path | None,
-    output_json: Path | None,
-    strict: bool,
-    glossary: Path,
-    validation_mode: str,
-) -> None:
-    """Invoke validation helpers from mathster.tools.validation."""
-    from mathster.tools.validation.cli import (
-        validate_complete,
-        validate_framework,
-        validate_relationships,
-        validate_schema,
-    )
-    from mathster.tools.validation.validation_report import ValidationReport
-
-    selected_types = list(entity_types) or [
-        "theorems",
-        "axioms",
-        "objects",
-        "parameters",
-        "mathster",
-        "remarks",
-        "equations",
-    ]
-
-    click.echo(f"Validation mode: {mode}")
-    click.echo(f"Entity types: {', '.join(selected_types)}")
-    click.echo(f"Source directory: {refined_dir}")
-    click.echo("")
-
-    if mode == "schema":
-        result = validate_schema(refined_dir, selected_types, strict, validation_mode)
-    elif mode == "relationships":
-        result = validate_relationships(refined_dir, selected_types, strict)
-    elif mode == "framework":
-        result = validate_framework(refined_dir, selected_types, strict, glossary)
-    elif mode == "complete":
-        result = validate_complete(refined_dir, selected_types, strict, glossary)
-    else:  # pragma: no cover - safeguarded by click.Choice
-        raise click.ClickException(f"Unknown validation mode: {mode}")
-
-    report = ValidationReport(result, refined_dir, mode)
-    report.print_summary()
-
-    if output_report:
-        report.save_markdown(output_report)
-        click.echo(f"Wrote markdown report to {output_report}")
-
-    if output_json:
-        report.save_json(output_json)
-        click.echo(f"Wrote JSON report to {output_json}")
-
-    if not result.is_valid:
-        msg = "Validation failed"
         raise click.ClickException(msg)
 
 

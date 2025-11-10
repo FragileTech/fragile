@@ -1,0 +1,1357 @@
+[
+  {
+    "symbol": "A_t",
+    "name": "Set of Alive Walkers",
+    "description": "The set of k alive walkers at time t.",
+    "constraints": [
+      "finite set",
+      "|A_t| = k"
+    ],
+    "tags": [
+      "set",
+      "walkers"
+    ],
+    "source_labels": [
+      "def-greedy-pairing-algorithm"
+    ]
+  },
+  {
+    "symbol": "C_{\\mathrm{safe}}",
+    "name": "Safe Harbor Set",
+    "description": "Compact set strictly inside the valid domain serving as a high-reward safe region.",
+    "constraints": [
+      "compact",
+      "subset of \\mathcal{X}_{\\mathrm{valid}}"
+    ],
+    "tags": [
+      "compact",
+      "safe",
+      "set"
+    ],
+    "source_labels": [
+      "axiom-safe-harbor"
+    ]
+  },
+  {
+    "symbol": "D_H(\\varepsilon)",
+    "name": "isolation distance",
+    "description": "Positive distance ensuring kinematic isolation for members of H_k.",
+    "constraints": [
+      "D_H(\\varepsilon) > 0"
+    ],
+    "tags": [
+      "distance",
+      "isolation"
+    ],
+    "source_labels": [
+      "def-geometric-partition"
+    ]
+  },
+  {
+    "symbol": "F",
+    "name": "Force field",
+    "description": "Deterministic field governing the system's kinetic dynamics",
+    "constraints": [],
+    "tags": [
+      "dynamics",
+      "force",
+      "kinetic"
+    ],
+    "source_labels": [
+      "axiom-lipschitz-fields"
+    ]
+  },
+  {
+    "symbol": "L_F",
+    "name": "Lipschitz constant for force field",
+    "description": "Finite constant ensuring the Lipschitz continuity of the force field F",
+    "constraints": [
+      "L_F >= 0",
+      "finite"
+    ],
+    "tags": [
+      "constant",
+      "force",
+      "lipschitz"
+    ],
+    "source_labels": [
+      "axiom-lipschitz-fields"
+    ]
+  },
+  {
+    "symbol": "L_u",
+    "name": "Lipschitz constant for steady flow field",
+    "description": "Finite constant ensuring the Lipschitz continuity of the steady flow field u",
+    "constraints": [
+      "L_u >= 0",
+      "finite"
+    ],
+    "tags": [
+      "constant",
+      "flow",
+      "lipschitz"
+    ],
+    "source_labels": [
+      "axiom-lipschitz-fields"
+    ]
+  },
+  {
+    "symbol": "L_{\\text{grad}}",
+    "name": "L_grad",
+    "description": "positive constant representing the minimal geometric separation threshold",
+    "constraints": [
+      "> 0"
+    ],
+    "tags": [
+      "length",
+      "separation",
+      "threshold"
+    ],
+    "source_labels": [
+      "axiom-non-deceptive-landscape"
+    ]
+  },
+  {
+    "symbol": "M",
+    "name": "aggregation operator",
+    "description": "The operator used to aggregate values from alive components.",
+    "constraints": [],
+    "tags": [
+      "aggregation",
+      "operator"
+    ],
+    "source_labels": [
+      "def-standardization-operator"
+    ]
+  },
+  {
+    "symbol": "M_D",
+    "name": "Diversity Metric",
+    "description": "Metric parameter for diversity Z-score computation.",
+    "constraints": [],
+    "tags": [
+      "diversity",
+      "metric"
+    ],
+    "source_labels": [
+      "def-fitness-potential-operator"
+    ]
+  },
+  {
+    "symbol": "N",
+    "name": "number of walkers",
+    "description": "The number of walkers in the swarm configuration",
+    "constraints": [
+      "> 0",
+      "N > 0",
+      "N is a positive integer",
+      "N ≥ 1",
+      "integer",
+      "positive integer"
+    ],
+    "tags": [
+      "agent-count",
+      "dimension",
+      "normalization",
+      "size",
+      "swarm",
+      "swarm size",
+      "total"
+    ],
+    "source_labels": [
+      "def-boundary-potential-recall",
+      "def-full-synergistic-lyapunov-function",
+      "def-single-swarm-space",
+      "def-state-difference-vectors",
+      "def-variance-conversions"
+    ]
+  },
+  {
+    "symbol": "P",
+    "name": "smoothing polynomial",
+    "description": "A C^1 smooth polynomial used for interpolation in the transition region.",
+    "constraints": [
+      "C^1 smooth"
+    ],
+    "tags": [
+      "interpolation",
+      "polynomial",
+      "smooth"
+    ],
+    "source_labels": [
+      "def-patched-std-dev-function"
+    ]
+  },
+  {
+    "symbol": "R_L(\\varepsilon)",
+    "name": "cluster radius",
+    "description": "Algorithmic radius for dense clusters in L_k, smaller than the isolation distance.",
+    "constraints": [
+      "R_L(\\varepsilon) < D_H(\\varepsilon)"
+    ],
+    "tags": [
+      "cluster",
+      "radius"
+    ],
+    "source_labels": [
+      "def-geometric-partition"
+    ]
+  },
+  {
+    "symbol": "R_agg",
+    "name": "Reward Aggregation",
+    "description": "Aggregation parameter for reward Z-score computation.",
+    "constraints": [],
+    "tags": [
+      "aggregation",
+      "reward"
+    ],
+    "source_labels": [
+      "def-fitness-potential-operator"
+    ]
+  },
+  {
+    "symbol": "R_{\\mathrm{safe}}",
+    "name": "Safe Reward Threshold",
+    "description": "Threshold value for reward distinguishing the safe harbor from outside regions.",
+    "constraints": [
+      "\\max_{y \\in C_{\\mathrm{safe}}} R_{\\mathrm{pos}}(y) \\geq R_{\\mathrm{safe}}",
+      "real number"
+    ],
+    "tags": [
+      "reward",
+      "threshold"
+    ],
+    "source_labels": [
+      "axiom-safe-harbor"
+    ]
+  },
+  {
+    "symbol": "R_{\\var}^2",
+    "name": "variance threshold",
+    "description": "Threshold determining high-variance state: Var(x) > R_{\\var}^2.",
+    "constraints": [
+      "R_{\\var}^2 > 0"
+    ],
+    "tags": [
+      "threshold",
+      "variance"
+    ],
+    "source_labels": [
+      "def-geometric-partition"
+    ]
+  },
+  {
+    "symbol": "R_{pos}",
+    "name": "positional reward function",
+    "description": "Reward component depending only on position x, integrated into the total reward.",
+    "constraints": [],
+    "tags": [
+      "function",
+      "positional",
+      "reward"
+    ],
+    "source_labels": [
+      "axiom-velocity-regularization"
+    ]
+  },
+  {
+    "symbol": "S",
+    "name": "swarm state",
+    "description": "The current state of the swarm, including information about alive components.",
+    "constraints": [],
+    "tags": [
+      "input",
+      "state",
+      "swarm"
+    ],
+    "source_labels": [
+      "def-boundary-exposed-set",
+      "def-cloning-companion-operator",
+      "def-decision-operator",
+      "def-fitness-operator",
+      "def-fitness-potential-operator",
+      "def-measurement-operator",
+      "def-standardization-operator",
+      "def-update-operator"
+    ]
+  },
+  {
+    "symbol": "S_1",
+    "name": "first swarm",
+    "description": "A swarm in the coupled state space.",
+    "constraints": [],
+    "tags": [
+      "swarm",
+      "swarm-state"
+    ],
+    "source_labels": [
+      "def-boundary-potential-recall",
+      "def-coupled-cloning-expectation"
+    ]
+  },
+  {
+    "symbol": "S_2",
+    "name": "second swarm",
+    "description": "A swarm in the coupled state space.",
+    "constraints": [],
+    "tags": [
+      "swarm",
+      "swarm-state"
+    ],
+    "source_labels": [
+      "def-boundary-potential-recall",
+      "def-coupled-cloning-expectation"
+    ]
+  },
+  {
+    "symbol": "S_i(c_i)",
+    "name": "cloning_score",
+    "description": "The canonical cloning score for walker i and companion c_i",
+    "constraints": [],
+    "tags": [
+      "score"
+    ],
+    "source_labels": [
+      "def-cloning-probability",
+      "def-cloning-score"
+    ]
+  },
+  {
+    "symbol": "S_k",
+    "name": "Un-normalized Sum of Squared Deviations",
+    "description": "Total positional variance without normalization",
+    "constraints": [
+      "non-negative real"
+    ],
+    "tags": [
+      "unnormalized",
+      "variance"
+    ],
+    "source_labels": [
+      "def-variance-conversions"
+    ]
+  },
+  {
+    "symbol": "T_i",
+    "name": "threshold",
+    "description": "Random threshold drawn from uniform distribution",
+    "constraints": [
+      "0 < T_i < p_max"
+    ],
+    "tags": [
+      "threshold"
+    ],
+    "source_labels": [
+      "def-cloning-probability"
+    ]
+  },
+  {
+    "symbol": "V_{Var,x}(S_k)",
+    "name": "Lyapunov Variance Component",
+    "description": "N-normalized mean-field contribution to system disorder per walker slot",
+    "constraints": [
+      "non-negative real"
+    ],
+    "tags": [
+      "lyapunov",
+      "variance"
+    ],
+    "source_labels": [
+      "def-variance-conversions"
+    ]
+  },
+  {
+    "symbol": "V_{\\max}",
+    "name": "V_max",
+    "description": "uniform upper bound on a raw measurement's absolute value (either V_{\\max}^{(R)} for rewards or D_{\\text{valid}} for distances)",
+    "constraints": [],
+    "tags": [
+      "distance",
+      "measurement",
+      "reward",
+      "upper bound"
+    ],
+    "source_labels": [
+      "def-max-patched-std"
+    ]
+  },
+  {
+    "symbol": "V_{fit,c_i}",
+    "name": "companion_fitness",
+    "description": "Fitness value of the selected companion c_i",
+    "constraints": [],
+    "tags": [
+      "fitness"
+    ],
+    "source_labels": [
+      "def-cloning-score"
+    ]
+  },
+  {
+    "symbol": "V_{fit,i}",
+    "name": "walker_fitness",
+    "description": "Fitness value of walker i",
+    "constraints": [],
+    "tags": [
+      "fitness"
+    ],
+    "source_labels": [
+      "def-cloning-score"
+    ]
+  },
+  {
+    "symbol": "V_{k,i}",
+    "name": "fitness potential",
+    "description": "Fitness potential of walker i in swarm k.",
+    "constraints": [],
+    "tags": [
+      "fitness",
+      "potential"
+    ],
+    "source_labels": [
+      "def-unfit-set"
+    ]
+  },
+  {
+    "symbol": "Var_k(x)",
+    "name": "Physical Internal Variance",
+    "description": "k-normalized average squared deviation per alive walker",
+    "constraints": [
+      "non-negative real"
+    ],
+    "tags": [
+      "internal",
+      "variance"
+    ],
+    "source_labels": [
+      "def-variance-conversions"
+    ]
+  },
+  {
+    "symbol": "\\delta_{\\mathrm{safe}}",
+    "name": "Safety Margin",
+    "description": "Positive minimum distance from points in the safe set to the boundary of the valid domain.",
+    "constraints": [
+      "> 0"
+    ],
+    "tags": [
+      "boundary",
+      "distance",
+      "margin"
+    ],
+    "source_labels": [
+      "axiom-safe-harbor"
+    ]
+  },
+  {
+    "symbol": "\\delta_{\\text{safe}}",
+    "name": "delta_safe",
+    "description": "Safety distance threshold from boundary",
+    "constraints": [
+      "\\delta_{\\text{safe}} > 0"
+    ],
+    "tags": [
+      "safety-threshold"
+    ],
+    "source_labels": [
+      "def-boundary-potential-recall"
+    ]
+  },
+  {
+    "symbol": "\\ell_p",
+    "name": "ell_p",
+    "description": "Algorithmic parameter for pairing distribution",
+    "constraints": [],
+    "tags": [
+      "parameter"
+    ],
+    "source_labels": [
+      "def-measurement-operator"
+    ]
+  },
+  {
+    "symbol": "\\epsilon",
+    "name": "error parameter",
+    "description": "parameter defining the high-error threshold in H_k",
+    "constraints": [
+      "\\epsilon > 0, small"
+    ],
+    "tags": [
+      "error",
+      "threshold"
+    ],
+    "source_labels": [
+      "def-critical-target-set"
+    ]
+  },
+  {
+    "symbol": "\\epsilon_c",
+    "name": "Companion selection scale",
+    "description": "Scale parameter for the softmax distribution in companion selection",
+    "constraints": [
+      "\\epsilon_c > 0"
+    ],
+    "tags": [
+      "companion",
+      "hyperparameter",
+      "scale"
+    ],
+    "source_labels": [
+      "def-decision-operator"
+    ]
+  },
+  {
+    "symbol": "\\epsilon_p",
+    "name": "epsilon_p",
+    "description": "Algorithmic parameter for pairing distribution",
+    "constraints": [],
+    "tags": [
+      "parameter"
+    ],
+    "source_labels": [
+      "def-measurement-operator"
+    ]
+  },
+  {
+    "symbol": "\\kappa_{\\text{raw},r}",
+    "name": "kappa_raw_r",
+    "description": "positive constant representing the minimal non-zero reward difference",
+    "constraints": [
+      "> 0"
+    ],
+    "tags": [
+      "difference",
+      "kappa",
+      "reward"
+    ],
+    "source_labels": [
+      "axiom-non-deceptive-landscape"
+    ]
+  },
+  {
+    "symbol": "\\kappa_{\\text{var,min}}",
+    "name": "minimum variance threshold",
+    "description": "The lower bound threshold for variance to ensure stability.",
+    "constraints": [
+      "> 0"
+    ],
+    "tags": [
+      "minimum",
+      "threshold",
+      "variance"
+    ],
+    "source_labels": [
+      "def-patched-std-dev-function"
+    ]
+  },
+  {
+    "symbol": "\\lambda_{\\text{alg}}",
+    "name": "lambda_alg",
+    "description": "Weighting factor for the velocity difference component in the algorithmic distance metric.",
+    "constraints": [],
+    "tags": [
+      "parameter",
+      "velocity",
+      "weight"
+    ],
+    "source_labels": [
+      "def-algorithmic-distance-metric"
+    ]
+  },
+  {
+    "symbol": "\\mathbf{V}_{\\text{fit}}",
+    "name": "Fitness potential vector",
+    "description": "Vector of fitness potentials V_fit,i for each walker i",
+    "constraints": [],
+    "tags": [
+      "fitness",
+      "input",
+      "vector"
+    ],
+    "source_labels": [
+      "def-decision-operator"
+    ]
+  },
+  {
+    "symbol": "\\mathbf{a}",
+    "name": "Action vector",
+    "description": "Vector specifying actions for each walker i, such as 'clone' or 'persist'.",
+    "constraints": [],
+    "tags": [
+      "action",
+      "input"
+    ],
+    "source_labels": [
+      "def-update-operator"
+    ]
+  },
+  {
+    "symbol": "\\mathbf{c}",
+    "name": "Companion vector",
+    "description": "Vector assigning each walker i a companion j in \\mathcal{A}(S) for cloning actions.",
+    "constraints": [],
+    "tags": [
+      "companion",
+      "input"
+    ],
+    "source_labels": [
+      "def-update-operator"
+    ]
+  },
+  {
+    "symbol": "\\mathcal{A}(S_1)",
+    "name": "A(S_1)",
+    "description": "Set of agent indices in swarm S_1",
+    "constraints": [],
+    "tags": [
+      "agent-set"
+    ],
+    "source_labels": [
+      "def-boundary-potential-recall"
+    ]
+  },
+  {
+    "symbol": "\\mathcal{A}_k",
+    "name": "alive set",
+    "description": "The set of alive walkers in swarm k.",
+    "constraints": [],
+    "tags": [
+      "alive",
+      "walkers"
+    ],
+    "source_labels": [
+      "def-unfit-set"
+    ]
+  },
+  {
+    "symbol": "\\mathcal{X}",
+    "name": "single-walker state space",
+    "description": "The state space on which standard regularity conditions are imposed for the construction to be valid.",
+    "constraints": [
+      "\\mathcal{X} is a measurable space",
+      "standard regularity conditions"
+    ],
+    "tags": [
+      "abstract",
+      "position",
+      "state-space",
+      "topology"
+    ],
+    "source_labels": [
+      "axiom-domain-regularity",
+      "def-single-swarm-space"
+    ]
+  },
+  {
+    "symbol": "\\mathcal{X}_{\\mathrm{valid}}",
+    "name": "Valid domain",
+    "description": "Compact domain on which the fields are defined and well-behaved",
+    "constraints": [
+      "compact"
+    ],
+    "tags": [
+      "domain",
+      "state-space"
+    ],
+    "source_labels": [
+      "axiom-lipschitz-fields"
+    ]
+  },
+  {
+    "symbol": "\\mathcal{X}_{\\text{valid}}",
+    "name": "X_valid",
+    "description": "Valid state space",
+    "constraints": [],
+    "tags": [
+      "state-space"
+    ],
+    "source_labels": [
+      "def-boundary-potential-recall"
+    ]
+  },
+  {
+    "symbol": "\\mu_{V,k}",
+    "name": "mean fitness potential",
+    "description": "Average fitness potential across alive walkers in swarm k, defined as \\frac{1}{k} \\sum_{j \\in \\mathcal{A}_k} V_{k,j}.",
+    "constraints": [],
+    "tags": [
+      "average",
+      "mean"
+    ],
+    "source_labels": [
+      "def-unfit-set"
+    ]
+  },
+  {
+    "symbol": "\\partial \\mathcal{X}_{\\text{valid}}",
+    "name": "partial X_valid",
+    "description": "Boundary of the valid state space",
+    "constraints": [],
+    "tags": [
+      "boundary"
+    ],
+    "source_labels": [
+      "def-boundary-potential-recall"
+    ]
+  },
+  {
+    "symbol": "\\phi_{\\text{thresh}}",
+    "name": "threshold",
+    "description": "Positive threshold for barrier penalty",
+    "constraints": [
+      "> 0"
+    ],
+    "tags": [
+      "positive",
+      "threshold"
+    ],
+    "source_labels": [
+      "def-boundary-exposed-set"
+    ]
+  },
+  {
+    "symbol": "\\varepsilon",
+    "name": "interaction range",
+    "description": "The given interaction range defining the swarm's phase-space structure.",
+    "constraints": [],
+    "tags": [
+      "interaction",
+      "range"
+    ],
+    "source_labels": [
+      "def-geometric-partition"
+    ]
+  },
+  {
+    "symbol": "\\varepsilon_d",
+    "name": "Interaction Range for Diversity",
+    "description": "The Interaction Range for Diversity.",
+    "constraints": [
+      "> 0",
+      "\\varepsilon_d > 0"
+    ],
+    "tags": [
+      "diversity",
+      "parameter",
+      "range"
+    ],
+    "source_labels": [
+      "def-greedy-pairing-algorithm",
+      "def-spatial-pairing-operator-diversity"
+    ]
+  },
+  {
+    "symbol": "\\varepsilon_{\\mathrm{std}}",
+    "name": "standard deviation epsilon",
+    "description": "Regularization parameter added to prevent zero or near-zero standard deviation.",
+    "constraints": [
+      "> 0"
+    ],
+    "tags": [
+      "epsilon",
+      "regularization",
+      "stability"
+    ],
+    "source_labels": [
+      "def-patched-std-dev-function"
+    ]
+  },
+  {
+    "symbol": "\\varepsilon_{\\text{clone}}",
+    "name": "Cloning epsilon",
+    "description": "Small positive constant to avoid division by zero in cloning score",
+    "constraints": [
+      "\\varepsilon_{\\text{clone}} > 0"
+    ],
+    "tags": [
+      "hyperparameter",
+      "regularization"
+    ],
+    "source_labels": [
+      "def-decision-operator"
+    ]
+  },
+  {
+    "symbol": "\\varepsilon_{clone}",
+    "name": "clone_epsilon",
+    "description": "Small epsilon parameter for cloning to avoid division by zero",
+    "constraints": [],
+    "tags": [
+      "epsilon",
+      "regularization"
+    ],
+    "source_labels": [
+      "def-cloning-score"
+    ]
+  },
+  {
+    "symbol": "\\varphi_{\\text{barrier}}",
+    "name": "varphi_barrier",
+    "description": "Smooth barrier function mapping valid states to non-negative reals",
+    "constraints": [
+      "\\varphi_{\\text{barrier}}: \\mathcal{X}_{\\text{valid}} \\to \\mathbb{R}_{\\geq 0}"
+    ],
+    "tags": [
+      "barrier",
+      "smooth"
+    ],
+    "source_labels": [
+      "def-boundary-potential-recall"
+    ]
+  },
+  {
+    "symbol": "\\|v\\|^2",
+    "name": "squared velocity norm",
+    "description": "Quadratic term representing kinetic energy, penalized in the reward.",
+    "constraints": [],
+    "tags": [
+      "kinetic",
+      "norm",
+      "velocity"
+    ],
+    "source_labels": [
+      "axiom-velocity-regularization"
+    ]
+  },
+  {
+    "symbol": "b",
+    "name": "hypocoercive parameter",
+    "description": "Hypocoercive parameter used in the definition of the hypocoercive Wasserstein distance.",
+    "constraints": [],
+    "tags": [
+      "hypocoercive",
+      "parameter"
+    ],
+    "source_labels": [
+      "def-full-synergistic-lyapunov-function"
+    ]
+  },
+  {
+    "symbol": "c_B",
+    "name": "boundary coupling constant",
+    "description": "Positive constant balancing the boundary potential term in the Lyapunov function.",
+    "constraints": [
+      "> 0"
+    ],
+    "tags": [
+      "boundary",
+      "coupling"
+    ],
+    "source_labels": [
+      "def-full-synergistic-lyapunov-function"
+    ]
+  },
+  {
+    "symbol": "c_V",
+    "name": "variance coupling constant",
+    "description": "Positive constant balancing the intra-swarm variance term in the Lyapunov function.",
+    "constraints": [
+      "> 0"
+    ],
+    "tags": [
+      "coupling",
+      "variance"
+    ],
+    "source_labels": [
+      "def-full-synergistic-lyapunov-function"
+    ]
+  },
+  {
+    "symbol": "c_d",
+    "name": "diameter constant",
+    "description": "Fixed constant scaling the maximum cluster diameter D_diam(ε)",
+    "constraints": [
+      "c_d > 0",
+      "typically c_d = 2"
+    ],
+    "tags": [
+      "clustering",
+      "diameter"
+    ],
+    "source_labels": [
+      "def-unified-high-low-error-sets"
+    ]
+  },
+  {
+    "symbol": "c_i",
+    "name": "companion",
+    "description": "Randomly selected companion for walker i",
+    "constraints": [],
+    "tags": [
+      "companion"
+    ],
+    "source_labels": [
+      "def-cloning-probability"
+    ]
+  },
+  {
+    "symbol": "c_{v_reg}",
+    "name": "velocity regularization coefficient",
+    "description": "Strictly positive constant scaling the quadratic penalty on velocity in the total reward function.",
+    "constraints": [
+      "> 0",
+      "c_{v_reg} > 0"
+    ],
+    "tags": [
+      "coefficient",
+      "constant",
+      "penalty",
+      "regularization",
+      "velocity"
+    ],
+    "source_labels": [
+      "axiom-velocity-regularization",
+      "def-raw-value-operators"
+    ]
+  },
+  {
+    "symbol": "d",
+    "name": "spatial dimension",
+    "description": "The dimension of the position and velocity spaces in the Euclidean Gas",
+    "constraints": [
+      "d is a positive integer",
+      "d ∈ ℝ^N_{≥0}",
+      "d ≥ 1"
+    ],
+    "tags": [
+      "dimension",
+      "distance",
+      "diversity",
+      "input",
+      "space",
+      "vector"
+    ],
+    "source_labels": [
+      "def-fitness-operator",
+      "def-fitness-potential-operator",
+      "def-single-swarm-space",
+      "def-state-difference-vectors"
+    ]
+  },
+  {
+    "symbol": "f",
+    "name": "test function",
+    "description": "A function f: Σ_N × Σ_N → ℝ.",
+    "constraints": [],
+    "tags": [
+      "function",
+      "test"
+    ],
+    "source_labels": [
+      "def-coupled-cloning-expectation"
+    ]
+  },
+  {
+    "symbol": "f_c",
+    "name": "cluster fraction",
+    "description": "Positive N-uniform fraction bounding the minimum size of local clusters in L_k.",
+    "constraints": [
+      "N-uniform",
+      "f_c > 0"
+    ],
+    "tags": [
+      "cluster",
+      "fraction"
+    ],
+    "source_labels": [
+      "def-geometric-partition"
+    ]
+  },
+  {
+    "symbol": "i",
+    "name": "walker index",
+    "description": "Index of the walker in the swarm",
+    "constraints": [
+      "i ∈ {1, …, N}"
+    ],
+    "tags": [
+      "index",
+      "walker"
+    ],
+    "source_labels": [
+      "def-cloning-companion-operator",
+      "def-cloning-probability",
+      "def-state-difference-vectors"
+    ]
+  },
+  {
+    "symbol": "k",
+    "name": "set index",
+    "description": "Index parameterizing the partitioned sets H_k and L_k.",
+    "constraints": [
+      "k is the index for the high-variance swarm in the high-error regime",
+      "k ≥ 1",
+      "k ≥ 2"
+    ],
+    "tags": [
+      "alive",
+      "count",
+      "high-variance",
+      "index",
+      "partition",
+      "step",
+      "swarm",
+      "walkers"
+    ],
+    "source_labels": [
+      "def-cloning-companion-operator",
+      "def-critical-target-set",
+      "def-geometric-partition",
+      "def-swarm-aggregation-operator",
+      "def-unfit-set",
+      "def-unified-high-low-error-sets"
+    ]
+  },
+  {
+    "symbol": "k_alive",
+    "name": "Number of alive walkers",
+    "description": "Number of alive walkers in swarm k, equal to |A(S_k)|",
+    "constraints": [
+      "0 <= k_alive <= N",
+      "integer"
+    ],
+    "tags": [
+      "alive",
+      "swarm"
+    ],
+    "source_labels": [
+      "def-variance-conversions"
+    ]
+  },
+  {
+    "symbol": "k_min",
+    "name": "minimum cluster size",
+    "description": "Minimum size for statistically valid clusters, defined as max(5, ⌈0.05k⌉)",
+    "constraints": [
+      "k_min ≥ 5"
+    ],
+    "tags": [
+      "cluster",
+      "validity"
+    ],
+    "source_labels": [
+      "def-unified-high-low-error-sets"
+    ]
+  },
+  {
+    "symbol": "p_i",
+    "name": "total cloning probability",
+    "description": "Unconditional probability of walker i being marked for cloning",
+    "constraints": [
+      "0 ≤ p_i ≤ 1"
+    ],
+    "tags": [
+      "cloning",
+      "probability"
+    ],
+    "source_labels": [
+      "def-cloning-probability",
+      "def-key-operator-outputs"
+    ]
+  },
+  {
+    "symbol": "p_max",
+    "name": "maximum probability",
+    "description": "Upper bound for the threshold distribution",
+    "constraints": [
+      "0 < p_max ≤ 1"
+    ],
+    "tags": [
+      "bound",
+      "maximum"
+    ],
+    "source_labels": [
+      "def-cloning-probability"
+    ]
+  },
+  {
+    "symbol": "p_{\\max}",
+    "name": "Maximum cloning probability",
+    "description": "Upper bound for the uniform threshold sampling",
+    "constraints": [
+      "0 < p_{\\max} \\leq 1"
+    ],
+    "tags": [
+      "hyperparameter",
+      "probability"
+    ],
+    "source_labels": [
+      "def-decision-operator"
+    ]
+  },
+  {
+    "symbol": "r",
+    "name": "Reward Vector",
+    "description": "Raw N-dimensional reward measurement vector.",
+    "constraints": [],
+    "tags": [
+      "reward",
+      "vector"
+    ],
+    "source_labels": [
+      "def-fitness-potential-operator"
+    ]
+  },
+  {
+    "symbol": "u",
+    "name": "Steady flow field",
+    "description": "Deterministic field representing steady flow in the environment",
+    "constraints": [],
+    "tags": [
+      "dynamics",
+      "flow",
+      "steady"
+    ],
+    "source_labels": [
+      "axiom-lipschitz-fields"
+    ]
+  },
+  {
+    "symbol": "v",
+    "name": "raw value vector",
+    "description": "The N-dimensional vector of raw values for the walkers.",
+    "constraints": [],
+    "tags": [
+      "raw",
+      "values",
+      "vector"
+    ],
+    "source_labels": [
+      "def-standardization-operator"
+    ]
+  },
+  {
+    "symbol": "x_{1,i}",
+    "name": "x_{1,i}",
+    "description": "State of the i-th agent in S_1",
+    "constraints": [
+      "i \\in \\mathcal{A}(S_1)"
+    ],
+    "tags": [
+      "agent-state"
+    ],
+    "source_labels": [
+      "def-boundary-potential-recall"
+    ]
+  },
+  {
+    "symbol": "x_{2,i}",
+    "name": "x_{2,i}",
+    "description": "State of the i-th agent in S_2",
+    "constraints": [
+      "i \\in \\mathcal{A}(S_2)"
+    ],
+    "tags": [
+      "agent-state"
+    ],
+    "source_labels": [
+      "def-boundary-potential-recall"
+    ]
+  },
+  {
+    "symbol": "Δv_i",
+    "name": "Velocity Perturbation",
+    "description": "Change in velocity for walker i participating in cloning, from inelastic collision depending on center-of-mass shift, restitution coefficient α_restitution, and random rotation R_i",
+    "constraints": [
+      "For cloning participants"
+    ],
+    "tags": [
+      "collision",
+      "perturbation",
+      "velocity"
+    ],
+    "source_labels": [
+      "def-key-operator-outputs"
+    ]
+  },
+  {
+    "symbol": "Δx_i",
+    "name": "Position Displacement",
+    "description": "Change in position for walker i, specifically for cloners Δx_i = x_{c_i} - x_i + σ_x ζ_i^x where ζ_i^x ~ N(0, I_d)",
+    "constraints": [
+      "For cloners"
+    ],
+    "tags": [
+      "displacement",
+      "position"
+    ],
+    "source_labels": [
+      "def-key-operator-outputs"
+    ]
+  },
+  {
+    "symbol": "Δδ_{x,i}",
+    "name": "Centered Displacements",
+    "description": "Difference in position displacements for coupled swarms (S_1, S_2): δ_{x,1,i} - δ_{x,2,i}",
+    "constraints": [],
+    "tags": [
+      "centered",
+      "coupled",
+      "displacement"
+    ],
+    "source_labels": [
+      "def-key-operator-outputs"
+    ]
+  },
+  {
+    "symbol": "α",
+    "name": "Reward Weight",
+    "description": "Exponent weighting the reward component in the final combination.",
+    "constraints": [],
+    "tags": [
+      "exponent",
+      "reward",
+      "weight"
+    ],
+    "source_labels": [
+      "def-fitness-operator",
+      "def-fitness-potential-operator"
+    ]
+  },
+  {
+    "symbol": "α_restitution",
+    "name": "coefficient of restitution",
+    "description": "Fixed algorithmic parameter in [0,1] representing the coefficient of restitution, controlling energy dissipation in the inelastic collapse.",
+    "constraints": [
+      "∈ [0,1]"
+    ],
+    "tags": [
+      "dissipation",
+      "hyperparameter",
+      "restitution"
+    ],
+    "source_labels": [
+      "def-inelastic-collision-update"
+    ]
+  },
+  {
+    "symbol": "β",
+    "name": "dynamics weight",
+    "description": "Weight for the diversity channel in the fitness potential.",
+    "constraints": [
+      "β > 0"
+    ],
+    "tags": [
+      "distance",
+      "diversity",
+      "dynamics",
+      "exponent",
+      "positive",
+      "weight"
+    ],
+    "source_labels": [
+      "axiom-active-diversity",
+      "def-fitness-operator",
+      "def-fitness-potential-operator"
+    ]
+  },
+  {
+    "symbol": "ε",
+    "name": "error parameter",
+    "description": "Threshold parameter controlling cluster diameter and error scale",
+    "constraints": [],
+    "tags": [
+      "error",
+      "threshold"
+    ],
+    "source_labels": [
+      "def-unified-high-low-error-sets"
+    ]
+  },
+  {
+    "symbol": "ε_O",
+    "name": "outlier fraction parameter",
+    "description": "Structural parameter determining the fraction of total contribution for outlier clusters",
+    "constraints": [
+      "typically ε_O = 0.1",
+      "ε_O ∈ (0,1)"
+    ],
+    "tags": [
+      "contribution",
+      "outlier"
+    ],
+    "source_labels": [
+      "def-unified-high-low-error-sets"
+    ]
+  },
+  {
+    "symbol": "ε_c",
+    "name": "interaction range",
+    "description": "Positive parameter controlling the cloning interaction range.",
+    "constraints": [
+      "ε_c > 0"
+    ],
+    "tags": [
+      "cloning",
+      "positive",
+      "range"
+    ],
+    "source_labels": [
+      "def-cloning-companion-operator"
+    ]
+  },
+  {
+    "symbol": "η",
+    "name": "Floor Value",
+    "description": "Minimum additive value for rescaled components to ensure positivity.",
+    "constraints": [
+      "η > 0",
+      "η ≥ 0"
+    ],
+    "tags": [
+      "floor",
+      "positivity",
+      "rescaling"
+    ],
+    "source_labels": [
+      "def-fitness-operator",
+      "def-fitness-potential-operator"
+    ]
+  },
+  {
+    "symbol": "λ_alg",
+    "name": "algorithmic velocity weight",
+    "description": "Weight parameter in the phase-space distance d_alg",
+    "constraints": [],
+    "tags": [
+      "distance",
+      "velocity"
+    ],
+    "source_labels": [
+      "def-unified-high-low-error-sets"
+    ]
+  },
+  {
+    "symbol": "λ_v",
+    "name": "velocity variance weight",
+    "description": "Positive weighting factor for the velocity component in the intra-swarm variance.",
+    "constraints": [
+      "> 0"
+    ],
+    "tags": [
+      "variance",
+      "velocity",
+      "weight"
+    ],
+    "source_labels": [
+      "def-full-synergistic-lyapunov-function",
+      "def-unified-high-low-error-sets"
+    ]
+  },
+  {
+    "symbol": "σ_stab",
+    "name": "Stability Constant",
+    "description": "Small positive constant added to standard deviations for numerical stability",
+    "constraints": [
+      "σ_stab > 0"
+    ],
+    "tags": [
+      "normalization",
+      "stability"
+    ],
+    "source_labels": [
+      "def-fitness-operator"
+    ]
+  }
+]

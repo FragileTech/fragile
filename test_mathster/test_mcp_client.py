@@ -11,21 +11,24 @@ from unittest.mock import AsyncMock
 
 import pytest
 
+
 # Ensure DSPy cache is writable inside the sandbox before importing dspy.
 _DSPY_CACHE = Path(os.environ.get("DSPY_CACHEDIR", Path.cwd() / ".dspy_cache"))
 _DSPY_CACHE.mkdir(parents=True, exist_ok=True)
 os.environ.setdefault("DSPY_CACHEDIR", str(_DSPY_CACHE))
 
 try:
-    import dspy  # noqa: E402
+    import dspy
 except ImportError:  # pragma: no cover - fallback when DSPy not installed
+
     class _FallbackBaseLM:
         def __init__(self, model: str, **kwargs):
             self.model = model
             self.kwargs = kwargs
 
         def forward(self, prompt=None, messages=None, **kwargs):
-            raise NotImplementedError("This fallback BaseLM cannot be used directly.")
+            msg = "This fallback BaseLM cannot be used directly."
+            raise NotImplementedError(msg)
 
         def __call__(self, *args, **kwargs):
             return self.forward(*args, **kwargs)
@@ -34,12 +37,12 @@ except ImportError:  # pragma: no cover - fallback when DSPy not installed
 
 from mathster.mcp_client import (  # noqa: E402
     BaseMCPClient,
-    CodexMCPClient,
     ClaudeCodeMCPClient,
+    CodexMCPClient,
     GeminiMCPClient,
     MCPConnectionError,
-    sync_ask_codex,
     sync_ask_claude,
+    sync_ask_codex,
     sync_ask_gemini,
 )
 

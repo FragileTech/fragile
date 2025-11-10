@@ -17,7 +17,7 @@ Design Philosophy:
 
 from __future__ import annotations
 
-import re
+import json
 import logging
 import re
 from typing import Any, ClassVar
@@ -26,6 +26,44 @@ from pydantic import BaseModel, Field, field_validator
 
 
 logger = logging.getLogger(__name__)
+
+
+def _reference_identity(value: Any) -> str:
+    """Return a stable identity for a reference entry."""
+
+    if isinstance(value, dict):
+        label = value.get("label")
+        if isinstance(label, str):
+            return f"dict:{label}"
+        try:
+            return "dict:" + json.dumps(value, sort_keys=True, default=str)
+        except TypeError:
+            return "dict:" + repr(value)
+    return f"value:{repr(value)}"
+
+
+def _merge_reference_labels(*sources: Any) -> list[Any]:
+    """Merge multiple reference lists while preserving order and removing duplicates."""
+
+    merged: list[Any] = []
+    seen: set[str] = set()
+
+    for source in sources:
+        if not source:
+            continue
+        if isinstance(source, (list, tuple, set)):
+            iterator = source
+        else:
+            iterator = [source]
+        for entry in iterator:
+            if entry is None:
+                continue
+            key = _reference_identity(entry)
+            if key in seen:
+                continue
+            seen.add(key)
+            merged.append(entry)
+    return merged
 
 # ============================================================================
 # SECTION 1: SHARED NESTED MODELS
@@ -246,7 +284,7 @@ class UnifiedMathematicalEntity(BaseModel):
         default_factory=list,
         description="Cross-references to other entities",
     )
-    proof: "UnifiedProof | None" = Field(
+    proof: UnifiedProof | None = Field(
         default=None,
         description="Attached proof object built from proof directives/extraction",
     )
@@ -303,15 +341,15 @@ class UnifiedMathematicalEntity(BaseModel):
     # SHARED METHODS
     # ========================================================================
 
-    _proof_lookup: ClassVar[dict[str, list["UnifiedProof"]]] = {}
+    _proof_lookup: ClassVar[dict[str, list[UnifiedProof]]] = {}
 
     @classmethod
-    def attach_proof_lookup(cls, proof_lookup: dict[str, list["UnifiedProof"]] | None) -> None:
+    def attach_proof_lookup(cls, proof_lookup: dict[str, list[UnifiedProof]] | None) -> None:
         """Install a lookup of proofs keyed by the statements they prove."""
         UnifiedMathematicalEntity._proof_lookup = proof_lookup or {}
 
     @classmethod
-    def _select_proof_for_label(cls, label: str) -> "UnifiedProof | None":
+    def _select_proof_for_label(cls, label: str) -> UnifiedProof | None:
         proofs = UnifiedMathematicalEntity._proof_lookup.get(label)
         if not proofs:
             return None
@@ -323,7 +361,7 @@ class UnifiedMathematicalEntity(BaseModel):
         return max(proofs, key=UnifiedMathematicalEntity._proof_length_score)
 
     @staticmethod
-    def _proof_length_score(proof: "UnifiedProof") -> int:
+    def _proof_length_score(proof: UnifiedProof) -> int:
         """Heuristic length used to pick the most detailed proof."""
         step_count = len(proof.steps or [])
         step_text_len = sum(len(step.text or "") for step in proof.steps or [])
@@ -452,8 +490,13 @@ class UnifiedMathematicalEntity(BaseModel):
 
         registry_context = directive_item.get("_registry_context", {}) or {}
         metadata = directive_item.get("metadata", {}) or {}
-        references = directive_item.get("references", []) or []
         section = directive_item.get("section")
+        references = _merge_reference_labels(
+            directive_item.get("references"),
+            extracted.get("references"),
+        )
+        if proof and proof.references:
+            references = _merge_reference_labels(references, proof.references)
 
         # === ALT LABELS (if mismatch) ===
         alt_labels = []
@@ -694,6 +737,10 @@ class Algorithm(BaseModel):
         label = extracted.get("label") or (raw.get("label") if raw else None) or "unknown"
         title = extracted.get("title") or (raw.get("title") if raw else None)
 
+        raw_references = raw.get("references") if raw else None
+        extracted_references = extracted_obj.references if extracted_obj else None
+        merged_references = _merge_reference_labels(raw_references, extracted_references)
+
         return cls(
             label=label,
             title=title,
@@ -704,7 +751,7 @@ class Algorithm(BaseModel):
             steps=extracted_obj.steps if extracted_obj else [],
             guard_conditions=extracted_obj.guard_conditions if extracted_obj else [],
             failure_modes=extracted_obj.failure_modes if extracted_obj else [],
-            references=extracted_obj.references if extracted_obj else [],
+            references=merged_references,
             raw=raw_obj,
             extracted=extracted_obj,
             doc_meta=doc_meta_obj,
@@ -805,8 +852,11 @@ class UnifiedAssumption(BaseModel):
 
         registry_context = directive_item.get("_registry_context", {}) or {}
         metadata = directive_item.get("metadata", {}) or {}
-        references = directive_item.get("references", []) or []
         section = directive_item.get("section")
+        references = _merge_reference_labels(
+            directive_item.get("references"),
+            extracted.get("references"),
+        )
 
         bullet_items = [BulletItem(**b) for b in extracted.get("bullet_items", []) or []]
         conditions = [Condition(**c) for c in extracted.get("conditions", []) or []]
@@ -940,8 +990,11 @@ class UnifiedAxiom(BaseModel):
 
         registry_context = directive_item.get("_registry_context", {}) or {}
         metadata = directive_item.get("metadata", {}) or {}
-        references = directive_item.get("references", []) or []
         section = directive_item.get("section")
+        references = _merge_reference_labels(
+            directive_item.get("references"),
+            extracted.get("references"),
+        )
 
         core_statement_data = extracted.get("core_statement")
         core_statement = (
@@ -1085,8 +1138,11 @@ class UnifiedDefinition(BaseModel):
 
         registry_context = directive_item.get("_registry_context", {}) or {}
         metadata = directive_item.get("metadata", {}) or {}
-        references = directive_item.get("references", []) or []
         section = directive_item.get("section")
+        references = _merge_reference_labels(
+            directive_item.get("references"),
+            extracted.get("references"),
+        )
 
         formal_conditions = [Condition(**c) for c in extracted.get("formal_conditions", []) or []]
         properties = [NamedProperty(**p) for p in extracted.get("properties", []) or []]
@@ -1267,8 +1323,11 @@ class UnifiedProof(BaseModel):
 
         registry_context = directive_item.get("_registry_context", {}) or {}
         metadata = directive_item.get("metadata", {}) or {}
-        references_list = extracted.get("references", []) or []
         section = directive_item.get("section")
+        references_list = _merge_reference_labels(
+            directive_item.get("references"),
+            extracted.get("references"),
+        )
 
         conclusion_data = extracted.get("conclusion")
         conclusion = Conclusion(**conclusion_data) if isinstance(conclusion_data, dict) else None
@@ -1400,7 +1459,9 @@ class UnifiedRemark(BaseModel):
         return result
 
     @classmethod
-    def from_instances(cls, raw_item: dict[str, Any], extracted_item: dict[str, Any]) -> UnifiedRemark:
+    def from_instances(
+        cls, raw_item: dict[str, Any], extracted_item: dict[str, Any]
+    ) -> UnifiedRemark:
         """Merge raw and extracted remark data."""
         # Implementation preserved from process_remarks.py
         label = extracted_item.get("label") or raw_item.get("label") or ""
@@ -1460,58 +1521,58 @@ class UnifiedRemark(BaseModel):
 # ============================================================================
 
 __all__ = [
-    # Section 1: Shared nested models
-    "Equation",
-    "Hypothesis",
-    "Conclusion",
-    "Variable",
-    "Assumption",
-    "ProofStep",
-    "Proof",
-    "Span",
-    "Parameter",
-    "Note",
-    "FailureMode",
-    "Condition",
-    # Section 2: Theorem-like entities
-    "UnifiedMathematicalEntity",
-    "UnifiedTheorem",
-    "UnifiedLemma",
-    "UnifiedCorollary",
-    "UnifiedProposition",
-    # Section 3: Algorithm-specific
-    "DocumentMetadata",
+    "Algorithm",
     "AlgorithmParameter",
     "AlgorithmSignature",
     "AlgorithmStep",
-    "GuardCondition",
-    "RawAlgorithm",
-    "ExtractedAlgorithm",
-    "Algorithm",
+    "Assumption",
     # Section 4: Assumption-specific
     "BulletItem",
-    "UnifiedAssumption",
+    "CaseItem",
+    "Conclusion",
+    "Condition",
     # Section 5: Axiom-specific
     "CoreStatement",
-    "Implication",
-    "UnifiedAxiom",
-    # Section 6: Definition-specific
-    "NamedProperty",
+    # Section 3: Algorithm-specific
+    "DocumentMetadata",
+    # Section 1: Shared nested models
+    "Equation",
     "Example",
-    "UnifiedDefinition",
-    # Section 7: Proof-specific
-    "ProofAssumption",
-    "KeyEquation",
-    "MathTool",
-    "CaseItem",
-    "Remark",
+    "ExtractedAlgorithm",
+    "FailureMode",
     "Gap",
-    "UnifiedProof",
+    "GuardCondition",
+    "Hypothesis",
+    "Implication",
+    "KeyEquation",
     # Section 8: Remark-specific
     "KeyPoint",
+    "MathTool",
+    # Section 6: Definition-specific
+    "NamedProperty",
+    "Note",
+    "Parameter",
+    "Proof",
+    # Section 7: Proof-specific
+    "ProofAssumption",
+    "ProofStep",
     "QuantitativeNote",
-    "Recommendation",
+    "RawAlgorithm",
     "RawMetadata",
+    "Recommendation",
     "RegistryContext",
+    "Remark",
+    "Span",
+    "UnifiedAssumption",
+    "UnifiedAxiom",
+    "UnifiedCorollary",
+    "UnifiedDefinition",
+    "UnifiedLemma",
+    # Section 2: Theorem-like entities
+    "UnifiedMathematicalEntity",
+    "UnifiedProof",
+    "UnifiedProposition",
     "UnifiedRemark",
+    "UnifiedTheorem",
+    "Variable",
 ]

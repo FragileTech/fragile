@@ -20,7 +20,7 @@ from collections import defaultdict, deque
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from mathster.core.pipeline_types import RelationType
+from mathster.proof_pipeline.pipeline_types import RelationType
 
 
 # =============================================================================

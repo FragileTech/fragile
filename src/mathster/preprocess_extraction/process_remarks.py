@@ -7,11 +7,6 @@ from pathlib import Path
 from typing import Any
 
 from mathster.preprocess_extraction.data_models import (
-    KeyPoint,
-    QuantitativeNote,
-    RawMetadata,
-    Recommendation,
-    RegistryContext,
     UnifiedRemark,
 )
 from mathster.preprocess_extraction.utils import (

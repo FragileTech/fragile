@@ -4,16 +4,9 @@ import argparse
 import json
 import logging
 from pathlib import Path
-import re
 from typing import Any
 
 from mathster.preprocess_extraction.data_models import (
-    CoreStatement,
-    FailureMode,
-    Hypothesis,
-    Implication,
-    Parameter,
-    Span,
     UnifiedAxiom,
 )
 from mathster.preprocess_extraction.utils import (

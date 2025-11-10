@@ -4,15 +4,9 @@ import argparse
 import json
 import logging
 from pathlib import Path
-import re
 from typing import Any
 
 from mathster.preprocess_extraction.data_models import (
-    BulletItem,
-    Condition,
-    Note,
-    Parameter,
-    Span,
     UnifiedAssumption,
 )
 from mathster.preprocess_extraction.utils import (
@@ -115,7 +109,6 @@ def preprocess_document_assumptions(
     extract_dir = resolve_extract_directory(registry_dir)
     extracted_candidates = [
         extract_dir / "assumption.json",
-
     ]
     extracted_path = select_existing_file(extracted_candidates)
 

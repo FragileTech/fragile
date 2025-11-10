@@ -251,7 +251,7 @@
         "chapter_file": "chapter_7.json",
         "section_id": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation"
       },
-      "generated_at": "2025-11-09T10:55:47.626397+00:00",
+      "generated_at": "2025-11-10T12:23:04.016510+00:00",
       "alt_labels": []
     },
     "tags": [
@@ -277,7 +277,10 @@
       ]
     },
     "references": [
-      "def-greedy-pairing-algorithm"
+      "def-greedy-pairing-algorithm",
+      "cor-vvarx-to-high-error-fraction",
+      "lem-geometric-separation-of-partition",
+      "lem-greedy-preserves-signal"
     ],
     "metadata": {
       "label": "thm-geometry-guarantees-variance"
@@ -289,7 +292,7 @@
       "chapter_file": "chapter_7.json",
       "section_id": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation"
     },
-    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "generated_at": "2025-11-10T12:23:04.021422+00:00",
     "alt_labels": []
   },
   {
@@ -429,8 +432,8 @@
       "proves": "thm-derivation-of-stability-condition",
       "proof_type": "direct",
       "proof_status": "complete",
-      "content_markdown": ":label: proof-thm-derivation-of-stability-condition\n\n**Proof.**\n\nThe proof proceeds in four stages. First, we formalize the condition for intelligent targeting in terms of the expected log-fitness of the high-error and low-error populations. Second, we decompose this condition to isolate the trade-off between the diversity and reward signals. Third, we derive rigorous, uniform bounds for these signal gaps under worst-case adversarial conditions. Finally, we assemble these bounds to derive the necessary and sufficient inequality.\n\n**1. The Formal Condition for Intelligent Targeting**\n\nFor the algorithm's targeting mechanism to be corrective, the high-error population `H_k` must, on average, be less fit than the low-error population `L_k = A_k \\setminus H_k`. Due to the multiplicative form of the fitness potential, $V_{\\text{fit}} = (d')^\\beta (r')^\\alpha$, the most robust way to analyze this condition is by comparing the expected logarithms of the fitness. The condition for intelligent targeting is therefore:\n\n$$\n\\mathbb{E}[\\ln(V_{\\text{fit}}) \\mid i \\in H_k] < \\mathbb{E}[\\ln(V_{\\text{fit}}) \\mid i \\in L_k]\n$$\n\n**2. Decomposing the Condition into a Signal Trade-off**\n\nUsing the definition $ln(V_fit) = \\beta ln(d') + \\alpha ln(r')$ and the linearity of expectation, the condition from Step 1 becomes:\n\n$$\n\\beta \\mathbb{E}[\\ln(d')|H_k] + \\alpha \\mathbb{E}[\\ln(r')|H_k] < \\beta \\mathbb{E}[\\ln(d')|L_k] + \\alpha \\mathbb{E}[\\ln(r')|L_k]\n$$\n\nRearranging the terms to separate the contribution from the diversity signal and the reward signal yields the core trade-off inequality that must be satisfied:\n\n$$\n\\beta \\left( \\mathbb{E}[\\ln(d')|H_k] - \\mathbb{E}[\\ln(d')|L_k] \\right) > \\alpha \\left( \\mathbb{E}[\\ln(r')|L_k] - \\mathbb{E}[\\ln(r')|H_k] \\right) \\quad (*)\n$$\n\nThis inequality states that the fitness advantage from the reliable diversity signal (LHS) must be strong enough to overcome the potential fitness advantage from a deceptive reward signal (RHS).\n\n**3. Deriving Uniform Bounds on the Signal Gaps**\n\nWe now find uniform bounds for the two parenthesized terms in inequality `(*)`. This is the critical step where we correctly apply {prf:ref}`lem-variance-to-gap` to establish rigorous bounds. These bounds must hold for any swarm configuration, including the most adversarial ones.\n\n*   **LHS: The Minimum Guaranteed Diversity Signal.**\n\n    The term `E[ln(d')|H_k] - E[ln(d')|L_k]` represents the guaranteed advantage in the diversity signal for the high-error population. We establish this through the following causal chain:\n\n    1. **From Geometry to Raw Measurement Variance:** A high-error state guarantees a raw measurement variance $\\text{E}[\\text{Var}(d)] \\geq \\kappa_meas(\\varepsilon) > 0$ (from [](#thm-geometry-guarantees-variance)).\n\n    2. **From Raw Variance to Rescaled Variance:** This raw variance propagates through the pipeline, guaranteeing a variance in the rescaled values $\\text{Var}(d') \\geq \\kappa_var(d') > 0$. The constant $\\kappa_var(d')$ is defined in terms of $\\kappa_meas(\\varepsilon)$ and the pipeline parameters via the gap propagation lemmas from Section 7.3.\n\n    3. **Signal-to-Noise Condition:** The Signal-to-Noise Condition $\\kappa_var(d') > Var_max(d')$ is satisfied by the choice of the gain parameter $\\gamma$ (from {prf:ref}`prop-satisfiability-of-snr-gamma`).\n\n    4. **Applying [](#lem-variance-to-mean-separation):** We now apply [](#lem-variance-to-mean-separation) to the set of rescaled diversity values `d'`. Let:\n        - `V = d'` (the total set of rescaled diversity values)\n        - `H = H_k` and `L = L_k` (the partition)\n        - The premise $\\text{Var}(V) \\geq \\kappa_var$ is met with $\\kappa_var = \\kappa_var(d')$\n        - The premise $\\kappa_var > Var_max$ is met by the Signal-to-Noise Condition\n\n    5. **Result from [](#lem-variance-to-mean-separation):** This yields a guaranteed lower bound on the separation between the subset means:\n\n\n$$\n|\\mathbb{E}[d'|H_k] - \\mathbb{E}[d'|L_k]| \\ge \\frac{1}{\\sqrt{f_H f_L}} \\sqrt{\\kappa_{\\mathrm{var}}(d') - \\operatorname{Var}_{\\max}(d')}\n$$\n\n    6. **Define the Mean Gap Constant:** We define this entire N-uniform lower bound as:\n\n\n$$\n\\kappa_{\\text{mean},d'}(\\epsilon) := \\frac{1}{\\sqrt{f_H f_L}} \\sqrt{\\kappa_{\\mathrm{var}}(d') - \\operatorname{Var}_{\\max}(d')} > 0\n$$\n\n    7. **From Mean Separation to Logarithmic Separation:** The smallest possible logarithmic gap corresponding to this minimal mean separation occurs when the values are compressed at the top of their allowed range, $[\\eta, g_A,max + \\eta]$. This provides a uniform lower bound on the reliable signal:\n\n\n$$\n\\mathbb{E}[\\ln(d')|H_k] - \\mathbb{E}[\\ln(d')|L_k] \\ge \\ln\\left(1 + \\frac{\\kappa_{\\text{mean},d'}(\\epsilon)}{g_{A,max}+\\eta}\\right)\n$$\n\n*   **RHS: The Maximum Adversarial Reward Signal.**\n\n    Symmetrically, we apply the same logic to find an upper bound on the term `E[ln(r')|L_k] - E[ln(r')|H_k]`, which represents the maximum potential advantage from a deceptive reward signal. A potential adversarial raw gap $\\kappa_r'$ leads, through the application of [](#lem-variance-to-mean-separation) to the reward channel, to a maximum possible rescaled mean gap of $\\kappa_{\\text{mean},r'}$. The largest possible logarithmic gap corresponding to this reward separation occurs when the values are compressed at the bottom of their range. This gives a uniform upper bound on the adversarial signal:\n\n\n$$\n\\mathbb{E}[\\ln(r')|L_k] - \\mathbb{E}[\\ln(r')|H_k] \\le \\ln\\left(1 + \\frac{\\kappa_{\\text{mean},r'}}{\\eta}\\right)\n$$\n\n**4. Assembling the Final Stability Condition**\n\nFor the intelligent targeting inequality `(*)` to hold robustly for *any* high-variance swarm, the guaranteed *minimum* of the LHS must be strictly greater than the allowed *maximum* of the RHS. The assembly of the final condition is now rigorous because it compares provably non-vanishing bounds on the *means of the populations*, not on unrepresentative individual values. Substituting the bounds derived in Stage 3 gives the necessary and sufficient condition.",
-      "raw_directive": "3928: where $\\kappa_mean,d'(\\varepsilon)$ and $\\kappa_mean,r'$ are the guaranteed N-uniform separations between the *mean* rescaled values of the high-error and low-error populations, derived from the system's guaranteed signal variance and landscape regularity, respectively.\n3929: :::\n3930: :::{prf:proof}\n3931: :label: proof-thm-derivation-of-stability-condition\n3932: \n3933: **Proof.**\n3934: \n3935: The proof proceeds in four stages. First, we formalize the condition for intelligent targeting in terms of the expected log-fitness of the high-error and low-error populations. Second, we decompose this condition to isolate the trade-off between the diversity and reward signals. Third, we derive rigorous, uniform bounds for these signal gaps under worst-case adversarial conditions. Finally, we assemble these bounds to derive the necessary and sufficient inequality.\n3936: \n3937: **1. The Formal Condition for Intelligent Targeting**\n3938: \n3939: For the algorithm's targeting mechanism to be corrective, the high-error population `H_k` must, on average, be less fit than the low-error population `L_k = A_k \\setminus H_k`. Due to the multiplicative form of the fitness potential, $V_{\\text{fit}} = (d')^\\beta (r')^\\alpha$, the most robust way to analyze this condition is by comparing the expected logarithms of the fitness. The condition for intelligent targeting is therefore:\n3940: \n3941: $$\n3942: \\mathbb{E}[\\ln(V_{\\text{fit}}) \\mid i \\in H_k] < \\mathbb{E}[\\ln(V_{\\text{fit}}) \\mid i \\in L_k]\n3943: $$\n3944: \n3945: **2. Decomposing the Condition into a Signal Trade-off**\n3946: \n3947: Using the definition $ln(V_fit) = \\beta ln(d') + \\alpha ln(r')$ and the linearity of expectation, the condition from Step 1 becomes:\n3948: \n3949: $$\n3950: \\beta \\mathbb{E}[\\ln(d')|H_k] + \\alpha \\mathbb{E}[\\ln(r')|H_k] < \\beta \\mathbb{E}[\\ln(d')|L_k] + \\alpha \\mathbb{E}[\\ln(r')|L_k]\n3951: $$\n3952: \n3953: Rearranging the terms to separate the contribution from the diversity signal and the reward signal yields the core trade-off inequality that must be satisfied:\n3954: \n3955: $$\n3956: \\beta \\left( \\mathbb{E}[\\ln(d')|H_k] - \\mathbb{E}[\\ln(d')|L_k] \\right) > \\alpha \\left( \\mathbb{E}[\\ln(r')|L_k] - \\mathbb{E}[\\ln(r')|H_k] \\right) \\quad (*)\n3957: $$\n3958: \n3959: This inequality states that the fitness advantage from the reliable diversity signal (LHS) must be strong enough to overcome the potential fitness advantage from a deceptive reward signal (RHS).\n3960: \n3961: **3. Deriving Uniform Bounds on the Signal Gaps**\n3962: \n3963: We now find uniform bounds for the two parenthesized terms in inequality `(*)`. This is the critical step where we correctly apply {prf:ref}`lem-variance-to-gap` to establish rigorous bounds. These bounds must hold for any swarm configuration, including the most adversarial ones.\n3964: \n3965: *   **LHS: The Minimum Guaranteed Diversity Signal.**\n3966: \n3967:     The term `E[ln(d')|H_k] - E[ln(d')|L_k]` represents the guaranteed advantage in the diversity signal for the high-error population. We establish this through the following causal chain:\n3968: \n3969:     1. **From Geometry to Raw Measurement Variance:** A high-error state guarantees a raw measurement variance $\\text{E}[\\text{Var}(d)] \\geq \\kappa_meas(\\varepsilon) > 0$ (from [](#thm-geometry-guarantees-variance)).\n3970: \n3971:     2. **From Raw Variance to Rescaled Variance:** This raw variance propagates through the pipeline, guaranteeing a variance in the rescaled values $\\text{Var}(d') \\geq \\kappa_var(d') > 0$. The constant $\\kappa_var(d')$ is defined in terms of $\\kappa_meas(\\varepsilon)$ and the pipeline parameters via the gap propagation lemmas from Section 7.3.\n3972: \n3973:     3. **Signal-to-Noise Condition:** The Signal-to-Noise Condition $\\kappa_var(d') > Var_max(d')$ is satisfied by the choice of the gain parameter $\\gamma$ (from {prf:ref}`prop-satisfiability-of-snr-gamma`).\n3974: \n3975:     4. **Applying [](#lem-variance-to-mean-separation):** We now apply [](#lem-variance-to-mean-separation) to the set of rescaled diversity values `d'`. Let:\n3976:         - `V = d'` (the total set of rescaled diversity values)\n3977:         - `H = H_k` and `L = L_k` (the partition)\n3978:         - The premise $\\text{Var}(V) \\geq \\kappa_var$ is met with $\\kappa_var = \\kappa_var(d')$\n3979:         - The premise $\\kappa_var > Var_max$ is met by the Signal-to-Noise Condition\n3980: \n3981:     5. **Result from [](#lem-variance-to-mean-separation):** This yields a guaranteed lower bound on the separation between the subset means:\n3982: \n3983: \n3984: $$\n3985: |\\mathbb{E}[d'|H_k] - \\mathbb{E}[d'|L_k]| \\ge \\frac{1}{\\sqrt{f_H f_L}} \\sqrt{\\kappa_{\\mathrm{var}}(d') - \\operatorname{Var}_{\\max}(d')}\n3986: $$\n3987: \n3988:     6. **Define the Mean Gap Constant:** We define this entire N-uniform lower bound as:\n3989: \n3990: \n3991: $$\n3992: \\kappa_{\\text{mean},d'}(\\epsilon) := \\frac{1}{\\sqrt{f_H f_L}} \\sqrt{\\kappa_{\\mathrm{var}}(d') - \\operatorname{Var}_{\\max}(d')} > 0\n3993: $$\n3994: \n3995:     7. **From Mean Separation to Logarithmic Separation:** The smallest possible logarithmic gap corresponding to this minimal mean separation occurs when the values are compressed at the top of their allowed range, $[\\eta, g_A,max + \\eta]$. This provides a uniform lower bound on the reliable signal:\n3996: \n3997: \n3998: $$\n3999: \\mathbb{E}[\\ln(d')|H_k] - \\mathbb{E}[\\ln(d')|L_k] \\ge \\ln\\left(1 + \\frac{\\kappa_{\\text{mean},d'}(\\epsilon)}{g_{A,max}+\\eta}\\right)\n4000: $$\n4001: \n4002: *   **RHS: The Maximum Adversarial Reward Signal.**\n4003: \n4004:     Symmetrically, we apply the same logic to find an upper bound on the term `E[ln(r')|L_k] - E[ln(r')|H_k]`, which represents the maximum potential advantage from a deceptive reward signal. A potential adversarial raw gap $\\kappa_r'$ leads, through the application of [](#lem-variance-to-mean-separation) to the reward channel, to a maximum possible rescaled mean gap of $\\kappa_{\\text{mean},r'}$. The largest possible logarithmic gap corresponding to this reward separation occurs when the values are compressed at the bottom of their range. This gives a uniform upper bound on the adversarial signal:\n4005: \n4006: \n4007: $$\n4008: \\mathbb{E}[\\ln(r')|L_k] - \\mathbb{E}[\\ln(r')|H_k] \\le \\ln\\left(1 + \\frac{\\kappa_{\\text{mean},r'}}{\\eta}\\right)\n4009: $$\n4010: \n4011: **4. Assembling the Final Stability Condition**\n4012: \n4013: For the intelligent targeting inequality `(*)` to hold robustly for *any* high-variance swarm, the guaranteed *minimum* of the LHS must be strictly greater than the allowed *maximum* of the RHS. The assembly of the final condition is now rigorous because it compares provably non-vanishing bounds on the *means of the populations*, not on unrepresentative individual values. Substituting the bounds derived in Stage 3 gives the necessary and sufficient condition.\n4014: ",
+      "content_markdown": ":label: proof-thm-derivation-of-stability-condition\n\n**Proof.**\n\nThe proof proceeds in four stages. First, we formalize the condition for intelligent targeting in terms of the expected log-fitness of the high-error and low-error populations. Second, we decompose this condition to isolate the trade-off between the diversity and reward signals. Third, we derive rigorous, uniform bounds for these signal gaps under worst-case adversarial conditions. Finally, we assemble these bounds to derive the necessary and sufficient inequality.\n\n**1. The Formal Condition for Intelligent Targeting**\n\nFor the algorithm's targeting mechanism to be corrective, the high-error population `H_k` must, on average, be less fit than the low-error population `L_k = A_k \\setminus H_k`. Due to the multiplicative form of the fitness potential, $V_{\\text{fit}} = (d')^\\beta (r')^\\alpha$, the most robust way to analyze this condition is by comparing the expected logarithms of the fitness. The condition for intelligent targeting is therefore:\n\n$$\n\\mathbb{E}[\\ln(V_{\\text{fit}}) \\mid i \\in H_k] < \\mathbb{E}[\\ln(V_{\\text{fit}}) \\mid i \\in L_k]\n$$\n\n**2. Decomposing the Condition into a Signal Trade-off**\n\nUsing the definition $ln(V_fit) = \\beta ln(d') + \\alpha ln(r')$ and the linearity of expectation, the condition from Step 1 becomes:\n\n$$\n\\beta \\mathbb{E}[\\ln(d')|H_k] + \\alpha \\mathbb{E}[\\ln(r')|H_k] < \\beta \\mathbb{E}[\\ln(d')|L_k] + \\alpha \\mathbb{E}[\\ln(r')|L_k]\n$$\n\nRearranging the terms to separate the contribution from the diversity signal and the reward signal yields the core trade-off inequality that must be satisfied:\n\n$$\n\\beta \\left( \\mathbb{E}[\\ln(d')|H_k] - \\mathbb{E}[\\ln(d')|L_k] \\right) > \\alpha \\left( \\mathbb{E}[\\ln(r')|L_k] - \\mathbb{E}[\\ln(r')|H_k] \\right) \\quad (*)\n$$\n\nThis inequality states that the fitness advantage from the reliable diversity signal (LHS, with \u03b2 > 0 from {prf:ref}`axiom-active-diversity`) must be strong enough to overcome the potential fitness advantage from a deceptive reward signal (RHS).\n\n**3. Deriving Uniform Bounds on the Signal Gaps**\n\nWe now find uniform bounds for the two parenthesized terms in inequality `(*)`. This is the critical step where we correctly apply {prf:ref}`lem-variance-to-gap` to establish rigorous bounds. These bounds must hold for any swarm configuration, including the most adversarial ones.\n\n*   **LHS: The Minimum Guaranteed Diversity Signal.**\n\n    The term `E[ln(d')|H_k] - E[ln(d')|L_k]` represents the guaranteed advantage in the diversity signal for the high-error population. We establish this through the following causal chain:\n\n    1. **From Geometry to Raw Measurement Variance:** A high-error state guarantees a raw measurement variance $\\text{E}[\\text{Var}(d)] \\geq \\kappa_meas(\\varepsilon) > 0$ (from [](#thm-geometry-guarantees-variance)).\n\n    2. **From Raw Variance to Rescaled Variance:** This raw variance propagates through the pipeline, guaranteeing a variance in the rescaled values $\\text{Var}(d') \\geq \\kappa_var(d') > 0$. The constant $\\kappa_var(d')$ is defined in terms of $\\kappa_meas(\\varepsilon)$ and the pipeline parameters via the gap propagation lemmas from Section 7.3.\n\n    3. **Signal-to-Noise Condition:** The Signal-to-Noise Condition $\\kappa_var(d') > Var_max(d')$ is satisfied by the choice of the gain parameter $\\gamma$ (from {prf:ref}`prop-satisfiability-of-snr-gamma`).\n\n    4. **Applying [](#lem-variance-to-mean-separation):** We now apply [](#lem-variance-to-mean-separation) to the set of rescaled diversity values `d'`. Let:\n        - `V = d'` (the total set of rescaled diversity values)\n        - `H = H_k` and `L = L_k` (the partition)\n        - The premise $\\text{Var}(V) \\geq \\kappa_var$ is met with $\\kappa_var = \\kappa_var(d')$\n        - The premise $\\kappa_var > Var_max$ is met by the Signal-to-Noise Condition\n\n    5. **Result from [](#lem-variance-to-mean-separation):** This yields a guaranteed lower bound on the separation between the subset means:\n\n\n$$\n|\\mathbb{E}[d'|H_k] - \\mathbb{E}[d'|L_k]| \\ge \\frac{1}{\\sqrt{f_H f_L}} \\sqrt{\\kappa_{\\mathrm{var}}(d') - \\operatorname{Var}_{\\max}(d')}\n$$\n\n    6. **Define the Mean Gap Constant:** We define this entire N-uniform lower bound as:\n\n\n$$\n\\kappa_{\\text{mean},d'}(\\epsilon) := \\frac{1}{\\sqrt{f_H f_L}} \\sqrt{\\kappa_{\\mathrm{var}}(d') - \\operatorname{Var}_{\\max}(d')} > 0\n$$\n\n    7. **From Mean Separation to Logarithmic Separation:** The smallest possible logarithmic gap corresponding to this minimal mean separation occurs when the values are compressed at the top of their allowed range, $[\\eta, g_A,max + \\eta]$. This provides a uniform lower bound on the reliable signal:\n\n\n$$\n\\mathbb{E}[\\ln(d')|H_k] - \\mathbb{E}[\\ln(d')|L_k] \\ge \\ln\\left(1 + \\frac{\\kappa_{\\text{mean},d'}(\\epsilon)}{g_{A,max}+\\eta}\\right)\n$$\n\n*   **RHS: The Maximum Adversarial Reward Signal.**\n\n    Symmetrically, we apply the same logic to find an upper bound on the term `E[ln(r')|L_k] - E[ln(r')|H_k]`, which represents the maximum potential advantage from a deceptive reward signal. A potential adversarial raw gap $\\kappa_r'$ leads, through the application of [](#lem-variance-to-mean-separation) to the reward channel, to a maximum possible rescaled mean gap of $\\kappa_{\\text{mean},r'}$. The largest possible logarithmic gap corresponding to this reward separation occurs when the values are compressed at the bottom of their range. This gives a uniform upper bound on the adversarial signal:\n\n\n$$\n\\mathbb{E}[\\ln(r')|L_k] - \\mathbb{E}[\\ln(r')|H_k] \\le \\ln\\left(1 + \\frac{\\kappa_{\\text{mean},r'}}{\\eta}\\right)\n$$\n\n**4. Assembling the Final Stability Condition**\n\nFor the intelligent targeting inequality `(*)` to hold robustly for *any* high-variance swarm, the guaranteed *minimum* of the LHS must be strictly greater than the allowed *maximum* of the RHS. The assembly of the final condition is now rigorous because it compares provably non-vanishing bounds on the *means of the populations*, not on unrepresentative individual values. Substituting the bounds derived in Stage 3 gives the necessary and sufficient condition.",
+      "raw_directive": "3928: where $\\kappa_mean,d'(\\varepsilon)$ and $\\kappa_mean,r'$ are the guaranteed N-uniform separations between the *mean* rescaled values of the high-error and low-error populations, derived from the system's guaranteed signal variance and landscape regularity, respectively.\n3929: :::\n3930: :::{prf:proof}\n3931: :label: proof-thm-derivation-of-stability-condition\n3932: \n3933: **Proof.**\n3934: \n3935: The proof proceeds in four stages. First, we formalize the condition for intelligent targeting in terms of the expected log-fitness of the high-error and low-error populations. Second, we decompose this condition to isolate the trade-off between the diversity and reward signals. Third, we derive rigorous, uniform bounds for these signal gaps under worst-case adversarial conditions. Finally, we assemble these bounds to derive the necessary and sufficient inequality.\n3936: \n3937: **1. The Formal Condition for Intelligent Targeting**\n3938: \n3939: For the algorithm's targeting mechanism to be corrective, the high-error population `H_k` must, on average, be less fit than the low-error population `L_k = A_k \\setminus H_k`. Due to the multiplicative form of the fitness potential, $V_{\\text{fit}} = (d')^\\beta (r')^\\alpha$, the most robust way to analyze this condition is by comparing the expected logarithms of the fitness. The condition for intelligent targeting is therefore:\n3940: \n3941: $$\n3942: \\mathbb{E}[\\ln(V_{\\text{fit}}) \\mid i \\in H_k] < \\mathbb{E}[\\ln(V_{\\text{fit}}) \\mid i \\in L_k]\n3943: $$\n3944: \n3945: **2. Decomposing the Condition into a Signal Trade-off**\n3946: \n3947: Using the definition $ln(V_fit) = \\beta ln(d') + \\alpha ln(r')$ and the linearity of expectation, the condition from Step 1 becomes:\n3948: \n3949: $$\n3950: \\beta \\mathbb{E}[\\ln(d')|H_k] + \\alpha \\mathbb{E}[\\ln(r')|H_k] < \\beta \\mathbb{E}[\\ln(d')|L_k] + \\alpha \\mathbb{E}[\\ln(r')|L_k]\n3951: $$\n3952: \n3953: Rearranging the terms to separate the contribution from the diversity signal and the reward signal yields the core trade-off inequality that must be satisfied:\n3954: \n3955: $$\n3956: \\beta \\left( \\mathbb{E}[\\ln(d')|H_k] - \\mathbb{E}[\\ln(d')|L_k] \\right) > \\alpha \\left( \\mathbb{E}[\\ln(r')|L_k] - \\mathbb{E}[\\ln(r')|H_k] \\right) \\quad (*)\n3957: $$\n3958: \n3959: This inequality states that the fitness advantage from the reliable diversity signal (LHS, with \u03b2 > 0 from {prf:ref}`axiom-active-diversity`) must be strong enough to overcome the potential fitness advantage from a deceptive reward signal (RHS).\n3960: \n3961: **3. Deriving Uniform Bounds on the Signal Gaps**\n3962: \n3963: We now find uniform bounds for the two parenthesized terms in inequality `(*)`. This is the critical step where we correctly apply {prf:ref}`lem-variance-to-gap` to establish rigorous bounds. These bounds must hold for any swarm configuration, including the most adversarial ones.\n3964: \n3965: *   **LHS: The Minimum Guaranteed Diversity Signal.**\n3966: \n3967:     The term `E[ln(d')|H_k] - E[ln(d')|L_k]` represents the guaranteed advantage in the diversity signal for the high-error population. We establish this through the following causal chain:\n3968: \n3969:     1. **From Geometry to Raw Measurement Variance:** A high-error state guarantees a raw measurement variance $\\text{E}[\\text{Var}(d)] \\geq \\kappa_meas(\\varepsilon) > 0$ (from [](#thm-geometry-guarantees-variance)).\n3970: \n3971:     2. **From Raw Variance to Rescaled Variance:** This raw variance propagates through the pipeline, guaranteeing a variance in the rescaled values $\\text{Var}(d') \\geq \\kappa_var(d') > 0$. The constant $\\kappa_var(d')$ is defined in terms of $\\kappa_meas(\\varepsilon)$ and the pipeline parameters via the gap propagation lemmas from Section 7.3.\n3972: \n3973:     3. **Signal-to-Noise Condition:** The Signal-to-Noise Condition $\\kappa_var(d') > Var_max(d')$ is satisfied by the choice of the gain parameter $\\gamma$ (from {prf:ref}`prop-satisfiability-of-snr-gamma`).\n3974: \n3975:     4. **Applying [](#lem-variance-to-mean-separation):** We now apply [](#lem-variance-to-mean-separation) to the set of rescaled diversity values `d'`. Let:\n3976:         - `V = d'` (the total set of rescaled diversity values)\n3977:         - `H = H_k` and `L = L_k` (the partition)\n3978:         - The premise $\\text{Var}(V) \\geq \\kappa_var$ is met with $\\kappa_var = \\kappa_var(d')$\n3979:         - The premise $\\kappa_var > Var_max$ is met by the Signal-to-Noise Condition\n3980: \n3981:     5. **Result from [](#lem-variance-to-mean-separation):** This yields a guaranteed lower bound on the separation between the subset means:\n3982: \n3983: \n3984: $$\n3985: |\\mathbb{E}[d'|H_k] - \\mathbb{E}[d'|L_k]| \\ge \\frac{1}{\\sqrt{f_H f_L}} \\sqrt{\\kappa_{\\mathrm{var}}(d') - \\operatorname{Var}_{\\max}(d')}\n3986: $$\n3987: \n3988:     6. **Define the Mean Gap Constant:** We define this entire N-uniform lower bound as:\n3989: \n3990: \n3991: $$\n3992: \\kappa_{\\text{mean},d'}(\\epsilon) := \\frac{1}{\\sqrt{f_H f_L}} \\sqrt{\\kappa_{\\mathrm{var}}(d') - \\operatorname{Var}_{\\max}(d')} > 0\n3993: $$\n3994: \n3995:     7. **From Mean Separation to Logarithmic Separation:** The smallest possible logarithmic gap corresponding to this minimal mean separation occurs when the values are compressed at the top of their allowed range, $[\\eta, g_A,max + \\eta]$. This provides a uniform lower bound on the reliable signal:\n3996: \n3997: \n3998: $$\n3999: \\mathbb{E}[\\ln(d')|H_k] - \\mathbb{E}[\\ln(d')|L_k] \\ge \\ln\\left(1 + \\frac{\\kappa_{\\text{mean},d'}(\\epsilon)}{g_{A,max}+\\eta}\\right)\n4000: $$\n4001: \n4002: *   **RHS: The Maximum Adversarial Reward Signal.**\n4003: \n4004:     Symmetrically, we apply the same logic to find an upper bound on the term `E[ln(r')|L_k] - E[ln(r')|H_k]`, which represents the maximum potential advantage from a deceptive reward signal. A potential adversarial raw gap $\\kappa_r'$ leads, through the application of [](#lem-variance-to-mean-separation) to the reward channel, to a maximum possible rescaled mean gap of $\\kappa_{\\text{mean},r'}$. The largest possible logarithmic gap corresponding to this reward separation occurs when the values are compressed at the bottom of their range. This gives a uniform upper bound on the adversarial signal:\n4005: \n4006: \n4007: $$\n4008: \\mathbb{E}[\\ln(r')|L_k] - \\mathbb{E}[\\ln(r')|H_k] \\le \\ln\\left(1 + \\frac{\\kappa_{\\text{mean},r'}}{\\eta}\\right)\n4009: $$\n4010: \n4011: **4. Assembling the Final Stability Condition**\n4012: \n4013: For the intelligent targeting inequality `(*)` to hold robustly for *any* high-variance swarm, the guaranteed *minimum* of the LHS must be strictly greater than the allowed *maximum* of the RHS. The assembly of the final condition is now rigorous because it compares provably non-vanishing bounds on the *means of the populations*, not on unrepresentative individual values. Substituting the bounds derived in Stage 3 gives the necessary and sufficient condition.\n4014: ",
       "strategy_summary": "The proof formalizes the intelligent targeting condition via expected log-fitness, decomposes it into a trade-off between diversity and reward signals using linearity of expectation, derives uniform bounds on signal gaps via variance-to-mean-separation lemmas under adversarial conditions, and assembles these bounds to obtain the necessary and sufficient stability inequality.",
       "conclusion": {
         "text": "The necessary and sufficient condition for intelligent targeting and stability is that the guaranteed minimum logarithmic diversity signal gap exceeds the maximum adversarial logarithmic reward signal gap: \\(\\beta \\ln\\left(1 + \\frac{\\kappa_{\\text{mean},d'}(\\varepsilon)}{g_{A,\\max} + \\eta}\\right) > \\alpha \\ln\\left(1 + \\frac{\\kappa_{\\text{mean},r'}}{\\eta}\\right)\\).",
@@ -530,6 +533,7 @@
         }
       ],
       "references": [
+        "axiom-active-diversity",
         "lem-variance-to-gap",
         "prop-satisfiability-of-snr-gamma",
         "thm-geometry-guarantees-variance",
@@ -631,7 +635,7 @@
         "chapter_file": "chapter_7.json",
         "section_id": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation"
       },
-      "generated_at": "2025-11-09T10:55:47.626397+00:00",
+      "generated_at": "2025-11-10T12:23:04.016510+00:00",
       "alt_labels": []
     },
     "tags": [
@@ -656,7 +660,13 @@
         3916
       ]
     },
-    "references": [],
+    "references": [
+      "axiom-active-diversity",
+      "lem-variance-to-gap",
+      "prop-satisfiability-of-snr-gamma",
+      "thm-geometry-guarantees-variance",
+      "lem-variance-to-mean-separation"
+    ],
     "metadata": {
       "label": "thm-derivation-of-stability-condition"
     },
@@ -667,7 +677,7 @@
       "chapter_file": "chapter_7.json",
       "section_id": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation"
     },
-    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "generated_at": "2025-11-10T12:23:04.021422+00:00",
     "alt_labels": []
   },
   {
@@ -941,7 +951,7 @@
         "chapter_file": "chapter_7.json",
         "section_id": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation"
       },
-      "generated_at": "2025-11-09T10:55:47.626397+00:00",
+      "generated_at": "2025-11-10T12:23:04.016510+00:00",
       "alt_labels": []
     },
     "tags": [
@@ -953,7 +963,7 @@
       "corrected-inequality"
     ],
     "content_markdown": ":label: thm-stability-condition-final-corrected\n\nLet a swarm `k$ be in a high-error state. The algorithm's targeting mechanism is intelligent (i.e., $\\mathbb{E}[\\ln(V_{\\text{fit}})|H_k] < \\mathbb{E}[\\ln(V_{\\text{fit}})|L_k]$) if and only if the system parameters satisfy the following **Corrected Stability Condition**:\n$$\n\\beta \\ln\\left(1 + \\frac{\\kappa_{d', \\text{mean}}}{g_{A,\\max}+\\eta}\\right) > \\alpha \\ln\\left(1 + \\frac{\\kappa_{\\mathrm{rescaled}}(L_{R} \\cdot D_{\\mathrm{valid}})}{\\eta}\\right)",
-    "raw_directive": "4512: With a rigorous, axiom-based bound on the adversarial reward signal now established, we can state the corrected and final stability condition.\n4513: \n4514: :::{prf:theorem} **(The Corrected Stability Condition for Intelligent Adaptation)**\n4515: :label: thm-stability-condition-final-corrected\n4516: \n4517: Let a swarm `k$ be in a high-error state. The algorithm's targeting mechanism is intelligent (i.e., $\\mathbb{E}[\\ln(V_{\\text{fit}})|H_k] < \\mathbb{E}[\\ln(V_{\\text{fit}})|L_k]$) if and only if the system parameters satisfy the following **Corrected Stability Condition**:\n4518: $$\n4519: \\beta \\ln\\left(1 + \\frac{\\kappa_{d', \\text{mean}}}{g_{A,\\max}+\\eta}\\right) > \\alpha \\ln\\left(1 + \\frac{\\kappa_{\\mathrm{rescaled}}(L_{R} \\cdot D_{\\mathrm{valid}})}{\\eta}\\right)\n4520: $$",
+    "raw_directive": "4512: With a rigorous, axiom-based bound on the adversarial reward signal now established (based on {prf:ref}`axiom-non-deceptive-landscape`), we can state the corrected and final stability condition (derived in {prf:ref}`thm-derivation-of-stability-condition`).\n4513: \n4514: :::{prf:theorem} **(The Corrected Stability Condition for Intelligent Adaptation)**\n4515: :label: thm-stability-condition-final-corrected\n4516: \n4517: Let a swarm `k$ be in a high-error state. The algorithm's targeting mechanism is intelligent (i.e., $\\mathbb{E}[\\ln(V_{\\text{fit}})|H_k] < \\mathbb{E}[\\ln(V_{\\text{fit}})|L_k]$) if and only if the system parameters satisfy the following **Corrected Stability Condition**:\n4518: $$\n4519: \\beta \\ln\\left(1 + \\frac{\\kappa_{d', \\text{mean}}}{g_{A,\\max}+\\eta}\\right) > \\alpha \\ln\\left(1 + \\frac{\\kappa_{\\mathrm{rescaled}}(L_{R} \\cdot D_{\\mathrm{valid}})}{\\eta}\\right)\n4520: $$",
     "document_id": "03_cloning",
     "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
     "span": {
@@ -966,7 +976,8 @@
       ]
     },
     "references": [
-      "prop-corrective-signal-bound"
+      "prop-corrective-signal-bound",
+      "prop-log-reward-gap-axiom-bound"
     ],
     "metadata": {
       "label": "thm-stability-condition-final-corrected"
@@ -978,7 +989,7 @@
       "chapter_file": "chapter_7.json",
       "section_id": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation"
     },
-    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "generated_at": "2025-11-10T12:23:04.021422+00:00",
     "alt_labels": []
   },
   {
@@ -1267,7 +1278,7 @@
         "chapter_file": "chapter_7.json",
         "section_id": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation"
       },
-      "generated_at": "2025-11-09T10:55:47.626397+00:00",
+      "generated_at": "2025-11-10T12:23:04.016510+00:00",
       "alt_labels": []
     },
     "tags": [
@@ -1291,7 +1302,9 @@
         4635
       ]
     },
-    "references": [],
+    "references": [
+      "thm-stability-condition-final-corrected"
+    ],
     "metadata": {
       "label": "thm-unfit-high-error-overlap-fraction"
     },
@@ -1302,7 +1315,7 @@
       "chapter_file": "chapter_7.json",
       "section_id": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation"
     },
-    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "generated_at": "2025-11-10T12:23:04.021422+00:00",
     "alt_labels": []
   },
   {
@@ -1423,16 +1436,16 @@
       "stochastic process"
     ],
     "content_markdown": ":label: thm-cloning-operator-composition\n\nThe cloning operator admits the following compositional representation:\n\n$$\n\\Psi_{\\text{clone}}(S, \\cdot) = \\int_{\\mathbf{d}} \\int_{\\mathbf{c}, \\mathbf{a}} \\Psi_{\\text{update}}(S, \\mathbf{c}, \\mathbf{a}, \\cdot) \\, dP_{\\text{decision}}(S, \\mathbf{V}_{\\text{fit}}(\\mathbf{d}), \\mathbf{c}, \\mathbf{a}) \\, dP_{\\text{measure}}(S, \\mathbf{d})\n$$\n\nwhere:\n- $P_{\\text{measure}}(S, \\cdot)$ is the distribution of raw distance vectors from $\\Psi_{\\text{measure}}$\n- $\\mathbf{V}_{\\text{fit}}(\\mathbf{d})$ is the deterministic fitness vector from $\\Psi_{\\text{fitness}}$ given $S$ and $\\mathbf{d}$\n- $P_{\\text{decision}}(S, \\mathbf{V}_{\\text{fit}}, \\cdot)$ is the joint distribution of companion assignments and actions\n- $\\Psi_{\\text{update}}(S, \\mathbf{c}, \\mathbf{a}, \\cdot)$ is the (possibly stochastic) output distribution given the actions\n\nThis composition is a proper Markov kernel: for any measurable set $A \\subseteq \\Sigma_N$,\n\n$$\n\\Psi_{\\text{clone}}(S, A) = P(S' \\in A \\mid S)\n$$",
-    "raw_directive": "6176: We now assemble the complete operator from its components.\n6177: \n6178: :::{prf:theorem} Compositional Structure of $\\Psi_{\\text{clone}}$\n6179: :label: thm-cloning-operator-composition\n6180: \n6181: The cloning operator admits the following compositional representation:\n6182: \n6183: $$\n6184: \\Psi_{\\text{clone}}(S, \\cdot) = \\int_{\\mathbf{d}} \\int_{\\mathbf{c}, \\mathbf{a}} \\Psi_{\\text{update}}(S, \\mathbf{c}, \\mathbf{a}, \\cdot) \\, dP_{\\text{decision}}(S, \\mathbf{V}_{\\text{fit}}(\\mathbf{d}), \\mathbf{c}, \\mathbf{a}) \\, dP_{\\text{measure}}(S, \\mathbf{d})\n6185: $$\n6186: \n6187: where:\n6188: - $P_{\\text{measure}}(S, \\cdot)$ is the distribution of raw distance vectors from $\\Psi_{\\text{measure}}$\n6189: - $\\mathbf{V}_{\\text{fit}}(\\mathbf{d})$ is the deterministic fitness vector from $\\Psi_{\\text{fitness}}$ given $S$ and $\\mathbf{d}$\n6190: - $P_{\\text{decision}}(S, \\mathbf{V}_{\\text{fit}}, \\cdot)$ is the joint distribution of companion assignments and actions\n6191: - $\\Psi_{\\text{update}}(S, \\mathbf{c}, \\mathbf{a}, \\cdot)$ is the (possibly stochastic) output distribution given the actions\n6192: \n6193: This composition is a proper Markov kernel: for any measurable set $A \\subseteq \\Sigma_N$,\n6194: \n6195: $$\n6196: \\Psi_{\\text{clone}}(S, A) = P(S' \\in A \\mid S)\n6197: $$\n6198: ",
+    "raw_directive": "6178: We now assemble the complete operator from its components.\n6179: \n6180: :::{prf:theorem} Compositional Structure of $\\Psi_{\\text{clone}}$\n6181: :label: thm-cloning-operator-composition\n6182: \n6183: The cloning operator admits the following compositional representation:\n6184: \n6185: $$\n6186: \\Psi_{\\text{clone}}(S, \\cdot) = \\int_{\\mathbf{d}} \\int_{\\mathbf{c}, \\mathbf{a}} \\Psi_{\\text{update}}(S, \\mathbf{c}, \\mathbf{a}, \\cdot) \\, dP_{\\text{decision}}(S, \\mathbf{V}_{\\text{fit}}(\\mathbf{d}), \\mathbf{c}, \\mathbf{a}) \\, dP_{\\text{measure}}(S, \\mathbf{d})\n6187: $$\n6188: \n6189: where:\n6190: - $P_{\\text{measure}}(S, \\cdot)$ is the distribution of raw distance vectors from $\\Psi_{\\text{measure}}$\n6191: - $\\mathbf{V}_{\\text{fit}}(\\mathbf{d})$ is the deterministic fitness vector from $\\Psi_{\\text{fitness}}$ given $S$ and $\\mathbf{d}$\n6192: - $P_{\\text{decision}}(S, \\mathbf{V}_{\\text{fit}}, \\cdot)$ is the joint distribution of companion assignments and actions\n6193: - $\\Psi_{\\text{update}}(S, \\mathbf{c}, \\mathbf{a}, \\cdot)$ is the (possibly stochastic) output distribution given the actions\n6194: \n6195: This composition is a proper Markov kernel: for any measurable set $A \\subseteq \\Sigma_N$,\n6196: \n6197: $$\n6198: \\Psi_{\\text{clone}}(S, A) = P(S' \\in A \\mid S)\n6199: $$\n6200: ",
     "document_id": "03_cloning",
     "section": "## 9.4. Complete Operator Specification",
     "span": {
-      "start_line": 6176,
-      "end_line": 6198,
-      "content_start": 6179,
-      "content_end": 6197,
+      "start_line": 6178,
+      "end_line": 6200,
+      "content_start": 6181,
+      "content_end": 6199,
       "header_lines": [
-        6177
+        6179
       ]
     },
     "references": [],
@@ -1446,7 +1459,7 @@
       "chapter_file": "chapter_12.json",
       "section_id": "## 9.4. Complete Operator Specification"
     },
-    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "generated_at": "2025-11-10T12:23:04.021422+00:00",
     "alt_labels": []
   },
   {
@@ -1619,7 +1632,7 @@
       "proof_type": "direct",
       "proof_status": "sketch",
       "content_markdown": ":::{prf:proof}\n:label: proof-lem-velocity-noise-propagation\n**Proof of {prf:ref}`thm-positional-variance-contraction`.**\n\nCombining Lemmas 10.3.4 and 10.3.5:\n\n$$\n\\begin{aligned}\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] &= \\sum_{k=1,2} \\mathbb{E}[\\Delta V_{\\text{Var},x}^{(k,\\text{alive})} + \\Delta V_{\\text{Var},x}^{(k,\\text{status})}] \\\\\n&\\leq -\\frac{\\chi(\\epsilon)}{2N} V_{\\text{struct}} + \\frac{g_{\\max}(\\epsilon)}{N} + C_{\\text{pers}} + \\frac{8 D_{\\text{valid}}^2}{N} \\sum_{k} |\\mathcal{D}(S_k)|\n\\end{aligned}\n$$\n\n**Step 1: Relate $V_{\\text{struct}}$ to $V_{\\text{Var},x}$**\n\nFrom {prf:ref}`lem-sx-implies-variance`, if the structural error satisfies $V_{\\text{struct}} \\geq \\frac{1}{2} V_{\\text{Var},x}$ (which holds when both swarms have similar numbers of alive walkers), then:\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\frac{\\chi(\\epsilon)}{4N} V_{\\text{Var},x} + C_{\\text{total}}\n$$\n\nwhere $C_{\\text{total}}$ absorbs all bounded terms.\n\n**Step 2: Express as geometric contraction**\n\nDefine:\n\n$$\n\\kappa_x := \\frac{\\chi(\\epsilon)}{4N} \\cdot \\frac{1}{\\text{(typical variance)}}\n$$\n\nAfter rescaling and using the fact that $V_{\\text{Var},x}$ is $N$-normalized:\n\n$$\n\\mathbb{E}_{\\text{clone}}[V_{\\text{Var},x}(S')] \\leq (1 - \\kappa_x) V_{\\text{Var},x}(S) + C_x\n$$\n\nThe constant $\\kappa_x > 0$ is independent of $N$ due to the N-uniformity of the Keystone Lemma.",
-      "raw_directive": "6699: ### 10.3.6. Proof of Main Theorem\n6700: \n6701: :::{prf:proof}\n6702: :label: proof-lem-velocity-noise-propagation\n6703: **Proof of {prf:ref}`thm-positional-variance-contraction`.**\n6704: \n6705: Combining Lemmas 10.3.4 and 10.3.5:\n6706: \n6707: $$\n6708: \\begin{aligned}\n6709: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] &= \\sum_{k=1,2} \\mathbb{E}[\\Delta V_{\\text{Var},x}^{(k,\\text{alive})} + \\Delta V_{\\text{Var},x}^{(k,\\text{status})}] \\\\\n6710: &\\leq -\\frac{\\chi(\\epsilon)}{2N} V_{\\text{struct}} + \\frac{g_{\\max}(\\epsilon)}{N} + C_{\\text{pers}} + \\frac{8 D_{\\text{valid}}^2}{N} \\sum_{k} |\\mathcal{D}(S_k)|\n6711: \\end{aligned}\n6712: $$\n6713: \n6714: **Step 1: Relate $V_{\\text{struct}}$ to $V_{\\text{Var},x}$**\n6715: \n6716: From {prf:ref}`lem-sx-implies-variance`, if the structural error satisfies $V_{\\text{struct}} \\geq \\frac{1}{2} V_{\\text{Var},x}$ (which holds when both swarms have similar numbers of alive walkers), then:\n6717: \n6718: $$\n6719: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\frac{\\chi(\\epsilon)}{4N} V_{\\text{Var},x} + C_{\\text{total}}\n6720: $$\n6721: \n6722: where $C_{\\text{total}}$ absorbs all bounded terms.\n6723: \n6724: **Step 2: Express as geometric contraction**\n6725: \n6726: Define:\n6727: \n6728: $$\n6729: \\kappa_x := \\frac{\\chi(\\epsilon)}{4N} \\cdot \\frac{1}{\\text{(typical variance)}}\n6730: $$\n6731: \n6732: After rescaling and using the fact that $V_{\\text{Var},x}$ is $N$-normalized:\n6733: \n6734: $$\n6735: \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},x}(S')] \\leq (1 - \\kappa_x) V_{\\text{Var},x}(S) + C_x\n6736: $$\n6737: \n6738: The constant $\\kappa_x > 0$ is independent of $N$ due to the N-uniformity of the Keystone Lemma.\n6739: ",
+      "raw_directive": "6703: ### 10.3.6. Proof of Main Theorem\n6704: \n6705: :::{prf:proof}\n6706: :label: proof-lem-velocity-noise-propagation\n6707: **Proof of {prf:ref}`thm-positional-variance-contraction`.**\n6708: \n6709: Combining Lemmas 10.3.4 and 10.3.5:\n6710: \n6711: $$\n6712: \\begin{aligned}\n6713: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] &= \\sum_{k=1,2} \\mathbb{E}[\\Delta V_{\\text{Var},x}^{(k,\\text{alive})} + \\Delta V_{\\text{Var},x}^{(k,\\text{status})}] \\\\\n6714: &\\leq -\\frac{\\chi(\\epsilon)}{2N} V_{\\text{struct}} + \\frac{g_{\\max}(\\epsilon)}{N} + C_{\\text{pers}} + \\frac{8 D_{\\text{valid}}^2}{N} \\sum_{k} |\\mathcal{D}(S_k)|\n6715: \\end{aligned}\n6716: $$\n6717: \n6718: **Step 1: Relate $V_{\\text{struct}}$ to $V_{\\text{Var},x}$**\n6719: \n6720: From {prf:ref}`lem-sx-implies-variance`, if the structural error satisfies $V_{\\text{struct}} \\geq \\frac{1}{2} V_{\\text{Var},x}$ (which holds when both swarms have similar numbers of alive walkers), then:\n6721: \n6722: $$\n6723: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\frac{\\chi(\\epsilon)}{4N} V_{\\text{Var},x} + C_{\\text{total}}\n6724: $$\n6725: \n6726: where $C_{\\text{total}}$ absorbs all bounded terms.\n6727: \n6728: **Step 2: Express as geometric contraction**\n6729: \n6730: Define:\n6731: \n6732: $$\n6733: \\kappa_x := \\frac{\\chi(\\epsilon)}{4N} \\cdot \\frac{1}{\\text{(typical variance)}}\n6734: $$\n6735: \n6736: After rescaling and using the fact that $V_{\\text{Var},x}$ is $N$-normalized:\n6737: \n6738: $$\n6739: \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},x}(S')] \\leq (1 - \\kappa_x) V_{\\text{Var},x}(S) + C_x\n6740: $$\n6741: \n6742: The constant $\\kappa_x > 0$ is independent of $N$ due to the N-uniformity of the Keystone Lemma.\n6743: ",
       "strategy_summary": "The proof combines bounds from Lemmas 10.3.4 and 10.3.5 to obtain an inequality for the expected change in positional variance, relates the structural variance term back to the total variance using Lemma 10.3.6, and rescales to demonstrate a geometric contraction in the variance functional independent of the swarm size N.",
       "conclusion": {
         "text": "The expected positional variance contracts geometrically: \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},x}(S')] \\leq (1 - \\kappa_x) V_{\\text{Var},x}(S) + C_x, where \\kappa_x > 0 is independent of N.",
@@ -1747,12 +1760,12 @@
       "document_id": "03_cloning",
       "section": "## 10.3. Positional Variance Contraction",
       "span": {
-        "start_line": 6699,
-        "end_line": 6739,
-        "content_start": 6701,
-        "content_end": 6738,
+        "start_line": 6703,
+        "end_line": 6743,
+        "content_start": 6705,
+        "content_end": 6742,
         "header_lines": [
-          6700
+          6704
         ]
       },
       "metadata": {
@@ -1765,7 +1778,7 @@
         "chapter_file": "chapter_17.json",
         "section_id": "## 10.3. Positional Variance Contraction"
       },
-      "generated_at": "2025-11-09T10:55:47.626397+00:00",
+      "generated_at": "2025-11-10T12:23:04.016510+00:00",
       "alt_labels": []
     },
     "tags": [
@@ -1778,19 +1791,22 @@
       "axioms"
     ],
     "content_markdown": ":label: thm-positional-variance-contraction\n\nUnder the foundational axioms (Chapter 4), there exist constants $\\kappa_x > 0$, $C_x < \\infty$, and a structural error threshold $R^2_{\\text{spread}} > 0$, all independent of $N$, such that for any pair of swarms $(S_1, S_2)$:\n\n$$\n\\mathbb{E}_{\\text{clone}}[V_{\\text{Var},x}(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_x) V_{\\text{Var},x}(S_1, S_2) + C_x\n$$\n\nFurthermore, when $V_{\\text{Var},x}(S_1, S_2) > \\tilde{C}_x$ for a sufficiently large threshold $\\tilde{C}_x$, the contraction becomes strict:\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] := \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},x}(S'_1, S'_2) - V_{\\text{Var},x}(S_1, S_2)] < 0",
-    "raw_directive": "6361: ### 10.3.1. Main Theorem\n6362: \n6363: :::{prf:theorem} Positional Variance Contraction Under Cloning\n6364: :label: thm-positional-variance-contraction\n6365: \n6366: Under the foundational axioms (Chapter 4), there exist constants $\\kappa_x > 0$, $C_x < \\infty$, and a structural error threshold $R^2_{\\text{spread}} > 0$, all independent of $N$, such that for any pair of swarms $(S_1, S_2)$:\n6367: \n6368: $$\n6369: \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},x}(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_x) V_{\\text{Var},x}(S_1, S_2) + C_x\n6370: $$\n6371: \n6372: Furthermore, when $V_{\\text{Var},x}(S_1, S_2) > \\tilde{C}_x$ for a sufficiently large threshold $\\tilde{C}_x$, the contraction becomes strict:\n6373: \n6374: $$\n6375: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] := \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},x}(S'_1, S'_2) - V_{\\text{Var},x}(S_1, S_2)] < 0\n6376: $$",
+    "raw_directive": "6363: ### 10.3.1. Main Theorem\n6364: \n6365: :::{prf:theorem} Positional Variance Contraction Under Cloning\n6366: :label: thm-positional-variance-contraction\n6367: \n6368: Under the foundational axioms (Chapter 4), there exist constants $\\kappa_x > 0$, $C_x < \\infty$, and a structural error threshold $R^2_{\\text{spread}} > 0$, all independent of $N$, such that for any pair of swarms $(S_1, S_2)$:\n6369: \n6370: $$\n6371: \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},x}(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_x) V_{\\text{Var},x}(S_1, S_2) + C_x\n6372: $$\n6373: \n6374: Furthermore, when $V_{\\text{Var},x}(S_1, S_2) > \\tilde{C}_x$ for a sufficiently large threshold $\\tilde{C}_x$, the contraction becomes strict:\n6375: \n6376: $$\n6377: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] := \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},x}(S'_1, S'_2) - V_{\\text{Var},x}(S_1, S_2)] < 0\n6378: $$",
     "document_id": "03_cloning",
     "section": "## 10.3. Positional Variance Contraction",
     "span": {
-      "start_line": 6361,
-      "end_line": 6376,
-      "content_start": 6364,
-      "content_end": 6375,
+      "start_line": 6363,
+      "end_line": 6378,
+      "content_start": 6366,
+      "content_end": 6377,
       "header_lines": [
-        6362
+        6364
       ]
     },
-    "references": [],
+    "references": [
+      "thm-positional-variance-contraction",
+      "lem-sx-implies-variance"
+    ],
     "metadata": {
       "label": "thm-positional-variance-contraction"
     },
@@ -1801,7 +1817,7 @@
       "chapter_file": "chapter_17.json",
       "section_id": "## 10.3. Positional Variance Contraction"
     },
-    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "generated_at": "2025-11-10T12:23:04.021422+00:00",
     "alt_labels": []
   },
   {
@@ -1878,7 +1894,7 @@
       "proof_type": "direct",
       "proof_status": "complete",
       "content_markdown": ":::{prf:proof}\n:label: proof-thm-velocity-variance-bounded-expansion\n**Proof.**\n\nThe proof analyzes how the inelastic collision model affects velocity variance.\n\n**Step 1: Velocity domain boundedness**\n\nBy Axiom EG-4 (velocity regularization), all walker velocities in viable swarms satisfy:\n\n$$\n\\|v_i\\| \\leq V_{\\max} := \\sqrt{\\max\\left\\{\\frac{2F_{\\max}}{\\gamma}, V_{\\text{thresh}}^2\\right\\}}\n$$\n\nThis bound is state-independent, depending only on physical parameters.\n\n**Step 2: Per-walker velocity change**\n\nWhen walker $i$ participates in an $(M+1)$-particle inelastic collision, its velocity changes from $v_i$ to:\n\n$$\nv'_i = V_{\\text{COM}} + \\alpha_{\\text{restitution}} \\cdot R_i(u_i)\n$$\n\nwhere $u_i = v_i - V_{\\text{COM}}$ and $R_i$ is a random rotation.\n\nThe squared velocity change is bounded:\n\n$$\n\\|v'_i - v_i\\|^2 = \\|\\alpha_{\\text{restitution}} \\cdot R_i(u_i) - u_i\\|^2 \\leq (\\alpha_{\\text{restitution}} + 1)^2 \\|u_i\\|^2\n$$\n\nSince $\\|u_i\\| \\leq 2V_{\\max}$ (difference of two bounded velocities):\n\n$$\n\\|v'_i - v_i\\|^2 \\leq 4(\\alpha_{\\text{restitution}} + 1)^2 V_{\\max}^2\n$$\n\n**Step 3: Variance change decomposition**\n\nThe velocity variance changes due to:\n\n1. **Direct velocity resets** for cloned walkers (bounded by Step 2)\n2. **Barycenter shift** affecting centered velocities (bounded by total momentum conservation)\n3. **Random rotations** redistributing kinetic energy (bounded by elastic limit)\n\nEach contribution is bounded by constants depending only on $V_{\\max}$, $\\alpha_{\\text{restitution}}$, and $N$.\n\n**Step 4: Total bounded expansion**\n\nSumming over all walkers and using $N$-normalization:\n\n$$\n\\mathbb{E}[\\Delta V_{\\text{Var},v}] \\leq \\frac{1}{N} \\sum_{i=1}^N p_i \\cdot 4(\\alpha_{\\text{restitution}} + 1)^2 V_{\\max}^2 + C_{\\text{bary}}\n$$\n\nSince $p_i \\in [0,1]$ and $\\sum_i p_i \\leq N$ (at most all walkers clone):\n\n$$\n\\mathbb{E}[\\Delta V_{\\text{Var},v}] \\leq 4(\\alpha_{\\text{restitution}} + 1)^2 V_{\\max}^2 + C_{\\text{bary}} =: C_v\n$$\n\nThis constant is **state-independent** and **$N$-independent** (the $N$ cancels in the normalization).",
-      "raw_directive": "6764: ### 10.4.1. Proof\n6765: \n6766: :::{prf:proof}\n6767: :label: proof-thm-velocity-variance-bounded-expansion\n6768: **Proof.**\n6769: \n6770: The proof analyzes how the inelastic collision model affects velocity variance.\n6771: \n6772: **Step 1: Velocity domain boundedness**\n6773: \n6774: By Axiom EG-4 (velocity regularization), all walker velocities in viable swarms satisfy:\n6775: \n6776: $$\n6777: \\|v_i\\| \\leq V_{\\max} := \\sqrt{\\max\\left\\{\\frac{2F_{\\max}}{\\gamma}, V_{\\text{thresh}}^2\\right\\}}\n6778: $$\n6779: \n6780: This bound is state-independent, depending only on physical parameters.\n6781: \n6782: **Step 2: Per-walker velocity change**\n6783: \n6784: When walker $i$ participates in an $(M+1)$-particle inelastic collision, its velocity changes from $v_i$ to:\n6785: \n6786: $$\n6787: v'_i = V_{\\text{COM}} + \\alpha_{\\text{restitution}} \\cdot R_i(u_i)\n6788: $$\n6789: \n6790: where $u_i = v_i - V_{\\text{COM}}$ and $R_i$ is a random rotation.\n6791: \n6792: The squared velocity change is bounded:\n6793: \n6794: $$\n6795: \\|v'_i - v_i\\|^2 = \\|\\alpha_{\\text{restitution}} \\cdot R_i(u_i) - u_i\\|^2 \\leq (\\alpha_{\\text{restitution}} + 1)^2 \\|u_i\\|^2\n6796: $$\n6797: \n6798: Since $\\|u_i\\| \\leq 2V_{\\max}$ (difference of two bounded velocities):\n6799: \n6800: $$\n6801: \\|v'_i - v_i\\|^2 \\leq 4(\\alpha_{\\text{restitution}} + 1)^2 V_{\\max}^2\n6802: $$\n6803: \n6804: **Step 3: Variance change decomposition**\n6805: \n6806: The velocity variance changes due to:\n6807: \n6808: 1. **Direct velocity resets** for cloned walkers (bounded by Step 2)\n6809: 2. **Barycenter shift** affecting centered velocities (bounded by total momentum conservation)\n6810: 3. **Random rotations** redistributing kinetic energy (bounded by elastic limit)\n6811: \n6812: Each contribution is bounded by constants depending only on $V_{\\max}$, $\\alpha_{\\text{restitution}}$, and $N$.\n6813: \n6814: **Step 4: Total bounded expansion**\n6815: \n6816: Summing over all walkers and using $N$-normalization:\n6817: \n6818: $$\n6819: \\mathbb{E}[\\Delta V_{\\text{Var},v}] \\leq \\frac{1}{N} \\sum_{i=1}^N p_i \\cdot 4(\\alpha_{\\text{restitution}} + 1)^2 V_{\\max}^2 + C_{\\text{bary}}\n6820: $$\n6821: \n6822: Since $p_i \\in [0,1]$ and $\\sum_i p_i \\leq N$ (at most all walkers clone):\n6823: \n6824: $$\n6825: \\mathbb{E}[\\Delta V_{\\text{Var},v}] \\leq 4(\\alpha_{\\text{restitution}} + 1)^2 V_{\\max}^2 + C_{\\text{bary}} =: C_v\n6826: $$\n6827: \n6828: This constant is **state-independent** and **$N$-independent** (the $N$ cancels in the normalization).\n6829: ",
+      "raw_directive": "6768: ### 10.4.1. Proof\n6769: \n6770: :::{prf:proof}\n6771: :label: proof-thm-velocity-variance-bounded-expansion\n6772: **Proof.**\n6773: \n6774: The proof analyzes how the inelastic collision model affects velocity variance.\n6775: \n6776: **Step 1: Velocity domain boundedness**\n6777: \n6778: By Axiom EG-4 (velocity regularization), all walker velocities in viable swarms satisfy:\n6779: \n6780: $$\n6781: \\|v_i\\| \\leq V_{\\max} := \\sqrt{\\max\\left\\{\\frac{2F_{\\max}}{\\gamma}, V_{\\text{thresh}}^2\\right\\}}\n6782: $$\n6783: \n6784: This bound is state-independent, depending only on physical parameters.\n6785: \n6786: **Step 2: Per-walker velocity change**\n6787: \n6788: When walker $i$ participates in an $(M+1)$-particle inelastic collision, its velocity changes from $v_i$ to:\n6789: \n6790: $$\n6791: v'_i = V_{\\text{COM}} + \\alpha_{\\text{restitution}} \\cdot R_i(u_i)\n6792: $$\n6793: \n6794: where $u_i = v_i - V_{\\text{COM}}$ and $R_i$ is a random rotation.\n6795: \n6796: The squared velocity change is bounded:\n6797: \n6798: $$\n6799: \\|v'_i - v_i\\|^2 = \\|\\alpha_{\\text{restitution}} \\cdot R_i(u_i) - u_i\\|^2 \\leq (\\alpha_{\\text{restitution}} + 1)^2 \\|u_i\\|^2\n6800: $$\n6801: \n6802: Since $\\|u_i\\| \\leq 2V_{\\max}$ (difference of two bounded velocities):\n6803: \n6804: $$\n6805: \\|v'_i - v_i\\|^2 \\leq 4(\\alpha_{\\text{restitution}} + 1)^2 V_{\\max}^2\n6806: $$\n6807: \n6808: **Step 3: Variance change decomposition**\n6809: \n6810: The velocity variance changes due to:\n6811: \n6812: 1. **Direct velocity resets** for cloned walkers (bounded by Step 2)\n6813: 2. **Barycenter shift** affecting centered velocities (bounded by total momentum conservation)\n6814: 3. **Random rotations** redistributing kinetic energy (bounded by elastic limit)\n6815: \n6816: Each contribution is bounded by constants depending only on $V_{\\max}$, $\\alpha_{\\text{restitution}}$, and $N$.\n6817: \n6818: **Step 4: Total bounded expansion**\n6819: \n6820: Summing over all walkers and using $N$-normalization:\n6821: \n6822: $$\n6823: \\mathbb{E}[\\Delta V_{\\text{Var},v}] \\leq \\frac{1}{N} \\sum_{i=1}^N p_i \\cdot 4(\\alpha_{\\text{restitution}} + 1)^2 V_{\\max}^2 + C_{\\text{bary}}\n6824: $$\n6825: \n6826: Since $p_i \\in [0,1]$ and $\\sum_i p_i \\leq N$ (at most all walkers clone):\n6827: \n6828: $$\n6829: \\mathbb{E}[\\Delta V_{\\text{Var},v}] \\leq 4(\\alpha_{\\text{restitution}} + 1)^2 V_{\\max}^2 + C_{\\text{bary}} =: C_v\n6830: $$\n6831: \n6832: This constant is **state-independent** and **$N$-independent** (the $N$ cancels in the normalization).\n6833: ",
       "strategy_summary": "The proof establishes a state- and N-independent bound on the expected change in velocity variance by first bounding individual velocities, then the velocity changes in collisions, decomposing the variance change into direct resets, barycenter shifts, and random rotations, and finally summing the bounded contributions.",
       "conclusion": {
         "text": "The expected change in velocity variance is bounded by a constant C_v independent of state and N.",
@@ -2023,12 +2039,12 @@
       "document_id": "03_cloning",
       "section": "## 10.4. Velocity Variance Bounded Expansion",
       "span": {
-        "start_line": 6764,
-        "end_line": 6829,
-        "content_start": 6766,
-        "content_end": 6828,
+        "start_line": 6768,
+        "end_line": 6833,
+        "content_start": 6770,
+        "content_end": 6832,
         "header_lines": [
-          6765
+          6769
         ]
       },
       "metadata": {
@@ -2041,7 +2057,7 @@
         "chapter_file": "chapter_18.json",
         "section_id": "## 10.4. Velocity Variance Bounded Expansion"
       },
-      "generated_at": "2025-11-09T10:55:47.626397+00:00",
+      "generated_at": "2025-11-10T12:23:04.016510+00:00",
       "alt_labels": []
     },
     "tags": [
@@ -2055,16 +2071,16 @@
       "expectation"
     ],
     "content_markdown": ":label: thm-velocity-variance-bounded-expansion\n\nThere exists a state-independent constant $C_v < \\infty$ such that for any swarm $S$:\n\n$$\n\\mathbb{E}_{\\text{clone}}[V_{\\text{Var},v}(S')] \\leq V_{\\text{Var},v}(S) + C_v\n$$\n\nEquivalently, the one-step drift satisfies:\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v",
-    "raw_directive": "6745: We now prove that the velocity variance expansion from cloning is uniformly bounded.\n6746: \n6747: :::{prf:theorem} Bounded Velocity Variance Expansion from Cloning\n6748: :label: thm-velocity-variance-bounded-expansion\n6749: \n6750: There exists a state-independent constant $C_v < \\infty$ such that for any swarm $S$:\n6751: \n6752: $$\n6753: \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},v}(S')] \\leq V_{\\text{Var},v}(S) + C_v\n6754: $$\n6755: \n6756: Equivalently, the one-step drift satisfies:\n6757: \n6758: $$\n6759: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n6760: $$",
+    "raw_directive": "6749: We now prove that the velocity variance expansion from cloning is uniformly bounded.\n6750: \n6751: :::{prf:theorem} Bounded Velocity Variance Expansion from Cloning\n6752: :label: thm-velocity-variance-bounded-expansion\n6753: \n6754: There exists a state-independent constant $C_v < \\infty$ such that for any swarm $S$:\n6755: \n6756: $$\n6757: \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},v}(S')] \\leq V_{\\text{Var},v}(S) + C_v\n6758: $$\n6759: \n6760: Equivalently, the one-step drift satisfies:\n6761: \n6762: $$\n6763: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n6764: $$",
     "document_id": "03_cloning",
     "section": "## 10.4. Velocity Variance Bounded Expansion",
     "span": {
-      "start_line": 6745,
-      "end_line": 6760,
-      "content_start": 6748,
-      "content_end": 6759,
+      "start_line": 6749,
+      "end_line": 6764,
+      "content_start": 6752,
+      "content_end": 6763,
       "header_lines": [
-        6746
+        6750
       ]
     },
     "references": [],
@@ -2078,7 +2094,7 @@
       "chapter_file": "chapter_18.json",
       "section_id": "## 10.4. Velocity Variance Bounded Expansion"
     },
-    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "generated_at": "2025-11-10T12:23:04.021422+00:00",
     "alt_labels": []
   },
   {
@@ -2228,7 +2244,7 @@
       "proof_type": "direct",
       "proof_status": "complete",
       "content_markdown": ":::{prf:proof}\n:label: proof-thm-complete-variance-drift\n**Proof.**\n\nThis result follows immediately by combining the two component drift inequalities established earlier in this chapter.\n\nFrom {prf:ref}`thm-positional-variance-contraction` ({prf:ref}`thm-positional-variance-contraction`), we have:\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x\n$$\n\nFrom {prf:ref}`thm-bounded-velocity-expansion-cloning` ({prf:ref}`thm-velocity-variance-bounded-expansion`), we have:\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n$$\n\nBy linearity of expectation, the total internal variance drift is:\n\n$$\n\\begin{aligned}\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var}}] &= \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x} + \\Delta V_{\\text{Var},v}] \\\\\n&= \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\\\\n&\\leq (-\\kappa_x V_{\\text{Var},x} + C_x) + C_v \\\\\n&= -\\kappa_x V_{\\text{Var},x} + (C_x + C_v)\n\\end{aligned}\n$$\n\nThis establishes the claimed drift inequality for the total variance.",
-      "raw_directive": "6920: :::\n6921: \n6922: :::{prf:proof}\n6923: :label: proof-thm-complete-variance-drift\n6924: **Proof.**\n6925: \n6926: This result follows immediately by combining the two component drift inequalities established earlier in this chapter.\n6927: \n6928: From {prf:ref}`thm-positional-variance-contraction` ({prf:ref}`thm-positional-variance-contraction`), we have:\n6929: \n6930: $$\n6931: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x\n6932: $$\n6933: \n6934: From {prf:ref}`thm-bounded-velocity-expansion-cloning` ({prf:ref}`thm-velocity-variance-bounded-expansion`), we have:\n6935: \n6936: $$\n6937: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n6938: $$\n6939: \n6940: By linearity of expectation, the total internal variance drift is:\n6941: \n6942: $$\n6943: \\begin{aligned}\n6944: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var}}] &= \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x} + \\Delta V_{\\text{Var},v}] \\\\\n6945: &= \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\\\\n6946: &\\leq (-\\kappa_x V_{\\text{Var},x} + C_x) + C_v \\\\\n6947: &= -\\kappa_x V_{\\text{Var},x} + (C_x + C_v)\n6948: \\end{aligned}\n6949: $$\n6950: \n6951: This establishes the claimed drift inequality for the total variance.\n6952: ",
+      "raw_directive": "6924: :::\n6925: \n6926: :::{prf:proof}\n6927: :label: proof-thm-complete-variance-drift\n6928: **Proof.**\n6929: \n6930: This result follows immediately by combining the two component drift inequalities established earlier in this chapter.\n6931: \n6932: From {prf:ref}`thm-positional-variance-contraction` ({prf:ref}`thm-positional-variance-contraction`), we have:\n6933: \n6934: $$\n6935: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x\n6936: $$\n6937: \n6938: From {prf:ref}`thm-bounded-velocity-expansion-cloning` ({prf:ref}`thm-velocity-variance-bounded-expansion`), we have:\n6939: \n6940: $$\n6941: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n6942: $$\n6943: \n6944: By linearity of expectation, the total internal variance drift is:\n6945: \n6946: $$\n6947: \\begin{aligned}\n6948: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var}}] &= \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x} + \\Delta V_{\\text{Var},v}] \\\\\n6949: &= \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\\\\n6950: &\\leq (-\\kappa_x V_{\\text{Var},x} + C_x) + C_v \\\\\n6951: &= -\\kappa_x V_{\\text{Var},x} + (C_x + C_v)\n6952: \\end{aligned}\n6953: $$\n6954: \n6955: This establishes the claimed drift inequality for the total variance.\n6956: ",
       "strategy_summary": "The proof directly combines the established drift inequalities for positional and velocity variances using linearity of expectation to derive the total internal variance drift inequality.",
       "conclusion": {
         "text": "\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var}}] \\leq -\\kappa_x V_{\\text{Var},x} + (C_x + C_v)",
@@ -2320,12 +2336,12 @@
       "document_id": "03_cloning",
       "section": "## 10.6. Summary of Variance Drift Inequalities",
       "span": {
-        "start_line": 6920,
-        "end_line": 6952,
-        "content_start": 6922,
-        "content_end": 6951,
+        "start_line": 6924,
+        "end_line": 6956,
+        "content_start": 6926,
+        "content_end": 6955,
         "header_lines": [
-          6921
+          6925
         ]
       },
       "metadata": {
@@ -2338,7 +2354,7 @@
         "chapter_file": "chapter_20.json",
         "section_id": "## 10.6. Summary of Variance Drift Inequalities"
       },
-      "generated_at": "2025-11-09T10:55:47.626397+00:00",
+      "generated_at": "2025-11-10T12:23:04.016510+00:00",
       "alt_labels": []
     },
     "tags": [
@@ -2350,19 +2366,23 @@
       "expansion"
     ],
     "content_markdown": ":label: thm-complete-variance-drift\n\nThe cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the variance components of the Lyapunov function:\n\n**1. Positional Variance (Strong Contraction):**\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x\n$$\n\nwhere $\\kappa_x > 0$ is $N$-independent (from Keystone Principle).\n\n**2. Velocity Variance (Bounded Expansion):**\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n$$\n\nwhere $C_v < \\infty$ is a state-independent constant.\n\n**3. Total Internal Variance:**\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var}}] = \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_x V_{\\text{Var},x} + (C_x + C_v)\n$$",
-    "raw_directive": "6890: We conclude by summarizing the main drift results for the variance components under $\\Psi_{\\text{clone}}$.\n6891: \n6892: :::{prf:theorem} Complete Variance Drift Characterization for Cloning\n6893: :label: thm-complete-variance-drift\n6894: \n6895: The cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the variance components of the Lyapunov function:\n6896: \n6897: **1. Positional Variance (Strong Contraction):**\n6898: \n6899: $$\n6900: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x\n6901: $$\n6902: \n6903: where $\\kappa_x > 0$ is $N$-independent (from Keystone Principle).\n6904: \n6905: **2. Velocity Variance (Bounded Expansion):**\n6906: \n6907: $$\n6908: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n6909: $$\n6910: \n6911: where $C_v < \\infty$ is a state-independent constant.\n6912: \n6913: **3. Total Internal Variance:**\n6914: \n6915: $$\n6916: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var}}] = \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_x V_{\\text{Var},x} + (C_x + C_v)\n6917: $$\n6918: ",
+    "raw_directive": "6894: We conclude by summarizing the main drift results for the variance components under $\\Psi_{\\text{clone}}$.\n6895: \n6896: :::{prf:theorem} Complete Variance Drift Characterization for Cloning\n6897: :label: thm-complete-variance-drift\n6898: \n6899: The cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the variance components of the Lyapunov function:\n6900: \n6901: **1. Positional Variance (Strong Contraction):**\n6902: \n6903: $$\n6904: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x\n6905: $$\n6906: \n6907: where $\\kappa_x > 0$ is $N$-independent (from Keystone Principle).\n6908: \n6909: **2. Velocity Variance (Bounded Expansion):**\n6910: \n6911: $$\n6912: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n6913: $$\n6914: \n6915: where $C_v < \\infty$ is a state-independent constant.\n6916: \n6917: **3. Total Internal Variance:**\n6918: \n6919: $$\n6920: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var}}] = \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_x V_{\\text{Var},x} + (C_x + C_v)\n6921: $$\n6922: ",
     "document_id": "03_cloning",
     "section": "## 10.6. Summary of Variance Drift Inequalities",
     "span": {
-      "start_line": 6890,
-      "end_line": 6918,
-      "content_start": 6893,
-      "content_end": 6917,
+      "start_line": 6894,
+      "end_line": 6922,
+      "content_start": 6897,
+      "content_end": 6921,
       "header_lines": [
-        6891
+        6895
       ]
     },
-    "references": [],
+    "references": [
+      "thm-positional-variance-contraction",
+      "thm-bounded-velocity-expansion-cloning",
+      "thm-velocity-variance-bounded-expansion"
+    ],
     "metadata": {
       "label": "thm-complete-variance-drift"
     },
@@ -2373,7 +2393,7 @@
       "chapter_file": "chapter_20.json",
       "section_id": "## 10.6. Summary of Variance Drift Inequalities"
     },
-    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "generated_at": "2025-11-10T12:23:04.021422+00:00",
     "alt_labels": []
   },
   {
@@ -2539,7 +2559,7 @@
       "proof_type": "direct",
       "proof_status": "sketch",
       "content_markdown": ":::{prf:proof}\n:label: proof-lem-barrier-reduction-measurement\n**Proof of {prf:ref}`thm-boundary-potential-contraction`.**\n\nWe analyze the expected change in boundary potential:\n\n$$\n\\Delta W_b = \\sum_{k=1,2} \\left[\\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S'_k)} \\varphi_{\\text{barrier}}(x'_{k,i}) - \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_k)} \\varphi_{\\text{barrier}}(x_{k,i})\\right]\n$$\n\n**Step 1: Decompose by cloning action**\n\nFor each swarm $k$, split the sum into walkers that clone and walkers that persist:\n\n$$\n\\mathbb{E}[\\Delta W_b^{(k)}] = \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_k)} p_{k,i} \\left[\\mathbb{E}[\\varphi_{\\text{barrier}}(x'_{k,i}) \\mid \\text{clone}] - \\varphi_{\\text{barrier}}(x_{k,i})\\right] + \\frac{1}{N} \\sum_{i \\in \\mathcal{D}(S_k)} \\mathbb{E}[\\varphi_{\\text{barrier}}(x'_{k,i})]\n$$\n\n**Step 2: Bound contribution from boundary-exposed walkers**\n\nFor walkers in $\\mathcal{E}_{\\text{boundary}}(S_k)$:\n\n- By {prf:ref}`lem-boundary-enhanced-cloning`: $p_{k,i} \\geq p_{\\text{boundary}}(\\phi_{\\text{thresh}})$\n- By {prf:ref}`lem-barrier-reduction-cloning`: $\\mathbb{E}[\\varphi_{\\text{barrier}}(x'_{k,i}) \\mid \\text{clone}] \\leq C_{\\text{jitter}}$\n\nTherefore:\n\n$$\n\\begin{aligned}\n\\sum_{i \\in \\mathcal{E}_{\\text{boundary}}(S_k)} p_{k,i} &\\left[\\mathbb{E}[\\varphi_{\\text{barrier}}(x'_{k,i}) \\mid \\text{clone}] - \\varphi_{\\text{barrier}}(x_{k,i})\\right] \\\\\n&\\leq \\sum_{i \\in \\mathcal{E}_{\\text{boundary}}(S_k)} p_{\\text{boundary}} [C_{\\text{jitter}} - \\varphi_{\\text{barrier}}(x_{k,i})]\n\\end{aligned}\n$$\n\nSince $\\varphi_{\\text{barrier}}(x_{k,i}) > \\phi_{\\text{thresh}}$ for $i \\in \\mathcal{E}_{\\text{boundary}}$:\n\n$$\n\\leq -p_{\\text{boundary}} \\sum_{i \\in \\mathcal{E}_{\\text{boundary}}(S_k)} [\\varphi_{\\text{barrier}}(x_{k,i}) - C_{\\text{jitter}}]\n$$\n\n$$\n\\leq -p_{\\text{boundary}} \\left[\\sum_{i \\in \\mathcal{E}_{\\text{boundary}}(S_k)} \\varphi_{\\text{barrier}}(x_{k,i}) - |\\mathcal{E}_{\\text{boundary}}| C_{\\text{jitter}}\\right]\n$$\n\n**Step 3: Relate to total boundary potential**\n\nThe boundary-exposed mass satisfies:\n\n$$\nM_{\\text{boundary}}(S_k) = \\frac{1}{N}\\sum_{i \\in \\mathcal{E}_{\\text{boundary}}(S_k)} \\varphi_{\\text{barrier}}(x_{k,i})\n$$\n\nIf most of $W_b$ comes from exposed walkers (which is true when $W_b$ is large):\n\n$$\nM_{\\text{boundary}}(S_k) \\geq W_b(S_k) - \\frac{k_{\\text{alive}}}{N} \\phi_{\\text{thresh}}\n$$\n\n**Step 4: Combine to get contraction**\n\nCombining Steps 2-3:\n\n$$\n\\mathbb{E}[\\Delta W_b^{(k)}] \\leq -\\frac{p_{\\text{boundary}}}{N} \\left[N \\cdot M_{\\text{boundary}}(S_k) - |\\mathcal{E}_{\\text{boundary}}| C_{\\text{jitter}}\\right] + \\text{(dead walker contribution)}\n$$\n\n$$\n\\leq -p_{\\text{boundary}} M_{\\text{boundary}}(S_k) + C'_{\\text{jitter}} + C_{\\text{dead}}\n$$\n\nUsing $M_{\\text{boundary}} \\approx W_b$ when $W_b$ is large:\n\n$$\n\\leq -p_{\\text{boundary}} W_b(S_k) + C_{\\text{total}}\n$$\n\nSumming over both swarms:\n\n$$\n\\mathbb{E}[\\Delta W_b] \\leq -p_{\\text{boundary}} W_b + 2C_{\\text{total}}\n$$\n\n**Step 5: Express as geometric contraction**\n\nDefining $\\kappa_b := p_{\\text{boundary}}$ and $C_b := 2C_{\\text{total}}$:\n\n$$\n\\mathbb{E}[W_b(S')] \\leq (1 - \\kappa_b) W_b(S) + C_b\n$$\n\nThe constant $\\kappa_b > 0$ is independent of $N$ by {prf:ref}`lem-boundary-enhanced-cloning`.",
-      "raw_directive": "7453: ### 11.4.3. Proof of Main Theorem\n7454: \n7455: :::{prf:proof}\n7456: :label: proof-lem-barrier-reduction-measurement\n7457: **Proof of {prf:ref}`thm-boundary-potential-contraction`.**\n7458: \n7459: We analyze the expected change in boundary potential:\n7460: \n7461: $$\n7462: \\Delta W_b = \\sum_{k=1,2} \\left[\\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S'_k)} \\varphi_{\\text{barrier}}(x'_{k,i}) - \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_k)} \\varphi_{\\text{barrier}}(x_{k,i})\\right]\n7463: $$\n7464: \n7465: **Step 1: Decompose by cloning action**\n7466: \n7467: For each swarm $k$, split the sum into walkers that clone and walkers that persist:\n7468: \n7469: $$\n7470: \\mathbb{E}[\\Delta W_b^{(k)}] = \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_k)} p_{k,i} \\left[\\mathbb{E}[\\varphi_{\\text{barrier}}(x'_{k,i}) \\mid \\text{clone}] - \\varphi_{\\text{barrier}}(x_{k,i})\\right] + \\frac{1}{N} \\sum_{i \\in \\mathcal{D}(S_k)} \\mathbb{E}[\\varphi_{\\text{barrier}}(x'_{k,i})]\n7471: $$\n7472: \n7473: **Step 2: Bound contribution from boundary-exposed walkers**\n7474: \n7475: For walkers in $\\mathcal{E}_{\\text{boundary}}(S_k)$:\n7476: \n7477: - By {prf:ref}`lem-boundary-enhanced-cloning`: $p_{k,i} \\geq p_{\\text{boundary}}(\\phi_{\\text{thresh}})$\n7478: - By {prf:ref}`lem-barrier-reduction-cloning`: $\\mathbb{E}[\\varphi_{\\text{barrier}}(x'_{k,i}) \\mid \\text{clone}] \\leq C_{\\text{jitter}}$\n7479: \n7480: Therefore:\n7481: \n7482: $$\n7483: \\begin{aligned}\n7484: \\sum_{i \\in \\mathcal{E}_{\\text{boundary}}(S_k)} p_{k,i} &\\left[\\mathbb{E}[\\varphi_{\\text{barrier}}(x'_{k,i}) \\mid \\text{clone}] - \\varphi_{\\text{barrier}}(x_{k,i})\\right] \\\\\n7485: &\\leq \\sum_{i \\in \\mathcal{E}_{\\text{boundary}}(S_k)} p_{\\text{boundary}} [C_{\\text{jitter}} - \\varphi_{\\text{barrier}}(x_{k,i})]\n7486: \\end{aligned}\n7487: $$\n7488: \n7489: Since $\\varphi_{\\text{barrier}}(x_{k,i}) > \\phi_{\\text{thresh}}$ for $i \\in \\mathcal{E}_{\\text{boundary}}$:\n7490: \n7491: $$\n7492: \\leq -p_{\\text{boundary}} \\sum_{i \\in \\mathcal{E}_{\\text{boundary}}(S_k)} [\\varphi_{\\text{barrier}}(x_{k,i}) - C_{\\text{jitter}}]\n7493: $$\n7494: \n7495: $$\n7496: \\leq -p_{\\text{boundary}} \\left[\\sum_{i \\in \\mathcal{E}_{\\text{boundary}}(S_k)} \\varphi_{\\text{barrier}}(x_{k,i}) - |\\mathcal{E}_{\\text{boundary}}| C_{\\text{jitter}}\\right]\n7497: $$\n7498: \n7499: **Step 3: Relate to total boundary potential**\n7500: \n7501: The boundary-exposed mass satisfies:\n7502: \n7503: $$\n7504: M_{\\text{boundary}}(S_k) = \\frac{1}{N}\\sum_{i \\in \\mathcal{E}_{\\text{boundary}}(S_k)} \\varphi_{\\text{barrier}}(x_{k,i})\n7505: $$\n7506: \n7507: If most of $W_b$ comes from exposed walkers (which is true when $W_b$ is large):\n7508: \n7509: $$\n7510: M_{\\text{boundary}}(S_k) \\geq W_b(S_k) - \\frac{k_{\\text{alive}}}{N} \\phi_{\\text{thresh}}\n7511: $$\n7512: \n7513: **Step 4: Combine to get contraction**\n7514: \n7515: Combining Steps 2-3:\n7516: \n7517: $$\n7518: \\mathbb{E}[\\Delta W_b^{(k)}] \\leq -\\frac{p_{\\text{boundary}}}{N} \\left[N \\cdot M_{\\text{boundary}}(S_k) - |\\mathcal{E}_{\\text{boundary}}| C_{\\text{jitter}}\\right] + \\text{(dead walker contribution)}\n7519: $$\n7520: \n7521: $$\n7522: \\leq -p_{\\text{boundary}} M_{\\text{boundary}}(S_k) + C'_{\\text{jitter}} + C_{\\text{dead}}\n7523: $$\n7524: \n7525: Using $M_{\\text{boundary}} \\approx W_b$ when $W_b$ is large:\n7526: \n7527: $$\n7528: \\leq -p_{\\text{boundary}} W_b(S_k) + C_{\\text{total}}\n7529: $$\n7530: \n7531: Summing over both swarms:\n7532: \n7533: $$\n7534: \\mathbb{E}[\\Delta W_b] \\leq -p_{\\text{boundary}} W_b + 2C_{\\text{total}}\n7535: $$\n7536: \n7537: **Step 5: Express as geometric contraction**\n7538: \n7539: Defining $\\kappa_b := p_{\\text{boundary}}$ and $C_b := 2C_{\\text{total}}$:\n7540: \n7541: $$\n7542: \\mathbb{E}[W_b(S')] \\leq (1 - \\kappa_b) W_b(S) + C_b\n7543: $$\n7544: \n7545: The constant $\\kappa_b > 0$ is independent of $N$ by {prf:ref}`lem-boundary-enhanced-cloning`.\n7546: ",
+      "raw_directive": "7461: ### 11.4.3. Proof of Main Theorem\n7462: \n7463: :::{prf:proof}\n7464: :label: proof-lem-barrier-reduction-measurement\n7465: **Proof of {prf:ref}`thm-boundary-potential-contraction`.**\n7466: \n7467: We analyze the expected change in boundary potential:\n7468: \n7469: $$\n7470: \\Delta W_b = \\sum_{k=1,2} \\left[\\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S'_k)} \\varphi_{\\text{barrier}}(x'_{k,i}) - \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_k)} \\varphi_{\\text{barrier}}(x_{k,i})\\right]\n7471: $$\n7472: \n7473: **Step 1: Decompose by cloning action**\n7474: \n7475: For each swarm $k$, split the sum into walkers that clone and walkers that persist:\n7476: \n7477: $$\n7478: \\mathbb{E}[\\Delta W_b^{(k)}] = \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_k)} p_{k,i} \\left[\\mathbb{E}[\\varphi_{\\text{barrier}}(x'_{k,i}) \\mid \\text{clone}] - \\varphi_{\\text{barrier}}(x_{k,i})\\right] + \\frac{1}{N} \\sum_{i \\in \\mathcal{D}(S_k)} \\mathbb{E}[\\varphi_{\\text{barrier}}(x'_{k,i})]\n7479: $$\n7480: \n7481: **Step 2: Bound contribution from boundary-exposed walkers**\n7482: \n7483: For walkers in $\\mathcal{E}_{\\text{boundary}}(S_k)$:\n7484: \n7485: - By {prf:ref}`lem-boundary-enhanced-cloning`: $p_{k,i} \\geq p_{\\text{boundary}}(\\phi_{\\text{thresh}})$\n7486: - By {prf:ref}`lem-barrier-reduction-cloning`: $\\mathbb{E}[\\varphi_{\\text{barrier}}(x'_{k,i}) \\mid \\text{clone}] \\leq C_{\\text{jitter}}$\n7487: \n7488: Therefore:\n7489: \n7490: $$\n7491: \\begin{aligned}\n7492: \\sum_{i \\in \\mathcal{E}_{\\text{boundary}}(S_k)} p_{k,i} &\\left[\\mathbb{E}[\\varphi_{\\text{barrier}}(x'_{k,i}) \\mid \\text{clone}] - \\varphi_{\\text{barrier}}(x_{k,i})\\right] \\\\\n7493: &\\leq \\sum_{i \\in \\mathcal{E}_{\\text{boundary}}(S_k)} p_{\\text{boundary}} [C_{\\text{jitter}} - \\varphi_{\\text{barrier}}(x_{k,i})]\n7494: \\end{aligned}\n7495: $$\n7496: \n7497: Since $\\varphi_{\\text{barrier}}(x_{k,i}) > \\phi_{\\text{thresh}}$ for $i \\in \\mathcal{E}_{\\text{boundary}}$:\n7498: \n7499: $$\n7500: \\leq -p_{\\text{boundary}} \\sum_{i \\in \\mathcal{E}_{\\text{boundary}}(S_k)} [\\varphi_{\\text{barrier}}(x_{k,i}) - C_{\\text{jitter}}]\n7501: $$\n7502: \n7503: $$\n7504: \\leq -p_{\\text{boundary}} \\left[\\sum_{i \\in \\mathcal{E}_{\\text{boundary}}(S_k)} \\varphi_{\\text{barrier}}(x_{k,i}) - |\\mathcal{E}_{\\text{boundary}}| C_{\\text{jitter}}\\right]\n7505: $$\n7506: \n7507: **Step 3: Relate to total boundary potential**\n7508: \n7509: The boundary-exposed mass satisfies:\n7510: \n7511: $$\n7512: M_{\\text{boundary}}(S_k) = \\frac{1}{N}\\sum_{i \\in \\mathcal{E}_{\\text{boundary}}(S_k)} \\varphi_{\\text{barrier}}(x_{k,i})\n7513: $$\n7514: \n7515: If most of $W_b$ comes from exposed walkers (which is true when $W_b$ is large):\n7516: \n7517: $$\n7518: M_{\\text{boundary}}(S_k) \\geq W_b(S_k) - \\frac{k_{\\text{alive}}}{N} \\phi_{\\text{thresh}}\n7519: $$\n7520: \n7521: **Step 4: Combine to get contraction**\n7522: \n7523: Combining Steps 2-3:\n7524: \n7525: $$\n7526: \\mathbb{E}[\\Delta W_b^{(k)}] \\leq -\\frac{p_{\\text{boundary}}}{N} \\left[N \\cdot M_{\\text{boundary}}(S_k) - |\\mathcal{E}_{\\text{boundary}}| C_{\\text{jitter}}\\right] + \\text{(dead walker contribution)}\n7527: $$\n7528: \n7529: $$\n7530: \\leq -p_{\\text{boundary}} M_{\\text{boundary}}(S_k) + C'_{\\text{jitter}} + C_{\\text{dead}}\n7531: $$\n7532: \n7533: Using $M_{\\text{boundary}} \\approx W_b$ when $W_b$ is large:\n7534: \n7535: $$\n7536: \\leq -p_{\\text{boundary}} W_b(S_k) + C_{\\text{total}}\n7537: $$\n7538: \n7539: Summing over both swarms:\n7540: \n7541: $$\n7542: \\mathbb{E}[\\Delta W_b] \\leq -p_{\\text{boundary}} W_b + 2C_{\\text{total}}\n7543: $$\n7544: \n7545: **Step 5: Express as geometric contraction**\n7546: \n7547: Defining $\\kappa_b := p_{\\text{boundary}}$ and $C_b := 2C_{\\text{total}}$:\n7548: \n7549: $$\n7550: \\mathbb{E}[W_b(S')] \\leq (1 - \\kappa_b) W_b(S) + C_b\n7551: $$\n7552: \n7553: The constant $\\kappa_b > 0$ is independent of $N$ by {prf:ref}`lem-boundary-enhanced-cloning`.\n7554: ",
       "strategy_summary": "The proof analyzes the expected change in the boundary potential by decomposing it into contributions from cloning and persisting walkers, bounding the cloning effects using referenced lemmas, relating boundary-exposed mass to the total potential, and deriving a geometric contraction inequality that holds when the potential is sufficiently large.",
       "conclusion": {
         "text": "E[W_b(S')] \u2264 (1 - \u03ba_b) W_b(S) + C_b, with \u03ba_b > 0 independent of N.",
@@ -2626,6 +2646,7 @@
         }
       ],
       "references": [
+        "thm-boundary-potential-contraction",
         "lem-boundary-enhanced-cloning",
         "lem-barrier-reduction-cloning"
       ],
@@ -2696,12 +2717,12 @@
       "document_id": "03_cloning",
       "section": "## 11.4. Proof of Boundary Potential Contraction",
       "span": {
-        "start_line": 7453,
-        "end_line": 7546,
-        "content_start": 7455,
-        "content_end": 7545,
+        "start_line": 7461,
+        "end_line": 7554,
+        "content_start": 7463,
+        "content_end": 7553,
         "header_lines": [
-          7454
+          7462
         ]
       },
       "metadata": {
@@ -2714,7 +2735,7 @@
         "chapter_file": "chapter_25.json",
         "section_id": "## 11.4. Proof of Boundary Potential Contraction"
       },
-      "generated_at": "2025-11-09T10:55:47.626397+00:00",
+      "generated_at": "2025-11-10T12:23:04.016510+00:00",
       "alt_labels": []
     },
     "tags": [
@@ -2727,19 +2748,23 @@
       "inequality"
     ],
     "content_markdown": ":label: thm-boundary-potential-contraction\n\nUnder the foundational axioms (Chapter 4) including the Safe Harbor Axiom (Axiom 4.3), there exist constants $\\kappa_b > 0$ and $C_b < \\infty$, both independent of $N$, such that for any pair of swarms $(S_1, S_2)$:\n\n$$\n\\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_b) W_b(S_1, S_2) + C_b\n$$\n\nFurthermore, when $W_b(S_1, S_2) > \\tilde{C}_b$ for a sufficiently large threshold $\\tilde{C}_b$, the contraction becomes strict:\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta W_b] := \\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) - W_b(S_1, S_2)] < 0",
-    "raw_directive": "7288: ## 11.3. Main Theorem: Boundary Potential Contraction\n7289: \n7290: :::{prf:theorem} Boundary Potential Contraction Under Cloning\n7291: :label: thm-boundary-potential-contraction\n7292: \n7293: Under the foundational axioms (Chapter 4) including the Safe Harbor Axiom (Axiom 4.3), there exist constants $\\kappa_b > 0$ and $C_b < \\infty$, both independent of $N$, such that for any pair of swarms $(S_1, S_2)$:\n7294: \n7295: $$\n7296: \\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_b) W_b(S_1, S_2) + C_b\n7297: $$\n7298: \n7299: Furthermore, when $W_b(S_1, S_2) > \\tilde{C}_b$ for a sufficiently large threshold $\\tilde{C}_b$, the contraction becomes strict:\n7300: \n7301: $$\n7302: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] := \\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) - W_b(S_1, S_2)] < 0\n7303: $$",
+    "raw_directive": "7292: ## 11.3. Main Theorem: Boundary Potential Contraction\n7293: \n7294: :::{prf:theorem} Boundary Potential Contraction Under Cloning\n7295: :label: thm-boundary-potential-contraction\n7296: \n7297: Under the foundational axioms (Chapter 4) including the Safe Harbor Axiom (Axiom 4.3), there exist constants $\\kappa_b > 0$ and $C_b < \\infty$, both independent of $N$, such that for any pair of swarms $(S_1, S_2)$:\n7298: \n7299: $$\n7300: \\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_b) W_b(S_1, S_2) + C_b\n7301: $$\n7302: \n7303: Furthermore, when $W_b(S_1, S_2) > \\tilde{C}_b$ for a sufficiently large threshold $\\tilde{C}_b$, the contraction becomes strict:\n7304: \n7305: $$\n7306: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] := \\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) - W_b(S_1, S_2)] < 0\n7307: $$",
     "document_id": "03_cloning",
     "section": "## 11.3. Main Theorem: Boundary Potential Contraction",
     "span": {
-      "start_line": 7288,
-      "end_line": 7303,
-      "content_start": 7291,
-      "content_end": 7302,
+      "start_line": 7292,
+      "end_line": 7307,
+      "content_start": 7295,
+      "content_end": 7306,
       "header_lines": [
-        7289
+        7293
       ]
     },
-    "references": [],
+    "references": [
+      "thm-boundary-potential-contraction",
+      "lem-boundary-enhanced-cloning",
+      "lem-barrier-reduction-cloning"
+    ],
     "metadata": {
       "label": "thm-boundary-potential-contraction"
     },
@@ -2750,7 +2775,7 @@
       "chapter_file": "chapter_24.json",
       "section_id": "## 11.3. Main Theorem: Boundary Potential Contraction"
     },
-    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "generated_at": "2025-11-10T12:23:04.021422+00:00",
     "alt_labels": []
   },
   {
@@ -2892,16 +2917,16 @@
       "large-N"
     ],
     "content_markdown": ":label: thm-complete-boundary-drift\n\nThe cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the boundary potential:\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\leq -\\kappa_b W_b + C_b\n$$\n\nwhere:\n- $\\kappa_b = p_{\\text{boundary}}(\\phi_{\\text{thresh}}) > 0$ is the minimum cloning probability for boundary-exposed walkers\n- $C_b = O(\\sigma_x^2 + N^{-1})$ accounts for position jitter and dead walker revival\n- Both constants are **$N$-independent** in the large-$N$ limit\n\n**Key Properties:**\n\n1. **Unconditional contraction:** The drift is negative for all states with $W_b > C_b/\\kappa_b$\n\n2. **Strengthening near danger:** The contraction rate $\\kappa_b$ increases with boundary proximity (through $\\phi_{\\text{thresh}}$)",
-    "raw_directive": "7724: We conclude by stating the complete boundary potential drift result.\n7725: \n7726: :::{prf:theorem} Complete Boundary Potential Drift Characterization\n7727: :label: thm-complete-boundary-drift\n7728: \n7729: The cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the boundary potential:\n7730: \n7731: $$\n7732: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\leq -\\kappa_b W_b + C_b\n7733: $$\n7734: \n7735: where:\n7736: - $\\kappa_b = p_{\\text{boundary}}(\\phi_{\\text{thresh}}) > 0$ is the minimum cloning probability for boundary-exposed walkers\n7737: - $C_b = O(\\sigma_x^2 + N^{-1})$ accounts for position jitter and dead walker revival\n7738: - Both constants are **$N$-independent** in the large-$N$ limit\n7739: \n7740: **Key Properties:**\n7741: \n7742: 1. **Unconditional contraction:** The drift is negative for all states with $W_b > C_b/\\kappa_b$\n7743: \n7744: 2. **Strengthening near danger:** The contraction rate $\\kappa_b$ increases with boundary proximity (through $\\phi_{\\text{thresh}}$)\n7745: ",
+    "raw_directive": "7732: We conclude by stating the complete boundary potential drift result.\n7733: \n7734: :::{prf:theorem} Complete Boundary Potential Drift Characterization\n7735: :label: thm-complete-boundary-drift\n7736: \n7737: The cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the boundary potential:\n7738: \n7739: $$\n7740: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\leq -\\kappa_b W_b + C_b\n7741: $$\n7742: \n7743: where:\n7744: - $\\kappa_b = p_{\\text{boundary}}(\\phi_{\\text{thresh}}) > 0$ is the minimum cloning probability for boundary-exposed walkers\n7745: - $C_b = O(\\sigma_x^2 + N^{-1})$ accounts for position jitter and dead walker revival\n7746: - Both constants are **$N$-independent** in the large-$N$ limit\n7747: \n7748: **Key Properties:**\n7749: \n7750: 1. **Unconditional contraction:** The drift is negative for all states with $W_b > C_b/\\kappa_b$\n7751: \n7752: 2. **Strengthening near danger:** The contraction rate $\\kappa_b$ increases with boundary proximity (through $\\phi_{\\text{thresh}}$)\n7753: ",
     "document_id": "03_cloning",
     "section": "## 11.6. Summary and Drift Inequality",
     "span": {
-      "start_line": 7724,
-      "end_line": 7745,
-      "content_start": 7727,
-      "content_end": 7744,
+      "start_line": 7732,
+      "end_line": 7753,
+      "content_start": 7735,
+      "content_end": 7752,
       "header_lines": [
-        7725
+        7733
       ]
     },
     "references": [],
@@ -2915,7 +2940,7 @@
       "chapter_file": "chapter_27.json",
       "section_id": "## 11.6. Summary and Drift Inequality"
     },
-    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "generated_at": "2025-11-10T12:23:04.021422+00:00",
     "alt_labels": []
   },
   {
@@ -3056,7 +3081,7 @@
       "proof_type": "probabilistic",
       "proof_status": "complete",
       "content_markdown": ":::{prf:proof}\n:label: proof-thm-inter-swarm-bounded-expansion\n**Proof.**\n\nThe proof analyzes how the stochastic cloning mechanism affects the distance between the two swarms' empirical measures.\n\n**Step 1: Sources of inter-swarm divergence**\n\nThe coupled cloning operator uses synchronous coupling for all randomness, but divergence still occurs through:\n\n1. **Different companion selections:** Walker $i$ in swarm 1 may select companion $j$ while the same walker in swarm 2 selects companion $k \\neq j$\n\n2. **Different cloning decisions:** The cloning scores $S_{1,i}$ and $S_{2,i}$ depend on the fitness potentials, which differ between swarms when the swarms are in different configurations\n\n3. **Position jitter:** Even when both swarms make the same cloning decision, the Gaussian jitter $\\zeta_i^x$ adds independent noise to each swarm's walker positions\n\n**Step 2: Bounding location error expansion**\n\nThe location error is:\n\n$$\nV_{\\text{loc}} = \\|\\Delta\\mu_x\\|^2 + \\lambda_v \\|\\Delta\\mu_v\\|^2 + b\\langle\\Delta\\mu_x, \\Delta\\mu_v\\rangle\n$$\n\nThe barycenters change based on the cloning decisions. In the worst case, if walker $i$ clones in swarm 1 but not in swarm 2:\n\n$$\n\\Delta\\mu'_x = \\Delta\\mu_x + \\frac{1}{N}(x'_{1,i} - x_{1,i}) - 0\n$$\n\nSince positions are bounded within $\\mathcal{X}_{\\text{valid}}$:\n\n$$\n\\|\\Delta\\mu'_x - \\Delta\\mu_x\\| \\leq \\frac{2D_{\\text{valid}}}{N}\n$$\n\nSquaring and summing over all potential mismatches:\n\n$$\n\\mathbb{E}[\\|\\Delta\\mu'_x\\|^2] \\leq \\|\\Delta\\mu_x\\|^2 + O(D_{\\text{valid}}^2)\n$$\n\nSimilarly for velocity barycenters.\n\n**Step 3: Bounding structural error expansion**\n\nThe structural error $V_{\\text{struct}}$ measures the Wasserstein distance between centered empirical measures. When walkers clone:\n\n- **Synchronized cloning:** Both swarms clone walker $i$ to similar positions (same companion, same jitter) \u2192 minimal divergence\n- **Desynchronized cloning:** Only one swarm clones walker $i$ \u2192 position divergence bounded by $D_{\\text{valid}}$\n\nThe expected number of desynchronized events is bounded by the differences in cloning probabilities:\n\n$$\n\\mathbb{E}[\\text{# desynchronized}] \\leq \\sum_{i=1}^N |p_{1,i} - p_{2,i}|\n$$\n\nBy the Lipschitz continuity of the cloning probability with respect to swarm configuration (proven in the framework document, Section 15.2):\n\n$$\n|p_{1,i} - p_{2,i}| \\leq L_{\\text{clone}} \\cdot d_{\\text{Disp}}(S_1, S_2)\n$$\n\nCombined with the bounded displacement per desynchronized event:\n\n$$\n\\mathbb{E}[\\Delta V_{\\text{struct}}] \\leq N \\cdot L_{\\text{clone}} \\cdot d_{\\text{Disp}}(S_1, S_2) \\cdot D_{\\text{valid}}^2 + C_{\\text{jitter}}\n$$\n\n**Step 4: Combine and use Wasserstein decomposition**\n\nFrom {prf:ref}`lem-wasserstein-decomposition`:\n\n$$\nV_W = V_{\\text{loc}} + V_{\\text{struct}}\n$$\n\nCombining the bounds from Steps 2-3:\n\n$$\n\\mathbb{E}[\\Delta V_W] \\leq O(D_{\\text{valid}}^2) + O(N \\cdot d_{\\text{Disp}}(S_1, S_2)) + C_{\\text{jitter}}\n$$\n\nIn the drift analysis regime where we consider bounded swarm configurations, $d_{\\text{Disp}}(S_1, S_2)$ is bounded, yielding:\n\n$$\n\\mathbb{E}[\\Delta V_W] \\leq C_W\n$$\n\nfor a state-independent constant $C_W$.",
-      "raw_directive": "7864: :::\n7865: \n7866: :::{prf:proof}\n7867: :label: proof-thm-inter-swarm-bounded-expansion\n7868: **Proof.**\n7869: \n7870: The proof analyzes how the stochastic cloning mechanism affects the distance between the two swarms' empirical measures.\n7871: \n7872: **Step 1: Sources of inter-swarm divergence**\n7873: \n7874: The coupled cloning operator uses synchronous coupling for all randomness, but divergence still occurs through:\n7875: \n7876: 1. **Different companion selections:** Walker $i$ in swarm 1 may select companion $j$ while the same walker in swarm 2 selects companion $k \\neq j$\n7877: \n7878: 2. **Different cloning decisions:** The cloning scores $S_{1,i}$ and $S_{2,i}$ depend on the fitness potentials, which differ between swarms when the swarms are in different configurations\n7879: \n7880: 3. **Position jitter:** Even when both swarms make the same cloning decision, the Gaussian jitter $\\zeta_i^x$ adds independent noise to each swarm's walker positions\n7881: \n7882: **Step 2: Bounding location error expansion**\n7883: \n7884: The location error is:\n7885: \n7886: $$\n7887: V_{\\text{loc}} = \\|\\Delta\\mu_x\\|^2 + \\lambda_v \\|\\Delta\\mu_v\\|^2 + b\\langle\\Delta\\mu_x, \\Delta\\mu_v\\rangle\n7888: $$\n7889: \n7890: The barycenters change based on the cloning decisions. In the worst case, if walker $i$ clones in swarm 1 but not in swarm 2:\n7891: \n7892: $$\n7893: \\Delta\\mu'_x = \\Delta\\mu_x + \\frac{1}{N}(x'_{1,i} - x_{1,i}) - 0\n7894: $$\n7895: \n7896: Since positions are bounded within $\\mathcal{X}_{\\text{valid}}$:\n7897: \n7898: $$\n7899: \\|\\Delta\\mu'_x - \\Delta\\mu_x\\| \\leq \\frac{2D_{\\text{valid}}}{N}\n7900: $$\n7901: \n7902: Squaring and summing over all potential mismatches:\n7903: \n7904: $$\n7905: \\mathbb{E}[\\|\\Delta\\mu'_x\\|^2] \\leq \\|\\Delta\\mu_x\\|^2 + O(D_{\\text{valid}}^2)\n7906: $$\n7907: \n7908: Similarly for velocity barycenters.\n7909: \n7910: **Step 3: Bounding structural error expansion**\n7911: \n7912: The structural error $V_{\\text{struct}}$ measures the Wasserstein distance between centered empirical measures. When walkers clone:\n7913: \n7914: - **Synchronized cloning:** Both swarms clone walker $i$ to similar positions (same companion, same jitter) \u2192 minimal divergence\n7915: - **Desynchronized cloning:** Only one swarm clones walker $i$ \u2192 position divergence bounded by $D_{\\text{valid}}$\n7916: \n7917: The expected number of desynchronized events is bounded by the differences in cloning probabilities:\n7918: \n7919: $$\n7920: \\mathbb{E}[\\text{# desynchronized}] \\leq \\sum_{i=1}^N |p_{1,i} - p_{2,i}|\n7921: $$\n7922: \n7923: By the Lipschitz continuity of the cloning probability with respect to swarm configuration (proven in the framework document, Section 15.2):\n7924: \n7925: $$\n7926: |p_{1,i} - p_{2,i}| \\leq L_{\\text{clone}} \\cdot d_{\\text{Disp}}(S_1, S_2)\n7927: $$\n7928: \n7929: Combined with the bounded displacement per desynchronized event:\n7930: \n7931: $$\n7932: \\mathbb{E}[\\Delta V_{\\text{struct}}] \\leq N \\cdot L_{\\text{clone}} \\cdot d_{\\text{Disp}}(S_1, S_2) \\cdot D_{\\text{valid}}^2 + C_{\\text{jitter}}\n7933: $$\n7934: \n7935: **Step 4: Combine and use Wasserstein decomposition**\n7936: \n7937: From {prf:ref}`lem-wasserstein-decomposition`:\n7938: \n7939: $$\n7940: V_W = V_{\\text{loc}} + V_{\\text{struct}}\n7941: $$\n7942: \n7943: Combining the bounds from Steps 2-3:\n7944: \n7945: $$\n7946: \\mathbb{E}[\\Delta V_W] \\leq O(D_{\\text{valid}}^2) + O(N \\cdot d_{\\text{Disp}}(S_1, S_2)) + C_{\\text{jitter}}\n7947: $$\n7948: \n7949: In the drift analysis regime where we consider bounded swarm configurations, $d_{\\text{Disp}}(S_1, S_2)$ is bounded, yielding:\n7950: \n7951: $$\n7952: \\mathbb{E}[\\Delta V_W] \\leq C_W\n7953: $$\n7954: \n7955: for a state-independent constant $C_W$.\n7956: ",
+      "raw_directive": "7872: :::\n7873: \n7874: :::{prf:proof}\n7875: :label: proof-thm-inter-swarm-bounded-expansion\n7876: **Proof.**\n7877: \n7878: The proof analyzes how the stochastic cloning mechanism affects the distance between the two swarms' empirical measures.\n7879: \n7880: **Step 1: Sources of inter-swarm divergence**\n7881: \n7882: The coupled cloning operator uses synchronous coupling for all randomness, but divergence still occurs through:\n7883: \n7884: 1. **Different companion selections:** Walker $i$ in swarm 1 may select companion $j$ while the same walker in swarm 2 selects companion $k \\neq j$\n7885: \n7886: 2. **Different cloning decisions:** The cloning scores $S_{1,i}$ and $S_{2,i}$ depend on the fitness potentials, which differ between swarms when the swarms are in different configurations\n7887: \n7888: 3. **Position jitter:** Even when both swarms make the same cloning decision, the Gaussian jitter $\\zeta_i^x$ adds independent noise to each swarm's walker positions\n7889: \n7890: **Step 2: Bounding location error expansion**\n7891: \n7892: The location error is:\n7893: \n7894: $$\n7895: V_{\\text{loc}} = \\|\\Delta\\mu_x\\|^2 + \\lambda_v \\|\\Delta\\mu_v\\|^2 + b\\langle\\Delta\\mu_x, \\Delta\\mu_v\\rangle\n7896: $$\n7897: \n7898: The barycenters change based on the cloning decisions. In the worst case, if walker $i$ clones in swarm 1 but not in swarm 2:\n7899: \n7900: $$\n7901: \\Delta\\mu'_x = \\Delta\\mu_x + \\frac{1}{N}(x'_{1,i} - x_{1,i}) - 0\n7902: $$\n7903: \n7904: Since positions are bounded within $\\mathcal{X}_{\\text{valid}}$:\n7905: \n7906: $$\n7907: \\|\\Delta\\mu'_x - \\Delta\\mu_x\\| \\leq \\frac{2D_{\\text{valid}}}{N}\n7908: $$\n7909: \n7910: Squaring and summing over all potential mismatches:\n7911: \n7912: $$\n7913: \\mathbb{E}[\\|\\Delta\\mu'_x\\|^2] \\leq \\|\\Delta\\mu_x\\|^2 + O(D_{\\text{valid}}^2)\n7914: $$\n7915: \n7916: Similarly for velocity barycenters.\n7917: \n7918: **Step 3: Bounding structural error expansion**\n7919: \n7920: The structural error $V_{\\text{struct}}$ measures the Wasserstein distance between centered empirical measures. When walkers clone:\n7921: \n7922: - **Synchronized cloning:** Both swarms clone walker $i$ to similar positions (same companion, same jitter) \u2192 minimal divergence\n7923: - **Desynchronized cloning:** Only one swarm clones walker $i$ \u2192 position divergence bounded by $D_{\\text{valid}}$\n7924: \n7925: The expected number of desynchronized events is bounded by the differences in cloning probabilities:\n7926: \n7927: $$\n7928: \\mathbb{E}[\\text{# desynchronized}] \\leq \\sum_{i=1}^N |p_{1,i} - p_{2,i}|\n7929: $$\n7930: \n7931: By the Lipschitz continuity of the cloning probability with respect to swarm configuration (proven in the framework document, Section 15.2):\n7932: \n7933: $$\n7934: |p_{1,i} - p_{2,i}| \\leq L_{\\text{clone}} \\cdot d_{\\text{Disp}}(S_1, S_2)\n7935: $$\n7936: \n7937: Combined with the bounded displacement per desynchronized event:\n7938: \n7939: $$\n7940: \\mathbb{E}[\\Delta V_{\\text{struct}}] \\leq N \\cdot L_{\\text{clone}} \\cdot d_{\\text{Disp}}(S_1, S_2) \\cdot D_{\\text{valid}}^2 + C_{\\text{jitter}}\n7941: $$\n7942: \n7943: **Step 4: Combine and use Wasserstein decomposition**\n7944: \n7945: From {prf:ref}`lem-wasserstein-decomposition`:\n7946: \n7947: $$\n7948: V_W = V_{\\text{loc}} + V_{\\text{struct}}\n7949: $$\n7950: \n7951: Combining the bounds from Steps 2-3:\n7952: \n7953: $$\n7954: \\mathbb{E}[\\Delta V_W] \\leq O(D_{\\text{valid}}^2) + O(N \\cdot d_{\\text{Disp}}(S_1, S_2)) + C_{\\text{jitter}}\n7955: $$\n7956: \n7957: In the drift analysis regime where we consider bounded swarm configurations, $d_{\\text{Disp}}(S_1, S_2)$ is bounded, yielding:\n7958: \n7959: $$\n7960: \\mathbb{E}[\\Delta V_W] \\leq C_W\n7961: $$\n7962: \n7963: for a state-independent constant $C_W$.\n7964: ",
       "strategy_summary": "The proof decomposes the inter-swarm Wasserstein distance into location and structural components, bounds the expected expansion from cloning divergences using synchronous coupling, Lipschitz properties of cloning probabilities, and position bounds, and combines these to show a constant upper bound on the expected change.",
       "conclusion": {
         "text": "The expected change in the Wasserstein distance between the two swarms is bounded by a state-independent constant C_W.",
@@ -3246,12 +3271,12 @@
       "document_id": "03_cloning",
       "section": "## 12.2. Inter-Swarm Error Under Cloning",
       "span": {
-        "start_line": 7864,
-        "end_line": 7956,
-        "content_start": 7866,
-        "content_end": 7955,
+        "start_line": 7872,
+        "end_line": 7964,
+        "content_start": 7874,
+        "content_end": 7963,
         "header_lines": [
-          7865
+          7873
         ]
       },
       "metadata": {
@@ -3264,7 +3289,7 @@
         "chapter_file": "chapter_30.json",
         "section_id": "## 12.2. Inter-Swarm Error Under Cloning"
       },
-      "generated_at": "2025-11-09T10:55:47.626397+00:00",
+      "generated_at": "2025-11-10T12:23:04.016510+00:00",
       "alt_labels": []
     },
     "tags": [
@@ -3277,19 +3302,21 @@
       "error"
     ],
     "content_markdown": ":label: thm-inter-swarm-bounded-expansion\n\nFor the coupled cloning operator acting on two swarms $(S_1, S_2)$, the expected change in the hypocoercive Wasserstein distance satisfies:\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W\n$$\n\nwhere $V_W = W_h^2(\\mu_1, \\mu_2) = V_{\\text{loc}} + V_{\\text{struct}}$ is the total inter-swarm error and $C_W < \\infty$ is a state-independent constant.\n\nEquivalently:\n\n$$\n\\mathbb{E}_{\\text{clone}}[V_W(S'_1, S'_2)] \\leq V_W(S_1, S_2) + C_W",
-    "raw_directive": "7845: ### 12.2.1. Bounded Expansion of Inter-Swarm Error\n7846: \n7847: :::{prf:theorem} Bounded Expansion of Inter-Swarm Wasserstein Distance\n7848: :label: thm-inter-swarm-bounded-expansion\n7849: \n7850: For the coupled cloning operator acting on two swarms $(S_1, S_2)$, the expected change in the hypocoercive Wasserstein distance satisfies:\n7851: \n7852: $$\n7853: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W\n7854: $$\n7855: \n7856: where $V_W = W_h^2(\\mu_1, \\mu_2) = V_{\\text{loc}} + V_{\\text{struct}}$ is the total inter-swarm error and $C_W < \\infty$ is a state-independent constant.\n7857: \n7858: Equivalently:\n7859: \n7860: $$\n7861: \\mathbb{E}_{\\text{clone}}[V_W(S'_1, S'_2)] \\leq V_W(S_1, S_2) + C_W\n7862: $$",
+    "raw_directive": "7853: ### 12.2.1. Bounded Expansion of Inter-Swarm Error\n7854: \n7855: :::{prf:theorem} Bounded Expansion of Inter-Swarm Wasserstein Distance\n7856: :label: thm-inter-swarm-bounded-expansion\n7857: \n7858: For the coupled cloning operator acting on two swarms $(S_1, S_2)$, the expected change in the hypocoercive Wasserstein distance satisfies:\n7859: \n7860: $$\n7861: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W\n7862: $$\n7863: \n7864: where $V_W = W_h^2(\\mu_1, \\mu_2) = V_{\\text{loc}} + V_{\\text{struct}}$ is the total inter-swarm error and $C_W < \\infty$ is a state-independent constant.\n7865: \n7866: Equivalently:\n7867: \n7868: $$\n7869: \\mathbb{E}_{\\text{clone}}[V_W(S'_1, S'_2)] \\leq V_W(S_1, S_2) + C_W\n7870: $$",
     "document_id": "03_cloning",
     "section": "## 12.2. Inter-Swarm Error Under Cloning",
     "span": {
-      "start_line": 7845,
-      "end_line": 7862,
-      "content_start": 7848,
-      "content_end": 7861,
+      "start_line": 7853,
+      "end_line": 7870,
+      "content_start": 7856,
+      "content_end": 7869,
       "header_lines": [
-        7846
+        7854
       ]
     },
-    "references": [],
+    "references": [
+      "lem-wasserstein-decomposition"
+    ],
     "metadata": {
       "label": "thm-inter-swarm-bounded-expansion"
     },
@@ -3300,7 +3327,7 @@
       "chapter_file": "chapter_30.json",
       "section_id": "## 12.2. Inter-Swarm Error Under Cloning"
     },
-    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "generated_at": "2025-11-10T12:23:04.021422+00:00",
     "alt_labels": []
   },
   {
@@ -3456,7 +3483,7 @@
       "proof_type": "direct",
       "proof_status": "complete",
       "content_markdown": ":::{prf:proof}\n:label: proof-thm-complete-wasserstein-drift\n**Proof.**\n\nBy linearity of expectation and the Wasserstein decomposition {prf:ref}`lem-wasserstein-decomposition`:\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta V_W] = \\mathbb{E}_{\\text{clone}}[\\Delta(V_{\\text{loc}} + V_{\\text{struct}})]\n$$\n\n$$\n= \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}]\n$$\n\nApplying the component bounds from {prf:ref}`cor-component-bounds-vw`:\n\n$$\n\\leq C_{\\text{loc}} + C_{\\text{struct}} =: C_W\n$$\n\nThis establishes the combined drift bound.\n\n**Explicit Constants:**\n\nFrom the proof of {prf:ref}`thm-inter-swarm-bounded-expansion`:\n\n**Location Expansion:** $C_{\\text{loc}}$ arises from the differential expected clone positions between swarms:\n\n$$\nC_{\\text{loc}} = O\\left(\\mathbb{E}\\left[\\left\\|\\mathbb{E}_{c_1 \\sim \\mathcal{C}_i(S_1)}[x_{c_1}] - \\mathbb{E}_{c_2 \\sim \\mathcal{C}_i(S_2)}[x_{c_2}]\\right\\|^2\\right]\\right)\n$$\n\nwhich is bounded by the domain diameter and companion selection variance.\n\n**Structural Expansion:** $C_{\\text{struct}}$ is dominated by position jitter:\n\n$$\nC_{\\text{struct}} = O(\\sigma_x^2 f_{\\text{clone}})\n$$\n\nwhere $f_{\\text{clone}}$ is the expected fraction of walkers that clone per step and $\\sigma_x^2$ is the jitter variance.",
-      "raw_directive": "8032: :::\n8033: \n8034: :::{prf:proof}\n8035: :label: proof-thm-complete-wasserstein-drift\n8036: **Proof.**\n8037: \n8038: By linearity of expectation and the Wasserstein decomposition {prf:ref}`lem-wasserstein-decomposition`:\n8039: \n8040: $$\n8041: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] = \\mathbb{E}_{\\text{clone}}[\\Delta(V_{\\text{loc}} + V_{\\text{struct}})]\n8042: $$\n8043: \n8044: $$\n8045: = \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}]\n8046: $$\n8047: \n8048: Applying the component bounds from {prf:ref}`cor-component-bounds-vw`:\n8049: \n8050: $$\n8051: \\leq C_{\\text{loc}} + C_{\\text{struct}} =: C_W\n8052: $$\n8053: \n8054: This establishes the combined drift bound.\n8055: \n8056: **Explicit Constants:**\n8057: \n8058: From the proof of {prf:ref}`thm-inter-swarm-bounded-expansion`:\n8059: \n8060: **Location Expansion:** $C_{\\text{loc}}$ arises from the differential expected clone positions between swarms:\n8061: \n8062: $$\n8063: C_{\\text{loc}} = O\\left(\\mathbb{E}\\left[\\left\\|\\mathbb{E}_{c_1 \\sim \\mathcal{C}_i(S_1)}[x_{c_1}] - \\mathbb{E}_{c_2 \\sim \\mathcal{C}_i(S_2)}[x_{c_2}]\\right\\|^2\\right]\\right)\n8064: $$\n8065: \n8066: which is bounded by the domain diameter and companion selection variance.\n8067: \n8068: **Structural Expansion:** $C_{\\text{struct}}$ is dominated by position jitter:\n8069: \n8070: $$\n8071: C_{\\text{struct}} = O(\\sigma_x^2 f_{\\text{clone}})\n8072: $$\n8073: \n8074: where $f_{\\text{clone}}$ is the expected fraction of walkers that clone per step and $\\sigma_x^2$ is the jitter variance.\n8075: ",
+      "raw_directive": "8040: :::\n8041: \n8042: :::{prf:proof}\n8043: :label: proof-thm-complete-wasserstein-drift\n8044: **Proof.**\n8045: \n8046: By linearity of expectation and the Wasserstein decomposition {prf:ref}`lem-wasserstein-decomposition`:\n8047: \n8048: $$\n8049: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] = \\mathbb{E}_{\\text{clone}}[\\Delta(V_{\\text{loc}} + V_{\\text{struct}})]\n8050: $$\n8051: \n8052: $$\n8053: = \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}]\n8054: $$\n8055: \n8056: Applying the component bounds from {prf:ref}`cor-component-bounds-vw`:\n8057: \n8058: $$\n8059: \\leq C_{\\text{loc}} + C_{\\text{struct}} =: C_W\n8060: $$\n8061: \n8062: This establishes the combined drift bound.\n8063: \n8064: **Explicit Constants:**\n8065: \n8066: From the proof of {prf:ref}`thm-inter-swarm-bounded-expansion`:\n8067: \n8068: **Location Expansion:** $C_{\\text{loc}}$ arises from the differential expected clone positions between swarms:\n8069: \n8070: $$\n8071: C_{\\text{loc}} = O\\left(\\mathbb{E}\\left[\\left\\|\\mathbb{E}_{c_1 \\sim \\mathcal{C}_i(S_1)}[x_{c_1}] - \\mathbb{E}_{c_2 \\sim \\mathcal{C}_i(S_2)}[x_{c_2}]\\right\\|^2\\right]\\right)\n8072: $$\n8073: \n8074: which is bounded by the domain diameter and companion selection variance.\n8075: \n8076: **Structural Expansion:** $C_{\\text{struct}}$ is dominated by position jitter:\n8077: \n8078: $$\n8079: C_{\\text{struct}} = O(\\sigma_x^2 f_{\\text{clone}})\n8080: $$\n8081: \n8082: where $f_{\\text{clone}}$ is the expected fraction of walkers that clone per step and $\\sigma_x^2$ is the jitter variance.\n8083: ",
       "strategy_summary": "The proof uses linearity of expectation on the Wasserstein decomposition to separate local and structural components, then applies established bounds to derive an overall constant bound on the expected drift.",
       "conclusion": {
         "text": "This establishes the combined drift bound \\(\\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W\\).",
@@ -3603,12 +3630,12 @@
       "document_id": "03_cloning",
       "section": "## 12.2. Inter-Swarm Error Under Cloning",
       "span": {
-        "start_line": 8032,
-        "end_line": 8075,
-        "content_start": 8034,
-        "content_end": 8074,
+        "start_line": 8040,
+        "end_line": 8083,
+        "content_start": 8042,
+        "content_end": 8082,
         "header_lines": [
-          8033
+          8041
         ]
       },
       "metadata": {
@@ -3621,7 +3648,7 @@
         "chapter_file": "chapter_30.json",
         "section_id": "## 12.2. Inter-Swarm Error Under Cloning"
       },
-      "generated_at": "2025-11-09T10:55:47.626397+00:00",
+      "generated_at": "2025-11-10T12:23:04.016510+00:00",
       "alt_labels": []
     },
     "tags": [
@@ -3633,20 +3660,22 @@
       "inter-swarm"
     ],
     "content_markdown": ":label: thm-complete-wasserstein-drift\n\nThe total inter-swarm Wasserstein distance $V_W = V_{\\text{loc}} + V_{\\text{struct}}$ satisfies a combined drift inequality under the cloning operator:\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W\n$$\n\nwhere $C_W < \\infty$ is a state-independent constant satisfying:\n\n$$\nC_W = C_{\\text{loc}} + C_{\\text{struct}}\n$$\n\n**Component Bounds:**\n\nFrom {prf:ref}`cor-component-bounds-vw`, the individual components satisfy:\n\n$$\n\\begin{aligned}\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] &\\leq C_{\\text{loc}} \\\\\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}] &\\leq C_{\\text{struct}}\n\\end{aligned}\n$$\n\nwhere:\n- $C_{\\text{loc}}$ arises from barycenter desynchronization due to differential cloning rates\n- $C_{\\text{struct}}$ arises from jitter noise and structural rearrangement during cloning\n\n**Note on Kinetic Contraction:**\n\nWhile the cloning operator allows bounded expansion of $V_W$, the **kinetic operator** provides contraction. From hypocoercive analysis (Chapter 4 of companion document):\n\n$$\n\\mathbb{E}_{\\text{kin}}[\\Delta V_W] \\leq -\\kappa_W^{\\text{kin}} \\tau V_W + C_W^{\\text{kin}} \\tau\n$$",
-    "raw_directive": "7991: :::\n7992: \n7993: :::{prf:theorem} Complete Wasserstein Decomposition Drift\n7994: :label: thm-complete-wasserstein-drift\n7995: \n7996: The total inter-swarm Wasserstein distance $V_W = V_{\\text{loc}} + V_{\\text{struct}}$ satisfies a combined drift inequality under the cloning operator:\n7997: \n7998: $$\n7999: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W\n8000: $$\n8001: \n8002: where $C_W < \\infty$ is a state-independent constant satisfying:\n8003: \n8004: $$\n8005: C_W = C_{\\text{loc}} + C_{\\text{struct}}\n8006: $$\n8007: \n8008: **Component Bounds:**\n8009: \n8010: From {prf:ref}`cor-component-bounds-vw`, the individual components satisfy:\n8011: \n8012: $$\n8013: \\begin{aligned}\n8014: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] &\\leq C_{\\text{loc}} \\\\\n8015: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}] &\\leq C_{\\text{struct}}\n8016: \\end{aligned}\n8017: $$\n8018: \n8019: where:\n8020: - $C_{\\text{loc}}$ arises from barycenter desynchronization due to differential cloning rates\n8021: - $C_{\\text{struct}}$ arises from jitter noise and structural rearrangement during cloning\n8022: \n8023: **Note on Kinetic Contraction:**\n8024: \n8025: While the cloning operator allows bounded expansion of $V_W$, the **kinetic operator** provides contraction. From hypocoercive analysis (Chapter 4 of companion document):\n8026: \n8027: $$\n8028: \\mathbb{E}_{\\text{kin}}[\\Delta V_W] \\leq -\\kappa_W^{\\text{kin}} \\tau V_W + C_W^{\\text{kin}} \\tau\n8029: $$\n8030: ",
+    "raw_directive": "7999: :::\n8000: \n8001: :::{prf:theorem} Complete Wasserstein Decomposition Drift\n8002: :label: thm-complete-wasserstein-drift\n8003: \n8004: The total inter-swarm Wasserstein distance $V_W = V_{\\text{loc}} + V_{\\text{struct}}$ satisfies a combined drift inequality under the cloning operator:\n8005: \n8006: $$\n8007: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] \\leq C_W\n8008: $$\n8009: \n8010: where $C_W < \\infty$ is a state-independent constant satisfying:\n8011: \n8012: $$\n8013: C_W = C_{\\text{loc}} + C_{\\text{struct}}\n8014: $$\n8015: \n8016: **Component Bounds:**\n8017: \n8018: From {prf:ref}`cor-component-bounds-vw`, the individual components satisfy:\n8019: \n8020: $$\n8021: \\begin{aligned}\n8022: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{loc}}] &\\leq C_{\\text{loc}} \\\\\n8023: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{struct}}] &\\leq C_{\\text{struct}}\n8024: \\end{aligned}\n8025: $$\n8026: \n8027: where:\n8028: - $C_{\\text{loc}}$ arises from barycenter desynchronization due to differential cloning rates\n8029: - $C_{\\text{struct}}$ arises from jitter noise and structural rearrangement during cloning\n8030: \n8031: **Note on Kinetic Contraction:**\n8032: \n8033: While the cloning operator allows bounded expansion of $V_W$, the **kinetic operator** provides contraction. From hypocoercive analysis (Chapter 4 of companion document):\n8034: \n8035: $$\n8036: \\mathbb{E}_{\\text{kin}}[\\Delta V_W] \\leq -\\kappa_W^{\\text{kin}} \\tau V_W + C_W^{\\text{kin}} \\tau\n8037: $$\n8038: ",
     "document_id": "03_cloning",
     "section": "## 12.2. Inter-Swarm Error Under Cloning",
     "span": {
-      "start_line": 7991,
-      "end_line": 8030,
-      "content_start": 7994,
-      "content_end": 8029,
+      "start_line": 7999,
+      "end_line": 8038,
+      "content_start": 8002,
+      "content_end": 8037,
       "header_lines": [
-        7992
+        8000
       ]
     },
     "references": [
-      "cor-component-bounds-vw"
+      "cor-component-bounds-vw",
+      "lem-wasserstein-decomposition",
+      "thm-inter-swarm-bounded-expansion"
     ],
     "metadata": {
       "label": "thm-complete-wasserstein-drift"
@@ -3658,7 +3687,7 @@
       "chapter_file": "chapter_30.json",
       "section_id": "## 12.2. Inter-Swarm Error Under Cloning"
     },
-    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "generated_at": "2025-11-10T12:23:04.021422+00:00",
     "alt_labels": []
   },
   {
@@ -3883,7 +3912,7 @@
       "proof_type": "direct",
       "proof_status": "complete",
       "content_markdown": ":::{prf:proof}\n:label: proof-thm-complete-cloning-drift\n**Proof.**\n\nThe total drift is obtained by summing the component drifts with their respective weights:\n\n$$\n\\begin{aligned}\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] &= \\mathbb{E}_{\\text{clone}}[\\Delta V_W] + c_V \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var}}] + c_B \\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\\\\n&= \\mathbb{E}_{\\text{clone}}[\\Delta V_W] + c_V (\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}]) + c_B \\mathbb{E}_{\\text{clone}}[\\Delta W_b]\n\\end{aligned}\n$$\n\nSubstituting the individual bounds from Theorems 10.3.1, 10.4.1, 11.3.1, and 12.2.1:\n\n$$\n\\leq C_W + c_V(-\\kappa_x V_{\\text{Var},x} + C_x + C_v) + c_B(-\\kappa_b W_b + C_b)\n$$\n\nRearranging:\n\n$$\n= -c_V \\kappa_x V_{\\text{Var},x} - c_B \\kappa_b W_b + (C_W + c_V C_x + c_V C_v + c_B C_b)\n$$\n\nFor the drift to be negative, we need the contraction terms to dominate:\n\n$$\nc_V \\kappa_x V_{\\text{Var},x} + c_B \\kappa_b W_b > C_W + c_V C_x + c_V C_v + c_B C_b\n$$\n\nThis holds when the weighted variance and boundary potential are sufficiently large.",
-      "raw_directive": "8119: :::\n8120: \n8121: :::{prf:proof}\n8122: :label: proof-thm-complete-cloning-drift\n8123: **Proof.**\n8124: \n8125: The total drift is obtained by summing the component drifts with their respective weights:\n8126: \n8127: $$\n8128: \\begin{aligned}\n8129: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] &= \\mathbb{E}_{\\text{clone}}[\\Delta V_W] + c_V \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var}}] + c_B \\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\\\\n8130: &= \\mathbb{E}_{\\text{clone}}[\\Delta V_W] + c_V (\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}]) + c_B \\mathbb{E}_{\\text{clone}}[\\Delta W_b]\n8131: \\end{aligned}\n8132: $$\n8133: \n8134: Substituting the individual bounds from Theorems 10.3.1, 10.4.1, 11.3.1, and 12.2.1:\n8135: \n8136: $$\n8137: \\leq C_W + c_V(-\\kappa_x V_{\\text{Var},x} + C_x + C_v) + c_B(-\\kappa_b W_b + C_b)\n8138: $$\n8139: \n8140: Rearranging:\n8141: \n8142: $$\n8143: = -c_V \\kappa_x V_{\\text{Var},x} - c_B \\kappa_b W_b + (C_W + c_V C_x + c_V C_v + c_B C_b)\n8144: $$\n8145: \n8146: For the drift to be negative, we need the contraction terms to dominate:\n8147: \n8148: $$\n8149: c_V \\kappa_x V_{\\text{Var},x} + c_B \\kappa_b W_b > C_W + c_V C_x + c_V C_v + c_B C_b\n8150: $$\n8151: \n8152: This holds when the weighted variance and boundary potential are sufficiently large.\n8153: ",
+      "raw_directive": "8127: :::\n8128: \n8129: :::{prf:proof}\n8130: :label: proof-thm-complete-cloning-drift\n8131: **Proof.**\n8132: \n8133: The total drift is obtained by summing the component drifts with their respective weights:\n8134: \n8135: $$\n8136: \\begin{aligned}\n8137: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] &= \\mathbb{E}_{\\text{clone}}[\\Delta V_W] + c_V \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var}}] + c_B \\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\\\\n8138: &= \\mathbb{E}_{\\text{clone}}[\\Delta V_W] + c_V (\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}]) + c_B \\mathbb{E}_{\\text{clone}}[\\Delta W_b]\n8139: \\end{aligned}\n8140: $$\n8141: \n8142: Substituting the individual bounds from Theorems 10.3.1, 10.4.1, 11.3.1, and 12.2.1:\n8143: \n8144: $$\n8145: \\leq C_W + c_V(-\\kappa_x V_{\\text{Var},x} + C_x + C_v) + c_B(-\\kappa_b W_b + C_b)\n8146: $$\n8147: \n8148: Rearranging:\n8149: \n8150: $$\n8151: = -c_V \\kappa_x V_{\\text{Var},x} - c_B \\kappa_b W_b + (C_W + c_V C_x + c_V C_v + c_B C_b)\n8152: $$\n8153: \n8154: For the drift to be negative, we need the contraction terms to dominate:\n8155: \n8156: $$\n8157: c_V \\kappa_x V_{\\text{Var},x} + c_B \\kappa_b W_b > C_W + c_V C_x + c_V C_v + c_B C_b\n8158: $$\n8159: \n8160: This holds when the weighted variance and boundary potential are sufficiently large.\n8161: ",
       "strategy_summary": "The proof computes the expected total drift by summing the weighted expectations of individual component changes, substitutes upper bounds from referenced theorems for each term, rearranges to highlight the negative contraction terms versus positive constants, and establishes the condition under which the drift is negative, ensuring stability when variance and boundary potentials are sufficiently large.",
       "conclusion": {
         "text": "The total drift is negative when the contraction terms dominate the constants: c_V \u03ba_x V_{Var,x} + c_B \u03ba_b W_b > C_W + c_V C_x + c_V C_v + c_B C_b. This holds when the weighted variance and boundary potential are sufficiently large.",
@@ -4018,12 +4047,12 @@
       "document_id": "03_cloning",
       "section": "## 12.3. The Complete Lyapunov Drift Under Cloning",
       "span": {
-        "start_line": 8119,
-        "end_line": 8153,
-        "content_start": 8121,
-        "content_end": 8152,
+        "start_line": 8127,
+        "end_line": 8161,
+        "content_start": 8129,
+        "content_end": 8160,
         "header_lines": [
-          8120
+          8128
         ]
       },
       "metadata": {
@@ -4036,7 +4065,7 @@
         "chapter_file": "chapter_31.json",
         "section_id": "## 12.3. The Complete Lyapunov Drift Under Cloning"
       },
-      "generated_at": "2025-11-09T10:55:47.626397+00:00",
+      "generated_at": "2025-11-10T12:23:04.016510+00:00",
       "alt_labels": []
     },
     "tags": [
@@ -4048,20 +4077,22 @@
       "operator",
       "synergistic"
     ],
-    "content_markdown": ":label: thm-complete-cloning-drift\n\nUnder the foundational axioms (Chapter 4), the cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the synergistic Lyapunov function:\n\n$$\nV_{\\text{total}}(S_1, S_2) = V_W(S_1, S_2) + c_V V_{\\text{Var}}(S_1, S_2) + c_B W_b(S_1, S_2)\n$$\n\n**Individual Component Drifts:**\n\n$$\n\\begin{aligned}\n\\mathbb{E}_{\\text{clone}}[\\Delta V_W] &\\leq C_W \\quad &\\text{(bounded expansion)} \\\\\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] &\\leq -\\kappa_x V_{\\text{Var},x} + C_x \\quad &\\text{(strong contraction)} \\\\\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] &\\leq C_v \\quad &\\text{(bounded expansion)} \\\\\n\\mathbb{E}_{\\text{clone}}[\\Delta W_b] &\\leq -\\kappa_b W_b + C_b \\quad &\\text{(strong contraction)}\n\\end{aligned}\n$$\n\n**Combined Drift:**\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] \\leq C_W + c_V(-\\kappa_x V_{\\text{Var},x} + C_v + C_x) + c_B(-\\kappa_b W_b + C_b)\n$$\n\n**Critical Property - Partial Contraction:**\n\nWhen $V_{\\text{Var},x}$ and $W_b$ are sufficiently large relative to the expansion terms, the drift becomes negative:\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] < 0 \\quad \\text{when } c_V V_{\\text{Var},x} + c_B W_b > \\frac{C_W + c_V(C_v + C_x) + c_B C_b}{\\min(\\kappa_x, \\kappa_b)}",
-    "raw_directive": "8083: ### 12.3.1. Main Result\n8084: \n8085: :::{prf:theorem} Complete Drift Inequality for the Cloning Operator\n8086: :label: thm-complete-cloning-drift\n8087: \n8088: Under the foundational axioms (Chapter 4), the cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the synergistic Lyapunov function:\n8089: \n8090: $$\n8091: V_{\\text{total}}(S_1, S_2) = V_W(S_1, S_2) + c_V V_{\\text{Var}}(S_1, S_2) + c_B W_b(S_1, S_2)\n8092: $$\n8093: \n8094: **Individual Component Drifts:**\n8095: \n8096: $$\n8097: \\begin{aligned}\n8098: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] &\\leq C_W \\quad &\\text{(bounded expansion)} \\\\\n8099: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] &\\leq -\\kappa_x V_{\\text{Var},x} + C_x \\quad &\\text{(strong contraction)} \\\\\n8100: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] &\\leq C_v \\quad &\\text{(bounded expansion)} \\\\\n8101: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] &\\leq -\\kappa_b W_b + C_b \\quad &\\text{(strong contraction)}\n8102: \\end{aligned}\n8103: $$\n8104: \n8105: **Combined Drift:**\n8106: \n8107: $$\n8108: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] \\leq C_W + c_V(-\\kappa_x V_{\\text{Var},x} + C_v + C_x) + c_B(-\\kappa_b W_b + C_b)\n8109: $$\n8110: \n8111: **Critical Property - Partial Contraction:**\n8112: \n8113: When $V_{\\text{Var},x}$ and $W_b$ are sufficiently large relative to the expansion terms, the drift becomes negative:\n8114: \n8115: $$\n8116: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] < 0 \\quad \\text{when } c_V V_{\\text{Var},x} + c_B W_b > \\frac{C_W + c_V(C_v + C_x) + c_B C_b}{\\min(\\kappa_x, \\kappa_b)}\n8117: $$",
+    "content_markdown": ":label: thm-complete-cloning-drift\n\nUnder the foundational axioms (Chapter 4), the cloning operator $\\Psi_{\\text{clone}}$ (see {prf:ref}`def-cloning-operator-formal`) induces the following drift on the synergistic Lyapunov function:\n\n$$\nV_{\\text{total}}(S_1, S_2) = V_W(S_1, S_2) + c_V V_{\\text{Var}}(S_1, S_2) + c_B W_b(S_1, S_2)\n$$\n\n**Individual Component Drifts:**\n\n$$\n\\begin{aligned}\n\\mathbb{E}_{\\text{clone}}[\\Delta V_W] &\\leq C_W \\quad &\\text{(bounded expansion)} \\\\\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] &\\leq -\\kappa_x V_{\\text{Var},x} + C_x \\quad &\\text{(strong contraction)} \\\\\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] &\\leq C_v \\quad &\\text{(bounded expansion)} \\\\\n\\mathbb{E}_{\\text{clone}}[\\Delta W_b] &\\leq -\\kappa_b W_b + C_b \\quad &\\text{(strong contraction)}\n\\end{aligned}\n$$\n\n**Combined Drift:**\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] \\leq C_W + c_V(-\\kappa_x V_{\\text{Var},x} + C_v + C_x) + c_B(-\\kappa_b W_b + C_b)\n$$\n\n**Critical Property - Partial Contraction:**\n\nWhen $V_{\\text{Var},x}$ and $W_b$ are sufficiently large relative to the expansion terms, the drift becomes negative:\n\n$$\n\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] < 0 \\quad \\text{when } c_V V_{\\text{Var},x} + c_B W_b > \\frac{C_W + c_V(C_v + C_x) + c_B C_b}{\\min(\\kappa_x, \\kappa_b)}",
+    "raw_directive": "8091: ### 12.3.1. Main Result\n8092: \n8093: :::{prf:theorem} Complete Drift Inequality for the Cloning Operator\n8094: :label: thm-complete-cloning-drift\n8095: \n8096: Under the foundational axioms (Chapter 4), the cloning operator $\\Psi_{\\text{clone}}$ (see {prf:ref}`def-cloning-operator-formal`) induces the following drift on the synergistic Lyapunov function:\n8097: \n8098: $$\n8099: V_{\\text{total}}(S_1, S_2) = V_W(S_1, S_2) + c_V V_{\\text{Var}}(S_1, S_2) + c_B W_b(S_1, S_2)\n8100: $$\n8101: \n8102: **Individual Component Drifts:**\n8103: \n8104: $$\n8105: \\begin{aligned}\n8106: \\mathbb{E}_{\\text{clone}}[\\Delta V_W] &\\leq C_W \\quad &\\text{(bounded expansion)} \\\\\n8107: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] &\\leq -\\kappa_x V_{\\text{Var},x} + C_x \\quad &\\text{(strong contraction)} \\\\\n8108: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] &\\leq C_v \\quad &\\text{(bounded expansion)} \\\\\n8109: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] &\\leq -\\kappa_b W_b + C_b \\quad &\\text{(strong contraction)}\n8110: \\end{aligned}\n8111: $$\n8112: \n8113: **Combined Drift:**\n8114: \n8115: $$\n8116: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] \\leq C_W + c_V(-\\kappa_x V_{\\text{Var},x} + C_v + C_x) + c_B(-\\kappa_b W_b + C_b)\n8117: $$\n8118: \n8119: **Critical Property - Partial Contraction:**\n8120: \n8121: When $V_{\\text{Var},x}$ and $W_b$ are sufficiently large relative to the expansion terms, the drift becomes negative:\n8122: \n8123: $$\n8124: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{total}}] < 0 \\quad \\text{when } c_V V_{\\text{Var},x} + c_B W_b > \\frac{C_W + c_V(C_v + C_x) + c_B C_b}{\\min(\\kappa_x, \\kappa_b)}\n8125: $$",
     "document_id": "03_cloning",
     "section": "## 12.3. The Complete Lyapunov Drift Under Cloning",
     "span": {
-      "start_line": 8083,
-      "end_line": 8117,
-      "content_start": 8086,
-      "content_end": 8116,
+      "start_line": 8091,
+      "end_line": 8125,
+      "content_start": 8094,
+      "content_end": 8124,
       "header_lines": [
-        8084
+        8092
       ]
     },
-    "references": [],
+    "references": [
+      "def-cloning-operator-formal"
+    ],
     "metadata": {
       "label": "thm-complete-cloning-drift"
     },
@@ -4072,7 +4103,7 @@
       "chapter_file": "chapter_31.json",
       "section_id": "## 12.3. The Complete Lyapunov Drift Under Cloning"
     },
-    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "generated_at": "2025-11-10T12:23:04.021422+00:00",
     "alt_labels": []
   },
   {
@@ -4236,16 +4267,16 @@
       "quasi-stationary"
     ],
     "content_markdown": ":label: thm-synergistic-foster-lyapunov-preview\n\nWhen the coupling constants $c_V$ and $c_B$ are chosen appropriately, the composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}} \\circ \\Psi_{\\text{clone}}$ satisfies a Foster-Lyapunov drift condition:\n\n$$\n\\mathbb{E}_{\\text{total}}[V_{\\text{total}}(S')] \\leq (1 - \\kappa_{\\text{total}}) V_{\\text{total}}(S) + C_{\\text{total}}\n$$\n\nfor some $\\kappa_{\\text{total}} > 0$ and $C_{\\text{total}} < \\infty$, both independent of $N$.\n\n**Consequence:** This drift condition implies:\n1. **Geometric ergodicity** of the Markov chain on the alive state space",
-    "raw_directive": "8232: ### 12.4.2. The Synergistic Drift Inequality\n8233: \n8234: :::{prf:theorem} Synergistic Foster-Lyapunov Condition (Preview)\n8235: :label: thm-synergistic-foster-lyapunov-preview\n8236: \n8237: When the coupling constants $c_V$ and $c_B$ are chosen appropriately, the composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}} \\circ \\Psi_{\\text{clone}}$ satisfies a Foster-Lyapunov drift condition:\n8238: \n8239: $$\n8240: \\mathbb{E}_{\\text{total}}[V_{\\text{total}}(S')] \\leq (1 - \\kappa_{\\text{total}}) V_{\\text{total}}(S) + C_{\\text{total}}\n8241: $$\n8242: \n8243: for some $\\kappa_{\\text{total}} > 0$ and $C_{\\text{total}} < \\infty$, both independent of $N$.\n8244: \n8245: **Consequence:** This drift condition implies:\n8246: 1. **Geometric ergodicity** of the Markov chain on the alive state space\n8247: 2. **Exponential convergence** to the quasi-stationary distribution",
+    "raw_directive": "8240: ### 12.4.2. The Synergistic Drift Inequality\n8241: \n8242: :::{prf:theorem} Synergistic Foster-Lyapunov Condition (Preview)\n8243: :label: thm-synergistic-foster-lyapunov-preview\n8244: \n8245: When the coupling constants $c_V$ and $c_B$ are chosen appropriately, the composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}} \\circ \\Psi_{\\text{clone}}$ satisfies a Foster-Lyapunov drift condition:\n8246: \n8247: $$\n8248: \\mathbb{E}_{\\text{total}}[V_{\\text{total}}(S')] \\leq (1 - \\kappa_{\\text{total}}) V_{\\text{total}}(S) + C_{\\text{total}}\n8249: $$\n8250: \n8251: for some $\\kappa_{\\text{total}} > 0$ and $C_{\\text{total}} < \\infty$, both independent of $N$.\n8252: \n8253: **Consequence:** This drift condition implies:\n8254: 1. **Geometric ergodicity** of the Markov chain on the alive state space\n8255: 2. **Exponential convergence** to the quasi-stationary distribution",
     "document_id": "03_cloning",
     "section": "## 12.4. The Synergistic Dissipation Framework",
     "span": {
-      "start_line": 8232,
-      "end_line": 8247,
-      "content_start": 8235,
-      "content_end": 8246,
+      "start_line": 8240,
+      "end_line": 8255,
+      "content_start": 8243,
+      "content_end": 8254,
       "header_lines": [
-        8233
+        8241
       ]
     },
     "references": [],
@@ -4259,7 +4290,7 @@
       "chapter_file": "chapter_32.json",
       "section_id": "## 12.4. The Synergistic Dissipation Framework"
     },
-    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "generated_at": "2025-11-10T12:23:04.021422+00:00",
     "alt_labels": []
   },
   {
@@ -4411,8 +4442,8 @@
       "proves": "thm-main-results-summary",
       "proof_type": "reference",
       "proof_status": "sketch",
-      "content_markdown": ":::{prf:proof}\n:label: proof-thm-main-results-summary\nThis theorem is proven by systematic consolidation and verification. The complete detailed proof (9/10 rigor, 850 lines) is available in `proofs/proof_20251025_0227_thm_main_results_summary.md`. Here we provide the proof structure:\n\n**Proof Strategy**: Meta-proof via systematic citation. Each of the five summary items is verified by citing the corresponding proven theorem and confirming all dependencies.\n\n**Step 1 - Keystone Principle**: Chapters 5-8 establish the four-link causal chain (variance \u2192 structure \u2192 fitness \u2192 pressure) culminating in the quantitative inequality (Keystone Lemma, Lines 4669-4683). Constants $\\chi(\\epsilon) > 0$ and $g_{\\max}(\\epsilon) < \\infty$ are verified as N-uniform and constructive.\n\n**Step 2 - Positional Variance Contraction**: {prf:ref}`thm-positional-variance-contraction` (Lines 6291-6293) rigorously proves the drift inequality using the Keystone Lemma as primary engine. Contraction rate $\\kappa_x = \\chi(\\epsilon) c_{\\text{struct}} > 0$ verified as N-uniform via variance decomposition.\n\n**Step 3 - Velocity Variance Bounded Expansion**: {prf:ref}`thm-velocity-variance-bounded-expansion` (Lines 6671-6673) establishes state-independent bound $C_v = 4(1 + \\alpha_{\\text{restitution}})^2 V_{\\max}^2$ via inelastic collision analysis and Axiom EG-4 (velocity regularization).\n\n**Step 4 - Boundary Potential Contraction**: Chapter 11 (Lines 7212, 7232) proves contraction via Safe Harbor axiom (EG-2). Fitness deficit for boundary walkers creates systematic replacement, yielding $\\kappa_b = c_{\\text{fit}} c_{\\text{barrier}} > 0$ (N-uniform).\n\n**Step 5 - Complete Characterization**: Chapter 12 (Lines 8003-8334) synthesizes all results, verifies N-uniformity of all constants, confirms partial contraction structure (positions/boundary contract, velocities expand bounded), and correctly scopes synergy as foundation for companion document.\n\n**Step 6 - Final Verification**: All five items verified as accurate summaries of proven results. No circular reasoning (summary after components). No overclaiming (scope boundary clear). All framework dependencies (Axioms EG-0, EG-2, EG-3, EG-4) verified in Chapter 4.",
-      "raw_directive": "8450: :::\n8451: \n8452: :::{prf:proof}\n8453: :label: proof-thm-main-results-summary\n8454: This theorem is proven by systematic consolidation and verification. The complete detailed proof (9/10 rigor, 850 lines) is available in `proofs/proof_20251025_0227_thm_main_results_summary.md`. Here we provide the proof structure:\n8455: \n8456: **Proof Strategy**: Meta-proof via systematic citation. Each of the five summary items is verified by citing the corresponding proven theorem and confirming all dependencies.\n8457: \n8458: **Step 1 - Keystone Principle**: Chapters 5-8 establish the four-link causal chain (variance \u2192 structure \u2192 fitness \u2192 pressure) culminating in the quantitative inequality (Keystone Lemma, Lines 4669-4683). Constants $\\chi(\\epsilon) > 0$ and $g_{\\max}(\\epsilon) < \\infty$ are verified as N-uniform and constructive.\n8459: \n8460: **Step 2 - Positional Variance Contraction**: {prf:ref}`thm-positional-variance-contraction` (Lines 6291-6293) rigorously proves the drift inequality using the Keystone Lemma as primary engine. Contraction rate $\\kappa_x = \\chi(\\epsilon) c_{\\text{struct}} > 0$ verified as N-uniform via variance decomposition.\n8461: \n8462: **Step 3 - Velocity Variance Bounded Expansion**: {prf:ref}`thm-velocity-variance-bounded-expansion` (Lines 6671-6673) establishes state-independent bound $C_v = 4(1 + \\alpha_{\\text{restitution}})^2 V_{\\max}^2$ via inelastic collision analysis and Axiom EG-4 (velocity regularization).\n8463: \n8464: **Step 4 - Boundary Potential Contraction**: Chapter 11 (Lines 7212, 7232) proves contraction via Safe Harbor axiom (EG-2). Fitness deficit for boundary walkers creates systematic replacement, yielding $\\kappa_b = c_{\\text{fit}} c_{\\text{barrier}} > 0$ (N-uniform).\n8465: \n8466: **Step 5 - Complete Characterization**: Chapter 12 (Lines 8003-8334) synthesizes all results, verifies N-uniformity of all constants, confirms partial contraction structure (positions/boundary contract, velocities expand bounded), and correctly scopes synergy as foundation for companion document.\n8467: \n8468: **Step 6 - Final Verification**: All five items verified as accurate summaries of proven results. No circular reasoning (summary after components). No overclaiming (scope boundary clear). All framework dependencies (Axioms EG-0, EG-2, EG-3, EG-4) verified in Chapter 4.\n8469: ",
+      "content_markdown": ":::{prf:proof}\n:label: proof-thm-main-results-summary\nThis theorem is proven by systematic consolidation and verification. The complete detailed proof (9/10 rigor, 850 lines) is available in `proofs/proof_20251025_0227_thm_main_results_summary.md`. Here we provide the proof structure:\n\n**Proof Strategy**: Meta-proof via systematic citation. Each of the five summary items is verified by citing the corresponding proven theorem and confirming all dependencies.\n\n**Step 1 - Keystone Principle**: Chapters 5-8 establish the four-link causal chain (variance \u2192 structure \u2192 fitness \u2192 pressure) culminating in the quantitative inequality (Keystone Lemma, Lines 4669-4683). Constants $\\chi(\\epsilon) > 0$ and $g_{\\max}(\\epsilon) < \\infty$ are verified as N-uniform and constructive.\n\n**Step 2 - Positional Variance Contraction**: {prf:ref}`thm-positional-variance-contraction` (Lines 6291-6293) rigorously proves the drift inequality using the Keystone Lemma as primary engine. Contraction rate $\\kappa_x = \\chi(\\epsilon) c_{\\text{struct}} > 0$ verified as N-uniform via variance decomposition.\n\n**Step 3 - Velocity Variance Bounded Expansion**: {prf:ref}`thm-velocity-variance-bounded-expansion` (Lines 6671-6673) establishes state-independent bound $C_v = 4(1 + \\alpha_{\\text{restitution}})^2 V_{\\max}^2$ via inelastic collision analysis and {prf:ref}`axiom-velocity-regularization`.\n\n**Step 4 - Boundary Potential Contraction**: Chapter 11 (Lines 7212, 7232) proves contraction via {prf:ref}`axiom-safe-harbor`. Fitness deficit for boundary walkers creates systematic replacement, yielding $\\kappa_b = c_{\\text{fit}} c_{\\text{barrier}} > 0$ (N-uniform).\n\n**Step 5 - Complete Characterization**: Chapter 12 (Lines 8003-8334) synthesizes all results, verifies N-uniformity of all constants, confirms partial contraction structure (positions/boundary contract, velocities expand bounded), and correctly scopes synergy as foundation for companion document.\n\n**Step 6 - Final Verification**: All five items verified as accurate summaries of proven results. No circular reasoning (summary after components). No overclaiming (scope boundary clear). All framework dependencies (Axioms EG-0, EG-2, EG-3, EG-4) verified in Chapter 4.",
+      "raw_directive": "8458: :::\n8459: \n8460: :::{prf:proof}\n8461: :label: proof-thm-main-results-summary\n8462: This theorem is proven by systematic consolidation and verification. The complete detailed proof (9/10 rigor, 850 lines) is available in `proofs/proof_20251025_0227_thm_main_results_summary.md`. Here we provide the proof structure:\n8463: \n8464: **Proof Strategy**: Meta-proof via systematic citation. Each of the five summary items is verified by citing the corresponding proven theorem and confirming all dependencies.\n8465: \n8466: **Step 1 - Keystone Principle**: Chapters 5-8 establish the four-link causal chain (variance \u2192 structure \u2192 fitness \u2192 pressure) culminating in the quantitative inequality (Keystone Lemma, Lines 4669-4683). Constants $\\chi(\\epsilon) > 0$ and $g_{\\max}(\\epsilon) < \\infty$ are verified as N-uniform and constructive.\n8467: \n8468: **Step 2 - Positional Variance Contraction**: {prf:ref}`thm-positional-variance-contraction` (Lines 6291-6293) rigorously proves the drift inequality using the Keystone Lemma as primary engine. Contraction rate $\\kappa_x = \\chi(\\epsilon) c_{\\text{struct}} > 0$ verified as N-uniform via variance decomposition.\n8469: \n8470: **Step 3 - Velocity Variance Bounded Expansion**: {prf:ref}`thm-velocity-variance-bounded-expansion` (Lines 6671-6673) establishes state-independent bound $C_v = 4(1 + \\alpha_{\\text{restitution}})^2 V_{\\max}^2$ via inelastic collision analysis and {prf:ref}`axiom-velocity-regularization`.\n8471: \n8472: **Step 4 - Boundary Potential Contraction**: Chapter 11 (Lines 7212, 7232) proves contraction via {prf:ref}`axiom-safe-harbor`. Fitness deficit for boundary walkers creates systematic replacement, yielding $\\kappa_b = c_{\\text{fit}} c_{\\text{barrier}} > 0$ (N-uniform).\n8473: \n8474: **Step 5 - Complete Characterization**: Chapter 12 (Lines 8003-8334) synthesizes all results, verifies N-uniformity of all constants, confirms partial contraction structure (positions/boundary contract, velocities expand bounded), and correctly scopes synergy as foundation for companion document.\n8475: \n8476: **Step 6 - Final Verification**: All five items verified as accurate summaries of proven results. No circular reasoning (summary after components). No overclaiming (scope boundary clear). All framework dependencies (Axioms EG-0, EG-2, EG-3, EG-4) verified in Chapter 4.\n8477: ",
       "strategy_summary": "This proof consolidates and verifies the five summary items of the main theorem by systematically citing corresponding proven theorems, lemmas, and axioms while confirming dependencies, N-uniformity of constants, and absence of circular reasoning or overclaiming.",
       "conclusion": {
         "text": "All five items verified as accurate summaries of proven results. No circular reasoning (summary after components). No overclaiming (scope boundary clear). All framework dependencies (Axioms EG-0, EG-2, EG-3, EG-4) verified in Chapter 4.",
@@ -4523,7 +4554,9 @@
       ],
       "references": [
         "thm-positional-variance-contraction",
-        "thm-velocity-variance-bounded-expansion"
+        "thm-velocity-variance-bounded-expansion",
+        "axiom-velocity-regularization",
+        "axiom-safe-harbor"
       ],
       "math_tools": [
         {
@@ -4588,12 +4621,12 @@
       "document_id": "03_cloning",
       "section": "## 12.5. Summary of Main Results",
       "span": {
-        "start_line": 8450,
-        "end_line": 8469,
-        "content_start": 8452,
-        "content_end": 8468,
+        "start_line": 8458,
+        "end_line": 8477,
+        "content_start": 8460,
+        "content_end": 8476,
         "header_lines": [
-          8451
+          8459
         ]
       },
       "metadata": {
@@ -4606,7 +4639,7 @@
         "chapter_file": "chapter_33.json",
         "section_id": "## 12.5. Summary of Main Results"
       },
-      "generated_at": "2025-11-09T10:55:47.626397+00:00",
+      "generated_at": "2025-11-10T12:23:04.016510+00:00",
       "alt_labels": []
     },
     "tags": [
@@ -4620,19 +4653,24 @@
       "boundary potential"
     ],
     "content_markdown": ":label: thm-main-results-summary\n\nThis document has established the following results for the cloning operator $\\Psi_{\\text{clone}}$:\n\n**1. The Keystone Principle (Chapters 5-8):**\n- Large internal positional variance \u2192 detectable geometric structure\n- Geometric structure \u2192 reliable fitness signal (N-uniform)\n- Fitness signal \u2192 corrective cloning pressure\n- **Result:** $\\frac{1}{N}\\sum_{i \\in I_{11}} (p_{1,i} + p_{2,i})\\|\\Delta\\delta_{x,i}\\|^2 \\geq \\chi(\\epsilon) V_{\\text{struct}} - g_{\\max}(\\epsilon)$\n\n**2. Positional Variance Contraction (Chapter 10):**\n- The Keystone Principle translates to rigorous drift inequality\n- **Result:** $\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x$\n- Contraction rate $\\kappa_x > 0$ is **N-uniform**\n\n**3. Velocity Variance Bounded Expansion (Chapter 10):**\n- Inelastic collisions cause state-independent perturbation\n- **Result:** $\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v$\n- Expansion is **bounded**, not growing with system state or size\n\n**4. Boundary Potential Contraction (Chapter 11):**\n- Safe Harbor mechanism systematically removes boundary-proximate walkers\n- **Result:** $\\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\leq -\\kappa_b W_b + C_b$\n- Provides **exponentially suppressed extinction probability**\n\n**5. Complete Characterization (Chapter 12):**\n- All drift constants are **N-independent** (scalable to large swarms)\n- Cloning provides **partial contraction** of the Lyapunov function\n- Requires **kinetic operator** to overcome bounded expansions\n- Foundation for **synergistic Foster-Lyapunov condition**",
-    "raw_directive": "8398: ### 12.5.1. Theoretical Contributions\n8399: \n8400: :::{prf:theorem} Main Results of the Cloning Analysis (Summary)\n8401: :label: thm-main-results-summary\n8402: \n8403: This document has established the following results for the cloning operator $\\Psi_{\\text{clone}}$:\n8404: \n8405: **1. The Keystone Principle (Chapters 5-8):**\n8406: - Large internal positional variance \u2192 detectable geometric structure\n8407: - Geometric structure \u2192 reliable fitness signal (N-uniform)\n8408: - Fitness signal \u2192 corrective cloning pressure\n8409: - **Result:** $\\frac{1}{N}\\sum_{i \\in I_{11}} (p_{1,i} + p_{2,i})\\|\\Delta\\delta_{x,i}\\|^2 \\geq \\chi(\\epsilon) V_{\\text{struct}} - g_{\\max}(\\epsilon)$\n8410: \n8411: **2. Positional Variance Contraction (Chapter 10):**\n8412: - The Keystone Principle translates to rigorous drift inequality\n8413: - **Result:** $\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x$\n8414: - Contraction rate $\\kappa_x > 0$ is **N-uniform**\n8415: \n8416: **3. Velocity Variance Bounded Expansion (Chapter 10):**\n8417: - Inelastic collisions cause state-independent perturbation\n8418: - **Result:** $\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v$\n8419: - Expansion is **bounded**, not growing with system state or size\n8420: \n8421: **4. Boundary Potential Contraction (Chapter 11):**\n8422: - Safe Harbor mechanism systematically removes boundary-proximate walkers\n8423: - **Result:** $\\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\leq -\\kappa_b W_b + C_b$\n8424: - Provides **exponentially suppressed extinction probability**\n8425: \n8426: **5. Complete Characterization (Chapter 12):**\n8427: - All drift constants are **N-independent** (scalable to large swarms)\n8428: - Cloning provides **partial contraction** of the Lyapunov function\n8429: - Requires **kinetic operator** to overcome bounded expansions\n8430: - Foundation for **synergistic Foster-Lyapunov condition**\n8431: ",
+    "raw_directive": "8406: ### 12.5.1. Theoretical Contributions\n8407: \n8408: :::{prf:theorem} Main Results of the Cloning Analysis (Summary)\n8409: :label: thm-main-results-summary\n8410: \n8411: This document has established the following results for the cloning operator $\\Psi_{\\text{clone}}$:\n8412: \n8413: **1. The Keystone Principle (Chapters 5-8):**\n8414: - Large internal positional variance \u2192 detectable geometric structure\n8415: - Geometric structure \u2192 reliable fitness signal (N-uniform)\n8416: - Fitness signal \u2192 corrective cloning pressure\n8417: - **Result:** $\\frac{1}{N}\\sum_{i \\in I_{11}} (p_{1,i} + p_{2,i})\\|\\Delta\\delta_{x,i}\\|^2 \\geq \\chi(\\epsilon) V_{\\text{struct}} - g_{\\max}(\\epsilon)$\n8418: \n8419: **2. Positional Variance Contraction (Chapter 10):**\n8420: - The Keystone Principle translates to rigorous drift inequality\n8421: - **Result:** $\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x$\n8422: - Contraction rate $\\kappa_x > 0$ is **N-uniform**\n8423: \n8424: **3. Velocity Variance Bounded Expansion (Chapter 10):**\n8425: - Inelastic collisions cause state-independent perturbation\n8426: - **Result:** $\\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v$\n8427: - Expansion is **bounded**, not growing with system state or size\n8428: \n8429: **4. Boundary Potential Contraction (Chapter 11):**\n8430: - Safe Harbor mechanism systematically removes boundary-proximate walkers\n8431: - **Result:** $\\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\leq -\\kappa_b W_b + C_b$\n8432: - Provides **exponentially suppressed extinction probability**\n8433: \n8434: **5. Complete Characterization (Chapter 12):**\n8435: - All drift constants are **N-independent** (scalable to large swarms)\n8436: - Cloning provides **partial contraction** of the Lyapunov function\n8437: - Requires **kinetic operator** to overcome bounded expansions\n8438: - Foundation for **synergistic Foster-Lyapunov condition**\n8439: ",
     "document_id": "03_cloning",
     "section": "## 12.5. Summary of Main Results",
     "span": {
-      "start_line": 8398,
-      "end_line": 8431,
-      "content_start": 8401,
-      "content_end": 8430,
+      "start_line": 8406,
+      "end_line": 8439,
+      "content_start": 8409,
+      "content_end": 8438,
       "header_lines": [
-        8399
+        8407
       ]
     },
-    "references": [],
+    "references": [
+      "thm-positional-variance-contraction",
+      "thm-velocity-variance-bounded-expansion",
+      "axiom-velocity-regularization",
+      "axiom-safe-harbor"
+    ],
     "metadata": {
       "label": "thm-main-results-summary"
     },
@@ -4643,7 +4681,7 @@
       "chapter_file": "chapter_33.json",
       "section_id": "## 12.5. Summary of Main Results"
     },
-    "generated_at": "2025-11-09T10:55:47.630889+00:00",
+    "generated_at": "2025-11-10T12:23:04.021422+00:00",
     "alt_labels": []
   }
 ]

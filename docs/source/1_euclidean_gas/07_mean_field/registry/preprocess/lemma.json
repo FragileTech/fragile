@@ -202,7 +202,7 @@
         "chapter_file": "chapter_3.json",
         "section_id": "## 3. The Mass-Conserving Forward Equation (PDE)"
       },
-      "generated_at": "2025-11-09T10:55:47.649719+00:00",
+      "generated_at": "2025-11-10T12:23:04.034234+00:00",
       "alt_labels": []
     },
     "tags": [
@@ -212,8 +212,8 @@
       "boundary conditions",
       "adjoint operator"
     ],
-    "content_markdown": ":label: lem-mass-conservation-transport\n\nThe integral of the transport operator over the domain $\\Omega$ vanishes due to the reflecting boundary conditions on both position and velocity boundaries:\n\n$$\n\\int_\\Omega L^\\dagger f(t,z)\\,\\mathrm{d}z = 0",
-    "raw_directive": "570: With the reflecting boundary conditions established in Section 2.2, this transport operator conserves total mass. This is a crucial simplification over models with absorbing boundaries.\n571: \n572: :::{prf:lemma} Mass Conservation of Transport\n573: :label: lem-mass-conservation-transport\n574: \n575: The integral of the transport operator over the domain $\\Omega$ vanishes due to the reflecting boundary conditions on both position and velocity boundaries:\n576: \n577: $$\n578: \\int_\\Omega L^\\dagger f(t,z)\\,\\mathrm{d}z = 0\n579: $$",
+    "content_markdown": ":label: lem-mass-conservation-transport\n\nThe integral of the transport operator (see {prf:ref}`def-transport-operator`) over the domain $\\Omega$ vanishes due to the reflecting boundary conditions on both position and velocity boundaries:\n\n$$\n\\int_\\Omega L^\\dagger f(t,z)\\,\\mathrm{d}z = 0",
+    "raw_directive": "570: With the reflecting boundary conditions established in Section 2.2, this transport operator conserves total mass. This is a crucial simplification over models with absorbing boundaries.\n571: \n572: :::{prf:lemma} Mass Conservation of Transport\n573: :label: lem-mass-conservation-transport\n574: \n575: The integral of the transport operator (see {prf:ref}`def-transport-operator`) over the domain $\\Omega$ vanishes due to the reflecting boundary conditions on both position and velocity boundaries:\n576: \n577: $$\n578: \\int_\\Omega L^\\dagger f(t,z)\\,\\mathrm{d}z = 0\n579: $$",
     "document_id": "07_mean_field",
     "section": "## 3. The Mass-Conserving Forward Equation (PDE)",
     "span": {
@@ -225,7 +225,9 @@
         571
       ]
     },
-    "references": [],
+    "references": [
+      "def-transport-operator"
+    ],
     "metadata": {
       "label": "lem-mass-conservation-transport"
     },
@@ -236,7 +238,7 @@
       "chapter_file": "chapter_3.json",
       "section_id": "## 3. The Mass-Conserving Forward Equation (PDE)"
     },
-    "generated_at": "2025-11-09T10:55:47.649523+00:00",
+    "generated_at": "2025-11-10T12:23:04.034066+00:00",
     "alt_labels": []
   }
 ]

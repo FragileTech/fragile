@@ -33,13 +33,15 @@
       ],
       "content_start": 147,
       "content_end": 157,
-      "content": "147: :label: def-coupled-state-space\n148: \n149: The **coupled state space** for the Euclidean Gas is the Cartesian product $\\Sigma_N \\times \\Sigma_N$. An element of this space is an ordered pair of swarm configurations, $(S_1, S_2)$, where:\n150: \n151: $$\n152: S_1 = \\left( (x_{1,1}, v_{1,1}, s_{1,1}), \\dots, (x_{1,N}, v_{1,N}, s_{1,N}) \\right) \\in \\Sigma_N,\n153: $$\n154: \n155: $$\n156: S_2 = \\left( (x_{2,1}, v_{2,1}, s_{2,1}), \\dots, (x_{2,N}, v_{2,N}, s_{2,N}) \\right) \\in \\Sigma_N.\n157: $$",
+      "content": "147: :label: def-coupled-state-space\n148: \n149: The **coupled state space** for the Euclidean Gas is the Cartesian product $\\Sigma_N \\times \\Sigma_N$, where $\\Sigma_N$ is defined in {prf:ref}`def-single-swarm-space`. An element of this space is an ordered pair of swarm configurations, $(S_1, S_2)$, where:\n150: \n151: $$\n152: S_1 = \\left( (x_{1,1}, v_{1,1}, s_{1,1}), \\dots, (x_{1,N}, v_{1,N}, s_{1,N}) \\right) \\in \\Sigma_N,\n153: $$\n154: \n155: $$\n156: S_2 = \\left( (x_{2,1}, v_{2,1}, s_{2,1}), \\dots, (x_{2,N}, v_{2,N}, s_{2,N}) \\right) \\in \\Sigma_N.\n157: $$",
       "metadata": {
         "label": "def-coupled-state-space"
       },
       "section": "## 2. The Coupled State Space and State Differences",
-      "references": [],
-      "raw_directive": "144: This synchronous coupling is chosen because it is designed to minimize the distance between the two trajectories, making it the most suitable choice for proving a contraction. All expectations $\\mathbb{E}[\\cdot]$ in the subsequent analysis are taken with respect to this single, shared source of randomness.\n145: \n146: :::{prf:definition} The Coupled State Space\n147: :label: def-coupled-state-space\n148: \n149: The **coupled state space** for the Euclidean Gas is the Cartesian product $\\Sigma_N \\times \\Sigma_N$. An element of this space is an ordered pair of swarm configurations, $(S_1, S_2)$, where:\n150: \n151: $$\n152: S_1 = \\left( (x_{1,1}, v_{1,1}, s_{1,1}), \\dots, (x_{1,N}, v_{1,N}, s_{1,N}) \\right) \\in \\Sigma_N,\n153: $$\n154: \n155: $$\n156: S_2 = \\left( (x_{2,1}, v_{2,1}, s_{2,1}), \\dots, (x_{2,N}, v_{2,N}, s_{2,N}) \\right) \\in \\Sigma_N.\n157: $$\n158: "
+      "references": [
+        "def-single-swarm-space"
+      ],
+      "raw_directive": "144: This synchronous coupling is chosen because it is designed to minimize the distance between the two trajectories, making it the most suitable choice for proving a contraction. All expectations $\\mathbb{E}[\\cdot]$ in the subsequent analysis are taken with respect to this single, shared source of randomness.\n145: \n146: :::{prf:definition} The Coupled State Space\n147: :label: def-coupled-state-space\n148: \n149: The **coupled state space** for the Euclidean Gas is the Cartesian product $\\Sigma_N \\times \\Sigma_N$, where $\\Sigma_N$ is defined in {prf:ref}`def-single-swarm-space`. An element of this space is an ordered pair of swarm configurations, $(S_1, S_2)$, where:\n150: \n151: $$\n152: S_1 = \\left( (x_{1,1}, v_{1,1}, s_{1,1}), \\dots, (x_{1,N}, v_{1,N}, s_{1,N}) \\right) \\in \\Sigma_N,\n153: $$\n154: \n155: $$\n156: S_2 = \\left( (x_{2,1}, v_{2,1}, s_{2,1}), \\dots, (x_{2,N}, v_{2,N}, s_{2,N}) \\right) \\in \\Sigma_N.\n157: $$\n158: "
     },
     {
       "directive_type": "definition",
@@ -58,7 +60,7 @@
       },
       "section": "## 2. The Coupled State Space and State Differences",
       "references": [],
-      "raw_directive": "164: The core of the hypocoercive analysis is not the absolute state of the swarms, but the *difference* between them. We formally define the vectors that capture this relative configuration.\n165: \n166: :::{prf:definition} State Difference Vectors\n167: :label: def-state-difference-vectors\n168: \n169: For any element $(S_1, S_2) \\in \\Sigma_N \\times \\Sigma_N$, we define the **state difference vectors** for each walker index $i \\in \\{1, \\ldots, N\\}$ as follows:\n170: \n171: 1.  The **position difference vector** for walker $i$ is:\n172: \n173: \n174: \n175: $$\n176: \\Delta x_i := x_{1,i} - x_{2,i} \\in \\mathbb{R}^d\n177: $$\n178: \n179: 2.  The **velocity difference vector** for walker $i$ is:\n180: \n181: \n182: \n183: $$\n184: \\Delta v_i := v_{1,i} - v_{2,i} \\in \\mathbb{R}^d\n185: $$\n186: "
+      "raw_directive": "164: The core of the hypocoercive analysis is not the absolute state of the swarms, but the *difference* between them (measured element-wise). We formally define the vectors that capture this relative configuration.\n165: \n166: :::{prf:definition} State Difference Vectors\n167: :label: def-state-difference-vectors\n168: \n169: For any element $(S_1, S_2) \\in \\Sigma_N \\times \\Sigma_N$, we define the **state difference vectors** for each walker index $i \\in \\{1, \\ldots, N\\}$ as follows:\n170: \n171: 1.  The **position difference vector** for walker $i$ is:\n172: \n173: \n174: \n175: $$\n176: \\Delta x_i := x_{1,i} - x_{2,i} \\in \\mathbb{R}^d\n177: $$\n178: \n179: 2.  The **velocity difference vector** for walker $i$ is:\n180: \n181: \n182: \n183: $$\n184: \\Delta v_i := v_{1,i} - v_{2,i} \\in \\mathbb{R}^d\n185: $$\n186: "
     },
     {
       "directive_type": "axiom",
@@ -90,13 +92,15 @@
       ],
       "content_start": 211,
       "content_end": 214,
-      "content": "211: :label: prop-barrier-existence\n212: \n213: Let $\\mathcal{X}_{\\text{valid}}$ satisfy the conditions of Axiom EG-0. Then there exists a function $\\varphi: \\mathcal{X}_{\\text{valid}} \\to \\mathbb{R}$ with the following properties:\n214: 1.  **Smoothness:** $\\varphi(x)$ is $C^{\\infty}$-smooth on $\\mathcal{X}_{\\text{valid}}$.",
+      "content": "211: :label: prop-barrier-existence\n212: \n213: Let $\\mathcal{X}_{\\text{valid}}$ satisfy the conditions of {prf:ref}`axiom-domain-regularity`. Then there exists a function $\\varphi: \\mathcal{X}_{\\text{valid}} \\to \\mathbb{R}$ with the following properties:\n214: 1.  **Smoothness:** $\\varphi(x)$ is $C^{\\infty}$-smooth on $\\mathcal{X}_{\\text{valid}}$.",
       "metadata": {
         "label": "prop-barrier-existence"
       },
       "section": "## 2. The Coupled State Space and State Differences",
-      "references": [],
-      "raw_directive": "208: Under the assumption of a regular domain, we can state and prove the existence of our desired barrier function.\n209: \n210: :::{prf:proposition} Existence of a Global Smooth Barrier Function\n211: :label: prop-barrier-existence\n212: \n213: Let $\\mathcal{X}_{\\text{valid}}$ satisfy the conditions of Axiom EG-0. Then there exists a function $\\varphi: \\mathcal{X}_{\\text{valid}} \\to \\mathbb{R}$ with the following properties:\n214: 1.  **Smoothness:** $\\varphi(x)$ is $C^{\\infty}$-smooth on $\\mathcal{X}_{\\text{valid}}$.\n215: 2.  **Positivity:** $\\varphi(x)$ is strictly positive for all $x \\in \\mathcal{X}_{\\text{valid}}$."
+      "references": [
+        "axiom-domain-regularity"
+      ],
+      "raw_directive": "208: Under the assumption of a regular domain, we can state and prove the existence of our desired barrier function.\n209: \n210: :::{prf:proposition} Existence of a Global Smooth Barrier Function\n211: :label: prop-barrier-existence\n212: \n213: Let $\\mathcal{X}_{\\text{valid}}$ satisfy the conditions of {prf:ref}`axiom-domain-regularity`. Then there exists a function $\\varphi: \\mathcal{X}_{\\text{valid}} \\to \\mathbb{R}$ with the following properties:\n214: 1.  **Smoothness:** $\\varphi(x)$ is $C^{\\infty}$-smooth on $\\mathcal{X}_{\\text{valid}}$.\n215: 2.  **Positivity:** $\\varphi(x)$ is strictly positive for all $x \\in \\mathcal{X}_{\\text{valid}}$."
     },
     {
       "directive_type": "proof",

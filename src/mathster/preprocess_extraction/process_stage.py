@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import argparse
-import logging
 from dataclasses import dataclass
+import logging
 from pathlib import Path
 from typing import Protocol, Sequence
 
@@ -37,11 +37,17 @@ class StageSpec:
 
 STAGES: tuple[StageSpec, ...] = (
     StageSpec("proof", process_proofs.preprocess_document_proofs, "proof.json"),
-    StageSpec("definition", process_definitions.preprocess_document_definitions, "definition.json"),
-    StageSpec("assumption", process_assumptions.preprocess_document_assumptions, "assumption.json"),
+    StageSpec(
+        "definition", process_definitions.preprocess_document_definitions, "definition.json"
+    ),
+    StageSpec(
+        "assumption", process_assumptions.preprocess_document_assumptions, "assumption.json"
+    ),
     StageSpec("axiom", process_axioms.preprocess_document_axioms, "axiom.json"),
     StageSpec("lemma", process_lemmas.preprocess_document_lemmas, "lemma.json"),
-    StageSpec("proposition", process_propositions.preprocess_document_propositions, "proposition.json"),
+    StageSpec(
+        "proposition", process_propositions.preprocess_document_propositions, "proposition.json"
+    ),
     StageSpec("theorem", process_theorems.preprocess_document_theorems, "theorem.json"),
     StageSpec("corollary", process_corollaries.preprocess_document_corollaries, "corollary.json"),
     StageSpec("remark", process_remarks.preprocess_document_remarks, "remark.json"),
@@ -49,7 +55,9 @@ STAGES: tuple[StageSpec, ...] = (
 )
 
 
-def run_all_stages(document: str | Path, stage_specs: Sequence[StageSpec] | None = None) -> list[Path]:
+def run_all_stages(
+    document: str | Path, stage_specs: Sequence[StageSpec] | None = None
+) -> list[Path]:
     document_dir = resolve_document_directory(document)
     registry_dir = document_dir / "registry"
     if not registry_dir.exists():

@@ -7,9 +7,6 @@ This module contains types and utilities for relationships between mathematical 
 - Equivalence classes, lineage, framework flow
 """
 
-# Import Relationship types from core (they're in pipeline_types)
-from mathster.core.pipeline_types import Relationship, RelationshipAttribute
-
 # Import graph analysis
 from mathster.relationships.graphs import (
     build_relationship_graph_from_registry,
@@ -25,8 +22,6 @@ __all__ = [
     "FrameworkFlow",
     "ObjectLineage",
     # Types (from core)
-    "Relationship",
-    "RelationshipAttribute",
     # Graphs
     "RelationshipGraph",
     "build_relationship_graph_from_registry",

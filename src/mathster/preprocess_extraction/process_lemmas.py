@@ -8,6 +8,7 @@ from typing import Any
 
 from mathster.preprocess_extraction.data_models import UnifiedLemma
 from mathster.preprocess_extraction.utils import (
+    build_proof_lookup,
     directive_lookup,
     load_directive_payload,
     load_extracted_items,
@@ -16,7 +17,6 @@ from mathster.preprocess_extraction.utils import (
     resolve_extract_directory,
     select_existing_file,
     wrap_directive_item,
-    build_proof_lookup,
 )
 
 

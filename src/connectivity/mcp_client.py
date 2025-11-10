@@ -50,9 +50,6 @@ import asyncio
 from contextlib import asynccontextmanager
 import logging
 import os
-from pathlib import Path
-import shutil
-import subprocess
 from typing import Any, Awaitable, TypeVar
 
 from dotenv import load_dotenv
@@ -553,10 +550,11 @@ def _run_sync(awaitable: Awaitable[T]) -> T:
         return asyncio.run(awaitable)
 
     if loop.is_running():
-        raise RuntimeError(
+        msg = (
             "sync_ask_* helpers cannot be executed inside a running asyncio loop. "
             "Await the async client methods instead."
         )
+        raise RuntimeError(msg)
 
     return loop.run_until_complete(awaitable)
 
