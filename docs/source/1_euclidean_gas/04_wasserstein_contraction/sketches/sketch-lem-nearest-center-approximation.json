@@ -1,0 +1,174 @@
+{
+  "label": "lem-nearest-center-approximation",
+  "entity_type": "lemma",
+  "document_id": "04_wasserstein_contraction",
+  "title": "Nearest Center Approximation via Alive Set Concentration",
+  "statement": "For two separated swarms S_1, S_2 with barycenters x̄_1, x̄_2 satisfying separation L = ||x̄_1 - x̄_2|| > D_min(ε), and walker i in swarm k's alive set A_k, the geometric bisector constraint holds approximately: ⟨x_i - x̄_k, u⟩ ≥ -L/2 - δ_approx(ε), where u = (x̄_k - x̄_l)/L is the separation unit vector and δ_approx(ε) = O(R_spread) ≪ L/2.",
+
+  "strategy": {
+    "strategist": "GPT-4.1 via Codex",
+    "method": "Direct Geometric Projection with Alive-Set Concentration",
+    "summary": "Project positions onto the separation axis and bound each alive walker's scalar deviation from its barycenter by the swarm spread radius. Using the stability condition, the alive set concentrates near the barycenter with radius R_spread(ε), while confining potential prevents large excursions. Since separation L exceeds the minimum viable gap and R_spread ≪ L, the scalar projection exceeds −L/2 up to an additive O(R_spread) error, yielding the approximate bisector constraint for all i ∈ A_k.",
+    "keySteps": [
+      "Step 1: Reduce to 1D along u by rewriting the bisector plane relative to x̄_k so the target inequality becomes s_i := ⟨x_i − x̄_k, u⟩ ≥ −L/2 − δ_approx(ε).",
+      "Step 2: Bound projection by spread using Cauchy–Schwarz and alive-set concentration: |s_i| ≤ ||x_i − x̄_k|| ≤ R_spread(ε) for all i ∈ A_k.",
+      "Step 3: Justify alive-set concentration (definition + stability): thm-stability-condition-final-corrected implies the fitness threshold selects walkers near x̄_k, giving a uniform R_spread(ε) for A_k.",
+      "Step 4: Ensure scale separation: use L > D_min(ε) and R_spread(ε) ≪ L to choose δ_approx(ε) = c_u R_spread(ε), so −R_spread ≥ −L/2 − δ_approx holds.",
+      "Step 5: Control barycenter sensitivity: show that small alive-set perturbations shift x̄_k by O(R_spread/|A_k|), absorbed into δ_approx.",
+      "Step 6: Conclude the bisector constraint uniformly for all i ∈ A_k: s_i ≥ −L/2 − δ_approx(ε) with δ_approx = O(R_spread) ≪ L/2."
+    ],
+    "strengths": [
+      "Dimension-free geometric reduction via scalar projection.",
+      "Explicit, controllable error term δ_approx = O(R_spread).",
+      "Relies on established framework concentration (alive-set) and confinement.",
+      "Robust to small barycenter fluctuations; stability absorbed into δ_approx."
+    ],
+    "weaknesses": [
+      "Requires a uniform R_spread bound over A_k; must be verified from stability.",
+      "Does not quantify probability tails if alive-set definition is stochastic.",
+      "Depends on a clear separation scale L > D_min(ε), which may be parameter-sensitive."
+    ],
+    "frameworkDependencies": {
+      "theorems": [
+        {
+          "label": "thm-stability-condition-final-corrected",
+          "document": "03_cloning",
+          "purpose": "Links fitness thresholds to geometric concentration of the alive set, providing a uniform spread radius R_spread(ε) for A_k.",
+          "usedInSteps": [
+            "Step 3",
+            "Step 5"
+          ]
+        }
+      ],
+      "lemmas": [
+        {
+          "label": "lem-phase-space-packing",
+          "document": "03_cloning",
+          "purpose": "Controls clustering by tying close-pair fraction to hypocoercive variance; supports that outliers cannot dominate A_k and helps justify a small R_spread.",
+          "usedInSteps": [
+            "Step 3",
+            "Step 5"
+          ]
+        }
+      ],
+      "axioms": [
+        {
+          "label": "axiom-confining-potential",
+          "document": "05_kinetic_contraction",
+          "purpose": "Ensures coercivity and bounded forces, preventing large excursions and enabling compactness needed for a finite R_spread(ε).",
+          "usedInSteps": [
+            "Step 2",
+            "Step 3"
+          ]
+        }
+      ],
+      "definitions": [
+        {
+          "label": "def-alive-dead-sets",
+          "document": "framework",
+          "purpose": "Defines A_k via fitness thresholds, the object to which the concentration argument applies.",
+          "usedInSteps": [
+            "Step 2",
+            "Step 3"
+          ]
+        },
+        {
+          "label": "def-barycenter",
+          "document": "framework",
+          "purpose": "Defines x̄_k as the center for projection and spread measurement.",
+          "usedInSteps": [
+            "Step 1",
+            "Step 2",
+            "Step 5"
+          ]
+        },
+        {
+          "label": "def-separation",
+          "document": "framework",
+          "purpose": "Defines L = ||x̄_1 − x̄_2|| and the unit direction u for the bisector geometry.",
+          "usedInSteps": [
+            "Step 1",
+            "Step 4",
+            "Step 6"
+          ]
+        },
+        {
+          "label": "def-spread-radius",
+          "document": "framework",
+          "purpose": "Quantifies the maximal deviation of alive walkers from x̄_k, yielding the bound |s_i| ≤ R_spread(ε).",
+          "usedInSteps": [
+            "Step 2",
+            "Step 4",
+            "Step 6"
+          ]
+        }
+      ]
+    },
+    "technicalDeepDives": [
+      {
+        "challengeTitle": "Alive-Set-to-Geometry Concentration",
+        "difficultyDescription": "Alive selection is fitness-based, not purely geometric; establishing that A_k lies within a uniform ball around x̄_k requires linking thresholded fitness to geometric proximity and ruling out far-out alive outliers.",
+        "proposedSolution": "Invoke thm-stability-condition-final-corrected to show the chosen thresholds favor points in the confining basin around x̄_k; combine with axiom-confining-potential to bound excursions and with lem-phase-space-packing to argue outliers cannot form a substantial subset of A_k. This yields a uniform R_spread(ε) controlling ||x_i − x̄_k|| for i ∈ A_k.",
+        "references": [
+          "thm-stability-condition-final-corrected (03_cloning)",
+          "axiom-confining-potential (05_kinetic_contraction)",
+          "lem-phase-space-packing (03_cloning)"
+        ]
+      },
+      {
+        "challengeTitle": "Barycenter Stability Under Alive-Set Perturbations",
+        "difficultyDescription": "Since x̄_k depends on A_k, small changes in A_k could shift x̄_k and affect projections, potentially weakening the bisector bound.",
+        "proposedSolution": "Use bounded-radius concentration to derive a Lipschitz-type influence bound on x̄_k: adding/removing a point in a ball of radius R_spread shifts x̄_k by at most O(R_spread/|A_k|). Aggregate fluctuations are absorbed into δ_approx = c R_spread.",
+        "references": [
+          "def-barycenter (framework)",
+          "def-spread-radius (framework)"
+        ]
+      }
+    ],
+    "confidenceScore": "High"
+  },
+
+  "_metadata": {
+    "generated_at": "2025-11-10T20:23:45.000000+00:00",
+    "agent_version": "sketch-json v1.0",
+    "source_label": "lem-nearest-center-approximation",
+    "document_id": "04_wasserstein_contraction",
+    "entity_type": "lemma",
+    "validation": {
+      "schema_valid": true,
+      "framework_verified": true,
+      "missing_fields": [],
+      "unverified_dependencies": []
+    },
+    "selection_process": {
+      "gemini_strategy": {
+        "method": "Proof by Contradiction via Fitness-Geometry Link",
+        "confidence": "High",
+        "summary": "Assume bisector constraint violated → walker geometrically closer to competing swarm → high fitness from competing perspective → contradicts intelligent targeting mechanism"
+      },
+      "codex_strategy": {
+        "method": "Direct Geometric Projection with Alive-Set Concentration",
+        "confidence": "High",
+        "summary": "Project onto separation axis → bound deviation by spread radius → use concentration from stability condition → verify scale separation"
+      },
+      "selected_strategist": "Codex (GPT-4.1)",
+      "selector_confidence": "HIGH",
+      "selector_justification": "Selected Codex strategy for its direct, constructive approach with explicit error quantification. The geometric projection method provides cleaner logic flow and uses framework results in their natural roles (stability condition → concentration, confining potential → bounded excursions, phase-space packing → outlier control). Gemini's contradiction approach, while valid, requires complex fitness kernel analysis (acknowledged as 'greatest challenge') that the direct method avoids. The constructive nature of Codex's approach also provides better foundation for dependent results like lem-cluster-alignment."
+    },
+    "source_context": {
+      "document_path": "docs/source/1_euclidean_gas/04_wasserstein_contraction.md",
+      "chapter": "1_euclidean_gas",
+      "local_refs": [
+        "lem-cluster-alignment"
+      ],
+      "has_existing_proof": false,
+      "purpose": "Bridges fitness-based alive set definition with geometric nearest-center assignment, enabling bisector constraint argument in cluster alignment"
+    },
+    "alternative_strategy": {
+      "strategist": "Gemini 2.5 Pro",
+      "method": "Proof by Contradiction via Fitness-Geometry Link",
+      "rationale_for_rejection": "While mathematically sound with high confidence, this approach requires complex fitness kernel expansion and averaging (Step 3→4 transition acknowledged as 'greatest challenge'). The direct geometric approach is preferred for its simpler technical demands and more explicit error quantification.",
+      "potential_use_case": "Could be valuable for proving stronger results about fitness-geometry coupling in future work"
+    }
+  }
+}

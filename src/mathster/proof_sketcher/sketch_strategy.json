@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AI-Generated Proof Strategy",
+  "description": "A structured representation of a single proof strategy proposed by an AI assistant, designed for evaluation and synthesis.",
+  "type": "object",
+  "properties": {
+    "strategist": {
+      "type": "string",
+      "description": "The name or version of the AI model that generated this strategy (e.g., 'Gemini 2.5 Pro', 'GPT-5 via Codex')."
+    },
+    "method": {
+      "type": "string",
+      "description": "A concise, high-level name for the proposed proof technique (e.g., 'Mild Formulation + Fixed-Point Argument', 'Contradiction via Subgradient Calculus')."
+    },
+    "summary": {
+      "type": "string",
+      "description": "A brief narrative summary explaining the core insight and logical flow of the proposed strategy."
+    },
+    "keySteps": {
+      "type": "array",
+      "description": "An ordered list of the main logical stages required to execute the proof.",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "strengths": {
+      "type": "array",
+      "description": "A list of the primary advantages of this proof strategy.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "weaknesses": {
+      "type": "array",
+      "description": "A list of potential disadvantages, risks, or technical difficulties associated with this strategy.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "frameworkDependencies": {
+      "type": "object",
+      "description": "A structured list of all axioms, theorems, lemmas, and definitions from the framework required to execute this strategy.",
+      "properties": {
+        "theorems": { "$ref": "#/definitions/dependencyList" },
+        "lemmas": { "$ref": "#/definitions/dependencyList" },
+        "axioms": { "$ref": "#/definitions/dependencyList" },
+        "definitions": { "$ref": "#/definitions/dependencyList" }
+      }
+    },
+    "technicalDeepDives": {
+      "type": "array",
+      "description": "An analysis of the most technically challenging parts of the proposed strategy, including a sketch of their resolution.",
+      "items": {
+        "$ref": "#/definitions/technicalChallenge"
+      }
+    },
+    "confidenceScore": {
+      "type": "string",
+      "description": "The AI's self-assessed confidence in the viability and completeness of its proposed strategy.",
+      "enum": ["High", "Medium", "Low"],
+      "default": "Medium"
+    }
+  },
+  "required": [
+    "strategist",
+    "method",
+    "summary",
+    "keySteps",
+    "strengths",
+    "weaknesses",
+    "frameworkDependencies",
+    "confidenceScore"
+  ],
+  "definitions": {
+    "dependencyList": {
+      "type": "array",
+      "description": "A list of specific framework dependencies of a certain type (e.g., Theorems).",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": { "type": "string", "description": "The unique identifier for the dependency." },
+          "document": { "type": "string", "description": "The source document where the dependency is defined." },
+          "purpose": { "type": "string", "description": "A brief summary of what this dependency provides for the proof." },
+          "usedInSteps": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "A list of identifiers for the 'keySteps' that rely on this dependency."
+          }
+        },
+        "required": ["label", "document", "purpose"]
+      }
+    },
+    "technicalChallenge": {
+      "type": "object",
+      "description": "An analysis of a specific technical challenge within the proof strategy.",
+      "properties": {
+        "challengeTitle": { "type": "string", "description": "A short name for the challenge." },
+        "difficultyDescription": { "type": "string", "description": "An explanation of why this part of the proof is difficult." },
+        "proposedSolution": { "type": "string", "description": "A sketch of the technique or argument to overcome the challenge." },
+        "references": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Citations to external literature or other framework results that support the proposed solution."
+        }
+      },
+      "required": ["challengeTitle", "difficultyDescription", "proposedSolution"]
+    }
+  }
+}

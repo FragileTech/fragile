@@ -308,7 +308,9 @@ class ColorDim(DimensionMapper):
         # No normalization needed - HoloViews handles it automatically
         if self.is_categorical:
             # Use categorical colormap instead of continuous (viridis)
-            self.cmap = "Category20"  # 20 distinct colors for categorical data
+            # Only use Category20 as default if no custom palette (list) provided
+            if not isinstance(self.cmap, list):
+                self.cmap = "Category20"  # 20 distinct colors for categorical data
             self.value = hv.dim(self.column.value)
             return
 

@@ -7,20 +7,20 @@
       "directive_type": "theorem",
       "label": "thm-complete-boundary-drift",
       "title": "Complete Boundary Potential Drift Characterization",
-      "start_line": 7732,
-      "end_line": 7753,
+      "start_line": 7780,
+      "end_line": 7801,
       "header_lines": [
-        7733
+        7781
       ],
-      "content_start": 7735,
-      "content_end": 7752,
-      "content": "7735: :label: thm-complete-boundary-drift\n7736: \n7737: The cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the boundary potential:\n7738: \n7739: $$\n7740: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\leq -\\kappa_b W_b + C_b\n7741: $$\n7742: \n7743: where:\n7744: - $\\kappa_b = p_{\\text{boundary}}(\\phi_{\\text{thresh}}) > 0$ is the minimum cloning probability for boundary-exposed walkers\n7745: - $C_b = O(\\sigma_x^2 + N^{-1})$ accounts for position jitter and dead walker revival\n7746: - Both constants are **$N$-independent** in the large-$N$ limit\n7747: \n7748: **Key Properties:**\n7749: \n7750: 1. **Unconditional contraction:** The drift is negative for all states with $W_b > C_b/\\kappa_b$\n7751: \n7752: 2. **Strengthening near danger:** The contraction rate $\\kappa_b$ increases with boundary proximity (through $\\phi_{\\text{thresh}}$)",
+      "content_start": 7783,
+      "content_end": 7800,
+      "content": "7783: :label: thm-complete-boundary-drift\n7784: \n7785: The cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the boundary potential:\n7786: \n7787: $$\n7788: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\leq -\\kappa_b W_b + C_b\n7789: $$\n7790: \n7791: where:\n7792: - $\\kappa_b = p_{\\text{boundary}}(\\phi_{\\text{thresh}}) > 0$ is the minimum cloning probability for boundary-exposed walkers\n7793: - $C_b = O(\\sigma_x^2 + N^{-1})$ accounts for position jitter and dead walker revival\n7794: - Both constants are **$N$-independent** in the large-$N$ limit\n7795: \n7796: **Key Properties:**\n7797: \n7798: 1. **Unconditional contraction:** The drift is negative for all states with $W_b > C_b/\\kappa_b$\n7799: \n7800: 2. **Strengthening near danger:** The contraction rate $\\kappa_b$ increases with boundary proximity (through $\\phi_{\\text{thresh}}$)",
       "metadata": {
         "label": "thm-complete-boundary-drift"
       },
       "section": "## 11.6. Summary and Drift Inequality",
       "references": [],
-      "raw_directive": "7732: We conclude by stating the complete boundary potential drift result.\n7733: \n7734: :::{prf:theorem} Complete Boundary Potential Drift Characterization\n7735: :label: thm-complete-boundary-drift\n7736: \n7737: The cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the boundary potential:\n7738: \n7739: $$\n7740: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\leq -\\kappa_b W_b + C_b\n7741: $$\n7742: \n7743: where:\n7744: - $\\kappa_b = p_{\\text{boundary}}(\\phi_{\\text{thresh}}) > 0$ is the minimum cloning probability for boundary-exposed walkers\n7745: - $C_b = O(\\sigma_x^2 + N^{-1})$ accounts for position jitter and dead walker revival\n7746: - Both constants are **$N$-independent** in the large-$N$ limit\n7747: \n7748: **Key Properties:**\n7749: \n7750: 1. **Unconditional contraction:** The drift is negative for all states with $W_b > C_b/\\kappa_b$\n7751: \n7752: 2. **Strengthening near danger:** The contraction rate $\\kappa_b$ increases with boundary proximity (through $\\phi_{\\text{thresh}}$)\n7753: "
+      "raw_directive": "7780: We conclude by stating the complete boundary potential drift result.\n7781: \n7782: :::{prf:theorem} Complete Boundary Potential Drift Characterization\n7783: :label: thm-complete-boundary-drift\n7784: \n7785: The cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the boundary potential:\n7786: \n7787: $$\n7788: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] \\leq -\\kappa_b W_b + C_b\n7789: $$\n7790: \n7791: where:\n7792: - $\\kappa_b = p_{\\text{boundary}}(\\phi_{\\text{thresh}}) > 0$ is the minimum cloning probability for boundary-exposed walkers\n7793: - $C_b = O(\\sigma_x^2 + N^{-1})$ accounts for position jitter and dead walker revival\n7794: - Both constants are **$N$-independent** in the large-$N$ limit\n7795: \n7796: **Key Properties:**\n7797: \n7798: 1. **Unconditional contraction:** The drift is negative for all states with $W_b > C_b/\\kappa_b$\n7799: \n7800: 2. **Strengthening near danger:** The contraction rate $\\kappa_b$ increases with boundary proximity (through $\\phi_{\\text{thresh}}$)\n7801: "
     }
   ],
   "validation": {

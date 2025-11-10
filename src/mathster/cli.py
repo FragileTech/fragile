@@ -15,6 +15,7 @@ changing the ``pyproject`` script definition (``mathster = mathster.cli:cli``).
 from __future__ import annotations
 
 import importlib.metadata
+import json
 import logging
 from pathlib import Path
 import re
@@ -550,6 +551,71 @@ def registry_command(
     if not success:
         msg = "Directive registry build failed"
         raise click.ClickException(msg)
+
+
+@cli.command(
+    "search",
+    help="Lookup a registry entity by label and print its JSON payload.",
+)
+@click.argument("label", type=str)
+@click.option(
+    "--stage",
+    type=click.Choice(["auto", "preprocess", "directives"]),
+    default="auto",
+    show_default=True,
+    help="Registry stage to search (auto tries preprocess first, then directives).",
+)
+@click.option(
+    "--preprocess-dir",
+    type=click.Path(file_okay=False, dir_okay=True, path_type=Path),
+    default=None,
+    help="Custom preprocess registry directory (defaults to unified_registry/preprocess).",
+)
+@click.option(
+    "--directives-dir",
+    type=click.Path(file_okay=False, dir_okay=True, path_type=Path),
+    default=None,
+    help="Custom directives registry directory (defaults to unified_registry/directives).",
+)
+def search_command(
+    label: str,
+    stage: str,
+    preprocess_dir: Path | None,
+    directives_dir: Path | None,
+) -> None:
+    """Load registry JSON for ``label`` and stream it to stdout."""
+    from mathster.registry import search as registry_search
+
+    label = label.strip()
+    if not label:
+        raise click.ClickException("Label must be a non-empty string.")
+
+    selected_stage = stage or "auto"
+    registry_source = None
+    entity: dict | None = None
+
+    if selected_stage in {"auto", "preprocess"}:
+        entity = registry_search.get_preprocess_label(label, preprocess_dir=preprocess_dir)
+        if entity is not None:
+            registry_source = "preprocess"
+
+    if entity is None and selected_stage in {"auto", "directives"}:
+        entity = registry_search.get_directive_label(label, directives_dir=directives_dir)
+        if entity is not None:
+            registry_source = "directives"
+
+    if entity is None:
+        if selected_stage == "preprocess":
+            scope = "the preprocess registry"
+        elif selected_stage == "directives":
+            scope = "the directives registry"
+        else:
+            scope = "either registry"
+        raise click.ClickException(f"Label '{label}' was not found in {scope}.")
+
+    assert registry_source is not None  # For type checkers
+    click.echo(f"[{registry_source} registry] {label}")
+    click.echo(json.dumps(entity, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":  # pragma: no cover

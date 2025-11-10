@@ -788,7 +788,9 @@ $$
 |R_{\mathcal{Y}}(y_1) - R_{\mathcal{Y}}(y_2)| \le L_{R,\mathcal{Y}} \cdot d_{\mathcal{Y}}(y_1, y_2)^{\alpha_R}.
 $$
 
-*   **Failure Mode Analysis:** A large **$L_{R,\mathcal{Y}}$** signifies a “bumpy” or volatile reward landscape. This can cause the exploitation component of the fitness potential to fluctuate wildly with small movements, making cloning decisions noisy and potentially unstable.
+*   **Failure Mode Analysis:** A large **$L_{R,\mathcal{Y}}$** signifies a "bumpy" or volatile reward landscape. This can cause the exploitation component of the fitness potential to fluctuate wildly with small movements, making cloning decisions noisy and potentially unstable.
+
+Referenced by {prf:ref}`axiom-projection-compatibility`.
 :::
 
 :::{hint}
@@ -838,6 +840,8 @@ A kernel $\mathcal P_\sigma$ (and analogously $\mathcal Q_\delta$) is valid if i
 - Boundary regularity assumptions required by the status‑continuity theorem (Section 14);
 - Non‑degeneracy as stipulated where needed.
 This consolidates the standing noise requirements referenced elsewhere in the framework.
+
+Referenced by {prf:ref}`def-valid-state-space`, {prf:ref}`def-perturbation-measure`, and {prf:ref}`def-cloning-measure`.
 :::
 
 These axioms concern the user's choices for the internal mechanisms of the algorithm, quantifying their impact on stability and convergence.
@@ -1531,6 +1535,8 @@ $$
 \left| \frac{1}{|S_1|} \sum_{j \in S_1} f_j - \frac{1}{|S_1|} \sum_{j \in S_2} f_j \right| \le \frac{M_f}{|S_1|} |S_1 \Delta S_2|
 
 $$
+
+Used in {prf:ref}`proof-thm-total-error-status-bound`.
 :::
 :::{prf:proof}
 :label: proof-lem-set-difference-bound
@@ -1561,6 +1567,8 @@ $$
 \left| \frac{1}{|S_1|} \sum_{j \in S_2} f_j - \frac{1}{|S_2|} \sum_{j \in S_2} f_j \right| \le \frac{M_f}{|S_1|} \big||S_1| - |S_2|\big|
 
 $$
+
+Used in {prf:ref}`proof-thm-total-error-status-bound`.
 :::
 :::{prf:proof}
 :label: proof-lem-normalization-difference-bound
@@ -2869,6 +2877,8 @@ ight| \le rac{(2n-1)!!}{2^n \sigma'^{(2n-1)}_{\min}}
 $$
 
 where $(2n-1)!! = 1 \cdot 3 \cdot 5 \cdots (2n-1)$ is the double factorial.
+
+Referenced by {prf:ref}`def-fragile-gas-algorithm`.
 :::
 :::{prf:proof}
 :label: proof-lem-sigma-reg-derivative-bounds
@@ -3133,6 +3143,8 @@ E_{V,ms}^2(\mathcal{S}_1, \mathcal{S}_2) \le C_{V,\text{total}}(\mathcal{S}_1) \
 $$
 
 where $C_{V,\text{total}}(\mathcal{S}_1)$ is the **Total Value Error Coefficient**, a deterministic constant derived from the axiomatic properties of the aggregation operator and the global parameters, as formally defined in [](#def-lipschitz-value-error-coefficients).
+
+Proof provided in {prf:ref}`proof-thm-standardization-value-error-mean-square`.
 :::
 The proof of this theorem requires a careful algebraic decomposition of the total error vector into three distinct and manageable components. The subsequent subsections will state and prove a deterministic bound for each of these three components. These results are then assembled in the final proof of the main theorem.
 ##### 11.2.2.1. Sub-Lemma: Algebraic Decomposition of the Value Error

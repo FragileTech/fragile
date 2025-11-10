@@ -295,7 +295,7 @@
         "chapter_file": "chapter_6.json",
         "section_id": "## 6. The Geometry of Error: From System Error to a Guaranteed Geometric Structure"
       },
-      "generated_at": "2025-11-10T12:23:04.016510+00:00",
+      "generated_at": "2025-11-10T13:26:08.165093+00:00",
       "alt_labels": []
     },
     "tags": [
@@ -337,7 +337,7 @@
       "chapter_file": "chapter_6.json",
       "section_id": "## 6. The Geometry of Error: From System Error to a Guaranteed Geometric Structure"
     },
-    "generated_at": "2025-11-10T12:23:04.013158+00:00",
+    "generated_at": "2025-11-10T13:26:08.162051+00:00",
     "alt_labels": []
   },
   {
@@ -526,7 +526,7 @@
         "chapter_file": "chapter_8.json",
         "section_id": "## 8. The N-Uniform Quantitative Keystone Lemma"
       },
-      "generated_at": "2025-11-10T12:23:04.016510+00:00",
+      "generated_at": "2025-11-10T13:26:08.165093+00:00",
       "alt_labels": []
     },
     "tags": [
@@ -565,7 +565,7 @@
       "chapter_file": "chapter_8.json",
       "section_id": "## 8. The N-Uniform Quantitative Keystone Lemma"
     },
-    "generated_at": "2025-11-10T12:23:04.013158+00:00",
+    "generated_at": "2025-11-10T13:26:08.162051+00:00",
     "alt_labels": []
   },
   {
@@ -802,7 +802,7 @@
         "chapter_file": "chapter_19.json",
         "section_id": "## 10.5. Implications for Structural Error"
       },
-      "generated_at": "2025-11-10T12:23:04.016510+00:00",
+      "generated_at": "2025-11-10T13:26:08.165093+00:00",
       "alt_labels": []
     },
     "tags": [
@@ -839,7 +839,7 @@
       "chapter_file": "chapter_19.json",
       "section_id": "## 10.5. Implications for Structural Error"
     },
-    "generated_at": "2025-11-10T12:23:04.013158+00:00",
+    "generated_at": "2025-11-10T13:26:08.162051+00:00",
     "alt_labels": []
   },
   {
@@ -1094,7 +1094,7 @@
         "chapter_file": "chapter_26.json",
         "section_id": "## 11.5. Implications for Extinction Probability"
       },
-      "generated_at": "2025-11-10T12:23:04.016510+00:00",
+      "generated_at": "2025-11-10T13:26:08.165093+00:00",
       "alt_labels": []
     },
     "tags": [
@@ -1131,7 +1131,7 @@
       "chapter_file": "chapter_26.json",
       "section_id": "## 11.5. Implications for Extinction Probability"
     },
-    "generated_at": "2025-11-10T12:23:04.013158+00:00",
+    "generated_at": "2025-11-10T13:26:08.162051+00:00",
     "alt_labels": []
   },
   {
@@ -1395,7 +1395,7 @@
         "chapter_file": "chapter_26.json",
         "section_id": "## 11.5. Implications for Extinction Probability"
       },
-      "generated_at": "2025-11-10T12:23:04.016510+00:00",
+      "generated_at": "2025-11-10T13:26:08.165093+00:00",
       "alt_labels": []
     },
     "tags": [
@@ -1432,7 +1432,7 @@
       "chapter_file": "chapter_26.json",
       "section_id": "## 11.5. Implications for Extinction Probability"
     },
-    "generated_at": "2025-11-10T12:23:04.013158+00:00",
+    "generated_at": "2025-11-10T13:26:08.162051+00:00",
     "alt_labels": []
   },
   {
@@ -1554,7 +1554,7 @@
       "chapter_file": "chapter_30.json",
       "section_id": "## 12.2. Inter-Swarm Error Under Cloning"
     },
-    "generated_at": "2025-11-10T12:23:04.013158+00:00",
+    "generated_at": "2025-11-10T13:26:08.162051+00:00",
     "alt_labels": []
   }
 ]

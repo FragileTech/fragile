@@ -1,0 +1,152 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Proof Sketch Validation Review",
+  "description": "A structured format for a comprehensive review of a proof sketch, designed to assess its soundness, viability, and readiness for expansion into a full rigorous proof.",
+  "type": "object",
+  "properties": {
+    "reviewer": {
+      "type": "string",
+      "description": "The name or version of the AI model conducting the review (e.g., 'Gemini 2.5 Pro', 'GPT-5 via Codex')."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The ISO 8601 timestamp of when the review was generated."
+    },
+    "overallAssessment": {
+      "type": "object",
+      "description": "The high-level summary and final recommendation of the review.",
+      "properties": {
+        "confidenceScore": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "description": "Reviewer score on a 1-5 scale (1=Unusable, 2=Critical fixable issues, 3=Major revisions required, 4=Minor revisions required, 5=Ready for top-tier publication-quality expansion)."
+        },
+        "summary": {
+          "type": "string",
+          "description": "A concise, human-readable summary of the key findings. It should state whether the core strategy is sound and highlight the most critical issues, if any."
+        },
+        "recommendation": {
+          "type": "string",
+          "description": "A clear, actionable recommendation for the next step.",
+          "enum": [
+            "Proceed to Expansion",
+            "Revise and Resubmit for Validation",
+            "Strategy is Flawed - A New Sketch is Recommended"
+          ]
+        }
+      },
+      "required": ["confidenceScore", "summary", "recommendation"]
+    },
+    "detailedAnalysis": {
+      "type": "object",
+      "description": "A granular breakdown of the review, assessing each major component of the proof sketch.",
+      "properties": {
+        "logicalFlowValidation": {
+          "type": "object",
+          "description": "Assessment of the high-level proof strategy and the step-by-step logical progression.",
+          "properties": {
+            "isSound": { "type": "boolean", "description": "True if the overall logical argument is valid and coherent." },
+            "comments": { "type": "string", "description": "General comments on the clarity, elegance, and soundness of the proof's structure." },
+            "identifiedGaps": {
+              "type": "array",
+              "description": "A list of specific logical gaps, leaps of faith, or steps that do not follow from the previous ones.",
+              "items": { "type": "string" }
+            }
+          },
+          "required": ["isSound", "comments"]
+        },
+        "dependencyValidation": {
+          "type": "object",
+          "description": "Verification of the sketch's reliance on the framework's axioms, theorems, and definitions.",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["Complete and Correct", "Minor Issues Found", "Major Issues Found"],
+              "description": "Overall status of dependency usage."
+            },
+            "issues": {
+              "type": "array",
+              "description": "A list of specific issues found with the cited dependencies.",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "label": { "type": "string", "description": "The label of the dependency in question." },
+                  "issueType": {
+                    "type": "string",
+                    "enum": [
+                      "Incorrectly Used",
+                      "Preconditions Not Met",
+                      "Missing Dependency",
+                      "Citation Error"
+                    ],
+                    "description": "The type of error found."
+                  },
+                  "comment": { "type": "string", "description": "A detailed explanation of the issue and its potential impact on the proof." }
+                },
+                "required": ["label", "issueType", "comment"]
+              }
+            }
+          },
+          "required": ["status"]
+        },
+        "technicalDeepDiveValidation": {
+          "type": "object",
+          "description": "A critical review of the sketch's handling of its most difficult technical challenges.",
+          "properties": {
+            "critiques": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "challengeTitle": { "type": "string", "description": "The title of the challenge being reviewed, to link back to the original sketch." },
+                  "solutionViability": {
+                    "type": "string",
+                    "enum": [
+                      "Viable and Well-Described",
+                      "Plausible but Requires More Detail",
+                      "Potentially Flawed",
+                      "Flawed"
+                    ],
+                    "description": "Assessment of the proposed solution's mathematical soundness."
+                  },
+                  "critique": { "type": "string", "description": "A detailed analysis of the proposed solution, pointing out strengths and weaknesses." },
+                  "suggestedImprovements": { "type": "string", "description": "Specific suggestions for strengthening or correcting the approach to this challenge." }
+                },
+                "required": ["challengeTitle", "solutionViability", "critique"]
+              }
+            }
+          }
+        },
+        "completenessAndCorrectness": {
+          "type": "object",
+          "description": "A check for mathematical errors and for whether all claims in the theorem statement are addressed.",
+          "properties": {
+            "coversAllClaims": { "type": "boolean", "description": "True if the proof sketch successfully addresses all parts of the theorem statement." },
+            "identifiedErrors": {
+              "type": "array",
+              "description": "A list of any identified mathematical errors, typos, or incorrect statements in the sketch.",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "location": { "type": "string", "description": "The specific location of the error (e.g., 'Step IV.4.2')." },
+                  "description": { "type": "string", "description": "A clear description of the error." },
+                  "suggestedCorrection": { "type": "string", "description": "The proposed correction." }
+                },
+                "required": ["location", "description", "suggestedCorrection"]
+              }
+            }
+          },
+          "required": ["coversAllClaims"]
+        }
+      }
+    }
+  },
+  "required": [
+    "reviewer",
+    "timestamp",
+    "overallAssessment",
+    "detailedAnalysis"
+  ]
+}

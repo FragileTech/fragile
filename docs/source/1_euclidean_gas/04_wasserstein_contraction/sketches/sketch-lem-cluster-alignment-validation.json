@@ -1,0 +1,522 @@
+{
+  "reportMetadata": {
+    "sketchLabel": "lem-cluster-alignment",
+    "validationCycleId": "28f8c9e5-3d14-4a2a-9f12-5c8e7a1b4d3f",
+    "validationTimestamp": "2025-11-10T18:15:00Z"
+  },
+
+  "originalProofSketch": {
+    "label": "lem-cluster-alignment",
+    "entity_type": "lemma",
+    "document_id": "04_wasserstein_contraction",
+    "title": "Cluster-Level Outlier Alignment",
+    "statement": "For two swarms S_1, S_2 satisfying: (1) Structural error V_struct > R²_spread, (2) Stability Condition holds (Theorem 7.5.2.4), (3) Separation L = ||x̄_1 - x̄_2|| > D_min(ε), the target set barycenters exhibit spatial alignment: ⟨μ_x(I_1) - μ_x(J_1), x̄_1 - x̄_2⟩ ≥ c_align(ε) ||μ_x(I_1) - μ_x(J_1)|| · L for some N-uniform constant c_align(ε) > 0.",
+    "strategy": {
+      "strategist": "Claude Sonnet 4.5 (Rigorous Framework Analysis)",
+      "method": "Fitness-Constrained Clustering Geometry via Stability Condition",
+      "summary": "The current proof contains a critical flaw: it uses the GLOBAL center of mass μ_x ≈ (x̄_1 + x̄_2)/2 in the clustering algorithm, but Definition 6.3 actually defines variance contribution relative to each SWARM'S OWN barycenter μ_x(S_k). This leads to an incorrect geometric argument about inter-swarm regions. The corrected proof must: (1) Use the proper clustering definition with swarm-local barycenters, (2) Leverage the Stability Condition which guarantees H_k has LOWER fitness than L_k, (3) Apply the Confining Potential axiom to establish that fitness valleys exist between separated swarms, (4) Conclude that outlier clusters (high-error H_k with low fitness) CANNOT reside in inter-swarm regions (which have intermediate-to-high fitness due to valley structure). The key insight is that the clustering algorithm's variance contribution ordering, combined with fitness constraints from the Stability Condition, forces outliers to the 'far side' away from the other swarm.",
+      "confidenceScore": "Medium",
+      "keySteps": [
+        "Step 1: Establish fitness valley structure between separated swarms using Confining Potential axiom (Axiom 2.1.1) and Environmental Richness (Axiom 4.1.1)",
+        "Step 2: Apply Stability Condition (Theorem 7.5.2.4) to establish fitness ordering: E[V_fit | i ∈ H_k] < E[V_fit | i ∈ L_k], which implies H_k walkers have LOWER fitness",
+        "Step 3: Prove that inter-swarm regions have intermediate-to-high fitness (avoiding valley), which contradicts H_k having low fitness",
+        "Step 4: Apply Phase-Space Packing Lemma (6.4.1) to establish spatial separation ||μ_x(I_k) - μ_x(J_k)|| ≥ R_sep",
+        "Step 5: Use correct clustering definition (Definition 6.3) with SWARM-LOCAL barycenter μ_x(S_k) to analyze variance contribution ordering",
+        "Step 6: Prove that far-side clusters have higher variance contribution than inter-swarm clusters, relative to swarm's own barycenter",
+        "Step 7: Conclude that clustering algorithm selects far-side clusters as outliers, establishing directional alignment ⟨μ_x(I_1) - x̄_1, x̄_1 - x̄_2⟩ > 0"
+      ],
+      "strengths": [
+        "Uses correct clustering algorithm definition from Definition 6.3 with swarm-local barycenter",
+        "Leverages Stability Condition rigorously to constrain fitness of outlier sets",
+        "Employs Confining Potential axiom to establish fitness landscape structure (valleys)",
+        "Static proof using only framework axioms and proven results (no temporal dynamics)",
+        "Addresses the counterexample: outliers cannot be between swarms due to fitness constraints",
+        "Quantitative bounds from Phase-Space Packing provide separation guarantees"
+      ],
+      "weaknesses": [
+        "Requires careful analysis of variance contribution formula with swarm-local vs. inter-swarm geometry",
+        "Fitness valley depth Δ_valley must be quantified (depends on landscape curvature)",
+        "Separation threshold D_min(ε) must be large enough relative to clustering diameter D_diam(ε)",
+        "Gap between 'proving outliers avoid inter-swarm region' and 'proving they point away from other swarm' requires geometric argument",
+        "Requires Environmental Richness axiom to guarantee valley structure exists"
+      ],
+      "frameworkDependencies": {
+        "theorems": [
+          {
+            "label": "thm-stability-condition-final-corrected",
+            "document": "03_cloning",
+            "purpose": "Establishes fitness ordering: E[ln(V_fit)|H_k] < E[ln(V_fit)|L_k], which implies outliers H_k have systematically lower fitness than core L_k",
+            "usedInSteps": ["Step 2", "Step 3"]
+          }
+        ],
+        "lemmas": [
+          {
+            "label": "lem-phase-space-packing",
+            "document": "03_cloning",
+            "purpose": "Provides separation bound ||μ_x(I_k) - μ_x(J_k)|| ≥ sqrt(c_sep V_struct) based on hypocoercive variance",
+            "usedInSteps": ["Step 4"]
+          },
+          {
+            "label": "cor-between-group-dominance",
+            "document": "03_cloning",
+            "purpose": "Quantifies spatial separation between I_k and J_k groups",
+            "usedInSteps": ["Step 4"]
+          }
+        ],
+        "axioms": [
+          {
+            "label": "axiom-confining-potential",
+            "document": "01_fragile_gas_framework",
+            "purpose": "Guarantees fitness function has local maxima separated by valleys, providing landscape structure",
+            "usedInSteps": ["Step 1", "Step 3"]
+          },
+          {
+            "label": "axiom-environmental-richness",
+            "document": "01_fragile_gas_framework",
+            "purpose": "Ensures sufficient landscape structure (multiple local optima with valleys) for separated swarms",
+            "usedInSteps": ["Step 1"]
+          }
+        ],
+        "definitions": [
+          {
+            "label": "def-unified-high-low-error-sets",
+            "document": "03_cloning",
+            "purpose": "Defines H_k (high-error/outlier set) via clustering algorithm with variance contribution Contrib(G_m) = |G_m|(||μ_x,m - μ_x(S_k)||² + λ_v ||μ_v,m - μ_v(S_k)||²) where μ_x(S_k) is SWARM'S barycenter",
+            "usedInSteps": ["Step 5", "Step 6", "Step 7"]
+          },
+          {
+            "label": "def-unfit-set",
+            "document": "03_cloning",
+            "purpose": "Defines U_k as walkers with V_k,i ≤ mean fitness, target set I_k = U_k ∩ H_k",
+            "usedInSteps": ["Step 2"]
+          }
+        ]
+      },
+      "technicalDeepDives": [
+        {
+          "challengeTitle": "Correcting the Clustering Algorithm Misapplication",
+          "difficultyDescription": "The current proof uses global barycenter μ_x ≈ (x̄_1 + x̄_2)/2 in clustering variance contribution, but Definition 6.3 explicitly defines Contrib(G_m) relative to each SWARM'S OWN barycenter μ_x(S_k). This is a fundamental misreading of the framework.",
+          "proposedSolution": "Rewrite Steps 5-7 using μ_x(S_k) = x̄_k explicitly. For swarm 1: far-side clusters have ||μ_x,m - x̄_1||² ≈ (R_spread + ε_outlier)² where ε_outlier is additional outlier displacement. Inter-swarm clusters have ||μ_x,m - x̄_1||² ≈ (L/2)².",
+          "references": ["Definition 6.3 (03_cloning, line 2413-2439)", "Theorem 7.5.2.4 (Stability Condition)"]
+        },
+        {
+          "challengeTitle": "Fitness Valley Constraint on Outlier Locations",
+          "difficultyDescription": "The key missing piece is that the Stability Condition guarantees H_k has LOWER fitness than L_k. The resolution requires understanding the fitness potential V_fit structure.",
+          "proposedSolution": "Clarify that Stability Condition applies to FITNESS POTENTIAL V_fit = exp(α R + β D'), not raw fitness F(x). Outliers in H_k have: (1) Lower reward R, (2) Higher diversity D', (3) Stability Condition ensures β·D' gain < α·R loss, resulting in lower V_fit.",
+          "references": ["Axiom 2.1.1 (Confining Potential)", "Axiom 4.1.1 (Environmental Richness)", "Theorem 7.5.2.4 (Stability Condition)"]
+        },
+        {
+          "challengeTitle": "Quantifying Directional Alignment from Geometric + Fitness Constraints",
+          "difficultyDescription": "Even after establishing that H_k outliers avoid inter-swarm regions and prefer far-side directions, we still need to quantify the alignment constant c_align.",
+          "proposedSolution": "Use geometric steps: (1) By Stability Condition, H_1 has mean fitness E[V_fit|H_1] < E[V_fit|L_1]. (2) I_1 = U_1 ∩ H_1 consists of unfit walkers within the high-error set. (3) Decompose alignment into directional and magnitude components.",
+          "references": ["Phase-Space Packing Lemma 6.4.1", "Corollary cor-between-group-dominance"]
+        }
+      ]
+    }
+  },
+
+  "reviews": [
+    {
+      "reviewer": "Gemini 2.5 Pro",
+      "timestamp": "2025-11-10T18:00:00Z",
+      "overallAssessment": {
+        "confidenceScore": "Medium (Sound, but requires minor revisions)",
+        "summary": "The proposed strategy correctly identifies a critical flaw in the implicit prior approach and presents a sound alternative. The core idea of using fitness landscape constraints to geometrically locate outlier clusters is strong, but the final geometric step required to prove directional alignment is asserted rather than proven and requires significant substantiation.",
+        "recommendation": "Proceed to Expansion"
+      },
+      "detailedAnalysis": {
+        "logicalFlowValidation": {
+          "isSound": true,
+          "comments": "The overall logical structure is coherent and represents a significant improvement. The strategy of using the Stability Condition (fitness ordering) in conjunction with the Confining Potential axiom (fitness landscape) to create a 'proof by contradiction' for the location of outliers is valid. The flow from axiom-derived landscape -> fitness ordering -> spatial constraint is sound.",
+          "identifiedGaps": [
+            "The primary gap exists between Step 3 ('Prove that inter-swarm regions have intermediate-to-high fitness') and Step 7 ('Conclude that clustering algorithm selects far-side clusters'). While the sketch proves outliers cannot be *between* swarms, it only asserts (in Step 6) that the variance-based clustering algorithm will necessarily place them on the 'far side'. This geometric conclusion is not self-evident and requires a rigorous proof that may depend on the swarm's shape."
+          ]
+        },
+        "dependencyValidation": {
+          "status": "Minor Issues Found",
+          "issues": [
+            {
+              "label": "thm-stability-condition-final-corrected (03_cloning)",
+              "issueType": "Preconditions Not Met",
+              "comment": "The sketch assumes the preconditions for the Stability Condition are met by the setup of this lemma. The full proof must explicitly verify that the conditions of Theorem 7.5.2.4 hold for swarms S_1 and S_2 as defined here."
+            },
+            {
+              "label": "axiom-environmental-richness (01_fragile_gas_framework)",
+              "issueType": "Preconditions Not Met",
+              "comment": "The sketch relies on this axiom to 'guarantee valley structure exists'. The full proof must not only cite this but demonstrate *how* it guarantees a fitness valley of sufficient depth (Δ_valley) to exclude the low-fitness H_k sets. The quantitative implications of the axiom must be derived."
+            },
+            {
+              "label": "cor-between-group-dominance (03_cloning)",
+              "issueType": "Citation Error",
+              "comment": "This dependency is listed but its role is not mentioned or explained in the 'Key Steps' or 'Summary'. Its contribution to the proof strategy is unclear. The full proof should either use it explicitly or remove the citation."
+            }
+          ]
+        },
+        "technicalDeepDiveValidation": {
+          "critiques": [
+            {
+              "challengeTitle": "Correcting the Clustering Algorithm Misapplication",
+              "solutionViability": "Viable and Well-Described",
+              "critique": "The proposed solution—using the correct swarm-local barycenter μ_x(S_k) as per Definition 6.3—is not just viable, it is essential. This correction is the foundation of the entire revised strategy and is well-justified.",
+              "suggestedImprovements": "None. This is the correct approach."
+            },
+            {
+              "challengeTitle": "Fitness Valley Constraint on Outlier Locations",
+              "solutionViability": "Plausible but Requires More Detail",
+              "critique": "The idea is sound, but its execution requires quantification. The proof must establish a formal lower bound on the fitness of the inter-swarm region and show it is greater than the upper bound on the fitness of outlier set H_k, as guaranteed by the Stability Condition. This requires deriving the quantitative consequences of the Confining Potential and Environmental Richness axioms.",
+              "suggestedImprovements": "The full proof should contain a dedicated lemma: 'The fitness V_fit(x) for any x in the inter-swarm region is bounded below by F_min > E[V_fit | i ∈ H_k]'."
+            },
+            {
+              "challengeTitle": "Quantifying Directional Alignment from Geometric + Fitness Constraints",
+              "solutionViability": "Potentially Flawed",
+              "critique": "This is the weakest point of the sketch. The solution relies on the unproven assertion in Step 6 that 'far-side clusters have higher variance contribution than inter-swarm clusters'. This geometric claim is not obvious and may not hold for arbitrary swarm geometries (e.g., crescent-shaped swarms). A failure here would invalidate the entire alignment conclusion.",
+              "suggestedImprovements": "A rigorous geometric lemma must be proven. It should state that for a cluster C, if its barycenter μ_x(C) is on the 'far side' of the swarm's barycenter μ_x(S_k) with respect to the inter-swarm vector, its contribution to the swarm's variance is greater than any cluster of similar size located in the inter-swarm region. This may require adding a hypothesis about the swarm's geometry (e.g., convexity)."
+            }
+          ]
+        },
+        "completenessAndCorrectness": {
+          "coversAllClaims": true,
+          "identifiedErrors": [
+            {
+              "location": "Key Step 6",
+              "description": "The statement 'Prove that far-side clusters have higher variance contribution than inter-swarm clusters' is an unproven assertion, not a known result. It is presented as a step but is actually a major required lemma in itself.",
+              "suggestedCorrection": "This step should be rephrased as 'Requires proof of a geometric lemma stating that variance contribution is maximized for far-side clusters.' The proof of this lemma will likely be the most challenging part of the expansion and may require additional assumptions on swarm structure."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "reviewer": "GPT-4o via Codex CLI",
+      "timestamp": "2025-11-10T17:30:00Z",
+      "overallAssessment": {
+        "confidenceScore": "Medium (Sound, but requires minor revisions)",
+        "summary": "Detected type: Proof Sketch. The corrected strategy fixes the critical misapplication of the clustering reference point and lays out a coherent static path using established framework pieces (stability, packing, separation). However, it relies on an unquantified fitness-valley/angle argument, misuses the stability condition in expectation (log vs value), and cites one missing definition label. With these addressed, the sketch is plausible and ready for expansion.",
+        "recommendation": "Revise and Resubmit for Validation"
+      },
+      "detailedAnalysis": {
+        "logicalFlowValidation": {
+          "isSound": true,
+          "comments": "Overall flow is coherent: (i) ensure cluster separation via packing and population lower bounds, (ii) fix clustering contribution to be measured against the swarm-local barycenter, (iii) combine stability constraints with geometric separation to infer directional alignment. The high-level logic does not appear circular. The main outstanding needs are quantifying the fitness-valley claim into an angular lower bound and replacing any reliance on E[V_fit|·] with the log-based stability result or an equivalent consequence.",
+          "identifiedGaps": [
+            "Angular alignment not quantified: no lemma translating landscape structure into a uniform lower bound on cos(theta) for μ_x(I_k) − x̄_k.",
+            "Stability Condition misused in value form: sketch uses E[V_fit|H] < E[V_fit|L] but the cited theorem supplies E[ln V_fit|H] < E[ln V_fit|L].",
+            "Valley/region classification: claim that inter-swarm region has intermediate-to-high fitness conflicts with a valley narrative; requires precise definition and sign conventions for V_fit.",
+            "Explicit N-uniformity of c_align(ε) not derived; needs dependence only on ε, packing constants, and thresholds."
+          ]
+        },
+        "dependencyValidation": {
+          "status": "Major Issues Found",
+          "issues": [
+            {
+              "label": "thm-stability-condition-final-corrected",
+              "issueType": "Incorrectly Used",
+              "comment": "The theorem as recorded states E[ln(V_fit)|H_k] < E[ln(V_fit)|L_k]. The sketch uses E[V_fit|·] instead. Monotonicity of log does not transfer through expectation without additional assumptions; replace with the log-inequality or derive a value-inequality via Jensen or concentration."
+            },
+            {
+              "label": "axiom-confining-potential",
+              "issueType": "Preconditions Not Met",
+              "comment": "Coercivity/smoothness alone does not guarantee a valley located and oriented between the two barycenters. A separate multi-modality or non-deceptive/geometric separation axiom must be invoked to ensure the existence and orientation of a fitness valley relevant to alignment."
+            },
+            {
+              "label": "axiom-environmental-richness",
+              "issueType": "Preconditions Not Met",
+              "comment": "Richness guarantees non-flat variability but not an oriented valley or angular bias. Additional structural conditions (e.g., non-deceptive landscape plus a two-basin separation statement) should be cited to justify a uniform angular lower bound."
+            },
+            {
+              "label": "def-fitness-landscape",
+              "issueType": "Missing Dependency",
+              "comment": "Label not found as a definition in the registries; it appears only as an input_object reference. Either create/point to the correct definition label or remove/rename this dependency."
+            },
+            {
+              "label": "def-unified-high-low-error-sets",
+              "issueType": "Citation Error",
+              "comment": "The definition measures cluster contribution relative to the swarm's center μ_x(S_k); avoid ambiguous references to a cross-swarm 'global' mean that can be misread as (x̄_1 + x̄_2)/2. Clarify explicitly that μ in the definition is μ_x(S_k)."
+            }
+          ]
+        },
+        "technicalDeepDiveValidation": {
+          "critiques": [
+            {
+              "challengeTitle": "Correcting the Clustering Algorithm Misapplication",
+              "solutionViability": "Viable and Well-Described",
+              "critique": "Switching the variance-contribution reference from (x̄_1 + x̄_2)/2 to μ_x(S_k) is the right fix and aligns with Definition 6.3. With separation L ≫ D_diam(ε), far-side clusters have larger ||μ_{x,m} − x̄_k|| than inter-swarm clusters, yielding the desired ordering without cross-swarm means.",
+              "suggestedImprovements": "Amend the proof text in 04_wasserstein_contraction.md:644–655 to replace 'global center of mass' with μ_x(S_k) and redo the comparison showing ||μ_{x,m}^{far} − x̄_k|| > ||μ_{x,m}^{inter} − x̄_k|| for L ≥ c_geom·R_spread(ε)."
+            },
+            {
+              "challengeTitle": "Fitness Valley Constraint on Outlier Locations",
+              "solutionViability": "Potentially Flawed",
+              "critique": "The sketch claims inter-swarm regions have intermediate-to-high fitness, which conflicts with the standard 'valley between modes' intuition. Moreover, the stability condition is log-based; converting it into a spatial exclusion of I_k from inter-swarm regions requires a precise mapping between fitness levels and location relative to the valley.",
+              "suggestedImprovements": "Replace the 'inter-swarm is high fitness' assertion with a geometric-clustering argument (already sufficient) and, if a valley is retained, add a lemma that (i) defines V_fit and its sign, (ii) proves a spatial band near the inter-swarm axis has bounded fitness (upper or lower, consistent with definitions), and (iii) ties that band to membership in U_k via thresholds. Otherwise, rely solely on clustering geometry and packing; do not over-assert valley properties."
+            },
+            {
+              "challengeTitle": "Quantifying Directional Alignment from Geometric + Fitness Constraints",
+              "solutionViability": "Plausible but Requires More Detail",
+              "critique": "The desired inequality needs a uniform angular bound: ⟨μ_x(I_k) − μ_x(J_k), u⟩ ≥ c_angular ||μ_x(I_k) − μ_x(J_k)|| with c_angular > 0 independent of N. Current text sketches a heuristic from landscape structure but lacks a proved, parameterized c_angular(ε).",
+              "suggestedImprovements": "Introduce an 'Angular Bias Lemma' deriving c_angular from (a) minimal separation L ≥ D_min(ε), (b) packing constants implying J_k concentrates in a ball around x̄_k, and (c) a valley-orientation or multi-basin assumption that biases I_k away from the inter-swarm corridor. Alternatively, bypass fitness and deduce a cone condition from the clustering thresholds and separation alone."
+            }
+          ]
+        },
+        "completenessAndCorrectness": {
+          "coversAllClaims": false,
+          "identifiedErrors": [
+            {
+              "location": "Step 2 (Stability Condition)",
+              "description": "The sketch uses E[V_fit|H_k] < E[V_fit|L_k], but the cited theorem states E[ln(V_fit)|H_k] < E[ln(V_fit)|L_k]. The expectation of a monotone transform cannot be inverted without additional structure.",
+              "suggestedCorrection": "Keep the inequality in logarithmic form throughout, or invoke Jensen/auxiliary bounds to translate to value-space if needed for downstream steps."
+            },
+            {
+              "location": "Step 3 (Inter-swarm region fitness classification)",
+              "description": "Claim that inter-swarm regions have 'intermediate-to-high fitness' conflicts with the valley narrative and is not supported by the cited axioms.",
+              "suggestedCorrection": "Either (i) remove this claim and rely on clustering geometry with swarm-local μ_x(S_k) to exclude inter-swarm clusters from H_k, or (ii) add a formal lemma defining V_fit's sign and proving an explicit fitness band for the inter-swarm corridor that is incompatible with U_k membership."
+            },
+            {
+              "location": "Directional alignment quantification",
+              "description": "No explicit bound shows cos(theta) ≥ c_angular > 0, so the product-form inequality with L lacks a concrete c_align(ε).",
+              "suggestedCorrection": "Prove an Angular Bias Lemma: establish a cone around u = (x̄_1 − x̄_2)/L that captures a fixed fraction of I_k mass, yielding a lower bound on the projection."
+            },
+            {
+              "location": "Reference frame for clustering contribution (document cross-check)",
+              "description": "The current document uses the cross-swarm midpoint in the contribution ordering (docs/source/1_euclidean_gas/04_wasserstein_contraction.md:644–655), which contradicts Definition 6.3 applied per swarm.",
+              "suggestedCorrection": "Revise those lines to measure contributions relative to μ_x(S_k) = x̄_k and re-derive the far-side > inter-swarm ordering under L ≥ c_geom·R_spread(ε)."
+            }
+          ]
+        }
+      }
+    }
+  ],
+
+  "synthesisAndActionPlan": {
+    "finalDecision": "Requires Minor Revisions",
+    "consensusAnalysis": {
+      "pointsOfAgreement": [
+        {
+          "issue": "Clustering Algorithm Correction is Essential",
+          "description": "Both reviewers strongly agree that correcting the clustering reference from global barycenter to swarm-local μ_x(S_k) is not just viable but essential. This is the foundation of the revised strategy.",
+          "confidence": "HIGH",
+          "sourceReviews": ["Gemini 2.5 Pro", "GPT-4o via Codex CLI"]
+        },
+        {
+          "issue": "Logical Flow is Sound",
+          "description": "Both reviewers confirm the overall logical structure is coherent and represents a significant improvement over the flawed prior approach. The high-level strategy is valid.",
+          "confidence": "HIGH",
+          "sourceReviews": ["Gemini 2.5 Pro", "GPT-4o via Codex CLI"]
+        },
+        {
+          "issue": "Angular Alignment Requires Quantification",
+          "description": "Both reviewers identify that the directional alignment constant c_align(ε) lacks rigorous derivation. An 'Angular Bias Lemma' is needed to prove cos(θ) ≥ c_angular > 0.",
+          "confidence": "HIGH",
+          "sourceReviews": ["Gemini 2.5 Pro", "GPT-4o via Codex CLI"]
+        },
+        {
+          "issue": "Axiom Preconditions Need Verification",
+          "description": "Both reviewers note that Environmental Richness and Confining Potential axioms must be applied more rigorously with quantitative bounds rather than qualitative invocations.",
+          "confidence": "HIGH",
+          "sourceReviews": ["Gemini 2.5 Pro", "GPT-4o via Codex CLI"]
+        },
+        {
+          "issue": "Step 6 is an Unproven Assertion",
+          "description": "Both reviewers flag that 'far-side clusters have higher variance contribution' is asserted rather than proven, and this geometric claim needs its own lemma.",
+          "confidence": "HIGH",
+          "sourceReviews": ["Gemini 2.5 Pro", "GPT-4o via Codex CLI"]
+        }
+      ],
+      "pointsOfDisagreement": [
+        {
+          "issue": "Severity of Stability Condition Log vs. Value Issue",
+          "geminiPosition": "Minor issue - preconditions not verified, but uses correct inequality form conceptually",
+          "codexPosition": "Major issue - incorrect use of E[V_fit|·] instead of E[ln(V_fit)|·] from theorem statement",
+          "resolution": "CODEX CORRECT - The sketch explicitly uses E[V_fit|H_k] < E[V_fit|L_k] in Step 2, but the cited theorem provides E[ln(V_fit)|H_k] < E[ln(V_fit)|L_k]. This is a genuine mathematical error requiring correction via Jensen's inequality or working in log-space throughout.",
+          "confidence": "HIGH",
+          "evidence": "Theorem statement verified in unified_registry/directives/theorem.json:4552-4555"
+        },
+        {
+          "issue": "Fitness Valley Constraint Viability",
+          "geminiPosition": "Plausible but Requires More Detail - idea is sound, execution needs quantification",
+          "codexPosition": "Potentially Flawed - conflicts with valley narrative, may need to abandon fitness argument entirely",
+          "resolution": "BOTH VALID CONCERNS - The 'inter-swarm has intermediate-to-high fitness' claim in Step 3 contradicts the valley structure from Step 1. Two paths forward: (1) Quantify fitness valley and prove exclusion rigorously (Gemini), or (2) Rely purely on geometric clustering without fitness valley arguments (Codex). Codex's skepticism is warranted given the internal contradiction.",
+          "confidence": "MEDIUM",
+          "evidence": "Step 3 states inter-swarm has 'intermediate-to-high fitness' but Step 1 establishes valley between swarms"
+        },
+        {
+          "issue": "Overall Recommendation",
+          "geminiPosition": "Proceed to Expansion",
+          "codexPosition": "Revise and Resubmit for Validation",
+          "resolution": "CONSERVATIVE APPROACH - Given the log/value error in Step 2 and the contradictory fitness claims in Step 3, revision is prudent before expansion. The core strategy is sound, but these technical issues should be addressed first.",
+          "confidence": "HIGH",
+          "evidence": "Multiple critical technical gaps identified by both reviewers"
+        }
+      ],
+      "unresolvedIssues": [
+        {
+          "issue": "Swarm Geometry Hypothesis",
+          "description": "Gemini suggests the variance-contribution geometric lemma may require convexity or shape assumptions on swarms. Codex doesn't address this. Needs investigation: can the far-side variance claim be proven without geometric restrictions?",
+          "requiresUserDecision": true
+        },
+        {
+          "issue": "Missing Definition Label: def-fitness-landscape",
+          "description": "Codex identifies this label is not found in registries. Gemini doesn't mention it. Needs verification: should this be removed, or does it reference a different label?",
+          "requiresUserDecision": false
+        }
+      ]
+    },
+    "actionableItems": [
+      {
+        "itemId": "ACTION-001",
+        "priority": "CRITICAL",
+        "category": "Mathematical Correctness",
+        "title": "Fix Stability Condition Inequality Form",
+        "description": "Step 2 uses E[V_fit|H_k] < E[V_fit|L_k] but the cited theorem states E[ln(V_fit)|H_k] < E[ln(V_fit)|L_k]. This is a genuine error.",
+        "location": "Step 2, proofSteps[1]",
+        "sourceReviews": ["GPT-4o via Codex CLI"],
+        "suggestedFix": "Either: (1) Work in log-space throughout: prove E[ln(V_fit)|I_k] < E[ln(V_fit)|J_k] suffices for downstream arguments, or (2) Derive value-space inequality from log-inequality using Jensen's inequality or concentration bounds with explicit constants.",
+        "estimatedEffort": "Medium - requires reworking Step 2 and verifying all downstream uses"
+      },
+      {
+        "itemId": "ACTION-002",
+        "priority": "CRITICAL",
+        "category": "Logical Consistency",
+        "title": "Resolve Fitness Valley Contradiction",
+        "description": "Step 1 establishes fitness valley between swarms (low fitness), but Step 3 claims inter-swarm regions have 'intermediate-to-high fitness'. These statements contradict each other.",
+        "location": "Steps 1 and 3",
+        "sourceReviews": ["Gemini 2.5 Pro", "GPT-4o via Codex CLI"],
+        "suggestedFix": "Choose one approach: (1) Quantify valley structure rigorously: prove F(x_valley) < F_threshold and show this excludes H_k membership via Stability Condition bounds, or (2) Abandon fitness valley argument entirely and rely on pure geometric clustering (swarm-local barycenter + separation) without invoking fitness landscape. Option (2) is simpler and sufficient.",
+        "estimatedEffort": "High - fundamental to proof architecture, affects Steps 1, 3, and 7"
+      },
+      {
+        "itemId": "ACTION-003",
+        "priority": "CRITICAL",
+        "category": "Missing Lemma",
+        "title": "Prove Angular Bias Lemma for Directional Alignment",
+        "description": "The alignment inequality ⟨μ_x(I_1) - μ_x(J_1), x̄_1 - x̄_2⟩ ≥ c_align ||μ_x(I_1) - μ_x(J_1)|| · L requires proving cos(θ) ≥ c_angular > 0 where θ is angle between (μ_x(I_k) - x̄_k) and separation vector.",
+        "location": "Step 7, proofSteps[6]",
+        "sourceReviews": ["Gemini 2.5 Pro", "GPT-4o via Codex CLI"],
+        "suggestedFix": "Introduce new lemma: 'Angular Bias Lemma: For separated swarms with L ≥ D_min(ε), the outlier barycenter μ_x(I_k) satisfies ⟨μ_x(I_k) - x̄_k, u⟩ ≥ c_angular ||μ_x(I_k) - x̄_k|| where u = (x̄_k - x̄_l)/L and c_angular(ε) > 0 is N-uniform.' Derive c_angular from: (a) packing bounds (J_k concentrates near x̄_k), (b) clustering separation (I_k is far from J_k), and (c) either landscape structure OR pure geometric cone argument from clustering thresholds.",
+        "estimatedEffort": "High - new lemma requiring rigorous geometric proof"
+      },
+      {
+        "itemId": "ACTION-004",
+        "priority": "HIGH",
+        "category": "Missing Lemma",
+        "title": "Prove Geometric Variance Contribution Lemma",
+        "description": "Step 6 asserts 'far-side clusters have higher variance contribution than inter-swarm clusters' without proof. This is a non-trivial geometric claim that may depend on swarm shape.",
+        "location": "Step 6, proofSteps[5]",
+        "sourceReviews": ["Gemini 2.5 Pro", "GPT-4o via Codex CLI"],
+        "suggestedFix": "Prove lemma: 'For swarm k with barycenter x̄_k, and separation L ≫ R_spread, clusters C_far on the far side (⟨μ_x(C_far) - x̄_k, x̄_k - x̄_l⟩ > 0) have variance contribution ||μ_x(C_far) - x̄_k||² > ||μ_x(C_inter) - x̄_k||² for inter-swarm clusters C_inter of similar size.' Note: May require convexity or connectedness assumptions on swarm geometry to exclude pathological configurations (e.g., crescent-shaped swarms).",
+        "estimatedEffort": "High - geometric lemma potentially requiring shape assumptions"
+      },
+      {
+        "itemId": "ACTION-005",
+        "priority": "HIGH",
+        "category": "Dependency Verification",
+        "title": "Verify Environmental Richness Provides Quantitative Valley Bounds",
+        "description": "The sketch invokes Environmental Richness axiom to guarantee valley structure, but doesn't derive quantitative bounds on valley depth Δ_valley or orientation.",
+        "location": "Step 1, frameworkDependencies.axioms",
+        "sourceReviews": ["Gemini 2.5 Pro", "GPT-4o via Codex CLI"],
+        "suggestedFix": "Consult axiom statement in 01_fragile_gas_framework.md. If axiom provides multi-modality and valley depth bounds, derive explicit Δ_valley(L, κ) where κ is landscape curvature. If axiom only provides qualitative richness, may need to add additional landscape structure assumptions or abandon fitness valley argument (see ACTION-002).",
+        "estimatedEffort": "Medium - requires checking axiom statement and deriving bounds"
+      },
+      {
+        "itemId": "ACTION-006",
+        "priority": "MEDIUM",
+        "category": "Dependency Verification",
+        "title": "Verify Stability Condition Preconditions",
+        "description": "The sketch assumes Theorem 7.5.2.4 (Stability Condition) applies to swarms S_1, S_2 without verifying preconditions.",
+        "location": "Step 2, frameworkDependencies.theorems",
+        "sourceReviews": ["Gemini 2.5 Pro"],
+        "suggestedFix": "Check theorem statement in 03_cloning.md: what are the preconditions for Stability Condition? Verify that: (1) V_struct > R²_spread (given in lemma hypothesis), (2) Any additional requirements on swarm configuration, cloning parameters, or fitness structure. Add explicit verification to proof.",
+        "estimatedEffort": "Low - check and verify preconditions"
+      },
+      {
+        "itemId": "ACTION-007",
+        "priority": "MEDIUM",
+        "category": "Clarification",
+        "title": "Clarify Role of cor-between-group-dominance or Remove",
+        "description": "Corollary is listed in dependencies but its role is not explained in key steps or summary. Either use it explicitly or remove citation.",
+        "location": "frameworkDependencies.lemmas",
+        "sourceReviews": ["Gemini 2.5 Pro"],
+        "suggestedFix": "Codex review confirms cor-between-group-dominance provides the quantitative separation bound f_I f_J ||μ_x(I_k) - μ_x(J_k)||² ≥ c_sep(ε) V_struct used in Step 4. Make this explicit in Step 4 description and mention in summary.",
+        "estimatedEffort": "Low - clarify existing dependency usage"
+      },
+      {
+        "itemId": "ACTION-008",
+        "priority": "LOW",
+        "category": "Citation Correction",
+        "title": "Remove or Replace def-fitness-landscape Label",
+        "description": "Label def-fitness-landscape not found in registries according to Codex review.",
+        "location": "frameworkDependencies.definitions",
+        "sourceReviews": ["GPT-4o via Codex CLI"],
+        "suggestedFix": "Search for correct label in 01_fragile_gas_framework.md or remove if not needed. The fitness function F(x) may be defined in a different labeled definition.",
+        "estimatedEffort": "Low - verify and correct label"
+      },
+      {
+        "itemId": "ACTION-009",
+        "priority": "LOW",
+        "category": "Clarification",
+        "title": "Clarify 'Global Center of Mass' in Definition 6.3",
+        "description": "The term 'global center of mass' in Definition 6.3 is ambiguous - could mean cross-swarm or within-swarm global.",
+        "location": "Step 5, frameworkDependencies.definitions[0]",
+        "sourceReviews": ["GPT-4o via Codex CLI"],
+        "suggestedFix": "Explicitly state that 'global' in Definition 6.3 means 'within the swarm being analyzed', i.e., μ_x = μ_x(S_k) = x̄_k, NOT the cross-swarm midpoint (x̄_1 + x̄_2)/2. Add clarifying note in proof.",
+        "estimatedEffort": "Low - add clarification"
+      },
+      {
+        "itemId": "ACTION-010",
+        "priority": "LOW",
+        "category": "Document Correction",
+        "title": "Correct Clustering Reference in 04_wasserstein_contraction.md",
+        "description": "Current document uses cross-swarm midpoint in clustering contribution ordering (lines 644-655), contradicting Definition 6.3.",
+        "location": "docs/source/1_euclidean_gas/04_wasserstein_contraction.md:644-655",
+        "sourceReviews": ["GPT-4o via Codex CLI"],
+        "suggestedFix": "Revise document to measure contributions relative to μ_x(S_k) = x̄_k and re-derive far-side > inter-swarm ordering under separation hypothesis. This is the original flaw being corrected by this sketch.",
+        "estimatedEffort": "Medium - document revision and re-derivation"
+      },
+      {
+        "itemId": "ACTION-011",
+        "priority": "LOW",
+        "category": "Quantification",
+        "title": "Derive N-Uniformity of c_align(ε)",
+        "description": "The lemma statement requires c_align(ε) to be N-uniform (independent of number of walkers N), but this dependence is not explicitly derived.",
+        "location": "Statement, Step 7",
+        "sourceReviews": ["GPT-4o via Codex CLI"],
+        "suggestedFix": "After proving Angular Bias Lemma (ACTION-003), verify that c_angular depends only on ε, packing constants c_sep, separation threshold D_min(ε), and landscape parameters - all N-uniform. Then c_align = c_angular (const) is also N-uniform.",
+        "estimatedEffort": "Low - verify dependency structure"
+      }
+    ],
+    "confidenceStatement": "The proof sketch represents a significant improvement over the flawed prior approach by correctly identifying the clustering algorithm reference frame error. The core strategy is sound: using swarm-local barycenter + fitness constraints + geometric separation. However, three critical gaps must be addressed before expansion: (1) the log vs. value form of Stability Condition must be corrected, (2) the contradictory fitness valley claims must be resolved (recommend abandoning fitness argument in favor of pure geometry), and (3) the angular alignment constant must be rigorously derived via a new lemma. With these revisions, the sketch will be ready for full expansion. Estimated revision time: 1-2 weeks for a mathematician familiar with the framework."
+  },
+
+  "_validationMetadata": {
+    "preprocessing": {
+      "schema_validation": "PASSED",
+      "filled_fields": [],
+      "note": "No auto-fill needed, sketch was well-formed"
+    },
+    "dependency_verification": {
+      "unverified_dependencies": [
+        {
+          "label": "def-fitness-landscape",
+          "type": "definition",
+          "reason": "Not found in glossary or registry (per Codex review)"
+        }
+      ],
+      "verified_dependencies": [
+        {
+          "label": "def-axiom-environmental-richness",
+          "type": "axiom",
+          "found_in": "docs/glossary.md:164"
+        }
+      ]
+    },
+    "parsing_results": {
+      "gemini": {
+        "parsed": true,
+        "error": null
+      },
+      "codex": {
+        "parsed": true,
+        "error": null
+      }
+    }
+  }
+}

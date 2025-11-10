@@ -1,0 +1,121 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Proof Sketch Validation Cycle Report",
+  "description": "A comprehensive report containing the original proof sketch, dual validation reviews from multiple AI strategists, and a final synthesis with an action plan for the next iteration or for proceeding to full proof expansion.",
+  "type": "object",
+  "properties": {
+    "reportMetadata": {
+      "type": "object",
+      "properties": {
+        "sketchLabel": {
+          "type": "string",
+          "description": "The unique label of the proof sketch being reviewed (e.g., 'thm-main-convergence')."
+        },
+        "validationCycleId": {
+          "type": "string",
+          "format": "uuid",
+          "description": "A unique identifier for this specific review cycle."
+        },
+        "validationTimestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The ISO 8601 timestamp when this validation report was finalized."
+        }
+      },
+      "required": ["sketchLabel", "validationCycleId", "validationTimestamp"]
+    },
+    "originalProofSketch": {
+      "$ref": "https://json-schema.org/draft-07/schema#",
+      "description": "The full JSON object of the proof sketch that was submitted for review. It should conform to the 'Proof Sketch for Mathematical Frameworks' schema."
+    },
+    "reviews": {
+      "type": "array",
+      "description": "A collection of individual validation reviews from each AI strategist.",
+      "items": {
+        "$ref": "https://json-schema.org/draft-07/schema#",
+        "description": "A single review object conforming to the 'Proof Sketch Validation Review' schema."
+      },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "synthesisAndActionPlan": {
+      "type": "object",
+      "description": "A conclusive summary that synthesizes the feedback from all reviewers and defines the next steps.",
+      "properties": {
+        "finalDecision": {
+          "type": "string",
+          "description": "The final, consolidated decision on the status of the proof sketch.",
+          "enum": [
+            "Approved for Expansion",
+            "Requires Minor Revisions",
+            "Requires Major Revisions",
+            "Rejected - New Strategy Needed"
+          ]
+        },
+        "consensusAnalysis": {
+          "type": "object",
+          "description": "An analysis of where the reviewers' feedback converged and diverged.",
+          "properties": {
+            "pointsOfAgreement": {
+              "type": "array",
+              "description": "Critical issues or strengths that both reviewers independently identified.",
+              "items": { "type": "string" }
+            },
+            "pointsOfDisagreement": {
+              "type": "array",
+              "description": "Areas where reviewers provided conflicting feedback, requiring human judgment to resolve.",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "topic": { "type": "string" },
+                  "geminiView": { "type": "string" },
+                  "codexView": { "type": "string" },
+                  "resolution": { "type": "string" }
+                },
+                "required": ["topic", "geminiView", "codexView", "resolution"]
+              }
+            },
+            "summaryOfFindings": {
+              "type": "string",
+              "description": "A human-written narrative summarizing the overall feedback and justifying the final decision."
+            }
+          },
+          "required": ["pointsOfAgreement", "summaryOfFindings"]
+        },
+        "actionableItems": {
+          "type": "array",
+          "description": "A concrete, consolidated list of tasks to be performed before the sketch can be considered complete or ready for the next stage. This list is empty if the decision is 'Approved for Expansion'.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "itemId": { "type": "string" },
+              "description": { "type": "string", "description": "A clear description of the required revision or action." },
+              "priority": {
+                "type": "string",
+                "enum": ["Critical", "High", "Medium", "Low"],
+                "description": "The priority of the task. 'Critical' items must be fixed as they represent logical flaws."
+              },
+              "references": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Pointers to the specific parts of the sketch or reviews that this item addresses (e.g., 'Gemini Review: technicalDeepDiveValidation[0]')."
+              }
+            },
+            "required": ["itemId", "description", "priority"]
+          }
+        },
+        "confidenceStatement": {
+          "type": "string",
+          "description": "A final statement on the rock-solidness and viability of the sketch *after* the proposed actionable items are completed. For example: 'Once the two critical revisions are made, the sketch will be considered rock-solid and ready for full expansion.'"
+        }
+      },
+      "required": ["finalDecision", "consensusAnalysis", "actionableItems", "confidenceStatement"]
+    }
+  },
+  "required": [
+    "reportMetadata",
+    "originalProofSketch",
+    "reviews",
+    "synthesisAndActionPlan"
+  ]
+}

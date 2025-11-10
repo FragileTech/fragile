@@ -12,7 +12,7 @@ import dspy
 
 
 def configure_dspy(
-    model: str = "gemini/gemini-2.5-flash-latest",
+    model: str = "gemini/gemini-2.5-flash-lite-preview-09-2025",
     temperature: float = 0.0,
     max_tokens: int = 20000,
     verbose: bool = False,

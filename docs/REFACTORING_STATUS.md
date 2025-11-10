@@ -362,11 +362,11 @@ __all__ = [
 ]
 EOF
 
-# 3. Extract signatures.py
+# 3. Extract sketch_strategist.py
 # Read lines 631-813 from extract_workflow.py
 # Read lines 1420-1475 from extract_workflow.py
 # Read lines 244-344 from improve_workflow.py
-# Combine into signatures.py with proper imports
+# Combine into sketch_strategist.py with proper imports
 
 # 4. Extract extractors.py
 # Read lines 815-884, 1477-1538 from extract_workflow.py

@@ -2,27 +2,29 @@
   "document_id": "01_fragile_gas_framework",
   "stage": "directives",
   "directive_type": "theorem",
-  "generated_at": "2025-11-10T13:24:29.446897+00:00",
+  "generated_at": "2025-11-10T13:57:32.693630+00:00",
   "count": 24,
   "items": [
     {
       "directive_type": "theorem",
       "label": "thm-revival-guarantee",
       "title": "Almost‑sure revival under the global constraint",
-      "start_line": 619,
-      "end_line": 628,
+      "start_line": 621,
+      "end_line": 632,
       "header_lines": [
-        620
+        622
       ],
-      "content_start": 621,
-      "content_end": 627,
-      "content": "621: :::{prf:theorem} Almost‑sure revival under the global constraint\n622: :label: thm-revival-guarantee\n623: Assume the global constraint $\\varepsilon_{\\text{clone}}\\,p_{\\max} < \\eta^{\\alpha+\\beta}$. Let $\\mathcal S$ be any swarm with at least one alive walker ($|\\mathcal A(\\mathcal S)|\\ge 1$) and let $i\\in\\mathcal D(\\mathcal S)$ be dead. Then, under the cloning rule with threshold $T_{\\text{clone}}\\sim\\mathrm{Unif}(0,p_{\\max})$ and a per‑dead‑walker score $S_i$ computed from an alive companion as in §16.1, we have\n624: \n625: $$\n626: \\mathbb P\\big[\\text{$i$ is revived in the cloning stage}\\big] \\;=\\;1.\n627: $$",
+      "content_start": 623,
+      "content_end": 631,
+      "content": "623: :::{prf:theorem} Almost‑sure revival under the global constraint\n624: :label: thm-revival-guarantee\n625: Assume the global constraint $\\varepsilon_{\\text{clone}}\\,p_{\\max} < \\eta^{\\alpha+\\beta}$. Let $\\mathcal S$ be any swarm with at least one alive walker ($|\\mathcal A(\\mathcal S)|\\ge 1$) and let $i\\in\\mathcal D(\\mathcal S)$ be dead. Then, under the cloning rule with threshold $T_{\\text{clone}}\\sim\\mathrm{Unif}(0,p_{\\max})$ and a per‑dead‑walker score $S_i$ computed from an alive companion as in §16.1, we have\n626: \n627: $$\n628: \\mathbb P\\big[\\text{$i$ is revived in the cloning stage}\\big] \\;=\\;1.\n629: $$\n630: \n631: In particular, $S_i > p_{\\max}$ surely, hence $S_i > T_{\\text{clone}}$ for every threshold realization. The conclusion holds also when $|\\mathcal A(\\mathcal S)|=1$ (single‑survivor case) since the companion selection measure assigns the unique alive index to every dead walker (cf. [](#def-companion-selection-measure)).",
       "metadata": {
         "label": "thm-revival-guarantee"
       },
       "section": "## 3. Axiomatic Foundations: A Parametric Debugging Framework",
-      "references": [],
-      "raw_directive": "619: :::\n620: \n621: :::{prf:theorem} Almost‑sure revival under the global constraint\n622: :label: thm-revival-guarantee\n623: Assume the global constraint $\\varepsilon_{\\text{clone}}\\,p_{\\max} < \\eta^{\\alpha+\\beta}$. Let $\\mathcal S$ be any swarm with at least one alive walker ($|\\mathcal A(\\mathcal S)|\\ge 1$) and let $i\\in\\mathcal D(\\mathcal S)$ be dead. Then, under the cloning rule with threshold $T_{\\text{clone}}\\sim\\mathrm{Unif}(0,p_{\\max})$ and a per‑dead‑walker score $S_i$ computed from an alive companion as in §16.1, we have\n624: \n625: $$\n626: \\mathbb P\\big[\\text{$i$ is revived in the cloning stage}\\big] \\;=\\;1.\n627: $$\n628: ",
+      "references": [
+        "02_euclidean_gas"
+      ],
+      "raw_directive": "621: :::\n622: \n623: :::{prf:theorem} Almost‑sure revival under the global constraint\n624: :label: thm-revival-guarantee\n625: Assume the global constraint $\\varepsilon_{\\text{clone}}\\,p_{\\max} < \\eta^{\\alpha+\\beta}$. Let $\\mathcal S$ be any swarm with at least one alive walker ($|\\mathcal A(\\mathcal S)|\\ge 1$) and let $i\\in\\mathcal D(\\mathcal S)$ be dead. Then, under the cloning rule with threshold $T_{\\text{clone}}\\sim\\mathrm{Unif}(0,p_{\\max})$ and a per‑dead‑walker score $S_i$ computed from an alive companion as in §16.1, we have\n626: \n627: $$\n628: \\mathbb P\\big[\\text{$i$ is revived in the cloning stage}\\big] \\;=\\;1.\n629: $$\n630: \n631: In particular, $S_i > p_{\\max}$ surely, hence $S_i > T_{\\text{clone}}$ for every threshold realization. The conclusion holds also when $|\\mathcal A(\\mathcal S)|=1$ (single‑survivor case) since the companion selection measure assigns the unique alive index to every dead walker (cf. [](#def-companion-selection-measure)).\n632: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -35,20 +37,20 @@
       "directive_type": "theorem",
       "label": "thm-mean-square-standardization-error",
       "title": "Asymptotic Behavior of the Mean-Square Standardization Error",
-      "start_line": 890,
-      "end_line": 910,
+      "start_line": 898,
+      "end_line": 918,
       "header_lines": [
-        891
+        899
       ],
-      "content_start": 893,
-      "content_end": 909,
-      "content": "893: :label: thm-mean-square-standardization-error\n894: \n895: The continuity of the **N-Dimensional Standardization Operator** $z(\\mathcal{S})$ depends on the coupled effects of two distinct error sources whose expected growth rates are summed.\n896: \n897: *   **Core Principle:** The total **expected** squared error in the standardization operator's output, $\\mathbb{E}[\\| \\mathbf{z}_1 - \\mathbf{z}_2 \\|_2^2]$, is bounded by the sum of the **Expected Squared Value Error** ($E^2_{V,ms}$) and the **Expected Squared Structural Error** ($E^2_{S,ms}$).\n898: \n899: *   **Mathematical Result (General Form):** For a large number of alive walkers, $k_1 = |\\mathcal{A}(\\mathcal{S}_1)|$, the total expected error has an asymptotic growth rate given by the sum of the growth rates of its two components:\n900: \n901: \n902: \n903: $$\n904: \\boxed{\n905:     \\mathbb{E}[\\| \\mathbf{z}_1 - \\mathbf{z}_2 \\|_2^2] \\in O(E_{V,ms}^2(k_1)) + O(E_{S,ms}^2(k_1))\n906:     }\n907: $$\n908: \n909: *   **Implications & Failure Modes:** The overall mean-square continuity of the standardization pipeline is governed by the operational regime of the swarm. The analysis reveals a critical distinction between normal operation and catastrophic collapse.",
+      "content_start": 901,
+      "content_end": 917,
+      "content": "901: :label: thm-mean-square-standardization-error\n902: \n903: The continuity of the **N-Dimensional Standardization Operator** $z(\\mathcal{S})$ depends on the coupled effects of two distinct error sources whose expected growth rates are summed.\n904: \n905: *   **Core Principle:** The total **expected** squared error in the standardization operator's output, $\\mathbb{E}[\\| \\mathbf{z}_1 - \\mathbf{z}_2 \\|_2^2]$, is bounded by the sum of the **Expected Squared Value Error** ($E^2_{V,ms}$) and the **Expected Squared Structural Error** ($E^2_{S,ms}$).\n906: \n907: *   **Mathematical Result (General Form):** For a large number of alive walkers, $k_1 = |\\mathcal{A}(\\mathcal{S}_1)|$, the total expected error has an asymptotic growth rate given by the sum of the growth rates of its two components:\n908: \n909: \n910: \n911: $$\n912: \\boxed{\n913:     \\mathbb{E}[\\| \\mathbf{z}_1 - \\mathbf{z}_2 \\|_2^2] \\in O(E_{V,ms}^2(k_1)) + O(E_{S,ms}^2(k_1))\n914:     }\n915: $$\n916: \n917: *   **Implications & Failure Modes:** The overall mean-square continuity of the standardization pipeline is governed by the operational regime of the swarm. The analysis reveals a critical distinction between normal operation and catastrophic collapse.",
       "metadata": {
         "label": "thm-mean-square-standardization-error"
       },
       "section": "## 3. Axiomatic Foundations: A Parametric Debugging Framework",
       "references": [],
-      "raw_directive": "890: The following theorem, which is a key result of the analysis in Section 11, establishes the asymptotic behavior of these error components.\n891: \n892: :::{prf:theorem} Asymptotic Behavior of the Mean-Square Standardization Error\n893: :label: thm-mean-square-standardization-error\n894: \n895: The continuity of the **N-Dimensional Standardization Operator** $z(\\mathcal{S})$ depends on the coupled effects of two distinct error sources whose expected growth rates are summed.\n896: \n897: *   **Core Principle:** The total **expected** squared error in the standardization operator's output, $\\mathbb{E}[\\| \\mathbf{z}_1 - \\mathbf{z}_2 \\|_2^2]$, is bounded by the sum of the **Expected Squared Value Error** ($E^2_{V,ms}$) and the **Expected Squared Structural Error** ($E^2_{S,ms}$).\n898: \n899: *   **Mathematical Result (General Form):** For a large number of alive walkers, $k_1 = |\\mathcal{A}(\\mathcal{S}_1)|$, the total expected error has an asymptotic growth rate given by the sum of the growth rates of its two components:\n900: \n901: \n902: \n903: $$\n904: \\boxed{\n905:     \\mathbb{E}[\\| \\mathbf{z}_1 - \\mathbf{z}_2 \\|_2^2] \\in O(E_{V,ms}^2(k_1)) + O(E_{S,ms}^2(k_1))\n906:     }\n907: $$\n908: \n909: *   **Implications & Failure Modes:** The overall mean-square continuity of the standardization pipeline is governed by the operational regime of the swarm. The analysis reveals a critical distinction between normal operation and catastrophic collapse.\n910:     1.  **Regime 1: Normal Operation (Asymptotically Stable):** Under normal conditions where walker attrition is low and the number of status changes ($n_c$) is small, the structural error term is negligible. The dominant error is the **expected value error**, which, for the benchmark case of an empirical aggregator and distance-to-companion measurement, **is constant with respect to swarm size** ($E^2_{V,ms} \\in O(1)$). This is a powerful result, indicating that under stable conditions, the algorithm's average measurement process **does not become noisier as the swarm gets larger**. The primary bottleneck for stability in this regime is not swarm size but the **extreme sensitivity to the regularization parameter**, as all error sources are amplified by a factor of up to **$O(\\varepsilon_{\\text{std}}^{-6})$**.",
+      "raw_directive": "898: The following theorem, which is a key result of the analysis in Section 11, establishes the asymptotic behavior of these error components.\n899: \n900: :::{prf:theorem} Asymptotic Behavior of the Mean-Square Standardization Error\n901: :label: thm-mean-square-standardization-error\n902: \n903: The continuity of the **N-Dimensional Standardization Operator** $z(\\mathcal{S})$ depends on the coupled effects of two distinct error sources whose expected growth rates are summed.\n904: \n905: *   **Core Principle:** The total **expected** squared error in the standardization operator's output, $\\mathbb{E}[\\| \\mathbf{z}_1 - \\mathbf{z}_2 \\|_2^2]$, is bounded by the sum of the **Expected Squared Value Error** ($E^2_{V,ms}$) and the **Expected Squared Structural Error** ($E^2_{S,ms}$).\n906: \n907: *   **Mathematical Result (General Form):** For a large number of alive walkers, $k_1 = |\\mathcal{A}(\\mathcal{S}_1)|$, the total expected error has an asymptotic growth rate given by the sum of the growth rates of its two components:\n908: \n909: \n910: \n911: $$\n912: \\boxed{\n913:     \\mathbb{E}[\\| \\mathbf{z}_1 - \\mathbf{z}_2 \\|_2^2] \\in O(E_{V,ms}^2(k_1)) + O(E_{S,ms}^2(k_1))\n914:     }\n915: $$\n916: \n917: *   **Implications & Failure Modes:** The overall mean-square continuity of the standardization pipeline is governed by the operational regime of the swarm. The analysis reveals a critical distinction between normal operation and catastrophic collapse.\n918:     1.  **Regime 1: Normal Operation (Asymptotically Stable):** Under normal conditions where walker attrition is low and the number of status changes ($n_c$) is small, the structural error term is negligible. The dominant error is the **expected value error**, which, for the benchmark case of an empirical aggregator and distance-to-companion measurement, **is constant with respect to swarm size** ($E^2_{V,ms} \\in O(1)$). This is a powerful result, indicating that under stable conditions, the algorithm's average measurement process **does not become noisier as the swarm gets larger**. The primary bottleneck for stability in this regime is not swarm size but the **extreme sensitivity to the regularization parameter**, as all error sources are amplified by a factor of up to **$O(\\varepsilon_{\\text{std}}^{-6})$**.",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -61,16 +63,16 @@
       "directive_type": "theorem",
       "label": "thm-forced-activity",
       "title": "Theorem of Forced Activity",
-      "start_line": 995,
-      "end_line": 1014,
+      "start_line": 1003,
+      "end_line": 1022,
       "header_lines": [
-        996,
-        999,
-        1000
+        1004,
+        1007,
+        1008
       ],
-      "content_start": 1001,
-      "content_end": 1013,
-      "content": "1001: :class: important\n1002: :open:\n1003: This theorem is beautiful because it guarantees the swarm can never get completely stuck! Here's the intuition:\n1004: \n1005: **The Setup**: If you have:\n1006: 1. **Spread out walkers** (covering enough space to sense reward differences)\n1007: 2. **Rich environment** (reward actually varies across space)\n1008: 3. **Non-zero amplification** (the algorithm pays attention to rewards)\n1009: 4. **Some noise** (walkers can explore)\n1010: \n1011: **The Conclusion**: Then some cloning MUST happen - the swarm can't just sit still.\n1012: \n1013: **Why it works**: Spread-out walkers in a rich environment will experience different rewards. This creates fitness differences. With amplification > 0, these differences get magnified into different cloning probabilities. Someone will always be \"fit enough\" to clone, keeping the swarm active.",
+      "content_start": 1009,
+      "content_end": 1021,
+      "content": "1009: :class: important\n1010: :open:\n1011: This theorem is beautiful because it guarantees the swarm can never get completely stuck! Here's the intuition:\n1012: \n1013: **The Setup**: If you have:\n1014: 1. **Spread out walkers** (covering enough space to sense reward differences)\n1015: 2. **Rich environment** (reward actually varies across space)\n1016: 3. **Non-zero amplification** (the algorithm pays attention to rewards)\n1017: 4. **Some noise** (walkers can explore)\n1018: \n1019: **The Conclusion**: Then some cloning MUST happen - the swarm can't just sit still.\n1020: \n1021: **Why it works**: Spread-out walkers in a rich environment will experience different rewards. This creates fitness differences. With amplification > 0, these differences get magnified into different cloning probabilities. Someone will always be \"fit enough\" to clone, keeping the swarm active.",
       "metadata": {
         "label": "thm-forced-activity",
         "class": "important",
@@ -78,7 +80,7 @@
       },
       "section": "## 3. Axiomatic Foundations: A Parametric Debugging Framework",
       "references": [],
-      "raw_directive": "995: For the algorithm's adaptive and contractive forces to function, a swarm that is not collapsed to a single point must generate a non-zero probability of cloning. This is the engine of adaptation.\n996: \n997: :::{prf:theorem} Theorem of Forced Activity\n998: :label: thm-forced-activity\n999: \n1000: :::{admonition} The \"No Stagnation\" Guarantee\n1001: :class: important\n1002: :open:\n1003: This theorem is beautiful because it guarantees the swarm can never get completely stuck! Here's the intuition:\n1004: \n1005: **The Setup**: If you have:\n1006: 1. **Spread out walkers** (covering enough space to sense reward differences)\n1007: 2. **Rich environment** (reward actually varies across space)\n1008: 3. **Non-zero amplification** (the algorithm pays attention to rewards)\n1009: 4. **Some noise** (walkers can explore)\n1010: \n1011: **The Conclusion**: Then some cloning MUST happen - the swarm can't just sit still.\n1012: \n1013: **Why it works**: Spread-out walkers in a rich environment will experience different rewards. This creates fitness differences. With amplification > 0, these differences get magnified into different cloning probabilities. Someone will always be \"fit enough\" to clone, keeping the swarm active.\n1014: ",
+      "raw_directive": "1003: For the algorithm's adaptive and contractive forces to function, a swarm that is not collapsed to a single point must generate a non-zero probability of cloning. This is the engine of adaptation.\n1004: \n1005: :::{prf:theorem} Theorem of Forced Activity\n1006: :label: thm-forced-activity\n1007: \n1008: :::{admonition} The \"No Stagnation\" Guarantee\n1009: :class: important\n1010: :open:\n1011: This theorem is beautiful because it guarantees the swarm can never get completely stuck! Here's the intuition:\n1012: \n1013: **The Setup**: If you have:\n1014: 1. **Spread out walkers** (covering enough space to sense reward differences)\n1015: 2. **Rich environment** (reward actually varies across space)\n1016: 3. **Non-zero amplification** (the algorithm pays attention to rewards)\n1017: 4. **Some noise** (walkers can explore)\n1018: \n1019: **The Conclusion**: Then some cloning MUST happen - the swarm can't just sit still.\n1020: \n1021: **Why it works**: Spread-out walkers in a rich environment will experience different rewards. This creates fitness differences. With amplification > 0, these differences get magnified into different cloning probabilities. Someone will always be \"fit enough\" to clone, keeping the swarm active.\n1022: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -91,20 +93,23 @@
       "directive_type": "theorem",
       "label": "thm-total-error-status-bound",
       "title": "Total Error Bound in Terms of Status Changes",
-      "start_line": 1575,
-      "end_line": 1584,
+      "start_line": 1587,
+      "end_line": 1598,
       "header_lines": [
-        1576
+        1588
       ],
-      "content_start": 1577,
-      "content_end": 1583,
-      "content": "1577: :label: thm-total-error-status-bound\n1578: Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states, and for a given walker $i$, let $S_1$ and $S_2$ be its companion support sets, with $|S_1| > 0$. Let the status of each potential companion $j$ be given by $s_{1,j}$ and $s_{2,j}$ in the respective swarms. Let $f_j = f(x_{2,j})$ be a function bounded by $M_f$. Let $n_c$ be the total number of status changes in the swarm.\n1579: The total error $E = |\\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S}_1)}[f_j] - \\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S}_2)}[f_j]|$ is bounded by:\n1580: $$\n1581: \n1582: E \\le \\frac{2 M_f}{|S_1|} \\cdot n_c\n1583: ",
+      "content_start": 1589,
+      "content_end": 1597,
+      "content": "1589: :label: thm-total-error-status-bound\n1590: Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states, and for a given walker $i$, let $S_1$ and $S_2$ be its companion support sets, with $|S_1| > 0$. Let the status of each potential companion $j$ be given by $s_{1,j}$ and $s_{2,j}$ in the respective swarms. Let $f_j = f(x_{2,j})$ be a function bounded by $M_f$. Let $n_c$ be the total number of status changes in the swarm.\n1591: The total error $E = |\\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S}_1)}[f_j] - \\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S}_2)}[f_j]|$ is bounded by:\n1592: $$\n1593: \n1594: E \\le \\frac{2 M_f}{|S_1|} \\cdot n_c\n1595: \n1596: $$\n1597: ",
       "metadata": {
         "label": "thm-total-error-status-bound"
       },
       "section": "## 8. Companion Selection",
-      "references": [],
-      "raw_directive": "1575: #### 7.2.3 Theorem: Total Error Bound in Terms of Status Changes\n1576: :::{prf:theorem} Total Error Bound in Terms of Status Changes\n1577: :label: thm-total-error-status-bound\n1578: Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states, and for a given walker $i$, let $S_1$ and $S_2$ be its companion support sets, with $|S_1| > 0$. Let the status of each potential companion $j$ be given by $s_{1,j}$ and $s_{2,j}$ in the respective swarms. Let $f_j = f(x_{2,j})$ be a function bounded by $M_f$. Let $n_c$ be the total number of status changes in the swarm.\n1579: The total error $E = |\\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S}_1)}[f_j] - \\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S}_2)}[f_j]|$ is bounded by:\n1580: $$\n1581: \n1582: E \\le \\frac{2 M_f}{|S_1|} \\cdot n_c\n1583: \n1584: $$",
+      "references": [
+        "02_euclidean_gas",
+        "09_kl_convergence"
+      ],
+      "raw_directive": "1587: #### 7.2.3 Theorem: Total Error Bound in Terms of Status Changes\n1588: :::{prf:theorem} Total Error Bound in Terms of Status Changes\n1589: :label: thm-total-error-status-bound\n1590: Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states, and for a given walker $i$, let $S_1$ and $S_2$ be its companion support sets, with $|S_1| > 0$. Let the status of each potential companion $j$ be given by $s_{1,j}$ and $s_{2,j}$ in the respective swarms. Let $f_j = f(x_{2,j})$ be a function bounded by $M_f$. Let $n_c$ be the total number of status changes in the swarm.\n1591: The total error $E = |\\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S}_1)}[f_j] - \\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S}_2)}[f_j]|$ is bounded by:\n1592: $$\n1593: \n1594: E \\le \\frac{2 M_f}{|S_1|} \\cdot n_c\n1595: \n1596: $$\n1597: \n1598: This general error bound is applied in {prf:ref}`02_euclidean_gas` for distance operator analysis and in {prf:ref}`09_kl_convergence` for KL-divergence convergence proofs.",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -117,20 +122,22 @@
       "directive_type": "theorem",
       "label": "thm-rescale-function-lipschitz",
       "title": "Global Lipschitz Continuity of the Smooth Rescale Function",
-      "start_line": 1970,
-      "end_line": 1981,
+      "start_line": 1984,
+      "end_line": 1997,
       "header_lines": [
-        1971
+        1985
       ],
-      "content_start": 1972,
-      "content_end": 1980,
-      "content": "1972: :label: thm-rescale-function-lipschitz\n1973: The **Smooth Piecewise Rescale Function** $g_A(z)$ is globally Lipschitz continuous on $\\mathbb{R}$. Its Lipschitz constant, $L_{g_A}$, is the supremum of the absolute value of its first derivative, and is given by:\n1974: $$\n1975: \n1976: \\boxed{\n1977: L_{g_A} = \\sup_{z \\in \\mathbb{R}} |g'_A(z)| = L_P = 1 + \\frac{(3\\log(2)-2)^2}{3(2\\log(2)-1)} \\approx 1.0054\n1978: }\n1979: \n1980: $$",
+      "content_start": 1986,
+      "content_end": 1996,
+      "content": "1986: :label: thm-rescale-function-lipschitz\n1987: The **Smooth Piecewise Rescale Function** $g_A(z)$ is globally Lipschitz continuous on $\\mathbb{R}$. Its Lipschitz constant, $L_{g_A}$, is the supremum of the absolute value of its first derivative, and is given by:\n1988: $$\n1989: \n1990: \\boxed{\n1991: L_{g_A} = \\sup_{z \\in \\mathbb{R}} |g'_A(z)| = L_P = 1 + \\frac{(3\\log(2)-2)^2}{3(2\\log(2)-1)} \\approx 1.0054\n1992: }\n1993: \n1994: $$\n1995: where $L_P$ is the uniform upper bound on the derivative of the polynomial patch from [](#lem-cubic-patch-derivative-bounds).\n1996: ",
       "metadata": {
         "label": "thm-rescale-function-lipschitz"
       },
       "section": "## 9. Rescale Transformation",
-      "references": [],
-      "raw_directive": "1970: ##### 8.2.2.7 Theorem: Global Lipschitz Continuity of the Smooth Rescale Function\n1971: :::{prf:theorem} Global Lipschitz Continuity of the Smooth Rescale Function\n1972: :label: thm-rescale-function-lipschitz\n1973: The **Smooth Piecewise Rescale Function** $g_A(z)$ is globally Lipschitz continuous on $\\mathbb{R}$. Its Lipschitz constant, $L_{g_A}$, is the supremum of the absolute value of its first derivative, and is given by:\n1974: $$\n1975: \n1976: \\boxed{\n1977: L_{g_A} = \\sup_{z \\in \\mathbb{R}} |g'_A(z)| = L_P = 1 + \\frac{(3\\log(2)-2)^2}{3(2\\log(2)-1)} \\approx 1.0054\n1978: }\n1979: \n1980: $$\n1981: where $L_P$ is the uniform upper bound on the derivative of the polynomial patch from [](#lem-cubic-patch-derivative-bounds).",
+      "references": [
+        "02_euclidean_gas"
+      ],
+      "raw_directive": "1984: ##### 8.2.2.7 Theorem: Global Lipschitz Continuity of the Smooth Rescale Function\n1985: :::{prf:theorem} Global Lipschitz Continuity of the Smooth Rescale Function\n1986: :label: thm-rescale-function-lipschitz\n1987: The **Smooth Piecewise Rescale Function** $g_A(z)$ is globally Lipschitz continuous on $\\mathbb{R}$. Its Lipschitz constant, $L_{g_A}$, is the supremum of the absolute value of its first derivative, and is given by:\n1988: $$\n1989: \n1990: \\boxed{\n1991: L_{g_A} = \\sup_{z \\in \\mathbb{R}} |g'_A(z)| = L_P = 1 + \\frac{(3\\log(2)-2)^2}{3(2\\log(2)-1)} \\approx 1.0054\n1992: }\n1993: \n1994: $$\n1995: where $L_P$ is the uniform upper bound on the derivative of the polynomial patch from [](#lem-cubic-patch-derivative-bounds).\n1996: \n1997: This Lipschitz continuity result enables the standardization and rescale continuity analysis in {prf:ref}`02_euclidean_gas`.",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -143,20 +150,20 @@
       "directive_type": "theorem",
       "label": "thm-canonical-logistic-validity",
       "title": "The Canonical Logistic Function is a Valid Rescale Function",
-      "start_line": 2088,
-      "end_line": 2091,
+      "start_line": 2106,
+      "end_line": 2109,
       "header_lines": [
-        2089
+        2107
       ],
-      "content_start": 2090,
-      "content_end": 2090,
-      "content": "2090: :label: thm-canonical-logistic-validity",
+      "content_start": 2108,
+      "content_end": 2108,
+      "content": "2108: :label: thm-canonical-logistic-validity",
       "metadata": {
         "label": "thm-canonical-logistic-validity"
       },
       "section": "## 9. Rescale Transformation",
       "references": [],
-      "raw_directive": "2088: #### 8.3.2. Theorem: The Canonical Logistic Function is a Valid Rescale Function\n2089: :::{prf:theorem} The Canonical Logistic Function is a Valid Rescale Function\n2090: :label: thm-canonical-logistic-validity\n2091: The **Canonical Logistic Rescale Function** defined in [](#def-canonical-logistic-rescale-function-example) satisfies all four conditions of the **Axiom of a Well-Behaved Rescale Function** ([](#def-axiom-rescale-function)).",
+      "raw_directive": "2106: #### 8.3.2. Theorem: The Canonical Logistic Function is a Valid Rescale Function\n2107: :::{prf:theorem} The Canonical Logistic Function is a Valid Rescale Function\n2108: :label: thm-canonical-logistic-validity\n2109: The **Canonical Logistic Rescale Function** defined in [](#def-canonical-logistic-rescale-function-example) satisfies all four conditions of the **Axiom of a Well-Behaved Rescale Function** ([](#def-axiom-rescale-function)).",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -169,20 +176,20 @@
       "directive_type": "theorem",
       "label": "thm-expected-raw-distance-bound",
       "title": "Bound on the Expected Raw Distance Vector Change",
-      "start_line": 2606,
-      "end_line": 2619,
+      "start_line": 2624,
+      "end_line": 2637,
       "header_lines": [
-        2607
+        2625
       ],
-      "content_start": 2608,
-      "content_end": 2618,
-      "content": "2608: :label: thm-expected-raw-distance-bound\n2609: Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states, with $|\\mathcal{A}(\\mathcal{S}_1)| = k_1 \\ge 2$. Let $\\mathbb{E}[\\mathbf{d}(\\mathcal{S})]$ be the $N$-dimensional vector of expected raw distances.\n2610: The squared Euclidean distance between the expected raw distance vectors of the two swarms is deterministically bounded by a function of the displacement components:\n2611: $$\n2612: \n2613: \\| \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_1)] - \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_2)] \\|_2^2 \\le C_{\\text{pos},d} \\cdot \\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) + C_{\\text{status},d}^{(1)} \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2) + C_{\\text{status},d}^{(2)}(k_1) \\cdot n_c^2(\\mathcal{S}_1, \\mathcal{S}_2)\n2614: \n2615: $$\n2616: where the **Expected Distance Error Coefficients** are defined as:\n2617: *   $C_{\\text{pos},d} := 12$\n2618: *   $C_{\\text{status},d}^{(1)} := D_{\\mathcal{Y}}^2$",
+      "content_start": 2626,
+      "content_end": 2636,
+      "content": "2626: :label: thm-expected-raw-distance-bound\n2627: Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states, with $|\\mathcal{A}(\\mathcal{S}_1)| = k_1 \\ge 2$. Let $\\mathbb{E}[\\mathbf{d}(\\mathcal{S})]$ be the $N$-dimensional vector of expected raw distances.\n2628: The squared Euclidean distance between the expected raw distance vectors of the two swarms is deterministically bounded by a function of the displacement components:\n2629: $$\n2630: \n2631: \\| \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_1)] - \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_2)] \\|_2^2 \\le C_{\\text{pos},d} \\cdot \\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) + C_{\\text{status},d}^{(1)} \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2) + C_{\\text{status},d}^{(2)}(k_1) \\cdot n_c^2(\\mathcal{S}_1, \\mathcal{S}_2)\n2632: \n2633: $$\n2634: where the **Expected Distance Error Coefficients** are defined as:\n2635: *   $C_{\\text{pos},d} := 12$\n2636: *   $C_{\\text{status},d}^{(1)} := D_{\\mathcal{Y}}^2$",
       "metadata": {
         "label": "thm-expected-raw-distance-bound"
       },
       "section": "## 11. Distance-to-Companion Measurement",
       "references": [],
-      "raw_directive": "2606: This theorem consolidates the error bounds from the preceding lemmas to establish a deterministic bound on the change of the *expected* raw distance vector. This bound is expressed as a function of the formal displacement components ([](#def-displacement-components)) and serves as the deterministic part of the continuity axiom for the distance operator.\n2607: :::{prf:theorem} Bound on the Expected Raw Distance Vector Change\n2608: :label: thm-expected-raw-distance-bound\n2609: Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states, with $|\\mathcal{A}(\\mathcal{S}_1)| = k_1 \\ge 2$. Let $\\mathbb{E}[\\mathbf{d}(\\mathcal{S})]$ be the $N$-dimensional vector of expected raw distances.\n2610: The squared Euclidean distance between the expected raw distance vectors of the two swarms is deterministically bounded by a function of the displacement components:\n2611: $$\n2612: \n2613: \\| \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_1)] - \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_2)] \\|_2^2 \\le C_{\\text{pos},d} \\cdot \\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) + C_{\\text{status},d}^{(1)} \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2) + C_{\\text{status},d}^{(2)}(k_1) \\cdot n_c^2(\\mathcal{S}_1, \\mathcal{S}_2)\n2614: \n2615: $$\n2616: where the **Expected Distance Error Coefficients** are defined as:\n2617: *   $C_{\\text{pos},d} := 12$\n2618: *   $C_{\\text{status},d}^{(1)} := D_{\\mathcal{Y}}^2$\n2619: *   $C_{\\text{status},d}^{(2)}(k_1) := \\frac{8 k_1 D_{\\mathcal{Y}}^2}{(k_1 - 1)^2}$",
+      "raw_directive": "2624: This theorem consolidates the error bounds from the preceding lemmas to establish a deterministic bound on the change of the *expected* raw distance vector. This bound is expressed as a function of the formal displacement components ([](#def-displacement-components)) and serves as the deterministic part of the continuity axiom for the distance operator.\n2625: :::{prf:theorem} Bound on the Expected Raw Distance Vector Change\n2626: :label: thm-expected-raw-distance-bound\n2627: Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states, with $|\\mathcal{A}(\\mathcal{S}_1)| = k_1 \\ge 2$. Let $\\mathbb{E}[\\mathbf{d}(\\mathcal{S})]$ be the $N$-dimensional vector of expected raw distances.\n2628: The squared Euclidean distance between the expected raw distance vectors of the two swarms is deterministically bounded by a function of the displacement components:\n2629: $$\n2630: \n2631: \\| \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_1)] - \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_2)] \\|_2^2 \\le C_{\\text{pos},d} \\cdot \\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) + C_{\\text{status},d}^{(1)} \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2) + C_{\\text{status},d}^{(2)}(k_1) \\cdot n_c^2(\\mathcal{S}_1, \\mathcal{S}_2)\n2632: \n2633: $$\n2634: where the **Expected Distance Error Coefficients** are defined as:\n2635: *   $C_{\\text{pos},d} := 12$\n2636: *   $C_{\\text{status},d}^{(1)} := D_{\\mathcal{Y}}^2$\n2637: *   $C_{\\text{status},d}^{(2)}(k_1) := \\frac{8 k_1 D_{\\mathcal{Y}}^2}{(k_1 - 1)^2}$",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -195,20 +202,20 @@
       "directive_type": "theorem",
       "label": "thm-expected-raw-distance-k1",
       "title": "Deterministic Behavior of the Expected Raw Distance Vector at $k=1$",
-      "start_line": 2633,
-      "end_line": 2648,
+      "start_line": 2651,
+      "end_line": 2666,
       "header_lines": [
-        2634
+        2652
       ],
-      "content_start": 2635,
-      "content_end": 2647,
-      "content": "2635: :label: thm-expected-raw-distance-k1\n2636: Let $\\mathcal{S}$ be a swarm state with exactly one alive walker, $|\\mathcal{A}(\\mathcal{S})| = 1$. The N-dimensional vector of expected raw distances, $\\mathbb{E}[\\mathbf{d}(\\mathcal{S})]$, is deterministically the zero vector.\n2637: $$\n2638: \n2639: |\\mathcal{A}(\\mathcal{S})| = 1 \\implies \\mathbb{E}[\\mathbf{d}(\\mathcal{S})] = \\mathbf{0}\n2640: \n2641: $$\n2642: **Implication for Continuity:**\n2643: Any transition between a state $\\mathcal{S}_1$ with $|\\mathcal{A}(\\mathcal{S}_1)| \\ge 2$ and a state $\\mathcal{S}_2$ with $|\\mathcal{A}(\\mathcal{S}_2)| = 1$ induces a discontinuous change in the expected raw distance vector. The magnitude of this change is not governed by the Lipschitz bounds derived for the $k \\geq 2$ regime, but is instead given by the norm of the vector in the $k \\geq 2$ state:\n2644: $$\n2645: \n2646: \\| \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_1)] - \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_2)] \\|_2^2 = \\| \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_1)] \\|_2^2\n2647: ",
+      "content_start": 2653,
+      "content_end": 2665,
+      "content": "2653: :label: thm-expected-raw-distance-k1\n2654: Let $\\mathcal{S}$ be a swarm state with exactly one alive walker, $|\\mathcal{A}(\\mathcal{S})| = 1$. The N-dimensional vector of expected raw distances, $\\mathbb{E}[\\mathbf{d}(\\mathcal{S})]$, is deterministically the zero vector.\n2655: $$\n2656: \n2657: |\\mathcal{A}(\\mathcal{S})| = 1 \\implies \\mathbb{E}[\\mathbf{d}(\\mathcal{S})] = \\mathbf{0}\n2658: \n2659: $$\n2660: **Implication for Continuity:**\n2661: Any transition between a state $\\mathcal{S}_1$ with $|\\mathcal{A}(\\mathcal{S}_1)| \\ge 2$ and a state $\\mathcal{S}_2$ with $|\\mathcal{A}(\\mathcal{S}_2)| = 1$ induces a discontinuous change in the expected raw distance vector. The magnitude of this change is not governed by the Lipschitz bounds derived for the $k \\geq 2$ regime, but is instead given by the norm of the vector in the $k \\geq 2$ state:\n2662: $$\n2663: \n2664: \\| \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_1)] - \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_2)] \\|_2^2 = \\| \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_1)] \\|_2^2\n2665: ",
       "metadata": {
         "label": "thm-expected-raw-distance-k1"
       },
       "section": "## 11. Distance-to-Companion Measurement",
       "references": [],
-      "raw_directive": "2633: The continuity analysis in the preceding sections is expressly valid for the $k \\geq 2$ regime. When the number of alive walkers becomes one, the diversity measurement mechanism behaves in a fundamentally different, deterministic manner. The following theorem formally describes this behavior.\n2634: :::{prf:theorem} Deterministic Behavior of the Expected Raw Distance Vector at $k=1$\n2635: :label: thm-expected-raw-distance-k1\n2636: Let $\\mathcal{S}$ be a swarm state with exactly one alive walker, $|\\mathcal{A}(\\mathcal{S})| = 1$. The N-dimensional vector of expected raw distances, $\\mathbb{E}[\\mathbf{d}(\\mathcal{S})]$, is deterministically the zero vector.\n2637: $$\n2638: \n2639: |\\mathcal{A}(\\mathcal{S})| = 1 \\implies \\mathbb{E}[\\mathbf{d}(\\mathcal{S})] = \\mathbf{0}\n2640: \n2641: $$\n2642: **Implication for Continuity:**\n2643: Any transition between a state $\\mathcal{S}_1$ with $|\\mathcal{A}(\\mathcal{S}_1)| \\ge 2$ and a state $\\mathcal{S}_2$ with $|\\mathcal{A}(\\mathcal{S}_2)| = 1$ induces a discontinuous change in the expected raw distance vector. The magnitude of this change is not governed by the Lipschitz bounds derived for the $k \\geq 2$ regime, but is instead given by the norm of the vector in the $k \\geq 2$ state:\n2644: $$\n2645: \n2646: \\| \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_1)] - \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_2)] \\|_2^2 = \\| \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_1)] \\|_2^2\n2647: \n2648: $$",
+      "raw_directive": "2651: The continuity analysis in the preceding sections is expressly valid for the $k \\geq 2$ regime. When the number of alive walkers becomes one, the diversity measurement mechanism behaves in a fundamentally different, deterministic manner. The following theorem formally describes this behavior.\n2652: :::{prf:theorem} Deterministic Behavior of the Expected Raw Distance Vector at $k=1$\n2653: :label: thm-expected-raw-distance-k1\n2654: Let $\\mathcal{S}$ be a swarm state with exactly one alive walker, $|\\mathcal{A}(\\mathcal{S})| = 1$. The N-dimensional vector of expected raw distances, $\\mathbb{E}[\\mathbf{d}(\\mathcal{S})]$, is deterministically the zero vector.\n2655: $$\n2656: \n2657: |\\mathcal{A}(\\mathcal{S})| = 1 \\implies \\mathbb{E}[\\mathbf{d}(\\mathcal{S})] = \\mathbf{0}\n2658: \n2659: $$\n2660: **Implication for Continuity:**\n2661: Any transition between a state $\\mathcal{S}_1$ with $|\\mathcal{A}(\\mathcal{S}_1)| \\ge 2$ and a state $\\mathcal{S}_2$ with $|\\mathcal{A}(\\mathcal{S}_2)| = 1$ induces a discontinuous change in the expected raw distance vector. The magnitude of this change is not governed by the Lipschitz bounds derived for the $k \\geq 2$ regime, but is instead given by the norm of the vector in the $k \\geq 2$ state:\n2662: $$\n2663: \n2664: \\| \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_1)] - \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_2)] \\|_2^2 = \\| \\mathbb{E}[\\mathbf{d}(\\mathcal{S}_1)] \\|_2^2\n2665: \n2666: $$",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -221,20 +228,20 @@
       "directive_type": "theorem",
       "label": "thm-distance-operator-satisfies-bounded-variance-axiom",
       "title": "The Distance Operator Satisfies the Bounded Variance Axiom",
-      "start_line": 2675,
-      "end_line": 2684,
+      "start_line": 2693,
+      "end_line": 2702,
       "header_lines": [
-        2676
+        2694
       ],
-      "content_start": 2677,
-      "content_end": 2683,
-      "content": "2677: :label: thm-distance-operator-satisfies-bounded-variance-axiom\n2678: The **Distance-to-Companion Measurement** operator ($V=d$) satisfies the **Axiom of Bounded Measurement Variance ([](#axiom-bounded-measurement-variance))**. Its maximum measurement variance is deterministically bounded by:\n2679: $$\n2680: \n2681: \\kappa^2_{\\text{variance}} = N \\cdot D_{\\mathcal{Y}}^2\n2682: \n2683: $$",
+      "content_start": 2695,
+      "content_end": 2701,
+      "content": "2695: :label: thm-distance-operator-satisfies-bounded-variance-axiom\n2696: The **Distance-to-Companion Measurement** operator ($V=d$) satisfies the **Axiom of Bounded Measurement Variance ([](#axiom-bounded-measurement-variance))**. Its maximum measurement variance is deterministically bounded by:\n2697: $$\n2698: \n2699: \\kappa^2_{\\text{variance}} = N \\cdot D_{\\mathcal{Y}}^2\n2700: \n2701: $$",
       "metadata": {
         "label": "thm-distance-operator-satisfies-bounded-variance-axiom"
       },
       "section": "## 11. Distance-to-Companion Measurement",
       "references": [],
-      "raw_directive": "2675: First, we must prove that our specific stochastic measurement process—the distance-to-companion operator—is compliant with the foundational axiom for bounded variance.\n2676: :::{prf:theorem} The Distance Operator Satisfies the Bounded Variance Axiom\n2677: :label: thm-distance-operator-satisfies-bounded-variance-axiom\n2678: The **Distance-to-Companion Measurement** operator ($V=d$) satisfies the **Axiom of Bounded Measurement Variance ([](#axiom-bounded-measurement-variance))**. Its maximum measurement variance is deterministically bounded by:\n2679: $$\n2680: \n2681: \\kappa^2_{\\text{variance}} = N \\cdot D_{\\mathcal{Y}}^2\n2682: \n2683: $$\n2684: where $N$ is the total number of walkers and $D_{\\mathcal{Y}}$ is the diameter of the algorithmic space.",
+      "raw_directive": "2693: First, we must prove that our specific stochastic measurement process—the distance-to-companion operator—is compliant with the foundational axiom for bounded variance.\n2694: :::{prf:theorem} The Distance Operator Satisfies the Bounded Variance Axiom\n2695: :label: thm-distance-operator-satisfies-bounded-variance-axiom\n2696: The **Distance-to-Companion Measurement** operator ($V=d$) satisfies the **Axiom of Bounded Measurement Variance ([](#axiom-bounded-measurement-variance))**. Its maximum measurement variance is deterministically bounded by:\n2697: $$\n2698: \n2699: \\kappa^2_{\\text{variance}} = N \\cdot D_{\\mathcal{Y}}^2\n2700: \n2701: $$\n2702: where $N$ is the total number of walkers and $D_{\\mathcal{Y}}$ is the diameter of the algorithmic space.",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -247,20 +254,20 @@
       "directive_type": "theorem",
       "label": "thm-distance-operator-mean-square-continuity",
       "title": "Mean-Square Continuity of the Distance Operator",
-      "start_line": 2714,
-      "end_line": 2732,
+      "start_line": 2732,
+      "end_line": 2750,
       "header_lines": [
-        2715
+        2733
       ],
-      "content_start": 2716,
-      "content_end": 2731,
-      "content": "2716: :label: thm-distance-operator-mean-square-continuity\n2717: The **Distance-to-Companion Measurement** operator ($V=d$) is mean-square continuous for transitions in the $k \\geq 2$ regime. For any two swarm states $\\mathcal{S}_1$ and $\\mathcal{S}_2$ with $|\\mathcal{A}(\\mathcal{S}_1)|=k_1 \\ge 2$, the expected squared Euclidean distance between the sampled raw distance vectors is deterministically bounded by the function $F_{d,ms}$:\n2718: $$\n2719: \n2720: \\mathbb{E}[\\|\\mathbf{d}(\\mathcal{S}_1) - \\mathbf{d}(\\mathcal{S}_2)\\|_2^2] \\le F_{d,ms}(\\mathcal{S}_1, \\mathcal{S}_2)\n2721: \n2722: $$\n2723: where the **Expected Squared Distance Error Bound** is defined as:\n2724: $$\n2725: \n2726: \\boxed{\n2727: F_{d,ms}(\\mathcal{S}_1, \\mathcal{S}_2) := 6 N D_{\\mathcal{Y}}^2 + 3 \\left( C_{\\text{pos},d} \\cdot \\Delta_{\\text{pos}}^2 + C_{\\text{status},d}^{(1)} \\cdot n_c + C_{\\text{status},d}^{(2)}(k_1) \\cdot n_c^2 \\right)\n2728: }\n2729: \n2730: $$\n2731: and the coefficients $C_{\\dots,d}$ are the deterministic **Expected Distance Error Coefficients** from [](#thm-distance-operator-mean-square-continuity).",
+      "content_start": 2734,
+      "content_end": 2749,
+      "content": "2734: :label: thm-distance-operator-mean-square-continuity\n2735: The **Distance-to-Companion Measurement** operator ($V=d$) is mean-square continuous for transitions in the $k \\geq 2$ regime. For any two swarm states $\\mathcal{S}_1$ and $\\mathcal{S}_2$ with $|\\mathcal{A}(\\mathcal{S}_1)|=k_1 \\ge 2$, the expected squared Euclidean distance between the sampled raw distance vectors is deterministically bounded by the function $F_{d,ms}$:\n2736: $$\n2737: \n2738: \\mathbb{E}[\\|\\mathbf{d}(\\mathcal{S}_1) - \\mathbf{d}(\\mathcal{S}_2)\\|_2^2] \\le F_{d,ms}(\\mathcal{S}_1, \\mathcal{S}_2)\n2739: \n2740: $$\n2741: where the **Expected Squared Distance Error Bound** is defined as:\n2742: $$\n2743: \n2744: \\boxed{\n2745: F_{d,ms}(\\mathcal{S}_1, \\mathcal{S}_2) := 6 N D_{\\mathcal{Y}}^2 + 3 \\left( C_{\\text{pos},d} \\cdot \\Delta_{\\text{pos}}^2 + C_{\\text{status},d}^{(1)} \\cdot n_c + C_{\\text{status},d}^{(2)}(k_1) \\cdot n_c^2 \\right)\n2746: }\n2747: \n2748: $$\n2749: and the coefficients $C_{\\dots,d}$ are the deterministic **Expected Distance Error Coefficients** from [](#thm-distance-operator-mean-square-continuity).",
       "metadata": {
         "label": "thm-distance-operator-mean-square-continuity"
       },
       "section": "## 11. Distance-to-Companion Measurement",
       "references": [],
-      "raw_directive": "2714: With the variance of the distance operator now axiomatically bounded, we can establish its mean-square continuity. This theorem provides the deterministic function that bounds the expected squared error, which is the critical input for the rest of the stability analysis.\n2715: :::{prf:theorem} Mean-Square Continuity of the Distance Operator\n2716: :label: thm-distance-operator-mean-square-continuity\n2717: The **Distance-to-Companion Measurement** operator ($V=d$) is mean-square continuous for transitions in the $k \\geq 2$ regime. For any two swarm states $\\mathcal{S}_1$ and $\\mathcal{S}_2$ with $|\\mathcal{A}(\\mathcal{S}_1)|=k_1 \\ge 2$, the expected squared Euclidean distance between the sampled raw distance vectors is deterministically bounded by the function $F_{d,ms}$:\n2718: $$\n2719: \n2720: \\mathbb{E}[\\|\\mathbf{d}(\\mathcal{S}_1) - \\mathbf{d}(\\mathcal{S}_2)\\|_2^2] \\le F_{d,ms}(\\mathcal{S}_1, \\mathcal{S}_2)\n2721: \n2722: $$\n2723: where the **Expected Squared Distance Error Bound** is defined as:\n2724: $$\n2725: \n2726: \\boxed{\n2727: F_{d,ms}(\\mathcal{S}_1, \\mathcal{S}_2) := 6 N D_{\\mathcal{Y}}^2 + 3 \\left( C_{\\text{pos},d} \\cdot \\Delta_{\\text{pos}}^2 + C_{\\text{status},d}^{(1)} \\cdot n_c + C_{\\text{status},d}^{(2)}(k_1) \\cdot n_c^2 \\right)\n2728: }\n2729: \n2730: $$\n2731: and the coefficients $C_{\\dots,d}$ are the deterministic **Expected Distance Error Coefficients** from [](#thm-distance-operator-mean-square-continuity).\n2732: With the explicit derivation of this function, we have formally proven that the Distance-to-Companion operator is a valid raw value operator that satisfies the **Axiom of Mean-Square Continuity for Raw Values**. This function will now be used as a direct input to the continuity analysis of the standardization operator.",
+      "raw_directive": "2732: With the variance of the distance operator now axiomatically bounded, we can establish its mean-square continuity. This theorem provides the deterministic function that bounds the expected squared error, which is the critical input for the rest of the stability analysis.\n2733: :::{prf:theorem} Mean-Square Continuity of the Distance Operator\n2734: :label: thm-distance-operator-mean-square-continuity\n2735: The **Distance-to-Companion Measurement** operator ($V=d$) is mean-square continuous for transitions in the $k \\geq 2$ regime. For any two swarm states $\\mathcal{S}_1$ and $\\mathcal{S}_2$ with $|\\mathcal{A}(\\mathcal{S}_1)|=k_1 \\ge 2$, the expected squared Euclidean distance between the sampled raw distance vectors is deterministically bounded by the function $F_{d,ms}$:\n2736: $$\n2737: \n2738: \\mathbb{E}[\\|\\mathbf{d}(\\mathcal{S}_1) - \\mathbf{d}(\\mathcal{S}_2)\\|_2^2] \\le F_{d,ms}(\\mathcal{S}_1, \\mathcal{S}_2)\n2739: \n2740: $$\n2741: where the **Expected Squared Distance Error Bound** is defined as:\n2742: $$\n2743: \n2744: \\boxed{\n2745: F_{d,ms}(\\mathcal{S}_1, \\mathcal{S}_2) := 6 N D_{\\mathcal{Y}}^2 + 3 \\left( C_{\\text{pos},d} \\cdot \\Delta_{\\text{pos}}^2 + C_{\\text{status},d}^{(1)} \\cdot n_c + C_{\\text{status},d}^{(2)}(k_1) \\cdot n_c^2 \\right)\n2746: }\n2747: \n2748: $$\n2749: and the coefficients $C_{\\dots,d}$ are the deterministic **Expected Distance Error Coefficients** from [](#thm-distance-operator-mean-square-continuity).\n2750: With the explicit derivation of this function, we have formally proven that the Distance-to-Companion operator is a valid raw value operator that satisfies the **Axiom of Mean-Square Continuity for Raw Values**. This function will now be used as a direct input to the continuity analysis of the standardization operator.",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -273,20 +280,22 @@
       "directive_type": "theorem",
       "label": "thm-z-score-norm-bound",
       "title": "General Bound on the Norm of the Standardized Vector",
-      "start_line": 2942,
-      "end_line": 2952,
+      "start_line": 2967,
+      "end_line": 2978,
       "header_lines": [
-        2943
+        2968
       ],
-      "content_start": 2944,
-      "content_end": 2951,
-      "content": "2944: :::\n2945: :::{prf:proof}\n2946: :label: proof-lem-stats-structural-continuity\n2947: **Proof.**\n2948: The proof is identical in structure to that of [](#lem-stats-value-continuity), but it uses the structural continuity functions ($L_{\\mu,S}$, $L_{m_2,S}$) from the aggregator axiom instead of the value-based Lipschitz constants. The change in variance due to structure is first shown to be bounded by $(L_{m_2,S}(\\mathcal{S}_1, \\mathcal{S}_2) + 2V_{\\max} L_{\\mu,S}(\\mathcal{S}_1, \\mathcal{S}_2)) \\|\\mathbf{s}_1-\\mathbf{s}_2\\|_2^2$. This is then composed with the globally Lipschitz function $\\sigma\\'_{\\text{reg}}(\\cdot)$ (with Lipschitz constant $L_{\\sigma\\'_{\\text{reg}}}$), yielding the final result for $L_{\\sigma',S}$.\n2949: **Q.E.D.**\n2950: :::\n2951: #### 11.1.4 Theorem: General Bound on the Norm of the Standardized Vector",
+      "content_start": 2969,
+      "content_end": 2977,
+      "content": "2969: :::\n2970: :::{prf:proof}\n2971: :label: proof-lem-stats-structural-continuity\n2972: **Proof.**\n2973: The proof is identical in structure to that of [](#lem-stats-value-continuity), but it uses the structural continuity functions ($L_{\\mu,S}$, $L_{m_2,S}$) from the aggregator axiom instead of the value-based Lipschitz constants. The change in variance due to structure is first shown to be bounded by $(L_{m_2,S}(\\mathcal{S}_1, \\mathcal{S}_2) + 2V_{\\max} L_{\\mu,S}(\\mathcal{S}_1, \\mathcal{S}_2)) \\|\\mathbf{s}_1-\\mathbf{s}_2\\|_2^2$. This is then composed with the globally Lipschitz function $\\sigma\\'_{\\text{reg}}(\\cdot)$ (with Lipschitz constant $L_{\\sigma\\'_{\\text{reg}}}$), yielding the final result for $L_{\\sigma',S}$.\n2974: **Q.E.D.**\n2975: :::\n2976: #### 11.1.4 Theorem: General Bound on the Norm of the Standardized Vector\n2977: A key property of the standardization process is that the magnitude of the resulting standardized vector is algebraically bounded, regardless of the specific aggregation operator used, provided the operator produces a mean within the range of the input values. The following theorem establishes a universal bound for the squared L2-norm of this vector. This general result is crucial for obtaining robust continuity bounds for the full operator pipeline.",
       "metadata": {
         "label": "thm-z-score-norm-bound"
       },
       "section": "## 12. Standardization pipeline",
-      "references": [],
-      "raw_directive": "2942: $$\n2943: \n2944: :::\n2945: :::{prf:proof}\n2946: :label: proof-lem-stats-structural-continuity\n2947: **Proof.**\n2948: The proof is identical in structure to that of [](#lem-stats-value-continuity), but it uses the structural continuity functions ($L_{\\mu,S}$, $L_{m_2,S}$) from the aggregator axiom instead of the value-based Lipschitz constants. The change in variance due to structure is first shown to be bounded by $(L_{m_2,S}(\\mathcal{S}_1, \\mathcal{S}_2) + 2V_{\\max} L_{\\mu,S}(\\mathcal{S}_1, \\mathcal{S}_2)) \\|\\mathbf{s}_1-\\mathbf{s}_2\\|_2^2$. This is then composed with the globally Lipschitz function $\\sigma\\'_{\\text{reg}}(\\cdot)$ (with Lipschitz constant $L_{\\sigma\\'_{\\text{reg}}}$), yielding the final result for $L_{\\sigma',S}$.\n2949: **Q.E.D.**\n2950: :::\n2951: #### 11.1.4 Theorem: General Bound on the Norm of the Standardized Vector\n2952: A key property of the standardization process is that the magnitude of the resulting standardized vector is algebraically bounded, regardless of the specific aggregation operator used, provided the operator produces a mean within the range of the input values. The following theorem establishes a universal bound for the squared L2-norm of this vector. This general result is crucial for obtaining robust continuity bounds for the full operator pipeline.",
+      "references": [
+        "02_euclidean_gas"
+      ],
+      "raw_directive": "2967: \n2968: This structural continuity lemma is applied in {prf:ref}`02_euclidean_gas` for analyzing standardization error with respect to walker status changes.\n2969: :::\n2970: :::{prf:proof}\n2971: :label: proof-lem-stats-structural-continuity\n2972: **Proof.**\n2973: The proof is identical in structure to that of [](#lem-stats-value-continuity), but it uses the structural continuity functions ($L_{\\mu,S}$, $L_{m_2,S}$) from the aggregator axiom instead of the value-based Lipschitz constants. The change in variance due to structure is first shown to be bounded by $(L_{m_2,S}(\\mathcal{S}_1, \\mathcal{S}_2) + 2V_{\\max} L_{\\mu,S}(\\mathcal{S}_1, \\mathcal{S}_2)) \\|\\mathbf{s}_1-\\mathbf{s}_2\\|_2^2$. This is then composed with the globally Lipschitz function $\\sigma\\'_{\\text{reg}}(\\cdot)$ (with Lipschitz constant $L_{\\sigma\\'_{\\text{reg}}}$), yielding the final result for $L_{\\sigma',S}$.\n2974: **Q.E.D.**\n2975: :::\n2976: #### 11.1.4 Theorem: General Bound on the Norm of the Standardized Vector\n2977: A key property of the standardization process is that the magnitude of the resulting standardized vector is algebraically bounded, regardless of the specific aggregation operator used, provided the operator produces a mean within the range of the input values. The following theorem establishes a universal bound for the squared L2-norm of this vector. This general result is crucial for obtaining robust continuity bounds for the full operator pipeline.\n2978: :::{prf:theorem} General Bound on the Norm of the Standardized Vector",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -299,20 +308,20 @@
       "directive_type": "theorem",
       "label": "thm-asymptotic-std-dev-structural-continuity",
       "title": "Asymptotic Behavior of the Structural Continuity for the Regularized Standard Deviation",
-      "start_line": 3002,
-      "end_line": 3017,
+      "start_line": 3028,
+      "end_line": 3043,
       "header_lines": [
-        3003
+        3029
       ],
-      "content_start": 3004,
-      "content_end": 3016,
-      "content": "3004: $$\n3005: \\|\\mathbf{z}\\|_2^2 \\le k \\left( \\frac{2V_{\\max}}{\\sigma'_{\\min\\,\\text{bound}}} \\right)^2\n3006: $$\n3007: \n3008: This provides a general bound on the norm of the standardized vector that is valid for any compliant aggregation operator.\n3009: **Q.E.D.**\n3010: :::\n3011: #### 11.1.5 Asymptotic Behavior of Moment Continuity\n3012: The axiomatic structural growth exponents ($p_{\\mu,S}, p_{m_2,S}$) of an aggregation operator determine the asymptotic behavior of the continuity for the derived statistical moments. The following theorem establishes how these base exponents propagate to the regularized standard deviation function, a critical step in analyzing the system's stability for large swarms.\n3013: :::{prf:theorem} Asymptotic Behavior of the Structural Continuity for the Regularized Standard Deviation\n3014: :label: thm-asymptotic-std-dev-structural-continuity\n3015: Let the chosen swarm aggregation operator $M$ have structural growth exponents $p_{\\mu,S}$ and $p_{m_2,S}$ for its mean and second moment, respectively, as defined in [](#def-swarm-aggregation-operator-axiomatic). Let $L_{\\sigma',S}(\\mathcal{S})$ be the structural Lipschitz function for the regularized standard deviation, as derived in [](#lem-stats-structural-continuity).\n3016: The asymptotic behavior of this function for large swarm size $k = |\\mathcal{A}(\\mathcal{S})|$ is determined by the larger of the two structural growth exponents. Let the worst-case exponent be:",
+      "content_start": 3030,
+      "content_end": 3042,
+      "content": "3030: $$\n3031: \\|\\mathbf{z}\\|_2^2 \\le k \\left( \\frac{2V_{\\max}}{\\sigma'_{\\min\\,\\text{bound}}} \\right)^2\n3032: $$\n3033: \n3034: This provides a general bound on the norm of the standardized vector that is valid for any compliant aggregation operator.\n3035: **Q.E.D.**\n3036: :::\n3037: #### 11.1.5 Asymptotic Behavior of Moment Continuity\n3038: The axiomatic structural growth exponents ($p_{\\mu,S}, p_{m_2,S}$) of an aggregation operator determine the asymptotic behavior of the continuity for the derived statistical moments. The following theorem establishes how these base exponents propagate to the regularized standard deviation function, a critical step in analyzing the system's stability for large swarms.\n3039: :::{prf:theorem} Asymptotic Behavior of the Structural Continuity for the Regularized Standard Deviation\n3040: :label: thm-asymptotic-std-dev-structural-continuity\n3041: Let the chosen swarm aggregation operator $M$ have structural growth exponents $p_{\\mu,S}$ and $p_{m_2,S}$ for its mean and second moment, respectively, as defined in [](#def-swarm-aggregation-operator-axiomatic). Let $L_{\\sigma',S}(\\mathcal{S})$ be the structural Lipschitz function for the regularized standard deviation, as derived in [](#lem-stats-structural-continuity).\n3042: The asymptotic behavior of this function for large swarm size $k = |\\mathcal{A}(\\mathcal{S})|$ is determined by the larger of the two structural growth exponents. Let the worst-case exponent be:",
       "metadata": {
         "label": "thm-asymptotic-std-dev-structural-continuity"
       },
       "section": "## 12. Standardization pipeline",
       "references": [],
-      "raw_directive": "3002: Since the bound is the same for all $k$ components, we have:\n3003: \n3004: $$\n3005: \\|\\mathbf{z}\\|_2^2 \\le k \\left( \\frac{2V_{\\max}}{\\sigma'_{\\min\\,\\text{bound}}} \\right)^2\n3006: $$\n3007: \n3008: This provides a general bound on the norm of the standardized vector that is valid for any compliant aggregation operator.\n3009: **Q.E.D.**\n3010: :::\n3011: #### 11.1.5 Asymptotic Behavior of Moment Continuity\n3012: The axiomatic structural growth exponents ($p_{\\mu,S}, p_{m_2,S}$) of an aggregation operator determine the asymptotic behavior of the continuity for the derived statistical moments. The following theorem establishes how these base exponents propagate to the regularized standard deviation function, a critical step in analyzing the system's stability for large swarms.\n3013: :::{prf:theorem} Asymptotic Behavior of the Structural Continuity for the Regularized Standard Deviation\n3014: :label: thm-asymptotic-std-dev-structural-continuity\n3015: Let the chosen swarm aggregation operator $M$ have structural growth exponents $p_{\\mu,S}$ and $p_{m_2,S}$ for its mean and second moment, respectively, as defined in [](#def-swarm-aggregation-operator-axiomatic). Let $L_{\\sigma',S}(\\mathcal{S})$ be the structural Lipschitz function for the regularized standard deviation, as derived in [](#lem-stats-structural-continuity).\n3016: The asymptotic behavior of this function for large swarm size $k = |\\mathcal{A}(\\mathcal{S})|$ is determined by the larger of the two structural growth exponents. Let the worst-case exponent be:\n3017: ",
+      "raw_directive": "3028: Since the bound is the same for all $k$ components, we have:\n3029: \n3030: $$\n3031: \\|\\mathbf{z}\\|_2^2 \\le k \\left( \\frac{2V_{\\max}}{\\sigma'_{\\min\\,\\text{bound}}} \\right)^2\n3032: $$\n3033: \n3034: This provides a general bound on the norm of the standardized vector that is valid for any compliant aggregation operator.\n3035: **Q.E.D.**\n3036: :::\n3037: #### 11.1.5 Asymptotic Behavior of Moment Continuity\n3038: The axiomatic structural growth exponents ($p_{\\mu,S}, p_{m_2,S}$) of an aggregation operator determine the asymptotic behavior of the continuity for the derived statistical moments. The following theorem establishes how these base exponents propagate to the regularized standard deviation function, a critical step in analyzing the system's stability for large swarms.\n3039: :::{prf:theorem} Asymptotic Behavior of the Structural Continuity for the Regularized Standard Deviation\n3040: :label: thm-asymptotic-std-dev-structural-continuity\n3041: Let the chosen swarm aggregation operator $M$ have structural growth exponents $p_{\\mu,S}$ and $p_{m_2,S}$ for its mean and second moment, respectively, as defined in [](#def-swarm-aggregation-operator-axiomatic). Let $L_{\\sigma',S}(\\mathcal{S})$ be the structural Lipschitz function for the regularized standard deviation, as derived in [](#lem-stats-structural-continuity).\n3042: The asymptotic behavior of this function for large swarm size $k = |\\mathcal{A}(\\mathcal{S})|$ is determined by the larger of the two structural growth exponents. Let the worst-case exponent be:\n3043: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -325,20 +334,22 @@
       "directive_type": "theorem",
       "label": "thm-standardization-value-error-mean-square",
       "title": "Bounding the Expected Squared Value Error",
-      "start_line": 3109,
-      "end_line": 3119,
+      "start_line": 3135,
+      "end_line": 3147,
       "header_lines": [
-        3110
+        3136
       ],
-      "content_start": 3111,
-      "content_end": 3118,
-      "content": "3111: \n3112: $$\n3113: E_{S,ms}^2(\\mathcal{S}_1, \\mathcal{S}_2) := \\mathbb{E}[\\| \\mathbf{z}(\\mathcal{S}_1, \\mathbf{v}_2, M) - \\mathbf{z}(\\mathcal{S}_2, \\mathbf{v}_2, M) \\|_2^2]\n3114: $$\n3115: \n3116: where the expectation is taken over the distribution of the raw value vector $\\mathbf{v}_2 \\sim V(\\mathcal{S}_2)$. Its explicit bound is derived in [](#thm-standardization-structural-error-mean-square).\n3117: #### 11.2.2. Bounding the Expected Squared Value Error ($E^2_{V,ms}$)\n3118: This section provides a rigorous, self-contained proof for the bound on the **Expected Squared Value Error**, $E^2_{V,ms}$. This term quantifies the component of the standardization operator's error that arises exclusively from the change in the underlying distribution of the raw value vector, while the swarm's structure is held constant.",
+      "content_start": 3137,
+      "content_end": 3146,
+      "content": "3137: \n3138: $$\n3139: E_{S,ms}^2(\\mathcal{S}_1, \\mathcal{S}_2) := \\mathbb{E}[\\| \\mathbf{z}(\\mathcal{S}_1, \\mathbf{v}_2, M) - \\mathbf{z}(\\mathcal{S}_2, \\mathbf{v}_2, M) \\|_2^2]\n3140: $$\n3141: \n3142: where the expectation is taken over the distribution of the raw value vector $\\mathbf{v}_2 \\sim V(\\mathcal{S}_2)$. Its explicit bound is derived in [](#thm-standardization-structural-error-mean-square).\n3143: #### 11.2.2. Bounding the Expected Squared Value Error ($E^2_{V,ms}$)\n3144: This section provides a rigorous, self-contained proof for the bound on the **Expected Squared Value Error**, $E^2_{V,ms}$. This term quantifies the component of the standardization operator's error that arises exclusively from the change in the underlying distribution of the raw value vector, while the swarm's structure is held constant.\n3145: The central result is the following theorem, which establishes that the expected output error of the standardization pipeline is bounded by the expected input error from the raw value operator.\n3146: :::{prf:theorem} Bounding the Expected Squared Value Error",
       "metadata": {
         "label": "thm-standardization-value-error-mean-square"
       },
       "section": "## 12. Standardization pipeline",
-      "references": [],
-      "raw_directive": "3109: :label: def-expected-squared-structural-error\n3110: The **Expected Squared Structural Error**, $E^2_{S,ms}(\\mathcal{S}_1, \\mathcal{S}_2)$, bounds the expected error in the standardization operator's output arising from the change in the swarm structure from $\\mathcal{S}_1$ to $\\mathcal{S}_2$, evaluated using the second swarm's raw value vector $\\mathbf{v}_2$. It is defined as:\n3111: \n3112: $$\n3113: E_{S,ms}^2(\\mathcal{S}_1, \\mathcal{S}_2) := \\mathbb{E}[\\| \\mathbf{z}(\\mathcal{S}_1, \\mathbf{v}_2, M) - \\mathbf{z}(\\mathcal{S}_2, \\mathbf{v}_2, M) \\|_2^2]\n3114: $$\n3115: \n3116: where the expectation is taken over the distribution of the raw value vector $\\mathbf{v}_2 \\sim V(\\mathcal{S}_2)$. Its explicit bound is derived in [](#thm-standardization-structural-error-mean-square).\n3117: #### 11.2.2. Bounding the Expected Squared Value Error ($E^2_{V,ms}$)\n3118: This section provides a rigorous, self-contained proof for the bound on the **Expected Squared Value Error**, $E^2_{V,ms}$. This term quantifies the component of the standardization operator's error that arises exclusively from the change in the underlying distribution of the raw value vector, while the swarm's structure is held constant.\n3119: The central result is the following theorem, which establishes that the expected output error of the standardization pipeline is bounded by the expected input error from the raw value operator.",
+      "references": [
+        "proof-thm-standardization-value-error-mean-square"
+      ],
+      "raw_directive": "3135: :label: def-expected-squared-structural-error\n3136: The **Expected Squared Structural Error**, $E^2_{S,ms}(\\mathcal{S}_1, \\mathcal{S}_2)$, bounds the expected error in the standardization operator's output arising from the change in the swarm structure from $\\mathcal{S}_1$ to $\\mathcal{S}_2$, evaluated using the second swarm's raw value vector $\\mathbf{v}_2$. It is defined as:\n3137: \n3138: $$\n3139: E_{S,ms}^2(\\mathcal{S}_1, \\mathcal{S}_2) := \\mathbb{E}[\\| \\mathbf{z}(\\mathcal{S}_1, \\mathbf{v}_2, M) - \\mathbf{z}(\\mathcal{S}_2, \\mathbf{v}_2, M) \\|_2^2]\n3140: $$\n3141: \n3142: where the expectation is taken over the distribution of the raw value vector $\\mathbf{v}_2 \\sim V(\\mathcal{S}_2)$. Its explicit bound is derived in [](#thm-standardization-structural-error-mean-square).\n3143: #### 11.2.2. Bounding the Expected Squared Value Error ($E^2_{V,ms}$)\n3144: This section provides a rigorous, self-contained proof for the bound on the **Expected Squared Value Error**, $E^2_{V,ms}$. This term quantifies the component of the standardization operator's error that arises exclusively from the change in the underlying distribution of the raw value vector, while the swarm's structure is held constant.\n3145: The central result is the following theorem, which establishes that the expected output error of the standardization pipeline is bounded by the expected input error from the raw value operator.\n3146: :::{prf:theorem} Bounding the Expected Squared Value Error\n3147: :label: thm-standardization-value-error-mean-square",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -351,20 +362,20 @@
       "directive_type": "theorem",
       "label": "thm-standardization-structural-error-mean-square",
       "title": "Bounding the Expected Squared Structural Error",
-      "start_line": 3307,
-      "end_line": 3316,
+      "start_line": 3335,
+      "end_line": 3344,
       "header_lines": [
-        3308
+        3336
       ],
-      "content_start": 3309,
-      "content_end": 3315,
-      "content": "3309: \\mathbb{E}[\\|\\mathbf{z}_1 - \\mathbf{z}_2\\|_2^2] \\le C_{V,\\text{total}}(\\mathcal{S}_1) \\cdot \\mathbb{E}[\\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2]\n3310: $$\n3311: \n3312: 4.  **Apply the Mean-Square Continuity Axiom for Raw Values.**\n3313:     By axiom ([](#axiom-raw-value-mean-square-continuity)), $E[\\|v_1 - v_2\\|_2^2]$ is bounded by $F_{V,ms}$. Substituting this gives the final result.\n3314: **Q.E.D.**\n3315: :::",
+      "content_start": 3337,
+      "content_end": 3343,
+      "content": "3337: \\mathbb{E}[\\|\\mathbf{z}_1 - \\mathbf{z}_2\\|_2^2] \\le C_{V,\\text{total}}(\\mathcal{S}_1) \\cdot \\mathbb{E}[\\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2]\n3338: $$\n3339: \n3340: 4.  **Apply the Mean-Square Continuity Axiom for Raw Values.**\n3341:     By axiom ([](#axiom-raw-value-mean-square-continuity)), $E[\\|v_1 - v_2\\|_2^2]$ is bounded by $F_{V,ms}$. Substituting this gives the final result.\n3342: **Q.E.D.**\n3343: :::",
       "metadata": {
         "label": "thm-standardization-structural-error-mean-square"
       },
       "section": "## 12. Standardization pipeline",
       "references": [],
-      "raw_directive": "3307: \n3308: $$\n3309: \\mathbb{E}[\\|\\mathbf{z}_1 - \\mathbf{z}_2\\|_2^2] \\le C_{V,\\text{total}}(\\mathcal{S}_1) \\cdot \\mathbb{E}[\\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2]\n3310: $$\n3311: \n3312: 4.  **Apply the Mean-Square Continuity Axiom for Raw Values.**\n3313:     By axiom ([](#axiom-raw-value-mean-square-continuity)), $E[\\|v_1 - v_2\\|_2^2]$ is bounded by $F_{V,ms}$. Substituting this gives the final result.\n3314: **Q.E.D.**\n3315: :::\n3316: #### 11.2.3. Bounding the Expected Squared Structural Error ($E^2_{S,ms}$)",
+      "raw_directive": "3335: \n3336: $$\n3337: \\mathbb{E}[\\|\\mathbf{z}_1 - \\mathbf{z}_2\\|_2^2] \\le C_{V,\\text{total}}(\\mathcal{S}_1) \\cdot \\mathbb{E}[\\|\\mathbf{v}_1 - \\mathbf{v}_2\\|_2^2]\n3338: $$\n3339: \n3340: 4.  **Apply the Mean-Square Continuity Axiom for Raw Values.**\n3341:     By axiom ([](#axiom-raw-value-mean-square-continuity)), $E[\\|v_1 - v_2\\|_2^2]$ is bounded by $F_{V,ms}$. Substituting this gives the final result.\n3342: **Q.E.D.**\n3343: :::\n3344: #### 11.2.3. Bounding the Expected Squared Structural Error ($E^2_{S,ms}$)",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -377,20 +388,20 @@
       "directive_type": "theorem",
       "label": "thm-deterministic-error-decomposition",
       "title": "Decomposition of the Total Standardization Error",
-      "start_line": 3434,
-      "end_line": 3456,
+      "start_line": 3462,
+      "end_line": 3484,
       "header_lines": [
-        3435
+        3463
       ],
-      "content_start": 3436,
-      "content_end": 3455,
-      "content": "3436: 1.  **Regime 1: Normal Operation (Low Attrition).**\n3437:     If the number of status changes $n_c$ is small, the structural error terms are bounded or vanish for large $k_1$. The system's stability is dominated by the value error, which is **constant with respect to swarm size** and scales with $1/\\sigma'^2_{\\min,\\text{bound}}$ and $L_{\\sigma\\'_{\\text{reg}}}^2/\\sigma'^4_{\\min,\\text{bound}}$. When the variance floor is much smaller than the smoothing parameter ($\\kappa_{\\text{var,min}} \\ll \\varepsilon_{\\text{std}}^2$), this reduces to the familiar $O(\\varepsilon_{\\mathrm{std}}^{-6})$ sensitivity.\n3438: 2.  **Regime 2: Catastrophic Collapse.**\n3439:     If a significant fraction of the swarm dies, such that $n_c \\propto k_1$, then the total error **grows linearly with the initial swarm size** with coefficients proportional to $L_{\\sigma\\'_{\\text{reg}}}^2/\\sigma'^4_{\\min,\\text{bound}}$. In the $\\kappa_{\\text{var,min}} \\ll \\varepsilon_{\\text{std}}^2$ regime this again matches the $O(k_1\\varepsilon_{\\mathrm{std}}^{-6})$ scaling.\n3440: ### 11.3 Deterministic Lipschitz Continuity of the Patched Standardization Operator\n3441: The introduction of the **Regularized Standard Deviation Function** ([](#def-statistical-properties-measurement)) ($\\sigma\\'_{\\text{reg}}$) in Section 11.1.2 provides a critical stability guarantee that is stronger than mean-square continuity. By ensuring the denominator of the standardization formula is a globally Lipschitz function of the raw value variance, the pathological sensitivity near zero-variance states is eliminated. This, in turn, enables a deterministic, worst-case **global continuity with a Lipschitz–Hölder modulus** for the entire N-Dimensional Standardization Operator.\n3442: This property is a non-negotiable prerequisite for certain powerful long-term convergence results, such as those derived from Feynman-Kac particle system theory. The following sections provide a rigorous, self-contained proof of this property. The strategy is to deterministically decompose the total error vector, $\\Deltaz = z(S_1, v_1, M) - z(S_2, v_2, M)$, into a series of manageable components and to bound the L2-norm of each component by a term proportional to the N-Particle Displacement Metric and the L2-norm of the raw value difference.\n3443: #### 11.3.1 Theorem: Decomposition of the Total Standardization Error\n3444: To establish the joint Lipschitz continuity of the standardization operator with respect to both the swarm state **S** and the raw value vector **v**, we first decompose the total squared error into two distinct components: a **Value Error** arising from the change in the raw value vector for a fixed swarm structure, and a **Structural Error** arising from the change in the swarm structure for a fixed raw value vector.\n3445: :::{prf:theorem} Decomposition of the Total Standardization Error\n3446: :label: thm-deterministic-error-decomposition\n3447: Let $z(S, v, M)$ be the N-Dimensional Standardization Operator. Let $S_1$ and $S_2$ be two swarm states, and let $v_1$ and $v_2$ be two corresponding N-dimensional raw value vectors. Let the output standardized vectors be $z_1 = z(S_1, v_1, M)$ and $z_2 = z(S_2, v_2, M)$.\n3448: The total squared Euclidean error between the output vectors is bounded by the sum of two fundamental error components:\n3449: \n3450: $$\n3451: \\|\\mathbf{z}_1 - \\mathbf{z}_2\\|_2^2 \\le 2 \\cdot E_{V}^2(\\mathcal{S}_1; \\mathbf{v}_1, \\mathbf{v}_2) + 2 \\cdot E_{S}^2(\\mathcal{S}_1, \\mathcal{S}_2; \\mathbf{v}_2)\n3452: $$\n3453: \n3454: where the error components are defined as:\n3455: 1.  **The Squared Value Error ($E_V^2$):** The deterministic squared error arising from the change in the raw value vector (from $v_1$ to $v_2$) while holding the swarm's structure fixed at $S_1$.",
+      "content_start": 3464,
+      "content_end": 3483,
+      "content": "3464: 1.  **Regime 1: Normal Operation (Low Attrition).**\n3465:     If the number of status changes $n_c$ is small, the structural error terms are bounded or vanish for large $k_1$. The system's stability is dominated by the value error, which is **constant with respect to swarm size** and scales with $1/\\sigma'^2_{\\min,\\text{bound}}$ and $L_{\\sigma\\'_{\\text{reg}}}^2/\\sigma'^4_{\\min,\\text{bound}}$. When the variance floor is much smaller than the smoothing parameter ($\\kappa_{\\text{var,min}} \\ll \\varepsilon_{\\text{std}}^2$), this reduces to the familiar $O(\\varepsilon_{\\mathrm{std}}^{-6})$ sensitivity.\n3466: 2.  **Regime 2: Catastrophic Collapse.**\n3467:     If a significant fraction of the swarm dies, such that $n_c \\propto k_1$, then the total error **grows linearly with the initial swarm size** with coefficients proportional to $L_{\\sigma\\'_{\\text{reg}}}^2/\\sigma'^4_{\\min,\\text{bound}}$. In the $\\kappa_{\\text{var,min}} \\ll \\varepsilon_{\\text{std}}^2$ regime this again matches the $O(k_1\\varepsilon_{\\mathrm{std}}^{-6})$ scaling.\n3468: ### 11.3 Deterministic Lipschitz Continuity of the Patched Standardization Operator\n3469: The introduction of the **Regularized Standard Deviation Function** ([](#def-statistical-properties-measurement)) ($\\sigma\\'_{\\text{reg}}$) in Section 11.1.2 provides a critical stability guarantee that is stronger than mean-square continuity. By ensuring the denominator of the standardization formula is a globally Lipschitz function of the raw value variance, the pathological sensitivity near zero-variance states is eliminated. This, in turn, enables a deterministic, worst-case **global continuity with a Lipschitz–Hölder modulus** for the entire N-Dimensional Standardization Operator.\n3470: This property is a non-negotiable prerequisite for certain powerful long-term convergence results, such as those derived from Feynman-Kac particle system theory. The following sections provide a rigorous, self-contained proof of this property. The strategy is to deterministically decompose the total error vector, $\\Deltaz = z(S_1, v_1, M) - z(S_2, v_2, M)$, into a series of manageable components and to bound the L2-norm of each component by a term proportional to the N-Particle Displacement Metric and the L2-norm of the raw value difference.\n3471: #### 11.3.1 Theorem: Decomposition of the Total Standardization Error\n3472: To establish the joint Lipschitz continuity of the standardization operator with respect to both the swarm state **S** and the raw value vector **v**, we first decompose the total squared error into two distinct components: a **Value Error** arising from the change in the raw value vector for a fixed swarm structure, and a **Structural Error** arising from the change in the swarm structure for a fixed raw value vector.\n3473: :::{prf:theorem} Decomposition of the Total Standardization Error\n3474: :label: thm-deterministic-error-decomposition\n3475: Let $z(S, v, M)$ be the N-Dimensional Standardization Operator. Let $S_1$ and $S_2$ be two swarm states, and let $v_1$ and $v_2$ be two corresponding N-dimensional raw value vectors. Let the output standardized vectors be $z_1 = z(S_1, v_1, M)$ and $z_2 = z(S_2, v_2, M)$.\n3476: The total squared Euclidean error between the output vectors is bounded by the sum of two fundamental error components:\n3477: \n3478: $$\n3479: \\|\\mathbf{z}_1 - \\mathbf{z}_2\\|_2^2 \\le 2 \\cdot E_{V}^2(\\mathcal{S}_1; \\mathbf{v}_1, \\mathbf{v}_2) + 2 \\cdot E_{S}^2(\\mathcal{S}_1, \\mathcal{S}_2; \\mathbf{v}_2)\n3480: $$\n3481: \n3482: where the error components are defined as:\n3483: 1.  **The Squared Value Error ($E_V^2$):** The deterministic squared error arising from the change in the raw value vector (from $v_1$ to $v_2$) while holding the swarm's structure fixed at $S_1$.",
       "metadata": {
         "label": "thm-deterministic-error-decomposition"
       },
       "section": "## 12. Standardization pipeline",
       "references": [],
-      "raw_directive": "3434: ##### 11.2.4.3. Implications and Interpretation\n3435: This result reveals two distinct operational regimes:\n3436: 1.  **Regime 1: Normal Operation (Low Attrition).**\n3437:     If the number of status changes $n_c$ is small, the structural error terms are bounded or vanish for large $k_1$. The system's stability is dominated by the value error, which is **constant with respect to swarm size** and scales with $1/\\sigma'^2_{\\min,\\text{bound}}$ and $L_{\\sigma\\'_{\\text{reg}}}^2/\\sigma'^4_{\\min,\\text{bound}}$. When the variance floor is much smaller than the smoothing parameter ($\\kappa_{\\text{var,min}} \\ll \\varepsilon_{\\text{std}}^2$), this reduces to the familiar $O(\\varepsilon_{\\mathrm{std}}^{-6})$ sensitivity.\n3438: 2.  **Regime 2: Catastrophic Collapse.**\n3439:     If a significant fraction of the swarm dies, such that $n_c \\propto k_1$, then the total error **grows linearly with the initial swarm size** with coefficients proportional to $L_{\\sigma\\'_{\\text{reg}}}^2/\\sigma'^4_{\\min,\\text{bound}}$. In the $\\kappa_{\\text{var,min}} \\ll \\varepsilon_{\\text{std}}^2$ regime this again matches the $O(k_1\\varepsilon_{\\mathrm{std}}^{-6})$ scaling.\n3440: ### 11.3 Deterministic Lipschitz Continuity of the Patched Standardization Operator\n3441: The introduction of the **Regularized Standard Deviation Function** ([](#def-statistical-properties-measurement)) ($\\sigma\\'_{\\text{reg}}$) in Section 11.1.2 provides a critical stability guarantee that is stronger than mean-square continuity. By ensuring the denominator of the standardization formula is a globally Lipschitz function of the raw value variance, the pathological sensitivity near zero-variance states is eliminated. This, in turn, enables a deterministic, worst-case **global continuity with a Lipschitz–Hölder modulus** for the entire N-Dimensional Standardization Operator.\n3442: This property is a non-negotiable prerequisite for certain powerful long-term convergence results, such as those derived from Feynman-Kac particle system theory. The following sections provide a rigorous, self-contained proof of this property. The strategy is to deterministically decompose the total error vector, $\\Deltaz = z(S_1, v_1, M) - z(S_2, v_2, M)$, into a series of manageable components and to bound the L2-norm of each component by a term proportional to the N-Particle Displacement Metric and the L2-norm of the raw value difference.\n3443: #### 11.3.1 Theorem: Decomposition of the Total Standardization Error\n3444: To establish the joint Lipschitz continuity of the standardization operator with respect to both the swarm state **S** and the raw value vector **v**, we first decompose the total squared error into two distinct components: a **Value Error** arising from the change in the raw value vector for a fixed swarm structure, and a **Structural Error** arising from the change in the swarm structure for a fixed raw value vector.\n3445: :::{prf:theorem} Decomposition of the Total Standardization Error\n3446: :label: thm-deterministic-error-decomposition\n3447: Let $z(S, v, M)$ be the N-Dimensional Standardization Operator. Let $S_1$ and $S_2$ be two swarm states, and let $v_1$ and $v_2$ be two corresponding N-dimensional raw value vectors. Let the output standardized vectors be $z_1 = z(S_1, v_1, M)$ and $z_2 = z(S_2, v_2, M)$.\n3448: The total squared Euclidean error between the output vectors is bounded by the sum of two fundamental error components:\n3449: \n3450: $$\n3451: \\|\\mathbf{z}_1 - \\mathbf{z}_2\\|_2^2 \\le 2 \\cdot E_{V}^2(\\mathcal{S}_1; \\mathbf{v}_1, \\mathbf{v}_2) + 2 \\cdot E_{S}^2(\\mathcal{S}_1, \\mathcal{S}_2; \\mathbf{v}_2)\n3452: $$\n3453: \n3454: where the error components are defined as:\n3455: 1.  **The Squared Value Error ($E_V^2$):** The deterministic squared error arising from the change in the raw value vector (from $v_1$ to $v_2$) while holding the swarm's structure fixed at $S_1$.\n3456: ",
+      "raw_directive": "3462: ##### 11.2.4.3. Implications and Interpretation\n3463: This result reveals two distinct operational regimes:\n3464: 1.  **Regime 1: Normal Operation (Low Attrition).**\n3465:     If the number of status changes $n_c$ is small, the structural error terms are bounded or vanish for large $k_1$. The system's stability is dominated by the value error, which is **constant with respect to swarm size** and scales with $1/\\sigma'^2_{\\min,\\text{bound}}$ and $L_{\\sigma\\'_{\\text{reg}}}^2/\\sigma'^4_{\\min,\\text{bound}}$. When the variance floor is much smaller than the smoothing parameter ($\\kappa_{\\text{var,min}} \\ll \\varepsilon_{\\text{std}}^2$), this reduces to the familiar $O(\\varepsilon_{\\mathrm{std}}^{-6})$ sensitivity.\n3466: 2.  **Regime 2: Catastrophic Collapse.**\n3467:     If a significant fraction of the swarm dies, such that $n_c \\propto k_1$, then the total error **grows linearly with the initial swarm size** with coefficients proportional to $L_{\\sigma\\'_{\\text{reg}}}^2/\\sigma'^4_{\\min,\\text{bound}}$. In the $\\kappa_{\\text{var,min}} \\ll \\varepsilon_{\\text{std}}^2$ regime this again matches the $O(k_1\\varepsilon_{\\mathrm{std}}^{-6})$ scaling.\n3468: ### 11.3 Deterministic Lipschitz Continuity of the Patched Standardization Operator\n3469: The introduction of the **Regularized Standard Deviation Function** ([](#def-statistical-properties-measurement)) ($\\sigma\\'_{\\text{reg}}$) in Section 11.1.2 provides a critical stability guarantee that is stronger than mean-square continuity. By ensuring the denominator of the standardization formula is a globally Lipschitz function of the raw value variance, the pathological sensitivity near zero-variance states is eliminated. This, in turn, enables a deterministic, worst-case **global continuity with a Lipschitz–Hölder modulus** for the entire N-Dimensional Standardization Operator.\n3470: This property is a non-negotiable prerequisite for certain powerful long-term convergence results, such as those derived from Feynman-Kac particle system theory. The following sections provide a rigorous, self-contained proof of this property. The strategy is to deterministically decompose the total error vector, $\\Deltaz = z(S_1, v_1, M) - z(S_2, v_2, M)$, into a series of manageable components and to bound the L2-norm of each component by a term proportional to the N-Particle Displacement Metric and the L2-norm of the raw value difference.\n3471: #### 11.3.1 Theorem: Decomposition of the Total Standardization Error\n3472: To establish the joint Lipschitz continuity of the standardization operator with respect to both the swarm state **S** and the raw value vector **v**, we first decompose the total squared error into two distinct components: a **Value Error** arising from the change in the raw value vector for a fixed swarm structure, and a **Structural Error** arising from the change in the swarm structure for a fixed raw value vector.\n3473: :::{prf:theorem} Decomposition of the Total Standardization Error\n3474: :label: thm-deterministic-error-decomposition\n3475: Let $z(S, v, M)$ be the N-Dimensional Standardization Operator. Let $S_1$ and $S_2$ be two swarm states, and let $v_1$ and $v_2$ be two corresponding N-dimensional raw value vectors. Let the output standardized vectors be $z_1 = z(S_1, v_1, M)$ and $z_2 = z(S_2, v_2, M)$.\n3476: The total squared Euclidean error between the output vectors is bounded by the sum of two fundamental error components:\n3477: \n3478: $$\n3479: \\|\\mathbf{z}_1 - \\mathbf{z}_2\\|_2^2 \\le 2 \\cdot E_{V}^2(\\mathcal{S}_1; \\mathbf{v}_1, \\mathbf{v}_2) + 2 \\cdot E_{S}^2(\\mathcal{S}_1, \\mathcal{S}_2; \\mathbf{v}_2)\n3480: $$\n3481: \n3482: where the error components are defined as:\n3483: 1.  **The Squared Value Error ($E_V^2$):** The deterministic squared error arising from the change in the raw value vector (from $v_1$ to $v_2$) while holding the swarm's structure fixed at $S_1$.\n3484: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -403,20 +414,20 @@
       "directive_type": "theorem",
       "label": "thm-lipschitz-value-error-bound",
       "title": "Bounding the Squared Value Error",
-      "start_line": 3543,
-      "end_line": 3552,
+      "start_line": 3571,
+      "end_line": 3580,
       "header_lines": [
-        3544
+        3572
       ],
-      "content_start": 3545,
-      "content_end": 3551,
-      "content": "3545: \n3546: $$\n3547: Recognizing that $(v_2 - \\mu_2) / \\sigma'_2$ is $z_2$, this matches the definition of $\\Delta_denom$.\n3548: 3.  **Bound on the Squared Norm.**\n3549:     The bound on the total squared norm follows directly from the triangle inequality and the elementary inequality $(a+b+c)^2 \\leq 3(a^2+b^2+c^2)$.\n3550: **Q.E.D.**\n3551: :::",
+      "content_start": 3573,
+      "content_end": 3579,
+      "content": "3573: \n3574: $$\n3575: Recognizing that $(v_2 - \\mu_2) / \\sigma'_2$ is $z_2$, this matches the definition of $\\Delta_denom$.\n3576: 3.  **Bound on the Squared Norm.**\n3577:     The bound on the total squared norm follows directly from the triangle inequality and the elementary inequality $(a+b+c)^2 \\leq 3(a^2+b^2+c^2)$.\n3578: **Q.E.D.**\n3579: :::",
       "metadata": {
         "label": "thm-lipschitz-value-error-bound"
       },
       "section": "## 12. Standardization pipeline",
       "references": [],
-      "raw_directive": "3543:     = \\Delta_{\\text{direct}} + \\Delta_{\\text{mean}} + (\\mathbf{v}_2 - \\mu_2) \\left(\\frac{1}{\\sigma'_1} - \\frac{1}{\\sigma'_2}\\right) = \\Delta_{\\text{direct}} + \\Delta_{\\text{mean}} + \\frac{\\mathbf{v}_2 - \\mu_2}{\\sigma'_2} \\frac{\\sigma'_2 - \\sigma'_1}{\\sigma'_1}\n3544: \n3545: \n3546: $$\n3547: Recognizing that $(v_2 - \\mu_2) / \\sigma'_2$ is $z_2$, this matches the definition of $\\Delta_denom$.\n3548: 3.  **Bound on the Squared Norm.**\n3549:     The bound on the total squared norm follows directly from the triangle inequality and the elementary inequality $(a+b+c)^2 \\leq 3(a^2+b^2+c^2)$.\n3550: **Q.E.D.**\n3551: :::\n3552: #### 11.3.3 Theorem: Bounding the Squared Value Error",
+      "raw_directive": "3571:     = \\Delta_{\\text{direct}} + \\Delta_{\\text{mean}} + (\\mathbf{v}_2 - \\mu_2) \\left(\\frac{1}{\\sigma'_1} - \\frac{1}{\\sigma'_2}\\right) = \\Delta_{\\text{direct}} + \\Delta_{\\text{mean}} + \\frac{\\mathbf{v}_2 - \\mu_2}{\\sigma'_2} \\frac{\\sigma'_2 - \\sigma'_1}{\\sigma'_1}\n3572: \n3573: \n3574: $$\n3575: Recognizing that $(v_2 - \\mu_2) / \\sigma'_2$ is $z_2$, this matches the definition of $\\Delta_denom$.\n3576: 3.  **Bound on the Squared Norm.**\n3577:     The bound on the total squared norm follows directly from the triangle inequality and the elementary inequality $(a+b+c)^2 \\leq 3(a^2+b^2+c^2)$.\n3578: **Q.E.D.**\n3579: :::\n3580: #### 11.3.3 Theorem: Bounding the Squared Value Error",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -429,20 +440,20 @@
       "directive_type": "theorem",
       "label": "thm-lipschitz-structural-error-bound",
       "title": "Bounding the Squared Structural Error",
-      "start_line": 3626,
-      "end_line": 3635,
+      "start_line": 3654,
+      "end_line": 3663,
       "header_lines": [
-        3627
+        3655
       ],
-      "content_start": 3628,
-      "content_end": 3634,
-      "content": "3628: \n3629:     C_{V,\\text{total}}(\\mathcal{S}) := 3 \\cdot \\left( C_{V,\\text{direct}} + C_{V,\\mu}(\\mathcal{S}) + C_{V,\\sigma}(\\mathcal{S}) \\right)\n3630: \n3631: \n3632: $$\n3633: where $L_{\\mu,M}(S)$ and $L_{\\sigma',M}(S)$ are the value Lipschitz functions for the aggregator's mean and regularized standard deviation, respectively, as defined in [](#lem-stats-value-continuity).\n3634: :::",
+      "content_start": 3656,
+      "content_end": 3662,
+      "content": "3656: \n3657:     C_{V,\\text{total}}(\\mathcal{S}) := 3 \\cdot \\left( C_{V,\\text{direct}} + C_{V,\\mu}(\\mathcal{S}) + C_{V,\\sigma}(\\mathcal{S}) \\right)\n3658: \n3659: \n3660: $$\n3661: where $L_{\\mu,M}(S)$ and $L_{\\sigma',M}(S)$ are the value Lipschitz functions for the aggregator's mean and regularized standard deviation, respectively, as defined in [](#lem-stats-value-continuity).\n3662: :::",
       "metadata": {
         "label": "thm-lipschitz-structural-error-bound"
       },
       "section": "## 12. Standardization pipeline",
       "references": [],
-      "raw_directive": "3626: 4.  **The Total Value Error Coefficient ($C_V,total(S)$):** The composite coefficient that bounds the total squared error.\n3627: $$\n3628: \n3629:     C_{V,\\text{total}}(\\mathcal{S}) := 3 \\cdot \\left( C_{V,\\text{direct}} + C_{V,\\mu}(\\mathcal{S}) + C_{V,\\sigma}(\\mathcal{S}) \\right)\n3630: \n3631: \n3632: $$\n3633: where $L_{\\mu,M}(S)$ and $L_{\\sigma',M}(S)$ are the value Lipschitz functions for the aggregator's mean and regularized standard deviation, respectively, as defined in [](#lem-stats-value-continuity).\n3634: :::\n3635: #### 11.3.5 Theorem: Bounding the Squared Structural Error",
+      "raw_directive": "3654: 4.  **The Total Value Error Coefficient ($C_V,total(S)$):** The composite coefficient that bounds the total squared error.\n3655: $$\n3656: \n3657:     C_{V,\\text{total}}(\\mathcal{S}) := 3 \\cdot \\left( C_{V,\\text{direct}} + C_{V,\\mu}(\\mathcal{S}) + C_{V,\\sigma}(\\mathcal{S}) \\right)\n3658: \n3659: \n3660: $$\n3661: where $L_{\\mu,M}(S)$ and $L_{\\sigma',M}(S)$ are the value Lipschitz functions for the aggregator's mean and regularized standard deviation, respectively, as defined in [](#lem-stats-value-continuity).\n3662: :::\n3663: #### 11.3.5 Theorem: Bounding the Squared Structural Error",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -455,20 +466,20 @@
       "directive_type": "theorem",
       "label": "thm-global-continuity-patched-standardization",
       "title": "Global Continuity of the Patched Standardization Operator",
-      "start_line": 3695,
-      "end_line": 3705,
+      "start_line": 3723,
+      "end_line": 3733,
       "header_lines": [
-        3696
+        3724
       ],
-      "content_start": 3697,
-      "content_end": 3704,
-      "content": "3697: \n3698:     C_{S,\\text{indirect}}(\\mathcal{S}_1, \\mathcal{S}_2) := 2 k_{\\text{stable}} \\frac{(L_{\\mu,S}(\\mathcal{S}_1, \\mathcal{S}_2))^2}{\\sigma'^{2}_{\\min\\,\\text{bound}}} + 2 k_1 \\left(\\frac{2V_{\\max}}{\\sigma'_{\\min\\,\\text{bound}}}\\right)^2 \\frac{(L_{\\sigma',S}(\\mathcal{S}_1, \\mathcal{S}_2))^2}{\\sigma'^{2}_{\\min\\,\\text{bound}}}\n3699: \n3700: \n3701: $$\n3702: where $L_{\\mu,S}$ and $L_{\\sigma',S}$ are the structural continuity functions for the aggregator's mean and regularized standard deviation, as defined in [](#lem-stats-structural-continuity).\n3703: :::\n3704: #### 11.3.7 Theorem: Global Continuity of the Patched Standardization Operator",
+      "content_start": 3725,
+      "content_end": 3732,
+      "content": "3725: \n3726:     C_{S,\\text{indirect}}(\\mathcal{S}_1, \\mathcal{S}_2) := 2 k_{\\text{stable}} \\frac{(L_{\\mu,S}(\\mathcal{S}_1, \\mathcal{S}_2))^2}{\\sigma'^{2}_{\\min\\,\\text{bound}}} + 2 k_1 \\left(\\frac{2V_{\\max}}{\\sigma'_{\\min\\,\\text{bound}}}\\right)^2 \\frac{(L_{\\sigma',S}(\\mathcal{S}_1, \\mathcal{S}_2))^2}{\\sigma'^{2}_{\\min\\,\\text{bound}}}\n3727: \n3728: \n3729: $$\n3730: where $L_{\\mu,S}$ and $L_{\\sigma',S}$ are the structural continuity functions for the aggregator's mean and regularized standard deviation, as defined in [](#lem-stats-structural-continuity).\n3731: :::\n3732: #### 11.3.7 Theorem: Global Continuity of the Patched Standardization Operator",
       "metadata": {
         "label": "thm-global-continuity-patched-standardization"
       },
       "section": "## 12. Standardization pipeline",
       "references": [],
-      "raw_directive": "3695: 2.  **The Indirect Structural Error Coefficient ($C_{S,\\text{indirect}}(\\mathcal{S}_1, \\mathcal{S}_2)$):** The coefficient of the term quadratic in $n_c$. This coefficient bounds the error for the stable walkers.\n3696: $$\n3697: \n3698:     C_{S,\\text{indirect}}(\\mathcal{S}_1, \\mathcal{S}_2) := 2 k_{\\text{stable}} \\frac{(L_{\\mu,S}(\\mathcal{S}_1, \\mathcal{S}_2))^2}{\\sigma'^{2}_{\\min\\,\\text{bound}}} + 2 k_1 \\left(\\frac{2V_{\\max}}{\\sigma'_{\\min\\,\\text{bound}}}\\right)^2 \\frac{(L_{\\sigma',S}(\\mathcal{S}_1, \\mathcal{S}_2))^2}{\\sigma'^{2}_{\\min\\,\\text{bound}}}\n3699: \n3700: \n3701: $$\n3702: where $L_{\\mu,S}$ and $L_{\\sigma',S}$ are the structural continuity functions for the aggregator's mean and regularized standard deviation, as defined in [](#lem-stats-structural-continuity).\n3703: :::\n3704: #### 11.3.7 Theorem: Global Continuity of the Patched Standardization Operator\n3705: By combining the bounds for the value error and the structural error, we can now state the final deterministic continuity property of the patched standardization operator. The operator is not globally Lipschitz, but it is jointly continuous with a well-defined Lipschitz-Hölder structure.",
+      "raw_directive": "3723: 2.  **The Indirect Structural Error Coefficient ($C_{S,\\text{indirect}}(\\mathcal{S}_1, \\mathcal{S}_2)$):** The coefficient of the term quadratic in $n_c$. This coefficient bounds the error for the stable walkers.\n3724: $$\n3725: \n3726:     C_{S,\\text{indirect}}(\\mathcal{S}_1, \\mathcal{S}_2) := 2 k_{\\text{stable}} \\frac{(L_{\\mu,S}(\\mathcal{S}_1, \\mathcal{S}_2))^2}{\\sigma'^{2}_{\\min\\,\\text{bound}}} + 2 k_1 \\left(\\frac{2V_{\\max}}{\\sigma'_{\\min\\,\\text{bound}}}\\right)^2 \\frac{(L_{\\sigma',S}(\\mathcal{S}_1, \\mathcal{S}_2))^2}{\\sigma'^{2}_{\\min\\,\\text{bound}}}\n3727: \n3728: \n3729: $$\n3730: where $L_{\\mu,S}$ and $L_{\\sigma',S}$ are the structural continuity functions for the aggregator's mean and regularized standard deviation, as defined in [](#lem-stats-structural-continuity).\n3731: :::\n3732: #### 11.3.7 Theorem: Global Continuity of the Patched Standardization Operator\n3733: By combining the bounds for the value error and the structural error, we can now state the final deterministic continuity property of the patched standardization operator. The operator is not globally Lipschitz, but it is jointly continuous with a well-defined Lipschitz-Hölder structure.",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -481,20 +492,20 @@
       "directive_type": "theorem",
       "label": "thm-mcdiarmids-inequality",
       "title": "McDiarmid's Inequality (Bounded Differences Inequality) (Boucheron–Lugosi–Massart)",
-      "start_line": 4081,
-      "end_line": 4095,
+      "start_line": 4109,
+      "end_line": 4123,
       "header_lines": [
-        4082
+        4110
       ],
-      "content_start": 4083,
-      "content_end": 4094,
-      "content": "4083: \n4084: $$\n4085: Under [](#axiom-bounded-algorithmic-diameter), each term is bounded in $[0, D_{\\mathcal{Y}}^2]$. Changing only the $i$‑th random input can change $f_{\\text{avg}}$ by at most $c_i = D_{\\mathcal{Y}}^2/N$. Assumption A supplies the required independence.\n4086: :::{prf:lemma} Bounded differences for $f_{\\text{avg}}$\n4087: :label: lem-bounded-differences-favg\n4088: \n4089: Under [](#axiom-bounded-algorithmic-diameter), for the normalized functional $f_{\\text{avg}}$ defined above, the McDiarmid bounded‑difference constants may be taken as $c_i=D_{\\mathcal{Y}}^2/N$ for all $i$.\n4090: :::\n4091: ##### 13.2.3.1. McDiarmid's Inequality (Bounded Differences Inequality)\n4092: :::{prf:theorem} McDiarmid's Inequality (Bounded Differences Inequality) (Boucheron–Lugosi–Massart)\n4093: :label: thm-mcdiarmids-inequality\n4094: Let $X_1, X_2, \\dots, X_N$ be a set of independent random variables. Let $f$ be a function of these variables, $f(X_1, \\dots, X_N)$, that satisfies the **bounded differences property**. This means that for each variable $i \\in \\{1, \\dots, N\\}$, there exists a constant $c_i$ such that if only the $i$-th variable is changed, the function's value cannot change by more than $c_i$:",
+      "content_start": 4111,
+      "content_end": 4122,
+      "content": "4111: \n4112: $$\n4113: Under [](#axiom-bounded-algorithmic-diameter), each term is bounded in $[0, D_{\\mathcal{Y}}^2]$. Changing only the $i$‑th random input can change $f_{\\text{avg}}$ by at most $c_i = D_{\\mathcal{Y}}^2/N$. Assumption A supplies the required independence.\n4114: :::{prf:lemma} Bounded differences for $f_{\\text{avg}}$\n4115: :label: lem-bounded-differences-favg\n4116: \n4117: Under [](#axiom-bounded-algorithmic-diameter), for the normalized functional $f_{\\text{avg}}$ defined above, the McDiarmid bounded‑difference constants may be taken as $c_i=D_{\\mathcal{Y}}^2/N$ for all $i$.\n4118: :::\n4119: ##### 13.2.3.1. McDiarmid's Inequality (Bounded Differences Inequality)\n4120: :::{prf:theorem} McDiarmid's Inequality (Bounded Differences Inequality) (Boucheron–Lugosi–Massart)\n4121: :label: thm-mcdiarmids-inequality\n4122: Let $X_1, X_2, \\dots, X_N$ be a set of independent random variables. Let $f$ be a function of these variables, $f(X_1, \\dots, X_N)$, that satisfies the **bounded differences property**. This means that for each variable $i \\in \\{1, \\dots, N\\}$, there exists a constant $c_i$ such that if only the $i$-th variable is changed, the function's value cannot change by more than $c_i$:",
       "metadata": {
         "label": "thm-mcdiarmids-inequality"
       },
       "section": "## 14. The Perturbation Operator",
       "references": [],
-      "raw_directive": "4081: f_{\\text{avg}}\\;:=\\;\\frac{1}{N}\\,\\Delta_{\\text{pert}}^2(\\mathcal{S}_{\\text{in}})\n4082: \\;=\\; \\frac{1}{N}\\sum_{i=1}^N d_{\\mathcal{Y}}\\!\\big(\\varphi(x'_{\\text{out},i}),\\varphi(x_{\\text{in},i})\\big)^2.\n4083: \n4084: $$\n4085: Under [](#axiom-bounded-algorithmic-diameter), each term is bounded in $[0, D_{\\mathcal{Y}}^2]$. Changing only the $i$‑th random input can change $f_{\\text{avg}}$ by at most $c_i = D_{\\mathcal{Y}}^2/N$. Assumption A supplies the required independence.\n4086: :::{prf:lemma} Bounded differences for $f_{\\text{avg}}$\n4087: :label: lem-bounded-differences-favg\n4088: \n4089: Under [](#axiom-bounded-algorithmic-diameter), for the normalized functional $f_{\\text{avg}}$ defined above, the McDiarmid bounded‑difference constants may be taken as $c_i=D_{\\mathcal{Y}}^2/N$ for all $i$.\n4090: :::\n4091: ##### 13.2.3.1. McDiarmid's Inequality (Bounded Differences Inequality)\n4092: :::{prf:theorem} McDiarmid's Inequality (Bounded Differences Inequality) (Boucheron–Lugosi–Massart)\n4093: :label: thm-mcdiarmids-inequality\n4094: Let $X_1, X_2, \\dots, X_N$ be a set of independent random variables. Let $f$ be a function of these variables, $f(X_1, \\dots, X_N)$, that satisfies the **bounded differences property**. This means that for each variable $i \\in \\{1, \\dots, N\\}$, there exists a constant $c_i$ such that if only the $i$-th variable is changed, the function's value cannot change by more than $c_i$:\n4095: $$",
+      "raw_directive": "4109: f_{\\text{avg}}\\;:=\\;\\frac{1}{N}\\,\\Delta_{\\text{pert}}^2(\\mathcal{S}_{\\text{in}})\n4110: \\;=\\; \\frac{1}{N}\\sum_{i=1}^N d_{\\mathcal{Y}}\\!\\big(\\varphi(x'_{\\text{out},i}),\\varphi(x_{\\text{in},i})\\big)^2.\n4111: \n4112: $$\n4113: Under [](#axiom-bounded-algorithmic-diameter), each term is bounded in $[0, D_{\\mathcal{Y}}^2]$. Changing only the $i$‑th random input can change $f_{\\text{avg}}$ by at most $c_i = D_{\\mathcal{Y}}^2/N$. Assumption A supplies the required independence.\n4114: :::{prf:lemma} Bounded differences for $f_{\\text{avg}}$\n4115: :label: lem-bounded-differences-favg\n4116: \n4117: Under [](#axiom-bounded-algorithmic-diameter), for the normalized functional $f_{\\text{avg}}$ defined above, the McDiarmid bounded‑difference constants may be taken as $c_i=D_{\\mathcal{Y}}^2/N$ for all $i$.\n4118: :::\n4119: ##### 13.2.3.1. McDiarmid's Inequality (Bounded Differences Inequality)\n4120: :::{prf:theorem} McDiarmid's Inequality (Bounded Differences Inequality) (Boucheron–Lugosi–Massart)\n4121: :label: thm-mcdiarmids-inequality\n4122: Let $X_1, X_2, \\dots, X_N$ be a set of independent random variables. Let $f$ be a function of these variables, $f(X_1, \\dots, X_N)$, that satisfies the **bounded differences property**. This means that for each variable $i \\in \\{1, \\dots, N\\}$, there exists a constant $c_i$ such that if only the $i$-th variable is changed, the function's value cannot change by more than $c_i$:\n4123: $$",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -507,20 +518,20 @@
       "directive_type": "theorem",
       "label": "thm-perturbation-operator-continuity-reproof",
       "title": "Probabilistic Continuity of the Perturbation Operator",
-      "start_line": 4154,
-      "end_line": 4164,
+      "start_line": 4182,
+      "end_line": 4192,
       "header_lines": [
-        4155
+        4183
       ],
-      "content_start": 4156,
-      "content_end": 4163,
-      "content": "4156: \n4157:     B_S(N, \\delta') := D_{\\mathcal{Y}}^2 \\sqrt{\\frac{N}{2} \\ln\\left(\\frac{2}{\\delta'}\\right)}\n4158: \n4159: \n4160: $$\n4161: where $D_{\\mathcal{Y}}$ is the diameter of the algorithmic space, a foundational geometric parameter.\n4162: :::\n4163: #### 13.2.5. Synthesis: The Full Probabilistic Continuity Bound for the Perturbation Operator",
+      "content_start": 4184,
+      "content_end": 4191,
+      "content": "4184: \n4185:     B_S(N, \\delta') := D_{\\mathcal{Y}}^2 \\sqrt{\\frac{N}{2} \\ln\\left(\\frac{2}{\\delta'}\\right)}\n4186: \n4187: \n4188: $$\n4189: where $D_{\\mathcal{Y}}$ is the diameter of the algorithmic space, a foundational geometric parameter.\n4190: :::\n4191: #### 13.2.5. Synthesis: The Full Probabilistic Continuity Bound for the Perturbation Operator",
       "metadata": {
         "label": "thm-perturbation-operator-continuity-reproof"
       },
       "section": "## 14. The Perturbation Operator",
       "references": [],
-      "raw_directive": "4154: 2.  **The Stochastic Fluctuation Bound ($B_S(N, \\delta')$):** A high-probability bound on the deviation of the total squared displacement from its mean, derived from McDiarmid's inequality in [](#sub-lem-probabilistic-bound-perturbation-displacement-reproof). For a given failure probability $\\delta' \\in (0, 1)$, it is defined as:\n4155: $$\n4156: \n4157:     B_S(N, \\delta') := D_{\\mathcal{Y}}^2 \\sqrt{\\frac{N}{2} \\ln\\left(\\frac{2}{\\delta'}\\right)}\n4158: \n4159: \n4160: $$\n4161: where $D_{\\mathcal{Y}}$ is the diameter of the algorithmic space, a foundational geometric parameter.\n4162: :::\n4163: #### 13.2.5. Synthesis: The Full Probabilistic Continuity Bound for the Perturbation Operator\n4164: This theorem assembles the preceding results to provide the final, rigorous probabilistic continuity bound for the Perturbation Operator.",
+      "raw_directive": "4182: 2.  **The Stochastic Fluctuation Bound ($B_S(N, \\delta')$):** A high-probability bound on the deviation of the total squared displacement from its mean, derived from McDiarmid's inequality in [](#sub-lem-probabilistic-bound-perturbation-displacement-reproof). For a given failure probability $\\delta' \\in (0, 1)$, it is defined as:\n4183: $$\n4184: \n4185:     B_S(N, \\delta') := D_{\\mathcal{Y}}^2 \\sqrt{\\frac{N}{2} \\ln\\left(\\frac{2}{\\delta'}\\right)}\n4186: \n4187: \n4188: $$\n4189: where $D_{\\mathcal{Y}}$ is the diameter of the algorithmic space, a foundational geometric parameter.\n4190: :::\n4191: #### 13.2.5. Synthesis: The Full Probabilistic Continuity Bound for the Perturbation Operator\n4192: This theorem assembles the preceding results to provide the final, rigorous probabilistic continuity bound for the Perturbation Operator.",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -533,20 +544,20 @@
       "directive_type": "theorem",
       "label": "thm-post-perturbation-status-update-continuity",
       "title": "Probabilistic Continuity of the Post-Perturbation Status Update",
-      "start_line": 4216,
-      "end_line": 4227,
+      "start_line": 4244,
+      "end_line": 4255,
       "header_lines": [
-        4217
+        4245
       ],
-      "content_start": 4218,
-      "content_end": 4226,
-      "content": "4218: :::{admonition} Independence in probabilistic status variants\n4219: :class: note\n4220: The definition above is deterministic. If an implementation uses a probabilistic status rule (e.g., $s_{\\text{out},i}\\sim\\mathrm{Bernoulli}(p_i)$ based on position‑dependent validity), then conditional on $\\mathcal S_t$ the draws are taken independently across walkers, using per‑walker uniforms. This aligns the status stage with Assumption A.\n4221: :::\n4222: ### 14.2 Continuity of the Composed Post-Perturbation Status Update\n4223: The **Status Update Operator ($Ψ_status$)** is a deterministic and inherently discontinuous function. Its effect on the system's stability can only be analyzed probabilistically by considering its composition with a stochastic position-update operator, such as the **Perturbation Operator ($Ψ_pert$)**. This section establishes the probabilistic continuity of this composed operator, $Ψ_status ∘ Ψ_pert$. It proves that the expected number of status changes between two output swarms is a Hölder-continuous function of the displacement between the input swarms. This result is a cornerstone of the full system's continuity proof and relies on the generalized N-particle axiom for boundary regularity.\n4224: :::{note}\n4225: Compactness convention: When restricting to compact position sets in $\\mathcal{X}$, their images under the continuous projection $\\varphi$ lie in compact subsets of $\\mathcal{Y}$. All continuity and Hölder estimates below are stated with respect to $d_{\\text{Disp},\\mathcal{Y}}$ on $\\Sigma_N$.\n4226: :::",
+      "content_start": 4246,
+      "content_end": 4254,
+      "content": "4246: :::{admonition} Independence in probabilistic status variants\n4247: :class: note\n4248: The definition above is deterministic. If an implementation uses a probabilistic status rule (e.g., $s_{\\text{out},i}\\sim\\mathrm{Bernoulli}(p_i)$ based on position‑dependent validity), then conditional on $\\mathcal S_t$ the draws are taken independently across walkers, using per‑walker uniforms. This aligns the status stage with Assumption A.\n4249: :::\n4250: ### 14.2 Continuity of the Composed Post-Perturbation Status Update\n4251: The **Status Update Operator ($Ψ_status$)** is a deterministic and inherently discontinuous function. Its effect on the system's stability can only be analyzed probabilistically by considering its composition with a stochastic position-update operator, such as the **Perturbation Operator ($Ψ_pert$)**. This section establishes the probabilistic continuity of this composed operator, $Ψ_status ∘ Ψ_pert$. It proves that the expected number of status changes between two output swarms is a Hölder-continuous function of the displacement between the input swarms. This result is a cornerstone of the full system's continuity proof and relies on the generalized N-particle axiom for boundary regularity.\n4252: :::{note}\n4253: Compactness convention: When restricting to compact position sets in $\\mathcal{X}$, their images under the continuous projection $\\varphi$ lie in compact subsets of $\\mathcal{Y}$. All continuity and Hölder estimates below are stated with respect to $d_{\\text{Disp},\\mathcal{Y}}$ on $\\Sigma_N$.\n4254: :::",
       "metadata": {
         "label": "thm-post-perturbation-status-update-continuity"
       },
       "section": "## 15. The Status Update Operator",
       "references": [],
-      "raw_directive": "4216: This operator is applied element-wise to all N walkers.\n4217: :::\n4218: :::{admonition} Independence in probabilistic status variants\n4219: :class: note\n4220: The definition above is deterministic. If an implementation uses a probabilistic status rule (e.g., $s_{\\text{out},i}\\sim\\mathrm{Bernoulli}(p_i)$ based on position‑dependent validity), then conditional on $\\mathcal S_t$ the draws are taken independently across walkers, using per‑walker uniforms. This aligns the status stage with Assumption A.\n4221: :::\n4222: ### 14.2 Continuity of the Composed Post-Perturbation Status Update\n4223: The **Status Update Operator ($Ψ_status$)** is a deterministic and inherently discontinuous function. Its effect on the system's stability can only be analyzed probabilistically by considering its composition with a stochastic position-update operator, such as the **Perturbation Operator ($Ψ_pert$)**. This section establishes the probabilistic continuity of this composed operator, $Ψ_status ∘ Ψ_pert$. It proves that the expected number of status changes between two output swarms is a Hölder-continuous function of the displacement between the input swarms. This result is a cornerstone of the full system's continuity proof and relies on the generalized N-particle axiom for boundary regularity.\n4224: :::{note}\n4225: Compactness convention: When restricting to compact position sets in $\\mathcal{X}$, their images under the continuous projection $\\varphi$ lie in compact subsets of $\\mathcal{Y}$. All continuity and Hölder estimates below are stated with respect to $d_{\\text{Disp},\\mathcal{Y}}$ on $\\Sigma_N$.\n4226: :::\n4227: :::{prf:theorem} Probabilistic Continuity of the Post-Perturbation Status Update",
+      "raw_directive": "4244: This operator is applied element-wise to all N walkers.\n4245: :::\n4246: :::{admonition} Independence in probabilistic status variants\n4247: :class: note\n4248: The definition above is deterministic. If an implementation uses a probabilistic status rule (e.g., $s_{\\text{out},i}\\sim\\mathrm{Bernoulli}(p_i)$ based on position‑dependent validity), then conditional on $\\mathcal S_t$ the draws are taken independently across walkers, using per‑walker uniforms. This aligns the status stage with Assumption A.\n4249: :::\n4250: ### 14.2 Continuity of the Composed Post-Perturbation Status Update\n4251: The **Status Update Operator ($Ψ_status$)** is a deterministic and inherently discontinuous function. Its effect on the system's stability can only be analyzed probabilistically by considering its composition with a stochastic position-update operator, such as the **Perturbation Operator ($Ψ_pert$)**. This section establishes the probabilistic continuity of this composed operator, $Ψ_status ∘ Ψ_pert$. It proves that the expected number of status changes between two output swarms is a Hölder-continuous function of the displacement between the input swarms. This result is a cornerstone of the full system's continuity proof and relies on the generalized N-particle axiom for boundary regularity.\n4252: :::{note}\n4253: Compactness convention: When restricting to compact position sets in $\\mathcal{X}$, their images under the continuous projection $\\varphi$ lie in compact subsets of $\\mathcal{Y}$. All continuity and Hölder estimates below are stated with respect to $d_{\\text{Disp},\\mathcal{Y}}$ on $\\Sigma_N$.\n4254: :::\n4255: :::{prf:theorem} Probabilistic Continuity of the Post-Perturbation Status Update",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -559,20 +570,20 @@
       "directive_type": "theorem",
       "label": "thm-expected-cloning-action-continuity",
       "title": "Continuity of the Conditional Expected Cloning Action",
-      "start_line": 4424,
-      "end_line": 4435,
+      "start_line": 4452,
+      "end_line": 4463,
       "header_lines": [
-        4425
+        4453
       ],
-      "content_start": 4426,
-      "content_end": 4434,
-      "content": "4426: :::{prf:definition} Conditional Expected Cloning Action\n4427: :label: def-expected-cloning-action\n4428: The **Conditional Expected Cloning Action** for a walker $i$, denoted $P_{\\text{clone}}(\\mathcal{S}, \\mathbf{V})_i$, is the probability that walker $i$ will be assigned the \"Clone\" action, given the swarm state $\\mathcal{S}$ and a specific, fixed fitness potential vector $\\mathbf{V}$. It is the expectation of the **Conditional Cloning Probability Function** under the **Companion Selection Measure**:\n4429: $$\n4430: \n4431: P_{\\text{clone}}(\\mathcal{S}, \\mathbf{V})_i := \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S})} [\\pi(V_c, V_i)]\n4432: \n4433: $$\n4434: :::",
+      "content_start": 4454,
+      "content_end": 4462,
+      "content": "4454: :::{prf:definition} Conditional Expected Cloning Action\n4455: :label: def-expected-cloning-action\n4456: The **Conditional Expected Cloning Action** for a walker $i$, denoted $P_{\\text{clone}}(\\mathcal{S}, \\mathbf{V})_i$, is the probability that walker $i$ will be assigned the \"Clone\" action, given the swarm state $\\mathcal{S}$ and a specific, fixed fitness potential vector $\\mathbf{V}$. It is the expectation of the **Conditional Cloning Probability Function** under the **Companion Selection Measure**:\n4457: $$\n4458: \n4459: P_{\\text{clone}}(\\mathcal{S}, \\mathbf{V})_i := \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S})} [\\pi(V_c, V_i)]\n4460: \n4461: $$\n4462: :::",
       "metadata": {
         "label": "thm-expected-cloning-action-continuity"
       },
       "section": "## 16. The Cloning Transition Measure",
       "references": [],
-      "raw_directive": "4424: #### 15.2.3. Continuity of the Conditional Expected Cloning Action\n4425: The overall cloning decision for a walker is stochastic due to the random choice of a companion. We can analyze the continuity of this process *conditional on a fixed fitness potential vector* by examining its expectation over the companion selection measure.\n4426: :::{prf:definition} Conditional Expected Cloning Action\n4427: :label: def-expected-cloning-action\n4428: The **Conditional Expected Cloning Action** for a walker $i$, denoted $P_{\\text{clone}}(\\mathcal{S}, \\mathbf{V})_i$, is the probability that walker $i$ will be assigned the \"Clone\" action, given the swarm state $\\mathcal{S}$ and a specific, fixed fitness potential vector $\\mathbf{V}$. It is the expectation of the **Conditional Cloning Probability Function** under the **Companion Selection Measure**:\n4429: $$\n4430: \n4431: P_{\\text{clone}}(\\mathcal{S}, \\mathbf{V})_i := \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S})} [\\pi(V_c, V_i)]\n4432: \n4433: $$\n4434: :::\n4435: :::{prf:theorem} Continuity of the Conditional Expected Cloning Action",
+      "raw_directive": "4452: #### 15.2.3. Continuity of the Conditional Expected Cloning Action\n4453: The overall cloning decision for a walker is stochastic due to the random choice of a companion. We can analyze the continuity of this process *conditional on a fixed fitness potential vector* by examining its expectation over the companion selection measure.\n4454: :::{prf:definition} Conditional Expected Cloning Action\n4455: :label: def-expected-cloning-action\n4456: The **Conditional Expected Cloning Action** for a walker $i$, denoted $P_{\\text{clone}}(\\mathcal{S}, \\mathbf{V})_i$, is the probability that walker $i$ will be assigned the \"Clone\" action, given the swarm state $\\mathcal{S}$ and a specific, fixed fitness potential vector $\\mathbf{V}$. It is the expectation of the **Conditional Cloning Probability Function** under the **Companion Selection Measure**:\n4457: $$\n4458: \n4459: P_{\\text{clone}}(\\mathcal{S}, \\mathbf{V})_i := \\mathbb{E}_{c \\sim \\mathbb{C}_i(\\mathcal{S})} [\\pi(V_c, V_i)]\n4460: \n4461: $$\n4462: :::\n4463: :::{prf:theorem} Continuity of the Conditional Expected Cloning Action",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -585,20 +596,20 @@
       "directive_type": "theorem",
       "label": "thm-total-expected-cloning-action-continuity",
       "title": "Continuity of the Total Expected Cloning Action",
-      "start_line": 4449,
-      "end_line": 4458,
+      "start_line": 4477,
+      "end_line": 4486,
       "header_lines": [
-        4450
+        4478
       ],
-      "content_start": 4451,
-      "content_end": 4457,
-      "content": "4451: The proof decomposes the total error into a structural component and a value component using the triangle inequality:\n4452: $|E_1[π_1] - E_2[π_2]| \\leq |E_1[π_1] - E_1[π_2]| + |E_1[π_2] - E_2[π_2]|$.\n4453: 1.  **Bound the Value Error Component:** The first term is the error from the change in potentials for a fixed companion measure. Using Jensen's inequality and the Lipschitz continuity of $\\pi$ ([](#lem-cloning-probability-lipschitz)), this is bounded by $C_{val}^{(π)}$ times the sum of the expected companion potential change and the walker's own potential change.\n4454: 2.  **Bound the Structural Error Component:** The second term is the error from the change in the companion measure for a fixed potential vector. We apply the **Total Error Bound in Terms of Status Changes ([](#thm-total-error-status-bound))**. The function being evaluated is bounded by $M_f=1$. The size of the initial companion set is at least $max(1, k_1-1)$. This gives the bound $C_{\\text{struct}}^{(π)}(k_1) \\cdot n_c$.\n4455: Summing the two bounds gives the final result.\n4456: **Q.E.D.**\n4457: :::",
+      "content_start": 4479,
+      "content_end": 4485,
+      "content": "4479: The proof decomposes the total error into a structural component and a value component using the triangle inequality:\n4480: $|E_1[π_1] - E_2[π_2]| \\leq |E_1[π_1] - E_1[π_2]| + |E_1[π_2] - E_2[π_2]|$.\n4481: 1.  **Bound the Value Error Component:** The first term is the error from the change in potentials for a fixed companion measure. Using Jensen's inequality and the Lipschitz continuity of $\\pi$ ([](#lem-cloning-probability-lipschitz)), this is bounded by $C_{val}^{(π)}$ times the sum of the expected companion potential change and the walker's own potential change.\n4482: 2.  **Bound the Structural Error Component:** The second term is the error from the change in the companion measure for a fixed potential vector. We apply the **Total Error Bound in Terms of Status Changes ([](#thm-total-error-status-bound))**. The function being evaluated is bounded by $M_f=1$. The size of the initial companion set is at least $max(1, k_1-1)$. This gives the bound $C_{\\text{struct}}^{(π)}(k_1) \\cdot n_c$.\n4483: Summing the two bounds gives the final result.\n4484: **Q.E.D.**\n4485: :::",
       "metadata": {
         "label": "thm-total-expected-cloning-action-continuity"
       },
       "section": "## 16. The Cloning Transition Measure",
       "references": [],
-      "raw_directive": "4449: \n4450: **Proof.**\n4451: The proof decomposes the total error into a structural component and a value component using the triangle inequality:\n4452: $|E_1[π_1] - E_2[π_2]| \\leq |E_1[π_1] - E_1[π_2]| + |E_1[π_2] - E_2[π_2]|$.\n4453: 1.  **Bound the Value Error Component:** The first term is the error from the change in potentials for a fixed companion measure. Using Jensen's inequality and the Lipschitz continuity of $\\pi$ ([](#lem-cloning-probability-lipschitz)), this is bounded by $C_{val}^{(π)}$ times the sum of the expected companion potential change and the walker's own potential change.\n4454: 2.  **Bound the Structural Error Component:** The second term is the error from the change in the companion measure for a fixed potential vector. We apply the **Total Error Bound in Terms of Status Changes ([](#thm-total-error-status-bound))**. The function being evaluated is bounded by $M_f=1$. The size of the initial companion set is at least $max(1, k_1-1)$. This gives the bound $C_{\\text{struct}}^{(π)}(k_1) \\cdot n_c$.\n4455: Summing the two bounds gives the final result.\n4456: **Q.E.D.**\n4457: :::\n4458: #### 15.2.4. Continuity of the Total Expected Cloning Action",
+      "raw_directive": "4477: \n4478: **Proof.**\n4479: The proof decomposes the total error into a structural component and a value component using the triangle inequality:\n4480: $|E_1[π_1] - E_2[π_2]| \\leq |E_1[π_1] - E_1[π_2]| + |E_1[π_2] - E_2[π_2]|$.\n4481: 1.  **Bound the Value Error Component:** The first term is the error from the change in potentials for a fixed companion measure. Using Jensen's inequality and the Lipschitz continuity of $\\pi$ ([](#lem-cloning-probability-lipschitz)), this is bounded by $C_{val}^{(π)}$ times the sum of the expected companion potential change and the walker's own potential change.\n4482: 2.  **Bound the Structural Error Component:** The second term is the error from the change in the companion measure for a fixed potential vector. We apply the **Total Error Bound in Terms of Status Changes ([](#thm-total-error-status-bound))**. The function being evaluated is bounded by $M_f=1$. The size of the initial companion set is at least $max(1, k_1-1)$. This gives the bound $C_{\\text{struct}}^{(π)}(k_1) \\cdot n_c$.\n4483: Summing the two bounds gives the final result.\n4484: **Q.E.D.**\n4485: :::\n4486: #### 15.2.4. Continuity of the Total Expected Cloning Action",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -611,16 +622,16 @@
       "directive_type": "theorem",
       "label": "thm-k1-revival-state",
       "title": "Theorem of Guaranteed Revival from a Single Survivor",
-      "start_line": 4661,
-      "end_line": 4672,
+      "start_line": 4689,
+      "end_line": 4700,
       "header_lines": [
-        4662,
-        4664,
-        4665
+        4690,
+        4692,
+        4693
       ],
-      "content_start": 4666,
-      "content_end": 4671,
-      "content": "4666: **The Beautiful Result**: Under the right conditions, one survivor is enough to resurrect the entire swarm! This section proves that the \"last walker standing\" scenario triggers a guaranteed revival mechanism that brings all dead walkers back to life in a single step.\n4667: \n4668: This is like having a \"phoenix effect\" built into the algorithm - the swarm can always rise from the ashes as long as one walker remains.\n4669: :::\n4670: The general continuity analysis presented in the preceding sections is valid for the regime where the number of alive walkers is at least two. The state where exactly one walker survives represents a critical boundary condition where the system's dynamics change fundamentally. This section provides a formal theorem to characterize the behavior in this \"revival state,\" demonstrating how the foundational axioms ensure the swarm can recover from near-extinction events.\n4671: ### 16.1 Theorem of Guaranteed Revival from a Single Survivor",
+      "content_start": 4694,
+      "content_end": 4699,
+      "content": "4694: **The Beautiful Result**: Under the right conditions, one survivor is enough to resurrect the entire swarm! This section proves that the \"last walker standing\" scenario triggers a guaranteed revival mechanism that brings all dead walkers back to life in a single step.\n4695: \n4696: This is like having a \"phoenix effect\" built into the algorithm - the swarm can always rise from the ashes as long as one walker remains.\n4697: :::\n4698: The general continuity analysis presented in the preceding sections is valid for the regime where the number of alive walkers is at least two. The state where exactly one walker survives represents a critical boundary condition where the system's dynamics change fundamentally. This section provides a formal theorem to characterize the behavior in this \"revival state,\" demonstrating how the foundational axioms ensure the swarm can recover from near-extinction events.\n4699: ### 16.1 Theorem of Guaranteed Revival from a Single Survivor",
       "metadata": {
         "label": "thm-k1-revival-state",
         "class": "note",
@@ -628,7 +639,7 @@
       },
       "section": "## 17. The Revival State: Dynamics at $k=1$",
       "references": [],
-      "raw_directive": "4661: :::{prf:remark} The Near-Extinction Recovery Mechanism (Phoenix Effect)\n4662: :label: rem-phoenix-effect\n4663: \n4664: This is perhaps the most dramatic moment in the swarm's life cycle: when disaster strikes and only one walker survives. Will the swarm go extinct, or can it rebuild itself from a single survivor?\n4665: \n4666: **The Beautiful Result**: Under the right conditions, one survivor is enough to resurrect the entire swarm! This section proves that the \"last walker standing\" scenario triggers a guaranteed revival mechanism that brings all dead walkers back to life in a single step.\n4667: \n4668: This is like having a \"phoenix effect\" built into the algorithm - the swarm can always rise from the ashes as long as one walker remains.\n4669: :::\n4670: The general continuity analysis presented in the preceding sections is valid for the regime where the number of alive walkers is at least two. The state where exactly one walker survives represents a critical boundary condition where the system's dynamics change fundamentally. This section provides a formal theorem to characterize the behavior in this \"revival state,\" demonstrating how the foundational axioms ensure the swarm can recover from near-extinction events.\n4671: ### 16.1 Theorem of Guaranteed Revival from a Single Survivor\n4672: :::{prf:theorem} Theorem of Guaranteed Revival from a Single Survivor",
+      "raw_directive": "4689: :::{prf:remark} The Near-Extinction Recovery Mechanism (Phoenix Effect)\n4690: :label: rem-phoenix-effect\n4691: \n4692: This is perhaps the most dramatic moment in the swarm's life cycle: when disaster strikes and only one walker survives. Will the swarm go extinct, or can it rebuild itself from a single survivor?\n4693: \n4694: **The Beautiful Result**: Under the right conditions, one survivor is enough to resurrect the entire swarm! This section proves that the \"last walker standing\" scenario triggers a guaranteed revival mechanism that brings all dead walkers back to life in a single step.\n4695: \n4696: This is like having a \"phoenix effect\" built into the algorithm - the swarm can always rise from the ashes as long as one walker remains.\n4697: :::\n4698: The general continuity analysis presented in the preceding sections is valid for the regime where the number of alive walkers is at least two. The state where exactly one walker survives represents a critical boundary condition where the system's dynamics change fundamentally. This section provides a formal theorem to characterize the behavior in this \"revival state,\" demonstrating how the foundational axioms ensure the swarm can recover from near-extinction events.\n4699: ### 16.1 Theorem of Guaranteed Revival from a Single Survivor\n4700: :::{prf:theorem} Theorem of Guaranteed Revival from a Single Survivor",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",

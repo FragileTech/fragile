@@ -1,7 +1,7 @@
 {
   "stage": "directives",
   "directive_type": "notation",
-  "generated_at": "2025-11-10T13:24:29.649321+00:00",
+  "generated_at": "2025-11-10T13:57:33.019811+00:00",
   "source_documents": [
     "13_geometric_gas_c3_regularity",
     "14_geometric_gas_cinf_regularity_full",

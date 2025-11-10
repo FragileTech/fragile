@@ -7,33 +7,33 @@
       "directive_type": "theorem",
       "label": "thm-complete-variance-drift",
       "title": "Complete Variance Drift Characterization for Cloning",
-      "start_line": 6894,
-      "end_line": 6922,
+      "start_line": 6939,
+      "end_line": 6967,
       "header_lines": [
-        6895
+        6940
       ],
-      "content_start": 6897,
-      "content_end": 6921,
-      "content": "6897: :label: thm-complete-variance-drift\n6898: \n6899: The cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the variance components of the Lyapunov function:\n6900: \n6901: **1. Positional Variance (Strong Contraction):**\n6902: \n6903: $$\n6904: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x\n6905: $$\n6906: \n6907: where $\\kappa_x > 0$ is $N$-independent (from Keystone Principle).\n6908: \n6909: **2. Velocity Variance (Bounded Expansion):**\n6910: \n6911: $$\n6912: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n6913: $$\n6914: \n6915: where $C_v < \\infty$ is a state-independent constant.\n6916: \n6917: **3. Total Internal Variance:**\n6918: \n6919: $$\n6920: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var}}] = \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_x V_{\\text{Var},x} + (C_x + C_v)\n6921: $$",
+      "content_start": 6942,
+      "content_end": 6966,
+      "content": "6942: :label: thm-complete-variance-drift\n6943: \n6944: The cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the variance components of the Lyapunov function:\n6945: \n6946: **1. Positional Variance (Strong Contraction):**\n6947: \n6948: $$\n6949: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x\n6950: $$\n6951: \n6952: where $\\kappa_x > 0$ is $N$-independent (from Keystone Principle).\n6953: \n6954: **2. Velocity Variance (Bounded Expansion):**\n6955: \n6956: $$\n6957: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n6958: $$\n6959: \n6960: where $C_v < \\infty$ is a state-independent constant.\n6961: \n6962: **3. Total Internal Variance:**\n6963: \n6964: $$\n6965: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var}}] = \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_x V_{\\text{Var},x} + (C_x + C_v)\n6966: $$",
       "metadata": {
         "label": "thm-complete-variance-drift"
       },
       "section": "## 10.6. Summary of Variance Drift Inequalities",
       "references": [],
-      "raw_directive": "6894: We conclude by summarizing the main drift results for the variance components under $\\Psi_{\\text{clone}}$.\n6895: \n6896: :::{prf:theorem} Complete Variance Drift Characterization for Cloning\n6897: :label: thm-complete-variance-drift\n6898: \n6899: The cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the variance components of the Lyapunov function:\n6900: \n6901: **1. Positional Variance (Strong Contraction):**\n6902: \n6903: $$\n6904: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x\n6905: $$\n6906: \n6907: where $\\kappa_x > 0$ is $N$-independent (from Keystone Principle).\n6908: \n6909: **2. Velocity Variance (Bounded Expansion):**\n6910: \n6911: $$\n6912: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n6913: $$\n6914: \n6915: where $C_v < \\infty$ is a state-independent constant.\n6916: \n6917: **3. Total Internal Variance:**\n6918: \n6919: $$\n6920: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var}}] = \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_x V_{\\text{Var},x} + (C_x + C_v)\n6921: $$\n6922: "
+      "raw_directive": "6939: We conclude by summarizing the main drift results for the variance components under $\\Psi_{\\text{clone}}$.\n6940: \n6941: :::{prf:theorem} Complete Variance Drift Characterization for Cloning\n6942: :label: thm-complete-variance-drift\n6943: \n6944: The cloning operator $\\Psi_{\\text{clone}}$ induces the following drift on the variance components of the Lyapunov function:\n6945: \n6946: **1. Positional Variance (Strong Contraction):**\n6947: \n6948: $$\n6949: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x\n6950: $$\n6951: \n6952: where $\\kappa_x > 0$ is $N$-independent (from Keystone Principle).\n6953: \n6954: **2. Velocity Variance (Bounded Expansion):**\n6955: \n6956: $$\n6957: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n6958: $$\n6959: \n6960: where $C_v < \\infty$ is a state-independent constant.\n6961: \n6962: **3. Total Internal Variance:**\n6963: \n6964: $$\n6965: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var}}] = \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_x V_{\\text{Var},x} + (C_x + C_v)\n6966: $$\n6967: "
     },
     {
       "directive_type": "proof",
       "label": "proof-thm-complete-variance-drift",
       "title": null,
-      "start_line": 6924,
-      "end_line": 6956,
+      "start_line": 6969,
+      "end_line": 7001,
       "header_lines": [
-        6925
+        6970
       ],
-      "content_start": 6926,
-      "content_end": 6955,
-      "content": "6926: :::{prf:proof}\n6927: :label: proof-thm-complete-variance-drift\n6928: **Proof.**\n6929: \n6930: This result follows immediately by combining the two component drift inequalities established earlier in this chapter.\n6931: \n6932: From {prf:ref}`thm-positional-variance-contraction` ({prf:ref}`thm-positional-variance-contraction`), we have:\n6933: \n6934: $$\n6935: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x\n6936: $$\n6937: \n6938: From {prf:ref}`thm-bounded-velocity-expansion-cloning` ({prf:ref}`thm-velocity-variance-bounded-expansion`), we have:\n6939: \n6940: $$\n6941: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n6942: $$\n6943: \n6944: By linearity of expectation, the total internal variance drift is:\n6945: \n6946: $$\n6947: \\begin{aligned}\n6948: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var}}] &= \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x} + \\Delta V_{\\text{Var},v}] \\\\\n6949: &= \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\\\\n6950: &\\leq (-\\kappa_x V_{\\text{Var},x} + C_x) + C_v \\\\\n6951: &= -\\kappa_x V_{\\text{Var},x} + (C_x + C_v)\n6952: \\end{aligned}\n6953: $$\n6954: \n6955: This establishes the claimed drift inequality for the total variance.",
+      "content_start": 6971,
+      "content_end": 7000,
+      "content": "6971: :::{prf:proof}\n6972: :label: proof-thm-complete-variance-drift\n6973: **Proof.**\n6974: \n6975: This result follows immediately by combining the two component drift inequalities established earlier in this chapter.\n6976: \n6977: From {prf:ref}`thm-positional-variance-contraction` ({prf:ref}`thm-positional-variance-contraction`), we have:\n6978: \n6979: $$\n6980: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x\n6981: $$\n6982: \n6983: From {prf:ref}`thm-bounded-velocity-expansion-cloning` ({prf:ref}`thm-velocity-variance-bounded-expansion`), we have:\n6984: \n6985: $$\n6986: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n6987: $$\n6988: \n6989: By linearity of expectation, the total internal variance drift is:\n6990: \n6991: $$\n6992: \\begin{aligned}\n6993: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var}}] &= \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x} + \\Delta V_{\\text{Var},v}] \\\\\n6994: &= \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\\\\n6995: &\\leq (-\\kappa_x V_{\\text{Var},x} + C_x) + C_v \\\\\n6996: &= -\\kappa_x V_{\\text{Var},x} + (C_x + C_v)\n6997: \\end{aligned}\n6998: $$\n6999: \n7000: This establishes the claimed drift inequality for the total variance.",
       "metadata": {
         "label": "proof-thm-complete-variance-drift"
       },
@@ -43,26 +43,26 @@
         "thm-bounded-velocity-expansion-cloning",
         "thm-velocity-variance-bounded-expansion"
       ],
-      "raw_directive": "6924: :::\n6925: \n6926: :::{prf:proof}\n6927: :label: proof-thm-complete-variance-drift\n6928: **Proof.**\n6929: \n6930: This result follows immediately by combining the two component drift inequalities established earlier in this chapter.\n6931: \n6932: From {prf:ref}`thm-positional-variance-contraction` ({prf:ref}`thm-positional-variance-contraction`), we have:\n6933: \n6934: $$\n6935: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x\n6936: $$\n6937: \n6938: From {prf:ref}`thm-bounded-velocity-expansion-cloning` ({prf:ref}`thm-velocity-variance-bounded-expansion`), we have:\n6939: \n6940: $$\n6941: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n6942: $$\n6943: \n6944: By linearity of expectation, the total internal variance drift is:\n6945: \n6946: $$\n6947: \\begin{aligned}\n6948: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var}}] &= \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x} + \\Delta V_{\\text{Var},v}] \\\\\n6949: &= \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\\\\n6950: &\\leq (-\\kappa_x V_{\\text{Var},x} + C_x) + C_v \\\\\n6951: &= -\\kappa_x V_{\\text{Var},x} + (C_x + C_v)\n6952: \\end{aligned}\n6953: $$\n6954: \n6955: This establishes the claimed drift inequality for the total variance.\n6956: "
+      "raw_directive": "6969: :::\n6970: \n6971: :::{prf:proof}\n6972: :label: proof-thm-complete-variance-drift\n6973: **Proof.**\n6974: \n6975: This result follows immediately by combining the two component drift inequalities established earlier in this chapter.\n6976: \n6977: From {prf:ref}`thm-positional-variance-contraction` ({prf:ref}`thm-positional-variance-contraction`), we have:\n6978: \n6979: $$\n6980: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] \\leq -\\kappa_x V_{\\text{Var},x} + C_x\n6981: $$\n6982: \n6983: From {prf:ref}`thm-bounded-velocity-expansion-cloning` ({prf:ref}`thm-velocity-variance-bounded-expansion`), we have:\n6984: \n6985: $$\n6986: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n6987: $$\n6988: \n6989: By linearity of expectation, the total internal variance drift is:\n6990: \n6991: $$\n6992: \\begin{aligned}\n6993: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var}}] &= \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x} + \\Delta V_{\\text{Var},v}] \\\\\n6994: &= \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},x}] + \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\\\\n6995: &\\leq (-\\kappa_x V_{\\text{Var},x} + C_x) + C_v \\\\\n6996: &= -\\kappa_x V_{\\text{Var},x} + (C_x + C_v)\n6997: \\end{aligned}\n6998: $$\n6999: \n7000: This establishes the claimed drift inequality for the total variance.\n7001: "
     },
     {
       "directive_type": "remark",
       "label": "rem-drift-constants-dependencies",
       "title": "Constants and Parameter Dependencies",
-      "start_line": 6980,
-      "end_line": 6997,
+      "start_line": 7025,
+      "end_line": 7042,
       "header_lines": [
-        6981
+        7026
       ],
-      "content_start": 6983,
-      "content_end": 6996,
-      "content": "6983: :label: rem-drift-constants-dependencies\n6984: \n6985: The drift constants have the following dependencies:\n6986: \n6987: **Contraction rate $\\kappa_x$:**\n6988: - Increases with measurement quality (larger $\\epsilon$ \u2192 better diversity detection)\n6989: - Increases with cloning responsiveness (larger $p_{\\max}$ and smaller $\\varepsilon_{\\text{clone}}$)\n6990: - Independent of $N$ (N-uniformity from Keystone)\n6991: \n6992: **Expansion bound $C_v$:**\n6993: - Increases with $V_{\\max}^2$ (larger velocity domain)\n6994: - Increases with $\\alpha_{\\text{restitution}}$ (more elastic collisions)\n6995: - Decreases toward zero as $\\alpha_{\\text{restitution}} \\to 0$ (perfectly inelastic)\n6996: - Independent of $N$",
+      "content_start": 7028,
+      "content_end": 7041,
+      "content": "7028: :label: rem-drift-constants-dependencies\n7029: \n7030: The drift constants have the following dependencies:\n7031: \n7032: **Contraction rate $\\kappa_x$:**\n7033: - Increases with measurement quality (larger $\\epsilon$ \u2192 better diversity detection)\n7034: - Increases with cloning responsiveness (larger $p_{\\max}$ and smaller $\\varepsilon_{\\text{clone}}$)\n7035: - Independent of $N$ (N-uniformity from Keystone)\n7036: \n7037: **Expansion bound $C_v$:**\n7038: - Increases with $V_{\\max}^2$ (larger velocity domain)\n7039: - Increases with $\\alpha_{\\text{restitution}}$ (more elastic collisions)\n7040: - Decreases toward zero as $\\alpha_{\\text{restitution}} \\to 0$ (perfectly inelastic)\n7041: - Independent of $N$",
       "metadata": {
         "label": "rem-drift-constants-dependencies"
       },
       "section": "## 10.6. Summary of Variance Drift Inequalities",
       "references": [],
-      "raw_directive": "6980: :::\n6981: \n6982: :::{prf:remark} Constants and Parameter Dependencies\n6983: :label: rem-drift-constants-dependencies\n6984: \n6985: The drift constants have the following dependencies:\n6986: \n6987: **Contraction rate $\\kappa_x$:**\n6988: - Increases with measurement quality (larger $\\epsilon$ \u2192 better diversity detection)\n6989: - Increases with cloning responsiveness (larger $p_{\\max}$ and smaller $\\varepsilon_{\\text{clone}}$)\n6990: - Independent of $N$ (N-uniformity from Keystone)\n6991: \n6992: **Expansion bound $C_v$:**\n6993: - Increases with $V_{\\max}^2$ (larger velocity domain)\n6994: - Increases with $\\alpha_{\\text{restitution}}$ (more elastic collisions)\n6995: - Decreases toward zero as $\\alpha_{\\text{restitution}} \\to 0$ (perfectly inelastic)\n6996: - Independent of $N$\n6997: "
+      "raw_directive": "7025: :::\n7026: \n7027: :::{prf:remark} Constants and Parameter Dependencies\n7028: :label: rem-drift-constants-dependencies\n7029: \n7030: The drift constants have the following dependencies:\n7031: \n7032: **Contraction rate $\\kappa_x$:**\n7033: - Increases with measurement quality (larger $\\epsilon$ \u2192 better diversity detection)\n7034: - Increases with cloning responsiveness (larger $p_{\\max}$ and smaller $\\varepsilon_{\\text{clone}}$)\n7035: - Independent of $N$ (N-uniformity from Keystone)\n7036: \n7037: **Expansion bound $C_v$:**\n7038: - Increases with $V_{\\max}^2$ (larger velocity domain)\n7039: - Increases with $\\alpha_{\\text{restitution}}$ (more elastic collisions)\n7040: - Decreases toward zero as $\\alpha_{\\text{restitution}} \\to 0$ (perfectly inelastic)\n7041: - Independent of $N$\n7042: "
     }
   ],
   "validation": {

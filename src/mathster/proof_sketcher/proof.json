@@ -1,0 +1,220 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Complete Rigorous Proof",
+  "description": "A schema for representing a complete, publication-ready mathematical proof, including all metadata, dependencies, logical steps, verification, and analysis required for a high-rigor standard.",
+  "type": "object",
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "description": "High-level information about the proof document.",
+      "properties": {
+        "theoremLabel": { "type": "string", "description": "The unique identifier for the theorem being proven." },
+        "sourceDocument": { "type": "string", "description": "The path to the source document where the theorem is stated." },
+        "proofType": {
+          "type": "string",
+          "description": "The primary method used in the proof.",
+          "enum": [
+            "Direct Derivation / Assembly",
+            "Proof by Contradiction",
+            "Proof by Synthesis / Consolidation",
+            "Computational / Numerical Verification",
+            "Inductive Proof",
+            "Variational Method",
+            "Semigroup Method"
+          ]
+        },
+        "generationTimestamp": { "type": "string", "format": "date-time" },
+        "rigorAssessment": {
+          "type": "object",
+          "properties": {
+            "score": { "type": "number", "minimum": 0, "maximum": 10 },
+            "standard": { "type": "string", "description": "The target publication standard (e.g., 'Annals of Mathematics standard')." }
+          },
+          "required": ["score", "standard"]
+        },
+        "iterationHistory": {
+          "type": "array",
+          "description": "A log of previous versions and the key changes made in this iteration.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "iterationNumber": { "type": "integer" },
+              "previousVersionFile": { "type": "string" },
+              "summaryOfChanges": { "type": "string", "description": "A narrative of the critical fixes and improvements made." }
+            },
+            "required": ["iterationNumber", "summaryOfChanges"]
+          }
+        }
+      },
+      "required": ["theoremLabel", "sourceDocument", "proofType", "generationTimestamp", "rigorAssessment"]
+    },
+    "theoremStatement": {
+      "type": "object",
+      "description": "Restatement of the theorem for context.",
+      "properties": {
+        "formal": { "type": "string", "description": "The verbatim formal statement." },
+        "informal": { "type": "string", "description": "A plain-language explanation of the theorem's meaning." }
+      },
+      "required": ["formal", "informal"]
+    },
+    "strategyOverview": {
+      "type": "object",
+      "description": "A high-level summary of the proof's architecture.",
+      "properties": {
+        "summary": { "type": "string", "description": "A narrative explaining the overall logical flow." },
+        "keyInsight": { "type": "string", "description": "The central mathematical or physical insight that makes the proof work." },
+        "architecture": { "type": "array", "items": { "type": "string" }, "description": "A list of the major stages or components of the proof." }
+      },
+      "required": ["summary", "keyInsight"]
+    },
+    "prerequisites": {
+      "type": "object",
+      "description": "A complete and verified list of all dependencies required for the proof.",
+      "properties": {
+        "axioms": { "$ref": "#/definitions/dependencyList" },
+        "theorems": { "$ref": "#/definitions/dependencyList" },
+        "lemmas": { "$ref": "#/definitions/dependencyList" },
+        "definitions": { "$ref": "#/definitions/dependencyList" },
+        "constants": { "$ref": "#/definitions/dependencyList" }
+      }
+    },
+    "mainProof": {
+      "type": "object",
+      "description": "The core, step-by-step mathematical argument.",
+      "properties": {
+        "sections": {
+          "type": "array",
+          "description": "The proof broken down into logical sections or major steps.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "sectionId": { "type": "string", "description": "A unique identifier for the section (e.g., 'Step 1', 'Lemma A')." },
+              "title": { "type": "string" },
+              "goal": { "type": "string", "description": "The primary objective of this section." },
+              "body": { "type": "string", "description": "The detailed mathematical content of the section, formatted in Markdown." },
+              "conclusion": { "type": "string", "description": "The result established by the end of this section." }
+            },
+            "required": ["sectionId", "title", "goal", "body", "conclusion"]
+          }
+        },
+        "finalConclusion": { "type": "string", "description": "The final concluding statement of the entire proof, ending with 'Q.E.D.' or a similar marker." }
+      },
+      "required": ["sections", "finalConclusion"]
+    },
+    "analysisAndVerification": {
+      "type": "object",
+      "description": "A collection of analyses that verify the proof's rigor and explore its implications.",
+      "properties": {
+        "validationChecklist": {
+          "type": "object",
+          "description": "A checklist confirming the proof's internal consistency and rigor.",
+          "properties": {
+            "logicalCompleteness": { "type": "boolean" },
+            "hypothesisUsage": { "type": "boolean" },
+            "conclusionDerivation": { "type": "boolean" },
+            "frameworkConsistency": { "type": "boolean" },
+            "noCircularReasoning": { "type": "boolean" },
+            "constantTracking": { "type": "boolean" },
+            "edgeCasesHandled": { "type": "boolean" },
+            "regularityAssumptionsVerified": { "type": "boolean" }
+          }
+        },
+        "edgeCaseAnalysis": {
+          "type": "array",
+          "description": "A detailed analysis of how the proof handles specific edge cases or degenerate situations.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "caseDescription": { "type": "string" },
+              "howHandled": { "type": "string" },
+              "result": { "type": "string" }
+            },
+            "required": ["caseDescription", "howHandled", "result"]
+          }
+        },
+        "counterexamplesForNecessity": {
+          "type": "array",
+          "description": "Counterexamples demonstrating that the key hypotheses of the theorem are necessary.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "hypothesis": { "type": "string" },
+              "counterexampleDescription": { "type": "string" },
+              "analysis": { "type": "string" },
+              "conclusion": { "type": "string" }
+            },
+            "required": ["hypothesis", "counterexampleDescription", "conclusion"]
+          }
+        },
+        "physicalInterpretation": {
+          "type": "string",
+          "description": "A narrative explaining the physical or intuitive meaning of the mathematical result and its proof."
+        }
+      }
+    },
+    "publicationReadiness": {
+      "type": "object",
+      "description": "A final assessment of the proof's suitability for publication.",
+      "properties": {
+        "overallAssessment": { "type": "string", "description": "A final verdict, e.g., 'Meets Annals of Mathematics Standard'." },
+        "detailedReasoning": { "type": "string", "description": "Justification for the assessment, comparing the proof to published work and highlighting novel contributions." },
+        "remainingTasks": {
+          "type": "array",
+          "description": "A list of minor polish tasks remaining before final submission.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "task": { "type": "string" },
+              "priority": { "type": "string", "enum": ["High", "Medium", "Low"] },
+              "estimatedTime": { "type": "string" }
+            },
+            "required": ["task", "priority"]
+          }
+        }
+      },
+      "required": ["overallAssessment", "detailedReasoning"]
+    },
+    "crossReferences": {
+      "type": "object",
+      "description": "A structured list of all internal and external references.",
+      "properties": {
+        "internal": {
+          "type": "array",
+          "description": "References to other parts of the same framework.",
+          "items": { "$ref": "#/definitions/dependencyItem" }
+        },
+        "external": {
+          "type": "array",
+          "description": "Citations to external literature (books, papers).",
+          "items": { "type": "string", "description": "A full bibliographic citation." }
+        }
+      }
+    }
+  },
+  "required": [
+    "metadata",
+    "theoremStatement",
+    "strategyOverview",
+    "prerequisites",
+    "mainProof",
+    "analysisAndVerification",
+    "publicationReadiness"
+  ],
+  "definitions": {
+    "dependencyItem": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["Axiom", "Theorem", "Lemma", "Definition", "Constant"] },
+        "label": { "type": "string" },
+        "sourceDocument": { "type": "string" },
+        "purpose": { "type": "string" },
+        "usedInSteps": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["type", "label", "sourceDocument", "purpose"]
+    },
+    "dependencyList": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/dependencyItem" }
+    }
+  }
+}

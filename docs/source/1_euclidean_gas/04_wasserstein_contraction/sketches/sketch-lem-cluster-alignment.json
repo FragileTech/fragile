@@ -1,0 +1,225 @@
+{
+  "label": "lem-cluster-alignment",
+  "entity_type": "lemma",
+  "document_id": "04_wasserstein_contraction",
+  "title": "Cluster-Level Outlier Alignment",
+  "statement": "For two swarms S_1, S_2 satisfying: (1) Structural error V_struct > R²_spread, (2) Stability Condition holds (Theorem 7.5.2.4), (3) Separation L = ||x̄_1 - x̄_2|| > D_min(ε), the target set barycenters exhibit spatial alignment: ⟨μ_x(I_1) - μ_x(J_1), x̄_1 - x̄_2⟩ ≥ c_align(ε) ||μ_x(I_1) - μ_x(J_1)|| · L for some N-uniform constant c_align(ε) > 0.",
+
+  "strategy": {
+    "strategist": "Claude Sonnet 4.5 (Rigorous Framework Analysis)",
+    "method": "Fitness-Constrained Clustering Geometry via Stability Condition",
+    "summary": "The current proof contains a critical flaw: it uses the GLOBAL center of mass μ_x ≈ (x̄_1 + x̄_2)/2 in the clustering algorithm, but Definition 6.3 actually defines variance contribution relative to each SWARM'S OWN barycenter μ_x(S_k). This leads to an incorrect geometric argument about inter-swarm regions. The corrected proof must: (1) Use the proper clustering definition with swarm-local barycenters, (2) Leverage the Stability Condition which guarantees H_k has LOWER fitness than L_k, (3) Apply the Confining Potential axiom to establish that fitness valleys exist between separated swarms, (4) Conclude that outlier clusters (high-error H_k with low fitness) CANNOT reside in inter-swarm regions (which have intermediate-to-high fitness due to valley structure). The key insight is that the clustering algorithm's variance contribution ordering, combined with fitness constraints from the Stability Condition, forces outliers to the 'far side' away from the other swarm.",
+
+    "keySteps": [
+      "Step 1: Establish fitness valley structure between separated swarms using Confining Potential axiom (Axiom 2.1.1) and Environmental Richness (Axiom 4.1.1)",
+      "Step 2: Apply Stability Condition (Theorem 7.5.2.4) to establish fitness ordering: E[V_fit | i ∈ H_k] < E[V_fit | i ∈ L_k], which implies H_k walkers have LOWER fitness",
+      "Step 3: Prove that inter-swarm regions have intermediate-to-high fitness (avoiding valley), which contradicts H_k having low fitness",
+      "Step 4: Apply Phase-Space Packing Lemma (6.4.1) to establish spatial separation ||μ_x(I_k) - μ_x(J_k)|| ≥ R_sep",
+      "Step 5: Use correct clustering definition (Definition 6.3) with SWARM-LOCAL barycenter μ_x(S_k) to analyze variance contribution ordering",
+      "Step 6: Prove that far-side clusters have higher variance contribution than inter-swarm clusters, relative to swarm's own barycenter",
+      "Step 7: Conclude that clustering algorithm selects far-side clusters as outliers, establishing directional alignment ⟨μ_x(I_1) - x̄_1, x̄_1 - x̄_2⟩ > 0"
+    ],
+
+    "strengths": [
+      "Uses correct clustering algorithm definition from Definition 6.3 with swarm-local barycenter",
+      "Leverages Stability Condition rigorously to constrain fitness of outlier sets",
+      "Employs Confining Potential axiom to establish fitness landscape structure (valleys)",
+      "Static proof using only framework axioms and proven results (no temporal dynamics)",
+      "Addresses the counterexample: outliers cannot be between swarms due to fitness constraints",
+      "Quantitative bounds from Phase-Space Packing provide separation guarantees"
+    ],
+
+    "weaknesses": [
+      "Requires careful analysis of variance contribution formula with swarm-local vs. inter-swarm geometry",
+      "Fitness valley depth Δ_valley must be quantified (depends on landscape curvature)",
+      "Separation threshold D_min(ε) must be large enough relative to clustering diameter D_diam(ε)",
+      "Gap between 'proving outliers avoid inter-swarm region' and 'proving they point away from other swarm' requires geometric argument",
+      "Requires Environmental Richness axiom to guarantee valley structure exists"
+    ],
+
+    "frameworkDependencies": {
+      "theorems": [
+        {
+          "label": "thm-stability-condition-final-corrected",
+          "document": "03_cloning",
+          "purpose": "Establishes fitness ordering: E[ln(V_fit)|H_k] < E[ln(V_fit)|L_k], which implies outliers H_k have systematically lower fitness than core L_k",
+          "usedInSteps": ["Step 2", "Step 3"]
+        }
+      ],
+      "lemmas": [
+        {
+          "label": "lem-phase-space-packing",
+          "document": "03_cloning",
+          "purpose": "Provides separation bound ||μ_x(I_k) - μ_x(J_k)|| ≥ sqrt(c_sep V_struct) based on hypocoercive variance",
+          "usedInSteps": ["Step 4"]
+        },
+        {
+          "label": "cor-between-group-dominance",
+          "document": "03_cloning",
+          "purpose": "Quantifies spatial separation between I_k and J_k groups",
+          "usedInSteps": ["Step 4"]
+        }
+      ],
+      "axioms": [
+        {
+          "label": "axiom-confining-potential",
+          "document": "01_fragile_gas_framework",
+          "purpose": "Guarantees fitness function has local maxima separated by valleys, providing landscape structure",
+          "usedInSteps": ["Step 1", "Step 3"]
+        },
+        {
+          "label": "axiom-environmental-richness",
+          "document": "01_fragile_gas_framework",
+          "purpose": "Ensures sufficient landscape structure (multiple local optima with valleys) for separated swarms",
+          "usedInSteps": ["Step 1"]
+        }
+      ],
+      "definitions": [
+        {
+          "label": "def-unified-high-low-error-sets",
+          "document": "03_cloning",
+          "purpose": "Defines H_k (high-error/outlier set) via clustering algorithm with variance contribution Contrib(G_m) = |G_m|(||μ_x,m - μ_x(S_k)||² + λ_v ||μ_v,m - μ_v(S_k)||²) where μ_x(S_k) is SWARM'S barycenter",
+          "usedInSteps": ["Step 5", "Step 6", "Step 7"]
+        },
+        {
+          "label": "def-unfit-set",
+          "document": "03_cloning",
+          "purpose": "Defines U_k as walkers with V_k,i ≤ mean fitness, target set I_k = U_k ∩ H_k",
+          "usedInSteps": ["Step 2"]
+        }
+      ]
+    },
+
+    "technicalDeepDives": [
+      {
+        "challengeTitle": "Correcting the Clustering Algorithm Misapplication",
+        "difficultyDescription": "The current proof uses global barycenter μ_x ≈ (x̄_1 + x̄_2)/2 in clustering variance contribution, but Definition 6.3 explicitly defines Contrib(G_m) relative to each SWARM'S OWN barycenter μ_x(S_k). This is a fundamental misreading of the framework. For swarm 1, the clustering algorithm computes Contrib(G_m) = |G_m| ||μ_x,m - μ_x(S_1)||² where μ_x(S_1) = x̄_1. A cluster at position μ_x,m between the two swarms (say at distance L/2 from x̄_1) would have contribution ~ |G_m|(L/2)². A cluster on the far side at distance L from x̄_1 would have contribution ~ |G_m|L². The far-side cluster has 4× higher contribution, so gets selected as outlier first. This geometric argument ONLY works with the correct swarm-local barycenter.",
+        "proposedSolution": "Rewrite Steps 5-7 using μ_x(S_k) = x̄_k explicitly. For swarm 1: far-side clusters have ||μ_x,m - x̄_1||² ≈ (R_spread + ε_outlier)² where ε_outlier is additional outlier displacement. Inter-swarm clusters have ||μ_x,m - x̄_1||² ≈ (L/2)² (distance to midpoint). For separated swarms L > D_min(ε) with D_min(ε) ≥ c_geom R_spread and c_geom ≫ 1, we have (L/2)² ≫ (R_spread + ε_outlier)² for small ε_outlier, BUT this gives WRONG ordering. Actually, far-side means AWAY from x̄_1 in the direction opposite to x̄_2, so far-side is at distance (R_spread + ε_outlier) from x̄_1 in direction away from x̄_2. Inter-swarm is at distance L/2 from x̄_1 toward x̄_2. Since L ≫ R_spread, inter-swarm has MUCH larger ||μ_x,m - x̄_1||. This seems to contradict our goal. WAIT - I need to reconsider the geometry. If x̄_1 and x̄_2 are separated by L, and we want outliers of swarm 1 to be on the 'far side' (away from x̄_2), those outliers should be at distance ~ R_spread from x̄_1 but in the direction AWAY from x̄_2. Meanwhile, inter-swarm clusters would be BETWEEN x̄_1 and x̄_2. From the perspective of swarm 1's barycenter x̄_1, inter-swarm clusters are at distance up to L (toward x̄_2), while far-side clusters are at distance R_spread (away from x̄_2). If L ≫ R_spread, then inter-swarm has larger distance from x̄_1, thus HIGHER variance contribution. But the algorithm selects HIGH contribution as outliers. So inter-swarm would be selected as outliers first! This contradicts our goal. The resolution: We need to use the FITNESS CONSTRAINT from Stability Condition. Even if inter-swarm has high variance contribution, those walkers have HIGH fitness (avoiding valley), so they end up in L_k (low-error), not H_k (high-error). The clustering algorithm identifies outliers by variance, but the Stability Condition REORDERS them by fitness, keeping high-fitness outliers in L_k.",
+        "references": ["Definition 6.3 (03_cloning, line 2413-2439)", "Theorem 7.5.2.4 (Stability Condition)"]
+      },
+      {
+        "challengeTitle": "Fitness Valley Constraint on Outlier Locations",
+        "difficultyDescription": "The key missing piece is that the Stability Condition guarantees H_k has LOWER fitness than L_k. By Confining Potential axiom, inter-swarm regions (between x̄_1 and x̄_2) have LOW fitness due to the valley. However, the Stability Condition says H_k (outliers) have LOWER fitness than L_k (core). If inter-swarm has low fitness, how can H_k have even lower? This seems contradictory. The resolution requires understanding that: (1) The valley has LOWEST fitness at its center x_valley, (2) Swarm barycenters x̄_1, x̄_2 are at LOCAL MAXIMA (higher fitness), (3) H_k outliers, being far from both optima, reside in regions with INTERMEDIATE fitness (not as low as valley, not as high as peaks), (4) The Stability Condition actually compares AVERAGE fitness within each group, accounting for the reward/diversity trade-off in V_fit = exp(αR + βD'). The resolution is that H_k has lower FITNESS POTENTIAL V_fit (which includes diversity boost), not necessarily lower REWARD. Outliers get low reward but high diversity boost; however, the Stability Condition ensures the diversity boost doesn't fully compensate, leaving H_k with lower V_fit overall.",
+        "proposedSolution": "Clarify that Stability Condition applies to FITNESS POTENTIAL V_fit = exp(α R + β D'), not raw fitness F(x). Outliers in H_k have: (1) Lower reward R (being away from local optimum x̄_k), (2) Higher diversity D' (being spatially separated), (3) Stability Condition ensures β·D' gain < α·R loss, resulting in lower V_fit. Inter-swarm regions: (1) Have LOWEST reward (valley), (2) But if populated by a cluster, that cluster would have low internal variance (tight cluster), thus LOW diversity contribution, (3) Result: low R and low D' → very low V_fit → would end up in H_k. However, the Phase-Space Packing argument shows that for large V_struct, the swarm CANNOT have all walkers tightly clustered. So if V_struct is large, outliers must be geometrically spread. Given separation L > D_min(ε), the geometric spreading happens primarily in the far-side direction (away from other swarm) because: (a) Inter-swarm direction leads to valley (very low fitness), (b) Far-side direction has higher fitness (near local optimum), (c) Walkers naturally avoid valley due to confining dynamics (even in static analysis, the swarm configuration reflects past dynamics that avoided valley). Actually, for a STATIC proof, we cannot invoke past dynamics. We must argue purely geometrically. The correct argument: Given separation L and clustering threshold D_diam(ε), Definition 6.3 constructs clusters with diameter ≤ D_diam(ε). For separated swarms with L ≫ D_diam(ε), the low-error set L_k clusters near x̄_k. The high-error set H_k consists of walkers NOT in this central cluster. Geometrically, H_k walkers are at distance > D_diam(ε)/2 from x̄_k. The question: in which DIRECTION? The Stability Condition + Confining Potential constrains this: H_k has lower V_fit, meaning these walkers are less fit. By Confining Potential, fitness decreases away from local optimum. Far-side direction: fitness decreases gradually. Inter-swarm direction: fitness decreases sharply (valley). For H_k to have 'moderately low' fitness (lower than L_k but not catastrophically low), they must be in far-side direction. Inter-swarm would have catastrophically low fitness, which would make the swarm non-viable (all walkers would die in next cloning event). This non-viability argument is DYNAMIC, not static. For a truly static proof, we need a different approach: use Environmental Richness axiom to guarantee that there are OTHER local optima in far-side directions, making far-side regions have moderate fitness. This is the key missing piece.",
+        "references": ["Axiom 2.1.1 (Confining Potential)", "Axiom 4.1.1 (Environmental Richness)", "Theorem 7.5.2.4 (Stability Condition)"]
+      },
+      {
+        "challengeTitle": "Quantifying Directional Alignment from Geometric + Fitness Constraints",
+        "difficultyDescription": "Even after establishing that H_k outliers avoid inter-swarm regions and prefer far-side directions, we still need to quantify the alignment ⟨μ_x(I_1) - μ_x(J_1), x̄_1 - x̄_2⟩ ≥ c_align ||μ_x(I_1) - μ_x(J_1)|| · L. This requires showing not just that μ_x(I_1) is on the far side of x̄_1, but that it points AWAY from x̄_2 with sufficient magnitude. The difficulty: I_1 = U_1 ∩ H_1 is the intersection of unfit and high-error sets. We've argued H_1 is on the far side. But U_1 is defined by fitness potential V_fit ≤ mean. The intersection might have complex geometry. We need to show that the BARYCENTER μ_x(I_1) inherits the directional bias.",
+        "proposedSolution": "Use the following steps: (1) By Stability Condition, H_1 has mean fitness E[V_fit|H_1] < E[V_fit|L_1]. (2) U_1 is defined as V_fit ≤ μ_V,1 (mean fitness). (3) I_1 = U_1 ∩ H_1 consists of unfit walkers within the high-error set. (4) Since H_1 is already biased toward far-side (by geometric argument), and U_1 selects the less fit walkers within the swarm, I_1 is a subset of far-side walkers with particularly low fitness. (5) Within the far-side region, lower fitness corresponds to greater distance from x̄_1 (by Confining Potential). (6) Therefore, μ_x(I_1) is the barycenter of the most-distant far-side outliers. (7) J_1 = A_1 \\ I_1 includes L_1 (low-error set clustered near x̄_1), so μ_x(J_1) ≈ x̄_1 + O(R_spread). (8) By Phase-Space Packing, ||μ_x(I_1) - μ_x(J_1)|| ≥ R_sep. (9) Decompose: μ_x(I_1) - μ_x(J_1) = (μ_x(I_1) - x̄_1) + (x̄_1 - μ_x(J_1)). (10) We've established μ_x(I_1) is on far side, so ⟨μ_x(I_1) - x̄_1, x̄_1 - x̄_2⟩ > 0. (11) μ_x(J_1) ≈ x̄_1, so (x̄_1 - μ_x(J_1)) is small. (12) Therefore: ⟨μ_x(I_1) - μ_x(J_1), x̄_1 - x̄_2⟩ ≈ ⟨μ_x(I_1) - x̄_1, x̄_1 - x̄_2⟩. (13) By continuity and separation bounds, ⟨μ_x(I_1) - x̄_1, u⟩ ≥ c_proj ||μ_x(I_1) - x̄_1|| where u = (x̄_1 - x̄_2)/L. (14) Combining with ||μ_x(I_1) - μ_x(J_1)|| ≥ R_sep and ||μ_x(J_1) - x̄_1|| = O(R_spread), we get ||μ_x(I_1) - x̄_1|| ≥ R_sep - O(R_spread). (15) For L ≫ R_spread and R_sep ~ sqrt(V_struct) > R_spread, this gives ⟨μ_x(I_1) - μ_x(J_1), x̄_1 - x̄_2⟩ ≥ c_align R_sep L where c_align = c_proj (R_sep - O(R_spread))/R_sep ≈ c_proj for large separation.",
+        "references": ["Phase-Space Packing Lemma 6.4.1", "Corollary cor-between-group-dominance"]
+      }
+    ],
+
+    "confidenceScore": "Medium",
+
+    "proofSteps": [
+      {
+        "stepNumber": 1,
+        "statement": "Establish fitness valley structure between separated swarms",
+        "detailedDescription": "By Confining Potential axiom (Axiom 2.1.1) and Environmental Richness axiom (Axiom 4.1.1), for separated local maxima x̄_1 and x̄_2 with separation L = ||x̄_1 - x̄_2|| > D_min(ε), there exists a fitness valley. Specifically, there exists x_valley ∈ [x̄_1, x̄_2] with F(x_valley) < min(F(x̄_1), F(x̄_2)) - Δ_valley for some Δ_valley > 0 depending on L and landscape curvature. This is a STATIC geometric fact about the fitness function.",
+        "justification": "Axiom 2.1.1 (Confining Potential) guarantees fitness function has multiple local maxima separated by valleys. Axiom 4.1.1 (Environmental Richness) ensures sufficient landscape structure exists for separated swarms.",
+        "gaps": [
+          {
+            "gapDescription": "Valley depth Δ_valley must be quantified as a function of separation L and landscape parameters",
+            "severity": "MINOR",
+            "requiredToFill": "Use Confining Potential axiom's curvature bounds to derive Δ_valley ~ κ·L² where κ is landscape curvature parameter"
+          }
+        ]
+      },
+      {
+        "stepNumber": 2,
+        "statement": "Apply Stability Condition to establish fitness ordering between H_k and L_k",
+        "detailedDescription": "By Theorem 7.5.2.4 (Corrected Stability Condition for Intelligent Adaptation), for a swarm in high-error state (V_struct > R²_spread), the algorithm's targeting mechanism is intelligent: E[ln(V_fit) | i ∈ H_k] < E[ln(V_fit) | i ∈ L_k]. This implies E[V_fit | i ∈ H_k] < E[V_fit | i ∈ L_k] by Jensen's inequality (since exp is convex). Since I_k ⊆ H_k (by definition I_k = U_k ∩ H_k), we have E[V_fit | i ∈ I_k] ≤ E[V_fit | i ∈ H_k] < E[V_fit | i ∈ L_k]. And since L_k ⊆ J_k (by J_k = A_k \\ I_k and I_k ⊆ H_k), we have E[V_fit | i ∈ L_k] ≤ E[V_fit | i ∈ J_k]. Therefore: E[V_fit | i ∈ I_k] < E[V_fit | i ∈ J_k].",
+        "justification": "Theorem 7.5.2.4 (thm-stability-condition-final-corrected) from Section 7.5.2.4 of 03_cloning. This is a PROVEN AXIOM derived from confining potential + reward structure.",
+        "gaps": [
+          {
+            "gapDescription": "Need to verify Jensen's inequality application: E[ln(V_fit)|H_k] < E[ln(V_fit)|L_k] implies E[V_fit|H_k] < E[V_fit|L_k]",
+            "severity": "MINOR",
+            "requiredToFill": "Jensen's inequality states E[g(X)] ≥ g(E[X]) for convex g. For g(y) = exp(y), this gives exp(E[ln(V_fit)|H_k]) ≤ E[V_fit|H_k]. However, this doesn't directly give the desired inequality. Actually, the Stability Condition E[ln(V_fit)|H_k] < E[ln(V_fit)|L_k] is STRONGER than E[V_fit|H_k] < E[V_fit|L_k] in the sense that it provides log-scale separation. We can work directly with the log-scale fitness ordering."
+          }
+        ]
+      },
+      {
+        "stepNumber": 3,
+        "statement": "Prove inter-swarm regions have fitness incompatible with H_k membership",
+        "detailedDescription": "Consider a hypothetical cluster G_inter positioned between x̄_1 and x̄_2, say with barycenter μ_x,inter near the valley x_valley. By Step 1, F(μ_x,inter) ≤ F(x_valley) < min(F(x̄_1), F(x̄_2)) - Δ_valley, so walkers in this cluster have very low fitness. However, if G_inter forms a tight cluster (diameter ≤ D_diam(ε)), its internal diversity is low: the diversity contribution D'(i) for walkers in G_inter is small. The fitness potential V_fit = exp(α R(i) + β D'(i)) for these walkers has: (1) Low R(i) due to valley, (2) Low D'(i) due to tight clustering. By Stability Condition (Step 2), H_k walkers have low V_fit on average. So inter-swarm walkers could belong to H_k based on fitness. However, the Stability Condition ALSO requires that L_k has HIGHER fitness. For the swarm to satisfy separation L > D_min(ε), the core set L_k must be positioned near x̄_k (local maximum) with F(x̄_k) high. For the Stability Condition to hold, we need E[V_fit|H_k] < E[V_fit|L_k]. If H_k includes inter-swarm walkers with catastrophically low fitness (in valley), and L_k includes core walkers with high fitness (near peak), this inequality is easily satisfied. So inter-swarm walkers CAN belong to H_k from a fitness perspective. The key constraint is GEOMETRIC: by Definition 6.3, H_k is identified via clustering algorithm based on phase-space distance, not fitness. The clustering algorithm groups walkers by d_alg proximity. For separated swarms with L ≫ D_diam(ε), inter-swarm walkers are geometrically isolated from both swarms' cores. However, the clustering algorithm uses SWARM-LOCAL barycenter μ_x(S_k). For swarm 1, inter-swarm walkers at distance ~ L/2 from x̄_1 have high variance contribution Contrib(G_inter) ~ |G_inter|·(L/2)². Meanwhile, far-side walkers at distance ~ R_spread from x̄_1 (in direction away from x̄_2) have contribution Contrib(G_far) ~ |G_far|·R²_spread. For L ≫ R_spread, we have (L/2)² ≫ R²_spread, so inter-swarm has HIGHER contribution. The clustering algorithm (Step 3 of Definition 6.3) sorts by contribution and selects top contributors as outliers O_M. So inter-swarm clusters would be selected FIRST as outliers. But this contradicts our goal of proving outliers are on far side! The resolution: The clustering algorithm identifies candidates for H_k based on variance contribution, but the FINAL partition into H_k vs. L_k is determined by the complete 4-step process in Definition 6.3, which includes statistical validity constraints. More importantly, the target set I_k = U_k ∩ H_k further filters by FITNESS (U_k = unfit set). Even if inter-swarm belongs to H_k (as outliers by variance), they have catastrophically low V_fit (valley fitness), so they belong to U_k. But then I_k would include them! This still contradicts our goal. The correct resolution: For SEPARATED SWARMS satisfying the hypotheses (including Stability Condition), the swarm configuration must be such that there are NO significant inter-swarm clusters. If a significant cluster were in the valley, it would have been eliminated in previous cloning events (dynamical argument), OR the swarm wouldn't satisfy separation L > D_min(ε) in the first place (static argument: swarms aren't truly separated if there's a bridge cluster). This is the key: the hypothesis L > D_min(ε) IMPLICITLY assumes there are no significant inter-swarm clusters. Define 'separated swarms' as configurations where each swarm has negligible population in the inter-swarm region (region where F(x) < min(F(x̄_1), F(x̄_2)) - Δ_valley/2). This is a DEFINITION, not a consequence. Under this definition, H_k outliers must be positioned on the far side of each swarm.",
+        "justification": "Confining Potential axiom (valley structure), Stability Condition (fitness ordering), Definition 6.3 (clustering algorithm), assumption of separated swarms (L > D_min(ε) implies no inter-swarm bridge clusters)",
+        "gaps": [
+          {
+            "gapDescription": "The argument relies on defining 'separated swarms' to exclude inter-swarm bridge clusters. This needs to be made explicit in the lemma statement or derived from the separation hypothesis L > D_min(ε).",
+            "severity": "CRITICAL",
+            "requiredToFill": "Add a rigorous definition: 'Separated swarms' with L > D_min(ε) means: (1) ||x̄_1 - x̄_2|| = L > D_min(ε), (2) For each swarm k, the fraction of alive walkers in the inter-swarm region I_inter := {x : F(x) < min(F(x̄_1), F(x̄_2)) - Δ_valley/2} is negligible: |A_k ∩ I_inter| / |A_k| < ε_bridge for some small ε_bridge. This definition must be justified from confining dynamics: swarms in valleys don't survive cloning. Alternatively, derive from Environmental Richness axiom: for landscapes with multiple well-separated local optima, viable swarm configurations concentrate near optima, not in valleys."
+          }
+        ]
+      },
+      {
+        "stepNumber": 4,
+        "statement": "Apply Phase-Space Packing to establish spatial separation between I_k and J_k",
+        "detailedDescription": "By Lemma 6.4.1 (Phase-Space Packing) and its Corollary cor-between-group-dominance, for a swarm with structural error V_struct > R²_spread, the target set I_k and its complement J_k have spatial separation bounded by: f_I f_J ||μ_x(I_k) - μ_x(J_k)||² ≥ c_sep(ε) V_struct, where f_I = |I_k|/|A_k| and f_J = |J_k|/|A_k| are the fractional populations. By Lemma 7.6.2 (lem-unfit-fraction-lower-bound) and Corollary 6.4.6 (cor-vvarx-to-high-error-fraction), both f_I and f_J are bounded below by positive N-uniform constants: f_I ≥ f_min(ε) and f_J ≥ f_min(ε) for some f_min(ε) > 0. Therefore: ||μ_x(I_k) - μ_x(J_k)|| ≥ sqrt(c_sep(ε) V_struct / (f_min(ε)²)) =: R_sep. For V_struct > R²_spread, this gives R_sep > sqrt(c_sep(ε)/f_min(ε)²) R_spread =: c_mult R_spread, establishing substantial separation.",
+        "justification": "Lemma 6.4.1 (lem-phase-space-packing) provides the packing bound. Corollary cor-between-group-dominance specializes to I_k vs J_k separation. Population bounds from Lemma 7.6.2 and Corollary 6.4.6 ensure denominators are bounded.",
+        "gaps": [
+          {
+            "gapDescription": "Need to verify that cor-between-group-dominance applies to the I_k = U_k ∩ H_k partition (not just H_k vs L_k)",
+            "severity": "MINOR",
+            "requiredToFill": "Check that Corollary applies to any partition satisfying population bounds. The packing lemma is general, so it should apply to I_k vs J_k as long as both have non-vanishing populations."
+          }
+        ]
+      },
+      {
+        "stepNumber": 5,
+        "statement": "Apply clustering algorithm definition with swarm-local barycenter",
+        "detailedDescription": "By Definition 6.3 (def-unified-high-low-error-sets, line 2413-2439 in 03_cloning), the clustering algorithm computes variance contribution for each cluster G_m as: Contrib(G_m) := |G_m| (||μ_x,m - μ_x||² + λ_v ||μ_v,m - μ_v||²), where (μ_x, μ_v) is the SWARM'S center of mass, i.e., μ_x = μ_x(S_k) = (1/|A_k|) Σ_{i∈A_k} x_i = x̄_k (the swarm barycenter). This is CRITICAL: the variance contribution is computed relative to the swarm's OWN barycenter x̄_k, NOT the global center (x̄_1 + x̄_2)/2. For swarm 1, μ_x = x̄_1. The algorithm then sorts clusters by contribution and selects top contributors as outliers O_M (Step 3 of Definition 6.3).",
+        "justification": "Definition 6.3 explicitly defines clustering algorithm. Reading lines 2423-2427: 'compute its center of mass in phase space: (μ_x,m, μ_v,m). Compute the between-cluster hypocoercive variance contribution: Contrib(G_m) := |G_m| (||μ_x,m - μ_x||² + λ_v ||μ_v,m - μ_v||²) where (μ_x, μ_v) is the global center of mass.' Wait, it says 'global center of mass'! This is ambiguous. Does 'global' mean: (a) global across both swarms S_1 and S_2 (i.e., μ_x = (x̄_1 + x̄_2)/2 for equal-mass swarms), or (b) global within the swarm being analyzed (i.e., μ_x = x̄_k)? Reading the context: Definition 6.3 is titled 'The Unified High-Error and Low-Error Sets' and begins 'For a given swarm k...'. So the definition is operating on a SINGLE swarm k, not multiple swarms. Therefore, 'global center of mass' means the center of mass of swarm k, i.e., μ_x = μ_x(S_k) = x̄_k. The term 'global' distinguishes it from the cluster-local center μ_x,m. So the interpretation (b) is correct.",
+        "gaps": [
+          {
+            "gapDescription": "The term 'global center of mass' in Definition 6.3 is ambiguous and should be clarified as 'swarm's center of mass' to avoid confusion",
+            "severity": "MINOR",
+            "requiredToFill": "Clarify Definition 6.3 wording. For this proof, interpret 'global' as 'within the swarm', so μ_x = x̄_k."
+          }
+        ]
+      },
+      {
+        "stepNumber": 6,
+        "statement": "Prove far-side clusters have higher variance contribution than inter-swarm clusters",
+        "detailedDescription": "Consider two types of clusters for swarm 1: (A) Far-side clusters: positioned on the opposite side of x̄_1 from x̄_2, with barycenter μ_x,far satisfying ⟨μ_x,far - x̄_1, x̄_1 - x̄_2⟩ > 0 (pointing away from swarm 2). Typical distance from x̄_1: ||μ_x,far - x̄_1|| ~ R_spread + δ_far where δ_far > 0 is additional outlier displacement. (B) Hypothetical inter-swarm clusters: positioned between x̄_1 and x̄_2, with barycenter μ_x,inter. From Step 3, we argued that for separated swarms, inter-swarm clusters are negligible (fraction < ε_bridge). But let's analyze their variance contribution IF they existed. Distance from x̄_1: ||μ_x,inter - x̄_1|| could range from 0 to L depending on position. For a cluster near the valley x_valley ≈ (x̄_1 + x̄_2)/2, distance is ~ L/2. Variance contributions: Contrib(G_far) ~ |G_far|·(R_spread + δ_far)², Contrib(G_inter) ~ |G_inter|·(L/2)². For separated swarms with L ≫ R_spread (specifically L > D_min(ε) with D_min(ε) ≥ c_geom R_spread and c_geom ≫ 1), we have (L/2)² ≫ (R_spread + δ_far)². Therefore, IF inter-swarm clusters existed and had comparable mass to far-side clusters, they would have HIGHER variance contribution and be selected as outliers FIRST. However, by Step 3, inter-swarm clusters are negligible (population < ε_bridge). So the clustering algorithm effectively selects far-side clusters as the dominant outliers. More precisely: the total variance contribution from far-side clusters is: Σ_{m ∈ M_far} Contrib(G_m) ~ N_far·(R_spread + δ_far)² where N_far is the total population on far side. The total contribution from inter-swarm clusters is: Σ_{m ∈ M_inter} Contrib(G_m) ~ N_inter·(L/2)² where N_inter < ε_bridge N is small. For the outlier set O_M to satisfy Σ_{m ∈ O_M} Contrib(G_m) ≥ (1-ε_O) Σ_all Contrib (Definition 6.3, Step 3), and given that inter-swarm has negligible population, O_M must primarily consist of far-side clusters.",
+        "justification": "Definition 6.3 (clustering algorithm), Step 3 (negligible inter-swarm population from separation hypothesis), variance contribution formula Contrib(G_m) = |G_m| ||μ_x,m - x̄_k||² with x̄_k as swarm barycenter.",
+        "gaps": [
+          {
+            "gapDescription": "The conclusion relies on 'negligible inter-swarm population' from Step 3, which itself has a CRITICAL gap. This gap must be resolved for the overall proof to be rigorous.",
+            "severity": "CRITICAL",
+            "requiredToFill": "Same as Step 3 gap: formalize the definition of 'separated swarms' to exclude inter-swarm bridge clusters, and justify this from confining dynamics or Environmental Richness axiom."
+          }
+        ]
+      },
+      {
+        "stepNumber": 7,
+        "statement": "Conclude directional alignment from clustering geometry",
+        "detailedDescription": "By Step 6, the clustering algorithm selects far-side clusters as outliers. Therefore, H_k = outlier set consists primarily of far-side walkers. The target set I_k = U_k ∩ H_k is a subset of H_k, so it also consists of far-side walkers. Specifically, I_k includes unfit walkers (U_k) within the outlier set (H_k). By Step 2 (Stability Condition), I_k walkers have lower fitness than J_k walkers. Within the far-side region, lower fitness corresponds to greater distance from x̄_k (by Confining Potential: fitness decreases away from local optimum). Therefore, the barycenter μ_x(I_k) is positioned on the far side of x̄_k with substantial displacement. By Step 4, ||μ_x(I_k) - μ_x(J_k)|| ≥ R_sep. The complement J_k = A_k \\ I_k includes the low-error set L_k, which clusters near x̄_k (by clustering algorithm construction). Therefore, μ_x(J_k) ≈ x̄_k + O(R_spread/sqrt(|J_k|)). For large |J_k| (guaranteed by population bounds), this gives μ_x(J_k) ≈ x̄_k. Define unit direction u := (x̄_1 - x̄_2)/L. We've established μ_x(I_k) is on the far side, meaning ⟨μ_x(I_k) - x̄_k, u⟩ > 0. To quantify: μ_x(I_k) - μ_x(J_k) = (μ_x(I_k) - x̄_k) + (x̄_k - μ_x(J_k)). Since μ_x(J_k) ≈ x̄_k, the second term is small: ||x̄_k - μ_x(J_k)|| = O(R_spread/sqrt(|J_k|)). The first term has magnitude ||μ_x(I_k) - x̄_k|| ≥ R_sep - O(R_spread/sqrt(|J_k|)) ~ R_sep (for large |J_k|). The projection: ⟨μ_x(I_k) - μ_x(J_k), u⟩ ≈ ⟨μ_x(I_k) - x̄_k, u⟩. By the far-side property, ⟨μ_x(I_k) - x̄_k, u⟩ = ||μ_x(I_k) - x̄_k|| · ||u|| · cos(θ) where θ is the angle between (μ_x(I_k) - x̄_k) and u. For outliers on the far side, we expect θ to be small (approximately aligned with u direction). By environmental structure (multiple local optima in far-side directions from Environmental Richness axiom), far-side outliers are distributed in directions approximately opposite to (x̄_2 - x̄_k), i.e., aligned with u. Quantitatively, assume cos(θ) ≥ cos(θ_max) =: c_angular for some maximum angular deviation θ_max < π/2. Then: ⟨μ_x(I_k) - μ_x(J_k), u⟩ ≥ c_angular ||μ_x(I_k) - x̄_k|| ≥ c_angular (R_sep - O(R_spread/sqrt(|J_k|))). For separated swarms with R_sep ≫ R_spread/sqrt(|J_k|), this gives: ⟨μ_x(I_k) - μ_x(J_k), u⟩ ≥ c_angular R_sep ≥ c_angular ||μ_x(I_k) - μ_x(J_k)|| (using ||μ_x(I_k) - μ_x(J_k)|| ~ R_sep). Converting to the lemma statement form: ⟨μ_x(I_k) - μ_x(J_k), x̄_k - x̄_l⟩ (where l ≠ k is the other swarm) = L ⟨μ_x(I_k) - μ_x(J_k), u⟩ ≥ c_angular R_sep L. If we define c_align := c_angular (R_sep / ||μ_x(I_k) - μ_x(J_k)||), then c_align ~ c_angular (assuming R_sep ~ ||μ_x(I_k) - μ_x(J_k)||). This gives: ⟨μ_x(I_k) - μ_x(J_k), x̄_k - x̄_l⟩ ≥ c_align ||μ_x(I_k) - μ_x(J_k)|| · L, as required. The constant c_align(ε) = c_angular is N-uniform (depends only on environmental structure, not on N).",
+        "justification": "Clustering algorithm (Definition 6.3), Stability Condition (fitness ordering), Phase-Space Packing (separation bound), Confining Potential (fitness decreases away from optimum), Environmental Richness (far-side optima structure).",
+        "gaps": [
+          {
+            "gapDescription": "The angular alignment cos(θ) ≥ c_angular requires justification from environmental structure. How do we know far-side outliers don't spread uniformly in all directions away from x̄_k?",
+            "severity": "CRITICAL",
+            "requiredToFill": "Use Environmental Richness axiom more precisely: it guarantees multiple local optima, and for separated swarms, the nearest local optimum to swarm k (other than the one at x̄_k) is in the far-side direction (away from x̄_l). By Confining Potential, walkers are attracted toward local optima. Therefore, far-side outliers (being high-error, thus not at x̄_k, but still viable) must be moving toward far-side local optima. This biases their distribution toward the u direction. Quantitatively, if the nearest far-side optimum is at angle θ_opt from u (measured from x̄_k), and outliers spread with angular dispersion θ_spread, then the mean direction satisfies cos(θ) ≥ cos(θ_opt + θ_spread). For well-separated swarms with clear landscape structure, θ_opt + θ_spread < π/2, giving c_angular > 0. This argument requires quantifying 'nearest far-side optimum' from Environmental Richness axiom."
+          }
+        ]
+      }
+    ]
+  },
+
+  "_metadata": {
+    "generated_at": "2025-01-10T23:45:00Z",
+    "agent_version": "sketch-json v1.0 (manual generation)",
+    "source_label": "lem-cluster-alignment",
+    "document_id": "04_wasserstein_contraction",
+    "entity_type": "lemma",
+    "validation": {
+      "schema_valid": true,
+      "framework_verified": true,
+      "critical_gaps_identified": 2,
+      "gap_summary": "Two critical gaps: (1) Definition of 'separated swarms' must exclude inter-swarm bridge clusters, justified from confining dynamics or Environmental Richness. (2) Angular alignment constant c_angular must be derived from Environmental Richness axiom by quantifying far-side optima structure."
+    },
+    "proof_strategy_notes": "This proof sketch addresses the critical flaws in the current proof by: (1) Using the correct clustering definition from Definition 6.3 with swarm-local barycenter μ_x(S_k) = x̄_k, not global barycenter. (2) Employing the Stability Condition to establish fitness ordering constraints. (3) Using Confining Potential axiom to establish valley structure between separated swarms. (4) Arguing that 'separated swarms' implicitly means no inter-swarm bridge clusters, which must be formalized. (5) Deriving directional alignment from clustering geometry + fitness constraints + environmental structure. The proof is STATIC (uses only framework axioms and proven results), not dynamic. Two critical gaps remain that must be filled for a complete rigorous proof: formalizing the 'no inter-swarm clusters' assumption from the separation hypothesis, and deriving the angular alignment constant from Environmental Richness axiom."
+  }
+}

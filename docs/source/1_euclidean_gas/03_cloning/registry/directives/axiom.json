@@ -2,27 +2,29 @@
   "document_id": "03_cloning",
   "stage": "directives",
   "directive_type": "axiom",
-  "generated_at": "2025-11-10T13:26:08.161673+00:00",
+  "generated_at": "2025-11-10T13:57:32.711417+00:00",
   "count": 6,
   "items": [
     {
       "directive_type": "axiom",
       "label": "axiom-domain-regularity",
       "title": "**(Axiom EG-0): Regularity of the Domain**",
-      "start_line": 196,
-      "end_line": 200,
+      "start_line": 201,
+      "end_line": 207,
       "header_lines": [
-        197
+        202
       ],
-      "content_start": 199,
-      "content_end": 199,
-      "content": "199: :label: axiom-domain-regularity",
+      "content_start": 204,
+      "content_end": 206,
+      "content": "204: :label: axiom-domain-regularity\n205: \n206: The valid domain for a single walker's position, $\\mathcal{X}_{\\text{valid}}$, is an open, bounded, and connected subset of $\\mathbb{R}^d$. Its boundary, $\\partial \\mathcal{X}_{\\text{valid}}$, is a $C^{\\infty}$-smooth compact manifold without boundary.",
       "metadata": {
         "label": "axiom-domain-regularity"
       },
       "section": "## 2. The Coupled State Space and State Differences",
-      "references": [],
-      "raw_directive": "196: For the construction to be valid, we impose the following standard regularity conditions on the single-walker state space $\\mathcal{X}$.\n197: \n198: :::{prf:axiom} **(Axiom EG-0): Regularity of the Domain**\n199: :label: axiom-domain-regularity\n200: ",
+      "references": [
+        "prop-barrier-existence"
+      ],
+      "raw_directive": "201: For the construction to be valid, we impose the following standard regularity conditions on the single-walker state space $\\mathcal{X}$.\n202: \n203: :::{prf:axiom} **(Axiom EG-0): Regularity of the Domain**\n204: :label: axiom-domain-regularity\n205: \n206: The valid domain for a single walker's position, $\\mathcal{X}_{\\text{valid}}$, is an open, bounded, and connected subset of $\\mathbb{R}^d$. Its boundary, $\\partial \\mathcal{X}_{\\text{valid}}$, is a $C^{\\infty}$-smooth compact manifold without boundary.\n207: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "03_cloning",
@@ -35,20 +37,22 @@
       "directive_type": "axiom",
       "label": "axiom-lipschitz-fields",
       "title": "**(Axiom EG-1): Lipschitz Regularity of Environmental Fields**",
-      "start_line": 1159,
-      "end_line": 1168,
+      "start_line": 1173,
+      "end_line": 1184,
       "header_lines": [
-        1160
+        1174
       ],
-      "content_start": 1162,
-      "content_end": 1167,
-      "content": "1162: :label: axiom-lipschitz-fields\n1163: \n1164: The deterministic fields governing the system's kinetic dynamics are locally smooth and globally well-behaved on the compact valid domain $\\mathcal X_{\\mathrm{valid}}$. Specifically, there exist finite constants $L_F$ and $L_u$ such that for all $x_1, x_2 \\in \\mathcal X_{\\mathrm{valid}}$:\n1165: \n1166: 1.  **Force Field:** $\\|F(x_1) - F(x_2)\\| \\leq L_F \\|x_1 - x_2\\|$\n1167: 2.  **Steady Flow Field:** $\\|u(x_1) - u(x_2)\\| \\leq L_u \\|x_1 - x_2\\|$",
+      "content_start": 1176,
+      "content_end": 1183,
+      "content": "1176: :label: axiom-lipschitz-fields\n1177: \n1178: The deterministic fields governing the system's kinetic dynamics are locally smooth and globally well-behaved on the compact valid domain $\\mathcal X_{\\mathrm{valid}}$. Specifically, there exist finite constants $L_F$ and $L_u$ such that for all $x_1, x_2 \\in \\mathcal X_{\\mathrm{valid}}$:\n1179: \n1180: 1.  **Force Field:** $\\|F(x_1) - F(x_2)\\| \\leq L_F \\|x_1 - x_2\\|$\n1181: 2.  **Steady Flow Field:** $\\|u(x_1) - u(x_2)\\| \\leq L_u \\|x_1 - x_2\\|$\n1182: \n1183: **Rationale:** This is a standard regularity assumption that ensures the kinetic dynamics do not have infinite gradients or instantaneous velocities, which is essential for the hypocoercive analysis. It guarantees that the one-step change in any walker's state is a well-behaved function of its current state.",
       "metadata": {
         "label": "axiom-lipschitz-fields"
       },
       "section": "## 4. Foundational Assumptions and System Properties",
-      "references": [],
-      "raw_directive": "1159: These axioms describe the fundamental properties of the state space and the reward function, which constitute the static \"world\" that the swarm explores.\n1160: \n1161: :::{prf:axiom} **(Axiom EG-1): Lipschitz Regularity of Environmental Fields**\n1162: :label: axiom-lipschitz-fields\n1163: \n1164: The deterministic fields governing the system's kinetic dynamics are locally smooth and globally well-behaved on the compact valid domain $\\mathcal X_{\\mathrm{valid}}$. Specifically, there exist finite constants $L_F$ and $L_u$ such that for all $x_1, x_2 \\in \\mathcal X_{\\mathrm{valid}}$:\n1165: \n1166: 1.  **Force Field:** $\\|F(x_1) - F(x_2)\\| \\leq L_F \\|x_1 - x_2\\|$\n1167: 2.  **Steady Flow Field:** $\\|u(x_1) - u(x_2)\\| \\leq L_u \\|x_1 - x_2\\|$\n1168: ",
+      "references": [
+        "prop-lyapunov-necessity"
+      ],
+      "raw_directive": "1173: These axioms describe the fundamental properties of the state space and the reward function, which constitute the static \"world\" that the swarm explores.\n1174: \n1175: :::{prf:axiom} **(Axiom EG-1): Lipschitz Regularity of Environmental Fields**\n1176: :label: axiom-lipschitz-fields\n1177: \n1178: The deterministic fields governing the system's kinetic dynamics are locally smooth and globally well-behaved on the compact valid domain $\\mathcal X_{\\mathrm{valid}}$. Specifically, there exist finite constants $L_F$ and $L_u$ such that for all $x_1, x_2 \\in \\mathcal X_{\\mathrm{valid}}$:\n1179: \n1180: 1.  **Force Field:** $\\|F(x_1) - F(x_2)\\| \\leq L_F \\|x_1 - x_2\\|$\n1181: 2.  **Steady Flow Field:** $\\|u(x_1) - u(x_2)\\| \\leq L_u \\|x_1 - x_2\\|$\n1182: \n1183: **Rationale:** This is a standard regularity assumption that ensures the kinetic dynamics do not have infinite gradients or instantaneous velocities, which is essential for the hypocoercive analysis. It guarantees that the one-step change in any walker's state is a well-behaved function of its current state.\n1184: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "03_cloning",
@@ -61,20 +65,20 @@
       "directive_type": "axiom",
       "label": "axiom-safe-harbor",
       "title": "**(Axiom EG-2): Existence of a Safe Harbor**",
-      "start_line": 1183,
-      "end_line": 1192,
+      "start_line": 1199,
+      "end_line": 1208,
       "header_lines": [
-        1184
+        1200
       ],
-      "content_start": 1186,
-      "content_end": 1191,
-      "content": "1186: :label: axiom-safe-harbor\n1187: \n1188: There exists a compact set $C_{\\mathrm{safe}} \\subset \\mathcal X_{\\mathrm{valid}}$ and a reward threshold $R_{\\mathrm{safe}}$ such that:\n1189: \n1190: 1.  $C_{\\mathrm{safe}}$ lies strictly inside the valid domain: $d(x, \\partial X_{\\mathrm{valid}}) \\geq \\delta_{\\mathrm{safe}} > 0$ for every $x \\in C_{\\mathrm{safe}}$.\n1191: 2.  The positional reward is strictly better inside the safe harbor: $\\max_{y \\in C_{\\mathrm{safe}}} R_{\\mathrm{pos}}(y) \\geq R_{\\mathrm{safe}}$ and $R_{\\mathrm{pos}}(x) < R_{\\mathrm{safe}}$ for all $x \\notin C_{\\mathrm{safe}}$.",
+      "content_start": 1202,
+      "content_end": 1207,
+      "content": "1202: :label: axiom-safe-harbor\n1203: \n1204: There exists a compact set $C_{\\mathrm{safe}} \\subset \\mathcal X_{\\mathrm{valid}}$ and a reward threshold $R_{\\mathrm{safe}}$ such that:\n1205: \n1206: 1.  $C_{\\mathrm{safe}}$ lies strictly inside the valid domain: $d(x, \\partial X_{\\mathrm{valid}}) \\geq \\delta_{\\mathrm{safe}} > 0$ for every $x \\in C_{\\mathrm{safe}}$.\n1207: 2.  The positional reward is strictly better inside the safe harbor: $\\max_{y \\in C_{\\mathrm{safe}}} R_{\\mathrm{pos}}(y) \\geq R_{\\mathrm{safe}}$ and $R_{\\mathrm{pos}}(x) < R_{\\mathrm{safe}}$ for all $x \\notin C_{\\mathrm{safe}}$.",
       "metadata": {
         "label": "axiom-safe-harbor"
       },
       "section": "## 4. Foundational Assumptions and System Properties",
       "references": [],
-      "raw_directive": "1183: :::\n1184: \n1185: :::{prf:axiom} **(Axiom EG-2): Existence of a Safe Harbor**\n1186: :label: axiom-safe-harbor\n1187: \n1188: There exists a compact set $C_{\\mathrm{safe}} \\subset \\mathcal X_{\\mathrm{valid}}$ and a reward threshold $R_{\\mathrm{safe}}$ such that:\n1189: \n1190: 1.  $C_{\\mathrm{safe}}$ lies strictly inside the valid domain: $d(x, \\partial X_{\\mathrm{valid}}) \\geq \\delta_{\\mathrm{safe}} > 0$ for every $x \\in C_{\\mathrm{safe}}$.\n1191: 2.  The positional reward is strictly better inside the safe harbor: $\\max_{y \\in C_{\\mathrm{safe}}} R_{\\mathrm{pos}}(y) \\geq R_{\\mathrm{safe}}$ and $R_{\\mathrm{pos}}(x) < R_{\\mathrm{safe}}$ for all $x \\notin C_{\\mathrm{safe}}$.\n1192: ",
+      "raw_directive": "1199: :::\n1200: \n1201: :::{prf:axiom} **(Axiom EG-2): Existence of a Safe Harbor**\n1202: :label: axiom-safe-harbor\n1203: \n1204: There exists a compact set $C_{\\mathrm{safe}} \\subset \\mathcal X_{\\mathrm{valid}}$ and a reward threshold $R_{\\mathrm{safe}}$ such that:\n1205: \n1206: 1.  $C_{\\mathrm{safe}}$ lies strictly inside the valid domain: $d(x, \\partial X_{\\mathrm{valid}}) \\geq \\delta_{\\mathrm{safe}} > 0$ for every $x \\in C_{\\mathrm{safe}}$.\n1207: 2.  The positional reward is strictly better inside the safe harbor: $\\max_{y \\in C_{\\mathrm{safe}}} R_{\\mathrm{pos}}(y) \\geq R_{\\mathrm{safe}}$ and $R_{\\mathrm{pos}}(x) < R_{\\mathrm{safe}}$ for all $x \\notin C_{\\mathrm{safe}}$.\n1208: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "03_cloning",
@@ -87,20 +91,20 @@
       "directive_type": "axiom",
       "label": "axiom-non-deceptive-landscape",
       "title": "**(Axiom EG-3): Non-Deceptive Landscape**",
-      "start_line": 1211,
-      "end_line": 1219,
+      "start_line": 1227,
+      "end_line": 1235,
       "header_lines": [
-        1212
+        1228
       ],
-      "content_start": 1214,
-      "content_end": 1218,
-      "content": "1214: :label: axiom-non-deceptive-landscape\n1215: \n1216: The environment is **non-deceptive**. A sufficient geometric separation between two walkers guarantees a minimal, non-zero difference in their raw positional rewards. Formally, there exist constants $L_{\\text{grad}} > 0$ and $\\kappa_{\\text{raw},r} > 0$ such that:\n1217: \n1218: If $\\|x - y\\| \\geq L_{\\text{grad}}$, then $|R_{\\mathrm{pos}}(y) - R_{\\mathrm{pos}}(x)| \\geq \\kappa_{\\text{raw},r}$.",
+      "content_start": 1230,
+      "content_end": 1234,
+      "content": "1230: :label: axiom-non-deceptive-landscape\n1231: \n1232: The environment is **non-deceptive**. A sufficient geometric separation between two walkers guarantees a minimal, non-zero difference in their raw positional rewards. Formally, there exist constants $L_{\\text{grad}} > 0$ and $\\kappa_{\\text{raw},r} > 0$ such that:\n1233: \n1234: If $\\|x - y\\| \\geq L_{\\text{grad}}$, then $|R_{\\mathrm{pos}}(y) - R_{\\mathrm{pos}}(x)| \\geq \\kappa_{\\text{raw},r}$.",
       "metadata": {
         "label": "axiom-non-deceptive-landscape"
       },
       "section": "## 4. Foundational Assumptions and System Properties",
       "references": [],
-      "raw_directive": "1211: These axioms ensure that the environment is sufficiently informative to prevent algorithmic stagnation and to allow the swarm to distinguish between good and bad configurations.\n1212: \n1213: :::{prf:axiom} **(Axiom EG-3): Non-Deceptive Landscape**\n1214: :label: axiom-non-deceptive-landscape\n1215: \n1216: The environment is **non-deceptive**. A sufficient geometric separation between two walkers guarantees a minimal, non-zero difference in their raw positional rewards. Formally, there exist constants $L_{\\text{grad}} > 0$ and $\\kappa_{\\text{raw},r} > 0$ such that:\n1217: \n1218: If $\\|x - y\\| \\geq L_{\\text{grad}}$, then $|R_{\\mathrm{pos}}(y) - R_{\\mathrm{pos}}(x)| \\geq \\kappa_{\\text{raw},r}$.\n1219: ",
+      "raw_directive": "1227: These axioms ensure that the environment is sufficiently informative to prevent algorithmic stagnation and to allow the swarm to distinguish between good and bad configurations.\n1228: \n1229: :::{prf:axiom} **(Axiom EG-3): Non-Deceptive Landscape**\n1230: :label: axiom-non-deceptive-landscape\n1231: \n1232: The environment is **non-deceptive**. A sufficient geometric separation between two walkers guarantees a minimal, non-zero difference in their raw positional rewards. Formally, there exist constants $L_{\\text{grad}} > 0$ and $\\kappa_{\\text{raw},r} > 0$ such that:\n1233: \n1234: If $\\|x - y\\| \\geq L_{\\text{grad}}$, then $|R_{\\mathrm{pos}}(y) - R_{\\mathrm{pos}}(x)| \\geq \\kappa_{\\text{raw},r}$.\n1235: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "03_cloning",
@@ -113,20 +117,20 @@
       "directive_type": "axiom",
       "label": "axiom-velocity-regularization",
       "title": "**(Axiom EG-4): Velocity Regularization via Reward**",
-      "start_line": 1240,
-      "end_line": 1262,
+      "start_line": 1256,
+      "end_line": 1278,
       "header_lines": [
-        1241
+        1257
       ],
-      "content_start": 1243,
-      "content_end": 1261,
-      "content": "1243: :label: axiom-velocity-regularization\n1244: \n1245: The total reward function `R(x,v)` is designed to actively penalize high kinetic energy. It is composed of the positional reward `R_pos(x)` and a quadratic velocity regularization term:\n1246: \n1247: $$\n1248: R_{\\text{total}}(x, v) := R_{\\text{pos}}(x) - c_{v\\_reg} \\|v\\|^2\n1249: $$\n1250: \n1251: where `c_{v\\_reg}` is a strictly positive constant `c_{v\\_reg} > 0`.\n1252: \n1253: **Rationale:**\n1254: \n1255: This axiom is a critical safety mechanism within the synergistic dissipation framework. While the cloning operator contracts positional variance $V_{\\text{Var},x}$ but causes bounded expansion of velocity variance $V_{\\text{Var},v}$, the velocity regularization term ensures this expansion remains controlled and bounded.\n1256: \n1257: 1.  **Bounding Velocity Variance Expansion During Cloning:** A walker `i` that acquires an anomalously large velocity `v_i` contributes significantly to the $V_{\\text{Var},v}$ component of the Lyapunov function. The `-c_{v\\_reg} ||v_i||^{2}` term gives this walker an extremely low raw reward, making it \"unfit\" regardless of its position. It thus becomes a prime target for cloning. When cloned, its high velocity is reset to that of a companion, which is overwhelmingly likely to be much smaller. This mechanism ensures that while cloning may increase $V_{\\text{Var},v}$ through velocity resets, walkers with dangerously high velocities are preferentially removed, providing an upper bound on the expansion.\n1258: \n1259: 2.  **Enabling Kinetic Stage Dissipation:** This mechanism acts as a robust safety net, preventing the kinetic energy of the swarm from growing to levels where the kinetic stage's Langevin friction term cannot overcome the expansion caused by cloning. It ensures that the velocity variance remains within a regime where the kinetic operator's dissipation can dominate, enabling the synergistic framework to achieve net contraction of the total Lyapunov function.\n1260: \n1261: **Implications and Trade-offs:**",
+      "content_start": 1259,
+      "content_end": 1277,
+      "content": "1259: :label: axiom-velocity-regularization\n1260: \n1261: The total reward function `R(x,v)` is designed to actively penalize high kinetic energy. It is composed of the positional reward `R_pos(x)` and a quadratic velocity regularization term:\n1262: \n1263: $$\n1264: R_{\\text{total}}(x, v) := R_{\\text{pos}}(x) - c_{v\\_reg} \\|v\\|^2\n1265: $$\n1266: \n1267: where `c_{v\\_reg}` is a strictly positive constant `c_{v\\_reg} > 0`.\n1268: \n1269: **Rationale:**\n1270: \n1271: This axiom is a critical safety mechanism within the synergistic dissipation framework. While the cloning operator contracts positional variance $V_{\\text{Var},x}$ but causes bounded expansion of velocity variance $V_{\\text{Var},v}$, the velocity regularization term ensures this expansion remains controlled and bounded.\n1272: \n1273: 1.  **Bounding Velocity Variance Expansion During Cloning:** A walker `i` that acquires an anomalously large velocity `v_i` contributes significantly to the $V_{\\text{Var},v}$ component of the Lyapunov function. The `-c_{v\\_reg} ||v_i||^{2}` term gives this walker an extremely low raw reward, making it \"unfit\" regardless of its position. It thus becomes a prime target for cloning. When cloned, its high velocity is reset to that of a companion, which is overwhelmingly likely to be much smaller. This mechanism ensures that while cloning may increase $V_{\\text{Var},v}$ through velocity resets, walkers with dangerously high velocities are preferentially removed, providing an upper bound on the expansion.\n1274: \n1275: 2.  **Enabling Kinetic Stage Dissipation:** This mechanism acts as a robust safety net, preventing the kinetic energy of the swarm from growing to levels where the kinetic stage's Langevin friction term cannot overcome the expansion caused by cloning. It ensures that the velocity variance remains within a regime where the kinetic operator's dissipation can dominate, enabling the synergistic framework to achieve net contraction of the total Lyapunov function.\n1276: \n1277: **Implications and Trade-offs:**",
       "metadata": {
         "label": "axiom-velocity-regularization"
       },
       "section": "## 4. Foundational Assumptions and System Properties",
       "references": [],
-      "raw_directive": "1240: These final axioms are assumptions about the user's choice of algorithmic parameters. They ensure the algorithm is configured to be active, to correctly interpret the signals it receives, and to remain dynamically stable.\n1241: \n1242: :::{prf:axiom} **(Axiom EG-4): Velocity Regularization via Reward**\n1243: :label: axiom-velocity-regularization\n1244: \n1245: The total reward function `R(x,v)` is designed to actively penalize high kinetic energy. It is composed of the positional reward `R_pos(x)` and a quadratic velocity regularization term:\n1246: \n1247: $$\n1248: R_{\\text{total}}(x, v) := R_{\\text{pos}}(x) - c_{v\\_reg} \\|v\\|^2\n1249: $$\n1250: \n1251: where `c_{v\\_reg}` is a strictly positive constant `c_{v\\_reg} > 0`.\n1252: \n1253: **Rationale:**\n1254: \n1255: This axiom is a critical safety mechanism within the synergistic dissipation framework. While the cloning operator contracts positional variance $V_{\\text{Var},x}$ but causes bounded expansion of velocity variance $V_{\\text{Var},v}$, the velocity regularization term ensures this expansion remains controlled and bounded.\n1256: \n1257: 1.  **Bounding Velocity Variance Expansion During Cloning:** A walker `i` that acquires an anomalously large velocity `v_i` contributes significantly to the $V_{\\text{Var},v}$ component of the Lyapunov function. The `-c_{v\\_reg} ||v_i||^{2}` term gives this walker an extremely low raw reward, making it \"unfit\" regardless of its position. It thus becomes a prime target for cloning. When cloned, its high velocity is reset to that of a companion, which is overwhelmingly likely to be much smaller. This mechanism ensures that while cloning may increase $V_{\\text{Var},v}$ through velocity resets, walkers with dangerously high velocities are preferentially removed, providing an upper bound on the expansion.\n1258: \n1259: 2.  **Enabling Kinetic Stage Dissipation:** This mechanism acts as a robust safety net, preventing the kinetic energy of the swarm from growing to levels where the kinetic stage's Langevin friction term cannot overcome the expansion caused by cloning. It ensures that the velocity variance remains within a regime where the kinetic operator's dissipation can dominate, enabling the synergistic framework to achieve net contraction of the total Lyapunov function.\n1260: \n1261: **Implications and Trade-offs:**\n1262: ",
+      "raw_directive": "1256: These final axioms are assumptions about the user's choice of algorithmic parameters. They ensure the algorithm is configured to be active, to correctly interpret the signals it receives, and to remain dynamically stable.\n1257: \n1258: :::{prf:axiom} **(Axiom EG-4): Velocity Regularization via Reward**\n1259: :label: axiom-velocity-regularization\n1260: \n1261: The total reward function `R(x,v)` is designed to actively penalize high kinetic energy. It is composed of the positional reward `R_pos(x)` and a quadratic velocity regularization term:\n1262: \n1263: $$\n1264: R_{\\text{total}}(x, v) := R_{\\text{pos}}(x) - c_{v\\_reg} \\|v\\|^2\n1265: $$\n1266: \n1267: where `c_{v\\_reg}` is a strictly positive constant `c_{v\\_reg} > 0`.\n1268: \n1269: **Rationale:**\n1270: \n1271: This axiom is a critical safety mechanism within the synergistic dissipation framework. While the cloning operator contracts positional variance $V_{\\text{Var},x}$ but causes bounded expansion of velocity variance $V_{\\text{Var},v}$, the velocity regularization term ensures this expansion remains controlled and bounded.\n1272: \n1273: 1.  **Bounding Velocity Variance Expansion During Cloning:** A walker `i` that acquires an anomalously large velocity `v_i` contributes significantly to the $V_{\\text{Var},v}$ component of the Lyapunov function. The `-c_{v\\_reg} ||v_i||^{2}` term gives this walker an extremely low raw reward, making it \"unfit\" regardless of its position. It thus becomes a prime target for cloning. When cloned, its high velocity is reset to that of a companion, which is overwhelmingly likely to be much smaller. This mechanism ensures that while cloning may increase $V_{\\text{Var},v}$ through velocity resets, walkers with dangerously high velocities are preferentially removed, providing an upper bound on the expansion.\n1274: \n1275: 2.  **Enabling Kinetic Stage Dissipation:** This mechanism acts as a robust safety net, preventing the kinetic energy of the swarm from growing to levels where the kinetic stage's Langevin friction term cannot overcome the expansion caused by cloning. It ensures that the velocity variance remains within a regime where the kinetic operator's dissipation can dominate, enabling the synergistic framework to achieve net contraction of the total Lyapunov function.\n1276: \n1277: **Implications and Trade-offs:**\n1278: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "03_cloning",
@@ -139,20 +143,20 @@
       "directive_type": "axiom",
       "label": "axiom-active-diversity",
       "title": "**(Axiom EG-5): Active Diversity Signal**",
-      "start_line": 1284,
-      "end_line": 1294,
+      "start_line": 1300,
+      "end_line": 1310,
       "header_lines": [
-        1285
+        1301
       ],
-      "content_start": 1287,
-      "content_end": 1293,
-      "content": "1287: :label: axiom-active-diversity\n1288: \n1289: The diversity channel of the fitness potential is active. The dynamics weight $\\beta$ is strictly positive:\n1290: \n1291: $$\n1292: \\beta > 0\n1293: $$",
+      "content_start": 1303,
+      "content_end": 1309,
+      "content": "1303: :label: axiom-active-diversity\n1304: \n1305: The diversity channel of the fitness potential is active. The dynamics weight $\\beta$ is strictly positive:\n1306: \n1307: $$\n1308: \\beta > 0\n1309: $$",
       "metadata": {
         "label": "axiom-active-diversity"
       },
       "section": "## 4. Foundational Assumptions and System Properties",
       "references": [],
-      "raw_directive": "1284: :::\n1285: \n1286: :::{prf:axiom} **(Axiom EG-5): Active Diversity Signal**\n1287: :label: axiom-active-diversity\n1288: \n1289: The diversity channel of the fitness potential is active. The dynamics weight $\\beta$ is strictly positive:\n1290: \n1291: $$\n1292: \\beta > 0\n1293: $$\n1294: ",
+      "raw_directive": "1300: :::\n1301: \n1302: :::{prf:axiom} **(Axiom EG-5): Active Diversity Signal**\n1303: :label: axiom-active-diversity\n1304: \n1305: The diversity channel of the fitness potential is active. The dynamics weight $\\beta$ is strictly positive:\n1306: \n1307: $$\n1308: \\beta > 0\n1309: $$\n1310: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "03_cloning",

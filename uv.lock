@@ -802,6 +802,11 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/e3/4f/58e7dce7985b35f98fcaba7b366de5baaf4637bc0811be66df4025c1885f/dspy-3.0.3-py3-none-any.whl", hash = "sha256:d19cc38ab3ec7edcb3db56a3463a606268dd2e83280595062b052bcfe0cfd24f", size = 261742 },
 ]
 
+[package.optional-dependencies]
+mcp = [
+    { name = "mcp" },
+]
+
 [[package]]
 name = "dspy-ai"
 version = "3.0.3"
@@ -966,6 +971,7 @@ source = { editable = "." }
 dependencies = [
     { name = "bokeh" },
     { name = "click" },
+    { name = "dspy", extra = ["mcp"] },
     { name = "dspy-ai" },
     { name = "einops" },
     { name = "flogging" },
@@ -1040,6 +1046,7 @@ requires-dist = [
     { name = "autoapi", marker = "extra == 'docs'" },
     { name = "bokeh" },
     { name = "click" },
+    { name = "dspy", extras = ["mcp"], specifier = ">=3.0.3" },
     { name = "dspy-ai", specifier = ">=3.0.3" },
     { name = "einops" },
     { name = "flogging" },

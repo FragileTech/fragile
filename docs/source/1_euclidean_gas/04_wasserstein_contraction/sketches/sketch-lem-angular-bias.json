@@ -1,0 +1,147 @@
+{
+  "label": "lem-angular-bias",
+  "entity_type": "lemma",
+  "document_id": "04_wasserstein_contraction",
+  "title": "Angular Bias of Target Barycenter",
+  "statement": "For separated swarms with L > D_min(ε) and target set I_k = U_k ∩ H_k (unfit high-error walkers), the target barycenter satisfies angular bias: ⟨μ_x(I_k) - x̄_k, u⟩ ≥ c_angular(ε) ||μ_x(I_k) - x̄_k|| where u = (x̄_k - x̄_l)/L is the separation unit vector and c_angular(ε) > 0 is an N-uniform constant depending on cone half-angle α(ε) and far-side mass fraction δ_+(ε).",
+  "strategy": {
+    "strategist": "Hybrid (Gemini 2.5 Pro + GPT-4.1 via Codex)",
+    "method": "Geometric Decomposition via Cone Partition with Mass-Weighted Barycenter Analysis",
+    "summary": "The proof establishes that the target barycenter (center of mass of unfit high-error walkers) is directionally biased away from the opposite swarm through a rigorous geometric argument. We partition swarm k with a hyperplane orthogonal to the separation direction u, creating far-side and near-side subsets. The log-stability condition forces high-error walkers to concentrate preferentially on the far side (away from the opposing swarm), creating a mass imbalance with far-side fraction δ_+(ε) bounded below uniformly in N. This mass imbalance geometrically pulls the target barycenter in the far-side direction. We make this rigorous by expressing the target barycenter as a mass-weighted average and deriving an explicit alignment constant c_angular(ε) = cos α(ε) · [δ_+(ε) - κ_pack(ε)(1-δ_+(ε))]/[δ_+(ε) + κ_pack(ε)(1-δ_+(ε))], where κ_pack(ε) controls off-cone and near-side radial contributions via phase-space packing.",
+    "keySteps": [
+      "Step 1: Cone Partition and Barycenter Decomposition. Define a hyperplane through the swarm barycenter x̄_k orthogonal to the separation unit vector u = (x̄_k - x̄_l)/L. This partitions the target set I_k into three subsets: far-side cone A_+ (angle ≤ α with u), near-side cone A_- (angle ≤ α with -u), and off-cone A_0. Choose cone half-angle α(ε) = π/3. Express the target barycenter μ_x(I_k) as the mass-weighted average: μ_x(I_k) = δ_+μ_x(A_+) + δ_-μ_x(A_-) + δ_0μ_x(A_0), where δ_+, δ_-, δ_0 are the respective mass fractions (summing to 1).",
+      "Step 2: Establish N-Uniform Lower Bound on Far-Side Mass (δ_+). Use proof by contradiction: Assume δ_+ can be arbitrarily small for some large N. This implies the target set I_k (unfit high-error walkers) concentrates almost entirely on the near side, aimed at the opposing swarm l. This configuration represents a highly effective targeting strategy. However, thm-stability-condition-final-corrected provides a strict upper bound on the system's targeting intelligence via the log-stability inequality β ln(1 + κ_d'/g_A,max+η) > α ln(1 + κ_rescaled(L_R·D_valid)/η). Show that sufficiently small δ_+ would allow expected log-fitness E[ln(V_fit)|H_k] to drop below E[ln(V_fit)|L_k], violating the theorem. This contradiction, combined with Environmental Richness (ensuring non-degenerate far-side states), establishes δ_+(ε) ≥ δ_*(ε) > 0 uniformly in N. The explicit threshold is δ_+(ε) > κ_pack(ε)/(1+κ_pack(ε)), where κ_pack(ε) is defined in Step 3.",
+      "Step 3: Bound Off-Cone and Near-Side Radial Contributions via Phase-Space Packing. Define the radial displacement r(x) := ||x - x̄_k|| and signed projection s(x) := ⟨x - x̄_k, u⟩. By cone geometry: for x ∈ A_+, s(x) ≥ cos(α)r(x); for x ∈ A_-, s(x) ≤ -cos(α)r(x); for x ∈ A_0, |s(x)| ≤ cos(α)r(x). Apply lem-phase-space-packing to control the fraction of walkers with small hypocoercive variance, preventing pathological clustering near the separating hyperplane. This yields a packing factor κ_pack(ε) < 1 such that the radial ratio ρ := E[r|A_- ∪ A_0]/E[r|A_+] ≤ κ_pack(ε), where E denotes expectation over the target set distribution restricted to each subset. The packing bound ensures that near-side and off-cone walkers do not dominate radially, preserving the far-side bias signal.",
+      "Step 4: Derive Cone-Averaging Inequality and Extract Explicit c_angular(ε). Compute the expected signed projection: E[s] = δ_+E[s|A_+] + δ_-E[s|A_-] + δ_0E[s|A_0]. Using the cone bounds from Step 3: E[s|A_+] ≥ cos(α)E[r|A_+], E[s|A_-] ≤ -cos(α)E[r|A_-], |E[s|A_0]| ≤ cos(α)E[r|A_0]. Combine with the radial bound ρ ≤ κ_pack(ε) to obtain: E[s] ≥ cos(α)E[r|A_+][δ_+ - κ_pack(1-δ_+)]. Similarly, E[r] ≤ E[r|A_+][δ_+ + κ_pack(1-δ_+)]. Dividing yields the cone-averaging ratio: E[s]/E[r] ≥ cos(α) · [δ_+(ε) - κ_pack(ε)(1-δ_+(ε))]/[δ_+(ε) + κ_pack(ε)(1-δ_+(ε))]. Define this explicit constant as c_angular(ε). Positivity follows from the threshold δ_+(ε) > κ_pack(ε)/(1+κ_pack(ε)) established in Step 2.",
+      "Step 5: Upgrade to Barycentric Norm Bound and Verify N-Uniformity. The barycenter μ_x(I_k) satisfies E[s] = ⟨μ_x(I_k) - x̄_k, u⟩ and E[r] ≥ ||μ_x(I_k) - x̄_k|| (by Jensen's inequality for norms). Therefore: ⟨μ_x(I_k) - x̄_k, u⟩ = E[s] ≥ c_angular(ε)E[r] ≥ c_angular(ε)||μ_x(I_k) - x̄_k||, establishing the claimed angular bias inequality. Verify N-uniformity: The cone half-angle α(ε) is a chosen geometric constant (π/3), independent of N. The far-side mass fraction δ_+(ε) and packing factor κ_pack(ε) depend only on system parameters (ε, stability constants from thm-stability-condition-final-corrected) and prior N-uniform bounds (Environmental Richness, phase-space packing), not on the number of walkers N. Therefore, c_angular(ε) is N-uniform."
+    ],
+    "strengths": [
+      "Constructive proof with explicit formula for c_angular(ε), enabling quantitative downstream analysis",
+      "Directly bridges abstract dynamical constraints (log-stability) to concrete spatial geometry (angular bias)",
+      "Robust geometric argument using fundamental barycentric coordinates and cone partitions, highly visualizable",
+      "Modular structure: mass-bias derivation (Steps 2-3) and geometric-averaging (Steps 4-5) are decoupled",
+      "N-uniformity is tracked systematically through each step, crucial for mean-field convergence",
+      "Hybrid strategy synthesizes Gemini's pedagogical clarity with Codex's technical precision"
+    ],
+    "weaknesses": [
+      "Central technical challenge: deriving tight N-uniform lower bound δ_+(ε) requires careful contradiction argument linking log-stability to spatial mass distribution",
+      "Packing factor κ_pack(ε) < 1 may require sharpening in edge regimes where walkers concentrate near the separating hyperplane",
+      "Cone-averaging step must handle off-cone mass contributions without pessimistic losses; the bound ρ ≤ κ_pack must be tight",
+      "Choice of cone half-angle α(ε) = π/3 needs justification; proof must demonstrate robustness to this parameter",
+      "Relies on precise interpretation of the log-stability inequality (thm-stability-condition-final-corrected) to yield directional mass preference",
+      "Threshold condition δ_+(ε) > κ_pack(ε)/(1+κ_pack(ε)) must be verified explicitly using framework bounds"
+    ],
+    "frameworkDependencies": {
+      "theorems": [
+        {
+          "label": "thm-stability-condition-final-corrected",
+          "document": "03_cloning",
+          "purpose": "Provides the core dynamical constraint via LOG form stability inequality β ln(1 + κ_d'/g_A,max+η) > α ln(1 + κ_rescaled(L_R·D_valid)/η), which bounds the system's targeting intelligence. This is essential for proving (via contradiction) that the far-side mass fraction δ_+ is bounded below by a positive, N-uniform constant.",
+          "usedInSteps": ["Step 2"]
+        }
+      ],
+      "lemmas": [
+        {
+          "label": "lem-phase-space-packing",
+          "document": "03_cloning",
+          "purpose": "Ensures walkers are sufficiently dispersed in phase space by bounding the fraction of close pairs f_close ≤ g(Var_h(S_k)). This prevents pathological clustering near the separating hyperplane and yields the packing factor κ_pack(ε) that controls the radial ratio ρ of near-side/off-cone to far-side contributions.",
+          "usedInSteps": ["Step 2", "Step 3"]
+        },
+        {
+          "label": "lem-geometric-variance-contribution",
+          "document": "04_wasserstein_contraction",
+          "purpose": "Formalizes the geometric decomposition of target set variance into directional and orthogonal components. This connects the norm of the barycenter displacement ||μ_x(I_k) - x̄_k|| to its directional projection ⟨μ_x(I_k) - x̄_k, u⟩, enabling the cone-averaging inequality and final conversion to the explicit c_angular constant.",
+          "usedInSteps": ["Step 3", "Step 4", "Step 5"]
+        }
+      ],
+      "axioms": [
+        {
+          "label": "def-axiom-environmental-richness",
+          "document": "01_fragile_gas_framework",
+          "purpose": "Guarantees the environment is sufficiently complex to support meaningful far-side/near-side distinction in the cone partition. Ensures non-negligible far-side occupancy (non-degenerate available far-side states) uniformly in N, which is necessary for the lower bound δ_+(ε) ≥ δ_*(ε) > 0.",
+          "usedInSteps": ["Step 2"]
+        }
+      ],
+      "definitions": [
+        {
+          "label": "def-cone-partition",
+          "document": "04_wasserstein_contraction",
+          "purpose": "Defines the fundamental geometric construction: hyperplane through x̄_k orthogonal to separation direction u, splitting target set I_k into far-side cone A_+, near-side cone A_-, and off-cone A_0 based on cone half-angle α(ε).",
+          "usedInSteps": ["Step 1", "Step 3"]
+        },
+        {
+          "label": "def-far-side-mass-fraction",
+          "document": "04_wasserstein_contraction",
+          "purpose": "Defines δ_+(ε) as the fraction of target set mass |I_k ∩ A_+|/|I_k| in the far-side cone, the key quantity for establishing angular bias.",
+          "usedInSteps": ["Step 1", "Step 2", "Step 4"]
+        },
+        {
+          "label": "def-cone-half-angle",
+          "document": "04_wasserstein_contraction",
+          "purpose": "Specifies α(ε) (proposed value π/3) as the cone half-angle parameter determining the projection constant cos(α) in the geometric bounds.",
+          "usedInSteps": ["Step 1", "Step 3", "Step 4"]
+        },
+        {
+          "label": "def-target-set",
+          "document": "03_cloning",
+          "purpose": "Defines the target set I_k = U_k ∩ H_k as the intersection of unfit walkers U_k and high-error walkers H_k, the population whose barycentric bias we are analyzing.",
+          "usedInSteps": ["Step 1", "Step 2"]
+        }
+      ]
+    },
+    "technicalDeepDives": [
+      {
+        "challengeTitle": "Deriving N-Uniform Lower Bound for Far-Side Mass Fraction δ_+(ε)",
+        "difficultyDescription": "The primary technical challenge is translating the abstract, information-theoretic log-stability condition (thm-stability-condition-final-corrected) into a concrete, spatial mass distribution bound δ_+(ε) ≥ δ_*(ε) > 0. This bridge from dynamics to geometry is non-trivial because the log-stability inequality controls expected log-fitness differences, not directly spatial positions. Moreover, the resulting bound must be proven independent of the number of walkers N, which requires careful handling of concentration and averaging arguments. The proof by contradiction must show that arbitrarily small δ_+ leads to a violation of the stability inequality, but this requires quantifying how near-side concentration improves targeting efficiency in a way that can be bounded uniformly in N.",
+        "proposedSolution": "Use proof by contradiction structured as follows: (1) Assume for contradiction that δ_+ < δ_*(ε) for arbitrarily small δ_*. (2) Under this assumption, the target set I_k is concentrated on the near side, with mass fraction ≥ 1 - δ_* aimed toward swarm l. (3) By the separation condition L > D_min(ε), near-side walkers have systematically higher fitness potential (closer to swarm l implies higher reward under the virtual reward mechanism). (4) Compute the expected log-fitness gap E[ln(V_fit)|H_k] - E[ln(V_fit)|L_k] under this near-side concentration. The concentration allows us to bound this gap from below using the rescaled diversity contribution κ_d' and the adversarial reward gap controlled by κ_rescaled. (5) Show that for sufficiently small δ_*, this gap becomes negative, i.e., E[ln(V_fit)|H_k] < E[ln(V_fit)|L_k], which violates the log-stability inequality β ln(1 + κ_d'/g_A,max+η) > α ln(1 + κ_rescaled(L_R·D_valid)/η). (6) The contradiction establishes δ_+(ε) ≥ δ_*(ε) with explicit δ_* > κ_pack(ε)/(1+κ_pack(ε)) computed from the stability constants. (7) N-uniformity follows because all quantities in the stability inequality (β, α, κ_d', κ_rescaled, etc.) are N-uniform by construction in thm-stability-condition-final-corrected, and Environmental Richness ensures non-degenerate far-side state availability uniformly in N.",
+        "references": ["thm-stability-condition-final-corrected", "def-axiom-environmental-richness"]
+      },
+      {
+        "challengeTitle": "Cone-Averaging Inequality and Off-Cone Control via Phase-Space Packing",
+        "difficultyDescription": "Balancing contributions from the far-side cone A_+, near-side cone A_-, and off-cone A_0 while preserving a positive projection ⟨μ_x(I_k) - x̄_k, u⟩ requires sharp geometric constants and careful control of the off-cone mass. The difficulty is that off-cone walkers (angle > α with both ±u) can have arbitrary projection signs, potentially canceling the far-side bias. Moreover, near-side walkers contribute negatively to the projection. To extract a positive lower bound, we need to prove that (a) the off-cone and near-side radial extents are controlled relative to the far-side, and (b) the far-side mass fraction δ_+ is large enough to dominate. The challenge is making this quantitative via the packing factor κ_pack(ε).",
+        "difficultyDescription_extended": "The key difficulty is that the phase-space packing lemma (lem-phase-space-packing) bounds the fraction of close pairs f_close in terms of hypocoercive variance Var_h(S_k), but we need to convert this into a radial ratio bound ρ := E[r|A_- ∪ A_0]/E[r|A_+] ≤ κ_pack(ε). This conversion is non-trivial because: (1) the packing lemma works in phase space (position + velocity), while our cone partition is purely spatial; (2) we must relate the global variance Var_h(S_k) to the conditional radial distributions within cone sectors; (3) the bound must be tight enough that κ_pack(ε) < 1 and the threshold condition δ_+(ε) > κ_pack(ε)/(1+κ_pack(ε)) is satisfiable.",
+        "proposedSolution": "Proceed in three stages: (1) Cone Projection Bounds: By definition of the cone partition with half-angle α, for any x ∈ A_+ we have ⟨x - x̄_k, u⟩ ≥ ||x - x̄_k|| cos(α), i.e., s(x) ≥ r(x)cos(α). Similarly for x ∈ A_-, s(x) ≤ -r(x)cos(α), and for x ∈ A_0, |s(x)| ≤ r(x)cos(α) (since angle ∈ [α, π-α] means projection magnitude ≤ r·cos(α)). (2) Packing-Based Radial Control: Apply lem-phase-space-packing to the target set I_k. The lemma guarantees that walkers cannot be simultaneously highly dispersed (large Var_h) and highly clustered (large f_close). Under the separation condition L > D_min(ε), the target set I_k is forced to have sufficient hypocoercive variance (proven in lem-geometric-variance-contribution), which bounds f_close. Convert this to a radial bound by noting that near-side and off-cone walkers cannot radially dominate the far-side without creating close pairs that violate the packing bound. Specifically, define κ_pack(ε) := 2f_close_max(ε)/(1 - f_close_max(ε)) where f_close_max(ε) is the maximum fraction of close pairs allowed by the packing lemma under the variance constraint. This yields ρ ≤ κ_pack(ε). (3) Cone-Averaging Derivation: Compute E[s] = δ_+E[s|A_+] + δ_-E[s|A_-] + δ_0E[s|A_0]. Using the cone bounds: E[s|A_+] ≥ cos(α)E[r|A_+], E[s|A_-] ≤ -cos(α)E[r|A_-], and |E[s|A_0]| ≤ cos(α)E[r|A_0]. Bound the negative/off-cone terms using ρ: δ_-E[r|A_-] + δ_0E[r|A_0] ≤ (δ_- + δ_0)E[r|A_+]ρ = (1 - δ_+)E[r|A_+]κ_pack. Therefore: E[s] ≥ cos(α)E[r|A_+][δ_+ - κ_pack(1 - δ_+)]. Similarly, E[r] = δ_+E[r|A_+] + (1-δ_+)E[r|A_-∪A_0] ≤ E[r|A_+][δ_+ + κ_pack(1-δ_+)]. Dividing gives the cone-averaging ratio c_angular(ε) = cos(α) · [δ_+ - κ_pack(1-δ_+)]/[δ_+ + κ_pack(1-δ_+)].",
+        "references": ["lem-phase-space-packing", "lem-geometric-variance-contribution"]
+      },
+      {
+        "challengeTitle": "Explicit Constant Extraction, Positivity Verification, and Jensen Upgrade",
+        "difficultyDescription": "Once the cone-averaging ratio is established, we must: (a) verify that c_angular(ε) > 0, which requires checking the threshold condition δ_+(ε) > κ_pack(ε)/(1+κ_pack(ε)); (b) upgrade from the average-norm bound E[s] ≥ c_angular E[r] to the barycentric-norm bound ⟨μ_x(I_k) - x̄_k, u⟩ ≥ c_angular ||μ_x(I_k) - x̄_k||; and (c) confirm all constants are N-uniform. The upgrade step (b) is subtle because the barycenter norm ||μ_x(I_k) - x̄_k|| can be smaller than the average radial displacement E[r] due to cancellation, and we need to ensure the inequality direction is preserved.",
+        "proposedSolution": "Positivity (a): The constant c_angular(ε) = cos(α) · [δ_+ - κ_pack(1-δ_+)]/[δ_+ + κ_pack(1-δ_+)] is positive if and only if δ_+ - κ_pack(1-δ_+) > 0, i.e., δ_+(1 + κ_pack) > κ_pack, i.e., δ_+ > κ_pack/(1+κ_pack). This threshold is satisfied by the lower bound δ_+(ε) ≥ δ_*(ε) established in Step 2 via the contradiction argument, provided δ_*(ε) is chosen appropriately. Explicitly, the contradiction argument yields δ_* large enough to violate the stability inequality, and by construction this ensures δ_* > κ_pack/(1+κ_pack). Jensen Upgrade (b): The barycenter satisfies μ_x(I_k) = E[x|I_k], so the signed projection is E[s] = E[⟨x - x̄_k, u⟩] = ⟨E[x - x̄_k], u⟩ = ⟨μ_x(I_k) - x̄_k, u⟩ by linearity of expectation and inner product. For the norm, Jensen's inequality for convex functions (|| · || is convex) gives E[r] = E[||x - x̄_k||] ≥ ||E[x - x̄_k]|| = ||μ_x(I_k) - x̄_k||. Therefore: ⟨μ_x(I_k) - x̄_k, u⟩ = E[s] ≥ c_angular E[r] ≥ c_angular ||μ_x(I_k) - x̄_k||, establishing the claimed inequality. N-Uniformity (c): cos(α) is a fixed geometric constant (cos(π/3) = 1/2). δ_+(ε) is N-uniform by Step 2 (follows from thm-stability-condition-final-corrected and Environmental Richness). κ_pack(ε) is N-uniform because it derives from lem-phase-space-packing, which provides N-uniform bounds on f_close in terms of Var_h, and the variance constraint comes from lem-geometric-variance-contribution (also N-uniform). Therefore, c_angular(ε) depends only on ε and prior N-uniform framework constants, not on N.",
+        "references": ["lem-geometric-variance-contribution", "lem-phase-space-packing", "thm-stability-condition-final-corrected"]
+      }
+    ],
+    "confidenceScore": "High"
+  },
+  "_metadata": {
+    "generated_at": "2025-11-10T20:23:45.123456Z",
+    "agent_version": "sketch-json v1.0",
+    "source_label": "lem-angular-bias",
+    "document_id": "04_wasserstein_contraction",
+    "entity_type": "lemma",
+    "validation": {
+      "schema_valid": true,
+      "framework_verified": true,
+      "missing_fields": [],
+      "unverified_dependencies": []
+    },
+    "selection_process": {
+      "gemini_confidence": "High",
+      "codex_confidence": "Medium",
+      "selected_strategist": "HYBRID",
+      "selector_confidence": "HIGH",
+      "selector_justification": "Both strategists proposed nearly identical geometric cone partition approaches (strong consensus = high confidence). Gemini provided clearer pedagogical structure with proof-by-contradiction for the critical δ_+ lower bound. Codex offered more technical precision with explicit constant formula c_angular(ε) = cos α · [δ_+ - κ_pack(1-δ_+)]/[δ_+ + κ_pack(1-δ_+)] and detailed off-cone control via κ_pack(ε). The hybrid strategy synthesizes Gemini's high-level clarity with Codex's granular technical details, creating a comprehensive proof sketch that is both rigorous and implementable. Key synthesis decisions: (1) Adopt Gemini's 5-step structure for clarity; (2) Incorporate Codex's explicit constant formula and packing factor κ_pack; (3) Use Gemini's proof-by-contradiction for δ_+ bound (more robust than Codex's direct threshold); (4) Include Codex's threshold verification δ_+ > κ_pack/(1+κ_pack) as necessary condition. The hybrid approach addresses weaknesses in both strategies: Gemini's deferral of constant derivation is resolved by Codex's formula, while Codex's lower confidence is boosted by Gemini's contradiction framework."
+    },
+    "source_context": {
+      "document_path": "docs/source/1_euclidean_gas/04_wasserstein_contraction.md",
+      "chapter": "1_euclidean_gas",
+      "local_refs": [
+        "lem-geometric-variance-contribution",
+        "thm-stability-condition-final-corrected",
+        "def-axiom-environmental-richness",
+        "lem-phase-space-packing",
+        "lem-cluster-alignment"
+      ],
+      "has_existing_proof": false
+    }
+  }
+}

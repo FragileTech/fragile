@@ -1,6 +1,0 @@
-{
-  "label": "axiom-ax-confining-recap",
-  "statement": "Confining Potential (from 04_convergence.md, Axiom 1.3.1)",
-  "mathematical_expression": "U(x) \\to +\\infty \\quad \\text{as} \\quad |x| \\to \\infty \\quad \\text{or} \\quad x \\to \\partial \\mathcal{X}",
-  "foundational_framework": "Euclidean Gas"
-}

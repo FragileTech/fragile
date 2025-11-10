@@ -25,6 +25,7 @@ from mathster.relationships.preprocess_graph import (
     build_label_reference_graph,
     load_preprocess_registry,
 )
+from mathster.reports.show_report import render_label_report
 
 
 hv.extension("bokeh")
@@ -314,6 +315,7 @@ class LabelReferenceDashboard:
 
         self.stats_view = pn.bind(self._render_statistics)
         self.connectivity_view = pn.bind(self._render_connectivity_report)
+        self.legend_view = pn.bind(self._create_entity_type_legend)
 
     # ------------------------------------------------------------------
     # Data loading & filtering
@@ -579,8 +581,8 @@ class LabelReferenceDashboard:
         )
         color_dim = ig.node_dims.dimensions.get("node_color")
         if color_dim and "entity_type" in getattr(color_dim, "valid_cols", []):
-            color_dim.column.value = "entity_type"
             color_dim.cmap = palette or list(ENTITY_TYPE_COLORS.values())
+            color_dim.column.value = "entity_type"
         self._current_ig = ig
         self._current_df_nodes = df_nodes
         try:
@@ -600,7 +602,12 @@ class LabelReferenceDashboard:
         if "label" not in fields:
             fields.insert(0, "label")
         tooltips = [(field, f"@{field}") for field in fields]
-        ig.dmap = ig.dmap.opts(tools=["tap", "hover"], hover_tooltips=tooltips)
+        ig.dmap = ig.dmap.opts(
+            tools=["tap", "hover"],
+            hover_tooltips=tooltips,
+            xaxis=None,
+            yaxis=None,
+        )
 
         bound = ig.bind_to_stream(self._on_node_select_xy)
         self.node_details_container.objects = [bound]
@@ -648,6 +655,8 @@ class LabelReferenceDashboard:
     # ------------------------------------------------------------------
 
     def _on_node_select_xy(self, x: float, y: float):
+        #  X AND Y ARE SWAPPED BY DEFAULT, LET GET THEM RIGHT
+        x, y = y, x
         df = self._current_df_nodes
         if df is None or df.empty:
             return pn.pane.Markdown("**No node data available.**", width=480)
@@ -657,7 +666,7 @@ class LabelReferenceDashboard:
             idx = int(find_closest_point(points, x, y))
             label = df.index[idx]
             self._append_console(f"[NodeTap] ({x:.3f}, {y:.3f}) -> {label}")
-            return pn.Column(self._render_node_details(label))
+            return self._render_node_details(label)
         except Exception as exc:  # pragma: no cover - defensive
             logger.exception("Node selection error: %s", exc)
             return pn.pane.Markdown(f"**Error:** {exc}", width=480)
@@ -665,7 +674,13 @@ class LabelReferenceDashboard:
     def _render_node_details(self, label: str):
         graph = self.filtered_graph
         if not graph or label not in graph.nodes:
-            return pn.pane.Markdown(f"**Label:** `{label}`\n\n*Not present in graph.*", width=480)
+            return pn.Column(
+                pn.pane.Markdown(
+                    f"**Label:** `{label}`\n\n*Not present in graph.*",
+                    width=480,
+                ),
+                sizing_mode="stretch_width",
+            )
 
         data = graph.nodes[label]
         entity_type = data.get("entity_type", "unknown")
@@ -717,7 +732,87 @@ class LabelReferenceDashboard:
             if len(incoming) > 20:
                 lines.append(f"- … ({len(incoming) - 20} more)")
 
-        return pn.pane.Markdown("\n".join(lines), width=480)
+        summary = pn.pane.Markdown("\n".join(lines), sizing_mode="stretch_width")
+
+        preprocess_dir = self.preprocess_dir or self._resolve_preprocess_dir()
+        try:
+            report_md = render_label_report(label, preprocess_dir=preprocess_dir)
+            report_pane = pn.pane.Markdown(report_md, sizing_mode="stretch_width")
+        except Exception as exc:  # pragma: no cover - defensive
+            logger.exception("Failed to render report for %s: %s", label, exc)
+            report_pane = pn.pane.Markdown(
+                f"**Report unavailable:** {exc}",
+                sizing_mode="stretch_width",
+            )
+
+        directive_pane = None
+        entry = self.registry_data.get(label)
+        if entry:
+            directive_markdown = entry.get("content_markdown") or entry.get("raw_directive")
+            if isinstance(directive_markdown, str) and directive_markdown.strip():
+                directive_pane = pn.pane.Markdown(
+                    f"## Directive\n\n{directive_markdown.strip()}",
+                    sizing_mode="stretch_width",
+                    styles={"maxHeight": "600px", "overflow-y": "auto"},
+                )
+
+        panes = [summary, pn.layout.Divider(), report_pane]
+        if directive_pane is not None:
+            panes.extend([pn.layout.Divider(), directive_pane])
+
+        return pn.Column(*panes, sizing_mode="stretch_width")
+
+    def _create_entity_type_legend(self) -> pn.pane.HTML:
+        """Create a legend showing entity type to color mapping.
+
+        Returns:
+            pn.pane.HTML: A Panel HTML pane with colored boxes and entity type labels.
+
+        """
+        graph = self.filtered_graph or self.label_graph
+
+        if graph.number_of_nodes() == 0:
+            return pn.pane.HTML(
+                '<div style="font-family: sans-serif; color: #666;">No data</div>',
+                width=220,
+            )
+
+        # Get unique entity types present in the current filtered graph
+        entity_types_in_graph = sorted(
+            {
+                data.get("entity_type", "unknown")
+                for _, data in graph.nodes(data=True)
+                if data.get("entity_type")
+            }
+        )
+
+        # Add unknown if there are nodes without entity_type
+        has_unknown = any(
+            not data.get("entity_type") for _, data in graph.nodes(data=True)
+        )
+        if has_unknown and "unknown" not in entity_types_in_graph:
+            entity_types_in_graph.append("unknown")
+
+        # Build HTML legend
+        legend_html = '<div style="font-family: sans-serif; font-size: 13px;">'
+        legend_html += '<div style="font-weight: bold; margin-bottom: 12px; font-size: 14px;">Entity Types</div>'
+
+        for entity_type in entity_types_in_graph:
+            color = ENTITY_TYPE_COLORS.get(entity_type, DEFAULT_ENTITY_COLOR)
+            display_name = entity_type.replace("_", " ").title()
+
+            legend_html += f'''
+            <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                <div style="width: 18px; height: 18px; background-color: {color};
+                            border: 1px solid #555; margin-right: 10px;
+                            border-radius: 3px; flex-shrink: 0;">
+                </div>
+                <span style="line-height: 1.2;">{display_name}</span>
+            </div>
+            '''
+
+        legend_html += "</div>"
+        return pn.pane.HTML(legend_html, width=220, sizing_mode="fixed")
 
     def _render_statistics(self):
         graph = self.filtered_graph or self.label_graph
@@ -827,19 +922,23 @@ class LabelReferenceDashboard:
         ]
 
         main_content = [
-            pn.Card(
-                pn.panel(self.graph_view),
-                title="Label Reference Graph",
-                sizing_mode="stretch_width",
-            ),
             pn.Row(
+                pn.Card(
+                    pn.panel(self.graph_view),
+                    title="Label Reference Graph",
+                    sizing_mode="stretch_both",
+                    min_height=600,
+                ),
                 pn.Card(
                     self.node_details_container,
                     title="Label Details",
-                    width=850,
-                    height=700,
+                    sizing_mode="stretch_height",
+                    width=1040,
+                    min_height=600,
                     scroll=True,
                 ),
+            ),
+            pn.Row(
                 pn.Card(
                     pn.panel(self.stats_view),
                     title="Statistics",
@@ -851,6 +950,13 @@ class LabelReferenceDashboard:
                     pn.panel(self.connectivity_view),
                     title="Connectivity Report",
                     width=375,
+                    height=700,
+                    scroll=True,
+                ),
+                pn.Card(
+                    pn.panel(self.legend_view),
+                    title="Legend",
+                    width=250,
                     height=700,
                     scroll=True,
                 ),

@@ -7,33 +7,36 @@
       "directive_type": "theorem",
       "label": "thm-boundary-potential-contraction",
       "title": "Boundary Potential Contraction Under Cloning",
-      "start_line": 7292,
-      "end_line": 7307,
+      "start_line": 7337,
+      "end_line": 7353,
       "header_lines": [
-        7293
+        7338
       ],
-      "content_start": 7295,
-      "content_end": 7306,
-      "content": "7295: :label: thm-boundary-potential-contraction\n7296: \n7297: Under the foundational axioms (Chapter 4) including the Safe Harbor Axiom (Axiom 4.3), there exist constants $\\kappa_b > 0$ and $C_b < \\infty$, both independent of $N$, such that for any pair of swarms $(S_1, S_2)$:\n7298: \n7299: $$\n7300: \\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_b) W_b(S_1, S_2) + C_b\n7301: $$\n7302: \n7303: Furthermore, when $W_b(S_1, S_2) > \\tilde{C}_b$ for a sufficiently large threshold $\\tilde{C}_b$, the contraction becomes strict:\n7304: \n7305: $$\n7306: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] := \\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) - W_b(S_1, S_2)] < 0",
+      "content_start": 7340,
+      "content_end": 7352,
+      "content": "7340: :label: thm-boundary-potential-contraction\n7341: \n7342: Under the foundational axioms (Chapter 4) including the Safe Harbor Axiom (Axiom 4.3), there exist constants $\\kappa_b > 0$ and $C_b < \\infty$, both independent of $N$, such that for any pair of swarms $(S_1, S_2)$:\n7343: \n7344: $$\n7345: \\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_b) W_b(S_1, S_2) + C_b\n7346: $$\n7347: \n7348: Furthermore, when $W_b(S_1, S_2) > \\tilde{C}_b$ for a sufficiently large threshold $\\tilde{C}_b$, the contraction becomes strict:\n7349: \n7350: $$\n7351: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] := \\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) - W_b(S_1, S_2)] < 0\n7352: $$",
       "metadata": {
         "label": "thm-boundary-potential-contraction"
       },
       "section": "## 11.3. Main Theorem: Boundary Potential Contraction",
-      "references": [],
-      "raw_directive": "7292: ## 11.3. Main Theorem: Boundary Potential Contraction\n7293: \n7294: :::{prf:theorem} Boundary Potential Contraction Under Cloning\n7295: :label: thm-boundary-potential-contraction\n7296: \n7297: Under the foundational axioms (Chapter 4) including the Safe Harbor Axiom (Axiom 4.3), there exist constants $\\kappa_b > 0$ and $C_b < \\infty$, both independent of $N$, such that for any pair of swarms $(S_1, S_2)$:\n7298: \n7299: $$\n7300: \\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_b) W_b(S_1, S_2) + C_b\n7301: $$\n7302: \n7303: Furthermore, when $W_b(S_1, S_2) > \\tilde{C}_b$ for a sufficiently large threshold $\\tilde{C}_b$, the contraction becomes strict:\n7304: \n7305: $$\n7306: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] := \\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) - W_b(S_1, S_2)] < 0\n7307: $$"
+      "references": [
+        "cor-bounded-boundary-exposure",
+        "cor-extinction-suppression"
+      ],
+      "raw_directive": "7337: ## 11.3. Main Theorem: Boundary Potential Contraction\n7338: \n7339: :::{prf:theorem} Boundary Potential Contraction Under Cloning\n7340: :label: thm-boundary-potential-contraction\n7341: \n7342: Under the foundational axioms (Chapter 4) including the Safe Harbor Axiom (Axiom 4.3), there exist constants $\\kappa_b > 0$ and $C_b < \\infty$, both independent of $N$, such that for any pair of swarms $(S_1, S_2)$:\n7343: \n7344: $$\n7345: \\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) \\mid S_1, S_2] \\leq (1 - \\kappa_b) W_b(S_1, S_2) + C_b\n7346: $$\n7347: \n7348: Furthermore, when $W_b(S_1, S_2) > \\tilde{C}_b$ for a sufficiently large threshold $\\tilde{C}_b$, the contraction becomes strict:\n7349: \n7350: $$\n7351: \\mathbb{E}_{\\text{clone}}[\\Delta W_b] := \\mathbb{E}_{\\text{clone}}[W_b(S'_1, S'_2) - W_b(S_1, S_2)] < 0\n7352: $$\n7353: "
     },
     {
       "directive_type": "remark",
       "label": "rem-progressive-safety",
       "title": "Interpretation: Progressive Safety Enhancement",
-      "start_line": 7309,
-      "end_line": 7322,
+      "start_line": 7355,
+      "end_line": 7368,
       "header_lines": [
-        7310
+        7356
       ],
-      "content_start": 7312,
-      "content_end": 7321,
-      "content": "7312: :label: rem-progressive-safety\n7313: \n7314: This theorem formalizes the Safe Harbor mechanism:\n7315: \n7316: - **When many walkers are near the boundary** ($W_b$ large), these walkers have low fitness and high cloning probability\n7317: - **They are replaced by clones of interior walkers**, pulling the boundary potential down\n7318: - **The contraction rate $\\kappa_b$ is state-independent**, ensuring consistent safety correction regardless of swarm configuration\n7319: - **The bounded offset $C_b$** accounts for walkers entering the boundary region through position jitter, but this is dominated by contraction when $W_b$ is large\n7320: \n7321: **Important Consequences:**",
+      "content_start": 7358,
+      "content_end": 7367,
+      "content": "7358: :label: rem-progressive-safety\n7359: \n7360: This theorem formalizes the Safe Harbor mechanism:\n7361: \n7362: - **When many walkers are near the boundary** ($W_b$ large), these walkers have low fitness and high cloning probability\n7363: - **They are replaced by clones of interior walkers**, pulling the boundary potential down\n7364: - **The contraction rate $\\kappa_b$ is state-independent**, ensuring consistent safety correction regardless of swarm configuration\n7365: - **The bounded offset $C_b$** accounts for walkers entering the boundary region through position jitter, but this is dominated by contraction when $W_b$ is large\n7366: \n7367: **Important Consequences:**",
       "metadata": {
         "label": "rem-progressive-safety"
       },
@@ -42,7 +45,7 @@
         "cor-bounded-boundary-exposure",
         "cor-extinction-suppression"
       ],
-      "raw_directive": "7309: :::\n7310: \n7311: :::{prf:remark} Interpretation: Progressive Safety Enhancement\n7312: :label: rem-progressive-safety\n7313: \n7314: This theorem formalizes the Safe Harbor mechanism:\n7315: \n7316: - **When many walkers are near the boundary** ($W_b$ large), these walkers have low fitness and high cloning probability\n7317: - **They are replaced by clones of interior walkers**, pulling the boundary potential down\n7318: - **The contraction rate $\\kappa_b$ is state-independent**, ensuring consistent safety correction regardless of swarm configuration\n7319: - **The bounded offset $C_b$** accounts for walkers entering the boundary region through position jitter, but this is dominated by contraction when $W_b$ is large\n7320: \n7321: **Important Consequences:**\n7322: - {prf:ref}`cor-bounded-boundary-exposure` establishes equilibrium bounds on boundary exposure"
+      "raw_directive": "7355: :::\n7356: \n7357: :::{prf:remark} Interpretation: Progressive Safety Enhancement\n7358: :label: rem-progressive-safety\n7359: \n7360: This theorem formalizes the Safe Harbor mechanism:\n7361: \n7362: - **When many walkers are near the boundary** ($W_b$ large), these walkers have low fitness and high cloning probability\n7363: - **They are replaced by clones of interior walkers**, pulling the boundary potential down\n7364: - **The contraction rate $\\kappa_b$ is state-independent**, ensuring consistent safety correction regardless of swarm configuration\n7365: - **The bounded offset $C_b$** accounts for walkers entering the boundary region through position jitter, but this is dominated by contraction when $W_b$ is large\n7366: \n7367: **Important Consequences:**\n7368: - {prf:ref}`cor-bounded-boundary-exposure` establishes equilibrium bounds on boundary exposure"
     }
   ],
   "validation": {

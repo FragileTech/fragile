@@ -435,7 +435,7 @@ class CodexMCPClient(BaseMCPClient):
 # Claude direct CLI client has been moved to agents_direct.py
 # Import it here for backward compatibility
 try:
-    from mathster.agents_direct import ClaudeDirectClient as ClaudeCodeMCPClient
+    from ..mathster.claude_tool import ClaudeDirectClient as ClaudeCodeMCPClient
 except ImportError:
     # Fallback if agents_direct is not available
     ClaudeCodeMCPClient = None  # type: ignore

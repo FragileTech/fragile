@@ -570,6 +570,8 @@ $$
 
 $$
 
+Referenced by {prf:ref}`lem-euclidean-boundary-holder`.
+
 ```{dropdown} Proof
 :::{prf:proof}
 Fix $(x,v),(x',v')\in\mathcal X\times\mathcal V_{\mathrm{alg}}$ and $\xi_v,\xi_x\in\mathbb R^d$. Define the uncapped velocities
@@ -613,6 +615,8 @@ The constant in parentheses is $L_{\mathrm{flow}}$, completing the proof.
 
 :::{prf:lemma} Hölder continuity of the death probability
 :label: lem-euclidean-boundary-holder
+
+Referenced by {prf:ref}`thm-euclidean-feller`.
 
 ```{dropdown} Proof
 :::{prf:proof}
@@ -738,6 +742,8 @@ The ambient space $(\mathcal X,d_{\mathcal X})$ remains Euclidean with Lebesgue 
 
 The reward function $R(x,v)=R_{\mathrm{pos}}(x)-\lambda_{\mathrm{vel}}\|v\|^2$ is continuous on $(\mathcal Y,d_{\mathcal Y}^{\mathrm{Sasaki}})$ and therefore satisfies the Axiom of Reward Regularity ({prf:ref}`def-axiom-reward-regularity`).
 
+Referenced by {prf:ref}`unlabeled-proof-1047`.
+
 ```{dropdown} Proof
 :::{prf:proof}
 Let $\mathcal Y^{\circ}:=B(0,R_x)\times B(0,V_{\mathrm{alg}})$ be the image of the projection $\varphi:\mathbb R^d\times\mathbb R^d\to\mathcal Y^{\circ}$. For $y=(y_x,y_v)\in\mathcal Y^{\circ}$ the inverse mapping is explicit:
@@ -802,6 +808,8 @@ On an unbounded domain we cannot demand a uniform moment bound. Instead, the kin
 
 :::{prf:lemma} Perturbation second moment in the Sasaki metric
 :label: lem-euclidean-perturb-moment
+
+Referenced by {prf:ref}`thm-euclidean-feller`.
 
 ```{dropdown} Proof
 :::{prf:proof}
@@ -893,6 +901,8 @@ The kinetic kernel is Feller: it composes the continuous affine map $(x,v)\mapst
 
 :::{prf:lemma} Geometric consistency under the capped kinetic kernel
 :label: lem-euclidean-geometric-consistency
+
+Referenced by {prf:ref}`lem-euclidean-boundary-holder`.
 
 ```{dropdown} Proof
 :::{prf:proof}
@@ -1062,6 +1072,8 @@ Let $\mathcal S_1$ and $\mathcal S_2$ be two swarm states. For a given walker $i
 
 The absolute error in its expected distance due to the positional displacement of the walkers between the two states, evaluated over the fixed companion set from $\mathcal S_1$, is bounded by the sum of its own displacement and the average displacement of its potential companions.
 
+Referenced by {prf:ref}`lem-sasaki-total-squared-error-stable` and {prf:ref}`thm-euclidean-feller`.
+
 $$
 \left| \mathbb{E}_{c \sim \mathbb{C}_i(\mathcal{S}_1)} \left[ d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,i}), \varphi(w_{1,c})) \right] - \mathbb{E}_{c \sim \mathbb{C}_i(\mathcal{S}_1)} \left[ d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{2,i}), \varphi(w_{2,c})) \right] \right| \le d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,i}), \varphi(w_{2,i})) + \mathbb{E}_{c \sim \mathbb{C}_i(\mathcal{S}_1)} \left[ d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,c}), \varphi(w_{2,c})) \right]
 
@@ -1112,7 +1124,9 @@ By linearity of expectation, we can separate the terms. The first term, $d_{\mat
 :::{prf:lemma} Single-walker structural error bound in the Sasaki metric
 :label: lem-sasaki-single-walker-structural-error
 
-Let $i\in\mathcal A_{\mathrm{stable}}$ and keep the second swarm’s capped positions fixed. Let the initial swarm have at least two alive walkers, $k_1=|\mathcal A(\mathcal S_1)| \ge 2$. The absolute error in the expected distance for walker $i$ due to the change in the companion selection measure is bounded by:
+Let $i\in\mathcal A_{\mathrm{stable}}$ and keep the second swarm's capped positions fixed. Let the initial swarm have at least two alive walkers, $k_1=|\mathcal A(\mathcal S_1)| \ge 2$. The absolute error in the expected distance for walker $i$ due to the change in the companion selection measure is bounded by:
+
+Referenced by {prf:ref}`thm-sasaki-distance-ms`.
 
 $$
 \left| \mathbb{E}_{c \sim \mathbb{C}_i(\mathcal{S}_1)} \left[ d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{2,i}), \varphi(w_{2,c})) \right] - \mathbb{E}_{c \sim \mathbb{C}_i(\mathcal{S}_2)} \left[ d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{2,i}), \varphi(w_{2,c})) \right] \right| \le \frac{2 D_{\mathcal Y}}{k_1-1} \cdot n_c(\mathcal S_1, \mathcal S_2)
@@ -1161,6 +1175,8 @@ $$
 
 where $C_{\mathrm{pos}}^{\mathrm{Sasaki}}(k_1,k_{\mathrm{stable}}):=2\Big(1+\frac{k_{\mathrm{stable}}}{\max\{1,k_1-1\}}\Big)$.
 
+Referenced by {prf:ref}`thm-sasaki-distance-ms`.
+
 ```{dropdown} Proof
 :::{prf:proof}
 For $i\in\mathcal A_{\mathrm{stable}}$ set $\Delta_i:=|d^{(1)}_i-d^{(2)}_i|$. Lemma {prf:ref}`lem-sasaki-single-walker-positional-error` gives
@@ -1195,6 +1211,8 @@ F_{d,ms}^{\mathrm{Sasaki}}(\Delta_{\mathrm{pos}}^2,n_c):=C_{\mathrm{pos}}^{\math
 
 $$
 
+Referenced by {prf:ref}`thm-euclidean-feller`.
+
 Then
 
 $$
@@ -1226,6 +1244,8 @@ Whenever aggregators act on reward vectors we use the uniform bound $V_{\mathrm{
 
 Fix a swarm $\mathcal S$ with alive index set $\mathcal A(\mathcal S)$ of size $k\ge 1$. Let $\mathbf v_1,\mathbf v_2\in\mathbb R^k$ be two scalar value vectors whose components satisfy $|v_{j,i}|\le V_{\max}$. Then the empirical mean and second moment obey
 
+Referenced by {prf:ref}`lem-sasaki-aggregator-lipschitz` and {prf:ref}`lem-sasaki-mean-shift-bound-sq`.
+
 $$
 |\mu(\mathcal S,\mathbf v_1)-\mu(\mathcal S,\mathbf v_2)|\le \frac{1}{\sqrt{k}}\,\|\mathbf v_1-\mathbf v_2\|_2,\qquad|m_2(\mathcal S,\mathbf v_1)-m_2(\mathcal S,\mathbf v_2)|\le \frac{2V_{\max}}{\sqrt{k}}\,\|\mathbf v_1-\mathbf v_2\|_2.
 
@@ -1243,6 +1263,8 @@ The identities follow from the gradient calculations $\nabla\mu=(1/k)\mathbf 1$ 
 
 Let $\mathcal S_r=((x_{r,i},v_{r,i},s_{r,i}))_{i=1}^N$ with alive counts $k_r\ge 1$ and let $\mathbf v$ be a scalar vector on the union of alive indices satisfying $|v_i|\le V_{\max}$. Set $k_{\min}:=\max\{1,\min(k_1,k_2)\}$ and $n_c:=\sum_{i=1}^N(s_{1,i}-s_{2,i})^2$. Then
 
+Referenced by {prf:ref}`lem-sasaki-aggregator-lipschitz` and {prf:ref}`lem-sasaki-indirect-structural-error-sq`.
+
 $$
 |\mu(\mathcal S_1,\mathbf v)-\mu(\mathcal S_2,\mathbf v)|\le \frac{3V_{\max}}{k_{\min}}\,n_c,\qquad|m_2(\mathcal S_1,\mathbf v)-m_2(\mathcal S_2,\mathbf v)|\le \frac{3V_{\max}^2}{k_{\min}}\,n_c.
 
@@ -1259,6 +1281,8 @@ The proof mirrors Lemma 6.2.2.b of the framework. Decompose the difference in me
 :label: lem-sasaki-aggregator-lipschitz
 
 For reward vectors take $V_{\max}=V_{\mathrm{max}}^{(R)}$; for distance vectors take $V_{\max}=V_{\mathrm{max}}^{(d)}$. The empirical mean and second moment satisfy the aggregator axioms with
+
+Referenced by {prf:ref}`lem-sasaki-mean-shift-bound-sq` and {prf:ref}`thm-euclidean-feller`.
 
 $$
 L_{\mu,M}^{\mathrm{Sasaki}}(k)=\frac{1}{\sqrt{k}},\qquad L_{m_2,M}^{\mathrm{Sasaki}}(k)=\frac{2V_{\max}}{\sqrt{k}},
@@ -1353,6 +1377,8 @@ where $C_{V,\mathrm{total}}^{\mathrm{Sasaki}}$ is the **Total Value Error Coeffi
 
 Let $\mathcal S$ be a fixed swarm state with alive set $\mathcal A$ of size $k$. Let $\mathbf r_1$ and $\mathbf r_2$ be two raw value vectors for the alive set. Let $(\mu_1, \sigma'_1)$ and $(\mu_2, \sigma'_2)$ be the corresponding statistical properties, and let $\mathbf z_1$ and $\mathbf z_2$ be the corresponding standardized vectors.
 
+Referenced by {prf:ref}`unlabeled-proof-1047`.
+
 The total value error vector, $\Delta\mathbf{z} = \mathbf z_1 - \mathbf z_2$, can be expressed as the sum of three components:
 
 $$
@@ -1425,6 +1451,8 @@ This completes the proof.
 
 Let $\mathcal S$ be a fixed swarm state. Let $\mathbf r_1$ and $\mathbf r_2$ be two raw value vectors for the alive set. The squared Euclidean norm of the direct shift error component, $\Delta_{\text{direct}} = (\mathbf r_1 - \mathbf r_2) / \sigma'_1$, is bounded as follows:
 
+Referenced by {prf:ref}`unlabeled-proof-1047`.
+
 $$
 \|\Delta_{\text{direct}}\|_2^2 \le \frac{1}{\sigma_{\min,\mathrm{patch}}^2} \cdot \|\mathbf r_1 - \mathbf r_2\|_2^2
 
@@ -1474,6 +1502,8 @@ The proof is a direct application of the definition of $\Delta_{\text{direct}}$ 
 :label: lem-sasaki-mean-shift-bound-sq
 
 Let $\mathcal S$ be a fixed swarm state with alive set $\mathcal A$ of size $k \ge 1$. Let $\mathbf r_1$ and $\mathbf r_2$ be two raw value vectors. The squared Euclidean norm of the mean shift error component, $\Delta_{\text{mean}} = ((\mu_2 - \mu_1) / \sigma'_1) \cdot \mathbf{1}$, is bounded as follows:
+
+Referenced by {prf:ref}`unlabeled-proof-1047`.
 
 $$
 \|\Delta_{\text{mean}}\|_2^2 \le \frac{k \cdot (L_{\mu,M}^{\mathrm{Sasaki}}(k))^2}{\sigma_{\min,\mathrm{patch}}^2} \cdot \|\mathbf r_1 - \mathbf r_2\|_2^2
@@ -1527,6 +1557,8 @@ The proof combines the definition of the mean shift component with the axiomatic
 :label: lem-sasaki-denom-shift-bound-sq
 
 Let $\mathcal S$ be a fixed swarm state with alive set $\mathcal A$ of size $k \ge 1$. Let $\mathbf r_1$ and $\mathbf r_2$ be two raw value vectors with components bounded by $V_{\max}^{(R)}$. The squared Euclidean norm of the denominator shift error component, $\Delta_{\text{denom}} = \mathbf z_2 \cdot ((\sigma'_2 - \sigma'_1) / \sigma'_1)$, is bounded as follows:
+
+Referenced by {prf:ref}`unlabeled-proof-1047`.
 
 $$
 \|\Delta_{\text{denom}}\|_2^2 \le k \left( \frac{2V_{\max}^{(R)}}{\sigma_{\min,\mathrm{patch}}} \right)^2 \left( \frac{L_{\sigma',M}^{\mathrm{Sasaki}}(k)}{\sigma_{\min,\mathrm{patch}}} \right)^2 \cdot \|\mathbf r_1 - \mathbf r_2\|_2^2
@@ -1650,6 +1682,8 @@ $C_{V,\mathrm{total}}^{\mathrm{Sasaki}} := 3 \cdot \left( C_{V,\mathrm{direct}}^
 
 Let $\mathcal S$ be a fixed swarm state with alive set $\mathcal A$ of size $k \ge 1$, and let $M$ be the chosen **Swarm Aggregation Operator**. The coefficients for the bounds on the squared value error are defined as follows:
 
+Referenced by {prf:ref}`unlabeled-proof-1047` and {prf:ref}`thm-sasaki-standardization-value-sq`.
+
 1.  **The Squared Direct Shift Coefficient ($C_{V,\mathrm{direct}}^{\mathrm{sq}}(\mathcal S)$):**
 
     $$
@@ -1684,6 +1718,8 @@ where $L_{\mu,M}^{\mathrm{Sasaki}}(k)$ and $L_{\sigma',M}^{\mathrm{Sasaki}}(k)$ 
 
 For general swarms $\mathcal S_1,\mathcal S_2$ with alive counts $k_r\ge 1$, the squared L2-norm of the output error of the standardization operator is bounded by a function of the number of status changes, $n_c(\mathcal S_1,\mathcal S_2)$.
 
+Referenced by {prf:ref}`def-sasaki-structural-coeffs-sq` and {prf:ref}`lem-sasaki-standardization-lipschitz`.
+
 $$
 \|z(\mathcal S_1)-z(\mathcal S_2)\|_2^2 \le C_{S,\mathrm{direct}}^{\mathrm{sq}}(\mathcal S_1, \mathcal S_2) \cdot n_c(\mathcal S_1, \mathcal S_2) + C_{S,\mathrm{indirect}}^{\mathrm{sq}}(\mathcal S_1, \mathcal S_2) \cdot n_c(\mathcal S_1, \mathcal S_2)^2
 
@@ -1698,6 +1734,8 @@ where $C_{S,\mathrm{direct}}^{\mathrm{sq}}$ and $C_{S,\mathrm{indirect}}^{\mathr
 :label: lem-sasaki-structural-error-decomposition
 
 Let $\mathbf r_2$ be a fixed raw value vector. Let $\mathcal S_1$ and $\mathcal S_2$ be two swarm states. Let $\mathbf z_1 = z(\mathcal S_1, \mathbf r_2)$ and $\mathbf z_2 = z(\mathcal S_2, \mathbf r_2)$ be the corresponding N-dimensional standardized vectors, computed using the fixed raw values from the second swarm but the structure of each respective swarm.
+
+Referenced by {prf:ref}`def-sasaki-structural-coeffs-sq`.
 
 The total structural error vector, $\Delta\mathbf{z} = \mathbf z_1 - \mathbf z_2$, can be expressed as the sum of two **orthogonal** components:
 
@@ -1755,6 +1793,8 @@ This completes the proof.
 
 Let $\mathbf r_2$ be a fixed raw value vector with components bounded by $V_{\max}^{(R)}$. The squared Euclidean norm of the direct structural error component, $\|\Delta_{\text{direct}}\|_2^2$, is bounded by a term linear in the number of status changes, $n_c(\mathcal S_1, \mathcal S_2)$.
 
+Referenced by {prf:ref}`def-sasaki-structural-coeffs-sq`.
+
 $$
 \|\Delta_{\text{direct}}\|_2^2 \le \left( \frac{2V_{\max}^{(R)}}{\sigma_{\min,\mathrm{patch}}} \right)^2 \cdot n_c(\mathcal S_1, \mathcal S_2)
 
@@ -1808,6 +1848,8 @@ The proof bounds the squared error for each unstable walker and sums the results
 :label: lem-sasaki-indirect-structural-error-sq
 
 Let $\mathbf r_2$ be a fixed raw value vector. Let $\mathcal S_1$ and $\mathcal S_2$ be two swarm states. The squared Euclidean norm of the indirect structural error component, $\|\Delta_{\text{indirect}}\|_2^2$, is bounded by a term quadratic in the number of status changes, $n_c(\mathcal S_1, \mathcal S_2)$.
+
+Referenced by {prf:ref}`def-sasaki-structural-coeffs-sq`.
 
 $$
 \|\Delta_{\text{indirect}}\|_2^2 \le C_{S,\mathrm{indirect}}^{\mathrm{sq}}(\mathcal S_1, \mathcal S_2) \cdot n_c(\mathcal S_1, \mathcal S_2)^2
@@ -1938,6 +1980,8 @@ This completes the proof, establishing a deterministic, worst-case bound on the 
 :label: def-sasaki-structural-coeffs-sq
 
 Let $\mathcal S_1$ and $\mathcal S_2$ be two swarm states with alive sets $\mathcal A_1$ and $\mathcal A_2$, of sizes $k_1:=|\mathcal A_1|$ and $k_2:=|\mathcal A_2|$. Let $k_{\mathrm{stable}}:=|\mathcal A_1\cap\mathcal A_2|$. The coefficients for the bounds on the squared structural error are defined as follows:
+
+Referenced by {prf:ref}`lem-sasaki-indirect-structural-error-sq` and {prf:ref}`thm-sasaki-standardization-structural-sq`.
 
 1.  **The Squared Direct Structural Error Coefficient ($C_{S,\mathrm{direct}}^{\mathrm{sq}}$):** The coefficient of the term linear in $n_c$.
 

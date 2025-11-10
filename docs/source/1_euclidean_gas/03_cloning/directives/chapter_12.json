@@ -7,20 +7,22 @@
       "directive_type": "theorem",
       "label": "thm-cloning-operator-composition",
       "title": "Compositional Structure of $\\Psi_{\\text{clone}}$",
-      "start_line": 6178,
-      "end_line": 6200,
+      "start_line": 6220,
+      "end_line": 6244,
       "header_lines": [
-        6179
+        6221
       ],
-      "content_start": 6181,
-      "content_end": 6199,
-      "content": "6181: :label: thm-cloning-operator-composition\n6182: \n6183: The cloning operator admits the following compositional representation:\n6184: \n6185: $$\n6186: \\Psi_{\\text{clone}}(S, \\cdot) = \\int_{\\mathbf{d}} \\int_{\\mathbf{c}, \\mathbf{a}} \\Psi_{\\text{update}}(S, \\mathbf{c}, \\mathbf{a}, \\cdot) \\, dP_{\\text{decision}}(S, \\mathbf{V}_{\\text{fit}}(\\mathbf{d}), \\mathbf{c}, \\mathbf{a}) \\, dP_{\\text{measure}}(S, \\mathbf{d})\n6187: $$\n6188: \n6189: where:\n6190: - $P_{\\text{measure}}(S, \\cdot)$ is the distribution of raw distance vectors from $\\Psi_{\\text{measure}}$\n6191: - $\\mathbf{V}_{\\text{fit}}(\\mathbf{d})$ is the deterministic fitness vector from $\\Psi_{\\text{fitness}}$ given $S$ and $\\mathbf{d}$\n6192: - $P_{\\text{decision}}(S, \\mathbf{V}_{\\text{fit}}, \\cdot)$ is the joint distribution of companion assignments and actions\n6193: - $\\Psi_{\\text{update}}(S, \\mathbf{c}, \\mathbf{a}, \\cdot)$ is the (possibly stochastic) output distribution given the actions\n6194: \n6195: This composition is a proper Markov kernel: for any measurable set $A \\subseteq \\Sigma_N$,\n6196: \n6197: $$\n6198: \\Psi_{\\text{clone}}(S, A) = P(S' \\in A \\mid S)\n6199: $$",
+      "content_start": 6223,
+      "content_end": 6243,
+      "content": "6223: :label: thm-cloning-operator-composition\n6224: \n6225: The cloning operator admits the following compositional representation:\n6226: \n6227: $$\n6228: \\Psi_{\\text{clone}}(S, \\cdot) = \\int_{\\mathbf{d}} \\int_{\\mathbf{c}, \\mathbf{a}} \\Psi_{\\text{update}}(S, \\mathbf{c}, \\mathbf{a}, \\cdot) \\, dP_{\\text{decision}}(S, \\mathbf{V}_{\\text{fit}}(\\mathbf{d}), \\mathbf{c}, \\mathbf{a}) \\, dP_{\\text{measure}}(S, \\mathbf{d})\n6229: $$\n6230: \n6231: where:\n6232: - $P_{\\text{measure}}(S, \\cdot)$ is the distribution of raw distance vectors from $\\Psi_{\\text{measure}}$\n6233: - $\\mathbf{V}_{\\text{fit}}(\\mathbf{d})$ is the deterministic fitness vector from $\\Psi_{\\text{fitness}}$ given $S$ and $\\mathbf{d}$\n6234: - $P_{\\text{decision}}(S, \\mathbf{V}_{\\text{fit}}, \\cdot)$ is the joint distribution of companion assignments and actions\n6235: - $\\Psi_{\\text{update}}(S, \\mathbf{c}, \\mathbf{a}, \\cdot)$ is the (possibly stochastic) output distribution given the actions\n6236: \n6237: This composition is a proper Markov kernel: for any measurable set $A \\subseteq \\Sigma_N$,\n6238: \n6239: $$\n6240: \\Psi_{\\text{clone}}(S, A) = P(S' \\in A \\mid S)\n6241: $$\n6242: \n6243: is a well-defined probability.",
       "metadata": {
         "label": "thm-cloning-operator-composition"
       },
       "section": "## 9.4. Complete Operator Specification",
-      "references": [],
-      "raw_directive": "6178: We now assemble the complete operator from its components.\n6179: \n6180: :::{prf:theorem} Compositional Structure of $\\Psi_{\\text{clone}}$\n6181: :label: thm-cloning-operator-composition\n6182: \n6183: The cloning operator admits the following compositional representation:\n6184: \n6185: $$\n6186: \\Psi_{\\text{clone}}(S, \\cdot) = \\int_{\\mathbf{d}} \\int_{\\mathbf{c}, \\mathbf{a}} \\Psi_{\\text{update}}(S, \\mathbf{c}, \\mathbf{a}, \\cdot) \\, dP_{\\text{decision}}(S, \\mathbf{V}_{\\text{fit}}(\\mathbf{d}), \\mathbf{c}, \\mathbf{a}) \\, dP_{\\text{measure}}(S, \\mathbf{d})\n6187: $$\n6188: \n6189: where:\n6190: - $P_{\\text{measure}}(S, \\cdot)$ is the distribution of raw distance vectors from $\\Psi_{\\text{measure}}$\n6191: - $\\mathbf{V}_{\\text{fit}}(\\mathbf{d})$ is the deterministic fitness vector from $\\Psi_{\\text{fitness}}$ given $S$ and $\\mathbf{d}$\n6192: - $P_{\\text{decision}}(S, \\mathbf{V}_{\\text{fit}}, \\cdot)$ is the joint distribution of companion assignments and actions\n6193: - $\\Psi_{\\text{update}}(S, \\mathbf{c}, \\mathbf{a}, \\cdot)$ is the (possibly stochastic) output distribution given the actions\n6194: \n6195: This composition is a proper Markov kernel: for any measurable set $A \\subseteq \\Sigma_N$,\n6196: \n6197: $$\n6198: \\Psi_{\\text{clone}}(S, A) = P(S' \\in A \\mid S)\n6199: $$\n6200: "
+      "references": [
+        "def-cloning-operator-formal"
+      ],
+      "raw_directive": "6220: We now assemble the complete operator from its components.\n6221: \n6222: :::{prf:theorem} Compositional Structure of $\\Psi_{\\text{clone}}$\n6223: :label: thm-cloning-operator-composition\n6224: \n6225: The cloning operator admits the following compositional representation:\n6226: \n6227: $$\n6228: \\Psi_{\\text{clone}}(S, \\cdot) = \\int_{\\mathbf{d}} \\int_{\\mathbf{c}, \\mathbf{a}} \\Psi_{\\text{update}}(S, \\mathbf{c}, \\mathbf{a}, \\cdot) \\, dP_{\\text{decision}}(S, \\mathbf{V}_{\\text{fit}}(\\mathbf{d}), \\mathbf{c}, \\mathbf{a}) \\, dP_{\\text{measure}}(S, \\mathbf{d})\n6229: $$\n6230: \n6231: where:\n6232: - $P_{\\text{measure}}(S, \\cdot)$ is the distribution of raw distance vectors from $\\Psi_{\\text{measure}}$\n6233: - $\\mathbf{V}_{\\text{fit}}(\\mathbf{d})$ is the deterministic fitness vector from $\\Psi_{\\text{fitness}}$ given $S$ and $\\mathbf{d}$\n6234: - $P_{\\text{decision}}(S, \\mathbf{V}_{\\text{fit}}, \\cdot)$ is the joint distribution of companion assignments and actions\n6235: - $\\Psi_{\\text{update}}(S, \\mathbf{c}, \\mathbf{a}, \\cdot)$ is the (possibly stochastic) output distribution given the actions\n6236: \n6237: This composition is a proper Markov kernel: for any measurable set $A \\subseteq \\Sigma_N$,\n6238: \n6239: $$\n6240: \\Psi_{\\text{clone}}(S, A) = P(S' \\in A \\mid S)\n6241: $$\n6242: \n6243: is a well-defined probability.\n6244: "
     }
   ],
   "validation": {

@@ -86,53 +86,55 @@
       "label": "def-ambient-euclidean",
       "title": "Ambient Euclidean Structure and Reference Measures",
       "start_line": 314,
-      "end_line": 320,
+      "end_line": 322,
       "header_lines": [
         315
       ],
       "content_start": 317,
-      "content_end": 319,
-      "content": "317: :label: def-ambient-euclidean\n318: \n319: - The spaces $\\mathcal{X} \\subset \\mathbb{R}^d$ and $\\mathcal{Y} \\subset \\mathbb{R}^m$ are finite-dimensional Euclidean domains with Lebesgue reference measures $\\lambda_d$ and $\\lambda_m$.",
+      "content_end": 321,
+      "content": "317: :label: def-ambient-euclidean\n318: \n319: - The spaces $\\mathcal{X} \\subset \\mathbb{R}^d$ and $\\mathcal{Y} \\subset \\mathbb{R}^m$ are finite-dimensional Euclidean domains with Lebesgue reference measures $\\lambda_d$ and $\\lambda_m$.\n320: - All linear-algebraic objects (means, variances, covariances) and kernel densities are defined with respect to these Euclidean structures and Lebesgue measures. In particular, KDE normalizations use the standard Euclidean constants (e.g., $\\int \\exp(-\\|y\\|_2^2/(2\\sigma^2))\\,dy = (2\\pi\\sigma^2)^{m/2}$).\n321: - The ambient dimensions $d$ and $m$ are fixed throughout.",
       "metadata": {
         "label": "def-ambient-euclidean"
       },
       "section": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
-      "references": [],
-      "raw_directive": "314:     These structures, formally defined in subsequent sections, give rise to a set of fixed **environmental constants**, including the reward bound ($R_{\\max}$), reward Lipschitz constant ($L_R$), the diameter of the projected valid domain ($D_{\\mathrm{valid}} := \\operatorname{diam}_{d_{\\mathcal{Y}}}(\\varphi(\\mathcal{X}_{\\mathrm{valid}}))$), the diameter of the entire algorithmic space ($D_{\\mathcal{Y}} := \\operatorname{diam}_{d_{\\mathcal{Y}}}(\\mathcal{Y})$), and the **Projection Map Lipschitz Constant ($L_{\\varphi}$)**.\n315: \n316: :::{prf:assumption} Ambient Euclidean Structure and Reference Measures\n317: :label: def-ambient-euclidean\n318: \n319: - The spaces $\\mathcal{X} \\subset \\mathbb{R}^d$ and $\\mathcal{Y} \\subset \\mathbb{R}^m$ are finite-dimensional Euclidean domains with Lebesgue reference measures $\\lambda_d$ and $\\lambda_m$.\n320: - All linear-algebraic objects (means, variances, covariances) and kernel densities are defined with respect to these Euclidean structures and Lebesgue measures. In particular, KDE normalizations use the standard Euclidean constants (e.g., $\\int \\exp(-\\|y\\|_2^2/(2\\sigma^2))\\,dy = (2\\pi\\sigma^2)^{m/2}$)."
+      "references": [
+        "02_euclidean_gas"
+      ],
+      "raw_directive": "314:     These structures, formally defined in subsequent sections, give rise to a set of fixed **environmental constants**, including the reward bound ($R_{\\max}$), reward Lipschitz constant ($L_R$), the diameter of the projected valid domain ($D_{\\mathrm{valid}} := \\operatorname{diam}_{d_{\\mathcal{Y}}}(\\varphi(\\mathcal{X}_{\\mathrm{valid}}))$), the diameter of the entire algorithmic space ($D_{\\mathcal{Y}} := \\operatorname{diam}_{d_{\\mathcal{Y}}}(\\mathcal{Y})$), and the **Projection Map Lipschitz Constant ($L_{\\varphi}$)**.\n315: \n316: :::{prf:assumption} Ambient Euclidean Structure and Reference Measures\n317: :label: def-ambient-euclidean\n318: \n319: - The spaces $\\mathcal{X} \\subset \\mathbb{R}^d$ and $\\mathcal{Y} \\subset \\mathbb{R}^m$ are finite-dimensional Euclidean domains with Lebesgue reference measures $\\lambda_d$ and $\\lambda_m$.\n320: - All linear-algebraic objects (means, variances, covariances) and kernel densities are defined with respect to these Euclidean structures and Lebesgue measures. In particular, KDE normalizations use the standard Euclidean constants (e.g., $\\int \\exp(-\\|y\\|_2^2/(2\\sigma^2))\\,dy = (2\\pi\\sigma^2)^{m/2}$).\n321: - The ambient dimensions $d$ and $m$ are fixed throughout.\n322: "
     },
     {
       "directive_type": "definition",
       "label": "def-reference-measures",
       "title": "Reference Noise and Kernel Families",
-      "start_line": 322,
-      "end_line": 332,
+      "start_line": 324,
+      "end_line": 334,
       "header_lines": [
-        323
+        325
       ],
-      "content_start": 325,
-      "content_end": 331,
-      "content": "325: :label: def-reference-measures\n326: \n327: - **Perturbation kernels on $\\mathcal{X}$ (dimension $d$):**\n328:   - Gaussian: $\\xi \\sim \\mathcal{N}(0, \\sigma^2 I_d)$ so that $\\mathbb{E}[\\|\\xi\\|_2^2] = d\\,\\sigma^2$.\n329:   - Uniform ball: $\\xi$ uniform on $B_d(0,\\sigma)$ with density $1/\\lambda_d(B_d(0,\\sigma))$.\n330: - **Cloning kernels on $\\mathcal{X}$:** analogously parameterized by $\\delta>0$ (e.g., $\\mathcal{N}(0, \\delta^2 I_d)$ or uniform on $B_d(0,\\delta)$).\n331: - **Smoothing kernels on $\\mathcal{Y}$ (dimension $m$):**",
+      "content_start": 327,
+      "content_end": 333,
+      "content": "327: :label: def-reference-measures\n328: \n329: - **Perturbation kernels on $\\mathcal{X}$ (dimension $d$):**\n330:   - Gaussian: $\\xi \\sim \\mathcal{N}(0, \\sigma^2 I_d)$ so that $\\mathbb{E}[\\|\\xi\\|_2^2] = d\\,\\sigma^2$.\n331:   - Uniform ball: $\\xi$ uniform on $B_d(0,\\sigma)$ with density $1/\\lambda_d(B_d(0,\\sigma))$.\n332: - **Cloning kernels on $\\mathcal{X}$:** analogously parameterized by $\\delta>0$ (e.g., $\\mathcal{N}(0, \\delta^2 I_d)$ or uniform on $B_d(0,\\delta)$).\n333: - **Smoothing kernels on $\\mathcal{Y}$ (dimension $m$):**",
       "metadata": {
         "label": "def-reference-measures"
       },
       "section": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
       "references": [],
-      "raw_directive": "322: :::\n323: \n324: :::{prf:definition} Reference Noise and Kernel Families\n325: :label: def-reference-measures\n326: \n327: - **Perturbation kernels on $\\mathcal{X}$ (dimension $d$):**\n328:   - Gaussian: $\\xi \\sim \\mathcal{N}(0, \\sigma^2 I_d)$ so that $\\mathbb{E}[\\|\\xi\\|_2^2] = d\\,\\sigma^2$.\n329:   - Uniform ball: $\\xi$ uniform on $B_d(0,\\sigma)$ with density $1/\\lambda_d(B_d(0,\\sigma))$.\n330: - **Cloning kernels on $\\mathcal{X}$:** analogously parameterized by $\\delta>0$ (e.g., $\\mathcal{N}(0, \\delta^2 I_d)$ or uniform on $B_d(0,\\delta)$).\n331: - **Smoothing kernels on $\\mathcal{Y}$ (dimension $m$):**\n332:   - Gaussian: $K_\\sigma(y) = (2\\pi\\sigma^2)^{-m/2} \\exp(-\\|y\\|_2^2/(2\\sigma^2))$."
+      "raw_directive": "324: :::\n325: \n326: :::{prf:definition} Reference Noise and Kernel Families\n327: :label: def-reference-measures\n328: \n329: - **Perturbation kernels on $\\mathcal{X}$ (dimension $d$):**\n330:   - Gaussian: $\\xi \\sim \\mathcal{N}(0, \\sigma^2 I_d)$ so that $\\mathbb{E}[\\|\\xi\\|_2^2] = d\\,\\sigma^2$.\n331:   - Uniform ball: $\\xi$ uniform on $B_d(0,\\sigma)$ with density $1/\\lambda_d(B_d(0,\\sigma))$.\n332: - **Cloning kernels on $\\mathcal{X}$:** analogously parameterized by $\\delta>0$ (e.g., $\\mathcal{N}(0, \\delta^2 I_d)$ or uniform on $B_d(0,\\delta)$).\n333: - **Smoothing kernels on $\\mathcal{Y}$ (dimension $m$):**\n334:   - Gaussian: $K_\\sigma(y) = (2\\pi\\sigma^2)^{-m/2} \\exp(-\\|y\\|_2^2/(2\\sigma^2))$."
     },
     {
       "directive_type": "definition",
       "label": "def-n-particle-displacement-metric",
       "title": "N-Particle Displacement Pseudometric ($d_{\\text{Disp},\\mathcal{Y}}$)",
-      "start_line": 414,
-      "end_line": 443,
+      "start_line": 416,
+      "end_line": 445,
       "header_lines": [
-        415,
-        434,
-        435
+        417,
+        436,
+        437
       ],
-      "content_start": 417,
-      "content_end": 442,
-      "content": "417: :label: def-n-particle-displacement-metric\n418: \n419: For any two swarms, $\\mathcal{S}_1$ and $\\mathcal{S}_2$, define the (pseudo)metric by\n420: \n421: $$\n422: d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)\n423: := \\Bigg( \\frac{1}{N} \\sum_{i=1}^N d_{\\mathcal{Y}}\\!\\big(\\varphi(x_{1,i}), \\varphi(x_{2,i})\\big)^2\n424: \\;+\n425: \\; \\frac{\\lambda_{\\mathrm{status}}}{N} \\sum_{i=1}^N (s_{1,i} - s_{2,i})^2 \\Bigg)^{\\!1/2}.\n426: $$\n427: \n428: For algebraic convenience we will frequently write and bound its square,\n429: \n430: $$\n431: d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)^2\n432: = \\frac{1}{N} \\sum_{i=1}^N d_{\\mathcal{Y}}(\\varphi(x_{1,i}), \\varphi(x_{2,i}))^2 + \\frac{\\lambda_{\\mathrm{status}}}{N} \\sum_{i=1}^N (s_{1,i} - s_{2,i})^2.\n433: $$\n434: \n435: :::{admonition} Breaking Down the Formula\n436: :class: note\n437: :open:\n438: This formula has two parts:\n439: \n440: 1. **Position Changes** (first term): For each walker $i$, measure how far it moved in the algorithmic space, square it, then average over all walkers.\n441: \n442: 2. **Status Changes** (second term): For each walker $i$, check if its status changed (alive \u2194 dead). Since status is 0 or 1, $(s_{1,i} - s_{2,i})^2$ equals 1 if status changed, 0 if unchanged. Sum these up and weight by $\\lambda_{\\text{status}}$.",
+      "content_start": 419,
+      "content_end": 444,
+      "content": "419: :label: def-n-particle-displacement-metric\n420: \n421: For any two swarms, $\\mathcal{S}_1$ and $\\mathcal{S}_2$, define the (pseudo)metric by\n422: \n423: $$\n424: d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)\n425: := \\Bigg( \\frac{1}{N} \\sum_{i=1}^N d_{\\mathcal{Y}}\\!\\big(\\varphi(x_{1,i}), \\varphi(x_{2,i})\\big)^2\n426: \\;+\n427: \\; \\frac{\\lambda_{\\mathrm{status}}}{N} \\sum_{i=1}^N (s_{1,i} - s_{2,i})^2 \\Bigg)^{\\!1/2}.\n428: $$\n429: \n430: For algebraic convenience we will frequently write and bound its square,\n431: \n432: $$\n433: d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)^2\n434: = \\frac{1}{N} \\sum_{i=1}^N d_{\\mathcal{Y}}(\\varphi(x_{1,i}), \\varphi(x_{2,i}))^2 + \\frac{\\lambda_{\\mathrm{status}}}{N} \\sum_{i=1}^N (s_{1,i} - s_{2,i})^2.\n435: $$\n436: \n437: :::{admonition} Breaking Down the Formula\n438: :class: note\n439: :open:\n440: This formula has two parts:\n441: \n442: 1. **Position Changes** (first term): For each walker $i$, measure how far it moved in the algorithmic space, square it, then average over all walkers.\n443: \n444: 2. **Status Changes** (second term): For each walker $i$, check if its status changed (alive \u2194 dead). Since status is 0 or 1, $(s_{1,i} - s_{2,i})^2$ equals 1 if status changed, 0 if unchanged. Sum these up and weight by $\\lambda_{\\text{status}}$.",
       "metadata": {
         "label": "def-n-particle-displacement-metric",
         "class": "note",
@@ -140,121 +142,121 @@
       },
       "section": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
       "references": [],
-      "raw_directive": "414: :::\n415: \n416: :::{prf:definition} N-Particle Displacement Pseudometric ($d_{\\text{Disp},\\mathcal{Y}}$)\n417: :label: def-n-particle-displacement-metric\n418: \n419: For any two swarms, $\\mathcal{S}_1$ and $\\mathcal{S}_2$, define the (pseudo)metric by\n420: \n421: $$\n422: d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)\n423: := \\Bigg( \\frac{1}{N} \\sum_{i=1}^N d_{\\mathcal{Y}}\\!\\big(\\varphi(x_{1,i}), \\varphi(x_{2,i})\\big)^2\n424: \\;+\n425: \\; \\frac{\\lambda_{\\mathrm{status}}}{N} \\sum_{i=1}^N (s_{1,i} - s_{2,i})^2 \\Bigg)^{\\!1/2}.\n426: $$\n427: \n428: For algebraic convenience we will frequently write and bound its square,\n429: \n430: $$\n431: d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)^2\n432: = \\frac{1}{N} \\sum_{i=1}^N d_{\\mathcal{Y}}(\\varphi(x_{1,i}), \\varphi(x_{2,i}))^2 + \\frac{\\lambda_{\\mathrm{status}}}{N} \\sum_{i=1}^N (s_{1,i} - s_{2,i})^2.\n433: $$\n434: \n435: :::{admonition} Breaking Down the Formula\n436: :class: note\n437: :open:\n438: This formula has two parts:\n439: \n440: 1. **Position Changes** (first term): For each walker $i$, measure how far it moved in the algorithmic space, square it, then average over all walkers.\n441: \n442: 2. **Status Changes** (second term): For each walker $i$, check if its status changed (alive \u2194 dead). Since status is 0 or 1, $(s_{1,i} - s_{2,i})^2$ equals 1 if status changed, 0 if unchanged. Sum these up and weight by $\\lambda_{\\text{status}}$.\n443: "
+      "raw_directive": "416: :::\n417: \n418: :::{prf:definition} N-Particle Displacement Pseudometric ($d_{\\text{Disp},\\mathcal{Y}}$)\n419: :label: def-n-particle-displacement-metric\n420: \n421: For any two swarms, $\\mathcal{S}_1$ and $\\mathcal{S}_2$, define the (pseudo)metric by\n422: \n423: $$\n424: d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)\n425: := \\Bigg( \\frac{1}{N} \\sum_{i=1}^N d_{\\mathcal{Y}}\\!\\big(\\varphi(x_{1,i}), \\varphi(x_{2,i})\\big)^2\n426: \\;+\n427: \\; \\frac{\\lambda_{\\mathrm{status}}}{N} \\sum_{i=1}^N (s_{1,i} - s_{2,i})^2 \\Bigg)^{\\!1/2}.\n428: $$\n429: \n430: For algebraic convenience we will frequently write and bound its square,\n431: \n432: $$\n433: d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2)^2\n434: = \\frac{1}{N} \\sum_{i=1}^N d_{\\mathcal{Y}}(\\varphi(x_{1,i}), \\varphi(x_{2,i}))^2 + \\frac{\\lambda_{\\mathrm{status}}}{N} \\sum_{i=1}^N (s_{1,i} - s_{2,i})^2.\n435: $$\n436: \n437: :::{admonition} Breaking Down the Formula\n438: :class: note\n439: :open:\n440: This formula has two parts:\n441: \n442: 1. **Position Changes** (first term): For each walker $i$, measure how far it moved in the algorithmic space, square it, then average over all walkers.\n443: \n444: 2. **Status Changes** (second term): For each walker $i$, check if its status changed (alive \u2194 dead). Since status is 0 or 1, $(s_{1,i} - s_{2,i})^2$ equals 1 if status changed, 0 if unchanged. Sum these up and weight by $\\lambda_{\\text{status}}$.\n445: "
     },
     {
       "directive_type": "definition",
       "label": "def-metric-quotient",
       "title": "Metric quotient of $(\\Sigma_N, d_{\\text{Disp},\\mathcal{Y}})$",
-      "start_line": 447,
-      "end_line": 456,
+      "start_line": 449,
+      "end_line": 458,
       "header_lines": [
-        448
+        450
       ],
-      "content_start": 449,
-      "content_end": 455,
-      "content": "449: :::{prf:definition} Metric quotient of $(\\Sigma_N, d_{\\text{Disp},\\mathcal{Y}})$\n450: :label: def-metric-quotient\n451: Define the equivalence relation $\\mathcal{S}_1\\sim\\mathcal{S}_2$ iff $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)=0$. The **metric identification** (Kolmogorov quotient) is $\\overline{\\Sigma}_N := \\Sigma_N/\\!\\sim$ with metric\n452: \n453: $$\n454: \\overline d_{\\text{Disp},\\mathcal{Y}}\\big([\\mathcal{S}_1],[\\mathcal{S}_2]\\big):= d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2),\n455: $$",
+      "content_start": 451,
+      "content_end": 457,
+      "content": "451: :::{prf:definition} Metric quotient of $(\\Sigma_N, d_{\\text{Disp},\\mathcal{Y}})$\n452: :label: def-metric-quotient\n453: Define the equivalence relation $\\mathcal{S}_1\\sim\\mathcal{S}_2$ iff $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)=0$. The **metric identification** (Kolmogorov quotient) is $\\overline{\\Sigma}_N := \\Sigma_N/\\!\\sim$ with metric\n454: \n455: $$\n456: \\overline d_{\\text{Disp},\\mathcal{Y}}\\big([\\mathcal{S}_1],[\\mathcal{S}_2]\\big):= d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2),\n457: $$",
       "metadata": {
         "label": "def-metric-quotient"
       },
       "section": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
       "references": [],
-      "raw_directive": "447: #### 1.6.1 Metric identification (Kolmogorov quotient)\n448: \n449: :::{prf:definition} Metric quotient of $(\\Sigma_N, d_{\\text{Disp},\\mathcal{Y}})$\n450: :label: def-metric-quotient\n451: Define the equivalence relation $\\mathcal{S}_1\\sim\\mathcal{S}_2$ iff $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)=0$. The **metric identification** (Kolmogorov quotient) is $\\overline{\\Sigma}_N := \\Sigma_N/\\!\\sim$ with metric\n452: \n453: $$\n454: \\overline d_{\\text{Disp},\\mathcal{Y}}\\big([\\mathcal{S}_1],[\\mathcal{S}_2]\\big):= d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2),\n455: $$\n456: "
+      "raw_directive": "449: #### 1.6.1 Metric identification (Kolmogorov quotient)\n450: \n451: :::{prf:definition} Metric quotient of $(\\Sigma_N, d_{\\text{Disp},\\mathcal{Y}})$\n452: :label: def-metric-quotient\n453: Define the equivalence relation $\\mathcal{S}_1\\sim\\mathcal{S}_2$ iff $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)=0$. The **metric identification** (Kolmogorov quotient) is $\\overline{\\Sigma}_N := \\Sigma_N/\\!\\sim$ with metric\n454: \n455: $$\n456: \\overline d_{\\text{Disp},\\mathcal{Y}}\\big([\\mathcal{S}_1],[\\mathcal{S}_2]\\big):= d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2),\n457: $$\n458: "
     },
     {
       "directive_type": "lemma",
       "label": "lem-borel-image-of-the-projected-swarm-space",
       "title": "Borel image of the projected swarm space",
-      "start_line": 462,
-      "end_line": 471,
+      "start_line": 464,
+      "end_line": 473,
       "header_lines": [
-        463
+        465
       ],
-      "content_start": 464,
-      "content_end": 470,
-      "content": "464: :::{prf:lemma} Borel image of the projected swarm space\n465: :label: lem-borel-image-of-the-projected-swarm-space\n466: Let $(\\mathcal X,d_{\\mathcal X})$ be Polish and $\\varphi:\\mathcal X\\to\\mathcal Y$ continuous. If $\\mathcal X$ is $\\sigma$\u2011compact and $\\Sigma_N\\subset(\\mathcal X\\times\\{0,1\\})^N$ is Borel, then the projected image\n467: \n468: $$\n469: \\widehat{\\Phi}(\\Sigma_N):=\\{((\\varphi(x_i),s_i))_{i=1}^N : ((x_i,s_i))\\in\\Sigma_N\\}\\subset (\\mathcal Y\\times\\{0,1\\})^N\n470: $$",
+      "content_start": 466,
+      "content_end": 472,
+      "content": "466: :::{prf:lemma} Borel image of the projected swarm space\n467: :label: lem-borel-image-of-the-projected-swarm-space\n468: Let $(\\mathcal X,d_{\\mathcal X})$ be Polish and $\\varphi:\\mathcal X\\to\\mathcal Y$ continuous. If $\\mathcal X$ is $\\sigma$\u2011compact and $\\Sigma_N\\subset(\\mathcal X\\times\\{0,1\\})^N$ is Borel, then the projected image\n469: \n470: $$\n471: \\widehat{\\Phi}(\\Sigma_N):=\\{((\\varphi(x_i),s_i))_{i=1}^N : ((x_i,s_i))\\in\\Sigma_N\\}\\subset (\\mathcal Y\\times\\{0,1\\})^N\n472: $$",
       "metadata": {
         "label": "lem-borel-image-of-the-projected-swarm-space"
       },
       "section": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
       "references": [],
-      "raw_directive": "462: #### 1.6.2 Borel image and completion of the working space\n463: \n464: :::{prf:lemma} Borel image of the projected swarm space\n465: :label: lem-borel-image-of-the-projected-swarm-space\n466: Let $(\\mathcal X,d_{\\mathcal X})$ be Polish and $\\varphi:\\mathcal X\\to\\mathcal Y$ continuous. If $\\mathcal X$ is $\\sigma$\u2011compact and $\\Sigma_N\\subset(\\mathcal X\\times\\{0,1\\})^N$ is Borel, then the projected image\n467: \n468: $$\n469: \\widehat{\\Phi}(\\Sigma_N):=\\{((\\varphi(x_i),s_i))_{i=1}^N : ((x_i,s_i))\\in\\Sigma_N\\}\\subset (\\mathcal Y\\times\\{0,1\\})^N\n470: $$\n471: "
+      "raw_directive": "464: #### 1.6.2 Borel image and completion of the working space\n465: \n466: :::{prf:lemma} Borel image of the projected swarm space\n467: :label: lem-borel-image-of-the-projected-swarm-space\n468: Let $(\\mathcal X,d_{\\mathcal X})$ be Polish and $\\varphi:\\mathcal X\\to\\mathcal Y$ continuous. If $\\mathcal X$ is $\\sigma$\u2011compact and $\\Sigma_N\\subset(\\mathcal X\\times\\{0,1\\})^N$ is Borel, then the projected image\n469: \n470: $$\n471: \\widehat{\\Phi}(\\Sigma_N):=\\{((\\varphi(x_i),s_i))_{i=1}^N : ((x_i,s_i))\\in\\Sigma_N\\}\\subset (\\mathcal Y\\times\\{0,1\\})^N\n472: $$\n473: "
     },
     {
       "directive_type": "proof",
       "label": "proof-lem-borel-image-of-the-projected-swarm-space",
       "title": null,
-      "start_line": 473,
-      "end_line": 478,
+      "start_line": 475,
+      "end_line": 480,
       "header_lines": [
-        474
+        476
       ],
-      "content_start": 475,
-      "content_end": 477,
-      "content": "475: :::{prf:proof}\n476: :label: proof-lem-borel-image-of-the-projected-swarm-space\n477: Write $\\mathcal X=\\bigcup_m K_m$ with $K_m$ compact. Then $\\varphi(\\mathcal X)=\\bigcup_m \\varphi(K_m)$ is $F_\\sigma$, hence Borel. Products and intersections with Borel sets are Borel; the status constraints are Borel in $\\{0,1\\}^N$. Hence the claim.",
+      "content_start": 477,
+      "content_end": 479,
+      "content": "477: :::{prf:proof}\n478: :label: proof-lem-borel-image-of-the-projected-swarm-space\n479: Write $\\mathcal X=\\bigcup_m K_m$ with $K_m$ compact. Then $\\varphi(\\mathcal X)=\\bigcup_m \\varphi(K_m)$ is $F_\\sigma$, hence Borel. Products and intersections with Borel sets are Borel; the status constraints are Borel in $\\{0,1\\}^N$. Hence the claim.",
       "metadata": {
         "label": "proof-lem-borel-image-of-the-projected-swarm-space"
       },
       "section": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
       "references": [],
-      "raw_directive": "473: :::\n474: \n475: :::{prf:proof}\n476: :label: proof-lem-borel-image-of-the-projected-swarm-space\n477: Write $\\mathcal X=\\bigcup_m K_m$ with $K_m$ compact. Then $\\varphi(\\mathcal X)=\\bigcup_m \\varphi(K_m)$ is $F_\\sigma$, hence Borel. Products and intersections with Borel sets are Borel; the status constraints are Borel in $\\{0,1\\}^N$. Hence the claim.\n478: "
+      "raw_directive": "475: :::\n476: \n477: :::{prf:proof}\n478: :label: proof-lem-borel-image-of-the-projected-swarm-space\n479: Write $\\mathcal X=\\bigcup_m K_m$ with $K_m$ compact. Then $\\varphi(\\mathcal X)=\\bigcup_m \\varphi(K_m)$ is $F_\\sigma$, hence Borel. Products and intersections with Borel sets are Borel; the status constraints are Borel in $\\{0,1\\}^N$. Hence the claim.\n480: "
     },
     {
       "directive_type": "remark",
       "label": "rem-closure-cemetery",
       "title": null,
-      "start_line": 480,
-      "end_line": 483,
+      "start_line": 482,
+      "end_line": 485,
       "header_lines": [
-        481
+        483
       ],
-      "content_start": 482,
-      "content_end": 482,
-      "content": "482: :::{prf:remark}",
+      "content_start": 484,
+      "content_end": 484,
+      "content": "484: :::{prf:remark}",
       "metadata": {
         "label": "rem-closure-cemetery"
       },
       "section": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
       "references": [],
-      "raw_directive": "480: :::\n481: \n482: :::{prf:remark}\n483: :label: rem-closure-cemetery"
+      "raw_directive": "482: :::\n483: \n484: :::{prf:remark}\n485: :label: rem-closure-cemetery"
     },
     {
       "directive_type": "lemma",
       "label": "lem-polishness-and-w2",
       "title": "Polishness of the quotient state space and $W_2$",
-      "start_line": 488,
-      "end_line": 492,
+      "start_line": 490,
+      "end_line": 494,
       "header_lines": [
-        489
+        491
       ],
-      "content_start": 491,
-      "content_end": 491,
-      "content": "491: :label: lem-polishness-and-w2",
+      "content_start": 493,
+      "content_end": 493,
+      "content": "493: :label: lem-polishness-and-w2",
       "metadata": {
         "label": "lem-polishness-and-w2"
       },
       "section": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
       "references": [],
-      "raw_directive": "488: #### 1.7.1 Polishness and $W_2$ well\u2011posedness (on the quotient)\n489: \n490: :::{prf:lemma} Polishness of the quotient state space and $W_2$\n491: :label: lem-polishness-and-w2\n492: "
+      "raw_directive": "490: #### 1.7.1 Polishness and $W_2$ well\u2011posedness (on the quotient)\n491: \n492: :::{prf:lemma} Polishness of the quotient state space and $W_2$\n493: :label: lem-polishness-and-w2\n494: "
     },
     {
       "directive_type": "definition",
       "label": "def-displacement-components",
       "title": "Components of Swarm Displacement",
-      "start_line": 507,
-      "end_line": 520,
+      "start_line": 509,
+      "end_line": 522,
       "header_lines": [
-        508
+        510
       ],
-      "content_start": 510,
-      "content_end": 519,
-      "content": "510: :label: def-displacement-components\n511: \n512: For any two swarms, $\\mathcal{S}_1$ and $\\mathcal{S}_2$, their total displacement is decomposed into two fundamental components:\n513: \n514: 1.  **The Squared Positional Displacement ($\\Delta_{\\text{pos}}^2$):** The sum of squared distances between corresponding walkers in the algorithmic space.\n515: \n516: $$\n517: \\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) := \\sum_{i=1}^N d_{\\mathcal{Y}}(\\varphi(x_{1,i}), \\varphi(x_{2,i}))^2\n518: $$\n519: ",
+      "content_start": 512,
+      "content_end": 521,
+      "content": "512: :label: def-displacement-components\n513: \n514: For any two swarms, $\\mathcal{S}_1$ and $\\mathcal{S}_2$, their total displacement is decomposed into two fundamental components:\n515: \n516: 1.  **The Squared Positional Displacement ($\\Delta_{\\text{pos}}^2$):** The sum of squared distances between corresponding walkers in the algorithmic space.\n517: \n518: $$\n519: \\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) := \\sum_{i=1}^N d_{\\mathcal{Y}}(\\varphi(x_{1,i}), \\varphi(x_{2,i}))^2\n520: $$\n521: ",
       "metadata": {
         "label": "def-displacement-components"
       },
       "section": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
       "references": [],
-      "raw_directive": "507: This section formally defines the two components of swarm displacement that will be used as inputs to the generalized continuity axioms.\n508: \n509: :::{prf:definition} Components of Swarm Displacement\n510: :label: def-displacement-components\n511: \n512: For any two swarms, $\\mathcal{S}_1$ and $\\mathcal{S}_2$, their total displacement is decomposed into two fundamental components:\n513: \n514: 1.  **The Squared Positional Displacement ($\\Delta_{\\text{pos}}^2$):** The sum of squared distances between corresponding walkers in the algorithmic space.\n515: \n516: $$\n517: \\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) := \\sum_{i=1}^N d_{\\mathcal{Y}}(\\varphi(x_{1,i}), \\varphi(x_{2,i}))^2\n518: $$\n519: \n520: :::{hint}"
+      "raw_directive": "509: This section formally defines the two components of swarm displacement that will be used as inputs to the generalized continuity axioms.\n510: \n511: :::{prf:definition} Components of Swarm Displacement\n512: :label: def-displacement-components\n513: \n514: For any two swarms, $\\mathcal{S}_1$ and $\\mathcal{S}_2$, their total displacement is decomposed into two fundamental components:\n515: \n516: 1.  **The Squared Positional Displacement ($\\Delta_{\\text{pos}}^2$):** The sum of squared distances between corresponding walkers in the algorithmic space.\n517: \n518: $$\n519: \\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) := \\sum_{i=1}^N d_{\\mathcal{Y}}(\\varphi(x_{1,i}), \\varphi(x_{2,i}))^2\n520: $$\n521: \n522: :::{hint}"
     }
   ],
   "validation": {

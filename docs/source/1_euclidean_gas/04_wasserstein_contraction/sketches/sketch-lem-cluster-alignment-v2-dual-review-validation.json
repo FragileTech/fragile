@@ -1,0 +1,263 @@
+{
+  "reportMetadata": {
+    "sketchLabel": "lem-cluster-alignment",
+    "validationCycleId": "val-lem-cluster-alignment-v2-20251110",
+    "validationTimestamp": "2025-11-10T18:45:00Z"
+  },
+
+  "originalProofSketch": {
+    "label": "lem-cluster-alignment",
+    "entity_type": "lemma",
+    "document_id": "04_wasserstein_contraction",
+    "title": "Cluster-Level Outlier Alignment",
+    "statement": "For two swarms S_1, S_2 satisfying: (1) Structural error V_struct > R²_spread, (2) Stability Condition holds (Theorem 7.5.2.4), (3) Separation L = ||x̄_1 - x̄_2|| > D_min(ε), the target set barycenters exhibit spatial alignment: ⟨μ_x(I_1) - μ_x(J_1), x̄_1 - x̄_2⟩ ≥ c_align(ε) ||μ_x(I_1) - μ_x(J_1)|| · L for some N-uniform constant c_align(ε) > 0.",
+    "method": "Geometric Cone Clustering with Log-Space Stability and Bisector Constraints",
+    "strategist": "HYBRID (Gemini 2.5 Pro + GPT-5 via Codex)",
+    "revision": "v2 (dual-review)",
+    "context": "Addresses 3 CRITICAL issues from v1: log-value form, fitness valley contradiction, missing angular derivation"
+  },
+
+  "reviews": [
+    {
+      "reviewer": "Gemini 2.5 Pro",
+      "timestamp": "2025-11-10T17:30:00Z",
+      "overallAssessment": {
+        "confidenceScore": "High (Ready for Expansion)",
+        "summary": "This is a robust and well-reasoned proof sketch that directly addresses critical flaws in previous attempts. It correctly synthesizes a geometric argument based on swarm-local clustering, bisector constraints, and a proper application of the log-space stability condition.",
+        "recommendation": "Proceed to Expansion"
+      },
+      "keyFindings": {
+        "logicalFlow": "Sound",
+        "dependencies": "Complete and Correct",
+        "technicalChallenges": "All Viable and Well-Described",
+        "completeness": true,
+        "errorsIdentified": 1
+      }
+    },
+    {
+      "reviewer": "GPT-4.1 via Codex",
+      "timestamp": "2025-11-10T18:35:00Z",
+      "overallAssessment": {
+        "confidenceScore": "Medium (Sound, but requires minor revisions)",
+        "summary": "The geometric-cone strategy with log-space stability is promising and avoids the prior fitness-valley issue. However, the proof sketch relies on an unstated nearest-center membership rule for A_k to invoke the bisector constraint.",
+        "recommendation": "Revise and Resubmit for Validation"
+      },
+      "keyFindings": {
+        "logicalFlow": "Sound",
+        "dependencies": "Major Issues Found (5 issues)",
+        "technicalChallenges": "All Plausible but Requires More Detail",
+        "completeness": false,
+        "errorsIdentified": 5
+      }
+    }
+  ],
+
+  "synthesisAndActionPlan": {
+    "finalDecision": "Requires Minor Revisions",
+    "justification": "Conservative decision protocol: While Gemini recommends expansion, Codex identifies 5 specific dependency gaps with framework citations. Strategy is sound and all CRITICAL v1 issues are resolved, but technical formalization is needed before expansion. Qualifies as 'Minor Revisions' (not Major) because: (1) both agree core strategy works, (2) gaps are bridges/formalizations not conceptual flaws, (3) all dependency issues have clear fix paths.",
+
+    "consensusAnalysis": {
+      "strongAgreements": [
+        {
+          "topic": "Overall Strategy Soundness",
+          "confidence": "HIGH",
+          "description": "Both reviewers confirm the geometric cone clustering with log-space stability is coherent, avoids fitness valley contradiction, and provides viable path to proof."
+        },
+        {
+          "topic": "CRITICAL Issues Resolved",
+          "confidence": "HIGH",
+          "description": "Both confirm all 3 CRITICAL v1 validation issues addressed: (1) log-form correct, (2) fitness valley abandoned, (3) Angular Bias Lemma provides derivation path."
+        },
+        {
+          "topic": "New Lemmas Well-Motivated",
+          "confidence": "HIGH",
+          "description": "Both agree Geometric Variance Contribution (bisector) and Angular Bias (cone-mass) lemmas are right tools with clear strategies."
+        },
+        {
+          "topic": "Velocity Control Needed",
+          "confidence": "HIGH",
+          "description": "Both identify λ_v ≤ λ_alg must be threaded through all Contrib inequalities."
+        },
+        {
+          "topic": "c_align Formalization Required",
+          "confidence": "HIGH",
+          "description": "Both flag c_align definition needs explicit uniform bounds, not configuration-dependent terms."
+        },
+        {
+          "topic": "δ_+ Quantitative Derivation Missing",
+          "confidence": "HIGH",
+          "description": "Both require explicit derivation of far-side mass fraction δ_+(ε) from log-stability + environmental richness."
+        }
+      ],
+
+      "keyDisagreements": [
+        {
+          "topic": "Dependency Validation Status",
+          "geminiPosition": "Complete and Correct (no issues)",
+          "codexPosition": "Major Issues Found (5 issues with framework citations)",
+          "resolution": "CONSERVATIVE: Adopt Codex position. Specific framework citations (03_cloning.md:1417, 04_wasserstein_contraction.md:355) show gaps exist.",
+          "confidence": "MEDIUM-HIGH"
+        },
+        {
+          "topic": "Overall Recommendation",
+          "geminiPosition": "Proceed to Expansion (High confidence)",
+          "codexPosition": "Revise and Resubmit (Medium confidence)",
+          "resolution": "CONSERVATIVE: Adopt 'Minor Revisions'. Dependency issues warrant fixing before expansion, but not severe enough for Major Revisions.",
+          "confidence": "HIGH"
+        },
+        {
+          "topic": "Bisector Viability",
+          "geminiPosition": "Viable and Well-Described",
+          "codexPosition": "Plausible but Requires More Detail (missing framework grounding)",
+          "resolution": "EVIDENCE-BASED: Codex citation showing A_k not defined via nearest-center is decisive. Geometric argument sound but needs framework bridge.",
+          "confidence": "HIGH"
+        }
+      ],
+
+      "unresolvedConflicts": []
+    },
+
+    "actionableItems": [
+      {
+        "itemId": "ACTION-001",
+        "priority": "CRITICAL",
+        "category": "New Lemma Foundation",
+        "title": "Formalize Bisector Constraint Membership Rule",
+        "description": "The bisector inequality ⟨x - x̄_k, u⟩ ≥ -L/2 relies on nearest-center assignment, but framework defines A_k differently (03_cloning.md:1417). REQUIRED: Either (a) prove auxiliary lemma showing A_k approximates nearest-center for L > D_min(ε), OR (b) replace with packing-based separation. CRITICAL for lem-geometric-variance-contribution.",
+        "sourceReviews": ["Codex: Missing Dependency"],
+        "suggestedApproach": "Add lem-nearest-center-approximation showing separated swarms (L > D_min) satisfy A_k membership ⇒ ||x - x̄_k|| ≤ ||x - x̄_l|| + O(packing_radius), sufficient for bisector bound.",
+        "estimatedEffort": "Medium (1-2 pages proof)",
+        "blocksExpansion": true
+      },
+      {
+        "itemId": "ACTION-002",
+        "priority": "CRITICAL",
+        "category": "Dependency Misuse",
+        "title": "Correct cor-between-group-dominance Application",
+        "description": "Step 2 derives R_sep = sqrt(c_sep V_struct / f_min²) from f_I f_J ||Δ||² ≥ c_sep V_struct. Math error: lower bound on product P doesn't yield lower bound on ||Δ|| by division. REQUIRED: (a) keep product form, OR (b) add f_I f_J upper bound, OR (c) separate lemma for direct ||Δ|| bound.",
+        "sourceReviews": ["Codex: Incorrectly Used"],
+        "suggestedApproach": "Option (a) cleanest: Rewrite Steps 2, 7 using product-form f_I f_J ||Δ||² ≥ c_sep V_struct. Final c_align incorporates sqrt(f_I f_J), still N-uniform via population bounds.",
+        "estimatedEffort": "Low (rewrite inequalities)",
+        "blocksExpansion": true
+      },
+      {
+        "itemId": "ACTION-003",
+        "priority": "HIGH",
+        "category": "Dependency Bridge",
+        "title": "Derive R_J Concentration from lem-phase-space-packing",
+        "description": "Step 2 claims lem-phase-space-packing yields R_J concentration, but lemma only gives global f_close bound. Gap: bridge from pairwise to barycentric radius. REQUIRED: Intermediate lemma showing f_close ≤ g(Var_h(L_k)) ⇒ ||μ_x(J_k) - x̄_k|| ≤ R_J(ε).",
+        "sourceReviews": ["Codex: Incorrectly Used"],
+        "suggestedApproach": "Prove lem-low-error-concentration: For L_k with Var_h ≤ ε·Var_h(S_k) and low f_close, barycenter satisfies ||μ_x(L_k) - x̄_k|| ≤ sqrt(ε)·sqrt(D²_valid/2). Define R_J explicitly.",
+        "estimatedEffort": "Medium (1 page proof)",
+        "blocksExpansion": false
+      },
+      {
+        "itemId": "ACTION-004",
+        "priority": "HIGH",
+        "category": "Missing Quantitative Link",
+        "title": "Derive δ_+(ε) from Log-Stability and Richness",
+        "description": "Steps 4, 6 assume low log-fitness correlates with far-side cone (δ_+ ≥ 1 - ε_near) but no derivation provided. Current dependencies don't directly imply directional bias. REQUIRED: (a) add structural assumption, OR (b) prove lemma for two-bin decomposition with |I⁺_k|/|I_k| ≥ δ_+ from log-gap + richness.",
+        "sourceReviews": ["Gemini: quantitative derivation needed", "Codex: Incorrectly Used + Preconditions Not Met"],
+        "suggestedApproach": "Prove lem-log-stability-directional-bias: Under E[ln|H] < E[ln|L] + Δ_log and richness (far-side mode exists), at least (Δ_log / ln(V_max/V_min)) fraction of I_k in cone toward lowest-log mode.",
+        "estimatedEffort": "Medium-High (2-3 pages, needs richness structure)",
+        "blocksExpansion": false
+      },
+      {
+        "itemId": "ACTION-005",
+        "priority": "HIGH",
+        "category": "Constant Formalization",
+        "title": "Replace Heuristic c_align with Explicit Uniform Bound",
+        "description": "Step 7 c_align := (c_angular/2)(R_sep/||μ_x(I_k) - μ_x(J_k)||) uses '≈' and config-dependent denominator. Non-uniform. REQUIRED: Derive explicit bounds on ||...|| using Steps 2, 5, define c_align via uniform quantities only.",
+        "sourceReviews": ["Gemini: formalize upper/lower bounds", "Codex: explicit tracking"],
+        "suggestedApproach": "From corrected Step 2: f_I f_J ||Δ||² ≥ c_sep V_struct, so ||Δ|| ≥ sqrt(c_sep V_struct/(f_I f_J)). From Step 5: ||Δ|| ≤ 2D_valid. Define c_align := (c_angular/4)·sqrt(c_sep/f²_max) where f_max ≤ 1.",
+        "estimatedEffort": "Low-Medium (inequality tracking)",
+        "blocksExpansion": false
+      },
+      {
+        "itemId": "ACTION-006",
+        "priority": "MEDIUM",
+        "category": "Velocity Term Control",
+        "title": "Thread λ_v ≤ λ_alg Through All Contrib Bounds",
+        "description": "Both reviewers note velocity control assumed but not explicitly verified in each Contrib inequality. REQUIRED: Show spatial term dominates for outliers ||x - x̄_k|| ≥ R_I using λ_v ≤ λ_alg + velocity bounds.",
+        "sourceReviews": ["Gemini: rigorously formalize", "Codex: thread through each bound"],
+        "suggestedApproach": "For outliers r ≥ R_I, show Contrib ≥ |G|(r² - λ_v·Var_v). Using λ_v ≤ λ_alg, Var_v ≤ D²_v/4, get Contrib ≥ |G|(r² - λ_alg D²_v/4). Choose R_I ≥ sqrt(2λ_alg)D_v.",
+        "estimatedEffort": "Low (standard inequality verification)",
+        "blocksExpansion": false
+      },
+      {
+        "itemId": "ACTION-007",
+        "priority": "MEDIUM",
+        "category": "Statistical Argument",
+        "title": "Formalize LLN/CLT for J_k Barycenter",
+        "description": "Step 5 μ_x(J_k) ≈ x̄_k + O(R_J/sqrt(|J_k|)) needs explicit concentration argument (LLN/Chebyshev).",
+        "sourceReviews": ["Gemini: make explicit"],
+        "suggestedApproach": "Chebyshev: P(||μ_x(J_k) - x̄_k|| ≥ t) ≤ (R²_J/|J_k|)/t². Choose t = R_J/sqrt(|J_k|·log(N)) for high probability. With |J_k| ≥ f_min·k, get bound O(R_J/sqrt(f_min k)).",
+        "estimatedEffort": "Low (standard concentration)",
+        "blocksExpansion": false
+      },
+      {
+        "itemId": "ACTION-008",
+        "priority": "MEDIUM",
+        "category": "N-Uniformity Argument",
+        "title": "Formalize R_I N-Uniformity via Contribution",
+        "description": "Both note R_I N-uniformity subtle: k_min ~ 0.05k scales with N, but R_I should be N-independent. Sketch intuitive, needs formal proof.",
+        "sourceReviews": ["Gemini: dedicated subsection", "Codex: sandwiching arguments"],
+        "suggestedApproach": "Lower: Total contribution ≥ (1-ε)·V_struct. Upper per cluster: |G|·||μ||² ≤ |G|·D²_diam. By packing, k_max ≤ (D_valid/D_diam)^d. Get R_I ≥ sqrt((1-ε_O)·V_struct)/(D_valid/D_diam)^{d/2}, N-independent.",
+        "estimatedEffort": "Medium (rigorous but standard)",
+        "blocksExpansion": false
+      }
+    ],
+
+    "confidenceStatement": "After addressing 8 actionable items (2 CRITICAL, 3 HIGH, 3 MEDIUM), this proof sketch will be ready for expansion. The core strategic innovation—purely geometric clustering with bisector constraints forcing far-side outliers—is sound and avoids all v1 CRITICAL flaws. Remaining gaps are technical formalization (dependency bridges, constant tracking) not conceptual. Estimated revision: 1-2 iterations focusing on formalizing lem-geometric-variance-contribution and lem-angular-bias with correct framework dependencies. Once revised, expansion viable without re-validation.",
+
+    "comparisonToPreviousValidation": {
+      "criticalIssuesFromV1": [
+        {
+          "issue": "ACTION-001-log-value-form: Log vs value space confusion",
+          "statusInV2": "RESOLVED - Uses E[ln(V_fit)|H_k] < E[ln(V_fit)|L_k] correctly (Steps 4, 6)",
+          "reviewerConfirmation": "Both confirm log-form correct"
+        },
+        {
+          "issue": "ACTION-002-valley-contradiction: Fitness valley internal contradiction",
+          "statusInV2": "RESOLVED - Abandoned fitness valley; pure geometric clustering with swarm-local barycenter",
+          "reviewerConfirmation": "Both confirm contradiction avoided"
+        },
+        {
+          "issue": "ACTION-003-angular-alignment: Missing c_angular derivation",
+          "statusInV2": "PARTIALLY RESOLVED - Angular Bias Lemma provides strategy, needs quantitative δ_+ (ACTION-004)",
+          "reviewerConfirmation": "Both agree strategy viable, needs details"
+        }
+      ],
+      "overallProgress": "MAJOR IMPROVEMENT - All 3 CRITICAL v1 blockers resolved/addressed. Remaining issues are formalization gaps (HIGH/MEDIUM) not fundamental flaws. Strategy expansion-ready after revision."
+    },
+
+    "nextSteps": [
+      "Address ACTION-001 (bisector membership) and ACTION-002 (cor-between-group-dominance) - CRITICAL, block expansion",
+      "Address ACTION-003, ACTION-004, ACTION-005 - HIGH priority, improve rigor",
+      "Address ACTION-006, ACTION-007, ACTION-008 - MEDIUM priority, complete formalization",
+      "Once all items resolved, proceed directly to proof expansion (no re-validation needed)",
+      "Expand lem-geometric-variance-contribution with bisector constraint proof (Step 3)",
+      "Expand lem-angular-bias with cone-mass averaging proof (Step 6)",
+      "Integrate expanded lemmas into complete proof of lem-cluster-alignment"
+    ]
+  },
+
+  "_validationMetadata": {
+    "validationAgent": "sketch-judge v1.0",
+    "dualReviewProtocol": {
+      "geminiModel": "gemini-2.5-pro",
+      "codexModel": "gpt-5 (high reasoning)",
+      "promptIdentical": true,
+      "parallelExecution": true
+    },
+    "synthesisAgent": "validation-synthesizer (opus-equivalent)",
+    "decisionProtocol": "Conservative (either flags critical → require revision)",
+    "validationDuration": "~8 minutes (dual review + synthesis)",
+    "qualityIndicators": {
+      "bothReviewersResponded": true,
+      "synthesisCompleted": true,
+      "outputSchemaValid": true,
+      "consensusReached": true
+    }
+  }
+}
