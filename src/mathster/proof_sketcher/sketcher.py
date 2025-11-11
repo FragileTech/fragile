@@ -434,6 +434,7 @@ class StrategySynthesisAgent(dspy.Module):
     """Chain-of-thought agent that generates StrategySynthesis from scratch."""
 
     def __init__(self) -> None:
+        super().__init__()
         schema = json.dumps(StrategySynthesis.model_json_schema(), indent=2)
         instructions = f"""
 You explore multiple proof strategies for the given theorem.
@@ -501,6 +502,7 @@ class DetailedProofAgent(dspy.Module):
     """Chain-of-thought agent that emits DetailedProof objects."""
 
     def __init__(self) -> None:
+        super().__init__()
         schema = json.dumps(DetailedProof.model_json_schema(), indent=2)
         instructions = f"""
 You produce the DetailedProof section of the proof sketch.
@@ -562,6 +564,7 @@ class TechnicalDeepDiveAgent(dspy.Module):
     """Chain-of-thought agent that fills TechnicalDeepDiveSignature."""
 
     def __init__(self) -> None:
+        super().__init__()
         instructions = f"""
 You extract ALL meaningful technical challenges from a proof sketch.
 
@@ -609,6 +612,7 @@ class ValidationChecklistAgent(dspy.Module):
     """Predictor that fills ValidationChecklist booleans."""
 
     def __init__(self) -> None:
+        super().__init__()
         schema = json.dumps(ValidationChecklist.model_json_schema(), indent=2)
         instructions = f"""
 Review the provided proof sketch text (and optional reviewer notes) and evaluate
@@ -648,6 +652,7 @@ class AlternativeApproachesAgent(dspy.Module):
     """Chain-of-thought agent that records alternative strategies."""
 
     def __init__(self) -> None:
+        super().__init__()
         schema = json.dumps(AlternativeApproach.model_json_schema(), indent=2)
         instructions = f"""
 From the theorem statement and rejected_ideas text, extract 2-4 alternative approaches.
@@ -686,6 +691,7 @@ class FutureWorkAgent(dspy.Module):
     """Chain-of-thought agent that structures future work directions."""
 
     def __init__(self) -> None:
+        super().__init__()
         schema = json.dumps(FutureWork.model_json_schema(), indent=2)
         instructions = f"""
 Analyze the provided open questions/gaps and categorize them into remainingGaps,
@@ -721,6 +727,7 @@ class ExpansionRoadmapAgent(dspy.Module):
     """Chain-of-thought agent that drafts the expansion roadmap."""
 
     def __init__(self) -> None:
+        super().__init__()
         schema = json.dumps(ExpansionRoadmap.model_json_schema(), indent=2)
         instructions = f"""
 Convert workstream notes (plus optional constraints) into a phased roadmap.
@@ -760,6 +767,7 @@ class CrossReferencesAgent(dspy.Module):
     """Chain-of-thought agent that records cross references."""
 
     def __init__(self) -> None:
+        super().__init__()
         schema = json.dumps(CrossReferences.model_json_schema(), indent=2)
         instructions = f"""
 From the provided proof sketch text, list referenced framework artifacts.
@@ -980,7 +988,9 @@ class ProofSketchAgent(dspy.Module):
             ),
         )
 
-        return dspy.Prediction(sketch=proof_sketch)
+        return dspy.Prediction(
+            sketch=proof_sketch, strategy_1=primary_strategy, strategy_2=secondary_strategy
+        )
 
 
 class DependencyPlanningSignature(dspy.Signature):

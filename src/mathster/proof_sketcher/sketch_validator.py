@@ -9,7 +9,7 @@ from typing import Literal
 import dspy
 from pydantic import BaseModel, Field
 
-from mathster.proof_sketcher.sketch_referee_analysis import SketchReviewAgent
+from mathster.proof_sketcher.sketch_referee_analysis import SketchRefereeAgent
 
 
 __all__ = [
@@ -206,6 +206,196 @@ class SketchValidationReportSignature(dspy.Signature):
     )
 
 
+class Scores(BaseModel):
+    """Comprehensive numerical metrics extracted from dual review validation cycle.
+
+    Tracks all score-related data from Gemini and Codex reviews, aggregate statistics,
+    synthesis metrics, and derived quality indicators. All scores follow 1-5 scale:
+    - 1 = Unusable
+    - 2 = Critical issues but fixable
+    - 3 = Major revisions needed
+    - 4 = Minor revisions needed
+    - 5 = Publication-quality
+    """
+
+    # === GEMINI REVIEW SCORES ===
+    gemini_overall_score: int = Field(..., description="Gemini's overall quality score (1-5)")
+    gemini_overall_confidence: int = Field(..., description="Gemini's overall confidence (1-5)")
+    gemini_overall_confidence_score: int = Field(
+        ..., description="Gemini's OverallAssessment.confidenceScore field (1-5)"
+    )
+
+    gemini_completeness_score: int = Field(
+        ..., description="Gemini's completeness/correctness quality score (1-5)"
+    )
+    gemini_completeness_confidence: int = Field(
+        ..., description="Gemini's completeness confidence (1-5)"
+    )
+    gemini_covers_all_claims: bool = Field(
+        ..., description="Whether Gemini confirms all theorem claims are covered"
+    )
+    gemini_error_count: int = Field(
+        ..., description="Number of mathematical errors identified by Gemini"
+    )
+
+    gemini_logical_flow_score: int = Field(
+        ..., description="Gemini's logical flow quality score (1-5)"
+    )
+    gemini_logical_flow_confidence: int = Field(
+        ..., description="Gemini's logical flow confidence (1-5)"
+    )
+    gemini_logical_flow_sound: bool = Field(
+        ..., description="Whether Gemini deems the logical flow sound"
+    )
+    gemini_logical_gap_count: int = Field(
+        ..., description="Number of logical gaps identified by Gemini"
+    )
+
+    gemini_dependency_score: int | None = Field(
+        None, description="Gemini's dependency validation score (1-5) if available"
+    )
+    gemini_dependency_confidence: int | None = Field(
+        None, description="Gemini's dependency validation confidence (1-5) if available"
+    )
+    gemini_dependency_issue_count: int = Field(
+        ..., description="Number of dependency issues identified by Gemini"
+    )
+
+    gemini_technical_dive_score: int | None = Field(
+        None, description="Gemini's technical deep dive score (1-5) if available"
+    )
+    gemini_technical_dive_confidence: int | None = Field(
+        None, description="Gemini's technical deep dive confidence (1-5) if available"
+    )
+    gemini_technical_critique_count: int = Field(
+        ..., description="Number of technical critiques provided by Gemini"
+    )
+
+    # === CODEX REVIEW SCORES ===
+    codex_overall_score: int = Field(..., description="Codex's overall quality score (1-5)")
+    codex_overall_confidence: int = Field(..., description="Codex's overall confidence (1-5)")
+    codex_overall_confidence_score: int = Field(
+        ..., description="Codex's OverallAssessment.confidenceScore field (1-5)"
+    )
+
+    codex_completeness_score: int = Field(
+        ..., description="Codex's completeness/correctness quality score (1-5)"
+    )
+    codex_completeness_confidence: int = Field(
+        ..., description="Codex's completeness confidence (1-5)"
+    )
+    codex_covers_all_claims: bool = Field(
+        ..., description="Whether Codex confirms all theorem claims are covered"
+    )
+    codex_error_count: int = Field(
+        ..., description="Number of mathematical errors identified by Codex"
+    )
+
+    codex_logical_flow_score: int = Field(
+        ..., description="Codex's logical flow quality score (1-5)"
+    )
+    codex_logical_flow_confidence: int = Field(
+        ..., description="Codex's logical flow confidence (1-5)"
+    )
+    codex_logical_flow_sound: bool = Field(
+        ..., description="Whether Codex deems the logical flow sound"
+    )
+    codex_logical_gap_count: int = Field(
+        ..., description="Number of logical gaps identified by Codex"
+    )
+
+    codex_dependency_score: int | None = Field(
+        None, description="Codex's dependency validation score (1-5) if available"
+    )
+    codex_dependency_confidence: int | None = Field(
+        None, description="Codex's dependency validation confidence (1-5) if available"
+    )
+    codex_dependency_issue_count: int = Field(
+        ..., description="Number of dependency issues identified by Codex"
+    )
+
+    codex_technical_dive_score: int | None = Field(
+        None, description="Codex's technical deep dive score (1-5) if available"
+    )
+    codex_technical_dive_confidence: int | None = Field(
+        None, description="Codex's technical deep dive confidence (1-5) if available"
+    )
+    codex_technical_critique_count: int = Field(
+        ..., description="Number of technical critiques provided by Codex"
+    )
+
+    # === AGGREGATE SCORES (across both reviewers) ===
+    average_overall_score: float = Field(
+        ..., description="Mean of Gemini and Codex overall scores"
+    )
+    average_overall_confidence: float = Field(
+        ..., description="Mean of Gemini and Codex overall confidences"
+    )
+    average_completeness_score: float = Field(
+        ..., description="Mean of Gemini and Codex completeness scores"
+    )
+    average_logical_flow_score: float = Field(
+        ..., description="Mean of Gemini and Codex logical flow scores"
+    )
+
+    total_error_count: int = Field(
+        ..., description="Total mathematical errors identified by both reviewers"
+    )
+    total_logical_gap_count: int = Field(
+        ..., description="Total logical gaps identified by both reviewers"
+    )
+    total_dependency_issue_count: int = Field(
+        ..., description="Total dependency issues identified by both reviewers"
+    )
+    total_technical_critique_count: int = Field(
+        ..., description="Total technical critiques from both reviewers"
+    )
+
+    both_reviewers_sound: bool = Field(
+        ..., description="True if both Gemini and Codex deem logical flow sound"
+    )
+    both_reviewers_cover_claims: bool = Field(
+        ..., description="True if both Gemini and Codex confirm all claims covered"
+    )
+
+    overall_score_variance: float = Field(
+        ..., description="Squared difference between Gemini and Codex overall scores"
+    )
+    completeness_score_variance: float = Field(
+        ..., description="Squared difference between Gemini and Codex completeness scores"
+    )
+    logical_flow_score_variance: float = Field(
+        ..., description="Squared difference between Gemini and Codex logical flow scores"
+    )
+
+    # === SYNTHESIS-LEVEL METRICS ===
+    final_decision_numeric: int = Field(
+        ...,
+        description="Numeric mapping of finalDecision (1=Rejected, 2=Major, 3=Minor, 4=Approved)",
+    )
+
+    action_item_count: int = Field(..., description="Total number of action items")
+    critical_action_count: int = Field(..., description="Number of critical priority actions")
+    high_action_count: int = Field(..., description="Number of high priority actions")
+    medium_action_count: int = Field(..., description="Number of medium priority actions")
+    low_action_count: int = Field(..., description="Number of low priority actions")
+
+    points_of_agreement_count: int = Field(
+        ..., description="Number of issues where reviewers independently agree"
+    )
+    points_of_disagreement_count: int = Field(
+        ..., description="Number of conflicting viewpoints between reviewers"
+    )
+
+    # === DERIVED METRICS ===
+    overall_quality_index: float = Field(
+        ..., description="Composite quality index combining scores, weighted by confidence"
+    )
+    risk_score: float = Field(
+        ..., description="Risk metric based on error counts, gaps, and score variance"
+    )
+
+
 class SketchValidator(dspy.Module):
     """Run dual sketch reviews and synthesize a complete validation report."""
 
@@ -245,40 +435,25 @@ class SketchValidator(dspy.Module):
         )
         self.report_builder = dspy.Predict(SketchValidationReportSignature)
 
-        self.review_agent_gemini = SketchReviewAgent(
-            project_root=project_root,
-            claude_system_prompt=gemini_prompt,
-        )
-        self.review_agent_codex = SketchReviewAgent(
-            project_root=project_root,
-            claude_system_prompt=codex_prompt,
-        )
+        self.review_agent_gemini = SketchRefereeAgent()
+        self.review_agent_codex = SketchRefereeAgent()
 
     def _run_review(
         self,
-        agent: SketchReviewAgent,
+        agent: SketchRefereeAgent,
         reviewer_name: str,
-        timestamp: str,
-        proof_sketch_json: str,
+        proof_sketch_dict: dict,
         extra_instructions: str,
     ) -> dict:
-        """Invoke a SketchReviewAgent with shared proof sketch context."""
-        json_payload = json.loads(proof_sketch_json)
-        payload = json.dumps({
-            "proof_sketch": json_payload,
-            "instructions": extra_instructions,
-        })
-        print("Running review with", reviewer_name)
-        print(json_payload)
+        """Invoke a SketchRefereeAgent with shared proof sketch context."""
+        print(f"Running review with {reviewer_name}")
+
         prediction = agent(
+            proof_sketch_dict=proof_sketch_dict,
             reviewer=reviewer_name,
-            timestamp=timestamp,
-            overallAssessment=payload,
-            logicalFlowValidation=payload,
-            dependencyValidation=payload,
-            technicalDeepDiveValidation=payload,
-            completenessAndCorrectness=payload,
+            extra_instructions=extra_instructions,
         )
+
         review = prediction.review
         return review.model_dump() if hasattr(review, "model_dump") else review
 
@@ -305,15 +480,13 @@ class SketchValidator(dspy.Module):
         gemini_review = self._run_review(
             self.review_agent_gemini,
             reviewer_name="Gemini 2.5 Flash",
-            timestamp=validation_timestamp,
-            proof_sketch_json=proof_sketch_json,
+            proof_sketch_dict=proof_sketch,
             extra_instructions=reviewer_context,
         )
         codex_review = self._run_review(
             self.review_agent_codex,
             reviewer_name="GPT-5 Codex",
-            timestamp=validation_timestamp,
-            proof_sketch_json=proof_sketch_json,
+            proof_sketch_dict=proof_sketch,
             extra_instructions=reviewer_context,
         )
 
@@ -356,5 +529,212 @@ class SketchValidator(dspy.Module):
             reviews=json.dumps([gemini_review, codex_review]),
             synthesisAndActionPlan=synthesis.model_dump_json(),
         ).report
+        scores = self.build_scores(gemini_review, codex_review, report)
+        return dspy.Prediction(
+            report=report, scores=scores, review_1=gemini_review, review_2=codex_review
+        )
 
-        return dspy.Prediction(report=report)
+    def build_scores(
+        self, gemini_review: dict, codex_review: dict, report: SketchValidationReport
+    ) -> Scores:
+        """Extract numerical scores from reviews and report for scoring purposes.
+
+        Args:
+            gemini_review: Dictionary from Gemini's SketchValidationReview
+            codex_review: Dictionary from Codex's SketchValidationReview
+            report: Complete validation report with synthesis
+
+        Returns:
+            Scores object with all extracted metrics
+        """
+        # === EXTRACT GEMINI SCORES ===
+        gemini_overall = gemini_review.get("overallAssessment", {})
+        gemini_completeness = gemini_review.get("completenessAndCorrectness", {})
+        gemini_logical = gemini_review.get("logicalFlowValidation", {})
+        gemini_dependency = gemini_review.get("dependencyValidation", {})
+        gemini_technical = gemini_review.get("technicalDeepDiveValidation", {})
+
+        # Overall assessment
+        gemini_overall_score = gemini_overall.get("score", 0)
+        gemini_overall_confidence = gemini_overall.get("confidence", 0)
+        gemini_overall_confidence_score = gemini_overall.get("confidenceScore", 0)
+
+        # Completeness
+        gemini_completeness_score = gemini_completeness.get("score", 0)
+        gemini_completeness_confidence = gemini_completeness.get("confidence", 0)
+        gemini_covers_all_claims = gemini_completeness.get("coversAllClaims", False)
+        gemini_error_count = len(gemini_completeness.get("identifiedErrors", []))
+
+        # Logical flow
+        gemini_logical_flow_score = gemini_logical.get("score", 0)
+        gemini_logical_flow_confidence = gemini_logical.get("confidence", 0)
+        gemini_logical_flow_sound = gemini_logical.get("isSound", False)
+        gemini_logical_gap_count = len(gemini_logical.get("identifiedGaps", []))
+
+        # Dependency (scores may be missing due to model inconsistency)
+        gemini_dependency_score = gemini_dependency.get("score")
+        gemini_dependency_confidence = gemini_dependency.get("confidence")
+        gemini_dependency_issue_count = len(gemini_dependency.get("issues", []))
+
+        # Technical deep dive (scores may be missing)
+        gemini_technical_dive_score = gemini_technical.get("score")
+        gemini_technical_dive_confidence = gemini_technical.get("confidence")
+        gemini_technical_critique_count = len(gemini_technical.get("critiques", []))
+
+        # === EXTRACT CODEX SCORES ===
+        codex_overall = codex_review.get("overallAssessment", {})
+        codex_completeness = codex_review.get("completenessAndCorrectness", {})
+        codex_logical = codex_review.get("logicalFlowValidation", {})
+        codex_dependency = codex_review.get("dependencyValidation", {})
+        codex_technical = codex_review.get("technicalDeepDiveValidation", {})
+
+        codex_overall_score = codex_overall.get("score", 0)
+        codex_overall_confidence = codex_overall.get("confidence", 0)
+        codex_overall_confidence_score = codex_overall.get("confidenceScore", 0)
+
+        codex_completeness_score = codex_completeness.get("score", 0)
+        codex_completeness_confidence = codex_completeness.get("confidence", 0)
+        codex_covers_all_claims = codex_completeness.get("coversAllClaims", False)
+        codex_error_count = len(codex_completeness.get("identifiedErrors", []))
+
+        codex_logical_flow_score = codex_logical.get("score", 0)
+        codex_logical_flow_confidence = codex_logical.get("confidence", 0)
+        codex_logical_flow_sound = codex_logical.get("isSound", False)
+        codex_logical_gap_count = len(codex_logical.get("identifiedGaps", []))
+
+        codex_dependency_score = codex_dependency.get("score")
+        codex_dependency_confidence = codex_dependency.get("confidence")
+        codex_dependency_issue_count = len(codex_dependency.get("issues", []))
+
+        codex_technical_dive_score = codex_technical.get("score")
+        codex_technical_dive_confidence = codex_technical.get("confidence")
+        codex_technical_critique_count = len(codex_technical.get("critiques", []))
+
+        # === COMPUTE AGGREGATES ===
+        average_overall_score = (gemini_overall_score + codex_overall_score) / 2.0
+        average_overall_confidence = (gemini_overall_confidence + codex_overall_confidence) / 2.0
+        average_completeness_score = (gemini_completeness_score + codex_completeness_score) / 2.0
+        average_logical_flow_score = (gemini_logical_flow_score + codex_logical_flow_score) / 2.0
+
+        total_error_count = gemini_error_count + codex_error_count
+        total_logical_gap_count = gemini_logical_gap_count + codex_logical_gap_count
+        total_dependency_issue_count = gemini_dependency_issue_count + codex_dependency_issue_count
+        total_technical_critique_count = (
+            gemini_technical_critique_count + codex_technical_critique_count
+        )
+
+        both_reviewers_sound = gemini_logical_flow_sound and codex_logical_flow_sound
+        both_reviewers_cover_claims = gemini_covers_all_claims and codex_covers_all_claims
+
+        overall_score_variance = (gemini_overall_score - codex_overall_score) ** 2
+        completeness_score_variance = (gemini_completeness_score - codex_completeness_score) ** 2
+        logical_flow_score_variance = (gemini_logical_flow_score - codex_logical_flow_score) ** 2
+
+        # === SYNTHESIS METRICS ===
+        final_decision_map = {
+            "Approved for Expansion": 4,
+            "Requires Minor Revisions": 3,
+            "Requires Major Revisions": 2,
+            "Rejected - New Strategy Needed": 1,
+        }
+        final_decision_numeric = final_decision_map.get(
+            report.synthesisAndActionPlan.finalDecision, 0
+        )
+
+        action_items = report.synthesisAndActionPlan.actionableItems
+        action_item_count = len(action_items)
+        critical_action_count = sum(1 for item in action_items if item.priority == "Critical")
+        high_action_count = sum(1 for item in action_items if item.priority == "High")
+        medium_action_count = sum(1 for item in action_items if item.priority == "Medium")
+        low_action_count = sum(1 for item in action_items if item.priority == "Low")
+
+        consensus = report.synthesisAndActionPlan.consensusAnalysis
+        points_of_agreement_count = len(consensus.pointsOfAgreement)
+        points_of_disagreement_count = len(consensus.pointsOfDisagreement)
+
+        # === DERIVED METRICS ===
+        # Quality index: weighted average of scores by confidence
+        total_confidence = gemini_overall_confidence + codex_overall_confidence
+        if total_confidence > 0:
+            overall_quality_index = (
+                gemini_overall_score * gemini_overall_confidence
+                + codex_overall_score * codex_overall_confidence
+            ) / total_confidence
+        else:
+            overall_quality_index = average_overall_score
+
+        # Risk score: combines issue counts and variance (higher = more risky)
+        risk_score = (
+            total_error_count * 2.0  # Errors weighted heavily
+            + total_logical_gap_count * 1.5  # Gaps weighted moderately
+            + total_dependency_issue_count * 1.0
+            + overall_score_variance * 0.5  # Disagreement between reviewers
+            + completeness_score_variance * 0.5
+            + logical_flow_score_variance * 0.5
+            + critical_action_count * 3.0  # Critical actions weighted heavily
+        )
+
+        return Scores(
+            # Gemini scores
+            gemini_overall_score=gemini_overall_score,
+            gemini_overall_confidence=gemini_overall_confidence,
+            gemini_overall_confidence_score=gemini_overall_confidence_score,
+            gemini_completeness_score=gemini_completeness_score,
+            gemini_completeness_confidence=gemini_completeness_confidence,
+            gemini_covers_all_claims=gemini_covers_all_claims,
+            gemini_error_count=gemini_error_count,
+            gemini_logical_flow_score=gemini_logical_flow_score,
+            gemini_logical_flow_confidence=gemini_logical_flow_confidence,
+            gemini_logical_flow_sound=gemini_logical_flow_sound,
+            gemini_logical_gap_count=gemini_logical_gap_count,
+            gemini_dependency_score=gemini_dependency_score,
+            gemini_dependency_confidence=gemini_dependency_confidence,
+            gemini_dependency_issue_count=gemini_dependency_issue_count,
+            gemini_technical_dive_score=gemini_technical_dive_score,
+            gemini_technical_dive_confidence=gemini_technical_dive_confidence,
+            gemini_technical_critique_count=gemini_technical_critique_count,
+            # Codex scores
+            codex_overall_score=codex_overall_score,
+            codex_overall_confidence=codex_overall_confidence,
+            codex_overall_confidence_score=codex_overall_confidence_score,
+            codex_completeness_score=codex_completeness_score,
+            codex_completeness_confidence=codex_completeness_confidence,
+            codex_covers_all_claims=codex_covers_all_claims,
+            codex_error_count=codex_error_count,
+            codex_logical_flow_score=codex_logical_flow_score,
+            codex_logical_flow_confidence=codex_logical_flow_confidence,
+            codex_logical_flow_sound=codex_logical_flow_sound,
+            codex_logical_gap_count=codex_logical_gap_count,
+            codex_dependency_score=codex_dependency_score,
+            codex_dependency_confidence=codex_dependency_confidence,
+            codex_dependency_issue_count=codex_dependency_issue_count,
+            codex_technical_dive_score=codex_technical_dive_score,
+            codex_technical_dive_confidence=codex_technical_dive_confidence,
+            codex_technical_critique_count=codex_technical_critique_count,
+            # Aggregates
+            average_overall_score=average_overall_score,
+            average_overall_confidence=average_overall_confidence,
+            average_completeness_score=average_completeness_score,
+            average_logical_flow_score=average_logical_flow_score,
+            total_error_count=total_error_count,
+            total_logical_gap_count=total_logical_gap_count,
+            total_dependency_issue_count=total_dependency_issue_count,
+            total_technical_critique_count=total_technical_critique_count,
+            both_reviewers_sound=both_reviewers_sound,
+            both_reviewers_cover_claims=both_reviewers_cover_claims,
+            overall_score_variance=overall_score_variance,
+            completeness_score_variance=completeness_score_variance,
+            logical_flow_score_variance=logical_flow_score_variance,
+            # Synthesis metrics
+            final_decision_numeric=final_decision_numeric,
+            action_item_count=action_item_count,
+            critical_action_count=critical_action_count,
+            high_action_count=high_action_count,
+            medium_action_count=medium_action_count,
+            low_action_count=low_action_count,
+            points_of_agreement_count=points_of_agreement_count,
+            points_of_disagreement_count=points_of_disagreement_count,
+            # Derived metrics
+            overall_quality_index=overall_quality_index,
+            risk_score=risk_score,
+        )

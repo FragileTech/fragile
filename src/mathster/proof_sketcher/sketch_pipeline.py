@@ -9,9 +9,11 @@ from uuid import uuid4
 
 import dspy
 
+from mathster.proof_sketcher.sketch_referee_analysis import SketchValidationReview
 from mathster.proof_sketcher.sketch_validator import (
     SketchValidationReport,
     SketchValidator,
+    Scores,
 )
 from mathster.proof_sketcher.sketcher import (
     ProofSketch,
@@ -34,6 +36,11 @@ class ProofSketchWorkflowResult:
 
     sketch: ProofSketch
     validation_report: SketchValidationReport
+    scores: Scores
+    sketch_1: ProofSketch
+    sketch_2: ProofSketch
+    review_1: SketchValidationReview
+    review_2: SketchValidationReview
 
 
 class ProofSketcherAgent(dspy.Module):
@@ -109,10 +116,14 @@ class ProofSketcherAgent(dspy.Module):
         validation_report = validation_prediction.report
 
         return dspy.Prediction(
-            sketch=proof_sketch,
-            validation_report=validation_report,
+
             result=ProofSketchWorkflowResult(
                 sketch=proof_sketch,
                 validation_report=validation_report,
+                scores=validation_prediction.scores,
+                sketch_1=validation_prediction.sketch_1,
+                sketch_2=validation_prediction.sketch_2,
+                review_1=validation_prediction.review_1,
+                review_2=validation_prediction.review_2,
             ),
         )
