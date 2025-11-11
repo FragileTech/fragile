@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import json
+import logging
+import time
 from typing import Callable, Literal
 
 import dspy
@@ -15,6 +17,9 @@ from mathster.proof_sketcher.sketch_strategist import (
     SketchStrategist,
     SketchStrategy,
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 __all__ = [
@@ -849,17 +854,30 @@ class ProofSketchAgent(dspy.Module):
         framework_context: str = "",
         operator_notes: str = "",
     ) -> dspy.Prediction:
+        logger.info(
+            "ProofSketchAgent starting for %s (type=%s, label=%s)",
+            title_hint,
+            theorem_type,
+            theorem_label,
+        )
+        overall_start = time.perf_counter()
+
         framework_context = framework_context or ""
         operator_notes = operator_notes or ""
 
         # 1. Statement
+        logger.debug("Generating proof statement (formal + informal)")
+        start = time.perf_counter()
         statement = self.statement_agent(
             theorem_label=theorem_label,
             theorem_statement=theorem_statement,
             context_notes=framework_context,
         ).statement
+        logger.debug("Statement generated in %.2fs", time.perf_counter() - start)
 
         # 2. Generate two strategies via SketchStrategist with different guidance
+        logger.debug("Generating dual proof strategies (classical + Fragile Gas)")
+        start = time.perf_counter()
         primary_notes = (
             operator_notes + "Focus on classical techniques and well-established methods."
         ).strip()
@@ -867,21 +885,32 @@ class ProofSketchAgent(dspy.Module):
             operator_notes + "Focus on leveraging as much as possible the Fragile Gas Theory."
         ).strip()
         with dspy.context(lm=self.strategist_1):
-            primary_strategy = self.sketch_strategist_primary(
+            primary_strategy = self.sketch_strategist(
                 theorem_label=theorem_label,
                 theorem_statement=theorem_statement,
                 framework_context=framework_context,
                 operator_notes=primary_notes,
             ).strategy
         with dspy.context(lm=self.strategist_2):
-            secondary_strategy = self.sketch_strategist_secondary(
+            secondary_strategy = self.sketch_strategist(
                 theorem_label=theorem_label,
                 theorem_statement=theorem_statement,
                 framework_context=framework_context,
                 operator_notes=secondary_notes,
             ).strategy
+        logger.debug(
+            "Dual strategies generated in %.2fs | Primary: %s (conf=%s) | Secondary: %s (conf=%s)",
+            time.perf_counter() - start,
+            primary_strategy.method,
+            primary_strategy.confidenceScore,
+            secondary_strategy.method,
+            secondary_strategy.confidenceScore,
+        )
+
+        # 3. Strategy synthesis
+        logger.debug("Synthesizing strategy comparison and selection")
+        start = time.perf_counter()
         with dspy.context(lm=self.stronger_model):
-            # 3. Strategy synthesis
             strategy_synthesis = self.strategy_synthesizer(
                 theorem_label=theorem_label,
                 theorem_statement=theorem_statement,
@@ -889,10 +918,17 @@ class ProofSketchAgent(dspy.Module):
                 secondary_strategy=secondary_strategy,
                 evaluation_notes=operator_notes,
             ).strategySynthesis
+        logger.debug(
+            "Strategy synthesis completed in %.2fs | Selected: %s",
+            time.perf_counter() - start,
+            strategy_synthesis.recommendedApproach.chosenMethod,
+        )
 
         strategy_context_text = _strategy_context(strategy_synthesis)
 
         # 4. Dependencies
+        logger.debug("Generating dependency ledger via ReAct agent")
+        start = time.perf_counter()
         combined_notes = "\n\n".join([
             theorem_statement,
             _describe_strategy(primary_strategy),
@@ -906,16 +942,34 @@ class ProofSketchAgent(dspy.Module):
             strategy_synthesis=strategy_synthesis,
             sketch_notes=combined_notes,
         ).dependency_ledger
+        verified_count = len(dependency_ledger.verifiedDependencies)
+        missing_count = 0
+        if dependency_ledger.missingOrUncertainDependencies:
+            missing_count = len(dependency_ledger.missingOrUncertainDependencies.lemmasToProve)
+        logger.debug(
+            "Dependency ledger completed in %.2fs | Verified: %d | Missing lemmas: %d",
+            time.perf_counter() - start,
+            verified_count,
+            missing_count,
+        )
 
+        # 5. Detailed proof
+        logger.debug("Generating detailed proof steps and outline")
+        start = time.perf_counter()
         dependency_notes = json.dumps(dependency_ledger.model_dump(), indent=2)
         with dspy.context(lm=self.stronger_model):
-            # 5. Detailed proof
             _select_recommended_option(strategy_synthesis)
             detailed_proof = self.detailed_proof_agent(
                 theorem_statement=theorem_statement,
                 strategy_summary=strategy_context_text,
                 dependency_notes=dependency_notes,
             ).detailedProof
+        logger.debug(
+            "Detailed proof completed in %.2fs | Steps: %d | Outline items: %d",
+            time.perf_counter() - start,
+            len(detailed_proof.steps),
+            len(detailed_proof.topLevelOutline),
+        )
 
         proof_text = "\n\n".join([
             statement.formal,
@@ -924,20 +978,46 @@ class ProofSketchAgent(dspy.Module):
             detailed_proof.overview,
             "\n".join(step.action for step in detailed_proof.steps),
         ])
+
+        # 6. Technical deep dives
+        logger.debug("Extracting technical deep dives and challenges")
+        start = time.perf_counter()
         with dspy.context(lm=self.stronger_model):
-            # 6. Technical deep dives
             technical_deep_dives = self.deep_dive_agent(
                 proof_sketch_text=proof_text,
                 focus_areas="Extract hardest steps, dependencies, and regularity issues.",
             ).deep_dives
+        logger.debug(
+            "Technical deep dives completed in %.2fs | Challenges: %d",
+            time.perf_counter() - start,
+            len(technical_deep_dives),
+        )
 
-            # 7. Validation checklist
+        # 7. Validation checklist
+        logger.debug("Running validation checklist self-audit")
+        start = time.perf_counter()
+        with dspy.context(lm=self.stronger_model):
             validation_checklist = self.validation_agent(
                 proof_sketch_text=proof_text,
                 self_review_notes=operator_notes,
             ).checklist
+        passed = sum([
+            validation_checklist.logicalCompleteness,
+            validation_checklist.hypothesisUsage,
+            validation_checklist.conclusionDerivation,
+            validation_checklist.frameworkConsistency,
+            validation_checklist.noCircularReasoning,
+        ])
+        logger.debug(
+            "Validation checklist completed in %.2fs | Passed: %d/5 core checks",
+            time.perf_counter() - start,
+            passed,
+        )
+
+        # 8. Alternate approaches (based on non-selected strategy)
+        logger.debug("Documenting alternative proof approaches")
+        start = time.perf_counter()
         with dspy.context(lm=self.model):
-            # 8. Alternate approaches (based on non-selected strategy)
             selected_method = strategy_synthesis.recommendedApproach.chosenMethod.strip()
             other_strategy = (
                 secondary_strategy
@@ -949,22 +1029,52 @@ class ProofSketchAgent(dspy.Module):
                 theorem_statement=theorem_statement,
                 rejected_ideas=rejected_ideas,
             ).alternatives
+        logger.debug(
+            "Alternative approaches completed in %.2fs | Alternatives: %d",
+            time.perf_counter() - start,
+            len(alternative_approaches),
+        )
 
-            # 9. Future work from dependency gaps
+        # 9. Future work from dependency gaps
+        logger.debug("Generating future work from dependency gaps")
+        start = time.perf_counter()
+        with dspy.context(lm=self.model):
             missing_text = _format_missing_dependencies_text(dependency_ledger)
             future_work = self.future_work_agent(open_questions=missing_text).futureWork
+        logger.debug("Future work completed in %.2fs", time.perf_counter() - start)
 
-            # 10. Expansion roadmap
+        # 10. Expansion roadmap
+        logger.debug("Creating expansion roadmap for full proof development")
+        start = time.perf_counter()
+        with dspy.context(lm=self.model):
             roadmap_notes = _roadmap_notes_from_future_work(future_work)
             expansion_roadmap = self.roadmap_agent(
                 workstream_notes=roadmap_notes,
                 constraints=operator_notes,
             ).roadmap
+        logger.debug(
+            "Expansion roadmap completed in %.2fs | Phases: %d",
+            time.perf_counter() - start,
+            len(expansion_roadmap.phases),
+        )
 
         # 11. Cross references
+        logger.debug("Extracting cross-references to framework artifacts")
+        start = time.perf_counter()
         cross_references = self.cross_refs_agent(proof_sketch_text=proof_text).crossReferences
+        total_refs = (
+            len(cross_references.theoremsUsed)
+            + len(cross_references.definitionsUsed)
+            + len(cross_references.axiomsUsed)
+        )
+        logger.debug(
+            "Cross references completed in %.2fs | Total references: %d",
+            time.perf_counter() - start,
+            total_refs,
+        )
 
         # Assemble final ProofSketch
+        logger.debug("Assembling final proof sketch")
         proof_sketch = ProofSketch(
             title=title_hint,
             label=theorem_label,
@@ -986,6 +1096,16 @@ class ProofSketchAgent(dspy.Module):
                 "Strategies generated via dual SketchStrategist passes (Claude + GPT) "
                 f"with operator guidance: {operator_notes or 'n/a'}"
             ),
+        )
+
+        overall_elapsed = time.perf_counter() - overall_start
+        logger.info(
+            "ProofSketchAgent completed in %.2fs | Label: %s | Status: %s | Steps: %d | Deep dives: %d",
+            overall_elapsed,
+            theorem_label,
+            proof_status,
+            len(detailed_proof.steps),
+            len(technical_deep_dives),
         )
 
         return dspy.Prediction(
@@ -1358,8 +1478,14 @@ class DependencyLedgerAgent(dspy.Module):
             theorem_label: str, theorem_statement: str, strategy_synthesis_json: str
         ) -> str:
             """Plan numbered steps to audit dependencies before extraction."""
-            print("running plan_dependencies_tool")
-            return self._plan_impl(theorem_label, theorem_statement, strategy_synthesis_json)
+            logger.debug("ReAct tool: plan_dependencies_tool invoked for %s", theorem_label)
+            start = time.perf_counter()
+            result = self._plan_impl(theorem_label, theorem_statement, strategy_synthesis_json)
+            logger.debug(
+                "ReAct tool: plan_dependencies_tool completed in %.2fs",
+                time.perf_counter() - start,
+            )
+            return result
 
         def gather_verified_dependencies_tool(
             theorem_label: str,
@@ -1369,10 +1495,18 @@ class DependencyLedgerAgent(dspy.Module):
             sketch_notes: str,
         ) -> str:
             """Ask Claude to list VERIFIED framework dependencies cited by the plan."""
-            print("running gather_verified_dependencies_tool")
-            return self._verified_impl(
+            logger.debug(
+                "ReAct tool: gather_verified_dependencies_tool invoked for %s", theorem_label
+            )
+            start = time.perf_counter()
+            result = self._verified_impl(
                 theorem_label, theorem_statement, strategy_synthesis_json, plan_text, sketch_notes
             )
+            logger.debug(
+                "ReAct tool: gather_verified_dependencies_tool completed in %.2fs",
+                time.perf_counter() - start,
+            )
+            return result
 
         def identify_missing_dependencies_tool(
             theorem_label: str,
@@ -1382,15 +1516,28 @@ class DependencyLedgerAgent(dspy.Module):
             sketch_notes: str,
         ) -> str:
             """Ask Claude to enumerate lemmas-to-prove and uncertain assumptions still needed."""
-            print("running identify_missing_dependencies_tool")
-            return self._missing_impl(
+            logger.debug(
+                "ReAct tool: identify_missing_dependencies_tool invoked for %s", theorem_label
+            )
+            start = time.perf_counter()
+            result = self._missing_impl(
                 theorem_label, theorem_statement, strategy_synthesis_json, plan_text, sketch_notes
             )
+            logger.debug(
+                "ReAct tool: identify_missing_dependencies_tool completed in %.2fs",
+                time.perf_counter() - start,
+            )
+            return result
 
         def lookup_label_tool(label: str) -> str:
             """Fetch existing registry data for a framework label (definition, theorem, etc.)."""
-            print("running lookup_label_tool")
-            return get_label_data(label)
+            logger.debug("ReAct tool: lookup_label_tool invoked for label=%s", label)
+            start = time.perf_counter()
+            result = get_label_data(label)
+            logger.debug(
+                "ReAct tool: lookup_label_tool completed in %.2fs", time.perf_counter() - start
+            )
+            return result
 
         instructions = f"""
 You are constructing the DependencyLedger AFTER the strategy has been selected but BEFORE full proof expansion.

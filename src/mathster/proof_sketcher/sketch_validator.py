@@ -4,9 +4,14 @@
 from __future__ import annotations
 
 import json
+import logging
+import time
 from typing import Literal
 
 import dspy
+
+
+logger = logging.getLogger(__name__)
 from pydantic import BaseModel, Field
 
 from mathster.proof_sketcher.sketch_referee_analysis import SketchRefereeAgent
@@ -446,13 +451,17 @@ class SketchValidator(dspy.Module):
         extra_instructions: str,
     ) -> dict:
         """Invoke a SketchRefereeAgent with shared proof sketch context."""
-        print(f"Running review with {reviewer_name}")
+        logger.info("Running review with %s", reviewer_name)
+        start_time = time.perf_counter()
 
         prediction = agent(
             proof_sketch_dict=proof_sketch_dict,
             reviewer=reviewer_name,
             extra_instructions=extra_instructions,
         )
+
+        elapsed = time.perf_counter() - start_time
+        logger.info("Review with %s completed in %.2fs", reviewer_name, elapsed)
 
         review = prediction.review
         return review.model_dump() if hasattr(review, "model_dump") else review
@@ -467,9 +476,17 @@ class SketchValidator(dspy.Module):
         final_decision_context: str = "",
         confidence_context: str = "",
     ) -> dspy.Prediction:
+        logger.info(
+            "Starting validation cycle for sketch %s (cycle_id=%s)",
+            sketch_label,
+            validation_cycle_id,
+        )
+        overall_start = time.perf_counter()
+
         reviewer_context = (
             reviewer_context or "Perform a thorough dual-review of the provided proof sketch."
         )
+        logger.debug("Generating report metadata")
         metadata = self.metadata_generator(
             sketch_label=sketch_label,
             cycle_uuid=validation_cycle_id,
@@ -490,17 +507,23 @@ class SketchValidator(dspy.Module):
             extra_instructions=reviewer_context,
         )
 
+        logger.debug("Analyzing consensus between reviewers")
+        consensus_start = time.perf_counter()
         consensus = self.consensus_generator(
             reviewer_notes=reviewer_context,
             gemini_review=json.dumps(gemini_review),
             codex_review=json.dumps(codex_review),
         ).consensusAnalysis
+        logger.debug(
+            "Consensus analysis completed in %.2fs", time.perf_counter() - consensus_start
+        )
 
         consolidated_feedback = (
             consensus.summaryOfFindings
             + "\nPoints of agreement:\n"
             + "\n".join(f"- {p}" for p in consensus.pointsOfAgreement)
         )
+        logger.debug("Generating action items")
         action_items_prediction = self.action_items_generator(
             consolidated_feedback=consolidated_feedback,
             references_json=json.dumps({
@@ -516,6 +539,7 @@ class SketchValidator(dspy.Module):
         final_decision_context = final_decision_context or consensus.summaryOfFindings
         confidence_context = confidence_context or reviewer_context
 
+        logger.debug("Synthesizing final decision and action plan")
         synthesis = self.synthesis_generator(
             consensus_analysis_json=json.dumps(consensus.model_dump()),
             actionable_items_json=json.dumps(action_items_serialized),
@@ -529,7 +553,18 @@ class SketchValidator(dspy.Module):
             reviews=json.dumps([gemini_review, codex_review]),
             synthesisAndActionPlan=synthesis.model_dump_json(),
         ).report
+        logger.debug("Building quantitative scores from reviews")
         scores = self.build_scores(gemini_review, codex_review, report)
+
+        overall_elapsed = time.perf_counter() - overall_start
+        logger.info(
+            "Validation cycle completed in %.2fs | Final decision: %s | Action items: %d | Overall score: %.1f",
+            overall_elapsed,
+            report.synthesisAndActionPlan.finalDecision,
+            len(report.synthesisAndActionPlan.actionableItems),
+            scores.average_overall_score,
+        )
+
         return dspy.Prediction(
             report=report, scores=scores, review_1=gemini_review, review_2=codex_review
         )

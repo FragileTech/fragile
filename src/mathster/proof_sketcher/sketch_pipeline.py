@@ -11,9 +11,9 @@ import dspy
 
 from mathster.proof_sketcher.sketch_referee_analysis import SketchValidationReview
 from mathster.proof_sketcher.sketch_validator import (
+    Scores,
     SketchValidationReport,
     SketchValidator,
-    Scores,
 )
 from mathster.proof_sketcher.sketcher import (
     ProofSketch,
@@ -116,7 +116,6 @@ class ProofSketcherAgent(dspy.Module):
         validation_report = validation_prediction.report
 
         return dspy.Prediction(
-
             result=ProofSketchWorkflowResult(
                 sketch=proof_sketch,
                 validation_report=validation_report,

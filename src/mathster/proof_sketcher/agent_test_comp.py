@@ -1,199 +1,218 @@
 #!/usr/bin/env python3
-"""Example script that demonstrates SketchRefereeAgent usage."""
+"""Example script demonstrating ProofSketchAgent usage."""
 
 from __future__ import annotations
 
+from datetime import datetime
 import json
+import logging
+import sys
 from typing import Any
 
+import flogging
+
 from mathster.parsing.config import configure_dspy
-from mathster.proof_sketcher.sketch_validator import SketchValidator
+from mathster.proof_sketcher.sketcher import ProofSketchAgent
+
+
+# Configure logging BEFORE flogging.setup() to ensure our handler is used
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s | %(levelname)-7s | %(name)s | %(message)s",
+    datefmt="%H:%M:%S",
+    stream=sys.stderr,
+    force=True,  # Force reconfiguration even if handlers exist
+)
+
+# Now setup flogging
+flogging.setup(allow_trailing_dot=True)
+
+# Set proof sketcher modules to DEBUG level
+logging.getLogger("mathster.proof_sketcher.sketcher").setLevel(logging.DEBUG)
+logging.getLogger("mathster.proof_sketcher.sketch_validator").setLevel(logging.DEBUG)
+logging.getLogger("mathster.proof_sketcher.sketch_referee_analysis").setLevel(logging.DEBUG)
 
 
 def run_demo() -> dict[str, Any]:
-    """Instantiate the agent, run a mock review, and return the serialized output."""
+    """Instantiate ProofSketchAgent, generate a proof sketch, and display results."""
 
-    # Create a mock ProofSketch dictionary matching the ProofSketch schema
-    sample_proof_sketch = {
-        "title": "KL Convergence of Euclidean Gas",
-        "label": "thm-euclidean-gas-kl-convergence",
-        "type": "Theorem",
-        "source": "docs/source/1_euclidean_gas/09_kl_convergence.md",
-        "date": "2025-01-15",
-        "status": "Sketch",
-        "statement": {
-            "formal": (
-                "Under the Euclidean Gas axioms and the confining potential assumption, "
-                "the swarm law converges exponentially fast in KL divergence to the unique QSD."
-            ),
-            "informal": "The Euclidean Gas converges to equilibrium exponentially fast.",
-        },
-        "strategySynthesis": {
-            "evaluatedStrategies": [
-                {
-                    "name": "LSI + Grönwall",
-                    "description": "Use log-Sobolev inequality with Grönwall lemma",
-                    "pros": ["Well-established", "Quantitative rates"],
-                    "cons": ["Requires LSI constant"],
-                }
-            ],
-            "chosenStrategy": {
-                "name": "LSI + Grönwall",
-                "rationale": "Standard approach for exponential convergence",
-            },
-        },
-        "dependencies": {
-            "verifiedDependencies": [
-                {"label": "def-kl-divergence", "title": "KL Divergence", "type": "Definition"}
-            ],
-            "missingDependencies": ["LSI constant computation"],
-        },
-        "detailedProof": {
-            "overview": (
-                "We establish exponential KL convergence by first showing tightness "
-                "via the confinement potential, then applying the log-Sobolev inequality "
-                "combined with Grönwall's lemma to obtain exponential decay."
-            ),
-            "topLevelOutline": [
-                "Establish tightness via confinement potential",
-                "Apply log-Sobolev inequality for KL contraction",
-                "Use Grönwall lemma to obtain exponential rate",
-                "Verify uniqueness of QSD",
-            ],
-            "steps": [
-                {
-                    "stepNumber": 1,
-                    "title": "Tightness from Confinement",
-                    "goal": "Show the swarm remains in a compact region",
-                    "action": "Apply confinement potential bounds",
-                    "justification": "Confining potential ensures bounded support",
-                    "expectedResult": "Tightness of the measure sequence",
-                    "dependencies": ["def-confining-potential"],
-                },
-                {
-                    "stepNumber": 2,
-                    "title": "KL Contraction via LSI",
-                    "goal": "Establish KL divergence decay rate",
-                    "action": "Apply Bakry-Émery criterion",
-                    "justification": "Log-Sobolev inequality implies entropy decay",
-                    "expectedResult": "d/dt KL(ρ_t || π) ≤ -λ KL(ρ_t || π)",
-                    "dependencies": ["lem-bakry-emery"],
-                    "potentialIssues": "LSI constant not explicitly computed",
-                },
-                {
-                    "stepNumber": 3,
-                    "title": "Exponential Rate via Grönwall",
-                    "goal": "Convert differential inequality to exponential bound",
-                    "action": "Apply Grönwall lemma to KL differential inequality",
-                    "justification": "Standard ODE comparison argument",
-                    "expectedResult": "KL(ρ_t || π) ≤ e^{-λt} KL(ρ_0 || π)",
-                    "dependencies": ["lem-gronwall"],
-                },
-                {
-                    "stepNumber": 4,
-                    "title": "Uniqueness of QSD",
-                    "goal": "Show π is the unique quasi-stationary distribution",
-                    "action": "Use ergodicity from exponential convergence",
-                    "justification": "Exponential convergence implies unique limit",
-                    "expectedResult": "π is the unique QSD",
-                    "dependencies": ["thm-ergodic-convergence"],
-                },
-            ],
-            "conclusion": "Therefore, the Euclidean Gas converges exponentially in KL divergence. Q.E.D.",
-        },
-        "validationChecklist": {
-            "allClaimsCovered": False,
-            "allDependenciesVerified": False,
-            "logicalFlowSound": True,
-            "technicalGapsIdentified": ["LSI constant not computed"],
-            "readyForExpansion": False,
-        },
-        "technicalDeepDives": [
-            {
-                "challengeTitle": "Log-Sobolev Constant",
-                "difficultyDescription": "Computing the explicit LSI constant is non-trivial",
-                "proposedSolution": "Use Bakry-Émery Γ2 criterion with curvature bounds",
-                "mathematicalDetail": "Need to verify Γ2(V, V) ≥ λ ||∇V||^2 for some λ > 0",
-            }
-        ],
-        "alternativeApproaches": [],
-        "futureWork": None,
-        "expansionRoadmap": None,
-        "crossReferences": None,
-        "specialNotes": "This is a test sketch for validation workflow",
+    # Configure DSPy with a fast model for testing
+    configure_dspy(model="gemini/gemini-2.5-flash-lite-preview-09-2025")
+
+    print("=" * 80)
+    print("Testing ProofSketchAgent")
+    print("=" * 80)
+
+    # Create the agent
+    agent = ProofSketchAgent()
+
+    # Sample theorem data
+    sample_data = {
+        "title_hint": "KL Convergence of Euclidean Gas",
+        "theorem_label": "thm-euclidean-gas-kl-convergence",
+        "theorem_type": "Theorem",
+        "theorem_statement": (
+            "Under the Euclidean Gas axioms with confining potential assumption, "
+            "the swarm law μ_t converges exponentially fast in KL divergence to "
+            "the unique quasi-stationary distribution (QSD) π: "
+            "KL(μ_t || π) ≤ C e^{-λt} KL(μ_0 || π) for constants C, λ > 0."
+        ),
+        "document_source": "docs/source/1_euclidean_gas/09_kl_convergence.md",
+        "creation_date": datetime.now().strftime("%Y-%m-%d"),
+        "proof_status": "Sketch",
+        "framework_context": (
+            "Available results: LSI theory (thm-lsi-target), "
+            "Bakry-Émery criterion (lem-bakry-emery), "
+            "Grönwall's lemma (lem-gronwall), "
+            "confinement potential bounds (ax-confining-potential)."
+        ),
+        "operator_notes": "Prefer LSI-based approach. Focus on explicit constants.",
     }
 
-    from datetime import datetime
-    import uuid
+    print(f"\nGenerating proof sketch for: {sample_data['title_hint']}")
+    print(f"Label: {sample_data['theorem_label']}")
+    print(f"Type: {sample_data['theorem_type']}\n")
 
-    configure_dspy(model="gemini/gemini-2.5-flash-lite-preview-09-2025")
-    print("Testing SketchValidator")
-    validator = SketchValidator()
+    # Run the agent
+    prediction = agent(**sample_data)
 
-    # Generate required metadata
-    validation_cycle_id = str(uuid.uuid4())
-    validation_timestamp = datetime.utcnow().isoformat() + "Z"
-    sketch_label = sample_proof_sketch["label"]
+    # Extract the proof sketch
+    sketch = prediction.sketch
 
-    prediction = validator(
-        proof_sketch=sample_proof_sketch,
-        sketch_label=sketch_label,
-        validation_cycle_id=validation_cycle_id,
-        validation_timestamp=validation_timestamp,
-        reviewer_context="Focus on mathematical rigor and completeness of arguments.",
-        final_decision_context="Assess if the proof sketch is ready for expansion or needs revisions.",
-        confidence_context="Evaluate the overall viability of the proof strategy.",
+    # Display key components
+    print("\n" + "=" * 80)
+    print("PROOF SKETCH GENERATED")
+    print("=" * 80)
+
+    print("\n--- Metadata ---")
+    print(f"Title: {sketch.title}")
+    print(f"Label: {sketch.label}")
+    print(f"Type: {sketch.type}")
+    print(f"Status: {sketch.status}")
+    print(f"Date: {sketch.date}")
+    print(f"Source: {sketch.source}")
+
+    print("\n--- Statement ---")
+    formal_preview = (
+        sketch.statement.formal[:200] + "..."
+        if len(sketch.statement.formal) > 200
+        else sketch.statement.formal
     )
+    print(f"Formal: {formal_preview}")
+    print(f"Informal: {sketch.statement.informal}")
 
-    # Extract the full validation report
-    report = prediction.report
+    print("\n--- Strategy Synthesis ---")
+    print(f"Number of strategies evaluated: {len(sketch.strategySynthesis.strategies)}")
+    print(f"Chosen method: {sketch.strategySynthesis.recommendedApproach.chosenMethod}")
+    rationale_preview = (
+        sketch.strategySynthesis.recommendedApproach.rationale[:150] + "..."
+        if len(sketch.strategySynthesis.recommendedApproach.rationale) > 150
+        else sketch.strategySynthesis.recommendedApproach.rationale
+    )
+    print(f"Rationale: {rationale_preview}")
 
-    print("\n=== Sketch Validation Report ===")
-    print(f"Sketch Label: {report.reportMetadata.sketchLabel}")
-    print(f"Validation Cycle ID: {report.reportMetadata.validationCycleId}")
-    print(f"Timestamp: {report.reportMetadata.validationTimestamp}")
+    print("\n--- Dependencies ---")
+    deps = sketch.dependencies
+    print(f"Verified dependencies: {len(deps.verifiedDependencies)}")
+    if deps.verifiedDependencies:
+        print("  Sample verified:")
+        for dep in deps.verifiedDependencies[:3]:
+            purpose_preview = dep.purpose[:60] + "..." if len(dep.purpose) > 60 else dep.purpose
+            print(f"    - {dep.label} ({dep.type}): {purpose_preview}")
 
-    print("\n--- Synthesis and Action Plan ---")
-    synthesis = report.synthesisAndActionPlan
-    print(f"Final Decision: {synthesis.finalDecision}")
-    print(f"\nConfidence Statement:\n{synthesis.confidenceStatement}")
+    if deps.missingOrUncertainDependencies:
+        missing = deps.missingOrUncertainDependencies
+        print(f"Lemmas to prove: {len(missing.lemmasToProve)}")
+        print(f"Uncertain assumptions: {len(missing.uncertainAssumptions)}")
 
-    print("\n--- Consensus Analysis ---")
-    consensus = synthesis.consensusAnalysis
-    print(f"Summary: {consensus.summaryOfFindings}")
-    print(f"\nPoints of Agreement ({len(consensus.pointsOfAgreement)}):")
-    for point in consensus.pointsOfAgreement:
-        print(f"  - {point}")
-    print(f"\nPoints of Disagreement ({len(consensus.pointsOfDisagreement)}):")
-    for disagreement in consensus.pointsOfDisagreement:
-        print(f"  Topic: {disagreement.topic}")
-        print(f"    Gemini: {disagreement.geminiView}")
-        print(f"    Codex: {disagreement.codexView}")
-        print(f"    Resolution: {disagreement.resolution}")
+    print("\n--- Detailed Proof ---")
+    proof = sketch.detailedProof
+    overview_preview = (
+        proof.overview[:150] + "..." if len(proof.overview) > 150 else proof.overview
+    )
+    print(f"Overview: {overview_preview}")
+    print(f"Top-level outline ({len(proof.topLevelOutline)} items):")
+    for i, item in enumerate(proof.topLevelOutline, 1):
+        print(f"  {i}. {item}")
+    print(f"Detailed steps: {len(proof.steps)}")
+    conclusion_preview = (
+        proof.conclusion[:100] + "..." if len(proof.conclusion) > 100 else proof.conclusion
+    )
+    print(f"Conclusion: {conclusion_preview}")
 
-    print(f"\n--- Actionable Items ({len(synthesis.actionableItems)}) ---")
-    for item in synthesis.actionableItems:
-        print(f"  [{item.priority}] {item.itemId}: {item.description}")
-        if item.references:
-            print(f"    References: {', '.join(item.references)}")
+    print("\n--- Technical Deep Dives ---")
+    print(f"Number of challenges identified: {len(sketch.technicalDeepDives)}")
+    for i, dive in enumerate(sketch.technicalDeepDives, 1):
+        print(f"\n  Challenge {i}: {dive.challengeTitle}")
+        diff_preview = (
+            dive.difficultyDescription[:80] + "..."
+            if len(dive.difficultyDescription) > 80
+            else dive.difficultyDescription
+        )
+        sol_preview = (
+            dive.proposedSolution[:80] + "..."
+            if len(dive.proposedSolution) > 80
+            else dive.proposedSolution
+        )
+        print(f"    Difficulty: {diff_preview}")
+        print(f"    Solution: {sol_preview}")
 
-    print("\n--- Individual Reviews ---")
-    print(f"Number of reviews: {len(report.reviews)}")
-    for i, review in enumerate(report.reviews, 1):
-        print(f"\nReview {i}:")
-        print(f"  Reviewer: {review.get('reviewer', 'Unknown')}")
-        if "overallAssessment" in review:
-            print(f"  Overall Score: {review['overallAssessment'].get('score', 'N/A')}")
-            print(f"  Recommendation: {review['overallAssessment'].get('recommendation', 'N/A')}")
+    print("\n--- Validation Checklist ---")
+    checklist = sketch.validationChecklist
+    print(f"  Logical Completeness: {checklist.logicalCompleteness}")
+    print(f"  Hypothesis Usage: {checklist.hypothesisUsage}")
+    print(f"  Conclusion Derivation: {checklist.conclusionDerivation}")
+    print(f"  Framework Consistency: {checklist.frameworkConsistency}")
+    print(f"  No Circular Reasoning: {checklist.noCircularReasoning}")
 
-    print("\n--- Full Report JSON ---")
-    print(json.dumps(report.model_dump(), indent=2))
-    print("REviews")
-    print(json.dumps(prediction.review_1, indent=2))
-    print("\n--- Validation Scores ---")
-    print(json.dumps(prediction.scores.model_dump(), indent=2))
+    print("\n--- Alternative Approaches ---")
+    print(f"Number documented: {len(sketch.alternativeApproaches)}")
 
-    return report.model_dump()
+    if sketch.futureWork:
+        print("\n--- Future Work ---")
+        fw = sketch.futureWork
+        print(f"  Remaining gaps: {len(fw.remainingGaps)}")
+        print(f"  Conjectures: {len(fw.conjectures)}")
+        print(f"  Extensions: {len(fw.extensions)}")
+
+    if sketch.expansionRoadmap:
+        print("\n--- Expansion Roadmap ---")
+        roadmap = sketch.expansionRoadmap
+        print(f"  Total phases: {len(roadmap.phases)}")
+        print(f"  Estimated time: {roadmap.totalEstimatedTime}")
+
+    print("\n--- Special Notes ---")
+    if sketch.specialNotes:
+        print(f"{sketch.specialNotes}")
+    else:
+        print("None")
+
+    # Display the two strategies that were generated
+    print("\n" + "=" * 80)
+    print("DUAL STRATEGY COMPARISON")
+    print("=" * 80)
+
+    print("\n--- Strategy 1 (Primary) ---")
+    s1 = prediction.strategy_1
+    print(f"Strategist: {s1.strategist}")
+    print(f"Method: {s1.method}")
+    print(f"Confidence: {s1.confidenceScore}")
+    print(f"Key steps: {len(s1.keySteps)}")
+
+    print("\n--- Strategy 2 (Secondary) ---")
+    s2 = prediction.strategy_2
+    print(f"Strategist: {s2.strategist}")
+    print(f"Method: {s2.method}")
+    print(f"Confidence: {s2.confidenceScore}")
+    print(f"Key steps: {len(s2.keySteps)}")
+
+    # Optionally dump full JSON
+    print("\n" + "=" * 80)
+    print("FULL PROOF SKETCH (JSON)")
+    print("=" * 80)
+    print(json.dumps(sketch.model_dump(), indent=2))
+
+    return sketch.model_dump()
 
 
 if __name__ == "__main__":

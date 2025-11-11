@@ -4,9 +4,14 @@
 from __future__ import annotations
 
 import json
+import logging
+import time
 from typing import Any, Literal
 
 import dspy
+
+
+logger = logging.getLogger(__name__)
 from pydantic import BaseModel, Field
 
 
@@ -456,6 +461,9 @@ class SketchRefereeAgent(dspy.Module):
         """
         import datetime
 
+        logger.info("SketchRefereeAgent starting review for reviewer=%s", reviewer)
+        overall_start = time.perf_counter()
+
         # Extract fields from proof_sketch_dict
         theorem_statement = proof_sketch_dict.get("statement", {}).get("formal", "")
 
@@ -492,34 +500,68 @@ class SketchRefereeAgent(dspy.Module):
             reasoning_notes = f"Proof overview: {overview}" if overview else None
 
         # 1. Completeness and Correctness Review
+        logger.debug("Running completeness & correctness review")
+        start = time.perf_counter()
         completeness_result = self.completeness_agent(
             theorem_statement=theorem_statement,
             proof_sketch_text=proof_sketch_text,
         )
         completeness_review = completeness_result.completenessAndCorrectness
+        logger.debug(
+            "Completeness review completed in %.2fs | Score: %d/5 | Errors: %d",
+            time.perf_counter() - start,
+            completeness_review.score,
+            len(completeness_review.identifiedErrors),
+        )
 
         # 2. Logical Flow Validation
+        logger.debug("Running logical flow validation")
+        start = time.perf_counter()
         logical_flow_result = self.logical_flow_agent(
             proof_outline=proof_outline,
             reasoning_notes=reasoning_notes,
         )
         logical_flow_review = logical_flow_result.logicalFlowValidation
+        logger.debug(
+            "Logical flow review completed in %.2fs | Score: %d/5 | Sound: %s | Gaps: %d",
+            time.perf_counter() - start,
+            logical_flow_review.score,
+            logical_flow_review.isSound,
+            len(logical_flow_review.identifiedGaps),
+        )
 
         # 3. Dependency Validation
+        logger.debug("Running dependency validation")
+        start = time.perf_counter()
         dependency_result = self.dependency_agent(
             dependency_ledger_json=dependency_ledger_json,
             sketch_references=sketch_references,
         )
         dependency_review = dependency_result.dependencyValidation
+        logger.debug(
+            "Dependency review completed in %.2fs | Status: %s | Issues: %d",
+            time.perf_counter() - start,
+            dependency_review.status,
+            len(dependency_review.issues),
+        )
 
         # 4. Technical Deep Dive Validation
+        logger.debug("Running technical deep dive validation")
+        start = time.perf_counter()
         technical_dive_result = self.technical_dive_agent(
             deep_dives_json=deep_dives_json,
             reviewer_focus=reviewer_focus,
         )
         technical_dive_review = technical_dive_result.technicalDeepDiveValidation
+        logger.debug(
+            "Technical dive review completed in %.2fs | Critiques: %d",
+            time.perf_counter() - start,
+            len(technical_dive_review.critiques),
+        )
 
         # 5. Overall Assessment (synthesizes all previous reviews)
+        logger.debug("Generating overall assessment")
+        start = time.perf_counter()
         overall_result = self.overall_agent(
             extra_instructions=extra_instructions,
             proof_sketch_json=proof_sketch_json,
@@ -529,6 +571,12 @@ class SketchRefereeAgent(dspy.Module):
             completenessAndCorrectness=completeness_review,
         )
         overall_assessment = overall_result.overallAssessment
+        logger.debug(
+            "Overall assessment completed in %.2fs | Confidence: %d/5 | Recommendation: %s",
+            time.perf_counter() - start,
+            overall_assessment.confidenceScore,
+            overall_assessment.recommendation,
+        )
 
         # 6. Assemble final review with metadata
         timestamp = datetime.datetime.utcnow().isoformat() + "Z"
@@ -541,6 +589,15 @@ class SketchRefereeAgent(dspy.Module):
             dependencyValidation=dependency_review,
             technicalDeepDiveValidation=technical_dive_review,
             completenessAndCorrectness=completeness_review,
+        )
+
+        overall_elapsed = time.perf_counter() - overall_start
+        logger.info(
+            "SketchRefereeAgent completed in %.2fs | Reviewer: %s | Overall score: %d/5 | Recommendation: %s",
+            overall_elapsed,
+            reviewer,
+            overall_assessment.score,
+            overall_assessment.recommendation,
         )
 
         return dspy.Prediction(review=review)
