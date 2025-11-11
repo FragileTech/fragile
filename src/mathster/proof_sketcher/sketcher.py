@@ -828,10 +828,11 @@ class ProofSketchAgent(dspy.Module):
         super().__init__()
         self.model = model or dspy.settings.lm
         self.stronger_model = stronger_model or dspy.settings.lm
-        self.strategist_1 = strategist_1 or dspy.settings.lm
-        self.strategist_2 = strategist_2 or self.strategist_1
+        strategist_1_lm = strategist_1 or dspy.settings.lm
+        strategist_2_lm = strategist_2 or strategist_1_lm
         self.statement_agent = ProofStatementAgent()
-        self.sketch_strategist = SketchStrategist()
+        self.sketch_strategist_primary = SketchStrategist(lm=strategist_1_lm)
+        self.sketch_strategist_secondary = SketchStrategist(lm=strategist_2_lm)
         self.strategy_synthesizer = StrategySynthesizer()
         self.dependency_agent = DependencyLedgerAgent()
         self.detailed_proof_agent = DetailedProofAgent()
@@ -884,20 +885,34 @@ class ProofSketchAgent(dspy.Module):
         secondary_notes = (
             operator_notes + "Focus on leveraging as much as possible the Fragile Gas Theory."
         ).strip()
-        with dspy.context(lm=self.strategist_1):
-            primary_strategy = self.sketch_strategist(
-                theorem_label=theorem_label,
-                theorem_statement=theorem_statement,
-                framework_context=framework_context,
-                operator_notes=primary_notes,
-            ).strategy
-        with dspy.context(lm=self.strategist_2):
-            secondary_strategy = self.sketch_strategist(
-                theorem_label=theorem_label,
-                theorem_statement=theorem_statement,
-                framework_context=framework_context,
-                operator_notes=secondary_notes,
-            ).strategy
+
+        # Create examples for parallel execution
+        primary_example = dspy.Example(
+            theorem_label=theorem_label,
+            theorem_statement=theorem_statement,
+            framework_context=framework_context,
+            operator_notes=primary_notes,
+        ).with_inputs("theorem_label", "theorem_statement", "framework_context", "operator_notes")
+
+        secondary_example = dspy.Example(
+            theorem_label=theorem_label,
+            theorem_statement=theorem_statement,
+            framework_context=framework_context,
+            operator_notes=secondary_notes,
+        ).with_inputs("theorem_label", "theorem_statement", "framework_context", "operator_notes")
+
+        # Execute both strategists in parallel
+        exec_pairs = [
+            (self.sketch_strategist_primary, primary_example),
+            (self.sketch_strategist_secondary, secondary_example),
+        ]
+
+        parallel = dspy.Parallel(num_threads=2)
+        results = parallel(exec_pairs)
+
+        primary_strategy = results[0].strategy
+        secondary_strategy = results[1].strategy
+
         logger.debug(
             "Dual strategies generated in %.2fs | Primary: %s (conf=%s) | Secondary: %s (conf=%s)",
             time.perf_counter() - start,
@@ -1014,10 +1029,13 @@ class ProofSketchAgent(dspy.Module):
             passed,
         )
 
-        # 8. Alternate approaches (based on non-selected strategy)
-        logger.debug("Documenting alternative proof approaches")
-        start = time.perf_counter()
+        # 8-10. Parallel execution: Alternative approaches, Future work, Cross references
+        logger.debug("Starting parallel execution of 3 agents (Alternative, Future, Cross)")
+        parallel_start = time.perf_counter()
+
+        # Prepare inputs for parallel agents
         with dspy.context(lm=self.model):
+            # Alternative approaches: need rejected strategy
             selected_method = strategy_synthesis.recommendedApproach.chosenMethod.strip()
             other_strategy = (
                 secondary_strategy
@@ -1025,25 +1043,54 @@ class ProofSketchAgent(dspy.Module):
                 else primary_strategy
             )
             rejected_ideas = _describe_strategy(other_strategy)
-            alternative_approaches = self.alternative_agent(
-                theorem_statement=theorem_statement,
-                rejected_ideas=rejected_ideas,
-            ).alternatives
+
+            # Future work: need missing dependencies text
+            missing_text = _format_missing_dependencies_text(dependency_ledger)
+
+            # Cross references: need proof_text (already prepared at line 989)
+
+            # Create parallel execution pairs
+            exec_pairs = [
+                (
+                    self.alternative_agent,
+                    {
+                        "theorem_statement": theorem_statement,
+                        "rejected_ideas": rejected_ideas,
+                    },
+                ),
+                (
+                    self.future_work_agent,
+                    {"open_questions": missing_text},
+                ),
+                (
+                    self.cross_refs_agent,
+                    {"proof_sketch_text": proof_text},
+                ),
+            ]
+
+            # Execute in parallel with 3 threads
+            parallel = dspy.Parallel(num_threads=3)
+            results = parallel(exec_pairs)
+
+            # Extract results
+            alternative_approaches = results[0].alternatives
+            future_work = results[1].futureWork
+            cross_references = results[2].crossReferences
+
+        parallel_elapsed = time.perf_counter() - parallel_start
+        total_refs = (
+            len(cross_references.theoremsUsed)
+            + len(cross_references.definitionsUsed)
+            + len(cross_references.axiomsUsed)
+        )
         logger.debug(
-            "Alternative approaches completed in %.2fs | Alternatives: %d",
-            time.perf_counter() - start,
+            "Parallel execution completed in %.2fs | Alternatives: %d | Future work generated | Cross refs: %d",
+            parallel_elapsed,
             len(alternative_approaches),
+            total_refs,
         )
 
-        # 9. Future work from dependency gaps
-        logger.debug("Generating future work from dependency gaps")
-        start = time.perf_counter()
-        with dspy.context(lm=self.model):
-            missing_text = _format_missing_dependencies_text(dependency_ledger)
-            future_work = self.future_work_agent(open_questions=missing_text).futureWork
-        logger.debug("Future work completed in %.2fs", time.perf_counter() - start)
-
-        # 10. Expansion roadmap
+        # 11. Expansion roadmap (sequential, depends on future_work)
         logger.debug("Creating expansion roadmap for full proof development")
         start = time.perf_counter()
         with dspy.context(lm=self.model):
@@ -1056,21 +1103,6 @@ class ProofSketchAgent(dspy.Module):
             "Expansion roadmap completed in %.2fs | Phases: %d",
             time.perf_counter() - start,
             len(expansion_roadmap.phases),
-        )
-
-        # 11. Cross references
-        logger.debug("Extracting cross-references to framework artifacts")
-        start = time.perf_counter()
-        cross_references = self.cross_refs_agent(proof_sketch_text=proof_text).crossReferences
-        total_refs = (
-            len(cross_references.theoremsUsed)
-            + len(cross_references.definitionsUsed)
-            + len(cross_references.axiomsUsed)
-        )
-        logger.debug(
-            "Cross references completed in %.2fs | Total references: %d",
-            time.perf_counter() - start,
-            total_refs,
         )
 
         # Assemble final ProofSketch

@@ -207,7 +207,7 @@ class TechnicalDeepDiveSignature(dspy.Signature):
     )
 
 
-def setup_get_technical_deep_dive():
+def setup_get_technical_deep_dive(lm: dspy.LM = None, claude_model="sonnet"):
     """Helper to create a tool that extracts all TechnicalDeepDive objects from a proof sketch.
 
     Returns:
@@ -252,9 +252,10 @@ Output must be a list of structured TechnicalDeepDive objects following the sche
 
     def ask_claude(prompt: str) -> str:
         """Give claude detailed instructions to gather any information you need about the project."""
-        return sync_ask_claude(prompt, model="sonnet", system_prompt=CLAUDE_INSTRUCTIONS)
+        return sync_ask_claude(prompt, model=claude_model, system_prompt=CLAUDE_INSTRUCTIONS)
 
     agent = dspy.ReAct(signature=signature, tools=[ask_claude])
+    lm = lm or dspy.settings.lm
 
     def get_technical_deep_dives(prompt: str) -> list[TechnicalDeepDive]:
         """Extract all TechnicalDeepDive objects from a proof sketch or mathematical discussion.
@@ -294,13 +295,14 @@ Output must be a list of structured TechnicalDeepDive objects following the sche
             >>> print(deep_dives[1].challengeTitle)
             'Boundary Regularity via Hölder Estimates'
         """
-        result = agent.run(prompt=prompt)
+        with dspy.context(lm=lm):
+            result = agent.run(prompt=prompt)
         return result.deep_dives if hasattr(result, "deep_dives") else result
 
     return get_technical_deep_dives
 
 
-def setup_get_framework_dependencies():
+def setup_get_framework_dependencies(lm: dspy.LM = None, claude_model="sonnet"):
     """Helper to create a tool that extracts FrameworkDependencies from a proof sketch.
 
     Returns:
@@ -353,9 +355,10 @@ Output must be a structured FrameworkDependencies object following the schema ex
 
     def ask_claude(prompt: str) -> str:
         """Give claude detailed instructions to gather framework dependency information."""
-        return sync_ask_claude(prompt, model="sonnet", system_prompt=CLAUDE_INSTRUCTIONS)
+        return sync_ask_claude(prompt, model=claude_model, system_prompt=CLAUDE_INSTRUCTIONS)
 
     agent = dspy.ReAct(signature=signature, tools=[ask_claude])
+    lm = lm or dspy.settings.lm
 
     def get_framework_dependencies(prompt: str) -> FrameworkDependencies:
         """Extract FrameworkDependencies from a proof sketch or mathematical discussion.
@@ -398,13 +401,14 @@ Output must be a structured FrameworkDependencies object following the schema ex
             >>> len(deps.definitions)
             1
         """
-        result = agent.run(prompt=prompt)
+        with dspy.context(lm=lm):
+            result = agent.run(prompt=prompt)
         return result.dependencies if hasattr(result, "dependencies") else result
 
     return get_framework_dependencies
 
 
-def configure_get_strategy_items():
+def configure_get_strategy_items(lm: dspy.LM = None):
     """Helper to create a tool that generates SketchStrategyItems using chain-of-thought reasoning.
 
     Returns:
@@ -452,6 +456,7 @@ Output must be a structured SketchStrategyItems object following the schema exac
     ).with_instructions(INSTRUCTIONS)
 
     agent = dspy.ChainOfThought(signature)
+    lm = lm or dspy.settings.lm
 
     def get_strategy_items(
         theorem_label: str,
@@ -497,12 +502,13 @@ Output must be a structured SketchStrategyItems object following the schema exac
             >>> print(items.keySteps[0])
             'Establish uniform LSI constant for the target measure'
         """
-        result = agent(
-            theorem_label=theorem_label,
-            theorem_statement=theorem_statement,
-            framework_context=framework_context or "",
-            operator_notes=operator_notes or "",
-        )
+        with dspy.context(lm=lm):
+            result = agent(
+                theorem_label=theorem_label,
+                theorem_statement=theorem_statement,
+                framework_context=framework_context or "",
+                operator_notes=operator_notes or "",
+            )
         return result.strategy_items if hasattr(result, "strategy_items") else result
 
     return get_strategy_items
@@ -572,14 +578,25 @@ class SketchStrategist(dspy.Module):
         3
     """
 
-    def __init__(self):
-        """Initialize the SketchStrategist with all required tools."""
+    def __init__(self, max_iters: int = 5, lm: dspy.LM = None, claude_model="sonnet") -> None:
+        """Initialize the SketchStrategist with all required tools.
+
+        Args:
+            max_iters: Maximum iterations for ReAct agent
+            lm: Language model to use (defaults to dspy.settings.lm)
+        """
         super().__init__()
+        self.lm = lm or dspy.settings.lm
 
         # Initialize the three specialized tool functions
-        self._get_strategy_items_impl = configure_get_strategy_items()
-        self._get_framework_dependencies_impl = setup_get_framework_dependencies()
-        self._get_technical_deep_dives_impl = setup_get_technical_deep_dive()
+        self._get_strategy_items_impl = configure_get_strategy_items(lm=self.lm)
+        self._get_framework_dependencies_impl = setup_get_framework_dependencies(
+            lm=self.lm,
+            claude_model=claude_model,
+        )
+        self._get_technical_deep_dives_impl = setup_get_technical_deep_dive(
+            lm=self.lm, claude_model=claude_model
+        )
 
         # Create tool wrappers for the ReAct agent
         def get_strategy_items_tool(
@@ -598,7 +615,6 @@ class SketchStrategist(dspy.Module):
             Returns:
                 JSON string of SketchStrategyItems
             """
-            print("running get_strategy_items_tool")
             result = self._get_strategy_items_impl(
                 theorem_label, theorem_statement, framework_context, operator_notes
             )
@@ -616,7 +632,6 @@ class SketchStrategist(dspy.Module):
             Returns:
                 JSON string of FrameworkDependencies (theorems, lemmas, axioms, definitions)
             """
-            print("running get_framework_dependencies_tool")
             result = self._get_framework_dependencies_impl(proof_sketch)
             return result.model_dump_json()
 
@@ -631,7 +646,6 @@ class SketchStrategist(dspy.Module):
             Returns:
                 JSON string of list[TechnicalDeepDive]
             """
-            print("running get_technical_deep_dives_tool")
             result = self._get_technical_deep_dives_impl(proof_sketch)
             return [dive.model_dump() for dive in result].__str__()
 
@@ -648,7 +662,6 @@ class SketchStrategist(dspy.Module):
             Returns:
                 One of: "High", "Medium", "Low"
             """
-            print("running assess_confidence_tool")
             # Simple heuristic - in practice this could be more sophisticated
             completeness_map = {"complete": 1, "mostly": 0.7, "partial": 0.3}
             challenges_map = {"minor": 1, "moderate": 0.6, "severe": 0.2}
@@ -710,7 +723,7 @@ Output structure reminder:
 - confidenceScore: From assess_confidence_tool
 """
         signature = SketchStrategySignature.with_instructions(INSTRUCTIONS)
-        self.agent = dspy.ReAct(signature, tools=self.tools, max_iters=3)
+        self.agent = dspy.ReAct(signature, tools=self.tools, max_iters=max_iters)
 
     def forward(
         self,
@@ -756,9 +769,10 @@ Output structure reminder:
             >>> print(strategy.confidenceScore)
             'High'
         """
-        return self.agent(
-            theorem_label=theorem_label,
-            theorem_statement=theorem_statement,
-            framework_context=framework_context or "",
-            operator_notes=operator_notes or "",
-        )
+        with dspy.context(lm=self.lm):
+            return self.agent(
+                theorem_label=theorem_label,
+                theorem_statement=theorem_statement,
+                framework_context=framework_context or "",
+                operator_notes=operator_notes or "",
+            )

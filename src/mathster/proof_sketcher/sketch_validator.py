@@ -400,6 +400,79 @@ class Scores(BaseModel):
         ..., description="Risk metric based on error counts, gaps, and score variance"
     )
 
+    def get_score(self) -> float:
+        """Return a single reward scalar (0-100, higher is better) for sketch quality.
+
+        The reward aggregates multiple heuristics:
+        - Positive contribution from overall quality, completeness, logical flow, reviewer confidence,
+          agreement, and the synthesis decision.
+        - Penalties for identified errors, gaps, dependency issues, critiques, action items,
+          reviewer disagreement/variance, and an explicit risk score.
+        - A final multiplier enforces that low synthesis decisions cap the achievable reward.
+        """
+
+        def clamp(value: float, lower: float = 0.0, upper: float = 1.0) -> float:
+            return max(lower, min(upper, value))
+
+        def normalize(value: float, upper: float) -> float:
+            if upper <= 0:
+                return 0.0
+            return clamp(value / upper)
+
+        def issue_penalty(count: float, pivot: float) -> float:
+            if pivot <= 0:
+                return 0.0
+            return clamp(count / pivot)
+
+        quality_anchor = normalize(
+            (self.average_overall_score + self.overall_quality_index) / 2.0, 5.0
+        )
+        positive = (
+            0.30 * quality_anchor
+            + 0.18 * normalize(self.average_completeness_score, 5.0)
+            + 0.18 * normalize(self.average_logical_flow_score, 5.0)
+            + 0.10 * normalize(self.average_overall_confidence, 5.0)
+            + 0.10 * normalize(self.final_decision_numeric, 4.0)
+            + 0.06 * (1.0 if self.both_reviewers_sound else 0.0)
+            + 0.05 * (1.0 if self.both_reviewers_cover_claims else 0.0)
+            + 0.03 * normalize(self.points_of_agreement_count, 5.0)
+        )
+
+        disagreement_variance = (
+            self.overall_score_variance
+            + self.completeness_score_variance
+            + self.logical_flow_score_variance
+        )
+        penalty = (
+            0.20 * issue_penalty(self.total_error_count, 4.0)
+            + 0.15 * issue_penalty(self.total_logical_gap_count, 4.0)
+            + 0.10 * issue_penalty(self.total_dependency_issue_count, 3.0)
+            + 0.08 * issue_penalty(self.total_technical_critique_count, 6.0)
+            + 0.12 * issue_penalty(self.critical_action_count, 3.0)
+            + 0.10 * issue_penalty(self.action_item_count, 8.0)
+            + 0.08 * issue_penalty(self.points_of_disagreement_count, 4.0)
+            + 0.07 * clamp(self.risk_score / 25.0)
+            + 0.05 * clamp(disagreement_variance / 6.0)
+            + 0.05 * issue_penalty(self.total_error_count + self.total_logical_gap_count, 8.0)
+        )
+
+        raw = clamp(positive - penalty)
+
+        decision_multiplier = {
+            1: 0.40,  # Rejected - keep reward low regardless of scores
+            2: 0.65,  # Major revisions
+            3: 0.85,  # Minor revisions
+            4: 1.00,  # Approved
+        }.get(self.final_decision_numeric, 0.70)
+
+        if not self.both_reviewers_cover_claims:
+            decision_multiplier *= 0.9
+        if not self.both_reviewers_sound:
+            decision_multiplier *= 0.9
+
+        reward = clamp(raw * decision_multiplier) * 100.0
+        return round(reward, 2)
+
 
 class SketchValidator(dspy.Module):
     """Run dual sketch reviews and synthesize a complete validation report."""
@@ -486,25 +559,66 @@ class SketchValidator(dspy.Module):
         reviewer_context = (
             reviewer_context or "Perform a thorough dual-review of the provided proof sketch."
         )
-        logger.debug("Generating report metadata")
-        metadata = self.metadata_generator(
+
+        # Create dspy.Example objects for parallel execution
+        logger.debug("Preparing metadata generation and dual reviews for parallel execution")
+
+        metadata_example = dspy.Example(
             sketch_label=sketch_label,
             cycle_uuid=validation_cycle_id,
             timestamp=validation_timestamp,
-        ).reportMetadata
+        ).with_inputs("sketch_label", "cycle_uuid", "timestamp")
+
+        gemini_example = dspy.Example(
+            proof_sketch_dict=proof_sketch,
+            reviewer="Gemini 2.5 Flash",
+            extra_instructions=reviewer_context,
+        ).with_inputs("proof_sketch_dict", "reviewer", "extra_instructions")
+
+        codex_example = dspy.Example(
+            proof_sketch_dict=proof_sketch,
+            reviewer="GPT-5 Codex",
+            extra_instructions=reviewer_context,
+        ).with_inputs("proof_sketch_dict", "reviewer", "extra_instructions")
+
+        # Create execution pairs for parallel processing
+        exec_pairs = [
+            (self.metadata_generator, metadata_example),
+            (self.review_agent_gemini, gemini_example),
+            (self.review_agent_codex, codex_example),
+        ]
+
+        # Execute metadata generation and both reviews in parallel
+        logger.info("Running metadata generation and dual reviews in parallel (3 agents)")
+        parallel = dspy.Parallel(num_threads=3)
+        parallel_start = time.perf_counter()
+        results = parallel(exec_pairs)
+        parallel_elapsed = time.perf_counter() - parallel_start
+
+        # Extract results from parallel execution
+        metadata = results[0].reportMetadata
+        gemini_review_pred = results[1]
+        codex_review_pred = results[2]
+
+        # Convert review predictions to dicts (matching _run_review behavior)
+        gemini_review = (
+            gemini_review_pred.review.model_dump()
+            if hasattr(gemini_review_pred.review, "model_dump")
+            else gemini_review_pred.review
+        )
+        codex_review = (
+            codex_review_pred.review.model_dump()
+            if hasattr(codex_review_pred.review, "model_dump")
+            else codex_review_pred.review
+        )
 
         proof_sketch_json = json.dumps(proof_sketch)
-        gemini_review = self._run_review(
-            self.review_agent_gemini,
-            reviewer_name="Gemini 2.5 Flash",
-            proof_sketch_dict=proof_sketch,
-            extra_instructions=reviewer_context,
-        )
-        codex_review = self._run_review(
-            self.review_agent_codex,
-            reviewer_name="GPT-5 Codex",
-            proof_sketch_dict=proof_sketch,
-            extra_instructions=reviewer_context,
+
+        logger.info(
+            "Parallel execution completed in %.2fs | Metadata generated | Gemini review: %s | Codex review: %s",
+            parallel_elapsed,
+            gemini_review.get("reviewer", "Unknown"),
+            codex_review.get("reviewer", "Unknown"),
         )
 
         logger.debug("Analyzing consensus between reviewers")
@@ -562,7 +676,7 @@ class SketchValidator(dspy.Module):
             overall_elapsed,
             report.synthesisAndActionPlan.finalDecision,
             len(report.synthesisAndActionPlan.actionableItems),
-            scores.average_overall_score,
+            scores.get_score(),
         )
 
         return dspy.Prediction(

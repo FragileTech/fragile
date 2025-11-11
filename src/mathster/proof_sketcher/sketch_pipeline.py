@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
+import logging
 from uuid import uuid4
 
 import dspy
@@ -21,7 +22,9 @@ from mathster.proof_sketcher.sketcher import (
 )
 
 
-__all__ = ["ProofSketchWorkflowResult", "ProofSketcherAgent"]
+__all__ = ["ProofSketchWorkflowResult", "AgentSketchPipeline"]
+
+logger = logging.getLogger(__name__)
 
 
 def _iso_timestamp() -> str:
@@ -37,13 +40,13 @@ class ProofSketchWorkflowResult:
     sketch: ProofSketch
     validation_report: SketchValidationReport
     scores: Scores
-    sketch_1: ProofSketch
-    sketch_2: ProofSketch
+    strategy_1: ProofSketch
+    strategy_2: ProofSketch
     review_1: SketchValidationReview
     review_2: SketchValidationReview
 
 
-class ProofSketcherAgent(dspy.Module):
+class AgentSketchPipeline(dspy.Module):
     """Run the full proof sketch workflow, from drafting to validation."""
 
     def __init__(
@@ -114,14 +117,32 @@ class ProofSketcherAgent(dspy.Module):
             confidence_context=confidence_context or framework_context,
         )
         validation_report = validation_prediction.report
+        scores = validation_prediction.scores
+
+        # Log overall score for terminal tracking
+        overall_score = scores.get_score()
+        logger.info(
+            "=" * 80 + "\n"
+            "PROOF SKETCH VALIDATION COMPLETE\n"
+            "Theorem: %s\n"
+            "Overall Score: %.2f/100\n"
+            "Gemini Score: %d/5 | Codex Score: %d/5\n"
+            "Decision: %s\n"+
+            "=" * 80,
+            theorem_label,
+            overall_score,
+            scores.gemini_overall_score,
+            scores.codex_overall_score,
+            validation_report.synthesisAndActionPlan.finalDecision,
+        )
 
         return dspy.Prediction(
             result=ProofSketchWorkflowResult(
                 sketch=proof_sketch,
                 validation_report=validation_report,
-                scores=validation_prediction.scores,
-                sketch_1=validation_prediction.sketch_1,
-                sketch_2=validation_prediction.sketch_2,
+                scores=scores,
+                strategy_1=sketch_prediction.strategy_1,
+                strategy_2=sketch_prediction.strategy_2,
                 review_1=validation_prediction.review_1,
                 review_2=validation_prediction.review_2,
             ),
