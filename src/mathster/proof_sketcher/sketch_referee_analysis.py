@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""DSPy signatures and pydantic models for proof sketch validation reviews."""
+"""DSPy signatures, pydantic models, and review agents for proof sketch validation."""
 
 from __future__ import annotations
 
+import json
 from typing import Literal
 
 import dspy
@@ -51,6 +52,32 @@ SolutionViability = Literal[
     "Flawed",
 ]
 
+class BaseAgent(dspy.Module):
+    data_model: TypeVar[BaseModel]  # type: ignore
+    signature_cls: TypeVar[dspy.Signature]  # type: ignore
+    agent_cls: TypeVar[dspy.Module]  # type: ignore
+    instructions: str
+
+    def __init__(self, data_model=None, signature_cls=None, agent_cls=None, instructions=None) -> None:
+        super().__init__()
+        self.data_model = data_model or self.data_model
+        self.signature_cls = signature_cls or self.signature_cls
+        self.agent_cls = agent_cls or self.agent_cls
+        self.instructions = instructions or self.instructions
+        self.instructions = self.render_instructions(self.instructions)
+        self.signature = self.signature_cls.with_instructions(self.instructions)
+        self.agent = self.agent_cls(signature=self.signature)
+
+    def render_instructions(self, instructions: str) -> str:
+        schema = json.dumps(CompletenessCorrectnessReview.model_json_schema(), indent=2)
+        return instructions.format(schema=schema)
+    
+    def forward(self, **kwargs) -> dspy.Prediction:
+        return self.agent(**kwargs)
+    
+    async def aforward(self, **kwargs) -> dspy.Prediction:
+        return await self.agent.aforward(**kwargs)
+
 
 # ---------------------------------
 # Completeness and Correctness Components
@@ -91,8 +118,37 @@ class CompletenessCorrectnessSignature(dspy.Signature):
         desc="Coverage/correctness evaluation result."
     )
 
-class CompletenessCorrectnessAgent(dspy.Module):
-    """ Agent using a dspy.ChainOfThought to assess completeness and correctness of a proof sketch that implements CompletenessCorrectnessSignature. """
+
+class CompletenessCorrectnessAgent(BaseAgent):
+    """Tool-augmented reviewer that scores proof sketch completeness/correctness."""
+    data_model = CompletenessCorrectnessReview
+    signature_cls = CompletenessCorrectnessSignature
+    agent_cls = dspy.Predict
+    instructions = """
+You audit a Fragile proof sketch for completeness and correctness.
+
+Workflow:
+1. Decompose the theorem_statement into explicit claims/conditions.
+2. Cross-check each claim against the proof_sketch_text.
+3. Record every mathematical error or missing coverage as an IdentifiedError with
+   the exact location, issue description, and a concrete fix.
+4. Set coversAllClaims=True only if every claim has adequate reasoning AND no blocking errors.
+5. Score rubric (1=worse, 5=publication-ready):
+   - 5: complete coverage, no errors.
+   - 4: minor gaps/clarity issues but claims supported.
+   - 3: partial coverage or moderate mistakes that require revision.
+   - 2: major gaps or incorrect arguments invalidate key parts.
+   - 1: unusable or contradicts hypotheses.
+6. Confidence reflects how certain you are in the assessment (1-5).
+
+Use available tools when needed:
+- search_project(query): inspect repository files or locate references.
+- ask_claude(prompt): consult Claude with the shared system prompt for deeper analysis.
+
+Return ONLY JSON matching:
+{schema}
+"""
+
 
 # ---------------------------------
 # Logical Flow Validation Components
@@ -129,7 +185,7 @@ class LogicalFlowValidationSignature(dspy.Signature):
         desc="Logical flow validation outcome."
     )
 
-class AgentLogicalFlowValidation(dspy.Module):
+class AgentLogicalFlowValidation(BaseAgent):
     """ Agent using a dspy.ChainOfThought to evaluate the logical flow of a proof sketch. """
 
 
@@ -171,7 +227,7 @@ class DependencyValidationSignature(dspy.Signature):
         desc="Numeric confidence score from 1-5 indicating reviewer's confidence in the assessment."
     )
 
-class AgentDependencyValidation(dspy.Module):
+class AgentDependencyValidation(BaseAgent):
     """ Agent using a dspy.ChainOfThought to validate framework dependencies in a proof sketch implementing DependencyValidationSignature. """
 
 # ---------------------------------
@@ -219,7 +275,7 @@ class TechnicalDeepDiveValidationSignature(dspy.Signature):
         desc="Numeric confidence score from 1-5 indicating reviewer's confidence in the assessment."
     )
 
-class AgentTechnicalDeepDiveValidation(dspy.Module):
+class AgentTechnicalDeepDiveValidation(BaseAgent):
     """ Agent using a dspy.ChainOfThought to critique the technical deep dives of a proof sketch. """
 
 # ---------------------------------
@@ -270,7 +326,7 @@ class OverallAssessmentSignature(dspy.Signature):
         desc="Structured overall assessment matching sketch_validation_request schema."
     )
 
-class AgentOverallAssessment(dspy.Module):
+class AgentOverallAssessment(BaseAgent):
     """ Agent using a dspy.ChainOfThought to generate the overall assessment of a proof sketch. """
 
 #
@@ -298,4 +354,3 @@ class SketchReviewAgent(dspy.Module):
     """This agent calls all the other agents in order and handles the "glue code" to produce a full sketch validation review. as described by SketchValidationReview.
     It is a composition of modules taht implements no new module on its own as it only does orchestration.
     """
-
