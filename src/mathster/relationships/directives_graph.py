@@ -62,9 +62,7 @@ def build_label_reference_graph(directives_dir: Path | str) -> nx.DiGraph:
         label_graph.add_node(label, **node_data)
 
     edge_instances: defaultdict[tuple[str, str], list[str]] = defaultdict(list)
-    edge_context_counts: defaultdict[tuple[str, str], Counter[str]] = defaultdict(
-        Counter
-    )
+    edge_context_counts: defaultdict[tuple[str, str], Counter[str]] = defaultdict(Counter)
 
     for label, entry in registry.items():
         _add_node(label, entry)

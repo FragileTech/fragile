@@ -32,7 +32,9 @@ def discover_document_folders(roots: Sequence[Path] | None = None) -> list[Path]
 
 
 def discover_registry_folders(
-    roots: Sequence[Path] | None = None, subfolder: str | None = None, document: str | None = None,
+    roots: Sequence[Path] | None = None,
+    subfolder: str | None = None,
+    document: str | None = None,
 ) -> list[Path]:
     """Return registry directories under document folders."""
     registries: list[Path] = []

@@ -11,6 +11,7 @@ from mathster.reports.report_utils import (
     make_section,
 )
 
+
 __all__ = ["unified_proof_to_markdown"]
 
 
@@ -21,12 +22,15 @@ def unified_proof_to_markdown(proof: UnifiedProof) -> str:
 
     reference_labels = format_reference_labels(proof.references)
     reference_line = (
-        f"**Reference labels:** {reference_labels}" if reference_labels else "**Reference labels:** _none_"
+        f"**Reference labels:** {reference_labels}"
+        if reference_labels
+        else "**Reference labels:** _none_"
     )
-    sections.append(reference_line)
-
-    sections.append(_build_header_block(proof))
-    sections.append(make_section("Proof Body", format_unified_proof(proof)))
+    sections.extend((
+        reference_line,
+        _build_header_block(proof),
+        make_section("Proof Body", format_unified_proof(proof)),
+    ))
 
     if proof.content_markdown:
         sections.append(
@@ -66,4 +70,3 @@ def _build_header_block(proof: UnifiedProof) -> str:
     if info_parts:
         lines.append(" • ".join(info_parts))
     return "\n".join(lines)
-

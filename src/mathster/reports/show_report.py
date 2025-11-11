@@ -11,7 +11,6 @@ from mathster.preprocess_extraction.data_models import (
     UnifiedCorollary,
     UnifiedDefinition,
     UnifiedLemma,
-    UnifiedMathematicalEntity,
     UnifiedProof,
     UnifiedProposition,
     UnifiedRemark,
@@ -43,9 +42,7 @@ def render_label_report(label: str, preprocess_dir: Path | str | None = None) ->
     entity_type = _infer_type(label, entity)
     renderer = _ENTITY_RENDERERS.get(entity_type)
     if renderer is None:
-        raise ValueError(
-            f"Unsupported entity type '{entity_type}' for label '{label}'."
-        )
+        raise ValueError(f"Unsupported entity type '{entity_type}' for label '{label}'.")
 
     return renderer(entity)
 
@@ -99,4 +96,3 @@ _ENTITY_RENDERERS: dict[str, Renderer] = {
     "proof": _wrap_model(UnifiedProof, unified_proof_to_markdown),
     "parameter": parameter_entry_to_markdown,
 }
-

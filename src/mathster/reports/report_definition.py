@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Iterable
-
 import json
+from typing import Any, Iterable
 
 from mathster.preprocess_extraction.data_models import (
     Condition,
@@ -16,6 +15,7 @@ from mathster.preprocess_extraction.data_models import (
     UnifiedDefinition,
 )
 
+
 __all__ = ["unified_definition_to_markdown"]
 
 
@@ -26,11 +26,11 @@ def unified_definition_to_markdown(definition: UnifiedDefinition) -> str:
 
     reference_labels = _format_reference_labels(definition.references)
     reference_line = (
-        f"**Reference labels:** {reference_labels}" if reference_labels else "**Reference labels:** _none_"
+        f"**Reference labels:** {reference_labels}"
+        if reference_labels
+        else "**Reference labels:** _none_"
     )
-    sections.append(reference_line)
-
-    sections.append(_build_header_block(definition))
+    sections.extend((reference_line, _build_header_block(definition)))
 
     term_block = _format_term(definition)
     if term_block:
@@ -40,7 +40,9 @@ def unified_definition_to_markdown(definition: UnifiedDefinition) -> str:
         sections.append(_section("Natural Language Definition", definition.nl_definition.strip()))
 
     if definition.formal_conditions:
-        sections.append(_section("Formal Conditions", _format_conditions(definition.formal_conditions)))
+        sections.append(
+            _section("Formal Conditions", _format_conditions(definition.formal_conditions))
+        )
 
     if definition.properties:
         sections.append(_section("Named Properties", _format_properties(definition.properties)))
@@ -55,7 +57,9 @@ def unified_definition_to_markdown(definition: UnifiedDefinition) -> str:
         sections.append(_section("Notes", _format_notes(definition.notes)))
 
     if definition.related_refs:
-        sections.append(_section("Related References", _format_bullet_list(definition.related_refs)))
+        sections.append(
+            _section("Related References", _format_bullet_list(definition.related_refs))
+        )
 
     if definition.tags:
         sections.append(_section("Tags", ", ".join(f"`{tag}`" for tag in definition.tags)))
@@ -247,4 +251,3 @@ def _format_metadata(metadata: dict[str, Any], registry_context: dict[str, Any])
     if registry_context:
         payload["registry_context"] = registry_context
     return f"```json\n{json.dumps(payload, indent=2, sort_keys=True)}\n```"
-

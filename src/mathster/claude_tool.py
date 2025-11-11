@@ -45,7 +45,9 @@ class ClaudeDirectClient:
         if api_key:
             self._env["ANTHROPIC_API_KEY"] = api_key
 
-    async def ask(self, prompt: str, model: str = "sonnet", system_prompt: str | None = None) -> str:
+    async def ask(
+        self, prompt: str, model: str = "sonnet", system_prompt: str | None = None
+    ) -> str:
         """
         Ask Claude a question via direct CLI invocation.
 
@@ -131,5 +133,3 @@ def sync_ask_claude(
     """
     client = ClaudeDirectClient(command=command, api_key=api_key)
     return asyncio.run(client.ask(prompt, model=model))
-
-

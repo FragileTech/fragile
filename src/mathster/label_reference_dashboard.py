@@ -778,18 +778,14 @@ class LabelReferenceDashboard:
             )
 
         # Get unique entity types present in the current filtered graph
-        entity_types_in_graph = sorted(
-            {
-                data.get("entity_type", "unknown")
-                for _, data in graph.nodes(data=True)
-                if data.get("entity_type")
-            }
-        )
+        entity_types_in_graph = sorted({
+            data.get("entity_type", "unknown")
+            for _, data in graph.nodes(data=True)
+            if data.get("entity_type")
+        })
 
         # Add unknown if there are nodes without entity_type
-        has_unknown = any(
-            not data.get("entity_type") for _, data in graph.nodes(data=True)
-        )
+        has_unknown = any(not data.get("entity_type") for _, data in graph.nodes(data=True))
         if has_unknown and "unknown" not in entity_types_in_graph:
             entity_types_in_graph.append("unknown")
 
@@ -801,7 +797,7 @@ class LabelReferenceDashboard:
             color = ENTITY_TYPE_COLORS.get(entity_type, DEFAULT_ENTITY_COLOR)
             display_name = entity_type.replace("_", " ").title()
 
-            legend_html += f'''
+            legend_html += f"""
             <div style="display: flex; align-items: center; margin-bottom: 8px;">
                 <div style="width: 18px; height: 18px; background-color: {color};
                             border: 1px solid #555; margin-right: 10px;
@@ -809,7 +805,7 @@ class LabelReferenceDashboard:
                 </div>
                 <span style="line-height: 1.2;">{display_name}</span>
             </div>
-            '''
+            """
 
         legend_html += "</div>"
         return pn.pane.HTML(legend_html, width=220, sizing_mode="fixed")

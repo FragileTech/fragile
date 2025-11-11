@@ -10,6 +10,7 @@ from mathster.reports.report_utils import (
     make_section,
 )
 
+
 __all__ = ["parameter_entry_to_markdown"]
 
 
@@ -19,13 +20,15 @@ def parameter_entry_to_markdown(parameter: Mapping[str, Any]) -> str:
     sections: list[str] = []
 
     references = parameter.get("references")
-    reference_labels = format_reference_labels(references if isinstance(references, list) else None)
-    reference_line = (
-        f"**Reference labels:** {reference_labels}" if reference_labels else "**Reference labels:** _none_"
+    reference_labels = format_reference_labels(
+        references if isinstance(references, list) else None
     )
-    sections.append(reference_line)
-
-    sections.append(_build_header_block(parameter))
+    reference_line = (
+        f"**Reference labels:** {reference_labels}"
+        if reference_labels
+        else "**Reference labels:** _none_"
+    )
+    sections.extend((reference_line, _build_header_block(parameter)))
 
     description = parameter.get("description")
     if isinstance(description, str) and description.strip():
@@ -37,7 +40,9 @@ def parameter_entry_to_markdown(parameter: Mapping[str, Any]) -> str:
 
     tags = parameter.get("tags")
     if isinstance(tags, list) and tags:
-        sections.append(make_section("Tags", ", ".join(f"`{tag}`" for tag in tags if isinstance(tag, str))))
+        sections.append(
+            make_section("Tags", ", ".join(f"`{tag}`" for tag in tags if isinstance(tag, str)))
+        )
 
     defined_in = parameter.get("defined_in")
     if isinstance(defined_in, str) and defined_in.strip():
@@ -58,4 +63,3 @@ def _build_header_block(parameter: Mapping[str, Any]) -> str:
     if symbol:
         lines.append(f"**Symbol:** {symbol}")
     return "\n".join(lines)
-

@@ -2,19 +2,19 @@
 
 from __future__ import annotations
 
-from typing import Any, Iterable, Mapping
-
 import json
+from typing import Any, Iterable, Mapping
 
 from mathster.preprocess_extraction.data_models import Span
 
+
 __all__ = [
+    "format_bullet_list",
+    "format_metadata",
     "format_reference_labels",
     "format_span",
     "make_section",
     "wrap_math",
-    "format_metadata",
-    "format_bullet_list",
 ]
 
 
@@ -101,4 +101,3 @@ def format_bullet_list(items: Iterable[str] | None) -> str | None:
     if not cleaned:
         return None
     return "\n".join(f"- {item}" for item in cleaned)
-

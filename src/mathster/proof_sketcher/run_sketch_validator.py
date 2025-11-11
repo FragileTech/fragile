@@ -3,11 +3,12 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
-from datetime import datetime, timezone
 from uuid import uuid4
+
 
 CACHE_DIR = Path("/tmp/dspy_cache")
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
@@ -15,6 +16,7 @@ os.environ.setdefault("DSPY_CACHEDIR", str(CACHE_DIR))
 
 from mathster.parsing.config import configure_dspy
 from mathster.proof_sketcher.sketch_validator import SketchValidator
+
 
 SKETCH_JSON = json.dumps(
     {
@@ -64,7 +66,10 @@ SKETCH_JSON = json.dumps(
                         "Bootstrap boundary regularity to prevent loss in λ.",
                     ],
                     "strengths": ["Highlights generator structure.", "Emphasizes tensorization."],
-                    "weaknesses": ["Needs sharp boundary control.", "More technical preconditions."],
+                    "weaknesses": [
+                        "Needs sharp boundary control.",
+                        "More technical preconditions.",
+                    ],
                 },
             ],
             "recommendedApproach": {

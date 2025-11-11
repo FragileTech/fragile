@@ -20,6 +20,7 @@ from mathster.relationships.preprocess_graph import (
     load_preprocess_registry,
 )
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -69,11 +70,7 @@ def _resolve_registry_path(
     discovered = discover_registry_folders(subfolder=subfolder, document=document_id)
     candidate: Path | None = None
     if discovered:
-        exact = [
-            path
-            for path in discovered
-            if path.parent.parent.name == document_id
-        ]
+        exact = [path for path in discovered if path.parent.parent.name == document_id]
         candidate = exact[0] if exact else discovered[0]
         candidate = Path(candidate).expanduser()
         if candidate.exists():
@@ -178,7 +175,7 @@ def _normalize_tags(raw_tags: object) -> list[str]:
 
     if raw_tags is None:
         return []
-    if isinstance(raw_tags, (list, tuple, set)):
+    if isinstance(raw_tags, list | tuple | set):
         iterable = raw_tags
     else:
         iterable = [raw_tags]
@@ -199,10 +196,9 @@ def _populate_node_metadata(graph, doc_entries: dict[str, dict[str, Any]]) -> No
         if label not in graph:
             continue
         node_data = graph.nodes[label]
-        node_data["entity_type"] = (
-            _normalize_str(node_data.get("entity_type"))
-            or _determine_entity_type(entry)
-        )
+        node_data["entity_type"] = _normalize_str(
+            node_data.get("entity_type")
+        ) or _determine_entity_type(entry)
         node_data["title"] = (
             node_data.get("title")
             or _normalize_str(entry.get("title"))
@@ -268,9 +264,7 @@ def build_document_connectivity_report_from_graph(
 
     doc_nodes = sorted(graph.nodes())
     if not doc_nodes:
-        raise ValueError(
-            f"Connectivity graph for document '{document_id}' contains no nodes."
-        )
+        raise ValueError(f"Connectivity graph for document '{document_id}' contains no nodes.")
 
     type_groups: defaultdict[str, list[str]] = defaultdict(list)
     definition_tags: dict[str, list[str]] = {}

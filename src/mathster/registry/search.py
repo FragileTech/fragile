@@ -5,10 +5,11 @@ with caching to avoid repeated disk I/O.
 """
 
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from mathster.relationships.directives_graph import load_directives_registry
 from mathster.relationships.preprocess_graph import load_preprocess_registry
+
 
 # Module-level cache for the preprocess registry
 _PREPROCESS_REGISTRY_CACHE: dict[tuple[Path, ...], dict[str, dict[str, Any]]] = {}
@@ -53,8 +54,7 @@ def get_preprocess_label(
 
         >>> # Use custom registry directory
         >>> entity = get_preprocess_label(
-        ...     "def-baoab-update",
-        ...     preprocess_dir="path/to/custom/registry"
+        ...     "def-baoab-update", preprocess_dir="path/to/custom/registry"
         ... )
 
     Note:
@@ -128,8 +128,7 @@ def get_directive_label(
 
         >>> # Use custom registry directory
         >>> entity = get_directive_label(
-        ...     "def-baoab-update",
-        ...     directives_dir="path/to/custom/registry"
+        ...     "def-baoab-update", directives_dir="path/to/custom/registry"
         ... )
 
         >>> # Access registry context

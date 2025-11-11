@@ -39,7 +39,7 @@ def _reference_identity(value: Any) -> str:
             return "dict:" + json.dumps(value, sort_keys=True, default=str)
         except TypeError:
             return "dict:" + repr(value)
-    return f"value:{repr(value)}"
+    return f"value:{value!r}"
 
 
 def _merge_reference_labels(*sources: Any) -> list[Any]:
@@ -51,7 +51,7 @@ def _merge_reference_labels(*sources: Any) -> list[Any]:
     for source in sources:
         if not source:
             continue
-        if isinstance(source, (list, tuple, set)):
+        if isinstance(source, list | tuple | set):
             iterator = source
         else:
             iterator = [source]
@@ -64,6 +64,7 @@ def _merge_reference_labels(*sources: Any) -> list[Any]:
             seen.add(key)
             merged.append(entry)
     return merged
+
 
 # ============================================================================
 # SECTION 1: SHARED NESTED MODELS

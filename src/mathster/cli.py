@@ -395,7 +395,8 @@ def connectivity_command(document: str, preprocess_dir: Path | None) -> None:
 
     document_id = _normalize_document_argument(document)
     if not document_id:
-        raise click.ClickException("Document identifier must be a non-empty string.")
+        msg = "Document identifier must be a non-empty string."
+        raise click.ClickException(msg)
 
     if preprocess_dir is not None:
         preprocess_dir = preprocess_dir.expanduser()
@@ -588,7 +589,8 @@ def search_command(
 
     label = label.strip()
     if not label:
-        raise click.ClickException("Label must be a non-empty string.")
+        msg = "Label must be a non-empty string."
+        raise click.ClickException(msg)
 
     selected_stage = stage or "auto"
     registry_source = None

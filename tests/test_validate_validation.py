@@ -1,20 +1,23 @@
 """Tests for validation request and validation report utilities."""
 
-import json
-import pytest
-from pathlib import Path
 from datetime import datetime
+import json
+from pathlib import Path
 
 # Import validation functions
 import sys
+
+import pytest
+
+
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from mathster.agent_schemas.validate_sketch import (
-    load_validation_request_schema,
-    load_validation_report_schema,
-    validate_validation_request,
-    validate_validation_report,
     load_sketch_for_validation,
+    load_validation_report_schema,
+    load_validation_request_schema,
+    validate_validation_report,
+    validate_validation_request,
 )
 
 
@@ -46,33 +49,27 @@ def test_valid_validation_request():
         "overallAssessment": {
             "confidenceScore": "High (Ready for Expansion)",
             "summary": "The proof sketch is mathematically sound and ready for expansion.",
-            "recommendation": "Proceed to Expansion"
+            "recommendation": "Proceed to Expansion",
         },
         "detailedAnalysis": {
             "logicalFlowValidation": {
                 "isSound": True,
                 "comments": "Logical progression is clear and rigorous",
-                "identifiedGaps": []
+                "identifiedGaps": [],
             },
-            "dependencyValidation": {
-                "status": "Complete and Correct",
-                "issues": []
-            },
+            "dependencyValidation": {"status": "Complete and Correct", "issues": []},
             "technicalDeepDiveValidation": {
                 "critiques": [
                     {
                         "challengeTitle": "LSI Constant Uniformity",
                         "solutionViability": "Viable and Well-Described",
                         "critique": "Framework provides N-uniform LSI constant",
-                        "suggestedImprovements": "Could add explicit theorem reference"
+                        "suggestedImprovements": "Could add explicit theorem reference",
                     }
                 ]
             },
-            "completenessAndCorrectness": {
-                "coversAllClaims": True,
-                "identifiedErrors": []
-            }
-        }
+            "completenessAndCorrectness": {"coversAllClaims": True, "identifiedErrors": []},
+        },
     }
 
     is_valid, errors = validate_validation_request(review)
@@ -84,7 +81,7 @@ def test_validation_request_missing_required_fields():
     """Test that missing required fields are detected."""
     review = {
         "reviewer": "Gemini 2.5 Pro",
-        "timestamp": "2025-11-10T17:30:00Z"
+        "timestamp": "2025-11-10T17:30:00Z",
         # Missing: overallAssessment, detailedAnalysis
     }
 
@@ -101,23 +98,16 @@ def test_validation_request_invalid_confidence_score():
         "overallAssessment": {
             "confidenceScore": "VeryHigh",  # Invalid - not in enum
             "summary": "Good",
-            "recommendation": "Proceed to Expansion"
+            "recommendation": "Proceed to Expansion",
         },
         "detailedAnalysis": {
-            "logicalFlowValidation": {
-                "isSound": True,
-                "comments": "Good"
-            },
-            "dependencyValidation": {
-                "status": "Complete and Correct"
-            },
-            "completenessAndCorrectness": {
-                "coversAllClaims": True
-            }
-        }
+            "logicalFlowValidation": {"isSound": True, "comments": "Good"},
+            "dependencyValidation": {"status": "Complete and Correct"},
+            "completenessAndCorrectness": {"coversAllClaims": True},
+        },
     }
 
-    is_valid, errors = validate_validation_request(review)
+    is_valid, _errors = validate_validation_request(review)
     assert not is_valid
 
 
@@ -129,13 +119,13 @@ def test_validation_request_with_dependency_issues():
         "overallAssessment": {
             "confidenceScore": "Medium (Sound, but requires minor revisions)",
             "summary": "Strategy sound but LSI preconditions need verification",
-            "recommendation": "Revise and Resubmit for Validation"
+            "recommendation": "Revise and Resubmit for Validation",
         },
         "detailedAnalysis": {
             "logicalFlowValidation": {
                 "isSound": True,
                 "comments": "Clear logical structure",
-                "identifiedGaps": ["Step 2→3 needs explicit bound"]
+                "identifiedGaps": ["Step 2→3 needs explicit bound"],
             },
             "dependencyValidation": {
                 "status": "Minor Issues Found",
@@ -143,14 +133,14 @@ def test_validation_request_with_dependency_issues():
                     {
                         "label": "thm-lsi-main",
                         "issueType": "Preconditions Not Met",
-                        "comment": "LSI constant N-uniformity not verified"
+                        "comment": "LSI constant N-uniformity not verified",
                     },
                     {
                         "label": "def-kl-divergence",
                         "issueType": "Missing Dependency",
-                        "comment": "Should cite def-relative-entropy as well"
-                    }
-                ]
+                        "comment": "Should cite def-relative-entropy as well",
+                    },
+                ],
             },
             "technicalDeepDiveValidation": {},
             "completenessAndCorrectness": {
@@ -159,11 +149,11 @@ def test_validation_request_with_dependency_issues():
                     {
                         "location": "Step 3.2",
                         "description": "Sign error in dissipation term",
-                        "suggestedCorrection": "Change + to - in equation (3.2)"
+                        "suggestedCorrection": "Change + to - in equation (3.2)",
                     }
-                ]
-            }
-        }
+                ],
+            },
+        },
     }
 
     is_valid, errors = validate_validation_request(review)
@@ -176,7 +166,7 @@ def test_valid_validation_report():
         "reportMetadata": {
             "sketchLabel": "thm-example-convergence",
             "validationCycleId": "550e8400-e29b-41d4-a716-446655440000",
-            "validationTimestamp": "2025-11-10T17:35:00Z"
+            "validationTimestamp": "2025-11-10T17:35:00Z",
         },
         "originalProofSketch": {
             "label": "thm-example-convergence",
@@ -192,10 +182,10 @@ def test_valid_validation_report():
                     "theorems": [],
                     "lemmas": [],
                     "axioms": [],
-                    "definitions": []
+                    "definitions": [],
                 },
-                "confidenceScore": "High"
-            }
+                "confidenceScore": "High",
+            },
         },
         "reviews": [
             {
@@ -204,20 +194,13 @@ def test_valid_validation_report():
                 "overallAssessment": {
                     "confidenceScore": "High (Ready for Expansion)",
                     "summary": "Sound",
-                    "recommendation": "Proceed to Expansion"
+                    "recommendation": "Proceed to Expansion",
                 },
                 "detailedAnalysis": {
-                    "logicalFlowValidation": {
-                        "isSound": True,
-                        "comments": "Good"
-                    },
-                    "dependencyValidation": {
-                        "status": "Complete and Correct"
-                    },
-                    "completenessAndCorrectness": {
-                        "coversAllClaims": True
-                    }
-                }
+                    "logicalFlowValidation": {"isSound": True, "comments": "Good"},
+                    "dependencyValidation": {"status": "Complete and Correct"},
+                    "completenessAndCorrectness": {"coversAllClaims": True},
+                },
             },
             {
                 "reviewer": "GPT-5 via Codex",
@@ -225,34 +208,27 @@ def test_valid_validation_report():
                 "overallAssessment": {
                     "confidenceScore": "High (Ready for Expansion)",
                     "summary": "Sound",
-                    "recommendation": "Proceed to Expansion"
+                    "recommendation": "Proceed to Expansion",
                 },
                 "detailedAnalysis": {
-                    "logicalFlowValidation": {
-                        "isSound": True,
-                        "comments": "Good"
-                    },
-                    "dependencyValidation": {
-                        "status": "Complete and Correct"
-                    },
-                    "completenessAndCorrectness": {
-                        "coversAllClaims": True
-                    }
-                }
-            }
+                    "logicalFlowValidation": {"isSound": True, "comments": "Good"},
+                    "dependencyValidation": {"status": "Complete and Correct"},
+                    "completenessAndCorrectness": {"coversAllClaims": True},
+                },
+            },
         ],
         "synthesisAndActionPlan": {
             "finalDecision": "Approved for Expansion",
             "consensusAnalysis": {
                 "pointsOfAgreement": [
                     "Both reviewers confirm logical soundness",
-                    "Both reviewers confirm completeness"
+                    "Both reviewers confirm completeness",
                 ],
-                "summaryOfFindings": "The proof sketch is rock-solid..."
+                "summaryOfFindings": "The proof sketch is rock-solid...",
             },
             "actionableItems": [],
-            "confidenceStatement": "Ready for expansion"
-        }
+            "confidenceStatement": "Ready for expansion",
+        },
     }
 
     is_valid, errors = validate_validation_report(report)
@@ -265,7 +241,7 @@ def test_validation_report_missing_reviews():
         "reportMetadata": {
             "sketchLabel": "thm-example",
             "validationCycleId": "550e8400-e29b-41d4-a716-446655440000",
-            "validationTimestamp": "2025-11-10T17:35:00Z"
+            "validationTimestamp": "2025-11-10T17:35:00Z",
         },
         "originalProofSketch": {},
         "reviews": [  # Only 1 review - should fail minItems: 2
@@ -275,34 +251,24 @@ def test_validation_report_missing_reviews():
                 "overallAssessment": {
                     "confidenceScore": "High (Ready for Expansion)",
                     "summary": "Good",
-                    "recommendation": "Proceed to Expansion"
+                    "recommendation": "Proceed to Expansion",
                 },
                 "detailedAnalysis": {
-                    "logicalFlowValidation": {
-                        "isSound": True,
-                        "comments": "Good"
-                    },
-                    "dependencyValidation": {
-                        "status": "Complete and Correct"
-                    },
-                    "completenessAndCorrectness": {
-                        "coversAllClaims": True
-                    }
-                }
+                    "logicalFlowValidation": {"isSound": True, "comments": "Good"},
+                    "dependencyValidation": {"status": "Complete and Correct"},
+                    "completenessAndCorrectness": {"coversAllClaims": True},
+                },
             }
         ],
         "synthesisAndActionPlan": {
             "finalDecision": "Approved for Expansion",
-            "consensusAnalysis": {
-                "pointsOfAgreement": [],
-                "summaryOfFindings": "..."
-            },
+            "consensusAnalysis": {"pointsOfAgreement": [], "summaryOfFindings": "..."},
             "actionableItems": [],
-            "confidenceStatement": "..."
-        }
+            "confidenceStatement": "...",
+        },
     }
 
-    is_valid, errors = validate_validation_report(report)
+    is_valid, _errors = validate_validation_report(report)
     assert not is_valid  # Should fail because reviews array has only 1 item
 
 
@@ -312,7 +278,7 @@ def test_validation_report_with_actionable_items():
         "reportMetadata": {
             "sketchLabel": "thm-example",
             "validationCycleId": "550e8400-e29b-41d4-a716-446655440000",
-            "validationTimestamp": "2025-11-10T17:35:00Z"
+            "validationTimestamp": "2025-11-10T17:35:00Z",
         },
         "originalProofSketch": {},
         "reviews": [
@@ -322,20 +288,13 @@ def test_validation_report_with_actionable_items():
                 "overallAssessment": {
                     "confidenceScore": "Medium (Sound, but requires minor revisions)",
                     "summary": "Needs clarification",
-                    "recommendation": "Revise and Resubmit for Validation"
+                    "recommendation": "Revise and Resubmit for Validation",
                 },
                 "detailedAnalysis": {
-                    "logicalFlowValidation": {
-                        "isSound": True,
-                        "comments": "Good"
-                    },
-                    "dependencyValidation": {
-                        "status": "Minor Issues Found"
-                    },
-                    "completenessAndCorrectness": {
-                        "coversAllClaims": True
-                    }
-                }
+                    "logicalFlowValidation": {"isSound": True, "comments": "Good"},
+                    "dependencyValidation": {"status": "Minor Issues Found"},
+                    "completenessAndCorrectness": {"coversAllClaims": True},
+                },
             },
             {
                 "reviewer": "GPT-5 via Codex",
@@ -343,21 +302,14 @@ def test_validation_report_with_actionable_items():
                 "overallAssessment": {
                     "confidenceScore": "High (Ready for Expansion)",
                     "summary": "Good",
-                    "recommendation": "Proceed to Expansion"
+                    "recommendation": "Proceed to Expansion",
                 },
                 "detailedAnalysis": {
-                    "logicalFlowValidation": {
-                        "isSound": True,
-                        "comments": "Good"
-                    },
-                    "dependencyValidation": {
-                        "status": "Complete and Correct"
-                    },
-                    "completenessAndCorrectness": {
-                        "coversAllClaims": True
-                    }
-                }
-            }
+                    "logicalFlowValidation": {"isSound": True, "comments": "Good"},
+                    "dependencyValidation": {"status": "Complete and Correct"},
+                    "completenessAndCorrectness": {"coversAllClaims": True},
+                },
+            },
         ],
         "synthesisAndActionPlan": {
             "finalDecision": "Requires Minor Revisions",
@@ -368,27 +320,27 @@ def test_validation_report_with_actionable_items():
                         "topic": "Dependency validation",
                         "geminiView": "Minor issues found",
                         "codexView": "Complete and correct",
-                        "resolution": "Resolved via framework verification"
+                        "resolution": "Resolved via framework verification",
                     }
                 ],
-                "summaryOfFindings": "Overall sound but needs minor fixes"
+                "summaryOfFindings": "Overall sound but needs minor fixes",
             },
             "actionableItems": [
                 {
                     "itemId": "AI-001",
                     "description": "Verify LSI constant is N-uniform",
                     "priority": "Critical",
-                    "references": ["Gemini Review: dependencyValidation"]
+                    "references": ["Gemini Review: dependencyValidation"],
                 },
                 {
                     "itemId": "AI-002",
                     "description": "Add explicit bound derivation for Step 3",
                     "priority": "High",
-                    "references": ["Gemini Review: logicalFlowValidation.identifiedGaps[0]"]
-                }
+                    "references": ["Gemini Review: logicalFlowValidation.identifiedGaps[0]"],
+                },
             ],
-            "confidenceStatement": "Once 2 issues addressed, ready for expansion"
-        }
+            "confidenceStatement": "Once 2 issues addressed, ready for expansion",
+        },
     }
 
     is_valid, errors = validate_validation_report(report)

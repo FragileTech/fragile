@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 from mathster.preprocess_extraction.data_models import (
     Algorithm,
     AlgorithmParameter,
@@ -12,12 +10,12 @@ from mathster.preprocess_extraction.data_models import (
     FailureMode,
     GuardCondition,
 )
-
 from mathster.reports.report_utils import (
     format_bullet_list,
     format_reference_labels,
     make_section,
 )
+
 
 __all__ = ["unified_algorithm_to_markdown"]
 
@@ -29,11 +27,11 @@ def unified_algorithm_to_markdown(algorithm: Algorithm) -> str:
 
     reference_labels = format_reference_labels(algorithm.references)
     reference_line = (
-        f"**Reference labels:** {reference_labels}" if reference_labels else "**Reference labels:** _none_"
+        f"**Reference labels:** {reference_labels}"
+        if reference_labels
+        else "**Reference labels:** _none_"
     )
-    sections.append(reference_line)
-
-    sections.append(_build_header_block(algorithm))
+    sections.extend((reference_line, _build_header_block(algorithm)))
 
     if algorithm.nl_summary:
         sections.append(make_section("Summary", algorithm.nl_summary.strip()))
@@ -45,10 +43,14 @@ def unified_algorithm_to_markdown(algorithm: Algorithm) -> str:
         sections.append(make_section("Steps", _format_steps(algorithm.steps)))
 
     if algorithm.guard_conditions:
-        sections.append(make_section("Guard Conditions", _format_guards(algorithm.guard_conditions)))
+        sections.append(
+            make_section("Guard Conditions", _format_guards(algorithm.guard_conditions))
+        )
 
     if algorithm.failure_modes:
-        sections.append(make_section("Failure Modes", _format_failure_modes(algorithm.failure_modes)))
+        sections.append(
+            make_section("Failure Modes", _format_failure_modes(algorithm.failure_modes))
+        )
 
     if algorithm.tags:
         sections.append(make_section("Tags", ", ".join(f"`{tag}`" for tag in algorithm.tags)))
@@ -102,14 +104,11 @@ def _format_line_range(start: int | None, end: int | None) -> str | None:
 def _format_signature(signature: AlgorithmSignature) -> str:
     lines: list[str] = []
     if signature.input:
-        lines.append("**Input:**" )
-        lines.append(format_bullet_list(signature.input) or "- —")
+        lines.extend(("**Input:**", format_bullet_list(signature.input) or "- —"))
     if signature.output:
-        lines.append("\n**Output:**")
-        lines.append(format_bullet_list(signature.output) or "- —")
+        lines.extend(("\n**Output:**", format_bullet_list(signature.output) or "- —"))
     if signature.parameters:
-        lines.append("\n**Parameters:**")
-        lines.append(_format_algorithm_parameters(signature.parameters))
+        lines.extend(("\n**Parameters:**", _format_algorithm_parameters(signature.parameters)))
     return "\n".join(lines).strip()
 
 
@@ -163,4 +162,3 @@ def _format_failure_modes(failure_modes: list[FailureMode]) -> str:
         impact = f" (impact: {mode.impact})" if mode.impact else ""
         lines.append(f"- {description}{impact}")
     return "\n".join(lines)
-

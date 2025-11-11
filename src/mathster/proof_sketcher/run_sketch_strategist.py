@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 from mathster.agent_schemas.signatures import SketchStrategist
 from mathster.parsing.config import configure_dspy
@@ -184,8 +183,7 @@ Preferences and constraints:
         print("SUMMARY STATISTICS")
         print("=" * 80)
         total_deps = (
-            len(deps.theorems) + len(deps.lemmas) +
-            len(deps.axioms) + len(deps.definitions)
+            len(deps.theorems) + len(deps.lemmas) + len(deps.axioms) + len(deps.definitions)
         )
         print(f"Total framework dependencies: {total_deps}")
         print(f"  - Theorems: {len(deps.theorems)}")
@@ -216,10 +214,11 @@ Preferences and constraints:
         print("✗ ERROR DURING STRATEGY GENERATION")
         print("=" * 80)
         print(f"\nError type: {type(e).__name__}")
-        print(f"Error message: {str(e)}")
+        print(f"Error message: {e!s}")
         print()
 
         import traceback
+
         print("Full traceback:")
         print("-" * 80)
         traceback.print_exc()

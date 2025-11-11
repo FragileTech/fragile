@@ -9,9 +9,11 @@ import json
 from pathlib import Path
 from typing import Any
 
+
 try:
     import jsonschema
-    from jsonschema import ValidationError, Draft7Validator
+    from jsonschema import Draft7Validator, ValidationError
+
     HAS_JSONSCHEMA = True
 except ImportError:
     HAS_JSONSCHEMA = False
@@ -62,8 +64,13 @@ def validate_sketch_strategy(
     ...     "keySteps": ["Step 1", "Step 2"],
     ...     "strengths": ["Direct approach"],
     ...     "weaknesses": ["Requires LSI"],
-    ...     "frameworkDependencies": {"theorems": [], "lemmas": [], "axioms": [], "definitions": []},
-    ...     "confidenceScore": "High"
+    ...     "frameworkDependencies": {
+    ...         "theorems": [],
+    ...         "lemmas": [],
+    ...         "axioms": [],
+    ...         "definitions": [],
+    ...     },
+    ...     "confidenceScore": "High",
     ... }
     >>> is_valid, errors = validate_sketch_strategy(strategy)
     >>> is_valid
@@ -121,8 +128,7 @@ def get_missing_required_fields(
         schema = load_schema()
 
     required_fields = schema.get("required", [])
-    missing = [field for field in required_fields if field not in strategy_json]
-    return missing
+    return [field for field in required_fields if field not in strategy_json]
 
 
 def fill_missing_fields(
@@ -281,13 +287,13 @@ def validate_validation_request(
     ...     "overallAssessment": {
     ...         "confidenceScore": "High (Ready for Expansion)",
     ...         "summary": "Sketch is sound",
-    ...         "recommendation": "Proceed to Expansion"
+    ...         "recommendation": "Proceed to Expansion",
     ...     },
     ...     "detailedAnalysis": {
     ...         "logicalFlowValidation": {"isSound": True, "comments": "Clear logic"},
     ...         "dependencyValidation": {"status": "Complete and Correct"},
-    ...         "completenessAndCorrectness": {"coversAllClaims": True}
-    ...     }
+    ...         "completenessAndCorrectness": {"coversAllClaims": True},
+    ...     },
     ... }
     >>> is_valid, errors = validate_validation_request(review)
     >>> is_valid
@@ -339,11 +345,11 @@ def validate_validation_report(
     ...     "reportMetadata": {
     ...         "sketchLabel": "thm-example",
     ...         "validationCycleId": "uuid-string",
-    ...         "validationTimestamp": "2025-11-10T17:30:00Z"
+    ...         "validationTimestamp": "2025-11-10T17:30:00Z",
     ...     },
     ...     "originalProofSketch": {...},
     ...     "reviews": [{...}, {...}],
-    ...     "synthesisAndActionPlan": {...}
+    ...     "synthesisAndActionPlan": {...},
     ... }
     >>> is_valid, errors = validate_validation_report(report)
     """
@@ -410,7 +416,8 @@ def load_sketch_for_validation(
 
     # Extract strategy
     if "strategy" not in sketch_data:
-        raise ValueError("Sketch file missing 'strategy' field")
+        msg = "Sketch file missing 'strategy' field"
+        raise ValueError(msg)
 
     strategy = sketch_data["strategy"]
 
@@ -433,7 +440,7 @@ def load_sketch_for_validation(
         sketch_data["_metadata"]["validation_preprocessing"] = {
             "filled_fields": filled_fields,
             "original_missing": missing,
-            "note": "Auto-filled by load_sketch_for_validation()"
+            "note": "Auto-filled by load_sketch_for_validation()",
         }
 
     return sketch_data, notes
@@ -486,7 +493,7 @@ def validate_full_sketch(
     ...     "strategySynthesis": {...},
     ...     "dependencies": {...},
     ...     "detailedProof": {...},
-    ...     "validationChecklist": {...}
+    ...     "validationChecklist": {...},
     ... }
     >>> is_valid, errors = validate_full_sketch(sketch)
     """
@@ -549,7 +556,7 @@ def fill_missing_sketch_fields(
         "status": "Sketch",
         "statement": {
             "formal": "[Statement not provided]",
-            "informal": "[Informal statement not provided]"
+            "informal": "[Informal statement not provided]",
         },
         "strategySynthesis": {
             "strategies": [],
@@ -560,22 +567,19 @@ def fill_missing_sketch_fields(
                     "frameworkDependencies": "Needs Verification",
                     "circularReasoning": "No circularity detected",
                     "keyAssumptions": "All assumptions are standard",
-                    "crossValidation": "Single strategist only"
-                }
-            }
+                    "crossValidation": "Single strategist only",
+                },
+            },
         },
         "dependencies": {
             "verifiedDependencies": [],
-            "missingOrUncertainDependencies": {
-                "lemmasToProve": [],
-                "uncertainAssumptions": []
-            }
+            "missingOrUncertainDependencies": {"lemmasToProve": [], "uncertainAssumptions": []},
         },
         "detailedProof": {
             "overview": "Not provided",
             "topLevelOutline": [],
             "steps": [],
-            "conclusion": "Q.E.D."
+            "conclusion": "Q.E.D.",
         },
         "validationChecklist": {
             "logicalCompleteness": False,
@@ -585,8 +589,8 @@ def fill_missing_sketch_fields(
             "noCircularReasoning": True,
             "constantTracking": False,
             "edgeCases": False,
-            "regularityAssumptions": False
-        }
+            "regularityAssumptions": False,
+        },
     }
 
     # Fill top-level missing fields

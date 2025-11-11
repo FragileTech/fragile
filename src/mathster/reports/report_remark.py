@@ -12,6 +12,7 @@ from mathster.reports.report_utils import (
     make_section,
 )
 
+
 __all__ = ["unified_remark_to_markdown"]
 
 
@@ -22,11 +23,11 @@ def unified_remark_to_markdown(remark: UnifiedRemark) -> str:
 
     reference_labels = format_reference_labels(remark.references)
     reference_line = (
-        f"**Reference labels:** {reference_labels}" if reference_labels else "**Reference labels:** _none_"
+        f"**Reference labels:** {reference_labels}"
+        if reference_labels
+        else "**Reference labels:** _none_"
     )
-    sections.append(reference_line)
-
-    sections.append(_build_header_block(remark))
+    sections.extend((reference_line, _build_header_block(remark)))
 
     if remark.nl_summary:
         sections.append(make_section("Summary", remark.nl_summary.strip()))
@@ -36,11 +37,15 @@ def unified_remark_to_markdown(remark: UnifiedRemark) -> str:
 
     if remark.quantitative_notes:
         sections.append(
-            make_section("Quantitative Notes", _format_quantitative_notes(remark.quantitative_notes))
+            make_section(
+                "Quantitative Notes", _format_quantitative_notes(remark.quantitative_notes)
+            )
         )
 
     if remark.recommendations:
-        sections.append(make_section("Recommendations", _format_recommendations(remark.recommendations)))
+        sections.append(
+            make_section("Recommendations", _format_recommendations(remark.recommendations))
+        )
 
     if remark.dependencies:
         sections.append(make_section("Dependencies", format_bullet_list(remark.dependencies)))
@@ -56,7 +61,9 @@ def unified_remark_to_markdown(remark: UnifiedRemark) -> str:
             )
         )
 
-    metadata_block = format_metadata(_maybe_model_dump(remark.metadata), _maybe_model_dump(remark.registry_context))
+    metadata_block = format_metadata(
+        _maybe_model_dump(remark.metadata), _maybe_model_dump(remark.registry_context)
+    )
     if metadata_block:
         sections.append(make_section("Metadata", metadata_block))
 
@@ -140,4 +147,3 @@ def _maybe_model_dump(model: Any) -> dict | None:
     else:
         data = getattr(model, "dict", lambda **_: None)(exclude_none=True)
     return data or None
-

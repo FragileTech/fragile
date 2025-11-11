@@ -3,11 +3,11 @@
 
 from __future__ import annotations
 
+import json
 from typing import Literal
 
 import dspy
 from pydantic import BaseModel, Field
-import json
 
 from mathster.proof_sketcher.sketch_referee_analysis import SketchReviewAgent
 
@@ -153,9 +153,7 @@ class ConsensusAnalysisSignature(dspy.Signature):
 class ActionableItemsSignature(dspy.Signature):
     """Generate the list of action items for the action plan."""
 
-    consolidated_feedback = dspy.InputField(
-        desc="Text summarizing required revisions or tasks."
-    )
+    consolidated_feedback = dspy.InputField(desc="Text summarizing required revisions or tasks.")
     references_json = dspy.InputField(
         desc="JSON array mapping action items to review references.", optional=True
     )
@@ -265,12 +263,13 @@ class SketchValidator(dspy.Module):
         extra_instructions: str,
     ) -> dict:
         """Invoke a SketchReviewAgent with shared proof sketch context."""
-        payload = json.dumps(
-            {
-                "proof_sketch": json.loads(proof_sketch_json),
-                "instructions": extra_instructions,
-            }
-        )
+        json_payload = json.loads(proof_sketch_json)
+        payload = json.dumps({
+            "proof_sketch": json_payload,
+            "instructions": extra_instructions,
+        })
+        print("Running review with", reviewer_name)
+        print(json_payload)
         prediction = agent(
             reviewer=reviewer_name,
             timestamp=timestamp,
@@ -293,7 +292,9 @@ class SketchValidator(dspy.Module):
         final_decision_context: str = "",
         confidence_context: str = "",
     ) -> dspy.Prediction:
-        reviewer_context = reviewer_context or "Perform a thorough dual-review of the provided proof sketch."
+        reviewer_context = (
+            reviewer_context or "Perform a thorough dual-review of the provided proof sketch."
+        )
         metadata = self.metadata_generator(
             sketch_label=sketch_label,
             cycle_uuid=validation_cycle_id,
@@ -329,12 +330,10 @@ class SketchValidator(dspy.Module):
         )
         action_items_prediction = self.action_items_generator(
             consolidated_feedback=consolidated_feedback,
-            references_json=json.dumps(
-                {
-                    "gemini": gemini_review.get("reviewer", "Gemini 2.5 Flash"),
-                    "codex": codex_review.get("reviewer", "GPT-5 Codex"),
-                }
-            ),
+            references_json=json.dumps({
+                "gemini": gemini_review.get("reviewer", "Gemini 2.5 Flash"),
+                "codex": codex_review.get("reviewer", "GPT-5 Codex"),
+            }),
         )
         action_items = action_items_prediction.actionableItems
         action_items_serialized = [

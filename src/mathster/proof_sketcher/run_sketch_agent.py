@@ -4,10 +4,9 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
-from mathster.proof_sketcher.sketcher import ProofSketchAgent
 from mathster.parsing.config import configure_dspy
+from mathster.proof_sketcher.sketcher import ProofSketchAgent
 
 
 def _print_header(title: str) -> None:
@@ -162,7 +161,7 @@ Guidance for the proof pipeline:
         print()
         print("✓ ProofSketchAgent test completed successfully!")
 
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         _print_header("✗ ProofSketchAgent encountered an error")
         print(f"{type(exc).__name__}: {exc}")
         print()

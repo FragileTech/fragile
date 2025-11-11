@@ -8,7 +8,6 @@ from typing import Literal
 
 import dspy
 from pydantic import BaseModel, Field
-from questionary import prompt
 
 from mathster.claude_tool import sync_ask_claude
 
@@ -17,9 +16,9 @@ __all__ = [
     "ConfidenceScore",
     "FrameworkDependencies",
     "FrameworkDependenciesSignature",
+    "SketchStrategist",
     "SketchStrategy",
     "SketchStrategyItems",
-    "SketchStrategist",
     "SketchStrategySignature",
     "StrategyDependency",
     "TechnicalDeepDive",
@@ -133,6 +132,7 @@ class SketchStrategy(BaseModel):
         description='Self-assessed viability score ("High", "Medium", or "Low").',
     )
 
+
 class SketchStrategyItems(BaseModel):
     """Pydantic mirror of sketch_strategy.json for convenient validation."""
 
@@ -160,6 +160,7 @@ class SketchStrategyItems(BaseModel):
         ...,
         description="Limitations, risks, or pain points to investigate.",
     )
+
 
 class SketchStrategySignature(dspy.Signature):
     """Collect all data required to emit a SketchStrategy object."""
@@ -206,8 +207,6 @@ class TechnicalDeepDiveSignature(dspy.Signature):
     )
 
 
-
-
 def setup_get_technical_deep_dive():
     """Helper to create a tool that extracts all TechnicalDeepDive objects from a proof sketch.
 
@@ -250,6 +249,7 @@ Output must be a list of structured TechnicalDeepDive objects following the sche
 """
     INSTRUCTIONS = "Use your ask_claude tool to extract detailed TechnicalDeepDive objects from the provided proof sketch or discussion."
     signature = TechnicalDeepDiveSignature.with_instructions(INSTRUCTIONS)
+
     def ask_claude(prompt: str) -> str:
         """Give claude detailed instructions to gather any information you need about the project."""
         return sync_ask_claude(prompt, model="sonnet", system_prompt=CLAUDE_INSTRUCTIONS)
@@ -296,6 +296,7 @@ Output must be a list of structured TechnicalDeepDive objects following the sche
         """
         result = agent.run(prompt=prompt)
         return result.deep_dives if hasattr(result, "deep_dives") else result
+
     return get_technical_deep_dives
 
 
@@ -399,6 +400,7 @@ Output must be a structured FrameworkDependencies object following the schema ex
         """
         result = agent.run(prompt=prompt)
         return result.dependencies if hasattr(result, "dependencies") else result
+
     return get_framework_dependencies
 
 
@@ -505,13 +507,15 @@ Output must be a structured SketchStrategyItems object following the schema exac
 
     return get_strategy_items
 
+
 def get_label_data(label: str) -> str:
     """Retrieve entity data for a given framework label from the registries."""
     from mathster.registry import search as registry_search
 
     label = label.strip()
     if not label:
-        raise ValueError("Label must be a non-empty string.")
+        msg = "Label must be a non-empty string."
+        raise ValueError(msg)
 
     selected_stage = "auto"
     registry_source = None
@@ -540,6 +544,7 @@ def get_label_data(label: str) -> str:
 
     return json.dumps(entity, indent=2, sort_keys=True)
 
+
 class SketchStrategist(dspy.Module):
     """Orchestrating module that generates complete SketchStrategy using ReAct reasoning.
 
@@ -559,7 +564,7 @@ class SketchStrategist(dspy.Module):
         ...     theorem_label="thm-kl-convergence",
         ...     theorem_statement="Under confining potential, Gas converges to QSD.",
         ...     framework_context="Available: LSI theory, cloning lemmas",
-        ...     operator_notes="Prefer LSI-based approach"
+        ...     operator_notes="Prefer LSI-based approach",
         ... )
         >>> print(result.strategy.method)
         'LSI + Grönwall Iteration'
@@ -665,10 +670,9 @@ class SketchStrategist(dspy.Module):
 
             if score >= 0.7:
                 return "High"
-            elif score >= 0.4:
+            if score >= 0.4:
                 return "Medium"
-            else:
-                return "Low"
+            return "Low"
 
         # Store tools
         self.tools = [
@@ -740,7 +744,7 @@ Output structure reminder:
             ...         the Euclidean Gas converges exponentially to unique QSD.
             ...     ''',
             ...     framework_context="LSI theory available: thm-lsi-target, lem-tensorization",
-            ...     operator_notes="Prefer LSI-based approach over direct Lyapunov"
+            ...     operator_notes="Prefer LSI-based approach over direct Lyapunov",
             ... )
             >>> strategy = result.strategy
             >>> print(strategy.method)
@@ -752,10 +756,9 @@ Output structure reminder:
             >>> print(strategy.confidenceScore)
             'High'
         """
-        result = self.agent(
+        return self.agent(
             theorem_label=theorem_label,
             theorem_statement=theorem_statement,
             framework_context=framework_context or "",
             operator_notes=operator_notes or "",
         )
-        return result

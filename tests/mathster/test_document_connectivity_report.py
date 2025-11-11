@@ -3,7 +3,14 @@ import json
 from pathlib import Path
 import sys
 
-MODULE_PATH = Path(__file__).resolve().parents[2] / "src" / "mathster" / "reports" / "document_connectivity_report.py"
+
+MODULE_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "src"
+    / "mathster"
+    / "reports"
+    / "document_connectivity_report.py"
+)
 spec = importlib.util.spec_from_file_location(
     "mathster.reports.document_connectivity_report",
     MODULE_PATH,

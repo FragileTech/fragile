@@ -3,11 +3,8 @@
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Callable
-
-import dspy
 
 from mathster.claude_tool import sync_ask_claude
 

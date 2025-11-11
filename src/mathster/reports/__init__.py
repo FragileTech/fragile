@@ -18,9 +18,15 @@ from __future__ import annotations
 from typing import Any, Dict
 
 from mathster.reports.report_axiom import unified_axiom_to_markdown as preprocess_axiom_to_markdown
-from mathster.reports.report_definition import unified_definition_to_markdown as preprocess_definition_to_markdown
-from mathster.reports.report_remark import unified_remark_to_markdown as preprocess_remark_to_markdown
-from mathster.reports.report_theorem import unified_theorem_to_markdown as preprocess_theorem_to_markdown
+from mathster.reports.report_definition import (
+    unified_definition_to_markdown as preprocess_definition_to_markdown,
+)
+from mathster.reports.report_remark import (
+    unified_remark_to_markdown as preprocess_remark_to_markdown,
+)
+from mathster.reports.report_theorem import (
+    unified_theorem_to_markdown as preprocess_theorem_to_markdown,
+)
 
 
 def _missing_renderer(name: str):

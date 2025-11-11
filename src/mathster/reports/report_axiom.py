@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Iterable
-
 import json
+from typing import Any
 
 from mathster.preprocess_extraction.data_models import (
     FailureMode,
@@ -14,6 +13,7 @@ from mathster.preprocess_extraction.data_models import (
     Span,
     UnifiedAxiom,
 )
+
 
 __all__ = ["unified_axiom_to_markdown"]
 
@@ -25,11 +25,11 @@ def unified_axiom_to_markdown(axiom: UnifiedAxiom) -> str:
 
     reference_labels = _format_reference_labels(axiom.references)
     reference_line = (
-        f"**Reference labels:** {reference_labels}" if reference_labels else "**Reference labels:** _none_"
+        f"**Reference labels:** {reference_labels}"
+        if reference_labels
+        else "**Reference labels:** _none_"
     )
-    sections.append(reference_line)
-
-    sections.append(_build_header_block(axiom))
+    sections.extend((reference_line, _build_header_block(axiom)))
 
     if axiom.nl_summary:
         sections.append(_section("Natural Language Summary", axiom.nl_summary.strip()))
@@ -226,4 +226,3 @@ def _format_metadata(metadata: dict[str, Any], registry_context: dict[str, Any])
     if registry_context:
         payload["registry_context"] = registry_context
     return f"```json\n{json.dumps(payload, indent=2, sort_keys=True)}\n```"
-

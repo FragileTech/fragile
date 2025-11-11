@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import argparse
+from dataclasses import dataclass
 import json
 import logging
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, List, Dict
+from typing import Iterable
 
 from pydantic import ValidationError
 
@@ -128,11 +128,11 @@ def _collect_parameters(preprocess_dir: Path) -> list[ParameterOccurrence]:
 
 def _deduplicate_parameters(
     occurrences: Iterable[ParameterOccurrence],
-) -> tuple[list[dict], Dict[str, list[ParameterOccurrence]]]:
+) -> tuple[list[dict], dict[str, list[ParameterOccurrence]]]:
     """Merge parameters by their LaTeX/symbol representation."""
 
     merged: dict[str, dict] = {}
-    occ_map: Dict[str, list[ParameterOccurrence]] = {}
+    occ_map: dict[str, list[ParameterOccurrence]] = {}
 
     for occurrence in occurrences:
         symbol = _normalize_symbol(occurrence.parameter.symbol)
@@ -165,7 +165,9 @@ def _deduplicate_parameters(
             entry["description"] = parameter.description
 
         entry["constraints"].update(
-            constraint.strip() for constraint in parameter.constraints if constraint and constraint.strip()
+            constraint.strip()
+            for constraint in parameter.constraints
+            if constraint and constraint.strip()
         )
         entry["tags"].update(tag.strip() for tag in parameter.tags if tag and tag.strip())
     normalized: list[dict] = []
@@ -179,26 +181,24 @@ def _deduplicate_parameters(
             ),
         )
         defined_label = occ_list[0].entity_label if occ_list and occ_list[0].entity_label else None
-        reference_labels = sorted(
-            {occ.entity_label for occ in occ_list[1:] if occ.entity_label}
-        )
-        normalized.append(
-            {
-                "label": _build_label(payload["name"], symbol),
-                "symbol": symbol,
-                "name": payload["name"],
-                "description": payload["description"],
-                "constraints": sorted(payload["constraints"]),
-                "tags": sorted(payload["tags"]),
-                "defined_in": defined_label,
-                "references": reference_labels,
-            }
-        )
+        reference_labels = sorted({occ.entity_label for occ in occ_list[1:] if occ.entity_label})
+        normalized.append({
+            "label": _build_label(payload["name"], symbol),
+            "symbol": symbol,
+            "name": payload["name"],
+            "description": payload["description"],
+            "constraints": sorted(payload["constraints"]),
+            "tags": sorted(payload["tags"]),
+            "defined_in": defined_label,
+            "references": reference_labels,
+        })
 
     return normalized, occ_map
 
 
-def _format_occurrence(label: str | None, entity_type: str | None, source_file: str, start_line: int | None) -> str:
+def _format_occurrence(
+    label: str | None, entity_type: str | None, source_file: str, start_line: int | None
+) -> str:
     label_str = label or "<unknown>"
     type_str = entity_type or "entry"
     line_str = f"line {start_line}" if start_line is not None else "line ?"
@@ -208,7 +208,7 @@ def _format_occurrence(label: str | None, entity_type: str | None, source_file: 
 def generate_parameter_markdown_report(
     document_id: str,
     parameters: list[dict],
-    occurrences: Dict[str, list[ParameterOccurrence]],
+    occurrences: dict[str, list[ParameterOccurrence]],
 ) -> str:
     """Return a markdown report summarizing parameter usage."""
 
@@ -229,17 +229,21 @@ def generate_parameter_markdown_report(
                 item.entity_label or "",
             ),
         )
-        lines.extend(("", f"## `{symbol}` — {entry.get('name') or '(unnamed parameter)' }"))
+        lines.extend(("", f"## `{symbol}` — {entry.get('name') or '(unnamed parameter)'}"))
         description = entry.get("description") or "(no description available)"
         lines.append(f"- **Description:** {description}")
 
         if not occ_list:
-            lines.append("- **Introduced in:** (no directive data)")
-            lines.append("- **Referenced in:** (no directive data)")
+            lines.extend((
+                "- **Introduced in:** (no directive data)",
+                "- **Referenced in:** (no directive data)",
+            ))
             continue
 
         intro = occ_list[0]
-        lines.append(f"- **Introduced in:** {_format_occurrence(intro.entity_label, intro.entity_type, intro.source_file, intro.start_line)}")
+        lines.append(
+            f"- **Introduced in:** {_format_occurrence(intro.entity_label, intro.entity_type, intro.source_file, intro.start_line)}"
+        )
 
         references = occ_list[1:]
         if references:
@@ -325,14 +329,16 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     try:
-        destination, unified, report = create_parameter_registry(args.document, output_path=args.output)
+        destination, unified, report = create_parameter_registry(
+            args.document, output_path=args.output
+        )
     except Exception as exc:  # pragma: no cover - CLI surface
         logger.error("%s", exc)
         return 1
 
     print(destination)
     print(json.dumps(unified, indent=2))
-    print("")
+    print()
     print(report)
     return 0
 

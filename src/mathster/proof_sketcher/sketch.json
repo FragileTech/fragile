@@ -15,7 +15,12 @@
     "type": {
       "type": "string",
       "description": "The type of the mathematical statement.",
-      "enum": ["Theorem", "Proposition", "Corollary", "Lemma"]
+      "enum": [
+        "Theorem",
+        "Proposition",
+        "Corollary",
+        "Lemma"
+      ]
     },
     "source": {
       "type": "string",
@@ -29,7 +34,12 @@
     "status": {
       "type": "string",
       "description": "The current status of the proof sketch.",
-      "enum": ["Sketch", "Draft", "Ready for Expansion", "Completed"]
+      "enum": [
+        "Sketch",
+        "Draft",
+        "Ready for Expansion",
+        "Completed"
+      ]
     },
     "statement": {
       "type": "object",
@@ -44,7 +54,11 @@
           "description": "An intuitive, plain-language explanation of the theorem's meaning and significance."
         }
       },
-      "required": ["formal", "informal"]
+      "required": [
+        "formal",
+        "informal"
+      ],
+      "additionalProperties": false
     },
     "strategySynthesis": {
       "type": "object",
@@ -56,35 +70,110 @@
           "items": {
             "type": "object",
             "properties": {
-              "strategist": { "type": "string", "description": "The source or name of the strategy (e.g., 'Gemini's Approach')." },
-              "method": { "type": "string", "description": "A brief name for the proof technique (e.g., 'Contradiction via Subgradient Calculus')." },
-              "keySteps": { "type": "array", "items": { "type": "string" } },
-              "strengths": { "type": "array", "items": { "type": "string" } },
-              "weaknesses": { "type": "array", "items": { "type": "string" } }
+              "strategist": {
+                "type": "string",
+                "description": "The source or name of the strategy (e.g., 'Gemini's Approach')."
+              },
+              "method": {
+                "type": "string",
+                "description": "A brief name for the proof technique (e.g., 'Contradiction via Subgradient Calculus')."
+              },
+              "keySteps": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "strengths": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "weaknesses": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
             },
-            "required": ["strategist", "method", "keySteps", "strengths", "weaknesses"]
+            "required": [
+              "strategist",
+              "method",
+              "keySteps",
+              "strengths",
+              "weaknesses"
+            ],
+            "additionalProperties": false
           }
         },
         "recommendedApproach": {
           "type": "object",
           "properties": {
-            "chosenMethod": { "type": "string", "description": "The final, chosen proof method." },
-            "rationale": { "type": "string", "description": "Justification for why this approach is optimal, often as a synthesis." },
+            "chosenMethod": {
+              "type": "string",
+              "description": "The final, chosen proof method."
+            },
+            "rationale": {
+              "type": "string",
+              "description": "Justification for why this approach is optimal, often as a synthesis."
+            },
             "verificationStatus": {
               "type": "object",
               "properties": {
-                "frameworkDependencies": { "type": "string", "enum": ["Verified", "Partially Verified", "Needs Verification"] },
-                "circularReasoning": { "type": "string", "enum": ["No circularity detected", "Potential circularity to check"] },
-                "keyAssumptions": { "type": "string", "enum": ["All assumptions are standard", "Requires new, unproven assumption"] },
-                "crossValidation": { "type": "string", "enum": ["Consensus between strategists", "Discrepancies noted", "Single strategist only"] }
+                "frameworkDependencies": {
+                  "type": "string",
+                  "enum": [
+                    "Verified",
+                    "Partially Verified",
+                    "Needs Verification"
+                  ]
+                },
+                "circularReasoning": {
+                  "type": "string",
+                  "enum": [
+                    "No circularity detected",
+                    "Potential circularity to check"
+                  ]
+                },
+                "keyAssumptions": {
+                  "type": "string",
+                  "enum": [
+                    "All assumptions are standard",
+                    "Requires new, unproven assumption"
+                  ]
+                },
+                "crossValidation": {
+                  "type": "string",
+                  "enum": [
+                    "Consensus between strategists",
+                    "Discrepancies noted",
+                    "Single strategist only"
+                  ]
+                }
               },
-              "required": ["frameworkDependencies", "circularReasoning", "keyAssumptions", "crossValidation"]
+              "required": [
+                "frameworkDependencies",
+                "circularReasoning",
+                "keyAssumptions",
+                "crossValidation"
+              ],
+              "additionalProperties": false
             }
           },
-          "required": ["chosenMethod", "rationale", "verificationStatus"]
+          "required": [
+            "chosenMethod",
+            "rationale",
+            "verificationStatus"
+          ],
+          "additionalProperties": false
         }
       },
-      "required": ["strategies", "recommendedApproach"]
+      "required": [
+        "strategies",
+        "recommendedApproach"
+      ],
+      "additionalProperties": false
     },
     "dependencies": {
       "type": "object",
@@ -95,13 +184,44 @@
           "items": {
             "type": "object",
             "properties": {
-              "type": { "type": "string", "enum": ["Axiom", "Theorem", "Lemma", "Definition", "Constant"] },
-              "label": { "type": "string", "description": "The unique label of the dependency." },
-              "sourceDocument": { "type": "string", "description": "The source file of the dependency." },
-              "purpose": { "type": "string", "description": "A brief statement of what the dependency provides." },
-              "usedInSteps": { "type": "array", "items": { "type": "string" }, "description": "A list of proof step identifiers (e.g., 'IV.3.2') where this dependency is used." }
+              "type": {
+                "type": "string",
+                "enum": [
+                  "Axiom",
+                  "Theorem",
+                  "Lemma",
+                  "Definition",
+                  "Constant"
+                ]
+              },
+              "label": {
+                "type": "string",
+                "description": "The unique label of the dependency."
+              },
+              "sourceDocument": {
+                "type": "string",
+                "description": "The source file of the dependency."
+              },
+              "purpose": {
+                "type": "string",
+                "description": "A brief statement of what the dependency provides."
+              },
+              "usedInSteps": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "A list of proof step identifiers (e.g., 'IV.3.2') where this dependency is used."
+              }
             },
-            "required": ["type", "label", "sourceDocument", "purpose", "usedInSteps"]
+            "required": [
+              "type",
+              "label",
+              "sourceDocument",
+              "purpose",
+              "usedInSteps"
+            ],
+            "additionalProperties": false
           }
         },
         "missingOrUncertainDependencies": {
@@ -112,12 +232,34 @@
               "items": {
                 "type": "object",
                 "properties": {
-                  "name": { "type": "string", "description": "A temporary name for the lemma (e.g., 'Lemma A')." },
-                  "statement": { "type": "string", "description": "The mathematical statement of the lemma to be proven." },
-                  "justification": { "type": "string", "description": "Why this lemma is necessary for the main proof." },
-                  "difficulty": { "type": "string", "enum": ["Easy", "Medium", "Hard"] }
+                  "name": {
+                    "type": "string",
+                    "description": "A temporary name for the lemma (e.g., 'Lemma A')."
+                  },
+                  "statement": {
+                    "type": "string",
+                    "description": "The mathematical statement of the lemma to be proven."
+                  },
+                  "justification": {
+                    "type": "string",
+                    "description": "Why this lemma is necessary for the main proof."
+                  },
+                  "difficulty": {
+                    "type": "string",
+                    "enum": [
+                      "Easy",
+                      "Medium",
+                      "Hard"
+                    ]
+                  }
                 },
-                "required": ["name", "statement", "justification", "difficulty"]
+                "required": [
+                  "name",
+                  "statement",
+                  "justification",
+                  "difficulty"
+                ],
+                "additionalProperties": false
               }
             },
             "uncertainAssumptions": {
@@ -125,44 +267,113 @@
               "items": {
                 "type": "object",
                 "properties": {
-                  "name": { "type": "string" },
-                  "statement": { "type": "string", "description": "The assumption being made." },
-                  "justification": { "type": "string", "description": "Why this assumption is uncertain or not explicitly stated in the framework." },
-                  "resolutionPath": { "type": "string", "description": "The proposed method to verify or formalize this assumption." }
+                  "name": {
+                    "type": "string"
+                  },
+                  "statement": {
+                    "type": "string",
+                    "description": "The assumption being made."
+                  },
+                  "justification": {
+                    "type": "string",
+                    "description": "Why this assumption is uncertain or not explicitly stated in the framework."
+                  },
+                  "resolutionPath": {
+                    "type": "string",
+                    "description": "The proposed method to verify or formalize this assumption."
+                  }
                 },
-                "required": ["statement", "justification", "resolutionPath"]
+                "required": [
+                  "name",
+                  "statement",
+                  "justification",
+                  "resolutionPath"
+                ],
+                "additionalProperties": false
               }
             }
-          }
+          },
+          "additionalProperties": false
         }
-      }
+      },
+      "additionalProperties": false
     },
     "detailedProof": {
       "type": "object",
       "description": "The core logical structure of the proof.",
       "properties": {
-        "overview": { "type": "string", "description": "A narrative summary of the proof's logical flow." },
-        "topLevelOutline": { "type": "array", "items": { "type": "string" }, "description": "A numbered list of the major stages of the proof." },
+        "overview": {
+          "type": "string",
+          "description": "A narrative summary of the proof's logical flow."
+        },
+        "topLevelOutline": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A numbered list of the major stages of the proof."
+        },
         "steps": {
           "type": "array",
           "items": {
             "type": "object",
             "properties": {
-              "stepNumber": { "type": "integer" },
-              "title": { "type": "string", "description": "The name of the proof step." },
-              "goal": { "type": "string", "description": "The objective of this step." },
-              "action": { "type": "string", "description": "The mathematical operations to be performed." },
-              "justification": { "type": "string", "description": "Why this action is valid, citing principles or definitions." },
-              "expectedResult": { "type": "string", "description": "The mathematical result at the end of this step." },
-              "dependencies": { "type": "array", "items": { "type": "string" } },
-              "potentialIssues": { "type": "string" }
+              "stepNumber": {
+                "type": "integer"
+              },
+              "title": {
+                "type": "string",
+                "description": "The name of the proof step."
+              },
+              "goal": {
+                "type": "string",
+                "description": "The objective of this step."
+              },
+              "action": {
+                "type": "string",
+                "description": "The mathematical operations to be performed."
+              },
+              "justification": {
+                "type": "string",
+                "description": "Why this action is valid, citing principles or definitions."
+              },
+              "expectedResult": {
+                "type": "string",
+                "description": "The mathematical result at the end of this step."
+              },
+              "dependencies": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "potentialIssues": {
+                "type": "string"
+              }
             },
-            "required": ["stepNumber", "title", "goal", "action", "justification", "expectedResult"]
+            "required": [
+              "stepNumber",
+              "title",
+              "goal",
+              "action",
+              "justification",
+              "expectedResult"
+            ],
+            "additionalProperties": false
           }
         },
-        "conclusion": { "type": "string", "description": "The final concluding statement of the proof (Q.E.D.)." }
+        "conclusion": {
+          "type": "string",
+          "description": "The final concluding statement of the proof (Q.E.D.)."
+        }
       },
-      "required": ["overview", "topLevelOutline", "steps", "conclusion"]
+      "required": [
+        "overview",
+        "topLevelOutline",
+        "steps",
+        "conclusion"
+      ],
+      "additionalProperties": false
     },
     "technicalDeepDives": {
       "type": "array",
@@ -170,28 +381,66 @@
       "items": {
         "type": "object",
         "properties": {
-          "challengeTitle": { "type": "string" },
-          "difficultyDescription": { "type": "string", "description": "Explanation of why this part is difficult." },
-          "proposedSolution": { "type": "string", "description": "The key technique to overcome the challenge." },
-          "mathematicalDetail": { "type": "string", "description": "A brief sketch of the calculation for this challenge." },
-          "references": { "type": "array", "items": { "type": "string" } }
+          "challengeTitle": {
+            "type": "string"
+          },
+          "difficultyDescription": {
+            "type": "string",
+            "description": "Explanation of why this part is difficult."
+          },
+          "proposedSolution": {
+            "type": "string",
+            "description": "The key technique to overcome the challenge."
+          },
+          "mathematicalDetail": {
+            "type": "string",
+            "description": "A brief sketch of the calculation for this challenge."
+          },
+          "references": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
         },
-        "required": ["challengeTitle", "difficultyDescription", "proposedSolution"]
+        "required": [
+          "challengeTitle",
+          "difficultyDescription",
+          "proposedSolution"
+        ],
+        "additionalProperties": false
       }
     },
     "validationChecklist": {
       "type": "object",
       "description": "A self-assessment checklist for the proof's rigor and completeness.",
       "properties": {
-        "logicalCompleteness": { "type": "boolean" },
-        "hypothesisUsage": { "type": "boolean" },
-        "conclusionDerivation": { "type": "boolean" },
-        "frameworkConsistency": { "type": "boolean" },
-        "noCircularReasoning": { "type": "boolean" },
-        "constantTracking": { "type": "boolean" },
-        "edgeCases": { "type": "boolean" },
-        "regularityAssumptions": { "type": "boolean" }
-      }
+        "logicalCompleteness": {
+          "type": "boolean"
+        },
+        "hypothesisUsage": {
+          "type": "boolean"
+        },
+        "conclusionDerivation": {
+          "type": "boolean"
+        },
+        "frameworkConsistency": {
+          "type": "boolean"
+        },
+        "noCircularReasoning": {
+          "type": "boolean"
+        },
+        "constantTracking": {
+          "type": "boolean"
+        },
+        "edgeCases": {
+          "type": "boolean"
+        },
+        "regularityAssumptions": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
     },
     "alternativeApproaches": {
       "type": "array",
@@ -199,23 +448,62 @@
       "items": {
         "type": "object",
         "properties": {
-          "name": { "type": "string" },
-          "approach": { "type": "string" },
-          "pros": { "type": "array", "items": { "type": "string" } },
-          "cons": { "type": "array", "items": { "type": "string" } },
-          "whenToConsider": { "type": "string" }
+          "name": {
+            "type": "string"
+          },
+          "approach": {
+            "type": "string"
+          },
+          "pros": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "cons": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "whenToConsider": {
+            "type": "string"
+          }
         },
-        "required": ["name", "approach", "pros", "cons", "whenToConsider"]
+        "required": [
+          "name",
+          "approach",
+          "pros",
+          "cons",
+          "whenToConsider"
+        ],
+        "additionalProperties": false
       }
     },
     "futureWork": {
       "type": "object",
       "description": "Documentation of gaps, conjectures, and potential extensions related to the proof.",
       "properties": {
-        "remainingGaps": { "type": "array", "items": { "type": "string" } },
-        "conjectures": { "type": "array", "items": { "type": "string" } },
-        "extensions": { "type": "array", "items": { "type": "string" } }
-      }
+        "remainingGaps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "conjectures": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "extensions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
     },
     "expansionRoadmap": {
       "type": "object",
@@ -226,38 +514,88 @@
           "items": {
             "type": "object",
             "properties": {
-              "phaseTitle": { "type": "string" },
-              "estimatedTime": { "type": "string" },
+              "phaseTitle": {
+                "type": "string"
+              },
+              "estimatedTime": {
+                "type": "string"
+              },
               "tasks": {
                 "type": "array",
                 "items": {
                   "type": "object",
                   "properties": {
-                    "taskName": { "type": "string" },
-                    "strategy": { "type": "string" },
-                    "difficulty": { "type": "string" }
+                    "taskName": {
+                      "type": "string"
+                    },
+                    "strategy": {
+                      "type": "string"
+                    },
+                    "difficulty": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["taskName"]
+                  "required": [
+                    "taskName"
+                  ],
+                  "additionalProperties": false
                 }
               }
             },
-            "required": ["phaseTitle", "estimatedTime", "tasks"]
+            "required": [
+              "phaseTitle",
+              "estimatedTime",
+              "tasks"
+            ],
+            "additionalProperties": false
           }
         },
-        "totalEstimatedTime": { "type": "string" }
+        "totalEstimatedTime": {
+          "type": "string"
+        }
       },
-      "required": ["phases", "totalEstimatedTime"]
+      "required": [
+        "phases",
+        "totalEstimatedTime"
+      ],
+      "additionalProperties": false
     },
     "crossReferences": {
       "type": "object",
       "description": "A collection of links to other parts of the document ecosystem.",
       "properties": {
-        "theoremsUsed": { "type": "array", "items": { "type": "string" } },
-        "definitionsUsed": { "type": "array", "items": { "type": "string" } },
-        "axiomsUsed": { "type": "array", "items": { "type": "string" } },
-        "relatedProofs": { "type": "array", "items": { "type": "string" } },
-        "downstreamConsequences": { "type": "array", "items": { "type": "string" } }
-      }
+        "theoremsUsed": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "definitionsUsed": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "axiomsUsed": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "relatedProofs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "downstreamConsequences": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
     },
     "specialNotes": {
       "type": "string",
@@ -276,5 +614,6 @@
     "dependencies",
     "detailedProof",
     "validationChecklist"
-  ]
+  ],
+  "additionalProperties": false
 }

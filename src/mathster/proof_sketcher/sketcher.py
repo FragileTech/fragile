@@ -9,69 +9,70 @@ from typing import Callable, Literal
 import dspy
 from pydantic import BaseModel, Field
 
-from mathster.proof_sketcher.sketch_strategist import (
-    SketchStrategy,
-    SketchStrategist,
-    get_label_data,
-)
 from mathster.claude_tool import sync_ask_claude
+from mathster.proof_sketcher.sketch_strategist import (
+    get_label_data,
+    SketchStrategist,
+    SketchStrategy,
+)
+
 
 __all__ = [
-    "ProofType",
-    "ProofSketchStatus",
-    "DependencyType",
-    "LemmaDifficulty",
-    "FrameworkVerificationState",
-    "CircularReasoningState",
-    "KeyAssumptionsState",
-    "CrossValidationState",
-    "ProofStatement",
-    "StrategyOption",
-    "VerificationStatus",
-    "RecommendedApproach",
-    "StrategySynthesis",
-    "DependencyEntry",
-    "LemmaToProve",
-    "UncertainAssumption",
-    "MissingOrUncertainDependencies",
-    "DependencyLedger",
-    "ProofStep",
-    "DetailedProof",
-    "TechnicalDeepDive",
-    "ValidationChecklist",
     "AlternativeApproach",
-    "FutureWork",
-    "ExpansionTask",
+    "AlternativeApproachesAgent",
+    "AlternativeApproachesSignature",
+    "CircularReasoningState",
+    "CrossReferences",
+    "CrossReferencesAgent",
+    "CrossReferencesSignature",
+    "CrossValidationState",
+    "DependencyEntry",
+    "DependencyLedger",
+    "DependencyLedgerAgent",
+    "DependencyLedgerAgentSignature",
+    "DependencyLedgerSignature",
+    "DependencyPlanningSignature",
+    "DependencyType",
+    "DetailedProof",
+    "DetailedProofAgent",
+    "DetailedProofSignature",
     "ExpansionPhase",
     "ExpansionRoadmap",
-    "CrossReferences",
-    "ProofSketch",
-    "ProofStatementSignature",
-    "ProofStatementAgent",
-    "StrategySynthesisSignature",
-    "StrategySynthesisAgent",
-    "DependencyLedgerSignature",
-    "DetailedProofSignature",
-    "DetailedProofAgent",
-    "TechnicalDeepDivesSignature",
-    "TechnicalDeepDiveAgent",
-    "ValidationChecklistSignature",
-    "ValidationChecklistAgent",
-    "AlternativeApproachesSignature",
-    "AlternativeApproachesAgent",
-    "FutureWorkSignature",
-    "FutureWorkAgent",
-    "ExpansionRoadmapSignature",
     "ExpansionRoadmapAgent",
-    "CrossReferencesSignature",
-    "CrossReferencesAgent",
-    "ProofSketchSignature",
+    "ExpansionRoadmapSignature",
+    "ExpansionTask",
+    "FrameworkVerificationState",
+    "FutureWork",
+    "FutureWorkAgent",
+    "FutureWorkSignature",
+    "KeyAssumptionsState",
+    "LemmaDifficulty",
+    "LemmaToProve",
+    "MissingOrUncertainDependencies",
+    "ProofSketch",
     "ProofSketchAgent",
-    "DependencyPlanningSignature",
-    "DependencyLedgerAgentSignature",
+    "ProofSketchSignature",
+    "ProofSketchStatus",
+    "ProofStatement",
+    "ProofStatementAgent",
+    "ProofStatementSignature",
+    "ProofStep",
+    "ProofType",
+    "RecommendedApproach",
     "StrategyComparisonSignature",
+    "StrategyOption",
+    "StrategySynthesis",
+    "StrategySynthesisAgent",
+    "StrategySynthesisSignature",
     "StrategySynthesizer",
-    "DependencyLedgerAgent",
+    "TechnicalDeepDive",
+    "TechnicalDeepDiveAgent",
+    "TechnicalDeepDivesSignature",
+    "UncertainAssumption",
+    "ValidationChecklist",
+    "ValidationChecklistAgent",
+    "ValidationChecklistSignature",
+    "VerificationStatus",
     "configure_dependency_plan_tool",
     "setup_missing_dependency_tool",
     "setup_verified_dependency_tool",
@@ -186,9 +187,7 @@ class UncertainAssumption(BaseModel):
     justification: str = Field(
         ..., description="Why this assumption is viewed as uncertain or implicit."
     )
-    resolutionPath: str = Field(
-        ..., description="Plan to formalize or validate the assumption."
-    )
+    resolutionPath: str = Field(..., description="Plan to formalize or validate the assumption.")
 
 
 class MissingOrUncertainDependencies(BaseModel):
@@ -207,7 +206,8 @@ class DependencyLedger(BaseModel):
     """Combined accounting of proven and pending dependencies."""
 
     verifiedDependencies: list[DependencyEntry] = Field(
-        default_factory=list, description="All references currently justified within the framework."
+        default_factory=list,
+        description="All references currently justified within the framework.",
     )
     missingOrUncertainDependencies: MissingOrUncertainDependencies | None = Field(
         default=None, description="Work remaining to firm up the dependency graph."
@@ -788,7 +788,7 @@ class ProofSketchSignature(dspy.Signature):
     document_source = dspy.InputField(desc="File path or reference to the source text.")
     creation_date = dspy.InputField(desc="Date string YYYY-MM-DD when the sketch is created.")
     proof_status = dspy.InputField(
-        desc='Lifecycle state (Sketch, Draft, Ready for Expansion, Completed).'
+        desc="Lifecycle state (Sketch, Draft, Ready for Expansion, Completed)."
     )
     framework_context = dspy.InputField(
         desc="Optional background information or available results.", optional=True
@@ -805,11 +805,20 @@ class ProofSketchSignature(dspy.Signature):
 class ProofSketchAgent(dspy.Module):
     """End-to-end orchestrator that assembles ProofSketch via modular agents."""
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        model: dspy.LM = None,
+        stronger_model: dspy.LM = None,
+        strategist_1: dspy.LM = None,
+        strategist_2: dspy.LM = None,
+    ) -> None:
         super().__init__()
+        self.model = model or dspy.settings.lm
+        self.stronger_model = stronger_model or dspy.settings.lm
+        self.strategist_1 = strategist_1 or dspy.settings.lm
+        self.strategist_2 = strategist_2 or self.strategist_1
         self.statement_agent = ProofStatementAgent()
-        self.sketch_strategist_primary = SketchStrategist()
-        self.sketch_strategist_secondary = SketchStrategist()
+        self.sketch_strategist = SketchStrategist()
         self.strategy_synthesizer = StrategySynthesizer()
         self.dependency_agent = DependencyLedgerAgent()
         self.detailed_proof_agent = DetailedProofAgent()
@@ -844,46 +853,44 @@ class ProofSketchAgent(dspy.Module):
 
         # 2. Generate two strategies via SketchStrategist with different guidance
         primary_notes = (
-            operator_notes + " | Primary strategist: Claude Sonnet 4.5 focusing on geometric insight."
+            operator_notes + "Focus on classical techniques and well-established methods."
         ).strip()
         secondary_notes = (
-            operator_notes + " | Secondary strategist: GPT-5 Codex focusing on analytic bounds."
+            operator_notes + "Focus on leveraging as much as possible the Fragile Gas Theory."
         ).strip()
-
-        primary_strategy = self.sketch_strategist_primary(
-            theorem_label=theorem_label,
-            theorem_statement=theorem_statement,
-            framework_context=framework_context,
-            operator_notes=primary_notes,
-        ).strategy
-
-        secondary_strategy = self.sketch_strategist_secondary(
-            theorem_label=theorem_label,
-            theorem_statement=theorem_statement,
-            framework_context=framework_context,
-            operator_notes=secondary_notes,
-        ).strategy
-
-        # 3. Strategy synthesis
-        strategy_synthesis = self.strategy_synthesizer(
-            theorem_label=theorem_label,
-            theorem_statement=theorem_statement,
-            primary_strategy=primary_strategy,
-            secondary_strategy=secondary_strategy,
-            evaluation_notes=operator_notes,
-        ).strategySynthesis
+        with dspy.context(lm=self.strategist_1):
+            primary_strategy = self.sketch_strategist_primary(
+                theorem_label=theorem_label,
+                theorem_statement=theorem_statement,
+                framework_context=framework_context,
+                operator_notes=primary_notes,
+            ).strategy
+        with dspy.context(lm=self.strategist_2):
+            secondary_strategy = self.sketch_strategist_secondary(
+                theorem_label=theorem_label,
+                theorem_statement=theorem_statement,
+                framework_context=framework_context,
+                operator_notes=secondary_notes,
+            ).strategy
+        with dspy.context(lm=self.stronger_model):
+            # 3. Strategy synthesis
+            strategy_synthesis = self.strategy_synthesizer(
+                theorem_label=theorem_label,
+                theorem_statement=theorem_statement,
+                primary_strategy=primary_strategy,
+                secondary_strategy=secondary_strategy,
+                evaluation_notes=operator_notes,
+            ).strategySynthesis
 
         strategy_context_text = _strategy_context(strategy_synthesis)
 
         # 4. Dependencies
-        combined_notes = "\n\n".join(
-            [
-                theorem_statement,
-                _describe_strategy(primary_strategy),
-                _describe_strategy(secondary_strategy),
-                strategy_context_text,
-            ]
-        )
+        combined_notes = "\n\n".join([
+            theorem_statement,
+            _describe_strategy(primary_strategy),
+            _describe_strategy(secondary_strategy),
+            strategy_context_text,
+        ])
 
         dependency_ledger = self.dependency_agent(
             theorem_label=theorem_label,
@@ -893,58 +900,58 @@ class ProofSketchAgent(dspy.Module):
         ).dependency_ledger
 
         dependency_notes = json.dumps(dependency_ledger.model_dump(), indent=2)
+        with dspy.context(lm=self.stronger_model):
+            # 5. Detailed proof
+            _select_recommended_option(strategy_synthesis)
+            detailed_proof = self.detailed_proof_agent(
+                theorem_statement=theorem_statement,
+                strategy_summary=strategy_context_text,
+                dependency_notes=dependency_notes,
+            ).detailedProof
 
-        # 5. Detailed proof
-        option = _select_recommended_option(strategy_synthesis)
-        detailed_proof = self.detailed_proof_agent(
-            theorem_statement=theorem_statement,
-            strategy_summary=strategy_context_text,
-            dependency_notes=dependency_notes,
-        ).detailedProof
+        proof_text = "\n\n".join([
+            statement.formal,
+            statement.informal,
+            strategy_context_text,
+            detailed_proof.overview,
+            "\n".join(step.action for step in detailed_proof.steps),
+        ])
+        with dspy.context(lm=self.stronger_model):
+            # 6. Technical deep dives
+            technical_deep_dives = self.deep_dive_agent(
+                proof_sketch_text=proof_text,
+                focus_areas="Extract hardest steps, dependencies, and regularity issues.",
+            ).deep_dives
 
-        proof_text = "\n\n".join(
-            [
-                statement.formal,
-                statement.informal,
-                strategy_context_text,
-                detailed_proof.overview,
-                "\n".join(step.action for step in detailed_proof.steps),
-            ]
-        )
+            # 7. Validation checklist
+            validation_checklist = self.validation_agent(
+                proof_sketch_text=proof_text,
+                self_review_notes=operator_notes,
+            ).checklist
+        with dspy.context(lm=self.model):
+            # 8. Alternate approaches (based on non-selected strategy)
+            selected_method = strategy_synthesis.recommendedApproach.chosenMethod.strip()
+            other_strategy = (
+                secondary_strategy
+                if secondary_strategy.method.strip() == selected_method
+                else primary_strategy
+            )
+            rejected_ideas = _describe_strategy(other_strategy)
+            alternative_approaches = self.alternative_agent(
+                theorem_statement=theorem_statement,
+                rejected_ideas=rejected_ideas,
+            ).alternatives
 
-        # 6. Technical deep dives
-        technical_deep_dives = self.deep_dive_agent(
-            proof_sketch_text=proof_text,
-            focus_areas="Extract hardest steps, dependencies, and regularity issues.",
-        ).deep_dives
+            # 9. Future work from dependency gaps
+            missing_text = _format_missing_dependencies_text(dependency_ledger)
+            future_work = self.future_work_agent(open_questions=missing_text).futureWork
 
-        # 7. Validation checklist
-        validation_checklist = self.validation_agent(
-            proof_sketch_text=proof_text,
-            self_review_notes=operator_notes,
-        ).checklist
-
-        # 8. Alternate approaches (based on non-selected strategy)
-        selected_method = strategy_synthesis.recommendedApproach.chosenMethod.strip()
-        other_strategy = (
-            secondary_strategy if secondary_strategy.method.strip() == selected_method else primary_strategy
-        )
-        rejected_ideas = _describe_strategy(other_strategy)
-        alternative_approaches = self.alternative_agent(
-            theorem_statement=theorem_statement,
-            rejected_ideas=rejected_ideas,
-        ).alternatives
-
-        # 9. Future work from dependency gaps
-        missing_text = _format_missing_dependencies_text(dependency_ledger)
-        future_work = self.future_work_agent(open_questions=missing_text).futureWork
-
-        # 10. Expansion roadmap
-        roadmap_notes = _roadmap_notes_from_future_work(future_work)
-        expansion_roadmap = self.roadmap_agent(
-            workstream_notes=roadmap_notes,
-            constraints=operator_notes,
-        ).roadmap
+            # 10. Expansion roadmap
+            roadmap_notes = _roadmap_notes_from_future_work(future_work)
+            expansion_roadmap = self.roadmap_agent(
+                workstream_notes=roadmap_notes,
+                constraints=operator_notes,
+            ).roadmap
 
         # 11. Cross references
         cross_references = self.cross_refs_agent(proof_sketch_text=proof_text).crossReferences
@@ -981,13 +988,9 @@ class DependencyPlanningSignature(dspy.Signature):
 
     theorem_label = dspy.InputField(desc="Framework label of the target statement.")
     theorem_statement = dspy.InputField(desc="Formal theorem/proposition statement.")
-    strategy_summary = dspy.InputField(
-        desc="Narrative summary of the selected proof strategy."
-    )
+    strategy_summary = dspy.InputField(desc="Narrative summary of the selected proof strategy.")
     rationale = dspy.InputField(desc="Justification for the chosen method.")
-    key_steps_text = dspy.InputField(
-        desc="Ordered bullet list of key steps (one per line)."
-    )
+    key_steps_text = dspy.InputField(desc="Ordered bullet list of key steps (one per line).")
 
     plan: str = dspy.OutputField(
         desc="Numbered plan describing how to confirm verified dependencies and identify missing ones."
@@ -1057,8 +1060,8 @@ Return ONLY a JSON object that matches StrategySynthesis model schema:
         self,
         theorem_label: str,
         theorem_statement: str,
-        primary_strategy: "SketchStrategy",
-        secondary_strategy: "SketchStrategy",
+        primary_strategy: SketchStrategy,
+        secondary_strategy: SketchStrategy,
         evaluation_notes: str = "",
     ) -> dspy.Prediction:
         primary_json = primary_strategy.model_dump_json()
@@ -1074,16 +1077,19 @@ Return ONLY a JSON object that matches StrategySynthesis model schema:
 
 def _load_strategy_synthesis(strategy_json: str) -> StrategySynthesis:
     if not strategy_json:
-        raise ValueError("Strategy synthesis JSON must be provided.")
+        msg = "Strategy synthesis JSON must be provided."
+        raise ValueError(msg)
     try:
         return StrategySynthesis.model_validate_json(strategy_json)
-    except Exception as exc:  # noqa: BLE001 - surface underlying validation
-        raise ValueError("Invalid strategy_synthesis_json supplied to tool.") from exc
+    except Exception as exc:
+        msg = "Invalid strategy_synthesis_json supplied to tool."
+        raise ValueError(msg) from exc
 
 
 def _select_recommended_option(strategy: StrategySynthesis) -> StrategyOption:
     if not strategy.strategies:
-        raise ValueError("StrategySynthesis must contain at least one strategy option.")
+        msg = "StrategySynthesis must contain at least one strategy option."
+        raise ValueError(msg)
     chosen = strategy.recommendedApproach.chosenMethod.strip()
     for option in strategy.strategies:
         if option.method.strip() == chosen:
@@ -1167,7 +1173,9 @@ def _roadmap_notes_from_future_work(future_work: FutureWork | None) -> str:
         return "No future work currently recorded."
     parts = []
     if future_work.remainingGaps:
-        parts.append("Remaining Gaps:\n" + "\n".join(f"- {gap}" for gap in future_work.remainingGaps))
+        parts.append(
+            "Remaining Gaps:\n" + "\n".join(f"- {gap}" for gap in future_work.remainingGaps)
+        )
     if future_work.conjectures:
         parts.append("Conjectures:\n" + "\n".join(f"- {conj}" for conj in future_work.conjectures))
     if future_work.extensions:
@@ -1241,17 +1249,18 @@ Dependency plan:
 {plan_text}
 
 Additional notes:
-{sketch_notes or 'None'}
+{sketch_notes or "None"}
 
 List VERIFIED dependencies as JSON array.
 """
         raw = sync_ask_claude(prompt, model="sonnet", system_prompt=claude_instructions)
         try:
             data = json.loads(raw)
-        except json.JSONDecodeError as exc:  # noqa: B904
+        except json.JSONDecodeError as exc:
             raise ValueError(f"Claude returned invalid dependency JSON: {raw}") from exc
         if not isinstance(data, list):
-            raise ValueError("Claude dependency response must be a JSON array.")
+            msg = "Claude dependency response must be a JSON array."
+            raise ValueError(msg)
         validated = [DependencyEntry.model_validate(item).model_dump() for item in data]
         return json.dumps(validated, indent=2)
 
@@ -1294,14 +1303,14 @@ Dependency plan:
 {plan_text}
 
 Additional notes:
-{sketch_notes or 'None'}
+{sketch_notes or "None"}
 
 List NEW lemmas or uncertain assumptions still needed.
 """
         raw = sync_ask_claude(prompt, model="sonnet", system_prompt=claude_instructions)
         try:
             data = json.loads(raw)
-        except json.JSONDecodeError as exc:  # noqa: B904
+        except json.JSONDecodeError as exc:
             raise ValueError(f"Claude returned invalid missing-dependency JSON: {raw}") from exc
         validated = MissingOrUncertainDependencies.model_validate(data)
         return validated.model_dump_json(indent=2)

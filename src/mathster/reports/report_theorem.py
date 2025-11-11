@@ -13,7 +13,6 @@ from mathster.preprocess_extraction.data_models import (
     UnifiedProof,
     Variable,
 )
-
 from mathster.reports.report_utils import (
     format_bullet_list,
     format_metadata,
@@ -23,7 +22,8 @@ from mathster.reports.report_utils import (
     wrap_math,
 )
 
-__all__ = ["unified_theorem_to_markdown", "format_unified_proof"]
+
+__all__ = ["format_unified_proof", "unified_theorem_to_markdown"]
 
 
 def unified_theorem_to_markdown(theorem: UnifiedMathematicalEntity) -> str:
@@ -33,11 +33,11 @@ def unified_theorem_to_markdown(theorem: UnifiedMathematicalEntity) -> str:
 
     reference_labels = format_reference_labels(theorem.references)
     reference_line = (
-        f"**Reference labels:** {reference_labels}" if reference_labels else "**Reference labels:** _none_"
+        f"**Reference labels:** {reference_labels}"
+        if reference_labels
+        else "**Reference labels:** _none_"
     )
-    sections.append(reference_line)
-
-    sections.append(_build_header_block(theorem))
+    sections.extend((reference_line, _build_header_block(theorem)))
 
     if theorem.nl_statement:
         sections.append(make_section("Natural Language Statement", theorem.nl_statement.strip()))
@@ -102,7 +102,9 @@ def _build_header_block(theorem: UnifiedMathematicalEntity) -> str:
     if theorem.generated_at:
         info_parts.append(f"Generated at: {theorem.generated_at}")
     if theorem.alt_labels:
-        info_parts.append("Alternate labels: " + ", ".join(f"`{lbl}`" for lbl in theorem.alt_labels))
+        info_parts.append(
+            "Alternate labels: " + ", ".join(f"`{lbl}`" for lbl in theorem.alt_labels)
+        )
     if info_parts:
         lines.append(" • ".join(info_parts))
     return "\n".join(lines)
@@ -257,7 +259,7 @@ def _format_proof_steps(steps: list[Any]) -> str:
             ref_line = format_reference_labels(list(refs))
             if ref_line:
                 body_parts.append(f"Refs: {ref_line}")
-        body = "\n   ".join(body_parts if body_parts else ["—"])
+        body = "\n   ".join(body_parts or ["—"])
         rendered.append(f"{len(rendered) + 1}. **{heading}**\n   {body}")
     return "\n".join(rendered)
 
