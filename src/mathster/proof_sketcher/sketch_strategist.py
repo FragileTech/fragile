@@ -299,6 +299,8 @@ Output must be a list of structured TechnicalDeepDive objects following the sche
             result = agent.run(prompt=prompt)
         return result.deep_dives if hasattr(result, "deep_dives") else result
 
+    get_technical_deep_dives.agent = agent  # type: ignore[attr-defined]
+
     return get_technical_deep_dives
 
 
@@ -404,6 +406,8 @@ Output must be a structured FrameworkDependencies object following the schema ex
         with dspy.context(lm=lm):
             result = agent.run(prompt=prompt)
         return result.dependencies if hasattr(result, "dependencies") else result
+
+    get_framework_dependencies.agent = agent  # type: ignore[attr-defined]
 
     return get_framework_dependencies
 
@@ -511,6 +515,8 @@ Output must be a structured SketchStrategyItems object following the schema exac
             )
         return result.strategy_items if hasattr(result, "strategy_items") else result
 
+    get_strategy_items.agent = agent  # type: ignore[attr-defined]
+
     return get_strategy_items
 
 
@@ -597,6 +603,22 @@ class SketchStrategist(dspy.Module):
         self._get_technical_deep_dives_impl = setup_get_technical_deep_dive(
             lm=self.lm, claude_model=claude_model
         )
+
+        # Expose the underlying DSPy predictors so Refine/trace tooling can map them.
+        try:
+            self.strategy_items_agent = self._get_strategy_items_impl.agent
+        except AttributeError as exc:  # pragma: no cover - defensive
+            raise RuntimeError("Strategy items tool is missing its DSPy agent reference") from exc
+
+        try:
+            self.framework_dependencies_agent = self._get_framework_dependencies_impl.agent
+        except AttributeError as exc:  # pragma: no cover - defensive
+            raise RuntimeError("Framework dependency tool is missing its DSPy agent reference") from exc
+
+        try:
+            self.technical_deep_dives_agent = self._get_technical_deep_dives_impl.agent
+        except AttributeError as exc:  # pragma: no cover - defensive
+            raise RuntimeError("Technical deep-dives tool is missing its DSPy agent reference") from exc
 
         # Create tool wrappers for the ReAct agent
         def get_strategy_items_tool(

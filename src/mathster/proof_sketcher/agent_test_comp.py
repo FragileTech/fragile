@@ -13,6 +13,10 @@ import dspy
 import flogging
 
 from mathster.parsing.config import configure_dspy
+from mathster.proof_sketcher.manual_refine_pipeline import (
+    ManualRefineSketchPipeline,
+    LogVerbosity,
+)
 from mathster.proof_sketcher.sketch_pipeline import AgentSketchPipeline, ProofSketchWorkflowResult
 
 
@@ -35,8 +39,20 @@ logging.getLogger("mathster.proof_sketcher.sketch_referee_analysis").setLevel(lo
 logging.getLogger("mathster.proof_sketcher.sketch_pipeline").setLevel(logging.DEBUG)
 
 
-def run_demo() -> dict[str, Any]:
-    """Instantiate AgentSketchPipeline, generate a proof sketch, and display results."""
+def run_demo(
+    verbosity: LogVerbosity = LogVerbosity.STANDARD,
+    log_json_path: str | None = None,
+    N: int = 5,
+    threshold: float = 60.0,
+) -> dict[str, Any]:
+    """Instantiate AgentSketchPipeline, generate a proof sketch, and display results.
+
+    Args:
+        verbosity: Logging verbosity level (minimal/standard/detailed/verbose/debug)
+        log_json_path: Optional path to export refinement metrics as JSON
+        N: Maximum number of refinement iterations
+        threshold: Score threshold for early stopping (0-100)
+    """
 
     # Configure DSPy with a fast model for testing
     configure_dspy(
@@ -46,15 +62,18 @@ def run_demo() -> dict[str, Any]:
     )
 
     print("=" * 80)
-    print("Testing AgentSketchPipeline (Full Workflow)")
+    print("Testing ManualRefineSketchPipeline (Full Workflow)")
+    print(f"Verbosity: {verbosity.value}")
     print("=" * 80)
 
-    def reward_fn(args, pred: dspy.Prediction):
-        return pred.result.scores.get_score()
-
-    # Create the pipeline agent
-    agent = dspy.Refine(
-        module=AgentSketchPipeline(), reward_fn=reward_fn, N=5, threshold=60, fail_count=5
+    # Create the manual refinement pipeline
+    agent = ManualRefineSketchPipeline(
+        pipeline=AgentSketchPipeline(),
+        N=N,
+        threshold=threshold,
+        fail_count=5,
+        verbosity=verbosity,
+        log_json_path=log_json_path,
     )
 
     # Sample theorem data
@@ -84,11 +103,23 @@ def run_demo() -> dict[str, Any]:
     print(f"Label: {sample_data['theorem_label']}")
     print(f"Type: {sample_data['theorem_type']}\n")
 
-    # Run the pipeline (drafting + validation)
-    prediction = agent(**sample_data)
+    # Run the manual refinement pipeline (drafting + validation + refinement)
+    refinement_result = agent(**sample_data)
 
-    # Extract the workflow result
-    result: ProofSketchWorkflowResult = prediction.result
+    # Display refinement diagnostics
+    print("\n" + "=" * 80)
+    print("REFINEMENT DIAGNOSTICS")
+    print("=" * 80)
+    print(f"Total iterations: {refinement_result.total_iterations}")
+    print(f"Best iteration: {refinement_result.best_iteration_num}")
+    print(f"Best score: {refinement_result.best_score:.2f}/100")
+    print(f"Score progression: {[f'{s:.2f}' for s in refinement_result.scores]}")
+    print(f"Threshold met: {refinement_result.threshold_met}")
+    print(f"Early stopped: {refinement_result.early_stopped}")
+    print(f"Stopped reason: {refinement_result.stopped_reason}")
+
+    # Extract the best workflow result
+    result: ProofSketchWorkflowResult = refinement_result.best_result
     sketch = result.sketch
 
     # Display key components

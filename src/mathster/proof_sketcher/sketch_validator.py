@@ -484,15 +484,6 @@ class SketchValidator(dspy.Module):
         codex_prompt: str | None = None,
     ) -> None:
         super().__init__()
-        project_root = project_root or "."
-        gemini_prompt = gemini_prompt or (
-            "You are Gemini 2.5 Flash serving as a rigorous mathematical proof reviewer. "
-            "Provide meticulous, publication-ready analysis."
-        )
-        codex_prompt = codex_prompt or (
-            "You are Codex (GPT-5) acting as an adversarial proof reviewer. "
-            "Focus on technical rigor and computational correctness."
-        )
 
         self.metadata_generator = dspy.Predict(ReportMetadataSignature)
         self.consensus_generator = dspy.ChainOfThought(
@@ -501,12 +492,12 @@ class SketchValidator(dspy.Module):
                 "and summarize key findings."
             )
         )
-        self.action_items_generator = dspy.ChainOfThought(
+        self.action_items_generator = dspy.Predict(
             ActionableItemsSignature.with_instructions(
                 "Turn consolidated reviewer feedback into actionable TODO items with priorities."
             )
         )
-        self.synthesis_generator = dspy.ChainOfThought(
+        self.synthesis_generator = dspy.Predict(
             SynthesisAndActionPlanSignature.with_instructions(
                 "Merge consensus analysis and action items into a final decision and confidence statement."
             )
@@ -661,12 +652,13 @@ class SketchValidator(dspy.Module):
             confidence_statement_context=confidence_context,
         ).synthesisAndActionPlan
 
-        report = self.report_builder(
-            reportMetadata=metadata.model_dump_json(),
-            originalProofSketch=proof_sketch_json,
-            reviews=json.dumps([gemini_review, codex_review]),
-            synthesisAndActionPlan=synthesis.model_dump_json(),
-        ).report
+        logger.debug("Building sketch report")
+        report = SketchValidationReport(
+            reportMetadata=metadata,
+            originalProofSketch=proof_sketch,
+            reviews=[gemini_review, codex_review],
+            synthesisAndActionPlan=synthesis,
+        )
         logger.debug("Building quantitative scores from reviews")
         scores = self.build_scores(gemini_review, codex_review, report)
 
