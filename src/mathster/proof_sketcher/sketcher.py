@@ -392,7 +392,9 @@ class ProofStatementSignature(dspy.Signature):
 class ProofStatementAgent(dspy.Module):
     """Chain-of-thought agent that emits ProofStatement objects."""
 
-    def __init__(self) -> None:
+    def __init__(self, lm: dspy.LM | None = None) -> None:
+        super().__init__()
+        self.lm = lm or dspy.settings.lm
         schema = json.dumps(ProofStatement.model_json_schema(), indent=2)
         instructions = f"""
 Produce both the formal and informal statements for the provided theorem.
@@ -406,7 +408,7 @@ Return ONLY JSON matching:
 {schema}
 """
         signature = ProofStatementSignature.with_instructions(instructions)
-        self.agent = dspy.ChainOfThought(signature)
+        self.agent = dspy.ChainOfThought(signature, lm=self.lm)
 
     def forward(
         self,
@@ -438,8 +440,9 @@ class StrategySynthesisSignature(dspy.Signature):
 class StrategySynthesisAgent(dspy.Module):
     """Chain-of-thought agent that generates StrategySynthesis from scratch."""
 
-    def __init__(self) -> None:
+    def __init__(self, lm: dspy.LM | None = None) -> None:
         super().__init__()
+        self.lm = lm or dspy.settings.lm
         schema = json.dumps(StrategySynthesis.model_json_schema(), indent=2)
         instructions = f"""
 You explore multiple proof strategies for the given theorem.
@@ -457,7 +460,7 @@ Return ONLY JSON matching:
 {schema}
 """
         signature = StrategySynthesisSignature.with_instructions(instructions)
-        self.agent = dspy.ChainOfThought(signature)
+        self.agent = dspy.ChainOfThought(signature, lm=self.lm)
 
     def forward(
         self,
@@ -506,8 +509,9 @@ class DetailedProofSignature(dspy.Signature):
 class DetailedProofAgent(dspy.Module):
     """Chain-of-thought agent that emits DetailedProof objects."""
 
-    def __init__(self) -> None:
+    def __init__(self, lm: dspy.LM | None = None) -> None:
         super().__init__()
+        self.lm = lm or dspy.settings.lm
         schema = json.dumps(DetailedProof.model_json_schema(), indent=2)
         instructions = f"""
 You produce the DetailedProof section of the proof sketch.
@@ -535,7 +539,7 @@ Output ONLY JSON matching:
 {schema}
 """
         signature = DetailedProofSignature.with_instructions(instructions)
-        self.agent = dspy.ChainOfThought(signature)
+        self.agent = dspy.ChainOfThought(signature, lm=self.lm)
 
     def forward(
         self,
@@ -568,8 +572,9 @@ class TechnicalDeepDivesSignature(dspy.Signature):
 class TechnicalDeepDiveAgent(dspy.Module):
     """Chain-of-thought agent that fills TechnicalDeepDiveSignature."""
 
-    def __init__(self) -> None:
+    def __init__(self, lm: dspy.LM | None = None) -> None:
         super().__init__()
+        self.lm = lm or dspy.settings.lm
         instructions = f"""
 You extract ALL meaningful technical challenges from a proof sketch.
 
@@ -587,7 +592,7 @@ Return ONLY a JSON array conforming to:
 {json.dumps(TechnicalDeepDive.model_json_schema(), indent=2)}
 """
         signature = TechnicalDeepDivesSignature.with_instructions(instructions)
-        self.agent = dspy.ChainOfThought(signature)
+        self.agent = dspy.ChainOfThought(signature, lm=self.lm)
 
     def forward(
         self,
@@ -616,8 +621,9 @@ class ValidationChecklistSignature(dspy.Signature):
 class ValidationChecklistAgent(dspy.Module):
     """Predictor that fills ValidationChecklist booleans."""
 
-    def __init__(self) -> None:
+    def __init__(self, lm: dspy.LM | None = None) -> None:
         super().__init__()
+        self.lm = lm or dspy.settings.lm
         schema = json.dumps(ValidationChecklist.model_json_schema(), indent=2)
         instructions = f"""
 Review the provided proof sketch text (and optional reviewer notes) and evaluate
@@ -627,7 +633,7 @@ Return ONLY JSON matching:
 {schema}
 """
         signature = ValidationChecklistSignature.with_instructions(instructions)
-        self.agent = dspy.Predict(signature)
+        self.agent = dspy.Predict(signature, lm=self.lm)
 
     def forward(
         self,
@@ -656,8 +662,9 @@ class AlternativeApproachesSignature(dspy.Signature):
 class AlternativeApproachesAgent(dspy.Module):
     """Chain-of-thought agent that records alternative strategies."""
 
-    def __init__(self) -> None:
+    def __init__(self, lm: dspy.LM | None = None) -> None:
         super().__init__()
+        self.lm = lm or dspy.settings.lm
         schema = json.dumps(AlternativeApproach.model_json_schema(), indent=2)
         instructions = f"""
 From the theorem statement and rejected_ideas text, extract 2-4 alternative approaches.
@@ -667,7 +674,7 @@ Return ONLY a JSON array of objects matching:
 {schema}
 """
         signature = AlternativeApproachesSignature.with_instructions(instructions)
-        self.agent = dspy.ChainOfThought(signature)
+        self.agent = dspy.ChainOfThought(signature, lm=self.lm)
 
     def forward(
         self,
@@ -695,8 +702,9 @@ class FutureWorkSignature(dspy.Signature):
 class FutureWorkAgent(dspy.Module):
     """Chain-of-thought agent that structures future work directions."""
 
-    def __init__(self) -> None:
+    def __init__(self, lm: dspy.LM | None = None) -> None:
         super().__init__()
+        self.lm = lm or dspy.settings.lm
         schema = json.dumps(FutureWork.model_json_schema(), indent=2)
         instructions = f"""
 Analyze the provided open questions/gaps and categorize them into remainingGaps,
@@ -706,7 +714,7 @@ Return ONLY JSON matching:
 {schema}
 """
         signature = FutureWorkSignature.with_instructions(instructions)
-        self.agent = dspy.ChainOfThought(signature)
+        self.agent = dspy.ChainOfThought(signature, lm=self.lm)
 
     def forward(self, open_questions: str) -> dspy.Prediction:
         return self.agent(open_questions=open_questions)
@@ -731,8 +739,9 @@ class ExpansionRoadmapSignature(dspy.Signature):
 class ExpansionRoadmapAgent(dspy.Module):
     """Chain-of-thought agent that drafts the expansion roadmap."""
 
-    def __init__(self) -> None:
+    def __init__(self, lm: dspy.LM | None = None) -> None:
         super().__init__()
+        self.lm = lm or dspy.settings.lm
         schema = json.dumps(ExpansionRoadmap.model_json_schema(), indent=2)
         instructions = f"""
 Convert workstream notes (plus optional constraints) into a phased roadmap.
@@ -743,7 +752,7 @@ Return ONLY JSON matching:
 {schema}
 """
         signature = ExpansionRoadmapSignature.with_instructions(instructions)
-        self.agent = dspy.ChainOfThought(signature)
+        self.agent = dspy.ChainOfThought(signature, lm=self.lm)
 
     def forward(
         self,
@@ -771,8 +780,9 @@ class CrossReferencesSignature(dspy.Signature):
 class CrossReferencesAgent(dspy.Module):
     """Chain-of-thought agent that records cross references."""
 
-    def __init__(self) -> None:
+    def __init__(self, lm: dspy.LM | None = None) -> None:
         super().__init__()
+        self.lm = lm or dspy.settings.lm
         schema = json.dumps(CrossReferences.model_json_schema(), indent=2)
         instructions = f"""
 From the provided proof sketch text, list referenced framework artifacts.
@@ -783,7 +793,7 @@ Return ONLY JSON matching:
 {schema}
 """
         signature = CrossReferencesSignature.with_instructions(instructions)
-        self.agent = dspy.ChainOfThought(signature)
+        self.agent = dspy.ChainOfThought(signature, lm=self.lm)
 
     def forward(self, proof_sketch_text: str) -> dspy.Prediction:
         return self.agent(proof_sketch_text=proof_sketch_text)
@@ -830,18 +840,18 @@ class ProofSketchAgent(dspy.Module):
         self.stronger_model = stronger_model or dspy.settings.lm
         strategist_1_lm = strategist_1 or dspy.settings.lm
         strategist_2_lm = strategist_2 or strategist_1_lm
-        self.statement_agent = ProofStatementAgent()
+        self.statement_agent = ProofStatementAgent(lm=self.model)
         self.sketch_strategist_primary = SketchStrategist(lm=strategist_1_lm)
         self.sketch_strategist_secondary = SketchStrategist(lm=strategist_2_lm)
-        self.strategy_synthesizer = StrategySynthesizer()
-        self.dependency_agent = DependencyLedgerAgent()
-        self.detailed_proof_agent = DetailedProofAgent()
-        self.deep_dive_agent = TechnicalDeepDiveAgent()
-        self.validation_agent = ValidationChecklistAgent()
-        self.alternative_agent = AlternativeApproachesAgent()
-        self.future_work_agent = FutureWorkAgent()
-        self.roadmap_agent = ExpansionRoadmapAgent()
-        self.cross_refs_agent = CrossReferencesAgent()
+        self.strategy_synthesizer = StrategySynthesizer(lm=self.stronger_model)
+        self.dependency_agent = DependencyLedgerAgent(lm=self.model)
+        self.detailed_proof_agent = DetailedProofAgent(lm=self.stronger_model)
+        self.deep_dive_agent = TechnicalDeepDiveAgent(lm=self.stronger_model)
+        self.validation_agent = ValidationChecklistAgent(lm=self.stronger_model)
+        self.alternative_agent = AlternativeApproachesAgent(lm=self.model)
+        self.future_work_agent = FutureWorkAgent(lm=self.model)
+        self.roadmap_agent = ExpansionRoadmapAgent(lm=self.model)
+        self.cross_refs_agent = CrossReferencesAgent(lm=self.model)
 
     def forward(
         self,
@@ -1184,7 +1194,9 @@ class StrategyComparisonSignature(dspy.Signature):
 class StrategySynthesizer(dspy.Module):
     """Use a ChainOfThought agent to synthesize StrategySynthesis from two strategies."""
 
-    def __init__(self) -> None:
+    def __init__(self, lm: dspy.LM | None = None) -> None:
+        super().__init__()
+        self.lm = lm or dspy.settings.lm
         instructions = f"""
 You are comparing two independently generated proof strategies for the same theorem.
 
@@ -1216,7 +1228,7 @@ Return ONLY a JSON object that matches StrategySynthesis model schema:
 {json.dumps(StrategySynthesis.model_json_schema(), indent=2)}
 """
         signature = StrategyComparisonSignature.with_instructions(instructions)
-        self.agent = dspy.ChainOfThought(signature)
+        self.agent = dspy.ChainOfThought(signature, lm=self.lm)
 
     def forward(
         self,
@@ -1500,8 +1512,9 @@ class DependencyLedgerAgentSignature(dspy.Signature):
 class DependencyLedgerAgent(dspy.Module):
     """ReAct agent that uses planning + Claude tools to build a DependencyLedger."""
 
-    def __init__(self) -> None:
+    def __init__(self, lm: dspy.LM | None = None) -> None:
         super().__init__()
+        self.lm = lm or dspy.settings.lm
         self._plan_impl = configure_dependency_plan_tool()
         self._verified_impl = setup_verified_dependency_tool()
         self._missing_impl = setup_missing_dependency_tool()
@@ -1596,6 +1609,7 @@ Return ONLY JSON matching:
                 lookup_label_tool,
             ],
             max_iters=4,
+            lm=self.lm,
         )
 
     def forward(

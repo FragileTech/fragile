@@ -1,8 +1,11 @@
 {
-  "generated_at": "2025-11-10T13:57:33.179121+00:00",
+  "generated_at": "2025-11-12T22:37:34.114186+00:00",
   "types": {
     "algorithm": {
       "count": 1
+    },
+    "assumption": {
+      "count": 4
     },
     "axiom": {
       "count": 6

@@ -7,178 +7,205 @@
       "directive_type": "definition",
       "label": "def-perturbation-measure",
       "title": "Perturbation Measure",
-      "start_line": 1127,
-      "end_line": 1130,
+      "start_line": 1145,
+      "end_line": 1148,
       "header_lines": [
-        1128
+        1146
       ],
-      "content_start": 1129,
-      "content_end": 1129,
-      "content": "1129: :label: def-perturbation-measure",
+      "content_start": 1147,
+      "content_end": 1147,
+      "content": "1147: :label: def-perturbation-measure",
       "metadata": {
         "label": "def-perturbation-measure"
       },
       "section": "## 5. Algorithmic Noise Measures",
       "references": [
+        "axiom-non-degenerate-noise",
+        "def-perturbation-measure",
         "def-valid-noise-measure"
       ],
-      "raw_directive": "1127: The algorithm uses two distinct noise measures, both of which are required to be instantiations of a Valid Noise Measure.\n1128: :::{prf:definition} Perturbation Measure\n1129: :label: def-perturbation-measure\n1130: For a given noise scale $\\sigma > 0$, the **Perturbation Measure**, $\\mathcal{P}_\\sigma(x, \\cdot)$, is a **Valid Noise Measure** according to {prf:ref}`def-valid-noise-measure`. It governs the random walks during the perturbation step of the algorithm."
+      "raw_directive": "1145: The algorithm uses two distinct noise measures, both of which are required to be instantiations of a Valid Noise Measure ({prf:ref}`def-valid-noise-measure`).\n1146: :::{prf:definition} Perturbation Measure\n1147: :label: def-perturbation-measure\n1148: For a given noise scale $\\sigma > 0$ ({prf:ref}`axiom-non-degenerate-noise`), the **Perturbation Measure ({prf:ref}`def-perturbation-measure`)**, $\\mathcal{P}_\\sigma(x, \\cdot)$, is a **Valid Noise Measure** according to {prf:ref}`def-valid-noise-measure`. It governs the random walks during the perturbation step of the algorithm."
     },
     {
       "directive_type": "definition",
       "label": "def-cloning-measure",
       "title": "Cloning Measure",
-      "start_line": 1131,
-      "end_line": 1134,
+      "start_line": 1149,
+      "end_line": 1152,
       "header_lines": [
-        1132
+        1150
       ],
-      "content_start": 1133,
-      "content_end": 1133,
-      "content": "1133: :label: def-cloning-measure",
+      "content_start": 1151,
+      "content_end": 1151,
+      "content": "1151: :label: def-cloning-measure",
       "metadata": {
         "label": "def-cloning-measure"
       },
       "section": "## 5. Algorithmic Noise Measures",
       "references": [
-        "def-valid-noise-measure"
+        "axiom-non-degenerate-noise",
+        "def-cloning-measure",
+        "def-valid-noise-measure",
+        "def-walker",
+        "def-alive-dead-sets"
       ],
-      "raw_directive": "1131: :::\n1132: :::{prf:definition} Cloning Measure\n1133: :label: def-cloning-measure\n1134: For a given cloning noise scale $\\delta > 0$, the **Cloning Measure**, $\\mathcal{Q}_\\delta(x, \\cdot)$, is a **Valid Noise Measure** according to {prf:ref}`def-valid-noise-measure`. It governs the displacement for newly created walkers during the cloning step."
+      "raw_directive": "1149: :::\n1150: :::{prf:definition} Cloning Measure\n1151: :label: def-cloning-measure\n1152: For a given cloning noise scale $\\delta > 0$ ({prf:ref}`axiom-non-degenerate-noise`), the **Cloning Measure ({prf:ref}`def-cloning-measure`)**, $\\mathcal{Q}_\\delta(x, \\cdot)$, is a **Valid Noise Measure** according to {prf:ref}`def-valid-noise-measure`. It governs the displacement for newly created walker ({prf:ref}`def-walker`)s ({prf:ref}`def-alive-dead-sets`) during the cloning step."
     },
     {
       "directive_type": "lemma",
       "label": "proof-lem-validation-of-the-heat-kernel",
       "title": "Validation of the Heat Kernel",
-      "start_line": 1138,
-      "end_line": 1147,
+      "start_line": 1156,
+      "end_line": 1165,
       "header_lines": [
-        1139,
-        1142
+        1157,
+        1160
       ],
-      "content_start": 1140,
-      "content_end": 1146,
-      "content": "1140: :label: lem-validation-of-the-heat-kernel\n1141: If the state space $(\\mathcal{X}, d_{\\mathcal{X}}, \\mu)$ is a Polish metric measure space with a canonical heat kernel $p_t(x, \\cdot)$ that has a uniformly bounded second moment, then defining the perturbation noise measure as $\\mathcal{P}_\\sigma(x, \\cdot) := p_{\\sigma^2}(x, \\cdot)$ satisfies the required axioms, provided the boundary of the valid set $\\mathcal{X}_{\\mathrm{valid}}$ is sufficiently regular.\n1142: :::{prf:proof}\n1143: :label: proof-lem-validation-of-the-heat-kernel\n1144: **Proof.**\n1145: 1.  **Axiom of Bounded Second Moment of Perturbation ([](#def-axiom-bounded-second-moment-perturbation)):** The definition of the state space requires that the heat kernel has a uniformly bounded second moment, i.e., $\\sup_{x \\in \\mathcal{X}} \\mathbb{E}_{x' \\sim p_t(x, \\cdot)} [ d_{\\mathcal{Y}}(\\varphi(x'), \\varphi(x))^2 ] \\le M_{\\text{pert}}^2$. This directly satisfies the axiom.\n1146: 2.  **Axiom of Boundary Regularity ([](#axiom-boundary-regularity)):** The death probability is given by the function $P(s_{\\text{out}}=0 | x) = \\int_{\\mathcal{X} \\setminus \\mathcal{X}_{\\mathrm{valid}}} p_{\\sigma^2}(x, dx')$. This is the convolution of the indicator function of the invalid set with the heat kernel. For non-pathological boundaries (e.g., boundaries that are not space-filling curves), the heat kernel is a well-known smoothing operator. Standard results in analysis show that the convolution of a smooth kernel with an indicator function results in a continuous function. For heat kernels specifically, the resulting function $P$ is smooth and therefore locally H\u00f6lder continuous. Global H\u00f6lder continuity follows on compact subsets of $\\mathcal X$ by a finite subcover argument.",
+      "content_start": 1158,
+      "content_end": 1164,
+      "content": "1158: :label: lem-validation-of-the-heat-kernel\n1159: If the state space $(\\mathcal{X}, d_{\\mathcal{X}}, \\mu)$ is a Polish metric measure space with a canonical heat kernel $p_t(x, \\cdot)$ that has a uniformly bounded second moment, then defining the perturbation noise measure ({prf:ref}`def-valid-noise-measure`) as $\\mathcal{P}_\\sigma(x, \\cdot) := p_{\\sigma^2}(x, \\cdot)$ satisfies the required axioms, provided the boundary ({prf:ref}`axiom-boundary-smoothness`)valid set $\\mathcal{X}_{\\mathrm{valid}}$ is sufficiently regular.\n1160: :::{prf:proof}\n1161: :label: proof-lem-validation-of-the-heat-kernel\n1162: **Proof.**\n1163: 1.  **Axiom of Bounded Second Moment of Perturbation** ({prf:ref}`axiom-non-degenerate-noise`): The definition of the state space requires that the heat kernel has a uniformly bounded second moment, i.e., $\\sup_{x \\in \\mathcal{X}} \\mathbb{E}_{x' \\sim p_t(x, \\cdot)} [ d_{\\mathcal{Y}}(\\varphi(x'), \\varphi(x))^2 ] \\le M_{\\text{pert}}^2$. This directly satisfies the axiom.\n1164: 2.  **Axiom of Boundary Regularity** ({prf:ref}`axiom-boundary-regularity`): The death probability is given by the function $P(s_{\\text{out}}=0 | x) = \\int_{\\mathcal{X} \\setminus \\mathcal{X}_{\\mathrm{valid}}} p_{\\sigma^2}(x, dx')$. This is the convolution of the indicator function of the invalid set with the heat kernel. For non-pathological boundaries (e.g., boundaries that are not space-filling curves), the heat kernel is a well-known smoothing operator. Standard results in analysis show that the convolution of a smooth kernel with an indicator function results in a continuous function. For heat kernels specifically, the resulting function $P$ is smooth and therefore locally H\u00f6lder continuous. Global H\u00f6lder continuity follows on compact subsets of $\\mathcal X$ by a finite subcover argument.",
       "metadata": {
         "label": "proof-lem-validation-of-the-heat-kernel"
       },
       "section": "## 5. Algorithmic Noise Measures",
-      "references": [],
-      "raw_directive": "1138: #### 5.2.1 Lemma: Validation of the Heat Kernel\n1139: :::{prf:lemma} Validation of the Heat Kernel\n1140: :label: lem-validation-of-the-heat-kernel\n1141: If the state space $(\\mathcal{X}, d_{\\mathcal{X}}, \\mu)$ is a Polish metric measure space with a canonical heat kernel $p_t(x, \\cdot)$ that has a uniformly bounded second moment, then defining the perturbation noise measure as $\\mathcal{P}_\\sigma(x, \\cdot) := p_{\\sigma^2}(x, \\cdot)$ satisfies the required axioms, provided the boundary of the valid set $\\mathcal{X}_{\\mathrm{valid}}$ is sufficiently regular.\n1142: :::{prf:proof}\n1143: :label: proof-lem-validation-of-the-heat-kernel\n1144: **Proof.**\n1145: 1.  **Axiom of Bounded Second Moment of Perturbation ([](#def-axiom-bounded-second-moment-perturbation)):** The definition of the state space requires that the heat kernel has a uniformly bounded second moment, i.e., $\\sup_{x \\in \\mathcal{X}} \\mathbb{E}_{x' \\sim p_t(x, \\cdot)} [ d_{\\mathcal{Y}}(\\varphi(x'), \\varphi(x))^2 ] \\le M_{\\text{pert}}^2$. This directly satisfies the axiom.\n1146: 2.  **Axiom of Boundary Regularity ([](#axiom-boundary-regularity)):** The death probability is given by the function $P(s_{\\text{out}}=0 | x) = \\int_{\\mathcal{X} \\setminus \\mathcal{X}_{\\mathrm{valid}}} p_{\\sigma^2}(x, dx')$. This is the convolution of the indicator function of the invalid set with the heat kernel. For non-pathological boundaries (e.g., boundaries that are not space-filling curves), the heat kernel is a well-known smoothing operator. Standard results in analysis show that the convolution of a smooth kernel with an indicator function results in a continuous function. For heat kernels specifically, the resulting function $P$ is smooth and therefore locally H\u00f6lder continuous. Global H\u00f6lder continuity follows on compact subsets of $\\mathcal X$ by a finite subcover argument.\n1147: **Q.E.D.**"
+      "references": [
+        "def-valid-noise-measure",
+        "axiom-boundary-smoothness",
+        "axiom-non-degenerate-noise",
+        "axiom-boundary-regularity"
+      ],
+      "raw_directive": "1156: #### 5.2.1 Lemma: Validation of the Heat Kernel\n1157: :::{prf:lemma} Validation of the Heat Kernel\n1158: :label: lem-validation-of-the-heat-kernel\n1159: If the state space $(\\mathcal{X}, d_{\\mathcal{X}}, \\mu)$ is a Polish metric measure space with a canonical heat kernel $p_t(x, \\cdot)$ that has a uniformly bounded second moment, then defining the perturbation noise measure ({prf:ref}`def-valid-noise-measure`) as $\\mathcal{P}_\\sigma(x, \\cdot) := p_{\\sigma^2}(x, \\cdot)$ satisfies the required axioms, provided the boundary ({prf:ref}`axiom-boundary-smoothness`)valid set $\\mathcal{X}_{\\mathrm{valid}}$ is sufficiently regular.\n1160: :::{prf:proof}\n1161: :label: proof-lem-validation-of-the-heat-kernel\n1162: **Proof.**\n1163: 1.  **Axiom of Bounded Second Moment of Perturbation** ({prf:ref}`axiom-non-degenerate-noise`): The definition of the state space requires that the heat kernel has a uniformly bounded second moment, i.e., $\\sup_{x \\in \\mathcal{X}} \\mathbb{E}_{x' \\sim p_t(x, \\cdot)} [ d_{\\mathcal{Y}}(\\varphi(x'), \\varphi(x))^2 ] \\le M_{\\text{pert}}^2$. This directly satisfies the axiom.\n1164: 2.  **Axiom of Boundary Regularity** ({prf:ref}`axiom-boundary-regularity`): The death probability is given by the function $P(s_{\\text{out}}=0 | x) = \\int_{\\mathcal{X} \\setminus \\mathcal{X}_{\\mathrm{valid}}} p_{\\sigma^2}(x, dx')$. This is the convolution of the indicator function of the invalid set with the heat kernel. For non-pathological boundaries (e.g., boundaries that are not space-filling curves), the heat kernel is a well-known smoothing operator. Standard results in analysis show that the convolution of a smooth kernel with an indicator function results in a continuous function. For heat kernels specifically, the resulting function $P$ is smooth and therefore locally H\u00f6lder continuous. Global H\u00f6lder continuity follows on compact subsets of $\\mathcal X$ by a finite subcover argument.\n1165: **Q.E.D.**"
     },
     {
       "directive_type": "lemma",
       "label": "lem-validation-of-the-uniform-ball-measure",
       "title": "Validation of the Uniform Ball Measure",
-      "start_line": 1157,
-      "end_line": 1165,
+      "start_line": 1175,
+      "end_line": 1186,
       "header_lines": [
-        1158
+        1176
       ],
-      "content_start": 1159,
-      "content_end": 1164,
-      "content": "1159: :label: lem-validation-of-the-uniform-ball-measure\n1160: Let the noise measure $\\mathcal{P}_\\sigma(x, \\cdot)$ be defined as the uniform probability measure over a ball of radius $\\sigma$ centered at $x$ in the state space $\\mathcal{X}$. This measure satisfies the required axioms, provided the boundary of the valid set is sufficiently regular. In particular, the death\u2011probability map is continuous under mild assumptions; to claim a global Lipschitz modulus with respect to $d_{\\text{Disp},\\mathcal{Y}}$, assume $\\mathcal{X}_{\\mathrm{valid}}$ has Lipschitz boundary or finite perimeter so that boundary layer estimates apply. In that case one obtains an explicit bound of the form\n1161: \n1162: $$\n1163: L_{\\text{death}}\\;\\le\\; \\frac{C_{\\text{perim}}}{\\sigma},\n1164: $$",
+      "content_start": 1177,
+      "content_end": 1185,
+      "content": "1177: :label: lem-validation-of-the-uniform-ball-measure\n1178: This lemma validates that the uniform ball measure from {prf:ref}`def-reference-measures` satisfies {prf:ref}`def-axiom-bounded-second-moment-perturbation`.\n1179: \n1180: Let the noise measure ({prf:ref}`def-valid-noise-measure`) $\\mathcal{P}_\\sigma(x, \\cdot)$ be defined as the uniform probability measure over a ball of radius $\\sigma$ centered at $x$ in the state space $\\mathcal{X}$. This measure satisfies theboundary ({prf:ref}`axiom-boundary-smoothness`), provided the boundary of the valid set is sufficiently regular. In particular, the death\u2011probability map is continuous under mild assumptions; to claim a global Lipschitz modulus with respect to $d_{\\text{Disp},\\mathcal{Y}}$, assume $\\mathcal{X}_{\\mathrm{valid}}$ has Lipschitz boundary or finite perimeter so that boundary layer estimates apply. In that case one obtains an explicit bound of the form\n1181: \n1182: $$\n1183: L_{\\text{death}}\\;\\le\\; \\frac{C_{\\text{perim}}}{\\sigma},\n1184: \n1185: $$",
       "metadata": {
         "label": "lem-validation-of-the-uniform-ball-measure"
       },
       "section": "## 5. Algorithmic Noise Measures",
-      "references": [],
-      "raw_directive": "1157: #### 5.2.2 Lemma: Validation of the Uniform Ball Measure\n1158: :::{prf:lemma} Validation of the Uniform Ball Measure\n1159: :label: lem-validation-of-the-uniform-ball-measure\n1160: Let the noise measure $\\mathcal{P}_\\sigma(x, \\cdot)$ be defined as the uniform probability measure over a ball of radius $\\sigma$ centered at $x$ in the state space $\\mathcal{X}$. This measure satisfies the required axioms, provided the boundary of the valid set is sufficiently regular. In particular, the death\u2011probability map is continuous under mild assumptions; to claim a global Lipschitz modulus with respect to $d_{\\text{Disp},\\mathcal{Y}}$, assume $\\mathcal{X}_{\\mathrm{valid}}$ has Lipschitz boundary or finite perimeter so that boundary layer estimates apply. In that case one obtains an explicit bound of the form\n1161: \n1162: $$\n1163: L_{\\text{death}}\\;\\le\\; \\frac{C_{\\text{perim}}}{\\sigma},\n1164: $$\n1165: where $C_{\\text{perim}}$ depends on the perimeter (surface measure) of $\\partial\\mathcal{X}_{\\mathrm{valid}}$ in the algorithmic metric."
+      "references": [
+        "def-reference-measures",
+        "def-axiom-bounded-second-moment-perturbation",
+        "def-valid-noise-measure",
+        "axiom-boundary-smoothness"
+      ],
+      "raw_directive": "1175: #### 5.2.2 Lemma: Validation of the Uniform Ball Measure\n1176: :::{prf:lemma} Validation of the Uniform Ball Measure\n1177: :label: lem-validation-of-the-uniform-ball-measure\n1178: This lemma validates that the uniform ball measure from {prf:ref}`def-reference-measures` satisfies {prf:ref}`def-axiom-bounded-second-moment-perturbation`.\n1179: \n1180: Let the noise measure ({prf:ref}`def-valid-noise-measure`) $\\mathcal{P}_\\sigma(x, \\cdot)$ be defined as the uniform probability measure over a ball of radius $\\sigma$ centered at $x$ in the state space $\\mathcal{X}$. This measure satisfies theboundary ({prf:ref}`axiom-boundary-smoothness`), provided the boundary of the valid set is sufficiently regular. In particular, the death\u2011probability map is continuous under mild assumptions; to claim a global Lipschitz modulus with respect to $d_{\\text{Disp},\\mathcal{Y}}$, assume $\\mathcal{X}_{\\mathrm{valid}}$ has Lipschitz boundary or finite perimeter so that boundary layer estimates apply. In that case one obtains an explicit bound of the form\n1181: \n1182: $$\n1183: L_{\\text{death}}\\;\\le\\; \\frac{C_{\\text{perim}}}{\\sigma},\n1184: \n1185: $$\n1186: where $C_{\\text{perim}}$ depends on the perimeter (surface measure) of $\\partial\\mathcal{X}_{\\mathrm{valid}}$ in the algorithmic metric."
     },
     {
       "directive_type": "proof",
       "label": "proof-lem-validation-of-the-uniform-ball-measure",
       "title": null,
-      "start_line": 1167,
-      "end_line": 1181,
+      "start_line": 1188,
+      "end_line": 1206,
       "header_lines": [
-        1168
+        1189
       ],
-      "content_start": 1169,
-      "content_end": 1180,
-      "content": "1169: :label: proof-lem-validation-of-the-uniform-ball-measure\n1170: **Proof.**\n1171: 1.  **Axiom of Bounded Second Moment of Perturbation ([](#def-axiom-bounded-second-moment-perturbation)):** A sample $x'$ is drawn from the ball $B(x, \\sigma)$. The displacement is, by definition, $d_{\\mathcal{X}}(x', x) \\le \\sigma$. The expected squared projected displacement is therefore bounded:\n1172: $$\n1173:     \\mathbb{E}_{x' \\sim \\mathcal{P}_\\sigma(x, \\cdot)} \\left[ d_{\\mathcal{Y}}(\\varphi(x'), \\varphi(x))^2 \\right] \\le L_\\varphi^2 \\sigma^2\n1174: $$\n1175: This bound holds for all $x \\in \\mathcal{X}$, so the supremum is also bounded. The axiom is satisfied.\n1176: 2.  **Axiom of Boundary Regularity ([](#axiom-boundary-regularity)):** Let $\\mathbb{1}_{\\text{invalid}}(x')$ be the indicator function for the invalid set. The death probability is the convolution of this indicator function with the indicator function of the ball:\n1177: $$\n1178:     P(s_{\\text{out}}=0 | x) = \\frac{1}{\\text{Volume}(B(x, \\sigma))} \\int_{B(x, \\sigma)} \\mathbb{1}_{\\text{invalid}}(x') dx' = \\frac{\\text{Volume}(\\mathcal{X}_{\\mathrm{invalid}} \\cap B(x, \\sigma))}{\\text{Volume}(B(x, \\sigma))}\n1179: $$\n1180: The function $f(x) = \\text{Volume}(\\mathcal{X}_{\\mathrm{invalid}} \\cap B(x, \\sigma))$ measures the volume of the intersection of a fixed set with a moving ball. As long as the boundary of $\\mathcal{X}_{\\mathrm{invalid}}$ is not pathological (e.g., is a Lipschitz submanifold), this function is continuous. For a small displacement of the ball's center, the change in the intersection volume is proportional to the surface area of the boundary segment that enters or leaves the ball. This geometric relationship ensures the function is locally Lipschitz, which implies it is also H\u00f6lder continuous with an exponent of 1. Thus, the axiom is satisfied.",
+      "content_start": 1190,
+      "content_end": 1205,
+      "content": "1190: :label: proof-lem-validation-of-the-uniform-ball-measure\n1191: **Proof.**\n1192: 1.  **Axiom of Bounded Second Moment of Perturbation** ({prf:ref}`axiom-non-degenerate-noise`): A sample $x'$ is drawn from the ball $B(x, \\sigma)$. The displacement is, by definition, $d_{\\mathcal{X}}(x', x) \\le \\sigma$. The expected squared projected displacement is therefore bounded:\n1193: \n1194: $$\n1195:     \\mathbb{E}_{x' \\sim \\mathcal{P}_\\sigma(x, \\cdot)} \\left[ d_{\\mathcal{Y}}(\\varphi(x'), \\varphi(x))^2 \\right] \\le L_\\varphi^2 \\sigma^2\n1196: \n1197: $$\n1198: This bound holds for all $x \\in \\mathcal{X}$, so the supremum is also bounded. The axiom is satisfied.\n1199: 2.  **Axiom of Boundary Regularity** ({prf:ref}`axiom-boundary-regularity`): Let $\\mathbb{1}_{\\text{invalid}}(x')$ be the indicator function for the invalid set. The death probability is the convolution of this indicator function with the indicator function of the ball:\n1200: \n1201: $$\n1202:     P(s_{\\text{out}}=0 | x) = \\frac{1}{\\text{Volume}(B(x, \\sigma))} \\int_{B(x, \\sigma)} \\mathbb{1}_{\\text{invalid}}(x') dx' = \\frac{\\text{Volume}(\\mathcal{X}_{\\mathrm{invalid}} \\cap B(x, \\sigma))}{\\text{Volume}(B(x, \\sigma))}\n1203: \n1204: $$\n1205: The function $f(x) = \\text{Volume}(\\mathcal{X}_{\\mathrm{invalid}} \\cap B(x, \\sigma))$ measures the volume of the intersection of a fixed set with a moving ball. As long as the boundary of $\\mathcal{X}_{\\mathrm{invalid}}$ is not pathological (e.g., is a Lipschitz submanifold), this function is continuous. For a small displacement of the ball's center, the change in the intersection volume is proportional to the surface area of the boundary segment that enters or leaves the ball. This geometric relationship ensures the function is locally Lipschitz, which implies it is also H\u00f6lder continuous with an exponent of 1. Thus, the axiom is satisfied.",
       "metadata": {
         "label": "proof-lem-validation-of-the-uniform-ball-measure"
       },
       "section": "## 5. Algorithmic Noise Measures",
-      "references": [],
-      "raw_directive": "1167: \n1168: :::{prf:proof}\n1169: :label: proof-lem-validation-of-the-uniform-ball-measure\n1170: **Proof.**\n1171: 1.  **Axiom of Bounded Second Moment of Perturbation ([](#def-axiom-bounded-second-moment-perturbation)):** A sample $x'$ is drawn from the ball $B(x, \\sigma)$. The displacement is, by definition, $d_{\\mathcal{X}}(x', x) \\le \\sigma$. The expected squared projected displacement is therefore bounded:\n1172: $$\n1173:     \\mathbb{E}_{x' \\sim \\mathcal{P}_\\sigma(x, \\cdot)} \\left[ d_{\\mathcal{Y}}(\\varphi(x'), \\varphi(x))^2 \\right] \\le L_\\varphi^2 \\sigma^2\n1174: $$\n1175: This bound holds for all $x \\in \\mathcal{X}$, so the supremum is also bounded. The axiom is satisfied.\n1176: 2.  **Axiom of Boundary Regularity ([](#axiom-boundary-regularity)):** Let $\\mathbb{1}_{\\text{invalid}}(x')$ be the indicator function for the invalid set. The death probability is the convolution of this indicator function with the indicator function of the ball:\n1177: $$\n1178:     P(s_{\\text{out}}=0 | x) = \\frac{1}{\\text{Volume}(B(x, \\sigma))} \\int_{B(x, \\sigma)} \\mathbb{1}_{\\text{invalid}}(x') dx' = \\frac{\\text{Volume}(\\mathcal{X}_{\\mathrm{invalid}} \\cap B(x, \\sigma))}{\\text{Volume}(B(x, \\sigma))}\n1179: $$\n1180: The function $f(x) = \\text{Volume}(\\mathcal{X}_{\\mathrm{invalid}} \\cap B(x, \\sigma))$ measures the volume of the intersection of a fixed set with a moving ball. As long as the boundary of $\\mathcal{X}_{\\mathrm{invalid}}$ is not pathological (e.g., is a Lipschitz submanifold), this function is continuous. For a small displacement of the ball's center, the change in the intersection volume is proportional to the surface area of the boundary segment that enters or leaves the ball. This geometric relationship ensures the function is locally Lipschitz, which implies it is also H\u00f6lder continuous with an exponent of 1. Thus, the axiom is satisfied.\n1181: **Q.E.D.**"
+      "references": [
+        "axiom-non-degenerate-noise",
+        "axiom-boundary-regularity"
+      ],
+      "raw_directive": "1188: \n1189: :::{prf:proof}\n1190: :label: proof-lem-validation-of-the-uniform-ball-measure\n1191: **Proof.**\n1192: 1.  **Axiom of Bounded Second Moment of Perturbation** ({prf:ref}`axiom-non-degenerate-noise`): A sample $x'$ is drawn from the ball $B(x, \\sigma)$. The displacement is, by definition, $d_{\\mathcal{X}}(x', x) \\le \\sigma$. The expected squared projected displacement is therefore bounded:\n1193: \n1194: $$\n1195:     \\mathbb{E}_{x' \\sim \\mathcal{P}_\\sigma(x, \\cdot)} \\left[ d_{\\mathcal{Y}}(\\varphi(x'), \\varphi(x))^2 \\right] \\le L_\\varphi^2 \\sigma^2\n1196: \n1197: $$\n1198: This bound holds for all $x \\in \\mathcal{X}$, so the supremum is also bounded. The axiom is satisfied.\n1199: 2.  **Axiom of Boundary Regularity** ({prf:ref}`axiom-boundary-regularity`): Let $\\mathbb{1}_{\\text{invalid}}(x')$ be the indicator function for the invalid set. The death probability is the convolution of this indicator function with the indicator function of the ball:\n1200: \n1201: $$\n1202:     P(s_{\\text{out}}=0 | x) = \\frac{1}{\\text{Volume}(B(x, \\sigma))} \\int_{B(x, \\sigma)} \\mathbb{1}_{\\text{invalid}}(x') dx' = \\frac{\\text{Volume}(\\mathcal{X}_{\\mathrm{invalid}} \\cap B(x, \\sigma))}{\\text{Volume}(B(x, \\sigma))}\n1203: \n1204: $$\n1205: The function $f(x) = \\text{Volume}(\\mathcal{X}_{\\mathrm{invalid}} \\cap B(x, \\sigma))$ measures the volume of the intersection of a fixed set with a moving ball. As long as the boundary of $\\mathcal{X}_{\\mathrm{invalid}}$ is not pathological (e.g., is a Lipschitz submanifold), this function is continuous. For a small displacement of the ball's center, the change in the intersection volume is proportional to the surface area of the boundary segment that enters or leaves the ball. This geometric relationship ensures the function is locally Lipschitz, which implies it is also H\u00f6lder continuous with an exponent of 1. Thus, the axiom is satisfied.\n1206: **Q.E.D.**"
     },
     {
       "directive_type": "lemma",
       "label": "lem-boundary-uniform-ball",
-      "title": "Uniform\u2011ball death probability is Lipschitz under finite perimeter",
-      "start_line": 1183,
-      "end_line": 1198,
+      "title": "Uniform\u2011ball deatboundary ({prf:ref}`axiom-boundary-smoothness`) Lipschitz ({prf:ref}`axiom-reward-regularity`)nite perimeter",
+      "start_line": 1208,
+      "end_line": 1225,
       "header_lines": [
-        1184
+        1209
       ],
-      "content_start": 1185,
-      "content_end": 1197,
-      "content": "1185: :label: lem-boundary-uniform-ball\n1186: Let $E=\\mathcal{X}_{\\mathrm{invalid}}\\subset\\mathcal X$ have finite perimeter (BV boundary) and let $\\mathcal P_\\sigma(x,\\cdot)$ be the uniform law on $B(x,\\sigma)$. Define\n1187: $$\n1188: \n1189: P_\\sigma(x)\\;:=\\;\\mathcal P_\\sigma(x, E)\\;=\\;\\frac{1}{\\mathrm{Vol}(B_\\sigma)}\\int \\mathbb 1_E(y)\\,\\mathbb 1_{B_\\sigma}(y-x)\\,\\mathrm dy.\n1190: \n1191: $$\n1192: Then there exists a constant $C_d>0$ depending only on the dimension such that for all $x,y\\in\\mathcal X$,\n1193: $$\n1194: \n1195: |P_\\sigma(x)-P_\\sigma(y)|\\;\\le\\; C_d\\,\\frac{\\mathrm{Per}(E)}{\\sigma}\\, d_{\\mathcal X}(x,y).\n1196: \n1197: $$",
+      "content_start": 1210,
+      "content_end": 1224,
+      "content": "1210: :label: lem-boundary-uniform-ball\n1211: This lemma provides the quantitative Lipschitz ({prf:ref}`axiom-reward-regularity`)quired by {prf:ref}`axiom-boundary-regularity` for the uniform ball perturbation measure ({prf:ref}`def-perturbation-mboundary ({prf:ref}`axiom-boundary-smoothness`)E=\\mathcal{X}_{\\mathrm{invalid}}\\subset\\mathcal X$ have finite perimeter (BV boundary) and let $\\mathcal P_\\sigma(x,\\cdot)$ be the uniform law on $B(x,\\sigma)$. Define\n1212: \n1213: $$\n1214: \n1215: P_\\sigma(x)\\;:=\\;\\mathcal P_\\sigma(x, E)\\;=\\;\\frac{1}{\\mathrm{Vol}(B_\\sigma)}\\int \\mathbb 1_E(y)\\,\\mathbb 1_{B_\\sigma}(y-x)\\,\\mathrm dy.\n1216: \n1217: $$\n1218: Then there exists a constant $C_d>0$ depending only on the dimension such that for all $x,y\\in\\mathcal X$,\n1219: \n1220: $$\n1221: \n1222: |P_\\sigma(x)-P_\\sigma(y)|\\;\\le\\; C_d\\,\\frac{\\mathrm{Per}(E)}{\\sigma}\\, d_{\\mathcal X}(x,y).\n1223: \n1224: $$",
       "metadata": {
         "label": "lem-boundary-uniform-ball"
       },
       "section": "## 5. Algorithmic Noise Measures",
-      "references": [],
-      "raw_directive": "1183: #### 5.2.3 Lemma: BV/perimeter Lipschitz bound for uniform\u2011ball death probability\n1184: :::{prf:lemma} Uniform\u2011ball death probability is Lipschitz under finite perimeter\n1185: :label: lem-boundary-uniform-ball\n1186: Let $E=\\mathcal{X}_{\\mathrm{invalid}}\\subset\\mathcal X$ have finite perimeter (BV boundary) and let $\\mathcal P_\\sigma(x,\\cdot)$ be the uniform law on $B(x,\\sigma)$. Define\n1187: $$\n1188: \n1189: P_\\sigma(x)\\;:=\\;\\mathcal P_\\sigma(x, E)\\;=\\;\\frac{1}{\\mathrm{Vol}(B_\\sigma)}\\int \\mathbb 1_E(y)\\,\\mathbb 1_{B_\\sigma}(y-x)\\,\\mathrm dy.\n1190: \n1191: $$\n1192: Then there exists a constant $C_d>0$ depending only on the dimension such that for all $x,y\\in\\mathcal X$,\n1193: $$\n1194: \n1195: |P_\\sigma(x)-P_\\sigma(y)|\\;\\le\\; C_d\\,\\frac{\\mathrm{Per}(E)}{\\sigma}\\, d_{\\mathcal X}(x,y).\n1196: \n1197: $$\n1198: If $\\varphi$ is $L_\\varphi$\u2011Lipschitz and distances are measured in the algorithmic space, the bound becomes $L_{\\text{death}}\\le C_d (\\mathrm{Per}(\\varphi(E))/\\sigma)\\,L_\\varphi$."
+      "references": [
+        "axiom-reward-regularity",
+        "axiom-boundary-regularity",
+        "def-perturbation-mboundary ({prf:ref}",
+        "def-algorithmic-space-generic"
+      ],
+      "raw_directive": "1208: #### 5.2.3 Lemma: BV/perimeter Lipschitz bound for uniform\u2011ball death probability\n1209: :::{prf:lemma} Uniform\u2011ball deatboundary ({prf:ref}`axiom-boundary-smoothness`) Lipschitz ({prf:ref}`axiom-reward-regularity`)nite perimeter\n1210: :label: lem-boundary-uniform-ball\n1211: This lemma provides the quantitative Lipschitz ({prf:ref}`axiom-reward-regularity`)quired by {prf:ref}`axiom-boundary-regularity` for the uniform ball perturbation measure ({prf:ref}`def-perturbation-mboundary ({prf:ref}`axiom-boundary-smoothness`)E=\\mathcal{X}_{\\mathrm{invalid}}\\subset\\mathcal X$ have finite perimeter (BV boundary) and let $\\mathcal P_\\sigma(x,\\cdot)$ be the uniform law on $B(x,\\sigma)$. Define\n1212: \n1213: $$\n1214: \n1215: P_\\sigma(x)\\;:=\\;\\mathcal P_\\sigma(x, E)\\;=\\;\\frac{1}{\\mathrm{Vol}(B_\\sigma)}\\int \\mathbb 1_E(y)\\,\\mathbb 1_{B_\\sigma}(y-x)\\,\\mathrm dy.\n1216: \n1217: $$\n1218: Then there exists a constant $C_d>0$ depending only on the dimension such that for all $x,y\\in\\mathcal X$,\n1219: \n1220: $$\n1221: \n1222: |P_\\sigma(x)-P_\\sigma(y)|\\;\\le\\; C_d\\,\\frac{\\mathrm{Per}(E)}{\\sigma}\\, d_{\\mathcal X}(x,y).\n1223: \n1224: $$\n1225: If $\\varphi$ is $L_\\varphi$\u2011Lipschitz and distances are measured in the algorithmic space ({prf:ref}`def-algorithmic-space-generic`), the bound becomes $L_{\\text{death}}\\le C_d (\\mathrm{Per}(\\varphi(E))/\\sigma)\\,L_\\varphi$."
     },
     {
       "directive_type": "proof",
       "label": "rem-projection-choice",
       "title": null,
-      "start_line": 1199,
-      "end_line": 1205,
+      "start_line": 1226,
+      "end_line": 1232,
       "header_lines": [
-        1200,
-        1203
+        1227,
+        1230
       ],
-      "content_start": 1201,
-      "content_end": 1204,
-      "content": "1201: :label: proof-lem-boundary-uniform-ball\n1202: Write $P_\\sigma= (\\chi_E * K_\\sigma)$ with $K_\\sigma= \\mathbb 1_{B_\\sigma}/\\mathrm{Vol}(B_\\sigma)$. Approximate $K_\\sigma$ in $W^{1,1}$ by smooth mollifiers $\\{K_\\sigma^{(\\varepsilon)}\\}$ with $\\|\\nabla K_\\sigma^{(\\varepsilon)}\\|_1\\le C_d/\\sigma$. For $f\\in BV$, $\\nabla(f*K)=(Df)*K$ and $\\|\\nabla(f*K)\\|_\\infty\\le \\|Df\\|(\\mathbb R^d)\\,\\|\\nabla K\\|_1$. Taking $f=\\chi_E$ gives a Lipschitz bound $\\le C_d\\,\\mathrm{Per}(E)/\\sigma$ for $\\chi_E*K_\\sigma^{(\\varepsilon)}$. Passing to the $\\varepsilon\\to 0$ limit yields the stated bound. The projection to algorithmic space introduces the $L_\\varphi$ factor.\n1203: :::{prf:remark} Projection choice\n1204: :label: rem-projection-choice",
+      "content_start": 1228,
+      "content_end": 1231,
+      "content": "1228: :label: proof-lem-boundary-uniform-ball\n1229: Write $P_\\sigma= (\\chi_E * K_\\sigma)$ with $K_\\sigma= \\mathbb 1_{B_\\sigma}/\\mathrm{Vol}(B_\\sigma)$. Approximate $K_\\sigma$ in $W^{1,1}$ by smooth mollifiers $\\{K_\\sigma^{(\\varepsilon)}\\}$ with $\\|\\nabla K_\\sigma^{(\\varepsilon)}\\|_1\\le C_d/\\sigma$. For $f\\in BV$, $\\nabla(f*K)=(Df)*K$ and $\\|\\nabla(f*K)\\|_\\infty\\le \\|Df\\|(\\mathbb R^d)\\,\\|\\nabla K\\|_1$. Taking $f=\\chi_E$ gives a Lipschitz bound $\\le C_d\\,\\mathrm{Per}(E)/\\sigma$ for $\\chi_E*K_\\sigma^{(\\varepsilon)}$. Passing to the $\\varepsilon\\to 0$ limit yields the stated bound. The projection to algorithmic space ({prf:ref}`def-algorithmic-space-generic`) introduces the $L_\\varphi$ factor.\n1230: :::{prf:remark} Projection choice\n1231: :label: rem-projection-choice",
       "metadata": {
         "label": "rem-projection-choice"
       },
       "section": "## 5. Algorithmic Noise Measures",
-      "references": [],
-      "raw_directive": "1199: :::\n1200: :::{prf:proof}\n1201: :label: proof-lem-boundary-uniform-ball\n1202: Write $P_\\sigma= (\\chi_E * K_\\sigma)$ with $K_\\sigma= \\mathbb 1_{B_\\sigma}/\\mathrm{Vol}(B_\\sigma)$. Approximate $K_\\sigma$ in $W^{1,1}$ by smooth mollifiers $\\{K_\\sigma^{(\\varepsilon)}\\}$ with $\\|\\nabla K_\\sigma^{(\\varepsilon)}\\|_1\\le C_d/\\sigma$. For $f\\in BV$, $\\nabla(f*K)=(Df)*K$ and $\\|\\nabla(f*K)\\|_\\infty\\le \\|Df\\|(\\mathbb R^d)\\,\\|\\nabla K\\|_1$. Taking $f=\\chi_E$ gives a Lipschitz bound $\\le C_d\\,\\mathrm{Per}(E)/\\sigma$ for $\\chi_E*K_\\sigma^{(\\varepsilon)}$. Passing to the $\\varepsilon\\to 0$ limit yields the stated bound. The projection to algorithmic space introduces the $L_\\varphi$ factor.\n1203: :::{prf:remark} Projection choice\n1204: :label: rem-projection-choice\n1205: In this document we take $\\varphi=\\mathrm{Id}$ so that $L_\\varphi=1$ and no perimeter distortion arises from projection. If a nontrivial projection is used, insert the BV/coarea bound for $\\mathrm{Per}(\\varphi(E))$ with the appropriate distortion factor."
+      "references": [
+        "def-algorithmic-space-generic"
+      ],
+      "raw_directive": "1226: :::\n1227: :::{prf:proof}\n1228: :label: proof-lem-boundary-uniform-ball\n1229: Write $P_\\sigma= (\\chi_E * K_\\sigma)$ with $K_\\sigma= \\mathbb 1_{B_\\sigma}/\\mathrm{Vol}(B_\\sigma)$. Approximate $K_\\sigma$ in $W^{1,1}$ by smooth mollifiers $\\{K_\\sigma^{(\\varepsilon)}\\}$ with $\\|\\nabla K_\\sigma^{(\\varepsilon)}\\|_1\\le C_d/\\sigma$. For $f\\in BV$, $\\nabla(f*K)=(Df)*K$ and $\\|\\nabla(f*K)\\|_\\infty\\le \\|Df\\|(\\mathbb R^d)\\,\\|\\nabla K\\|_1$. Taking $f=\\chi_E$ gives a Lipschitz bound $\\le C_d\\,\\mathrm{Per}(E)/\\sigma$ for $\\chi_E*K_\\sigma^{(\\varepsilon)}$. Passing to the $\\varepsilon\\to 0$ limit yields the stated bound. The projection to algorithmic space ({prf:ref}`def-algorithmic-space-generic`) introduces the $L_\\varphi$ factor.\n1230: :::{prf:remark} Projection choice\n1231: :label: rem-projection-choice\n1232: In this document we take $\\varphi=\\mathrm{Id}$ so that $L_\\varphi=1$ and no perimeter distortion arises from projection. If a nontrivial projection is used, insert the BV/coarea bound for $\\mathrm{Per}(\\varphi(E))$ with the appropriate distortion factor."
     },
     {
       "directive_type": "lemma",
-      "label": "lem-boundary-heat-kernel",
-      "title": "Heat\u2011kernel death probability is Lipschitz with constant $\\lesssim 1/\\sigma$",
-      "start_line": 1209,
-      "end_line": 1218,
-      "header_lines": [
-        1210
-      ],
-      "content_start": 1211,
-      "content_end": 1217,
-      "content": "1211: :label: lem-boundary-heat-kernel\n1212: Let $E=\\mathcal{X}_{\\mathrm{invalid}}\\subset\\mathcal X$ have finite perimeter and let $p_{\\sigma^2}$ be the heat kernel at scale $\\sigma$. Define $P_\\sigma(x)=\\int \\chi_E(y)\\,p_{\\sigma^2}(x,\\mathrm dy)$. Then\n1213: $$\n1214: \n1215: |P_\\sigma(x)-P_\\sigma(y)|\\;\\le\\; C_d'\\,\\frac{\\mathrm{Per}(E)}{\\sigma}\\, d_{\\mathcal X}(x,y),\n1216: \n1217: $$",
-      "metadata": {
-        "label": "lem-boundary-heat-kernel"
-      },
+      "label": "unlabeled-lemma-95",
+      "title": "Heat\u2011Lipschitz ({prf:ref}`axiom-reward-regularity`)bility is Lipschitz with constant $\\lesssim boundary ({prf:ref}`axiom-boundary-smoothness`): lem-boLipschitz ({prf:ref}`axiom-reward-regularity`)",
+      "start_line": 1236,
+      "end_line": 1247,
+      "header_lines": [],
+      "content_start": 1237,
+      "content_end": 1246,
+      "content": "1237: :::{prf:lemma} Heat\u2011Lipschitz ({prf:ref}`axiom-reward-regularity`)bility is Lipschitz with constant $\\lesssim boundary ({prf:ref}`axiom-boundary-smoothness`): lem-boLipschitz ({prf:ref}`axiom-reward-regularity`)\n1238: This lemma provides the quantitative Lipschitz bouboundary ({prf:ref}`axiom-boundary-smoothness`)prf:ref}`axiom-boundary-regularity` for the heat kernel perturbation measure ({prf:ref}`def-perturbation-measure`).\n1239: \n1240: Let $E=\\mathcal{X}_{\\mathrm{invalid}}\\subset\\mathcal X$ have finite perimeter and let $p_{\\sigma^2}$ be the heat kernel at scale $\\sigma$. Define $P_\\sigma(x)=\\int \\chi_E(y)\\,p_{\\sigma^2}(x,\\mathrm dy)$. Then\n1241: \n1242: $$\n1243: \n1244: |P_\\sigma(x)-P_\\sigma(y)|\\;\\le\\; C_d'\\,\\frac{\\mathrm{Per}(E)}{\\sigma}\\, d_{\\mathcal X}(x,y),\n1245: \n1246: $$",
+      "metadata": {},
       "section": "## 5. Algorithmic Noise Measures",
-      "references": [],
-      "raw_directive": "1209: #### 5.2.4 Lemma: Heat\u2011kernel Lipschitz bound via BV smoothing\n1210: :::{prf:lemma} Heat\u2011kernel death probability is Lipschitz with constant $\\lesssim 1/\\sigma$\n1211: :label: lem-boundary-heat-kernel\n1212: Let $E=\\mathcal{X}_{\\mathrm{invalid}}\\subset\\mathcal X$ have finite perimeter and let $p_{\\sigma^2}$ be the heat kernel at scale $\\sigma$. Define $P_\\sigma(x)=\\int \\chi_E(y)\\,p_{\\sigma^2}(x,\\mathrm dy)$. Then\n1213: $$\n1214: \n1215: |P_\\sigma(x)-P_\\sigma(y)|\\;\\le\\; C_d'\\,\\frac{\\mathrm{Per}(E)}{\\sigma}\\, d_{\\mathcal X}(x,y),\n1216: \n1217: $$\n1218: with a constant $C_d'$ depending on dimension. Consequently $L_{\\text{death}}\\lesssim (\\mathrm{Per}(\\varphi(E))/\\sigma)\\,L_\\varphi$ in the algorithmic metric."
+      "references": [
+        "axiom-boundary-smoothness",
+        "def-perturbation-measure"
+      ],
+      "raw_directive": "1236: #### 5.2.4 Lemma: Heat\u2011kernel Lipschitz bound via BV smoothing\n1237: :::{prf:lemma} Heat\u2011Lipschitz ({prf:ref}`axiom-reward-regularity`)bility is Lipschitz with constant $\\lesssim boundary ({prf:ref}`axiom-boundary-smoothness`): lem-boLipschitz ({prf:ref}`axiom-reward-regularity`)\n1238: This lemma provides the quantitative Lipschitz bouboundary ({prf:ref}`axiom-boundary-smoothness`)prf:ref}`axiom-boundary-regularity` for the heat kernel perturbation measure ({prf:ref}`def-perturbation-measure`).\n1239: \n1240: Let $E=\\mathcal{X}_{\\mathrm{invalid}}\\subset\\mathcal X$ have finite perimeter and let $p_{\\sigma^2}$ be the heat kernel at scale $\\sigma$. Define $P_\\sigma(x)=\\int \\chi_E(y)\\,p_{\\sigma^2}(x,\\mathrm dy)$. Then\n1241: \n1242: $$\n1243: \n1244: |P_\\sigma(x)-P_\\sigma(y)|\\;\\le\\; C_d'\\,\\frac{\\mathrm{Per}(E)}{\\sigma}\\, d_{\\mathcal X}(x,y),\n1245: \n1246: $$\n1247: with a constant $C_d'$ depending on dimension. Consequently $L_{\\text{death}}\\lesssim (\\mathrm{Per}(\\varphi(E))/\\sigma)\\,L_\\varphi$ in the algorithmic metric."
     },
     {
       "directive_type": "proof",
       "label": "proof-lem-boundary-heat-kernel",
       "title": null,
-      "start_line": 1219,
-      "end_line": 1223,
+      "start_line": 1248,
+      "end_line": 1252,
       "header_lines": [
-        1220
+        1249
       ],
-      "content_start": 1221,
-      "content_end": 1222,
-      "content": "1221: :label: proof-lem-boundary-heat-kernel\n1222: As above, $P_\\sigma=\\chi_E * p_{\\sigma^2}$ and $\\nabla(\\chi_E * p_{\\sigma^2})=(D\\chi_E)*p_{\\sigma^2}$. Since $\\|\\nabla p_{\\sigma^2}\\|_1\\asymp 1/\\sigma$, convolution with the BV measure $D\\chi_E$ yields a Lipschitz bound $\\lesssim (\\mathrm{Per}(E)/\\sigma)$. The projection factor $L_\\varphi$ carries distances to the algorithmic space.",
+      "content_start": 1250,
+      "content_end": 1251,
+      "content": "1250: :label: proof-lem-boundary-heat-kernel\n1251: As above, $P_\\sigma=\\chi_E * p_{\\sigma^2}$ and $\\nabla(\\chi_E * p_{\\sigma^2})=(D\\chi_E)*p_{\\sigma^2}$. Since $\\|\\nabla p_{\\sigma^2}\\|_1\\asymp 1/\\sigma$, convolution with the BV measure $D\\chi_E$ yields a Lipschitz bound $\\lesssim (\\mathrm{Per}(E)/\\sigma)$. The projection factor $L_\\varphi$ carries distances to the algorithmic space ({prf:ref}`def-algorithmic-space-generic`).",
       "metadata": {
         "label": "proof-lem-boundary-heat-kernel"
       },
       "section": "## 5. Algorithmic Noise Measures",
-      "references": [],
-      "raw_directive": "1219: :::\n1220: :::{prf:proof}\n1221: :label: proof-lem-boundary-heat-kernel\n1222: As above, $P_\\sigma=\\chi_E * p_{\\sigma^2}$ and $\\nabla(\\chi_E * p_{\\sigma^2})=(D\\chi_E)*p_{\\sigma^2}$. Since $\\|\\nabla p_{\\sigma^2}\\|_1\\asymp 1/\\sigma$, convolution with the BV measure $D\\chi_E$ yields a Lipschitz bound $\\lesssim (\\mathrm{Per}(E)/\\sigma)$. The projection factor $L_\\varphi$ carries distances to the algorithmic space.\n1223: **Q.E.D.**"
+      "references": [
+        "def-algorithmic-space-generic"
+      ],
+      "raw_directive": "1248: :::\n1249: :::{prf:proof}\n1250: :label: proof-lem-boundary-heat-kernel\n1251: As above, $P_\\sigma=\\chi_E * p_{\\sigma^2}$ and $\\nabla(\\chi_E * p_{\\sigma^2})=(D\\chi_E)*p_{\\sigma^2}$. Since $\\|\\nabla p_{\\sigma^2}\\|_1\\asymp 1/\\sigma$, convolution with the BV measure $D\\chi_E$ yields a Lipschitz bound $\\lesssim (\\mathrm{Per}(E)/\\sigma)$. The projection factor $L_\\varphi$ carries distances to the algorithmic space ({prf:ref}`def-algorithmic-space-generic`).\n1252: **Q.E.D.**"
     }
   ],
   "validation": {

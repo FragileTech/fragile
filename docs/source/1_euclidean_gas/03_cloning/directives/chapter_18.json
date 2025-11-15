@@ -14,13 +14,15 @@
       ],
       "content_start": 6797,
       "content_end": 6808,
-      "content": "6797: :label: thm-velocity-variance-bounded-expansion\n6798: \n6799: There exists a state-independent constant $C_v < \\infty$ such that for any swarm $S$:\n6800: \n6801: $$\n6802: \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},v}(S')] \\leq V_{\\text{Var},v}(S) + C_v\n6803: $$\n6804: \n6805: Equivalently, the one-step drift satisfies:\n6806: \n6807: $$\n6808: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v",
+      "content": "6797: :label: thm-velocity-variance-bounded-expansion\n6798: \n6799: There exists a state-independent constant $C_v < \\infty$ such that for any swarm ({prf:ref}`def-swarm-and-state-space`) $S$:\n6800: \n6801: $$\n6802: \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},v}(S')] \\leq V_{\\text{Var},v}(S) + C_v\n6803: $$\n6804: \n6805: Equivalently, the one-step drift satisfies:\n6806: \n6807: $$\n6808: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v",
       "metadata": {
         "label": "thm-velocity-variance-bounded-expansion"
       },
       "section": "## 10.4. Velocity Variance Bounded Expansion",
-      "references": [],
-      "raw_directive": "6794: We now prove that the velocity variance expansion from cloning is uniformly bounded.\n6795: \n6796: :::{prf:theorem} Bounded Velocity Variance Expansion from Cloning\n6797: :label: thm-velocity-variance-bounded-expansion\n6798: \n6799: There exists a state-independent constant $C_v < \\infty$ such that for any swarm $S$:\n6800: \n6801: $$\n6802: \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},v}(S')] \\leq V_{\\text{Var},v}(S) + C_v\n6803: $$\n6804: \n6805: Equivalently, the one-step drift satisfies:\n6806: \n6807: $$\n6808: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n6809: $$"
+      "references": [
+        "def-swarm-and-state-space"
+      ],
+      "raw_directive": "6794: We now prove that the velocity variance expansion from cloning is uniformly bounded.\n6795: \n6796: :::{prf:theorem} Bounded Velocity Variance Expansion from Cloning\n6797: :label: thm-velocity-variance-bounded-expansion\n6798: \n6799: There exists a state-independent constant $C_v < \\infty$ such that for any swarm ({prf:ref}`def-swarm-and-state-space`) $S$:\n6800: \n6801: $$\n6802: \\mathbb{E}_{\\text{clone}}[V_{\\text{Var},v}(S')] \\leq V_{\\text{Var},v}(S) + C_v\n6803: $$\n6804: \n6805: Equivalently, the one-step drift satisfies:\n6806: \n6807: $$\n6808: \\mathbb{E}_{\\text{clone}}[\\Delta V_{\\text{Var},v}] \\leq C_v\n6809: $$"
     },
     {
       "directive_type": "proof",

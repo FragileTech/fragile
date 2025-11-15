@@ -2,13 +2,13 @@
 
 ## 0. TLDR
 
-**The Keystone Lemma**: The cloning operator $\Psi_{\text{clone}}$ exhibits a powerful error-correction mechanism. When the swarm's internal positional variance $V_{\text{Var},x}$ is large, the system automatically generates a fitness signal that correctly identifies high-error walkers and applies cloning pressure proportional to their positional error. This creates an expected N-uniform contraction of internal variance with rate $\kappa_x > 0$.
+**The Keystone Lemma**: The cloning operator $\Psi_{\text{clone}}$ ({prf:ref}`def-cloning-operator`) exhibits a powerful error-correction mechanism. When the swarm's internal positional variance $V_{\text{Var},x}$ is large, the system automatically generates a fitness signal that correctly identifies high-error walkers and applies cloning pressure proportional to their positional error. This creates an expected N-uniform contraction of internal variance with rate $\kappa_x > 0$.
 
 **Foster-Lyapunov Drift Condition**: The cloning operator satisfies a two-part drift inequality on the hypocoercive Lyapunov function. Positional variance contracts geometrically ($\mathbb{E}[\Delta V_{\text{Var},x}] \leq -\kappa_x V_{\text{Var},x} + C_x$), while velocity variance exhibits bounded expansion ($\mathbb{E}[\Delta V_{\text{Var},v}] \leq C_v$). Combined with the Safe Harbor mechanism (see {prf:ref}`axiom-safe-harbor`), boundary potential contracts exponentially ($\mathbb{E}[\Delta W_b] \leq -\kappa_b W_b + C_b$), ensuring low extinction probability.
 
 **N-Uniform Scalability**: All contraction rates ($\kappa_x$, $\kappa_b$) and expansion bounds ($C_x$, $C_v$, $C_b$) are independent of the swarm size $N$. This N-uniformity is the foundation for mean-field analysis and validates the Fragile Gas as a continuum physics model. The proof is constructive with explicit constants expressed in terms of primitive algorithmic parameters.
 
-**Synergistic Stability**: The cloning operator provides partial contraction—it stabilizes position but perturbs velocity. The companion document proves that the kinetic operator $\Psi_{\text{kin}}$ provides complementary dynamics (stabilizes velocity, perturbs position). Together, they form a synergistic Foster-Lyapunov condition guaranteeing exponential convergence to a unique Quasi-Stationary Distribution (QSD).
+**Synergistic Stability**: The cloning operator provides partial contraction—it stabilizes position but perturbs velocity. The companion document proves that the kinetic operator $\Psi_{\text{kin}}$ ({prf:ref}`def-kinetic-operator`) provides complementary dynamics (stabilizes velocity, perturbs position). Together, they form a synergistic Foster-Lyapunov condition guaranteeing exponential convergence to a unique Quasi-Stationary Distribution (QSD) ({prf:ref}`def-qsd`).
 
 ## 1. Introduction
 
@@ -16,16 +16,16 @@
 
 The goal of this document is to provide a complete, self-contained proof that the cloning and selection operator of the Fragile Gas is the primary source of the system's **positional error contraction** and long-term stability. The central object of study is the operator $\Psi_{\text{clone}}$, defined as the sequence of operations from the initial raw measurement of the swarm's state through the final cloning transition that produces an intermediate, all-alive swarm.
 
-We will prove that this complex, stochastic, and highly non-linear operator is fundamentally stabilizing for any system that satisfies the Fragile Gas axioms. The main result of this analysis is the derivation of a **two-part Foster-Lyapunov drift condition**. This condition formally proves that, on average, the cloning operator exerts a powerful contractive force on the **positional ($V_{\text{Var},x}$)** and boundary components of the system's error, while maintaining **bounded expansion of the velocity variance ($V_{\text{Var},v}$)**, as measured by a specifically constructed hypocoercive Lyapunov function.
+We will prove that this complex, stochastic, and highly non-linear operator is fundamentally stabilizing for any system that satisfies the Fragile Gas axioms ({prf:ref}`def-fragile-gas-axioms`). The main result of this analysis is the derivation of a **two-part Foster-Lyapunov ({prf:ref}`def-foster-lyapunov`) drift condition**. This condition formally proves that, on average, the cloning operator exerts a powerful contractive force on the **positional ($V_{\text{Var},x}$)** and boundary components of the system's error, while maintaining **bounded expansion of the velocity variance ($V_{\text{Var},v}$)**, as measured by a specifically constructed hypocoercive Lyapunov function.
 
-This document focuses exclusively on the analysis of the cloning operator. While we use the Euclidean Gas as a primary concrete example, the results derived are general to the entire class of Fragile Gas systems. The subsequent analysis of the kinetic Langevin operator ($\Psi_{\text{kin}}$), which provides the necessary **contraction of velocity error**, the composition of the two operators, and the final proof of exponential convergence for the full Euclidean Gas model are deferred to the companion document, *"Hypocoercivity and Convergence of the Euclidean Gas."*
+This document focuses exclusively on the analysis of the cloning operator. While we use the Euclidean Gas as a primary concrete example, the results derived are general to the entire class of Fragile Gas systems. The subsequent analysis of the kinetic Langevin operator ({prf:ref}`def-langevin-operator`) ($\Psi_{\text{kin}}$), which provides the necessary **contraction of velocity error**, the composition of the two operators, and the final proof of exponential convergence for the full Euclidean Gas model are deferred to the companion document, *"Hypocoercivity and Convergence of the Euclidean Gas."*
 
 :::{remark} A Note on the Possibility of Extinction and Quasi-Stationary Distributions
 :label: rem-note-extinction-possibility
 
-A critical feature of the Euclidean Gas, and any Fragile Gas instantiation employing unbounded noise kernels, is the existence of an absorbing "cemetery state." While the axioms and dynamics are designed to make the swarm robust, the use of unbounded Gaussian noise in the kinetic stage means there remains a strictly positive, albeit potentially infinitesimal, probability of total swarm extinction in a single step from any state. Even a swarm located centrally in the valid domain can, through a sufficiently large and coherent random fluctuation, have all $N$ of its walkers displaced beyond the boundary of $\mathcal X_{\mathrm{valid}}$.
+A critical feature of the Euclidean Gas, and any Fragile Gas instantiation employing unbounded noise kernels, is the existence of an absorbing "cemetery state." While the axioms and dynamics are designed to make the swarm robust, the use of unbounded Gaussian noise in the kinetic stage means there remains a strictly positive, albeit potentially infinitesimal, probability of total swarm extinction in a single step from any state. Even a swarm located centrally in the valid domain ({prf:ref}`def-valid-state-space`) can, through a sufficiently large and coherent random fluctuation, have all $N$ of its walkers displaced beyond the boundary of $\mathcal X_{\mathrm{valid}}$.
 
-Consequently, the process is an absorbed Markov chain, and it cannot converge to a true stationary distribution over the space of living swarms. The correct framework for analyzing such a process is the theory of **Quasi-Stationary Distributions (QSDs)**. A QSD describes the long-term statistical behavior of the process *conditioned on its survival*.
+Consequently, the process is an absorbed Markov chain ({prf:ref}`def-markov-kernel`), and it cannot converge to a true stationary distribution over the space of living swarms. The correct framework for analyzing such a process is the theory of **Quasi-Stationary Distributions (QSDs)**. A QSD describes the long-term statistical behavior of the process *conditioned on its survival*.
 
 Therefore, the convergence analysis in this document is dedicated to proving that the Euclidean Gas converges exponentially fast to a unique QSD. The practical implication of the stability proven herein is that the mean time to extinction, while finite, can be made exponentially long with appropriate parameter choices. This allows the swarm to converge to and operate within this quasi-stationary regime for all relevant timescales, making the QSD the correct and meaningful description of the system's long-term behavior.
 :::
@@ -93,24 +93,24 @@ graph TD
 ```
 
 The document is structured as follows:
-*   **Chapters 2-4 (Foundations):** We begin by defining our analytical tools: the coupled state space for comparing swarms, the augmented hypocoercive Lyapunov function for measuring error, and the complete set of foundational axioms that any valid Fragile Gas must satisfy.
+*   **Chapters 2-4 (Foundations):** We begin by defining our analytical tools: the coupled state space for comparing swarms, the augmented hypocoercive Lyapunov ({prf:ref}`def-hypocoercive-lyapunov`) function for measuring error, and the complete set of foundational axioms that any valid Fragile Gas must satisfy.
 *   **Chapters 5-8 (The Keystone Lemma):** The core of this work is a multi-chapter proof of the Keystone Lemma. We build a rigorous causal chain, proving that a large system error is guaranteed to be converted into a non-cancellable fitness signal (Ch 6), that this signal correctly targets the walkers responsible for the error (Ch 7), and that the resulting expected contractive force is proportional to the error in a scalable, N-uniform manner (Ch 8).
 *   **Chapters 9-12 (Drift Analysis):** With the Keystone Lemma established, we apply it to analyze the one-step drift of the cloning operator. We formally define the operator (Ch 9) and then prove that it induces geometric expected contraction on the positional variance (Ch 10) and boundary potential (Ch 11). Chapter 12 synthesizes these results into the complete drift inequality for the cloning operator, demonstrating the synergistic interplay between variance contraction, boundary safety, and inter-swarm error dynamics.
 
 ## 2. The Coupled State Space and State Differences
 
-The proof of geometric ergodicity is constructed on a coupled state space, which allows us to analyze the convergence of two distinct trajectories of the swarm towards each other. This chapter formally defines the space in which a single swarm evolves, the product space required for the coupling argument, and the difference vectors that will serve as the core variables for the subsequent analysis.
+The proof of geometric ergodicity ({prf:ref}`def-geometric-ergodicity`) is constructed on a coupled state space, which allows us to analyze the convergence of two distinct trajectories of the swarm towards each other. This chapter formally defines the space in which a single swarm evolves, the product space required for the coupling argument, and the difference vectors that will serve as the core variables for the subsequent analysis.
 
 ### 2.1. The Single-Swarm State Space
 
-The fundamental unit of the system is the walker, and a collection of these walkers constitutes a swarm. We begin by defining their state spaces abstractly, in a manner consistent with the Fragile Gas framework.
+The fundamental unit of the system is the walker ({prf:ref}`def-walker`), and a collection of these walkers constitutes a swarm ({prf:ref}`def-swarm-and-state-space`). We begin by defining their state spaces abstractly, in a manner consistent with the Fragile Gas framework.
 
 :::{prf:definition} Single-Walker and Swarm State Spaces
 :label: def-single-swarm-space
 
-1.  A **walker** is a tuple $(x, s)$, where $x \in \mathcal{X}$ is its position in a state space and $s \in \{0, 1\}$ is its survival status. For the Euclidean Gas, this is extended to include a velocity component, making the **full state** of a single walker a tuple $(x, v, s) \in \mathbb{R}^d \times \mathbb{R}^d \times \{0, 1\}$. We refer to $(x,v)$ as the **kinematic state**.
+1.  A **walker** is a tuple $(x, s)$ ({prf:ref}`def-walker`), where $x \in \mathcal{X}$ is its position in a state space and $s \in \{0, 1\}$ is its survival status. For the Euclidean Gas ({prf:ref}`def-euclidean-gas`), this is extended to include a velocity component, making the **full state** of a single walker a tuple $(x, v, s) \in \mathbb{R}^d \times \mathbb{R}^d \times \{0, 1\}$. We refer to $(x,v)$ as the **kinematic state**.
 
-2.  A **swarm configuration**, $S$, is an N-tuple of walker states:
+2.  A **swarm ({prf:ref}`def-swarm-and-state-space`) configuration**, $S$, is an N-tuple of walker  states:
 
 
 
@@ -118,7 +118,7 @@ $$
 S := \left( (x_1, v_1, s_1), (x_2, v_2, s_2), \dots, (x_N, v_N, s_N) \right)
 $$
 
-3.  The **single-swarm state space**, denoted $\Sigma_N$, is the Cartesian product of the per-walker state spaces:
+3.  The **single-swarm ({prf:ref}`def-swarm-and-state-space`) state space**, denoted $\Sigma_N$, is the Cartesian product of the per-walker ({prf:ref}`def-walker`) state spaces:
 
 
 
@@ -140,14 +140,14 @@ To achieve this, we must define a specific **coupling** for all sources of rando
 1.  **Companion Selection:** For each walker $i$, a single underlying random variable is used to sample from the $\varepsilon$-dependent spatial kernels of each swarm, $P(\cdot \mid S_1, i)$ and $P(\cdot \mid S_2, i)$. Because the distributions are state-dependent, the chosen companions $c_{1,i}$ and $c_{2,i}$ will generally be different.
 2.  **Cloning Thresholds:** The same random threshold $T_i \sim \text{Uniform}(0, p_{\max})$ is used for both swarms.
 3.  **Cloning Jitter:** The same random vectors $\zeta_i^x \sim \mathcal{N}(0, I_d)$ are used for positional jitter.
-4.  **Kinetic Perturbation:** The same random vectors $\xi_i^v \sim \mathcal{N}(0, I_d)$ are used for Langevin noise.
+4.  **Kinetic Perturbation:** The same random vectors $\xi_i^v \sim \mathcal{N}(0, I_d)$ are used for Langevin ({prf:ref}`def-langevin-operator`) noise.
 
 This synchronous coupling is chosen because it is designed to minimize the distance between the two trajectories, making it the most suitable choice for proving a contraction. All expectations $\mathbb{E}[\cdot]$ in the subsequent analysis are taken with respect to this single, shared source of randomness.
 
 :::{prf:definition} The Coupled State Space
 :label: def-coupled-state-space
 
-The **coupled state space** for the Euclidean Gas is the Cartesian product $\Sigma_N \times \Sigma_N$, where $\Sigma_N$ is defined in {prf:ref}`def-single-swarm-space`. An element of this space is an ordered pair of swarm configurations, $(S_1, S_2)$, where:
+The **coupled state space** for the Euclidean Gas ({prf:ref}`def-euclidean-gas`) is the Cartesian product $\Sigma_N \times \Sigma_N$, where $\Sigma_N$ is defined in {prf:ref}`def-single-swarm-space`. An element of this space is an ordered pair of swarm configurations, $(S_1, S_2)$, where:
 
 $$
 S_1 = \left( (x_{1,1}, v_{1,1}, s_{1,1}), \dots, (x_{1,N}, v_{1,N}, s_{1,N}) \right) \in \Sigma_N,
@@ -169,9 +169,9 @@ The core of the hypocoercive analysis is not the absolute state of the swarms, b
 :::{prf:definition} State Difference Vectors
 :label: def-state-difference-vectors
 
-For any element $(S_1, S_2) \in \Sigma_N \times \Sigma_N$, we define the **state difference vectors** for each walker index $i \in \{1, \ldots, N\}$ as follows:
+For any element $(S_1, S_2) \in \Sigma_N \times \Sigma_N$, we define the **state difference vectors** for each walker ({prf:ref}`def-walker`) index $i \in \{1, \ldots, N\}$ as follows:
 
-1.  The **position difference vector** for walker $i$ is:
+1.  The **position difference vector** for walker  $i$ is:
 
 
 
@@ -179,7 +179,7 @@ $$
 \Delta x_i := x_{1,i} - x_{2,i} \in \mathbb{R}^d
 $$
 
-2.  The **velocity difference vector** for walker $i$ is:
+2.  The **velocity difference vector** for walker ({prf:ref}`def-walker`) $i$ is:
 
 
 
@@ -187,7 +187,7 @@ $$
 \Delta v_i := v_{1,i} - v_{2,i} \in \mathbb{R}^d
 $$
 
-The entire drift analysis will be formulated in terms of the norms and inner products of these $2N$ difference vectors. The objective is to show that, in expectation, the magnitudes of these vectors decrease over time, driving the two swarm trajectories together.
+The entire drift analysis will be formulated in terms of the norms and inner products of these $2N$ difference vectors. The objective is to show that, in expectation, the magnitudes of these vectors decrease over time, driving the two swarm ({prf:ref}`def-swarm-and-state-space`) trajectories together.
 
 Referenced by {prf:ref}`def-location-error-component`.
 :::
@@ -203,7 +203,7 @@ For the construction to be valid, we impose the following standard regularity co
 :::{prf:axiom} **(Axiom EG-0): Regularity of the Domain**
 :label: axiom-domain-regularity
 
-The valid domain for a single walker's position, $\mathcal{X}_{\text{valid}}$, is an open, bounded, and connected subset of $\mathbb{R}^d$. Its boundary, $\partial \mathcal{X}_{\text{valid}}$, is a $C^{\infty}$-smooth compact manifold without boundary.
+The valid domain for a single walker ({prf:ref}`def-walker`)'s position, $\mathcal{X}_{\text{valid}}$ ({prf:ref}`def-valid-state-space`), is an open, bounded, and connected subset of $\mathbb{R}^d$. Its boundary, $\partial \mathcal{X}_{\text{valid}}$, is a $C^{\infty}$-smooth compact manifold without boundary.
 
 Referenced by {prf:ref}`prop-barrier-existence`.
 :::
@@ -375,7 +375,7 @@ We begin by formally defining the mathematical objects required for this decompo
 :::{prf:definition} Barycentres and Centered Vectors (Alive Walkers Only)
 :label: def-barycentres-and-centered-vectors
 
-For each swarm $k \in \{1, 2\}$ (see {prf:ref}`def-single-swarm-space`) in a coupled state $(S_1, S_2)$, let $\mathcal{A}(S_k)$ denote the set of alive walker indices and let $k_{\text{alive}} := |\mathcal{A}(S_k)|$ denote the number of alive walkers in swarm $k$. We define:
+For each swarm ({prf:ref}`def-swarm-and-state-space`) $k \in \{1, 2\}$ (see {prf:ref}`def-single-swarm-space`) in a coupled state $(S_1, S_2)$, let $\mathcal{A}(S_k)$ denote the set of alive walker ({prf:ref}`def-walker`) indices and let $k_{\text{alive}} := |\mathcal{A}(S_k)|$ denote the number of alive walkers in swarm $k$. We define:
 
 1.  The **positional center of mass** (barycentre) **computed over alive walkers only**:
 
@@ -393,9 +393,9 @@ $$
 \mu_{v,k} := \frac{1}{k_{\text{alive}}}\sum_{i \in \mathcal{A}(S_k)} v_{k,i}
 $$
 
-The **centered vectors** represent the state of each **alive** walker relative to its swarm's center of mass:
+The **centered vectors** represent the state of each **alive** walker ({prf:ref}`def-walker`) relative to its swarm ({prf:ref}`def-swarm-and-state-space`)'s center of mass:
 
-1.  The **centered position vector** for alive walker $i \in \mathcal{A}(S_k)$:
+1.  The **centered position vector** for alive walker  $i \in \mathcal{A}(S_k)$:
 
 
 
@@ -434,12 +434,12 @@ To create a robust analysis that is independent of walker labels, we define the 
 
 #### 3.2.1. The Location Error Component ($V_{\text{loc}}$)
 
-The distance between the swarms' centers of mass is an intrinsically permutation-invariant quantity. We define the location error as the hypocoercive quadratic form applied to the difference between the barycenters of the two swarms.
+The distance between the swarms' centers of mass is an intrinsically permutation-invariant quantity. We define the location error as the hypocoercive quadratic form ({prf:ref}`def-hypocoercive-distance`) applied to the difference between the barycenters of the two swarms.
 
 :::{prf:definition} The Location Error Component ($V_{\text{loc}}$)
 :label: def-location-error-component
 
-For any pair of swarm configurations $(S_1, S_2)$ with barycenters $(\mu_{x,1}, \mu_{v,1})$ and $(\mu_{x,2}, \mu_{v,2})$ (derived from {prf:ref}`def-state-difference-vectors`), the **location error component** is defined as:
+For any pair of swarm ({prf:ref}`def-swarm-and-state-space`) configurations $(S_1, S_2)$ with barycenters $(\mu_{x,1}, \mu_{v,1})$ and $(\mu_{x,2}, \mu_{v,2})$ (derived from {prf:ref}`def-state-difference-vectors`), the **location error component** is defined as:
 
 $$
 V_{\text{loc}} := \|\Delta\mu_x\|^2 + \lambda_v\|\Delta\mu_v\|^2 + b\langle\Delta\mu_x, \Delta\mu_v\rangle
@@ -450,7 +450,7 @@ where $\Delta\mu_x = \mu_{x,1} - \mu_{x,2}$ and $\Delta\mu_v = \mu_{v,1} - \mu_{
 
 #### 3.2.2. The Structural Error Component ($V_{\text{struct}}$)
 
-The structural error measures the mismatch between the "shapes" of the two swarms. The shape of a swarm is described by the set of its centered vectors, $\{\delta_{z,k,i}\}$. To compare these shapes in a permutation-invariant way, we find the **optimal matching** between the centered vectors of the two swarms and measure the residual error of that matching. This is equivalent to the hypocoercive Wasserstein distance between the *centered empirical measures*.
+The structural error measures the mismatch between the "shapes" of the two swarms. The shape of a swarm is described by the set of its centered vectors, $\{\delta_{z,k,i}\}$. To compare these shapes in a permutation-invariant way, we find the **optimal matching** between the centered vectors of the two swarms and measure the residual error of that matching. This is equivalent to the hypocoercive Wasserstein distance ({prf:ref}`def-wasserstein-distance`) between the *centered empirical measures*.
 
 :::{prf:definition} The Structural Error Component ($V_{\text{struct}}$)
 :label: def-structural-error-component
@@ -461,25 +461,25 @@ $$
 \tilde{\mu}_k := \frac{1}{k_{\text{alive}}} \sum_{i \in \mathcal{A}(S_k)} \delta_{(\delta_{x,k,i}, \delta_{v,k,i})}
 $$
 
-where $k_{\text{alive}} = |\mathcal{A}(S_k)|$ is the number of alive walkers in swarm $k$, and $\delta_{x,k,i}, \delta_{v,k,i}$ are the centered vectors defined in {prf:ref}`def-barycentres-and-centered-vectors`.
+where $k_{\text{alive}} = |\mathcal{A}(S_k)|$ is the number of alive walkers in swarm ({prf:ref}`def-swarm-and-state-space`) $k$, and $\delta_{x,k,i}, \delta_{v,k,i}$ are the centered vectors defined in {prf:ref}`def-barycentres-and-centered-vectors`.
 
-The **structural error component** $V_{\text{struct}}$ is defined as the squared hypocoercive Wasserstein distance between these centered measures:
+The **structural error component** $V_{\text{struct}}$ is defined as the squared hypocoercive Wasserstein distance ({prf:ref}`def-hypocoercive-distance`) between these centered measures:
 
 $$
 V_{\text{struct}} := W_h^2(\tilde{\mu}_1, \tilde{\mu}_2) = \inf_{\gamma \in \Gamma(\tilde{\mu}_1, \tilde{\mu}_2)} \int c(\delta_{z,1}, \delta_{z,2}) \, d\gamma(\delta_{z,1}, \delta_{z,2})
 $$
 
-where $c(\delta_1, \delta_2)$ is the hypocoercive cost $\|\delta_{x,1}-\delta_{x,2}\|^2 + \lambda_v\|\delta_{v,1}-\delta_{v,2}\|^2 + b\langle\ldots\rangle$. This finds the minimal average cost to align the shape of swarm 1 with the shape of swarm 2.
+where $c(\delta_1, \delta_2)$ is the hypocoercive cost $\|\delta_{x,1}-\delta_{x,2}\|^2 + \lambda_v\|\delta_{v,1}-\delta_{v,2}\|^2 + b\langle\ldots\rangle$. This finds the minimal average cost to align the shape of swarm ({prf:ref}`def-swarm-and-state-space`) 1 with the shape of swarm 2.
 :::
 
 #### 3.2.3. The Decomposition of Total Inter-Swarm Error
 
-A key result from optimal transport theory allows us to relate these components. The total distance between two distributions can be precisely decomposed into the distance between their centers of mass and the distance between their centered shapes.
+A key result from optimal transport theory ({prf:ref}`def-wasserstein-distance`) allows us to relate these components. The total distance between two distributions can be precisely decomposed into the distance between their centers of mass and the distance between their centered shapes.
 
 :::{prf:lemma} Decomposition of the Hypocoercive Wasserstein Distance
 :label: lem-wasserstein-decomposition
 
-The total inter-swarm error, as measured by the squared hypocoercive Wasserstein distance $W_h^2(\mu_1, \mu_2)$ between the two swarms' full empirical measures $\mu_1$ and $\mu_2$, decomposes exactly into the sum of the location and structural error components:
+The total inter-swarm ({prf:ref}`def-swarm-and-state-space`) error, as measured by the squared hypocoercive Wasserstein distance ({prf:ref}`def-n-particle-displacement-metric`) $W_h^2(\mu_1, \mu_2)$ between the two swarms' full empirical measures $\mu_1$ and $\mu_2$, decomposes exactly into the sum of the location and structural error components:
 
 $$
 W_h^2(\mu_1, \mu_2) = V_{\text{loc}} + V_{\text{struct}}
@@ -636,10 +636,10 @@ The first step in our causal chain is to connect the state of the coupled system
 :::{prf:lemma} Structural Positional Error and Internal Variance
 :label: lem-sx-implies-variance
 
-Let $k_1 := |\mathcal{A}(S_1)|$ and $k_2 := |\mathcal{A}(S_2)|$ denote the numbers of alive walkers in each swarm. Define:
+Let $k_1 := |\mathcal{A}(S_1)|$ and $k_2 := |\mathcal{A}(S_2)|$ denote the numbers of alive walkers in each swarm ({prf:ref}`def-swarm-and-state-space`). Define:
 
-- $V_{\text{x,struct}}$ as the positional component of the structural error between the two swarms' **alive-walker distributions**
-- $\text{Var}_k(x) := \frac{1}{k_{\text{alive}}} \sum_{i \in \mathcal{A}(S_k)} \|\delta_{x,k,i}\|^2$ as the **physical internal positional variance** of the **alive walkers** in swarm $k$ (note: this is $k_{\text{alive}}$-normalized, representing the actual spread of alive walkers, distinct from the Lyapunov variance component $V_{Var,x}$ which is $N$-normalized)
+- $V_{\text{x,struct}}$ as the positional component of the structural error between the two swarms' **alive-walker ({prf:ref}`def-walker`) distributions**
+- $\text{Var}_k(x) := \frac{1}{k_{\text{alive}}} \sum_{i \in \mathcal{A}(S_k)} \|\delta_{x,k,i}\|^2$ as the **physical internal positional variance** of the **alive walkers** in swarm  $k$ (note: this is $k_{\text{alive}}$-normalized, representing the actual spread of alive walkers, distinct from the Lyapunov variance component $V_{Var,x}$ which is $N$-normalized)
 
 Then:
 
@@ -647,7 +647,7 @@ $$
 V_{\text{x,struct}} \le 2(\text{Var}_1(x) + \text{Var}_2(x))
 $$
 
-Consequently, if $V_{\text{x,struct}} > R^2_{\text{spread}}$ for some threshold $R_{\text{spread}}$, then at least one swarm $k$ must have an internal variance $\text{Var}_k(x) > R^2_{\text{spread}} / 4$.
+Consequently, if $V_{\text{x,struct}} > R^2_{\text{spread}}$ for some threshold $R_{\text{spread}}$, then at least one swarm ({prf:ref}`def-swarm-and-state-space`) $k$ must have an internal variance $\text{Var}_k(x) > R^2_{\text{spread}} / 4$.
 :::
 :::{prf:proof}
 :label: proof-lem-sx-implies-variance
@@ -759,13 +759,13 @@ With the permutation-invariant decomposition of the inter-swarm error establishe
 :::{prf:definition} The Full Synergistic Hypocoercive Lyapunov Function
 :label: def-full-synergistic-lyapunov-function
 
-For any pair of swarm configurations $(S_1, S_2)$ with corresponding empirical measures $(\mu_1, \mu_2)$, the **total synergistic Lyapunov function** is defined as:
+For any pair of swarm ({prf:ref}`def-swarm-and-state-space`) configurations $(S_1, S_2)$ with corresponding empirical measures $(\mu_1, \mu_2)$, the **total synergistic Lyapunov function** is defined as:
 
 $$
 V_{\mathrm{total}}(S_1, S_2) := W_h^2(\mu_1, \mu_2) + c_V V_{Var}(S_1, S_2) + c_B W_b(S_1, S_2)
 $$
 
-where the intra-swarm variance term explicitly decomposes into positional and velocity components **summed over alive walkers only, but normalized by the total swarm size $N$**:
+where the intra-swarm ({prf:ref}`def-swarm-and-state-space`) variance term explicitly decomposes into positional and velocity components **summed over alive walkers only, but normalized by the total swarm size $N$**:
 
 $$
 V_{Var}(S_1, S_2) = V_{Var,x}(S_1, S_2) + \lambda_v V_{Var,v}(S_1, S_2)
@@ -780,11 +780,11 @@ V_{Var,v}(S_1, S_2) &:= \frac{1}{N} \sum_{i \in \mathcal{A}(S_1)} \|\delta_{v,1,
 \end{align*}
 $$
 
-where $N$ is the total swarm size, $\mathcal{A}(S_k)$ is the set of alive walker indices in swarm $k$, and $\delta_{x,k,i}, \delta_{v,k,i}$ are the centered vectors defined in {prf:ref}`def-barycentres-and-centered-vectors`.
+where $N$ is the total swarm ({prf:ref}`def-swarm-and-state-space`) size, $\mathcal{A}(S_k)$ is the set of alive walker ({prf:ref}`def-walker`) indices in swarm $k$, and $\delta_{x,k,i}, \delta_{v,k,i}$ are the centered vectors defined in {prf:ref}`def-barycentres-and-centered-vectors`.
 
 The function is a sum of three components:
 
-1.  **The Inter-Swarm Error ($W_h^2$):** The squared hypocoercive 2-Wasserstein distance between the swarms' full empirical measures. This term quantifies the total permutation-invariant distance between the two swarms in phase space. As established in {prf:ref}`lem-wasserstein-decomposition`, this component can be exactly decomposed into:
+1.  **The Inter-Swarm ({prf:ref}`def-swarm-and-state-space`) Error ($W_h^2$):** The squared hypocoercive 2-Wasserstein distance between the swarms' full empirical measures. This term quantifies the total permutation-invariant distance between the two swarms in phase space. As established in {prf:ref}`lem-wasserstein-decomposition`, this component can be exactly decomposed into:
     *   A **Location Component ($V_{\text{loc}}$)**, measuring the error between the swarm centers of mass.
     *   A **Structural Component ($V_{\text{struct}}$)**, measuring the mismatch in swarm shapes.
 
@@ -871,7 +871,7 @@ To ensure clarity throughout the proofs, we explicitly state the relationships b
 :::{prf:definition} Variance Notation Conversion Formulas
 :label: def-variance-conversions
 
-For a swarm $k$ with $k_{\text{alive}} = |\mathcal{A}(S_k)|$ alive walkers out of $N$ total walker slots:
+For a swarm ({prf:ref}`def-swarm-and-state-space`) $k$ with $k_{\text{alive}} = |\mathcal{A}(S_k)|$ alive walkers out of $N$ total walker ({prf:ref}`def-walker`) slots:
 
 **1. Un-normalized Sum of Squared Deviations:**
 
@@ -887,7 +887,7 @@ $$
 \text{Var}_k(x) := \frac{1}{k_{\text{alive}}} \sum_{i \in \mathcal{A}(S_k)} \|\delta_{x,k,i}\|^2 = \frac{S_k}{k_{\text{alive}}}
 $$
 
-This is the average squared deviation per alive walker - the standard statistical variance.
+This is the average squared deviation per alive walker ({prf:ref}`def-walker`) - the standard statistical variance.
 
 **3. Lyapunov Variance Component ($N$-normalized):**
 
@@ -895,7 +895,7 @@ $$
 V_{\text{Var},x}(S_k) := \frac{1}{N} \sum_{i \in \mathcal{A}(S_k)} \|\delta_{x,k,i}\|^2 = \frac{S_k}{N}
 $$
 
-This is the mean-field contribution to system disorder per walker slot.
+This is the mean-field contribution to system disorder per walker ({prf:ref}`def-walker`) slot.
 
 **Conversion Formulas:**
 
@@ -938,9 +938,9 @@ The Lyapunov function $V_{\text{total}} = W_h^2 + c_V V_{\text{Var}} + c_B W_b$ 
 
 **1. Complementary Information Content**
 
-The two kinematic components measure fundamentally different aspects of swarm error:
+The two kinematic components measure fundamentally different aspects of swarm ({prf:ref}`def-swarm-and-state-space`) error:
 
-- **$W_h^2(\mu_1, \mu_2)$**: Measures how far apart the two swarms are **as distributions**. This is the squared Wasserstein distance between the full empirical measures $\mu_1$ and $\mu_2$. It quantifies the minimal transport cost to transform one swarm's distribution into the other's.
+- **$W_h^2(\mu_1, \mu_2)$**: Measures how far apart the two swarms are **as distributions**. This is the squared Wasserstein distance ({prf:ref}`def-n-particle-displacement-metric`) between the full empirical measures $\mu_1$ and $\mu_2$. It quantifies the minimal transport cost to transform one swarm 's distribution into the other's.
 
 - **$V_{\text{Var}}(S_1, S_2)$**: Measures the **internal dispersion within each swarm**. This is the sum of the internal variances (positional and velocity) of each swarm's alive-walker population.
 
@@ -1144,7 +1144,7 @@ $$
 V_{\text{struct}} \geq \lambda_2 \cdot W_2^2(\tilde{\mu}_1, \tilde{\mu}_2)
 $$
 
-where $\lambda_2 = \lambda_{\min} > 0$. The standard $W_2$ distance between centered empirical measures satisfies:
+where $\lambda_2 = \lambda_{\min} > 0$. The standard $W_2$ ({prf:ref}`lem-polishness-and-w2`) distance between centered empirical measures satisfies:
 
 $$
 W_2^2(\tilde{\mu}_1, \tilde{\mu}_2) \geq \frac{1}{N} \sum_{i=1}^N \inf_{\sigma \in S_N} \left(\|\delta_{x,1,i} - \delta_{x,2,\sigma(i)}\|^2 + \|\delta_{v,1,i} - \delta_{v,2,\sigma(i)}\|^2\right)
@@ -1180,7 +1180,7 @@ The deterministic fields governing the system's kinetic dynamics are locally smo
 1.  **Force Field:** $\|F(x_1) - F(x_2)\| \leq L_F \|x_1 - x_2\|$
 2.  **Steady Flow Field:** $\|u(x_1) - u(x_2)\| \leq L_u \|x_1 - x_2\|$
 
-**Rationale:** This is a standard regularity assumption that ensures the kinetic dynamics do not have infinite gradients or instantaneous velocities, which is essential for the hypocoercive analysis. It guarantees that the one-step change in any walker's state is a well-behaved function of its current state.
+**Rationale:** This is a standard regularity assumption that ensures the kinetic dynamics do not have infinite gradients or instantaneous velocities, which is essential for the hypocoercive analysis. It guarantees that the one-step change in any walker ({prf:ref}`def-walker`)'s state is a well-behaved function of its current state.
 
 Referenced by {prf:ref}`prop-lyapunov-necessity`.
 :::
@@ -1204,7 +1204,7 @@ If the force or flow fields were not Lipschitz (e.g., if they had discontinuitie
 There exists a compact set $C_{\mathrm{safe}} \subset \mathcal X_{\mathrm{valid}}$ and a reward threshold $R_{\mathrm{safe}}$ such that:
 
 1.  $C_{\mathrm{safe}}$ lies strictly inside the valid domain: $d(x, \partial X_{\mathrm{valid}}) \geq \delta_{\mathrm{safe}} > 0$ for every $x \in C_{\mathrm{safe}}$.
-2.  The positional reward is strictly better inside the safe harbor: $\max_{y \in C_{\mathrm{safe}}} R_{\mathrm{pos}}(y) \geq R_{\mathrm{safe}}$ and $R_{\mathrm{pos}}(x) < R_{\mathrm{safe}}$ for all $x \notin C_{\mathrm{safe}}$.
+2.  The positional reward is strictly better inside the safe harbor ({prf:ref}`axiom-safe-harbor`): $\max_{y \in C_{\mathrm{safe}}} R_{\mathrm{pos}}(y) \geq R_{\mathrm{safe}}$ and $R_{\mathrm{pos}}(x) < R_{\mathrm{safe}}$ for all $x \notin C_{\mathrm{safe}}$.
 
 **Rationale:** This structural assumption on the reward landscape is the engine for the boundary potential's contractive drift. It guarantees that walkers near the boundary are demonstrably "unfit" compared to those in the interior, ensuring they will be preferentially cloned inwards. This provides the inward pull necessary to counteract the diffusive expansion from the kinetic noise.
 :::
@@ -1226,7 +1226,7 @@ If no such Safe Harbor exists, the reward landscape could be structured such tha
 
 These axioms ensure that the environment is sufficiently informative to prevent algorithmic stagnation and to allow the swarm to distinguish between good and bad configurations.
 
-:::{prf:axiom} **(Axiom EG-3): Non-Deceptive Landscape**
+:::{prf:axiom} **(Axiom EG-3): Non-Deceptive Landscape ({prf:ref}`def-axiom-environmental-richness`)**
 :label: axiom-non-deceptive-landscape
 
 The environment is **non-deceptive**. A sufficient geometric separation between two walkers guarantees a minimal, non-zero difference in their raw positional rewards. Formally, there exist constants $L_{\text{grad}} > 0$ and $\kappa_{\text{raw},r} > 0$ such that:
@@ -1268,11 +1268,11 @@ where `c_{v\_reg}` is a strictly positive constant `c_{v\_reg} > 0`.
 
 **Rationale:**
 
-This axiom is a critical safety mechanism within the synergistic dissipation framework. While the cloning operator contracts positional variance $V_{\text{Var},x}$ but causes bounded expansion of velocity variance $V_{\text{Var},v}$, the velocity regularization term ensures this expansion remains controlled and bounded.
+This axiom is a critical safety mechanism within the synergistic dissipation framework. While the cloning operator ({prf:ref}`def-cloning-operator`) contracts positional variance $V_{\text{Var},x}$ but causes bounded expansion of velocity variance $V_{\text{Var},v}$, the velocity regularization term ensures this expansion remains controlled and bounded.
 
-1.  **Bounding Velocity Variance Expansion During Cloning:** A walker `i` that acquires an anomalously large velocity `v_i` contributes significantly to the $V_{\text{Var},v}$ component of the Lyapunov function. The `-c_{v\_reg} ||v_i||^{2}` term gives this walker an extremely low raw reward, making it "unfit" regardless of its position. It thus becomes a prime target for cloning. When cloned, its high velocity is reset to that of a companion, which is overwhelmingly likely to be much smaller. This mechanism ensures that while cloning may increase $V_{\text{Var},v}$ through velocity resets, walkers with dangerously high velocities are preferentially removed, providing an upper bound on the expansion.
+1.  **Bounding Velocity Variance Expansion During Cloning:** A walker ({prf:ref}`def-walker`) `i` that acquires an anomalously large velocity `v_i` contributes significantly to the $V_{\text{Var},v}$ component of the Lyapunov function. The `-c_{v\_reg} ||v_i||^{2}` term gives this walker an extremely low raw reward, making it "unfit" regardless of its position. It thus becomes a prime target for cloning. When cloned, its high velocity is reset to that of a companion, which is overwhelmingly likely to be much smaller. This mechanism ensures that while cloning may increase $V_{\text{Var},v}$ through velocity resets, walkers with dangerously high velocities are preferentially removed, providing an upper bound on the expansion.
 
-2.  **Enabling Kinetic Stage Dissipation:** This mechanism acts as a robust safety net, preventing the kinetic energy of the swarm from growing to levels where the kinetic stage's Langevin friction term cannot overcome the expansion caused by cloning. It ensures that the velocity variance remains within a regime where the kinetic operator's dissipation can dominate, enabling the synergistic framework to achieve net contraction of the total Lyapunov function.
+2.  **Enabling Kinetic Stage Dissipation:** This mechanism acts as a robust safety net, preventing the kinetic energy of the swarm from growing to levels where the kinetic stage's Langevin friction term cannot overcome the expansion caused by cloning. It ensures that the velocity variance remains within a regime where the kinetic operator ({prf:ref}`def-kinetic-operator`)'s dissipation can dominate, enabling the synergistic framework to achieve net contraction of the total Lyapunov function.
 
 **Implications and Trade-offs:**
 
@@ -1328,7 +1328,7 @@ The algorithm's fitness potential becomes $V_{\text{fit}} = (r')^\alpha$, making
 
 A central claim of this framework is that the convergence guarantees are **N-uniform**, meaning the stability of the algorithm does not degrade as the number of walkers `N` grows. Proving this requires ensuring that the primary contractive forces of the algorithm do not vanish in the large-N limit.
 
-The most significant of these forces is the corrective feedback loop from cloning, which is driven by interactions between walkers in the **stably alive set** ($I_{11}$) of a coupled pair of swarms. For a simple companion selection mechanism, such as one where each walker chooses a companion independently and uniformly from its own swarm, a critical vulnerability arises: if the alive sets of the two swarms are nearly disjoint, the size of the stably alive set $N_{11}$ can be vanishingly small. In this scenario, the contractive force would be diluted to nothing, and the N-uniformity of the proof would be lost.
+The most significant of these forces is the corrective feedback loop from cloning, which is driven by interactions between walkers in the **stably alive set ({prf:ref}`def-alive-dead-sets`)** ($I_{11}$) of a coupled pair of swarms. For a simple companion selection mechanism, such as one where each walker chooses a companion independently and uniformly from its own swarm, a critical vulnerability arises: if the alive sets of the two swarms are nearly disjoint, the size of the stably alive set $N_{11}$ can be vanishingly small. In this scenario, the contractive force would be diluted to nothing, and the N-uniformity of the proof would be lost.
 
 To guarantee N-uniformity for such simpler mechanisms, one would need to impose the following axiom, which explicitly outlaws states where the structural overlap is too small.
 
@@ -1367,7 +1367,7 @@ Before defining the measurement operators, we must first establish the fundament
 :::{prf:definition} Algorithmic Distance for Companion Selection
 :label: def-algorithmic-distance-metric
 
-For any two walkers $i$ and $j$ with states $(x_i, v_i)$ and $(x_j, v_j)$, the **algorithmic distance** between them is defined as:
+For any two walkers $i$ and $j$ with states $(x_i, v_i)$ and $(x_j, v_j)$, the **algorithmic distance ({prf:ref}`def-alg-distance`)** between them is defined as:
 
 $$
 d_{\text{alg}}(i, j)^2 := \|x_i - x_j\|^2 + \lambda_{\text{alg}} \|v_i - v_j\|^2
@@ -1411,14 +1411,14 @@ For the purposes of theoretical analysis, it is useful to model the pairing as a
 :::{prf:definition} Spatially-Aware Pairing Operator (Idealized Model)
 :label: def-spatial-pairing-operator-diversity
 
-Let $\mathcal{S}_t$ be the current swarm state with alive set $\mathcal{A}_t$ of size $k = |\mathcal{A}_t|$. The idealized **Spatially-Aware Pairing Operator**, denoted $\mathbb{P}_{\text{pair}}$, maps the alive set $\mathcal{A}_t$ to a probability distribution over the set of all possible perfect matchings, $\mathcal{M}_k$.
+Let $\mathcal{S}_t$ be the current swarm ({prf:ref}`def-swarm-and-state-space`) state with alive set ({prf:ref}`def-alive-dead-sets`) $\mathcal{A}_t$ of size $k = |\mathcal{A}_t|$. The idealized **Spatially-Aware Pairing Operator**, denoted $\mathbb{P}_{\text{pair}}$, maps the alive set $\mathcal{A}_t$ to a probability distribution over the set of all possible perfect matchings, $\mathcal{M}_k$.
 
 **Inputs:**
-*   The alive set of walkers, $\mathcal{A}_t = \{w_1, w_2, \dots, w_k\}$.
+*   The alive set  of walkers, $\mathcal{A}_t = \{w_1, w_2, \dots, w_k\}$.
 *   $\varepsilon_d > 0$ (The Interaction Range for Diversity).
 
 **Operation:**
-1.  For every pair of distinct walkers $(w_i, w_j)$, an edge weight is assigned based on their phase-space proximity using the algorithmic distance metric (see {prf:ref}`def-algorithmic-distance-metric`):
+1.  For every pair of distinct walkers $(w_i, w_j)$, an edge weight is assigned based on their phase-space proximity using the algorithmic distance ({prf:ref}`def-alg-distance`) metric (see {prf:ref}`def-algorithmic-distance-metric`):
 
 
 $$
@@ -1459,8 +1459,8 @@ Let `A_t` be the set of `k` alive walkers at time `t`. The pairing operator gene
 **Operation:**
 1.  Initialize a set of unpaired walkers `U ← A_t` and an empty companion map `c`.
 2.  While `|U| > 1`:
-    a. Select and remove an arbitrary walker `i` from `U`.
-    b. For each remaining walker $j \in U$, calculate the selection weight based on phase-space proximity using the algorithmic distance metric (see {prf:ref}`def-algorithmic-distance-metric`):
+    a. Select and remove an arbitrary walker ({prf:ref}`def-walker`) `i` from `U`.
+    b. For each remaining walker  $j \in U$, calculate the selection weight based on phase-space proximity using the algorithmic distance ({prf:ref}`def-alg-distance`) metric (see {prf:ref}`def-algorithmic-distance-metric`):
 
 
 $$
@@ -1486,7 +1486,7 @@ The following pseudocode provides a concrete implementation of this operator.
 ALGORITHM: GreedyPairing(alive_walkers, epsilon_d)
 -------------------------------------------------
 INPUT:
-  alive_walkers: A list of k walker objects.
+  alive_walkers: A list of k walker ({prf:ref}`def-walker`) objects.
   epsilon_d: The interaction range for diversity.
 OUTPUT:
   companion_map: A dictionary representing the pairing.
@@ -1495,7 +1495,7 @@ OUTPUT:
 2.  companion_map ← an empty dictionary
 
 3.  WHILE len(unpaired_set) > 1:
-4.      i ← unpaired_set.pop()  // Select and remove a walker
+4.      i ← unpaired_set.pop()  // Select and remove a walker ({prf:ref}`def-walker`)
 
 5.      // Prepare to compute the probability distribution
 6.      companions ← list(unpaired_set)
@@ -1538,11 +1538,11 @@ First, we must formalize the geometric partitioning of the swarm that is guarant
 :::{prf:definition} Geometric Partitioning of High-Variance Swarms
 :label: def-geometric-partition
 
-For a given interaction range $\varepsilon$, we define a swarm's phase-space structure based on local and global properties. As will be proven in **{prf:ref}`cor-vvarx-to-high-error-fraction`**, any swarm with sufficiently high variance (`Var(x) > R^{2}_var`) can be partitioned into two non-empty, N-uniform sets:
-1.  A **high-error set** `H_k`, whose members are **kinematically isolated** in phase space. This implies the existence of a distance $D_H(\varepsilon) > 0$ such that for any $i \in H_k$, all other walkers `j` are at an algorithmic distance $d_alg(i, j) > D_H(\varepsilon)$.
+For a given interaction range $\varepsilon$, we define a swarm ({prf:ref}`def-swarm-and-state-space`)'s phase-space structure based on local and global properties. As will be proven in **{prf:ref}`cor-vvarx-to-high-error-fraction`**, any swarm with sufficiently high variance (`Var(x) > R^{2}_var`) can be partitioned into two non-empty, N-uniform sets:
+1.  A **high-error set** `H_k`, whose members are **kinematically isolated** in phase space. This implies the existence of a distance $D_H(\varepsilon) > 0$ such that for any $i \in H_k$, all other walkers `j` are at an algorithmic distance ({prf:ref}`def-alg-distance`) $d_alg(i, j) > D_H(\varepsilon)$.
 2.  A **low-error set** `L_k`, whose members are part of dense clusters in phase space. For any $j \in L_k$, there is a non-empty subset of other walkers `C_j ⊂ L_k` of size $|C_j| \geq f_c k$ (for some N-uniform `f_c > 0`) located within an algorithmic radius $R_L(\varepsilon) < D_H(\varepsilon)$.
 
-The existence and N-uniformity of these sets, their fractions, and their characteristic distances are the central results of the geometric analysis in Chapter 6. For this section, we take these as given structural properties of a high-variance swarm.
+The existence and N-uniformity of these sets, their fractions, and their characteristic distances are the central results of the geometric analysis in Chapter 6. For this section, we take these as given structural properties of a high-variance swarm ({prf:ref}`def-swarm-and-state-space`).
 
 Referenced by {prf:ref}`lem-greedy-preserves-signal`.
 :::
@@ -1552,18 +1552,18 @@ With these formal definitions, we can now prove that the practical pairing algor
 :::{prf:lemma} Greedy Pairing Guarantees Signal Separation
 :label: lem-greedy-preserves-signal
 
-Let a swarm be in a state with high internal variance, such that its alive walkers `A_k` are partitioned into a high-error set `H_k` and a low-error set `L_k` as per {prf:ref}`def-geometric-partition`.
+Let a swarm ({prf:ref}`def-swarm-and-state-space`) be in a state with high internal variance, such that its alive walkers `A_k` are partitioned into a high-error set `H_k` and a low-error set `L_k` as per {prf:ref}`def-geometric-partition`.
 
 The Sequential Stochastic Greedy Pairing Operator ({prf:ref}`def-greedy-pairing-algorithm`) guarantees a statistical separation in the expected raw phase-space distance measurements for these two populations. Specifically, there exist N-uniform, $\varepsilon$-dependent bounds such that:
 
-1.  For any high-error walker $i \in H_k$, its expected raw distance is large:
+1.  For any high-error walker ({prf:ref}`def-walker`) $i \in H_k$, its expected raw distance is large:
 
 
 $$
 \mathbb{E}[d_i \mid S_t, i \in H_k] \ge D_H(\epsilon)
 $$
 
-2.  For any low-error walker $j \in L_k$, its expected raw distance is small:
+2.  For any low-error walker ({prf:ref}`def-walker`) $j \in L_k$, its expected raw distance is small:
 
 
 $$
@@ -1617,7 +1617,7 @@ Since the low-error set $L_k$ contains a non-vanishing fraction of walkers ($|L_
 
 **Step 1.1: Geometric property from corrected {prf:ref}`lem-geometric-separation-of-partition`.**
 
-By {prf:ref}`lem-geometric-separation-of-partition` (corrected), for a high-error walker $i \in H_k$:
+By  (corrected), for a high-error walker $i \in H_k$:
 - For any low-error walker $u \in L_k$: $d_{\text{alg}}(i, u) \geq D_H(\epsilon)$
 - For any high-error walker in the same cluster: $d_{\text{alg}}(i, u) \leq R_L(\epsilon)$
 
@@ -1765,7 +1765,7 @@ Once the Companion Map `c(i)` is fixed for the timestep by the pairing operator,
 :::{prf:definition} Raw Value Operators
 :label: def-raw-value-operators
 
-1.  **The Reward Measurement Operator ($V_R$):** The raw reward for each alive walker `i` is its direct, individual measurement of the reward function, which explicitly includes both positional and velocity components:
+1.  **The Reward Measurement Operator ($V_R$):** The raw reward for each alive walker ({prf:ref}`def-walker`) `i` is its direct, individual measurement of the reward function, which explicitly includes both positional and velocity components:
 
 
 $$
@@ -1774,14 +1774,14 @@ $$
 
     where $R_{\text{pos}}(x_i)$ is the positional reward and $c_{v\_reg} > 0$ is the velocity regularization coefficient from {prf:ref}`axiom-velocity-regularization`.
 
-2.  **The Paired Distance Measurement Operator ($V_D$):** Given the Companion Map `c(i)` generated by the pairing operator, the raw distance for each alive walker `i` is deterministically defined as the algorithmic distance to its assigned companion:
+2.  **The Paired Distance Measurement Operator ($V_D$):** Given the Companion Map `c(i)` generated by the pairing operator, the raw distance for each alive walker ({prf:ref}`def-walker`) `i` is deterministically defined as the algorithmic distance ({prf:ref}`def-alg-distance`) to its assigned companion:
 
 
 $$
 d_i := d_{\text{alg}}(i, c(i))
 $$
 
-For any walker `j` that is dead, its raw values are deterministically zero: $r_j = 0$ and $d_j = 0$.
+For any walker ({prf:ref}`def-walker`) `j` that is dead, its raw values are deterministically zero: $r_j = 0$ and $d_j = 0$.
 
 Referenced by {prf:ref}`def-measurement-operator`.
 :::
@@ -1805,7 +1805,7 @@ This stage distills the raw reward and distance vectors from the `k` alive walke
 :::{prf:definition} Swarm Aggregation Operator
 :label: def-swarm-aggregation-operator
 
-A **Swarm Aggregation Operator**, $M$, maps the `k`-dimensional raw value vector $\mathbf{v}_{\mathcal{A}}$ from the alive set of a swarm state $\mathcal{S}$ (see {prf:ref}`def-single-swarm-space`) to a probability measure on $\mathbb{R}$, $\mu_{\mathbf{v}} = M(\mathcal{S}, \mathbf{v}_{\mathcal{A}})$. The moments of this measure define the swarm's collective statistics.
+A **Swarm ({prf:ref}`def-swarm-and-state-space`) Aggregation Operator**, $M$, maps the `k`-dimensional raw value vector $\mathbf{v}_{\mathcal{A}}$ from the alive set ({prf:ref}`def-alive-dead-sets`) of a swarm state $\mathcal{S}$ (see {prf:ref}`def-single-swarm-space`) to a probability measure on $\mathbb{R}$, $\mu_{\mathbf{v}} = M(\mathcal{S}, \mathbf{v}_{\mathcal{A}})$. The moments of this measure define the swarm's collective statistics.
 
 Referenced by {prf:ref}`def-standardization-operator`.
 :::
@@ -1846,12 +1846,12 @@ This operator uses the robust statistics from the previous stage to convert the 
 :::{prf:definition} N-Dimensional Standardization Operator
 :label: def-standardization-operator
 
-The **N-Dimensional Standardization Operator**, $z$, maps a swarm state `S`, a raw value vector `v`, and an aggregation operator `M` to an N-dimensional vector of Z-scores.
+The **N-Dimensional Standardization Operator ({prf:ref}`def-standardization-operator-n-dimensional`)**, $z$, maps a swarm ({prf:ref}`def-swarm-and-state-space`) state `S`, a raw value vector `v`, and an aggregation operator `M` to an N-dimensional vector of Z-scores.
 
 **Operation:**
 1.  Aggregate the alive components `v_A` using operator M (see {prf:ref}`def-swarm-aggregation-operator`) to get a measure $\mu_v = M(S, v_A)$.
 2.  Compute the mean $\mu_A = \mathbb{E}[\mu_v]$ and the **patched** standard deviation $\sigma'_A = \sigma'_{\text{patch}}(\text{Var}[\mu_v])$ using the patching function (see {prf:ref}`lem-patching-properties`).
-3.  For each alive walker `i`, compute its Z-score: $z_i = (v_i - \mu_A) / \sigma'_A$.
+3.  For each alive walker ({prf:ref}`def-walker`) `i`, compute its Z-score: $z_i = (v_i - \mu_A) / \sigma'_A$.
 4.  Assemble the final N-dimensional vector, setting components for dead walkers to zero.
 
 Referenced by {prf:ref}`def-measurement-operator`.
@@ -1859,7 +1859,7 @@ Referenced by {prf:ref}`def-measurement-operator`.
 
 :::{prf:lemma} Compact Support of Standardized Scores
 :label: lem-compact-support-z-scores
-As a direct consequence of the raw values being uniformly bounded and the patched standard deviation being uniformly bounded below by $\sigma'_{\min,\text{patch}} > 0$ (from {prf:ref}`lem-patching-properties`), any generated Z-score `z_i` is guaranteed to lie within a fixed, compact interval $Z_{\mathrm{supp}}$ that is independent of the swarm state.
+As a direct consequence of the raw values being uniformly bounded and the patched standard deviation being uniformly bounded below by $\sigma'_{\min,\text{patch}} > 0$ (from {prf:ref}`lem-patching-properties`), any generated Z-score `z_i` is guaranteed to lie within a fixed, compact interval $Z_{\mathrm{supp}}$ that is independent of the swarm ({prf:ref}`def-swarm-and-state-space`) state.
 :::
 
 ### 5.5. Stage 5: The Rescale Transformation
@@ -1874,7 +1874,7 @@ The canonical choice for the Euclidean Gas is the **Canonical Logistic Rescale F
 :::{prf:definition} Canonical Logistic Rescale Function
 :label: def-logistic-rescale
 
-The **Canonical Logistic Rescale Function**, $g_A: \mathbb{R} \to (0, 2)$, is defined as:
+The **Canonical Logistic Rescale Function ({prf:ref}`def-canonical-logistic-rescale-function-example`)**, $g_A: \mathbb{R} \to (0, 2)$, is defined as:
 
 $$
 g_A(z) := \frac{2}{1 + e^{-z}}
@@ -1884,7 +1884,7 @@ $$
 
 :::{prf:lemma} Verification of Axiomatic Properties
 :label: lem-logistic-properties
-The Canonical Logistic Rescale function is infinitely differentiable ($C^\infty$), strictly increasing, has a range of $(0,2)$, and its derivative is globally bounded by 1/2. It is therefore globally Lipschitz and satisfies all axiomatic requirements for a valid rescale function.
+The Canonical Logistic Rescale function ({prf:ref}`def-canonical-logistic-rescale-function-example`) is infinitely differentiable ($C^\infty$), strictly increasing, has a range of $(0,2)$, and its derivative is globally bounded by 1/2. It is therefore globally Lipschitz and satisfies all axiomatic requirements for a valid rescale function.
 :::
 
 ### 5.6. Stage 6: The Final Fitness Potential Operator
@@ -1894,12 +1894,12 @@ The final stage of the pipeline assembles the rescaled components from both the 
 :::{prf:definition} Fitness Potential Operator
 :label: def-fitness-potential-operator
 
-The **Fitness Potential Operator**, $\Phi_{\text{pipeline}}$, maps a swarm state `S` and its raw measurement vectors `r` and `d` to the final N-dimensional fitness potential vector $\mathbf{V}_{\text{fit}}$.
+The **Fitness Potential Operator**, $\Phi_{\text{pipeline}}$, maps a swarm ({prf:ref}`def-swarm-and-state-space`) state `S` and its raw measurement vectors `r` and `d` to the final N-dimensional fitness potential vector $\mathbf{V}_{\text{fit}}$.
 
 **Operation:**
 1.  Compute reward Z-scores: $\mathbf{z}_r = z(S, \mathbf{r}, R_{agg})$.
 2.  Compute distance Z-scores: $\mathbf{z}_d = z(S, \mathbf{d}, M_D)$.
-3.  For each alive walker `i`, compute the rescaled components with the floor $\eta$ using the Canonical Logistic Rescale Function (see {prf:ref}`lem-logistic-properties`):
+3.  For each alive walker ({prf:ref}`def-walker`) `i`, compute the rescaled components with the floor $\eta$ using the Canonical Logistic Rescale Function (see {prf:ref}`lem-logistic-properties`):
     *   $r'_i := g_A(z_{r,i}) + \eta$
     *   $d'_i := g_A(z_{d,i}) + \eta$
 4.  Combine the components using the dynamics weights $\alpha$ and $\beta$:
@@ -1964,16 +1964,16 @@ The process for each walker `i` follows a strict sequence: first, a potential co
 :::{prf:definition} Companion Selection Operator for Cloning
 :label: def-cloning-companion-operator
 
-The first step of the cloning action is to select a companion. The **Companion Selection Operator for Cloning** defines, for each walker `i`, a probability measure $\mathcal{C}_i(S)$ from which a companion `c_i` is sampled independently. This is a hybrid operator that uses the best available information for each type of walker.
+The first step of the cloning action is to select a companion. The **Companion Selection ({prf:ref}`def-companion-selection-measure`) Operator for Cloning** defines, for each walker ({prf:ref}`def-walker`) `i`, a probability measure $\mathcal{C}_i(S)$ from which a companion `c_i` is sampled independently. This is a hybrid operator that uses the best available information for each type of walker.
 
 **Inputs:**
-*   The swarm state `S`, which defines the set of alive walkers, $\mathcal{A}_k$, and the set of dead walkers, $\mathcal{D}_k$.
+*   The swarm ({prf:ref}`def-swarm-and-state-space`) state `S`, which defines the set of alive walkers, $\mathcal{A}_k$, and the set of dead walkers, $\mathcal{D}_k$.
 *   The interaction range for cloning, $\varepsilon_c > 0$.
 
 **Operation:**
-The definition of the measure $\mathcal{C}_i(S)$ depends on the status of walker `i`:
+The definition of the measure $\mathcal{C}_i(S)$ depends on the status of walker ({prf:ref}`def-walker`) `i`:
 
-1.  **If `i` is an ALIVE walker ($i \in \mathcal{A}_k$):**
+1.  **If `i` is an ALIVE walker  ($i \in \mathcal{A}_k$):**
     The selection is phase-space-aware and restricted to other alive walkers. For any other alive walker $j \in \mathcal{A}_k \setminus \{i\}$, the probability of selection is given by a softmax distribution based on algorithmic distance:
 
 
@@ -1996,13 +1996,13 @@ Referenced by {prf:ref}`def-decision-operator`.
 :::{prf:definition} The Canonical Cloning Score
 :label: def-cloning-score
 
-Once a companion `c_i` has been selected for walker `i`, the **Canonical Cloning Score**, $S_i(c_i)$, is calculated as:
+Once a companion `c_i` has been selected for walker ({prf:ref}`def-walker`) `i`, the **Canonical Cloning Score**, $S_i(c_i)$, is calculated as:
 
 $$
 S_i(c_i) := \frac{V_{\text{fit},{c_i}} - V_{\text{fit},i}}{V_{\text{fit},i} + \varepsilon_{\mathrm{clone}}}
 $$
 
-where $V_{\text{fit},i}$ is the fitness of walker `i`, $V_{\text{fit},{c_i}}$ is the fitness of its chosen companion, and $\varepsilon_{\mathrm{clone}} > 0$ is a small regularization constant.
+where $V_{\text{fit},i}$ is the fitness of walker ({prf:ref}`def-walker`) `i`, $V_{\text{fit},{c_i}}$ is the fitness of its chosen companion, and $\varepsilon_{\mathrm{clone}} > 0$ is a small regularization constant.
 
 Referenced by {prf:ref}`def-cloning-decision` and {prf:ref}`def-cloning-probability`.
 :::
@@ -2010,7 +2010,7 @@ Referenced by {prf:ref}`def-cloning-decision` and {prf:ref}`def-cloning-probabil
 :::{prf:definition} Total Cloning Probability
 :label: def-cloning-probability
 
-The **total cloning probability**, $p_i$, for a walker `i` is its unconditional probability of being marked for cloning. This is the expectation of the cloning event taken over the random draws of both the companion `c_i` and the threshold `T_i`, where the score is defined by {prf:ref}`def-cloning-score`.
+The **total cloning probability**, $p_i$, for a walker ({prf:ref}`def-walker`) `i` is its unconditional probability of being marked for cloning. This is the expectation of the cloning event taken over the random draws of both the companion `c_i` and the threshold `T_i`, where the score is defined by {prf:ref}`def-cloning-score`.
 
 $$
 p_i := \mathbb{E}_{c_i \sim \mathcal{C}_i(S)} \left[ \mathbb{P}_{T_i \sim U(0,p_{\max})} \left( S_i(c_i) > T_i \right) \right]
@@ -2022,7 +2022,7 @@ $$
 p_i = \mathbb{E}_{c_i \sim \mathcal{C}_i(S)}\left[\min\left(1, \max\left(0, \frac{S_i(c_i)}{p_{\max}}\right)\right)\right]
 $$
 
-This quantity, $p_i$, is the direct measure of the corrective pressure applied to walker `i` and is a central variable in the Keystone Principle proof.
+This quantity, $p_i$, is the direct measure of the corrective pressure applied to walker ({prf:ref}`def-walker`) `i` and is a central variable in the Keystone Principle proof.
 :::
 
 :::{admonition} Design Note: The Duality of Cloning Interactions
@@ -2038,7 +2038,7 @@ This means that in any given pairing, only one walker—the less fit one—can e
 :::{prf:definition} The Stochastic Cloning Decision
 :label: def-cloning-decision
 
-The decision to clone is made by comparing the score (see {prf:ref}`def-cloning-score`) to a random threshold. For each walker `i`, after its score $S_i(c_i)$ has been computed, a random threshold $T_i$ is sampled from the uniform distribution $T_i \sim \mathrm{Unif}(0, p_{\max})$. The walker `i` is marked for **cloning** if $S_i(c_i) > T_i$. Otherwise, it is marked to **persist**.
+The decision to clone is made by comparing the score (see {prf:ref}`def-cloning-score`) to a random threshold. For each walker ({prf:ref}`def-walker`) `i`, after its score $S_i(c_i)$ has been computed, a random threshold $T_i$ is sampled from the uniform distribution $T_i \sim \mathrm{Unif}(0, p_{\max})$. The walker `i` is marked for **cloning** if $S_i(c_i) > T_i$. Otherwise, it is marked to **persist**.
 :::
 
 #### 5.7.4. The Cloning State Update: A Multi-Body Inelastic Collision Model
@@ -2050,9 +2050,9 @@ This model handles the complex but common scenario where multiple "cloners" (eit
 :::{prf:definition} The Inelastic Collision State Update
 :label: def-inelastic-collision-update
 
-Let the set of all walkers marked for cloning be `C_set`. For each cloner $i \in C_set$, let `c_i` be its selected companion. The intermediate swarm state `S'` is constructed as follows.
+Let the set of all walkers marked for cloning be `C_set`. For each cloner $i \in C_set$, let `c_i` be its selected companion. The intermediate swarm ({prf:ref}`def-swarm-and-state-space`) state `S'` is constructed as follows.
 
-First, for each unique companion `c` in the swarm, we identify the set of all cloners that selected it:
+First, for each unique companion `c` in the swarm , we identify the set of all cloners that selected it:
 
 $$
 I_c := \{j \in C_{set} \mid c_j = c\}
@@ -2080,7 +2080,7 @@ $$
 V_{COM, c} := \frac{1}{M+1} \left( v_c + \sum_{j \in I_c} v_j \right)
 $$
 
-    *   **b. Update Relative Velocities:** For each walker `k` in the system ($k \in I_c \cup {c}$), its velocity relative to the CoM is `u_k = v_k - V_{COM,c}`. The new relative velocities `u'_k` are defined by a random rotation and a frictional contraction.
+    *   **b. Update Relative Velocities:** For each walker ({prf:ref}`def-walker`) `k` in the system ($k \in I_c \cup {c}$), its velocity relative to the CoM is `u_k = v_k - V_{COM,c}`. The new relative velocities `u'_k` are defined by a random rotation and a frictional contraction.
         Let $\alpha_restitution \in [0, 1]$ be a fixed algorithmic parameter representing the coefficient of restitution. For each `k`, let `R_k` be a random orthogonal transformation that isotropically rotates `u_k` (i.e., `R_k(u_k)` has the same magnitude as `u_k` but a uniformly random direction on the `(d-1)`-sphere). The new relative velocity is:
 
 
@@ -2095,7 +2095,7 @@ $$
 v'_k := V_{COM, c} + u'_k
 $$
 
-3.  **Uninvolved Walkers:** Any walker `k` that is not a cloner and was not selected as a companion by any cloner has its state `(x_k, v_k)` unchanged.
+3.  **Uninvolved Walkers:** Any walker ({prf:ref}`def-walker`) `k` that is not a cloner and was not selected as a companion by any cloner has its state `(x_k, v_k)` unchanged.
 
 **Analysis of the Restitution Parameter $\alpha_restitution$:**
 
@@ -2107,7 +2107,7 @@ This model introduces $\alpha_restitution$ as a crucial hyperparameter that cont
 
 *   If **$\alpha_restitution \in (0, 1)$**, the cloning event has **intermediate dissipation**. The internal kinetic energy of the interacting group is reduced by a factor of $\alpha_restitution^{2}$. This parameter provides a tunable mechanism for controlling the trade-off between maintaining kinetic diversity and bounding velocity variance expansion.
 
-The key insight is that **cloning causes bounded expansion of velocity variance through the velocity reset mechanism**, regardless of the value of $\alpha_restitution$. The restitution coefficient controls the magnitude of this expansion, with lower values providing tighter bounds. This expansion is then overcome by the kinetic operator's Langevin dissipation, as proven in the companion document.
+The key insight is that **cloning causes bounded expansion of velocity variance through the velocity reset mechanism**, regardless of the value of $\alpha_restitution$. The restitution coefficient controls the magnitude of this expansion, with lower values providing tighter bounds. This expansion is then overcome by the kinetic operator ({prf:ref}`def-kinetic-operator`)'s Langevin dissipation, as proven in the companion document.
 :::
 
 #### 5.7.5. Bounded Velocity Variance Expansion from Cloning
@@ -2123,7 +2123,7 @@ $$
 \Delta V_{Var,v} \leq f_{\text{clone}} \cdot C_{\text{reset}} \cdot V_{\max,\text{KE}}
 $$
 
-where $V_{\max,\text{KE}}$ is a uniform bound on the maximum possible kinetic energy per walker, and $C_{\text{reset}}$ is a constant depending on $\alpha_{\text{restitution}}$ and the domain geometry.
+where $V_{\max,\text{KE}}$ is a uniform bound on the maximum possible kinetic energy per walker ({prf:ref}`def-walker`), and $C_{\text{reset}}$ is a constant depending on $\alpha_{\text{restitution}}$ and the domain geometry.
 :::
 
 :::{prf:proof}
@@ -2355,13 +2355,13 @@ The first step in the Keystone analysis is to connect the relevant component of 
 :::{prf:lemma} Large $V_{\text{Var},x}$ Implies Large Single-Swarm Positional Variance
 :label: lem-V_Varx-implies-variance
 
-Let $V_{Var,x}(S_1, S_2)$ be the total intra-swarm positional variance component of the Lyapunov function as defined in [](#def-full-synergistic-lyapunov-function):
+Let $V_{Var,x}(S_1, S_2)$ be the total intra-swarm ({prf:ref}`def-swarm-and-state-space`) positional variance component of the Lyapunov function as defined in [](#def-full-synergistic-lyapunov-function):
 
 $$
 V_{Var,x}(S_1, S_2) = \frac{1}{N} \sum_{i \in \mathcal{A}(S_1)} \|\delta_{x,1,i}\|^2 + \frac{1}{N} \sum_{i \in \mathcal{A}(S_2)} \|\delta_{x,2,i}\|^2
 $$
 
-If this component is large, such that $V_{Var,x} > R_{total\_var,x}^2$ for some threshold $R_{total\_var,x}^2 > 0$, then at least one swarm $k \in \{1, 2\}$ must have a large sum of squared deviations:
+If this component is large, such that $V_{Var,x} > R_{total\_var,x}^2$ for some threshold $R_{total\_var,x}^2 > 0$, then at least one swarm ({prf:ref}`def-swarm-and-state-space`) $k \in \{1, 2\}$ must have a large sum of squared deviations:
 
 $$
 \frac{1}{N} \sum_{i \in \mathcal{A}(S_k)} \|\delta_{x,k,i}\|^2 > \frac{R_{total\_var,x}^2}{2}
@@ -2404,13 +2404,13 @@ Therefore, this section formally defines these sets based on the swarm's full **
 :::{prf:definition} The Unified High-Error and Low-Error Sets
 :label: def-unified-high-low-error-sets
 
-For a given swarm `k` with alive set $\mathcal{A}_k$ ($k \ge 2$), we define a partition into a unified high-error set $H_k(\epsilon)$ and a unified low-error set $L_k(\epsilon)$ using a **clustering-based approach** that applies uniformly across all interaction regimes. This unified approach captures both global outlier structure and local phase-space clustering through a single consistent mechanism.
+For a given swarm ({prf:ref}`def-swarm-and-state-space`) `k` with alive set ({prf:ref}`def-alive-dead-sets`) $\mathcal{A}_k$ ($k \ge 2$), we define a partition into a unified high-error set $H_k(\epsilon)$ and a unified low-error set $L_k(\epsilon)$ using a **clustering-based approach** that applies uniformly across all interaction regimes. This unified approach captures both global outlier structure and local phase-space clustering through a single consistent mechanism.
 
 **Phase-Space Clustering Construction:**
 
 The construction proceeds in four steps:
 
-1.  **Clustering:** Partition the alive set $\mathcal{A}_k$ into disjoint clusters $\{G_1, \ldots, G_M\}$ using complete-linkage hierarchical clustering with a maximum cluster diameter $D_{\text{diam}}(\epsilon) := c_d \cdot \epsilon$ (where $c_d > 0$ is a fixed constant, typically $c_d = 2$). Each cluster $G_m$ satisfies:
+1.  **Clustering:** Partition the alive set ({prf:ref}`def-alive-dead-sets`) $\mathcal{A}_k$ into disjoint clusters $\{G_1, \ldots, G_M\}$ using complete-linkage hierarchical clustering with a maximum cluster diameter $D_{\text{diam}}(\epsilon) := c_d \cdot \epsilon$ (where $c_d > 0$ is a fixed constant, typically $c_d = 2$). Each cluster $G_m$ satisfies:
 
 $$
 \text{diam}(G_m) := \max_{i,j \in G_m} d_{\text{alg}}(i, j) \le D_{\text{diam}}(\epsilon)
@@ -2464,7 +2464,7 @@ Before analyzing the specific regimes of the $\varepsilon$-dichotomy, we establi
 :::{prf:lemma} The Phase-Space Packing Lemma
 :label: lem-phase-space-packing
 
-For a swarm `k` consisting of $k \geq 2$ walkers with phase-space states $\{(x_i, v_i)\}_{i=1}^k$ within a compact domain, define the **total hypocoercive variance** of the swarm as:
+For a swarm ({prf:ref}`def-swarm-and-state-space`) `k` consisting of $k \geq 2$ walkers with phase-space states $\{(x_i, v_i)\}_{i=1}^k$ within a compact domain, define the **total hypocoercive variance** of the swarm as:
 
 $$
 \mathrm{Var}_h(S_k) := \mathrm{Var}_x(S_k) + \lambda_v \mathrm{Var}_v(S_k)
@@ -2472,7 +2472,7 @@ $$
 
 For any chosen proximity threshold $d_{\text{close}} > 0$, let $N_{\text{close}}$ be the number of unique pairs $(i, j)$ with $i<j$ and $d_{\text{alg}}(i, j) < d_{\text{close}}$, where $d_{\text{alg}}(i, j)^2 := \|x_i - x_j\|^2 + \lambda_{\text{alg}} \|v_i - v_j\|^2$ is the algorithmic phase-space distance.
 
-The fraction of such "close pairs in phase space", $f_{\text{close}} = N_{\text{close}} / \binom{k}{2}$, is bounded above by a function of the swarm's hypocoercive variance. Specifically, assuming $\lambda_v \le \lambda_{\text{alg}}$ and defining the phase-space diameter $D_{\text{valid}}^2 := D_x^2 + \lambda_{\text{alg}} D_v^2$ where $D_x$ and $D_v$ are the spatial and velocity domain diameters, there exists a continuous, monotonically decreasing function such that:
+The fraction of such "close pairs in phase space", $f_{\text{close}} = N_{\text{close}} / \binom{k}{2}$, is bounded above by a function of the swarm ({prf:ref}`def-swarm-and-state-space`)'s hypocoercive variance. Specifically, assuming $\lambda_v \le \lambda_{\text{alg}}$ and defining the phase-space diameter $D_{\text{valid}}^2 := D_x^2 + \lambda_{\text{alg}} D_v^2$ where $D_x$ and $D_v$ are the spatial and velocity domain diameters, there exists a continuous, monotonically decreasing function such that:
 
 $$
 f_{\text{close}} \le g(\mathrm{Var}_h(S_k)) := \frac{D_{\text{valid}}^2 - 2\mathrm{Var}_h(S_k)}{D_{\text{valid}}^2 - d_{\text{close}}^2}
@@ -2609,7 +2609,7 @@ To connect this analysis back to the positional variance component of the Lyapun
 :::{prf:lemma} Positional Variance as a Lower Bound for Hypocoercive Variance
 :label: lem-var-x-implies-var-h
 
-For any swarm `k`, its total hypocoercive variance is bounded below by its positional variance:
+For any swarm ({prf:ref}`def-swarm-and-state-space`) `k`, its total hypocoercive variance is bounded below by its positional variance:
 
 $$
 \mathrm{Var}_h(S_k) \ge \mathrm{Var}_x(S_k)
@@ -2644,9 +2644,9 @@ This lemma establishes the crucial bridge: the analysis in Section 6.2 guarantee
 :::{prf:lemma} N-Uniform Lower Bound on the Outlier Fraction
 :label: lem-outlier-fraction-lower-bound
 
-Let $O_k$ be the **global kinematic outlier set** for a swarm `k` with `k >= 2` alive walkers, as defined in Section 6.3, with structural parameter $\varepsilon_O \in (0, 1)$.
+Let $O_k$ be the **global kinematic outlier set** for a swarm ({prf:ref}`def-swarm-and-state-space`) `k` with `k >= 2` alive walkers, as defined in Section 6.3, with structural parameter $\varepsilon_O \in (0, 1)$.
 
-If the swarm's internal hypocoercive variance is large, such that $\mathrm{Var}_h(S_k) > R^2_h$ for some threshold $R^2_h > 0$, then the fraction of *alive* walkers in the outlier set is bounded below by a positive constant that is independent of `N`. Specifically:
+If the swarm 's internal hypocoercive variance is large, such that $\mathrm{Var}_h(S_k) > R^2_h$ for some threshold $R^2_h > 0$, then the fraction of *alive* walkers in the outlier set is bounded below by a positive constant that is independent of `N`. Specifically:
 
 $$
 \frac{|O_k|}{k} \ge \frac{(1-\varepsilon_O) R^2_h}{D_h^2} =: f_O > 0
@@ -2754,7 +2754,7 @@ Let the high-error set $H_k(\varepsilon)$ be defined via the phase-space cluster
 
 For any choice of $c_d$ and variance threshold $R^2_{\text{var}}$ satisfying $c_d · \epsilon < 2\sqrt{R^2_{\text{var}}}$, there exists a positive constant $f_H(\epsilon) > 0$, independent of `N` and `k`, such that:
 
-If the swarm's internal positional variance is large, $\mathrm{Var}_x(S_k) > R^2_{\text{var}}$, then the fraction of *alive* walkers in the high-error set is bounded below:
+If the swarm ({prf:ref}`def-swarm-and-state-space`)'s internal positional variance is large, $\mathrm{Var}_x(S_k) > R^2_{\text{var}}$, then the fraction of *alive* walkers in the high-error set is bounded below:
 
 $$
 \frac{|H_k(\epsilon)|}{k} \ge f_H(\epsilon) > 0
@@ -2842,7 +2842,7 @@ This corollary provides the final, synthesized result of our geometric analysis.
 
 For any fixed interaction range $\varepsilon > 0$, there exists a positional variance threshold $R^2_{\text{total\_var},x} > 0$ and a corresponding N-uniform constant $f_H(\epsilon) > 0$ such that:
 
-If the total intra-swarm positional variance is large, $V_{\text{Var},x} > R^2_{\text{total\_var},x}$, then the fraction of *alive* walkers in the unified high-error set of at least one of the swarms, $k \in {1, 2}$, is bounded below:
+If the total intra-swarm ({prf:ref}`def-swarm-and-state-space`) positional variance is large, $V_{\text{Var},x} > R^2_{\text{total\_var},x}$, then the fraction of *alive* walkers in the unified high-error set of at least one of the swarms, $k \in {1, 2}$, is bounded below:
 
 $$
 \frac{|H_k(\epsilon)|}{k} \ge f_H(\epsilon) > 0
@@ -2880,7 +2880,7 @@ With the condition $\mathrm{Var}_h(S_k) > R^2_{\text{var}}$ met, we can now invo
 
 *   **If the swarm is in the large-$\varepsilon$ regime** (where $\varepsilon > D_swarm$): By {prf:ref}`def-unified-high-low-error-sets`, $H_k(\epsilon) = O_k$ in this regime. **{prf:ref}`lem-outlier-fraction-lower-bound`** guarantees that the fraction of walkers in the global kinematic outlier set is bounded below by a positive, N-uniform constant: $|H_k(\epsilon)|/k \ge f_O > 0$.
 
-*   **If the swarm is in the small-$\varepsilon$ regime** (where $\varepsilon \leq D_swarm$): By {prf:ref}`def-unified-high-low-error-sets`, $H_k(\epsilon) = C_k(\epsilon)$ (the clustering-based outlier set) in this regime. **{prf:ref}`lem-outlier-cluster-fraction-lower-bound`** guarantees that the fraction of walkers in the outlier clusters is bounded below by a positive, N-uniform constant: $|H_k(\epsilon)|/k \ge f_{H,\text{cluster}}(\epsilon) > 0$.
+*   **If the swarm is in the small-$\varepsilon$ regime** (where $\varepsilon \leq D_swarm$): By , $H_k(\epsilon) = C_k(\epsilon)$ (the clustering-based outlier set) in this regime. **{prf:ref}`lem-outlier-cluster-fraction-lower-bound`** guarantees that the fraction of walkers in the outlier clusters is bounded below by a positive, N-uniform constant: $|H_k(\epsilon)|/k \ge f_{H,\text{cluster}}(\epsilon) > 0$.
 
 **4. Define the Unified Lower Bound:**
 We can define a single, unified lower bound $f_H(\epsilon)$ that is valid for all regimes by taking the minimum of the bounds from the two cases:
@@ -2925,17 +2925,17 @@ Under this configuration, the velocity term $\lambda_{\text{alg}} \|v_i - v_j\|^
 :::{prf:lemma} Geometric Separation of the Partition
 :label: lem-geometric-separation-of-partition
 
-Let $H_k(\epsilon)$ and $L_k(\epsilon)$ be the unified high-error and low-error sets for swarm $k$ as defined in {prf:ref}`def-unified-high-low-error-sets`. Assume the swarm's internal positional variance is large: $\mathrm{Var}(x) > R^2_{\mathrm{var}}$.
+Let $H_k(\epsilon)$ and $L_k(\epsilon)$ be the unified high-error and low-error sets for swarm ({prf:ref}`def-swarm-and-state-space`) $k$ as defined in {prf:ref}`def-unified-high-low-error-sets`. Assume the swarm's internal positional variance is large: $\mathrm{Var}(x) > R^2_{\mathrm{var}}$.
 
 Then there exist N-uniform, $\epsilon$-dependent constants $D_H(\epsilon) > R_L(\epsilon) > 0$ and a fractional constant $f_c > 0$ such that:
 
-**Part 1 (Separation Between Sets):** For any walker $i \in H_k(\epsilon)$ from a high-error cluster and any walker $j \in L_k(\epsilon)$ from a low-error cluster, their algorithmic distance is bounded below:
+**Part 1 (Separation Between Sets):** For any walker ({prf:ref}`def-walker`) $i \in H_k(\epsilon)$ from a high-error cluster and any walker $j \in L_k(\epsilon)$ from a low-error cluster, their algorithmic distance ({prf:ref}`def-alg-distance`) is bounded below:
 
 $$
 d_{\text{alg}}(i, j) \ge D_H(\epsilon)
 $$
 
-**Part 2 (Clustering of Low-Error Walkers):** For any walker $j \in L_k(\epsilon)$, there exists a non-empty subset of companion walkers $C_j \subset L_k(\epsilon) \setminus \{j\}$ of minimum size $|C_j| \ge f_c k$ such that all members of this cluster are within a small algorithmic radius:
+**Part 2 (Clustering of Low-Error Walkers):** For any walker ({prf:ref}`def-walker`) $j \in L_k(\epsilon)$, there exists a non-empty subset of companion walkers $C_j \subset L_k(\epsilon) \setminus \{j\}$ of minimum size $|C_j| \ge f_c k$ such that all members of this cluster are within a small algorithmic radius:
 
 $$
 d_{\text{alg}}(j, \ell) \le R_L(\epsilon) \quad \text{for all } \ell \in C_j
@@ -3298,7 +3298,7 @@ Together, these conditions ensure the strict separation property $D_H(\epsilon) 
 
 ##### 6.5.3.3. Conclusion of the Proof of {prf:ref}`lem-geometric-separation-of-partition`
 
-We have now rigorously established the existence of **state-independent, N-uniform constants** $D_H(\varepsilon)$ and $R_L(\varepsilon)$ in the **`d_alg` phase-space metric** that satisfy the claims of {prf:ref}`lem-geometric-separation-of-partition`:
+We have now rigorously established the existence of **state-independent, N-uniform constants** $D_H(\varepsilon)$ and $R_L(\varepsilon)$ in the **`d_alg` phase-space metric** that satisfy the claims of :
 
 1.  For any swarm state `S_k` with `Var_x(S_k) > R^{2}_var`, every walker `i` in the unified high-error set $H_k(\varepsilon)$ is guaranteed to be isolated from all other walkers `j` by a phase-space distance of at least $D_H(\varepsilon)$ in the `d_alg` metric.
 
@@ -3362,9 +3362,9 @@ This section provides that proof. We will use the geometric separation propertie
 :::{prf:theorem} Geometric Structure Guarantees Measurement Variance
 :label: thm-geometry-guarantees-variance
 
-Let the `Sequential Stochastic Greedy Pairing Operator` be defined as in {prf:ref}`def-greedy-pairing-algorithm`. There exists a positional variance threshold $R^2_{\mathrm{var}} > 0$ and a positive, $\varepsilon$-dependent constant $\kappa_{\text{meas}}(\epsilon) > 0$ such that for any swarm with $k \geq 2$ alive walkers:
+Let the `Sequential Stochastic Greedy Pairing Operator` be defined as in {prf:ref}`def-greedy-pairing-algorithm`. There exists a positional variance threshold $R^2_{\mathrm{var}} > 0$ and a positive, $\varepsilon$-dependent constant $\kappa_{\text{meas}}(\epsilon) > 0$ such that for any swarm ({prf:ref}`def-swarm-and-state-space`) with $k \geq 2$ alive walkers:
 
-If the internal positional variance of the swarm is large, $\mathrm{Var}(x) \ge R^2_{\mathrm{var}}$, then the expected empirical variance of the raw distance-to-companion measurements is uniformly bounded below:
+If the internal positional variance of the swarm  is large, $\mathrm{Var}(x) \ge R^2_{\mathrm{var}}$, then the expected empirical variance of the raw distance-to-companion measurements is uniformly bounded below:
 
 $$
 \mathbb{E}[\operatorname{Var}(d)] \ge \kappa_{\text{meas}}(\epsilon) > 0
@@ -3386,7 +3386,7 @@ The premise of the theorem is that $Var_x \geq R^{2}_var$. From the results esta
 
 *   **Algorithmic Perception ({prf:ref}`lem-greedy-preserves-signal`):** The `Sequential Stochastic Greedy Pairing Operator`, when applied to this guaranteed geometric structure in `d_alg`, produces a statistical separation in the expected raw distance measurements for these two populations. Let $\mu_d(H_k) = \text{E}[d_i | i \in H_k]$ be the mean expected distance for a high-error walker and $\mu_d(L_k) = \text{E}[d_j | j \in L_k]$ be the mean for a low-error walker.
 
-    From {prf:ref}`lem-greedy-preserves-signal`, we have the bounds $\mu_d(H_k) \geq D_H(\varepsilon)$ and $\mu_d(L_k) \leq R_L(\varepsilon) + C_tail(\varepsilon)$, where $C_tail(\varepsilon)$ is a small, exponentially decaying error term accounting for boundary effects. As the separation $D_H(\varepsilon) > R_L(\varepsilon)$ is a required condition for a well-posed system (guaranteed by the Unified Condition from Section 6.5.4), we can choose parameters such that $D_H(\varepsilon) - R_L(\varepsilon)$ is large enough to dominate $C_tail(\varepsilon)$.
+    From , we have the bounds $\mu_d(H_k) \geq D_H(\varepsilon)$ and $\mu_d(L_k) \leq R_L(\varepsilon) + C_tail(\varepsilon)$, where $C_tail(\varepsilon)$ is a small, exponentially decaying error term accounting for boundary effects. As the separation $D_H(\varepsilon) > R_L(\varepsilon)$ is a required condition for a well-posed system (guaranteed by the Unified Condition from Section 6.5.4), we can choose parameters such that $D_H(\varepsilon) - R_L(\varepsilon)$ is large enough to dominate $C_tail(\varepsilon)$.
 
     We therefore define the guaranteed positive gap:
 
@@ -3516,7 +3516,7 @@ This section provides the formal proof that this condition, which we call the **
 :::{prf:proposition} **(Satisfiability of the Signal-to-Noise Condition via Signal Gain)**
 :label: prop-satisfiability-of-snr-gamma
 
-Let the rescaled diversity values be defined as $d'_i = g_A(\gamma · z_{d,i}) + \eta$, where $\gamma > 0$ is a user-defined **Signal Gain** parameter and `g_A` is any function satisfying the **Axiom of a Well-Behaved Rescale Function** (see {prf:ref}`def-logistic-rescale` for the canonical choice).
+Let the rescaled diversity values be defined as $d'_i = g_A(\gamma · z_{d,i}) + \eta$, where $\gamma > 0$ is a user-defined **Signal Gain** parameter and `g_A` is any function satisfying the **Axiom of a Well-Behaved Rescale Function ({prf:ref}`def-canonical-logistic-rescale-function-example`)** (see {prf:ref}`def-logistic-rescale` for the canonical choice).
 
 For any system in a high-error state (`Var(x) > R^{2}_var`) that generates a non-zero raw distance signal ($\kappa_meas(d) > 0$), there exists a sufficiently large choice of $\gamma$ that satisfies the **Signal-to-Noise Condition**:
 
@@ -3735,13 +3735,13 @@ With the uniform bounds on the pipeline's components now established, we can pro
 :::{prf:lemma} From Raw Measurement Gap to Rescaled Value Gap
 :label: lem-raw-gap-to-rescaled-gap
 
-Let the system parameters be fixed. There exists a function $\kappa_rescaled(\kappa_raw)$ such that for *any* swarm state `S` with $k \geq 2$ alive walkers, if the raw measurement values contain a gap $|vₐ - vᵦ| \geq \kappa_raw > 0$, then the corresponding rescaled values are guaranteed to have a gap:
+Let the system parameters be fixed. There exists a function $\kappa_rescaled(\kappa_raw)$ such that for *any* swarm ({prf:ref}`def-swarm-and-state-space`) state `S` with $k \geq 2$ alive walkers, if the raw measurement values contain a gap $|vₐ - vᵦ| \geq \kappa_raw > 0$, then the corresponding rescaled values are guaranteed to have a gap:
 
 $$
 |g_A(z_a) - g_A(z_b)| \ge \kappa_{\mathrm{rescaled}}(\kappa_{\mathrm{raw}}) > 0
 $$
 
-The function $\kappa_rescaled$ is independent of the swarm state `S` and its size `k`, and is defined as:
+The function $\kappa_rescaled$ is independent of the swarm ({prf:ref}`def-swarm-and-state-space`) state `S` and its size `k`, and is defined as:
 
 $$
 \kappa_{\mathrm{rescaled}}(\kappa_{\mathrm{raw}}) := \frac{g'_{\min}}{\sigma'_{\max}} \cdot \kappa_{\mathrm{raw}}
@@ -3950,9 +3950,9 @@ This property is not unconditional. We will rigorously derive a **Stability Cond
 :::{prf:theorem} Derivation of the Stability Condition for Intelligent Adaptation
 :label: thm-derivation-of-stability-condition
 
-Let the system satisfy the foundational axioms, including the **Axiom of Non-Deceptive Landscapes (EG-7)**. Let a swarm `k` have a sufficiently large internal positional variance, $\mathrm{Var}_x(S_k) > R^2_{\mathrm{var}}$.
+Let the system satisfy the foundational axioms, including the **Axiom of Non-Deceptive Landscapes (EG-7)**. Let a swarm ({prf:ref}`def-swarm-and-state-space`) `k` have a sufficiently large internal positional variance, $\mathrm{Var}_x(S_k) > R^2_{\mathrm{var}}$.
 
-The algorithm's targeting mechanism is "intelligent" (i.e., the expected fitness of a high-error walker is systematically lower than that of a low-error walker) if and only if the system parameters ($\alpha$, $\beta$, $\varepsilon$, etc.) satisfy the following **Stability Condition**:
+The algorithm's targeting mechanism is "intelligent" (i.e., the expected fitness of a high-error walker ({prf:ref}`def-walker`) is systematically lower than that of a low-error walker) if and only if the system parameters ($\alpha$, $\beta$, $\varepsilon$, etc.) satisfy the following **Stability Condition**:
 
 $$
 \beta \ln\left(1 + \frac{\kappa_{\text{mean},d'}(\epsilon)}{g_{A,max}+\eta}\right) > \alpha \ln\left(1 + \frac{\kappa_{\text{mean},r'}}{\eta}\right)
@@ -4331,7 +4331,7 @@ This proposition forges the complete link from a macroscopic state of high geome
 :::{prf:proposition} **(Lower Bound on the Corrective Diversity Signal)**
 :label: prop-corrective-signal-bound
 
-Let a swarm state be in the high-error regime, such that the variance of its rescaled diversity values, `d'`, is bounded below, $\operatorname{Var}(d') \ge \kappa_{d', \text{var}} > 0$. Let the system parameters be chosen such that the Signal-to-Noise Condition of [](#lem-variance-to-mean-separation) is satisfied, i.e., $\kappa_{d', \text{var}} > \operatorname{Var}_{\max}(d')$.
+Let a swarm ({prf:ref}`def-swarm-and-state-space`) state be in the high-error regime, such that the variance of its rescaled diversity values, `d'`, is bounded below, $\operatorname{Var}(d') \ge \kappa_{d', \text{var}} > 0$. Let the system parameters be chosen such that the Signal-to-Noise Condition of [](#lem-variance-to-mean-separation) is satisfied, i.e., $\kappa_{d', \text{var}} > \operatorname{Var}_{\max}(d')$.
 
 Then the expected logarithmic gap in the diversity signal between the high-error population $H_k$ and the low-error population $L_k$ is bounded below by a strictly positive, N-uniform constant:
 
@@ -4379,7 +4379,7 @@ Before deriving the final stability condition, it is instructive to first establ
 :::{prf:proposition} **(Worst-Case Upper Bound on the Adversarial Reward Signal)**
 :label: prop-adversarial-signal-bound-naive
 
-For any swarm state, the maximum possible expected logarithmic gap in the rescaled reward signal, $r'$, between the low-error and high-error populations is uniformly bounded above by a constant derived only from the rescale function's range:
+For any swarm ({prf:ref}`def-swarm-and-state-space`) state, the maximum possible expected logarithmic gap in the rescaled reward signal, $r'$, between the low-error and high-error populations is uniformly bounded above by a constant derived only from the rescale function ({prf:ref}`def-canonical-logistic-rescale-function-example`)'s range:
 
 $$
 \mathbb{E}[\ln(r')|L_k] - \mathbb{E}[\ln(r')|H_k] \le \ln\left(1 + \frac{g_{A,\max}}{\eta}\right)
@@ -4432,7 +4432,7 @@ We now leverage the axiomatic structure of the Fragile Gas framework to derive a
 
 It is crucial to distinguish between two types of "deception" in a reward landscape:
 1.  **Deceptive Plateaus:** Large regions where geometry changes but reward does not. Our {prf:ref}`axiom-non-deceptive-landscape` from this document's Chapter 4 is designed to prevent this by guaranteeing a minimal reward difference for sufficiently separated points.
-2.  **Deceptive Traps:** Regions where the reward landscape is anti-correlated with a desired geometric property (e.g., isolated points having systematically lower rewards). {prf:ref}`axiom-non-deceptive-landscape` does *not* prevent this.
+2.  **Deceptive Traps:** Regions where the reward landscape is anti-correlated with a desired geometric property (e.g., isolated points having systematically lower rewards).  does *not* prevent this.
 
 To bound the strength of a deceptive trap, we must use an axiom that limits how quickly the reward can change with position. The correct tool is the **Axiom of Reward Regularity (2.2.2 from `01_fractal_gas_framework.md`)**, which guarantees the reward function is Lipschitz continuous.
 :::
@@ -4442,9 +4442,9 @@ The following propositions build a chain of reasoning from the Lipschitz continu
 :::{prf:proposition} **(Lipschitz Bound on the Raw Reward Mean Gap)**
 :label: prop-raw-reward-mean-gap-bound
 
-Let the reward function's positional component, $R_{\text{pos}}(x)$, be Lipschitz continuous on the valid domain $\mathcal{X}_{\text{valid}}$ with constant $L_{R}$, as per the **Axiom of Reward Regularity**. Let the diameter of $\mathcal{X}_{\text{valid}}$ be $D_{\text{valid}}$.
+Let the reward function's positional component, $R_{\text{pos}}(x)$, be Lipschitz continuous on the valid domain $\mathcal{X}_{\text{valid}}$ with constant $L_{R}$, as per the **Axiom of Reward Regularity ({prf:ref}`axiom-reward-regularity`)**. Let the diameter of $\mathcal{X}_{\text{valid}}$ be $D_{\text{valid}}$.
 
-For any swarm, the absolute difference between the mean raw rewards of the high-error population $H_k$ and the low-error population $L_k$ is uniformly bounded:
+For any swarm ({prf:ref}`def-swarm-and-state-space`), the absolute difference between the mean raw rewards of the high-error population $H_k$ and the low-error population $L_k$ is uniformly bounded:
 
 $$
 |\mu_R(L_k) - \mu_R(H_k)| \le L_{R} \cdot D_{\mathrm{valid}} =: \kappa_{\mathrm{raw},r,\text{adv}}
@@ -4479,7 +4479,7 @@ This raw reward gap now propagates through the measurement pipeline.
 :::{prf:proposition} **(Axiom-Based Bound on the Logarithmic Reward Gap)**
 :label: prop-log-reward-gap-axiom-bound
 
-Under the **Axiom of Reward Regularity**, the expected logarithmic gap in the rescaled reward signal is bounded by:
+Under the **Axiom of Reward Regularity ({prf:ref}`axiom-reward-regularity`)**, the expected logarithmic gap in the rescaled reward signal is bounded by:
 
 $$
 \mathbb{E}[\ln(r')|L_k] - \mathbb{E}[\ln(r')|H_k] \le \ln\left(1 + \frac{\kappa_{\mathrm{rescaled}}(L_R \cdot D_{\mathrm{valid}})}{\eta}\right)
@@ -4549,7 +4549,7 @@ With a rigorous, axiom-based bound on the adversarial reward signal now establis
 :::{prf:theorem} **(The Corrected Stability Condition for Intelligent Adaptation)**
 :label: thm-stability-condition-final-corrected
 
-Let a swarm `k$ be in a high-error state. The algorithm's targeting mechanism is intelligent (i.e., $\mathbb{E}[\ln(V_{\text{fit}})|H_k] < \mathbb{E}[\ln(V_{\text{fit}})|L_k]$) if and only if the system parameters satisfy the following **Corrected Stability Condition**:
+Let a swarm ({prf:ref}`def-swarm-and-state-space`) `k$ be in a high-error state. The algorithm's targeting mechanism is intelligent (i.e., $\mathbb{E}[\ln(V_{\text{fit}})|H_k] < \mathbb{E}[\ln(V_{\text{fit}})|L_k]$) if and only if the system parameters satisfy the following **Corrected Stability Condition**:
 $$
 \beta \ln\left(1 + \frac{\kappa_{d', \text{mean}}}{g_{A,\max}+\eta}\right) > \alpha \ln\left(1 + \frac{\kappa_{\mathrm{rescaled}}(L_{R} \cdot D_{\mathrm{valid}})}{\eta}\right)
 $$
@@ -4565,7 +4565,7 @@ The proof is a direct assembly of the bounds derived in the preceding propositio
 *   **LHS (Corrective Signal):** The lower bound is given by **{prf:ref}`prop-corrective-signal-bound`**.
 *   **RHS (Adversarial Signal):** The upper bound is now given by **{prf:ref}`prop-log-reward-gap-axiom-bound`** (the axiom-based bound).
 
-Substituting the lower bound for the corrective signal (from {prf:ref}`prop-corrective-signal-bound`) and the upper bound for the adversarial signal (from {prf:ref}`prop-log-reward-gap-axiom-bound`) into the inequality $\beta \times (\text{Corrective Gap}) > \alpha \times (\text{Adversarial Gap})$ yields the final, corrected stability condition.
+Substituting the lower bound for the corrective signal (from ) and the upper bound for the adversarial signal (from ) into the inequality $\beta \times (\text{Corrective Gap}) > \alpha \times (\text{Adversarial Gap})$ yields the final, corrected stability condition.
 
 **Q.E.D.**
 :::
@@ -4596,7 +4596,7 @@ The first pillar of the overlap proof is to show that the fitness signal generat
 :::{prf:definition} The Unfit Set
 :label: def-unfit-set
 
-For a given swarm `k` with alive set $\mathcal{A}_k$ and a calculated fitness potential vector $(V_{k,i})_{i \in \mathcal{A}_k}$, the **unfit set**, $U_k$, is the subset of alive walkers whose fitness potential is less than or equal to the swarm's mean fitness potential, $\mu_{V,k} = \frac{1}{k}\sum_{j \in \mathcal{A}_k} V_{k,j}$.
+For a given swarm ({prf:ref}`def-swarm-and-state-space`) `k` with alive set ({prf:ref}`def-alive-dead-sets`) $\mathcal{A}_k$ and a calculated fitness potential vector $(V_{k,i})_{i \in \mathcal{A}_k}$, the **unfit set**, $U_k$, is the subset of alive walkers whose fitness potential is less than or equal to the swarm's mean fitness potential, $\mu_{V,k} = \frac{1}{k}\sum_{j \in \mathcal{A}_k} V_{k,j}$.
 
 $$
 U_k := \{i \in \mathcal{A}_k \mid V_{k,i} \le \mu_{V,k}\}
@@ -4607,7 +4607,7 @@ $$
 :::{prf:lemma} N-Uniform Lower Bound on the Unfit Fraction
 :label: lem-unfit-fraction-lower-bound
 
-Let a swarm `k` with `k >= 2` alive walkers have a fitness potential range that is bounded below by a positive, $\varepsilon$-dependent constant: $V_{\max,k} - V_{\min,k} \ge \kappa_{V,\text{gap}}(\epsilon) > 0$.
+Let a swarm ({prf:ref}`def-swarm-and-state-space`) `k` with `k >= 2` alive walkers have a fitness potential range that is bounded below by a positive, $\varepsilon$-dependent constant: $V_{\max,k} - V_{\min,k} \ge \kappa_{V,\text{gap}}(\epsilon) > 0$.
 
 The fraction of alive walkers in the unfit set $U_k$ is bounded below by a positive, N-uniform, $\varepsilon$-dependent constant $f_U(\epsilon) > 0$:
 
@@ -4671,7 +4671,7 @@ This theorem proves that the set of walkers targeted by the algorithm for correc
 :::{prf:theorem} N-Uniform Lower Bound on the Unfit-High-Error Overlap Fraction
 :label: thm-unfit-high-error-overlap-fraction
 
-Let a swarm state satisfy $V_{\mathrm{struct}} > R^2_{\mathrm{spread}}$. Let $U_k$ be the unfit set for swarm `k` and let $H_k(\epsilon)$ be its corresponding unified high-error set.
+Let a swarm ({prf:ref}`def-swarm-and-state-space`) state satisfy $V_{\mathrm{struct}} > R^2_{\mathrm{spread}}$. Let $U_k$ be the unfit set for swarm `k` and let $H_k(\epsilon)$ be its corresponding unified high-error set.
 
 If the **Stability Condition** ([](#thm-stability-condition-final-corrected)) holds for the chosen system parameters, then the fraction of alive walkers in the intersection set $I_{UH} = U_k \cap H_k(\epsilon)$ is bounded below by a positive, N-uniform constant:
 
@@ -4679,7 +4679,7 @@ $$
 \frac{|I_{UH}|}{k} \ge f_{UH}(\epsilon) > 0
 $$
 
-where `k` is the number of alive walkers in swarm `k`.
+where `k` is the number of alive walkers in swarm ({prf:ref}`def-swarm-and-state-space`) `k`.
 :::
 :::{prf:proof}
 :label: proof-thm-unfit-high-error-overlap-fraction
@@ -4760,7 +4760,7 @@ $$
 \frac{1}{N}\sum_{i \in I_{11}} (p_{1,i} + p_{2,i})\|\Delta\delta_{x,i}\|^2 \ge \chi(\epsilon) V_{\text{struct}} - g_{\max}(\epsilon)
 $$
 
-where $I_{11}$ is the set of stably alive walkers and $p_{k,i}$ is the total cloning probability for walker $i$ in swarm $k$.
+where $I_{11}$ is the set of stably alive walkers and $p_{k,i}$ is the total cloning probability for walker ({prf:ref}`def-walker`) $i$ in swarm ({prf:ref}`def-swarm-and-state-space`) $k$.
 
 Referenced by {prf:ref}`def-decision-operator` and {prf:ref}`lem-keystone-contraction-alive`.
 :::
@@ -4800,7 +4800,7 @@ The analysis in Chapter 7 proved that this high-variance swarm $k$ contains a no
 :::{prf:definition} The Critical Target Set
 :label: def-critical-target-set
 
-For a state in the high-error regime, let $k$ be the index of the high-variance swarm. The **critical target set**, $I_{\text{target}}$, is the set of walkers that are simultaneously stably alive, unfit in swarm $k$, and high-error in swarm $k$.
+For a state in the high-error regime, let $k$ be the index of the high-variance swarm ({prf:ref}`def-swarm-and-state-space`). The **critical target set**, $I_{\text{target}}$, is the set of walkers that are simultaneously stably alive, unfit in swarm $k$, and high-error in swarm $k$.
 
 $$
 I_{\text{target}} := I_{11} \cap U_k \cap H_k(\epsilon)
@@ -4822,9 +4822,9 @@ To establish a lower bound on cloning probabilities, we must first prove that un
 :::{prf:lemma} Lower Bound on Mean Companion Fitness Gap
 :label: lem-mean-companion-fitness-gap
 
-Let a swarm $k$ with $k \geq 2$ alive walkers have a non-degenerate fitness potential range $\kappa_{V,\text{gap}}(\epsilon) > 0$. Let $U_k$ and $F_k$ denote the unfit and fit sets, with respective population fractions $f_U := |U_k|/k$ and $f_F := |F_k|/k$, where $f_U, f_F > 0$ and $f_U + f_F = 1$. Denote by $\mu_U$ and $\mu_F$ the mean fitness values of the two sets.
+Let a swarm ({prf:ref}`def-swarm-and-state-space`) $k$ with $k \geq 2$ alive walkers have a non-degenerate fitness potential range $\kappa_{V,\text{gap}}(\epsilon) > 0$. Let $U_k$ and $F_k$ denote the unfit and fit sets, with respective population fractions $f_U := |U_k|/k$ and $f_F := |F_k|/k$, where $f_U, f_F > 0$ and $f_U + f_F = 1$. Denote by $\mu_U$ and $\mu_F$ the mean fitness values of the two sets.
 
-For any walker $i \in U_k$ (unfit set), the difference between its mean companion fitness and its own fitness is bounded below by:
+For any walker ({prf:ref}`def-walker`) $i \in U_k$ (unfit set), the difference between its mean companion fitness and its own fitness is bounded below by:
 
 $$
 \mu_{\text{comp},i} - V_{k,i} \geq \frac{f_F}{k-1} (\mu_F - \mu_U) > 0
@@ -4989,7 +4989,7 @@ The bound $\Delta_{\min}(\epsilon, f_U, f_F, k)$ depends on $k$ through the fact
 :::{prf:lemma} Guaranteed Cloning Pressure on the Unfit Set
 :label: lem-unfit-cloning-pressure
 
-Let a swarm $k$ with $k \geq 2$ alive walkers be in a state such that its fitness potential range is bounded below by $\kappa_{V,\text{gap}}(\epsilon) > 0$. For any walker $i$ in the unfit set $U_k$, its total cloning probability is bounded below by a positive, N-uniform, and $\epsilon$-dependent constant $p_u(\epsilon) > 0$:
+Let a swarm ({prf:ref}`def-swarm-and-state-space`) $k$ with $k \geq 2$ alive walkers be in a state such that its fitness potential range is bounded below by $\kappa_{V,\text{gap}}(\epsilon) > 0$. For any walker ({prf:ref}`def-walker`) $i$ in the unfit set $U_k$, its total cloning probability is bounded below by a positive, N-uniform, and $\epsilon$-dependent constant $p_u(\epsilon) > 0$:
 
 $$
 p_{k,i} = \mathbb{E}_{c \sim \mathbb{C}_i(S_k)}[\pi(S(V_{k,c}, V_{k,i}))] \ge p_u(\epsilon) > 0
@@ -5048,7 +5048,7 @@ This powerful lemma guarantees that every walker identified as "unfit" is under 
 :::{prf:corollary} Cloning Pressure on the Target Set
 :label: cor-cloning-pressure-target-set
 
-For any walker $i$ in the **critical target set** (see {prf:ref}`def-critical-target-set`), $I_{\text{target}} = I_{11} \cap U_k \cap H_k(\epsilon)$, its total cloning probability in the high-variance swarm $k$ is also bounded below by the same N-uniform constant:
+For any walker ({prf:ref}`def-walker`) $i$ in the **critical target set** (see {prf:ref}`def-critical-target-set`), $I_{\text{target}} = I_{11} \cap U_k \cap H_k(\epsilon)$, its total cloning probability in the high-variance swarm ({prf:ref}`def-swarm-and-state-space`) $k$ is also bounded below by the same N-uniform constant:
 
 $$
 p_{k,i} \ge p_u(\epsilon) > 0
@@ -5074,7 +5074,7 @@ To make the proof self-contained, we first formalize a direct consequence of the
 :::{prf:lemma} **(Variance Concentration in the High-Error Set)**
 :label: lem-variance-concentration-Hk
 
-Let a swarm $k$ be in a high-error state, $\text{Var}_k(x) > R^2_{\text{var}}$. There exists a strictly positive, N-uniform constant $c_H \in (0, 1]$ such that the sum of squared deviations from the mean for the walkers in the unified high-error set $H_k(\epsilon)$ is bounded below by a fixed fraction of the total sum of squared deviations:
+Let a swarm ({prf:ref}`def-swarm-and-state-space`) $k$ be in a high-error state, $\text{Var}_k(x) > R^2_{\text{var}}$. There exists a strictly positive, N-uniform constant $c_H \in (0, 1]$ such that the sum of squared deviations from the mean for the walkers in the unified high-error set $H_k(\epsilon)$ is bounded below by a fixed fraction of the total sum of squared deviations:
 
 $$
 \sum_{i \in H_k(\epsilon)} \|\delta_{x,k,i}\|^2 \ge c_H \sum_{i \in \mathcal{A}_k} \|\delta_{x,k,i}\|^2
@@ -5195,7 +5195,7 @@ We can now prove the main lemma of this section.
 :::{prf:lemma} Error Concentration in the Target Set
 :label: lem-error-concentration-target-set
 
-Let a swarm state $(S_1, S_2)$ be in the high-error regime, such that $V_{\mathrm{struct}} > R^2_{\mathrm{spread}}$. Let $k$ be the high-variance swarm and let $I_{\text{target}} := I_{11} \cap U_k \cap H_k(\epsilon)$ be the critical target set.
+Let a swarm ({prf:ref}`def-swarm-and-state-space`) state $(S_1, S_2)$ be in the high-error regime, such that $V_{\mathrm{struct}} > R^2_{\mathrm{spread}}$. Let $k$ be the high-variance swarm and let $I_{\text{target}} := I_{11} \cap U_k \cap H_k(\epsilon)$ be the critical target set.
 
 The positional structural error concentrated within this target set is bounded below by a linear function of the total structural error:
 
@@ -5603,7 +5603,7 @@ We now provide a formal verification that both Keystone constants, $\chi(\epsilo
 :::{prf:proposition} N-Uniformity of Keystone Constants
 :label: prop-n-uniformity-keystone
 
-The Keystone constants $\chi(\epsilon)$ and $g_{\max}(\epsilon)$ are strictly independent of the swarm size $N$. More precisely, for any fixed choice of system parameters ($\epsilon$, domain, pipeline parameters, etc.), there exist finite positive constants $\chi_0(\epsilon)$ and $g_0(\epsilon)$ such that for all $N \geq 2$:
+The Keystone constants $\chi(\epsilon)$ and $g_{\max}(\epsilon)$ are strictly independent of the swarm ({prf:ref}`def-swarm-and-state-space`) size $N$. More precisely, for any fixed choice of system parameters ($\epsilon$, domain, pipeline parameters, etc.), there exist finite positive constants $\chi_0(\epsilon)$ and $g_0(\epsilon)$ such that for all $N \geq 2$:
 
 $$
 \chi(\epsilon) = \chi_0(\epsilon) \quad \text{and} \quad g_{\max}(\epsilon) = g_0(\epsilon)
@@ -5792,7 +5792,7 @@ This explicit deconstruction provides a clear, quantitative story for the stabil
 
 *   **To increase $\chi(\epsilon)$ and improve stability, a user should:**
     1.  **Improve Targeting Accuracy:** Choose an interaction range $\epsilon$ that is well-matched to the problem's length scales. This maximizes the underlying measurement signal $\kappa_{\text{meas}}(\epsilon)$, which in turn strengthens the fitness gap $\kappa_{V,\text{gap}}(\epsilon)$ and increases the overlap $f_{UH}(\epsilon)$.
-    2.  **Increase Cloning Responsiveness:** Decrease the clone threshold $p_{\max}$ or the regularizer $\varepsilon_{\text{clone}}$ to make the system more sensitive to the fitness gap. However, this must be balanced against the **Guaranteed Revival Axiom**, which places a lower bound on $p_{\max} \cdot \varepsilon_{\text{clone}}$.
+    2.  **Increase Cloning Responsiveness:** Decrease the clone threshold $p_{\max}$ or the regularizer $\varepsilon_{\text{clone}}$ to make the system more sensitive to the fitness gap. However, this must be balanced against the **Guaranteed Revival ({prf:ref}`def-axiom-guaranteed-revival`) Axiom**, which places a lower bound on $p_{\max} \cdot \varepsilon_{\text{clone}}$.
 
 The offset $g_{\max}(\epsilon)$ represents the intrinsic error floor of the system for a given configuration. It is large for large domains or for configurations where the targeting accuracy is poor. The Keystone Lemma guarantees that as long as the total error $V_{\text{struct}}$ is large enough to overcome this offset ($V_{\text{struct}} > g_{\max}(\epsilon) / \chi(\epsilon)$), the cloning operator will act as a powerful, linear contraction, driving the system back towards a stable, synchronized state.
 
@@ -5848,11 +5848,11 @@ We begin with the highest-level definition of the operator as a mathematical obj
 :::{prf:definition} The Cloning Operator $\Psi_{\text{clone}}$
 :label: def-cloning-operator-formal
 
-The **cloning operator** $\Psi_{\text{clone}}$ is a Markov transition kernel on the swarm state space $\Sigma_N$. For any input swarm configuration $S \in \Sigma_N$, it produces a probability measure $\Psi_{\text{clone}}(S, \cdot)$ on $\Sigma_N$.
+The **cloning operator ({prf:ref}`def-cloning-operator`)** $\Psi_{\text{clone}}$ is a Markov transition kernel on the swarm ({prf:ref}`def-swarm-and-state-space`) state space $\Sigma_N$. For any input swarm configuration $S \in \Sigma_N$, it produces a probability measure $\Psi_{\text{clone}}(S, \cdot)$ on $\Sigma_N$.
 
 **Domain and Range:**
-- **Input:** A swarm configuration $S = ((x_1, v_1, s_1), \ldots, (x_N, v_N, s_N)) \in \Sigma_N$ with at least one alive walker ($|\mathcal{A}(S)| \geq 1$).
-- **Output:** A probability measure over swarm configurations $S' \in \Sigma_N$ where all walkers have status $s'_i = 1$ (the intermediate, all-alive configuration).
+- **Input:** A swarm  configuration $S = ((x_1, v_1, s_1), \ldots, (x_N, v_N, s_N)) \in \Sigma_N$ with at least one alive walker ({prf:ref}`def-walker`) ($|\mathcal{A}(S)| \geq 1$).
+- **Output:** A probability measure over swarm ({prf:ref}`def-swarm-and-state-space`) configurations $S' \in \Sigma_N$ where all walkers have status $s'_i = 1$ (the intermediate, all-alive configuration).
 
 **Stochastic Structure:**
 
@@ -5897,9 +5897,9 @@ The first stage (as discussed in Section 5.3) generates the stochastic diversity
 :::{prf:definition} The Measurement Operator
 :label: def-measurement-operator
 
-For input swarm $S$ with alive set $\mathcal{A}(S)$ of size $k = |\mathcal{A}(S)|$:
+For input swarm ({prf:ref}`def-swarm-and-state-space`) $S$ with alive set ({prf:ref}`def-alive-dead-sets`) $\mathcal{A}(S)$ of size $k = |\mathcal{A}(S)|$:
 
-**Input:** Swarm configuration $S$
+**Input:** Swarm  configuration $S$
 
 **Stochastic Process:**
 
@@ -5910,7 +5910,7 @@ $$
 \pi \sim P_{\text{pair}}(S, \cdot)
 $$
 
-2. **Raw Distance Vector** (see {prf:ref}`def-raw-value-operators`): For each alive walker $i \in \mathcal{A}(S)$, compute:
+2. **Raw Distance Vector** (see {prf:ref}`def-raw-value-operators`): For each alive walker ({prf:ref}`def-walker`) $i \in \mathcal{A}(S)$, compute:
 
 
 $$
@@ -5923,7 +5923,7 @@ $$
 **Output:** The $N$-dimensional raw distance vector $\mathbf{d} = (d_1, \ldots, d_N) \in \mathbb{R}^N_{\geq 0}$
 
 **Key Properties:**
-- The pairing $\pi$ is sampled once per swarm, creating correlations between measurements
+- The pairing $\pi$ is sampled once per swarm ({prf:ref}`def-swarm-and-state-space`), creating correlations between measurements
 - The distribution of $\mathbf{d}$ depends only on $S$ and the algorithmic parameters $(\epsilon_p, \ell_p)$
 - Dead walkers receive deterministic zero measurements
 :::
@@ -5945,12 +5945,12 @@ This deterministic operator (implementing the pipeline from Chapter 5) transform
 :label: def-fitness-operator
 
 **Input:**
-- Swarm configuration $S$
+- Swarm ({prf:ref}`def-swarm-and-state-space`) configuration $S$
 - Raw distance vector $\mathbf{d} \in \mathbb{R}^N_{\geq 0}$
 
 **Deterministic Computation:**
 
-1. **Boundary Proximity:** For each walker $i$, compute:
+1. **Boundary Proximity:** For each walker ({prf:ref}`def-walker`) $i$, compute:
 
 
 $$
@@ -5959,7 +5959,7 @@ $$
 
    yielding the raw reward vector $\mathbf{r} = (r_1, \ldots, r_N)$.
 
-2. **Rescaling:** Apply the rescale function with floor $\eta > 0$:
+2. **Rescaling:** Apply the rescale function ({prf:ref}`def-canonical-logistic-rescale-function-example`) with floor $\eta > 0$:
 
 
 $$
@@ -5990,9 +5990,9 @@ $$
 
    For dead walkers, set $z_{d,i} = z_{r,i} = 0$.
 
-4. **Fitness Potential:** For each walker $i$, compute:
+4. **Fitness Potential:** For each walker ({prf:ref}`def-walker`) $i$, compute:
 
-   a. Apply the Rescale Function $g_A$ and add the floor $\eta$ to create the rescaled components:
+   a. Apply the Rescale Function ({prf:ref}`def-canonical-logistic-rescale-function-example`) $g_A$ and add the floor $\eta$ to create the rescaled components:
       - $r'_i := g_A(z_{r,i}) + \eta$
       - $d'_i := g_A(z_{d,i}) + \eta$
 
@@ -6022,14 +6022,14 @@ This stochastic operator (formalized from {prf:ref}`def-cloning-decision`) deter
 :label: def-decision-operator
 
 **Input:**
-- Swarm configuration $S$
+- Swarm ({prf:ref}`def-swarm-and-state-space`) configuration $S$
 - Fitness potential vector $\mathbf{V}_{\text{fit}}$
 
 **Stochastic Process:**
 
-For each walker $i \in \{1, \ldots, N\}$:
+For each walker ({prf:ref}`def-walker`) $i \in \{1, \ldots, N\}$:
 
-1. **Companion Selection** (see {prf:ref}`def-cloning-companion-operator`):
+1. **Companion Selection ({prf:ref}`def-companion-selection-measure`)** (see {prf:ref}`def-cloning-companion-operator`):
 
    - If $i \in \mathcal{A}(S)$ (alive): Sample companion $c_i$ from the softmax distribution over other alive walkers:
 
@@ -6055,7 +6055,7 @@ $$
 
 3. **Stochastic Decision:** Sample threshold $T_i \sim \text{Uniform}(0, p_{\max})$ independently.
 
-   Walker $i$ is marked for **cloning** if $S_i > T_i$, otherwise marked to **persist**.
+   Walker ({prf:ref}`def-walker`) $i$ is marked for **cloning** if $S_i > T_i$, otherwise marked to **persist**.
 
 **Output:**
 - Companion assignment vector $\mathbf{c} = (c_1, \ldots, c_N)$
@@ -6063,7 +6063,7 @@ $$
 
 **Total Cloning Probability:**
 
-The key quantity for drift analysis is the **total probability** that walker $i$ clones, averaging over all randomness in companion selection and threshold sampling:
+The key quantity for drift analysis is the **total probability** that walker ({prf:ref}`def-walker`) $i$ clones, averaging over all randomness in companion selection and threshold sampling:
 
 $$
 p_i := P(\text{walker } i \text{ clones} \mid S, \mathbf{V}_{\text{fit}})
@@ -6075,7 +6075,7 @@ This is the probability that enters the Keystone Lemma ({prf:ref}`lem-quantitati
 :::{prf:lemma} Total Cloning Probability for Dead Walkers
 :label: lem-dead-walker-clone-prob
 
-Under the Axiom of Guaranteed Revival ($\varepsilon_{\text{clone}} \cdot p_{\max} < \eta^{\alpha+\beta}$), any dead walker clones with probability 1:
+Under the Axiom of Guaranteed Revival ($\varepsilon_{\text{clone}} \cdot p_{\max} < \eta^{\alpha+\beta}$), any dead walker ({prf:ref}`def-walker`) clones with probability 1:
 
 $$
 i \in \mathcal{D}(S) \implies p_i = 1
@@ -6108,10 +6108,10 @@ The final stage executes the cloning actions, producing the output swarm configu
 :::{prf:definition} The State Update Operator
 :label: def-update-operator
 
-The state update operator implements the inelastic collision model (see {prf:ref}`def-inelastic-collision-update`) to update walker states after cloning decisions.
+The state update operator implements the inelastic collision model (see {prf:ref}`def-inelastic-collision-update`) to update walker ({prf:ref}`def-walker`) states after cloning decisions.
 
 **Input:**
-- Swarm configuration $S$
+- Swarm ({prf:ref}`def-swarm-and-state-space`) configuration $S$
 - Companion vector $\mathbf{c}$
 - Action vector $\mathbf{a}$
 
@@ -6155,7 +6155,7 @@ $$
 
    **b. Update Relative Velocities:**
 
-   For each walker $k \in I_j \cup \{j\}$, compute the relative velocity:
+   For each walker ({prf:ref}`def-walker`) $k \in I_j \cup \{j\}$, compute the relative velocity:
 
 
 $$
@@ -6196,7 +6196,7 @@ $$
 s'_i = 1 \quad \text{for all } i \in \{1, \ldots, N\}
 $$
 
-**Output:** The intermediate swarm configuration $S' = ((x'_1, v'_1, 1), \ldots, (x'_N, v'_N, 1))$
+**Output:** The intermediate swarm ({prf:ref}`def-swarm-and-state-space`) configuration $S' = ((x'_1, v'_1, 1), \ldots, (x'_N, v'_N, 1))$
 :::
 
 :::{prf:remark} Position Jitter vs. Velocity Collision Model
@@ -6222,7 +6222,7 @@ We now assemble the complete operator from its components.
 :::{prf:theorem} Compositional Structure of $\Psi_{\text{clone}}$
 :label: thm-cloning-operator-composition
 
-The cloning operator admits the following compositional representation:
+The cloning operator ({prf:ref}`def-cloning-operator`) admits the following compositional representation:
 
 $$
 \Psi_{\text{clone}}(S, \cdot) = \int_{\mathbf{d}} \int_{\mathbf{c}, \mathbf{a}} \Psi_{\text{update}}(S, \mathbf{c}, \mathbf{a}, \cdot) \, dP_{\text{decision}}(S, \mathbf{V}_{\text{fit}}(\mathbf{d}), \mathbf{c}, \mathbf{a}) \, dP_{\text{measure}}(S, \mathbf{d})
@@ -6234,7 +6234,7 @@ where:
 - $P_{\text{decision}}(S, \mathbf{V}_{\text{fit}}, \cdot)$ is the joint distribution of companion assignments and actions
 - $\Psi_{\text{update}}(S, \mathbf{c}, \mathbf{a}, \cdot)$ is the (possibly stochastic) output distribution given the actions
 
-This composition is a proper Markov kernel: for any measurable set $A \subseteq \Sigma_N$,
+This composition is a proper Markov kernel ({prf:ref}`def-markov-kernel`): for any measurable set $A \subseteq \Sigma_N$,
 
 $$
 \Psi_{\text{clone}}(S, A) = P(S' \in A \mid S)
@@ -6252,16 +6252,16 @@ We conclude by highlighting the critical quantities (see {prf:ref}`def-key-opera
 :::{prf:definition} Key Operator Outputs
 :label: def-key-operator-outputs
 
-For input swarm $S$ and output swarm $S' \sim \Psi_{\text{clone}}(S, \cdot)$, the following quantities are central to the drift analysis:
+For input swarm ({prf:ref}`def-swarm-and-state-space`) $S$ and output swarm $S' \sim \Psi_{\text{clone}}(S, \cdot)$, the following quantities are central to the drift analysis:
 
-1. **Total Cloning Probability:** For each walker $i$:
+1. **Total Cloning Probability:** For each walker ({prf:ref}`def-walker`) $i$:
 
 
 $$
-p_i = P(\text{walker } i \text{ clones} \mid S)
+p_i = P(\text{walker ({prf:ref}`def-walker`) } i \text{ clones} \mid S)
 $$
 
-2. **Position Displacement:** For each walker $i$:
+2. **Position Displacement:** For each walker  $i$:
 
 
 $$
@@ -6270,7 +6270,7 @@ $$
 
    For cloners, $\Delta x_i = x_{c_i} - x_i + \sigma_x \zeta_i^x$ where $\zeta_i^x \sim \mathcal{N}(0, I_d)$.
 
-3. **Velocity Perturbation:** For each walker $i$ that participates in a cloning event:
+3. **Velocity Perturbation:** For each walker ({prf:ref}`def-walker`) $i$ that participates in a cloning event:
 
 
 $$
@@ -6294,7 +6294,7 @@ $$
 :::{prf:proposition} Expected Displacement Under Cloning
 :label: prop-expected-displacement-cloning
 
-For walker $i$ with cloning probability $p_i$, the expected squared position displacement satisfies:
+For walker ({prf:ref}`def-walker`) $i$ with cloning probability $p_i$, the expected squared position displacement satisfies:
 
 $$
 \mathbb{E}[\|\Delta x_i\|^2 \mid S] \leq p_i \cdot D_{\text{max}}^2
@@ -6302,7 +6302,7 @@ $$
 
 where $D_{\text{max}}$ is the maximum distance in the valid domain (or a suitable bound on the jitter kernel range).
 
-For a walker that persists ($a_i = \text{persist}$), $\Delta x_i = 0$ deterministically.
+For a walker ({prf:ref}`def-walker`) that persists ($a_i = \text{persist}$), $\Delta x_i = 0$ deterministically.
 :::
 
 :::{prf:proof}
@@ -6374,9 +6374,9 @@ To analyze the drift of the Lyapunov function components, we work with two copie
 
 Consider two swarms $(S_1, S_2)$ in the coupled state space (see {prf:ref}`def-coupled-state-space`). Let $(S'_1, S'_2)$ be the output swarms after applying $\Psi_{\text{clone}}$ to each independently, using **synchronous coupling** of all randomness:
 
-- Same PRNG seeds for companion selection
+- Same PRNG seeds for companion selection ({prf:ref}`def-companion-selection-measure`)
 - Same pairing algorithm random choices
-- Same threshold samples $T_i$ for each walker index $i$
+- Same threshold samples $T_i$ for each walker ({prf:ref}`def-walker`) index $i$
 - Same Gaussian jitters $\zeta_i^x$ for position updates (when both walkers clone)
 - Same rotation operators $R_i$ for velocity collisions (when both walkers participate in collisions)
 
@@ -6424,7 +6424,7 @@ $$
 Referenced by {prf:ref}`cor-structural-error-contraction`.
 :::
 
-**Immediate Consequence:** {prf:ref}`cor-structural-error-contraction` shows that the structural error component inherits this contraction property.
+**Immediate Consequence:**  shows that the structural error component inherits this contraction property.
 
 ### 10.3.2. Proof Strategy
 
@@ -6448,7 +6448,7 @@ $$
 
 where:
 
-1. **Alive walker contribution:**
+1. **Alive walker ({prf:ref}`def-walker`) contribution:**
 
 
 $$
@@ -6507,7 +6507,7 @@ We now bound the contribution from walkers that are alive in both swarms (the st
 :::{prf:lemma} Keystone-Driven Contraction for Stably Alive Walkers
 :label: lem-keystone-contraction-alive
 
-For walkers in the stably alive set $I_{11}$, the expected change in their contribution to variance satisfies:
+For walkers in the stably alive set ({prf:ref}`def-alive-dead-sets`) $I_{11}$, the expected change in their contribution to variance satisfies:
 
 $$
 \mathbb{E}_{\text{clone}}\left[\sum_{i \in I_{11}} \sum_{k=1,2} \left(\|\delta'_{x,k,i}\|^2 - \|\delta_{x,k,i}\|^2\right)\right] \leq -\frac{\chi(\epsilon)}{2N} \cdot V_{\text{struct}} + \frac{g_{\max}(\epsilon)}{N} + C_{\text{pers}}
@@ -6796,7 +6796,7 @@ We now prove that the velocity variance expansion from cloning is uniformly boun
 :::{prf:theorem} Bounded Velocity Variance Expansion from Cloning
 :label: thm-velocity-variance-bounded-expansion
 
-There exists a state-independent constant $C_v < \infty$ such that for any swarm $S$:
+There exists a state-independent constant $C_v < \infty$ such that for any swarm ({prf:ref}`def-swarm-and-state-space`) $S$:
 
 $$
 \mathbb{E}_{\text{clone}}[V_{\text{Var},v}(S')] \leq V_{\text{Var},v}(S) + C_v
@@ -6941,7 +6941,7 @@ We conclude by summarizing the main drift results for the variance components un
 :::{prf:theorem} Complete Variance Drift Characterization for Cloning
 :label: thm-complete-variance-drift
 
-The cloning operator $\Psi_{\text{clone}}$ induces the following drift on the variance components of the Lyapunov function:
+The cloning operator ({prf:ref}`def-cloning-operator`) $\Psi_{\text{clone}}$ induces the following drift on the variance components of the Lyapunov function:
 
 **1. Positional Variance (Strong Contraction):**
 
@@ -6974,7 +6974,7 @@ $$
 
 This result follows immediately by combining the two component drift inequalities established earlier in this chapter.
 
-From {prf:ref}`thm-positional-variance-contraction` ({prf:ref}`thm-positional-variance-contraction`), we have:
+From {prf:ref}`thm-positional-variance-contraction` , we have:
 
 $$
 \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] \leq -\kappa_x V_{\text{Var},x} + C_x
@@ -7142,13 +7142,13 @@ This raw reward feeds into the fitness potential calculation, so walkers near th
 :::{prf:lemma} Fitness Gradient from Boundary Proximity
 :label: lem-fitness-gradient-boundary
 
-Consider two walkers $i$ and $j$ with similar positions and velocities, except that walker $i$ is closer to the boundary than walker $j$. Specifically, let:
+Consider two walkers $i$ and $j$ with similar positions and velocities, except that walker ({prf:ref}`def-walker`) $i$ is closer to the boundary than walker $j$. Specifically, let:
 
 $$
 \varphi_{\text{barrier}}(x_i) - \varphi_{\text{barrier}}(x_j) = \Delta_{\text{barrier}} > 0
 $$
 
-Then, under the fitness evaluation pipeline (Chapter 5), walker $i$ has systematically lower fitness potential:
+Then, under the fitness evaluation pipeline (Chapter 5), walker ({prf:ref}`def-walker`) $i$ has systematically lower fitness potential:
 
 $$
 V_{\text{fit},i} \leq V_{\text{fit},j} - f(\Delta_{\text{barrier}})
@@ -7306,7 +7306,7 @@ We now formalize the set of walkers (see {prf:ref}`def-boundary-exposed-set`) th
 :::{prf:definition} The Boundary-Exposed Set
 :label: def-boundary-exposed-set
 
-For a swarm $S$ and a threshold $\phi_{\text{thresh}} > 0$, the **boundary-exposed set** is:
+For a swarm ({prf:ref}`def-swarm-and-state-space`) $S$ and a threshold $\phi_{\text{thresh}} > 0$, the **boundary-exposed set** is:
 
 $$
 \mathcal{E}_{\text{boundary}}(S) := \{i \in \mathcal{A}(S) : \varphi_{\text{barrier}}(x_i) > \phi_{\text{thresh}}\}
@@ -7339,7 +7339,7 @@ When $W_b$ is large, most of its contribution comes from the boundary-exposed se
 :::{prf:theorem} Boundary Potential Contraction Under Cloning
 :label: thm-boundary-potential-contraction
 
-Under the foundational axioms (Chapter 4) including the Safe Harbor Axiom (Axiom 4.3), there exist constants $\kappa_b > 0$ and $C_b < \infty$, both independent of $N$, such that for any pair of swarms $(S_1, S_2)$:
+Under the foundational axioms (Chapter 4) including the Safe Harbor ({prf:ref}`axiom-safe-harbor`) Axiom (Axiom 4.3), there exist constants $\kappa_b > 0$ and $C_b < \infty$, both independent of $N$, such that for any pair of swarms $(S_1, S_2)$:
 
 $$
 \mathbb{E}_{\text{clone}}[W_b(S'_1, S'_2) \mid S_1, S_2] \leq (1 - \kappa_b) W_b(S_1, S_2) + C_b
@@ -7378,13 +7378,13 @@ The proof proceeds by analyzing how cloning affects walkers in the boundary-expo
 :::{prf:lemma} Enhanced Cloning Probability Near Boundary
 :label: lem-boundary-enhanced-cloning
 
-For any walker $i$ in the boundary-exposed set $\mathcal{E}_{\text{boundary}}(S)$, its cloning probability satisfies:
+For any walker ({prf:ref}`def-walker`) $i$ in the boundary-exposed set $\mathcal{E}_{\text{boundary}}(S)$, its cloning probability satisfies:
 
 $$
 p_i \geq p_{\text{boundary}}(\phi_{\text{thresh}}) > 0
 $$
 
-where $p_{\text{boundary}}(\phi)$ is a monotonically increasing function of $\phi$ and is independent of $N$ and the specific swarm configuration.
+where $p_{\text{boundary}}(\phi)$ is a monotonically increasing function of $\phi$ and is independent of $N$ and the specific swarm ({prf:ref}`def-swarm-and-state-space`) configuration.
 :::
 
 :::{prf:proof}
@@ -7449,7 +7449,7 @@ This bound is independent of $N$ and depends only on $\phi_{\text{thresh}}$ and 
 :::{prf:lemma} Expected Barrier Reduction for Cloned Walker
 :label: lem-barrier-reduction-cloning
 
-When a boundary-exposed walker $i$ clones, its expected barrier penalty after cloning satisfies:
+When a boundary-exposed walker ({prf:ref}`def-walker`) $i$ clones, its expected barrier penalty after cloning satisfies:
 
 $$
 \mathbb{E}[\varphi_{\text{barrier}}(x'_i) \mid i \text{ clones}] \leq \mathbb{E}[\varphi_{\text{barrier}}(x_{c_i})] + C_{\text{jitter}}
@@ -7614,7 +7614,7 @@ $$
 \limsup_{t \to \infty} \mathbb{E}[W_b(S_t)] \leq \frac{C_b}{\kappa_b}
 $$
 
-This provides a **state-independent upper bound** on how close the swarm can get to the boundary in equilibrium.
+This provides a **state-independent upper bound** on how close the swarm ({prf:ref}`def-swarm-and-state-space`) can get to the boundary in equilibrium.
 
 Referenced by {prf:ref}`rem-progressive-safety`.
 :::
@@ -7659,7 +7659,7 @@ $$
 P(\text{extinction in one step}) = O(e^{-N \cdot \text{const}})
 $$
 
-when the swarm is in a region where $W_b \leq \frac{C_b}{\kappa_b}$.
+when the swarm ({prf:ref}`def-swarm-and-state-space`) is in a region where $W_b \leq \frac{C_b}{\kappa_b}$.
 :::
 
 :::{prf:proof}
@@ -7782,7 +7782,7 @@ We conclude by stating the complete boundary potential drift result.
 :::{prf:theorem} Complete Boundary Potential Drift Characterization
 :label: thm-complete-boundary-drift
 
-The cloning operator $\Psi_{\text{clone}}$ induces the following drift on the boundary potential:
+The cloning operator ({prf:ref}`def-cloning-operator`) $\Psi_{\text{clone}}$ induces the following drift on the boundary potential:
 
 $$
 \mathbb{E}_{\text{clone}}[\Delta W_b] \leq -\kappa_b W_b + C_b
@@ -7790,7 +7790,7 @@ $$
 
 where:
 - $\kappa_b = p_{\text{boundary}}(\phi_{\text{thresh}}) > 0$ is the minimum cloning probability for boundary-exposed walkers
-- $C_b = O(\sigma_x^2 + N^{-1})$ accounts for position jitter and dead walker revival
+- $C_b = O(\sigma_x^2 + N^{-1})$ accounts for position jitter and dead walker ({prf:ref}`def-walker`) revival
 - Both constants are **$N$-independent** in the large-$N$ limit
 
 **Key Properties:**
@@ -7903,13 +7903,13 @@ We begin by analyzing the component we have not yet addressed: the structural er
 :::{prf:theorem} Bounded Expansion of Inter-Swarm Wasserstein Distance
 :label: thm-inter-swarm-bounded-expansion
 
-For the coupled cloning operator acting on two swarms $(S_1, S_2)$, the expected change in the hypocoercive Wasserstein distance satisfies:
+For the coupled cloning operator ({prf:ref}`def-cloning-operator`) acting on two swarms $(S_1, S_2)$, the expected change in the hypocoercive Wasserstein distance ({prf:ref}`def-n-particle-displacement-metric`) satisfies:
 
 $$
 \mathbb{E}_{\text{clone}}[\Delta V_W] \leq C_W
 $$
 
-where $V_W = W_h^2(\mu_1, \mu_2) = V_{\text{loc}} + V_{\text{struct}}$ is the total inter-swarm error and $C_W < \infty$ is a state-independent constant.
+where $V_W = W_h^2(\mu_1, \mu_2) = V_{\text{loc}} + V_{\text{struct}}$ is the total inter-swarm ({prf:ref}`def-swarm-and-state-space`) error and $C_W < \infty$ is a state-independent constant.
 
 Equivalently:
 
@@ -8035,7 +8035,7 @@ For completeness, we state the separate bounds on the location and structural co
 :::{prf:corollary} Component-Wise Bounds on Inter-Swarm Error
 :label: cor-component-bounds-vw
 
-As a decomposition of {prf:ref}`thm-inter-swarm-bounded-expansion`, the location and structural error components satisfy:
+As a decomposition of {prf:ref}`thm-inter-swarm ({prf:ref}`def-swarm-and-state-space`)-bounded-expansion`, the location and structural error components satisfy:
 
 $$
 \begin{aligned}
@@ -8052,7 +8052,7 @@ Referenced by {prf:ref}`thm-complete-wasserstein-drift`.
 :::{prf:theorem} Complete Wasserstein Decomposition Drift
 :label: thm-complete-wasserstein-drift
 
-The total inter-swarm Wasserstein distance $V_W = V_{\text{loc}} + V_{\text{struct}}$ satisfies a combined drift inequality under the cloning operator:
+The total inter-swarm ({prf:ref}`def-swarm-and-state-space`) Wasserstein distance ({prf:ref}`def-n-particle-displacement-metric`) $V_W = V_{\text{loc}} + V_{\text{struct}}$ satisfies a combined drift inequality under the cloning operator ({prf:ref}`def-cloning-operator`):
 
 $$
 \mathbb{E}_{\text{clone}}[\Delta V_W] \leq C_W
@@ -8081,7 +8081,7 @@ where:
 
 **Note on Kinetic Contraction:**
 
-While the cloning operator allows bounded expansion of $V_W$, the **kinetic operator** provides contraction. From hypocoercive analysis (Chapter 4 of companion document):
+While the cloning operator ({prf:ref}`def-cloning-operator`) allows bounded expansion of $V_W$, the **kinetic operator ({prf:ref}`def-kinetic-operator`)** provides contraction. From hypocoercive analysis (Chapter 4 of companion document):
 
 $$
 \mathbb{E}_{\text{kin}}[\Delta V_W] \leq -\kappa_W^{\text{kin}} \tau V_W + C_W^{\text{kin}} \tau
@@ -8144,7 +8144,7 @@ We now combine all results to characterize the cloning operator's effect on the 
 :::{prf:theorem} Complete Drift Inequality for the Cloning Operator
 :label: thm-complete-cloning-drift
 
-Under the foundational axioms (Chapter 4), the cloning operator $\Psi_{\text{clone}}$ (see {prf:ref}`def-cloning-operator-formal`) induces the following drift on the synergistic Lyapunov function:
+Under the foundational axioms (Chapter 4), the cloning operator ({prf:ref}`def-cloning-operator`) $\Psi_{\text{clone}}$ (see {prf:ref}`def-cloning-operator-formal`) induces the following drift on the synergistic Lyapunov function:
 
 $$
 V_{\text{total}}(S_1, S_2) = V_W(S_1, S_2) + c_V V_{\text{Var}}(S_1, S_2) + c_B W_b(S_1, S_2)
@@ -8248,11 +8248,11 @@ This holds when the weighted variance and boundary potential are sufficiently la
 :::{prf:proposition} Necessity of the Kinetic Operator
 :label: prop-kinetic-necessity
 
-The cloning operator alone cannot guarantee convergence to a quasi-stationary distribution. Specifically:
+The cloning operator ({prf:ref}`def-cloning-operator`) alone cannot guarantee convergence to a quasi-stationary distribution ({prf:ref}`def-qsd`). Specifically:
 
 1. **Velocity variance accumulation:** The bounded expansion $+C_v$ per step can accumulate without bound over infinite time if not countered.
 
-2. **Inter-swarm divergence:** The bounded expansion $+C_W$ means the two coupled swarms can drift arbitrarily far apart without inter-swarm correction.
+2. **Inter-swarm ({prf:ref}`def-swarm-and-state-space`) divergence:** The bounded expansion $+C_W$ means the two coupled swarms can drift arbitrarily far apart without inter-swarm correction.
 
 3. **No velocity equilibrium:** Cloning has no mechanism to dissipate kinetic energy toward a target distribution - it only redistributes it through collisions.
 
@@ -8293,7 +8293,7 @@ This is not coincidental - it's the **fundamental design principle** of the Eucl
 :::{prf:theorem} Synergistic Foster-Lyapunov Condition (Preview)
 :label: thm-synergistic-foster-lyapunov-preview
 
-When the coupling constants $c_V$ and $c_B$ are chosen appropriately, the composed operator $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$ satisfies a Foster-Lyapunov drift condition:
+When the coupling constants $c_V$ and $c_B$ are chosen appropriately, the composed operator $\Psi_{\text{total}} = \Psi_{\text{kin}} \circ \Psi_{\text{clone}}$ satisfies a Foster-Lyapunov ({prf:ref}`def-foster-lyapunov`) drift condition:
 
 $$
 \mathbb{E}_{\text{total}}[V_{\text{total}}(S')] \leq (1 - \kappa_{\text{total}}) V_{\text{total}}(S) + C_{\text{total}}
@@ -8302,9 +8302,9 @@ $$
 for some $\kappa_{\text{total}} > 0$ and $C_{\text{total}} < \infty$, both independent of $N$.
 
 **Consequence:** This drift condition implies:
-1. **Geometric ergodicity** of the Markov chain on the alive state space
-2. **Exponential convergence** to the quasi-stationary distribution
-3. **Exponentially suppressed extinction probability** in the QSD regime
+1. **Geometric ergodicity ({prf:ref}`def-geometric-ergodicity`)** of the Markov chain on the alive state space
+2. **Exponential convergence** to the quasi-stationary distribution ({prf:ref}`def-qsd`)
+3. **Exponentially suppressed extinction probability** in the QSD  regime
 :::
 
 :::{prf:proof}
@@ -8459,7 +8459,7 @@ We conclude by summarizing the main achievements of this document.
 :::{prf:theorem} Main Results of the Cloning Analysis (Summary)
 :label: thm-main-results-summary
 
-This document has established the following results for the cloning operator $\Psi_{\text{clone}}$:
+This document has established the following results for the cloning operator ({prf:ref}`def-cloning-operator`) $\Psi_{\text{clone}}$:
 
 **1. The Keystone Principle (Chapters 5-8):**
 - Large internal positional variance → detectable geometric structure
@@ -8478,15 +8478,15 @@ This document has established the following results for the cloning operator $\P
 - Expansion is **bounded**, not growing with system state or size
 
 **4. Boundary Potential Contraction (Chapter 11):**
-- Safe Harbor mechanism systematically removes boundary-proximate walkers
+- Safe Harbor ({prf:ref}`axiom-safe-harbor`) mechanism systematically removes boundary-proximate walkers
 - **Result:** $\mathbb{E}_{\text{clone}}[\Delta W_b] \leq -\kappa_b W_b + C_b$
 - Provides **exponentially suppressed extinction probability**
 
 **5. Complete Characterization (Chapter 12):**
 - All drift constants are **N-independent** (scalable to large swarms)
 - Cloning provides **partial contraction** of the Lyapunov function
-- Requires **kinetic operator** to overcome bounded expansions
-- Foundation for **synergistic Foster-Lyapunov condition**
+- Requires **kinetic operator ({prf:ref}`def-kinetic-operator`)** to overcome bounded expansions
+- Foundation for **synergistic Foster-Lyapunov ({prf:ref}`def-foster-lyapunov`) condition**
 
 All results hold under the foundational axioms (Chapter 4) and are **constructive** with explicit constants.
 :::

@@ -14,13 +14,16 @@
       ],
       "content_start": 7379,
       "content_end": 7385,
-      "content": "7379: :label: lem-boundary-enhanced-cloning\n7380: \n7381: For any walker $i$ in the boundary-exposed set $\\mathcal{E}_{\\text{boundary}}(S)$, its cloning probability satisfies:\n7382: \n7383: $$\n7384: p_i \\geq p_{\\text{boundary}}(\\phi_{\\text{thresh}}) > 0\n7385: $$",
+      "content": "7379: :label: lem-boundary-enhanced-cloning\n7380: \n7381: For any walker ({prf:ref}`def-walker`) $i$ in the boundary-exposed set $\\mathcal{E}_{\\text{boundary}}(S)$, its cloning probability satisfies:\n7382: \n7383: $$\n7384: p_i \\geq p_{\\text{boundary}}(\\phi_{\\text{thresh}}) > 0\n7385: $$",
       "metadata": {
         "label": "lem-boundary-enhanced-cloning"
       },
       "section": "## 11.4. Proof of Boundary Potential Contraction",
-      "references": [],
-      "raw_directive": "7376: ### 11.4.1. Cloning Probability for Boundary-Exposed Walkers\n7377: \n7378: :::{prf:lemma} Enhanced Cloning Probability Near Boundary\n7379: :label: lem-boundary-enhanced-cloning\n7380: \n7381: For any walker $i$ in the boundary-exposed set $\\mathcal{E}_{\\text{boundary}}(S)$, its cloning probability satisfies:\n7382: \n7383: $$\n7384: p_i \\geq p_{\\text{boundary}}(\\phi_{\\text{thresh}}) > 0\n7385: $$\n7386: "
+      "references": [
+        "def-walker",
+        "def-swarm-and-state-space"
+      ],
+      "raw_directive": "7376: ### 11.4.1. Cloning Probability for Boundary-Exposed Walkers\n7377: \n7378: :::{prf:lemma} Enhanced Cloning Probability Near Boundary\n7379: :label: lem-boundary-enhanced-cloning\n7380: \n7381: For any walker ({prf:ref}`def-walker`) $i$ in the boundary-exposed set $\\mathcal{E}_{\\text{boundary}}(S)$, its cloning probability satisfies:\n7382: \n7383: $$\n7384: p_i \\geq p_{\\text{boundary}}(\\phi_{\\text{thresh}}) > 0\n7385: $$\n7386: "
     },
     {
       "directive_type": "proof",
@@ -55,13 +58,15 @@
       ],
       "content_start": 7450,
       "content_end": 7463,
-      "content": "7450: :label: lem-barrier-reduction-cloning\n7451: \n7452: When a boundary-exposed walker $i$ clones, its expected barrier penalty after cloning satisfies:\n7453: \n7454: $$\n7455: \\mathbb{E}[\\varphi_{\\text{barrier}}(x'_i) \\mid i \\text{ clones}] \\leq \\mathbb{E}[\\varphi_{\\text{barrier}}(x_{c_i})] + C_{\\text{jitter}}\n7456: $$\n7457: \n7458: where $C_{\\text{jitter}} = O(\\sigma_x^2)$ accounts for the position jitter variance.\n7459: \n7460: Furthermore, if the companion is from the safe interior:\n7461: \n7462: $$\n7463: \\mathbb{E}[\\varphi_{\\text{barrier}}(x'_i) \\mid c_i \\in \\mathcal{I}_{\\text{safe}}] \\leq C_{\\text{jitter}}",
+      "content": "7450: :label: lem-barrier-reduction-cloning\n7451: \n7452: When a boundary-exposed walker ({prf:ref}`def-walker`) $i$ clones, its expected barrier penalty after cloning satisfies:\n7453: \n7454: $$\n7455: \\mathbb{E}[\\varphi_{\\text{barrier}}(x'_i) \\mid i \\text{ clones}] \\leq \\mathbb{E}[\\varphi_{\\text{barrier}}(x_{c_i})] + C_{\\text{jitter}}\n7456: $$\n7457: \n7458: where $C_{\\text{jitter}} = O(\\sigma_x^2)$ accounts for the position jitter variance.\n7459: \n7460: Furthermore, if the companion is from the safe interior:\n7461: \n7462: $$\n7463: \\mathbb{E}[\\varphi_{\\text{barrier}}(x'_i) \\mid c_i \\in \\mathcal{I}_{\\text{safe}}] \\leq C_{\\text{jitter}}",
       "metadata": {
         "label": "lem-barrier-reduction-cloning"
       },
       "section": "## 11.4. Proof of Boundary Potential Contraction",
-      "references": [],
-      "raw_directive": "7447: ### 11.4.2. Barrier Reduction from Cloning\n7448: \n7449: :::{prf:lemma} Expected Barrier Reduction for Cloned Walker\n7450: :label: lem-barrier-reduction-cloning\n7451: \n7452: When a boundary-exposed walker $i$ clones, its expected barrier penalty after cloning satisfies:\n7453: \n7454: $$\n7455: \\mathbb{E}[\\varphi_{\\text{barrier}}(x'_i) \\mid i \\text{ clones}] \\leq \\mathbb{E}[\\varphi_{\\text{barrier}}(x_{c_i})] + C_{\\text{jitter}}\n7456: $$\n7457: \n7458: where $C_{\\text{jitter}} = O(\\sigma_x^2)$ accounts for the position jitter variance.\n7459: \n7460: Furthermore, if the companion is from the safe interior:\n7461: \n7462: $$\n7463: \\mathbb{E}[\\varphi_{\\text{barrier}}(x'_i) \\mid c_i \\in \\mathcal{I}_{\\text{safe}}] \\leq C_{\\text{jitter}}\n7464: $$"
+      "references": [
+        "def-walker"
+      ],
+      "raw_directive": "7447: ### 11.4.2. Barrier Reduction from Cloning\n7448: \n7449: :::{prf:lemma} Expected Barrier Reduction for Cloned Walker\n7450: :label: lem-barrier-reduction-cloning\n7451: \n7452: When a boundary-exposed walker ({prf:ref}`def-walker`) $i$ clones, its expected barrier penalty after cloning satisfies:\n7453: \n7454: $$\n7455: \\mathbb{E}[\\varphi_{\\text{barrier}}(x'_i) \\mid i \\text{ clones}] \\leq \\mathbb{E}[\\varphi_{\\text{barrier}}(x_{c_i})] + C_{\\text{jitter}}\n7456: $$\n7457: \n7458: where $C_{\\text{jitter}} = O(\\sigma_x^2)$ accounts for the position jitter variance.\n7459: \n7460: Furthermore, if the companion is from the safe interior:\n7461: \n7462: $$\n7463: \\mathbb{E}[\\varphi_{\\text{barrier}}(x'_i) \\mid c_i \\in \\mathcal{I}_{\\text{safe}}] \\leq C_{\\text{jitter}}\n7464: $$"
     },
     {
       "directive_type": "proof",

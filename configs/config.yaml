@@ -1,0 +1,18 @@
+# Main configuration file for proof sketcher pipeline with Hydra
+#
+# Usage:
+#   python examples/hydra_proof_sketcher.py              # Use defaults
+#   python examples/hydra_proof_sketcher.py llm=cost_optimized    # Override LLM config
+#   python examples/hydra_proof_sketcher.py pipeline=quick        # Override pipeline config
+
+defaults:
+  - llm: default
+  - pipeline: default
+  - _self_
+
+# Hydra settings
+hydra:
+  run:
+    dir: outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  job:
+    name: proof_sketcher

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Interactive dashboard for label-level preprocess reference graphs."""
+"""Interactive dashboard for label-level reference graphs across registry stages."""
 
 from __future__ import annotations
 
@@ -21,8 +21,12 @@ from fragile.shaolin.graph import (
     InteractiveGraph,
     nodes_as_df,
 )
+from mathster.relationships.directives_graph import (
+    build_label_reference_graph as build_directives_label_reference_graph,
+    load_directives_registry,
+)
 from mathster.relationships.preprocess_graph import (
-    build_label_reference_graph,
+    build_label_reference_graph as build_preprocess_label_reference_graph,
     load_preprocess_registry,
 )
 from mathster.reports.show_report import render_label_report
@@ -101,19 +105,29 @@ def _matches_search(label: str, data: dict[str, Any], search_text: str) -> bool:
 
 
 class LabelReferenceDashboard:
-    """Dashboard that visualizes label-to-label references in preprocess data."""
+    """Dashboard that visualizes label references across preprocess and directives stages."""
 
     def __init__(self, default_registry_path: str | None = None) -> None:
         project_root = Path(__file__).resolve().parents[2]
-        self.default_registry_path = (
-            default_registry_path or project_root / "unified_registry" / "preprocess"
+        preprocess_default = (
+            Path(default_registry_path).expanduser()
+            if default_registry_path
+            else project_root / "unified_registry" / "preprocess"
         )
+        self.default_registry_paths: dict[str, Path] = {
+            "preprocess": preprocess_default,
+            "directives": project_root / "unified_registry" / "directives",
+        }
 
-        self.preprocess_dir: Path | None = None
+        self.registry_dir: Path | None = None
         self.registry_data: dict[str, dict[str, Any]] = {}
         self.label_graph: nx.DiGraph = nx.DiGraph()
         self.filtered_graph: nx.DiGraph = nx.DiGraph()
         self.layout_cache: dict[tuple[str, str], dict[str, tuple[float, float]]] = {}
+        self._stage_selection: dict[str, str] = {}
+        self._custom_path_history: dict[str, str] = {
+            stage: str(path) for stage, path in self.default_registry_paths.items()
+        }
 
         self._current_ig: InteractiveGraph | None = None
         self._current_df_nodes: pd.DataFrame | None = None
@@ -145,40 +159,47 @@ class LabelReferenceDashboard:
     # Widget creation
     # ------------------------------------------------------------------
 
-    def _discover_preprocess_dirs(self) -> dict[str, str]:
+    def _discover_registry_dirs(self, stage: str) -> dict[str, str]:
         project_root = Path(__file__).resolve().parents[2]
         options: dict[str, str] = {}
+        stage = stage or "preprocess"
+        stage_label = stage.capitalize()
 
-        unified = project_root / "unified_registry" / "preprocess"
+        unified = project_root / "unified_registry" / stage
         if unified.exists():
-            options["Unified Registry (preprocess)"] = str(unified)
+            options[f"Unified Registry ({stage_label})"] = str(unified)
 
         per_doc_root = project_root / "registries" / "per_document"
         if per_doc_root.exists():
             for doc_dir in sorted(per_doc_root.iterdir()):
-                preprocess_dir = doc_dir / "preprocess"
-                if preprocess_dir.exists() and any(preprocess_dir.glob("*.json")):
-                    options[f"Per-document: {doc_dir.name}"] = str(preprocess_dir)
+                stage_dir = doc_dir / stage
+                if stage_dir.exists() and any(stage_dir.glob("*.json")):
+                    options[f"Per-document ({stage_label}): {doc_dir.name}"] = str(stage_dir)
 
-        options["Custom Path"] = "__custom__"
+        options[f"Custom Path ({stage_label})"] = "__custom__"
         return options
 
     def _create_data_source_widgets(self) -> None:
-        options = self._discover_preprocess_dirs()
-        default_value = next(iter(options.values())) if options else "__custom__"
+        self.stage_toggle = pn.widgets.RadioButtonGroup(
+            name="Registry Stage",
+            options={"Preprocess": "preprocess", "Directives": "directives"},
+            value="preprocess",
+            button_type="primary",
+            width=280,
+        )
 
         self.data_source_selector = pn.widgets.Select(
-            name="Preprocess Source",
-            options=options,
-            value=default_value,
+            name="Registry Source",
+            options={},
+            value=None,
             width=280,
         )
 
         self.custom_path_input = pn.widgets.TextInput(
-            name="Preprocess Directory",
-            value=str(self.default_registry_path),
+            name="Registry Directory",
+            value=str(self.default_registry_paths["preprocess"]),
             width=280,
-            visible=default_value == "__custom__",
+            visible=False,
         )
 
         self.reload_button = pn.widgets.Button(
@@ -189,9 +210,53 @@ class LabelReferenceDashboard:
         self.reload_button.on_click(self._on_reload_requested)
 
         def _toggle_custom(event) -> None:
-            self.custom_path_input.visible = event.new == "__custom__"
+            is_custom = event.new == "__custom__"
+            self.custom_path_input.visible = is_custom
+            stage = self.stage_toggle.value
+            if is_custom:
+                default_path = self._custom_path_history.get(
+                    stage, str(self.default_registry_paths.get(stage, ""))
+                )
+                if default_path:
+                    self.custom_path_input.value = default_path
+            self._stage_selection[stage] = event.new
 
+        def _remember_custom_path(event) -> None:
+            stage = self.stage_toggle.value
+            self._custom_path_history[stage] = event.new
+
+        self.stage_toggle.param.watch(self._on_stage_change, "value")
         self.data_source_selector.param.watch(_toggle_custom, "value")
+        self.custom_path_input.param.watch(_remember_custom_path, "value")
+        self._refresh_data_source_options()
+
+    def _refresh_data_source_options(self) -> None:
+        stage = getattr(self, "stage_toggle", None)
+        stage_value = stage.value if stage else "preprocess"
+        stage_label = stage_value.capitalize()
+        options = self._discover_registry_dirs(stage_value)
+        if not options:
+            options = {f"Custom Path ({stage_label})": "__custom__"}
+
+        available_values = list(options.values())
+        preferred_value = self._stage_selection.get(stage_value)
+        value = preferred_value if preferred_value in available_values else available_values[0]
+
+        self.data_source_selector.options = options
+        self.data_source_selector.value = value
+        self.data_source_selector.name = f"{stage_label} Source"
+
+        is_custom = value == "__custom__"
+        self.custom_path_input.visible = is_custom
+        self.custom_path_input.name = f"{stage_label} Directory"
+        if is_custom:
+            default_path = self._custom_path_history.get(
+                stage_value, str(self.default_registry_paths.get(stage_value, ""))
+            )
+            if default_path:
+                self.custom_path_input.value = default_path
+        else:
+            self._stage_selection[stage_value] = value
 
     def _create_filter_widgets(self) -> None:
         self.label_filter = pn.widgets.MultiChoice(
@@ -321,27 +386,65 @@ class LabelReferenceDashboard:
     # Data loading & filtering
     # ------------------------------------------------------------------
 
-    def _resolve_preprocess_dir(self) -> Path:
+    def _resolve_registry_dir(self) -> Path:
         selection = self.data_source_selector.value
         if selection == "__custom__":
-            return Path(self.custom_path_input.value).expanduser()
-        return Path(selection)
+            custom_value = self.custom_path_input.value.strip()
+            if custom_value:
+                return Path(custom_value).expanduser()
+        if selection:
+            return Path(selection)
+        default_path = self.default_registry_paths.get(self.stage_toggle.value)
+        if default_path:
+            return default_path
+        return Path(".")
+
+    def _resolve_report_preprocess_dir(self) -> Path | None:
+        stage = self.stage_toggle.value
+        current_dir = self.registry_dir or self._resolve_registry_dir()
+        if stage == "preprocess":
+            return current_dir
+        if stage == "directives" and current_dir:
+            sibling = current_dir.parent / "preprocess"
+            if sibling.exists():
+                return sibling
+        fallback = self.default_registry_paths.get("preprocess")
+        if fallback and fallback.exists():
+            return fallback
+        return None
+
+    def _get_stage_handlers(self, stage: str):
+        if stage == "directives":
+            return load_directives_registry, build_directives_label_reference_graph
+        return load_preprocess_registry, build_preprocess_label_reference_graph
 
     def _load_label_graph(self) -> None:
-        preprocess_dir = self._resolve_preprocess_dir()
-        self.preprocess_dir = preprocess_dir
+        stage = self.stage_toggle.value
+        registry_dir = self._resolve_registry_dir()
+        self.registry_dir = registry_dir
 
-        if not preprocess_dir.exists():
-            logger.warning("Preprocess directory %s does not exist", preprocess_dir)
+        loader, builder = self._get_stage_handlers(stage)
+
+        if not registry_dir.exists():
+            logger.warning("%s directory %s does not exist", stage.title(), registry_dir)
             self.registry_data = {}
             self.label_graph = nx.DiGraph()
         else:
-            self.registry_data = load_preprocess_registry(preprocess_dir)
-            self.label_graph = build_label_reference_graph(preprocess_dir)
-            self._augment_node_metadata()
+            self.registry_data = loader(registry_dir)
+            self.label_graph = builder(registry_dir)
+            self._augment_node_metadata(stage)
 
         self._update_filters_from_graph()
-        self._append_console(f"[Load] Label graph built from {preprocess_dir}")
+        self._append_console(f"[Load] ({stage}) label graph built from {registry_dir}")
+
+    def _on_stage_change(self, event) -> None:
+        previous_stage = event.old
+        if previous_stage:
+            self._stage_selection[previous_stage] = self.data_source_selector.value or ""
+        self.layout_cache.clear()
+        self._append_console(f"[Stage] Switched to {event.new}")
+        self._refresh_data_source_options()
+        self._load_label_graph()
 
     def _update_filters_from_graph(self) -> None:
         labels = sorted(self.label_graph.nodes())
@@ -417,24 +520,39 @@ class LabelReferenceDashboard:
     # Graph rendering
     # ------------------------------------------------------------------
 
-    def _augment_node_metadata(self) -> None:
+    def _augment_node_metadata(self, stage: str) -> None:
         for label, data in self.label_graph.nodes(data=True):
             entry = self.registry_data.get(label, {}) or {}
-            entity_type = data.get("entity_type") or _safe_str(entry.get("type")) or "unknown"
+            if stage == "directives":
+                entity_type = (
+                    data.get("entity_type")
+                    or data.get("directive_type")
+                    or _safe_str(entry.get("directive_type"))
+                    or "unknown"
+                )
+                registry_ctx = entry.get("_registry_context") or {}
+            else:
+                entity_type = data.get("entity_type") or _safe_str(entry.get("type")) or "unknown"
+                registry_ctx = entry.get("registry_context") or {}
+
             title = data.get("title") or _safe_str(entry.get("title") or entry.get("term"))
             document_id = (
                 data.get("document_id")
                 or _safe_str(entry.get("document_id"))
-                or _safe_str((entry.get("registry_context") or {}).get("document_id"))
+                or _safe_str(registry_ctx.get("document_id"))
             )
             section = data.get("section") or _safe_str(entry.get("section"))
-            registry_ctx = entry.get("registry_context") or {}
             if not section:
                 section = _safe_str(
-                    registry_ctx.get("section_id") or registry_ctx.get("chapter_file")
+                    registry_ctx.get("section_id")
+                    or registry_ctx.get("chapter_file")
+                    or registry_ctx.get("section")
                 )
 
             data["entity_type"] = entity_type
+            if stage == "directives":
+                data.setdefault("directive_type", entity_type)
+
             data["title"] = title
             data["document_id"] = document_id
             data["section"] = section
@@ -683,6 +801,8 @@ class LabelReferenceDashboard:
             )
 
         data = graph.nodes[label]
+        stage = self.stage_toggle.value
+        stage_label = "Directives" if stage == "directives" else "Preprocess"
         entity_type = data.get("entity_type", "unknown")
         title = data.get("title") or "(no title)"
         document_id = data.get("document_id") or "?"
@@ -697,10 +817,22 @@ class LabelReferenceDashboard:
             f"**ID:** `{label}`",
             f"**Title:** {title}",
             f"**Entity Type:** {entity_type}",
+            f"**Registry Stage:** {stage_label}",
             f"**Document:** {document_id}",
             f"**Section:** {section}",
             f"**Tags:** {tags}",
         ]
+
+        if stage == "directives":
+            start_line = data.get("start_line")
+            end_line = data.get("end_line")
+            chapter_file = data.get("chapter_file")
+            chapter_index = data.get("chapter_index")
+            lines.append(f"**Chapter File:** {chapter_file or '—'}")
+            if chapter_index is not None:
+                lines.append(f"**Chapter Index:** {chapter_index}")
+            if start_line or end_line:
+                lines.append(f"**Line Range:** {start_line or '—'} – {end_line or '—'}")
 
         def _edge_context_string(edge_data: dict[str, Any]) -> str:
             contexts = edge_data.get("context_counts") or edge_data.get("contexts") or []
@@ -734,14 +866,26 @@ class LabelReferenceDashboard:
 
         summary = pn.pane.Markdown("\n".join(lines), sizing_mode="stretch_width")
 
-        preprocess_dir = self.preprocess_dir or self._resolve_preprocess_dir()
-        try:
-            report_md = render_label_report(label, preprocess_dir=preprocess_dir)
-            report_pane = pn.pane.Markdown(report_md, sizing_mode="stretch_width")
-        except Exception as exc:  # pragma: no cover - defensive
-            logger.exception("Failed to render report for %s: %s", label, exc)
+        preprocess_dir = self._resolve_report_preprocess_dir()
+        if preprocess_dir:
+            try:
+                report_md = render_label_report(label, preprocess_dir=preprocess_dir)
+                report_pane = pn.pane.Markdown(report_md, sizing_mode="stretch_width")
+            except Exception as exc:  # pragma: no cover - defensive
+                log_message = (
+                    "Failed to render preprocess report for %s (stage=%s, dir=%s): %s"
+                )
+                if stage == "directives":
+                    logger.info(log_message, label, stage, preprocess_dir, exc)
+                else:
+                    logger.exception(log_message, label, stage, preprocess_dir, exc)
+                report_pane = pn.pane.Markdown(
+                    f"**Report unavailable:** {exc}",
+                    sizing_mode="stretch_width",
+                )
+        else:
             report_pane = pn.pane.Markdown(
-                f"**Report unavailable:** {exc}",
+                "**Report unavailable:** No preprocess registry configured for reports.",
                 sizing_mode="stretch_width",
             )
 
@@ -906,6 +1050,7 @@ class LabelReferenceDashboard:
             self.reload_button,
             pn.layout.Divider(),
             pn.pane.Markdown("## Filters", margin=(10, 0, 10, 0)),
+            self.stage_toggle,
             self.filter_accordion,
             self.entity_type_filter,
             self.document_filter,

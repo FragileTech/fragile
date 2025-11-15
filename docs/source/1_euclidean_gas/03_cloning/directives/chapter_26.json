@@ -14,16 +14,17 @@
       ],
       "content_start": 7609,
       "content_end": 7617,
-      "content": "7609: :label: cor-bounded-boundary-exposure\n7610: \n7611: Under the drift inequality from {prf:ref}`thm-boundary-potential-contraction`, the long-term boundary exposure is bounded:\n7612: \n7613: $$\n7614: \\limsup_{t \\to \\infty} \\mathbb{E}[W_b(S_t)] \\leq \\frac{C_b}{\\kappa_b}\n7615: $$\n7616: \n7617: This provides a **state-independent upper bound** on how close the swarm can get to the boundary in equilibrium.",
+      "content": "7609: :label: cor-bounded-boundary-exposure\n7610: \n7611: Under the drift inequality from {prf:ref}`thm-boundary-potential-contraction`, the long-term boundary exposure is bounded:\n7612: \n7613: $$\n7614: \\limsup_{t \\to \\infty} \\mathbb{E}[W_b(S_t)] \\leq \\frac{C_b}{\\kappa_b}\n7615: $$\n7616: \n7617: This provides a **state-independent upper bound** on how close the swarm ({prf:ref}`def-swarm-and-state-space`) can get to the boundary in equilibrium.",
       "metadata": {
         "label": "cor-bounded-boundary-exposure"
       },
       "section": "## 11.5. Implications for Extinction Probability",
       "references": [
         "thm-boundary-potential-contraction",
+        "def-swarm-and-state-space",
         "rem-progressive-safety"
       ],
-      "raw_directive": "7606: The boundary potential contraction has important consequences for swarm survival.\n7607: \n7608: :::{prf:corollary} Bounded Boundary Exposure in Equilibrium\n7609: :label: cor-bounded-boundary-exposure\n7610: \n7611: Under the drift inequality from {prf:ref}`thm-boundary-potential-contraction`, the long-term boundary exposure is bounded:\n7612: \n7613: $$\n7614: \\limsup_{t \\to \\infty} \\mathbb{E}[W_b(S_t)] \\leq \\frac{C_b}{\\kappa_b}\n7615: $$\n7616: \n7617: This provides a **state-independent upper bound** on how close the swarm can get to the boundary in equilibrium.\n7618: "
+      "raw_directive": "7606: The boundary potential contraction has important consequences for swarm survival.\n7607: \n7608: :::{prf:corollary} Bounded Boundary Exposure in Equilibrium\n7609: :label: cor-bounded-boundary-exposure\n7610: \n7611: Under the drift inequality from {prf:ref}`thm-boundary-potential-contraction`, the long-term boundary exposure is bounded:\n7612: \n7613: $$\n7614: \\limsup_{t \\to \\infty} \\mathbb{E}[W_b(S_t)] \\leq \\frac{C_b}{\\kappa_b}\n7615: $$\n7616: \n7617: This provides a **state-independent upper bound** on how close the swarm ({prf:ref}`def-swarm-and-state-space`) can get to the boundary in equilibrium.\n7618: "
     },
     {
       "directive_type": "proof",
@@ -61,7 +62,8 @@
       },
       "section": "## 11.5. Implications for Extinction Probability",
       "references": [
-        "thm-boundary-potential-contraction"
+        "thm-boundary-potential-contraction",
+        "def-swarm-and-state-space"
       ],
       "raw_directive": "7651: :::\n7652: \n7653: :::{prf:corollary} Exponentially Suppressed Extinction Probability\n7654: :label: cor-extinction-suppression\n7655: \n7656: As a consequence of {prf:ref}`thm-boundary-potential-contraction`, the boundary potential contraction exponentially suppresses the probability of catastrophic boundary crossing events. Specifically, for any $\\epsilon > 0$, there exists $N_0$ such that for all $N > N_0$:\n7657: \n7658: $$\n7659: P(\\text{extinction in one step}) = O(e^{-N \\cdot \\text{const}})\n7660: $$\n7661: "
     },

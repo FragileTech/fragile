@@ -1,0 +1,32 @@
+# Default LLM configuration for proof sketcher pipeline
+#
+# Uses GPT-4 for perspectives and synthesis, GPT-3.5 for simple tasks.
+# Balanced configuration for high-quality proof generation.
+
+perspective_1_model:
+  provider: "openai"
+  model: "gpt-4-turbo-preview"
+  temperature: 0.7
+  max_tokens: 4000
+
+perspective_2_model:
+  provider: "openai"
+  model: "gpt-4-turbo-preview"
+  temperature: 0.7
+  max_tokens: 4000
+
+synthesis_model:
+  provider: "openai"
+  model: "gpt-4"
+  temperature: 0.5
+  max_tokens: 3000
+
+fast_model:
+  provider: "openai"
+  model: "gpt-3.5-turbo"
+  temperature: 0.7
+  max_tokens: 2000
+
+# Claude models for tool calls (ReAct tools in strategists and dependency ledger)
+claude_model_heavy: "sonnet"
+claude_model_fast: "haiku"

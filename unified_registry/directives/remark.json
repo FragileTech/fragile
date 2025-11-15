@@ -1,7 +1,7 @@
 {
   "stage": "directives",
   "directive_type": "remark",
-  "generated_at": "2025-11-10T13:57:33.020243+00:00",
+  "generated_at": "2025-11-12T22:37:34.044278+00:00",
   "source_documents": [
     "01_crystalline_gas_yang_mills_mass_gap_proof",
     "01_fragile_gas_framework",
@@ -622,20 +622,22 @@
       "directive_type": "remark",
       "label": "rem-closure-cemetery",
       "title": null,
-      "start_line": 482,
-      "end_line": 485,
+      "start_line": 490,
+      "end_line": 493,
       "header_lines": [
-        483
+        491
       ],
-      "content_start": 484,
-      "content_end": 484,
-      "content": "484: :::{prf:remark}",
+      "content_start": 492,
+      "content_end": 492,
+      "content": "492: :::{prf:remark}",
       "metadata": {
         "label": "rem-closure-cemetery"
       },
       "section": "## 2. Global Conventions: Foundational Objects and Core Algorithmic Parameters",
-      "references": [],
-      "raw_directive": "482: :::\n483: \n484: :::{prf:remark}\n485: :label: rem-closure-cemetery",
+      "references": [
+        "lem-borel-image-of-the-projected-swarm ({prf:ref}"
+      ],
+      "raw_directive": "490: :::\n491: \n492: :::{prf:remark}\n493: :label: rem-closure-cemetery",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -648,20 +650,23 @@
       "directive_type": "remark",
       "label": "rem-margin-stability",
       "title": null,
-      "start_line": 1094,
-      "end_line": 1108,
+      "start_line": 1109,
+      "end_line": 1124,
       "header_lines": [
-        1095
+        1110
       ],
-      "content_start": 1096,
-      "content_end": 1107,
-      "content": "1096: :::{prf:remark}\n1097: :label: rem-margin-stability\n1098: This axiom expresses a deterministic stability of the status update in terms of the positional component alone. It is strictly stronger than the trivial consequence of the identity\n1099: \n1100: $$\n1101: d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2 = \\tfrac{1}{N}\\,\\Delta_{\\text{pos}}^2 + \\tfrac{\\lambda_{\\mathrm{status}}}{N}\\,n_c,\n1102: $$\n1103: \n1104: which would otherwise allow a tautological “margin” by tuning $\\lambda_{\\mathrm{status}}$.\n1105: n_c\\;\\le\\; \\frac{N}{\\lambda_{\\mathrm{status}}}\\, d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2,\\qquad\n1106: n_c^2\\;\\le\\; \\left(\\frac{N}{\\lambda_{\\mathrm{status}}}\\right)^2 d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^4.\n1107: ",
+      "content_start": 1111,
+      "content_end": 1123,
+      "content": "1111: :::{prf:remark}\n1112: :label: rem-margin-stability\n1113: The Axiom of Margin Stability ({prf:ref}`axiom-margin-stability`) expresses a deterministic stability of the status update ({prf:ref}`def-status-update-operator`) in terms of the positional component alone. It is strictly stronger than the trivial consequence of the identity\n1114: \n1115: $$\n1116: d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2 = \\tfrac{1}{N}\\,\\Delta_{\\text{pos}}^2 + \\tfrac{\\lambda_{\\mathrm{status}}}{N}\\,n_c,\n1117: \n1118: $$\n1119: \n1120: which would otherwise allow a tautological “margin” by tuning $\\lambda_{\\mathrm{status}}$.\n1121: n_c\\;\\le\\; \\frac{N}{\\lambda_{\\mathrm{status}}}\\, d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2,\\qquad\n1122: n_c^2\\;\\le\\; \\left(\\frac{N}{\\lambda_{\\mathrm{status}}}\\right)^2 d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^4.\n1123: ",
       "metadata": {
         "label": "rem-margin-stability"
       },
       "section": "## 3. Axiomatic Foundations: A Parametric Debugging Framework",
-      "references": [],
-      "raw_directive": "1094: :::\n1095: \n1096: :::{prf:remark}\n1097: :label: rem-margin-stability\n1098: This axiom expresses a deterministic stability of the status update in terms of the positional component alone. It is strictly stronger than the trivial consequence of the identity\n1099: \n1100: $$\n1101: d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2 = \\tfrac{1}{N}\\,\\Delta_{\\text{pos}}^2 + \\tfrac{\\lambda_{\\mathrm{status}}}{N}\\,n_c,\n1102: $$\n1103: \n1104: which would otherwise allow a tautological “margin” by tuning $\\lambda_{\\mathrm{status}}$.\n1105: n_c\\;\\le\\; \\frac{N}{\\lambda_{\\mathrm{status}}}\\, d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2,\\qquad\n1106: n_c^2\\;\\le\\; \\left(\\frac{N}{\\lambda_{\\mathrm{status}}}\\right)^2 d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^4.\n1107: \n1108: $$",
+      "references": [
+        "axiom-margin-stability",
+        "def-status-update-operator"
+      ],
+      "raw_directive": "1109: :::\n1110: \n1111: :::{prf:remark}\n1112: :label: rem-margin-stability\n1113: The Axiom of Margin Stability ({prf:ref}`axiom-margin-stability`) expresses a deterministic stability of the status update ({prf:ref}`def-status-update-operator`) in terms of the positional component alone. It is strictly stronger than the trivial consequence of the identity\n1114: \n1115: $$\n1116: d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2 = \\tfrac{1}{N}\\,\\Delta_{\\text{pos}}^2 + \\tfrac{\\lambda_{\\mathrm{status}}}{N}\\,n_c,\n1117: \n1118: $$\n1119: \n1120: which would otherwise allow a tautological “margin” by tuning $\\lambda_{\\mathrm{status}}$.\n1121: n_c\\;\\le\\; \\frac{N}{\\lambda_{\\mathrm{status}}}\\, d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2,\\qquad\n1122: n_c^2\\;\\le\\; \\left(\\frac{N}{\\lambda_{\\mathrm{status}}}\\right)^2 d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^4.\n1123: \n1124: $$",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -674,46 +679,51 @@
       "directive_type": "remark",
       "label": "rem-maximal-cemetery-distance-design-choice",
       "title": "Maximal cemetery distance (design choice)",
-      "start_line": 1461,
-      "end_line": 1464,
+      "start_line": 1512,
+      "end_line": 1515,
       "header_lines": [
-        1462
+        1513
       ],
-      "content_start": 1463,
-      "content_end": 1463,
-      "content": "1463: :label: rem-maximal-cemetery-distance-design-choice",
+      "content_start": 1514,
+      "content_end": 1514,
+      "content": "1514: :label: rem-maximal-cemetery-distance-design-choice",
       "metadata": {
         "label": "rem-maximal-cemetery-distance-design-choice"
       },
-      "section": "## 7. Swarm Measuring",
-      "references": [],
-      "raw_directive": "1461: :::\n1462: :::{prf:remark} Maximal cemetery distance (design choice)\n1463: :label: rem-maximal-cemetery-distance-design-choice\n1464: This convention selects a maximal, state‑independent distance to the cemetery law so that absorption events represent the largest possible jump in distributional metrics. It simplifies comparisons (no ad‑hoc offsets) and keeps $W_p(\\nu,\\delta_{\\dagger})$ constant across all living $\\nu$.",
+      "section": "## 7. Swarm ({prf:ref}`def-swarm-and-state-space`) Measuring",
+      "references": [
+        "def-distance-to-cemetery-state"
+      ],
+      "raw_directive": "1512: :::\n1513: :::{prf:remark} Maximal cemetery distance (design choice)\n1514: :label: rem-maximal-cemetery-distance-design-choice\n1515: This convention for the distance to the cemetery state ({prf:ref}`def-distance-to-cemetery-state`) selects a maximal, state‑independent distance to the cemetery law so that absorption events represent the largest possible jump in distributional metrics. It simplifies comparisons (no ad‑hoc offsets) and keeps $W_p(\\nu,\\delta_{\\dagger})$ constant across all living $\\nu$.",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
         "chapter_index": 7,
         "chapter_file": "chapter_7.json",
-        "section_id": "## 7. Swarm Measuring"
+        "section_id": "## 7. Swarm ({prf:ref}`def-swarm-and-state-space`) Measuring"
       }
     },
     {
       "directive_type": "remark",
       "label": "rem-cubic-hermite-construction",
       "title": null,
-      "start_line": 1859,
-      "end_line": 1862,
+      "start_line": 1923,
+      "end_line": 1926,
       "header_lines": [
-        1860
+        1924
       ],
-      "content_start": 1861,
-      "content_end": 1861,
-      "content": "1861: :label: rem-cubic-hermite-construction",
+      "content_start": 1925,
+      "content_end": 1925,
+      "content": "1925: :label: rem-cubic-hermite-construction",
       "metadata": {
         "label": "rem-cubic-hermite-construction"
       },
       "section": "## 9. Rescale Transformation",
-      "references": [],
-      "raw_directive": "1859: :::\n1860: :::{prf:remark}\n1861: :label: rem-cubic-hermite-construction\n1862: This construction is the standard monotone cubic Hermite approach (PCHIP/PCHIM). The global derivative bound $L_P\\approx 1.0054$ from §8.2.2.5 provides an explicit Lipschitz constant for the rescale segment.",
+      "references": [
+        "lem-cubic-patch-derivative",
+        "lem-polynomial-patch-monotonicity"
+      ],
+      "raw_directive": "1923: :::\n1924: :::{prf:remark}\n1925: :label: rem-cubic-hermite-construction\n1926: This construction ({prf:ref}`lem-cubic-patch-derivative`, {prf:ref}`lem-polynomial-patch-monotonicity`) is the standard monotone cubic Hermite approach (PCHIP/PCHIM). The global derivative bound $L_P\\approx 1.0054$ from §8.2.2.5 provides an explicit Lipschitz constant for the rescale segment.",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -726,20 +736,22 @@
       "directive_type": "remark",
       "label": "rem-cloning-scope-companion-convention",
       "title": "Cloning Scope and Companion Convention",
-      "start_line": 4378,
-      "end_line": 4382,
+      "start_line": 4672,
+      "end_line": 4676,
       "header_lines": [
-        4379
+        4673
       ],
-      "content_start": 4381,
-      "content_end": 4381,
-      "content": "4381: :class: note",
+      "content_start": 4675,
+      "content_end": 4675,
+      "content": "4675: :class: note",
       "metadata": {
         "label": "rem-cloning-scope-companion-convention"
       },
       "section": "## 16. The Cloning Transition Measure",
-      "references": [],
-      "raw_directive": "4378: This unified definition handles both alive and dead walkers. For a **dead walker** $i \\in \\mathcal{D}_t$, its potential $V_{\\text{fit},i} = 0$. Its cloning companion $c_{\\text{clone}}(i)$ is drawn from the alive set $\\mathcal{A}_t$, making its potential $V_{\\text{fit},c_{\\text{clone}}(i)} > 0$. The score simplifies to $S_i = V_{\\text{fit},c_{\\text{clone}}(i)} / \\varepsilon$. Since the **Global Constraint** $\\varepsilon \\cdot p_{\\max} < \\eta^{(\\alpha+\\beta)}$ is satisfied, the minimum possible score for a dead walker is guaranteed to be greater than the maximum possible threshold: $S_{i, \\min} > (\\eta^{\\alpha+\\beta})/\\varepsilon > p_{\\max}$. Because $T_{\\text{clone}}$ is always sampled from $[0, p_{\\max}]$, the condition $S_i > T_{\\text{clone}}$ is always met. This results in a \"Clone\" action with probability 1, ensuring the revival mechanism remains an emergent and guaranteed property of the framework.\n4379: :::\n4380: :::{admonition} Randomness discipline for cloning\n4381: :class: note\n4382: - For each walker $i$, independently sample the cloning companion index $c_{\\text{clone}}(i)\\sim \\mathbb C_i(\\mathcal S)$ (with replacement) using an independent uniform $U_i^{\\mathrm{comp}}$.",
+      "references": [
+        "def-walker"
+      ],
+      "raw_directive": "4672: This unified definition handles both alive and dead walker ({prf:ref}`def-walker`)s. For a **dead walker** $i \\in \\mathcal{D}_t$, its potential $V_{\\text{fit},i} = 0$. Its cloning companion $c_{\\text{clone}}(i)$ is drawn from the alive set ({prf:ref}`def-alive-dead-sets`) $\\mathcal{A}_t$, making its potential $V_{\\text{fit},c_{\\text{clone}}(i)} > 0$. The score simplifies to $S_i = V_{\\text{fit},c_{\\text{clone}}(i)} / \\varepsilon$. Since the **Global Constraint** $\\varepsilon \\cdot p_{\\max} < \\eta^{(\\alpha+\\beta)}$ is satisfied, the minimum possible score for a dead walker is guaranteed to be greater than the maximum possible threshold: $S_{i, \\min} > (\\eta^{\\alpha+\\beta})/\\varepsilon > p_{\\max}$. Because $T_{\\text{clone}}$ is always sampled from $[0, p_{\\max}]$, the condition $S_i > T_{\\text{clone}}$ is always met. This results in a \"Clone\" action with probability 1, ensuring the revival mechanism remains an emergent and guaranteed property of the framework.\n4673: :::\n4674: :::{admonition} Randomness discipline for cloning\n4675: :class: note\n4676: - For each walker ({prf:ref}`def-walker`) $i$, independently sample the cloning companion index $c_{\\text{clone}}(i)\\sim \\mathbb C_i(\\mathcal S)$ (with replacement) using an independent uniform $U_i^{\\mathrm{comp}}$.",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -752,20 +764,24 @@
       "directive_type": "remark",
       "label": "rem-phoenix-effect",
       "title": "The Near-Extinction Recovery Mechanism (Phoenix Effect)",
-      "start_line": 4678,
-      "end_line": 4686,
+      "start_line": 4996,
+      "end_line": 5004,
       "header_lines": [
-        4679
+        4997
       ],
-      "content_start": 4681,
-      "content_end": 4685,
-      "content": "4681:     *   $n_c^2 \\le \\left(\\frac{N}{\\lambda_{\\text{status}}}\\right)^2 \\cdot V_{\\text{in}}^2$\n4682:     Substituting these into the bound for $F_{\\text{pot}}$ shows that $F_{\\text{pot}}$ is bounded by a quadratic function of $V_{\\text{in}}$: $F_{\\text{pot}} <= B_2 V_{\\text{in}}^2 + B_1 V_{\\text{in}} + B_0$.\n4683: 5.  **Finalize the Bound on the L1-Norm.**\n4684:     The term $\\sqrt{F_{\\text{pot}}}$ is therefore bounded by $\\sqrt{B_2 V_{\\text{in}}^2 + B_1 V_{\\text{in}} + B_0}$, which is asymptotically linear in $V_{\\text{in}}$ for large $V_{\\text{in}}$. Applying [](#lem-subadditivity-power) with $\\alpha=1/2$ yields $\\sqrt{a+b} \\le \\sqrt{a} + \\sqrt{b}$, so we can bound $\\sqrt{F_{\\text{pot}}}$ by a sum of linear and square-root terms of $V_{\\text{in}}$.\n4685:     Combining all terms, the total L1-norm $\\|\\DeltaP\\|_1$ is bounded by an expression of the form $C'_P V_{\\text{in}} + H'_P sqrt(V_{\\text{in}}) + K'_P$. Absorbing the term **2N** into the constant offset gives the final result as stated in the sub-lemma.",
+      "content_start": 4999,
+      "content_end": 5003,
+      "content": "4999:     *   $n_c^2 \\le \\left(\\frac{N}{\\lambda_{\\text{status}}}\\right)^2 \\cdot V_{\\text{in}}^2$\n5000:     Substituting these into the bound for $F_{\\text{pot}}$ shows that $F_{\\text{pot}}$ is bounded by a quadratic function of $V_{\\text{in}}$: $F_{\\text{pot}} <= B_2 V_{\\text{in}}^2 + B_1 V_{\\text{in}} + B_0$.\n5001: 5.  **Finalize the Bound on the L1-Norm.**\n5002:     The term $\\sqrt{F_{\\text{pot}}}$ is therefore bounded by $\\sqrt{B_2 V_{\\text{in}}^2 + B_1 V_{\\text{in}} + B_0}$, which is asymptotically linear in $V_{\\text{in}}$ for large $V_{\\text{in}}$. Applying [](#lem-subadditivity-power) with $\\alpha=1/2$ yields $\\sqrt{a+b} \\le \\sqrt{a} + \\sqrt{b}$, so we can bound $\\sqrt{F_{\\text{pot}}}$ by a sum of linear and square-root terms of $V_{\\text{in}}$.\n5003:     Combining all terms, the total L1-norm $\\|\\DeltaP\\|_1$ is bounded by an expression of the form $C'_P V_{\\text{in}} + H'_P sqrt(V_{\\text{in}}) + K'_P$. Absorbing the term **2N** into the constant offset gives the final result as stated in the sub-lemma.",
       "metadata": {
         "label": "rem-phoenix-effect"
       },
       "section": "## 17. The Revival State: Dynamics at $k=1$",
-      "references": [],
-      "raw_directive": "4678:     We relate the input displacement components to the total input squared displacement $V_{\\text{in}}$ using the definitions from [](#def-displacement-components):\n4679:     *   $\\Delta_{\\text{pos}}^2 \\le N \\cdot V_{\\text{in}}$\n4680:     *   $n_c \\le \\frac{N}{\\lambda_{\\text{status}}} \\cdot V_{\\text{in}}$\n4681:     *   $n_c^2 \\le \\left(\\frac{N}{\\lambda_{\\text{status}}}\\right)^2 \\cdot V_{\\text{in}}^2$\n4682:     Substituting these into the bound for $F_{\\text{pot}}$ shows that $F_{\\text{pot}}$ is bounded by a quadratic function of $V_{\\text{in}}$: $F_{\\text{pot}} <= B_2 V_{\\text{in}}^2 + B_1 V_{\\text{in}} + B_0$.\n4683: 5.  **Finalize the Bound on the L1-Norm.**\n4684:     The term $\\sqrt{F_{\\text{pot}}}$ is therefore bounded by $\\sqrt{B_2 V_{\\text{in}}^2 + B_1 V_{\\text{in}} + B_0}$, which is asymptotically linear in $V_{\\text{in}}$ for large $V_{\\text{in}}$. Applying [](#lem-subadditivity-power) with $\\alpha=1/2$ yields $\\sqrt{a+b} \\le \\sqrt{a} + \\sqrt{b}$, so we can bound $\\sqrt{F_{\\text{pot}}}$ by a sum of linear and square-root terms of $V_{\\text{in}}$.\n4685:     Combining all terms, the total L1-norm $\\|\\DeltaP\\|_1$ is bounded by an expression of the form $C'_P V_{\\text{in}} + H'_P sqrt(V_{\\text{in}}) + K'_P$. Absorbing the term **2N** into the constant offset gives the final result as stated in the sub-lemma.\n4686: **Q.E.D.**",
+      "references": [
+        "def-swarm-and-state-space",
+        "def-walker",
+        "axiom-guaranteed-revival"
+      ],
+      "raw_directive": "4996:     We relate the input displacement components to the total input squared displacement $V_{\\text{in}}$ using the definitions from [](#def-displacement-components):\n4997:     *   $\\Delta_{\\text{pos}}^2 \\le N \\cdot V_{\\text{in}}$\n4998:     *   $n_c \\le \\frac{N}{\\lambda_{\\text{status}}} \\cdot V_{\\text{in}}$\n4999:     *   $n_c^2 \\le \\left(\\frac{N}{\\lambda_{\\text{status}}}\\right)^2 \\cdot V_{\\text{in}}^2$\n5000:     Substituting these into the bound for $F_{\\text{pot}}$ shows that $F_{\\text{pot}}$ is bounded by a quadratic function of $V_{\\text{in}}$: $F_{\\text{pot}} <= B_2 V_{\\text{in}}^2 + B_1 V_{\\text{in}} + B_0$.\n5001: 5.  **Finalize the Bound on the L1-Norm.**\n5002:     The term $\\sqrt{F_{\\text{pot}}}$ is therefore bounded by $\\sqrt{B_2 V_{\\text{in}}^2 + B_1 V_{\\text{in}} + B_0}$, which is asymptotically linear in $V_{\\text{in}}$ for large $V_{\\text{in}}$. Applying [](#lem-subadditivity-power) with $\\alpha=1/2$ yields $\\sqrt{a+b} \\le \\sqrt{a} + \\sqrt{b}$, so we can bound $\\sqrt{F_{\\text{pot}}}$ by a sum of linear and square-root terms of $V_{\\text{in}}$.\n5003:     Combining all terms, the total L1-norm $\\|\\DeltaP\\|_1$ is bounded by an expression of the form $C'_P V_{\\text{in}} + H'_P sqrt(V_{\\text{in}}) + K'_P$. Absorbing the term **2N** into the constant offset gives the final result as stated in the sub-lemma.\n5004: **Q.E.D.**",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -778,20 +794,22 @@
       "directive_type": "remark",
       "label": "rem-remark-context-4997",
       "title": null,
-      "start_line": 5107,
-      "end_line": 5110,
+      "start_line": 5456,
+      "end_line": 5459,
       "header_lines": [
-        5108
+        5457
       ],
-      "content_start": 5109,
-      "content_end": 5109,
-      "content": "5109: 2. If $V\\ge 1$, then $V^{p_k}\\le V^{p_{\\max}}$ for every $k$, hence",
+      "content_start": 5458,
+      "content_end": 5458,
+      "content": "5458: ",
       "metadata": {
         "label": "rem-remark-context-4997"
       },
       "section": "## 18. Swarm Update Operator: A Composition of Measures",
-      "references": [],
-      "raw_directive": "5107: \n5108: $$\n5109: 2. If $V\\ge 1$, then $V^{p_k}\\le V^{p_{\\max}}$ for every $k$, hence\n5110: $$",
+      "references": [
+        "proof-lem-sub-unify-holder-terms"
+      ],
+      "raw_directive": "5456: $$\n5457: 2. If $V\\ge 1$, then $V^{p_k}\\le V^{p_{\\max}}$ for every $k$, hence\n5458: \n5459: $$",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -804,20 +822,22 @@
       "directive_type": "remark",
       "label": "rem-remark-context-5042",
       "title": null,
-      "start_line": 5154,
-      "end_line": 5157,
+      "start_line": 5512,
+      "end_line": 5515,
       "header_lines": [
-        5155
+        5513
       ],
-      "content_start": 5156,
-      "content_end": 5156,
-      "content": "5156: $$",
+      "content_start": 5514,
+      "content_end": 5514,
+      "content": "5514: $$",
       "metadata": {
         "label": "rem-remark-context-5042"
       },
       "section": "## 18. Swarm Update Operator: A Composition of Measures",
-      "references": [],
-      "raw_directive": "5154: $$\n5155: By definition of $W_2$, for any coupling $\\pi$ we have $W_2^2\\le \\mathbb{E}_{\\pi}[\\overline d_{\\text{Disp},\\mathcal{Y}}^2]$, hence\n5156: $$\n5157: ",
+      "references": [
+        "prop-w2-bound-no-offset"
+      ],
+      "raw_directive": "5512: By definition of $W_2$, for any coupling $\\pi$ we have $W_2^2\\le \\mathbb{E}_{\\pi}[\\overline d_{\\text{Disp},\\mathcal{Y}}^2]$, hence\n5513: \n5514: $$\n5515: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -830,20 +850,22 @@
       "directive_type": "remark",
       "label": "rem-context-5056",
       "title": null,
-      "start_line": 5170,
-      "end_line": 5173,
+      "start_line": 5530,
+      "end_line": 5533,
       "header_lines": [
-        5171
+        5531
       ],
-      "content_start": 5172,
-      "content_end": 5172,
-      "content": "5172: :label: prop-psi-markov-kernel",
+      "content_start": 5532,
+      "content_end": 5532,
+      "content": "5532: ",
       "metadata": {
         "label": "rem-context-5056"
       },
       "section": "## 18. Swarm Update Operator: A Composition of Measures",
-      "references": [],
-      "raw_directive": "5170: :label: subsec-measurability-markov-kernel\n5171: :::{prf:proposition} The Swarm Update defines a Markov kernel\n5172: :label: prop-psi-markov-kernel\n5173: Let $(\\Sigma_N,\\mathcal{B}(\\Sigma_N))$ be the measurable state space. Assume each stage of the update—cloning, perturbation, and status update—is defined by a measurable map with respect to its inputs and driven by a measurable noise kernel on a Polish probability space. Then the full Swarm Update Operator $\\Psi$ is a Markov kernel on $\\Sigma_N$; i.e., for each $\\mathcal{S}\\in\\Sigma_N$, $\\Psi(\\mathcal{S},\\cdot)$ is a probability measure on $\\Sigma_N$, and for each measurable $A\\in\\mathcal{B}(\\Sigma_N)$, the map $\\mathcal{S}\\mapsto \\Psi(\\mathcal{S},A)$ is measurable.",
+      "references": [
+        "prop-psi-markov-kernel"
+      ],
+      "raw_directive": "5530: :label: prop-psi-markov-kernel\n5531: This proposition establishes that {prf:ref}`def-swarm-update-procedure` defines a valid Markov kernel on the swarm space ({prf:ref}`def-swarm-and-state-space`).\n5532: \n5533: Let $(\\Sigma_N,\\mathcal{B}(\\Sigma_N))$ be the measurable state space. Assume each stage of the update—cloning, perturbation, and status update ({prf:ref}`def-status-update-operator`)—is defined by a measurable map with respect to its inputs and driven by a measurable noise kernel on a Polish probability space. Then the full Swarm Update Operator $\\Psi$ is a Markov kernel on $\\Sigma_N$; i.e., for each $\\mathcal{S}\\in\\Sigma_N$, $\\Psi(\\mathcal{S},\\cdot)$ is a probability measure on $\\Sigma_N$, and for each measurable $A\\in\\mathcal{B}(\\Sigma_N)$, the map $\\mathcal{S}\\mapsto \\Psi(\\mathcal{S},A)$ is measurable.",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",
@@ -856,21 +878,21 @@
       "directive_type": "remark",
       "label": "proof-prop-coefficient-regularity-2",
       "title": null,
-      "start_line": 5191,
-      "end_line": 5201,
+      "start_line": 5554,
+      "end_line": 5564,
       "header_lines": [
-        5192,
-        5198
+        5555,
+        5561
       ],
-      "content_start": 5193,
-      "content_end": 5200,
-      "content": "5193: \n5194: $$\n5195: are bounded on $\\mathcal{K}_R$ and jointly continuous in $(\\mathcal{S}_1,\\mathcal{S}_2)$.\n5196: :::\n5197: :::{prf:proof}\n5198: :label: proof-prop-coefficient-regularity\n5199: By definitions in Sections 11.3 and 17.2.4.1, each coefficient is obtained from the stagewise Lipschitz/Hölder functions and bounded parameters via finite sums, products, maxima, and composition with continuous operations (including the map $x\\mapsto x^{\\alpha}$ for $\\alpha\\in(0,1]$). Under assumptions (i)–(iii), the inputs to these algebraic operations are bounded and continuous on $\\mathcal{K}_R$ by the aggregator axioms and the properties of the patched $\\sigma'$ (see [](#lem-sigma-reg-derivative-bounds)). Continuity is preserved under sums, products, and composition; boundedness follows from continuity on compact (or closed, bounded) sets. Hence all listed coefficients are bounded on $\\mathcal{K}_R$ and jointly continuous in $(\\mathcal{S}_1,\\mathcal{S}_2)$.\n5200: **Q.E.D.**",
+      "content_start": 5556,
+      "content_end": 5563,
+      "content": "5556: \n5557: $$\n5558: are bounded on $\\mathcal{K}_R$ and jointly continuous in $(\\mathcal{S}_1,\\mathcal{S}_2)$.\n5559: :::\n5560: :::{prf:proof}\n5561: :label: proof-prop-coefficient-regularity\n5562: By definitions in Sections 11.3 and 17.2.4.1, each coefficient is obtained from the stagewise Lipschitz/Hölder functions and bounded parameters via finite sums, products, maxima, and composition with continuous operations (including the map $x\\mapsto x^{\\alpha}$ for $\\alpha\\in(0,1]$). Under assumptions (i)–(iii), the inputs to these algebraic operations are bounded and continuous on $\\mathcal{K}_R$ by the aggregator axioms and the properties of the patched $\\sigma'$ (see [](#lem-sigma-reg-derivative-bounds)). Continuity is preserved under sums, products, and composition; boundedness follows from continuity on compact (or closed, bounded) sets. Hence all listed coefficients are bounded on $\\mathcal{K}_R$ and jointly continuous in $(\\mathcal{S}_1,\\mathcal{S}_2)$.\n5563: **Q.E.D.**",
       "metadata": {
         "label": "proof-prop-coefficient-regularity-2"
       },
       "section": "## 18. Swarm Update Operator: A Composition of Measures",
       "references": [],
-      "raw_directive": "5191: \n5192: (\\mathcal{S}_1,\\mathcal{S}_2)\\mapsto C_{\\text{clone},L/H},\\ K_{\\text{clone}},\\ C_{\\Psi,L/H},\\ K_{\\Psi},\\ C_{S,\\text{direct}},\\ C_{S,\\text{indirect}},\\ C_{V,\\text{total}}\n5193: \n5194: $$\n5195: are bounded on $\\mathcal{K}_R$ and jointly continuous in $(\\mathcal{S}_1,\\mathcal{S}_2)$.\n5196: :::\n5197: :::{prf:proof}\n5198: :label: proof-prop-coefficient-regularity\n5199: By definitions in Sections 11.3 and 17.2.4.1, each coefficient is obtained from the stagewise Lipschitz/Hölder functions and bounded parameters via finite sums, products, maxima, and composition with continuous operations (including the map $x\\mapsto x^{\\alpha}$ for $\\alpha\\in(0,1]$). Under assumptions (i)–(iii), the inputs to these algebraic operations are bounded and continuous on $\\mathcal{K}_R$ by the aggregator axioms and the properties of the patched $\\sigma'$ (see [](#lem-sigma-reg-derivative-bounds)). Continuity is preserved under sums, products, and composition; boundedness follows from continuity on compact (or closed, bounded) sets. Hence all listed coefficients are bounded on $\\mathcal{K}_R$ and jointly continuous in $(\\mathcal{S}_1,\\mathcal{S}_2)$.\n5200: **Q.E.D.**\n5201: :::",
+      "raw_directive": "5554: \n5555: (\\mathcal{S}_1,\\mathcal{S}_2)\\mapsto C_{\\text{clone},L/H},\\ K_{\\text{clone}},\\ C_{\\Psi,L/H},\\ K_{\\Psi},\\ C_{S,\\text{direct}},\\ C_{S,\\text{indirect}},\\ C_{V,\\text{total}}\n5556: \n5557: $$\n5558: are bounded on $\\mathcal{K}_R$ and jointly continuous in $(\\mathcal{S}_1,\\mathcal{S}_2)$.\n5559: :::\n5560: :::{prf:proof}\n5561: :label: proof-prop-coefficient-regularity\n5562: By definitions in Sections 11.3 and 17.2.4.1, each coefficient is obtained from the stagewise Lipschitz/Hölder functions and bounded parameters via finite sums, products, maxima, and composition with continuous operations (including the map $x\\mapsto x^{\\alpha}$ for $\\alpha\\in(0,1]$). Under assumptions (i)–(iii), the inputs to these algebraic operations are bounded and continuous on $\\mathcal{K}_R$ by the aggregator axioms and the properties of the patched $\\sigma'$ (see [](#lem-sigma-reg-derivative-bounds)). Continuity is preserved under sums, products, and composition; boundedness follows from continuity on compact (or closed, bounded) sets. Hence all listed coefficients are bounded on $\\mathcal{K}_R$ and jointly continuous in $(\\mathcal{S}_1,\\mathcal{S}_2)$.\n5563: **Q.E.D.**\n5564: :::",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",

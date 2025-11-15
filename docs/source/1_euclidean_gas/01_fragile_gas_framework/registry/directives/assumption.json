@@ -2,21 +2,21 @@
   "document_id": "01_fragile_gas_framework",
   "stage": "directives",
   "directive_type": "assumption",
-  "generated_at": "2025-11-12T08:56:16.993922+00:00",
+  "generated_at": "2025-11-12T22:37:33.878039+00:00",
   "count": 1,
   "items": [
     {
       "directive_type": "assumption",
       "label": "def-ambient-euclidean",
       "title": "Ambient Euclidean Structure and Reference Measures",
-      "start_line": 314,
-      "end_line": 322,
+      "start_line": 317,
+      "end_line": 325,
       "header_lines": [
-        315
+        318
       ],
-      "content_start": 317,
-      "content_end": 321,
-      "content": "317: :label: def-ambient-euclidean\n318: \n319: - The spaces $\\mathcal{X} \\subset \\mathbb{R}^d$ and $\\mathcal{Y} \\subset \\mathbb{R}^m$ are finite-dimensional Euclidean domains with Lebesgue reference measures $\\lambda_d$ and $\\lambda_m$.\n320: - All linear-algebraic objects (means, variances, covariances) and kernel densities are defined with respect to these Euclidean structures and Lebesgue measures. In particular, KDE normalizations use the standard Euclidean constants (e.g., $\\int \\exp(-\\|y\\|_2^2/(2\\sigma^2))\\,dy = (2\\pi\\sigma^2)^{m/2}$).\n321: - The ambient dimensions $d$ and $m$ are fixed throughout.",
+      "content_start": 320,
+      "content_end": 324,
+      "content": "320: :label: def-ambient-euclidean\n321: \n322: - The spaces $\\mathcal{X} \\subset \\mathbb{R}^d$ and $\\mathcal{Y} \\subset \\mathbb{R}^m$ are finite-dimensional Euclidean domains with Lebesgue reference measures $\\lambda_d$ and $\\lambda_m$.\n323: - All linear-algebraic objects (means, variances, covariances) and kernel densities are defined with respect to these Euclidean structures and Lebesgue measures. In particular, KDE normalizations use the standard Euclidean constants (e.g., $\\int \\exp(-\\|y\\|_2^2/(2\\sigma^2))\\,dy = (2\\pi\\sigma^2)^{m/2}$).\n324: - The ambient dimensions $d$ and $m$ are fixed throughout.",
       "metadata": {
         "label": "def-ambient-euclidean"
       },
@@ -24,7 +24,7 @@
       "references": [
         "02_euclidean_gas"
       ],
-      "raw_directive": "314:     These structures, formally defined in subsequent sections, give rise to a set of fixed **environmental constants**, including the reward bound ($R_{\\max}$), reward Lipschitz constant ($L_R$), the diameter of the projected valid domain ($D_{\\mathrm{valid}} := \\operatorname{diam}_{d_{\\mathcal{Y}}}(\\varphi(\\mathcal{X}_{\\mathrm{valid}}))$), the diameter of the entire algorithmic space ($D_{\\mathcal{Y}} := \\operatorname{diam}_{d_{\\mathcal{Y}}}(\\mathcal{Y})$), and the **Projection Map Lipschitz Constant ($L_{\\varphi}$)**.\n315: \n316: :::{prf:assumption} Ambient Euclidean Structure and Reference Measures\n317: :label: def-ambient-euclidean\n318: \n319: - The spaces $\\mathcal{X} \\subset \\mathbb{R}^d$ and $\\mathcal{Y} \\subset \\mathbb{R}^m$ are finite-dimensional Euclidean domains with Lebesgue reference measures $\\lambda_d$ and $\\lambda_m$.\n320: - All linear-algebraic objects (means, variances, covariances) and kernel densities are defined with respect to these Euclidean structures and Lebesgue measures. In particular, KDE normalizations use the standard Euclidean constants (e.g., $\\int \\exp(-\\|y\\|_2^2/(2\\sigma^2))\\,dy = (2\\pi\\sigma^2)^{m/2}$).\n321: - The ambient dimensions $d$ and $m$ are fixed throughout.\n322: ",
+      "raw_directive": "317:     These structures, formally defined in subsequent sections, give rise to a set of fixed **environmental constants**, including the reward bound ($R_{\\max}$), reward Lipschitz constant ($L_R$), the diameter of the projected valid domain ($D_{\\mathrm{valid}} := \\operatorname{diam}_{d_{\\mathcal{Y}}}(\\varphi(\\mathcal{X}_{\\mathrm{valid}}))$), the diameter of the entire algorithmic space ($D_{\\mathcal{Y}} := \\operatorname{diam}_{d_{\\mathcal{Y}}}(\\mathcal{Y})$), and the **Projection Map Lipschitz Constant ($L_{\\varphi}$)**.\n318: \n319: :::{prf:assumption} Ambient Euclidean Structure and Reference Measures\n320: :label: def-ambient-euclidean\n321: \n322: - The spaces $\\mathcal{X} \\subset \\mathbb{R}^d$ and $\\mathcal{Y} \\subset \\mathbb{R}^m$ are finite-dimensional Euclidean domains with Lebesgue reference measures $\\lambda_d$ and $\\lambda_m$.\n323: - All linear-algebraic objects (means, variances, covariances) and kernel densities are defined with respect to these Euclidean structures and Lebesgue measures. In particular, KDE normalizations use the standard Euclidean constants (e.g., $\\int \\exp(-\\|y\\|_2^2/(2\\sigma^2))\\,dy = (2\\pi\\sigma^2)^{m/2}$).\n324: - The ambient dimensions $d$ and $m$ are fixed throughout.\n325: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "01_fragile_gas_framework",

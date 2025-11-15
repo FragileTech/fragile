@@ -54,31 +54,50 @@ SolutionViability = Literal[
 
 
 class BaseAgent(dspy.Module):
-    """Helper wrapper that configures a dspy.Predict program with shared instructions."""
+    """Helper wrapper that configures a dspy.Predict program with shared instructions.
+
+    Args:
+        instructions: Optional instructions to override default
+        predict_kwargs: Additional kwargs to pass to agent_cls
+        lm: Optional dspy.LM instance to use for this agent. If None, uses dspy.settings.lm.
+    """
 
     data_model: type[BaseModel]
     signature_cls: type[dspy.Signature]
     agent_cls: type[Any] = dspy.Predict
     instructions: str = "{schema}"
+    predict_kwargs: dict[str, Any] | None = None
 
     def __init__(
         self,
         *,
         instructions: str | None = None,
         predict_kwargs: dict[str, Any] | None = None,
+        lm: dspy.LM | None = None,
     ) -> None:
         super().__init__()
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
+        self.lm = lm or self.get_default_lm()
+
         schema = json.dumps(self.data_model.model_json_schema(), indent=2)
         resolved_instructions = (instructions or self.instructions or "{schema}").format(
             schema=schema
         )
         self.signature = self.signature_cls.with_instructions(resolved_instructions)
-        predict_kwargs = predict_kwargs or {}
-        self.agent = self.agent_cls(self.signature, **predict_kwargs)
+        self.predict_kwargs = self.predict_kwargs or predict_kwargs or {}
+
+        # Pass lm to agent_cls if provided
+        if self.lm:
+            self.predict_kwargs["lm"] = self.lm
+
+        self.agent = self.agent_cls(self.signature, **self.predict_kwargs)
 
     def forward(self, **kwargs: Any) -> dspy.Prediction:
         return self.agent(**kwargs)
+
+    def get_default_lm(self) -> dspy.LM:
+        """Return a new ."""
+        return dspy.settings.lm
 
 
 # ---------------------------------
@@ -87,16 +106,16 @@ class BaseAgent(dspy.Module):
 class IdentifiedError(BaseModel):
     """A concrete mathematical error or mismatch in the proof sketch."""
 
-    location: str = Field(..., description="Reference to the specific step or section.")
-    description: str = Field(..., description="Details of the error or inconsistency.")
-    suggestedCorrection: str = Field(..., description="Proposed fix or remedy.")
+    location: str = Field(..., description="Reference to the specific step or section. Show here **what** is wrong")
+    description: str = Field(..., description="Details of the error or inconsistency. Explain **why** it is wrong.")
+    suggested_fix: str = Field(..., description="Proposed fix or remedy to correct the error. Offer **how** to fix it.")
 
 
 class CompletenessCorrectnessReview(BaseModel):
     """Assessment of coverage and mathematical correctness."""
 
-    coversAllClaims: bool = Field(..., description="Does the sketch cover every claim?")
-    identifiedErrors: list[IdentifiedError] = Field(
+    covers_all_claims: bool = Field(..., description="Does the sketch cover every claim?")
+    identified_errors: list[IdentifiedError] = Field(
         default_factory=list,
         description="List of explicit mathematical errors or typos found.",
     )
@@ -123,7 +142,7 @@ class CompletenessCorrectnessSignature(dspy.Signature):
     )
 
 
-class CompletenessCorrectnessAgent(BaseAgent):
+class AgentCompletenessCorrectness(BaseAgent):
     """Predictor that scores completeness/correctness coverage for a proof sketch."""
 
     data_model = CompletenessCorrectnessReview
@@ -143,16 +162,23 @@ Return ONLY JSON matching:
 {schema}
 """
 
-
-# ---------------------------------
+# ----------------------------------
 # Logical Flow Validation Components
-# ---------------------------------
+# ----------------------------------
+class IdentifiedGap(BaseModel):
+    """A specific logical gap or leap of faith in the proof sketch."""
+
+    location: str = Field(..., description="Reference to the specific step or section with the gap. Explane **where** the gap occurs.")
+    description: str = Field(..., description="Details of the logical gap or leap of faith. Explain **what** the gap is.")
+    proposed_resolution: str = Field(..., description="Suggested way to address or fill the gap. Offer **how** to resolve it.")
+
+
 class LogicalFlowReview(BaseModel):
     """Assessment of logical structure and step progression."""
 
-    isSound: bool = Field(..., description="True if the argument is coherent and valid.")
+    is_sound: bool = Field(..., description="True if the argument is coherent and valid.")
     comments: str = Field(..., description="Narrative assessment of clarity and structure.")
-    identifiedGaps: list[str] = Field(
+    identified_gaps: list[IdentifiedGap] = Field(
         default_factory=list,
         description="Specific logical gaps or leaps of faith that require attention.",
     )
@@ -269,11 +295,11 @@ class TechnicalDeepDiveCritique(BaseModel):
     """Review of a single technical challenge and proposed fix."""
 
     challengeTitle: str = Field(..., description="Matching title from the original sketch.")
-    solutionViability: SolutionViability = Field(..., description="Assessment of feasibility.")
+    solution_viability: SolutionViability = Field(..., description="Assessment of feasibility.")
     critique: str = Field(
         ..., description="Detailed analysis highlighting strengths and weaknesses."
     )
-    suggestedImprovements: str | None = Field(
+    suggested_improvements: str | None = Field(
         default=None,
         description="Optional concrete suggestions for strengthening the argument.",
     )
@@ -288,7 +314,7 @@ class TechnicalDeepDiveValidation(BaseModel):
     )
     score: int = Field(
         ...,
-        description="Numeric quality score from 1-5. 1 means unusable, 5 means publication-quality.",
+        description="Numeric quality score from 1-5. 1 means unusable, 5 means ready.",
     )
     confidence: int = Field(
         ...,
@@ -424,17 +450,37 @@ class SketchValidationReview(BaseModel):
 class SketchRefereeAgent(dspy.Module):
     """This agent calls all the other agents in order and handles the "glue code" to produce a full sketch validation review. as described by SketchValidationReview.
     It is a composition of modules taht implements no new module on its own as it only does orchestration.
+
+    Args:
+        lm: Optional dspy.LM instance to use for all sub-agents. If None, uses dspy.settings.lm.
+        synthesis_lm: Optional dspy.LM instance specifically for the overall assessment synthesis agent.
+                      If None, uses the same lm as other agents.
     """
 
-    def __init__(self) -> None:
-        """Initialize all component agents for orchestrated proof sketch review."""
+    def __init__(
+        self,
+        lm: dspy.LM | None = None,
+        synthesis_lm: dspy.LM | None = None,
+    ) -> None:
+        """Initialize all component agents for orchestrated proof sketch review.
+
+        Args:
+            lm: Language model for the 4 parallel review components
+            synthesis_lm: Optional separate model for synthesis (overall assessment)
+        """
         super().__init__()
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
-        self.completeness_agent = CompletenessCorrectnessAgent()
-        self.logical_flow_agent = AgentLogicalFlowValidation()
-        self.dependency_agent = AgentDependencyValidation()
-        self.technical_dive_agent = AgentTechnicalDeepDiveValidation()
-        self.overall_agent = AgentOverallAssessment()
+        self.lm = lm
+        self.synthesis_lm = synthesis_lm or lm
+
+        # Initialize 4 parallel review components with main lm
+        self.completeness_agent = AgentCompletenessCorrectness(lm=self.lm)
+        self.logical_flow_agent = AgentLogicalFlowValidation(lm=self.lm)
+        self.dependency_agent = AgentDependencyValidation(lm=self.lm)
+        self.technical_dive_agent = AgentTechnicalDeepDiveValidation(lm=self.lm)
+
+        # Initialize synthesis agent with potentially different model
+        self.overall_agent = AgentOverallAssessment(lm=self.synthesis_lm)
 
     def old_forward(
         self,

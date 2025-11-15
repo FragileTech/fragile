@@ -1,197 +1,300 @@
 {
   "chapter_index": 13,
   "section_id": "## 13. Fitness potential operator",
-  "directive_count": 10,
+  "directive_count": 13,
   "hints": [
     {
       "directive_type": "definition",
       "label": "def-alive-set-potential-operator",
       "title": "Rescaled Potential Operator for the Alive Set",
-      "start_line": 3765,
-      "end_line": 3791,
+      "start_line": 4032,
+      "end_line": 4058,
       "header_lines": [
-        3766
+        4033
       ],
-      "content_start": 3767,
-      "content_end": 3790,
-      "content": "3767: \n3768: \n3769: $$\n3770: 4.  **Combine the Bounds:** Substituting the bounds from steps 2 and 3 into the decomposition from step 1 yields the final inequality as stated in the theorem. This provides a complete, deterministic, worst-case bound on the operator's output error.\n3771: **Q.E.D.**\n3772: :::\n3773: ## 13. Fitness potential operator\n3774: This section defines the sequence of deterministic operators that transform the raw measurement vectors (rewards and distances) into a final, N-dimensional fitness potential vector. These operators are executed after the stochastic measurement stage and are fixed for the remainder of the cloning decision process.\n3775: ### 12.1 Rescaled Potential Operator for the Alive Set\n3776: :::{prf:definition} Rescaled Potential Operator for the Alive Set\n3777: :label: def-alive-set-potential-operator\n3778: The **Rescaled Potential Operator for the Alive Set**, denoted $V_{\\text{op},\\mathcal{A}}$, is a deterministic function that maps the raw reward and distance vectors of an alive set of size $k=|\\mathcal{A}_t|$ to a vector of fitness potentials for that same set.\n3779: **Signature:** $V_{\\text{op},\\mathcal{A}}: \\Sigma_N \\times \\mathbb{R}^k \\times \\mathbb{R}^k \\to \\mathbb{R}^k$\n3780: **Inputs:**\n3781: *   The current swarm state, $\\mathcal{S}_t$ (used for the aggregation operators).\n3782: *   The raw reward vector for the alive set, $\\mathbf{r} = (r_j)_{j \\in \\mathcal{A}_t}$.\n3783: *   The raw distance vector for the alive set, $\\mathbf{d} = (d_j)_{j \\in \\mathcal{A}_t}$.\n3784: *   All relevant algorithmic parameters ($\\eta, \\varepsilon_{\\mathrm{std}}, z_{\\max}, R_{agg}, M_D, \\alpha, \\beta$).\n3785: **Operation:**\n3786: The operator computes the output vector $\\mathbf{V}_{\\mathcal{A}} = (V_i)_{i \\in \\mathcal{A}_t}$ as follows:\n3787: 1.  **Standardize Raw Values (patched z\u2011score):** The **N-Dimensional Standardization Operator** (Def. 11.1.1) is applied independently to each raw vector using the regularized standard deviation $\\sigma\\'_{\\text{reg}}$.\n3788:     *   Compute reward Z\u2011scores: $\\mathbf{z_r} := z(\\mathcal{S}_t, \\mathbf{r}, R_{agg}, \\varepsilon_{\\mathrm{std}})$.\n3789:     *   Compute distance Z-scores: $\\mathbf{z_d} := z(\\mathcal{S}_t, \\mathbf{d}, M_D, \\varepsilon_{\\mathrm{std}})$.\n3790: 2.  **Compute Potentials:** For each walker $i \\in \\mathcal{A}_t$:",
+      "content_start": 4034,
+      "content_end": 4057,
+      "content": "4034: \n4035: $$\n4036: \n4037: 4.  **Combine the Bounds:** Substituting the bounds from steps 2 and 3 into the decomposition from step 1 yields the final inequality as stated in the theorem. This provides a complete, deterministic, worst-case bound on the operator's output error.\n4038: **Q.E.D.**\n4039: :::\n4040: ## 13. Fitness potential operator\n4041: This section defines the sequence of deterministic operators that transform the raw measurement vectors (rewards and distances) into a final, N-dimensional fitness potential vector. These operators are executed after the stochastic measurement stage and are fixed for the remainder of the cloning decision process.\n4042: ### 12.1 Rescaled Potential Operator for the Alive Set ({prf:ref}`def-alive-dead-sets`)\n4043: :::{prf:definition} Rescaled Potential Operator for the Alive Set\n4044: :label: def-alive-set-potential-operator\n4045: The **Rescaled Potential Operator for the Alive Set**, denoted $V_{\\text{op},\\mathcal{A}}$, is a deterministic function that maps the raw reward and distance vectors of an alive set ({prf:ref}`def-alive-dead-sets`) of size $k=|\\mathcal{A}_t|$ to a vector of fitness potentials for that same set.\n4046: **Signature:** $V_{\\text{op},\\mathcal{A}}: \\Sigma_N \\times \\mathbb{R}^k \\times \\mathbb{R}^k \\to \\mathbb{R}^k$\n4047: **Inputs:**\n4048: *   The current swarm ({prf:ref}`def-swarm-and-state-space`) state, $\\mathcal{S}_t$ (used for the aggregation operators).\n4049: *   The raw reward vector for the alive set ({prf:ref}`def-alive-dead-sets`), $\\mathbf{r} = (r_j)_{j \\in \\mathcal{A}_t}$.\n4050: *   The raw distance vector for the alive set ({prf:ref}`def-alive-dead-sets`), $\\mathbf{d} = (d_j)_{j \\in \\mathcal{A}_t}$.\n4051: *   All relevant algorithmic parameters ($\\eta, \\varepsilon_{\\mathrm{std}}, z_{\\max}, R_{agg}, M_D, \\alpha, \\beta$).\n4052: **Operation:**\n4053: The operator computes the output vector $\\mathbf{V}_{\\mathcal{A}} = (V_i)_{i \\in \\mathcal{A}_t}$ as follows:\n4054: 1.  **Standardize Raw Values (patched z\u2011score):** The **N-Dimensional Standardization Operator ({prf:ref}`def-standardization-operator-n-dimensional`)** (Def. 11.1.1) is applied independently to each raw vector using the regularized standard deviation $\\sigma\\'_{\\text{reg}}$.\n4055:     *   Compute reward Z\u2011scores: $\\mathbf{z_r} := z(\\mathcal{S}_t, \\mathbf{r}, R_{agg}, \\varepsilon_{\\mathrm{std}})$.\n4056:     *   Compute distance Z-scores: $\\mathbf{z_d} := z(\\mathcal{S}_t, \\mathbf{d}, M_D, \\varepsilon_{\\mathrm{std}})$.\n4057: 2.  **Compute Potentials:** For each walker ({prf:ref}`def-walker`) $i \\in \\mathcal{A}_t$:",
       "metadata": {
         "label": "def-alive-set-potential-operator"
       },
       "section": "## 13. Fitness potential operator",
-      "references": [],
-      "raw_directive": "3765: \n3766:     E_{S}^2(\\mathcal{S}_1, \\mathcal{S}_2; \\mathbf{v}_2) \\le C_{S,\\text{direct}} \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2) + C_{S,\\text{indirect}}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)^2\n3767: \n3768: \n3769: $$\n3770: 4.  **Combine the Bounds:** Substituting the bounds from steps 2 and 3 into the decomposition from step 1 yields the final inequality as stated in the theorem. This provides a complete, deterministic, worst-case bound on the operator's output error.\n3771: **Q.E.D.**\n3772: :::\n3773: ## 13. Fitness potential operator\n3774: This section defines the sequence of deterministic operators that transform the raw measurement vectors (rewards and distances) into a final, N-dimensional fitness potential vector. These operators are executed after the stochastic measurement stage and are fixed for the remainder of the cloning decision process.\n3775: ### 12.1 Rescaled Potential Operator for the Alive Set\n3776: :::{prf:definition} Rescaled Potential Operator for the Alive Set\n3777: :label: def-alive-set-potential-operator\n3778: The **Rescaled Potential Operator for the Alive Set**, denoted $V_{\\text{op},\\mathcal{A}}$, is a deterministic function that maps the raw reward and distance vectors of an alive set of size $k=|\\mathcal{A}_t|$ to a vector of fitness potentials for that same set.\n3779: **Signature:** $V_{\\text{op},\\mathcal{A}}: \\Sigma_N \\times \\mathbb{R}^k \\times \\mathbb{R}^k \\to \\mathbb{R}^k$\n3780: **Inputs:**\n3781: *   The current swarm state, $\\mathcal{S}_t$ (used for the aggregation operators).\n3782: *   The raw reward vector for the alive set, $\\mathbf{r} = (r_j)_{j \\in \\mathcal{A}_t}$.\n3783: *   The raw distance vector for the alive set, $\\mathbf{d} = (d_j)_{j \\in \\mathcal{A}_t}$.\n3784: *   All relevant algorithmic parameters ($\\eta, \\varepsilon_{\\mathrm{std}}, z_{\\max}, R_{agg}, M_D, \\alpha, \\beta$).\n3785: **Operation:**\n3786: The operator computes the output vector $\\mathbf{V}_{\\mathcal{A}} = (V_i)_{i \\in \\mathcal{A}_t}$ as follows:\n3787: 1.  **Standardize Raw Values (patched z\u2011score):** The **N-Dimensional Standardization Operator** (Def. 11.1.1) is applied independently to each raw vector using the regularized standard deviation $\\sigma\\'_{\\text{reg}}$.\n3788:     *   Compute reward Z\u2011scores: $\\mathbf{z_r} := z(\\mathcal{S}_t, \\mathbf{r}, R_{agg}, \\varepsilon_{\\mathrm{std}})$.\n3789:     *   Compute distance Z-scores: $\\mathbf{z_d} := z(\\mathcal{S}_t, \\mathbf{d}, M_D, \\varepsilon_{\\mathrm{std}})$.\n3790: 2.  **Compute Potentials:** For each walker $i \\in \\mathcal{A}_t$:\n3791:     a.  Apply the **Smooth Piecewise Rescale Function** ($g_A$) and add the lower bound $\\eta$ to create the rescaled components from the Z-scores $z_{i,r}$ and $z_{i,d}$:"
+      "references": [
+        "def-alive-dead-sets",
+        "def-swarm-and-state-space",
+        "def-standardization-operator-n-dimensional",
+        "def-walker",
+        "def-axiom-rescale-function"
+      ],
+      "raw_directive": "4032: $$\n4033:     E_{S}^2(\\mathcal{S}_1, \\mathcal{S}_2; \\mathbf{v}_2) \\le C_{S,\\text{direct}} \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2) + C_{S,\\text{indirect}}(\\mathcal{S}_1, \\mathcal{S}_2) \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)^2\n4034: \n4035: $$\n4036: \n4037: 4.  **Combine the Bounds:** Substituting the bounds from steps 2 and 3 into the decomposition from step 1 yields the final inequality as stated in the theorem. This provides a complete, deterministic, worst-case bound on the operator's output error.\n4038: **Q.E.D.**\n4039: :::\n4040: ## 13. Fitness potential operator\n4041: This section defines the sequence of deterministic operators that transform the raw measurement vectors (rewards and distances) into a final, N-dimensional fitness potential vector. These operators are executed after the stochastic measurement stage and are fixed for the remainder of the cloning decision process.\n4042: ### 12.1 Rescaled Potential Operator for the Alive Set ({prf:ref}`def-alive-dead-sets`)\n4043: :::{prf:definition} Rescaled Potential Operator for the Alive Set\n4044: :label: def-alive-set-potential-operator\n4045: The **Rescaled Potential Operator for the Alive Set**, denoted $V_{\\text{op},\\mathcal{A}}$, is a deterministic function that maps the raw reward and distance vectors of an alive set ({prf:ref}`def-alive-dead-sets`) of size $k=|\\mathcal{A}_t|$ to a vector of fitness potentials for that same set.\n4046: **Signature:** $V_{\\text{op},\\mathcal{A}}: \\Sigma_N \\times \\mathbb{R}^k \\times \\mathbb{R}^k \\to \\mathbb{R}^k$\n4047: **Inputs:**\n4048: *   The current swarm ({prf:ref}`def-swarm-and-state-space`) state, $\\mathcal{S}_t$ (used for the aggregation operators).\n4049: *   The raw reward vector for the alive set ({prf:ref}`def-alive-dead-sets`), $\\mathbf{r} = (r_j)_{j \\in \\mathcal{A}_t}$.\n4050: *   The raw distance vector for the alive set ({prf:ref}`def-alive-dead-sets`), $\\mathbf{d} = (d_j)_{j \\in \\mathcal{A}_t}$.\n4051: *   All relevant algorithmic parameters ($\\eta, \\varepsilon_{\\mathrm{std}}, z_{\\max}, R_{agg}, M_D, \\alpha, \\beta$).\n4052: **Operation:**\n4053: The operator computes the output vector $\\mathbf{V}_{\\mathcal{A}} = (V_i)_{i \\in \\mathcal{A}_t}$ as follows:\n4054: 1.  **Standardize Raw Values (patched z\u2011score):** The **N-Dimensional Standardization Operator ({prf:ref}`def-standardization-operator-n-dimensional`)** (Def. 11.1.1) is applied independently to each raw vector using the regularized standard deviation $\\sigma\\'_{\\text{reg}}$.\n4055:     *   Compute reward Z\u2011scores: $\\mathbf{z_r} := z(\\mathcal{S}_t, \\mathbf{r}, R_{agg}, \\varepsilon_{\\mathrm{std}})$.\n4056:     *   Compute distance Z-scores: $\\mathbf{z_d} := z(\\mathcal{S}_t, \\mathbf{d}, M_D, \\varepsilon_{\\mathrm{std}})$.\n4057: 2.  **Compute Potentials:** For each walker ({prf:ref}`def-walker`) $i \\in \\mathcal{A}_t$:\n4058:     a.  Apply the **Smooth Piecewise Rescale Function ({prf:ref}`def-axiom-rescale-function`)** ($g_A$) and add the lower bound $\\eta$ to create the rescaled components from the Z-scores $z_{i,r}$ and $z_{i,d}$:"
     },
     {
       "directive_type": "definition",
       "label": "def-swarm-potential-assembly-operator",
       "title": "Swarm Potential Assembly Operator",
-      "start_line": 3792,
-      "end_line": 3806,
+      "start_line": 4059,
+      "end_line": 4073,
       "header_lines": [
-        3793
+        4060
       ],
-      "content_start": 3794,
-      "content_end": 3805,
-      "content": "3794:     b.  Combine the components to get the final fitness potential for that walker:\n3795: $$\n3796: \n3797:     V_i := (d'_i)^{\\beta} \\cdot (r'_i)^{\\alpha} \\quad \\text{for } i \\in \\mathcal{A}_t\n3798: \n3799: \n3800: $$\n3801: **Output:** The operator returns the $k$-dimensional vector $\\mathbf{V}_{\\mathcal{A}} = (V_i)_{i \\in \\mathcal{A}_t}$.\n3802: :::\n3803: :::{prf:definition} Swarm Potential Assembly Operator\n3804: :label: def-swarm-potential-assembly-operator\n3805: The **Swarm Potential Assembly Operator**, denoted $A_{\\text{pot}}$, is a deterministic function that maps the potential vector of the alive set to the full N-dimensional fitness potential vector for the entire swarm.",
+      "content_start": 4061,
+      "content_end": 4072,
+      "content": "4061:     b.  Combine the components to get the final fitness potential for that walker ({prf:ref}`def-walker`):\n4062: \n4063: $$\n4064:     V_i := (d'_i)^{\\beta} \\cdot (r'_i)^{\\alpha} \\quad \\text{for } i \\in \\mathcal{A}_t\n4065: \n4066: $$\n4067: \n4068: **Output:** The operator returns the $k$-dimensional vector $\\mathbf{V}_{\\mathcal{A}} = (V_i)_{i \\in \\mathcal{A}_t}$.\n4069: :::\n4070: :::{prf:definition} Swarm Potential Assembly Operator\n4071: :label: def-swarm-potential-assembly-operator\n4072: The **Swarm Potential Assembly Operator**, denoted $A_{\\text{pot}}$, is a deterministic function that maps the potential vector of the alive set ({prf:ref}`def-alive-dead-sets`) to the full N-dimensional fitness potential vector for the entire swarm.",
       "metadata": {
         "label": "def-swarm-potential-assembly-operator"
       },
       "section": "## 13. Fitness potential operator",
-      "references": [],
-      "raw_directive": "3792:         *   $r'_i := g_A(z_{i,r}) + \\eta$\n3793:         *   $d'_i := g_A(z_{i,d}) + \\eta$\n3794:     b.  Combine the components to get the final fitness potential for that walker:\n3795: $$\n3796: \n3797:     V_i := (d'_i)^{\\beta} \\cdot (r'_i)^{\\alpha} \\quad \\text{for } i \\in \\mathcal{A}_t\n3798: \n3799: \n3800: $$\n3801: **Output:** The operator returns the $k$-dimensional vector $\\mathbf{V}_{\\mathcal{A}} = (V_i)_{i \\in \\mathcal{A}_t}$.\n3802: :::\n3803: :::{prf:definition} Swarm Potential Assembly Operator\n3804: :label: def-swarm-potential-assembly-operator\n3805: The **Swarm Potential Assembly Operator**, denoted $A_{\\text{pot}}$, is a deterministic function that maps the potential vector of the alive set to the full N-dimensional fitness potential vector for the entire swarm.\n3806: **Signature:** $A_{\\text{pot}}: \\Sigma_N \\times \\mathbb{R}^{|\\mathcal{A}_t|} \\to \\mathbb{R}^N$"
+      "references": [
+        "def-alive-dead-sets",
+        "def-swarm-and-state-space",
+        "def-walker"
+      ],
+      "raw_directive": "4059:         *   $r'_i := g_A(z_{i,r}) + \\eta$\n4060:         *   $d'_i := g_A(z_{i,d}) + \\eta$\n4061:     b.  Combine the components to get the final fitness potential for that walker ({prf:ref}`def-walker`):\n4062: \n4063: $$\n4064:     V_i := (d'_i)^{\\beta} \\cdot (r'_i)^{\\alpha} \\quad \\text{for } i \\in \\mathcal{A}_t\n4065: \n4066: $$\n4067: \n4068: **Output:** The operator returns the $k$-dimensional vector $\\mathbf{V}_{\\mathcal{A}} = (V_i)_{i \\in \\mathcal{A}_t}$.\n4069: :::\n4070: :::{prf:definition} Swarm Potential Assembly Operator\n4071: :label: def-swarm-potential-assembly-operator\n4072: The **Swarm Potential Assembly Operator**, denoted $A_{\\text{pot}}$, is a deterministic function that maps the potential vector of the alive set ({prf:ref}`def-alive-dead-sets`) to the full N-dimensional fitness potential vector for the entire swarm.\n4073: **Signature:** $A_{\\text{pot}}: \\Sigma_N \\times \\mathbb{R}^{|\\mathcal{A}_t|} \\to \\mathbb{R}^N$"
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-potential-boundedness",
+      "title": "Boundedness of the Fitness Potential",
+      "start_line": 4079,
+      "end_line": 4093,
+      "header_lines": [
+        4080
+      ],
+      "content_start": 4082,
+      "content_end": 4092,
+      "content": "4082:     *   Set the $j$-th component of the output vector: $V_{\\text{fit},j} := V_j$.\n4083: **Output:** The full N-dimensional fitness potential vector $\\mathbf{V}_{\\text{fit}}$.\n4084: :::\n4085: ### 12.2. Mean-Square Continuity of the Fitness Potential Operator\n4086: The Fitness Potential Operator is the result of a multi-stage composition of functions, including the stochastic measurement operators. Its continuity is therefore analyzed in a probabilistic sense. This section proves that the operator is **mean-square continuous**, which provides a bound on the *average* squared error between the output potential vectors of two input swarms. This property is the foundation for analyzing the long-term stability and ergodicity of the system. A subsequent section will establish a stronger, deterministic continuity property required for certain convergence theorems.\n4087: The proof is built upon two key properties of the potential function: its boundedness and its Lipschitz continuity with respect to its inputs.\n4088: #### 12.2.1. Lemma: Boundedness of the Fitness Potential\n4089: \n4090: :::{prf:lemma} Boundedness of the Fitness Potential\n4091: :label: lem-potential-boundedness\n4092: ",
+      "metadata": {
+        "label": "lem-potential-boundedness"
+      },
+      "section": "## 13. Fitness potential operator",
+      "references": [
+        "def-walker"
+      ],
+      "raw_directive": "4079: 1.  Initialize an N-dimensional zero vector, $\\mathbf{V}_{\\text{fit}} \\leftarrow \\mathbf{0}$.\n4080: 2.  For each walker ({prf:ref}`def-walker`) $j \\in \\mathcal{A}(\\mathcal{S}_t)$:\n4081:     *   Let $V_j$ be the corresponding value from the input vector $\\mathbf{V}_{\\mathcal{A}}$.\n4082:     *   Set the $j$-th component of the output vector: $V_{\\text{fit},j} := V_j$.\n4083: **Output:** The full N-dimensional fitness potential vector $\\mathbf{V}_{\\text{fit}}$.\n4084: :::\n4085: ### 12.2. Mean-Square Continuity of the Fitness Potential Operator\n4086: The Fitness Potential Operator is the result of a multi-stage composition of functions, including the stochastic measurement operators. Its continuity is therefore analyzed in a probabilistic sense. This section proves that the operator is **mean-square continuous**, which provides a bound on the *average* squared error between the output potential vectors of two input swarms. This property is the foundation for analyzing the long-term stability and ergodicity of the system. A subsequent section will establish a stronger, deterministic continuity property required for certain convergence theorems.\n4087: The proof is built upon two key properties of the potential function: its boundedness and its Lipschitz continuity with respect to its inputs.\n4088: #### 12.2.1. Lemma: Boundedness of the Fitness Potential\n4089: \n4090: :::{prf:lemma} Boundedness of the Fitness Potential\n4091: :label: lem-potential-boundedness\n4092: \n4093: For any alive walker ({prf:ref}`def-walker`) $i$, its fitness potential $V_i$ is strictly positive and uniformly bounded. That is, there exist finite, state-independent constants $V_{\\text{pot,min}}$ and $V_{\\text{pot,max}}$ such that:"
     },
     {
       "directive_type": "proof",
       "label": "proof-lem-potential-boundedness",
       "title": null,
-      "start_line": 3822,
-      "end_line": 3836,
+      "start_line": 4095,
+      "end_line": 4109,
       "header_lines": [
-        3823
+        4096
       ],
-      "content_start": 3824,
-      "content_end": 3835,
-      "content": "3824: $$\n3825: \n3826: 0 < V_{\\text{pot,min}} \\le V_i \\le V_{\\text{pot,max}} < \\infty\n3827: \n3828: $$\n3829: where the bounds are defined in terms of the global algorithmic parameters:\n3830: *   $V_{\\text{pot,min}} := \\eta^{\\alpha+\\beta}$\n3831: *   $V_{\\text{pot,max}} := (g_{A,\\max} + \\eta)^{\\alpha+\\beta}$\n3832: *   $g_{A,\\max} := \\log(1 + z_{\\max}) + 1$\n3833: :::{prf:proof}\n3834: :label: proof-lem-potential-boundedness\n3835: **Proof.**",
+      "content_start": 4097,
+      "content_end": 4108,
+      "content": "4097: \n4098: $$\n4099: \n4100: where the bounds are defined in terms of the global algorithmic parameters:\n4101: *   $V_{\\text{pot,min}} := \\eta^{\\alpha+\\beta}$\n4102: *   $V_{\\text{pot,max}} := (g_{A,\\max} + \\eta)^{\\alpha+\\beta}$\n4103: *   $g_{A,\\max} := \\log(1 + z_{\\max}) + 1$\n4104: :::\n4105: \n4106: :::{prf:proof}\n4107: :label: proof-lem-potential-boundedness\n4108: **Proof.**",
       "metadata": {
         "label": "proof-lem-potential-boundedness"
       },
       "section": "## 13. Fitness potential operator",
-      "references": [],
-      "raw_directive": "3822: :label: lem-potential-boundedness\n3823: For any alive walker $i$, its fitness potential $V_i$ is strictly positive and uniformly bounded. That is, there exist finite, state-independent constants $V_{\\text{pot,min}}$ and $V_{\\text{pot,max}}$ such that:\n3824: $$\n3825: \n3826: 0 < V_{\\text{pot,min}} \\le V_i \\le V_{\\text{pot,max}} < \\infty\n3827: \n3828: $$\n3829: where the bounds are defined in terms of the global algorithmic parameters:\n3830: *   $V_{\\text{pot,min}} := \\eta^{\\alpha+\\beta}$\n3831: *   $V_{\\text{pot,max}} := (g_{A,\\max} + \\eta)^{\\alpha+\\beta}$\n3832: *   $g_{A,\\max} := \\log(1 + z_{\\max}) + 1$\n3833: :::{prf:proof}\n3834: :label: proof-lem-potential-boundedness\n3835: **Proof.**\n3836: The proof follows from the definition of the potential function and the properties of the rescale function."
+      "references": [
+        "def-axiom-rescale-function"
+      ],
+      "raw_directive": "4095: $$\n4096: 0 < V_{\\text{pot,min}} \\le V_i \\le V_{\\text{pot,max}} < \\infty\n4097: \n4098: $$\n4099: \n4100: where the bounds are defined in terms of the global algorithmic parameters:\n4101: *   $V_{\\text{pot,min}} := \\eta^{\\alpha+\\beta}$\n4102: *   $V_{\\text{pot,max}} := (g_{A,\\max} + \\eta)^{\\alpha+\\beta}$\n4103: *   $g_{A,\\max} := \\log(1 + z_{\\max}) + 1$\n4104: :::\n4105: \n4106: :::{prf:proof}\n4107: :label: proof-lem-potential-boundedness\n4108: **Proof.**\n4109: The proof follows from the definition of the potential function and the properties of the rescale function ({prf:ref}`def-axiom-rescale-function`)."
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-component-potential-lipschitz",
+      "title": "Lipschitz Continuity of the Fitness Potential Function",
+      "start_line": 4112,
+      "end_line": 4125,
+      "header_lines": [
+        4113
+      ],
+      "content_start": 4115,
+      "content_end": 4124,
+      "content": "4115:     Since $\\alpha, \\beta \\geq 0$, the potential $V_i$ is bounded by raising these component bounds to the appropriate powers.\n4116:     *   **Lower Bound:** $V_i \\geq (\\eta)^\\beta \\cdot (\\eta)^\\alpha = \\eta^{(\\alpha+\\beta)} =: V_{\\text{pot,min}}$.\n4117:     *   **Upper Bound:** $V_i \\leq (g_{A,\\max} + \\eta)^\\beta \\cdot (g_{A,\\max} + \\eta)^\\alpha = (g_{A,\\max} + \\eta)^{(\\alpha+\\beta)} =: V_{\\text{pot,max}}$.\n4118: This completes the proof.\n4119: **Q.E.D.**\n4120: :::\n4121: #### 12.2.2. Lemma: Lipschitz Continuity of the Fitness Potential Function\n4122: \n4123: :::{prf:lemma} Lipschitz Continuity of the Fitness Potential Function\n4124: :label: lem-component-potential-lipschitz",
+      "metadata": {
+        "label": "lem-component-potential-lipschitz"
+      },
+      "section": "## 13. Fitness potential operator",
+      "references": [
+        "axiom-reward-regularity",
+        "thm-rescale-function-lipschitz",
+        "def-alive-set-potential-operator"
+      ],
+      "raw_directive": "4112:     From the analysis of the **Smooth Piecewise Rescale Function ({prf:ref}`def-axiom-rescale-function`)** in Section 8.2, for any real input $z$, the function $g_A(z)$ is bounded on the interval $(0, g_{A,\\max}]$.\n4113:     Therefore, the rescaled components $r'_i = g_A(z_{r,i}) + \\eta$ and $d'_i = g_A(z_{d,i}) + \\eta$ are bounded on the interval $(\\eta, g_{A,\\max} + \\eta]$. Since $\\eta > 0$, these components are always strictly positive.\n4114: 2.  **Combine for Final Bounds.**\n4115:     Since $\\alpha, \\beta \\geq 0$, the potential $V_i$ is bounded by raising these component bounds to the appropriate powers.\n4116:     *   **Lower Bound:** $V_i \\geq (\\eta)^\\beta \\cdot (\\eta)^\\alpha = \\eta^{(\\alpha+\\beta)} =: V_{\\text{pot,min}}$.\n4117:     *   **Upper Bound:** $V_i \\leq (g_{A,\\max} + \\eta)^\\beta \\cdot (g_{A,\\max} + \\eta)^\\alpha = (g_{A,\\max} + \\eta)^{(\\alpha+\\beta)} =: V_{\\text{pot,max}}$.\n4118: This completes the proof.\n4119: **Q.E.D.**\n4120: :::\n4121: #### 12.2.2. Lemma: Lipschitz Continuity of the Fitness Potential Function\n4122: \n4123: :::{prf:lemma} Lipschitz Continuity of the Fitness Potential Function\n4124: :label: lem-component-potential-lipschitz\n4125: "
     },
     {
       "directive_type": "proof",
       "label": "proof-lem-component-potential-lipschitz",
       "title": null,
-      "start_line": 3846,
-      "end_line": 3867,
+      "start_line": 4127,
+      "end_line": 4149,
       "header_lines": [
-        3847
+        4128
       ],
-      "content_start": 3848,
-      "content_end": 3866,
-      "content": "3848: #### 12.2.2. Lemma: Lipschitz Continuity of the Fitness Potential Function\n3849: :label: lem-component-potential-lipschitz\n3850: Let the component-wise potential function be defined as $F(z_r, z_d) := (g_A(z_d) + \\eta)^{\\beta} \\cdot (g_A(z_r) + \\eta)^{\\alpha}$. This function is Lipschitz continuous with respect to its Z-score inputs. For any two pairs of Z-scores $(z_{r1}, z_{d1})$ and $(z_{r2}, z_{d2})$:\n3851: $$\n3852: \n3853: |F(z_{r1}, z_{d1}) - F(z_{r2}, z_{d2})| \\le L_{F,r}|z_{r1} - z_{r2}| + L_{F,d}|z_{d1} - z_{d2}|\n3854: \n3855: $$\n3856: where the Lipschitz constants $L_{F,r}$ and $L_{F,d}$ are finite, state-independent constants.\n3857: :::{prf:proof}\n3858: :label: proof-lem-component-potential-lipschitz\n3859: **Proof.**\n3860: The proof proceeds by bounding the partial derivatives of $F$ with respect to its inputs, $z_r$ and $z_d$.\n3861: 1.  **Partial Derivative with respect to $z_r$:**\n3862: $$\n3863: \n3864: \\frac{\\partial F}{\\partial z_r} = (g_A(z_d) + \\eta)^{\\beta} \\cdot \\left[ \\alpha (g_A(z_r) + \\eta)^{\\alpha-1} \\cdot g'_A(z_r) \\right]\n3865: \n3866: $$",
+      "content_start": 4129,
+      "content_end": 4148,
+      "content": "4129: \n4130: $$\n4131: |F(z_{r1}, z_{d1}) - F(z_{r2}, z_{d2})| \\le L_{F,r}|z_{r1} - z_{r2}| + L_{F,d}|z_{d1} - z_{d2}|\n4132: \n4133: $$\n4134: \n4135: where the Lipschitz constants $L_{F,r}$ and $L_{F,d}$ are finite, state-independent constants.\n4136: :::\n4137: \n4138: :::{prf:proof}\n4139: :label: proof-lem-component-potential-lipschitz\n4140: **Proof.**\n4141: The proof proceeds by bounding the partial derivatives of $F$ with respect to its inputs, $z_r$ and $z_d$.\n4142: 1.  **Partial Derivative with respect to $z_r$:**\n4143: \n4144: $$\n4145: \\frac{\\partial F}{\\partial z_r} = (g_A(z_d) + \\eta)^{\\beta} \\cdot \\left[ \\alpha (g_A(z_r) + \\eta)^{\\alpha-1} \\cdot g'_A(z_r) \\right]\n4146: \n4147: $$\n4148: ",
       "metadata": {
         "label": "proof-lem-component-potential-lipschitz"
       },
       "section": "## 13. Fitness potential operator",
       "references": [],
-      "raw_directive": "3846: **Q.E.D.**\n3847: :::\n3848: #### 12.2.2. Lemma: Lipschitz Continuity of the Fitness Potential Function\n3849: :label: lem-component-potential-lipschitz\n3850: Let the component-wise potential function be defined as $F(z_r, z_d) := (g_A(z_d) + \\eta)^{\\beta} \\cdot (g_A(z_r) + \\eta)^{\\alpha}$. This function is Lipschitz continuous with respect to its Z-score inputs. For any two pairs of Z-scores $(z_{r1}, z_{d1})$ and $(z_{r2}, z_{d2})$:\n3851: $$\n3852: \n3853: |F(z_{r1}, z_{d1}) - F(z_{r2}, z_{d2})| \\le L_{F,r}|z_{r1} - z_{r2}| + L_{F,d}|z_{d1} - z_{d2}|\n3854: \n3855: $$\n3856: where the Lipschitz constants $L_{F,r}$ and $L_{F,d}$ are finite, state-independent constants.\n3857: :::{prf:proof}\n3858: :label: proof-lem-component-potential-lipschitz\n3859: **Proof.**\n3860: The proof proceeds by bounding the partial derivatives of $F$ with respect to its inputs, $z_r$ and $z_d$.\n3861: 1.  **Partial Derivative with respect to $z_r$:**\n3862: $$\n3863: \n3864: \\frac{\\partial F}{\\partial z_r} = (g_A(z_d) + \\eta)^{\\beta} \\cdot \\left[ \\alpha (g_A(z_r) + \\eta)^{\\alpha-1} \\cdot g'_A(z_r) \\right]\n3865: \n3866: $$\n3867: We bound the absolute value of each term in this product:"
-    },
-    {
-      "directive_type": "proof",
-      "label": "proof-thm-fitness-potential-mean-square-continuity",
-      "title": null,
-      "start_line": 3886,
-      "end_line": 3897,
-      "header_lines": [
-        3887
-      ],
-      "content_start": 3888,
-      "content_end": 3896,
-      "content": "3888: where the **Expected Squared Potential Error Bound**, $F_{\\text{pot}}$, is defined as:\n3889: $$\n3890: \n3891: \\boxed{\n3892: F_{\\text{pot}}(\\mathcal{S}_1, \\mathcal{S}_2) := E_{\\text{unstable,ms}}^2(\\mathcal{S}_1, \\mathcal{S}_2) + E_{\\text{stable,ms}}^2(\\mathcal{S}_1, \\mathcal{S}_2)\n3893: }\n3894: \n3895: $$\n3896: and the two error components are the expected squared errors from the unstable and stable sets of walkers, respectively.",
-      "metadata": {
-        "label": "proof-thm-fitness-potential-mean-square-continuity"
-      },
-      "section": "## 13. Fitness potential operator",
-      "references": [],
-      "raw_directive": "3886: \n3887: $$\n3888: where the **Expected Squared Potential Error Bound**, $F_{\\text{pot}}$, is defined as:\n3889: $$\n3890: \n3891: \\boxed{\n3892: F_{\\text{pot}}(\\mathcal{S}_1, \\mathcal{S}_2) := E_{\\text{unstable,ms}}^2(\\mathcal{S}_1, \\mathcal{S}_2) + E_{\\text{stable,ms}}^2(\\mathcal{S}_1, \\mathcal{S}_2)\n3893: }\n3894: \n3895: $$\n3896: and the two error components are the expected squared errors from the unstable and stable sets of walkers, respectively.\n3897: :::{prf:proof}"
+      "raw_directive": "4127: \n4128: Let the component-wise potential function be defined as $FLipschitz ({prf:ref}`axiom-reward-regularity`)(z_d) + \\eta)^{\\beta} \\cdot (g_A(z_r) + \\eta)^{\\alpha}$. This function is Lipschitz continuous with respect to its Z-score inputs. For any two pairs of Z-scores $(z_{r1}, z_{d1})$ and $(z_{r2}, z_{d2})$:\n4129: \n4130: $$\n4131: |F(z_{r1}, z_{d1}) - F(z_{r2}, z_{d2})| \\le L_{F,r}|z_{r1} - z_{r2}| + L_{F,d}|z_{d1} - z_{d2}|\n4132: \n4133: $$\n4134: \n4135: where the Lipschitz constants $L_{F,r}$ and $L_{F,d}$ are finite, state-independent constants.\n4136: :::\n4137: \n4138: :::{prf:proof}\n4139: :label: proof-lem-component-potential-lipschitz\n4140: **Proof.**\n4141: The proof proceeds by bounding the partial derivatives of $F$ with respect to its inputs, $z_r$ and $z_d$.\n4142: 1.  **Partial Derivative with respect to $z_r$:**\n4143: \n4144: $$\n4145: \\frac{\\partial F}{\\partial z_r} = (g_A(z_d) + \\eta)^{\\beta} \\cdot \\left[ \\alpha (g_A(z_r) + \\eta)^{\\alpha-1} \\cdot g'_A(z_r) \\right]\n4146: \n4147: $$\n4148: \n4149: We bound the absolute value of each term in this product:"
     },
     {
       "directive_type": "lemma",
       "label": "lem-sub-potential-unstable-error-mean-square",
       "title": "Bounding the Expected Error from Unstable Walkers",
-      "start_line": 3899,
-      "end_line": 3909,
+      "start_line": 4151,
+      "end_line": 4163,
       "header_lines": [
-        3900
+        4152
       ],
-      "content_start": 3902,
-      "content_end": 3908,
-      "content": "3902: \n3903: \\|\\mathbf{V}_1 - \\mathbf{V}_2\\|_2^2 = \\sum_{i \\in \\mathcal{A}_{\\text{unstable}}} |V_{1,i} - V_{2,i}|^2 + \\sum_{i \\in \\mathcal{A}_{\\text{stable}}} |V_{1,i} - V_{2,i}|^2\n3904: \n3905: $$\n3906: We take the expectation of both sides. By linearity of expectation, the total expected squared error is the sum of the expected squared errors over these two partitions. We define the first term as the expected error from unstable walkers, $E^2_{\\text{unstable,ms}}$, and the second term as the expected error from stable walkers, $E^2_{\\text{stable,ms}}$. The subsequent lemmas provide bounds for these terms.\n3907: **Q.E.D.**\n3908: :::",
+      "content_start": 4154,
+      "content_end": 4162,
+      "content": "4154:     Since each term in the product is uniformly bounded by a finite constant, the partial derivative $\\partial F/\\partial z_r$ is uniformly bounded. Let this bound be $L_{F,r}$.\n4155: 2.  **Partial Derivative with respect to $z_d$:**\n4156:     The argument is symmetric to the one above, yielding a uniform bound $L_{F,d}$.\n4157: 3.  **Conclusion:**\n4158:     Since the partial derivatives are uniformly bounded, the function $F$ is Lipschitz continuous, and the total change is bounded by the sum of the changes along each dimension, weighted by the corresponding Lipschitz constants.\n4159: **Q.E.D.**\n4160: :::\n4161: #### 12.2.4. Sub-Lemma: Bounding the Expected Error from Unstable Walker ({prf:ref}`def-walker`)s\n4162: :::{prf:lemma} Bounding the Expected Error from Unstable Walkers",
       "metadata": {
         "label": "lem-sub-potential-unstable-error-mean-square"
       },
       "section": "## 13. Fitness potential operator",
-      "references": [],
-      "raw_directive": "3899: **Proof.**\n3900: We decompose the total squared error $\\|\\mathbf{V}_1 - \\mathbf{V}_2\\|_2^2$ into contributions from two disjoint sets of walker indices: the unstable set $\\mathcal{A}_{\\text{unstable}} = \\mathcal{A}_1 \\Delta \\mathcal{A}_2$ and the stable set $\\mathcal{A}_{\\text{stable}} = \\mathcal{A}_1 \\cap \\mathcal{A}_2$. Because the sets are disjoint, the error vectors are orthogonal, and the total squared norm is the sum of the squared norms of the error over each set.\n3901: $$\n3902: \n3903: \\|\\mathbf{V}_1 - \\mathbf{V}_2\\|_2^2 = \\sum_{i \\in \\mathcal{A}_{\\text{unstable}}} |V_{1,i} - V_{2,i}|^2 + \\sum_{i \\in \\mathcal{A}_{\\text{stable}}} |V_{1,i} - V_{2,i}|^2\n3904: \n3905: $$\n3906: We take the expectation of both sides. By linearity of expectation, the total expected squared error is the sum of the expected squared errors over these two partitions. We define the first term as the expected error from unstable walkers, $E^2_{\\text{unstable,ms}}$, and the second term as the expected error from stable walkers, $E^2_{\\text{stable,ms}}$. The subsequent lemmas provide bounds for these terms.\n3907: **Q.E.D.**\n3908: :::\n3909: #### 12.2.4. Sub-Lemma: Bounding the Expected Error from Unstable Walkers"
+      "references": [
+        "def-alive ({prf:ref}",
+        "def-walker"
+      ],
+      "raw_directive": "4151:     *   $|\\alpha| = \\alpha$.\n4152:     *   $|(g_A(z_r) + \\eta)^{(\\alpha-1)}|$: If $\\alpha \\geq 1$, this is bounded by $(g_{A,\\max} + \\eta)^{(\\alpha-1)}$. If $\\alpha < 1$, this is $1/(g_A(z_r)+\\eta)^{(1-\\alpha)}$, which is bounded by $1/\\eta^{(1-\\alpha)}$. In both cases, this term is uniformly bounded.\n4153:     *   $|g'_A(z_r)| \\leq L_{g_A}$ from [](#thm-rescale-function-lipschitz).\n4154:     Since each term in the product is uniformly bounded by a finite constant, the partial derivative $\\partial F/\\partial z_r$ is uniformly bounded. Let this bound be $L_{F,r}$.\n4155: 2.  **Partial Derivative with respect to $z_d$:**\n4156:     The argument is symmetric to the one above, yielding a uniform bound $L_{F,d}$.\n4157: 3.  **Conclusion:**\n4158:     Since the partial derivatives are uniformly bounded, the function $F$ is Lipschitz continuous, and the total change is bounded by the sum of the changes along each dimension, weighted by the corresponding Lipschitz constants.\n4159: **Q.E.D.**\n4160: :::\n4161: #### 12.2.4. Sub-Lemma: Bounding the Expected Error from Unstable Walker ({prf:ref}`def-walker`)s\n4162: :::{prf:lemma} Bounding the Expected Error from Unstable Walkers\n4163: :label: lem-sub-potential-unstable-error-mean-square"
     },
     {
       "directive_type": "proof",
       "label": "proof-lem-sub-potential-unstable-error-mean-square",
       "title": null,
-      "start_line": 3910,
-      "end_line": 3916,
+      "start_line": 4164,
+      "end_line": 4170,
       "header_lines": [
-        3911
+        4165
       ],
-      "content_start": 3912,
-      "content_end": 3915,
-      "content": "3912: \n3913: The expected squared error component from walkers changing their survival status is bounded deterministically by the number of status changes.\n3914: \n3915: $$",
+      "content_start": 4166,
+      "content_end": 4169,
+      "content": "4166: \n4167: The expected squared error component from walker ({prf:ref}`def-walker`)s changing their survival status is bounded deterministically by the number of status changes.\n4168: \n4169: $$",
       "metadata": {
         "label": "proof-lem-sub-potential-unstable-error-mean-square"
       },
       "section": "## 13. Fitness potential operator",
-      "references": [],
-      "raw_directive": "3910: :::{prf:lemma} Bounding the Expected Error from Unstable Walkers\n3911: :label: lem-sub-potential-unstable-error-mean-square\n3912: \n3913: The expected squared error component from walkers changing their survival status is bounded deterministically by the number of status changes.\n3914: \n3915: $$\n3916: "
+      "references": [
+        "def-alive-dead-sets",
+        "def-swarm-and-state-space",
+        "def-walker"
+      ],
+      "raw_directive": "4164: \n4165: This lemma bounds the error contribution from unstable walkers in {prf:ref}`def-alive ({prf:ref}`def-alive-dead-sets`)-set-potential-operator`.\n4166: \n4167: The expected squared error component from walker ({prf:ref}`def-walker`)s changing their survival status is bounded deterministically by the number of status changes.\n4168: \n4169: $$\n4170: E_{\\text{unstable,ms}}^2(\\mathcal{S}_1, \\mathcal{S}_2) := \\mathbb{E}\\left[\\sum_{i \\in \\mathcal{A}_{\\text{unstable}}} |V_{1,i} - V_{2,i}|^2\\right] \\le V_{\\text{pot,max}}^2 \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)"
+    },
+    {
+      "directive_type": "lemma",
+      "label": "lem-sub-potential-stable-error-mean-square",
+      "title": "Bounding the Expected Error from Stable Walkers",
+      "start_line": 4173,
+      "end_line": 4188,
+      "header_lines": [
+        4174
+      ],
+      "content_start": 4176,
+      "content_end": 4187,
+      "content": "4176: :label: proof-lem-sub-potential-unstable-error-mean-square\n4177: **Proof.**\n4178: For ({prf:ref}`def-alive-dead-sets`) ({prf:ref}`def-swarm-and-state-space`) any walker ({prf:ref}`def-walker`) $i$ in the unstable set $\\mathcal{A}_{\\text{unstable}}$, its survival status changes. This means one of $V_{1,i}$ or $V_{2,i}$ is zero, while the other is a non-zero potential. From [](#lem-potential-boundedness), any non-zero potential is bounded by $V_{\\text{pot,max}}$. Thus, the squared difference $|V_{1,i} - V_{2,i}|^2$ is deterministically bounded by $V_{\\text{pot,max}}^2$.\n4179: The total squared error from this set is therefore bounded by the number of unstable walker ({prf:ref}`def-walker`)s ($n_c$) multiplied by this bound: $V_{\\text{pot,max}}^2 \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)$. Since this bound is a deterministic constant, its expectation is the constant itself.\n4180: **Q.E.D.**\n4181: :::\n4182: #### 12.2.5. Sub-Lemma: Bounding the Expected Error from Stable Walker ({prf:ref}`def-walker`)s\n4183: \n4184: :::{prf:lemma} Bounding the Expected Error from Stable Walkers\n4185: :label: lem-sub-potential-stable-error-mean-square\n4186: \n4187: This lemma bounds the stable walker error by combining {prf:ref}`lem-component-potential-lipschitz` with the standardization continuity from {prf:ref}`thm-standardization-operator-unified-mean-square-continuity`.",
+      "metadata": {
+        "label": "lem-sub-potential-stable-error-mean-square"
+      },
+      "section": "## 13. Fitness potential operator",
+      "references": [
+        "lem-component-potential-lipschitz",
+        "thm-standardization-operator-unified-mean-square-continuity",
+        "def-walker",
+        "def-alive-dead-sets"
+      ],
+      "raw_directive": "4173: \n4174: :::\n4175: :::{prf:proof}\n4176: :label: proof-lem-sub-potential-unstable-error-mean-square\n4177: **Proof.**\n4178: For ({prf:ref}`def-alive-dead-sets`) ({prf:ref}`def-swarm-and-state-space`) any walker ({prf:ref}`def-walker`) $i$ in the unstable set $\\mathcal{A}_{\\text{unstable}}$, its survival status changes. This means one of $V_{1,i}$ or $V_{2,i}$ is zero, while the other is a non-zero potential. From [](#lem-potential-boundedness), any non-zero potential is bounded by $V_{\\text{pot,max}}$. Thus, the squared difference $|V_{1,i} - V_{2,i}|^2$ is deterministically bounded by $V_{\\text{pot,max}}^2$.\n4179: The total squared error from this set is therefore bounded by the number of unstable walker ({prf:ref}`def-walker`)s ($n_c$) multiplied by this bound: $V_{\\text{pot,max}}^2 \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)$. Since this bound is a deterministic constant, its expectation is the constant itself.\n4180: **Q.E.D.**\n4181: :::\n4182: #### 12.2.5. Sub-Lemma: Bounding the Expected Error from Stable Walker ({prf:ref}`def-walker`)s\n4183: \n4184: :::{prf:lemma} Bounding the Expected Error from Stable Walkers\n4185: :label: lem-sub-potential-stable-error-mean-square\n4186: \n4187: This lemma bounds the stable walker error by combining {prf:ref}`lem-component-potential-lipschitz` with the standardization continuity from {prf:ref}`thm-standardization-operator-unified-mean-square-continuity`.\n4188: "
     },
     {
       "directive_type": "proof",
       "label": "proof-lem-sub-potential-stable-error-mean-square",
       "title": null,
-      "start_line": 3928,
-      "end_line": 3956,
+      "start_line": 4190,
+      "end_line": 4221,
       "header_lines": [
-        3929
+        4191
       ],
-      "content_start": 3930,
-      "content_end": 3955,
-      "content": "3930: The expected squared error component from walkers that remain alive in both states ($\\mathcal{A}_{\\text{stable}} = \\mathcal{A}(\\mathcal{S}_1) \\cap \\mathcal{A}(\\mathcal{S}_2)$), denoted $E^2_{\\text{stable,ms}}$, is bounded in terms of the mean-square continuity of the underlying standardization pipelines.\n3931: $$\n3932: \n3933: E_{\\text{stable,ms}}^2(\\mathcal{S}_1, \\mathcal{S}_2) \\le 2L_{F,r}^2 \\cdot \\mathbb{E}[\\|\\Delta\\mathbf{z}_r\\|_2^2] + 2L_{F,d}^2 \\cdot \\mathbb{E}[\\|\\Delta\\mathbf{z}_d\\|_2^2]\n3934: \n3935: $$\n3936: where:\n3937: *   $L_{F,r}$ and $L_{F,d}$ are the component-wise Lipschitz constants for the potential function from [](#lem-component-potential-lipschitz).\n3938: *   $\\mathbb{E}[\\|\\Delta\\mathbf{z}_r\\|_2^2]$ and $\\mathbb{E}[\\|\\Delta\\mathbf{z}_d\\|_2^2]$ are the total expected squared error bounds for the **reward standardization pipeline** and **distance standardization pipeline**, respectively. These bounds are given by **[](#thm-standardization-operator-unified-mean-square-continuity)**.\n3939: :::{prf:proof}\n3940: :label: proof-lem-sub-potential-stable-error-mean-square\n3941: **Proof.**\n3942: The proof proceeds by applying the Lipschitz continuity of the fitness potential function and then taking the expectation.\n3943: 1.  **Bound the Single-Walker Error:**\n3944:     For any stable walker $i \\in \\mathcal{A}_{\\text{stable}}$, its fitness potential $V_i$ is a function of its reward Z-score $z_{r,i}$ and its distance Z-score $z_{d,i}$. From the Lipschitz continuity of the component-wise potential function ([](#lem-component-potential-lipschitz)) and the inequality $(a+b)^2 \\leq 2a^2 + 2b^2$, we can bound the squared error for this single walker:\n3945: $$\n3946: \n3947: |V_{1,i} - V_{2,i}|^2 \\le \\left(L_{F,r}|\\Delta z_{r,i}| + L_{F,d}|\\Delta z_{d,i}|\\right)^2 \\le 2L_{F,r}^2|\\Delta z_{r,i}|^2 + 2L_{F,d}^2|\\Delta z_{d,i}|^2\n3948: \n3949: $$\n3950: where $\\Delta z_{r,i}$ and $\\Delta z_{d,i}$ are the changes in the $i$-th components of the reward and distance standardized vectors, respectively.\n3951: 2.  **Sum Over All Stable Walkers:**\n3952:     The total squared error for the stable set is the sum of the individual squared errors. The sum over the stable subset is less than or equal to the sum over all $N$ walkers, which is the full squared L2-norm of the error vectors:\n3953: $$\n3954: \n3955: \\sum_{i \\in \\mathcal{A}_{\\text{stable}}} |V_{1,i} - V_{2,i}|^2 \\le 2L_{F,r}^2 \\|\\Delta\\mathbf{z}_r\\|_2^2 + 2L_{F,d}^2 \\|\\Delta\\mathbf{z}_d\\|_2^2",
+      "content_start": 4192,
+      "content_end": 4220,
+      "content": "4192: E_{\\text{stable,ms}}^2(\\mathcal{S}_1, \\mathcal{S}_2) \\le 2L_{F,r}^2 \\cdot \\mathbb{E}[\\|\\Delta\\mathbf{z}_r\\|_2^2] + 2L_{F,d}^2 \\cdot \\mathbb{E}[\\|\\Delta\\mathbf{z}_d\\|_2^2]\n4193: \n4194: $$\n4195: \n4196: where:\n4197: *   $L_{F,r}$ and $L_{F,d}$ are the component-wise Lipschitz constants for the potential function from [](#lem-component-potential-lipschitz).\n4198: *   $\\mathbb{E}[\\|\\Delta\\mathbf{z}_r\\|_2^2]$ and $\\mathbb{E}[\\|\\Delta\\mathbf{z}_d\\|_2^2]$ are the total expected squared error bounds for the **reward standardization pipeline** and **distance standardization pipeline**, respectively. These bounds are given by **[](#thm-standardization-operator-unified-mean-square-continuity)**.\n4199: :::\n4200: \n4201: :::{prf:proof}\n4202: :label: proof-lem-sub-potential-stable-error-mean-square\n4203: **Proof.**\n4204: The proof proceeds by applying the Lipschitz continuity of the fitness potential function and then taking the expectation.\n4205: 1.  **Bound the Single-Walker ({prf:ref}`def-walker`) Error:**\n4206:     For ({prf:ref}`def-alive-dead-sets`) any stable walker ({prf:ref}`def-walker`) $i \\in \\mathcal{A}_{\\text{stable}}$, its fitness potential $V_i$ is a function of its reward Z-score $z_{r,i}$ and its distance Z-score $z_{d,i}$. From the Lipschitz continuity of the component-wise potential function ([](#lem-component-potential-lipschitz)) and the inequality $(a+b)^2 \\leq 2a^2 + 2b^2$, we can bound the squared error for this single walker:\n4207: \n4208: $$\n4209: |V_{1,i} - V_{2,i}|^2 \\le \\left(L_{F,r}|\\Delta z_{r,i}| + L_{F,d}|\\Delta z_{d,i}|\\right)^2 \\le 2L_{F,r}^2|\\Delta z_{r,i}|^2 + 2L_{F,d}^2|\\Delta z_{d,i}|^2\n4210: \n4211: $$\n4212: \n4213: where $\\Delta z_{r,i}$ and $\\Delta z_{d,i}$ are the changes in the $i$-th components of the reward and distance standardized vectors, respectively.\n4214: 2.  **Sum Over All Stable Walker ({prf:ref}`def-walker`)s:**\n4215:     The total squared error for the stable set is the sum of the individual squared errors. The sum over the stable subset is less than or equal to the sum over all $N$ walker ({prf:ref}`def-walker`)s, which is the full squared L2-norm of the error vectors:\n4216: \n4217: $$\n4218: \\sum_{i \\in \\mathcal{A}_{\\text{stable}}} |V_{1,i} - V_{2,i}|^2 \\le 2L_{F,r}^2 \\|\\Delta\\mathbf{z}_r\\|_2^2 + 2L_{F,d}^2 \\|\\Delta\\mathbf{z}_d\\|_2^2\n4219: \n4220: $$",
       "metadata": {
         "label": "proof-lem-sub-potential-stable-error-mean-square"
       },
       "section": "## 13. Fitness potential operator",
-      "references": [],
-      "raw_directive": "3928: #### 12.2.5. Sub-Lemma: Bounding the Expected Error from Stable Walkers\n3929: :label: lem-sub-potential-stable-error-mean-square\n3930: The expected squared error component from walkers that remain alive in both states ($\\mathcal{A}_{\\text{stable}} = \\mathcal{A}(\\mathcal{S}_1) \\cap \\mathcal{A}(\\mathcal{S}_2)$), denoted $E^2_{\\text{stable,ms}}$, is bounded in terms of the mean-square continuity of the underlying standardization pipelines.\n3931: $$\n3932: \n3933: E_{\\text{stable,ms}}^2(\\mathcal{S}_1, \\mathcal{S}_2) \\le 2L_{F,r}^2 \\cdot \\mathbb{E}[\\|\\Delta\\mathbf{z}_r\\|_2^2] + 2L_{F,d}^2 \\cdot \\mathbb{E}[\\|\\Delta\\mathbf{z}_d\\|_2^2]\n3934: \n3935: $$\n3936: where:\n3937: *   $L_{F,r}$ and $L_{F,d}$ are the component-wise Lipschitz constants for the potential function from [](#lem-component-potential-lipschitz).\n3938: *   $\\mathbb{E}[\\|\\Delta\\mathbf{z}_r\\|_2^2]$ and $\\mathbb{E}[\\|\\Delta\\mathbf{z}_d\\|_2^2]$ are the total expected squared error bounds for the **reward standardization pipeline** and **distance standardization pipeline**, respectively. These bounds are given by **[](#thm-standardization-operator-unified-mean-square-continuity)**.\n3939: :::{prf:proof}\n3940: :label: proof-lem-sub-potential-stable-error-mean-square\n3941: **Proof.**\n3942: The proof proceeds by applying the Lipschitz continuity of the fitness potential function and then taking the expectation.\n3943: 1.  **Bound the Single-Walker Error:**\n3944:     For any stable walker $i \\in \\mathcal{A}_{\\text{stable}}$, its fitness potential $V_i$ is a function of its reward Z-score $z_{r,i}$ and its distance Z-score $z_{d,i}$. From the Lipschitz continuity of the component-wise potential function ([](#lem-component-potential-lipschitz)) and the inequality $(a+b)^2 \\leq 2a^2 + 2b^2$, we can bound the squared error for this single walker:\n3945: $$\n3946: \n3947: |V_{1,i} - V_{2,i}|^2 \\le \\left(L_{F,r}|\\Delta z_{r,i}| + L_{F,d}|\\Delta z_{d,i}|\\right)^2 \\le 2L_{F,r}^2|\\Delta z_{r,i}|^2 + 2L_{F,d}^2|\\Delta z_{d,i}|^2\n3948: \n3949: $$\n3950: where $\\Delta z_{r,i}$ and $\\Delta z_{d,i}$ are the changes in the $i$-th components of the reward and distance standardized vectors, respectively.\n3951: 2.  **Sum Over All Stable Walkers:**\n3952:     The total squared error for the stable set is the sum of the individual squared errors. The sum over the stable subset is less than or equal to the sum over all $N$ walkers, which is the full squared L2-norm of the error vectors:\n3953: $$\n3954: \n3955: \\sum_{i \\in \\mathcal{A}_{\\text{stable}}} |V_{1,i} - V_{2,i}|^2 \\le 2L_{F,r}^2 \\|\\Delta\\mathbf{z}_r\\|_2^2 + 2L_{F,d}^2 \\|\\Delta\\mathbf{z}_d\\|_2^2\n3956: "
+      "references": [
+        "def-walker",
+        "def-alive-dead-sets"
+      ],
+      "raw_directive": "4190: \n4191: $$\n4192: E_{\\text{stable,ms}}^2(\\mathcal{S}_1, \\mathcal{S}_2) \\le 2L_{F,r}^2 \\cdot \\mathbb{E}[\\|\\Delta\\mathbf{z}_r\\|_2^2] + 2L_{F,d}^2 \\cdot \\mathbb{E}[\\|\\Delta\\mathbf{z}_d\\|_2^2]\n4193: \n4194: $$\n4195: \n4196: where:\n4197: *   $L_{F,r}$ and $L_{F,d}$ are the component-wise Lipschitz constants for the potential function from [](#lem-component-potential-lipschitz).\n4198: *   $\\mathbb{E}[\\|\\Delta\\mathbf{z}_r\\|_2^2]$ and $\\mathbb{E}[\\|\\Delta\\mathbf{z}_d\\|_2^2]$ are the total expected squared error bounds for the **reward standardization pipeline** and **distance standardization pipeline**, respectively. These bounds are given by **[](#thm-standardization-operator-unified-mean-square-continuity)**.\n4199: :::\n4200: \n4201: :::{prf:proof}\n4202: :label: proof-lem-sub-potential-stable-error-mean-square\n4203: **Proof.**\n4204: The proof proceeds by applying the Lipschitz continuity of the fitness potential function and then taking the expectation.\n4205: 1.  **Bound the Single-Walker ({prf:ref}`def-walker`) Error:**\n4206:     For ({prf:ref}`def-alive-dead-sets`) any stable walker ({prf:ref}`def-walker`) $i \\in \\mathcal{A}_{\\text{stable}}$, its fitness potential $V_i$ is a function of its reward Z-score $z_{r,i}$ and its distance Z-score $z_{d,i}$. From the Lipschitz continuity of the component-wise potential function ([](#lem-component-potential-lipschitz)) and the inequality $(a+b)^2 \\leq 2a^2 + 2b^2$, we can bound the squared error for this single walker:\n4207: \n4208: $$\n4209: |V_{1,i} - V_{2,i}|^2 \\le \\left(L_{F,r}|\\Delta z_{r,i}| + L_{F,d}|\\Delta z_{d,i}|\\right)^2 \\le 2L_{F,r}^2|\\Delta z_{r,i}|^2 + 2L_{F,d}^2|\\Delta z_{d,i}|^2\n4210: \n4211: $$\n4212: \n4213: where $\\Delta z_{r,i}$ and $\\Delta z_{d,i}$ are the changes in the $i$-th components of the reward and distance standardized vectors, respectively.\n4214: 2.  **Sum Over All Stable Walker ({prf:ref}`def-walker`)s:**\n4215:     The total squared error for the stable set is the sum of the individual squared errors. The sum over the stable subset is less than or equal to the sum over all $N$ walker ({prf:ref}`def-walker`)s, which is the full squared L2-norm of the error vectors:\n4216: \n4217: $$\n4218: \\sum_{i \\in \\mathcal{A}_{\\text{stable}}} |V_{1,i} - V_{2,i}|^2 \\le 2L_{F,r}^2 \\|\\Delta\\mathbf{z}_r\\|_2^2 + 2L_{F,d}^2 \\|\\Delta\\mathbf{z}_d\\|_2^2\n4219: \n4220: $$\n4221: "
+    },
+    {
+      "directive_type": "theorem",
+      "label": "thm-deterministic-potential-continuity",
+      "title": "Deterministic Continuity of the Fitness Potential Operator",
+      "start_line": 4227,
+      "end_line": 4239,
+      "header_lines": [
+        4228
+      ],
+      "content_start": 4230,
+      "content_end": 4238,
+      "content": "4230: The terms on the right are precisely the mean-square error bounds for the standardization pipelines, which are functions of the input displacement and are derived in Section 11.2.\n4231: **Q.E.D.**\n4232: :::\n4233: ### 12.3 Deterministic Continuity of the Fitness Potential Operator\n4234: While mean-square continuity is sufficient for analyzing the system's average behavior and proving ergodicity, certain powerful convergence theorems (such as those from Feynman-Kac theory) require a stronger, deterministic, worst-case guarantee on the system's interaction potential. This section establishes this stronger property.\n4235: By leveraging the deterministic Lipschitz-H\u00f6lder continuity of the patched standardization operator ({prf:ref}`def-standardization-operator-n-dimensional`) (proven in Section 11.3), we prove that the composite **Fitness Potential Operator** is also deterministically continuous. This result is a non-negotiable prerequisite for the Feynman-Kac convergence analysis presented in the `04_convergence.md` document.\n4236: #### 12.3.1 Theorem: Deterministic Continuity of the Fitness Potential Operator\n4237: \n4238: :::{prf:theorem} Deterministic Continuity of the Fitness Potential Operator",
+      "metadata": {
+        "label": "thm-deterministic-potential-continuity"
+      },
+      "section": "## 13. Fitness potential operator",
+      "references": [
+        "def-standardization-operator-n-dimensional",
+        "def-algorithmic-space-generic",
+        "def-swarm-and-state-space",
+        "def-raw-value-operator"
+      ],
+      "raw_directive": "4227: \n4228: $$\n4229: \n4230: The terms on the right are precisely the mean-square error bounds for the standardization pipelines, which are functions of the input displacement and are derived in Section 11.2.\n4231: **Q.E.D.**\n4232: :::\n4233: ### 12.3 Deterministic Continuity of the Fitness Potential Operator\n4234: While mean-square continuity is sufficient for analyzing the system's average behavior and proving ergodicity, certain powerful convergence theorems (such as those from Feynman-Kac theory) require a stronger, deterministic, worst-case guarantee on the system's interaction potential. This section establishes this stronger property.\n4235: By leveraging the deterministic Lipschitz-H\u00f6lder continuity of the patched standardization operator ({prf:ref}`def-standardization-operator-n-dimensional`) (proven in Section 11.3), we prove that the composite **Fitness Potential Operator** is also deterministically continuous. This result is a non-negotiable prerequisite for the Feynman-Kac convergence analysis presented in the `04_convergence.md` document.\n4236: #### 12.3.1 Theorem: Deterministic Continuity of the Fitness Potential Operator\n4237: \n4238: :::{prf:theorem} Deterministic Continuity of the Fitness Potential Operator\n4239: :label: thm-deterministic-potential-continuity"
     },
     {
       "directive_type": "proof",
       "label": "proof-proof-deterministic-potential-continuity",
       "title": null,
-      "start_line": 3972,
-      "end_line": 4012,
+      "start_line": 4243,
+      "end_line": 4283,
       "header_lines": [
-        3973
+        4244
       ],
-      "content_start": 3974,
-      "content_end": 4011,
-      "content": "3974: The squared Euclidean error between the output potential vectors is deterministically bounded by a function of the swarm displacement and the raw value differences:\n3975: $$\n3976: \n3977: \\|\\mathbf{V}_1 - \\mathbf{V}_2\\|_2^2 \\le F_{\\text{pot,det}}(\\mathcal{S}_1, \\mathcal{S}_2, \\mathbf{v}_{r1}, \\mathbf{v}_{r2}, \\mathbf{v}_{d1}, \\mathbf{v}_{d2})\n3978: \n3979: $$\n3980: where $F_{\\text{pot,det}}$ is a deterministic bounding function that is jointly continuous in its arguments and vanishes as $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2) \\to 0$, $\\|\\mathbf{v}_{r1} - \\mathbf{v}_{r2}\\|_2 \\to 0$, and $\\|\\mathbf{v}_{d1} - \\mathbf{v}_{d2}\\|_2 \\to 0$.\n3981: #### 12.3.2 Proof of Deterministic Continuity for the Fitness Potential Operator\n3982: :label: proof-deterministic-potential-continuity\n3983: :::{prf:proof}\n3984: :label: proof-proof-deterministic-potential-continuity\n3985: **Proof.**\n3986: The proof proceeds by deterministically decomposing the total error and applying the established continuity properties of the constituent operators.\n3987: 1.  **Decomposition of Total Error:** The total squared error is decomposed into contributions from unstable walkers (whose status changes) and stable walkers.\n3988: $$\n3989: \n3990:     \\|\\mathbf{V}_1 - \\mathbf{V}_2\\|_2^2 = \\sum_{i \\in \\mathcal{A}_{\\text{unstable}}} |V_{1,i} - V_{2,i}|^2 + \\sum_{i \\in \\mathcal{A}_{\\text{stable}}} |V_{1,i} - V_{2,i}|^2\n3991: \n3992: \n3993: $$\n3994: 2.  **Bound the Error from Unstable Walkers:**\n3995:     The error from the $n_c$ unstable walkers is bounded deterministically. Since one potential is zero and the other is bounded by $V_{\\text{pot,max}}$ ([](#lem-potential-boundedness)), this component is bounded by:\n3996: $$\n3997: \n3998:     \\sum_{i \\in \\mathcal{A}_{\\text{unstable}}} |V_{1,i} - V_{2,i}|^2 \\le V_{\\text{pot,max}}^2 \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)\n3999: \n4000: \n4001: $$\n4002: 3.  **Bound the Error from Stable Walkers:**\n4003:     For stable walkers, the potential $V_i$ is a composite function of the standardized vectors for rewards and distance: $V_i = F(z_{r,i}, z_{d,i})$. As shown in [](#lem-component-potential-lipschitz), the function $F$ is globally Lipschitz continuous with respect to its Z-score inputs. The total squared error for the stable set is therefore bounded by a linear combination of the squared errors of the underlying standardization pipelines:\n4004: $$\n4005: \n4006:     \\sum_{i \\in \\mathcal{A}_{\\text{stable}}} |V_{1,i} - V_{2,i}|^2 \\le 2L_{F,r}^2 \\|\\mathbf{z}_{r,1} - \\mathbf{z}_{r,2}\\|_2^2 + 2L_{F,d}^2 \\|\\mathbf{z}_{d,1} - \\mathbf{z}_{d,2}\\|_2^2\n4007: \n4008: \n4009: $$\n4010: where the constants $L_{F,r}$ and $L_{F,d}$ are from [](#lem-component-potential-lipschitz).\n4011: 4.  **Apply the Deterministic Bound for Standardization:**",
+      "content_start": 4245,
+      "content_end": 4282,
+      "content": "4245: \\|\\mathbf{V}_1 - \\mathbf{V}_2\\|_2^2 \\le F_{\\text{pot,det}}(\\mathcal{S}_1, \\mathcal{S}_2, \\mathbf{v}_{r1}, \\mathbf{v}_{r2}, \\mathbf{v}_{d1}, \\mathbf{v}_{d2})\n4246: \n4247: $$\n4248: \n4249: where $F_{\\text{pot,det}}$ is a deterministic bounding function that is jointly continuous in its arguments and vanishes as $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2) \\to 0$, $\\|\\mathbf{v}_{r1} - \\mathbf{v}_{r2}\\|_2 \\to 0$, and $\\|\\mathbf{v}_{d1} - \\mathbf{v}_{d2}\\|_2 \\to 0$.\n4250: :::\n4251: \n4252: #### 12.3.2 Proof of Deterministic Continuity for the Fitness Potential Operator\n4253: :label: proof-deterministic-potential-continuity\n4254: :::{prf:proof}\n4255: :label: proof-proof-deterministic-potential-continuity\n4256: **Proof.**\n4257: The proof proceeds by deterministically decomposing the total error and applying the established continuity properties of the constituent operators.\n4258: 1.  **Decomposition of Total Error:** The total squared error is decomposed into contributions from unstable walker ({prf:ref}`def-walker`)s (whose status changes) and stable walkers.\n4259: \n4260: $$\n4261:     \\|\\mathbf{V}_1 - \\mathbf{V}_2\\|_2^2 = \\sum_{i \\in \\mathcal{A}_{\\text{unstable}}} |V_{1,i} - V_{2,i}|^2 + \\sum_{i \\in \\mathcal{A}_{\\text{stable}}} |V_{1,i} - V_{2,i}|^2\n4262: \n4263: $$\n4264: \n4265: 2.  **Bound the Error from Unstable Walker ({prf:ref}`def-walker`)s:**\n4266:     The error from the $n_c$ unstable walker ({prf:ref}`def-walker`)s is bounded deterministically. Since one potential is zero and the other is bounded by $V_{\\text{pot,max}}$ ([](#lem-potential-boundedness)), this component is bounded by:\n4267: \n4268: $$\n4269:     \\sum_{i \\in \\mathcal{A}_{\\text{unstable}}} |V_{1,i} - V_{2,i}|^2 \\le V_{\\text{pot,max}}^2 \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)\n4270: \n4271: $$\n4272: \n4273: 3.  **Bound the Error from Stable Walker ({prf:ref}`def-walker`)s:**\n4274:     For stable walker ({prf:ref}`def-walker`)s, the potential $V_i$ is a composite function of the standardized vectors for rewards and distance: $V_i = F(z_{r,i}, z_{d,i})$. As shown in [](#lem-component-potential-lipschitz), the function $F$ is globally Lipschitz continuous with respect to its Z-score inputs. The total squared error for the stable set is therefore bounded by a linear combination of the squared errors of the underlying standardization pipelines:\n4275: \n4276: $$\n4277:     \\sum_{i \\in \\mathcal{A}_{\\text{stable}}} |V_{1,i} - V_{2,i}|^2 \\le 2L_{F,r}^2 \\|\\mathbf{z}_{r,1} - \\mathbf{z}_{r,2}\\|_2^2 + 2L_{F,d}^2 \\|\\mathbf{z}_{d,1} - \\mathbf{z}_{d,2}\\|_2^2\n4278: \n4279: $$\n4280: \n4281: where the constants $L_{F,r}$ and $L_{F,d}$ are from [](#lem-component-potential-lipschitz).\n4282: 4.  **Apply the Deterministic Bound for Standardization:**",
       "metadata": {
         "label": "proof-proof-deterministic-potential-continuity"
       },
       "section": "## 13. Fitness potential operator",
-      "references": [],
-      "raw_directive": "3972: :label: thm-deterministic-potential-continuity\n3973: Let the Fitness Potential Operator $V_{\\text{op}}$ be constructed using the patched **N-Dimensional Standardization Operator**. Let $(\\mathcal{S}_1, \\mathbf{v}_{r1}, \\mathbf{v}_{d1})$ and $(\\mathcal{S}_2, \\mathbf{v}_{r2}, \\mathbf{v}_{d2})$ be two sets of inputs, consisting of swarm states and their corresponding raw reward and distance vectors. Let $\\mathbf{V}_1$ and $\\mathbf{V}_2$ be the resulting N-dimensional fitness potential vectors.\n3974: The squared Euclidean error between the output potential vectors is deterministically bounded by a function of the swarm displacement and the raw value differences:\n3975: $$\n3976: \n3977: \\|\\mathbf{V}_1 - \\mathbf{V}_2\\|_2^2 \\le F_{\\text{pot,det}}(\\mathcal{S}_1, \\mathcal{S}_2, \\mathbf{v}_{r1}, \\mathbf{v}_{r2}, \\mathbf{v}_{d1}, \\mathbf{v}_{d2})\n3978: \n3979: $$\n3980: where $F_{\\text{pot,det}}$ is a deterministic bounding function that is jointly continuous in its arguments and vanishes as $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2) \\to 0$, $\\|\\mathbf{v}_{r1} - \\mathbf{v}_{r2}\\|_2 \\to 0$, and $\\|\\mathbf{v}_{d1} - \\mathbf{v}_{d2}\\|_2 \\to 0$.\n3981: #### 12.3.2 Proof of Deterministic Continuity for the Fitness Potential Operator\n3982: :label: proof-deterministic-potential-continuity\n3983: :::{prf:proof}\n3984: :label: proof-proof-deterministic-potential-continuity\n3985: **Proof.**\n3986: The proof proceeds by deterministically decomposing the total error and applying the established continuity properties of the constituent operators.\n3987: 1.  **Decomposition of Total Error:** The total squared error is decomposed into contributions from unstable walkers (whose status changes) and stable walkers.\n3988: $$\n3989: \n3990:     \\|\\mathbf{V}_1 - \\mathbf{V}_2\\|_2^2 = \\sum_{i \\in \\mathcal{A}_{\\text{unstable}}} |V_{1,i} - V_{2,i}|^2 + \\sum_{i \\in \\mathcal{A}_{\\text{stable}}} |V_{1,i} - V_{2,i}|^2\n3991: \n3992: \n3993: $$\n3994: 2.  **Bound the Error from Unstable Walkers:**\n3995:     The error from the $n_c$ unstable walkers is bounded deterministically. Since one potential is zero and the other is bounded by $V_{\\text{pot,max}}$ ([](#lem-potential-boundedness)), this component is bounded by:\n3996: $$\n3997: \n3998:     \\sum_{i \\in \\mathcal{A}_{\\text{unstable}}} |V_{1,i} - V_{2,i}|^2 \\le V_{\\text{pot,max}}^2 \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)\n3999: \n4000: \n4001: $$\n4002: 3.  **Bound the Error from Stable Walkers:**\n4003:     For stable walkers, the potential $V_i$ is a composite function of the standardized vectors for rewards and distance: $V_i = F(z_{r,i}, z_{d,i})$. As shown in [](#lem-component-potential-lipschitz), the function $F$ is globally Lipschitz continuous with respect to its Z-score inputs. The total squared error for the stable set is therefore bounded by a linear combination of the squared errors of the underlying standardization pipelines:\n4004: $$\n4005: \n4006:     \\sum_{i \\in \\mathcal{A}_{\\text{stable}}} |V_{1,i} - V_{2,i}|^2 \\le 2L_{F,r}^2 \\|\\mathbf{z}_{r,1} - \\mathbf{z}_{r,2}\\|_2^2 + 2L_{F,d}^2 \\|\\mathbf{z}_{d,1} - \\mathbf{z}_{d,2}\\|_2^2\n4007: \n4008: \n4009: $$\n4010: where the constants $L_{F,r}$ and $L_{F,d}$ are from [](#lem-component-potential-lipschitz).\n4011: 4.  **Apply the Deterministic Bound for Standardization:**\n4012:     We now substitute the deterministic bound from [](#thm-global-continuity-patched-standardization) for both the reward and distance standardization pipelines. For $*\\in\\{r,d\\}$ we obtain"
+      "references": [
+        "def-walker",
+        "def-swarm-and-state-space"
+      ],
+      "raw_directive": "4243: \n4244: $$\n4245: \\|\\mathbf{V}_1 - \\mathbf{V}_2\\|_2^2 \\le F_{\\text{pot,det}}(\\mathcal{S}_1, \\mathcal{S}_2, \\mathbf{v}_{r1}, \\mathbf{v}_{r2}, \\mathbf{v}_{d1}, \\mathbf{v}_{d2})\n4246: \n4247: $$\n4248: \n4249: where $F_{\\text{pot,det}}$ is a deterministic bounding function that is jointly continuous in its arguments and vanishes as $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1, \\mathcal{S}_2) \\to 0$, $\\|\\mathbf{v}_{r1} - \\mathbf{v}_{r2}\\|_2 \\to 0$, and $\\|\\mathbf{v}_{d1} - \\mathbf{v}_{d2}\\|_2 \\to 0$.\n4250: :::\n4251: \n4252: #### 12.3.2 Proof of Deterministic Continuity for the Fitness Potential Operator\n4253: :label: proof-deterministic-potential-continuity\n4254: :::{prf:proof}\n4255: :label: proof-proof-deterministic-potential-continuity\n4256: **Proof.**\n4257: The proof proceeds by deterministically decomposing the total error and applying the established continuity properties of the constituent operators.\n4258: 1.  **Decomposition of Total Error:** The total squared error is decomposed into contributions from unstable walker ({prf:ref}`def-walker`)s (whose status changes) and stable walkers.\n4259: \n4260: $$\n4261:     \\|\\mathbf{V}_1 - \\mathbf{V}_2\\|_2^2 = \\sum_{i \\in \\mathcal{A}_{\\text{unstable}}} |V_{1,i} - V_{2,i}|^2 + \\sum_{i \\in \\mathcal{A}_{\\text{stable}}} |V_{1,i} - V_{2,i}|^2\n4262: \n4263: $$\n4264: \n4265: 2.  **Bound the Error from Unstable Walker ({prf:ref}`def-walker`)s:**\n4266:     The error from the $n_c$ unstable walker ({prf:ref}`def-walker`)s is bounded deterministically. Since one potential is zero and the other is bounded by $V_{\\text{pot,max}}$ ([](#lem-potential-boundedness)), this component is bounded by:\n4267: \n4268: $$\n4269:     \\sum_{i \\in \\mathcal{A}_{\\text{unstable}}} |V_{1,i} - V_{2,i}|^2 \\le V_{\\text{pot,max}}^2 \\cdot n_c(\\mathcal{S}_1, \\mathcal{S}_2)\n4270: \n4271: $$\n4272: \n4273: 3.  **Bound the Error from Stable Walker ({prf:ref}`def-walker`)s:**\n4274:     For stable walker ({prf:ref}`def-walker`)s, the potential $V_i$ is a composite function of the standardized vectors for rewards and distance: $V_i = F(z_{r,i}, z_{d,i})$. As shown in [](#lem-component-potential-lipschitz), the function $F$ is globally Lipschitz continuous with respect to its Z-score inputs. The total squared error for the stable set is therefore bounded by a linear combination of the squared errors of the underlying standardization pipelines:\n4275: \n4276: $$\n4277:     \\sum_{i \\in \\mathcal{A}_{\\text{stable}}} |V_{1,i} - V_{2,i}|^2 \\le 2L_{F,r}^2 \\|\\mathbf{z}_{r,1} - \\mathbf{z}_{r,2}\\|_2^2 + 2L_{F,d}^2 \\|\\mathbf{z}_{d,1} - \\mathbf{z}_{d,2}\\|_2^2\n4278: \n4279: $$\n4280: \n4281: where the constants $L_{F,r}$ and $L_{F,d}$ are from [](#lem-component-potential-lipschitz).\n4282: 4.  **Apply the Deterministic Bound for Standardization:**\n4283:     We now substitute the deterministic bound from [](#thm-global-continuity-patched-standardization) for both the reward and distance standardization pipelines. For $*\\in\\{r,d\\}$ we obtain"
     },
     {
       "directive_type": "corollary",
       "label": "cor-pipeline-continuity-margin-stability",
       "title": null,
-      "start_line": 4014,
-      "end_line": 4027,
+      "start_line": 4285,
+      "end_line": 4301,
       "header_lines": [
-        4015
+        4286
       ],
-      "content_start": 4017,
-      "content_end": 4026,
-      "content": "4017: \n4018: $$\n4019: where $C_{V,\\text{total}}^{(*)}$ is defined in [](#def-lipschitz-value-error-coefficients) and $C_{S,\\text{direct}}^{(*)}$, $C_{S,\\text{indirect}}^{(*)}$ are from [](#def-lipschitz-structural-error-coefficients). The dependence on the swarm states is entirely through these deterministic coefficients.\n4020: 5.  **Assemble the Final Bound `F_pot,det`:**\n4021:     Combining the bounds from steps 2\u20134 yields the final deterministic function $F_{\\text{pot,det}}$. It is a sum of terms proportional to $\\|\\Delta\\mathbf{v}_r\\|^2$, $\\|\\Delta\\mathbf{v}_d\\|^2$, $n_c$, and $n_c^2$, with coefficients obtained by collecting $V_{\\text{pot,max}}$, $L_{F,*}$, and the standardization constants $C_{V,\\text{total}}^{(*)}$, $C_{S,\\text{direct}}^{(*)}$, $C_{S,\\text{indirect}}^{(*)}$. Since each constituent coefficient is finite by definition, $F_{\\text{pot,det}}$ is a well-defined, continuous bound on the deterministic error. This completes the proof.\n4022: **Q.E.D.**\n4023: :::\n4024: #### 12.3.3 Corollary: Pipeline Continuity Under Margin-Based Status Stability\n4025: :::{prf:corollary}\n4026: :label: cor-pipeline-continuity-margin-stability",
+      "content_start": 4288,
+      "content_end": 4300,
+      "content": "4288: $$\n4289: \n4290: where $C_{V,\\text{total}}^{(*)}$ is defined in [](#def-lipschitz-value-error-coefficients) and $C_{S,\\text{direct}}^{(*)}$, $C_{S,\\text{indirect}}^{(*)}$ are from [](#def-lipschitz-structural-error-coefficients). The dependence on the swarm ({prf:ref}`def-swarm-and-state-space`) states is entirely through these deterministic coefficients.\n4291: 5.  **Assemble the Final Bound `F_pot,det`:**\n4292:     Combining the bounds from steps 2\u20134 yields the final deterministic function $F_{\\text{pot,det}}$. It is a sum of terms proportional to $\\|\\Delta\\mathbf{v}_r\\|^2$, $\\|\\Delta\\mathbf{v}_d\\|^2$, $n_c$, and $n_c^2$, with coefficients obtained by collecting $V_{\\text{pot,max}}$, $L_{F,*}$, and the standardization constants $C_{V,\\text{total}}^{(*)}$, $C_{S,\\text{direct}}^{(*)}$, $C_{S,\\text{indirect}}^{(*)}$. Since each constituent coefficient is finite by definition, $F_{\\text{pot,det}}$ is a well-defined, continuous bound on the deterministic error. This completes the proof.\n4293: **Q.E.D.**\n4294: :::\n4295: #### 12.3.3 Corollary: Pipeline Continuity Under Margin-Based Status Stability\n4296: :::{prf:corollary}\n4297: :label: cor-pipeline-continuity-margin-stability\n4298: \n4299: Under {prf:ref}`axiom-margin-stability`, the deterministic bound from {prf:ref}`thm-deterministic-potential-continuity` simplifies significantly, with the unstable term vanishing for small input perturbations.\n4300: ",
       "metadata": {
         "label": "cor-pipeline-continuity-margin-stability"
       },
       "section": "## 13. Fitness potential operator",
-      "references": [],
-      "raw_directive": "4014: \n4015:     \\|\\mathbf{z}_{*,1} - \\mathbf{z}_{*,2}\\|_2^2 \\le 2 C_{V,\\text{total}}^{(*)}\\cdot \\|\\Delta\\mathbf{v}_*\\|_2^2 + 2 C_{S,\\text{direct}}^{(*)} \\cdot n_c + 2 C_{S,\\text{indirect}}^{(*)}(\\mathcal{S}_1,\\mathcal{S}_2) \\cdot n_c^2,\n4016: \n4017: \n4018: $$\n4019: where $C_{V,\\text{total}}^{(*)}$ is defined in [](#def-lipschitz-value-error-coefficients) and $C_{S,\\text{direct}}^{(*)}$, $C_{S,\\text{indirect}}^{(*)}$ are from [](#def-lipschitz-structural-error-coefficients). The dependence on the swarm states is entirely through these deterministic coefficients.\n4020: 5.  **Assemble the Final Bound `F_pot,det`:**\n4021:     Combining the bounds from steps 2\u20134 yields the final deterministic function $F_{\\text{pot,det}}$. It is a sum of terms proportional to $\\|\\Delta\\mathbf{v}_r\\|^2$, $\\|\\Delta\\mathbf{v}_d\\|^2$, $n_c$, and $n_c^2$, with coefficients obtained by collecting $V_{\\text{pot,max}}$, $L_{F,*}$, and the standardization constants $C_{V,\\text{total}}^{(*)}$, $C_{S,\\text{direct}}^{(*)}$, $C_{S,\\text{indirect}}^{(*)}$. Since each constituent coefficient is finite by definition, $F_{\\text{pot,det}}$ is a well-defined, continuous bound on the deterministic error. This completes the proof.\n4022: **Q.E.D.**\n4023: :::\n4024: #### 12.3.3 Corollary: Pipeline Continuity Under Margin-Based Status Stability\n4025: :::{prf:corollary}\n4026: :label: cor-pipeline-continuity-margin-stability\n4027: "
+      "references": [
+        "axiom-margin-stability",
+        "thm-deterministic-potential-continuity",
+        "def-standardization-operator-n-dimensional",
+        "def-perturbation-operator"
+      ],
+      "raw_directive": "4285: $$\n4286:     \\|\\mathbf{z}_{*,1} - \\mathbf{z}_{*,2}\\|_2^2 \\le 2 C_{V,\\text{total}}^{(*)}\\cdot \\|\\Delta\\mathbf{v}_*\\|_2^2 + 2 C_{S,\\text{direct}}^{(*)} \\cdot n_c + 2 C_{S,\\text{indirect}}^{(*)}(\\mathcal{S}_1,\\mathcal{S}_2) \\cdot n_c^2,\n4287: \n4288: $$\n4289: \n4290: where $C_{V,\\text{total}}^{(*)}$ is defined in [](#def-lipschitz-value-error-coefficients) and $C_{S,\\text{direct}}^{(*)}$, $C_{S,\\text{indirect}}^{(*)}$ are from [](#def-lipschitz-structural-error-coefficients). The dependence on the swarm ({prf:ref}`def-swarm-and-state-space`) states is entirely through these deterministic coefficients.\n4291: 5.  **Assemble the Final Bound `F_pot,det`:**\n4292:     Combining the bounds from steps 2\u20134 yields the final deterministic function $F_{\\text{pot,det}}$. It is a sum of terms proportional to $\\|\\Delta\\mathbf{v}_r\\|^2$, $\\|\\Delta\\mathbf{v}_d\\|^2$, $n_c$, and $n_c^2$, with coefficients obtained by collecting $V_{\\text{pot,max}}$, $L_{F,*}$, and the standardization constants $C_{V,\\text{total}}^{(*)}$, $C_{S,\\text{direct}}^{(*)}$, $C_{S,\\text{indirect}}^{(*)}$. Since each constituent coefficient is finite by definition, $F_{\\text{pot,det}}$ is a well-defined, continuous bound on the deterministic error. This completes the proof.\n4293: **Q.E.D.**\n4294: :::\n4295: #### 12.3.3 Corollary: Pipeline Continuity Under Margin-Based Status Stability\n4296: :::{prf:corollary}\n4297: :label: cor-pipeline-continuity-margin-stability\n4298: \n4299: Under {prf:ref}`axiom-margin-stability`, the deterministic bound from {prf:ref}`thm-deterministic-potential-continuity` simplifies significantly, with the unstable term vanishing for small input perturbations.\n4300: \n4301: Assume the **Axiom of Margin-Based Status Stability** ([](#axiom-margin-stability)). Then for all inputs"
     }
   ],
   "validation": {

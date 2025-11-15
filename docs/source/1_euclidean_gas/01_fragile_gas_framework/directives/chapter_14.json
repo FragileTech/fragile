@@ -1,216 +1,256 @@
 {
   "chapter_index": 14,
-  "section_id": "## 14. The Perturbation Operator",
+  "section_id": "## 14. The Perturbation Operator ({prf:ref}`def-perturbation-operator`)",
   "directive_count": 11,
   "hints": [
     {
       "directive_type": "definition",
       "label": "def-perturbation-operator",
-      "title": "Perturbation Operator",
-      "start_line": 4031,
-      "end_line": 4044,
+      "title": "Pertu ({prf:ref}`def-perturbation-operator`)rbation Operator",
+      "start_line": 4305,
+      "end_line": 4318,
       "header_lines": [
-        4032
+        4306
       ],
-      "content_start": 4033,
-      "content_end": 4043,
-      "content": "4033: F_{\\text{pot,det}}(\\mathcal{S}_1, \\mathcal{S}_2, \\mathbf{v}_{r1}, \\mathbf{v}_{r2}, \\mathbf{v}_{d1}, \\mathbf{v}_{d2})\n4034: \\;\\xrightarrow[(d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2),\\,\\|\\Delta\\mathbf{v}_r\\|,\\,\\|\\Delta\\mathbf{v}_d\\|)\\to 0]{}\\;0.\n4035: \n4036: $$\n4037: Moreover, for $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2\\le r_{\\mathrm{status}}$ we have $n_c=0$ and the unstable term vanishes exactly; the remaining terms are controlled by the deterministic continuity of the patched standardization operator and the Lipschitz continuity of the potential map $F$.\n4038: :::\n4039: ## 14. The Perturbation Operator\n4040: The perturbation stage applies a random displacement to each walker in the swarm, representing an exploration step. This is a purely stochastic operator that only affects walker positions.\n4041: ### 13.1 Definition: Perturbation Operator\n4042: :::{prf:definition} Perturbation Operator\n4043: :label: def-perturbation-operator",
+      "content_start": 4307,
+      "content_end": 4317,
+      "content": "4307: \\;\\xrightarrow[(d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2),\\,\\|\\Delta\\mathbf{v}_r\\|,\\,\\|\\Delta\\mathbf{v}_d\\|)\\to 0]{}\\;0.\n4308: \n4309: $$\n4310: \n4311: Moreover, for $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2\\le r_{\\mathrm{status}}$ we have $n_c=0$ and the unstable term vanishes exactly; the remaining terms are controlled by the deterministic continuity of the patched standardization operator ({prf:ref}`def-standardization-operator-n-dimensional`) and the Lipschitz continuity of the potential map $F ({prf:ref}`def-perturbation-operator`)$.\n4312: :::\n4313: ## 14. The Perturbation Operator ({prf:ref}`def-perturbation-operator`)\n4314: The perturbation stage applies a random displacement to each walker in the swarm, representing an exploration step. This is a purely stochastic operator  ({prf:ref}`def-perturbation-operator`)that only affects walker positions.\n4315: ### ({prf:ref}`def-perturbation-operator`) 13.1 Definition: Perturbation Operator\n4316: :::{prf:definition} Pertu ({prf:ref}`def-perturbation-operator`)rbation Operator\n4317: :label: def-perturbation-operator",
       "metadata": {
         "label": "def-perturbation-operator"
       },
-      "section": "## 14. The Perturbation Operator",
-      "references": [],
-      "raw_directive": "4031: $$\n4032: \n4033: F_{\\text{pot,det}}(\\mathcal{S}_1, \\mathcal{S}_2, \\mathbf{v}_{r1}, \\mathbf{v}_{r2}, \\mathbf{v}_{d1}, \\mathbf{v}_{d2})\n4034: \\;\\xrightarrow[(d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2),\\,\\|\\Delta\\mathbf{v}_r\\|,\\,\\|\\Delta\\mathbf{v}_d\\|)\\to 0]{}\\;0.\n4035: \n4036: $$\n4037: Moreover, for $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2\\le r_{\\mathrm{status}}$ we have $n_c=0$ and the unstable term vanishes exactly; the remaining terms are controlled by the deterministic continuity of the patched standardization operator and the Lipschitz continuity of the potential map $F$.\n4038: :::\n4039: ## 14. The Perturbation Operator\n4040: The perturbation stage applies a random displacement to each walker in the swarm, representing an exploration step. This is a purely stochastic operator that only affects walker positions.\n4041: ### 13.1 Definition: Perturbation Operator\n4042: :::{prf:definition} Perturbation Operator\n4043: :label: def-perturbation-operator\n4044: The **Perturbation Operator**, denoted $\\Psi_{\\text{pert}}: \\Sigma_N \\to \\mathcal{P}(\\Sigma_N)$, maps an input swarm $\\mathcal{S}_{\\text{in}}$ to a distribution over swarms where only the positions have been updated."
+      "section": "## 14. The Perturbation Operator ({prf:ref}`def-perturbation-operator`)",
+      "references": [
+        "def-perturbation-operator",
+        "def-swarm-and-state-space",
+        "def-walker",
+        "def-perturbation-measure"
+      ],
+      "raw_directive": "4305: $$\n4306: F_{\\text{pot,det}}(\\mathcal{S}_1, \\mathcal{S}_2, \\mathbf{v}_{r1}, \\mathbf{v}_{r2}, \\mathbf{v}_{d1}, \\mathbf{v}_{d2})\n4307: \\;\\xrightarrow[(d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2),\\,\\|\\Delta\\mathbf{v}_r\\|,\\,\\|\\Delta\\mathbf{v}_d\\|)\\to 0]{}\\;0.\n4308: \n4309: $$\n4310: \n4311: Moreover, for $d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}_1,\\mathcal{S}_2)^2\\le r_{\\mathrm{status}}$ we have $n_c=0$ and the unstable term vanishes exactly; the remaining terms are controlled by the deterministic continuity of the patched standardization operator ({prf:ref}`def-standardization-operator-n-dimensional`) and the Lipschitz continuity of the potential map $F ({prf:ref}`def-perturbation-operator`)$.\n4312: :::\n4313: ## 14. The Perturbation Operator ({prf:ref}`def-perturbation-operator`)\n4314: The perturbation stage applies a random displacement to each walker in the swarm, representing an exploration step. This is a purely stochastic operator  ({prf:ref}`def-perturbation-operator`)that only affects walker positions.\n4315: ### ({prf:ref}`def-perturbation-operator`) 13.1 Definition: Perturbation Operator\n4316: :::{prf:definition} Pertu ({prf:ref}`def-perturbation-operator`)rbation Operator\n4317: :label: def-perturbation-operator\n4318: The **Perturbation Operator ({prf:ref}`def-perturbation-operator`)**, denoted $\\Psi_{\\text{pert}}: \\Sigma_N \\to \\mathcal{P}(\\Sigma_N)$, maps an input swarm ({prf:ref}`def-swarm-and-state-space`) $\\mathcal{S}_{\\text{in}}$ to a distribution over swarms where only the positions have been updated."
     },
     {
       "directive_type": "axiom",
       "label": "def-axiom-bounded-second-moment-perturbation",
       "title": "Axiom of Bounded Second Moment of Perturbation",
-      "start_line": 4053,
-      "end_line": 4066,
+      "start_line": 4327,
+      "end_line": 4343,
       "header_lines": [
-        4054
+        4328
       ],
-      "content_start": 4055,
-      "content_end": 4065,
-      "content": "4055: :::\n4056: :::{admonition} Randomness discipline for perturbation\n4057: :class: note\n4058: For each walker $i$, sample the perturbation noise $\\xi_i$ independently from the chosen noise law (Gaussian, uniform ball, heat kernel, \u2026), using a per\u2011walker PRNG stream. If the noise scale $\\sigma$ is adapted from $\\mathcal S_t$, the mapping $\\sigma(\\mathcal S_t)$ is deterministic; no shared, additional randomness is introduced at this stage. This enforces within\u2011step independence required by Assumption A.\n4059: :::\n4060: ### 13.2 Continuity of the Perturbation Operator\n4061: The Perturbation Operator is a purely stochastic operator that updates the positions of all walkers in the swarm according to the **Perturbation Measure**. This section establishes the probabilistic continuity of this operator with respect to the **N-Particle Displacement Metric ($d_{\\text{Disp},\\mathcal{Y}}$)**. The analysis will show that for two input swarms that are close to each other, the resulting output swarms are also close with high probability. The proof relies on a fundamental axiomatic property of the chosen noise measure and projection map, which bounds the expected displacement in the algorithmic space. We will use this axiom to construct a high-probability bound on the total output displacement by decomposing the error into its positional and status components.\n4062: #### 13.2.1 Axiomatic Requirement: Bounded Second Moment of Perturbation\n4063: For the continuity of the Perturbation Operator to be well-defined, the random displacement it introduces must be statistically bounded. The user's choice of **Perturbation Measure** and **Projection Map** must satisfy an axiom that provides a uniform bound on the mean of the squared displacement in the algorithmic space.\n4064: :::{prf:axiom} Axiom of Bounded Second Moment of Perturbation\n4065: :label: def-axiom-bounded-second-moment-perturbation",
+      "content_start": 4329,
+      "content_end": 4342,
+      "content": "4329: :::\n4330: :::{admonition} Randomness discipline for perturbation\n4331: :class: note\n4332: For each walker ({prf:ref}`def-walker`) $i$, sample the perturbation noise $\\xi_i$ independently from the chosen noise law (Gaussian, uniform ball, heat kernel, \u2026), using a per\u2011walker PRNG stream. If the noise scale $\\sigma$ is adapted from $\\mathcal S_t$, the mapping $\\sigma(\\mathcal S_t)$ is deterministic; no shared, additional randomness is introduced at this stage. This enforces within\u2011step independence required by Assumption A.\n4333: :::\n4334: ### 13.2 Continuity of the Perturbation Operator ({prf:ref}`def-perturbation-operator`)\n4335: The Perturbation Operator ({prf:ref}`def-perturbation-operator`) is a purely stochastic operator that updates the positions of all walker ({prf:ref}`def-walker`)s in the swarm according to the **Perturbation Measure**. This section establishes the probabilistic continuity of this operator with respect to the **N-Particle Displacement ({prf:ref}`def-n-particle-displacement-metric`) Metric ($d_{\\text{Disp},\\mathcal{Y}}$)**. The analysis will show that for two input swarms that are close to each other, the resulting output swarms are also close with high probability. The proof relies on a fundamental axiomatic property of the chosen noise measure and projection map, which bounds the expected displacement in the algorithmic space. We will use this axiom to construct a high-probability bound on the total output displacement by decomposing the error into its positional and status components.\n4336: #### 13.2.1 Axiomatic Requirement: Bounded Second Moment of Perturbation\n4337: For the continuity of the Perturbation Operator ({prf:ref}`def-perturbation-operator`) to be well-defined, the random displacement it introduces must be statistically bounded. The user's choice of **Perturbation Measure ({prf:ref}`def-perturbation-measure`)** and **Projection Map** must satisfy an axiom that provides a uniform bound on the mean of the squared displacement in the algorithmic space.\n4338: :::{prf:axiom} Axiom of Bounded Second Moment of Perturbation\n4339: :label: def-axiom-bounded-second-moment-perturbation\n4340: This axiom constrains the {prf:ref}`def-perturbation-measure` and ensures bounded behavior in the {prf:ref}`def-algorithmic-space-generic`.\n4341: \n4342: *   **Core Assumption:** The expectation of the squared displacement caused by the **Perturbation Measure ({prf:ref}`def-perturbation-measure`)**, after being projected into the **Algorithmic Space ({prf:ref}`def-algorithmic-space-generic`)**, is uniformly bounded across all possible starting positions. This ensures that, on average, walker ({prf:ref}`def-walker`)s do not experience infinite displacement.",
       "metadata": {
         "label": "def-axiom-bounded-second-moment-perturbation"
       },
-      "section": "## 14. The Perturbation Operator",
-      "references": [],
-      "raw_directive": "4053: 2.  Its status remains unchanged from the input: $s_{\\text{out},i} = s_{\\text{in},i}$.\n4054: The operator is the product measure of these N independent processes.\n4055: :::\n4056: :::{admonition} Randomness discipline for perturbation\n4057: :class: note\n4058: For each walker $i$, sample the perturbation noise $\\xi_i$ independently from the chosen noise law (Gaussian, uniform ball, heat kernel, \u2026), using a per\u2011walker PRNG stream. If the noise scale $\\sigma$ is adapted from $\\mathcal S_t$, the mapping $\\sigma(\\mathcal S_t)$ is deterministic; no shared, additional randomness is introduced at this stage. This enforces within\u2011step independence required by Assumption A.\n4059: :::\n4060: ### 13.2 Continuity of the Perturbation Operator\n4061: The Perturbation Operator is a purely stochastic operator that updates the positions of all walkers in the swarm according to the **Perturbation Measure**. This section establishes the probabilistic continuity of this operator with respect to the **N-Particle Displacement Metric ($d_{\\text{Disp},\\mathcal{Y}}$)**. The analysis will show that for two input swarms that are close to each other, the resulting output swarms are also close with high probability. The proof relies on a fundamental axiomatic property of the chosen noise measure and projection map, which bounds the expected displacement in the algorithmic space. We will use this axiom to construct a high-probability bound on the total output displacement by decomposing the error into its positional and status components.\n4062: #### 13.2.1 Axiomatic Requirement: Bounded Second Moment of Perturbation\n4063: For the continuity of the Perturbation Operator to be well-defined, the random displacement it introduces must be statistically bounded. The user's choice of **Perturbation Measure** and **Projection Map** must satisfy an axiom that provides a uniform bound on the mean of the squared displacement in the algorithmic space.\n4064: :::{prf:axiom} Axiom of Bounded Second Moment of Perturbation\n4065: :label: def-axiom-bounded-second-moment-perturbation\n4066: *   **Core Assumption:** The expectation of the squared displacement caused by the **Perturbation Measure**, after being projected into the **Algorithmic Space**, is uniformly bounded across all possible starting positions. This ensures that, on average, walkers do not experience infinite displacement."
+      "section": "## 14. The Perturbation Operator ({prf:ref}`def-perturbation-operator`)",
+      "references": [
+        "def-perturbation-measure",
+        "def-algorithmic-space-generic",
+        "def-walker",
+        "thm-mcdiarmids-inequality"
+      ],
+      "raw_directive": "4327: 2.  Its status remains unchanged from the input: $s_{\\text{out},i} = s_{\\text{in},i}$.\n4328: The operator is the product measure of these N independent processes.\n4329: :::\n4330: :::{admonition} Randomness discipline for perturbation\n4331: :class: note\n4332: For each walker ({prf:ref}`def-walker`) $i$, sample the perturbation noise $\\xi_i$ independently from the chosen noise law (Gaussian, uniform ball, heat kernel, \u2026), using a per\u2011walker PRNG stream. If the noise scale $\\sigma$ is adapted from $\\mathcal S_t$, the mapping $\\sigma(\\mathcal S_t)$ is deterministic; no shared, additional randomness is introduced at this stage. This enforces within\u2011step independence required by Assumption A.\n4333: :::\n4334: ### 13.2 Continuity of the Perturbation Operator ({prf:ref}`def-perturbation-operator`)\n4335: The Perturbation Operator ({prf:ref}`def-perturbation-operator`) is a purely stochastic operator that updates the positions of all walker ({prf:ref}`def-walker`)s in the swarm according to the **Perturbation Measure**. This section establishes the probabilistic continuity of this operator with respect to the **N-Particle Displacement ({prf:ref}`def-n-particle-displacement-metric`) Metric ($d_{\\text{Disp},\\mathcal{Y}}$)**. The analysis will show that for two input swarms that are close to each other, the resulting output swarms are also close with high probability. The proof relies on a fundamental axiomatic property of the chosen noise measure and projection map, which bounds the expected displacement in the algorithmic space. We will use this axiom to construct a high-probability bound on the total output displacement by decomposing the error into its positional and status components.\n4336: #### 13.2.1 Axiomatic Requirement: Bounded Second Moment of Perturbation\n4337: For the continuity of the Perturbation Operator ({prf:ref}`def-perturbation-operator`) to be well-defined, the random displacement it introduces must be statistically bounded. The user's choice of **Perturbation Measure ({prf:ref}`def-perturbation-measure`)** and **Projection Map** must satisfy an axiom that provides a uniform bound on the mean of the squared displacement in the algorithmic space.\n4338: :::{prf:axiom} Axiom of Bounded Second Moment of Perturbation\n4339: :label: def-axiom-bounded-second-moment-perturbation\n4340: This axiom constrains the {prf:ref}`def-perturbation-measure` and ensures bounded behavior in the {prf:ref}`def-algorithmic-space-generic`.\n4341: \n4342: *   **Core Assumption:** The expectation of the squared displacement caused by the **Perturbation Measure ({prf:ref}`def-perturbation-measure`)**, after being projected into the **Algorithmic Space ({prf:ref}`def-algorithmic-space-generic`)**, is uniformly bounded across all possible starting positions. This ensures that, on average, walker ({prf:ref}`def-walker`)s do not experience infinite displacement.\n4343: *   **Axiomatic Parameter:** The user of this framework must provide one non-negative constant derived from their choice of operators:"
     },
     {
       "directive_type": "lemma",
       "label": "lem-sub-perturbation-positional-bound-reproof",
       "title": "Bounding the Output Positional Displacement",
-      "start_line": 4069,
-      "end_line": 4078,
+      "start_line": 4346,
+      "end_line": 4358,
       "header_lines": [
-        4070
+        4347
       ],
-      "content_start": 4071,
-      "content_end": 4077,
-      "content": "4071: \n4072: M_{\\text{pert}}^2 \\ge \\sup_{x_{\\text{in}} \\in \\mathcal{X}} \\mathbb{E}[Y]\n4073: \n4074: $$\n4075: *   **Framework Application:** This axiom provides a uniform bound on the *mean* of the random displacement. The *fluctuations* around this mean are bounded via **McDiarmid\u2019s inequality** for functions of independent inputs (Assumption A), applied to the average of per\u2011walker squared displacements. Bounded differences hold with constants $c_i=D_{\\mathcal{Y}}^2/N$ since each term lies in $[0,D_{\\mathcal{Y}}^2]$ (finite diameter). No further variance assumptions are required. See Boucheron\u2013Lugosi\u2013Massart (Appendix B).\n4076: *   **Failure Mode Analysis:** If this axiom is violated (i.e., if the supremum is infinite), walkers could be displaced by an infinite amount on average, making the operator's behavior unpredictable and breaking the continuity guarantees.\n4077: :::",
+      "content_start": 4348,
+      "content_end": 4357,
+      "content": "4348: \n4349: M_{\\text{pert}}^2 \\ge \\sup_{x_{\\text{in}} \\in \\mathcal{X}} \\mathbb{E}[Y]\n4350: \n4351: $$\n4352: *   **Framework Application:** This axiom provides a uniform bound on the *mean* of the random displacement. The *fluctuations* around this mean are bounded via **McDiarmid\u2019s inequality** for functions of independent inputs (Assumption A), applied to the average of per\u2011walker ({prf:ref}`def-walker`) squared displacements. Bounded differences ({prf:ref}`thm-mcdiarmids-inequality`) hold with constants $c_i=D_{\\mathcal{Y}}^2/N$ since each term lies in $[0,D_{\\mathcal{Y}}^2]$ (finite diameter). No further variance assumptions are required. See Boucheron\u2013Lugosi\u2013Massart (Appendix B).\n4353: *   **Failure Mode Analysis:** If this axiom is violated (i.e., if the supremum is infinite), walker ({prf:ref}`def-walker`)s could be displaced by an infinite amount on average, making the operator's behavior unpredictable and breaking the continuity guarantees.\n4354: :::\n4355: #### 13.2.2. Bounding the Output Positional Displacement\n4356: The first step is to establish an algebraic bound on the positional displacement between the two output swarms. This bound decomposes the total output displacement into the initial input displacement and the random displacement introduced by the perturbation operator ({prf:ref}`def-perturbation-operator`) acting on each swarm ({prf:ref}`def-swarm-and-state-space`).\n4357: :::{prf:lemma} Bounding the Output Positional Displacement",
       "metadata": {
         "label": "lem-sub-perturbation-positional-bound-reproof"
       },
-      "section": "## 14. The Perturbation Operator",
-      "references": [],
-      "raw_directive": "4069: *   **Condition:** For any starting position $x_{\\text{in}} \\in \\mathcal{X}$, let the random variable for the squared displacement be $Y := d_{\\mathcal{Y}}(\\varphi(x_{\\text{out}}), \\varphi(x_{\\text{in}}))^2$ where $x_{\\text{out}} \\sim \\mathcal{P}_\\sigma(x_{\\text{in}}, \\cdot)$. The constant must satisfy:\n4070: $$\n4071: \n4072: M_{\\text{pert}}^2 \\ge \\sup_{x_{\\text{in}} \\in \\mathcal{X}} \\mathbb{E}[Y]\n4073: \n4074: $$\n4075: *   **Framework Application:** This axiom provides a uniform bound on the *mean* of the random displacement. The *fluctuations* around this mean are bounded via **McDiarmid\u2019s inequality** for functions of independent inputs (Assumption A), applied to the average of per\u2011walker squared displacements. Bounded differences hold with constants $c_i=D_{\\mathcal{Y}}^2/N$ since each term lies in $[0,D_{\\mathcal{Y}}^2]$ (finite diameter). No further variance assumptions are required. See Boucheron\u2013Lugosi\u2013Massart (Appendix B).\n4076: *   **Failure Mode Analysis:** If this axiom is violated (i.e., if the supremum is infinite), walkers could be displaced by an infinite amount on average, making the operator's behavior unpredictable and breaking the continuity guarantees.\n4077: :::\n4078: #### 13.2.2. Bounding the Output Positional Displacement"
+      "section": "## 14. The Perturbation Operator ({prf:ref}`def-perturbation-operator`)",
+      "references": [
+        "def-perturbation-operator",
+        "def-swarm-and-state-space"
+      ],
+      "raw_directive": "4346: \n4347: $$\n4348: \n4349: M_{\\text{pert}}^2 \\ge \\sup_{x_{\\text{in}} \\in \\mathcal{X}} \\mathbb{E}[Y]\n4350: \n4351: $$\n4352: *   **Framework Application:** This axiom provides a uniform bound on the *mean* of the random displacement. The *fluctuations* around this mean are bounded via **McDiarmid\u2019s inequality** for functions of independent inputs (Assumption A), applied to the average of per\u2011walker ({prf:ref}`def-walker`) squared displacements. Bounded differences ({prf:ref}`thm-mcdiarmids-inequality`) hold with constants $c_i=D_{\\mathcal{Y}}^2/N$ since each term lies in $[0,D_{\\mathcal{Y}}^2]$ (finite diameter). No further variance assumptions are required. See Boucheron\u2013Lugosi\u2013Massart (Appendix B).\n4353: *   **Failure Mode Analysis:** If this axiom is violated (i.e., if the supremum is infinite), walker ({prf:ref}`def-walker`)s could be displaced by an infinite amount on average, making the operator's behavior unpredictable and breaking the continuity guarantees.\n4354: :::\n4355: #### 13.2.2. Bounding the Output Positional Displacement\n4356: The first step is to establish an algebraic bound on the positional displacement between the two output swarms. This bound decomposes the total output displacement into the initial input displacement and the random displacement introduced by the perturbation operator ({prf:ref}`def-perturbation-operator`) acting on each swarm ({prf:ref}`def-swarm-and-state-space`).\n4357: :::{prf:lemma} Bounding the Output Positional Displacement\n4358: :label: lem-sub-perturbation-positional-bound-reproof"
     },
     {
       "directive_type": "proof",
       "label": "proof-lem-sub-perturbation-positional-bound-reproof",
       "title": null,
-      "start_line": 4079,
-      "end_line": 4091,
+      "start_line": 4359,
+      "end_line": 4372,
       "header_lines": [
-        4080
+        4360
       ],
-      "content_start": 4082,
-      "content_end": 4090,
-      "content": "4082: Let $\\mathcal{S}_1, \\mathcal{S}_2$ be two input swarms, and let $\\mathcal{S}'_1, \\mathcal{S}'_2$ be the corresponding output swarms after applying the Perturbation Operator. The total squared positional displacement between the output swarms, $\\Delta_{\\text{pos}}^2(\\mathcal{S}'_1, \\mathcal{S}'_2)$, is bounded as follows:\n4083: $$\n4084: \n4085: \\Delta_{\\text{pos}}^2(\\mathcal{S}'_1, \\mathcal{S}'_2) \\le 3\\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) + 3\\Delta_{\\text{pert}}^2(\\mathcal{S}_1) + 3\\Delta_{\\text{pert}}^2(\\mathcal{S}_2)\n4086: \n4087: $$\n4088: where $\\Delta_{\\text{pert}}^2(\\mathcal{S})$ is the **Total Perturbation-Induced Displacement** from [](#def-perturbation-fluctuation-bounds-reproof).\n4089: :::\n4090: :::{prf:proof}",
+      "content_start": 4362,
+      "content_end": 4371,
+      "content": "4362: \n4363: $$\n4364: \n4365: \\Delta_{\\text{pos}}^2(\\mathcal{S}'_1, \\mathcal{S}'_2) \\le 3\\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) + 3\\Delta_{\\text{pert}}^2(\\mathcal{S}_1) + 3\\Delta_{\\text{pert}}^2(\\mathcal{S}_2)\n4366: \n4367: $$\n4368: where $\\Delta_{\\text{pert}}^2(\\mathcal{S})$ is the **Total Perturbation-Induced Displacement** from [](#def-perturbation-fluctuation-bounds-reproof).\n4369: :::\n4370: :::{prf:proof}\n4371: :label: proof-lem-sub-perturbation-positional-bound-reproof",
       "metadata": {
         "label": "proof-lem-sub-perturbation-positional-bound-reproof"
       },
-      "section": "## 14. The Perturbation Operator",
-      "references": [],
-      "raw_directive": "4079: The first step is to establish an algebraic bound on the positional displacement between the two output swarms. This bound decomposes the total output displacement into the initial input displacement and the random displacement introduced by the perturbation operator acting on each swarm.\n4080: :::{prf:lemma} Bounding the Output Positional Displacement\n4081: :label: lem-sub-perturbation-positional-bound-reproof\n4082: Let $\\mathcal{S}_1, \\mathcal{S}_2$ be two input swarms, and let $\\mathcal{S}'_1, \\mathcal{S}'_2$ be the corresponding output swarms after applying the Perturbation Operator. The total squared positional displacement between the output swarms, $\\Delta_{\\text{pos}}^2(\\mathcal{S}'_1, \\mathcal{S}'_2)$, is bounded as follows:\n4083: $$\n4084: \n4085: \\Delta_{\\text{pos}}^2(\\mathcal{S}'_1, \\mathcal{S}'_2) \\le 3\\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) + 3\\Delta_{\\text{pert}}^2(\\mathcal{S}_1) + 3\\Delta_{\\text{pert}}^2(\\mathcal{S}_2)\n4086: \n4087: $$\n4088: where $\\Delta_{\\text{pert}}^2(\\mathcal{S})$ is the **Total Perturbation-Induced Displacement** from [](#def-perturbation-fluctuation-bounds-reproof).\n4089: :::\n4090: :::{prf:proof}\n4091: :label: proof-lem-sub-perturbation-positional-bound-reproof"
+      "section": "## 14. The Perturbation Operator ({prf:ref}`def-perturbation-operator`)",
+      "references": [
+        "def-algorithmic-space-generic",
+        "def-swarm-and-state-space",
+        "def-walker"
+      ],
+      "raw_directive": "4359: This lemma analyzes the output displacement of the {prf:ref}`def-perturbation-operator`.\n4360: \n4361: Let $\\mathcal{S}_1, \\mathcal{S}_2$ be two input swarm ({prf:ref}`def-swarm-and-state-space`)s, and let $\\mathcal{S}'_1, \\mathcal{S}'_2$ be the corresponding output swarms after applying the Perturbation Operator ({prf:ref}`def-perturbation-operator`). The total squared positional displacement between the output swarms, $\\Delta_{\\text{pos}}^2(\\mathcal{S}'_1, \\mathcal{S}'_2)$, is bounded as follows:\n4362: \n4363: $$\n4364: \n4365: \\Delta_{\\text{pos}}^2(\\mathcal{S}'_1, \\mathcal{S}'_2) \\le 3\\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2) + 3\\Delta_{\\text{pert}}^2(\\mathcal{S}_1) + 3\\Delta_{\\text{pert}}^2(\\mathcal{S}_2)\n4366: \n4367: $$\n4368: where $\\Delta_{\\text{pert}}^2(\\mathcal{S})$ is the **Total Perturbation-Induced Displacement** from [](#def-perturbation-fluctuation-bounds-reproof).\n4369: :::\n4370: :::{prf:proof}\n4371: :label: proof-lem-sub-perturbation-positional-bound-reproof\n4372: "
     },
     {
       "directive_type": "lemma",
-      "label": "lem-bounded-differences-favg",
-      "title": "Bounded differences for $f_{\\text{avg}}$",
-      "start_line": 4103,
-      "end_line": 4107,
-      "header_lines": [
-        4104
+      "label": "unlabeled-lemma-83",
+      "title": "Bounded differences ({prf:ref}`thm-mcdiarmids-inequality`) for $f_{\\text{avg}}$",
+      "start_line": 4385,
+      "end_line": 4391,
+      "header_lines": [],
+      "content_start": 4388,
+      "content_end": 4390,
+      "content": "4388: \n4389: $$\n4390: ",
+      "metadata": {},
+      "section": "## 14. The Perturbation Operator ({prf:ref}`def-perturbation-operator`)",
+      "references": [
+        "thm-mcdiarmids-inequality",
+        "def-perturbation-operator"
       ],
-      "content_start": 4106,
-      "content_end": 4106,
-      "content": "4106: For clarity, we analyze the normalized functional",
-      "metadata": {
-        "label": "lem-bounded-differences-favg"
-      },
-      "section": "## 14. The Perturbation Operator",
-      "references": [],
-      "raw_directive": "4103: #### 13.2.3. Concentration Inequality for Total Perturbation-Induced Displacement\n4104: The algebraic bound from the previous section shows that the final positional displacement depends on the random variable $\\Delta_{\\text{pert}}^2(\\mathcal{S})$. To establish a probabilistic continuity bound, we must find a high-probability bound for this random variable. The term $\\Delta_{\\text{pert}}^2(\\mathcal{S})$ is a sum of the **N** random squared displacements of each walker, which are statistically independent for a fixed initial state $\\mathcal{S}$. This allows us to apply a concentration inequality for functions of independent random variables to bound its deviation from its expected value. We will use McDiarmid's Inequality.\n4105: ##### 13.2.3.0. Inputs and Lipschitz constants for McDiarmid\n4106: For clarity, we analyze the normalized functional\n4107: $$"
+      "raw_directive": "4385: The algebraic bound from the previous section shows that the final positional displacement depends on the random variable $\\Delta_{\\text{pert}}^2(\\mathcal{S})$. To establish a probabilistic continuity bound, we must find a high-probability bound for this random variable. The term $\\Delta_{\\text{pert}}^2(\\mathcal{S})$ is a sum of the **N** random squared displacements of each walker ({prf:ref}`def-walker`), which are statistically independent for a fixed initial state $\\mathcal{S}$. This allows us to apply a concentration inequality for functions of independent random variables to bound its deviation from its expected value. We will use McDiarmid's Inequality.\n4386: ##### 13.2.3.0. Inputs and Lipschitz constants for McDiarmid\n4387: For clarity, we analyze the normalized functional\n4388: \n4389: $$\n4390: \n4391: f_{\\text{avg}}\\;:=\\;\\frac{1}{N}\\,\\Delta_{\\text{pert}}^2(\\mathcal{S}_{\\text{in}})"
     },
     {
       "directive_type": "theorem",
       "label": "thm-mcdiarmids-inequality",
       "title": "McDiarmid's Inequality (Bounded Differences Inequality) (Boucheron\u2013Lugosi\u2013Massart)",
-      "start_line": 4109,
-      "end_line": 4123,
+      "start_line": 4393,
+      "end_line": 4411,
       "header_lines": [
-        4110
+        4394
       ],
-      "content_start": 4111,
-      "content_end": 4122,
-      "content": "4111: \n4112: $$\n4113: Under [](#axiom-bounded-algorithmic-diameter), each term is bounded in $[0, D_{\\mathcal{Y}}^2]$. Changing only the $i$\u2011th random input can change $f_{\\text{avg}}$ by at most $c_i = D_{\\mathcal{Y}}^2/N$. Assumption A supplies the required independence.\n4114: :::{prf:lemma} Bounded differences for $f_{\\text{avg}}$\n4115: :label: lem-bounded-differences-favg\n4116: \n4117: Under [](#axiom-bounded-algorithmic-diameter), for the normalized functional $f_{\\text{avg}}$ defined above, the McDiarmid bounded\u2011difference constants may be taken as $c_i=D_{\\mathcal{Y}}^2/N$ for all $i$.\n4118: :::\n4119: ##### 13.2.3.1. McDiarmid's Inequality (Bounded Differences Inequality)\n4120: :::{prf:theorem} McDiarmid's Inequality (Bounded Differences Inequality) (Boucheron\u2013Lugosi\u2013Massart)\n4121: :label: thm-mcdiarmids-inequality\n4122: Let $X_1, X_2, \\dots, X_N$ be a set of independent random variables. Let $f$ be a function of these variables, $f(X_1, \\dots, X_N)$, that satisfies the **bounded differences property**. This means that for each variable $i \\in \\{1, \\dots, N\\}$, there exists a constant $c_i$ such that if only the $i$-th variable is changed, the function's value cannot change by more than $c_i$:",
+      "content_start": 4395,
+      "content_end": 4410,
+      "content": "4395: Under [](#axiom-bounded-algorithmic-diameter), each term is bounded in $[0, D_{\\mathcal{Y}}^2]$. Changing only the $i$\u2011th random input can change $f_{\\text{avg}}$ by at most $c_i = D_{\\mathcal{Y}}^2/N$. Assumption A supplies the required independe ({prf:ref}`thm-mcdiarmids-inequality`)nce.\n4396: :::{prf:lemma} Bounded differences ({prf:ref}`thm-mcdiarmids-inequality`) for $f_{\\text{avg}}$\n4397: :label ({prf:ref}`thm-mcdiarmids-inequality`): lem-bounded-differences-favg\n4398: \n4399: This le ({prf:ref}`thm-mcdiarmids-inequality`)mma establishes the bounded differences condition for the perturbation displacement functional, enabling application of {prf:ref}`thm-mcdiarmids-inequality` to obtain probabilistic continuity of {prf:ref}`def-perturbation-operator`.\n4400: \n4401: Under [](#axiom-bounded-algorithmic-diameter), for the normalized functional $f_{\\text{avg}}$ defined above, the McDiarmid bounded\u2011difference constants may be taken as $c_i=D_{\\mathcal{Y}}^2/N ({prf:ref}`thm-mcdiarmids-inequality`)$ for all $i$.\n4402: :::\n4403: ##### 13.2.3.1. McDiarmid's Inequality (Bounded Differences Inequality)\n4404: :::{prf:theorem} McDiarmid's Inequality (Bounded Differences Inequality) (Boucheron\u2013Lugosi\u2013Massart)\n4405: :label: thm-mcdiarmids-inequality\n4406: This is a standard concentration inequality from probability theory, used to bound the deviation of {prf:ref}`def-perturbation-operator` from its expected behavior.\n4407: \n4408: Let $X_1, X_2, \\dots, X_N$ be a set of independent random variables. Let $f$ be a function of these variables, $f(X_1, \\dots, X_N)$, that satisfies the **bounded differences property**. This means that for each variable $i \\in \\{1, \\dots, N\\}$, there exists a constant $c_i$ such that if only the $i$-th variable is changed, the function's value cannot change by more than $c_i$:\n4409: \n4410: $$",
       "metadata": {
         "label": "thm-mcdiarmids-inequality"
       },
-      "section": "## 14. The Perturbation Operator",
-      "references": [],
-      "raw_directive": "4109: f_{\\text{avg}}\\;:=\\;\\frac{1}{N}\\,\\Delta_{\\text{pert}}^2(\\mathcal{S}_{\\text{in}})\n4110: \\;=\\; \\frac{1}{N}\\sum_{i=1}^N d_{\\mathcal{Y}}\\!\\big(\\varphi(x'_{\\text{out},i}),\\varphi(x_{\\text{in},i})\\big)^2.\n4111: \n4112: $$\n4113: Under [](#axiom-bounded-algorithmic-diameter), each term is bounded in $[0, D_{\\mathcal{Y}}^2]$. Changing only the $i$\u2011th random input can change $f_{\\text{avg}}$ by at most $c_i = D_{\\mathcal{Y}}^2/N$. Assumption A supplies the required independence.\n4114: :::{prf:lemma} Bounded differences for $f_{\\text{avg}}$\n4115: :label: lem-bounded-differences-favg\n4116: \n4117: Under [](#axiom-bounded-algorithmic-diameter), for the normalized functional $f_{\\text{avg}}$ defined above, the McDiarmid bounded\u2011difference constants may be taken as $c_i=D_{\\mathcal{Y}}^2/N$ for all $i$.\n4118: :::\n4119: ##### 13.2.3.1. McDiarmid's Inequality (Bounded Differences Inequality)\n4120: :::{prf:theorem} McDiarmid's Inequality (Bounded Differences Inequality) (Boucheron\u2013Lugosi\u2013Massart)\n4121: :label: thm-mcdiarmids-inequality\n4122: Let $X_1, X_2, \\dots, X_N$ be a set of independent random variables. Let $f$ be a function of these variables, $f(X_1, \\dots, X_N)$, that satisfies the **bounded differences property**. This means that for each variable $i \\in \\{1, \\dots, N\\}$, there exists a constant $c_i$ such that if only the $i$-th variable is changed, the function's value cannot change by more than $c_i$:\n4123: $$"
+      "section": "## 14. The Perturbation Operator ({prf:ref}`def-perturbation-operator`)",
+      "references": [
+        "def-perturbation-operator"
+      ],
+      "raw_directive": "4393: \n4394: $$\n4395: Under [](#axiom-bounded-algorithmic-diameter), each term is bounded in $[0, D_{\\mathcal{Y}}^2]$. Changing only the $i$\u2011th random input can change $f_{\\text{avg}}$ by at most $c_i = D_{\\mathcal{Y}}^2/N$. Assumption A supplies the required independe ({prf:ref}`thm-mcdiarmids-inequality`)nce.\n4396: :::{prf:lemma} Bounded differences ({prf:ref}`thm-mcdiarmids-inequality`) for $f_{\\text{avg}}$\n4397: :label ({prf:ref}`thm-mcdiarmids-inequality`): lem-bounded-differences-favg\n4398: \n4399: This le ({prf:ref}`thm-mcdiarmids-inequality`)mma establishes the bounded differences condition for the perturbation displacement functional, enabling application of {prf:ref}`thm-mcdiarmids-inequality` to obtain probabilistic continuity of {prf:ref}`def-perturbation-operator`.\n4400: \n4401: Under [](#axiom-bounded-algorithmic-diameter), for the normalized functional $f_{\\text{avg}}$ defined above, the McDiarmid bounded\u2011difference constants may be taken as $c_i=D_{\\mathcal{Y}}^2/N ({prf:ref}`thm-mcdiarmids-inequality`)$ for all $i$.\n4402: :::\n4403: ##### 13.2.3.1. McDiarmid's Inequality (Bounded Differences Inequality)\n4404: :::{prf:theorem} McDiarmid's Inequality (Bounded Differences Inequality) (Boucheron\u2013Lugosi\u2013Massart)\n4405: :label: thm-mcdiarmids-inequality\n4406: This is a standard concentration inequality from probability theory, used to bound the deviation of {prf:ref}`def-perturbation-operator` from its expected behavior.\n4407: \n4408: Let $X_1, X_2, \\dots, X_N$ be a set of independent random variables. Let $f$ be a function of these variables, $f(X_1, \\dots, X_N)$, that satisfies the **bounded differences property**. This means that for each variable $i \\in \\{1, \\dots, N\\}$, there exists a constant $c_i$ such that if only the $i$-th variable is changed, the function's value cannot change by more than $c_i$:\n4409: \n4410: $$\n4411: "
     },
     {
       "directive_type": "lemma",
       "label": "lem-sub-probabilistic-bound-perturbation-displacement-reproof",
       "title": "Probabilistic Bound on Total Perturbation-Induced Displacement",
-      "start_line": 4125,
-      "end_line": 4134,
+      "start_line": 4413,
+      "end_line": 4423,
       "header_lines": [
-        4126
+        4414
       ],
-      "content_start": 4127,
-      "content_end": 4133,
-      "content": "4127: $$\n4128: Then for any $t > 0$, the probability that the function's value deviates from its expected value by more than $t$ is bounded by:\n4129: $$\n4130: \n4131: P(|f(X_1, \\dots, X_N) - \\mathbb{E}[f(X_1, \\dots, X_N)]| \\ge t) \\le 2\\exp\\left(\\frac{-2t^2}{\\sum_{i=1}^N c_i^2}\\right)\n4132: \n4133: $$",
+      "content_start": 4415,
+      "content_end": 4422,
+      "content": "4415: Then for any $t > 0$, the probability that the function's value deviates from its expected value by more than $t$ is bounded by:\n4416: \n4417: $$\n4418: \n4419: P(|f(X_1, \\dots, X_N) - \\mathbb{E}[f(X_1, \\dots, X_N)]| \\ge t) \\le 2\\exp\\left(\\frac{-2t^2}{\\sum_{i=1}^N c_i^2}\\right)\n4420: \n4421: $$\n4422: :::",
       "metadata": {
         "label": "lem-sub-probabilistic-bound-perturbation-displacement-reproof"
       },
-      "section": "## 14. The Perturbation Operator",
-      "references": [],
-      "raw_directive": "4125: \\sup_{x_1, \\dots, x_N, x'_i} |f(x_1, \\dots, x_i, \\dots, x_N) - f(x_1, \\dots, x'_i, \\dots, x_N)| \\le c_i\n4126: \n4127: $$\n4128: Then for any $t > 0$, the probability that the function's value deviates from its expected value by more than $t$ is bounded by:\n4129: $$\n4130: \n4131: P(|f(X_1, \\dots, X_N) - \\mathbb{E}[f(X_1, \\dots, X_N)]| \\ge t) \\le 2\\exp\\left(\\frac{-2t^2}{\\sum_{i=1}^N c_i^2}\\right)\n4132: \n4133: $$\n4134: :::"
+      "section": "## 14. The Perturbation Operator ({prf:ref}`def-perturbation-operator`)",
+      "references": [
+        "def-swarm-and-state-space"
+      ],
+      "raw_directive": "4413: \n4414: $$\n4415: Then for any $t > 0$, the probability that the function's value deviates from its expected value by more than $t$ is bounded by:\n4416: \n4417: $$\n4418: \n4419: P(|f(X_1, \\dots, X_N) - \\mathbb{E}[f(X_1, \\dots, X_N)]| \\ge t) \\le 2\\exp\\left(\\frac{-2t^2}{\\sum_{i=1}^N c_i^2}\\right)\n4420: \n4421: $$\n4422: :::\n4423: ##### 13.2.3.2. Probabilistic Bound on Total Perturbation-Induced Displacement"
     },
     {
       "directive_type": "proof",
       "label": "proof-lem-sub-probabilistic-bound-perturbation-displacement-reproof",
       "title": null,
-      "start_line": 4135,
-      "end_line": 4158,
+      "start_line": 4424,
+      "end_line": 4447,
       "header_lines": [
-        4136
+        4425
       ],
-      "content_start": 4138,
-      "content_end": 4157,
-      "content": "4138: Let $\\mathcal{S}_{\\text{in}}$ be an input swarm. Assume the **Axiom of Bounded Second Moment of Perturbation** ([](#def-axiom-bounded-second-moment-perturbation)) holds. Then for any probability of failure $\\delta' \\in (0, 1)$, the **Total Perturbation-Induced Displacement** is bounded with probability at least $1-\\delta'$:\n4139: $$\n4140: \n4141: \\Delta_{\\text{pert}}^2(\\mathcal{S}_{\\text{in}}) \\le B_M(N) + B_S(N, \\delta')\n4142: \n4143: $$\n4144: where $B_M(N)$ is the **Mean Displacement Bound** and $B_S(N, \\delta')$ is the **Stochastic Fluctuation Bound**, as defined in the subsequent section.\n4145: :::\n4146: :::{prf:proof}\n4147: :label: proof-lem-sub-probabilistic-bound-perturbation-displacement-reproof\n4148: \n4149: **Proof.**\n4150: The proof proceeds by applying McDiarmid's Inequality to the function that computes the total perturbation-induced displacement.\n4151: 1.  **Define the Function and Independent Variables.**\n4152:     *   **Independent Variables:** The perturbation of the N-particle swarm is the result of **N** independent random choices made by the perturbation measure for each walker.\n4153:     *   **Function:** The function we wish to bound is the **Total Perturbation-Induced Displacement**, **f**, which is a function of these **N** independent random choices for a fixed initial state $\\mathcal{S}_{\\text{in}}$.\n4154: 2.  **Prove the Bounded Differences Property.**\n4155:     We apply McDiarmid to $f_{\\text{avg}}$. Changing only the **i**-th random outcome only affects the **i**-th summand. Since each summand is in $[0, D_{\\mathcal{Y}}^2]$, the bounded differences constants are $c_i = D_{\\mathcal{Y}}^2/N$ for all $i$.\n4156: 3.  **Apply McDiarmid's Inequality and Solve for the Bound.**\n4157:     The sum of squares is $\\sum_{i=1}^N c_i^2 = N\\,(D_{\\mathcal{Y}}^2/N)^2 = D_{\\mathcal{Y}}^4/N$. McDiarmid yields, for $t>0$,",
+      "content_start": 4427,
+      "content_end": 4446,
+      "content": "4427: \n4428: $$\n4429: \n4430: \\Delta_{\\text{pert}}^2(\\mathcal{S}_{\\text{in}}) \\le B_M(N) + B_S(N, \\delta')\n4431: \n4432: $$\n4433: where $B_M(N)$ is the **Mean Displacement Bound** and $B_S(N, \\delta')$ is the **Stochastic Fluctuation Bound**, as defined in the subsequent section.\n4434: :::\n4435: :::{prf:proof}\n4436: :label: proof-lem-sub-probabilistic-bound-perturbation-displacement-reproof\n4437: \n4438: **Proof.**\n4439: The proof proceeds by applying McDiarmid's Inequality ({prf:ref}`thm-mcdiarmids-inequality`) to the function that computes the total perturbation-induced displacement.\n4440: 1.  **Define the Function and Independent Variables.**\n4441:     *   **Independent Variables:** The perturbation of the N-particle swarm ({prf:ref}`def-swarm-and-state-space`) is the result of **N** independent random choices made by the perturbation measure for each walker ({prf:ref}`def-walker`).\n4442:     *   **Function:** The function we wish to bound is the **Total Perturbation-Induced Displacement**, **f**, which is a function of these **N** independent random choices for a fixed initial state $\\mathcal{S}_{\\text{in}}$.\n4443: 2.  **Prove the Bounded Differences Property.**\n4444:     We apply McDiarmid to $f_{\\text{avg}}$. Changing only the **i**-th random outcome only affects the **i**-th summand. Since each summand is in $[0, D_{\\mathcal{Y}}^2]$, the bounded differences constants are $c_i = D_{\\mathcal{Y}}^2/N$ for all $i$.\n4445: 3.  **Apply McDiarmid's Inequality and Solve for the Bound.**\n4446:     The sum of squares is $\\sum_{i=1}^N c_i^2 = N\\,(D_{\\mathcal{Y}}^2/N)^2 = D_{\\mathcal{Y}}^4/N$. McDiarmid yields, for $t>0$,",
       "metadata": {
         "label": "proof-lem-sub-probabilistic-bound-perturbation-displacement-reproof"
       },
-      "section": "## 14. The Perturbation Operator",
-      "references": [],
-      "raw_directive": "4135: ##### 13.2.3.2. Probabilistic Bound on Total Perturbation-Induced Displacement\n4136: :::{prf:lemma} Probabilistic Bound on Total Perturbation-Induced Displacement\n4137: :label: lem-sub-probabilistic-bound-perturbation-displacement-reproof\n4138: Let $\\mathcal{S}_{\\text{in}}$ be an input swarm. Assume the **Axiom of Bounded Second Moment of Perturbation** ([](#def-axiom-bounded-second-moment-perturbation)) holds. Then for any probability of failure $\\delta' \\in (0, 1)$, the **Total Perturbation-Induced Displacement** is bounded with probability at least $1-\\delta'$:\n4139: $$\n4140: \n4141: \\Delta_{\\text{pert}}^2(\\mathcal{S}_{\\text{in}}) \\le B_M(N) + B_S(N, \\delta')\n4142: \n4143: $$\n4144: where $B_M(N)$ is the **Mean Displacement Bound** and $B_S(N, \\delta')$ is the **Stochastic Fluctuation Bound**, as defined in the subsequent section.\n4145: :::\n4146: :::{prf:proof}\n4147: :label: proof-lem-sub-probabilistic-bound-perturbation-displacement-reproof\n4148: \n4149: **Proof.**\n4150: The proof proceeds by applying McDiarmid's Inequality to the function that computes the total perturbation-induced displacement.\n4151: 1.  **Define the Function and Independent Variables.**\n4152:     *   **Independent Variables:** The perturbation of the N-particle swarm is the result of **N** independent random choices made by the perturbation measure for each walker.\n4153:     *   **Function:** The function we wish to bound is the **Total Perturbation-Induced Displacement**, **f**, which is a function of these **N** independent random choices for a fixed initial state $\\mathcal{S}_{\\text{in}}$.\n4154: 2.  **Prove the Bounded Differences Property.**\n4155:     We apply McDiarmid to $f_{\\text{avg}}$. Changing only the **i**-th random outcome only affects the **i**-th summand. Since each summand is in $[0, D_{\\mathcal{Y}}^2]$, the bounded differences constants are $c_i = D_{\\mathcal{Y}}^2/N$ for all $i$.\n4156: 3.  **Apply McDiarmid's Inequality and Solve for the Bound.**\n4157:     The sum of squares is $\\sum_{i=1}^N c_i^2 = N\\,(D_{\\mathcal{Y}}^2/N)^2 = D_{\\mathcal{Y}}^4/N$. McDiarmid yields, for $t>0$,\n4158: $$"
+      "section": "## 14. The Perturbation Operator ({prf:ref}`def-perturbation-operator`)",
+      "references": [
+        "thm-mcdiarmids-inequality",
+        "def-swarm-and-state-space",
+        "def-walker"
+      ],
+      "raw_directive": "4424: :::{prf:lemma} Probabilistic Bound on Total Perturbation-Induced Displacement\n4425: :label: lem-sub-probabilistic-bound-perturbation-displacement-reproof\n4426: Let $\\mathcal{S}_{\\text{in}}$ be an input swarm ({prf:ref}`def-swarm-and-state-space`). Assume the **Axiom of Bounded Second Moment of Perturbation** ([](#def-axiom-bounded-second-moment-perturbation)) holds. Then for any probability of failure $\\delta' \\in (0, 1)$, the **Total Perturbation-Induced Displacement** is bounded with probability at least $1-\\delta'$:\n4427: \n4428: $$\n4429: \n4430: \\Delta_{\\text{pert}}^2(\\mathcal{S}_{\\text{in}}) \\le B_M(N) + B_S(N, \\delta')\n4431: \n4432: $$\n4433: where $B_M(N)$ is the **Mean Displacement Bound** and $B_S(N, \\delta')$ is the **Stochastic Fluctuation Bound**, as defined in the subsequent section.\n4434: :::\n4435: :::{prf:proof}\n4436: :label: proof-lem-sub-probabilistic-bound-perturbation-displacement-reproof\n4437: \n4438: **Proof.**\n4439: The proof proceeds by applying McDiarmid's Inequality ({prf:ref}`thm-mcdiarmids-inequality`) to the function that computes the total perturbation-induced displacement.\n4440: 1.  **Define the Function and Independent Variables.**\n4441:     *   **Independent Variables:** The perturbation of the N-particle swarm ({prf:ref}`def-swarm-and-state-space`) is the result of **N** independent random choices made by the perturbation measure for each walker ({prf:ref}`def-walker`).\n4442:     *   **Function:** The function we wish to bound is the **Total Perturbation-Induced Displacement**, **f**, which is a function of these **N** independent random choices for a fixed initial state $\\mathcal{S}_{\\text{in}}$.\n4443: 2.  **Prove the Bounded Differences Property.**\n4444:     We apply McDiarmid to $f_{\\text{avg}}$. Changing only the **i**-th random outcome only affects the **i**-th summand. Since each summand is in $[0, D_{\\mathcal{Y}}^2]$, the bounded differences constants are $c_i = D_{\\mathcal{Y}}^2/N$ for all $i$.\n4445: 3.  **Apply McDiarmid's Inequality and Solve for the Bound.**\n4446:     The sum of squares is $\\sum_{i=1}^N c_i^2 = N\\,(D_{\\mathcal{Y}}^2/N)^2 = D_{\\mathcal{Y}}^4/N$. McDiarmid yields, for $t>0$,\n4447: "
     },
     {
       "directive_type": "definition",
       "label": "def-perturbation-fluctuation-bounds-reproof",
       "title": "Perturbation Fluctuation Bounds",
-      "start_line": 4161,
-      "end_line": 4179,
+      "start_line": 4450,
+      "end_line": 4468,
       "header_lines": [
-        4162
+        4451
       ],
-      "content_start": 4163,
-      "content_end": 4178,
-      "content": "4163: $$\n4164: Setting the failure probability to $\\delta'$ and solving for $t$ gives the stochastic fluctuation bound for the average,\n4165:     $\\displaystyle B_{S,\\text{avg}}(N,\\delta') = D_{\\mathcal{Y}}^2 \\sqrt{\\tfrac{1}{2N}\\ln\\!(\\tfrac{2}{\\delta'})}$. Multiplying back by $N$ recovers the bound for $\\Delta_{\\text{pert}}^2$ used below.\n4166: 4.  **Combine with Axiomatic Mean Bound.**\n4167:     The expected total displacement $E[\\Delta_pert^2]$ is bounded by the **Mean Displacement Bound**, $B_M(N)$. Combining these gives the final high-probability bound.\n4168: **Q.E.D.**\n4169: :::\n4170: #### 13.2.4. Definition: Perturbation Fluctuation Bounds\n4171: This section formally defines the two components that bound the total random displacement introduced by the Perturbation Operator. These terms are direct consequences of the preceding analysis and are functions of the foundational parameters of the system.\n4172: :::{prf:definition} Perturbation Fluctuation Bounds\n4173: :label: def-perturbation-fluctuation-bounds-reproof\n4174: The total random displacement introduced by the Perturbation Operator is bounded by the sum of two components: a deterministic bound on its mean and a probabilistic bound on its fluctuations.\n4175: 1.  **The Mean Displacement Bound ($B_M(N)$):** A deterministic upper bound on the total expected squared displacement for a swarm of size N. It is derived from the **Axiom of Bounded Second Moment of Perturbation** ([](#def-axiom-bounded-second-moment-perturbation)).\n4176: $$\n4177: \n4178:     B_M(N) := N \\cdot M_{\\text{pert}}^2",
+      "content_start": 4452,
+      "content_end": 4467,
+      "content": "4452: $$\n4453: Setting the failure probability to $\\delta'$ and solving for $t$ gives the stochastic fluctuation bound for the average,\n4454:     $\\displaystyle B_{S,\\text{avg}}(N,\\delta') = D_{\\mathcal{Y}}^2 \\sqrt{\\tfrac{1}{2N}\\ln\\!(\\tfrac{2}{\\delta'})}$. Multiplying back by $N$ recovers the bound for $\\Delta_{\\text{pert}}^2$ used below.\n4455: 4.  **Combine with Axiomatic Mean Bound.**\n4456:     The expected total displacement $E[\\Delta_pert^2]$ is bounded by the **Mean Displacement Bound**, $B_M(N)$. Combining these gives the final high-probability bound.\n4457: **Q.E.D.**\n4458: :::\n4459: #### 13.2.4. Definition: Perturbation Fluctuation Bounds\n4460: This section formally defines the two components that bound the total random displacement introduced by the Perturbation Operator ({prf:ref}`def-perturbation-operator`). These terms are direct consequences of the preceding analysis and are functions of the foundational parameters of the system.\n4461: :::{prf:definition} Perturbation Fluctuation Bounds\n4462: :label: def-perturbation-fluctuation-bounds-reproof\n4463: The total random displacement introduced by the Perturbation Operator ({prf:ref}`def-perturbation-operator`) is bounded by the sum of two components: a deterministic bound on its mean and a probabilistic bound on its fluctuations.\n4464: 1.  **The Mean Displacement Bound ($B_M(N)$):** A deterministic upper bound on the total expected squared displacement for a swarm ({prf:ref}`def-swarm-and-state-space`) of size N. It is derived from the **Axiom of Bounded Second Moment of Perturbation** ([](#def-axiom-bounded-second-moment-perturbation)).\n4465: \n4466: $$\n4467: ",
       "metadata": {
         "label": "def-perturbation-fluctuation-bounds-reproof"
       },
-      "section": "## 14. The Perturbation Operator",
-      "references": [],
-      "raw_directive": "4161: \n4162: \n4163: $$\n4164: Setting the failure probability to $\\delta'$ and solving for $t$ gives the stochastic fluctuation bound for the average,\n4165:     $\\displaystyle B_{S,\\text{avg}}(N,\\delta') = D_{\\mathcal{Y}}^2 \\sqrt{\\tfrac{1}{2N}\\ln\\!(\\tfrac{2}{\\delta'})}$. Multiplying back by $N$ recovers the bound for $\\Delta_{\\text{pert}}^2$ used below.\n4166: 4.  **Combine with Axiomatic Mean Bound.**\n4167:     The expected total displacement $E[\\Delta_pert^2]$ is bounded by the **Mean Displacement Bound**, $B_M(N)$. Combining these gives the final high-probability bound.\n4168: **Q.E.D.**\n4169: :::\n4170: #### 13.2.4. Definition: Perturbation Fluctuation Bounds\n4171: This section formally defines the two components that bound the total random displacement introduced by the Perturbation Operator. These terms are direct consequences of the preceding analysis and are functions of the foundational parameters of the system.\n4172: :::{prf:definition} Perturbation Fluctuation Bounds\n4173: :label: def-perturbation-fluctuation-bounds-reproof\n4174: The total random displacement introduced by the Perturbation Operator is bounded by the sum of two components: a deterministic bound on its mean and a probabilistic bound on its fluctuations.\n4175: 1.  **The Mean Displacement Bound ($B_M(N)$):** A deterministic upper bound on the total expected squared displacement for a swarm of size N. It is derived from the **Axiom of Bounded Second Moment of Perturbation** ([](#def-axiom-bounded-second-moment-perturbation)).\n4176: $$\n4177: \n4178:     B_M(N) := N \\cdot M_{\\text{pert}}^2\n4179: "
+      "section": "## 14. The Perturbation Operator ({prf:ref}`def-perturbation-operator`)",
+      "references": [
+        "def-perturbation-operator",
+        "def-swarm-and-state-space",
+        "axiom-bounded-algorithmic-diameter",
+        "def-algorithmic-space-generic"
+      ],
+      "raw_directive": "4450:     \\mathbb{P}\\big( |f_{\\text{avg}} - \\mathbb{E}[f_{\\text{avg}}]| \\ge t \\big) \\le 2\\exp\\!\\left(\\!-\\,\\frac{2N t^2}{ D_{\\mathcal{Y}}^4}\\right).\n4451: \n4452: $$\n4453: Setting the failure probability to $\\delta'$ and solving for $t$ gives the stochastic fluctuation bound for the average,\n4454:     $\\displaystyle B_{S,\\text{avg}}(N,\\delta') = D_{\\mathcal{Y}}^2 \\sqrt{\\tfrac{1}{2N}\\ln\\!(\\tfrac{2}{\\delta'})}$. Multiplying back by $N$ recovers the bound for $\\Delta_{\\text{pert}}^2$ used below.\n4455: 4.  **Combine with Axiomatic Mean Bound.**\n4456:     The expected total displacement $E[\\Delta_pert^2]$ is bounded by the **Mean Displacement Bound**, $B_M(N)$. Combining these gives the final high-probability bound.\n4457: **Q.E.D.**\n4458: :::\n4459: #### 13.2.4. Definition: Perturbation Fluctuation Bounds\n4460: This section formally defines the two components that bound the total random displacement introduced by the Perturbation Operator ({prf:ref}`def-perturbation-operator`). These terms are direct consequences of the preceding analysis and are functions of the foundational parameters of the system.\n4461: :::{prf:definition} Perturbation Fluctuation Bounds\n4462: :label: def-perturbation-fluctuation-bounds-reproof\n4463: The total random displacement introduced by the Perturbation Operator ({prf:ref}`def-perturbation-operator`) is bounded by the sum of two components: a deterministic bound on its mean and a probabilistic bound on its fluctuations.\n4464: 1.  **The Mean Displacement Bound ($B_M(N)$):** A deterministic upper bound on the total expected squared displacement for a swarm ({prf:ref}`def-swarm-and-state-space`) of size N. It is derived from the **Axiom of Bounded Second Moment of Perturbation** ([](#def-axiom-bounded-second-moment-perturbation)).\n4465: \n4466: $$\n4467: \n4468:     B_M(N) := N \\cdot M_{\\text{pert}}^2"
     },
     {
       "directive_type": "theorem",
       "label": "thm-perturbation-operator-continuity-reproof",
       "title": "Probabilistic Continuity of the Perturbation Operator",
-      "start_line": 4182,
-      "end_line": 4192,
+      "start_line": 4471,
+      "end_line": 4482,
       "header_lines": [
-        4183
+        4472
       ],
-      "content_start": 4184,
-      "content_end": 4191,
-      "content": "4184: \n4185:     B_S(N, \\delta') := D_{\\mathcal{Y}}^2 \\sqrt{\\frac{N}{2} \\ln\\left(\\frac{2}{\\delta'}\\right)}\n4186: \n4187: \n4188: $$\n4189: where $D_{\\mathcal{Y}}$ is the diameter of the algorithmic space, a foundational geometric parameter.\n4190: :::\n4191: #### 13.2.5. Synthesis: The Full Probabilistic Continuity Bound for the Perturbation Operator",
+      "content_start": 4473,
+      "content_end": 4481,
+      "content": "4473: $$\n4474: \n4475:     B_S(N, \\delta') := D_{\\mathcal{Y}}^2 \\sqrt{\\frac{N}{2} \\ln\\left(\\frac{2}{\\delta'}\\right)}\n4476: \n4477: $$\n4478: where $D_{\\mathcal{Y}}$ ({prf:ref}`axiom-bounded-algorithmic-diameter`) is the diameter of the algorithmic space ({prf:ref}`def-algorithmic-space-generic`), a foundational geometric parameter.\n4479: :::\n4480: #### 13.2.5. Synthesis: The Full Probabilistic Continuity Bound for the Perturbation Operator ({prf:ref}`def-perturbation-operator`)\n4481: This theorem assembles the preceding results to provide the final, rigorous probabilistic continuity bound for the Perturbation Operator ({prf:ref}`def-perturbation-operator`).",
       "metadata": {
         "label": "thm-perturbation-operator-continuity-reproof"
       },
-      "section": "## 14. The Perturbation Operator",
-      "references": [],
-      "raw_directive": "4182: 2.  **The Stochastic Fluctuation Bound ($B_S(N, \\delta')$):** A high-probability bound on the deviation of the total squared displacement from its mean, derived from McDiarmid's inequality in [](#sub-lem-probabilistic-bound-perturbation-displacement-reproof). For a given failure probability $\\delta' \\in (0, 1)$, it is defined as:\n4183: $$\n4184: \n4185:     B_S(N, \\delta') := D_{\\mathcal{Y}}^2 \\sqrt{\\frac{N}{2} \\ln\\left(\\frac{2}{\\delta'}\\right)}\n4186: \n4187: \n4188: $$\n4189: where $D_{\\mathcal{Y}}$ is the diameter of the algorithmic space, a foundational geometric parameter.\n4190: :::\n4191: #### 13.2.5. Synthesis: The Full Probabilistic Continuity Bound for the Perturbation Operator\n4192: This theorem assembles the preceding results to provide the final, rigorous probabilistic continuity bound for the Perturbation Operator."
+      "section": "## 14. The Perturbation Operator ({prf:ref}`def-perturbation-operator`)",
+      "references": [
+        "def-algorithmic-space-generic",
+        "def-swarm-and-state-space",
+        "def-perturbation-operator",
+        "def-perturbation-measure",
+        "def-n-particle-displacement-metric"
+      ],
+      "raw_directive": "4471: 2.  **The Stochastic Fluctuation Bound ($B_S(N, \\delta')$):** A high-probability bound on the deviation of the total squared displacement from its mean, derived from McDiarmid's inequality in [](#sub-lem-probabilistic-bound-perturbation-displacement-reproof). For a given failure probability $\\delta' \\in (0, 1)$, it is defined as:\n4472: \n4473: $$\n4474: \n4475:     B_S(N, \\delta') := D_{\\mathcal{Y}}^2 \\sqrt{\\frac{N}{2} \\ln\\left(\\frac{2}{\\delta'}\\right)}\n4476: \n4477: $$\n4478: where $D_{\\mathcal{Y}}$ ({prf:ref}`axiom-bounded-algorithmic-diameter`) is the diameter of the algorithmic space ({prf:ref}`def-algorithmic-space-generic`), a foundational geometric parameter.\n4479: :::\n4480: #### 13.2.5. Synthesis: The Full Probabilistic Continuity Bound for the Perturbation Operator ({prf:ref}`def-perturbation-operator`)\n4481: This theorem assembles the preceding results to provide the final, rigorous probabilistic continuity bound for the Perturbation Operator ({prf:ref}`def-perturbation-operator`).\n4482: :::{prf:theorem} Probabilistic Continuity of the Perturbation Operator"
     },
     {
       "directive_type": "proof",
       "label": "proof-thm-perturbation-operator-continuity-reproof",
       "title": null,
-      "start_line": 4193,
-      "end_line": 4213,
+      "start_line": 4483,
+      "end_line": 4503,
       "header_lines": [
-        4194
+        4484
       ],
-      "content_start": 4196,
-      "content_end": 4212,
-      "content": "4196: Assume the chosen **Perturbation Measure** satisfies the **Axiom of Bounded Second Moment of Perturbation ([](#def-axiom-bounded-second-moment-perturbation))**.\n4197: Then for any probability of failure $\\delta \\in (0, 1)$, the squared **N-Particle Displacement Metric** between the two output swarms is bounded with probability at least $1-\\delta$ by:\n4198: $$\n4199: \n4200: d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}'_1, \\mathcal{S}'_2)^2 \\le 3 \\frac{\\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2)}{N} + \\lambda_{\\mathrm{status}} \\frac{n_c(\\mathcal{S}_1, \\mathcal{S}_2)}{N} + \\frac{6}{N} \\left( B_M(N) + B_S(N, \\delta/2) \\right)\n4201: \n4202: $$\n4203: :::\n4204: :::{prf:proof}\n4205: :label: proof-thm-perturbation-operator-continuity-reproof\n4206: \n4207: **Proof.**\n4208: The proof constructs a high-probability bound for the output displacement metric by composing the algebraic and probabilistic bounds from the preceding lemmas.\n4209: 1.  **Decomposition of the Output Metric.**\n4210:     The squared N-Particle Displacement Metric for the output swarms is:\n4211: $$\n4212: ",
+      "content_start": 4486,
+      "content_end": 4502,
+      "content": "4486: Then for any probability of failure $\\delta \\in (0, 1)$, the squared **N-Particle Displacement ({prf:ref}`def-n-particle-displacement-metric`) Metric** between the two output swarms is bounded with probability at least $1-\\delta$ by:\n4487: \n4488: $$\n4489: \n4490: d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}'_1, \\mathcal{S}'_2)^2 \\le 3 \\frac{\\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2)}{N} + \\lambda_{\\mathrm{status}} \\frac{n_c(\\mathcal{S}_1, \\mathcal{S}_2)}{N} + \\frac{6}{N} \\left( B_M(N) + B_S(N, \\delta/2) \\right)\n4491: \n4492: $$\n4493: :::\n4494: :::{prf:proof}\n4495: :label: proof-thm-perturbation-operator-continuity-reproof\n4496: \n4497: **Proof.**\n4498: The proof constructs a high-probability bound for the output displacement metric ({prf:ref}`def-n-particle-displacement-metric`) by composing the algebraic and probabilistic bounds from the preceding lemmas.\n4499: 1.  **Decomposition of the Output Metric.**\n4500:     The squared N-Particle Displacement Metric ({prf:ref}`def-n-particle-displacement-metric`) for the output swarm ({prf:ref}`def-swarm-and-state-space`)s is:\n4501: \n4502: $$",
       "metadata": {
         "label": "proof-thm-perturbation-operator-continuity-reproof"
       },
-      "section": "## 14. The Perturbation Operator",
-      "references": [],
-      "raw_directive": "4193: :::{prf:theorem} Probabilistic Continuity of the Perturbation Operator\n4194: :label: thm-perturbation-operator-continuity-reproof\n4195: Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two input swarms. Let the output swarms be generated by independent applications of the Perturbation Operator: $\\mathcal{S}'_1 \\sim \\Psi_{\\text{pert}}(\\mathcal{S}_1, \\cdot)$ and $\\mathcal{S}'_2 \\sim \\Psi_{\\text{pert}}(\\mathcal{S}_2, \\cdot)$.\n4196: Assume the chosen **Perturbation Measure** satisfies the **Axiom of Bounded Second Moment of Perturbation ([](#def-axiom-bounded-second-moment-perturbation))**.\n4197: Then for any probability of failure $\\delta \\in (0, 1)$, the squared **N-Particle Displacement Metric** between the two output swarms is bounded with probability at least $1-\\delta$ by:\n4198: $$\n4199: \n4200: d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}'_1, \\mathcal{S}'_2)^2 \\le 3 \\frac{\\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2)}{N} + \\lambda_{\\mathrm{status}} \\frac{n_c(\\mathcal{S}_1, \\mathcal{S}_2)}{N} + \\frac{6}{N} \\left( B_M(N) + B_S(N, \\delta/2) \\right)\n4201: \n4202: $$\n4203: :::\n4204: :::{prf:proof}\n4205: :label: proof-thm-perturbation-operator-continuity-reproof\n4206: \n4207: **Proof.**\n4208: The proof constructs a high-probability bound for the output displacement metric by composing the algebraic and probabilistic bounds from the preceding lemmas.\n4209: 1.  **Decomposition of the Output Metric.**\n4210:     The squared N-Particle Displacement Metric for the output swarms is:\n4211: $$\n4212: \n4213:     d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}'_1, \\mathcal{S}'_2)^2 = \\frac{1}{N}\\Delta_{\\text{pos}}^2(\\mathcal{S}'_1, \\mathcal{S}'_2) + \\frac{\\lambda_{\\mathrm{status}}}{N} n_c(\\mathcal{S}'_1, \\mathcal{S}'_2)"
+      "section": "## 14. The Perturbation Operator ({prf:ref}`def-perturbation-operator`)",
+      "references": [
+        "def-n-particle-displacement-metric",
+        "def-swarm-and-state-space",
+        "def-perturbation-operator",
+        "def-walker"
+      ],
+      "raw_directive": "4483: :label: thm-perturbation-operator-continuity-reproof\n4484: Let $\\mathcal{S}_1$ ({prf:ref}`def-algorithmic-space-generic`) and $\\mathcal{S}_2$ be two input swarm ({prf:ref}`def-swarm-and-state-space`)s. Let the output swarms be generated by independent applications of the Perturbation Operator ({prf:ref}`def-perturbation-operator`): $\\mathcal{S}'_1 \\sim \\Psi_{\\text{pert}}(\\mathcal{S}_1, \\cdot)$ and $\\mathcal{S}'_2 \\sim \\Psi_{\\text{pert}}(\\mathcal{S}_2, \\cdot)$.\n4485: Assume the chosen **Perturbation Measure ({prf:ref}`def-perturbation-measure`)** satisfies the **Axiom of Bounded Second Moment of Perturbation ([](#def-axiom-bounded-second-moment-perturbation))**.\n4486: Then for any probability of failure $\\delta \\in (0, 1)$, the squared **N-Particle Displacement ({prf:ref}`def-n-particle-displacement-metric`) Metric** between the two output swarms is bounded with probability at least $1-\\delta$ by:\n4487: \n4488: $$\n4489: \n4490: d_{\\text{Disp},\\mathcal{Y}}(\\mathcal{S}'_1, \\mathcal{S}'_2)^2 \\le 3 \\frac{\\Delta_{\\text{pos}}^2(\\mathcal{S}_1, \\mathcal{S}_2)}{N} + \\lambda_{\\mathrm{status}} \\frac{n_c(\\mathcal{S}_1, \\mathcal{S}_2)}{N} + \\frac{6}{N} \\left( B_M(N) + B_S(N, \\delta/2) \\right)\n4491: \n4492: $$\n4493: :::\n4494: :::{prf:proof}\n4495: :label: proof-thm-perturbation-operator-continuity-reproof\n4496: \n4497: **Proof.**\n4498: The proof constructs a high-probability bound for the output displacement metric ({prf:ref}`def-n-particle-displacement-metric`) by composing the algebraic and probabilistic bounds from the preceding lemmas.\n4499: 1.  **Decomposition of the Output Metric.**\n4500:     The squared N-Particle Displacement Metric ({prf:ref}`def-n-particle-displacement-metric`) for the output swarm ({prf:ref}`def-swarm-and-state-space`)s is:\n4501: \n4502: $$\n4503: "
     }
   ],
   "validation": {

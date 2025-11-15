@@ -1,0 +1,33 @@
+# Quality-optimized LLM configuration for proof sketcher pipeline
+#
+# Uses strongest models (GPT-4, Claude Opus) for all stages including simple tasks.
+# Maximizes proof quality and rigor at higher cost.
+#
+# Best for: Critical theorems, publication-ready proofs, or when quality is paramount
+
+perspective_1_model:
+  provider: "openai"
+  model: "gpt-4-turbo-preview"
+  temperature: 0.7
+  max_tokens: 4000
+
+perspective_2_model:
+  provider: "anthropic"
+  model: "claude-3-opus-20240229"
+  temperature: 0.7
+  max_tokens: 4000
+
+synthesis_model:
+  provider: "openai"
+  model: "gpt-4"
+  temperature: 0.5
+  max_tokens: 3000
+
+fast_model:
+  provider: "openai"
+  model: "gpt-4"
+  temperature: 0.7
+  max_tokens: 3000
+
+claude_model_heavy: "sonnet"
+claude_model_fast: "sonnet"

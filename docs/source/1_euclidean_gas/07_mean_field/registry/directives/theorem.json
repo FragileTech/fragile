@@ -2,7 +2,7 @@
   "document_id": "07_mean_field",
   "stage": "directives",
   "directive_type": "theorem",
-  "generated_at": "2025-11-10T13:57:32.750208+00:00",
+  "generated_at": "2025-11-12T22:37:33.919841+00:00",
   "count": 4,
   "items": [
     {
@@ -41,14 +41,14 @@
       "directive_type": "theorem",
       "label": "thm-mass-conservation",
       "title": "Total Mass Conservation and Population Dynamics",
-      "start_line": 673,
-      "end_line": 693,
+      "start_line": 689,
+      "end_line": 709,
       "header_lines": [
-        674
+        690
       ],
-      "content_start": 676,
-      "content_end": 692,
-      "content": "676: :label: thm-mass-conservation\n677: \n678: Any sufficiently regular solution $(f(t,z), m_d(t))$ to the Mean-Field Equations (see {prf:ref}`thm-mean-field-equation`) satisfies the following properties:\n679: \n680: **1. Total Mass Conservation:** The total population is conserved for all time $t>0$:\n681: \n682: $$\n683: \\frac{\\mathrm{d}}{\\mathrm{d}t}\\left[m_a(t) + m_d(t)\\right] = 0\n684: $$\n685: \n686: where $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$. This implies that $m_a(t) + m_d(t) = 1$ for all $t$ if this holds initially.\n687: \n688: **2. Alive Population Dynamics:** The alive mass evolves according to the balance between killing and revival:\n689: \n690: $$\n691: \\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = \\lambda_{\\text{rev}} m_d(t) - k_{\\text{killed}}[f](t)\n692: $$",
+      "content_start": 692,
+      "content_end": 708,
+      "content": "692: :label: thm-mass-conservation\n693: \n694: Any sufficiently regular solution $(f(t,z), m_d(t))$ to the Mean-Field Equations (see {prf:ref}`thm-mean-field-equation`) satisfies the following properties:\n695: \n696: **1. Total Mass Conservation:** The total population is conserved for all time $t>0$:\n697: \n698: $$\n699: \\frac{\\mathrm{d}}{\\mathrm{d}t}\\left[m_a(t) + m_d(t)\\right] = 0\n700: $$\n701: \n702: where $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$. This implies that $m_a(t) + m_d(t) = 1$ for all $t$ if this holds initially.\n703: \n704: **2. Alive Population Dynamics:** The alive mass evolves according to the balance between killing and revival:\n705: \n706: $$\n707: \\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = \\lambda_{\\text{rev}} m_d(t) - k_{\\text{killed}}[f](t)\n708: $$",
       "metadata": {
         "label": "thm-mass-conservation"
       },
@@ -56,7 +56,7 @@
       "references": [
         "thm-mean-field-equation"
       ],
-      "raw_directive": "673: The primary property of this coupled system is that it conserves **total population mass** while allowing the alive and dead populations to exchange mass and reach a dynamic equilibrium.\n674: \n675: :::{prf:theorem} Total Mass Conservation and Population Dynamics\n676: :label: thm-mass-conservation\n677: \n678: Any sufficiently regular solution $(f(t,z), m_d(t))$ to the Mean-Field Equations (see {prf:ref}`thm-mean-field-equation`) satisfies the following properties:\n679: \n680: **1. Total Mass Conservation:** The total population is conserved for all time $t>0$:\n681: \n682: $$\n683: \\frac{\\mathrm{d}}{\\mathrm{d}t}\\left[m_a(t) + m_d(t)\\right] = 0\n684: $$\n685: \n686: where $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$. This implies that $m_a(t) + m_d(t) = 1$ for all $t$ if this holds initially.\n687: \n688: **2. Alive Population Dynamics:** The alive mass evolves according to the balance between killing and revival:\n689: \n690: $$\n691: \\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = \\lambda_{\\text{rev}} m_d(t) - k_{\\text{killed}}[f](t)\n692: $$\n693: ",
+      "raw_directive": "689: The primary property of this coupled system is that it conserves **total population mass** while allowing the alive and dead populations to exchange mass and reach a dynamic equilibrium.\n690: \n691: :::{prf:theorem} Total Mass Conservation and Population Dynamics\n692: :label: thm-mass-conservation\n693: \n694: Any sufficiently regular solution $(f(t,z), m_d(t))$ to the Mean-Field Equations (see {prf:ref}`thm-mean-field-equation`) satisfies the following properties:\n695: \n696: **1. Total Mass Conservation:** The total population is conserved for all time $t>0$:\n697: \n698: $$\n699: \\frac{\\mathrm{d}}{\\mathrm{d}t}\\left[m_a(t) + m_d(t)\\right] = 0\n700: $$\n701: \n702: where $m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z$. This implies that $m_a(t) + m_d(t) = 1$ for all $t$ if this holds initially.\n703: \n704: **2. Alive Population Dynamics:** The alive mass evolves according to the balance between killing and revival:\n705: \n706: $$\n707: \\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = \\lambda_{\\text{rev}} m_d(t) - k_{\\text{killed}}[f](t)\n708: $$\n709: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "07_mean_field",
@@ -69,14 +69,14 @@
       "directive_type": "theorem",
       "label": "thm-killing-rate-consistency",
       "title": "Consistency of the Interior Killing Rate Approximation",
-      "start_line": 835,
-      "end_line": 892,
+      "start_line": 851,
+      "end_line": 908,
       "header_lines": [
-        836
+        852
       ],
-      "content_start": 838,
-      "content_end": 891,
-      "content": "838: :label: thm-killing-rate-consistency\n839: \n840: Under the regularity assumptions (see {prf:ref}`assumption-domain-regularity`, {prf:ref}`assumption-integrator-regularity`, and {prf:ref}`assumption-density-regularity-killing`), there exists a smooth killing rate function $c \\in C^\\infty_c(\\Omega)$ (see {prf:ref}`def-killing-operator`) with compact support in $\\mathcal{T}_\\delta$ such that:\n841: \n842: **Part (i): Pointwise Convergence of the Exit Rate**\n843: \n844: For each $(x,v) \\in \\Omega$, define the discrete exit probability:\n845: \n846: $$\n847: p_{\\text{exit}}(x,v,\\tau) := \\mathbb{P}\\left(x^+(\\tau; x,v) \\notin X_{\\text{valid}}\\right)\n848: $$\n849: \n850: Then:\n851: \n852: $$\n853: \\lim_{\\tau \\to 0} \\frac{1}{\\tau} p_{\\text{exit}}(x,v,\\tau) = c(x,v)\n854: $$\n855: \n856: where the killing rate is given explicitly by:\n857: \n858: $$\n859: c(x,v) = \\begin{cases}\n860: \\frac{(v \\cdot n_x(x))^+}{d(x)} \\cdot \\mathbf{1}_{d(x) < \\delta} & \\text{if } x \\in \\mathcal{T}_\\delta \\\\\n861: 0 & \\text{otherwise}\n862: \\end{cases}\n863: $$\n864: \n865: with $(v \\cdot n_x(x))^+ := \\max(v \\cdot n_x(x), 0)$ denoting the outward normal velocity component.\n866: \n867: **Part (ii): Uniform Convergence of the Expected Killing Fraction**\n868: \n869: Define the expected killing fraction in a discrete timestep as:\n870: \n871: $$\n872: K_{\\text{discrete}}(\\tau) := \\int_{\\Omega} p_{\\text{exit}}(x,v,\\tau) f^\\tau(x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v\n873: $$\n874: \n875: and the continuous killing rate as:\n876: \n877: $$\n878: K_{\\text{continuous}} := \\int_{\\Omega} c(x,v) f(x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v\n879: $$\n880: \n881: Then:\n882: \n883: $$\n884: \\lim_{\\tau \\to 0} \\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) = K_{\\text{continuous}}\n885: $$\n886: \n887: with the error bound:\n888: \n889: $$\n890: \\left|\\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) - K_{\\text{continuous}}\\right| \\le C \\left(\\sqrt{\\tau} + \\|f^\\tau - f\\|_{L^1}\\right)\n891: $$",
+      "content_start": 854,
+      "content_end": 907,
+      "content": "854: :label: thm-killing-rate-consistency\n855: \n856: Under the regularity assumptions (see {prf:ref}`assumption-domain-regularity`, {prf:ref}`assumption-integrator-regularity`, and {prf:ref}`assumption-density-regularity-killing`), there exists a smooth killing rate function $c \\in C^\\infty_c(\\Omega)$ (see {prf:ref}`def-killing-operator`) with compact support in $\\mathcal{T}_\\delta$ such that:\n857: \n858: **Part (i): Pointwise Convergence of the Exit Rate**\n859: \n860: For each $(x,v) \\in \\Omega$, define the discrete exit probability:\n861: \n862: $$\n863: p_{\\text{exit}}(x,v,\\tau) := \\mathbb{P}\\left(x^+(\\tau; x,v) \\notin X_{\\text{valid}}\\right)\n864: $$\n865: \n866: Then:\n867: \n868: $$\n869: \\lim_{\\tau \\to 0} \\frac{1}{\\tau} p_{\\text{exit}}(x,v,\\tau) = c(x,v)\n870: $$\n871: \n872: where the killing rate is given explicitly by:\n873: \n874: $$\n875: c(x,v) = \\begin{cases}\n876: \\frac{(v \\cdot n_x(x))^+}{d(x)} \\cdot \\mathbf{1}_{d(x) < \\delta} & \\text{if } x \\in \\mathcal{T}_\\delta \\\\\n877: 0 & \\text{otherwise}\n878: \\end{cases}\n879: $$\n880: \n881: with $(v \\cdot n_x(x))^+ := \\max(v \\cdot n_x(x), 0)$ denoting the outward normal velocity component.\n882: \n883: **Part (ii): Uniform Convergence of the Expected Killing Fraction**\n884: \n885: Define the expected killing fraction in a discrete timestep as:\n886: \n887: $$\n888: K_{\\text{discrete}}(\\tau) := \\int_{\\Omega} p_{\\text{exit}}(x,v,\\tau) f^\\tau(x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v\n889: $$\n890: \n891: and the continuous killing rate as:\n892: \n893: $$\n894: K_{\\text{continuous}} := \\int_{\\Omega} c(x,v) f(x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v\n895: $$\n896: \n897: Then:\n898: \n899: $$\n900: \\lim_{\\tau \\to 0} \\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) = K_{\\text{continuous}}\n901: $$\n902: \n903: with the error bound:\n904: \n905: $$\n906: \\left|\\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) - K_{\\text{continuous}}\\right| \\le C \\left(\\sqrt{\\tau} + \\|f^\\tau - f\\|_{L^1}\\right)\n907: $$",
       "metadata": {
         "label": "thm-killing-rate-consistency"
       },
@@ -87,7 +87,7 @@
         "assumption-density-regularity-killing",
         "def-killing-operator"
       ],
-      "raw_directive": "835: #### 4.4.2. Main Theorem: Killing Rate Approximation\n836: \n837: :::{prf:theorem} Consistency of the Interior Killing Rate Approximation\n838: :label: thm-killing-rate-consistency\n839: \n840: Under the regularity assumptions (see {prf:ref}`assumption-domain-regularity`, {prf:ref}`assumption-integrator-regularity`, and {prf:ref}`assumption-density-regularity-killing`), there exists a smooth killing rate function $c \\in C^\\infty_c(\\Omega)$ (see {prf:ref}`def-killing-operator`) with compact support in $\\mathcal{T}_\\delta$ such that:\n841: \n842: **Part (i): Pointwise Convergence of the Exit Rate**\n843: \n844: For each $(x,v) \\in \\Omega$, define the discrete exit probability:\n845: \n846: $$\n847: p_{\\text{exit}}(x,v,\\tau) := \\mathbb{P}\\left(x^+(\\tau; x,v) \\notin X_{\\text{valid}}\\right)\n848: $$\n849: \n850: Then:\n851: \n852: $$\n853: \\lim_{\\tau \\to 0} \\frac{1}{\\tau} p_{\\text{exit}}(x,v,\\tau) = c(x,v)\n854: $$\n855: \n856: where the killing rate is given explicitly by:\n857: \n858: $$\n859: c(x,v) = \\begin{cases}\n860: \\frac{(v \\cdot n_x(x))^+}{d(x)} \\cdot \\mathbf{1}_{d(x) < \\delta} & \\text{if } x \\in \\mathcal{T}_\\delta \\\\\n861: 0 & \\text{otherwise}\n862: \\end{cases}\n863: $$\n864: \n865: with $(v \\cdot n_x(x))^+ := \\max(v \\cdot n_x(x), 0)$ denoting the outward normal velocity component.\n866: \n867: **Part (ii): Uniform Convergence of the Expected Killing Fraction**\n868: \n869: Define the expected killing fraction in a discrete timestep as:\n870: \n871: $$\n872: K_{\\text{discrete}}(\\tau) := \\int_{\\Omega} p_{\\text{exit}}(x,v,\\tau) f^\\tau(x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v\n873: $$\n874: \n875: and the continuous killing rate as:\n876: \n877: $$\n878: K_{\\text{continuous}} := \\int_{\\Omega} c(x,v) f(x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v\n879: $$\n880: \n881: Then:\n882: \n883: $$\n884: \\lim_{\\tau \\to 0} \\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) = K_{\\text{continuous}}\n885: $$\n886: \n887: with the error bound:\n888: \n889: $$\n890: \\left|\\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) - K_{\\text{continuous}}\\right| \\le C \\left(\\sqrt{\\tau} + \\|f^\\tau - f\\|_{L^1}\\right)\n891: $$\n892: ",
+      "raw_directive": "851: #### 4.4.2. Main Theorem: Killing Rate Approximation\n852: \n853: :::{prf:theorem} Consistency of the Interior Killing Rate Approximation\n854: :label: thm-killing-rate-consistency\n855: \n856: Under the regularity assumptions (see {prf:ref}`assumption-domain-regularity`, {prf:ref}`assumption-integrator-regularity`, and {prf:ref}`assumption-density-regularity-killing`), there exists a smooth killing rate function $c \\in C^\\infty_c(\\Omega)$ (see {prf:ref}`def-killing-operator`) with compact support in $\\mathcal{T}_\\delta$ such that:\n857: \n858: **Part (i): Pointwise Convergence of the Exit Rate**\n859: \n860: For each $(x,v) \\in \\Omega$, define the discrete exit probability:\n861: \n862: $$\n863: p_{\\text{exit}}(x,v,\\tau) := \\mathbb{P}\\left(x^+(\\tau; x,v) \\notin X_{\\text{valid}}\\right)\n864: $$\n865: \n866: Then:\n867: \n868: $$\n869: \\lim_{\\tau \\to 0} \\frac{1}{\\tau} p_{\\text{exit}}(x,v,\\tau) = c(x,v)\n870: $$\n871: \n872: where the killing rate is given explicitly by:\n873: \n874: $$\n875: c(x,v) = \\begin{cases}\n876: \\frac{(v \\cdot n_x(x))^+}{d(x)} \\cdot \\mathbf{1}_{d(x) < \\delta} & \\text{if } x \\in \\mathcal{T}_\\delta \\\\\n877: 0 & \\text{otherwise}\n878: \\end{cases}\n879: $$\n880: \n881: with $(v \\cdot n_x(x))^+ := \\max(v \\cdot n_x(x), 0)$ denoting the outward normal velocity component.\n882: \n883: **Part (ii): Uniform Convergence of the Expected Killing Fraction**\n884: \n885: Define the expected killing fraction in a discrete timestep as:\n886: \n887: $$\n888: K_{\\text{discrete}}(\\tau) := \\int_{\\Omega} p_{\\text{exit}}(x,v,\\tau) f^\\tau(x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v\n889: $$\n890: \n891: and the continuous killing rate as:\n892: \n893: $$\n894: K_{\\text{continuous}} := \\int_{\\Omega} c(x,v) f(x,v)\\,\\mathrm{d}x\\,\\mathrm{d}v\n895: $$\n896: \n897: Then:\n898: \n899: $$\n900: \\lim_{\\tau \\to 0} \\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) = K_{\\text{continuous}}\n901: $$\n902: \n903: with the error bound:\n904: \n905: $$\n906: \\left|\\frac{1}{\\tau} K_{\\text{discrete}}(\\tau) - K_{\\text{continuous}}\\right| \\le C \\left(\\sqrt{\\tau} + \\|f^\\tau - f\\|_{L^1}\\right)\n907: $$\n908: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "07_mean_field",
@@ -100,14 +100,14 @@
       "directive_type": "theorem",
       "label": "thm-mean-field-limit-informal",
       "title": "Mean-Field Limit (Informal Statement)",
-      "start_line": 1339,
-      "end_line": 1355,
+      "start_line": 1355,
+      "end_line": 1371,
       "header_lines": [
-        1340
+        1356
       ],
-      "content_start": 1342,
-      "content_end": 1354,
-      "content": "1342: :label: thm-mean-field-limit-informal\n1343: \n1344: Let $(X_i^\\tau(t), V_i^\\tau(t))_{i=1}^N$ be the $N$-particle discrete Fragile Gas dynamics (see {prf:ref}`def-baoab-update-rule` for the kinetic integrator) with timestep $\\tau$, and let:\n1345: \n1346: $$\n1347: f_N^\\tau(t, x, v) := \\frac{1}{N} \\sum_{i=1}^N \\delta(x - X_i^\\tau(t), v - V_i^\\tau(t))\n1348: $$\n1349: \n1350: be the empirical density. Then, in the joint limit $N \\to \\infty, \\tau \\to 0$ with $\\tau = O(N^{-\\alpha})$ for $\\alpha > 0$:\n1351: \n1352: $$\n1353: f_N^\\tau(t, \\cdot, \\cdot) \\xrightarrow{\\text{weak}} f(t, \\cdot, \\cdot)\n1354: $$",
+      "content_start": 1358,
+      "content_end": 1370,
+      "content": "1358: :label: thm-mean-field-limit-informal\n1359: \n1360: Let $(X_i^\\tau(t), V_i^\\tau(t))_{i=1}^N$ be the $N$-particle discrete Fragile Gas dynamics (see {prf:ref}`def-baoab-update-rule` for the kinetic integrator) with timestep $\\tau$, and let:\n1361: \n1362: $$\n1363: f_N^\\tau(t, x, v) := \\frac{1}{N} \\sum_{i=1}^N \\delta(x - X_i^\\tau(t), v - V_i^\\tau(t))\n1364: $$\n1365: \n1366: be the empirical density. Then, in the joint limit $N \\to \\infty, \\tau \\to 0$ with $\\tau = O(N^{-\\alpha})$ for $\\alpha > 0$:\n1367: \n1368: $$\n1369: f_N^\\tau(t, \\cdot, \\cdot) \\xrightarrow{\\text{weak}} f(t, \\cdot, \\cdot)\n1370: $$",
       "metadata": {
         "label": "thm-mean-field-limit-informal"
       },
@@ -116,7 +116,7 @@
         "def-baoab-update-rule",
         "thm-mean-field-equation"
       ],
-      "raw_directive": "1339: The killing rate consistency theorem (see {prf:ref}`thm-killing-rate-consistency`) provides the final piece needed to justify our mean-field model. Combined with the standard kinetic theory arguments for the transport operator $L^\\dagger$ from the kinetic generator (see {prf:ref}`def-kinetic-generator`) and the Law of Large Numbers for the cloning operators (Section 2.3), we obtain:\n1340: \n1341: :::{prf:theorem} Mean-Field Limit (Informal Statement)\n1342: :label: thm-mean-field-limit-informal\n1343: \n1344: Let $(X_i^\\tau(t), V_i^\\tau(t))_{i=1}^N$ be the $N$-particle discrete Fragile Gas dynamics (see {prf:ref}`def-baoab-update-rule` for the kinetic integrator) with timestep $\\tau$, and let:\n1345: \n1346: $$\n1347: f_N^\\tau(t, x, v) := \\frac{1}{N} \\sum_{i=1}^N \\delta(x - X_i^\\tau(t), v - V_i^\\tau(t))\n1348: $$\n1349: \n1350: be the empirical density. Then, in the joint limit $N \\to \\infty, \\tau \\to 0$ with $\\tau = O(N^{-\\alpha})$ for $\\alpha > 0$:\n1351: \n1352: $$\n1353: f_N^\\tau(t, \\cdot, \\cdot) \\xrightarrow{\\text{weak}} f(t, \\cdot, \\cdot)\n1354: $$\n1355: ",
+      "raw_directive": "1355: The killing rate consistency theorem (see {prf:ref}`thm-killing-rate-consistency`) provides the final piece needed to justify our mean-field model. Combined with the standard kinetic theory arguments for the transport operator $L^\\dagger$ from the kinetic generator (see {prf:ref}`def-kinetic-generator`) and the Law of Large Numbers for the cloning operators (Section 2.3), we obtain:\n1356: \n1357: :::{prf:theorem} Mean-Field Limit (Informal Statement)\n1358: :label: thm-mean-field-limit-informal\n1359: \n1360: Let $(X_i^\\tau(t), V_i^\\tau(t))_{i=1}^N$ be the $N$-particle discrete Fragile Gas dynamics (see {prf:ref}`def-baoab-update-rule` for the kinetic integrator) with timestep $\\tau$, and let:\n1361: \n1362: $$\n1363: f_N^\\tau(t, x, v) := \\frac{1}{N} \\sum_{i=1}^N \\delta(x - X_i^\\tau(t), v - V_i^\\tau(t))\n1364: $$\n1365: \n1366: be the empirical density. Then, in the joint limit $N \\to \\infty, \\tau \\to 0$ with $\\tau = O(N^{-\\alpha})$ for $\\alpha > 0$:\n1367: \n1368: $$\n1369: f_N^\\tau(t, \\cdot, \\cdot) \\xrightarrow{\\text{weak}} f(t, \\cdot, \\cdot)\n1370: $$\n1371: ",
       "_registry_context": {
         "stage": "directives",
         "document_id": "07_mean_field",

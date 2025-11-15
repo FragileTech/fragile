@@ -74,21 +74,14 @@ class FrameworkDependencies(BaseModel):
     )
 
 
-class TechnicalDeepDive(BaseModel):
-    """Detailed look at hard sub-problems in the proposed approach."""
+class FrameworkDependenciesSignature(dspy.Signature):
+    """Signature for extracting framework dependencies from proof sketches."""
 
-    challengeTitle: str = Field(..., description="Short name describing the technical obstacle.")
-    difficultyDescription: str = Field(
-        ...,
-        description="Explanation of why this challenge is difficult or delicate.",
+    prompt: str = dspy.InputField(
+        desc="Natural language proof sketch or mathematical discussion containing framework dependencies."
     )
-    proposedSolution: str = Field(
-        ...,
-        description="Sketch of the argument or tool that resolves the difficulty.",
-    )
-    references: list[str] = Field(
-        default_factory=list,
-        description="Optional citations to framework results or literature backing the solution.",
+    dependencies: FrameworkDependencies = dspy.OutputField(
+        desc="Structured FrameworkDependencies object with categorized theorems, lemmas, axioms, definitions."
     )
 
 
@@ -133,35 +126,6 @@ class SketchStrategy(BaseModel):
     )
 
 
-class SketchStrategyItems(BaseModel):
-    """Pydantic mirror of sketch_strategy.json for convenient validation."""
-
-    strategist: str = Field(
-        ...,
-        description="Agent/model responsible for the proposal (e.g., GPT-5 Codex).",
-    )
-    method: str = Field(
-        ...,
-        description="Concise, high-level name for the proof technique.",
-    )
-    summary: str = Field(
-        ...,
-        description="Narrative overview explaining the approach and logical flow.",
-    )
-    keySteps: list[str] = Field(
-        ...,
-        description="Ordered list of major stages required to complete the proof.",
-    )
-    strengths: list[str] = Field(
-        ...,
-        description="Primary advantages of pursuing this strategy.",
-    )
-    weaknesses: list[str] = Field(
-        ...,
-        description="Limitations, risks, or pain points to investigate.",
-    )
-
-
 class SketchStrategySignature(dspy.Signature):
     """Collect all data required to emit a SketchStrategy object."""
 
@@ -185,14 +149,21 @@ class SketchStrategySignature(dspy.Signature):
     )
 
 
-class FrameworkDependenciesSignature(dspy.Signature):
-    """Signature for extracting framework dependencies from proof sketches."""
+class TechnicalDeepDive(BaseModel):
+    """Detailed look at hard sub-problems in the proposed approach."""
 
-    prompt: str = dspy.InputField(
-        desc="Natural language proof sketch or mathematical discussion containing framework dependencies."
+    challengeTitle: str = Field(..., description="Short name describing the technical obstacle.")
+    difficultyDescription: str = Field(
+        ...,
+        description="Explanation of why this challenge is difficult or delicate.",
     )
-    dependencies: FrameworkDependencies = dspy.OutputField(
-        desc="Structured FrameworkDependencies object with categorized theorems, lemmas, axioms, definitions."
+    proposedSolution: str = Field(
+        ...,
+        description="Sketch of the argument or tool that resolves the difficulty.",
+    )
+    references: list[str] = Field(
+        default_factory=list,
+        description="Optional citations to framework results or literature backing the solution.",
     )
 
 
@@ -452,11 +423,11 @@ Common proof strategies in the framework:
 - Mean-field limits (propagation of chaos, exchangeability)
 - Functional inequalities (Poincaré, log-Sobolev, transport-entropy)
 
-Output must be a structured SketchStrategyItems object following the schema exactly:
-{SketchStrategyItems.model_json_schema()}
+Output must be a structured SketchStrategy object following the schema exactly:
+{SketchStrategy.model_json_schema()}
 """
     signature = dspy.Signature(
-        "theorem_label: str, theorem_statement: str, framework_context: str, operator_notes: str -> strategy_items: SketchStrategyItems"
+        "theorem_label: str, theorem_statement: str, framework_context: str, operator_notes: str -> strategy_items: SketchStrategy"
     ).with_instructions(INSTRUCTIONS)
 
     agent = dspy.ChainOfThought(signature)
@@ -467,8 +438,8 @@ Output must be a structured SketchStrategyItems object following the schema exac
         theorem_statement: str,
         framework_context: str = "",
         operator_notes: str = "",
-    ) -> SketchStrategyItems:
-        """Generate SketchStrategyItems using chain-of-thought reasoning.
+    ) -> SketchStrategy:
+        """Generate SketchStrategy using chain-of-thought reasoning.
 
         This function uses structured reasoning to develop a proof strategy, analyzing the
         theorem statement, available framework results, and constraints to produce a coherent
@@ -481,7 +452,7 @@ Output must be a structured SketchStrategyItems object following the schema exac
             operator_notes: Optional evaluator instructions - preferred tools, constraints, known pitfalls
 
         Returns:
-            SketchStrategyItems object with 6 components:
+            SketchStrategy object with 6 components:
                 - strategist: Agent/model name
                 - method: Concise technique name
                 - summary: Narrative overview

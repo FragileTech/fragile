@@ -4123,86 +4123,93 @@
     ],
     "hypotheses": [
       {
-        "text": "Reflecting boundary conditions are established on both position and velocity boundaries, as defined in Section 2.2.",
+        "text": "Reflecting boundary conditions on position and velocity boundaries",
+        "latex": null
+      },
+      {
+        "text": "Transport operator as defined with these boundary conditions",
         "latex": null
       }
     ],
     "conclusion": {
-      "text": "The integral of the adjoint transport operator over the domain vanishes.",
+      "text": "The integral of the transport operator over the domain Ω vanishes",
       "latex": "\\int_\\Omega L^\\dagger f(t,z)\\,\\mathrm{d}z = 0"
     },
     "variables": [
       {
         "symbol": "L^\\dagger",
         "name": "adjoint transport operator",
-        "description": "The adjoint of the transport operator acting on functions in phase space.",
+        "description": "The adjoint of the transport operator acting on functions in phase space",
         "constraints": [],
         "tags": [
-          "operator",
-          "adjoint"
+          "operator"
         ]
       },
       {
         "symbol": "f",
         "name": "density function",
-        "description": "A function representing density or distribution in phase space, depending on time and position-velocity.",
-        "constraints": [],
+        "description": "A smooth function representing the density at time t and position z",
+        "constraints": [
+          "sufficiently integrable"
+        ],
         "tags": [
           "function",
           "density"
         ]
       },
       {
-        "symbol": "\\Omega",
-        "name": "domain",
-        "description": "The phase space domain over which integration occurs.",
+        "symbol": "t",
+        "name": "time variable",
+        "description": "Time parameter",
         "constraints": [],
         "tags": [
-          "domain",
-          "phase space"
+          "time"
         ]
       },
       {
         "symbol": "z",
-        "name": "phase variable",
-        "description": "The variable representing position and velocity in phase space.",
-        "constraints": [],
+        "name": "phase space variable",
+        "description": "Combined position and velocity variable in the domain Ω",
+        "constraints": [
+          "z ∈ Ω"
+        ],
         "tags": [
-          "variable",
-          "phase space"
+          "phase-space"
         ]
       },
       {
-        "symbol": "t",
-        "name": "time",
-        "description": "The time parameter for the function f.",
+        "symbol": "\\Omega",
+        "name": "domain",
+        "description": "The phase space domain with reflecting boundaries",
         "constraints": [],
         "tags": [
-          "time"
+          "domain"
         ]
       }
     ],
     "implicit_assumptions": [
       {
-        "text": "The transport operator is defined in a context with total mass conservation as a key property.",
-        "confidence": 1.0
+        "text": "The domain Ω is bounded with reflecting boundaries ensuring no flux across boundaries",
+        "confidence": 0.9
       },
       {
-        "text": "The domain Ω is bounded with reflecting boundaries that prevent mass flux.",
-        "confidence": 0.9
+        "text": "f is sufficiently regular for the integral to be well-defined",
+        "confidence": 0.8
       }
     ],
-    "local_refs": [],
+    "local_refs": [
+      "def-transport-operator"
+    ],
     "proof": {
-      "availability": "not provided",
+      "availability": "not-provided",
       "steps": []
     },
     "tags": [
-      "mass conservation",
-      "transport operator",
-      "reflecting boundaries",
-      "boundary conditions",
-      "adjoint operator"
+      "mass-conservation",
+      "transport-operator",
+      "reflecting-boundaries",
+      "boundary-conditions",
+      "integral-vanishing"
     ]
   }
 ]

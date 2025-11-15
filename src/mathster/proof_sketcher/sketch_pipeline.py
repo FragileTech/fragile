@@ -6,6 +6,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import logging
+from typing import TYPE_CHECKING
 from uuid import uuid4
 
 import dspy
@@ -20,6 +21,9 @@ from mathster.proof_sketcher.sketcher import (
     ProofSketch,
     ProofSketchAgent as DraftingAgent,
 )
+
+if TYPE_CHECKING:
+    from mathster.proof_sketcher.llm_config import ProofSketcherLMConfig
 
 
 __all__ = ["ProofSketchWorkflowResult", "AgentSketchPipeline"]
@@ -47,23 +51,53 @@ class ProofSketchWorkflowResult:
 
 
 class AgentSketchPipeline(dspy.Module):
-    """Run the full proof sketch workflow, from drafting to validation."""
+    """Run the full proof sketch workflow, from drafting to validation.
+
+    Creates agents from ProofSketcherLMConfig for automatic model selection:
+
+    ```python
+    from mathster.proof_sketcher.llm_config import ProofSketcherLMConfig
+
+    config = ProofSketcherLMConfig.default()
+    pipeline = AgentSketchPipeline(lm_config=config)
+    ```
+
+    Args:
+        lm_config: ProofSketcherLMConfig specifying models for all pipeline stages
+        project_root: Optional path to project root for prompt loading
+        gemini_prompt: Optional custom prompt for Gemini reviewer
+        codex_prompt: Optional custom prompt for Codex reviewer
+    """
 
     def __init__(
         self,
         *,
+        lm_config: ProofSketcherLMConfig,
         project_root: str | None = None,
         gemini_prompt: str | None = None,
         codex_prompt: str | None = None,
-        drafting_agent: DraftingAgent | None = None,
-        validator: SketchValidator | None = None,
     ) -> None:
         super().__init__()
-        self._drafting_agent = drafting_agent or DraftingAgent()
-        self._validator = validator or SketchValidator(
+
+        lms = lm_config.to_dspy_lms()
+
+        # Create drafting agent with perspective models and synthesis/fast models
+        self._drafting_agent = DraftingAgent(
+            strategist_1=lms["perspective_1"],  # Primary strategist
+            strategist_2=lms["perspective_2"],  # Secondary strategist
+            model=lms["fast"],  # Fast model for simple tasks
+            stronger_model=lms["synthesis"],  # Synthesis model for complex reasoning
+        )
+
+        # Create validator with perspective and synthesis models
+        self._validator = SketchValidator(
             project_root=project_root,
             gemini_prompt=gemini_prompt,
             codex_prompt=codex_prompt,
+            perspective_1_lm=lms["perspective_1"],  # Gemini reviewer
+            perspective_2_lm=lms["perspective_2"],  # Codex reviewer
+            synthesis_lm=lms["synthesis"],  # Consensus/synthesis
+            fast_lm=lms["fast"],  # Metadata generation
         )
 
     def forward(

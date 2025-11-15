@@ -53,17 +53,17 @@
       "operator synergy"
     ],
     "references": [],
-    "content": "978: :class: tip\n979: \n980: This structure is the **discrete stochastic analogue** of the classical hypocoercivity framework for kinetic PDEs (Villani, 2009; Dolbeault-Mouhot-Schmeiser, 2015):\n981: \n982: **Classical Hypocoercivity (Kinetic Fokker-Planck)**:\n983: - The transport operator $v \\cdot \\nabla_x$ generates dynamics in $x$ but is neutral on the velocity distribution.\n984: - The collision operator $\\mathcal{L}_v$ generates dissipation in $v$ but does not directly affect $x$.\n985: - Neither operator alone contracts the full kinetic norm $\\|f\\|^2_{L^2} + \\|\\nabla_x f\\|^2_{L^2}$.\n986: - The augmented norm $\\|f\\|^2_{L^2} + \\varepsilon \\|\\nabla_x f\\|^2_{L^2}$ allows proving exponential decay by balancing the operators' effects.\n987: \n988: **Our Discrete Stochastic Framework (Fragile Gas)**:\n989: - The cloning operator $\\Psi_{\\text{clone}}$ contracts $V_{\\text{Var}}$ (internal swarm structure) but may expand $W_h^2$ (inter-swarm distance via velocity resets).\n990: - The kinetic operator $\\Psi_{\\text{kin}}$ contracts $W_h^2$ (via confining potential) but may expand $V_{\\text{Var}}$ (via diffusion noise).\n991: - Neither operator alone contracts the full phase-space error.\n992: - The augmented Lyapunov $V_{\\text{total}} = W_h^2 + c_V V_{\\text{Var}} + c_B W_b$ allows proving exponential convergence by balancing the operators' synergistic dissipation.",
+    "content": "992: :class: tip\n993: \n994: This structure is the **discrete stochastic analogue** of the classical hypocoercivity framework for kinetic PDEs (Villani, 2009; Dolbeault-Mouhot-Schmeiser, 2015):\n995: \n996: **Classical Hypocoercivity (Kinetic Fokker-Planck)**:\n997: - The transport operator $v \\cdot \\nabla_x$ generates dynamics in $x$ but is neutral on the velocity distribution.\n998: - The collision operator $\\mathcal{L}_v$ generates dissipation in $v$ but does not directly affect $x$.\n999: - Neither operator alone contracts the full kinetic norm $\\|f\\|^2_{L^2} + \\|\\nabla_x f\\|^2_{L^2}$.\n1000: - The augmented norm $\\|f\\|^2_{L^2} + \\varepsilon \\|\\nabla_x f\\|^2_{L^2}$ allows proving exponential decay by balancing the operators' effects.\n1001: \n1002: **Our Discrete Stochastic Framework (Fragile Gas)**:\n1003: - The cloning operator $\\Psi_{\\text{clone}}$ contracts $V_{\\text{Var}}$ (internal swarm structure) but may expand $W_h^2$ (inter-swarm distance via velocity resets).\n1004: - The kinetic operator $\\Psi_{\\text{kin}}$ contracts $W_h^2$ (via confining potential) but may expand $V_{\\text{Var}}$ (via diffusion noise).\n1005: - Neither operator alone contracts the full phase-space error.\n1006: - The augmented Lyapunov $V_{\\text{total}} = W_h^2 + c_V V_{\\text{Var}} + c_B W_b$ allows proving exponential convergence by balancing the operators' synergistic dissipation.",
     "section": "## 3. The Augmented Hypocoercive Lyapunov Function",
-    "start_line": 974,
-    "end_line": 993,
+    "start_line": 988,
+    "end_line": 1007,
     "header_lines": [
-      975,
-      976
+      989,
+      990
     ],
-    "content_start": 978,
-    "content_end": 992,
-    "raw_directive": "974: :::\n975: \n976: :::{prf:remark} Analogy to Classical Hypocoercivity Theory\n977: :label: rem-note-hypocoercivity-analogy\n978: :class: tip\n979: \n980: This structure is the **discrete stochastic analogue** of the classical hypocoercivity framework for kinetic PDEs (Villani, 2009; Dolbeault-Mouhot-Schmeiser, 2015):\n981: \n982: **Classical Hypocoercivity (Kinetic Fokker-Planck)**:\n983: - The transport operator $v \\cdot \\nabla_x$ generates dynamics in $x$ but is neutral on the velocity distribution.\n984: - The collision operator $\\mathcal{L}_v$ generates dissipation in $v$ but does not directly affect $x$.\n985: - Neither operator alone contracts the full kinetic norm $\\|f\\|^2_{L^2} + \\|\\nabla_x f\\|^2_{L^2}$.\n986: - The augmented norm $\\|f\\|^2_{L^2} + \\varepsilon \\|\\nabla_x f\\|^2_{L^2}$ allows proving exponential decay by balancing the operators' effects.\n987: \n988: **Our Discrete Stochastic Framework (Fragile Gas)**:\n989: - The cloning operator $\\Psi_{\\text{clone}}$ contracts $V_{\\text{Var}}$ (internal swarm structure) but may expand $W_h^2$ (inter-swarm distance via velocity resets).\n990: - The kinetic operator $\\Psi_{\\text{kin}}$ contracts $W_h^2$ (via confining potential) but may expand $V_{\\text{Var}}$ (via diffusion noise).\n991: - Neither operator alone contracts the full phase-space error.\n992: - The augmented Lyapunov $V_{\\text{total}} = W_h^2 + c_V V_{\\text{Var}} + c_B W_b$ allows proving exponential convergence by balancing the operators' synergistic dissipation.\n993: ",
+    "content_start": 992,
+    "content_end": 1006,
+    "raw_directive": "988: :::\n989: \n990: :::{prf:remark} Analogy to Classical Hypocoercivity Theory\n991: :label: rem-note-hypocoercivity-analogy\n992: :class: tip\n993: \n994: This structure is the **discrete stochastic analogue** of the classical hypocoercivity framework for kinetic PDEs (Villani, 2009; Dolbeault-Mouhot-Schmeiser, 2015):\n995: \n996: **Classical Hypocoercivity (Kinetic Fokker-Planck)**:\n997: - The transport operator $v \\cdot \\nabla_x$ generates dynamics in $x$ but is neutral on the velocity distribution.\n998: - The collision operator $\\mathcal{L}_v$ generates dissipation in $v$ but does not directly affect $x$.\n999: - Neither operator alone contracts the full kinetic norm $\\|f\\|^2_{L^2} + \\|\\nabla_x f\\|^2_{L^2}$.\n1000: - The augmented norm $\\|f\\|^2_{L^2} + \\varepsilon \\|\\nabla_x f\\|^2_{L^2}$ allows proving exponential decay by balancing the operators' effects.\n1001: \n1002: **Our Discrete Stochastic Framework (Fragile Gas)**:\n1003: - The cloning operator $\\Psi_{\\text{clone}}$ contracts $V_{\\text{Var}}$ (internal swarm structure) but may expand $W_h^2$ (inter-swarm distance via velocity resets).\n1004: - The kinetic operator $\\Psi_{\\text{kin}}$ contracts $W_h^2$ (via confining potential) but may expand $V_{\\text{Var}}$ (via diffusion noise).\n1005: - Neither operator alone contracts the full phase-space error.\n1006: - The augmented Lyapunov $V_{\\text{total}} = W_h^2 + c_V V_{\\text{Var}} + c_B W_b$ allows proving exponential convergence by balancing the operators' synergistic dissipation.\n1007: ",
     "directive_type": "remark",
     "metadata": {
       "label": "rem-note-hypocoercivity-analogy",
@@ -100,17 +100,17 @@
       "negligible difference"
     ],
     "references": [],
-    "content": "4160: :class: note\n4161: \n4162: The stated bound $\\ln(1 + \\kappa/V_{\\max})$ is slightly conservative compared to the tight bound $\\ln(1 + \\kappa/(V_{\\max} - \\kappa))$ derived in Step 4. For most practical applications where $\\kappa \\ll V_{\\max}$, the difference is negligible:\n4163: \n4164: $$\n4165: \\frac{\\kappa}{V_{\\max} - \\kappa} \\approx \\frac{\\kappa}{V_{\\max}}\\left(1 + \\frac{\\kappa}{V_{\\max}}\\right)\n4166: $$",
+    "content": "4193: :class: note\n4194: \n4195: The stated bound $\\ln(1 + \\kappa/V_{\\max})$ is slightly conservative compared to the tight bound $\\ln(1 + \\kappa/(V_{\\max} - \\kappa))$ derived in Step 4. For most practical applications where $\\kappa \\ll V_{\\max}$, the difference is negligible:\n4196: \n4197: $$\n4198: \\frac{\\kappa}{V_{\\max} - \\kappa} \\approx \\frac{\\kappa}{V_{\\max}}\\left(1 + \\frac{\\kappa}{V_{\\max}}\\right)\n4199: $$",
     "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
-    "start_line": 4156,
-    "end_line": 4167,
+    "start_line": 4189,
+    "end_line": 4200,
     "header_lines": [
-      4157,
-      4158
+      4190,
+      4191
     ],
-    "content_start": 4160,
-    "content_end": 4166,
-    "raw_directive": "4156: :::\n4157: \n4158: :::{prf:remark} On the Tightness of the Bound\n4159: :label: rem-log-gap-bound-tightness\n4160: :class: note\n4161: \n4162: The stated bound $\\ln(1 + \\kappa/V_{\\max})$ is slightly conservative compared to the tight bound $\\ln(1 + \\kappa/(V_{\\max} - \\kappa))$ derived in Step 4. For most practical applications where $\\kappa \\ll V_{\\max}$, the difference is negligible:\n4163: \n4164: $$\n4165: \\frac{\\kappa}{V_{\\max} - \\kappa} \\approx \\frac{\\kappa}{V_{\\max}}\\left(1 + \\frac{\\kappa}{V_{\\max}}\\right)\n4166: $$\n4167: ",
+    "content_start": 4193,
+    "content_end": 4199,
+    "raw_directive": "4189: :::\n4190: \n4191: :::{prf:remark} On the Tightness of the Bound\n4192: :label: rem-log-gap-bound-tightness\n4193: :class: note\n4194: \n4195: The stated bound $\\ln(1 + \\kappa/V_{\\max})$ is slightly conservative compared to the tight bound $\\ln(1 + \\kappa/(V_{\\max} - \\kappa))$ derived in Step 4. For most practical applications where $\\kappa \\ll V_{\\max}$, the difference is negligible:\n4196: \n4197: $$\n4198: \\frac{\\kappa}{V_{\\max} - \\kappa} \\approx \\frac{\\kappa}{V_{\\max}}\\left(1 + \\frac{\\kappa}{V_{\\max}}\\right)\n4199: $$\n4200: ",
     "directive_type": "remark",
     "metadata": {
       "label": "rem-log-gap-bound-tightness",
@@ -149,17 +149,17 @@
       "logarithm-slope"
     ],
     "references": [],
-    "content": "4280: :class: note\n4281: \n4282: The upper bound $\\ln(1 + \\kappa/V_{\\min})$ is achieved in the worst-case scenario where:\n4283: 1. The means are separated by the maximum allowed gap $\\kappa$\n4284: 2. Both distributions are positioned at the bottom of the range near $V_{\\min}$, where the logarithm has the steepest slope\n4285: 3. One distribution is deterministic (maximizing its expected log) while the other is maximally dispersed (minimizing its expected log)",
+    "content": "4313: :class: note\n4314: \n4315: The upper bound $\\ln(1 + \\kappa/V_{\\min})$ is achieved in the worst-case scenario where:\n4316: 1. The means are separated by the maximum allowed gap $\\kappa$\n4317: 2. Both distributions are positioned at the bottom of the range near $V_{\\min}$, where the logarithm has the steepest slope\n4318: 3. One distribution is deterministic (maximizing its expected log) while the other is maximally dispersed (minimizing its expected log)",
     "section": "## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation",
-    "start_line": 4276,
-    "end_line": 4286,
+    "start_line": 4309,
+    "end_line": 4319,
     "header_lines": [
-      4277,
-      4278
+      4310,
+      4311
     ],
-    "content_start": 4280,
-    "content_end": 4285,
-    "raw_directive": "4276: :::\n4277: \n4278: :::{prf:remark} Why the Bound is Tight at $V_{\\min}$\n4279: :label: rem-log-gap-bound-tight-at-vmin\n4280: :class: note\n4281: \n4282: The upper bound $\\ln(1 + \\kappa/V_{\\min})$ is achieved in the worst-case scenario where:\n4283: 1. The means are separated by the maximum allowed gap $\\kappa$\n4284: 2. Both distributions are positioned at the bottom of the range near $V_{\\min}$, where the logarithm has the steepest slope\n4285: 3. One distribution is deterministic (maximizing its expected log) while the other is maximally dispersed (minimizing its expected log)\n4286: ",
+    "content_start": 4313,
+    "content_end": 4318,
+    "raw_directive": "4309: :::\n4310: \n4311: :::{prf:remark} Why the Bound is Tight at $V_{\\min}$\n4312: :label: rem-log-gap-bound-tight-at-vmin\n4313: :class: note\n4314: \n4315: The upper bound $\\ln(1 + \\kappa/V_{\\min})$ is achieved in the worst-case scenario where:\n4316: 1. The means are separated by the maximum allowed gap $\\kappa$\n4317: 2. Both distributions are positioned at the bottom of the range near $V_{\\min}$, where the logarithm has the steepest slope\n4318: 3. One distribution is deterministic (maximizing its expected log) while the other is maximally dispersed (minimizing its expected log)\n4319: ",
     "directive_type": "remark",
     "metadata": {
       "label": "rem-log-gap-bound-tight-at-vmin",
@@ -198,17 +198,17 @@
     "references": [
       "cor-cloning-pressure-target-set"
     ],
-    "content": "4945: :class: note",
+    "content": "4984: :class: note",
     "section": "## 8. The N-Uniform Quantitative Keystone Lemma",
-    "start_line": 4941,
-    "end_line": 4946,
+    "start_line": 4980,
+    "end_line": 4985,
     "header_lines": [
-      4942,
-      4943
+      4981,
+      4982
     ],
-    "content_start": 4945,
-    "content_end": 4945,
-    "raw_directive": "4941: :::\n4942: \n4943: :::{prf:remark} N-Uniformity of the Bound\n4944: :label: rem-n-uniformity-delta-min-bound\n4945: :class: note\n4946: ",
+    "content_start": 4984,
+    "content_end": 4984,
+    "raw_directive": "4980: :::\n4981: \n4982: :::{prf:remark} N-Uniformity of the Bound\n4983: :label: rem-n-uniformity-delta-min-bound\n4984: :class: note\n4985: ",
     "directive_type": "remark",
     "metadata": {
       "label": "rem-n-uniformity-delta-min-bound",
@@ -254,16 +254,16 @@
       "random pairing"
     ],
     "references": [],
-    "content": "5890: :label: rem-measurement-coupling\n5891: \n5892: When analyzing two swarms $(S_1, S_2)$ in the drift analysis (Chapters 10-11), we use **synchronous coupling** of the randomness:\n5893: - The same random pairing algorithm is applied to both swarms",
+    "content": "5932: :label: rem-measurement-coupling\n5933: \n5934: When analyzing two swarms $(S_1, S_2)$ in the drift analysis (Chapters 10-11), we use **synchronous coupling** of the randomness:\n5935: - The same random pairing algorithm is applied to both swarms",
     "section": "## 9.3. Decomposition into Sub-Operators",
-    "start_line": 5887,
-    "end_line": 5894,
+    "start_line": 5929,
+    "end_line": 5936,
     "header_lines": [
-      5888
+      5930
     ],
-    "content_start": 5890,
-    "content_end": 5893,
-    "raw_directive": "5887: :::\n5888: \n5889: :::{prf:remark} Stochastic Coupling for Drift Analysis\n5890: :label: rem-measurement-coupling\n5891: \n5892: When analyzing two swarms $(S_1, S_2)$ in the drift analysis (Chapters 10-11), we use **synchronous coupling** of the randomness:\n5893: - The same random pairing algorithm is applied to both swarms\n5894: - The PRNG streams are coupled so that walker $i$ in swarm 1 and walker $i$ in swarm 2 use the same random seed",
+    "content_start": 5932,
+    "content_end": 5935,
+    "raw_directive": "5929: :::\n5930: \n5931: :::{prf:remark} Stochastic Coupling for Drift Analysis\n5932: :label: rem-measurement-coupling\n5933: \n5934: When analyzing two swarms $(S_1, S_2)$ in the drift analysis (Chapters 10-11), we use **synchronous coupling** of the randomness:\n5935: - The same random pairing algorithm is applied to both swarms\n5936: - The PRNG streams are coupled so that walker $i$ in swarm 1 and walker $i$ in swarm 2 use the same random seed",
     "directive_type": "remark",
     "metadata": {
       "label": "rem-measurement-coupling",
@@ -336,16 +336,16 @@
       "energy-dissipation"
     ],
     "references": [],
-    "content": "6161: :label: rem-position-velocity-update-difference\n6162: \n6163: The cloning operator treats positions and velocities asymmetrically:\n6164: \n6165: 1. **Position:** Stochastic Gaussian jitter with variance $\\sigma_x^2$ breaks spatial correlations between swarms in the drift analysis.\n6166: \n6167: 2. **Velocity:** Deterministic inelastic collision model (with random rotation) conserves momentum and provides controlled energy dissipation via $\\alpha_{\\text{restitution}}$.\n6168: \n6169: This design choice has important implications:\n6170: \n6171: - **Positional desynchronization** comes from explicit Gaussian noise $\\mathcal{N}(0, \\sigma_x^2 I_d)$",
+    "content": "6203: :label: rem-position-velocity-update-difference\n6204: \n6205: The cloning operator treats positions and velocities asymmetrically:\n6206: \n6207: 1. **Position:** Stochastic Gaussian jitter with variance $\\sigma_x^2$ breaks spatial correlations between swarms in the drift analysis.\n6208: \n6209: 2. **Velocity:** Deterministic inelastic collision model (with random rotation) conserves momentum and provides controlled energy dissipation via $\\alpha_{\\text{restitution}}$.\n6210: \n6211: This design choice has important implications:\n6212: \n6213: - **Positional desynchronization** comes from explicit Gaussian noise $\\mathcal{N}(0, \\sigma_x^2 I_d)$",
     "section": "## 9.3. Decomposition into Sub-Operators",
-    "start_line": 6158,
-    "end_line": 6172,
+    "start_line": 6200,
+    "end_line": 6214,
     "header_lines": [
-      6159
+      6201
     ],
-    "content_start": 6161,
-    "content_end": 6171,
-    "raw_directive": "6158: :::\n6159: \n6160: :::{prf:remark} Position Jitter vs. Velocity Collision Model\n6161: :label: rem-position-velocity-update-difference\n6162: \n6163: The cloning operator treats positions and velocities asymmetrically:\n6164: \n6165: 1. **Position:** Stochastic Gaussian jitter with variance $\\sigma_x^2$ breaks spatial correlations between swarms in the drift analysis.\n6166: \n6167: 2. **Velocity:** Deterministic inelastic collision model (with random rotation) conserves momentum and provides controlled energy dissipation via $\\alpha_{\\text{restitution}}$.\n6168: \n6169: This design choice has important implications:\n6170: \n6171: - **Positional desynchronization** comes from explicit Gaussian noise $\\mathcal{N}(0, \\sigma_x^2 I_d)$\n6172: - **Velocity desynchronization** comes from the random rotations $R_k$ in the collision model, which randomize velocity directions while preserving or reducing magnitudes",
+    "content_start": 6203,
+    "content_end": 6213,
+    "raw_directive": "6200: :::\n6201: \n6202: :::{prf:remark} Position Jitter vs. Velocity Collision Model\n6203: :label: rem-position-velocity-update-difference\n6204: \n6205: The cloning operator treats positions and velocities asymmetrically:\n6206: \n6207: 1. **Position:** Stochastic Gaussian jitter with variance $\\sigma_x^2$ breaks spatial correlations between swarms in the drift analysis.\n6208: \n6209: 2. **Velocity:** Deterministic inelastic collision model (with random rotation) conserves momentum and provides controlled energy dissipation via $\\alpha_{\\text{restitution}}$.\n6210: \n6211: This design choice has important implications:\n6212: \n6213: - **Positional desynchronization** comes from explicit Gaussian noise $\\mathcal{N}(0, \\sigma_x^2 I_d)$\n6214: - **Velocity desynchronization** comes from the random rotations $R_k$ in the collision model, which randomize velocity directions while preserving or reducing magnitudes",
     "directive_type": "remark",
     "metadata": {
       "label": "rem-position-velocity-update-difference",
@@ -393,16 +393,16 @@
       "divergence reduction"
     ],
     "references": [],
-    "content": "6348: :label: rem-coupling-benefits\n6349: \n6350: The synchronous coupling ensures that:\n6351: \n6352: 1. **Common randomness cancels:** When both swarms have walker $i$ in similar states and both make the same cloning decision, much of the random perturbation is shared, reducing divergence.\n6353: \n6354: 2. **Worst-case expansion is bounded:** Even when the swarms make different decisions (e.g., walker $i$ clones in swarm 1 but persists in swarm 2), the expansion is controlled by the maximum displacement $D_{\\text{valid}}$.",
+    "content": "6392: :label: rem-coupling-benefits\n6393: \n6394: The synchronous coupling ensures that:\n6395: \n6396: 1. **Common randomness cancels:** When both swarms have walker $i$ in similar states and both make the same cloning decision, much of the random perturbation is shared, reducing divergence.\n6397: \n6398: 2. **Worst-case expansion is bounded:** Even when the swarms make different decisions (e.g., walker $i$ clones in swarm 1 but persists in swarm 2), the expansion is controlled by the maximum displacement $D_{\\text{valid}}$.",
     "section": "## 10.2. The Coupled Expectation Framework",
-    "start_line": 6345,
-    "end_line": 6355,
+    "start_line": 6389,
+    "end_line": 6399,
     "header_lines": [
-      6346
+      6390
     ],
-    "content_start": 6348,
-    "content_end": 6354,
-    "raw_directive": "6345: :::\n6346: \n6347: :::{prf:remark} Synchronous Coupling Benefits\n6348: :label: rem-coupling-benefits\n6349: \n6350: The synchronous coupling ensures that:\n6351: \n6352: 1. **Common randomness cancels:** When both swarms have walker $i$ in similar states and both make the same cloning decision, much of the random perturbation is shared, reducing divergence.\n6353: \n6354: 2. **Worst-case expansion is bounded:** Even when the swarms make different decisions (e.g., walker $i$ clones in swarm 1 but persists in swarm 2), the expansion is controlled by the maximum displacement $D_{\\text{valid}}$.\n6355: ",
+    "content_start": 6392,
+    "content_end": 6398,
+    "raw_directive": "6389: :::\n6390: \n6391: :::{prf:remark} Synchronous Coupling Benefits\n6392: :label: rem-coupling-benefits\n6393: \n6394: The synchronous coupling ensures that:\n6395: \n6396: 1. **Common randomness cancels:** When both swarms have walker $i$ in similar states and both make the same cloning decision, much of the random perturbation is shared, reducing divergence.\n6397: \n6398: 2. **Worst-case expansion is bounded:** Even when the swarms make different decisions (e.g., walker $i$ clones in swarm 1 but persists in swarm 2), the expansion is controlled by the maximum displacement $D_{\\text{valid}}$.\n6399: ",
     "directive_type": "remark",
     "metadata": {
       "label": "rem-coupling-benefits",
@@ -465,16 +465,16 @@
       "framework"
     ],
     "references": [],
-    "content": "6838: :label: rem-synergistic-velocity-dissipation\n6839: \n6840: This bounded expansion is the prerequisite for the synergistic dissipation framework. The companion document will prove that the kinetic operator provides velocity contraction:\n6841: \n6842: $$\n6843: \\mathbb{E}_{\\text{kin}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_v V_{\\text{Var},v} + C'_v\n6844: $$\n6845: \n6846: for some $\\kappa_v > 0$ proportional to the Langevin friction $\\gamma$.\n6847: \n6848: When properly balanced:\n6849: \n6850: $$\n6851: \\mathbb{E}_{\\text{clone} \\circ \\text{kin}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_v V_{\\text{Var},v} + (C_v + C'_v)\n6852: $$",
+    "content": "6883: :label: rem-synergistic-velocity-dissipation\n6884: \n6885: This bounded expansion is the prerequisite for the synergistic dissipation framework. The companion document will prove that the kinetic operator provides velocity contraction:\n6886: \n6887: $$\n6888: \\mathbb{E}_{\\text{kin}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_v V_{\\text{Var},v} + C'_v\n6889: $$\n6890: \n6891: for some $\\kappa_v > 0$ proportional to the Langevin friction $\\gamma$.\n6892: \n6893: When properly balanced:\n6894: \n6895: $$\n6896: \\mathbb{E}_{\\text{clone} \\circ \\text{kin}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_v V_{\\text{Var},v} + (C_v + C'_v)\n6897: $$",
     "section": "## 10.4. Velocity Variance Bounded Expansion",
-    "start_line": 6835,
-    "end_line": 6853,
+    "start_line": 6880,
+    "end_line": 6898,
     "header_lines": [
-      6836
+      6881
     ],
-    "content_start": 6838,
-    "content_end": 6852,
-    "raw_directive": "6835: :::\n6836: \n6837: :::{prf:remark} Synergistic Dissipation Enables Net Contraction\n6838: :label: rem-synergistic-velocity-dissipation\n6839: \n6840: This bounded expansion is the prerequisite for the synergistic dissipation framework. The companion document will prove that the kinetic operator provides velocity contraction:\n6841: \n6842: $$\n6843: \\mathbb{E}_{\\text{kin}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_v V_{\\text{Var},v} + C'_v\n6844: $$\n6845: \n6846: for some $\\kappa_v > 0$ proportional to the Langevin friction $\\gamma$.\n6847: \n6848: When properly balanced:\n6849: \n6850: $$\n6851: \\mathbb{E}_{\\text{clone} \\circ \\text{kin}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_v V_{\\text{Var},v} + (C_v + C'_v)\n6852: $$\n6853: ",
+    "content_start": 6883,
+    "content_end": 6897,
+    "raw_directive": "6880: :::\n6881: \n6882: :::{prf:remark} Synergistic Dissipation Enables Net Contraction\n6883: :label: rem-synergistic-velocity-dissipation\n6884: \n6885: This bounded expansion is the prerequisite for the synergistic dissipation framework. The companion document will prove that the kinetic operator provides velocity contraction:\n6886: \n6887: $$\n6888: \\mathbb{E}_{\\text{kin}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_v V_{\\text{Var},v} + C'_v\n6889: $$\n6890: \n6891: for some $\\kappa_v > 0$ proportional to the Langevin friction $\\gamma$.\n6892: \n6893: When properly balanced:\n6894: \n6895: $$\n6896: \\mathbb{E}_{\\text{clone} \\circ \\text{kin}}[\\Delta V_{\\text{Var},v}] \\leq -\\kappa_v V_{\\text{Var},v} + (C_v + C'_v)\n6897: $$\n6898: ",
     "directive_type": "remark",
     "metadata": {
       "label": "rem-synergistic-velocity-dissipation",
@@ -549,16 +549,16 @@
       "cloning responsiveness"
     ],
     "references": [],
-    "content": "6983: :label: rem-drift-constants-dependencies\n6984: \n6985: The drift constants have the following dependencies:\n6986: \n6987: **Contraction rate $\\kappa_x$:**\n6988: - Increases with measurement quality (larger $\\epsilon$ \u2192 better diversity detection)\n6989: - Increases with cloning responsiveness (larger $p_{\\max}$ and smaller $\\varepsilon_{\\text{clone}}$)\n6990: - Independent of $N$ (N-uniformity from Keystone)\n6991: \n6992: **Expansion bound $C_v$:**\n6993: - Increases with $V_{\\max}^2$ (larger velocity domain)\n6994: - Increases with $\\alpha_{\\text{restitution}}$ (more elastic collisions)\n6995: - Decreases toward zero as $\\alpha_{\\text{restitution}} \\to 0$ (perfectly inelastic)\n6996: - Independent of $N$",
+    "content": "7028: :label: rem-drift-constants-dependencies\n7029: \n7030: The drift constants have the following dependencies:\n7031: \n7032: **Contraction rate $\\kappa_x$:**\n7033: - Increases with measurement quality (larger $\\epsilon$ \u2192 better diversity detection)\n7034: - Increases with cloning responsiveness (larger $p_{\\max}$ and smaller $\\varepsilon_{\\text{clone}}$)\n7035: - Independent of $N$ (N-uniformity from Keystone)\n7036: \n7037: **Expansion bound $C_v$:**\n7038: - Increases with $V_{\\max}^2$ (larger velocity domain)\n7039: - Increases with $\\alpha_{\\text{restitution}}$ (more elastic collisions)\n7040: - Decreases toward zero as $\\alpha_{\\text{restitution}} \\to 0$ (perfectly inelastic)\n7041: - Independent of $N$",
     "section": "## 10.6. Summary of Variance Drift Inequalities",
-    "start_line": 6980,
-    "end_line": 6997,
+    "start_line": 7025,
+    "end_line": 7042,
     "header_lines": [
-      6981
+      7026
     ],
-    "content_start": 6983,
-    "content_end": 6996,
-    "raw_directive": "6980: :::\n6981: \n6982: :::{prf:remark} Constants and Parameter Dependencies\n6983: :label: rem-drift-constants-dependencies\n6984: \n6985: The drift constants have the following dependencies:\n6986: \n6987: **Contraction rate $\\kappa_x$:**\n6988: - Increases with measurement quality (larger $\\epsilon$ \u2192 better diversity detection)\n6989: - Increases with cloning responsiveness (larger $p_{\\max}$ and smaller $\\varepsilon_{\\text{clone}}$)\n6990: - Independent of $N$ (N-uniformity from Keystone)\n6991: \n6992: **Expansion bound $C_v$:**\n6993: - Increases with $V_{\\max}^2$ (larger velocity domain)\n6994: - Increases with $\\alpha_{\\text{restitution}}$ (more elastic collisions)\n6995: - Decreases toward zero as $\\alpha_{\\text{restitution}} \\to 0$ (perfectly inelastic)\n6996: - Independent of $N$\n6997: ",
+    "content_start": 7028,
+    "content_end": 7041,
+    "raw_directive": "7025: :::\n7026: \n7027: :::{prf:remark} Constants and Parameter Dependencies\n7028: :label: rem-drift-constants-dependencies\n7029: \n7030: The drift constants have the following dependencies:\n7031: \n7032: **Contraction rate $\\kappa_x$:**\n7033: - Increases with measurement quality (larger $\\epsilon$ \u2192 better diversity detection)\n7034: - Increases with cloning responsiveness (larger $p_{\\max}$ and smaller $\\varepsilon_{\\text{clone}}$)\n7035: - Independent of $N$ (N-uniformity from Keystone)\n7036: \n7037: **Expansion bound $C_v$:**\n7038: - Increases with $V_{\\max}^2$ (larger velocity domain)\n7039: - Increases with $\\alpha_{\\text{restitution}}$ (more elastic collisions)\n7040: - Decreases toward zero as $\\alpha_{\\text{restitution}} \\to 0$ (perfectly inelastic)\n7041: - Independent of $N$\n7042: ",
     "directive_type": "remark",
     "metadata": {
       "label": "rem-drift-constants-dependencies",
@@ -606,16 +606,16 @@
       "valid-region"
     ],
     "references": [],
-    "content": "7074: :label: rem-barrier-geometric-penalty\n7075: \n7076: The barrier function creates a \"soft wall\" around the boundary:\n7077: \n7078: - **Far from boundary** ($d(x, \\partial \\mathcal{X}_{\\text{valid}}) > \\delta_{\\text{safe}}$): No penalty, $\\varphi_{\\text{barrier}}(x) = 0$\n7079: \n7080: - **Near boundary** ($d(x, \\partial \\mathcal{X}_{\\text{valid}}) \\leq \\delta_{\\text{safe}}$): Penalty increases, reducing fitness\n7081: \n7082: - **At boundary:** Infinite penalty (though walkers at the boundary are dead, so this limit is never realized for alive walkers)",
+    "content": "7119: :label: rem-barrier-geometric-penalty\n7120: \n7121: The barrier function creates a \"soft wall\" around the boundary:\n7122: \n7123: - **Far from boundary** ($d(x, \\partial \\mathcal{X}_{\\text{valid}}) > \\delta_{\\text{safe}}$): No penalty, $\\varphi_{\\text{barrier}}(x) = 0$\n7124: \n7125: - **Near boundary** ($d(x, \\partial \\mathcal{X}_{\\text{valid}}) \\leq \\delta_{\\text{safe}}$): Penalty increases, reducing fitness\n7126: \n7127: - **At boundary:** Infinite penalty (though walkers at the boundary are dead, so this limit is never realized for alive walkers)",
     "section": "## 11.2. The Boundary Barrier and Fitness Gradient",
-    "start_line": 7071,
-    "end_line": 7083,
+    "start_line": 7116,
+    "end_line": 7128,
     "header_lines": [
-      7072
+      7117
     ],
-    "content_start": 7074,
-    "content_end": 7082,
-    "raw_directive": "7071: :::\n7072: \n7073: :::{prf:remark} Barrier Function as Geometric Penalty\n7074: :label: rem-barrier-geometric-penalty\n7075: \n7076: The barrier function creates a \"soft wall\" around the boundary:\n7077: \n7078: - **Far from boundary** ($d(x, \\partial \\mathcal{X}_{\\text{valid}}) > \\delta_{\\text{safe}}$): No penalty, $\\varphi_{\\text{barrier}}(x) = 0$\n7079: \n7080: - **Near boundary** ($d(x, \\partial \\mathcal{X}_{\\text{valid}}) \\leq \\delta_{\\text{safe}}$): Penalty increases, reducing fitness\n7081: \n7082: - **At boundary:** Infinite penalty (though walkers at the boundary are dead, so this limit is never realized for alive walkers)\n7083: ",
+    "content_start": 7119,
+    "content_end": 7127,
+    "raw_directive": "7116: :::\n7117: \n7118: :::{prf:remark} Barrier Function as Geometric Penalty\n7119: :label: rem-barrier-geometric-penalty\n7120: \n7121: The barrier function creates a \"soft wall\" around the boundary:\n7122: \n7123: - **Far from boundary** ($d(x, \\partial \\mathcal{X}_{\\text{valid}}) > \\delta_{\\text{safe}}$): No penalty, $\\varphi_{\\text{barrier}}(x) = 0$\n7124: \n7125: - **Near boundary** ($d(x, \\partial \\mathcal{X}_{\\text{valid}}) \\leq \\delta_{\\text{safe}}$): Penalty increases, reducing fitness\n7126: \n7127: - **At boundary:** Infinite penalty (though walkers at the boundary are dead, so this limit is never realized for alive walkers)\n7128: ",
     "directive_type": "remark",
     "metadata": {
       "label": "rem-barrier-geometric-penalty",
@@ -663,16 +663,16 @@
       "mass"
     ],
     "references": [],
-    "content": "7281: :label: rem-boundary-mass-relationship\n7282: \n7283: If all walkers outside the exposed set have $\\varphi_{\\text{barrier}}(x_i) \\leq \\phi_{\\text{thresh}}$, then:\n7284: \n7285: $$\n7286: W_b(S_k) = \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_k)} \\varphi_{\\text{barrier}}(x_i) \\leq M_{\\text{boundary}}(S_k) + \\frac{k_{\\text{alive}}}{N} \\phi_{\\text{thresh}}\n7287: $$",
+    "content": "7326: :label: rem-boundary-mass-relationship\n7327: \n7328: If all walkers outside the exposed set have $\\varphi_{\\text{barrier}}(x_i) \\leq \\phi_{\\text{thresh}}$, then:\n7329: \n7330: $$\n7331: W_b(S_k) = \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_k)} \\varphi_{\\text{barrier}}(x_i) \\leq M_{\\text{boundary}}(S_k) + \\frac{k_{\\text{alive}}}{N} \\phi_{\\text{thresh}}\n7332: $$",
     "section": "## 11.2. The Boundary Barrier and Fitness Gradient",
-    "start_line": 7278,
-    "end_line": 7288,
+    "start_line": 7323,
+    "end_line": 7333,
     "header_lines": [
-      7279
+      7324
     ],
-    "content_start": 7281,
-    "content_end": 7287,
-    "raw_directive": "7278: :::\n7279: \n7280: :::{prf:remark} Relationship to Total Boundary Potential\n7281: :label: rem-boundary-mass-relationship\n7282: \n7283: If all walkers outside the exposed set have $\\varphi_{\\text{barrier}}(x_i) \\leq \\phi_{\\text{thresh}}$, then:\n7284: \n7285: $$\n7286: W_b(S_k) = \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_k)} \\varphi_{\\text{barrier}}(x_i) \\leq M_{\\text{boundary}}(S_k) + \\frac{k_{\\text{alive}}}{N} \\phi_{\\text{thresh}}\n7287: $$\n7288: ",
+    "content_start": 7326,
+    "content_end": 7332,
+    "raw_directive": "7323: :::\n7324: \n7325: :::{prf:remark} Relationship to Total Boundary Potential\n7326: :label: rem-boundary-mass-relationship\n7327: \n7328: If all walkers outside the exposed set have $\\varphi_{\\text{barrier}}(x_i) \\leq \\phi_{\\text{thresh}}$, then:\n7329: \n7330: $$\n7331: W_b(S_k) = \\frac{1}{N} \\sum_{i \\in \\mathcal{A}(S_k)} \\varphi_{\\text{barrier}}(x_i) \\leq M_{\\text{boundary}}(S_k) + \\frac{k_{\\text{alive}}}{N} \\phi_{\\text{thresh}}\n7332: $$\n7333: ",
     "directive_type": "remark",
     "metadata": {
       "label": "rem-boundary-mass-relationship",
@@ -734,16 +734,16 @@
       "cor-bounded-boundary-exposure",
       "cor-extinction-suppression"
     ],
-    "content": "7312: :label: rem-progressive-safety\n7313: \n7314: This theorem formalizes the Safe Harbor mechanism:\n7315: \n7316: - **When many walkers are near the boundary** ($W_b$ large), these walkers have low fitness and high cloning probability\n7317: - **They are replaced by clones of interior walkers**, pulling the boundary potential down\n7318: - **The contraction rate $\\kappa_b$ is state-independent**, ensuring consistent safety correction regardless of swarm configuration\n7319: - **The bounded offset $C_b$** accounts for walkers entering the boundary region through position jitter, but this is dominated by contraction when $W_b$ is large\n7320: \n7321: **Important Consequences:**",
+    "content": "7358: :label: rem-progressive-safety\n7359: \n7360: This theorem formalizes the Safe Harbor mechanism:\n7361: \n7362: - **When many walkers are near the boundary** ($W_b$ large), these walkers have low fitness and high cloning probability\n7363: - **They are replaced by clones of interior walkers**, pulling the boundary potential down\n7364: - **The contraction rate $\\kappa_b$ is state-independent**, ensuring consistent safety correction regardless of swarm configuration\n7365: - **The bounded offset $C_b$** accounts for walkers entering the boundary region through position jitter, but this is dominated by contraction when $W_b$ is large\n7366: \n7367: **Important Consequences:**",
     "section": "## 11.3. Main Theorem: Boundary Potential Contraction",
-    "start_line": 7309,
-    "end_line": 7322,
+    "start_line": 7355,
+    "end_line": 7368,
     "header_lines": [
-      7310
+      7356
     ],
-    "content_start": 7312,
-    "content_end": 7321,
-    "raw_directive": "7309: :::\n7310: \n7311: :::{prf:remark} Interpretation: Progressive Safety Enhancement\n7312: :label: rem-progressive-safety\n7313: \n7314: This theorem formalizes the Safe Harbor mechanism:\n7315: \n7316: - **When many walkers are near the boundary** ($W_b$ large), these walkers have low fitness and high cloning probability\n7317: - **They are replaced by clones of interior walkers**, pulling the boundary potential down\n7318: - **The contraction rate $\\kappa_b$ is state-independent**, ensuring consistent safety correction regardless of swarm configuration\n7319: - **The bounded offset $C_b$** accounts for walkers entering the boundary region through position jitter, but this is dominated by contraction when $W_b$ is large\n7320: \n7321: **Important Consequences:**\n7322: - {prf:ref}`cor-bounded-boundary-exposure` establishes equilibrium bounds on boundary exposure",
+    "content_start": 7358,
+    "content_end": 7367,
+    "raw_directive": "7355: :::\n7356: \n7357: :::{prf:remark} Interpretation: Progressive Safety Enhancement\n7358: :label: rem-progressive-safety\n7359: \n7360: This theorem formalizes the Safe Harbor mechanism:\n7361: \n7362: - **When many walkers are near the boundary** ($W_b$ large), these walkers have low fitness and high cloning probability\n7363: - **They are replaced by clones of interior walkers**, pulling the boundary potential down\n7364: - **The contraction rate $\\kappa_b$ is state-independent**, ensuring consistent safety correction regardless of swarm configuration\n7365: - **The bounded offset $C_b$** accounts for walkers entering the boundary region through position jitter, but this is dominated by contraction when $W_b$ is large\n7366: \n7367: **Important Consequences:**\n7368: - {prf:ref}`cor-bounded-boundary-exposure` establishes equilibrium bounds on boundary exposure",
     "directive_type": "remark",
     "metadata": {
       "label": "rem-progressive-safety",
@@ -775,16 +775,16 @@
       "fitness-weight"
     ],
     "references": [],
-    "content": "7717: :label: rem-safety-margin-tuning\n7718: \n7719: The equilibrium bound $C_b/\\kappa_b$ can be made arbitrarily small by:\n7720: \n7721: 1. **Increasing $\\kappa_b$:** Use larger weight $\\beta$ on the reward component in fitness, making boundary penalties more salient\n7722: \n7723: 2. **Decreasing $C_b$:** Use smaller position jitter variance $\\sigma_x^2$ to reduce re-entry into boundary regions after cloning\n7724: \n7725: 3. **Widening safe interior:** Choose barrier function parameters to increase $\\delta_{\\text{safe}}$, providing more buffer before penalties activate",
+    "content": "7765: :label: rem-safety-margin-tuning\n7766: \n7767: The equilibrium bound $C_b/\\kappa_b$ can be made arbitrarily small by:\n7768: \n7769: 1. **Increasing $\\kappa_b$:** Use larger weight $\\beta$ on the reward component in fitness, making boundary penalties more salient\n7770: \n7771: 2. **Decreasing $C_b$:** Use smaller position jitter variance $\\sigma_x^2$ to reduce re-entry into boundary regions after cloning\n7772: \n7773: 3. **Widening safe interior:** Choose barrier function parameters to increase $\\delta_{\\text{safe}}$, providing more buffer before penalties activate",
     "section": "## 11.5. Implications for Extinction Probability",
-    "start_line": 7714,
-    "end_line": 7726,
+    "start_line": 7762,
+    "end_line": 7774,
     "header_lines": [
-      7715
+      7763
     ],
-    "content_start": 7717,
-    "content_end": 7725,
-    "raw_directive": "7714: :::\n7715: \n7716: :::{prf:remark} Safety Margin and Parameter Tuning\n7717: :label: rem-safety-margin-tuning\n7718: \n7719: The equilibrium bound $C_b/\\kappa_b$ can be made arbitrarily small by:\n7720: \n7721: 1. **Increasing $\\kappa_b$:** Use larger weight $\\beta$ on the reward component in fitness, making boundary penalties more salient\n7722: \n7723: 2. **Decreasing $C_b$:** Use smaller position jitter variance $\\sigma_x^2$ to reduce re-entry into boundary regions after cloning\n7724: \n7725: 3. **Widening safe interior:** Choose barrier function parameters to increase $\\delta_{\\text{safe}}$, providing more buffer before penalties activate\n7726: ",
+    "content_start": 7765,
+    "content_end": 7773,
+    "raw_directive": "7762: :::\n7763: \n7764: :::{prf:remark} Safety Margin and Parameter Tuning\n7765: :label: rem-safety-margin-tuning\n7766: \n7767: The equilibrium bound $C_b/\\kappa_b$ can be made arbitrarily small by:\n7768: \n7769: 1. **Increasing $\\kappa_b$:** Use larger weight $\\beta$ on the reward component in fitness, making boundary penalties more salient\n7770: \n7771: 2. **Decreasing $C_b$:** Use smaller position jitter variance $\\sigma_x^2$ to reduce re-entry into boundary regions after cloning\n7772: \n7773: 3. **Widening safe interior:** Choose barrier function parameters to increase $\\delta_{\\text{safe}}$, providing more buffer before penalties activate\n7774: ",
     "directive_type": "remark",
     "metadata": {
       "label": "rem-safety-margin-tuning",
@@ -833,16 +833,16 @@
       "fitness evaluation"
     ],
     "references": [],
-    "content": "7969: :label: rem-why-vw-expands\n7970: \n7971: The cloning operator **cannot contract** $V_W$ because:\n7972: \n7973: 1. **Intra-swarm mechanism:** Cloning acts **within** each swarm independently. It compares walker $i$ to its companion in the **same swarm**, not to the corresponding walker in the other swarm.\n7974: \n7975: 2. **No inter-swarm communication:** The fitness evaluation and companion selection have no information about the other swarm in the coupled analysis. They cannot \"know\" which direction reduces $V_W$.\n7976: \n7977: 3. **Stochastic desynchronization:** Even with synchronous coupling, different swarm configurations lead to different fitness landscapes, causing different cloning decisions that increase divergence.",
+    "content": "8018: :label: rem-why-vw-expands\n8019: \n8020: The cloning operator **cannot contract** $V_W$ because:\n8021: \n8022: 1. **Intra-swarm mechanism:** Cloning acts **within** each swarm independently. It compares walker $i$ to its companion in the **same swarm**, not to the corresponding walker in the other swarm.\n8023: \n8024: 2. **No inter-swarm communication:** The fitness evaluation and companion selection have no information about the other swarm in the coupled analysis. They cannot \"know\" which direction reduces $V_W$.\n8025: \n8026: 3. **Stochastic desynchronization:** Even with synchronous coupling, different swarm configurations lead to different fitness landscapes, causing different cloning decisions that increase divergence.",
     "section": "## 12.2. Inter-Swarm Error Under Cloning",
-    "start_line": 7966,
-    "end_line": 7978,
+    "start_line": 8015,
+    "end_line": 8027,
     "header_lines": [
-      7967
+      8016
     ],
-    "content_start": 7969,
-    "content_end": 7977,
-    "raw_directive": "7966: :::\n7967: \n7968: :::{prf:remark} Why Inter-Swarm Error Doesn't Contract Under Cloning\n7969: :label: rem-why-vw-expands\n7970: \n7971: The cloning operator **cannot contract** $V_W$ because:\n7972: \n7973: 1. **Intra-swarm mechanism:** Cloning acts **within** each swarm independently. It compares walker $i$ to its companion in the **same swarm**, not to the corresponding walker in the other swarm.\n7974: \n7975: 2. **No inter-swarm communication:** The fitness evaluation and companion selection have no information about the other swarm in the coupled analysis. They cannot \"know\" which direction reduces $V_W$.\n7976: \n7977: 3. **Stochastic desynchronization:** Even with synchronous coupling, different swarm configurations lead to different fitness landscapes, causing different cloning decisions that increase divergence.\n7978: ",
+    "content_start": 8018,
+    "content_end": 8026,
+    "raw_directive": "8015: :::\n8016: \n8017: :::{prf:remark} Why Inter-Swarm Error Doesn't Contract Under Cloning\n8018: :label: rem-why-vw-expands\n8019: \n8020: The cloning operator **cannot contract** $V_W$ because:\n8021: \n8022: 1. **Intra-swarm mechanism:** Cloning acts **within** each swarm independently. It compares walker $i$ to its companion in the **same swarm**, not to the corresponding walker in the other swarm.\n8023: \n8024: 2. **No inter-swarm communication:** The fitness evaluation and companion selection have no information about the other swarm in the coupled analysis. They cannot \"know\" which direction reduces $V_W$.\n8025: \n8026: 3. **Stochastic desynchronization:** Even with synchronous coupling, different swarm configurations lead to different fitness landscapes, causing different cloning decisions that increase divergence.\n8027: ",
     "directive_type": "remark",
     "metadata": {
       "label": "rem-why-vw-expands",
@@ -903,16 +903,16 @@
       "hypocoercivity"
     ],
     "references": [],
-    "content": "8230: :label: rem-perfect-complementarity\n8231: \n8232: Notice the **exact complementarity**:\n8233: - What cloning **contracts** (position, boundary), kinetic **expands** (diffusion, potential climb)\n8234: - What cloning **expands** (velocity, inter-swarm), kinetic **contracts** (friction, hypocoercivity)\n8235: - Both **contract** the boundary potential (layered safety)",
+    "content": "8281: :label: rem-perfect-complementarity\n8282: \n8283: Notice the **exact complementarity**:\n8284: - What cloning **contracts** (position, boundary), kinetic **expands** (diffusion, potential climb)\n8285: - What cloning **expands** (velocity, inter-swarm), kinetic **contracts** (friction, hypocoercivity)\n8286: - Both **contract** the boundary potential (layered safety)",
     "section": "## 12.4. The Synergistic Dissipation Framework",
-    "start_line": 8227,
-    "end_line": 8236,
+    "start_line": 8278,
+    "end_line": 8287,
     "header_lines": [
-      8228
+      8279
     ],
-    "content_start": 8230,
-    "content_end": 8235,
-    "raw_directive": "8227: | $W_b$ (boundary) | $-\\kappa_b W_b$ (contraction) | $-\\kappa_{\\text{pot}} W_b$ (contraction) | Strong contraction |\n8228: \n8229: :::{prf:remark} Perfect Complementarity\n8230: :label: rem-perfect-complementarity\n8231: \n8232: Notice the **exact complementarity**:\n8233: - What cloning **contracts** (position, boundary), kinetic **expands** (diffusion, potential climb)\n8234: - What cloning **expands** (velocity, inter-swarm), kinetic **contracts** (friction, hypocoercivity)\n8235: - Both **contract** the boundary potential (layered safety)\n8236: ",
+    "content_start": 8281,
+    "content_end": 8286,
+    "raw_directive": "8278: | $W_b$ (boundary) | $-\\kappa_b W_b$ (contraction) | $-\\kappa_{\\text{pot}} W_b$ (contraction) | Strong contraction |\n8279: \n8280: :::{prf:remark} Perfect Complementarity\n8281: :label: rem-perfect-complementarity\n8282: \n8283: Notice the **exact complementarity**:\n8284: - What cloning **contracts** (position, boundary), kinetic **expands** (diffusion, potential climb)\n8285: - What cloning **expands** (velocity, inter-swarm), kinetic **contracts** (friction, hypocoercivity)\n8286: - Both **contract** the boundary potential (layered safety)\n8287: ",
     "directive_type": "remark",
     "metadata": {
       "label": "rem-perfect-complementarity",
@@ -983,16 +983,16 @@
       "friction"
     ],
     "references": [],
-    "content": "8386: :label: rem-tuning-guidance\n8387: \n8388: In practice, the coupling constants are chosen as:\n8389: \n8390: $$\n8391: c_V \\approx \\frac{\\kappa_W}{2\\kappa_x}, \\quad c_B \\approx \\frac{\\kappa_W}{2\\kappa_b}\n8392: $$\n8393: \n8394: This balances the contraction rates across components, ensuring no single component dominates the drift inequality. The factor of 2 provides safety margin.\n8395: \n8396: If the system is experiencing:\n8397: - **High boundary exposure:** Increase $c_B$ to weight safety more heavily",
+    "content": "8437: :label: rem-tuning-guidance\n8438: \n8439: In practice, the coupling constants are chosen as:\n8440: \n8441: $$\n8442: c_V \\approx \\frac{\\kappa_W}{2\\kappa_x}, \\quad c_B \\approx \\frac{\\kappa_W}{2\\kappa_b}\n8443: $$\n8444: \n8445: This balances the contraction rates across components, ensuring no single component dominates the drift inequality. The factor of 2 provides safety margin.\n8446: \n8447: If the system is experiencing:\n8448: - **High boundary exposure:** Increase $c_B$ to weight safety more heavily",
     "section": "## 12.4. The Synergistic Dissipation Framework",
-    "start_line": 8383,
-    "end_line": 8398,
+    "start_line": 8434,
+    "end_line": 8449,
     "header_lines": [
-      8384
+      8435
     ],
-    "content_start": 8386,
-    "content_end": 8397,
-    "raw_directive": "8383: :::\n8384: \n8385: :::{prf:remark} Tuning Guidance\n8386: :label: rem-tuning-guidance\n8387: \n8388: In practice, the coupling constants are chosen as:\n8389: \n8390: $$\n8391: c_V \\approx \\frac{\\kappa_W}{2\\kappa_x}, \\quad c_B \\approx \\frac{\\kappa_W}{2\\kappa_b}\n8392: $$\n8393: \n8394: This balances the contraction rates across components, ensuring no single component dominates the drift inequality. The factor of 2 provides safety margin.\n8395: \n8396: If the system is experiencing:\n8397: - **High boundary exposure:** Increase $c_B$ to weight safety more heavily\n8398: - **High velocity variance:** Increase friction $\\gamma$ in kinetic stage",
+    "content_start": 8437,
+    "content_end": 8448,
+    "raw_directive": "8434: :::\n8435: \n8436: :::{prf:remark} Tuning Guidance\n8437: :label: rem-tuning-guidance\n8438: \n8439: In practice, the coupling constants are chosen as:\n8440: \n8441: $$\n8442: c_V \\approx \\frac{\\kappa_W}{2\\kappa_x}, \\quad c_B \\approx \\frac{\\kappa_W}{2\\kappa_b}\n8443: $$\n8444: \n8445: This balances the contraction rates across components, ensuring no single component dominates the drift inequality. The factor of 2 provides safety margin.\n8446: \n8447: If the system is experiencing:\n8448: - **High boundary exposure:** Increase $c_B$ to weight safety more heavily\n8449: - **High velocity variance:** Increase friction $\\gamma$ in kinetic stage",
     "directive_type": "remark",
     "metadata": {
       "label": "rem-tuning-guidance",

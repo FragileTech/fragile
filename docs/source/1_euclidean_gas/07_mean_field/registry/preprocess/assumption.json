@@ -1,0 +1,282 @@
+[
+  {
+    "label": "assump-assumption-regularity-summary",
+    "type": "assumption",
+    "title": "Summary of Regularity Assumptions",
+    "scope": "global",
+    "nl_summary": "Summary of regularity assumptions (H1)-(H5) ensuring the well-posedness of the coupled mean-field system, satisfied by the Canonical Euclidean Gas, covering domains, potentials, fields, parameters, and functions.",
+    "content_markdown": ":label: assumption-regularity-summary\n\nThe well-posedness of the coupled mean-field system relies on the following assumptions, which are satisfied by the Canonical Euclidean Gas:\n*   **(H1)** The domains $X_{\\text{valid}}$ and $V_{\\text{alg}}$ that comprise the phase space {prf:ref}`def-mean-field-phase-space` are bounded and have smooth ($C^2$) boundaries.\n*   **(H2)** The reward potential $R_{\\text{pos}}$ is $C^2$, making the force field $F$ globally Lipschitz.\n*   **(H3)** The flow field $u$ is $C^1$, and all physical parameters ($m, \\gamma_{\\text{fric}}, \\Theta, \\sigma_x$) are finite and positive.\n*   **(H4)** All algorithmic functions (e.g., the rescale function, companion selection) are measurable and satisfy the continuity properties established in the abstract framework.",
+    "raw_directive": "758: The rigorous analysis of the coupled mean-field system\u2014proving the existence, uniqueness, and long-term behavior of its solutions\u2014requires a set of standing technical assumptions on the regularity of its constituent parts.\n759: \n760: :::{prf:assumption} Summary of Regularity Assumptions\n761: :label: assumption-regularity-summary\n762: \n763: The well-posedness of the coupled mean-field system relies on the following assumptions, which are satisfied by the Canonical Euclidean Gas:\n764: *   **(H1)** The domains $X_{\\text{valid}}$ and $V_{\\text{alg}}$ that comprise the phase space {prf:ref}`def-mean-field-phase-space` are bounded and have smooth ($C^2$) boundaries.\n765: *   **(H2)** The reward potential $R_{\\text{pos}}$ is $C^2$, making the force field $F$ globally Lipschitz.\n766: *   **(H3)** The flow field $u$ is $C^1$, and all physical parameters ($m, \\gamma_{\\text{fric}}, \\Theta, \\sigma_x$) are finite and positive.\n767: *   **(H4)** All algorithmic functions (e.g., the rescale function, companion selection) are measurable and satisfy the continuity properties established in the abstract framework.\n768: *   **(H5)** The killing rate function $c(z)$ is smooth ($C^\\infty$), non-negative, and has compact support in a neighborhood of $\\partial X_{\\text{valid}}$.",
+    "bullet_items": [],
+    "conditions": [
+      {
+        "type": "(H1)",
+        "text": "The domains $X_{\\text{valid}}$ and $V_{\\text{alg}}$ that comprise the phase space {prf:ref}`def-mean-field-phase-space` are bounded and have smooth ($C^2$) boundaries.",
+        "latex": null
+      },
+      {
+        "type": "(H2)",
+        "text": "The reward potential $R_{\\text{pos}}$ is $C^2$, making the force field $F$ globally Lipschitz.",
+        "latex": null
+      },
+      {
+        "type": "(H3)",
+        "text": "The flow field $u$ is $C^1$, and all physical parameters ($m, \\gamma_{\\text{fric}}, \\Theta, \\sigma_x$) are finite and positive.",
+        "latex": null
+      },
+      {
+        "type": "(H4)",
+        "text": "All algorithmic functions (e.g., the rescale function, companion selection) are measurable and satisfy the continuity properties established in the abstract framework.",
+        "latex": null
+      },
+      {
+        "type": "(H5)",
+        "text": "The killing rate function $c(z)$ is smooth ($C^\\infty$), non-negative, and has compact support in a neighborhood of $\\partial X_{\\text{valid}}$.",
+        "latex": null
+      }
+    ],
+    "parameters": [],
+    "notes": [],
+    "tags": [
+      "regularity",
+      "assumptions",
+      "well-posedness",
+      "mean-field",
+      "phase-space",
+      "euclidean-gas",
+      "lipschitz",
+      "smooth",
+      "bounded-domains"
+    ],
+    "references": [
+      "def-mean-field-phase-space"
+    ],
+    "document_id": "07_mean_field",
+    "section": "## 4. Analysis and Properties of the Mean-Field Equations",
+    "span": {
+      "start_line": 758,
+      "end_line": 768,
+      "content_start": 761,
+      "content_end": 767,
+      "header_lines": [
+        759
+      ]
+    },
+    "metadata": {
+      "label": "assumption-regularity-summary"
+    },
+    "registry_context": {
+      "stage": "directives",
+      "document_id": "07_mean_field",
+      "chapter_index": 4,
+      "chapter_file": "chapter_4.json",
+      "section_id": "## 4. Analysis and Properties of the Mean-Field Equations"
+    },
+    "generated_at": "2025-11-10T13:57:32.748049+00:00",
+    "alt_labels": [
+      "assump-assumption-regularity-summary",
+      "assumption-regularity-summary"
+    ]
+  },
+  {
+    "label": "assump-assumption-domain-regularity",
+    "type": "assumption",
+    "title": "Regularity of the Valid Domain",
+    "scope": "global",
+    "nl_summary": "The valid position domain X_valid is an open, bounded subset of R^d with C^3 boundary, featuring a C^2 signed distance function in a tubular neighborhood and a unit inward normal vector.",
+    "content_markdown": ":label: assumption-domain-regularity\n\nThe valid position domain $X_{\\text{valid}} \\subset \\mathbb{R}^d$ (from the phase space {prf:ref}`def-mean-field-phase-space`) satisfies:\n\n1. **Smoothness**: $X_{\\text{valid}}$ is an open, bounded domain with $C^3$ boundary $\\partial X_{\\text{valid}}$.\n2. **Distance Function**: The signed distance function $d(x) := \\text{dist}(x, \\partial X_{\\text{valid}})$ is $C^2$ in a tubular neighborhood $\\mathcal{T}_\\delta := \\{x \\in X_{\\text{valid}} : d(x) < \\delta\\}$ for some $\\delta > 0$.",
+    "raw_directive": "800: We work with the following precise geometric and regularity framework:\n801: \n802: :::{prf:assumption} Regularity of the Valid Domain\n803: :label: assumption-domain-regularity\n804: \n805: The valid position domain $X_{\\text{valid}} \\subset \\mathbb{R}^d$ (from the phase space {prf:ref}`def-mean-field-phase-space`) satisfies:\n806: \n807: 1. **Smoothness**: $X_{\\text{valid}}$ is an open, bounded domain with $C^3$ boundary $\\partial X_{\\text{valid}}$.\n808: 2. **Distance Function**: The signed distance function $d(x) := \\text{dist}(x, \\partial X_{\\text{valid}})$ is $C^2$ in a tubular neighborhood $\\mathcal{T}_\\delta := \\{x \\in X_{\\text{valid}} : d(x) < \\delta\\}$ for some $\\delta > 0$.\n809: 3. **Unit Inward Normal**: For each $x \\in \\mathcal{T}_\\delta$, let $n_x(x) = -\\nabla d(x)$ denote the unit inward normal vector (pointing into $X_{\\text{valid}}$).",
+    "bullet_items": [
+      {
+        "name": "Smoothness",
+        "text": "X_valid is an open, bounded domain with C^3 boundary \u2202X_valid.",
+        "latex": null
+      },
+      {
+        "name": "Distance Function",
+        "text": "The signed distance function d(x) := dist(x, \u2202X_valid) is C^2 in a tubular neighborhood T_\u03b4 := {x \u2208 X_valid : d(x) < \u03b4} for some \u03b4 > 0.",
+        "latex": null
+      },
+      {
+        "name": "Unit Inward Normal",
+        "text": "For each x \u2208 T_\u03b4, let n_x(x) = -\u2207d(x) denote the unit inward normal vector (pointing into X_valid).",
+        "latex": null
+      }
+    ],
+    "conditions": [
+      {
+        "type": "smoothness",
+        "text": "X_valid is an open, bounded domain with C^3 boundary \u2202X_valid.",
+        "latex": null
+      },
+      {
+        "type": "distance-function",
+        "text": "The signed distance function d(x) := dist(x, \u2202X_valid) is C^2 in a tubular neighborhood T_\u03b4 := {x \u2208 X_valid : d(x) < \u03b4} for some \u03b4 > 0.",
+        "latex": null
+      },
+      {
+        "type": "unit-inward-normal",
+        "text": "For each x \u2208 T_\u03b4, let n_x(x) = -\u2207d(x) denote the unit inward normal vector (pointing into X_valid).",
+        "latex": null
+      }
+    ],
+    "parameters": [],
+    "notes": [],
+    "tags": [
+      "regularity",
+      "domain",
+      "boundary",
+      "smoothness",
+      "signed-distance",
+      "tubular-neighborhood",
+      "inward-normal"
+    ],
+    "references": [
+      "def-mean-field-phase-space"
+    ],
+    "document_id": "07_mean_field",
+    "section": "## 4. Analysis and Properties of the Mean-Field Equations",
+    "span": {
+      "start_line": 800,
+      "end_line": 809,
+      "content_start": 803,
+      "content_end": 808,
+      "header_lines": [
+        801
+      ]
+    },
+    "metadata": {
+      "label": "assumption-domain-regularity"
+    },
+    "registry_context": {
+      "stage": "directives",
+      "document_id": "07_mean_field",
+      "chapter_index": 4,
+      "chapter_file": "chapter_4.json",
+      "section_id": "## 4. Analysis and Properties of the Mean-Field Equations"
+    },
+    "generated_at": "2025-11-10T13:57:32.748049+00:00",
+    "alt_labels": [
+      "assump-assumption-domain-regularity",
+      "assumption-domain-regularity"
+    ]
+  },
+  {
+    "label": "assump-assumption-integrator-regularity",
+    "type": "assumption",
+    "title": "Regularity of the Discrete Integrator",
+    "scope": "global",
+    "nl_summary": "Assumes the discrete kinetic integrator (BAOAB update) produces position updates of a specific form, including a quadratic force term and a position remainder.",
+    "content_markdown": ":label: assumption-integrator-regularity\n\nThe discrete kinetic integrator (see {prf:ref}`def-baoab-update-rule`) produces position updates of the form:\n\n$$\nx^+(\\tau; x,v) = x + v\\tau + \\frac{\\tau^2}{2m}F(x) + R_{\\text{pos}}(\\tau; x,v)\n$$",
+    "raw_directive": "811: :::\n812: \n813: :::{prf:assumption} Regularity of the Discrete Integrator\n814: :label: assumption-integrator-regularity\n815: \n816: The discrete kinetic integrator (see {prf:ref}`def-baoab-update-rule`) produces position updates of the form:\n817: \n818: $$\n819: x^+(\\tau; x,v) = x + v\\tau + \\frac{\\tau^2}{2m}F(x) + R_{\\text{pos}}(\\tau; x,v)\n820: $$\n821: ",
+    "bullet_items": [
+      {
+        "name": null,
+        "text": null,
+        "latex": "x^+(\\tau; x,v) = x + v\\tau + \\frac{\\tau^2}{2m}F(x) + R_{\\text{pos}}(\\tau; x,v)"
+      }
+    ],
+    "conditions": [
+      {
+        "type": "assumption",
+        "text": "The discrete kinetic integrator produces position updates of the specified form.",
+        "latex": "x^+(\\tau; x,v) = x + v\\tau + \\frac{\\tau^2}{2m}F(x) + R_{\\text{pos}}(\\tau; x,v)"
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "\u03c4",
+        "name": "time step",
+        "description": "Discretization time step parameter.",
+        "constraints": [],
+        "tags": [
+          "time"
+        ]
+      },
+      {
+        "symbol": "x",
+        "name": "position",
+        "description": "Current position vector.",
+        "constraints": [],
+        "tags": [
+          "position"
+        ]
+      },
+      {
+        "symbol": "v",
+        "name": "velocity",
+        "description": "Current velocity vector.",
+        "constraints": [],
+        "tags": [
+          "velocity"
+        ]
+      },
+      {
+        "symbol": "m",
+        "name": "mass",
+        "description": "Particle mass.",
+        "constraints": [],
+        "tags": [
+          "mass"
+        ]
+      },
+      {
+        "symbol": "F",
+        "name": "force",
+        "description": "Force function evaluated at position x.",
+        "constraints": [],
+        "tags": [
+          "force"
+        ]
+      },
+      {
+        "symbol": "R_pos",
+        "name": "position remainder",
+        "description": "Remainder term in the position update.",
+        "constraints": [],
+        "tags": [
+          "remainder"
+        ]
+      }
+    ],
+    "notes": [],
+    "tags": [
+      "discrete",
+      "integrator",
+      "regularity",
+      "position",
+      "update",
+      "kinetic",
+      "BAOAB"
+    ],
+    "references": [
+      "def-baoab-update-rule"
+    ],
+    "document_id": "07_mean_field",
+    "section": "## 4. Analysis and Properties of the Mean-Field Equations",
+    "span": {
+      "start_line": 811,
+      "end_line": 821,
+      "content_start": 814,
+      "content_end": 820,
+      "header_lines": [
+        812
+      ]
+    },
+    "metadata": {
+      "label": "assumption-integrator-regularity"
+    },
+    "registry_context": {
+      "stage": "directives",
+      "document_id": "07_mean_field",
+      "chapter_index": 4,
+      "chapter_file": "chapter_4.json",
+      "section_id": "## 4. Analysis and Properties of the Mean-Field Equations"
+    },
+    "generated_at": "2025-11-10T13:57:32.748049+00:00",
+    "alt_labels": [
+      "assump-assumption-integrator-regularity",
+      "assumption-integrator-regularity"
+    ]
+  }
+]

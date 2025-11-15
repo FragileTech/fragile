@@ -7,58 +7,72 @@
       "directive_type": "definition",
       "label": "def-algorithmic-space-generic",
       "title": "Algorithmic Space",
-      "start_line": 1227,
-      "end_line": 1230,
+      "start_line": 1256,
+      "end_line": 1259,
       "header_lines": [
-        1228
+        1257
       ],
-      "content_start": 1229,
-      "content_end": 1229,
-      "content": "1229: :label: def-algorithmic-space-generic",
+      "content_start": 1258,
+      "content_end": 1258,
+      "content": "1258: :label: def-algorithmic-space-generic",
       "metadata": {
         "label": "def-algorithmic-space-generic"
       },
       "section": "## 6. Algorithm Space and Distance Measurement",
-      "references": [],
-      "raw_directive": "1227: ### 6.1 Specification of the Algorithmic Space\n1228: :::{prf:definition} Algorithmic Space\n1229: :label: def-algorithmic-space-generic\n1230: An **algorithmic space** is a pair $(\\mathcal{Y}, d_{\\mathcal{Y}})$ consisting of a real vector space $\\mathcal{Y}$ and a true metric $d_{\\mathcal{Y}}$ on $\\mathcal{Y}$."
+      "references": [
+        "def-algorithmic-space-generic",
+        "axiom-bounded-algorithmic-diameter",
+        "def-ambient-euclidean"
+      ],
+      "raw_directive": "1256: ### 6.1 Specification of the Algorithmic Space ({prf:ref}`def-algorithmic-space-generic`)\n1257: :::{prf:definition} Algorithmic Space\n1258: :label: def-algorithmic-space-generic\n1259: An **algorithmic space ({prf:ref}`def-algorithmic-space-generic`)** is a pair $(\\mathcal{Y}, d_{\\mathcal{Y}})$ consisting of a real vector space $\\mathcal{Y}$ and a true metric $d_{\\mathcal{Y}}$ ({prf:ref}`axiom-bounded-algorithmic-diameter`) on $\\mathcal{Y}$, built on the Ambient Euclidean Structure ({prf:ref}`def-ambient-euclidean`)."
     },
     {
       "directive_type": "definition",
       "label": "def-distance-positional-measures",
       "title": "Distance Between Positional Measures",
-      "start_line": 1233,
-      "end_line": 1243,
+      "start_line": 1262,
+      "end_line": 1273,
       "header_lines": [
-        1234
+        1263
       ],
-      "content_start": 1235,
-      "content_end": 1242,
-      "content": "1235: :label: def-distance-positional-measures\n1236: Let two walkers, $i$ and $j$, have their positions represented by the Dirac positional measures $\\delta_{x_i}$ and $\\delta_{x_j}$. The distance between them in the algorithmic space is the **1-Wasserstein distance ($W_1$)** between their **projected positional measures**, with $d_{\\mathcal{Y}}$ as the ground metric.\n1237: The projected positional measure for walker $i$ is the pushforward measure $\\varphi_* \\delta_{x_i} = \\delta_{\\varphi(x_i)}$. The distance is then:\n1238: $$\n1239: \n1240: d(\\varphi_* \\delta_{x_i}, \\varphi_* \\delta_{x_j}) := W_1(\\delta_{\\varphi(x_i)}, \\delta_{\\varphi(x_j)})\n1241: \n1242: $$",
+      "content_start": 1264,
+      "content_end": 1272,
+      "content": "1264: :label: def-distance-positional-measures\n1265: Let two walkers ({prf:ref}`def-walker`), $i$ and $j$, have their positions represented by the Dirac positional measures $\\delta_{x_i}$ and $\\delta_{x_j}$. The distance between them in the algorithmic space ({prf:ref}`def-algorithmic-space-generic`) is the **1-Wasserstein distance ($W_1$)** between their **projected positional measures**, with $d_{\\mathcal{Y}}$ ({prf:ref}`axiom-bounded-algorithmic-diameter`) as the ground metric.\n1266: The projected positional measure for walker ({prf:ref}`def-walker`) $i$ is the pushforward measure $\\varphi_* \\delta_{x_i} = \\delta_{\\varphi(x_i)}$. The distance is then:\n1267: \n1268: $$\n1269: \n1270: d(\\varphi_* \\delta_{x_i}, \\varphi_* \\delta_{x_j}) := W_1(\\delta_{\\varphi(x_i)}, \\delta_{\\varphi(x_j)})\n1271: \n1272: $$",
       "metadata": {
         "label": "def-distance-positional-measures"
       },
       "section": "## 6. Algorithm Space and Distance Measurement",
-      "references": [],
-      "raw_directive": "1233: The distance between two walkers is formally defined as the distance between the probability measures representing their positions.\n1234: :::{prf:definition} Distance Between Positional Measures\n1235: :label: def-distance-positional-measures\n1236: Let two walkers, $i$ and $j$, have their positions represented by the Dirac positional measures $\\delta_{x_i}$ and $\\delta_{x_j}$. The distance between them in the algorithmic space is the **1-Wasserstein distance ($W_1$)** between their **projected positional measures**, with $d_{\\mathcal{Y}}$ as the ground metric.\n1237: The projected positional measure for walker $i$ is the pushforward measure $\\varphi_* \\delta_{x_i} = \\delta_{\\varphi(x_i)}$. The distance is then:\n1238: $$\n1239: \n1240: d(\\varphi_* \\delta_{x_i}, \\varphi_* \\delta_{x_j}) := W_1(\\delta_{\\varphi(x_i)}, \\delta_{\\varphi(x_j)})\n1241: \n1242: $$\n1243: For Dirac measures, the Wasserstein distance simplifies to the ground metric distance between their points of support."
+      "references": [
+        "def-walker",
+        "def-algorithmic-space-generic",
+        "axiom-bounded-algorithmic-diameter"
+      ],
+      "raw_directive": "1262: The distance between two walker ({prf:ref}`def-walker`)s is formally defined as the distance between the probability measures representing their positions.\n1263: :::{prf:definition} Distance Between Positional Measures\n1264: :label: def-distance-positional-measures\n1265: Let two walkers ({prf:ref}`def-walker`), $i$ and $j$, have their positions represented by the Dirac positional measures $\\delta_{x_i}$ and $\\delta_{x_j}$. The distance between them in the algorithmic space ({prf:ref}`def-algorithmic-space-generic`) is the **1-Wasserstein distance ($W_1$)** between their **projected positional measures**, with $d_{\\mathcal{Y}}$ ({prf:ref}`axiom-bounded-algorithmic-diameter`) as the ground metric.\n1266: The projected positional measure for walker ({prf:ref}`def-walker`) $i$ is the pushforward measure $\\varphi_* \\delta_{x_i} = \\delta_{\\varphi(x_i)}$. The distance is then:\n1267: \n1268: $$\n1269: \n1270: d(\\varphi_* \\delta_{x_i}, \\varphi_* \\delta_{x_j}) := W_1(\\delta_{\\varphi(x_i)}, \\delta_{\\varphi(x_j)})\n1271: \n1272: $$\n1273: For Dirac measures, the Wasserstein distance simplifies to the ground metric distance between their points of support."
     },
     {
       "directive_type": "definition",
       "label": "def-alg-distance",
       "title": "Algorithmic Distance",
-      "start_line": 1245,
-      "end_line": 1254,
+      "start_line": 1275,
+      "end_line": 1285,
       "header_lines": [
-        1246
+        1276
       ],
-      "content_start": 1247,
-      "content_end": 1253,
-      "content": "1247: :label: def-alg-distance\n1248: The **algorithmic distance** $d_{\\text{alg}}\\colon\\mathcal{X}\\times\\mathcal{X}\\to\\mathbb{R}_{\\ge0}$ is the distance between the projected positional measures of two walkers. In practice, this is the distance or semidistance function $d_{\\mathcal{Y}}$ applied to the projected points in the algorithmic space:\n1249: $$\n1250: \n1251: \\boxed{d_{\\text{alg}}(x_1, x_2) := d_{\\mathcal{Y}}(\\varphi(x_1), \\varphi(x_2))}\n1252: \n1253: $$",
+      "content_start": 1277,
+      "content_end": 1284,
+      "content": "1277: :label: def-alg-distance\n1278: The **algorithmic distance ({prf:ref}`def-alg-distance`)** $d_{\\text{alg}}\\colon\\mathcal{X}\\times\\mathcal{X}\\to\\mathbb{R}_{\\ge0}$ is the distance between the projected positional measures ({prf:ref}`def-distance-positional-measures`) of two walkers ({prf:ref}`def-walker`). In practice, this is the distance or semidistance function $d_{\\mathcal{Y}}$ ({prf:ref}`axiom-bounded-algorithmic-diameter`) applied to the projected points in the algorithmic space ({prf:ref}`def-algorithmic-space-generic`):\n1279: \n1280: $$\n1281: \n1282: \\boxed{d_{\\text{alg}}(x_1, x_2) := d_{\\mathcal{Y}}(\\varphi(x_1), \\varphi(x_2))}\n1283: \n1284: $$",
       "metadata": {
         "label": "def-alg-distance"
       },
       "section": "## 6. Algorithm Space and Distance Measurement",
-      "references": [],
-      "raw_directive": "1245: ### 6.3 Algorithmic Distance\n1246: :::{prf:definition} Algorithmic Distance\n1247: :label: def-alg-distance\n1248: The **algorithmic distance** $d_{\\text{alg}}\\colon\\mathcal{X}\\times\\mathcal{X}\\to\\mathbb{R}_{\\ge0}$ is the distance between the projected positional measures of two walkers. In practice, this is the distance or semidistance function $d_{\\mathcal{Y}}$ applied to the projected points in the algorithmic space:\n1249: $$\n1250: \n1251: \\boxed{d_{\\text{alg}}(x_1, x_2) := d_{\\mathcal{Y}}(\\varphi(x_1), \\varphi(x_2))}\n1252: \n1253: $$\n1254: This is the practical implementation of the Wasserstein distance between the walkers' projected Dirac measures and serves as the ground distance for all subsequent calculations."
+      "references": [
+        "def-alg-distance",
+        "def-distance-positional-measures",
+        "def-walker",
+        "axiom-bounded-algorithmic-diameter",
+        "def-algorithmic-space-generic"
+      ],
+      "raw_directive": "1275: ### 6.3 Algorithmic Distance\n1276: :::{prf:definition} Algorithmic Distance\n1277: :label: def-alg-distance\n1278: The **algorithmic distance ({prf:ref}`def-alg-distance`)** $d_{\\text{alg}}\\colon\\mathcal{X}\\times\\mathcal{X}\\to\\mathbb{R}_{\\ge0}$ is the distance between the projected positional measures ({prf:ref}`def-distance-positional-measures`) of two walkers ({prf:ref}`def-walker`). In practice, this is the distance or semidistance function $d_{\\mathcal{Y}}$ ({prf:ref}`axiom-bounded-algorithmic-diameter`) applied to the projected points in the algorithmic space ({prf:ref}`def-algorithmic-space-generic`):\n1279: \n1280: $$\n1281: \n1282: \\boxed{d_{\\text{alg}}(x_1, x_2) := d_{\\mathcal{Y}}(\\varphi(x_1), \\varphi(x_2))}\n1283: \n1284: $$\n1285: This is the practical implementation of the Wasserstein distance between the walker ({prf:ref}`def-walker`)s' projected Dirac measures and serves as the ground distance for all subsequent calculations."
     }
   ],
   "validation": {

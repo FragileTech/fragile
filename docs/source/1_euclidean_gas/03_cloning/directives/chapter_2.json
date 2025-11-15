@@ -14,17 +14,20 @@
       ],
       "content_start": 109,
       "content_end": 127,
-      "content": "109: :label: def-single-swarm-space\n110: \n111: 1.  A **walker** is a tuple $(x, s)$, where $x \\in \\mathcal{X}$ is its position in a state space and $s \\in \\{0, 1\\}$ is its survival status. For the Euclidean Gas, this is extended to include a velocity component, making the **full state** of a single walker a tuple $(x, v, s) \\in \\mathbb{R}^d \\times \\mathbb{R}^d \\times \\{0, 1\\}$. We refer to $(x,v)$ as the **kinematic state**.\n112: \n113: 2.  A **swarm configuration**, $S$, is an N-tuple of walker states:\n114: \n115: \n116: \n117: $$\n118: S := \\left( (x_1, v_1, s_1), (x_2, v_2, s_2), \\dots, (x_N, v_N, s_N) \\right)\n119: $$\n120: \n121: 3.  The **single-swarm state space**, denoted $\\Sigma_N$, is the Cartesian product of the per-walker state spaces:\n122: \n123: \n124: \n125: $$\n126: \\Sigma_N := \\left( \\mathbb{R}^d \\times \\mathbb{R}^d \\times \\{0, 1\\} \\right)^N.\n127: $$",
+      "content": "109: :label: def-single-swarm-space\n110: \n111: 1.  A **walker** is a tuple $(x, s)$ ({prf:ref}`def-walker`), where $x \\in \\mathcal{X}$ is its position in a state space and $s \\in \\{0, 1\\}$ is its survival status. For the Euclidean Gas ({prf:ref}`def-euclidean-gas`), this is extended to include a velocity component, making the **full state** of a single walker a tuple $(x, v, s) \\in \\mathbb{R}^d \\times \\mathbb{R}^d \\times \\{0, 1\\}$. We refer to $(x,v)$ as the **kinematic state**.\n112: \n113: 2.  A **swarm ({prf:ref}`def-swarm-and-state-space`) configuration**, $S$, is an N-tuple of walker  states:\n114: \n115: \n116: \n117: $$\n118: S := \\left( (x_1, v_1, s_1), (x_2, v_2, s_2), \\dots, (x_N, v_N, s_N) \\right)\n119: $$\n120: \n121: 3.  The **single-swarm ({prf:ref}`def-swarm-and-state-space`) state space**, denoted $\\Sigma_N$, is the Cartesian product of the per-walker ({prf:ref}`def-walker`) state spaces:\n122: \n123: \n124: \n125: $$\n126: \\Sigma_N := \\left( \\mathbb{R}^d \\times \\mathbb{R}^d \\times \\{0, 1\\} \\right)^N.\n127: $$",
       "metadata": {
         "label": "def-single-swarm-space"
       },
       "section": "## 2. The Coupled State Space and State Differences",
       "references": [
+        "def-walker",
+        "def-euclidean-gas",
+        "def-swarm-and-state-space",
         "def-barycentres-and-centered-vectors",
         "def-coupled-state-space",
         "def-swarm-aggregation-operator"
       ],
-      "raw_directive": "106: The fundamental unit of the system is the walker, and a collection of these walkers constitutes a swarm. We begin by defining their state spaces abstractly, in a manner consistent with the Fragile Gas framework.\n107: \n108: :::{prf:definition} Single-Walker and Swarm State Spaces\n109: :label: def-single-swarm-space\n110: \n111: 1.  A **walker** is a tuple $(x, s)$, where $x \\in \\mathcal{X}$ is its position in a state space and $s \\in \\{0, 1\\}$ is its survival status. For the Euclidean Gas, this is extended to include a velocity component, making the **full state** of a single walker a tuple $(x, v, s) \\in \\mathbb{R}^d \\times \\mathbb{R}^d \\times \\{0, 1\\}$. We refer to $(x,v)$ as the **kinematic state**.\n112: \n113: 2.  A **swarm configuration**, $S$, is an N-tuple of walker states:\n114: \n115: \n116: \n117: $$\n118: S := \\left( (x_1, v_1, s_1), (x_2, v_2, s_2), \\dots, (x_N, v_N, s_N) \\right)\n119: $$\n120: \n121: 3.  The **single-swarm state space**, denoted $\\Sigma_N$, is the Cartesian product of the per-walker state spaces:\n122: \n123: \n124: \n125: $$\n126: \\Sigma_N := \\left( \\mathbb{R}^d \\times \\mathbb{R}^d \\times \\{0, 1\\} \\right)^N.\n127: $$\n128: "
+      "raw_directive": "106: The fundamental unit of the system is the walker ({prf:ref}`def-walker`), and a collection of these walkers constitutes a swarm ({prf:ref}`def-swarm-and-state-space`). We begin by defining their state spaces abstractly, in a manner consistent with the Fragile Gas framework.\n107: \n108: :::{prf:definition} Single-Walker and Swarm State Spaces\n109: :label: def-single-swarm-space\n110: \n111: 1.  A **walker** is a tuple $(x, s)$ ({prf:ref}`def-walker`), where $x \\in \\mathcal{X}$ is its position in a state space and $s \\in \\{0, 1\\}$ is its survival status. For the Euclidean Gas ({prf:ref}`def-euclidean-gas`), this is extended to include a velocity component, making the **full state** of a single walker a tuple $(x, v, s) \\in \\mathbb{R}^d \\times \\mathbb{R}^d \\times \\{0, 1\\}$. We refer to $(x,v)$ as the **kinematic state**.\n112: \n113: 2.  A **swarm ({prf:ref}`def-swarm-and-state-space`) configuration**, $S$, is an N-tuple of walker  states:\n114: \n115: \n116: \n117: $$\n118: S := \\left( (x_1, v_1, s_1), (x_2, v_2, s_2), \\dots, (x_N, v_N, s_N) \\right)\n119: $$\n120: \n121: 3.  The **single-swarm ({prf:ref}`def-swarm-and-state-space`) state space**, denoted $\\Sigma_N$, is the Cartesian product of the per-walker ({prf:ref}`def-walker`) state spaces:\n122: \n123: \n124: \n125: $$\n126: \\Sigma_N := \\left( \\mathbb{R}^d \\times \\mathbb{R}^d \\times \\{0, 1\\} \\right)^N.\n127: $$\n128: "
     },
     {
       "directive_type": "definition",
@@ -37,16 +40,17 @@
       ],
       "content_start": 148,
       "content_end": 160,
-      "content": "148: :label: def-coupled-state-space\n149: \n150: The **coupled state space** for the Euclidean Gas is the Cartesian product $\\Sigma_N \\times \\Sigma_N$, where $\\Sigma_N$ is defined in {prf:ref}`def-single-swarm-space`. An element of this space is an ordered pair of swarm configurations, $(S_1, S_2)$, where:\n151: \n152: $$\n153: S_1 = \\left( (x_{1,1}, v_{1,1}, s_{1,1}), \\dots, (x_{1,N}, v_{1,N}, s_{1,N}) \\right) \\in \\Sigma_N,\n154: $$\n155: \n156: $$\n157: S_2 = \\left( (x_{2,1}, v_{2,1}, s_{2,1}), \\dots, (x_{2,N}, v_{2,N}, s_{2,N}) \\right) \\in \\Sigma_N.\n158: $$\n159: \n160: The convergence analysis proceeds by tracking the evolution of a Lyapunov function $V(S_1, S_2)$ across this coupled space.",
+      "content": "148: :label: def-coupled-state-space\n149: \n150: The **coupled state space** for the Euclidean Gas ({prf:ref}`def-euclidean-gas`) is the Cartesian product $\\Sigma_N \\times \\Sigma_N$, where $\\Sigma_N$ is defined in {prf:ref}`def-single-swarm-space`. An element of this space is an ordered pair of swarm configurations, $(S_1, S_2)$, where:\n151: \n152: $$\n153: S_1 = \\left( (x_{1,1}, v_{1,1}, s_{1,1}), \\dots, (x_{1,N}, v_{1,N}, s_{1,N}) \\right) \\in \\Sigma_N,\n154: $$\n155: \n156: $$\n157: S_2 = \\left( (x_{2,1}, v_{2,1}, s_{2,1}), \\dots, (x_{2,N}, v_{2,N}, s_{2,N}) \\right) \\in \\Sigma_N.\n158: $$\n159: \n160: The convergence analysis proceeds by tracking the evolution of a Lyapunov function $V(S_1, S_2)$ across this coupled space.",
       "metadata": {
         "label": "def-coupled-state-space"
       },
       "section": "## 2. The Coupled State Space and State Differences",
       "references": [
+        "def-euclidean-gas",
         "def-single-swarm-space",
         "def-coupled-cloning-expectation"
       ],
-      "raw_directive": "145: This synchronous coupling is chosen because it is designed to minimize the distance between the two trajectories, making it the most suitable choice for proving a contraction. All expectations $\\mathbb{E}[\\cdot]$ in the subsequent analysis are taken with respect to this single, shared source of randomness.\n146: \n147: :::{prf:definition} The Coupled State Space\n148: :label: def-coupled-state-space\n149: \n150: The **coupled state space** for the Euclidean Gas is the Cartesian product $\\Sigma_N \\times \\Sigma_N$, where $\\Sigma_N$ is defined in {prf:ref}`def-single-swarm-space`. An element of this space is an ordered pair of swarm configurations, $(S_1, S_2)$, where:\n151: \n152: $$\n153: S_1 = \\left( (x_{1,1}, v_{1,1}, s_{1,1}), \\dots, (x_{1,N}, v_{1,N}, s_{1,N}) \\right) \\in \\Sigma_N,\n154: $$\n155: \n156: $$\n157: S_2 = \\left( (x_{2,1}, v_{2,1}, s_{2,1}), \\dots, (x_{2,N}, v_{2,N}, s_{2,N}) \\right) \\in \\Sigma_N.\n158: $$\n159: \n160: The convergence analysis proceeds by tracking the evolution of a Lyapunov function $V(S_1, S_2)$ across this coupled space.\n161: "
+      "raw_directive": "145: This synchronous coupling is chosen because it is designed to minimize the distance between the two trajectories, making it the most suitable choice for proving a contraction. All expectations $\\mathbb{E}[\\cdot]$ in the subsequent analysis are taken with respect to this single, shared source of randomness.\n146: \n147: :::{prf:definition} The Coupled State Space\n148: :label: def-coupled-state-space\n149: \n150: The **coupled state space** for the Euclidean Gas ({prf:ref}`def-euclidean-gas`) is the Cartesian product $\\Sigma_N \\times \\Sigma_N$, where $\\Sigma_N$ is defined in {prf:ref}`def-single-swarm-space`. An element of this space is an ordered pair of swarm configurations, $(S_1, S_2)$, where:\n151: \n152: $$\n153: S_1 = \\left( (x_{1,1}, v_{1,1}, s_{1,1}), \\dots, (x_{1,N}, v_{1,N}, s_{1,N}) \\right) \\in \\Sigma_N,\n154: $$\n155: \n156: $$\n157: S_2 = \\left( (x_{2,1}, v_{2,1}, s_{2,1}), \\dots, (x_{2,N}, v_{2,N}, s_{2,N}) \\right) \\in \\Sigma_N.\n158: $$\n159: \n160: The convergence analysis proceeds by tracking the evolution of a Lyapunov function $V(S_1, S_2)$ across this coupled space.\n161: "
     },
     {
       "directive_type": "definition",
@@ -59,15 +63,17 @@
       ],
       "content_start": 170,
       "content_end": 190,
-      "content": "170: :label: def-state-difference-vectors\n171: \n172: For any element $(S_1, S_2) \\in \\Sigma_N \\times \\Sigma_N$, we define the **state difference vectors** for each walker index $i \\in \\{1, \\ldots, N\\}$ as follows:\n173: \n174: 1.  The **position difference vector** for walker $i$ is:\n175: \n176: \n177: \n178: $$\n179: \\Delta x_i := x_{1,i} - x_{2,i} \\in \\mathbb{R}^d\n180: $$\n181: \n182: 2.  The **velocity difference vector** for walker $i$ is:\n183: \n184: \n185: \n186: $$\n187: \\Delta v_i := v_{1,i} - v_{2,i} \\in \\mathbb{R}^d\n188: $$\n189: \n190: The entire drift analysis will be formulated in terms of the norms and inner products of these $2N$ difference vectors. The objective is to show that, in expectation, the magnitudes of these vectors decrease over time, driving the two swarm trajectories together.",
+      "content": "170: :label: def-state-difference-vectors\n171: \n172: For any element $(S_1, S_2) \\in \\Sigma_N \\times \\Sigma_N$, we define the **state difference vectors** for each walker ({prf:ref}`def-walker`) index $i \\in \\{1, \\ldots, N\\}$ as follows:\n173: \n174: 1.  The **position difference vector** for walker  $i$ is:\n175: \n176: \n177: \n178: $$\n179: \\Delta x_i := x_{1,i} - x_{2,i} \\in \\mathbb{R}^d\n180: $$\n181: \n182: 2.  The **velocity difference vector** for walker ({prf:ref}`def-walker`) $i$ is:\n183: \n184: \n185: \n186: $$\n187: \\Delta v_i := v_{1,i} - v_{2,i} \\in \\mathbb{R}^d\n188: $$\n189: \n190: The entire drift analysis will be formulated in terms of the norms and inner products of these $2N$ difference vectors. The objective is to show that, in expectation, the magnitudes of these vectors decrease over time, driving the two swarm ({prf:ref}`def-swarm-and-state-space`) trajectories together.",
       "metadata": {
         "label": "def-state-difference-vectors"
       },
       "section": "## 2. The Coupled State Space and State Differences",
       "references": [
+        "def-walker",
+        "def-swarm-and-state-space",
         "def-location-error-component"
       ],
-      "raw_directive": "167: The core of the hypocoercive analysis is not the absolute state of the swarms, but the *difference* between them (measured element-wise). We formally define the vectors that capture this relative configuration.\n168: \n169: :::{prf:definition} State Difference Vectors\n170: :label: def-state-difference-vectors\n171: \n172: For any element $(S_1, S_2) \\in \\Sigma_N \\times \\Sigma_N$, we define the **state difference vectors** for each walker index $i \\in \\{1, \\ldots, N\\}$ as follows:\n173: \n174: 1.  The **position difference vector** for walker $i$ is:\n175: \n176: \n177: \n178: $$\n179: \\Delta x_i := x_{1,i} - x_{2,i} \\in \\mathbb{R}^d\n180: $$\n181: \n182: 2.  The **velocity difference vector** for walker $i$ is:\n183: \n184: \n185: \n186: $$\n187: \\Delta v_i := v_{1,i} - v_{2,i} \\in \\mathbb{R}^d\n188: $$\n189: \n190: The entire drift analysis will be formulated in terms of the norms and inner products of these $2N$ difference vectors. The objective is to show that, in expectation, the magnitudes of these vectors decrease over time, driving the two swarm trajectories together.\n191: "
+      "raw_directive": "167: The core of the hypocoercive analysis is not the absolute state of the swarms, but the *difference* between them (measured element-wise). We formally define the vectors that capture this relative configuration.\n168: \n169: :::{prf:definition} State Difference Vectors\n170: :label: def-state-difference-vectors\n171: \n172: For any element $(S_1, S_2) \\in \\Sigma_N \\times \\Sigma_N$, we define the **state difference vectors** for each walker ({prf:ref}`def-walker`) index $i \\in \\{1, \\ldots, N\\}$ as follows:\n173: \n174: 1.  The **position difference vector** for walker  $i$ is:\n175: \n176: \n177: \n178: $$\n179: \\Delta x_i := x_{1,i} - x_{2,i} \\in \\mathbb{R}^d\n180: $$\n181: \n182: 2.  The **velocity difference vector** for walker ({prf:ref}`def-walker`) $i$ is:\n183: \n184: \n185: \n186: $$\n187: \\Delta v_i := v_{1,i} - v_{2,i} \\in \\mathbb{R}^d\n188: $$\n189: \n190: The entire drift analysis will be formulated in terms of the norms and inner products of these $2N$ difference vectors. The objective is to show that, in expectation, the magnitudes of these vectors decrease over time, driving the two swarm ({prf:ref}`def-swarm-and-state-space`) trajectories together.\n191: "
     },
     {
       "directive_type": "axiom",
@@ -80,15 +86,17 @@
       ],
       "content_start": 204,
       "content_end": 206,
-      "content": "204: :label: axiom-domain-regularity\n205: \n206: The valid domain for a single walker's position, $\\mathcal{X}_{\\text{valid}}$, is an open, bounded, and connected subset of $\\mathbb{R}^d$. Its boundary, $\\partial \\mathcal{X}_{\\text{valid}}$, is a $C^{\\infty}$-smooth compact manifold without boundary.",
+      "content": "204: :label: axiom-domain-regularity\n205: \n206: The valid domain for a single walker ({prf:ref}`def-walker`)'s position, $\\mathcal{X}_{\\text{valid}}$ ({prf:ref}`def-valid-state-space`), is an open, bounded, and connected subset of $\\mathbb{R}^d$. Its boundary, $\\partial \\mathcal{X}_{\\text{valid}}$, is a $C^{\\infty}$-smooth compact manifold without boundary.",
       "metadata": {
         "label": "axiom-domain-regularity"
       },
       "section": "## 2. The Coupled State Space and State Differences",
       "references": [
+        "def-walker",
+        "def-valid-state-space",
         "prop-barrier-existence"
       ],
-      "raw_directive": "201: For the construction to be valid, we impose the following standard regularity conditions on the single-walker state space $\\mathcal{X}$.\n202: \n203: :::{prf:axiom} **(Axiom EG-0): Regularity of the Domain**\n204: :label: axiom-domain-regularity\n205: \n206: The valid domain for a single walker's position, $\\mathcal{X}_{\\text{valid}}$, is an open, bounded, and connected subset of $\\mathbb{R}^d$. Its boundary, $\\partial \\mathcal{X}_{\\text{valid}}$, is a $C^{\\infty}$-smooth compact manifold without boundary.\n207: "
+      "raw_directive": "201: For the construction to be valid, we impose the following standard regularity conditions on the single-walker state space $\\mathcal{X}$.\n202: \n203: :::{prf:axiom} **(Axiom EG-0): Regularity of the Domain**\n204: :label: axiom-domain-regularity\n205: \n206: The valid domain for a single walker ({prf:ref}`def-walker`)'s position, $\\mathcal{X}_{\\text{valid}}$ ({prf:ref}`def-valid-state-space`), is an open, bounded, and connected subset of $\\mathbb{R}^d$. Its boundary, $\\partial \\mathcal{X}_{\\text{valid}}$, is a $C^{\\infty}$-smooth compact manifold without boundary.\n207: "
     },
     {
       "directive_type": "proposition",

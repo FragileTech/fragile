@@ -1,0 +1,15 @@
+# Default pipeline configuration for ManualRefineSketchPipeline
+#
+# Standard settings for iterative proof sketch refinement
+
+# Refinement parameters
+N: 5                     # Maximum number of refinement iterations
+threshold: 60.0          # Score threshold to stop early (0-100 scale)
+fail_count: 5            # Consecutive failures before stopping
+
+# Logging configuration
+verbosity: "STANDARD"    # Options: MINIMAL, STANDARD, DETAILED, VERBOSE, DEBUG
+log_json_path: null      # Optional path to save JSON logs (null = no export)
+
+# Feedback configuration
+enable_iteration_feedback: true  # Enable learning from previous iterations

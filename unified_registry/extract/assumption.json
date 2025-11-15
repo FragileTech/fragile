@@ -1,0 +1,245 @@
+[
+  {
+    "label": "assump-assumption-regularity-summary",
+    "title": "Summary of Regularity Assumptions",
+    "scope": "global",
+    "nl_summary": "Summary of regularity assumptions (H1)-(H5) ensuring the well-posedness of the coupled mean-field system, satisfied by the Canonical Euclidean Gas, covering domains, potentials, fields, parameters, and functions.",
+    "bullet_items": [],
+    "conditions": [
+      {
+        "type": "(H1)",
+        "text": "The domains $X_{\\text{valid}}$ and $V_{\\text{alg}}$ that comprise the phase space {prf:ref}`def-mean-field-phase-space` are bounded and have smooth ($C^2$) boundaries.",
+        "latex": null
+      },
+      {
+        "type": "(H2)",
+        "text": "The reward potential $R_{\\text{pos}}$ is $C^2$, making the force field $F$ globally Lipschitz.",
+        "latex": null
+      },
+      {
+        "type": "(H3)",
+        "text": "The flow field $u$ is $C^1$, and all physical parameters ($m, \\gamma_{\\text{fric}}, \\Theta, \\sigma_x$) are finite and positive.",
+        "latex": null
+      },
+      {
+        "type": "(H4)",
+        "text": "All algorithmic functions (e.g., the rescale function, companion selection) are measurable and satisfy the continuity properties established in the abstract framework.",
+        "latex": null
+      },
+      {
+        "type": "(H5)",
+        "text": "The killing rate function $c(z)$ is smooth ($C^\\infty$), non-negative, and has compact support in a neighborhood of $\\partial X_{\\text{valid}}$.",
+        "latex": null
+      }
+    ],
+    "parameters": [],
+    "references": [
+      "def-mean-field-phase-space"
+    ],
+    "notes": [],
+    "tags": [
+      "regularity",
+      "assumptions",
+      "well-posedness",
+      "mean-field",
+      "phase-space",
+      "euclidean-gas",
+      "lipschitz",
+      "smooth",
+      "bounded-domains"
+    ]
+  },
+  {
+    "label": "assump-assumption-domain-regularity",
+    "title": "Regularity of the Valid Domain",
+    "scope": "global",
+    "nl_summary": "The valid position domain X_valid is an open, bounded subset of R^d with C^3 boundary, featuring a C^2 signed distance function in a tubular neighborhood and a unit inward normal vector.",
+    "bullet_items": [
+      {
+        "name": "Smoothness",
+        "text": "X_valid is an open, bounded domain with C^3 boundary ∂X_valid.",
+        "latex": null
+      },
+      {
+        "name": "Distance Function",
+        "text": "The signed distance function d(x) := dist(x, ∂X_valid) is C^2 in a tubular neighborhood T_δ := {x ∈ X_valid : d(x) < δ} for some δ > 0.",
+        "latex": null
+      },
+      {
+        "name": "Unit Inward Normal",
+        "text": "For each x ∈ T_δ, let n_x(x) = -∇d(x) denote the unit inward normal vector (pointing into X_valid).",
+        "latex": null
+      }
+    ],
+    "conditions": [
+      {
+        "type": "smoothness",
+        "text": "X_valid is an open, bounded domain with C^3 boundary ∂X_valid.",
+        "latex": null
+      },
+      {
+        "type": "distance-function",
+        "text": "The signed distance function d(x) := dist(x, ∂X_valid) is C^2 in a tubular neighborhood T_δ := {x ∈ X_valid : d(x) < δ} for some δ > 0.",
+        "latex": null
+      },
+      {
+        "type": "unit-inward-normal",
+        "text": "For each x ∈ T_δ, let n_x(x) = -∇d(x) denote the unit inward normal vector (pointing into X_valid).",
+        "latex": null
+      }
+    ],
+    "parameters": [],
+    "references": [
+      "def-mean-field-phase-space"
+    ],
+    "notes": [],
+    "tags": [
+      "regularity",
+      "domain",
+      "boundary",
+      "smoothness",
+      "signed-distance",
+      "tubular-neighborhood",
+      "inward-normal"
+    ]
+  },
+  {
+    "label": "assump-assumption-integrator-regularity",
+    "title": "Regularity of the Discrete Integrator",
+    "scope": "global",
+    "nl_summary": "Assumes the discrete kinetic integrator (BAOAB update) produces position updates of a specific form, including a quadratic force term and a position remainder.",
+    "bullet_items": [
+      {
+        "name": null,
+        "text": null,
+        "latex": "x^+(\\tau; x,v) = x + v\\tau + \\frac{\\tau^2}{2m}F(x) + R_{\\text{pos}}(\\tau; x,v)"
+      }
+    ],
+    "conditions": [
+      {
+        "type": "assumption",
+        "text": "The discrete kinetic integrator produces position updates of the specified form.",
+        "latex": "x^+(\\tau; x,v) = x + v\\tau + \\frac{\\tau^2}{2m}F(x) + R_{\\text{pos}}(\\tau; x,v)"
+      }
+    ],
+    "parameters": [
+      {
+        "symbol": "τ",
+        "name": "time step",
+        "description": "Discretization time step parameter.",
+        "constraints": [],
+        "tags": [
+          "time"
+        ]
+      },
+      {
+        "symbol": "x",
+        "name": "position",
+        "description": "Current position vector.",
+        "constraints": [],
+        "tags": [
+          "position"
+        ]
+      },
+      {
+        "symbol": "v",
+        "name": "velocity",
+        "description": "Current velocity vector.",
+        "constraints": [],
+        "tags": [
+          "velocity"
+        ]
+      },
+      {
+        "symbol": "m",
+        "name": "mass",
+        "description": "Particle mass.",
+        "constraints": [],
+        "tags": [
+          "mass"
+        ]
+      },
+      {
+        "symbol": "F",
+        "name": "force",
+        "description": "Force function evaluated at position x.",
+        "constraints": [],
+        "tags": [
+          "force"
+        ]
+      },
+      {
+        "symbol": "R_pos",
+        "name": "position remainder",
+        "description": "Remainder term in the position update.",
+        "constraints": [],
+        "tags": [
+          "remainder"
+        ]
+      }
+    ],
+    "references": [
+      "def-baoab-update-rule"
+    ],
+    "notes": [],
+    "tags": [
+      "discrete",
+      "integrator",
+      "regularity",
+      "position",
+      "update",
+      "kinetic",
+      "BAOAB"
+    ]
+  },
+  {
+    "label": "assump-density-regularity-killing",
+    "title": "Density Regularity",
+    "scope": "initial",
+    "nl_summary": "The phase-space density f^τ at the start of each discrete timestep is bounded in L^∞ and belongs to C^1(Ω) with bounded spatial gradient in L^∞.",
+    "bullet_items": [],
+    "conditions": [],
+    "parameters": [
+      {
+        "symbol": "M_f",
+        "name": "density bound constant",
+        "description": "Positive upper bound for the L^∞ norm of the phase-space density f^τ.",
+        "constraints": [
+          "M_f > 0"
+        ],
+        "tags": [
+          "boundedness",
+          "L-infinity",
+          "constant",
+          "density"
+        ]
+      },
+      {
+        "symbol": "M_{\\nabla f}",
+        "name": "gradient bound constant",
+        "description": "Positive upper bound for the L^∞ norm of the spatial gradient of f^τ.",
+        "constraints": [
+          "M_{\\nabla f} > 0"
+        ],
+        "tags": [
+          "regularity",
+          "gradient",
+          "L-infinity",
+          "constant",
+          "spatial"
+        ]
+      }
+    ],
+    "references": [
+      "def-phase-space-density"
+    ],
+    "notes": [],
+    "tags": [
+      "phase-space",
+      "density",
+      "regularity",
+      "boundedness",
+      "spatial"
+    ]
+  }
+]

@@ -33,13 +33,17 @@
       ],
       "content_start": 8294,
       "content_end": 8305,
-      "content": "8294: :label: thm-synergistic-foster-lyapunov-preview\n8295: \n8296: When the coupling constants $c_V$ and $c_B$ are chosen appropriately, the composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}} \\circ \\Psi_{\\text{clone}}$ satisfies a Foster-Lyapunov drift condition:\n8297: \n8298: $$\n8299: \\mathbb{E}_{\\text{total}}[V_{\\text{total}}(S')] \\leq (1 - \\kappa_{\\text{total}}) V_{\\text{total}}(S) + C_{\\text{total}}\n8300: $$\n8301: \n8302: for some $\\kappa_{\\text{total}} > 0$ and $C_{\\text{total}} < \\infty$, both independent of $N$.\n8303: \n8304: **Consequence:** This drift condition implies:\n8305: 1. **Geometric ergodicity** of the Markov chain on the alive state space",
+      "content": "8294: :label: thm-synergistic-foster-lyapunov-preview\n8295: \n8296: When the coupling constants $c_V$ and $c_B$ are chosen appropriately, the composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}} \\circ \\Psi_{\\text{clone}}$ satisfies a Foster-Lyapunov ({prf:ref}`def-foster-lyapunov`) drift condition:\n8297: \n8298: $$\n8299: \\mathbb{E}_{\\text{total}}[V_{\\text{total}}(S')] \\leq (1 - \\kappa_{\\text{total}}) V_{\\text{total}}(S) + C_{\\text{total}}\n8300: $$\n8301: \n8302: for some $\\kappa_{\\text{total}} > 0$ and $C_{\\text{total}} < \\infty$, both independent of $N$.\n8303: \n8304: **Consequence:** This drift condition implies:\n8305: 1. **Geometric ergodicity ({prf:ref}`def-geometric-ergodicity`)** of the Markov chain on the alive state space",
       "metadata": {
         "label": "thm-synergistic-foster-lyapunov-preview"
       },
       "section": "## 12.4. The Synergistic Dissipation Framework",
-      "references": [],
-      "raw_directive": "8291: ### 12.4.2. The Synergistic Drift Inequality\n8292: \n8293: :::{prf:theorem} Synergistic Foster-Lyapunov Condition (Preview)\n8294: :label: thm-synergistic-foster-lyapunov-preview\n8295: \n8296: When the coupling constants $c_V$ and $c_B$ are chosen appropriately, the composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}} \\circ \\Psi_{\\text{clone}}$ satisfies a Foster-Lyapunov drift condition:\n8297: \n8298: $$\n8299: \\mathbb{E}_{\\text{total}}[V_{\\text{total}}(S')] \\leq (1 - \\kappa_{\\text{total}}) V_{\\text{total}}(S) + C_{\\text{total}}\n8300: $$\n8301: \n8302: for some $\\kappa_{\\text{total}} > 0$ and $C_{\\text{total}} < \\infty$, both independent of $N$.\n8303: \n8304: **Consequence:** This drift condition implies:\n8305: 1. **Geometric ergodicity** of the Markov chain on the alive state space\n8306: 2. **Exponential convergence** to the quasi-stationary distribution"
+      "references": [
+        "def-foster-lyapunov",
+        "def-geometric-ergodicity",
+        "def-qsd"
+      ],
+      "raw_directive": "8291: ### 12.4.2. The Synergistic Drift Inequality\n8292: \n8293: :::{prf:theorem} Synergistic Foster-Lyapunov Condition (Preview)\n8294: :label: thm-synergistic-foster-lyapunov-preview\n8295: \n8296: When the coupling constants $c_V$ and $c_B$ are chosen appropriately, the composed operator $\\Psi_{\\text{total}} = \\Psi_{\\text{kin}} \\circ \\Psi_{\\text{clone}}$ satisfies a Foster-Lyapunov ({prf:ref}`def-foster-lyapunov`) drift condition:\n8297: \n8298: $$\n8299: \\mathbb{E}_{\\text{total}}[V_{\\text{total}}(S')] \\leq (1 - \\kappa_{\\text{total}}) V_{\\text{total}}(S) + C_{\\text{total}}\n8300: $$\n8301: \n8302: for some $\\kappa_{\\text{total}} > 0$ and $C_{\\text{total}} < \\infty$, both independent of $N$.\n8303: \n8304: **Consequence:** This drift condition implies:\n8305: 1. **Geometric ergodicity ({prf:ref}`def-geometric-ergodicity`)** of the Markov chain on the alive state space\n8306: 2. **Exponential convergence** to the quasi-stationary distribution ({prf:ref}`def-qsd`)"
     },
     {
       "directive_type": "proof",

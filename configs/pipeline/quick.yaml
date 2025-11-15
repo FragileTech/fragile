@@ -1,0 +1,15 @@
+# Quick pipeline configuration for fast testing
+#
+# Minimal iterations for rapid debugging and development
+
+# Refinement parameters
+N: 2                     # Only 2 iterations (baseline + 1 feedback iteration)
+threshold: 50.0          # Lower threshold to stop faster
+fail_count: 2            # Stop quickly on failures
+
+# Logging configuration
+verbosity: "MINIMAL"     # Minimal output for clean logs
+log_json_path: null
+
+# Feedback configuration
+enable_iteration_feedback: true

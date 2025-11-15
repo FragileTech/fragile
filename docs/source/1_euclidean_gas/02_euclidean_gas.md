@@ -16,7 +16,7 @@
 
 The goal of this document is to define the **Euclidean Gas** as a concrete, physically-motivated instantiation of the abstract Fragile Gas framework and to verify, axiom-by-axiom, that this construction satisfies all requirements for a valid Fragile Gas.
 
-The Euclidean Gas is the canonical example of a Fragile Swarm operating in continuous Euclidean space $\mathbb{R}^d$. Each walker $w_i = (x_i, v_i, s_i)$ carries both position and velocity coordinates, with the algorithmic state space $\mathcal{Y}$ equipped with the **Sasaki metric** to couple these coordinates. The perturbation dynamics follow underdamped Langevin evolution via the BAOAB splitting integrator, providing a physically grounded stochastic exploration mechanism with friction, thermal noise, and force-driven drift.
+The Euclidean Gas is the canonical example of a Fragile Swarm operating in continuous Euclidean space $\mathbb{R}^d$. Each walker $w_i = (x_i ({prf:ref}`def-walker`), v_i, s_i)$ carries both position and velocity coordinates, with the algorithmic state space $\mathcal{Y}$ equipped with the **Sasaki metric** to couple these coordinates. The perturbation dynamics follow underdamped Langevin evolution via the BAOAB splitting integrator, providing a physically grounded stochastic exploration mechanism with friction, thermal noise, and force-driven drift.
 
 The main results of this document are:
 
@@ -26,7 +26,7 @@ The main results of this document are:
 
 3. **Continuity Analysis** (§4.3): Detailed derivation of Hölder/Lipschitz constants for all operators (measurement, standardization, rescale, cloning, kinetic) in the Sasaki geometry, yielding explicit bounds for swarm-level continuity.
 
-4. **Operator Kernel** (§5): Construction of the one-step update operator $\Psi_{\mathcal{F}_{\text{EG}}}$ as a well-defined Markov kernel on the swarm state space.
+4. **Operator Kernel** (§5): Construction of the one-step update operator $\Psi_{\mathcal{F}_{\text{EG}}}$ as a well-defined Markov kernel on the swarm state space ({prf:ref}`def-swarm-and-state-space`).
 
 This document focuses exclusively on the **geometric and analytical foundations** of the Euclidean Gas. The convergence analysis (exponential approach to quasi-stationary distribution), mean-field limit (McKean-Vlasov PDE), and propagation of chaos are treated in subsequent documents (06_convergence.md, 06_mean_field.md, 08_propagation_chaos.md).
 
@@ -157,13 +157,13 @@ A **Euclidean Gas** is the Fragile Swarm $\mathcal F_{\text{EG}}$ given by the t
 
 Given a swarm state $\mathcal S_t=(w_1,\dots,w_N)$ with walkers $w_i=(x_i,v_i,s_i)$, the Euclidean Gas performs one update as follows:
 
-1.  **Cemetery check.** If all walkers are dead (no alive indices in $\mathcal A_t$) return the cemetery state; otherwise continue.
+1.  **Cemetery check.** If all walkers are dead (no alive indices in $\mathcal A_t$) return the cemetery state ({prf:ref}`def-cemetery-state`); otherwise continue.
 2.  **Measurement stage.** For every alive walker $i\in\mathcal A_t$ sample a companion $c_{\mathrm{pot}}(i)$ from the algorithmic distance-weighted kernel $\mathbb C_\epsilon(\mathcal S_t,i)$, then compute raw reward $r_i:=R(x_i,v_i)$ and algorithmic distance $d_i:=d_{\text{alg}}(i,c_{\mathrm{pot}}(i))$ as defined in Section 3.3 and detailed in {ref}`Stage 2 <sec-eg-stage2>`.
 3.  **Patched standardisation.** Aggregate the raw reward and distance vectors with the empirical operator and apply the regularized standard deviation from {prf:ref}`def-statistical-properties-measurement` to obtain standardized scores with floor $\sigma'_{\min,\mathrm{patch}} = \sqrt{\kappa_{\mathrm{var,min}}+\varepsilon_{\mathrm{std}}^2}$.
 4.  **Logistic rescale.** Apply the Canonical Logistic Rescale Function ({prf:ref}`def-canonical-logistic-rescale-function-example`) to the standardized reward and distance components, producing positive outputs $r'_i$ and $d'_i$. Combine them with the canonical exponents to freeze the potential vector $V_{\text{fit},i}=(d'_i)^\beta (r'_i)^\alpha$ with floor $\eta^{\alpha+\beta}$.
-5.  **Clone/Persist gate.** For each walker draw a clone companion $c_{\mathrm{clone}}(i)$ from the same algorithmic distance-weighted kernel and threshold $T_i\sim\mathrm{Unif}(0,p_{\max})$, compute the canonical score $S_i:=\big(V_{\text{fit},c_{\mathrm{clone}}(i)}-V_{\text{fit},i}\big)/(V_{\text{fit},i}+\varepsilon_{\mathrm{clone}})$, and clone when $S_i>T_i$. Cloned walkers are grouped by companion and undergo a momentum-conserving inelastic collision: positions reset to the companion's position plus Gaussian jitter ($\sigma_x$), while velocities are updated via center-of-mass calculation with random rotation and restitution coefficient $\alpha_{\text{restitution}}$, as detailed in {ref}`Stage 3 <sec-eg-stage3>` and Definition 5.7.4 of `03_cloning.md`. Otherwise the walker persists unchanged. The intermediate swarm sets every status to alive before the kinetic step.
+5.  **Clone/Persist gate.** For each walker draw a clone companion $c_{\mathrm{clone}}(i)$ from the same algorithmic distance-weighted kernel ({prf:ref}`def-alg-distance`) and threshold $T_i\sim\mathrm{Unif}(0,p_{\max})$, compute the canonical score $S_i:=\big(V_{\text{fit},c_{\mathrm{clone}}(i)}-V_{\text{fit},i}\big)/(V_{\text{fit},i}+\varepsilon_{\mathrm{clone}})$, and clone when $S_i>T_i$. Cloned walkers are grouped by companion and undergo a momentum-conserving inelastic collision: positions reset to the companion's position plus Gaussian jitter ($\sigma_x$), while velocities are updated via center-of-mass calculation with random rotation and restitution coefficient $\alpha_{\text{restitution}}$, as detailed in {ref}`Stage 3 <sec-eg-stage3>` and Definition 5.7.4 of `03_cloning.md`. Otherwise the walker persists unchanged. The intermediate swarm sets every status to alive before the kinetic step.
 6.  **Kinetic perturbation.** Update each alive clone or survivor by applying the **BAOAB splitting integrator** for one step of underdamped Langevin dynamics with force $F(x)=\nabla R_{\mathrm{pos}}(x)$ and noise scales $(\sigma_v,\sigma_x)$.
-7.  **Status refresh.** Set the new status $s_i^{(t+1)}=\mathbf 1_{\mathcal X_{\mathrm{valid}}}(x_i^+)$ and output the updated swarm $\mathcal S_{t+1}$.
+7.  **Status refresh ({prf:ref}`def-status-update-operator`).** Set the new status $s_i^{(t+1)}=\mathbf 1_{\mathcal X_{\mathrm{valid}}}(x_i^+)$ and output the updated swarm $\mathcal S_{t+1}$.
 
 **Euclidean Gas Algorithm**
 
@@ -173,7 +173,7 @@ $$
 & \qquad \sigma'_{\mathrm{patch}}, g_A, \mathbb C_i, Q_{\delta}, \Psi_{\mathrm{kin,BAOAB}}. \\
 & \textbf{If } |\mathcal A_t| = 0: \textbf{ return } \delta_{\mathcal S_t} \quad \text{\# Cemetery absorption} \\
 \\
-& \underline{\text{Stage 2a: Raw vectors on alive set}} \\
+& \underline{\text{Stage 2a: Raw vectors on alive set ({prf:ref}`def-alive-dead-sets`)}} \\
 & \dots \quad \text{\# Unchanged} \\
 \\
 & \underline{\text{Stage 2b: Patched standardisation}} \\
@@ -371,7 +371,7 @@ def run_euclidean_gas_step(S_t, params):
 - **Velocity radius** $V_{\mathrm{alg}}\in(0,\infty)$ and **velocity cap** $\mathcal V_{\mathrm{alg}}:=\{v\in\mathbb R^d:\|v\|\le V_{\mathrm{alg}}\}$.
 - **Positional radius** $R_x\in(0,\infty)$, which sets the characteristic scale of the bounded algorithmic position space.
 - **Walker state** $w_i=(x_i,v_i,s_i)\in\mathcal X\times\mathbb R^d\times\{0,1\}$ collects position, velocity, and status.
-- **Algorithmic space and Sasaki metric** $(\mathcal Y,d_{\mathcal Y}^{\mathrm{Sasaki}})$ where the algorithmic space is the closure of the projection image,
+- **Algorithmic space and Sasaki metric** $(\mathcal Y,d_{\mathcal Y}^{\mathrm{Sasaki}})$ where the algorithmic space is the ({prf:ref}`def-algorithmic-space-generic`) closure of the projection image,
 
   $$
   \mathcal Y\;:=\;\overline{B(0,R_x)}\times\overline{B(0,V_{\mathrm{alg}})}\subset\mathbb R^d\times\mathbb R^d,
@@ -400,7 +400,7 @@ def run_euclidean_gas_step(S_t, params):
 
   The projection $\varphi$ maps the physical state space $\mathbb R^d\times\mathbb R^d$ into the bounded product $B(0,R_x)\times B(0,V_{\mathrm{alg}})$. Its image has compact closure $\mathcal Y$, so the **Axiom of Bounded Algorithmic Diameter** ({prf:ref}`def-axiom-bounded-algorithmic-diameter`) holds by construction. Lemma {prf:ref}`lem-squashing-properties-generic` shows that each squashing map is $1$-Lipschitz, and Lemma {prf:ref}`lem-projection-lipschitz` extends this to $\varphi$ under the Sasaki metric.
 
-- **Algorithmic distance for companion selection.** For intra-swarm measurements (companion selection for diversity and cloning), the algorithm uses the **algorithmic distance** between two walkers $i$ and $j$:
+- **Algorithmic distance for companion selection ({prf:ref}`def-alg-distance`).** For intra-swarm measurements (companion selection for diversity and cloning), the algorithm uses the **algorithmic distance** between two walkers $i$ and $j$:
 
   $$
   d_{\text{alg}}(i,j)^2 := \|x_i - x_j\|^2 + \lambda_{\text{alg}} \|v_i - v_j\|^2
@@ -506,13 +506,13 @@ We measure dispersion in the Sasaki metric and retain the canonical aggregation 
 
   It is critical to distinguish two different distance metrics used in this document:
 
-  1. **Algorithmic distance** $d_{\text{alg}}(i,j)$: Used by the *algorithm itself* for intra-swarm companion selection (diversity measurement and cloning). This defines how the algorithm "perceives" proximity between walkers within the same swarm.
+  1. **Algorithmic distance ({prf:ref}`def-alg-distance`)** $d_{\text{alg}}(i,j)$: Used by the *algorithm itself* for intra-swarm companion selection (diversity measurement and cloning). This defines how the algorithm "perceives" proximity between walkers within the same swarm.
 
   2. **Sasaki metric** $d_{\mathcal Y}^{\mathrm{Sasaki}}$: Used by the *analysis* to measure inter-swarm dispersion and derive continuity bounds. This is an analytical tool for proving convergence properties.
 
   For the Euclidean Gas, we set $\lambda_{\text{alg}} = \lambda_v$ so that these metrics coincide in their functional form, simplifying the connection between algorithmic behavior and analytical properties. However, they serve conceptually different roles: the algorithmic distance is intrinsic to the algorithm's design, while the Sasaki metric is extrinsic to the convergence analysis.
   :::
-- **Walkers:** $N\ge 2$; the empirical reward and distance aggregators keep their canonical formulas. Lemma {prf:ref}`lem-sasaki-aggregator-lipschitz` supplies Sasaki-specific error moduli, and Lemma {prf:ref}`lem-sasaki-standardization-lipschitz` applies them to the regularized standard deviation and logistic rescale operators.
+- **Walkers:** $N\ge 2$; the empirical reward and distance aggregators ({prf:ref}`def-swarm-aggregation-operator-axiomatic`) keep their canonical formulas. Lemma {prf:ref}`lem-sasaki-aggregator-lipschitz` supplies Sasaki-specific error moduli, and Lemma {prf:ref}`lem-sasaki-standardization-lipschitz` applies them to the regularized standard deviation and logistic rescale operators.
 - **Dynamics weights:** $\alpha,\beta\ge 0$ with $\alpha+\beta>0$ fixed as in the framework’s Axiom of Sufficient Amplification ({prf:ref}`def-axiom-sufficient-amplification`).
 
 ### 3.5 Kinetic Langevin perturbations with velocity capping
@@ -528,8 +528,8 @@ We measure dispersion in the Sasaki metric and retain the canonical aggregation 
   \end{aligned}
 
   $$
-  The **kinetic perturbation kernel** $\mathcal P_{\mathrm{kin}}$ therefore injects independent Gaussian noise into both velocities and positions. The cap ensures $\|v^+\|\le V_{\mathrm{alg}}$; when capping is inactive the drift component coincides with an underdamped Langevin Euler step. If one sets $\sigma_x=0$, the same reachability conclusions follow whenever $\operatorname{diam}(\mathcal X_{\mathrm{comp}})<\tau V_{\mathrm{alg}}$, because $\psi_v(\mathbb R^d)=B(0,V_{\mathrm{alg}})$ makes every point of $\mathcal X_{\mathrm{comp}}$ one-step reachable.
-- **Clone jitter distribution.** When the Clone action fires in {ref}`Stage 3 <sec-eg-stage3>`, positions are reset with Gaussian jitter $x_c + \sigma_x\zeta_x$ where $\zeta_x\sim\mathcal N(0,I_d)$ and $\sigma_x > 0$ is the positional jitter scale. Velocities are updated via the momentum-conserving inelastic collision model: for each companion $c$ with cloners $I_c$, the center-of-mass velocity $V_{\text{COM},c} = (v_c + \sum_{j \in I_c} v_j)/(M_c+1)$ is computed, then each walker $k$ in the system receives velocity $\tilde v_k = V_{\text{COM},c} + \alpha_{\text{restitution}} \cdot R_k(v_k - V_{\text{COM},c})$ where $R_k$ is a random rotation and $\alpha_{\text{restitution}} \in [0,1]$ controls energy dissipation. See Definition 5.7.4 in `03_cloning.md` for the complete specification.
+  The **kinetic perturbation kernel ({prf:ref}`def-perturbation-measure`)** $\mathcal P_{\mathrm{kin}}$ therefore injects independent Gaussian noise into both velocities and positions. The cap ensures $\|v^+\|\le V_{\mathrm{alg}}$; when capping is inactive the drift component coincides with an underdamped Langevin Euler step. If one sets $\sigma_x=0$, the same reachability conclusions follow whenever $\operatorname{diam}(\mathcal X_{\mathrm{comp}})<\tau V_{\mathrm{alg}}$, because $\psi_v(\mathbb R^d)=B(0,V_{\mathrm{alg}})$ makes every point of $\mathcal X_{\mathrm{comp}}$ one-step reachable.
+- **Clone jitter distribution.** When the Clone action fires in {ref}`Stage 3 <sec-eg-stage3>`, positions are reset with Gaussian jitter $x_c + \sigma_x\zeta_x$ where $\zeta_x\sim\mathcal N(0,I_d)$ and $\sigma_x > 0$ is the positional jitter scale. Velocities are updated via the momentum-conserving inelastic collision (see Definition 5.7.4 in `03_cloning.md`) model: for each companion $c$ with cloners $I_c$, the center-of-mass velocity $V_{\text{COM},c} = (v_c + \sum_{j \in I_c} v_j)/(M_c+1)$ is computed, then each walker $k$ in the system receives velocity $\tilde v_k = V_{\text{COM},c} + \alpha_{\text{restitution}} \cdot R_k(v_k - V_{\text{COM},c})$ where $R_k$ is a random rotation and $\alpha_{\text{restitution}} \in [0,1]$ controls energy dissipation. See Definition 5.7.4 in `03_cloning.md` for the complete specification.
 - **Pipeline ordering.** {ref}`Section 4 <sec-eg-kernel>` executes the canonical measurement → standardize → rescale pipeline first, freezes the potential vector, and then applies the Clone/Persist rule to produce an all-alive intermediate swarm. The kinetic update above acts on that intermediate state, and the deterministic status operator sets $s_i^{(t+1)}=\mathbf 1_{\mathcal X_{\mathrm{valid}}}(x_i^+)$ afterward—no cloning occurs after the status check.
 - **In-step independence.** The random draws $(\xi_i^v,\xi_i^x,\zeta_i^x,R_i)$ used in the cloning and kinetic stages are independent across walkers given the current swarm, as required by Assumption A ({prf:ref}`def-assumption-instep-independence`). Here $R_i$ denotes the random rotation applied in the inelastic collision model.
 
@@ -550,7 +550,7 @@ We reuse the canonical Fragile framework proofs, updating every bound so it live
    $$
    \kappa_{\mathrm{revival}}\;=\;\frac{\eta^{\alpha+\beta}}{\varepsilon_{\mathrm{clone}}\,p_{\max}}\;>\;1
    $$
-   is therefore the same as in the framework, so each dead walker survives the Clone/Persist gate with strictly positive probability and the all-alive intermediate swarm satisfies the axiom (Theorem *Almost-sure revival*; {prf:ref}`thm-revival-guarantee`, {prf:ref}`def-axiom-guaranteed-revival`).
+   is therefore the same as in the framework, so each dead walker survives the Clone/Persist gate with strictly positive probability and the all-alive intermediate swarm satisfies the axiom (Theorem *Almost-sure revival* ({prf:ref}`thm-revival-guarantee`, {prf:ref}`def-axiom-guaranteed-revival`).
 
 2. **Boundary regularity & smoothness.** Lemma {prf:ref}`lem-euclidean-boundary-holder` bounds the death probability with explicit Hölder constants, verifying the boundary axioms ({prf:ref}`def-axiom-boundary-regularity`, {prf:ref}`def-axiom-boundary-smoothness`).
 
@@ -735,7 +735,7 @@ $$
 
 ### 4.2 Environmental axioms
 
-The ambient space $(\mathcal X,d_{\mathcal X})$ remains Euclidean with Lebesgue reference measure, so the canonical density and integration arguments carry over ({prf:ref}`def-ambient-euclidean`). Because $\mathcal X_{\mathrm{valid}}$ is compact and $F=\nabla R_{\mathrm{pos}}$ is Lipschitz on this set, both $F$ and the auxiliary flow field $u$ are uniformly bounded; these bounds are the only ingredients required by the kinetic and boundary estimates recorded below.
+The ambient space ({prf:ref}`def-ambient-euclidean`) $(\mathcal X,d_{\mathcal X})$ remains Euclidean with Lebesgue reference measure, so the canonical density and integration arguments carry over. Because $\mathcal X_{\mathrm{valid}}$ is compact and $F=\nabla R_{\mathrm{pos}}$ is Lipschitz on this set, both $F$ and the auxiliary flow field $u$ are uniformly bounded; these bounds are the only ingredients required by the kinetic and boundary estimates recorded below.
 
 :::{prf:lemma} Reward regularity in the Sasaki metric
 :label: lem-euclidean-reward-regularity
@@ -1046,7 +1046,7 @@ The analysis in the remainder of this chapter is performed for the **canonical E
 
 **Key Simplifications in the Canonical Model:**
 - **Companion Selection:** Uniform random selection from alive walkers (infinite ε limit)
-- **Algorithmic Distance:** While formally defined in Section 3.3 as `d_alg(i,j)² = ||x_i - x_j||² + λ_alg ||v_i - v_j||²`, the uniform selection means this distance only affects the raw distance measurement `d_i`, not the companion selection probabilities.
+- **Algorithmic Distance ({prf:ref}`def-alg-distance`):** While formally defined in Section 3.3 as `d_alg(i,j)² = ||x_i - x_j||² + λ_alg ||v_i - v_j||²`, the uniform selection means this distance only affects the raw distance measurement `d_i`, not the companion selection probabilities.
 - **Cloning Operator:** Momentum-conserving inelastic collision model with position jitter (as defined in Definition 5.7.4 of `03_cloning.md`)
 
 This simplified, non-local model serves as a valuable and tractable baseline. The main convergence proof, presented in the `03_cloning.md` document, builds upon this foundation by analyzing the full model with:
@@ -1227,7 +1227,7 @@ Decompose the index set into stable walkers $\mathcal A_{\mathrm{stable}}$ and t
 Finally, the structural perturbation of the companion distribution for stable walkers is controlled by Lemma {prf:ref}`lem-sasaki-single-walker-structural-error`. Squaring its bound and summing over the $k_{\mathrm{stable}}$ indices yields the middle term in $F_{d,ms}^{\mathrm{Sasaki}}$. Adding the three contributions completes the proof.```
 :::
 
-4. **Non-degenerate noise.** Choosing $\sigma_v^2>0$ and positional cloning jitter $\sigma_x>0$ keeps the perturbation and cloning measures non-Dirac. The velocity updates via the inelastic collision model add stochasticity through random rotations $R_k$.
+4. **Non-degenerate noise ({prf:ref}`def-axiom-non-degenerate-noise`).** Choosing $\sigma_v^2>0$ and positional cloning jitter $\sigma_x>0$ keeps the perturbation and cloning measures non-Dirac. The velocity updates via the inelastic collision model add stochasticity through random rotations $R_k$.
 
 5. **Sufficient amplification.** The weights $\alpha,\beta\ge 0$ satisfy $\alpha+\beta>0$ exactly as in the canonical swarm ({prf:ref}`def-axiom-sufficient-amplification`).
 
@@ -2186,13 +2186,13 @@ If the alive index set $\mathcal A(\mathcal S_t)$ is empty, the operator returns
 ### 6.2 Stage 2 — Single-shot measurement and frozen potentials
 
 1.  **Raw scores.** For $i\in\mathcal A_t$ set $r_i:=R(x_i,v_i)$, and put $r_i:=0$ for $i\notin\mathcal A_t$.
-2.  **Measurement companions.** For each alive walker $i\in\mathcal A_t$, a companion for the diversity measurement, $c_{\mathrm{pot}}(i)$, is drawn independently from the **`ε`-dependent companion kernel** $\mathbb C_\epsilon(\mathcal S_t, i)$. This measure assigns a probability to each potential companion $j \in \mathcal A_t \setminus \{i\}$ that is weighted by their algorithmic distance (see Section 3.3):
+2.  **Measurement companions ({prf:ref}`def-distance-to-companion`).** For each alive walker $i\in\mathcal A_t$, a companion for the diversity measurement, $c_{\mathrm{pot}}(i)$, is drawn independently from the **`ε`-dependent companion kernel** $\mathbb C_\epsilon(\mathcal S_t, i)$. This measure assigns a probability to each potential companion $j \in \mathcal A_t \setminus \{i\}$ that is weighted by their algorithmic distance (see Section 3.3):
 
    $$
    P(\text{choose } j \mid \mathcal S_t, i) \propto \exp\left(-\frac{d_{\text{alg}}(i,j)^2}{2\epsilon^2}\right).
    $$
 
-   The raw distance to this sampled companion is then computed using the algorithmic distance:
+   The raw distance to this sampled companion is then computed using the algorithmic distance ({prf:ref}`def-alg-distance`):
 
    $$
    d_i:=d_{\text{alg}}(i,c_{\mathrm{pot}}(i)),
@@ -2210,7 +2210,7 @@ If the alive index set $\mathcal A(\mathcal S_t)$ is empty, the operator returns
 
 For each index $i\in\{1,\dots,N\}$ independently:
 
-1.  **Clone companion and threshold.** Sample a companion $c_{\mathrm{clone}}(i)\sim\mathbb C_\epsilon(\mathcal S_t, i)$ from the same **`ε`-dependent companion kernel** used in the measurement stage, weighted by algorithmic distance. Independently, sample a threshold $T_i\sim\mathrm{Unif}(0,p_{\max})$.
+1.  **Clone companion and threshold.** Sample a companion using algorithmic distance ({prf:ref}`def-alg-distance`) $c_{\mathrm{clone}}(i)\sim\mathbb C_\epsilon(\mathcal S_t, i)$ from the same **`ε`-dependent companion kernel** used in the measurement stage, weighted by algorithmic distance. Independently, sample a threshold $T_i\sim\mathrm{Unif}(0,p_{\max})$.
 2.  **Score comparison.** With $v_i:=V_{\text{fit},i}$ and $v_c:=V_{\text{fit},c_{\mathrm{clone}}(i)}$, compute
 
    $$

@@ -55,13 +55,15 @@
       ],
       "content_start": 7143,
       "content_end": 7155,
-      "content": "7143: :label: lem-fitness-gradient-boundary\n7144: \n7145: Consider two walkers $i$ and $j$ with similar positions and velocities, except that walker $i$ is closer to the boundary than walker $j$. Specifically, let:\n7146: \n7147: $$\n7148: \\varphi_{\\text{barrier}}(x_i) - \\varphi_{\\text{barrier}}(x_j) = \\Delta_{\\text{barrier}} > 0\n7149: $$\n7150: \n7151: Then, under the fitness evaluation pipeline (Chapter 5), walker $i$ has systematically lower fitness potential:\n7152: \n7153: $$\n7154: V_{\\text{fit},i} \\leq V_{\\text{fit},j} - f(\\Delta_{\\text{barrier}})\n7155: $$",
+      "content": "7143: :label: lem-fitness-gradient-boundary\n7144: \n7145: Consider two walkers $i$ and $j$ with similar positions and velocities, except that walker ({prf:ref}`def-walker`) $i$ is closer to the boundary than walker $j$. Specifically, let:\n7146: \n7147: $$\n7148: \\varphi_{\\text{barrier}}(x_i) - \\varphi_{\\text{barrier}}(x_j) = \\Delta_{\\text{barrier}} > 0\n7149: $$\n7150: \n7151: Then, under the fitness evaluation pipeline (Chapter 5), walker ({prf:ref}`def-walker`) $i$ has systematically lower fitness potential:\n7152: \n7153: $$\n7154: V_{\\text{fit},i} \\leq V_{\\text{fit},j} - f(\\Delta_{\\text{barrier}})\n7155: $$",
       "metadata": {
         "label": "lem-fitness-gradient-boundary"
       },
       "section": "## 11.2. The Boundary Barrier and Fitness Gradient",
-      "references": [],
-      "raw_directive": "7140: This raw reward feeds into the fitness potential calculation, so walkers near the boundary have systematically lower fitness.\n7141: \n7142: :::{prf:lemma} Fitness Gradient from Boundary Proximity\n7143: :label: lem-fitness-gradient-boundary\n7144: \n7145: Consider two walkers $i$ and $j$ with similar positions and velocities, except that walker $i$ is closer to the boundary than walker $j$. Specifically, let:\n7146: \n7147: $$\n7148: \\varphi_{\\text{barrier}}(x_i) - \\varphi_{\\text{barrier}}(x_j) = \\Delta_{\\text{barrier}} > 0\n7149: $$\n7150: \n7151: Then, under the fitness evaluation pipeline (Chapter 5), walker $i$ has systematically lower fitness potential:\n7152: \n7153: $$\n7154: V_{\\text{fit},i} \\leq V_{\\text{fit},j} - f(\\Delta_{\\text{barrier}})\n7155: $$\n7156: "
+      "references": [
+        "def-walker"
+      ],
+      "raw_directive": "7140: This raw reward feeds into the fitness potential calculation, so walkers near the boundary have systematically lower fitness.\n7141: \n7142: :::{prf:lemma} Fitness Gradient from Boundary Proximity\n7143: :label: lem-fitness-gradient-boundary\n7144: \n7145: Consider two walkers $i$ and $j$ with similar positions and velocities, except that walker ({prf:ref}`def-walker`) $i$ is closer to the boundary than walker $j$. Specifically, let:\n7146: \n7147: $$\n7148: \\varphi_{\\text{barrier}}(x_i) - \\varphi_{\\text{barrier}}(x_j) = \\Delta_{\\text{barrier}} > 0\n7149: $$\n7150: \n7151: Then, under the fitness evaluation pipeline (Chapter 5), walker ({prf:ref}`def-walker`) $i$ has systematically lower fitness potential:\n7152: \n7153: $$\n7154: V_{\\text{fit},i} \\leq V_{\\text{fit},j} - f(\\Delta_{\\text{barrier}})\n7155: $$\n7156: "
     },
     {
       "directive_type": "proof",
@@ -95,13 +97,15 @@
       ],
       "content_start": 7307,
       "content_end": 7320,
-      "content": "7307: :label: def-boundary-exposed-set\n7308: \n7309: For a swarm $S$ and a threshold $\\phi_{\\text{thresh}} > 0$, the **boundary-exposed set** is:\n7310: \n7311: $$\n7312: \\mathcal{E}_{\\text{boundary}}(S) := \\{i \\in \\mathcal{A}(S) : \\varphi_{\\text{barrier}}(x_i) > \\phi_{\\text{thresh}}\\}\n7313: $$\n7314: \n7315: These are alive walkers whose barrier penalty exceeds the threshold, indicating dangerous proximity to the boundary.\n7316: \n7317: The **boundary-exposed mass** is:\n7318: \n7319: $$\n7320: M_{\\text{boundary}}(S) := \\frac{1}{N} \\sum_{i \\in \\mathcal{E}_{\\text{boundary}}(S)} \\varphi_{\\text{barrier}}(x_i)",
+      "content": "7307: :label: def-boundary-exposed-set\n7308: \n7309: For a swarm ({prf:ref}`def-swarm-and-state-space`) $S$ and a threshold $\\phi_{\\text{thresh}} > 0$, the **boundary-exposed set** is:\n7310: \n7311: $$\n7312: \\mathcal{E}_{\\text{boundary}}(S) := \\{i \\in \\mathcal{A}(S) : \\varphi_{\\text{barrier}}(x_i) > \\phi_{\\text{thresh}}\\}\n7313: $$\n7314: \n7315: These are alive walkers whose barrier penalty exceeds the threshold, indicating dangerous proximity to the boundary.\n7316: \n7317: The **boundary-exposed mass** is:\n7318: \n7319: $$\n7320: M_{\\text{boundary}}(S) := \\frac{1}{N} \\sum_{i \\in \\mathcal{E}_{\\text{boundary}}(S)} \\varphi_{\\text{barrier}}(x_i)",
       "metadata": {
         "label": "def-boundary-exposed-set"
       },
       "section": "## 11.2. The Boundary Barrier and Fitness Gradient",
-      "references": [],
-      "raw_directive": "7304: We now formalize the set of walkers (see {prf:ref}`def-boundary-exposed-set`) that are in danger due to boundary proximity.\n7305: \n7306: :::{prf:definition} The Boundary-Exposed Set\n7307: :label: def-boundary-exposed-set\n7308: \n7309: For a swarm $S$ and a threshold $\\phi_{\\text{thresh}} > 0$, the **boundary-exposed set** is:\n7310: \n7311: $$\n7312: \\mathcal{E}_{\\text{boundary}}(S) := \\{i \\in \\mathcal{A}(S) : \\varphi_{\\text{barrier}}(x_i) > \\phi_{\\text{thresh}}\\}\n7313: $$\n7314: \n7315: These are alive walkers whose barrier penalty exceeds the threshold, indicating dangerous proximity to the boundary.\n7316: \n7317: The **boundary-exposed mass** is:\n7318: \n7319: $$\n7320: M_{\\text{boundary}}(S) := \\frac{1}{N} \\sum_{i \\in \\mathcal{E}_{\\text{boundary}}(S)} \\varphi_{\\text{barrier}}(x_i)\n7321: $$"
+      "references": [
+        "def-swarm-and-state-space"
+      ],
+      "raw_directive": "7304: We now formalize the set of walkers (see {prf:ref}`def-boundary-exposed-set`) that are in danger due to boundary proximity.\n7305: \n7306: :::{prf:definition} The Boundary-Exposed Set\n7307: :label: def-boundary-exposed-set\n7308: \n7309: For a swarm ({prf:ref}`def-swarm-and-state-space`) $S$ and a threshold $\\phi_{\\text{thresh}} > 0$, the **boundary-exposed set** is:\n7310: \n7311: $$\n7312: \\mathcal{E}_{\\text{boundary}}(S) := \\{i \\in \\mathcal{A}(S) : \\varphi_{\\text{barrier}}(x_i) > \\phi_{\\text{thresh}}\\}\n7313: $$\n7314: \n7315: These are alive walkers whose barrier penalty exceeds the threshold, indicating dangerous proximity to the boundary.\n7316: \n7317: The **boundary-exposed mass** is:\n7318: \n7319: $$\n7320: M_{\\text{boundary}}(S) := \\frac{1}{N} \\sum_{i \\in \\mathcal{E}_{\\text{boundary}}(S)} \\varphi_{\\text{barrier}}(x_i)\n7321: $$"
     },
     {
       "directive_type": "remark",

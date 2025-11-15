@@ -27,7 +27,6 @@ __all__ = [
     "ReportMetadata",
     "ReportMetadataSignature",
     "SketchValidationReport",
-    "SketchValidationReportSignature",
     "SketchValidator",
     "SynthesisAndActionPlan",
     "SynthesisAndActionPlanSignature",
@@ -83,6 +82,21 @@ class ConsensusAnalysis(BaseModel):
     )
 
 
+class ConsensusAnalysisSignature(dspy.Signature):
+    """Summarize reviewer agreement and disagreements."""
+
+    original_proof_sketch: dict = Field(..., description="Proof sketch JSON being reviewed.")
+    reviewer_notes = dspy.InputField(
+        desc="Combined notes referencing key points of agreement/disagreement."
+    )
+    gemini_review = dspy.InputField(desc="Serialized review JSON from Gemini reviewer.")
+    codex_review = dspy.InputField(desc="Serialized review JSON from Codex reviewer.")
+
+    consensus_analysis: ConsensusAnalysis = dspy.OutputField(
+        desc="Consensus analysis summary object."
+    )
+
+
 class ActionItem(BaseModel):
     """Concrete tasks needed before the sketch can progress."""
 
@@ -92,6 +106,18 @@ class ActionItem(BaseModel):
     references: list[str] = Field(
         default_factory=list,
         description="Pointers to sketch/review segments related to this item.",
+    )
+
+class ActionableItemsSignature(dspy.Signature):
+    """Generate the list of action items for the action plan."""
+
+    original_proof_sketch: dict = Field(..., description="Proof sketch JSON being reviewed.")
+    consolidated_feedback = dspy.InputField(desc="Text summarizing required revisions or tasks.")
+    references_json = dspy.InputField(
+        desc="JSON array mapping action items to review references.", optional=True
+    )
+    actionableItems: list[ActionItem] = dspy.OutputField(
+        desc="List of action items with priority and references."
     )
 
 
@@ -141,33 +167,6 @@ class ReportMetadataSignature(dspy.Signature):
     )
 
 
-class ConsensusAnalysisSignature(dspy.Signature):
-    """Summarize reviewer agreement and disagreements."""
-
-    reviewer_notes = dspy.InputField(
-        desc="Combined notes referencing key points of agreement/disagreement."
-    )
-    gemini_review = dspy.InputField(desc="Serialized review JSON from Gemini reviewer.")
-    codex_review = dspy.InputField(desc="Serialized review JSON from Codex reviewer.")
-
-    consensusAnalysis: ConsensusAnalysis = dspy.OutputField(
-        desc="Consensus analysis summary object."
-    )
-
-
-class ActionableItemsSignature(dspy.Signature):
-    """Generate the list of action items for the action plan."""
-
-    consolidated_feedback = dspy.InputField(desc="Text summarizing required revisions or tasks.")
-    references_json = dspy.InputField(
-        desc="JSON array mapping action items to review references.", optional=True
-    )
-
-    actionableItems: list[ActionItem] = dspy.OutputField(
-        desc="List of action items with priority and references."
-    )
-
-
 class SynthesisAndActionPlanSignature(dspy.Signature):
     """Produce final decision, consensus, actionables, and confidence statement."""
 
@@ -186,28 +185,6 @@ class SynthesisAndActionPlanSignature(dspy.Signature):
 
     synthesisAndActionPlan: SynthesisAndActionPlan = dspy.OutputField(
         desc="Structured synthesis/action plan conforming to schema."
-    )
-
-
-class ActionableItemsListSignature(dspy.Signature):
-    """Signature alias for compatibility."""
-
-    consolidated_feedback = dspy.InputField(desc="Same as ActionableItemsSignature.")
-    references_json = dspy.InputField(desc="Same as ActionableItemsSignature.", optional=True)
-
-    items: list[ActionItem] = dspy.OutputField(desc="Action items list.")
-
-
-class SketchValidationReportSignature(dspy.Signature):
-    """Assemble the full sketch validation report."""
-
-    reportMetadata = dspy.InputField(desc="Serialized ReportMetadata JSON.")
-    originalProofSketch = dspy.InputField(desc="Serialized proof sketch JSON.")
-    reviews = dspy.InputField(desc="JSON array of two review objects.")
-    synthesisAndActionPlan = dspy.InputField(desc="Serialized SynthesisAndActionPlan JSON.")
-
-    report: SketchValidationReport = dspy.OutputField(
-        desc="Complete validation cycles report object."
     )
 
 
@@ -475,37 +452,67 @@ class Scores(BaseModel):
 
 
 class SketchValidator(dspy.Module):
-    """Run dual sketch reviews and synthesize a complete validation report."""
+    """Run dual sketch reviews and synthesize a complete validation report.
+
+    Args:
+        project_root: Optional path to project root for prompt loading
+        gemini_prompt: Optional custom prompt for Gemini reviewer
+        codex_prompt: Optional custom prompt for Codex reviewer
+        perspective_1_lm: LM for perspective 1 (Gemini reviewer). If None, uses dspy.settings.lm
+        perspective_2_lm: LM for perspective 2 (Codex reviewer). If None, uses dspy.settings.lm
+        synthesis_lm: LM for synthesis agents (consensus, actions, synthesis). If None, uses dspy.settings.lm
+        fast_lm: LM for simple tasks (metadata). If None, uses dspy.settings.lm
+    """
 
     def __init__(
         self,
         project_root: str | None = None,
         gemini_prompt: str | None = None,
         codex_prompt: str | None = None,
+        perspective_1_lm: dspy.LM | None = None,
+        perspective_2_lm: dspy.LM | None = None,
+        synthesis_lm: dspy.LM | None = None,
+        fast_lm: dspy.LM | None = None,
     ) -> None:
         super().__init__()
 
-        self.metadata_generator = dspy.Predict(ReportMetadataSignature)
+        # Store LM configurations
+        self.perspective_1_lm = perspective_1_lm
+        self.perspective_2_lm = perspective_2_lm
+        self.synthesis_lm = synthesis_lm or dspy.settings.lm
+        self.fast_lm = fast_lm or dspy.settings.lm
+
+        # Initialize fast tasks with fast_lm
+        self.metadata_generator = dspy.Predict(ReportMetadataSignature, lm=self.fast_lm)
+
+        # Initialize synthesis agents with synthesis_lm
         self.consensus_generator = dspy.ChainOfThought(
             ConsensusAnalysisSignature.with_instructions(
                 "Compare Gemini and Codex reviews to extract agreements, disagreements, "
                 "and summarize key findings."
-            )
+            ),
+            lm=self.synthesis_lm,
         )
         self.action_items_generator = dspy.Predict(
             ActionableItemsSignature.with_instructions(
                 "Turn consolidated reviewer feedback into actionable TODO items with priorities."
-            )
+            ),
+            lm=self.synthesis_lm,
         )
         self.synthesis_generator = dspy.Predict(
             SynthesisAndActionPlanSignature.with_instructions(
                 "Merge consensus analysis and action items into a final decision and confidence statement."
-            )
+            ),
+            lm=self.synthesis_lm,
         )
-        self.report_builder = dspy.Predict(SketchValidationReportSignature)
-
-        self.review_agent_gemini = SketchRefereeAgent()
-        self.review_agent_codex = SketchRefereeAgent()
+        # Initialize review agents with perspective-specific LMs
+        # synthesis_lm used for overall assessment in each reviewer
+        self.review_agent_gemini = SketchRefereeAgent(
+            lm=self.perspective_1_lm, synthesis_lm=self.synthesis_lm
+        )
+        self.review_agent_codex = SketchRefereeAgent(
+            lm=self.perspective_2_lm, synthesis_lm=self.synthesis_lm
+        )
 
     def _run_review(
         self,

@@ -1,0 +1,34 @@
+# Development LLM configuration for proof sketcher pipeline
+#
+# Uses GPT-3.5-turbo for all stages. Fast and cheap for testing, debugging,
+# and rapid iteration. Not suitable for production proof generation.
+# Estimated cost: ~10% of default configuration.
+#
+# Best for: Testing, debugging, development, CI/CD pipelines
+
+perspective_1_model:
+  provider: "openai"
+  model: "gpt-3.5-turbo"
+  temperature: 0.7
+  max_tokens: 3000
+
+perspective_2_model:
+  provider: "openai"
+  model: "gpt-3.5-turbo"
+  temperature: 0.7
+  max_tokens: 3000
+
+synthesis_model:
+  provider: "openai"
+  model: "gpt-3.5-turbo"
+  temperature: 0.5
+  max_tokens: 2000
+
+fast_model:
+  provider: "openai"
+  model: "gpt-3.5-turbo"
+  temperature: 0.7
+  max_tokens: 2000
+
+claude_model_heavy: "haiku"
+claude_model_fast: "haiku"

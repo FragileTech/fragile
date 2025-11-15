@@ -1,150 +1,158 @@
 {
   "chapter_index": 8,
-  "section_id": "## 8. Companion Selection",
+  "section_id": "## 8. Companion Selection ({prf:ref}`def-companion-selection-measure`)",
   "directive_count": 7,
   "hints": [
     {
       "directive_type": "definition",
       "label": "def-companion-selection-measure",
       "title": "Companion Selection Measure",
-      "start_line": 1503,
-      "end_line": 1511,
+      "start_line": 1556,
+      "end_line": 1564,
       "header_lines": [
-        1504
+        1557
       ],
-      "content_start": 1505,
-      "content_end": 1510,
-      "content": "1505: :label: def-companion-selection-measure\n1506: For each walker $i \\in \\{1, \\dots, N\\}$ in a swarm $\\mathcal{S}$ with alive set $\\mathcal{A}$, the **Companion Selection Measure**, $\\mathbb{C}_i(\\mathcal{S})$, is a **uniform discrete probability measure** over a support set $S_i \\subseteq \\{1, \\dots, N\\}$ of valid companion indices. The support set is defined as:\n1507: *   If walker $i$ is alive ($i \\in \\mathcal{A}$) and there is at least one other alive walker ($|\\mathcal{A}| \\ge 2$), the support set is all other alive walkers: $S_i := \\mathcal{A} \\setminus \\{i\\}$.\n1508: *   If walker $i$ is dead ($i \\notin \\mathcal{A}$) and the alive set is not empty ($|\\mathcal{A}| \\ge 1$), the support set is all alive walkers: $S_i := \\mathcal{A}$.\n1509: *   If walker $i$ is the only one alive ($|\\mathcal{A}| = 1$ and $\\mathcal{A} = \\{i\\}$), it is its own companion: $S_i := \\{i\\}$.\n1510: *   If the swarm is empty ($|\\mathcal{A}|=0$), the support set is empty: $S_i := \\emptyset$.",
+      "content_start": 1558,
+      "content_end": 1563,
+      "content": "1558: :label: def-companion-selection-measure\n1559: For each walker $i \\in \\{1, \\dots, N\\}$ ({prf:ref}`def-walker`) in a swarm $\\mathcal{S}$ ({prf:ref}`def-swarm-and-state-space`) with alive set $\\mathcal{A}$ ({prf:ref}`def-alive-dead-sets`), the **Companion Selection Measure**, $\\mathbb{C}_i(\\mathcal{S})$, is a **uniform discrete probability measure** over a support set $S_i \\subseteq \\{1, \\dots, N\\}$ of valid companion indices. The support set is defined as:\n1560: *   If walker ({prf:ref}`def-walker`) $i$ is alive ($i \\in \\mathcal{A}$) and there is at least one other alive walker ($|\\mathcal{A}| \\ge 2$), the support set is all other alive walkers: $S_i := \\mathcal{A} \\setminus \\{i\\}$.\n1561: *   If walker ({prf:ref}`def-walker`) $i$ is dead ($i \\notin \\mathcal{A}$) and the alive set ({prf:ref}`def-alive-dead-sets`) is not empty ($|\\mathcal{A}| \\ge 1$), the support set is all alive walkers: $S_i := \\mathcal{A}$.\n1562: *   If walker ({prf:ref}`def-walker`) $i$ is the only one alive ($|\\mathcal{A}| = 1$ and $\\mathcal{A} = \\{i\\}$), it is its own companion: $S_i := \\{i\\}$.\n1563: *   If the swarm ({prf:ref}`def-swarm-and-state-space`) is empty ($|\\mathcal{A}|=0$), the support set is empty: $S_i := \\emptyset$.",
       "metadata": {
         "label": "def-companion-selection-measure"
       },
-      "section": "## 8. Companion Selection",
-      "references": [],
-      "raw_directive": "1503: :::\n1504: :::{prf:definition} Companion Selection Measure\n1505: :label: def-companion-selection-measure\n1506: For each walker $i \\in \\{1, \\dots, N\\}$ in a swarm $\\mathcal{S}$ with alive set $\\mathcal{A}$, the **Companion Selection Measure**, $\\mathbb{C}_i(\\mathcal{S})$, is a **uniform discrete probability measure** over a support set $S_i \\subseteq \\{1, \\dots, N\\}$ of valid companion indices. The support set is defined as:\n1507: *   If walker $i$ is alive ($i \\in \\mathcal{A}$) and there is at least one other alive walker ($|\\mathcal{A}| \\ge 2$), the support set is all other alive walkers: $S_i := \\mathcal{A} \\setminus \\{i\\}$.\n1508: *   If walker $i$ is dead ($i \\notin \\mathcal{A}$) and the alive set is not empty ($|\\mathcal{A}| \\ge 1$), the support set is all alive walkers: $S_i := \\mathcal{A}$.\n1509: *   If walker $i$ is the only one alive ($|\\mathcal{A}| = 1$ and $\\mathcal{A} = \\{i\\}$), it is its own companion: $S_i := \\{i\\}$.\n1510: *   If the swarm is empty ($|\\mathcal{A}|=0$), the support set is empty: $S_i := \\emptyset$.\n1511: The measure is defined as $\\mathbb{C}_i(\\mathcal{S})(\\{j\\}) = 1/|S_i|$ if $j \\in S_i$ and $|S_i|>0$, and 0 otherwise. The expectation of any function $f$ under this measure is $\\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S})}[f(j)] = \\frac{1}{|S_i|} \\sum_{j \\in S_i} f(j)$."
+      "section": "## 8. Companion Selection ({prf:ref}`def-companion-selection-measure`)",
+      "references": [
+        "def-walker",
+        "def-swarm-and-state-space",
+        "def-alive-dead-sets"
+      ],
+      "raw_directive": "1556: :::\n1557: :::{prf:definition} Companion Selection Measure\n1558: :label: def-companion-selection-measure\n1559: For each walker $i \\in \\{1, \\dots, N\\}$ ({prf:ref}`def-walker`) in a swarm $\\mathcal{S}$ ({prf:ref}`def-swarm-and-state-space`) with alive set $\\mathcal{A}$ ({prf:ref}`def-alive-dead-sets`), the **Companion Selection Measure**, $\\mathbb{C}_i(\\mathcal{S})$, is a **uniform discrete probability measure** over a support set $S_i \\subseteq \\{1, \\dots, N\\}$ of valid companion indices. The support set is defined as:\n1560: *   If walker ({prf:ref}`def-walker`) $i$ is alive ($i \\in \\mathcal{A}$) and there is at least one other alive walker ($|\\mathcal{A}| \\ge 2$), the support set is all other alive walkers: $S_i := \\mathcal{A} \\setminus \\{i\\}$.\n1561: *   If walker ({prf:ref}`def-walker`) $i$ is dead ($i \\notin \\mathcal{A}$) and the alive set ({prf:ref}`def-alive-dead-sets`) is not empty ($|\\mathcal{A}| \\ge 1$), the support set is all alive walkers: $S_i := \\mathcal{A}$.\n1562: *   If walker ({prf:ref}`def-walker`) $i$ is the only one alive ($|\\mathcal{A}| = 1$ and $\\mathcal{A} = \\{i\\}$), it is its own companion: $S_i := \\{i\\}$.\n1563: *   If the swarm ({prf:ref}`def-swarm-and-state-space`) is empty ($|\\mathcal{A}|=0$), the support set is empty: $S_i := \\emptyset$.\n1564: The measure is defined as $\\mathbb{C}_i(\\mathcal{S})(\\{j\\}) = 1/|S_i|$ if $j \\in S_i$ and $|S_i|>0$, and 0 otherwise. The expectation of any function $f$ under this measure is $\\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S})}[f(j)] = \\frac{1}{|S_i|} \\sum_{j \\in S_i} f(j)$."
     },
     {
       "directive_type": "lemma",
       "label": "lem-set-difference-bound",
       "title": "Bound on the Error from Companion Set Change",
-      "start_line": 1528,
-      "end_line": 1539,
+      "start_line": 1581,
+      "end_line": 1593,
       "header_lines": [
-        1529
+        1582
       ],
-      "content_start": 1530,
-      "content_end": 1538,
-      "content": "1530: :label: lem-set-difference-bound\n1531: Let $S_1$ and $S_2$ be two companion support sets, with $|S_1| > 0$. Let $f_j = f(x_j)$ be a real-valued function bounded by a constant $M_f$ such that $|f_j| \\le M_f$ for all $j$.\n1532: The absolute difference between the sums over these two sets, normalized by the initial set size $|S_1|$, is bounded by the size of the symmetric difference between the sets, $|S_1 \\Delta S_2|$.\n1533: $$\n1534: \n1535: \\left| \\frac{1}{|S_1|} \\sum_{j \\in S_1} f_j - \\frac{1}{|S_1|} \\sum_{j \\in S_2} f_j \\right| \\le \\frac{M_f}{|S_1|} |S_1 \\Delta S_2|\n1536: \n1537: $$\n1538: ",
+      "content_start": 1583,
+      "content_end": 1592,
+      "content": "1583: :label: lem-set-difference-bound\n1584: Let $S_1$ and $S_2$ be two companion support sets, with $|S_1| > 0$. Let $f_j = f(x_j)$ be a real-valued function bounded by a constant $M_f$ such that $|f_j| \\le M_f$ for all $j$.\n1585: The absolute difference between the sums over these two sets, normalized by the initial set size $|S_1|$, is bounded by the size of the symmetric difference between the sets, $|S_1 \\Delta S_2|$.\n1586: \n1587: $$\n1588: \n1589: \\left| \\frac{1}{|S_1|} \\sum_{j \\in S_1} f_j - \\frac{1}{|S_1|} \\sum_{j \\in S_2} f_j \\right| \\le \\frac{M_f}{|S_1|} |S_1 \\Delta S_2|\n1590: \n1591: $$\n1592: ",
       "metadata": {
         "label": "lem-set-difference-bound"
       },
-      "section": "## 8. Companion Selection",
+      "section": "## 8. Companion Selection ({prf:ref}`def-companion-selection-measure`)",
       "references": [
         "proof-thm-total-error-status-bound"
       ],
-      "raw_directive": "1528: This lemma bounds the component of the error that arises purely from the change in the set of companions, holding the normalization constant fixed.\n1529: :::{prf:lemma} Bound on the Error from Companion Set Change\n1530: :label: lem-set-difference-bound\n1531: Let $S_1$ and $S_2$ be two companion support sets, with $|S_1| > 0$. Let $f_j = f(x_j)$ be a real-valued function bounded by a constant $M_f$ such that $|f_j| \\le M_f$ for all $j$.\n1532: The absolute difference between the sums over these two sets, normalized by the initial set size $|S_1|$, is bounded by the size of the symmetric difference between the sets, $|S_1 \\Delta S_2|$.\n1533: $$\n1534: \n1535: \\left| \\frac{1}{|S_1|} \\sum_{j \\in S_1} f_j - \\frac{1}{|S_1|} \\sum_{j \\in S_2} f_j \\right| \\le \\frac{M_f}{|S_1|} |S_1 \\Delta S_2|\n1536: \n1537: $$\n1538: \n1539: Used in {prf:ref}`proof-thm-total-error-status-bound`."
+      "raw_directive": "1581: This lemma bounds the component of the error that arises purely from the change in the set of companions, holding the normalization constant fixed.\n1582: :::{prf:lemma} Bound on the Error from Companion Set Change\n1583: :label: lem-set-difference-bound\n1584: Let $S_1$ and $S_2$ be two companion support sets, with $|S_1| > 0$. Let $f_j = f(x_j)$ be a real-valued function bounded by a constant $M_f$ such that $|f_j| \\le M_f$ for all $j$.\n1585: The absolute difference between the sums over these two sets, normalized by the initial set size $|S_1|$, is bounded by the size of the symmetric difference between the sets, $|S_1 \\Delta S_2|$.\n1586: \n1587: $$\n1588: \n1589: \\left| \\frac{1}{|S_1|} \\sum_{j \\in S_1} f_j - \\frac{1}{|S_1|} \\sum_{j \\in S_2} f_j \\right| \\le \\frac{M_f}{|S_1|} |S_1 \\Delta S_2|\n1590: \n1591: $$\n1592: \n1593: Used in {prf:ref}`proof-thm-total-error-status-bound`."
     },
     {
       "directive_type": "proof",
       "label": "proof-lem-set-difference-bound",
       "title": null,
-      "start_line": 1540,
-      "end_line": 1557,
+      "start_line": 1594,
+      "end_line": 1617,
       "header_lines": [
-        1541
+        1595
       ],
-      "content_start": 1542,
-      "content_end": 1556,
-      "content": "1542: :label: proof-lem-set-difference-bound\n1543: **Proof.**\n1544: 1.  **Isolate the Difference in Sums:** Factoring out the common normalization constant $1/|S_1|$, we need to bound $\\frac{1}{|S_1|} \\left| \\sum_{j \\in S_1} f_j - \\sum_{j \\in S_2} f_j \\right|$.\n1545: 2.  **Decompose the Sums:** We partition the sums over disjoint regions: $S_1 = (S_1 \\setminus S_2) \\cup (S_1 \\cap S_2)$ and $S_2 = (S_2 \\setminus S_1) \\cup (S_1 \\cap S_2)$. The difference of sums becomes:\n1546: $$\n1547:     \\left( \\sum_{j \\in S_1 \\setminus S_2} f_j + \\sum_{j \\in S_1 \\cap S_2} f_j \\right) - \\left( \\sum_{j \\in S_2 \\setminus S_1} f_j + \\sum_{j \\in S_1 \\cap S_2} f_j \\right) = \\sum_{j \\in S_1 \\setminus S_2} f_j - \\sum_{j \\in S_2 \\setminus S_1} f_j\n1548: $$\n1549: 3.  **Apply Bounds:** By the triangle inequality and the uniform bound $|f_j| \\le M_f$:\n1550: $$\n1551:     \\left| \\sum_{j \\in S_1 \\setminus S_2} f_j - \\sum_{j \\in S_2 \\setminus S_1} f_j \\right| \\le \\sum_{j \\in S_1 \\setminus S_2} |f_j| + \\sum_{j \\in S_2 \\setminus S_1} |f_j| \\le M_f |S_1 \\setminus S_2| + M_f |S_2 \\setminus S_1|\n1552: $$\n1553: 4.  **Relate to Symmetric Difference:** By definition, $|S_1 \\setminus S_2| + |S_2 \\setminus S_1| = |S_1 \\Delta S_2|$. Combining this with the previous steps gives the final bound:\n1554: $$\n1555:     \\frac{1}{|S_1|} \\left| \\dots \\right| \\le \\frac{M_f}{|S_1|} |S_1 \\Delta S_2|\n1556: $$",
+      "content_start": 1596,
+      "content_end": 1616,
+      "content": "1596: :label: proof-lem-set-difference-bound\n1597: **Proof.**\n1598: 1.  **Isolate the Difference in Sums:** Factoring out the common normalization constant $1/|S_1|$, we need to bound $\\frac{1}{|S_1|} \\left| \\sum_{j \\in S_1} f_j - \\sum_{j \\in S_2} f_j \\right|$.\n1599: 2.  **Decompose the Sums:** We partition the sums over disjoint regions: $S_1 = (S_1 \\setminus S_2) \\cup (S_1 \\cap S_2)$ and $S_2 = (S_2 \\setminus S_1) \\cup (S_1 \\cap S_2)$. The difference of sums becomes:\n1600: \n1601: $$\n1602:     \\left( \\sum_{j \\in S_1 \\setminus S_2} f_j + \\sum_{j \\in S_1 \\cap S_2} f_j \\right) - \\left( \\sum_{j \\in S_2 \\setminus S_1} f_j + \\sum_{j \\in S_1 \\cap S_2} f_j \\right) = \\sum_{j \\in S_1 \\setminus S_2} f_j - \\sum_{j \\in S_2 \\setminus S_1} f_j\n1603: \n1604: $$\n1605: 3.  **Apply Bounds:** By the triangle inequality and the uniform bound $|f_j| \\le M_f$:\n1606: \n1607: $$\n1608:     \\left| \\sum_{j \\in S_1 \\setminus S_2} f_j - \\sum_{j \\in S_2 \\setminus S_1} f_j \\right| \\le \\sum_{j \\in S_1 \\setminus S_2} |f_j| + \\sum_{j \\in S_2 \\setminus S_1} |f_j| \\le M_f |S_1 \\setminus S_2| + M_f |S_2 \\setminus S_1|\n1609: \n1610: $$\n1611: 4.  **Relate to Symmetric Difference:** By definition, $|S_1 \\setminus S_2| + |S_2 \\setminus S_1| = |S_1 \\Delta S_2|$. Combining this with the previous steps gives the final bound:\n1612: \n1613: $$\n1614:     \\frac{1}{|S_1|} \\left| \\dots \\right| \\le \\frac{M_f}{|S_1|} |S_1 \\Delta S_2|\n1615: \n1616: $$",
       "metadata": {
         "label": "proof-lem-set-difference-bound"
       },
-      "section": "## 8. Companion Selection",
+      "section": "## 8. Companion Selection ({prf:ref}`def-companion-selection-measure`)",
       "references": [],
-      "raw_directive": "1540: :::\n1541: :::{prf:proof}\n1542: :label: proof-lem-set-difference-bound\n1543: **Proof.**\n1544: 1.  **Isolate the Difference in Sums:** Factoring out the common normalization constant $1/|S_1|$, we need to bound $\\frac{1}{|S_1|} \\left| \\sum_{j \\in S_1} f_j - \\sum_{j \\in S_2} f_j \\right|$.\n1545: 2.  **Decompose the Sums:** We partition the sums over disjoint regions: $S_1 = (S_1 \\setminus S_2) \\cup (S_1 \\cap S_2)$ and $S_2 = (S_2 \\setminus S_1) \\cup (S_1 \\cap S_2)$. The difference of sums becomes:\n1546: $$\n1547:     \\left( \\sum_{j \\in S_1 \\setminus S_2} f_j + \\sum_{j \\in S_1 \\cap S_2} f_j \\right) - \\left( \\sum_{j \\in S_2 \\setminus S_1} f_j + \\sum_{j \\in S_1 \\cap S_2} f_j \\right) = \\sum_{j \\in S_1 \\setminus S_2} f_j - \\sum_{j \\in S_2 \\setminus S_1} f_j\n1548: $$\n1549: 3.  **Apply Bounds:** By the triangle inequality and the uniform bound $|f_j| \\le M_f$:\n1550: $$\n1551:     \\left| \\sum_{j \\in S_1 \\setminus S_2} f_j - \\sum_{j \\in S_2 \\setminus S_1} f_j \\right| \\le \\sum_{j \\in S_1 \\setminus S_2} |f_j| + \\sum_{j \\in S_2 \\setminus S_1} |f_j| \\le M_f |S_1 \\setminus S_2| + M_f |S_2 \\setminus S_1|\n1552: $$\n1553: 4.  **Relate to Symmetric Difference:** By definition, $|S_1 \\setminus S_2| + |S_2 \\setminus S_1| = |S_1 \\Delta S_2|$. Combining this with the previous steps gives the final bound:\n1554: $$\n1555:     \\frac{1}{|S_1|} \\left| \\dots \\right| \\le \\frac{M_f}{|S_1|} |S_1 \\Delta S_2|\n1556: $$\n1557: **Q.E.D.**"
+      "raw_directive": "1594: :::\n1595: :::{prf:proof}\n1596: :label: proof-lem-set-difference-bound\n1597: **Proof.**\n1598: 1.  **Isolate the Difference in Sums:** Factoring out the common normalization constant $1/|S_1|$, we need to bound $\\frac{1}{|S_1|} \\left| \\sum_{j \\in S_1} f_j - \\sum_{j \\in S_2} f_j \\right|$.\n1599: 2.  **Decompose the Sums:** We partition the sums over disjoint regions: $S_1 = (S_1 \\setminus S_2) \\cup (S_1 \\cap S_2)$ and $S_2 = (S_2 \\setminus S_1) \\cup (S_1 \\cap S_2)$. The difference of sums becomes:\n1600: \n1601: $$\n1602:     \\left( \\sum_{j \\in S_1 \\setminus S_2} f_j + \\sum_{j \\in S_1 \\cap S_2} f_j \\right) - \\left( \\sum_{j \\in S_2 \\setminus S_1} f_j + \\sum_{j \\in S_1 \\cap S_2} f_j \\right) = \\sum_{j \\in S_1 \\setminus S_2} f_j - \\sum_{j \\in S_2 \\setminus S_1} f_j\n1603: \n1604: $$\n1605: 3.  **Apply Bounds:** By the triangle inequality and the uniform bound $|f_j| \\le M_f$:\n1606: \n1607: $$\n1608:     \\left| \\sum_{j \\in S_1 \\setminus S_2} f_j - \\sum_{j \\in S_2 \\setminus S_1} f_j \\right| \\le \\sum_{j \\in S_1 \\setminus S_2} |f_j| + \\sum_{j \\in S_2 \\setminus S_1} |f_j| \\le M_f |S_1 \\setminus S_2| + M_f |S_2 \\setminus S_1|\n1609: \n1610: $$\n1611: 4.  **Relate to Symmetric Difference:** By definition, $|S_1 \\setminus S_2| + |S_2 \\setminus S_1| = |S_1 \\Delta S_2|$. Combining this with the previous steps gives the final bound:\n1612: \n1613: $$\n1614:     \\frac{1}{|S_1|} \\left| \\dots \\right| \\le \\frac{M_f}{|S_1|} |S_1 \\Delta S_2|\n1615: \n1616: $$\n1617: **Q.E.D.**"
     },
     {
       "directive_type": "lemma",
       "label": "lem-normalization-difference-bound",
       "title": "Bound on the Error from Normalization Change",
-      "start_line": 1560,
-      "end_line": 1571,
+      "start_line": 1620,
+      "end_line": 1632,
       "header_lines": [
-        1561
+        1621
       ],
-      "content_start": 1562,
-      "content_end": 1570,
-      "content": "1562: :label: lem-normalization-difference-bound\n1563: Let $S_1$ and $S_2$ be two companion support sets, with $|S_1|, |S_2| > 0$. Let $f_j = f(x_j)$ be a real-valued function bounded by a constant $M_f$.\n1564: The absolute difference between two sums over the *same* set $S_2$, but with different normalization constants, is bounded by the absolute difference in the set sizes.\n1565: $$\n1566: \n1567: \\left| \\frac{1}{|S_1|} \\sum_{j \\in S_2} f_j - \\frac{1}{|S_2|} \\sum_{j \\in S_2} f_j \\right| \\le \\frac{M_f}{|S_1|} \\big||S_1| - |S_2|\\big|\n1568: \n1569: $$\n1570: ",
+      "content_start": 1622,
+      "content_end": 1631,
+      "content": "1622: :label: lem-normalization-difference-bound\n1623: Let $S_1$ and $S_2$ be two companion support sets, with $|S_1|, |S_2| > 0$. Let $f_j = f(x_j)$ be a real-valued function bounded by a constant $M_f$.\n1624: The absolute difference between two sums over the *same* set $S_2$, but with different normalization constants, is bounded by the absolute difference in the set sizes.\n1625: \n1626: $$\n1627: \n1628: \\left| \\frac{1}{|S_1|} \\sum_{j \\in S_2} f_j - \\frac{1}{|S_2|} \\sum_{j \\in S_2} f_j \\right| \\le \\frac{M_f}{|S_1|} \\big||S_1| - |S_2|\\big|\n1629: \n1630: $$\n1631: ",
       "metadata": {
         "label": "lem-normalization-difference-bound"
       },
-      "section": "## 8. Companion Selection",
+      "section": "## 8. Companion Selection ({prf:ref}`def-companion-selection-measure`)",
       "references": [
         "proof-thm-total-error-status-bound"
       ],
-      "raw_directive": "1560: This lemma bounds the component of the error that arises from changing the normalization constants, from $1/|S_1|$ to $1/|S_2|$, while holding the summation set fixed.\n1561: :::{prf:lemma} Bound on the Error from Normalization Change\n1562: :label: lem-normalization-difference-bound\n1563: Let $S_1$ and $S_2$ be two companion support sets, with $|S_1|, |S_2| > 0$. Let $f_j = f(x_j)$ be a real-valued function bounded by a constant $M_f$.\n1564: The absolute difference between two sums over the *same* set $S_2$, but with different normalization constants, is bounded by the absolute difference in the set sizes.\n1565: $$\n1566: \n1567: \\left| \\frac{1}{|S_1|} \\sum_{j \\in S_2} f_j - \\frac{1}{|S_2|} \\sum_{j \\in S_2} f_j \\right| \\le \\frac{M_f}{|S_1|} \\big||S_1| - |S_2|\\big|\n1568: \n1569: $$\n1570: \n1571: Used in {prf:ref}`proof-thm-total-error-status-bound`."
+      "raw_directive": "1620: This lemma bounds the component of the error that arises from changing the normalization constants, from $1/|S_1|$ to $1/|S_2|$, while holding the summation set fixed.\n1621: :::{prf:lemma} Bound on the Error from Normalization Change\n1622: :label: lem-normalization-difference-bound\n1623: Let $S_1$ and $S_2$ be two companion support sets, with $|S_1|, |S_2| > 0$. Let $f_j = f(x_j)$ be a real-valued function bounded by a constant $M_f$.\n1624: The absolute difference between two sums over the *same* set $S_2$, but with different normalization constants, is bounded by the absolute difference in the set sizes.\n1625: \n1626: $$\n1627: \n1628: \\left| \\frac{1}{|S_1|} \\sum_{j \\in S_2} f_j - \\frac{1}{|S_2|} \\sum_{j \\in S_2} f_j \\right| \\le \\frac{M_f}{|S_1|} \\big||S_1| - |S_2|\\big|\n1629: \n1630: $$\n1631: \n1632: Used in {prf:ref}`proof-thm-total-error-status-bound`."
     },
     {
       "directive_type": "proof",
       "label": "proof-lem-normalization-difference-bound",
       "title": null,
-      "start_line": 1572,
-      "end_line": 1585,
+      "start_line": 1633,
+      "end_line": 1646,
       "header_lines": [
-        1573
+        1634
       ],
-      "content_start": 1574,
-      "content_end": 1584,
-      "content": "1574: :label: proof-lem-normalization-difference-bound\n1575: **Proof.**\n1576: 1.  **Factor out the Common Sum:** The expression is $\\left| \\frac{1}{|S_1|} - \\frac{1}{|S_2|} \\right| \\left| \\sum_{j \\in S_2} f_j \\right|$.\n1577: 2.  **Bound the Sum:** Using the triangle inequality, $\\left| \\sum_{j \\in S_2} f_j \\right| \\le \\sum_{j \\in S_2} |f_j| \\le |S_2| \\cdot M_f$.\n1578: 3.  **Combine and Finalize:** Substituting the bound on the sum gives:\n1579: $$\n1580: \n1581:     \\left| \\frac{|S_2| - |S_1|}{|S_1| |S_2|} \\right| \\cdot \\left( |S_2| \\cdot M_f \\right) = \\frac{\\big||S_2| - |S_1|\\big|}{|S_1| |S_2|} \\cdot |S_2| M_f = \\frac{M_f}{|S_1|} \\big||S_1| - |S_2|\\big|\n1582: \n1583: \n1584: $$",
+      "content_start": 1635,
+      "content_end": 1645,
+      "content": "1635: :label: proof-lem-normalization-difference-bound\n1636: **Proof.**\n1637: 1.  **Factor out the Common Sum:** The expression is $\\left| \\frac{1}{|S_1|} - \\frac{1}{|S_2|} \\right| \\left| \\sum_{j \\in S_2} f_j \\right|$.\n1638: 2.  **Bound the Sum:** Using the triangle inequality, $\\left| \\sum_{j \\in S_2} f_j \\right| \\le \\sum_{j \\in S_2} |f_j| \\le |S_2| \\cdot M_f$.\n1639: 3.  **Combine and Finalize:** Substituting the bound on the sum gives:\n1640: \n1641: $$\n1642: \n1643:     \\left| \\frac{|S_2| - |S_1|}{|S_1| |S_2|} \\right| \\cdot \\left( |S_2| \\cdot M_f \\right) = \\frac{\\big||S_2| - |S_1|\\big|}{|S_1| |S_2|} \\cdot |S_2| M_f = \\frac{M_f}{|S_1|} \\big||S_1| - |S_2|\\big|\n1644: \n1645: $$",
       "metadata": {
         "label": "proof-lem-normalization-difference-bound"
       },
-      "section": "## 8. Companion Selection",
+      "section": "## 8. Companion Selection ({prf:ref}`def-companion-selection-measure`)",
       "references": [],
-      "raw_directive": "1572: :::\n1573: :::{prf:proof}\n1574: :label: proof-lem-normalization-difference-bound\n1575: **Proof.**\n1576: 1.  **Factor out the Common Sum:** The expression is $\\left| \\frac{1}{|S_1|} - \\frac{1}{|S_2|} \\right| \\left| \\sum_{j \\in S_2} f_j \\right|$.\n1577: 2.  **Bound the Sum:** Using the triangle inequality, $\\left| \\sum_{j \\in S_2} f_j \\right| \\le \\sum_{j \\in S_2} |f_j| \\le |S_2| \\cdot M_f$.\n1578: 3.  **Combine and Finalize:** Substituting the bound on the sum gives:\n1579: $$\n1580: \n1581:     \\left| \\frac{|S_2| - |S_1|}{|S_1| |S_2|} \\right| \\cdot \\left( |S_2| \\cdot M_f \\right) = \\frac{\\big||S_2| - |S_1|\\big|}{|S_1| |S_2|} \\cdot |S_2| M_f = \\frac{M_f}{|S_1|} \\big||S_1| - |S_2|\\big|\n1582: \n1583: \n1584: $$\n1585: **Q.E.D.**"
+      "raw_directive": "1633: :::\n1634: :::{prf:proof}\n1635: :label: proof-lem-normalization-difference-bound\n1636: **Proof.**\n1637: 1.  **Factor out the Common Sum:** The expression is $\\left| \\frac{1}{|S_1|} - \\frac{1}{|S_2|} \\right| \\left| \\sum_{j \\in S_2} f_j \\right|$.\n1638: 2.  **Bound the Sum:** Using the triangle inequality, $\\left| \\sum_{j \\in S_2} f_j \\right| \\le \\sum_{j \\in S_2} |f_j| \\le |S_2| \\cdot M_f$.\n1639: 3.  **Combine and Finalize:** Substituting the bound on the sum gives:\n1640: \n1641: $$\n1642: \n1643:     \\left| \\frac{|S_2| - |S_1|}{|S_1| |S_2|} \\right| \\cdot \\left( |S_2| \\cdot M_f \\right) = \\frac{\\big||S_2| - |S_1|\\big|}{|S_1| |S_2|} \\cdot |S_2| M_f = \\frac{M_f}{|S_1|} \\big||S_1| - |S_2|\\big|\n1644: \n1645: $$\n1646: **Q.E.D.**"
     },
     {
       "directive_type": "theorem",
       "label": "thm-total-error-status-bound",
       "title": "Total Error Bound in Terms of Status Changes",
-      "start_line": 1587,
-      "end_line": 1598,
+      "start_line": 1648,
+      "end_line": 1660,
       "header_lines": [
-        1588
+        1649
       ],
-      "content_start": 1589,
-      "content_end": 1597,
-      "content": "1589: :label: thm-total-error-status-bound\n1590: Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states, and for a given walker $i$, let $S_1$ and $S_2$ be its companion support sets, with $|S_1| > 0$. Let the status of each potential companion $j$ be given by $s_{1,j}$ and $s_{2,j}$ in the respective swarms. Let $f_j = f(x_{2,j})$ be a function bounded by $M_f$. Let $n_c$ be the total number of status changes in the swarm.\n1591: The total error $E = |\\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S}_1)}[f_j] - \\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S}_2)}[f_j]|$ is bounded by:\n1592: $$\n1593: \n1594: E \\le \\frac{2 M_f}{|S_1|} \\cdot n_c\n1595: \n1596: $$\n1597: ",
+      "content_start": 1650,
+      "content_end": 1659,
+      "content": "1650: :label: thm-total-error-status-bound\n1651: Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm ({prf:ref}`def-swarm-and-state-space`) states, and for a given walker ({prf:ref}`def-walker`) $i$, let $S_1$ and $S_2$ be its companion support sets, with $|S_1| > 0$. Let the status of each potential companion $j$ be given by $s_{1,j}$ and $s_{2,j}$ in the respective swarms. Let $f_j = f(x_{2,j})$ be a function bounded by $M_f$. Let $n_c$ be the total number of status changes in the swarm.\n1652: The total error $E = |\\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S}_1)}[f_j] - \\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S}_2)}[f_j]|$ is bounded by:\n1653: \n1654: $$\n1655: \n1656: E \\le \\frac{2 M_f}{|S_1|} \\cdot n_c\n1657: \n1658: $$\n1659: ",
       "metadata": {
         "label": "thm-total-error-status-bound"
       },
-      "section": "## 8. Companion Selection",
+      "section": "## 8. Companion Selection ({prf:ref}`def-companion-selection-measure`)",
       "references": [
+        "def-swarm-and-state-space",
+        "def-walker",
         "02_euclidean_gas",
         "09_kl_convergence"
       ],
-      "raw_directive": "1587: #### 7.2.3 Theorem: Total Error Bound in Terms of Status Changes\n1588: :::{prf:theorem} Total Error Bound in Terms of Status Changes\n1589: :label: thm-total-error-status-bound\n1590: Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm states, and for a given walker $i$, let $S_1$ and $S_2$ be its companion support sets, with $|S_1| > 0$. Let the status of each potential companion $j$ be given by $s_{1,j}$ and $s_{2,j}$ in the respective swarms. Let $f_j = f(x_{2,j})$ be a function bounded by $M_f$. Let $n_c$ be the total number of status changes in the swarm.\n1591: The total error $E = |\\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S}_1)}[f_j] - \\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S}_2)}[f_j]|$ is bounded by:\n1592: $$\n1593: \n1594: E \\le \\frac{2 M_f}{|S_1|} \\cdot n_c\n1595: \n1596: $$\n1597: \n1598: This general error bound is applied in {prf:ref}`02_euclidean_gas` for distance operator analysis and in {prf:ref}`09_kl_convergence` for KL-divergence convergence proofs."
+      "raw_directive": "1648: #### 7.2.3 Theorem: Total Error Bound in Terms of Status Changes\n1649: :::{prf:theorem} Total Error Bound in Terms of Status Changes\n1650: :label: thm-total-error-status-bound\n1651: Let $\\mathcal{S}_1$ and $\\mathcal{S}_2$ be two swarm ({prf:ref}`def-swarm-and-state-space`) states, and for a given walker ({prf:ref}`def-walker`) $i$, let $S_1$ and $S_2$ be its companion support sets, with $|S_1| > 0$. Let the status of each potential companion $j$ be given by $s_{1,j}$ and $s_{2,j}$ in the respective swarms. Let $f_j = f(x_{2,j})$ be a function bounded by $M_f$. Let $n_c$ be the total number of status changes in the swarm.\n1652: The total error $E = |\\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S}_1)}[f_j] - \\mathbb{E}_{j \\sim \\mathbb{C}_i(\\mathcal{S}_2)}[f_j]|$ is bounded by:\n1653: \n1654: $$\n1655: \n1656: E \\le \\frac{2 M_f}{|S_1|} \\cdot n_c\n1657: \n1658: $$\n1659: \n1660: This general error bound is applied in {prf:ref}`02_euclidean_gas` for distance operator analysis and in {prf:ref}`09_kl_convergence` for KL-divergence convergence proofs."
     },
     {
       "directive_type": "proof",
       "label": "proof-thm-total-error-status-bound",
       "title": null,
-      "start_line": 1599,
-      "end_line": 1625,
+      "start_line": 1661,
+      "end_line": 1687,
       "header_lines": [
-        1600
+        1662
       ],
-      "content_start": 1601,
-      "content_end": 1624,
-      "content": "1601: :label: proof-thm-total-error-status-bound\n1602: **Proof.**\n1603: 1.  **Decompose the Total Error:** We introduce an intermediate term and apply the triangle inequality:\n1604: $$\n1605: \n1606:     E \\le \\left| \\frac{1}{|S_1|} \\sum_{j \\in S_1} f_j - \\frac{1}{|S_1|} \\sum_{j \\in S_2} f_j \\right| + \\left| \\frac{1}{|S_1|} \\sum_{j \\in S_2} f_j - \\frac{1}{|S_2|} \\sum_{j \\in S_2} f_j \\right|\n1607: \n1608: \n1609: $$\n1610: 2.  **Substitute Proven Bounds:** We substitute the results from {prf:ref}`lem-set-difference-bound` and {prf:ref}`lem-normalization-difference-bound`:\n1611: $$\n1612: \n1613:     E \\le \\frac{M_f}{|S_1|} |S_1 \\Delta S_2| + \\frac{M_f}{|S_1|} \\big||S_1| - |S_2|\\big| = \\frac{M_f}{|S_1|} \\left( |S_1 \\Delta S_2| + \\big||S_1| - |S_2|\\big| \\right)\n1614: \n1615: \n1616: $$\n1617: 3.  **Relate Set Metrics to Status Changes:** A change in a potential companion's status is what drives changes in the support set $S_i$. A single status change for a walker $j$ can change the size of the symmetric difference $|S_1 \\Delta S_2|$ by at most one, and the difference in set sizes $||S_1| - |S_2||$ by at most one. Therefore, both of these set-based metrics are bounded by the total number of status changes among the set of potential companions. This local count is, in turn, bounded by the total number of status changes in the entire swarm, $n_c = \\sum_{j=1}^N (s_{1,j}-s_{2,j})^2$. Thus, we have $|S_1 \\Delta S_2| \\le n_c$ and $||S_1| - |S_2|| \\leq n_c$.\n1618: 4.  **Substitute and Finalize:** We substitute these two bounds into the inequality from step 2:\n1619: $$\n1620: \n1621:     E \\le \\frac{M_f}{|S_1|} \\left( n_c + n_c \\right) = \\frac{2 M_f}{|S_1|} \\cdot n_c\n1622: \n1623: \n1624: $$",
+      "content_start": 1663,
+      "content_end": 1686,
+      "content": "1663: :label: proof-thm-total-error-status-bound\n1664: **Proof.**\n1665: 1.  **Decompose the Total Error:** We introduce an intermediate term and apply the triangle inequality:\n1666: \n1667: $$\n1668: \n1669:     E \\le \\left| \\frac{1}{|S_1|} \\sum_{j \\in S_1} f_j - \\frac{1}{|S_1|} \\sum_{j \\in S_2} f_j \\right| + \\left| \\frac{1}{|S_1|} \\sum_{j \\in S_2} f_j - \\frac{1}{|S_2|} \\sum_{j \\in S_2} f_j \\right|\n1670: \n1671: $$\n1672: 2.  **Substitute Proven Bounds:** We substitute the results from {prf:ref}`lem-set-difference-bound` and {prf:ref}`lem-normalization-difference-bound`:\n1673: \n1674: $$\n1675: \n1676:     E \\le \\frac{M_f}{|S_1|} |S_1 \\Delta S_2| + \\frac{M_f}{|S_1|} \\big||S_1| - |S_2|\\big| = \\frac{M_f}{|S_1|} \\left( |S_1 \\Delta S_2| + \\big||S_1| - |S_2|\\big| \\right)\n1677: \n1678: $$\n1679: 3.  **Relate Set Metrics to Status Changes:** A change in a potential companion's status is what drives changes in the support set $S_i$. A single status change for a walker ({prf:ref}`def-walker`) $j$ can change the size of the symmetric difference $|S_1 \\Delta S_2|$ by at most one, and the difference in set sizes $||S_1| - |S_2||$ by at most one. Therefore, both of these set-based metrics are bounded by the total number of status changes among the set of potential companions. This local count is, in turn, bounded by the total number of status changes in the entire swarm ({prf:ref}`def-swarm-and-state-space`), $n_c = \\sum_{j=1}^N (s_{1,j}-s_{2,j})^2$. Thus, we have $|S_1 \\Delta S_2| \\le n_c$ and $||S_1| - |S_2|| \\leq n_c$.\n1680: 4.  **Substitute and Finalize:** We substitute these two bounds into the inequality from step 2:\n1681: \n1682: $$\n1683: \n1684:     E \\le \\frac{M_f}{|S_1|} \\left( n_c + n_c \\right) = \\frac{2 M_f}{|S_1|} \\cdot n_c\n1685: \n1686: $$",
       "metadata": {
         "label": "proof-thm-total-error-status-bound"
       },
-      "section": "## 8. Companion Selection",
+      "section": "## 8. Companion Selection ({prf:ref}`def-companion-selection-measure`)",
       "references": [
         "lem-set-difference-bound",
-        "lem-normalization-difference-bound"
+        "lem-normalization-difference-bound",
+        "def-walker",
+        "def-swarm-and-state-space"
       ],
-      "raw_directive": "1599: :::\n1600: :::{prf:proof}\n1601: :label: proof-thm-total-error-status-bound\n1602: **Proof.**\n1603: 1.  **Decompose the Total Error:** We introduce an intermediate term and apply the triangle inequality:\n1604: $$\n1605: \n1606:     E \\le \\left| \\frac{1}{|S_1|} \\sum_{j \\in S_1} f_j - \\frac{1}{|S_1|} \\sum_{j \\in S_2} f_j \\right| + \\left| \\frac{1}{|S_1|} \\sum_{j \\in S_2} f_j - \\frac{1}{|S_2|} \\sum_{j \\in S_2} f_j \\right|\n1607: \n1608: \n1609: $$\n1610: 2.  **Substitute Proven Bounds:** We substitute the results from {prf:ref}`lem-set-difference-bound` and {prf:ref}`lem-normalization-difference-bound`:\n1611: $$\n1612: \n1613:     E \\le \\frac{M_f}{|S_1|} |S_1 \\Delta S_2| + \\frac{M_f}{|S_1|} \\big||S_1| - |S_2|\\big| = \\frac{M_f}{|S_1|} \\left( |S_1 \\Delta S_2| + \\big||S_1| - |S_2|\\big| \\right)\n1614: \n1615: \n1616: $$\n1617: 3.  **Relate Set Metrics to Status Changes:** A change in a potential companion's status is what drives changes in the support set $S_i$. A single status change for a walker $j$ can change the size of the symmetric difference $|S_1 \\Delta S_2|$ by at most one, and the difference in set sizes $||S_1| - |S_2||$ by at most one. Therefore, both of these set-based metrics are bounded by the total number of status changes among the set of potential companions. This local count is, in turn, bounded by the total number of status changes in the entire swarm, $n_c = \\sum_{j=1}^N (s_{1,j}-s_{2,j})^2$. Thus, we have $|S_1 \\Delta S_2| \\le n_c$ and $||S_1| - |S_2|| \\leq n_c$.\n1618: 4.  **Substitute and Finalize:** We substitute these two bounds into the inequality from step 2:\n1619: $$\n1620: \n1621:     E \\le \\frac{M_f}{|S_1|} \\left( n_c + n_c \\right) = \\frac{2 M_f}{|S_1|} \\cdot n_c\n1622: \n1623: \n1624: $$\n1625: **Q.E.D.**"
+      "raw_directive": "1661: :::\n1662: :::{prf:proof}\n1663: :label: proof-thm-total-error-status-bound\n1664: **Proof.**\n1665: 1.  **Decompose the Total Error:** We introduce an intermediate term and apply the triangle inequality:\n1666: \n1667: $$\n1668: \n1669:     E \\le \\left| \\frac{1}{|S_1|} \\sum_{j \\in S_1} f_j - \\frac{1}{|S_1|} \\sum_{j \\in S_2} f_j \\right| + \\left| \\frac{1}{|S_1|} \\sum_{j \\in S_2} f_j - \\frac{1}{|S_2|} \\sum_{j \\in S_2} f_j \\right|\n1670: \n1671: $$\n1672: 2.  **Substitute Proven Bounds:** We substitute the results from {prf:ref}`lem-set-difference-bound` and {prf:ref}`lem-normalization-difference-bound`:\n1673: \n1674: $$\n1675: \n1676:     E \\le \\frac{M_f}{|S_1|} |S_1 \\Delta S_2| + \\frac{M_f}{|S_1|} \\big||S_1| - |S_2|\\big| = \\frac{M_f}{|S_1|} \\left( |S_1 \\Delta S_2| + \\big||S_1| - |S_2|\\big| \\right)\n1677: \n1678: $$\n1679: 3.  **Relate Set Metrics to Status Changes:** A change in a potential companion's status is what drives changes in the support set $S_i$. A single status change for a walker ({prf:ref}`def-walker`) $j$ can change the size of the symmetric difference $|S_1 \\Delta S_2|$ by at most one, and the difference in set sizes $||S_1| - |S_2||$ by at most one. Therefore, both of these set-based metrics are bounded by the total number of status changes among the set of potential companions. This local count is, in turn, bounded by the total number of status changes in the entire swarm ({prf:ref}`def-swarm-and-state-space`), $n_c = \\sum_{j=1}^N (s_{1,j}-s_{2,j})^2$. Thus, we have $|S_1 \\Delta S_2| \\le n_c$ and $||S_1| - |S_2|| \\leq n_c$.\n1680: 4.  **Substitute and Finalize:** We substitute these two bounds into the inequality from step 2:\n1681: \n1682: $$\n1683: \n1684:     E \\le \\frac{M_f}{|S_1|} \\left( n_c + n_c \\right) = \\frac{2 M_f}{|S_1|} \\cdot n_c\n1685: \n1686: $$\n1687: **Q.E.D.**"
     }
   ],
   "validation": {

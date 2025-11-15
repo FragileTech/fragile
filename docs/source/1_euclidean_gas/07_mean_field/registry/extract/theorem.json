@@ -3,7 +3,7 @@
     "type": "theorem",
     "label": "thm-mean-field-equation",
     "title": "The Mean-Field Equations for the Euclidean Gas",
-    "nl_statement": "The evolution of the Euclidean Gas in the mean-field limit is governed by a coupled system of equations for the alive density f(t,z) and the dead mass m_d(t).",
+    "nl_statement": "The evolution of the Euclidean Gas in the mean-field limit is governed by a coupled system of equations for the alive density f(t,z) and the dead mass m_d(t), with total population conservation m_a(t) + m_d(t) = 1.",
     "equations": [
       {
         "label": "eq-mean-field-pde-main",
@@ -20,35 +20,31 @@
     ],
     "hypotheses": [
       {
-        "text": "Initial condition for alive density: f(0, ·) = f_0",
-        "latex": "f(0, \\cdot) = f_0"
-      },
-      {
-        "text": "Initial condition for dead mass: m_d(0) = 1 - ∫_Ω f_0",
-        "latex": "m_d(0) = 1 - \\int_\\Omega f_0"
-      },
-      {
-        "text": "Normalization: m_a(0) + m_d(0) = 1",
+        "text": "Initial conditions: f(0, ·) = f_0 and m_d(0) = 1 - ∫_Ω f_0, with m_a(0) + m_d(0) = 1.",
         "latex": null
       },
       {
-        "text": "Reflecting boundaries for kinetic transport",
+        "text": "Reflecting boundaries on Ω.",
         "latex": null
       },
       {
-        "text": "Domain Ω with interior killing rate c(z) zero in interior and positive near boundary",
+        "text": "c(z) is zero in the interior and positive near the boundary.",
+        "latex": null
+      },
+      {
+        "text": "λ_revive > 0 is the revival rate (free parameter, typical values 0.1-5).",
         "latex": null
       }
     ],
     "conclusion": {
-      "text": "The coupled system consists of the PDE for alive density and ODE for dead mass, incorporating kinetic transport, killing, revival, and cloning operators.",
+      "text": "The coupled system conserves total population: m_a(t) + m_d(t) = 1 for all t.",
       "latex": null
     },
     "variables": [
       {
         "symbol": "f",
         "name": "alive density",
-        "description": "Spatial density of alive particles at time t and position z",
+        "description": "Density of alive particles at time t and position z.",
         "constraints": [
           "f(t,z) ≥ 0",
           "∫_Ω f(t,z) dz = m_a(t)"
@@ -61,10 +57,9 @@
       {
         "symbol": "m_d",
         "name": "dead mass",
-        "description": "Total mass of dead particles at time t",
+        "description": "Total mass of dead particles at time t.",
         "constraints": [
-          "m_d(t) ≥ 0",
-          "m_d(t) ≤ 1"
+          "m_d(t) ≥ 0"
         ],
         "tags": [
           "mass",
@@ -74,7 +69,7 @@
       {
         "symbol": "m_a",
         "name": "alive mass",
-        "description": "Total mass of alive particles at time t",
+        "description": "Total mass of alive particles at time t.",
         "constraints": [
           "m_a(t) = ∫_Ω f(t,z) dz",
           "m_a(t) + m_d(t) = 1"
@@ -87,147 +82,126 @@
       {
         "symbol": "z",
         "name": "position",
-        "description": "Spatial variable in domain Ω",
+        "description": "Spatial variable in domain Ω.",
         "constraints": [
           "z ∈ Ω"
         ],
         "tags": [
-          "spatial"
+          "space",
+          "Euclidean"
         ]
       },
       {
         "symbol": "t",
         "name": "time",
-        "description": "Time variable",
+        "description": "Time variable.",
         "constraints": [
           "t ≥ 0"
         ],
         "tags": [
-          "temporal"
+          "time"
+        ]
+      },
+      {
+        "symbol": "c",
+        "name": "killing rate",
+        "description": "Position-dependent killing rate.",
+        "constraints": [
+          "c(z) ≥ 0",
+          "c(z) = 0 in interior, >0 near boundary"
+        ],
+        "tags": [
+          "rate",
+          "killing"
+        ]
+      },
+      {
+        "symbol": "λ_revive",
+        "name": "revival rate",
+        "description": "Rate of revival from dead mass.",
+        "constraints": [
+          "λ_revive > 0"
+        ],
+        "tags": [
+          "rate",
+          "revival"
         ]
       },
       {
         "symbol": "A",
         "name": "drift field",
-        "description": "Velocity field for kinetic transport",
-        "constraints": [
-          "defined on Ω"
-        ],
+        "description": "Velocity field for transport.",
+        "constraints": [],
         "tags": [
           "drift",
           "transport"
         ]
       },
       {
-        "symbol": "\\mathsf{D}",
+        "symbol": "D",
         "name": "diffusion tensor",
-        "description": "Diffusion coefficient for kinetic transport",
-        "constraints": [
-          "positive semi-definite"
-        ],
+        "description": "Diffusion coefficient for transport.",
+        "constraints": [],
         "tags": [
           "diffusion",
           "transport"
-        ]
-      },
-      {
-        "symbol": "c",
-        "name": "killing rate",
-        "description": "Rate of interior killing, zero in interior and positive near boundary",
-        "constraints": [
-          "c(z) ≥ 0"
-        ],
-        "tags": [
-          "killing"
-        ]
-      },
-      {
-        "symbol": "\\lambda_{\\text{revive}}",
-        "name": "revival rate",
-        "description": "Rate constant for revival from dead mass",
-        "constraints": [
-          "\\lambda_{\\text{revive}} > 0",
-          "typical values 0.1-5"
-        ],
-        "tags": [
-          "revival",
-          "rate"
-        ]
-      },
-      {
-        "symbol": "S",
-        "name": "cloning operator",
-        "description": "Mass-neutral internal cloning operator applied to f",
-        "constraints": [
-          "mass-preserving"
-        ],
-        "tags": [
-          "cloning"
-        ]
-      },
-      {
-        "symbol": "B",
-        "name": "revival operator",
-        "description": "Revival term B[f, m_d] = \\lambda_{\\text{revive}} m_d(t) f / m_a(t)",
-        "constraints": [
-          "proportional to f"
-        ],
-        "tags": [
-          "revival"
         ]
       }
     ],
     "implicit_assumptions": [
       {
-        "text": "The system operates in the mean-field limit with many particles",
-        "confidence": 1
-      },
-      {
-        "text": "Domain Ω is a bounded Euclidean domain with reflecting boundaries",
+        "text": "Domain Ω is a bounded Euclidean domain with reflecting boundaries.",
         "confidence": 0.9
       },
       {
-        "text": "All operators L^†, B, S are well-defined and preserve non-negativity",
-        "confidence": 1
-      },
-      {
-        "text": "Initial data f_0 is non-negative with ∫_Ω f_0 ≤ 1",
-        "confidence": 0.9
-      },
-      {
-        "text": "Parameters ensure global existence of solutions (e.g., bounded rates)",
+        "text": "Operators L†, B, S are well-defined and preserve non-negativity.",
         "confidence": 0.8
+      },
+      {
+        "text": "Initial f_0 ≥ 0 and ∫_Ω f_0 ≤ 1.",
+        "confidence": 0.95
       }
     ],
-    "local_refs": [],
+    "local_refs": [
+      "def-transport-operator",
+      "def-killing-operator",
+      "def-revival-operator",
+      "def-cloning-generator",
+      "thm-mass-conservation"
+    ],
     "proof": {
       "availability": "not provided",
       "steps": []
     },
     "tags": [
-      "mean-field limit",
+      "mean-field",
       "Euclidean gas",
+      "PDE",
+      "ODE",
+      "coupled system",
       "alive density",
       "dead mass",
-      "coupled system",
-      "revival operator",
-      "cloning operator",
-      "kinetic transport"
+      "revival",
+      "cloning"
     ]
   },
   {
     "type": "theorem",
     "label": "thm-mass-conservation",
     "title": "Total Mass Conservation and Population Dynamics",
-    "nl_statement": "Any sufficiently regular solution to the Mean-Field Equations conserves total population mass over time and evolves the alive population mass through revival from the dead population and killing.",
+    "nl_statement": "Any sufficiently regular solution to the Mean-Field Equations conserves the total population mass over time and satisfies the specified dynamics for the alive population mass, balancing revival from the dead population and killing.",
     "equations": [
       {
         "label": null,
         "latex": "\\frac{\\mathrm{d}}{\\mathrm{d}t}\\left[m_a(t) + m_d(t)\\right] = 0"
       },
       {
-        "label": "def-ma",
+        "label": null,
         "latex": "m_a(t) = \\int_\\Omega f(t,z)\\,\\mathrm{d}z"
+      },
+      {
+        "label": null,
+        "latex": "m_a(t) + m_d(t) = 1 \\quad \\text{(for all } t > 0 \\text{ if holds initially)}"
       },
       {
         "label": null,
@@ -236,85 +210,80 @@
     ],
     "hypotheses": [
       {
-        "text": "Sufficiently regular solution $(f(t,z), m_d(t))$ to the Mean-Field Equations",
-        "latex": "$(f(t,z), m_d(t))$"
+        "text": "Any sufficiently regular solution $(f(t,z), m_d(t))$ to the Mean-Field Equations",
+        "latex": null
       }
     ],
     "conclusion": {
-      "text": "Total mass $m_a(t) + m_d(t) = 1$ for all $t > 0$ if initially true, and alive mass evolves as $\\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = \\lambda_{\\text{rev}} m_d(t) - k_{\\text{killed}}[f](t)$",
+      "text": "The total population mass $m_a(t) + m_d(t)$ is conserved for all $t > 0$, implying $m_a(t) + m_d(t) = 1$ if initial, and the alive mass evolves as $\\frac{\\mathrm{d}}{\\mathrm{d}t}m_a(t) = \\lambda_{\\text{rev}} m_d(t) - k_{\\text{killed}}[f](t)$",
       "latex": null
     },
     "variables": [
       {
         "symbol": "f",
-        "name": "alive population density",
-        "description": "Density function for alive population at time t and position z",
+        "name": "f",
+        "description": "Density of the alive population at time t and position z",
         "constraints": [
           "sufficiently regular"
         ],
         "tags": [
-          "density",
-          "alive"
+          "alive",
+          "density"
         ]
       },
       {
         "symbol": "m_d",
-        "name": "dead mass",
-        "description": "Total mass of dead population at time t",
-        "constraints": [
-          "non-negative"
-        ],
+        "name": "m_d",
+        "description": "Mass of the dead population at time t",
+        "constraints": [],
         "tags": [
-          "mass",
-          "dead"
+          "dead",
+          "mass"
         ]
       },
       {
         "symbol": "m_a",
-        "name": "alive mass",
-        "description": "Total mass of alive population at time t, defined as integral of f",
-        "constraints": [
-          "non-negative"
-        ],
+        "name": "m_a",
+        "description": "Mass of the alive population at time t, defined as integral of f over Ω",
+        "constraints": [],
         "tags": [
-          "mass",
-          "alive"
+          "alive",
+          "mass"
         ]
       },
       {
         "symbol": "\\lambda_{\\text{rev}}",
-        "name": "revival rate",
-        "description": "Rate constant for reviving dead population to alive",
+        "name": "lambda_rev",
+        "description": "Revival rate from dead to alive population",
         "constraints": [],
         "tags": [
-          "rate",
-          "revival"
+          "revival",
+          "rate"
         ]
       },
       {
         "symbol": "k_{\\text{killed}}",
-        "name": "killing functional",
-        "description": "Functional applied to f representing killing rate",
+        "name": "k_killed",
+        "description": "Killing functional applied to the alive population density f",
         "constraints": [],
         "tags": [
-          "functional",
-          "killing"
+          "killing",
+          "functional"
         ]
       },
       {
         "symbol": "\\Omega",
-        "name": "spatial domain",
-        "description": "Domain over which the integral for m_a is taken",
+        "name": "Omega",
+        "description": "Spatial domain for integration",
         "constraints": [],
         "tags": [
-          "space",
           "domain"
         ]
       },
       {
         "symbol": "t",
-        "name": "time",
-        "description": "Time variable for dynamics",
+        "name": "t",
+        "description": "Time variable",
         "constraints": [
           "t > 0"
         ],
@@ -324,8 +293,8 @@
       },
       {
         "symbol": "z",
-        "name": "spatial variable",
-        "description": "Position variable in the density f",
+        "name": "z",
+        "description": "Spatial variable in Ω",
         "constraints": [],
         "tags": [
           "space"
@@ -334,23 +303,21 @@
     ],
     "implicit_assumptions": [
       {
-        "text": "Initial condition m_a(0) + m_d(0) = 1",
-        "confidence": 1.0
-      },
-      {
-        "text": "Non-negativity of masses m_a(t) >= 0 and m_d(t) >= 0 for all t",
+        "text": "Initial condition: m_a(0) + m_d(0) = 1",
         "confidence": 0.9
       },
       {
-        "text": "Parameters lambda_rev > 0 and k_killed is a positive operator",
-        "confidence": 0.8
+        "text": "Sufficient regularity of the solution allows differentiation under the integral and application of the mean-field equations",
+        "confidence": 1.0
       },
       {
-        "text": "Omega is a bounded domain",
-        "confidence": 0.7
+        "text": "The killing functional k_killed[f] is well-defined for regular f",
+        "confidence": 0.8
       }
     ],
-    "local_refs": [],
+    "local_refs": [
+      "thm-mean-field-equation"
+    ],
     "proof": {
       "availability": "not provided",
       "steps": []
@@ -369,7 +336,7 @@
     "type": "theorem",
     "label": "thm-killing-rate-consistency",
     "title": "Consistency of the Interior Killing Rate Approximation",
-    "nl_statement": "Under the given regularity assumptions on the domain, integrator, and density, there exists a smooth compactly supported killing rate function c such that the normalized discrete exit probability converges pointwise to c, and the normalized expected discrete killing fraction converges to the continuous killing integral with a specified error bound involving sqrt(tau) and the L1 norm of the density difference.",
+    "nl_statement": "Under regularity assumptions on the domain, integrator, and density, there exists a smooth compactly supported killing rate function c such that the discrete exit probability converges pointwise to c as the timestep τ approaches 0, and the expected discrete killing fraction converges to the continuous killing integral with an explicit error bound involving √τ and the L¹ norm of the density difference.",
     "equations": [
       {
         "label": null,
@@ -382,10 +349,6 @@
       {
         "label": null,
         "latex": "c(x,v) = \\begin{cases} \\frac{(v \\cdot n_x(x))^+}{d(x)} \\cdot \\mathbf{1}_{d(x) < \\delta} & \\text{if } x \\in \\mathcal{T}_\\delta \\\\ 0 & \\text{otherwise} \\end{cases}"
-      },
-      {
-        "label": null,
-        "latex": "(v \\cdot n_x(x))^+ := \\max(v \\cdot n_x(x), 0)"
       },
       {
         "label": null,
@@ -406,65 +369,52 @@
     ],
     "hypotheses": [
       {
-        "text": "Assumptions on domain regularity (asmp-domain-regularity)",
+        "text": "Regularity assumptions on the domain (assumption-domain-regularity)",
         "latex": null
       },
       {
-        "text": "Assumptions on integrator regularity (asmp-integrator-regularity)",
+        "text": "Regularity assumptions on the integrator (assumption-integrator-regularity)",
         "latex": null
       },
       {
-        "text": "Assumptions on density regularity for killing (asmp-density-regularity-killing)",
+        "text": "Regularity assumptions on the density for killing (assumption-density-regularity-killing)",
         "latex": null
       }
     ],
     "conclusion": {
-      "text": "Existence of smooth c in C^∞_c(Ω) with compact support in T_δ such that: (i) pointwise convergence of normalized exit probability to c(x,v); (ii) uniform convergence of normalized expected killing fraction to continuous killing rate with error bound C(√τ + ||f^τ - f||_{L^1}).",
+      "text": "There exists a smooth killing rate c ∈ C^∞_c(Ω) with compact support in T_δ such that: (i) pointwise convergence of (1/τ) p_exit to c(x,v), with c explicitly given; (ii) uniform convergence of (1/τ) K_discrete(τ) to K_continuous, with error bound C(√τ + ||f^τ - f||_{L^1}).",
       "latex": null
     },
     "variables": [
       {
         "symbol": "c",
-        "name": "killing rate function",
-        "description": "Smooth function with compact support in T_δ, defining the killing rate.",
+        "name": "killing rate",
+        "description": "Smooth function in C^∞_c(Ω) with compact support in T_δ",
         "constraints": [
-          "c ∈ C^∞_c(Ω)",
-          "supp(c) ⊂ T_δ"
+          "c(x,v) = ((v · n_x(x))⁺ / d(x)) · 1_{d(x)<δ} if x ∈ T_δ, else 0"
         ],
         "tags": [
           "killing",
-          "rate"
+          "rate",
+          "smooth"
         ]
       },
       {
-        "symbol": "x",
-        "name": "position",
-        "description": "Spatial variable in domain Ω.",
-        "constraints": [
-          "x ∈ Ω"
-        ],
+        "symbol": "p_exit",
+        "name": "discrete exit probability",
+        "description": "Probability that the updated position x⁺(τ; x,v) is not in the valid domain X_valid",
+        "constraints": [],
         "tags": [
-          "position",
-          "space"
-        ]
-      },
-      {
-        "symbol": "v",
-        "name": "velocity",
-        "description": "Velocity variable.",
-        "constraints": [
-          "v ∈ V (implicit)"
-        ],
-        "tags": [
-          "velocity"
+          "exit",
+          "probability",
+          "discrete"
         ]
       },
       {
         "symbol": "τ",
         "name": "timestep",
-        "description": "Discrete timestep size approaching 0.",
+        "description": "Small positive time increment approaching 0",
         "constraints": [
-          "τ > 0",
           "τ → 0"
         ],
         "tags": [
@@ -473,45 +423,33 @@
         ]
       },
       {
-        "symbol": "δ",
-        "name": "boundary layer thickness",
-        "description": "Parameter defining the thin boundary layer T_δ.",
-        "constraints": [
-          "δ > 0 small"
-        ],
-        "tags": [
-          "boundary",
-          "layer"
-        ]
-      },
-      {
-        "symbol": "d(x)",
-        "name": "signed distance",
-        "description": "Signed distance to the boundary.",
-        "constraints": [
-          "d(x) < δ in T_δ"
-        ],
-        "tags": [
-          "distance",
-          "boundary"
-        ]
-      },
-      {
-        "symbol": "n_x(x)",
-        "name": "outward normal",
-        "description": "Outward unit normal at x on boundary.",
+        "symbol": "K_discrete",
+        "name": "discrete killing fraction",
+        "description": "Integral of p_exit weighted by discrete density f^τ",
         "constraints": [],
         "tags": [
-          "normal",
-          "boundary"
+          "killing",
+          "fraction",
+          "discrete"
+        ]
+      },
+      {
+        "symbol": "K_continuous",
+        "name": "continuous killing rate",
+        "description": "Integral of c weighted by continuous density f",
+        "constraints": [],
+        "tags": [
+          "killing",
+          "rate",
+          "continuous"
         ]
       },
       {
         "symbol": "f",
         "name": "density function",
-        "description": "Continuous density function.",
+        "description": "Continuous probability density on Ω",
         "constraints": [
-          "f ∈ suitable regularity space"
+          "regular under assumption-density-regularity-killing"
         ],
         "tags": [
           "density",
@@ -521,34 +459,63 @@
       {
         "symbol": "f^τ",
         "name": "discrete density",
-        "description": "Density at discrete timestep τ.",
+        "description": "Approximate density at timestep τ",
         "constraints": [
-          "||f^τ - f||_{L^1} → 0 as τ → 0 (implicit)"
+          "||f^τ - f||_{L^1} → 0 as τ → 0"
         ],
         "tags": [
           "density",
           "discrete"
         ]
+      },
+      {
+        "symbol": "Ω",
+        "name": "phase space domain",
+        "description": "Domain for (x,v) variables",
+        "constraints": [
+          "regular under assumption-domain-regularity"
+        ],
+        "tags": [
+          "domain",
+          "phase-space"
+        ]
+      },
+      {
+        "symbol": "δ",
+        "name": "boundary layer thickness",
+        "description": "Positive parameter defining T_δ near boundary",
+        "constraints": [
+          "δ > 0"
+        ],
+        "tags": [
+          "boundary",
+          "thickness"
+        ]
       }
     ],
     "implicit_assumptions": [
       {
-        "text": "Ω is a bounded domain with smooth boundary.",
+        "text": "f and f^τ are probability densities integrating to 1 over Ω",
         "confidence": 0.9
       },
       {
-        "text": "The integrator x^+(τ; x,v) is accurate to higher order near boundary.",
+        "text": "The integrator for x⁺(τ; x,v) is regular and approximates the true flow",
         "confidence": 0.8
       },
       {
-        "text": "f and f^τ are non-negative and integrate to 1 (probability densities).",
-        "confidence": 0.7
+        "text": "(v · n_x(x))⁺ ≥ 0 represents outward flux",
+        "confidence": 1.0
+      },
+      {
+        "text": "d(x) > 0 inside the domain and d(x) < δ in the boundary layer",
+        "confidence": 0.9
       }
     ],
     "local_refs": [
-      "asmp-domain-regularity",
-      "asmp-integrator-regularity",
-      "asmp-density-regularity-killing"
+      "assumption-domain-regularity",
+      "assumption-integrator-regularity",
+      "assumption-density-regularity-killing",
+      "def-killing-operator"
     ],
     "proof": {
       "availability": "not-provided",
@@ -557,56 +524,57 @@
     "tags": [
       "killing-rate",
       "consistency",
-      "pointwise-convergence",
-      "uniform-convergence",
+      "convergence",
       "exit-probability",
       "error-bound",
-      "transport-simulation"
+      "transport",
+      "boundary"
     ]
   },
   {
     "type": "theorem",
     "label": "thm-mean-field-limit-informal",
     "title": "Mean-Field Limit (Informal Statement)",
-    "nl_statement": "In the joint limit N → ∞ and τ → 0 with τ = O(N^{-α}) for α > 0, the empirical density of the N-particle discrete Fragile Gas dynamics converges weakly to the mean-field density f.",
+    "nl_statement": "In the joint limit as the number of particles N approaches infinity and the timestep τ approaches 0 with τ scaling as O(N^{-α}) for α > 0, the empirical density of the N-particle discrete Fragile Gas dynamics converges weakly to the mean-field density f.",
     "equations": [
       {
-        "label": "empirical-density",
+        "label": null,
         "latex": "f_N^\\tau(t, x, v) := \\frac{1}{N} \\sum_{i=1}^N \\delta(x - X_i^\\tau(t), v - V_i^\\tau(t))"
       },
       {
-        "label": "convergence",
+        "label": null,
         "latex": "f_N^\\tau(t, \\cdot, \\cdot) \\xrightarrow{\\text{weak}} f(t, \\cdot, \\cdot)"
       }
     ],
     "hypotheses": [
       {
-        "text": "N-particle discrete Fragile Gas dynamics with timestep τ: (X_i^τ(t), V_i^τ(t))_{i=1}^N",
+        "text": "The system consists of N-particle discrete Fragile Gas dynamics (X_i^τ(t), V_i^τ(t))_{i=1}^N with timestep τ.",
         "latex": null
       },
       {
-        "text": "Empirical density defined as f_N^τ(t, x, v) = (1/N) ∑_{i=1}^N δ(x - X_i^τ(t), v - V_i^τ(t))",
+        "text": "The empirical density is defined as f_N^τ(t, x, v) = (1/N) ∑_{i=1}^N δ(x - X_i^τ(t), v - V_i^τ(t)).",
         "latex": "f_N^\\tau(t, x, v) := \\frac{1}{N} \\sum_{i=1}^N \\delta(x - X_i^\\tau(t), v - V_i^\\tau(t))"
       },
       {
-        "text": "Joint limit N → ∞, τ → 0 with τ = O(N^{-α}) for α > 0",
-        "latex": "\\tau = O(N^{-\\alpha}) \\; \\alpha > 0"
+        "text": "Joint limit N → ∞, τ → 0 with τ = O(N^{-α}) for α > 0.",
+        "latex": "\\tau = O(N^{-\\alpha}) \\text{ for } \\alpha > 0"
       }
     ],
     "conclusion": {
-      "text": "f_N^τ(t, ·, ·) converges weakly to f(t, ·, ·)",
+      "text": "The empirical density converges weakly to the mean-field density f.",
       "latex": "f_N^\\tau(t, \\cdot, \\cdot) \\xrightarrow{\\text{weak}} f(t, \\cdot, \\cdot)"
     },
     "variables": [
       {
         "symbol": "N",
         "name": "number of particles",
-        "description": "Number of particles in the system",
+        "description": "Number of particles in the Fragile Gas system",
         "constraints": [
           "N → ∞"
         ],
         "tags": [
-          "particles"
+          "particles",
+          "system-size"
         ]
       },
       {
@@ -615,34 +583,28 @@
         "description": "Discrete timestep in the dynamics",
         "constraints": [
           "τ → 0",
-          "τ = O(N^{-α}), α > 0"
+          "τ = O(N^{-α})"
         ],
         "tags": [
-          "discretization"
+          "discretization",
+          "timestep"
         ]
       },
       {
-        "symbol": "X_i^τ(t)",
-        "name": "position",
-        "description": "Position of i-th particle at time t",
-        "constraints": [],
+        "symbol": "α",
+        "name": "scaling exponent",
+        "description": "Positive exponent in the τ scaling",
+        "constraints": [
+          "α > 0"
+        ],
         "tags": [
-          "position"
-        ]
-      },
-      {
-        "symbol": "V_i^τ(t)",
-        "name": "velocity",
-        "description": "Velocity of i-th particle at time t",
-        "constraints": [],
-        "tags": [
-          "velocity"
+          "scaling"
         ]
       },
       {
         "symbol": "f_N^τ",
         "name": "empirical density",
-        "description": "Empirical measure of the particle system",
+        "description": "Empirical measure of particle positions and velocities",
         "constraints": [],
         "tags": [
           "density",
@@ -652,41 +614,59 @@
       {
         "symbol": "f",
         "name": "mean-field density",
-        "description": "Limiting mean-field density function",
+        "description": "Limiting density in the mean-field regime",
         "constraints": [],
         "tags": [
-          "mean-field",
-          "limit"
+          "density",
+          "mean-field"
+        ]
+      },
+      {
+        "symbol": "X_i^τ(t)",
+        "name": "particle position",
+        "description": "Position of the i-th particle at time t",
+        "constraints": [],
+        "tags": [
+          "position",
+          "particle"
+        ]
+      },
+      {
+        "symbol": "V_i^τ(t)",
+        "name": "particle velocity",
+        "description": "Velocity of the i-th particle at time t",
+        "constraints": [],
+        "tags": [
+          "velocity",
+          "particle"
         ]
       }
     ],
     "implicit_assumptions": [
       {
-        "text": "The killing rate consistency theorem holds",
-        "confidence": 1.0
-      },
-      {
-        "text": "Standard kinetic theory applies to the transport operator L†",
+        "text": "The N-particle dynamics are well-defined and stable under the discrete timestep τ.",
         "confidence": 0.9
       },
       {
-        "text": "Law of Large Numbers applies to cloning operators",
-        "confidence": 0.9
+        "text": "The mean-field density f satisfies the corresponding mean-field kinetic equation.",
+        "confidence": 0.8
       },
       {
-        "text": "Weak convergence in the space of probability measures",
-        "confidence": 1.0
+        "text": "Weak convergence holds in the space of probability measures on position-velocity space.",
+        "confidence": 0.95
       }
     ],
     "local_refs": [
-      "thm-killing-rate-consistency"
+      "thm-killing-rate-consistency",
+      "def-kinetic-generator",
+      "def-baoab-update-rule"
     ],
     "proof": {
       "availability": "informal",
       "steps": [
         {
           "kind": "reference",
-          "text": "Relies on killing rate consistency theorem, kinetic theory for transport, and LLN for cloning.",
+          "text": "Relies on killing rate consistency theorem (thm-killing-rate-consistency), standard kinetic theory for transport operator from kinetic generator (def-kinetic-generator), and Law of Large Numbers for cloning operators (Section 2.3).",
           "latex": null
         }
       ]
@@ -694,10 +674,11 @@
     "tags": [
       "mean-field",
       "limit",
-      "fragile gas",
-      "kinetic theory",
-      "weak convergence",
-      "empirical density"
+      "fragile-gas",
+      "empirical-density",
+      "weak-convergence",
+      "kinetic-theory",
+      "law-of-large-numbers"
     ]
   }
 ]

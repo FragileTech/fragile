@@ -12,12 +12,16 @@ from enum import Enum
 import json
 import logging
 import time
-from typing import Any, Literal
+from typing import Any, Literal, TYPE_CHECKING
 
 import dspy
 
+from mathster.proof_sketcher.feedback_formatter import FeedbackConfig, IterationFeedbackFormatter
 from mathster.proof_sketcher.sketch_pipeline import AgentSketchPipeline, ProofSketchWorkflowResult
 from mathster.proof_sketcher.sketch_validator import Scores
+
+if TYPE_CHECKING:
+    from mathster.proof_sketcher.llm_config import ProofSketcherLMConfig
 
 
 __all__ = [
@@ -25,6 +29,7 @@ __all__ = [
     "RefinementResult",
     "ManualRefineSketchPipeline",
     "LogVerbosity",
+    "FeedbackConfig",
 ]
 
 logger = logging.getLogger(__name__)
@@ -124,17 +129,27 @@ class ManualRefineSketchPipeline(dspy.Module):
     allowing access to all intermediate results and avoiding nested
     parallelization conflicts.
 
-    Refinement Logic (matches dspy.Refine):
+    Refinement Logic:
     - Run up to N iterations
     - Track best result by score
     - Early stop if score ≥ threshold
     - Track consecutive failures (score not improving)
     - Stop if fail_count consecutive failures reached
 
+    Creates pipeline from ProofSketcherLMConfig:
+
+    ```python
+    from mathster.proof_sketcher.llm_config import ProofSketcherLMConfig
+
+    config = ProofSketcherLMConfig.default()
+    refiner = ManualRefineSketchPipeline(lm_config=config, N=5)
+    ```
+
     Example:
-        >>> pipeline = AgentSketchPipeline()
+        >>> from mathster.proof_sketcher.llm_config import ProofSketcherLMConfig
+        >>> config = ProofSketcherLMConfig.cost_optimized()
         >>> refiner = ManualRefineSketchPipeline(
-        ...     pipeline=pipeline,
+        ...     lm_config=config,
         ...     N=5,
         ...     threshold=60,
         ...     fail_count=5
@@ -151,30 +166,55 @@ class ManualRefineSketchPipeline(dspy.Module):
 
     def __init__(
         self,
-        pipeline: AgentSketchPipeline,
+        *,
+        lm_config: ProofSketcherLMConfig,
         N: int = 5,
         threshold: float = 60.0,
         fail_count: int = 5,
         verbosity: LogVerbosity | str = LogVerbosity.STANDARD,
         log_json_path: str | None = None,
+        enable_iteration_feedback: bool = True,
+        feedback_config: FeedbackConfig | None = None,
+        project_root: str | None = None,
+        gemini_prompt: str | None = None,
+        codex_prompt: str | None = None,
     ) -> None:
         """Initialize manual refinement pipeline.
 
         Args:
-            pipeline: The AgentSketchPipeline to refine
+            lm_config: ProofSketcherLMConfig for pipeline creation
             N: Maximum number of refinement iterations
             threshold: Quality score threshold for early stopping (0-100)
             fail_count: Maximum consecutive failures before stopping
             verbosity: Logging verbosity level (minimal/standard/detailed/verbose/debug)
             log_json_path: Optional path to export refinement data as JSON
+            enable_iteration_feedback: Enable feedback injection from best iteration (default: True)
+            feedback_config: Optional feedback configuration. If None, uses default config.
+            project_root: Optional path to project root
+            gemini_prompt: Optional custom prompt for Gemini reviewer
+            codex_prompt: Optional custom prompt for Codex reviewer
         """
         super().__init__()
-        self.pipeline = pipeline
+
+        # Create pipeline from LM config
+        self.pipeline = AgentSketchPipeline(
+            lm_config=lm_config,
+            project_root=project_root,
+            gemini_prompt=gemini_prompt,
+            codex_prompt=codex_prompt,
+        )
+
         self.N = N
         self.threshold = threshold
         self.fail_count = fail_count
         self.verbosity = LogVerbosity(verbosity) if isinstance(verbosity, str) else verbosity
         self.log_json_path = log_json_path
+        self.enable_iteration_feedback = enable_iteration_feedback
+        self.feedback_formatter = (
+            IterationFeedbackFormatter(feedback_config)
+            if enable_iteration_feedback
+            else None
+        )
 
     def _log_score_breakdown(self, scores: Scores, iteration: int) -> None:
         """Log detailed score component breakdown."""
@@ -376,6 +416,104 @@ class ManualRefineSketchPipeline(dspy.Module):
         except Exception as e:
             logger.error(f"Failed to export JSON log: {e}", exc_info=True)
 
+    def _extract_feedback_summary(self, result: ProofSketchWorkflowResult) -> str:
+        """Extract brief summary for operator_notes.
+
+        Creates a concise 2-3 sentence summary with:
+        - Final decision
+        - Top 2-3 critical issues
+        - Overall guidance
+
+        Args:
+            result: Workflow result from previous iteration
+
+        Returns:
+            Brief feedback summary (2-3 sentences)
+        """
+        report = result.validation_report
+        scores = result.scores
+
+        decision = report.synthesisAndActionPlan.finalDecision
+        score = scores.get_score()
+
+        # Get top critical/high priority actions
+        critical_actions = [
+            item
+            for item in report.synthesisAndActionPlan.actionableItems
+            if item.priority in ["Critical", "High"]
+        ][:3]  # Top 3
+
+        summary_parts = []
+
+        # Decision and score
+        summary_parts.append(
+            f"Previous iteration scored {score:.1f}/100 with decision: {decision}."
+        )
+
+        # Top issues
+        if critical_actions:
+            issues = ", ".join(
+                action.description.split(".")[0][:80] for action in critical_actions
+            )
+            summary_parts.append(f"Address these issues: {issues}.")
+
+        # Overall guidance
+        if score < 40:
+            summary_parts.append("Major revisions needed - reconsider proof strategy.")
+        elif score < 60:
+            summary_parts.append("Focus on fixing critical gaps and errors.")
+        else:
+            summary_parts.append("Minor refinements needed to meet threshold.")
+
+        return " ".join(summary_parts)
+
+    def _inject_iteration_feedback(
+        self,
+        base_kwargs: dict[str, Any],
+        best_iteration: RefinementIteration,
+    ) -> dict[str, Any]:
+        """Inject feedback from best iteration into kwargs.
+
+        Injects feedback into both parameters:
+        - Summary → operator_notes (brief actionable guidance)
+        - Full feedback → framework_context (detailed analysis + suggestions)
+
+        Args:
+            base_kwargs: Original kwargs from user
+            best_iteration: Best iteration result so far
+
+        Returns:
+            Updated kwargs with feedback injected
+        """
+        if not self.feedback_formatter:
+            return base_kwargs
+
+        # Generate combined feedback (detailed + suggestions)
+        full_feedback = self.feedback_formatter.format_combined(
+            best_iteration.result,
+            best_iteration.iteration_num,
+        )
+
+        # Extract summary for operator_notes
+        summary = self._extract_feedback_summary(best_iteration.result)
+
+        # Inject into kwargs
+        updated_kwargs = base_kwargs.copy()
+
+        # Append to operator_notes (brief actionable summary)
+        updated_kwargs["operator_notes"] = (
+            base_kwargs.get("operator_notes", "")
+            + f"\n\n## Previous Iteration Guidance:\n{summary}"
+        )
+
+        # Append to framework_context (full detailed feedback)
+        updated_kwargs["framework_context"] = (
+            base_kwargs.get("framework_context", "")
+            + f"\n\n## Iteration {best_iteration.iteration_num} Feedback:\n{full_feedback}"
+        )
+
+        return updated_kwargs
+
     def forward(self, **kwargs: Any) -> RefinementResult:
         """Run refinement loop with full intermediate result tracking.
 
@@ -394,6 +532,7 @@ class ManualRefineSketchPipeline(dspy.Module):
             logger.info(f"Score threshold: {self.threshold}")
             logger.info(f"Fail count: {self.fail_count}")
             logger.info(f"Verbosity: {self.verbosity.value}")
+            logger.info(f"Iteration feedback: {'enabled' if self.enable_iteration_feedback else 'disabled'}")
             logger.info("=" * 80)
 
         # Track all iterations and best result
@@ -410,9 +549,24 @@ class ManualRefineSketchPipeline(dspy.Module):
                 logger.info(f"ITERATION {i}/{self.N}")
                 logger.info(f"{'=' * 80}")
 
+            # Inject feedback from best iteration (if available)
+            if best_iteration is not None and self.enable_iteration_feedback:
+                current_kwargs = self._inject_iteration_feedback(kwargs, best_iteration)
+                if self.verbosity in [
+                    LogVerbosity.DETAILED,
+                    LogVerbosity.VERBOSE,
+                    LogVerbosity.DEBUG,
+                ]:
+                    logger.info(
+                        f"Injecting feedback from best iteration "
+                        f"(#{best_iteration.iteration_num}, score: {best_iteration.score:.2f})"
+                    )
+            else:
+                current_kwargs = kwargs
+
             # Run pipeline
             try:
-                prediction = self.pipeline(**kwargs)
+                prediction = self.pipeline(**current_kwargs)
             except Exception as e:
                 logger.error(f"Iteration {i} failed with exception: {e}", exc_info=True)
                 consecutive_fails += 1
