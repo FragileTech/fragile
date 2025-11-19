@@ -4,12 +4,15 @@
 from __future__ import annotations
 
 import json
+import logging
 from typing import Literal
 
 import dspy
 from pydantic import BaseModel, Field
 
 from mathster.claude_tool import sync_ask_claude
+
+logger = logging.getLogger(__name__)
 
 
 __all__ = [
@@ -315,9 +318,8 @@ Common framework documents:
 - 01_fragile_gas_framework: Core axioms and definitions
 - 02_euclidean_gas: Euclidean Gas specification
 - 03_cloning: Cloning operator theory
-- 09_kl_convergence: KL divergence and LSI theory
-- 07_mean_field: Mean-field limit
 - 05_kinetic_contraction: Kinetic operator convergence
+- 06_convergence.md: Uniform in N convergence in total variation
 
 Input will be a natural language proof sketch or mathematical discussion.
 Output must be a structured FrameworkDependencies object following the schema exactly and nothing else:
@@ -608,9 +610,17 @@ class SketchStrategist(dspy.Module):
             Returns:
                 JSON string of SketchStrategyItems
             """
+            logger.debug(
+                "Tool call: get_strategy_items_tool(theorem_label=%s, statement_len=%d, context_len=%d, notes_len=%d)",
+                theorem_label,
+                len(theorem_statement),
+                len(framework_context),
+                len(operator_notes),
+            )
             result = self._get_strategy_items_impl(
                 theorem_label, theorem_statement, framework_context, operator_notes
             )
+            logger.debug("Tool result: get_strategy_items_tool returned method=%s", result.method)
             return result.model_dump_json()
 
         def get_framework_dependencies_tool(proof_sketch: str) -> str:
@@ -625,7 +635,18 @@ class SketchStrategist(dspy.Module):
             Returns:
                 JSON string of FrameworkDependencies (theorems, lemmas, axioms, definitions)
             """
+            logger.debug(
+                "Tool call: get_framework_dependencies_tool(sketch_len=%d)",
+                len(proof_sketch),
+            )
             result = self._get_framework_dependencies_impl(proof_sketch)
+            logger.debug(
+                "Tool result: get_framework_dependencies_tool found %d theorems, %d lemmas, %d axioms, %d definitions",
+                len(result.theorems),
+                len(result.lemmas),
+                len(result.axioms),
+                len(result.definitions),
+            )
             return result.model_dump_json()
 
         def get_technical_deep_dives_tool(proof_sketch: str) -> str:
@@ -639,7 +660,15 @@ class SketchStrategist(dspy.Module):
             Returns:
                 JSON string of list[TechnicalDeepDive]
             """
+            logger.debug(
+                "Tool call: get_technical_deep_dives_tool(sketch_len=%d)",
+                len(proof_sketch),
+            )
             result = self._get_technical_deep_dives_impl(proof_sketch)
+            logger.debug(
+                "Tool result: get_technical_deep_dives_tool found %d technical challenges",
+                len(result),
+            )
             return [dive.model_dump() for dive in result].__str__()
 
         def assess_confidence_tool(
@@ -655,6 +684,12 @@ class SketchStrategist(dspy.Module):
             Returns:
                 One of: "High", "Medium", "Low"
             """
+            logger.debug(
+                "Tool call: assess_confidence_tool(completeness=%s, challenges=%s, dependencies=%s)",
+                strategy_completeness[:50],
+                technical_challenges[:50],
+                dependencies_available[:50],
+            )
             # Simple heuristic - in practice this could be more sophisticated
             completeness_map = {"complete": 1, "mostly": 0.7, "partial": 0.3}
             challenges_map = {"minor": 1, "moderate": 0.6, "severe": 0.2}
@@ -675,10 +710,14 @@ class SketchStrategist(dspy.Module):
                     break
 
             if score >= 0.7:
-                return "High"
-            if score >= 0.4:
-                return "Medium"
-            return "Low"
+                confidence = "High"
+            elif score >= 0.4:
+                confidence = "Medium"
+            else:
+                confidence = "Low"
+
+            logger.debug("Tool result: assess_confidence_tool returned %s (score=%.2f)", confidence, score)
+            return confidence
 
         # Store tools
         self.tools = [
