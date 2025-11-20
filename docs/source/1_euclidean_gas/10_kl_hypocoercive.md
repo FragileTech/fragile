@@ -240,10 +240,6 @@ Our primary goal in the subsequent chapters is to compute the time derivative $\
 
 This approach allows us to rigorously quantify how the kinetic noise suppresses the local instability caused by the non-convex potential $V_{\text{eff}}$.
 
-Here is the rigorous, computation-heavy rewrite of **Chapter 2**.
-
-***
-
 # Chapter 2. The Drift Analysis: Explicit Hypocoercivity
 
 ## 2.1. Setup: The Hessian Bound
