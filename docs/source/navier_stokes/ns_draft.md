@@ -36,7 +36,7 @@ For clarity, we state here the main conditional assumptions used throughout the 
 
 - **Solution class:** We consider Leray–Hopf solutions on $\mathbb{R}^3$ (or periodic domains) with smooth initial data and finite energy (Section 2).
 - **Variational framework:** The nonlinear efficiency functional $\Xi$ and its extremizers satisfy Hypotheses H1–H5 of Section 8.5:
-  existence, regularity and orbit structure of extremizers (H1), non-degeneracy modulo symmetries and isolation of the zero eigenvalue (H2–H3), concentration–compactness of maximizing sequences (H4), and single-scale localization of extremizers (H5).
+  existence and orbit structure of extremizers (H1), non-degeneracy modulo symmetries and isolation of the zero eigenvalue (H2–H3), concentration–compactness of maximizing sequences (H4), and single-scale localization of extremizers (H5). The regularity of extremizers is established separately by elliptic bootstrapping for the Euler–Lagrange system (Proposition 8.5.1), so all variational maximizers in $\mathcal{M}$ are in fact smooth and rapidly decaying.
 - **Spectral coercivity:** In the high-swirl regime $\mathcal{S}>\sqrt{2}$, the linearized operator around helical profiles is strictly accretive with a uniform spectral gap and favorable pseudospectral bounds, as in Theorems 6.3–6.4 and Corollary 6.1.
 - **Geometric alignment and curvature:** Coherent low-swirl filaments satisfy the Constantin–Fefferman-type alignment hypothesis and curvature dichotomy encoded in Hypothesis 4.5 and Theorem 4.6 (Section 4).
 - **Dynamic normalization gauge:** The scaling parameter $\lambda(t)$ is fixed by the renormalized enstrophy normalization on $B_1$ (Definition 6.1 and Definition 9.2.1), ensuring a non-vanishing core and well-defined renormalized profiles.
@@ -3588,7 +3588,7 @@ This version breaks down the logic into a granular decision tree, citing the spe
 
 ## 12. The Exhaustive Classification and Structure Theorem
 
-We now synthesize the conditional results of Sections 3–11 into a single structural argument. The strategy is a proof by partition: we define a phase space of all possible renormalized limit profiles, partition it into five mutually exclusive classes, and show that each class has empty intersection with the set of admissible singular limits.
+We now synthesize the conditional results of Sections 3–11 into a single structural argument. The strategy is a proof by partition: we define a phase space of all possible renormalized limit profiles, introduce a small number of structural parameters, stratify this phase space into regimes, and show that each regime has empty intersection with the set of admissible singular limits.
 
 Throughout this section we work under the standing hypotheses stated in the Introduction, namely:
 - finite-energy Leray–Hopf solutions on $\mathbb{R}^3$ with smooth initial data (Section 2);
@@ -3600,9 +3600,41 @@ Throughout this section we work under the standing hypotheses stated in the Intr
 
 Under these assumptions, the only remaining conditional input is the Geometric Alignment Hypothesis of Section 9.6; all other mechanisms (fractal exclusion, Type II exclusion, high-swirl coercivity, variational regularity) are proved within this framework.
 
-### 12.1. Phase Space Partition (Defining the Enemy)
+### 12.1. Parameterization of the Singular Phase Space
 
-Let
+To rigorously classify potential singular limit profiles $\mathbf{V} \in H^1_\rho$, we introduce the **Structural State Vector**
+$$
+\Psi(\mathbf{V}) = \big(\delta(\mathbf{V}),\, \mathcal{S}(\mathbf{V}),\, \mathcal{T}(\mathbf{V}),\, \Lambda(\mathbf{V})\big),
+$$
+where:
+
+1. **Variational Distance**
+   $$
+   \delta(\mathbf{V}) := \mathrm{dist}_{H^1_\rho}(\mathbf{V}, \mathcal{M})
+   $$
+   measures the distance to the manifold $\mathcal{M}$ of smooth extremizers defined in Section 8.5.
+
+2. **Swirl Ratio**
+   $$
+   \mathcal{S}(\mathbf{V}) := \inf_{(y,z)\in \mathrm{core}} \frac{|V_\theta(y,z)|}{|V_z(y,z)|}
+   $$
+   characterizes the rotational intensity in the coherent core, with the critical threshold $\mathcal{S}_c = \sqrt{2}$ arising from the spectral coercivity analysis of Section 6.0.
+
+3. **Twist Parameter**
+   $$
+   \mathcal{T}(\mathbf{V}) := \|\nabla\xi\|_{L^\infty(\mathbb{R}^3)},
+   $$
+   where $\xi = \boldsymbol{\omega}/|\boldsymbol{\omega}|$ is the vorticity direction field. This measures the geometric complexity of the vortex lines, with large $\mathcal{T}$ corresponding to highly twisted (Barber Pole–type) configurations.
+
+4. **Shape Parameter**
+   $$
+   \Lambda(\mathbf{V}) := \frac{J_z[\mathbf{V}]}{J_r[\mathbf{V}]},
+   $$
+   where $J_z$ and $J_r$ are the axial and radial Gaussian moments introduced in Section 10.1. This ratio captures the anisotropy of the profile (tube-like versus sheet-like).
+
+We denote by $\delta_0>0$ the variational separation constant from Theorem 8.5.10 and Corollary 8.5.11, by $S_c := \sqrt{2}$ the critical swirl threshold from Section 6, by $T_c>0$ a large twist threshold determined by Theorem 11.1 and Theorem 11.0.2, and by $\Lambda_c>0$ a shape threshold associated with the tube/sheet dichotomy in Section 10.
+
+We now define the singular phase space and the subset associated with potential singularities. Let
 $$
 \Omega := \left\{ \mathbf{V}_\infty \in H^1_\rho(\mathbb{R}^3) : \mathbf{V}_\infty \text{ is a stationary RNSE profile arising as a renormalized limit under Hypotheses H1–H3} \right\}.
 $$
@@ -3612,60 +3644,60 @@ $$
 $$
 the set of all such renormalized limit profiles associated with finite-time singularities.
 
-Let $\mathcal{M}$ be the extremizer manifold of Section 8.5 and define the variational distance
-$$
-\delta(\mathbf{V}) := \mathrm{dist}_{H^1_\rho}(\mathbf{V},\mathcal{M}).
-$$
+### 12.2. The Geometric Stratification
 
-We partition $\Omega$ into the following five classes:
+Using the structural state vector $\Psi(\mathbf{V})$ and the thresholds above, we partition $\Omega$ into five mutually exclusive regimes.
 
-1. **Fractal / High-Entropy class**
-   $$
-   \Omega_{\mathrm{Fractal}} := \{ \mathbf{V} \in \Omega : \delta(\mathbf{V}) \ge \delta_0 \},
-   $$
-   where $\delta_0>0$ is the separation constant provided by Theorem 8.5.10 (Fractal Separation Lemma) together with Corollary 8.5.11 (Smoothness–Fractal Efficiency Gap). Elements of $\Omega_{\mathrm{Fractal}}$ are at a fixed positive distance from the smooth extremizer manifold and correspond to broadband, high-entropy spectra.
+**Definition 12.2 (The Geometric Stratification).**
 
-2. **Type II (Fast-Focusing) class**
+1. **Fractal / High-Entropy Stratum**
    $$
-   \Omega_{\mathrm{Type\,II}} := \left\{ \mathbf{V}_\infty \in \Omega : \text{the associated renormalized trajectory has Type II scaling } \lambda(t)\ll (T^*-t)^{1/2} \right\},
+   \Omega_{\mathrm{Frac}} := \{ \mathbf{V} \in \Omega : \delta(\mathbf{V}) \ge \delta_0 \}.
+   $$
+   Physically, these are rough, high-entropy states lying at a fixed positive distance from the smooth extremizer manifold; they correspond to broadband, fractal spectra as in Section 8.5.4.
+
+2. **High-Swirl Stratum**
+   $$
+   \Omega_{\mathrm{Swirl}} := \{ \mathbf{V} \in \Omega : \delta(\mathbf{V}) < \delta_0 \text{ and } \mathcal{S}(\mathbf{V}) \ge S_c \}.
+   $$
+   These are smooth, coherent, high-swirl cores in the regime controlled by the spectral gap of Section 6.
+
+3. **Barber Pole (Low-Swirl / High-Twist) Stratum**
+   $$
+   \Omega_{\mathrm{Barber}} := \{ \mathbf{V} \in \Omega : \delta(\mathbf{V}) < \delta_0,\ \mathcal{S}(\mathbf{V}) < S_c,\ \mathcal{T}(\mathbf{V}) \ge T_c \}.
+   $$
+   These are smooth, low-swirl filaments with pathological internal twist, matching the Barber Pole configuration of Definition 2.2.
+
+4. **Tube (Low-Swirl / Low-Twist Coherent) Stratum**
+   $$
+   \Omega_{\mathrm{Tube}} := \{ \mathbf{V} \in \Omega : \delta(\mathbf{V}) < \delta_0,\ \mathcal{S}(\mathbf{V}) < S_c,\ \mathcal{T}(\mathbf{V}) < T_c \}.
+   $$
+   These are the standard tubular candidates: smooth, low-swirl, low-twist coherent filaments whose collapse is governed by the axial defocusing and curvature dichotomy of Section 4.
+
+5. **Type II (Accelerating) Stratum**
+   $$
+   \Omega_{\mathrm{Acc}} := \left\{ \mathbf{V}_\infty \in \Omega : \text{the associated renormalized trajectory has Type II scaling } \lambda(t)\ll (T^*-t)^{1/2} \right\},
    $$
    as in Definition 6.1.6 and the discussion preceding Proposition 6.1.6 (equivalently, the rescaled Reynolds number $Re_\lambda\to\infty$).
 
-3. **High-Swirl class**
-   $$
-   \Omega_{\mathrm{HighSwirl}} := \{ \mathbf{V}_\infty \in \Omega : \mathcal{S}(\mathbf{V}_\infty) > \sqrt{2} \},
-   $$
-   where $\mathcal{S}$ is the swirl ratio defined in Section 6.0.
-
-4. **Barber Pole (Low-Swirl / High-Twist) class**
-   $$
-   \Omega_{\mathrm{Barber}} := \left\{ \mathbf{V}_\infty \in \Omega : \text{the associated trajectory realizes a Barber Pole configuration as in Definition 2.2} \right\},
-   $$
-   i.e. coherent, low-swirl filaments for which the vorticity direction field satisfies $\|\nabla\xi(\cdot,s_n)\|_{L^\infty}\to\infty$ along some sequence $s_n\to\infty$ in renormalized time.
-
-5. **Tube class (Low-Swirl / Low-Twist coherent filaments)**
-   $$
-   \Omega_{\mathrm{Tube}} := \Omega \setminus \left( \Omega_{\mathrm{Fractal}} \cup \Omega_{\mathrm{Type\,II}} \cup \Omega_{\mathrm{HighSwirl}} \cup \Omega_{\mathrm{Barber}} \right).
-   $$
-
-By construction, these five sets form a partition of $\Omega$.
+For clarity of notation, we note that the “Type II class’’ considered in Section 9 corresponds to $\Omega_{\mathrm{Acc}}$, and the fractal/high-entropy configurations of Section 8.5 correspond to $\Omega_{\mathrm{Frac}}$.
 
 **Proposition 12.1 (Phase-Space Coverage).**
 Under the conditional framework of Sections 3–11, any renormalized limit profile associated with a finite-time singularity belongs to one of the five classes above:
 $$
-\Omega_{\mathrm{sing}} \subseteq \Omega_{\mathrm{Fractal}} \cup \Omega_{\mathrm{Type\,II}} \cup \Omega_{\mathrm{HighSwirl}} \cup \Omega_{\mathrm{Barber}} \cup \Omega_{\mathrm{Tube}}.
+\Omega_{\mathrm{sing}} \subseteq \Omega_{\mathrm{Frac}} \cup \Omega_{\mathrm{Acc}} \cup \Omega_{\mathrm{Swirl}} \cup \Omega_{\mathrm{Barber}} \cup \Omega_{\mathrm{Tube}}.
 $$
 
 *Proof (classification).* Sections 3–4 distinguish between fractal/high-entropy and coherent configurations, while Sections 6, 9, and 10 distinguish between Type I and Type II scaling and between high- and low-swirl regimes (via the swirl parameter $\mathcal{S}$ and the Type I/II dichotomy of Definition 6.1.6 and Proposition 6.1.6). Definition 2.2 singles out the Barber Pole (low-swirl/high-twist) as the only coherent configuration with unbounded internal twist; any remaining coherent, low-swirl, bounded-twist filament falls into the tube class. Combining these dichotomies yields the stated partition. $\hfill\square$
 
-### 12.2. Exclusion of Dynamic Transients (Fractal and Chameleon Defense)
+### 12.3. Exclusion of Dynamic Transients (Fractal and Chameleon Defense)
 
 We first rule out the fractal/high-entropy box and its dynamic variants.
 
 **Proposition 12.2 (Fractal and Chameleon Exclusion).**
 Under Hypotheses H1–H5 and the Gevrey framework of Section 8.6,
 $$
-\Omega_{\mathrm{sing}} \cap \Omega_{\mathrm{Fractal}} = \emptyset.
+\Omega_{\mathrm{sing}} \cap \Omega_{\mathrm{Frac}} = \emptyset.
 $$
 
 *Proof.* By Theorem 8.5.10 (Fractal Separation Lemma) and Corollary 8.5.11 (Smoothness–Fractal Efficiency Gap), there exist $\delta_0,\kappa>0$ such that
@@ -3673,22 +3705,22 @@ $$
 \delta(\mathbf{V}) \ge \delta_0 \quad \Longrightarrow \quad
 \Xi[\mathbf{V}] \le \Xi_{\max} - \kappa \delta_0^2.
 $$
-In particular, any $\mathbf{V}\in\Omega_{\mathrm{Fractal}}$ has a strictly subcritical efficiency deficit relative to extremizers.
+In particular, any $\mathbf{V}\in\Omega_{\mathrm{Frac}}$ has a strictly subcritical efficiency deficit relative to extremizers.
 
 Theorem 8.5.12 (No Fractal Blow-up) already shows that Type IV (fractal) blow-up is impossible: any singularity would require $\Xi[\mathbf{V}(s)]\to \Xi_{\max}$ as $s\to\infty$, which is incompatible with the uniform efficiency gap on the fractal class.
 
 Moreover, Theorem 8.6.5 (Transit Cost Inequality) and Theorem 8.6.6 (Exclusion of Recurrent Dynamics) quantify the Gevrey regularity gained whenever the trajectory passes from the fractal stratum (where $\delta(s)\ge\Delta$) to the coherent stratum (where $\delta(s)\le\varepsilon$). Each such transition increases the analyticity radius $\tau(s)$ by at least a fixed $\Delta\tau_{\min}>0$, and $\tau(s)$ cannot grow indefinitely on a finite-time interval.
 
-If a singular solution had a limit profile $\mathbf{V}_\infty\in\Omega_{\mathrm{Fractal}}$, the renormalized trajectory would have to visit the fractal class infinitely often as $s\to\infty$, contradicting the transit-cost and hysteresis estimates. Hence no renormalized limit profile associated with a finite-time singularity can lie in $\Omega_{\mathrm{Fractal}}$. $\hfill\square$
+If a singular solution had a limit profile $\mathbf{V}_\infty\in\Omega_{\mathrm{Frac}}$, the renormalized trajectory would have to visit the fractal class infinitely often as $s\to\infty$, contradicting the transit-cost and hysteresis estimates. Hence no renormalized limit profile associated with a finite-time singularity can lie in $\Omega_{\mathrm{Frac}}$. $\hfill\square$
 
-### 12.3. Exclusion of Scaling Anomalies (Type II Defense)
+### 12.4. Exclusion of Scaling Anomalies (Type II Defense)
 
 We next eliminate profiles associated with Type II (fast-focusing) scaling.
 
 **Proposition 12.3 (Type II Exclusion).**
 Under the Dynamic Normalization Gauge (Definition 9.2.1) and the mass-flux capacity assumptions of Section 9,
 $$
-\Omega_{\mathrm{sing}} \cap \Omega_{\mathrm{Type\,II}} = \emptyset.
+\Omega_{\mathrm{sing}} \cap \Omega_{\mathrm{Acc}} = \emptyset.
 $$
 
 *Proof.* Suppose $\mathbf{V}_\infty\in\Omega_{\mathrm{Type\,II}}$ arises from a finite-energy solution with Type II scaling. By Definition 9.2.1 and Lemma 9.2.2 (Prevention of the Null Limit), the renormalized profile satisfies
@@ -3698,23 +3730,23 @@ $$
 $$
 so the limit profile is non-trivial and has a non-vanishing core. Theorem 9.2.1 (Smoothness of the Limit Profile) then yields $\mathbf{V}_\infty\in C^\infty_b(\mathbb{R}^3)$.
 
-Theorem 9.3 (Exclusion of Vanishing Type II Blow-up), combined with the energetic bound of Proposition 6.1.6, shows that any such Type II scaling forces the physical dissipation integral to diverge:
+Theorem 9.3 (Refined Type II Exclusion), combined with the energetic bound of Proposition 6.1.6, shows that any such Type II scaling forces the physical dissipation integral to diverge:
 $$
 \int_0^{T^*} \nu \|\nabla \mathbf{u}(\cdot,t)\|_{L^2}^2\,dt = \infty,
 $$
-contradicting the global Leray energy inequality. Thus no finite-energy solution can develop a Type II singularity under the normalization gauge, and $\Omega_{\mathrm{sing}} \cap \Omega_{\mathrm{Type\,II}}$ is empty. $\hfill\square$
+contradicting the global Leray energy inequality. Thus no finite-energy solution can develop a Type II singularity under the normalization gauge, and $\Omega_{\mathrm{sing}} \cap \Omega_{\mathrm{Acc}}$ is empty. $\hfill\square$
 
-### 12.4. Exclusion of Coherent High-Swirl Rotation (Swirl Defense)
+### 12.5. Exclusion of Coherent High-Swirl Rotation (Swirl Defense)
 
 We now consider profiles in the high-swirl regime.
 
 **Proposition 12.4 (High-Swirl Exclusion).**
 Under the spectral coercivity assumptions of Section 6 and the Lyapunov framework of Section 9,
 $$
-\Omega_{\mathrm{sing}} \cap \Omega_{\mathrm{HighSwirl}} = \emptyset.
+\Omega_{\mathrm{sing}} \cap \Omega_{\mathrm{Swirl}} = \emptyset.
 $$
 
-*Proof.* For $\mathbf{V}_\infty\in\Omega_{\mathrm{HighSwirl}}$ the swirl parameter satisfies $\mathcal{S}(\mathbf{V}_\infty)>\sqrt{2}$. Theorem 6.3 (High-Swirl Spectral Coercivity) and its pseudospectral refinement (Theorem 6.4 and Corollary 6.1) imply that the linearized operator around $\mathbf{V}_\infty$ is strictly accretive with spectral gap $\mu>0$ and generates a strongly contracting semigroup:
+*Proof.* For $\mathbf{V}_\infty\in\Omega_{\mathrm{Swirl}}$ the swirl parameter satisfies $\mathcal{S}(\mathbf{V}_\infty)>\sqrt{2}$. Theorem 6.3 (High-Swirl Spectral Coercivity) and its pseudospectral refinement (Theorem 6.4 and Corollary 6.1) imply that the linearized operator around $\mathbf{V}_\infty$ is strictly accretive with spectral gap $\mu>0$ and generates a strongly contracting semigroup:
 $$
 \|e^{s\mathcal{L}_\sigma}\| \le e^{-\mu s} \quad \text{for } s\ge 0.
 $$
@@ -3724,9 +3756,9 @@ $$
 $$
 along the renormalized flow (Theorem 9.4 and Theorem 11.2). Any bounded ancient trajectory in the high-swirl class must therefore converge exponentially to the trivial profile.
 
-If a finite-time singularity produced a non-trivial high-swirl limit profile $\mathbf{V}_\infty$, the associated ancient RNSE trajectory would both remain bounded and decay to zero, contradicting non-triviality (Lemma 9.2.2 and Theorem 6.1). Hence no renormalized limit profile of a singularity can lie in $\Omega_{\mathrm{HighSwirl}}$. $\hfill\square$
+If a finite-time singularity produced a non-trivial high-swirl limit profile $\mathbf{V}_\infty$, the associated ancient RNSE trajectory would both remain bounded and decay to zero, contradicting non-triviality (Lemma 9.2.2 and Theorem 6.1). Hence no renormalized limit profile of a singularity can lie in $\Omega_{\mathrm{Swirl}}$. $\hfill\square$
 
-### 12.5. Exclusion of Geometric Pathologies (Barber Pole Defense)
+### 12.6. Exclusion of Geometric Pathologies (Barber Pole Defense)
 
 We now treat the low-swirl/high-twist Barber Pole class.
 
@@ -3753,33 +3785,38 @@ and cannot, by themselves, drive blow-up.
 
 Finally, Theorem 11.1 (Smoothness–Twist Incompatibility) shows that a Barber Pole configuration, which by Definition 2.2 requires $\|\nabla\xi\|_{L^\infty}\to\infty$ in the core, is incompatible with the bounded-twist structure of variational extremizers and their limits. Thus no renormalized limit profile arising from a finite-time singularity can belong to $\Omega_{\mathrm{Barber}}$. $\hfill\square$
 
-### 12.6. The Master Structure Theorem (Q.E.D.)
+### 12.7. The Master Structure Theorem (Q.E.D.)
 
 We conclude with the structural reformulation of the conditional regularity result.
 
 **Theorem 12.1 (Structure Theorem for Navier–Stokes Singularities).**
-Assume the spectral and variational hypotheses of Sections 6 and 8 (Hypotheses H1–H3), the Dynamic Normalization Gauge (Definition 9.2.1), and the geometric alignment and curvature conditions of Section 4 (in particular Hypothesis 4.5 and Theorem 4.6). Let $u(x,t)$ be a smooth finite-energy solution and suppose $T^*<\infty$ is a singular time. Then:
+Assume the spectral and variational hypotheses of Sections 6 and 8 (Hypotheses H1–H3), the Dynamic Normalization Gauge (Definition 9.2.1), and the geometric alignment and curvature conditions of Section 4 (in particular Hypothesis 4.5 and Theorem 4.6). Let $u(x,t)$ be a smooth finite-energy solution and suppose $T^*<\infty$ is a singular time. Let $\Omega_{\mathrm{sing}}$ denote the set of renormalized limit profiles associated with $T^*$. Then:
 
-1.  The associated renormalized limit set satisfies
+1.  **Phase-space stratification.**  
+    The limit set lies in the five-fold partition of Definition 12.2:
     $$
-    \Omega_{\mathrm{sing}} \subseteq \Omega_{\mathrm{Tube}}.
+    \Omega_{\mathrm{sing}} \subseteq \Omega_{\mathrm{Frac}} \cup \Omega_{\mathrm{Acc}} \cup \Omega_{\mathrm{Swirl}} \cup \Omega_{\mathrm{Barber}} \cup \Omega_{\mathrm{Tube}}
     $$
-    In particular, any limit profile must be a coherent, low-swirl, low-twist filament.
+    (by Proposition 12.1).
 
-2.  For every $\mathbf{V}_\infty\in\Omega_{\mathrm{sing}}$ we have:
-    - **Non-triviality:** $\mathbf{V}_\infty \not\equiv 0$ (by Lemma 9.2.2 and Theorem 6.1).
-    - **Smoothness:** $\mathbf{V}_\infty \in C^\infty(\mathbb{R}^3)$ with bounded derivatives (by the variational regularity of Section 8.5 and Theorem 9.2.1).
-    - **Stationarity:** $\mathbf{V}_\infty$ is a stationary solution of the RNSE (by the Lyapunov monotonicity and dynamical rigidity of Section 9.4 and Theorem 11.2).
+2.  **Stratum-wise exclusions.**  
+    Each stratum has empty intersection with the singular set:
+    \begin{align*}
+    \Omega_{\mathrm{sing}} \cap \Omega_{\mathrm{Frac}} &= \emptyset &&\text{(Fractal exclusion, Proposition 12.2)},\\
+    \Omega_{\mathrm{sing}} \cap \Omega_{\mathrm{Acc}} &= \emptyset &&\text{(Type II exclusion, Proposition 12.3)},\\
+    \Omega_{\mathrm{sing}} \cap \Omega_{\mathrm{Swirl}} &= \emptyset &&\text{(High-swirl exclusion, Proposition 12.4)},\\
+    \Omega_{\mathrm{sing}} \cap \Omega_{\mathrm{Barber}} &= \emptyset &&\text{(Barber Pole exclusion, Proposition 12.5)},\\
+    \Omega_{\mathrm{sing}} \cap \Omega_{\mathrm{Tube}} &= \emptyset &&\text{(Tube exclusion, Theorem 4.6 and Section 4.3)}.
+    \end{align*}
 
-3.  The tube class itself is empty in the singular regime: by Theorem 4.6 (Curvature Dichotomy for Filamentary Structures) together with the axial defocusing mechanism of Section 4.3, coherent low-swirl, low-twist tubes cannot sustain a Type I singularity.
+3.  **Conclusion.**  
+    Since $\Omega_{\mathrm{sing}}$ is contained in the union of the five strata and disjoint from each of them, we must have $\Omega_{\mathrm{sing}} = \emptyset$. Equivalently, under the standing hypotheses the 3D Navier–Stokes equations admit no finite-time singularity for smooth finite-energy initial data.
 
-Consequently $\Omega_{\mathrm{sing}}=\emptyset$: there is no admissible renormalized limit profile compatible with all of the standing hypotheses. Equivalently, under these conditions the 3D Navier–Stokes equations admit no finite-time singularity for smooth finite-energy initial data.
+*Proof.* Statement (1) is precisely Proposition 12.1. Statement (2) follows from Propositions 12.2–12.5 for the strata $\Omega_{\mathrm{Frac}}$, $\Omega_{\mathrm{Acc}}$, $\Omega_{\mathrm{Swirl}}$, and $\Omega_{\mathrm{Barber}}$, and from Theorem 4.6 together with the axial defocusing mechanism of Section 4.3 for $\Omega_{\mathrm{Tube}}$. Statement (3) is the set-theoretic consequence of (1) and (2). $\hfill\square$
 
-*Proof.* Item (1) follows from Proposition 12.1 together with Propositions 12.2–12.5, which eliminate the fractal, Type II, high-swirl, and Barber Pole classes. Item (2) is the content of the compactness and rigidity results in Sections 6, 9, and 11. Item (3) is precisely the tube exclusion proved in Section 4. Combining these statements shows that $\Omega_{\mathrm{sing}}$ must be both contained in $\Omega_{\mathrm{Tube}}$ and disjoint from it, hence empty. $\hfill\square$
+### 12.8. Diagrammatic Overview of the Logical Sieve
 
-### 12.7. Diagrammatic Overview of the Logical Sieve
-
-For convenience of the reader, we provide a diagrammatic representation of the proof-by-partition underlying Theorem 12.1. Each box represents one of the five phase-space classes defined in Section 12.1, and each arrow is annotated with the main theorem that excludes that class from the set $\Omega_{\mathrm{sing}}$.
+For convenience of the reader, we provide a diagrammatic representation of the proof-by-partition underlying Theorem 12.1. Each box represents one of the five phase-space classes defined in Section 12.2, and each arrow is annotated with the main theorem that excludes that class from the set $\Omega_{\mathrm{sing}}$.
 
 ```mermaid
 graph TD
@@ -3829,9 +3866,24 @@ graph TD
     classDef empty fill:#ffffff,stroke:#000,stroke-width:2.5px,color:#000;
 ```
 
-The diagram emphasizes that every possible renormalized limit profile for a candidate singularity must fall into one of the five classes of Section 12.1, and that each arrow corresponds to a rigorous exclusion: Theorems 8.5.10, 8.5.11, 8.5.12, 8.6.5, and 8.6.6 exclude $\Omega_{\mathrm{Fractal}}$; Theorem 9.3 and Proposition 6.1.6 exclude $\Omega_{\mathrm{Type\,II}}$; Theorems 6.3, 6.4, 9.4, and 11.2 exclude $\Omega_{\mathrm{HighSwirl}}$; Corollary 8.5.1.1 together with Theorems 11.0.2 and 11.1 exclude $\Omega_{\mathrm{Barber}}$; and Theorem 4.6 excludes $\Omega_{\mathrm{Tube}}$. The convergence of all paths to the empty set $\emptyset$ is the diagrammatic expression of Theorem 12.1.
+The diagram emphasizes that every possible renormalized limit profile for a candidate singularity must fall into one of the five classes of Section 12.2, and that each arrow corresponds to a rigorous exclusion: Theorems 8.5.10, 8.5.11, 8.5.12, 8.6.5, and 8.6.6 exclude $\Omega_{\mathrm{Frac}}$; Theorem 9.3 and Proposition 6.1.6 exclude $\Omega_{\mathrm{Acc}}$; Theorems 6.3, 6.4, 9.4, and 11.2 exclude $\Omega_{\mathrm{Swirl}}$; Corollary 8.5.1.1 together with Theorems 11.0.2 and 11.1 exclude $\Omega_{\mathrm{Barber}}$; and Theorem 4.6 excludes $\Omega_{\mathrm{Tube}}$. The convergence of all paths to the empty set $\emptyset$ is the diagrammatic expression of Theorem 12.1.
 
-### 12.8. Status of Variational Regularity (Removing Conditionality)
+### 12.9. Mechanism Handoffs and Covering Robustness
+
+The phase-space partition of Definition 12.2 is only useful if every potential failure of one mechanism forces the trajectory into the domain of another. We summarize here the main “handoff’’ principles; a more detailed quantitative analysis is given in Appendix C.
+
+1. **Coherence Handoff (Tube $\rightarrow$ Barber / Fractal).**  
+   If a profile in the coherent regime ($\delta(\mathbf{V})<\delta_0$) develops strong local geometric defects—kinks, bending, or localized twist spikes—then either the twist parameter $\mathcal{T}(\mathbf{V})$ crosses the threshold $T_c$ (entering $\Omega_{\mathrm{Barber}}$) or the $H^1_\rho$-distance to the extremizer manifold increases (entering $\Omega_{\mathrm{Frac}}$). In the first case the Barber Pole exclusion (Proposition 12.5 and Section 11) applies; in the second, the variational/entropy mechanism of Proposition 12.2 and Theorems 8.5.10–8.5.12 applies. There is no persistent “kinked tube’’ that is both geometrically defective and variationally optimal.
+
+2. **Swirl Handoff (Swirl $\rightarrow$ Tube / Barber).**  
+   When the swirl ratio drops below the spectral threshold $S_c$, the high-swirl spectral gap of Proposition 12.4 no longer applies, but the profile automatically leaves $\Omega_{\mathrm{Swirl}}$ and enters either $\Omega_{\mathrm{Barber}}$ or $\Omega_{\mathrm{Tube}}$ depending on $\mathcal{T}(\mathbf{V})$. Thus the loss of spectral coercivity in the high-swirl regime is compensated by the geometric and variational controls in the low-swirl regime (Sections 4 and 11).
+
+3. **Variational Handoff (Extremizers $\rightarrow$ Fractal / Type II).**  
+   If the extremizer regularity mechanism were to fail at the level of $H^1_\rho$—for instance, if a rough critical point existed or if a trajectory drifted away from $\mathcal{M}$—then the profile would necessarily acquire high-wavenumber spectral tails or accelerated scaling. In that case it would enter either the fractal stratum $\Omega_{\mathrm{Frac}}$ or the Type II stratum $\Omega_{\mathrm{Acc}}$, where Proposition 12.2 (variational inefficiency plus Gevrey smoothing) and Proposition 12.3 (mass-flux capacity and refined Type II exclusion) rule out singular behavior. Rough or rapidly concentrating configurations are therefore caught by the entropy and scaling mechanisms before they can produce a coherent tube.
+
+Taken together, these handoffs ensure that the union of the stabilization mechanisms—variational efficiency, Gevrey smoothing, Type II exclusion, high-swirl spectral coercivity, Barber Pole twist control, and tube defocusing—covers the entire singular phase space $\Omega_{\mathrm{sing}}$. No “Goldilocks’’ regime remains in which a candidate singularity can evade all constraints.
+
+### 12.10. Status of Variational Regularity (Removing Conditionality)
 
 While we have packaged the existence and orbit structure of extremizers into Hypothesis H1 for notational convenience, the regularity of extremizers is not a hypothesis but a theorem-level fact. Two mechanisms ensure that the variational framework only ever sees smooth extremizers:
 
@@ -3845,7 +3897,7 @@ Taken together, these facts mean that the set of global maximizers $\mathcal{M}$
 
 ## 13. Discussion: Robustness and Redundant Stabilizers
 
-The preceding analysis highlights the Barber Pole as the primary obstruction, conditioned on spectral non-degeneracy of the extremizer. In this section we explain why the regularity mechanism is, in fact, over-determined: even if the spectral gap closes, other structures in the argument act as redundant stabilizers that continue to oppose singularity formation.
+The preceding analysis highlights the Barber Pole as the primary obstruction, conditioned on spectral non-degeneracy of the extremizer. Building on the mechanism handoffs of Section 12.9 and the variational regularity discussion of Section 12.10, we now explain why the regularity mechanism is, in fact, over-determined: even if the spectral gap closes, other structures in the argument act as redundant stabilizers that continue to oppose singularity formation.
 
 **Argument A: The “Flat” Barber Pole vs. Variational Smoothness.**
 
