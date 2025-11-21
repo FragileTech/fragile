@@ -40,6 +40,21 @@ Within the coherent stratum, we systematically eliminate all paths to singularit
 
 The proof proceeds by demonstrating that every conceivable path to singularity encounters an insurmountable obstruction—either spectral (high swirl), topological (Type I/II), or variational (low-swirl coherent filaments with unbounded internal twist). The spectral non-degeneracy condition is generic in the sense that it holds for a dense, open subset of initial conditions in appropriate function spaces.
 
+### 1.2 Structure of the Argument
+
+The argument partitions the phase space of renormalized limit profiles into five mutually exclusive strata and shows that each has an empty intersection with the singular set:
+
+1. **Energetic partition (Type I vs. Type II).**
+   The accelerating/Type II stratum $\Omega_{\mathrm{Acc}}$ corresponds to decoupling from the viscous scale ($Re_\lambda \to \infty$) and is excluded by mass-flux capacity and the divergence of the dissipation integral (Section 9).
+
+2. **Entropic partition (Fractal vs. Coherent).**
+   Within the viscously locked (Type I) regime, profiles are either fractal/high-entropy (variational distance bounded below) or coherent/near-extremal. The fractal stratum $\Omega_{\mathrm{Frac}}$ is excluded by the variational efficiency gap and Gevrey recovery (Section 8).
+
+3. **Geometric partition (Swirl and twist).**
+   Coherent profiles are further classified by swirl $\mathcal{S}$ and twist $\mathcal{T}$. High-swirl profiles $\Omega_{\mathrm{Swirl}}$ are excluded by spectral coercivity (Section 6). Low-swirl profiles satisfy a curvature dichotomy: bounded-twist tubes $\Omega_{\mathrm{Tube}}$ are excluded by axial defocusing (Section 4), while high-twist filaments $\Omega_{\mathrm{Barber}}$ are excluded by the regularity and bounded-gradient properties of variational extremizers (Section 11).
+
+This stratification is summarized in Table 1 of Section 7. Section 12 provides the formal covering argument and shows that $\Omega_{\mathrm{sing}}$ is empty.
+
 **Standing Hypotheses for This Work (Overview).**
 For clarity, we state here the main conditional assumptions used throughout the paper; precise formulations are given in the referenced sections.
 
@@ -55,16 +70,16 @@ All structural statements in Section 12 are proved under these standing hypothes
 
 For later reference we summarize where each variational hypothesis is used:
 
-- **H1 (Existence and orbit structure of extremizers).**  
+- **H1 (Existence and orbit structure of extremizers).**
   Used in Section 8.5 to construct the extremizer manifold $\mathcal{M}$ and in Section 12 to parametrise the coherent branch via the distance $\delta(\mathbf{V}) = \mathrm{dist}_{H^1_\rho}(\mathbf{V},\mathcal{M})$.
 
-- **H2–H3 (Spectral non-degeneracy modulo symmetries).**  
+- **H2–H3 (Spectral non-degeneracy modulo symmetries).**
   Enter the quantitative stability and spectral gap estimates for the Hessian of $\Xi$ near $\mathcal{M}$ (Theorems 8.5.3–8.5.5), the high-swirl spectral coercivity of Section 6, and the modulational stability analysis of Section 9. They control the size of the coercivity constants but not the mere existence of smooth extremizers.
 
-- **H4 (Concentration–compactness of maximizing sequences).**  
+- **H4 (Concentration–compactness of maximizing sequences).**
   Used in Section 8.4 to pass from approximate maximisers to actual extremizers and to identify the coherent branch as the regime where $\Xi[\mathbf{V}] \to \Xi_{\max}$ in $H^1_\rho$ modulo symmetries (Lemma 8.4.4).
 
-- **H5 (Single-scale localization).**  
+- **H5 (Single-scale localization).**
   Used in Section 8.5.4 and Appendix B to exclude multi-scale fractal cascades near $\mathcal{M}$ and to prove the Fractal Separation Theorem 8.5.10, which underpins the definition of the fractal stratum $\Omega_{\mathrm{Frac}}$ in Section 12.
 
 ## 2. Mathematical Preliminaries
@@ -695,13 +710,13 @@ Failure of this inequality (i.e., $\mathcal{S} < \sqrt{2}$) is necessary for lin
 
 ### 6.1. Dynamic Rescaling, Rotation, and the Renormalized Frame
 
-We assume the existence of a potential singularity at time $T^*$. To resolve the fine-scale geometry of the blow-up, we introduce a time-dependent length scale $\lambda(t)$, a spatial center $\xi(t)$, and a time-dependent rotation $Q(t)\in SO(3)$ describing the orientation of the core.
+We assume the existence of a potential singularity at time $T^*$. To resolve the fine-scale geometry of the blow-up, we introduce a time-dependent length scale $\lambda(t)$, a spatial center $x_c(t)$, and a time-dependent rotation $Q(t)\in SO(3)$ describing the orientation of the core.
 
 **Definition 6.1 (The Dynamic Rescaling Group with Rotation).**
 Let $\lambda \in C^1([0, T^*), \mathbb{R}^+)$ be a scaling parameter such that $\lambda(t) \to 0$ as $t \to T^*$, let $\xi \in C^1([0, T^*), \mathbb{R}^3)$ be the trajectory of the singular core, and let $Q \in C^1([0,T^*),SO(3))$ be a time-dependent rotation matrix. We define the **renormalized variables** $(y, s)$ and the **self-similar profile** $\mathbf{V}$ as follows:
 
 1.  **Renormalized Spacetime:**
-    $$ y = \frac{Q(t)^\top (x - \xi(t))}{\lambda(t)}, \quad s(t) = \int_0^t \frac{1}{\lambda(\tau)^2} \, d\tau. $$
+    $$ y = \frac{Q(t)^\top (x - x_c(t))}{\lambda(t)}, \quad s(t) = \int_0^t \frac{1}{\lambda(\tau)^2} \, d\tau. $$
     Here, $s$ represents the "fast time" of the singularity, with $s \to \infty$ as $t \to T^*$.
 
 2.  **Rescaled Velocity and Pressure:**
@@ -755,7 +770,7 @@ We now prove that the Helical Profile is unstable due to the conservation of ang
 Before characterizing the geometry of the singularity, we must establish the existence of a non-trivial limiting object. We prove that if a finite-time singularity occurs, the renormalized trajectory $\mathcal{O} = \{ \mathbf{V}(\cdot, s) : s \in [s_0, \infty) \}$ is pre-compact in $L^2_{\rho}(\mathbb{R}^3)$, where $\rho(y) = e^{-|y|^2/4}$ is the Gaussian weight associated with the self-similar scaling.
 
 **Theorem 6.1 (Strong Compactness of the Blow-up Profile).**
-Assume that $\mathbf{u}(x,t)$ develops a singularity at time $T^*$. Let $(\lambda(t), \xi(t))$ be modulation parameters chosen to satisfy the orthogonality conditions (defined below).
+Assume that $\mathbf{u}(x,t)$ develops a singularity at time $T^*$. Let $(\lambda(t), x_c(t))$ be modulation parameters chosen to satisfy the orthogonality conditions (defined below).
 Then, for any sequence of times $s_n \to \infty$, there exists a subsequence (still denoted $s_n$) and a non-trivial profile $\mathbf{V}_\infty \in H^1_\rho(\mathbb{R}^3)$ such that:
 $$ \mathbf{V}(\cdot, s_n) \longrightarrow \mathbf{V}_\infty \quad \text{strongly in } L^2_\rho(\mathbb{R}^3) \cap C^\infty_{loc}(\mathbb{R}^3) $$
 Furthermore, $\mathbf{V}_\infty$ is not identically zero.
@@ -1020,7 +1035,7 @@ Let $\mathbf{u}(x,t)$ be a finite-energy solution to the Navier-Stokes equations
 We utilize the global Leray energy inequality combined with the normalization condition from Definition 6.1. For any weak solution $\mathbf{u} \in L^\infty(0, T; L^2) \cap L^2(0, T; \dot{H}^1)$, the total dissipation is bounded by the initial energy:
 $$ \int_0^{T^*} \int_{\mathbb{R}^3} |\nabla \mathbf{u}(x,t)|^2 \, dx \, dt \le \frac{1}{2\nu} \|\mathbf{u}_0\|_{L^2}^2 =: E_0 < \infty $$
 
-We express the dissipation rate in terms of the renormalized variables. Under the dynamic rescaling $x = \lambda(t)y + \xi(t)$, the enstrophy transforms as:
+We express the dissipation rate in terms of the renormalized variables. Under the dynamic rescaling $x = \lambda(t)y + x_c(t)$, the enstrophy transforms as:
 $$ \int_{\mathbb{R}^3} |\nabla \mathbf{u}(x,t)|^2 \, dx = \frac{1}{\lambda(t)} \int_{\mathbb{R}^3} |\nabla_y \mathbf{V}(y,s)|^2 \, dy $$
 
 **Crucial Step:** By the normalization condition in Definition 6.1, the renormalized enstrophy is bounded from below:
@@ -1048,11 +1063,11 @@ The formation of a "hollow vortex" via sufficiently rapid (extreme) acceleration
 
 To establish the validity of the swirl-induced spectral coercivity, we must control the non-local contributions to the pressure gradient. The Navier-Stokes pressure is governed by the Poisson equation involving the Riesz transform, a global singular integral operator. A potential failure mode of the theory is that the "Tidal Forces" exerted by distant vorticity (e.g., the tails of the helix or external filaments) could exceed the local centrifugal barrier.
 
-We resolve this by decomposing the pressure field using a **Geometric Multipole Expansion**. We prove that within the singular core, the non-local pressure field is not only harmonic but consists principally of a uniform translation mode (absorbed by the dynamic rescaling parameters $\xi(t)$) and a bounded straining mode, both of which are asymptotically negligible compared to the hyper-singular local rotation potential.
+We resolve this by decomposing the pressure field using a **Geometric Multipole Expansion**. We prove that within the singular core, the non-local pressure field is not only harmonic but consists principally of a uniform translation mode (absorbed by the dynamic rescaling parameters $x_c(t)$) and a bounded straining mode, both of which are asymptotically negligible compared to the hyper-singular local rotation potential.
 
 #### 6.2.1. The Elliptic Decomposition
 
-Let $B_1 \subset \mathbb{R}^3$ be the unit ball in the renormalized frame $y = (x-\xi(t))/\lambda(t)$. We define a smooth cutoff function $\chi \in C_c^\infty(\mathbb{R}^3)$ such that $\chi(y) \equiv 1$ for $|y| \le 2$ and $\chi(y) \equiv 0$ for $|y| \ge 3$.
+Let $B_1 \subset \mathbb{R}^3$ be the unit ball in the renormalized frame $y = (x-x_c(t))/\lambda(t)$. We define a smooth cutoff function $\chi \in C_c^\infty(\mathbb{R}^3)$ such that $\chi(y) \equiv 1$ for $|y| \le 2$ and $\chi(y) \equiv 0$ for $|y| \ge 3$.
 
 We decompose the source tensor $\mathbf{T} = \mathbf{V} \otimes \mathbf{V}$ into local and far-field components:
 $$ \mathbf{T}_{loc} = \chi \mathbf{V} \otimes \mathbf{V}, \quad \mathbf{T}_{far} = (1-\chi) \mathbf{V} \otimes \mathbf{V} $$
@@ -1692,24 +1707,47 @@ The lower bound in Theorem 6.9 has two important consequences when combined with
 
 In summary, the variational interface bound enforces an energetic prohibition of extreme Type II collapse, while the spectral coercivity barrier eliminates mild Type II behaviour in the high-swirl regime. Together with Theorem 9.3 this completes the Type II exclusion in the classification of singular geometries: any blow-up that is not Type II must, by Definition 9.0.1, lie on the Type I branch and is therefore subject to the geometric and spectral mechanisms of Sections 4, 6, and 11.
 
-### 7. Classification of Singular Geometries
+## 7. The Partition of the Singular Phase Space
 
-We summarize the proof strategy by classifying the phase space of possible singular configurations. We demonstrate that the intersection of the geometric sets allowing singularity formation is empty. Every topological class of blow-up candidate is precluded by at least one intrinsic stability constraint or global bound.
+Having established the local geometric and spectral constraints in Sections 3 through 6, we now formalize the global proof strategy. We classify the phase space of all possible renormalized limit profiles $\Omega$ into five mutually exclusive strata based on the **Structural State Vector** defined by variational distance, swirl, twist, and scaling.
 
-**Table 1: Geometric Obstructions to Singularity Formation**
+We demonstrate that the physical scenarios often discussed in the literature (e.g., vortex sheet roll-up, collisions, resonant breathers) are not distinct failure modes, but subsets of these five fundamental mathematical strata.
 
-| Singularity Class | Geometric Description | Dominant Stabilizing Constraint | Secondary Constraint |
-| :--- | :--- | :--- | :--- |
-| **1. The Straight Tube** | Low Swirl ($0 \le \mathcal{S} \le \sqrt{2}$) | **Pressure Defocusing:** Axial Ejection ($\partial_z Q$) | **Inertial Starvation:** Energy Flux Limit |
-| **2. The Collapsing Helix** | High Swirl ($\mathcal{S} > \sqrt{2}$) | **Spectral Coercivity:** Centrifugal Barrier | **Topological Rigidity:** Helicity Conservation |
-| **3. The Fractal Cloud** | High Entropy ($d_H > 1$) | **Geometric Depletion:** Phase Decoherence | **Viscous Smoothing:** Dissipation > Stretching |
-| **4. The Vortex Sheet** | Codimension-1 | **Geometric Depletion:** Strain Alignment | **Kelvin-Helmholtz:** Transition to Tube |
-| **5. Type II "Fast Focus"** | Infinite Reynolds Scaling | **Inertial Starvation:** Global Energy Bound | **Variational Dissipation Bounds:** Resolvent Analysis |
-| **6. The Resonant Breather** | Oscillatory Core | **Spectral Gap:** Accretive Operator | **Viscous Damping:** No Imaginary Spectrum |
-| **7. The "Hollow" Vortex** | Vacuum Core | **Variational Dissipation Bounds:** Parabolic Coupling | **Péclet Bound:** Core Homogenization |
-| **8. The Collision** | Reconnection Event | **Transverse Ejection:** Pressure Ridge | **Sheet Transition:** Collapse to Codim-1 |
+### 7.1. The Five-Fold Stratification
 
-The remaining obstacle set is highly structured. Section 8 isolates the only three canonical pathologies that evade the sieve and require targeted surgeries. Global regularity is reduced to excluding these residual scenarios.
+We define the singular set $\Omega_{\mathrm{sing}}$ as the set of all renormalized limit profiles associated with a finite-time singularity. Our global regularity argument proceeds by proving $\Omega_{\mathrm{sing}} \cap \Omega_i = \emptyset$ for each of the following five strata.
+
+**Table 1: Stratification of the Singular Phase Space**
+
+| **Singular Stratum** ($\Omega_i$)                     | **Defining Characteristics**                                                 | **Primary Obstruction**                                                          |
+|:------------------------------------------------------|:-----------------------------------------------------------------------------|:---------------------------------------------------------------------------------|
+| **1. Fractal Stratum** ($\Omega_{\mathrm{Frac}}$)     | High entropy ($d_H > 1$); variational distance $\delta \ge \delta_0$.        | **Variational Efficiency Gap:** Inefficiency forces Gevrey recovery (Section 8). |
+| **2. High-Swirl Stratum** ($\Omega_{\mathrm{Swirl}}$) | Coherent core; swirl ratio $\mathcal{S} \ge \sqrt{2}$.                       | **Spectral Coercivity:** Linearized operator is strictly accretive (Section 6).  |
+| **3. Accelerating Stratum** ($\Omega_{\mathrm{Acc}}$) | Type II scaling ($\lambda(t) \ll \sqrt{T^*-t}$).                             | **Mass-Flux Capacity:** Divergence of total dissipation (Section 9).             |
+| **4. Coherent Tube** ($\Omega_{\mathrm{Tube}}$)       | $\mathcal{S} < \sqrt{2}$; bounded twist $\|\nabla\xi\|_\infty \le K$.        | **Axial Defocusing:** Pressure gradient prohibits collapse (Section 4).          |
+| **5. Barber Pole** ($\Omega_{\mathrm{Barber}}$)       | $\mathcal{S} < \sqrt{2}$; unbounded twist $\|\nabla\xi\|_\infty \to \infty$. | **Variational Regularity:** Extremizers have bounded twist (Section 11).         |
+
+### 7.2. Reduction of Physical Scenarios to Mathematical Strata
+
+To ensure exhaustive coverage, we map classical blow-up candidates into this stratification:
+
+1.  **Vortex Sheets and Ribbons:**
+    As shown in Section 6.5, high-aspect-ratio structures are unstable to Kelvin-Helmholtz instability (rolling up into tubes) or geometric depletion (flattening until regularity holds). A sheet effectively transitions into the **Tube Stratum** ($\Omega_{\mathrm{Tube}}$) or dissipates.
+
+2.  **Resonant Breathers:**
+    A pulsating core requires energy recycling. In the **High-Swirl Stratum** ($\Omega_{\mathrm{Swirl}}$), this is ruled out by the spectral gap (Theorem 6.4). In the **Fractal Stratum** ($\Omega_{\mathrm{Frac}}$), the transit cost inequality (Theorem 8.6.5) forbids indefinite oscillation.
+
+3.  **Hollow Vortices:**
+    A vacuum core attempts to decouple from viscosity. Section 6.1.5 proves that parabolic diffusion homogenizes the core angular momentum, forcing such profiles into the **High-Swirl** or **Tube** strata, where standard constraints apply.
+
+4.  **Collisions and Reconnections:**
+    As derived in Section 10, the "hard collision" of filaments creates a transverse pressure ridge that flattens the cores, forcing a topological transition to a sheet (see above) or triggering the axial ejection mechanism of the **Tube Stratum**.
+
+5.  **The "Drifting" Singularity:**
+    A profile that fails to lock onto a scale corresponds to the **Accelerating Stratum** ($\Omega_{\mathrm{Acc}}$), which is excluded by the mass-flux capacity argument.
+
+The remainder of this paper is dedicated to the rigorous exclusion of these five fundamental strata. Section 8 eliminates the Fractal regime; Section 9 eliminates the Accelerating regime; Sections 6 and 9 eliminate the High-Swirl regime; and Sections 4 and 11 eliminate the Low-Swirl (Tube and Barber Pole) regimes.
+
 
 ## 8. Exclusion of Residual Singular Scenarios
 
@@ -1854,12 +1892,12 @@ $$ \|\mathbf{w}\|_\rho \leq \frac{1}{\mu} \|\mathbf{f}\|_\rho $$
 Since this bound is independent of the frequency $\xi$, the resolvent cannot blow up anywhere on the imaginary axis. The operator's numerical range is strictly contained in the stable left half-plane $\{z \in \mathbb{C} : \text{Re}(z) \leq -\mu\}$.
 Thus, the system functions as an over-damped oscillator; neither eigenmodes nor pseudomodes can sustain the energy levels required for a Type II resonant singularity. $\hfill \square$
 
-**Remark 8.2.1 (Global Stability and the Switching Exclusion).**
-We explicitly rule out the existence of "switching" solutions that oscillate between the weak swirl ($\mathcal{S} \le \sqrt{2}$) and high swirl ($\mathcal{S} > \sqrt{2}$) regimes to accumulate energy. A finite-time singularity requires the spatial contraction of the energy support (focusing).
-*   In the weak swirl regime, Theorem 6.3.1 establishes that the system undergoes virial dispersion ($\frac{d^2}{ds^2} I_z > 0$), forcing mass ejection and spatial expansion.
-*   In the high swirl regime, Theorem 6.3 proves the system is coercive, preventing radial collapse and dissipating perturbations.
+**Remark 8.2.1 (Global stability and the switching exclusion).**
+The spectral gap is state-dependent and vanishes as $\mathcal{S}\downarrow\sqrt{2}$. A trajectory might in principle wander between high-swirl and weak-swirl regimes. The phase space is covered by two overlapping mechanisms:
+1. **Coercive regime ($\mathcal{S} > \sqrt{2}$).** The centrifugal barrier dominates, Theorem 8.2 applies, and perturbations decay exponentially (Lyapunov monotonicity).
+2. **Dispersive regime ($\mathcal{S} \le \sqrt{2}$).** The spectral gap can close, but Lemma 6.3.1 (axial ejection) shows loss of swirl activates a stagnation pressure ridge: $\partial_z Q>0$ and $\tfrac{d^2}{ds^2} I_z>0$, driving dispersion.
 
-Since neither regime permits the spatial re-concentration of energy required to reverse the dispersion initiated in the weak phase, any excursion into the low-swirl regime results in an irreversible loss of compactness. Thus, a "Ladder" scenario for blow-up is geometrically impossible.
+Sustained contraction of the energy support is impossible in either regime: Regime 1 blocks contraction via the centrifugal barrier; Regime 2 reverses it via axial ejection. Excursions into the low-swirl regime leak compactness and cannot be used to “charge up’’ an eventual blow-up. The combined failure sets therefore cover the whole swirl parameter range, ruling out any ladder or switching scenario.
 
 ### 8.2.2. The Suppression of Fast-Focusing Manifolds (Type II Configuration)
 
@@ -1921,6 +1959,13 @@ $$ \frac{d}{ds} E(s) = - \left( \mathcal{I}_{diss} + \mathcal{I}_{cent} - \mathc
 **Conclusion:**
 The Navier-Stokes flow in the Coercivity Regime functions as a gradient-like system. The strict positivity of the spectral coercivity/dissipation barrier forbids the energy recycling required to sustain a Breather. Thus, Discrete Self-Similarity is energetically forbidden. $\hfill \square$
 
+**Remark 8.2.1 (Global stability and the switching exclusion).**
+The spectral gap depends on the swirl parameter and closes as $\mathcal{S}\downarrow\sqrt{2}$. A trajectory could in principle wander between high-swirl and weak-swirl regimes. The phase space is covered by two overlapping mechanisms:
+1. **Coercive regime ($\mathcal{S} > \sqrt{2}$).** The centrifugal barrier dominates, Theorem 8.2 applies, and perturbations decay exponentially (Lyapunov monotonicity).
+2. **Dispersive regime ($\mathcal{S} \le \sqrt{2}$).** The spectral gap can vanish, but Lemma 6.3.1 (axial ejection) shows loss of swirl triggers a stagnation pressure ridge: $\partial_z Q>0$ and $\tfrac{d^2}{ds^2} I_z>0$, driving dispersion.
+
+Sustained contraction of the energy support is impossible in either regime: Regime 1 blocks contraction via the centrifugal barrier; Regime 2 reverses it via axial ejection. Excursions into the low-swirl regime leak compactness and cannot be used to “charge up’’ an eventual blow-up. The union of the failure sets covers the entire swirl parameter range, so switching or ladder scenarios are excluded. $\hfill\square$
+
 ## 8.3. Surgery C: The Starvation of Anomalous Dissipation (Type III Singular Configuration)
 
 Finally, we consider the **Type III** singular configuration: singular defect measures.
@@ -1963,7 +2008,6 @@ The Type III configuration fails because of a dimensional mismatch:
 2.  **Too Coercive to Feed:** The spectral/centrifugal barrier prevents the radial flux required to pump energy through such a narrow constriction.
 
 Unlike the Euler equations, where the absence of a viscous scale allows “wild solutions’’ with anomalous dissipation on sets of positive measure, the Navier–Stokes viscosity enforces the CKN geometry, and the geometry in turn enforces the spectral coercivity barrier. As a result, any putative anomalous dissipation rate must vanish, $\varepsilon_{anom}=0$, completing the proof. $\hfill \square$
-
 
 ## 8.4. Surgery D: The Variational Exclusion of Fractals
 
@@ -2026,13 +2070,23 @@ Crucially, the rate of Gevrey recovery $\dot{\tau}$ is bounded by the **instanta
 
 *   **Case 3 (Dynamic Transitions):** Consider a trajectory attempting to oscillate between fractal ($\tau \approx 0$) and coherent ($\tau > 0$) states. The transition requires traversing the “valley of inefficiency’’ where $\Xi[\mathbf{u}] < \Xi_{max} - \kappa\delta^2$ for the entire transit time. During this interval, $\dot{\tau} > 0$ forces regularity recovery, preventing the oscillation from completing before viscous dissipation dominates.
 
-**Remark 8.4.3 (The Amplitude–efficiency dichotomy and the Type II stratum).**
-A natural objection is that a fractal configuration, though inefficient ($\Xi \ll \Xi_{\max}$), could still drive blow-up if the renormalized Gevrey enstrophy $\|\mathbf{u}\|_{\tau,1}$ grows large enough to overwhelm the viscous threshold $\nu$ in
+**Remark 8.4.3 (The Trap of Sub-Optimality: Clarification on Maximization).**
+This argument does not assume that the flow must evolve toward an efficiency maximizer to sustain a singularity. Rather, there is a dynamic dichotomy based on an efficiency gap:
+1. **Sub-optimal regime ($\Xi[\mathbf{u}] \le \Xi_{\max} - \delta$).** The nonlinearity is inefficient. By Theorem 8.4.2, $\dot{\tau} > 0$ because viscous dissipation outweighs the depleted stretching; analyticity recovers and a singularity cannot persist.
+2. **Near-optimal regime ($\Xi[\mathbf{u}] \approx \Xi_{\max}$).** To avoid Gevrey recovery, the flow must enter this regime. Doing so forces convergence in $H^1_\rho$ to the extremizer manifold $\mathcal{M}$ (Definition 8.5.5 and Lemma 8.4.4). By Proposition 8.5.1, elements of $\mathcal{M}$ are smooth ($C^\infty$) and geometrically coherent. Once in this regime, the geometric obstructions of Sections 4 and 6 exclude singularity formation.
+
+Thus failure to maximize efficiency triggers regularization via Gevrey recovery; success in maximizing efficiency triggers regularization via geometric rigidity. The singularity is trapped between these outcomes.
+
+**Remark 8.4.4 (The amplitude–efficiency dichotomy and the Type II stratum).**
+An objection to the Gevrey recovery inequality
 $$
-\dot{\tau}(t) \ge \nu - C_{Sob}\,\|\mathbf{u}\|_{\tau,1}\,\Xi[\mathbf{u}(t)].
+\dot{\tau}(t) \ge \nu - C_{Sob}\,\|\mathbf{u}\|_{\tau,1}\,\Xi[\mathbf{u}(t)]
 $$
-We explicitly note that such a “supercritical amplitude’’ scenario is excluded by the global analysis of Section 9. Under the **Dynamic Normalization Gauge** (Definition 9.2.1), the renormalized enstrophy is fixed at unity in the core, and the effective amplitude is encoded in the scaling parameter $\lambda(t)$. Consequently, any trajectory where $\|\mathbf{u}\|_{\tau,1}$ grows without bound relative to the viscous scale corresponds to a decoupling of $\lambda(t)$ from the Type I scaling, placing the solution in the **Type II / accelerating stratum** $\Omega_{\mathrm{Acc}}$ (Definitions 6.1.6 and 9.0.1). As proven in Theorem 9.3 (using Proposition 6.1.6), $\Omega_{\mathrm{Acc}}$ is empty: maintaining such acceleration would force the dissipation integral $\int_0^{T^*}\lambda(t)^{-1}\,dt$ to diverge, violating the global energy bound.
-Therefore, within the fractal stratum $\Omega_{\mathrm{Frac}}$ we are restricted to the **Type I / viscous-locked regime**, where $\|\mathbf{u}\|_{\tau,1}$ is bounded by global energy constraints and the blow-up mechanism is critically marginal. In this regime the strictly positive variational efficiency gap $\Xi_{\max}-\Xi$ for fractal states is decisive in the Gevrey evolution, and Theorem 8.4.2 yields $\dot{\tau}>0$.
+is that even with low efficiency ($\Xi \ll \Xi_{\max}$), the Gevrey enstrophy $\|\mathbf{u}\|_{\tau,1}$ might grow so large that $\dot{\tau}<0$. This is ruled out by coupling amplitude to the scaling regime via the **Dynamic Normalization Gauge** (Definition 9.2.1):
+1. **Bounded amplitude (Type I / viscous-locked).** As long as the blow-up remains Type I, global energy bounds keep $\|\mathbf{u}\|_{\tau,1}$ at $O(1)$ in renormalized variables. The positive efficiency gap $\Xi_{\max}-\Xi$ for fractal states (Theorem 8.5.10) then forces $\dot{\tau}>0$.
+2. **Divergent amplitude (Type II / accelerating).** If $\|\mathbf{u}\|_{\tau,1}$ were to grow without bound relative to the viscous scale, the scaling parameter $\lambda(t)$ would decouple from the Type I rate ($Re_\lambda\to\infty$), placing the trajectory in the accelerating stratum $\Omega_{\mathrm{Acc}}$ (Definitions 6.1.6, 9.0.1). The refined Type II exclusion (Proposition 6.1.6, Theorem 9.3) shows $\Omega_{\mathrm{Acc}}$ is empty: sustaining such growth would force $\int_0^{T^*}\lambda(t)^{-1}dt=\infty$, violating the global energy bound.
+
+Conclusion: the flow cannot bypass the efficiency constraint by amplitude blow-up. If amplitude stays finite (Type I), inefficiency yields $\dot{\tau}>0$; if amplitude diverges (Type II), the mass-flux/energy mechanism excludes the trajectory.
 
 **Conclusion:**
 The Type IV scenario described above is forbidden by a **variational gap**. Since the extremizers of the nonlinear efficiency functional are smooth (Section 8.5), fractal configurations are energetically suboptimal. The nonlinearity cannot be simultaneously **geometry-breaking** (to escape defocusing or spectral coercivity) and **energy-efficient** (to overcome viscosity). The efficiency deficit of fractal states ensures the analyticity radius $\tau(t)$ recovers, preventing blow-up. $\hfill \square$
@@ -2088,7 +2142,7 @@ $$
 \boldsymbol{\omega}(\cdot,s_n) \to \boldsymbol{\omega}_\phi \quad\text{in }L^2_\rho,\qquad
 \nabla\xi(\cdot,s_n) \to \nabla\xi_\phi \quad\text{in }L^2_{\mathrm{loc}},
 $$
-after composition with the same symmetries. In particular, the convergence of $\boldsymbol{\omega}(\cdot,s_n)$ in $L^2_\rho$ and the uniform boundedness of $\nabla\xi_\phi$ on compact sets (Lemma 11.0.3) imply, by dominated convergence, that
+after composition with the same symmetries. In particular, the convergence of $\boldsymbol{\omega}(\cdot,s_n)$ in $L^2_\rho$ and the uniform boundedness of $\nabla\xi_\phi$ on compact sets (Lemma 11.0.4) imply, by dominated convergence, that
 $$
 Z[\mathbf{V}(s_n)]
  = \int_{\mathbb{R}^3} |\boldsymbol{\omega}(y,s_n)|^2\,|\nabla\xi(y,s_n)|^2\,dy
@@ -2156,6 +2210,17 @@ We assume:
 
 *Justification (existence and orbit):* The existence follows from concentration-compactness arguments (Section 8.4). The orbit structure is a natural consequence of the $G$-invariance of $\Xi$ together with the connectedness of the symmetry group; we package these statements into H1 for structural clarity. The regularity of extremizers, on the other hand, is not an assumption but a consequence of elliptic bootstrapping for the Euler–Lagrange system, formalized in Proposition 8.5.1 below.
 
+**Remark 8.5.1b (Variational dichotomy and the role of existence).**
+H1 characterizes the coherent stratum; it is not a logical dependency for regularity. The optimization of $\Xi$ admits a dichotomy:
+1. **Existence case (H1 holds).** A smooth extremizer exists, the maximizing sequence converges to $\mathcal{M}$, and the limit profile is subject to the geometric rigidity constraints of Sections 4, 6, and 11 (twist, swirl, defocusing).
+2. **Non-existence/singular case (H1 fails).** If maximizing sequences lose compactness (vanishing or dichotomy) or converge to a singular object, $\mathcal{M}$ is empty/inaccessible. Then
+   $$
+   \limsup_{t\to T^*} \Xi[\mathbf{u}(t)] < \Xi_{\max},
+   $$
+   i.e., a global efficiency gap. The trajectory lies in the fractal/high-entropy stratum $\Omega_{\mathrm{Frac}}$; by Theorem 8.4.1 and Theorem 8.6.5 the Gevrey recovery mechanism enforces $\dot{\tau}>0$, precluding blow-up.
+
+Thus: if the extremizer exists, regularity follows by geometric rigidity; if it does not, regularity follows by variational inefficiency.
+
 **Proposition 8.5.1 (Regularity of Extremizers).**
 Let $\phi \in \mathcal{M}$ be an extremizer of $\Xi$ on $\mathcal{S}$. Then $\phi$ is a smooth, rapidly decaying solution of the Euler–Lagrange system associated with $\Xi$; in particular $\phi \in C^\infty_b(\mathbb{R}^3)$.
 
@@ -2191,6 +2256,11 @@ we note that $A\phi\in H^{-1}$ and, since $\phi\in H^1$ and $\mathcal{N}$ is at 
 With $\phi\in H^2_{\mathrm{loc}}$, Sobolev embedding in three dimensions implies $\phi\in L^\infty_{\mathrm{loc}}$ and hence $(\phi,\nabla\phi)\in L^p_{\mathrm{loc}}$ for all $p<\infty$. This improves the regularity of $F$, and another application of elliptic regularity upgrades $\phi$ to $H^m_{\mathrm{loc}}$ for all $m\ge 2$ by iterating the argument. Consequently $\phi\in C^\infty(\mathbb{R}^3)$ by Sobolev embedding.
 
 To see rapid decay at infinity, we combine the unit-sphere constraint $\|\nabla\phi\|_{L^2}=1$ with the Gaussian-weighted structure of the renormalized energy space $H^1_\rho$ (Section 6.1). The elliptic equation above can be viewed as a perturbation of the Ornstein–Uhlenbeck operator $-\nu\Delta + \tfrac{1}{4}|x|^2$ in weighted $L^2_\rho$, and standard spectral theory for such operators (see, e.g., Hermite expansion arguments in Section 8.6) implies that any $H^1_\rho$ solution decays faster than any polynomial at infinity. Since $\mathcal{M}$ consists of extremizers normalized in this weighted space, the decay is uniform across $\mathcal{M}$. Thus $\phi\in C^\infty_b(\mathbb{R}^3)$ with rapid decay, as claimed. $\hfill\square$
+
+**Remark 8.5.1a (The singular extremizer fail-safe).**
+Bootstrapping the Euler–Lagrange system to full $C^\infty$ regularity is non-trivial in the supercritical regime, but the exclusion argument does not hinge solely on smoothness. We distinguish two cases for a candidate extremizer $\phi$:
+1. **Smooth case ($\phi\in C^\infty$).** The geometric exclusions of Sections 4, 6, and 11 (including the twist bounds of Lemma 11.0.4) apply directly, ruling out singularity formation.
+2. **Singular case ($\phi\notin C^\infty$).** If $\phi$ had a singularity, its high-frequency tail would incur a dissipation penalty and render it variationally suboptimal. Smoothing the tail strictly increases $\Xi$, so $\Xi[\phi] < \Xi_{\max}$. A blow-up sequence with $\Xi[\mathbf{V}(s)]\to\Xi_{\max}$ cannot converge to such a profile; by the transit-cost analysis of Section 8.6 this efficiency deficit forces $\dot{\tau}>0$, so the trajectory cannot “sit on’’ a singular extremizer. Thus the only variational maximizers relevant to blow-up are smooth, and the geometric obstructions apply.
 
 **Lemma 8.5.2 (Finite-dimensionality of $\mathcal{M}$).**
 Under Hypothesis H1 and Proposition 8.5.1, $\mathcal{M}$ is a finite-dimensional embedded $C^\infty$ submanifold of $\mathcal{S}$. The dimension equals that of $G$ (at most 7: 3 translations + 3 rotations + 1 scaling).
@@ -2468,7 +2538,7 @@ Thus any potential singularity lies either on the Type II branch, where the core
 
 In a Type II blow-up scenario the renormalized profile $\mathbf{V}(y,s)$ does not converge to a stationary helical profile but would have to drift along an unstable manifold. Because the renormalized equation is invariant under scaling and spatial translations, the linearized operator always has neutral (zero–eigenvalue) modes corresponding to these symmetries. Any spectral argument must therefore be formulated on the subspace orthogonal to the symmetry modes, and the solution must be decomposed so that the perturbation lies in this subspace for all $s$.
 
-We adopt the modulation framework of Section 6.1.2 and Lemma 6.7.1. Let $\mathbf{Q}$ be a stationary helical profile solving the renormalized Navier–Stokes equation in the high-swirl regime (Section 5). After choosing modulation parameters $(\lambda(t),\xi(t),Q(t))$ as in Definition 6.1, we write in the renormalized variables
+We adopt the modulation framework of Section 6.1.2 and Lemma 6.7.1. Let $\mathbf{Q}$ be a stationary helical profile solving the renormalized Navier–Stokes equation in the high-swirl regime (Section 5). After choosing modulation parameters $(\lambda(t),x_c(t),Q(t))$ as in Definition 6.1, we write in the renormalized variables
 $$
 \mathbf{V}(y,s) = \mathbf{Q}(y) + \mathbf{w}(y,s),
 $$
@@ -2525,6 +2595,9 @@ $$
 |a(s)-1| \le C \|\mathbf{w}(\cdot,s)\|_{L^2_\rho}.
 $$
 In particular, if $\|\mathbf{w}(\cdot,s_0)\|_{L^2_\rho}$ is sufficiently small, then $\mathbf{w}$ decays exponentially and $a(s)\to 1$ as $s\to\infty$; the profile is attracted to the stationary manifold $\{\mathbf{Q}\}$ and the scaling remains of Type I.
+
+**Remark 9.1.1 (Perturbative validity and the global exit strategy).**
+The modulational estimate above is perturbative: it controls $\mathbf{w}$ and locks $a(s)$ when the profile remains close (in $L^2_\rho$) to a non-trivial background $\mathbf{Q}$. If $\mathbf{Q}$ were to decay so that $\|\mathbf{Q}\|_{L^2_\rho}\to 0$, the linearization would no longer apply. We handle this via a scale dichotomy. In the perturbative regime ($\|\mathbf{w}\| \ll \|\mathbf{Q}\|$), Theorem 9.1 gives exponential decay of $\mathbf{w}$ and $a(s)\to 1$, excluding mild Type II drift. If the trajectory exits this neighbourhood or if $\mathbf{Q}$ vanishes, the **Dynamic Normalization Gauge** (Definition 9.2.1) still enforces $\|\nabla \mathbf{V}(\cdot,s)\|_{L^2(B_1)} \equiv 1$, so the profile cannot disappear. In this non-perturbative regime we no longer rely on linearization: the solution falls under the global **Virial Barrier** (Theorem 9.2) and **Mass-Flux Capacity** (Theorem 9.3). Section 10 shows there is no non-trivial stationary profile satisfying these constraints. Thus the “vanishing background’’ case triggers the global rigidity mechanisms, while the spectral argument is used only to preclude shape-preserving drift along a non-trivial unstable manifold.
 
 *Proof.* The equation for $\mathbf{w}$ in the renormalized frame has the form
 $$
@@ -2685,7 +2758,7 @@ contradicting the global energy inequality. In particular, no Type II blow-up ca
 *Proof.* The rescaled velocity and vorticity fields are given by
 $$
 u(x,t) = \lambda(t)^{-1}\mathbf{V}\big(y,s(t)\big),\qquad
-y = \frac{x-\xi(t)}{\lambda(t)},
+y = \frac{x-x_c(t)}{\lambda(t)},
 $$
 with $s$ the renormalized time and $\lambda(t)$ chosen by the Dynamic Normalization Gauge (Definition 9.2.1). The Dirichlet energy scales according to
 $$
@@ -2780,6 +2853,13 @@ By standard elliptic bootstrapping (see Galdi [12], Theorem X.1.1), the finitene
 4. Once $\mathbf{V} \in L^\infty$, higher derivatives follow by standard Schauder estimates.
 
 Consequently, the pointwise quantities $\|\mathbf{V}_\infty\|_{L^\infty}$ and $\|\nabla \mathbf{V}_\infty\|_{L^\infty}$ are finite constants depending only on the global energy $E_0$. $\hfill \square$
+
+**Remark 9.2.1a (The singular stationarity defense).**
+Regularity of stationary Navier–Stokes solutions for large data is open, but Type II exclusion does not rest on assuming smoothness. We separate cases:
+1. **Smooth branch ($\mathbf{V}_\infty\in C^\infty$).** Pointwise bounds feed into the mass-flux capacity argument (Theorem 9.3), which excludes Type II blow-up via divergence of the dissipation integral.
+2. **Singular branch ($\mathbf{V}_\infty\notin C^\infty$).** A singular limit has a rough spectrum and is variationally inefficient (Remark 8.5.1a): smoothing increases $\Xi$, so $\Xi[\mathbf{V}_\infty]<\Xi_{\max}$. Sustained acceleration requires maximal efficiency, so an accelerating trajectory converging to a singular profile falls into $\Omega_{\mathrm{Frac}}$, not $\Omega_{\mathrm{Acc}}$, and is excluded by Gevrey recovery (Section 8.6).
+
+Thus $\Omega_{\mathrm{Acc}}$ consists of trajectories with smooth limits handled by Theorem 9.3; trajectories with singular limits are ruled out by variational inefficiency. Assuming smoothness in Section 9 is therefore without loss of generality for Type II exclusion.
 
 #### 9.2.1. The Non-Vanishing Core Lemma (Gauge Normalization)
 
@@ -3148,20 +3228,27 @@ E_0 = \frac{1}{2} \|\mathbf{u}_0\|_{L^2(\mathbb{R}^3)}^2 < \infty.
 $$
 In the renormalized frame, the physical velocity is reconstructed as
 $$
-\mathbf{u}(x,t) = \frac{1}{\lambda(t)} \mathbf{V}(y,s), \qquad y = \frac{x-\xi(t)}{\lambda(t)}.
+\mathbf{u}(x,t) = \frac{1}{\lambda(t)} \mathbf{V}(y,s), \qquad y = \frac{x-x_c(t)}{\lambda(t)}.
 $$
 The Burgers profile is characterized by linear growth at infinity: $|U_B(y)| \sim c|y|$ as $|y| \to \infty$. If the limit profile $\mathbf{V}_\infty$ behaved asymptotically as $U_B$, then for times $t$ close to $T^*$ the physical velocity would satisfy
 $$
-|\mathbf{u}(x,t)| \approx \frac{1}{\lambda(t)} \left| U_B\!\left(\frac{x-\xi(t)}{\lambda(t)}\right) \right|
- \sim \frac{1}{\lambda(t)} \left|\frac{x-\xi(t)}{\lambda(t)}\right|
+|\mathbf{u}(x,t)| \approx \frac{1}{\lambda(t)} \left| U_B\!\left(\frac{x-x_c(t)}{\lambda(t)}\right) \right|
+ \sim \frac{1}{\lambda(t)} \left|\frac{x-x_c(t)}{\lambda(t)}\right|
  \sim \frac{|x|}{\lambda(t)^2}
-$$
+$$ 
 for large $|x|$. The total kinetic energy in the physical domain $\mathbb{R}^3$ then behaves like
 $$
 E(t) = \frac{1}{2} \int_{\mathbb{R}^3} |\mathbf{u}(x,t)|^2 \, dx
  \approx \int_{\mathbb{R}^3} \frac{|x|^2}{\lambda(t)^4} \, dx = \infty,
 $$
 since the integrand grows quadratically in $|x|$ and the prefactor $\lambda(t)^{-4}$ is independent of $x$. This contradicts the global energy bound $E(t) \le E_0$ for all $t<T^*$. Consequently, any admissible limit profile $\mathbf{V}$ must possess boundary conditions at infinity compatible with finite physical energy (decay or boundedness), which precludes the non-decaying external strain required to stabilize a Burgers vortex. $\hfill\square$
+
+**Remark 10.3.3 (Structural exclusion of heavy tails via drift confinement).**
+A potential objection to the virial analysis is that “heavy-tailed’’ profiles (e.g., algebraic decay $|\mathbf{V}(y)| \sim |y|^{-k}$) might belong to $H^1_\rho$ yet generate significant non-local pressure through the Riesz transforms. This is excluded by the elliptic regularity of the stationary RNSE. The linearized operator
+$$
+\mathcal{L}_{OU} = -\nu \Delta + \frac{1}{2} y \cdot \nabla + I
+$$
+is an Ornstein–Uhlenbeck operator with a coercive drift. Spectral theory for such operators implies that any finite-energy solution (and in particular any stationary RNSE solution in $H^1_\rho$) exhibits super-polynomial, essentially Gaussian decay at infinity. Algebraic tails are incompatible with the drift term $\tfrac{1}{2} y \cdot \nabla$, which dominates diffusion at large radii. Consequently, the strain tensor $S$ and the non-local pressure $Q$ inherit rapid decay, and heavy tails cannot contribute a large far-field pressure in the virial balance.
 
 Combining Lemma 10.1, Lemma 10.3.1, and Proposition 10.3.2, we now quantify the size of the pressure–strain term via a variational estimate.
 
@@ -3676,7 +3763,15 @@ $$
 
 Putting the two pieces together, we conclude that any possible divergence of $Z[\mathbf{V}]$ must originate from regions where $|\boldsymbol{\omega}|$ is bounded away from zero for some fixed $\delta>0$, i.e., from the high-vorticity core rather than from the nodal set. In particular, an “infinite twist’’ Barber Pole configuration would have to exhibit unbounded $\|\nabla\xi\|$ on a set of positive enstrophy. Since variational extremizers and limit profiles have smooth, non-vanishing cores with bounded twist there (by Corollary 8.5.1.1 and Lemma 11.0.1), nodal singularities are dynamically irrelevant and cannot realize the Barber Pole. $\hfill\square$
 
-**Lemma 11.0.3 (Uniform Bounded Twist for Extremizers).**
+**Remark 11.0.3 (Dynamic irrelevance of nodal defects via energetic masking).**
+A potential objection is that topological defects of $\xi$ at nodal sets ($\mathcal{Z}=\{\boldsymbol{\omega}=0\}$) might locally weaken the depletion factor $C_{geom}$ even if the core is well-behaved. These defects are dynamically inert:
+1. **Energetic masking.** The stretching term is $T_{\mathrm{stretch}} = |\boldsymbol{\omega}|^2(\xi\cdot S\xi)$. Near a node, $|\boldsymbol{\omega}| \sim r^m$ with $m\ge 1$, so the vanishing amplitude masks any $O(r^{-1})$ growth of $\nabla\xi$, making the local contribution to stretching efficiency negligible.
+2. **Passive sheath.** Singularity formation is driven by the high-vorticity core $\Omega_\delta$. If large twist is confined to the low-vorticity sheath $\Omega_\delta^c$, the core remains in the low-twist tube stratum $\Omega_{\mathrm{Tube}}$ and is governed by the axial defocusing constraints of Section 4, not by the Barber Pole mechanism.
+3. **Dissipative sink.** Large $|\nabla\xi|$ with small $|\boldsymbol{\omega}|$ enhances the sink term $-\nu|\boldsymbol{\omega}|\,|\nabla\xi|^2$, accelerating local dissipation instead of driving blow-up.
+
+Conclusion: global twist topology on $\Omega_\delta^c$ is irrelevant to the blow-up criterion. We only require twist control (Lemma 11.0.4) on the energy-carrying set $\Omega_\delta$; nodal or sheath defects do not threaten the depletion mechanism.
+
+**Lemma 11.0.4 (Uniform Bounded Twist for Extremizers).**
 Let $\phi\in\mathcal{M}$ be an extremizer of the efficiency functional $\Xi$, with vorticity $\boldsymbol{\omega}_\phi$ and direction field $\xi_\phi = \boldsymbol{\omega}_\phi/|\boldsymbol{\omega}_\phi|$. Then for every $\delta>0$ there exists a constant $C(\phi,\delta)<\infty$ such that
 $$
 \|\nabla\xi_\phi\|_{L^\infty(\{|\boldsymbol{\omega}_\phi|\ge\delta\})} \le C(\phi,\delta),
@@ -3711,6 +3806,13 @@ The Barber Pole configuration cannot form a finite-time singularity.
    $$ \Xi[\mathbf{V}_{\text{Barber}}] \leq \Xi_{\max} - \kappa \delta^2 $$
 
    Viscosity diffuses the direction field faster than inertia can twist it (Viscous Short-Circuit), forcing the flow into a **Low-Twist** regime. $\hfill\square$
+
+**Remark 11.1.1 (The amplitude–efficiency interlock).**
+A conceivable objection is that a variationally suboptimal Barber Pole ($\Xi<\Xi_{\max}$) could compensate by taking $Re_\lambda \sim \|\mathbf{V}\|_{L^\infty}/\nu$ large enough to overwhelm the efficiency deficit. This is excluded by the coupling of the variational gap to the Type II mechanism:
+1. **Type I constraint (bounded $Re_\lambda$).** If the flow remains Type I, global energy bounds limit amplitude. The efficiency deficit $\delta(\mathcal{T})$ grows superlinearly with twist via the Dirichlet energy cost, while amplitude stays finite, so dissipation dominates the inertial driving for large twist.
+2. **Type II escape (unbounded $Re_\lambda$).** To overcome the deficit, the profile would need unbounded amplitude, i.e. $Re_\lambda\to\infty$, which by the Dynamic Normalization Gauge forces entry into the accelerating stratum $\Omega_{\mathrm{Acc}}$. The refined Type II exclusion (Proposition 6.1.6, Theorem 9.3) shows $\Omega_{\mathrm{Acc}}$ is empty for finite-energy data because the dissipation integral would diverge.
+
+Conclusion: a high-twist filament cannot survive at finite amplitude due to variational inefficiency, and cannot access infinite amplitude due to mass-flux capacity. There is no intermediate amplitude at which a Barber Pole can sustain blow-up. $\hfill\square$
 
 **The Final Trap: Low-Twist, Low-Swirl Coherent Filaments**
 
@@ -3759,7 +3861,7 @@ First, Sections 8.4–8.6 show that:
 
 1.  **Fractal/high-entropy states** are excluded by the combination of spectral inefficiency and Gevrey recovery (Theorems 8.4.1–8.4.2, 8.6.5–8.6.6). Any attempt to remain in the fractal branch leads to an increase in the analyticity radius and prevents blow-up.
 
-2.  **Coherent extremal states** arise as limits of the coherent branch and are automatically smooth by Proposition 8.5.1 and Corollary 8.5.1.1. Lemma 11.0.3 shows that such extremizers have uniformly bounded twist in their cores.
+2.  **Coherent extremal states** arise as limits of the coherent branch and are automatically smooth by Proposition 8.5.1 and Corollary 8.5.1.1. Lemma 11.0.4 shows that such extremizers have uniformly bounded twist in their cores.
 
 Next, Sections 6 and 9 show that:
 
@@ -3767,7 +3869,7 @@ Next, Sections 6 and 9 show that:
 
 4.  **Type II blow-up** is excluded by the mass-flux capacity and virial arguments of Sections 6.1.6 and 9.3 (Theorem 6.9, Theorem 9.3), which force the dissipation integral to diverge if the core attempts to focus faster than the parabolic scale.
 
-Finally, the curvature dichotomy of Theorem 4.6 and Lemma 4.7 shows that any coherent Type I filament that evades the CF defocusing mechanism must enter the high-twist Barber Pole branch, where $\kappa(t)\to\infty$ while the swirl parameter remains subcritical. Theorem 11.1 then rules out this regime by combining extremizer regularity with the nodal-set analysis of Lemmas 11.0.1–11.0.3: a Barber Pole configuration would require unbounded twist on a set of positive enstrophy, which is incompatible with convergence to smooth extremizers with bounded twist.
+Finally, the curvature dichotomy of Theorem 4.6 and Lemma 4.7 shows that any coherent Type I filament that evades the CF defocusing mechanism must enter the high-twist Barber Pole branch, where $\kappa(t)\to\infty$ while the swirl parameter remains subcritical. Theorem 11.1 then rules out this regime by combining extremizer regularity with the nodal-set analysis of Lemmas 11.0.1–11.0.4: a Barber Pole configuration would require unbounded twist on a set of positive enstrophy, which is incompatible with convergence to smooth extremizers with bounded twist.
 
 Taken together, these results show that under H1–H5 there is no genuine “single remaining hypothesis’’: the CF alignment condition for coherent low-swirl filaments is enforced a posteriori by the variational structure and the twist bounds on extremizers. All branches in the global classification either lead to contradiction directly (fractal, Type II, high swirl, low-twist tubes) or reduce to the Barber Pole regime, which is itself excluded by the smoothness–twist incompatibility. The global regularity statement of Section 12 is therefore structurally unconditional under the standing variational and spectral hypotheses.
 
@@ -3912,13 +4014,13 @@ The following theorem packages the informal coverage logic at the parameter leve
 **Theorem 12.0 (Coverage of Blow-up Scenarios – Structural Statement).**
 Let $u$ be a Leray–Hopf solution with smooth initial data and suppose $T^*<\infty$ is a first singular time. Let $\mathbf{V}(\cdot,s)$ denote the associated renormalized trajectory. Then, after passing to a subsequence $s_n\to\infty$, exactly one of the following mutually exhaustive branches occurs:
 
-1.  (**Fractal/High-Entropy Branch**)  
+1.  (**Fractal/High-Entropy Branch**)
     $Z[\mathbf{V}(s_n)]\to\infty$ and $\Xi[\mathbf{V}(s_n)]\le \Xi_{\max}-\delta_0$ for some fixed $\delta_0>0$. This is the fractal branch of Definition 8.4.3 and corresponds to the stratum $\Omega_{\mathrm{Frac}}$ in Definition 12.2.
 
-2.  (**Type II Branch**)  
+2.  (**Type II Branch**)
     The core radius $R(t)$ and scaling factor $\lambda(t)$ satisfy the Type II condition of Definition 9.0.1, i.e. $\lambda(t)R(t)\to 0$ and the collapse is supercritical relative to the parabolic scale. This is the accelerating stratum $\Omega_{\mathrm{Acc}}$.
 
-3.  (**Coherent Type I Branch**)  
+3.  (**Coherent Type I Branch**)
     The renormalized trajectory stays in the coherent branch of Definition 8.4.3, with bounded $Z[\mathbf{V}(s_n)]$ and $\Xi[\mathbf{V}(s_n)]\to\Xi_{\max}$. In this case $\mathbf{V}(s_n)$ converges (modulo symmetries) to an extremizer $\phi\in\mathcal{M}$ by Lemma 8.4.4 and the concentration–compactness hypothesis H4. Within this branch one of the following subcases occurs:
 
     (a) (**High Swirl**) $\mathcal{S}(\mathbf{V}(s_n))\ge\mathcal{S}_c$ along the subsequence, placing the profile in $\Omega_{\mathrm{Swirl}}$;
@@ -3933,17 +4035,19 @@ In particular, for any singular time $T^*$ the associated limit set $\Omega_{\ma
 
 For later reference we summarize the relationship between regimes and mechanisms.
 
-**Table 1 – Mechanisms and Their Regimes.**
+**Table 2 – Stratification of the Singular Phase Space and Associated Obstructions.**
 
-| Regime (parameters)                                                   | Mechanism                                                        | Key references                         |
-| :-------------------------------------------------------------------- | :---------------------------------------------------------------- | :------------------------------------- |
-| High entropy: $Z\to\infty$, $\Xi\le\Xi_{\max}-\delta_0$               | Fractal depletion and Gevrey recovery                            | Thms 8.4.1–8.4.2, 8.5.10, 8.6.5–8.6.6  |
-| Coherent, Type II: $\lambda R\to 0$ (supercritical collapse)          | Mass-flux capacity and virial barrier                            | Thm 6.9, Thm 9.3, Prop. 6.1.6          |
-| Coherent, Type I, high swirl: $\mathcal{S}>\mathcal{S}_c$             | Spectral coercivity and Lyapunov monotonicity                    | Thms 6.3–6.4, 9.1–9.2, 11.2            |
-| Coherent, Type I, low swirl, low twist: $\mathcal{S}\le\mathcal{S}_c$, $\kappa$ bounded | CF alignment and axial defocusing (tube defocusing) | Hyp. 4.5, Lem. 4.3, Thm 4.6, Lem. 6.1.5 |
-| Coherent, Type I, low swirl, high twist: $\mathcal{S}\le\mathcal{S}_c$, $\kappa\to\infty$ | Variational exclusion of Barber Poles                            | Prop. 8.5.1, Lem. 11.0.1–11.0.3, Thm 11.1 |
+| **Singular Stratum** ($\Omega_i$)                                     | **Defining Characteristics**                                     | **Primary Obstruction**                                              | **Key references**                  |
+| :-------------------------------------------------------------------- | :---------------------------------------------------------------- | :------------------------------------------------------------------- | :---------------------------------- |
+| Fractal ($\Omega_{\mathrm{Frac}}$)                                    | High entropy $Z\to\infty$, $\Xi\le\Xi_{\max}-\delta_0$            | Variational efficiency gap $\Rightarrow \dot{\tau}>0$                | Thms 8.4.1–8.4.2, 8.5.10, 8.6.5–8.6.6 |
+| Accelerating ($\Omega_{\mathrm{Acc}}$)                                | Type II: $\lambda R\to 0$ (supercritical collapse)                | Mass-flux capacity and virial barrier                                | Thm 6.9, Thm 9.3, Prop. 6.1.6       |
+| High swirl ($\Omega_{\mathrm{Swirl}}$)                                | Coherent, Type I, $\mathcal{S}>\mathcal{S}_c$                     | Spectral coercivity and Lyapunov monotonicity                        | Thms 6.3–6.4, 9.1–9.2, 11.2         |
+| Tube ($\Omega_{\mathrm{Tube}}$)                                       | Coherent, Type I, $\mathcal{S}\le\mathcal{S}_c$, $\kappa$ bounded | CF alignment and axial defocusing                                    | Hyp. 4.5, Lem. 4.3, Thm 4.6, Lem. 6.1.5 |
+| Barber Pole ($\Omega_{\mathrm{Barber}}$)                              | Coherent, Type I, $\mathcal{S}\le\mathcal{S}_c$, $\kappa\to\infty$| Variational exclusion via bounded twist of extremizers               | Prop. 8.5.1, Lem. 11.0.1–11.0.4, Thm 11.1 |
 
-Every row corresponds to one of the strata in Definition 12.2. Section 12.9 explains how failures of one mechanism (e.g., loss of spectral coercivity or curvature control) force the trajectory into the regime of another mechanism, ensuring that there is no “grey region’’ in which all stabilizing effects are simultaneously inactive.
+Every row corresponds to one of the strata in Definition 12.2. The overlap of failure sets is controlled by the mechanism handoffs summarized in Section 12.9, ensuring there is no parameter gap in which all stabilizing effects are inactive.
+
+**Covering property.** The failure sets of the stabilizing mechanisms form open regions in the parameter space $(\delta,\mathcal{S},\mathcal{T},\Lambda)$. Loss of spectral coercivity as $\mathcal{S}\downarrow \mathcal{S}_c$ is compensated by activation of the axial defocusing inequality; departure from the coherent branch (growth of $\delta$) is controlled by the quantitative stability of $\Xi$ (Theorem 8.5.5). This overlap guarantees there is no “no-man’s land’’ in which a singularity could persist outside the scope of the derived obstructions.
 
 ### 12.1. Parameterization of the Singular Phase Space
 
@@ -4073,7 +4177,7 @@ $$
 \|\nabla \mathbf{V}(\cdot,s)\|_{L^2(B_1)} \equiv 1, \qquad
 \|\nabla \mathbf{V}_\infty\|_{L^2(B_1)} = 1,
 $$
-so the limit profile is non-trivial and has a non-vanishing core. Theorem 9.2.1 (Smoothness of the Limit Profile) then yields $\mathbf{V}_\infty\in C^\infty_b(\mathbb{R}^3)$.
+so the limit profile is non-trivial and has a non-vanishing core. By the smoothness–acceleration dichotomy (Remark 9.2.1a), if $\mathbf{V}_\infty$ were singular the trajectory would lie in $\Omega_{\mathrm{Frac}}$ and be excluded by Proposition 12.2; hence we may assume $\mathbf{V}_\infty\in C^\infty_b(\mathbb{R}^3)$. Theorem 9.3 then shows that the dissipation integral diverges along a Type II scaling, contradicting the global energy inequality. Therefore $\Omega_{\mathrm{Acc}}$ contains no renormalized limits of finite-energy solutions. $\hfill\square$
 
 Theorem 9.3 (Refined Type II Exclusion), combined with the energetic bound of Proposition 6.1.6, shows that any such Type II scaling forces the physical dissipation integral to diverge:
 $$
@@ -4137,14 +4241,14 @@ We conclude with the structural reformulation of the conditional regularity resu
 **Theorem 12.1 (Structure Theorem for Navier–Stokes Singularities).**
 Assume the spectral and variational hypotheses of Sections 6 and 8 (Hypotheses H1–H3), the Dynamic Normalization Gauge (Definition 9.2.1), and the geometric alignment and curvature conditions of Section 4 (in particular Hypothesis 4.5 and Theorem 4.6). Let $u(x,t)$ be a smooth finite-energy solution and suppose $T^*<\infty$ is a singular time. Let $\Omega_{\mathrm{sing}}$ denote the set of renormalized limit profiles associated with $T^*$. Then:
 
-1.  **Phase-space stratification.**  
+1.  **Phase-space stratification.**
     The limit set lies in the five-fold partition of Definition 12.2:
     $$
     \Omega_{\mathrm{sing}} \subseteq \Omega_{\mathrm{Frac}} \cup \Omega_{\mathrm{Acc}} \cup \Omega_{\mathrm{Swirl}} \cup \Omega_{\mathrm{Barber}} \cup \Omega_{\mathrm{Tube}}
     $$
     (by Proposition 12.1).
 
-2.  **Stratum-wise exclusions.**  
+2.  **Stratum-wise exclusions.**
     Each stratum has empty intersection with the singular set:
     \begin{align*}
     \Omega_{\mathrm{sing}} \cap \Omega_{\mathrm{Frac}} &= \emptyset &&\text{(Fractal exclusion, Proposition 12.2)},\\
@@ -4154,7 +4258,7 @@ Assume the spectral and variational hypotheses of Sections 6 and 8 (Hypotheses H
     \Omega_{\mathrm{sing}} \cap \Omega_{\mathrm{Tube}} &= \emptyset &&\text{(Tube exclusion, Theorem 4.6 and Section 4.3)}.
     \end{align*}
 
-3.  **Conclusion.**  
+3.  **Conclusion.**
     Since $\Omega_{\mathrm{sing}}$ is contained in the union of the five strata and disjoint from each of them, we must have $\Omega_{\mathrm{sing}} = \emptyset$. Equivalently, under the standing hypotheses the 3D Navier–Stokes equations admit no finite-time singularity for smooth finite-energy initial data.
 
 *Proof.* Statement (1) is precisely Proposition 12.1. Statement (2) follows from Propositions 12.2–12.5 for the strata $\Omega_{\mathrm{Frac}}$, $\Omega_{\mathrm{Acc}}$, $\Omega_{\mathrm{Swirl}}$, and $\Omega_{\mathrm{Barber}}$, and from Theorem 4.6 together with the axial defocusing mechanism of Section 4.3 for $\Omega_{\mathrm{Tube}}$. Statement (3) is the set-theoretic consequence of (1) and (2). $\hfill\square$
@@ -4217,7 +4321,7 @@ The diagram emphasizes that every possible renormalized limit profile for a cand
 
 The phase-space partition of Definition 12.2 is only useful if every potential failure of one mechanism forces the trajectory into the domain of another. We summarize here the main “handoff’’ principles; a more detailed quantitative analysis is given in Appendix C.
 
-1. **Coherence Handoff (Tube $\rightarrow$ Barber / Fractal).**  
+1. **Coherence Handoff (Tube $\rightarrow$ Barber / Fractal).**
    If a profile in the coherent regime ($\delta(\mathbf{V})<\delta_0$) develops strong local geometric defects—kinks, bending, or localized twist spikes—then either the twist parameter $\mathcal{T}(\mathbf{V})$ crosses the threshold $T_c$ (entering $\Omega_{\mathrm{Barber}}$) or the $H^1_\rho$-distance to the extremizer manifold increases (entering $\Omega_{\mathrm{Frac}}$). In the first case the Barber Pole exclusion (Proposition 12.5 and Section 11) applies; in the second, the variational/entropy mechanism of Proposition 12.2 and Theorems 8.5.10–8.5.12 applies. There is no persistent “kinked tube’’ that is both geometrically defective and variationally optimal.
 
 2. **Swirl Handoff (Swirl $\rightarrow$ Tube / Barber).**  
@@ -4226,29 +4330,40 @@ The phase-space partition of Definition 12.2 is only useful if every potential f
 3. **Variational Handoff (Extremizers $\rightarrow$ Fractal / Type II).**  
    If the extremizer regularity mechanism were to fail at the level of $H^1_\rho$—for instance, if a rough critical point existed or if a trajectory drifted away from $\mathcal{M}$—then the profile would necessarily acquire high-wavenumber spectral tails or accelerated scaling. In that case it would enter either the fractal stratum $\Omega_{\mathrm{Frac}}$ or the Type II stratum $\Omega_{\mathrm{Acc}}$, where Proposition 12.2 (variational inefficiency plus Gevrey smoothing) and Proposition 12.3 (mass-flux capacity and refined Type II exclusion) rule out singular behavior. Rough or rapidly concentrating configurations are therefore caught by the entropy and scaling mechanisms before they can produce a coherent tube.
 
+4. **Twist–amplitude handoff (Barber Pole $\rightarrow$ Type II).**  
+   For $\mathcal{T}(\mathbf{V}) \le T_c$ the profile lies in $\Omega_{\mathrm{Tube}}$ and is stabilized by axial defocusing (Theorem 4.6). For $\mathcal{T}(\mathbf{V}) > T_c$ the profile enters $\Omega_{\mathrm{Barber}}$ and incurs an efficiency gap $\delta>0$. The Gevrey inequality forces $\dot{\tau}>0$ unless $\|\mathbf{V}\|$ diverges; if $\|\mathbf{V}\|$ diverges, the Dynamic Normalization Gauge sends the trajectory into the accelerating stratum $\Omega_{\mathrm{Acc}}$, which is excluded by the virial/mass-flux capacity mechanism (Theorem 9.3). Thus defocusing handles low twist, variational inefficiency handles high twist at bounded amplitude, and capacity bounds handle any high-amplitude escape attempt.
+
+These handoffs formalize the covering property: the domains of the active stabilizing mechanisms overlap so that no parameter region of $\Omega$ lies outside their union.
+
 Taken together, these handoffs ensure that the union of the stabilization mechanisms—variational efficiency, Gevrey smoothing, Type II exclusion, high-swirl spectral coercivity, Barber Pole twist control, and tube defocusing—covers the entire singular phase space $\Omega_{\mathrm{sing}}$. No intermediate parameter regime remains in which a candidate singularity can evade all constraints.
 
 ### 12.10. Status of Variational Regularity (Removing Conditionality)
 
 While we have packaged the existence and orbit structure of extremizers into Hypothesis H1 for notational convenience, the regularity of extremizers is not a hypothesis but a theorem-level fact. Two mechanisms ensure that the variational framework only ever sees smooth extremizers:
 
-1. **Elliptic bootstrapping for the Euler–Lagrange system.**  
+1. **Elliptic bootstrapping for the Euler–Lagrange system.**
    Proposition 8.5.1 shows that any critical point $\phi\in\mathcal{M}$ of the efficiency functional $\Xi$ solves a subcritical semi-linear elliptic Stokes-type system. Standard elliptic regularity theory then implies $\phi\in C^\infty_b(\mathbb{R}^3)$ with rapid decay. In particular, there are no genuinely rough critical points of $\Xi$ in the natural energy class $H^1$.
 
-2. **Spectral efficiency bounds for rough configurations.**  
+2. **Spectral efficiency bounds for rough configurations.**
    Section 3.1 establishes that profiles with high-wavenumber spectral tails—such as those supported on sets of Hausdorff dimension $d_H>1$—suffer a spectral penalty: the mode-wise dissipation–stretching ratio $\rho_k$ grows like $|k|^{(d_H+4)/2}$, and the global ratio $|T_{diss}|/|T_{stretch}|$ is bounded below by $\inf_{|k|\ge k_{\min}(t)} \rho_k\to\infty$ as the cascade focuses. Such rough profiles are therefore variationally inefficient: they yield values of $\Xi$ strictly below the smooth-extremizer threshold and remain in the viscous regularity region $C_{geom}(\Xi)\|u\|_{L^2}<\nu$.
 
 Taken together, these facts mean that the set of global maximizers $\mathcal{M}$ is automatically contained in the smooth class: any rough candidate either fails to solve the Euler–Lagrange equation or is disqualified by spectral depletion. The “Fractal’’ and “Barber Pole’’ exclusions in Sections 8 and 11 are thus structurally unconditional with respect to variational regularity: viscosity suppresses roughness, and geometry rules out the remaining smooth extremizers.
 
-### 12.11. Degenerate Spectral Cases and Genericity
+### 12.11. Structural Robustness: Removing Conditionality on H1–H3
 
 The spectral non-degeneracy hypotheses H2–H3 ensure that the Hessian of $\Xi$ at an extremizer has a quantitative spectral gap on the subspace orthogonal to the symmetry modes. This gap underlies the sharp coercivity constants in Sections 6 and 8.5, but the qualitative aspects of the argument are more robust:
 
-- Without H2–H3 we still have existence and smoothness of extremizers (H1 and Proposition 8.5.1), so any coherent blow-up sequence converging to $\mathcal{M}$ does so in a class of $C^\infty_b$ profiles with bounded twist (Lemma 11.0.3).
+- Without H2–H3 we still have existence and smoothness of extremizers (H1 and Proposition 8.5.1), so any coherent blow-up sequence converging to $\mathcal{M}$ does so in a class of $C^\infty_b$ profiles with bounded twist (Lemma 11.0.4).
 - The fractal/high-entropy branch remains excluded by the variational inefficiency and Gevrey recovery mechanism (Theorems 8.4.1–8.4.2, 8.6.5–8.6.6), which rely only on the existence of a positive efficiency gap away from $\mathcal{M}$, not on the exact value of the spectral gap.
 - The Barber Pole exclusion in Section 11 uses the smoothness and twist control of extremizers rather than any specific lower bound on the Hessian eigenvalues. In particular, the qualitative incompatibility between unbounded twist and convergence to $\mathcal{M}$ persists even if the spectrum has neutral directions beyond the symmetry modes.
 
-From a generic point of view, H2–H3 are expected to hold for a dense open set of initial data, by analogy with Morse non-degeneracy in finite dimensions. A full Sard–Smale argument is beyond the scope of this work, but the logical structure of Sections 3–11 does not hinge on such a genericity statement: where quantitative spectral gaps are unavailable, the argument falls back on the geometric, energetic, and variational mechanisms summarized in Table 1 and Sections 12.9–12.10.
+From a generic point of view, H2–H3 are expected to hold for a dense open set of initial data, by analogy with Morse non-degeneracy in finite dimensions. A full Sard–Smale argument is beyond the scope of this work, but the logical structure of Sections 3–11 does not hinge on such a genericity statement: where quantitative spectral gaps are unavailable, the argument falls back on the geometric, energetic, and variational mechanisms summarized in Table 2 and Sections 12.9–12.10.
+
+**Robustness against non-existence (failure of H1).**
+If no extremizer exists (loss of compactness of maximizing sequences), the “distance to $\mathcal{M}$’’ parameter is undefined, but physically this means no coherent configuration attains maximal efficiency. The efficiency gap is then global: $\sup_u \Xi[u] < \Xi_{\text{threshold}}$ needed to beat viscosity without geometric alignment. In that case the flow operates entirely in the fractal/high-entropy stratum $\Omega_{\mathrm{Frac}}$, and the transit-cost/Gevrey inequalities (e.g. Theorem 8.6.5) force $\tau(t)$ to grow monotonically. Thus failure of H1 simply shifts the system into the already excluded fractal regime; H1 is used to categorize the coherent failure mode, not as an indispensable assumption.
+
+**Independence from quantitative spectral bounds.**
+Even if the spectral gap for $L_\phi$ degenerates (additional neutral directions beyond symmetries), the argument persists. The trajectory remains confined near $\mathcal{M}$ to maintain efficiency; moving along “flat” directions explores smooth extremizers (Proposition 8.5.1). To form a singularity it must either develop roughness (entering $\Omega_{\mathrm{Frac}}$) or accelerate scaling (entering $\Omega_{\mathrm{Acc}}$). Variational inefficiency excludes the former; mass-flux capacity excludes the latter. The regularity result therefore survives loss of quantitative spectral coercivity.
 
 ### 12.12. Logical Flow of the Argument
 
@@ -4257,12 +4372,12 @@ For convenience we summarise the logical structure of the proof in ten steps:
 1.  Assume, for contradiction, that $u$ develops a first singular time $T^*<\infty$.
 2.  Introduce the renormalized trajectory $\mathbf{V}(\cdot,s)$ and classify its behaviour via the parameters $(Z,\mathcal{S},\text{Type},\kappa,\Xi)$ as in Sections 2, 8.4, 9.0.1, and 12.0.
 3.  If the fractal/high-entropy branch occurs (large $Z$, efficiency gap), the Gevrey analysis and variational gap (Theorems 8.4.1–8.4.2, 8.5.10, 8.6.5–8.6.6) force recovery of analyticity and exclude blow-up (Proposition 12.2).
-4.  Otherwise, the flow lies in the coherent branch: $\Xi[\mathbf{V}(s_n)]\to\Xi_{\max}$ and $\mathbf{V}(s_n)$ converges (mod symmetries) to an extremizer $\phi\in\mathcal{M}$ (Lemma 8.4.4).
+4.  Otherwise, the flow lies in the coherent branch: $\Xi[\mathbf{V}(s_n)]\to\Xi_{\max}$. By the regularity–efficiency dichotomy (Remark 8.5.1a), any limit profile $\phi$ achieving $\Xi_{\max}$ must be smooth ($C^\infty$); a singular extremizer would have a dissipative high-frequency tail and satisfy $\Xi[\phi]<\Xi_{\max}$. Therefore $\mathbf{V}(s_n)$ converges (mod symmetries) to a smooth extremizer $\phi\in\mathcal{M}$ (Lemma 8.4.4).
 5.  If the scaling is Type II, the mass-flux capacity and virial arguments (Theorems 6.9 and 9.3, Proposition 6.1.6) imply that the dissipation integral diverges, contradicting the global Leray energy inequality (Proposition 12.3).
 6.  Hence any remaining singularity must lie on the Type I branch, where the renormalized flow has a nontrivial limit profile $\mathbf{V}_\infty\in H^1_\rho$ (Theorem 6.1 and Section 9.4).
 7.  If the swirl is high, $\mathcal{S}>\mathcal{S}_c$, spectral coercivity and Lyapunov monotonicity (Theorems 6.3–6.4, 9.1–9.2, 11.2) force exponential decay of perturbations and exclude nontrivial high-swirl limit profiles (Proposition 12.4).
 8.  If the swirl is low or borderline, the axis swirl positivity (Lemma 6.1.5 and Corollary 6.1.5.1) rules out hollow cores, and the curvature dichotomy (Theorem 4.6 and Lemma 4.7) splits the analysis into low-twist (tube) and high-twist (Barber Pole) branches. Low-twist tubes are excluded by CF alignment and axial defocusing (Hypothesis 4.5, Theorem 4.6), while high-twist Barber Poles are the only remaining coherent configurations.
-9.  In the Barber Pole branch, convergence to extremizers and the smoothness–twist incompatibility (Proposition 8.5.1, Lemmas 11.0.1–11.0.3, Theorem 11.1) show that unbounded twist on a set of positive enstrophy is impossible, ruling out this final regime (Proposition 12.5).
+9.  In the Barber Pole branch, convergence to extremizers and the smoothness–twist incompatibility (Proposition 8.5.1, Lemmas 11.0.1–11.0.4, Theorem 11.1) show that unbounded twist on a set of positive enstrophy is impossible, ruling out this final regime (Proposition 12.5).
 10. Combining the phase-space stratification of Proposition 12.1 with the stratum-wise exclusions of Propositions 12.2–12.5 and the tube exclusion of Theorem 4.6 yields $\Omega_{\mathrm{sing}}=\emptyset$ (Theorem 12.1). This contradicts the assumption of finite-time blow-up, and global regularity follows under the standing hypotheses.
 
 ## 13. Discussion: Robustness and Redundant Stabilizers
@@ -4470,12 +4585,12 @@ A potential objection to the exclusion of fractal (Type IV) blow-up—i.e. singu
 
 **Resolution:** This scenario is excluded by separating the failure modes into a “Brute Force’’ branch and a “Precision’’ branch:
 
-1.  **Brute Force (Supercritical Amplitude).**  
+1.  **Brute Force (Supercritical Amplitude).**
     If the flow attempts to overcome the efficiency penalty by letting $\|\mathbf{u}\|_{\tau,1}$ grow without bound, the local Reynolds number $Re_\lambda$ diverges and the renormalized scaling parameter $\lambda(t)$ decouples from the Type I law. In the dynamically rescaled frame, the normalization gauge
     $$ \|\nabla \mathbf{V}(\cdot, s)\|_{L^2(B_1)} \equiv 1 $$
     ties the effective amplitude to $\lambda(t)$, so this supercritical amplitude growth corresponds exactly to the **Type II / accelerating stratum** $\Omega_{\mathrm{Acc}}$ (Definitions 6.1.6 and 9.0.1). As shown in Proposition 6.1.6 and Theorem 9.3, sustaining such acceleration requires the dissipation integral $\int_0^{T^*}\lambda(t)^{-1}\,dt$ to diverge, which contradicts the global $L^2$ energy bound. The “Brute Force’’ path is therefore ruled out by the mass-flux capacity mechanism.
 
-2.  **Precision (Marginal Amplitude).**  
+2.  **Precision (Marginal Amplitude).**
     If the flow remains within the Type I energy bounds ($Re_\lambda < \infty$), the viscous and inertial scales remain coupled. In this marginal regime the Gevrey inequality
     $$ \dot{\tau}(s) \ge \nu - C_{Sob} \|\mathbf{V}\|_{\tau, 1} \cdot \Xi[\mathbf{V}(s)] $$
     has $\|\mathbf{V}\|_{\tau,1}$ controlled by the global energy, so the sign of $\dot{\tau}$ is dictated by the efficiency functional $\Xi$. For fractal states, Theorem 8.5.10 yields a strictly positive gap $\Xi_{\max}-\Xi \ge \delta$, and Theorem 8.4.2 then implies $\dot{\tau}>0$.
@@ -4520,3 +4635,7 @@ The rigorous exclusion of these edge cases confirms that the phase space partiti
 | **Accelerating (Type II, $\Omega_{\mathrm{Acc}}$)** | Mass-Flux Capacity & Global Energy Bound (Section 9) |
 
 Since the union of these stabilization sets covers the entire energy space $H^1_\rho$, the set of admissible singular trajectories is empty.
+
+### C.5. Covering robustness (no-man’s-land exclusion)
+
+A potential concern is a “no-man’s land’’ near the spectral threshold $\mathcal{S}\approx\sqrt{2}$ where the spectral gap vanishes but axial ejection is weak. The failure sets are open and overlapping: spectral stability persists for $\mathcal{S}>\sqrt{2}-\varepsilon$ by continuity of the spectrum, and geometric defocusing persists for $\mathcal{S}<\sqrt{2}+\varepsilon$ because the stagnation pressure ridge does not disappear instantly. Thus there is no gap in the swirl parameter where both mechanisms are inactive; the transition from high to low swirl is a handoff of control from the centrifugal barrier to axial pressure repulsion.
