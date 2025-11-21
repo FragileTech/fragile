@@ -55,7 +55,7 @@ The argument partitions the phase space of renormalized limit profiles into five
 
 This stratification is summarized in Table 1 of Section 7. Section 12 provides the formal covering argument and shows that $\Omega_{\mathrm{sing}}$ is empty.
 
-**The Variational Trap.** Our analysis does not assume the existence of smooth extremizers. Instead, we prove that if a maximizing profile is not smooth, it incurs an efficiency deficit $\Xi < \Xi_{\max}$. This deficit forces the growth of the Gevrey radius $\dot{\tau} > 0$, preventing blow-up. Consequently, we need only test geometric obstructions against the class of smooth, coherent profiles: fractal or rough profiles regularize by inefficiency, while coherent profiles regularize by rigidity.
+**Variational Stability Mechanism.** Our analysis does not assume the existence of smooth extremizers. Instead, we prove that if a maximizing profile is not smooth, it incurs an efficiency deficit $\Xi < \Xi_{\max}$. This deficit forces the growth of the Gevrey radius $\dot{\tau} > 0$, preventing blow-up. Consequently, we need only test geometric obstructions against the class of smooth, coherent profiles: fractal or rough profiles regularize by inefficiency, while coherent profiles regularize by rigidity.
 
 ## 2. Mathematical Preliminaries
 
@@ -1837,10 +1837,10 @@ Even if the physical growth rate is obscured by the shrinking scale $\lambda(t)$
 This breaks the axisymmetry required to maintain the Rankine structure. The core will strictly "ovalize" and then eject filaments (filamentation), violating the self-similarity assumption.
 This breaks the axisymmetry required to maintain the Rankine structure and forces the flow away from the Rankine class of profiles, contradicting the assumption of convergence to a stationary self-similar limit.
 
-**Conclusion of Surgery A:**
+**Conclusion of Case A:**
 The Rankine profile is dynamically forbidden not because "it takes too long to blow up," but because **it is structurally unstable in the renormalized topology.** To stay on the Rankine profile would require infinite fine-tuning of the initial data to exactly cancel the unstable manifold, which has measure zero in the space of finite-energy flows.
 
-## 8.2. Surgery B: The Suppression of Resonant Breathers (Type II Singular Scenario)
+## 8.2. Case B: Suppression of Resonant Breathers (Type II Singular Scenario)
 
 We now address the second canonical singular scenario: the **Resonant Breather**. This corresponds to a blow-up profile that is not stationary in the renormalized frame, but rather periodic or quasi-periodic. Such a solution would manifest as a limit cycle in the dynamical system defined by the Renormalized Navier-Stokes Equation (RNSE), evading the decay implied by the energy cascade through a nonlinear resonance mechanism.
 
@@ -1950,7 +1950,7 @@ The spectral gap depends on the swirl parameter and closes as $\mathcal{S}\downa
 
 Sustained contraction of the energy support is impossible in either regime: Regime 1 blocks contraction via the centrifugal barrier; Regime 2 reverses it via axial ejection. Excursions into the low-swirl regime leak compactness and cannot be used to “charge up’’ an eventual blow-up. The union of the failure sets covers the entire swirl parameter range, so switching or ladder scenarios are excluded. $\hfill\square$
 
-## 8.3. Surgery C: The Starvation of Anomalous Dissipation (Type III Singular Configuration)
+## 8.3. Case C: Starvation of Anomalous Dissipation (Type III Singular Configuration)
 
 Finally, we consider the **Type III** singular configuration: singular defect measures.
 This class represents the limit profile of a weak solution or a defect measure, analogous to the Onsager-critical solutions constructed for the Euler equations via convex integration. In these scenarios, the limit profile $\mathbf{V}_\infty$ might not be a function in the strong sense, but rather a distributional object supporting anomalous dissipation—a non-zero energy loss $\varepsilon > 0$ that persists even as the viscosity $\nu \to 0$.
@@ -1993,7 +1993,7 @@ The Type III configuration fails because of a dimensional mismatch:
 
 Unlike the Euler equations, where the absence of a viscous scale allows “wild solutions’’ with anomalous dissipation on sets of positive measure, the Navier–Stokes viscosity enforces the CKN geometry, and the geometry in turn enforces the spectral coercivity barrier. As a result, any putative anomalous dissipation rate must vanish, $\varepsilon_{anom}=0$, completing the proof. $\hfill \square$
 
-## 8.4. Surgery D: The Variational Exclusion of Fractals
+## 8.4. Case D: Variational Exclusion of Fractals
 
 The final theoretical loophole in the high-entropy analysis concerns the temporal dynamics of the **High-Entropy** regime. While the geometric depletion inequality and the CKN theorem constrain the Hausdorff dimension of the terminal singular set in physical space, they do not explicitly forbid a **Type IV configuration**: a short-time excursion into a spectrally dense state immediately prior to $T^*$. In such a scenario one would attempt to transfer sufficient energy to small scales in a brief time interval to overcome the depletion inequality before the viscous smoothing applies.
 
@@ -3601,7 +3601,7 @@ Here the profile has comparable axial and radial extent. In this regime the geom
 
 In all cases, stationarity forces $\mathbf{V}\equiv 0$. $\hfill\square$
 
-### 10.7. Soft Rigidity and External Exclusion (The Final Seal)
+### 10.7. Soft Rigidity and External Exclusion
 
 We address edge cases and external stabilization mechanisms through compactness and soft rigidity arguments.
 
@@ -4235,7 +4235,7 @@ and cannot, by themselves, drive blow-up.
 
 Finally, Theorem 11.1 (Smoothness–Twist Incompatibility) shows that a Barber Pole configuration, which by Definition 2.2 requires $\|\nabla\xi\|_{L^\infty}\to\infty$ in the core, is incompatible with the bounded-twist structure of variational extremizers and their limits. Thus no renormalized limit profile arising from a finite-time singularity can belong to $\Omega_{\mathrm{Barber}}$. $\hfill\square$
 
-### 12.7. The Master Structure Theorem (Q.E.D.)
+### 12.7. Structure Theorem
 
 We conclude with the structural reformulation of the conditional regularity result.
 
@@ -4337,6 +4337,29 @@ The phase-space partition of Definition 12.2 is only useful if every potential f
 These handoffs formalize the covering property: the domains of the active stabilizing mechanisms overlap so that no parameter region of $\Omega$ lies outside their union.
 
 Taken together, these handoffs ensure that the union of the stabilization mechanisms—variational efficiency, Gevrey smoothing, Type II exclusion, high-swirl spectral coercivity, Barber Pole twist control, and tube defocusing—covers the entire singular phase space $\Omega_{\mathrm{sing}}$. No intermediate parameter regime remains in which a candidate singularity can evade all constraints.
+
+### 12.9. Mechanism Handoffs and Covering Robustness
+
+This section makes explicit the overlap strategy implicit in the phase-space proof. Rather than pushing any single mechanism to a sharp threshold (where delicate spectral numerics would be required), we exploit overlap in their validity regions so that every transition is covered twice. The quantitative bounds in Sections 4, 6, 8, and 9 are deliberately non-sharp to maximize this redundancy.
+
+**Covering Principle.** Let $\delta$ measure variational distance to $\mathcal{M}$, $\mathcal{S}$ the swirl ratio, $\mathcal{T}$ the twist, and $\Lambda$ the shape anisotropy. The domains of the geometric, spectral, variational, and capacity mechanisms overlap so that there is no “No-Man’s Land’’ in the $(\delta,\mathcal{S},\mathcal{T},\Lambda)$ space; every path to singularity lies in a region where at least two stabilizing mechanisms are active. The overlap neighborhoods in Lemma 12.2.1 already guarantee coverage of the fractal/high-swirl interface; the handoffs below extend this to all transitions.
+
+**Handoff A – Coherence to Variational Smoothing (Tube $\rightarrow$ Fractal).**
+- Trigger: A coherent tube develops geometric complexity (kinks/oscillations), increasing $\delta(\mathbf{V})$.
+- Mechanisms: Tube geometry (Section 4) still supplies defocusing when $\delta$ is small; as soon as $\delta>0$, the variational gap activates Gevrey growth, $\dot{\tau}>0$ (Theorems 8.5.5, 8.6.5).
+- Overlap: There is a corridor $\delta \in (0,\delta_0)$ where both geometric defocusing and Gevrey recovery apply. No critical “kink’’ analysis is needed because the tube and fractal mechanisms double-cover the transition.
+
+**Handoff B – Swirl to Tube Geometry (Swirl $\rightarrow$ Tube).**
+- Trigger: Swirl decreases toward $\mathcal{S}_c$; spectral coercivity weakens.
+- Mechanisms: High-swirl spectral gap (Section 6) controls $\mathcal{S}\ge \mathcal{S}_c$; axial defocusing and curvature (Section 4) control coherent low-swirl tubes.
+- Overlap: For intermediate swirl, the centrifugal barrier and the axial pressure ridge both operate. We never require a sharp threshold at $\mathcal{S}=\mathcal{S}_c$; the tube mechanism is already active before spectral coercivity vanishes, preventing any spectral gap in coverage.
+
+**Handoff C – Twist to Scaling (Barber Pole $\rightarrow$ Type II).**
+- Trigger: A low-swirl filament attempts unbounded twist to evade alignment, staying Type I.
+- Mechanisms: At finite amplitude, variational inefficiency and bounded-twist of extremizers rule out Barber Pole profiles (Section 11, Corollary 8.5.1.1). If amplitude increases to compensate, the trajectory exits Type I and enters the accelerating stratum $\Omega_{\mathrm{Acc}}$, invoking the mass-flux capacity barrier (Theorem 9.3, Proposition 6.1.6).
+- Overlap: Finite-amplitude twist is blocked by variational regularity; unbounded amplitude is blocked by capacity divergence. There is no amplitude window where twist is unconstrained.
+
+**Consequence.** The proof is architected as a partition-of-unity argument on phase space: each stabilizing mechanism is used in its robust regime, and the overlaps ensure continuity of protection across all transitions. Novelty resides in this architecture—regularity follows from the redundancy of handoffs, not from sharp single-mechanism estimates.
 
 ### 12.10. Status of Variational Regularity (Removing Conditionality)
 
