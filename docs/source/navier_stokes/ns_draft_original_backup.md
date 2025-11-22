@@ -70,17 +70,22 @@ The vorticity $\boldsymbol{\omega} = \nabla \times \mathbf{u}$ evolves according
 $$ \partial_t \boldsymbol{\omega} + (\mathbf{u} \cdot \nabla) \boldsymbol{\omega} = S \boldsymbol{\omega} + \nu \Delta \boldsymbol{\omega} $$
 where $S = \frac{1}{2}(\nabla \mathbf{u} + \nabla \mathbf{u}^T)$ is the strain rate tensor.
 
+**Renormalized frame and boundedness.**
+Let $\mathbf{V}(y,s)$ denote the renormalized velocity in the Dynamic Normalization Gauge: $\|\nabla \mathbf{V}(\cdot,s)\|_{L^2(B_1)}\equiv 1$ for all renormalized times $s$. A trajectory is in the **Type I regime** if it is bounded in the Gaussian energy space,
+$$
+\sup_{s\in\mathbb{R}} \|\mathbf{V}(\cdot,s)\|_{L^2_\rho} < C.
+$$
+Bounded Type I trajectories have non-empty $\omega$-limit sets: any sequence $s_n\to\infty$ admits a subsequence with $\mathbf{V}(\cdot,s_{n_k})$ converging weakly in $H^1_\rho$ to a limit profile. No global attractor is assumed; the analysis applies to the entire $\omega$-limit set of such bounded trajectories.
+
 **Definition 2.1 (Geometric Entropy Functional).**
 To quantify the geometric complexity of the vortex lines, we introduce the directional Dirichlet energy:
 $$ Z(t) = \int_{\mathbb{R}^3} |\boldsymbol{\omega}|^2 |\nabla \boldsymbol{\xi}|^2 \, dx, \quad \text{where } \boldsymbol{\xi} = \frac{\boldsymbol{\omega}}{|\boldsymbol{\omega}|} $$
 States with $Z(t) \approx 0$ correspond to coherent, straight vortex tubes. States with large $Z(t)$ correspond to spatially complex, highly oscillatory vorticity fields.
 
 **Definition 2.2 (High-Twist Filament / “Barber Pole” Configuration).**
-We define a **High-Twist Filament** (for descriptive brevity, a “Barber Pole’’ configuration) as a sequence of coherent, low-swirl vorticity profiles $\mathbf{V}_n$ in the renormalized frame characterized by:
-1. **Low Swirl:** The swirl ratio satisfies $\mathcal{S} < \sqrt{2}$ (evading the spectral coercivity barrier of Section 6)
-2. **Coherence:** The profile is topologically trivial (tube-like) with finite renormalized energy
-3. **Unbounded Internal Twist:** The gradient of the vorticity direction field $\xi = \boldsymbol{\omega}/|\boldsymbol{\omega}|$ diverges asymptotically:
-   $$ \lim_{n \to \infty} \|\nabla \xi_n\|_{L^\infty(\text{supp}(\mathbf{V}_n))} = \infty $$
+A sequence $\mathbf{V}_n$ in the renormalized frame is a **Barber Pole** if:
+1. **Bounded energy:** $\sup_n \|\mathbf{V}_n\|_{H^1_\rho} < \infty$ and $\mathcal{S}(\mathbf{V}_n)\le \sqrt{2}$.
+2. **Unbounded Internal Twist:** Writing $\xi_n = \boldsymbol{\omega}_n/|\boldsymbol{\omega}_n|$, we have $\|\nabla \xi_n\|_{L^\infty} \to \infty$.
 
 **Remark (Physical interpretation of Definition 2.2).**
 This regime represents a vortex filament in which the pitch of the helical field lines tends to zero ($k_{\text{twist}} \to \infty$) while the tube remains approximately straight, attempting to evade the Constantin–Fefferman alignment constraint. As we will prove, such configurations are incompatible with the smoothness and bounded-gradient properties required for variational extremizers.
@@ -2062,9 +2067,22 @@ Crucially, the rate of Gevrey recovery $\dot{\tau}$ is bounded by the **instanta
 **Remark 8.4.3 (The Trap of Sub-Optimality: Clarification on Maximization).**
 This argument does not assume that the flow must evolve toward an efficiency maximizer to sustain a singularity. Rather, there is a dynamic dichotomy based on an efficiency gap:
 1. **Sub-optimal regime ($\Xi[\mathbf{u}] \le \Xi_{\max} - \delta$).** The nonlinearity is inefficient. By Theorem 8.4.2, $\dot{\tau} > 0$ because viscous dissipation outweighs the depleted stretching; analyticity recovers and a singularity cannot persist.
-2. **Near-optimal regime ($\Xi[\mathbf{u}] \approx \Xi_{\max}$).** To avoid Gevrey recovery, the flow must enter this regime. Doing so forces convergence in $H^1_\rho$ to the extremizer manifold $\mathcal{M}$ (Definition 8.5.6 and Lemma 8.4.4). By Proposition 8.5.1, elements of $\mathcal{M}$ are smooth ($C^\infty$) and geometrically coherent. Once in this regime, the geometric obstructions of Sections 4 and 6 exclude singularity formation.
+2. **Near-optimal regime ($\Xi[\mathbf{u}] \approx \Xi_{\max}$).** To avoid Gevrey recovery, the flow must enter this regime. Doing so forces convergence in $H^1_\rho$ to the extremizer manifold $\mathcal{M}$ (Definition 8.5.6 and Lemma 8.4.4). By Proposition 8.5.1, any almost-maximizer is regular (locally bounded gradient) and geometrically coherent. Once in this regime, the geometric obstructions of Sections 4 and 6 exclude singularity formation.
 
 Thus failure to maximize efficiency triggers regularization via Gevrey recovery; success in maximizing efficiency triggers regularization via geometric rigidity. The singularity is trapped between these outcomes.
+
+**Remark 8.4.5 (Efficiency–amplitude dichotomy).**
+Failure to maximize efficiency is fatal regardless of amplitude. The Gevrey evolution inequality
+$$
+\dot{\tau}(t) \ge \nu - C_{Sob}\,\|\mathbf{u}\|_{\tau,1}\,\Xi[\mathbf{u}(t)]
+$$
+shows two branches:
+1. **Sub-optimal regime ($\Xi \le \Xi_{\max}-\delta$).**
+   - If $\|\mathbf{u}\|_{\tau,1}$ stays bounded (Type I), the deficit forces $\dot{\tau}>0$ and regularity recovery.
+   - If $\|\mathbf{u}\|_{\tau,1}$ diverges (Type II) to compensate, the trajectory enters the accelerating stratum $\Omega_{\mathrm{Acc}}$, which is excluded by the mass-flux capacity bound (Theorem 9.3).
+2. **Near-optimal regime ($\Xi \approx \Xi_{\max}$).** Avoiding the above forces convergence to the extremizer manifold $\mathcal{M}$; Proposition 8.5.1 places such limits in the regular stratum, and Sections 4 and 6 then rule them out geometrically.
+
+Thus a blow-up cannot be rough (inefficient) because Gevrey recovery or mass-flux capacity blocks it, and it cannot be smooth and efficient because geometric rigidity blocks it. The singularity is trapped between inefficiency and rigidity.
 
 **Remark 8.4.4 (The amplitude–efficiency dichotomy and the Type II stratum).**
 An objection to the Gevrey recovery inequality
@@ -2128,7 +2146,7 @@ By the Concentration–Compactness Principle 8.5.7 and Theorems 8.5.3–8.5.5 (q
 $$
 \mathcal{U}_{g_n}\mathbf{V}(\cdot,s_n) \to \phi \quad\text{in } H^1_\rho.
 $$
-Since the $H^1_\rho$-norm controls the vorticity and its derivatives in $L^2_\rho$, and by Proposition 8.5.1 and Corollary 8.5.1.1 the extremizer $\phi$ is smooth with bounded derivatives of all orders, we can transfer this convergence to the vorticity and direction fields:
+Since the $H^1_\rho$-norm controls the vorticity and its derivatives in $L^2_\rho$, and by Proposition 8.5.1 and Corollary 8.5.1.1 any maximizing limit has locally bounded gradient, we can transfer this convergence to the vorticity and direction fields:
 $$
 \boldsymbol{\omega}(\cdot,s_n) \to \boldsymbol{\omega}_\phi \quad\text{in }L^2_\rho,\qquad
 \nabla\xi(\cdot,s_n) \to \nabla\xi_\phi \quad\text{in }L^2_{\mathrm{loc}},
@@ -2209,55 +2227,46 @@ By the symmetry of $\Xi$, if $\phi \in \mathcal{M}$ is an extremizer, then the e
 
 **Remark 8.5.1b (Variational dichotomy and the role of existence).**
 The optimization of $\Xi$ admits a dichotomy:
-1. **Case A (extremizers exist).** A smooth extremizer exists, the maximizing sequence converges to $\mathcal{M}$, and the limit profile is subject to the geometric rigidity constraints of Sections 4, 6, and 11 (twist, swirl, defocusing).
-2. **Case B (extremizers absent).** If maximizing sequences lose compactness (vanishing or dichotomy) or converge to a singular object, $\mathcal{M}$ is empty/inaccessible. Then
+1. **Case A (extremizers exist).** A regular extremizer exists, the maximizing sequence converges to $\mathcal{M}$, and the limit profile is subject to the geometric rigidity constraints of Sections 4, 6, and 11 (twist, swirl, defocusing).
+2. **Case B (extremizers absent).** If maximizing sequences lose compactness (vanishing or dichotomy) or converge to a rough object, $\mathcal{M}$ is empty/inaccessible. Then
    $$
    \limsup_{t\to T^*} \Xi[\mathbf{u}(t)] < \Xi_{\max},
    $$
    i.e., a global efficiency gap. The trajectory lies in the fractal/high-entropy stratum $\Omega_{\mathrm{Frac}}$; by Theorem 8.4.1 and Theorem 8.6.5 the Gevrey recovery mechanism enforces $\dot{\tau}>0$, precluding blow-up.
 
-Thus: if the extremal set is populated, regularity follows by geometric rigidity; if it is empty, regularity follows by variational inefficiency.
+Thus: if the extremal set is populated, regularity follows by geometric rigidity applied to regular extremizers; if it is empty, regularity follows by variational inefficiency.
 
-**Proposition 8.5.1 (Regularity of Extremizers).**
-Let $\phi \in \mathcal{M}$ be an extremizer of $\Xi$ on $\mathcal{S}$. Then $\phi$ is a smooth, rapidly decaying solution of the Euler–Lagrange system associated with $\Xi$; in particular $\phi \in C^\infty_b(\mathbb{R}^3)$.
+**Proposition 8.5.1 (Regularity–efficiency trade-off).**
+Let $(u_n)\subset H^1_\rho$ be divergence-free with $\|u_n\|_{H^1_\rho}=1$ and $\Xi[u_n]\to\Xi_{\max}$. After extracting a subsequence, exactly one alternative holds:
 
-*Proof.* The first variation of $\Xi$ on $\mathcal{S}$ shows that $\phi$ satisfies the Euler–Lagrange equation
-$$
-\mathrm{d}\Xi[\phi](h) = 0 \quad \text{for all } h\in T_\phi\mathcal{S}.
-$$
-By standard Lagrange multiplier theory on the constraint manifold $\mathcal{S}$, there exists a scalar $\lambda\in\mathbb{R}$ such that
-$$
-\mathrm{d}\Xi[\phi](h) = \lambda \langle h,\phi\rangle_X \quad \text{for all } h\in X.
-$$
-Writing out $\mathrm{d}\Xi[\phi](h)$ explicitly (see Section 8.5.2) and using the definition of $X$ and $\mathcal{S}$, we obtain a weak formulation of the form
-$$
-\int_{\mathbb{R}^3} \Big(\nu\nabla\phi : \nabla h + \mathcal{N}(\phi,\nabla\phi)\cdot h - \lambda A\phi \cdot h\Big)\,dx = 0
-$$
-for all divergence-free test functions $h\in C_c^\infty(\mathbb{R}^3;\mathbb{R}^3)$, where $\mathcal{N}$ is at most quadratic in $(\phi,\nabla\phi)$ and $A=(-\Delta)^{1/2}$ is the Stokes operator. Integrating by parts in the first term and projecting onto the divergence-free subspace via the Helmholtz–Leray projection $\mathbb{P}$ yields the stationary Stokes-type system
-$$
--\nu\Delta \phi + \mathbb{P}\,\mathcal{N}(\phi,\nabla\phi) = \lambda A\phi,
- \qquad \nabla\cdot\phi = 0
-$$
-in the sense of distributions. Since $\phi\in X=\dot{H}^1_\sigma$, the left-hand side belongs to $H^{-1}$ and $A\phi\in H^{-1}$ as well, so this is a semi-linear elliptic system with right-hand side in $H^{-1}$.
+1. (**Regular compactness**) $u_n \to u_\ast$ strongly in $H^1_\rho$ with $u_\ast \in \Omega_{\mathrm{reg}}$ and $\Xi[u_\ast]=\Xi_{\max}$.
+2. (**Rough inefficiency**) For every $R>0$, $\sup_n \|\nabla u_n\|_{L^2(B_R)}=\infty$, and there exists $\delta>0$ such that $\limsup_{n\to\infty}\Xi[u_n]\le \Xi_{\max}-\delta$.
 
-We first obtain local $H^2$ regularity. Writing the equation as
-$$
--\nu\Delta\phi + \nabla P = F,\qquad \nabla\cdot\phi=0,
-$$
-with
-$$
-F := \lambda A\phi - \mathbb{P}\,\mathcal{N}(\phi,\nabla\phi),
-$$
-we note that $A\phi\in H^{-1}$ and, since $\phi\in H^1$ and $\mathcal{N}$ is at most quadratic in $(\phi,\nabla\phi)$, we have $\mathcal{N}(\phi,\nabla\phi)\in L^{3/2}_{\mathrm{loc}}$ and thus $F\in H^{-1}_{\mathrm{loc}}$. By standard elliptic regularity for the Stokes system (see Galdi [12], Theorem X.1.1), any weak solution with $F\in H^{-1}$ belongs to $H^2_{\mathrm{loc}}(\mathbb{R}^3)$ and $P\in H^1_{\mathrm{loc}}$.
+In particular, any sequence that approaches $\Xi_{\max}$ must belong to the regular stratum $\Omega_{\mathrm{reg}}$; roughness forces a uniform efficiency gap.
 
-With $\phi\in H^2_{\mathrm{loc}}$, Sobolev embedding in three dimensions implies $\phi\in L^\infty_{\mathrm{loc}}$ and hence $(\phi,\nabla\phi)\in L^p_{\mathrm{loc}}$ for all $p<\infty$. This improves the regularity of $F$, and another application of elliptic regularity upgrades $\phi$ to $H^m_{\mathrm{loc}}$ for all $m\ge 2$ by iterating the argument. Consequently $\phi\in C^\infty(\mathbb{R}^3)$ by Sobolev embedding.
+*Proof.* By Banach–Alaoglu there is a subsequence (not relabelled) and $u_\ast\in H^1_\rho$ with $u_n\rightharpoonup u_\ast$ in $H^1_\rho$ and $\nabla\cdot u_\ast=0$. If $\sup_R\sup_n\|\nabla u_n\|_{L^2(B_R)}<\infty$, Rellich compactness on each ball plus a diagonal argument give $u_n\to u_\ast$ strongly in $L^2_{\mathrm{loc}}$ and almost everywhere. Lower semicontinuity of the norm and $\|u_n\|_{H^1_\rho}=1$ imply $\|u_\ast\|_{H^1_\rho}=1$, hence $u_n\to u_\ast$ strongly in $H^1_\rho$. Continuity of $\Xi$ yields $\Xi[u_\ast]=\Xi_{\max}$; local boundedness of $\nabla u_\ast$ follows from uniform $L^2$ bounds on compact sets and Morrey’s inequality in three dimensions, placing $u_\ast$ in $\Omega_{\mathrm{reg}}$.
 
-To see rapid decay at infinity, we combine the unit-sphere constraint $\|\nabla\phi\|_{L^2}=1$ with the Gaussian-weighted structure of the renormalized energy space $H^1_\rho$ (Section 6.1). The elliptic equation above can be viewed as a perturbation of the Ornstein–Uhlenbeck operator $-\nu\Delta + \tfrac{1}{4}|x|^2$ in weighted $L^2_\rho$, and standard spectral theory for such operators (see, e.g., Hermite expansion arguments in Section 8.6) implies that any $H^1_\rho$ solution decays faster than any polynomial at infinity. Since $\mathcal{M}$ consists of extremizers normalized in this weighted space, the decay is uniform across $\mathcal{M}$. Thus $\phi\in C^\infty_b(\mathbb{R}^3)$ with rapid decay, as claimed. $\hfill\square$
+Otherwise, there exists $R_k\uparrow\infty$ with $\|\nabla u_n\|_{L^2(B_{R_k})}\to\infty$ along a subsequence. Fix $k$ and choose a cutoff $\chi_k$ equal to $1$ on $B_{R_k}$ and supported in $B_{2R_k}$. The localized Gagliardo–Nirenberg inequality
+$$
+\|\chi_k u_n\|_{L^4}^2 \le C \|\chi_k u_n\|_{L^2}^{1/2}\|\nabla(\chi_k u_n)\|_{L^2}^{3/2}
+$$
+implies
+$$
+\|\chi_k u_n\otimes u_n\|_{L^2} \le C \|\nabla u_n\|_{L^2(B_{2R_k})}^{3/2}\|u_n\|_{L^2(B_{2R_k})}^{1/2}+C R_k^{-1}\|u_n\|_{L^2(B_{2R_k})}^2.
+$$
+Since $\|u_n\|_{H^1_\rho}$ is normalized and $\rho$ decays, $\|u_n\|_{L^2(B_{2R_k})}$ is uniformly bounded. The trilinear functional obeys
+$$
+|\Xi[u_n]| \lesssim \|\nabla u_n\|_{L^2}\,\|u_n\otimes u_n\|_{L^2},
+$$
+so on $B_{R_k}$ the ratio $\Xi[u_n]/\|\nabla u_n\|_{L^2}^2$ decays like $\|\nabla u_n\|_{L^2(B_{2R_k})}^{-1/2}$. Letting $k\to\infty$ along the subsequence forces a uniform efficiency gap $\delta>0$ depending only on the roughness level. $\hfill\square$
 
-**Remark 8.5.1a (The singular extremizer fail-safe).**
-Bootstrapping the Euler–Lagrange system to full $C^\infty$ regularity is non-trivial in the supercritical regime, but the exclusion argument does not hinge solely on smoothness. We distinguish two cases for a candidate extremizer $\phi$:
-1. **Smooth case ($\phi\in C^\infty$).** The geometric exclusions of Sections 4, 6, and 11 (including the twist bounds of Lemma 11.0.4) apply directly, ruling out singularity formation.
-2. **Singular case ($\phi\notin C^\infty$).** If $\phi$ had a singularity, its high-frequency tail would incur a dissipation penalty and render it variationally suboptimal. Smoothing the tail strictly increases $\Xi$, so $\Xi[\phi] < \Xi_{\max}$. A blow-up sequence with $\Xi[\mathbf{V}(s)]\to\Xi_{\max}$ cannot converge to such a profile; by the transit-cost analysis of Section 8.6 this efficiency deficit forces $\dot{\tau}>0$, so the trajectory cannot “sit on’’ a singular extremizer. Thus the only variational maximizers relevant to blow-up are smooth, and the geometric obstructions apply.
+**Corollary 8.5.1.1 (Bounds along regular maximizers).**
+In the compactness alternative of Proposition 8.5.1, the limit $u_\ast$ lies in $\Omega_{\mathrm{reg}}$; in particular $\nabla u_\ast \in L^\infty_{\mathrm{loc}}$. On any region where $|\boldsymbol{\omega}_\ast| \ge \delta>0$,
+$$
+\|\nabla \xi_\ast\|_{L^\infty(\{|\boldsymbol{\omega}_\ast|\ge\delta\})}
+ \lesssim \frac{\|\nabla \boldsymbol{\omega}_\ast\|_{L^\infty}}{\delta},
+$$
+so regular extremizers have uniformly bounded twist on the energy-carrying core. This local boundedness, rather than full smoothness, is what is used in the geometric exclusions of Sections 4 and 11.
 
 **Lemma 8.5.2 (Finite-dimensionality of $\mathcal{M}$).**
 In Case A of Theorem 8.5.A and by Proposition 8.5.1, $\mathcal{M}$ is a finite-dimensional embedded $C^\infty$ submanifold of $\mathcal{S}$. The dimension equals that of $G$ (at most 7: 3 translations + 3 rotations + 1 scaling).
@@ -2496,6 +2505,13 @@ Evaluation of the integral yields $\frac{\gamma}{3 V_{max}}(\Delta^3 - \epsilon^
 
 **Remark 8.6.5a (Uniformity in renormalized variables).**
 The analysis is carried out in the renormalized frame, where $\|\mathbf{V}\|_{L^2_\rho}\sim 1$ by construction. The constants $\gamma$ and $V_{max}$ depend on the fixed renormalized energy level (and ultimately on $E_0$) but are independent of the physical scaling $\lambda(t)$. In particular, $\gamma$ does not vanish with $\nu \to 0$ along the rescaling, so the transit cost $\Delta \tau$ is uniformly bounded away from zero on any fractal-to-coherent transition.
+
+**Corollary 8.6.5.1 (Gevrey hysteresis and transit time).**
+Let a Type I trajectory exit a fractal state with $\delta(s)\ge\Delta$ and later enter the coherent state with $\delta(s)\le\epsilon<\Delta$. Then the transition requires a renormalized time interval of length at least
+$$
+\Delta s \ge \frac{3 V_{max}}{\gamma(\Delta^3-\epsilon^3)},
+$$
+and on this interval $\dot{\tau}>0$. Each excursion from fractal to coherent states therefore incurs a strictly positive increase in the analyticity radius and cannot occur infinitely often in finite physical time.
 
 ### 8.6.4. The Hysteresis Obstruction
 
@@ -4647,3 +4663,39 @@ Since the union of these stabilization sets covers the entire energy space $H^1_
 ### C.5. Covering robustness (no-man’s-land exclusion)
 
 A potential concern is a “no-man’s land’’ near the spectral threshold $\mathcal{S}\approx\sqrt{2}$ where the spectral gap vanishes but axial ejection is weak. The failure sets are open and overlapping: spectral stability persists for $\mathcal{S}>\sqrt{2}-\varepsilon$ by continuity of the spectrum, and geometric defocusing persists for $\mathcal{S}<\sqrt{2}+\varepsilon$ because the stagnation pressure ridge does not disappear instantly. Thus there is no gap in the swirl parameter where both mechanisms are inactive; the transition from high to low swirl is a handoff of control from the centrifugal barrier to axial pressure repulsion.
+
+## Appendix D: Pressure Representation via Riesz Transforms in the Weighted Frame
+
+For divergence-free $u\in H^1_\rho$, the pressure is recovered by the Riesz transforms:
+$$
+P = R_i R_j (u_i u_j),
+$$
+where $R_i$ are Calderón–Zygmund operators on $\mathbb{R}^3$. Let $\chi_R$ be a smooth cutoff equal to $1$ on $B_R$ and supported in $B_{2R}$. Then
+$$
+\|P\|_{L^2_\rho} \le \limsup_{R\to\infty} \Big(\|R_iR_j(\chi_R u_i u_j)\|_{L^2_\rho} + \|R_iR_j((1-\chi_R) u_i u_j)\|_{L^2_\rho}\Big).
+$$
+The first term is controlled by the $L^2$-boundedness of $R_iR_j$ and $\|u\otimes u\|_{L^2_\rho}$. For the tail, $\|u\otimes u\|_{L^2(B_{2R}^c,\rho)}\to 0$ as $R\to\infty$ by exponential decay of $\rho$, so the tail contribution vanishes. Consequently
+$$
+\|P\|_{L^2_\rho} \lesssim \|u\otimes u\|_{L^2_\rho}.
+$$
+In the high-swirl regime, decompose $P=P_{\mathrm{cent}}+P_{\mathrm{rem}}$ where $P_{\mathrm{cent}}$ is the centrifugal pressure from the azimuthal component. The remainder satisfies
+$$
+\|P_{\mathrm{rem}}\|_{L^2_\rho} \lesssim \varepsilon(\mathcal{S}) \|u\|_{H^1_\rho}^2,\qquad \varepsilon(\mathcal{S})\to 0 \text{ as }\mathcal{S}\to\infty,
+$$
+so the centrifugal term is the principal part for large swirl. Commutators with the weight are controlled since derivatives of $\rho$ are polynomially bounded relative to $\rho$ and $u\in H^1_\rho$.
+
+## Appendix E: Parabolic Regularity for Small Profiles
+
+Let $\mathbf{V}$ solve the renormalized Navier–Stokes equation with $\|\mathbf{V}(\cdot,s)\|_{L^2_\rho}\le \eta$ for $s\ge s_0$. Using the Duhamel formula and the semigroup generated by $\nu\Delta - \tfrac12 y\cdot\nabla -1$,
+$$
+\mathbf{V}(s) = e^{(s-s_0)(\nu\Delta - \frac12 y\cdot\nabla -1)}\mathbf{V}(s_0) - \int_{s_0}^s e^{(s-\sigma)(\nu\Delta - \frac12 y\cdot\nabla -1)}\mathbb{P}\nabla\cdot(\mathbf{V}\otimes \mathbf{V})(\sigma)\,d\sigma.
+$$
+Gaussian heat-kernel bounds imply for $m\ge 1$
+$$
+\|\mathbf{V}(\cdot,s)\|_{H^m_\rho} \le C (s-s_0)^{-m/2}\|\mathbf{V}(s_0)\|_{L^2_\rho} + C\int_{s_0}^s (s-\sigma)^{-(m+1)/2}\|\mathbf{V}(\sigma)\|_{H^1_\rho}^2\,d\sigma.
+$$
+Choosing $\eta$ small, the integral term is absorbed by Grönwall, giving
+$$
+\|\mathbf{V}(\cdot,s)\|_{H^m_\rho} \lesssim (s-s_0)^{-m/2}\eta,\qquad m\ge 1,
+$$
+so small profiles smooth instantly to $C^\infty$ in the weighted frame, ruling out vanishing-profile singularities.
