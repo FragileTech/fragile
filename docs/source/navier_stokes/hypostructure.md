@@ -2,7 +2,7 @@
 
 ## Abstract
 
-We construct a calculus of variations for dissipative dynamics on stratified metric spaces. A **Hypostructure** is a stratified metric gradient flow on a complete, separable metric space endowed with a Whitney/Fredholm stratification, a lower semi-continuous energy, and a metric–dissipation inequality on singular interfaces. Trajectories are curves of bounded variation; we prove a \emph{Stratified BV Chain Rule} for the energy along hybrid arcs, decomposing the dissipation into absolutely continuous, jump, and (in principle) Cantor parts in time. This decomposition underlies a family of Morse–Conley type exclusion principles. Under a compensated compactness (Palais–Smale–type) hypothesis tied to a defect measure, and a stratified Łojasiewicz–Simon inequality, we prove rectifiability and finiteness of the jump set and convergence to a compact terminal stratum. These results replace the binary “regularity vs blow-up” alternative by a graded \emph{capacity analysis}: singular strata are ruled out when they lack sufficient energetic capacity or topological index to sustain dissipation defects, and global regularity follows whenever a null stratification covers all potential singular profiles.
+We construct a calculus of variations for dissipative dynamics on stratified metric spaces. A **Hypostructure** is a stratified metric gradient flow on a complete, separable metric space endowed with a Whitney/Fredholm stratification, a lower semi-continuous energy, and a metric–dissipation inequality on singular interfaces. Trajectories are curves of bounded variation; we prove a \emph{Stratified BV Chain Rule} for the energy along hybrid arcs, decomposing the dissipation into absolutely continuous and jump parts in time, with any Cantor part vanishing under appropriate gradient inequalities. This decomposition underlies a family of Morse–Conley type exclusion principles. Under a compensated compactness (Palais–Smale–type) hypothesis tied to a defect measure, and a stratified Łojasiewicz–Simon inequality, we prove rectifiability and finiteness of the jump set and convergence to a compact terminal stratum. These results replace the binary “regularity vs blow-up” alternative by a graded \emph{capacity analysis}: singular strata are ruled out when they lack sufficient energetic capacity or topological index to sustain dissipation defects, and global regularity follows whenever a null stratification covers all potential singular profiles.
 
 ## 1. Introduction
 
@@ -14,10 +14,13 @@ The central contribution of this framework is to replace the binary alternative 
 
 ## 2. Hypostructures as Stratified Metric Gradient Flows
 
-Let $(\mathcal{X},d_{\mathcal{X}})$ be a complete, separable metric space. When needed, we equip $\mathcal{X}$ with a Borel reference measure $\mathfrak{m}$ to interpret spatial integrals (for instance in concrete PDE realizations). All “almost everywhere” statements in this paper refer either to Lebesgue measure in time (on $[0,\infty)$) or to $\mathfrak{m}$ on $\mathcal{X}$ when explicitly indicated.
+We begin by specifying the ambient space. In order to speak both about smooth strata (to formulate transversality and Fredholm regularity) and about metric slopes (to apply the Ambrosio–Gigli–Savaré theory of gradient flows), we work with a Banach manifold endowed with an intrinsic metric.
+
+**Assumption (Ambient space).**  
+$\mathcal{X}$ is a $C^1$ Banach manifold modeled on a separable Banach space $B$, endowed with a complete metric $d_{\mathcal{X}}$ that is compatible with the manifold topology but not necessarily induced by a linear norm (for instance, $d_{\mathcal{X}}$ may be a control distance or a Wasserstein-type metric). When needed, we equip $\mathcal{X}$ with a Borel reference measure $\mathfrak{m}$ to interpret spatial integrals (for example in concrete PDE realizations). All “almost everywhere” statements in this paper refer either to Lebesgue measure in time (on $[0,\infty)$) or to $\mathfrak{m}$ on $\mathcal{X}$ when explicitly indicated.
 
 **Definition 2.1 (Hypostructure).** A hypostructure is a tuple $(\mathcal{X},d_{\mathcal{X}},\mathfrak{m},\Sigma,\Phi,\psi)$ where:
-1. $\Sigma=\{S_\alpha\}_{\alpha\in\Lambda}$ is a countable Whitney-type stratification of $\mathcal{X}$, partially ordered by $\preceq$, and \emph{Fredholm-regular} in the sense that for each stratum $S_\alpha$ the Hessian (second variation) of $\Phi$ along the normal bundle $N S_\alpha$ defines a Fredholm operator. In particular, the notion of codimension of strata is well defined and descending chains of strata have strictly decreasing codimension.
+1. $\Sigma=\{S_\alpha\}_{\alpha\in\Lambda}$ is a locally finite partition of $\mathcal{X}$ into $C^1$-submanifolds (strata), partially ordered by $\preceq$, and \emph{Fredholm regular} in the sense that for each stratum $S_\alpha$ the Hessian (second variation) of $\Phi$ along the normal bundle $N S_\alpha$ defines a Fredholm operator of finite index (typically index zero in applications) on a Hilbert completion of $N S_\alpha$ (for example, via an $L^2$ pairing in PDE realizations). We also assume a \emph{local conical structure}: for every point $x\in \partial S_\alpha\cap S_\beta$ with $S_\beta\prec S_\alpha$ there exists a neighbourhood of $x$ that is bi-Lipschitz equivalent (with respect to $d_{\mathcal{X}}$) to a product $S_\beta\times C(L)$, where $C(L)$ is a metric cone over a lower-dimensional “link” $L$. In particular, codimension is well defined, descending chains of strata have strictly decreasing codimension, and near interfaces the space looks like a regular part crossed with a cone, justifying the product charts used in the BV chain rule.
 2. **Frontier condition:** If $S_\alpha\cap \overline{S_\beta}\neq\emptyset$, then $S_\alpha\subseteq \overline{S_\beta}$.
 3. **Singular interfaces:** $\partial S_\alpha=\mathcal{E}_\alpha\cup \bigcup_{\beta\neq \alpha} G_{\alpha\to\beta}$, with $G_{\alpha\to\beta}$ Borel (jump interface) and $\mathcal{E}_\alpha$ equilibria.
 4. $\Phi:\mathcal{X}\to[0,\infty]$ is lower semi-continuous on $\mathcal{X}$ and continuous on each stratum (energy functional).
@@ -34,7 +37,7 @@ In applications to evolution equations on domains (e.g. parabolic or dispersive 
 $$
 \psi(u\to v) \le \psi(u\to w) + \psi(w\to v)
 $$
-whenever the intermediate transitions are admissible in the stratification graph. Moreover, there exists $\kappa>0$ such that for any $u\in G_{\alpha\to\beta}$,
+whenever the intermediate transitions are admissible in the stratification graph. This prevents “interfacial arbitrage”: the cost of moving between two strata cannot be lowered by decomposing a transition into a sequence of cheaper intermediate jumps or by grazing along interfaces. Moreover, there exists $\kappa>0$ such that for any $u\in G_{\alpha\to\beta}$,
 $$
 \psi(u)\ge \kappa \min\bigl(1, \inf_{v\in S_{\mathrm{target}}} d_{\mathcal{X}}(u,v)^2\bigr),
 $$
@@ -76,19 +79,17 @@ D_t(\Phi\circ u)
 $$
 where $J_u$ is the (at most countable) jump set, each atom at $t_k$ has mass at least $\psi(u(t_k^-))$, and $\nu_{\mathrm{cantor}}$ is a nonnegative Cantor measure. In particular, all dissipation of energy is accounted for by the continuous metric slope, the explicit interfacial costs at jumps, and a nonpositive Cantor part.
 
-*Proof.* The BV property and the decomposition follow from a localization argument combining the general theory of curves of bounded variation in metric spaces with the stratified geometry near interfaces. Away from the interface set $\Gamma$, the standard metric chain rule for BV mappings (see, e.g., Ambrosio–Gigli–Savaré) applies directly: on intervals where $u(t)$ remains in a single stratum $S_\alpha$, the composition $\Phi\circ u$ satisfies
+*Proof.* The BV property and the decomposition follow from a localization argument combining the general theory of curves of bounded variation in metric spaces with the stratified geometry near interfaces. Away from the interface set $\Gamma$, the standard metric chain rule for curves of maximal slope (see, e.g., Ambrosio–Gigli–Savaré, Thm. 1.2.5) yields the equality
 $$
-D_t^{ac}(\Phi\circ u)(t) = \frac{d}{dt}\Phi(u(t)) \le -|\partial\Phi|^2(u(t))
+D_t^{ac}(\Phi\circ u)(t) = \frac{d}{dt}\Phi(u(t)) = -|\partial\Phi|^2(u(t))
 $$
-for almost every $t$, and there are no jumps. This yields the density $-|\partial\Phi|^2(u(t))$ with respect to $\mathcal{L}^1$ on the set of continuity times.
+for almost every $t$ at which $u(t)$ remains in a single stratum $S_\alpha$ and there are no jumps. This gives the density $-|\partial\Phi|^2(u(t))$ with respect to $\mathcal{L}^1$ on the set of continuity times.
 
-At a jump time $t_k\in J_u$ the behaviour is governed by the local structure of the stratification. By Assumption A2', there exists a neighbourhood $U\subset\mathcal{X}$ of the interface point and a bi-Lipschitz homeomorphism onto a product
+At a jump time $t_k\in J_u$ the behaviour is governed by the local structure of the stratification. By the local conical structure in Definition 2.1 and Assumption A2', there exists a neighbourhood $U\subset\mathcal{X}$ of the interface point and a bi-Lipschitz homeomorphism onto a product
 $$
 U \simeq (-\varepsilon,\varepsilon)\times S_\alpha,
 $$
-with the interface corresponding to $\{0\}\times S_\alpha$ and such that the flow is transversal to $\{0\}\times S_\alpha$. In these coordinates, the trajectory near $t_k$ can be written as $u(t)=(\xi(t),y(t))$ with $\xi(t_k^-)<0<\xi(t_k^+)$ (or the reverse) and $y(t)$ continuous through $t_k$. Since $u$ is a curve of bounded variation and the chart is bi-Lipschitz, the left and right limits $u(t_k^-)$, $u(t_k^+)$ exist in the metric topology. Transversality ensures that $u(t_k^-)$ lies in the closure of the ingoing stratum and $u(t_k^+)$ in the outgoing stratum.
-
-Moreover, the bi-Lipschitz property of the chart implies that the metric speed $|\dot u|(t)$ is comparable to the Euclidean speed of $(\xi(t),y(t))$ in these coordinates; in particular, the $L^1$–integrability of the metric derivative and the BV structure of $u$ are preserved under the change of coordinates, so the one-dimensional analysis of the interface crossing captures the full metric behaviour near $t_k$.
+with the interface corresponding to $\{0\}\times S_\alpha$ and such that the flow is transversal to $\{0\}\times S_\alpha$. In these coordinates, the trajectory near $t_k$ can be written as $u(t)=(\xi(t),y(t))$ with $\xi(t_k^-)<0<\xi(t_k^+)$ (or the reverse) and $y(t)$ continuous through $t_k$. Since $u$ is a curve of bounded variation and the chart is bi-Lipschitz, the left and right limits $u(t_k^-)$ and $u(t_k^+)$ exist in the strong (metric) topology. Transversality ensures that $u(t_k^-)$ lies in the closure of the ingoing stratum and $u(t_k^+)$ in the outgoing stratum. Moreover, the bi-Lipschitz property of the chart implies that the metric speed $|\dot u|(t)$ is comparable to the Euclidean speed of $(\xi(t),y(t))$ in these coordinates; in particular, the $L^1$–integrability of the metric derivative and the BV structure of $u$ are preserved under the change of coordinates, so the one-dimensional analysis of the interface crossing captures the full metric behaviour near $t_k$.
 
 Lower semi-continuity of $\Phi$ implies that the one-sided limits
 $$
@@ -130,14 +131,14 @@ u \;\longmapsto\; \nu_u\in\mathcal{M},
 $$
 where $\mathcal{M}$ is a Banach space of nonnegative measures (for example, Radon measures on an auxiliary reference space in concrete PDE realizations), with the following property: for any bounded-energy sequence $\{u_n\}$ converging to $u$ in $\tau_w$, the sequence of “energy densities” associated with $u_n$ admits a decomposition into a weak limit plus a nonnegative defect measure $\nu_u$; the case $\nu_u=0$ is called \emph{strict convergence}. The precise underlying reference measure is immaterial for the hypostructural theory; only the norm $\|\nu_u\|_{\mathcal{M}}$ enters the coercivity assumptions below, and this norm is required to be lower semi-continuous with respect to $\tau_w$.
 
-**Assumption A3 (Compensated compactness / generalized Palais–Smale).** There exists a strictly increasing $\gamma:[0,\infty)\to[0,\infty)$ with $\gamma(0)=0$ such that along any flow in $S_\alpha$,
+**Assumption A3 (Metric–defect compatibility / generalized Palais–Smale).** There exists a strictly increasing $\gamma:[0,\infty)\to[0,\infty)$ with $\gamma(0)=0$ such that along any flow in $S_\alpha$,
 $$
 |\partial\Phi|(u) \ge \gamma(\|\nu_u\|_{\mathcal{M}}).
 $$
 Equivalently: vanishing slope forces vanishing defect measure; energy cannot concentrate without strictly increasing the slope. In particular, if $\|\nu_u\|_{\mathcal{M}}\ge \delta>0$, then $W_\alpha(u)\ge \gamma(\delta)>0$, and bounded sequences with vanishing slope are precompact relative to the stratification.
 
-*Remark 3.1 (Profile decomposition viewpoint).*  
-In many critical PDE applications, the abstract defect structure arises from a profile decomposition: any bounded sequence admits a decomposition into a finite sum of rescaled profiles plus a remainder, and the energy functional $\Phi$ behaves additively to leading order on the profiles and lower semi-continuously on the remainder. In that setting, the defect norm $\|\nu_u\|_{\mathcal{M}}$ measures the energy carried by the remainder; Assumption A3 is then a reformulation of the principle that genuine lack of compactness (nontrivial profiles or remainder) is accompanied by a nontrivial metric slope. The present abstract formulation is designed to encompass such profile-decomposition-compatible situations without committing to a specific function-space realization.
+*Remark 3.1 (Relaxation gap and profile decomposition viewpoints).*  
+One intrinsic way to interpret the defect is via relaxation of the energy. Let $\bar\Phi$ denote the lower semi-continuous envelope of $\Phi$ with respect to the weak topology $\tau_w$. At points where $\Phi$ fails to be weakly lower semi-continuous, the metric slope of $\bar\Phi$ may be strictly smaller than that of $\Phi$, and the discrepancy can be encoded in the norm $\|\nu_u\|_{\mathcal{M}}$ of a suitable defect measure. In this sense, $\nu_u$ measures a “relaxation gap” between the original energy landscape and its weakly closed counterpart: vanishing defect corresponds to stability of the slope under relaxation. In many critical PDE applications, this abstract defect structure arises concretely from a profile decomposition: any bounded sequence admits a decomposition into a finite sum of rescaled profiles plus a remainder, and the energy functional $\Phi$ behaves additively to leading order on the profiles and lower semi-continuously on the remainder. In that setting, the defect norm $\|\nu_u\|_{\mathcal{M}}$ measures the energy carried by the remainder; Assumption A3 is then a reformulation of the principle that genuine lack of compactness (nontrivial profiles or remainder) is accompanied by a nontrivial metric slope. The present abstract formulation is designed to encompass such relaxation- and profile-decomposition-compatible situations without committing to a specific function-space realization.
 
 **Assumption A4 (Safe stratum / absorbing manifold).** There exists a minimal stratum $S_\ast$ such that: (i) $S_\ast$ is forward invariant; (ii) any defect measure generated by trajectories in $S_\ast$ vanishes (compact type); (iii) $\Phi$ is a strict Lyapunov function on $S_\ast$ relative to its equilibria $\mathcal{E}_\ast$.
 
@@ -228,9 +229,9 @@ We classify equations according to the convergence/divergence of the gauge-fixed
 
 ### 3.5 Capacity Veto Theorem
 
-**Theorem 3.1 (Capacity veto).** Let $(\mathcal{X},\Phi,\psi)$ be a hypostructure with dissipation $\mathfrak{D}$ homogeneous of degree $-\gamma$ under scaling. Suppose a singular stratum $S_{\mathrm{sing}}$ corresponds to $\lambda\to 0$ and that $\mathrm{Cap}(u)=\infty$ for any trajectory attempting $\lambda(t)\to 0$ at that rate. Then $S_{\mathrm{sing}}$ has infinite energetic capacity and is dynamically null for finite-energy BV trajectories.
+**Theorem 3.1 (Capacity veto).** Let $(\mathcal{X},d_{\mathcal{X}},\mathfrak{m},\Sigma,\Phi,\psi)$ be a hypostructure with dissipation $\mathfrak{D}$ homogeneous of degree $-\gamma$ under scaling. Suppose a singular stratum $S_{\mathrm{sing}}$ corresponds to $\lambda\to 0$ and that $\mathrm{Cap}(u)=\infty$ for any trajectory attempting $\lambda(t)\to 0$ at that rate. Then $S_{\mathrm{sing}}$ has infinite energetic capacity and is dynamically null for finite-energy BV trajectories.
 
-*Proof.* The BV chain rule gives $|D^s(\Phi\circ u)|(J_u)+\int_0^{T^\ast}W(u(t))\,dt \le \Phi_0$. The absolutely continuous part dominates $\int_0^{T^\ast}\mathfrak{D}(u(t))\,dt=\mathrm{Cap}(u)$. If $\mathrm{Cap}(u)=\infty$, then $\Phi\circ u$ would have unbounded variation, contradicting finiteness of $\Phi_0$. Thus no finite-energy trajectory can realize $\lambda\to 0$ with infinite capacity; $S_{\mathrm{sing}}$ is unreachable. □
+*Proof.* Let $\Phi_0:=\Phi(u(0))$ denote the initial energy of the trajectory. The BV chain rule gives $|D^s(\Phi\circ u)|(J_u)+\int_0^{T^\ast}W(u(t))\,dt \le \Phi_0$. The absolutely continuous part dominates $\int_0^{T^\ast}\mathfrak{D}(u(t))\,dt=\mathrm{Cap}(u)$. If $\mathrm{Cap}(u)=\infty$, then $\Phi\circ u$ would have unbounded variation, contradicting finiteness of $\Phi_0$. Thus no finite-energy trajectory can realize $\lambda\to 0$ with infinite capacity; $S_{\mathrm{sing}}$ is unreachable. □
 
 
 ## 4. Structural Exclusion Principles: Monotonicity and Geometric Convexity
@@ -311,7 +312,7 @@ It follows that $S_\alpha$ is transient in the hypostructure: any nontrivial tra
 To rule out “Zeno” behaviour (infinitely many transitions in finite time with vanishing cost) near equilibria or singular interfaces, we impose a Łojasiewicz–Simon type gradient inequality relative to the energy.
 
 **Assumption A5 (Stratified Łojasiewicz–Simon inequality).**  
-Let $u_\infty\in \mathcal{E}_\ast$ be an equilibrium in the safe stratum. There exist constants $C>0$, $\theta\in(0,1)$, and a neighbourhood $\mathcal{U}$ of $u_\infty$ in $\mathcal{X}$ such that for all $u\in\mathcal{U}$,
+Let $u_\infty\in \mathcal{E}_\ast$ be an equilibrium in the terminal (attracting) stratum. There exist constants $C>0$, $\theta\in(0,1)$, and a neighbourhood $\mathcal{U}$ of $u_\infty$ in $\mathcal{X}$ such that for all $u\in\mathcal{U}$,
 $$
 |\partial\Phi|(u) \;\ge\; C\,|\Phi(u)-\Phi(u_\infty)|^{\theta}.
 $$
@@ -731,7 +732,7 @@ In particular, a putative singular stratum in which $\mathcal{A}(u)\to\infty$ wh
 
 The preceding chapters provide a collection of independent exclusion mechanisms—capacity barriers, virial monotonicity, geometric $\mu$-convexity, variational rigidity, and dimensional/topological constraints. We now formalize how these mechanisms combine to yield a global regularity criterion. The key idea is that of a \emph{null} stratification: a hypostructural stratification in which every stratum is dynamically empty in the sense that it cannot support finite-time singularities of finite-energy trajectories.
 
-Throughout this section we fix a hypostructure $(\mathcal{X},d_{\mathcal{X}},\Sigma,\Phi,\psi)$ and consider BV trajectories $u:[0,\infty)\to\mathcal{X}$ with finite initial energy $\Phi(u(0))<\infty$. Let $\mathcal{S}_u\subset \mathcal{X}\times(0,\infty)$ denote the spatio-temporal singular set associated with $u$ (space–time points where the hypostructural regularity fails), as in Section 5.1, and let
+Throughout this section we fix a hypostructure $(\mathcal{X},d_{\mathcal{X}},\mathfrak{m},\Sigma,\Phi,\psi)$ and consider BV trajectories $u:[0,\infty)\to\mathcal{X}$ with finite initial energy $\Phi(u(0))<\infty$. Let $\mathcal{S}_u\subset \mathcal{X}\times(0,\infty)$ denote the spatio-temporal singular set associated with $u$ (space–time points where the hypostructural regularity fails), as in Section 5.1, and let
 $$
 S_{\mathrm{sing}}^X(u):=\{x\in\mathcal{X}:\exists\,t>0\ \text{with }(x,t)\in \mathcal{S}_u\}
 $$
@@ -798,7 +799,7 @@ $$
 $$
 Equivalently, no finite-energy trajectory develops a singularity in finite time.
 
-**Theorem 6.2 (Structural global regularity).** Let $(\mathcal{X},d_{\mathcal{X}},\Sigma,\Phi,\psi)$ be a hypostructure satisfying Assumptions A0–A4. Suppose that:
+**Theorem 6.2 (Structural global regularity).** Let $(\mathcal{X},d_{\mathcal{X}},\mathfrak{m},\Sigma,\Phi,\psi)$ be a hypostructure satisfying Assumptions A0–A4. Suppose that:
 
 1. The stratification $\Sigma$ is a structural cover in the sense of Definition 6.1, i.e.
    $$
