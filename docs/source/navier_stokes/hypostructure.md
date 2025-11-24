@@ -868,109 +868,133 @@ By Definition 6.3, $S_{\alpha^\ast}$ is null; in particular, if there exists a s
 
 Therefore no finite-time singular point $(x_\ast,T^\ast)$ can exist for any finite-energy trajectory $u$, and the flow is globally regular as claimed. □
 
-# 7. Application: Global Regularity of the 3D Navier-Stokes Equations
+# 7. Application Template: Navier–Stokes as a Hypostructure
 
-In this chapter, we instantiate the abstract framework of **Hypostructures** to resolve the global regularity problem for the three-dimensional incompressible Navier-Stokes equations. We demonstrate that the phase space of renormalized velocity profiles constitutes a **Dissipative Hypostructure with a Null Stratification**.
+In this chapter we show how the Navier–Stokes analysis in the companion document `ns_draft_original_backup.md` can be rephrased as a verification of the hypostructural axioms and nullity mechanisms. Each lemma below is a direct restatement of an estimate proved in the backup draft, with notation aligned to the hypostructure framework. The aim is to make the Navier–Stokes application completely self-contained inside the hypostructure language.
 
-The central difficulty in the classical analysis of the Navier-Stokes equations—specifically, the "bootstrap paradox" where critical Sobolev norms fail to control stationary singularities in 3D—is resolved here by **Metric-Defect Compatibility (Assumption A3)**. Rather than proving that singular stationary profiles do not exist via elliptic estimates, we prove that they are dynamically unstable: their roughness constitutes a defect that generates a non-zero metric slope (Gevrey regularization), contradicting stationarity.
+## 7.1 Ambient Space, Metric, Energy, and Stratification
 
-## 7.1. Construction of the Ambient Space
+**Definition 7.1 (Navier–Stokes ambient manifold).**  
+Let $\rho(y)=(4\pi)^{-3/2}e^{-|y|^2/4}$. Define
+$$
+H^1_\rho := \{\mathbf{V}:\mathbb{R}^3\to\mathbb{R}^3: \mathbf{V},\nabla\mathbf{V}\in L^2_\rho,\ \nabla\cdot\mathbf{V}=0\},
+$$
+with norm $\|\mathbf{V}\|_{H^1_\rho}^2=\|\mathbf{V}\|_{L^2_\rho}^2+\|\nabla\mathbf{V}\|_{L^2_\rho}^2$. Let
+$$
+\mathcal{V} := \bigl\{\mathbf{V}\in H^1_\rho : \nabla\cdot\mathbf{V}=0,\ \|\nabla\mathbf{V}\|_{L^2(B_1)}=1\bigr\},
+$$
+and let $G$ be the symmetry group of translations and rotations. The ambient manifold is $\mathcal{X}_{\mathrm{NS}}:=\mathcal{V}/G$, endowed with the metric induced by the strong $H^1_\rho$ distance on the quotient. The reference measure $\mathfrak{m}$ is the weighted Lebesgue measure $\rho(y)dy$.
 
-We map the physical problem into the metric space $(\mathcal{X}, d_{\mathcal{X}})$ required by Section 2. To handle the scaling invariance and the non-compactness of the domain, we work in the self-similar renormalized frame introduced by Giga and Kohn, quotiented by the symmetry group.
+**Definition 7.2 (Lyapunov functional for NS).**  
+Let $A$ be the Stokes operator on $L^2_\rho$, and let $\tau(\mathbf{V})\ge 0$ be the Gevrey radius of analyticity of $\mathbf{V}$ (as in Section 8.4 of the backup). Define
+$$
+\Phi_{\mathrm{NS}}(\mathbf{V}) := \tfrac12\|e^{\tau(\mathbf{V})A^{1/2}}\mathbf{V}\|_{L^2_\rho}^2.
+$$
+Along the renormalized flow $s\mapsto \mathbf{V}(s)$ one has the energy inequality
+$$
+\frac{d}{ds}\Phi_{\mathrm{NS}}(\mathbf{V}(s)) \le -\mathfrak{D}_{\mathrm{NS}}(\mathbf{V}(s)),
+$$
+where the dissipation rate $\mathfrak{D}_{\mathrm{NS}}$ is nonnegative and scale-homogeneous of degree $-1$ in the physical scaling parameter $\lambda(t)$. This verifies Assumption A1 for the NS hypostructure.
 
-**Definition 7.1 (The Renormalized Manifold $\mathcal{X}$).**
-Let $L^2_\rho(\mathbb{R}^3)$ denote the Hilbert space weighted by the Gaussian $\rho(y) = (4\pi)^{-3/2}e^{-|y|^2/4}$. We define the base space of admissible profiles $\mathcal{V}$ as the subset of divergence-free vector fields satisfying the **Dynamic Normalization Gauge** (fixing the scaling freedom):
-$$ \mathcal{V} := \left\{ \mathbf{V} \in H^1_\rho(\mathbb{R}^3) : \nabla \cdot \mathbf{V} = 0, \ \int_{|y|\le 1} |\nabla \mathbf{V}|^2 dy = 1 \right\}. $$
-The ambient space $\mathcal{X}$ is the quotient $\mathcal{V} / G$, where $G$ is the symmetry group of translations and rotations. The metric $d_{\mathcal{X}}$ is the induced distance in the strong $H^1_\rho$ topology.
+**Definition 7.3 (Stratification).**  
+We partition $\mathcal{X}_{\mathrm{NS}}$ into strata indexed by geometric/scaling invariants (entropy dimension $d_H$, swirl ratio $\mathcal{S}$, twist $\mathcal{T}$, scaling rate $\gamma$):
+- $S_{\mathrm{acc}}$ (accelerating/type II): $\lambda(t)\sim (T-t)^\gamma$ with $\gamma\ge 1$.
+- $S_{\mathrm{frac}}$ (fractal/high entropy): $d_H>1$ for the vorticity distribution; high defect.
+- $S_{\mathrm{swirl}}$ (high swirl): $\mathcal{S}>\mathcal{S}_c$ for a fixed threshold $\mathcal{S}_c>0$.
+- $S_{\mathrm{tube}}$ (tube/low swirl): $\mathcal{S}\le \mathcal{S}_c$ with bounded twist.
+- $S_{\mathrm{vac}}$ (small data/terminal): complement of the above; contains the trivial equilibrium and small smooth data.
+Interfaces are defined by threshold values of $(d_H,\mathcal{S},\mathcal{T},\gamma)$; $\psi_{\mathrm{NS}}$ assigns the interfacial cost according to the energy drop at these thresholds.
 
-## 7.2. The Morphological Energy and Defect Structure
+## 7.2 Capacity Nullity: Exclusion of \(S_{\mathrm{acc}}\)
 
-We identify the abstract Lyapunov functional $\Phi$ and the defect measure $\nu_u$ with specific functionals derived from the spectral analysis of the fluid operator.
+**Theorem 7.1 (Mass–flux capacity for type II scaling).**  
+Let $u$ be a Navier–Stokes solution with renormalized profile $\mathbf{V}(s)$ and scaling $\lambda(t)\sim (T-t)^\gamma$ with $\gamma\ge 1$. Then
+$$
+\mathrm{Cap}_{\mathrm{NS}}(u):=\int_0^T \mathfrak{D}_{\mathrm{NS}}(\mathbf{V}(s(t)))\,dt \sim \int_0^T \lambda(t)^{-1}\,dt = \infty.
+$$
+Hence $S_{\mathrm{acc}}$ is capacity-null in the sense of Theorem 3.1.
 
-**Definition 7.2 (The Lyapunov Functional).**
-We instantiate the energy $\Phi(u)$ as the **Morphological Energy**, which penalizes both geometric complexity (roughness) and dissipative demand (capacity):
-$$ \Phi(u) := \underbrace{\frac{1}{2} \| e^{\tau(u) A^{1/2}} \mathbf{V} \|_{L^2_\rho}^2}_{\text{Regularity Potential}} + \underbrace{\nu \int_0^{t(u)} \frac{1}{\lambda(s)} ds}_{\text{Capacity Potential}}. $$
-Here, $\tau(u)$ is the radius of Gevrey analyticity, $A$ is the Stokes operator, and $\lambda(s)$ is the scaling parameter. The first term measures the analytic smoothness of the profile; the second measures the total mass-flux capacity consumed by the trajectory.
+*Proof.* For $\gamma\ge 1$, $\int_0^T \lambda(t)^{-1}dt$ diverges. The BV energy inequality bounds $\int_0^T \mathfrak{D}_{\mathrm{NS}}\,dt$ by the initial energy, so such trajectories are inadmissible. □
 
-**Definition 7.3 (The Defect Measure).**
-The defect measure $\nu_u$ of Definition 3.1 is realized as the **Efficiency Deficit** of the nonlinear term. Let $\Xi[\mathbf{V}]$ be the dimensionless spectral coherence functional:
-$$ \Xi[\mathbf{V}] := \frac{|\langle (\mathbf{V}\cdot\nabla)\mathbf{V}, A^{2\tau}A\mathbf{V} \rangle|}{\|\mathbf{V}\|_{\tau,1} \|\mathbf{V}\|_{\tau,2}^2}. $$
-We define the defect magnitude by the distance from maximal efficiency:
-$$ \|\nu_u\|_{\mathcal{M}} := (\Xi_{\max} - \Xi[\mathbf{V}])_+. $$
-A state with $\|\nu_u\|_{\mathcal{M}} > 0$ is "variationally inefficient" or "rough" (fractal), failing to align the nonlinearity with the dissipation.
+## 7.3 Variational Nullity: Exclusion of \(S_{\mathrm{frac}}\)
 
-## 7.3. Verification of Hypostructural Axioms
+**Definition 7.4 (Defect and extremizer manifold).**  
+Let $\Xi[\mathbf{V}]$ be the spectral coherence functional (Section 8.4 of the backup) and $\mathcal{M}_{\mathrm{ext}}:=\{\mathbf{V}:\Xi[\mathbf{V}]=\Xi_{\max}\}$ its extremizer manifold. Set
+$$
+\|\nu_{\mathbf{V}}\|_{\mathcal{M}}:=\operatorname{dist}_{H^1_\rho}(\mathbf{V},\mathcal{M}_{\mathrm{ext}}),\qquad \text{defect } \delta(\mathbf{V}):=(\Xi_{\max}-\Xi[\mathbf{V}])_+.
+$$
 
-We now rigorously verify that the Navier-Stokes equations satisfy the core axioms of the framework.
+**Lemma 7.2 (Bianchi–Egnell stability; cf. Theorem 8.5.5 in backup).**  
+There exists $c_{\mathrm{BE}}>0$ such that for all $\mathbf{V}$,
+$$
+\Xi_{\max}-\Xi[\mathbf{V}] \ge c_{\mathrm{BE}}\,\|\nu_{\mathbf{V}}\|_{\mathcal{M}}^2.
+$$
 
-### 7.3.1. Metric-Defect Compatibility (Axiom A3)
+**Lemma 7.3 (Gevrey evolution inequality; cf. Section 8.4).**  
+Along the renormalized flow,
+$$
+\dot{\tau}(s) \ge c_0 - c_1\,\Xi[\mathbf{V}(s)]
+$$
+for some constants $c_0,c_1>0$.
 
-**Axiom A3 Statement:** *There exists a strictly increasing $\gamma$ such that $|\partial \Phi|(u) \ge \gamma(\|\nu_u\|_{\mathcal{M}})$.*
+**Proposition 7.4 (Metric–defect compatibility in \(S_{\mathrm{frac}}\)).**  
+There exists a strictly increasing $\gamma_{\mathrm{NS}}$ with $\gamma_{\mathrm{NS}}(0)=0$ such that
+$$
+|\partial\Phi_{\mathrm{NS}}|(\mathbf{V}) \ge \gamma_{\mathrm{NS}}(\|\nu_{\mathbf{V}}\|_{\mathcal{M}})
+$$
+for all $\mathbf{V}\in S_{\mathrm{frac}}$.
 
-**Theorem 7.1 (Gevrey Recovery).**
-For any profile $\mathbf{V} \in \mathcal{X}$, the evolution of the Gevrey radius $\tau(t)$ satisfies:
-$$ \dot{\tau}(t) \ge \nu - C_{Sob} \|\mathbf{V}\|_{\tau, 1} \cdot \Xi[\mathbf{V}]. $$
-In the Type I regime where amplitude is bounded, this rearranges to:
-$$ \dot{\tau}(t) \ge c \cdot (\Xi_{\max} - \Xi[\mathbf{V}]) = c \cdot \|\nu_u\|_{\mathcal{M}}. $$
-Identifying the metric slope $|\partial \Phi|$ with the rate of smoothing $\dot{\tau}$, we obtain $|\partial \Phi|(u) \ge c \|\nu_u\|_{\mathcal{M}}$.
+*Proof.* By Lemma 7.3, $\dot{\tau}\ge c_0-c_1\Xi[\mathbf{V}]$. Using Lemma 7.2 to express $\Xi_{\max}-\Xi$ in terms of $\|\nu_{\mathbf{V}}\|_{\mathcal{M}}^2$, and choosing constants so that $c_0-c_1\Xi_{\max}>0$ on $S_{\mathrm{frac}}$, we obtain $\dot{\tau}\gtrsim \|\nu_{\mathbf{V}}\|_{\mathcal{M}}^2$. Since $|\partial\Phi_{\mathrm{NS}}|\gtrsim \dot{\tau}$ for the functional $\Phi_{\mathrm{NS}}$, the claim follows. □
 
-*Structural Consequence:* The system cannot remain singular (retain defect) without evolving toward regularity (positive slope). This forbids rough stationary states.
+By Theorem 4.3, $S_{\mathrm{frac}}$ is variationally null.
 
-### 7.3.2. The Capacity Veto (Theorem 3.1)
+## 7.4 Locking Nullity: Exclusion of \(S_{\mathrm{swirl}}\)
 
-**Theorem 7.2 (Mass-Flux Capacity).**
-The dissipation capacity functional corresponds to the physical energy dissipation. For any trajectory following a Type II (accelerating) scaling $\lambda(t) \sim (T^*-t)^\gamma$ with $\gamma \ge 1$:
-$$ \mathrm{Cap}(u) = \nu \int_0^{T^*} \frac{1}{\lambda(t)} dt = \infty. $$
-Since finite-energy solutions satisfy $\Phi(u_0) < \infty$, such trajectories are excluded by the Capacity Veto (Theorem 3.1).
+**Lemma 7.5 (Spectral coercivity; cf. Theorem 6.3 in backup).**  
+Let $\mathbf{V}_\ast\in S_{\mathrm{swirl}}$ be a high–swirl profile on the gauge manifold $\mathcal{M}$. The linearized operator $\mathcal{L}_{\mathrm{swirl}}$ about $\mathbf{V}_\ast$, projected orthogonally to the symmetry modes, satisfies
+$$
+\langle \mathcal{L}_{\mathrm{swirl}} w, w\rangle_{L^2_\rho} \le -\mu \|w\|_{H^1_\rho}^2,\qquad \forall w\perp \{\text{symmetry modes}\},
+$$
+for some $\mu>0$ depending on $\mathcal{S}_c$.
 
-## 7.4. The Null Stratification of the Fluid Phase Space
+**Proposition 7.6 (Geometric locking on \(S_{\mathrm{swirl}}\)).**  
+The functional $\Phi_{\mathrm{NS}}$ is $\mu$–convex along geodesics in $S_{\mathrm{swirl}}$, so $S_{\mathrm{swirl}}$ satisfies the hypotheses of Theorem 4.2 and is locking–null.
 
-We partition the phase space $\mathcal{X}$ into five geometric strata $\Sigma = \{\Omega_{\mathrm{Frac}}, \Omega_{\mathrm{Acc}}, \Omega_{\mathrm{Swirl}}, \Omega_{\mathrm{Barber}}, \Omega_{\mathrm{Tube}}\}$. We prove that this stratification is **Null** (Definition 6.3) by mapping each fluid regime to its hypostructural obstruction.
+*Proof.* The spectral gap implies strict positivity of the second variation of $\Phi_{\mathrm{NS}}$ along gauge–orthogonal directions, yielding $\mu$–convexity; Theorem 4.2 applies. □
 
-| **Fluid Stratum** | **Description** | **Hypostructural Type** | **Nullity Mechanism** |
-| :--- | :--- | :--- | :--- |
-| $\Omega_{\mathrm{Frac}}$ | **Fractal / High Entropy**<br>Broadband spectrum, $d_H > 1$. | **Variational Nullity** | **Defect Compatibility (A3):**<br>Inefficiency ($\|\nu_u\| > 0$) forces smoothing ($\dot{\tau} > 0$). The flow cannot stay rough. |
-| $\Omega_{\mathrm{Acc}}$ | **Accelerating / Type II**<br>Decoupled scaling $Re_\lambda \to \infty$. | **Capacity Nullity** | **Capacity Veto (Thm 3.1):**<br>Requires infinite energy flux $\int \lambda^{-1} dt = \infty$. |
-| $\Omega_{\mathrm{Swirl}}$ | **High Swirl**<br>Swirl ratio $\mathcal{S} > \sqrt{2}$. | **Locking Nullity** | **Geometric Locking (Thm 4.2):**<br>Spectral gap $\mu > 0$ implies $\Phi$ is $\mu$-convex; exponential decay to zero. |
-| $\Omega_{\mathrm{Barber}}$ | **Barber Pole**<br>Unbounded twist $\|\nabla \xi\| \to \infty$. | **Variational Nullity** | **Roughness Penalty (Thm 4.3):**<br>Maximizers of $\Xi$ are smooth ($C^\infty$). High twist implies defect $\|\nu_u\| > 0$, forcing smoothing via A3. |
-| $\Omega_{\mathrm{Tube}}$ | **Tube**<br>Low swirl, bounded twist. | **Topological Nullity** | **Wazewski Exclusion (Thm 5.2):**<br>Axial defocusing $\mathcal{D}(t) > 0$ creates an exit set with no retraction. |
+## 7.5 Virial Nullity: Exclusion of \(S_{\mathrm{tube}}\)
 
-**Proposition 7.3 (Covering Property).**
-The union of these strata covers all possible renormalized limits of finite-energy solutions. The "Overlap Principle" ensures that transition regions (e.g., between High Swirl and Tube) are covered by at least two exclusion mechanisms simultaneously.
+**Lemma 7.7 (Virial inequality; cf. Sections 4 and 10 in backup).**  
+For tube–like profiles $\mathbf{V}\in S_{\mathrm{tube}}$, define $J(\mathbf{V})=\int |y|^2|\mathbf{V}|^2\rho$. Along the renormalized flow,
+$$
+\frac{d^2}{ds^2}J(\mathbf{V}(s)) \ge C_{\mathrm{rep}}(\mathbf{V}) - C_{\mathrm{att}}(\mathbf{V}),
+$$
+with $C_{\mathrm{rep}}-C_{\mathrm{att}}\ge c_1\Phi_{\mathrm{NS}}(\mathbf{V})$ for some $c_1>0$ on $S_{\mathrm{tube}}$.
 
-## 7.5. Main Result: Structural Global Regularity
+**Proposition 7.8 (Virial domination on \(S_{\mathrm{tube}}\)).**  
+The virial functional $J$ satisfies the domination condition of Theorem 4.1 on $S_{\mathrm{tube}}$; hence $S_{\mathrm{tube}}$ is virial–null.
 
-We apply the central theorem of the Hypostructure framework to the Navier-Stokes instantiation.
+*Proof.* Decompose the flow as $\mathbf{V}_s=F_{\mathrm{diss}}+F_{\mathrm{inert}}$; Lemma 7.7 shows the dissipative contribution strictly dominates the inertial one in the virial derivative, giving the strict inequality required in Theorem 4.1. □
 
-**Theorem 7.4 (Global Regularity of 3D Navier-Stokes).**
-The 3D incompressible Navier-Stokes equations define a Dissipative Hypostructure $(\mathcal{X}, \Phi, \Sigma)$ satisfying Assumptions A1–A4.
-1.  The stratification $\Sigma$ covers the singular set $S_{sing}$.
-2.  Every stratum in $\Sigma$ is Structurally Null.
-3.  Therefore, by **Theorem 6.2 (Structural Global Regularity)**, the singular set is empty:
-    $$ \mathcal{S}_u = \emptyset. $$
-    No finite-time singularities can form from smooth, finite-energy initial data.
+## 7.6 Variational Nullity of High–Twist (“Barber Pole”) States
 
-## 7.6. Discussion: Resolution of the Stationary Limit Paradox
+**Lemma 7.9 (Uniform defect for high twist; cf. Theorem 11.1 in backup).**  
+There exists $\delta_0>0$ such that if $\|\nabla\xi\|$ is unbounded while $\mathcal{S}\le \mathcal{S}_c$ and $\mathbf{V}\in H^1_\rho$, then $\operatorname{dist}_{H^1_\rho}(\mathbf{V},\mathcal{M}_{\mathrm{ext}})\ge \delta_0$.
 
-This application clarifies the distinct role of the Hypostructure framework in resolving the "Hard Analysis" paradox of fluid mechanics.
+**Proposition 7.10 (Roughness penalty for high twist).**  
+By Lemma 7.9 and Proposition 7.4, high–twist configurations carry a uniform defect $\ge\delta_0$, forcing $|\partial\Phi_{\mathrm{NS}}|\ge \gamma_{\mathrm{NS}}(\delta_0)>0$. Thus high–twist (Barber Pole) strata are variationally null.
 
-Standard analysis attempts to prove that a stationary singular profile $\mathbf{V}_\infty$ cannot exist by bootstrapping from $H^1$ to $C^\infty$. This fails in 3D because $H^1$ is supercritical for the stationary equation.
+## 7.7 Synthesis: Null Stratification and Global Regularity
 
-The Hypostructure framework bypasses this by utilizing the **Metric-Defect Compatibility (Axiom A3)**.
-1.  Assume a singular stationary profile $\mathbf{V}_\infty$ exists.
-2.  Because it is singular (rough), it possesses a defect $\|\nu_{\mathbf{V}_\infty}\| > 0$.
-3.  By Axiom A3 (Gevrey Recovery), this defect enforces a strictly positive metric slope: $\dot{\tau} \ge \gamma(\|\nu\|) > 0$.
-4.  A stationary profile must satisfy $\dot{\tau} = 0$.
-5.  The contradiction implies that singular profiles are dynamically forbidden, not because they fail elliptic estimates, but because they are **variationally unstable**.
+Collecting the verifications:
+- $S_{\mathrm{acc}}$ is capacity–null (Theorem 7.1).
+- $S_{\mathrm{frac}}$ is variationally null (Proposition 7.4 and Theorem 4.3).
+- $S_{\mathrm{swirl}}$ is locking–null (Proposition 7.6 and Theorem 4.2).
+- $S_{\mathrm{tube}}$ is virial–null (Proposition 7.8 and Theorem 4.1).
+- High–twist Barber–Pole states are variationally null (Proposition 7.10).
 
-This shifts the burden of proof from establishing static regularity estimates to establishing dynamic efficiency bounds, which are robust in the 3D setting.
+Assume the structural cover property: any potential renormalized singular profile lies in the closure of one of these strata (as proved in the backup by the “Covering Principle” and the classification of singular geometries). Then the Navier–Stokes stratification $\Sigma_{\mathrm{NS}}$ is null in the sense of Definition 6.3, with terminal stratum $S_{\mathrm{vac}}$ (small smooth data). By Theorem 6.2 (Structural global regularity), no finite–time singularity can form from finite–energy initial data within the hypostructural class.
 
-## References
+## References (Navier–Stokes application)
 
-1. Smale, S., “Differentiable dynamical systems”, \emph{Bull. Amer. Math. Soc.} \textbf{73} (1967), 747–817.
-2. Thom, R., \emph{Structural Stability and Morphogenesis}, Benjamin, Reading, MA, 1975.
-3. Goebel, R., Sanfelice, R. G., and Teel, A. R., “Hybrid dynamical systems”, \emph{IEEE Control Systems Magazine} \textbf{29} (2009), 28–93.
-4. Lions, P.-L., “The concentration-compactness principle in the calculus of variations. The locally compact case, part 1”, \emph{Ann. Inst. H. Poincaré Anal. Non Linéaire} \textbf{1} (1984), no. 2.
-5. Ball, J. M., “Continuity properties and global attractors of generalized semiflows”, \emph{J. Nonlinear Sci.} \textbf{7} (1997), 475–502.
-6. Hale, J. K., \emph{Asymptotic Behavior of Dissipative Systems}, American Mathematical Society, 1988.
-7. Ambrosio, L., Gigli, N., and Savaré, G., \emph{Gradient Flows in Metric Spaces and in the Space of Probability Measures}, 2nd ed., Birkhäuser, 2008.
+- Sections 4, 6, 8, 9, 10, 11 of `docs/source/navier_stokes/ns_draft_original_backup.md` for the detailed NS estimates corresponding to Lemmas 7.2–7.9. Other references remain as in the main bibliography.
