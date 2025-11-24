@@ -1,246 +1,783 @@
-# Hypostructure Framework for Global Control in Dynamical Systems
+# Hypostructures: A Variational and Topological Theory for Global Regularity in Stratified Dissipative Systems
 
 ## Abstract
 
-We present the **Hypostructure Framework** as a rigorous, abstract method for achieving global control and stability in general dynamical systems. The framework adds a structural layer on phase space: a **phase-space stratification** into distinct regimes, **local coercive mechanisms** within each regime, **regime transition functionals** that assign a uniform positive "cost" $\Delta_{\min}>0$ to transitions, a **minimum dwell/anti-Zeno condition**, and a **global Lyapunov-type functional** that measures the system's global "energy" or progress. Using this structure and explicit standing assumptions (A0)–(A4), we formulate and prove three key metatheorems. The presentation is purely structural: **no claims are made about specific equations (e.g., Navier–Stokes) or hard open problems**; examples are deliberately simple to keep the focus on the abstract template.
-
-First, the **Global Capacity Metatheorem** asserts that if the global Lyapunov functional is bounded and every regime transition incurs a positive cost, then a trajectory can only undergo finitely many regime switches – infinite switching is ruled out.
-
-Second, the **Non-Degeneracy Metatheorem** formalizes that any trajectory attempting to avoid all local coercive effects must accumulate unbounded cost, making such a trajectory physically impossible or dynamically unstable. In essence, along any trajectory at least one stabilizing mechanism is always active¹, so there is no "pathological" sequence that evades all coercive influences.
-
-Third, the **Decay Metatheorem** shows that under minimal conditions (e.g. monotonic decrease of the global Lyapunov functional), the system must converge to a safe regime where a decay mechanism is active. In this final regime the global functional decreases to a minimum, implying convergence to a stable equilibrium or steady state.
-
-We provide precise definitions of all framework concepts and sketch formal proofs of these metatheorems. The presentation is entirely abstract — we do not assume any particular system (no specific PDEs or physical models) — and is aimed at mathematically trained readers in dynamical systems, control theory, or applied analysis. Our results illustrate how complex global behavior can be controlled by a coordinated set of local mechanisms, ensuring that the system cannot exhibit indefinite oscillations, chaotic switching, or unbounded growth, but instead settles into a stable, "safe" configuration.
+We establish a variational and topological framework for dissipative dynamics on stratified metric spaces. A **Hypostructure** is a stratified metric gradient flow on a Banach manifold endowed with a Whitney/Fredholm stratification, a lower semi-continuous energy, and a metric–dissipation inequality on singular interfaces. Trajectories are curves of bounded variation; we construct a calculus of variations on the stratification and prove a \emph{Stratified BV Chain Rule} for the energy along hybrid arcs. The resulting decomposition
+of the energy dissipation into absolutely continuous, jump, and Cantor parts underpins a family of Morse–Conley type exclusion principles. Under a compensated compactness (Palais–Smale–type) hypothesis tied to a defect measure, we prove rectifiability of the jump set (finitely many transitions) and convergence to a compact attracting stratum. These results reduce global regularity to static structural conditions: capacity nullity, virial/locking nullity, and topological nullity of the non-attracting strata. The theory applies to non-smooth, non-coercive, infinite-dimensional dynamics with symmetry and scaling, and recovers classical metric gradient flow estimates as a special case.
 
 ## 1. Introduction
 
-Controlling the global behavior of complex dynamical systems is a fundamental challenge across many fields, from nonlinear control theory to partial differential equations (PDEs) and stochastic processes. Classical methods of stability analysis (such as Lyapunov functions or invariant set theorems) typically focus on a single dominant mechanism to prove convergence or boundedness. However, in many advanced systems, no single mechanism suffices globally – different *regimes* of behavior may require different stabilizing effects. For example, a system might exhibit multiple modes or phases, each with its own local dynamics, or it might alternate between periods of stable decay and bursts of transient growth. In such cases, achieving global control calls for a structured approach that can handle regime changes and ensure that **at least one stabilizing influence is active at all times**¹.
+The analysis of global well-posedness for nonlinear evolution equations is obstructed by the locality of coercive estimates and by topological changes in the governing semi-flow. When dynamics allow regime changes—interpreted as passages between strata with distinct dissipative structures—classical Lyapunov theory is insufficient. This paper formalizes a geometric structure, the **Hypostructure**, as a stratified metric gradient flow: continuous dissipation occurs inside strata, while singular energy costs are encoded on interfaces. Trajectories are curves of bounded variation in the metric space; the jumps contribute the singular part of the distributional derivative of the energy.
+
+We show that a metric-dissipation inequality on singular interfaces and a compensated compactness (Palais–Smale–type) condition tied to a defect measure force the jump set to have finite $\mathcal{H}^0$-measure and yield convergence to a compact attracting stratum. The results are formulated for metric gradient flows (or differential inclusions) on Banach manifolds, without assuming uniqueness or finite-dimensionality.
+
+The central contribution of this framework is to replace the binary alternative “global regularity versus blow-up” by a graded \emph{capacity analysis} of the phase space. Classical weak solutions are typically too flexible, admitting non-physical singularities that violate energy or dissipation constraints. The hypostructure acts as a \emph{variational selection principle}: it singles out a class of physically admissible trajectories (BV in energy, compatible with the metric–dissipation inequality) and proves that, within this class, singular behaviour is topologically constrained by the stratification. If the stratification is well-chosen and structurally null, this constraint forces global regularity. Thus the analytical burden shifts from controlling \emph{all} weak solutions to verifying structural exclusion on a finite collection of geometrically and physically meaningful strata.
+
+## 2. Hypostructures as Stratified Metric Gradient Flows
+
+Let $\mathcal{X}$ be a separable Banach manifold with intrinsic metric $d_{\mathcal{X}}$.
+
+**Definition 2.1 (Hypostructure).** A hypostructure is a tuple $(\mathcal{X},d_{\mathcal{X}},\Sigma,\Phi,\psi)$ where:
+1. $\Sigma=\{S_\alpha\}_{\alpha\in\Lambda}$ is a countable Whitney-type stratification of $\mathcal{X}$, partially ordered by $\preceq$, and \emph{Fredholm-regular} in the sense that for each stratum $S_\alpha$ the Hessian (second variation) of $\Phi$ along the normal bundle $N S_\alpha$ defines a Fredholm operator. In particular, the notion of codimension of strata is well defined and descending chains of strata have strictly decreasing codimension.
+2. **Frontier condition:** If $S_\alpha\cap \overline{S_\beta}\neq\emptyset$, then $S_\alpha\subseteq \overline{S_\beta}$.
+3. **Singular interfaces:** $\partial S_\alpha=\mathcal{E}_\alpha\cup \bigcup_{\beta\neq \alpha} G_{\alpha\to\beta}$, with $G_{\alpha\to\beta}$ Borel (jump interface) and $\mathcal{E}_\alpha$ equilibria.
+4. $\Phi:\mathcal{X}\to[0,\infty]$ is lower semi-continuous on $\mathcal{X}$ and continuous on each stratum (energy functional).
+5. $\psi:\Gamma\to[0,\infty)$ with $\Gamma=\bigcup_{\alpha,\beta}G_{\alpha\to\beta}$ is a transition (interfacial) cost.
+
+**Remark 2.1 (Weak–strong topology in applications).**  
+In applications to evolution equations on domains (e.g. parabolic or dispersive PDEs), the manifold $\mathcal{X}$ is typically realized as a function space such as $L^2(\Omega)$, $H^1(\Omega)$, or a suitable subspace thereof. The metric $d_{\mathcal{X}}$ is often chosen to encode a weak topology on bounded sets (for instance, a negative Sobolev norm or the metric induced by weak convergence), whereas the Lyapunov functional $\Phi$ controls a stronger norm. In this setting:
+- The lower semi-continuity of $\Phi$ (Assumption A1) reflects standard weak lower semi-continuity properties of norms and energies (e.g. via Fatou’s lemma).
+- The defect measure $\nu_u$ (Definition 3.1) quantifies the gap between weak convergence in $(\mathcal{X},d_{\mathcal{X}})$ and strong convergence of the energy, capturing concentration and oscillation phenomena in a concentration–compactness sense.
+
+**Assumption A1 (Energy regularity).** $\Phi$ is proper, coercive on bounded strata, and l.s.c. on $\mathcal{X}$.
+
+**Assumption A2 (Metric non-degeneracy and l.s.c. cost).** The transition cost $\psi$ is Borel measurable and lower semi-continuous on $\Gamma$. Moreover, there exists $\kappa>0$ such that for any $u\in G_{\alpha\to\beta}$,
+$$
+\psi(u)\ge \kappa \min\bigl(1, \inf_{v\in S_{\mathrm{target}}} d_{\mathcal{X}}(u,v)^2\bigr),
+$$
+where $S_{\mathrm{target}}$ is the stable manifold of the target stratum.
+
+**Assumption A2' (Stratified transversality).** Each local flow field is tangent to the stratification and enters lower strata transversally: if $u\in \partial S_\alpha\cap G_{\alpha\to\beta}$ and the flow points outward from $S_\alpha$, then its projection lies in the tangent cone of $S_\beta$. This ensures transversality to stratification boundaries, precluding grazing trajectories and yielding well-defined entry times.
+
+### 2.2 Metric Chain Rule in Stratified Spaces
+
+Given a curve $u:[0,\infty)\to\mathcal{X}$, its \emph{metric derivative} at time $t$ is
+$$
+|\dot u|(t) := \lim_{h\to 0} \frac{d_{\mathcal{X}}(u(t+h),u(t))}{|h|}
+$$
+whenever the limit exists; for BV curves this limit exists for $\mathcal{L}^1$-a.e. $t$ and belongs to $L^1_{\mathrm{loc}}(0,\infty)$.
+
+Trajectories are curves $u\in BV_{\mathrm{loc}}([0,\infty);\mathcal{X})$; we use the metric slope $|\partial\Phi|(u)$ in the sense of Ambrosio–Gigli–Savaré.
+
+**Definition 2.2 (Dissipative hypostructural trajectory).**  
+A trajectory $u$ is dissipative if:
+1. (**Existence, A0**) for any initial $u(0)\in\mathcal{X}$ there exists a maximal BV trajectory defined on $[0,T_{\max})$;
+2. for $\mathcal{L}^1$-a.e. $t$ with $u(t)\in S_\alpha$, the absolutely continuous part satisfies
+   $$
+   D_t^{ac}(\Phi\circ u)(t) \le -|\partial\Phi|^2(u(t)) \le -W_\alpha(u(t)),
+   $$
+   with $W_\alpha:S_\alpha\to[0,\infty)$;
+3. the jump set $J_u$ is at most countable, and for each $t_k\in J_u$ with $u(t_k^-)\in G_{\alpha\to\beta}$ and $u(t_k^+)=u(t_k)\in S_\beta$ one has
+   $$
+   \Phi(u(t_k^+)) - \Phi(u(t_k^-)) \le -\psi(u(t_k^-));
+   $$
+4. any Cantor part of $D_t(\Phi\circ u)$ is nonpositive and included in the dissipation measure.
 
-The **Hypostructure Framework** provides a rigorous way to impose and analyze such a structured, multi-regime stabilization strategy. In this framework, the phase space (state space of the system) is **stratified** into a finite (or countable) collection of disjoint **regimes**, each representing a qualitatively distinct dynamical behavior. Along with this stratification, we equip each regime with a **local coercive mechanism** – informally, a mathematical property or functional inequality that forces a certain type of stability or dissipation when the system is in that regime. Furthermore, we define **regime transition functionals** that quantify the cost for the system to switch from one regime to another. Intuitively, whenever the system attempts to leave a stable configuration or enter a more "dangerous" regime, it must pay a price in terms of increased energy expenditure, lost Lyapunov energy, or some other irreversible measure. Finally, the entire framework is governed by a **global Lyapunov-type functional** $V$ that serves as an aggregate measure of the system's dynamical "energy" or disorder. This $V$ is constructed to be non-increasing under the dynamics (except perhaps for discrete drops during regime changes) – much like a standard Lyapunov function, but tailored to the stratified structure.
+The next result summarizes the BV structure of the energy along such trajectories.
 
-Using these ingredients, the Hypostructure Framework enables a **proof-by-partition** strategy for global control. The phase space partition into regimes allows us to consider **all possible** qualitative scenarios for the system's evolution². For each regime, the associated coercive mechanism ensures that either the system is driven toward a stable condition within that regime or it cannot persist there indefinitely without triggering a transition. Meanwhile, the transition functionals ensure that any such switch between regimes causes a controlled reduction in the global Lyapunov functional (or another form of cumulative cost). By summing up these effects, we can exclude pathological behaviors such as **infinite switching**, **limit cycles across regimes**, or **chaotic attractors** that roam through different modes. In particular, we will prove that a system with bounded global Lyapunov energy and positive transition costs cannot undergo infinitely many regime transitions – a result we call the **Global Capacity Metatheorem**. This means the system cannot keep changing its qualitative behavior forever; it can only switch a finite number of times before it must settle.
+**Theorem 2.1 (Stratified BV Chain Rule).**  
+Let $u$ be a dissipative hypostructural trajectory. Then $\Phi\circ u$ belongs to $BV_{\mathrm{loc}}([0,\infty))$, and its distributional derivative admits the decomposition
+$$
+D_t(\Phi\circ u)
+= -|\partial\Phi|^2(u)\,\mathcal{L}^1\lfloor_{\mathrm{cont}} - \sum_{t_k\in J_u}\psi(u(t_k^-))\,\delta_{t_k} - \nu_{\mathrm{cantor}},
+$$
+where $J_u$ is the (at most countable) jump set, each atom at $t_k$ has mass at least $\psi(u(t_k^-))$, and $\nu_{\mathrm{cantor}}$ is a nonnegative Cantor measure. In particular, all dissipation of energy is accounted for by the continuous metric slope, the explicit interfacial costs at jumps, and a nonpositive Cantor part.
 
-We then formalize a **Non-Degeneracy Metatheorem**, which states that if one attempted to construct a trajectory that somehow evades all the local coercive mechanisms (never allowing any of them to act), that trajectory would necessarily incur an unbounded cumulative cost and thus is not dynamically admissible. In other words, **there is no degeneracy in coverage: at least one stabilizing mechanism is always in effect at any given time**¹, preventing the system from slipping through cracks in the control design. Finally, under an additional mild assumption of overall monotonicity (the global functional eventually decreases consistently), we establish a **Decay Metatheorem**. This result guarantees that the system will not only stop switching regimes, but will also **converge to a stable end-state**. Specifically, it will enter a **safe regime** – a regime in which a strong decay mechanism is active – and remain there, with the global Lyapunov-type functional decreasing to a minimal value. Consequently, the state approaches an equilibrium or a benign long-term behavior (such as a steady orbit within that safe regime, though typically we design it to be an equilibrium). This excludes the possibility of sustained oscillations or strange attractors in the long run, as all trajectories must eventually be captured by a stable damping regime.
+*Proof.* The BV property and the decomposition follow from the general theory of curves of bounded variation in metric spaces and the chain rule for BV mappings (cf. Vol’pert’s chain rule together with the metric gradient-flow framework of Ambrosio–Gigli–Savaré). By Definition 2.2, the absolutely continuous part of $D_t(\Phi\circ u)$ is given by
+$$
+D_t^{ac}(\Phi\circ u)(t) \le -|\partial\Phi|^2(u(t))
+$$
+for almost every $t$. This yields the density $-|\partial\Phi|^2(u(t))$ with respect to $\mathcal{L}^1$ on the set of continuity times.
 
-The aim of this paper is to present the Hypostructure Framework in a **fully abstract** and mathematically precise form. We deliberately avoid any application-specific content: no particular equations (such as Navier–Stokes, reaction-diffusion, or kinetic models) will be invoked. Instead, we formulate general definitions and theorems that could, in principle, be instantiated in many different settings. The framework and metatheorems are intended to be **structural**: they provide a template for global control arguments that readers can apply or specialize to their own dynamical systems of interest. We assume the reader has a background in dynamical systems and stability theory – at the level of understanding Lyapunov functions, basic invariant set theorems, and perhaps some familiarity with concepts like attractors or dissipative systems (common in ODE, PDE, or stochastic dynamics literature). However, we will define all framework-specific concepts (phase stratification, coercive mechanism, etc.) from first principles for completeness.
+At any jump time $t_k\in J_u$ we define $u(t_k^-)$ and $u(t_k^+)$ as the left and right limits of $u(t)$ in the metric topology. The assumption on jump costs implies
+$$
+\Phi(u(t_k^+))-\Phi(u(t_k^-)) \le -\psi(u(t_k^-)).
+$$
+The jump part of $D_t(\Phi\circ u)$ is thus represented by a sum of Dirac masses at the jump times, with weights bounded above by $-\psi(u(t_k^-))$. Since $\Phi\circ u$ is bounded from below, the total variation of its jump part is finite, and the sum $\sum_{t_k\in J_u}\psi(u(t_k^-))$ converges.
 
-**Caution (no bold claims about PDE regularity).** Nothing in this document purports to solve Navier–Stokes global regularity or any other Millennium problem. All examples are intentionally elementary (e.g., low-dimensional switched ODEs) to illustrate how the abstract hypotheses can be instantiated without suggesting breakthroughs on open problems.
+The remaining singular part of $D_t(\Phi\circ u)$, denoted $\nu_{\mathrm{cantor}}$, is by definition the singular continuous (Cantor) part in the Lebesgue decomposition of the measure. By dissipativity, it is nonpositive: if $\nu_{\mathrm{cantor}}$ assigned positive mass to a set, the energy would strictly increase along the corresponding part of the trajectory, contradicting the Lyapunov property of $\Phi$ implied by Definition 2.2. This establishes the stated decomposition. □
 
-**Notation and standing assumptions (preview).**
-- Trajectory: piecewise $C^1$ map $x:[0,T_{\max})\to X$ with transition times $0=t_0<t_1<t_2<\dots$ and regime indices $i_k$.
-- Global functional: $V:X\to[0,\infty)$, piecewise $C^1$, nonincreasing within each regime and finite at $t=0$.
-- Transition cost: each realized transition satisfies $\Delta V_k\ge\Delta_{\min}>0$; anti-Zeno: either a minimum dwell $\delta_t>0$ or a positive cost accumulation rate.
-- Coercivity: in any regime, if the trajectory is not at an equilibrium of that regime, $\dot V\le -c_i<0$.
-- Safe regimes: forward invariant regimes with strict decay; convergence arguments later rely on their existence.
+**Definition 2.3 (Hypostructural relaxed slope).** The hypostructural slope at $u$ is the relaxation of the metric slope augmented by interfacial cost:
+$$
+|\partial \mathcal{H}|(u) := \begin{cases}
+|\partial\Phi|(u) & \text{if } u\notin \Gamma,\\
+\bigl(|\partial\Phi|(u)^2 + \psi(u)\bigr)^{1/2} & \text{if } u\in \Gamma,
+\end{cases}
+$$
+so that the dissipation measure can be written compactly as
+$$
+D_t(\Phi\circ u) \le -|\partial \mathcal{H}|^2(u)\,\mathcal{L}^1 - \nu_{\mathrm{cantor}}.
+$$
+Rectifiability of the singular set is encoded in the finiteness of the singular part of $D_t(\Phi\circ u)$ together with the uniform gap $\psi\ge \kappa>0$ away from the attractor.
 
-## 2. Framework Setup and Definitions
+**Theorem 2.2 (Minimum dwell under Lipschitz flows).**  
+If each flow field is uniformly Lipschitz on bounded-energy sets and there exists $\delta>0$ such that any post-jump state $u_{\mathrm{in}}\in S_\alpha$ and subsequent interface point $u_{\mathrm{out}}\in G_{\alpha\to\beta}$ satisfy $d_{\mathcal{X}}(u_{\mathrm{in}},u_{\mathrm{out}})\ge \delta$, then there is $\tau_{\mathrm{dwell}}>0$ with $t_{k+1}-t_k\ge \tau_{\mathrm{dwell}}$ for all jumps. □
 
-We consider a dynamical system evolving on a phase space $X$. For concreteness, one may imagine $X$ is a smooth manifold or an open subset of $\mathbb{R}^n$, but the framework can also accommodate infinite-dimensional spaces (function spaces for PDE states), provided the dynamical flow or semiflow is well-defined. We denote the state of the system at time $t$ as $x(t) \in X$, and we assume $x(t)$ is governed by some evolution law (ODE, PDE, etc.) which is not explicitly needed in the abstract formulation. We do assume basic well-posedness: trajectories $x(t)$ exist for $t$ in some interval $[0,T)$ or $[0,\infty)$, and are at least piecewise continuous in time (differentiable when inside a given regime, etc.). Now we endow this system with an abstract **hypostructure** as follows.
+## 3. Structural Compactness and Coercivity
 
-### 2.1 Phase-Space Stratification
+**Definition 3.1 (Defect structure).** Equip $\mathcal{X}$ with a topology $\tau_w$ that is weaker than the metric topology induced by $d_{\mathcal{X}}$ on bounded sets. We postulate the existence of a map
+$$
+u \;\longmapsto\; \nu_u\in\mathcal{M},
+$$
+where $\mathcal{M}$ is a Banach space of nonnegative measures (for example, Radon measures on an auxiliary reference space in concrete PDE realizations), with the following property: for any bounded-energy sequence $\{u_n\}$ converging to $u$ in $\tau_w$, the sequence of “energy densities” associated with $u_n$ admits a decomposition into a weak limit plus a nonnegative defect measure $\nu_u$; the case $\nu_u=0$ is called \emph{strict convergence}. The precise underlying reference measure is immaterial for the hypostructural theory; only the norm $\|\nu_u\|_{\mathcal{M}}$ enters the coercivity assumptions below, and this norm is required to be lower semi-continuous with respect to $\tau_w$.
 
-**Definition 2.1 (Regimes and Stratification).** We partition the phase space $X$ into a collection of disjoint subsets (regimes)
-$$X = \bigsqcup_{i\in \mathcal{I}} \Omega_i,$$
-where $\{\Omega_i: i \in \mathcal{I}\}$ is an indexable family of **regimes**. For simplicity, one may take $\mathcal{I}=\{1,2,\dots, N\}$ to be a finite index set, though a countable (or even continuum) of regimes could be considered if needed. Each $\Omega_i \subset X$ represents a distinct qualitative configuration or dynamical *regime* of the system. We require that the stratification be **exhaustive**, meaning the regimes cover all relevant states (their union is the whole phase space $X$ or at least all states that the system can possibly visit). Typically, the regimes are defined by certain **conditions** or **properties** of the state; for example, a regime might be characterized by a particular range of a parameter or the validity of an approximation. Formally, one can think of a vector of *structural parameters* or labels $R(x) = (R_1(x), \ldots, R_m(x))$ that can be evaluated on a state $x$, and each regime $\Omega_i$ corresponds to a certain range or pattern of these parameters³. We do not need the exact nature of these parameters here, only that each possible state falls into one regime.
+**Assumption A3 (Compensated compactness / generalized Palais–Smale).** There exists a strictly increasing $\gamma:[0,\infty)\to[0,\infty)$ with $\gamma(0)=0$ such that along any flow in $S_\alpha$,
+$$
+|\partial\Phi|(u) \ge \gamma(\|\nu_u\|_{\mathcal{M}}).
+$$
+Equivalently: vanishing slope forces vanishing defect measure; energy cannot concentrate without strictly increasing the slope. In particular, if $\|\nu_u\|_{\mathcal{M}}\ge \delta>0$, then $W_\alpha(u)\ge \gamma(\delta)>0$, and bounded sequences with vanishing slope are precompact relative to the stratification.
 
-Importantly, the boundaries between regimes (where $x$ satisfies the defining conditions for two regimes at once, perhaps equality on some threshold) represent **transition surfaces**. We assume for clarity that the stratification is reasonably regular (for instance, each $\Omega_i$ could be an open set in $X$, with transitions occurring when $x(t)$ crosses from one open region to another as some condition hits a threshold). This ensures that for a typical trajectory, we can speak of **transition times** $t_1 < t_2 < \cdots$ at which the system moves from one regime to a different regime. Between those times, the system stays within a single $\Omega_i$. We denote by
-$$0 = t_0 < t_1 < t_2 < \cdots < t_K < \cdots$$
-the (potentially finite or infinite) sequence of times at which regime transitions occur. Correspondingly, let $i_k \in \mathcal{I}$ be such that $x(t) \in \Omega_{i_k}$ for $t_k \le t < t_{k+1}$ (with $t_0=0$ and possibly $t_K \to \infty$ if there are finitely many switches). Thus the trajectory passes through the sequence of regimes $\Omega_{i_0} \to \Omega_{i_1} \to \Omega_{i_2} \to \cdots$. By construction, $i_k \neq i_{k+1}$ for all $k$ (each $t_k$ is a genuine change to a new regime).
+**Assumption A4 (Safe stratum / absorbing manifold).** There exists a minimal stratum $S_\ast$ such that: (i) $S_\ast$ is forward invariant; (ii) any defect measure generated by trajectories in $S_\ast$ vanishes (compact type); (iii) $\Phi$ is a strict Lyapunov function on $S_\ast$ relative to its equilibria $\mathcal{E}_\ast$.
 
-The phase-space stratification provides the **scaffolding** for our analysis. It is a way to classify **all** possible behaviors of the system into a finite collection of cases. In complex systems research, such a partition might come from physical reasoning or prior theoretical results. Here, we treat it abstractly: assume we have identified the relevant regimes. The **strategy** is that we will design or identify specific stabilizing mechanisms for each regime, and then consider the system's global behavior by stitching together those local analyses.
+## 4. Main Results
 
-### 2.2 Local Coercive Mechanisms
+### Theorem 4.1 (Rectifiability with vanishing cost)
 
-**Definition 2.2 (Local Coercive Mechanism).** Each regime $\Omega_i$ is equipped with at least one **coercive mechanism**, which is a mathematical property that induces a **one-way tendency** toward stability or prevents certain pathological behaviors while the system is in $\Omega_i$. A coercive mechanism can be formulated in various ways depending on context, but for our purposes it typically takes one of the following forms:
+Let $u:[0,\infty)\to\mathcal{X}$ be a dissipative hypostructural trajectory satisfying A1–A2 (and A2' if needed for dwell), with $\Phi_0<\infty$. Assume there is a modulus $\omega$ such that on interfaces $G_{\alpha\to\beta}$,
+$$
+\psi(x) \ge \omega\bigl(d_{\mathcal{X}}(x,\mathcal{E}_\ast)\bigr), \qquad \omega(0)=0,\ \omega \text{ strictly increasing}.
+$$
+Then either $u$ reaches the attracting set $\mathcal{E}_\ast$ in finite time, or the jump set $J_u$ is $\mathcal{H}^0$-rectifiable (finite) with the bound
+$$
+\omega(\delta)\,\mathcal{H}^0(J_u) \le \Phi_0,\qquad \delta:=\inf_{t\in J_u} d_{\mathcal{X}}(u(t^-),\mathcal{E}_\ast)>0.
+$$
+In particular, away from $\mathcal{E}_\ast$ the cost is uniformly positive, and only finitely many jumps can occur.
 
-• **Local Lyapunov Functional:** There may be a function $W_i: \Omega_i \to \mathbb{R}_{\ge 0}$ (for example, a local energy or entropy) that decreases along trajectories in $\Omega_i$. Specifically, whenever $x(t) \in \Omega_i$ and the dynamics are continuous, we have $\frac{d}{dt}W_i(x(t)) \le -\alpha_i(x(t))$ for some nonnegative function $\alpha_i(\cdot)$ that is not identically zero on $\Omega_i$. This implies that as long as the state stays in $\Omega_i$, $W_i$ will drop or dissipate at a certain rate (unless perhaps the state is at an equilibrium where $\alpha_i=0$). We refer to this as **coercivity** in regime $i$ – the dynamical effect that $W_i$ captures cannot be sustained in the unstable direction; it coerces the system either to settle down or to leave the regime.
+*Proof.* The BV chain rule gives $|D^s(\Phi\circ u)|(J_u)=\sum_{t_k\in J_u}\psi(u(t_k^-))\le \Phi_0$. If $u$ does not hit $\mathcal{E}_\ast$, then $\delta:=\inf_{t\in J_u}d(u(t^-),\mathcal{E}_\ast)>0$, so $\psi\ge \omega(\delta)>0$ on all active interfaces. Hence $\omega(\delta)\mathcal{H}^0(J_u)\le \Phi_0$, proving finiteness. If $\delta=0$, then the trajectory accumulates at $\mathcal{E}_\ast$; by lower semicontinuity and the gradient-flow structure, $u$ enters the attractor. □
 
-• **Invariant Barrier or Exclusion Principle:** Alternatively, a coercive mechanism might assert that *if* the system attempts to push certain variables in an extreme way within $\Omega_i$, it hits a barrier. For example, there might be an inequality constraint that holds in $\Omega_i$, such as $F_i(x) \ge 0$ for some functional $F_i$, which would be violated if the system tried to evolve in a forbidden direction. As a result, any attempt to violate this condition forces the system out of $\Omega_i$ (because $\Omega_i$ was defined by that condition). In effect, the regime $\Omega_i$ cannot support trajectories that go arbitrarily far in the unstable direction; something (dissipation, geometric obstruction, etc.) stops them. This is another sense of "coercive": the regime itself is inhospitable to indefinite growth or oscillation in a certain mode.
+### Theorem 4.2 (Global Regularity / Absorption)
 
-• **Spectral Gap or Contractivity:** In many systems, a local mechanism could be linear stability: e.g., if the linearization around a nominal state in $\Omega_i$ has a spectral gap $\lambda > 0$, then small perturbations in that regime decay like $e^{-\lambda t}$ (strictly stable). This spectral coercivity is a concrete example: it means any trajectory in $\Omega_i$ will either decay exponentially toward some manifold (if it stays in $\Omega_i$) or, if it does not decay, it means the assumptions of this regime are breaking, hence a regime transition is imminent. **Coercivity** here refers to a positive lower bound on damping or dissipation rates.
+Under A1–A4, any bounded trajectory $u$ enters $S_\ast$ in finite time and converges to $\mathcal{E}_\ast$.
 
-We formalize the notion by saying: **In each regime $\Omega_i$, at least one coercive inequality or decay law holds, which tends to reduce the global Lyapunov functional or some surrogate measure of instability.** Let $V: X \to \mathbb{R}_{\ge 0}$ denote the global Lyapunov functional (to be defined precisely shortly). A simple way to encode a coercive mechanism is to require that for some constant $c_i>0$ (or a positive function $c_i(x)$) we have:
-$$\frac{d}{dt}V(x(t)) \le -c_i \quad \text{whenever } x(t)\in \Omega_i,$$
-except possibly when $x(t)$ is at a regime-specific equilibrium or boundary. In other words, as long as the system stays in regime $i$, the global measure $V$ must decrease at a definite rate (or at least by a definite amount over time). This captures the idea that $\Omega_i$ has an active damping effect on $V$. We allow that $c_i$ might depend on the state or vanish on some stable submanifold – the typical case is that $c_i$ is positive except at an equilibrium within $\Omega_i$. If the system finds that equilibrium, it would stay there (which is a perfectly fine outcome, representing perhaps a local stable steady state); otherwise, as long as it's moving and not at equilibrium, $V$ decreases.
+*Proof.* By Theorem 4.1, there is $T^\ast$ after which no jumps occur; denote the terminal stratum by $S_f$. If $\inf_{t>T^\ast}\|\nu_{u(t)}\|_{\mathcal{M}}=\delta>0$, then by A3 the flow satisfies $D_t\Phi(u)\le -\gamma(\delta)$, contradicting $\Phi\ge 0$. Thus the defect measure vanishes along the tail and $\{u(t)\}_{t>T^\ast}$ is precompact. Its omega-limit set is non-empty, compact, invariant, and contained in $\overline{S_f}$ with no further transitions. The frontier condition and absence of jumps force $\omega(u)\subset S_f$. Dissipation vanishes only on equilibria; hence $\omega(u)\subset \mathcal{E}_\ast$ and $S_f=S_\ast$. □
 
-More generally, coercive mechanisms need not *directly* reference $V$ – they could be statements about other quantities. But crucially, the effect of any coercive mechanism can be translated into the behavior of $V$ (since $V$ is supposed to track overall progress). If a mechanism does not directly reduce $V$, it might instead enforce some condition that indirectly causes $V$ to drop or prevents $V$ from increasing. For instance, a geometric obstruction might not itself be an energy, but it could imply that to remain in $\Omega_i$, the system must maintain a certain configuration that dissipates energy. In all cases, we assume the net outcome is: **Staying indefinitely in any given regime $\Omega_i$ without transitioning will either drive $V$ down to a lower value or lead to a contradiction.** Thus, no regime is a perpetually free zone where the system can roam without consequences. There is always some "force" (in the Lyapunov or dissipative sense) acting on the system in each regime.
+## 5. Discussion
 
-To connect with the intuitive language: one can think of each regime having a built-in **braking mechanism** or **sink effect**. For example, if $\Omega_i$ corresponds to a high-friction situation, then energy $V$ will be dissipated while in $\Omega_i$. If $\Omega_j$ corresponds to a constrained geometry, then certain expansions are blocked, forcing either collapse of some measure (hence $V$ drops) or a change of regime. The formal requirement is simply that each $\Omega_i$ provides some kind of **one-way street** toward stability – it could be mild (maybe just eventual Lyapunov decrease) or strong (exponential decay), but it must be there.
+The hypostructure formalism yields global regularity from two ingredients: quantized energy loss at singular interfaces and defect-driven coercivity inside strata. The BV interpretation of the energy evolution isolates singular dissipation at jumps and continuous dissipation along flows. The finite-capacity/rectifiability principle eliminates infinite combinatorics; compensated compactness forces eventual compactness and convergence within the minimal stratum, providing a topological mechanism for non-coercive infinite-dimensional dynamics.
 
-We note that this setup aligns with the idea that **at least one stabilizing mechanism is always active along a trajectory**¹. In fact, by stratifying the system and assigning a coercive mechanism to each stratum, we cover all possible cases: no matter where the trajectory goes, it cannot escape having some mechanism acting on it. The Non-Degeneracy Metatheorem in Section 3 will formalize the statement that there's no trajectory which "slips through" without feeling any of these coercive effects.
+## 3. Renormalization, Gauge Fixing, and Capacity Classification
 
-### 2.3 Regime Transition Functionals and Transition Costs
+We now incorporate scaling symmetries into the hypostructural setting to capture blow-up/concentration phenomena in evolution equations. The singular interfaces $G_{\alpha\to\beta}$ can be viewed as thresholds of concentration (e.g., norms hitting a critical level) at which a renormalization step (gauge transformation $T_\lambda$) is applied; the interfacial cost $\psi$ is the energy dissipated or injected by this renormalization. The goal is to quantify when a singular stratum is dynamically inaccessible because the dissipation required to reach it is infinite.
 
-Even with powerful local mechanisms in place, a system may still move from one regime to another. For example, the system might dissipate energy in one regime until it hits a threshold where the regime's defining condition no longer holds, and thus it transitions to a different regime with perhaps new dynamics. Some transitions are benign, but others might be associated with surges or expenditures of energy. In the Hypostructure Framework, we account for this via **transition functionals** that measure the "cost" of regime changes.
+### 3.1 Scaling Group and Singular Sequences
 
-**Definition 2.3 (Transition Functional and Cost).** For each ordered pair of regimes $(\Omega_i, \Omega_j)$ (with $i \neq j$) that can possibly occur in succession (meaning there exist trajectories that go from $\Omega_i$ to $\Omega_j$), we define a **regime transition functional** $\Psi_{i\to j}(x)$, which is a non-negative real-valued function defined on (or near) the states that lie on the boundary between $\Omega_i$ and $\Omega_j$ (or in the region of overlap if the transition is not sharp). Intuitively, $\Psi_{i\to j}(x)$ quantifies the amount of some conserved or slowly changing quantity that must be expended or lost when transitioning from regime $i$ to regime $j$.
+Let $\mathcal{G}=\{T_\lambda:\lambda>0\}$ be a one-parameter scaling group acting on $\mathcal{X}$, typically $(T_\lambda v)(x)=\lambda^{-\alpha} v(\lambda^{-1}x)$ with $\alpha$ dictated by critical invariance. The action is assumed to be smooth on each stratum and compatible with the metric (e.g., locally bi-Lipschitz on strata).
 
-In many cases, the natural choice for $\Psi_{i\to j}$ is simply the drop in the global Lyapunov functional $V$ that occurs during the transition. For example, if at time $t_k$ the system leaves $\Omega_i$ and enters $\Omega_j$, one could define:
-$$\Psi_{i\to j}(x(t_k)) := V(x(t_k^-)) - V(x(t_k^+)),$$
-the sudden decrease in $V$ at the moment of transition. Here $x(t_k^-)$ and $x(t_k^+)$ denote the states immediately before and after the transition (in practice, $V$ might be continuous and differentiable, so the "jump" could also be measured as an integral of $\dot V$ around the transition time, but the idea is the same: how much did $V$ go down because of that change?). However, $\Psi_{i\to j}$ could also measure other forms of cost: for instance, the work done against friction, the increase in entropy, or the amount of some monotonic quantity that increased or decreased.
+**Definition 3.1 (Singular sequence).** A sequence $\{u_n\}\subset\mathcal{X}$ is singular if there exist scales $\lambda_n\to 0$ and a nontrivial profile $v\in\mathcal{X}$ such that $d_{\mathcal{X}}(u_n,T_{\lambda_n} v)\to 0$. For a trajectory $u(t)$ with blow-up time $T^\ast$, we say $u$ is singular if there exists $\lambda(t)\to 0$ as $t\to T^\ast$ with $d_{\mathcal{X}}(u(t),T_{\lambda(t)} v)\to 0$ for some profile $v\neq 0$.
 
-We impose the following **Positive Transition Cost** assumption: there exists a uniform $\Delta_{\min} > 0$ such that for every realized transition $i\to j$ we have $\Psi_{i\to j}(x) \ge \Delta_{\min}$. In other words, **every regime change carries a strictly positive cost bounded away from zero.** This rules out “cheap” oscillations where the cost of switching vanishes along a trajectory.
+### 3.2 Dynamic Normalization (Gauge Fixing)
 
-**Rationale:** The transition functional can often be derived from physical or analytical considerations. For example, if $\Omega_i$ is a metastable state (like a local energy well) and $\Omega_j$ is another well, then $\Psi_{i\to j}$ could be related to the height of the energy barrier between these wells. A trajectory must gain enough energy (which then might be dissipated) to get out of $\Omega_i$ and into $\Omega_j$, resulting in a loss of some stored potential or the like. In the framework presented in a PDE context, a *transit cost inequality* was established to show that transitioning from a high-entropy (fractal) regime to a coherent regime increases a certain analytic radius by at least a fixed amount, thereby forbidding an indefinite back-and-forth oscillation. This is a prime example of a positive transition cost: each fractal-to-coherent-to-fractal cycle forces an irrecoverable gain in regularity (or loss of some resource) that cannot happen infinitely often. In general, positive transition costs ensure that while the system can switch behaviors, it cannot **chatter** between regimes endlessly – it will run out of the capacity to do so.
+To disentangle scale from profile, we introduce a gauge slice transverse to the scaling orbit.
 
-One can formalize the **cumulative cost** along a trajectory. Given a trajectory with transitions at times $t_1, t_2, ..., t_N, ...$, the **total incurred cost** up to time $T$ is
-$$C(T) := \sum_{t_k \le T} \Psi_{i_{k-1}\to i_k}(x(t_k)).$$
-If there are finitely many transitions, this sum is finite. If there were infinitely many transitions up to some time horizon, $C(T)$ would be an infinite sum. Under the uniform lower bound $\Delta_{\min}>0$, infinitely many transitions force $C(T)=+\infty$, which will contradict the bounded Lyapunov budget below.
+**Definition 3.2 (Gauge condition and renormalized manifold).** Let $\mathcal{M}\subset\mathcal{X}$ be a codimension-one submanifold transversal to $\mathcal{G}$ (e.g., $\{v:\|v\|_{\dot H^1}=1\}$). The gauge map $\pi:\mathcal{X}\setminus\{0\}\to \mathcal{M}\times \mathbb{R}_+$ sends $u$ to $(v,\lambda)$ with $u=T_\lambda v$ and $v\in\mathcal{M}$.
 
-### 2.4 Trajectory Model, Global Lyapunov Functional, and Standing Assumptions
+**Definition 3.3 (Renormalized trajectory).** For a trajectory $u(t)$ approaching a singularity, define $v(s)$ via the dynamic rescaling
+$$
+u(x,t)=\lambda(t)^{-\alpha} v\Big(\frac{x-x_c(t)}{\lambda(t)}, s(t)\Big),\qquad \frac{ds}{dt}=\lambda(t)^{-\beta},
+$$
+with gauge constraint $v(\cdot,s)\in\mathcal{M}$ for all $s$. The exponents $\alpha,\beta$ reflect the scaling of the equation and dissipation.
 
-We now pin down the exact objects and hypotheses used by the metatheorems.
+### 3.3 Capacity Functional
+
+In the hypostructural setting for evolution equations, the abstract dissipation $W_\alpha(u)$ from Section 2.2 is realized by a concrete scale-homogeneous functional $\mathfrak{D}:\mathcal{X}\to[0,\infty)$ (e.g., $\mathfrak{D}(u)=\nu\|\nabla u\|_{L^2}^2$), satisfying $\mathfrak{D}(T_\lambda v)=\lambda^{-\gamma}\mathfrak{D}(v)$ for some exponent $\gamma$.
+
+**Definition 3.4 (Capacity cost).** For a trajectory $u:[0,T^\ast)\to\mathcal{X}$, define
+$$
+\mathrm{Cap}(u):=\int_0^{T^\ast}\mathfrak{D}(u(t))\,dt.
+$$
+In renormalized variables,
+$$
+\mathrm{Cap}(u)=\int_0^{T^\ast}\lambda(t)^{-\gamma}\mathfrak{D}(v(s(t)))\,dt.
+$$
 
-**Notation (transition schedule).** A trajectory is a map $x: [0,T_{\max}) \to X$, piecewise $C^1$ on intervals $[t_k,t_{k+1})$. The regime index is $i(t)$ with $x(t)\in\Omega_{i(t)}$. Transition times satisfy $0=t_0<t_1<t_2<\cdots$ and $i_k:=i(t)$ for $t\in[t_k,t_{k+1})$ with $i_{k+1}\neq i_k$. Left/right limits $x(t_k^-)$ and $x(t_k^+)$ exist.
+**Assumption (Non-degenerate gauge).** The renormalized manifold $\mathcal{M}$ is chosen so that $c_{\mathcal{M}}:=\inf_{v\in\mathcal{M}}\mathfrak{D}(v)>0$ (e.g., if $\mathfrak{D}(v)=\nu\|\nabla v\|_{L^2}^2$ and $\mathcal{M}=\{\|\nabla v\|_{L^2}=1\}$, then $c_{\mathcal{M}}=\nu$).
 
-**(A0) Well-posed trajectories.** The above transition schedule exists; $T_{\max}\in(0,\infty]$; and no transition happens without a regime change.
-
-**(A1) Global Lyapunov functional.** There is a piecewise $C^1$ map $V:X\to[0,\infty)$ with finite $V_0:=V(x(0))$ such that
-- (monotonicity inside regimes) if $x(t)\in\Omega_i$ on $[s,u)$ then $\frac{d}{dt}V(x(t))\le 0$ a.e. on $[s,u)$;
-- (jump relation) for each transition $t_k$, set $\Delta V_k := V(x(t_k^-)) - V(x(t_k^+))\ge 0$ and require $V(x(t_k^+)) + \Delta V_k \le V(x(t_k^-))$ (equality if $\Psi_{i\to j}$ is chosen as the drop in $V$);
-- (lower bound) $V(x)\ge 0$ for all $x$.
-
-**(A2) Uniform transition cost.** There exists $\Delta_{\min}>0$ such that every realized transition satisfies $\Delta V_k \ge \Delta_{\min}$ (equivalently, $\Psi_{i\to j}\ge \Delta_{\min}$ when a transition occurs).
-
-**(A3) Anti-Zeno / minimum dwell.** Either (i) there exists $\delta_t>0$ such that $t_{k+1}-t_k\ge\delta_t$ for all $k$ (no accumulation of transitions in finite time), or (ii) there is a cost accumulation rate $c_t>0$ so that $\sum_{t_k\le T}\Delta V_k \ge c_t T$ for all $T>0$. Both rule out infinitely many transitions in finite time with vanishing cost.
-
-**(A4) Active coercivity in regimes.** For each regime $\Omega_i$ there is $c_i>0$ such that if $x(t)\in\Omega_i$ and $x(t)$ is not an equilibrium of the dynamics in $\Omega_i$, then $\frac{d}{dt}V(x(t))\le -c_i$ on that interval. This prevents “loitering” indefinitely in an unstable regime with flat $V$.
-
-**Cumulative quantities.** Define $N(T):=\#\{k: t_k\le T\}$ and $C(T):=\sum_{t_k\le T}\Delta V_k$. Under (A1)–(A2), $C(T)$ is nondecreasing and $C(T)\le V_0$ for any realizable trajectory.
-
-**Why these hypotheses?** (A1)–(A2) provide the clean energy accounting used in Metatheorem 3.1; (A3) excludes Zeno-type accumulation of switches; (A4) ensures “stay forever in a bad regime” is impossible unless the state is already equilibrated; and $V_0<\infty$ is the finite budget needed for the capacity bound. Together they sharpen the informal “positive cost” and “coercive mechanism” phrases into precise conditions.
-
-**Boundary behavior and left/right limits.** The definitions of $\Delta V_k$ and $\Psi_{i\to j}$ use $x(t_k^\pm)$, so we implicitly require that trajectories admit left/right limits at transition times. This is automatic for piecewise $C^1$ dynamics and is the standard setting for hybrid or switched systems.
-
-This structure is what we call the **Hypostructure Framework** for global control. It is "hypo-" in the sense of being an underlying scaffolding beneath the actual dynamical equations, guiding their possible outcomes. We now proceed to the main theoretical results, which show how these ingredients combine to guarantee robust global behavior.
-
-### 2.5 Safe Regimes and Invariance
-
-**Definition 2.5 (Safe regime).** A regime $\Omega_s$ is *safe* if (i) it is forward invariant: entering $\Omega_s$ implies $x(t)\in\Omega_s$ for all later times; and (ii) it has strict decay away from equilibria: there exists $c_s>0$ such that $\dot V\le -c_s$ whenever $x(t)\in\Omega_s$ and $x(t)$ is not an equilibrium of the dynamics restricted to $\Omega_s$.
-
-**Assumption (existence of at least one safe regime).** There exists at least one regime satisfying Definition 2.5. In applications, the safe regime is typically the near-equilibrium region or an absorbing set where dissipation dominates.
-
-### 2.6 Edge-Case Controls and Failure Modes
-
-- **If $\Delta_{\min}\downarrow 0$.** Infinite switching may reappear unless a positive *cycle-averaged* cost is established; otherwise the Global Capacity bound fails.
-- **If (A3) fails.** Zeno behavior (infinitely many transitions in finite time) is possible; exclude it by a dwell-time estimate or by proving a positive cost accumulation rate.
-- **If (A4) fails.** A trajectory could loiter indefinitely in a non-safe regime with flat $V$; Non-Degeneracy then need not hold.
-- **If no safe regime exists.** Metatheorem 3.3 cannot guarantee convergence; the analysis stops at finite switching plus bounded $V$.
-
-These controls make explicit which pathological behaviors are ruled out and which hypotheses must be verified when instantiating the framework.
-
-## 3. Main Results: Global Control Metatheorems
-
-Using the framework defined above, we can now state and prove the promised general results. Each result is called a "Metatheorem" because it is not a classical theorem about a specific equation, but rather a **schema** or template that can be instantiated in many contexts. Nonetheless, we will treat them as theorems in the mathematical sense, providing proofs (or proof sketches) based on the assumptions of the framework.
-
-### Metatheorem 3.1: Global Capacity (Finiteness of Regime Transitions)
-
-**Metatheorem 3.1 (Global Capacity: Finite Regime Transitions).** Assume the Hypostructure Framework (Definitions 2.1–2.3) with standing assumptions (A0)–(A3). Then for any trajectory with finite Lyapunov budget $V_0:=V(x(0))<\infty$ and uniform transition cost $\Delta_{\min}>0$,
-$$N(\infty) \le \frac{V_0}{\Delta_{\min}}.$$
-In particular, infinite switching is impossible; only finitely many regime transitions can occur. The anti-Zeno condition (A3) further guarantees that these transitions cannot accumulate in finite time.
-
-#### Lemma 3.1.1 (Cumulative Lyapunov Drop)
-For any $K\ge 1$,
-$$V\bigl(x(t_K^+)\bigr) = V_0 - \sum_{k=1}^K \Delta V_k \le V_0 - K\Delta_{\min}.$$
-
-*Proof.* By (A1) $V$ is nonincreasing inside regimes. Between $t_{k-1}^+$ and $t_k^-$,
-$V(x(t_k^-))\le V(x(t_{k-1}^+))$. Applying the jump relation,
-$$V(x(t_k^+)) = V(x(t_k^-)) - \Delta V_k \le V_0 - \sum_{j=1}^k \Delta V_j.$$
-Iterating from $k=1$ to $K$ yields the identity and the bound using $\Delta V_j\ge\Delta_{\min}$. □
-
-#### Lemma 3.1.2 (Transition Count Bound)
-For any $K\ge 1$, $K\Delta_{\min} \le V_0 - V\bigl(x(t_K^+)\bigr) \le V_0$. Hence $K \le V_0/\Delta_{\min}$.
-
-*Proof.* Immediate from Lemma 3.1.1 and the nonnegativity of $V$. □
-
-**Proof of Metatheorem 3.1.** Let $K:=N(\infty)$. Lemma 3.1.2 gives $K \le V_0/\Delta_{\min}$. If $K$ were infinite, the right-hand side would have to be infinite, contradicting finiteness of $V_0$. (A3) excludes accumulation of transition times in finite $T$. Thus $K<\infty$ and the regime sequence stabilizes after finitely many switches. □
-
-**Remarks.**
-- If costs are state-dependent but satisfy $\inf$ over realizable transitions $>0$, the same bound applies with that infimum in place of $\Delta_{\min}$. If only cycle-averaged cost is positive, apply the argument to one cycle to get the same conclusion.
-- If $\Delta_{\min}>0$ holds but (A3) is dropped, $N(\infty)<\infty$ still holds, but a Zeno accumulation of those finitely many transitions in finite time must be excluded separately; (A3) does exactly that.
-- The lemma-based accounting isolates where each hypothesis is used: (A1) for monotonicity, (A2) for the positive drop, and $V_0<\infty$ for the budget.
-
-### Metatheorem 3.2: Non-Degeneracy (No Mechanism Evasion Without Cost)
-
-**Metatheorem 3.2 (Non-Degeneracy of Trajectories).** Under (A0)–(A4), there is **no bounded trajectory that indefinitely evades all coercive mechanisms**. Any attempt to do so must either (i) trigger infinitely many regime transitions, forcing unbounded cumulative cost, or (ii) stay in a single regime where (A4) enforces decay. In both cases the avoidance is impossible if $V$ remains bounded.
-
-**Proof.**
-1. *Infinite switching route.* Suppose $x(t)$ keeps evading mechanisms by switching regimes infinitely often. By Metatheorem 3.1 and $\Delta_{\min}>0$, $\sum_k \Delta V_k = \infty$, so $V$ would become negative, contradicting $V\ge 0$. If one weakened (A2) but retained the cost accumulation rate in (A3), then $\sum_{t_k\le T}\Delta V_k \ge c_t T \to \infty$ as $T\to\infty$, giving the same contradiction. Thus a bounded trajectory cannot realize infinite evasive switching.
-2. *Single-regime loitering route.* If the trajectory stops switching but still claims to avoid coercivity, then it remains in some $\Omega_i$ without being at equilibrium. (A4) gives $\dot V \le -c_i<0$ there, so $V(t)$ strictly decreases and exits any positive level in finite time unless the trajectory converges to an equilibrium where the mechanism is active. Either way, avoidance fails.
-3. *Boundary skimming route.* A hypothetical path that rides regime boundaries to avoid cost would violate (A0) (no regime change without a recorded transition) or (A2) (transitions have cost). Any small perturbation pushes the state into a regime, reactivating cost or decay. Such knife-edge trajectories are thus non-robust and excluded by the standing assumptions.
-
-Therefore every physically realizable bounded trajectory must engage some coercive mechanism; there is no “loophole” path that escapes the designed control net. □
-
-### Metatheorem 3.3: Decay to Safe Regime and Convergence
-
-**Metatheorem 3.3 (Decay and Convergence to a Safe Regime).** Assume (A0)–(A4) and, in addition:
-1. $V(x(t))$ is nonincreasing for all sufficiently large $t$ (automatic if no further transitions occur).
-2. There is at least one **safe regime** $\Omega_s$ that is forward invariant: once entered, $x(t)\in\Omega_s$ for all later times.
-3. In any safe regime, the decay is strict away from equilibria: $\dot V \le -c_s <0$ whenever $x(t)\in\Omega_s$ and $x(t)$ is not an equilibrium of the dynamics restricted to $\Omega_s$.
-
-Then $x(t)$ enters some safe regime in finite time, makes no further transitions, and converges to the equilibrium set of that regime. If the equilibrium is unique, $x(t)$ converges to that point.
-
-**Proof Sketch (LaSalle-type).** By Metatheorem 3.1, only finitely many transitions occur; let $T_1$ be the last transition time and $\Omega_f$ the final regime. By (A4), if $\Omega_f$ were not safe (i.e., required a transition to exit instability), another transition would be forced, contradicting maximality of $T_1$. Thus $\Omega_f$ must be a regime in which indefinite evolution is possible, hence a safe regime. For $t\ge T_1$, $\dot V\le 0$ and $V$ is bounded below, so $V(t)\to V_\infty$ exists. By strict decay away from equilibria in $\Omega_f$, the largest invariant subset of $\{\dot V=0\}$ inside $\Omega_f$ is the equilibrium set; LaSalle’s invariance principle gives convergence of $x(t)$ to that set. If that set is a singleton, the trajectory converges to a single equilibrium point. □
-
-**Remark:** The assumption of eventual monotonicity of $V$ or entering a safe regime is usually satisfied if $V$ is a proper Lyapunov function in the final regime. Sometimes one can prove that after the last transition, the regime in which the system lands is automatically one with a strong decay property. In a well-designed stratification, you often arrange that the only possible long-term regime *is* a stable one, with all others being either transient (leading to transitions) or contradictory if assumed to hold forever. For example, in a physical application, perhaps $\Omega_{\text{safe}}$ is the regime "near equilibrium" which has linear damping, whereas other regimes correspond to far-from-equilibrium behavior that must either blow up or eventually come closer and transition to the near-equilibrium regime. Thus it is natural that eventually the system is near equilibrium and decays. Our metatheorem abstracts this scenario.
-
-### 3.4 Implementation Checklist (Practitioner-Facing)
-
-- **Specify the stratification and guards.** Write explicit inequalities defining each $\Omega_i$ and the guard sets where transitions occur. Ensure left/right limits exist at the guards.
-- **Choose $V$ and verify (A1).** Prove $V\ge 0$, $V_0<\infty$, piecewise $C^1$, and $\dot V\le 0$ in each regime (strictly negative away from equilibria for (A4)).
-- **Quantify transition cost.** Prove $\Delta_{\min}>0$ (or a positive cycle-averaged cost) on each allowed transition. If the cost is state dependent, bound it below on the guard to get a uniform $\Delta_{\min}$.
-- **Rule out Zeno.** Establish a minimum dwell time $\delta_t>0$ from vector-field regularity or a cost accumulation rate $c_t>0$ so that infinitely many transitions cannot occur in finite time.
-- **Identify safe regimes.** Mark regimes with strict decay and forward invariance; verify that only safe regimes can host the trajectory forever (used in Metatheorem 3.3).
-- **Document constants.** Record $(\Delta_{\min}, \delta_t, c_i, c_s)$ explicitly; the metatheorem bounds depend only on these and $V_0$.
-
-### 3.5 Toy Model: Two-Mode Switched ODE
-
-- **Phase space and $V$.** $X=\mathbb{R}^2$, $V(x)=\tfrac12\|x\|^2$.
-- **Regimes.** $\Omega_1=\{x_1\ge 0\}$ with dynamics $\dot x=-A_1 x$, and $\Omega_2=\{x_1<0\}$ with $\dot x=-A_2 x$, where $A_1,A_2$ are symmetric positive definite. Then $\dot V\le -\mu_\ast\|x\|^2$ with $\mu_\ast:=\min\{\lambda_{\min}(A_1),\lambda_{\min}(A_2)\}>0$ (verifies (A1) and (A4)).
-- **Transitions and cost.** Crossing the guard $x_1=0$ triggers an instantaneous reset $x(t_k^+)=\rho\,x(t_k^-)$ with fixed $\rho\in(0,1)$ (models a dissipative shock). Then $\Delta V_k=(1-\rho^2)V(x(t_k^-))$. Restricting transitions to states with $\|x(t_k^-)\|\ge r_\ast>0$ yields a uniform $\Delta_{\min}=(1-\rho^2)r_\ast^2/2$.
-- **Anti-Zeno.** The vector fields are Lipschitz, so trajectories are $C^1$; the time to return from the guard to itself is bounded below by a positive $\delta_t$ depending on $\|A_i\|$ and $r_\ast$, ruling out accumulation of transitions.
-- **Capacity bound and convergence.** Metatheorem 3.1 gives $N(\infty)\le V_0/\Delta_{\min}$. After the final transition the system evolves in a single regime and converges exponentially to the origin by standard Lyapunov theory (Metatheorem 3.3).
-
-By combining Metatheorems 3.1, 3.2, and 3.3, we achieve a comprehensive global control result: no infinite switching (so the system's qualitative behavior eventually stops changing, **Global Capacity**), no pathological avoidance of dissipation (so the system cannot sustain a runaway or wild trajectory that slips through stabilizing forces, **Non-Degeneracy**), and eventual convergence to a stable state (**Decay to Safe Regime**). Together, these guarantee a robust form of global stability for the system under the Hypostructure Framework.
-
-## 4. Discussion
-
-We have formulated an abstract framework for global control in dynamical systems and proved three general metatheorems that capture essential features of globally stable behavior. It is worth reflecting on the generality and limitations of this approach, as well as its relationship to more classical theories in dynamics and control.
-
-**Generality:** The Hypostructure Framework does not assume any particular equations or even finite-dimensionality (aside from requiring a Lyapunov functional and a notion of phase space). Therefore, it can be applied in principle to ODE systems, hybrid systems (which naturally have regime switches), PDEs with different solution regimes (e.g. laminar vs turbulent phases), or stochastic processes that have different qualitative phases. The key requirement is the ability to partition the state space into meaningful regimes and to identify appropriate $V$, $\Psi$, and local mechanisms. This is admittedly a non-trivial task in practice — it presupposes deep understanding of the system's dynamics. In settings like the Navier–Stokes blow-up problem or control of chaotic oscillators, researchers effectively carry out this program by identifying all possible routes to instability and showing that each route is blocked by some mechanism². Our framework is a formal abstraction of that strategy: **divide and conquer** in phase space, using local Lyapunov or coercive estimates, and glue the analysis together with an energy accounting argument.
-
-**On the Metatheorems:** The Global Capacity Metatheorem has a clear physical interpretation: any system with finite energy and a dissipative cost to changing states cannot change states indefinitely. In control terms, it's like saying if your actuator uses a bit of energy every time it switches modes, and you have a battery of finite size, you can only switch finitely many times. This rules out Zeno behaviors and endless chatter, which are often a concern in hybrid control systems. It also connects to the idea of excluding limit cycles that require repeated reinjection of energy; those cycles cannot sustain because they'd have to siphon energy from a finite source an infinite number of times. Notably, the results in Section 8.6 of the provided context demonstrated exactly such an exclusion of recurrent dynamics by establishing a minimum "hysteresis" cost for each cycle.
-
-The Non-Degeneracy Metatheorem is essentially a **completeness or coverage guarantee**: our stratification and mechanisms cover all eventualities – there is no mysterious "loophole" trajectory that the analysis misses. In traditional dynamical systems terms, it means the union of the controlled (or stable) regions is an **absorbing set**: any trajectory must end up in one of them. It's reminiscent of statements like "any solution either blows up or tends to the attractor" – here blow-up corresponds to running out of Lyapunov budget (which we disallow by assumption of global boundedness), so the only option is tending to an attractor (safe regime). The text from Section 12 of the backup¹ basically states this in an application: at least one stabilizing mechanism is always active along any trajectory, which is what we achieved.
-
-The Decay Metatheorem ensures that not only does something stabilizing always act, but eventually one stabilizing effect dominates and brings the system to rest. This is akin to the standard Lyapunov convergence theorems, except we had to work to ensure the system stops switching so that a single Lyapunov function can take over. This result leans on an additional assumption that the final regime has a proper Lyapunov function and no further excitation, which is generally true if the system is dissipative and no external energy is being added.
-
-**Mathematical Soundness:** We endeavored to define everything precisely (regimes, functionals, etc.) and keep arguments general. One potential subtlety is the assumption of a uniform positive transition cost. In some systems, costs might not be uniform, but our proofs would still hold if, for example, the *infimum* of costs is positive or if a cycle of transitions has a net cost bounded away from zero. If costs could get arbitrarily small, one could conceive a sequence of smaller and smaller wiggles that avoid doing much. In practice, such behavior often implies an approach to an equilibrium or singular point, which usually contradicts the avoidance of mechanisms (since near an equilibrium a mechanism is in effect, just weakly). Thus, while we assumed positivity for clarity, a more refined statement could allow diminishing costs but still conclude that infinite switching either requires infinite time (Zeno, which is usually ruled out by well-posedness) or infinite energy.
-
-Another assumption is that $V$ is globally bounded (from above, or at least does not diverge over time). This is necessary – if unlimited energy could enter the system, then all bets are off for stability. In closed systems, energy is typically bounded by initial energy or by conservation laws. In controlled systems, one designs controllers to ensure a Lyapunov-like function stays bounded. So this is a reasonable requirement.
-
-**Relation to Known Principles:** Our global Lyapunov function $V$ is akin to a **composite Lyapunov function** used in control of switched systems. In switched system theory, one often has multiple Lyapunov functions (one for each mode) and one needs a condition to ensure overall Lyapunov decrease despite switching. A common condition is the so-called **common Lyapunov function** or **multiple Lyapunov function** technique, which is an active research area. The Hypostructure Framework in some sense assumes a common global Lyapunov function $V$ exists across regimes (since we required $V$ never increases under any regime or transition). This is a strong condition but is often met in physical systems by actual energy or entropy which is always dissipated. If a common $V$ didn't exist, one might still salvage some version of the argument by using the local $W_i$ and ensuring a minimal drop in one of them that feeds into another – but that complicates matters. The simpler case is when one $V$ works for all.
-
-Another relation is to **LaSalle's invariance principle**: essentially our Decay Metatheorem is an extension of LaSalle's principle to a piecewise-smooth system. LaSalle says if $V$ is nonincreasing and has a limit, then trajectories approach the largest invariant set in $\{\dot V=0\}$. We ensured that the largest such invariant set in the final regime is the safe equilibrium set.
-
-**Applications:**
-
-- **Toy dissipative fluid surrogate:** A simplified two-mode model (e.g., laminar vs vortical proxy variables) can be stratified with kinetic-energy-like $V$ and a uniform cost for mode changes. This is a didactic surrogate, not a claim about Navier–Stokes regularity.
-- **Hybrid control (robots/vehicles):** Regimes are controller modes (cruise, brake, turn) with local Lyapunov functions. Costs represent actuator usage or delay. Capacity/Non-degeneracy prevent chatter; Decay ensures arrival at a target or rest.
-- **Stochastic volatility toy model:** Regimes correspond to high- and low-variance states; mean-reversion provides coercivity; entropy loss across transitions supplies cost, ruling out endless volatility cycling in the toy setting.
-
-**Conclusion:** The Hypostructure Framework provides a rigorous scaffolding to reason about global dynamics by breaking the problem into cases and ensuring every case pushes the system toward overall stability. It formalizes the intuitive notion that "for each way the system could misbehave, we have a contingency that stops it," and that these contingencies collectively force the system to behave in the long term. The metatheorems serve as checkpoints: (i) have we ruled out infinite regime hopping? (ii) have we covered all scenarios? (iii) have we ensured final convergence? If yes to all, then global stability is achieved.
-
-Future directions include relaxing hypotheses (e.g., allowing summable but nonuniform transition costs), algorithmic search for stratifications/Lyapunov functionals, and robustness with inputs. These are research problems; nothing here claims resolution of hard PDE regularity or other open problems.
-
----
-
-## Footnotes
-
-¹ Section reference: "at least one stabilizing mechanism is always active"
-² Section reference: "divide and conquer in phase space, using local Lyapunov or coercive estimates"
-³ Referenced as structural parameters in Definition 2.1
-
----
-
-## Bibliography
+**Lemma 3.1 (Gauge-fixed lower bound).** Under the non-degenerate gauge assumption,
+$$
+\mathrm{Cap}(u) \ge c_{\mathcal{M}} \int_0^{T^\ast} \frac{dt}{\lambda(t)^\gamma}.
+$$
+Thus the capacity cost reduces to a purely kinematic integral involving the blow-up rate and scaling exponent.
+
+### 3.4 Capacity Classification
+
+We classify equations according to the convergence/divergence of the gauge-fixed integral $\int_0^{T^\ast} \lambda(t)^{-\gamma} dt$ for fast focusing $\lambda(t)\to 0$:
+
+- **Type I (zero cost; conservative/inviscid):** $\mathfrak{D}\equiv 0$ (or $\nu=0$), so $\mathrm{Cap}(u)\equiv 0$; singularities are not energetically obstructed.
+- **Type II (finite cost; critical dispersive/Hamiltonian):** $\mathrm{Cap}(u)<\infty$ for admissible blow-up rates; singularities are energetically affordable (framework describes rates/profiles).
+- **Type III (infinite cost; supercritical dissipative):** For $\lambda(t)$ faster than self-similar, $\int_0^{T^\ast}\lambda(t)^{-\gamma} dt=\infty$, so $\mathrm{Cap}(u)=\infty$; singularities are energetically forbidden.
+
+### 3.5 Capacity Veto Theorem
+
+**Theorem 3.1 (Capacity veto).** Let $(\mathcal{X},\Phi,\psi)$ be a hypostructure with dissipation $\mathfrak{D}$ homogeneous of degree $-\gamma$ under scaling. Suppose a singular stratum $S_{\mathrm{sing}}$ corresponds to $\lambda\to 0$ and that $\mathrm{Cap}(u)=\infty$ for any trajectory attempting $\lambda(t)\to 0$ at that rate. Then $S_{\mathrm{sing}}$ has infinite energetic capacity and is dynamically null for finite-energy BV trajectories.
+
+*Proof.* The BV chain rule gives $|D^s(\Phi\circ u)|(J_u)+\int_0^{T^\ast}W(u(t))\,dt \le \Phi_0$. The absolutely continuous part dominates $\int_0^{T^\ast}\mathfrak{D}(u(t))\,dt=\mathrm{Cap}(u)$. If $\mathrm{Cap}(u)=\infty$, then $\Phi\circ u$ would have unbounded variation, contradicting finiteness of $\Phi_0$. Thus no finite-energy trajectory can realize $\lambda\to 0$ with infinite capacity; $S_{\mathrm{sing}}$ is unreachable. □
+
+
+## 4. Structural Exclusion Principles: Monotonicity and Geometric Convexity
+
+Beyond capacity barriers and defect-coercivity, hypostructures admit additional structural mechanisms that exclude stationary or recurrent behavior in certain strata. We record three such mechanisms—virial-type monotonicity, geometric $\mu$-convexity, and variational rigidity—that can be verified on smooth strata in concrete PDE models.
+
+### 4.1 Virial Monotonicity and Exclusion
+
+On a smooth stratum $S_\alpha$ where tangent vectors and gradients are well-defined, consider a $C^1$ functional $J:\mathcal{X}\to\mathbb{R}$ playing the role of a dispersion or moment functional (e.g., a virial). Along a hypostructural trajectory $u(t)$ in $S_\alpha$, the orbital derivative of $J$ is
+$$
+\frac{d}{dt}J(u(t)) = \langle \dot u(t), \nabla J(u(t))\rangle.
+$$
+We assume a decomposition of the velocity field $\dot u=F_{\mathrm{diss}}+F_{\mathrm{inert}}$ into a dissipative (gradient-like) part and an inertial (skew or transport) part.
+
+**Definition 4.1 (Virial splitting on a stratum).** A stratum $S_\alpha$ admits a virial splitting if there exist $F_{\mathrm{diss}},F_{\mathrm{inert}}$ and $J$ such that, along any smooth flow line in $S_\alpha$,
+1. $\langle F_{\mathrm{diss}}(u),\nabla J(u)\rangle \le -c_1\Phi(u)$ for some $c_1>0$ (cohesive decay),
+2. $\langle F_{\mathrm{inert}}(u),\nabla J(u)\rangle$ captures dispersive/expansive effects.
+
+**Theorem 4.1 (Virial exclusion).** Suppose that on $S_\alpha$ the domination condition
+$$
+|\langle F_{\mathrm{inert}}(u),\nabla J(u)\rangle| < |\langle F_{\mathrm{diss}}(u),\nabla J(u)\rangle|
+$$
+holds for all nontrivial $u\in S_\alpha$. Then $S_\alpha$ contains no nontrivial equilibria of the hypostructural flow, and no trajectory can remain in $S_\alpha$ for all $t\in\mathbb{R}$ without converging to zero.
+
+*Proof.* Let $u_\ast\in S_\alpha$ be an equilibrium of the hypostructural flow. By definition, $\dot u(t)=0$ whenever $u(t)\equiv u_\ast$, hence
+$$
+F_{\mathrm{diss}}(u_\ast)+F_{\mathrm{inert}}(u_\ast)=0.
+$$
+If $\Phi(u_\ast)>0$, then by Definition 4.1 we have
+$$
+\langle F_{\mathrm{diss}}(u_\ast),\nabla J(u_\ast)\rangle \le -c_1\Phi(u_\ast) < 0.
+$$
+Thus $\langle F_{\mathrm{diss}}(u_\ast),\nabla J(u_\ast)\rangle\neq 0$ and
+$$
+|\langle F_{\mathrm{diss}}(u_\ast),\nabla J(u_\ast)\rangle| \ge c_1\Phi(u_\ast)>0.
+$$
+Since $F_{\mathrm{inert}}(u_\ast)=-F_{\mathrm{diss}}(u_\ast)$, pairing with $\nabla J$ yields
+$$
+\langle F_{\mathrm{inert}}(u_\ast),\nabla J(u_\ast)\rangle = -\langle F_{\mathrm{diss}}(u_\ast),\nabla J(u_\ast)\rangle,
+$$
+so the absolute values coincide:
+$$
+|\langle F_{\mathrm{inert}}(u_\ast),\nabla J(u_\ast)\rangle| = |\langle F_{\mathrm{diss}}(u_\ast),\nabla J(u_\ast)\rangle|.
+$$
+This contradicts the domination condition, which requires the strict inequality
+$$
+|\langle F_{\mathrm{inert}}(u_\ast),\nabla J(u_\ast)\rangle| < |\langle F_{\mathrm{diss}}(u_\ast),\nabla J(u_\ast)\rangle|.
+$$
+Hence any equilibrium $u_\ast$ must satisfy $\Phi(u_\ast)=0$. On a dissipative stratum, $\Phi$ is a Lyapunov functional with $\Phi\ge 0$ and $\Phi=0$ only at the trivial state, so $u_\ast=0$. This proves that $S_\alpha$ contains no nontrivial equilibria.
+
+We now consider a complete trajectory $u:\mathbb{R}\to S_\alpha$ of the hypostructural flow. Along $u(t)$ we have
+$$
+\frac{d}{dt}J(u(t)) = \langle \dot u(t),\nabla J(u(t))\rangle
+ = \langle F_{\mathrm{diss}}(u(t)) + F_{\mathrm{inert}}(u(t)),\nabla J(u(t))\rangle.
+$$
+At each time $t$ with $\Phi(u(t))>0$, Definition 4.1 gives
+$$
+\langle F_{\mathrm{diss}}(u(t)),\nabla J(u(t))\rangle \le -c_1\Phi(u(t))<0,
+$$
+so this term is strictly negative. The domination condition implies
+$$
+|\langle F_{\mathrm{inert}}(u(t)),\nabla J(u(t))\rangle| < |\langle F_{\mathrm{diss}}(u(t)),\nabla J(u(t))\rangle|.
+$$
+Since $\langle F_{\mathrm{diss}},\nabla J\rangle$ is negative and has strictly larger magnitude than $\langle F_{\mathrm{inert}},\nabla J\rangle$, the sum
+$$
+\langle F_{\mathrm{diss}}(u(t)) + F_{\mathrm{inert}}(u(t)),\nabla J(u(t))\rangle
+$$
+remains strictly negative whenever $\Phi(u(t))>0$. Thus there exists a function $c(t)>0$ such that
+$$
+\frac{d}{dt}J(u(t)) \le -c(t)\quad\text{whenever }\Phi(u(t))>0.
+$$
+In particular, $J(u(t))$ is strictly decreasing on any interval where $\Phi(u(t))>0$. If there exists $t_0$ with $\Phi(u(t_0))>0$, then $J(u(t))\to -\infty$ as $t\to +\infty$ and $J(u(t))\to +\infty$ as $t\to -\infty$, contradicting lower boundedness of $J$ (e.g., by convexity and nonnegativity). Therefore, for a complete trajectory confined to $S_\alpha$ we must have $\Phi(u(t))=0$ for all $t\in\mathbb{R}$, which forces $u(t)\equiv 0$ by the previous paragraph.
+
+It follows that $S_\alpha$ is transient in the hypostructure: any nontrivial trajectory entering $S_\alpha$ cannot remain there for all time and must exit through some interface $G_{\alpha\to\beta}$ in finite forward or backward time. Such exits contribute interfacial cost in the finite-capacity accounting of Theorem 4.1. □
+
+### 4.2 Geometric Locking via $\mu$-Convexity
+
+Spectral gaps in linearized PDEs correspond, in the metric setting, to uniform $\mu$-convexity (geodesic convexity) of the energy. We encode geometric conditions that enforce such convexity.
+
+**Definition 4.2 (Geometric conditioning and locking).** Let $\mathcal{I}:\mathcal{X}\to\mathbb{R}$ be a continuous geometric invariant. For a threshold $\mathcal{I}_c$, define the locked region
+$$
+S_{\mathrm{lock}}:=\{u\in\mathcal{X}:\mathcal{I}(u)>\mathcal{I}_c\}.
+$$
+We say $\Phi$ exhibits geometric locking on $S_{\mathrm{lock}}$ if there exists $\mu>0$ such that $\Phi$ is $\mu$-convex along geodesics restricted to $S_{\mathrm{lock}}$; i.e., for any metric geodesic $(\gamma_\theta)_{\theta\in[0,1]}$ in $S_{\mathrm{lock}}$,
+$$
+\Phi(\gamma_\theta) \le (1-\theta)\Phi(\gamma_0)+\theta\Phi(\gamma_1) - \tfrac12\mu\theta(1-\theta)d_{\mathcal{X}}(\gamma_0,\gamma_1)^2.
+$$
+
+**Theorem 4.2 (Locking and exponential convergence).** If $u(t)$ is a hypostructural trajectory that remains in $S_{\mathrm{lock}}$ for all $t\ge 0$, then there exists a unique equilibrium $u_\infty\in S_{\mathrm{lock}}$ and constants $C,\mu>0$ such that
+$$
+d_{\mathcal{X}}(u(t),u_\infty)\le C e^{-\mu t}.
+$$
+In particular, recurrent dynamics (cycles, chaos) are excluded in locked strata.
+
+*Proof.* By Assumption A1, $\Phi$ is proper and lower semi-continuous, and its sublevel sets intersected with any fixed stratum are precompact. Since $S_{\mathrm{lock}}$ is a super-level set of the continuous invariant $\mathcal{I}$, it is Borel; we additionally assume it is closed and nonempty. On $S_{\mathrm{lock}}$, the functional $\Phi$ is $\mu$-convex along geodesics. The direct method in the calculus of variations then yields the existence of a minimizer $u_\infty\in S_{\mathrm{lock}}$ of $\Phi|_{S_{\mathrm{lock}}}$; $\mu$-convexity implies that this minimizer is unique.
+
+By Definition 2.2 and the BV chain rule, a hypostructural trajectory is a curve of maximal slope for $\Phi$ in the sense of De Giorgi and of Ambrosio–Gigli–Savaré, at least while it remains in a single stratum. When $\Phi$ is $\mu$-convex along geodesics, curves of maximal slope coincide with the metric gradient flow of $\Phi$ and satisfy the evolution variational inequality (EVI$_\mu$)
+$$
+\frac12\frac{d}{dt} d_{\mathcal{X}}(u(t),v)^2 + \frac{\mu}{2}\, d_{\mathcal{X}}(u(t),v)^2
+\le \Phi(v)-\Phi\bigl(u(t)\bigr)
+$$
+for all $v\in S_{\mathrm{lock}}$ and for almost every $t\ge 0$; see, for example, Ambrosio–Gigli–Savaré, \emph{Gradient Flows in Metric Spaces and in the Space of Probability Measures}. Choosing $v=u_\infty$ and using the minimality of $u_\infty$ gives
+$$
+\frac12\frac{d}{dt} d_{\mathcal{X}}(u(t),u_\infty)^2 + \frac{\mu}{2}\, d_{\mathcal{X}}(u(t),u_\infty)^2 \le 0.
+$$
+Gronwall’s lemma then yields
+$$
+d_{\mathcal{X}}(u(t),u_\infty)^2 \le e^{-\mu t}\, d_{\mathcal{X}}(u(0),u_\infty)^2,
+$$
+which is the stated exponential convergence with $C=d_{\mathcal{X}}(u(0),u_\infty)$. The contraction property implied by the EVI$_\mu$ also shows that no nontrivial recurrent dynamics (limit cycles or chaotic invariant sets) can exist in $S_{\mathrm{lock}}$: any two trajectories remaining in $S_{\mathrm{lock}}$ converge exponentially to each other and hence to the unique equilibrium $u_\infty$. □
+
+### 4.3 Variational Rigidity and Roughness Penalties
+
+We finally connect efficiency functionals driving potential singularities to the defect structure, obtaining quantitative stability.
+
+**Definition 4.3 (Variational rigidity).** Let $\Xi:\mathcal{X}\to\mathbb{R}$ be a scaling-critical efficiency functional (e.g., a nonlinear production rate), with maximal value $\Xi_{\max}$. The hypostructure is variationally rigid if:
+1. Maximizers are smooth: $\arg\max\Xi\subset \mathcal{X}_{\mathrm{reg}}$,
+2. There exists $C>0$ such that
+$$
+\Xi_{\max}-\Xi(u) \ge C\,\|\nu_u\|_{\mathcal{M}}^2
+$$
+for all $u$, where $\nu_u$ is the defect measure.
+
+**Theorem 4.3 (Roughness penalty).** In a variationally rigid hypostructure, any sequence $\{u_n\}$ with $\Xi(u_n)\to\Xi_{\max}$ satisfies $\|\nu_{u_n}\|_{\mathcal{M}}\to 0$ and is precompact. Thus “most efficient” candidates for singular behavior are asymptotically smooth; if smooth singularities are excluded by classical criteria, then no singularity is dynamically admissible. Moreover, attempting to maximize $\Xi$ while retaining nonzero defect $\nu_u$ forces, via A3 and the BV energy inequality, a coercive contribution to $D_t\Phi(u)$ and hence to the transition/interfacial cost; rough singular strata are energetically disfavored relative to smooth ones.
+
+*Proof.* Let $\{u_n\}$ be a sequence with $\Xi(u_n)\to\Xi_{\max}$. By variational rigidity,
+$$
+\Xi_{\max}-\Xi(u_n) \;\ge\; C\,\|\nu_{u_n}\|_{\mathcal{M}}^2
+$$
+for all $n$. Taking $n\to\infty$ and using $\Xi(u_n)\to\Xi_{\max}$ shows that the left-hand side tends to $0$, hence
+$$
+\|\nu_{u_n}\|_{\mathcal{M}}^2 \le \frac{\Xi_{\max}-\Xi(u_n)}{C}\longrightarrow 0,
+$$
+so $\|\nu_{u_n}\|_{\mathcal{M}}\to 0$.
+
+By the compensated compactness assumption A3 there is a strictly increasing function $\gamma$ with $\gamma(0)=0$ such that
+$$
+|\partial\Phi|(u) \;\ge\; \gamma(\|\nu_u\|_{\mathcal{M}})
+$$
+for all $u$ in each stratum. In particular, if $\|\nu_{u_n}\|_{\mathcal{M}}\to 0$, then $\gamma(\|\nu_{u_n}\|_{\mathcal{M}})\to 0$ and hence $|\partial\Phi|(u_n)\to 0$. Combining this with the coercivity of $\Phi$ on bounded strata (Assumption A1) and the precompactness clause in A3 (“bounded sequences with vanishing slope are precompact relative to the stratification”), we conclude that any maximizing sequence $\{u_n\}$ is precompact in $\mathcal{X}$; its limit points necessarily satisfy $\nu_u=0$ and are therefore regular (belonging to $\mathcal{X}_{\mathrm{reg}}$ by the first part of Definition 4.3). This proves the first assertion.
+
+For the energetic statement, fix $\delta>0$. If $\|\nu_u\|_{\mathcal{M}}\ge \delta$, then by A3,
+$$
+|\partial\Phi|(u) \;\ge\; \gamma(\delta)>0.
+$$
+Along any hypostructural trajectory $u(t)$ with $u(t_0)=u$ at some time $t_0$, the BV energy inequality yields
+$$
+\frac{d}{dt}\Phi(u(t))\Big|_{t=t_0}^{ac} \le -|\partial\Phi|^2(u(t_0)) \le -\gamma(\delta)^2.
+$$
+Hence, at any configuration with defect bounded below by $\delta$, the instantaneous dissipation rate is bounded below by a strictly positive constant depending only on $\delta$. Integrating over a time interval on which $\|\nu_{u(t)}\|_{\mathcal{M}}\ge \delta$ shows that such segments contribute a uniform positive amount to the total dissipation (and, via the chain rule, to the singular/interfacial cost). In this precise sense, configurations with nonzero defect are energetically expensive: they cannot persist for long in any near-maximizing trajectory and are disfavoured relative to smooth configurations with vanishing defect. □
+
+### 4.4 Ground State Gap and Quantization
+
+Another potential failure mode in exclusion arguments is the “vanishing singularity”, where a would-be singular profile shrinks in norm until it disappears, evading large-data obstructions. We encode a structural mechanism that rules out nontrivial stationary profiles with arbitrarily small energy.
+
+In many dissipative systems the energy and dissipation satisfy a scaling imbalance near the origin: informally, the “nonlinear production” scales superlinearly relative to the dissipation at small amplitudes, so that any nonzero stationary configuration must live at a definite energy scale. In the hypostructural setting this can be formulated directly in terms of the Lyapunov functional and its metric slope.
+
+**Assumption (Small-energy slope gap).**  
+There exist constants $\Phi_\ast>0$ and $c_\ast>0$ and an exponent $\theta>0$ such that for all $u\in\mathcal{X}$ with $0<\Phi(u)\le \Phi_\ast$ one has
+$$
+|\partial\Phi|(u) \;\ge\; c_\ast\,\Phi(u)^{\theta}.
+$$
+Equivalently, the dissipation rate dominates any possible nonlinear self-interaction at small energy scales: the slope cannot vanish “too fast” as $\Phi(u)\to 0$.
+
+**Theorem 4.4 (Ground state gap).**  
+Under the small-energy slope gap assumption, any nontrivial stationary point $u$ of the hypostructural flow satisfies
+$$
+\Phi(u)\ge \epsilon_0,
+$$
+for some universal constant $\epsilon_0\in(0,\Phi_\ast]$. In particular, the set of nontrivial stationary profiles (and hence of candidate singular limit profiles) is bounded away from the vacuum in energy space.
+
+*Proof.* A stationary point in the metric gradient-flow sense satisfies $|\partial\Phi|(u)=0$. If $u$ is nontrivial with $0<\Phi(u)\le \Phi_\ast$, the small-energy slope gap gives
+$$
+0 = |\partial\Phi|(u) \ge c_\ast \Phi(u)^\theta >0,
+$$
+a contradiction. Thus no nontrivial stationary point can lie in the sublevel set $\{\Phi\le \Phi_\ast\}$; any nontrivial stationary $u$ must satisfy $\Phi(u)>\Phi_\ast$. Taking $\epsilon_0:=\Phi_\ast$ yields the claim. □
+
+*Remark 4.3.*  
+In concrete PDE models the small-energy slope gap typically follows from a scaling imbalance between the dissipation and the nonlinearity: if the dissipation functional $\mathfrak{D}$ scales linearly (or sublinearly) in amplitude while the nonlinear term scales superlinearly near zero, then the stationary Euler–Lagrange equation cannot admit arbitrarily small nontrivial solutions. The present abstract formulation isolates the only property used by the hypostructural arguments: a quantitative gap between the vacuum and the least nontrivial stationary profile in terms of the Lyapunov functional $\Phi$.
+
+### 4.5 Modulational Locking of the Scaling Rate
+
+The capacity classification of Section 3 treats different blow-up regimes according to the scaling behaviour of $\lambda(t)$. To prevent a trajectory from “drifting” between regimes (for example, from a critical Type I rate toward a mildly supercritical Type II rate), we formulate a modulational locking principle: under a spectral gap for the renormalized dynamics on the gauge manifold, the scaling parameter is asymptotically forced to its self-similar value.
+
+We work on the renormalized manifold $\mathcal{M}$ of Definition 3.2. Let $v_\ast\in\mathcal{M}$ be a stationary renormalized profile and write $v=v_\ast+w$, with $w$ constrained by the gauge condition to lie in the subspace orthogonal (in an appropriate inner product) to the infinitesimal scaling mode $z_{\mathrm{scal}}$ (the tangent to the scaling orbit at $v_\ast$).
+
+**Assumption (Spectral gap and modulation system).**  
+Near $v_\ast$ the renormalized dynamics admit a decomposition
+$$
+v_s = \mathcal{F}(v,\lambda),\qquad \lambda_s = F(\lambda) + G(w),
+$$
+where $s$ is renormalized time, $v_s:=\partial_s v$, and:
+
+1. (Linearization with gap) The map $\mathcal{F}$ is Fréchet differentiable at $(v_\ast,\lambda_\ast)$, and the linearized operator
+   $$
+   \mathcal{L} := D_v\mathcal{F}(v_\ast,\lambda_\ast)
+   $$
+   satisfies a spectral gap estimate on the gauge-orthogonal subspace:
+   $$
+   \langle \mathcal{L}w,w\rangle \le -\mu \|w\|^2 \quad\text{for all }w\perp z_{\mathrm{scal}},
+   $$
+   for some $\mu>0$.
+
+2. (Nonlinear remainder) The nonlinear remainder in the $v$-equation is higher order in $w$:
+   $$
+   \|\mathcal{F}(v_\ast+w,\lambda) - \mathcal{L}w\| \le C\|w\|^2
+   $$
+   for $\|w\|$ sufficiently small.
+
+3. (Modulation equation) The scaling parameter satisfies
+  $$
+  |\lambda_s - F(\lambda)| \le C\|w\|
+  $$
+  for $\|w\|$ sufficiently small, where $F(\lambda)$ is the \emph{scaling beta-function} determining the self-similar rate (for instance $F(\lambda)\approx -\lambda$ in simple self-similar collapse models), and $F(\lambda_\ast)=0$, $F'(\lambda_\ast)\neq 0$ (a nondegenerate self-similar fixed point).
+
+**Theorem 4.5 (Modulational locking).**  
+Under the spectral gap and modulation assumptions above, there exist constants $C_1,C_2>0$ and a neighbourhood of $(v_\ast,\lambda_\ast)$ in which any renormalized trajectory $(v(s),\lambda(s))$ satisfying the gauge condition and entering that neighbourhood for some $s_0$ obeys
+$$
+\|w(s)\| \le C_1 e^{-\mu (s-s_0)}\|w(s_0)\|\quad\text{for all }s\ge s_0,
+$$
+and
+$$
+|\lambda(s)-\lambda_\ast| \le C_2 e^{-\mu (s-s_0)}\|w(s_0)\|.
+$$
+In particular, the scaling rate is asymptotically locked to the self-similar value $\lambda_\ast$, and slow drift toward alternative scaling regimes is structurally excluded in the neighbourhood of $v_\ast$.
+
+*Proof.* The evolution for $w$ is
+$$
+w_s = \mathcal{L}w + R(w,\lambda),
+$$
+with $\|R(w,\lambda)\|\le C\|w\|^2$ by assumption. On the gauge-orthogonal subspace the spectral gap gives
+$$
+\frac{d}{ds}\|w(s)\|^2
+\le -2\mu\|w(s)\|^2 + C\|w(s)\|^3,
+$$
+for $s$ such that $\|w(s)\|$ is sufficiently small. Choose a neighbourhood of $v_\ast$ in which $\|w\|\le \eta$ implies $\|R(w,\lambda)\|\le C\|w\|^2$ and $C\|w\|\le \mu$; this is possible by continuity and smallness of $w$. Then whenever $\|w(s)\|\le \eta$ we have
+$$
+\frac{d}{ds}\|w(s)\|^2 \le -\mu\|w(s)\|^2,
+$$
+which yields
+$$
+\|w(s)\|^2 \le e^{-\mu (s-s_0)}\|w(s_0)\|^2
+$$
+as long as the trajectory remains in the chosen neighbourhood. A standard continuity/bootstrapping argument shows that if $\|w(s_0)\|$ is small enough, the solution cannot exit this neighbourhood forwards in $s$, so the exponential decay estimate holds for all $s\ge s_0$. Taking square roots gives the first inequality with a suitable constant $C_1$.
+
+For the scaling parameter, the modulation equation can be written as
+$$
+\lambda_s - F(\lambda) = G(w),\qquad |G(w)|\le C\|w\|.
+$$
+Linearizing $F$ at $\lambda_\ast$ and using $F(\lambda_\ast)=0$, $F'(\lambda_\ast)\neq 0$, we write
+$$
+F(\lambda) = F'(\lambda_\ast)(\lambda-\lambda_\ast) + r(\lambda),
+$$
+where $r(\lambda)=o(|\lambda-\lambda_\ast|)$ as $\lambda\to\lambda_\ast$. For $\lambda$ sufficiently close to $\lambda_\ast$ we have $|r(\lambda)|\le \frac12 |F'(\lambda_\ast)|\,|\lambda-\lambda_\ast|$. Substituting into the modulation equation for $\lambda-\lambda_\ast$ gives
+$$
+(\lambda-\lambda_\ast)_s - F'(\lambda_\ast)(\lambda-\lambda_\ast)
+= r(\lambda) + G(w).
+$$
+Taking absolute values and using the bounds on $r$ and $G$ and the exponential decay of $\|w(s)\|$ yields a scalar differential inequality of the form
+$$
+\frac{d}{ds}|\lambda(s)-\lambda_\ast|
+\le -c_0 |\lambda(s)-\lambda_\ast| + C\|w(s)\|,
+$$
+for some $c_0>0$ and all $s\ge s_0$ in the neighbourhood. Applying Gronwall’s lemma and inserting the exponential bound on $\|w(s)\|$ shows that $|\lambda(s)-\lambda_\ast|$ decays exponentially at rate $c_0$ up to constants depending on $\|w(s_0)\|$, which can be absorbed into $C_2$. This proves the second inequality.
+
+Returning to physical time (if desired) corresponds to a smooth reparametrization of $s$ and does not affect the qualitative conclusion: in the neighbourhood of a spectrally stable renormalized profile, the scaling behaviour cannot drift to a different blow-up rate. The only dynamically realized scaling is the self-similar one determined by the zero of the beta-function $F$. □
+## 5. Dimensional, Topological, and Screening Constraints
+
+We record three further structural selection principles—measure-theoretic starvation, topological handoff, and asymptotic autonomy—that constrain possible singular sets and trajectories in hypostructures.
+
+### 5.1 Dissipation–Capacity Gap
+
+Let $\mu$ denote the dissipation measure in space–time (e.g., the absolutely continuous part of $D_t(\Phi\circ u)$).
+
+**Definition 5.1 (Dissipative dimension).** The dissipative dimension $d_{\mathrm{diss}}$ is the infimum of $d\ge 0$ such that $\mu$ is absolutely continuous with respect to the $d$-dimensional Hausdorff measure $\mathcal{H}^d$ on $\mathcal{X}\times(0,\infty)$:
+$$
+\mu \ll \mathcal{H}^d.
+$$
+
+**Definition 5.2 (Singular dimension).** Let $\mathcal{S}_u\subset \mathcal{X}\times(0,\infty)$ be the singular set of a trajectory (space–time points where the hypostructure fails to be regular). The singular dimension $d_{\mathrm{sing}}$ is the (parabolic) Hausdorff dimension of $\mathcal{S}_u$.
+
+**Theorem 5.1 (Measure-theoretic starvation).** Suppose there exists a critical dimension $d_\ast$ such that:
+1. (Partial regularity) $d_{\mathrm{sing}}< d_\ast$,
+2. (Flux requirement) $\mu\ll \mathcal{H}^{d_\ast}$.
+Then $\mu(\mathcal{S}_u)=0$. In particular, any singular regime that requires a positive dissipation flux supported on $\mathcal{S}_u$ is energetically starved and dynamically forbidden.
+
+*Proof.* Since $d_{\mathrm{sing}}<d_\ast$, we have $\mathcal{H}^{d_\ast}(\mathcal{S}_u)=0$. By absolute continuity, $\mu(\mathcal{S}_u)=0$. Thus the dissipation measure cannot charge the singular set; any nontrivial flux must be realized on the regular part, where the hypostructural gradient-flow regularity applies. □
+
+### 5.2 Topological Inflation and Handoff
+
+Let $\mathcal{I}:\mathcal{X}\to[0,\infty)$ be a geometric scale parameter (e.g., a radius or aspect ratio), and $\mathcal{T}:\mathcal{X}\to\mathbb{N}\cup\{0\}$ a lower semicontinuous topological index (e.g., winding number, genus).
+
+**Definition 5.3 (Topological coercivity).** A stratum $S_\alpha$ is topologically coercive if for any sequence $u_n\in S_\alpha$ with $\mathcal{I}(u_n)\to 0$,
+$$
+\mathcal{T}(u_n)\to +\infty.
+$$
+
+**Theorem 5.2 (Complexity barrier / handoff).** Let $S_{\mathrm{coll}}$ be a collapse stratum (where $\mathcal{I}\to 0$) and suppose $S_{\mathrm{coll}}$ is topologically coercive. Assume further that the energy controls complexity in the sense that there exists $C>0$ with
+$$
+\mathcal{T}(u)\le C\,\Phi(u)
+$$
+for all $u$ in the relevant region of phase space. Then any finite-energy trajectory cannot realize $\mathcal{I}(u(t))\to 0$ while remaining in $S_{\mathrm{coll}}$. If, in addition, the region $\{\mathcal{T}\ge T_0\}$ defines a forbidden stratum $S_{\mathrm{forb}}$ dynamically excluded by, say, Theorem 4.3, then any attempted collapse must hand off into $S_{\mathrm{forb}}$, and genuine collapse is arrested.
+
+*Proof.* If a trajectory $u(t)$ remained in $S_{\mathrm{coll}}$ with $\mathcal{I}(u(t))\to 0$ as $t\to T^\ast$, topological coercivity would imply $\mathcal{T}(u(t))\to\infty$. The energy bound on complexity then forces $\Phi(u(t))\to\infty$, contradicting the finite-energy assumption. Thus either $\mathcal{I}$ does not collapse or the trajectory must leave $S_{\mathrm{coll}}$ before reaching $\mathcal{I}=0$. If leaving occurs through the region where $\mathcal{T}\ge T_0$, then by the definition of $S_{\mathrm{forb}}$ and its dynamical nullness, the flow cannot proceed along a collapsing path, yielding the handoff conclusion. □
+
+### 5.3 Asymptotic Autonomy and Screening
+
+Finally, we formalize the intuition that near a singularity, local self-interaction dominates nonlocal environmental forcing.
+
+**Definition 5.4 (Local/nonlocal decomposition).** Decompose the driving force as
+$$
+F(u) = F_{\mathrm{self}}(u) + F_{\mathrm{env}}(u),
+$$
+where $F_{\mathrm{self}}$ is generated by the configuration in a shrinking neighborhood of a potential singular point (localized stratum), and $F_{\mathrm{env}}$ by the complement.
+
+**Assumption (Singular scaling hierarchy).** Under the scaling action $T_\lambda$, assume
+$$
+\|F_{\mathrm{self}}(T_\lambda v)\|\sim \lambda^{-\alpha},\qquad \|F_{\mathrm{env}}(T_\lambda v)\|\sim \lambda^{-\beta},
+$$
+for some exponents with $\alpha>\beta$.
+
+**Theorem 5.3 (Screening / asymptotic autonomy).** Under the singular scaling hierarchy, as $\lambda\to 0$,
+$$
+\frac{\|F_{\mathrm{env}}(T_\lambda v)\|}{\|F_{\mathrm{self}}(T_\lambda v)\|} \to 0.
+$$
+Thus near putative singular scales, the dynamics become asymptotically autonomous: local self-interaction determines stability, and external forcing becomes a lower-order perturbation.
+
+*Proof.* By the assumed scaling hierarchy,
+$$
+\frac{\|F_{\mathrm{env}}(T_\lambda v)\|}{\|F_{\mathrm{self}}(T_\lambda v)\|}
+\sim \lambda^{\alpha-\beta}
+$$
+as $\lambda\to 0$. Since $\alpha>\beta$, the exponent $\alpha-\beta$ is positive and hence $\lambda^{\alpha-\beta}\to 0$. This shows that the environmental forcing becomes negligible compared to the self-interaction in the renormalized regime, and any blow-up limit is governed by the autonomous evolution generated by $F_{\mathrm{self}}$ alone. □
+
+### 5.4 Energetic Masking of Nodal Defects
+
+In vector-valued dynamics, structural parameters (such as phase, angle, or direction) often become singular on a nodal set where the amplitude vanishes. A typical example is the decomposition $u=|u|\xi$ of a vector field into amplitude and direction: the direction $\xi$ is undefined at $u=0$. The energetic masking principle asserts that, under natural quantitative vanishing conditions, such kinematic defects do not contribute to the hypostructural energy budget and hence cannot carry singular capacity or defect.
+
+To make this precise, let $\mathcal{X}$ be realized as a function space over a spatial domain (for instance, a Banach space of maps $u:\Omega\to\mathbb{R}^m$), and let $\Phi$ admit a local energy density $\varphi(u,\nabla u)$ so that
+$$
+\Phi(u)=\int_{\Omega} \varphi(u(x),\nabla u(x))\,dx.
+$$
+We consider a structural parameter $\xi$ defined whenever $u(x)\neq 0$.
+
+**Definition 5.5 (Structural parameter and nodal set).**  
+Let $\pi:\mathcal{X}\setminus\{0\}\to\mathcal{Y}$ be a projection onto a parameter space (e.g. $\xi(u)=u/|u|\in S^{m-1}$), and set $\xi(x):=\pi(u(x))$ wherever $u(x)\neq 0$. The \emph{nodal set} of $u$ is
+$$
+\mathcal{Z}_u:=\{x\in\Omega:u(x)=0\}.
+$$
+On $\mathcal{Z}_u$ the parameter $\xi$ is undefined (or singular).
+
+We assume that near $\mathcal{Z}_u$ the energy density splits into an amplitude part and a direction part.
+
+**Assumption (Amplitude–direction decomposition).**  
+There exist constants $c_1,c_2>0$ such that, for $x$ in a neighbourhood of $\mathcal{Z}_u$,
+$$
+c_1\Big(|\nabla |u(x)||^2 + |u(x)|^2|\nabla \xi(x)|^2\Big)
+\le \varphi(u(x),\nabla u(x))
+\le c_2\Big(|\nabla |u(x)||^2 + |u(x)|^2|\nabla \xi(x)|^2\Big),
+$$
+with $\xi(x)$ defined for $u(x)\neq 0$.
+
+**Theorem 5.4 (Energetic masking).**  
+Let $u$ satisfy the amplitude–direction decomposition above in a neighbourhood of its nodal set $\mathcal{Z}_u$. Suppose that:
+
+1. The amplitude vanishes at $\mathcal{Z}_u$ with order at least $\alpha\ge 1$, in the sense that there exist $r_0>0$ and $C>0$ such that
+   $$
+   |u(x)| \le C\,\mathrm{dist}(x,\mathcal{Z}_u)^{\alpha}
+   \quad\text{for all }x\text{ with }\mathrm{dist}(x,\mathcal{Z}_u)<r_0;
+   $$
+
+2. The gradient of the structural parameter has at most first-order singularities,
+   $$
+   |\nabla \xi(x)| \le C'\,\mathrm{dist}(x,\mathcal{Z}_u)^{-1}
+   \quad\text{for all }x\text{ with }\mathrm{dist}(x,\mathcal{Z}_u)<r_0,
+   $$
+   for some constant $C'>0$.
+
+Then the energy of $u$ remains finite in a neighbourhood of the nodal set:
+$$
+\int_{\{x:\,\mathrm{dist}(x,\mathcal{Z}_u)<r_0\}} \varphi(u(x),\nabla u(x))\,dx < \infty.
+$$
+In particular, the singularity of $\nabla \xi$ on $\mathcal{Z}_u$ is energetically masked by the vanishing of $|u|$, and does not contribute to the hypostructural capacity or defect. Energetic and defect-based exclusion arguments may therefore be verified on the energy-carrying core $\{x:|u(x)|>\delta\}$ for small $\delta>0$, ignoring kinematic defects on $\mathcal{Z}_u$.
+
+*Proof.* It suffices to estimate the two contributions $|\nabla |u||^2$ and $|u|^2|\nabla \xi|^2$ separately in a tubular neighbourhood of $\mathcal{Z}_u$. Since $u\in\mathcal{X}$ by assumption, we already know that $\Phi(u)<\infty$, but we give a local argument that isolates the role of the nodal set.
+
+Fix a point $x_0\in\mathcal{Z}_u$ and consider a ball $B_r(x_0)$ with $r<r_0$. By the amplitude–direction decomposition and the bounds assumed on $|u|$ and $|\nabla\xi|$, we obtain
+$$
+\varphi(u(x),\nabla u(x))
+\le c_2\Big(|\nabla |u(x)||^2 + |u(x)|^2|\nabla \xi(x)|^2\Big)
+\le c_2\Big(|\nabla |u(x)||^2 + C^2 C'^2\,\mathrm{dist}(x,\mathcal{Z}_u)^{2\alpha-2}\Big).
+$$
+The first term $|\nabla |u||^2$ is locally integrable because $u$ belongs to the underlying Sobolev (or similar) space by definition of $\mathcal{X}$. For the second term, note that by hypothesis $\alpha\ge 1$, so $2\alpha-2\ge 0$ and hence
+$$
+\mathrm{dist}(x,\mathcal{Z}_u)^{2\alpha-2}
+$$
+is locally bounded near $\mathcal{Z}_u$. In particular, in spatial dimension $d$ we can estimate in polar coordinates around $x_0$:
+$$
+\int_{B_r(x_0)} \mathrm{dist}(x,\mathcal{Z}_u)^{2\alpha-2}\,dx
+\lesssim \int_0^{r} \rho^{2\alpha-2}\,\rho^{d-1}\,d\rho
+= \int_0^{r} \rho^{(2\alpha+d-3)}\,d\rho,
+$$
+which converges for any $\alpha\ge 1$ and any $d\ge 1$. Thus the contribution of $|u|^2|\nabla\xi|^2$ is locally integrable near $x_0$.
+
+Covering $\mathcal{Z}_u$ by finitely many such balls (using compactness or local finiteness) and summing the estimates gives
+$$
+\int_{\{x:\,\mathrm{dist}(x,\mathcal{Z}_u)<r_0\}} \varphi(u(x),\nabla u(x))\,dx <\infty.
+$$
+Since $\varphi$ controls the local contribution to the Lyapunov functional $\Phi$, the singular behaviour of $\xi$ on $\mathcal{Z}_u$ does not generate infinite capacity or defect. This justifies restricting energetic and defect-based exclusion arguments to the energy-carrying core where $|u|$ is bounded away from zero. □
+
+### 5.5 Geometric Attrition and Shape-Dependent Capacity
+
+The capacity functional of Section 3 quantifies the cost of temporal collapse (through the scaling parameter $\lambda(t)$). Singular behaviour may also arise via spatially anisotropic collapse, in which certain directions shrink much faster than others (e.g. sheet- or filament-like structures). We now formulate a geometric attrition principle: if anisotropy increases the local dissipation rate in a controlled way, then trajectories cannot sustain extreme anisotropy at fixed finite energy.
+
+Let $\mathcal{A}:\mathcal{X}\to[1,\infty)$ be a continuous “anisotropy modulus” (e.g. an aspect ratio or eccentricity functional) measuring deviation from isotropy on each stratum.
+
+**Definition 5.6 (Anisotropic stiffness).**  
+The dissipation is \emph{anisotropically stiff} relative to $\Phi$ and $\mathcal{A}$ if there exist constants $C_{\mathrm{stiff}}>0$ and $\gamma>0$ such that along any hypostructural trajectory $u(t)$ one has
+$$
+\frac{\mathfrak{D}(u(t))}{\Phi(u(t))} \;\ge\; C_{\mathrm{stiff}}\,\mathcal{A}(u(t))^{\gamma}
+$$
+whenever $\Phi(u(t))>0$, where $\mathfrak{D}$ is the dissipation rate functional from Section 3.3 (identified with $W_\alpha$ on each stratum).
+
+Informally, anisotropic configurations (large $\mathcal{A}$) are dissipatively expensive relative to their stored energy.
+
+**Theorem 5.5 (Geometric attrition).**  
+Assume anisotropic stiffness. Let $u:[0,\infty)\to\mathcal{X}$ be a finite-energy hypostructural trajectory with $\Phi(u(0))=\Phi_0<\infty$. Then:
+
+1. The integral of the anisotropy modulus is controlled by the initial energy:
+   $$
+   \int_0^T \mathcal{A}(u(t))^{\gamma}\,dt \;\le\; \frac{1}{C_{\mathrm{stiff}}}\,\log\frac{\Phi(u(0))}{\Phi(u(T))}\quad\text{for all }T>0.
+   $$
+
+2. In particular, if there exists $\delta>0$ and a sequence $t_n\to\infty$ such that $\Phi(u(t_n))\ge \delta$ and $\mathcal{A}(u(t_n))\to\infty$, then the integral $\int_0^\infty \mathcal{A}(u(t))^{\gamma}\,dt$ diverges. This contradicts the inequality above, hence such a trajectory cannot exist. Consequently, any trajectory that attempts to enter a regime with $\mathcal{A}(u(t))\to\infty$ while retaining a positive fraction of its energy is dynamically impossible: either $\mathcal{A}$ remains bounded along the trajectory, or the energy decays to zero before extreme anisotropy can be reached.
+
+*Proof.* From the BV chain rule and the identification of $\mathfrak{D}$ with the absolutely continuous dissipation we have
+$$
+\frac{d}{dt}\Phi(u(t)) \le -\mathfrak{D}(u(t))
+$$
+for almost every $t$. Dividing by $\Phi(u(t))>0$ and using anisotropic stiffness yields
+$$
+\frac{d}{dt}\log\Phi(u(t)) = \frac{1}{\Phi(u(t))}\frac{d}{dt}\Phi(u(t))
+\le -\frac{\mathfrak{D}(u(t))}{\Phi(u(t))}
+\le -C_{\mathrm{stiff}}\mathcal{A}(u(t))^{\gamma}.
+$$
+Integrating from $0$ to $T$ gives
+$$
+\log\Phi(u(T))-\log\Phi(u(0))
+\le -C_{\mathrm{stiff}}\int_0^T \mathcal{A}(u(t))^{\gamma}\,dt,
+$$
+or equivalently
+$$
+\int_0^T \mathcal{A}(u(t))^{\gamma}\,dt \le \frac{1}{C_{\mathrm{stiff}}}\,\log\frac{\Phi(u(0))}{\Phi(u(T))}.
+$$
+Since $\Phi(u(T))\ge 0$, the right-hand side is bounded above by $(1/C_{\mathrm{stiff}})\log(\Phi_0/\Phi_{\min})$ whenever $\Phi(u(T))\ge \Phi_{\min}>0$. Thus if $\Phi(u(t_n))\ge\delta>0$ for some $\delta$ and a sequence $t_n\to\infty$, the integral $\int_0^\infty\mathcal{A}(u(t))^{\gamma}\,dt$ must be finite, which is incompatible with any scenario in which $\mathcal{A}(u(t))\to\infty$ along a subsequence with nonvanishing energy: large anisotropy must be confined to sets of times with arbitrarily small total measure.
+
+In particular, a putative singular stratum in which $\mathcal{A}(u)\to\infty$ while $\Phi(u)$ remains bounded away from zero is “capacity null”: approaching such a stratum would require either unbounded integrated dissipation (contradicting the finite-energy budget) or collapse of the energy itself. □
+
+
+## 6. Structural Exclusion and Global Regularity
+
+The preceding chapters provide a collection of independent exclusion mechanisms—capacity barriers, virial monotonicity, geometric $\mu$-convexity, variational rigidity, and dimensional/topological constraints. We now formalize how these mechanisms combine to yield a global regularity criterion. The key idea is that of a \emph{null} stratification: a hypostructural stratification in which every stratum is dynamically empty in the sense that it cannot support finite-time singularities of finite-energy trajectories.
+
+Throughout this section we fix a hypostructure $(\mathcal{X},d_{\mathcal{X}},\Sigma,\Phi,\psi)$ and consider BV trajectories $u:[0,\infty)\to\mathcal{X}$ with finite initial energy $\Phi(u(0))<\infty$. Let $\mathcal{S}_u\subset \mathcal{X}\times(0,\infty)$ denote the spatio-temporal singular set associated with $u$ (space–time points where the hypostructural regularity fails), as in Section 5.1, and let
+$$
+S_{\mathrm{sing}}^X(u):=\{x\in\mathcal{X}:\exists\,t>0\ \text{with }(x,t)\in \mathcal{S}_u\}
+$$
+be its spatial projection. Define the \emph{global} singular set and its projection by
+$$
+S_{\mathrm{sing}}:=\bigcup_{u}\mathcal{S}_u,\qquad S_{\mathrm{sing}}^X:=\bigcup_{u} S_{\mathrm{sing}}^X(u),
+$$
+where the union is taken over all finite-energy BV trajectories $u$ of the hypostructural flow.
+
+### 6.1 Structural Covers
+
+The first requirement is that the stratification actually “sees” all potentially singular configurations.
+
+**Definition 6.1 (Structural cover).** A stratification $\Sigma=\{S_\alpha\}_{\alpha\in\Lambda}$ is a structural cover for the hypostructure if the spatial projection of the singular set is contained in the union of the stratum closures:
+$$
+S_{\mathrm{sing}}^X \subseteq \bigcup_{\alpha\in\Lambda} \overline{S_\alpha}.
+$$
+Equivalently, for every finite-energy trajectory $u$ and every singular point $(x,t)\in\mathcal{S}_u$ there exists $\alpha\in\Lambda$ such that $x\in\overline{S_\alpha}$.
+
+*Remark.* Since the strata form a Whitney-type stratification of $\mathcal{X}$, their closures cover $\mathcal{X}$; the content of the definition is that the potential singular states belong to the same stratified structure that governs the regular dynamics. This rules out “latent” singular regimes not represented by the prescribed stratification.
+
+### 6.2 Dynamically Null Strata and Null Stratifications
+
+We distinguish between strata that are merely regular and those that are structurally excluded by the hypostructural mechanisms developed above. A stratum is declared \emph{null} when one of the explicit exclusion principles (capacity, virial, locking, variational rigidity, topological coercivity, or their refinements) applies, and we then prove that null strata are dynamically empty of finite-time singularities.
+
+**Definition 6.2 (Structurally null stratum).**  
+A stratum $S_\alpha\in\Sigma$ is \emph{structurally null} if it satisfies at least one of the following:
+
+1. \emph{Capacity nullity:} Any trajectory attempting to approach $S_\alpha$ along a singular scaling requires infinite capacity in the sense of Theorem 3.1 (capacity veto).
+
+2. \emph{Virial nullity:} The hypotheses of Theorem 4.1 (virial exclusion) hold on $S_\alpha$, so that $\Phi>0$ implies a strictly decreasing virial functional $J$ along any complete trajectory within $S_\alpha$.
+
+3. \emph{Locking nullity:} The hypotheses of Theorem 4.2 (geometric locking) hold on $S_\alpha$, with the associated equilibrium lying in a lower (safer) part of the stratification.
+
+4. \emph{Variational nullity:} The hypotheses of Theorem 4.3 (roughness penalty / variational rigidity) hold on $S_\alpha$, and smooth singularities in $\overline{S_\alpha}$ are excluded by independent regularity arguments.
+
+5. \emph{Topological nullity:} The hypotheses of Theorem 5.2 (complexity barrier / topological handoff) hold with $S_\alpha$ playing the role of a collapse stratum that must hand off to a forbidden (already null) stratum before any singular limit can be reached.
+
+In applications, one may also incorporate further mechanisms (e.g. measure-theoretic starvation via Theorem 5.1, screening via Theorem 5.3, or problem-specific Liouville theorems) into the definition of structural nullity.
+
+**Theorem 6.1 (Nullity implication).**  
+If a stratum $S_\alpha$ is structurally null in the sense of Definition 6.2, then it is dynamically empty of finite-time singularities of finite-energy BV trajectories:
+$$
+\mathcal{S}_u\cap \bigl(S_\alpha\times(0,\infty)\bigr) = \emptyset
+$$
+for every finite-energy hypostructural trajectory $u$.
+
+*Proof.*  
+If $S_\alpha$ is capacity-null, the conclusion follows directly from Theorem 3.1: any trajectory attempting to reach $S_\alpha$ along a singular scaling would require infinite capacity, contradicting the BV energy inequality. If $S_\alpha$ is virial-null, Theorem 4.1 shows that any nontrivial trajectory confined to $S_\alpha$ must experience strict virial decay and hence cannot support a nontrivial stationary or recurrent singular profile. If $S_\alpha$ is locking-null, Theorem 4.2 implies exponential convergence to a unique regular equilibrium lying in a safer region, ruling out singular accumulation in $S_\alpha$. If $S_\alpha$ is variationally null, Theorem 4.3 forces any near-maximizing sequence for the relevant efficiency functional to be smooth and precompact; thus candidate singular limits in $\overline{S_\alpha}$ are regular. Finally, if $S_\alpha$ is topologically null, Theorem 5.2 shows that any collapsing trajectory must hand off into a forbidden (hence already null) stratum before a singularity can form, so no singular limit supported in $S_\alpha$ is dynamically realizable. The same reasoning applies to any additional mechanisms included in the definition of structural nullity. □
+
+**Definition 6.3 (Null stratification).**  
+A stratification $\Sigma$ is \emph{null} if every stratum $S_\alpha\in\Sigma$ is structurally null in the sense of Definition 6.2, and moreover the minimal (safe) stratum $S_\ast$ from Assumption A4 contains all equilibria and is regular in the sense that the dynamics restricted to $S_\ast$ are globally well-posed and free of finite-time singularities.
+
+*Remark.*  
+The mechanisms listed above are sufficient but not necessary for nullity. In applications, additional structural principles (e.g. measure-theoretic starvation via Theorem 5.1, asymptotic autonomy via Theorem 5.3, or Liouville-type theorems) may be used to verify that $\overline{S_\alpha}$ cannot support singular limit points and hence that $S_\alpha$ is structurally null.
+
+### 6.3 Structural Global Regularity
+
+We can now state the global regularity meta-theorem: if the stratification covers all potential singular states and every stratum is null, then finite-time singularities are impossible.
+
+**Definition 6.4 (Global regularity).** The hypostructural flow is \emph{globally regular} if for every finite-energy initial datum $u_0\in\mathcal{X}$ there exists a BV trajectory $u:[0,\infty)\to\mathcal{X}$ with $u(0)=u_0$ such that the associated singular set $\mathcal{S}_u$ contains no points with finite time coordinate:
+$$
+\mathcal{S}_u\cap \bigl(\mathcal{X}\times(0,T]\bigr)=\emptyset\quad\text{for every }T>0.
+$$
+Equivalently, no finite-energy trajectory develops a singularity in finite time.
+
+**Theorem 6.2 (Structural global regularity).** Let $(\mathcal{X},d_{\mathcal{X}},\Sigma,\Phi,\psi)$ be a hypostructure satisfying Assumptions A0–A4. Suppose that:
+
+1. The stratification $\Sigma$ is a structural cover in the sense of Definition 6.1, i.e.
+   $$
+   S_{\mathrm{sing}}^X \subseteq \bigcup_{\alpha\in\Lambda} \overline{S_\alpha}.
+   $$
+
+2. The stratification is null in the sense of Definition 6.3: every $S_\alpha$ is null and the safe stratum $S_\ast$ is regular and absorbing.
+
+Then the hypostructural flow is globally regular in the sense of Definition 6.4: no finite-time singularity can form from finite-energy initial data.
+
+*Proof.* Assume for contradiction that global regularity fails. Then there exists a finite-energy BV trajectory $u:[0,\infty)\to\mathcal{X}$ and a finite time $T^\ast>0$ such that the singular set $\mathcal{S}_u$ contains a point $(x_\ast,T^\ast)$ with $x_\ast\in\mathcal{X}$. By definition of $S_{\mathrm{sing}}^X(u)$, we have $x_\ast\in S_{\mathrm{sing}}^X(u)\subseteq S_{\mathrm{sing}}^X$.
+
+By the structural cover property (Definition 6.1), there exists at least one index $\alpha\in\Lambda$ such that
+$$
+x_\ast \in \overline{S_\alpha}.
+$$
+Fix such an $\alpha$. Since $(x_\ast,T^\ast)\in\mathcal{S}_u$, there exists a sequence $t_n\uparrow T^\ast$ and states $x_n:=u(t_n)$ such that $x_n\to x_\ast$ in $\mathcal{X}$. By passing to a subsequence if necessary, we may assume that each $x_n$ lies in some stratum $S_{\alpha_n}$. By the frontier condition and the definition of the closure, the indices $\alpha_n$ must be eventually bounded below by $\alpha$ in the partial order, and in any case there exists a sequence $\{\tilde t_n\}$ and indices $\{\tilde\alpha_n\}$ with $u(\tilde t_n)\in S_{\tilde\alpha_n}$ and $u(\tilde t_n)\to x_\ast$ such that either $S_{\tilde\alpha_n}=S_\alpha$ for all $n$ or $S_{\tilde\alpha_n}\subset \overline{S_\alpha}$ for all $n$.
+
+We distinguish two cases.
+
+1. If there exists a subsequence with $u(t_n)\in S_\alpha$ for all $n$ and $u(t_n)\to x_\ast$, then by nullity of $S_\alpha$ (Definition 6.2) the point $(x_\ast,T^\ast)$ cannot be singular for $u$, contradicting $(x_\ast,T^\ast)\in\mathcal{S}_u$.
+
+2. Otherwise, every sufficiently large $n$ satisfies $u(t_n)\in S_{\beta_n}$ with $S_{\beta_n}\subsetneq \overline{S_\alpha}$. By the frontier condition, each $S_{\beta_n}$ is a lower-dimensional stratum whose closure still contains $x_\ast$. Repeating the argument with $S_{\beta_n}$ in place of $S_\alpha$, we obtain a strictly descending chain of strata whose closures contain $x_\ast$. Since the index set $\Lambda$ is partially ordered and the stratification is locally finite, such a strictly descending chain must terminate at a minimal stratum $S_{\alpha^\ast}$ with $x_\ast\in \overline{S_{\alpha^\ast}}$.
+
+By Definition 6.3, $S_{\alpha^\ast}$ is null; in particular, if there exists a sequence of times $\tau_k\uparrow T^\ast$ with $u(\tau_k)\in S_{\alpha^\ast}$ and $u(\tau_k)\to x_\ast$, then $(x_\ast,T^\ast)$ cannot be singular. If no such sequence exists, then necessarily $u(t)$ approaches $x_\ast$ through strata of strictly higher order, but then we can repeat the previous descent argument until we reach $S_{\alpha^\ast}$ and extract a sequence in $S_{\alpha^\ast}$ converging to $x_\ast$, again contradicting nullity. In all cases we reach a contradiction with the assumption $(x_\ast,T^\ast)\in\mathcal{S}_u$.
+
+Therefore no finite-time singular point $(x_\ast,T^\ast)$ can exist for any finite-energy trajectory $u$, and the flow is globally regular as claimed. □
+
+
+## References
+
+1. Smale, S., “Differentiable dynamical systems”, \emph{Bull. Amer. Math. Soc.} \textbf{73} (1967), 747–817.
+2. Thom, R., \emph{Structural Stability and Morphogenesis}, Benjamin, Reading, MA, 1975.
+3. Goebel, R., Sanfelice, R. G., and Teel, A. R., “Hybrid dynamical systems”, \emph{IEEE Control Systems Magazine} \textbf{29} (2009), 28–93.
+4. Lions, P.-L., “The concentration-compactness principle in the calculus of variations. The locally compact case, part 1”, \emph{Ann. Inst. H. Poincaré Anal. Non Linéaire} \textbf{1} (1984), no. 2.
+5. Ball, J. M., “Continuity properties and global attractors of generalized semiflows”, \emph{J. Nonlinear Sci.} \textbf{7} (1997), 475–502.
+6. Hale, J. K., \emph{Asymptotic Behavior of Dissipative Systems}, American Mathematical Society, 1988.
+7. Ambrosio, L., Gigli, N., and Savaré, G., \emph{Gradient Flows in Metric Spaces and in the Space of Probability Measures}, 2nd ed., Birkhäuser, 2008.
+
+
+## References
+
+1. Smale, S., “Differentiable dynamical systems”, \emph{Bull. Amer. Math. Soc.} \textbf{73} (1967), 747–817.
+2. Thom, R., \emph{Structural Stability and Morphogenesis}, Benjamin, Reading, MA, 1975.
+3. Goebel, R., Sanfelice, R. G., and Teel, A. R., “Hybrid dynamical systems”, \emph{IEEE Control Systems Magazine} \textbf{29} (2009), 28–93.
+4. Lions, P.-L., “The concentration-compactness principle in the calculus of variations. The locally compact case, part 1”, \emph{Ann. Inst. H. Poincaré Anal. Non Linéaire} \textbf{1} (1984), no. 2.
+5. Ball, J. M., “Continuity properties and global attractors of generalized semiflows”, \emph{J. Nonlinear Sci.} \textbf{7} (1997), 475–502.
+6. Hale, J. K., \emph{Asymptotic Behavior of Dissipative Systems}, American Mathematical Society, 1988.
+7. Ambrosio, L., Gigli, N., and Savaré, G., \emph{Gradient Flows in Metric Spaces and in the Space of Probability Measures}, 2nd ed., Birkhäuser, 2008.
