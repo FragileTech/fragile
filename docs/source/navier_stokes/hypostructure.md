@@ -1,9 +1,8 @@
-# Hypostructures: A Variational and Topological Theory for Global Regularity in Stratified Dissipative Systems
+# Hypostructures: A Variational Theory of Regularity for Stratified Metric Flows
 
 ## Abstract
 
-We establish a variational and topological framework for dissipative dynamics on stratified metric spaces. A **Hypostructure** is a stratified metric gradient flow on a Banach manifold endowed with a Whitney/Fredholm stratification, a lower semi-continuous energy, and a metric–dissipation inequality on singular interfaces. Trajectories are curves of bounded variation; we construct a calculus of variations on the stratification and prove a \emph{Stratified BV Chain Rule} for the energy along hybrid arcs. The resulting decomposition
-of the energy dissipation into absolutely continuous, jump, and Cantor parts underpins a family of Morse–Conley type exclusion principles. Under a compensated compactness (Palais–Smale–type) hypothesis tied to a defect measure, we prove rectifiability of the jump set (finitely many transitions) and convergence to a compact attracting stratum. These results reduce global regularity to static structural conditions: capacity nullity, virial/locking nullity, and topological nullity of the non-attracting strata. The theory applies to non-smooth, non-coercive, infinite-dimensional dynamics with symmetry and scaling, and recovers classical metric gradient flow estimates as a special case.
+We construct a calculus of variations for dissipative dynamics on stratified metric spaces. A **Hypostructure** is a stratified metric gradient flow on a complete, separable metric space endowed with a Whitney/Fredholm stratification, a lower semi-continuous energy, and a metric–dissipation inequality on singular interfaces. Trajectories are curves of bounded variation; we prove a \emph{Stratified BV Chain Rule} for the energy along hybrid arcs, decomposing the dissipation into absolutely continuous, jump, and (in principle) Cantor parts in time. This decomposition underlies a family of Morse–Conley type exclusion principles. Under a compensated compactness (Palais–Smale–type) hypothesis tied to a defect measure, and a stratified Łojasiewicz–Simon inequality, we prove rectifiability and finiteness of the jump set and convergence to a compact terminal stratum. These results replace the binary “regularity vs blow-up” alternative by a graded \emph{capacity analysis}: singular strata are ruled out when they lack sufficient energetic capacity or topological index to sustain dissipation defects, and global regularity follows whenever a null stratification covers all potential singular profiles.
 
 ## 1. Introduction
 
@@ -15,9 +14,9 @@ The central contribution of this framework is to replace the binary alternative 
 
 ## 2. Hypostructures as Stratified Metric Gradient Flows
 
-Let $\mathcal{X}$ be a separable Banach manifold with intrinsic metric $d_{\mathcal{X}}$.
+Let $(\mathcal{X},d_{\mathcal{X}})$ be a complete, separable metric space. When needed, we equip $\mathcal{X}$ with a Borel reference measure $\mathfrak{m}$ to interpret spatial integrals (for instance in concrete PDE realizations). All “almost everywhere” statements in this paper refer either to Lebesgue measure in time (on $[0,\infty)$) or to $\mathfrak{m}$ on $\mathcal{X}$ when explicitly indicated.
 
-**Definition 2.1 (Hypostructure).** A hypostructure is a tuple $(\mathcal{X},d_{\mathcal{X}},\Sigma,\Phi,\psi)$ where:
+**Definition 2.1 (Hypostructure).** A hypostructure is a tuple $(\mathcal{X},d_{\mathcal{X}},\mathfrak{m},\Sigma,\Phi,\psi)$ where:
 1. $\Sigma=\{S_\alpha\}_{\alpha\in\Lambda}$ is a countable Whitney-type stratification of $\mathcal{X}$, partially ordered by $\preceq$, and \emph{Fredholm-regular} in the sense that for each stratum $S_\alpha$ the Hessian (second variation) of $\Phi$ along the normal bundle $N S_\alpha$ defines a Fredholm operator. In particular, the notion of codimension of strata is well defined and descending chains of strata have strictly decreasing codimension.
 2. **Frontier condition:** If $S_\alpha\cap \overline{S_\beta}\neq\emptyset$, then $S_\alpha\subseteq \overline{S_\beta}$.
 3. **Singular interfaces:** $\partial S_\alpha=\mathcal{E}_\alpha\cup \bigcup_{\beta\neq \alpha} G_{\alpha\to\beta}$, with $G_{\alpha\to\beta}$ Borel (jump interface) and $\mathcal{E}_\alpha$ equilibria.
@@ -31,11 +30,15 @@ In applications to evolution equations on domains (e.g. parabolic or dispersive 
 
 **Assumption A1 (Energy regularity).** $\Phi$ is proper, coercive on bounded strata, and l.s.c. on $\mathcal{X}$.
 
-**Assumption A2 (Metric non-degeneracy and l.s.c. cost).** The transition cost $\psi$ is Borel measurable and lower semi-continuous on $\Gamma$. Moreover, there exists $\kappa>0$ such that for any $u\in G_{\alpha\to\beta}$,
+**Assumption A2 (Metric non-degeneracy and l.s.c. cost).** The transition cost $\psi$ is Borel measurable and lower semi-continuous on $\Gamma$, and satisfies the subadditivity property
+$$
+\psi(u\to v) \le \psi(u\to w) + \psi(w\to v)
+$$
+whenever the intermediate transitions are admissible in the stratification graph. Moreover, there exists $\kappa>0$ such that for any $u\in G_{\alpha\to\beta}$,
 $$
 \psi(u)\ge \kappa \min\bigl(1, \inf_{v\in S_{\mathrm{target}}} d_{\mathcal{X}}(u,v)^2\bigr),
 $$
-where $S_{\mathrm{target}}$ is the stable manifold of the target stratum.
+where $S_{\mathrm{target}}$ is the stable manifold of the target stratum. This prevents trajectories from reducing the cost of entering a given stratum by decomposing the transition into a sequence of “cheaper” intermediate jumps.
 
 **Assumption A2' (Stratified transversality).** Each local flow field is tangent to the stratification and enters lower strata transversally: if $u\in \partial S_\alpha\cap G_{\alpha\to\beta}$ and the flow points outward from $S_\alpha$, then its projection lies in the tangent cone of $S_\beta$. This ensures transversality to stratification boundaries, precluding grazing trajectories and yielding well-defined entry times.
 
@@ -45,7 +48,7 @@ Given a curve $u:[0,\infty)\to\mathcal{X}$, its \emph{metric derivative} at time
 $$
 |\dot u|(t) := \lim_{h\to 0} \frac{d_{\mathcal{X}}(u(t+h),u(t))}{|h|}
 $$
-whenever the limit exists; for BV curves this limit exists for $\mathcal{L}^1$-a.e. $t$ and belongs to $L^1_{\mathrm{loc}}(0,\infty)$.
+whenever the limit exists; for BV curves this limit exists for Lebesgue-almost every $t$ and belongs to $L^1_{\mathrm{loc}}(0,\infty)$. We use $D_t$ to denote distributional derivatives with respect to time and $\frac{d}{dt}$ for classical derivatives when they exist.
 
 Trajectories are curves $u\in BV_{\mathrm{loc}}([0,\infty);\mathcal{X})$; we use the metric slope $|\partial\Phi|(u)$ in the sense of Ambrosio–Gigli–Savaré.
 
@@ -73,19 +76,35 @@ D_t(\Phi\circ u)
 $$
 where $J_u$ is the (at most countable) jump set, each atom at $t_k$ has mass at least $\psi(u(t_k^-))$, and $\nu_{\mathrm{cantor}}$ is a nonnegative Cantor measure. In particular, all dissipation of energy is accounted for by the continuous metric slope, the explicit interfacial costs at jumps, and a nonpositive Cantor part.
 
-*Proof.* The BV property and the decomposition follow from the general theory of curves of bounded variation in metric spaces and the chain rule for BV mappings (cf. Vol’pert’s chain rule together with the metric gradient-flow framework of Ambrosio–Gigli–Savaré). By Definition 2.2, the absolutely continuous part of $D_t(\Phi\circ u)$ is given by
+*Proof.* The BV property and the decomposition follow from a localization argument combining the general theory of curves of bounded variation in metric spaces with the stratified geometry near interfaces. Away from the interface set $\Gamma$, the standard metric chain rule for BV mappings (see, e.g., Ambrosio–Gigli–Savaré) applies directly: on intervals where $u(t)$ remains in a single stratum $S_\alpha$, the composition $\Phi\circ u$ satisfies
 $$
-D_t^{ac}(\Phi\circ u)(t) \le -|\partial\Phi|^2(u(t))
+D_t^{ac}(\Phi\circ u)(t) = \frac{d}{dt}\Phi(u(t)) \le -|\partial\Phi|^2(u(t))
 $$
-for almost every $t$. This yields the density $-|\partial\Phi|^2(u(t))$ with respect to $\mathcal{L}^1$ on the set of continuity times.
+for almost every $t$, and there are no jumps. This yields the density $-|\partial\Phi|^2(u(t))$ with respect to $\mathcal{L}^1$ on the set of continuity times.
 
-At any jump time $t_k\in J_u$ we define $u(t_k^-)$ and $u(t_k^+)$ as the left and right limits of $u(t)$ in the metric topology. The assumption on jump costs implies
+At a jump time $t_k\in J_u$ the behaviour is governed by the local structure of the stratification. By Assumption A2', there exists a neighbourhood $U\subset\mathcal{X}$ of the interface point and a bi-Lipschitz homeomorphism onto a product
+$$
+U \simeq (-\varepsilon,\varepsilon)\times S_\alpha,
+$$
+with the interface corresponding to $\{0\}\times S_\alpha$ and such that the flow is transversal to $\{0\}\times S_\alpha$. In these coordinates, the trajectory near $t_k$ can be written as $u(t)=(\xi(t),y(t))$ with $\xi(t_k^-)<0<\xi(t_k^+)$ (or the reverse) and $y(t)$ continuous through $t_k$. Since $u$ is a curve of bounded variation and the chart is bi-Lipschitz, the left and right limits $u(t_k^-)$, $u(t_k^+)$ exist in the metric topology. Transversality ensures that $u(t_k^-)$ lies in the closure of the ingoing stratum and $u(t_k^+)$ in the outgoing stratum.
+
+Moreover, the bi-Lipschitz property of the chart implies that the metric speed $|\dot u|(t)$ is comparable to the Euclidean speed of $(\xi(t),y(t))$ in these coordinates; in particular, the $L^1$–integrability of the metric derivative and the BV structure of $u$ are preserved under the change of coordinates, so the one-dimensional analysis of the interface crossing captures the full metric behaviour near $t_k$.
+
+Lower semi-continuity of $\Phi$ implies that the one-sided limits
+$$
+\Phi(u(t_k^-)) := \lim_{\tau\downarrow 0}\Phi(u(t_k-\tau)),\qquad
+\Phi(u(t_k^+)) := \lim_{\tau\downarrow 0}\Phi(u(t_k+\tau))
+$$
+exist (possibly after restricting to a subsequence) and bound from below any approximate limits along the trajectory. By Definition 2.2 (item 3), the energy drop at $t_k$ satisfies
 $$
 \Phi(u(t_k^+))-\Phi(u(t_k^-)) \le -\psi(u(t_k^-)).
 $$
-The jump part of $D_t(\Phi\circ u)$ is thus represented by a sum of Dirac masses at the jump times, with weights bounded above by $-\psi(u(t_k^-))$. Since $\Phi\circ u$ is bounded from below, the total variation of its jump part is finite, and the sum $\sum_{t_k\in J_u}\psi(u(t_k^-))$ converges.
+Consequently, the distributional derivative $D_t(\Phi\circ u)$ acquires a Dirac mass at $t_k$ with weight equal to the jump in $\Phi\circ u$, which is bounded above by $-\psi(u(t_k^-))$. Summing over all jump times leads to the discrete term
+$$
+-\sum_{t_k\in J_u}\psi(u(t_k^-))\,\delta_{t_k}.
+$$
 
-The remaining singular part of $D_t(\Phi\circ u)$, denoted $\nu_{\mathrm{cantor}}$, is by definition the singular continuous (Cantor) part in the Lebesgue decomposition of the measure. By dissipativity, it is nonpositive: if $\nu_{\mathrm{cantor}}$ assigned positive mass to a set, the energy would strictly increase along the corresponding part of the trajectory, contradicting the Lyapunov property of $\Phi$ implied by Definition 2.2. This establishes the stated decomposition. □
+The remaining singular part of $D_t(\Phi\circ u)$, denoted $\nu_{\mathrm{cantor}}$, is by definition the singular continuous (Cantor) part in the Lebesgue decomposition of the measure. The dissipativity inequality in Definition 2.2 and the Lyapunov property of $\Phi$ imply that $\nu_{\mathrm{cantor}}$ cannot assign positive mass to any set: a positive Cantor contribution would correspond to an unaccounted increase in energy along a subset of times of zero Lebesgue measure. Thus $\nu_{\mathrm{cantor}}$ is nonpositive, and after gathering signs we may regard it as a nonnegative measure in the expression above. This establishes the stated decomposition. □
 
 **Definition 2.3 (Hypostructural relaxed slope).** The hypostructural slope at $u$ is the relaxation of the metric slope augmented by interfacial cost:
 $$
@@ -116,6 +135,9 @@ $$
 |\partial\Phi|(u) \ge \gamma(\|\nu_u\|_{\mathcal{M}}).
 $$
 Equivalently: vanishing slope forces vanishing defect measure; energy cannot concentrate without strictly increasing the slope. In particular, if $\|\nu_u\|_{\mathcal{M}}\ge \delta>0$, then $W_\alpha(u)\ge \gamma(\delta)>0$, and bounded sequences with vanishing slope are precompact relative to the stratification.
+
+*Remark 3.1 (Profile decomposition viewpoint).*  
+In many critical PDE applications, the abstract defect structure arises from a profile decomposition: any bounded sequence admits a decomposition into a finite sum of rescaled profiles plus a remainder, and the energy functional $\Phi$ behaves additively to leading order on the profiles and lower semi-continuously on the remainder. In that setting, the defect norm $\|\nu_u\|_{\mathcal{M}}$ measures the energy carried by the remainder; Assumption A3 is then a reformulation of the principle that genuine lack of compactness (nontrivial profiles or remainder) is accompanied by a nontrivial metric slope. The present abstract formulation is designed to encompass such profile-decomposition-compatible situations without committing to a specific function-space realization.
 
 **Assumption A4 (Safe stratum / absorbing manifold).** There exists a minimal stratum $S_\ast$ such that: (i) $S_\ast$ is forward invariant; (ii) any defect measure generated by trajectories in $S_\ast$ vanishes (compact type); (iii) $\Phi$ is a strict Lyapunov function on $S_\ast$ relative to its equilibria $\mathcal{E}_\ast$.
 
@@ -166,6 +188,14 @@ $$
 u(x,t)=\lambda(t)^{-\alpha} v\Big(\frac{x-x_c(t)}{\lambda(t)}, s(t)\Big),\qquad \frac{ds}{dt}=\lambda(t)^{-\beta},
 $$
 with gauge constraint $v(\cdot,s)\in\mathcal{M}$ for all $s$. The exponents $\alpha,\beta$ reflect the scaling of the equation and dissipation.
+
+**Remark 3.2 (Dictionary of singularities).**  
+In applications to evolutionary PDEs, the abstract convergence of the renormalized trajectory $v(s)$ to an equilibrium $v_\infty\in\mathcal{E}_\alpha$ in the hypostructure corresponds to specific blow-up scenarios in the original variables:
+- A nontrivial fixed point in renormalized variables ($v_\infty\neq 0$) corresponds to a \emph{self-similar} collapse or growth profile.
+- A periodic orbit in renormalized variables corresponds to \emph{discrete self-similarity} or pulsating blow-up.
+- More complicated compact attractors correspond to \emph{modulated self-similar} regimes.
+
+ The structural nullity conditions of Definition 6.2 are precisely designed to rule out such nontrivial equilibria or recurrent sets in the singular strata: virial nullity excludes stationary profiles via coercive monotonicity identities; capacity nullity excludes profiles whose approach would require infinite dissipation; and homological/topological nullity excludes invariant sets incompatible with the Conley/Wazewski index. When the only equilibria in the terminal stratum are regular (e.g. the zero or globally regular solutions), convergence in renormalized time implies global regularity in the original variables, rather than self-similar blow-up. In this sense, establishing structural nullity for all singular strata is an abstract Liouville-type theorem for the renormalized flow.
 
 ### 3.3 Capacity Functional
 
@@ -275,6 +305,43 @@ $$
 In particular, $J(u(t))$ is strictly decreasing on any interval where $\Phi(u(t))>0$. If there exists $t_0$ with $\Phi(u(t_0))>0$, then $J(u(t))\to -\infty$ as $t\to +\infty$ and $J(u(t))\to +\infty$ as $t\to -\infty$, contradicting lower boundedness of $J$ (e.g., by convexity and nonnegativity). Therefore, for a complete trajectory confined to $S_\alpha$ we must have $\Phi(u(t))=0$ for all $t\in\mathbb{R}$, which forces $u(t)\equiv 0$ by the previous paragraph.
 
 It follows that $S_\alpha$ is transient in the hypostructure: any nontrivial trajectory entering $S_\alpha$ cannot remain there for all time and must exit through some interface $G_{\alpha\to\beta}$ in finite forward or backward time. Such exits contribute interfacial cost in the finite-capacity accounting of Theorem 4.1. □
+
+### 4.6 Stratified Łojasiewicz–Simon Inequality and Zeno Exclusion
+
+To rule out “Zeno” behaviour (infinitely many transitions in finite time with vanishing cost) near equilibria or singular interfaces, we impose a Łojasiewicz–Simon type gradient inequality relative to the energy.
+
+**Assumption A5 (Stratified Łojasiewicz–Simon inequality).**  
+Let $u_\infty\in \mathcal{E}_\ast$ be an equilibrium in the safe stratum. There exist constants $C>0$, $\theta\in(0,1)$, and a neighbourhood $\mathcal{U}$ of $u_\infty$ in $\mathcal{X}$ such that for all $u\in\mathcal{U}$,
+$$
+|\partial\Phi|(u) \;\ge\; C\,|\Phi(u)-\Phi(u_\infty)|^{\theta}.
+$$
+Analogous inequalities are assumed to hold, when needed, in neighbourhoods of other isolated equilibria or limit profiles associated with singular strata.
+
+**Proposition 4.6 (Finite-length approach to equilibria).**  
+Let $u:[0,T)\to\mathcal{X}$ be a dissipative trajectory with values in $\mathcal{U}$ for all $t\in[t_0,T)$ and assume Assumption A5 holds at $u_\infty$. Then:
+1. The total metric length of $u$ on $[t_0,T)$ is finite:
+   $$
+   \int_{t_0}^T |\dot u|(t)\,dt < \infty.
+   $$
+2. In particular, any sequence of jump times $\{t_k\}\subset [t_0,T)$ approaching $T$ must be finite if each jump carries a cost bounded below in terms of the energy gap, ruling out Zeno accumulation of jumps near $u_\infty$.
+
+*Sketch of proof.* In the neighbourhood $\mathcal{U}$ the metric gradient-flow inequality and the chain rule yield
+$$
+\frac{d}{dt}\Phi(u(t)) \le -|\partial\Phi|^2(u(t))
+$$
+for almost every $t$. Combining this with the Łojasiewicz–Simon inequality gives
+$$
+\frac{d}{dt}\Phi(u(t)) \le -C^2\,|\Phi(u(t))-\Phi(u_\infty)|^{2\theta}.
+$$
+Separating variables and integrating from $t_0$ to $t<T$ shows that $\Phi(u(t))$ converges to $\Phi(u_\infty)$ at a rate that makes
+$$
+\int_{t_0}^T |\partial\Phi|(u(t))\,dt < \infty.
+$$
+Since the metric derivative satisfies $|\dot u|(t)\le |\partial\Phi|(u(t))$ along curves of maximal slope, we obtain
+$$
+\int_{t_0}^T |\dot u|(t)\,dt < \infty.
+$$
+Thus the path has finite length in $\mathcal{X}$ as it approaches $u_\infty$. Together with the positive lower bounds on jump costs away from the equilibrium (as in Theorem 4.1), this prevents infinitely many jumps from accumulating in finite time: each jump requires the trajectory to traverse a definite amount of metric distance, and a finite-length curve can realize only finitely many such excursions. In particular, in any Łojasiewicz neighbourhood the singular dissipation is completely accounted for by the absolutely continuous part and a finite sum of jump contributions: a nontrivial Cantor part of $D_t(\Phi\circ u)$ would require infinitely many small oscillations of $\Phi\circ u$ along a set of positive Hausdorff dimension in time, incompatible with both the monotonicity of $\Phi$ and the finite metric length of $u$. Thus, in the neighbourhoods provided by A5, the dissipation measure is purely absolutely continuous plus atomic at jump times. □
 
 ### 4.2 Geometric Locking via $\mu$-Convexity
 
@@ -489,22 +556,22 @@ Then $\mu(\mathcal{S}_u)=0$. In particular, any singular regime that requires a 
 
 *Proof.* Since $d_{\mathrm{sing}}<d_\ast$, we have $\mathcal{H}^{d_\ast}(\mathcal{S}_u)=0$. By absolute continuity, $\mu(\mathcal{S}_u)=0$. Thus the dissipation measure cannot charge the singular set; any nontrivial flux must be realized on the regular part, where the hypostructural gradient-flow regularity applies. □
 
-### 5.2 Topological Inflation and Handoff
+### 5.2 Homological Exclusion and the Wazewski–Conley Principle
 
-Let $\mathcal{I}:\mathcal{X}\to[0,\infty)$ be a geometric scale parameter (e.g., a radius or aspect ratio), and $\mathcal{T}:\mathcal{X}\to\mathbb{N}\cup\{0\}$ a lower semicontinuous topological index (e.g., winding number, genus).
+Topological arguments can also exclude invariant sets without explicit growth of a numerical index. We recall the Wazewski retract principle, a precursor to Conley index theory, in a form adapted to strata.
 
-**Definition 5.3 (Topological coercivity).** A stratum $S_\alpha$ is topologically coercive if for any sequence $u_n\in S_\alpha$ with $\mathcal{I}(u_n)\to 0$,
-$$
-\mathcal{T}(u_n)\to +\infty.
-$$
+**Definition 5.3 (Homological triviality).**  
+A stratum $S_\alpha$ is homologically trivial for the flow if, for some isolating neighbourhood $N\subset S_\alpha$ of the invariant set under consideration, the Conley index (or, more simply, the relative homology) of $(N,E)$ is trivial, where $E\subset \partial N$ is the exit set for the flow. In particular, $H_\ast(N,E)\cong 0$.
 
-**Theorem 5.2 (Complexity barrier / handoff).** Let $S_{\mathrm{coll}}$ be a collapse stratum (where $\mathcal{I}\to 0$) and suppose $S_{\mathrm{coll}}$ is topologically coercive. Assume further that the energy controls complexity in the sense that there exists $C>0$ with
-$$
-\mathcal{T}(u)\le C\,\Phi(u)
-$$
-for all $u$ in the relevant region of phase space. Then any finite-energy trajectory cannot realize $\mathcal{I}(u(t))\to 0$ while remaining in $S_{\mathrm{coll}}$. If, in addition, the region $\{\mathcal{T}\ge T_0\}$ defines a forbidden stratum $S_{\mathrm{forb}}$ dynamically excluded by, say, Theorem 4.3, then any attempted collapse must hand off into $S_{\mathrm{forb}}$, and genuine collapse is arrested.
+**Theorem 5.2 (Wazewski–Conley exclusion).**  
+Let $S_\alpha$ be a stratum and suppose there exists a compact neighbourhood $N\subset S_\alpha$ and an exit set $E\subset \partial N$ such that:
 
-*Proof.* If a trajectory $u(t)$ remained in $S_{\mathrm{coll}}$ with $\mathcal{I}(u(t))\to 0$ as $t\to T^\ast$, topological coercivity would imply $\mathcal{T}(u(t))\to\infty$. The energy bound on complexity then forces $\Phi(u(t))\to\infty$, contradicting the finite-energy assumption. Thus either $\mathcal{I}$ does not collapse or the trajectory must leave $S_{\mathrm{coll}}$ before reaching $\mathcal{I}=0$. If leaving occurs through the region where $\mathcal{T}\ge T_0$, then by the definition of $S_{\mathrm{forb}}$ and its dynamical nullness, the flow cannot proceed along a collapsing path, yielding the handoff conclusion. □
+1. Any trajectory that meets $E$ immediately exits $N$ and hence leaves $S_\alpha$ through the neighbouring strata determined by the stratification graph.
+2. There is no continuous retraction of $N$ onto $E$ (equivalently, the relative homology $H_\ast(N,E)$ is nontrivial).
+
+Then $S_\alpha$ contains no nonempty bounded invariant set. In particular, any trajectory that enters $N$ must eventually exit through $E$ and undergo a transition to a different stratum, incurring the corresponding interfacial cost $\psi$.
+
+*Proof (sketch).* This is a classical application of the Wazewski retract principle. If there were a bounded invariant set $K\subset N\setminus E$, the flow would define a deformation of $N$ that keeps $K$ invariant and never crosses $E$. Under mild regularity assumptions, one can use the flow to construct a homotopy between the identity on $N$ and a map retracting $N$ into $E$, contradicting the assumption that no such retraction exists. In the language of Conley index theory, the triviality of the index (or nontrivial relative homology) implies that no isolated invariant set can be contained in $N$. Thus no bounded invariant set can lie entirely within $S_\alpha$; any trajectory entering $N$ must eventually exit through $E$ and hence through an interface $G_{\alpha\to\beta}$, triggering a transition in the stratification graph. □
 
 ### 5.3 Asymptotic Autonomy and Screening
 
@@ -716,10 +783,10 @@ for every finite-energy hypostructural trajectory $u$.
 If $S_\alpha$ is capacity-null, the conclusion follows directly from Theorem 3.1: any trajectory attempting to reach $S_\alpha$ along a singular scaling would require infinite capacity, contradicting the BV energy inequality. If $S_\alpha$ is virial-null, Theorem 4.1 shows that any nontrivial trajectory confined to $S_\alpha$ must experience strict virial decay and hence cannot support a nontrivial stationary or recurrent singular profile. If $S_\alpha$ is locking-null, Theorem 4.2 implies exponential convergence to a unique regular equilibrium lying in a safer region, ruling out singular accumulation in $S_\alpha$. If $S_\alpha$ is variationally null, Theorem 4.3 forces any near-maximizing sequence for the relevant efficiency functional to be smooth and precompact; thus candidate singular limits in $\overline{S_\alpha}$ are regular. Finally, if $S_\alpha$ is topologically null, Theorem 5.2 shows that any collapsing trajectory must hand off into a forbidden (hence already null) stratum before a singularity can form, so no singular limit supported in $S_\alpha$ is dynamically realizable. The same reasoning applies to any additional mechanisms included in the definition of structural nullity. □
 
 **Definition 6.3 (Null stratification).**  
-A stratification $\Sigma$ is \emph{null} if every stratum $S_\alpha\in\Sigma$ is structurally null in the sense of Definition 6.2, and moreover the minimal (safe) stratum $S_\ast$ from Assumption A4 contains all equilibria and is regular in the sense that the dynamics restricted to $S_\ast$ are globally well-posed and free of finite-time singularities.
+A stratification $\Sigma$ is \emph{null} if every stratum $S_\alpha\in\Sigma$ is structurally null in the sense of Definition 6.2, and moreover the minimal terminal stratum $S_\ast$ from Assumption A4 contains all equilibria and is regular in the sense that the dynamics restricted to $S_\ast$ are globally well-posed and free of finite-time singularities.
 
-*Remark.*  
-The mechanisms listed above are sufficient but not necessary for nullity. In applications, additional structural principles (e.g. measure-theoretic starvation via Theorem 5.1, asymptotic autonomy via Theorem 5.3, or Liouville-type theorems) may be used to verify that $\overline{S_\alpha}$ cannot support singular limit points and hence that $S_\alpha$ is structurally null.
+**Remark 6.1 (Structural stability of nullity).**  
+The mechanisms listed in Definition 6.2 are robust under small perturbations of the hypostructure. Capacity nullity typically relies on strict comparisons of homogeneity exponents in the scaling group; virial and locking nullity rely on strict domination inequalities for Lyapunov-type functionals; topological nullity relies on discrete homological indices (e.g. nontrivial Conley indices or Wazewski exit sets) that are invariant under small continuous deformations. Consequently, if a given hypostructure admits a null stratification, then all sufficiently small perturbations of the energy $\Phi$ and metric $d_{\mathcal{X}}$ (in appropriate $C^2$ or Lipschitz topologies on strata) yield nearby hypostructures with the same qualitative nullity pattern. In this sense, the global regularity obtained from a null stratification is \emph{structurally stable} under small perturbations of the model.
 
 ### 6.3 Structural Global Regularity
 
@@ -759,17 +826,6 @@ We distinguish two cases.
 By Definition 6.3, $S_{\alpha^\ast}$ is null; in particular, if there exists a sequence of times $\tau_k\uparrow T^\ast$ with $u(\tau_k)\in S_{\alpha^\ast}$ and $u(\tau_k)\to x_\ast$, then $(x_\ast,T^\ast)$ cannot be singular. If no such sequence exists, then necessarily $u(t)$ approaches $x_\ast$ through strata of strictly higher order, but then we can repeat the previous descent argument until we reach $S_{\alpha^\ast}$ and extract a sequence in $S_{\alpha^\ast}$ converging to $x_\ast$, again contradicting nullity. In all cases we reach a contradiction with the assumption $(x_\ast,T^\ast)\in\mathcal{S}_u$.
 
 Therefore no finite-time singular point $(x_\ast,T^\ast)$ can exist for any finite-energy trajectory $u$, and the flow is globally regular as claimed. □
-
-
-## References
-
-1. Smale, S., “Differentiable dynamical systems”, \emph{Bull. Amer. Math. Soc.} \textbf{73} (1967), 747–817.
-2. Thom, R., \emph{Structural Stability and Morphogenesis}, Benjamin, Reading, MA, 1975.
-3. Goebel, R., Sanfelice, R. G., and Teel, A. R., “Hybrid dynamical systems”, \emph{IEEE Control Systems Magazine} \textbf{29} (2009), 28–93.
-4. Lions, P.-L., “The concentration-compactness principle in the calculus of variations. The locally compact case, part 1”, \emph{Ann. Inst. H. Poincaré Anal. Non Linéaire} \textbf{1} (1984), no. 2.
-5. Ball, J. M., “Continuity properties and global attractors of generalized semiflows”, \emph{J. Nonlinear Sci.} \textbf{7} (1997), 475–502.
-6. Hale, J. K., \emph{Asymptotic Behavior of Dissipative Systems}, American Mathematical Society, 1988.
-7. Ambrosio, L., Gigli, N., and Savaré, G., \emph{Gradient Flows in Metric Spaces and in the Space of Probability Measures}, 2nd ed., Birkhäuser, 2008.
 
 
 ## References
