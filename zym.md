@@ -1,4 +1,4 @@
--perturbative proof of confinement.
+follows from the geometric structure of the gauge quotient rather than from perturbative analysis, providing a non-perturbative proof of confinement.
 
 # 9. Constructive Existence via Geometric Probability
 
@@ -1345,4 +1345,4 @@ $$
 
 This chain is conditional only on the Symmetry Induction hypothesis that asymmetric modes are variationally unstable, which is verified for Navier-Stokes through the Barber Pole exclusion (Lemma 7.9).
 
-# 12
+# 12. Synthesis: The Structural Reduction Architecture
