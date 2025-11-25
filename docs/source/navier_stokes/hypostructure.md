@@ -4,9 +4,9 @@
 
 We present a structural reduction of global regularity problems for nonlinear evolution equations. A **Hypostructure** is a stratified metric gradient flow on a complete, separable metric space endowed with a Whitney/Fredholm stratification, a lower semi-continuous energy, and a metric–dissipation inequality on singular interfaces. Trajectories are curves of bounded variation; we prove a *Stratified BV Chain Rule* for the energy along hybrid arcs, decomposing the dissipation into absolutely continuous and jump parts in time. This decomposition underlies a family of Morse–Conley type exclusion principles, including a *Variational Defect Principle* that rules out concentration defects through efficiency considerations.
 
-The central contribution is a **fully unconditional proof of regularity** for the 3D Navier-Stokes equations. We prove that the Renormalized Navier-Stokes flow is **strictly dissipative** on the singular set with a uniform spectral gap $\mu > 0$ (Theorem 7.8, Step 8). This is established by integrating **(i)** Naber-Valtorta rectifiability theory (excluding fractal supports), **(ii)** Gaussian-weighted Virial and Pohozaev identities (excluding stationary profiles via Ornstein-Uhlenbeck elliptic regularity, Lemma 7.12.1), and **(iii)** modulational locking on the tubular neighborhood of extremizers (Theorem 7.11.1). The combination ensures that no dynamic or static configuration can sustain a singularity. The proof closes all logical gaps and removes conditional hypotheses.
+The central contribution is a **proposed regularity approach** for the 3D Navier-Stokes equations. We demonstrate that the Renormalized Navier-Stokes flow exhibits **strict dissipativity** on the singular set with a proposed uniform spectral gap $\mu > 0$ (Theorem 7.8, Step 8). This is established by integrating **(i)** Naber-Valtorta rectifiability theory (excluding fractal supports), **(ii)** Gaussian-weighted Virial and Pohozaev identities (excluding stationary profiles via Ornstein-Uhlenbeck elliptic regularity, Lemma 7.12.1), and **(iii)** modulational locking on the tubular neighborhood of extremizers (Theorem 7.11.1). The combination suggests that no dynamic or static configuration can sustain a singularity, though rigorous verification of all technical details remains an open problem for the community.
 
-For Navier-Stokes, we establish global regularity through exhaustive dichotomies: **(i)** Geometric rigidity (rectifiable sets → 2.5D reduction → virial exclusion) versus thermodynamic inefficiency (fractal sets → mass transfer deficit → Gevrey recovery), **(ii)** Pohozaev algebraic exclusion (stationary profiles) versus autonomy penalty (non-stationary profiles), and **(iii)** coercive trapping (compact landscapes) versus dispersion-induced efficiency collapse (non-coercive landscapes). Every logical branch excludes singularities. The proof is unconditional, relying only on standard PDE theory: Aubin-Lions compactness, Naber-Valtorta geometric measure theory, and Ornstein-Uhlenbeck elliptic regularity.
+For Navier-Stokes, we explore global regularity through exhaustive dichotomies: **(i)** Geometric rigidity (rectifiable sets → 2.5D reduction → virial exclusion) versus thermodynamic inefficiency (fractal sets → mass transfer deficit → Gevrey recovery), **(ii)** Pohozaev algebraic exclusion (stationary profiles) versus autonomy penalty (non-stationary profiles), and **(iii)** coercive trapping (compact landscapes) versus dispersion-induced efficiency collapse (non-coercive landscapes). Each logical branch appears to exclude singularities, relying on standard PDE theory: Aubin-Lions compactness, Naber-Valtorta geometric measure theory, and Ornstein-Uhlenbeck elliptic regularity.
 
 ## 1. Introduction
 
@@ -18,11 +18,11 @@ The central contribution of this framework is to replace the binary alternative 
 
 **Structure of the paper.** The development proceeds in three layers:
 
-1. **The Framework (Sections 2–5).** We construct the hypostructure formalism: stratified metric spaces, BV chain rules, defect measures, and capacity functionals. These results are proved unconditionally and apply to general dissipative PDEs.
+1. **The Framework (Sections 2–5).** We construct the hypostructure formalism: stratified metric spaces, BV chain rules, defect measures, and capacity functionals. These abstract results apply to general dissipative PDEs.
 
-2. **The Variational Tools (Section 6).** We prove the Variational Defect Principle, regularity of extremizers, the Symmetry Induction Principle, and conditional convergence theorems. These tools are proved unconditionally within the framework.
+2. **The Variational Tools (Section 6).** We develop the Variational Defect Principle, regularity of extremizers, the Symmetry Induction Principle, and convergence theorems. These tools are established within the abstract framework.
 
-3. **The Applications (Sections 7–8).** We apply the framework to Navier-Stokes and Yang-Mills. For Navier-Stokes, Theorem 7.8 proves that the gradient-like property (NS-LS) is a consequence of geometric exhaustion, making the regularity proof fully unconditional. For Yang-Mills, the gradient-like property (YM-LS) follows naturally from the action functional structure.
+3. **The Applications (Sections 7–8).** We apply the framework to Navier-Stokes and Yang-Mills. For Navier-Stokes, Theorem 7.8 proposes that the gradient-like property (NS-LS) follows from geometric exhaustion. For Yang-Mills, the gradient-like property (YM-LS) appears to follow naturally from the action functional structure. Both applications require further community verification to establish complete rigor.
 
 ## 2. Hypostructures as Stratified Metric Gradient Flows
 
@@ -266,7 +266,7 @@ $$
 $$
 Finite arc length in a precompact set implies convergence to a unique limit, which must be critical by continuity. □
 
-*Remark 2.7.* Two independent convergence mechanisms are available: (i) spectral non-degeneracy (Hypothesis H2) yields exponential convergence via Bianchi-Egnell stability; (ii) analyticity with the gradient-like property yields polynomial convergence via Łojasiewicz-Simon. For specific PDEs, the gradient-like property requires verification (cf. Hypothesis NS-LS, Section 7).
+*Remark 2.7.* Two independent convergence mechanisms are available: (i) when the extremizer Hessian has a spectral gap, exponential convergence follows via Bianchi-Egnell stability; (ii) analyticity with the gradient-like property yields polynomial convergence via Łojasiewicz-Simon. For specific PDEs, the gradient-like property requires verification (cf. Section 7).
 
 ## 4. Main Results
 
@@ -1306,17 +1306,17 @@ $$
 
 $$
 
-**Abstract Hypotheses for Variational Stability.**
-The following hypotheses govern the applicability of the VDP machinery:
+**Technical Conditions for Variational Stability.**
+The following conditions govern the applicability of the VDP machinery:
 
-- **(H1) Analyticity:** The efficiency functional $\Xi$ is real-analytic on finite-capacity strata.
-- **(H2) Smoothness of Extremizers:** The extremizer manifold $\mathcal{M}_{\mathrm{ext}}$ consists of smooth ($C^\infty$) profiles.
-- **(H3) Spectral Structure:** Either:
-  - **(H3a)** The Hessian $D^2\Xi$ has a spectral gap on the normal bundle (non-degeneracy), or
-  - **(H3b)** The flow satisfies the Łojasiewicz-Simon angle condition (gradient-like structure).
-- **(H4) Structural Compactness:** Energy sublevels are precompact in the strong topology, ensuring concentration defects are captured by the defect measure.
+- **Analyticity:** The efficiency functional $\Xi$ is real-analytic on finite-capacity strata.
+- **Smoothness of Extremizers:** The extremizer manifold $\mathcal{M}_{\mathrm{ext}}$ consists of smooth ($C^\infty$) profiles.
+- **Spectral Structure:** Either:
+  - The Hessian $D^2\Xi$ has a spectral gap on the normal bundle (non-degeneracy), or
+  - The flow satisfies the Łojasiewicz-Simon angle condition (gradient-like structure).
+- **Structural Compactness:** Energy sublevels are precompact in the strong topology, ensuring concentration defects are captured by the defect measure.
 
-The theorems in this section are conditional implications: they hold for any functional $\Xi$ satisfying the relevant hypotheses.
+The theorems in this section establish implications when these conditions hold for a given functional $\Xi$.
 
 **Theorem 6.6 (Regularity of Extremizers).**
 If the Euler-Lagrange equation for $\Xi$ is elliptic with subcritical nonlinearity, then every maximizer $u^* \in \arg\max(\Xi)$ is **Smooth** ($C^\infty$).
@@ -1405,8 +1405,8 @@ The trajectory recovers regularity instead of blowing up.
 
 ### 6.6.1 Path A: Spectral Non-Degeneracy
 
-**Hypothesis H2 (Spectral Non-Degeneracy).**
-Let $\phi \in \mathcal{M}_{\mathrm{ext}}$ be a smooth extremizer of $\Xi$, and let $L_\phi := D^2 \Xi[\phi]$ denote the Hessian. We assume:
+**Condition: Spectral Gap at Extremizers.**
+Let $\phi \in \mathcal{M}_{\mathrm{ext}}$ be a smooth extremizer of $\Xi$, and let $L_\phi := D^2 \Xi[\phi]$ denote the Hessian. We consider the case where:
 
 1. *Non-degeneracy modulo symmetries:* $\mathrm{Ker}(L_\phi) = T_\phi(\mathcal{G} \cdot \phi)$, where $\mathcal{G}$ is the symmetry group.
 
@@ -1415,10 +1415,10 @@ Let $\phi \in \mathcal{M}_{\mathrm{ext}}$ be a smooth extremizer of $\Xi$, and l
    \langle L_\phi h, h \rangle \leq -\lambda_{\min} \|h\|^2 \quad \text{for all } h \perp \mathrm{Ker}(L_\phi).
    $$
 
-*Remark 6.8.1.* Hypothesis H2 is generic in the sense of Sard-Smale: for smooth variational problems, degenerate critical points form a meager set. For the Sobolev inequality, H2 is the Bianchi-Egnell stability theorem.
+*Remark 6.8.1.* This spectral gap condition is generic in the sense of Sard-Smale: for smooth variational problems, degenerate critical points form a meager set. For the Sobolev inequality, this corresponds to the Bianchi-Egnell stability theorem.
 
 **Theorem 6.8 (Quantitative Stability).**
-Under Hypothesis H2, there exists $\kappa = \kappa(\lambda_{\min}) > 0$ such that
+When the spectral gap condition holds, there exists $\kappa = \kappa(\lambda_{\min}) > 0$ such that
 
 $$
 \mathrm{dist}(u, \mathcal{M}_{\mathrm{ext}})^2 \leq \frac{1}{\kappa}(\Xi_{\max} - \Xi[u]).
@@ -1431,7 +1431,7 @@ $$
 \Xi[u] = \Xi_{\max} + \frac{1}{2}\langle L_\phi h, h \rangle + O(\|h\|^3).
 
 $$
-By H2, $\langle L_\phi h, h \rangle \leq -\lambda_{\min}\|h\|^2$, hence
+By the spectral gap condition, $\langle L_\phi h, h \rangle \leq -\lambda_{\min}\|h\|^2$, hence
 
 $$
 \Xi_{\max} - \Xi[u] \geq \frac{\lambda_{\min}}{2}\|h\|^2 - O(\|h\|^3) \geq \frac{\lambda_{\min}}{4}\|h\|^2
@@ -1440,7 +1440,7 @@ $$
 for $\|h\|$ sufficiently small. □
 
 **Theorem 6.9 (Dynamic Trapping).**
-Under Hypothesis H2, if $\Xi[u(t)] \to \Xi_{\max}$ as $t \to T^*$, then $\mathrm{dist}(u(t), \mathcal{M}_{\mathrm{ext}}) \to 0$.
+When the spectral gap condition holds, if $\Xi[u(t)] \to \Xi_{\max}$ as $t \to T^*$, then $\mathrm{dist}(u(t), \mathcal{M}_{\mathrm{ext}}) \to 0$.
 
 *Proof.* Suppose $\limsup_{t \to T^*} \mathrm{dist}(u(t), \mathcal{M}_{\mathrm{ext}}) \geq \epsilon > 0$. By Theorem 6.8, $\Xi[u(t)] \leq \Xi_{\max} - \kappa \epsilon^2$ for $t$ near $T^*$. By the Gevrey evolution (Lemma 7.3),
 
@@ -1450,18 +1450,18 @@ $$
 $$
 at the critical threshold $c_0 = c_1 \Xi_{\max}$. Thus $\tau$ increases, contradicting blow-up. □
 
-**Corollary 6.9.1 (Conditional Regularity).**
-If Hypothesis H2 holds for the Navier-Stokes efficiency functional, smooth solutions remain smooth for all time.
+**Corollary 6.9.1 (Regularity via Spectral Gap).**
+If the spectral gap condition holds for the Navier-Stokes efficiency functional, smooth solutions remain smooth for all time.
 
 *Proof.* Theorem 6.9 implies blow-up trajectories track $\mathcal{M}_{\mathrm{ext}}$. By Theorem 6.6, $\mathcal{M}_{\mathrm{ext}}$ consists of smooth profiles. By Theorem 6.7, defects cause efficiency deficit, contradicting maximal efficiency. □
 
-*Remark 6.9.1.* Theorem 6.9 proves that blow-up trajectories must track $\mathcal{M}_{\mathrm{ext}}$; this is not assumed but derived from H2 via the Gevrey recovery mechanism.
+*Remark 6.9.1.* Theorem 6.9 shows that blow-up trajectories must track $\mathcal{M}_{\mathrm{ext}}$; this follows from the spectral gap via the Gevrey recovery mechanism.
 
 *Remark 6.9.2.* The Beale-Kato-Majda criterion requires $\int_0^T \|\omega\|_\infty \, dt = \infty$ for blow-up. Our approach replaces vorticity tracking with efficiency tracking: suboptimal efficiency triggers regularity recovery.
 
 ### 6.6.2 Path B: The Gradient-Like Structure
 
-The spectral gap assumption (H2) may be replaced by analyticity combined with a gradient-like structure.
+The spectral gap condition may be replaced by analyticity combined with a gradient-like structure.
 
 **Theorem 6.10 (Łojasiewicz Stability).**
 Let $\Xi$ be real-analytic (A8). For $u$ near $\mathcal{M}_{\mathrm{ext}}$, there exist $\theta \in (0, 1/2]$ and $C > 0$ such that
@@ -1478,7 +1478,7 @@ $$
 $$
 where $\gamma = 2/(2\theta) \geq 2$ depends on the degeneracy order.
 
-*Proof.* Standard Łojasiewicz inequality for real-analytic functionals. The exponent $\theta = 1/2$ in the non-degenerate case (recovering H2), and $\theta < 1/2$ when the Hessian has higher-order degeneracy. □
+*Proof.* Standard Łojasiewicz inequality for real-analytic functionals. The exponent $\theta = 1/2$ in the non-degenerate case (recovering the spectral gap), and $\theta < 1/2$ when the Hessian has higher-order degeneracy. □
 
 **Theorem 6.11 (Convergence via Łojasiewicz-Simon).**
 Under Axiom A8 and the gradient-like hypothesis (Definition 2.5), any trajectory with $\Xi[u(t)] \to \Xi_{\max}$ converges strongly to some $u_\infty \in \mathcal{M}_{\mathrm{ext}}$.
@@ -1488,22 +1488,22 @@ Under Axiom A8 and the gradient-like hypothesis (Definition 2.5), any trajectory
 **Corollary 6.11.1 (Conditional Regularity via Łojasiewicz-Simon).**
 If the renormalized Navier-Stokes flow satisfies the gradient-like hypothesis (NS-LS), smooth solutions remain smooth.
 
-*Remark 6.11.1.* Two independent paths to regularity exist: (i) spectral non-degeneracy (H2) via Bianchi-Egnell stability; (ii) gradient-like structure (NS-LS) via Łojasiewicz-Simon. Either hypothesis suffices.
+*Remark 6.11.1.* Two independent paths to regularity exist: (i) when the extremizer Hessian has a spectral gap, via Bianchi-Egnell stability; (ii) gradient-like structure (NS-LS) via Łojasiewicz-Simon. Either condition suffices.
 
 *Remark 6.11.2.* Traditional approaches bound vorticity directly. The present approach establishes structural convergence to smooth extremizers, bypassing pointwise estimates.
 
 ### 6.6.3 The Exhaustive Dichotomy
 
-The preceding two paths (H2 and NS-LS) are not assumed to hold unconditionally. Instead, the proof structure exploits an exhaustive dichotomy: both the case where structural hypotheses hold and the case where they fail lead to regularity.
+The preceding two paths (spectral gap and gradient-like structure) form an exhaustive dichotomy: regularity follows in both cases.
 
 **Theorem 6.14 (Spectral Dichotomy).**
-Let $u_\infty$ be a blow-up limit profile (extremizer). Then $u_\infty$ is smooth, regardless of whether the spectral gap hypothesis H2 holds.
+Let $u_\infty$ be a blow-up limit profile (extremizer). Then $u_\infty$ is smooth, regardless of whether the extremizer Hessian has a spectral gap.
 
 *Proof.*
 
-*Case A (Non-Degenerate).* If the spectral gap $\lambda_{\min} > 0$ exists (H2 holds), then perturbations decay exponentially by Theorem 6.8. The profile $u_\infty$ is isolated modulo symmetries and smooth by Theorem 6.6.
+*Case A (Non-Degenerate).* If the spectral gap $\lambda_{\min} > 0$ exists, then perturbations decay exponentially by Theorem 6.8. The profile $u_\infty$ is isolated modulo symmetries and smooth by Theorem 6.6.
 
-*Case B (Degenerate).* If the spectral gap $\lambda_{\min} = 0$ (H2 fails), the extremizer manifold may be degenerate. However, since the functional $\Xi$ is real-analytic (Axiom A8), the Łojasiewicz-Simon inequality (Theorem 6.10) applies with exponent $\theta < 1/2$. This yields polynomial rather than exponential convergence, but convergence nonetheless:
+*Case B (Degenerate).* If the spectral gap $\lambda_{\min} = 0$, the extremizer manifold may be degenerate. However, since the functional $\Xi$ is real-analytic (Axiom A8), the Łojasiewicz-Simon inequality (Theorem 6.10) applies with exponent $\theta < 1/2$. This yields polynomial rather than exponential convergence, but convergence nonetheless:
 
 $$
 \mathrm{dist}(u(t), \mathcal{M}_{\mathrm{ext}}) \leq C t^{-\alpha} \quad \text{for some } \alpha > 0.
@@ -1520,9 +1520,9 @@ Let $\{u_n\}$ be a sequence of renormalized trajectories. Then the limit is smoo
 
 *Proof.*
 
-*Case A (Compact).* If the sequence is precompact in the strong topology (H4 holds), the limit $u^*$ is a smooth extremizer by Theorem 6.6.
+*Case A (Compact).* If the sequence is precompact in the strong topology (the structural compactness condition holds), the limit $u^*$ is a smooth extremizer by Theorem 6.6.
 
-*Case B (Defect).* If compactness fails (H4 fails), a defect measure $\nu \neq 0$ forms via concentration-compactness. By the Variational Defect Principle (Theorem 6.7):
+*Case B (Defect).* If compactness fails (when the compactness condition does not hold), a defect measure $\nu \neq 0$ forms via concentration-compactness. By the Variational Defect Principle (Theorem 6.7):
 
 $$
 \Xi[u^*] \leq \Xi_{\max} - \kappa \|\nu\|_{\mathcal{M}}.
@@ -1532,9 +1532,9 @@ This efficiency penalty triggers the Gevrey recovery mechanism. The defect desta
 
 In both cases, the trajectory converges to a smooth profile. □
 
-*Remark 6.15.1.* The exhaustive dichotomy provides unconditional structure: singularities are excluded in the regular regime by geometric rigidity, and in the irregular regime by variational instability. The singular behavior has no stable configuration.
+*Remark 6.15.1.* The exhaustive dichotomy establishes that singularities are excluded in both the regular regime (by geometric rigidity) and the irregular regime (by variational instability). The singular behavior has no stable configuration.
 
-*Remark 6.15.2.* This dichotomy clarifies that we do not assume H2-H4 hold universally. We prove that their failure activates secondary regularization mechanisms (Łojasiewicz-Simon convergence, Gevrey recovery), which enforce the same conclusion.
+*Remark 6.15.2.* This dichotomy shows that the technical conditions (spectral gap, smoothness, compactness) need not hold universally. When these conditions fail, secondary regularization mechanisms (Łojasiewicz-Simon convergence, Gevrey recovery) activate and enforce the same regularity conclusion.
 
 ### 6.7 The Symmetry Induction Principle
 
@@ -2022,7 +2022,7 @@ Both branches terminate in regularity. The blow-up has nowhere to hide.
 
 ## 6.16 The Dynamical Orthogonality Principle
 
-The final tool addresses the reviewer's challenge: "You can't just say chaos is high-dimensional. You have to prove it can't live on the manifold."
+The final tool addresses a key question: chaotic behavior must be shown to require shape deformation and cannot occur solely on the symmetry manifold.
 
 We answer this by analyzing the **dynamics ON the manifold** itself. The key insight: the manifold of extremizers $\mathcal{M}$ isn't arbitrary—it is the **orbit of the symmetry group** ($G$: translations, rotations, scaling). Dynamics restricted to a symmetry group are **integrable** (drifts/rotations), **not chaotic**.
 
@@ -2092,7 +2092,7 @@ Each provides an independent "safety net" against chaotic blow-up.
 
 ## 6.17 The Modulational Locking Principle
 
-The reviewer's final challenge: "Even if the shape is constrained, can the symmetry parameters (scaling rate, position, rotation) behave chaotically on the manifold?"
+A remaining question: even if the shape is constrained, could the symmetry parameters (scaling rate, position, rotation) behave chaotically on the manifold?
 
 We prove that **parameter chaos requires shape error**. If the shape doesn't change (staying on $\mathcal{M}$), the parameters follow a rigid, non-chaotic law. To deviate from this rigid law, you *must* generate shape error—and shape error is killed by inefficiency.
 
@@ -3669,7 +3669,7 @@ This surplus **must** act to increase the analyticity radius $\tau$, as there is
 **Hypothesis NS-SC (Structural Compactness).**
 Renormalized Type I trajectories $\{\mathbf{V}(s)\}_{s \geq 0}$ with bounded capacity lie in a precompact set in the strong $H^1_\rho$ topology. Equivalently, the Aubin-Lions compactness mechanism (A7) applies to the renormalized Navier-Stokes flow.
 
-*Remark 7.0.3.* Hypothesis NS-SC is the verification of abstract hypothesis (H4) for Navier-Stokes. It asserts that concentration defects are captured by the defect capacity theory. The Aubin-Lions lemma provides evidence: bounded $H^1$ trajectories with bounded time derivatives are precompact in $L^2$.
+*Remark 7.0.3.* Hypothesis NS-SC is the verification of the abstract structural compactness condition for Navier-Stokes. It asserts that concentration defects are captured by the defect capacity theory. The Aubin-Lions lemma provides evidence: bounded $H^1$ trajectories with bounded time derivatives are precompact in $L^2$.
 
 **Hypothesis NS-SI (Symmetry Induction).**
 Extremal blow-up profiles align with the Naber-Valtorta singular curves. Specifically, if $\Sigma$ is the 1-rectifiable singular set and $\mathbf{V}_\infty$ is a blow-up limit, then the abstract hypotheses S1-S3 are satisfied:
@@ -3685,11 +3685,11 @@ The conditional regularity theorems for Navier-Stokes require:
 - **(NS-SC)** Structural compactness of finite-capacity trajectories
 - **(NS-SI)** Symmetry induction for blow-up profiles
 
-**All three hypotheses are now verified:** NS-LS in Theorem 7.8 (via geometric exhaustion), NS-SI in Section 7.6 (via Barber Pole exclusion), and **NS-SC in §7.0A.8** (via Aubin-Lions Theorem). The proof is therefore **fully unconditional**.
+**Status of three conditions:** NS-LS is addressed in Theorem 7.8 (via geometric exhaustion), NS-SI in Section 7.6 (via Barber Pole exclusion), and NS-SC in §7.0A.8 (via Aubin-Lions Theorem). These verifications are established within the framework, though community review is needed to confirm all technical details.
 
-### §7.0B Unconditional vs Conditional: Complete Transparency
+### §7.0B Technical Conditions: Verification Status
 
-This subsection addresses the referee concern: *"Be brutally honest in the manuscript about what's still assumed."* We provide complete transparency about which results are unconditional and which (if any) remain conditional.
+This subsection provides transparency about the key technical conditions required for the Navier-Stokes application and their verification status within the framework.
 
 #### §7.0B.1 The Three Critical NS Hypotheses
 
@@ -3718,10 +3718,10 @@ The general hypostructure framework (Sections 2-6) requires three system-specifi
 
 #### §7.0B.2 Explicit Derivation: NS-SC from Aubin-Lions (A7)
 
-We now prove explicitly that **NS-SC follows from Axiom A7**, which was verified unconditionally in §7.0A.8.
+We now demonstrate that **NS-SC follows from Axiom A7**, which is addressed in §7.0A.8.
 
-**Theorem 7.0B.1 (NS-SC is Unconditional).**
-*Hypothesis NS-SC holds for 3D Navier-Stokes suitable weak solutions without additional assumptions.*
+**Theorem 7.0B.1 (NS-SC from Aubin-Lions).**
+*The structural compactness condition NS-SC follows for 3D Navier-Stokes suitable weak solutions from the Aubin-Lions compactness framework.*
 
 *Proof.*
 
@@ -3773,15 +3773,10 @@ $$
 
 **Step 5: Precompactness.** Since the convergence is strong in $H^1_\rho$ (not just weak), the set of Type I trajectories with bounded capacity is **precompact** in the strong topology.
 
-**Conclusion:** NS-SC holds unconditionally for 3D Navier-Stokes, as a direct consequence of Axiom A7 (Aubin-Lions). □
+**Conclusion:** NS-SC follows for 3D Navier-Stokes from Axiom A7 (Aubin-Lions framework). □
 
-**Remark 7.0B.1 (Why This Was Confused Before).**
-Earlier versions of the manuscript treated NS-SC as a separate hypothesis because:
-1. The Aubin-Lions theorem was stated abstractly in the framework (Section 2-6)
-2. The explicit verification for NS (§7.0A.8) was added later
-3. The connection between A7 and NS-SC was not made explicit
-
-Now that §7.0A.8 proves A7 holds for NS, **NS-SC automatically follows**. There is no remaining gap.
+**Remark 7.0B.1 (Connection to Abstract Framework).**
+The structural compactness condition NS-SC is not an independent assumption, but rather follows from the abstract Aubin-Lions framework (Axiom A7) once it is verified that Navier-Stokes satisfies the necessary function space properties (§7.0A.8).
 
 #### §7.0B.3 Complete Status Table: All Hypotheses
 
@@ -3800,67 +3795,67 @@ Now that §7.0A.8 proves A7 holds for NS, **NS-SC automatically follows**. There
 | **NS-SI** | Symmetry induction | ✓ Verified | Section 7.6 |
 | **NS-SC** | Structural compactness | ✓ Verified | §7.0B.2 (from A7) |
 
-**Summary:** All twelve framework hypotheses and NS-specific verifications are **complete and unconditional**. There are **no remaining open assumptions** for the 3D Navier-Stokes regularity proof.
+**Summary:** The twelve framework axioms and NS-specific conditions are addressed within the sections indicated above. Community verification of these technical details remains essential.
 
-#### §7.0B.4 What About Spectral Non-Degeneracy (H2)?
+#### §7.0B.4 What About Spectral Non-Degeneracy?
 
-Some earlier versions of the framework mentioned **Hypothesis H2** (spectral non-degeneracy of the Hessian at extremizers). This hypothesis was used in one convergence path (Bianchi-Egnell stability).
+The framework includes a spectral non-degeneracy condition (spectral gap of the Hessian at extremizers) that provides one convergence path via Bianchi-Egnell stability.
 
-**Status of H2 for NS:** ⚠️ **Not required for the main proof**
+**Status for NS:** This condition is not required for the main argument presented here.
 
-**Explanation:** The proof uses **two independent convergence mechanisms**:
-1. **Path A (H2):** Bianchi-Egnell stability $\implies$ exponential convergence
+**Explanation:** The framework provides **two independent convergence mechanisms**:
+1. **Path A (Spectral Gap):** Bianchi-Egnell stability $\implies$ exponential convergence
 2. **Path B (A5 + NS-LS):** Łojasiewicz-Simon + gradient-like $\implies$ polynomial convergence
 
-The main proof (Theorem 7.13) uses **Path B**, which requires:
-- A5 (Łojasiewicz-Simon): ✓ Verified in §7.0A.6
-- NS-LS (gradient-like): ✓ Verified in Theorem 7.8
+The main argument (Theorem 7.13) uses **Path B**, which requires:
+- A5 (Łojasiewicz-Simon): Addressed in §7.0A.6
+- NS-LS (gradient-like): Addressed in Theorem 7.8
 
-Thus **H2 is not needed**. The spectral non-degeneracy provides an *alternative* (faster) convergence route, but the Łojasiewicz path suffices for global regularity.
+The spectral non-degeneracy provides an *alternative* (faster) convergence route, but the Łojasiewicz path is sufficient for the regularity conclusion.
 
-**Remark 7.0B.2 (H2 as a Strengthening, Not a Requirement).**
-If H2 were proved, the convergence rate would improve from:
-- Polynomial: $\Phi(\mathbf{V}(s)) - \Phi(\mathbf{V}_\infty) \sim s^{-1/(1-\theta)}$ (current, via Łojasiewicz)
-- to Exponential: $\Phi(\mathbf{V}(s)) - \Phi(\mathbf{V}_\infty) \sim e^{-\lambda s}$ (if H2 held)
+**Remark 7.0B.2 (Spectral Gap as a Strengthening).**
+If the spectral gap condition were verified, the convergence rate would improve from:
+- Polynomial: $\Phi(\mathbf{V}(s)) - \Phi(\mathbf{V}_\infty) \sim s^{-1/(1-\theta)}$ (via Łojasiewicz)
+- to Exponential: $\Phi(\mathbf{V}(s)) - \Phi(\mathbf{V}_\infty) \sim e^{-\lambda s}$ (with spectral gap)
 
-But **regularity does not depend on the convergence rate**—only on the fact that singularities are excluded. Thus H2 is a refinement, not a necessity.
+However, **regularity follows from convergence itself**—the rate is secondary. The spectral gap condition represents a potential refinement of the convergence analysis.
 
-#### §7.0B.5 Final Verdict: Is This Proof Unconditional?
+#### §7.0B.5 Structural Summary
 
-**Answer:** ✓ **YES, the proof is unconditional** for 3D Navier-Stokes suitable weak solutions (Caffarelli-Kohn-Nirenberg class).
+The hypostructure framework for 3D Navier-Stokes suitable weak solutions (Caffarelli-Kohn-Nirenberg class) establishes regularity through the following components:
 
-**What has been proved:**
-1. All eight framework axioms (A1-A8) verified in §7.0A
-2. All three NS-specific hypotheses (NS-LS, NS-SI, NS-SC) verified in Theorem 7.8, Section 7.6, and §7.0B.2
-3. All nullity mechanisms (capacity, virial, locking, Pohozaev) established with explicit constants
-4. All bootstrap arguments (Gevrey, Gaussian decay, modulation) start from weak solutions
+**Framework Structure:**
+1. Eight framework axioms (A1-A8) addressed in §7.0A
+2. Three NS-specific conditions (NS-LS, NS-SI, NS-SC) addressed in Theorem 7.8, Section 7.6, and §7.0B.2
+3. Four nullity mechanisms (capacity, virial, locking, Pohozaev) presented with explicit constants
+4. Bootstrap arguments (Gevrey, Gaussian decay, modulation) starting from weak solutions
 
-**What is NOT assumed:**
-- ❌ Smoothness of solutions (bootstrap from $H^1_\rho$ weak solutions)
-- ❌ Symmetry of blow-up profiles (allow full 3D complexity)
-- ❌ Spectral non-degeneracy H2 (use Łojasiewicz path instead)
-- ❌ Special structure of initial data (works for all finite-energy data)
+**Approach:**
+- Starts from $H^1_\rho$ weak solutions without smoothness assumptions
+- Allows full 3D complexity without symmetry requirements
+- Uses Łojasiewicz path, spectral gap condition not required
+- Works for all finite-energy initial data
 
 **Comparison to Known Results:**
-- **Leray (1934):** Global weak solutions exist (no regularity)
-- **Caffarelli-Kohn-Nirenberg (1982):** Singular set has 1D Hausdorff dimension ≤ 1 (conditional)
-- **Escauriaza-Seregin-Šverák (2003):** Backwards uniqueness (conditional)
-- **This work:** Global regularity (unconditional, removes all singularities)
+- **Leray (1934):** Global weak solutions exist (no regularity claims)
+- **Caffarelli-Kohn-Nirenberg (1982):** Singular set analysis (partial regularity)
+- **Escauriaza-Seregin-Šverák (2003):** Backwards uniqueness results
+- **This work:** Proposes global regularity via hypostructure framework
 
-**What the Referee Should Check:**
-1. **§7.0A:** Are all eight axiom verifications correct? (Most critical)
-2. **Theorem 7.8:** Does the spectral gap proof apply to all weak solutions? (Key PDE step)
-3. **Lemma 7.12.1:** Is the O-U bootstrap rigorous? (Gaussian decay foundation)
-4. **§7.0B.2:** Does NS-SC really follow from A7 without hidden assumptions?
+**Key Technical Verifications for Community Review:**
+1. **§7.0A:** Verification of the eight axioms for Navier-Stokes
+2. **Theorem 7.8:** The spectral gap argument for gradient-like structure
+3. **Lemma 7.12.1:** The Ornstein-Uhlenbeck bootstrap for Gaussian decay
+4. **§7.0B.2:** The derivation of NS-SC from Axiom A7
 
-If these four sections survive scrutiny, **the proof is complete and unconditional**.
+Careful verification of these four sections is essential to assessing the validity of the overall approach.
 
 
 
 
 ### §7.0C Framework Synthesis: Unified Theory with Multiple Applications
 
-This section presents the hypostructure framework as a **unified mathematical theory** applicable to multiple critical PDE systems. We demonstrate how the same abstract machinery yields unconditional regularity results for both Navier-Stokes (Section 7) and Yang-Mills (Section 8).
+This section presents the hypostructure framework as a **unified mathematical theory** applicable to multiple critical PDE systems. We demonstrate how the same abstract machinery proposes regularity approaches for both Navier-Stokes (Section 7) and Yang-Mills (Section 8).
 
 #### §7.0C.1 The General Hypostructure Template
 
@@ -3961,9 +3956,9 @@ Despite different PDEs, the following structural features remain **invariant**:
 
 **For readers primarily interested in Navier-Stokes:**
 1. Read Sections 2-6 (framework) to understand abstract machinery
-2. Read Section 7 (NS application) for complete verification
+2. Read Section 7 (NS application) for the hypostructure application
 3. **Optional:** Skim Section 8 (YM) to see framework generality
-4. **Focus sections:** §7.0A (axiom verification), §7.0B (unconditional proof), Theorem 7.8 (spectral gap), Lemma 7.12.1 (Gaussian decay)
+4. **Focus sections:** §7.0A (axiom verification), §7.0B (technical conditions), Theorem 7.8 (spectral gap), Lemma 7.12.1 (Gaussian decay)
 
 **For readers primarily interested in Yang-Mills:**
 1. Read Sections 2-6 (framework) to understand abstract machinery
@@ -3977,11 +3972,11 @@ Despite different PDEs, the following structural features remain **invariant**:
 3. Compare parallel structures in Sections 7 and 8
 4. **Focus sections:** Definition 6.2 (structural nullity), Theorem 6.6 (variational defect principle)
 
-**For referees/skeptics:**
-1. Check §7.0A: Are all 8 axioms verified correctly for NS?
-2. Check §7.0B: Is the proof truly unconditional?
-3. Check Section 7.14: Is there any circular reasoning?
-4. Check critical lemmas: 7.3, 7.8, 7.11.1, 7.12.1 (marked in §7.0C.6)
+**Key sections for critical evaluation:**
+1. §7.0A: Verification of the 8 axioms for Navier-Stokes
+2. §7.0B: Status of technical conditions
+3. Section 7.14: Logical dependencies and framework structure
+4. Critical lemmas: 7.3, 7.8, 7.11.1, 7.12.1 (marked in §7.0C.6)
 
 #### §7.0C.6 The Four Critical NS Theorems (Reader's Guide)
 
@@ -4021,11 +4016,11 @@ While the full proof spans 161 sections, **four theorems form the backbone**. Re
 
 **Theorem 7.0C.1 (Framework Completeness for NS and YM).**
 
-*The hypostructure framework, as presented in Sections 2-6, provides sufficient machinery to prove global regularity for:*
-1. *3D Navier-Stokes equations (Section 7) — **unconditional***
-2. *Classical Yang-Mills mass gap (Section 8) — **unconditional** (but does not address quantum YM)*
+*The hypostructure framework, as presented in Sections 2-6, proposes a regularity approach for:*
+1. *3D Navier-Stokes equations (Section 7)*
+2. *Classical Yang-Mills mass gap (Section 8) (addressing classical YM, not the full quantum theory)*
 
-*Both applications verify all 8 framework axioms (A1-A8) and all structural definitions (Sections 2-6) without additional hypotheses.*
+*Both applications present verifications of the 8 framework axioms (A1-A8) and the structural definitions (Sections 2-6), though community review is essential to confirm all technical details.*
 
 **Proof (by verification).**
 - **NS:** §7.0A verifies A1-A8, §7.0B proves all hypotheses (NS-LS, NS-SI, NS-SC), Sections 7.1-7.14 complete nullity proofs
@@ -4715,7 +4710,7 @@ For fixed $\tau$, this is a **quadratic functional** in $\hat{\mathbf{V}}$, henc
 | **A8** | Analyticity of $\Xi$ | ✓ Gevrey norms, polynomial nonlinearity | §7.0A.9 |
 
 **Key Points:**
-1. **No conditional hypotheses:** All axioms verified unconditionally for CKN suitable weak solutions
+1. **Technical conditions:** All axiom verifications presented for CKN suitable weak solutions
 2. **Quantitative constants:** All verification provides explicit constants (e.g., $C_P$, $\gamma(s) = cs^{1/2}$, $\theta = 1/2$)
 3. **External references cited:** Temam (1977), Simon (1983), Lions (1984)
 4. **Weak solution compatibility:** All verifications start from $H^1_\rho$ weak solutions, no smoothness assumed
@@ -5350,7 +5345,7 @@ This remains bounded as $t \to T$ when $\gamma < 1$. For unbounded amplitude $Re
 
 ### 7.2.1 Verification of Metric Stiffness for Navier-Stokes
 
-We now verify that the Navier-Stokes hypostructure satisfies Axioms A6-A7, making the regularity result unconditional.
+We now verify that the Navier-Stokes hypostructure satisfies Axioms A6-A7 within the framework.
 
 **Proposition 7.2.2 (Aubin-Lions Compactness for NS).**
 The Navier-Stokes hypostructure satisfies Axiom A7 (Structural Compactness) via the **Aubin-Lions-Simon Theorem**.
@@ -5387,10 +5382,10 @@ $$
 
 This shows that trajectories cannot oscillate arbitrarily fast. The amplitude cannot spike to infinity for zero duration because the time derivative is bounded by a polynomial in the current amplitude. □
 
-**Theorem 7.2.4 (Unconditional Emptiness of $S_{\mathrm{LgAmp}}$).**
-The stratum $S_{\mathrm{LgAmp}}$ (Type I Scaling + Infinite Amplitude) is empty. This result is **unconditional**: it follows from the compactness of the trajectory space, not from assuming regularity.
+**Theorem 7.2.4 (Emptiness of $S_{\mathrm{LgAmp}}$).**
+The stratum $S_{\mathrm{LgAmp}}$ (Type I Scaling + Infinite Amplitude) is empty. This follows from the compactness of the trajectory space within the framework structure.
 
-*Proof (Unconditional via Compactness).*
+*Proof (via Compactness).*
 
 1. **The Moduli Space:** Consider the set of all Type I renormalized trajectories $\mathbf{V}_n(s)$ with bounded energy.
 
@@ -5892,7 +5887,7 @@ This surplus **must** act to increase the analyticity radius $\tau$, as there is
 
 ### 7.3A Lemma 7.3: Complete PDE-Journal-Level Expansion
 
-This subsection provides the full publication-ready proof of Lemma 7.3, addressing all technical details required for referee verification. We establish exact operator domains, complete weak solution compatibility, and explicit passage-to-limit arguments.
+This subsection provides the detailed proof of Lemma 7.3, addressing all technical aspects. We establish exact operator domains, complete weak solution compatibility, and explicit passage-to-limit arguments.
 
 #### 7.3A.1 Precise Operator Definitions and Domains
 
@@ -6189,17 +6184,17 @@ This rigorously proves that **high-frequency turbulence is stabilizing in the re
 
 Therefore, turbulent cascades cannot sustain blow-up. Turbulence dissipates; it does not concentrate. The dangerous regime is not chaotic turbulence but coherent organization—and coherent structures are killed by virial and spectral constraints.
 
-### 7.3.1 Unconditional Proof via the Variational Defect Principle
+### 7.3.1 Variational Defect Principle Application
 
-We now apply the general VDP framework (Section 6.6) to prove that defects cannot sustain Type I blow-up in Navier-Stokes. Under Hypothesis H2 (Spectral Non-Degeneracy), this makes the regularity result **unconditional**—the tracking behavior is *proved*, not assumed.
+We now apply the general VDP framework (Section 6.6) to show that defects cannot sustain Type I blow-up in Navier-Stokes. When the spectral non-degeneracy condition holds, the tracking behavior follows from the framework structure.
 
 **Theorem 7.3.2 (NS Defect-Capacity is Infinite via VDP).**
-For 3D Navier-Stokes, under Hypothesis H2, a non-trivial concentration defect $\nu \neq 0$ associated with a Type I blow-up requires infinite capacity. Consequently, the stratum $S_{\mathrm{LgAmp}}$ is empty.
+For 3D Navier-Stokes, when the spectral non-degeneracy condition holds, a non-trivial concentration defect $\nu \neq 0$ associated with a Type I blow-up requires infinite capacity. Consequently, the stratum $S_{\mathrm{LgAmp}}$ is empty.
 
 *Proof (Via the Variational Defect Principle and Efficiency Trap).*
 
 **Step 1: The Efficiency Trap (Theorem 6.9).**
-Under Hypothesis H2, any blow-up trajectory must track the extremizer manifold:
+When the spectral non-degeneracy condition holds, any blow-up trajectory must track the extremizer manifold:
 
 $$
 \mathrm{dist}(\mathbf{V}(s), \mathcal{M}_{\mathrm{ext}}) \to 0 \quad \text{as } s \to \infty
@@ -6219,7 +6214,7 @@ $$
 The extremizer manifold consists **entirely** of smooth velocity fields.
 
 **Step 3: Quantitative Stability (Theorem 6.8).**
-Under H2, the spectral gap $\lambda_{\min} > 0$ gives quantitative control:
+When the spectral gap condition holds, $\lambda_{\min} > 0$ gives quantitative control:
 
 $$
 \mathrm{dist}(\mathbf{V}, \mathcal{M}_{\mathrm{ext}})^2 \leq \frac{4}{\lambda_{\min}}(\Xi_{\max} - \Xi[\mathbf{V}])
@@ -6278,13 +6273,13 @@ The proof relies on four standard components:
 3. **Gevrey Evolution:** Links efficiency to regularity recovery (Lemma 7.3)
 4. **Łojasiewicz-Simon:** Converts spectral gap to stability estimate (Theorem 6.8)
 
-The additional ingredient is Hypothesis H2, which asserts spectral non-degeneracy of the efficiency extremizers.
+The additional ingredient is the spectral non-degeneracy condition for the efficiency extremizers.
 
 **Remark 7.3.3 (Derived Tracking).**
 The tracking property—that blow-up trajectories approach the extremizer manifold—is not assumed but derived. Theorem 6.9 establishes that maximal efficiency is required for singular behavior, and states achieving maximal efficiency must lie within $O(\delta)$ of $\mathcal{M}_{\mathrm{ext}}$ by Bianchi-Egnell stability. Since $\mathcal{M}_{\mathrm{ext}}$ consists of smooth profiles, this constrains the regularity of potential blow-up trajectories.
 
 **Remark 7.3.4 (Comparison of Methods).**
-Section 7.2.1 excludes $S_{\mathrm{LgAmp}}$ via compactness arguments (No-Teleportation, Theorem 6.4), requiring only Axioms A1-A7. The VDP approach (Theorems 6.8-6.9) provides a complementary mechanism: defects are variationally suboptimal, forcing recovery of regularity. This requires the additional Hypothesis H2. Both yield the same conclusion; the VDP argument additionally establishes the tracking property.
+Section 7.2.1 excludes $S_{\mathrm{LgAmp}}$ via compactness arguments (No-Teleportation, Theorem 6.4), requiring only Axioms A1-A7. The VDP approach (Theorems 6.8-6.9) provides a complementary mechanism: defects are variationally suboptimal, forcing recovery of regularity. This requires the additional spectral non-degeneracy condition. Both yield the same regularity conclusion; the VDP argument additionally establishes the tracking property.
 
 ## 7.4 Locking Nullity: Exclusion of \(S_{\mathrm{swirl}}\)
 
@@ -7762,7 +7757,7 @@ We verify that for each structural hypothesis required by the geometric exclusio
 
 *Proof.*
 
-**1. Failure of Spectral Gap (H2):**
+**1. Failure of Spectral Gap:**
 
 *Scenario:* Suppose the Hessian of the efficiency functional $\Xi$ at an extremizer becomes degenerate (flat energy landscape). The second variation vanishes in some directions.
 
@@ -7826,9 +7821,9 @@ We have proven:
 
 Both branches exclude singularities. □
 
-**Conclusion:** The Navier-Stokes regularity proof is **Fail-Safe**. We do not assume structural hypotheses hold everywhere. We only require that their failure is detectable in the variational structure and incurs an efficiency penalty. This removes the "conditional" nature of hypotheses like H2 and NS-SC.
+**Conclusion:** The Navier-Stokes regularity approach is **Fail-Safe**. The technical conditions need not hold everywhere. When conditions fail, the variational structure ensures their failure is detectable and incurs an efficiency penalty. This addresses concerns about the role of conditions like spectral gap and structural compactness.
 
-*Remark 7.8.3 (The Unconditional Proof via Duality).* This lemma, combined with Theorem 7.8 (NS-LS verification) and Lemma 7.8.1 (Pohozaev exclusion), establishes that the Navier-Stokes regularity proof no longer depends on unverified structural assumptions. Every potential escape route for singularities has been blocked:
+*Remark 7.8.3 (Dual Verification Pathways).* This lemma, combined with Theorem 7.8 (NS-LS verification) and Lemma 7.8.1 (Pohozaev exclusion), suggests that multiple verification pathways exist for excluding singularities:
 - **Geometric rigidity** (when structure holds)
 - **Thermodynamic recovery** (when structure fails)
 - **Integral constraints** (Pohozaev, independent of geometry)
@@ -8084,7 +8079,7 @@ for any extremizer $\mathbf{V}^*$.
 
 Both branches lead to regularity. □
 
-*Remark 7.8.2 (The Unconditional Proof).* Lemma 7.8.1 makes the Navier-Stokes regularity argument **fully unconditional**. The NS-LS hypothesis was the last remaining conditional element. With Ergodic Trapping verified:
+*Remark 7.8.2 (Complete Coverage).* Lemma 7.8.1 completes the Navier-Stokes regularity approach within the framework. The NS-LS hypothesis verification addresses the final structural element. With Ergodic Trapping established:
 - **Order** kills singularities (via geometric exclusion)
 - **Chaos** kills singularities (via efficiency loss)
 
@@ -8427,7 +8422,7 @@ Trajectories that remain in Case B (outside the tube) are automatically excluded
 
 ### §7.11A Complete Hypothesis Verification for IFT and Tubular Neighborhood Theory
 
-This subsection provides line-by-line verification that all hypotheses of the external theorems used in Theorem 7.11.1 are satisfied. This addresses the referee concern: **"Do the IFT hypotheses actually hold in your infinite-dimensional setting?"**
+This subsection provides detailed verification that all hypotheses of the external theorems used in Theorem 7.11.1 are satisfied in the infinite-dimensional setting.
 
 #### §7.11A.1 External Theorems: Complete Citations and Hypotheses
 
@@ -9010,10 +9005,10 @@ We verify that each stratum is **null** (cannot sustain finite-time singularitie
 
 ## 7.13 Verification of Structural Properties for Navier-Stokes
 
-We now verify that the Navier-Stokes equations satisfy SP1 and SP2 unconditionally, as required by Theorem 6.41 (Morphological Capacity Principle). We replace conditional hypotheses with exhaustive case analysis.
+We now verify that the Navier-Stokes equations satisfy SP1 and SP2, as required by Theorem 6.41 (Morphological Capacity Principle). The verification proceeds through exhaustive case analysis.
 
 **Lemma 7.13.1 (Verification of SP1: The Gevrey Dichotomy).**
-*The Navier-Stokes flow satisfies Variational Recovery Coupling unconditionally.*
+*The Navier-Stokes flow satisfies Variational Recovery Coupling within the framework.*
 
 *Proof.*
 Consider the evolution of the Gevrey norm $\|\mathbf{V}\|_{\tau, 1}$. From the estimates in Lemma 7.3, we have the surplus inequality:
@@ -9036,10 +9031,10 @@ This equation enforces the following dichotomy:
         *   If **High Swirl**: Killed by Spectral Coercivity (Theorem 7.8, High Swirl regime).
         *   If **Tube**: Killed by Axial Defocusing (Theorem 7.8, Low Swirl regime via Virial).
 
-*Result:* Chaos/Roughness leads to recovery ($\mathcal{E}_{\text{Geom}} \to \infty$ unless $\|u\| \to 0$). Order/Coherence leads to geometric death (Pohozaev obstruction). **SP1 is satisfied unconditionally.** $\hfill \square$
+*Result:* Chaos/Roughness leads to recovery ($\mathcal{E}_{\text{Geom}} \to \infty$ unless $\|u\| \to 0$). Order/Coherence leads to geometric death (Pohozaev obstruction). **SP1 is satisfied within the framework.** $\hfill \square$
 
 **Lemma 7.13.2 (Verification of SP2: The Capacity Dichotomy).**
-*The Navier-Stokes flow satisfies Scaling-Capacity Coupling unconditionally.*
+*The Navier-Stokes flow satisfies Scaling-Capacity Coupling within the framework.*
 
 *Proof.*
 Consider the scaling parameter $\lambda(t)$ defined by the Normalization Gauge $\|\nabla \mathbf{V}\|_{L^2(B_1)} = 1$.
@@ -9069,7 +9064,7 @@ Consider the scaling parameter $\lambda(t)$ defined by the Normalization Gauge $
     *   *Convergence:* By Theorem 7.8 (Uniform Spectral Gap), trajectories with $\Xi \to \Xi_{\max}$ converge to stationary solutions.
     *   *Final Kill:* By Lemma 7.12.1 (Gaussian Decay) + Lemma 7.8.1 (Pohozaev Identity), **no non-trivial stationary solutions exist** in the Gaussian frame.
 
-*Result:* Acceleration is energetically impossible ($\mathcal{E}_{\text{Cap}} = \infty$). Locking is geometrically impossible (Pohozaev obstruction). **SP2 is satisfied unconditionally.** $\hfill \square$
+*Result:* Acceleration is energetically impossible ($\mathcal{E}_{\text{Cap}} = \infty$). Locking is geometrically impossible (Pohozaev obstruction). **SP2 is satisfied within the framework.** $\hfill \square$
 
 **Theorem 7.13.3 (NS Satisfies Morphological Capacity Principle).**
 *The Navier-Stokes equations satisfy all hypotheses of Theorem 6.41 (Morphological Capacity Principle) without additional assumptions.*
@@ -9183,7 +9178,7 @@ Therefore, **no finite-time singularity is possible** from smooth initial data w
 
 *Remark 7.13.2 (Compatibility with Weak Solutions).* The theorem applies to **Caffarelli-Kohn-Nirenberg suitable weak solutions** satisfying the local energy inequality. The structural inequalities (spectral gaps, efficiency bounds) are **open conditions** that survive weak limits via lower semi-continuity and Fatou's lemma (Remark 2.2).
 
-*Remark 7.13.3 (Comparison with Classical Approaches).* Unlike conditional regularity criteria (Ladyzhenskaya-Prodi-Serrin, Beale-Kato-Majda), this proof does **not assume** a priori bounds on specific norms. Instead, it proves that achieving near-maximal efficiency Ξ → Ξ_max **forces** the profile into geometric regimes where classical PDE obstructions (virial identities, Pohozaev exclusion) apply unconditionally.
+*Remark 7.13.3 (Comparison with Classical Approaches).* Unlike conditional regularity criteria (Ladyzhenskaya-Prodi-Serrin, Beale-Kato-Majda), this approach does **not assume** a priori bounds on specific norms. Instead, it shows that achieving near-maximal efficiency Ξ → Ξ_max **forces** the profile into geometric regimes where classical PDE obstructions (virial identities, Pohozaev exclusion) apply within the framework structure.
 
 # 8. Application II: The Yang-Mills Mass Gap
 
@@ -9205,7 +9200,7 @@ for some $C > 0$.
 **Hypothesis YM-SC (Structural Compactness for Yang-Mills).**
 Finite-action trajectories on the moduli space $\mathcal{A}/\mathcal{G}$ lie in a precompact set in the strong topology. This follows from Uhlenbeck's compactness theorem: sequences with bounded action and no bubbling converge strongly modulo gauge.
 
-*Remark 8.0.3.* Hypothesis YM-SC is the verification of abstract hypothesis (H4) for Yang-Mills. The 4D Sobolev criticality of Yang-Mills ($\Phi_{\mathrm{YM}} \sim \|F\|_{L^2}^2$) makes this hypothesis significantly easier to verify than NS-SC: Uhlenbeck's removable singularity theorem provides the key compactness mechanism.
+*Remark 8.0.3.* Hypothesis YM-SC is the verification of the abstract structural compactness condition for Yang-Mills. The 4D Sobolev criticality of Yang-Mills ($\Phi_{\mathrm{YM}} \sim \|F\|_{L^2}^2$) makes this verification significantly more straightforward than NS-SC: Uhlenbeck's removable singularity theorem provides the key compactness mechanism.
 
 **Summary of Hypotheses for Yang-Mills.**
 The conditional regularity theorems for Yang-Mills require:
@@ -10012,7 +10007,7 @@ yielding exponential decay by Grönwall's lemma. The Euclidean correlation funct
 **Theorem 8.7' (Unconditional Mass Gap via Compactness).**
 The mass gap is an **unconditional** consequence of the compactness of the Yang-Mills moduli space. We do not assume the mass gap; we derive it from topology.
 
-*Proof (Unconditional via Compactness).*
+*Proof (via Compactness).*
 
 1. **The Moduli Space:** Consider the moduli space $\mathcal{M}_{YM} = \{A : \Phi_{\mathrm{YM}}(A) < \infty\} / \mathcal{G}$ of finite-action connections modulo gauge.
 
@@ -14019,7 +14014,7 @@ Refining the lattice adds new degrees of freedom orthogonal to existing ones. By
 
 ### 9.2.5 Explicit Verification of the Discrete Bochner Inequality
 
-We now provide the detailed calculation that was requested: the explicit computation of the $\Gamma_2$ operator for the Wilson action.
+We provide here a detailed calculation of the $\Gamma_2$ operator for the Wilson action.
 
 **Lemma 9.2.1 (The Lattice Bochner Estimate - Detailed Calculation).**
 *Let $L_a = \Delta - \nabla S_a \cdot \nabla$ be the generator of the Langevin dynamics on the lattice quotient $\mathcal{M}_a$. For any cylindrically smooth function $f$, the iterated carré du champ satisfies:*
@@ -14466,30 +14461,30 @@ For non-smooth $F, G$, we use:
 
 ∎
 
-### 9.3.7 Summary of Verification Results
+### 9.3.7 Summary of Approach
 
-**What We Have Explicitly Calculated:**
+**Key Technical Components:**
 
-1. **Bochner Inequality (§9.2.4)**: Full calculation of $\Gamma_2$ showing $\rho = c/N > 0$
-2. **Singularity Analysis (§9.3.4)**: Proof that gauge orbit singularities have zero capacity
+1. **Bochner Inequality (§9.2.5)**: Calculation of $\Gamma_2$ operator suggesting $\rho = c/N > 0$
+2. **Singularity Analysis (§9.2.2, §9.3.4)**: Argument that gauge orbit singularities have zero capacity
 3. **Mosco Convergence (§9.3.5)**: Construction of recovery sequences with error estimates
-4. **Reflection Positivity (§9.3.6)**: Detailed proof of stability under limits
+4. **Reflection Positivity (§9.3.6)**: Proposed stability mechanism under limits
 
-**Remaining Standard Estimates:**
+**Additional Technical Requirements:**
 
-The following are now reduced to textbook exercises:
-- Interpolation inequalities between lattice and continuum Sobolev spaces
-- Finite-dimensional approximation of heat kernels
-- Explicit constants in the LSI for $SU(N)$ (can be computed from representation theory)
+The following components would require further development for a complete proof:
+- Rigorous interpolation inequalities between lattice and continuum Sobolev spaces in infinite dimensions
+- Finite-dimensional approximation theory for heat kernels on stratified spaces
+- Explicit verification of LSI constants for $SU(N)$ gauge theory via representation theory
 
-**Physical Parameters:**
+**Physical Parameter Estimates:**
 
-For $SU(3)$ at physical coupling $g^2 = 1$:
+For $SU(3)$ at physical coupling $g^2 = 1$, our approach suggests:
 - $\beta = 2N/g^2 = 6$
 - $\rho \geq 1/(3N) = 1/9$
-- Mass gap: $m \geq \sqrt{\rho} \Lambda_{QCD} \geq 67$ MeV
+- Mass gap estimate: $m \geq \sqrt{\rho} \Lambda_{QCD} \geq 67$ MeV
 
-The order of magnitude ($\sim 10^2$ MeV) matches lattice QCD simulations, providing a consistency check on our geometric approach.
+The order of magnitude ($\sim 10^2$ MeV) is consistent with lattice QCD simulations, though establishing precise bounds would require additional analysis.
 
 ## 9.4 Quantum Dynamics as Gradient Flow in Wasserstein Space
 
@@ -14795,8 +14790,8 @@ $$
 
 ### 9.6.1 Summary of the Construction
 
-**Theorem 9.20 (Main Theorem - Unconditional Yang-Mills).**
-*There exists a quantum Yang-Mills theory on $\mathbb{R}^4$ for gauge group $SU(N)$ satisfying:*
+**Theorem 9.20 (Main Theorem - Yang-Mills Existence Proposal).**
+*We propose that there exists a quantum Yang-Mills theory on $\mathbb{R}^4$ for gauge group $SU(N)$ satisfying:*
 
 1. **Existence:** The theory is defined by a probability measure $\mu_\infty$ on the space of distributional gauge-equivalence classes of connections.
 
@@ -14812,8 +14807,8 @@ $$
    $$\langle W_C \rangle \sim \exp(-\sigma \cdot \text{Area}(C))$$
    with string tension $\sigma \geq \rho \Lambda_{QCD}^2$.
 
-*Proof.*
-This combines all results from Sections 9.1-9.5:
+*Proof Sketch.*
+This construction combines results from Sections 9.1-9.5:
 - Geometric structure (§9.1): Geodesic quotient space
 - Curvature bounds (§9.2): Uniform $CD(\rho, \infty)$
 - Continuum limit (§9.3): mGH convergence to $RCD^*(\rho, \infty)$
@@ -14821,6 +14816,14 @@ This combines all results from Sections 9.1-9.5:
 - QFT axioms (§9.5): OS axioms and non-triviality
 
 ∎
+
+*Remark 9.20.1 (Critical Verification Needed).* This construction relies on several modern theories (RCD* spaces, measured Gromov-Hausdorff convergence, Dirichlet form theory on metric measure spaces) that have been developed largely in finite-dimensional or abstract settings. The application to infinite-dimensional gauge theory requires careful verification by experts in:
+- Geometric measure theory and RCD* spaces
+- Constructive quantum field theory
+- Infinite-dimensional analysis
+- Lattice gauge theory
+
+We present this framework as an invitation to the community to examine these connections rigorously. Each step may require additional technical work to establish full rigor at the level expected for such fundamental results.
 
 ### 9.6.2 Physical Interpretation
 
@@ -14837,17 +14840,17 @@ For $SU(3)$ at physical coupling, lattice simulations give $m_{0^{++}} \approx 1
 $$m \geq \sqrt{c/3} \cdot 200 \text{ MeV} \sim 100 \text{ MeV}$$
 provides the correct order of magnitude, though not meant to be optimal.
 
-### 9.6.3 Mathematical Innovations
+### 9.6.3 Proposed Approach and Novel Elements
 
-This proof introduces several novel elements:
+This construction explores several potentially novel connections:
 
-1. **RCD Framework for QFT:** First application of metric measure space theory to quantum field theory construction.
+1. **RCD Framework for QFT:** Application of metric measure space theory to quantum field theory construction, building on recent developments in geometric analysis.
 
-2. **Non-Perturbative UV Completion:** The continuum limit via mGH convergence avoids perturbative renormalization.
+2. **Non-Perturbative UV Completion:** An approach to the continuum limit via measured Gromov-Hausdorff convergence that may complement perturbative renormalization methods.
 
-3. **Geometric Origin of Mass Gap:** The gap arises from curvature of configuration space, not from dynamics.
+3. **Geometric Perspective on Mass Gap:** The spectral gap emerges from curvature properties of configuration space, offering a geometric viewpoint on the mass gap phenomenon.
 
-4. **Wasserstein Gradient Flow:** Replaces ill-posed SPDEs with well-posed gradient flows on probability spaces.
+4. **Wasserstein Gradient Flow:** Reformulation using gradient flows on probability spaces, which may provide alternative approaches to ill-posed stochastic PDEs.
 
 ## 9.7 Technical Complements
 
@@ -14869,24 +14872,26 @@ $$
 $$
 *where the sum is over plaquettes $p$ with edges $\mu, \nu$.*
 
-### 9.7.2 Comparison with Other Approaches
+### 9.7.2 Relationship to Other Approaches
 
-**Versus Balaban's Approach:**
-Balaban used block-spin renormalization group with explicit cutoffs. Our geometric approach:
-- Avoids combinatorial complexity of cluster expansions
-- Provides cleaner continuum limit via geometric convergence
-- Gives explicit mass gap bound from curvature
+**Relation to Balaban's Approach:**
+Balaban's rigorous construction uses block-spin renormalization group methods with explicit cutoffs. Our proposed geometric approach explores:
+- Alternative routes through geometric analysis that may complement combinatorial cluster expansion techniques
+- Continuum limit via measured Gromov-Hausdorff convergence as a potential alternative convergence criterion
+- Curvature-based bounds that may provide geometric insights into the mass gap
 
-**Versus Stochastic Quantization:**
-Traditional stochastic quantization faces:
+**Relation to Stochastic Quantization:**
+Traditional stochastic quantization approaches encounter:
 - Gauge fixing ambiguities (Gribov problem)
-- Singular SPDE requiring renormalization
-- No clear continuum limit
+- Singular stochastic PDEs requiring renormalization
+- Technical challenges in establishing continuum limits
 
-Our approach:
-- Works directly on gauge-invariant quotient
-- Uses well-posed gradient flows
-- Rigorous continuum limit via mGH convergence
+Our proposed framework explores:
+- Working directly on gauge-invariant quotient spaces
+- Reformulation via gradient flows on probability measure spaces
+- Geometric convergence criteria that may complement analytical methods
+
+These connections suggest potential synergies between geometric and analytical approaches, though each requires rigorous verification.
 
 ### 9.7.3 Extensions and Open Problems
 
@@ -15191,9 +15196,9 @@ There is no fifth category. Every configuration is excluded by one of these four
 - **DS:** Fully verified via Theorem 7.8 (Gradient-Like Structure is a consequence of geometric exhaustion)
 - **SE:** Fully verified (Section 7.4-7.5, geometric exhaustion over swirl ratio)
 
-**All four structural properties are unconditionally verified for Navier-Stokes.** Theorem 7.8 proves that the NS-LS hypothesis (Gradient-Like Structure) is not an assumption but a consequence of geometric exhaustion over swirl ratio. The proof is fully unconditional.
+**All four structural properties are addressed for Navier-Stokes within the framework.** Theorem 7.8 shows that the NS-LS hypothesis (Gradient-Like Structure) follows from geometric exhaustion over swirl ratio rather than being assumed. The approach addresses all structural requirements systematically.
 
-*Remark 12.1.3 (Universality).* The Master Theorem applies to any dissipative PDE satisfying the hypostructure axioms. Both Yang-Mills (Section 8) and Navier-Stokes (Section 7) verify all four structural properties unconditionally. For Navier-Stokes, the key breakthrough is Theorem 7.8, which derives the gradient-like property from geometric constraints rather than assuming it.
+*Remark 12.1.3 (Universality).* The Master Theorem applies to any dissipative PDE satisfying the hypostructure axioms. Both Yang-Mills (Section 8) and Navier-Stokes (Section 7) present verifications of all four structural properties within the framework. For Navier-Stokes, the key element is Theorem 7.8, which derives the gradient-like property from geometric constraints rather than assuming it.
 
 ## 12.2 The Framework Toolbox
 
@@ -15231,7 +15236,7 @@ The following table maps each potential failure mode to its corresponding exclus
 - **Coercivity vs. Non-Coercivity:** Theorem 6.40 proves both branches are fatal
 - **Algebraic Structure:** Theorem 6.36 (Pohozaev) universally excludes stationary profiles
 
-With these tools, the Navier-Stokes proof is fully unconditional. Every logical dichotomy has been exhausted.
+With these tools, the Navier-Stokes approach systematically addresses all identified failure modes. Every logical dichotomy has been examined.
 
 ## 12.3 Philosophical Implications
 
@@ -15274,7 +15279,7 @@ The unifying principle: **Criticality is not randomness; it is organization. And
 
 ## 12.4 Open Questions
 
-1. **Spectral Non-Degeneracy (H2):** Is the Hessian of $\Xi$ at extremizers non-degenerate? If yes, the Efficiency Trap (Theorem 6.9) provides an alternative unconditional proof pathway.
+1. **Spectral Non-Degeneracy:** Is the Hessian of $\Xi$ at extremizers non-degenerate? If yes, the Efficiency Trap (Theorem 6.9) provides an alternative pathway via faster convergence rates.
 
 2. **Sharpness:** Are the structural hypotheses I-IV minimal? Can any tool be removed without loss of generality?
 
@@ -15288,7 +15293,7 @@ The unifying principle: **Criticality is not randomness; it is organization. And
 
 We have constructed a rigorous framework for analyzing regularity via structural reduction. The central result is **Theorem 12.1**: singularities are excluded if the system satisfies four structural properties (Thermodynamic Consistency, Geometric Rigidity, Dynamical Stability, Stationary Exclusion).
 
-For both Navier-Stokes and Yang-Mills, all four properties are verified unconditionally. The key breakthrough for Navier-Stokes is **Theorem 7.8**, which proves that the gradient-like property (NS-LS) is not an assumption but a consequence of geometric exhaustion over swirl ratio.
+For both Navier-Stokes and Yang-Mills, all four properties are addressed within the framework structure. For Navier-Stokes, the key element is **Theorem 7.8**, which shows that the gradient-like property (NS-LS) follows from geometric exhaustion over swirl ratio rather than being assumed.
 
 The framework demonstrates that global regularity and spectral gaps are not isolated phenomena but manifestations of a universal principle: **Dissipation creates geometry, and geometry prevents singularities.**
 
