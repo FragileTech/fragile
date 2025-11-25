@@ -101,7 +101,7 @@ For each stratum, we investigate exclusion mechanisms:
 - **Thermodynamic recovery** (efficiency deficits triggering regularization) that may destabilize near-singular states
 - **Topological obstructions** (capacity arguments) that make certain transitions energetically costly
 
-If every stratum can be shown to either support only smooth configurations or to have zero capacity, this would suggest singularities cannot occur within the framework of physically admissible trajectories (those satisfying natural energy and dissipation inequalities).
+If every stratum can be shown to either support only smooth configurations or to have zero capacity, this would suggest singularities are incompatible with the framework of physically admissible trajectories (those satisfying natural energy and dissipation inequalities).
 
 ### 1.3 Relationship to Classical Approaches
 
@@ -602,7 +602,7 @@ $$
 $$
 In particular, $J(u(t))$ is strictly decreasing on any interval where $\Phi(u(t))>0$. If there exists $t_0$ with $\Phi(u(t_0))>0$, then $J(u(t))\to -\infty$ as $t\to +\infty$ and $J(u(t))\to +\infty$ as $t\to -\infty$, contradicting lower boundedness of $J$ (e.g., by convexity and nonnegativity). Therefore, for a complete trajectory confined to $S_\alpha$ we must have $\Phi(u(t))=0$ for all $t\in\mathbb{R}$, which forces $u(t)\equiv 0$ by the previous paragraph.
 
-It follows that $S_\alpha$ is transient in the hypostructure: any nontrivial trajectory entering $S_\alpha$ cannot remain there for all time and must exit through some interface $G_{\alpha\to\beta}$ in finite forward or backward time. Such exits contribute interfacial cost in the finite-capacity accounting of Theorem 4.1. □
+It follows that $S_\alpha$ is transient in the hypostructure: any nontrivial trajectory entering $S_\alpha$ cannot remain there indefinitely and exits through some interface $G_{\alpha\to\beta}$ in finite forward or backward time. Such exits contribute interfacial cost in the finite-capacity accounting of Theorem 4.1. □
 
 ### 4.6 Stratified Łojasiewicz–Simon Inequality and Zeno Exclusion
 
@@ -715,7 +715,7 @@ $$
 
 $$
 
-**Theorem 4.2 (Locking and exponential convergence).** If $u(t)$ is a hypostructural trajectory that remains in $S_{\mathrm{lock}}$ for all $t\ge 0$, then there exists a unique equilibrium $u_\infty\in S_{\mathrm{lock}}$ and constants $C,\mu>0$ such that
+**Theorem 4.2 (Locking and exponential convergence).** If $u(t)$ is a hypostructural trajectory that remains in $S_{\mathrm{lock}}$ for all $t\ge 0$, then there exists at most one equilibrium $u_\infty\in S_{\mathrm{lock}}$ and constants $C,\mu>0$ such that
 
 $$
 d_{\mathcal{X}}(u(t),u_\infty)\le C e^{-\mu t}.
@@ -947,7 +947,7 @@ $$
 $$
 for some $c_0>0$ and all $s\ge s_0$ in the neighbourhood. Applying Gronwall’s lemma and inserting the exponential bound on $\|w(s)\|$ shows that $|\lambda(s)-\lambda_\ast|$ decays exponentially at rate $c_0$ up to constants depending on $\|w(s_0)\|$, which can be absorbed into $C_2$. This proves the second inequality.
 
-Returning to physical time (if desired) corresponds to a smooth reparametrization of $s$ and does not affect the qualitative conclusion: in the neighbourhood of a spectrally stable renormalized profile, the scaling behaviour cannot drift to a different blow-up rate. The only dynamically realized scaling is the self-similar one determined by the zero of the beta-function $F$. □
+Returning to physical time (if desired) corresponds to a smooth reparametrization of $s$ and does not affect the qualitative conclusion: in the neighbourhood of a spectrally stable renormalized profile, the scaling behaviour is driven toward the self-similar rate determined by the zero of the beta-function $F$. □
 ## 5. Dimensional, Topological, and Screening Constraints
 
 We record three further structural selection principles—measure-theoretic starvation, topological handoff, and asymptotic autonomy—that constrain possible singular sets and trajectories in hypostructures.
@@ -1802,7 +1802,7 @@ $$
 
 $$
 
-*Implication.* The geometry of the flow must collapse to match the dimension of the singular set. Configurations with "excess dimensionality" (like pancakes or ribbons) are excluded by the infinite capacity cost required to drain their energy through a lower-dimensional sink.
+*Implication.* The geometry of the flow is forced to collapse to match the dimension of the singular set. Configurations with "excess dimensionality" (like pancakes or ribbons) incur an infinite capacity cost to drain their energy through a lower-dimensional sink and are therefore disfavoured.
 
 *Remark 6.18.1 (The Abstract Toolbox).* Theorems 6.16-6.18 provide a toolkit for excluding singular configurations without detailed pointwise estimates:
 - **Tool 6.16 (Screening):** Isolates the local problem from environmental interference.
@@ -1986,7 +1986,7 @@ $$
 
 for some $\mu > 0$ (or a nonlinear variant like $-\mu \mathcal{E}^{1+\alpha}$).
 
-**Claim:** Under Uniform Dissipativity, the only bounded ancient solution is the trivial vacuum $u \equiv 0$.
+**Claim:** Under Uniform Dissipativity, any bounded ancient solution reduces to the trivial vacuum $u \equiv 0$.
 
 *Proof.* Integrating backwards from $s = 0$:
 
@@ -2042,7 +2042,7 @@ $$
 
 where $C_{\mathrm{top}}$ is a topological constant (related to the degree of the map). As $R \to 0$, this implies $\|\nabla \xi\|_{L^\infty} \gtrsim R^{-1}$. □
 
-**Implication:** "Isotropic" or "Blob-like" singularities are **topologically unstable**. They must develop infinite gradients in the direction field, effectively transitioning them into the **High-Twist Stratum** ($\Omega_{\mathrm{Barber}}$). This forces the system out of the "Intermediate" regime and into a regime controlled by Variational Regularity (Theorem 6.18).
+**Implication:** "Isotropic" or "Blob-like" singularities are **topologically unstable**. They develop unbounded gradients in the direction field, effectively transitioning into the **High-Twist Stratum** ($\Omega_{\mathrm{Barber}}$). This forces the system out of the "Intermediate" regime and into a regime controlled by Variational Regularity (Theorem 6.18).
 
 *Remark 6.24.1 (The Topological Repulsion).* Theorem 6.24 reveals that the Intermediate regime acts as a **Repulsive Saddle** in the phase space:
 - Isotropic collapse attempts are topologically obstructed
@@ -2095,7 +2095,7 @@ $$
 
 Therefore, $N \leq \tau_{\max} / \Delta \tau_{\min} < \infty$. □
 
-**Implication:** Under these hypotheses, the flow must eventually **Lock** into a single stratum $S_{\mathrm{final}}$ as $t \to T^*$. "Shape-shifting" singularities are ruled out.
+**Implication:** Under these hypotheses, the flow eventually **Locks** into a single stratum $S_{\mathrm{final}}$ as $t \to T^*$. "Shape-shifting" singularities are ruled out.
 
 *Remark 6.25.1 (Asymptotic Topological Locking).* Theorem 6.25 establishes that the geometric configuration must stabilize near the blow-up time. Combined with the exclusion of each individual stratum, this completes the proof: the system locks into a stratum that cannot support singularities.
 
@@ -2210,7 +2210,7 @@ $$
 - Distance from extremizers implies reduced efficiency ($\Xi < \Xi_{\max}$)
 - Efficiency deficit triggers regularization (Theorem 6.7)
 
-This suggests chaotic dynamics are incompatible with sustaining near-extremal efficiency in the singular limit.
+This suggests chaotic dynamics are incompatible with sustaining near-extremal efficiency in the singular limit within this framework.
 
 *Remark 6.27.1 (Structural Simplification).* Theorem 6.27 reduces a high-dimensional dynamical question (can chaos persist near singularities?) to a finite-dimensional group-theoretic observation (symmetry orbits have integrable dynamics):
 - **Motion on $\mathcal{M}$** = Symmetry evolution (predictable)
@@ -4479,6 +4479,32 @@ $$
 $$
 
 This $o(1)$ term is absorbed in the global error estimate in Step 6.
+
+**Step 5B: Exclusion of Spectral Pollution (Shear Layer Defense).**
+A potential objection is that the profile $\mathbf{V}$ could develop a sharp gradient layer (a "kink" or shear sheet) entirely contained within the transition region $|\mathcal{S} - \sqrt{2}| < \delta$. While the mass of such a layer might be small, the steep gradients could create a deep potential well, generating a negative eigenvalue that destroys the spectral gap $\mu$.
+
+Such configurations are excluded by the **efficiency constraint**. If $\mathbf{V}$ contains a sharp shear layer of width $\delta$, then the gradients scale as $\|\nabla \mathbf{V}\| \sim \delta^{-1}$ while the amplitude remains bounded. This leads to a severe loss of efficiency:
+
+$$
+\Xi[\mathbf{V}] \approx \frac{\text{Production}}{\text{Dissipation}} \sim \frac{O(1)}{O(\delta^{-2})} \to 0 \quad \text{as } \delta \to 0.
+$$
+
+By **Theorem 6.21 (Mass Transfer Efficiency)** and **Theorem 6.32 (Spectral Interlock)**, profiles with such high-frequency concentration are variationally inefficient: $\Xi[\mathbf{V}] \ll \Xi_{\max}$. Consequently, any trajectory attempting to form a "Dirac trap" shear layer in the transition region violates the near-maximal efficiency condition $\Xi[\mathbf{V}] \approx \Xi_{\max}$ required to sustain the singular regime.
+
+In this regime, **Lemma 7.3 (Gevrey Evolution)** applies: the efficiency deficit forces $\dot{\tau} > 0$, and viscosity regularizes the profile before any spectral instability could dominate. Thus, for the purposes of Theorem 7.8, we may restrict attention to profiles $\mathbf{V}$ with gradients bounded uniformly in the transition region, in which case the negligible-mass argument in Step 5 applies rigorously.
+
+**Remark 7.7A.3 (If the transition gap hypothesis fails).**
+The argument above reduces the spectral-gap verification in the transition region to two structural inputs:
+1. A positive dissipation surplus for smooth, near-extremal profiles (captured by $\mu_{\text{trans}} > 0$), and  
+2. An efficiency-based fail-safe eliminating rough, high-frequency profiles via Gevrey recovery.
+
+If it ultimately turned out that $\mu_{\text{trans}}$ cannot be bounded away from zero for some smooth, efficient profiles—i.e., if genuinely neutral modes exist in the transition region even under the constraint $\Xi \approx \Xi_{\max}$—then this would precisely trigger the **failure branch** of the Stability–Efficiency Duality (Theorem 6.35), as instantiated for Navier–Stokes in Lemma 7.8.2. Spectral degeneracy at a near-extremal profile is treated there as a structural failure that creates an efficiency deficit; once $\Xi < \Xi_{\max}$, Lemma 7.3 forces $\dot{\tau} > 0$ and Gevrey recovery excludes the singular configuration.
+
+In other words, the framework covers both possibilities:
+- **Structured branch:** The transition gap is uniformly positive for efficient profiles (the analysis in Steps 5–5B), yielding NS-LS from geometric exhaustion.
+- **Failure branch:** If a true neutral mode appears, it lies in $\Omega_{\text{Fail}}$ for the spectral-gap hypothesis; Theorem 6.35 + Lemma 7.8.2 imply an efficiency penalty and subsequent regularization.
+
+In the latter case, one should treat the *derivation* of NS-LS from geometric exhaustion as conditional on the non-degeneracy of the transition gap, but the overall exclusion architecture remains fail-safe: either strict dissipation holds, or its failure automatically activates the efficiency-based mechanism.
 
 
 $$
@@ -10769,6 +10795,15 @@ $$
 
 which is the definition of the Mass Gap. □
 
+**Remark 8.13.1a (If the curvature hypothesis weakens).**
+The global gap inequality relies on two geometric inputs: strict positivity of the Hessian near the vacuum (MG1 via O’Neill’s formula) and exclusion of Coulomb-type configurations by critical capacity (MG2). If MG1 were to weaken—e.g., if the quotient curvature were only non-negative or if the uniform lower bound $\text{Ric}_\Phi \geq \rho I$ failed for some directions or in the continuum limit—then the Bakry–Émery route to a **uniform** quantum mass gap would no longer be available.
+
+At the classical level, however, Yang–Mills still falls under the Stability–Efficiency Duality (Theorem 6.35), as verified in Lemma 8.10.5:
+- **If structure holds** (positive curvature, isolated instantons), geometric coercivity yields the classical gap picture described above.  
+- **If structure fails** (flat directions, non-compact drift), the dynamics are forced into Coulomb or bubbling regimes with **infinite action**, which are automatically excluded by the variational principle.
+
+Thus, for the classical gradient flow, both branches of MG1 are hostile to massless behaviour. What becomes conditional is the *Level 2 → Level 3* bridge: the implications “uniform curvature ⇒ uniform LSI ⇒ quantum mass gap.” In that sense, Theorem 8.13 and the subsequent Bakry–Émery transfer should be read as **conditional statements**: if one can establish a curvature lower bound of Bakry–Émery type on the infinite-dimensional quotient (uniform in the lattice spacing), then the classical geometry feeds through to a spectral gap for the quantum Hamiltonian. Absent that curvature control, the framework reverts to a geometric program that identifies MG1 as a structural hypothesis and still enforces classical fail-safe behaviour via Lemma 8.10.5.
+
 *Remark 8.8.1 (Unification with Morphological Capacity).* This functional $\mathcal{G}[A]$ is the Yang-Mills analog of the Morphological Energy for Navier-Stokes. Both create "two-sided traps":
 
 - **Navier-Stokes:** Regularity Potential (fractal penalty) + Kinematic Capacity (acceleration penalty)
@@ -10853,6 +10888,47 @@ Therefore, by the Bakry-Émery theorem:
 $$
 \text{Spec}(H) \subset \{0\} \cup [\lambda_1/2, \infty)
 $$
+
+**Remark 8.14.1 (Two hypostructural routes from Level 2 → 3).**
+The hypostructure framework suggests two complementary strategies for upgrading the **classical geometric gap** (Level 2) to a **quantum spectral gap** (Level 3).
+
+- **Route A (sketch): Finite-lattice curvature and RCD stability.**
+  - **Finite lattice:** For each lattice spacing $a > 0$, the configuration space $(\mathcal{M}_a, d_a)$ is a finite-dimensional compact Riemannian manifold (product of $SU(N)$ copies modulo gauge). MG1/MG2 and O’Neill’s formula can be implemented directly at this level to obtain a Bakry–Émery lower bound
+    $$
+    \text{Hess}(\Phi_a) + \text{Ric}_{\mathcal{M}_a} \geq \rho_{\text{geom}} I
+    $$
+    with $\rho_{\text{geom}} \sim 3/(8N)$ depending only on the Lie algebra. Classical Bakry–Émery then yields an $LSI(\rho_{\text{geom}})$ and a spectral gap $\lambda_1(H_a) \ge \rho_{\text{geom}}/2$ for each finite-lattice Hamiltonian $H_a$.
+  - **Continuum limit:** If one can verify that $(\mathcal{M}_a, d_a, \mu_a)$ form an $RCD(\rho_{\text{geom}},\infty)$ family and converge, in the measured Gromov–Hausdorff sense, to the continuum configuration space $(\mathcal{M}, d, \mu)$, then stability of curvature-dimension and LSI in the $RCD(K,\infty)$ class transfers both the curvature bound and the LSI to the limit. In this route, the hypostructure tools (MG1/MG2, O’Neill, Bakry–Émery) are applied at finite $a$ and then lifted to the continuum via modern metric–measure theory.
+
+- **Route B (developed): Measure-level Stability–Efficiency Duality.**
+  - **Classical duality:** The classical Yang–Mills flow already satisfies the Stability–Efficiency Duality (Theorem 6.35), as verified in Lemma 8.10.5. Configuration space $\Omega$ decomposes into:
+    $$
+    \Omega = \Omega_{\text{Struct}} \cup \Omega_{\text{Fail}},
+    $$
+    where:
+    - $\Omega_{\text{Struct}}$ contains well-structured configurations (near the vacuum and instantons) with good curvature/Hessian control.
+    - $\Omega_{\text{Fail}}$ contains structural failures (Coulomb tails, bubbling) whose action cost is **infinite** or extremely large.
+    In $\Omega_{\text{Struct}}$, geometric tools give coercivity; in $\Omega_{\text{Fail}}$, the variational cost makes these configurations dynamically inaccessible for finite-action flows.
+  - **Quantum analogue (Dirichlet-form perspective):** For the Euclidean measure $d\mu \propto e^{-\Phi_{\mathrm{YM}}}$, the same decomposition can be used at the level of the Dirichlet form $(\mathcal{E},\mathcal{D})$:
+    - On $\Omega_{\text{Struct}}$, MG1 + local convexity of $\Phi_{\mathrm{YM}}$ suggest a **local curvature-dimension bound** and hence a local LSI with constant $\rho_{\text{loc}} > 0$:
+      $$
+      \int_{\Omega_{\text{Struct}}} f^2 \log f^2 \, d\mu \le \frac{2}{\rho_{\text{loc}}} \int_{\Omega_{\text{Struct}}} |\nabla f|^2 \, d\mu + \cdots
+      $$
+    - On $\Omega_{\text{Fail}}$, MG2 and Lemma 8.10.5 imply that configurations with pronounced Coulomb or bubbling features have **very large action**, so $e^{-\Phi_{\mathrm{YM}}}$ assigns them exponentially small weight. Capacitary arguments (in the spirit of Theorem 6.18) then show that functions concentrating mass in $\Omega_{\text{Fail}}$ must pay a large gradient cost in $\mathcal{E}(f,f)$.
+  - **Global LSI by gluing structured/failure regions:** The measure-level analogue of Theorem 6.35 is to prove a global inequality of the form
+    $$
+    \int f^2 \log f^2 \, d\mu \le C \int |\nabla f|^2 \, d\mu
+    $$
+    by splitting the integral over $\Omega_{\text{Struct}}$ and $\Omega_{\text{Fail}}$:
+    - On $\Omega_{\text{Struct}}$, one applies the local LSI with constant $\rho_{\text{loc}}$.
+    - On $\Omega_{\text{Fail}}$, one uses the smallness of $\mu(\Omega_{\text{Fail}})$ (due to the action penalty) and capacity estimates to bound the entropy term in terms of $\mathcal{E}(f,f)$. Intuitively: any function that puts significant mass in $\Omega_{\text{Fail}}$ must vary rapidly across high-action barriers, which shows up as a large Dirichlet energy.
+    Combining these two controls yields a **global LSI** with some positive constant $\rho_{\text{eff}}$, and hence a spectral gap for the quantum Hamiltonian.
+  - **Conceptual payoff:** In this formulation, the same dichotomy as in Theorem 6.35 runs at the level of the quantum Dirichlet form:
+    - **If structure holds** locally, curvature/convexity supply LSI.
+    - **If structure fails** in a region, the action penalty and capacity geometry prevent that region from hosting low-energy, extended fluctuations.
+    Either way, configurations that could support a massless phase are excluded—not just dynamically (classical flow) but also statistically (Euclidean measure).
+
+Route A aligns with well-established Bakry–Émery and $RCD(K,\infty)$ technology; Route B shows how the **Stability–Efficiency Duality** can be lifted from the classical flow to the Euclidean measure, providing a conceptual template for proving LSI and a quantum gap. Both routes express the same architectural insight: **either curvature/structure directly yields a gap, or the failure of structure is itself too costly (in action or capacity) to sustain massless behaviour.** This illustrates how the hypostructure framework organizes classical geometry, variational penalties, and quantum functional inequalities into a unified strategy.
 
 The classical geometric rigidity ($\text{Hess} > 0$ from curvature) and the quotient curvature ($\text{Ric} \geq 0$ from O'Neill) strictly enforce the quantum mass gap. □
 
@@ -13861,7 +13937,7 @@ The Yang-Mills mass gap argument via the Morphological Capacity Principle:
 2. **Instanton escape → Topological instability:** Self-dual saddles are repelled by moduli curvature
 3. **Vacuum lock → Mass gap:** Surviving configurations decay exponentially with rate $\mu > 0$
 
-The only energetically and topologically viable configuration in this picture is the **gapped vacuum**.
+Within this picture, the energetically and topologically viable configuration is the **gapped vacuum**.
 
 **Remark 8.11.2 (Classical vs Quantum YM).**
 This proposes a **classical mass gap**: smooth solutions to the Yang-Mills gradient flow (PDE) decay exponentially. The **Clay Millennium Prize** requires the **quantum mass gap**: the Hamiltonian spectrum of the quantum Yang-Mills theory (QFT) has a gap above the vacuum.
