@@ -2,11 +2,11 @@
 
 ## Abstract
 
-We introduce a geometric framework for analyzing regularity in nonlinear evolution equations through the concept of a **Hypostructure**: a stratified metric gradient flow endowed with a lower semi-continuous energy and a metric–dissipation inequality. By decomposing trajectories into continuous evolution and jump components, we establish a **Variational Defect Principle** that excludes singular concentration phenomena through thermodynamic efficiency constraints.
+We introduce a geometric framework for analyzing regularity in nonlinear evolution equations through the concept of a **Hypostructure**: a stratified metric gradient flow endowed with a lower semi-continuous energy and a metric–dissipation inequality. By decomposing trajectories into continuous evolution and jump components, we develop a **Variational Defect Principle** that proposes to exclude singular concentration phenomena through thermodynamic efficiency constraints.
 
 We apply this framework to two fundamental problems in mathematical physics. First, for the **3D Navier-Stokes equations**, we integrate Naber-Valtorta rectifiability theory with modulational stability analysis. We propose that global regularity follows from an exhaustive dichotomy: singular configurations are excluded either by **geometric rigidity** (virial identities and spectral gaps) or by **thermodynamic recovery**, where efficiency deficits trigger Gevrey regularization.
 
-Second, for **Yang-Mills theory**, we derive the mass gap from the geometry of the gauge quotient space. Using O'Neill’s formula, we establish uniform positive curvature on the moduli space, which enforces a spectral gap via infinite-dimensional Bakry-Émery theory. We further outline a constructive QFT approach where geometric coercivity acts as a natural non-perturbative ultraviolet regulator, stabilizing the continuum limit and ensuring confinement without perturbative counter-terms.
+Second, for **Yang-Mills theory**, we propose that the mass gap emerges from the geometry of the gauge quotient space. Using O'Neill's formula, we show how uniform positive curvature on the moduli space would enforce a spectral gap via infinite-dimensional Bakry-Émery theory. We further outline a constructive QFT approach where geometric coercivity could act as a natural non-perturbative ultraviolet regulator, potentially stabilizing the continuum limit and ensuring confinement without perturbative counter-terms.
 
 By synthesizing geometric measure theory, variational analysis, and constructive QFT, this framework proposes a structural alternative to pointwise estimates based on global capacity bounds. We present this work as a research program, inviting the community to critically examine the analytic and geometric mechanisms derived herein.
 
@@ -30,7 +30,7 @@ The global regularity problem for nonlinear evolution equations—particularly t
 
 This work explores a complementary perspective. Rather than seeking direct energy bounds that prevent singularities, we ask: **What geometric and variational structures would a singularity need to satisfy?** If one can demonstrate that potential singular configurations violate fundamental constraints—geometric, algebraic, or thermodynamic—this would suggest regularity.
 
-We formalize this approach through the concept of a **Hypostructure**: a stratified metric gradient flow where continuous dissipation occurs within geometric regimes (strata), while transitions between regimes incur measurable energy costs encoded at interfaces. Trajectories are curves of bounded variation in the metric space, and we establish a *Stratified BV Chain Rule* that accounts for both smooth evolution and regime changes.
+We formalize this approach through the concept of a **Hypostructure**: a stratified metric gradient flow where continuous dissipation occurs within geometric regimes (strata), while transitions between regimes incur measurable energy costs encoded at interfaces. Trajectories are curves of bounded variation in the metric space, and we develop a *Stratified BV Chain Rule* that accounts for both smooth evolution and regime changes.
 
 ### 1.2 The Core Idea: Capacity Analysis of Phase Space
 
@@ -2429,7 +2429,7 @@ Taking $k$ sufficiently large yields $u^* \in C^\infty$.
 - **Quadratic nonlinearity:** $(u \cdot \nabla u)$ loses 1 derivative
 - **Net gain:** $\alpha - \beta = 2 - 1 = 1 > 0$ (subcritical)
 
-*Remark 6.31.3 (Exhaustive Profile Exclusion).* The blow-up profile cannot be:
+*Remark 6.31.3 (Exhaustive Profile Exclusion).* The framework suggests blow-up profiles face constraints if they are:
 - Oscillatory (Transition Cost)
 - Wandering (Backward Rigidity)
 - Chaotic (Dynamical Orthogonality)
@@ -2437,7 +2437,7 @@ Taking $k$ sufficiently large yields $u^* \in C^\infty$.
 - Fractal (Efficiency)
 - Rough (Bootstrap Regularity)
 
-The only possibility is a smooth, stationary, symmetric, coherent structure—excluded by geometric rigidity.
+This suggests smooth, stationary, symmetric, coherent structures remain as the primary candidates—which are then addressed by geometric rigidity arguments.
 
 ## 6.21 The Spectral Interlock Principle
 
@@ -3764,24 +3764,27 @@ The general hypostructure framework (Sections 2-6) requires three system-specifi
 
 **NS-LS (Gradient-Like Structure):** The renormalized flow does not admit periodic orbits or chaotic wandering in the near-extremal regime. Equivalently, trajectories with $\Xi[\mathbf{V}(s)] \to \Xi_{\max}$ must converge to an extremizer.
 
-**Status:** ✓ **VERIFIED** in Theorem 7.8 (Strict Dissipativity)
+**Status:** Proposed verification in Theorem 7.8 (Strict Dissipativity) — *requires community review*
 - **Proof method:** Geometric exhaustion over swirl ratio $\mathcal{S}$
-- **Key result:** Uniform spectral gap $\mu > 0$ in all geometric regimes (High Swirl, Low Swirl, Transition)
+- **Key claim:** Uniform spectral gap $\mu > 0$ in all geometric regimes (High Swirl, Low Swirl, Transition)
 - **Reference:** Theorem 7.8, §7.7A (complete operator-theoretic details)
+- **Critical point needing verification:** Uniformity of spectral gap across all regimes
 
 **NS-SI (Symmetry Induction):** Extremal blow-up profiles align with rectifiable singular sets. Twisted configurations (Barber Poles) incur an efficiency penalty.
 
-**Status:** ✓ **VERIFIED** in Section 7.6 (Smoothness-Twist Incompatibility)
+**Status:** Proposed verification in Section 7.6 (Smoothness-Twist Incompatibility) — *requires community review*
 - **Proof method:** Variational rigidity + Bianchi-Egnell stability
-- **Key result:** Barber Pole configurations satisfy $\Xi < \Xi_{\max} - c\mathcal{T}^2$ (efficiency penalty)
+- **Key claim:** Barber Pole configurations satisfy $\Xi < \Xi_{\max} - c\mathcal{T}^2$ (efficiency penalty)
 - **Reference:** Theorem 7.6, Section 7.6
+- **Critical point needing verification:** Quantitative efficiency penalty estimates
 
 **NS-SC (Structural Compactness):** Renormalized Type I trajectories with bounded capacity lie in a precompact set in the strong $H^1_\rho$ topology.
 
-**Status:** ✓ **VERIFIED** in §7.0A.8 (Aubin-Lions Theorem)
+**Status:** Proposed verification in §7.0A.8 (Aubin-Lions Theorem) — *requires community review*
 - **Proof method:** Aubin-Lions-Simon compactness theorem (Temam, 1977)
-- **Key result:** Bounded energy + bounded time derivative $\implies$ strong $L^2_{\text{loc}}$ convergence
+- **Key claim:** Bounded energy + bounded time derivative $\implies$ strong $L^2_{\text{loc}}$ convergence
 - **Reference:** §7.0A.8, Axiom A7 verification
+- **Critical point needing verification:** Compatibility with weak solution formulation
 
 #### §7.0B.2 Explicit Derivation: NS-SC from Aubin-Lions (A7)
 
@@ -3849,20 +3852,20 @@ The structural compactness condition NS-SC is not an independent assumption, but
 
 | Hypothesis | Description | Status | Reference |
 |------------|-------------|--------|-----------|
-| **A1** | Energy regularity | ✓ Verified | §7.0A.1 |
-| **A2** | Metric non-degeneracy | ✓ Verified | §7.0A.2 |
-| **A2'** | Stratified transversality | ✓ Verified | §7.0A.3 |
-| **A3** | Metric-defect compatibility | ✓ Verified | §7.0A.4 |
-| **A4** | Safe stratum | ✓ Verified | §7.0A.5 |
-| **A5** | Łojasiewicz-Simon | ✓ Verified | §7.0A.6 |
-| **A6** | Invariant continuity | ✓ Verified | §7.0A.7 |
-| **A7** | Aubin-Lions property | ✓ Verified | §7.0A.8 |
-| **A8** | Analyticity | ✓ Verified | §7.0A.9 |
-| **NS-LS** | Gradient-like structure | ✓ Verified | Theorem 7.8 |
-| **NS-SI** | Symmetry induction | ✓ Verified | Section 7.6 |
-| **NS-SC** | Structural compactness | ✓ Verified | §7.0B.2 (from A7) |
+| **A1** | Energy regularity | Framework axiom | §7.0A.1 |
+| **A2** | Metric non-degeneracy | Framework axiom | §7.0A.2 |
+| **A2'** | Stratified transversality | Framework axiom | §7.0A.3 |
+| **A3** | Metric-defect compatibility | Framework axiom | §7.0A.4 |
+| **A4** | Safe stratum | Framework axiom | §7.0A.5 |
+| **A5** | Łojasiewicz-Simon | Framework axiom | §7.0A.6 |
+| **A6** | Invariant continuity | Framework axiom | §7.0A.7 |
+| **A7** | Aubin-Lions property | Framework axiom | §7.0A.8 |
+| **A8** | Analyticity | Framework axiom | §7.0A.9 |
+| **NS-LS** | Gradient-like structure | Proposed - needs review | Theorem 7.8 |
+| **NS-SI** | Symmetry induction | Proposed - needs review | Section 7.6 |
+| **NS-SC** | Structural compactness | Proposed - needs review | §7.0B.2 (from A7) |
 
-**Summary:** The twelve framework axioms and NS-specific conditions are addressed within the sections indicated above. Community verification of these technical details remains essential.
+**Summary:** The nine framework axioms (A1-A8, A2') are standard components of the abstract theory (Sections 2-6). The three NS-specific conditions (NS-LS, NS-SI, NS-SC) represent proposed verifications in Sections 7-8 that require detailed community review and validation.
 
 #### §7.0B.4 What About Spectral Non-Degeneracy?
 
@@ -3922,7 +3925,7 @@ Careful verification of these four sections is essential to assessing the validi
 
 ### §7.0C Framework Synthesis: Unified Theory with Multiple Applications
 
-This section presents the hypostructure framework as a **unified mathematical theory** applicable to multiple critical PDE systems. We demonstrate how the same abstract machinery proposes regularity approaches for both Navier-Stokes (Section 7) and Yang-Mills (Section 8).
+This section presents the hypostructure framework as a **unified mathematical theory** applicable to multiple critical PDE systems. We show how the same abstract machinery proposes regularity approaches for both Navier-Stokes (Section 7) and Yang-Mills (Section 8).
 
 #### §7.0C.1 The General Hypostructure Template
 
@@ -4117,7 +4120,7 @@ For NS, there is no such quantum extension—the PDE regularity **is** the Mille
 │                                                             │
 │  Application 1: 3D Navier-Stokes (Section 7)              │
 │  ├─ §7.0A: Axiom verification (A1-A8)                     │
-│  ├─ §7.0B: Unconditional proof certification              │
+│  ├─ §7.0B: Proposed verification approach                 │
 │  ├─ §7.1-7.13: Nullity proofs by stratum                  │
 │  ├─ §7.14: Non-circularity audit                          │
 │  └─ Result: Global regularity (Theorem 7.13)              │
@@ -4267,7 +4270,7 @@ $$
 
 ✓
 
-**Conclusion:** Assumption A1 is **verified** for the Navier-Stokes hypostructure.
+**Conclusion:** Assumption A1 is claimed to hold for the Navier-Stokes hypostructure.
 
 #### §7.0A.2 Verification of Assumption A2 (Metric Non-Degeneracy and L.S.C. Cost)
 
@@ -4448,7 +4451,7 @@ $$
 
 Dividing by the denominator and integrating gives subadditivity (with constant $2$). ✓
 
-**Conclusion:** Assumption A2 is **verified** for the Navier-Stokes hypostructure.
+**Conclusion:** Assumption A2 is claimed to hold for the Navier-Stokes hypostructure.
 
 #### §7.0A.3 Verification of Assumption A2' (Stratified Transversality)
 
@@ -4493,7 +4496,7 @@ Thus the flow crosses the boundary **transversally** (increasing $\Xi$), not tan
 
 *Proof.* By the strict inequalities in the Gevrey evolution (Lemma 7.3) and spectral gap (Theorem 7.8), whenever a trajectory approaches a stratum boundary, it either stays inside the stratum (if the dynamics push it away) or crosses transversally (if the dynamics push it across). There is no configuration where the flow is exactly tangent to the boundary for an interval of time. ✓
 
-**Conclusion:** Assumption A2' is **verified** for the Navier-Stokes hypostructure.
+**Conclusion:** Assumption A2' is claimed to hold for the Navier-Stokes hypostructure.
 
 #### §7.0A.4 Verification of Assumption A3 (Metric-Defect Compatibility / Generalized Palais-Smale)
 
@@ -4553,7 +4556,7 @@ $$
 
 Setting $\gamma(s) := c' s^{1/2}$ gives the required inequality. ✓
 
-**Conclusion:** Assumption A3 is **verified** for the Navier-Stokes hypostructure with $\gamma(s) = c's^{1/2}$.
+**Conclusion:** Assumption A3 is claimed to hold for the Navier-Stokes hypostructure with $\gamma(s) = c's^{1/2}$.
 
 #### §7.0A.5 Verification of Assumption A4 (Safe Stratum / Absorbing Manifold)
 
@@ -4602,7 +4605,7 @@ Thus $\mathbf{V}_n \to 0$ **strongly** in $L^2_\rho$, with no defect. ✓
 
 *Proof.* By the energy inequality, $\Phi_{\text{NS}}$ is strictly decreasing along non-equilibrium trajectories. The only equilibrium in $S_*$ is $\mathbf{V} = 0$. ✓
 
-**Conclusion:** Assumption A4 is **verified** for the Navier-Stokes hypostructure with $S_* = \{0\}$.
+**Conclusion:** Assumption A4 is claimed to hold for the Navier-Stokes hypostructure with $S_* = \{0\}$.
 
 #### §7.0A.6 Verification of Assumption A5 (Stratified Łojasiewicz-Simon Inequality)
 
@@ -4647,7 +4650,7 @@ $$
 
 This is the **Poincaré inequality**, which holds for the Gaussian-weighted space $H^1_\rho$.
 
-**Conclusion:** Assumption A5 is **verified** for the Navier-Stokes hypostructure with $\theta = 1/2$ (Poincaré exponent).
+**Conclusion:** Assumption A5 is claimed to hold for the Navier-Stokes hypostructure with $\theta = 1/2$ (Poincaré exponent).
 
 #### §7.0A.7 Verification of Assumption A6 (Invariant Continuity / Metric Stiffness)
 
@@ -4699,7 +4702,7 @@ $$
 
 by the Type I condition. Thus $Re_\lambda$ has **bounded variation**. ✓
 
-**Conclusion:** Assumption A6 is **verified** for all NS invariants.
+**Conclusion:** Assumption A6 is claimed to hold for all NS invariants.
 
 #### §7.0A.8 Verification of Assumption A7 (Structural Compactness / Aubin-Lions Property)
 
@@ -4727,7 +4730,7 @@ $$
 
 uniformly on compact time intervals.
 
-**Conclusion:** Assumption A7 is **verified** via Aubin-Lions theorem (Temam, 1977).
+**Conclusion:** Assumption A7 is claimed to hold via Aubin-Lions theorem (Temam, 1977).
 
 #### §7.0A.9 Verification of Assumption A8 (Analyticity)
 
@@ -4755,12 +4758,12 @@ For fixed $\tau$, this is a **quadratic functional** in $\hat{\mathbf{V}}$, henc
 
 **A8.4 Extremizers Have Non-Vanishing Denominator:** For extremizers $\mathbf{Q}$, we have $\|\mathbf{Q}\|_{\tau,1}, \|\mathbf{Q}\|_{\tau,2} > 0$ by the non-triviality condition. Thus $\Xi$ is analytic in a neighborhood of $\mathbf{Q}$.
 
-**Conclusion:** Assumption A8 is **verified** for the Navier-Stokes efficiency functional.
+**Conclusion:** Assumption A8 is claimed to hold for the Navier-Stokes efficiency functional.
 
-#### §7.0A.10 Summary: Complete Framework Verification
+#### §7.0A.10 Summary: Proposed Framework Verification
 
-**Theorem 7.0A.1 (Framework Compatibility Certificate).**
-*The Navier-Stokes hypostructure $(\mathcal{X}_{\text{NS}}, d_{H^1_\rho}, \Phi_{\text{NS}}, \Sigma, \Xi, \psi)$ satisfies all eight framework axioms (A1-A8) without exception.*
+**Theorem 7.0A.1 (Framework Compatibility Claim).**
+*The Navier-Stokes hypostructure $(\mathcal{X}_{\text{NS}}, d_{H^1_\rho}, \Phi_{\text{NS}}, \Sigma, \Xi, \psi)$ is claimed to satisfy all eight framework axioms (A1-A8).*
 
 **Verification Summary Table:**
 
@@ -6360,7 +6363,7 @@ $$
 
 $$
 
-for some $\mu>0$ independent of time. This establishes a uniform spectral gap that forbids unstable (growing) modes and prevents the self-similar collapse scaling $\lambda(t) \to 0$.
+for some $\mu>0$ independent of time. This provides a uniform spectral gap that would forbid unstable (growing) modes and prevent the self-similar collapse scaling $\lambda(t) \to 0$.
 
 *Proof.* We examine the energy identity for the perturbation $\mathbf{w}$. Multiplying the linearized equation by $\mathbf{w}\rho$ and integrating by parts yields:
 
@@ -7023,7 +7026,7 @@ Taking $k$ sufficiently large yields $\mathbf{V}^* \in C^\infty_b$.
 - Complex/Multi-Core (Complexity-Efficiency, Lemma 7.6.7)
 - Rough/Singular (Bootstrap Regularity, Lemma 7.6.9)
 
-The only possibility is a smooth, stationary, symmetric, isolated, coherent structure—excluded by geometric rigidity (Theorems 6.17, 6.22, Proposition 7.9).
+This suggests smooth, stationary, symmetric, isolated, coherent structures remain as primary candidates—which are then addressed by geometric rigidity (Theorems 6.17, 6.22, Proposition 7.9).
 
 ## 7.7 Verification of Asymptotic Gradient Structure
 
@@ -7033,7 +7036,7 @@ $$
 \left\langle \frac{d\mathbf{V}}{ds}, \nabla \Xi \right\rangle \geq C \left\| \frac{d\mathbf{V}}{ds} \right\|^2
 $$
 
-We prove this is not an assumption—it is a **consequence** of geometric exhaustion.
+We show this emerges as a **consequence** of geometric exhaustion rather than as an independent assumption.
 
 **Theorem 7.8 (Verification of Asymptotic Gradient Structure).**
 *The Renormalized Navier-Stokes flow restricted to the set of Type I blow-up profiles satisfies the Angle Condition (Hypothesis NS-LS).*
@@ -7391,7 +7394,7 @@ $$
 
 is continuous on $\mathcal{P}$ with respect to the $H^1_\rho$ norm. We prove this by showing that $\mathbf{V}_n \to \mathbf{V}$ in $H^1_\rho$ implies $D(\mathbf{V}_n) \to D(\mathbf{V})$.
 
-**Linear Term:** The first term is obviously continuous:
+**Linear Term:** The first term is continuous:
 
 $$
 \left| \int (|\nabla \mathbf{V}_n|^2 - |\nabla \mathbf{V}|^2) \rho \, dy \right| \leq \|\nabla \mathbf{V}_n + \nabla \mathbf{V}\|_{L^2_\rho} \|\nabla \mathbf{V}_n - \nabla \mathbf{V}\|_{L^2_\rho} \to 0
@@ -7797,7 +7800,7 @@ This expansion directly answers: *"Do all of these theorems actually apply, with
 - ✅ **Pressure control:** Vanishes by Helmholtz orthogonality (§7.7A.1, Remark 7.7A.1)
 - ✅ **No hidden degeneracies:** Transition region has positive gap + negligible mass (§7.7A.3)
 
-*Remark 7.8.1 (Unconditional Verification).* Theorem 7.8 proves that **NS-LS is not an assumption—it is a consequence** of the geometric exhaustion over swirl ratio. The key insight: every regime (High Swirl, Low Swirl) has strict dissipation dominance. There is no "neutral zone" where the flow could wander chaotically without losing energy.
+*Remark 7.8.1 (Proposed Verification).* Theorem 7.8 proposes that **NS-LS need not be assumed—it is claimed as a consequence** of the geometric exhaustion over swirl ratio. The key claim: every regime (High Swirl, Low Swirl) has strict dissipation dominance. There is no "neutral zone" where the flow could wander chaotically without losing energy.
 
 *Remark 7.8.2 (Scope of the Result).* The theorem applies specifically to **Type I blow-up profiles** in the renormalized frame. It does not assert that the full 3D Navier-Stokes flow is globally gradient-like (which would contradict turbulence). Instead, it proves that **on the singular set** (if it were non-empty), the dynamics must be gradient-like. This is the precise hypothesis required for the Łojasiewicz-Simon convergence mechanism (Theorem 6.10).
 
@@ -8111,7 +8114,7 @@ This follows from Axiom A1 (Energy Boundedness) combined with the Type I rate no
 
    Therefore, the flow is strictly dissipative with $\mu = \min(\mu_{\mathrm{swirl}}, \mu_{\mathrm{tube}}, \mu_{\mathrm{leak}}) > 0$ everywhere on the singular set.
 
-**Conclusion:** By Theorem 6.23 (Backward Rigidity), any Type I limit profile must satisfy $\mathcal{E}_\rho[\mathbf{V}_\infty] = 0$, hence $\mathbf{V}_\infty = 0$. Since the Normalization Gauge $\|\nabla \mathbf{V}\| = 1$ forbids the zero profile, **Type I blow-up is impossible**. □
+**Conclusion:** By Theorem 6.23 (Backward Rigidity), any Type I limit profile must satisfy $\mathcal{E}_\rho[\mathbf{V}_\infty] = 0$, hence $\mathbf{V}_\infty = 0$. Since the Normalization Gauge $\|\nabla \mathbf{V}\| = 1$ forbids the zero profile, this suggests **Type I blow-up is excluded within the framework**. □
 
 *Remark 7.9.3 (Elimination of Wandering).* This lemma closes the "wandering loophole": we do not need to *assume* convergence to a stationary profile; we *prove* that non-convergence implies infinite energy in the past. The only bounded ancient solutions are trivial, and triviality is excluded by normalization.
 
@@ -8182,9 +8185,9 @@ where $G$ consists of translations, rotations, and scaling.
    - Distance implies **inefficiency** ($\Xi < \Xi_{\max}$).
    - Inefficiency triggers **Gevrey Recovery** (Theorem 6.7, Lemma 7.5.2).
 
-5. **Conclusion:** **Chaos is self-extinguishing** in the singular limit. It forces the system into the Recovery Zone. The only way to stay on the "razor's edge" of maximal efficiency is to avoid shape deformation—but without shape deformation, the dynamics are integrable (not chaotic).
+5. **Conclusion:** **Chaos appears self-extinguishing** in the singular limit under these bounds. It would force the system into the Recovery Zone. Staying on the "razor's edge" of maximal efficiency would require avoiding shape deformation—but without shape deformation, the dynamics are integrable (not chaotic).
 
-Therefore, chaotic blow-up is impossible: chaos requires the very inefficiency that prevents blow-up. □
+This suggests chaotic blow-up is excluded within the framework: chaos requires the very inefficiency that would prevent blow-up. □
 
 *Remark 7.10.1 (Group Theory vs. Dimension Counting).* This is a stronger argument than dimension counting:
 - **Dimension counting:** Chaos is "too fat" to fit on a 7-dimensional manifold
@@ -8544,14 +8547,14 @@ We verify each hypothesis of Lang's Tubular Neighborhood Theorem (External Theor
 
 **Hypothesis 1: $\mathcal{H}$ is a separable Hilbert space.**
 
-✓ **Verified.** We take $\mathcal{H} = H^1_\rho(\mathbb{R}^3) = \{ \mathbf{V} : \|\mathbf{V}\|_{H^1_\rho}^2 := \int (|\mathbf{V}|^2 + |\nabla \mathbf{V}|^2) \rho \, dy < \infty \}$ with Gaussian weight $\rho(y) = (4\pi)^{-3/2} e^{-|y|^2/4}$.
+**Proposed verification:** We take $\mathcal{H} = H^1_\rho(\mathbb{R}^3) = \{ \mathbf{V} : \|\mathbf{V}\|_{H^1_\rho}^2 := \int (|\mathbf{V}|^2 + |\nabla \mathbf{V}|^2) \rho \, dy < \infty \}$ with Gaussian weight $\rho(y) = (4\pi)^{-3/2} e^{-|y|^2/4}$.
 
 - **Hilbert space:** The $H^1_\rho$ inner product $\langle \mathbf{U}, \mathbf{V} \rangle_{H^1_\rho} := \int (\mathbf{U} \cdot \mathbf{V} + \nabla \mathbf{U} : \nabla \mathbf{V}) \rho \, dy$ is complete by standard Sobolev theory with exponential weights (Lunardi, *Analytic Semigroups*, Theorem 2.1.4).
 - **Separable:** $H^1_\rho(\mathbb{R}^3)$ is separable because polynomials $\times$ Gaussian are dense (Mehler expansion).
 
 **Hypothesis 2: $\mathcal{M}$ is a $C^2$ submanifold of $\mathcal{H}$.**
 
-✓ **Verified.** The extremizer manifold $\mathcal{M} = \{ g \cdot \mathbf{Q} : g \in G \}$ is the orbit of the canonical extremizer $\mathbf{Q}$ under the symmetry group $G$.
+**Proposed verification:** The extremizer manifold $\mathcal{M} = \{ g \cdot \mathbf{Q} : g \in G \}$ is the orbit of the canonical extremizer $\mathbf{Q}$ under the symmetry group $G$.
 
 **Step 1: Orbit Map is $C^\infty$.**
 
@@ -8620,13 +8623,13 @@ Since $G$ is compact and $\varphi$ is continuous, the image $\mathcal{M} = \varp
 
 **Hypothesis 3: $\mathcal{M}$ is compact.**
 
-✓ **Verified.** As established above, $\mathcal{M} = \varphi(G)$ is the continuous image of the compact group $G$, hence compact.
+**Proposed verification:** As established above, $\mathcal{M} = \varphi(G)$ is the continuous image of the compact group $G$, hence compact.
 
 **Hypothesis 4: $\dim \mathcal{M} < \infty$.**
 
-✓ **Verified.** $\dim \mathcal{M} = \dim G \leq 7$ (rotations: 3, scaling: 1, translations: 3). The dimension is finite.
+**Proposed verification:** $\dim \mathcal{M} = \dim G \leq 7$ (rotations: 3, scaling: 1, translations: 3). The dimension is finite.
 
-**Conclusion:** All four hypotheses of the Tubular Neighborhood Theorem are verified. Therefore, there exists $\varepsilon_0 > 0$ such that the orthogonal projection $\pi: \mathcal{T}_{\varepsilon_0} \to \mathcal{M}$ is well-defined and smooth.
+**Conclusion:** The four hypotheses of the Tubular Neighborhood Theorem are proposed as verified above. Under these verifications, there exists $\varepsilon_0 > 0$ such that the orthogonal projection $\pi: \mathcal{T}_{\varepsilon_0} \to \mathcal{M}$ is well-defined and smooth.
 
 #### §7.11A.3 Verification of Implicit Function Theorem Hypotheses
 
@@ -8642,7 +8645,7 @@ where $\{\mathbf{e}_j(g)\}$ is an orthonormal basis for $T_{g \cdot \mathbf{Q}} 
 
 **Hypothesis 1: $E, F$ are Banach spaces.**
 
-✓ **Verified.** We take:
+**Proposed verification:** We take:
 - $E = H^1_\rho(\mathbb{R}^3)$ (separable Hilbert space, hence Banach)
 - $F = \mathbb{R}^{\dim G}$ (finite-dimensional Euclidean space, hence Banach)
 
@@ -8650,7 +8653,7 @@ Both are complete normed vector spaces.
 
 **Hypothesis 2: $f: U \to F$ is $C^1$.**
 
-✓ **Verified.** We verify $C^1$ regularity in both variables.
+**Proposed verification:** We verify $C^1$ regularity in both variables.
 
 **Smoothness in $\mathbf{V}$:** For fixed $g$, the map $\mathbf{V} \mapsto F(g, \mathbf{V})$ is:
 
@@ -8675,7 +8678,7 @@ Composition of smooth maps is smooth, so $F$ is $C^1$ in $g$.
 
 **Hypothesis 3: $D_g F(g_0, \mathbf{V}_0)$ is invertible.**
 
-✓ **Verified.** We compute the Jacobian with respect to $g$ at a point $(g_0, \mathbf{V}_0)$ where $F(g_0, \mathbf{V}_0) = 0$ (i.e., $\mathbf{V}_0 - g_0 \cdot \mathbf{Q} \perp T_{g_0 \cdot \mathbf{Q}} \mathcal{M}$).
+**Proposed verification:** We compute the Jacobian with respect to $g$ at a point $(g_0, \mathbf{V}_0)$ where $F(g_0, \mathbf{V}_0) = 0$ (i.e., $\mathbf{V}_0 - g_0 \cdot \mathbf{Q} \perp T_{g_0 \cdot \mathbf{Q}} \mathcal{M}$).
 
 **Derivative Calculation:** For $\delta g \in \mathfrak{g}$:
 
@@ -9271,10 +9274,10 @@ Finite-action trajectories on the moduli space $\mathcal{A}/\mathcal{G}$ lie in 
 
 **Summary of Hypotheses for Yang-Mills.**
 The conditional regularity theorems for Yang-Mills require:
-- **(YM-LS)** Gradient-like structure (verified: YM is naturally gradient flow)
-- **(YM-SC)** Structural compactness (verified: Uhlenbeck compactness)
+- **(YM-LS)** Gradient-like structure (natural: YM is gradient flow)
+- **(YM-SC)** Structural compactness (claimed: Uhlenbeck compactness)
 
-Both hypotheses are verified for Yang-Mills, making the mass gap argument unconditional within the framework.
+Both hypotheses are argued to hold for Yang-Mills, supporting the mass gap argument within the framework.
 
 
 ## 7.16 Non-Circularity Audit: Complete Verification of Logical Dependencies
@@ -9440,15 +9443,15 @@ We audit common places where regularity might be hidden:
 
 | Location | Potential Issue | Resolution |
 |----------|----------------|------------|
-| **Theorem 7.1A.1** | "WLOG assume $\mathbf{V}$ is smooth" | ✓ **Avoided:** Galerkin approximation used explicitly, limit taken carefully |
-| **Lemma 7.3** | Fourier transform assumes decay | ✓ **Avoided:** Fourier transform defined distributionally for $H^1_\rho$ (Lunardi §2.1) |
-| **Theorem 7.8** | Integration by parts assumes smoothness | ✓ **Avoided:** Justified via Galerkin in Theorem 7.1A.1, §7.1A.4 |
-| **Lemma 7.12.1** | "Assume stationary solution is smooth" | ✓ **Avoided:** Bootstrap from $H^1_\rho$ using O-U theory |
-| **Lemma 7.8.1** | Pohozaev identity assumes decay at infinity | ✓ **Avoided:** Gaussian decay proven in Lemma 7.12.1 before Pohozaev applied |
-| **Theorem 7.11.1** | IFT assumes differentiability | ✓ **Avoided:** Lang's IFT applies to $C^1$ maps on Hilbert spaces, verified in §7.11A.3 |
-| **Theorem 6.8** | Bianchi-Egnell stability assumes smoothness | ✓ **Avoided:** Applies to $H^1_\rho$ Sobolev spaces (EXT-6) |
+| **Theorem 7.1A.1** | "WLOG assume $\mathbf{V}$ is smooth" | **Proposed:** Galerkin approximation used explicitly, limit taken carefully |
+| **Lemma 7.3** | Fourier transform assumes decay | **Proposed:** Fourier transform defined distributionally for $H^1_\rho$ (Lunardi §2.1) |
+| **Theorem 7.8** | Integration by parts assumes smoothness | **Proposed:** Justified via Galerkin in Theorem 7.1A.1, §7.1A.4 |
+| **Lemma 7.12.1** | "Assume stationary solution is smooth" | **Proposed:** Bootstrap from $H^1_\rho$ using O-U theory |
+| **Lemma 7.8.1** | Pohozaev identity assumes decay at infinity | **Proposed:** Gaussian decay proven in Lemma 7.12.1 before Pohozaev applied |
+| **Theorem 7.11.1** | IFT assumes differentiability | **Proposed:** Lang's IFT applies to $C^1$ maps on Hilbert spaces, verified in §7.11A.3 |
+| **Theorem 6.8** | Bianchi-Egnell stability assumes smoothness | **Proposed:** Applies to $H^1_\rho$ Sobolev spaces (EXT-6) |
 
-**Summary:** ✓ **No hidden regularity assumptions found.** All potentially problematic steps are handled via Galerkin approximation or explicit bootstrap.
+**Summary:** The above table proposes that no hidden regularity assumptions are present. All potentially problematic steps are claimed to be handled via Galerkin approximation or explicit bootstrap — this requires community review.
 
 ### §7.14.4 External Result Application Verification
 
@@ -9457,22 +9460,22 @@ We verify each external result is applied within its stated hypotheses:
 **EXT-1: CKN Weighted Hardy Inequality**
 - **Hypothesis:** $\mathbf{V} \in H^1_\rho$ with $\int |\nabla \mathbf{V}|^2 \rho < \infty$
 - **Our Application:** Theorem 7.8 (High Swirl), applied to $\mathbf{V} \in H^1_\rho$
-- **Verification:** ✓ **Hypothesis satisfied** by definition of $H^1_\rho$
+- **Proposed verification:** Hypothesis claimed satisfied by definition of $H^1_\rho$
 
 **EXT-2: Lunardi Weighted Sobolev Embeddings**
 - **Hypothesis:** Weight $\rho(y) = e^{-a|y|^2}$ with $a > 0$, Sobolev space $H^k_\rho$ with $k \geq 1$
 - **Our Application:** Lemma 7.3, Lemma 7.12.1, with $\rho(y) = e^{-|y|^2/4}$ (so $a = 1/4$)
-- **Verification:** ✓ **Hypothesis satisfied** (§7.3A.3)
+- **Proposed verification:** Hypothesis claimed satisfied (§7.3A.3)
 
 **EXT-3: Lang Tubular Neighborhood Theorem**
 - **Hypothesis:** $\mathcal{M}$ is $C^2$ compact finite-dimensional submanifold of separable Hilbert space
 - **Our Application:** Theorem 7.11.1, with $\mathcal{M} = \{ g \cdot \mathbf{Q} : g \in G \}$
-- **Verification:** ✓ **All four hypotheses verified** (§7.11A.2)
+- **Proposed verification:** All four hypotheses proposed as verified (§7.11A.2)
 
 **EXT-4: Metafune-Pallara-Priola O-U Spectrum**
 - **Hypothesis:** O-U operator $-\nu \Delta + \frac{1}{2}y \cdot \nabla + \text{Id}$ on $L^2_\rho$ with Gaussian weight
 - **Our Application:** Lemma 7.12.1, exact same operator
-- **Verification:** ✓ **Hypothesis satisfied** (after normalization, §7.12.1 Step 2)
+- **Proposed verification:** Hypothesis claimed satisfied (after normalization, §7.12.1 Step 2)
 
 **EXT-5: Temam Galerkin Theory**
 - **Hypothesis:** Weak solution in $H^1$ with locally integrable nonlinearity
@@ -9523,7 +9526,7 @@ Every place where smoothness is used in a calculation, it is either:
 - On Galerkin approximations (which are smooth by construction), with passage to weak limit, OR
 - Proven via bootstrap from weak regularity
 
-**Conclusion:** The proof is **line-by-line verifiable without circular reasoning**. It meets the standard for publication in *Annals of Mathematics* or submission to the Clay Institute for Millennium Prize verification.
+**Conclusion:** The proposed verification aims to be line-by-line verifiable without circular reasoning. Whether it meets the standards for publication or Millennium Prize verification requires expert community review.
 
 
 ### §8.0A Complete Framework Axiom Verification for Yang-Mills
@@ -9542,7 +9545,7 @@ Before proceeding with the Yang-Mills mass gap proof, we systematically verify t
 - By **Uhlenbeck's compactness theorem** (1982, Duke Math J.), bounded action connections have a subsequence converging in Coulomb gauge to a smooth connection, modulo gauge.
 - The gauge orbit space $\mathcal{A}/\mathcal{G}$ with the quotient topology inherits compactness from Uhlenbeck's theorem.
 
-✓ **A1.1 verified** via Uhlenbeck (1982).
+**Proposed verification:** A1.1 claimed verified via Uhlenbeck (1982).
 
 **A1.2 Coercivity:** If $\|[A_n]\|_{H^1} \to \infty$, then $\Phi_{\text{YM}}([A_n]) \to \infty$.
 
@@ -9558,7 +9561,7 @@ by the Yang-Mills gradient flow inequality. ✓
 
 *Proof.* The action is a quadratic functional in the curvature, hence weakly l.s.c. by Mazur's theorem. ✓
 
-**Conclusion:** A1 verified for YM via Uhlenbeck compactness.
+**Conclusion:** A1 claimed to hold for YM via Uhlenbeck compactness.
 
 #### §8.0A.2 Verification of Assumption A2 (Metric Non-Degeneracy) for YM
 
@@ -9574,7 +9577,7 @@ $$
 
 *Proof.* The infimum over gauge transformations is achieved by the **Coulomb gauge condition** $d^* A = 0$ (Sobolev gauge fixing theorem). The resulting metric is bi-Lipschitz equivalent to the $H^1$ metric on the gauge slice. ✓
 
-**Conclusion:** A2 verified for YM via gauge-fixing theory.
+**Conclusion:** A2 claimed to hold for YM via gauge-fixing theory.
 
 #### §8.0A.3 Verification of Assumption A2' (Stratified Transversality) for YM
 
@@ -9600,7 +9603,7 @@ $$
 
 At the Gribov horizon, this is generically nonzero (Morse theory). ✓
 
-**Conclusion:** A2' verified for YM via spectral flow theory.
+**Conclusion:** A2' claimed to hold for YM via spectral flow theory.
 
 #### §8.0A.4 Verification of Assumption A3 (Metric-Defect Compatibility) for YM
 
@@ -9624,7 +9627,7 @@ $$
 
 (the anti-self-dual projection must support the defect). ✓
 
-**Conclusion:** A3 verified for YM with $\gamma(s) = cs^{1/2}$ via DUY theory.
+**Conclusion:** A3 claimed to hold for YM with $\gamma(s) = cs^{1/2}$ via DUY theory.
 
 #### §8.0A.5 Verification of Assumption A4 (Safe Stratum) for YM
 
@@ -9644,7 +9647,7 @@ $$
 
 *Proof.* By the Yang-Mills gradient flow inequality. ✓
 
-**Conclusion:** A4 verified for YM with $S_* = \{\text{flat connections}\}$.
+**Conclusion:** A4 claimed to hold for YM with $S_* = \{\text{flat connections}\}$.
 
 #### §8.0A.6 Verification of Assumption A5 (Łojasiewicz-Simon) for YM
 
@@ -9662,7 +9665,7 @@ $$
 
 with exponent $\theta \in (0, 1/2]$ depending on the deformation complex. ✓
 
-**Conclusion:** A5 verified for YM via Freed-Groisser analyticity.
+**Conclusion:** A5 claimed to hold for YM via Freed-Groisser analyticity.
 
 #### §8.0A.7 Verification of Assumption A6 (Invariant Continuity) for YM
 
@@ -9678,7 +9681,7 @@ $$
 
 by the Chern-Simons variation formula. ✓
 
-**Conclusion:** A6 verified for YM with Chern-Simons as invariant.
+**Conclusion:** A6 claimed to hold for YM with Chern-Simons as invariant.
 
 #### §8.0A.8 Verification of Assumption A7 (Aubin-Lions) for YM
 
@@ -9698,7 +9701,7 @@ $$
 
 This is the YM analog of Aubin-Lions. ✓
 
-**Conclusion:** A7 verified for YM via Uhlenbeck (1982, Duke Math J.).
+**Conclusion:** A7 claimed to hold for YM via Uhlenbeck (1982, Duke Math J.).
 
 #### §8.0A.9 Verification of Assumption A8 (Analyticity) for YM
 
@@ -9712,12 +9715,12 @@ This is the YM analog of Aubin-Lions. ✓
 
 By Freed-Groisser (1989), the action is real-analytic on the moduli space of connections modulo gauge. ✓
 
-**Conclusion:** A8 verified for YM via polynomial structure of action.
+**Conclusion:** A8 claimed to hold for YM via polynomial structure of action.
 
-#### §8.0A.10 Summary: Complete YM Axiom Verification
+#### §8.0A.10 Summary: Proposed YM Axiom Verification
 
-**Theorem 8.0A.1 (Framework Compatibility for YM).**
-*The Yang-Mills hypostructure $(\mathcal{X}_{\text{YM}}, d_{\mathcal{X}}, \Phi_{\text{YM}}, \Sigma, CS, \psi)$ satisfies all eight framework axioms (A1-A8) without exception.*
+**Theorem 8.0A.1 (Framework Compatibility Claim for YM).**
+*The Yang-Mills hypostructure $(\mathcal{X}_{\text{YM}}, d_{\mathcal{X}}, \Phi_{\text{YM}}, \Sigma, CS, \psi)$ is claimed to satisfy all eight framework axioms (A1-A8).*
 
 **Verification Summary Table:**
 
@@ -9748,7 +9751,7 @@ By Freed-Groisser (1989), the action is real-analytic on the moduli space of con
 - **NS:** Fluid mechanics, Gaussian weights, O-U operator
 - **YM:** Gauge theory, fiber bundles, topological charges
 
-Both applications verify **all 8 axioms unconditionally**, demonstrating the framework's generality.
+Both applications are claimed to satisfy all 8 axioms, demonstrating the proposed generality of the framework.
 
 **Remark 8.0A.1 (Classical vs Quantum YM).**
 This verification applies to the **classical Yang-Mills PDE** (gradient flow of the action functional). The Clay Millennium Prize requires the **quantum Yang-Mills theory** (constructive QFT with Osterwalder-Schrader axioms).
@@ -9940,7 +9943,7 @@ Thus, the Coulomb stratum $S_{\mathrm{Coulomb}}$ (massless radiation) is kinemat
 
 ### 8.3.1 Verification of Structural Compactness for Yang-Mills
 
-We now verify that the Yang-Mills hypostructure satisfies Axioms A6-A7, making the mass gap result unconditional.
+We now propose that the Yang-Mills hypostructure satisfies Axioms A6-A7, which would support the mass gap claim.
 
 **Proposition 8.3.1 (Uhlenbeck Compactness for YM).**
 The Yang-Mills hypostructure satisfies Axiom A7 (Structural Compactness) via **Uhlenbeck's Compactness Theorem**.
@@ -10071,8 +10074,8 @@ $$
 
 yielding exponential decay by Grönwall's lemma. The Euclidean correlation function is obtained by analytic continuation $t \to -ix^0$, giving the claimed spatial decay. □
 
-**Theorem 8.7' (Unconditional Mass Gap via Compactness).**
-The mass gap is an **unconditional** consequence of the compactness of the Yang-Mills moduli space. We do not assume the mass gap; we derive it from topology.
+**Theorem 8.7' (Proposed Mass Gap via Compactness).**
+The mass gap is proposed as a consequence of the compactness of the Yang-Mills moduli space. The framework aims to derive it from topology rather than assume it.
 
 *Proof (via Compactness).*
 
@@ -10112,9 +10115,9 @@ While formally presented as evolution in a Euclidean coordinate $x^4$, the hypos
 
 This geometric picture unifies the Wilsonian RG perspective with our hypostructural framework.
 
-### 8.4.1 Unconditional Proof via the Variational Defect Principle
+### 8.4.1 Proposed Proof via the Variational Defect Principle
 
-We now apply the VDP framework (Section 6.6) to prove that massless defects are excluded from Yang-Mills, making the mass gap result **unconditional**.
+We now apply the VDP framework (Section 6.6) with the claim that massless defects are excluded from Yang-Mills, which would imply the mass gap.
 
 **Theorem 8.4.1 (YM Massless-Defect is Excluded via VDP).**
 Massless defects (Type II, $F \sim 1/r$) are excluded from the Yang-Mills moduli space. Only Instantons (Type I, $F \sim 1/r^2$) with quantized finite action are allowed.
@@ -10297,12 +10300,12 @@ $$
 After the final tunneling event $t_*$, the trajectory remains in a single Gribov region, where Theorem 8.7 guarantees exponential convergence to the vacuum. □
 
 **Theorem 8.5 (Nullity of Non-Vacuum Strata).**
-From the exhaustive partition (Corollary 8.3.1), every finite-energy configuration belongs to one stratum. We have established:
+From the exhaustive partition (Corollary 8.3.1), every finite-energy configuration belongs to one stratum. The framework proposes:
 - $S_{\mathrm{Coulomb}}$ is **kinematically empty** for finite energy (Theorem 8.4)
 - $\Gamma_{\mathrm{Gribov}}$ has **finite capacity** for tunneling transitions (Section 8.5)
 - $S_{\mathrm{trans}}$ flows to $S_{\mathrm{vac}}$ under gradient flow
 
-Therefore, any finite-energy trajectory is asymptotically confined to $S_{\mathrm{vac}}$, where geometric locking enforces exponential decay (mass gap).
+This suggests any finite-energy trajectory would be asymptotically confined to $S_{\mathrm{vac}}$, where geometric locking enforces exponential decay (mass gap).
 
 ### 8.5.1 Symmetry Induction for Yang-Mills
 
@@ -10702,7 +10705,7 @@ Both prove that the gap/regularity is not an accident of perturbation theory, bu
 
 ## 8.9 The Quantum Bridge: Bakry-Émery Transfer
 
-We now link the geometry of the classical quotient space to the spectrum of the quantum Hamiltonian via the **Bakry-Émery Curvature-Dimension** framework. This establishes the quantum mass gap as a direct consequence of classical geometric rigidity.
+We now link the geometry of the classical quotient space to the spectrum of the quantum Hamiltonian via the **Bakry-Émery Curvature-Dimension** framework. This proposes the quantum mass gap as a consequence of classical geometric rigidity.
 
 **Theorem 8.14 (The Quantum Transfer Principle).**
 *From Classical Geometry to Quantum Spectrum.*
@@ -10781,9 +10784,9 @@ $$
 The classical geometric rigidity ($\text{Hess} > 0$ from curvature) and the quotient curvature ($\text{Ric} \geq 0$ from O'Neill) strictly enforce the quantum mass gap. □
 
 *Remark 8.9.1 (The Constructive Gap).*
-We do not construct the measure $d\mu$ from perturbation theory or lattice approximations. Instead, we prove that **if** a rigorous measure exists on the stratified space $\mathcal{X}_{\mathrm{YM}}$ (as conjectured by Constructive QFT), it **must** inherit the spectral gap from the geometry of the quotient. The Mass Gap is a consequence of the **Positive Curvature of the Gauge Quotient**, which acts as a restoring force preventing massless fluctuations.
+We do not construct the measure $d\mu$ from perturbation theory or lattice approximations. Instead, we show that **if** a rigorous measure exists on the stratified space $\mathcal{X}_{\mathrm{YM}}$ (as conjectured by Constructive QFT), it would inherit the spectral gap from the geometry of the quotient. The Mass Gap would be a consequence of the **Positive Curvature of the Gauge Quotient**, which would act as a restoring force preventing massless fluctuations.
 
-This establishes the mass gap as a **geometric necessity** rather than a perturbative accident. The hypostructure framework provides the rigorous link between classical gauge geometry and quantum field spectrum.
+This proposes the mass gap as a **geometric consequence** rather than a perturbative accident. The hypostructure framework proposes a link between classical gauge geometry and quantum field spectrum.
 
 *Remark 8.9.2 (The Complete Logic Chain).*
 The mass gap proof now follows a complete chain of implications:
@@ -11192,15 +11195,15 @@ The geometric framework provides both regimes from a single principle (uniform L
 
 **Conclusion of §8.10.1:**
 
-The explicit construction of gauge-invariant observables and Schwinger functions demonstrates:
+The explicit construction of gauge-invariant observables and Schwinger functions proposes:
 
-1. ✓ **Wilson loops:** Manifestly gauge-invariant, well-defined on $\mathcal{A}/\mathcal{G}$
-2. ✓ **Schwinger functions:** Tempered distributions satisfying OS4 (Theorem 8.10.1.1)
-3. ✓ **Uniform bounds:** Polynomial growth independent of UV cutoff $a$ (from uniform LSI)
-4. ✓ **Area law:** Confinement follows from uniform curvature $\rho > 0$ (Theorem 8.10.1.2)
-5. ✓ **Cluster decomposition:** Exponential decay with mass $m \sim \sqrt{\rho}$
+1. **Wilson loops:** Manifestly gauge-invariant, well-defined on $\mathcal{A}/\mathcal{G}$
+2. **Schwinger functions:** Tempered distributions satisfying OS4 (Theorem 8.10.1.1)
+3. **Uniform bounds:** Polynomial growth independent of UV cutoff $a$ (from uniform LSI)
+4. **Area law:** Confinement follows from uniform curvature $\rho > 0$ (Theorem 8.10.1.2)
+5. **Cluster decomposition:** Exponential decay with mass $m \sim \sqrt{\rho}$
 
-**Gap G3 (Regularity of Schwinger Functions) is now PROVEN**, conditional on uniform LSI (Theorem 8.13.2), which is itself now rigorously established in §8.13.1b.
+**Gap G3 (Regularity of Schwinger Functions)** — proposed verification conditional on uniform LSI (Theorem 8.13.2), which is claimed in §8.13.1b.
 
 The remaining gap is Gap G4 (analytic continuation to Minkowski), which will be addressed in §8.10.2.
 
@@ -11526,7 +11529,7 @@ The spectral measure $d\rho(s^2)$ has the following properties:
    - **Discrete spectrum:** Glueball states (bound states) at isolated masses $m_n$
    - **Continuous spectrum:** Multi-particle scattering states for $s^2 > (2m)^2$
 
-The uniform LSI guarantees that the infimum of the spectrum is at least $m = \sqrt{\rho} > 0$, establishing the **mass gap**.
+The uniform LSI would guarantee that the infimum of the spectrum is at least $m = \sqrt{\rho} > 0$, providing the **mass gap**.
 
 ∎
 
@@ -11542,19 +11545,19 @@ The spectral representation for the Wightman function uses $\delta(p^2+s^2)$, wh
 
 **Conclusion of §8.10.2:**
 
-The analyticity of Schwinger functions and Wick rotation regularity demonstrate:
+The analyticity of Schwinger functions and Wick rotation regularity aim to demonstrate:
 
-1. ✓ **Regularization:** Smeared Wilson loops make integrals well-defined (Definition 8.10.2.1)
-2. ✓ **Holomorphic semigroup:** LSI → hypercontractivity → holomorphy (Lemma 8.10.2.1)
-3. ✓ **Test function shift:** Correct mechanism for analytic continuation (not field shift)
-4. ✓ **Holomorphy:** Schwinger functions extend to $\mathcal{T}_{+,\epsilon}^n$ (Theorem 8.10.2.2)
-5. ✓ **Wick rotation:** Wightman functions obtained by $x_0 \to -it$ (Corollary 8.10.2.3)
-6. ✓ **Edge-of-the-wedge:** Forward and backward tubes agree (Theorem 8.10.2.4)
-7. ✓ **Spectral representation:** Mass gap $m \geq \sqrt{\rho}$ via Källén-Lehmann (Theorem 8.10.2.5)
-8. ✓ **Correct formulas:** Wightman ($\delta(p^2+s^2)$) vs. Feynman ($1/(p^2+s^2)$) distinguished
-9. ✓ **OS reconstruction:** All axioms verified, Wightman theory exists
+1. **Regularization:** Smeared Wilson loops make integrals well-defined (Definition 8.10.2.1)
+2. **Holomorphic semigroup:** LSI → hypercontractivity → holomorphy (Lemma 8.10.2.1)
+3. **Test function shift:** Correct mechanism for analytic continuation (not field shift)
+4. **Holomorphy:** Schwinger functions extend to $\mathcal{T}_{+,\epsilon}^n$ (Theorem 8.10.2.2)
+5. **Wick rotation:** Wightman functions obtained by $x_0 \to -it$ (Corollary 8.10.2.3)
+6. **Edge-of-the-wedge:** Forward and backward tubes agree (Theorem 8.10.2.4)
+7. **Spectral representation:** Mass gap $m \geq \sqrt{\rho}$ via Källén-Lehmann (Theorem 8.10.2.5)
+8. **Correct formulas:** Wightman ($\delta(p^2+s^2)$) vs. Feynman ($1/(p^2+s^2)$) distinguished
+9. **OS reconstruction:** All axioms proposed as verified, Wightman theory construction proposed
 
-**Gap G4 (Analyticity and Wick Rotation) is now PROVEN**, conditional on:
+**Gap G4 (Analyticity and Wick Rotation)** — proposed verification conditional on:
 - Existence of Euclidean YM measure (Level 2 assumption)
 - Uniform LSI (Theorem 8.13.2, proven in §8.13.1b)
 - Nelson-Symanzik estimates for holomorphic semigroup (standard in constructive QFT)
@@ -11715,7 +11718,7 @@ The remaining work is **Level 1 ⇒ Level 2 (classical ⇒ Euclidean quantum)**,
 
 ## 8.12 The Constructive Logic: Geometric Regularization
 
-While a complete constructive proof of existence for 4D non-Abelian gauge theory requires extensive technical machinery beyond the scope of a single manuscript, we now sketch how the **hypostructure framework resolves the primary obstruction** to construction—control of ultraviolet divergences—and ensures the resulting theory inherits the mass gap.
+While a complete constructive proof of existence for 4D non-Abelian gauge theory requires extensive technical machinery beyond the scope of a single manuscript, we now sketch how the **hypostructure framework proposes to address the primary obstruction** to construction—control of ultraviolet divergences—and how the resulting theory would inherit the mass gap.
 
 The key insight is that **geometric coercivity acts as a natural regulator**: Theorem 8.4 (Kinematic Emptiness) proves that rough fields have infinite action, forcing the measure to concentrate on smooth configurations without requiring perturbative counter-terms.
 
@@ -12135,7 +12138,7 @@ These are standard (though technically demanding) exercises in constructive QFT.
 
 ## 8.13 The Existence Proof: Uniform Log-Sobolev Inequalities
 
-We now address the final constructive gap: establishing not merely the existence of a continuum limit measure, but proving it is **non-trivial** (interacting) and satisfies the Wightman axioms **unconditionally**. The key is demonstrating that the **Log-Sobolev Inequality (LSI) constant is uniform** in the lattice spacing $a$.
+We now address the final constructive gap: establishing not merely the existence of a continuum limit measure, but arguing it is **non-trivial** (interacting) and satisfies the Wightman axioms. The key is demonstrating that the **Log-Sobolev Inequality (LSI) constant is uniform** in the lattice spacing $a$.
 
 **Standard Constructive QFT Obstruction:**
 As $a \to 0$, the configuration space dimension diverges. In generic infinite-dimensional spaces, Ricci curvature typically degenerates, driving spectral gaps to zero. This is why standard constructive approaches require elaborate cluster expansions and perturbative control.
@@ -12345,7 +12348,7 @@ This lemma establishes three critical facts:
 2. **Large-$N$ Scaling:** The bound recovers the 't Hooft $1/N$ expansion predictions.
 3. **Connection to $\Lambda_{\mathrm{QCD}}$:** The geometric gap is directly related to the dynamically generated scale in QCD.
 
-This proves the geometric mass gap is **physically consistent** with known phenomenology.
+This suggests the geometric mass gap is **physically consistent** with known phenomenology.
 
 ### §8.13.1c Independent Verification of the Uniform Curvature Bound
 
@@ -12621,19 +12624,19 @@ Asymptotic freedom **rescues** the spectral gap in gauge theory, unlike scalar t
 
 The numerical computations **confirm positivity**, which is the essential property. The precise value affects the mass gap estimate but not existence.
 
-#### Summary: Theorem 8.13.1 is Independently Verified
+#### Summary: Proposed Verification of Theorem 8.13.1
 
 **Conclusion of §8.13.1c:**
 
-The uniform curvature bound $\mathrm{Ric}_{\Phi_a} \geq \rho \cdot I$ with $\rho > 0$ independent of $a$ has been verified through:
+The uniform curvature bound $\mathrm{Ric}_{\Phi_a} \geq \rho \cdot I$ with $\rho > 0$ independent of $a$ is proposed through:
 
-1. ✓ **Alternative derivation:** Sectional curvature approach confirms the bound
-2. ✓ **Numerical computation:** Explicit values for $SU(2)$ and $SU(3)$ are positive
-3. ✓ **Finite-dimensional consistency:** Matches known results for compact manifolds
-4. ✓ **Perturbative consistency:** Dimensionally compatible with beta function
-5. ✓ **Objection handling:** Key concerns addressed with rigorous responses
+1. **Alternative derivation:** Sectional curvature approach proposed to confirm the bound
+2. **Numerical computation:** Explicit values for $SU(2)$ and $SU(3)$ claimed positive
+3. **Finite-dimensional consistency:** Proposed to match known results for compact manifolds
+4. **Perturbative consistency:** Claimed dimensionally compatible with beta function
+5. **Objection handling:** Key concerns addressed with proposed responses
 
-**Confidence Level:** The curvature bound is **highly credible** and ready for community scrutiny. Independent verification by differential geometers and constructive QFT experts is the next step for full validation.
+**Status:** The curvature bound is a central claim requiring independent verification by differential geometers and constructive QFT experts for validation.
 
 ### §8.13.1b Functional-Analytic Framework for Infinite-Dimensional LSI
 
@@ -12933,21 +12936,21 @@ $$
 
 *Proof.* LSI is a **closed convex condition** on probability measures. Weak convergence $\mu_a \rightharpoonup \mu$ preserves LSI if the constant $C_{\mathrm{LS}} = 2/\rho$ is uniform (Bakry-Émery 2006, Proposition 5.7). Since $\rho > 0$ is independent of $a$ (Theorem 8.13.1), uniformity holds. □
 
-#### Summary: Infinite-Dimensional Bakry-Émery is Rigorous
+#### Summary: Proposed Extension of Bakry-Émery to Infinite Dimensions
 
 **Conclusion of §8.13.1b:**
 
-The extension of Bakry-Émery theory to Yang-Mills gauge quotients is justified by:
+The extension of Bakry-Émery theory to Yang-Mills gauge quotients is proposed through:
 
-1. ✓ **Dirichlet forms:** Regular, Markovian, closable (Proposition 8.13.1b.1)
-2. ✓ **Generator:** Self-adjoint with uniform spectral gap (Theorem 8.13.1b.1)
-3. ✓ **O'Neill's formula:** Extends to infinite dimensions with trace-class convergence (Theorem 8.13.1b.2)
-4. ✓ **Domain compatibility:** Uniform core ensures continuum limit is well-defined (Theorem 8.13.1b.3)
-5. ✓ **LSI preservation:** Weak limits preserve LSI with uniform constant (Corollary 8.13.1b.1)
+1. **Dirichlet forms:** Regular, Markovian, closable (Proposition 8.13.1b.1)
+2. **Generator:** Self-adjoint with uniform spectral gap (Theorem 8.13.1b.1)
+3. **O'Neill's formula:** Proposed to extend to infinite dimensions with trace-class convergence (Theorem 8.13.1b.2)
+4. **Domain compatibility:** Uniform core proposed to ensure continuum limit is well-defined (Theorem 8.13.1b.3)
+5. **LSI preservation:** Weak limits proposed to preserve LSI with uniform constant (Corollary 8.13.1b.1)
 
-**The Key Novelty:** Unlike scalar field theories (where dimension $\to \infty$ kills spectral gaps), Yang-Mills has **geometric asymptotic freedom**: the UV stiffness $\sim 1/a^2$ compensates dimensional growth $\sim a^{-4}$, yielding uniform $\rho > 0$.
+**The Key Claim:** Unlike scalar field theories (where dimension $\to \infty$ kills spectral gaps), Yang-Mills is proposed to have **geometric asymptotic freedom**: the UV stiffness $\sim 1/a^2$ compensates dimensional growth $\sim a^{-4}$, yielding uniform $\rho > 0$.
 
-This completes the functional-analytic foundation for the Yang-Mills mass gap proof. The curvature bound (Theorem 8.13.1) is now rigorously applicable in infinite dimensions, making the LSI (Theorem 8.13.2) and subsequent mass gap (Theorem 8.13.3) unconditional.
+This proposes a functional-analytic foundation for the Yang-Mills mass gap approach. The curvature bound (Theorem 8.13.1) is claimed applicable in infinite dimensions, which would support the LSI (Theorem 8.13.2) and subsequent mass gap (Theorem 8.13.3) claims.
 
 ### Theorem 8.13.2 (Uniform Log-Sobolev Inequality)
 
@@ -12983,7 +12986,7 @@ The 4D Yang-Mills quantum field theory exists, is non-trivial, and has a mass ga
 
 2. **Non-Triviality:** The measure $\mu$ is not Gaussian. The theory contains **interacting glueballs** with non-trivial $n$-point correlation functions.
 
-3. **Wightman Axioms:** The theory obtained by Osterwalder-Schrader reconstruction satisfies all six Wightman axioms (W1-W6) **unconditionally**.
+3. **Wightman Axioms:** The theory obtained by Osterwalder-Schrader reconstruction is claimed to satisfy all six Wightman axioms (W1-W6).
 
 4. **Mass Gap:** The Hamiltonian $H$ on the physical Hilbert space has spectrum:
    $$
@@ -13572,7 +13575,7 @@ Unlike Navier-Stokes (where failure creates finite but subcritical efficiency), 
 
 **Conclusion:** Yang-Mills is **ultra fail-safe**. Structural failures don't just reduce efficiency—they produce infinite action, making them impossible rather than merely unfavorable. This is the quantum field theoretic analog of the thermodynamic exclusion principle.
 
-*Remark 8.10.5 (Why Yang-Mills is Easier).* The Yang-Mills mass gap is unconditional for two reasons:
+*Remark 8.10.5 (Why Yang-Mills is Structurally Simpler).* The Yang-Mills mass gap argument is presented as more direct for two reasons:
 1. **Gradient Flow:** The Yang-Mills flow is literally gradient descent for $\Phi_{\mathrm{YM}}$ (verifying YM-LS trivially)
 2. **Infinite Penalties:** Failure modes have infinite action (not just subcritical), making them impossible rather than recoverable
 
@@ -13625,7 +13628,7 @@ Yang-Mills has:
 - **Infinite** action penalty when parameters drift (automatic exclusion)
 - Instanton moduli space is unstable (flow escapes to vacuum automatically)
 
-This is why Yang-Mills is unconditional while NS required proving Theorem 7.8.
+This structural difference makes the Yang-Mills argument more direct compared to NS which required proving Theorem 7.8.
 
 **Lemma 8.10.7 (Verification of Coercivity Duality for YM).**
 *Yang-Mills satisfies the Coercivity Duality Principle (Theorem 6.40) with automatic infinite penalties.*
@@ -13739,7 +13742,7 @@ Consider a sequence of connections $A_n$ on $\mathbb{R}^4$.
         - **Flat connections** ($F = 0$): The vacuum stratum $S_{\text{vac}}$ itself.
     *   *Conclusion:* Finite action extremizers are either unstable or already in the safe stratum. (Matches SP1 Branch B). ✓
 
-*Result:* Roughness has infinite cost. Smoothness leads either to instability (instantons) or to the vacuum. **SP1 is satisfied unconditionally for YM.** $\hfill \square$
+*Result:* Roughness has infinite cost. Smoothness leads either to instability (instantons) or to the vacuum. **SP1 is claimed to hold for YM.** $\hfill \square$
 
 **Lemma 8.11.2 (Verification of SP2: The Confinement Dichotomy).**
 *Yang-Mills satisfies Scaling-Capacity Coupling via the Mass Gap.*
@@ -13772,7 +13775,7 @@ Consider the asymptotic behavior of the connection as $|x| \to \infty$.
     where $\mu > 0$ is the spectral gap (related to the curvature $\kappa$).
     *   *Conclusion:* The massive phase is **geometrically mandatory**. The exponential decay **is the mass gap**. (Matches SP2 Branch B). ✓
 
-*Result:* The massless phase is energetically forbidden ($\mathcal{E}_{\text{Cap}} = \infty$). The massive phase is geometrically forced ($\mu$-convexity). **SP2 is satisfied unconditionally for YM.** $\hfill \square$
+*Result:* The massless phase is energetically forbidden ($\mathcal{E}_{\text{Cap}} = \infty$). The massive phase is geometrically forced ($\mu$-convexity). **SP2 is claimed to hold for YM.** $\hfill \square$
 
 **Theorem 8.11.3 (YM Satisfies Morphological Capacity Principle).**
 *Classical Yang-Mills theory satisfies all hypotheses of Theorem 6.41 (Morphological Capacity Principle) without additional assumptions.*
@@ -13788,18 +13791,18 @@ The Yang-Mills mass gap proof via the Morphological Capacity Principle:
 The only energetically and topologically viable configuration is the **gapped vacuum**.
 
 **Remark 8.11.2 (Classical vs Quantum YM).**
-This proves the **classical mass gap**: smooth solutions to the Yang-Mills gradient flow (PDE) decay exponentially. The **Clay Millennium Prize** requires the **quantum mass gap**: the Hamiltonian spectrum of the quantum Yang-Mills theory (QFT) has a gap above the vacuum.
+This proposes a **classical mass gap**: smooth solutions to the Yang-Mills gradient flow (PDE) decay exponentially. The **Clay Millennium Prize** requires the **quantum mass gap**: the Hamiltonian spectrum of the quantum Yang-Mills theory (QFT) has a gap above the vacuum.
 
 **Gap remaining:** Constructive quantum field theory (Osterwalder-Schrader axioms, Euclidean path integral, reflection positivity). The classical result is a **necessary prerequisite** but not the full quantum problem.
 
 
 ## 8.6 Conclusion
 
-The Yang-Mills mass gap emerges as a structural consequence of the hypostructure $(\mathcal{X}_{\mathrm{YM}}, \Phi_{\mathrm{YM}}, \Sigma_{\mathrm{Gribov}})$:
+The Yang-Mills mass gap is proposed to emerge as a structural consequence of the hypostructure $(\mathcal{X}_{\mathrm{YM}}, \Phi_{\mathrm{YM}}, \Sigma_{\mathrm{Gribov}})$:
 
-1. **Capacity nullity** excludes long-range massless radiation due to infrared divergence of non-Abelian self-interaction.
+1. **Capacity nullity** proposes to exclude long-range massless radiation through infrared divergence of non-Abelian self-interaction.
 
-2. **Modulational locking** solves the local gauge-fixing problem, separating physical from gauge modes.
+2. **Modulational locking** addresses the local gauge-fixing problem by separating physical from gauge modes.
 
 3. **Rectifiability** handles the global Gribov ambiguity, showing that instanton transitions are finite.
 
@@ -15256,16 +15259,16 @@ Therefore, $\Omega_{\text{sing}} = \emptyset$, yielding global regularity. □
 
 There is no fifth category. Every configuration is excluded by one of these four mechanisms.
 
-*Remark 12.1.2 (Verification Status for Navier-Stokes).* The structural hypotheses have the following status:
+*Remark 12.1.2 (Verification Status for Navier-Stokes).* The structural hypotheses have the following proposed status:
 
-- **TC:** Fully verified (Section 7.1-7.3)
-- **GR:** Fully verified (Section 7.6)
-- **DS:** Fully verified via Theorem 7.8 (Gradient-Like Structure is a consequence of geometric exhaustion)
-- **SE:** Fully verified (Section 7.4-7.5, geometric exhaustion over swirl ratio)
+- **TC:** Claimed (Section 7.1-7.3)
+- **GR:** Claimed (Section 7.6)
+- **DS:** Claimed via Theorem 7.8 (Gradient-Like Structure proposed as consequence of geometric exhaustion)
+- **SE:** Claimed (Section 7.4-7.5, geometric exhaustion over swirl ratio)
 
-**All four structural properties are addressed for Navier-Stokes within the framework.** Theorem 7.8 shows that the NS-LS hypothesis (Gradient-Like Structure) follows from geometric exhaustion over swirl ratio rather than being assumed. The approach addresses all structural requirements systematically.
+**All four structural properties are claimed to be addressed for Navier-Stokes within the framework.** Theorem 7.8 proposes that the NS-LS hypothesis (Gradient-Like Structure) follows from geometric exhaustion over swirl ratio rather than being assumed. The approach aims to address all structural requirements systematically.
 
-*Remark 12.1.3 (Universality).* The Master Theorem applies to any dissipative PDE satisfying the hypostructure axioms. Both Yang-Mills (Section 8) and Navier-Stokes (Section 7) present verifications of all four structural properties within the framework. For Navier-Stokes, the key element is Theorem 7.8, which derives the gradient-like property from geometric constraints rather than assuming it.
+*Remark 12.1.3 (Universality).* The Master Theorem applies to any dissipative PDE satisfying the hypostructure axioms. Both Yang-Mills (Section 8) and Navier-Stokes (Section 7) present proposed verifications of all four structural properties within the framework. For Navier-Stokes, the key element is Theorem 7.8, which proposes to derive the gradient-like property from geometric constraints rather than assuming it.
 
 ## 12.2 The Framework Toolbox
 
@@ -15406,7 +15409,7 @@ for all field operators $\Phi(x)$ and all $(a, \Lambda) \in \mathcal{P}$.
 - **Analytic Continuation:** Uniform LSI ensures regularity of Schwinger functions, permitting Wick rotation $x_0 \to it$
 - **Result:** $SO(4)$ analytically continues to Poincaré group $\mathcal{P} = \mathbb{R}^{1,3} \rtimes SO(1,3)$
 
-**Status:** ✓ **Verified** (Theorem 8.13.3, Part 3, Item W1)
+**Status:** Proposed verification (Theorem 8.13.3, Part 3, Item W1)
 
 ### W2: Spectrum Condition
 
@@ -15422,7 +15425,7 @@ $$
 - **Mechanism:** Positive-frequency analyticity in complex time comes from exponential decay in Euclidean time
 - **Mass Gap:** $\mathrm{Spec}(H) \subset \{0\} \cup [m, \infty)$ with $m \geq \sqrt{\rho}/2$ (Theorem 8.13.3, Part 4)
 
-**Status:** ✓ **Verified** (Theorem 8.13.3, Part 4 + Theorem 8.13.2)
+**Status:** Proposed verification (Theorem 8.13.3, Part 4 + Theorem 8.13.2)
 
 ### W3: Locality (Microcausality)
 
@@ -15441,7 +15444,7 @@ $$
 - **Analytic Continuation:** Exponential decay in Euclidean signature analytically continues to commutativity at spacelike separation
 - **Mechanism:** Causal structure emerges from analytic properties of Wightman functions
 
-**Status:** ✓ **Verified** (Theorem 8.13.3, Part 3, Item W3)
+**Status:** Proposed verification (Theorem 8.13.3, Part 3, Item W3)
 
 ### W4: Vacuum State
 
@@ -15457,7 +15460,7 @@ $$
 - **Mechanism:** Ergodic measures have unique ground state (no spontaneous symmetry breaking for pure gauge theory)
 - **Result:** The vacuum is the unique state with minimal energy ($E = 0$)
 
-**Status:** ✓ **Verified** (Theorem 8.13.3, Part 1, Steps 2-3)
+**Status:** Proposed verification (Theorem 8.13.3, Part 1, Steps 2-3)
 
 ### W5: Cyclicity of Vacuum (Reeh-Schlieder Property)
 
@@ -15475,7 +15478,7 @@ $$
 - **Mechanism:** Reeh-Schlieder theorem (Streater-Wightman, 1964) applies automatically
 - **Result:** Any vector orthogonal to all local excitations of the vacuum must be zero
 
-**Status:** ✓ **Verified** (Theorem 8.13.3, Part 3, Item W5)
+**Status:** Proposed verification (Theorem 8.13.3, Part 3, Item W5)
 
 ### W6: Temperedness
 
@@ -15495,7 +15498,7 @@ $$
   with $C_p$ independent of lattice spacing $a$
 - **Result:** Schwinger functions (Euclidean correlations) have polynomial growth, ensuring Wightman functions are tempered
 
-**Status:** ✓ **Verified** (Theorem 8.13.3, Part 3, Item W6)
+**Status:** Proposed verification (Theorem 8.13.3, Part 3, Item W6)
 
 ## F.3 Mass Gap Verification
 
@@ -15550,7 +15553,7 @@ $$
 m \geq \frac{\sqrt{\rho}}{2} \sim \frac{1}{2\sqrt{2N}} \sim \mathcal{O}(\Lambda_{\mathrm{QCD}}) > 0
 $$
 
-**Status:** ✓ **Verified** (Theorem 8.13.3, Part 4)
+**Status:** Proposed verification (Theorem 8.13.3, Part 4)
 
 ## F.4 Summary Compliance Table
 
@@ -15565,31 +15568,31 @@ $$
 | **W5: Cyclicity** | Clustering + Spectrum → Reeh-Schlieder | Standard (W3 + W2) |
 | **W6: Temperedness** | Uniform LSI → Herbst → Moment bounds → Tempered | Theorem 8.13.3, Part 1 |
 
-## F.5 Certification Statement
+## F.5 Proposed Verification Statement
 
-**We certify that all requirements of the Clay Millennium Problem for Yang-Mills Theory are satisfied by the hypostructure framework:**
+**The hypostructure framework proposes a verification approach for the Clay Millennium Problem requirements:**
 
-### The Complete Logical Chain
+### The Proposed Logical Chain
 
-1. ✓ **Classical Geometry (Theorem 8.13):** The configuration space $\mathcal{A}/\mathcal{G}$ satisfies a gap inequality $\|\nabla \Phi\|^2 \geq \Delta \cdot \Phi$.
+1. **Classical Geometry (Theorem 8.13):** The configuration space $\mathcal{A}/\mathcal{G}$ is claimed to satisfy a gap inequality $\|\nabla \Phi\|^2 \geq \Delta \cdot \Phi$.
 
-2. ✓ **Positive Curvature (Theorem 8.13.1):** O'Neill's formula gives $\mathrm{Ric}_{\Phi} \geq \rho > 0$ uniformly in lattice spacing.
+2. **Positive Curvature (Theorem 8.13.1):** O'Neill's formula claimed to give $\mathrm{Ric}_{\Phi} \geq \rho > 0$ uniformly in lattice spacing.
 
-3. ✓ **Explicit Computation (Lemma 8.13.1a):** For $SU(N)$, the constant is $\rho_{SU(N)} \sim 3/(8N) > 0$, explicitly computable from structure constants.
+3. **Explicit Computation (Lemma 8.13.1a):** For $SU(N)$, the constant is claimed as $\rho_{SU(N)} \sim 3/(8N) > 0$, proposed to be computable from structure constants.
 
-4. ✓ **UV Self-Regularization (Theorem 8.4):** Kinematic veto forces rough fields to have infinite action, suppressing UV fluctuations.
+4. **UV Self-Regularization (Theorem 8.4):** Kinematic veto claimed to force rough fields to have infinite action, suppressing UV fluctuations.
 
-5. ✓ **Uniform LSI (Theorem 8.13.2):** Bakry-Émery theorem converts uniform curvature to uniform logarithmic Sobolev inequality.
+5. **Uniform LSI (Theorem 8.13.2):** Bakry-Émery theorem converts uniform curvature to uniform logarithmic Sobolev inequality (standard implication). The claim is that YM has uniform curvature.
 
-6. ✓ **Existence (M1):** Uniform LSI implies tightness; Prokhorov theorem yields continuum limit measure (Theorem 8.13.3, Part 1).
+6. **Existence (M1):** Uniform LSI implies tightness; Prokhorov theorem yields continuum limit measure (standard results). The claim is that YM satisfies uniform LSI (Theorem 8.13.3, Part 1).
 
-7. ✓ **Uniqueness:** LSI implies ergodicity; unique vacuum ensures unique theory—full sequence convergence (Theorem 8.13.3, Part 1).
+7. **Uniqueness:** LSI implies ergodicity; ergodicity ensures unique vacuum and full sequence convergence (standard implications). The claim is that YM satisfies LSI (Theorem 8.13.3, Part 1).
 
-8. ✓ **Non-Triviality:** Non-Abelian curvature $\rho \propto \|[,]_{\mathfrak{g}}\|^2 > 0$ forces interaction; theory cannot be Gaussian (Theorem 8.13.3, Part 2).
+8. **Non-Triviality:** Non-Abelian curvature $\rho \propto \|[,]_{\mathfrak{g}}\|^2 > 0$ forces interaction (standard implication). Claim: YM has positive curvature, hence is non-Gaussian (Theorem 8.13.3, Part 2).
 
-9. ✓ **Wightman Axioms (W1-W6):** All six axioms verified via Osterwalder-Schrader reconstruction (Theorem 8.13.3, Part 3; see §F.2 above).
+9. **Wightman Axioms (W1-W6):** All six axioms claimed to be satisfied via Osterwalder-Schrader reconstruction (Theorem 8.13.3, Part 3; see §F.2 above).
 
-10. ✓ **Mass Gap (M2):** Spectral gap $m \geq \sqrt{\rho}/2 \sim \mathcal{O}(\Lambda_{\mathrm{QCD}}) > 0$ from Gross theorem applied to uniform LSI (Theorem 8.13.3, Part 4).
+10. **Mass Gap (M2):** Spectral gap $m \geq \sqrt{\rho}/2 \sim \mathcal{O}(\Lambda_{\mathrm{QCD}}) > 0$ follows from Gross theorem applied to uniform LSI (standard implication). The claim is that YM satisfies uniform LSI (Theorem 8.13.3, Part 4).
 
 ### What This Achieves
 
@@ -15621,9 +15624,9 @@ $$
 - Stiff geometry suppresses UV fluctuations exponentially: $P(\text{rough}) \sim e^{-C/a^2} \to 0$
 - This **is** asymptotic freedom—geometric language for "weak coupling at high energy"
 
-**Why This Solves the Existence Problem:**
-- Uniform curvature bound $\rho > 0$ (independent of $a$) gives uniform LSI
-- Uniform LSI gives **all** needed properties simultaneously:
+**Why This Proposes to Address the Existence Problem:**
+- Uniform curvature bound $\rho > 0$ (independent of $a$) would give uniform LSI
+- Uniform LSI would provide needed properties simultaneously:
   - Existence (tightness + Prokhorov)
   - Uniqueness (ergodicity)
   - Mass gap (spectral gap via Gross theorem)
@@ -15635,7 +15638,7 @@ m_{\text{glueball}} \geq \frac{\sqrt{\rho}}{2} \sim \frac{1}{2\sqrt{2N}} \cdot \
 $$
 For $SU(3)$: $m \gtrsim 1$ GeV, consistent with lattice QCD simulations.
 
-**Bottom Line:** We replace the **perturbative renormalization of couplings** with the **geometric renormalization of curvature**. The curvature is stable (doesn't vanish in UV), so the theory exists with a gap.
+**Bottom Line:** The framework proposes to replace **perturbative renormalization of couplings** with **geometric renormalization of curvature**. If the curvature remains stable (doesn't vanish in UV), the theory would exist with a gap.
 
 ### For Analysts: The Mathematical Framework
 
@@ -15933,19 +15936,19 @@ The hypostructure framework **generalizes** perturbative QFT by identifying the 
 
 ### F.6.5 What the Hypostructure Framework Accomplishes
 
-**Unconditional Results (Fully Proven):**
-1. ✓ **Geometric coercivity** of classical Yang-Mills configuration space (Theorem 8.13.1)
-2. ✓ **Uniform curvature bound** $\rho \geq 3/(8N)$ for $SU(N)$ gauge theory (Lemma 8.13.1a)
-3. ✓ **Conditional mass gap** $m \geq \sqrt{\rho}$ for any Euclidean measure with this curvature (Theorem 8.14)
-4. ✓ **Full sequence convergence** via ergodicity if uniform LSI holds (Theorem 8.12.3a)
-5. ✓ **Schwinger function regularity** (temperedness, clustering) from uniform LSI (Theorems 8.10.1.1-8.10.1.2)
-6. ✓ **Wick rotation analyticity** via holomorphic semigroup (Theorem 8.10.2.2)
-7. ✓ **Källén-Lehmann spectral representation** with mass gap (Theorem 8.10.2.5)
-8. ✓ **Complete Osterwalder-Schrader reconstruction** conditional on measure existence (§8.10.2)
+**Proposed Framework Results:**
+1. **Geometric coercivity** of classical Yang-Mills configuration space (Theorem 8.13.1)
+2. **Uniform curvature bound** $\rho \geq 3/(8N)$ for $SU(N)$ gauge theory (Lemma 8.13.1a)
+3. **Conditional mass gap** $m \geq \sqrt{\rho}$ for any Euclidean measure with this curvature (Theorem 8.14)
+4. **Full sequence convergence** via ergodicity if uniform LSI holds (Theorem 8.12.3a)
+5. **Schwinger function regularity** (temperedness, clustering) from uniform LSI (Theorems 8.10.1.1-8.10.1.2)
+6. **Wick rotation analyticity** via holomorphic semigroup (Theorem 8.10.2.2)
+7. **Källén-Lehmann spectral representation** with mass gap (Theorem 8.10.2.5)
+8. **Complete Osterwalder-Schrader reconstruction** conditional on measure existence (§8.10.2)
 
 **Conditional Results (Assuming Euclidean Measure Exists):**
-1. ✓ **Wightman axioms** W1-W6 verified (Conditional Theorem 8.15)
-2. ✓ **Mass gap in Minkowski theory** $m \geq \sqrt{\rho}$ (Theorem 8.14 + OS reconstruction)
+1. **Wightman axioms** W1-W6 proposed as verified (Conditional Theorem 8.15)
+2. **Mass gap in Minkowski theory** $m \geq \sqrt{\rho}$ (Theorem 8.14 + OS reconstruction)
 
 **Remaining Gaps (Constructive QFT Component):**
 1. **Gap G1:** Construction of 4D Euclidean measure $d\mu$ with reflection positivity
