@@ -302,60 +302,64 @@ To keep the focus of this first paper clear, we do not develop these application
 
 The following diagram summarizes the logical flow for Navier–Stokes. Each arrow represents a theorem or lemma; the entire chain fits on one page.
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  ASSUME: Finite-energy NS solution u blows up at time T*                    │
-└─────────────────────────────────────────────────────────────────────────────┘
-                                    │
-                                    ▼ (§7.1: Concentration-compactness)
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  Extract minimal blow-up solution and renormalized orbit V(s) in H¹_ρ      │
-└─────────────────────────────────────────────────────────────────────────────┘
-                                    │
-                                    ▼ (NS-SC': Lemma 7.0B.2)
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  Orbit lies in compact trapping set K ⊂ H¹_ρ (Aubin-Lions + defects)       │
-└─────────────────────────────────────────────────────────────────────────────┘
-                                    │
-              ┌─────────────────────┴─────────────────────┐
-              ▼                                           ▼
-┌──────────────────────────┐                ┌──────────────────────────┐
-│  BRANCH 1: Inefficient   │                │  BRANCH 2: Near-maximal  │
-│  Ξ < Ξ_max - δ           │                │  Ξ → Ξ_max               │
-└──────────────────────────┘                └──────────────────────────┘
-              │                                           │
-              ▼ (NS-R: Lemma 7.3B)                        │
-┌──────────────────────────┐                              │
-│  Gevrey radius grows:    │                              │
-│  τ̇ ≥ ε(δ) > 0            │                              │
-│  → analyticity → smooth  │                              │
-│  → NO BLOW-UP ✗          │                              │
-└──────────────────────────┘                              │
-                                                          │
-                              ┌────────────────────────────┴───────────────────┐
-                              ▼                                                ▼
-               ┌──────────────────────────┐                 ┌──────────────────────────┐
-               │  BRANCH 2A: Type II      │                 │  BRANCH 2B: Type I       │
-               │  λ(t) → 0 fast (γ ≥ 1)   │                 │  λ(t) ~ (T*-t)^{1/2}     │
-               └──────────────────────────┘                 └──────────────────────────┘
-                              │                                                │
-                              ▼ (SP2: Theorem 7.1)                             ▼ (Thm 7.8, Lem 7.12.1)
-               ┌──────────────────────────┐                 ┌──────────────────────────┐
-               │  Capacity diverges:      │                 │  Profile → stationary    │
-               │  Cap(u) = ∞ > E₀         │                 │  extremizer V_∞          │
-               │  → violates energy       │                 │  (locked regime)         │
-               │  → NO BLOW-UP ✗          │                 └──────────────────────────┘
-               └──────────────────────────┘                                │
-                                                                           ▼ (Pohozaev: Lem 7.8.1)
-                                                           ┌──────────────────────────┐
-                                                           │  V_∞ must be trivial:    │
-                                                           │  ∫ V·(y·∇V) ρ dy ≠ 0     │
-                                                           │  for non-zero V_∞        │
-                                                           │  → NO BLOW-UP ✗          │
-                                                           └──────────────────────────┘
+```mermaid
+flowchart TD
+    %% Styling
+    classDef assumption fill:#ffcccc,stroke:#cc0000,stroke-width:2px,color:#000
+    classDef process fill:#cce5ff,stroke:#0066cc,stroke-width:2px,color:#000
+    classDef branch fill:#fff3cd,stroke:#cc9900,stroke-width:2px,color:#000
+    classDef contradiction fill:#d4edda,stroke:#28a745,stroke-width:3px,color:#000
+    classDef intermediate fill:#f8f9fa,stroke:#6c757d,stroke-width:1px,color:#000
 
-ALL BRANCHES LEAD TO CONTRADICTION → No finite-energy blow-up exists.
+    %% Initial Assumption
+    A["<b>ASSUME</b><br/>Finite-energy NS solution u<br/>blows up at time T*"]:::assumption
+
+    %% Sequential Processing
+    B["Extract minimal blow-up solution<br/>and renormalized orbit V(s) in H¹ᵨ<br/><i>§7.1: Concentration-compactness</i>"]:::process
+    C["Orbit lies in compact trapping set K ⊂ H¹ᵨ<br/><i>NS-SC′: Lemma 7.0B.2</i>"]:::process
+
+    %% First Branch Point
+    D{"Efficiency<br/>Dichotomy"}:::branch
+    E["<b>BRANCH 1: Inefficient</b><br/>Ξ &lt; Ξ_max − δ"]:::intermediate
+    F["<b>BRANCH 2: Near-maximal</b><br/>Ξ → Ξ_max"]:::intermediate
+
+    %% Branch 1 Resolution
+    G["Gevrey radius grows: τ̇ ≥ ε(δ) &gt; 0<br/>→ analyticity → smooth<br/><i>NS-R: Lemma 7.3B</i>"]:::process
+    H["<b>✗ NO BLOW-UP</b><br/>Gevrey Recovery"]:::contradiction
+
+    %% Second Branch Point
+    I{"Scaling<br/>Rate"}:::branch
+    J["<b>BRANCH 2A: Type II</b><br/>λ(t) → 0 fast (γ ≥ 1)"]:::intermediate
+    K["<b>BRANCH 2B: Type I</b><br/>λ(t) ~ (T*−t)^{1/2}"]:::intermediate
+
+    %% Branch 2A Resolution
+    L["Capacity diverges: Cap(u) = ∞ &gt; E₀<br/>→ violates energy inequality<br/><i>SP2: Theorem 7.1</i>"]:::process
+    M["<b>✗ NO BLOW-UP</b><br/>Capacity Starvation"]:::contradiction
+
+    %% Branch 2B Resolution
+    N["Profile → stationary extremizer V_∞<br/><i>Thm 7.8, Lem 7.12.1</i>"]:::process
+    O["V_∞ must be trivial:<br/>∫ V·(y·∇V) ρ dy ≠ 0 for non-zero V_∞<br/><i>Pohozaev: Lem 7.8.1</i>"]:::process
+    P["<b>✗ NO BLOW-UP</b><br/>Pohozaev Obstruction"]:::contradiction
+
+    %% Flow Connections
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    D --> F
+    E --> G
+    G --> H
+    F --> I
+    I --> J
+    I --> K
+    J --> L
+    L --> M
+    K --> N
+    N --> O
+    O --> P
 ```
+
+**ALL BRANCHES LEAD TO CONTRADICTION → No finite-energy blow-up exists.**
 
 **Key insight:** The reader can trace any hypothetical blow-up trajectory through exactly one of three terminal nodes (Gevrey recovery, capacity starvation, or Pohozaev obstruction). There is no escape route.
 
@@ -438,7 +442,6 @@ At a conceptual level, the hypostructure reduces the analytical burden to a **ve
 
 2. **One recovery inequality for a regularity functional $R$.**
    You need at least one regularity gauge $R$ (Gevrey radius, high Sobolev norm, etc.) such that whenever efficiency is strictly submaximal, $R$ grows:
-
 
 
 $$
@@ -649,7 +652,6 @@ A trajectory $u$ is dissipative if:
 2. for $\mathcal{L}^1$-a.e. $t$ with $u(t)\in S_\alpha$, the absolutely continuous part satisfies
 
 
-
 $$
 D_t^{ac}(\Phi\circ u)(t) \le -|\partial\Phi|^2(u(t)) \le -W_\alpha(u(t)),
 $$
@@ -809,7 +811,6 @@ A hypostructure $(\mathcal{X}, \Phi)$ is *gradient-like* if:
 1. The functional $\Phi$ is real-analytic in a neighbourhood of each relevant equilibrium (A8).
 
 2. There exists $C > 0$ such that
-
 
 
 $$
@@ -1066,7 +1067,6 @@ Let $u:[0,T)\to\mathcal{X}$ be a dissipative trajectory with values in $\mathcal
 1. The total metric length of $u$ on $[t_0,T)$ is finite:
 
 
-
 $$
 \int_{t_0}^T |\dot u|(t)\,dt < \infty.
 $$
@@ -1297,13 +1297,11 @@ where $s$ is renormalized time, $v_s:=\partial_s v$, and:
 1. (Linearization with gap) The map $\mathcal{F}$ is Fréchet differentiable at $(v_\ast,\lambda_\ast)$, and the linearized operator
 
 
-
 $$
 \mathcal{L} := D_v\mathcal{F}(v_\ast,\lambda_\ast)
 $$
 
    satisfies a spectral gap estimate on the gauge-orthogonal subspace:
-
 
 
 $$
@@ -1315,7 +1313,6 @@ $$
 2. (Nonlinear remainder) The nonlinear remainder in the $v$-equation is higher order in $w$:
 
 
-
 $$
 \|\mathcal{F}(v_\ast+w,\lambda) - \mathcal{L}w\| \le C\|w\|^2
 $$
@@ -1323,7 +1320,6 @@ $$
    for $\|w\|$ sufficiently small.
 
 3. (Modulation equation) The scaling parameter satisfies
-
 
 
 $$
@@ -1528,14 +1524,12 @@ Let $u$ satisfy the amplitude–direction decomposition above in a neighbourhood
 1. The amplitude vanishes at $\mathcal{Z}_u$ with order at least $\alpha\ge 1$, in the sense that there exist $r_0>0$ and $C>0$ such that
 
 
-
 $$
 |u(x)| \le C\,\mathrm{dist}(x,\mathcal{Z}_u)^{\alpha}
    \quad\text{for all }x\text{ with }\mathrm{dist}(x,\mathcal{Z}_u)<r_0;
 $$
 
 2. The gradient of the structural parameter has at most first-order singularities,
-
 
 
 $$
@@ -1608,7 +1602,6 @@ Informally, anisotropic configurations (large $\mathcal{A}$) are dissipatively e
 Assume anisotropic stiffness. Let $u:[0,\infty)\to\mathcal{X}$ be a finite-energy hypostructural trajectory with $\Phi(u(0))=\Phi_0<\infty$. Then:
 
 1. The integral of the anisotropy modulus is controlled by the initial energy:
-
 
 
 $$
@@ -3229,7 +3222,6 @@ such that:
 1. **Strong convergence in $X$:** $u_n \to u$ strongly in $L^2(0, T; X)$.
 
 2. **Weak-* convergence of dissipation densities:**
-
 
 
 $$
@@ -7549,6 +7541,7 @@ $$
 \neg \mathcal{H} \;\Longrightarrow\; \Xi_{\mathrm{NS}} \le \Xi_{\max}-\delta(\mathcal{H})
 \;\Longrightarrow\; \text{“recovery” via the regularity functional }R.
 $$
+
 In other words, whenever a structural hypothesis fails in a given region of phase space, that failure itself produces a detectable efficiency deficit, which drives the solution into a regime where the recovery functional $R$ (e.g. Gevrey radius or a high-regularity norm) is forced to increase and blow-up is again ruled out. Thus the framework is intrinsically **gap–free**: global regularity emerges from patching together many locally weaker mechanisms, each used only in the regimes where it is safe and justified, and any breakdown of those local mechanisms triggers a compensating “soft” exclusion mechanism instead of becoming a hidden unproved assumption.
 
 #### 7.3A.1 Operator Definitions and Domains
@@ -8178,7 +8171,6 @@ The key components are:
 3. **Pressure gradient:** The critical contribution is the centrifugal potential hidden in $Q$. In cylindrical coordinates, when $\mathbf{V}_\ast$ has swirl $u_\theta \sim \sigma/r$, the pressure gradient contains the centrifugal barrier:
 
 
-
 $$
 \nabla Q \supset \frac{u_\theta^2}{r} \hat{r} \sim \frac{\sigma^2}{r^3} \hat{r}
 $$
@@ -8186,13 +8178,11 @@ $$
 4. **Hardy-Rellich inequality:** The centrifugal term $\sigma^2/r^2$ dominates the adverse strain if $\sigma > \sigma_c$. Specifically, for radial perturbations, the operator contains the radial barrier:
 
 
-
 $$
 \mathcal{H}_{rad} = -\Delta + \frac{\sigma^2}{r^2} + \text{lower order}
 $$
 
    For $\sigma^2 > 2$, the Hardy inequality (Caffarelli-Kohn-Nirenberg, 1984) ensures:
-
 
 
 $$
@@ -9111,6 +9101,7 @@ $$
 $$
 = -\mu \mathcal{E}_\rho + o(1)
 $$
+
 where $\mu := \min(\mu_{\text{swirl}}, \mu_{\text{tube}}) > 0$. In the singular limit (as the profile approaches a blow-up configuration), the error term $o(1) \to 0$, yielding:
 
 $$
