@@ -64,7 +64,7 @@ def format_latex_blocks(file_path: str, output_path: str | None = None) -> None:
         content_lines = [line.rstrip() for line in lines if line.strip()]
 
         if content_lines:
-            cleaned = "\n".join(content_lines)
+            cleaned = "\n".join(content_lines).rstrip()
             return f"$$\n{cleaned}\n$$"
         return "$$\n$$"
 
