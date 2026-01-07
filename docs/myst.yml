@@ -1,0 +1,24 @@
+# MyST configuration for Jupyter Book
+# https://mystmd.org/guide/frontmatter
+
+version: 1
+
+project:
+  title: Fragile
+  subtitle: A Unified Field Theory of Inference, Geometry, and Control
+  authors:
+    - name: Guillem Duran Ballester
+  copyright: "2025"
+  bibliography:
+    - references.bib
+
+  # Table of contents
+  toc:
+    - file: index.md
+      title: Home
+    - file: fragile-index.md
+      title: Main Documentation
+
+site:
+  title: Fragile Documentation
+  template: book-theme

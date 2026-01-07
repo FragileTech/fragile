@@ -1,0 +1,550 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 800" width="1100" height="800">
+  <title>Fragile Agent: Full System Architecture</title>
+  <desc>Comprehensive architecture diagram showing all components: Environment, Encoder/Shutter with Attentive Atlas, Decoder, World Model, Critic, Policy, Holographic Screen, and Governor/Sieve</desc>
+
+  <!-- Definitions -->
+  <defs>
+    <!-- Arrow markers for different signal types -->
+    <marker id="arrow-observation" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#3B82F6"/>
+    </marker>
+    <marker id="arrow-latent" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#10B981"/>
+    </marker>
+    <marker id="arrow-reward" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#F59E0B"/>
+    </marker>
+    <marker id="arrow-action" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#8B5CF6"/>
+    </marker>
+    <marker id="arrow-monitor" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#6B7280"/>
+    </marker>
+    <marker id="arrow-dark" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#374151"/>
+    </marker>
+
+    <!-- Gradients -->
+    <linearGradient id="envGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ECFDF5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#D1FAE5;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="encoderGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#EFF6FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#DBEAFE;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="decoderGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#F0FDFA;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#CCFBF1;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="worldGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FAF5FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F3E8FF;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="criticGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFBEB;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FEF3C7;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="policyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#F5F3FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#EDE9FE;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="memoryGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FEF3C7;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FFFBEB;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FEF3C7;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="governorGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FEF2F2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FEE2E2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="latentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#F3E8FF;stop-opacity:0.5" />
+      <stop offset="50%" style="stop-color:#EFF6FF;stop-opacity:0.5" />
+      <stop offset="100%" style="stop-color:#F9FAFB;stop-opacity:0.5" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1100" height="800" fill="#FAFAFA"/>
+
+  <!-- Title -->
+  <g id="title">
+    <text x="550" y="28" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="600" fill="#1F2937" text-anchor="middle">Fragile Agent: Full System Architecture</text>
+  </g>
+
+  <!-- ==================== GOVERNOR/SIEVE (Surrounding Frame) ==================== -->
+  <g id="governor-frame">
+    <!-- Outer monitoring boundary -->
+    <rect x="85" y="95" width="930" height="620" rx="12" ry="12" fill="none" stroke="#EF4444" stroke-width="2" stroke-dasharray="6,4" opacity="0.6"/>
+
+    <!-- Governor label top-right -->
+    <g transform="translate(920, 55)">
+      <rect x="0" y="0" width="160" height="55" rx="6" ry="6" fill="url(#governorGradient)" stroke="#EF4444" stroke-width="2"/>
+      <text x="80" y="20" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" fill="#DC2626" text-anchor="middle">GOVERNOR / SIEVE</text>
+      <text x="80" y="35" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#6B7280" text-anchor="middle">55 Runtime Contracts</text>
+      <text x="80" y="48" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#9CA3AF" text-anchor="middle" font-style="italic">WARN / HALT / KILL</text>
+    </g>
+
+    <!-- Monitoring indicators around perimeter -->
+    <circle cx="100" cy="200" r="4" fill="#EF4444" opacity="0.5"/>
+    <circle cx="100" cy="350" r="4" fill="#EF4444" opacity="0.5"/>
+    <circle cx="100" cy="500" r="4" fill="#EF4444" opacity="0.5"/>
+    <circle cx="1000" cy="200" r="4" fill="#EF4444" opacity="0.5"/>
+    <circle cx="1000" cy="350" r="4" fill="#EF4444" opacity="0.5"/>
+    <circle cx="1000" cy="500" r="4" fill="#EF4444" opacity="0.5"/>
+  </g>
+
+  <!-- ==================== HOLOGRAPHIC SCREEN (Top Memory Bar) ==================== -->
+  <g id="holographic-screen">
+    <rect x="180" y="55" width="700" height="50" rx="8" ry="8" fill="url(#memoryGradient)" stroke="#F59E0B" stroke-width="2"/>
+
+    <!-- Header -->
+    <text x="530" y="75" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#92400E" text-anchor="middle">HOLOGRAPHIC SCREEN</text>
+    <text x="530" y="92" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#6B7280" text-anchor="middle" font-style="italic">Memory: {z</text>
+    <text x="569" y="95" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#6B7280">t'</text>
+    <text x="578" y="92" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#6B7280">, a</text>
+    <text x="596" y="95" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#6B7280">t'</text>
+    <text x="605" y="92" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#6B7280">, r</text>
+    <text x="620" y="95" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#6B7280">t'</text>
+    <text x="628" y="92" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#6B7280">} for t' &lt; t</text>
+
+    <!-- Memory slots visualization -->
+    <g transform="translate(200, 65)">
+      <rect x="0" y="0" width="18" height="25" rx="2" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1"/>
+      <rect x="22" y="0" width="18" height="25" rx="2" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1"/>
+      <rect x="44" y="0" width="18" height="25" rx="2" fill="#FEFCE8" stroke="#FCD34D" stroke-width="1"/>
+      <rect x="66" y="0" width="18" height="25" rx="2" fill="#FEFCE8" stroke="#FCD34D" stroke-width="1"/>
+      <text x="48" y="36" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#92400E" text-anchor="middle">past tuples</text>
+    </g>
+
+    <!-- Attention retrieval indicator -->
+    <g transform="translate(750, 68)">
+      <text x="0" y="10" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#92400E" text-anchor="start">z</text>
+      <text x="7" y="13" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#92400E">t</text>
+      <text x="14" y="10" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#6B7280">queries past</text>
+    </g>
+  </g>
+
+  <!-- ==================== ENVIRONMENT (Left Side) ==================== -->
+  <g id="environment">
+    <rect x="20" y="280" width="100" height="200" rx="10" ry="10" fill="url(#envGradient)" stroke="#10B981" stroke-width="2.5"/>
+
+    <!-- Header -->
+    <rect x="20" y="280" width="100" height="30" rx="10" ry="10" fill="#10B981"/>
+    <rect x="20" y="300" width="100" height="12" fill="#10B981"/>
+    <text x="70" y="300" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" fill="white" text-anchor="middle">ENVIRONMENT</text>
+
+    <!-- Outputs from environment -->
+    <g transform="translate(35, 325)">
+      <text x="35" y="12" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#047857" text-anchor="middle" font-weight="500">Provides:</text>
+
+      <!-- x_t -->
+      <rect x="5" y="20" width="60" height="22" rx="3" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1"/>
+      <text x="35" y="35" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#047857" text-anchor="middle">x</text>
+      <text x="42" y="38" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#047857">t</text>
+
+      <!-- r_t -->
+      <rect x="5" y="48" width="60" height="22" rx="3" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1"/>
+      <text x="35" y="63" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#92400E" text-anchor="middle">r</text>
+      <text x="42" y="66" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#92400E">t</text>
+
+      <!-- d_t -->
+      <rect x="5" y="76" width="60" height="22" rx="3" fill="#F3F4F6" stroke="#D1D5DB" stroke-width="1"/>
+      <text x="35" y="91" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#6B7280" text-anchor="middle">d</text>
+      <text x="42" y="94" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#6B7280">t</text>
+    </g>
+
+    <!-- Input to environment -->
+    <g transform="translate(35, 435)">
+      <text x="35" y="12" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#047857" text-anchor="middle" font-weight="500">Receives:</text>
+      <rect x="5" y="18" width="60" height="22" rx="3" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/>
+      <text x="35" y="33" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#7C3AED" text-anchor="middle">a</text>
+      <text x="42" y="36" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#7C3AED">t</text>
+    </g>
+  </g>
+
+  <!-- ==================== ENCODER/SHUTTER (Split VQ-VAE) ==================== -->
+  <g id="encoder-shutter">
+    <rect x="160" y="130" width="340" height="260" rx="10" ry="10" fill="url(#encoderGradient)" stroke="#2563EB" stroke-width="2.5"/>
+
+    <!-- Header -->
+    <rect x="160" y="130" width="340" height="32" rx="10" ry="10" fill="#2563EB"/>
+    <rect x="160" y="152" width="340" height="12" fill="#2563EB"/>
+    <text x="330" y="152" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" fill="white" text-anchor="middle">ENCODER / SHUTTER</text>
+
+    <!-- Subtitle -->
+    <text x="330" y="180" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#2563EB" text-anchor="middle" font-style="italic">Split VQ-VAE with Attentive Atlas</text>
+
+    <!-- Feature Extractor -->
+    <g transform="translate(175, 195)">
+      <rect x="0" y="0" width="140" height="35" rx="4" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1.5"/>
+      <text x="70" y="15" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600" fill="#1D4ED8" text-anchor="middle">Feature Extractor</text>
+      <text x="70" y="28" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#3B82F6" text-anchor="middle" font-style="italic">f(x) backbone</text>
+    </g>
+
+    <!-- Key/Value Projections -->
+    <g transform="translate(175, 238)">
+      <rect x="0" y="0" width="65" height="28" rx="3" fill="#BFDBFE" stroke="#60A5FA" stroke-width="1"/>
+      <text x="32" y="12" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#1D4ED8" text-anchor="middle" font-weight="500">k(x)=W</text>
+      <text x="58" y="15" font-family="system-ui, -apple-system, sans-serif" font-size="6" fill="#1D4ED8">k</text>
+      <text x="32" y="23" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#1D4ED8" text-anchor="middle">f(x)</text>
+    </g>
+    <g transform="translate(250, 238)">
+      <rect x="0" y="0" width="65" height="28" rx="3" fill="#BFDBFE" stroke="#60A5FA" stroke-width="1"/>
+      <text x="32" y="12" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#1D4ED8" text-anchor="middle" font-weight="500">v(x)=W</text>
+      <text x="58" y="15" font-family="system-ui, -apple-system, sans-serif" font-size="6" fill="#1D4ED8">v</text>
+      <text x="32" y="23" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#1D4ED8" text-anchor="middle">f(x)</text>
+    </g>
+
+    <!-- Chart Query Bank -->
+    <g transform="translate(330, 195)">
+      <rect x="0" y="0" width="155" height="35" rx="4" fill="#E0E7FF" stroke="#A5B4FC" stroke-width="1.5"/>
+      <text x="77" y="15" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600" fill="#4338CA" text-anchor="middle">Chart Query Bank</text>
+      <text x="77" y="28" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#6366F1" text-anchor="middle" font-style="italic">{q</text>
+      <text x="87" y="31" font-family="system-ui, -apple-system, sans-serif" font-size="6" fill="#6366F1">i</text>
+      <text x="95" y="28" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#6366F1">} prototypes</text>
+    </g>
+
+    <!-- Cross-Attention Router -->
+    <g transform="translate(330, 238)">
+      <rect x="0" y="0" width="155" height="28" rx="3" fill="#C7D2FE" stroke="#818CF8" stroke-width="1"/>
+      <text x="77" y="12" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#4338CA" text-anchor="middle" font-weight="500">Cross-Attention Router</text>
+      <text x="77" y="23" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#6366F1" text-anchor="middle">softmax(k@q.T/sqrt(d))</text>
+    </g>
+
+    <!-- VQ Codebook -->
+    <g transform="translate(175, 278)">
+      <rect x="0" y="0" width="310" height="45" rx="4" fill="#F3E8FF" stroke="#C4B5FD" stroke-width="1.5"/>
+      <text x="155" y="15" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600" fill="#7C3AED" text-anchor="middle">VQ Codebook {e</text>
+      <text x="225" y="18" font-family="system-ui, -apple-system, sans-serif" font-size="6" fill="#7C3AED">i,c</text>
+      <text x="238" y="15" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#7C3AED">} per-chart codes</text>
+
+      <!-- Codebook grid -->
+      <g transform="translate(30, 22)">
+        <rect x="0" y="0" width="12" height="12" rx="2" fill="#DDD6FE" stroke="#A78BFA" stroke-width="1"/>
+        <rect x="16" y="0" width="12" height="12" rx="2" fill="#C4B5FD" stroke="#A78BFA" stroke-width="1"/>
+        <rect x="32" y="0" width="12" height="12" rx="2" fill="#DDD6FE" stroke="#A78BFA" stroke-width="1"/>
+        <rect x="48" y="0" width="12" height="12" rx="2" fill="#EDE9FE" stroke="#A78BFA" stroke-width="1"/>
+        <rect x="64" y="0" width="12" height="12" rx="2" fill="#C4B5FD" stroke="#A78BFA" stroke-width="1"/>
+        <text x="95" y="10" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#7C3AED">chart 1</text>
+      </g>
+      <g transform="translate(145, 22)">
+        <rect x="0" y="0" width="12" height="12" rx="2" fill="#EDE9FE" stroke="#A78BFA" stroke-width="1"/>
+        <rect x="16" y="0" width="12" height="12" rx="2" fill="#DDD6FE" stroke="#A78BFA" stroke-width="1"/>
+        <rect x="32" y="0" width="12" height="12" rx="2" fill="#8B5CF6" stroke="#7C3AED" stroke-width="1.5"/>
+        <rect x="48" y="0" width="12" height="12" rx="2" fill="#DDD6FE" stroke="#A78BFA" stroke-width="1"/>
+        <rect x="64" y="0" width="12" height="12" rx="2" fill="#EDE9FE" stroke="#A78BFA" stroke-width="1"/>
+        <text x="95" y="10" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#7C3AED">chart 2</text>
+        <circle cx="38" cy="6" r="2" fill="white"/>
+      </g>
+    </g>
+
+    <!-- Outputs label -->
+    <text x="330" y="340" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600" fill="#1F2937" text-anchor="middle">Outputs:</text>
+
+    <!-- Output boxes -->
+    <g transform="translate(175, 350)">
+      <!-- K -->
+      <rect x="0" y="0" width="90" height="30" rx="4" fill="#F3E8FF" stroke="#8B5CF6" stroke-width="1.5"/>
+      <text x="45" y="14" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600" fill="#7C3AED" text-anchor="middle">K = (K</text>
+      <text x="70" y="17" font-family="system-ui, -apple-system, sans-serif" font-size="6" fill="#7C3AED">chart</text>
+      <text x="85" y="14" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#7C3AED">,</text>
+      <text x="45" y="25" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#7C3AED" text-anchor="middle">K</text>
+      <text x="52" y="28" font-family="system-ui, -apple-system, sans-serif" font-size="6" fill="#7C3AED">code</text>
+      <text x="65" y="25" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#7C3AED">)</text>
+    </g>
+    <g transform="translate(275, 350)">
+      <!-- z_n -->
+      <rect x="0" y="0" width="70" height="30" rx="4" fill="#EFF6FF" stroke="#3B82F6" stroke-width="1.5"/>
+      <text x="35" y="18" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="500" fill="#2563EB" text-anchor="middle">z</text>
+      <text x="44" y="22" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#2563EB">n</text>
+    </g>
+    <g transform="translate(355, 350)">
+      <!-- z_tex -->
+      <rect x="0" y="0" width="70" height="30" rx="4" fill="#F9FAFB" stroke="#9CA3AF" stroke-width="1.5"/>
+      <text x="35" y="18" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="500" fill="#6B7280" text-anchor="middle">z</text>
+      <text x="47" y="22" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#6B7280">tex</text>
+    </g>
+  </g>
+
+  <!-- ==================== LATENT SPACE HUB (Center) ==================== -->
+  <g id="latent-hub">
+    <rect x="290" y="410" width="220" height="110" rx="8" ry="8" fill="url(#latentGradient)" stroke="#374151" stroke-width="2"/>
+
+    <text x="400" y="432" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="#1F2937" text-anchor="middle">Latent State Hub</text>
+
+    <!-- Three-tier visualization -->
+    <g transform="translate(305, 445)">
+      <!-- K box -->
+      <rect x="0" y="0" width="55" height="35" rx="4" fill="#F3E8FF" stroke="#8B5CF6" stroke-width="1.5"/>
+      <text x="27" y="16" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="#7C3AED" text-anchor="middle">K</text>
+      <text x="27" y="28" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#9CA3AF" text-anchor="middle">discrete</text>
+    </g>
+    <g transform="translate(372, 445)">
+      <!-- z_n box -->
+      <rect x="0" y="0" width="55" height="35" rx="4" fill="#EFF6FF" stroke="#3B82F6" stroke-width="1.5"/>
+      <text x="27" y="14" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="500" fill="#2563EB" text-anchor="middle">z</text>
+      <text x="35" y="18" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#2563EB">n</text>
+      <text x="27" y="28" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#9CA3AF" text-anchor="middle">nuisance</text>
+    </g>
+    <g transform="translate(440, 445)">
+      <!-- z_tex box -->
+      <rect x="0" y="0" width="55" height="35" rx="4" fill="#F9FAFB" stroke="#9CA3AF" stroke-width="1.5"/>
+      <text x="27" y="14" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="500" fill="#6B7280" text-anchor="middle">z</text>
+      <text x="38" y="18" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#6B7280">tex</text>
+      <text x="27" y="28" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#9CA3AF" text-anchor="middle">texture</text>
+    </g>
+
+    <!-- Control-relevant bracket -->
+    <path d="M305 485 L305 492 L427 492 L427 485" fill="none" stroke="#2563EB" stroke-width="1.5"/>
+    <text x="366" y="505" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#2563EB" text-anchor="middle" font-weight="500">control-relevant</text>
+
+    <!-- Firewall indicator -->
+    <line x1="437" y1="445" x2="437" y2="480" stroke="#EF4444" stroke-width="2" stroke-dasharray="4,2"/>
+    <text x="460" y="508" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#EF4444" text-anchor="middle" font-weight="500">firewall</text>
+  </g>
+
+  <!-- ==================== DECODER ==================== -->
+  <g id="decoder">
+    <rect x="160" y="540" width="150" height="90" rx="8" ry="8" fill="url(#decoderGradient)" stroke="#14B8A6" stroke-width="2"/>
+
+    <!-- Header -->
+    <rect x="160" y="540" width="150" height="26" rx="8" ry="8" fill="#14B8A6"/>
+    <rect x="160" y="558" width="150" height="10" fill="#14B8A6"/>
+    <text x="235" y="558" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="700" fill="white" text-anchor="middle">DECODER</text>
+
+    <!-- Content -->
+    <text x="235" y="585" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#0D9488" text-anchor="middle">Input: z</text>
+    <text x="272" y="588" font-family="system-ui, -apple-system, sans-serif" font-size="6" fill="#0D9488">geo</text>
+    <text x="285" y="585" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#0D9488">= z</text>
+    <text x="300" y="588" font-family="system-ui, -apple-system, sans-serif" font-size="6" fill="#0D9488">q</text>
+    <text x="305" y="585" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#0D9488">+ z</text>
+    <text x="320" y="588" font-family="system-ui, -apple-system, sans-serif" font-size="6" fill="#0D9488">n</text>
+
+    <text x="235" y="605" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#6B7280" text-anchor="middle" font-style="italic">Output: reconstructed x</text>
+
+    <text x="235" y="622" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#9CA3AF" text-anchor="middle">z</text>
+    <text x="244" y="625" font-family="system-ui, -apple-system, sans-serif" font-size="6" fill="#9CA3AF">tex</text>
+    <text x="260" y="622" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#9CA3AF">for recon only</text>
+  </g>
+
+  <!-- ==================== WORLD MODEL ==================== -->
+  <g id="world-model">
+    <rect x="540" y="130" width="200" height="130" rx="8" ry="8" fill="url(#worldGradient)" stroke="#8B5CF6" stroke-width="2.5"/>
+
+    <!-- Header -->
+    <rect x="540" y="130" width="200" height="28" rx="8" ry="8" fill="#8B5CF6"/>
+    <rect x="540" y="150" width="200" height="10" fill="#8B5CF6"/>
+    <text x="640" y="150" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" fill="white" text-anchor="middle">WORLD MODEL</text>
+
+    <!-- Content -->
+    <text x="640" y="180" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#7C3AED" text-anchor="middle" font-weight="500">Predicts:</text>
+    <text x="640" y="198" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#6D28D9" text-anchor="middle" font-style="italic">P(K</text>
+    <text x="662" y="201" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#6D28D9">t+1</text>
+    <text x="680" y="198" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#6D28D9">, z</text>
+    <text x="698" y="201" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#6D28D9">n,t+1</text>
+    <text x="720" y="198" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#6D28D9">|</text>
+
+    <text x="640" y="216" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#6D28D9" text-anchor="middle" font-style="italic">K</text>
+    <text x="650" y="219" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#6D28D9">t</text>
+    <text x="658" y="216" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#6D28D9">, z</text>
+    <text x="676" y="219" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#6D28D9">n,t</text>
+    <text x="692" y="216" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#6D28D9">, a</text>
+    <text x="710" y="219" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#6D28D9">t</text>
+    <text x="717" y="216" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#6D28D9">)</text>
+
+    <text x="640" y="240" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#6B7280" text-anchor="middle">Latent dynamics on (K, z</text>
+    <text x="733" y="243" font-family="system-ui, -apple-system, sans-serif" font-size="6" fill="#6B7280">n</text>
+    <text x="740" y="240" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#6B7280">)</text>
+    <text x="640" y="252" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#9CA3AF" text-anchor="middle" font-style="italic">Planning &amp; counterfactual</text>
+  </g>
+
+  <!-- ==================== CRITIC ==================== -->
+  <g id="critic">
+    <rect x="540" y="290" width="200" height="140" rx="8" ry="8" fill="url(#criticGradient)" stroke="#F59E0B" stroke-width="2.5"/>
+
+    <!-- Header -->
+    <rect x="540" y="290" width="200" height="28" rx="8" ry="8" fill="#F59E0B"/>
+    <rect x="540" y="310" width="200" height="10" fill="#F59E0B"/>
+    <text x="640" y="310" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" fill="white" text-anchor="middle">CRITIC</text>
+
+    <!-- Subtitle -->
+    <text x="640" y="335" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#92400E" text-anchor="middle" font-weight="500">Helmholtz Solver</text>
+
+    <!-- Content -->
+    <text x="640" y="358" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#D97706" text-anchor="middle" font-style="italic">V(z) via screened</text>
+    <text x="640" y="373" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#D97706" text-anchor="middle" font-style="italic">Poisson equation</text>
+
+    <!-- Reward input indicator -->
+    <g transform="translate(560, 388)">
+      <rect x="0" y="0" width="55" height="22" rx="3" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1"/>
+      <text x="27" y="15" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#92400E" text-anchor="middle">r</text>
+      <text x="34" y="18" font-family="system-ui, -apple-system, sans-serif" font-size="6" fill="#92400E">t</text>
+      <text x="45" y="15" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#92400E">input</text>
+    </g>
+
+    <!-- Output indicator -->
+    <g transform="translate(625, 388)">
+      <rect x="0" y="0" width="95" height="22" rx="3" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1"/>
+      <text x="47" y="15" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#92400E" text-anchor="middle">Output: V, nabla V</text>
+    </g>
+    <text x="672" y="422" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#9CA3AF" text-anchor="middle" font-style="italic">value gradients for policy</text>
+  </g>
+
+  <!-- ==================== POLICY ==================== -->
+  <g id="policy">
+    <rect x="540" y="460" width="200" height="130" rx="8" ry="8" fill="url(#policyGradient)" stroke="#8B5CF6" stroke-width="2.5"/>
+
+    <!-- Header -->
+    <rect x="540" y="460" width="200" height="28" rx="8" ry="8" fill="#8B5CF6"/>
+    <rect x="540" y="480" width="200" height="10" fill="#8B5CF6"/>
+    <text x="640" y="480" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" fill="white" text-anchor="middle">POLICY</text>
+
+    <!-- Subtitle -->
+    <text x="640" y="505" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#7C3AED" text-anchor="middle" font-weight="500">Controller</text>
+
+    <!-- Inputs -->
+    <text x="640" y="525" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#6B7280" text-anchor="middle">Input: K, z</text>
+    <text x="685" y="528" font-family="system-ui, -apple-system, sans-serif" font-size="6" fill="#6B7280">n</text>
+    <text x="693" y="525" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#6B7280">, V(z), nabla V</text>
+
+    <!-- Output -->
+    <text x="640" y="545" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#6D28D9" text-anchor="middle">Output: a</text>
+    <text x="680" y="548" font-family="system-ui, -apple-system, sans-serif" font-size="6" fill="#6D28D9">t</text>
+
+    <!-- Properties -->
+    <text x="640" y="565" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#6B7280" text-anchor="middle" font-style="italic">Entropy-regularized control</text>
+    <text x="640" y="578" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#6B7280" text-anchor="middle" font-style="italic">Natural gradient via G</text>
+  </g>
+
+  <!-- ==================== DATA FLOW ARROWS ==================== -->
+
+  <!-- Observation flow: Environment -> Encoder (Blue) -->
+  <g id="flow-observation">
+    <path d="M120 345 L150 345" fill="none" stroke="#3B82F6" stroke-width="2" marker-end="url(#arrow-observation)"/>
+    <text x="135" y="338" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#3B82F6" text-anchor="middle">x</text>
+    <text x="142" y="341" font-family="system-ui, -apple-system, sans-serif" font-size="6" fill="#3B82F6">t</text>
+  </g>
+
+  <!-- Encoder to Latent Hub (Green) -->
+  <g id="flow-encoder-to-hub">
+    <path d="M330 390 L330 400 L400 400 L400 408" fill="none" stroke="#10B981" stroke-width="2" marker-end="url(#arrow-latent)"/>
+  </g>
+
+  <!-- Latent to World Model (Green) -->
+  <g id="flow-latent-to-world">
+    <path d="M450 445 L520 445 L520 260 L538 260" fill="none" stroke="#10B981" stroke-width="1.5" marker-end="url(#arrow-latent)"/>
+    <text x="485" y="440" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#10B981">K, z</text>
+    <text x="505" y="443" font-family="system-ui, -apple-system, sans-serif" font-size="5" fill="#10B981">n</text>
+  </g>
+
+  <!-- Latent to Critic (Green) -->
+  <g id="flow-latent-to-critic">
+    <path d="M510 465 L525 465 L525 360 L538 360" fill="none" stroke="#10B981" stroke-width="1.5" marker-end="url(#arrow-latent)"/>
+  </g>
+
+  <!-- Latent to Policy (Green) -->
+  <g id="flow-latent-to-policy">
+    <path d="M510 475 L525 475 L525 520 L538 520" fill="none" stroke="#10B981" stroke-width="1.5" marker-end="url(#arrow-latent)"/>
+  </g>
+
+  <!-- Latent to Decoder (Green) -->
+  <g id="flow-latent-to-decoder">
+    <path d="M360 520 L360 545 L310 545 L310 538" fill="none" stroke="#10B981" stroke-width="1.5" marker-end="url(#arrow-latent)"/>
+    <text x="340" y="538" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#10B981">z</text>
+    <text x="348" y="541" font-family="system-ui, -apple-system, sans-serif" font-size="5" fill="#10B981">geo</text>
+  </g>
+
+  <!-- z_tex to Decoder (Gray dashed) -->
+  <g id="flow-ztex-to-decoder">
+    <path d="M467 520 L467 560 L310 560" fill="none" stroke="#9CA3AF" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-monitor)"/>
+    <text x="440" y="558" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#9CA3AF">z</text>
+    <text x="450" y="561" font-family="system-ui, -apple-system, sans-serif" font-size="5" fill="#9CA3AF">tex</text>
+  </g>
+
+  <!-- World Model to Policy (Green) -->
+  <g id="flow-world-to-policy">
+    <path d="M640 260 L640 458" fill="none" stroke="#10B981" stroke-width="1.5" marker-end="url(#arrow-latent)"/>
+    <text x="648" y="280" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#10B981">predictions</text>
+  </g>
+
+  <!-- Critic to Policy (Amber) -->
+  <g id="flow-critic-to-policy">
+    <path d="M640 430 L640 458" fill="none" stroke="#F59E0B" stroke-width="2" marker-end="url(#arrow-reward)"/>
+    <text x="648" y="445" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#F59E0B">V, nabla V</text>
+  </g>
+
+  <!-- Environment reward to Critic (Amber) -->
+  <g id="flow-reward">
+    <path d="M120 375 L140 375 L140 650 L530 650 L530 350 L538 350" fill="none" stroke="#F59E0B" stroke-width="2" marker-end="url(#arrow-reward)"/>
+    <text x="470" y="645" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#F59E0B">r</text>
+    <text x="477" y="648" font-family="system-ui, -apple-system, sans-serif" font-size="6" fill="#F59E0B">t</text>
+  </g>
+
+  <!-- Policy to Environment (Purple) -->
+  <g id="flow-action">
+    <path d="M640 590 L640 680 L90 680 L90 470 L120 470" fill="none" stroke="#8B5CF6" stroke-width="2" marker-end="url(#arrow-action)"/>
+    <text x="365" y="695" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#8B5CF6">a</text>
+    <text x="372" y="698" font-family="system-ui, -apple-system, sans-serif" font-size="6" fill="#8B5CF6">t</text>
+  </g>
+
+  <!-- Memory connections (dashed amber) -->
+  <g id="flow-memory">
+    <!-- From latent hub to memory -->
+    <path d="M400 410 L400 105" fill="none" stroke="#F59E0B" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-monitor)"/>
+
+    <!-- From memory to world model -->
+    <path d="M640 105 L640 128" fill="none" stroke="#F59E0B" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-monitor)"/>
+
+    <!-- From memory to policy -->
+    <path d="M750 105 L750 200 L760 200 L760 530 L740 530" fill="none" stroke="#F59E0B" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-monitor)"/>
+  </g>
+
+  <!-- Governor monitoring (gray dashed) -->
+  <g id="flow-governor">
+    <path d="M920 80 L920 110" fill="none" stroke="#6B7280" stroke-width="1" stroke-dasharray="3,2"/>
+    <path d="M920 80 L850 80 L850 105" fill="none" stroke="#6B7280" stroke-width="1" stroke-dasharray="3,2"/>
+    <path d="M920 80 L800 80 L800 128" fill="none" stroke="#6B7280" stroke-width="1" stroke-dasharray="3,2"/>
+  </g>
+
+  <!-- ==================== LEGEND ==================== -->
+  <g id="legend" transform="translate(780, 540)">
+    <rect x="0" y="0" width="190" height="155" rx="6" ry="6" fill="#FAFAFA" stroke="#E5E7EB" stroke-width="1.5"/>
+    <text x="95" y="18" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600" fill="#374151" text-anchor="middle">SIGNAL TYPES</text>
+
+    <!-- Observation/Perception (Blue) -->
+    <line x1="15" y1="38" x2="50" y2="38" stroke="#3B82F6" stroke-width="2" marker-end="url(#arrow-observation)"/>
+    <text x="60" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#374151">Observation flow</text>
+
+    <!-- Latent State (Green) -->
+    <line x1="15" y1="58" x2="50" y2="58" stroke="#10B981" stroke-width="2" marker-end="url(#arrow-latent)"/>
+    <text x="60" y="62" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#374151">Latent state flow</text>
+
+    <!-- Reward/Value (Amber) -->
+    <line x1="15" y1="78" x2="50" y2="78" stroke="#F59E0B" stroke-width="2" marker-end="url(#arrow-reward)"/>
+    <text x="60" y="82" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#374151">Reward / value flow</text>
+
+    <!-- Action/Control (Purple) -->
+    <line x1="15" y1="98" x2="50" y2="98" stroke="#8B5CF6" stroke-width="2" marker-end="url(#arrow-action)"/>
+    <text x="60" y="102" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#374151">Action / control flow</text>
+
+    <!-- Monitoring (Gray dashed) -->
+    <line x1="15" y1="118" x2="50" y2="118" stroke="#6B7280" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text x="60" y="122" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#374151">Monitor / memory</text>
+
+    <!-- Firewall -->
+    <line x1="15" y1="138" x2="50" y2="138" stroke="#EF4444" stroke-width="2" stroke-dasharray="4,2"/>
+    <text x="60" y="142" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#374151">Firewall (z</text>
+    <text x="112" y="145" font-family="system-ui, -apple-system, sans-serif" font-size="6" fill="#374151">tex</text>
+    <text x="128" y="142" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#374151">separation)</text>
+  </g>
+
+  <!-- ==================== ANNOTATION: Agent Tuple ==================== -->
+  <g id="agent-tuple" transform="translate(780, 700)">
+    <rect x="0" y="0" width="190" height="40" rx="4" ry="4" fill="#F9FAFB" stroke="#D1D5DB" stroke-width="1"/>
+    <text x="95" y="17" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600" fill="#374151" text-anchor="middle">Agent Tuple A:</text>
+    <text x="95" y="32" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#6B7280" text-anchor="middle" font-style="italic">(Shutter, World, Critic, Policy)</text>
+  </g>
+
+</svg>
