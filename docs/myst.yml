@@ -14,10 +14,8 @@ project:
 
   # Table of contents
   toc:
-    - file: index.md
-      title: Home
     - file: fragile-index.md
-      title: Main Documentation
+      title: Home
 
 site:
   title: Fragile Documentation
