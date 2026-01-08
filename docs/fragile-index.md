@@ -43,8 +43,8 @@ A catalog of online diagnostics organized by failure mode ({ref}`Sections 3–6 
 - **Stability**: Lyapunov descent, Lipschitz bounds, bifurcation detection
 - **Capacity**: Codebook entropy, rate constraints, information closure
 - **Grounding**: Input/output coupling, mixing time, saturation limits
-- **Multi-Agent**: Game tensor bounds, Nash residual, symplectic bridge conservation
-- **Ontology**: Texture predictability, fission readiness
+- **Multi-Agent**: Game tensor bounds, Nash residual, symplectic bridge conservation, mean-field scalability, geometric locking
+- **Ontology**: Texture predictability, fission readiness, thermodynamic hysteresis, hyperbolic coalescence
 
 **Geometry & Field-Theoretic Layer:**
 1. **Capacity-Constrained Metric Law** ({ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>`): Interface limits induce curvature and consistency defects
@@ -156,6 +156,8 @@ This framework introduces a unified nomenclature. While these terms may seem nov
 8. **Holographic interface symmetry.** Sensors and motors are dual boundary conditions on the same symplectic manifold—perception imposes Dirichlet (position) BCs, action imposes Neumann (flux) BCs, and reward injects scalar charges ({ref}`Section 23 <sec-the-boundary-interface-symplectic-structure>`, {ref}`Section 24 <sec-the-scalar-field-reward-energy-and-geometry>`).
 9. **Multi-agent geometric coupling.** Strategic interaction is encoded in the Game Tensor $\mathcal{G}_{ij}$, which modulates the effective metric; adversarial coupling increases the effective metric tensor eigenvalues ({ref}`Section 29 <sec-symplectic-multi-agent-field-theory>`).
 10. **Principled ontology expansion.** When texture becomes predictable (violating Axiom {prf:ref}`ax-bulk-boundary-decoupling`), the framework prescribes chart fission via pitchfork bifurcation ({ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>`).
+11. **Mean-field scalability.** Multi-agent interactions scale to $N \to \infty$ via the Mean-Field Metric Law ({prf:ref}`thm-mean-field-metric-law`), which proves that the effective metric converges to a deterministic Vlasov-geometry equation. Cooperation emerges metabolically via the Geometric Locking Principle ({prf:ref}`thm-geometric-locking-principle`).
+12. **Thermodynamic grounding.** Constants like the hysteresis threshold $\epsilon_{\text{hysteresis}}$ are not free parameters but are derived from Landauer thermodynamics ({prf:ref}`thm-thermodynamic-hysteresis-bound`), ensuring ontological operations respect computational metabolism.
 
 (sec-what-is-novel-here-vs-what-is-repackaging)=
 ### 0.2 What Is Novel Here vs What Is Repackaging
@@ -171,9 +173,10 @@ This framework introduces a unified nomenclature. While these terms may seem nov
 8. **Conformal back-reaction of value on metric.** High-curvature value regions modulate the metric via $\Omega = 1 + \alpha\|\nabla^2 V\|$, creating a feedback loop where high-curvature regions have increased metric coefficients ({ref}`Section 24.4 <sec-geometric-back-reaction-the-conformal-coupling>`).
 9. **Policy as symmetry-breaking kick.** Generation and control are unified as perturbations breaking $SO(D)$ symmetry at the origin; the framework exhibits a supercritical pitchfork bifurcation with critical temperature ({ref}`Section 21.2 <sec-policy-control-field>`, Theorem {prf:ref}`thm-pitchfork-bifurcation-structure`).
 10. **Non-local memory as self-interaction.** Trajectory history induces a memory potential $\Psi_{\text{mem}}$ via heat-kernel convolution, creating conservative forces that stabilize learned attractors ({ref}`Section 27 <sec-section-non-local-memory-as-self-interaction-functional>`).
-11. **Multi-agent field theory.** Strategic interaction derives from coupled Helmholtz equations; the Game Tensor $\mathcal{G}_{ij}$ increases the effective metric eigenvalues under adversarial coupling, making Nash equilibrium a geometric fixed point ({ref}`Section 29 <sec-symplectic-multi-agent-field-theory>`).
-12. **Ontological expansion via fission.** When texture becomes predictable (ontological stress $\Xi > \Xi_{\text{crit}}$), the framework prescribes chart bifurcation, expanding the agent's categorical structure ({ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>`).
+11. **Multi-agent field theory.** Strategic interaction derives from coupled Helmholtz equations; the Game Tensor $\mathcal{G}_{ij}$ increases the effective metric eigenvalues under adversarial coupling, making Nash equilibrium a geometric fixed point ({ref}`Section 29 <sec-symplectic-multi-agent-field-theory>`). The Mean-Field Metric Law ({prf:ref}`thm-mean-field-metric-law`) proves scalability to $N \to \infty$ agents. The Geometric Locking Principle ({prf:ref}`thm-geometric-locking-principle`) establishes that cooperative equilibria emerge from metabolic constraints.
+12. **Ontological expansion via fission.** When texture becomes predictable (ontological stress $\Xi > \Xi_{\text{crit}}$), the framework prescribes chart bifurcation, expanding the agent's categorical structure ({ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>`). The hysteresis constant is derived from Landauer thermodynamics ({prf:ref}`thm-thermodynamic-hysteresis-bound`). Chart coalescence uses the Fréchet mean on hyperbolic space ({prf:ref}`def-hyperbolic-frechet-coalescence`), and the Fission Inhibition Corollary ({prf:ref}`thm-fission-inhibition`) guarantees hierarchical stability.
 13. **Causal Information Bound (Area Law).** The maximum representable information is bounded by interface area: $I_{\max} = \text{Area}(\partial\mathcal{Z})/4\ell_L^2$. Derived rigorously from the Capacity-Constrained Metric Law via generalized Gauss-Bonnet identity; the 1/4 coefficient emerges from Fisher metric normalization. Structural parallel to Bekenstein-Hawking with information-theoretic content ({ref}`Section 33 <sec-causal-information-bound>`, {ref}`Appendix A.6 <sec-appendix-a-area-law>`).
+14. **Causal Isometry and Safe Retrieval.** The Causal Isometry Theorem ({prf:ref}`thm-causal-isometry`) proves that Interventionally Closed representations in different modalities induce isometric metrics, enabling principled cross-modal transfer. The Safe Retrieval Bandwidth Theorem ({prf:ref}`thm-safe-retrieval-bandwidth`) bounds retrieval injection to prevent saturation of the holographic interface.
 
 **Repackaging (directly inherited ingredients):**
 - **POMDP/belief-control viewpoint:** partial observability, belief updates, and control on internal state {cite}`kaelbling1998planning,rabiner1989tutorial`.
@@ -202,8 +205,8 @@ This framework introduces a unified nomenclature. While these terms may seem nov
 | **Diffusion models**                | reverse SDE from noise to data               | forward SDE from origin to boundary via holographic generation; policy steers the entropy-driven expansion ({ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>`)                                                                                                                                                                                                                                                                                                                                                                         |
 | **AdS/CFT-inspired architectures**  | bulk/boundary duality as loose metaphor      | explicit boundary-condition architecture: Dirichlet (sensors), Neumann (motors), Source (rewards) mapped to neural components ({ref}`Sections 23–24 <sec-the-boundary-interface-symplectic-structure>`)                                                                                                                                                                                                                                                                                                                                                          |
 | **Critic / value function**         | MLP fitting $V(z)$ via TD error              | PDE-solver propagating reward boundary conditions via screened Poisson equation; Helmholtz regularization and conformal coupling to metric ({ref}`Section 24 <sec-the-scalar-field-reward-energy-and-geometry>`)                                                                                                                                                                                                                                                                                                                                                 |
-| **Multi-agent RL**                  | independent or centralized learners          | coupled Helmholtz equations with Game Tensor $\mathcal{G}_{ij}$ modulating effective metric; Nash equilibrium as geometric stasis ({ref}`Section 29 <sec-symplectic-multi-agent-field-theory>`)                                                                                                                                                                                                                                                                                                                                                                  |
-| **Ontology learning**               | implicit via representation                  | explicit fission criterion: when texture becomes predictable ($\Xi > \Xi_{\text{crit}}$), chart bifurcation expands categories ({ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>`)                                                                                                                                                                                                                                                                                                                                       |
+| **Multi-agent RL**                  | independent or centralized learners          | coupled Helmholtz equations with Game Tensor $\mathcal{G}_{ij}$ modulating effective metric; Nash equilibrium as geometric stasis; mean-field scalability to $N \to \infty$ ({ref}`Section 29 <sec-symplectic-multi-agent-field-theory>`)                                                                                                                                                                                                                                                                                                                        |
+| **Ontology learning**               | implicit via representation                  | explicit fission criterion: when texture becomes predictable ($\Xi > \Xi_{\text{crit}}$), chart bifurcation expands categories; hysteresis thermodynamically calibrated ({ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>`)                                                                                                                                                                                                                                                                                              |
 
 **Reading guide (connections by section).**
 - Representation + abstraction: {ref}`Sections 2.2b <sec-the-shutter-as-a-vq-vae>`, {ref}`2.8 <sec-conditional-independence-and-sufficiency>`, {ref}`9.7–9.9 <sec-literature-connections>`
@@ -329,10 +332,10 @@ where:
 2. **Infinite Capacity** ($|\mathcal{K}| \to \infty$): No information bottleneck, continuous state space without quantization
 3. **No Safety Constraints** ($\Xi_{\text{crit}} \to \infty$): The Sieve is disabled, all actions permitted
 
-*Proof.* Each of the 30 Connection boxes below demonstrates a specific reduction. The composite limit follows from the independence of the three degeneracy conditions. $\square$
+*Proof.* Each of the 31 Connection boxes below demonstrates a specific reduction. The composite limit follows from the independence of the three degeneracy conditions. $\square$
 :::
 
-**Table 0.6.1 (The 30 RL Reductions).** Each row shows a standard RL algorithm (degenerate case), the corresponding Fragile Agent construct (general law), and the mathematical limit that recovers the standard algorithm.
+**Table 0.6.1 (The 31 RL Reductions).** Each row shows a standard RL algorithm (degenerate case), the corresponding Fragile Agent construct (general law), and the mathematical limit that recovers the standard algorithm.
 
 | #  | Standard RL (Degenerate)   | Fragile Agent (General Law)                                        | Limit                                                                   | Section                                                                                   |
 |----|----------------------------|--------------------------------------------------------------------|-------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|
@@ -366,10 +369,11 @@ where:
 | 28 | CURL/DrQ/SPR               | VICReg per Chart                                                   | Contrastive only                                                        | {ref}`7.7 <sec-vicreg-geometric-collapse-prevention>`                                     |
 | 29 | Contrastive RL (CPC)       | InfoNCE Anchoring                                                  | No macro-micro                                                          | {ref}`8 <sec-geomcheck-efficient-infonce>`                                                |
 | 30 | Temporal Discount $\gamma$ | Screening Length $\ell = 1/\kappa$                                 | Temporal only                                                           | {ref}`24.2 <sec-the-bulk-potential-screened-poisson-equation>`                            |
+| 31 | Mean-Field Games (MFG)     | Mean-Field Metric Law + Geometric Locking                          | Finite $N$                                                              | {ref}`29.8 <sec-mean-field-metric-law>`                                                   |
 
 **The Three Degeneracy Classes:**
 
-1. **Geometric Degeneracy** (Rows 1–4, 18, 20, 24, 27, 30): Setting $G \to I$ flattens the manifold. Natural gradients become vanilla gradients; the Helmholtz PDE becomes the Bellman recursion; diffusion policies lose hyperbolic structure; screening length reduces to a temporal discount parameter.
+1. **Geometric Degeneracy** (Rows 1–4, 18, 20, 24, 27, 30–31): Setting $G \to I$ flattens the manifold. Natural gradients become vanilla gradients; the Helmholtz PDE becomes the Bellman recursion; diffusion policies lose hyperbolic structure; screening length reduces to a temporal discount parameter; mean-field limits reduce to finite-agent games.
 
 2. **Capacity Degeneracy** (Rows 5–6, 11–13, 25, 28–29): Setting $|\mathcal{K}| \to \infty$ removes the information bottleneck. VQ-VAE becomes continuous representations; information bottleneck becomes scalar rate; VICReg loses atlas structure; InfoNCE loses macro-micro separation.
 
@@ -1120,6 +1124,28 @@ $$
 $$
 
 **Why this matters here.** Most of the document uses $G$ operationally via diagonal preconditioning $G^{-1}$ (which is computationally cheap). The connection becomes relevant when we ask whether updates are **path dependent** in state space: transporting a tangent vector (e.g., a value gradient direction) around a loop can return a different direction if curvature is present. Section 3 introduces an operational HolonomyCheck that detects loop drift without explicitly computing $\Gamma$.
+
+::::{admonition} Physics Isomorphism: Levi-Civita Connection
+:class: note
+:name: pi-levi-civita
+
+**In Physics:** The Levi-Civita connection is the unique torsion-free, metric-compatible connection on a Riemannian manifold. It defines parallel transport and geodesics. The Christoffel symbols $\Gamma^k_{ij} = \frac{1}{2}G^{kl}(\partial_i G_{jl} + \partial_j G_{il} - \partial_l G_{ij})$ encode how vectors rotate under infinitesimal displacement {cite}`docarmo1992riemannian`.
+
+**In Implementation:** The latent metric $G$ induces a Levi-Civita connection with Christoffel symbols (Section 2.5.1):
+$$\Gamma^k_{ij}(z) = \frac{1}{2}G^{kl}(z)\left(\partial_i G_{jl} + \partial_j G_{il} - \partial_l G_{ij}\right)$$
+appearing in the geodesic correction term of the dynamics (Definition {prf:ref}`def-bulk-drift-continuous-flow`).
+
+**Correspondence Table:**
+| Differential Geometry | Agent (Latent Dynamics) |
+|:----------------------|:------------------------|
+| Christoffel symbols $\Gamma^k_{ij}$ | Geodesic correction in SDE |
+| Parallel transport | Value gradient propagation |
+| Geodesic equation $\ddot{z}^k + \Gamma^k_{ij}\dot{z}^i\dot{z}^j = 0$ | Free motion under metric |
+| Metric compatibility $\nabla G = 0$ | Consistent distance measurement |
+| Torsion-free | Symmetric policy gradients |
+
+**Effect:** The Christoffel terms ensure that policy updates respect the curved geometry—updates are coordinate-invariant, not Euclidean.
+::::
 
 (sec-the-metric-hierarchy-fixing-the-category-error)=
 ### 2.6 The Metric Hierarchy: Fixing the Category Error
@@ -2312,18 +2338,18 @@ When Limits are breached or Interfaces fail, the agent exhibits specific patholo
 | Mode    | Standard Name       | Failed Component     | Fragile (Pathology) Name      | Description                                                                     |
 |---------|---------------------|----------------------|-------------------------------|---------------------------------------------------------------------------------|
 | **D.D** | Dispersion-Decay    | **All (Optimal)**    | **Success (Convergence)**     | Agent solves task; error drops to a stable floor.                               |
-| **S.E** | Subcritical-Equilib | **Policy**           | **Curriculum Stumble**        | Task difficulty increases faster than adaptation rate.                                    |
-| **C.D** | Conc-Dispersion     | **Policy/Shutter**   | **Mode Collapse / Obsession** | Policy concentrates on a single mode, neglecting remaining state space.                                 |
+| **S.E** | Subcritical-Equilib | **Policy**           | **Curriculum Stumble**        | Task difficulty increases faster than adaptation rate.                          |
+| **C.D** | Conc-Dispersion     | **Policy/Shutter**   | **Mode Collapse / Obsession** | Policy concentrates on a single mode, neglecting remaining state space.         |
 | **C.E** | Conc-Escape         | **Policy/Critic**    | **Divergence / Blow-up**      | Gradients/activations diverge; optimization becomes unstable.                   |
 | **T.E** | Topo-Extension      | **Shutter/WM**       | **Wrong Paradigm**            | Architecture is topologically insufficient.                                     |
 | **S.D** | Struct-Dispersion   | **Shutter**          | **Symmetry Blindness**        | Fails to exploit available symmetries.                                          |
 | **C.C** | Event Accumulation  | **Policy/WM**        | **Decision Paralysis**        | Input happens faster than decision loop (Zeno).                                 |
-| **T.D** | Glassy Freeze       | **Policy**           | **Learned Helplessness**      | Policy converges to suboptimal fixed point with zero gradient.                              |
+| **T.D** | Glassy Freeze       | **Policy**           | **Learned Helplessness**      | Policy converges to suboptimal fixed point with zero gradient.                  |
 | **D.E** | Oscillatory         | **Policy**           | **Pilot-Induced Oscillation** | Overcorrection causes increasing instability.                                   |
 | **T.C** | Labyrinthine        | **World Model**      | **Overfitting to Noise**      | WM models noise instead of signal.                                              |
 | **D.C** | Semantic Horizon    | **Shutter/WM**       | **Ungrounded inference**      | Distribution shift causes internal rollouts to decouple from boundary evidence. |
-| **B.E** | Sensitivity Expl.   | **Critic**           | **Fragility**                 | Optimization for a single condition induces high sensitivity to perturbations.                       |
-| **B.D** | Resource Depletion  | **Boundary/Shutter** | **Starvation**                | Input or power resources depleted.                                                    |
+| **B.E** | Sensitivity Expl.   | **Critic**           | **Fragility**                 | Optimization for a single condition induces high sensitivity to perturbations.  |
+| **B.D** | Resource Depletion  | **Boundary/Shutter** | **Starvation**                | Input or power resources depleted.                                              |
 | **B.C** | Control Deficit     | **Policy**           | **Overwhelmed**               | Disturbance more complex than controller (Ashby).                               |
 
 ---
@@ -2373,30 +2399,30 @@ This section provides an order-of-growth and engineering-cost view of the regula
 (sec-interface-cost-summary)=
 #### 7.1 Interface Cost Summary
 
-| Tier | Interfaces | Relative Cost | Failure Modes Covered |
-|------|-----------|---------------|-----------------------|
-| **Essential** | CostBoundCheck, ZenoCheck, CompactCheck, ErgoCheck, ComplexCheck, StiffnessCheck | Low | 6/14 |
-| **Important** | ScaleCheck, GeomCheck, OscillateCheck, ParamCheck | Medium | 9/14 |
-| **Advanced** | TopoCheck, TameCheck, BifurcateCheck, AlignCheck | High | 13/14 |
+| Tier          | Interfaces                                                                       | Relative Cost | Failure Modes Covered |
+|---------------|----------------------------------------------------------------------------------|---------------|-----------------------|
+| **Essential** | CostBoundCheck, ZenoCheck, CompactCheck, ErgoCheck, ComplexCheck, StiffnessCheck | Low           | 6/14                  |
+| **Important** | ScaleCheck, GeomCheck, OscillateCheck, ParamCheck                                | Medium        | 9/14                  |
+| **Advanced**  | TopoCheck, TameCheck, BifurcateCheck, AlignCheck                                 | High          | 13/14                 |
 
 (sec-barrier-cost-summary)=
 ### 7.2 Barrier Cost Summary
 
-| Tier | Barriers | Implementation | Notes |
-|------|----------|----------------|-------|
-| **Architectural** | BarrierSat, BarrierVariety | Built-in (tanh, dim) | Zero runtime cost |
-| **Standard RL** | BarrierMix, BarrierCausal, BarrierScat, BarrierEpi | Standard losses | Already in most implementations |
-| **Specialized** | BarrierTypeII, BarrierOmin, BarrierGap | Medium cost | Requires auxiliary computation |
-| **Infeasible** | BarrierBode, BarrierFreq, BarrierVac | See Section 8 | Need replacements |
+| Tier              | Barriers                                           | Implementation       | Notes                           |
+|-------------------|----------------------------------------------------|----------------------|---------------------------------|
+| **Architectural** | BarrierSat, BarrierVariety                         | Built-in (tanh, dim) | Zero runtime cost               |
+| **Standard RL**   | BarrierMix, BarrierCausal, BarrierScat, BarrierEpi | Standard losses      | Already in most implementations |
+| **Specialized**   | BarrierTypeII, BarrierOmin, BarrierGap             | Medium cost          | Requires auxiliary computation  |
+| **Infeasible**    | BarrierBode, BarrierFreq, BarrierVac               | See Section 8        | Need replacements               |
 
 (sec-synchronization-loss-costs)=
 ### 7.3 Synchronization Loss Costs
 
-| Sync Pair | Formula | Time Complexity | Implementation |
-|-----------|---------|-----------------|----------------|
-| **Shutter ↔ WM** | $\mathrm{CE}(K_{t+1},\hat{p}_\phi(K_{t+1}\mid K_t,A_t))$ | $O(B\lvert\mathcal{K}\rvert)$ | Easy - closure cross-entropy |
-| **Critic ↔ Policy** | TD-Error + $\Delta A = \lvert A^\pi - A^{\text{Buffer}} \rvert$ | $O(B)$ | Easy - track advantage gap |
-| **WM ↔ Policy** | $\mathbb{E}_{z \sim \pi}[\mathcal{L}_{\text{pred}}(z)]$ | $O(HBZ)$ | Medium - requires on-policy rollouts |
+| Sync Pair           | Formula                                                         | Time Complexity               | Implementation                       |
+|---------------------|-----------------------------------------------------------------|-------------------------------|--------------------------------------|
+| **Shutter ↔ WM**    | $\mathrm{CE}(K_{t+1},\hat{p}_\phi(K_{t+1}\mid K_t,A_t))$        | $O(B\lvert\mathcal{K}\rvert)$ | Easy - closure cross-entropy         |
+| **Critic ↔ Policy** | TD-Error + $\Delta A = \lvert A^\pi - A^{\text{Buffer}} \rvert$ | $O(B)$                        | Easy - track advantage gap           |
+| **WM ↔ Policy**     | $\mathbb{E}_{z \sim \pi}[\mathcal{L}_{\text{pred}}(z)]$         | $O(HBZ)$                      | Medium - requires on-policy rollouts |
 
 (sec-implementation-tiers)=
 ### 7.4 Implementation Tiers
@@ -6397,6 +6423,28 @@ This is a modeling choice, not a claim about literal quantum physics: it is used
 *Note (WFR Embedding).* The GKSL generator embeds naturally into the Wasserstein-Fisher-Rao framework (Section 20.5): the commutator $-i[H, \varrho]$ corresponds to **transport** (continuous belief flow), while the dissipator $\sum_j \gamma_j(\cdot)$ corresponds to **reaction** (discrete mass creation/destruction). This provides a geometric foundation for the otherwise algebraic GKSL construction.
 
 :::
+
+::::{admonition} Physics Isomorphism: Lindblad Master Equation
+:class: note
+:name: pi-lindblad
+
+**In Physics:** The GKSL (Gorini-Kossakowski-Sudarshan-Lindblad) equation describes the evolution of open quantum systems: $\dot{\varrho} = -i[H,\varrho] + \sum_k \gamma_k(L_k\varrho L_k^\dagger - \frac{1}{2}\{L_k^\dagger L_k, \varrho\})$. It is the most general Markovian, completely positive, trace-preserving (CPTP) evolution {cite}`lindblad1976generators,gorini1976completely`.
+
+**In Implementation:** The belief density evolution (Definition {prf:ref}`def-gksl-generator`):
+$$\mathcal{L}_{\text{GKSL}}(\varrho) = -i[H_{\text{eff}}, \varrho] + \sum_k \gamma_k \left( L_k \varrho L_k^\dagger - \frac{1}{2}\{L_k^\dagger L_k, \varrho\} \right)$$
+
+**Correspondence Table:**
+| Open Quantum Systems | Agent (Belief Dynamics) |
+|:---------------------|:------------------------|
+| Density matrix $\varrho$ | Belief distribution $\rho$ |
+| Hamiltonian $H$ | Effective potential $\Phi_{\text{eff}}$ |
+| Lindblad operators $L_k$ | Jump operators (chart transitions) |
+| Decoherence rate $\gamma_k$ | Transition rates |
+| CPTP evolution | Probability-preserving dynamics |
+
+**Diagnostic:** MECCheck (Node 22) monitors $\|\dot{\varrho} - \mathcal{L}_{\text{GKSL}}(\varrho)\|_F^2$.
+::::
+
 (sec-master-equation-consistency-defect)=
 #### 12.5.3 Master-Equation Consistency Defect (Node 22)
 
@@ -6808,6 +6856,30 @@ where $\Lambda$ and $\kappa$ are constants and $T_{ij}$ is the loss-gradient (ri
 **Implementation hook.** The squared residual of this identity defines a capacity-consistency regularizer $\mathcal{L}_{\text{cap-metric}}$; see Appendix B for the consolidated list of loss definitions and naming conventions.
 
 :::
+
+::::{admonition} Physics Isomorphism: Einstein Field Equations
+:class: note
+:name: pi-einstein-equations
+
+**In Physics:** Einstein's field equations relate spacetime curvature to stress-energy: $R_{\mu\nu} - \frac{1}{2}Rg_{\mu\nu} + \Lambda g_{\mu\nu} = 8\pi G T_{\mu\nu}$ {cite}`einstein1915field,wald1984general`.
+
+**In Implementation:** The capacity-constrained metric law (Theorem {prf:ref}`thm-capacity-constrained-metric-law`) relates latent geometry to risk:
+$$R_{ij} - \frac{1}{2}R\,G_{ij} + \Lambda G_{ij} = \kappa T_{ij}$$
+
+**Correspondence Table:**
+
+| General Relativity | Agent (Metric Law) |
+|:-------------------|:-------------------|
+| Spacetime metric $g_{\mu\nu}$ | Latent metric $G_{ij}$ |
+| Ricci tensor $R_{\mu\nu}$ | Ricci tensor $R_{ij}$ (of $G$) |
+| Cosmological constant $\Lambda$ | Baseline curvature $\Lambda$ |
+| Stress-energy $T_{\mu\nu}$ | Risk tensor $T_{ij}$ |
+| Gravitational coupling $8\pi G$ | Capacity coupling $\kappa$ |
+| Schwarzschild horizon | Saturation horizon (Lemma {prf:ref}`lem-metric-divergence-at-saturation`) |
+
+**Loss Function:** $\mathcal{L}_{\text{EFE}} := \|R_{ij} - \frac{1}{2}R\,G_{ij} + \Lambda G_{ij} - \kappa T_{ij}\|_F^2$.
+::::
+
 (sec-diagnostic-node-capacity-saturation)=
 ### 18.3 Diagnostic Node: Capacity Saturation
 
@@ -6936,6 +7008,29 @@ where:
 *Forward reference (Boundary Conditions).* Section 23.5 specifies how boundary conditions on $\partial\mathcal{Z}$ (sensory and motor boundaries) constrain the WFR dynamics: **Waking** imposes Dirichlet (sensors) + Neumann (motors) BCs; **Dreaming** imposes reflective BCs on both, enabling recirculating flow without external input.
 
 :::
+
+::::{admonition} Physics Isomorphism: Wasserstein-Fisher-Rao Geometry
+:class: note
+:name: pi-wfr-metric
+
+**In Physics:** The Wasserstein-Fisher-Rao (WFR) metric on probability measures combines optimal transport (Wasserstein) with information geometry (Fisher-Rao). It is the unique metric allowing both mass transport and creation/annihilation {cite}`liero2018optimal,chizat2018interpolating`.
+
+**In Implementation:** The belief density $\rho$ evolves under the WFR metric on $\mathcal{P}(\mathcal{Z})$:
+$$d_{\text{WFR}}^2(\rho_0, \rho_1) = \inf_{\rho, v, r} \int_0^1 \int_{\mathcal{Z}} \left( \|v\|_G^2 + \lambda^2 r^2 \right) \rho \, d\mu_G \, dt$$
+
+**Correspondence Table:**
+| Optimal Transport | Agent (Belief Dynamics) |
+|:------------------|:------------------------|
+| Wasserstein distance $W_2$ | Transport cost for belief |
+| Fisher-Rao distance | Information cost for reweighting |
+| Transport velocity $v$ | Belief flow in $\mathcal{Z}$ |
+| Reaction rate $r$ | Mass creation/annihilation |
+| Benamou-Brenier formula | Dynamic formulation |
+| Geodesic interpolation | Optimal belief transition |
+
+**Significance:** WFR unifies transport (Wasserstein) and reweighting (Fisher-Rao) in a single Riemannian geometry.
+::::
+
 :::{prf:remark} Units
 :label: rem-units
 
@@ -7215,6 +7310,28 @@ $\delta d\mu_G=-\tfrac12 G_{ij}\delta G^{ij}d\mu_G$, then collect terms to match
 $\delta\mathcal{S}_{\mathrm{WFR}}=-\tfrac12\int T_{ij}\delta G^{ij}d\mu_G\,ds$.
 See Appendix C for the full derivation. $\square$
 
+:::
+
+::::{admonition} Physics Isomorphism: Stress-Energy Tensor
+:class: note
+:name: pi-stress-energy
+
+**In Physics:** The stress-energy tensor $T_{\mu\nu}$ is derived from the variation of the matter action with respect to the metric: $T_{\mu\nu} = -\frac{2}{\sqrt{-g}}\frac{\delta S_M}{\delta g^{\mu\nu}}$ {cite}`wald1984general`.
+
+**In Implementation:** The WFR stress-energy tensor (Theorem {prf:ref}`thm-wfr-stress-energy-tensor-variational-form`) is:
+$$T_{ij} = \rho\left(v_i v_j - \frac{1}{2}\|v\|_G^2 G_{ij}\right) + \frac{\lambda^2}{2}\rho r^2 G_{ij}$$
+derived from $\delta \mathcal{S}_{\text{WFR}}/\delta G^{ij}$.
+
+**Correspondence Table:**
+
+| Field Theory | Agent (WFR) |
+|:-------------|:------------|
+| Matter density $\rho_m$ | Belief density $\rho$ |
+| 4-velocity $u^\mu$ | Transport velocity $v^i$ |
+| Pressure $p$ | Reaction pressure $\frac{\lambda^2}{2}\rho r^2$ |
+| Rest mass density | WFR kinetic energy $\frac{1}{2}\rho\|v\|_G^2$ |
+::::
+
 **Implications:**
 1. **High velocity ($v$):** Agent moves fast through a region → $T_{ij}$ large → curvature $R_{ij}$ increases → latent space contracts. This is the **Natural Gradient** effect derived from first principles.
 
@@ -7484,6 +7601,31 @@ $$
 T_c^* = \frac{\mu^2}{4} = \frac{1}{16}(1 + 2u_\pi^r)^2 \approx \frac{1}{16}.
 $$
 For $T_c > T_c^*$: symmetric phase; for $T_c < T_c^*$: broken phase with directional flow. $\square$
+
+:::
+
+::::{admonition} Physics Isomorphism: Spontaneous Symmetry Breaking
+:class: note
+:name: pi-symmetry-breaking
+
+**In Physics:** Spontaneous symmetry breaking occurs when a system's ground state has lower symmetry than its Hamiltonian. The classic example is the Mexican hat potential $V(\phi) = -\mu^2|\phi|^2 + \lambda|\phi|^4$: for $\mu^2 > 0$, the $U(1)$-symmetric origin becomes unstable and the system selects a direction {cite}`goldstone1961field,weinberg1996qft`.
+
+**In Implementation:** The radial dynamics exhibit supercritical pitchfork bifurcation (Theorem {prf:ref}`thm-pitchfork-bifurcation-structure`):
+$$\dot{r} = \mu r - r^3 + \sigma\xi$$
+where $\mu = 1/2$ and the $SO(D)$ symmetry at the origin is broken when the policy selects a direction.
+
+**Correspondence Table:**
+| Phase Transition Theory | Agent (Policy Emergence) |
+|:------------------------|:-------------------------|
+| Order parameter $\phi$ | Radial coordinate $r = \|z\|$ |
+| Control parameter $\mu$ | $\mu = 1/2$ (supercritical) |
+| Critical temperature $T_c^*$ | $T_c^* = 1/16$ (barrier height) |
+| Symmetric phase ($\phi = 0$) | Semantic vacuum (origin) |
+| Broken phase ($\phi \neq 0$) | Policy-selected direction |
+| Goldstone modes | Angular fluctuations in $\theta$ |
+
+**Significance:** Policy selection is not arbitrary—it is a geometric phase transition where the agent spontaneously breaks $SO(D)$ symmetry to select a generation direction.
+::::
 
 **Algorithm 21.2.6 (Control Field Computation).**
 
@@ -7777,6 +7919,27 @@ Units: $[S_{\mathrm{OM}}] = \mathrm{nat}$.
 *Remark (Curvature Correction).* The term $\frac{T_c}{12}R(z)$ is a stochastic correction that accounts for the path-measure distortion on curved spaces. In flat space ($R = 0$), this term vanishes. The entropy term $T_c H_{\pi}$ ensures the agent prefers stochastic policies in uncertain regions.
 
 :::
+
+::::{admonition} Physics Isomorphism: Onsager-Machlup Action
+:class: note
+:name: pi-onsager-machlup
+
+**In Physics:** The Onsager-Machlup functional assigns probability to paths in stochastic thermodynamics: $P[\gamma] \propto \exp(-S_{OM}[\gamma]/k_B T)$ where $S_{OM}$ includes kinetic and potential terms plus a curvature correction {cite}`onsager1953fluctuations`.
+
+**In Implementation:** The extended Onsager-Machlup action (Definition {prf:ref}`def-extended-onsager-machlup-action`):
+$$S_{\text{OM}}[z] = \int_0^T \left(\frac{1}{2}G_{ij}\dot{z}^i\dot{z}^j + \Phi_{\text{eff}} + \frac{T_c}{12}R + T_c H_\pi\right)ds$$
+
+**Correspondence Table:**
+
+| Statistical Mechanics | Agent (Path Integral) |
+|:----------------------|:----------------------|
+| Temperature $k_B T$ | Cognitive temperature $T_c$ |
+| Kinetic energy $\frac{1}{2}m|\dot{x}|^2$ | $\frac{1}{2}G_{ij}\dot{z}^i\dot{z}^j$ (mass = metric) |
+| Potential $U(x)$ | Effective potential $\Phi_{\text{eff}}$ |
+| Curvature correction $\frac{k_BT}{12}R$ | $\frac{T_c}{12}R$ |
+| Boltzmann weight $e^{-S/k_BT}$ | Path probability $e^{-S_{\text{OM}}/T_c}$ |
+::::
+
 :::{prf:proposition} Mass Scaling Near Boundary
 :label: prop-mass-scaling-near-boundary
 
@@ -8179,6 +8342,54 @@ The BAOAB integrator preserves the Boltzmann distribution $\rho(z, p) \propto \e
 *Remark (Comparison to Euler-Maruyama).* Euler-Maruyama has $O(h)$ bias in the stationary distribution, whereas BAOAB achieves $O(h^2)$. For long trajectories, this difference is critical.
 
 :::
+
+::::{admonition} Physics Isomorphism: Langevin Thermostat
+:class: note
+:name: pi-langevin-thermostat
+
+**In Physics:** The Langevin equation $m\ddot{x} = -\nabla U - \gamma\dot{x} + \sqrt{2\gamma k_B T}\,\xi(t)$ describes Brownian motion in a potential with friction $\gamma$ and thermal noise. The Ornstein-Uhlenbeck thermostat samples the Maxwell-Boltzmann distribution $p \propto \exp(-mv^2/2k_BT)$ {cite}`leimkuhler2016computation`.
+
+**In Implementation:** The BAOAB integrator (Definition {prf:ref}`def-baoab-splitting`) splits the dynamics:
+- **B:** $p \gets p - \frac{h}{2}\nabla_z\Phi_{\text{eff}}$ (kick)
+- **A:** $z \gets z + \frac{h}{2}G^{-1}p$ (drift)
+- **O:** $p \gets c_1 p + c_2 G^{1/2}\xi$ (thermostat)
+- **A, B:** repeat
+
+**Correspondence Table:**
+| Molecular Dynamics | Agent (BAOAB) |
+|:-------------------|:--------------|
+| Position $x$ | Latent state $z$ |
+| Momentum $p$ | Auxiliary variable $p$ |
+| Potential $U(x)$ | Effective potential $\Phi_{\text{eff}}(z)$ |
+| Friction $\gamma$ | Damping coefficient |
+| Temperature $k_B T$ | Cognitive temperature $T_c$ |
+| Maxwell-Boltzmann | Stationary policy distribution |
+
+**Advantage:** BAOAB preserves the Boltzmann distribution to $O(h^2)$ (Proposition {prf:ref}`prop-baoab-preserves-boltzmann`), avoiding the $O(h)$ bias of Euler-Maruyama.
+::::
+
+::::{admonition} Physics Isomorphism: Detailed Balance
+:class: note
+:name: pi-detailed-balance
+
+**In Physics:** A stochastic process satisfies detailed balance if transition rates satisfy $\pi(x)W(x \to y) = \pi(y)W(y \to x)$ for all states $x, y$. This implies the stationary distribution $\pi$ and time-reversibility {cite}`vanKampen1992stochastic`.
+
+**In Implementation:** The WFR dynamics satisfy detailed balance at equilibrium:
+$$\rho_*(z) \cdot J(z \to z') = \rho_*(z') \cdot J(z' \to z)$$
+where $\rho_* \propto \exp(-\Phi_{\text{eff}}/T_c)\sqrt{|G|}$ is the Boltzmann distribution.
+
+**Correspondence Table:**
+| Statistical Mechanics | Agent (Equilibrium) |
+|:----------------------|:--------------------|
+| Transition rate $W(x \to y)$ | Jump rate $\lambda_{KK'}$ |
+| Stationary distribution $\pi$ | Equilibrium belief $\rho_*$ |
+| Detailed balance | Reversibility at Nash |
+| Entropy production $\dot{S}$ | Zero at equilibrium |
+| Fluctuation-dissipation | Einstein relation for $T_c$ |
+
+**Consequence:** Detailed balance ensures the BAOAB thermostat samples the correct distribution.
+::::
+
 (sec-the-overdamped-limit)=
 ### 22.5 The Overdamped Limit
 
@@ -8231,6 +8442,29 @@ Setting $\partial_s p = 0$ and using detailed balance gives $p \propto e^{-\Phi/
 **Cross-references:** Section 21.2 (Langevin dynamics), Theorem {prf:ref}`thm-equivalence-of-entropy-regularized-control-forms-discrete-macro`, Section 2.11 (Belief density evolution).
 
 :::
+
+::::{admonition} Physics Isomorphism: Fokker-Planck Equation
+:class: note
+:name: pi-fokker-planck
+
+**In Physics:** The Fokker-Planck equation describes the time evolution of probability density under drift and diffusion: $\partial_t p = -\nabla \cdot (p\,\mathbf{F}) + D\nabla^2 p$. On a Riemannian manifold with metric $g$, the diffusion term becomes the Laplace-Beltrami operator {cite}`risken1996fokkerplanck`.
+
+**In Implementation:** The belief density $\rho(z,s)$ evolves via (Corollary {prf:ref}`cor-fokker-planck-duality`):
+$$\partial_s p = \nabla_i\left( G^{ij}\left( p\,\partial_j\Phi_{\text{eff}} + T_c\,\partial_j p \right) \right)$$
+with stationary distribution $p_*(z) \propto \exp(-\Phi_{\text{eff}}(z)/T_c)\sqrt{|G(z)|}$.
+
+**Correspondence Table:**
+| Statistical Physics | Agent (Belief Dynamics) |
+|:--------------------|:------------------------|
+| Probability density $p(x,t)$ | Belief density $\rho(z,s)$ |
+| Drift force $\mathbf{F}$ | Effective potential gradient $-\nabla\Phi_{\text{eff}}$ |
+| Diffusion constant $D$ | Cognitive temperature $T_c$ |
+| Laplacian $\nabla^2$ | Laplace-Beltrami $\Delta_G$ |
+| Boltzmann equilibrium | WFR stationary distribution |
+
+**Loss Function:** Stein discrepancy $\mathbb{E}[\|\nabla \log p - \nabla \log p_*\|^2_G]$.
+::::
+
 (sec-agent-lifecycle-summary)=
 ### 22.6 Agent Lifecycle Summary
 
@@ -8533,6 +8767,29 @@ $$
 Units: $[j_{\text{motor}}] = \mathrm{nat}/\text{step}$.
 
 :::
+
+::::{admonition} Physics Isomorphism: Hamiltonian Boundary Conditions
+:class: note
+:name: pi-hamiltonian-bc
+
+**In Physics:** In Hamiltonian mechanics, canonical coordinates $(q, p)$ satisfy $\dot{q} = \partial H/\partial p$ (position from momentum) and $\dot{p} = -\partial H/\partial q$ (momentum from position). Boundary conditions fix either $q$ (Dirichlet) or $\partial_n q \propto p$ (Neumann) {cite}`arnold1989mathematical`.
+
+**In Implementation:** The agent's interface imposes dual boundary conditions:
+- **Perception (Dirichlet):** Observations fix position $z|_{\partial\mathcal{Z}} = z_{\text{obs}}$
+- **Action (Neumann):** Motors fix momentum flux $\partial_n z|_{\partial\mathcal{Z}} = u_\pi$
+- **Reward (Source):** Scalar charge injection $\sigma_r|_{\partial\mathcal{Z}}$
+
+**Correspondence Table:**
+
+| Hamiltonian Mechanics | Agent (Symplectic Interface) |
+|:----------------------|:-----------------------------|
+| Position $q$ | Latent state $z$ |
+| Momentum $p$ | Policy gradient $\nabla_z V$ |
+| Dirichlet BC $q|_\Gamma = q_0$ | Observation constraint |
+| Neumann BC $\partial_n q|_\Gamma = f$ | Action constraint |
+| Hamiltonian $H(q,p)$ | Effective potential $\Phi_{\text{eff}}$ |
+::::
+
 :::{prf:proposition} Symplectic Duality Principle
 :label: prop-symplectic-duality-principle
 
@@ -8614,6 +8871,30 @@ which is smooth and invertible by positive-definiteness of $G$. $\square$
 *Cross-reference:* The metric $G$ appearing here is the capacity-constrained metric from Theorem {prf:ref}`thm-capacity-constrained-metric-law`, ensuring that the "mass" in the Legendre relation $p = G\dot{q}$ is the same "mass" that determines geodesic inertia (Definition {prf:ref}`def-mass-tensor`).
 
 :::
+
+::::{admonition} Physics Isomorphism: Legendre Transform
+:class: note
+:name: pi-legendre-transform
+
+**In Physics:** The Legendre transform maps between Lagrangian and Hamiltonian formulations: $H(q,p) = p\dot{q} - L(q,\dot{q})$ where $p = \partial L/\partial \dot{q}$. It exchanges velocity for momentum as the independent variable {cite}`arnold1989mathematical`.
+
+**In Implementation:** The Visual and Action Atlases are related by Legendre duality (Theorem {prf:ref}`thm-atlas-duality-via-legendre-transform`):
+$$\mathcal{L}: T\mathcal{Q} \to T^*\mathcal{Q}, \quad (z, \dot{z}) \mapsto (z, p = G\dot{z})$$
+
+**Correspondence Table:**
+| Analytical Mechanics | Agent (Symplectic Interface) |
+|:---------------------|:-----------------------------|
+| Configuration space $\mathcal{Q}$ | Latent state space $\mathcal{Z}$ |
+| Tangent bundle $T\mathcal{Q}$ | Velocity representation |
+| Cotangent bundle $T^*\mathcal{Q}$ | Momentum representation |
+| Lagrangian $L(q,\dot{q})$ | Kinetic action |
+| Hamiltonian $H(q,p)$ | Effective potential $\Phi_{\text{eff}}$ |
+| Velocity $\dot{q}$ | Policy output $u_\pi$ |
+| Momentum $p$ | Value gradient $\nabla V$ |
+
+**Duality:** Perception (Dirichlet) fixes position; Action (Neumann) fixes momentum flux.
+::::
+
 :::{prf:definition} The Holographic Shutter — Unified Interface
 :label: def-the-holographic-shutter-unified-interface
 
@@ -9476,6 +9757,28 @@ Units: $[\kappa] = 1/\text{length}$, $[\Delta_G V] = \mathrm{nat}/\text{length}^
 
 :::
 
+::::{admonition} Physics Isomorphism: Yukawa Potential
+:class: note
+:name: pi-yukawa-potential
+
+**In Physics:** The Yukawa (screened Coulomb) potential satisfies $(-\nabla^2 + m^2)\phi = \rho$ where $m$ is the mediating boson mass. The screening length $\ell = 1/m$ determines the range of the force {cite}`yukawa1935interaction`.
+
+**In Implementation:** The value function satisfies $(-\Delta_G + \kappa^2)V = \rho_r$ where:
+$$\kappa = -\ln\gamma, \quad \ell_\gamma = 1/\kappa$$
+
+**Correspondence Table:**
+
+| Physics (Yukawa) | Agent (Bellman-Helmholtz) |
+|:-----------------|:--------------------------|
+| Scalar field $\phi$ | Value function $V(z)$ |
+| Mass $m$ | Discount rate $\kappa = -\ln\gamma$ |
+| Screening length $1/m$ | Reward horizon $\ell_\gamma = 1/\kappa$ |
+| Charge density $\rho$ | Reward density $\rho_r$ |
+| Laplacian $\nabla^2$ | Laplace-Beltrami $\Delta_G$ |
+
+**Loss Function:** PINN regularizer enforcing $\|(-\Delta_G + \kappa^2)V - \rho_r\|^2$.
+::::
+
 :::{note} Connection to RL #4: Bellman Equation as Degenerate Helmholtz PDE
 **The General Law (Fragile Agent):**
 The Value Function $V(z)$ satisfies the **Screened Poisson (Helmholtz) Equation** on $(\mathcal{Z}, G)$:
@@ -9515,6 +9818,29 @@ where $G_\kappa(z, z')$ is the Green's function satisfying $(-\Delta_G + \kappa^
 *Physical Interpretation:* The Critic tells the Policy: "If there is a charge (Reward) at the boundary, here is the resulting Potential Energy at your current location $z$."
 
 :::
+
+::::{admonition} Physics Isomorphism: Green's Function
+:class: note
+:name: pi-green-function
+
+**In Physics:** The Green's function $G(x, x')$ is the fundamental solution satisfying $\mathcal{L}G(x, \cdot) = \delta(x - \cdot)$ for a linear operator $\mathcal{L}$. In electrostatics, $G$ is the potential at $x$ due to a unit charge at $x'$. For the screened Laplacian, $G_\kappa \sim e^{-\kappa r}/r^{(d-2)/2}$ {cite}`jackson1999classical`.
+
+**In Implementation:** The Critic computes the Green's function of the screened Laplacian (Proposition {prf:ref}`prop-green-s-function-interpretation`):
+$$V(z) = \int_{\partial\Omega} G_\kappa(z, z') \sigma_r(z') \, d\Sigma(z')$$
+where $(-\Delta_G + \kappa^2) G_\kappa(z, \cdot) = \delta_z$.
+
+**Correspondence Table:**
+| Electrostatics | Agent (Critic) |
+|:---------------|:---------------|
+| Green's function $G(x, x')$ | Value kernel $G_\kappa(z, z')$ |
+| Charge density $\rho$ | Reward density $\sigma_r$ |
+| Electrostatic potential $\phi$ | Value function $V$ |
+| Screening length $1/m$ | Reward horizon $\ell_\gamma = 1/\kappa$ |
+| Superposition principle | Linearity of Helmholtz equation |
+
+**Loss Function:** TD-error $\|(-\Delta_G + \kappa^2)V - \rho_r\|^2$ trains the critic as an implicit Green's function solver.
+::::
+
 :::{prf:proposition} Green's Function Decay
 :label: prop-green-s-function-decay
 
@@ -9609,6 +9935,30 @@ where $Z = \int_{\mathcal{Z}} \exp(V(z)/T_c) \, d\mu_G(z)$ is the partition func
 *Sign Convention:* If $V$ is "Reward" (higher is better), use $+V/T_c$. If $V$ is "Cost" (lower is better), use $-V/T_c$. Throughout this document we use the **Reward convention** unless otherwise noted.
 
 :::
+
+::::{admonition} Physics Isomorphism: Canonical Ensemble
+:class: note
+:name: pi-canonical-ensemble
+
+**In Physics:** The canonical ensemble describes a system in thermal equilibrium with a heat bath at temperature $T$. The probability of microstate $i$ is $P_i = Z^{-1}\exp(-E_i/k_B T)$ where $Z = \sum_i \exp(-E_i/k_B T)$ is the partition function {cite}`landau1980statistical`.
+
+**In Implementation:** The stationary policy distribution (Definition {prf:ref}`def-canonical-ensemble`):
+$$P_{\text{stationary}}(z) = \frac{1}{Z} \exp\left(\frac{V(z)}{T_c}\right)$$
+where $Z = \int_{\mathcal{Z}} \exp(V(z)/T_c) \, d\mu_G(z)$ is the partition function.
+
+**Correspondence Table:**
+| Statistical Mechanics | Agent (MaxEnt RL) |
+|:----------------------|:------------------|
+| Energy $E$ | Negative reward $-r$ |
+| Temperature $k_B T$ | Cognitive temperature $T_c$ |
+| Partition function $Z$ | Soft value normalization |
+| Free energy $F = -k_BT\log Z$ | Soft value function |
+| Boltzmann distribution | MaxEnt optimal policy $\pi^* \propto \exp(Q/T_c)$ |
+| Entropy $S = -k_B\sum p\log p$ | Policy entropy $H(\pi)$ |
+
+**Consequence:** MaxEnt RL is not an approximation—it is the exact solution to entropy-regularized control, recovering the Boltzmann distribution as the unique maximizer.
+::::
+
 :::{prf:theorem} WFR Consistency: Value Creates Mass
 :label: thm-wfr-consistency-value-creates-mass
 
@@ -9672,6 +10022,28 @@ with $\alpha_{\text{conf}} \ge 0$ the conformal coupling strength and $\|\cdot\|
 Units: $[\Omega] = 1$ (dimensionless), $[\alpha_{\text{conf}}] = \text{length}^2/\mathrm{nat}$.
 
 :::
+
+::::{admonition} Physics Isomorphism: Conformal Transformation
+:class: note
+:name: pi-conformal-coupling
+
+**In Physics:** A conformal transformation rescales the metric by a position-dependent factor: $\tilde{g}_{\mu\nu} = \Omega^2(x) g_{\mu\nu}$. In scalar field theory, conformal coupling $\xi R\phi^2$ couples the field to spacetime curvature. Weyl transformations preserve angles but not distances {cite}`wald1984general`.
+
+**In Implementation:** The value-metric conformal coupling (Definition {prf:ref}`def-value-metric-conformal-coupling`):
+$$\tilde{G}_{ij}(z) = \Omega(z)^2 \cdot G_{ij}(z), \quad \Omega(z) = 1 + \alpha_{\text{conf}} \|\nabla^2_G V(z)\|_{\text{op}}$$
+
+**Correspondence Table:**
+| Conformal Field Theory | Agent (Value-Metric Coupling) |
+|:-----------------------|:------------------------------|
+| Conformal factor $\Omega^2$ | $\left(1 + \alpha\|\nabla^2 V\|\right)^2$ |
+| Weyl rescaling | Value-dependent metric inflation |
+| Conformal anomaly | Curvature-dependent deliberation cost |
+| Preserved angles | Preserved local policy directions |
+| Dilated distances | Increased caution in high-curvature regions |
+
+**Effect:** High-curvature value regions acquire increased effective mass, automatically slowing the agent near critical decisions.
+::::
+
 :::{prf:proposition} Risk-Curvature Mechanism
 :label: prop-risk-curvature-mechanism
 
@@ -10973,6 +11345,29 @@ At any non-stationary point $\theta$ where LICQ holds (the gradients $\{\nabla C
 
 :::
 
+::::{admonition} Physics Isomorphism: Lyapunov Stability
+:class: note
+:name: pi-lyapunov
+
+**In Physics:** A Lyapunov function $V(x)$ certifies stability if $V > 0$ away from equilibrium and $\dot{V} \leq 0$ along trajectories. For $\dot{V} \leq -\lambda V$, convergence is exponential {cite}`khalil2002nonlinear,lasalle1961stability`.
+
+**In Implementation:** The training Lyapunov function (Definition {prf:ref}`def-training-lyapunov-function`):
+$$\mathcal{L}_{\text{Lyap}}(\theta) = \mathcal{L}_{\text{task}}(\theta) + \sum_k \frac{\mu_k}{2} \max(0, C_k(\theta))^2$$
+with $\Delta\mathcal{L}_{\text{Lyap}} < 0$ along gradient flow.
+
+**Correspondence Table:**
+| Dynamical Systems | Agent (Training) |
+|:------------------|:-----------------|
+| State $x$ | Parameters $\theta$ |
+| Lyapunov function $V$ | Training loss $\mathcal{L}_{\text{Lyap}}$ |
+| Equilibrium $x^*$ | Trained parameters $\theta^*$ |
+| $\dot{V} \leq 0$ | Loss decrease |
+| Exponential stability | Convergence rate $\eta$ |
+| LaSalle invariance | Convergence to KKT manifold |
+
+**Diagnostic:** StabilityCheck monitors $\Delta\mathcal{L}_{\text{Lyap}}/\mathcal{L}_{\text{Lyap}}$.
+::::
+
 ::::{note} Connection to RL #23: MAML as Degenerate Meta-Stability
 **The General Law (Fragile Agent):**
 The **Universal Governor** solves bilevel optimization over Sieve diagnostics:
@@ -11310,6 +11705,29 @@ $$
 The sign convention ensures that the drift $-G^{-1}\nabla \Psi_{\text{mem}}$ moves toward rewarding experiences and away from penalizing ones.
 
 :::
+
+::::{admonition} Physics Isomorphism: Heat Kernel
+:class: note
+:name: pi-heat-kernel
+
+**In Physics:** The heat kernel $H_t(x, y)$ is the fundamental solution of the heat equation $\partial_t u = \Delta u$, satisfying $H_t(x, \cdot) \to \delta_x$ as $t \to 0$. On a Riemannian manifold, it encodes diffusion and satisfies $H_t(x, y) \sim (4\pi t)^{-d/2}\exp(-d^2(x,y)/4t)$ for small $t$ {cite}`berline1992heat,grigoryan2009heat`.
+
+**In Implementation:** The memory potential uses heat kernel convolution (Definition {prf:ref}`def-memory-potential`):
+$$\Psi_{\text{mem}}(z) = -\int_0^T \alpha(t') H_\tau(z, \gamma(t'))\, dt'$$
+where $H_\tau$ is the heat kernel on $(\mathcal{Z}, G)$.
+
+**Correspondence Table:**
+| Heat Equation Theory | Agent (Non-Local Memory) |
+|:---------------------|:-------------------------|
+| Heat kernel $H_t(x, y)$ | Memory diffusion kernel |
+| Diffusion time $t$ | Memory timescale $\tau$ |
+| Heat source | Past reward-weighted positions |
+| Temperature evolution | Belief spread over time |
+| Short-time asymptotics | Geodesic distance dominance |
+
+**Connection:** The Matérn kernel $K_\nu \propto (-\Delta_G + \kappa^2)^{-\nu}$ generalizes the heat kernel; for $\nu = 1$, it recovers the screened Poisson Green's function (Section 24.2).
+::::
+
 :::{prf:proposition} Kernel Alternatives {cite}`rasmussen2006gp`
 :label: prop-kernel-alternatives
 
@@ -11783,10 +12201,96 @@ We introduce two diagnostic nodes for monitoring retrieval health.
 
 *Key insight:* Memory and retrieval are dual non-local mechanisms. Memory integrates over temporal history; retrieval integrates over spatial archive. Both contribute conservative forces to the equations of motion (Definition {prf:ref}`def-retrieval-augmented-geodesic-sde`) and mass sources to WFR dynamics (Definition {prf:ref}`def-retrieval-source-term`).
 
-**Open problems:**
-1. *Joint optimization:* How should $\Lambda_{\text{mem}}$ and $\Lambda_{\text{ret}}$ be co-adapted? (Hint: the Governor framework of Section 26 applies.)
-2. *Retrieval-induced instability:* Under what conditions does external knowledge destabilize the hyperbolic boundary approach?
-3. *Cross-modal retrieval:* Can the isometry axiom be extended to heterogeneous modalities (text ↔ image ↔ code)?
+---
+
+(sec-bilevel-nonlocal-regulation)=
+### 28.8 Bilevel Regulation of Non-Local Potentials (Joint Optimization Resolution)
+
+The joint optimization of memory strength $\Lambda_{\text{mem}}$ and retrieval strength $\Lambda_{\text{ret}}$ is solved by the Universal Governor ({ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>`) acting on the diagnostic residuals of Nodes 43 and 53.
+
+:::{prf:proposition} Optimal Non-Local Coupling
+:label: prop-optimal-nonlocal-coupling
+
+Let the control vector be $\Lambda = (\Lambda_{\text{mem}}, \Lambda_{\text{ret}})$. The optimal coupling is the fixed point of the Governor's policy $\pi_{\mathfrak{G}}$ ({prf:ref}`def-the-universal-governor`) given the diagnostic state $s_t = (\Delta_{\text{causal}}, \Omega_{\text{mem}})$.
+
+**Control Law Derivation:**
+
+1. **Surprise Signal:** Let $\Delta_{\text{causal}} = D_{\text{KL}}(P_{\text{int}} \| P_{\text{obs}})$ be the Interventional Gap (Node 53).
+
+2. **Overfitting Signal:** Let $\Omega_{\text{mem}}$ be the Non-Locality Ratio ({prf:ref}`def-non-locality-ratio`, Node 43).
+
+3. **Governor Update:** The Lyapunov descent condition $\Delta V_{\mathfrak{L}} < 0$ ({prf:ref}`def-training-lyapunov-function`) implies the following qualitative update dynamics:
+$$
+\begin{aligned}
+\dot{\Lambda}_{\text{ret}} &\propto \alpha_1 \cdot \Delta_{\text{causal}} \\
+\dot{\Lambda}_{\text{mem}} &\propto \alpha_2 \cdot (\Delta_{\text{causal}}^{\text{target}} - \Delta_{\text{causal}}) - \alpha_3 \cdot \operatorname{ReLU}(\Omega_{\text{mem}} - \Omega_{\max})
+\end{aligned}
+$$
+where $\alpha_1, \alpha_2, \alpha_3 > 0$ are learning rates and $\Omega_{\max}$ is the maximum tolerable non-locality ratio.
+
+*Proof sketch.* The Governor's outer objective ({prf:ref}`def-outer-problem-governor-optimization`) includes terms penalizing both prediction error (Interventional Gap) and overfitting (Non-Locality Ratio). The gradient of this objective with respect to $\Lambda$ yields the stated control law. At equilibrium, $\dot{\Lambda} = 0$, which implies a balance between reliance on memory and retrieval calibrated to the agent's surprise level. $\square$
+:::
+
+:::{prf:remark} Operational Interpretation
+:label: rem-memory-retrieval-interpretation
+
+- **If the agent is surprised by reality** ($\Delta_{\text{causal}}$ high): It must increase reliance on external truth ($\Lambda_{\text{ret}} \uparrow$).
+- **If the agent is not surprised** ($\Delta_{\text{causal}}$ low): It can conserve bandwidth by relying on internal memory ($\Lambda_{\text{mem}} \uparrow$), subject to the constraint that it must not overfit ($\Omega_{\text{mem}} < \Omega_{\max}$).
+
+This closes the joint optimization problem by reducing it to a specific instantiation of the Governor's Lyapunov stability framework ({prf:ref}`def-training-lyapunov-function`).
+:::
+
+---
+
+(sec-safe-retrieval-bandwidth)=
+### 28.9 The Safe Retrieval Bandwidth Corollary (Instability Resolution)
+
+Retrieval-induced instability is identified as the violation of the **Causal Information Bound** ({ref}`Section 33 <sec-causal-information-bound>`). Retrieval functions as a mass-injection source term; stability is preserved only if the total bulk information respects the interface area law.
+
+:::{prf:theorem} Safe Retrieval Bandwidth
+:label: thm-safe-retrieval-bandwidth
+
+Let $\sigma_{\text{ret}}(z)$ be the retrieval source term in the WFR continuity equation ({prf:ref}`def-retrieval-source-term`). The latent geometry remains non-singular if and only if the total information flux satisfies:
+$$
+\int_{\mathcal{Z}} \left( \rho_I(z) + \sigma_{\text{ret}}(z) \right) \, d\mu_G \leq \kappa \, C_{\partial}
+$$
+where $C_{\partial} = \frac{1}{4\ell_L^2}\text{Area}(\partial\mathcal{Z})$ is the boundary capacity ({prf:ref}`def-levin-length`).
+
+*Proof.*
+1. **Mass Augmentation:** Retrieval modifies the bulk information density: $\tilde{\rho}_I = \rho_I + \sigma_{\text{ret}}$.
+
+2. **Metric Response:** By the Capacity-Constrained Metric Law ({prf:ref}`thm-capacity-constrained-metric-law`), the radial metric component scales as $G_{rr} \propto (1 - \tilde{I}_{\text{bulk}}/C_{\partial})^{-1}$.
+
+3. **Singularity:** If $\int \sigma_{\text{ret}} > C_{\partial} - I_{\text{bulk}}$, then $G_{rr} \to \infty$ at a radius $r < 1$ (the horizon moves inward).
+
+4. **Dynamical Consequence:** The update velocity $\|v\|_G \to 0$ (Causal Stasis, {ref}`Section 33 <sec-causal-information-bound>`). The instability manifests as the freezing of the agent's inference dynamics due to saturation of the holographic bound. $\square$
+:::
+
+*Interpretation:* External retrieval becomes destabilizing when it pushes the total information content beyond the holographic capacity of the interface. The remedy is to increase interface bandwidth (more sensors) or reduce retrieval intensity.
+
+---
+
+(sec-causal-isometry-theorem)=
+### 28.10 The Causal Isometry Theorem (Cross-Modal Retrieval Resolution)
+
+We prove that if two modalities allow for the solution of the same causal control task, their capacity-constrained geometries must be isometric in the bulk.
+
+:::{prf:theorem} Causal Isometry Theorem
+:label: thm-causal-isometry
+
+Let $\mathcal{M}_A$ and $\mathcal{M}_B$ be latent manifolds encoding modalities $A$ and $B$ of a common environment $\mathcal{E}$. Let $\Phi_{\text{causal}}$ be the Causal Information Potential ({ref}`Section 32 <sec-causal-discovery-interventional-geometry-and-the-singularity-of-action>`). If both representations are **Interventionally Closed** ({prf:ref}`thm-interventional-closure`), then the induced metrics $G_A$ and $G_B$ are isometric.
+
+*Proof.*
+1. **Metric Genesis:** According to the Capacity-Constrained Metric Law ({prf:ref}`thm-capacity-constrained-metric-law`), the metric $G$ is determined by the solution to the Einstein-like equation $R_{ij} - \frac{1}{2}R G_{ij} + \Lambda G_{ij} = \kappa T_{ij}$, where the stress-energy tensor $T_{ij}$ is derived from the risk Lagrangian $\mathcal{L}_{\text{risk}}$.
+
+2. **Risk Invariance:** The risk Lagrangian $\mathcal{L}_{\text{risk}}(V) = \frac{1}{2}\|\nabla V\|^2 + U(V)$ depends only on the Value function $V$ and the Causal Potential $\Psi_{\text{causal}}$.
+
+3. **Task Invariance:** The potentials $V$ and $\Psi_{\text{causal}}$ are functions of the *causal graph* of the environment $\mathcal{E}$, which is an invariant independent of the sensory modality (pixels vs. tokens).
+
+4. **Uniqueness:** Assuming the solution to the metric field equation is unique (guaranteed for the Poincaré disk ansatz in the saturation limit), the geometries $G_A$ and $G_B$ are identical up to a diffeomorphism determined by the encoder parameterization. $\square$
+:::
+
+*Interpretation:* Latent representations of the same concept in different modalities (e.g., visual vs. textual) are geometrically isometric because the risk functional governing the metric depends only on the causal structure of the environment, not the sensory channel. This justifies cross-modal retrieval: information retrieved from one modality can inform reasoning in another if both are grounded in the same causal graph.
 
 ---
 
@@ -11902,6 +12406,28 @@ $$\frac{d}{dt}\sum_{i<j} \int_{\mathcal{B}_{ij}} \omega_{ij} = 0.$$
 *Proof sketch.* Liouville's theorem applied to the joint Hamiltonian system on $\mathcal{Z}^{(N)}$. Non-Hamiltonian forces (friction, noise) break this conservation; Node 48 monitors violations. $\square$
 
 :::
+
+::::{admonition} Physics Isomorphism: Liouville's Theorem
+:class: note
+:name: pi-liouville
+
+**In Physics:** Hamiltonian flow preserves phase-space volume: $\frac{d}{dt}\int_\Omega d^nq\,d^np = 0$. Equivalently, the symplectic 2-form $\omega = dq \wedge dp$ is invariant under the flow {cite}`arnold1989mathematical`.
+
+**In Implementation:** Symplectic integrators (BAOAB, leapfrog) preserve the Liouville measure on $(z, p)$ phase space:
+$$\omega(\Phi_* X, \Phi_* Y) = \omega(X, Y)$$
+where $\Phi$ is the discrete-time flow map.
+
+**Correspondence Table:**
+| Hamiltonian Mechanics | Agent (Phase Space) |
+|:----------------------|:--------------------|
+| Phase space $T^*\mathcal{Q}$ | $(z, p)$ state-momentum space |
+| Symplectic 2-form $\omega$ | Area element in phase space |
+| Volume preservation | No information loss in reversible dynamics |
+| Liouville density | Joint belief over position and momentum |
+
+**Diagnostic:** SymplecticBridgeCheck (Node 48) monitors volume conservation.
+::::
+
 (sec-derivation-of-the-interaction-potential)=
 ### 29.3 Derivation of the Interaction Potential
 
@@ -12123,13 +12649,110 @@ If $\epsilon_{\text{Nash}} > 0$ but below threshold, the system is in a **transi
 | **Success**     | Value Maxima                                                      | Geometric Stasis (Nash Equilibrium)                                                                  |
 | **Diagnostics** | Nodes 1–45                                                        | + Nodes 46–48                                                                                        |
 
-**Open problems:**
-1. *Scalability:* The Game Tensor scales as $O(N^2 d^2)$. Sparse approximations or mean-field limits are needed for large $N$.
-2. *Non-stationary Nash:* In non-stationary environments, the Nash equilibrium shifts. How should agents track moving equilibria?
-3. *Emergent cooperation:* Under what conditions does adversarial coupling $\alpha_{ij} < 0$ spontaneously emerge into effective cooperation?
+---
+
+(sec-mean-field-metric-law)=
+### 29.8 The Mean-Field Metric Law (Scalability Resolution)
+
+The calculation of the Game Tensor $\mathcal{G}_{ij}$ ({prf:ref}`def-the-game-tensor`) entails computational complexity $O(N^2 d^2)$, which is intractable for large $N$. We prove that in the limit $N \to \infty$, the discrete Game Tensor converges to the Hessian of a convolution potential.
+
+:::{prf:theorem} Mean-Field Metric Law
+:label: thm-mean-field-metric-law
+
+Let $\boldsymbol{z} = (z_1, \dots, z_N)$ be the configuration of $N$ agents on $\mathcal{Z}$. Let the empirical measure be $\mu_N = \frac{1}{N} \sum_{i=1}^N \delta_{z_i}$. As $N \to \infty$, assuming $\mu_N$ converges weakly to a smooth density $\rho \in \mathcal{P}(\mathcal{Z})$, the effective metric $\tilde{G}(z)$ for a test agent at position $z$ converges to:
+$$
+\tilde{G}(z) = G_{\text{intrinsic}}(z) + \alpha_{\text{adv}} \nabla^2_z \left( \Phi_{\text{int}} * \rho \right)(z)
+$$
+where $\Phi_{\text{int}}(z, \zeta)$ is the pairwise interaction potential ({prf:ref}`prop-interaction-kernel`) and $*$ denotes the Riemannian convolution.
+
+*Proof.*
+1. **Discrete Interaction Energy:** The total interaction potential for agent $i$ is $V_{\text{int}}(z_i) = \frac{1}{N} \sum_{j \neq i} \Phi_{\text{int}}(z_i, z_j)$.
+
+2. **Discrete Game Tensor:** The Game Tensor acting on the metric is defined as the sum of cross-sensitivities ({prf:ref}`thm-adversarial-mass-inflation`):
+$$
+(\delta G)_{ab}(z_i) = \alpha_{\text{adv}} \sum_{j \neq i} \frac{\partial^2 \Phi_{\text{int}}(z_i, z_j)}{\partial z_i^a \partial z_i^b}.
+$$
+
+3. **Continuum Limit:** We rewrite the sum as an integral against the empirical measure:
+$$
+(\delta G)_{ab}(z) = \alpha_{\text{adv}} \int_{\mathcal{Z}} \nabla^2_{z, a, b} \Phi_{\text{int}}(z, \zeta) \, d\mu_N(\zeta).
+$$
+
+4. **Convergence:** Assuming $\Phi_{\text{int}}$ is $C^2$ and bounded, and $\mu_N \rightharpoonup \rho$ weakly, the integral converges to the convolution $(\nabla^2 \Phi_{\text{int}} * \rho)(z)$.
+
+5. **Complexity Reduction:** The computation of $\tilde{G}$ now requires evaluating the Hessian of a static field $\Psi(z) = (\Phi_{\text{int}} * \rho)(z)$. This is $O(1)$ with respect to $N$ (given the density field), effectively decoupling the agent's complexity from the population size. $\square$
+:::
+
+*Cross-references:* This resolves the scalability limitation by reducing agent complexity from $O(N^2 d^2)$ to $O(d^2)$ via the Vlasov-geometry limit.
+
+---
+
+(sec-metabolic-tracking-bound)=
+### 29.9 The Metabolic Tracking Bound (Non-Stationary Nash Resolution)
+
+In non-stationary environments, the Nash equilibrium $z^*(t)$ shifts. We derive the tracking limit from the Computational Metabolism ({ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`), relating the metric speed of the target to the agent's power dissipation budget.
+
+:::{prf:theorem} Metabolic Tracking Bound
+:label: thm-metabolic-tracking-bound
+
+Let $z^*(t)$ be a time-varying Nash equilibrium. An agent with maximum metabolic flux budget $\dot{\mathcal{M}}_{\max}$ can maintain tracking error $\epsilon \to 0$ if and only if the target's trajectory satisfies:
+$$
+\|\dot{z}^*\|_{\tilde{G}(z^*)} \leq \sqrt{\frac{2 \dot{\mathcal{M}}_{\max}}{\sigma_{\text{met}}}}
+$$
+where $\tilde{G}$ is the game-augmented metric ({prf:ref}`thm-adversarial-mass-inflation`).
+
+*Proof.*
+1. **Kinematic Requirement:** To track $z^*(t)$, the agent's transport velocity must satisfy $v = \dot{z}^*$.
+
+2. **Thermodynamic Cost:** The metabolic cost of transport is $\dot{\mathcal{M}} = \frac{1}{2} \sigma_{\text{met}} \|v\|_{\tilde{G}}^2$ ({prf:ref}`def-metabolic-flux`).
+
+3. **Adversarial Drag:** The metric $\tilde{G} = G + \alpha \mathcal{G}_{ij}$ includes the Game Tensor. High adversarial tension ($\mathcal{G}_{ij} \gg 0$) inflates the norm $\|\cdot\|_{\tilde{G}}$.
+
+4. **Critical Failure:** If the adversary moves sufficiently fast or the conflict is sufficiently intense, the required dissipation exceeds $\dot{\mathcal{M}}_{\max}$. The agent loses tracking not due to algorithmic error, but due to exceeding its thermodynamic budget. $\square$
+:::
+
+*Interpretation:* The agent's ability to track a moving Nash equilibrium is fundamentally limited by its metabolic budget. Intense conflict ($\mathcal{G}_{ij}$ large) compounds this limitation by inflating the kinetic cost of pursuit.
+
+---
+
+(sec-variational-emergence-cooperation)=
+### 29.10 Variational Emergence of Cooperation via Metric Inflation
+
+We prove that cooperative equilibria correspond to local minima of the Onsager-Machlup action functional under the game-augmented metric, resolving the question of when adversarial coupling spontaneously yields cooperative behavior.
+
+:::{prf:theorem} Geometric Locking Principle
+:label: thm-geometric-locking-principle
+
+Consider $N$ agents with Game Tensor $\mathcal{G}_{ij}$ ({prf:ref}`def-the-game-tensor`). In the presence of strong adversarial coupling, the joint system tends toward configurations where $\operatorname{Tr}(\mathcal{G}_{ij})$ is minimized.
+
+*Proof.*
+
+1. **Metric Inflation:** By {prf:ref}`thm-adversarial-mass-inflation`, the effective metric for agent $i$ is $\tilde{G}^{(i)} = G^{(i)} + \sum_j \beta_{ij} \mathcal{G}_{ij}$. For adversarial agents, $\beta_{ij} > 0$ and $\mathcal{G}_{ij}$ is positive semi-definite, implying $\det(\tilde{G}^{(i)}) \ge \det(G^{(i)})$.
+
+2. **Kinetic Cost:** The WFR action ({prf:ref}`def-joint-wfr-action`) includes the transport term $\int \|v\|_{\tilde{G}}^2 d\rho$. An inflated metric implies a higher metabolic cost for any movement $v \neq 0$.
+
+3. **Energy Minimization:** The system evolves to minimize the free energy $\mathcal{F}$. If the potential gain $\nabla V$ is bounded, but the kinetic cost scales with $\mathcal{G}_{ij}$, trajectories with large $\mathcal{G}_{ij}$ (intense conflict) become energetically prohibitive.
+
+4. **Stationarity:** The system relaxes to a state where either $v \to 0$ (Nash stasis, {prf:ref}`thm-nash-equilibrium-as-geometric-stasis`) or the metric perturbation vanishes ($\mathcal{G}_{ij} \to 0$). The condition $\mathcal{G}_{ij} \to 0$ implies $\nabla_{z^{(j)}}\nabla_{z^{(i)}} V^{(i)} \to 0$, which defines a region of **strategic decoupling**. $\square$
+:::
+
+:::{prf:corollary} Metabolic Basis of Cooperation
+:label: cor-metabolic-cooperation
+
+Adversarial agents converge to cooperative or decoupled configurations because conflict maximizes the effective inertia of the state space, rendering non-cooperative trajectories metabolically unsustainable.
+
+*Interpretation:* The Game Tensor acts as a "friction term" that penalizes rapid strategic maneuvers. In the long run, agents either:
+1. **Cooperate:** Reduce $\mathcal{G}_{ij}$ by aligning their gradients
+2. **Decouple:** Move to regions where $\nabla_{z^{(j)}} V^{(i)} \approx 0$
+3. **Freeze:** Accept Nash stasis with $v^{(i)} = 0$
+
+All three outcomes correspond to stationary points of the joint action functional.
+:::
+
+---
 
 (sec-the-belief-wave-function-schrodinger-representation)=
-### 29.8 The Belief Wave-Function (Schrödinger Representation)
+### 29.11 The Belief Wave-Function (Schrödinger Representation)
 
 While Sections 29.1–29.7 derive multi-agent dynamics using **classical** field equations (coupled WFR flows), a more powerful formulation emerges when we lift the belief density to a **complex amplitude**. This section establishes the **Schrödinger Representation** of inference dynamics, revealing strategic interaction as a form of **quantum entanglement** on the latent manifold.
 
@@ -12243,6 +12866,27 @@ For most applications where $\mathcal{Z}$ is simply connected (e.g., Poincaré d
 
 :::
 
+::::{admonition} Physics Isomorphism: Holonomy and Berry Phase
+:class: note
+:name: pi-holonomy
+
+**In Physics:** Holonomy measures the failure of parallel transport around a closed loop to return a vector to itself. The Berry phase $\gamma_n = i\oint \langle n|\nabla_R|n\rangle \cdot dR$ is the geometric phase acquired by a quantum state under adiabatic evolution around a parameter loop {cite}`berry1984quantal,nakahara2003geometry`.
+
+**In Implementation:** When $\mathcal{Z}$ has non-trivial topology, the value phase $V/\sigma$ may be multi-valued. The holonomy around a closed loop $\gamma$ is (Remark {ref}`remark-line-bundle-formalism`):
+$$\exp\left(\frac{i}{\sigma} \oint_\gamma dV\right) = \exp\left(\frac{i}{\sigma} \Delta V_\gamma\right)$$
+
+**Correspondence Table:**
+| Gauge Theory | Agent (Value Phase) |
+|:-------------|:--------------------|
+| Connection 1-form $A$ | $dV/\sigma$ |
+| Holonomy $\exp(i\oint A)$ | Phase accumulated around loop |
+| Berry phase | Value change $\Delta V_\gamma$ |
+| Line bundle $\mathcal{L}$ | Complex belief amplitude bundle |
+| Trivial bundle | Simply connected $\mathcal{Z}$ |
+
+**Significance:** Non-trivial holonomy ($\Delta V_\gamma \neq 0 \mod 2\pi\sigma$) implies the belief wave-function is a section of a non-trivial line bundle—topological structure in the agent's value landscape.
+::::
+
 (sec-the-inference-wave-correspondence)=
 ### 29.9 The Inference-Wave Correspondence (WFR to Schrödinger)
 
@@ -12286,6 +12930,26 @@ $$
 **Step 4 (Identify terms).** The real part of the resulting equation gives the HJB with Bohm correction; the imaginary part gives the continuity equation with reaction. Combining yields the Schrödinger form. $\square$
 
 :::
+
+::::{admonition} Physics Isomorphism: Madelung Transform
+:class: note
+:name: pi-madelung
+
+**In Physics:** The Madelung transform $\psi = \sqrt{\rho}e^{iS/\hbar}$ converts the Schrödinger equation into hydrodynamic form: continuity + quantum Hamilton-Jacobi with Bohm potential $Q = -\frac{\hbar^2}{2m}\frac{\nabla^2\sqrt{\rho}}{\sqrt{\rho}}$ {cite}`madelung1927quantentheorie,bohm1952suggested`.
+
+**In Implementation:** The WFR-to-Schrödinger correspondence (Theorem {prf:ref}`thm-madelung-transform`):
+$$\psi(z,s) = \sqrt{\rho(z,s)}\exp(iV(z,s)/\sigma)$$
+with information resolution limit $Q_B = -\frac{\sigma^2}{2}\frac{\Delta_G\sqrt{\rho}}{\sqrt{\rho}}$.
+
+**Correspondence Table:**
+
+| Quantum Mechanics | Agent (Inference Wave) |
+|:------------------|:-----------------------|
+| Wave function $\psi$ | Belief amplitude |
+| Planck constant $\hbar$ | Cognitive scale $\sigma$ |
+| Bohm potential $Q$ | Information resolution limit $Q_B$ |
+| Probability current $\mathbf{j}$ | Belief flux $\rho v$ |
+::::
 
 :::{prf:definition} Bohm Quantum Potential (Information Resolution Limit)
 :label: def-bohm-quantum-potential
@@ -12631,6 +13295,25 @@ where:
 *Cross-reference:* This generalizes Theorem {prf:ref}`thm-memory-induced-barrier-crossing` from single-agent memory barriers to multi-agent Pareto barriers. See Appendix E.7 for the rigorous proof via Agmon estimates and spectral theory.
 
 :::
+
+::::{admonition} Physics Isomorphism: WKB Tunneling
+:class: note
+:name: pi-wkb-tunneling
+
+**In Physics:** The WKB approximation gives tunneling probability through a barrier: $P \sim \exp(-2\int_a^b \sqrt{2m(U-E)/\hbar^2}\,dx)$ where the integral is over the classically forbidden region {cite}`wentzel1926verallgemeinerung,agmon1982lectures`.
+
+**In Implementation:** The tunneling probability (Theorem {prf:ref}`thm-tunneling-probability`):
+$$P_{\text{tunnel}} \sim \exp\left(-\frac{2}{\sigma}\int_\gamma \sqrt{2(\Phi_{\text{eff}} - E_0)}\,d\ell_G\right)$$
+
+**Correspondence Table:**
+
+| Quantum Mechanics | Agent (Strategic Tunneling) |
+|:------------------|:----------------------------|
+| Barrier potential $U(x)$ | Effective potential $\Phi_{\text{eff}}$ |
+| Ground state energy $E_0$ | Nash equilibrium value |
+| Tunneling exponent | Agmon distance $d_{\text{Ag}}$ |
+| $\hbar \to 0$ limit | $\sigma \to 0$ (classical Nash) |
+::::
 
 :::{prf:corollary} Bohm Potential Enables Strategic Teleportation
 :label: cor-bohm-teleportation
@@ -13119,6 +13802,28 @@ where:
 *Interpretation.* The first term drives the metric toward the capacity-constrained fixed point. The second term $\nu \nabla_i \nabla_j \Xi$ introduces curvature in regions of high stress gradient, expanding the metric where new distinctions are needed.
 
 :::
+
+::::{admonition} Physics Isomorphism: Ricci Flow
+:class: note
+:name: pi-ricci-flow
+
+**In Physics:** Hamilton's Ricci flow evolves a Riemannian metric toward constant curvature: $\partial_t g_{ij} = -2R_{ij}$. It was used by Perelman to prove the Poincaré conjecture {cite}`hamilton1982ricci,perelman2002entropy`.
+
+**In Implementation:** The Ontological Ricci Flow (Definition {prf:ref}`def-ontological-ricci-flow`) evolves the latent metric:
+$$\frac{\partial G_{ij}}{\partial s} = -2\left(R_{ij} - \frac{1}{2}R\,G_{ij} + \Lambda G_{ij} - \kappa T_{ij}\right) + \nu\nabla_i\nabla_j\Xi$$
+
+**Correspondence Table:**
+
+| Differential Geometry | Agent (Ontological Flow) |
+|:----------------------|:-------------------------|
+| Metric evolution $\partial_t g$ | Metric adaptation $\partial_s G$ |
+| Ricci curvature $R_{ij}$ | Ricci curvature of $G$ |
+| Flow singularities | Chart fission events |
+| Entropy monotonicity | Ontological stress reduction |
+
+**Fixed Point:** The capacity-constrained metric law + vanishing stress Hessian.
+::::
+
 :::{prf:proposition} Fixed Points of Ontological Ricci Flow
 :label: prop-fixed-points-of-ontological-ricci-flow
 
@@ -13731,10 +14436,122 @@ where $U$ is the total utility functional (value minus complexity cost).
 *Interpretation:* The agent allocates representational capacity such that one additional bit of chart-level information provides the same marginal value as one additional bit of symbol-level information. This is the information-theoretic analogue of thermodynamic equipartition.
 :::
 
-**Open problems:**
-1. *Optimal hysteresis:* How should $\epsilon_{\text{hysteresis}}$ be calibrated to prevent ontological churn while remaining responsive to genuine redundancy?
-2. *Hierarchical metabolism:* How does fission/fusion interact with the stacked TopoEncoder ({ref}`Section 7.12 <sec-stacked-topoencoders-deep-renormalization-group-flow>`)? Should chart births/deaths propagate across layers?
-3. *Non-Euclidean coalescence:* Query coalescence uses the Euclidean barycenter. Should it use the hyperbolic midpoint to respect Poincaré geometry?
+---
+
+(sec-thermodynamic-hysteresis-calibration)=
+### 30.15 Thermodynamic Calibration of Ontological Hysteresis
+
+We derive the hysteresis constant $\epsilon_{\text{hysteresis}}$ appearing in the Fusion Criterion ({prf:ref}`thm-fusion-criterion`) as a thermodynamic necessity arising from the computational metabolism of the agent ({ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`).
+
+:::{prf:theorem} Thermodynamic Lower Bound on Hysteresis
+:label: thm-thermodynamic-hysteresis-bound
+
+Let $\mathcal{C}$ be a cycle of ontological operations consisting of a fission event $N_c \to N_c + 1$ followed immediately by a fusion event $N_c + 1 \to N_c$. Let $T_c$ be the cognitive temperature and $\mathcal{W}_{\text{comp}}$ be the metabolic work of parameter instantiation. To satisfy the generalized Second Law of Thermodynamics for open cognitive systems (Theorem {prf:ref}`thm-generalized-landauer-bound`), the hysteresis threshold must satisfy:
+$$
+\epsilon_{\text{hysteresis}} \geq \frac{1}{\beta_{\text{eff}}} \left( \Delta H_{\text{Shannon}} + \frac{1}{T_c}\mathcal{W}_{\text{comp}} \right)
+$$
+where $\beta_{\text{eff}} = 1/T_c$ is the inverse cognitive temperature and $\Delta H_{\text{Shannon}}$ is the entropy reduction associated with the discarded distinction.
+
+*Proof.*
+Consider the free energy functional $\mathcal{F} = E - T_c S$.
+
+1. **Fission Cost:** The creation of a new chart requires initializing a set of parameters $\theta_{\text{new}}$. By Landauer's Principle ({prf:ref}`pi-landauer-principle`), the erasure of the previous random state of these memory units to a low-entropy initialization requires work $\mathcal{W}_{\text{init}} \geq k T_c \ln 2 \cdot |\theta_{\text{new}}|$.
+
+2. **Fusion Cost:** The merger of two charts implies the erasure of the mutual information $I(X; \{K_i, K_j\}) - I(X; K_{i \cup j})$, defined as the Discrimination Gain $G_\Delta$ ({prf:ref}`def-discrimination-gain`). This is an irreversible logical operation, dissipating heat $Q_{\text{fus}} \geq T_c G_\Delta$.
+
+3. **Cycle Condition:** For the cycle $\mathcal{C}$ to be non-spontaneous (preventing chattering), the total free energy change must be positive. The Governor imposes a metabolic efficiency constraint $\eta_{\text{ROI}} > \eta_{\min}$ ({ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>`).
+
+4. **Derivation:** The utility gain of the cycle is zero (the topology is unchanged). The cost is $\mathcal{W}_{\text{init}} + Q_{\text{fus}}$. For the cycle to be rejected by the Fusion Criterion ({prf:ref}`thm-fusion-criterion`), the hysteresis term must exceed the minimum metabolic dissipation of the cycle:
+$$
+\epsilon_{\text{hysteresis}} \geq \inf_{\mathcal{C}} \oint \dot{\mathcal{M}}(s) ds
+$$
+Substituting the Landauer bound yields the stated inequality. $\square$
+:::
+
+*Units:* $[\epsilon_{\text{hysteresis}}] = \text{nat}$, consistent with the complexity cost functional.
+
+*Cross-references:* This resolves the hysteresis calibration question by grounding it in the Landauer thermodynamics of {ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`.
+
+---
+
+(sec-hyperbolic-coalescence)=
+### 30.16 Intrinsic Coalescence on Hyperbolic Manifolds
+
+The Query Coalescence operation ({prf:ref}`def-query-coalescence`) uses a Euclidean barycenter $\bar{q} = \frac{1}{N}\sum q_i$. In the Poincaré disk $\mathbb{D}$, this induces geometric distortion since straight lines in $\mathbb{R}^n$ are not geodesics in $\mathbb{D}$. The rigorous fusion operator is the **Fréchet Mean**, following the pattern established in {prf:ref}`def-class-centroid-in-poincar-disk`.
+
+:::{prf:definition} Hyperbolic Fréchet Mean for Query Coalescence
+:label: def-hyperbolic-frechet-coalescence
+
+Let $\{q_i\}_{i=1}^k \subset \mathbb{D}$ be a set of chart query vectors with associated usage weights $\bar{w}_i := \mathbb{E}[w_i(x)]$ from the Attentive Atlas ({prf:ref}`def-attentive-routing-law`). The **Intrinsic Merged Query** is:
+$$
+q_{\text{merged}} := \operatorname*{arg\,min}_{q \in \mathbb{D}} \sum_{i=1}^k \bar{w}_i \cdot d^2_{\mathbb{D}}(q, q_i),
+$$
+where $d_{\mathbb{D}}(x, y) = \operatorname{arccosh}\left(1 + \frac{2\|x-y\|^2}{(1-\|x\|^2)(1-\|y\|^2)}\right)$ is the hyperbolic distance.
+
+*Units:* $[q_{\text{merged}}] = [q_i]$ (dimensionless in the unit disk).
+
+*Cross-reference:* This definition supersedes {prf:ref}`def-query-coalescence` for hyperbolic embeddings.
+:::
+
+:::{prf:theorem} Existence and Uniqueness of Fusion Center
+:label: thm-frechet-fusion-uniqueness
+
+Since the Poincaré disk $(\mathbb{D}, G)$ is a complete, simply connected Riemannian manifold with non-positive sectional curvature ($K=-1$), it is a Hadamard space (global CAT(0) space). The squared distance function $d^2_{\mathbb{D}}(\cdot, y)$ is strictly convex. Therefore, the functional $F(q) = \sum \bar{w}_i d^2_{\mathbb{D}}(q, q_i)$ admits a unique global minimizer.
+
+*Proof.* By Cartan's theorem on Hadamard manifolds, the distance function from any point is strictly convex along geodesics. The weighted sum of strictly convex functions is strictly convex, ensuring the minimizer exists and is unique. $\square$
+:::
+
+:::{prf:remark} Computational Algorithm
+:label: rem-frechet-algorithm
+
+The minimizer can be computed via Riemannian gradient descent:
+$$
+q_{t+1} = \operatorname{Exp}_{q_t}\left( -\eta \sum_i \bar{w}_i \operatorname{Log}_{q_t}(q_i) \right)
+$$
+where:
+- $\operatorname{Exp}_p: T_p\mathbb{D} \to \mathbb{D}$ is the exponential map at $p$
+- $\operatorname{Log}_p: \mathbb{D} \to T_p\mathbb{D}$ is the logarithmic map (inverse of exponential)
+
+For the Poincaré disk, these have closed-form expressions via Möbius operations ({ref}`Section 21.3 <sec-mobius-recentering-and-the-origin-as-base-point>`).
+
+*Complexity:* $O(k \cdot d)$ per iteration, where $k$ is the number of charts being merged and $d$ is the embedding dimension.
+:::
+
+*Cross-references:* This resolves the geometric inconsistency by ensuring coalescence respects the intrinsic hyperbolic geometry.
+
+---
+
+(sec-fission-inhibition-corollary)=
+### 30.17 The Fission Inhibition Corollary (Hierarchical Metabolism Resolution)
+
+We prove that the Stacked TopoEncoder architecture ({ref}`Section 7.12 <sec-stacked-topoencoders-deep-renormalization-group-flow>`) enforces **top-down stability** via the properties of the residual variance in the Renormalization Group (RG) flow. A fission event at layer $\ell$ does not trigger cascading fission at higher layers.
+
+:::{prf:theorem} Fission Inhibition Corollary
+:label: thm-fission-inhibition
+
+Let $\mathcal{E}^{(\ell)}$ be the encoder at scale $\ell$. A Topological Fission event at layer $\ell$ (increasing chart count $N_c^{(\ell)} \to N_c^{(\ell)}+1$) strictly reduces the probability of fission at layer $\ell+1$.
+
+*Proof.*
+1. **Residual Coupling:** The input to layer $\ell+1$ is the normalized residual of layer $\ell$: $x^{(\ell+1)} = z_{\text{tex}}^{(\ell)} / \sigma^{(\ell)}$.
+
+2. **Approximation Theory:** Fission adds a centroid to the Voronoi partition at layer $\ell$. By standard quantization theory (Zador's theorem), increasing codebook size strictly reduces the mean squared quantization error (distortion), provided the data is not uniform.
+
+3. **Variance Reduction:** The reconstruction error $\|z_{\text{tex}}^{(\ell)}\|^2$ decreases, implying the scale factor $\sigma^{(\ell)}$ decreases.
+
+4. **Stress Damping:** Ontological Stress at layer $\ell+1$ is upper-bounded by the mutual information of its input. Since the input variance is reduced (relative to the pre-fission state), the extractable structure $I(x^{(\ell+1)}_t; x^{(\ell+1)}_{t+1})$ decreases.
+
+5. **Conclusion:** Macro-scale adaptation absorbs structural variance, starving the micro-scale of the stress required to trigger bifurcation. $\square$
+:::
+
+:::{prf:corollary} Hierarchical Stability
+:label: cor-hierarchical-stability
+
+The stacked architecture is **inherently stable** against fission cascades. Ontological expansion at coarse scales (low $\ell$) pre-empts the need for expansion at fine scales (high $\ell$).
+
+*Interpretation:* If the agent learns a new high-level concept (e.g., "mammal"), the residual variance available to learn low-level distinctions (e.g., specific breeds) is reduced. The hierarchy self-regulates, preventing runaway complexity growth.
+:::
+
+*Cross-references:* This resolves the hierarchical metabolism question by showing that the RG structure naturally dampens topological perturbations from propagating upward.
 
 ---
 
@@ -13795,6 +14612,28 @@ The first factor is the **Fisher Information** $\mathcal{I}(\rho) = \int \rho \|
 *Remark (Landauer's Principle).* The classical Landauer bound states that erasing one bit of information requires dissipating at least $k_B T \ln 2$ joules of heat. Theorem {prf:ref}`thm-generalized-landauer-bound` is the information-geometric generalization: reducing belief entropy by $\Delta H$ nats requires dissipating at least $T_c \cdot |\Delta H|$ nats of metabolic energy.
 
 :::
+
+::::{admonition} Physics Isomorphism: Landauer's Principle
+:class: note
+:name: pi-landauer-principle
+
+**In Physics:** Erasing one bit of information requires dissipating at least $k_B T \ln 2$ joules of heat. More generally, reducing entropy by $\Delta S$ requires work $W \geq T|\Delta S|$ {cite}`landauer1961irreversibility,bennett1982thermodynamics`.
+
+**In Implementation:** The generalized Landauer bound (Theorem {prf:ref}`thm-generalized-landauer-bound`):
+$$\dot{\mathcal{M}}(s) \geq T_c \left|\frac{d}{ds} H(\rho_s)\right|$$
+
+**Correspondence Table:**
+
+| Thermodynamics | Agent (Metabolic) |
+|:---------------|:------------------|
+| Temperature $T$ | Cognitive temperature $T_c$ |
+| Heat dissipation $\dot{Q}$ | Metabolic flux $\dot{\mathcal{M}}$ |
+| Entropy $S$ | Belief entropy $H(\rho)$ |
+| Boltzmann constant $k_B$ | 1 (nat units) |
+| Work $W$ | Cumulative metabolic cost $\Psi_{\text{met}}$ |
+
+**Consequence:** Thinking has irreducible thermodynamic cost. Deliberation stops when marginal value gain equals metabolic cost.
+::::
 
 :::{note} Connection to RL #14: Maximum Expected Utility as Zero-Temperature Limit
 **The General Law (Fragile Agent):**
@@ -14250,6 +15089,26 @@ For each interaction step $t$:
 :name: rb-sensor-bandwidth
 You cannot represent more information than your sensors can ground. This section provides the hard limit for **Model Overload**. We derive an "Area Law" which proves that if an agent tries to store more "bits" than its interface area allows, its internal update speed (gradients) will vanish. We call this **Causal Stasis**. It is the geometric explanation for why models "die" or stop learning when they are over-parameterized relative to their data source.
 :::
+
+::::{admonition} Physics Isomorphism: Bekenstein-Hawking Entropy Bound
+:class: note
+:name: pi-bekenstein-bound
+
+**In Physics:** The Bekenstein-Hawking entropy of a black hole is $S_{BH} = A/(4\ell_P^2)$ where $A$ is horizon area and $\ell_P$ is the Planck length. Information inside a region cannot exceed its boundary area in Planck units {cite}`bekenstein1973black,hawking1975particle`.
+
+**In Implementation:** The maximum information $I_{\max}$ an agent can stably represent is bounded by its interface area:
+$$I_{\max} = \frac{\text{Area}(\partial\mathcal{Z})}{4\ell_L^2}$$
+where $\ell_L$ is the Levin length (Definition {prf:ref}`def-levin-length`).
+
+**Correspondence Table:**
+
+| Physics | Agent |
+|:--------|:------|
+| Horizon area $A$ | Interface bandwidth $\text{Area}(\partial\mathcal{Z})$ |
+| Planck length $\ell_P$ | Levin length $\ell_L$ |
+| Black hole entropy $S_{BH}$ | Representational capacity $I_{\max}$ |
+| Horizon singularity ($g_{rr} \to \infty$) | Causal Stasis ($G_{rr} \to \infty$, $v \to 0$) |
+::::
 
 *Cross-references:* This section extends the Capacity-Constrained Metric Law (Theorem {prf:ref}`thm-capacity-constrained-metric-law`), the Boundary Capacity Definition ({prf:ref}`def-boundary-capacity-area-law-at-finite-resolution`), and the Equation of Motion (Definition {prf:ref}`def-bulk-drift-continuous-flow`). The remediation connects to Ontological Fusion ({ref}`Section 30.8 <sec-ontological-fusion-concept-consolidation>`).
 
@@ -15211,6 +16070,28 @@ for some constant $c > 0$.
 *Significance.* Chentsov's theorem establishes that the Fisher metric is not a choice but a *necessity*: any geometry on probability space that respects statistical structure must be (proportional to) the Fisher geometry. This grounds our derivation in fundamental statistics, not ad-hoc assumptions.
 
 :::
+
+::::{admonition} Physics Isomorphism: Fisher Information Metric
+:class: note
+:name: pi-fisher-information
+
+**In Physics:** The Fisher Information Metric $\mathcal{F}_{ij}(\theta) = \mathbb{E}\left[\frac{\partial \log p}{\partial \theta^i}\frac{\partial \log p}{\partial \theta^j}\right]$ is the unique Riemannian metric on statistical manifolds invariant under sufficient statistics (Chentsov's Theorem) {cite}`chentsov1982statistical,amari1985differential`.
+
+**In Implementation:** The latent metric $G(z)$ combines value curvature with Fisher Information (Section 2.5):
+$$G_{ij}(z) = \nabla^2_{ij} V(z) + \lambda\,\mathcal{F}_{ij}(z)$$
+where $\mathcal{F}_{ij} = \mathbb{E}_{a\sim\pi}[\partial_i \log\pi \cdot \partial_j \log\pi]$ is the state-space Fisher metric.
+
+**Correspondence Table:**
+| Information Geometry | Agent (Latent Metric) |
+|:---------------------|:----------------------|
+| Parameter space $\Theta$ | Latent state space $\mathcal{Z}$ |
+| Fisher metric $\mathcal{F}_{ij}$ | Base metric contribution |
+| Sufficient statistics | Macro-state $K$ (chart index) |
+| KL divergence $D_{KL}$ | Squared geodesic distance (locally) |
+| Natural gradient | Metric-aware policy gradient |
+
+**Significance:** Chentsov's theorem (Theorem {prf:ref}`thm-a-chentsov-uniqueness`) proves the Fisher metric is not a choice but a necessity—any geometry respecting statistical structure must be proportional to Fisher.
+::::
 
 :::{prf:definition} A.6.0c (Computational Microstate)
 :label: def-a-computational-microstate
@@ -17029,6 +17910,27 @@ where:
 
 :::
 
+::::{admonition} Physics Isomorphism: Spectral Gap
+:class: note
+:name: pi-spectral-gap
+
+**In Physics:** The spectral gap $\Delta = E_1 - E_0$ of a Hamiltonian $H$ controls the mixing time to the ground state: $\|e^{-tH}\psi - \psi_0\| \leq e^{-\Delta t}$. The Poincaré inequality bounds the gap from below {cite}`liggett1989exponential,diaconis1991geometric`.
+
+**In Implementation:** The spectral gap of the strategic Hamiltonian $\hat{H}_{\text{strat}}$ controls convergence to Nash:
+$$\|\Psi(s) - \Psi_0\|_{L^2} \leq e^{-\Delta s / \sigma^2} \|\Psi(0) - \Psi_0\|_{L^2}$$
+
+**Correspondence Table:**
+| Spectral Theory | Agent (Convergence) |
+|:----------------|:--------------------|
+| Ground state energy $E_0$ | Nash equilibrium value |
+| First excited state $E_1$ | Nearest sub-optimal equilibrium |
+| Spectral gap $\Delta$ | Convergence rate to Nash |
+| Poincaré inequality | Lower bound on gap |
+| Mixing time $\tau_{\text{mix}} \sim 1/\Delta$ | Training time |
+
+**Diagnostic:** ConvergenceRateCheck monitors effective gap from eigenvalue estimates.
+::::
+
 :::{prf:definition} E.7.3 (The Forbidden Region and Nash Basins)
 :label: def-e7-forbidden-region
 
@@ -17180,6 +18082,27 @@ $$
 
 :::
 
+::::{admonition} Physics Isomorphism: Agmon Estimates
+:class: note
+:name: pi-agmon-estimates
+
+**In Physics:** Agmon estimates give exponential decay bounds for eigenfunctions in classically forbidden regions. For a Schrödinger operator $-\hbar^2\Delta + V$, the ground state decays as $|\psi(x)| \lesssim \exp(-d_{\text{Ag}}(x, \Omega)/\hbar)$ where $d_{\text{Ag}}$ is the Agmon distance {cite}`agmon1982lectures`.
+
+**In Implementation:** The belief wave-function amplitude decays through Pareto barriers (Theorem {prf:ref}`thm-e7-agmon-decay-bound`):
+$$|\Psi_0(\mathbf{z})| \leq C_\epsilon \exp\left(-\frac{1-\epsilon}{\sigma} d_{\text{Ag}}(\mathbf{z}, \Omega_A)\right)$$
+
+**Correspondence Table:**
+| Semi-Classical Analysis | Agent (Tunneling) |
+|:------------------------|:------------------|
+| Agmon metric $(\rho_E)_{ij} = (V-E)_+ g_{ij}$ | Strategic Agmon metric |
+| Agmon distance $d_{\text{Ag}}$ | Barrier "thickness" |
+| Planck constant $\hbar$ | Cognitive scale $\sigma$ |
+| Forbidden region $\{V > E\}$ | Pareto barrier $\{\Phi > E_0\}$ |
+| Exponential decay rate | Tunneling suppression |
+
+**Consequence:** Agmon distance, not Euclidean distance, controls tunneling probability.
+::::
+
 ---
 
 #### E.7.4 Game Tensor Effect: Adversarial Suppression of Tunneling
@@ -17284,6 +18207,28 @@ $$
 
 :::
 
+::::{admonition} Physics Isomorphism: Feynman-Kac Formula
+:class: note
+:name: pi-feynman-kac
+
+**In Physics:** The Feynman-Kac formula represents solutions to the Schrödinger equation as expectations over Brownian paths: $\psi(x,t) = \mathbb{E}_x[\exp(-\int_0^t V(X_s)ds)\psi_0(X_t)]$ {cite}`kac1949distributions,simon2005functional`.
+
+**In Implementation:** The ground state wave-function admits the representation (Theorem {prf:ref}`thm-e7-feynman-kac`):
+$$\Psi_0(\mathbf{z}) = \lim_{t \to \infty} e^{E_0 t/\sigma^2} \cdot \mathbb{E}_{\mathbf{z}}\left[\exp\left(-\frac{1}{\sigma^2}\int_0^t \mathcal{V}(\mathbf{X}_s)ds\right)\phi(\mathbf{X}_t)\right]$$
+where $\mathbf{X}_s$ is Brownian motion on $(\mathcal{M}, \mathbf{g})$ and $E_0$ is the ground state energy.
+
+**Correspondence Table:**
+| Path Integral | Agent (Value Function) |
+|:--------------|:-----------------------|
+| Brownian motion $X_t$ | WFR diffusion |
+| Potential $V(x)$ | Effective potential $\mathcal{V}$ |
+| Imaginary time $\tau = it$ | Value iteration time |
+| Path weight $e^{-\int V ds}$ | Reward accumulation |
+| Ground state $\psi_0$ | Optimal belief amplitude |
+
+**Significance:** This is rigorous (not heuristic path integrals); tunneling = rare large-deviation fluctuations.
+::::
+
 :::{prf:corollary} E.7.5 (Tunneling via Large Deviations)
 :label: cor-e7-large-deviations
 
@@ -17299,19 +18244,41 @@ and paths that cross the barrier $\mathcal{K}$ while minimizing $I[\gamma] + \in
 
 :::
 
+::::{admonition} Physics Isomorphism: Large Deviation Principle
+:class: note
+:name: pi-large-deviation
+
+**In Physics:** Large deviation theory quantifies rare events via rate functions: $P(X_n \in A) \asymp \exp(-n I(A))$ where $I$ is the rate function. In stochastic mechanics, instantons are paths minimizing the action that dominate rare transitions {cite}`freidlin1998random,varadhan1984large`.
+
+**In Implementation:** Tunneling probability is controlled by the Large Deviation Principle (Corollary {prf:ref}`cor-e7-large-deviations`):
+$$P_{\text{tunnel}} \asymp \exp\left(-\frac{d_{\text{Ag}}(\Omega_A, \Omega_B)}{\sigma}\right)$$
+where the rate function is the Agmon action.
+
+**Correspondence Table:**
+| Large Deviations | Agent (Barrier Crossing) |
+|:-----------------|:-------------------------|
+| Rate function $I$ | Agmon action |
+| Instanton path | Optimal tunneling trajectory |
+| Cramér's theorem | Exponential bound on transition |
+| Sanov's theorem | Entropy cost of belief shift |
+| $n \to \infty$ limit | $\sigma \to 0$ (classical Nash) |
+
+**Consequence:** Paths minimizing Brownian action are precisely the instantons governing tunneling.
+::::
+
 ---
 
 #### E.7.6 Summary of Rigorous Results
 
 **Table E.7.1 (Summary of Tunneling Rigor).**
 
-| Result | Statement | Method |
-|:-------|:----------|:-------|
-| **Existence** | $P(\Omega_B) > 0$ always | Perron-Frobenius / Harnack |
-| **Decay Rate** | $|\Psi_0| \lesssim e^{-d_{\text{Ag}}/\sigma}$ | Agmon estimates |
-| **Game Tensor Effect** | $d_{\text{Ag}}^{\text{adv}} \geq d_{\text{Ag}}^0$ | Metric comparison |
-| **Probabilistic** | Feynman-Kac representation | Semigroup theory |
-| **Optimal Path** | Instanton = Agmon geodesic | Large deviations |
+| Result                 | Statement                                         | Method                     |
+|:-----------------------|:--------------------------------------------------|:---------------------------|
+| **Existence**          | $P(\Omega_B) > 0$ always                          | Perron-Frobenius / Harnack |
+| **Decay Rate**         | $                                                 | \Psi_0                     | \lesssim e^{-d_{\text{Ag}}/\sigma}$ | Agmon estimates |
+| **Game Tensor Effect** | $d_{\text{Ag}}^{\text{adv}} \geq d_{\text{Ag}}^0$ | Metric comparison          |
+| **Probabilistic**      | Feynman-Kac representation                        | Semigroup theory           |
+| **Optimal Path**       | Instanton = Agmon geodesic                        | Large deviations           |
 
 **Rigorous version of Theorem {prf:ref}`thm-tunneling-probability`:**
 $$
