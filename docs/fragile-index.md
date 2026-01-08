@@ -96,43 +96,43 @@ Standard RL appears as a degenerate limit of the Fragile Agent when geometry is 
 **Researcher Bridge Index (Quick Links):**
 | Researcher Bridge | Location |
 | :--- | :--- |
-| Bounded Rationality as a POMDP with Costs | {ref}`Section 1 <sec-introduction-the-agent-as-a-bounded-rationality-controller>` |
-| Markov Blanket = Observation/Action Interface | {ref}`Section 1.1 <sec-definitions-interaction-under-partial-observability>` |
-| Actor-Critic + World Model, Typed | {ref}`Section 2 <sec-the-control-loop-representation-and-control>` |
-| Adversarial Immunity via Firewalling | {ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>` |
-| Beyond Parameter-Space Adam | {ref}`Section 2.5 <sec-second-order-sensitivity-value-defines-a-local-metric>` |
-| Safety as a Unit Test | {ref}`Section 3 <sec-diagnostics-stability-checks>` |
-| Barriers vs. Trust Regions | {ref}`Section 4 <sec-limits-barriers>` |
-| RL Pathologies, Named and Localized | {ref}`Section 5 <sec-failure-modes>` |
-| Heuristic Fixes as Typed Surgeries | {ref}`Section 6 <sec-interventions>` |
-| Engineering Tradeoffs, Made Explicit | {ref}`Section 7 <sec-computational-considerations>` |
-| Hyperbolic Hierarchy = Tree-Like Abstraction | {ref}`Section 7.11 <sec-the-geometry-of-the-latent-space-a-hyperbolic-hierarchy>` |
-| Renormalization Group vs. ResNets | {ref}`Section 7.12 <sec-stacked-topoencoders-deep-renormalization-group-flow>` |
-| Jump Operators as Skill Switches | {ref}`Section 7.13 <sec-factorized-jump-operators-efficient-chart-transitions>` |
-| Practical Substitutions for Idealized Laws | {ref}`Section 8 <sec-infeasible-implementation-replacements>` |
-| World Models with Typed Latents | {ref}`Section 9 <sec-the-disentangled-variational-architecture-hierarchical-latent-separation>` |
-| Max-Entropy Exploration in Macro Space | {ref}`Section 11 <sec-intrinsic-motivation-maximum-entropy-exploration>` |
-| Bayes Filter with Safety Projection | {ref}`Section 12 <sec-belief-dynamics-prediction-update-projection>` |
-| Soft RL Equals Exploration Duality | {ref}`Section 14 <sec-duality-of-exploration-and-soft-optimality>` |
-| KL Control as a Schrödinger Bridge | {ref}`Section 15 <sec-implementation-note-entropy-regularized-optimal-transport-bridge>` |
-| The Stable Learning Window | {ref}`Section 16 <sec-theorem-the-information-stability-threshold>` |
-| Information Bottleneck Becomes Geometry | {ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>` |
-| Handling Distribution Shift | {ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>` |
-| Diffusion-Style Generation with Policy Drift | {ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>` |
-| Continuous-Time Actor-Critic | {ref}`Section 22 <sec-the-equations-of-motion-geodesic-jump-diffusion>` |
-| Observations and Actions as Boundary Conditions | {ref}`Section 23 <sec-the-boundary-interface-symplectic-structure>` |
-| Value as a Smooth Field (PINN) | {ref}`Section 24 <sec-the-scalar-field-reward-energy-and-geometry>` |
-| Metric Learning for Classification | {ref}`Section 25 <sec-supervised-topology-semantic-potentials-and-metric-segmentation>` |
-| Automated Homeostasis vs. Hyperparameter Tuning | {ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>` |
-| Experience Replay as a Potential Field | {ref}`Section 27 <sec-section-non-local-memory-as-self-interaction-functional>` |
-| Retrieval-Augmented Control | {ref}`Section 28 <sec-section-hyperbolic-active-retrieval-geodesic-search-and-semantic-pull-back>` |
-| Opponents as Geometric Inertia | {ref}`Section 29 <sec-symplectic-multi-agent-field-theory>` |
-| Dynamic Architecture vs. Fixed Capacity | {ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>` |
-| Pruning via Metabolic Efficiency | {ref}`Section 30.8 <sec-ontological-fusion-concept-consolidation>` |
-| Principled "Thinking Fast and Slow" | {ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>` |
-| Curiosity as a Vector Field (Not a Scalar) | {ref}`Section 32 <sec-causal-discovery-interventional-geometry-and-the-singularity-of-action>` |
-| The Sensor Bandwidth Ceiling | {ref}`Section 33 <sec-causal-information-bound>` |
-| The Fragile Agent Lexicon | {ref}`Appendix D <sec-appendix-d-frequently-asked-questions>` |
+| Bounded Rationality as a POMDP with Costs | {ref}`rb-bounded-rationality` |
+| Markov Blanket = Observation/Action Interface | {ref}`rb-markov-blanket` |
+| Actor-Critic + World Model, Typed | {ref}`rb-actor-critic` |
+| Adversarial Immunity via Firewalling | {ref}`rb-adversarial-immunity` |
+| Beyond Parameter-Space Adam | {ref}`rb-beyond-adam` |
+| Safety as a Unit Test | {ref}`rb-safety-unit-test` |
+| Barriers vs. Trust Regions | {ref}`rb-barriers-trust-regions` |
+| RL Pathologies, Named and Localized | {ref}`rb-rl-pathologies` |
+| Heuristic Fixes as Typed Surgeries | {ref}`rb-heuristic-fixes` |
+| Engineering Tradeoffs, Made Explicit | {ref}`rb-engineering-tradeoffs` |
+| Hyperbolic Hierarchy = Tree-Like Abstraction | {ref}`rb-hyperbolic-hierarchy` |
+| Renormalization Group vs. ResNets | {ref}`rb-renormalization-resnets` |
+| Jump Operators as Skill Switches | {ref}`rb-jump-operators` |
+| Practical Substitutions for Idealized Laws | {ref}`rb-practical-substitutions` |
+| World Models with Typed Latents | {ref}`rb-world-models` |
+| Max-Entropy Exploration in Macro Space | {ref}`rb-maxent-exploration` |
+| Bayes Filter with Safety Projection | {ref}`rb-bayes-filter` |
+| Soft RL Equals Exploration Duality | {ref}`rb-soft-rl-duality` |
+| KL Control as a Schrödinger Bridge | {ref}`rb-kl-control-bridge` |
+| The Stable Learning Window | {ref}`rb-stable-learning-window` |
+| Information Bottleneck Becomes Geometry | {ref}`rb-info-bottleneck-geometry` |
+| Handling Distribution Shift | {ref}`rb-distribution-shift` |
+| Diffusion-Style Generation with Policy Drift | {ref}`rb-diffusion-generation` |
+| Continuous-Time Actor-Critic | {ref}`rb-continuous-actor-critic` |
+| Observations and Actions as Boundary Conditions | {ref}`rb-boundary-conditions` |
+| Value as a Smooth Field (PINN) | {ref}`rb-value-pinn` |
+| Metric Learning for Classification | {ref}`rb-metric-learning` |
+| Automated Homeostasis vs. Hyperparameter Tuning | {ref}`rb-homeostasis` |
+| Experience Replay as a Potential Field | {ref}`rb-experience-replay` |
+| Retrieval-Augmented Control | {ref}`rb-retrieval-augmented` |
+| Opponents as Geometric Inertia | {ref}`rb-opponents-inertia` |
+| Dynamic Architecture vs. Fixed Capacity | {ref}`rb-dynamic-architecture` |
+| Pruning via Metabolic Efficiency | {ref}`rb-pruning-efficiency` |
+| Principled "Thinking Fast and Slow" | {ref}`rb-thinking-fast-slow` |
+| Curiosity as a Vector Field (Not a Scalar) | {ref}`rb-curiosity-vector` |
+| The Sensor Bandwidth Ceiling | {ref}`rb-sensor-bandwidth` |
+| The Fragile Agent Lexicon | {ref}`rb-fragile-lexicon` |
 :::
 
 (sec-positioning-connections-to-prior-work-differences-and-advantages)=
@@ -391,6 +391,7 @@ Throughout this document, `:::{note} Connection to RL #N` admonition boxes mark 
 
 :::{admonition} Researcher Bridge: Bounded Rationality as a POMDP with Costs
 :class: info
+:name: rb-bounded-rationality
 Standard RL frames the agent as a policy that maximizes return in a POMDP. Here we make the usual hidden constraints explicit: limited bandwidth, memory, and compute. Think of it as a POMDP with an information bottleneck and hard safety contracts that shape the feasible policy class.
 :::
 
@@ -405,6 +406,7 @@ This is the native language of **Safe RL**, **Robust Control**, and **Embodied A
 
 :::{admonition} Researcher Bridge: Markov Blanket = Observation/Action Interface
 :class: tip
+:name: rb-markov-blanket
 If you are used to POMDP notation, the "boundary" here is just the observation, action, reward, and termination channels treated as a single interface. The environment is an input-output law, not a latent object the agent can access directly. This re-typing lets us attach geometric and information constraints to the interface itself.
 :::
 
@@ -618,6 +620,7 @@ This is the time coordinate of the Holographic Screen.
 
 :::{admonition} Researcher Bridge: Actor-Critic + World Model, Typed
 :class: info
+:name: rb-actor-critic
 The control loop is the familiar actor-critic with a learned world model, but the latent state is explicitly split into macro, nuisance, and texture. The macro register plays the role of the control state, the critic defines value, and the policy is regularized by geometry and constraints rather than ad-hoc penalties. Think "model-based RL with typed latents and audited constraints."
 :::
 
@@ -628,12 +631,9 @@ We frame the agent as a **bounded controller** operating on an internal latent s
 
 We write the objective as a cumulative cost functional $\mathcal{S}$ (expected loss plus regularization) over time:
 $$
-\mathcal{S}
-=
-\int \Big(
+\mathcal{S} = \int \Big(
 \underbrace{\mathcal{L}_{\text{control}}}_{\text{control cost / regularization}}
-\;+\;
-\underbrace{C(z_t,a_t)}_{\text{task cost}}
++ \underbrace{C(z_t,a_t)}_{\text{task cost}}
 \Big)\,dt.
 $$
 Operationally, $\mathcal{L}_{\text{control}}$ can be a KL control penalty (deviation from a prior policy), action magnitude cost, or any control-effort term; $C$ encodes task loss and constraints.
@@ -698,6 +698,7 @@ The information-theoretic/control interpretation benefits from an explicit **dis
 
 :::{admonition} Researcher Bridge: Adversarial Immunity via Firewalling
 :class: info
+:name: rb-adversarial-immunity
 Standard Autoencoders mix all information into a single vector, making them vulnerable to "texture" attacks (adversarial noise). We split the latent space into three channels: **Discrete Symbols ($K$)**, **Nuisance ($z_n$)**, and **Texture ($z_{tex}$)**.
 By architectural design, the **Policy is blind to the Texture channel**. This creates a mathematical firewall: the agent uses texture for reconstruction, but is physically incapable of making decisions based on non-causal pixel noise.
 :::
@@ -1001,6 +1002,7 @@ In information geometry and second-order optimization, a local metric captures h
 
 :::{admonition} Researcher Bridge: Beyond Parameter-Space Adam
 :class: info
+:name: rb-beyond-adam
 Standard optimizers like Adam or K-FAC use the Fisher Information of the **Parameter Manifold ($\Theta$)** to scale updates. This ignores the geometry of the environment. The Fragile Agent introduces a metric $G$ on the **Latent State Manifold ($\mathcal{Z}$)**.
 **Why this matters:** It acts as a state-dependent preconditioner. In high-risk or high-sensitivity regions (sharp value gradients), $G$ expands, automatically forcing the agent to take smaller, more cautious steps. It turns "Natural Gradient" from a weight-update trick into a coordinate-invariant law of motion.
 :::
@@ -1107,9 +1109,7 @@ Units: the Fisher term has units $[z]^{-2}$; therefore $\lambda$ carries the sam
 Because $G$ is a Riemannian metric on $\mathcal{Z}$, it induces a unique torsion-free, metric-compatible connection (the Levi-Civita connection). In local coordinates the Christoffel symbols are
 
 $$
-\Gamma^k_{ij}(z)
-=
-\frac12\,G^{k\ell}(z)\left(\partial_i G_{j\ell}(z)+\partial_j G_{i\ell}(z)-\partial_\ell G_{ij}(z)\right).
+\Gamma^k_{ij}(z) = \frac12\,G^{k\ell}(z)\left(\partial_i G_{j\ell}(z)+\partial_j G_{i\ell}(z)-\partial_\ell G_{ij}(z)\right).
 $$
 
 The covariant derivative of a vector field $v$ is then
@@ -1564,6 +1564,7 @@ Stability and data-quality are monitored via 29 distinct checks (Gate Nodes). Ea
 
 :::{admonition} Researcher Bridge: Safety as a Unit Test
 :class: warning
+:name: rb-safety-unit-test
 Standard RL safety relies on "Reward Shaping"—hoping the agent learns to avoid bad states. The Sieve replaces hope with **Hard Runtime Assertions**. Each of the 58 nodes is a mathematical contract. If a "check" fails (e.g., the agent starts chattering or its belief decouples from the sensors), the system doesn't just get a penalty; it **halts or reverts**. Think of this as a compiled type-system for agent behavior.
 :::
 
@@ -2208,6 +2209,7 @@ The Governor subsumes these by learning the appropriate response to each diagnos
 
 :::{admonition} Researcher Bridge: Barriers vs. Trust Regions
 :class: warning
+:name: rb-barriers-trust-regions
 Standard RL uses trust regions, clipping, or penalty terms to avoid instability. Barriers are the formal limit surfaces those heuristics approximate. When a barrier activates, the correct move is to halt, project, or reshape updates, not to "pay a penalty."
 :::
 
@@ -2300,6 +2302,7 @@ The most dangerous failures occur when barriers conflict. We model these as **Tr
 
 :::{admonition} Researcher Bridge: RL Pathologies, Named and Localized
 :class: info
+:name: rb-rl-pathologies
 If you have seen mode collapse, oscillation, overfitting, or deadlock in RL, this table is the same landscape but made explicit. Each failure is tied to a component and a diagnostic signature, so it can be detected and corrected rather than discovered post hoc.
 :::
 
@@ -2329,6 +2332,7 @@ When Limits are breached or Interfaces fail, the agent exhibits specific patholo
 
 :::{admonition} Researcher Bridge: Heuristic Fixes as Typed Surgeries
 :class: tip
+:name: rb-heuristic-fixes
 You can read these as the geometric equivalents of common RL stabilizers: target networks, clipping, entropy tuning, replay, and resets. The difference is that each fix is triggered by a specific diagnostic, not by manual hyperparameter tuning.
 :::
 
@@ -2359,6 +2363,7 @@ Interventions are external mitigations to restore stability, re-ground the repre
 
 :::{admonition} Researcher Bridge: Engineering Tradeoffs, Made Explicit
 :class: tip
+:name: rb-engineering-tradeoffs
 This section is the compute budget view: which checks are cheap enough for online use and which must be amortized. It matches the practical reality of RL systems where full safety is too expensive to evaluate every step.
 :::
 
@@ -3819,6 +3824,7 @@ This keeps the inverse router aligned with the encoder routing.
 
 :::{admonition} Researcher Bridge: Hyperbolic Hierarchy = Tree-Like Abstraction
 :class: info
+:name: rb-hyperbolic-hierarchy
 Hyperbolic embeddings are a standard tool for hierarchical representation learning. Here the macro codebook forms the tree, the nuisance coordinates are local Euclidean fibers, and texture lives at the boundary. This is the geometric version of hierarchical state abstraction.
 :::
 
@@ -3940,6 +3946,7 @@ We extend the single-block Attentive Atlas into a deep, hierarchical architectur
 
 :::{admonition} Researcher Bridge: Renormalization Group vs. ResNets
 :class: info
+:name: rb-renormalization-resnets
 Standard Deep RL uses ResNets/Skip-connections to prevent vanishing gradients, but this allows information to "leak" past layers unprocessed. Stacked TopoEncoders use a strict **Renormalization Group (RG)** flow. Each layer must explain as much variance as possible and pass only the **rescaled residual (texture)** to the next block. This guarantees a true semantic hierarchy where Block 0 is "the gist" and Block $L$ is "the noise."
 :::
 
@@ -4274,6 +4281,7 @@ This ensures that deeper blocks explain progressively less variance—the RG flo
 
 :::{admonition} Researcher Bridge: Jump Operators as Skill Switches
 :class: info
+:name: rb-jump-operators
 If you think in options or skills, a jump operator is the formal "mode switch" between charts. It encodes how to translate state coordinates when the agent changes macro regime, avoiding brittle hand-written state resets.
 :::
 
@@ -4688,6 +4696,7 @@ The jump consistency loss should be introduced after the atlas structure has sta
 
 :::{admonition} Researcher Bridge: Practical Substitutions for Idealized Laws
 :class: tip
+:name: rb-practical-substitutions
 Many theoretical constraints are too expensive to compute directly. This section provides the RL-engineering replacements (surrogate losses, probes, and bounds) that preserve the same failure detection in practice.
 :::
 
@@ -5103,6 +5112,7 @@ def compute_geom_loss(
 
 :::{admonition} Researcher Bridge: World Models with Typed Latents
 :class: info
+:name: rb-world-models
 Think Dreamer or MuZero, but with explicit separation between control-relevant symbols, structured nuisance, and texture. The goal is to stop policies from relying on high-frequency detail while keeping reconstruction fidelity.
 :::
 
@@ -6176,6 +6186,7 @@ The **Universal Loss** (Section 7.7.4) decomposes into geometric objectives, usi
 
 :::{admonition} Researcher Bridge: Max-Entropy Exploration in Macro Space
 :class: info
+:name: rb-maxent-exploration
 This is the MaxEnt RL idea applied to discrete macro trajectories. Instead of adding a scalar bonus, we maximize the entropy of reachable macro futures, which is the discrete version of "keep options open."
 :::
 
@@ -6285,6 +6296,7 @@ $$
 
 :::{admonition} Researcher Bridge: Bayes Filter with Safety Projection
 :class: info
+:name: rb-bayes-filter
 The predict-update loop is standard HMM/POMDP filtering. The extra step is projection by the Sieve, which removes or downweights unsafe belief mass. Think "Bayes filter plus constraints."
 :::
 
@@ -6480,6 +6492,7 @@ The table below is a dictionary from standard **filtering and constrained infere
 
 :::{admonition} Researcher Bridge: Soft RL Equals Exploration Duality
 :class: info
+:name: rb-soft-rl-duality
 If you know SAC or KL control, this section formalizes why maximizing entropy and optimizing soft value are the same problem. The exploration gradient is just the covariant form of that duality.
 :::
 
@@ -6594,6 +6607,7 @@ This recovers **KL-Regularized Policy Gradient** and exponential family policies
 
 :::{admonition} Researcher Bridge: KL Control as a Schrödinger Bridge
 :class: tip
+:name: rb-kl-control-bridge
 Entropy-regularized control can be read as an optimal transport problem on trajectories. This is the same math behind soft policy iteration, just framed as a path-measure bridge.
 :::
 
@@ -6614,6 +6628,7 @@ so each training update can be read as an entropic optimal transport step on bel
 
 :::{admonition} Researcher Bridge: The Stable Learning Window
 :class: warning
+:name: rb-stable-learning-window
 The coupling window is the stability region where representation and dynamics stay grounded. For RL readers, it plays the role of a learning-rate and discount range where updates contract rather than diverge.
 :::
 
@@ -6709,6 +6724,7 @@ This softly penalizes overestimation on unseen actions but **does not prevent** 
 
 :::{admonition} Researcher Bridge: Information Bottleneck Becomes Geometry
 :class: info
+:name: rb-info-bottleneck-geometry
 When you push a model to the edge of representational capacity, the geometry must adapt. This is the rigorous version of information bottleneck regularization: capacity limits induce curvature that slows updates in overloaded regions.
 :::
 
@@ -6863,6 +6879,7 @@ The latent bundle $\mathcal{Z} = \mathcal{K} \times \mathcal{Z}_n \times \mathca
 
 :::{admonition} Researcher Bridge: Handling Distribution Shift
 :class: info
+:name: rb-distribution-shift
 Standard Bayesian filters fail during "surprises" because they can't handle mass appearing or disappearing (Unbalanced Transport). The **Wasserstein-Fisher-Rao (WFR)** metric allows the agent's belief to both **flow** (smooth tracking) and **jump** (teleporting probability mass). This provides a unified variational principle for both continuous state-tracking and discrete hypothesis-switching.
 :::
 
@@ -7292,6 +7309,7 @@ Following the diagnostic node convention (Section 3.1), we define:
 
 :::{admonition} Researcher Bridge: Diffusion-Style Generation with Policy Drift
 :class: info
+:name: rb-diffusion-generation
 If you know diffusion or score-based models, the radial expansion here is the generative flow. The policy is the controllable drift term that steers generation toward high-value regions.
 :::
 
@@ -7706,6 +7724,7 @@ def sample_boundary_texture(
 
 :::{admonition} Researcher Bridge: Continuous-Time Actor-Critic
 :class: info
+:name: rb-continuous-actor-critic
 The equations of motion are the continuous-time limit of policy updates with stochastic exploration noise. Think of it as a Langevinized actor-critic where the metric defines the preconditioner.
 :::
 
@@ -8448,6 +8467,7 @@ $$
 
 :::{admonition} Researcher Bridge: Observations and Actions as Boundary Conditions
 :class: info
+:name: rb-boundary-conditions
 In standard RL, observations and actions are inputs and outputs. Here they are boundary conditions on the latent dynamics, which is why sensor and motor channels appear as Dirichlet and Neumann conditions.
 :::
 
@@ -9361,6 +9381,7 @@ We rigorously frame Reward not as a discrete signal, but as a **Boundary Scalar 
 
 :::{admonition} Researcher Bridge: Value as a Smooth Field (PINN)
 :class: tip
+:name: rb-value-pinn
 Standard RL treats the Value function as a regression target for TD-error, often leading to "jagged" or over-fit landscapes. We reframe the Critic as a **Field Solver**. By enforcing the Helmholtz/Poisson correspondence, we treat rewards as "charges" that propagate smoothly through the latent manifold. This is implemented as a **Physics-Informed Neural Network (PINN)** loss, ensuring the value landscape is globally consistent and respects the manifold's curvature.
 :::
 
@@ -10107,6 +10128,7 @@ We define five diagnostic nodes (35-39) to monitor the health of the Critic/Valu
 
 :::{admonition} Researcher Bridge: Metric Learning for Classification
 :class: info
+:name: rb-metric-learning
 This section recasts supervised labels as geometric constraints. It is the same idea as contrastive or metric learning, but expressed as class-conditioned potentials and separation in the latent manifold.
 :::
 
@@ -10726,6 +10748,7 @@ The Fragile Agent architecture relies on the strict satisfaction of information-
 
 :::{admonition} Researcher Bridge: Automated Homeostasis vs. Hyperparameter Tuning
 :class: tip
+:name: rb-homeostasis
 In standard RL, we spend weeks "grid-searching" for the right entropy coefficient ($\alpha$) or learning rate ($\eta$). The **Universal Governor** replaces this with a **homeostatic control loop**. It treats hyperparameters as a dynamical system that responds in real-time to the Sieve's diagnostic residuals. Instead of a static configuration, you have a meta-controller that "squeezes" the learning dynamics to stay on the stable manifold.
 :::
 
@@ -11181,6 +11204,7 @@ Following the diagnostic node convention (Section 3.1), we define:
 
 :::{admonition} Researcher Bridge: Experience Replay as a Potential Field
 :class: info
+:name: rb-experience-replay
 Standard Experience Replay buffers are just "bags of transitions" sampled at random. We reframe Memory as a **Self-Interaction Functional**. Past successes and failures act like physical magnets (attractive or repulsive charges) that generate a non-local force $\Psi_{\text{mem}}$. The agent does not just "sample" the past; it is literally **pulled** toward high-reward trajectories by the gradient of its own history.
 :::
 
@@ -11497,6 +11521,7 @@ with empirically recommended bounds $\Omega_{\min} \approx 0.01$, $\Omega_{\max}
 
 :::{admonition} Researcher Bridge: Retrieval-Augmented Control
 :class: info
+:name: rb-retrieval-augmented
 If you know episodic control or retrieval-augmented generation, this is the geometric version: retrieval is a geodesic search in a shared embedding space. The firewall ensures retrieved texture does not leak into policy decisions.
 :::
 
@@ -11747,6 +11772,7 @@ This section provides a first-principles derivation of **Multi-Agent Symplectic 
 
 :::{admonition} Researcher Bridge: Opponents as Geometric Inertia
 :class: warning
+:name: rb-opponents-inertia
 Standard Multi-Agent RL (MARL) usually fails because agents treat each other as non-stationary noise. In this framework, strategic interaction is encoded in the **Game Tensor**. We prove that an adversary does not just "change the environment" - they literally **inflate the metric** of your latent space. In contested regions, the "mass" of the agent increases, making aggressive updates physically harder to execute. Nash Equilibrium is recovered as a state of **geometric stasis**.
 :::
 
@@ -12081,6 +12107,7 @@ This section formalizes the mechanism by which agents expand their ontology—cr
 
 :::{admonition} Researcher Bridge: Dynamic Architecture vs. Fixed Capacity
 :class: tip
+:name: rb-dynamic-architecture
 Standard models have fixed tensor shapes chosen at initialization. If the environment's complexity exceeds the model's capacity, it fails. **Ontological Fission** is our version of "Dynamic Architecture Growth." When the agent detects "Ontological Stress" (unaccounted-for structure in the noise floor), it triggers a **pitchfork bifurcation** to spawn new latent charts (experts). The model grows to match the data, rather than trying to cram the world into a fixed bottleneck.
 :::
 
@@ -12481,6 +12508,7 @@ This recovers **Elastic Weight Consolidation (EWC)**—the Fisher information $F
 
 :::{admonition} Researcher Bridge: Pruning via Metabolic Efficiency
 :class: important
+:name: rb-pruning-efficiency
 Most MoE (Mixture of Experts) or multi-chart models suffer from "Expert Explosion," where they create a new index for every minor variation. **Ontological Fusion** provides a principled way to forget. It merges latent charts when the **Discrimination Gain** (the information provided by keeping them separate) falls below the **Metabolic Cost** of maintaining them. It is the geometric derivation of Occam's Razor.
 :::
 
@@ -12976,6 +13004,7 @@ where $U$ is the total utility functional (value minus complexity cost).
 
 :::{admonition} Researcher Bridge: Principled "Thinking Fast and Slow"
 :class: info
+:name: rb-thinking-fast-slow
 Most agents spend the same amount of FLOPs on a trivial decision as a critical one. We use the **Landauer Bound** to assign a thermodynamic cost to information updates. The agent stops "deliberating" ($S^*$) exactly when the marginal gain in Value is outweighed by the metabolic cost of more compute. This derives "System 1 vs System 2" behavior from first principles.
 :::
 
@@ -13250,6 +13279,7 @@ Following the diagnostic node convention (Section 3.1), we define two new monito
 
 :::{admonition} Researcher Bridge: Curiosity as a Vector Field (Not a Scalar)
 :class: tip
+:name: rb-curiosity-vector
 Standard curiosity-driven RL (like RND) uses a scalar reward bonus to encourage exploration. We reframe "Curiosity" as a **Riemannian Force Field**. It is defined by the **Interventional Gap** - the discrepancy between what the model predicts through passive observation vs. active $do$-sampling. Curiosity is not an "incentive" you add to the reward; it is a vector that physically steers the agent toward states where its causal model is most likely to be proven wrong.
 :::
 
@@ -13467,6 +13497,7 @@ For each interaction step $t$:
 
 :::{admonition} Researcher Bridge: The Sensor Bandwidth Ceiling
 :class: important
+:name: rb-sensor-bandwidth
 You cannot represent more information than your sensors can ground. This section provides the hard limit for **Model Overload**. We derive an "Area Law" which proves that if an agent tries to store more "bits" than its interface area allows, its internal update speed (gradients) will vanish. We call this **Causal Stasis**. It is the geometric explanation for why models "die" or stop learning when they are over-parameterized relative to their data source.
 :::
 
@@ -13971,9 +14002,7 @@ Under these hypotheses, the first variation of $\mathcal{S}$ is well-defined as 
 
 Let $d\mu_G=\sqrt{|G|}\,dz^n$. The determinant identity gives
 $$
-\delta \sqrt{|G|}
-=
--\frac{1}{2}\sqrt{|G|}\,G_{ij}\,\delta G^{ij},
+\delta \sqrt{|G|} = -\frac{1}{2}\sqrt{|G|}\,G_{ij}\,\delta G^{ij},
 $$
 equivalently $\delta d\mu_G = -\tfrac12\,G_{ij}\,\delta G^{ij}\, d\mu_G$.
 
@@ -13982,9 +14011,7 @@ equivalently $\delta d\mu_G = -\tfrac12\,G_{ij}\,\delta G^{ij}\, d\mu_G$.
 
 Write the curvature functional as $\mathcal{S}_{\text{geo}}[G]:=\int_{\mathcal{Z}}R(G)\,d\mu_G$. The variation splits as
 $$
-\delta(R\,d\mu_G)
-=
-(\delta R)\,d\mu_G + R\,\delta d\mu_G.
+\delta(R\,d\mu_G) = (\delta R)\,d\mu_G + R\,\delta d\mu_G.
 $$
 For the scalar curvature, use
 $$
@@ -13992,9 +14019,7 @@ R = G^{ij}R_{ij},
 $$
 hence
 $$
-\delta R
-=
-R_{ij}\,\delta G^{ij} + G^{ij}\,\delta R_{ij}.
+\delta R = R_{ij}\,\delta G^{ij} + G^{ij}\,\delta R_{ij}.
 $$
 The Palatini identity gives
 $$
@@ -14002,19 +14027,13 @@ $$
 $$
 and the Christoffel variation is
 $$
-\delta\Gamma^k_{ij}
-=
-\frac12\,G^{k\ell}\left(\nabla_i \delta G_{j\ell}+\nabla_j \delta G_{i\ell}-\nabla_\ell \delta G_{ij}\right),
+\delta\Gamma^k_{ij} = \frac12\,G^{k\ell}\left(\nabla_i \delta G_{j\ell}+\nabla_j \delta G_{i\ell}-\nabla_\ell \delta G_{ij}\right),
 $$
 where $\delta G_{ij} = -G_{ia}G_{jb}\,\delta G^{ab}$.
 
 Substituting and collecting terms yields the standard decomposition
 $$
-\delta\mathcal{S}_{\text{geo}}
-=
-\int_{\mathcal{Z}}\left(R_{ij}-\frac12 R\,G_{ij}\right)\delta G^{ij}\,d\mu_G
-\;+\;
-\oint_{\partial\mathcal{Z}} \mathcal{B}_{\text{curv}}(\delta G,\nabla\delta G),
+\delta\mathcal{S}_{\text{geo}} = \int_{\mathcal{Z}}\left(R_{ij}-\frac12 R\,G_{ij}\right)\delta G^{ij}\,d\mu_G + \oint_{\partial\mathcal{Z}} \mathcal{B}_{\text{curv}}(\delta G,\nabla\delta G),
 $$
 where $\mathcal{B}_{\text{curv}}$ is an explicit boundary $(n\!-\!1)$-form built from $\delta\Gamma$ (equivalently from $\delta G$ and its first derivatives). For a well-posed Dirichlet variational problem one can add an appropriate boundary term to cancel $\mathcal{B}_{\text{curv}}$. In our setting the boundary is clamped, so we impose $\delta G\vert_{\partial\mathcal{Z}}=0$ and the boundary term vanishes.
 
@@ -14023,15 +14042,11 @@ where $\mathcal{B}_{\text{curv}}$ is an explicit boundary $(n\!-\!1)$-form built
 
 Let $\mathcal{S}_{\text{risk}}[G,V] := \int_{\mathcal{Z}}\mathcal{L}_{\text{risk}}(V;G)\,d\mu_G$. Define the (Riemannian-signature) risk tensor by
 $$
-T_{ij}
-:=
--\frac{2}{\sqrt{|G|}}\frac{\delta(\sqrt{|G|}\,\mathcal{L}_{\text{risk}})}{\delta G^{ij}}.
+T_{ij} := -\frac{2}{\sqrt{|G|}}\frac{\delta(\sqrt{|G|}\,\mathcal{L}_{\text{risk}})}{\delta G^{ij}}.
 $$
 Holding $V$ fixed under $\delta G$ and using $\delta d\mu_G = -\tfrac12 G_{ij}\delta G^{ij} d\mu_G$ gives the standard identity
 $$
-\delta \mathcal{S}_{\text{risk}}
-=
--\frac12 \int_{\mathcal{Z}} T_{ij}\,\delta G^{ij}\,d\mu_G.
+\delta \mathcal{S}_{\text{risk}} = -\frac12 \int_{\mathcal{Z}} T_{ij}\,\delta G^{ij}\,d\mu_G.
 $$
 For the risk Lagrangian
 $$
@@ -14039,10 +14054,7 @@ $$
 $$
 the explicit computation yields
 $$
-T_{ij}
-=
-\nabla_i V\,\nabla_j V
--G_{ij}\left(\frac12\,G^{ab}\nabla_a V\nabla_b V + U(V)\right).
+T_{ij} = \nabla_i V\,\nabla_j V - G_{ij}\left(\frac12\,G^{ab}\nabla_a V\nabla_b V + U(V)\right).
 $$
 
 (sec-appendix-a-capacity-term-and-the-emergence-of)=
@@ -14052,9 +14064,7 @@ The explicit boundary penalty $-\kappa\oint_{\partial\mathcal{Z}}\omega_{\partia
 
 The remaining constant $\Lambda$ in Definition A.1.4 plays the role of the bulk Lagrange multiplier for finite boundary capacity: it is the only diffeomorphism-invariant way to represent an additive “grounding floor” required for non-degenerate macrostates (cf. Theorem {prf:ref}`thm-information-stability-window-operational`). Formally, varying $-2\Lambda\int_{\mathcal{Z}} d\mu_G$ gives
 $$
-\delta\left(-2\Lambda\int_{\mathcal{Z}} d\mu_G\right)
-=
-\int_{\mathcal{Z}} \Lambda G_{ij}\,\delta G^{ij}\,d\mu_G.
+\delta\left(-2\Lambda\int_{\mathcal{Z}} d\mu_G\right) = \int_{\mathcal{Z}} \Lambda G_{ij}\,\delta G^{ij}\,d\mu_G.
 $$
 
 (sec-appendix-a-recovery-of-the-metric-stationarity-condition)=
@@ -14065,9 +14075,7 @@ $$
 
 For any sufficiently regular information flux field $\mathbf{j}$ on $\mathcal{Z}$,
 $$
-\int_{\mathcal{Z}} \operatorname{div}_G(\mathbf{j})\, d\mu_G
-=
-\oint_{\partial \mathcal{Z}} \langle \mathbf{j}, \mathbf{n}\rangle\, dA_G,
+\int_{\mathcal{Z}} \operatorname{div}_G(\mathbf{j})\, d\mu_G = \oint_{\partial \mathcal{Z}} \langle \mathbf{j}, \mathbf{n}\rangle\, dA_G,
 $$
 which is the Riemannian divergence theorem underlying the global balance equation in Theorem {prf:ref}`thm-generalized-conservation-of-belief`.
 
@@ -14083,17 +14091,7 @@ with $T_{ij}$ given by Section A.2.3.
 
 *Proof.* Combine Sections A.2.1–A.2.4:
 $$
-\delta\mathcal{S}
-=
-\int_{\mathcal{Z}}\left[
-\left(R_{ij}-\frac12 R\,G_{ij}\right)
-\;+\;
-\Lambda G_{ij}
-\;-\;
-\kappa T_{ij}
-\right]\delta G^{ij}\,d\mu_G
-\;+\;
-\text{(boundary terms)}.
+\delta\mathcal{S} = \int_{\mathcal{Z}}\left[\left(R_{ij}-\frac12 R\,G_{ij}\right) + \Lambda G_{ij} - \kappa T_{ij}\right]\delta G^{ij}\,d\mu_G + \text{(boundary terms)}.
 $$
 Boundary terms vanish under the clamped boundary condition (or after adding an appropriate boundary term). Because $\delta G^{ij}$ is arbitrary in the interior, the fundamental lemma of the calculus of variations implies the bracketed tensor must vanish pointwise almost everywhere, yielding the stated identity (see e.g. Evans, *Partial Differential Equations*, 2010, for the functional-analytic lemma).
 
@@ -15029,10 +15027,7 @@ This appendix provides the full derivation of Theorem {prf:ref}`thm-wfr-stress-e
 
 Recall the WFR action:
 $$
-\mathcal{S}_{\mathrm{WFR}}
-=
-\frac12\int_0^T\int_{\mathcal{Z}}
-\rho\left(\|v\|_G^2+\lambda^2 r^2\right)\,d\mu_G\,ds,
+\mathcal{S}_{\mathrm{WFR}} = \frac12\int_0^T\int_{\mathcal{Z}} \rho\left(\|v\|_G^2+\lambda^2 r^2\right)\,d\mu_G\,ds,
 $$
 with the continuity equation enforced separately:
 $$
@@ -15057,11 +15052,11 @@ $$
 $$
 so
 $$
+\begin{aligned}
 \delta\|v\|_G^2
-=
-v^i v^j\,\delta G_{ij}
-=
--v_i v_j\,\delta G^{ij}.
+&= v^i v^j\,\delta G_{ij} \\
+&= -v_i v_j\,\delta G^{ij}.
+\end{aligned}
 $$
 The volume form varies as
 $$
@@ -15071,8 +15066,7 @@ $$
 Combine these:
 $$
 \delta\left(\sqrt{|G|}\,\mathcal{L}_{\mathrm{WFR}}\right)
-=
-\sqrt{|G|}\left[
+= \sqrt{|G|}\left[
 -\frac12\,\rho v_i v_j\,\delta G^{ij}
 -\frac12\,\mathcal{L}_{\mathrm{WFR}}\,G_{ij}\,\delta G^{ij}
 \right].
@@ -15080,8 +15074,7 @@ $$
 Therefore,
 $$
 \delta\mathcal{S}_{\mathrm{WFR}}
-=
--\frac12\int_0^T\int_{\mathcal{Z}}
+= -\frac12\int_0^T\int_{\mathcal{Z}}
 \left(\rho v_i v_j + \mathcal{L}_{\mathrm{WFR}} G_{ij}\right)
 \delta G^{ij}\,d\mu_G\,ds.
 $$
@@ -15133,6 +15126,7 @@ This appendix addresses forty rigorous objections that a skeptical reviewer migh
 
 :::{admonition} Researcher Bridge: The Fragile Agent Lexicon
 :class: important
+:name: rb-fragile-lexicon
 If you are coming from a standard RL/Deep Learning background, use this mapping to understand the functional roles of our geometric constructs:
 
 | Their Heuristic (Degenerate Case) | Our Geometric Law (General Theory) |
