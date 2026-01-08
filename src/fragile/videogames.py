@@ -1,8 +1,10 @@
+from typing import Callable
+
 import numpy as np
 import torch
 
 from fragile.core import FractalTree
-from fragile.fractalai import clone_tensor, relativize
+from fragile.fractalai import clone_tensor, l2_norm, relativize
 
 
 def aggregate_visits(array, block_size=5, upsample=True):
@@ -97,21 +99,19 @@ class VideoGameTree(FractalTree):
 
     def step_walkers(self):
         wc_np = self.will_clone.cpu().numpy()
-        new_states, observ, reward, oobs, _truncateds, infos = super().step_walkers()
+        new_states, observ, reward, oobs, truncateds, infos = super().step_walkers()
         if new_states is None:
-            return new_states, observ, reward, oobs, _truncateds, infos
+            return new_states, observ, reward, oobs, truncateds, infos
         self.rgb[wc_np] = np.array([info["rgb"] for info in infos])
-        return new_states, observ, reward, oobs, _truncateds, infos
+        return new_states, observ, reward, oobs, truncateds, infos
 
     def reset(self):
-        (state, _obs, _info), new_states, observ, reward, oobs, _truncateds, infos = (
-            super().reset()
-        )
+        (state, obs, info), new_states, observ, reward, oobs, truncateds, infos = super().reset()
         self.rgb = np.zeros((self.start_walkers, *self.rgb_shape), dtype=np.uint8)
         self.env.set_state(state)
         self.rgb[0, :] = self.env.get_image()
         self.rgb[1:, :] = np.array([info["rgb"] for info in infos[1:]])
-        return (state, _obs, _info), new_states, observ, reward, oobs, _truncateds, infos
+        return (state, obs, info), new_states, observ, reward, oobs, truncateds, infos
 
 
 class MontezumaTree(FractalTree):
@@ -120,6 +120,7 @@ class MontezumaTree(FractalTree):
         max_walkers,
         env,
         policy=None,
+        dt_sampler=None,
         device="cuda",
         start_walkers=100,
         min_leafs=100,
@@ -133,11 +134,15 @@ class MontezumaTree(FractalTree):
         count_visits: bool = True,
         erase_coef=0.05,
         agg_block_size: int = 5,
+        distance_function: Callable[[torch.Tensor, torch.Tensor], torch.Tensor] = l2_norm,
+        dist_coef: float = 1.0,
+        reward_coef: float = 1.0,
     ):
         super().__init__(
             max_walkers=max_walkers,
             env=env,
             policy=policy,
+            dt_sampler=dt_sampler,
             device=device,
             start_walkers=start_walkers,
             min_leafs=min_leafs,
@@ -148,16 +153,14 @@ class MontezumaTree(FractalTree):
             state_shape=state_shape,
             state_dtype=state_dtype,
             img_shape=img_shape,
+            distance_function=distance_function,
+            dist_coef=dist_coef,
+            reward_coef=reward_coef,
         )
         self.agg_block_size = agg_block_size
         self.count_visits = count_visits
         self.erase_coef = erase_coef
         self.visits = np.zeros((24, 160, 160), dtype=np.int64)
-
-    def sample_dt(self, n_walkers: int | None = None):
-        if n_walkers is None:
-            n_walkers = self.n_walkers
-        return np.random.randint(1, 5, size=len(n_walkers))  # noqa: NPY002
 
     def to_dict(self):
         data = super().to_dict()
@@ -165,19 +168,19 @@ class MontezumaTree(FractalTree):
         return data
 
     def step_walkers(self):
-        _new_states, observ, _reward, _oobs, _truncateds, _infos = super().step_walkers()
-        if _new_states is None:
-            return _new_states, observ, _reward, _oobs, _truncateds, _infos
+        new_states, observ, reward, oobs, truncateds, infos = super().step_walkers()
+        if new_states is None:
+            return new_states, observ, reward, oobs, truncateds, infos
         if self.count_visits:
             self.update_visits(np.array(observ, dtype=np.int64))
-        return _new_states, observ, _reward, _oobs, _truncateds, _infos
+        return new_states, observ, reward, oobs, truncateds, infos
 
     def reset(self):
-        _state, _new_states, observ, _reward, _oobs, _truncateds, _infos = super().reset()
+        state, new_states, observ, reward, oobs, truncateds, infos = super().reset()
         self.visits = np.zeros((24, 160, 160), dtype=np.float32)
         if self.count_visits:
             self.update_visits(np.array(observ, dtype=np.int64))
-        return _state, _new_states, observ, _reward, _oobs, _truncateds, _infos
+        return state, new_states, observ, reward, oobs, truncateds, infos
 
     def update_visits(self, observ):
         observ = observ.astype(np.float64)
@@ -195,5 +198,6 @@ class MontezumaTree(FractalTree):
         visits = aggregate_visits(self.visits, block_size=self.agg_block_size, upsample=True)
         obs = self.observ.numpy(force=True).astype(np.int64)
         x, y, room_ix = obs[:, 0], obs[:, 1], obs[:, 2]
-        visits_val = torch.tensor(visits[room_ix, y, x], device=self.device, dtype=torch.float32)
-        return relativize(-visits_val)
+        visits_val = -torch.tensor(visits[room_ix, y, x], device=self.device, dtype=torch.float32)
+        leaf_visits = visits_val[self.is_leaf]
+        return relativize(visits_val, mean=leaf_visits.mean(), std=leaf_visits.std())

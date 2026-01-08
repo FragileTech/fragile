@@ -1,3 +1,4 @@
+from collections.abc import Callable
 import logging
 import threading
 import time
@@ -12,9 +13,10 @@ import torch
 from fragile.benchmarks import Rastrigin
 from fragile.fractalai import (
     calculate_clone,
-    calculate_virtual_reward,
     clone_tensor,
     fai_iteration,
+    l2_norm,
+    random_alive_compas,
     relativize,
 )
 from fragile.utils import numpy_dtype_to_torch_dtype
@@ -74,8 +76,9 @@ def aggregate_visits(array, block_size=5, upsample=True):
     return np.repeat(np.repeat(aggregated_array, block_size, axis=1), block_size, axis=2)
 
 
-class BasePolicy:
-    def __init__(self, fractal: "BaseFractalTree | None" = None):
+class BasePolicy(param.Parameterized):
+    def __init__(self, fractal: "BaseFractalTree | None" = None, **kwargs):
+        super().__init__(**kwargs)
         self._fractal = fractal
 
     def __call__(
@@ -102,8 +105,9 @@ class BasePolicy:
         pass
 
 
-class BaseDtSampler:
-    def __init__(self, fractal: "BaseFractalTree | None" = None):
+class BaseDtSampler(param.Parameterized):
+    def __init__(self, fractal: "BaseFractalTree | None" = None, **kwargs):
+        super().__init__(**kwargs)
         self._fractal = fractal
 
     def __call__(
@@ -137,6 +141,10 @@ class RandomPolicy(BasePolicy):
     ) -> torch.Tensor:
         n_walkers = n_samples if n_samples is not None else fractal.n_walkers
         acts = [fractal.env.sample_action() for _ in range(n_walkers)]
+        if isinstance(acts[0], torch.Tensor) and len(acts) > 1:
+            return torch.concat(acts, dim=0)
+        if isinstance(acts[0], torch.Tensor):
+            return acts[0]
         return torch.tensor(acts, device=fractal.device, dtype=fractal.action_type)
 
 
@@ -152,7 +160,7 @@ class ConstantDt(BaseDtSampler):
         return np.ones(n_walkers) * self.dt
 
 
-class BaseFractalTree:
+class _BaseFractalTree:
     def __init__(
         self,
         max_walkers,
@@ -282,7 +290,175 @@ class BaseFractalTree:
         self.scaled_reward = torch.cat((self.scaled_reward, scaled_reward), dim=0).contiguous()
 
 
+class BaseFractalTree(param.Parameterized):
+    max_walkers = param.Integer(default=1000, bounds=(2, None), per_instance=True)
+    start_walkers = param.Integer(default=100, bounds=(2, None), per_instance=True)
+    min_leafs = param.Integer(default=100, bounds=(2, None), per_instance=True)
+    n_walkers = param.Integer(default=100, bounds=(2, None), per_instance=True)
+
+    def __init__(
+        self,
+        max_walkers,
+        env,
+        device="cuda",
+        start_walkers: int = 100,
+        min_leafs: int = 100,
+        **kwargs,
+    ):
+        super().__init__(
+            max_walkers=max_walkers,
+            start_walkers=start_walkers,
+            min_leafs=min_leafs,
+            n_walkers=start_walkers,
+            **kwargs,
+        )
+        self.env = env
+        self.device = device
+
+        self.total_steps = 0
+        self.iteration = 0
+
+        self._parent = torch.zeros(max_walkers, device=self.device, dtype=torch.long)
+        self._is_leaf = torch.ones(max_walkers, device=self.device, dtype=torch.long)
+        self._can_clone = torch.zeros(max_walkers, device=self.device, dtype=torch.bool)
+        self._is_cloned = torch.zeros(max_walkers, device=self.device, dtype=torch.bool)
+        self._is_compa_distance = torch.ones(max_walkers, device=self.device, dtype=torch.bool)
+        self._is_compa_clone = torch.ones(max_walkers, device=self.device, dtype=torch.bool)
+        self._is_dead = torch.zeros(max_walkers, device=self.device, dtype=torch.bool)
+
+        self._reward = torch.zeros(max_walkers, device=self.device, dtype=torch.float32)
+        self._cum_reward = torch.zeros(max_walkers, device=self.device, dtype=torch.float32)
+        self._oobs = torch.zeros(max_walkers, device=self.device, dtype=torch.bool)
+
+        self._virtual_reward = torch.zeros(max_walkers, device=self.device, dtype=torch.float32)
+        self._clone_prob = torch.zeros(max_walkers, device=self.device, dtype=torch.float32)
+        self._clone_ix = torch.zeros(max_walkers, device=self.device, dtype=torch.int64)
+        self._distance_ix = torch.zeros(max_walkers, device=self.device, dtype=torch.int64)
+        self._wants_clone = torch.zeros(max_walkers, device=self.device, dtype=torch.bool)
+        self._will_clone = torch.ones(max_walkers, device=self.device, dtype=torch.bool)
+        self._distance = torch.zeros(max_walkers, device=self.device, dtype=torch.float32)
+        self._scaled_distance = torch.zeros(max_walkers, device=self.device, dtype=torch.float32)
+        self._scaled_reward = torch.zeros(max_walkers, device=self.device, dtype=torch.float32)
+
+    def widgets(self) -> dict[str, pn.widgets.Widget]:
+        return {
+            "max_walkers": pn.widgets.IntInput(
+                name="max_walkers", value=self.max_walkers, width=100
+            ),
+            "start_walkers": pn.widgets.IntInput(
+                name="start_walkers", value=self.start_walkers, width=100
+            ),
+            "min_leafs": pn.widgets.IntInput(name="min_leafs", value=self.min_leafs, width=100),
+            "n_walkers": pn.widgets.IntInput(name="n_walkers", value=self.n_walkers, width=100),
+        }
+
+    def reset_tensors(self):
+        self._parent = torch.zeros_like(self._parent)
+        self._is_leaf = torch.ones_like(self._is_leaf)
+        self._can_clone = torch.ones_like(self._can_clone)
+        self._is_cloned = torch.zeros_like(self._is_cloned)
+        self._is_compa_distance = torch.ones_like(self._is_compa_distance)
+        self._is_compa_clone = torch.ones_like(self._is_compa_clone)
+        self._is_dead = torch.ones_like(self._is_dead)
+
+        self._reward = torch.zeros_like(self._reward)
+        self._cum_reward = torch.zeros_like(self._cum_reward)
+        self._oobs = torch.ones_like(self._oobs)
+
+        self._virtual_reward = torch.zeros_like(self._virtual_reward)
+        self._clone_prob = torch.zeros_like(self._clone_prob)
+        self._clone_ix = torch.zeros_like(self._clone_ix)
+        self._distance_ix = torch.zeros_like(self._distance_ix)
+        self._wants_clone = torch.zeros_like(self._wants_clone)
+        self._will_clone = torch.ones_like(self._will_clone)
+        self._distance = torch.zeros_like(self._distance)
+        self._scaled_distance = torch.zeros_like(self._scaled_distance)
+        self._scaled_reward = torch.zeros_like(self._scaled_reward)
+
+    @property
+    def parent(self):
+        return self._parent[: self.n_walkers]
+
+    @property
+    def is_leaf(self):
+        return self._is_leaf[: self.n_walkers]
+
+    @property
+    def can_clone(self):
+        return self._can_clone[: self.n_walkers]
+
+    @property
+    def is_cloned(self):
+        return self._is_cloned[: self.n_walkers]
+
+    @property
+    def is_compa_distance(self):
+        return self._is_compa_distance[: self.n_walkers]
+
+    @property
+    def is_compa_clone(self):
+        return self._is_compa_clone[: self.n_walkers]
+
+    @property
+    def is_dead(self):
+        return self._is_dead[: self.n_walkers]
+
+    @property
+    def reward(self):
+        return self._reward[: self.n_walkers]
+
+    @property
+    def cum_reward(self):
+        return self._cum_reward[: self.n_walkers]
+
+    @property
+    def oobs(self):
+        return self._oobs[: self.n_walkers]
+
+    @property
+    def virtual_reward(self):
+        return self._virtual_reward[: self.n_walkers]
+
+    @property
+    def clone_prob(self):
+        return self._clone_prob[: self.n_walkers]
+
+    @property
+    def clone_ix(self):
+        return self._clone_ix[: self.n_walkers]
+
+    @property
+    def distance_ix(self):
+        return self._distance_ix[: self.n_walkers]
+
+    @property
+    def wants_clone(self):
+        return self._wants_clone[: self.n_walkers]
+
+    @property
+    def will_clone(self):
+        return self._will_clone[: self.n_walkers]
+
+    @property
+    def distance(self):
+        return self._distance[: self.n_walkers]
+
+    @property
+    def scaled_distance(self):
+        return self._scaled_distance[: self.n_walkers]
+
+    @property
+    def scaled_reward(self):
+        return self._scaled_reward[: self.n_walkers]
+
+    def add_walkers(self, new_walkers):
+        self.n_walkers += new_walkers
+
+
 class FractalTree(BaseFractalTree):
+    dist_coef = param.Number(default=1.0, bounds=(0.0, None), per_instance=True)
+    reward_coef = param.Number(default=1.0, bounds=(0.0, None), per_instance=True)
+
     def __init__(
         self,
         max_walkers,
@@ -301,6 +477,10 @@ class FractalTree(BaseFractalTree):
         state_dtype: torch.dtype | type = object,
         img_shape: tuple[int, ...] | None = None,
         img_dtype: torch.dtype | None = None,
+        distance_function: Callable[[torch.Tensor, torch.Tensor], torch.Tensor] = l2_norm,
+        dist_coef: float = 1.0,
+        reward_coef: float = 1.0,
+        accumulate_reward: bool = True,
     ):
         super().__init__(
             max_walkers=max_walkers,
@@ -308,23 +488,27 @@ class FractalTree(BaseFractalTree):
             device=device,
             start_walkers=start_walkers,
             min_leafs=min_leafs,
+            dist_coef=dist_coef,
+            reward_coef=reward_coef,
         )
+        self.accumulate_reward = accumulate_reward
+        self.distance_function = distance_function
         self.minimize = minimize
         self.obs_shape = obs_shape
         self.obs_dtype = obs_dtype
-        self.observ = self.reset_observ()
+        self._observ = self.reset_observ()
 
         self.action_shape = action_shape
         self.action_type = action_dtype
-        self.action = self.reset_action()
+        self._action = self.reset_action()
 
         self.state_shape = state_shape
         self.state_dtype = state_dtype
-        self.state = self.reset_state()
+        self._state = self.reset_state()
 
         self.img_shape = img_shape
         self.img_dtype = img_dtype
-        self.img = self.reset_img()
+        self._img = self.reset_img()
 
         self.state_step = None
         self.action_step = None
@@ -350,6 +534,57 @@ class FractalTree(BaseFractalTree):
             else self.cum_reward.argmax().cpu().item()
         )
 
+    @property
+    def observ(self):
+        return self._observ[: self.n_walkers]
+
+    @property
+    def action(self):
+        return self._action[: self.n_walkers]
+
+    @property
+    def state(self):
+        return self._state[: self.n_walkers]
+
+    @property
+    def img(self):
+        return self._img[: self.n_walkers]
+
+    def widgets(self) -> dict[str, pn.widgets.Widget]:
+        widgets = super().widgets()
+        curr_widgets = {
+            "dist_coef": pn.widgets.FloatInput(name="dist_coef", value=self.dist_coef, width=100),
+            "reward_coef": pn.widgets.FloatInput(
+                name="reward_coef", value=self.reward_coef, width=100
+            ),
+        }
+        return {**widgets, **curr_widgets}
+
+    def __panel__(self):
+        top_row_names = ["max_walkers", "start_walkers", "min_leafs", "n_walkers"]
+        top_widgets = {k: v for k, v in self.widgets().items() if k in top_row_names}
+        bot_row_names = ["dist_coef", "reward_coef"]
+        bot_widgets = {k: v for k, v in self.widgets().items() if k in bot_row_names}
+        return pn.Column(
+            pn.pane.Markdown("## Fractal Tree"),
+            pn.Row(
+                pn.Param(
+                    self,
+                    parameters=top_row_names,
+                    widgets=top_widgets,
+                    show_name=False,
+                    default_layout=pn.Row,
+                ),
+                pn.Param(
+                    self,
+                    parameters=bot_row_names,
+                    widgets=bot_widgets,
+                    show_name=False,
+                    default_layout=pn.Row,
+                ),
+            ),
+        )
+
     def reset_img(self):
         self.img_shape = self.img_shape if self.img_shape is not None else self.env.img_shape
         if self.img_shape is not None and self.img_dtype is None:
@@ -357,7 +592,7 @@ class FractalTree(BaseFractalTree):
         elif self.img_shape is None:
             self.img_dtype = np.uint8
             self.img_shape = (10, 10, 3)
-        return np.zeros((self.start_walkers, *self.img_shape), dtype=self.img_dtype)
+        return np.zeros((self.max_walkers, *self.img_shape), dtype=self.img_dtype)
 
     def reset_observ(self):
         self.obs_shape = (
@@ -369,7 +604,7 @@ class FractalTree(BaseFractalTree):
             else numpy_dtype_to_torch_dtype(self.env.observation_space.dtype)
         )
         return torch.zeros(
-            (self.start_walkers, *self.obs_shape), device=self.device, dtype=self.obs_dtype
+            (self.max_walkers, *self.obs_shape), device=self.device, dtype=self.obs_dtype
         )
 
     def reset_action(self):
@@ -382,34 +617,18 @@ class FractalTree(BaseFractalTree):
             else numpy_dtype_to_torch_dtype(self.env.action_space.dtype)
         )
         return torch.zeros(
-            (self.start_walkers, *self.action_shape), device=self.device, dtype=self.action_type
+            (self.max_walkers, *self.action_shape), device=self.device, dtype=self.action_type
         )
 
     def reset_state(self):
-        return np.empty((self.start_walkers, *self.state_shape), dtype=self.state_dtype)
+        return np.empty((self.max_walkers, *self.state_shape), dtype=self.state_dtype)
 
     def reset_tensors(self):
+        self._action = self.reset_action()
+        self._observ = self.reset_observ()
+        self._state = self.reset_state()
+        self._is_leaf = get_is_leaf(self._parent)
         super().reset_tensors()
-        self.action = self.reset_action()
-        self.observ = self.reset_observ()
-        self.state = self.reset_state()
-        self.is_leaf = get_is_leaf(self.parent)
-
-    def add_walkers(self, new_walkers):
-        super().add_walkers(new_walkers)
-        observ = self.observ[:new_walkers].detach().clone()
-        self.observ = torch.cat((self.observ, observ), dim=0).contiguous()
-
-        action = self.action[:new_walkers].detach().clone()
-        self.action = torch.cat((self.action, action), dim=0).contiguous()
-
-        state = self.state[:new_walkers].copy()
-        self.state = np.concatenate((self.state, state), axis=0)  # type: ignore
-
-        img = np.zeros((new_walkers, *self.img_shape), dtype=self.img_dtype)
-        self.img = np.concatenate((self.img, img), axis=0)
-        self.policy.add_walkers(new_walkers)
-        self.dt_sampler.add_walkers(new_walkers)
 
     def to_dict(self):
         observ = self.observ.cpu().numpy()
@@ -440,12 +659,11 @@ class FractalTree(BaseFractalTree):
     def summary(self):
         return {
             "iteration": self.iteration,
+            "total_steps": self.total_steps,
+            "best_reward": self.best_reward,
             "leaf_nodes": self.is_leaf.sum().cpu().item(),
             "oobs": self.oobs.sum().cpu().item(),
-            "best_reward": self.best_reward,
-            "best_ix": self.best_ix,
             "will_clone": self.will_clone.sum().cpu().item(),
-            "total_steps": self.total_steps,
             "n_walkers": self.n_walkers,
         }
 
@@ -453,14 +671,22 @@ class FractalTree(BaseFractalTree):
         best = self.best_ix
         self.will_clone[best] = False
         try:
-            self.observ = clone_tensor(self.observ, self.clone_ix, self.will_clone)
-            self.reward = clone_tensor(self.reward, self.clone_ix, self.will_clone)
-            self.cum_reward = clone_tensor(self.cum_reward, self.clone_ix, self.will_clone)
-            self.state = clone_tensor(self.state, self.clone_ix, self.will_clone)
-            self.img = clone_tensor(self.img, self.clone_ix, self.will_clone)
+            self._observ[: self.n_walkers] = clone_tensor(
+                self.observ, self.clone_ix, self.will_clone
+            )
+            self._reward[: self.n_walkers] = clone_tensor(
+                self.reward, self.clone_ix, self.will_clone
+            )
+            self._cum_reward[: self.n_walkers] = clone_tensor(
+                self.cum_reward, self.clone_ix, self.will_clone
+            )
+            self._state[: self.n_walkers] = clone_tensor(
+                self.state, self.clone_ix, self.will_clone
+            )
+            self._img[: self.n_walkers] = clone_tensor(self.img, self.clone_ix, self.will_clone)
             # This line is what updates the parents to create the tree structure
             # comment this, and you get the swarm wave
-            self.parent[self.will_clone] = self.clone_ix[self.will_clone]
+            self._parent[: self.n_walkers][self.will_clone] = self.clone_ix[self.will_clone]
 
             self.policy.clone(self.will_clone, self.clone_ix)
             self.dt_sampler.clone(self.will_clone, self.clone_ix)
@@ -503,7 +729,7 @@ class FractalTree(BaseFractalTree):
         self.action_step = self.sample_actions(int(wc_np.sum()))
         try:
             logger.info("In step_walkers: %s, %s", self.observ.shape, self.action_step.shape)
-            new_states, observ, reward, oobs, _truncateds, infos = self.step_env()
+            new_states, observ, reward, oobs, truncateds, infos = self.step_env()
         except Exception as e:
             logger.error(
                 "Error in step_walkers %s %s %s %s",
@@ -513,39 +739,51 @@ class FractalTree(BaseFractalTree):
                 wc_np.sum(),
             )
             raise e
-        self.observ[self.will_clone] = observ
-        self.reward[self.will_clone] = reward
-        self.cum_reward[self.will_clone] += reward
-        self.oobs[self.will_clone] = oobs
+        self.observ[self.will_clone] = observ.to(self.observ.dtype)
+        self.reward[self.will_clone] = reward.to(self.reward.dtype)
+        if self.accumulate_reward:
+            self.cum_reward[self.will_clone] += reward.to(self.cum_reward.dtype)
+        else:
+            self.cum_reward[self.will_clone] = reward.to(self.cum_reward.dtype)
+        self.oobs[self.will_clone] = oobs.to(self.oobs.dtype)
         self.state[wc_np] = new_states
         self.img[wc_np] = np.array([info["rgb"] for info in infos])
-        self.action[self.will_clone] = self.action_step
-        return new_states, observ, reward, oobs, _truncateds, infos
+        self.action[self.will_clone] = self.action_step.to(self.action.dtype)
+        return new_states, observ, reward, oobs, truncateds, infos
 
     def calculate_other_reward(self):
         return 1.0
 
-    def step_tree(self):
-        visits_reward = self.calculate_other_reward()
+    def calculate_virtual_reward(self):
         cum_reward = -1.0 * self.cum_reward if self.minimize else self.cum_reward
-        self.virtual_reward, self.distance_ix, self.distance = calculate_virtual_reward(
-            self.observ,
-            cum_reward,
-            self.oobs,
-            return_distance=True,
-            return_compas=True,
-            other_reward=visits_reward,
+        compas = random_alive_compas(self.oobs, self.observ)
+        flattened_observs = self.observ.reshape(compas.shape[0], -1).to(torch.float32)
+        o_rew = self.calculate_other_reward()
+        other_reward = o_rew.flatten() if isinstance(o_rew, torch.Tensor) else o_rew
+        distance = self.distance_function(flattened_observs, flattened_observs[compas])
+        distance_norm = relativize(distance.flatten())
+        rew_leafs = cum_reward[self.is_leaf]
+        rewards_norm = relativize(cum_reward.flatten(), mean=rew_leafs.mean(), std=rew_leafs.std())
+        virtual_reward = (
+            distance_norm**self.dist_coef * rewards_norm**self.reward_coef * other_reward
         )
-        self.scaled_distance = relativize(self.distance)
-        self.scaled_reward = relativize(self.cum_reward)
-        self.is_leaf = get_is_leaf(self.parent)
+        self.virtual_reward[:] = virtual_reward
+        self.distance[:] = distance
+        self.scaled_distance[:] = distance_norm
+        self.scaled_reward[:] = rewards_norm
+        self.distance_ix[:] = compas
 
-        self.clone_ix, self.wants_clone, self.clone_prob = calculate_clone(
-            self.virtual_reward, self.oobs
-        )
-        self.is_cloned = get_is_cloned(self.clone_ix, self.wants_clone)
+    def step_tree(self):
+        self.calculate_virtual_reward()
+        self.is_leaf[:] = get_is_leaf(self.parent)
+
+        clone_ix, wants_clone, clone_prob = calculate_clone(self.virtual_reward, self.oobs)
+        self.clone_ix[:] = clone_ix
+        self.wants_clone[:] = wants_clone
+        self.clone_prob[:] = clone_prob
+        self.is_cloned[:] = get_is_cloned(self.clone_ix, self.wants_clone)
         self.wants_clone[self.oobs] = True
-        self.will_clone = self.wants_clone & ~self.is_cloned & self.is_leaf
+        self.will_clone[:] = self.wants_clone & self.is_leaf & ~self.is_cloned
         if self.will_clone.sum().cpu().item() == 0:
             self.iteration += 1
             return
@@ -563,37 +801,40 @@ class FractalTree(BaseFractalTree):
         self.iteration += 1
 
     def reset_env(self):
-        state, _obs, _info = self.env.reset()
-        return state, _obs, _info
+        state, obs, info = self.env.reset()
+        return state, obs, info
 
     def reset(self):
-        logger.info("reset start: %s", self.observ.shape)
+        logger.info("reset start: %s %s", self.observ.shape, self._observ.shape)
+        self.n_walkers = self.start_walkers
         self.total_steps = 0
         self.iteration = 0
         self.reset_tensors()
-        logger.info("after reset tensor: %s", self.observ.shape)
-        self.action = self.sample_actions(self.start_walkers)
+        logger.info("after reset tensor: %s %s", self.observ.shape, self._observ.shape)
+        start_action = self.sample_actions(self.start_walkers)
+        self._action[: self.n_walkers] = start_action
 
-        state, _obs, _info = self.reset_env()
-        self.state = np.array([state.copy() for _ in range(self.start_walkers)])
+        state, obs, info = self.reset_env()
+        states = np.stack([state.copy() for _ in range(self.start_walkers)], axis=0)
+        self._state[: self.n_walkers] = states
 
         self.state_step = self.state
         self.action_step = self.action
 
-        new_states, observ, reward, oobs, _truncateds, infos = self.step_env()
+        new_states, observ, reward, oobs, truncateds, infos = self.step_env()
         # here we set the first state to the one after reset. This state will act as the root
         # of the tree
         logger.info("INIT: %s %s", self.observ.shape, observ.shape)
-        self.observ[0, :] = observ[0, :]
+        self._observ[0, :] = observ[0, :]
         # We fill up the remaining states with the ones returned  after stepping the environment.
         # All these states have the root as their parent.
-        self.observ[1:, :] = observ[1:, :]
-        self.reward[1:] = reward[1:]
-        self.cum_reward[1:] = reward[1:]
-        self.oobs[1 : self.n_walkers] = oobs[1 : self.n_walkers]
-        self.state[1:] = new_states[1:]
+        self._observ[1 : self.n_walkers, :] = observ[1:, :]
+        self._reward[1 : self.n_walkers] = reward[1:]
+        self._cum_reward[1 : self.n_walkers] = reward[1:]
+        self._oobs[1 : self.n_walkers] = oobs[1 : self.n_walkers]
+        self._state[1 : self.n_walkers] = new_states[1:]
 
-        self.img = np.zeros((self.start_walkers, *self.img_shape), dtype=self.img_dtype)
+        self._img = np.zeros_like(self._img)
         try:
             self.env.set_state(state)
             img = self.env.get_image()
@@ -604,7 +845,7 @@ class FractalTree(BaseFractalTree):
             logger.warning("cannot start image")
             # raise e
 
-        return (state, _obs, _info), new_states, observ, reward, oobs, _truncateds, infos
+        return (state, obs, info), new_states, observ, reward, oobs, truncateds, infos
 
 
 class FaiRunner(param.Parameterized):
@@ -620,14 +861,14 @@ class FaiRunner(param.Parameterized):
             name="Progress", value=0, width=600, max=n_steps, bar_color="primary"
         )
         self.sleep_val = pn.widgets.FloatInput(value=0.0, width=60)
-        self.report_interval = pn.widgets.IntInput(value=report_interval)
-        self.table = pn.widgets.Tabulator()
+        self.report_interval = pn.widgets.IntInput(value=report_interval, width=70)
+        self.table = pn.widgets.Tabulator(show_index=False)
         self.fai = fai
         self.n_steps = n_steps
         self.curr_step = 0
         self.plot = plot
         self.thread = None
-        self.erase_coef_val = pn.widgets.FloatInput(value=0.05, width=60, name="erase")
+        self.erase_coef_val = pn.widgets.FloatInput(value=0.05, width=75)
 
     @param.depends("erase_coef_val.value")
     def update_erase_coef(self):
@@ -665,7 +906,7 @@ class FaiRunner(param.Parameterized):
         self.play_btn.disabled = False
         self.pause_btn.disabled = True
         if self.thread is not None:
-            self.thread.join(timeout=0.1)
+            self.thread.join()
 
     @param.depends("step_btn.value")
     def on_step_click(self):
@@ -699,20 +940,23 @@ class FaiRunner(param.Parameterized):
 
     def __panel__(self):
         # pn.state.add_periodic_callback(self.run, period=20)
-
+        buttons_row = pn.Row(
+            self.play_btn,
+            self.pause_btn,
+            self.reset_btn,
+            self.step_btn,
+            pn.pane.Markdown("**Sleep**"),
+            self.sleep_val,
+            pn.pane.Markdown("**Report Interval**"),
+            self.report_interval,
+            pn.pane.Markdown("**Erase coef**"),
+            self.erase_coef_val,
+        )
         return pn.Column(
+            self.fai,
             self.table,
             self.progress,
-            pn.Row(
-                self.play_btn,
-                self.pause_btn,
-                self.reset_btn,
-                self.step_btn,
-                pn.pane.Markdown("**Sleep**"),
-                self.sleep_val,
-                self.report_interval,
-                self.erase_coef_val,
-            ),
+            buttons_row,
             self.on_play_click,
             self.on_pause_click,
             self.on_reset_click,

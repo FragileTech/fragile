@@ -50,13 +50,17 @@ class GaussianForce(RandomGaussianPolicy):
         super().__init__(std=std, fractal=fractal, min=min, max=max)
         action_shape = fractal.action_shape if fractal is not None else (1,)
         device = fractal.device if fractal is not None else "cpu"
-        n_walkers = fractal.n_walkers if fractal is not None else 1
-        self.velocity = torch.zeros((n_walkers, *action_shape), device=device)
+        n_walkers = fractal.max_walkers if fractal is not None else 1
+        self._velocity = torch.zeros((n_walkers, *action_shape), device=device)
+
+    @property
+    def velocity(self):
+        return self._velocity[: self.fractal.n_walkers]
 
     def set_fractal(self, fractal: "FractalTree"):
         super().set_fractal(fractal)
-        self.velocity = torch.zeros(
-            (fractal.n_walkers, *fractal.action_shape), device=fractal.device
+        self._velocity = torch.zeros(
+            (fractal.max_walkers, *fractal.action_shape), device=fractal.device
         )
 
     def act(self, n_walkers: int | None = None, fractal: FractalTree | None = None):
@@ -70,8 +74,8 @@ class GaussianForce(RandomGaussianPolicy):
         return self.velocity[wc].clamp(self.min_, self.max_)
 
     def clone(self, will_clone: torch.Tensor, clone_ix: torch.Tensor):
-        self.velocity = clone_tensor(self.velocity, clone_ix, will_clone)
+        self.velocity[:] = clone_tensor(self.velocity, clone_ix, will_clone)
 
     def add_walkers(self, new_walkers):
         new_vel = torch.zeros((new_walkers, *self.velocity.shape[1:]), device=self.velocity.device)
-        self.velocity = torch.cat((self.velocity, new_vel), dim=0).contiguous()
+        self.velocity[:] = torch.cat((self.velocity, new_vel), dim=0).contiguous()

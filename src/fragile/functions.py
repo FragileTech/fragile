@@ -53,7 +53,7 @@ class FunctionTree(FractalTree):
         )
 
     def reset_img(self):
-        return np.zeros((self.start_walkers, *self.img_shape), dtype=self.img_dtype)
+        return np.zeros((self.max_walkers, *self.img_shape), dtype=self.img_dtype)
 
     def reset_observ(self):
         self.obs_shape = self.obs_shape if self.obs_shape is not None else self.env.bounds.shape
@@ -63,7 +63,7 @@ class FunctionTree(FractalTree):
             else numpy_dtype_to_torch_dtype(self.env.bounds.dtype)
         )
         return torch.zeros(
-            (self.start_walkers, *self.obs_shape), device=self.device, dtype=self.obs_dtype
+            (self.max_walkers, *self.obs_shape), device=self.device, dtype=self.obs_dtype
         )
 
     def reset_action(self):
@@ -76,7 +76,7 @@ class FunctionTree(FractalTree):
             else numpy_dtype_to_torch_dtype(self.env.bounds.dtype)
         )
         return torch.zeros(
-            (self.start_walkers, *self.action_shape), device=self.device, dtype=self.action_type
+            (self.max_walkers, *self.action_shape), device=self.device, dtype=self.action_type
         )
 
     def step_env(self):
