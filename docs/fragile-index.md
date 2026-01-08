@@ -666,13 +666,6 @@ This tuple directly instantiates the core objects of the Hypostructure $\mathbb{
 **The Fragile Agent Core Architecture.** The agent tuple $\mathbb{A} = (\text{Shutter}, \text{World Model}, \text{Critic}, \text{Policy})$ showing data flow from observation $x_t$ through the three-tier latent state $(K, z_n, z_{\text{tex}})$ to action $a_t$, with environment feedback loop.
 :::
 
-:::{figure} svg_images/fragile_full_architecture.svg
-:name: fig-fragile-full-architecture
-:width: 100%
-
-**The Complete Fragile Agent Architecture.** Detailed view showing all components: the Encoder/Shutter with Attentive Atlas (feature extractor, cross-attention router, VQ codebook), the three-tier latent state $(K, z_n, z_{\text{tex}})$ with firewall separating control-relevant from reconstruction-only channels, the World Model predicting latent dynamics, the Critic solving the screened Poisson equation for value $V(z)$, the Policy outputting actions, the Holographic Screen providing memory via attention-based retrieval, and the Governor/Sieve monitoring all components with 56 runtime contracts.
-:::
-
 (sec-the-trinity-of-manifolds)=
 ### 2.2a The Trinity of Manifolds (Dimensional Alignment)
 

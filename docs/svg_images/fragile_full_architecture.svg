@@ -591,7 +591,7 @@
 
   <!-- Encoder to Latent + Topology -->
   <g id="flow-encoder-to-latent">
-    <path d="M660 480 L660 580 L1050 580" fill="none" stroke="#10B981" stroke-width="2" marker-end="url(#arrow-latent)"/>
+    <path d="M660 480 L660 500 L1040 500 L1040 580 L1050 580" fill="none" stroke="#10B981" stroke-width="2" marker-end="url(#arrow-latent)"/>
   </g>
   <g id="flow-encoder-to-ontology">
     <path d="M660 560 L700 560" fill="none" stroke="#10B981" stroke-width="1.5" marker-end="url(#arrow-latent)"/>
@@ -620,28 +620,28 @@
     <path d="M1790 520 L1790 470" fill="none" stroke="#10B981" stroke-width="1.6" marker-end="url(#arrow-latent)"/>
   </g>
   <g id="flow-latent-to-critic">
-    <path d="M1050 590 L1050 610 L380 610 L380 590" fill="none" stroke="#10B981" stroke-width="1.6" marker-end="url(#arrow-latent)"/>
+    <path d="M1050 590 L1040 590 L1040 710 L160 710 L160 590 L180 590" fill="none" stroke="#10B981" stroke-width="1.6" marker-end="url(#arrow-latent)"/>
   </g>
   <g id="flow-metric-to-policy">
-    <path d="M1670 590 L1670 640 L1690 640" fill="none" stroke="#10B981" stroke-width="1.6" marker-end="url(#arrow-latent)"/>
+    <path d="M1670 590 L1680 590 L1680 640 L1690 640" fill="none" stroke="#10B981" stroke-width="1.6" marker-end="url(#arrow-latent)"/>
   </g>
 
   <!-- World model + value to policy -->
   <g id="flow-world-to-policy">
-    <path d="M1790 470 L1910 470 L1910 640 L1790 640" fill="none" stroke="#10B981" stroke-width="1.6" marker-end="url(#arrow-latent)"/>
+    <path d="M1790 340 L1790 320 L2070 320 L2070 700 L1900 700 L1890 700" fill="none" stroke="#10B981" stroke-width="1.6" marker-end="url(#arrow-latent)"/>
   </g>
   <g id="flow-critic-to-policy">
-    <path d="M380 590 L380 680 L1690 680 L1690 760" fill="none" stroke="#F59E0B" stroke-width="2" marker-end="url(#arrow-reward)"/>
-    <text x="700" y="672" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#F59E0B">V, nabla V</text>
+    <path d="M380 590 L390 590 L390 695 L1680 695 L1680 730 L1690 730" fill="none" stroke="#F59E0B" stroke-width="2" marker-end="url(#arrow-reward)"/>
+    <text x="700" y="687" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#F59E0B">V, nabla V</text>
   </g>
 
   <!-- Latent to decoder -->
   <g id="flow-latent-to-decoder">
-    <path d="M1150 640 L1000 640 L1000 900 L470 900" fill="none" stroke="#10B981" stroke-width="1.5" marker-end="url(#arrow-latent)"/>
+    <path d="M1150 640 L1150 660 L1000 660 L1000 900 L470 900" fill="none" stroke="#10B981" stroke-width="1.5" marker-end="url(#arrow-latent)"/>
     <text x="760" y="892" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#10B981">z<tspan font-size="5" baseline-shift="sub">geo</tspan></text>
   </g>
   <g id="flow-ztex-to-decoder">
-    <path d="M1250 600 L1270 600 L1270 950 L470 950" fill="none" stroke="#9CA3AF" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-monitor)"/>
+    <path d="M1250 600 L1260 600 L1260 500 L1000 500 L1000 980 L470 980" fill="none" stroke="#9CA3AF" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-monitor)"/>
     <text x="780" y="942" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#9CA3AF">z<tspan font-size="5" baseline-shift="sub">tex</tspan></text>
   </g>
 
@@ -653,13 +653,13 @@
 
   <!-- Policy to action path -->
   <g id="flow-policy-to-action-decoder">
-    <path d="M1790 770 L1910 770 L1910 1120 L1820 1120" fill="none" stroke="#8B5CF6" stroke-width="2" marker-end="url(#arrow-action)"/>
+    <path d="M1890 730 L1910 730 L1910 1150 L1890 1150" fill="none" stroke="#8B5CF6" stroke-width="2" marker-end="url(#arrow-action)"/>
   </g>
   <g id="flow-motor-to-action-decoder">
-    <path d="M1250 905 L1250 1145 L1750 1145" fill="none" stroke="#8B5CF6" stroke-width="2" marker-end="url(#arrow-action)"/>
+    <path d="M1250 905 L1260 905 L1260 1080 L1820 1080 L1820 1120" fill="none" stroke="#8B5CF6" stroke-width="2" marker-end="url(#arrow-action)"/>
   </g>
   <g id="flow-action-to-boundary">
-    <path d="M1820 1170 L1820 1260 L310 1260 L310 390" fill="none" stroke="#8B5CF6" stroke-width="2" marker-end="url(#arrow-action)"/>
+    <path d="M1820 1170 L1820 1260 L140 1260 L140 350 L170 350" fill="none" stroke="#8B5CF6" stroke-width="2" marker-end="url(#arrow-action)"/>
     <text x="980" y="1252" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#8B5CF6">a<tspan font-size="6" baseline-shift="sub">t</tspan></text>
   </g>
   <g id="flow-boundary-to-env-action">
@@ -676,7 +676,7 @@
 
   <!-- Memory + retrieval -->
   <g id="flow-memory-latent">
-    <path d="M1150 520 L1210 520 L1210 200" fill="none" stroke="#6B7280" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-monitor)"/>
+    <path d="M1150 520 L1150 500 L1210 500 L1210 200" fill="none" stroke="#6B7280" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-monitor)"/>
   </g>
   <g id="flow-memory-screen">
     <path d="M1080 185 L1080 230" fill="none" stroke="#6B7280" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-monitor)"/>
@@ -688,24 +688,24 @@
     <path d="M980 300 L980 740 L1240 740" fill="none" stroke="#6B7280" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-monitor)"/>
   </g>
   <g id="flow-latent-to-retrieval">
-    <path d="M1150 520 L1200 520 L1200 300 L1325 300" fill="none" stroke="#6B7280" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-monitor)"/>
+    <path d="M1150 520 L1150 500 L1190 500 L1190 265 L1220 265" fill="none" stroke="#6B7280" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-monitor)"/>
   </g>
   <g id="flow-kb-to-retrieval">
     <path d="M1450 265 L1430 265" fill="none" stroke="#6B7280" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-monitor)"/>
   </g>
   <g id="flow-retrieval-to-phi">
-    <path d="M1325 300 L1470 300 L1470 700 L1240 700" fill="none" stroke="#6B7280" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-monitor)"/>
+    <path d="M1325 300 L1325 320 L1470 320 L1470 695 L1230 695 L1230 720 L1240 720" fill="none" stroke="#6B7280" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-monitor)"/>
   </g>
 
   <!-- Energy / causal shaping -->
   <g id="flow-critic-to-phi">
-    <path d="M380 620 L380 720 L1240 720" fill="none" stroke="#F59E0B" stroke-width="1.5" marker-end="url(#arrow-reward)"/>
+    <path d="M380 620 L390 620 L390 720 L1240 720" fill="none" stroke="#F59E0B" stroke-width="1.5" marker-end="url(#arrow-reward)"/>
   </g>
   <g id="flow-causal-to-phi">
     <path d="M1690 820 L1660 820" fill="none" stroke="#F59E0B" stroke-width="1.5" marker-end="url(#arrow-reward)"/>
   </g>
   <g id="flow-phi-to-dynamics">
-    <path d="M1660 740 L1910 740 L1910 620 L1790 620" fill="none" stroke="#F59E0B" stroke-width="1.5" marker-end="url(#arrow-reward)"/>
+    <path d="M1660 740 L1670 740 L1670 630 L1790 630 L1790 620" fill="none" stroke="#F59E0B" stroke-width="1.5" marker-end="url(#arrow-reward)"/>
   </g>
 
   <!-- Causal + metabolism -->
@@ -713,27 +713,27 @@
     <path d="M1790 770 L1790 790" fill="none" stroke="#8B5CF6" stroke-width="1.5" marker-end="url(#arrow-action)"/>
   </g>
   <g id="flow-metabolism-to-policy">
-    <path d="M1790 860 L1910 860 L1910 770 L1790 770" fill="none" stroke="#6B7280" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-monitor)"/>
+    <path d="M1890 890 L1910 890 L1910 730 L1890 730" fill="none" stroke="#6B7280" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-monitor)"/>
   </g>
 
   <!-- Governance + capacity -->
   <g id="flow-multi-agent-to-metric">
-    <path d="M1800 300 L1910 300 L1910 480 L1575 480 L1575 520" fill="none" stroke="#10B981" stroke-width="1.2" marker-end="url(#arrow-latent)"/>
+    <path d="M1800 300 L1800 320 L1575 320 L1575 520" fill="none" stroke="#10B981" stroke-width="1.2" marker-end="url(#arrow-latent)"/>
   </g>
   <g id="flow-capacity-to-metric">
-    <path d="M1950 300 L1950 480 L1575 480" fill="none" stroke="#6B7280" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-monitor)"/>
+    <path d="M1950 300 L1950 320 L1575 320 L1575 520" fill="none" stroke="#6B7280" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-monitor)"/>
   </g>
   <g id="flow-capacity-to-sieve">
     <path d="M1950 230 L1950 220" fill="none" stroke="#6B7280" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-monitor)"/>
   </g>
   <g id="flow-sieve-to-belief">
-    <path d="M1950 220 L2070 220 L2070 320 L1370 320 L1370 520" fill="none" stroke="#6B7280" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-monitor)"/>
+    <path d="M2060 185 L2070 185 L2070 310 L1370 310 L1370 520" fill="none" stroke="#6B7280" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-monitor)"/>
   </g>
   <g id="flow-sieve-to-policy">
-    <path d="M1950 220 L2070 220 L2070 640 L1690 640" fill="none" stroke="#6B7280" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-monitor)"/>
+    <path d="M2060 185 L2070 185 L2070 690 L1890 690" fill="none" stroke="#6B7280" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-monitor)"/>
   </g>
   <g id="flow-theta-to-encoder">
-    <path d="M1840 510 L660 510 L660 220" fill="none" stroke="#6B7280" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-monitor)"/>
+    <path d="M1840 510 L670 510 L670 220 L660 220" fill="none" stroke="#6B7280" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-monitor)"/>
   </g>
 
   <!-- ==================== LEGEND ==================== -->
