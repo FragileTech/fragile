@@ -1,7 +1,11 @@
-.PHONY: build serve clean install
+.PHONY: build docs serve clean install
 
 # Build the Jupyter Book
 build:
+	npx myst build
+
+# Build docs without serving
+docs:
 	npx myst build
 
 # Serve the built site on localhost:3000
