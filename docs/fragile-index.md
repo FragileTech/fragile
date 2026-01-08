@@ -13,7 +13,7 @@ author: "Guillem Duran-Ballester"
 2.  **Resolution of Technical Paradoxes:** Refer to **Appendix D** immediately when encountering objections regarding computational complexity or "Physics Envy." Specifically:
     *   **FAQ D.1.1:** Distinguish strictly between the **Parameter Manifold ($\Theta$)** used for weight updates and the **Latent State Manifold ($\mathcal{Z}$)** equipped with the metric $G$. Curvature calculations are $O(D^3)$ in $\mathcal{Z}$ ($D \approx 10^2$), making them computationally trivial.
     *   **FAQ D.4.1:** The Helmholtz/Bellman correspondence is a functional mapping using the **Laplace-Beltrami operator** to ensure representation grounding.
-3.  **The Sieve as Runtime Interface Contracts:** Treat the 56 diagnostic nodes not as "ideal goals" but as **Hard Runtime Assertions**. If a node is violated, the agent's operation is mathematically undefined/halted. Refer to **FAQ D.5.4** to understand how "doing nothing" is prevented by ergodicity checks.
+3.  **The Sieve as Runtime Interface Contracts:** Treat the 60 diagnostic nodes not as "ideal goals" but as **Hard Runtime Assertions**. If a node is violated, the agent's operation is mathematically undefined/halted. Refer to **FAQ D.5.4** to understand how "doing nothing" is prevented by ergodicity checks.
 4.  **Standard RL as Degenerate Limit:** Refer to **Section 0.6** and **FAQ D.6.2** to understand how algorithms like PPO and SAC emerge as "un-grounded" special cases when geometric and capacity constraints are removed ($G \to I$, $|\mathcal{K}| \to \infty$).
 5.  **Grounding over Utility:** Prioritize **Causal Enclosure** and **Holographic Grounding** over simple reward maximization. "Causal Stasis" (**FAQ D.8.4**) is a security feature resulting from capacity saturation, not an optimization failure.
 
@@ -38,7 +38,7 @@ When asked to explain or critique, translate geometric statements into their opt
 - **Policy**: Entropy-regularized control on the learned metric $G$ with geometric trust-region behavior. See {ref}`Section 2.11 <sec-variance-value-duality-and-information-conservation>`.
 - **Universal Governor + Sieve**: Runtime monitors and recovery logic that enforce stability, capacity, and grounding constraints. See {ref}`Sections 3–6 <sec-diagnostics-stability-checks>` and {ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>`.
 
-**The Sieve (56 Runtime Checks):**
+**The Sieve (60 Runtime Checks):**
 A catalog of online diagnostics organized by failure mode ({ref}`Sections 3–6 <sec-diagnostics-stability-checks>`):
 - **Stability**: Lyapunov descent, Lipschitz bounds, bifurcation detection
 - **Capacity**: Codebook entropy, rate constraints, information closure
@@ -59,7 +59,7 @@ The agent is designed to *degrade gracefully* and *fail loudly*. When constraint
 
 **What's Novel:**
 - Discrete macro-register $K$ as the auditable control state (not just compression)
-- The Sieve: 56 explicit monitors connecting theory to implementation
+- The Sieve: 60 explicit monitors connecting theory to implementation
 - Capacity-constrained metric law linking interface limits to geometry
 - Critic as PDE solver with geometric back-reaction
 - Unified WFR geometry for hybrid discrete/continuous belief states
@@ -150,7 +150,7 @@ This framework introduces a unified nomenclature. While these terms may seem nov
 2. **Explicit macro-state abstraction.** The discrete macro register $K_t$ makes sufficiency, capacity, and closure conditions well-typed and testable ({ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`, {ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`, {ref}`Section 3 <sec-diagnostics-stability-checks>`, {ref}`Section 15 <sec-implementation-note-entropy-regularized-optimal-transport-bridge>`).
 3. **Predictive vs structured residual separation.** The "micro" channel is structured: we explicitly separate **structured nuisance** (pose/basis/disturbance coordinates that can be modeled and monitored) from **texture** (high-rate reconstruction detail). This prevents the world model and policy from silently depending on texture while still allowing nuisance to be represented and audited ({ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`, Axiom {prf:ref}`ax-bulk-boundary-decoupling`).
 4. **Geometry-aware regulation.** A state-space sensitivity metric $G$ is used as a runtime trust-region / conditioning signal ({ref}`Section 2.5 <sec-second-order-sensitivity-value-defines-a-local-metric>`, {ref}`Section 18.2 <sec-main-result>`), complementing standard natural-gradient methods {cite}`amari1998natural,schulman2015trpo,martens2015kfac`.
-5. **Safety as a first-class interface contract.** "Safety" is not a single scalar constraint: it decomposes into 56 explicit checks (switching limits, capacity limits, saturation, grounding, mixing, multi-agent coupling, ontological stress, capacity horizon) with known compute cost ({ref}`Sections 3–6 <sec-diagnostics-stability-checks>`).
+5. **Safety as a first-class interface contract.** "Safety" is not a single scalar constraint: it decomposes into 60 explicit checks (switching limits, capacity limits, saturation, grounding, mixing, multi-agent coupling, ontological stress, capacity horizon) with known compute cost ({ref}`Sections 3–6 <sec-diagnostics-stability-checks>`).
 6. **Unified treatment of discrete and continuous dynamics.** The Wasserstein-Fisher-Rao (WFR) metric provides a single variational principle for belief evolution that seamlessly handles both continuous flow within charts and discrete jumps between charts ({ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`).
 7. **Geometric field-theoretic formulation.** The critic is a PDE solver propagating reward boundary conditions via the screened Poisson (Helmholtz) equation; the discount factor $\gamma$ determines the screening length $\ell = 1/\kappa$ where $\kappa = -\ln\gamma$ ({ref}`Section 24 <sec-the-scalar-field-reward-energy-and-geometry>`).
 8. **Holographic interface symmetry.** Sensors and motors are dual boundary conditions on the same symplectic manifold—perception imposes Dirichlet (position) BCs, action imposes Neumann (flux) BCs, and reward injects scalar charges ({ref}`Section 23 <sec-the-boundary-interface-symplectic-structure>`, {ref}`Section 24 <sec-the-scalar-field-reward-energy-and-geometry>`).
@@ -266,7 +266,7 @@ The document is organized into seven conceptual layers:
 - **{ref}`Section 2 <sec-the-control-loop-representation-and-control>`**: The control loop—objective, architecture, state manifolds, metric hierarchy
 
 **Part II: The Sieve ({ref}`Sections 3–6 <sec-diagnostics-stability-checks>`)**
-- **{ref}`Section 3 <sec-diagnostics-stability-checks>`**: The 56 diagnostic nodes—what to measure, when to warn, when to halt
+- **{ref}`Section 3 <sec-diagnostics-stability-checks>`**: The 60 diagnostic nodes—what to measure, when to warn, when to halt
 - **{ref}`Section 4 <sec-limits-barriers>`**: Barriers—hard limits that cannot be crossed (BarrierLock, BarrierGap, BarrierSat)
 - **{ref}`Section 5 <sec-failure-modes>`**: Observed failure modes with symptoms and root causes
 - **{ref}`Section 6 <sec-interventions>`**: Interventions—what the Governor does when checks fail
@@ -1585,14 +1585,14 @@ Stability and data-quality are monitored via 29 distinct checks (Gate Nodes). Ea
 :::{admonition} Researcher Bridge: Safety as a Unit Test
 :class: warning
 :name: rb-safety-unit-test
-Standard RL safety relies on reward shaping, which provides no formal guarantee that the agent avoids bad states. The Sieve replaces probabilistic incentives with **Hard Runtime Assertions**. Each of the 56 nodes is a mathematical contract. If a check fails (e.g., the agent exhibits chattering or its belief decouples from the sensors), the system does not receive a penalty; it **halts or reverts**. This architecture enforces safety constraints in the same manner that a type system enforces invariants at compile time.
+Standard RL safety relies on reward shaping, which provides no formal guarantee that the agent avoids bad states. The Sieve replaces probabilistic incentives with **Hard Runtime Assertions**. Each of the 60 nodes is a mathematical contract. If a check fails (e.g., the agent exhibits chattering or its belief decouples from the sensors), the system does not receive a penalty; it **halts or reverts**. This architecture enforces safety constraints in the same manner that a type system enforces invariants at compile time.
 :::
 
 :::{note} Connection to RL #8: Constrained MDPs as Soft Sieve
 **The General Law (Fragile Agent):**
 Safety is a **topological constraint** enforced by the Sieve—a hard binary filter:
 $$
-\text{Sieve}(a \mid z) = \begin{cases} \text{PASS} & \text{if all 56 diagnostics pass} \\ \text{BLOCK} & \text{otherwise} \end{cases}
+\text{Sieve}(a \mid z) = \begin{cases} \text{PASS} & \text{if all 60 diagnostics pass} \\ \text{BLOCK} & \text{otherwise} \end{cases}
 $$
 Actions failing any diagnostic are **blocked**, not penalized. The Sieve is not subject to reward-cost trade-offs.
 
@@ -1609,7 +1609,7 @@ This recovers **Constrained MDPs** (CMDPs) with penalty-based constraint satisfa
 
 **What the generalization offers:**
 - Hard guarantees: topological constraints cannot be circumvented by high rewards
-- Typed diagnostics: 55 constraints with semantic identity (what/where/why), not just scalar cost
+- Typed diagnostics: 59 constraints with semantic identity (what/where/why), not just scalar cost
 - Fail-fast semantics: violations halt execution and trigger remediation, not gradual penalty accumulation
 - Auditable: each check has known compute cost and clear interpretation (Sections 3–6)
 :::
@@ -1618,7 +1618,7 @@ This recovers **Constrained MDPs** (CMDPs) with penalty-based constraint satisfa
 :name: fig-sieve-diagnostics
 :width: 100%
 
-**The Sieve: 56 Runtime Contracts.** The diagnostic monitoring architecture organized into six categories: Stability, Capacity, Grounding, Safety, Multi-Agent, and Ontology. Each diagnostic feeds into three intervention levels (WARN, HALT, KILL). The design principle: failure modes must be observable and trigger explicit remediation.
+**The Sieve: 60 Runtime Contracts.** The diagnostic monitoring architecture organized into six categories: Stability, Capacity, Grounding, Safety, Multi-Agent, and Ontology. Each diagnostic feeds into three intervention levels (WARN, HALT, KILL). The design principle: failure modes must be observable and trigger explicit remediation.
 :::
 
 (sec-the-stability-checks)=
@@ -17133,7 +17133,7 @@ The name **Fragile** is an intentional portmanteau encoding the four pillars of 
 
 4. **FRAGILE (Fail-Fast Design).**
    - **Learning to be Robust:** The agent starts "thin"—few parameters, sparse latent bundle. Robustness is not given but *earned* by navigating the Sieve.
-   - **Fail Loudly:** The most dangerous AI failure is silent. The 56 diagnostic nodes ({ref}`Section 3 <sec-diagnostics-stability-checks>`) ensure constraint violations trigger immediate halts or alerts.
+   - **Fail Loudly:** The most dangerous AI failure is silent. The 60 diagnostic nodes ({ref}`Section 3 <sec-diagnostics-stability-checks>`) ensure constraint violations trigger immediate halts or alerts.
    - **Path to Robustness:** We do not treat the agent as a magical black box with infinite capacity that will inevitably converge. Imperfection and failure are first-class citizens; acknowledging fragility is the only way to ensure behavior remains auditable and predictable, with explicit recovery mechanisms ({ref}`Section 6 <sec-interventions>`).
 
 The name encodes a design philosophy: start with explicit fragility, instrument it completely, and build robustness through verified operation.
@@ -17179,13 +17179,13 @@ The framework does not eliminate agency—it *geometrizes* it.
 (sec-appendix-d-the-meta-tuning-paradox)=
 #### D.7.1 The Meta-Tuning Paradox
 
-**Objection:** *The Sieve contains 56 diagnostic nodes. Even with the Universal Governor, doesn't this just move the "hyperparameter hell" problem up one level? Who tunes the Governor's initial constraints?*
+**Objection:** *The Sieve contains 60 diagnostic nodes. Even with the Universal Governor, doesn't this just move the "hyperparameter hell" problem up one level? Who tunes the Governor's initial constraints?*
 
 **Response:**
 
 The Governor reduces hyperparameter count, not shifts it.
 
-1. **From 56 thresholds to 3 meta-parameters.** The Universal Governor ({ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>`) is a bilevel optimization: the inner loop is the agent; the outer loop adjusts Lagrange multipliers $\lambda_i$ via dual ascent. The Governor has only 3 meta-parameters: (a) initial $\lambda_0$ (typically uniform), (b) dual learning rate $\eta_\lambda$, (c) constraint tolerance $\epsilon$. All 56 node thresholds are *derived* from these via the Lagrangian.
+1. **From 60 thresholds to 3 meta-parameters.** The Universal Governor ({ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>`) is a bilevel optimization: the inner loop is the agent; the outer loop adjusts Lagrange multipliers $\lambda_i$ via dual ascent. The Governor has only 3 meta-parameters: (a) initial $\lambda_0$ (typically uniform), (b) dual learning rate $\eta_\lambda$, (c) constraint tolerance $\epsilon$. All 60 node thresholds are *derived* from these via the Lagrangian.
 
 2. **Self-tuning dynamics.** Constraints that are satisfied have $\lambda_i \to 0$ automatically—the Governor "turns off" passing checks. Constraints that are violated see $\lambda_i$ increase until the violation is corrected. This is not "tuning"; it is a dynamical equilibrium.
 
@@ -17415,7 +17415,7 @@ Interventions are bounded by the Sieve; hardware safety is a separate layer.
 
 The Sieve provides layered explanations from technical to intuitive.
 
-1. **Diagnostic Node → Plain English mapping.** Each of the 56 nodes has a human-readable interpretation column in the registry ({ref}`Section 3.1 <sec-diagnostics-stability-checks>`):
+1. **Diagnostic Node → Plain English mapping.** Each of the 60 nodes has a human-readable interpretation column in the registry ({ref}`Section 3.1 <sec-diagnostics-stability-checks>`):
    - "Helmholtz Residual Violation" → "The agent's value predictions are inconsistent with how rewards spread."
    - "Ontological Stress" → "The agent is detecting patterns it cannot explain with its current concepts."
    - "CapacityHorizonCheck" → "The agent's memory is nearly full."
@@ -17424,7 +17424,7 @@ The Sieve provides layered explanations from technical to intuitive.
 
 3. **Intervention log.** {ref}`Section 6 <sec-interventions>` defines the remediation for each failure mode. When a check fails, the system logs: (a) which check failed, (b) the current value vs. threshold, (c) the prescribed intervention. The operator sees "Node 35 (HelmholtzResidual) exceeded 0.5; reducing learning rate."
 
-4. **Dashboard visualization.** The 56 diagnostic outputs can be rendered as a heatmap, gauge cluster, or time series. An operator trained on the dashboard can monitor agent health without understanding the underlying geometry.
+4. **Dashboard visualization.** The 60 diagnostic outputs can be rendered as a heatmap, gauge cluster, or time series. An operator trained on the dashboard can monitor agent health without understanding the underlying geometry.
 
 (sec-appendix-d-physical-metabolic-reality)=
 ### D.11 Physical and Metabolic Reality
