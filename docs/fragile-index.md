@@ -1,5 +1,5 @@
 ---
-title: "Fragile: A Unified Field Theory of Inference, Geometry, and Control"
+title: "A Fragile Theory of Inference, Geometry, and Control"
 author: "Guillem Duran Ballester"
 ---
 
@@ -23,6 +23,7 @@ When asked to explain or critique, translate geometric statements into their opt
 
 
 (sec-the-fragile-agent-bounded-rationality-control-and-information-geometry)=
+
 # Fragile: A Unified Field Theory of Inference, Geometry, and Control
 
 :::{tip} TL;DR — One-Page Summary
@@ -1876,7 +1877,7 @@ The Critic does not just predict reward; it defines a **stability-oriented poten
     V(z):=V_{\mathrm{scale}}\,(1-u(z)\cdot \omega),
     $$
     where $\phi$ is a learned embedding and $\tilde\omega$ is a learned goal direction. The dot product is dimensionless; $V_{\mathrm{scale}}$ carries units of nats (Section 1.2) and can be calibrated or learned via adaptive multipliers (Section 3.5).
-    
+
     This does **not** make the entire RL pipeline invariant to arbitrary reward rescaling by itself (targets still change under $r\mapsto ar+b$), but it bounds critic outputs and makes the *directional part* of the value landscape less sensitive to magnitude drift.
 
 *   **Lyapunov Decay (Node 7 - Stiffness):**
