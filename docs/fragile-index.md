@@ -424,6 +424,7 @@ In the Fragile Agent framework, we do **not** treat the environment as a passive
 :label: def-bounded-rationality-controller
 
 The agent is a controller with internal state
+
 $$
 Z_t := (K_t, Z_{n,t}, Z_{\mathrm{tex},t}) \in \mathcal{Z}=\mathcal{K}\times\mathcal{Z}_n\times\mathcal{Z}_{\mathrm{tex}},
 $$
@@ -434,6 +435,7 @@ and internal components (Encoder/Shutter, World Model, Critic, Policy). Its evol
 :label: def-boundary-markov-blanket
 
 The boundary variables at time $t$ are the interface tuple
+
 $$
 B_t := (x_t,\ r_t,\ d_t,\ \iota_t,\ a_t),
 $$
@@ -448,11 +450,13 @@ where:
 :::{prf:definition} Environment as Generative Process
 :label: def-environment-as-generative-process
 
-The “environment” is the conditional law of future interface signals given past interface history. Concretely it is a (possibly history-dependent) kernel on incoming boundary signals conditional on outgoing control:
+The "environment" is the conditional law of future interface signals given past interface history. Concretely it is a (possibly history-dependent) kernel on incoming boundary signals conditional on outgoing control:
+
 $$
 P_{\partial}(x_{t+1}, r_t, d_t, \iota_{t+1}\mid x_{\le t}, a_{\le t}).
 $$
 In the Markov case this reduces to the familiar RL kernel
+
 $$
 P_{\partial}(x_{t+1}, r_t, d_t, \iota_{t+1}\mid x_t, a_t),
 $$
@@ -515,6 +519,7 @@ We use “gauge” in the minimal, operational sense: a **gauge transformation**
 
 Let:
 - $G_{\text{obj}}$ be an **objective/feedback gauge** acting on scalar feedback signals (e.g., change of units or baseline shift). A common choice is the positive affine group
+
   $$
   G_{\text{obj}} := \{(a,b): a>0,\ r\mapsto ar+b\}.
   $$
@@ -524,6 +529,7 @@ Let:
 - $\mathrm{Symp}(2n,\mathbb{R})$ be an optional **phase-space symmetry** acting on canonical latent coordinates $z=(q,p)\in\mathbb{R}^{2n}$ when the world model is parameterized as a symplectic/Hamiltonian system (Section 3.3.B).
 
 The (candidate) total symmetry group is the direct product
+
 $$
 \mathcal{G}_{\mathbb{A}}
 :=
@@ -542,6 +548,7 @@ $$
 
 **Principle of covariance (engineering requirement).** The internal maps of the agent should be invariant/equivariant under $\mathcal{G}_{\mathbb{A}}$ in the following typed sense:
 - **Shutter $E$**: canonicalize or quotient $G_{\text{spatial}}$ before discretization, so the macro register is approximately invariant:
+
   $$
   K(x)\approx K(g\cdot x)\quad (g\in G_{\text{spatial}}),
   $$
@@ -596,6 +603,7 @@ This is the Markov Decision Process index imposed by the environment.
 (sec-computation-time-the-continuous-thought)=
 ##### 1.3.2 Computation Time ($s$): The Continuous Thought
 This is the integration variable of the internal solver and the Equation of Motion (Section 22). It represents the agent's "thinking" process:
+
 $$
 \frac{dz}{ds} = -G^{-1}\nabla \Phi_{\text{eff}} + \dots
 $$
@@ -635,13 +643,14 @@ We frame the agent as a **bounded controller** operating on an internal latent s
 ### 2.1 The Objective: Optimal Control Under Information Constraints
 
 We write the objective as a cumulative cost functional $\mathcal{S}$ (expected loss plus regularization) over time:
+
 $$
 \mathcal{S} = \int \Big(
 \underbrace{\mathcal{L}_{\text{control}}}_{\text{control cost / regularization}}
 + \underbrace{C(z_t,a_t)}_{\text{task cost}}
 \Big)\,dt.
 $$
-Operationally, $\mathcal{L}_{\text{control}}$ can be a KL control penalty (deviation from a prior policy), action magnitude cost, or any control-effort term; $C$ encodes task loss and constraints.
+Operationally, {math}`\mathcal{L}_{\text{control}}` can be a KL control penalty (deviation from a prior policy), action magnitude cost, or any control-effort term; {math}`C` encodes task loss and constraints.
 
 **Relation to prior work.** This objective family covers standard stochastic optimal control and entropy-/KL-regularized RL: KL-control and “soft” (entropy-regularized) Bellman objectives are special cases {cite}`todorov2009efficient,kappen2005path,haarnoja2018soft`.
 
@@ -702,6 +711,7 @@ By architectural design, the **Policy is blind to the Texture channel**. This cr
 :::
 
 We factor the latent as:
+
 $$
 Z_t := (K_t, Z_{n,t}, Z_{\mathrm{tex},t}),
 \qquad
@@ -712,12 +722,14 @@ Z_{n,t}\in\mathbb{R}^{d_n}\ \text{(continuous nuisance)},
 Z_{\mathrm{tex},t}\in\mathbb{R}^{d_{\mathrm{tex}}}\ \text{(continuous texture)}.
 $$
 For the Attentive Atlas shutter, the macro register is a two-level tuple:
+
 $$
 K_t = (K_{\text{chart}}, K_{\text{code}}),
 $$
 with $K_{\text{chart}}\in\{1,\dots,N_c\}$ and $K_{\text{code}}\in\{1,\dots,N_v\}$.
 
 **Macro codebook (symbols).** Let $\mathcal{K}=\{1,\dots,|\mathcal{K}|\}$ and let $\{e_k\}_{k\in\mathcal{K}}\subset\mathbb{R}^{d_m}$ be a learned codebook. Given an observation $x$ the macro encoder produces a pre-quantized vector $z_e(x)\in\mathbb{R}^{d_m}$ and the VQ projection chooses the nearest code:
+
 $$
 K(x) := \arg\min_{k\in\mathcal{K}} \|z_e(x)-e_k\|_2^2,
 \qquad
@@ -728,6 +740,7 @@ We equip $\mathcal{K}$ with the induced finite metric $d_{\mathcal{K}}(k,k'):=\|
 :::{note} Connection to RL #5: Tabular Q-Learning as Degenerate VQ-VAE
 **The General Law (Fragile Agent):**
 The state is encoded via a learned VQ-VAE discretization:
+
 $$
 K(x) := \arg\min_{k \in \mathcal{K}} \|z_e(x) - e_k\|_2^2
 $$
@@ -737,6 +750,7 @@ where $\{e_k\}_{k \in \mathcal{K}}$ is a learned codebook and $z_e(x)$ is the en
 Set $|\mathcal{K}| = |\mathcal{S}|$ (codebook size equals state space) and encoder $z_e = \text{identity}$.
 
 **The Special Case (Standard RL):**
+
 $$
 K(x) = s \in \{1, \ldots, N\} \quad \text{(tabular state index)}
 $$
@@ -755,22 +769,26 @@ This recovers **Tabular Q-Learning** with discrete state enumeration.
 - **Value projection:** $v(x)=W_v f(x)$
 - **Chart query bank:** $\{q_i\}_{i=1}^{N_c}$
 - **Cross-attention routing:**
+
   $$
   w_i(x) = \frac{\exp(\langle k(x), q_i\rangle/\sqrt{d})}{\sum_j \exp(\langle k(x), q_j\rangle/\sqrt{d})},
   \qquad
   K_{\text{chart}} = \arg\max_i w_i(x).
   $$
 Each chart has its own codebook $\{e_{i,c}\}_{c=1}^{N_v}$. For each chart, pick the closest code
+
 $$
 K_{\text{code},i}(x) := \arg\min_c \|v(x)-e_{i,c}\|_2^2,
 $$
 then form a soft blended code for differentiability:
+
 $$
 z_q(x) := \sum_i w_i(x)\, e_{i,K_{\text{code},i}(x)}.
 $$
 The hard code index used for discrete state is $K_{\text{code}}:=K_{\text{code},K_{\text{chart}}}(x)$.
 
 **Recursive residual split (TopoEncoder).** The shutter then decomposes the value residual:
+
 $$
 \Delta_{\text{total}} = v(x) - \operatorname{sg}[z_q(x)],
 \qquad
@@ -779,6 +797,7 @@ z_n = \text{StructureFilter}(\Delta_{\text{total}}),
 z_{\text{tex}} = \Delta_{\text{total}} - z_n.
 $$
 Finally, the geometric latent for the decoder is
+
 $$
 z_{\text{geo}} = z_q^{\text{st}} + z_n,
 \qquad
@@ -787,6 +806,7 @@ $$
 so reconstruction uses the discrete macro code plus structured nuisance.
 
 **Canonicalization and symmetry quotienting (optional).** Let $G_{\text{spatial}}$ be a nuisance group acting on observations (Section 1.1.4). A practical way to make the macro register invariant to pose/basis choices is to insert a **canonicalization map** $C_\psi:\mathcal{X}\to\mathcal{X}$ before quantization and to train it so that
+
 $$
 C_\psi(g\cdot x)\approx C_\psi(x)\qquad (g\in G_{\text{spatial}}).
 $$
@@ -806,6 +826,7 @@ This separation is enforced by orbit-invariance and (macro ⟂ nuisance/texture)
 :::{note} Connection to RL #6: Options Framework as Read-Only Codebook
 **The General Law (Fragile Agent):**
 The agent's state is a **Split VQ-VAE** with learned hierarchy:
+
 $$
 Z_t = (K_t, z_{n,t}, z_{\text{tex},t}) \in \mathcal{K} \times \mathcal{Z}_n \times \mathcal{Z}_{\text{tex}}
 $$
@@ -820,6 +841,7 @@ The **Shutter** forces temporal decoupling: $K$ evolves slowly, $(z_n, z_{\text{
 Hard-code the semantics of $K$ to be fixed sub-policies rather than learned symbols.
 
 **The Special Case (Standard RL):**
+
 $$
 \text{Options Framework (Sutton et al.)}: o \in \{o_1, \ldots, o_N\}, \quad \pi_o(a|s)
 $$
@@ -834,12 +856,14 @@ where $o$ is a fixed option index and $\pi_o$ is a pre-specified intra-option po
 :::
 
 **Nuisance residual ($z_n$).** The nuisance channel remains continuous, e.g. with a Gaussian posterior
+
 $$
 q_\phi(z_n\mid x)=\mathcal{N}(\mu_\phi(x),\operatorname{diag}(\sigma_\phi^2(x))),
 $$
 with a task-appropriate prior $p(z_n)$ (often standard normal as a conservative default). The key requirement is *typed*: nuisance may influence reconstruction and may be used to explain structured deviations, but macro prediction/closure must not require it beyond $(K_t,A_t)$ (Section 2.8).
 
 **Texture residual ($z_{\mathrm{tex}}$).** Texture is modeled as a separate continuous residual with posterior
+
 $$
 q_\phi(z_{\mathrm{tex}}\mid x)=\mathcal{N}(\mu_{\mathrm{tex}}(x),\operatorname{diag}(\sigma_{\mathrm{tex}}^2(x))),
 $$
@@ -856,9 +880,10 @@ $$
 \end{aligned}
 $$
 
-*Units:* $\beta$, $\beta_n$, and $\beta_{\mathrm{tex}}$ are dimensionless weights; each $D_{\mathrm{KL}}$ is measured in nats. In the Attentive Atlas shutter, the codebook/commitment terms are computed per chart and weighted by $w_i(x)$ so inactive charts do not receive spurious updates.
+*Units:* {math}`\beta`, {math}`\beta_n`, and {math}`\beta_{\mathrm{tex}}` are dimensionless weights; each {math}`D_{\mathrm{KL}}` is measured in nats. In the Attentive Atlas shutter, the codebook/commitment terms are computed per chart and weighted by {math}`w_i(x)` so inactive charts do not receive spurious updates.
 
 **Information-theoretic capacity becomes explicit.** Because $K$ is discrete,
+
 $$
 I(X;K)\le H(K)\le \log|\mathcal{K}|.
 $$
@@ -868,6 +893,7 @@ For deterministic nearest-neighbor quantization, $H(K\mid X)=0$ and hence $I(X;K
 :::{note} Connection to RL #10: Soft Actor-Critic as Degenerate MaxEnt Control
 **The General Law (Fragile Agent):**
 The agent optimizes an entropy-regularized objective on the Riemannian manifold $(\mathcal{Z}, G)$:
+
 $$
 \mathcal{F}[p, \pi] = \int_{\mathcal{Z}} p(z) \Big( V(z) - \tau H(\pi(\cdot|z)) \Big) d\mu_G
 $$
@@ -877,6 +903,7 @@ where $d\mu_G = \sqrt{|G|}\, dz$ is the Riemannian volume form and $\tau$ is the
 Restrict entropy regularization to action space only; ignore state-space geometry ($G \to I$).
 
 **The Special Case (Standard RL):**
+
 $$
 J_{\text{SAC}}(\pi) = \mathbb{E}\left[\sum_{t=0}^\infty \gamma^t \big(r_t + \alpha H(\pi(\cdot|s_t))\big)\right]
 $$
@@ -891,13 +918,15 @@ This recovers **Soft Actor-Critic** (SAC) with action entropy bonus.
 :::
 
 **Rate–distortion / MDL viewpoint (optional but canonical).** Because $K$ is a discrete string, an explicit entropy model $p_\psi(K)$ defines a literal expected codelength $\mathbb{E}[-\log p_\psi(K)]$ (in nats). Adding this term yields the Lagrangian form of lossy source coding:
+
 $$
 \min_{E,D}\ \mathbb{E}\big[d(X,\hat{X})\big] + \lambda\,\mathbb{E}\big[-\log p_\psi(K)\big],
 $$
 with rate controlled by the symbolic model and distortion controlled by the decoder. This is the rigorous information-theoretic envelope in which VQ-VAE-style macrostates live.
 Units: $\lambda$ has units of the distortion scale divided by nats (dimensionless if $d$ is itself a negative-log-likelihood in nats).
 
-**Notation note (micro split).** Earlier sections (and some later, legacy blocks) use $z_\mu$ / $\mathcal{Z}_\mu$ to denote “the continuous micro channel”. In the refined typed specification, this channel is split as
+**Notation note (micro split).** Earlier sections (and some later, legacy blocks) use $z_\mu$ / $\mathcal{Z}_\mu$ to denote "the continuous micro channel". In the refined typed specification, this channel is split as
+
 $$
 z_\mu \equiv (z_n, z_{\mathrm{tex}}),
 $$
@@ -930,6 +959,7 @@ The key insight is that these perspectives align around the same mathematical ob
 :::{note} Connection to RL #18: Lyapunov Stability as Implicit Hope
 **The General Law (Fragile Agent):**
 The Critic $V(z)$ serves as a **Control Lyapunov Function** with explicit stability constraint:
+
 $$
 \dot{V}(z) := \nabla V(z)^\top \dot{z} \le -\lambda V(z), \quad [\lambda] = s^{-1}
 $$
@@ -961,6 +991,7 @@ Where $\lVert\cdot\rVert_G$ is the norm under a **state-space sensitivity metric
 :::{note} Connection to RL #2: SGD as Degenerate Geodesic Flow
 **The General Law (Fragile Agent):**
 Policy updates follow **geodesic flow** on the Riemannian manifold $(\mathcal{Z}, G)$:
+
 $$
 \mathcal{S} = \int \left( \frac{1}{2} \|\dot{\pi}\|_G^2 - \dot{V} \right) dt
 $$
@@ -970,6 +1001,7 @@ The Euler-Lagrange equations yield updates along geodesics—shortest paths that
 Set $G = I$ (flat metric). Geodesics become straight lines.
 
 **The Special Case (Standard RL):**
+
 $$
 \theta_{t+1} = \theta_t + \eta \nabla_\theta J(\theta)
 $$
@@ -1024,6 +1056,7 @@ Units: $[G_{ij}]=\mathrm{nat}\,[z]^{-2}$ if $z$ is measured in units $[z]$.
 :::{note} Connection to RL #1: REINFORCE as Degenerate Natural Gradient
 **The General Law (Fragile Agent):**
 Policy updates follow a flow on the Riemannian manifold $(\mathcal{Z}, G)$:
+
 $$
 \delta z = G^{-1}(z) \nabla_z \mathcal{L}
 $$
@@ -1033,6 +1066,7 @@ where $G(z)$ is the state-space sensitivity metric (Definition {prf:ref}`def-loc
 Set $G = I$ (identity matrix). The manifold becomes flat Euclidean space.
 
 **The Special Case (Standard RL):**
+
 $$
 \delta\theta = \nabla_\theta J(\theta) \quad \text{(REINFORCE / Vanilla Policy Gradient)}
 $$
@@ -1125,6 +1159,7 @@ $$
 **In Physics:** The Levi-Civita connection is the unique torsion-free, metric-compatible connection on a Riemannian manifold. It defines parallel transport and geodesics. The Christoffel symbols $\Gamma^k_{ij} = \frac{1}{2}G^{kl}(\partial_i G_{jl} + \partial_j G_{il} - \partial_l G_{ij})$ encode how vectors rotate under infinitesimal displacement {cite}`docarmo1992riemannian`.
 
 **In Implementation:** The latent metric $G$ induces a Levi-Civita connection with Christoffel symbols (Section 2.5.1):
+
 $$\Gamma^k_{ij}(z) = \frac{1}{2}G^{kl}(z)\left(\partial_i G_{jl} + \partial_j G_{il} - \partial_l G_{ij}\right)$$
 appearing in the geodesic correction term of the dynamics (Definition {prf:ref}`def-bulk-drift-continuous-flow`).
 
@@ -1171,6 +1206,7 @@ The Covariant Regulator uses the **State-Space Fisher Information** to scale the
 :::{note} Connection to RL #3: TRPO/PPO as Degenerate State-Space Metric
 **The General Law (Fragile Agent):**
 The trust region is defined by the **state-space sensitivity metric** $G(z)$:
+
 $$
 G_{ij}(z) = \mathbb{E}_{a \sim \pi}\left[\frac{\partial \log\pi(a|z)}{\partial z_i} \frac{\partial \log\pi(a|z)}{\partial z_j}\right] + \nabla^2_z V(z)
 $$
@@ -1180,9 +1216,11 @@ Updates satisfy $\|\delta\pi\|_G^2 \le \epsilon$ in **state space**.
 Conflate state space with parameter space. Use the parameter-space Fisher $\mathcal{F}(\theta)$ instead of $G(z)$.
 
 **The Special Case (Standard RL):**
+
 $$
 \text{TRPO: } D_{\text{KL}}(\pi_\theta \| \pi_{\theta'}) \le \delta \quad \text{(parameter-space constraint)}
 $$
+
 $$
 \text{PPO: } \text{clip}(\rho, 1-\epsilon, 1+\epsilon) \quad \text{(surrogate approximation)}
 $$
@@ -1241,21 +1279,25 @@ All terms in the HJB equation have units of a **cost rate**. In discrete time th
 The transition from micro to macro is a **projection operator** $\Pi:\mathcal{Z}\to\mathcal{K}$. In the discrete macro instantiation, $\Pi$ is precisely the **VQ quantizer** $z_e\mapsto K$ from Section 2.2b.
 
 **Causal Enclosure Condition (Markov sufficiency).** With the nuisance/texture split (Section 2.2b), let $(K_t, Z_{n,t}, Z_{\mathrm{tex},t}, A_t)$ be the internal state/action process and define the macrostate $K_t:=\Pi(Z_t)$ (projection to the discrete register). The macro-model requirement is the conditional independence
+
 $$
 K_{t+1}\ \perp\!\!\!\perp\ (Z_{n,t}, Z_{\mathrm{tex},t})\ \big|\ (K_t,A_t),
 $$
 equivalently the vanishing of a conditional mutual information:
+
 $$
 I(K_{t+1};Z_{n,t},Z_{\mathrm{tex},t}\mid K_t,A_t)=0.
 $$
 This is the information-theoretic statement that the macro-symbols are a sufficient statistic for predicting their own future, while the micro coordinates are residual variation not needed for macro prediction.
 
 **Closure Defect (kernel-level).** Write the micro-dynamics as a Markov kernel $P(dz'\mid z,a)$ and let $P_\Pi(\cdot\mid z,a)$ be the pushforward kernel on $\mathcal{K}$ induced by $\Pi$. A learned macro-dynamics kernel $\bar{P}(\cdot\mid k,a)$ is enclosure-correct iff
+
 $$
 P_\Pi(\cdot\mid z,a)=\bar{P}(\cdot\mid \Pi(z),a)
 \quad\text{for }P\text{-a.e. }z.
 $$
 A canonical defect functional is the expected divergence
+
 $$
 \delta_{\text{CE}}
 :=
@@ -1299,7 +1341,8 @@ The Fragile Agent therefore treats “metric computation” as part of the regul
 
 Below is an implementable hierarchy that improves on a raw diagonal while staying within the diagonal/block-diagonal regime.
 
-**A. EMA-smoothed diagonal (“damped diagonal”).** Let $g_t\in\mathbb{R}^d$ be an instantaneous diagonal estimator, e.g.
+**A. EMA-smoothed diagonal ("damped diagonal").** Let $g_t\in\mathbb{R}^d$ be an instantaneous diagonal estimator, e.g.
+
 $$
 g_t
 \approx
@@ -1309,6 +1352,7 @@ $$
 where $\odot$ denotes elementwise product (and the Hessian term can be omitted when too expensive).
 
 Maintain a smoothed diagonal metric estimate with an exponential moving average (EMA):
+
 $$
 \widehat{G}^{\mathrm{diag}}_{t}
 =
@@ -1319,6 +1363,7 @@ $$
 $$
 
 Use a stabilized inverse in preconditioning:
+
 $$
 \left(\widehat{G}^{\mathrm{diag}}_{t}+\epsilon_t\mathbf{1}\right)^{-1},
 \qquad
@@ -1329,6 +1374,7 @@ and optionally clamp inverse entries to a bounded interval to avoid singular tru
 This is a low-pass filter on curvature/sensitivity: it reduces high-frequency estimator noise while preserving slow curvature drift (consistent with the timescale-separation ethos of BarrierTypeII).
 
 **B. Macro–nuisance block-diagonal split (enclosure-aligned).** Under causal enclosure (Section 2.8), macro dynamics and macro prediction should not require the *residual* channels, and in particular should not require texture. This motivates a block structure
+
 $$
 G
 \approx
@@ -1351,6 +1397,7 @@ The off-diagonal block corresponds to macro–nuisance “cross-talk”. If it i
 These probes should be amortized (run every $N$ steps) and treated as **monitors** first, **preconditioners** second.
 
 **D. Adaptive stabilizer $\epsilon_t$ (noise-floor coupling).** The most dangerous failure mode for diagonal natural-gradient schemes is a vanishing diagonal entry: $G_{ii}\to 0$ implies an exploding inverse. Instead of a fixed $\epsilon$, use a stabilizer tied to an online noise/uncertainty proxy:
+
 $$
 \epsilon_t
 :=
@@ -1407,6 +1454,7 @@ $$\Sigma_\pi(z) \propto \beta(z)^{-1} \cdot G^{-1}(z)$$
 :label: def-entropy-regularized-objective-functional
 
 Let $d\mu_G:=\sqrt{|G|}\,dz$ be the Riemannian volume form on $\mathcal{Z}$ and let $p(z)$ be a probability density with respect to $d\mu_G$. For a (dimensionless) trade-off coefficient $\tau\ge 0$, define
+
 $$
 \mathcal{F}[p,\pi]
 :=
@@ -1430,6 +1478,7 @@ Let $p(z,s)\ge 0$ be a density with respect to $d\mu_G$ representing the agent�
 :label: def-transport-field
 
 Let $v\in\Gamma(T\mathcal{Z})$ be a vector field describing the instantaneous transport of belief mass on $\mathcal{Z}$. In a value-gradient-flow idealization (used only for intuition), one may take
+
 $$
 v^i(z) := -G^{ij}(z)\frac{\partial V}{\partial z^j},
 $$
@@ -1463,13 +1512,14 @@ Interpreting $\sigma$:
    -\oint_{\partial U}\langle p v,n\rangle\,dA_G
    +\int_U \sigma\,d\mu_G.
    $$
-   For $U=\mathcal{Z}$ this relates net mass change to boundary flux and the integrated residual.
+   For {math}`U=\mathcal{Z}` this relates net mass change to boundary flux and the integrated residual.
 
 :::
 :::{prf:proposition} Mass Conservation in a Closed Enclosure
 :label: prop-mass-conservation-in-a-closed-enclosure
 
 If $\sigma\equiv 0$ and the boundary flux vanishes (e.g. $\langle p v,n\rangle=0$ on $\partial\mathcal{Z}$), then the total belief mass
+
 $$
 \mathcal{V}(s):=\int_{\mathcal{Z}}p(z,s)\,d\mu_G
 $$
@@ -1591,6 +1641,7 @@ Standard RL safety relies on reward shaping, which provides no formal guarantee 
 :::{note} Connection to RL #8: Constrained MDPs as Soft Sieve
 **The General Law (Fragile Agent):**
 Safety is a **topological constraint** enforced by the Sieve—a hard binary filter:
+
 $$
 \text{Sieve}(a \mid z) = \begin{cases} \text{PASS} & \text{if all 60 diagnostics pass} \\ \text{BLOCK} & \text{otherwise} \end{cases}
 $$
@@ -1600,6 +1651,7 @@ Actions failing any diagnostic are **blocked**, not penalized. The Sieve is not 
 Replace the hard binary filter with a soft Lagrange multiplier $\lambda > 0$.
 
 **The Special Case (Standard RL):**
+
 $$
 J_{\text{CMDP}}(\pi) = \mathbb{E}\left[\sum_t \gamma^t r_t\right] - \lambda \sum_i c_i(\pi)
 $$
@@ -1742,7 +1794,7 @@ The table below summarizes a minimal, implementable set of **gauge-invariant reg
     + \underbrace{\beta_{\mathrm{tex}} D_{\mathrm{KL}}(q(z_{\mathrm{tex}} \mid x) \Vert p(z_{\mathrm{tex}}))}_{\text{texture-as-residual}}
     + \underbrace{\lambda_{\text{use}} D_{\mathrm{KL}}(\hat{p}(K)\ \Vert\ \mathrm{Unif}(\mathcal{K}))}_{\text{anti-collapse (optional)}}.
     $$
-    Units: $\beta$, $\beta_n$, $\beta_{\mathrm{tex}}$, and $\lambda_{\text{use}}$ are dimensionless weights; each $D_{\mathrm{KL}}$ is measured in nats.
+    Units: {math}`\beta`, {math}`\beta_n`, {math}`\beta_{\mathrm{tex}}`, and {math}`\lambda_{\text{use}}` are dimensionless weights; each {math}`D_{\mathrm{KL}}` is measured in nats.
     *   *Effect:* The macro channel is a bounded-rate symbolic register. The nuisance channel is regularized but typed (it may be used to explain structured deviations or support actuation). The texture channel is reconstruction-only: it is forced toward a high-entropy prior and must not be required for macro closure or control.
 *   **Orbit invariance (Node 18: SymmetryCheck; optional but recommended when $G_{\text{spatial}}$ is known).**
     Sample nuisance transforms $g\sim G_{\text{spatial}}$ (data augmentation, known pose perturbations, or learned warps) and penalize changes in macro assignment:
@@ -1810,6 +1862,7 @@ Units: $\lambda,\mu,\nu$ are dimensionless weights; each component loss is taken
 ::::{note} Connection to RL #29: Contrastive RL as Degenerate InfoNCE Anchoring
 **The General Law (Fragile Agent):**
 **InfoNCE** anchors the latent space to capture long-term structural dependencies:
+
 $$
 \mathcal{L}_{\text{InfoNCE}} = -\log \frac{\exp(\text{sim}(z_t, z_{t+k})/\tau)}{\sum_j \exp(\text{sim}(z_t, z^-_j)/\tau)}
 $$
@@ -1819,6 +1872,7 @@ This is one of *multiple* anchoring signals in the Fragile Agent, applied specif
 Use InfoNCE as the *primary* representation objective rather than auxiliary anchoring. No macro-micro split—all features treated uniformly.
 
 **The Special Case (Standard RL):**
+
 $$
 I(z_t; z_{t+k}) \ge \log N - \mathcal{L}_{\text{CPC}}
 $$
@@ -1847,12 +1901,14 @@ This recovers **Contrastive Predictive Coding (CPC)** {cite}`oord2018cpc` and **
     *   *Effect:* Standard dynamics learning, but constrained by the Lyapunov potential (see below).
 *   **Symplectic / Hamiltonian parameterization (Node 21; optional).**
     If the latent state is organized as canonical coordinates $z=(q,p)\in\mathbb{R}^{2n}$, a structured world model can be parameterized by a learned Hamiltonian $H_\psi(q,p,a)$. Hamiltonian dynamics take the form
+
     $$
     \dot q = \nabla_p H_\psi(q,p,a),
     \qquad
     \dot p = -\nabla_q H_\psi(q,p,a).
     $$
     Equivalently, $\dot z = J\nabla_z H_\psi(z,a)$ for the canonical symplectic matrix $J$. This induces a divergence-free flow in $z$ and supports stable long-horizon rollouts when the environment is approximately conservative in the chosen coordinates {cite}`greydanus2019hamiltonian`. For a discrete-time transition $S$, one can monitor (or penalize) departures from symplecticity via
+
     $$
     \mathcal{L}_{\text{symp}}
     :=
@@ -1862,7 +1918,8 @@ This recovers **Contrastive Predictive Coding (CPC)** {cite}`oord2018cpc` and **
     $$
     This is optional: if the environment is strongly dissipative or control-dominated, forcing symplectic structure can be counterproductive.
 *   **Residual-event (jump) codebook (optional).**
-    To separate “modeled dynamics” from “unmodeled disturbance”, maintain a discrete codebook over one-step residuals
+    To separate "modeled dynamics" from "unmodeled disturbance", maintain a discrete codebook over one-step residuals
+
     $$
     \Delta z_{n,t} := z_{n,t+1}-S_n(z_{n,t},K_t,a_t),
     \qquad
@@ -1937,6 +1994,7 @@ The Policy is the controller. Its objective is to choose actions that reduce exp
 
 *   **Hodge-style alignment (optional; complements Node 10 and BarrierBode).**
     View the policy-induced state change as a vector field on latent space (either the true environment dynamics $f$ or the world-model prediction $S(z,a)-z$). A simple alignment surrogate encourages the task-relevant component of the flow to be gradient-like:
+
     $$
     g(z):= -G^{-1}(z)\nabla_z V(z),
     \qquad
@@ -1981,6 +2039,7 @@ A key design choice in the Fragile Agent is to make inter-component alignment ex
 The synchronization and component losses above enforce internal consistency. The following regularizers make information/coupling constraints explicit in online-auditable form.
 
 *   **KL-Control (Relative-Entropy Control; Theorem {prf:ref}`thm-equivalence-of-entropy-regularized-control-forms-discrete-macro`).** Fix a reference actuator prior $\pi_0(a\mid k)$ with full support. Define control effort as KL deviation from this prior:
+
     $$
     \mathcal{L}_{\text{KL-ctrl}}
     :=
@@ -1989,6 +2048,7 @@ The synchronization and component losses above enforce internal consistency. The
     When $\pi_0$ is uniform, this reduces (up to an additive constant) to standard entropy regularization; when $\pi_0$ encodes actuator limits, it becomes a calibrated control-effort penalty.
 
 *   **Path-Entropy Exploration (Future Flexibility; Definition 10.1.2).** Encourage non-degenerate reachable macro futures by maximizing causal path entropy (equivalently minimizing its negative):
+
     $$
     \mathcal{L}_{\text{expl}}
     :=
@@ -1997,6 +2057,7 @@ The synchronization and component losses above enforce internal consistency. The
     with weights $w_h\ge 0$. In practice, a computable proxy is the entropy of the WM-predicted horizon marginals $\hat{P}_\phi(K_{t+h}\mid K_t)$ obtained by rollout or dynamic programming.
 
 *   **Information–Stability Window (Theorem {prf:ref}`thm-information-stability-window-operational`).** Penalize both under-coupling (loss of grounding) and over-coupling (symbol dispersion / saturation). With thresholds $0<\epsilon<\log|\mathcal{K}|$,
+
     $$
     \mathcal{L}_{\text{window}}
     :=
@@ -2007,6 +2068,7 @@ The synchronization and component losses above enforce internal consistency. The
     This is an explicit online enforcement of the coupling window: $I(X;K)$ must not collapse, and $H(K)$ must not saturate.
 
 *   **Regularized Objective Descent (Sections 9.11 and 11–14).** Define an instantaneous (per-step) regularized objective
+
     $$
     F_t
     :=
@@ -2018,6 +2080,7 @@ The synchronization and component losses above enforce internal consistency. The
     \qquad \text{where } Z_t=(K_t,z_{n,t},z_{\mathrm{tex},t}).
     $$
     A monotonicity surrogate is then enforced by
+
     $$
     \mathcal{L}_{\downarrow F}
     :=
@@ -2045,6 +2108,7 @@ We distinguish three classes of coefficients:
 #### 3.5.1 Method A: Primal–Dual Updates (Projected Dual Ascent)
 
 Choose online-computable nonnegative constraint metrics $\mathcal{C}_i(\theta)$ and tolerances $\epsilon_i$ defining a feasible set
+
 $$
 \mathcal{C}_i(\theta)\le \epsilon_i,
 \qquad i=1,\dots,m.
@@ -2052,6 +2116,7 @@ $$
 Examples include enclosure defects (Section 2.8), Zeno/step-size limits (Node 2), saturation measures (BarrierSat), and Lyapunov defects (Node 7).
 
 Define the Lagrangian (units consistent with Section 1.2):
+
 $$
 \mathcal{L}(\theta,\lambda)
 =
@@ -2120,12 +2185,13 @@ This “multiplier as controller” viewpoint is used directly in PID Lagrangian
 When combining multiple likelihood-style losses with different natural scales (e.g., reconstruction vs dynamics prediction vs auxiliary self-supervision), it is often better to learn their relative weights as **inverse variances** (precisions) rather than choose them by hand.
 
 Assume each loss $\mathcal{L}_i$ is (or is proportional to) a negative log-likelihood with unknown homoscedastic noise variance $\sigma_i^2$. Learning $s_i:=\log\sigma_i^2$ yields the objective {cite}`kendall2018multi`:
+
 $$
 \mathcal{L}_{\text{total}}
 =
 \sum_i \frac12\Big(\exp(-s_i)\,\mathcal{L}_i + s_i\Big).
 $$
-The effective weight is $\exp(-s_i)$, and the $s_i$ term prevents degenerate solutions where all weights collapse to zero.
+The effective weight is {math}`\exp(-s_i)`, and the {math}`s_i` term prevents degenerate solutions where all weights collapse to zero.
 
 This method is appropriate for **multi-task scaling**, not for nonnegotiable safety constraints (use Method A for those).
 
@@ -2148,6 +2214,7 @@ A practical, implementable calibration procedure is:
 1. **Collect a calibration buffer** $\mathcal{D}_{\text{cal}}$ by running a baseline policy for $N$ steps (random, scripted, or a known-safe controller), logging the metrics used in your Gate Nodes / Barriers.
 2. **Estimate achievable baselines** by computing empirical summaries for each metric (median, quantiles, MAD).
 3. **Set tolerances** using quantiles plus a margin:
+
    $$
    \epsilon_i := Q_p\!\big(\mathcal{C}_i(\mathcal{D}_{\text{cal}})\big) + \Delta_i,
    $$
@@ -2293,6 +2360,7 @@ The most dangerous failures occur when barriers conflict. We model these as **Tr
     *   *Classes:* **Rate-Distortion Optimization.**
     *   *Conflict:* High compression (anti-collapse) removes details needed for fine control (capacity/controllability).
     *   *Regularization:*
+
         $$
         \mathcal{L}_{\text{InfoControl}}
         =
@@ -2300,7 +2368,7 @@ The most dangerous failures occur when barriers conflict. We model these as **Tr
         +
         \underbrace{\gamma\,\mathbb{E}[\mathfrak{D}(Z,A)]}_{\text{Control Effort}}
         $$
-        where $\mathfrak{D}$ is an actuation cost (e.g. KL-control to a prior $\pi_0$, or a calibrated norm/penalty on actions).
+        where {math}`\mathfrak{D}` is an actuation cost (e.g. KL-control to a prior {math}`\pi_0`, or a calibrated norm/penalty on actions).
     *   *Mechanism:* Use Lagrange multipliers to find the Pareto frontier. If control performance drops, decrease $\beta_K,\beta_n,\beta_{\mathrm{tex}}$ (allocate more bits to the shutter).
 
 2.  **The Stability-Plasticity Dilemma (BarrierVac vs BarrierPZ):**
@@ -2425,6 +2493,7 @@ This section provides an order-of-growth and engineering-cost view of the regula
 For production systems with tight compute budgets.
 
 **Loss Function:**
+
 $$
 \mathcal{L}_{\text{Fragile}}^{\text{core}} = \mathcal{L}_{\text{task}} + \lambda_{\text{shutter}} \mathcal{L}_{\text{shutter}} + \lambda_{\text{ent}} (-H(\pi)) + \lambda_{\text{zeno}} D_{\mathrm{KL}}(\pi_t \Vert \pi_{t-1}) + \lambda_{\text{stiff}} \max(0, \epsilon - \Vert \nabla V \Vert)^2
 $$
@@ -2483,6 +2552,7 @@ def compute_fragile_core_loss(
 For research and safety-conscious applications.
 
 **Additional Terms:**
+
 $$
 \mathcal{L}_{\text{Fragile}}^{\text{std}} = \mathcal{L}_{\text{Fragile}}^{\text{core}} + \lambda_{\text{scale}} \max(0, \beta - \alpha) + \lambda_{\text{sync}}\,\mathcal{L}_{\text{Sync}_{K-W}} + \lambda_{\text{osc}} \Vert z_t - z_{t-2} \Vert
 $$
@@ -3119,6 +3189,7 @@ $$\mathcal{L}_{\text{universal}} = \mathcal{L}_{\text{vicreg}} + \mathcal{L}_{\t
 ::::{note} Connection to RL #28: Self-Supervised RL as Degenerate VICReg
 **The General Law (Fragile Agent):**
 Each chart enforces **VICReg** constraints to prevent representation collapse:
+
 $$
 \mathcal{L}_{\text{VICReg}} = \lambda \mathcal{L}_{\text{inv}} + \mu \mathcal{L}_{\text{var}} + \nu \mathcal{L}_{\text{cov}}
 $$
@@ -3983,16 +4054,19 @@ Let $\mathcal{E}^{(\ell)}$ denote the $\ell$-th TopoEncoder block. The forward p
 At layer $\ell$, the input signal $x^{(\ell)}$ is decomposed into a structural component (the **Effective Theory** at scale $\ell$) and a residual component (the **High-Frequency Fluctuations**).
 
 1. **Analysis (Encoding):** The block identifies the macro-symbol $K^{(\ell)}$ and structured nuisance $z_n^{(\ell)}$ that best approximate $x^{(\ell)}$:
+
 $$
 (K^{(\ell)}, z_n^{(\ell)}) = \mathcal{E}^{(\ell)}(x^{(\ell)})
 $$
 
 2. **Synthesis (Effective Reconstruction):** The block generates the signal explained by this structure:
+
 $$
 \hat{x}^{(\ell)} = \mathcal{D}^{(\ell)}(K^{(\ell)}, z_n^{(\ell)})
 $$
 
 3. **Residual Computation (Texture Extraction):** The unexplained signal is isolated:
+
 $$
 z_{\mathrm{tex}}^{(\ell)} = x^{(\ell)} - \hat{x}^{(\ell)}
 $$
@@ -4002,6 +4076,7 @@ $$
 :label: def-the-rescaling-operator-renormalization
 
 To prevent signal decay (vanishing activations) without using skip connections, we explicitly renormalize the residual to unit variance before passing it to the next scale:
+
 $$
 x^{(\ell+1)} = \frac{z_{\mathrm{tex}}^{(\ell)}}{\sigma^{(\ell)} + \epsilon}, \qquad \sigma^{(\ell)} = \sqrt{\mathrm{Var}(z_{\mathrm{tex}}^{(\ell)}) + \epsilon}
 $$
@@ -4012,6 +4087,7 @@ The scalar $\sigma^{(\ell)}$ is stored as a state variable (the **scale factor**
 :label: def-total-reconstruction
 
 The original signal is reconstructed by summing the contributions of all scales, modulated by their respective scale factors. Define $\Pi^{(\ell)} := \prod_{j=0}^{\ell-1} \sigma^{(j)}$ with the convention $\Pi^{(0)} = 1$ (empty product). Then:
+
 $$
 \hat{x} = \sum_{\ell=0}^{L-1} \Pi^{(\ell)} \cdot \hat{x}^{(\ell)} + \Pi^{(L)} \cdot x^{(L)}
 $$
@@ -4028,6 +4104,7 @@ We achieve **Dynamical Isometry**—the condition that the input-output Jacobian
 ##### Mechanism 1: Orthogonality Regularization (Section 7.7.2)
 
 The **OrthogonalLinear** layers enforce approximate isometry via the loss:
+
 $$
 \mathcal{L}_{\text{orth}} = \sum_{\ell} \|W_\ell^T W_\ell - I\|_F^2
 $$
@@ -4059,6 +4136,7 @@ With variance rescaling:
 3. The backward gradient is scaled by $1/\sigma^{(\ell)}$, amplifying gradients for fine-scale layers.
 
 **Gradient Amplification Analysis:** Let the loss $\mathcal{L}$ depend on the output of block $\ell$. The gradient flowing back to block $\ell-1$ includes the factor:
+
 $$
 \frac{\partial x^{(\ell)}}{\partial z_{\mathrm{tex}}^{(\ell-1)}} = \frac{1}{\sigma^{(\ell-1)}}
 $$
@@ -4074,12 +4152,14 @@ This prevents the **Spectral Bias** where neural networks preferentially learn l
 ##### Mechanism 3: Spectral Normalization (Section 3.4, Node 20)
 
 For additional stability, each layer can use **spectral normalization** {cite}`miyato2018spectral` to bound the operator norm:
+
 $$
 W_{\text{SN}} = \frac{W}{\sigma_{\max}(W)}
 $$
 This ensures $\|W_{\text{SN}}\|_2 = 1$, making each layer 1-Lipschitz. Combined with 1-Lipschitz activations (e.g., ReLU), this bounds the network Lipschitz constant by the product of per-layer spectral norms.
 
 The framework's **LipschitzCheck** (Node 20) monitors $\max_\ell \sigma(W_\ell)$ at runtime, and the spectral (Lipschitz) barrier (Section 3.3, Table; {cite}`miyato2018spectral`) enforces:
+
 $$
 \mathcal{L}_{\text{Lip}} = \sum_\ell \max(0, \sigma_{\max}(W_\ell) - K)^2
 $$
@@ -6099,7 +6179,7 @@ V(Z_t)
 + \beta_{\mathrm{tex}} D_{\mathrm{KL}}\!\left(q(z_{\mathrm{tex},t}\mid x_t)\ \Vert\ p(z_{\mathrm{tex}})\right)
 + T_c D_{\mathrm{KL}}\!\left(\pi(\cdot\mid K_t)\ \Vert\ \pi_0(\cdot\mid K_t)\right),
 $$
-where $Z_t=(K_t,z_{n,t},z_{\mathrm{tex},t})$ and all terms are measured in nats.
+where {math}`Z_t=(K_t,z_{n,t},z_{\mathrm{tex},t})` and all terms are measured in nats.
 
 A practical monotonicity surrogate is:
 $$
@@ -6405,7 +6485,7 @@ $$
 \;+\;
 \underbrace{\sum_{j} \gamma_j\left(L_j\varrho L_j^\dagger-\frac12\{L_j^\dagger L_j,\varrho\}\right)}_{\text{dissipative update}},
 $$
-where $H=H^\dagger$ is Hermitian, $\gamma_j\ge 0$ are rates, and $\{L_j\}$ are (learned) operators.
+where {math}`H=H^\dagger` is Hermitian, {math}`\gamma_j\ge 0` are rates, and {math}`\{L_j\}` are (learned) operators.
 
 **Operational interpretation (within this document).**
 - The commutator term is a structured way to represent **reversible internal prediction** (it preserves $\mathrm{Tr}(\varrho)$ and the spectrum of $\varrho$).
@@ -6613,7 +6693,7 @@ $$
 -D_{\mathrm{KL}}(P(\cdot\mid k)\Vert P_0(\cdot\mid k))
 \right\},
 $$
-and the optimizer is exactly the exponentially tilted law $P^*$. In the special case where $P_0$ is uniform (or treated as constant), the KL term differs from Shannon path entropy by an additive constant, recovering the standard “maximize entropy subject to expected reward” view.
+and the optimizer is exactly the exponentially tilted law {math}`P^*`. In the special case where {math}`P_0` is uniform (or treated as constant), the KL term differs from Shannon path entropy by an additive constant, recovering the standard "maximize entropy subject to expected reward" view.
 
 *Proof sketch.* Set up the constrained variational problem "maximize path entropy subject to an expected reward constraint." The Euler–Lagrange condition yields an exponential-family distribution on paths. The normalizer obeys dynamic programming and equals the soft value. Differentiating the log-normalizer yields the corresponding exploration-gradient direction.
 
@@ -7295,7 +7375,7 @@ T_{ij}=\rho\,v_i v_j + P\,G_{ij},
 P=\frac12\,\rho\left(\|v\|_G^2+\lambda^2 r^2\right),
 $$
 which is the perfect-fluid form with reaction contributing an additive pressure term
-$P_{\mathrm{react}}=\tfrac12\lambda^2\rho r^2$.
+{math}`P_{\mathrm{react}}=\tfrac12\lambda^2\rho r^2`.
 
 *Proof sketch.* Vary $\mathcal{S}_{\mathrm{WFR}}$ with respect to $G^{ij}$ while holding
 $(\rho,v,r)$ fixed. Use $\delta\|v\|_G^2=-v_i v_j\,\delta G^{ij}$ and
