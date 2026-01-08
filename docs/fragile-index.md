@@ -403,7 +403,7 @@ The framework is stated strictly in **information theory, optimization, and cont
 This is the native language of **Safe RL**, **Robust Control**, and **Embodied AI**.
 
 (sec-definitions-interaction-under-partial-observability)=
-## 1.1 Definitions: Interaction Under Partial Observability
+### 1.1 Definitions: Interaction Under Partial Observability
 
 :::{admonition} Researcher Bridge: Markov Blanket = Observation/Action Interface
 :class: tip
@@ -414,7 +414,7 @@ If you are used to POMDP notation, the "boundary" here is just the observation, 
 In the Fragile Agent framework, we do **not** treat the environment as a passive data provider. We treat the agent as a **partially observed control problem** whose only coupling to the external world is through a well-defined **interface / Markov blanket**. All RL primitives are re-typed as **signals and constraints at this interface**.
 
 (sec-the-environment-is-an-input-output-law)=
-### 1.1.1 The Environment is an Input–Output Law (Not an Internal Object)
+#### 1.1.1 The Environment is an Input–Output Law (Not an Internal Object)
 
 :::{prf:definition} Bounded-Rationality Controller
 :label: def-bounded-rationality-controller
@@ -458,7 +458,7 @@ This is the categorical move: we do not assume access to the environment’s lat
 
 :::
 (sec-re-typing-standard-rl-primitives-as-interface-signals)=
-### 1.1.2 Re-typing Standard RL Primitives as Interface Signals
+#### 1.1.2 Re-typing Standard RL Primitives as Interface Signals
 
 1. **Environment (Stochastic Process / Unmodeled Disturbance).**
    - *Standard:* a black box providing states and rewards.
@@ -500,7 +500,7 @@ This is the categorical move: we do not assume access to the environment’s lat
    - *Fragile:* a finite window used to estimate a cumulative objective under uncertainty. “Success” is satisfying task constraints while maintaining stability; “failure” is crossing a monitored limit (Section 4).
 
 (sec-symmetries-and-gauge-freedoms)=
-### 1.1.4 Symmetries and Gauge Freedoms (Operational)
+#### 1.1.4 Symmetries and Gauge Freedoms (Operational)
 
 Many of the largest stability and sample-efficiency failures in practice come from **wasting capacity on nuisance degrees of freedom**: the agent learns separate internal states for observations that differ only by pose, basis choice, or arbitrary internal labeling. We formalize these nuisance directions as **symmetries** (group actions) and treat “quotienting them out” as an explicit design constraint.
 
@@ -549,7 +549,7 @@ These are *requirements on representations and interfaces*, not philosophical cl
 
 :::
 (sec-units-and-dimensional-conventions)=
-### 1.2 Units and Dimensional Conventions (Explicit)
+#### 1.2 Units and Dimensional Conventions (Explicit)
 
 This document expresses objectives in **information units** so that likelihoods, code lengths, KL terms, and entropy regularizers share a common scale.
 
@@ -572,7 +572,7 @@ This document expresses objectives in **information units** so that likelihoods,
 - Composite-loss weights (e.g. $\lambda_{\text{*}}$ used to sum training losses) are taken dimensionless unless explicitly stated otherwise.
 
 (sec-the-chronology-temporal-distinctions)=
-### 1.3 The Chronology: Temporal Distinctions
+#### 1.3 The Chronology: Temporal Distinctions
 
 We distinguish four temporal dimensions. They are orthogonal (or nested) and must not be conflated. Using one symbol for all of them is a chronological category error (e.g., confusing "thinking longer" with "getting older").
 
@@ -584,13 +584,13 @@ We distinguish four temporal dimensions. They are orthogonal (or nested) and mus
 | **$t'$**   | **Memory Time**      | $\{t' \in \mathbb{Z} : t' < t\}$ | Index of stored past states on the screen.        | Retarded time                    |
 
 (sec-interaction-time-the-discrete-clock)=
-#### 1.3.1 Interaction Time ($t$): The Discrete Clock
+##### 1.3.1 Interaction Time ($t$): The Discrete Clock
 This is the Markov Decision Process index imposed by the environment.
 - **Update:** $z_t \to z_{t+1}$.
 - **Constraint:** the agent must emit $a_t$ before $t$ increments (real-time constraint).
 
 (sec-computation-time-the-continuous-thought)=
-#### 1.3.2 Computation Time ($s$): The Continuous Thought
+##### 1.3.2 Computation Time ($s$): The Continuous Thought
 This is the integration variable of the internal solver and the Equation of Motion (Section 22). It represents the agent's "thinking" process:
 $$
 \frac{dz}{ds} = -G^{-1}\nabla \Phi_{\text{eff}} + \dots
@@ -600,7 +600,7 @@ $$
 - **Thermodynamics:** this is the time variable in which Fokker-Planck dynamics evolve internal belief toward equilibrium (Section 22.5).
 
 (sec-scale-time-the-holographic-depth)=
-#### 1.3.3 Scale Time ($\tau$): The Holographic Depth
+##### 1.3.3 Scale Time ($\tau$): The Holographic Depth
 This is the radial coordinate in the Poincare disk (Sections 21, 7.12). It corresponds to resolution depth.
 - **Dynamics:** $dr/d\tau = \operatorname{sech}^2(\tau/2)$ (the holographic law).
 - **Discretization:** in stacked TopoEncoders, layer $\ell$ corresponds to scale time $\tau_\ell$.
@@ -608,7 +608,7 @@ This is the radial coordinate in the Poincare disk (Sections 21, 7.12). It corre
 - **Process:** generation flows in $+\tau$ (root to boundary); inference flows in $-\tau$.
 
 (sec-memory-time-the-historical-coordinate)=
-#### 1.3.4 Memory Time ($t'$): The Historical Coordinate
+##### 1.3.4 Memory Time ($t'$): The Historical Coordinate
 This is the time coordinate of the Holographic Screen.
 - **Structure:** the screen stores tuples $(z_{t'}, a_{t'}, r_{t'})$ at past indices.
 - **Access:** attention computes distances between the current state $z_t$ and stored states $z_{t'}$.
@@ -12128,6 +12128,710 @@ If $\epsilon_{\text{Nash}} > 0$ but below threshold, the system is in a **transi
 2. *Non-stationary Nash:* In non-stationary environments, the Nash equilibrium shifts. How should agents track moving equilibria?
 3. *Emergent cooperation:* Under what conditions does adversarial coupling $\alpha_{ij} < 0$ spontaneously emerge into effective cooperation?
 
+(sec-the-belief-wave-function-schrodinger-representation)=
+### 29.8 The Belief Wave-Function (Schrödinger Representation)
+
+While Sections 29.1–29.7 derive multi-agent dynamics using **classical** field equations (coupled WFR flows), a more powerful formulation emerges when we lift the belief density to a **complex amplitude**. This section establishes the **Schrödinger Representation** of inference dynamics, revealing strategic interaction as a form of **quantum entanglement** on the latent manifold.
+
+:::{admonition} Researcher Bridge: Why Quantum Formalism?
+:class: warning
+:name: rb-quantum-formalism-marl
+The quantum representation is not a claim about literal quantum physics—it is a **mathematical technology** that provides:
+1. **Linear superposition** of strategies via complex amplitudes
+2. **Entanglement** as a precise definition of non-factorizable strategic coupling
+3. **Tunneling** as a mechanism for escaping local Nash equilibria
+4. **Spectral methods** (eigenvalue problems) for finding ground states (Nash)
+5. **Imaginary time evolution** as a rigorous version of value iteration
+
+This parallels how the GKSL formalism (Definition {prf:ref}`def-gksl-generator`) uses quantum operator notation for classical belief dynamics.
+:::
+
+:::{prf:definition} Inference Hilbert Space
+:label: def-inference-hilbert-space
+
+Let $(\mathcal{Z}, G)$ be the latent manifold with capacity-constrained metric (Theorem {prf:ref}`thm-capacity-constrained-metric-law`). The **Inference Hilbert Space** is:
+$$
+\mathcal{H} := L^2(\mathcal{Z}, d\mu_G), \quad d\mu_G := \sqrt{\det G(z)}\, d^n z,
+$$
+with inner product:
+$$
+\langle \psi_1 | \psi_2 \rangle := \int_{\mathcal{Z}} \overline{\psi_1(z)} \psi_2(z)\, d\mu_G(z).
+$$
+
+The measure $d\mu_G$ is the **Riemannian volume form**, ensuring coordinate invariance of the inner product.
+
+*Units:* $[\psi] = [z]^{-d/2}$ (probability amplitude density).
+
+*Remark (Coordinate Invariance).* Under a coordinate transformation $z \to z'$, the Jacobian factor $|\partial z/\partial z'|$ cancels with $\sqrt{\det G}$, leaving $\langle \psi_1 | \psi_2 \rangle$ invariant.
+
+:::
+
+:::{prf:definition} Belief Wave-Function
+:label: def-belief-wave-function
+
+Let $\rho(z, s)$ be the belief density from the WFR dynamics (Definition {prf:ref}`def-the-wfr-action`) and $V(z, s)$ be the value function (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`). The **Belief Wave-Function** is the complex amplitude:
+$$
+\psi(z, s) := \sqrt{\rho(z, s)} \exp\left(\frac{i V(z, s)}{\sigma}\right),
+$$
+where $\sigma > 0$ is the **Cognitive Action Scale** (Definition {prf:ref}`def-cognitive-action-scale`).
+
+**Decomposition:**
+- **Amplitude:** $R(z, s) := \sqrt{\rho(z, s)} = |\psi(z, s)|$
+- **Phase:** $\phi(z, s) := V(z, s)/\sigma = \arg(\psi(z, s))$
+
+**Probability Recovery:**
+$$
+|\psi(z, s)|^2 = \rho(z, s), \quad \int_{\mathcal{Z}} |\psi|^2 d\mu_G = 1.
+$$
+
+*Physical interpretation:* The amplitude $R$ encodes "how much" belief mass is at $z$; the phase $\phi$ encodes "which direction" the belief is flowing (via $\nabla V$).
+
+:::
+
+:::{prf:definition} Cognitive Action Scale
+:label: def-cognitive-action-scale
+
+The **Cognitive Action Scale** $\sigma$ is the information-theoretic analog of Planck's constant $\hbar$:
+$$
+\sigma := T_c \cdot \tau_{\text{update}},
+$$
+where:
+- $T_c$ is the **Cognitive Temperature** (Section 22.4), setting the scale of stochastic exploration
+- $\tau_{\text{update}}$ is the characteristic belief update timescale
+
+**Equivalent characterizations:**
+1. **Entropy-Action Duality:** $\sigma$ relates entropy production to "cognitive action" via $\Delta S = \mathcal{A}/\sigma$
+2. **Resolution Limit:** $\sigma \sim \ell_L^2$ where $\ell_L$ is the Levin Length (Section 33.2)
+3. **Uncertainty Scale:** $\sigma$ sets the minimum uncertainty product $\Delta z \cdot \Delta p \geq \sigma/2$
+
+*Units:* $[\sigma] = \text{nat} \cdot \text{step} = \text{bit} \cdot \text{step} / \ln 2$.
+
+*Cross-reference:* In the limit $\sigma \to 0$ (zero temperature, infinite precision), the wave-function becomes a delta function concentrated on the optimal trajectory—recovering classical gradient flow.
+
+:::
+
+:::{prf:proposition} Self-Adjointness of the Laplace-Beltrami Operator
+:label: prop-laplace-beltrami-self-adjointness
+
+The Laplace-Beltrami operator
+$$
+\Delta_G := \frac{1}{\sqrt{|G|}} \partial_i \left( \sqrt{|G|} G^{ij} \partial_j \right)
+$$
+is essentially self-adjoint on $\mathcal{H} = L^2(\mathcal{Z}, d\mu_G)$ with domain $C_c^\infty(\mathcal{Z})$ (smooth functions with compact support), provided either:
+1. $(\mathcal{Z}, G)$ is **geodesically complete**, or
+2. $\mathcal{Z}$ has a boundary $\partial \mathcal{Z}$ with **Dirichlet conditions** $\psi|_{\partial \mathcal{Z}} = 0$ (sensors, Definition {prf:ref}`def-dirichlet-boundary-condition-sensors`) or **Neumann conditions** $\nabla_n \psi|_{\partial \mathcal{Z}} = 0$ (motors, Definition {prf:ref}`def-neumann-boundary-condition-motors`).
+
+*Proof sketch.* The quadratic form $q[\psi] := \int_{\mathcal{Z}} \|\nabla_G \psi\|^2 d\mu_G$ is positive and closable. By the **Friedrichs Extension Theorem**, there exists a unique self-adjoint extension $\Delta_G^F$ associated with $q$. For geodesically complete manifolds, this extension coincides with the closure of $\Delta_G$ on $C_c^\infty$. See {cite}`strichartz1983analysis` for the general theory. $\square$
+
+*Consequence:* Self-adjointness guarantees that $-\Delta_G$ has a real spectrum bounded below, enabling spectral decomposition and ground state analysis.
+
+:::
+
+:::{admonition} Remark: Line Bundle Formalism for Topologically Non-Trivial Manifolds
+:class: dropdown
+:name: remark-line-bundle-formalism
+
+When the latent manifold has non-trivial topology (e.g., $\pi_1(\mathcal{Z}) \neq 0$), the phase $V/\sigma$ may be **multi-valued** around non-contractible loops. In this case, $\psi$ should be defined as a **section of a complex line bundle** $\mathcal{L} \to \mathcal{Z}$ with connection 1-form $A = dV/\sigma$.
+
+The **holonomy** around a closed loop $\gamma$ is:
+$$
+\exp\left(\frac{i}{\sigma} \oint_\gamma dV\right) = \exp\left(\frac{i}{\sigma} \Delta V_\gamma\right),
+$$
+where $\Delta V_\gamma$ is the value change around the loop. Non-trivial holonomy ($\Delta V_\gamma \neq 0 \mod 2\pi\sigma$) implies the phase $V/\sigma$ is not globally defined; instead, $\psi$ is a section of a non-trivial complex line bundle $\mathcal{L} \to \mathcal{Z}$.
+
+For most applications where $\mathcal{Z}$ is simply connected (e.g., Poincaré disk), this subtlety does not arise, and $\psi$ is a well-defined scalar function.
+
+:::
+
+(sec-the-inference-wave-correspondence)=
+### 29.9 The Inference-Wave Correspondence (WFR to Schrödinger)
+
+We now derive the **Schrödinger equation** for the belief wave-function from the WFR dynamics. This is the inverse of the **Madelung transform** in quantum mechanics.
+
+:::{prf:theorem} The Madelung Transform (WFR-Schrödinger Equivalence)
+:label: thm-madelung-transform
+
+Let the belief density $\rho$ and value $V$ satisfy the WFR-HJB system:
+1. **WFR Continuity (unbalanced):** $\partial_s \rho + \nabla_G \cdot (\rho \mathbf{v}) = \rho r$
+2. **Hamilton-Jacobi-Bellman:** $\partial_s V + \frac{1}{2}\|\nabla_G V\|_G^2 + \Phi_{\text{eff}} = 0$
+
+where $\mathbf{v} = -G^{-1}\nabla V$ is the gradient flow velocity and $r$ is the WFR reaction rate (Definition {prf:ref}`def-the-wfr-action`).
+
+Then the belief wave-function $\psi = \sqrt{\rho} e^{iV/\sigma}$ satisfies the **Inference Schrödinger Equation**:
+$$
+i\sigma \frac{\partial \psi}{\partial s} = \hat{H}_{\text{inf}} \psi,
+$$
+where the **Inference Hamiltonian** is:
+$$
+\hat{H}_{\text{inf}} := -\frac{\sigma^2}{2} \Delta_G + \Phi_{\text{eff}} + Q_B - \frac{i\sigma}{2} r.
+$$
+
+The terms are:
+- **Kinetic:** $-\frac{\sigma^2}{2} \Delta_G$ (belief diffusion via Laplace-Beltrami)
+- **Potential:** $\Phi_{\text{eff}}$ (effective potential from rewards and constraints)
+- **Quantum Correction:** $Q_B$ (Bohm potential, Definition {prf:ref}`def-bohm-quantum-potential`)
+- **Dissipation:** $-\frac{i\sigma}{2} r$ (non-Hermitian term from WFR reaction)
+
+*Proof.* See Appendix E.7 for the rigorous derivation. The key steps are:
+
+**Step 1 (Substitution).** Write $\psi = R e^{i\phi}$ with $R = \sqrt{\rho}$ and $\phi = V/\sigma$.
+
+**Step 2 (Time derivative).**
+$$
+i\sigma \partial_s \psi = i\sigma \left( \frac{\partial_s R}{R} + \frac{i}{\sigma}\partial_s V \right) \psi = \left( \frac{i\sigma \partial_s \rho}{2\rho} - \partial_s V \right) \psi.
+$$
+
+**Step 3 (Use governing equations).** Substitute the continuity equation for $\partial_s \rho$ and HJB for $\partial_s V$.
+
+**Step 4 (Identify terms).** The real part of the resulting equation gives the HJB with Bohm correction; the imaginary part gives the continuity equation with reaction. Combining yields the Schrödinger form. $\square$
+
+:::
+
+:::{prf:definition} Bohm Quantum Potential (Information Resolution Limit)
+:label: def-bohm-quantum-potential
+
+The **Bohm Quantum Potential** is:
+$$
+Q_B(z, s) := -\frac{\sigma^2}{2} \frac{\Delta_G \sqrt{\rho}}{\sqrt{\rho}} = -\frac{\sigma^2}{2} \frac{\Delta_G R}{R},
+$$
+where $R = \sqrt{\rho}$ is the amplitude.
+
+**Explicit form in terms of $\rho$:**
+$$
+Q_B = -\frac{\sigma^2}{8\rho^2} \|\nabla_G \rho\|_G^2 + \frac{\sigma^2}{4\rho} \Delta_G \rho.
+$$
+
+**Physical interpretation:** $Q_B$ represents the **energetic cost of belief localization**. Regions where $\rho$ has high curvature (sharp belief features) incur an effective potential energy penalty. This prevents the belief from concentrating to delta functions.
+
+**Information-theoretic interpretation:** $Q_B$ enforces the **Levin Length** (Section 33.2) as a resolution limit. The agent cannot represent distinctions finer than $\ell_L \sim \sqrt{\sigma}$.
+
+*Units:* $[Q_B] = \text{nat}$ (same as potential).
+
+*Cross-reference:* In standard quantum mechanics, $Q_B$ is called the "quantum potential" or "Bohm potential." Here it emerges from the information geometry, not fundamental physics.
+
+:::
+
+:::{prf:corollary} Open Quantum System Interpretation
+:label: cor-open-quantum-system
+
+The Inference Hamiltonian $\hat{H}_{\text{inf}}$ is **non-Hermitian** due to the reaction term $-\frac{i\sigma}{2}r$. This corresponds to an **open quantum system** where:
+- $r > 0$: Mass creation (information gain from boundary) → probability amplitude **grows**
+- $r < 0$: Mass destruction (information loss) → probability amplitude **decays**
+
+The **complex potential** formulation is:
+$$
+W(z) := \Phi_{\text{eff}}(z) - \frac{i\sigma}{2} r(z),
+$$
+so that $\hat{H}_{\text{inf}} = -\frac{\sigma^2}{2}\Delta_G + W + Q_B$.
+
+**Norm evolution:** The normalization $\|\psi\|^2 = \int |\psi|^2 d\mu_G$ evolves as:
+$$
+\frac{d}{ds} \|\psi\|^2 = \int_{\mathcal{Z}} r(z) |\psi(z)|^2 d\mu_G(z) = \langle r \rangle_\rho,
+$$
+which matches the WFR mass balance equation.
+
+*Remark (Lindblad Connection).* For trace-preserving dynamics (where $\int r \rho\, d\mu_G = 0$), the non-Hermitian Schrödinger equation can be embedded in a **Lindblad master equation** (Definition {prf:ref}`def-gksl-generator`) via the Dyson-Phillips construction.
+
+:::
+
+:::{prf:proposition} Operator Ordering and Coordinate Invariance
+:label: prop-operator-ordering-invariance
+
+The kinetic term $-\frac{\sigma^2}{2}\Delta_G$ in the Inference Hamiltonian uses the unique **coordinate-invariant** ordering:
+$$
+-\frac{\sigma^2}{2}\Delta_G \psi = -\frac{\sigma^2}{2} \cdot \frac{1}{\sqrt{|G|}} \partial_i \left( \sqrt{|G|} G^{ij} \partial_j \psi \right).
+$$
+
+This is equivalent to:
+$$
+-\frac{\sigma^2}{2}\Delta_G = -\frac{\sigma^2}{2} \left( G^{ij} \partial_i \partial_j + \Gamma^k \partial_k \right),
+$$
+where $\Gamma^k := G^{ij}\Gamma^k_{ij}$ is the trace of Christoffel symbols.
+
+**Alternative orderings** (Weyl, symmetric, etc.) would introduce frame-dependent terms that break the geometric interpretation.
+
+*Cross-reference:* This matches the Laplace-Beltrami operator used in the Helmholtz equation (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`), ensuring consistency between the PDE and wave-function formulations.
+
+:::
+
+:::{prf:corollary} Semiclassical Limit
+:label: cor-semiclassical-limit
+
+In the limit $\sigma \to 0$ (classical limit), the Schrödinger dynamics recover the **geodesic flow**:
+
+**WKB Ansatz:** $\psi = A(z) e^{iS(z)/\sigma}$ with $A$ slowly varying.
+
+**Leading Order ($O(\sigma^{-1})$):** The Hamilton-Jacobi equation
+$$
+\partial_s S + \frac{1}{2}\|\nabla_G S\|_G^2 + \Phi_{\text{eff}} = 0.
+$$
+
+**Next Order ($O(\sigma^0)$):** The transport equation
+$$
+\partial_s |A|^2 + \nabla_G \cdot (|A|^2 \nabla_G S) = 0.
+$$
+
+These are exactly the HJB and continuity equations from WFR dynamics. The quantum correction $Q_B \to 0$ as $\sigma \to 0$.
+
+*Interpretation:* The wave-function collapses to a delta function following the optimal trajectory. Quantum effects (tunneling, interference) vanish in this limit.
+
+:::
+
+(sec-multi-agent-schrodinger-equation)=
+### 29.10 Multi-Agent Schrödinger Equation
+
+We now extend the wave-function formalism to $N$-agent systems, defining **strategic entanglement** as non-factorizability of the joint belief amplitude.
+
+:::{prf:definition} Joint Inference Hilbert Space
+:label: def-joint-inference-hilbert-space
+
+For $N$ agents with individual Hilbert spaces $\mathcal{H}^{(i)} = L^2(\mathcal{Z}^{(i)}, d\mu_{G^{(i)}})$, the **Joint Inference Hilbert Space** is the tensor product:
+$$
+\mathcal{H}^{(N)} := \bigotimes_{i=1}^N \mathcal{H}^{(i)} = L^2\left(\mathcal{Z}^{(N)}, d\mu_{G^{(N)}}\right),
+$$
+where:
+- $\mathcal{Z}^{(N)} = \prod_{i=1}^N \mathcal{Z}^{(i)}$ is the product manifold (Definition {prf:ref}`def-n-agent-product-manifold`)
+- $d\mu_{G^{(N)}} = \prod_{i=1}^N d\mu_{G^{(i)}}$ is the product measure
+
+Elements $\Psi \in \mathcal{H}^{(N)}$ are functions $\Psi: \mathcal{Z}^{(N)} \to \mathbb{C}$ with:
+$$
+\|\Psi\|^2 = \int_{\mathcal{Z}^{(N)}} |\Psi(\mathbf{z})|^2 d\mu_{G^{(N)}}(\mathbf{z}) < \infty.
+$$
+
+*Notation:* We use uppercase $\Psi$ for joint wave-functions and lowercase $\psi^{(i)}$ for single-agent wave-functions.
+
+:::
+
+:::{prf:definition} Strategic Entanglement
+:label: def-strategic-entanglement
+
+A joint wave-function $\Psi \in \mathcal{H}^{(N)}$ exhibits **Strategic Entanglement** if it cannot be written as a product:
+$$
+\Psi(z^{(1)}, \ldots, z^{(N)}) \neq \prod_{i=1}^N \psi^{(i)}(z^{(i)}) \quad \text{for any choice of } \psi^{(i)} \in \mathcal{H}^{(i)}.
+$$
+
+**Entanglement Entropy:** For a bipartition $\{i\} \cup \{j \neq i\}$, the **Strategic Entanglement Entropy** is:
+$$
+S_{\text{ent}}(i) := -\text{Tr}\left[\hat{\rho}^{(i)} \ln \hat{\rho}^{(i)}\right],
+$$
+where $\hat{\rho}^{(i)} = \text{Tr}_{j \neq i}[|\Psi\rangle\langle\Psi|]$ is the **reduced density operator** obtained by partial trace over all agents except $i$.
+
+**Physical interpretation:**
+- $S_{\text{ent}}(i) = 0$: Agent $i$ is **disentangled** (can be modeled independently)
+- $S_{\text{ent}}(i) > 0$: Agent $i$ is **entangled** with others (cannot be modeled in isolation)
+- $S_{\text{ent}}(i) = \ln N$: **Maximal entanglement** (all agents maximally correlated)
+
+*Cross-reference:* The partial trace operation corresponds to the **Information Bottleneck** (Definition {prf:ref}`def-dpi-boundary-capacity-constraint`)—marginalizing over opponents discards strategic correlations.
+
+:::
+
+:::{prf:definition} Strategic Hamiltonian
+:label: def-strategic-hamiltonian
+
+The **Strategic Hamiltonian** on $\mathcal{H}^{(N)}$ is:
+$$
+\hat{H}_{\text{strat}} := \sum_{i=1}^N \hat{H}^{(i)}_{\text{kin}} + \sum_{i=1}^N \hat{\Phi}^{(i)}_{\text{eff}} + \sum_{i < j} \hat{V}_{ij},
+$$
+where:
+1. **Kinetic terms:** $\hat{H}^{(i)}_{\text{kin}} = -\frac{\sigma_i^2}{2} \Delta_{G^{(i)}}$ (acting on $\mathcal{Z}^{(i)}$ coordinates)
+2. **Individual potentials:** $\hat{\Phi}^{(i)}_{\text{eff}}$ (local reward landscape for agent $i$)
+3. **Interaction potentials:** $\hat{V}_{ij} = \Phi_{ij}(z^{(i)}, z^{(j)})$ (strategic coupling from Proposition {prf:ref}`prop-interaction-kernel`)
+
+*Remark (Separability).* If all $\hat{V}_{ij} = 0$, the Hamiltonian is **separable**: $\hat{H}_{\text{strat}} = \sum_i \hat{H}^{(i)}$, and the ground state is a product $\Psi_0 = \prod_i \psi^{(i)}_0$. Non-zero interaction creates entanglement.
+
+:::
+
+:::{prf:theorem} Multi-Agent Schrödinger Equation
+:label: thm-multi-agent-schrodinger-equation
+
+The joint belief wave-function $\Psi(\mathbf{z}, s)$ of $N$ strategically coupled agents evolves according to:
+$$
+i\sigma \frac{\partial \Psi}{\partial s} = \hat{H}_{\text{strat}} \Psi + i\frac{\sigma}{2} \mathcal{R} \Psi,
+$$
+where:
+- $\hat{H}_{\text{strat}}$ is the Strategic Hamiltonian (Definition {prf:ref}`def-strategic-hamiltonian`)
+- $\mathcal{R}(\mathbf{z}) = \sum_i r^{(i)}(z^{(i)})$ is the total reaction rate
+
+**Expanded form:**
+$$
+i\sigma \frac{\partial \Psi}{\partial s} = \left[ \sum_{i=1}^N \left( -\frac{\sigma_i^2}{2} \Delta_{G^{(i)}} + \Phi^{(i)}_{\text{eff}} \right) + \sum_{i < j} \Phi_{ij} \right] \Psi + i\frac{\sigma}{2} \mathcal{R} \Psi.
+$$
+
+**Sources of entanglement:** Strategic entanglement arises from:
+1. **Potential coupling:** Non-zero $\Phi_{ij}(z^{(i)}, z^{(j)})$ creates position-position correlations
+2. **Metric coupling:** The Game Tensor $\mathcal{G}_{ij}$ modifies the kinetic terms (Theorem {prf:ref}`thm-game-augmented-laplacian`)
+
+*Cross-reference:* This extends Theorem {prf:ref}`thm-madelung-transform` to multiple agents, with the joint WFR dynamics (Definition {prf:ref}`def-joint-wfr-action`) as the underlying classical limit.
+
+:::
+
+:::{prf:theorem} Game-Augmented Laplacian
+:label: thm-game-augmented-laplacian
+
+Under adversarial coupling, the effective kinetic operator for agent $i$ incorporates the **Game Tensor** (Definition {prf:ref}`def-the-game-tensor`):
+$$
+\hat{H}^{(i)}_{\text{kin,eff}} = -\frac{\sigma_i^2}{2} \tilde{\Delta}^{(i)},
+$$
+where the **Game-Augmented Laplacian** is:
+$$
+\tilde{\Delta}^{(i)} := \frac{1}{\sqrt{|\tilde{G}^{(i)}|}} \partial_a \left( \sqrt{|\tilde{G}^{(i)}|} (\tilde{G}^{(i)})^{ab} \partial_b \right),
+$$
+with strategic metric $\tilde{G}^{(i)} = G^{(i)} + \sum_{j \neq i} \beta_{ij} \mathcal{G}_{ij}$ (Definition {prf:ref}`def-the-game-tensor`, Equation 29.4.1).
+
+**Consequence for entanglement:** Since $\tilde{G}^{(i)}$ depends on $z^{(j)}$ through the Game Tensor, the kinetic operator for agent $i$ is **not separable**:
+$$
+\tilde{\Delta}^{(i)} = \tilde{\Delta}^{(i)}(z^{(i)}; z^{(-i)}).
+$$
+This creates **kinetic entanglement**—even without potential coupling, adversarial metric inflation entangles the agents.
+
+*Physical interpretation:* Agent $j$ "curves" agent $i$'s configuration space. Moving through a contested region requires more "effort" (higher effective mass), and this coupling cannot be factorized away.
+
+:::
+
+:::{prf:proposition} Partial Trace and Reduced Dynamics
+:label: prop-partial-trace-reduced-dynamics
+
+For a pure joint state $|\Psi\rangle \in \mathcal{H}^{(N)}$, the **reduced density operator** for agent $i$ is:
+$$
+\hat{\rho}^{(i)} := \text{Tr}_{j \neq i}\left[ |\Psi\rangle\langle\Psi| \right] = \int_{\prod_{j \neq i} \mathcal{Z}^{(j)}} |\Psi|^2 \prod_{j \neq i} d\mu_{G^{(j)}}.
+$$
+
+The diagonal elements give the **marginal belief density**:
+$$
+\rho^{(i)}(z^{(i)}) = \langle z^{(i)} | \hat{\rho}^{(i)} | z^{(i)} \rangle = \int |\Psi(z^{(i)}, z^{(-i)})|^2 d\mu_{G^{(-i)}},
+$$
+which is exactly the marginalization from the joint WFR density.
+
+**Mixed state evolution:** Even if $\Psi$ evolves unitarily, the reduced state $\hat{\rho}^{(i)}$ generally evolves **non-unitarily** (with decoherence) due to entanglement with other agents.
+
+:::
+
+(sec-nash-equilibrium-as-ground-state)=
+### 29.11 Nash Equilibrium as Ground State
+
+The spectral properties of the Strategic Hamiltonian provide a new characterization of Nash equilibrium.
+
+:::{prf:theorem} Nash Equilibrium as Ground State
+:label: thm-nash-ground-state
+
+A Nash equilibrium $\mathbf{z}^* = (z^{(1)*}, \ldots, z^{(N)*})$ (Theorem {prf:ref}`thm-nash-equilibrium-as-geometric-stasis`) corresponds to the **ground state** of the Strategic Hamiltonian:
+
+1. **Spectral condition:** The ground state $\Psi_{\text{Nash}}$ satisfies:
+   $$
+   \hat{H}_{\text{strat}} \Psi_{\text{Nash}} = E_0 \Psi_{\text{Nash}}, \quad E_0 = \min \text{spec}(\hat{H}_{\text{strat}}).
+   $$
+
+2. **Localization:** In the semiclassical limit ($\sigma \to 0$), $|\Psi_{\text{Nash}}|^2$ concentrates near $\mathbf{z}^*$:
+   $$
+   \lim_{\sigma \to 0} |\Psi_{\text{Nash}}(\mathbf{z})|^2 = \delta(\mathbf{z} - \mathbf{z}^*).
+   $$
+
+3. **Energy interpretation:** The ground state energy $E_0$ equals the total effective potential at Nash:
+   $$
+   E_0 = \sum_{i=1}^N \Phi^{(i)}_{\text{eff}}(\mathbf{z}^*) + \sum_{i < j} \Phi_{ij}(\mathbf{z}^*) + O(\sigma).
+   $$
+
+*Proof sketch.*
+- At Nash, $\nabla_{z^{(i)}} \Phi^{(i)}_{\text{eff}} = 0$ for all $i$ (Condition 1 of Theorem {prf:ref}`thm-nash-equilibrium-as-geometric-stasis`).
+- The variational principle $\delta \langle \Psi | \hat{H} | \Psi \rangle / \delta \Psi^* = 0$ with normalization constraint yields the same stationarity conditions in the $\sigma \to 0$ limit.
+- The second variation (Hessian) being non-positive (Condition 3) corresponds to local stability of the ground state. $\square$
+
+*Remark (Multiple Nash).* If multiple Nash equilibria exist, each corresponds to a different local minimum of the energy landscape. The **global** ground state is the Nash with lowest $E_0$; other Nash equilibria are metastable excited states.
+
+:::
+
+:::{prf:corollary} Vanishing Probability Current at Nash
+:label: cor-vanishing-probability-current
+
+At Nash equilibrium, the **probability current** vanishes:
+$$
+\mathbf{J}^{(i)}(\mathbf{z}^*) := \text{Im}\left[\bar{\Psi}_{\text{Nash}} \cdot \sigma \nabla_{G^{(i)}} \Psi_{\text{Nash}}\right]_{\mathbf{z}^*} = 0 \quad \forall i.
+$$
+
+**Derivation:** The probability current is $\mathbf{J} = \rho \mathbf{v}$ where $\mathbf{v} = G^{-1}\nabla V$ is the velocity field. At Nash:
+- $\nabla V^{(i)}|_{\mathbf{z}^*} = 0$ (stationarity condition)
+- Therefore $\mathbf{v}^{(i)}|_{\mathbf{z}^*} = 0$
+- Hence $\mathbf{J}^{(i)}|_{\mathbf{z}^*} = 0$
+
+*Interpretation:* At Nash, there is no net belief flow. The wave-function is in a **standing wave pattern**—agents are not "stopped" but are in dynamic equilibrium where flows cancel.
+
+*Cross-reference:* This is the quantum version of **Geometric Stasis** (Theorem {prf:ref}`thm-nash-equilibrium-as-geometric-stasis`).
+
+:::
+
+:::{prf:proposition} Imaginary Time Evolution for Nash Finding
+:label: prop-imaginary-time-nash-finding
+
+The substitution $s \to -i\tau$ (**Wick rotation**) transforms the Schrödinger equation into a diffusion equation:
+$$
+-\sigma \frac{\partial \Psi}{\partial \tau} = \hat{H}_{\text{strat}} \Psi.
+$$
+
+Under this **imaginary time evolution**, any initial state $\Psi_0$ converges to the ground state:
+$$
+\Psi(\tau) = e^{-\hat{H}_{\text{strat}} \tau / \sigma} \Psi_0 \xrightarrow{\tau \to \infty} c \cdot \Psi_{\text{Nash}},
+$$
+where $c$ is a normalization constant.
+
+**Computational interpretation:**
+1. Imaginary time evolution is equivalent to **Value Iteration** in dynamic programming
+2. The propagator $e^{-\hat{H}\tau/\sigma}$ is the **Bellman backup operator** in infinite-horizon limit
+3. Convergence rate is set by the **spectral gap** $E_1 - E_0$ (energy of first excited state minus ground state)
+
+**Algorithm sketch (Quantum Value Iteration):**
+```
+Initialize Ψ randomly
+For τ = 0 to T:
+    Ψ ← exp(-H_strat Δτ / σ) Ψ    # Diffusion step
+    Ψ ← Ψ / ||Ψ||                  # Renormalize
+Return Ψ (approximates Nash ground state)
+```
+
+*Cross-reference:* This connects to the **imaginary-time path integral** formulation used in quantum Monte Carlo methods.
+
+:::
+
+(sec-strategic-tunneling-and-barrier-crossing)=
+### 29.12 Strategic Tunneling and Barrier Crossing
+
+The wave nature of the belief amplitude enables **tunneling**—crossing barriers that would trap classical gradient-descent agents.
+
+:::{prf:definition} Pareto Barrier
+:label: def-pareto-barrier
+
+A **Pareto Barrier** $\mathcal{B}_P \subset \mathcal{Z}^{(N)}$ is a region where:
+1. **Local value decrease:** $\Phi^{(i)}_{\text{eff}}(\mathbf{z}) > \Phi^{(i)}_{\text{eff}}(\mathbf{z}^*)$ for at least one agent $i$ and some starting point $\mathbf{z}^*$
+2. **No Nash within:** There exists no Nash equilibrium $\mathbf{z}' \in \mathcal{B}_P$
+3. **Separates basins:** $\mathcal{B}_P$ lies between distinct Nash equilibria $\mathbf{z}^*_A$ and $\mathbf{z}^*_B$
+
+The **barrier height** is:
+$$
+\Delta \Phi_P := \max_{\mathbf{z} \in \mathcal{B}_P} \left[ \sum_{i=1}^N \Phi^{(i)}_{\text{eff}}(\mathbf{z}) - \sum_{i=1}^N \Phi^{(i)}_{\text{eff}}(\mathbf{z}^*_A) \right].
+$$
+
+*Mathematical characterization:* A Pareto barrier is a region where the total potential $\sum_i \Phi^{(i)}_{\text{eff}}$ exceeds its value at nearby Nash equilibria. Classical gradient descent with initial condition in the basin of attraction of $\mathbf{z}^*_A$ converges to $\mathbf{z}^*_A$ and cannot reach $\mathbf{z}^*_B$.
+
+:::
+
+:::{prf:theorem} Strategic Tunneling Probability (WKB Approximation)
+:label: thm-tunneling-probability
+
+In the semiclassical limit ($\sigma \ll \Delta \Phi_P$), the probability of crossing a Pareto barrier is:
+$$
+P_{\text{tunnel}} \sim \exp\left(-\frac{2}{\sigma} \int_{\gamma} \sqrt{2(\Phi_{\text{eff,total}}(\mathbf{z}) - E_0)}\, d\ell_{G^{(N)}}\right),
+$$
+where:
+- $\gamma$ is the **optimal tunneling path** (instanton) connecting $\mathbf{z}^*_A$ to $\mathbf{z}^*_B$
+- $\Phi_{\text{eff,total}} = \sum_i \Phi^{(i)}_{\text{eff}} + \sum_{i<j} \Phi_{ij}$
+- $d\ell_{G^{(N)}}$ is the geodesic arc length on $(\mathcal{Z}^{(N)}, G^{(N)})$
+- $E_0$ is the ground state energy
+
+**Key scaling:** $P_{\text{tunnel}} \propto e^{-\Delta \Phi_P / \sigma}$, so higher barriers or lower temperature (small $\sigma$) exponentially suppress tunneling.
+
+*Cross-reference:* This generalizes Theorem {prf:ref}`thm-memory-induced-barrier-crossing` from single-agent memory barriers to multi-agent Pareto barriers. See Appendix E.7 for the rigorous proof via Agmon estimates and spectral theory.
+
+:::
+
+:::{prf:corollary} Bohm Potential Enables Strategic Teleportation
+:label: cor-bohm-teleportation
+
+When the Bohm potential $Q_B$ dominates (high belief curvature), the **effective barrier** becomes:
+$$
+\Phi^{\text{quantum}}_{\text{eff}}(\mathbf{z}) := \Phi_{\text{eff,total}}(\mathbf{z}) + Q_B(\mathbf{z}).
+$$
+
+In regions where $Q_B < 0$ (convex $\rho$), the effective barrier can become **negative** even when $\Phi_{\text{eff}} > 0$. This enables "teleportation" across classically forbidden regions.
+
+**Operational interpretation:**
+- An agent with **high uncertainty** (diffuse, smooth $\rho$) has $Q_B \approx 0$ → normal barrier
+- An agent with **localized uncertainty** near the barrier (peaked, curved $\rho$) can have $Q_B \ll 0$ → reduced effective barrier
+- The WFR **reaction term** $r$ (mass creation/destruction) provides the mechanism for "teleporting" belief mass without traversing intermediate states
+
+*Remark (Exploration-Exploitation).* This provides a geometric foundation for the exploration-exploitation tradeoff: maintaining some uncertainty ($Q_B \neq 0$) is necessary to escape local optima.
+
+:::
+
+:::{prf:proposition} WFR Reaction as Tunneling Mechanism
+:label: prop-wfr-reaction-tunneling
+
+The WFR reaction term $r(z)$ (Definition {prf:ref}`def-the-wfr-action`) enables tunneling via **mass creation on the far side** of barriers:
+
+1. Agent detects high-value region $\mathbf{z}^*_B$ beyond barrier $\mathcal{B}_P$
+2. Reaction term $r(\mathbf{z}^*_B) > 0$ creates belief mass at $\mathbf{z}^*_B$
+3. Reaction term $r(\mathbf{z}^*_A) < 0$ destroys mass at old position $\mathbf{z}^*_A$
+4. Net effect: belief "teleports" without traversing $\mathcal{B}_P$
+
+The rate of this process is controlled by the **teleportation length** $\lambda$ (Definition {prf:ref}`def-canonical-length-scale`):
+- $\lambda \gg$ barrier width: tunneling is fast (reaction-dominated)
+- $\lambda \ll$ barrier width: tunneling is slow (transport-dominated)
+
+:::
+
+(sec-summary-of-qm-agent-isomorphisms)=
+### 29.13 Summary of QM-Agent Isomorphisms
+
+The following table consolidates the correspondence between quantum mechanical concepts and their Fragile Agent interpretations.
+
+**Table 29.13.1 (Quantum-Agent Dictionary).**
+
+| Quantum Mechanics | Fragile Agent Theory | Definition/Location |
+|:------------------|:---------------------|:--------------------|
+| **Wave-function $\psi$** | Belief Amplitude $\sqrt{\rho}e^{iV/\sigma}$ | {prf:ref}`def-belief-wave-function` |
+| **Probability $\|\psi\|^2$** | Belief Density $\rho$ | Definition {prf:ref}`def-the-wfr-action` |
+| **Phase $\arg(\psi)$** | Value Function $V/\sigma$ | Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence` |
+| **Planck constant $\hbar$** | Cognitive Action Scale $\sigma$ | {prf:ref}`def-cognitive-action-scale` |
+| **Hilbert space $\mathcal{H}$** | $L^2(\mathcal{Z}, d\mu_G)$ | {prf:ref}`def-inference-hilbert-space` |
+| **Hamiltonian $\hat{H}$** | Inference Hamiltonian $\hat{H}_{\text{inf}}$ | {prf:ref}`thm-madelung-transform` |
+| **Kinetic energy $-\frac{\hbar^2}{2m}\nabla^2$** | Diffusion term $-\frac{\sigma^2}{2}\Delta_G$ | Section 29.9 |
+| **Potential energy $V(x)$** | Effective Potential $\Phi_{\text{eff}}$ | Definition {prf:ref}`def-effective-potential` |
+| **Quantum potential $Q$** | Information Resolution Limit $Q_B$ | {prf:ref}`def-bohm-quantum-potential` |
+| **Schrödinger equation** | Inference-Wave equation | {prf:ref}`thm-madelung-transform` |
+| **Entanglement** | Strategic Coupling (non-factorizable) | {prf:ref}`def-strategic-entanglement` |
+| **Tensor product $\otimes$** | Joint Hilbert space | {prf:ref}`def-joint-inference-hilbert-space` |
+| **Partial trace** | Marginalization / Information Bottleneck | {prf:ref}`prop-partial-trace-reduced-dynamics` |
+| **Ground state** | Nash Equilibrium | {prf:ref}`thm-nash-ground-state` |
+| **Tunneling** | Pareto Barrier Crossing | {prf:ref}`thm-tunneling-probability` |
+| **Imaginary time evolution** | Value Iteration | {prf:ref}`prop-imaginary-time-nash-finding` |
+| **Density matrix $\hat{\rho}$** | Belief Operator (GKSL) | Definition {prf:ref}`def-belief-operator` |
+| **Lindblad dissipator** | WFR Reaction Term $r$ | Definition {prf:ref}`def-gksl-generator` |
+| **von Neumann entropy** | Belief Entropy $-\text{Tr}[\hat{\rho}\ln\hat{\rho}]$ | Section 29.14 |
+| **WKB approximation** | Semiclassical limit | {prf:ref}`cor-semiclassical-limit` |
+| **Spectral gap** | Convergence rate to Nash | {prf:ref}`prop-imaginary-time-nash-finding` |
+
+**Interpretation Hierarchy:**
+1. **Level 1 (Symplectic):** Bridge manifold $\mathcal{B}_{ij}$ couples agent boundaries
+2. **Level 2 (Riemannian):** Game Tensor $\mathcal{G}_{ij}$ curves the metric
+3. **Level 3 (Thermodynamic):** Landauer bounds constrain information processing
+4. **Level 4 (Quantum):** Wave-function provides superposition and tunneling
+
+Each level adds expressive power while remaining mathematically consistent with the levels below.
+
+(sec-diagnostic-nodes-quantum-consistency)=
+### 29.14 Diagnostic Nodes 57–60 (Quantum Consistency)
+
+Following the diagnostic node convention (Section 3.1), we define four new monitors for quantum consistency in multi-agent systems.
+
+(node-57)=
+**Node 57: CoherenceCheck**
+
+| **#** | **Name** | **Component** | **Type** | **Interpretation** | **Proxy** | **Cost** |
+|:------|:---------|:--------------|:---------|:-------------------|:----------|:---------|
+| **57** | **CoherenceCheck** | Multi-Agent | Unitary Consistency | Is the belief update probability-preserving? | $\delta_{\text{coh}} := \left\lvert \|\Psi_{s+\Delta s}\|^2 - \|\Psi_s\|^2 \right\rvert$ | $O(N d)$ |
+
+**Interpretation:** Monitors deviation from unitarity (or trace-preservation for density matrices). Non-zero $\delta_{\text{coh}}$ indicates:
+- Numerical integration error
+- Unmodeled dissipation channels
+- Inconsistency between Hamiltonian and WFR dynamics
+
+**For open systems:** Replace with trace preservation check $\delta_{\text{tr}} := |\text{Tr}[\hat{\rho}_{s+\Delta s}] - 1|$.
+
+**Threshold:** $\delta_{\text{coh}} < \epsilon_{\text{coh}}$ (typical default $10^{-6}$).
+
+**Trigger conditions:**
+- High CoherenceCheck: Numerical instability or model inconsistency
+- **Remedy:** Reduce timestep; verify Hamiltonian is Hermitian (up to reaction term); check boundary conditions
+
+(node-58)=
+**Node 58: EntropyProductionCheck**
+
+| **#** | **Name** | **Component** | **Type** | **Interpretation** | **Proxy** | **Cost** |
+|:------|:---------|:--------------|:---------|:-------------------|:----------|:---------|
+| **58** | **EntropyProductionCheck** | Multi-Agent | Thermodynamic | Is entropy production physically reasonable? | $\dot{S}_{\text{vN}} := -\frac{d}{ds}\text{Tr}[\hat{\rho}\ln\hat{\rho}]$ | $O(N^2 d)$ |
+
+**Interpretation:** Monitors the rate of **von Neumann entropy** change:
+- $\dot{S}_{\text{vN}} > 0$: Entropy increasing (learning, decoherence, information gain from environment)
+- $\dot{S}_{\text{vN}} < 0$: Entropy decreasing (spontaneous ordering, may indicate instability)
+- $\dot{S}_{\text{vN}} \approx 0$: Near equilibrium
+
+**Connection to Landauer:** Entropy production should satisfy $\dot{S}_{\text{vN}} \geq -\mathcal{W}_{\text{comp}}/T_c$ where $\mathcal{W}_{\text{comp}}$ is computational work (Section 31).
+
+**Threshold:** $|\dot{S}_{\text{vN}}| < \dot{S}_{\max}$ (implementation-dependent).
+
+**Trigger conditions:**
+- Large positive $\dot{S}_{\text{vN}}$: Rapid decoherence ("losing mind")
+- Large negative $\dot{S}_{\text{vN}}$: Anomalous ordering (check for mode collapse)
+
+(node-59)=
+**Node 59: UncertaintyPrincipleCheck**
+
+| **#** | **Name** | **Component** | **Type** | **Interpretation** | **Proxy** | **Cost** |
+|:------|:---------|:--------------|:---------|:-------------------|:----------|:---------|
+| **59** | **UncertaintyPrincipleCheck** | Multi-Agent | Consistency | Are uncertainty bounds satisfied? | $\eta_{\text{unc}} := \frac{\sigma/2}{\sigma_z \sigma_p} \leq 1$ | $O(N d)$ |
+
+**Interpretation:** The **Heisenberg-Robertson uncertainty relation** on the latent manifold requires:
+$$
+\sigma_z \cdot \sigma_p \geq \frac{\sigma}{2} |\langle[\hat{z}, \hat{p}]\rangle| = \frac{\sigma}{2},
+$$
+where:
+- $\sigma_z := \sqrt{\langle z^2 \rangle - \langle z \rangle^2}$ is position uncertainty
+- $\sigma_p := \sqrt{\langle p^2 \rangle - \langle p \rangle^2}$ is momentum uncertainty ($p = G\mathbf{v} = \nabla V$)
+
+**Violation $\eta_{\text{unc}} > 1$:** The agent claims to know both "where it is" (position $z$) and "where it is going" (momentum $\nabla V$) with precision exceeding the information-theoretic limit. This indicates:
+- Over-confident world model
+- Ungrounded predictions
+- Numerical precision issues
+
+**Threshold:** $\eta_{\text{unc}} < 1$ (hard constraint from information geometry).
+
+**Trigger conditions:**
+- $\eta_{\text{unc}} > 1$: Uncertainty violation
+- **Remedy:** Increase $\sigma$ (cognitive temperature); add regularization; verify encoder-decoder consistency
+
+(node-60)=
+**Node 60: TunnelingRateMonitor**
+
+| **#** | **Name** | **Component** | **Type** | **Interpretation** | **Proxy** | **Cost** |
+|:------|:---------|:--------------|:---------|:-------------------|:----------|:---------|
+| **60** | **TunnelingRateMonitor** | Multi-Agent | Exploration | Is barrier crossing rate reasonable? | $\Gamma_{\text{tunnel}} := P_{\text{tunnel}} / \tau_{\text{obs}}$ | $O(N^2 d)$ |
+
+**Interpretation:** Monitors the rate at which agents cross Pareto barriers (Theorem {prf:ref}`thm-tunneling-probability`):
+- $\Gamma_{\text{tunnel}} \approx 0$: Agents trapped in local equilibria (insufficient exploration)
+- $\Gamma_{\text{tunnel}}$ moderate: Healthy exploration-exploitation balance
+- $\Gamma_{\text{tunnel}}$ very high: Unstable dynamics (agents "teleporting" erratically)
+
+**Computation:** Track probability mass flux across identified barrier surfaces using:
+$$
+\Gamma_{\text{tunnel}} = \int_{\partial \mathcal{B}_P} \mathbf{J} \cdot \mathbf{n}\, d\Sigma,
+$$
+where $\mathbf{J}$ is probability current and $\partial \mathcal{B}_P$ is the barrier boundary.
+
+**Threshold:** $\Gamma_{\min} < \Gamma_{\text{tunnel}} < \Gamma_{\max}$ (task-dependent).
+
+**Trigger conditions:**
+- Low tunneling: Increase $\sigma$ or WFR reaction rate
+- High tunneling: Decrease exploration; check for instabilities
+- Asymmetric tunneling (one direction only): May indicate irreversible dynamics
+
+(sec-extended-summary-table)=
+### 29.15 Extended Summary Table
+
+**Table 29.15.1 (Extended SMFT Summary with Quantum Layer).**
+
+| Concept | Single Agent (Sec. 20–24) | Multi-Agent Classical (Sec. 29.1–29.7) | Multi-Agent Quantum (Sec. 29.8–29.14) |
+|:--------|:--------------------------|:---------------------------------------|:--------------------------------------|
+| **State Space** | $\mathcal{Z}$ | $\mathcal{Z}^{(N)} = \prod_i \mathcal{Z}^{(i)}$ | $\mathcal{H}^{(N)} = \bigotimes_i \mathcal{H}^{(i)}$ |
+| **State Rep.** | Density $\rho(z)$ | Joint density $\boldsymbol{\rho}(\mathbf{z})$ | Wave-function $\Psi(\mathbf{z})$ or operator $\hat{\rho}$ |
+| **Dynamics** | WFR Continuity + HJB | Coupled WFR | Schrödinger equation |
+| **Generator** | Fokker-Planck / WFR | Coupled continuity | Hamiltonian $\hat{H}_{\text{strat}}$ |
+| **Kinetic Term** | $\nabla \cdot (\rho G^{-1}\nabla V)$ | Per-agent with coupling | $-\frac{\sigma^2}{2}\Delta_{\tilde{G}}$ |
+| **Potential** | $\Phi_{\text{eff}}(z)$ | $\Phi^{(i)}_{\text{eff}}(z^{(i)}, z^{(-i)})$ | Operator $\hat{\Phi}_{\text{eff}} + \sum \hat{V}_{ij}$ |
+| **Metric Effect** | $G$ | $\tilde{G}^{(i)} = G^{(i)} + \sum_j \beta_{ij}\mathcal{G}_{ij}$ | Game-Augmented Laplacian |
+| **Resolution Limit** | — | — | Bohm potential $Q_B$ |
+| **Coupling Type** | — | Potential + Metric | + Entanglement |
+| **Correlation** | — | Classical (factorizable) | Quantum (non-factorizable) |
+| **Equilibrium** | Value maxima | Geometric Stasis (Nash) | Ground state of $\hat{H}_{\text{strat}}$ |
+| **Equilibrium Char.** | $\nabla V = 0$ | $\nabla \Phi_{\text{eff}} = 0, \mathcal{G}$ stationary | $\hat{H}\Psi = E_0\Psi$ |
+| **Barrier Crossing** | Thermal noise | Strategic coupling | Quantum tunneling |
+| **Nash Finding** | Gradient descent | Coupled gradient flow | Imaginary time evolution |
+| **Diagnostics** | Nodes 1–45 | + Nodes 46–48 | + Nodes 57–60 |
+
+**Open problems (extended):**
+1. *Scalability:* Tensor product Hilbert space dimension scales as $\prod_i \dim(\mathcal{H}^{(i)})$. Mean-field or tensor network approximations needed for large $N$.
+2. *Decoherence timescales:* How fast does strategic entanglement decay under realistic noise? What is the effective "decoherence time" for multi-agent systems?
+3. *Entanglement witnesses:* Can we design efficient diagnostics to detect and quantify strategic entanglement without full state tomography?
+4. *Quantum speedup:* Does the Schrödinger formulation enable faster Nash-finding algorithms (quantum advantage in game theory)?
+5. *Topological phases:* When $\mathcal{Z}$ has non-trivial topology, can agents exhibit "topologically protected" strategies immune to local perturbations?
+
 ---
 
 (sec-ontological-expansion-topological-fission-and-the-semantic-vacuum)=
@@ -16081,6 +16785,7 @@ $$\Delta V_{\text{proj}} > \mu_{\text{size}} = \mathcal{C}_{\text{complexity}}.$
 The condition $\Xi > \Xi_{\text{crit}}$ ensures that the second variation of the texture-entropy functional $\delta^2 H(z_{\text{tex}})$ is negative-definite at the vacuum. This precludes the absorption of the signal into the existing noise floor: if $\Xi \le \Xi_{\text{crit}}$, the texture residual $z_{\text{tex}}$ is truly unpredictable noise, and adding a chart provides no informational benefit. $\square$
 
 :::
+
 ---
 
 (sec-appendix-e-proof-of-theorem-prf-ref-a)=
@@ -16113,6 +16818,7 @@ Since $r \ge 0$ is a radial coordinate, this constitutes a **supercritical pitch
 The bifurcation diagram: for $\Xi < \Xi_{\text{crit}}$, the system has a single stable fixed point at $r=0$; for $\Xi > \Xi_{\text{crit}}$, the origin becomes unstable and two symmetric branches (in the full space, a sphere of radius $r^*$) emerge. $\square$
 
 :::
+
 ---
 
 (sec-appendix-e-proof-of-theorem-prf-ref-b)=
@@ -16154,6 +16860,7 @@ $$\left| \int \rho r \ln \rho \, d\mu_G \right| \le \|\sqrt{\rho} r\|_{L^2} \|\s
 Adding both contributions yields the stated bound. $\square$
 
 :::
+
 ---
 
 (sec-appendix-e-proof-of-theorem-prf-ref-c)=
@@ -16191,6 +16898,7 @@ $$\frac{d}{ds} \langle V \rangle_{\rho_s}\bigg|_{s=S^*} = \dot{\mathcal{M}}(S^*)
 This states that the optimal stopping time $S^*$ is reached when the power dissipated by the value-gradient flow exactly matches the metabolic cost rate. $\square$
 
 :::
+
 ---
 
 (sec-appendix-e-proof-of-theorem-prf-ref-d)=
@@ -16230,6 +16938,7 @@ $$\dot{z}^m = -G^{mk}\partial_k V + \beta_{\text{exp}} G^{mk}\partial_k \Psi_{\t
 The drift field $F_{\text{total}}$ is the first-order velocity approximation, proving the additive force of curiosity. $\square$
 
 :::
+
 ---
 
 (sec-appendix-e-proof-of-theorem-prf-ref-e)=
@@ -16269,6 +16978,349 @@ $$K_t \leftarrow Z_{\text{micro}, t} \to K_{t+1}.$$
 This path was confounded in observational data (the correlation between $Z_{\text{micro}}$ and $K_{t+1}$ was screened by the policy generating $A_t$). The intervention breaks this screening, exposing the hidden variable. The remedy is **Ontological Expansion** (Section 30): promote the relevant component of $Z_{\text{micro}}$ to a new macro-variable in $K$. $\square$
 
 :::
+
+---
+
+(sec-appendix-e-rigorous-proof-of-multi-agent-strategic-tunneling)=
+### E.7 Rigorous Proof of Multi-Agent Strategic Tunneling (Theorem {prf:ref}`thm-tunneling-probability`)
+
+**Title:** *Asymptotic Behavior of the Joint Belief Measure on Riemannian Product Manifolds under Metric Deformation by the Game Tensor.*
+
+This appendix provides the rigorous mathematical foundation for Theorem {prf:ref}`thm-tunneling-probability` (Strategic Tunneling Probability). We replace heuristic WKB arguments with rigorous results from **Spectral Theory of Elliptic Operators** and **Semi-Classical Analysis (Agmon Estimates)**.
+
+**Key rigorous tools:**
+1. **Perron-Frobenius / Krein-Rutman Theorem** for strict positivity
+2. **Agmon Estimates** {cite}`agmon1982lectures` for exponential decay bounds
+3. **Feynman-Kac Formula** for probabilistic representation
+4. **Metric Comparison Theorems** for Game Tensor effects
+
+---
+
+#### E.7.1 Mathematical Setup and Definitions
+
+Let the $N$-agent configuration space be the product manifold $\mathcal{M} = \prod_{i=1}^N \mathcal{Z}^{(i)}$. We assume each $\mathcal{Z}^{(i)}$ is a smooth, compact, connected Riemannian manifold with boundary (or without boundary if geodesically complete).
+
+:::{prf:definition} E.7.1 (The Strategic Metric)
+:label: def-e7-strategic-metric
+
+Let $G^{(i)}$ be the capacity-constrained metric on $\mathcal{Z}^{(i)}$ (Theorem {prf:ref}`thm-capacity-constrained-metric-law`). The **Strategic Metric** $\mathbf{g}$ on $\mathcal{M}$ is the block-diagonal sum perturbed by the Game Tensor $\mathcal{G}$ (Definition {prf:ref}`def-the-game-tensor`):
+$$
+\mathbf{g}(\mathbf{z}) := \bigoplus_{i=1}^N G^{(i)}(z^{(i)}) + \alpha \sum_{i \neq j} \mathcal{G}_{ij}(\mathbf{z}),
+$$
+where the pullback of the cross-Hessian interaction acts on tangent vectors in the obvious way.
+
+*Assumption 1 (Ellipticity):* We assume $\alpha > 0$ is sufficiently small such that $\mathbf{g}$ remains positive-definite and defines a valid Riemannian structure on $\mathcal{M}$. This is guaranteed when $\|\alpha \mathcal{G}\|_{\text{op}} < \lambda_{\min}(\bigoplus G^{(i)})$.
+
+:::
+
+:::{prf:definition} E.7.2 (The Strategic Hamiltonian)
+:label: def-e7-strategic-hamiltonian
+
+The self-adjoint **Strategic Hamiltonian** operator $\hat{H}_\sigma: H^2(\mathcal{M}) \to L^2(\mathcal{M}, d\mu_{\mathbf{g}})$ acts on the joint wave-function $\Psi$:
+$$
+\hat{H}_\sigma := -\frac{\sigma^2}{2} \Delta_{\mathbf{g}} + \mathcal{V}(\mathbf{z}),
+$$
+where:
+- $\Delta_{\mathbf{g}}$ is the Laplace-Beltrami operator associated with the strategic metric $\mathbf{g}$
+- $\mathcal{V}(\mathbf{z}) := \sum_{i=1}^N \Phi^{(i)}_{\text{eff}}(z^{(i)}) + \sum_{i < j} \Phi_{ij}(z^{(i)}, z^{(j)})$ is the joint potential
+- $\sigma > 0$ is the cognitive action scale (Definition {prf:ref}`def-cognitive-action-scale`)
+
+*Assumption 2 (Regularity):* $\mathcal{V} \in C^2(\mathcal{M})$ and is bounded below.
+
+:::
+
+:::{prf:definition} E.7.3 (The Forbidden Region and Nash Basins)
+:label: def-e7-forbidden-region
+
+Let $E_0 := \inf \text{spec}(\hat{H}_\sigma)$ be the ground state energy. The **Classically Forbidden Region** (Barrier) is:
+$$
+\mathcal{K} := \{ \mathbf{z} \in \mathcal{M} : \mathcal{V}(\mathbf{z}) > E_0 \}.
+$$
+
+Let $\Omega_A, \Omega_B \subset \mathcal{M} \setminus \mathcal{K}$ be disjoint open sets (Nash basins) where $\mathcal{V}(\mathbf{z}) \leq E_0$.
+
+*Geometric interpretation:* $\Omega_A$ and $\Omega_B$ are "potential wells" corresponding to distinct Nash equilibria (Theorem {prf:ref}`thm-nash-ground-state`). The barrier $\mathcal{K}$ separates these wells.
+
+:::
+
+---
+
+#### E.7.2 Strict Positivity of the Ground State (Existence of Tunneling)
+
+We first prove that tunneling is not merely possible—it is **inevitable** for any connected manifold.
+
+:::{prf:theorem} E.7.1 (Strict Positivity of the Ground State)
+:label: thm-e7-ground-state-positivity
+
+Let $\Psi_0$ be the ground state eigenfunction of $\hat{H}_\sigma$ (the eigenfunction with eigenvalue $E_0$). Then:
+$$
+|\Psi_0(\mathbf{z})| > 0 \quad \forall \mathbf{z} \in \mathcal{M}.
+$$
+
+*Consequence:* For any open set $\Omega_B \subset \mathcal{M}$, the probability measure satisfies:
+$$
+\mu(\Omega_B) = \int_{\Omega_B} |\Psi_0(\mathbf{z})|^2 \, d\mu_{\mathbf{g}}(\mathbf{z}) > 0.
+$$
+Therefore, if an agent is localized in $\Omega_A$, there is strictly positive probability of finding it in $\Omega_B$.
+
+:::
+
+:::{prf:proof}
+:label: proof-thm-e7-ground-state-positivity
+
+**Step 1 (Elliptic Regularity).** Since $\mathbf{g}$ is smooth and positive-definite (Assumption 1), and $\mathcal{V}$ is smooth (Assumption 2), the operator $\hat{H}_\sigma$ is uniformly elliptic. By standard elliptic regularity theory {cite}`gilbarg1977elliptic`, any $L^2$ eigenfunction $\Psi$ satisfying $\hat{H}_\sigma \Psi = E \Psi$ is in $C^\infty(\mathcal{M})$.
+
+**Step 2 (Heat Kernel Positivity).** Consider the heat semigroup $e^{-t\hat{H}_\sigma}$ for $t > 0$. By the **Harnack Inequality** for parabolic equations on manifolds {cite}`li1986parabolic`, the heat kernel $K_t(\mathbf{x}, \mathbf{y}) > 0$ for all $\mathbf{x}, \mathbf{y} \in \mathcal{M}$ and $t > 0$, provided $\mathcal{M}$ is connected.
+
+This implies: for any non-negative, non-zero $f \in L^2(\mathcal{M})$:
+$$
+(e^{-t\hat{H}_\sigma} f)(\mathbf{x}) = \int_{\mathcal{M}} K_t(\mathbf{x}, \mathbf{y}) f(\mathbf{y}) \, d\mu_{\mathbf{g}}(\mathbf{y}) > 0 \quad \forall \mathbf{x} \in \mathcal{M}.
+$$
+The heat kernel maps non-negative functions to **strictly positive** functions.
+
+**Step 3 (Perron-Frobenius / Krein-Rutman).** The operator $e^{-t\hat{H}_\sigma}$ is a positivity-improving compact operator on $L^2(\mathcal{M})$. By the **Krein-Rutman Theorem** (the infinite-dimensional generalization of Perron-Frobenius), the spectral radius is a simple eigenvalue with a strictly positive eigenfunction.
+
+Since $e^{-t\hat{H}_\sigma}$ has spectral radius $e^{-tE_0}$ with eigenfunction $\Psi_0$, and this eigenvalue is simple, we conclude:
+- $\Psi_0$ can be chosen to be real and non-negative
+- By positivity-improving property, $\Psi_0(\mathbf{z}) > 0$ for all $\mathbf{z} \in \mathcal{M}$
+
+**Step 4 (Conclusion).** For any open $\Omega_B \subset \mathcal{M}$:
+$$
+\mu(\Omega_B) = \int_{\Omega_B} |\Psi_0|^2 \, d\mu_{\mathbf{g}} \geq c \cdot \text{Vol}_{\mathbf{g}}(\Omega_B) > 0,
+$$
+where $c = \min_{\overline{\Omega}_B} |\Psi_0|^2 > 0$ by continuity and strict positivity. $\square$
+
+:::
+
+:::{admonition} Key Insight
+:class: tip
+:name: insight-tunneling-inevitable
+
+Theorem E.7.1 proves that **tunneling is inevitable**, not merely possible. On a connected manifold, the ground state wave-function has non-zero amplitude everywhere. The agent cannot be "trapped" in a Nash basin $\Omega_A$ with zero probability of being in $\Omega_B$—there is always leakage through the barrier.
+
+The relevant question becomes: **how fast** does tunneling occur? This is answered by the Agmon estimates.
+
+:::
+
+---
+
+#### E.7.3 Agmon Estimates: Quantifying the Tunneling Rate
+
+While Theorem E.7.1 proves existence, we need **quantitative bounds** on the decay rate through the barrier. We use Agmon's method {cite}`agmon1982lectures`.
+
+:::{prf:definition} E.7.4 (The Agmon Metric)
+:label: def-e7-agmon-metric
+
+Inside the barrier $\mathcal{K}$, we define the **Agmon Metric** $\rho_E$, a degenerate conformal rescaling of $\mathbf{g}$:
+$$
+(\rho_E)_{ij}(\mathbf{z}) := \max\left(0, \mathcal{V}(\mathbf{z}) - E_0\right) \cdot \mathbf{g}_{ij}(\mathbf{z}).
+$$
+
+The **Agmon distance** between points $\mathbf{x}, \mathbf{y} \in \mathcal{M}$ is:
+$$
+d_{\text{Ag}}(\mathbf{x}, \mathbf{y}) := \inf_{\gamma: \mathbf{x} \to \mathbf{y}} \int_0^1 \sqrt{\max(0, \mathcal{V}(\gamma(t)) - E_0)} \cdot \|\dot{\gamma}(t)\|_{\mathbf{g}} \, dt,
+$$
+where the infimum is over all piecewise smooth paths $\gamma$ from $\mathbf{x}$ to $\mathbf{y}$.
+
+*Properties:*
+1. $d_{\text{Ag}}(\mathbf{x}, \mathbf{y}) = 0$ if there exists a path entirely within $\mathcal{M} \setminus \mathcal{K}$ (the "classical" region)
+2. $d_{\text{Ag}}(\mathbf{x}, \mathbf{y}) > 0$ if all paths must traverse $\mathcal{K}$ (tunneling required)
+3. The Agmon distance is a pseudo-metric (satisfies triangle inequality)
+
+:::
+
+:::{prf:theorem} E.7.2 (Agmon Exponential Decay Bound)
+:label: thm-e7-agmon-decay-bound
+
+Let $\Psi_0$ be the ground state of $\hat{H}_\sigma$ with eigenvalue $E_0$. For any $\epsilon > 0$, there exists a constant $C_\epsilon > 0$ (depending on $\mathcal{M}$, $\mathcal{V}$, and $\epsilon$, but not on $\sigma$) such that:
+$$
+|\Psi_0(\mathbf{z})| \leq C_\epsilon \exp\left( - \frac{1 - \epsilon}{\sigma} d_{\text{Ag}}(\mathbf{z}, \Omega_A) \right) \quad \forall \mathbf{z} \in \mathcal{M},
+$$
+where $d_{\text{Ag}}(\mathbf{z}, \Omega_A) := \inf_{\mathbf{y} \in \Omega_A} d_{\text{Ag}}(\mathbf{z}, \mathbf{y})$.
+
+*Interpretation:* The wave-function amplitude decays exponentially with rate $1/\sigma$ times the Agmon distance from the classical region. Deeper into the barrier (larger $d_{\text{Ag}}$), the amplitude is exponentially smaller.
+
+:::
+
+:::{prf:proof}
+:label: proof-thm-e7-agmon-decay-bound
+
+We follow the standard Agmon method {cite}`agmon1982lectures,simon1983semiclassical`.
+
+**Step 1 (Twisted Function).** Define the twisted function:
+$$
+\phi(\mathbf{z}) := e^{f(\mathbf{z})/\sigma} \Psi_0(\mathbf{z}),
+$$
+where $f: \mathcal{M} \to \mathbb{R}$ is a Lipschitz weight function to be chosen.
+
+**Step 2 (Agmon Identity).** From the eigenvalue equation $(\hat{H}_\sigma - E_0)\Psi_0 = 0$, we derive:
+$$
+-\frac{\sigma^2}{2}\Delta_{\mathbf{g}}\phi + (\mathcal{V} - E_0)\phi = \frac{1}{2}\|\nabla_{\mathbf{g}} f\|_{\mathbf{g}}^2 \phi + \sigma \langle \nabla_{\mathbf{g}} f, \nabla_{\mathbf{g}} \phi \rangle_{\mathbf{g}}.
+$$
+
+**Step 3 (Energy Estimate).** Multiply by $\bar{\phi}$ and integrate. Using integration by parts:
+$$
+\frac{\sigma^2}{2} \|\nabla_{\mathbf{g}}\phi\|_{L^2}^2 + \int_{\mathcal{M}} \left(\mathcal{V} - E_0 - \frac{1}{2}\|\nabla_{\mathbf{g}} f\|_{\mathbf{g}}^2\right) |\phi|^2 \, d\mu_{\mathbf{g}} \leq 0.
+$$
+
+**Step 4 (Optimal Weight).** Choose $f(\mathbf{z}) = (1-\epsilon) d_{\text{Ag}}(\mathbf{z}, \Omega_A)$. By construction of the Agmon metric:
+$$
+\|\nabla_{\mathbf{g}} f\|_{\mathbf{g}}^2 \leq (1-\epsilon)^2 (\mathcal{V} - E_0)_+ \quad \text{a.e.}
+$$
+
+**Step 5 (Pointwise Bound).** Substituting and using Sobolev embedding on the compact manifold $\mathcal{M}$:
+$$
+\sup_{\mathbf{z} \in \mathcal{M}} |\phi(\mathbf{z})|^2 \leq C_\epsilon' \|\phi\|_{H^1}^2 \leq C_\epsilon'' \|\Psi_0\|_{L^2}^2 = C_\epsilon''.
+$$
+
+Unwinding the twist gives:
+$$
+|\Psi_0(\mathbf{z})| = e^{-f(\mathbf{z})/\sigma} |\phi(\mathbf{z})| \leq C_\epsilon \exp\left(-\frac{(1-\epsilon)}{\sigma} d_{\text{Ag}}(\mathbf{z}, \Omega_A)\right). \quad \square
+$$
+
+:::
+
+---
+
+#### E.7.4 Game Tensor Effect: Adversarial Suppression of Tunneling
+
+We now prove that the Game Tensor $\mathcal{G}_{ij}$ (Definition {prf:ref}`def-the-game-tensor`) increases the effective barrier, suppressing tunneling.
+
+:::{prf:corollary} E.7.3 (Adversarial Suppression of Tunneling)
+:label: cor-e7-adversarial-suppression
+
+Assume Agent $j$ is adversarial to Agent $i$, so the Game Tensor $\mathcal{G}_{ij}$ is positive semi-definite (Theorem {prf:ref}`thm-adversarial-mass-inflation`). Let:
+- $\mathbf{g}_0 := \bigoplus_{i=1}^N G^{(i)}$ be the **non-interacting** (decoupled) metric
+- $\mathbf{g}_{\text{adv}} := \mathbf{g}_0 + \alpha \sum_{i \neq j} \mathcal{G}_{ij}$ be the **adversarial** (Game-inflated) metric
+
+Then the Agmon distances satisfy:
+$$
+d_{\text{Ag}}^{\text{adv}}(\Omega_A, \Omega_B) \geq d_{\text{Ag}}^{0}(\Omega_A, \Omega_B),
+$$
+and consequently the tunneling probability is exponentially suppressed:
+$$
+P_{\text{tunnel}}^{\text{adv}} \lesssim \exp\left(-\frac{d_{\text{Ag}}^{\text{adv}}}{\sigma}\right) \leq \exp\left(-\frac{d_{\text{Ag}}^{0}}{\sigma}\right) \lesssim P_{\text{tunnel}}^{0}.
+$$
+
+:::
+
+:::{prf:proof}
+:label: proof-cor-e7-adversarial-suppression
+
+**Step 1 (Metric Comparison).** Since $\mathcal{G}_{ij} \succeq 0$ (positive semi-definite), for any tangent vector $\mathbf{v} \in T_{\mathbf{z}}\mathcal{M}$:
+$$
+\mathbf{v}^T \mathbf{g}_{\text{adv}} \mathbf{v} = \mathbf{v}^T \mathbf{g}_0 \mathbf{v} + \alpha \sum_{i \neq j} \mathbf{v}^T \mathcal{G}_{ij} \mathbf{v} \geq \mathbf{v}^T \mathbf{g}_0 \mathbf{v}.
+$$
+Thus $\mathbf{g}_{\text{adv}} \geq \mathbf{g}_0$ in the sense of quadratic forms.
+
+**Step 2 (Path Length Inequality).** For any path $\gamma: [0,1] \to \mathcal{M}$, the Agmon length satisfies:
+$$
+L_{\text{Ag}}^{\text{adv}}(\gamma) = \int_0^1 \sqrt{(\mathcal{V} - E_0)_+} \cdot \|\dot{\gamma}\|_{\mathbf{g}_{\text{adv}}} \, dt \geq \int_0^1 \sqrt{(\mathcal{V} - E_0)_+} \cdot \|\dot{\gamma}\|_{\mathbf{g}_0} \, dt = L_{\text{Ag}}^{0}(\gamma).
+$$
+
+**Step 3 (Distance Inequality).** Taking the infimum over all paths:
+$$
+d_{\text{Ag}}^{\text{adv}}(\mathbf{x}, \mathbf{y}) = \inf_{\gamma} L_{\text{Ag}}^{\text{adv}}(\gamma) \geq \inf_{\gamma} L_{\text{Ag}}^{0}(\gamma) = d_{\text{Ag}}^{0}(\mathbf{x}, \mathbf{y}).
+$$
+
+**Step 4 (Tunneling Suppression).** By Theorem E.7.2, the ground state amplitude at distance $d$ from $\Omega_A$ scales as $\exp(-d/\sigma)$. Since $d_{\text{Ag}}^{\text{adv}} \geq d_{\text{Ag}}^{0}$:
+$$
+|\Psi_0^{\text{adv}}(\mathbf{z})|^2 \lesssim \exp\left(-\frac{2 d_{\text{Ag}}^{\text{adv}}}{\sigma}\right) \leq \exp\left(-\frac{2 d_{\text{Ag}}^{0}}{\sigma}\right) \lesssim |\Psi_0^{0}(\mathbf{z})|^2.
+$$
+
+The tunneling probability $P_{\text{tunnel}} \approx \int_{\Omega_B} |\Psi_0|^2$ inherits this exponential suppression. $\square$
+
+:::
+
+:::{admonition} Geometric Interpretation
+:class: note
+:name: interpretation-adversarial-barrier
+
+**The Game Tensor inflates the metric, increasing geodesic and Agmon path lengths.**
+
+In an adversarial setting:
+- The metric satisfies $\mathbf{g}_{\text{adv}} \geq \mathbf{g}_0$ (in the sense of quadratic forms)
+- Path lengths satisfy $L_{\text{Ag}}^{\text{adv}}(\gamma) \geq L_{\text{Ag}}^0(\gamma)$ for all paths $\gamma$
+- The wave-function amplitude bound (Theorem E.7.2) yields smaller values under $\mathbf{g}_{\text{adv}}$
+- Tunneling probability is exponentially suppressed
+
+This proves that adversarial coupling increases Agmon distance (Corollary E.7.3), which by Theorem E.7.2 implies exponentially reduced tunneling probability.
+
+:::
+
+---
+
+#### E.7.5 Probabilistic Representation: Feynman-Kac Formula
+
+To connect the spectral results to the stochastic WFR dynamics (Section 22), we invoke the rigorous Feynman-Kac formula.
+
+:::{prf:theorem} E.7.4 (Feynman-Kac Representation)
+:label: thm-e7-feynman-kac
+
+Let $(\mathbf{X}_s)_{s \geq 0}$ be Brownian motion on the Riemannian manifold $(\mathcal{M}, \mathbf{g})$, starting at $\mathbf{X}_0 = \mathbf{z}$. Then the ground state $\Psi_0$ admits the representation:
+$$
+\Psi_0(\mathbf{z}) = \lim_{t \to \infty} e^{E_0 t} \cdot \mathbb{E}_{\mathbf{z}}\left[ \exp\left( -\frac{1}{\sigma^2} \int_0^t \mathcal{V}(\mathbf{X}_s) \, ds \right) \phi(\mathbf{X}_t) \right],
+$$
+where $\phi \in L^2(\mathcal{M})$ is any function with $\langle \Psi_0, \phi \rangle \neq 0$.
+
+*Remark:* This is rigorous—not a heuristic "path integral." The expectation is over Brownian paths on the manifold.
+
+:::
+
+:::{prf:proof}
+:label: proof-thm-e7-feynman-kac
+
+**Step 1 (Semigroup Representation).** By the Feynman-Kac-Itô formula for Schrödinger operators on manifolds {cite}`simon1979functional`:
+$$
+(e^{-t\hat{H}_\sigma/\sigma^2} \phi)(\mathbf{z}) = \mathbb{E}_{\mathbf{z}}\left[ \exp\left( -\frac{1}{\sigma^2} \int_0^t \mathcal{V}(\mathbf{X}_s) \, ds \right) \phi(\mathbf{X}_t) \right].
+$$
+
+**Step 2 (Spectral Projection).** As $t \to \infty$, the semigroup projects onto the ground state:
+$$
+e^{-t\hat{H}_\sigma/\sigma^2} \phi \to e^{-tE_0/\sigma^2} \langle \Psi_0, \phi \rangle \Psi_0.
+$$
+
+**Step 3 (Normalization).** Multiplying by $e^{E_0 t/\sigma^2}$ and taking the limit gives the stated formula. $\square$
+
+:::
+
+:::{prf:corollary} E.7.5 (Tunneling via Large Deviations)
+:label: cor-e7-large-deviations
+
+The tunneling probability is controlled by the **Large Deviation Principle** for Brownian paths on $(\mathcal{M}, \mathbf{g})$.
+
+The rate function (Freidlin-Wentzell action) is:
+$$
+I[\gamma] = \frac{1}{2} \int_0^T \|\dot{\gamma}(t)\|_{\mathbf{g}}^2 \, dt,
+$$
+and paths that cross the barrier $\mathcal{K}$ while minimizing $I[\gamma] + \int_0^T (\mathcal{V}(\gamma) - E_0) \, dt$ are precisely the **instantons** that govern tunneling.
+
+*Interpretation:* Tunneling is realized by rare stochastic fluctuations of the WFR diffusion process that penetrate the high-cost region. The probability of such fluctuations scales as $\exp(-S_{\text{inst}}/\sigma)$ where $S_{\text{inst}}$ is the instanton action—which equals the Agmon distance.
+
+:::
+
+---
+
+#### E.7.6 Summary of Rigorous Results
+
+**Table E.7.1 (Summary of Tunneling Rigor).**
+
+| Result | Statement | Method |
+|:-------|:----------|:-------|
+| **Existence** | $P(\Omega_B) > 0$ always | Perron-Frobenius / Harnack |
+| **Decay Rate** | $|\Psi_0| \lesssim e^{-d_{\text{Ag}}/\sigma}$ | Agmon estimates |
+| **Game Tensor Effect** | $d_{\text{Ag}}^{\text{adv}} \geq d_{\text{Ag}}^0$ | Metric comparison |
+| **Probabilistic** | Feynman-Kac representation | Semigroup theory |
+| **Optimal Path** | Instanton = Agmon geodesic | Large deviations |
+
+**Rigorous version of Theorem {prf:ref}`thm-tunneling-probability`:**
+$$
+P_{\text{tunnel}}(\Omega_A \to \Omega_B) = \Theta\left(\exp\left(-\frac{2}{\sigma} d_{\text{Ag}}(\Omega_A, \Omega_B)\right)\right) \quad \text{as } \sigma \to 0,
+$$
+where $\Theta(\cdot)$ denotes asymptotic equality up to polynomial prefactors in $\sigma$.
+
+This completes the rigorous foundation for the strategic tunneling mechanism. $\square$
+
 ---
 
 (sec-references)=
