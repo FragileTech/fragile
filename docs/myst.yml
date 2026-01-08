@@ -14,7 +14,7 @@ project:
 
   # Table of contents
   toc:
-    - file: fragile-index.md
+    - file: index.md
       title: Home
 
 site:
