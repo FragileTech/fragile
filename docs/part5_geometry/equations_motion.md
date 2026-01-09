@@ -8,10 +8,38 @@
 The equations of motion are the continuous-time limit of policy updates with stochastic exploration noise. Think of it as a Langevinized actor-critic where the metric defines the preconditioner.
 :::
 
+:::{div} feynman-prose
+Now, here is where everything comes together. We have built up all this machinery in the previous sections---the geometry, the metric law, the WFR transport---and you might be wondering: what does the agent actually *do*? How does it move?
+
+This is the chapter where we write down the answer. And the beautiful thing is that once you have the geometry right, the equations of motion almost write themselves. They are not something we impose from outside; they *emerge* from the structure we have already established.
+
+The key insight is this: **the agent's motion is geodesic motion on a curved manifold, with noise**. That is it. The agent follows the paths of least resistance through the latent space, but it gets jostled around by thermal fluctuations. And occasionally---this is the jump part---it can hop from one chart to another when it discovers a better representation.
+
+If you have ever studied classical mechanics, this should feel familiar. We are doing Lagrangian mechanics, but in a stochastic setting and on a curved space. The curvature comes from the metric law of Section 18. The noise comes from the exploration-exploitation tradeoff. And the jumps come from the discrete structure of the chart atlas.
+
+Let me emphasize something that might seem obvious but is actually profound: **the metric plays the role of mass**. In ordinary mechanics, mass tells you how hard it is to accelerate an object. Here, the metric tells you how hard it is to move through a region of latent space. High-curvature regions are "heavy"---the agent slows down there, takes smaller steps, is more cautious. Low-curvature regions are "light"---the agent moves freely.
+
+Why is that the right thing? Because high curvature means high risk, high uncertainty, regions where the representation is strained. You want to be careful there. The geometry *is* the caution.
+:::
+
 We derive the rigorous equation of motion (EoM) for the agent. This equation unifies the WFR geometry ({ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`, {prf:ref}`def-the-wfr-action`), the Metric Law ({ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>`, Theorem {prf:ref}`thm-capacity-constrained-metric-law`), and the Policy-driven Expansion ({ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>`).
 
 (sec-the-stochastic-action-principle)=
 ## The Stochastic Action Principle (Mass = Metric)
+
+:::{div} feynman-prose
+Before we get into the formalism, let me tell you what we are really doing here. In classical mechanics, you have the action principle: Nature chooses the path that minimizes the action integral. But what does "minimize" mean when there is randomness involved?
+
+The answer is the Onsager-Machlup functional. Instead of asking "which path does the particle take?", we ask "which path is *most probable*?" And it turns out that the most probable path is the one that minimizes a certain action---not the classical action, but a modified one that accounts for the noise.
+
+Here is the picture I want you to have in your mind. Imagine you are looking at a particle undergoing Brownian motion in a potential. At any moment, the particle could go anywhere---the noise is pushing it in all directions. But some paths are more likely than others. The Onsager-Machlup functional tells you exactly how likely each path is: $P[\text{path}] \propto \exp(-\text{Action}/T)$, where $T$ is the temperature.
+
+This is exactly the path-integral formulation of statistical mechanics. And the beautiful thing is that it works on curved spaces too, with one subtlety: on a curved manifold, you need a curvature correction term. The measure for path integration is not uniform---it gets distorted by the geometry.
+
+Now, the key decision we have to make: what plays the role of mass? In ordinary mechanics, mass appears in the kinetic energy term, $\frac{1}{2}mv^2$. On a Riemannian manifold, the natural generalization is $\frac{1}{2}G_{ij}\dot{z}^i\dot{z}^j$---the metric-weighted norm of the velocity.
+
+So here is our choice, and it is the conceptually correct one: **Mass = Metric**. The inertial mass tensor *is* the metric tensor. This is not arbitrary; it is forced on us by the geometry. The metric already encodes how to measure distances. It should also encode how to measure kinetic energy.
+:::
 
 The classical Lagrangian approach extends to stochastic systems via the **Onsager-Machlup functional**, which assigns a probability to paths based on their "action."
 
@@ -37,6 +65,19 @@ $$
 The metric-weighted step size decreases in high-curvature (high-risk) regions without explicit penalty terms.
 
 :::
+
+:::{admonition} The Causal Chain of Caution
+:class: feynman-added tip
+
+The Mass = Metric principle creates an automatic feedback loop for safe exploration:
+
+1. **High risk** in a region $\Rightarrow$ Metric Law says curvature increases $\Rightarrow$ metric $G$ grows
+2. **Large metric** $\Rightarrow$ Mass = Metric says effective mass increases
+3. **Large mass** $\Rightarrow$ Same force produces smaller acceleration $\Rightarrow$ smaller step size
+
+No explicit "safety penalty" needed---the geometry *is* the safety mechanism.
+:::
+
 :::{prf:definition} Extended Onsager-Machlup Action
 :label: def-extended-onsager-machlup-action
 
@@ -56,6 +97,20 @@ Units: $[S_{\mathrm{OM}}] = \mathrm{nat}$.
 
 *Remark (Curvature Correction).* The term $\frac{T_c}{12}R(z)$ is a stochastic correction that accounts for the path-measure distortion on curved spaces. In flat space ($R = 0$), this term vanishes. The entropy term $T_c H_{\pi}$ ensures the agent prefers stochastic policies in uncertain regions.
 
+:::
+
+:::{div} feynman-prose
+Let me decode this action functional term by term, because each piece is doing something important:
+
+**The kinetic term** $\frac{1}{2}G_{ij}\dot{z}^i\dot{z}^j$: This is "how fast am I moving?" in the curved geometry. Not Euclidean speed, but speed measured with the metric. If the metric is large, the same coordinate velocity costs more action.
+
+**The potential term** $\Phi_{\text{eff}}$: This is "where do I want to go?" We will unpack this later, but it combines the hyperbolic expansion drive with the learned value function and a risk penalty.
+
+**The curvature correction** $\frac{T_c}{12}R$: This is subtle. When you do path integrals on a curved manifold, you have to be careful about how you measure paths. The factor of 1/12 is not arbitrary---it comes from the mathematical analysis of the path measure. On a flat space this vanishes, so you can ignore it for Euclidean intuition.
+
+**The entropy term** $T_c H_\pi$: This is the exploration bonus. The agent *prefers* to have a stochastic policy---it gets rewarded for keeping its options open. The temperature $T_c$ controls how much this matters.
+
+Now, why does the most probable path minimize this action? Think of it this way: every path has an associated "cost." The kinetic term penalizes going fast. The potential term penalizes being in bad places. The entropy term rewards keeping options open. Nature---or rather, the stochastic dynamics---samples paths according to how costly they are, preferring low-cost paths exponentially.
 :::
 
 (pi-onsager-machlup)=
@@ -80,6 +135,10 @@ $$
 | Boltzmann weight $e^{-S/k_BT}$ | Path probability $e^{-S_{\text{OM}}/T_c}$ |
 ::::
 
+:::{div} feynman-prose
+Now here is a wonderful consistency check. What happens near the boundary of the Poincare disk? Remember, the boundary represents the "edge" of the representable world---where the agent runs out of capacity.
+:::
+
 :::{prf:proposition} Mass Scaling Near Boundary
 :label: prop-mass-scaling-near-boundary
 
@@ -93,6 +152,13 @@ The metric diverges as $|z| \to 1$, which bounds all finite-action trajectories 
 *Proof.* Direct evaluation of the Poincare metric. The factor $(1-|z|^2)^{-2}$ diverges as $|z| \to 1$. $\square$
 
 :::
+
+:::{div} feynman-prose
+This is exactly what we want. The mass becomes infinite at the boundary. What does infinite mass mean? It means the agent *cannot* cross the boundary. No matter how much force you apply, an infinite mass cannot accelerate. The geometry itself enforces the boundary condition---no extra constraint needed.
+
+This is the geometric version of a hard wall. But it is much better than just saying "stop at the boundary," because the agent feels the wall coming. As it approaches the boundary, it gets heavier and heavier, slower and slower. It is not a sudden stop; it is a gradual deceleration. The mathematics is smooth even though the boundary is impenetrable.
+:::
+
 :::{prf:proposition} Most Probable Path
 :label: prop-most-probable-path
 
@@ -106,8 +172,23 @@ where $\sigma \sigma^T = G^{-1}$, the most probable path connecting $z(0) = z_0$
 *Proof sketch.* This follows from the Girsanov theorem and the Cameron-Martin formula adapted to Riemannian manifolds. See {cite}`ikeda1989stochastic` Chapter V or {ref}`Appendix A.4 <sec-appendix-a-full-derivations>` for details. $\square$
 
 :::
+
 (sec-the-coupled-jump-diffusion-sde)=
 ## The Coupled Jump-Diffusion SDE
+
+:::{div} feynman-prose
+Alright, now we get to the actual equation of motion. This is where the rubber meets the road.
+
+The agent is not just a point in space. It is a **particle with mass**---and by "mass" here I mean the importance weight $m$, which is like the probability that this particular trajectory is the right one. You can think of it as how much "belief" the agent has invested in this particular path through latent space.
+
+The dynamics have two parts:
+1. **Continuous motion**: The particle slides around on the manifold, pulled by gradients and pushed by noise
+2. **Discrete jumps**: Occasionally, the particle teleports from one chart to another
+
+Why jumps? Because the latent space is not a single connected manifold. It is an atlas of overlapping charts, like the pages of a flip-book. Sometimes the best move is not to take a small step, but to flip to a completely different page---a different representation, a different conceptual framework.
+
+Think of it like this: you are solving a problem, and you have been thinking about it one way, taking small incremental steps. Then suddenly you realize there is a completely different way to look at it. That is a jump. The continuous dynamics handle the incremental thinking; the jump process handles the conceptual leaps.
+:::
 
 The agent's state is not merely a point $z$ but a **particle with mass** $(z, m)$, where $m$ is the importance weight (belief probability). The dynamics couple continuous transport with discrete topological jumps.
 
@@ -145,6 +226,36 @@ where:
 *Remark (Connection Specification).* The Christoffel symbols $\Gamma^k_{ij}$ are explicitly those of the **Levi-Civita connection** induced by the capacity-constrained metric $G$ from Theorem {prf:ref}`thm-capacity-constrained-metric-law`. This ensures metric compatibility ($\nabla G = 0$) and torsion-freeness.
 
 :::
+
+:::{div} feynman-prose
+Let me break down this equation, because it looks intimidating but each piece has a clear physical meaning.
+
+**The gradient term** $-G^{-1}\nabla\Phi$: This is "roll downhill." The agent feels a force pushing it toward lower potential. The $G^{-1}$ is there because we are on a curved manifold---it converts the gradient (which lives in the cotangent space) to a velocity (which lives in the tangent space).
+
+**The control term** $u_\pi$: This is the policy. The agent can choose to go somewhere that is not just downhill. Maybe there is a hill it needs to climb to reach a better valley. The policy provides this intentional override of the gradient.
+
+**The Lorentz force** $\beta_{\text{curl}} G^{-1}\mathcal{F}\dot{z}$: This is the interesting one. When the reward field has curl---meaning there are regions where you can go around in a circle and accumulate reward---the agent feels a sideways force, perpendicular to its velocity. This is exactly like the Lorentz force on a charged particle in a magnetic field. It makes the agent spiral or orbit rather than just fall to the bottom.
+
+**The geodesic correction** $-\Gamma(\dot{z},\dot{z})$: On a curved manifold, straight lines curve. This term corrects for that. If you want to go in a "straight line" (a geodesic) on a curved surface, you have to constantly adjust your direction. The Christoffel symbols tell you how much to adjust.
+
+**The thermal noise** $\sqrt{2T_c} G^{-1/2} dW$: This is the exploration. The agent gets jostled by random thermal fluctuations. The $G^{-1/2}$ ensures the noise is properly adapted to the geometry---it produces isotropic noise in the metric-induced sense.
+
+The beautiful thing is that these are not five separate mechanisms bolted together. They all emerge from the same underlying structure: the geometry of the latent space plus the stochastic variational principle.
+:::
+
+:::{admonition} The Four Forces on the Agent
+:class: feynman-added note
+
+| Force | Expression | Physical Analogy | Effect |
+|-------|------------|------------------|--------|
+| **Gradient** | $-G^{-1}\nabla\Phi$ | Gravity | Pulls toward low potential |
+| **Control** | $u_\pi$ | Rocket thrust | Policy-directed motion |
+| **Lorentz** | $\beta G^{-1}\mathcal{F}\dot{z}$ | Magnetic force | Induces rotation/orbiting |
+| **Geodesic** | $-\Gamma(\dot{z},\dot{z})$ | Coriolis/centrifugal | Keeps motion on manifold |
+
+Plus thermal noise for exploration.
+:::
+
 :::{prf:proposition} a (Explicit Christoffel Symbols for Poincare Disk)
 :label: prop-a-explicit-christoffel-symbols-for-poincar-disk
 
@@ -163,6 +274,15 @@ $$
 *Geometric interpretation:* The first term $(z \cdot \dot{z})\dot{z}$ accelerates motion radially when moving outward; the second term $|\dot{z}|^2 z$ provides centripetal correction. Together they ensure geodesics are circular arcs perpendicular to the boundary.
 
 :::
+
+:::{div} feynman-prose
+Why should you care about the explicit Christoffel symbols? Because they tell you something beautiful about the geometry.
+
+On the Poincare disk, the geodesics---the "straight lines"---are not straight at all in Euclidean terms. They are arcs of circles that hit the boundary at right angles. The Christoffel symbols encode this. When you are moving outward, you need to curve your trajectory to stay on a geodesic. When you are moving tangentially, you need a centripetal correction.
+
+The formula might look complicated, but it is just saying: "adjust your direction so that you curve in the right way for this particular geometry."
+:::
+
 :::{prf:definition} Mass Evolution - Jump Process
 :label: def-mass-evolution-jump-process
 
@@ -179,6 +299,17 @@ where:
 *Interpretation:* Between jumps, mass evolves smoothly via the reaction term $r$. At jump times, the mass is rescaled by factor $\eta$, and the position is teleported via the chart transition operator $L_{i \to j}$.
 
 :::
+
+:::{div} feynman-prose
+Now here is the discrete part of the dynamics. The mass $m$ is like a betting stake---it tells you how much probability weight this particular trajectory carries.
+
+Between jumps, the mass can grow or shrink according to the reaction rate $r$. If you are in a good region (positive $r$), your mass grows---you become more confident that this is the right trajectory. If you are in a bad region (negative $r$), your mass shrinks---you become less confident.
+
+At jump times, something more dramatic happens. You teleport to a different chart, and your mass gets rescaled by a factor $\eta$. Typically $\eta > 1$ because you only bother jumping if the new chart is better than the old one. The jump is like a sudden insight: "Wait, I should be thinking about this completely differently!" And when you have that insight, you become more confident.
+
+This is exactly the resampling step in particle filtering. If you are running multiple particles (multiple trajectories in parallel), the ones with high mass survive and the ones with low mass get killed off. Selection pressure, in a mathematical form.
+:::
+
 :::{prf:proposition} Jump Intensity from Value Discontinuity
 :label: prop-jump-intensity-from-value-discontinuity
 
@@ -199,8 +330,35 @@ where:
 **Cross-references:** {ref}`Section 20.2 <sec-the-wfr-metric>` ({prf:ref}`def-the-wfr-action`), {ref}`Section 20.6 <sec-the-unified-world-model>` (WFR world model), {ref}`Section 11 <sec-intrinsic-motivation-maximum-entropy-exploration>` (Filtering and projection).
 
 :::
+
+:::{div} feynman-prose
+The jump intensity formula is a Boltzmann factor. The probability of jumping is exponential in the value difference, minus a transport cost. This is exactly the right behavior:
+
+- If the target chart has much higher value, $\lambda$ is large---you jump frequently
+- If the target chart has lower value, $\lambda$ is small---why bother?
+- The transport cost $c_{\text{transport}}$ provides a barrier: even if the grass looks greener, there is a cost to jumping the fence
+
+The parameter $\beta$ controls how "sharp" this decision is. At high $\beta$, the agent is decisive: if the value difference is positive, jump; if negative, don't. At low $\beta$, the agent is more exploratory: it might jump even to slightly worse charts, just to see what is there.
+:::
+
 (sec-the-unified-effective-potential)=
 ## The Unified Effective Potential
+
+:::{div} feynman-prose
+We have been talking about the potential $\Phi$ that the agent rolls down. But where does this potential come from? It is not given to us by Nature; we have to construct it from the quantities we actually care about.
+
+It turns out there are three natural contributions:
+
+1. **The hyperbolic potential** $U$: This drives expansion from the origin toward the boundary. It is the "generation drive"---the urge to create, to produce output, to sample from the model.
+
+2. **The value function** $V_{\text{critic}}$: This is what RL calls the critic. It tells you how good a state is in terms of expected future reward. If you are doing pure control (trying to maximize reward), you roll down this potential.
+
+3. **The risk penalty** $\Psi_{\text{risk}}$: This is caution. Some regions are dangerous---high variance, unstable representations. You want to stay away from them.
+
+The effective potential is a weighted combination of these three. The weight $\alpha$ controls the balance between generation and control. When $\alpha = 1$, you are doing pure generation---expanding outward following the hyperbolic flow. When $\alpha = 0$, you are doing pure control---following the value gradient to maximize reward. In between, you are doing both at once.
+
+This is the key to understanding the agent as a generative model: it is not *either* a generator *or* a controller. It is both, blended together through this unified potential.
+:::
 
 The effective potential unifies three terms: the hyperbolic information potential $U$ from holographic generation ({ref}`Section 21.1 <sec-hyperbolic-volume-and-entropic-drift>`), the learned value function $V$ from control ({ref}`Section 2.7 <sec-the-hjb-correspondence>`), and the risk-stress contribution $\Psi_{risk}$ from the stress-energy tensor ({ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>`).
 
@@ -222,6 +380,21 @@ where:
 Units: $[\Phi_{\text{eff}}] = \mathrm{nat}$.
 
 :::
+
+:::{admonition} Example: What the Agent "Feels"
+:class: feynman-added example
+
+Imagine the agent at position $z$ in the latent space:
+
+- The **hyperbolic term** pulls it outward toward the boundary (generation drive)
+- The **value term** pulls it toward high-reward regions (control drive)
+- The **risk term** pushes it away from uncertain regions (caution)
+
+The effective potential is the superposition of these three force fields. The agent rolls downhill in this combined landscape.
+
+At $\alpha = 0.5$ (balanced): The agent generates while seeking reward, but avoids risky regions.
+:::
+
 :::{prf:proposition} Mode Interpretation
 :label: prop-mode-interpretation
 
@@ -255,6 +428,20 @@ $$
 
 :::
 
+:::{div} feynman-prose
+Let me say something about the hyperbolic gradient $\nabla_G U$ on the Poincare disk. The formula is:
+
+$$
+\nabla_G U = -\frac{(1-|z|^2)}{2}\, \hat{z}
+$$
+
+What does this mean? It means the force points *outward*, toward the boundary, in the radial direction $\hat{z} = z/|z|$. And the magnitude scales like $(1-|z|^2)/2$, which is big near the center and goes to zero at the boundary.
+
+This is exactly right. Near the center, there is a strong drive to expand outward---to generate, to differentiate, to create structure. Near the boundary, this drive weakens, because you are already at high specificity. You have already committed to a particular output.
+
+The factor of $(1-|z|^2)$ is the inverse of the conformal factor. It compensates for the metric blowup at the boundary. In terms of *coordinate* velocity, the force looks like it is weakening. But in terms of *proper* velocity (measured with the metric), the expansion drive stays roughly constant until you get very close to the boundary.
+:::
+
 :::{prf:definition} Cognitive Temperature
 :label: def-cognitive-temperature
 
@@ -269,8 +456,36 @@ The **cognitive temperature** $T_c > 0$ is the exploration-exploitation tradeoff
 *Correspondence:* $T_c$ is the agent-theoretic analogue of thermodynamic temperature $k_B T$ in statistical mechanics.
 :::
 
+:::{div} feynman-prose
+The cognitive temperature $T_c$ deserves special attention, because it is one of those parameters that looks simple but controls a lot.
+
+At high $T_c$: The agent explores aggressively. The noise term dominates, the policy becomes diffuse, the free energy prefers entropy over energy. The agent is "hot"---it moves around a lot, tries many things, does not commit.
+
+At low $T_c$: The agent exploits what it knows. The noise term is small, the policy becomes sharp, the free energy prefers energy over entropy. The agent is "cold"---it moves decisively toward the best known option.
+
+This is exactly the exploration-exploitation tradeoff, but now it has a thermodynamic interpretation. And it comes with all the machinery of statistical mechanics: the Boltzmann distribution, the free energy, the fluctuation-dissipation theorem.
+
+One beautiful consequence: the agent can *cool down* as it learns. Start with high $T_c$ to explore the space. As you find good regions, lower $T_c$ to commit to them. This is simulated annealing, but it emerges naturally from the thermodynamic structure.
+:::
+
 (sec-the-geodesic-baoab-integrator)=
 ## The Geodesic Boris-BAOAB Integrator
+
+:::{div} feynman-prose
+Now we get to the practical question: how do you actually simulate this? You have a stochastic differential equation on a curved manifold with multiple force terms. You cannot just use Euler's method.
+
+The key insight is **operator splitting**. Instead of trying to handle everything at once, you split the dynamics into pieces and handle each piece separately. This is the BAOAB scheme:
+
+- **B** for "kick" (the potential gradient)
+- **A** for "drift" (moving along the manifold)
+- **O** for "Ornstein-Uhlenbeck" (the thermostat, handling the noise)
+
+The name BAOAB tells you the order: half-kick, half-drift, full thermostat, half-drift, half-kick. This symmetric structure is important---it gives you better accuracy and better preservation of the equilibrium distribution.
+
+Why add Boris to BAOAB? Because we have the Lorentz force, which depends on velocity. The standard kick step does not handle velocity-dependent forces correctly. The Boris algorithm is a trick from plasma physics: instead of applying the force directly, you rotate the momentum around the force axis. This preserves the norm of the momentum, which is exactly what the Lorentz force should do (it does no work, just changes direction).
+
+The combination---Boris-BAOAB---handles everything: the potential gradient, the Lorentz force, the geodesic correction, and the thermal noise. It is a bit complicated, but it is the right way to do it.
+:::
 
 We provide the numerical integrator for the controlled geodesic SDE (Definition {prf:ref}`def-bulk-drift-continuous-flow`). The **Boris-BAOAB** scheme extends the standard BAOAB {cite}`leimkuhler2016computation` to handle the velocity-dependent Lorentz force from non-conservative reward fields.
 
@@ -303,6 +518,19 @@ where $c_1 = e^{-\gamma h}$ and $c_2 = \sqrt{(1 - c_1^2) T_c}$.
 *Remark (Boris Rotation).* The Boris algorithm is a volume-preserving integrator for magnetic-like forces. It rotates the momentum around the local Value Curl axis, preserving the norm $|p|$ while changing direction. This ensures the Lorentz force does no net work, consistent with physics.
 
 *Remark (O-step).* The O-step implements the **Ornstein-Uhlenbeck thermostat**, which exactly preserves the Maxwell-Boltzmann momentum distribution $p \sim \mathcal{N}(0, T_c G)$.
+
+:::
+
+:::{admonition} Why Splitting Works
+:class: feynman-added tip
+
+Each sub-step has an exact solution:
+- **B-step** (kick): $p \to p - \frac{h}{2}\nabla\Phi$ is just adding a constant to momentum
+- **A-step** (drift): $z \to \exp_z(\frac{h}{2}v)$ is following a geodesic
+- **O-step** (thermostat): $p \to c_1 p + c_2 \xi$ is an Ornstein-Uhlenbeck step
+
+None of these is approximate---each sub-step is exact. The only approximation is in the splitting itself: we pretend the forces are constant during each sub-step. This is why symmetric splitting (B-A-O-A-B) is important: the errors from the first half cancel the errors from the second half, giving you $O(h^2)$ accuracy instead of $O(h)$.
+:::
 
 **Algorithm 22.4.2 (Full Geodesic BAOAB with Jump Step).**
 
@@ -529,6 +757,16 @@ The BAOAB integrator preserves the Boltzmann distribution $\rho(z, p) \propto \e
 
 :::
 
+:::{div} feynman-prose
+This result about preserving the Boltzmann distribution is crucial. When you run a simulation, you want it to sample from the correct distribution. If your integrator has a bias, your samples will be wrong---you will be over-sampling some regions and under-sampling others.
+
+Euler-Maruyama, the simplest integrator, has $O(h)$ bias. That means if you use a time step of $h = 0.01$, your distribution is wrong by about 1%. Sounds small? It adds up. Over a million steps, the errors compound.
+
+BAOAB has $O(h^2)$ bias. Same time step, $h = 0.01$, the error is about 0.01%. A hundred times smaller. This matters enormously for any application where you need accurate statistics---which is basically all of them.
+
+The price you pay is five sub-steps instead of one. But that is a small price for a hundred-fold improvement in accuracy.
+:::
+
 (pi-langevin-thermostat)=
 ::::{admonition} Physics Isomorphism: Langevin Thermostat
 :class: note
@@ -582,6 +820,21 @@ where $\rho_* \propto \exp(-\Phi_{\text{eff}}/T_c)\sqrt{|G|}$ is the Boltzmann d
 (sec-the-overdamped-limit)=
 ## The Overdamped Limit
 
+:::{div} feynman-prose
+So far we have been working with the full second-order dynamics: position *and* momentum. But in many applications, you do not need all that machinery. When friction is strong enough, the momentum equilibrates almost instantly to the force, and you can forget about it.
+
+This is the **overdamped limit**, and it is important for two reasons:
+
+1. **Simplicity**: First-order dynamics are easier to simulate and analyze than second-order
+2. **Relevance**: Many real systems operate in this regime---diffusion models, Brownian motion in viscous fluids, biological processes
+
+The mathematical statement is: when friction $\gamma$ is large compared to the forces, the momentum quickly relaxes to $p \approx -\gamma^{-1} G^{-1}\nabla\Phi$. You do not need to track the momentum explicitly; you can just compute it from the force.
+
+The resulting dynamics are pure gradient flow with noise: roll downhill, get jostled by thermal fluctuations. No inertia, no coasting, no overshoot. The agent responds instantaneously to changes in the potential.
+
+When is this a good approximation? When the timescale of momentum relaxation ($\sim 1/\gamma$) is much shorter than the timescale of position changes. In that case, the momentum "slaves" to the position, and you can eliminate it.
+:::
+
 In many applications (diffusion models, biological control), the system operates in the **overdamped regime** where friction dominates inertia. We derive this limit rigorously.
 
 :::{prf:theorem} Overdamped Limit
@@ -600,6 +853,13 @@ $$
 *Proof sketch.* In the high-friction limit, velocity equilibrates instantaneously to the force: $\gamma\,\dot{z} \approx -G^{-1}\nabla\Phi$. The geodesic term $\Gamma(\dot{z},\dot{z}) \sim O(|\dot{z}|^2) = O(\gamma^{-2})$ is negligible. What remains is the gradient flow with diffusion. See {ref}`Appendix A.4 <sec-appendix-a-full-derivations>` for the full singular perturbation analysis. $\square$
 
 :::
+
+:::{div} feynman-prose
+Notice what disappears in the overdamped limit: the geodesic correction term $\Gamma(\dot{z},\dot{z})$. This makes sense. The geodesic correction is about inertia---it tells you how to maintain your direction on a curved surface when you are coasting. But in the overdamped limit, you are not coasting. You are always being dragged to a halt by friction and then pushed by the force. There is no inertia to correct for.
+
+This is why the overdamped equation is so much simpler: just $dz = -G^{-1}\nabla\Phi\,ds + \text{noise}$. The curvature still matters---it is hiding in the metric $G$---but the explicit Christoffel symbols are gone.
+:::
+
 :::{prf:corollary} Recovery of Holographic Flow
 :label: cor-recovery-of-holographic-flow
 
@@ -615,6 +875,15 @@ For the Poincare disk, this gives $\dot{z} = \frac{(1-|z|^2)}{2}\,z$, which inte
 *Remark.* This proves that the "ad-hoc" holographic law from {ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>` is actually the **optimal control trajectory** for the geometry defined in {ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>`, vindicating the intuition.
 
 :::
+
+:::{div} feynman-prose
+This is one of those beautiful moments where everything fits together. In Section 21, we introduced the holographic flow $|z(\tau)| = \tanh(\tau/2)$ as a kind of "natural" radial expansion. It looked like an ad-hoc choice.
+
+But now we see it is not ad-hoc at all. It is the *unique* geodesic flow for the hyperbolic potential on the Poincare disk in the overdamped, deterministic limit. The geometry *forces* this flow on us.
+
+This is the kind of consistency check that tells you the theory is on the right track. Different parts, derived independently, turn out to agree. The holographic law is not just one choice among many---it is the geometrically natural choice.
+:::
+
 :::{prf:corollary} Fokker-Planck Duality {cite}`risken1996fokkerplanck`
 :label: cor-fokker-planck-duality
 
@@ -634,6 +903,18 @@ Setting $\partial_s p = 0$ and using detailed balance gives $p \propto e^{-\Phi/
 
 **Cross-references:** {ref}`Section 21.2 <sec-policy-control-field>` (Langevin dynamics), Theorem {prf:ref}`thm-equivalence-of-entropy-regularized-control-forms-discrete-macro`, {ref}`Section 2.11 <sec-variance-value-duality-and-information-conservation>` (Belief density evolution).
 
+:::
+
+:::{div} feynman-prose
+The Fokker-Planck equation tells you how probability density evolves under the SDE. But we care most about the *stationary* distribution---the long-time limit. And look at that beautiful formula:
+
+$$
+p_*(z) \propto \exp\left(-\frac{\Phi}{T_c}\right)\,\sqrt{|G|}
+$$
+
+This is the Boltzmann distribution on a curved manifold. The $\exp(-\Phi/T_c)$ part is familiar from statistical mechanics: probability is exponentially suppressed in high-potential regions. The $\sqrt{|G|}$ part is the volume correction from the geometry: probability is enhanced in regions where the metric is large, because there is "more space" there in the intrinsic sense.
+
+Together, these give you the correct equilibrium. The agent, running the SDE for a long time, will sample from this distribution. Low potential, high probability. Large metric volume element, high probability. This is the target distribution for MCMC sampling on curved manifolds.
 :::
 
 (pi-fokker-planck)=
@@ -663,6 +944,24 @@ with stationary distribution $p_*(z) \propto \exp(-\Phi_{\text{eff}}(z)/T_c)\sqr
 
 (sec-agent-lifecycle-summary)=
 ## Agent Lifecycle Summary
+
+:::{div} feynman-prose
+Now let me put all the pieces together. We have equations for continuous motion, for discrete jumps, for the potential, for the temperature. How do these combine into a coherent picture of what the agent does?
+
+The agent lifecycle has five phases, and they map beautifully onto a physical picture of phase transitions:
+
+1. **Init**: Start at the origin. This is the "gas phase"---maximum entropy, no commitment, all possibilities open.
+
+2. **Kick**: Apply symmetry-breaking control. This is "nucleation"---you have to pick a direction, break the perfect symmetry of the origin.
+
+3. **Bulk**: Geodesic flow with jumps. This is the "liquid phase"---flowing, exploring, but with structure. The trajectory can switch between charts, try different representations.
+
+4. **Boundary**: Reach the cutoff radius. This is "crystallization"---committing to a specific output, sampling the texture.
+
+5. **Decode**: Map to the output space. The latent trajectory becomes an actual observable.
+
+The beautiful thing is that these phases are not imposed from outside. They *emerge* from the dynamics. The symmetry at the origin creates the need for a kick. The expansion drive creates the bulk flow. The boundary condition creates the stopping criterion. The geometry itself choreographs the whole dance.
+:::
 
 The complete agent lifecycle integrates the components from Sections 21-22 into a coherent execution flow.
 
@@ -744,6 +1043,17 @@ def run_agent_loop(
 ```
 
 :::
+
+:::{admonition} The Texture Firewall
+:class: feynman-added warning
+
+Notice that during the Bulk phase, the texture is completely invisible. The dynamics depend only on $(z, K, m)$, not on any fine-grained texture information.
+
+This is the **Texture Firewall**: texture is sampled only at the boundary, not during the bulk flow. Why? Because if texture influenced the dynamics, the bulk would become infinitely complex---you would need to track an infinite number of degrees of freedom.
+
+The firewall ensures the bulk dynamics remain finite-dimensional, with all the high-dimensional structure appearing only at the final step.
+:::
+
 :::{prf:proposition} Phase Transition Interpretation
 :label: prop-phase-transition-interpretation
 
@@ -757,10 +1067,21 @@ The agent lifecycle corresponds to a thermodynamic phase transition:
 | Boundary (solid) | Crystallization | $\lVert z\rVert \geq R_{cutoff}$ |
 
 :::
+
 (sec-adaptive-thermodynamics)=
 ## Adaptive Thermodynamics (Fluctuation-Dissipation)
 
-The temperature $T_c$ and friction $\gamma$ need not be constant—they can adapt to the local geometry to maintain the Einstein relation.
+:::{div} feynman-prose
+Up to now, we have been treating the temperature $T_c$ as a constant. But there is something unsatisfying about that. The metric $G$ varies across the manifold---should not the temperature vary too?
+
+The answer is yes, if you want to maintain the correct relationship between noise and dissipation. This is the **fluctuation-dissipation theorem**: in equilibrium, the noise and the friction are related by the temperature. If you change one, you have to change the others to stay in equilibrium.
+
+On a curved manifold, this becomes the **Einstein relation**: $\sigma^2 = 2\gamma T_c / G$. The noise variance, the friction, the temperature, and the metric are all tied together.
+
+What happens if you let the temperature adapt to the geometry? Something wonderful: the agent automatically transitions between exploration and exploitation based on where it is. Near the origin (small $G$), the effective noise is large---exploration. Near the boundary (large $G$), the effective noise is small---exploitation. No temperature schedule needed. The geometry does it for you.
+:::
+
+The temperature $T_c$ and friction $\gamma$ need not be constant---they can adapt to the local geometry to maintain the Einstein relation.
 
 :::{prf:definition} Einstein Relation on Manifolds
 :label: def-einstein-relation-on-manifolds
@@ -783,9 +1104,18 @@ With adaptive temperature $T_c(z)$ satisfying the Einstein relation:
 | **Uncertain** (near origin) | Small         | Large           | Gas phase (exploration)       |
 | **Certain** (near boundary) | Large         | Small           | Solid phase (crystallization) |
 
-*Remark.* This automatic phase transition emerges from the geometry alone—no explicit temperature schedule is needed.
+*Remark.* This automatic phase transition emerges from the geometry alone---no explicit temperature schedule is needed.
 
 :::
+
+:::{div} feynman-prose
+This is worth pausing on. In standard machine learning, if you want to transition from exploration to exploitation, you have to design a temperature schedule. High temperature at the start, gradually lowering it. This is simulated annealing, and it requires hand-tuning.
+
+Here, the same effect emerges automatically. The geometry provides a "natural" temperature schedule: high effective noise near the center, low effective noise near the boundary. You do not have to tune it; it falls out of the mathematics.
+
+This is another instance of the general principle: **the geometry does the work**. Instead of adding explicit mechanisms for various behaviors, you build the right geometry and let the behaviors emerge.
+:::
+
 :::{prf:definition} Fisher-Covariance Duality
 :label: def-fisher-covariance-duality
 
@@ -818,6 +1148,18 @@ def adaptive_temperature(
 ```
 
 :::
+
+:::{div} feynman-prose
+The Fisher-Covariance duality is one of those deep facts that keeps showing up in different guises. Here is the intuition:
+
+- The **Fisher information** tells you how much information the data provides about the parameters. High Fisher information means the data is very informative.
+- The **posterior covariance** tells you how uncertain you are about the parameters after seeing the data. High covariance means high uncertainty.
+
+These are inversely related: $G \approx \Sigma^{-1}$. If the data is very informative (high $G$), you are very certain (low $\Sigma$). If the data is not informative (low $G$), you remain uncertain (high $\Sigma$).
+
+This is why Mass = Metric makes sense. The metric *is* the Fisher information. Where you are certain (high Fisher, high metric), you should be cautious---you have committed to a representation, do not throw it away lightly. Where you are uncertain (low Fisher, low metric), you should be exploratory---you do not have much to lose.
+:::
+
 :::{prf:corollary} Deterministic Boundary
 :label: cor-deterministic-boundary
 
@@ -829,8 +1171,31 @@ $$
 The agent becomes deterministic at the boundary, ensuring reproducible outputs.
 
 :::
+
+:::{div} feynman-prose
+This corollary is the final piece of the puzzle. At the boundary, the noise goes to zero. The agent becomes deterministic.
+
+Why is this important? Because outputs need to be reproducible. If you generate an image, you want the same latent code to give the same image every time. If there were noise at the boundary, you would get different images each time---maybe good for "creative variability," but terrible for debugging and control.
+
+The geometry gives you both: exploration in the bulk (where noise is large), and determinism at the boundary (where noise vanishes). The stochastic and deterministic regimes are unified in a single framework, with the transition happening smoothly as you approach the boundary.
+:::
+
 (sec-summary-tables-and-diagnostic-nodes)=
 ## Summary Tables and Diagnostic Nodes
+
+:::{div} feynman-prose
+Let me summarize what we have built. The equations of motion combine three ingredients:
+
+1. **Geodesic dynamics** on a curved manifold, with the metric providing natural inertia
+2. **Stochastic fluctuations** controlled by the cognitive temperature
+3. **Discrete jumps** between charts, enabling topological transitions
+
+The key insight is that these are not independent mechanisms. They all emerge from a single variational principle: minimize the Onsager-Machlup action. The geometry (metric, Christoffel symbols, curvature) comes from the capacity constraint. The noise comes from the entropy regularization. The jumps come from the multi-chart structure.
+
+The diagnostic nodes below help you check that everything is working correctly. If the GeodesicCheck is high, your trajectory is not following the controlled geodesic---maybe a bug in the Christoffel computation. If the JumpConsistencyCheck is high, your jump rates are violating detailed balance---maybe the value functions are inconsistent across charts.
+
+These are the kinds of things you want to monitor in a running system. Not just "is the loss going down," but "are the geometric invariants being preserved."
+:::
 
 **Summary of Equations of Motion:**
 
@@ -901,6 +1266,12 @@ $$
 - High TextureFirewallCheck: Texture is leaking into dynamics (firewall violated).
 - Remedy: Review implementation; ensure texture sampled only at boundary; verify Axiom {prf:ref}`ax-bulk-boundary-decoupling`.
 
+:::{div} feynman-prose
+We have now assembled the complete dynamical picture. The agent is a particle on a curved manifold, carrying mass (belief weight), feeling forces (from the effective potential), being jostled by noise (exploration), and occasionally jumping between charts (conceptual transitions).
 
+The beautiful thing is how much emerges from the geometry. The caution in risky regions? That is Mass = Metric. The exploration-exploitation tradeoff? That is the Einstein relation. The boundary behavior? That is the metric divergence. The phase transitions? That is the natural temperature schedule.
+
+In the next sections, we will see how this dynamical picture connects to the boundary structure and the decoder. But the core message of this chapter is simple: **once you have the geometry right, the dynamics follow**.
+:::
 
 (sec-the-boundary-interface-symplectic-structure)=

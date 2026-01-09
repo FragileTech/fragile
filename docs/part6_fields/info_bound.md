@@ -1,6 +1,20 @@
 # The Causal Information Bound
 
-*Abstract.* We derive a fundamental limit on representational capacity: the maximum information an agent can stably represent is bounded by the area of its interface, measured in units of a characteristic length scale we call the **Levin Length**. This bound follows from the capacity-constrained metric law ({ref}`Section 18.2 <sec-main-result>`) and has a striking consequence: as the agent approaches this limit, its internal update rate slows to zero—a phenomenon we call **Causal Stasis**. This section provides the rigorous derivation (with full proofs in {ref}`Appendix A.6 <sec-appendix-a-area-law>`) and defines Diagnostic Node 56 to monitor proximity to this bound.
+:::{div} feynman-prose
+Now I want to tell you about a fundamental limit---perhaps the most important limit in the whole theory. It's the kind of thing that, once you understand it, changes how you think about intelligence, memory, and computation.
+
+Here's the question: How much can an agent know?
+
+Not "how much can it learn eventually" or "how much could it know in principle with unlimited resources." No. How much can it *stably represent* given its finite interface with the world?
+
+The answer, remarkably, is that intelligence is bounded by *area*, not volume. The maximum information you can hold in your head is proportional to the surface area of your interface---your sensors, your bandwidth, your connection to the outside world. Not the volume of your brain, not the number of your neurons, but the *area* of your boundary.
+
+This might remind you of something from physics. It should. This is the same structure as the Bekenstein-Hawking bound on black hole entropy: a black hole's entropy is proportional to its horizon area, not its volume. The deepest secret of quantum gravity turns out to have an analog in cognitive science.
+
+And there's a consequence that's even more striking: as you approach this limit, *you slow down*. Your internal update rate drops toward zero. We call this Causal Stasis, and it's the geometric explanation for why overparameterized models "die"---they're not running out of memory in the computer science sense; they're running out of *geometric capacity*.
+:::
+
+*Abstract.* We derive a fundamental limit on representational capacity: the maximum information an agent can stably represent is bounded by the area of its interface, measured in units of a characteristic length scale we call the **Levin Length**. This bound follows from the capacity-constrained metric law ({ref}`Section 18.2 <sec-main-result>`) and has a striking consequence: as the agent approaches this limit, its internal update rate slows to zero---a phenomenon we call **Causal Stasis**. This section provides the rigorous derivation (with full proofs in {ref}`Appendix A.6 <sec-appendix-a-area-law>`) and defines Diagnostic Node 56 to monitor proximity to this bound.
 
 (rb-sensor-bandwidth)=
 :::{admonition} Researcher Bridge: The Sensor Bandwidth Ceiling
@@ -41,6 +55,18 @@ where $\ell_L$ is the Levin length (Definition {prf:ref}`def-levin-length`) and 
 (sec-holographic-coefficient)=
 ## The Holographic Coefficient
 
+:::{div} feynman-prose
+Before we can write down the information bound, we need to understand a curious fact: the efficiency of boundary storage depends on dimension.
+
+Think about it this way. In 2D, the boundary of a disk is a circle. In 3D, the boundary of a ball is a sphere. In higher dimensions, the boundary becomes increasingly exotic. And here's the surprise: *higher dimensions are worse for holographic storage*.
+
+You might have expected the opposite. More dimensions, more room, more capacity, right? Wrong. The coefficient $\nu_D$ that determines how much information fits per unit boundary area actually *decreases* as dimension increases. In the limit of infinite dimensions, it goes to zero.
+
+This is the "curse of dimensionality" derived from first principles. High-dimensional latent spaces sound powerful, but they're geometrically inefficient. The sweet spot turns out to be around $D \approx 3$---which is suspiciously close to the dimensionality of the physical space we evolved to navigate.
+
+For $D = 2$, we get $\nu_2 = 1/4$, which matches the famous Bekenstein-Hawking coefficient for black holes. This isn't a coincidence; it's the same mathematics in a different context.
+:::
+
 Before defining the Levin Length, we establish the dimension-dependent coefficient that governs holographic capacity.
 
 :::{prf:definition} Holographic Coefficient
@@ -76,7 +102,19 @@ where $\Omega_{D-1} = \frac{2\pi^{D/2}}{\Gamma(D/2)}$ is the surface area of the
 (sec-levin-length)=
 ## The Levin Length
 
-We define a characteristic length scale that represents the minimal resolvable distinction in the latent manifold—the information-theoretic floor of the agent's representational capacity.
+:::{div} feynman-prose
+Now we need to define the "pixel size" of thought. How small a distinction can you make?
+
+Every physical measurement has a resolution limit. A camera has pixels; below that scale, you can't see finer detail. A thermometer has precision; below that, temperature differences are meaningless. What's the analogous limit for internal representations?
+
+We call it the Levin Length, after Leonid Levin, who pioneered the theory of algorithmic information. It's the minimal scale of distinction---the information-theoretic "pixel" of the latent manifold. A cell of area $\ell_L^2$ corresponds to one nat (one natural unit) of information capacity.
+
+Why does this matter? Because the information bound is measured in Levin Lengths. The maximum information you can represent is the area of your boundary divided by the Levin Length squared (in 2D). If your boundary area is fixed but your Levin Length shrinks---if you become more precise---you can store more information. If your Levin Length grows, your capacity drops.
+
+This gives us a deep insight into what "improving" an agent means: either expand the interface (bigger sensors, more bandwidth) or improve the resolution (better encoding, finer distinctions). Both increase capacity in the same mathematical way.
+:::
+
+We define a characteristic length scale that represents the minimal resolvable distinction in the latent manifold---the information-theoretic floor of the agent's representational capacity.
 
 :::{prf:definition} Levin Length
 :label: def-levin-length
@@ -98,6 +136,18 @@ Units: $[\ell_L] = [z]$ (latent coordinate length).
 
 (sec-saturation-limit)=
 ## The Saturation Limit
+
+:::{div} feynman-prose
+Now let's talk about what happens when you're full.
+
+Imagine filling a balloon with water. At first, it's easy---the balloon stretches, accommodates more. But as you approach its capacity, things get harder. The rubber becomes taut. The pressure rises. Eventually, you hit a limit: the balloon can't hold any more.
+
+The same thing happens with information in the latent manifold. As the "bulk information volume" approaches the "boundary capacity," the geometry becomes stressed. The metric tensor starts to diverge. And something dramatic happens: the agent approaches what we call the *saturation limit*.
+
+At saturation, the Data Processing Inequality constraint $I_{\text{bulk}} \le C_\partial$ is saturated---satisfied with equality. The agent is at maximum capacity. Every bit of representation it has is being used. There's no slack.
+
+And here's where it gets interesting: at this limit, the geometry *breaks*. The metric component $G_{rr}$ diverges to infinity, which means the "distance" in the radial direction becomes infinite. You can't move. You're stuck. That's Causal Stasis.
+:::
 
 We characterize the regime where the agent's representational capacity is fully utilized.
 
@@ -140,6 +190,26 @@ At this radius, $G_{rr} \to \infty$ and consequently $G^{rr} \to 0$.
 
 (sec-area-law-derivation)=
 ## Derivation of the Area Law
+
+:::{div} feynman-prose
+All right, now let's derive the main result. This is where all the pieces come together.
+
+The argument has three steps, and I want you to understand the logic, not just the formulas:
+
+**Step 1 (Holographic Reduction):** The bulk information---everything stored inside the agent---can be rewritten as a boundary integral. This is the holographic principle: bulk data equals boundary data. It's like saying the information inside a room can be completely specified by what's painted on the walls. Remarkable, but true.
+
+**Step 2 (Saturation Geometry):** At the saturation limit, the boundary has a specific curvature related to the "horizon radius." This is exactly like a black hole horizon, where the geometry becomes singular at a particular radius.
+
+**Step 3 (Fisher Normalization):** We fix the overall scale by requiring consistency with Fisher information geometry. This determines the coupling constant $\kappa$ and gives us the final formula.
+
+The result is elegant:
+
+$$
+I_{\max} = \nu_D \cdot \frac{\text{Area}(\partial\mathcal{Z})}{\ell_L^{D-1}}
+$$
+
+Maximum information equals holographic coefficient times boundary area divided by Levin Length to the appropriate power. That's it. That's the bound.
+:::
 
 We now derive the fundamental bound on representational capacity.
 
@@ -193,6 +263,20 @@ There is no third option. Adding internal parameters without expanding the inter
 (sec-causal-stasis)=
 ## Causal Stasis
 
+:::{div} feynman-prose
+Now we come to the most striking consequence: as you approach the information bound, you freeze.
+
+Let me give you the physical intuition. In general relativity, as you approach a black hole's horizon, time dilates. From an outside observer's perspective, someone falling into a black hole appears to slow down and eventually freeze at the horizon. They never quite cross it---they're stuck forever at the boundary.
+
+Something similar happens here. As the bulk information approaches the maximum, the metric becomes singular. The "mass" (inertia) in the radial direction becomes infinite. And since the velocity of belief updates scales with the inverse metric, that velocity goes to zero.
+
+$$\|v\|_G \to 0 \quad \text{as} \quad I_{\text{bulk}} \to I_{\max}$$
+
+The agent becomes *frozen in thought*. It can still receive observations (inflow at the boundary), but it cannot *process* them into updated beliefs. It's overwhelmed by its own representational complexity.
+
+This isn't a software bug or a resource limitation. It's a *geometric* phenomenon. The manifold has curved so severely that motion becomes infinitely costly. The only remedies are structural: either reduce the bulk information (ontological surgery---merging concepts, pruning the codebook) or expand the boundary capacity (better sensors, more bandwidth). Adding more parameters without expanding the interface just makes things worse.
+:::
+
 We derive the consequence of approaching the information bound: the agent's internal dynamics freeze.
 
 :::{prf:theorem} Causal Stasis
@@ -242,6 +326,16 @@ $$
 
 (sec-diagnostic-node-56)=
 ## Diagnostic Node 56: CapacityHorizonCheck
+
+:::{div} feynman-prose
+How do you know if you're approaching the bound? You need a warning light.
+
+That's what Diagnostic Node 56 provides. It computes the "saturation ratio" $\eta_{\text{Sch}}$---the fraction of capacity being used. Think of it like a fuel gauge, except instead of showing how much gas you have left, it shows how close you are to geometric collapse.
+
+At 50% saturation, you're fine. At 90%, you're in the yellow zone---velocity is already degraded, and you should start thinking about ontological intervention. At 99%, you're in the red---Causal Stasis is imminent, and you need emergency fusion (merging redundant concepts) to free up capacity.
+
+The subscript "Sch" honors Karl Schwarzschild, who first computed the metric for a black hole. The analogy is exact: $\eta_{\text{Sch}} = 1$ is the horizon, beyond which lies the singularity.
+:::
 
 Following the diagnostic node convention ({ref}`Section 3.1 <sec-diagnostics-stability-checks>`), we define a monitor for proximity to the Causal Information Bound.
 
@@ -298,6 +392,18 @@ where $|\mathcal{K}|$ is the number of active charts, $\bar{H}(z_n | K)$ is the 
 
 (sec-summary-geometry-bounded-intelligence)=
 ## Summary: The Geometry of Bounded Intelligence
+
+:::{div} feynman-prose
+Let me step back and tell you what we've really learned here.
+
+Intelligence is bounded by geometry. Not by algorithm, not by compute, not by the cleverness of your architecture---by *geometry*. The fundamental limit is the area of your interface, and the fundamental consequence of hitting that limit is paralysis.
+
+This is profound. It says that there's no free lunch in representation. You can't just add more parameters and expect more capability. The parameters have to be grounded through your interface with the world, and that interface has finite bandwidth.
+
+It also tells you what to do when you're stuck. If your agent is slowing down, if learning has plateaued, if the model seems "dead"---check the saturation ratio. You might be approaching the horizon. The solution isn't more training; it's *ontological surgery*---restructuring the representation to reduce bulk information, or expanding the interface to increase capacity.
+
+This is the kind of result that changes how you think about machine learning. It's not just theory---it's engineering guidance. Build agents that respect geometric constraints, and you'll avoid a whole class of failure modes.
+:::
 
 **Table 33.6.1 (Causal Information Bound Summary).**
 
