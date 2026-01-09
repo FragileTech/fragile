@@ -1,7 +1,7 @@
 absl-py==2.3.1
 accessible-pygments==0.0.5
 aiohappyeyeballs==2.6.1
-aiohttp==3.13.2
+aiohttp==3.13.3
 aiosignal==1.4.0
 alabaster==0.7.16
 ale-py==0.8.1
