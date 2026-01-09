@@ -20298,7 +20298,7 @@ Sparse and mean-field approximations scale the Game Tensor.
 
 2. **Mean-field limit.** For large homogeneous populations, we replace $\mathcal{G}_{ij}$ with a **mean-field approximation**: each agent interacts with the *average* influence $\bar{\mathcal{G}} = \frac{1}{N} \sum_j \mathcal{G}_{ij}$. This reduces the problem to a single representative agent coupled to a population statistic—$O(1)$ per agent.
 
-3. **Hierarchical decomposition.** Teams can be organized hierarchically: agents within a team share a local Game Tensor; teams interact via a coarser inter-team tensor. This multi-scale approach ({ref}`Section 29.5 <sec-joint-wfr-dynamics-and-nash-equilibrium>`) reduces complexity to $O(N \log N)$.
+3. **Hierarchical decomposition.** Teams can be organized hierarchically: agents within a team share a local Game Tensor; teams interact via a coarser inter-team tensor. This multi-scale approach ({ref}`Section 29.5 <sec-the-hyperbolic-value-equation>`) reduces complexity to $O(N \log N)$.
 
 4. **The framework is exact for small $N$.** For $N \le 10$ (small teams, adversarial games), the full $O(N^2)$ computation is tractable. The approximations above extend the framework to large $N$ without abandoning the geometric structure.
 
