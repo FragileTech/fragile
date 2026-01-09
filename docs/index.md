@@ -8421,6 +8421,21 @@ $$
 *Forward reference (Scalar Field Interpretation).* Section 24 provides the complete field-theoretic interpretation of $V_{\text{critic}}$: the Critic solves the **Screened Poisson Equation** (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`) with rewards as boundary charges (Definition {prf:ref}`def-the-reward-flux`), the Value represents **Gibbs Free Energy** (Axiom {prf:ref}`ax-the-boltzmann-value-law`), and the Value Hessian induces a **Conformal Coupling** to the metric (Definition {prf:ref}`def-value-metric-conformal-coupling`).
 
 :::
+
+:::{prf:definition} Cognitive Temperature
+:label: def-cognitive-temperature
+
+The **cognitive temperature** $T_c > 0$ is the exploration-exploitation tradeoff parameter that controls:
+
+1. **Diffusion magnitude:** The thermal noise term in the geodesic SDE scales as $\sqrt{2T_c}\,dW$
+2. **Boltzmann policy:** The softmax temperature in $\pi(a|z) \propto \exp(Q(z,a)/T_c)$
+3. **Free energy tradeoff:** The entropy-energy balance $\Phi = E - T_c S$
+
+*Units:* nat (dimensionless in natural units where $k_B = 1$).
+
+*Correspondence:* $T_c$ is the agent-theoretic analogue of thermodynamic temperature $k_B T$ in statistical mechanics.
+:::
+
 (sec-the-geodesic-baoab-integrator)=
 ### 22.4 The Geodesic Boris-BAOAB Integrator
 
@@ -13346,6 +13361,22 @@ $$
 
 :::
 
+:::{prf:proposition} Interaction Kernel
+:label: prop-interaction-kernel
+
+The **pairwise interaction potential** $\Phi_{\text{int}}: \mathcal{Z} \times \mathcal{Z} \to \mathbb{R}$ between agents at positions $z, \zeta$ is the screened Green's function weighted by influence:
+
+$$
+\Phi_{\text{int}}(z, \zeta) := \alpha \cdot \mathcal{G}_{\kappa}(z, \zeta)
+$$
+where $\mathcal{G}_{\kappa}$ is the screened Green's function (Proposition {prf:ref}`prop-green-s-function-interpretation`) and $\alpha$ encodes the strategic relationship.
+
+*Properties:*
+- $\Phi_{\text{int}}(z, \zeta) = \Phi_{\text{int}}(\zeta, z)$ (symmetric in cooperative settings)
+- $\Phi_{\text{int}} \to 0$ as $d_G(z, \zeta) \to \infty$ (locality via screening)
+- $\nabla^2_z \Phi_{\text{int}}$ defines the Game Tensor contribution (Definition {prf:ref}`def-the-game-tensor`)
+:::
+
 :::{prf:definition} Retarded Interaction Potential
 :label: def-retarded-interaction-potential
 
@@ -13605,6 +13636,12 @@ $$
 
 *Proof.* From Definition {prf:ref}`def-the-game-tensor`, the metric perturbation is $\delta G_{kl} = \sum_{j} \beta_{ij} \mathcal{G}_{ij,kl}$. For adversarial agents, $\beta_{ij} > 0$. If $\mathcal{G}_{ij}$ is positive semi-definite (which occurs when Agent $j$'s presence increases the curvature of $V^{(i)}$), then $\mathcal{G}_{ij,kl} \xi^k \xi^l \geq 0$ for all $\xi$. Thus $\tilde{G}^{(i)}_{kl} \xi^k \xi^l = G^{(i)}_{kl} \xi^k \xi^l + \beta_{ij} \mathcal{G}_{ij,kl} \xi^k \xi^l \geq G^{(i)}_{kl} \xi^k \xi^l$. $\square$
 
+:::
+
+:::{admonition} Researcher Bridge: Opponents as Geometric Inertia
+:class: info
+:name: rb-opponents-inertia
+In game-theoretic settings, adversarial opponents increase the effective **mass** (metric tensor eigenvalues) of the agent's latent space via the Game Tensor $\mathcal{G}_{ij}$. This transforms strategic uncertainty into geometric inertia: the agent moves more slowly in contested regions because geodesic steps are more costly. Cooperation has the opposite effect—allies smooth the value landscape, reducing effective mass.
 :::
 
 :::{prf:definition} Retarded Game Tensor
@@ -20505,6 +20542,18 @@ The monitoring hierarchy terminates at a **Lawvere fixed point**, avoiding infin
 **Response:**
 
 The **cobordism interface** avoids requiring opponent policy knowledge.
+
+:::{prf:axiom} The Bridge Principle
+:label: ax-the-bridge-principle
+
+An agent commits to a **response function** $\sigma: \mathcal{O} \to \mathcal{A}$ mapping observations to actions, not a fixed policy $\pi: \mathcal{S} \to \mathcal{A}$ over states. The response function:
+
+1. Is computable given bounded observations
+2. Does not require access to opponent internal states or policies
+3. Defines the agent's strategic interface at the boundary $\partial\mathcal{X}$
+
+*Consequence:* Strategic interactions reduce to boundary conditions on the response function, eliminating the need for opponent omniscience.
+:::
 
 1. **Response functions, not policies.** The **Bridge Principle** (Axiom {prf:ref}`ax-the-bridge-principle`) requires the agent to commit to a *response function* $\sigma: \mathcal{O} \to \mathcal{A}$ mapping observations to actions, not a fixed policy. This is computable given bounded observations.
 
