@@ -142,7 +142,7 @@ markdown-it-py==3.0.0
 markupsafe==3.0.1
 matplotlib==3.10.7
 matplotlib-inline==0.1.7
-mcp==1.20.0
+mcp==1.23.0
 mdit-py-plugins==0.4.2
 mdurl==0.1.2
 mistune==3.1.4
