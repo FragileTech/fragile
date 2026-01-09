@@ -12,6 +12,18 @@ Standard Multi-Agent RL assumes a global clock: when Agent A acts, Agent B sees 
 
 *Literature:* Game theory {cite}`fudenberg1991game`; stochastic games {cite}`shapley1953stochastic`; multi-agent RL {cite}`littman1994markov,lowe2017multi`; symplectic geometry {cite}`arnold1989mathematical`; retarded potentials {cite}`jackson1999classical`.
 
+:::{div} feynman-prose
+Now, I want to tell you about something that bothered me for a long time when I first thought about multi-agent systems. You see, in most of the literature, people write down these beautiful game-theoretic equations where all the agents can see each other perfectly, instantly, at every moment. Agent A knows what Agent B is doing right now. Agent B knows what Agent A is thinking right now. It is all very nice and symmetric and mathematically convenient.
+
+But wait a minute. How does Agent A know what Agent B is doing? The information has to travel somehow. Maybe it is light bouncing off B and hitting A's sensors. Maybe it is a message sent over a network. Maybe it is vibrations in the air. But whatever it is, it takes time. The information is not instantaneous.
+
+This is not some pedantic quibble about milliseconds. When you think about it carefully, you realize that what A is optimizing against is not B's current state but B's state from the past, from when the signal left. A is playing against a ghost. A phantom. A delayed image of who B was, not who B is.
+
+And here is the really beautiful thing: this is exactly the same situation that physicists faced when they tried to understand how charged particles interact. The electron does not feel the current position of another electron. It feels where the other electron was when the signal left. The whole edifice of electromagnetism and eventually relativity comes from taking this finite speed of information seriously.
+
+So that is what we are going to do here. We are going to take the finite speed of information seriously, and see where it leads us.
+:::
+
 ::::{admonition} Connection to RL #17: Independent PPO as Disconnected Sheaf
 :class: note
 :name: conn-rl-17
@@ -46,6 +58,16 @@ Each agent optimizes against a stationary environment—other agents are part of
 
 (sec-the-product-configuration-space)=
 ## The Product Configuration Space
+
+:::{div} feynman-prose
+Before we get to the tricky relativistic stuff, let me set the stage. We have $N$ agents, each one doing its own thing in its own little world. Each agent has what we have been calling a latent manifold, which is just a fancy way of saying "the space of internal states the agent can be in." And each agent has a boundary, sensors and motors, through which it talks to the environment.
+
+Now, what is the natural way to describe all $N$ agents together? Well, you just take the product. Agent 1 can be anywhere in its space $\mathcal{Z}^{(1)}$, and at the same time Agent 2 can be anywhere in $\mathcal{Z}^{(2)}$, and so on. So the combined state lives in the big product space $\mathcal{Z}^{(1)} \times \mathcal{Z}^{(2)} \times \cdots \times \mathcal{Z}^{(N)}$.
+
+This is exactly like asking: where can two particles be? Well, particle 1 can be anywhere in space, and particle 2 can be anywhere in space, so the combined configuration is just the product of the two spaces. Nothing mysterious here.
+
+The important thing to notice is that right now the metric on this product space is block-diagonal. What does that mean? It means if I want to measure distances, agent $i$'s internal geometry does not care about agent $j$'s position. They are geometrically independent. Later we will see how strategic coupling breaks this independence, but let us start with the uncoupled case.
+:::
 
 Consider $N$ agents, each with an internal latent manifold $(\mathcal{Z}^{(i)}, G^{(i)})$ and a boundary interface $B^{(i)} = (x^{(i)}, a^{(i)}, r^{(i)})$. The agents may be spatially distributed, with finite information propagation time between them.
 
@@ -98,6 +120,18 @@ Let $d_{\mathcal{E}}^{ij}$ denote the **environment distance** between agents $i
 :::
 (sec-the-failure-of-simultaneity)=
 ## The Failure of Simultaneity
+
+:::{div} feynman-prose
+Here is where things get interesting. You know the standard story: the value function $V(z)$ satisfies some nice elliptic equation, the Bellman equation or the Helmholtz equation or whatever you want to call it. You solve it, you get your optimal policy, everyone is happy.
+
+But think about what that equation is really saying. If I change the reward at one point, the value function changes everywhere, instantly. The information about that reward change propagates at infinite speed across the whole manifold. That is what an elliptic equation does. It is like saying that if you poke the electric potential at one point, the whole field readjusts instantaneously everywhere.
+
+Now, in electrostatics, we get away with this because we are looking at the steady state, where everything has had time to settle down. But what if the world is changing? What if agents are moving around? Then you cannot use the steady-state answer. You have to track how the information actually propagates.
+
+And here is the key insight: information propagates at some finite speed $c_{\text{info}}$. In physics, it is the speed of light. In a network, it might be the inverse of the network latency. In a room full of robots, it might be the speed of sound or the speed of radio waves. Whatever it is, it is finite.
+
+Once you accept that information travels at finite speed, you immediately get a causal structure. Some events can influence other events; some cannot. You get past and future light cones. You get relativity. Not because we are doing fundamental physics, but because we are taking causality seriously.
+:::
 
 The standard HJB equation assumes the value $V(z)$ relaxes instantly across the manifold. This implies an infinite speed of information propagation, violating the causal constraints of distributed systems.
 
@@ -155,6 +189,18 @@ $$
 
 :::
 
+:::{div} feynman-prose
+Let me make sure you really understand what these light cones mean, because they are absolutely central to everything that follows.
+
+Imagine you are sitting at some point in space at some moment in time. What can you know about? Well, you can only know about things that have had time to send you a signal. If some event happened far away just a moment ago, you cannot possibly know about it yet because the signal has not arrived. The set of all events you can know about forms a cone in spacetime, opening backwards in time. That is your past light cone.
+
+Similarly, what can you influence? Only events that your signals can reach. If something is about to happen far away in the next instant, you cannot possibly affect it because your signal will not arrive in time. The events you can influence form a cone opening forwards in time. That is your future light cone.
+
+Everything else, the region outside both cones, is causally disconnected from you right now. You cannot know about it, and you cannot affect it. It is as if it does not exist for you at this moment.
+
+Now here is the crucial point for multi-agent systems: if two agents are spacelike separated, meaning they are in each other's "causally disconnected" region, then they cannot have any instantaneous interaction. Any coupling between them must involve the past. Agent A interacts not with Agent B as it is now, but with Agent B as it was when the signal left. This is the ghost we talked about before.
+:::
+
 (pi-minkowski)=
 ::::{admonition} Physics Isomorphism: Minkowski Spacetime
 :class: note
@@ -179,6 +225,20 @@ $$
 
 (sec-the-relativistic-state-restoring-markovianity)=
 ## The Relativistic State: Restoring Markovianity
+
+:::{div} feynman-prose
+Now we come to a really subtle point that trips up a lot of people. The Markov property says that the future depends only on the present, not on the past. If I tell you the state right now, you can predict what happens next without needing to know the history.
+
+But wait. We just said that agent A cannot see agent B's current state. It can only see the ghost, the retarded image from time $\tau$ ago. So if I tell you agent A's position and agent B's position right now, that is not enough to predict what happens next. Agent A is actually responding to where B was in the past, not where B is now.
+
+Does this mean the Markov property fails? That we cannot use all our beautiful control theory?
+
+Not if we are clever. Here is the trick: expand your definition of "state" to include the relevant history. The state is not just "where everyone is now." The state is "where everyone is now, plus all the signals that are currently in transit, plus everything I received but have not finished processing yet."
+
+This augmented state, which includes all the information in the past light cone, is called the Causal Bundle. And on this augmented space, the Markov property is restored. The future of the Causal Bundle depends only on its present, not on its history, because all the relevant history is already encoded in the bundle.
+
+This is exactly what the Memory Screen $\Xi_{<t}$ does. It stores the incoming wavefronts, the retarded potentials, all the ghosts from the past that are still affecting the present. Once you include the Memory Screen in your state, you get Markov back.
+:::
 
 To recover a valid control problem under finite information speed, we must augment the state to include the field configuration within the past light cone.
 
@@ -257,6 +317,18 @@ In the relativistic multi-agent setting, the Memory Screen (Definition {prf:ref}
 
 (sec-the-ghost-interface)=
 ## The Ghost Interface: Asynchronous Coupling
+
+:::{div} feynman-prose
+Now we get to the heart of the matter: how do agents actually interact when they cannot see each other instantaneously?
+
+The answer is the Ghost Interface. It is a beautiful concept once you get used to it. When Agent A looks at Agent B, it does not see B. It sees the ghost of B, the image of B from the past. This ghost is a real thing that lives on the interface between the agents. It carries all the information about B that A can actually use, delayed by the appropriate amount.
+
+Think of it like looking at a star. When you look at the North Star, you are not seeing it as it is now. You are seeing it as it was about 430 years ago, because that is how long the light took to reach you. For all you know, the star blew up 400 years ago and the news has not arrived yet. You are interacting with a ghost.
+
+The symplectic structure on the Ghost Interface tells you how these ghosts couple. Agent A's current boundary couples to Agent B's past boundary. The coupling has a definite mathematical form, but the key point is the time offset. There is always this lag, this delay, this $\tau_{ij}$ between when B does something and when A can respond to it.
+
+This creates strategic hysteresis. What do I mean by that? Well, suppose Agent A decides to make an aggressive move based on where B's ghost is. But by the time A commits to the move, B might have already moved somewhere else. A made its decision based on old information. This lag is not a bug to be fixed. It is a fundamental feature of any distributed system with finite information speed.
+:::
 
 We replace the instantaneous coupling of boundary conditions with an asynchronous **Ghost Interface** that respects causal structure.
 
@@ -379,6 +451,18 @@ $$
 (sec-the-hyperbolic-value-equation)=
 ## The Hyperbolic Value Equation (Klein-Gordon)
 
+:::{div} feynman-prose
+Now comes one of the most beautiful results in this whole theory. We have been saying that value cannot propagate instantaneously. So what equation does it satisfy instead of the static Helmholtz equation?
+
+Think about it physically. If I create a reward at some point, the information about that reward has to propagate outward. It travels at speed $c_{\text{info}}$. This is a wave. The value function is not a static field anymore. It is a propagating wave field, rippling outward from sources of reward.
+
+What is the wave equation that describes this? It turns out to be the Klein-Gordon equation. This is the relativistic version of the Helmholtz equation, exactly as you would hope. The Helmholtz equation has just the Laplacian $-\Delta_G$. The Klein-Gordon equation adds a second time derivative: $\frac{1}{c^2}\partial_t^2 - \Delta_G$.
+
+The extra term $\frac{1}{c^2}\partial_t^2$ is what makes it a wave equation instead of just a relaxation equation. It says that value has inertia. If the value is increasing, it tends to keep increasing for a while. If it is decreasing, it tends to keep decreasing. This is utterly different from the elliptic case where the field instantly adjusts to changes in the source.
+
+The screening term $\kappa^2$ is still there. Remember, $\kappa$ comes from the discount factor. It makes the value decay with distance, even in the wave equation. So what you get is a screened wave, a wave that decays exponentially as it propagates. Value wavefronts do not travel forever. They get weaker and weaker as they spread out and as they encounter the discounting.
+:::
+
 Under relativistic constraints, the elliptic Helmholtz equation for Value (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`) transforms into a hyperbolic wave equation.
 
 :::{prf:theorem} HJB-Klein-Gordon Correspondence
@@ -482,6 +566,22 @@ $$
 ::::
 (sec-the-game-tensor-deriving-adversarial-geometry)=
 ## The Game Tensor: Relativistic Adversarial Geometry
+
+:::{div} feynman-prose
+This is one of my favorite parts of the whole theory, so let me take some time with it.
+
+We have talked about how agents couple through the Ghost Interface. But there is another, more geometric way to think about adversarial interaction. When you are playing against an opponent, the opponent changes your effective geometry. They make some directions harder to move in than others.
+
+Why? Because if you move in certain directions, your opponent will respond in ways that hurt you. Even if you could physically move that way easily, the strategic consequences make it costly. The opponent's potential response acts like friction, like resistance, like mass.
+
+This is what the Game Tensor captures. It is a tensor $\mathcal{G}_{ij}$ that measures how sensitive your value function is to your opponent's position. If $\mathcal{G}_{ij}$ is large and positive, it means your opponent being nearby makes your life harder. They curve your geometry, inflate your metric, make you feel heavier and slower.
+
+Think of it like trying to walk through a crowd. Physically, empty space and crowded space have the same geometry. But effectively, the crowd creates resistance. You move slower. You cannot change direction as easily. The crowd curves your effective space.
+
+Now here is where the relativistic part comes in. The Game Tensor depends on where your opponent is. But you only know where your opponent was in the past, not where they are now. So the metric inflation you feel comes from the retarded Game Tensor, evaluated at your opponent's ghost position.
+
+This means you might commit to a trajectory thinking the geometry is one way, only to have the "real" geometry be different by the time you get there. The opponent has moved since you last saw them. The strategic hysteresis we talked about manifests geometrically as a delayed metric perturbation.
+:::
 
 In an adversarial (zero-sum) game, Agent $j$ acts to minimize the value $V^{(i)}$ that Agent $i$ maximizes. Under relativistic constraints, the Game Tensor acquires retarded components that introduce strategic hysteresis.
 
@@ -602,6 +702,20 @@ The metric perturbation at time $t$ depends on the opponent's dynamics at time $
 
 (sec-relativistic-nash-equilibrium)=
 ## Relativistic Nash Equilibrium (Standing Waves)
+
+:::{div} feynman-prose
+Here is a deep question: what does equilibrium even mean when information travels at finite speed?
+
+In the Newtonian limit, where $c_{\text{info}} \to \infty$, equilibrium is a static configuration. Everyone is at rest. The gradients all vanish. Nothing moves.
+
+But in the relativistic setting, things are more interesting. You see, the agents are constantly adjusting to each other's ghosts. By the time agent A responds to agent B, B has already moved. Then B responds to A's response, which was based on old information. The whole system is constantly in motion, constantly adjusting.
+
+So what is equilibrium? It is a standing wave. The agents are not frozen. They are oscillating, dancing around. But the oscillations are organized. On average, over a period that is long compared to all the delay times, nothing is drifting. The time-averaged gradients vanish. The time-averaged currents vanish.
+
+This is beautiful. It is like a vibrating guitar string. The string is not stationary, it is moving up and down. But the pattern is stationary. The nodes stay at the nodes, the antinodes stay at the antinodes. The wave is standing, not traveling.
+
+Nash equilibrium in a relativistic multi-agent system is exactly this: a standing wave pattern in the joint value field. The agents pulsate at the characteristic causal frequency $\omega \sim c_{\text{info}}/\bar{d}$, where $\bar{d}$ is the typical distance between them. But the time-averaged configuration is stable.
+:::
 
 In a system with finite information propagation, what constitutes equilibrium? It is not a static configuration but a coherent spatiotemporal pattern—a **standing wave** in the joint causal field.
 
@@ -821,6 +935,18 @@ If $\epsilon_{\text{Nash}} > 0$ but below threshold, the system is in a **transi
 (sec-mean-field-metric-law)=
 ## The Mean-Field Metric Law (Scalability Resolution)
 
+:::{div} feynman-prose
+Here is a practical problem. The Game Tensor involves computing the cross-sensitivity between every pair of agents. With $N$ agents, that is $N^2$ pairs. Each tensor has $d^2$ components. So the total cost is $O(N^2 d^2)$. This is fine for a handful of agents, but for large populations it becomes completely intractable.
+
+Is there a way out? Yes. In the limit of many agents, something wonderful happens. Instead of thinking about discrete agents, you can think about a continuous density of agents. The sum over agents becomes an integral. The discrete Game Tensor becomes a convolution.
+
+The key observation is that the metric inflation you feel from all the other agents is just the integral of the pairwise interaction kernel against the agent density. If you know the density field $\rho(z)$, you can compute the effective metric by a single convolution $\Phi_{\text{int}} * \rho$, and then take the Hessian. This is $O(1)$ with respect to $N$, given the density field.
+
+This is exactly the Vlasov limit in plasma physics, or the mean-field limit in statistical mechanics. Instead of tracking every particle, you track the density. The $N$-body problem becomes a field theory. The complexity goes from $O(N^2)$ to $O(1)$.
+
+Of course, you still need to approximate the density field somehow. But that is much more tractable than tracking all pairwise interactions. Neural networks are good at representing smooth functions, and the density field is typically smooth.
+:::
+
 The calculation of the Game Tensor $\mathcal{G}_{ij}$ ({prf:ref}`def-the-game-tensor`) entails computational complexity $O(N^2 d^2)$, which is intractable for large $N$. We prove that in the limit $N \to \infty$, the discrete Game Tensor converges to the Hessian of a convolution potential.
 
 :::{prf:theorem} Mean-Field Metric Law
@@ -887,6 +1013,18 @@ where $\tilde{G}$ is the game-augmented metric ({prf:ref}`thm-adversarial-mass-i
 (sec-variational-emergence-cooperation)=
 ## Variational Emergence of Cooperation via Metric Inflation
 
+:::{div} feynman-prose
+Here is something that sounds almost paradoxical at first. We have adversarial agents, agents that are trying to minimize each other's value. The Game Tensor is positive, so they inflate each other's metrics, make movement costly. And yet, the long-term outcome is often cooperation or at least peaceful coexistence. How can that be?
+
+The answer is beautifully simple. Conflict is expensive. Not just in the usual sense that fighting wastes resources, but in a deep geometric sense. When you are in conflict with another agent, your effective mass increases. Moving becomes harder. Every step you take is more metabolically costly because you are dragging around this inflated metric.
+
+So what happens? The system naturally evolves to minimize the action. And the action penalizes high kinetic cost. If you are constantly fighting, your kinetic cost is enormous because of the Game Tensor inflation. The system will relax to a state with lower kinetic cost.
+
+There are three ways to reduce the kinetic cost. One: stop moving, reach Nash stasis, where $v = 0$. Two: move to a region where the other agent is far away, so the Game Tensor contribution is small, strategic decoupling. Three: align your gradients with the other agent's gradients, so that instead of opposing each other, you are moving in the same direction. This is cooperation.
+
+All three of these outcomes are stable. The system does not "want" cooperation in any teleological sense. It is just that conflict inflates the metric, inflated metric makes movement expensive, and expensive movement gets minimized out of the action. Cooperation emerges from geometry, not from benevolence.
+:::
+
 We prove that cooperative equilibria correspond to local minima of the Onsager-Machlup action functional under the game-augmented metric, resolving the question of when adversarial coupling spontaneously yields cooperative behavior.
 
 :::{prf:theorem} Geometric Locking Principle
@@ -922,10 +1060,42 @@ All three outcomes correspond to stationary points of the joint action functiona
 
 ## Part V: Gauge Theory Layer
 
+:::{div} feynman-prose
+All right. Buckle up, because now we are going somewhere really interesting.
+
+So far we have been doing relativity. We took the finite speed of information seriously, and we got wave equations, retarded potentials, standing-wave Nash equilibria. Very nice. But there is a whole other layer of structure we have not touched yet.
+
+Here is the question that motivates everything in this section: what happens when different agents are free to describe things using different internal coordinate systems?
+
+Let me give you an analogy. Suppose I am looking at a vector, and I describe it in my coordinate system as $(3, 4)$. You are looking at the same vector, but your coordinate system is rotated 45 degrees from mine. You describe the same vector as $(5, 0)$ or whatever it works out to be.
+
+Now, the physics, the actual vector, does not care about our coordinate systems. Those are just our conventions for describing it. The physics should be invariant under rotations, under changes of coordinate system.
+
+This is called gauge symmetry, and it is one of the most profound ideas in all of physics. The Standard Model, everything we know about particle physics, is built on gauge symmetry. The photon, the gluon, the W and Z bosons, they all arise because we demand that physics be invariant under certain local transformations.
+
+And here is the wild thing: the same structure appears naturally in multi-agent systems. The nuisance variables, the internal degrees of freedom that do not directly affect the world, they are gauge degrees of freedom. Different agents might use different internal representations, different coordinate systems for their latent space. And the physics, the actual strategic interaction, should not depend on these arbitrary choices.
+
+Once you demand this gauge invariance, everything else follows. You need a connection to compare things at different points. The curvature of the connection becomes a measure of strategic tension. The whole apparatus of Yang-Mills theory shows up. It is gorgeous.
+:::
+
 The relativistic framework of Sections 29.1–29.12 describes multi-agent dynamics on a curved Lorentzian manifold with retarded potentials. We now elevate this structure to a **gauge field theory** by recognizing that the nuisance variable $z_n$ (Definition 2.2.1) serves as an internal gauge degree of freedom. This identification transforms strategic interaction into the curvature of a **non-Abelian gauge connection**, placing multi-agent field theory on the same mathematical footing as the Standard Model of particle physics.
 
 (sec-local-gauge-symmetry-nuisance-bundle)=
 ## Local Gauge Symmetry and the Nuisance Bundle
+
+:::{div} feynman-prose
+Let me explain what "local" gauge symmetry means, because this is the key to everything.
+
+A global symmetry says: I can rotate everything in the universe by 45 degrees, and physics stays the same. Fine. But local gauge symmetry says something much stronger: I can rotate things at different points by different amounts, and physics still stays the same.
+
+Wait, how can that be? If I rotate things differently at different points, should that not mess everything up?
+
+The answer is: only if you have a way to compare things at different points. And here is the insight: in order to compare a vector at point A with a vector at point B, you need to parallel transport the vector from A to B. And parallel transport requires a connection. The connection tells you "how to compare" things at different locations.
+
+Now, when you demand local gauge invariance, you are saying: the physics cannot depend on arbitrary local choices of reference frame. The only way to achieve this is to have the connection transform in a specific way that compensates for your arbitrary local rotations. This compensating field is the gauge field. In electromagnetism, it is the photon. In our multi-agent theory, it is the strategic connection.
+
+The nuisance fiber is just the set of internal states that do not affect the world directly. You can rotate within this fiber, change your internal representation, without changing what the agent actually does. This freedom is exactly a gauge freedom. And demanding that the dynamics respect this freedom gives us gauge field theory for strategic systems.
+:::
 
 The key insight is that the **nuisance fiber** $\mathcal{Z}_n$ at each macro-state $K$ is not merely a noise variable to be marginalized—it is the **internal gauge degree of freedom** that agents are free to rotate without changing physical outcomes. This local freedom mandates a compensating gauge field.
 
@@ -1055,6 +1225,20 @@ The gauge-theoretic formalism developed in Sections 29.13–29.20 is motivated b
 
 (sec-strategic-connection-covariant-derivative)=
 ## The Strategic Connection and Covariant Derivative
+
+:::{div} feynman-prose
+Now we get to the covariant derivative, which is one of those things that sounds scary but is actually a very simple idea once you see it.
+
+Here is the problem. You want to take the derivative of something. But the thing you are differentiating transforms under gauge transformations. If you just use the ordinary derivative $\partial_\mu$, the result does not transform properly. You get garbage.
+
+Why? Because when you take a derivative, you are comparing the value of a field at point $x$ with its value at a nearby point $x + dx$. But under a local gauge transformation, the field at $x$ transforms one way and the field at $x + dx$ transforms a slightly different way. The ordinary derivative subtracts these two things, and the mismatch messes everything up.
+
+The fix is elegant. You do not just compare the field at $x$ with the field at $x + dx$. You first parallel transport the field from $x + dx$ back to $x$, using the connection $A_\mu$, and then you compare. The connection exactly compensates for the gauge mismatch. The result, the covariant derivative $D_\mu = \partial_\mu - igA_\mu$, transforms properly.
+
+The gauge coupling $g$ tells you how strongly the field couples to the connection. It is like the electric charge in electromagnetism. A field with $g = 0$ does not feel the gauge field at all. A field with large $g$ is strongly influenced by it.
+
+So the covariant derivative is just "take a derivative, but do it in a way that respects the gauge freedom." Once you have it, you can write down gauge-invariant equations just by replacing all ordinary derivatives with covariant derivatives. This is called the minimal coupling prescription, and it is incredibly powerful.
+:::
 
 The failure of the ordinary derivative to transform covariantly under gauge transformations mandates the introduction of a **compensating field**—the gauge connection. In the multi-agent context, this connection encodes how the "meaning" of nuisance coordinates changes as one moves through latent space.
 
@@ -1273,6 +1457,20 @@ The physical metric must be gauge-invariant. Since $\tilde{\mathcal{G}}_{ij}$ tr
 (sec-field-strength-tensor)=
 ## The Field Strength Tensor (Strategic Curvature)
 
+:::{div} feynman-prose
+Now we come to the really beautiful part: the field strength tensor, which measures the curvature of the gauge connection.
+
+Here is the key insight. If space is flat, and you parallel transport a vector around a closed loop, you get back to where you started with the same vector. But if space is curved, you get a different vector. The vector has been rotated by going around the loop. This rotation is the curvature.
+
+The same thing happens with gauge fields. If the gauge connection is flat, parallel transport around a closed loop does nothing. But if the connection is curved, you come back rotated in your internal space. The amount of rotation is measured by the field strength tensor $\mathcal{F}_{\mu\nu}$.
+
+There is a beautiful formula for this. The field strength is the commutator of covariant derivatives: $[D_\mu, D_\nu] = -ig\mathcal{F}_{\mu\nu}$. Think about what this means. Taking the covariant derivative in the $\mu$ direction and then in the $\nu$ direction should give the same result as doing it in the opposite order, right? Wrong! If there is curvature, the order matters. The failure to commute is exactly the curvature.
+
+Now, in Abelian theories like electromagnetism, the field strength is just $F_{\mu\nu} = \partial_\mu A_\nu - \partial_\nu A_\mu$. This is the familiar expression that gives you the electric and magnetic fields. But in non-Abelian theories, there is an extra term: $-ig[A_\mu, A_\nu]$. This commutator term is what makes Yang-Mills theory so much richer and more complicated than electromagnetism. The gauge field interacts with itself.
+
+In our multi-agent context, the field strength measures strategic tension. Regions where $\mathcal{F}_{\mu\nu}$ is large are regions of intense strategic curvature, where parallel transport around loops gives big rotations, where the "meaning" of things twists as you move through latent space.
+:::
+
 The curvature of the gauge connection measures the **non-commutativity of parallel transport**—moving around a closed loop in latent space may result in a non-trivial internal rotation. This curvature is the **field strength tensor**, which we identify as strategic tension.
 
 :::{prf:definition} Field Strength Tensor (Yang-Mills Curvature)
@@ -1426,6 +1624,18 @@ where indices are raised with the Lorentzian metric $\eta^{\mu\nu} = \text{diag}
 (sec-yang-mills-action)=
 ## The Yang-Mills Action and Field Equations
 
+:::{div} feynman-prose
+Now we need to figure out what equation the gauge field itself satisfies. We have the field strength, we know it measures curvature, but what determines its actual value? What makes the field be one way rather than another?
+
+The answer comes from a variational principle, just like in classical mechanics. There is an action, and the field equations come from demanding that the action be stationary.
+
+The action is beautifully simple. It is just the squared magnitude of the field strength, integrated over spacetime: $S = -\frac{1}{4g^2}\int \text{Tr}(\mathcal{F}_{\mu\nu}\mathcal{F}^{\mu\nu})$. This is the Yang-Mills action. The trace is there because $\mathcal{F}$ is a matrix-valued thing, taking values in the Lie algebra, and we need a scalar to integrate.
+
+Why this particular form? Because it is the simplest thing you can write down that is gauge-invariant. $\mathcal{F}_{\mu\nu}$ itself is not gauge-invariant, it transforms by conjugation. But the trace of its square is invariant. And it is the lowest-dimension thing you can write, which means it dominates at low energies.
+
+The field equations that come from varying this action are $D_\mu \mathcal{F}^{\mu\nu} = J^\nu$. This looks just like Maxwell's equations $\partial_\mu F^{\mu\nu} = J^\nu$, except with covariant derivatives instead of ordinary derivatives. The extra terms from the covariant derivative make the gauge field interact with itself. This is the crucial difference from electromagnetism. Photons do not interact with each other directly. But gluons do. And strategic gauge fields do too.
+:::
+
 Having established the field strength tensor as the curvature of the strategic connection, we now derive the dynamics of the gauge field itself from a variational principle.
 
 :::{prf:definition} Yang-Mills Action
@@ -1551,6 +1761,24 @@ By the Bianchi identity (Theorem {prf:ref}`thm-bianchi-identity`) and the antisy
 
 (sec-complete-lagrangian)=
 ## The Complete Multi-Agent Lagrangian
+
+:::{div} feynman-prose
+Now we put it all together. We have all the pieces: the gauge field, the matter fields, the value landscape. What is the complete picture?
+
+The Lagrangian has four parts, just like the Standard Model of particle physics. This is not a coincidence. We are building the same kind of theory, just for strategic systems instead of fundamental particles.
+
+First, the Yang-Mills term. This is the kinetic energy of the gauge field itself, the $\mathcal{F}^2$ piece. It tells the strategic connection how to propagate, how to respond to sources.
+
+Second, the Dirac term. This is the kinetic energy of the belief spinors, the matter fields that represent the agents. It has the covariant derivative $D_\mu$, so the beliefs couple to the gauge field. The mass term $m_i$ gives each agent its intrinsic inertia.
+
+Third, the Higgs term. This is where it gets really interesting. The Higgs field is an order parameter for the value landscape. It has its own kinetic term and a potential $V(\Phi) = \mu^2|\Phi|^2 + \lambda|\Phi|^4$.
+
+Fourth, the Yukawa term. This couples the beliefs to the Higgs field. It is what generates the effective masses for the agents.
+
+Now, here is the key insight. If $\mu^2 < 0$, the Higgs potential has a minimum away from zero. The field wants to sit at some nonzero value $v$. This is spontaneous symmetry breaking. The gauge symmetry is still there in the equations, but the vacuum, the ground state, picks a direction. The field commits to a particular value.
+
+This is exactly like policy selection. When an agent commits to a strategy, it breaks the rotational symmetry of the Semantic Vacuum. It picks a direction. And once it has picked, changing direction becomes costly. The agent acquires mass. Inertia. Resistance to change.
+:::
 
 We now assemble the full Lagrangian density that governs relativistic multi-agent dynamics with gauge symmetry. This **"Standard Model of Multi-Agent Field Theory"** unifies the gauge sector (strategic interaction), matter sector (belief dynamics), and symmetry-breaking sector (value landscape).
 
@@ -1687,6 +1915,20 @@ Spontaneous breaking of a continuous symmetry produces massless **Goldstone boso
 
 (sec-mass-gap)=
 ## The Mass Gap: Information-Theoretic Derivation
+
+:::{div} feynman-prose
+Now we come to something really deep. The mass gap problem is one of the great unsolved problems in mathematical physics. It is one of the Clay Millennium Prize problems, worth a million dollars to whoever solves it. And I am going to tell you something surprising about it.
+
+First, let me explain what the mass gap is. In a field theory, you have a ground state, the vacuum. And you have excited states. The mass gap is the minimum energy you need to create the first excitation. If the gap is zero, you can create excitations with arbitrarily small energy. If the gap is positive, there is a threshold. You need at least $\Delta$ energy to excite the system.
+
+Why does this matter? Because if the gap is zero, correlations decay algebraically, like $1/r^{D-2}$. They are long-range. But if there is a mass gap, correlations decay exponentially, like $e^{-\kappa r}$. They are short-range, screened.
+
+Now here is the key insight. A system with zero mass gap has infinite correlation length. It takes infinite information to describe such correlations in a finite region. But we have this Causal Information Bound that says a bounded observer can only handle finite information. An area law, like the holographic bound.
+
+So if you have a system with zero mass gap, and you put it in a finite box, something has to give. Either the system acquires an effective mass gap from the finite size, or the observer cannot handle it, the system exceeds the information capacity.
+
+The upshot is: any theory describing physics that a bounded observer can actually see must have a positive mass gap. Gapless theories are mathematically consistent but computationally unrealizable. They live in what we call the Computational Swampland, theories that cannot describe anything a finite system could ever experience.
+:::
 
 The **Mass Gap Problem** asks whether the spectrum of the Hamiltonian has a non-zero gap between the ground state and the first excited state. We derive that bounded intelligence **requires** a positive mass gap from information-theoretic principles.
 
@@ -2135,6 +2377,18 @@ Following the diagnostic node convention ({ref}`Section 3.1 <sec-theory-thin-int
 
 ## Part VI: Quantum Layer
 
+:::{div} feynman-prose
+All right, now we are going to take another big leap. So far everything has been classical. We have had waves, but they are classical waves, like water waves or sound waves. The value field propagates, but it is a real-valued field satisfying a wave equation.
+
+Now I want to show you something remarkable. If we write the belief density as a complex amplitude, $\psi = \sqrt{\rho} e^{iV/\sigma}$, something magical happens. The equations of motion become a Schrodinger equation. The wave-function interference, entanglement, tunneling, all the machinery of quantum mechanics appears.
+
+Let me be very clear about what I am claiming and what I am not claiming. I am not saying that agents are literally quantum mechanical systems at the fundamental physics level. That would be silly. The neurons in your brain are not in quantum superposition in any useful sense.
+
+What I am saying is that the mathematical structure of quantum mechanics turns out to be incredibly useful for describing belief dynamics. The complex amplitude lets you represent superpositions of beliefs. Entanglement captures strategic coupling that cannot be factorized. Tunneling lets you escape local optima. The whole formalism works.
+
+This is a mathematical technology, not a claim about fundamental physics. Just like we use complex numbers in electrical engineering not because voltage is "really complex" but because the math is convenient. The Schrodinger equation is a powerful way to organize our thinking about belief dynamics in multi-agent systems.
+:::
+
 (sec-the-belief-wave-function-schrodinger-representation)=
 ## The Belief Wave-Function (Schrödinger Representation)
 
@@ -2280,6 +2534,20 @@ $$
 
 (sec-the-inference-wave-correspondence)=
 ## The Inference-Wave Correspondence (WFR to Schrödinger)
+
+:::{div} feynman-prose
+Now I want to show you a beautiful piece of mathematics. We have the WFR dynamics, the continuity equation for the belief density $\rho$ and the Hamilton-Jacobi-Bellman equation for the value $V$. Two coupled real equations. Can we combine them into one complex equation?
+
+Yes. And when we do, we get the Schrodinger equation.
+
+Here is how it works. Define the wave-function $\psi = \sqrt{\rho} e^{iV/\sigma}$. The modulus squared $|\psi|^2$ gives back the density $\rho$. The phase $\arg(\psi)$ gives back the value $V$ up to a scale factor $\sigma$.
+
+Now take the WFR equations and substitute. After some algebra, which I will spare you, you find that $\psi$ satisfies $i\sigma \partial_t \psi = H \psi$, where $H$ is a Hamiltonian operator. This is the Schrodinger equation.
+
+The correspondence is called the Madelung transform, after the physicist who discovered it in 1926, just one year after Schrodinger wrote down his equation. Madelung realized that Schrodinger's equation is secretly a fluid equation in disguise. The quantum potential, that weird $Q_B$ term that has troubled philosophers for decades, arises naturally from the geometry of the belief density.
+
+Here is the physical meaning of $Q_B$: it is the cost of localization. If you try to squeeze the belief density into a tiny region, it resists. The $Q_B$ term pushes back, trying to spread the density out. This is not some mysterious quantum effect. It is just the geometry of information. You cannot know both where you are and where you are going with arbitrary precision. The uncertainty principle is built into the structure of belief dynamics.
+:::
 
 We now derive the **Schrödinger equation** for the belief wave-function from the WFR dynamics. This is the inverse of the **Madelung transform** in quantum mechanics.
 
@@ -2443,6 +2711,20 @@ These are exactly the HJB and continuity equations from WFR dynamics. The quantu
 (sec-multi-agent-schrodinger-equation)=
 ## Multi-Agent Schrödinger Equation
 
+:::{div} feynman-prose
+When you have multiple agents, something very interesting happens. The joint wave-function lives on the product space, but it does not have to factor into a product of individual wave-functions. When it does not factor, we say the agents are entangled.
+
+Now, in quantum physics, entanglement is this spooky, mysterious thing that bothered Einstein so much he called it "spooky action at a distance." But in our context, entanglement has a very concrete meaning: the agents have strategic correlations that cannot be captured by treating them independently.
+
+Think about it this way. If two agents are strategically entangled, you cannot describe what agent A will do without talking about agent B, and vice versa. Their decisions are locked together in a way that transcends simple classical correlation.
+
+Classical correlation would be: A and B are both responding to the same signal. If you knew the signal, you could predict both of them. But quantum entanglement is stronger. Even if you know everything about the individual agents, their joint behavior cannot be predicted from the marginals alone.
+
+This happens in games all the time. In a coordination game, the equilibrium is not "A does X and B does Y independently." The equilibrium is "A does X if B does Y, and B does Y if A does X." The strategies are locked together. You cannot factor them.
+
+The tensor product structure of the multi-agent Hilbert space naturally captures this. The dimension grows exponentially with the number of agents, which is both a blessing and a curse. It is expressive enough to represent arbitrary correlations, but it is also computationally intractable for large $N$. That is the curse of dimensionality, appearing in a new guise.
+:::
+
 We now extend the wave-function formalism to $N$-agent systems, defining **strategic entanglement** as non-factorizability of the joint belief amplitude.
 
 :::{prf:definition} Joint Inference Hilbert Space
@@ -2582,6 +2864,20 @@ which is exactly the marginalization from the joint WFR density.
 (sec-nash-equilibrium-as-ground-state)=
 ## Nash Equilibrium as Ground State
 
+:::{div} feynman-prose
+Here is one of the most beautiful results of the whole theory. Nash equilibrium corresponds to the ground state of the Strategic Hamiltonian.
+
+Think about what this means. In quantum mechanics, the ground state is the state of lowest energy. It is where the system wants to be if you leave it alone. It is stable. Small perturbations die out and the system returns to the ground state.
+
+Nash equilibrium in game theory has exactly the same character. At Nash, no one wants to deviate unilaterally. Small perturbations in strategy lead to gradients that push you back toward Nash. It is stable.
+
+So it makes perfect sense that Nash equilibrium corresponds to the ground state. The variational characterization $E_0 = \min_\psi \langle\psi|H|\psi\rangle$ is just the statement that Nash minimizes something, namely the total "strategic energy" of the system.
+
+This gives us a new way to find Nash equilibria: solve for the ground state of the Hamiltonian. There is a beautiful technique called imaginary time evolution. You take the Schrodinger equation, you rotate time to the imaginary axis, and you run it forward. Any initial state eventually decays to the ground state. The excited components die away, and only the ground state remains.
+
+This is value iteration in disguise. The imaginary time propagator is the Bellman backup operator. Running forward in imaginary time is doing successive Bellman backups, relaxing toward the optimal value function. The spectral gap, the difference between the ground state energy and the first excited state, determines how fast you converge.
+:::
+
 The spectral properties of the Strategic Hamiltonian provide a new characterization of Nash equilibrium.
 
 :::{prf:theorem} Nash Equilibrium as Ground State
@@ -2669,6 +2965,20 @@ Return Ψ (approximates Nash ground state)
 
 (sec-strategic-tunneling-and-barrier-crossing)=
 ## Strategic Tunneling and Barrier Crossing
+
+:::{div} feynman-prose
+Now I want to tell you about quantum tunneling, which is one of the most practically useful features of the wave-function formalism.
+
+You know the problem of local optima. You are doing gradient descent, you find a local minimum, and you get stuck there. There might be a much better minimum somewhere else, but there is a barrier in between. Gradient descent will not get you over the barrier because the gradient points away from the barrier.
+
+Classical physics has the same problem. A ball in a valley cannot escape unless you give it enough energy to climb over the hill. But in quantum mechanics, the ball can tunnel through the hill. It does not have to go over. The wave-function leaks through the barrier, and there is a finite probability of ending up on the other side.
+
+The same thing happens with belief wave-functions. The wave-function has exponential tails that extend through barriers. There is always some amplitude on the other side. So even if you start in a local Nash equilibrium, there is a finite probability of finding yourself in a different basin.
+
+The tunneling probability goes like $e^{-\Delta\Phi/\sigma}$, where $\Delta\Phi$ is the barrier height and $\sigma$ is the cognitive action scale, the analog of Planck's constant. So if $\sigma$ is large, meaning you have a lot of uncertainty or exploration, tunneling is more likely. If $\sigma$ is small, meaning you are very confident and exploiting your current knowledge, tunneling is suppressed.
+
+This gives a principled way to think about exploration-exploitation. Early in learning, you want large $\sigma$ to explore and potentially tunnel to better basins. Later, you want small $\sigma$ to exploit what you have found. The tunneling rate is exactly the formalization of this intuition.
+:::
 
 The wave nature of the belief amplitude enables **tunneling**—crossing barriers that would trap classical gradient-descent agents.
 
@@ -2904,6 +3214,20 @@ where $\mathbf{J}$ is probability current and $\partial \mathcal{B}_P$ is the ba
 
 (sec-implementation-causal-buffer)=
 ## Implementation: The Causal Buffer
+
+:::{div} feynman-prose
+All right, enough theory. How do you actually build this thing?
+
+The key implementation challenge is handling the retardation. When agent A looks at agent B, it should not see the current state of B. It should see the ghost, the state of B from time $\tau_{ij}$ ago. How do you do that without rewriting your entire codebase?
+
+The answer is the Causal Buffer. It is a simple data structure that sits between agents and handles all the time-delay bookkeeping transparently. When agent B takes an action or updates its state, it writes to the buffer. When agent A wants to read B's state, it reads from the buffer at the appropriate retarded time.
+
+The buffer just stores timestamped records and interpolates when you request a time that falls between records. That is it. The rest of your code can pretend that it is seeing instantaneous states, but what it actually sees are ghosts.
+
+The beauty of this approach is that it is modular. You do not have to rewrite your policy network or your value function. You just wrap the inter-agent communication in a Causal Buffer, and suddenly your system respects causality. All the relativistic effects, the standing-wave Nash, the strategic hysteresis, they all emerge automatically from this simple bookkeeping.
+
+Of course, you need to choose $c_{\text{info}}$ appropriately for your domain. In a physical robotics scenario, it might be the speed of light or sound. In a networked system, it is the inverse of the network latency. In some simulations, you might want to crank it up to infinity to recover the Newtonian limit. The Causal Buffer handles all these cases.
+:::
 
 To implement relativistic multi-agent dynamics without disrupting existing software architecture, we introduce a **Causal Buffer** that handles time-retardation transparently.
 

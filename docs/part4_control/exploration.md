@@ -1,22 +1,46 @@
 # Intrinsic Motivation: Maximum-Entropy Exploration
 
+:::{div} feynman-prose
+Let me tell you about a beautiful idea that connects two things you might not have thought were related: exploring the world and keeping your options open.
+
+When you learn reinforcement learning, exploration often gets treated as a necessary evil. You need to try different things so you don't get stuck in a local optimum, but exploration is just noise you add to your policy, right? Random actions to shake things loose.
+
+Wrong. There's a deeper way to think about exploration, and it leads to much better algorithms.
+
+Here's the key insight: exploration isn't about randomness for its own sake. It's about **maintaining reachability**. A good explorer is an agent that can still get to many different places in the future. An agent that's painted itself into a corner---even if that corner looks pretty good right now---has lost something valuable. It's lost the *ability to change course*.
+
+Maximum-entropy exploration formalizes this. Instead of asking "what action gives me the highest expected reward right now?", we ask "what action gives me the highest expected reward *while preserving my ability to reach many future states*?" The entropy of your future state distribution is a measure of that ability.
+
+And here's the beautiful thing: once you work through the math, maximizing entropy and maximizing soft (KL-regularized) reward turn out to be the *same problem*, viewed from different angles. This is the duality we'll explore in this section.
+:::
+
 :::{admonition} Researcher Bridge: Max-Entropy Exploration in Macro Space
 :class: info
 :name: rb-maxent-exploration
 This is the MaxEnt RL idea applied to discrete macro trajectories. Instead of adding a scalar bonus, we maximize the entropy of reachable macro futures, which is the discrete version of "keep options open."
 :::
 
+:::{div} feynman-prose
 The previous layers define representation ($K,z_n,z_{\mathrm{tex}}$), predictive dynamics ($\bar{P}$), and stability/value constraints ($V,G$, Sieve checks). This layer formalizes an **intrinsic exploration pressure** on the discrete macro register: prefer policies that keep the set of reachable future macrostates diverse, which supports reachability/controllability and reduces brittle overcommitment to narrow paths.
+:::
 
 (sec-path-entropy-and-exploration-gradients)=
 ## Path Entropy and Exploration Gradients
 
+:::{div} feynman-prose
+We're going to work on the **macro model**---the discrete register of high-level states. Why discrete? Because entropy is well-defined for discrete distributions. There's no ambiguity, no reference measures, no gauge choices. The entropy of a distribution over a finite set is just what Shannon said it is.
+
+We start with the macro Markov kernel: the learned transition probabilities $\bar{P}(k' | k, a)$ that tell us how macro-states evolve under actions. This is the causal enclosure we demanded earlier---the macro-symbol alone (plus action) is sufficient to predict the next macro-symbol.
+:::
+
+:::{div} feynman-prose
 We work on the **macro model** (the discrete register). Assume a macro Markov kernel
 
 $$
 \bar{P}(k'\mid k,a),\qquad k,k'\in\mathcal{K},\ a\in\mathcal{A},
 $$
 which is the learned effective dynamics demanded by Causal Enclosure ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`).
+:::
 
 :::{prf:definition} Macro Path Distribution
 :label: def-macro-path-distribution
@@ -37,6 +61,13 @@ $$
 (For continuous $\mathcal{A}$, replace the sum by an integral with respect to the action reference measure.)
 
 :::
+
+:::{div} feynman-prose
+What is this definition saying? Fix where you are now (macro-state $k$) and fix a policy (how you choose actions). Then there's a distribution over where you could end up $H$ steps in the future. That's $P_\pi(\xi | k)$---the probability of each possible future trajectory.
+
+Notice the sum over actions. Even if the dynamics $\bar{P}$ were deterministic, a stochastic policy would still induce a distribution over paths. And even if the policy were deterministic, stochastic dynamics would induce a distribution. Either way, you get a spread of possible futures.
+:::
+
 :::{prf:definition} Causal Path Entropy
 :label: def-causal-path-entropy
 
@@ -49,6 +80,13 @@ $$
 This quantity is well-typed precisely because the macro register is discrete: there is no differential-entropy ambiguity.
 
 :::
+
+:::{div} feynman-prose
+Now we're getting somewhere. $S_c(k, H; \pi)$ measures how many different future trajectories are plausible from state $k$ under policy $\pi$. High entropy means lots of possibilities---you're in a flexible position. Low entropy means your future is essentially determined---you've committed to a narrow path.
+
+I want to emphasize why discreteness matters here. If $\mathcal{K}$ were continuous, we'd have to talk about differential entropy, which depends on your choice of reference measure. Different reference measures give different entropies. With a discrete macro register, there's no such ambiguity. Entropy is entropy. This is one of the payoffs for the VQ-VAE architecture that quantizes latent states.
+:::
+
 :::{prf:definition} Exploration Gradient, metric form
 :label: def-exploration-gradient-metric-form
 
@@ -62,10 +100,21 @@ where $T_c>0$ is the cognitive temperature ({prf:ref}`def-cognitive-temperature`
 **Interpretation (Exploration / Reachability).** $S_c(k,H;\pi)$ measures how many future macro-trajectories remain plausible from $k$ under $\pi$ and $\bar{P}$. Increasing $S_c$ preserves **future reachability**: the agent stays inside regions with many reachable, non-absorbing macrostates.
 
 :::
+
+:::{div} feynman-prose
+The exploration gradient $\mathbf{g}_{\text{expl}}$ tells you which direction in state space increases your future optionality. It's like a compass pointing toward freedom. The cognitive temperature $T_c$ controls how strongly you weight exploration versus exploitation---high temperature means exploration dominates, low temperature means you mostly follow reward gradients.
+
+Now here's a subtle point. The macro-state $K$ is discrete, but we take gradients through its continuous embedding $e_k$. How does that work? Through the straight-through estimator from the VQ-VAE. In the forward pass, you quantize to discrete codes. In the backward pass, you pretend the quantization was differentiable and flow gradients to the pre-quantization coordinates. It's a hack, but it works beautifully in practice.
+:::
+
 (sec-maxent-duality-utility-entropy-regularization)=
 ## MaxEnt Duality: Utility + Entropy Regularization
 
-The same object appears from a variational principle.
+:::{div} feynman-prose
+We've defined path entropy as a measure of future reachability. Now let's connect this to standard reinforcement learning by showing that maximizing entropy is equivalent to maximizing a certain kind of soft reward.
+
+The setup is familiar: you have an instantaneous reward function $\mathcal{R}(k, a)$ and a discount factor $\gamma$. The twist is that instead of maximizing expected discounted reward, you maximize expected discounted reward *plus* policy entropy. This is the "entropy regularization" or "soft RL" framework.
+:::
 
 :::{prf:definition} MaxEnt RL objective on macrostates
 :label: def-maxent-rl-objective-on-macrostates
@@ -77,7 +126,7 @@ J_{T_c}(\pi)
 :=
 \mathbb{E}_\pi\left[\sum_{t\ge 0}\gamma^t\left(\mathcal{R}(K_t,A_t) + T_c\,\mathcal{H}(\pi(\cdot\mid K_t))\right)\right],
 $$
-where $\mathcal{H}$ is Shannon entropy. This is the standard “utility + entropy regularization” objective.
+where $\mathcal{H}$ is Shannon entropy. This is the standard "utility + entropy regularization" objective.
 
 **Regimes.**
 - $T_c\to 0$: $\pi$ collapses toward determinism; behavior can be brittle under distribution shift.
@@ -85,6 +134,22 @@ where $\mathcal{H}$ is Shannon entropy. This is the standard “utility + entrop
 - The useful regime is intermediate: enough entropy to remain robust, enough utility to remain directed.
 
 :::
+
+:::{div} feynman-prose
+Let me make sure this is clear. The objective $J_{T_c}(\pi)$ has two terms at each timestep:
+
+1. **Reward**: $\mathcal{R}(K_t, A_t)$---how good is the immediate outcome?
+2. **Policy entropy**: $T_c \cdot \mathcal{H}(\pi(\cdot | K_t))$---how spread out is your action distribution?
+
+The cognitive temperature $T_c$ trades off these two concerns. When $T_c$ is large, you care a lot about keeping your options open (high entropy policy). When $T_c$ is small, you care mostly about reward and your policy becomes more deterministic.
+
+The extreme cases are instructive:
+- $T_c \to 0$: You become a pure reward maximizer. Your policy converges to the greedy action at each state. This can be brittle---if your environment shifts, you have no backup plans.
+- $T_c \to \infty$: You become uniformly random. Every action is equally likely. This is maximally robust but you get no actual work done.
+
+The sweet spot is somewhere in between, and finding it is part of the art of RL algorithm design.
+:::
+
 :::{prf:proposition} Soft Bellman form, discrete actions
 :label: prop-soft-bellman-form-discrete-actions
 
@@ -107,7 +172,7 @@ $$
 \pi^*(a\mid k)\propto
 \exp\!\left(\frac{1}{T_c}\left(\mathcal{R}(k,a)+\gamma\,\mathbb{E}[V^*(k')]\right)\right).
 $$
-*Proof sketch.* Standard convex duality / log-sum-exp variational identity: maximizing expected reward plus entropy yields a softmax (exponential-family) distribution; substituting back produces the log-partition recursion. (This is the “soft”/MaxEnt Bellman equation used in SAC-like methods.)
+*Proof sketch.* Standard convex duality / log-sum-exp variational identity: maximizing expected reward plus entropy yields a softmax (exponential-family) distribution; substituting back produces the log-partition recursion. (This is the "soft"/MaxEnt Bellman equation used in SAC-like methods.)
 
 **Consequence.** The same mathematics can be read as:
 1) maximize reward while retaining policy entropy (MaxEnt RL), or
@@ -115,6 +180,31 @@ $$
 
 :::
 
+:::{div} feynman-prose
+The soft Bellman equation is gorgeous. Let me walk you through it.
+
+In regular dynamic programming, the Bellman equation says: the value of a state is the maximum over actions of (immediate reward + discounted future value). You pick the best action and that determines your value.
+
+In *soft* dynamic programming, you replace the maximum with a "soft maximum"---the log-sum-exp. Instead of picking one action, you average over all actions, weighted by their exponentiated values. This is the same as maximizing expected value plus entropy.
+
+The log-sum-exp function has a beautiful property: it's a smooth approximation to the maximum. When $T_c$ is small, $T_c \log \sum_a \exp(Q_a / T_c)$ approaches $\max_a Q_a$. When $T_c$ is large, it approaches the average plus some entropy term. The temperature interpolates between "be greedy" and "be uncertain."
+
+The optimal policy falls out automatically: it's the softmax over Q-values (which are immediate reward plus discounted future value). High-value actions get more probability, but every action gets *some* probability, weighted by temperature.
+:::
+
+:::{admonition} The Two Faces of MaxEnt
+:class: feynman-added tip
+
+The same mathematics has two interpretations that are useful in different contexts:
+
+1. **MaxEnt RL view:** "I want high reward, but I also want to hedge my bets by keeping my policy from being too deterministic."
+
+2. **Intrinsic motivation view:** "I want to stay in regions of state space where many futures are reachable, because that gives me flexibility to adapt."
+
+These are the same objective, just explained differently. The first emphasizes the reward-seeking behavior with entropy as a regularizer. The second emphasizes the exploration/reachability behavior with reward as a guide.
+
+For building intuition: if you're optimizing for a known reward function, think MaxEnt RL. If you're trying to build an agent that can adapt to changing goals, think intrinsic motivation.
+:::
 
 
 (sec-belief-dynamics-prediction-update-projection)=
@@ -127,7 +217,11 @@ $$
 If you know SAC or KL control, this section formalizes why maximizing entropy and optimizing soft value are the same problem. The exploration gradient is just the covariant form of that duality.
 :::
 
-This section makes the exploration layer precise: the exploration gradient ({ref}`Section 11.1 <sec-path-entropy-and-exploration-gradients>`) is dual to entropy-regularized (soft) optimal control once the macro channel is discrete.
+:::{div} feynman-prose
+Now we're going to make the duality between exploration and soft optimality precise. This is beautiful mathematics, and it has practical consequences for how you think about policy learning.
+
+The claim is strong: maximizing path entropy subject to expected reward constraints is *exactly the same problem* as maximizing expected reward with a KL penalty toward a reference policy. Different objective functions, same optimal solution. This is a convex duality result, and it's the deep reason why entropy regularization "works."
+:::
 
 (sec-formal-definitions)=
 ## Formal Definitions (Path Space, Causal Entropy, Exploration Gradient)
@@ -141,18 +235,25 @@ $$
 \Gamma_H(k) := \mathcal{K}^H.
 $$
 :::
+
+:::{div} feynman-prose
+This is just notation. $\Gamma_H(k)$ is the set of all possible $H$-step trajectories starting from $k$. Since $\mathcal{K}$ has finite cardinality, so does $\Gamma_H(k)$---it has $|\mathcal{K}|^H$ elements.
+:::
+
 :::{prf:definition} Path Probability
 :label: def-path-probability
 
 $P_\pi(\xi\mid k)$ is the induced path probability from Definition 10.1.1.
 
 :::
+
 :::{prf:definition} Causal Entropy
 :label: def-causal-entropy
 
 $S_c(k,H;\pi)$ is the Shannon entropy of $P_\pi(\cdot\mid k)$ (Definition 10.1.2).
 
 :::
+
 :::{prf:definition} Exploration gradient, covariant form
 :label: def-exploration-gradient-covariant-form
 
@@ -162,10 +263,19 @@ $$
 \mathbf{g}_{\text{expl}}(e_k) := T_c\,\nabla_G S_c(k,H;\pi).
 $$
 :::
+
+:::{div} feynman-prose
+Why "covariant form"? Because we're taking gradients with respect to the metric $G$, not with respect to Euclidean coordinates. The metric gradient $\nabla_G$ accounts for the local geometry of state space. This matters when your state space is curved or has non-uniform sensitivity---the natural direction of steepest ascent depends on the metric.
+:::
+
 (sec-the-equivalence-theorem)=
 ## The Equivalence Theorem (Duality of Causal Regulation)
 
-We state the equivalence in the setting where it is unambiguous.
+:::{div} feynman-prose
+Now for the main event. The following theorem says that three apparently different ways of stating the optimal control problem are actually equivalent. They give the same optimal policy, and their objective values are related by simple transformations.
+
+This is not a "they're approximately the same" result. It's exact equivalence. The same optimal policy arises whether you think about it as MaxEnt control, as KL-regularized trajectory optimization, or as soft Bellman dynamic programming.
+:::
 
 :::{prf:theorem} Equivalence of Entropy-Regularized Control Forms; discrete macro
 :label: thm-equivalence-of-entropy-regularized-control-forms-discrete-macro
@@ -206,8 +316,32 @@ $$
 $$
 and the optimizer is exactly the exponentially tilted law {math}`P^*`. In the special case where {math}`P_0` is uniform (or treated as constant), the KL term differs from Shannon path entropy by an additive constant, recovering the standard "maximize entropy subject to expected reward" view.
 
-*Proof sketch.* Set up the constrained variational problem "maximize path entropy subject to an expected reward constraint." The Euler–Lagrange condition yields an exponential-family distribution on paths. The normalizer obeys dynamic programming and equals the soft value. Differentiating the log-normalizer yields the corresponding exploration-gradient direction.
+*Proof sketch.* Set up the constrained variational problem "maximize path entropy subject to an expected reward constraint." The Euler-Lagrange condition yields an exponential-family distribution on paths. The normalizer obeys dynamic programming and equals the soft value. Differentiating the log-normalizer yields the corresponding exploration-gradient direction.
 
+:::
+
+:::{div} feynman-prose
+Let me unpack why this theorem matters.
+
+**Form 1** is how you think about MaxEnt RL day-to-day: maximize reward plus entropy. This is the objective in SAC, Soft Q-Learning, and similar algorithms.
+
+**Form 2** is the path-space view: instead of thinking about policies, think about distributions over entire trajectories. The optimal trajectory distribution is an exponential tilt of the reference distribution, where the tilt factor is the exponential of cumulative reward. High-reward trajectories get exponentially more probability.
+
+**Form 3** is the dynamic programming view: the soft Bellman equation gives you a recursive way to compute optimal values, and the optimal policy is a softmax over Q-values.
+
+The theorem says these are all the same. If you solve one, you've solved them all. The optimal policy $\pi^*$ is identical whether you derive it from Form 1, Form 2, or Form 3.
+
+The key equation is the variational identity at the end: soft value equals the maximum over trajectory distributions of (expected reward minus KL to reference). This is convex optimization, and the KL penalty is what makes the problem tractable. Without regularization, you'd have a hard maximum over trajectories; with KL regularization, you get a smooth log-sum-exp.
+:::
+
+:::{admonition} Why the Log-Normalizer Matters
+:class: feynman-added note
+
+The log-normalizer $\log Z(k)$ in the variational identity is the soft value function $V^*(k)$ (up to a temperature-dependent scaling). This is a deep fact from statistical mechanics and exponential families.
+
+In statistical mechanics, the log-normalizer of the Boltzmann distribution is the free energy. Here, the log-normalizer of the exponentially tilted trajectory distribution is the soft value. The same mathematical structure appears in both places because both are doing the same thing: trading off "energy" (negative reward) against "entropy" (randomness).
+
+For practical algorithms, this means: if you can efficiently compute or estimate the normalizing constant $Z(k)$, you can extract values and gradients for policy optimization. This is exactly what soft actor-critic does.
 :::
 
 ::::{admonition} Connection to RL #22: KL-Regularized Policies as Degenerate Exploration Duality
@@ -219,7 +353,7 @@ MaxEnt control is equivalent to an **Exponentially Tilted Trajectory Measure**:
 $$
 P^*(\omega|K_t=k) \propto P_0(\omega|k) \exp\!\left(\frac{1}{T_c}\sum_{h=0}^{H-1} \gamma^h \mathcal{R}(K_{t+h}, A_{t+h})\right)
 $$
-The path-space log-normalizer equals the soft value (Theorem {prf:ref}`thm-equivalence-of-entropy-regularized-control-forms-discrete-macro`). This is a **Schrödinger bridge** formulation.
+The path-space log-normalizer equals the soft value (Theorem {prf:ref}`thm-equivalence-of-entropy-regularized-control-forms-discrete-macro`). This is a **Schrodinger bridge** formulation.
 
 **The Degenerate Limit:**
 Use single-step KL penalty instead of path-space tilting. Ignore the trajectory structure.
@@ -232,11 +366,19 @@ $$
 This recovers **KL-Regularized Policy Gradient** and exponential family policies.
 
 **What the generalization offers:**
-- **Path-space view**: The optimal policy is a Schrödinger bridge between prior and reward-weighted measures
+- **Path-space view**: The optimal policy is a Schrodinger bridge between prior and reward-weighted measures
 - **Trajectory entropy**: Explores future *macro-trajectories* $\omega = (A_t, \ldots, K_{t+H})$, not just single actions
 - **Variational principle**: Soft value = log-partition function of trajectory measure (eq. above)
 - **Causal entropy**: $S_c(k, H; \pi)$ measures future reachability under causal interventions
 ::::
+
+:::{div} feynman-prose
+The connection to standard KL-regularized policies is instructive. When you add a KL penalty $D_{\text{KL}}(\pi \| \pi_0)$ to your policy gradient objective, you're doing a single-step approximation to what we're describing here. The full picture is path-space: you're regularizing toward a reference *trajectory* distribution, not just a reference action distribution.
+
+This matters when your MDP has temporal structure. Single-step KL regularization doesn't account for how today's action affects tomorrow's options. Path-space KL regularization does. The Schrodinger bridge formulation makes this crystal clear: you're finding the path distribution closest to your reference that achieves a certain expected reward.
+
+For discrete macro-states, this is computationally tractable because the path space is finite. For continuous states, you'd need approximations---which is why practical algorithms like SAC use the single-step version and rely on temporal-difference learning to propagate future information backward.
+:::
 
 
 

@@ -1,15 +1,39 @@
 # Computational Considerations
 
+:::{div} feynman-prose
+Now we come to the part that separates theorists from engineers---and frankly, I have a lot of sympathy for the engineers here.
+
+See, we've built up this beautiful framework with all these monitors and barriers and checks. Theoretically lovely. But if you tried to run every single check on every single timestep, your robot would think so hard about safety that it would never actually move. That's no good.
+
+So here's the question we have to answer honestly: *What can we actually compute?*
+
+This is not a failure of ambition. This is wisdom. A good pilot doesn't verify every rivet before takeoff---he checks the critical systems and trusts that the maintenance schedule caught the rest. Same principle here. We need to know which checks are cheap enough to run every step, which ones we can run occasionally, and which ones we might have to skip entirely in favor of cheaper proxies.
+
+The goal of this section is to give you that engineering judgment. I'll be honest about what costs what, so you can make informed decisions based on your actual compute budget, not on theoretical wishful thinking.
+:::
+
 (rb-engineering-tradeoffs)=
 :::{admonition} Researcher Bridge: Engineering Tradeoffs, Made Explicit
 :class: tip
 This section is the compute budget view: which checks are cheap enough for online use and which must be amortized. It matches the practical reality of RL systems where full safety is too expensive to evaluate every step.
 :::
 
+:::{div} feynman-prose
 This section provides an order-of-growth and engineering-cost view of the regulation framework, enabling practitioners to choose an appropriate tier of coverage under compute and implementation constraints.
+:::
 
 (sec-interface-cost-summary)=
 ## Interface Cost Summary
+
+:::{div} feynman-prose
+Let me give you the bottom line first, then we'll dig into the details.
+
+Think of these interface checks like a medical triage system. You've got the vitals---pulse, breathing, blood pressure---that you check on everyone, every time. Those are cheap, fast, and catch the most common life-threatening conditions. Then you've got the specialized tests---MRIs, genetic screens---that you only run when you have reason to suspect something specific, because they're expensive and time-consuming.
+
+The "Essential" tier catches 6 out of 14 failure modes with low overhead. That's your vital signs. Run these every timestep. The "Important" tier catches 3 more for medium cost---run these periodically or when you see warning signs. The "Advanced" tier is your full diagnostic suite: expensive, but comprehensive.
+
+The key insight is that failure modes don't happen with equal frequency or equal severity. The cheap checks catch the common, dangerous ones. The expensive checks catch the rare, subtle ones. That's not an accident---that's good engineering.
+:::
 
 | Tier          | Interfaces                                                                       | Relative Cost | Failure Modes Covered |
 |---------------|----------------------------------------------------------------------------------|---------------|-----------------------|
@@ -19,6 +43,16 @@ This section provides an order-of-growth and engineering-cost view of the regula
 
 (sec-barrier-cost-summary)=
 ## Barrier Cost Summary
+
+:::{div} feynman-prose
+Now let's talk about barriers---the guardrails that keep your agent from running off a cliff.
+
+Here's a wonderful fact: some of the most important barriers are *free*. They're built into the architecture itself. Use a tanh activation? Congratulations, you've bounded your outputs. Use a finite-dimensional latent space? Congratulations, you've limited representational variety. These constraints protect you without costing a single extra FLOP at runtime.
+
+The "Standard RL" barriers are things like entropy regularization and causal masking. If you're doing modern RL, you're probably already paying for these. They're not extra overhead---they're baseline good practice that happens to also provide safety.
+
+The "Specialized" barriers require auxiliary computation. Not free, but tractable. The "Infeasible" barriers---well, let's be honest. Checking frequency-domain stability exactly would require Fourier transforms on every timestep. That's ridiculous. So we use proxies. I'll tell you what those proxies are in Section 8.
+:::
 
 | Tier              | Barriers                                           | Implementation       | Notes                           |
 |-------------------|----------------------------------------------------|----------------------|---------------------------------|
@@ -30,6 +64,16 @@ This section provides an order-of-growth and engineering-cost view of the regula
 (sec-synchronization-loss-costs)=
 ## Synchronization Loss Costs
 
+:::{div} feynman-prose
+Here's a subtle but important point. Your agent has multiple components---the encoder that perceives, the world model that predicts, the critic that evaluates, the policy that acts. These components need to agree with each other. If they don't, you get a kind of internal chaos where different parts of the agent are operating under different assumptions about reality.
+
+Think of it like a jazz band. The drummer, bassist, and pianist all need to be in sync. If the drummer thinks they're playing in 4/4 and the bassist thinks it's 3/4, you've got a problem. The music falls apart.
+
+These synchronization losses measure how well your components agree. The "Shutter ↔ WM" sync asks: "Does the world model predict the same macro-codes that the encoder actually produces?" That's checking whether your predictive model matches your perceptual system. The "Critic ↔ Policy" sync asks: "Is the policy optimizing for the same values the critic is estimating?" And "WM ↔ Policy" asks: "Does the world model make accurate predictions under the states the policy actually visits?"
+
+Notice the cost scaling. The first two are cheap---$O(B)$ or $O(B|\mathcal{K}|)$. The third requires rollouts, which means running the world model forward many times. That's where the $H$ (horizon) term comes in, making it substantially more expensive.
+:::
+
 | Sync Pair           | Formula                                                         | Time Complexity               | Implementation                       |
 |---------------------|-----------------------------------------------------------------|-------------------------------|--------------------------------------|
 | **Shutter ↔ WM**    | $\mathrm{CE}(K_{t+1},\hat{p}_\phi(K_{t+1}\mid K_t,A_t))$        | $O(B\lvert\mathcal{K}\rvert)$ | Easy - closure cross-entropy         |
@@ -39,8 +83,33 @@ This section provides an order-of-growth and engineering-cost view of the regula
 (sec-implementation-tiers)=
 ## Implementation Tiers
 
+:::{div} feynman-prose
+Now we get to the meat of it: actual implementation tiers you can use. I'm going to give you four levels, from "I have barely any compute to spare" to "I'm building a safety-critical system and I'll pay whatever it costs."
+
+The beautiful thing is that these tiers are nested. Tier 2 includes everything from Tier 1. Tier 3 includes everything from Tier 2. So you can start minimal and add complexity as your resources allow or your requirements demand.
+:::
+
 (sec-tier-core-fragile-agent)=
 ### Tier 1: Core Fragile Agent (Minimal)
+
+:::{div} feynman-prose
+This is the stripped-down version. The one you use when every FLOP counts. Maybe you're running on embedded hardware, or you're training billions of agents in parallel, or you just want something that works without a lot of fuss.
+
+The core loss function has five terms. Let me tell you what each one does and why it's there.
+
+**The task loss** $\mathcal{L}_{\text{task}}$ is obvious---it's whatever you're actually trying to accomplish. Policy gradient, TD error, whatever. That's your objective.
+
+**The shutter loss** $\mathcal{L}_{\text{shutter}}$ regularizes your representation. It's preventing your encoder from doing something pathological like mapping everything to the same point or spreading things out wildly.
+
+**The entropy term** $-H(\pi)$ (note the negative sign, so we're adding a *positive* penalty for low entropy) keeps your policy from collapsing to a deterministic choice too quickly. You want some exploration, some spread in your action distribution.
+
+**The Zeno term** $D_{\text{KL}}(\pi_t \| \pi_{t-1})$ is beautiful. It penalizes the policy for changing too rapidly from one timestep to the next. Why? Because in continuous time, if your policy oscillates infinitely fast, you get a phenomenon called "Zeno behavior"---like Zeno's paradox, you take infinitely many infinitely small steps and never get anywhere. This term prevents that pathology.
+
+**The stiffness term** $\max(0, \epsilon - \|\nabla V\|)^2$ is a little less obvious. It penalizes the critic for being *too flat*. If the value function has zero gradient everywhere, your policy has no information about which direction to go. This ensures the critic maintains enough curvature to be useful.
+
+With these five terms, you cover the six most common failure modes. That's good bang for your computational buck.
+:::
+
 For production systems with tight compute budgets.
 
 **Loss Function:**
@@ -99,6 +168,19 @@ def compute_fragile_core_loss(
 
 (sec-tier-standard-fragile-agent)=
 ### Tier 2: Standard Fragile Agent (Diagnostics + Synchronization)
+
+:::{div} feynman-prose
+Now we step up to the research-grade version. Everything from Tier 1, plus three new ingredients.
+
+**The scale check** $\max(0, \beta - \alpha)$ is a fascinating one. It's monitoring the relationship between two different "scaling exponents" in your system. The $\alpha$ measures how sharply your loss landscape curves. The $\beta$ measures how aggressively your policy changes. If $\beta > \alpha$, your policy is changing faster than your value estimates can track---you're flying blind. This term penalizes that mismatch.
+
+**The sync loss** $\mathcal{L}_{\text{Sync}_{K-W}}$ keeps your shutter (encoder) and world model aligned. Remember the jazz band analogy? This is making sure the drummer and bassist agree on the beat.
+
+**The oscillation term** $\|z_t - z_{t-2}\|$ catches a subtle pathology: period-2 oscillations. Your system might look stable if you only compare consecutive states, but it's actually bouncing back and forth between two configurations. By comparing $z_t$ to $z_{t-2}$, you catch this ping-pong behavior.
+
+This tier is what I'd recommend for most serious research. It catches the subtle failure modes that the minimal tier misses, without going overboard on computational cost.
+:::
+
 For research and safety-conscious applications.
 
 **Additional Terms:**
@@ -171,6 +253,19 @@ def compute_oscillation_loss(
 
 (sec-tier-full-fragile-agent)=
 ### Tier 3: Full Fragile Agent (High-Assurance)
+
+:::{div} feynman-prose
+Now we're getting into the expensive stuff. This tier is for when you *really* care about safety---medical robots, autonomous vehicles, anything where a failure has serious consequences.
+
+**The Lipschitz loss** $\mathcal{L}_{\text{Lipschitz}}$ constrains how rapidly your network outputs can change as inputs vary. If a network is Lipschitz-bounded, small perturbations can only cause small changes in behavior. This is robustness against adversarial inputs and sensor noise.
+
+**The InfoNCE loss** $\mathcal{L}_{\text{InfoNCE}}$ is a contrastive learning objective that ensures your representations preserve useful geometric structure. Points that should be similar end up nearby; points that should be different end up far apart.
+
+**The gain loss** $\mathcal{L}_{\text{gain}}$ monitors the input-output gain of your system---essentially, how much does the output change per unit change in input? Unbounded gain leads to instability.
+
+These terms aren't cheap. The Lipschitz constraint, done properly, requires computing or bounding singular values. InfoNCE requires comparing your sample against negatives. But for safety-critical applications, you pay the price.
+:::
+
 For safety-critical applications with verification requirements.
 
 **Additional Terms:**
@@ -183,9 +278,27 @@ See {ref}`Section 8 <sec-infeasible-implementation-replacements>` for efficient 
 (sec-tier-riemannian-fragile-agent)=
 ### Tier 4: Riemannian Fragile Agent (Covariant Updates)
 
+:::{div} feynman-prose
+Now we come to something really beautiful, and I want to make sure you understand why it's beautiful, not just how to implement it.
+
+Here's the key question: *What does it mean to take a small step in policy space?*
+
+If you're doing standard gradient descent, you'd say "a small step is one where the parameters don't change much." You measure distance in parameter space using the Euclidean norm: $\|\theta_{\text{new}} - \theta_{\text{old}}\|$.
+
+But here's the problem: a small change in parameters might cause a *huge* change in behavior in some regions of state space, and almost no change in others. Parameter distance isn't the same as behavioral distance.
+
+The Riemannian approach says: "Let's measure distance in terms of how much the policy *actually changes*, not how much the parameters change." To do this, we use the **Fisher Information Matrix**, which tells you how sensitive the policy distribution is to each direction of parameter change.
+
+But wait---there's a subtlety here that trips up a lot of people. TRPO and PPO use the *parameter-space* Fisher: "How does the policy change when I change $\theta$?" What we're doing here is different. We're using the *state-space* Fisher: "How does the policy change when the *state* changes?"
+
+Why does this matter? Because the state-space Fisher tells you about the control authority at each location. In regions where small state changes cause big policy changes, you should be conservative. In regions where the policy is insensitive to state, you can be more aggressive. The state-space geometry is about the physics of your problem, not the parameterization of your neural network.
+
+This distinction is subtle and important. The parameter-space Fisher gives you a natural gradient for *learning*. The state-space Fisher gives you a natural gradient for *control*. They're not the same thing.
+:::
+
 This tier implements a **Riemannian / information-geometric** view, replacing Euclidean losses with geometry-aware equivalents. This approach is inspired by Natural Gradient methods {cite}`amari1998natural,martens2015kfac,martens2020natural` and Safe RL literature {cite}`chow2018lyapunov,kolter2019safe`.
 
-**Key Insight (State-Space Fisher):** The Covariant Regulator uses the **State-Space Fisher Information** to scale the Lie Derivative. This measures how sensitively the policy responds to changes in the latent state $z$—NOT how the parameters $\theta$ affect the policy (which is what TRPO/PPO use). See {ref}`Section 2.6 <sec-the-metric-hierarchy-fixing-the-category-error>` for the critical distinction between these geometries.
+**Key Insight (State-Space Fisher):** The Covariant Regulator uses the **State-Space Fisher Information** to scale the Lie Derivative. This measures how sensitively the policy responds to changes in the latent state $z$---NOT how the parameters $\theta$ affect the policy (which is what TRPO/PPO use). See {ref}`Section 2.6 <sec-the-metric-hierarchy-fixing-the-category-error>` for the critical distinction between these geometries.
 
 **A. compute_natural_gradient_loss(): Geometry-Aware Value Decrease**
 
@@ -534,6 +647,18 @@ class RiemannianFragileAgent(nn.Module):
 (sec-cost-benefit-decision-matrix)=
 ## Cost-Benefit Decision Matrix
 
+:::{div} feynman-prose
+Let me give you a decision guide. You know your compute budget. Here's what to pick.
+
+If you're tight on compute---running on an embedded system, training at massive scale, or just prototyping---use Tier 1. You'll cover the basics. Most agents won't blow up. You might miss subtle pathologies, but you'll get something working.
+
+If you have moderate resources and care about getting things right, use Tier 2. This is my recommendation for most research work. The extra diagnostics catch problems that would otherwise waste weeks of your time debugging.
+
+If you're building something safety-critical---a medical device, an autonomous vehicle, anything where failure has real consequences---use Tier 3. Pay the computational cost. It's cheaper than lawsuits.
+
+And if you can do expensive analysis offline---between training runs, during validation---run the full verification suite. Catch everything you can before deployment.
+:::
+
 | Compute Budget | Recommended Tier | Key Trade-offs |
 |----------------|------------------|----------------|
 | **Tight (online-only)** | Tier 1 | Covers basic stability; may miss scaling issues |
@@ -560,10 +685,28 @@ For training-time defect minimization:
 (sec-tier-atlas-based-fragile-agent)=
 ## Tier 5: Atlas-Based Fragile Agent (Multi-Chart Architecture)
 
-This tier introduces **manifold atlas** architecture—a principled approach for handling topologically complex latent spaces that cannot be covered by a single coordinate chart.
+:::{div} feynman-prose
+Now we get to something that might seem abstract at first, but it solves a very concrete problem.
+
+Imagine you're trying to make a flat map of the Earth. You immediately run into trouble: the Earth is a sphere, and there's no way to flatten a sphere without tearing it or stretching it. Any flat map has distortions---Greenland looks huge on a Mercator projection, angles are wrong on an equal-area projection, and so on.
+
+The solution that cartographers discovered is: *don't try to make one perfect map*. Make an *atlas*---a collection of maps, each covering part of the globe, with clear instructions for how to translate between them where they overlap.
+
+Your neural network encoder has exactly the same problem. It's trying to map your observation space (which might have complicated topology) into a flat latent space. If the true structure of your data is topologically complex---like a torus, or multiple disconnected clusters, or a Swiss roll---no single coordinate system can capture it without distortion.
+
+The atlas architecture says: instead of one encoder, have several. Each one handles a different region of your data manifold. Where regions overlap, we have explicit "transition functions" that tell you how to convert coordinates from one chart to another.
+
+This isn't just mathematical elegance. It solves real problems. When your single encoder struggles with representation collapse, or has discontinuities, or fails to generalize across different parts of state space---these are often symptoms of trying to force a complex manifold into a single chart. The atlas gives you a principled way to handle complexity.
+:::
+
+This tier introduces **manifold atlas** architecture---a principled approach for handling topologically complex latent spaces that cannot be covered by a single coordinate chart.
 
 (sec-manifold-atlas-theory-why-single-charts-fail)=
 ### Manifold Atlas Theory: Why Single Charts Fail
+
+:::{div} feynman-prose
+Let me be concrete about when single charts fail.
+:::
 
 **The Fundamental Problem:**
 A single neural network encoder defines a single coordinate chart on the latent manifold. However, many manifolds **cannot** be covered by a single chart {cite}`whitney1936differentiable,lee2012smooth`:
@@ -575,11 +718,21 @@ A single neural network encoder defines a single coordinate chart on the latent 
 | **Klein Bottle** | ∞ | Non-orientable |
 | **Swiss Roll** | 1 | Topologically trivial but geometrically challenging |
 
+:::{div} feynman-prose
+Look at that table. A sphere needs at least 2 charts---you can't put coordinates on the whole sphere without a singularity somewhere (that's the Hairy Ball Theorem: you can't comb a hairy ball flat without a cowlick). A torus needs 4. And so on.
+
+The Swiss Roll is interesting---it's topologically trivial (just a twisted rectangle), but geometrically it's hard to unfold without distortion. A single chart *can* cover it, but it'll have to stretch and compress in awkward ways.
+:::
+
 **Symptoms of Single-Chart Failure:**
 - Representation collapse (everything maps to one region)
 - Discontinuities at chart boundaries
 - Poor generalization to unseen topology
 - Gradient instabilities near singularities
+
+:::{div} feynman-prose
+If you've ever had a VAE that suddenly maps half your data to the same point, or an autoencoder with weird artifacts at certain inputs, you might have been hitting chart boundary problems without knowing it.
+:::
 
 **The Atlas Solution:**
 An **atlas** $\mathcal{A} = \{(U_i, \phi_i)\}_{i=1}^K$ is a collection of charts where:
@@ -649,6 +802,22 @@ class OrthogonalLinear(nn.Module):
 
 (sec-vicreg-geometric-collapse-prevention)=
 ### VICReg: Geometric Collapse Prevention
+
+:::{div} feynman-prose
+Here's a problem that plagues representation learning: *collapse*. Your encoder looks at a thousand different inputs and says "yep, they're all the same." Maps everything to one point. Useless.
+
+Why does this happen? Because the easiest way to make your representations "similar" (low loss on invariance objectives) is to make them *identical*. The network finds the lazy solution.
+
+VICReg is a clever trick to prevent this. It has three terms---Variance, Invariance, and Covariance (that's the VIC):
+
+**Variance:** Each dimension of your embedding must have variance above a threshold. This forces spread---things can't all collapse to one point.
+
+**Invariance:** Augmented versions of the same input should map to similar embeddings. This is the useful part---learning that rotations and crops of the same image are "the same thing."
+
+**Covariance:** Different dimensions of your embedding should be uncorrelated. This forces the network to use all its dimensions, not just project everything onto a line.
+
+Together, these three terms prevent both collapse (variance) and redundancy (covariance) while maintaining useful similarity structure (invariance). No negative samples needed---the constraints do the work.
+:::
 
 Each chart must produce non-degenerate embeddings. We enforce this via **VICReg** {cite}`bardes2022vicreg`.
 
@@ -720,6 +889,21 @@ def compute_vicreg_loss(
 
 (sec-the-universal-loss-functional)=
 ### The Universal Loss Functional
+
+:::{div} feynman-prose
+Now let's put all the pieces together into one unified loss function.
+
+This is a good place to step back and appreciate what we're doing. We're not just throwing regularizers at a network and hoping something works. Each term has a specific geometric purpose:
+
+- **VICReg** ensures the data manifold is represented faithfully (no collapse, no redundancy)
+- **Topology** ensures the atlas structure is clean (sharp chart boundaries, balanced usage)
+- **Separation** ensures charts cover different regions (no overlap without purpose)
+- **Orthogonality** ensures each chart preserves local geometry (distances and angles)
+
+Each term addresses a different failure mode. Without VICReg, you get collapse. Without topology, you get mushy boundaries. Without separation, charts pile up on top of each other. Without orthogonality, you get distortion.
+
+The coefficients I'm giving you aren't magic---they're starting points that have worked empirically. You'll need to tune them for your specific domain. But the structure of the loss is principled: each term does one job.
+:::
 
 The **Universal Loss** combines four components, each with a geometric interpretation:
 
@@ -1033,6 +1217,20 @@ def train_atlas_model(
 
 (sec-tier-the-attentive-atlas)=
 ## Tier 6: The Attentive Atlas (Permutation-Invariant Routing)
+
+:::{div} feynman-prose
+Here's a subtle problem with the atlas architecture as described so far.
+
+When you have multiple charts and an MLP router, the router learns to output "use chart 1" or "use chart 3." But what *is* "chart 1"? It's just... whatever the network decided to put in output index 1. There's nothing intrinsic about it. If you shuffled the charts around, the router would need to completely relearn which index means what.
+
+This is called *permutation sensitivity*, and it's ugly for a few reasons. First, it means the learning depends on arbitrary initialization. Second, it makes it hard to add or remove charts dynamically. Third, it violates a philosophical principle: the identity of a concept (a chart, a symbol, a category) shouldn't depend on where it happens to be stored in memory.
+
+The solution is cross-attention routing. Instead of having the router output "use index 3," we have each chart be represented by a *learnable query vector*. The router computes the similarity between the input and each chart's query vector, then routes based on which chart is most similar.
+
+Now the charts are identified by *what they represent*, not by *where they're stored*. You can shuffle the memory indices around and the routing behavior doesn't change. You can add a new chart by adding a new query vector. The system is permutation-invariant.
+
+This is the same idea behind transformers and slot attention: let similarity determine routing, not fixed indices.
+:::
 
 The Atlas architecture described in {ref}`Section 7.7 <sec-tier-atlas-based-fragile-agent>` uses a fixed MLP router to assign input regions to charts. While functional, this approach is **permutation sensitive**: the network assigns fixed semantics to output indices. This breaks the **Symbol-Permutation Symmetry** ($S_{|\mathcal{K}|}$) requirement of Section 1.1.4, which posits that the identity of a manifold chart should not depend on its memory index.
 
@@ -1474,6 +1672,26 @@ This keeps the inverse router aligned with the encoder routing.
 (sec-the-geometry-of-the-latent-space-a-hyperbolic-hierarchy)=
 ## The Geometry of the Latent Space: A Hyperbolic Hierarchy
 
+:::{div} feynman-prose
+Now we come to something that might seem like pure mathematics, but I promise you it has real consequences for how your agent works.
+
+We've been building up this hierarchical state representation: macro-symbols $K$ at the top, structured nuisance $z_n$ in the middle, texture $z_{\text{tex}}$ at the bottom. But what *kind* of geometry does this hierarchy have?
+
+Here's the key insight: hierarchies are naturally *hyperbolic*. Not Euclidean, hyperbolic.
+
+Let me explain what that means. In Euclidean geometry, if you walk in a straight line, parallel lines stay parallel. The circumference of a circle grows like $2\pi r$. Things are flat.
+
+In hyperbolic geometry, space expands exponentially as you move away from a center point. Parallel lines diverge. The circumference of a circle grows like $e^r$, not $r$. There's vastly more "room" at the edges than in the middle.
+
+Why does this matter for hierarchies? Think about a tree. At the root, there's one node. At depth 1, there might be 10 nodes. At depth 2, there might be 100 nodes. At depth 3, there might be 1000 nodes. The number of nodes grows exponentially with depth.
+
+A tree naturally fits in hyperbolic space, because hyperbolic space *has* that exponential growth of volume. Trying to fit a deep tree into Euclidean space is like trying to fit an orange peel flat on a table---something has to stretch or tear.
+
+So when we say our latent space is "hyperbolic," we're saying its geometry naturally accommodates the hierarchical structure we're building. The macro-symbols live near the "center" (the bulk). As you add finer and finer detail, you're moving toward the "edge" (the boundary at infinity). The texture lives at that boundary---it's the infinitely fine detail that you can never quite reach with finite resolution.
+
+This isn't just a metaphor. It has practical consequences for how distances work, how gradients flow, and what kinds of structure the network can represent.
+:::
+
 :::{admonition} Researcher Bridge: Hyperbolic Hierarchy = Tree-Like Abstraction
 :class: info
 :name: rb-hyperbolic-hierarchy
@@ -1517,6 +1735,16 @@ This identifies the **discrete macro-register** $K_t = (K_{\text{chart}}, K_{\te
 :::
 (sec-the-bulk-boundary-decomposition)=
 ### The Bulk-Boundary Decomposition (Holographic Latents)
+
+:::{div} feynman-prose
+This section might remind you of something from physics: the holographic principle. In theoretical physics, there's this wild idea that all the information about what's happening inside a volume might be encoded on the boundary of that volume. Black hole thermodynamics suggested it; string theory formalized it with AdS/CFT.
+
+We're not doing quantum gravity here, but the mathematical structure is similar. The "bulk" of our latent space---the macro-symbols $K$ and structured nuisance $z_n$---is where the dynamics happen, where control operates, where decisions are made. The "boundary"---the texture $z_{\text{tex}}$---is where we observe the infinitely fine details that the finite-capacity bulk can't resolve.
+
+The bulk is where your agent *thinks*. The boundary is what your agent *sees but can't fully represent*. The relationship between them---how boundary observations propagate into bulk dynamics---is the fundamental data flow of the system.
+
+This isn't just a pretty analogy. It has practical consequences: texture must not leak into dynamics. If your control law depends on texture (boundary data), you're trying to control at infinite resolution with finite capacity. That's a recipe for instability.
+:::
 
 We now rigorously situate the continuous components $(z_n, z_{\mathrm{tex}})$ relative to this structure.
 
@@ -1575,6 +1803,20 @@ where:
 The structured nuisance $z_n$ is not stochastic noise; it is the **tangent space coordinate** on the horosphere (surface of constant depth $\rho$) determined by the active macro-symbol $K$. Horospheres in hyperbolic space are intrinsically flat (zero curvature), which is why local linear control theory (LTI approximations) applies within a single chart, even though the global geometry is hyperbolic.
 
 :::
+
+:::{admonition} Example: A Robot Navigating Rooms
+:class: feynman-added example
+
+To make this concrete, imagine a robot navigating an apartment.
+
+**Macro-symbol $K$:** Which room am I in? "Kitchen," "Bedroom," "Bathroom"---these are discrete categories, the nodes of the tree. The hierarchy depth might be: Building > Floor > Apartment > Room.
+
+**Structured nuisance $z_n$:** Where am I within this room? The continuous $(x, y)$ position, the robot's orientation. This is "nuisance" not because it's unimportant, but because it's *local*---it only makes sense given which room you're in.
+
+**Texture $z_{\text{tex}}$:** The fine visual details---the exact pixel values of the tiles, the precise shadows on the wall. These are needed to reconstruct the camera image, but they don't matter for navigation decisions.
+
+The hyperbolic geometry captures this naturally. Moving between rooms (changing $K$) is a big deal---a discrete jump to a different branch of the tree. Moving within a room (changing $z_n$) is smooth and local. The texture is the infinite detail at the boundary---always there, never fully resolved.
+:::
 (sec-summary-the-manifold-construction)=
 ### Summary: The Manifold Construction
 
@@ -1595,6 +1837,20 @@ This geometric picture justifies the **Sieve architecture**:
 
 (sec-stacked-topoencoders-deep-renormalization-group-flow)=
 ## Stacked TopoEncoders: Deep Renormalization Group Flow
+
+:::{div} feynman-prose
+Now I want to tell you about something from physics that, surprisingly, gives us the right way to think about deep networks for hierarchical representation.
+
+In physics, there's a technique called the *Renormalization Group* (RG). It was developed to handle problems where physics operates differently at different scales. Think about a magnet: at the atomic scale, you have individual electron spins. At the macroscopic scale, you have bulk magnetization. The RG tells you how to systematically "zoom out"---how to go from fine-scale physics to coarse-scale physics.
+
+The key idea is this: at each scale, you identify what's *relevant* (what matters for the larger-scale behavior) and what's *irrelevant* (what gets washed out as you zoom out). You keep the relevant stuff and discard the irrelevant stuff. Then you zoom out and repeat.
+
+This is exactly what we want our deep network to do. Each layer should capture what's important at one scale, remove it from the signal, and pass only the unexplained residual to the next layer. Block 0 captures the global structure. Block 1 captures large-scale details that Block 0 missed. Block 2 captures finer details. And so on, until the final block is left with just noise---the irreducible randomness that no amount of structure can explain.
+
+Here's the crucial difference from standard deep learning: *no skip connections*. In a ResNet, information can flow directly from input to output, bypassing intermediate layers. That's great for gradient flow, but it breaks the semantic hierarchy. A deep layer might learn global features that should have been captured by a shallow layer, because the skip connection lets the input "leak through."
+
+We want a strict hierarchy. Each layer *must* explain its portion of the variance. It can't pass the buck. So we remove skip connections and instead use careful normalization to maintain gradient flow. The result is a network where depth corresponds to semantic scale in a principled way.
+:::
 
 We extend the single-block Attentive Atlas into a deep, hierarchical architecture by stacking TopoEncoder blocks. Crucially, we depart from the standard ResNet paradigm: we do **not** use skip connections to carry the input forward. Instead, we pass only the **rescaled texture** (the unexplained residual) to the next block.
 
@@ -1655,9 +1911,25 @@ $$
 (sec-dynamical-isometry-why-gradients-do-not-vanish)=
 ### Dynamical Isometry: Why Gradients Do Not Vanish
 
+:::{div} feynman-prose
+"But wait," you might say, "if we don't have skip connections, won't the gradients vanish? Isn't that why ResNets were invented in the first place?"
+
+Fair question. Let me explain why we can get away without skip connections here.
+
+The vanishing gradient problem happens when you multiply many numbers together and they're all less than 1, so the product goes to zero. Or they're all greater than 1, and the product explodes. Either way, training fails.
+
+Skip connections solve this by adding an identity path: even if the main path vanishes, the gradient can flow through the shortcut. But that shortcut lets information bypass processing, which breaks our semantic hierarchy.
+
+Our solution is different: instead of adding shortcuts, we make sure the numbers we're multiplying are all *close to 1*. This is called "dynamical isometry"---the Jacobian of each layer has singular values near 1, so neither vanishing nor exploding happens.
+
+We achieve this through three mechanisms. First, orthogonality: if the weight matrix is orthogonal, its singular values are exactly 1. Second, variance rescaling: we renormalize activations to unit variance at each layer, keeping everything in a healthy range. Third, spectral normalization: we explicitly bound the largest singular value.
+
+Together, these keep the gradient magnitude stable without skip connections. The hierarchy stays strict, and training still works.
+:::
+
 Standard deep learning uses skip connections ($y = f(x) + x$) to allow gradients to flow through identity paths, avoiding the vanishing gradient problem. However, skip connections allow information to bypass a layer without processing, violating our requirement for a strict hierarchy (interpretability).
 
-We achieve **Dynamical Isometry**—the condition that the input-output Jacobian has singular values concentrated near unity {cite}`saxe2014exact,pennington2017resurrecting`—through three complementary mechanisms already defined in the framework:
+We achieve **Dynamical Isometry**---the condition that the input-output Jacobian has singular values concentrated near unity {cite}`saxe2014exact,pennington2017resurrecting`---through three complementary mechanisms already defined in the framework:
 
 (sec-mechanism-orthogonality-regularization)=
 #### Mechanism 1: Orthogonality Regularization ({ref}`Section 7.7.2 <sec-orthonormal-constraints-for-atlas-charts>`)
@@ -1936,13 +2208,29 @@ This ensures that deeper blocks explain progressively less variance—the RG flo
 (sec-factorized-jump-operators-efficient-chart-transitions)=
 ## Factorized Jump Operators: Efficient Chart Transitions
 
+:::{div} feynman-prose
+Remember when I told you about the atlas? Multiple charts, each covering part of the manifold? Well, I glossed over a crucial question: *what happens at the boundaries?*
+
+When you're in chart A and you step into the overlap region with chart B, your coordinates suddenly need to change. You had coordinates $(x, y)$ in chart A's system, and now you need coordinates $(u, v)$ in chart B's system. How do you translate?
+
+This is what cartographers call "transition functions." If you have a map of France and a map of Germany, and they overlap in Alsace, you need a rule for converting coordinates from one map to the other.
+
+For neural networks, we need to *learn* these transition functions. That's what Jump Operators are: learnable maps that tell you how to convert coordinates when you switch charts.
+
+Now, the naive way to do this would be to learn a separate function for every pair of charts. If you have $K$ charts, that's $K(K-1)$ transition functions. With 64 charts, you'd need about 4000 separate learned maps. That's a lot of parameters, and it doesn't enforce any consistency---going from A to B to C might give you different coordinates than going directly from A to C.
+
+The clever trick is *factorization*. Instead of learning $K^2$ pairwise maps, we learn a shared "global tangent space" and teach each chart how to project into and out of it. To go from chart A to chart B, you lift A's coordinates into the global space, then project down into B's coordinates. This reduces the parameter count from $O(K^2)$ to $O(K)$, and it automatically ensures consistency because everything goes through the same intermediate representation.
+
+Think of it like currency exchange. Instead of having exchange rates for every pair of currencies (dollars to euros, euros to yen, yen to pounds, etc.), you express everything in terms of a universal unit (like SDRs or gold), then convert from that. Fewer rates to track, and no arbitrage opportunities.
+:::
+
 :::{admonition} Researcher Bridge: Jump Operators as Skill Switches
 :class: info
 :name: rb-jump-operators
 In the options framework, a jump operator corresponds to a transition function between charts. It encodes how to translate state coordinates when the agent changes macro regime, avoiding brittle hand-written state resets.
 :::
 
-The atlas structure ({ref}`Section 7.8 <sec-tier-the-attentive-atlas>`) decomposes the latent space into overlapping charts, but has not yet specified how coordinates transform between charts. This section introduces **Jump Operators**—the learnable transition functions $L_{i \to j}: \mathcal{U}_i \to \mathcal{U}_j$ that encode the topological structure of the manifold.
+The atlas structure ({ref}`Section 7.8 <sec-tier-the-attentive-atlas>`) decomposes the latent space into overlapping charts, but has not yet specified how coordinates transform between charts. This section introduces **Jump Operators**---the learnable transition functions $L_{i \to j}: \mathcal{U}_i \to \mathcal{U}_j$ that encode the topological structure of the manifold.
 
 (sec-motivation-from-geometry-to-topology)=
 ### Motivation: From Geometry to Topology
@@ -1974,7 +2262,12 @@ L_{i \to j} : \mathbb{R}^{d_n} \to \mathbb{R}^{d_n}, \quad \forall i \neq j
 $$
 **Failure Mode 1: Parameter Explosion.**
 
-For $K$ charts, this requires $K(K-1)$ independent functions. With $K = 64$ charts and $d_n = 16$ nuisance dimensions, a linear parameterization alone requires $64 \times 63 \times 16^2 \approx 10^6$ parameters—just for the jump operators.
+For $K$ charts, this requires $K(K-1)$ independent functions. With $K = 64$ charts and $d_n = 16$ nuisance dimensions, a linear parameterization alone requires $64 \times 63 \times 16^2 \approx 10^6$ parameters---just for the jump operators.
+
+:::{warning}
+:class: feynman-added
+This is a real trap people fall into. They add charts to handle complex manifolds, then wonder why their model has millions of extra parameters and won't train. The quadratic scaling in $K$ is a killer.
+:::
 
 **Failure Mode 2: Cycle Inconsistency.**
 

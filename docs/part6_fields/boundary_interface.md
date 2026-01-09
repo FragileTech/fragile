@@ -2,20 +2,47 @@
 
 {cite}`arnold1989mathematical`
 
+:::{div} feynman-prose
+All right, now we come to something that I find absolutely fascinating---the place where the agent meets the world. You see, so far we've been talking about what happens *inside* the agent, all this beautiful geometry and dynamics on the latent manifold. But an agent that doesn't touch reality isn't much of an agent, is it?
+
+Here's the profound question: How does information get *in* and *out*? Not just "sensors provide data and motors send commands"---that's the boring answer. The interesting answer is that the interface between agent and world has a deep mathematical structure. It's a *symplectic manifold*, where observations and actions live as conjugate variables, just like position and momentum in physics.
+
+This isn't a metaphor. It's the same mathematics. And understanding this connection will tell us exactly how sensors and motors work at the deepest level.
+:::
+
 (rb-boundary-conditions)=
 :::{admonition} Researcher Bridge: Observations and Actions as Boundary Conditions
 :class: info
 In standard RL, observations and actions are inputs and outputs. Here they are boundary conditions on the latent dynamics, which is why sensor and motor channels appear as Dirichlet and Neumann conditions.
 :::
 
+:::{div} feynman-prose
 We have defined the internal dynamics of the agent (the interior) as a Jump-Diffusion process on a Riemannian fiber bundle (Sections 20-22). We now rigorously define its coupling to the external world.
 
 The interface exchanges information with the environment via two asymmetric boundary conditions: **Dirichlet** (position-clamping for sensors) and **Neumann** (flux-clamping for motors).
 
+Now, what do these terms mean? If you've taken a course in partial differential equations, you know that to solve an equation on a region, you need to specify what happens at the boundary. There are two classic choices:
+
+- **Dirichlet**: You fix the *value* of the solution at the boundary. "The temperature at the wall is 100 degrees."
+- **Neumann**: You fix the *flux* (the rate of flow) at the boundary. "Heat flows out through the wall at 50 watts per square meter."
+
+The remarkable thing is that sensors and motors naturally correspond to these two cases. Sensors tell you *where* you are (position)---that's Dirichlet. Motors tell you *how fast* you're pushing (flux)---that's Neumann. This isn't a coincidence; it reflects a deep duality in physics and information theory.
+:::
+
 (sec-the-symplectic-interface-position-momentum-duality)=
 ## The Symplectic Interface: Position-Momentum Duality
 
-The boundary $\partial\mathcal{Z}$ between agent and environment is not merely a surface—it is a **symplectic manifold** where observations and actions live as conjugate variables.
+:::{div} feynman-prose
+Now we get to the heart of the matter. The boundary between agent and environment isn't just a wall or a membrane---it has *structure*. Specifically, it's a symplectic manifold.
+
+What's a symplectic manifold? Let me give you the picture first, then the mathematics. Imagine a dance floor. At each point on the floor, you could be standing still, or moving in some direction, or spinning. Now, the symplectic structure is like a rule that says: if you know your position *and* your momentum, you know everything there is to know about your motion. Position and momentum together form a complete description.
+
+But here's the beautiful part: they're not independent. They're *conjugate*. If you change your position, it affects how your momentum evolves, and vice versa. In classical mechanics, Hamilton's equations tell you exactly how: $\dot{q} = \partial H/\partial p$ and $\dot{p} = -\partial H/\partial q$. Position comes from momentum; momentum comes from position. They're locked in an eternal dance.
+
+At the agent's interface, observations play the role of position (they tell you *where* you are in representation space), and actions play the role of momentum (they tell you *how* you're pushing). The symplectic structure captures this duality exactly.
+:::
+
+The boundary $\partial\mathcal{Z}$ between agent and environment is not merely a surface---it is a **symplectic manifold** where observations and actions live as conjugate variables.
 
 :::{prf:definition} Symplectic Boundary Manifold
 :label: def-symplectic-boundary-manifold
@@ -34,7 +61,16 @@ Units: $[\omega] = [q][p] = \mathrm{nat}$.
 *Remark (Causal Structure).* The symplectic structure encodes causality: observations fix "where" the belief state is (position), while actions fix "how" it flows outward (momentum/flux). These cannot be treated symmetrically as static fields.
 
 :::
-:::{prf:definition} Dirichlet Boundary Condition — Sensors
+
+:::{div} feynman-prose
+Let me unpack that definition a bit. The symplectic form $\omega = \sum_i dq^i \wedge dp_i$ might look like abstract nonsense, but it's actually telling you something very concrete. It says: when you integrate $\omega$ over any little patch of the phase space, you get the "area" of that patch in a very specific sense---the sense that's preserved by Hamiltonian dynamics. No matter how the system evolves, this area is conserved.
+
+The units being "nat" (natural units of information) is crucial. This tells you that position-momentum pairs at the boundary carry information, and the symplectic structure measures how much. When you observe something (fix $q$), you're committing to a position in belief space. When you act (fix $p$), you're committing to a direction of push. Together, they determine a point in phase space, and that point carries information content measured by $\omega$.
+
+The remark about causal structure is subtle but important: observations fix *where* you are; actions fix *how* you're moving. You can't swap them. This asymmetry is built into the mathematics through the distinction between Dirichlet and Neumann boundary conditions.
+:::
+
+:::{prf:definition} Dirichlet Boundary Condition --- Sensors
 :label: def-dirichlet-boundary-condition-sensors
 
 The sensory input stream $\phi(x)$ imposes a **Dirichlet** (position-clamping) condition on the belief density:
@@ -47,7 +83,14 @@ where $q_{\text{obs}}(t) = E_\phi(x_t)$ is the encoded observation. This clamps 
 *Interpretation:* Information flow from environment to agent (observation).
 
 :::
-:::{prf:definition} Neumann Boundary Condition — Motors
+
+:::{div} feynman-prose
+Think about what that delta function means. When you receive an observation, it *slams* your belief state to a specific location. Before the observation, you might have been uncertain about where you are in belief space---spread out, diffuse. After the observation, bang! You're at $q_{\text{obs}}$. No ambiguity. That's why it's called "clamping."
+
+This is exactly what sensors do: they *localize* you. A camera tells you "the visual world looks like this." An accelerometer tells you "you're tilted by this much." Each observation pins down some aspect of your position in representation space.
+:::
+
+:::{prf:definition} Neumann Boundary Condition --- Motors
 :label: def-neumann-boundary-condition-motors
 
 The motor output stream $A(x)$ imposes a **Neumann** (flux-clamping) condition:
@@ -64,6 +107,14 @@ $$
 
 Units: $[j_{\text{motor}}] = \mathrm{nat}/\text{step}$.
 
+:::
+
+:::{div} feynman-prose
+Motors work differently from sensors. Instead of pinning down *where* you are, they specify *how much flow* is crossing the boundary. Think of it like this: a sensor is a window you look through; a motor is a faucet you turn on.
+
+The motor doesn't care exactly where the belief state is. It cares about how much *influence* is flowing outward. The policy says "push this hard in that direction," and the motor boundary condition enforces that flux. The actual position can wiggle around, but the rate of flow is clamped.
+
+This is why the mathematics uses the gradient (the $\nabla_n \rho \cdot \mathbf{n}$ term). The gradient tells you the rate of change---how much "stuff" is flowing across the boundary. For motors, we fix the flux, not the value.
 :::
 
 (pi-hamiltonian-bc)=
@@ -103,8 +154,27 @@ This duality is the mathematical foundation for the symmetric treatment of sensi
 **Cross-references:** {ref}`Section 2.11.4 <sec-the-interface-and-observation-inflow>` (Observation inflow), Definition {prf:ref}`def-dirichlet-boundary-condition-sensors`.
 
 :::
+
+:::{div} feynman-prose
+Now here's something that might blow your mind a little. The proposition says that if you do a canonical transformation---swap position and momentum---then Dirichlet becomes Neumann, sensors become motors, and perception becomes action.
+
+This is the deep reason why sensing and acting have the same mathematical structure. They're *dual* to each other. It's like how in electricity, you can swap electric and magnetic fields (under certain conditions), and the equations still work. Here, you can swap observations and actions, and the boundary conditions still make sense.
+
+This isn't just mathematical elegance. It has practical consequences: you can design perception systems and motor systems using the same principles, because they're two faces of the same coin. The Visual Atlas and Action Atlas that we'll define next exploit this duality.
+:::
+
 (sec-the-dual-atlas-architecture)=
 ## The Dual Atlas Architecture
+
+:::{div} feynman-prose
+Now that we understand the symplectic structure, we need to actually build something. How do you implement an interface that respects all this beautiful mathematics?
+
+The answer is to use *atlases*---collections of charts that together cover the whole space. If you've studied differential geometry, you know that a manifold is defined by its atlas: a set of overlapping patches, each with its own coordinate system, with smooth transitions between them.
+
+Here's the key insight: perception and action each need their own atlas, but these atlases are related by the Legendre transform. The Visual Atlas tells you "given what I see, where am I?" The Action Atlas tells you "given what I want to do, how do I push?" And the Legendre transform is the mathematical operation that connects them---the same operation that connects Lagrangian mechanics (position and velocity) to Hamiltonian mechanics (position and momentum).
+
+Why do we need separate atlases? Because the same physical situation might look very different from the perception side versus the action side. When you're looking at a cup, the visual representation involves shape, color, distance. When you're reaching for that cup, the motor representation involves joint angles, velocities, forces. These are different coordinate systems on the same underlying reality, and the Legendre transform is what translates between them.
+:::
 
 To implement the symplectic interface, we require two symmetric topological structures: a **Visual Atlas** for perception and an **Action Atlas** for actuation. This symmetrizes the architecture from {ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`.
 
@@ -120,7 +190,14 @@ The Visual Atlas $\mathcal{A}_{\text{vis}} = \{(U_\alpha, \phi_\alpha, e_\alpha^
 *Output:* Latent state $z \in \mathcal{Z}$ (configuration).
 
 :::
-:::{prf:definition} Action Atlas — Actuation
+
+:::{div} feynman-prose
+Notice what the Visual Atlas does. It takes the raw visual chaos---pixels, shapes, colors---and organizes it into a structured representation. The charts ($U_\alpha$) are like different "ways of seeing": one chart might specialize in recognizing faces, another in outdoor scenes, another in small objects. The codebook embeddings ($e_\alpha^{\text{vis}}$) are the discrete labels: "this is a face," "this is a tree."
+
+The output is a position in the latent space $\mathcal{Z}$. Every time you see something, the Visual Atlas tells you where you've landed in this internal coordinate system.
+:::
+
+:::{prf:definition} Action Atlas --- Actuation
 :label: def-action-atlas-actuation
 
 The Action Atlas $\mathcal{A}_{\text{act}} = \{(V_\beta, \psi_\beta, e_\beta^{\text{act}})\}_{\beta \in \mathcal{K}_{\text{act}}}$ is a chart atlas on the motor manifold $T^*\mathcal{Q}$ with:
@@ -134,6 +211,15 @@ The Action Atlas $\mathcal{A}_{\text{act}} = \{(V_\beta, \psi_\beta, e_\beta^{\t
 *Remark (Jump Operator in Action Atlas).* The **Jump Operator** $L_{\beta \to \beta'}$ in the Action Atlas represents **Task Switching**: transitioning from one control primitive to another (e.g., "Walk" $\to$ "Jump", "Grasp" $\to$ "Release"). This mirrors the chart transition operator in the Visual Atlas ({ref}`Section 20.6 <sec-the-unified-world-model>`).
 
 :::
+
+:::{div} feynman-prose
+The Action Atlas mirrors the Visual Atlas, but on the motor side. Instead of "ways of seeing," you have "ways of doing." One chart might be for walking, another for grasping, another for using a tool. Each represents a topologically distinct control regime---you can't smoothly interpolate from walking to grasping; you have to *switch* between them.
+
+The Jump Operator is how you switch. It's the motor equivalent of a saccade in vision: a discrete transition from one mode of operation to another. When you stop walking and start reaching for something, you've jumped between charts in the Action Atlas.
+
+And here's the beautiful thing: the Legendre transform connects these two atlases. It's not that we designed them to be similar---they *have to be* similar, because they're related by a canonical transformation. This is why well-designed robot systems often have the same architecture for perception and control, just applied to different modalities.
+:::
+
 :::{prf:theorem} Atlas Duality via Legendre Transform
 :label: thm-atlas-duality-via-legendre-transform
 
@@ -218,6 +304,14 @@ where:
 (sec-motor-texture-the-action-residual)=
 ## Motor Texture: The Action Residual
 
+:::{div} feynman-prose
+Now we come to something subtle but important. When you reach for a cup, your brain doesn't specify the exact position of every muscle fiber at every millisecond. It specifies something more abstract: "reach toward that location with this general trajectory." The fine details---the slight tremor in your fingers, the micro-adjustments for balance, the precise timing of individual motor units---those emerge from lower-level systems.
+
+This is *motor texture*. It's the high-frequency, fine-grained detail of motor execution that doesn't matter for planning. Just like visual texture (the exact pixel values in an image) doesn't matter for recognizing what object you're looking at, motor texture doesn't matter for deciding what action to take.
+
+The reason this matters is the sim-to-real gap. In simulation, your motors are perfect: no tremor, no noise, no friction. In reality, all of that exists. If your policy depends on motor texture, it will fail catastrophically in the real world. So we build a *firewall*: the policy never sees motor texture, and therefore can't depend on it. The texture is only used for low-level execution, not for decision-making.
+:::
+
 Just as visual texture captures reconstruction-only detail ({ref}`Section 21.3 <sec-the-retrieval-texture-firewall>`), **motor texture** captures actuation-only detail that is excluded from planning.
 
 :::{prf:definition} Motor Texture Decomposition
@@ -292,7 +386,23 @@ The policy $\pi_\theta$ operates on $(K, z_n, A, z_{n,\text{motor}})$ but **neve
 
 :::
 (sec-the-belief-evolution-cycle-perception-dreaming-action)=
-## The Belief Evolution Cycle: Perception–Dreaming–Action
+## The Belief Evolution Cycle: Perception--Dreaming--Action
+
+:::{div} feynman-prose
+All right, now we're going to tie everything together with one of the most beautiful pictures in this whole framework: the thermodynamic cycle of cognition.
+
+Think about a heat engine. It compresses gas, heats it, expands it, cools it, and repeats. At each stage, energy and entropy flow in predictable ways. A Carnot engine achieves maximum efficiency by carefully managing these flows.
+
+The agent does something remarkably similar. It has three phases:
+
+1. **Perception (Compression)**: You receive a high-entropy sensory stream---millions of pixels, thousands of sensor readings---and compress it down to a low-entropy internal state. This is like compressing gas: you're squeezing information into a smaller representation. Entropy decreases inside the agent.
+
+2. **Dreaming (Isentropic Evolution)**: With the boundary closed, you think. You simulate, plan, consider alternatives. No information flows in or out. This is like the isentropic expansion or compression in a thermodynamic cycle: energy moves around internally, but total entropy doesn't change.
+
+3. **Action (Expansion)**: You take your low-entropy intention and expand it into a high-entropy motor command---all those fine details of muscle activations and motor signals. This is like the power stroke of an engine: you're doing work on the external world.
+
+And just like a heat engine, there's an efficiency bound. The Carnot limit tells you how well you can convert thermal energy to mechanical work. Here, the analog tells you how well you can convert sensory information to control information. Perfection is impossible---some "waste heat" (irreversible information loss) is inevitable.
+:::
 
 The agent's interaction loop is a **belief density evolution cycle** on the information manifold.
 
@@ -377,6 +487,18 @@ where $T_{\text{sensor}}$ and $T_{\text{motor}}$ are the effective temperatures 
 (sec-wfr-boundary-conditions-waking-vs-dreaming)=
 ## WFR Boundary Conditions: Waking vs Dreaming
 
+:::{div} feynman-prose
+Now we get to something philosophically deep: what's the difference between being awake and dreaming? In ordinary language, we might say "when you're awake, your senses are active; when you're dreaming, they're not." But can we make this precise?
+
+Yes, we can. The difference is entirely in the boundary conditions.
+
+When you're awake, your sensors are clamped to reality. Every moment, the world is shouting at you through your eyes and ears, forcing your belief state to match what's out there. That's a Dirichlet condition---the boundary is fixed to external observations.
+
+When you're dreaming, the boundary is *reflective*. No information flows in from outside. No information flows out to motors. Your mind is a closed system, evolving under its own internal dynamics. The boundary is sealed.
+
+Mathematically, this is the simplest possible change: swap a Dirichlet condition for a Neumann-zero condition. But the consequences are profound. In waking, your beliefs are constantly being corrected by reality. In dreaming, your beliefs can wander wherever the internal dynamics take them. That's why dreams can be so strange---there's no ground truth pulling you back.
+:::
+
 The **Wasserstein-Fisher-Rao** (WFR, {prf:ref}`def-the-wfr-action`) equation from {ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>` governs the belief density $\rho$. The distinction between Waking and Dreaming is rigorously defined by the **boundary condition** on $\rho$. Boundary conditions update at interaction time $t$, while internal flow evolves in computation time $s$ ({ref}`Section 1.3 <sec-the-chronology-temporal-distinctions>`).
 
 :::{prf:definition} Waking: Boundary Clamping
@@ -440,6 +562,23 @@ which is:
 :::
 (sec-the-context-space-unified-definition)=
 ## The Context Space: Unified Definition
+
+:::{div} feynman-prose
+Now I want to show you something that I find really beautiful---a unification that wasn't obvious at all until we had the right framework.
+
+What do these three things have in common?
+- A robot deciding which direction to push a lever
+- A classifier deciding whether an image shows a cat or a dog
+- A language model deciding which word comes next given a prompt
+
+On the surface, they seem totally different. Actions, labels, tokens---different domains, different vocabularies, different applications. But in the framework we've been building, they're all the same thing: *boundary conditions*.
+
+Each one specifies a constraint on how the agent's internal state should flow outward. The robot's action says "push this way." The classifier's label says "route to this output category." The prompt says "generate text in this direction." In every case, you're clamping the motor boundary to a particular configuration.
+
+We call the space of all such boundary conditions the *Context Space* $\mathcal{C}$. And the remarkable fact is that the mathematics doesn't care which interpretation you use. The bulk dynamics---the geodesic flows, the WFR transport, the holographic generation---all work the same way. Only the boundary semantics change.
+
+This is why the same neural network architectures can be adapted from robotics to language modeling to classification: they're all implementing the same geometric structure with different boundary interpretations.
+:::
 
 The Action Atlas admits a deeper structure: the **Context Space** $\mathcal{C}$ is the abstract space of boundary conditions that unifies RL actions, classification labels, and LLM prompts.
 
@@ -528,6 +667,19 @@ Each specifies:
 :::
 (sec-implementation-the-holographicinterface-module)=
 ## Implementation: The HolographicInterface Module
+
+:::{div} feynman-prose
+All right, enough theory. Let's build something.
+
+The code below implements everything we've discussed: the dual atlas architecture, the motor texture decomposition, the context-conditioned policy. You'll see how the abstract mathematics translates into concrete PyTorch modules.
+
+A few things to notice as you read through:
+1. The Visual and Action atlases have parallel structure---this is the Legendre duality made concrete
+2. Motor texture is sampled with geometry-dependent variance---the conformal scaling from the Poincare disk
+3. The policy is context-conditioned---the same network handles RL actions, classification labels, and more
+
+This isn't just an illustration. This is a working architecture that embodies the boundary interface theory.
+:::
 
 We provide the Python implementation of the Holographic Interface, combining the Dual Atlas, Motor Texture, and Context Space.
 

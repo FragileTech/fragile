@@ -2,6 +2,20 @@
 
 {cite}`evans2010pde,sutton2018rl`
 
+:::{div} feynman-prose
+Now we come to reward, and I have to tell you something that might seem heretical at first: reward is not a number.
+
+In every RL textbook, you see $r_t$---a scalar. The agent does something, the environment gives back a number, and the goal is to maximize the sum of these numbers over time. Simple, clean, and completely inadequate for understanding what's really going on.
+
+Here's the problem: when you move through the world, the reward you collect depends not just on *where* you are, but on *which direction you're moving*. Walk toward the refrigerator, and you might get closer to food (good). Walk away from it, and you don't. Same position, different reward---because of the direction of motion.
+
+This means reward isn't a scalar field (a number at each point). It's a *1-form*---a mathematical object that eats a direction and spits out a number. The reward you get is the inner product of the reward 1-form with your velocity: $r_t = \langle \mathcal{R}, v \rangle$.
+
+Why does this matter? Because it opens up a whole world of structure that standard RL ignores. The 1-form can have a "curl"---non-zero circulation around closed loops. When it does, something remarkable happens: the optimal strategy might not be to converge to a fixed point. It might be to *orbit forever*, continuously harvesting reward from cycles in the value landscape.
+
+Think of Rock-Paper-Scissors. There's no "best" move. The optimal strategy cycles: rock beats scissors beats paper beats rock. That cyclic structure is encoded in the curl of the reward 1-form.
+:::
+
 We have defined Observations as **Configuration Constraints** (manifold position, {ref}`Section 23.1 <sec-the-symplectic-interface-position-momentum-duality>`) and Actions as **Momentum Constraints** (tangent vectors, {ref}`Section 23.1 <sec-the-symplectic-interface-position-momentum-duality>`). We now define the third component of the interface: **Reward**.
 
 We rigorously frame Reward not as a scalar signal, but as a **Differential 1-Form** on the latent manifold. This generalization is fundamental: the agent harvests reward by moving through the field, and the reward it collects depends on both position and direction of motion. The standard scalar value function $V(z)$ emerges as the special case where the reward field is **conservative** (curl-free).
@@ -19,6 +33,16 @@ We generalize by treating reward as a **1-form field** $\mathcal{R}$, with scala
 
 (sec-the-reward-1-form)=
 ## The Reward 1-Form
+
+:::{div} feynman-prose
+Let me make the mathematical setup precise. A 1-form is a linear map from tangent vectors to numbers. At each point $z$ on the manifold, you have a 1-form $\mathcal{R}(z)$ that takes any velocity vector $v$ and returns a real number: the instantaneous reward rate.
+
+The beautiful thing about 1-forms is that they integrate naturally along paths. If you want to know the total reward collected along a trajectory, you just integrate: $R_{\text{cumulative}} = \int_\gamma \mathcal{R}$. This is a *line integral*, exactly like the work done by a force field in physics.
+
+Notice the remark: a stationary agent ($v = 0$) collects zero instantaneous reward. You have to *move* to harvest value. This captures something deep about agency: there's no such thing as passive reward collection. You have to act, explore, traverse the landscape.
+
+This is different from the textbook picture, where you might imagine sitting in a "good state" and accumulating reward by existing. In the 1-form formulation, reward flows only when you're in motion. It's a rate, not a stock.
+:::
 
 We begin with the most general formulation: reward is a **differential 1-form** on the latent manifold.
 
@@ -82,6 +106,25 @@ In the discrete limit, this manifests as point charges $r_t$ deposited at the bo
 ::::
 (sec-hodge-decomposition-of-value)=
 ## The Hodge Decomposition of Value
+
+:::{div} feynman-prose
+Now we come to one of the most powerful theorems in differential geometry, applied to the reward landscape: the Hodge decomposition.
+
+The idea is this: any vector field (or 1-form) can be split into three orthogonal pieces:
+
+1. **Gradient part** ($d\Phi$): This is the "climb the hill" component. It points from low value to high value. If you only had this part, there would be a scalar potential $\Phi$ such that reward always flows downhill in $-\Phi$ space.
+
+2. **Solenoidal part** ($\delta\Psi$): This is the "swirl" component. It circulates around without converging to any fixed point. Think of stirring coffee---the flow goes round and round.
+
+3. **Harmonic part** ($\eta$): This is the "topological" component. It comes from holes in the manifold---places you can loop around that aren't contractible. If your latent space has the topology of a donut, there's a harmonic component you can't get rid of.
+
+Why does this matter? Because each component has different implications for optimal behavior:
+- The gradient part can be *optimized*. You can climb to the peak and stay there.
+- The solenoidal part must be *orbited*. There's no peak; you harvest reward by cycling.
+- The harmonic part is *topological*. It's determined by the shape of the space itself.
+
+Standard RL assumes the solenoidal and harmonic parts are zero---that there's always a scalar value function you're climbing. When that assumption fails, standard methods break down, and you need the full Hodge structure.
+:::
 
 The central theorem of this section decomposes any reward 1-form into three orthogonal components: gradient, solenoidal, and harmonic. This decomposition separates the optimizable component from the inherently cyclic components.
 
@@ -184,6 +227,24 @@ This recovers the **scalar Value function**, which exists precisely because rewa
 
 (sec-the-bulk-potential-screened-poisson-equation)=
 ## The Conservative Case: Scalar Potential and Screened Poisson Equation
+
+:::{div} feynman-prose
+Now let's focus on the special case that standard RL assumes: the curl vanishes. When $\mathcal{F} = 0$, the reward 1-form is exact---it's the gradient of some scalar function $\Phi$. This scalar is the value function, and suddenly everything becomes much simpler.
+
+In this regime, the value function satisfies a beautiful partial differential equation: the Screened Poisson (or Helmholtz) equation. This is the continuum limit of the Bellman equation, and understanding it geometrically is one of the key insights of this framework.
+
+The equation looks like this:
+$$-\Delta_G V + \kappa^2 V = \rho_r$$
+
+Let me parse that for you:
+- $\Delta_G$ is the Laplace-Beltrami operator---the generalization of the Laplacian to curved manifolds. It measures how $V$ differs from its local average.
+- $\kappa^2$ is the "screening mass," which turns out to be $\kappa = -\ln\gamma$ where $\gamma$ is the discount factor. This is the deep connection: the discount rate isn't just an arbitrary weighting---it's a *mass* for the value field.
+- $\rho_r$ is the reward density---where rewards are being deposited.
+
+What does this equation mean physically? It says value *propagates* from reward sources, but the propagation is screened. Distant rewards contribute less, and the screening length is $\ell = 1/\kappa = -1/\ln\gamma$. For $\gamma = 0.99$, this is about 100 time steps. Beyond that distance, rewards are exponentially suppressed.
+
+This gives the discount factor a *spatial* meaning, not just a temporal one. In latent space, $\gamma$ controls how far reward "reaches."
+:::
 
 When the Value Curl vanishes ($\mathcal{F} = 0$), the reward field is conservative and we recover the standard scalar value function framework. In this regime, the Value function $V(z) = \Phi(z)$ obeys the Bellman Equation, which in the continuum limit becomes the **Screened Poisson (Helmholtz) Equation**.
 
@@ -391,6 +452,21 @@ This recovers the standard **temporal horizon interpretation** where $\gamma$ co
 (sec-thermodynamic-interpretation-energy-vs-probability)=
 ## Thermodynamic Interpretation: Energy vs Probability
 
+:::{div} feynman-prose
+Now we have to deal with an old confusion: what *is* the value function? Is it an energy? A probability? A utility?
+
+Here's the answer: it's a *Gibbs free energy*. That sounds fancy, but it's actually clarifying. The Gibbs free energy in thermodynamics is $F = E - TS$: energy minus temperature times entropy. It balances energetic favorability against entropic disorder.
+
+For the agent, the analog is:
+$$\Phi(z) = E(z) - T_c S(z)$$
+
+where $E(z)$ is the task cost (low is good), $S(z)$ is the exploration entropy (high means lots of options), and $T_c$ is the cognitive temperature (how much the agent values exploration).
+
+This explains why entropy-regularized RL works: it's not a hack or approximation. It's solving for the *free energy* minimum, which is the thermodynamically correct objective. The Boltzmann distribution $P(z) \propto \exp(V(z)/T_c)$ emerges naturally as the equilibrium.
+
+At high temperature ($T_c$ large), the agent spreads out, exploring broadly. At low temperature, the agent concentrates on the value peaks, exploiting. The temperature controls the tradeoff, and the free energy formulation tells you exactly how.
+:::
+
 We explicitly resolve the ambiguity between "Energy" and "Probability" in the value function interpretation. The scalar potential $\Phi(z)$ from the Hodge decomposition plays the role of Gibbs Free Energy in the conservative case.
 
 :::{prf:axiom} The Generalized Boltzmann-Value Law
@@ -536,8 +612,6 @@ At stationarity, $\nabla \cdot J = 0$, but only $J_{\text{gradient}} = 0$ at tru
 
 **Cross-references:** {ref}`Section 20.2 <sec-the-wfr-metric>` (WFR dynamics), Section 23.4 (Thermodynamic Cycle), Section 14.2 (MaxEnt control), Theorem {prf:ref}`thm-hodge-decomposition` (Hodge Decomposition).
 
-:::
-
 :::{prf:corollary} The Varentropy-Stability Relation (Cognitive Heat Capacity)
 :label: cor-varentropy-stability
 
@@ -571,6 +645,18 @@ $$
 :::
 (sec-geometric-back-reaction-the-conformal-coupling)=
 ## Geometric Back-Reaction: The Conformal Coupling
+
+:::{div} feynman-prose
+Now I want to tell you about something that closes the loop in a beautiful way: the geometry affects the value field (through the Laplace-Beltrami operator), and *the value field affects the geometry back*.
+
+This is a back-reaction. In general relativity, matter curves spacetime, and curved spacetime tells matter how to move. Here, reward curves the latent geometry, and the curved geometry tells the agent how to move.
+
+Specifically, in regions where the value function has high curvature---sharp ridges, steep valleys, critical decision points---the metric gets *rescaled*. The conformal factor $\Omega(z) = 1 + \alpha_{\text{conf}} \|\nabla^2 V\|$ inflates distances in those regions.
+
+What does this mean practically? The agent *slows down* near important decisions. It can't rush through regions of high value curvature; the geometry forces it to be careful. This is automatic caution built into the dynamics---not a hand-tuned heuristic, but an emergent consequence of the geometric coupling.
+
+Think about it: in a region where the value landscape is flat, the agent can zoom along freely. But near a cliff edge (high curvature), distances stretch out, effective mass increases, and the agent has to spend more computational effort to move. This is exactly what you want from a rational agent: be decisive in easy regions, be careful in risky ones.
+:::
 
 Does the Reward field change the Geometry? **Yes.** From Theorem {prf:ref}`thm-capacity-constrained-metric-law`, the curvature is driven by the Risk Tensor. Both the scalar potential $\Phi$ and the Value Curl $\mathcal{F}$ contribute to risk, and therefore modify the metric.
 
@@ -696,7 +782,21 @@ This recovers **Auxiliary Tasks** (reward prediction, inverse dynamics, world mo
 (sec-implementation-the-holographiccritic-module)=
 ## Implementation: The HolographicCritic Module
 
-We update the architecture to include the Critic as the third pillar of the Holographic Interface. The Critic is not merely a value predictor—it is the **Field Solver** that computes the potential landscape from boundary charges.
+:::{div} feynman-prose
+Time to build the Critic. And I want you to think about it differently than you might be used to.
+
+In standard RL, the critic is a "value predictor"---a function approximator that learns to output $V(s)$ for each state $s$. You train it with TD-learning, bootstrap from targets, and try to minimize prediction error.
+
+Here, the critic is a *field solver*. It's computing the solution to a partial differential equation: the Screened Poisson equation. Rewards are the source terms, and the value function is the potential field they generate.
+
+This isn't just a reframing. It changes how you think about training. The TD error isn't a prediction error---it's the *PDE residual*. When TD error is zero, the Helmholtz equation is satisfied. The critic network is an implicit neural PDE solver.
+
+The conformal coupling adds another layer: the critic also computes the Hessian of the value function, which feeds back into the metric. High-curvature regions get flagged, distances get stretched, and the agent naturally becomes more cautious there.
+
+Notice how the implementation computes both the TD error (PDE consistency) and the geometric gradient regularization (smoothness on the manifold). Both are necessary for a well-behaved solution.
+:::
+
+We update the architecture to include the Critic as the third pillar of the Holographic Interface. The Critic is not merely a value predictor---it is the **Field Solver** that computes the potential landscape from boundary charges.
 
 ```python
 import torch
@@ -959,6 +1059,25 @@ def train_critic_step(
 (sec-the-unified-holographic-dictionary)=
 ## The Unified Holographic Dictionary
 
+:::{div} feynman-prose
+Let's step back and admire what we've built. We now have a complete translation between the language of RL and the language of field theory.
+
+Every RL concept maps to a geometric/physical concept:
+- Observations are *Dirichlet boundary conditions* (clamping position)
+- Actions are *Neumann boundary conditions* (clamping flux)
+- Rewards are *source charges* for the Poisson equation
+- The value function is the *potential field* generated by those charges
+- The discount factor is the *screening mass* that controls correlation length
+- The policy is an *external force* that breaks symmetry
+- The temperature is the *thermal bath* that drives exploration
+
+And crucially: the agent's motion through latent space follows a *geodesic SDE* on a *curved manifold* whose curvature is determined by the information it's processing and the value landscape it's navigating.
+
+This is RL as electrodynamics on a curved manifold. The Encoder is a coordinate chart. The Critic is a field solver. The Policy is an external force. And the whole thing is self-consistent: value curves the geometry, and geometry shapes value propagation.
+
+If you understand this dictionary, you understand the deep structure of agency.
+:::
+
 This completes the **Holographic Dictionary** for the Fragile Agent. We now have a complete mapping between boundary data (observations, actions, rewards) and bulk objects (position, momentum, potential).
 
 **Table 24.6.1 (Complete Holographic Dictionary).**
@@ -1018,6 +1137,22 @@ These three conditions fully specify the agent's interaction with its environmen
 :::
 (sec-diagnostic-nodes-for-the-scalar-field)=
 ## Diagnostic Nodes for the Reward Field
+
+:::{div} feynman-prose
+Finally, we need to know when things are going wrong. The Critic is a complex system---a PDE solver coupled to a geometric back-reaction. There are many ways it can fail, and we need diagnostics for each.
+
+Node 35 checks whether the Helmholtz equation is actually being satisfied. If the residual is large, the Critic hasn't converged---you're not getting the right potential field.
+
+Node 36 checks whether value correlations are decaying at the right rate. The Green's function should decay exponentially with screening length $\ell = 1/\kappa$. If correlations extend further, something is wrong with the screening mass (discount factor) or metric computation.
+
+Node 37 checks whether the empirical distribution matches the Boltzmann distribution. If the agent isn't sampling from equilibrium, there's an exploration-exploitation imbalance.
+
+Node 38 checks the conformal back-reaction. Too little variation in $\Omega$ means the value landscape is flat and boring. Too much means the geometry is wildly distorted and the agent might be stuck.
+
+Node 39 checks the WFR consistency: high value should create mass. If the correlation between mass and value is low, the WFR dynamics aren't properly coupling to the Critic.
+
+Node 61 is new and crucial: it checks whether the reward field is actually conservative. If the Value Curl is non-zero, standard methods will fail, and you need to think about the full Hodge structure.
+:::
 
 We define six diagnostic nodes (35-39, 61) to monitor the health of the Critic/Value system, including the new ValueCurlCheck for non-conservative reward fields.
 
