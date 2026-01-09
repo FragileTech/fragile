@@ -32,8 +32,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv pip install --system -r docs/requirements.txt
-          uv pip install --system -e .
+          uv pip install --system -e ".[docs]"
 
       - name: Build JupyterBook
         run: jupyter-book build docs/
