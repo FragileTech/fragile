@@ -1,12 +1,12 @@
 (sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws)=
-## Appendix E: Rigorous Proof Sketches for Ontological and Metabolic Laws
+# {ref}`Appendix E <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>`: Rigorous Proof Sketches for Ontological and Metabolic Laws
 
 This appendix provides the rigorous mathematical foundations for the theorems and propositions introduced in Sections 30, 31, and 32. We operate on the latent Riemannian manifold $(\mathcal{Z}, G)$ with belief measures $\rho \in \mathcal{P}(\mathcal{Z})$.
 
 
 
 (sec-appendix-e-proof-of-theorem-prf-ref)=
-### E.1 Proof of Theorem {prf:ref}`thm-fission-criterion`
+## E.1 Proof of Theorem {prf:ref}`thm-fission-criterion`
 
 **Statement:** The ontology should expand from $N_c$ to $N_c + 1$ charts if and only if $\Xi > \Xi_{\text{crit}}$ and $\Delta V_{\text{proj}} > \mathcal{C}_{\text{complexity}}$.
 
@@ -15,7 +15,7 @@ This appendix provides the rigorous mathematical foundations for the theorems an
 :::{prf:proof}
 :label: proof-thm-the-fission-trigger
 
-Consider the discrete variation $\Delta \mathcal{S} = \mathcal{S}[N_c + 1] - \mathcal{S}[N_c]$. By the definition of the Ontological Action (Section 30.3):
+Consider the discrete variation $\Delta \mathcal{S} = \mathcal{S}[N_c + 1] - \mathcal{S}[N_c]$. By the definition of the Ontological Action ({ref}`Section 30.3 <sec-the-fission-criterion>`):
 
 $$
 \mathcal{S}_{\text{onto}} = -\mathcal{S}_{\text{task}} + \mu_{\text{size}} \cdot N_c,
@@ -44,7 +44,7 @@ The condition $\Xi > \Xi_{\text{crit}}$ ensures that the second variation of the
 
 
 (sec-appendix-e-proof-of-theorem-prf-ref-a)=
-### E.2 Proof of Theorem {prf:ref}`thm-supercritical-pitchfork-bifurcation-for-charts`
+## E.2 Proof of Theorem {prf:ref}`thm-supercritical-pitchfork-bifurcation-for-charts`
 
 **Statement:** The emergence of a new chart follows a supercritical pitchfork bifurcation with control parameter $\mu = \Xi - \Xi_{\text{crit}}$.
 
@@ -82,11 +82,11 @@ The bifurcation diagram: for $\Xi < \Xi_{\text{crit}}$, the system has a single 
 
 
 (sec-appendix-e-proof-of-theorem-prf-ref-b)=
-### E.3 Proof of Theorem {prf:ref}`thm-generalized-landauer-bound`
+## E.3 Proof of Theorem {prf:ref}`thm-generalized-landauer-bound`
 
 **Statement:** $\dot{\mathcal{M}}(s) \ge T_c \left| \frac{d}{ds} H(\rho_s) \right|$.
 
-**Hypothesis:** Belief evolution follows the WFR continuity equation $\partial_s \rho = \mathcal{L}_{\text{WFR}} \rho = \rho r - \nabla \cdot (\rho v)$.
+**Hypothesis:** Belief evolution follows the {prf:ref}`def-the-wfr-action` continuity equation $\partial_s \rho = \mathcal{L}_{\text{WFR}} \rho = \rho r - \nabla \cdot (\rho v)$.
 
 :::{prf:proof}
 :label: proof-thm-generalized-landauer-bound
@@ -139,7 +139,7 @@ Adding both contributions yields the stated bound. $\square$
 
 
 (sec-appendix-e-proof-of-theorem-prf-ref-c)=
-### E.4 Proof of Theorem {prf:ref}`thm-deliberation-optimality-condition`
+## E.4 Proof of Theorem {prf:ref}`thm-deliberation-optimality-condition`
 
 **Statement:** The optimal computation budget $S^*$ satisfies $\frac{d}{ds} \langle V \rangle_{\rho_s}|_{s=S^*} = \dot{\mathcal{M}}(S^*)$.
 
@@ -192,7 +192,7 @@ This states that the optimal stopping time $S^*$ is reached when the power dissi
 
 
 (sec-appendix-e-proof-of-theorem-prf-ref-d)=
-### E.5 Proof of Theorem {prf:ref}`thm-augmented-drift-law`
+## E.5 Proof of Theorem {prf:ref}`thm-augmented-drift-law`
 
 **Statement:** $F_{\text{total}} = -G^{-1}\nabla V + \beta_{\text{exp}} G^{-1}\nabla\Psi_{\text{causal}}$.
 
@@ -236,7 +236,7 @@ Contracting with $G^{mk}$ and using $\Gamma^m_{ij} = G^{mk}[ij, k]$:
 $$
 \ddot{z}^m + \Gamma^m_{ij}\dot{z}^i\dot{z}^j = -G^{mk}\partial_k V - \beta_{\text{exp}} G^{mk}\partial_k \Psi_{\text{causal}}.
 $$
-This is the geodesic equation with forcing terms. In the **overdamped limit** (Section 22.3), inertia is negligible and the acceleration term vanishes, leaving:
+This is the geodesic equation with forcing terms. In the **overdamped limit** ({ref}`Section 22.3 <sec-the-unified-effective-potential>`), inertia is negligible and the acceleration term vanishes, leaving:
 
 $$
 \dot{z}^m = -G^{mk}\partial_k V + \beta_{\text{exp}} G^{mk}\partial_k \Psi_{\text{causal}} = F^m_{\text{total}}.
@@ -248,7 +248,7 @@ The drift field $F_{\text{total}}$ is the first-order velocity approximation, pr
 
 
 (sec-appendix-e-proof-of-theorem-prf-ref-e)=
-### E.6 Proof of Theorem {prf:ref}`thm-interventional-closure`
+## E.6 Proof of Theorem {prf:ref}`thm-interventional-closure`
 
 **Statement:** The macro-ontology $K$ is interventionally closed iff $I(K_{t+1}; Z_{\text{micro}, t} | K_t, do(A_t)) = 0$.
 
@@ -259,7 +259,7 @@ The drift field $F_{\text{total}}$ is the first-order velocity approximation, pr
 
 We compare the mutual information under the observational measure $P$ and the interventional measure $P_{do(A)}$.
 
-**Observational case:** By the Causal Enclosure condition (Section 2.8):
+**Observational case:** By the Causal Enclosure condition ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`):
 
 $$
 I(K_{t+1}; Z_{\text{micro}, t} | K_t, A_t) = 0 \quad \text{under } P.
@@ -291,14 +291,14 @@ Therefore, $I(K_{t+1}; Z_{\text{micro}, t} | K_t, do(A_t)) = 0$.
 $$
 K_t \leftarrow Z_{\text{micro}, t} \to K_{t+1}.
 $$
-This path was confounded in observational data (the correlation between $Z_{\text{micro}}$ and $K_{t+1}$ was screened by the policy generating $A_t$). The intervention breaks this screening, exposing the hidden variable. The remedy is **Ontological Expansion** (Section 30): promote the relevant component of $Z_{\text{micro}}$ to a new macro-variable in $K$. $\square$
+This path was confounded in observational data (the correlation between $Z_{\text{micro}}$ and $K_{t+1}$ was screened by the policy generating $A_t$). The intervention breaks this screening, exposing the hidden variable. The remedy is **Ontological Expansion** ({ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>`): promote the relevant component of $Z_{\text{micro}}$ to a new macro-variable in $K$. $\square$
 
 :::
 
 
 
 (sec-appendix-e-rigorous-proof-of-multi-agent-strategic-tunneling)=
-### E.7 Rigorous Proof of Multi-Agent Strategic Tunneling (Theorem {prf:ref}`thm-tunneling-probability`)
+## E.7 Rigorous Proof of Multi-Agent Strategic Tunneling (Theorem {prf:ref}`thm-tunneling-probability`)
 
 **Title:** *Asymptotic Behavior of the Joint Belief Measure on Riemannian Product Manifolds under Metric Deformation by the Game Tensor.*
 
@@ -312,7 +312,7 @@ This appendix provides the rigorous mathematical foundation for Theorem {prf:ref
 
 
 
-#### E.7.1 Mathematical Setup and Definitions
+### E.7.1 Mathematical Setup and Definitions
 
 Let the $N$-agent configuration space be the product manifold $\mathcal{M} = \prod_{i=1}^N \mathcal{Z}^{(i)}$. We assume each $\mathcal{Z}^{(i)}$ is a smooth, compact, connected Riemannian manifold with boundary (or without boundary if geodesically complete).
 
@@ -386,7 +386,7 @@ Let $\Omega_A, \Omega_B \subset \mathcal{M} \setminus \mathcal{K}$ be disjoint o
 
 
 
-#### E.7.2 Strict Positivity of the Ground State (Existence of Tunneling)
+### E.7.2 Strict Positivity of the Ground State (Existence of Tunneling)
 
 We first prove that tunneling is not merely possible—it is **inevitable** for any connected manifold.
 
@@ -448,7 +448,7 @@ The relevant question becomes: **how fast** does tunneling occur? This is answer
 
 
 
-#### E.7.3 Agmon Estimates: Quantifying the Tunneling Rate
+### E.7.3 Agmon Estimates: Quantifying the Tunneling Rate
 
 While Theorem E.7.1 proves existence, we need **quantitative bounds** on the decay rate through the barrier. We use Agmon's method {cite}`agmon1982lectures`.
 
@@ -552,7 +552,7 @@ $$
 
 
 
-#### E.7.4 Game Tensor Effect: Adversarial Suppression of Tunneling
+### E.7.4 Game Tensor Effect: Adversarial Suppression of Tunneling
 
 We now prove that the Game Tensor $\mathcal{G}_{ij}$ (Definition {prf:ref}`def-the-game-tensor`) increases the effective barrier, suppressing tunneling.
 
@@ -622,9 +622,9 @@ This proves that adversarial coupling increases Agmon distance (Corollary E.7.3)
 
 
 
-#### E.7.5 Probabilistic Representation: Feynman-Kac Formula
+### E.7.5 Probabilistic Representation: Feynman-Kac Formula
 
-To connect the spectral results to the stochastic WFR dynamics (Section 22), we invoke the rigorous Feynman-Kac formula.
+To connect the spectral results to the stochastic WFR dynamics ({ref}`Section 22 <sec-the-equations-of-motion-geodesic-jump-diffusion>`), we invoke the rigorous Feynman-Kac formula.
 
 :::{prf:theorem} E.7.4 (Feynman-Kac Representation)
 :label: thm-e7-feynman-kac
@@ -725,7 +725,7 @@ where the rate function is the Agmon action.
 
 
 
-#### E.7.6 Summary of Rigorous Results
+### E.7.6 Summary of Rigorous Results
 
 **Table E.7.1 (Summary of Tunneling Rigor).**
 
@@ -749,11 +749,11 @@ This completes the rigorous foundation for the strategic tunneling mechanism. $\
 
 
 (sec-appendix-e-proof-of-corollary-varentropy-stability)=
-### E.8 Proof of Corollary {prf:ref}`cor-varentropy-stability`
+## E.8 Proof of Corollary {prf:ref}`cor-varentropy-stability`
 
 **Statement:** $V_H(z) = T_c^2 \frac{\partial H(\pi)}{\partial T_c}$.
 
-**Hypothesis:** Let $\pi(a|z) = \frac{1}{Z} \exp\left(\frac{Q(z,a)}{T_c}\right)$ be the policy, where $Z = \sum_a \exp(Q/T_c)$ is the partition function. Let $\beta = 1/T_c$ be the inverse cognitive temperature.
+**Hypothesis:** Let $\pi(a|z) = \frac{1}{Z} \exp\left(\frac{Q(z,a)}{T_c}\right)$ be the policy, where $Z = \sum_a \exp(Q/T_c)$ is the partition function. Let $\beta = 1/T_c$ be the inverse {prf:ref}`def-cognitive-temperature`.
 
 :::{prf:proof}
 :label: proof-cor-varentropy-stability
@@ -809,7 +809,7 @@ This proves that Varentropy equals the heat capacity and measures the sensitivit
 
 
 (sec-appendix-e-proof-of-corollary-bimodal-instability)=
-### E.9 Proof of Corollary {prf:ref}`cor-bimodal-instability`
+## E.9 Proof of Corollary {prf:ref}`cor-bimodal-instability`
 
 **Statement:** For a bimodal policy on a value ridge, $V_H$ is significant, distinguishing it from uniform noise.
 
@@ -862,7 +862,7 @@ This proves that $V_H$ detects the topological feature (the valley) that disting
 
 
 (sec-appendix-e-proof-of-corollary-varentropy-brake)=
-### E.10 Proof of Corollary {prf:ref}`cor-varentropy-brake`
+## E.10 Proof of Corollary {prf:ref}`cor-varentropy-brake`
 
 **Statement:** To maintain stability, the cooling rate must satisfy $|\dot{T}_c| \ll T_c / \sqrt{V_H}$.
 
@@ -922,7 +922,7 @@ $$
 
 
 (sec-appendix-e-proof-of-corollary-epistemic-curiosity-filter)=
-### E.11 Proof of Corollary {prf:ref}`cor-epistemic-curiosity-filter`
+## E.11 Proof of Corollary {prf:ref}`cor-epistemic-curiosity-filter`
 
 **Statement:** $\nabla \Psi_{\text{causal}} \propto \nabla \mathbb{E}_{z'} [ V_H[P(\theta_W | z, a, z')] ]$.
 
@@ -965,7 +965,7 @@ $$
 
 
 
-### E.12 Derivation of the HJB-Klein-Gordon Correspondence (Theorem {prf:ref}`thm-hjb-klein-gordon`)
+## E.12 Derivation of the HJB-Klein-Gordon Correspondence (Theorem {prf:ref}`thm-hjb-klein-gordon`)
 
 **Statement:** Under finite information propagation speed $c_{\text{info}}$, the Bellman equation generalizes to the hyperbolic Klein-Gordon equation:
 
@@ -1095,7 +1095,7 @@ All terms have consistent units. $\square$
 
 
 
-### E.13 Derivation of the Madelung Transform (Theorem {prf:ref}`thm-madelung-transform`)
+## E.13 Derivation of the Madelung Transform (Theorem {prf:ref}`thm-madelung-transform`)
 
 **Statement:** The belief wave-function $\psi = \sqrt{\rho} e^{iV/\sigma}$ satisfies the Inference Schrödinger Equation if and only if $(\rho, V)$ satisfy the WFR-HJB system.
 
@@ -1274,7 +1274,7 @@ The Bohm potential $Q_B$ emerges naturally from the kinetic energy operator acti
 
 
 
-### E.14 Proof of Markov Restoration on the Causal Bundle (Theorem {prf:ref}`thm-markov-restoration`)
+## E.14 Proof of Markov Restoration on the Causal Bundle (Theorem {prf:ref}`thm-markov-restoration`)
 
 **Statement:** The augmented state $(z^{(N)}_t, \Xi_{<t})$ forms a Markov process even when the raw state $z^{(N)}_t$ does not.
 
@@ -1352,7 +1352,7 @@ for all $0 < r < s$, which characterizes Markov processes. $\square$
 
 
 
-### E.15 Proof of Nash Equilibrium as Standing Wave (Theorem {prf:ref}`thm-nash-standing-wave`)
+## E.15 Proof of Nash Equilibrium as Standing Wave (Theorem {prf:ref}`thm-nash-standing-wave`)
 
 **Statement:** A Nash equilibrium in the multi-agent Klein-Gordon system corresponds to a standing wave pattern with time-averaged zero flux.
 
@@ -1438,7 +1438,7 @@ Higher modes ($n > 1$) are metastable—small perturbations can cause transition
 
 
 
-### E.16 Derivation of the Game Tensor and Strategic Jacobian (Definition {prf:ref}`def-the-game-tensor`)
+## E.16 Derivation of the Game Tensor and Strategic Jacobian (Definition {prf:ref}`def-the-game-tensor`)
 
 **Statement:** The Game Tensor $\mathcal{G}_{ij}$ arises from the second-order response of agent $i$'s value to agent $j$'s position, mediated by the Strategic Jacobian.
 
@@ -1530,7 +1530,7 @@ $$
 
 
 
-### E.17 Proof of the Bianchi Identity (Theorem {prf:ref}`thm-bianchi-identity`)
+## E.17 Proof of the Bianchi Identity (Theorem {prf:ref}`thm-bianchi-identity`)
 
 **Statement:** The field strength tensor satisfies $D_{[\mu}\mathcal{F}_{\nu\rho]} = 0$ (cyclic sum vanishes).
 
@@ -1624,7 +1624,7 @@ by the Jacobi identity for structure constants and antisymmetry of $\mathcal{F}$
 
 
 
-### E.18 Derivation of the Higgs Mechanism (Theorem {prf:ref}`thm-higgs-mechanism`)
+## E.18 Derivation of the Higgs Mechanism (Theorem {prf:ref}`thm-higgs-mechanism`)
 
 **Statement:** When $\mu^2 < 0$ in the Higgs potential, spontaneous symmetry breaking generates masses for gauge bosons and matter fields.
 
@@ -1746,7 +1746,7 @@ The number of massive gauge bosons equals $\dim(G) - \dim(H)$ (the number of bro
 
 
 
-### E.19 Proof of Nash Equilibrium as Ground State (Theorem {prf:ref}`thm-nash-ground-state`)
+## E.19 Proof of Nash Equilibrium as Ground State (Theorem {prf:ref}`thm-nash-ground-state`)
 
 **Statement:** In the semiclassical limit $\sigma \to 0$, the ground state wave-function concentrates on the Nash equilibrium.
 

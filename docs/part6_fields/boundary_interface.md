@@ -1,10 +1,10 @@
-## 23. The Boundary Interface: Symplectic Structure
+# The Boundary Interface: Symplectic Structure
 
 {cite}`arnold1989mathematical`
 
+(rb-boundary-conditions)=
 :::{admonition} Researcher Bridge: Observations and Actions as Boundary Conditions
 :class: info
-:name: rb-boundary-conditions
 In standard RL, observations and actions are inputs and outputs. Here they are boundary conditions on the latent dynamics, which is why sensor and motor channels appear as Dirichlet and Neumann conditions.
 :::
 
@@ -13,7 +13,7 @@ We have defined the internal dynamics of the agent (the interior) as a Jump-Diff
 The interface exchanges information with the environment via two asymmetric boundary conditions: **Dirichlet** (position-clamping for sensors) and **Neumann** (flux-clamping for motors).
 
 (sec-the-symplectic-interface-position-momentum-duality)=
-### 23.1 The Symplectic Interface: Position-Momentum Duality
+## The Symplectic Interface: Position-Momentum Duality
 
 The boundary $\partial\mathcal{Z}$ between agent and environment is not merely a surface—it is a **symplectic manifold** where observations and actions live as conjugate variables.
 
@@ -66,9 +66,9 @@ Units: $[j_{\text{motor}}] = \mathrm{nat}/\text{step}$.
 
 :::
 
+(pi-hamiltonian-bc)=
 ::::{admonition} Physics Isomorphism: Hamiltonian Boundary Conditions
 :class: note
-:name: pi-hamiltonian-bc
 
 **In Physics:** In Hamiltonian mechanics, canonical coordinates $(q, p)$ satisfy $\dot{q} = \partial H/\partial p$ (position from momentum) and $\dot{p} = -\partial H/\partial q$ (momentum from position). Boundary conditions fix either $q$ (Dirichlet) or $\partial_n q \propto p$ (Neumann) {cite}`arnold1989mathematical`.
 
@@ -85,7 +85,7 @@ Units: $[j_{\text{motor}}] = \mathrm{nat}/\text{step}$.
 | Momentum $p$ | Policy gradient $\nabla_z V$ |
 | Dirichlet BC $q\vert_{\Gamma} = q_0$ | Observation constraint |
 | Neumann BC $\partial_n q\vert_{\Gamma} = f$ | Action constraint |
-| Hamiltonian $H(q,p)$ | Effective potential $\Phi_{\text{eff}}$ |
+| Hamiltonian $H(q,p)$ | Effective potential $\Phi_{\text{eff}}$ ({prf:ref}`def-effective-potential`) |
 ::::
 
 :::{prf:proposition} Symplectic Duality Principle
@@ -100,13 +100,13 @@ This duality is the mathematical foundation for the symmetric treatment of sensi
 
 *Proof sketch.* The symplectic form $\omega$ is invariant under canonical transformations. The Legendre transform $\mathcal{L}: T\mathcal{Q} \to T^*\mathcal{Q}$ maps velocity to momentum, exchanging position-fixing (Dirichlet) for flux-fixing (Neumann). $\square$
 
-**Cross-references:** Section 2.11.4 (Observation inflow), Definition {prf:ref}`def-dirichlet-boundary-condition-sensors`.
+**Cross-references:** {ref}`Section 2.11.4 <sec-the-interface-and-observation-inflow>` (Observation inflow), Definition {prf:ref}`def-dirichlet-boundary-condition-sensors`.
 
 :::
 (sec-the-dual-atlas-architecture)=
-### 23.2 The Dual Atlas Architecture
+## The Dual Atlas Architecture
 
-To implement the symplectic interface, we require two symmetric topological structures: a **Visual Atlas** for perception and an **Action Atlas** for actuation. This symmetrizes the architecture from Section 2.2b.
+To implement the symplectic interface, we require two symmetric topological structures: a **Visual Atlas** for perception and an **Action Atlas** for actuation. This symmetrizes the architecture from {ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`.
 
 :::{prf:definition} Visual Atlas — Perception
 :label: def-visual-atlas-perception
@@ -128,10 +128,10 @@ The Action Atlas $\mathcal{A}_{\text{act}} = \{(V_\beta, \psi_\beta, e_\beta^{\t
 - **Chart maps** $\psi_\beta: V_\beta \to \mathbb{R}^{d_{\text{act}}}$: Local motor coordinates
 - **Codebook embeddings** $e_\beta^{\text{act}} \in \mathbb{R}^{d_m}$: Action primitive codes
 
-*Input:* Intention $u_{\text{intent}} \in T_z\mathcal{Z}$ (from Policy, Section 21.2).
+*Input:* Intention $u_{\text{intent}} \in T_z\mathcal{Z}$ (from Policy, {ref}`Section 21.2 <sec-policy-control-field>`).
 *Output:* Actuation $a_{\text{raw}}$ (torques, voltages).
 
-*Remark (Jump Operator in Action Atlas).* The **Jump Operator** $L_{\beta \to \beta'}$ in the Action Atlas represents **Task Switching**: transitioning from one control primitive to another (e.g., "Walk" $\to$ "Jump", "Grasp" $\to$ "Release"). This mirrors the chart transition operator in the Visual Atlas (Section 20.6).
+*Remark (Jump Operator in Action Atlas).* The **Jump Operator** $L_{\beta \to \beta'}$ in the Action Atlas represents **Task Switching**: transitioning from one control primitive to another (e.g., "Walk" $\to$ "Jump", "Grasp" $\to$ "Release"). This mirrors the chart transition operator in the Visual Atlas ({ref}`Section 20.6 <sec-the-unified-world-model>`).
 
 :::
 :::{prf:theorem} Atlas Duality via Legendre Transform
@@ -167,16 +167,16 @@ which is smooth and invertible by positive-definiteness of $G$. $\square$
 
 *Remark (Why Legendre?).* The Legendre transform is the unique smooth map relating configuration-velocity (perception) to configuration-momentum (action) that:
 1. Preserves the symplectic structure (Proposition {prf:ref}`prop-symplectic-duality-principle`)
-2. Interchanges Dirichlet and Neumann boundary conditions (Section 23.1)
+2. Interchanges Dirichlet and Neumann boundary conditions ({ref}`Section 23.1 <sec-the-symplectic-interface-position-momentum-duality>`)
 3. Maps kinetic energy to Hamiltonian dynamics
 
 *Cross-reference:* The metric $G$ appearing here is the capacity-constrained metric from Theorem {prf:ref}`thm-capacity-constrained-metric-law`, ensuring that the "mass" in the Legendre relation $p = G\dot{q}$ is the same "mass" that determines geodesic inertia (Definition {prf:ref}`def-mass-tensor`).
 
 :::
 
+(pi-legendre-transform)=
 ::::{admonition} Physics Isomorphism: Legendre Transform
 :class: note
-:name: pi-legendre-transform
 
 **In Physics:** The Legendre transform maps between Lagrangian and Hamiltonian formulations: $H(q,p) = p\dot{q} - L(q,\dot{q})$ where $p = \partial L/\partial \dot{q}$. It exchanges velocity for momentum as the independent variable {cite}`arnold1989mathematical`.
 
@@ -202,7 +202,7 @@ $$
 :::{prf:definition} The Holographic Shutter — Unified Interface
 :label: def-the-holographic-shutter-unified-interface
 
-The Shutter is extended from Section 2.2b to a symmetric tuple:
+The Shutter is extended from {ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>` to a symmetric tuple:
 
 $$
 \mathbb{S} = (\mathcal{A}_{\text{vis}}, \mathcal{A}_{\text{act}}),
@@ -212,13 +212,13 @@ where:
 - **Egress (Actuation):** $D_A: T_z\mathcal{Z} \times \mathcal{Z} \to T^*\mathcal{Q}$ via Action Atlas
 - **Proprioception (Inverse Model):** $E_A: T^*\mathcal{Q} \to T_z\mathcal{Z}$ maps realized actions back to intentions
 
-**Cross-references:** Section 2.2b (VQ-VAE Shutter), Section 7.8 (AttentiveAtlasEncoder), Section 7.10 (TopologicalDecoder).
+**Cross-references:** {ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>` (VQ-VAE Shutter), {ref}`Section 7.8 <sec-tier-the-attentive-atlas>` (AttentiveAtlasEncoder), {ref}`Section 7.10 <sec-decoder-architecture-overview-topological-decoder>` (TopologicalDecoder).
 
 :::
 (sec-motor-texture-the-action-residual)=
-### 23.3 Motor Texture: The Action Residual
+## Motor Texture: The Action Residual
 
-Just as visual texture captures reconstruction-only detail (Section 21.3), **motor texture** captures actuation-only detail that is excluded from planning.
+Just as visual texture captures reconstruction-only detail ({ref}`Section 21.3 <sec-the-retrieval-texture-firewall>`), **motor texture** captures actuation-only detail that is excluded from planning.
 
 :::{prf:definition} Motor Texture Decomposition
 :label: def-motor-texture-decomposition
@@ -233,7 +233,7 @@ where:
 - $z_{n,\text{motor}} \in \mathbb{R}^{d_{\text{motor},n}}$ is **motor nuisance** (impedance, compliance, force distribution)
 - $z_{\text{tex,motor}} \in \mathbb{R}^{d_{\text{motor,tex}}}$ is **motor texture** (tremor, fine-grained noise, micro-corrections)
 
-*Remark (Parallel to Visual Decomposition).* This mirrors the visual decomposition $(K_t, z_{n,t}, z_{\text{tex},t})$ from Section 2.2b:
+*Remark (Parallel to Visual Decomposition).* This mirrors the visual decomposition $(K_t, z_{n,t}, z_{\text{tex},t})$ from {ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`:
 
 | Component                 | Visual Domain                 | Motor Domain                              |
 |---------------------------|-------------------------------|-------------------------------------------|
@@ -288,11 +288,11 @@ The policy $\pi_\theta$ operates on $(K, z_n, A, z_{n,\text{motor}})$ but **neve
 - **Reality:** $\sigma_{\text{motor}} > 0$ (friction, sensor noise, motor tremor)
 - **Robustness:** The Bulk policy $u_\pi$ is invariant; only the Action Decoder learns to manage domain-specific noise.
 
-**Cross-references:** Section 21.3 (Texture Firewall), Axiom {prf:ref}`ax-bulk-boundary-decoupling`.
+**Cross-references:** {ref}`Section 21.3 <sec-the-retrieval-texture-firewall>` (Texture Firewall), Axiom {prf:ref}`ax-bulk-boundary-decoupling`.
 
 :::
 (sec-the-belief-evolution-cycle-perception-dreaming-action)=
-### 23.4 The Belief Evolution Cycle: Perception–Dreaming–Action
+## The Belief Evolution Cycle: Perception–Dreaming–Action
 
 The agent's interaction loop is a **belief density evolution cycle** on the information manifold.
 
@@ -317,7 +317,7 @@ During perception, the agent compresses external entropy into internal free ener
 $$
 W_{\text{compress}} = T_c \cdot I(X_t; K_t) \geq 0,
 $$
-where $I(X_t; K_t)$ is the mutual information extracted from the observation $X_t$ into the macro-state $K_t$.
+where $T_c$ is the cognitive temperature ({prf:ref}`def-cognitive-temperature`) and $I(X_t; K_t)$ is the mutual information extracted from the observation $X_t$ into the macro-state $K_t$.
 
 *Mechanism:* The Visual Encoder $E_\phi$ compresses high-entropy raw data $\phi_{\text{raw}}$ into a low-entropy macro-state $z$. The "heat" absorbed is the raw sensory stream.
 
@@ -369,15 +369,15 @@ where $T_{\text{sensor}}$ and $T_{\text{motor}}$ are the effective temperatures 
 
 *Interpretation:* Perfect efficiency ($\eta = 1$) requires $T_{\text{motor}} = 0$ (deterministic motors) or $T_{\text{sensor}} \to \infty$ (infinite sensory entropy). Real systems operate at $\eta < 1$.
 
-**Cross-references:** Section 22.7 (Adaptive Thermodynamics), Section 14.2 (MaxEnt Control).
+**Cross-references:** {ref}`Section 22.7 <sec-adaptive-thermodynamics>` (Adaptive Thermodynamics), {ref}`Section 14.2 <sec-the-equivalence-theorem>` (MaxEnt Control).
 
-*Forward reference (Reward as Heat).* Section 24.3 establishes that Reward is the thermodynamic **heat input** that drives the cycle: the Boltzmann-Value Law (Axiom {prf:ref}`ax-the-boltzmann-value-law`) identifies $V(z) = E(z) - T_c S(z)$ as Gibbs Free Energy, and Theorem {prf:ref}`thm-wfr-consistency-value-creates-mass` proves that WFR dynamics materialize the agent in high-value regions ("Value Creates Mass").
+*Forward reference (Reward as Heat).* {ref}`Section 24.3 <sec-the-bulk-potential-screened-poisson-equation>` establishes that Reward is the thermodynamic **heat input** that drives the cycle: the Boltzmann-Value Law (Axiom {prf:ref}`ax-the-boltzmann-value-law`) identifies $V(z) = E(z) - T_c S(z)$ as Gibbs Free Energy, and Theorem {prf:ref}`thm-wfr-consistency-value-creates-mass` proves that WFR dynamics materialize the agent in high-value regions ("Value Creates Mass").
 
 :::
 (sec-wfr-boundary-conditions-waking-vs-dreaming)=
-### 23.5 WFR Boundary Conditions: Waking vs Dreaming
+## WFR Boundary Conditions: Waking vs Dreaming
 
-The **Wasserstein-Fisher-Rao** (WFR) equation from Section 20 governs the belief density $\rho$. The distinction between Waking and Dreaming is rigorously defined by the **boundary condition** on $\rho$. Boundary conditions update at interaction time $t$, while internal flow evolves in computation time $s$ (Section 1.3).
+The **Wasserstein-Fisher-Rao** (WFR, {prf:ref}`def-the-wfr-action`) equation from {ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>` governs the belief density $\rho$. The distinction between Waking and Dreaming is rigorously defined by the **boundary condition** on $\rho$. Boundary conditions update at interaction time $t$, while internal flow evolves in computation time $s$ ({ref}`Section 1.3 <sec-the-chronology-temporal-distinctions>`).
 
 :::{prf:definition} Waking: Boundary Clamping
 :label: def-waking-boundary-clamping
@@ -435,11 +435,11 @@ which is:
 - **Zero** during dreaming (closed system)
 - **Negative** during pure actuation (net information outflow to motors)
 
-**Cross-references:** Section 20.2 (WFR Action), Section 20.6 (WFR World Model), Section 2.11.4 (Observation Inflow).
+**Cross-references:** {ref}`Section 20.2 <sec-the-wfr-metric>` (WFR Action), {ref}`Section 20.6 <sec-the-unified-world-model>` (WFR World Model), Section 2.11.4 (Observation Inflow).
 
 :::
 (sec-the-context-space-unified-definition)=
-### 23.6 The Context Space: Unified Definition
+## The Context Space: Unified Definition
 
 The Action Atlas admits a deeper structure: the **Context Space** $\mathcal{C}$ is the abstract space of boundary conditions that unifies RL actions, classification labels, and LLM prompts.
 
@@ -490,13 +490,13 @@ All context instantiations share the same geometric structure:
    $$
    \pi(a | z, c) = \text{softmax}\left(-\frac{\Phi_{\text{eff}}(z, K, c)}{T_c}\right)
    $$
-*Proof.* The holographic expansion (Section 21) is invariant to the interpretation of the control field $u_\pi$. Whether $u_\pi$ encodes "go left" (RL), "class = cat" (classification), or "continue with tone = formal" (LLM), the bulk dynamics follow the same geodesic SDE (Section 22). The interpretation is purely a boundary condition. $\square$
+*Proof.* The holographic expansion ({ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>`) is invariant to the interpretation of the control field $u_\pi$. Whether $u_\pi$ encodes "go left" (RL), "class = cat" (classification), or "continue with tone = formal" (LLM), the bulk dynamics follow the same geodesic SDE ({ref}`Section 22 <sec-the-equations-of-motion-geodesic-jump-diffusion>`). The interpretation is purely a boundary condition. $\square$
 
 :::
 :::{prf:definition} Context-Conditioned WFR
 :label: def-context-conditioned-wfr
 
-The WFR dynamics (Section 20.2) generalize to context-conditioned form:
+The WFR dynamics ({ref}`Section 20.2 <sec-the-wfr-metric>`) generalize to context-conditioned form:
 
 $$
 \partial_s \rho + \nabla \cdot (\rho\, v_c) = \rho\, r_c,
@@ -521,13 +521,13 @@ Each specifies:
 
 *Remark (Unified Training Objective).* This isomorphism enables transfer learning across task domains: an agent trained on RL can be fine-tuned for classification by reinterpreting the action space as label space, with the same holographic dynamics.
 
-**Cross-references:** Section 21.2 (Control Field), Theorem {prf:ref}`thm-unified-control-interpretation`, Definition {prf:ref}`def-effective-potential`.
+**Cross-references:** {ref}`Section 21.2 <sec-policy-control-field>` (Control Field), Theorem {prf:ref}`thm-unified-control-interpretation`, Definition {prf:ref}`def-effective-potential`.
 
-*Forward reference (Effective Potential Resolution).* Section 24.2 resolves the meaning of $\Phi_{\text{eff}} = V_{\text{critic}}$: the Critic solves the **Screened Poisson Equation** to compute the potential from boundary reward charges. The discount factor $\gamma$ determines the screening length $\ell = -1/\ln\gamma$ (Corollary {prf:ref}`cor-discount-as-screening-length`), explaining why distant rewards are exponentially suppressed in policy.
+*Forward reference (Effective Potential Resolution).* {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>` resolves the meaning of $\Phi_{\text{eff}} = V_{\text{critic}}$: the Critic solves the **Screened Poisson Equation** to compute the potential from boundary reward charges. The discount factor $\gamma$ determines the screening length $\ell = -1/\ln\gamma$ (Corollary {prf:ref}`cor-discount-as-screening-length`), explaining why distant rewards are exponentially suppressed in policy.
 
 :::
 (sec-implementation-the-holographicinterface-module)=
-### 23.7 Implementation: The HolographicInterface Module
+## Implementation: The HolographicInterface Module
 
 We provide the Python implementation of the Holographic Interface, combining the Dual Atlas, Motor Texture, and Context Space.
 
@@ -576,7 +576,7 @@ class DualAtlasEncoder(nn.Module):
     """
     Definitions 23.2.1-23.2.2: Symmetric encoder for Visual/Action atlases.
 
-    Extends AttentiveAtlasEncoder (Section 7.8) with unified interface.
+    Extends AttentiveAtlasEncoder ({ref}`Section 7.8 <sec-tier-the-attentive-atlas>`) with unified interface.
     """
 
     def __init__(
@@ -602,7 +602,7 @@ class DualAtlasEncoder(nn.Module):
             nn.SiLU(),
         )
 
-        # Cross-attention routing (Section 7.8)
+        # Cross-attention routing ({ref}`Section 7.8 <sec-tier-the-attentive-atlas>`)
         self.key_proj = nn.Linear(hidden_dim, hidden_dim)
         self.chart_queries = nn.Parameter(torch.randn(num_charts, hidden_dim) * 0.02)
         self.scale = hidden_dim ** 0.5
@@ -737,7 +737,7 @@ class ContextConditionedPolicy(nn.Module):
 
 class HolographicInterface(nn.Module):
     """
-    Section 23: The Holographic Interface.
+    {ref}`Section 23 <sec-the-boundary-interface-symplectic-structure>`: The Holographic Interface.
 
     Implements the symplectic boundary between Agent and Environment.
     Combines:
@@ -747,9 +747,9 @@ class HolographicInterface(nn.Module):
     - Thermodynamic cycle tracking
 
     Cross-references:
-    - Section 20 (WFR Geometry)
-    - Section 21 (Holographic Generation {cite}`thooft1993holographic,susskind1995world`)
-    - Section 22 (Geodesic SDE)
+    - {ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>` (WFR Geometry)
+    - {ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>` (Holographic Generation {cite}`thooft1993holographic,susskind1995world`)
+    - {ref}`Section 22 <sec-the-equations-of-motion-geodesic-jump-diffusion>` (Geodesic SDE)
     """
 
     def __init__(self, config: InterfaceConfig):
@@ -874,11 +874,13 @@ class HolographicInterface(nn.Module):
         }
 ```
 
-**Cross-references:** Section 7.8 (AttentiveAtlasEncoder), Section 7.10 (TopologicalDecoder), Algorithm 22.4.2 (BAOAB).
+**Cross-references:** {ref}`Section 7.8 <sec-tier-the-attentive-atlas>` (AttentiveAtlasEncoder), {ref}`Section 7.10 <sec-decoder-architecture-overview-topological-decoder>` (TopologicalDecoder), Algorithm 22.4.2 (BAOAB).
 
-::::{note} Connection to RL #7: Dreamer/World Models as Generic RNN Dynamics
+::::{admonition} Connection to RL #7: Dreamer/World Models as Generic RNN Dynamics
+:class: note
+:name: conn-rl-7
 **The General Law (Fragile Agent):**
-The HolographicInterface implements latent dynamics via **symplectic integrators** on the state-space manifold $(\mathcal{Z}, G, \omega)$. The BAOAB algorithm (Section 22.4) preserves the symplectic structure:
+The HolographicInterface implements latent dynamics via **symplectic integrators** on the state-space manifold $(\mathcal{Z}, G, \omega)$. The BAOAB algorithm ({ref}`Section 22.4 <sec-the-geodesic-baoab-integrator>`) preserves the symplectic structure:
 
 $$
 \hat{z}_{t+1} = \Phi_{\text{BAOAB}}(z_t) \quad \text{with} \quad \omega(\Phi_* X, \Phi_* Y) = \omega(X, Y).
@@ -906,7 +908,7 @@ The RNN/GRU/Transformer architecture has no geometric constraints—it's a unive
 ::::
 
 (sec-summary-tables-and-diagnostic-nodes-a)=
-### 23.8 Summary Tables and Diagnostic Nodes
+## Summary Tables and Diagnostic Nodes
 
 **Summary of Holographic Interface:**
 

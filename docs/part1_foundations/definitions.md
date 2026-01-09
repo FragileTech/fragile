@@ -1,8 +1,8 @@
-## 1. Introduction: The Agent as a Bounded-Rationality Controller
+# Introduction: The Agent as a Bounded-Rationality Controller
 
+(rb-bounded-rationality)=
 :::{admonition} Researcher Bridge: Bounded Rationality as a POMDP with Costs
 :class: info
-:name: rb-bounded-rationality
 Standard RL frames the agent as a policy that maximizes return in a POMDP. Here we make the usual hidden constraints explicit: limited bandwidth, memory, and compute. Think of it as a POMDP with an information bottleneck and hard safety contracts that shape the feasible policy class.
 :::
 
@@ -13,18 +13,18 @@ The framework is stated strictly in **information theory, optimization, and cont
 This is the native language of **Safe RL**, **Robust Control**, and **Embodied AI**.
 
 (sec-definitions-interaction-under-partial-observability)=
-### 1.1 Definitions: Interaction Under Partial Observability
+## Definitions: Interaction Under Partial Observability
 
+(rb-markov-blanket)=
 :::{admonition} Researcher Bridge: Markov Blanket = Observation/Action Interface
 :class: tip
-:name: rb-markov-blanket
 If you are used to POMDP notation, the "boundary" here is just the observation, action, reward, and termination channels treated as a single interface. The environment is an input-output law, not a latent object the agent can access directly. This re-typing lets us attach geometric and information constraints to the interface itself.
 :::
 
 In the Fragile Agent framework, we do **not** treat the environment as a passive data provider. We treat the agent as a **partially observed control problem** whose only coupling to the external world is through a well-defined **interface / Markov blanket**. All RL primitives are re-typed as **signals and constraints at this interface**.
 
 (sec-the-environment-is-an-input-output-law)=
-#### 1.1.1 The Environment is an Input–Output Law (Not an Internal Object)
+### The Environment is an Input–Output Law (Not an Internal Object)
 
 :::{prf:definition} Bounded-Rationality Controller
 :label: def-bounded-rationality-controller
@@ -72,7 +72,7 @@ This is the categorical move: we do not assume access to the environment’s lat
 
 :::
 (sec-re-typing-standard-rl-primitives-as-interface-signals)=
-#### 1.1.2 Re-typing Standard RL Primitives as Interface Signals
+### Re-typing Standard RL Primitives as Interface Signals
 
 1. **Environment (Stochastic Process / Unmodeled Disturbance).**
    - *Standard:* a black box providing states and rewards.
@@ -87,24 +87,24 @@ This is the categorical move: we do not assume access to the environment’s lat
      x_t \mapsto (K_t, Z_{n,t}, Z_{\mathrm{tex},t}),
      $$
      where $K_t$ is the **discrete predictive signal** (bounded-rate latent statistic), $Z_{n,t}$ is a **structured nuisance / gauge residual** (pose/basis/disturbance coordinates), and $Z_{\mathrm{tex},t}$ is a **texture residual** (high-rate reconstruction detail).
-   - *Boundary gate nodes (Section 3):*
+   - *Boundary gate nodes ({ref}`Section 3 <sec-diagnostics-stability-checks>`):*
      - **Node 14 (InputSaturationCheck):** input saturation (sensor dynamic range exceeded).
      - **Node 15 (SNRCheck):** low signal-to-noise (SNR too low to support stable inference).
      - **Node 13 (BoundaryCheck):** the channel is open in the only well-typed sense: $I(X;K)>0$ (symbolic mutual information).
 
 3. **Action $a_t$ (Control / Actuation).**
    - *Standard:* a vector sent to the environment.
-   - *Fragile:* a control signal chosen to minimize expected future cost under uncertainty and constraints. Like observations, actions decompose into structured components: $a_t = (A_t, z_{n,\text{motor}}, z_{\text{tex,motor}})$ where $A_t$ is the discrete motor macro, $z_{n,\text{motor}}$ is motor nuisance (compliance), and $z_{\text{tex,motor}}$ is motor texture (tremor). See Section 23.3 for details.
+   - *Fragile:* a control signal chosen to minimize expected future cost under uncertainty and constraints. Like observations, actions decompose into structured components: $a_t = (A_t, z_{n,\text{motor}}, z_{\text{tex,motor}})$ where $A_t$ is the discrete motor macro, $z_{n,\text{motor}}$ is motor nuisance (compliance), and $z_{\text{tex,motor}}$ is motor texture (tremor). See {ref}`Section 23.3 <sec-motor-texture-the-action-residual>` for details.
    - *Cybernetic constraints:*
      - **Node 2 (ZenoCheck):** limits chattering (bounded variation in control outputs).
      - **BarrierSat:** actuator saturation (finite control authority).
-   - *Boundary interpretation (Section 23.1):* Actions impose **Neumann boundary conditions** (clamping flux/momentum) on the agent's internal manifold, dual to the Dirichlet conditions imposed by sensors.
+   - *Boundary interpretation ({ref}`Section 23.1 <sec-the-symplectic-interface-position-momentum-duality>`):* Actions impose **Neumann boundary conditions** (clamping flux/momentum) on the agent's internal manifold, dual to the Dirichlet conditions imposed by sensors.
 
 4. **Reward $r_t$ (Utility / Negative Cost Signal).**
    - *Standard:* a scalar to maximize.
-   - *Fragile:* a scalar feedback signal used to define the control objective. In continuous-time derivations it appears as an instantaneous **cost rate**; in discrete time it appears as an incremental term in the Bellman/HJB consistency relation (Section 2.7).
+   - *Fragile:* a scalar feedback signal used to define the control objective. In continuous-time derivations it appears as an instantaneous **cost rate**; in discrete time it appears as an incremental term in the Bellman/HJB consistency relation ({ref}`Section 2.7 <sec-the-hjb-correspondence>`).
    - *Mechanism:* the critic's $V$ is the internal value/cost-to-go; reward provides the task-aligned signal shaping $V$.
-   - *Boundary interpretation (Section 24.1):* Reward is a **Scalar Charge Density** $\sigma_r$ on the boundary. The Critic solves the **Screened Poisson Equation** (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`) to propagate this boundary condition into the bulk, generating the potential field $V(z)$.
+   - *Boundary interpretation ({ref}`Section 24.1 <sec-the-reward-1-form>`):* Reward is a **Scalar Charge Density** $\sigma_r$ on the boundary. The Critic solves the **Screened Poisson Equation** (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`) to propagate this boundary condition into the bulk, generating the potential field $V(z)$.
 
 5. **Termination $d_t$ (Absorbing Boundary Event).**
    - *Standard:* end-of-episode flag.
@@ -112,10 +112,10 @@ This is the categorical move: we do not assume access to the environment’s lat
 
 6. **Episode / Rollout (Finite-Horizon Segment).**
    - *Standard:* a finite trajectory segment.
-   - *Fragile:* a finite window used to estimate a cumulative objective under uncertainty. “Success” is satisfying task constraints while maintaining stability; “failure” is crossing a monitored limit (Section 4).
+   - *Fragile:* a finite window used to estimate a cumulative objective under uncertainty. “Success” is satisfying task constraints while maintaining stability; “failure” is crossing a monitored limit ({ref}`Section 4 <sec-4-limits-barriers-the-limits-of-control>`).
 
 (sec-symmetries-and-gauge-freedoms)=
-#### 1.1.4 Symmetries and Gauge Freedoms (Operational)
+### Symmetries and Gauge Freedoms (Operational)
 
 Many of the largest stability and sample-efficiency failures in practice come from **wasting capacity on nuisance degrees of freedom**: the agent learns separate internal states for observations that differ only by pose, basis choice, or arbitrary internal labeling. We formalize these nuisance directions as **symmetries** (group actions) and treat “quotienting them out” as an explicit design constraint.
 
@@ -130,10 +130,10 @@ Let:
   $$
   G_{\text{obj}} := \{(a,b): a>0,\ r\mapsto ar+b\}.
   $$
-  (If representing value as a unit-norm phase variable, one may instead use $U(1)$; Section 3.3.C treats the real-valued case via projective heads.)
+  (If representing value as a unit-norm phase variable, one may instead use $U(1)$; {ref}`Section 3.3 <sec-defect-functionals-implementing-regulation>`.C treats the real-valued case via projective heads.)
 - $G_{\text{spatial}}$ be an **observation gauge** acting on raw observations $x$ (e.g., pose/translation/rotation; choose $SE(3)$, $SE(2)$, $\mathrm{Sim}(2)$, or a task-specific subgroup depending on sensors).
 - $S_{|\mathcal{K}|}$ be the **symbol-permutation symmetry** of the discrete macro register: relabeling code indices is unobservable if downstream components depend only on embeddings $\{e_k\}$.
-- $\mathrm{Symp}(2n,\mathbb{R})$ be an optional **phase-space symmetry** acting on canonical latent coordinates $z=(q,p)\in\mathbb{R}^{2n}$ when the world model is parameterized as a symplectic/Hamiltonian system (Section 3.3.B).
+- $\mathrm{Symp}(2n,\mathbb{R})$ be an optional **phase-space symmetry** acting on canonical latent coordinates $z=(q,p)\in\mathbb{R}^{2n}$ when the world model is parameterized as a symplectic/Hamiltonian system ({ref}`Section 3.3 <sec-defect-functionals-implementing-regulation>`.B).
 
 The (candidate) total symmetry group is the direct product
 
@@ -158,15 +158,15 @@ $$
   $$
   K(x)\approx K(g\cdot x)\quad (g\in G_{\text{spatial}}),
   $$
-  while $z_n$ carries structured nuisance parameters (pose/basis/disturbance coordinates) and $z_{\mathrm{tex}}$ carries reconstruction-only texture (Section 2.2b, Section 3.3.A).
+  while $z_n$ carries structured nuisance parameters (pose/basis/disturbance coordinates) and $z_{\mathrm{tex}}$ carries reconstruction-only texture ({ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`, {ref}`Section 3.3 <sec-defect-functionals-implementing-regulation>`.A).
 - **World model $S$ and policy $\pi$:** be covariant to symbol permutations $S_{|\mathcal{K}|}$ by treating $K$ only through its embedding $e_K$ (not the integer label) and by using permutation-invariant diagnostics.
-- **Critic/value and dual variables:** enforce stability and constraint satisfaction in a way that is robust to re-scaling/offset of the scalar feedback (Section 3.3.C, Section 3.5).
+- **Critic/value and dual variables:** enforce stability and constraint satisfaction in a way that is robust to re-scaling/offset of the scalar feedback ({ref}`Section 3.3 <sec-defect-functionals-implementing-regulation>`.C, {ref}`Section 3.5 <sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration>`).
 
 These are *requirements on representations and interfaces*, not philosophical claims: if an invariance is not enforced, the corresponding failure modes (symmetry blindness, brittle scaling, uncontrolled drift) become more likely and harder to debug.
 
 :::
 (sec-units-and-dimensional-conventions)=
-#### 1.2 Units and Dimensional Conventions (Explicit)
+### Units and Dimensional Conventions (Explicit)
 
 This document expresses objectives in **information units** so that likelihoods, code lengths, KL terms, and entropy regularizers share a common scale.
 
@@ -189,7 +189,7 @@ This document expresses objectives in **information units** so that likelihoods,
 - Composite-loss weights (e.g. $\lambda_{\text{*}}$ used to sum training losses) are taken dimensionless unless explicitly stated otherwise.
 
 (sec-the-chronology-temporal-distinctions)=
-#### 1.3 The Chronology: Temporal Distinctions
+### The Chronology: Temporal Distinctions
 
 We distinguish four temporal dimensions. They are orthogonal (or nested) and must not be conflated. Using one symbol for all of them is a chronological category error (e.g., confusing "thinking longer" with "getting older").
 
@@ -201,24 +201,24 @@ We distinguish four temporal dimensions. They are orthogonal (or nested) and mus
 | **$t'$**   | **Memory Time**      | $\{t' \in \mathbb{Z} : t' < t\}$ | Index of stored past states on the screen.        | Retarded time                    |
 
 (sec-interaction-time-the-discrete-clock)=
-##### 1.3.1 Interaction Time ($t$): The Discrete Clock
+#### Interaction Time ($t$): The Discrete Clock
 This is the Markov Decision Process index imposed by the environment.
 - **Update:** $z_t \to z_{t+1}$.
 - **Constraint:** the agent must emit $a_t$ before $t$ increments (real-time constraint).
 
 (sec-computation-time-the-continuous-thought)=
-##### 1.3.2 Computation Time ($s$): The Continuous Thought
-This is the integration variable of the internal solver and the Equation of Motion (Section 22). It represents the agent's "thinking" process:
+#### Computation Time ($s$): The Continuous Thought
+This is the integration variable of the internal solver and the Equation of Motion ({ref}`Section 22 <sec-the-equations-of-motion-geodesic-jump-diffusion>`). It represents the agent's "thinking" process:
 
 $$
 \frac{dz}{ds} = -G^{-1}\nabla \Phi_{\text{eff}} + \dots
 $$
 - **Relationship to $t$:** to transition from $t$ to $t+1$, the agent integrates its internal dynamics from $s=0$ to $s=S_{\text{budget}}$.
 - **Thinking fast vs. slow:** small $S_{\text{budget}}$ yields reflexive action; large $S_{\text{budget}}$ yields deliberate planning.
-- **Thermodynamics:** this is the time variable in which Fokker-Planck dynamics evolve internal belief toward equilibrium (Section 22.5).
+- **Thermodynamics:** this is the time variable in which Fokker-Planck dynamics evolve internal belief toward equilibrium ({ref}`Section 22.5 <sec-the-overdamped-limit>`).
 
 (sec-scale-time-the-holographic-depth)=
-##### 1.3.3 Scale Time ($\tau$): The Holographic Depth
+#### Scale Time ($\tau$): The Holographic Depth
 This is the radial coordinate in the Poincare disk (Sections 21, 7.12). It corresponds to resolution depth.
 - **Dynamics:** $dr/d\tau = \operatorname{sech}^2(\tau/2)$ (the holographic law).
 - **Discretization:** in stacked TopoEncoders, layer $\ell$ corresponds to scale time $\tau_\ell$.
@@ -226,7 +226,7 @@ This is the radial coordinate in the Poincare disk (Sections 21, 7.12). It corre
 - **Process:** generation flows in $+\tau$ (root to boundary); inference flows in $-\tau$.
 
 (sec-memory-time-the-historical-coordinate)=
-##### 1.3.4 Memory Time ($t'$): The Historical Coordinate
+#### Memory Time ($t'$): The Historical Coordinate
 This is the time coordinate of the Holographic Screen.
 - **Structure:** the screen stores tuples $(z_{t'}, a_{t'}, r_{t'})$ at past indices.
 - **Access:** attention computes distances between the current state $z_t$ and stored states $z_{t'}$.

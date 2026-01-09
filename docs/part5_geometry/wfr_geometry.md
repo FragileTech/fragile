@@ -1,21 +1,21 @@
-## 20. Wasserstein-Fisher-Rao Geometry: Unified Transport on Hybrid State Spaces
+# Wasserstein-Fisher-Rao Geometry: Unified Transport on Hybrid State Spaces
 
-The latent bundle $\mathcal{Z} = \mathcal{K} \times \mathcal{Z}_n \times \mathcal{Z}_{\mathrm{tex}}$ (Section 2.2a) combines a discrete macro-state $K$ with continuous nuisance coordinates $z_n$. The product metric $d_{\mathcal{K}} \oplus G_n$ (Definition 2.2.1) and the Sasaki-like warped metric (Section 7.11.3) were heuristic constructions that treat the discrete and continuous components separately.
+The latent bundle $\mathcal{Z} = \mathcal{K} \times \mathcal{Z}_n \times \mathcal{Z}_{\mathrm{tex}}$ ({ref}`Section 2.2a <sec-the-trinity-of-manifolds>`) combines a discrete macro-state $K$ with continuous nuisance coordinates $z_n$. The product metric $d_{\mathcal{K}} \oplus G_n$ (Definition 2.2.1) and the Sasaki-like warped metric ({ref}`Section 7.11.3 <sec-the-induced-riemannian-geometry>`) were heuristic constructions that treat the discrete and continuous components separately. These constructions are constrained by the agent's {prf:ref}`def-boundary-markov-blanket`.
 
+(rb-distribution-shift)=
 :::{admonition} Researcher Bridge: Handling Distribution Shift
 :class: info
-:name: rb-distribution-shift
 Standard Bayesian filters fail during "surprises" because they can't handle mass appearing or disappearing (Unbalanced Transport). The **Wasserstein-Fisher-Rao (WFR)** metric allows the agent's belief to both **flow** (smooth tracking) and **jump** (teleporting probability mass). This provides a unified variational principle for both continuous state-tracking and discrete hypothesis-switching.
 :::
 
 This section introduces the **Wasserstein-Fisher-Rao (WFR)** metric—also known as **Hellinger-Kantorovich** {cite}`chizat2018unbalanced,liero2018optimal`—which provides a rigorous, unified variational principle. The key insight is to treat the agent's internal state not as a *point* in $\mathcal{Z}$, but as a *measure* (belief state) $\rho_s \in \mathcal{M}^+(\mathcal{Z})$ evolving on the bundle.
 
 (sec-motivation-the-failure-of-product-metrics)=
-### 20.1 Motivation: The Failure of Product Metrics
+## Motivation: The Failure of Product Metrics
 
 **The Problem with Sasaki-like Constructions.**
 
-The metric tensor from Section 7.11.3 (where $\rho_{\text{depth}}$ denotes resolution depth, not density):
+The metric tensor from {ref}`Section 7.11.3 <sec-the-induced-riemannian-geometry>` (where $\rho_{\text{depth}}$ denotes resolution depth, not density):
 
 $$
 ds^2 = d\rho_{\text{depth}}^2 + d\sigma_{\mathcal{K}}^2 + e^{-2\rho_{\text{depth}}}\|dz_n\|^2
@@ -24,7 +24,7 @@ assumes a fixed point moving through the bundle. This creates two problems:
 
 1. **Discontinuous Jumps:** When the agent transitions from chart $K_i$ to chart $K_j$, the metric provides no principled way to measure the "cost" of the jump versus continuous motion along an overlap.
 
-2. **No Mass Conservation:** A point either is or isn't at a location. But the agent's *belief* can be partially in multiple charts simultaneously (soft routing, Section 7.8).
+2. **No Mass Conservation:** A point either is or isn't at a location. But the agent's *belief* can be partially in multiple charts simultaneously (soft routing, {ref}`Section 7.8 <sec-tier-the-attentive-atlas>`).
 
 **The WFR Solution.**
 
@@ -35,7 +35,7 @@ The Wasserstein-Fisher-Rao metric resolves both issues by lifting dynamics to th
 The metric determines the optimal path by minimizing the total cost: transport cost $\int\|v\|_G^2\,d\rho$ plus reaction cost $\int\lambda^2|r|^2\,d\rho$.
 
 (sec-the-wfr-metric)=
-### 20.2 The WFR Metric (Benamou-Brenier Formulation)
+## The WFR Metric (Benamou-Brenier Formulation)
 
 Let $\rho(s, z)$ be a time-varying density on the latent bundle $\mathcal{Z}$, evolving in computation time $s$. The WFR distance is defined by the minimal action of a generalized continuity equation.
 
@@ -56,8 +56,8 @@ where:
 - $v_s(z) \in T_z\mathcal{Z}$ is the **velocity field** (transport/flow)
 - $r_s(z) \in \mathbb{R}$ is the **reaction rate** (growth/decay of mass)
 - $\lambda > 0$ is the **length-scale parameter** balancing transport and reaction
-- $G$ is the Riemannian metric on the continuous fibres (Section 2.5)
-- $\mathbf{A}(z)$ is the **vector potential** satisfying $d\mathbf{A} = \mathcal{F}$ (the Value Curl)
+- $G$ is the Riemannian metric on the continuous fibres ({ref}`Section 2.5 <sec-second-order-sensitivity-value-defines-a-local-metric>`)
+- $\mathbf{A}(z)$ is the **vector potential** satisfying $d\mathbf{A} = \mathcal{F}$ (the {prf:ref}`def-value-curl`)
 
 *Units:* $[\mathbf{A}] = \mathrm{nat}/[\text{length}]$.
 
@@ -67,13 +67,13 @@ where:
 
 *Remark (Gauge Invariance).* The action is invariant under gauge transformations $\mathbf{A} \to \mathbf{A} + d\chi$ for any scalar $\chi$, since $d(d\chi) = 0$. We fix the gauge via the Coulomb condition $\delta\mathbf{A} = 0$ (divergence-free).
 
-*Forward reference (Boundary Conditions).* Section 23.5 specifies how boundary conditions on $\partial\mathcal{Z}$ (sensory and motor boundaries) constrain the WFR dynamics: **Waking** imposes Dirichlet (sensors) + Neumann (motors) BCs; **Dreaming** imposes reflective BCs on both, enabling recirculating flow without external input.
+*Forward reference (Boundary Conditions).* {ref}`Section 23.5 <sec-wfr-boundary-conditions-waking-vs-dreaming>` specifies how boundary conditions on $\partial\mathcal{Z}$ (sensory and motor boundaries) constrain the WFR dynamics: **Waking** imposes Dirichlet (sensors) + Neumann (motors) BCs; **Dreaming** imposes reflective BCs on both, enabling recirculating flow without external input.
 
 :::
 
+(pi-wfr-metric)=
 ::::{admonition} Physics Isomorphism: Wasserstein-Fisher-Rao Geometry
 :class: note
-:name: pi-wfr-metric
 
 **In Physics:** The Wasserstein-Fisher-Rao (WFR) metric on probability measures combines optimal transport (Wasserstein) with information geometry (Fisher-Rao). It is the unique metric allowing both mass transport and creation/annihilation {cite}`liero2018optimal,chizat2018interpolating`.
 
@@ -102,7 +102,7 @@ $[v] = \text{length}/\text{time}$, $[r] = 1/\text{time}$, and $[\lambda] = \text
 
 :::
 (sec-transport-vs-reaction-components)=
-### 20.3 Transport vs. Reaction Components
+## Transport vs. Reaction Components
 
 The belief state $\rho_s$ evolves on the bundle $\mathcal{Z}$ via two mechanisms.
 
@@ -118,7 +118,7 @@ This parameter defines the characteristic length scale at which transport cost e
 - If $\|z_A - z_B\|_G < \lambda$: Transport is preferred (continuous regime)
 - If $\|z_A - z_B\|_G > \lambda$: Reaction is preferred (discrete chart transition)
 
-**Operational interpretation:** $\lambda$ is exactly the **radius of the chart overlap region** (Section 7.13). Within overlaps, transport is efficient; across non-overlapping regions, reaction dominates.
+**Operational interpretation:** $\lambda$ is exactly the **radius of the chart overlap region** ({ref}`Section 7.13 <sec-factorized-jump-operators-efficient-chart-transitions>`). Within overlaps, transport is efficient; across non-overlapping regions, reaction dominates.
 
 :::{prf:definition} Canonical length-scale
 :label: def-canonical-length-scale
@@ -137,11 +137,11 @@ $$
 $$
 This corresponds to the RMS geodesic step size in an isotropic metric.
 
-*Cross-reference:* The screening length $\ell_{\text{screen}} = 1/\kappa$ from Section 24.2 plays an analogous role for temporal horizons; $\lambda$ plays the corresponding role for spatial horizons in the WFR geometry.
+*Cross-reference:* The screening length $\ell_{\text{screen}} = 1/\kappa$ from {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>` plays an analogous role for temporal horizons; $\lambda$ plays the corresponding role for spatial horizons in the WFR geometry.
 
 :::
 (sec-reconciling-discrete-and-continuous)=
-### 20.4 Reconciling Discrete and Continuous
+## Reconciling Discrete and Continuous
 
 :::{prf:proposition} Limiting Regimes
 :label: prop-limiting-regimes
@@ -161,7 +161,9 @@ The WFR metric seamlessly unifies discrete and continuous dynamics:
 
 :::
 
-::::{note} Connection to RL #26: Distributional RL as Degenerate WFR Geometry
+::::{admonition} Connection to RL #26: Distributional RL as Degenerate WFR Geometry
+:class: note
+:name: conn-rl-26
 **The General Law (Fragile Agent):**
 Belief states evolve on $\mathcal{M}^+(\mathcal{Z})$ via **Wasserstein-Fisher-Rao dynamics**:
 
@@ -184,13 +186,13 @@ This recovers **Distributional RL**: C51, QR-DQN, IQN {cite}`bellemare2017c51,da
 - **Unified transport-reaction**: WFR handles continuous flow (within charts) and discrete jumps (between charts) in one framework
 - **Belief geometry**: The metric on $\mathcal{M}^+(\mathcal{Z})$ respects both $W_2$ (spatial) and Fisher-Rao (probabilistic)
 - **Teleportation length**: $\lambda$ determines when transport beats reaction (Proposition {prf:ref}`prop-limiting-regimes`)
-- **GKSL embedding**: Quantum-like master equations embed naturally (Section 20.5)
+- **GKSL embedding**: Quantum-like master equations embed naturally ({ref}`Section 20.5 <sec-connection-to-gksl-master-equation>`)
 ::::
 
 (sec-connection-to-gksl-master-equation)=
-### 20.5 Connection to GKSL / Master Equation (Section 12.5)
+## Connection to GKSL / Master Equation ({ref}`Section 12.5 <sec-optional-operator-valued-belief-updates>`)
 
-The WFR framework provides a natural interpretation of the GKSL (Lindblad) master equation from Section 12.5.
+The WFR framework provides a natural interpretation of the GKSL (Lindblad) master equation from {ref}`Section 12.5 <sec-optional-operator-valued-belief-updates>`.
 
 **Correspondence Table:**
 
@@ -212,7 +214,7 @@ This provides a **geometric foundation** for the otherwise algebraic GKSL constr
 
 :::
 (sec-the-unified-world-model)=
-### 20.6 The Unified World Model
+## The Unified World Model
 
 The WFR formulation enables a **single World Model** that predicts both transport and reaction, eliminating the need for separate "macro predictor" and "micro dynamics" modules.
 
@@ -304,9 +306,9 @@ class WFRWorldModel(nn.Module):
 
 :::
 (sec-scale-renormalization)=
-### 20.7 Scale Renormalization (Connection to Section 7.12)
+## Scale Renormalization (Connection to {ref}`Section 7.12 <sec-stacked-topoencoders-deep-renormalization-group-flow>`)
 
-For stacked TopoEncoders (Section 7.12), the WFR metric applies recursively with **scale-dependent coupling**.
+For stacked TopoEncoders ({ref}`Section 7.12 <sec-stacked-topoencoders-deep-renormalization-group-flow>`), the WFR metric applies recursively with **scale-dependent coupling**.
 
 Recall the WFR action:
 
@@ -328,7 +330,7 @@ where $\sigma^{(\ell)}$ is the scale factor from Definition {prf:ref}`def-the-re
 - **Layer $L$ (Texture / UV):** Low $\lambda^{(L)}$. "Mass" (texture details) can appear/disappear cheaply. Reaction dominates.
 
 **Correspondence with Cosmological Constant:**
-In the capacity-constrained metric law (Section 18), the term $\Lambda G_{ij}$ plays the role of a baseline curvature. The correspondence is:
+In the capacity-constrained metric law ({ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>`, Theorem {prf:ref}`thm-capacity-constrained-metric-law`), the term $\Lambda G_{ij}$ plays the role of a baseline curvature. The correspondence is:
 
 $$
 \Lambda^{(\ell)} \sim \frac{1}{(\lambda^{(\ell)})^2}
@@ -338,7 +340,7 @@ $$
 
 :::
 (sec-connection-to-einstein-equations)=
-### 20.8 Connection to Einstein Equations (Section 18)
+## Connection to Einstein Equations ({ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>`)
 
 The WFR dynamics provide the **stress-energy tensor** $T_{ij}$ that drives curvature in Theorem {prf:ref}`thm-capacity-constrained-metric-law`.
 
@@ -379,13 +381,13 @@ which is the perfect-fluid form with reaction contributing an additive pressure 
 $(\rho,v,r)$ fixed. Use $\delta\|v\|_G^2=-v_i v_j\,\delta G^{ij}$ and
 $\delta d\mu_G=-\tfrac12 G_{ij}\delta G^{ij}d\mu_G$, then collect terms to match
 $\delta\mathcal{S}_{\mathrm{WFR}}=-\tfrac12\int T_{ij}\delta G^{ij}d\mu_G\,ds$.
-See Appendix C for the full derivation. $\square$
+See {ref}`Appendix C <sec-appendix-c-wfr-stress-energy-tensor>` for the full derivation. $\square$
 
 :::
 
+(pi-stress-energy)=
 ::::{admonition} Physics Isomorphism: Stress-Energy Tensor
 :class: note
-:name: pi-stress-energy
 
 **In Physics:** The stress-energy tensor $T_{\mu\nu}$ is derived from the variation of the matter action with respect to the metric: $T_{\mu\nu} = -\frac{2}{\sqrt{-g}}\frac{\delta S_M}{\delta g^{\mu\nu}}$ {cite}`wald1984general`.
 
@@ -423,7 +425,7 @@ derived from $\delta \mathcal{S}_{\text{WFR}}/\delta G^{ij}$.
 :::
 
 (sec-comparison-sasaki-vs-wfr)=
-### 20.9 Comparison: Sasaki vs. WFR
+## Comparison: Sasaki vs. WFR
 
 | Feature                     | Sasaki (Product Metric)          | WFR (Unbalanced Transport)             |
 |-----------------------------|----------------------------------|----------------------------------------|
@@ -435,7 +437,7 @@ derived from $\delta \mathcal{S}_{\text{WFR}}/\delta G^{ij}$.
 | **Multi-scale**             | Separate metrics per scale       | Unified with scale-dependent $\lambda$ |
 
 (sec-implementation-wfr-consistency-loss)=
-### 20.10 Implementation: WFR Consistency Loss
+## Implementation: WFR Consistency Loss
 
 :::{prf:definition} WFR Consistency Loss / WFRCheck
 :label: def-wfr-consistency-loss-wfrcheck
@@ -484,9 +486,9 @@ def compute_wfr_consistency_loss(
 
 :::
 (sec-node-wfrcheck)=
-### 20.11 Node 23: WFRCheck
+## Node 23: WFRCheck
 
-Following the diagnostic node convention (Section 3.1), we define:
+Following the diagnostic node convention ({ref}`Section 3.1 <sec-theory-thin-interfaces>`), we define:
 
 | **#**  | **Name**     | **Component**   | **Type**                 | **Interpretation**          | **Proxy**                    | **Cost** |
 |--------|--------------|-----------------|--------------------------|-----------------------------|------------------------------|----------|

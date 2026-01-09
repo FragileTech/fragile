@@ -1,23 +1,23 @@
-## 31. Computational Metabolism: The Landauer Bound and Deliberation Dynamics
+# Computational Metabolism: The Landauer Bound and Deliberation Dynamics
 
 *Abstract.* We establish a thermodynamic foundation for internal inference by coupling computation time $s$ to an energetic cost functional. We model the agent as an open system where belief updates are dissipative processes. By applying Landauer's Principle {cite}`landauer1961irreversibility` to the Wasserstein-Fisher-Rao (WFR) flow, we prove that the optimal allocation of computation time $S^*$ emerges from the stationarity of a **Dual-Horizon Action**. We derive a rigorous phase transition between reflexive (fast) and deliberative (slow) regimes {cite}`kahneman2011thinking`, governed by the ratio of the task-gradient norm to the metabolic dissipation rate.
 
+(rb-thinking-fast-slow)=
 :::{admonition} Researcher Bridge: Principled "Thinking Fast and Slow"
 :class: info
-:name: rb-thinking-fast-slow
 Most agents spend the same amount of FLOPs on a trivial decision as a critical one. We use the **Landauer Bound** to assign a thermodynamic cost to information updates. The agent stops "deliberating" ($S^*$) exactly when the marginal gain in Value is outweighed by the metabolic cost of more compute. This derives "System 1 vs System 2" behavior from first principles.
 :::
 
-*Cross-references:* This section extends the WFR dynamics (Section 20) to account for the thermodynamic cost of belief updates, building on the cognitive temperature framework (Section 22.4) and the value potential (Section 24).
+*Cross-references:* This section extends the WFR dynamics ({ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`) to account for the thermodynamic cost of belief updates, building on the cognitive temperature framework ({ref}`Section 22.4 <sec-the-geodesic-baoab-integrator>`) and the value potential ({ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>`).
 
 *Literature:* Landauer's principle {cite}`landauer1961irreversibility`; thermodynamics of computation {cite}`bennett1982thermodynamics`; thermodynamics of information {cite}`parrondo2015thermodynamics`; dual-process theory {cite}`kahneman2011thinking`; free energy principle {cite}`friston2010free`; information geometry {cite}`amari2016information`.
 
 
 
 (sec-the-energetics-of-information-updates)=
-### 31.1 The Energetics of Information Updates
+## The Energetics of Information Updates
 
-We begin by mapping the abstract WFR belief dynamics (Section 20) {cite}`chizat2018unbalanced,liero2018optimal` to physical dissipation via Landauer's Principle.
+We begin by mapping the abstract WFR belief dynamics ({ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`) {cite}`chizat2018unbalanced,liero2018optimal` to physical dissipation via Landauer's Principle.
 
 :::{prf:definition} Metabolic Flux
 :label: def-metabolic-flux
@@ -50,7 +50,7 @@ The metabolic flux $\dot{\mathcal{M}}$ provides a physical lower bound on the ra
 $$
 \dot{\mathcal{M}}(s) \ge T_c \left| \frac{d}{ds} H(\rho_s) \right|,
 $$
-where $H(\rho_s) = -\int_{\mathcal{Z}} \rho \ln \rho \, d\mu_G$ is the Shannon entropy and $T_c$ is the cognitive temperature (Section 22.4).
+where $H(\rho_s) = -\int_{\mathcal{Z}} \rho \ln \rho \, d\mu_G$ is the Shannon entropy and $T_c$ is the cognitive temperature ({prf:ref}`def-cognitive-temperature`, {ref}`Section 22.4 <sec-the-geodesic-baoab-integrator>`).
 
 *Proof sketch.* The time derivative of the Shannon entropy is:
 
@@ -67,15 +67,15 @@ By the Cauchy-Schwarz inequality on the tangent bundle $(T\mathcal{Z}, G)$:
 $$
 \left| \int_{\mathcal{Z}} \rho \langle \nabla \ln \rho, v \rangle_G \, d\mu_G \right| \le \left( \int_{\mathcal{Z}} \rho \|\nabla \ln \rho\|_G^2 \, d\mu_G \right)^{1/2} \left( \int_{\mathcal{Z}} \rho \|v\|_G^2 \, d\mu_G \right)^{1/2}.
 $$
-The first factor is the **Fisher Information** $\mathcal{I}(\rho) = \int \rho \|\nabla \ln \rho\|_G^2 \, d\mu_G$ {cite}`amari2016information`. Under the optimal transport scaling $v = -T_c \nabla \ln \rho$ (gradient flow of the free energy), we recover the de Bruijn identity {cite}`stam1959some` and the bound follows. The reaction term satisfies an analogous inequality via the $L^2(\rho)$ norm. See Appendix E.3 for the full proof. $\square$
+The first factor is the **Fisher Information** $\mathcal{I}(\rho) = \int \rho \|\nabla \ln \rho\|_G^2 \, d\mu_G$ {cite}`amari2016information`. Under the optimal transport scaling $v = -T_c \nabla \ln \rho$ (gradient flow of the free energy), we recover the de Bruijn identity {cite}`stam1959some` and the bound follows. The reaction term satisfies an analogous inequality via the $L^2(\rho)$ norm. See {ref}`Appendix E.3 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>` for the full proof. $\square$
 
 *Remark (Landauer's Principle).* The classical Landauer bound states that erasing one bit of information requires dissipating at least $k_B T \ln 2$ joules of heat. Theorem {prf:ref}`thm-generalized-landauer-bound` is the information-geometric generalization: reducing belief entropy by $\Delta H$ nats requires dissipating at least $T_c \cdot |\Delta H|$ nats of metabolic energy.
 
 :::
 
+(pi-landauer-principle)=
 ::::{admonition} Physics Isomorphism: Landauer's Principle
 :class: note
-:name: pi-landauer-principle
 
 **In Physics:** Erasing one bit of information requires dissipating at least $k_B T \ln 2$ joules of heat. More generally, reducing entropy by $\Delta S$ requires work $W \geq T|\Delta S|$ {cite}`landauer1961irreversibility,bennett1982thermodynamics`.
 
@@ -97,7 +97,9 @@ $$
 **Consequence:** Thinking has irreducible thermodynamic cost. Deliberation stops when marginal value gain equals metabolic cost.
 ::::
 
-:::{note} Connection to RL #14: Maximum Expected Utility as Zero-Temperature Limit
+:::{admonition} Connection to RL #14: Maximum Expected Utility as Zero-Temperature Limit
+:class: note
+:name: conn-rl-14
 **The General Law (Fragile Agent):**
 The agent optimizes a **Free Energy** objective that includes the metabolic cost of computation:
 
@@ -127,7 +129,7 @@ This recovers standard **Maximum Expected Utility**—the objective used in DQN,
 
 
 (sec-the-metabolic-potential-and-deliberation-action)=
-### 31.2 The Metabolic Potential and Deliberation Action
+## The Metabolic Potential and Deliberation Action
 
 We introduce the metabolic cost as a coordinate in the agent's extended state space.
 
@@ -145,7 +147,7 @@ For any interaction step $t$, the agent selects a total computation budget $S \i
 $$
 \mathcal{S}_{\text{delib}}[S] = -\underbrace{\mathbb{E}_{z \sim \rho_S} [V(z)]}_{\text{Expected Terminal Value}} + \underbrace{\Psi_{\text{met}}(S)}_{\text{Computational Cost}},
 $$
-where $V(z)$ is the task potential (Section 24.2.1). Units: $[\mathcal{S}_{\text{delib}}] = \text{nat}$.
+where $V(z)$ is the task potential ({ref}`Section 24.2 <sec-hodge-decomposition-of-value>`). Units: $[\mathcal{S}_{\text{delib}}] = \text{nat}$.
 
 *Physical interpretation:* The agent faces a trade-off: longer deliberation ($S$ large) improves the expected value $\langle V \rangle_{\rho_S}$ by refining the belief toward high-value regions, but incurs greater metabolic cost $\Psi_{\text{met}}(S)$. The optimal $S^*$ balances these competing pressures.
 
@@ -156,7 +158,7 @@ where $V(z)$ is the task potential (Section 24.2.1). Units: $[\mathcal{S}_{\text
 
 
 (sec-optimal-deliberation-the-fast-slow-law)=
-### 31.3 Optimal Deliberation: The Fast/Slow Law
+## Optimal Deliberation: The Fast/Slow Law
 
 We now prove the existence of an optimal "stopping time" for internal thought.
 
@@ -195,7 +197,7 @@ For gradient flow dynamics, $v = -G^{-1} \nabla V$ (up to temperature scaling), 
 $$
 \frac{d}{dS} \langle V \rangle_{\rho_S} = \int_{\mathcal{Z}} \rho \left( V r - \|\nabla V\|_G^2 \right) d\mu_G.
 $$
-The stationarity condition $\frac{d}{dS} \mathcal{S}_{\text{delib}} = 0$ yields the optimality condition. See Appendix E.4 for the full proof using the WFR adjoint operator. $\square$
+The stationarity condition $\frac{d}{dS} \mathcal{S}_{\text{delib}} = 0$ yields the optimality condition. See {ref}`Appendix E.4 <sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws>` for the full proof using the WFR adjoint operator. $\square$
 
 *Physical interpretation:* The optimal stopping time $S^*$ is reached when the marginal gain in expected value (the "return on thinking") exactly equals the marginal metabolic cost (the "price of thinking"). At $S^*$, the agent has extracted all cost-effective information from deliberation.
 
@@ -250,7 +252,9 @@ where $\gamma_s$ is the closed trajectory over one cycle at time $s$. Stop when 
 
 :::
 
-:::{note} Connection to RL #15: UCB as Degenerate Thermodynamic VOI
+:::{admonition} Connection to RL #15: UCB as Degenerate Thermodynamic VOI
+:class: note
+:name: conn-rl-15
 **The General Law (Fragile Agent):**
 The agent explores based on the **Thermodynamic Value of Information**:
 
@@ -280,7 +284,7 @@ This recovers **UCB1 (Upper Confidence Bound)**. The exploration bonus $c\sqrt{\
 
 
 (sec-the-h-theorem-for-open-cognitive-systems)=
-### 31.4 The H-Theorem for Open Cognitive Systems
+## The H-Theorem for Open Cognitive Systems
 
 We reconcile computation with the Second Law of Thermodynamics {cite}`crooks1999entropy,parrondo2015thermodynamics`.
 
@@ -320,9 +324,9 @@ The **Carnot limit** for cognitive systems is $\eta_{\text{thought}} = 1$, achie
 
 
 (sec-diagnostic-nodes-b)=
-### 31.5 Diagnostic Nodes 51–52
+## Diagnostic Nodes 51–52
 
-Following the diagnostic node convention (Section 3.1), we define two new monitors for metabolic efficiency.
+Following the diagnostic node convention ({ref}`Section 3.1 <sec-theory-thin-interfaces>`), we define two new monitors for metabolic efficiency.
 
 (node-51)=
 **Node 51: MetabolicEfficiencyCheck**
@@ -355,12 +359,12 @@ Following the diagnostic node convention (Section 3.1), we define two new monito
 - **Cause:** Numerical errors in the WFR solver, unstable metric $G$, or incorrectly estimated entropy.
 - **Remediation:** Reduce integration step size; verify metric positive-definiteness; check entropy estimator calibration.
 
-*Cross-reference:* Node 52 extends the thermodynamic consistency checks of Section 23.4 (ThermoCycleCheck, Node 33) to the internal deliberation loop.
+*Cross-reference:* Node 52 extends the thermodynamic consistency checks of {ref}`Section 23.4 <sec-the-belief-evolution-cycle-perception-dreaming-action>` (ThermoCycleCheck, Node 33) to the internal deliberation loop.
 
 
 
 (sec-summary-table-computational-thermodynamics)=
-### 31.6 Summary Table: Computational Thermodynamics
+## Summary Table: Computational Thermodynamics
 
 **Table 31.6.1 (Computational Metabolism Summary).**
 

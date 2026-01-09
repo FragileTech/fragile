@@ -1,16 +1,18 @@
-## 3. Diagnostics: Stability Checks (Monitors)
+# Diagnostics: Stability Checks (Monitors)
 
 Stability and data-quality are monitored via 29 distinct checks (Gate Nodes). Each corresponds to a specific, testable condition on the interaction between the agent and its environment.
 
 **Relation to prior work.** Many safe-RL formulations express safety as one (or a few) expected-cost constraints in a constrained MDP {cite}`altman1999constrained,achiam2017constrained`. The Fragile Agent keeps that spirit but broadens the constraint surface to include **representation and interface diagnostics** (grounding, mixing, saturation, switching, stiffness) that can be audited online, alongside Lyapunov-style stability constraints {cite}`chow2018lyapunov`.
 
+(rb-safety-unit-test)=
 :::{admonition} Researcher Bridge: Safety as a Unit Test
 :class: warning
-:name: rb-safety-unit-test
 Standard RL safety relies on reward shaping, which provides no formal guarantee that the agent avoids bad states. The Sieve replaces probabilistic incentives with **Hard Runtime Assertions**. Each of the 60 nodes is a mathematical contract. If a check fails (e.g., the agent exhibits chattering or its belief decouples from the sensors), the system does not receive a penalty; it **halts or reverts**. This architecture enforces safety constraints in the same manner that a type system enforces invariants at compile time.
 :::
 
-:::{note} Connection to RL #8: Constrained MDPs as Soft Sieve
+:::{admonition} Connection to RL #8: Constrained MDPs as Soft Sieve
+:class: note
+:name: conn-rl-8
 **The General Law (Fragile Agent):**
 Safety is a **topological constraint** enforced by the Sieve—a hard binary filter:
 
@@ -46,7 +48,7 @@ This recovers **Constrained MDPs** (CMDPs) with penalty-based constraint satisfa
 :::
 
 (sec-the-stability-checks)=
-### The 29 Stability Checks
+## The 29 Stability Checks
 
 | Node    | Check                                             | Component                | Interpretation                  | Meaning                                     | Regularization Factor ($\mathcal{L}_{\text{check}}$)                                                                                       | Compute                         |
 |---------|---------------------------------------------------|--------------------------|---------------------------------|---------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------|
@@ -67,7 +69,7 @@ This recovers **Constrained MDPs** (CMDPs) with penalty-based constraint satisfa
 | **11**  | **ComplexCheck ($\mathrm{Rep}_K$)**               | **VQ-VAE**               | **Model Capacity Check**        | Symbolic rate within budget?                | $\mathrm{Rep}_K := H(K)/\log\lvert\mathcal{K}\rvert$ (Rate Utilization)                                                                    | $O(B)$ ✓                        |
 | **12**  | **OscillateCheck ($\mathrm{GC}_\nabla$)**         | **WM / Policy**          | **Oscillation / Chattering**    | Limit cycles?                               | $\Vert z_t - z_{t-2} \Vert$ (Period-2 Penalty)                                                                                             | $O(BZ)$ ✓                       |
 | **12a** | **HolonomyCheck ($\mathrm{GC}_{\mathrm{holo}}$)** | **WM / Policy**          | **Loop Drift**                  | Near-closed loop changes policy/value?      | $\mathbb{I}[d_G(z_t,z_{t-L})<\epsilon_z]\cdot \mathrm{ReLU}(D_{\mathrm{KL}}(\pi(\cdot\mid z_t)\Vert \pi(\cdot\mid z_{t-L}))-\epsilon_h)^2$ | $O(BA)$ ✓                       |
-| **13**  | **BoundaryCheck ($\mathrm{Bound}_\partial$)**     | **VQ-VAE**               | **Input Informativeness**       | External signal present?                    | $I(X;K)$ (Symbolic MI $>0$)                                                                                                                | $O(B)$ ✓                        |
+| **13**  | **BoundaryCheck ($\mathrm{Bound}_\partial$)**     | **VQ-VAE**               | **Input Informativeness**       | External signal present at boundary ({prf:ref}`def-boundary-markov-blanket`)?                    | $I(X;K)$ (Symbolic MI $>0$)                                                                                                                | $O(B)$ ✓                        |
 | **14**  | **InputSaturationCheck ($\mathrm{Bound}_B$)**     | **Boundary**             | **Input Saturation**            | Inputs clipping?                            | $\mathbb{I}(\lvert x \rvert > x_{\text{max}})$ (Saturation Flag)                                                                           | $O(BD)$ ✓                       |
 | **15**  | **SNRCheck ($\mathrm{Bound}_{\Sigma}$)**          | **Boundary**             | **Signal-to-Noise**             | Signal strength sufficient?                 | $\text{SNR} < \epsilon$ (Noise Floor Check)                                                                                                | $O(BD)$ ✓                       |
 | **16**  | **AlignCheck ($\mathrm{GC}_T$)**                  | **Critic**               | **Objective Alignment**         | Proxy matches objective?                    | $\lvert V_{\text{proxy}} - V_{\text{true}} \rvert$ (Alignment Error)                                                                       | $O(B)$ ✗                        |
@@ -76,7 +78,7 @@ This recovers **Constrained MDPs** (CMDPs) with penalty-based constraint satisfa
 | **19**  | **DisentanglementCheck ($\mathrm{Decorr}_{Kn}$)** | **Shutter / WM**         | **Macro–Nuisance Leakage**      | Macro correlated with nuisance residual?    | $\left\lVert\mathrm{Cov}(z_{\text{macro}},z_n)\right\rVert_F^2$                                                                            | $O(Bd_md_n)$ ✓                  |
 | **20**  | **LipschitzCheck ($\mathrm{Lip}_\Theta$)**        | **WM / Critic**          | **Gain Control**                | Operator norms bounded?                     | $\max_\ell \sigma(W_\ell)$ (spectral norm monitor)                                                                                         | $O(P)$ ⚡                        |
 | **21**  | **SymplecticCheck ($\mathrm{Symp}$)**             | **World Model**          | **Volume Preservation**         | Transition approximately symplectic?        | $\left\lVert J_S^\top J J_S - J\right\rVert_F^2$                                                                                           | $O(BZ^2)$ ✗                     |
-| **22**  | **MECCheck ($\mathrm{MEC}$)**                     | **Belief / WM**          | **CPTP Consistency**            | Operator update matches GKSL form?          | $\left\lVert\frac{\varrho_{t+1}-\varrho_t}{\Delta t}-\mathcal{L}_{\text{GKSL}}(\varrho_t)\right\rVert_F^2$                                 | $O(BZ^3)$ ✗                     |
+| **22**  | **MECCheck ($\mathrm{MEC}$)**                     | **Belief / WM**          | **CPTP Consistency**            | Operator update matches GKSL ({prf:ref}`def-gksl-generator`) form?          | $\left\lVert\frac{\varrho_{t+1}-\varrho_t}{\Delta t}-\mathcal{L}_{\text{GKSL}}(\varrho_t)\right\rVert_F^2$                                 | $O(BZ^3)$ ✗                     |
 | **23**  | **NEPCheck ($\mathrm{NEP}$)**                     | **Belief / Boundary**    | **Update vs Evidence**          | Internal update supported by boundary info? | $\mathrm{ReLU}(D_{\mathrm{KL}}(p_{t+1}\Vert p_t)-I(X_t;K_t))^2$                                                                            | $O(B\lvert\mathcal{K}\rvert)$ ✓ |
 | **24**  | **QSLCheck ($\mathrm{QSL}$)**                     | **All**                  | **Update Speed Limit**          | Step too large in $d_G$?                    | $\mathrm{ReLU}(d_G(z_{t+1},z_t)-v_{\max})^2$                                                                                               | $O(BZ)$ ✓                       |
 | **25**  | **HoloGenCheck**                                  | **Generator**            | **Generation Validity**         | Did flow reach boundary?                    | $\mathbb{I}(\lvert z_{\text{final}}\rvert \ge R_{\text{cutoff}})$                                                                          | $O(B)$ ✓                        |
@@ -85,7 +87,7 @@ This recovers **Constrained MDPs** (CMDPs) with penalty-based constraint satisfa
 
 **Compute Legend:** ✓ Low (typically online) | ⚡ Moderate (often amortized/approximated) | ✗ High (often offline or coarse approximations)
 **Variables:** $B$ = batch, $Z$ = latent dim, $A$ = actions, $P$ = params, $H$ = horizon, $D$ = observation dim
-**Threshold units:** whenever a node uses a threshold $\epsilon$, it inherits the units of the compared quantity (e.g., $\epsilon$ is dimensionless for SNR checks; $\epsilon$ has the same units as $\|\nabla V\|$ for stiffness checks; $\epsilon$ is in nats when compared to $I(X;K)$ or $H(K)$). Budgets like $V_{\text{max}},V_{\text{limit}}$, and $B_{\text{switch}}$ share units with $V$ (nats in the convention of Section 1.2).
+**Threshold units:** whenever a node uses a threshold $\epsilon$, it inherits the units of the compared quantity (e.g., $\epsilon$ is dimensionless for SNR checks; $\epsilon$ has the same units as $\|\nabla V\|$ for stiffness checks; $\epsilon$ is in nats when compared to $I(X;K)$ or $H(K)$). Budgets like $V_{\text{max}},V_{\text{limit}}$, and $B_{\text{switch}}$ share units with $V$ (nats in the convention of {ref}`Section 1.2 <sec-units-and-dimensional-conventions>`).
 
 **Geometric Properties of Key Nodes:**
 
@@ -99,7 +101,7 @@ This recovers **Constrained MDPs** (CMDPs) with penalty-based constraint satisfa
 Each node corresponds to a verifiable geometric property. The Sieve acts as a **topological filter**: problems that fail these checks are rejected before gradient updates can corrupt the agent.
 
 (sec-theory-thin-interfaces)=
-### 3.1 Theory: Thin Interfaces
+## Theory: Thin Interfaces
 
 In the Hypostructure framework, **Thin Interfaces** are defined as minimal couplings between components. Instead of monolithic end-to-end training, we enforce structural contracts (the checks) via **Defect Functionals** ($\mathcal{L}_{\text{check}}$).
 
@@ -107,11 +109,11 @@ In the Hypostructure framework, **Thin Interfaces** are defined as minimal coupl
 *   **Mechanism:** Each component minimizes its own objective *subject to* the cybernetic constraints imposed by the others.
 
 (sec-scaling-exponents-characterizing-the-agent)=
-### 3.2 Scaling Exponents: Characterizing the Agent
+## Scaling Exponents: Characterizing the Agent
 
 We characterize the training dynamics of the Fragile Agent using four **scaling coefficients**. These are *diagnostic* summaries of state-space behavior, not optimizer statistics.
 
-The geometric metric $G$ is the **State-Space Fisher Information** (see Section 2.6), ensuring coordinate invariance. Common diagonal approximations include:
+The geometric metric $G$ is the **State-Space Fisher Information** (see {ref}`Section 2.6 <sec-the-metric-hierarchy-fixing-the-category-error>`), ensuring coordinate invariance. Common diagonal approximations include:
 - `policy_fisher`: $G_{ii} = \mathbb{E}[(\partial \log \pi / \partial z_i)^2]$
 - `state_fisher`: $G_{ii} = \mathbb{E}[(\partial \log \pi / \partial z_i)^2] + \text{Hess}_z(V)_{ii}$ (Hessian + Fisher sensitivity)
 - `grad_rms`: $G_{ii} = \mathbb{E}[(\partial V / \partial z_i)^2]^{1/2}$
@@ -132,19 +134,19 @@ $$
 $$
 1.  **$\delta \ll \gamma$ (Representation Stability):** the representation (encoder/codebook) drifts slower than the learned dynamics model.
 2.  **$\gamma \ll \alpha$ (Predictability / Trackability):** the learned dynamics do not drift faster than the value function can track.
-3.  **$\beta \le \alpha$ (Two-Time-Scale Actor–Critic):** policy updates stay within the critic’s validity region. If $\beta>\alpha$, skip or shrink the policy update (BarrierTypeII; see Section 4.1.2).
+3.  **$\beta \le \alpha$ (Two-Time-Scale Actor–Critic):** policy updates stay within the critic's validity region. If $\beta>\alpha$, skip or shrink the policy update (BarrierTypeII; see {ref}`Section 4.1 <sec-barrier-implementation-details>`).
 
 (sec-defect-functionals-implementing-regulation)=
-### 3.3 Defect Functionals: Implementing Regulation
+## Defect Functionals: Implementing Regulation
 
 We regulate the Fragile Agent by augmenting the loss function with specific terms for each component. These terms are non-negotiable cybernetic contracts.
 
 (sec-gauge-invariant-regulation)=
-#### 3.3.0 Gauge-Invariant Regulation (Symmetry Quotienting)
+### Gauge-Invariant Regulation (Symmetry Quotienting)
 
-The “Fragile” design is compatible with (and benefits from) an explicit **symmetry layer** (Section 1.1.4): identify nuisance degrees of freedom as group actions and enforce invariance/equivariance so that capacity is spent on control-relevant structure.
+The “Fragile” design is compatible with (and benefits from) an explicit **symmetry layer** ({ref}`Section 1.1.4 <sec-symmetries-and-gauge-freedoms>`): identify nuisance degrees of freedom as group actions and enforce invariance/equivariance so that capacity is spent on control-relevant structure.
 
-The table below summarizes a minimal, implementable set of **gauge-invariant regulation** mechanisms. Each item is expressed as a concrete loss/monitor and mapped to an existing Fragile failure mode (Section 5). The intent is not to import physics metaphors, but to use the standard mathematical language of symmetry and invariance (group actions, quotienting, equivariance).
+The table below summarizes a minimal, implementable set of **gauge-invariant regulation** mechanisms. Each item is expressed as a concrete loss/monitor and mapped to an existing Fragile failure mode ({ref}`Section 5 <sec-failure-modes>`). The intent is not to import physics metaphors, but to use the standard mathematical language of symmetry and invariance (group actions, quotienting, equivariance).
 
 | Method                                              | Gauge / nuisance variable                     | Implementation (loss / constraint)                                                                                                                  | Failure mode mitigated                   | Notes                                                                                                                                                                                                          |
 |:----------------------------------------------------|:----------------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------|:-----------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -158,8 +160,8 @@ The table below summarizes a minimal, implementable set of **gauge-invariant reg
 | **Diagonal metric law**                             | coordinate basis choice                       | natural-gradient / trust region with state metric $G$                                                                                               | Mode B.C (control deficit)               | Enforces coordinate-invariant update geometry in latent state space (Sections 2.5–2.6).                                                                                                                        |
 
 (sec-a-vq-vae-regulation)=
-#### A. VQ-VAE Regulation (The Shutter)
-*   **Symbolic Bottleneck (Node 3 / 11):** the shutter is a split latent $(K,z_n,z_{\mathrm{tex}})$ with $K\in\mathcal{K}$ discrete (Section 2.2b). A canonical objective is:
+### A. VQ-VAE Regulation (The Shutter)
+*   **Symbolic Bottleneck (Node 3 / 11):** the shutter is a split latent $(K,z_n,z_{\mathrm{tex}})$ with $K\in\mathcal{K}$ discrete ({ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`). A canonical objective is:
 
     $$
     \mathcal{L}_{\text{shutter}}
@@ -180,7 +182,7 @@ The table below summarizes a minimal, implementable set of **gauge-invariant reg
     :=
     \mathbb{E}_{g}\!\left[D_{\mathrm{KL}}\!\left(q(K\mid x)\ \Vert\ q(K\mid g\cdot x)\right)\right].
     $$
-    This is a direct operationalization of the quotient intent “$K$ approximates $x/G_{\text{spatial}}$” (Section 2.2b) and prevents symmetry-blind representations.
+    This is a direct operationalization of the quotient intent “$K$ approximates $x/G_{\text{spatial}}$” ({ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`) and prevents symmetry-blind representations.
 *   **Macro–residual disentanglement (Node 19: DisentanglementCheck).**
     Enforce that the control-relevant macro embedding $z_{\text{macro}}:=e_K$ does not carry the same variation as either residual channel by discouraging cross-covariance:
 
@@ -191,9 +193,9 @@ The table below summarizes a minimal, implementable set of **gauge-invariant reg
     +
     \left\|\mathrm{Cov}(z_{\text{macro}}, z_{\mathrm{tex}})\right\|_F^2.
     $$
-    This complements enclosure/closure constraints (Section 2.8). Texture leakage is treated as strictly disallowed; nuisance leakage is allowed only insofar as it does not alter macro identity.
+    This complements enclosure/closure constraints ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`). Texture leakage is treated as strictly disallowed; nuisance leakage is allowed only insofar as it does not alter macro identity.
 *   **Canonicalization shutter (optional).**
-    If $G_{\text{spatial}}$ corresponds to a known input-frame nuisance (pose/basis), insert $x\mapsto \tilde x=C_\psi(x)$ (e.g., an STN) before the VQ encoder and train $C_\psi$ jointly using $\mathcal{L}_{\text{orbit}}$ and reconstruction/closure losses (Section 2.2b) {cite}`jaderberg2015stn`.
+    If $G_{\text{spatial}}$ corresponds to a known input-frame nuisance (pose/basis), insert $x\mapsto \tilde x=C_\psi(x)$ (e.g., an STN) before the VQ encoder and train $C_\psi$ jointly using $\mathcal{L}_{\text{orbit}}$ and reconstruction/closure losses ({ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`) {cite}`jaderberg2015stn`.
 *   **Contrastive Anchoring (Node 6):**
 
     $$
@@ -252,7 +254,9 @@ Units: $\lambda,\mu,\nu$ are dimensionless weights; each component loss is taken
 - **VICReg:** When you want geometric constraints without mining hard negatives
 - **Barlow Twins:** When you want redundancy reduction (information-theoretic)
 
-::::{note} Connection to RL #29: Contrastive RL as Degenerate InfoNCE Anchoring
+::::{admonition} Connection to RL #29: Contrastive RL as Degenerate InfoNCE Anchoring
+:class: note
+:name: conn-rl-29
 **The General Law (Fragile Agent):**
 **InfoNCE** anchors the latent space to capture long-term structural dependencies:
 
@@ -272,7 +276,7 @@ $$
 This recovers **Contrastive Predictive Coding (CPC)** {cite}`oord2018cpc` and **Contrastive RL** methods.
 
 **What the generalization offers:**
-- **Macro-micro split**: InfoNCE anchors the macro channel $K$; texture $z_{\text{tex}}$ is separate (Section 2.2b)
+- **Macro-micro split**: InfoNCE anchors the macro channel $K$; texture $z_{\text{tex}}$ is separate ({ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`)
 - **Multiple anchoring signals**: InfoNCE + VICReg + disentanglement losses work together (Table above)
 - **Structural filtering**: Slow features → $K$; fast features → $z_n$, $z_{\text{tex}}$
 - **Audit-friendly**: Node 6 (CollapseCheck) monitors whether contrastive loss is preventing collapse
@@ -287,7 +291,7 @@ This recovers **Contrastive Predictive Coding (CPC)** {cite}`oord2018cpc` and **
     Units: $\mathcal{L}_{\text{orth}}$ is dimensionless; the weight multiplying it is dimensionless.
 
 (sec-b-world-model-regulation)=
-#### B. World Model Regulation (Dynamics Model)
+### B. World Model Regulation (Dynamics Model)
 *   **Lipschitz Constraint (BarrierOmin / Node 9):**
 
     $$
@@ -327,14 +331,14 @@ This recovers **Contrastive Predictive Coding (CPC)** {cite}`oord2018cpc` and **
     \qquad
     J_t := \mathrm{VQ}(\Delta z_{n,t})\in\{1,\dots,|\mathcal{J}|\}.
     $$
-    Here $z_n$ is the **structured nuisance** coordinate (Section 2.2b). Texture $z_{\mathrm{tex}}$ is explicitly not used to form jump types: it is treated as an emission residual for reconstruction/likelihood, not as a disturbance class for dynamics. The resulting index $J_t$ provides an online-codable label for recurring disturbance types and supports conditional noise modeling (e.g., a mixture model for nuisance residuals). Section 11.5 shows how the same idea can be lifted to operator-valued belief updates, where discrete residual types parameterize jump operators.
+    Here $z_n$ is the **structured nuisance** coordinate ({ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`). Texture $z_{\mathrm{tex}}$ is explicitly not used to form jump types: it is treated as an emission residual for reconstruction/likelihood, not as a disturbance class for dynamics. The resulting index $J_t$ provides an online-codable label for recurring disturbance types and supports conditional noise modeling (e.g., a mixture model for nuisance residuals). Section 11.5 shows how the same idea can be lifted to operator-valued belief updates, where discrete residual types parameterize jump operators.
 
 (sec-c-critic-regulation)=
-#### C. Critic Regulation (Value / Lyapunov Function)
+### C. Critic Regulation (Value / Lyapunov Function)
 
 The Critic does not just predict reward; it defines a **stability-oriented potential** over latent state. We impose Lyapunov-style constraints as *sufficient conditions* for local stability, enforced approximately via sampled penalties {cite}`chang2019neural,chow2018lyapunov,kolter2019safe`.
 
-*Forward reference (Field Solver Interpretation).* Section 24 provides a deeper interpretation: the Critic is a **Field Solver** that propagates boundary reward charges into the bulk via the **Screened Poisson Equation** (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`). The Value function $V(z)$ is the Green's function of the screened Laplacian (Proposition {prf:ref}`prop-green-s-function-interpretation`), with the discount factor determining the screening length. This Helmholtz PDE perspective unifies the Lyapunov constraints below with the geometric regularization in Section 24.5.
+*Forward reference (Field Solver Interpretation).* {ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>` provides a deeper interpretation: the Critic is a **Field Solver** that propagates boundary reward charges into the bulk via the **Screened Poisson Equation** (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`). The Value function $V(z)$ is the Green's function of the screened Laplacian (Proposition {prf:ref}`prop-green-s-function-interpretation`), with the discount factor determining the screening length. This Helmholtz PDE perspective unifies the Lyapunov constraints below with the geometric regularization in Section 24.5.
 
 **Euclidean vs Riemannian Critic Losses:**
 
@@ -346,7 +350,7 @@ The Critic does not just predict reward; it defines a **stability-oriented poten
 | **Geometry**     | Ignores curvature                                                  | Encourages a well-conditioned potential                                       |
 
 *   **Projective (bounded) value head (optional; objective gauge robustness).**
-    If the dominant instability comes from value-scale drift (objective gauge $G_{\text{obj}}$; Section 1.1.4), parameterize the critic so its *state-dependent* output is bounded and scale-free. One implementable pattern is:
+    If the dominant instability comes from value-scale drift (objective gauge $G_{\text{obj}}$; {ref}`Section 1.1.4 <sec-symmetries-and-gauge-freedoms>`), parameterize the critic so its *state-dependent* output is bounded and scale-free. One implementable pattern is:
 
     $$
     u(z):=\frac{\phi(z)}{\|\phi(z)\|+\epsilon},
@@ -355,7 +359,7 @@ The Critic does not just predict reward; it defines a **stability-oriented poten
     \qquad
     V(z):=V_{\mathrm{scale}}\,(1-u(z)\cdot \omega),
     $$
-    where $\phi$ is a learned embedding and $\tilde\omega$ is a learned goal direction. The dot product is dimensionless; $V_{\mathrm{scale}}$ carries units of nats (Section 1.2) and can be calibrated or learned via adaptive multipliers (Section 3.5).
+    where $\phi$ is a learned embedding and $\tilde\omega$ is a learned goal direction. The dot product is dimensionless; $V_{\mathrm{scale}}$ carries units of nats ({ref}`Section 1.2 <sec-units-and-dimensional-conventions>`) and can be calibrated or learned via adaptive multipliers ({ref}`Section 3.5 <sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration>`).
 
     This does **not** make the entire RL pipeline invariant to arbitrary reward rescaling by itself (targets still change under $r\mapsto ar+b$), but it bounds critic outputs and makes the *directional part* of the value function less sensitive to magnitude drift.
 
@@ -388,9 +392,9 @@ The Critic does not just predict reward; it defines a **stability-oriented poten
     *   *Effect:* Hard Lagrangian enforcement of the risk budget.
 
 (sec-d-policy-regulation)=
-#### D. Policy Regulation (Controller / Geometry-Aware Updates)
+### D. Policy Regulation (Controller / Geometry-Aware Updates)
 
-The Policy is the controller. Its objective is to choose actions that reduce expected cost while respecting stability and information constraints. We replace purely Euclidean policy-gradient updates with a **natural-gradient / information-geometric** update that respects the local sensitivity metric $G$ (Section 2.5).
+The Policy is the controller. Its objective is to choose actions that reduce expected cost while respecting stability and information constraints. We replace purely Euclidean policy-gradient updates with a **natural-gradient / information-geometric** update that respects the local sensitivity metric $G$ ({ref}`Section 2.5 <sec-second-order-sensitivity-value-defines-a-local-metric>`).
 
 **Euclidean vs Riemannian Policy Losses:**
 
@@ -443,11 +447,11 @@ The Policy is the controller. Its objective is to choose actions that reduce exp
     *   *Effect:* Prevents premature collapse to deterministic policies (BarrierMix).
 
 (sec-e-cross-network-synchronization)=
-#### E. Cross-Network Synchronization (Alignment Terms)
+### E. Cross-Network Synchronization (Alignment Terms)
 A key design choice in the Fragile Agent is to make inter-component alignment explicit via **synchronization losses**:
 
 1.  **Shutter $\leftrightarrow$ WM (Macro Closure / Predictability):**
-    *   The shutter is not merely compressing $x_t$; it is defining the **macro-effective ontology** $K_t\in\mathcal{K}$ on which the World Model claims to be Markov (Causal Enclosure; Section 2.8).
+    *   The shutter is not merely compressing $x_t$; it is defining the **macro-effective ontology** $K_t\in\mathcal{K}$ on which the World Model claims to be Markov (Causal Enclosure; {ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`).
 
         $$
         \mathcal{L}_{\text{Sync}_{K-W}} = \mathrm{CE}\!\left(K_{t+1},\ \hat{p}_\phi(K_{t+1}\mid K_t, A_t)\right)
@@ -471,7 +475,7 @@ A key design choice in the Fragile Agent is to make inter-component alignment ex
     *   *Meaning:* Accuracy on the *optimal path* matters more than global accuracy.
 
 (sec-f-exploration-and-coupling-regularizers)=
-#### F. Exploration and Coupling Regularizers (Path Entropy, KL-Control, Window)
+### F. Exploration and Coupling Regularizers (Path Entropy, KL-Control, Window)
 The synchronization and component losses above enforce internal consistency. The following regularizers make information/coupling constraints explicit in online-auditable form.
 
 *   **KL-Control (Relative-Entropy Control; Theorem {prf:ref}`thm-equivalence-of-entropy-regularized-control-forms-discrete-macro`).** Fix a reference actuator prior $\pi_0(a\mid k)$ with full support. Define control effort as KL deviation from this prior:
@@ -525,16 +529,16 @@ The synchronization and component losses above enforce internal consistency. The
     optionally applied only inside the safety budget (Node 1 / CostBoundCheck) to avoid suppressing necessary exploration.
 
 (sec-joint-optimization)=
-### 3.4 Joint Optimization
+## Joint Optimization
 The total Fragile Agent training objective is the weighted sum of component and synchronization tasks:
 
 $$
 \mathcal{L}_{\text{Fragile}} = \mathcal{L}_{\text{Task}} + \sum \lambda_i \mathcal{L}_{\text{Self-Reg}_i} + \sum \lambda_{ij} \mathcal{L}_{\text{Sync}_{ij}}
 $$
-This defines the coupled-system "stiffness". In practice, the coefficients $\lambda$ should be treated as **adaptive multipliers** (not fixed constants): different constraints become active at different times, and gradient scales drift as representation and policy change (Section 3.5). If $\lambda_{\text{Sync}}$ is too low, components drift out of alignment; if it is too high, optimization becomes over-regularized and can stall (BarrierBode).
+This defines the coupled-system "stiffness". In practice, the coefficients $\lambda$ should be treated as **adaptive multipliers** (not fixed constants): different constraints become active at different times, and gradient scales drift as representation and policy change ({ref}`Section 3.5 <sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration>`). If $\lambda_{\text{Sync}}$ is too low, components drift out of alignment; if it is too high, optimization becomes over-regularized and can stall (BarrierBode).
 
 (sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration)=
-### 3.5 Adaptive Multipliers: Learned Penalties, Setpoints, and Calibration
+## Adaptive Multipliers: Learned Penalties, Setpoints, and Calibration
 
 In the Fragile Agent, **static loss weights are a failure mode**: hard-coding numbers like $\lambda=0.1$ implicitly assumes a constant exchange rate between heterogeneous terms even though their typical magnitudes and gradients change across training, operating regimes, and distribution shift.
 
@@ -544,7 +548,7 @@ We distinguish three classes of coefficients:
 - **Learned precisions (multi-task scaling):** balance likelihood-style losses with unknown noise scales (reconstruction vs prediction vs auxiliary SSL).
 
 (sec-method-a-primal-dual-updates)=
-#### 3.5.1 Method A: Primal–Dual Updates (Projected Dual Ascent)
+### Method A: Primal–Dual Updates (Projected Dual Ascent)
 
 Choose online-computable nonnegative constraint metrics $\mathcal{C}_i(\theta)$ and tolerances $\epsilon_i$ defining a feasible set
 
@@ -552,9 +556,9 @@ $$
 \mathcal{C}_i(\theta)\le \epsilon_i,
 \qquad i=1,\dots,m.
 $$
-Examples include enclosure defects (Section 2.8), Zeno/step-size limits (Node 2), saturation measures (BarrierSat), and Lyapunov defects (Node 7).
+Examples include enclosure defects ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`), Zeno/step-size limits (Node 2), saturation measures (BarrierSat), and Lyapunov defects (Node 7).
 
-Define the Lagrangian (units consistent with Section 1.2):
+Define the Lagrangian (units consistent with {ref}`Section 1.2 <sec-units-and-dimensional-conventions>`):
 
 $$
 \mathcal{L}(\theta,\lambda)
@@ -590,7 +594,7 @@ for name, v in violations.items():
 This is the same mathematical pattern used to tune entropy coefficients or KL constraints in modern RL (e.g. SAC-style automatic entropy tuning) {cite}`haarnoja2018soft`.
 
 (sec-method-b-setpoint-controllers)=
-#### 3.5.2 Method B: Setpoint Controllers (PI/PID Regulation)
+### Method B: Setpoint Controllers (PI/PID Regulation)
 
 Some metrics should be regulated around a target value or rate. Typical examples:
 - **Policy KL per update** (trust region): keep $D_{\mathrm{KL}}(\pi_t\Vert\pi_{t-1})$ in a target band.
@@ -619,7 +623,7 @@ In practice, PI control (no derivative term) is often sufficient; add derivative
 This “multiplier as controller” viewpoint is used directly in PID Lagrangian methods for constrained RL {cite}`stooke2020responsive`.
 
 (sec-method-c-learned-precisions)=
-#### 3.5.3 Method C: Learned Precisions (Homoscedastic Uncertainty Weighting)
+### Method C: Learned Precisions (Homoscedastic Uncertainty Weighting)
 
 When combining multiple likelihood-style losses with different natural scales (e.g., reconstruction vs dynamics prediction vs auxiliary self-supervision), it is often better to learn their relative weights as **inverse variances** (precisions) rather than choose them by hand.
 
@@ -635,7 +639,7 @@ The effective weight is {math}`\exp(-s_i)`, and the {math}`s_i` term prevents de
 This method is appropriate for **multi-task scaling**, not for nonnegotiable safety constraints (use Method A for those).
 
 (sec-recommended-mixing)=
-#### 3.5.4 Recommended Mixing (Practical Policy)
+### Recommended Mixing (Practical Policy)
 
 | Term type                           | Examples in this document                                          | Mechanism                     |
 |-------------------------------------|--------------------------------------------------------------------|-------------------------------|
@@ -645,7 +649,7 @@ This method is appropriate for **multi-task scaling**, not for nonnegotiable saf
 | **Multi-task likelihood balancing** | recon vs prediction vs auxiliary SSL losses                        | Method C (learned precisions) |
 
 (sec-calibrating-tolerances)=
-#### 3.5.5 Calibrating Tolerances $\epsilon_i$ (Feasibility and Units)
+### Calibrating Tolerances $\epsilon_i$ (Feasibility and Units)
 
 Dual methods only work if constraints are **feasible**: setting $\epsilon_i$ below the system’s achievable resolution forces multipliers to diverge and produces brittle training.
 
@@ -668,7 +672,7 @@ A practical, implementable calibration procedure is:
 |------------------------------------------------------------------|--------------:|-----------------------------------------------------------------|--------------------------------------------------------------------------------|
 | Reconstruction NLL / distortion                                  |           nat | $Q_{0.9}(\mathcal{L}_{\text{recon}}(\mathcal{D}_{\text{cal}}))$ | Prefer likelihood losses (nats); if using MSE, fix/learn the scale (Method C). |
 | One-step prediction NLL                                          |      nat/step | $Q_{0.9}(\mathcal{L}_{\text{pred}}(\mathcal{D}_{\text{cal}}))$  | Use an ensemble baseline to separate reducible vs irreducible error.           |
-| Macro closure defect (e.g. $H(K_{t+1}\!\mid K_t,a_t)$ surrogate) |           nat | baseline Markov predictor + margin                              | Prevents “macro depends on micro” failure (Section 2.8).                       |
+| Macro closure defect (e.g. $H(K_{t+1}\!\mid K_t,a_t)$ surrogate) |           nat | baseline Markov predictor + margin                              | Prevents “macro depends on micro” failure ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`).                       |
 | KL-per-update (trust region)                                     |           nat | $\epsilon_{\text{KL}}\approx c/B$                               | Sampling noise scales as $O(1/B)$ for batch size $B$.                          |
 | Code usage gap $\log\lvert\mathcal{K}\rvert-H(K)$                |           nat | $-\log(1-\rho_{\text{dead}})$                                   | Purely architectural.                                                          |
 | Numerical residuals (orthogonality, symmetry)                    | dimensionless | $\approx 10^{-6}$ (float32)                                     | Treat as a numeric floor, not a learnable target.                              |
@@ -686,12 +690,12 @@ A practical, implementable calibration procedure is:
   With $\rho_{\text{dead}}=0.05$, the right-hand side is $\approx 0.051$ nats.
 - **Sampling noise floors.** For per-update KL constraints estimated from batches, a typical noise scale is $O(1/B)$, so a conservative starting tolerance is $\epsilon_{\text{KL}}\approx c/B$ with $c\in[0.5,5]$ depending on variance.
 
-**Safety budgets.** Budgets like $V_{\max}$ are part of the task specification; if $V$ is interpreted as a log-risk surrogate, then requirements on survival probability can be mapped to nats via $-\log p$ (Section 1.2).
+**Safety budgets.** Budgets like $V_{\max}$ are part of the task specification; if $V$ is interpreted as a log-risk surrogate, then requirements on survival probability can be mapped to nats via $-\log p$ ({ref}`Section 1.2 <sec-units-and-dimensional-conventions>`).
 
 (sec-using-scaling-exponents-to-gate-updates-and-tune-step-sizes)=
-#### 3.5.6 Using Scaling Exponents to Gate Updates and Tune Step Sizes
+### Using Scaling Exponents to Gate Updates and Tune Step Sizes
 
-The scaling exponents $(\alpha,\beta,\gamma,\delta)$ (Section 3.2) become actionable when treated as **online diagnostics** driving a simple update scheduler {cite}`konda2000actor`:
+The scaling exponents $(\alpha,\beta,\gamma,\delta)$ ({ref}`Section 3.2 <sec-scaling-exponents-characterizing-the-agent>`) become actionable when treated as **online diagnostics** driving a simple update scheduler {cite}`konda2000actor`:
 - If representation drift $\delta$ is high, freeze downstream learning (policy/critic/world) until the shutter stabilizes.
 - If world-model volatility $\gamma$ is high, avoid policy learning on shifting dynamics (freeze or reduce policy step size).
 - If the policy update scale $\beta$ exceeds critic signal strength $\alpha$ (BarrierTypeII), skip policy updates until the critic recovers.
@@ -715,18 +719,18 @@ elif beta > min(beta_max, alpha):
     lr_critic *= 1.02
 ```
 
-This is not ad-hoc tuning; it is a direct operationalization of the two-time-scale requirement already encoded as BarrierTypeII (Section 4.1.2).
+This is not ad-hoc tuning; it is a direct operationalization of the two-time-scale requirement already encoded as BarrierTypeII ({ref}`Section 4.1 <sec-barrier-implementation-details>`).
 
-:::{note} Neural Unification (Section 26)
+:::{note} Neural Unification ({ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>`)
 :class: seealso
 
-The three adaptive multiplier methods above (Primal–Dual, PID, Learned Precisions) are **special cases** of a more general neural meta-controller. Section 26 introduces the **Universal Governor** $\pi_{\mathfrak{G}}$, which learns a temporal policy over the diagnostic stream $s_t = [C_1(\theta_t), \ldots, C_K(\theta_t)]$ and outputs all hyperparameters $\Lambda_t = (\eta_t, \vec{\lambda}_t, T_{c,t})$ jointly:
+The three adaptive multiplier methods above (Primal–Dual, PID, Learned Precisions) are **special cases** of a more general neural meta-controller. {ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>` introduces the **Universal Governor** $\pi_{\mathfrak{G}}$, which learns a temporal policy over the diagnostic stream $s_t = [C_1(\theta_t), \ldots, C_K(\theta_t)]$ and outputs all hyperparameters $\Lambda_t = (\eta_t, \vec{\lambda}_t, T_{c,t})$ jointly:
 
 - **Primal–Dual (Method A)** = affine policy, memoryless ($H=0$)
 - **PID (Method B)** = linear temporal filter with hand-tuned $(K_p, K_i, K_d)$
 - **Learned Precisions (Method C)** = diagonal covariance, no temporal processing
 
-The Governor subsumes these by learning the appropriate response to each diagnostic signature via bilevel optimization. See Section 26 for stability guarantees via Lyapunov analysis.
+The Governor subsumes these by learning the appropriate response to each diagnostic signature via bilevel optimization. See {ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>` for stability guarantees via Lyapunov analysis.
 :::
 
 

@@ -1,24 +1,24 @@
-## 26. Theory of Meta-Stability: The Universal Governor as Homeostatic Controller
+# Theory of Meta-Stability: The Universal Governor as Homeostatic Controller
 
 {cite}`finn2017maml,franceschi2018bilevel,hospedales2021metalearning`
 
-The Fragile Agent architecture relies on the strict satisfaction of information-theoretic and geometric constraints (The Sieve, Section 3). Manual tuning of the associated Lagrange multipliers is intractable due to the non-stationary coupling between the Representation ($G$), the Dynamics ($S$), and the Value ($V$). We formalize the training process as a dynamical system and introduce the **Universal Governor**, a meta-controller that regulates the learning dynamics. The Governor solves a bilevel optimization problem; convergence is characterized via a training Lyapunov function (Definition {prf:ref}`def-training-lyapunov-function`).
+The Fragile Agent architecture relies on the strict satisfaction of information-theoretic and geometric constraints (The Sieve, {ref}`Section 3 <sec-diagnostics-stability-checks>`). Manual tuning of the associated Lagrange multipliers is intractable due to the non-stationary coupling between the Representation ($G$), the Dynamics ($S$), and the Value ($V$). We formalize the training process as a dynamical system and introduce the **Universal Governor**, a meta-controller that regulates the learning dynamics. The Governor solves a bilevel optimization problem; convergence is characterized via a training Lyapunov function (Definition {prf:ref}`def-training-lyapunov-function`).
 
+(rb-homeostasis)=
 :::{admonition} Researcher Bridge: Automated Homeostasis vs. Hyperparameter Tuning
 :class: tip
-:name: rb-homeostasis
 In standard RL, we spend weeks "grid-searching" for the right entropy coefficient ($\alpha$) or learning rate ($\eta$). The **Universal Governor** replaces this with a **homeostatic control loop**. It treats hyperparameters as a dynamical system that responds in real-time to the Sieve's diagnostic residuals. Instead of a static configuration, you have a meta-controller that "squeezes" the learning dynamics to stay on the stable manifold.
 :::
 
-This section **unifies and extends** the heuristic methods of Section 3.5 (Primal-Dual, PID, Learned Precisions) into a single neural meta-controller framework.
+This section **unifies and extends** the heuristic methods of {ref}`Section 3.5 <sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration>` (Primal-Dual, PID, Learned Precisions) into a single neural meta-controller framework.
 
 (sec-relationship-to-adaptive-multipliers)=
-### 26.1 Relationship to Adaptive Multipliers (Section 3.5)
+## Relationship to Adaptive Multipliers ({ref}`Section 3.5 <sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration>`)
 
-:::{prf:remark} Extending Section 3.5
+:::{prf:remark} Extending {ref}`Section 3.5 <sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration>`
 :label: rem-extending-section
 
-Section 3.5 introduces three methods for adaptive multiplier tuning:
+{ref}`Section 3.5 <sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration>` introduces three methods for adaptive multiplier tuning:
 - **3.5.A (Primal-Dual):** $\lambda_{t+1} = \Pi[\lambda_t + \eta_\lambda (C(\theta_t) - \epsilon)]$ — linear, memoryless
 - **3.5.B (PID):** $\lambda_{t+1} = K_p e_t + K_i \sum e + K_d \Delta e$ — hand-tuned temporal filter
 - **3.5.C (Learned Precisions):** $\lambda_i = \exp(-s_i)$ — diagonal covariance, no temporal structure
@@ -31,11 +31,11 @@ Each method addresses a specific failure mode but lacks generality. The **Univer
 
 Let $\theta_t \in \mathcal{M}_\Theta$ be the agent parameters at training step $t$. The meta-control problem is: find a policy $\pi_{\mathfrak{G}}$ that selects hyperparameters $\Lambda_t$ to minimize task loss while satisfying the Sieve constraints.
 
-**Cross-references:** Section 3.5 (Adaptive Multipliers), Section 3.4 (Joint Optimization).
+**Cross-references:** {ref}`Section 3.5 <sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration>` (Adaptive Multipliers), Section 3.4 (Joint Optimization).
 
 :::
 (sec-formalization-of-learning-dynamics)=
-### 26.2 Formalization of Learning Dynamics
+## Formalization of Learning Dynamics
 
 Let $\mathcal{M}_\Theta$ be the parameter manifold of the agent. The state of the agent at training step $t$ is denoted by $\theta_t \in \mathcal{M}_\Theta$.
 
@@ -55,7 +55,7 @@ Units: $[\theta] = \text{parameter units}$, $[\eta] = \text{step}^{-1}$, $[\nabl
 :::{prf:definition} Constrained Dynamics
 :label: def-constrained-dynamics
 
-The Fragile Agent imposes $K$ constraints $\{C_k(\theta) \leq 0\}_{k=1}^K$ defined by the Sieve (Section 3.1). Each $C_k$ corresponds to a diagnostic node:
+The Fragile Agent imposes $K$ constraints $\{C_k(\theta) \leq 0\}_{k=1}^K$ defined by the Sieve ({ref}`Section 3.1 <sec-theory-thin-interfaces>`). Each $C_k$ corresponds to a diagnostic node:
 
 $$
 C_k(\theta) = \text{Node}_k(\theta) - \epsilon_k,
@@ -72,7 +72,7 @@ $$
 \theta_{t+1} = \theta_t - \eta_t \left( G^{-1}(\theta_t) \nabla \mathcal{L}_{\text{task}}(\theta_t) + \sum_{k=1}^K \lambda_{k,t} \nabla C_k(\theta_t) \right),
 $$
 where:
-- $G(\theta)$ is the parameter-space metric (cf. natural gradient, Section 2.5)
+- $G(\theta)$ is the parameter-space metric (cf. natural gradient, {ref}`Section 2.5 <sec-second-order-sensitivity-value-defines-a-local-metric>`)
 - $\eta_t$ is the adaptive learning rate
 - $\lambda_{k,t} \geq 0$ are the constraint multipliers
 
@@ -80,11 +80,11 @@ Units: $[\lambda_k] = \text{dimensionless}$.
 
 *Remark (Natural Gradient Connection).* The factor $G^{-1}$ applies preconditioning analogous to Fisher Information in natural gradient methods {cite}`amari1998natural`. This ensures updates are measured in information-geometric units rather than Euclidean units.
 
-**Cross-references:** Section 2.5 (State-Space Metric), Section 3.1 (Diagnostic Nodes).
+**Cross-references:** {ref}`Section 2.5 <sec-second-order-sensitivity-value-defines-a-local-metric>` (State-Space Metric), Section 3.1 (Diagnostic Nodes).
 
 :::
 (sec-the-universal-governor)=
-### 26.3 The Universal Governor
+## The Universal Governor
 
 We define the meta-controller that observes diagnostic residuals and outputs control signals.
 
@@ -96,7 +96,7 @@ The Governor observes the **Sieve Residuals** via the constraint evaluation map 
 $$
 s_t = \Psi(\theta_t) = [C_1(\theta_t), \ldots, C_K(\theta_t)]^\top.
 $$
-The components of $s_t$ are the normalized defect functionals corresponding to diagnostic nodes 1–41 (Section 3.1). Positive values indicate constraint violation.
+The components of $s_t$ are the normalized defect functionals corresponding to diagnostic nodes 1–41 ({ref}`Section 3.1 <sec-theory-thin-interfaces>`). Positive values indicate constraint violation.
 
 Units: $[s_t] = \text{nat}$ (for entropy-based nodes) or dimensionless (for normalized defects).
 
@@ -110,7 +110,7 @@ $$
 \Lambda_t = \pi_{\mathfrak{G}}(s_t, s_{t-1}, \ldots, s_{t-H}; \phi),
 $$
 where:
-- $\Lambda_t = (\eta_t, \lambda_{1,t}, \ldots, \lambda_{K,t}, T_{c,t}) \in \mathbb{R}_+^{K+2}$
+- $\Lambda_t = (\eta_t, \lambda_{1,t}, \ldots, \lambda_{K,t}, T_{c,t}) \in \mathbb{R}_+^{K+2}$, where $T_c$ is the cognitive temperature ({prf:ref}`def-cognitive-temperature`)
 - $\phi$ are the learnable parameters of the Governor
 - $H$ is the history horizon (temporal context)
 
@@ -119,10 +119,10 @@ Units: $[\eta_t] = \text{step}^{-1}$, $[\lambda_{k,t}] = \text{dimensionless}$, 
 *Remark (Temporal Processing).* The Governor processes a window of $H$ diagnostic snapshots. This enables detection of first and second differences $\Delta s_t$, $\Delta^2 s_t$, which are required for PID-like control (Proposition {prf:ref}`prop-subsumption-of-section`).
 
 :::
-:::{prf:proposition} Subsumption of Section 3.5
+:::{prf:proposition} Subsumption of {ref}`Section 3.5 <sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration>`
 :label: prop-subsumption-of-section
 
-The methods of Section 3.5 are recovered as special cases of $\pi_{\mathfrak{G}}$:
+The methods of {ref}`Section 3.5 <sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration>` are recovered as special cases of $\pi_{\mathfrak{G}}$:
 
 | Method                     | Governor Instantiation                                                       |
 |----------------------------|------------------------------------------------------------------------------|
@@ -134,7 +134,7 @@ The methods of Section 3.5 are recovered as special cases of $\pi_{\mathfrak{G}}
 
 :::
 (sec-bilevel-optimization-objective)=
-### 26.4 Bilevel Optimization Objective
+## Bilevel Optimization Objective
 
 The Governor is trained to solve a bilevel optimization problem {cite}`franceschi2018bilevel`.
 
@@ -174,11 +174,11 @@ The inner problem (agent learning) depends on the outer variables (Governor para
 
 *Remark (Gradient Computation).* Computing $\nabla_\phi J$ requires differentiating through the entire training trajectory. In practice, we use truncated backpropagation through time or evolutionary strategies.
 
-**Cross-references:** Section 3.4 (Joint Optimization).
+**Cross-references:** {ref}`Section 3.4 <sec-joint-optimization>` (Joint Optimization).
 
 :::
 (sec-stability-analysis-via-lyapunov-functions)=
-### 26.5 Stability Analysis via Lyapunov Functions
+## Stability Analysis via Lyapunov Functions
 
 We establish convergence guarantees using Lyapunov stability theory {cite}`khalil2002nonlinear,lasalle1960invariance`.
 
@@ -217,7 +217,7 @@ At any non-stationary point $\theta$ where LICQ holds (the gradients $\{\nabla C
 
 *Proof.* At a non-KKT point, either (i) the unconstrained gradient $-\nabla \mathcal{L}_{\text{task}}$ points into the feasible region, giving descent, or (ii) some constraint is active with $\nabla C_k \neq 0$. Under LICQ, we can solve for $\lambda_k$ such that the projected gradient onto the feasible tangent cone is non-zero {cite}`nocedal2006numerical`. Taking $\eta$ sufficiently small ensures descent. $\square$
 
-**Cross-references:** Section 2.3 (Lyapunov-Constrained Control).
+**Cross-references:** {ref}`Section 2.3 <sec-the-bridge-rl-as-lyapunov-constrained-control>` (Lyapunov-Constrained Control).
 
 :::
 :::{prf:corollary} The Varentropy Brake (Annealing Safety Margin)
@@ -242,9 +242,9 @@ where $\eta, \gamma > 0$ are constants.
 
 :::
 
+(pi-lyapunov)=
 ::::{admonition} Physics Isomorphism: Lyapunov Stability
 :class: note
-:name: pi-lyapunov
 
 **In Physics:** A Lyapunov function $V(x)$ certifies stability if $V > 0$ away from equilibrium and $\dot{V} \leq 0$ along trajectories. For $\dot{V} \leq -\lambda V$, convergence is exponential {cite}`khalil2002nonlinear,lasalle1961stability`.
 
@@ -268,7 +268,9 @@ with $\Delta\mathcal{L}_{\text{Lyap}} < 0$ along gradient flow.
 **Diagnostic:** StabilityCheck monitors $\Delta\mathcal{L}_{\text{Lyap}}/\mathcal{L}_{\text{Lyap}}$.
 ::::
 
-::::{note} Connection to RL #23: MAML as Degenerate Meta-Stability
+::::{admonition} Connection to RL #23: MAML as Degenerate Meta-Stability
+:class: note
+:name: conn-rl-23
 **The General Law (Fragile Agent):**
 The **Universal Governor** solves bilevel optimization over Sieve diagnostics:
 
@@ -295,7 +297,7 @@ This recovers **MAML** {cite}`finn2017maml` and **Meta-RL** {cite}`hospedales202
 ::::
 
 (sec-transfer-via-geometric-invariance)=
-### 26.6 Transfer via Geometric Invariance
+## Transfer via Geometric Invariance
 
 :::{prf:proposition} Structure of Diagnostic Inputs
 :label: prop-structure-of-diagnostic-inputs
@@ -355,7 +357,7 @@ All outputs are either dimensionless (multipliers $\lambda_k$) or have standard 
 
 :::
 (sec-meta-training-protocol-canonical-obstruction-suite)=
-### 26.7 Meta-Training Protocol: Canonical Obstruction Suite
+## Meta-Training Protocol: Canonical Obstruction Suite
 
 To train the Governor $\phi$, we do not use real task data. We use a set of **Canonical Topological Obstructions**.
 
@@ -376,7 +378,7 @@ A distribution of synthetic optimization landscapes $\{\mathcal{L}_{\text{syn}}^
 
 :::
 (sec-implementation-the-neural-governor-module)=
-### 26.8 Implementation: The Neural Governor Module
+## Implementation: The Neural Governor Module
 
 We provide the implementation of the meta-controller. Note the use of bounded activations to ensure control signals remain in the admissible set $\Lambda_{\text{adm}}$.
 
@@ -389,7 +391,7 @@ class UniversalGovernor(nn.Module):
     """
     Implements the meta-policy π_𝔊: s_{t:t-H} → Λ_t.
 
-    Subsumes Section 3.5 methods as special cases:
+    Subsumes {ref}`Section 3.5 <sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration>` methods as special cases:
     - Primal-Dual: H=1, linear layers, no hidden state
     - PID: H≥2, linear layers with fixed weights
     - Learned Precisions: H=0, diagonal output
@@ -491,7 +493,7 @@ class UniversalGovernor(nn.Module):
 *Remark (Gradient Clipping).* In practice, we apply gradient clipping to the Governor's outputs to prevent extreme control signals during early training.
 
 (sec-summary-and-diagnostic-node-a)=
-### 26.9 Summary and Diagnostic Node
+## Summary and Diagnostic Node
 
 **Table 26.9.1 (Summary of Meta-Stability Theory).**
 
@@ -506,7 +508,7 @@ class UniversalGovernor(nn.Module):
 (node-42)=
 **Node 42: GovernorStabilityCheck**
 
-Following the diagnostic node convention (Section 3.1), we define:
+Following the diagnostic node convention ({ref}`Section 3.1 <sec-theory-thin-interfaces>`), we define:
 
 | **#**  | **Name**                   | **Component**       | **Type**              | **Interpretation**                   | **Proxy**                                                                               | **Cost** |
 |--------|----------------------------|---------------------|-----------------------|--------------------------------------|-----------------------------------------------------------------------------------------|----------|
@@ -517,7 +519,7 @@ Following the diagnostic node convention (Section 3.1), we define:
 - Remedy: Reduce learning rate; increase constraint penalties $\mu_k$; check for conflicting gradients.
 - Persistent positive: Governor policy $\phi$ may need retraining on expanded Obstruction Suite.
 
-**Cross-references:** Section 3 (Sieve Diagnostic Nodes), Section 3.5 (Adaptive Multipliers), Section 2.3 (Lyapunov-Constrained Control).
+**Cross-references:** {ref}`Section 3 <sec-diagnostics-stability-checks>` (Sieve Diagnostic Nodes), {ref}`Section 3.5 <sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration>` (Adaptive Multipliers), Section 2.3 (Lyapunov-Constrained Control).
 
 
 

@@ -1,14 +1,14 @@
-## 21. Radial Generation: Entropic Drift and Policy Control
+# Radial Generation: Entropic Drift and Policy Control
 
 {cite}`ho2020ddpm,sohldickstein2015deep,nickel2017poincare`
 
+(rb-diffusion-generation)=
 :::{admonition} Researcher Bridge: Diffusion-Style Generation with Policy Drift
 :class: info
-:name: rb-diffusion-generation
 If you know diffusion or score-based models, the radial expansion here is the generative flow. The policy is the controllable drift term that steers generation toward high-value regions.
 :::
 
-Data generation is defined as **radial expansion** of the latent state from the low-entropy origin ($z=0$) toward the high-entropy boundary ($|z| \to 1$). The expansion is driven by the **entropic drift** (the natural tendency of hyperbolic volume to grow) and steered by the **policy control field** $u_\pi$.
+Data generation is defined as **radial expansion** of the latent state from the low-entropy origin ($z=0$) toward the high-entropy boundary ($|z| \to 1$). This boundary corresponds to the agent's {prf:ref}`def-boundary-markov-blanket`. The expansion is driven by the **entropic drift** (the natural tendency of {prf:ref}`def-hyperbolic-volume-growth` to increase) and steered by the **policy control field** $u_\pi$.
 
 This section establishes the following unification: by identifying the **policy** as the source of initial direction selection, we merge Generative Modeling and Reinforcement Learning into a single variational operation:
 - **RL:** The policy chooses a direction to maximize value $V(z)$.
@@ -16,7 +16,7 @@ This section establishes the following unification: by identifying the **policy*
 - Both contribute to the drift term in the latent SDE.
 
 (sec-hyperbolic-volume-and-entropic-drift)=
-### 21.1 Hyperbolic Volume and Entropic Drift
+## Hyperbolic Volume and Entropic Drift
 
 Consider the latent agent as a particle in the Poincare disk $\mathbb{D} = \{z \in \mathbb{C} : |z| < 1\}$. The number of distinguishable microstates (volume) grows exponentially with radius $r$.
 
@@ -99,13 +99,13 @@ The **entropic drift** (negative gradient) pushes radially outward:
 $$
 -\nabla_G U(z) = \frac{(1-|z|^2)}{2} z.
 $$
-*Remark (Connection to Section 7.11).* The Poincare coordinate $z$ relates to depth via $\rho = d_{\mathbb{D}}(0, z) = 2\operatorname{artanh}(|z|)$. Chart transitions are handled by the WFR jump process (Section 22.2).
+*Remark (Connection to {ref}`Section 7.11 <sec-the-geometry-of-the-latent-space-a-hyperbolic-hierarchy>`).* The Poincare coordinate $z$ relates to depth via $\rho = d_{\mathbb{D}}(0, z) = 2\operatorname{artanh}(|z|)$. Chart transitions are handled by the WFR jump process ({ref}`Section 22.2 <sec-the-coupled-jump-diffusion-sde>`), governed by the {prf:ref}`def-the-wfr-action`.
 
 **Cross-references:** Definition {prf:ref}`def-information-density-and-bulk-information-volume`, Theorem {prf:ref}`thm-capacity-constrained-metric-law`.
 
 :::
 (sec-policy-control-field)=
-### 21.2 Policy Control Field
+## Policy Control Field
 
 At the origin ($z=0$), the system has full rotational symmetry $SO(D)$. To generate specific content (or solve a task), this symmetry must be broken. The **policy** provides the initial direction via the control field $u_\pi$.
 
@@ -132,7 +132,7 @@ This vector field represents the **Information Preference** of the agent (or the
 
 Units: $[u_\pi] = [z]/\tau$.
 
-*Remark (Context-Conditioning).* Section 23.6 generalizes this to **context-conditioned policies** $\pi(a|z,c)$ where the context $c \in \mathcal{C}$ unifies: RL action spaces, classification label spaces, and LLM prompt spaces. The control field becomes $u_\pi(z,c) = G^{-1}(z) \cdot \nabla_z \Phi_{\text{eff}}(z,K,c)$ where the effective potential depends on task context.
+*Remark (Context-Conditioning).* {ref}`Section 23.6 <sec-relationship-to-the-context-conditioned-framework>` generalizes this to **context-conditioned policies** $\pi(a|z,c)$ where the context $c \in \mathcal{C}$ unifies: RL action spaces, classification label spaces, and LLM prompt spaces. The control field becomes $u_\pi(z,c) = G^{-1}(z) \cdot \nabla_z \Phi_{\text{eff}}(z,K,c)$ where the {prf:ref}`def-effective-potential` depends on task context.
 
 :::
 :::{prf:definition} Control Field at Origin
@@ -168,13 +168,13 @@ Near the origin, the combined dynamics exhibit a **supercritical pitchfork bifur
 $$
 \dot{r} = \mu r - r^3 + \sigma \xi
 $$
-where $r = |z|$, $\mu = 1$ (unstable fixed point), and $\sigma = \sqrt{2T_c}$ is the noise amplitude.
+where $r = |z|$, $\mu = 1$ (unstable fixed point), and $\sigma = \sqrt{2T_c}$ is the noise amplitude (see {prf:ref}`def-cognitive-temperature`).
 
 **Phase Transition:**
 - **Symmetric phase** ($T_c$ large): Random walk near origin, symmetry preserved
 - **Broken phase** ($T_c$ small): Deterministic flow to boundary along selected direction
 
-*Proof sketch (Bifurcation derivation).* Near the origin, the Langevin dynamics (from Section 22.2) in radial coordinate $r = |z|$ becomes:
+*Proof sketch (Bifurcation derivation).* Near the origin, the Langevin dynamics (from {ref}`Section 22.2 <sec-the-coupled-jump-diffusion-sde>`) in radial coordinate $r = |z|$ becomes:
 
 $$
 dr = \left(\frac{1-r^2}{2} + u_\pi^r\right) d\tau + \sqrt{T_c(1-r^2)} dW_\tau
@@ -195,9 +195,9 @@ For $T_c > T_c^*$: symmetric phase; for $T_c < T_c^*$: broken phase with directi
 
 :::
 
+(pi-symmetry-breaking)=
 ::::{admonition} Physics Isomorphism: Spontaneous Symmetry Breaking
 :class: note
-:name: pi-symmetry-breaking
 
 **In Physics:** Spontaneous symmetry breaking occurs when a system's ground state has lower symmetry than its Hamiltonian. The classic example is the Mexican hat potential $V(\phi) = -\mu^2|\phi|^2 + \lambda|\phi|^4$: for $\mu^2 > 0$, the $U(1)$-symmetric origin becomes unstable and the system selects a direction {cite}`goldstone1961field,weinberg1996qft`.
 
@@ -278,11 +278,13 @@ def compute_control_field(
     return u_pi
 ```
 
-**Cross-references:** Section 2.7 (HJB Correspondence), Section 14.2 (MaxEnt control equivalence).
+**Cross-references:** {ref}`Section 2.7 <sec-the-hjb-correspondence>` (HJB Correspondence), Section 14.2 (MaxEnt control equivalence).
 
 :::
 
-::::{note} Connection to RL #24: Diffusion Policies as Degenerate Radial Generation
+::::{admonition} Connection to RL #24: Diffusion Policies as Degenerate Radial Generation
+:class: note
+:name: conn-rl-24
 **The General Law (Fragile Agent):**
 Data generation is **radial expansion** from the vacuum (origin) to the boundary:
 
@@ -309,11 +311,11 @@ This recovers **Diffusion Models** {cite}`ho2020ddpm` and **Diffusion Policies**
 ::::
 
 (sec-bulk-boundary-independence)=
-### 21.3 Bulk-Boundary Independence
+## Bulk-Boundary Independence
 
 We strictly enforce the separation of **Planning** (interior $\text{int}(\mathcal{Z})$) and **Observation** (boundary $\partial\mathcal{Z}$). This is formalized as a partition condition.
 
-*Remark (Motor Extension).* The independence constraint applies equally to the **motor/action boundary**: motor texture $z_{\text{tex,motor}}$ (tremor, fine motor noise) is sampled at the output interface and does not participate in planning. Section 23.3 formalizes the motor texture distribution $z_{\text{tex,motor}} \sim \mathcal{N}(0, \sigma_{\text{motor}}^2 G^{-1}(z))$ with the same conformal scaling as visual texture. Theorem {prf:ref}`ax-motor-texture-firewall` establishes the duality: $\Sigma_{\text{motor}} = \omega \cdot \Sigma_{\text{visual}} \cdot \omega^{-1}$.
+*Remark (Motor Extension).* The independence constraint applies equally to the **motor/action boundary**: motor texture $z_{\text{tex,motor}}$ (tremor, fine motor noise) is sampled at the output interface and does not participate in planning. {ref}`Section 23.3 <sec-motor-texture-the-action-residual>` formalizes the motor texture distribution $z_{\text{tex,motor}} \sim \mathcal{N}(0, \sigma_{\text{motor}}^2 G^{-1}(z))$ with the same conformal scaling as visual texture. Theorem {prf:ref}`ax-motor-texture-firewall` establishes the duality: $\Sigma_{\text{motor}} = \omega \cdot \Sigma_{\text{visual}} \cdot \omega^{-1}$.
 
 :::{prf:axiom} Bulk-Boundary Decoupling
 :label: ax-bulk-boundary-decoupling
@@ -436,7 +438,7 @@ def sample_boundary_texture(
 
 :::
 (sec-summary-and-diagnostic-node)=
-### 21.4 Summary and Diagnostic Node
+## Summary and Diagnostic Node
 
 **Summary of Radial Generation:**
 
@@ -460,7 +462,7 @@ def sample_boundary_texture(
 - Low RadialGenCheck: Generation terminated too early (insufficient specificity).
 - Remedy: Increase $\tau_{\text{max}}$ or decrease $R_{\text{cutoff}}$.
 
-**Cross-references:** Section 2.2b (VQ-VAE texture channel), Section 7.10 (TopologicalDecoder), Section 18 (Capacity constraints).
+**Cross-references:** {ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>` (VQ-VAE texture channel), {ref}`Section 7.10 <sec-decoder-architecture-overview-topological-decoder>` (TopologicalDecoder), {ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>` (Capacity constraints).
 
 
 

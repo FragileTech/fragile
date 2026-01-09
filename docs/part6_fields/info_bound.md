@@ -1,16 +1,16 @@
-## 33. The Causal Information Bound
+# The Causal Information Bound
 
 *Abstract.* We derive a fundamental limit on representational capacity: the maximum information an agent can stably represent is bounded by the area of its interface, measured in units of a characteristic length scale we call the **Levin Length**. This bound follows from the capacity-constrained metric law ({ref}`Section 18.2 <sec-main-result>`) and has a striking consequence: as the agent approaches this limit, its internal update rate slows to zero—a phenomenon we call **Causal Stasis**. This section provides the rigorous derivation (with full proofs in {ref}`Appendix A.6 <sec-appendix-a-area-law>`) and defines Diagnostic Node 56 to monitor proximity to this bound.
 
+(rb-sensor-bandwidth)=
 :::{admonition} Researcher Bridge: The Sensor Bandwidth Ceiling
 :class: important
-:name: rb-sensor-bandwidth
 You cannot represent more information than your sensors can ground. This section provides the hard limit for **Model Overload**. We derive an "Area Law" which proves that if an agent tries to store more "bits" than its interface area allows, its internal update speed (gradients) will vanish. We call this **Causal Stasis**. It is the geometric explanation for why models "die" or stop learning when they are over-parameterized relative to their data source.
 :::
 
+(pi-bekenstein-bound)=
 ::::{admonition} Physics Isomorphism: Bekenstein-Hawking Entropy Bound
 :class: note
-:name: pi-bekenstein-bound
 
 **In Physics:** The Bekenstein-Hawking entropy of a black hole is $S_{BH} = A/(4\ell_P^2)$ where $A$ is horizon area and $\ell_P$ is the Planck length. Information inside a region cannot exceed its boundary area in Planck units {cite}`bekenstein1973black,hawking1975particle`.
 
@@ -39,7 +39,7 @@ where $\ell_L$ is the Levin length (Definition {prf:ref}`def-levin-length`) and 
 
 
 (sec-holographic-coefficient)=
-### 33.0 The Holographic Coefficient
+## The Holographic Coefficient
 
 Before defining the Levin Length, we establish the dimension-dependent coefficient that governs holographic capacity.
 
@@ -74,7 +74,7 @@ where $\Omega_{D-1} = \frac{2\pi^{D/2}}{\Gamma(D/2)}$ is the surface area of the
 
 
 (sec-levin-length)=
-### 33.1 The Levin Length
+## The Levin Length
 
 We define a characteristic length scale that represents the minimal resolvable distinction in the latent manifold—the information-theoretic floor of the agent's representational capacity.
 
@@ -97,7 +97,7 @@ Units: $[\ell_L] = [z]$ (latent coordinate length).
 
 
 (sec-saturation-limit)=
-### 33.2 The Saturation Limit
+## The Saturation Limit
 
 We characterize the regime where the agent's representational capacity is fully utilized.
 
@@ -125,7 +125,7 @@ where $\mu(r) := \frac{\kappa}{n-2} \int_0^r \sigma_{\max} r'^{n-1} dr'$ is the 
 
 *Remark ($n=2$ case).* For $n=2$ (the Poincare disk), the $(n-2)$ factor vanishes and the solution requires separate treatment. The Poincare metric $G_{ij} = 4\delta_{ij}/(1-|z|^2)^2$ is the correctly regularized saturation geometry, with the horizon at $|z|=1$.
 
-*Proof sketch.* Substitute the uniform density into the Metric Law. The spherically symmetric solution follows from standard analysis of Einstein-like field equations {cite}`wald1984general`. Full derivation in Appendix A.6. $\square$
+*Proof sketch.* Substitute the uniform density into the Metric Law. The spherically symmetric solution follows from standard analysis of Einstein-like field equations {cite}`wald1984general`. Full derivation in {ref}`Appendix A.6 <sec-appendix-a-full-derivations>`. $\square$
 
 *Critical observation.* The metric component $A(r)$ diverges at the horizon radius $r_h$ satisfying:
 
@@ -139,7 +139,7 @@ At this radius, $G_{rr} \to \infty$ and consequently $G^{rr} \to 0$.
 
 
 (sec-area-law-derivation)=
-### 33.3 Derivation of the Area Law
+## Derivation of the Area Law
 
 We now derive the fundamental bound on representational capacity.
 
@@ -191,7 +191,7 @@ There is no third option. Adding internal parameters without expanding the inter
 
 
 (sec-causal-stasis)=
-### 33.4 Causal Stasis
+## Causal Stasis
 
 We derive the consequence of approaching the information bound: the agent's internal dynamics freeze.
 
@@ -203,7 +203,7 @@ Let $v^k = dz^k/ds$ be the velocity of the agent's belief update in computation 
 $$
 \|v\|_G \to 0.
 $$
-*Proof.* From the Equation of Motion (Definition {prf:ref}`def-bulk-drift-continuous-flow`):
+*Proof.* From the Equation of Motion (Definition {prf:ref}`def-bulk-drift-continuous-flow`) with effective potential $\Phi_{\text{eff}}$ ({prf:ref}`def-effective-potential`):
 
 $$
 dz^k = \left( -G^{kj}\partial_j \Phi_{\text{eff}} + u_\pi^k - \Gamma^k_{ij}\dot{z}^i\dot{z}^j \right) ds + \sqrt{2T_c}(G^{-1/2})^{kj} dW^j_s.
@@ -241,7 +241,7 @@ $$
 
 
 (sec-diagnostic-node-56)=
-### 33.5 Diagnostic Node 56: CapacityHorizonCheck
+## Diagnostic Node 56: CapacityHorizonCheck
 
 Following the diagnostic node convention ({ref}`Section 3.1 <sec-diagnostics-stability-checks>`), we define a monitor for proximity to the Causal Information Bound.
 
@@ -273,7 +273,7 @@ where:
 - $0.9 \le \eta_{\text{Sch}} < 0.99$: **Warning.** Update velocity degraded (Corollary {prf:ref}`cor-saturation-velocity-tradeoff`). Prepare for ontological intervention.
 - $\eta_{\text{Sch}} \ge 0.99$: **Critical.** Causal Stasis imminent. Halt exploration and trigger emergency fusion.
 
-*Cross-reference:* Complements CapacitySaturationCheck (Node 40, Section 18.3) by providing the velocity-degradation interpretation and connecting to ontological remediation.
+*Cross-reference:* Complements CapacitySaturationCheck (Node 40, {ref}`Section 18.3 <sec-diagnostic-node-capacity-saturation>`) by providing the velocity-degradation interpretation and connecting to ontological remediation.
 :::
 
 **Trigger Conditions:**
@@ -297,7 +297,7 @@ where $|\mathcal{K}|$ is the number of active charts, $\bar{H}(z_n | K)$ is the 
 
 
 (sec-summary-geometry-bounded-intelligence)=
-### 33.6 Summary: The Geometry of Bounded Intelligence
+## Summary: The Geometry of Bounded Intelligence
 
 **Table 33.6.1 (Causal Information Bound Summary).**
 
@@ -332,7 +332,7 @@ where $|\mathcal{K}|$ is the number of active charts, $\bar{H}(z_n | K)$ is the 
 This section provides a consolidated reference for the key symbols introduced across Sections 17-32.
 
 (sec-core-symbols)=
-### Core Symbols (Sections 17-32)
+## Core Symbols (Sections 17-32)
 
 | Symbol                         | Name                            | Definition                                                                                                         | Units             | Section        |
 |--------------------------------|---------------------------------|--------------------------------------------------------------------------------------------------------------------|-------------------|----------------|
@@ -410,7 +410,7 @@ This section provides a consolidated reference for the key symbols introduced ac
 | $r_h$                          | Horizon radius                  | Critical radius where $G_{rr} \to \infty$                                                                          | $[z]$             | 33.2           |
 
 (sec-boundary-conditions)=
-### Boundary Conditions (Section 23)
+## Boundary Conditions ({ref}`Section 23 <sec-the-boundary-interface-symplectic-structure>`)
 
 | Type      | Symbol                                               | Interpretation              | Physics             |
 |-----------|------------------------------------------------------|-----------------------------|---------------------|
@@ -419,68 +419,68 @@ This section provides a consolidated reference for the key symbols introduced ac
 | Source    | $J_r$                                                | Reward flux on boundary     | Reward signal       |
 
 (sec-cross-section-connectivity-map)=
-### Cross-Section Connectivity Map (Sections 17-32)
+## Cross-Section Connectivity Map (Sections 17-32)
 
 ```
-Section 17 (Summary)
+{ref}`Section 17 <sec-summary-unified-information-theoretic-control-view>` (Summary)
      |
      v
-Section 18 (Capacity Law) ─────────────────────────────────────────┐
+{ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>` (Capacity Law) ─────────────────────────────────────────┐
      |                                                              |
      | $\rho_I$, $C_\partial$, $T_{ij}$                            |
      v                                                              |
-Section 19 (Conclusion) ←───────────────────────────────────────┐  |
+{ref}`Section 19 <sec-conclusion>` (Conclusion) ←───────────────────────────────────────┐  |
      |                                                           |  |
      v                                                           |  |
-Section 20 (WFR Geometry) ──────────────────────────────────┐   |  |
+{ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>` (WFR Geometry) ──────────────────────────────────┐   |  |
      |                                                       |   |  |
      | $\lambda$, $(v, r)$, WFR metric                       |   |  |
      v                                                       |   |  |
-Section 21 (Holographic Generation {cite}`thooft1993holographic,susskind1995world`) ────────────────┐       |   |  |
+{ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>` (Holographic Generation {cite}`thooft1993holographic,susskind1995world`) ────────────────┐       |   |  |
      |                                               |       |   |  |
      | $U(z)$, $u_\pi$, SO(D) breaking              |       |   |  |
      v                                               v       v   |  |
-Section 22 (Equations of Motion) ←──────────────────┴───────┴───┘  |
+{ref}`Section 22 <sec-the-equations-of-motion-geodesic-jump-diffusion>` (Equations of Motion) ←──────────────────┴───────┴───┘  |
      |                                                              |
      | $\Phi_{\text{eff}}$, geodesic SDE, BAOAB                    |
      v                                                              |
-Section 23 (Holographic Interface) ←────────────────────────────────┤
+{ref}`Section 23 <sec-the-boundary-interface-symplectic-structure>` (Holographic Interface) ←────────────────────────────────┤
      |                                                              |
      | Symplectic structure, Legendre transform, $(q, p)$          |
      v                                                              |
-Section 24 (Scalar Field) ←─────────────────────────────────────────┘
+{ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>` (Scalar Field) ←─────────────────────────────────────────┘
      |
      | $V$ as Helmholtz solution, conformal coupling $\Omega$
      v
-Section 25 (Supervised Topology)
+{ref}`Section 25 <sec-supervised-topology-semantic-potentials-and-metric-segmentation>` (Supervised Topology)
      |
      | Classification as geodesic relaxation
      v
-Section 26 (Meta-Stability) ←─────────────────────── Section 3.5
+{ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>` (Meta-Stability) ←─────────────────────── {ref}`Section 3.5 <sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration>`
      |                                               (Adaptive Multipliers)
      | $\pi_{\mathfrak{G}}$, $V_{\mathfrak{L}}$, bilevel optimization
      v
-Section 27 (Non-Local Memory) ←──────────────────── Section 20, 22, 24
+{ref}`Section 27 <sec-section-non-local-memory-as-self-interaction-functional>` (Non-Local Memory) ←──────────────────── {ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`, 22, 24
      |                                               (WFR, EoM, Scalar Field)
      | $\Xi_T$, $H_\tau$, $\Psi_{\text{mem}}$, $\Omega_{\text{mem}}$
      v
-Section 28 (Hyperbolic Retrieval) ←────────────────── Section 21 (Poincare metric)
-     |                                               Section 27 (Memory potential)
+{ref}`Section 28 <sec-section-hyperbolic-active-retrieval-geodesic-search-and-semantic-pull-back>` (Hyperbolic Retrieval) ←────────────────── {ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>` (Poincare metric)
+     |                                               {ref}`Section 27 <sec-section-non-local-memory-as-self-interaction-functional>` (Memory potential)
      | $\Phi_{\text{ret}}$, Geodesic search, WFR sources
      v
-Section 29 (Multi-Agent SMFT) ←──────────────────── Section 18, 21, 23
+{ref}`Section 29 <sec-symplectic-multi-agent-field-theory>` (Multi-Agent SMFT) ←──────────────────── {ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>`, 21, 23
      |                                               (Metric, Symplectic, Capacity)
      | $\mathcal{G}_{ij}$, Strategic potential, Nash equilibrium
      v
-Section 30 (Ontological Expansion) ←───────────────── Section 21 (Pitchfork bifurcation)
-     |                                               Section 7.8 (Attentive Atlas)
-     | $\Xi$, $\emptyset$, Query Fission, Ricci flow   Section 18.2 (Metric law)
+{ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>` (Ontological Expansion) ←───────────────── {ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>` (Pitchfork bifurcation)
+     |                                               {ref}`Section 7.8 <sec-tier-the-attentive-atlas>` (Attentive Atlas)
+     | $\Xi$, $\emptyset$, Query Fission, Ricci flow   {ref}`Section 18.2 <sec-main-result>` (Metric law)
      v
 Appendices (Derivations, Units, WFR Tensor)
 ```
 
 (sec-diagnostic-node-registry)=
-### Diagnostic Node Registry (Complete)
+## Diagnostic Node Registry (Complete)
 
 | #  | Name                                              | Section | Key Formula                                                                                                      |
 |----|---------------------------------------------------|---------|------------------------------------------------------------------------------------------------------------------|
@@ -524,7 +524,7 @@ Appendices (Derivations, Units, WFR Tensor)
 | 38 | [ConformalBackReactionCheck](#node-38)            | 24.7    | $\text{Var}(\Omega)$                                                                                             |
 | 39 | [ValueMassCorrelationCheck](#node-39)             | 24.7    | $\text{corr}(m_t, V(z_t))$                                                                                       |
 | 40 | [CapacitySaturationCheck](#node-40)               | 18.3    | $I_{\text{bulk}}/C_\partial$                                                                                     |
-| 41 | [SupervisedTopologyChecks](#node-41)              | 25.4    | (See Section 25.4)                                                                                               |
+| 41 | [SupervisedTopologyChecks](#node-41)              | 25.4    | (See {ref}`Section 25.4 <sec-the-supervised-topology-loss>`)                                                                                               |
 | 42 | [GovernorStabilityCheck](#node-42)                | 26.9    | $\Delta V_{\mathfrak{L}} = V_{\mathfrak{L}}(\theta_{t+1}) - V_{\mathfrak{L}}(\theta_t)$                          |
 | 43 | [MemoryBalanceCheck](#node-43)                    | 27.5    | $\Omega_{\text{mem}} = \lVert\nabla_G\Psi_{\text{mem}}\rVert_G / \lVert\nabla_G\Phi_{\text{eff}}\rVert_G$        |
 | 44 | [HyperbolicAlignmentCheck](#node-44)              | 28.6    | $\Delta_{\text{align}} := \mathbb{E}[\lVert d_{\mathbb{D}}^{\text{int}} - d_{\mathbb{D}}^{\text{ext}}\rVert]$    |

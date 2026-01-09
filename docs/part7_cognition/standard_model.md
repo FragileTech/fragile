@@ -1,23 +1,23 @@
 (sec-standard-model-cognition)=
-## 34. The Standard Model of Cognition: Gauge-Theoretic Formulation
+# The Standard Model of Cognition: Gauge-Theoretic Formulation
 
 *Abstract.* This chapter demonstrates that the internal symmetry group $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ emerges necessarily from the cybernetic constraints of a bounded, distributed, reward-seeking agent. The **Feature Dimension** $N_f$ is determined by the agent's environment; the physics Standard Model corresponds to the special case $N_f = 3$. Each factor is derived from redundancies in the agent's description that leave physical observables invariant. The proofs rely explicitly on prior definitions from the WFR framework ({ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`), the Belief Wave-Function ({ref}`Section 29.21 <sec-the-belief-wave-function-schrodinger-representation>`), the Boundary Interface ({ref}`Section 23 <sec-the-boundary-interface-symplectic-structure>`), and the Ontological Fission dynamics ({ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>`).
 
 *Cross-references:* This chapter synthesizes:
-- Section 29.21–29.27 (Quantum Layer: Belief Wave-Function, Schrödinger Representation)
-- Section 23 (Holographic Interface: Dirichlet/Neumann Boundary Conditions)
-- Section 30 (Ontological Expansion: Pitchfork Bifurcation, Chart Fission)
-- Section 18 (Capacity-Constrained Metric Law)
-- Section 24 (Helmholtz Equation, Value Field)
+- {ref}`Section 29.21 <sec-the-belief-wave-function-schrodinger-representation>`–29.27 (Quantum Layer: Belief Wave-Function, Schrödinger Representation)
+- {ref}`Section 23 <sec-the-boundary-interface-symplectic-structure>` (Holographic Interface: Dirichlet/Neumann Boundary Conditions)
+- {ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>` (Ontological Expansion: Pitchfork Bifurcation, Chart Fission)
+- {ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>` (Capacity-Constrained Metric Law)
+- {ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>` (Helmholtz Equation, Value Field)
 
 
 
 (sec-gauge-principle-derivation)=
-### 34.1 The Gauge Principle: Derivation of the Symmetry Group $G_{\text{Fragile}}$
+## The Gauge Principle: Derivation of the Symmetry Group $G_{\text{Fragile}}$
 
 We derive the internal symmetry group by identifying redundancies in the agent's description that leave physical observables (Actions and Rewards) invariant. By Noether's Second Theorem, gauging these symmetries necessitates compensating force fields.
 
-#### A. $U(1)_Y$: The Hypercharge of Utility
+### A. $U(1)_Y$: The Hypercharge of Utility
 
 The fundamental observable in Reinforcement Learning is the **Preference**, defined by the gradient of the Value function, not its absolute magnitude.
 
@@ -120,14 +120,14 @@ $\square$
 
 
 
-#### B. $SU(2)_L$: The Chirality of Agency (Weak Isospin)
+### B. $SU(2)_L$: The Chirality of Agency (Weak Isospin)
 
 We derive the non-Abelian $SU(2)$ symmetry from the fundamental asymmetry of the Cybernetic Loop: the distinction between **Perception** (Information Inflow) and **Actuation** (Information Outflow).
 
 :::{prf:axiom} Cybernetic Parity Violation
 :label: ax-cybernetic-parity-violation
 
-The agent's interaction with the environment is **Chiral**, as established by the boundary condition asymmetry in Section 23:
+The agent's interaction with the environment is **Chiral**, as established by the boundary condition asymmetry in {ref}`Section 23 <sec-the-boundary-interface-symplectic-structure>`:
 
 1. **Sensors (Dirichlet Boundary, Definition {prf:ref}`def-dirichlet-boundary-condition-sensors`):** The internal state $\psi$ is *updated* by boundary data. The boundary clamps the field value: $\phi|_{\partial\mathcal{Z}} = \phi_D$.
 
@@ -158,7 +158,7 @@ $$
 
 representing the settled **Posterior/Action** plan ready for execution.
 
-*Cross-reference:* This decomposition mirrors Section 12's Belief Dynamics (Prediction-Update-Projection) and the Kalman filtering structure.
+*Cross-reference:* This decomposition mirrors {ref}`Section 12 <sec-belief-dynamics-prediction-update-projection>`'s Belief Dynamics (Prediction-Update-Projection) and the Kalman filtering structure.
 
 :::
 
@@ -195,7 +195,7 @@ to maintain covariance.
 
 **Identification:**
 - The $W^\pm_\mu = (W^1_\mu \mp iW^2_\mu)/\sqrt{2}$ bosons mediate transitions between $\psi_{\text{pred}}$ and $\psi_{\text{obs}}$. These correspond to belief updates where prediction and observation exchange weight.
-- The $W^3_\mu$ component mixes with $B_\mu$ after symmetry breaking (Section 34.3).
+- The $W^3_\mu$ component mixes with $B_\mu$ after symmetry breaking ({ref}`Section 34.3 <sec-scalar-sector-symmetry-breaking>`).
 - The $SU(2)_L$ gauge symmetry acts only on the input channel ($\Psi_L$), leaving the output singlet ($\Psi_R$) invariant. This reflects the architectural asymmetry between perception and action.
 
 $\square$
@@ -221,7 +221,7 @@ The **Feature Dimension** $N_f \in \mathbb{Z}_{>0}$ is the intrinsic dimensional
 
 :::
 
-#### C. $SU(N_f)_C$: Hierarchical Confinement (Feature Binding)
+### C. $SU(N_f)_C$: Hierarchical Confinement (Feature Binding)
 
 We derive the $SU(N_f)$ symmetry from the **Binding Problem** inherent in the Hierarchical Atlas ({ref}`Section 7.12 <sec-stacked-topoencoders-deep-renormalization-group-flow>`), where $N_f$ is the Feature Dimension (Definition {prf:ref}`def-feature-dimension-parameter`).
 
@@ -313,11 +313,11 @@ where:
 
 
 (sec-matter-sector-chiral-spinors)=
-### 34.2 The Matter Sector: Chiral Inference Spinors
+## The Matter Sector: Chiral Inference Spinors
 
 We define the "Matter" of cognition: the **Belief State**. In the Relativistic WFR limit ({ref}`Section 29 <sec-symplectic-multi-agent-field-theory>`), the belief state is a propagating amplitude. To satisfy the chiral constraints of the cybernetic loop (Axiom {prf:ref}`ax-cybernetic-parity-violation`), we lift the scalar belief $\psi$ to a **Spinor field** $\Psi$.
 
-#### A. The Inference Hilbert Space
+### A. The Inference Hilbert Space
 
 The belief state lives on the **Causal Manifold** $\mathcal{M}$ (the product of Time and the Latent Space $\mathcal{Z}$) equipped with the metric derived from the Capacity-Constrained Metric Law (Theorem {prf:ref}`thm-capacity-constrained-metric-law`).
 
@@ -361,7 +361,7 @@ $$
 
 :::
 
-#### B. The Strategic Connection (Covariant Derivative)
+### B. The Strategic Connection (Covariant Derivative)
 
 The agent cannot simply compare beliefs at $x$ and $x+\delta x$ because the "meaning" of the internal features and the "baseline" of value may twist locally. The **Covariant Derivative** $D_\mu$ corrects for this transport.
 
@@ -383,7 +383,7 @@ where $\lambda^a$ ($a = 1, \ldots, N_f^2 - 1$) are the generators of $SU(N_f)$, 
 
 :::
 
-#### C. The Yang-Mills Curvature
+### C. The Yang-Mills Curvature
 
 The presence of non-trivial gauge fields implies non-zero curvature in the principal bundle over the latent manifold. This curvature generates forces in the equations of motion.
 
@@ -410,7 +410,7 @@ The commutator of the covariant derivatives $[D_\mu, D_\nu]$ generates three dis
    $$
    G_{\mu\nu}^a = \partial_\mu G_\nu^a - \partial_\nu G_\mu^a + g_s f^{abc} G_\mu^b G_\nu^c
    $$
-   When $G_{\mu\nu} \neq 0$, the feature binding is under stress. This corresponds to the Ontological Stress $\Xi$ (Definition {prf:ref}`def-ontological-stress`). When $\Xi > \Xi_{\text{crit}}$, chart fission is triggered (Section 30).
+   When $G_{\mu\nu} \neq 0$, the feature binding is under stress. This corresponds to the Ontological Stress $\Xi$ (Definition {prf:ref}`def-ontological-stress`). When $\Xi > \Xi_{\text{crit}}$, chart fission is triggered ({ref}`Section 30 <sec-ontological-expansion-topological-fission-and-the-semantic-vacuum>`).
 
 $\square$
 
@@ -432,11 +432,11 @@ The stationary points of this action satisfy the Yang-Mills equations. A **flat 
 
 
 (sec-scalar-sector-symmetry-breaking)=
-### 34.3 The Scalar Sector: Ontological Symmetry Breaking (The Higgs Mechanism)
+## The Scalar Sector: Ontological Symmetry Breaking (The Higgs Mechanism)
 
 We derive the scalar sector by lifting the **Fission-Fusion dynamics** from {ref}`Section 30.4 <sec-symmetry-breaking-and-chart-birth>` into a field-theoretic action. The "Higgs Field" of cognition is the **Ontological Order Parameter**.
 
-#### A. The Ontological Scalar Field
+### A. The Ontological Scalar Field
 
 :::{prf:definition} The Ontological Order Parameter
 :label: def-ontological-order-parameter
@@ -458,9 +458,9 @@ The field $\phi$ transforms as a doublet under the gauge group $SU(2)_L$, coupli
 
 :::
 
-#### B. Derivation of the Scalar Potential
+### B. Derivation of the Scalar Potential
 
-We derive the potential $V(\phi)$ from the stability analysis of the Topological Fission process (Section 30.4).
+We derive the potential $V(\phi)$ from the stability analysis of the Topological Fission process ({ref}`Section 30.4 <sec-symmetry-breaking-and-chart-birth>`).
 
 :::{prf:theorem} The Complexity Potential
 :label: thm-complexity-potential
@@ -531,7 +531,7 @@ $\square$
 
 :::
 
-#### C. Mass Generation
+### C. Mass Generation
 
 We derive the mass terms for the gauge fields from the covariant kinetic term of the scalar field.
 
@@ -586,11 +586,11 @@ In the Fragile Agent, this massless mode is the **Texture** ($z_{\text{tex}}$). 
 
 
 (sec-interaction-terms)=
-### 34.4 The Interaction Terms
+## The Interaction Terms
 
 The Gauge and Scalar sectors define the geometry and topology of the latent space. The Matter sector defines the belief state. We now derive the **Interaction Terms** that couple these sectors.
 
-#### A. Yukawa Coupling: Decision Commitment
+### A. Yukawa Coupling: Decision Commitment
 
 :::{prf:definition} The Decision Coupling
 :label: def-decision-coupling
@@ -636,7 +636,7 @@ $\square$
 
 :::
 
-#### B. The External Field: Helmholtz Coupling
+### B. The External Field: Helmholtz Coupling
 
 The agent is driven by the desire to maximize Value. We couple the Value Potential to the belief spinor.
 
@@ -696,7 +696,7 @@ $\square$
 
 
 (sec-cognitive-lagrangian-density)=
-### 34.5 The Unified Cognitive Lagrangian
+## The Unified Cognitive Lagrangian
 
 We assemble the complete action functional governing the dynamics of a bounded, embodied, rational agent.
 
@@ -734,7 +734,7 @@ $$
 
 
 (sec-isomorphism-dictionary)=
-### 34.6 Summary: The Isomorphism Dictionary
+## Summary: The Isomorphism Dictionary
 
 This table provides the mapping between Standard Model entities and Cognitive entities, with explicit references to where each correspondence is derived.
 
@@ -754,7 +754,7 @@ This table provides the mapping between Standard Model entities and Cognitive en
 | Gluons | $g$ (8 for $N_c=3$) | Feature Binding Force ($N_f^2-1$ generators) | Definition {prf:ref}`def-feature-color-space` |
 | Quarks | $q$ | Sub-symbolic Features | Definition {prf:ref}`def-the-peeling-step` |
 | Hadrons | Baryons/Mesons | Concepts $K$ | Axiom {prf:ref}`ax-feature-confinement` |
-| Confinement | Color Neutral | Observability Constraint | Section 33 (Area Law) |
+| Confinement | Color Neutral | Observability Constraint | {ref}`Section 33 <sec-causal-information-bound>` (Area Law) |
 | Spontaneous Symmetry Breaking | Higgs Mechanism | Ontological Fission | Corollary {prf:ref}`cor-ontological-ssb` |
 | Goldstone Boson | Massless mode | Texture $z_{\text{tex}}$ | Axiom {prf:ref}`ax-bulk-boundary-decoupling` |
 
@@ -770,21 +770,21 @@ The scalar potential derives from the pitchfork bifurcation dynamics (Theorem {p
 
 
 (sec-parameter-space-sieve)=
-## 35. The Parameter Space Sieve: Deriving Fundamental Constants
+## The Parameter Space Sieve: Deriving Fundamental Constants
 
 *Abstract.* This chapter derives the constraints on fundamental constants from cybernetic first principles. We formulate the Sieve Architecture as a system of coupled inequalities that any viable agent must satisfy. The fundamental constants $\Lambda = (c_{\text{info}}, \sigma, \ell_L, T_c, g_s, \gamma)$ are not free parameters but decision variables of a constrained optimization problem. The physical universe exists within the **Feasible Region** where all constraints are simultaneously satisfied. We prove that moving off this region triggers a Sieve violation: the agent either loses causal coherence, exceeds its holographic bound, violates thermodynamic consistency, or suffers ontological dissolution.
 
 *Cross-references:* This chapter synthesizes:
-- Section 18 (Capacity-Constrained Metric Law)
-- Section 29.21 (Cognitive Action Scale)
-- Section 31 (Generalized Landauer Bound)
-- Section 33 (Causal Information Bound, Area Law)
+- {ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>` (Capacity-Constrained Metric Law)
+- {ref}`Section 29.21 <sec-the-belief-wave-function-schrodinger-representation>` (Cognitive Action Scale)
+- {ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>` (Generalized Landauer Bound)
+- {ref}`Section 33 <sec-causal-information-bound>` (Causal Information Bound, Area Law)
 - The Sieve Architecture (Nodes 2, 7, 29, 40, 52, 56, 62)
 
 
 
 (sec-sieve-formulation)=
-### 35.1 The Sieve Formulation: Agents as Constraint Satisfaction
+## The Sieve Formulation: Agents as Constraint Satisfaction
 
 The Fragile Agent Framework imposes strict consistency conditions at every node of the inference graph. We formalize these as a system of inequalities that constrain the space of viable configurations.
 
@@ -826,7 +826,7 @@ $$
 
 with dimension $[L^{-1}]$ (Corollary {prf:ref}`cor-discount-as-screening-length`).
 
-These correspond to the physics constants $\{c, \hbar, \ell_P, k_B T, \alpha_s, \gamma_{\text{cosmo}}\}$ under the isomorphism of Section 34.6.
+These correspond to the physics constants $\{c, \hbar, \ell_P, k_B T, \alpha_s, \gamma_{\text{cosmo}}\}$ under the isomorphism of {ref}`Section 34.6 <sec-isomorphism-dictionary>`.
 
 :::
 
@@ -846,7 +846,7 @@ where the inequality holds component-wise. Each component corresponds to a Sieve
 
 
 (sec-causal-consistency-constraint)=
-### 35.2 The Causal Consistency Constraint
+## The Causal Consistency Constraint
 
 We derive the bounds on information speed from the requirements of buffer coherence and synchronization.
 
@@ -903,7 +903,7 @@ with equality only in the degenerate case of a single-module agent. For distribu
 
 
 (sec-holographic-stability-constraint)=
-### 35.3 The Holographic Stability Constraint
+## The Holographic Stability Constraint
 
 We derive the relationship between the Levin Length $\ell_L$ and the information capacity from the Area Law.
 
@@ -941,7 +941,7 @@ $\square$
 :::{prf:definition} The Planck-Levin Correspondence
 :label: def-planck-levin-correspondence
 
-Under the physics isomorphism (Section 34.6), the Levin Length $\ell_L$ corresponds to the Planck Length $\ell_P$:
+Under the physics isomorphism ({ref}`Section 34.6 <sec-isomorphism-dictionary>`), the Levin Length $\ell_L$ corresponds to the Planck Length $\ell_P$:
 
 $$
 \ell_L \leftrightarrow \ell_P = \sqrt{\frac{\hbar G}{c^3}}
@@ -983,7 +983,7 @@ $\square$
 
 
 (sec-metabolic-viability-constraint)=
-### 35.4 The Metabolic Viability Constraint
+## The Metabolic Viability Constraint
 
 We derive the thermodynamic constraint on computational operations from the Generalized Landauer Bound.
 
@@ -1062,7 +1062,7 @@ with $\mu = 1/2 + u_\pi^r$ the bifurcation parameter and $u_\pi^r$ the radial po
 
 
 (sec-hierarchical-coupling-constraint)=
-### 35.5 The Hierarchical Coupling Constraint
+## The Hierarchical Coupling Constraint
 
 We derive the constraints on the binding coupling $g_s$ from the requirements of object permanence and texture decoupling.
 
@@ -1170,7 +1170,7 @@ where $\mu_{\text{conf}}$ is the confinement scale separating bound states from 
 
 
 (sec-stiffness-constraint)=
-### 35.6 The Stiffness Constraint
+## The Stiffness Constraint
 
 We derive the constraint on the separation between adjacent energy levels that enables both memory stability and dynamic flexibility.
 
@@ -1252,7 +1252,7 @@ At $T \approx 300$ K (biological temperature), $\chi \approx 500$, placing molec
 
 
 (sec-discount-screening-constraint)=
-### 35.7 The Temporal Screening Constraint
+## The Temporal Screening Constraint
 
 We derive the constraint on the discount factor from the requirements of causal coherence and goal-directedness.
 
@@ -1325,7 +1325,7 @@ Both sides have dimension $[L]$. For $\gamma \to 1$, the screening length $\ell_
 
 
 (sec-sieve-eigenvalue-system)=
-### 35.8 The Sieve Eigenvalue System
+## The Sieve Eigenvalue System
 
 We formulate the complete system of constraints and derive the feasible region.
 
@@ -1381,7 +1381,7 @@ $\square$
 
 
 (sec-optimization-problem)=
-### 35.9 The Optimization Problem
+## The Optimization Problem
 
 We formulate the selection of fundamental constants as a constrained optimization.
 
@@ -1446,7 +1446,7 @@ Moving off this surface triggers constraint violation:
 
 
 (sec-physics-isomorphism-constants)=
-### 35.10 Physics Isomorphism: The Standard Model Constants
+## Physics Isomorphism: The Standard Model Constants
 
 We tabulate the correspondence between agent parameters and physics constants.
 
@@ -1478,7 +1478,7 @@ Changing any constant while holding others fixed moves the system out of the fea
 
 
 (sec-summary-parameter-sieve)=
-### 35.11 Summary
+## Summary
 
 This chapter has derived the constraints on fundamental constants from cybernetic first principles:
 

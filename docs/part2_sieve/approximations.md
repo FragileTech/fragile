@@ -1,15 +1,15 @@
-## 8. Infeasible Implementation Replacements
+# Infeasible Implementation Replacements
 
+(rb-practical-substitutions)=
 :::{admonition} Researcher Bridge: Practical Substitutions for Idealized Laws
 :class: tip
-:name: rb-practical-substitutions
 Many theoretical constraints are too expensive to compute directly. This section provides the RL-engineering replacements (surrogate losses, probes, and bounds) that preserve the same failure detection in practice.
 :::
 
 Several regularization terms from the theoretical framework are computationally infeasible for standard training. This section provides practical alternatives with full PyTorch implementations.
 
 (sec-barrierbode-temporal-gain-margin)=
-### 8.1 BarrierBode → Temporal Gain Margin
+## BarrierBode → Temporal Gain Margin
 
 **Original (Infeasible):**
 
@@ -77,7 +77,7 @@ def compute_peak_gain_loss(
 ```
 
 (sec-bifurcatecheck-stochastic-jacobian-probing)=
-### 8.2 BifurcateCheck → Stochastic Jacobian Probing
+## BifurcateCheck → Stochastic Jacobian Probing
 
 **Original (Infeasible):**
 
@@ -152,7 +152,7 @@ def compute_bifurcation_loss(
 ```
 
 (sec-tamecheck-lipschitz-gradient-proxy)=
-### 8.3 TameCheck → Lipschitz Gradient Proxy
+## TameCheck → Lipschitz Gradient Proxy
 
 **Original (Infeasible):**
 
@@ -227,7 +227,7 @@ def compute_tame_loss(
 ```
 
 (sec-topocheck-value-gradient-alignment)=
-### 8.4 TopoCheck → Value Gradient Alignment
+## TopoCheck → Value Gradient Alignment
 
 **Original (Infeasible):**
 
@@ -290,7 +290,7 @@ def compute_topo_loss(
 ```
 
 (sec-geomcheck-efficient-infonce)=
-### 8.5 GeomCheck → Efficient InfoNCE
+## GeomCheck → Efficient InfoNCE
 
 **Original (Expensive):**
 
@@ -401,7 +401,7 @@ def compute_geom_loss(
 ```
 
 (sec-summary-replacement-mapping)=
-### 8.6 Summary: Replacement Mapping
+## Summary: Replacement Mapping
 
 | Original                  | Replacement        | Speedup  | Preserved Property              |
 |---------------------------|--------------------|----------|---------------------------------|

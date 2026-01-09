@@ -5,14 +5,14 @@
 
 #######################################################################################
 # Book settings
-title                       : "Fragile"  # The title of the book. Will be placed in the left navbar.
+title                       : "Fragile Mechanics"  # The title of the book. Will be placed in the left navbar.
 author                      : "Guillem Duran Ballester"  # The author of the book
 copyright                   : "2024"  # Copyright year to be placed in the footer
 logo                        : "logo.png"  # A path to the book logo
 # Patterns to skip when building the book. Can be glob-style (e.g. "*skip.ipynb")
 exclude_patterns            : [_build, Thumbs.db, .DS_Store, "**.ipynb_checkpoints", ".venv", "node_modules", "index.md.bak", "extract_sections.py"]
 # Auto-exclude files not in the toc
-only_build_toc_files        : false
+only_build_toc_files        : true
 
 #######################################################################################
 # Execution settings

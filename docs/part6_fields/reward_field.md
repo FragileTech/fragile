@@ -1,14 +1,14 @@
-## 24. The Reward Field: Value Forms and Hodge Geometry
+# The Reward Field: Value Forms and Hodge Geometry
 
 {cite}`evans2010pde,sutton2018rl`
 
-We have defined Observations as **Configuration Constraints** (manifold position, Section 23.1) and Actions as **Momentum Constraints** (tangent vectors, Section 23.1). We now define the third component of the interface: **Reward**.
+We have defined Observations as **Configuration Constraints** (manifold position, {ref}`Section 23.1 <sec-the-symplectic-interface-position-momentum-duality>`) and Actions as **Momentum Constraints** (tangent vectors, {ref}`Section 23.1 <sec-the-symplectic-interface-position-momentum-duality>`). We now define the third component of the interface: **Reward**.
 
 We rigorously frame Reward not as a scalar signal, but as a **Differential 1-Form** on the latent manifold. This generalization is fundamental: the agent harvests reward by moving through the field, and the reward it collects depends on both position and direction of motion. The standard scalar value function $V(z)$ emerges as the special case where the reward field is **conservative** (curl-free).
 
+(rb-non-conservative-value)=
 :::{admonition} Researcher Bridge: Beyond Conservative Value Functions
 :class: tip
-:name: rb-non-conservative-value
 Standard RL assumes a scalar Value function $V(z)$ exists such that reward gradients are conservative: $\mathcal{R} = \nabla V$. This implies that the total reward around any closed loop is zero—no cyclic preference structures exist. But many real-world scenarios violate this:
 - **Rock-Paper-Scissors**: Cyclic dominance creates non-zero reward loops
 - **Exploration-Exploitation Orbits**: Optimal behavior may involve sustained cycling
@@ -18,7 +18,7 @@ We generalize by treating reward as a **1-form field** $\mathcal{R}$, with scala
 :::
 
 (sec-the-reward-1-form)=
-### 24.1 The Reward 1-Form
+## The Reward 1-Form
 
 We begin with the most general formulation: reward is a **differential 1-form** on the latent manifold.
 
@@ -59,9 +59,9 @@ In the discrete limit, this manifests as point charges $r_t$ deposited at the bo
 
 :::
 
+(pi-electromagnetism-reward)=
 ::::{admonition} Physics Isomorphism: Electromagnetism
 :class: note
-:name: pi-electromagnetism-reward
 
 **In Physics:** A charged particle moving through an electromagnetic field experiences a force that depends on both position and velocity. The electric field $\mathbf{E}$ creates conservative (gradient) forces, while the magnetic field $\mathbf{B}$ creates velocity-dependent (curl) forces via the Lorentz force law: $\mathbf{F} = q(\mathbf{E} + \mathbf{v} \times \mathbf{B})$.
 
@@ -81,7 +81,7 @@ In the discrete limit, this manifests as point charges $r_t$ deposited at the bo
 
 ::::
 (sec-hodge-decomposition-of-value)=
-### 24.2 The Hodge Decomposition of Value
+## The Hodge Decomposition of Value
 
 The central theorem of this section decomposes any reward 1-form into three orthogonal components: gradient, solenoidal, and harmonic. This decomposition separates the optimizable component from the inherently cyclic components.
 
@@ -155,7 +155,9 @@ $$
 
 :::
 
-:::{note} Connection to RL #31: Path-Independence as Degenerate Value Curl
+:::{admonition} Connection to RL #31: Path-Independence as Degenerate Value Curl
+:class: note
+:name: conn-rl-31
 **The General Law (Fragile Agent):**
 The Reward 1-form $\mathcal{R}$ decomposes via Hodge theory into gradient, solenoidal, and harmonic components. The **Value Curl** $\mathcal{F} = d\mathcal{R}$ measures non-conservative structure:
 
@@ -181,7 +183,7 @@ This recovers the **scalar Value function**, which exists precisely because rewa
 :::
 
 (sec-the-bulk-potential-screened-poisson-equation)=
-### 24.3 The Conservative Case: Scalar Potential and Screened Poisson Equation
+## The Conservative Case: Scalar Potential and Screened Poisson Equation
 
 When the Value Curl vanishes ($\mathcal{F} = 0$), the reward field is conservative and we recover the standard scalar value function framework. In this regime, the Value function $V(z) = \Phi(z)$ obeys the Bellman Equation, which in the continuum limit becomes the **Screened Poisson (Helmholtz) Equation**.
 
@@ -213,19 +215,19 @@ Rearranging and dividing by $\Delta t$, then taking $\Delta t \to 0$:
 $$
 \kappa V = r + \nabla V \cdot b + T_c \Delta_G V.
 $$
-For the stationary case ($b = 0$) and absorbing the temperature into the source term, this yields the Helmholtz equation $-\Delta_G V + \kappa^2 V = \rho_r$. Details in Appendix A.5. $\square$
+For the stationary case ($b = 0$) and absorbing the temperature into the source term, this yields the Helmholtz equation $-\Delta_G V + \kappa^2 V = \rho_r$. Details in {ref}`Appendix A.5 <sec-appendix-a-full-derivations>`. $\square$
 
 Units: $[\kappa] = 1/\text{length}$, $[\Delta_G V] = \mathrm{nat}/\text{length}^2$, $[\rho_r] = \mathrm{nat}/\text{length}^2$.
 
-*Cross-reference (Relativistic Extension):* This **elliptic** Helmholtz equation assumes instantaneous value propagation. When agents interact across spatial or computational separation with finite information speed $c_{\text{info}}$, the equation generalizes to the **hyperbolic Klein-Gordon equation**: $(\frac{1}{c^2}\partial_t^2 - \Delta_G + \kappa^2)V = \rho_r$. See Theorem {prf:ref}`thm-hjb-klein-gordon` in Section 29.5.
+*Cross-reference (Relativistic Extension):* This **elliptic** Helmholtz equation assumes instantaneous value propagation. When agents interact across spatial or computational separation with finite information speed $c_{\text{info}}$, the equation generalizes to the **hyperbolic Klein-Gordon equation**: $(\frac{1}{c^2}\partial_t^2 - \Delta_G + \kappa^2)V = \rho_r$. See Theorem {prf:ref}`thm-hjb-klein-gordon` in {ref}`Section 29.5 <sec-the-hyperbolic-value-equation>`.
 
-*Cross-reference (Gauge-Covariant Generalization):* When the dynamics must be invariant under local nuisance transformations (Section 29.13), all partial derivatives $\partial_\mu$ are promoted to covariant derivatives $D_\mu = \partial_\mu - igA_\mu$, where $A_\mu$ is the Strategic Connection (Definition {prf:ref}`def-strategic-connection`). The Helmholtz operator becomes $-D_\mu D^\mu + \kappa^2$.
+*Cross-reference (Gauge-Covariant Generalization):* When the dynamics must be invariant under local nuisance transformations ({ref}`Section 29.13 <sec-local-gauge-symmetry-nuisance-bundle>`), all partial derivatives $\partial_\mu$ are promoted to covariant derivatives $D_\mu = \partial_\mu - igA_\mu$, where $A_\mu$ is the Strategic Connection (Definition {prf:ref}`def-strategic-connection`). The Helmholtz operator becomes $-D_\mu D^\mu + \kappa^2$.
 
 :::
 
+(pi-yukawa-potential)=
 ::::{admonition} Physics Isomorphism: Yukawa Potential
 :class: note
-:name: pi-yukawa-potential
 
 **In Physics:** The Yukawa (screened Coulomb) potential satisfies $(-\nabla^2 + m^2)\phi = \rho$ where $m$ is the mediating boson mass. The screening length $\ell = 1/m$ determines the range of the force {cite}`yukawa1935interaction`.
 
@@ -247,7 +249,9 @@ $$
 **Loss Function:** PINN regularizer enforcing $\|(-\Delta_G + \kappa^2)V - \rho_r\|^2$.
 ::::
 
-:::{note} Connection to RL #4: Bellman Equation as Degenerate Helmholtz PDE
+:::{admonition} Connection to RL #4: Bellman Equation as Degenerate Helmholtz PDE
+:class: note
+:name: conn-rl-4
 **The General Law (Fragile Agent):**
 The Value Function $V(z)$ satisfies the **Screened Poisson (Helmholtz) Equation** on $(\mathcal{Z}, G)$:
 
@@ -271,7 +275,7 @@ This recovers the **Bellman equation** $V = r + \gamma P V$.
 
 **What the generalization offers:**
 - Geometric propagation: rewards propagate as sources in a scalar field, respecting manifold curvature
-- Conformal coupling: high-value-curvature regions modulate the metric (Section 24.4)
+- Conformal coupling: high-value-curvature regions modulate the metric ({ref}`Section 24.4 <sec-geometric-back-reaction-the-conformal-coupling>`)
 - Continuous limit: natural extension to continuous state spaces without discretization artifacts
 - Physical interpretation: $\gamma$ has a spatial meaning (screening length), not just temporal (horizon)
 :::
@@ -290,9 +294,9 @@ where $G_\kappa(z, z')$ is the Green's function satisfying $(-\Delta_G + \kappa^
 
 :::
 
+(pi-green-function)=
 ::::{admonition} Physics Isomorphism: Green's Function
 :class: note
-:name: pi-green-function
 
 **In Physics:** The Green's function $G(x, x')$ is the fundamental solution satisfying $\mathcal{L}G(x, \cdot) = \delta(x - \cdot)$ for a linear operator $\mathcal{L}$. In electrostatics, $G$ is the potential at $x$ due to a unit charge at $x'$. For the screened Laplacian, $G_\kappa \sim e^{-\kappa r}/r^{(d-2)/2}$ {cite}`jackson1999classical`.
 
@@ -347,11 +351,13 @@ For $\gamma = 0.99$ and $\Delta t = 1$: $\ell_{\text{screen}} \approx 100$ steps
 | $\gamma = 0.9$    | $\kappa \approx 0.1$    | $\ell \approx 10$       | Short horizon                     |
 | $\gamma \to 0$    | $\kappa \to \infty$     | $\ell \to 0$            | Myopic (infinitely massive)       |
 
-**Cross-references:** Section 2.7 (HJB Equation), Theorem {prf:ref}`thm-capacity-constrained-metric-law`.
+**Cross-references:** {ref}`Section 2.7 <sec-the-hjb-correspondence>` (HJB Equation), Theorem {prf:ref}`thm-capacity-constrained-metric-law`.
 
 :::
 
-::::{note} Connection to RL #30: Temporal Horizon as Degenerate Screening Length
+::::{admonition} Connection to RL #30: Temporal Horizon as Degenerate Screening Length
+:class: note
+:name: conn-rl-30
 **The General Law (Fragile Agent):**
 The discount factor $\gamma$ defines a **Screening Length** with geometric meaning:
 
@@ -383,7 +389,7 @@ This recovers the standard **temporal horizon interpretation** where $\gamma$ co
 ::::
 
 (sec-thermodynamic-interpretation-energy-vs-probability)=
-### 24.4 Thermodynamic Interpretation: Energy vs Probability
+## Thermodynamic Interpretation: Energy vs Probability
 
 We explicitly resolve the ambiguity between "Energy" and "Probability" in the value function interpretation. The scalar potential $\Phi(z)$ from the Hodge decomposition plays the role of Gibbs Free Energy in the conservative case.
 
@@ -398,7 +404,7 @@ $$
 where:
 - $E(z)$ is the **task risk/cost** at state $z$
 - $S(z)$ is the **exploration entropy** (measure of uncertainty/optionality)
-- $T_c$ is the **cognitive temperature** (Section 21.1)
+- $T_c$ is the **cognitive temperature** ({prf:ref}`def-cognitive-temperature`, {ref}`Section 21.1 <sec-hyperbolic-volume-and-entropic-drift>`)
 
 *Units:* $[\Phi] = [E] = [T_c S] = \mathrm{nat}$.
 
@@ -421,9 +427,9 @@ where $Z = \int_{\mathcal{Z}} \exp(V(z)/T_c) \, d\mu_G(z)$ is the partition func
 
 :::
 
+(pi-canonical-ensemble)=
 ::::{admonition} Physics Isomorphism: Canonical Ensemble
 :class: note
-:name: pi-canonical-ensemble
 
 **In Physics:** The canonical ensemble describes a system in thermal equilibrium with a heat bath at temperature $T$. The probability of microstate $i$ is $P_i = Z^{-1}\exp(-E_i/k_B T)$ where $Z = \sum_i \exp(-E_i/k_B T)$ is the partition function {cite}`landau1980statistical`.
 
@@ -450,7 +456,7 @@ where $Z = \int_{\mathcal{Z}} \exp(V(z)/T_c) \, d\mu_G(z)$ is the partition func
 :::{prf:theorem} WFR Consistency: Value Creates Mass
 :label: thm-wfr-consistency-value-creates-mass
 
-In the WFR dynamics (Section 20), the reaction rate $r(z)$ in the unbalanced continuity equation is determined by the value function:
+In the WFR dynamics ({prf:ref}`def-the-wfr-action`, {ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`), the reaction rate $r(z)$ in the unbalanced continuity equation is determined by the value function:
 
 $$
 r(z) = \frac{1}{s_r} \left( V(z) - \bar{V} \right),
@@ -528,7 +534,7 @@ At stationarity, $\nabla \cdot J = 0$, but only $J_{\text{gradient}} = 0$ at tru
 | **Probability current $J$** | **Value harvesting flow** | **NESS circulation** |
 | **Entropy production $\dot{S}_i$** | **Cyclic reward rate** | **Perpetual motion** |
 
-**Cross-references:** Section 20.2 (WFR dynamics), Section 23.4 (Thermodynamic Cycle), Section 14.2 (MaxEnt control), Theorem {prf:ref}`thm-hodge-decomposition` (Hodge Decomposition).
+**Cross-references:** {ref}`Section 20.2 <sec-the-wfr-metric>` (WFR dynamics), Section 23.4 (Thermodynamic Cycle), Section 14.2 (MaxEnt control), Theorem {prf:ref}`thm-hodge-decomposition` (Hodge Decomposition).
 
 :::
 
@@ -564,7 +570,7 @@ $$
 
 :::
 (sec-geometric-back-reaction-the-conformal-coupling)=
-### 24.5 Geometric Back-Reaction: The Conformal Coupling
+## Geometric Back-Reaction: The Conformal Coupling
 
 Does the Reward field change the Geometry? **Yes.** From Theorem {prf:ref}`thm-capacity-constrained-metric-law`, the curvature is driven by the Risk Tensor. Both the scalar potential $\Phi$ and the Value Curl $\mathcal{F}$ contribute to risk, and therefore modify the metric.
 
@@ -587,9 +593,9 @@ Units: $[\Omega] = 1$ (dimensionless), $[\alpha_{\text{conf}}] = \text{length}^2
 
 :::
 
+(pi-conformal-coupling)=
 ::::{admonition} Physics Isomorphism: Conformal Transformation
 :class: note
-:name: pi-conformal-coupling
 
 **In Physics:** A conformal transformation rescales the metric by a position-dependent factor: $\tilde{g}_{\mu\nu} = \Omega^2(x) g_{\mu\nu}$. In scalar field theory, conformal coupling $\xi R\phi^2$ couples the field to spacetime curvature. Weyl transformations preserve angles but not distances {cite}`wald1984general`.
 
@@ -627,7 +633,7 @@ The conformal factor encodes the local "importance" of the value landscape:
 
 Near sharp ridges or valleys of $V$ (where $\|\nabla^2 V\|$ is large), the conformal factor causes:
 
-1. **Inertia Increase:** The effective mass $\tilde{G}(z) = \Omega^2(z) G(z)$ increases, so the agent slows down near critical decision boundaries (Section 22.2 mass scaling).
+1. **Inertia Increase:** The effective mass $\tilde{G}(z) = \Omega^2(z) G(z)$ increases, so the agent slows down near critical decision boundaries ({ref}`Section 22.2 <sec-the-coupled-jump-diffusion-sde>` mass scaling).
 
 2. **Resolution Increase:** The capacity-constrained metric allocates more volume to high-curvature regions (Theorem {prf:ref}`thm-capacity-constrained-metric-law`), allowing higher-fidelity representation of value gradients.
 
@@ -655,11 +661,13 @@ with effective screening mass $\tilde{\kappa}^2 = \Omega^{-2} \kappa^2$.
 
 *Interpretation:* In high-curvature regions ($\Omega$ large), the effective screening mass decreases, making the field more "massless" and allowing longer-range correlations. This is the **self-focusing** effect: important regions become more interconnected.
 
-**Cross-references:** Theorem {prf:ref}`thm-capacity-constrained-metric-law`, Section 22.1 (Mass=Metric), Proposition {prf:ref}`prop-mass-scaling-near-boundary`.
+**Cross-references:** Theorem {prf:ref}`thm-capacity-constrained-metric-law`, {ref}`Section 22.1 <sec-the-stochastic-action-principle>` (Mass=Metric), Proposition {prf:ref}`prop-mass-scaling-near-boundary`.
 
 :::
 
-::::{note} Connection to RL #27: Auxiliary Tasks as Degenerate Conformal Back-Reaction
+::::{admonition} Connection to RL #27: Auxiliary Tasks as Degenerate Conformal Back-Reaction
+:class: note
+:name: conn-rl-27
 **The General Law (Fragile Agent):**
 The value function modulates the metric via **Conformal Coupling**:
 
@@ -686,7 +694,7 @@ This recovers **Auxiliary Tasks** (reward prediction, inverse dynamics, world mo
 ::::
 
 (sec-implementation-the-holographiccritic-module)=
-### 24.6 Implementation: The HolographicCritic Module
+## Implementation: The HolographicCritic Module
 
 We update the architecture to include the Critic as the third pillar of the Holographic Interface. The Critic is not merely a value predictor—it is the **Field Solver** that computes the potential landscape from boundary charges.
 
@@ -699,7 +707,7 @@ from typing import Optional, Tuple
 
 @dataclass
 class CriticConfig:
-    """Configuration for the HolographicCritic (Section 24)."""
+    """Configuration for the HolographicCritic ({ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>`)."""
     latent_dim: int = 32          # Dimension of latent space Z
     hidden_dim: int = 256         # Hidden layer dimension
     gamma: float = 0.99           # Discount factor
@@ -714,7 +722,7 @@ class CriticConfig:
 
 class HolographicCritic(nn.Module):
     """
-    Section 24: The Reward Encoder / Field Solver.
+    {ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>`: The Reward Encoder / Field Solver.
 
     Maps Boundary Charges (rewards r) to Bulk Potential (value V).
     Solves the Screened Poisson Equation on the latent manifold (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`).
@@ -946,10 +954,10 @@ def train_critic_step(
     return info
 ```
 
-**Cross-references:** Section 22.4 (BAOAB integrator uses $\nabla\Phi_{\text{eff}}$), Section 23.7 (HolographicInterface).
+**Cross-references:** {ref}`Section 22.4 <sec-the-geodesic-baoab-integrator>` (BAOAB integrator uses $\nabla\Phi_{\text{eff}}$), Section 23.7 (HolographicInterface).
 
 (sec-the-unified-holographic-dictionary)=
-### 24.7 The Unified Holographic Dictionary
+## The Unified Holographic Dictionary
 
 This completes the **Holographic Dictionary** for the Fragile Agent. We now have a complete mapping between boundary data (observations, actions, rewards) and bulk objects (position, momentum, potential).
 
@@ -1005,11 +1013,11 @@ The agent-environment interface decomposes into exactly three types of boundary 
 
 These three conditions fully specify the agent's interaction with its environment.
 
-**Cross-references:** Section 23 (Holographic Interface), Section 22 (Equations of Motion), Section 18 (Capacity-Constrained Geometry).
+**Cross-references:** {ref}`Section 23 <sec-the-boundary-interface-symplectic-structure>` (Holographic Interface), {ref}`Section 22 <sec-the-equations-of-motion-geodesic-jump-diffusion>` (Equations of Motion), {ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>` (Capacity-Constrained Geometry).
 
 :::
 (sec-diagnostic-nodes-for-the-scalar-field)=
-### 24.8 Diagnostic Nodes for the Reward Field
+## Diagnostic Nodes for the Reward Field
 
 We define six diagnostic nodes (35-39, 61) to monitor the health of the Critic/Value system, including the new ValueCurlCheck for non-conservative reward fields.
 
@@ -1098,7 +1106,7 @@ def value_curl_check(
     return abs(loop_integral)
 ```
 
-**Table 24.8.1 (Section 24 Diagnostic Summary).**
+**Table 24.8.1 ({ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>` Diagnostic Summary).**
 
 | # | Name | Monitors | Healthy Range |
 |---|------|----------|---------------|
@@ -1109,7 +1117,7 @@ def value_curl_check(
 | 39 | ValueMassCorrelationCheck | WFR-Value alignment | $> 0.5$ |
 | 61 | ValueCurlCheck | Non-conservative structure | Context-dependent (see above) |
 
-**Cross-references:** Section 3 (Sieve Diagnostic Nodes), Section 23.8 (Interface Diagnostics Nodes 30-34), Theorem {prf:ref}`thm-hodge-decomposition` (Hodge Decomposition), Definition {prf:ref}`def-value-curl` (Value Curl).
+**Cross-references:** {ref}`Section 3 <sec-diagnostics-stability-checks>` (Sieve Diagnostic Nodes), Section 23.8 (Interface Diagnostics Nodes 30-34), Theorem {prf:ref}`thm-hodge-decomposition` (Hodge Decomposition), Definition {prf:ref}`def-value-curl` (Value Curl).
 
 
 
