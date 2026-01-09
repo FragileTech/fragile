@@ -141,6 +141,9 @@ class TopoEncoderConfig:
     disable_ae: bool = False  # Skip VanillaAE baseline
     disable_vq: bool = False  # Skip StandardVQ baseline
 
+    # Train/test split
+    test_split: float = 0.2
+
     # Logging and output
     log_every: int = 100
     save_every: int = 100  # Save visualization every N epochs (0 to disable)
@@ -245,8 +248,8 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         - ami_score: Final AMI for TopoEncoder
         - std_perplexity: Final perplexity for StandardVQ
         - atlas_perplexity: Final perplexity for TopoEncoder
-        - X: Input data
-        - labels: Ground truth labels
+        - X: Evaluation data
+        - labels: Ground truth labels for eval
         - chart_assignments: Learned chart assignments
     """
     # Create output directory
@@ -256,7 +259,41 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
 
     # Generate data (3D nightmare dataset with rainbow colors)
     X, labels, colors = get_nightmare_data(config.n_samples)
+    dataset_ids = {
+        "swiss_roll": 0,
+        "sphere": 1,
+        "moons": 2,
+    }
+    labels = labels.astype(np.int64)
     print(f"Generated {len(X)} points from 3 manifolds (Swiss Roll, Sphere, Moons)")
+    print(
+        "Dataset IDs: swiss_roll=0, sphere=1, moons=2"
+    )
+    if not (0.0 <= config.test_split < 1.0):
+        raise ValueError("test_split must be in [0.0, 1.0).")
+
+    n_total = X.shape[0]
+    test_size = max(1, int(n_total * config.test_split)) if config.test_split > 0 else 0
+    if test_size >= n_total:
+        test_size = max(1, n_total - 1)
+    train_size = n_total - test_size
+    perm = torch.randperm(n_total)
+    train_idx = perm[:train_size]
+    test_idx = perm[train_size:]
+    train_idx_np = train_idx.numpy()
+    test_idx_np = test_idx.numpy()
+
+    X_train = X[train_idx]
+    X_test = X[test_idx] if test_size > 0 else X
+    labels_train = labels[train_idx_np]
+    labels_test = labels[test_idx_np] if test_size > 0 else labels
+    colors_train = colors[train_idx_np]
+    colors_test = colors[test_idx_np] if test_size > 0 else colors
+
+    print(
+        f"Train/test split: {len(X_train)}/{len(X_test)} "
+        f"(test={config.test_split:.2f})"
+    )
 
     # Create TopoEncoder first to get its parameter count
     model_atlas = TopoEncoder(
@@ -325,7 +362,8 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         model_std = model_std.to(device)
     if model_ae is not None:
         model_ae = model_ae.to(device)
-    X = X.to(device)
+    X_train = X_train.to(device)
+    X_test = X_test.to(device)
     print(f"  Device: {device}")
 
     # Initialize Jump Operator for chart gluing
@@ -336,13 +374,34 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
     ).to(device)
     print(f"  Jump Operator: {count_parameters(jump_op):,} params")
 
+    # Supervised topology loss (chart-to-class mapping)
+    supervised_loss = None
+    num_classes = int(labels.max()) + 1 if labels.size else config.num_classes
+    if config.enable_supervised:
+        supervised_loss = SupervisedTopologyLoss(
+            num_charts=config.num_charts,
+            num_classes=num_classes,
+            lambda_purity=config.sup_purity_weight,
+            lambda_balance=config.sup_balance_weight,
+            lambda_metric=config.sup_metric_weight,
+            margin=config.sup_metric_margin,
+            temperature=config.sup_temperature,
+        ).to(device)
+        print(
+            "  Supervised Topology: "
+            f"classes={num_classes}, "
+            f"λ_purity={config.sup_purity_weight}, "
+            f"λ_balance={config.sup_balance_weight}, "
+            f"λ_metric={config.sup_metric_weight}"
+        )
+
     # Optimizers (joint training of atlas model and jump operator)
     if model_std is not None:
         opt_std = optim.Adam(model_std.parameters(), lr=config.lr)
-    opt_atlas = optim.Adam(
-        list(model_atlas.parameters()) + list(jump_op.parameters()),
-        lr=config.lr,
-    )
+    atlas_params = list(model_atlas.parameters()) + list(jump_op.parameters())
+    if supervised_loss is not None:
+        atlas_params.extend(list(supervised_loss.parameters()))
+    opt_atlas = optim.Adam(atlas_params, lr=config.lr)
     if model_ae is not None:
         opt_ae = optim.Adam(model_ae.parameters(), lr=config.lr)
 
@@ -355,10 +414,12 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
 
     # Create data loader for minibatching (data already on device)
     from torch.utils.data import DataLoader, TensorDataset
-    labels_t = torch.from_numpy(labels).float().to(device)
-    colors_t = torch.from_numpy(colors).float().to(device)
-    dataset = TensorDataset(X, labels_t, colors_t)
-    batch_size = config.batch_size if config.batch_size > 0 else len(X)
+    labels_train_t = torch.from_numpy(labels_train).long().to(device)
+    labels_test_t = torch.from_numpy(labels_test).long().to(device)
+    colors_train_t = torch.from_numpy(colors_train).float().to(device)
+    colors_test_t = torch.from_numpy(colors_test).float().to(device)
+    dataset = TensorDataset(X_train, labels_train_t, colors_train_t)
+    batch_size = config.batch_size if config.batch_size > 0 else len(X_train)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
     # Training history
@@ -387,6 +448,13 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         "vicreg_inv": [],
         # Tier 5: Jump Operator
         "jump": [],
+        # Supervised topology
+        "sup_total": [],
+        "sup_route": [],
+        "sup_purity": [],
+        "sup_balance": [],
+        "sup_metric": [],
+        "sup_acc": [],
     }
     info_metrics: dict[str, list[float]] = {
         "I_XK": [],
@@ -409,7 +477,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         epoch_info = {"I_XK": 0.0, "H_K": 0.0}
         n_batches = 0
 
-        for batch_X, _batch_labels, _batch_colors in dataloader:
+        for batch_X, batch_labels, _batch_colors in dataloader:
             n_batches += 1
 
             # --- Standard VQ Step ---
@@ -494,6 +562,25 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             else:
                 jump_loss = torch.tensor(0.0, device=device)
 
+            # Supervised topology losses
+            sup_total = torch.tensor(0.0, device=device)
+            sup_route = torch.tensor(0.0, device=device)
+            sup_purity = torch.tensor(0.0, device=device)
+            sup_balance = torch.tensor(0.0, device=device)
+            sup_metric = torch.tensor(0.0, device=device)
+            sup_acc = torch.tensor(0.0, device=device)
+
+            if supervised_loss is not None:
+                sup_out = supervised_loss(enc_w, batch_labels, z_geo)
+                sup_total = sup_out["loss_total"]
+                sup_route = sup_out["loss_route"]
+                sup_purity = sup_out["loss_purity"]
+                sup_balance = sup_out["loss_balance"]
+                sup_metric = sup_out["loss_metric"]
+
+                p_y_x = torch.matmul(enc_w, supervised_loss.p_y_given_k)
+                sup_acc = (p_y_x.argmax(dim=1) == batch_labels).float().mean()
+
             # Total loss
             loss_a = (
                 recon_loss_a
@@ -517,6 +604,8 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 + config.vicreg_inv_weight * vicreg_loss
                 # Tier 5: Jump Operator (scheduled)
                 + current_jump_weight * jump_loss
+                # Supervised topology
+                + config.sup_weight * sup_total
             )
 
             opt_atlas.zero_grad()
@@ -547,6 +636,12 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             epoch_losses["orbit"] += orbit_loss.item()
             epoch_losses["vicreg_inv"] += vicreg_loss.item()
             epoch_losses["jump"] += jump_loss.item()
+            epoch_losses["sup_total"] += sup_total.item()
+            epoch_losses["sup_route"] += sup_route.item()
+            epoch_losses["sup_purity"] += sup_purity.item()
+            epoch_losses["sup_balance"] += sup_balance.item()
+            epoch_losses["sup_metric"] += sup_metric.item()
+            epoch_losses["sup_acc"] += sup_acc.item()
             epoch_info["I_XK"] += window_info["I_XK"]
             epoch_info["H_K"] += window_info["H_K"]
 
@@ -564,15 +659,17 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             scheduler.step()
 
         # Logging and visualization (matching embed_fragile.py style)
-        if config.save_every > 0 and (
+        should_log = epoch % config.log_every == 0 or epoch == config.epochs
+        should_save = config.save_every > 0 and (
             epoch % config.save_every == 0 or epoch == config.epochs
-        ):
+        )
+        if should_log or should_save:
             # Compute metrics on full dataset
             with torch.no_grad():
-                K_chart_full, _, _, _, enc_w_full, _, _, _, _ = model_atlas.encoder(X)
+                K_chart_full, _, _, _, enc_w_full, _, _, _, _ = model_atlas.encoder(X_test)
                 usage = enc_w_full.mean(dim=0).cpu().numpy()
                 chart_assignments = K_chart_full.cpu().numpy()
-                ami = compute_ami(labels, chart_assignments)
+                ami = compute_ami(labels_test, chart_assignments)
                 perplexity = model_atlas.compute_perplexity(K_chart_full)
 
             # Get epoch-averaged losses
@@ -593,6 +690,12 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             avg_orbit = loss_components["orbit"][-1]
             avg_vicreg = loss_components["vicreg_inv"][-1]
             avg_jump = loss_components["jump"][-1]
+            avg_sup_total = loss_components["sup_total"][-1]
+            avg_sup_route = loss_components["sup_route"][-1]
+            avg_sup_purity = loss_components["sup_purity"][-1]
+            avg_sup_balance = loss_components["sup_balance"][-1]
+            avg_sup_metric = loss_components["sup_metric"][-1]
+            avg_sup_acc = loss_components["sup_acc"][-1]
             avg_ixk = info_metrics["I_XK"][-1]
             avg_hk = info_metrics["H_K"][-1]
 
@@ -634,6 +737,32 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 f"  Tier5: jump={avg_jump:.3f} "
                 f"(λ={log_jump_weight:.3f})"
             )
+            if supervised_loss is not None:
+                with torch.no_grad():
+                    _, _, _, _, enc_w_test, z_geo_test, _, _, _ = model_atlas.encoder(
+                        X_test
+                    )
+                    sup_test = supervised_loss(enc_w_test, labels_test_t, z_geo_test)
+                    p_y_x_test = torch.matmul(enc_w_test, supervised_loss.p_y_given_k)
+                    test_sup_acc = (
+                        p_y_x_test.argmax(dim=1) == labels_test_t
+                    ).float().mean().item()
+                    test_sup_route = sup_test["loss_route"].item()
+
+                print(
+                    f"  Sup: train_acc={avg_sup_acc:.3f} "
+                    f"train_route={avg_sup_route:.3f} "
+                    f"test_acc={test_sup_acc:.3f} "
+                    f"test_route={test_sup_route:.3f}"
+                )
+                print(
+                    f"  Sup: total={avg_sup_total:.3f} "
+                    f"route={avg_sup_route:.3f} "
+                    f"purity={avg_sup_purity:.3f} "
+                    f"balance={avg_sup_balance:.3f} "
+                    f"metric={avg_sup_metric:.3f} "
+                    f"acc={avg_sup_acc:.3f}"
+                )
             print(
                 f"  Info: I(X;K)={avg_ixk:.3f} "
                 f"H(K)={avg_hk:.3f}"
@@ -642,8 +771,17 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             print("-" * 60)
 
             # Save visualization
-            save_path = f"{config.output_dir}/topo_epoch_{epoch:05d}.png"
-            visualize_latent(model_atlas, X, colors, labels, save_path, epoch, jump_op=jump_op)
+            if should_save:
+                save_path = f"{config.output_dir}/topo_epoch_{epoch:05d}.png"
+                visualize_latent(
+                    model_atlas,
+                    X_test,
+                    colors_test,
+                    labels_test,
+                    save_path,
+                    epoch,
+                    jump_op=jump_op,
+                )
 
     # Final evaluation
     print("\n" + "=" * 50)
@@ -656,13 +794,13 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         ami_ae = 0.0
         recon_ae_final = None
         if model_ae is not None:
-            recon_ae_final, z_ae = model_ae(X)
-            mse_ae = F.mse_loss(recon_ae_final, X).item()
+            recon_ae_final, z_ae = model_ae(X_test)
+            mse_ae = F.mse_loss(recon_ae_final, X_test).item()
             # Use K-Means on latent space for clustering (K=num_charts)
             z_ae_np = z_ae.cpu().numpy()
             kmeans = KMeans(n_clusters=config.num_charts, random_state=42, n_init=10)
             ae_clusters = kmeans.fit_predict(z_ae_np)
-            ami_ae = compute_ami(labels, ae_clusters)
+            ami_ae = compute_ami(labels_test, ae_clusters)
 
         # Standard VQ metrics
         mse_std = 0.0
@@ -670,20 +808,26 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         std_perplexity = 0.0
         recon_std_final = None
         if model_std is not None:
-            recon_std_final, _, indices_s = model_std(X)
+            recon_std_final, _, indices_s = model_std(X_test)
             std_perplexity = model_std.compute_perplexity(indices_s)
-            mse_std = F.mse_loss(recon_std_final, X).item()
+            mse_std = F.mse_loss(recon_std_final, X_test).item()
             # Cluster VQ codes to get comparable AMI
             vq_clusters = indices_s.cpu().numpy() % config.num_charts  # Simple modulo clustering
-            ami_std = compute_ami(labels, vq_clusters)
+            ami_std = compute_ami(labels_test, vq_clusters)
 
         # Atlas metrics (use dreaming mode to test autonomous routing)
-        recon_atlas_final, _, enc_w, dec_w, K_chart = model_atlas(X, use_hard_routing=False)
+        recon_atlas_final, _, enc_w, dec_w, K_chart = model_atlas(
+            X_test, use_hard_routing=False
+        )
         chart_assignments = K_chart.cpu().numpy()
         atlas_perplexity = model_atlas.compute_perplexity(K_chart)
-        ami_atlas = compute_ami(labels, chart_assignments)
-        mse_atlas = F.mse_loss(recon_atlas_final, X).item()
+        ami_atlas = compute_ami(labels_test, chart_assignments)
+        mse_atlas = F.mse_loss(recon_atlas_final, X_test).item()
         final_consistency = model_atlas.compute_consistency_loss(enc_w, dec_w).item()
+        sup_acc = 0.0
+        if supervised_loss is not None:
+            p_y_x = torch.matmul(enc_w, supervised_loss.p_y_given_k)
+            sup_acc = (p_y_x.argmax(dim=1) == labels_test_t).float().mean().item()
 
     # Results table
     print("\n" + "-" * 70)
@@ -708,11 +852,21 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             print("  AE fails at topology despite good reconstruction (entangled latent)")
 
     print(f"\nRouting Consistency (KL): {final_consistency:.4f}")
+    if supervised_loss is not None:
+        print(f"Supervised Accuracy: {sup_acc:.4f}")
 
     # Save final visualization
     if config.save_every > 0:
         final_path = f"{config.output_dir}/topo_final.png"
-        visualize_latent(model_atlas, X, colors, labels, final_path, epoch=None, jump_op=jump_op)
+        visualize_latent(
+            model_atlas,
+            X_test,
+            colors_test,
+            labels_test,
+            final_path,
+            epoch=None,
+            jump_op=jump_op,
+        )
         print(f"\nFinal visualization saved to: {final_path}")
 
     # Results dict uses already-computed reconstructions from final evaluation
@@ -732,11 +886,19 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         # Perplexity
         "std_perplexity": std_perplexity,
         "atlas_perplexity": atlas_perplexity,
+        "sup_acc": sup_acc,
         # Data
-        "X": X,
-        "labels": labels,
-        "colors": colors,
+        "X": X_test,
+        "labels": labels_test,
+        "colors": colors_test,
+        "X_train": X_train,
+        "X_test": X_test,
+        "labels_train": labels_train,
+        "labels_test": labels_test,
+        "colors_train": colors_train,
+        "colors_test": colors_test,
         "chart_assignments": chart_assignments,
+        "dataset_ids": dataset_ids,
         # For reconstruction comparison
         "recon_ae": recon_ae_final,
         "recon_std": recon_std_final,
@@ -776,6 +938,12 @@ def main():
         help="Total samples (divided by 3 per manifold)",
     )
     parser.add_argument(
+        "--test_split",
+        type=float,
+        default=0.2,
+        help="Fraction of samples for test split (0.0-0.99)",
+    )
+    parser.add_argument(
         "--num_charts",
         type=int,
         default=3,
@@ -792,6 +960,12 @@ def main():
         type=int,
         default=32,
         help="Hidden dimension for TopoEncoder",
+    )
+    parser.add_argument(
+        "--log_every",
+        type=int,
+        default=100,
+        help="Log training metrics every N epochs",
     )
     parser.add_argument(
         "--save_every",
@@ -905,6 +1079,49 @@ def main():
         help="Rank of global tangent space (0 = use latent_dim, default: 0)",
     )
 
+    # Supervised topology loss
+    parser.add_argument(
+        "--disable_supervised",
+        action="store_true",
+        help="Disable supervised topology losses",
+    )
+    parser.add_argument(
+        "--sup_weight",
+        type=float,
+        default=1.0,
+        help="Global weight for supervised topology loss",
+    )
+    parser.add_argument(
+        "--sup_purity_weight",
+        type=float,
+        default=0.1,
+        help="Supervised purity loss weight",
+    )
+    parser.add_argument(
+        "--sup_balance_weight",
+        type=float,
+        default=0.01,
+        help="Supervised balance loss weight",
+    )
+    parser.add_argument(
+        "--sup_metric_weight",
+        type=float,
+        default=0.01,
+        help="Supervised metric loss weight",
+    )
+    parser.add_argument(
+        "--sup_metric_margin",
+        type=float,
+        default=1.0,
+        help="Supervised metric loss margin",
+    )
+    parser.add_argument(
+        "--sup_temperature",
+        type=float,
+        default=1.0,
+        help="Temperature for chart-to-class mapping",
+    )
+
     # Benchmark control
     parser.add_argument(
         "--disable_ae",
@@ -929,9 +1146,11 @@ def main():
         lr=args.lr,
         batch_size=args.batch_size,
         n_samples=args.n_samples,
+        test_split=args.test_split,
         num_charts=args.num_charts,
         codes_per_chart=args.codes_per_chart,
         hidden_dim=args.hidden_dim,
+        log_every=args.log_every,
         save_every=args.save_every,
         output_dir=args.output_dir,
         device=args.device,
@@ -953,6 +1172,14 @@ def main():
         jump_warmup=args.jump_warmup,
         jump_ramp_end=args.jump_ramp_end,
         jump_global_rank=args.jump_global_rank,
+        # Supervised topology loss
+        enable_supervised=not args.disable_supervised,
+        sup_weight=args.sup_weight,
+        sup_purity_weight=args.sup_purity_weight,
+        sup_balance_weight=args.sup_balance_weight,
+        sup_metric_weight=args.sup_metric_weight,
+        sup_metric_margin=args.sup_metric_margin,
+        sup_temperature=args.sup_temperature,
         # Benchmark control
         disable_ae=args.disable_ae,
         disable_vq=args.disable_vq,
@@ -965,6 +1192,7 @@ def main():
     print(f"\nConfiguration:")
     print(f"  Epochs: {config.epochs}, Batch size: {config.batch_size}")
     print(f"  Total samples: {config.n_samples}")
+    print(f"  Test split: {config.test_split}")
     print(f"  Num charts: {config.num_charts}")
     print(f"  Codes per chart: {config.codes_per_chart}")
     print(f"  Total atlas codes: {config.num_charts * config.codes_per_chart}")
