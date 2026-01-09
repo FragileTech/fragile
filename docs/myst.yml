@@ -1,4 +1,4 @@
-# MyST configuration for Jupyter Book
+# MyST configuration for Fragile documentation
 # https://mystmd.org/guide/frontmatter
 
 version: 1
@@ -12,10 +12,17 @@ project:
   bibliography:
     - references.bib
 
-  # Table of contents
   toc:
     - file: index.md
       title: Home
+    - title: Chapters
+      children:
+        - file: source/info_sm.md
+          title: "Chapter 34: The Standard Model of Cognition"
+        - file: source/harvesting_loop.md
+          title: "Chapter 36: The Metabolic Transducer"
+        - file: source/language.md
+          title: "Chapter 37: The Inter-Subjective Metric"
 
 site:
   title: Fragile Documentation
