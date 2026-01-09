@@ -188,7 +188,7 @@ Cross-references are provided throughout so you can dive deeper when needed, but
 
 A recommended approach for understanding this framework:
 
-1. **Provide the markdown files** to an LLM (Claude, GPT-4, Gemini, etc.)
+1. **Provide the markdown files** to an LLM (Claude, GPT-5.2, Gemini, etc.)
 2. **Ask targeted questions** about specific concepts, theorems, or connections
 3. **Request explanations** of how different parts connect
 4. **Use the LLM to trace cross-references** and build intuition
@@ -317,7 +317,7 @@ This framework introduces a unified nomenclature. While these terms may seem nov
 *Field-Theoretic Contributions (Multi-Agent & Bounds):*
 
 11. **Multi-agent field theory.** Strategic interaction derives from coupled Helmholtz equations; the Game Tensor $\mathcal{G}_{ij}$ increases the effective metric eigenvalues under adversarial coupling, making Nash equilibrium a geometric fixed point ({ref}`Section 29 <sec-symplectic-multi-agent-field-theory>`). The Mean-Field Metric Law ({prf:ref}`thm-mean-field-metric-law`) proves scalability to $N \to \infty$ agents. The Geometric Locking Principle ({prf:ref}`thm-geometric-locking-principle`) establishes that cooperative equilibria emerge from metabolic constraints.
-12. **Causal Information Bound (Area Law).** The maximum representable information is bounded by interface area: $I_{\max} = \text{Area}(\partial\mathcal{Z})/4\ell_L^2$. Derived rigorously from the Capacity-Constrained Metric Law via generalized Gauss-Bonnet identity; the 1/4 coefficient emerges from Fisher metric normalization. Structural parallel to Bekenstein-Hawking with information-theoretic content ({ref}`Section 33 <sec-causal-information-bound>`, {ref}`Appendix A.6 <sec-appendix-a-area-law>`).
+12. **Causal Information Bound (Area Law).** The maximum representable information is bounded by interface area: $I_{\max} = \nu_D \cdot \text{Area}(\partial\mathcal{Z})/\ell_L^{D-1}$ where the Holographic Coefficient $\nu_D = (D-1)\Omega_{D-1}/(8\pi)$ is dimension-dependent (recovering $\nu_2 = 1/4$ for $D=2$). Derived rigorously from the Capacity-Constrained Metric Law via generalized Gauss-Bonnet identity. Structural parallel to Bekenstein-Hawking with information-theoretic content ({ref}`Section 33 <sec-causal-information-bound>`, {ref}`Appendix A.6 <sec-appendix-a-area-law>`).
 13. **Causal Isometry and Safe Retrieval.** The Causal Isometry Theorem ({prf:ref}`thm-causal-isometry`) proves that Interventionally Closed representations in different modalities induce isometric metrics, enabling principled cross-modal transfer. The Safe Retrieval Bandwidth Theorem ({prf:ref}`thm-safe-retrieval-bandwidth`) bounds retrieval injection to prevent saturation of the holographic interface.
 
 *Ontological Contributions (Dynamic Architecture):*
