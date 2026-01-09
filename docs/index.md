@@ -7702,7 +7702,9 @@ Following the diagnostic node convention (Section 3.1), we define:
 
 
 (sec-radial-generation-entropic-drift-and-policy-control)=
-## 21. Radial Generation: Entropic Drift and Policy Control {cite}`ho2020ddpm,sohldickstein2015deep,nickel2017poincare`
+## 21. Radial Generation: Entropic Drift and Policy Control
+
+{cite}`ho2020ddpm,sohldickstein2015deep,nickel2017poincare`
 
 :::{admonition} Researcher Bridge: Diffusion-Style Generation with Policy Drift
 :class: info
@@ -8167,7 +8169,9 @@ def sample_boundary_texture(
 
 
 (sec-the-equations-of-motion-geodesic-jump-diffusion)=
-## 22. The Equations of Motion: Geodesic Jump-Diffusion {cite}`oksendal2003sde,risken1996fokkerplanck`
+## 22. The Equations of Motion: Geodesic Jump-Diffusion
+
+{cite}`oksendal2003sde,risken1996fokkerplanck`
 
 :::{admonition} Researcher Bridge: Continuous-Time Actor-Critic
 :class: info
@@ -9071,7 +9075,9 @@ $$
 
 
 (sec-the-boundary-interface-symplectic-structure)=
-## 23. The Boundary Interface: Symplectic Structure {cite}`arnold1989mathematical`
+## 23. The Boundary Interface: Symplectic Structure
+
+{cite}`arnold1989mathematical`
 
 :::{admonition} Researcher Bridge: Observations and Actions as Boundary Conditions
 :class: info
@@ -10056,7 +10062,9 @@ The RNN/GRU/Transformer architecture has no geometric constraints—it's a unive
 
 
 (sec-the-reward-field-value-forms-and-hodge-geometry)=
-## 24. The Reward Field: Value Forms and Hodge Geometry {cite}`evans2010pde,sutton2018rl`
+## 24. The Reward Field: Value Forms and Hodge Geometry
+
+{cite}`evans2010pde,sutton2018rl`
 
 We have defined Observations as **Configuration Constraints** (manifold position, Section 23.1) and Actions as **Momentum Constraints** (tangent vectors, Section 23.1). We now define the third component of the interface: **Reward**.
 
@@ -11455,7 +11463,9 @@ Since $H(Y)$ is fixed by the data, $\min \mathcal{L}_{\text{purity}} \Leftrighta
 
 :::
 (sec-load-balance-loss)=
-#### 25.4.2 Load Balance Loss (Uniform Coverage) {cite}`shazeer2017moe`
+#### 25.4.2 Load Balance Loss (Uniform Coverage)
+
+{cite}`shazeer2017moe`
 
 :::{prf:definition} Balance Loss
 :label: def-balance-loss
@@ -11471,7 +11481,9 @@ where $\bar{w} = \mathbb{E}_{x \sim \mathcal{D}}[w(x)]$ is the average router we
 
 :::
 (sec-metric-contrastive-loss)=
-#### 25.4.3 Metric Contrastive Loss (Geometric Separation) {cite}`schroff2015facenet,khosla2020supcon`
+#### 25.4.3 Metric Contrastive Loss (Geometric Separation)
+
+{cite}`schroff2015facenet,khosla2020supcon`
 
 :::{prf:definition} Contrastive Loss
 :label: def-contrastive-loss
@@ -11818,7 +11830,9 @@ Following the diagnostic node convention (Section 3.1), we define:
 
 
 (sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller)=
-## 26. Theory of Meta-Stability: The Universal Governor as Homeostatic Controller {cite}`finn2017maml,franceschi2018bilevel,hospedales2021metalearning`
+## 26. Theory of Meta-Stability: The Universal Governor as Homeostatic Controller
+
+{cite}`finn2017maml,franceschi2018bilevel,hospedales2021metalearning`
 
 The Fragile Agent architecture relies on the strict satisfaction of information-theoretic and geometric constraints (The Sieve, Section 3). Manual tuning of the associated Lagrange multipliers is intractable due to the non-stationary coupling between the Representation ($G$), the Dynamics ($S$), and the Value ($V$). We formalize the training process as a dynamical system and introduce the **Universal Governor**, a meta-controller that regulates the learning dynamics. The Governor solves a bilevel optimization problem; convergence is characterized via a training Lyapunov function (Definition {prf:ref}`def-training-lyapunov-function`).
 
