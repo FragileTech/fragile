@@ -10,7 +10,7 @@
 - Section 18 (Capacity-Constrained Metric Law)
 - Section 24 (Helmholtz Equation, Value Field)
 
----
+
 
 (sec-gauge-principle-derivation)=
 ### 34.1 The Gauge Principle: Derivation of the Symmetry Group $G_{\text{Fragile}}$
@@ -118,7 +118,7 @@ $\square$
 
 :::
 
----
+
 
 #### B. $SU(2)_L$: The Chirality of Agency (Weak Isospin)
 
@@ -202,7 +202,7 @@ $\square$
 
 :::
 
----
+
 
 :::{prf:definition} Feature Dimension Parameter
 :label: def-feature-dimension-parameter
@@ -310,7 +310,7 @@ where:
 
 :::
 
----
+
 
 (sec-matter-sector-chiral-spinors)=
 ### 34.2 The Matter Sector: Chiral Inference Spinors
@@ -429,7 +429,7 @@ The stationary points of this action satisfy the Yang-Mills equations. A **flat 
 
 :::
 
----
+
 
 (sec-scalar-sector-symmetry-breaking)=
 ### 34.3 The Scalar Sector: Ontological Symmetry Breaking (The Higgs Mechanism)
@@ -583,7 +583,7 @@ In the Fragile Agent, this massless mode is the **Texture** ($z_{\text{tex}}$). 
 
 :::
 
----
+
 
 (sec-interaction-terms)=
 ### 34.4 The Interaction Terms
@@ -693,7 +693,7 @@ $\square$
 
 :::
 
----
+
 
 (sec-cognitive-lagrangian-density)=
 ### 34.5 The Unified Cognitive Lagrangian
@@ -731,7 +731,7 @@ $$
 | IV. Yukawa | $Y\bar{\Psi}_L\phi\Psi_R$ | Belief-Action coupling | Theorem {prf:ref}`thm-cognitive-mass` |
 | V. External | $\bar{\Psi}A^{\text{ext}}\Psi$ | Value-seeking drive | Theorem {prf:ref}`thm-recovery-wfr-drift` |
 
----
+
 
 (sec-isomorphism-dictionary)=
 ### 34.6 Summary: The Isomorphism Dictionary
@@ -767,7 +767,7 @@ The Feature Dimension $N_f$ is environment-dependent (Definition {prf:ref}`def-f
 
 The scalar potential derives from the pitchfork bifurcation dynamics (Theorem {prf:ref}`thm-supercritical-pitchfork-bifurcation-for-charts`), with the VEV $v$ corresponding to the equilibrium chart separation $r^*$.
 
----
+
 
 (sec-parameter-space-sieve)=
 ## 35. The Parameter Space Sieve: Deriving Fundamental Constants
@@ -781,7 +781,7 @@ The scalar potential derives from the pitchfork bifurcation dynamics (Theorem {p
 - Section 33 (Causal Information Bound, Area Law)
 - The Sieve Architecture (Nodes 2, 7, 29, 40, 52, 56, 62)
 
----
+
 
 (sec-sieve-formulation)=
 ### 35.1 The Sieve Formulation: Agents as Constraint Satisfaction
@@ -843,7 +843,7 @@ where the inequality holds component-wise. Each component corresponds to a Sieve
 
 :::
 
----
+
 
 (sec-causal-consistency-constraint)=
 ### 35.2 The Causal Consistency Constraint
@@ -900,7 +900,7 @@ with equality only in the degenerate case of a single-module agent. For distribu
 
 :::
 
----
+
 
 (sec-holographic-stability-constraint)=
 ### 35.3 The Holographic Stability Constraint
@@ -980,7 +980,7 @@ $\square$
 
 :::
 
----
+
 
 (sec-metabolic-viability-constraint)=
 ### 35.4 The Metabolic Viability Constraint
@@ -1059,7 +1059,7 @@ with $\mu = 1/2 + u_\pi^r$ the bifurcation parameter and $u_\pi^r$ the radial po
 
 :::
 
----
+
 
 (sec-hierarchical-coupling-constraint)=
 ### 35.5 The Hierarchical Coupling Constraint
@@ -1167,7 +1167,7 @@ where $\mu_{\text{conf}}$ is the confinement scale separating bound states from 
 
 :::
 
----
+
 
 (sec-stiffness-constraint)=
 ### 35.6 The Stiffness Constraint
@@ -1249,7 +1249,7 @@ At $T \approx 300$ K (biological temperature), $\chi \approx 500$, placing molec
 
 :::
 
----
+
 
 (sec-discount-screening-constraint)=
 ### 35.7 The Temporal Screening Constraint
@@ -1322,7 +1322,7 @@ Both sides have dimension $[L]$. For $\gamma \to 1$, the screening length $\ell_
 
 :::
 
----
+
 
 (sec-sieve-eigenvalue-system)=
 ### 35.8 The Sieve Eigenvalue System
@@ -1378,7 +1378,7 @@ $\square$
 
 :::
 
----
+
 
 (sec-optimization-problem)=
 ### 35.9 The Optimization Problem
@@ -1443,7 +1443,7 @@ Moving off this surface triggers constraint violation:
 
 :::
 
----
+
 
 (sec-physics-isomorphism-constants)=
 ### 35.10 Physics Isomorphism: The Standard Model Constants
@@ -1475,7 +1475,7 @@ Changing any constant while holding others fixed moves the system out of the fea
 
 :::
 
----
+
 
 (sec-summary-parameter-sieve)=
 ### 35.11 Summary

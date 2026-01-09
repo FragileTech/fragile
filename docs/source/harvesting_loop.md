@@ -7,7 +7,7 @@
 
 *Literature:* Maxwell's Demon {cite}`maxwell1871theory` (Maxwell, *Theory of Heat*, 1871); Szilard engine {cite}`szilard1929entropy` (Szilard, "On the decrease of entropy in a thermodynamic system by the intervention of intelligent beings," *Zeitschrift für Physik* 53:840–856, 1929); Landauer's principle {cite}`landauer1961irreversibility` (Landauer, "Irreversibility and Heat Generation in the Computing Process," *IBM J. Res. Dev.* 5:183–191, 1961); autopoiesis {cite}`maturana1980autopoiesis` (Maturana & Varela, *Autopoiesis and Cognition: The Realization of the Living*, 1980); free energy principle {cite}`friston2010free` (Friston, "The free-energy principle: a unified brain theory?", *Nature Reviews Neuroscience* 11:127–138, 2010); Johnson-Nyquist noise {cite}`johnson1928thermal,nyquist1928thermal` (Johnson, "Thermal Agitation of Electricity in Conductors," *Phys. Rev.* 32:97–109, 1928; Nyquist, "Thermal Agitation of Electric Charge in Conductors," *Phys. Rev.* 32:110–113, 1928).
 
----
+
 
 (sec-thermodynamics-of-information-harvesting)=
 ### 36.1 The Thermodynamics of Information Harvesting
@@ -144,7 +144,7 @@ where $r_t$ is measured in nats.
 
 ::::
 
----
+
 
 (sec-internal-battery-autopoietic-dynamics)=
 ### 36.2 The Internal Battery and Autopoietic Dynamics
@@ -247,7 +247,7 @@ Standard reward maximization $\max \mathbb{E}[\sum_t \gamma^t r_t]$ emerges as a
 - Connects RL objective to thermodynamic first principles
 :::
 
----
+
 
 (sec-the-fading-metric-energy-dependent-geometry)=
 ### 36.3 The Fading Metric: Energy-Dependent Geometry
@@ -380,7 +380,7 @@ where $R$ is resistance and $T$ is temperature. The SNR of any electrical signal
 
 ::::
 
----
+
 
 (sec-homeostatic-control-battery-potential)=
 ### 36.4 Homeostatic Control: The Battery Potential
@@ -458,7 +458,7 @@ As $B \to 0$:
 - Grounds "intrinsic motivation" in thermodynamic necessity
 :::
 
----
+
 
 (sec-thermal-management-carnot-bound)=
 ### 36.5 Thermal Management and the Carnot Bound
@@ -535,7 +535,7 @@ The **Thermal Operating Envelope** is the region in $(T_c, \dot{\mathcal{M}}, \d
 
 :::
 
----
+
 
 (sec-implementation-metabolic-battery)=
 ### 36.6 Implementation: The MetabolicBattery Module
@@ -725,7 +725,7 @@ class MetabolicBattery(nn.Module):
         return waste_heat > max_dissipation
 ```
 
----
+
 
 (sec-diagnostic-nodes-autopoiesis)=
 ### 36.7 Diagnostic Nodes 67–70: Autopoiesis
@@ -739,7 +739,7 @@ We add four diagnostic nodes to the Sieve monitoring autopoietic viability.
 | **69** | **ThermalRunawayCheck** | Cooling | Stability | Is thermal equilibrium stable? | $T_c < T_{\text{env}}$ | $O(1)$ |
 | **70** | **MetricFadingCheck** | Geometry | Degradation | Is metric resolution adequate? | $f(B/B_{\text{crit}}) > \epsilon_{\text{fade}}$ | $O(1)$ |
 
----
+
 
 (node-67)=
 **Node 67: AutopoiesisCheck**
@@ -752,7 +752,7 @@ We add four diagnostic nodes to the Sieve monitoring autopoietic viability.
 - Initialize next generation with higher $\eta$ or more conservative policy
 - Select for lineages with positive $\langle \mathfrak{T} - \dot{\mathcal{M}} \rangle$
 
----
+
 
 (node-68)=
 **Node 68: HarvestEfficiencyCheck**
@@ -767,7 +767,7 @@ We add four diagnostic nodes to the Sieve monitoring autopoietic viability.
 3. Increase Homeostatic Weight $\lambda_{\text{surv}}$ (focus on food-seeking)
 4. Trigger Deliberation Stopping (Theorem {prf:ref}`thm-deliberation-optimality-condition`) earlier
 
----
+
 
 (node-69-metabolic)=
 **Node 69: ThermalRunawayCheck**
@@ -782,7 +782,7 @@ We add four diagnostic nodes to the Sieve monitoring autopoietic viability.
 3. Reduce transduction rate (take fewer actions)
 4. Enter "sleep" mode: reflective boundary, zero action, maximize heat dissipation
 
----
+
 
 (node-70-metabolic)=
 **Node 70: MetricFadingCheck**
@@ -797,7 +797,7 @@ We add four diagnostic nodes to the Sieve monitoring autopoietic viability.
 3. Fall back to reflexive/hardcoded behaviors
 4. Signal distress to external systems (if available)
 
----
+
 
 (sec-summary-closed-thermodynamic-loop)=
 ### 36.8 Summary: The Closed Thermodynamic Loop

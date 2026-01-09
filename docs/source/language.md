@@ -7,7 +7,7 @@
 
 *Literature:* Gromov-Hausdorff distance and metric geometry {cite}`gromov1999metric`; Kuramoto model for coupled oscillator synchronization {cite}`acebron2005kuramoto`; consensus problems in multi-agent systems {cite}`olfati2004consensus`; theory of mind in primates {cite}`premack1978does`; convention and signaling games {cite}`lewis1969convention`; non-Abelian gauge theory {cite}`yang1954conservation`.
 
----
+
 
 (sec-the-solipsism-problem-metric-friction)=
 ### 37.1 The Solipsism Problem: Metric Friction
@@ -48,7 +48,7 @@ where $V_{\text{max}}$ is the optimal cooperative value under perfect alignment 
 
 :::
 
----
+
 
 (sec-the-locking-operator)=
 ### 37.2 The Locking Operator: Derivation from Gauge Theory
@@ -148,7 +148,7 @@ $$
 
 :::
 
----
+
 
 (sec-spontaneous-gauge-locking)=
 ### 37.3 Spontaneous Gauge Locking
@@ -298,7 +298,7 @@ where $\sigma$ is the Cognitive Action Scale (Definition {prf:ref}`def-cognitive
 
 :::
 
----
+
 
 (sec-language-as-geometric-alignment)=
 ### 37.4 Language as Gauge-Covariant Transport
@@ -425,7 +425,7 @@ Perfect translation ($\mathcal{U}_{AB} = 0$) is achievable for all messages if a
 
 :::
 
----
+
 
 (sec-the-babel-limit)=
 ### 37.5 The Babel Limit: Communication Bandwidth Constraints
@@ -488,7 +488,7 @@ This subspace corresponds to **Private Qualia**: aspects of Agent $A$'s experien
 
 :::
 
----
+
 
 (sec-spectral-analysis)=
 ### 37.6 Spectral Analysis: Core Concepts vs Nuance
@@ -526,7 +526,7 @@ $$
 
 :::
 
----
+
 
 (sec-echo-chamber-and-drift)=
 ### 37.7 The Emergence of Objective Reality
@@ -606,7 +606,7 @@ where $\langle \mathcal{F}_{ij} \rangle$ is the average pairwise friction.
 
 :::
 
----
+
 
 (sec-multi-agent-scaling)=
 ### 37.8 Multi-Agent Scaling: The Institutional Manifold
@@ -641,7 +641,7 @@ This provides a normalized gauge that allows agents with disjoint utility functi
 
 :::
 
----
+
 
 (sec-physics-isomorphisms-language)=
 ### 37.9 Physics Isomorphisms
@@ -698,7 +698,7 @@ $$
 | Synchronized State | Gauge-Locked Phase |
 ::::
 
----
+
 
 (sec-implementation-metric-synchronizer)=
 ### 37.10 Implementation: The Gauge-Covariant Metric Synchronizer
@@ -886,7 +886,7 @@ class GaugeCovariantMetricSynchronizer(nn.Module):
         return satisfied, k_max
 ```
 
----
+
 
 (sec-diagnostic-nodes-consensus)=
 ### 37.11 Diagnostic Nodes 69–70: Consensus
@@ -905,7 +905,7 @@ class GaugeCovariantMetricSynchronizer(nn.Module):
     2. Trigger `GaugeCovariantMetricSynchronizer` training phase
     3. Force ostensive definitions (shared physical pointing)
 
----
+
 
 (node-70)=
 **Node 70: BabelCheck**
@@ -922,7 +922,7 @@ class GaugeCovariantMetricSynchronizer(nn.Module):
     2. Increase $\lambda_{\text{ground}}$ in loss function
     3. Inject diversity via temporary unlocking
 
----
+
 
 (sec-summary-language)=
 ### 37.12 Summary: Reality as a Fixed Point
