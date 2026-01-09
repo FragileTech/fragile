@@ -77,7 +77,7 @@ lint= ["mypy", "ruff", "mypy"]
 test = ["pytest", "pytest-cov", "pytest-xdist", "tomli>=2.0.2"]
 docs = [
     "autoapi",
-    "jupyter-book",
+    "jupyter-book>=1.0.0,<2.0.0",
     "sphinx",
     "linkify-it-py",
     "myst-parser",
@@ -94,6 +94,8 @@ docs = [
     "sphinx-togglebutton",
     "sphinxext-opengraph",
     "sphinxcontrib-bibtex",
+    "sphinx-tippy",
+    "sphinx-proof",
 ]
 [tool.rye]
 managed = true
