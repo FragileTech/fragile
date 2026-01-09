@@ -101,17 +101,17 @@ sphinx:
     - sphinx.ext.autodoc.typehints
     - sphinx.ext.githubpages
     - sphinxcontrib.mermaid
-    - autoapi.extension
+    # - autoapi.extension  # Disabled - requires src directory
     - sphinx_proof
   local_extensions          :   # A list of local extensions to load by sphinx specified by "name: path" items
   recursive_update          : false # A boolean indicating whether to overwrite the Sphinx config (true) or recursively update (false)
   config                    : # key-value pairs to directly over-ride the Sphinx configuration
     numfig                    : true
-    autoapi_dirs              : [ "../src" ]
+    # autoapi_dirs              : [ "../src" ]  # Disabled - requires src directory
     napoleon_google_docstring : true
     napoleon_numpy_docstring  : false
     autodoc_typehints         : "description"
-    autoapi_add_toctree_entry : true
+    # autoapi_add_toctree_entry : true  # Disabled - requires autoapi
     # imgmath_latex             : /usr/bin/latex  # Disabled - not using imgmath
     version                   : "0.2.0"  # The version of the book
     release                   : "0.2.0"  # The release of the book

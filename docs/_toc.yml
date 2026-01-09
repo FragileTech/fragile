@@ -1,2 +1,10 @@
 format: jb-book
 root: index
+
+chapters:
+  - file: source/info_sm
+    title: "Chapter 34: The Standard Model of Cognition"
+  - file: source/harvesting_loop
+    title: "Chapter 36: The Metabolic Transducer"
+  - file: source/language
+    title: "Chapter 37: The Inter-Subjective Metric"

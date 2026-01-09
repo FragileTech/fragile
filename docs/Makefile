@@ -2,23 +2,19 @@
 
 # Build the Jupyter Book
 build:
-	npx myst build
+	jupyter-book build .
 
 # Build docs without serving
 docs:
-	npx myst build
+	jupyter-book build .
 
-# Serve the built site on localhost:3000
-serve:
-	npx myst start
-
-# Serve on custom port
-serve-port:
-	npx myst start --port 8000
+# Serve the built site (requires python http.server or similar)
+serve: build
+	python -m http.server -d _build/html 8000
 
 # Build PDF output
 pdf:
-	npx myst build --pdf
+	jupyter-book build . --builder pdflatex
 
 # Clean build artifacts
 clean:
@@ -26,4 +22,4 @@ clean:
 
 # Install dependencies
 install:
-	npm install
+	pip install -r requirements.txt

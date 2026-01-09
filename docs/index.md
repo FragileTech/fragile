@@ -400,7 +400,7 @@ Throughout this document, `:::{note} Connection to RL #N` admonition boxes mark 
 
 **Conclusion.** Standard RL is recovered from the Fragile Agent under these degeneracy conditions: flat geometry, infinite capacity, disabled Sieve. The 33 reductions in Table 0.6.1 demonstrate that each standard RL algorithm corresponds to a specific limit of the unified framework. The generalizations are not optional decorations; they restore coordinate invariance, impose hard safety guarantees, and provide principled answers to questions (like "when should I stop thinking?") that standard RL leaves to heuristics.
 
----
+
 
 (sec-introduction-the-agent-as-a-bounded-rationality-controller)=
 ## 1. Introduction: The Agent as a Bounded-Rationality Controller
@@ -637,7 +637,7 @@ This is the time coordinate of the Holographic Screen.
 - **Access:** attention computes distances between the current state $z_t$ and stored states $z_{t'}$.
 - **Causality:** we enforce $t' < t$ (no access to the future).
 
----
+
 
 (sec-the-control-loop-representation-and-control)=
 ## 2. The Control Loop: Representation and Control
@@ -1655,7 +1655,7 @@ The Trinity of Manifolds is extended to the **Boundary Operator**:
 
 **Operational audit criterion.** Rather than treating internal variables as inherently grounded, we require that changes in internal belief/state be explainable by boundary coupling and declared projection events. In practice this is enforced via BoundaryCheck, coupling-window constraints, and enclosure/closure defects; persistent violations indicate that internal rollouts are no longer reliable for control and should trigger conservative updates or re-grounding interventions.
 
----
+
 
 (sec-diagnostics-stability-checks)=
 ## 3. Diagnostics: Stability Checks (Monitors)
@@ -2389,7 +2389,7 @@ The three adaptive multiplier methods above (Primal–Dual, PID, Learned Precisi
 The Governor subsumes these by learning the appropriate response to each diagnostic signature via bilevel optimization. See Section 26 for stability guarantees via Lyapunov analysis.
 :::
 
----
+
 
 (sec-limits-barriers)=
 ## 4. Limits: Barriers (The Limits of Control)
@@ -2492,7 +2492,7 @@ The most dangerous failures occur when barriers conflict. We model these as **Tr
         $$
     *   *Mechanism:* Explicitly decide *where* to be blind. We penalize high-frequency errors heavily (instability) while accepting low-frequency drift (steady-state error), or vice versa.
 
----
+
 
 (sec-failure-modes)=
 ## 5. Failure Modes (Observed Pathologies)
@@ -2522,7 +2522,7 @@ When Limits are breached or Interfaces fail, the agent exhibits specific patholo
 | **B.D** | Resource Depletion  | **Boundary/Shutter** | **Starvation**                | Input or power resources depleted.                                              |
 | **B.C** | Control Deficit     | **Policy**           | **Overwhelmed**               | Disturbance more complex than controller (Ashby).                               |
 
----
+
 
 (sec-interventions)=
 ## 6. Interventions (Mitigations)
@@ -2553,7 +2553,7 @@ Interventions are external mitigations to restore stability, re-ground the repre
 | **SurgBD**     | B.D (Starve)       | **Boundary/Shutter** | **Replay Buffer / Reservoir** | **Experience Replay:** Train on historical buffers to prevent catastrophic forgetting.                                                                                                                                                                                                                                                  |
 | **SurgBC**     | B.C (Deficit)      | **Policy**           | **Controller Expansion**      | **Width Expansion:** Dynamically add neurons to the Policy network (Net2Net).                                                                                                                                                                                                                                                           |
 
----
+
 
 (sec-computational-considerations)=
 ## 7. Computational Considerations
@@ -3795,7 +3795,7 @@ In the Attentive Atlas, a **Jump** (Section 11.5.4) corresponds to a switch in t
 2.  At $t+1$, the attention weight for chart $j$ exceeds chart $i$.
 3.  The transition triggers the application of the Jump Operator $L_{i \to j}$ (learned affine transform) to the local coordinates, handling the gauge transformation between the two charts.
 
----
+
 
 (sec-elastic-atlas-dynamic-chart-count)=
 #### 7.8.7 Elastic Atlas: Dynamic Chart Count (Implementation Note)
@@ -3841,7 +3841,7 @@ Elastic charts are worth it when environment complexity is unknown or non-statio
 
 From this point onward, atlas references assume the Attentive Atlas (Tier 6) unless explicitly labeled Tier 5.
 
----
+
 
 (sec-encoder-architecture-overview-attentive-atlas-latent-hierarchy)=
 ### 7.9 Encoder Architecture Overview: Attentive Atlas Latent Hierarchy
@@ -4025,7 +4025,7 @@ $$
 $$
 This keeps the inverse router aligned with the encoder routing.
 
----
+
 
 (sec-the-geometry-of-the-latent-space-a-hyperbolic-hierarchy)=
 ### 7.11 The Geometry of the Latent Space: A Hyperbolic Hierarchy
@@ -4147,7 +4147,7 @@ This geometric picture justifies the **Sieve architecture**:
 * **Boundary checks** monitor the flux from $z_{\mathrm{tex}}$ into the bulk.
 * **Texture is residual:** We do not control infinity; we only observe it.
 
----
+
 
 (sec-stacked-topoencoders-deep-renormalization-group-flow)=
 ### 7.12 Stacked TopoEncoders: Deep Renormalization Group Flow
@@ -4487,7 +4487,7 @@ $$
 $$
 This ensures that deeper blocks explain progressively less variance—the RG flow moves toward a fixed point.
 
----
+
 
 (sec-factorized-jump-operators-efficient-chart-transitions)=
 ### 7.13 Factorized Jump Operators: Efficient Chart Transitions
@@ -5318,7 +5318,7 @@ def compute_geom_loss(
 | TopoCheck ($O(HBZ)$)      | Value Alignment    | ~$H$     | Ensures goal reachability       |
 | GeomCheck ($O(B^2 Z)$)    | Sampled NCE        | ~$B/K$   | Preserves slow features         |
 
----
+
 
 (sec-the-disentangled-variational-architecture-hierarchical-latent-separation)=
 ## 9. The Disentangled Variational Architecture: Hierarchical Latent Separation
@@ -6391,7 +6391,7 @@ The **Universal Loss** (Section 7.7.4) decomposes into geometric objectives, usi
 | **InfoNCE**              | {cite}`oord2018cpc`               | Contrastive predictive coding                |
 | **Information Geometry** | {cite}`saxe2019information`       | Fisher information in NNs                    |
 
----
+
 
 (sec-intrinsic-motivation-maximum-entropy-exploration)=
 ## 11. Intrinsic Motivation: Maximum-Entropy Exploration
@@ -6511,7 +6511,7 @@ $$
 
 :::
 
----
+
 
 (sec-belief-dynamics-prediction-update-projection)=
 ## 12. Belief Dynamics: Prediction, Update, Projection
@@ -6722,7 +6722,7 @@ This recovers standard **POMDP belief updates** {cite}`kaelbling1998planning` wi
 - **Operator-valued updates**: Section 12.5 extends to GKSL/Lindblad form for quantum-like belief decoherence
 ::::
 
----
+
 
 (sec-correspondence-table-filtering-control-template)=
 ## 13. Correspondence Table: Filtering / Control Template
@@ -6739,7 +6739,7 @@ The table below is a dictionary from standard **filtering and constrained infere
 | Entropy $H(p_t)$                                          | Macro uncertainty / symbol mixing              | Detect collapse vs dispersion |
 | KL-control $D_{\mathrm{KL}}(\pi\Vert\pi_0)$               | Control-effort regularizer                     | Penalize deviation from prior |
 
----
+
 
 (sec-duality-of-exploration-and-soft-optimality)=
 ## 14. Duality of Exploration and Soft Optimality
@@ -6859,7 +6859,7 @@ This recovers **KL-Regularized Policy Gradient** and exponential family policies
 - **Causal entropy**: $S_c(k, H; \pi)$ measures future reachability under causal interventions
 ::::
 
----
+
 
 (sec-implementation-note-entropy-regularized-optimal-transport-bridge)=
 ## 15. Implementation Note: Entropy-Regularized Optimal Transport Bridge
@@ -6880,7 +6880,7 @@ In the Fragile Agent:
 - the Sieve imposes feasibility constraints (via projections),
 so each training update can be read as an entropic optimal transport step on belief trajectories.
 
----
+
 
 (sec-theorem-the-information-stability-threshold)=
 ## 16. Theorem: The Information–Stability Threshold (Coupling Window)
@@ -6967,7 +6967,7 @@ This softly penalizes overestimation on unseen actions but **does not prevent** 
 - **Bidirectional protection**: Both under-coupling (ungrounded) and over-coupling (dispersion) are detected and blocked
 ::::
 
----
+
 
 (sec-summary-unified-information-theoretic-control-view)=
 ## 17. Summary: Unified Information-Theoretic Control View
@@ -6982,7 +6982,7 @@ This softly penalizes overestimation on unseen actions but **does not prevent** 
 
 **Fragile conclusion.** The agent is a controller with explicit information and stability constraints. Macro symbols remain meaningful only inside the coupling window (Theorem {prf:ref}`thm-information-stability-window-operational`); outside it, the system either exhibits ungrounded inference (under-coupling) or loses macro structure through excessive mixing/dispersion (over-coupling).
 
----
+
 
 (sec-capacity-constrained-metric-law-geometry-from-interface-limits)=
 ## 18. Capacity-Constrained Metric Law: Geometry from Interface Limits
@@ -7183,7 +7183,7 @@ This recovers the **Information Bottleneck** {cite}`tishby2015ib` and **Variatio
 - **Diagnostic saturation**: CapacitySaturationCheck (Node 40) monitors $\nu_{\text{cap}} = I_{\text{bulk}}/C_\partial$ at runtime
 ::::
 
----
+
 
 (sec-conclusion)=
 ## 19. Conclusion
@@ -7198,7 +7198,7 @@ The Fragile Agent is a capacity- and stability-constrained control specification
 
 Appendix A records the full derivations. Appendix B consolidates notation and all regularization losses.
 
----
+
 
 (sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces)=
 ## 20. Wasserstein-Fisher-Rao Geometry: Unified Transport on Hybrid State Spaces
@@ -7699,7 +7699,7 @@ Following the diagnostic node convention (Section 3.1), we define:
 - High $\mathcal{L}_{\mathrm{WFR}}$: World model's $(v, r)$ predictions violate continuity
 - Remedy: Increase training on transitions; check for distribution shift
 
----
+
 
 (sec-radial-generation-entropic-drift-and-policy-control)=
 ## 21. Radial Generation: Entropic Drift and Policy Control {cite}`ho2020ddpm,sohldickstein2015deep,nickel2017poincare`
@@ -8164,7 +8164,7 @@ def sample_boundary_texture(
 
 **Cross-references:** Section 2.2b (VQ-VAE texture channel), Section 7.10 (TopologicalDecoder), Section 18 (Capacity constraints).
 
----
+
 
 (sec-the-equations-of-motion-geodesic-jump-diffusion)=
 ## 22. The Equations of Motion: Geodesic Jump-Diffusion {cite}`oksendal2003sde,risken1996fokkerplanck`
@@ -9068,7 +9068,7 @@ $$
 - High TextureFirewallCheck: Texture is leaking into dynamics (firewall violated).
 - Remedy: Review implementation; ensure texture sampled only at boundary; verify Axiom {prf:ref}`ax-bulk-boundary-decoupling`.
 
----
+
 
 (sec-the-boundary-interface-symplectic-structure)=
 ## 23. The Boundary Interface: Symplectic Structure {cite}`arnold1989mathematical`
@@ -10053,7 +10053,7 @@ The RNN/GRU/Transformer architecture has no geometric constraints—it's a unive
 - Low ContextGroundingCheck: Context is not influencing motor output (ungrounded generation).
 - Remedy: Increase context embedding strength; verify context-conditioned potential; check symmetry-breaking kick.
 
----
+
 
 (sec-the-reward-field-value-forms-and-hodge-geometry)=
 ## 24. The Reward Field: Value Forms and Hodge Geometry {cite}`evans2010pde,sutton2018rl`
@@ -11167,7 +11167,7 @@ def value_curl_check(
 
 **Cross-references:** Section 3 (Sieve Diagnostic Nodes), Section 23.8 (Interface Diagnostics Nodes 30-34), Theorem {prf:ref}`thm-hodge-decomposition` (Hodge Decomposition), Definition {prf:ref}`def-value-curl` (Value Curl).
 
----
+
 
 (sec-supervised-topology-semantic-potentials-and-metric-segmentation)=
 ## 25. Supervised Topology: Semantic Potentials and Metric Segmentation
@@ -11815,7 +11815,7 @@ Following the diagnostic node convention (Section 3.1), we define:
 
 **Cross-references:** Section 3 (Sieve Diagnostic Nodes), Section 24.7 (Scalar Field Diagnostics).
 
----
+
 
 (sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller)=
 ## 26. Theory of Meta-Stability: The Universal Governor as Homeostatic Controller {cite}`finn2017maml,franceschi2018bilevel,hospedales2021metalearning`
@@ -12337,7 +12337,7 @@ Following the diagnostic node convention (Section 3.1), we define:
 
 **Cross-references:** Section 3 (Sieve Diagnostic Nodes), Section 3.5 (Adaptive Multipliers), Section 2.3 (Lyapunov-Constrained Control).
 
----
+
 
 (sec-section-non-local-memory-as-self-interaction-functional)=
 ## 27: Non-Local Memory as Self-Interaction Functional
@@ -12389,7 +12389,7 @@ The memory screen $\Xi_T$ provides the mathematical realization of holographic p
 
 :::
 
----
+
 
 (sec-the-non-local-interaction-functional)=
 ### 27.2 The Non-Local Interaction Functional
@@ -12496,7 +12496,7 @@ The force field $-\nabla_G \Psi_{\text{mem}}$ violates the Markov property.
 
 :::
 
----
+
 
 (sec-memory-augmented-equations-of-motion)=
 ### 27.3 Memory-Augmented Equations of Motion
@@ -12585,7 +12585,7 @@ This recovers **Experience Replay** {cite}`lin1992experience,mnih2015humanlevel`
 - **Barrier crossing:** Strong memories can pull the agent across local energy barriers
 ::::
 
----
+
 
 (sec-wfr-dynamics-with-memory-sources)=
 ### 27.4 WFR Dynamics with Memory Sources
@@ -12624,7 +12624,7 @@ where $\bar{\Psi}_{\text{mem}} = \int_{\mathcal{Z}} \Psi_{\text{mem}} \rho \, d\
 
 :::
 
----
+
 
 (sec-stability-analysis-and-diagnostic)=
 ### 27.5 Stability Analysis and Diagnostic
@@ -12672,7 +12672,7 @@ with empirically recommended bounds $\Omega_{\min} \approx 0.01$, $\Omega_{\max}
 
 :::
 
----
+
 
 (sec-summary-memory-as-non-local-interface)=
 ### 27.6 Summary: Memory as Non-Local Interface
@@ -12700,7 +12700,7 @@ with empirically recommended bounds $\Omega_{\min} \approx 0.01$, $\Omega_{\max}
 
 **Summary.** This section introduced non-local memory as a self-interaction functional, extending the Markovian dynamics of Sections 20–24. The memory screen $\Xi_T$ (Definition {prf:ref}`def-memory-screen`) encodes reward-weighted trajectory history; the memory potential $\Psi_{\text{mem}}$ (Definition {prf:ref}`def-memory-potential`) converts this into a force field via heat kernel convolution; and the Non-Locality Ratio $\Omega_{\text{mem}}$ (Definition {prf:ref}`def-non-locality-ratio`) provides a diagnostic for balancing memory against local gradients. Node 43 (MemoryBalanceCheck) monitors this ratio during training.
 
----
+
 
 (sec-section-hyperbolic-active-retrieval-geodesic-search-and-semantic-pull-back)=
 ## 28 · Hyperbolic Active Retrieval: Geodesic Search and Semantic Pull-Back
@@ -12983,7 +12983,7 @@ We introduce two diagnostic nodes for monitoring retrieval health.
 
 *Key insight:* Memory and retrieval are dual non-local mechanisms. Memory integrates over temporal history; retrieval integrates over spatial archive. Both contribute conservative forces to the equations of motion (Definition {prf:ref}`def-retrieval-augmented-geodesic-sde`) and mass sources to WFR dynamics (Definition {prf:ref}`def-retrieval-source-term`).
 
----
+
 
 (sec-bilevel-nonlocal-regulation)=
 ### 28.8 Bilevel Regulation of Non-Local Potentials (Joint Optimization Resolution)
@@ -13023,7 +13023,7 @@ where $\alpha_1, \alpha_2, \alpha_3 > 0$ are learning rates and $\Omega_{\max}$ 
 This closes the joint optimization problem by reducing it to a specific instantiation of the Governor's Lyapunov stability framework ({prf:ref}`def-training-lyapunov-function`).
 :::
 
----
+
 
 (sec-safe-retrieval-bandwidth)=
 ### 28.9 The Safe Retrieval Bandwidth Corollary (Instability Resolution)
@@ -13052,7 +13052,7 @@ where $C_{\partial} = \nu_D \cdot \text{Area}(\partial\mathcal{Z})/\ell_L^{D-1}$
 
 *Interpretation:* External retrieval becomes destabilizing when it pushes the total information content beyond the holographic capacity of the interface. The remedy is to increase interface bandwidth (more sensors) or reduce retrieval intensity.
 
----
+
 
 (sec-causal-isometry-theorem)=
 ### 28.10 The Causal Isometry Theorem (Cross-Modal Retrieval Resolution)
@@ -13076,7 +13076,7 @@ Let $\mathcal{M}_A$ and $\mathcal{M}_B$ be latent manifolds encoding modalities 
 
 *Interpretation:* Latent representations of the same concept in different modalities (e.g., visual vs. textual) are geometrically isometric because the risk functional governing the metric depends only on the causal structure of the environment, not the sensory channel. This justifies cross-modal retrieval: information retrieved from one modality can inform reasoning in another if both are grounded in the same causal graph.
 
----
+
 
 (sec-symplectic-multi-agent-field-theory)=
 ## 29. Relativistic Symplectic Multi-Agent Field Theory
@@ -13332,7 +13332,7 @@ In the relativistic multi-agent setting, the Memory Screen (Definition {prf:ref}
 
 :::
 
----
+
 
 (sec-the-ghost-interface)=
 ### 29.4 The Ghost Interface: Asynchronous Coupling
@@ -13453,7 +13453,7 @@ $$
 | Radiation reaction | Strategic back-pressure |
 ::::
 
----
+
 
 (sec-the-hyperbolic-value-equation)=
 ### 29.5 The Hyperbolic Value Equation (Klein-Gordon)
@@ -13677,7 +13677,7 @@ The metric perturbation at time $t$ depends on the opponent's dynamics at time $
 
 :::
 
----
+
 
 (sec-relativistic-nash-equilibrium)=
 ### 29.7 Relativistic Nash Equilibrium (Standing Waves)
@@ -13862,7 +13862,7 @@ If $\epsilon_{\text{Nash}} > 0$ but below threshold, the system is in a **transi
 
 *Cross-reference:* This enforces the information speed limit (Axiom {prf:ref}`ax-information-speed-limit`).
 
----
+
 
 (sec-summary-table-from-single-to-multi-agent)=
 ### 29.9 Summary Table: Newtonian vs. Einsteinian Agent
@@ -13895,7 +13895,7 @@ If $\epsilon_{\text{Nash}} > 0$ but below threshold, the system is in a **transi
 | **Success** | Value Maxima | Standing Wave Nash |
 | **Diagnostics** | Nodes 1–45 | + Nodes 46–48, 62 |
 
----
+
 
 (sec-mean-field-metric-law)=
 ### 29.10 The Mean-Field Metric Law (Scalability Resolution)
@@ -13932,7 +13932,7 @@ $$
 
 *Cross-references:* This resolves the scalability limitation by reducing agent complexity from $O(N^2 d^2)$ to $O(d^2)$ via the Vlasov-geometry limit.
 
----
+
 
 (sec-metabolic-tracking-bound)=
 ### 29.11 The Metabolic Tracking Bound (Non-Stationary Nash Resolution)
@@ -13961,7 +13961,7 @@ where $\tilde{G}$ is the game-augmented metric ({prf:ref}`thm-adversarial-mass-i
 
 *Interpretation:* The agent's ability to track a moving Nash equilibrium is fundamentally limited by its metabolic budget. Intense conflict ($\mathcal{G}_{ij}$ large) compounds this limitation by inflating the kinetic cost of pursuit.
 
----
+
 
 (sec-variational-emergence-cooperation)=
 ### 29.12 Variational Emergence of Cooperation via Metric Inflation
@@ -13997,7 +13997,7 @@ Adversarial agents converge to cooperative or decoupled configurations because c
 All three outcomes correspond to stationary points of the joint action functional.
 :::
 
----
+
 
 ## Part V: Gauge Theory Layer
 
@@ -14130,7 +14130,7 @@ The gauge-theoretic formalism developed in Sections 29.13–29.20 is motivated b
 
 ::::
 
----
+
 
 (sec-strategic-connection-covariant-derivative)=
 ### 29.14 The Strategic Connection and Covariant Derivative
@@ -14276,7 +14276,7 @@ This **Minimal Coupling Principle** ensures that:
 
 ::::
 
----
+
 
 (sec-gauge-transformation-game-tensor)=
 ### 29.15 Gauge Transformation of the Game Tensor
@@ -14347,7 +14347,7 @@ The physical metric must be gauge-invariant. Since $\tilde{\mathcal{G}}_{ij}$ tr
 
 :::
 
----
+
 
 (sec-field-strength-tensor)=
 ### 29.16 The Field Strength Tensor (Strategic Curvature)
@@ -14500,7 +14500,7 @@ where indices are raised with the Lorentzian metric $\eta^{\mu\nu} = \text{diag}
 
 ::::
 
----
+
 
 (sec-yang-mills-action)=
 ### 29.17 The Yang-Mills Action and Field Equations
@@ -14626,7 +14626,7 @@ By the Bianchi identity (Theorem {prf:ref}`thm-bianchi-identity`) and the antisy
 
 :::
 
----
+
 
 (sec-complete-lagrangian)=
 ### 29.18 The Complete Multi-Agent Lagrangian
@@ -14762,7 +14762,7 @@ Spontaneous breaking of a continuous symmetry produces massless **Goldstone boso
 
 ::::
 
----
+
 
 (sec-mass-gap)=
 ### 29.19 The Mass Gap: Information-Theoretic Derivation
@@ -15122,7 +15122,7 @@ The framework is Yang-Mills theory applied to information systems. The mass gap 
 
 ::::
 
----
+
 
 (sec-diagnostic-nodes-gauge)=
 ### 29.20 Diagnostic Nodes 63–66 (Gauge Consistency)
@@ -15144,7 +15144,7 @@ Following the diagnostic node convention (Section 3.1), we define four monitors 
 - High GaugeInvarianceCheck: Numerical gauge symmetry violation
 - **Remedy:** Regularize gauge degrees of freedom; impose gauge-fixing condition (Coulomb, Lorenz, etc.)
 
----
+
 
 (node-64)=
 **Node 64: FieldStrengthBoundCheck**
@@ -15161,7 +15161,7 @@ Following the diagnostic node convention (Section 3.1), we define four monitors 
 - High FieldStrengthBoundCheck: Strong strategic curvature regime (intense conflict)
 - **Remedy:** Reduce coupling $g$; add gauge field damping; check for instabilities
 
----
+
 
 (node-65)=
 **Node 65: BianchiViolationCheck**
@@ -15181,7 +15181,7 @@ Following the diagnostic node convention (Section 3.1), we define four monitors 
 - High BianchiViolationCheck: Topological anomaly or numerical instability
 - **Remedy:** Check for singular gauge configurations; refine numerical integration
 
----
+
 
 (node-66)=
 **Node 66: MassGapCheck**
@@ -15199,7 +15199,7 @@ Following the diagnostic node convention (Section 3.1), we define four monitors 
 - $\Delta < 0$: Unstable vacuum (tachyonic mode)
 - **Remedy:** Check for symmetry breaking; verify Higgs potential parameters; add mass regularization
 
----
+
 
 **Summary Table: Gauge Diagnostic Nodes**
 
@@ -15210,7 +15210,7 @@ Following the diagnostic node convention (Section 3.1), we define four monitors 
 | 65 | BianchiViolationCheck | Topological consistency | $\delta_B < 10^{-8}$ |
 | 66 | MassGapCheck | Spectral stability | $\Delta > 0$ |
 
----
+
 
 ## Part VI: Quantum Layer
 
@@ -16102,7 +16102,7 @@ class RelativisticMultiAgentInterface(nn.Module):
 
 *Cross-reference:* This implementation realizes the Ghost Interface (Definition {prf:ref}`def-ghost-interface`) and Memory Screen (Definition {prf:ref}`def-memory-screen`) in differentiable form, enabling end-to-end training of relativistic multi-agent systems.
 
----
+
 
 (sec-extended-summary-table)=
 ### 29.29 Extended Summary Table
@@ -16136,7 +16136,7 @@ class RelativisticMultiAgentInterface(nn.Module):
 4. *Quantum speedup:* Does the Schrödinger formulation enable faster Nash-finding algorithms (quantum advantage in game theory)?
 5. *Topological phases:* When $\mathcal{Z}$ has non-trivial topology, can agents exhibit "topologically protected" strategies immune to local perturbations?
 
----
+
 
 (sec-ontological-expansion-topological-fission-and-the-semantic-vacuum)=
 ## 30. Ontological Expansion: Topological Fission and the Semantic Vacuum
@@ -16155,7 +16155,7 @@ Standard models have fixed tensor shapes chosen at initialization. If the enviro
 
 *Literature:* Symmetry breaking in dynamical systems {cite}`strogatz2015nonlinear`; Ricci flow {cite}`hamilton1982ricci,perelman2002entropy`; ontology learning {cite}`wong2012`.
 
----
+
 
 (sec-the-semantic-vacuum-as-a-reference-measure)=
 ### 30.1 The Semantic Vacuum as a Reference Measure
@@ -16216,7 +16216,7 @@ $$
 $$
 :::
 
----
+
 
 (sec-ontological-stress)=
 ### 30.2 Ontological Stress
@@ -16290,7 +16290,7 @@ This recovers **Random Network Distillation (RND)**—prediction error as "curio
 - No reward hacking: exploration is architectural, not incentive-based
 :::
 
----
+
 
 (sec-the-fission-criterion)=
 ### 30.3 The Fission Criterion
@@ -16349,7 +16349,7 @@ This recovers **standard deep learning**—the agent can never learn a concept t
 - No catastrophic forgetting: new charts are topologically isolated (Section 30.7)
 :::
 
----
+
 
 (sec-symmetry-breaking-and-chart-birth)=
 ### 30.4 Symmetry Breaking and Chart Birth
@@ -16414,7 +16414,7 @@ T_c < \frac{(\Xi - \Xi_{\text{crit}})^2}{4\alpha}.
 $$
 :::
 
----
+
 
 (sec-metric-relaxation-ontological-ricci-flow)=
 ### 30.5 Metric Relaxation: Ontological Ricci Flow
@@ -16482,7 +16482,7 @@ encouraging the learned metric to satisfy the capacity constraint while penalizi
 
 :::
 
----
+
 
 (sec-diagnostic-nodes-a)=
 ### 30.6 Diagnostic Nodes 49–50
@@ -16513,7 +16513,7 @@ where $p_\phi$ is a small MLP. If $\hat{\Xi} \approx 0$, texture is unpredictabl
 
 *Cross-reference:* Extends TextureFirewallCheck (Node 29) from measuring $\|\partial_{z_{\text{tex}}} \dot{z}\|$ (static leak) to measuring $I(z_{\text{tex},t}; z_{\text{tex},t+1})$ (temporal structure).
 
----
+
 
 (node-50)=
 **Node 50: FissionReadinessCheck**
@@ -16534,7 +16534,7 @@ where $p_\phi$ is a small MLP. If $\hat{\Xi} \approx 0$, texture is unpredictabl
 - If repeatedly triggering fission: The base architecture may be too constrained. Increase $N_v$ (codes per chart) before increasing $N_c$ (chart count).
 - If fission fails to reduce $\Xi$: The fission direction missed the relevant structure. Use supervised signal (if available) to guide $u$.
 
----
+
 
 (sec-summary-the-lifecycle-of-an-ontology)=
 ### 30.7 Summary: The Lifecycle of an Ontology
@@ -16586,7 +16586,7 @@ This recovers **Elastic Weight Consolidation (EWC)** -- the Fisher information $
 - No forgetting: old charts are frozen, not elastically constrained
 :::
 
----
+
 
 (sec-ontological-fusion-concept-consolidation)=
 ### 30.8 Ontological Fusion: Concept Consolidation
@@ -16601,7 +16601,7 @@ Most MoE (Mixture of Experts) or multi-chart models suffer from "Expert Explosio
 
 *Cross-references:* This section addresses Open Problem 1 from Section 30.7. It is the dual of Section 30.4 (Fission) and connects to the Universal Governor's metabolic monitoring ({ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>`) and the complexity cost functional ({ref}`Section 30.3 <sec-the-fission-criterion>`).
 
----
+
 
 (sec-ontological-redundancy)=
 #### 30.8.1 Ontological Redundancy
@@ -16626,7 +16626,7 @@ where:
 *Interpretation:* $\Upsilon_{ij} \to 1$ implies the charts are functionally redundant: they occupy similar regions of belief space, predict similar futures, and assign similar values. $\Upsilon_{ij} \to 0$ implies they are functionally distinct.
 :::
 
----
+
 
 (sec-discrimination-gain)=
 #### 30.8.2 Discrimination Gain
@@ -16661,7 +16661,7 @@ When $\Upsilon_{ij} \to 1$, the bound tightens: $G_\Delta \to 0$.
 *Proof sketch.* The discrimination gain is upper-bounded by the entropy reduction from merging. When charts are redundant ($\Upsilon_{ij} \to 1$), they route to the same observations with high probability, so the conditional entropy $H(K_i | K_j) \to 0$. $\square$
 :::
 
----
+
 
 (sec-the-fusion-criterion)=
 ### 30.9 The Fusion Criterion
@@ -16703,14 +16703,14 @@ The hysteresis term $\epsilon_{\text{hysteresis}}$ breaks the symmetry with Fiss
 *Remark (Units):* All terms are in nats. The criterion is dimensionally consistent.
 :::
 
----
+
 
 (sec-topological-collapse-the-mechanism-of-fusion)=
 ### 30.10 Topological Collapse: The Mechanism of Fusion
 
 Once the Fusion Criterion is met, the agent must physically merge the charts. This is not simple deletion—it is **topological surgery**.
 
----
+
 
 (sec-query-coalescence)=
 #### 30.10.1 Query Coalescence
@@ -16728,7 +16728,7 @@ where $\bar{w}_k := \mathbb{E}[w_k(x)]$ is the historical routing weight from th
 *Interpretation:* The more frequently used chart contributes more to the merged query position. This preserves the routing behavior for the majority of observations.
 :::
 
----
+
 
 (sec-fiber-reconciliation-via-jump-operators)=
 #### 30.10.2 Fiber Reconciliation via Jump Operators
@@ -16748,7 +16748,7 @@ where $B_j$ is the chart-to-global encoder and $A_i$ is the global-to-chart deco
 *Codebook reconciliation:* The codebook entries of chart $j$ are projected into chart $i$'s Voronoi structure. Entries that fall within existing Voronoi cells of chart $i$ are absorbed; entries that create new structure may be retained if codebook capacity permits.
 :::
 
----
+
 
 (sec-subcritical-bifurcation-dynamics)=
 #### 30.10.3 Subcritical Bifurcation Dynamics
@@ -16785,14 +16785,14 @@ When $\Upsilon_{ij} > \Upsilon_{\text{crit}}$:
 *Proof sketch.* The bifurcation structure follows from standard dynamical systems theory {cite}`strogatz2018nonlinear`. The key insight is that Fission and Fusion are **dual bifurcations**: Fission breaks $\mathbb{Z}_2$ symmetry (one chart → two); Fusion restores it (two charts → one). The sign flip in the linear term corresponds to the duality between expansion ($\Xi$) and contraction ($\Upsilon$) forces. $\square$
 :::
 
----
+
 
 (sec-diagnostic-nodes-fusion-and-codebook-liveness)=
 ### 30.11 Diagnostic Nodes 54–55: Fusion and Codebook Liveness
 
 We introduce two new diagnostic nodes for the Sieve ({ref}`Section 3 <sec-diagnostics-stability-checks>`).
 
----
+
 
 :::{prf:definition} Node 54 — FusionReadinessCheck
 :label: node-fusion-readiness-check
@@ -16820,7 +16820,7 @@ $$
 5. Decrement chart count: $N_c \to N_c - 1$.
 :::
 
----
+
 
 :::{prf:definition} Node 55 — CodebookLivenessCheck
 :label: node-codebook-liveness-check
@@ -16854,14 +16854,14 @@ where $P(K = k)$ is the empirical usage frequency of code $k$ over a trailing wi
 | **54** | FusionReadinessCheck  | Atlas     | Metabolic Efficiency | $\max_{i \neq j} \Upsilon_{ij} > \Upsilon_{\text{crit}}$ | $O(N_c^2)$ |
 | **55** | CodebookLivenessCheck | Codebook  | Dead Code Detection  | $\min_k P(K=k) < \epsilon_{\text{dead}}$                 | $O(\lvert\mathcal{K}\rvert)$ |
 
----
+
 
 (sec-symbolic-metabolism-intra-chart-fission-and-fusion)=
 ### 30.12 Symbolic Metabolism: Intra-Chart Fission and Fusion
 
 While Sections 30.1–30.11 address **chart-level** (macro) topology, the codebook symbols **within** each chart also require lifecycle management. This creates a two-level metabolic hierarchy.
 
----
+
 
 (sec-symbol-fission-cluster-splitting)=
 #### 30.12.1 Symbol Fission: Cluster Splitting
@@ -16899,7 +16899,7 @@ where $z_e$ is the pre-quantized encoder output.
    where $\epsilon = \sqrt{\lambda_1 / 2}$ and $\lambda_1$ is the principal eigenvalue.
 4. **Capacity check:** If the codebook is full, trigger Symbol Fusion elsewhere to free a slot.
 
----
+
 
 (sec-symbol-fusion-synonym-merging)=
 #### 30.12.2 Symbol Fusion: Synonym Merging
@@ -16931,7 +16931,7 @@ If $\mathcal{D}_f(k_1, k_2) < \epsilon_{\text{indist}}$, the distinction provide
 2. **Remap transitions:** Update all entries in the world model $\bar{P}$ that reference $k_1$ or $k_2$ to point to the merged index.
 3. **Free slot:** Return one index to the available pool for future Symbol Fission.
 
----
+
 
 (sec-the-lazarus-protocol-dead-code-reallocation)=
 #### 30.12.3 The Lazarus Protocol: Dead Code Reallocation
@@ -16960,7 +16960,7 @@ In standard VQ-VAEs, **codebook collapse** is a major failure mode where most co
 *Connection to existing constraints:* This implements the anti-collapse regularizer from {ref}`Section 3.5.5 <sec-calibrating-tolerances>`: $\lambda_{\text{use}} D_{\mathrm{KL}}(\hat{p}(K) \| \text{Unif}(\mathcal{K}))$.
 :::
 
----
+
 
 (sec-measure-theoretic-formalization)=
 #### 30.12.4 Measure-Theoretic Formalization
@@ -17051,7 +17051,7 @@ $$
 
 :::
 
----
+
 
 (sec-comparison-chart-vs-symbol-metabolism)=
 ### 30.13 Comparison: Chart vs. Symbol Metabolism
@@ -17074,7 +17074,7 @@ The fission/fusion dynamics operate at two hierarchical levels with analogous bu
    $$
    H(K_{\text{chart}}) + \mathbb{E}_{i}[H(K_{\text{code}} | K_{\text{chart}} = i)] \leq B_{\text{metabolic}}
    $$
----
+
 
 (sec-summary-the-topological-heartbeat)=
 ### 30.14 Summary: The Topological Heartbeat
@@ -17109,7 +17109,7 @@ where $U$ is the total utility functional (value minus complexity cost).
 *Interpretation:* The agent allocates representational capacity such that one additional bit of chart-level information provides the same marginal value as one additional bit of symbol-level information. This is the information-theoretic analogue of thermodynamic equipartition.
 :::
 
----
+
 
 (sec-thermodynamic-hysteresis-calibration)=
 ### 30.15 Thermodynamic Calibration of Ontological Hysteresis
@@ -17147,7 +17147,7 @@ Substituting the Landauer bound yields the stated inequality. $\square$
 
 *Cross-references:* This resolves the hysteresis calibration question by grounding it in the Landauer thermodynamics of {ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`.
 
----
+
 
 (sec-hyperbolic-coalescence)=
 ### 30.16 Intrinsic Coalescence on Hyperbolic Manifolds
@@ -17196,7 +17196,7 @@ For the Poincare disk, these have closed-form expressions via Möbius operations
 
 *Cross-references:* This resolves the geometric inconsistency by ensuring coalescence respects the intrinsic hyperbolic geometry.
 
----
+
 
 (sec-fission-inhibition-corollary)=
 ### 30.17 The Fission Inhibition Corollary (Hierarchical Metabolism Resolution)
@@ -17230,7 +17230,7 @@ The stacked architecture is **inherently stable** against fission cascades. Onto
 
 *Cross-references:* This resolves the hierarchical metabolism question by showing that the RG structure naturally dampens topological perturbations from propagating upward.
 
----
+
 
 (sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics)=
 ## 31. Computational Metabolism: The Landauer Bound and Deliberation Dynamics
@@ -17247,7 +17247,7 @@ Most agents spend the same amount of FLOPs on a trivial decision as a critical o
 
 *Literature:* Landauer's principle {cite}`landauer1961irreversibility`; thermodynamics of computation {cite}`bennett1982thermodynamics`; thermodynamics of information {cite}`parrondo2015thermodynamics`; dual-process theory {cite}`kahneman2011thinking`; free energy principle {cite}`friston2010free`; information geometry {cite}`amari2016information`.
 
----
+
 
 (sec-the-energetics-of-information-updates)=
 ### 31.1 The Energetics of Information Updates
@@ -17359,7 +17359,7 @@ This recovers standard **Maximum Expected Utility**—the objective used in DQN,
 - Landauer bound: $\dot{\mathcal{M}} \ge T_c |\dot{H}|$—thinking has irreducible thermodynamic cost
 :::
 
----
+
 
 (sec-the-metabolic-potential-and-deliberation-action)=
 ### 31.2 The Metabolic Potential and Deliberation Action
@@ -17388,7 +17388,7 @@ where $V(z)$ is the task potential (Section 24.2.1). Units: $[\mathcal{S}_{\text
 
 :::
 
----
+
 
 (sec-optimal-deliberation-the-fast-slow-law)=
 ### 31.3 Optimal Deliberation: The Fast/Slow Law
@@ -17512,7 +17512,7 @@ This recovers **UCB1 (Upper Confidence Bound)**. The exploration bonus $c\sqrt{\
 - Deliberation-aware: exploration trades off against computational cost $\dot{\mathcal{M}}$
 :::
 
----
+
 
 (sec-the-h-theorem-for-open-cognitive-systems)=
 ### 31.4 The H-Theorem for Open Cognitive Systems
@@ -17552,7 +17552,7 @@ The **Carnot limit** for cognitive systems is $\eta_{\text{thought}} = 1$, achie
 
 :::
 
----
+
 
 (sec-diagnostic-nodes-b)=
 ### 31.5 Diagnostic Nodes 51–52
@@ -17592,7 +17592,7 @@ Following the diagnostic node convention (Section 3.1), we define two new monito
 
 *Cross-reference:* Node 52 extends the thermodynamic consistency checks of Section 23.4 (ThermoCycleCheck, Node 33) to the internal deliberation loop.
 
----
+
 
 (sec-summary-table-computational-thermodynamics)=
 ### 31.6 Summary Table: Computational Thermodynamics
@@ -17615,7 +17615,7 @@ Following the diagnostic node convention (Section 3.1), we define two new monito
 
 **Conclusion.** Computational Metabolism provides the "biological" limit for the Fragile Agent. By deriving $S^*$ from first principles, we transform the "Thinking Fast vs. Slow" heuristic into a rigorous physical law. The agent acts not when it is "ready," but when it is no longer metabolically efficient to continue refining its belief. This framework connects to the free energy principle {cite}`friston2010free` and active inference {cite}`friston2017active`, providing a thermodynamic foundation for bounded rationality.
 
----
+
 
 (sec-causal-discovery-interventional-geometry-and-the-singularity-of-action)=
 ## 32. Causal Discovery: Interventional Geometry and the Singularity of Action
@@ -17632,7 +17632,7 @@ Standard curiosity-driven RL (like RND) uses a scalar reward bonus to encourage 
 
 *Literature:* Causal inference {cite}`pearl2009causality`; causal discovery {cite}`spirtes2000causation`; expected information gain {cite}`lindley1956measure`; optimal experimental design {cite}`chaloner1995bayesian`; intrinsic motivation {cite}`schmidhuber2010formal,oudeyer2007intrinsic`; curiosity-driven exploration {cite}`pathak2017curiosity,houthooft2016vime`.
 
----
+
 
 (sec-the-interventional-operator-as-manifold-surgery)=
 ### 32.1 The Interventional Operator as Manifold Surgery
@@ -17670,7 +17670,7 @@ An intervention at state $z$ is a point-source singularity in the field theory. 
 
 :::
 
----
+
 
 (sec-the-causal-information-potential)=
 ### 32.2 The Causal Information Potential
@@ -17762,7 +17762,7 @@ The Curiosity Force $\mathbf{f}_{\text{exp}}$ (Theorem {prf:ref}`thm-augmented-d
 
 :::
 
----
+
 
 (sec-the-force-of-curiosity-geodesic-experimentation)=
 ### 32.3 The Force of Curiosity: Geodesic Experimentation
@@ -17810,7 +17810,7 @@ In the absence of task reward ($V = \text{const}$), the agent behaves as a "Pure
 
 :::
 
----
+
 
 (sec-causal-enclosure-and-interventional-stability)=
 ### 32.4 Causal Enclosure and Interventional Stability
@@ -17835,7 +17835,7 @@ If the observational distribution is closed ($I = 0$), and the mechanism is inva
 
 :::
 
----
+
 
 (sec-implementation-the-experimental-sieve)=
 ### 32.5 Implementation: The Experimental Sieve
@@ -17870,7 +17870,7 @@ For each interaction step $t$:
 
 *Cross-reference:* Node 53 complements the TextureFirewallCheck (Node 29) by detecting causal leakage rather than representational leakage.
 
----
+
 
 (sec-summary-table-the-hierarchy-of-interaction)=
 ### 32.6 Summary Table: The Hierarchy of Interaction
@@ -17891,7 +17891,7 @@ For each interaction step $t$:
 
 **Conclusion.** Causal Discovery is the final layer of the Fragile Agent's intelligence. By modeling actions as singular surgeries on the transition kernel and defining Curiosity as a Riemannian force field, we provide a rigorous mechanism for the agent to actively simplify the world. The agent is no longer a passive observer of a Markov process, but an **active topologist** who prunes the latent space into a robust, causal architecture.
 
----
+
 
 (sec-causal-information-bound)=
 ## 33. The Causal Information Bound
@@ -17932,7 +17932,7 @@ where $\ell_L$ is the Levin length (Definition {prf:ref}`def-levin-length`) and 
 
 *Literature:* Holographic bounds {cite}`thooft1993holographic,susskind1995world`; Fisher information geometry {cite}`amari2016information`; Levin complexity {cite}`levin1973universal`.
 
----
+
 
 (sec-holographic-coefficient)=
 ### 33.0 The Holographic Coefficient
@@ -17967,7 +17967,7 @@ where $\Omega_{D-1} = \frac{2\pi^{D/2}}{\Gamma(D/2)}$ is the surface area of the
 
 :::
 
----
+
 
 (sec-levin-length)=
 ### 33.1 The Levin Length
@@ -17990,7 +17990,7 @@ Units: $[\ell_L] = [z]$ (latent coordinate length).
 
 :::
 
----
+
 
 (sec-saturation-limit)=
 ### 33.2 The Saturation Limit
@@ -18032,7 +18032,7 @@ At this radius, $G_{rr} \to \infty$ and consequently $G^{rr} \to 0$.
 
 :::
 
----
+
 
 (sec-area-law-derivation)=
 ### 33.3 Derivation of the Area Law
@@ -18084,7 +18084,7 @@ There is no third option. Adding internal parameters without expanding the inter
 
 :::
 
----
+
 
 (sec-causal-stasis)=
 ### 33.4 Causal Stasis
@@ -18134,7 +18134,7 @@ $$
 
 :::
 
----
+
 
 (sec-diagnostic-node-56)=
 ### 33.5 Diagnostic Node 56: CapacityHorizonCheck
@@ -18190,7 +18190,7 @@ $$
 $$
 where $|\mathcal{K}|$ is the number of active charts, $\bar{H}(z_n | K)$ is the average conditional entropy of nuisance coordinates, $d_n = \dim(z_n)$, and $A_{\text{eff}}$ is the effective boundary area.
 
----
+
 
 (sec-summary-geometry-bounded-intelligence)=
 ### 33.6 Summary: The Geometry of Bounded Intelligence
@@ -18220,7 +18220,7 @@ where $|\mathcal{K}|$ is the number of active charts, $\bar{H}(z_n | K)$ is the 
 
 **Conclusion.** This bound is not a limitation of any particular architecture—it is a fundamental constraint on any agent that must ground its internal representations through a finite-capacity interface. The bound formalizes the intuition that "intelligence" is not a free resource: it must be paid for in interface bandwidth. An agent with finite sensing cannot be infinitely smart—it can only be as smart as its interface is large.
 
----
+
 
 (sec-unified-notation-table-and-cross-section-connectivity)=
 ## Unified Notation Table and Cross-Section Connectivity
@@ -18438,7 +18438,7 @@ Appendices (Derivations, Units, WFR Tensor)
 | 56 | [CapacityHorizonCheck](#node-56)                  | 33.5    | $\eta_{\text{Sch}} := I_{\text{bulk}} / I_{\max}$                                                                |
 | 61 | [ValueCurlCheck](#node-61)                        | 24.8    | $\oint_\gamma \delta_{\text{TD}} \approx \int\lVert\nabla\times\mathcal{R}\rVert$                                |
 
----
+
 
 (sec-appendix-a-full-derivations)=
 ## Appendix A: Full Derivations (Capacity-Constrained Curvature Functional)
@@ -18918,7 +18918,7 @@ The theorem provides a geometric interpretation of classification accuracy: a sa
 
 :::
 
----
+
 
 (sec-appendix-a-area-law)=
 ### A.6 The Area Law Coefficient (Proof of Theorem {prf:ref}`thm-causal-information-bound`)
@@ -18933,7 +18933,7 @@ This section provides the rigorous derivation of the Causal Information Bound, i
 
 The first derivation establishes the bound from counting distinguishable states; the second shows that the Metric Law reproduces this bound dynamically.
 
----
+
 
 (sec-appendix-a-foundational-axioms)=
 #### A.6.0 Foundational Axioms for Microstate Counting
@@ -19023,7 +19023,7 @@ Two microstates $\mu_1, \mu_2$ are **boundary-distinguishable** if an external o
 
 :::
 
----
+
 
 (sec-appendix-a-microstate-counting)=
 #### A.6.0d Microstate Counting: The Non-Circular Derivation
@@ -19224,7 +19224,7 @@ It does **not** invoke the Metric Law (Theorem {prf:ref}`thm-capacity-constraine
 
 :::
 
----
+
 
 (sec-appendix-a-holographic-reduction)=
 #### A.6.1 Step 1: Holographic Reduction via Divergence Theorem (Field-Theoretic Derivation)
@@ -19255,7 +19255,7 @@ Combining with $R = \kappa T + 2\Lambda$ and noting that the $\Lambda$ term cont
 
 :::
 
----
+
 
 (sec-appendix-a-saturation-geometry)=
 #### A.6.2 Step 2: Saturation Geometry (Schwarzschild-like Solution)
@@ -19293,7 +19293,7 @@ The integration constant is determined by requiring $\lim_{r \to 0} A(r) = 1$. $
 
 :::
 
----
+
 
 (sec-appendix-a-horizon-condition)=
 #### A.6.3 Step 3: The Horizon Condition
@@ -19315,7 +19315,7 @@ For $n = 2$ (the Poincare disk case), the formula simplifies. The Poincare metri
 $$
 G_{ij}(z) = \frac{4\delta_{ij}}{(1-|z|^2)^2} \xrightarrow{|z| \to 1} \infty.
 $$
----
+
 
 (sec-appendix-a-fisher-normalization)=
 #### A.6.4 Step 4: Fisher Normalization and the 1/4 Coefficient
@@ -19360,7 +19360,7 @@ $$
 
 :::
 
----
+
 
 (sec-appendix-a-assembly)=
 #### A.6.5 Step 5: Assembly of the Bound
@@ -19504,7 +19504,7 @@ Similarly, the microstate counting here is analogous to Strominger-Vafa, while t
 
 :::
 
----
+
 
 (sec-appendix-a-remark-bekenstein-hawking)=
 #### A.6.6 Remark: Connection to Bekenstein-Hawking
@@ -19521,7 +19521,7 @@ The key difference is the interpretation:
 
 The mathematical structure is identical; the physical content is distinct. This suggests that holographic bounds are a general feature of capacity-constrained field theories, independent of whether the underlying dynamics are gravitational or information-theoretic.
 
----
+
 
 (sec-appendix-b-units-parameters-and-coefficients)=
 ## Appendix B: Units, Parameters, and Coefficients (Audit Table)
@@ -19617,7 +19617,7 @@ Some Greek letters are intentionally overloaded in different submodels:
 - $\gamma$ appears as (i) discount factor, (ii) the World Model volatility scaling coefficient $\gamma$ (Section 3.2), and (iii) friction coefficient in overdamped dynamics (Section 22.4).
 - $\lambda$ appears as (i) Lyapunov rate ($s^{-1}$), (ii) generic loss weights (dimensionless), and (iii) other Lagrange multipliers (units stated locally).
 
----
+
 
 (sec-appendix-c-wfr-stress-energy-tensor)=
 ## Appendix C: WFR Stress-Energy Tensor (Full Derivation)
@@ -19731,7 +19731,7 @@ $$
 with the WFR stress-energy acting as the risk tensor generated by transport and reaction.
 This completes the derivation of Theorem {prf:ref}`thm-wfr-stress-energy-tensor-variational-form`.
 
----
+
 
 (sec-appendix-d-frequently-asked-questions)=
 ## Appendix D: Frequently Asked Questions
@@ -20606,14 +20606,14 @@ Thermodynamic gating prevents dream leakage.
 
 3. **Phase transition.** The **Fast/Slow Phase Transition** ({prf:ref}`thm-fast-slow-phase-transition`) determines when dream content transfers to online behavior. If the reflexive flux $\Gamma(0)$ exceeds the metabolic flux $\dot{\mathcal{M}}(0)$, the system remains in "fast" (reflexive) mode and dreams do not leak. Transfer to "slow" (deliberative) mode requires sustained metabolic investment, filtering out thermodynamically forbidden dreams.
 
----
+
 
 (sec-appendix-d-quantum-foundations-and-physical-limits)=
 ### D.13 Quantum Foundations and Physical Limits
 
 This section addresses objections concerning the framework's relationship to foundational issues in quantum mechanics and the physical interpretation of saturation boundaries.
 
----
+
 
 (sec-appendix-d-measurement-problem)=
 #### D.13.1 The Measurement Problem (Collapse vs. Jumps)
@@ -20630,7 +20630,7 @@ The apparent discontinuity dissolves in WFR geometry. The reaction term $R(\rho)
 
 3. **Topological interpretation.** Measurement is a topology change in the support of $\rho$, achieved continuously via the reaction term. The WFR metric makes such transitions geodesically accessible in finite time.
 
----
+
 
 (sec-appendix-d-bell-theorem)=
 #### D.13.2 Bell's Theorem and the Loophole of Freedom
@@ -20647,7 +20647,7 @@ Bell's theorem requires statistical independence between measurement settings an
 
 3. **No signaling.** The apparent nonlocality of entanglement correlations reflects correlations in initial conditions, not faster-than-light causation. The relativistic constraints in Section {numref}`sec-the-relativistic-state-restoring-markovianity` ensure that no information propagates superluminally; the correlations are pre-established, not communicated.
 
----
+
 
 (sec-appendix-d-singularity-causal-stasis)=
 #### D.13.3 The Singularity and Causal Stasis
@@ -20666,14 +20666,14 @@ Yes. Saturation ($\rho = 1$) creates a metric singularity in Fisher-Rao geometry
 
 4. **Physical interpretation.** Just as a black hole's event horizon represents the boundary of causal influence in general relativity, the saturation boundary represents the limit of the agent's predictive reach. Beyond $\rho = 1$, no further probability mass can be concentrated—the belief has become certain, and no additional information can modify it.
 
----
+
 
 (sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws)=
 ## Appendix E: Rigorous Proof Sketches for Ontological and Metabolic Laws
 
 This appendix provides the rigorous mathematical foundations for the theorems and propositions introduced in Sections 30, 31, and 32. We operate on the latent Riemannian manifold $(\mathcal{Z}, G)$ with belief measures $\rho \in \mathcal{P}(\mathcal{Z})$.
 
----
+
 
 (sec-appendix-e-proof-of-theorem-prf-ref)=
 ### E.1 Proof of Theorem {prf:ref}`thm-fission-criterion`
@@ -20711,7 +20711,7 @@ The condition $\Xi > \Xi_{\text{crit}}$ ensures that the second variation of the
 
 :::
 
----
+
 
 (sec-appendix-e-proof-of-theorem-prf-ref-a)=
 ### E.2 Proof of Theorem {prf:ref}`thm-supercritical-pitchfork-bifurcation-for-charts`
@@ -20749,7 +20749,7 @@ The bifurcation diagram: for $\Xi < \Xi_{\text{crit}}$, the system has a single 
 
 :::
 
----
+
 
 (sec-appendix-e-proof-of-theorem-prf-ref-b)=
 ### E.3 Proof of Theorem {prf:ref}`thm-generalized-landauer-bound`
@@ -20806,7 +20806,7 @@ Adding both contributions yields the stated bound. $\square$
 
 :::
 
----
+
 
 (sec-appendix-e-proof-of-theorem-prf-ref-c)=
 ### E.4 Proof of Theorem {prf:ref}`thm-deliberation-optimality-condition`
@@ -20859,7 +20859,7 @@ This states that the optimal stopping time $S^*$ is reached when the power dissi
 
 :::
 
----
+
 
 (sec-appendix-e-proof-of-theorem-prf-ref-d)=
 ### E.5 Proof of Theorem {prf:ref}`thm-augmented-drift-law`
@@ -20915,7 +20915,7 @@ The drift field $F_{\text{total}}$ is the first-order velocity approximation, pr
 
 :::
 
----
+
 
 (sec-appendix-e-proof-of-theorem-prf-ref-e)=
 ### E.6 Proof of Theorem {prf:ref}`thm-interventional-closure`
@@ -20965,7 +20965,7 @@ This path was confounded in observational data (the correlation between $Z_{\tex
 
 :::
 
----
+
 
 (sec-appendix-e-rigorous-proof-of-multi-agent-strategic-tunneling)=
 ### E.7 Rigorous Proof of Multi-Agent Strategic Tunneling (Theorem {prf:ref}`thm-tunneling-probability`)
@@ -20980,7 +20980,7 @@ This appendix provides the rigorous mathematical foundation for Theorem {prf:ref
 3. **Feynman-Kac Formula** for probabilistic representation
 4. **Metric Comparison Theorems** for Game Tensor effects
 
----
+
 
 #### E.7.1 Mathematical Setup and Definitions
 
@@ -21054,7 +21054,7 @@ Let $\Omega_A, \Omega_B \subset \mathcal{M} \setminus \mathcal{K}$ be disjoint o
 
 :::
 
----
+
 
 #### E.7.2 Strict Positivity of the Ground State (Existence of Tunneling)
 
@@ -21116,7 +21116,7 @@ The relevant question becomes: **how fast** does tunneling occur? This is answer
 
 :::
 
----
+
 
 #### E.7.3 Agmon Estimates: Quantifying the Tunneling Rate
 
@@ -21220,7 +21220,7 @@ $$
 **Consequence:** Agmon distance, not Euclidean distance, controls tunneling probability.
 ::::
 
----
+
 
 #### E.7.4 Game Tensor Effect: Adversarial Suppression of Tunneling
 
@@ -21290,7 +21290,7 @@ This proves that adversarial coupling increases Agmon distance (Corollary E.7.3)
 
 :::
 
----
+
 
 #### E.7.5 Probabilistic Representation: Feynman-Kac Formula
 
@@ -21393,7 +21393,7 @@ where the rate function is the Agmon action.
 **Consequence:** Paths minimizing Brownian action are precisely the instantons governing tunneling.
 ::::
 
----
+
 
 #### E.7.6 Summary of Rigorous Results
 
@@ -21416,7 +21416,7 @@ where $\Theta(\cdot)$ denotes asymptotic equality up to polynomial prefactors in
 
 This completes the rigorous foundation for the strategic tunneling mechanism. $\square$
 
----
+
 
 (sec-appendix-e-proof-of-corollary-varentropy-stability)=
 ### E.8 Proof of Corollary {prf:ref}`cor-varentropy-stability`
@@ -21476,7 +21476,7 @@ This proves that Varentropy equals the heat capacity and measures the sensitivit
 
 :::
 
----
+
 
 (sec-appendix-e-proof-of-corollary-bimodal-instability)=
 ### E.9 Proof of Corollary {prf:ref}`cor-bimodal-instability`
@@ -21529,7 +21529,7 @@ This proves that $V_H$ detects the topological feature (the valley) that disting
 
 :::
 
----
+
 
 (sec-appendix-e-proof-of-corollary-varentropy-brake)=
 ### E.10 Proof of Corollary {prf:ref}`cor-varentropy-brake`
@@ -21589,7 +21589,7 @@ $$
 
 :::
 
----
+
 
 (sec-appendix-e-proof-of-corollary-epistemic-curiosity-filter)=
 ### E.11 Proof of Corollary {prf:ref}`cor-epistemic-curiosity-filter`
@@ -21633,7 +21633,7 @@ $$
 
 :::
 
----
+
 
 ### E.12 Derivation of the HJB-Klein-Gordon Correspondence (Theorem {prf:ref}`thm-hjb-klein-gordon`)
 
@@ -21763,7 +21763,7 @@ All terms have consistent units. $\square$
 
 :::
 
----
+
 
 ### E.13 Derivation of the Madelung Transform (Theorem {prf:ref}`thm-madelung-transform`)
 
@@ -21942,7 +21942,7 @@ The Bohm potential $Q_B$ emerges naturally from the kinetic energy operator acti
 
 :::
 
----
+
 
 ### E.14 Proof of Markov Restoration on the Causal Bundle (Theorem {prf:ref}`thm-markov-restoration`)
 
@@ -22020,7 +22020,7 @@ for all $0 < r < s$, which characterizes Markov processes. $\square$
 
 :::
 
----
+
 
 ### E.15 Proof of Nash Equilibrium as Standing Wave (Theorem {prf:ref}`thm-nash-standing-wave`)
 
@@ -22106,7 +22106,7 @@ Higher modes ($n > 1$) are metastable—small perturbations can cause transition
 
 :::
 
----
+
 
 ### E.16 Derivation of the Game Tensor and Strategic Jacobian (Definition {prf:ref}`def-the-game-tensor`)
 
@@ -22198,7 +22198,7 @@ $$
 
 :::
 
----
+
 
 ### E.17 Proof of the Bianchi Identity (Theorem {prf:ref}`thm-bianchi-identity`)
 
@@ -22292,7 +22292,7 @@ by the Jacobi identity for structure constants and antisymmetry of $\mathcal{F}$
 
 :::
 
----
+
 
 ### E.18 Derivation of the Higgs Mechanism (Theorem {prf:ref}`thm-higgs-mechanism`)
 
@@ -22414,7 +22414,7 @@ The number of massive gauge bosons equals $\dim(G) - \dim(H)$ (the number of bro
 
 :::
 
----
+
 
 ### E.19 Proof of Nash Equilibrium as Ground State (Theorem {prf:ref}`thm-nash-ground-state`)
 
@@ -22510,7 +22510,7 @@ Unstable critical points (saddles) have $H$ with negative eigenvalues, leading t
 
 :::
 
----
+
 
 (sec-references)=
 ## References
