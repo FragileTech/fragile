@@ -327,7 +327,7 @@ As $B(t) \to 0$, the following degenerations occur:
    $$d_G^{\text{eff}}(z, z') = \sqrt{f(B/B_{\text{crit}})} \cdot d_G(z, z') \to 0$$
    Distinct concepts become indistinguishable.
 
-2. **Inertia Loss:** The mass term in the geodesic SDE (Definition {prf:ref}`def-geodesic-sde`) vanishes. The agent loses momentum and becomes dominated by thermal noise.
+2. **Inertia Loss:** The mass term in the geodesic SDE (Definition {prf:ref}`def-bulk-drift-continuous-flow`) vanishes. The agent loses momentum and becomes dominated by thermal noise.
 
 3. **Causal Dissolution:** The Causal Information Bound ({ref}`Section 33 <sec-causal-information-bound>`, Theorem {prf:ref}`thm-causal-information-bound`) collapses:
    $$I_{\max}^{\text{eff}} = \frac{\text{Area}(\partial\mathcal{Z})}{4\ell_L^2} \cdot f(B/B_{\text{crit}}) \to 0$$
@@ -769,7 +769,7 @@ We add four diagnostic nodes to the Sieve monitoring autopoietic viability.
 
 ---
 
-(node-69)=
+(node-69-metabolic)=
 **Node 69: ThermalRunawayCheck**
 
 *Trigger condition:* $T_c \geq T_{\text{env}} - \delta_{\text{thermal}}$ (approaching thermal parity)
@@ -784,7 +784,7 @@ We add four diagnostic nodes to the Sieve monitoring autopoietic viability.
 
 ---
 
-(node-70)=
+(node-70-metabolic)=
 **Node 70: MetricFadingCheck**
 
 *Trigger condition:* $f(B/B_{\text{crit}}) < \epsilon_{\text{fade}}$ (metric severely degraded)
