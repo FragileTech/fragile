@@ -537,8 +537,8 @@ Appendices (Derivations, Units, WFR Tensor)
 | 51 | [MetabolicEfficiencyCheck](#node-51)              | 31.5    | $\eta_{\text{ROI}} := \lvert\Delta\langle V\rangle\rvert / \Psi_{\text{met}}(S)$                                 |
 | 52 | [EntropyProductionCheck](#node-52)                | 31.5    | $\sigma_{\text{tot}} := \dot{H} + \dot{\mathcal{M}}/T_c \ge 0$                                                   |
 | 53 | [CausalEnclosureCheck](#node-53)                  | 32.6    | $\Delta_{\text{causal}} < \delta_{\text{causal}}$                                                                |
-| 54 | [FusionReadinessCheck](#node-fusion-readiness-check)                  | 30.11   | $\max_{i \neq j} \Upsilon_{ij} > \Upsilon_{\text{crit}}$                                                         |
-| 55 | [CodebookLivenessCheck](#node-codebook-liveness-check)                 | 30.11   | $\min_k P(K=k) < \epsilon_{\text{dead}}$                                                                         |
+| 54 | {prf:ref}`node-fusion-readiness-check`                  | 30.11   | $\max_{i \neq j} \Upsilon_{ij} > \Upsilon_{\text{crit}}$                                                         |
+| 55 | {prf:ref}`node-codebook-liveness-check`                 | 30.11   | $\min_k P(K=k) < \epsilon_{\text{dead}}$                                                                         |
 | 56 | [CapacityHorizonCheck](#node-56)                  | 33.5    | $\eta_{\text{Sch}} := I_{\text{bulk}} / I_{\max}$                                                                |
 | 61 | [ValueCurlCheck](#node-61)                        | 24.8    | $\oint_\gamma \delta_{\text{TD}} \approx \int\lVert\nabla\times\mathcal{R}\rVert$                                |
 

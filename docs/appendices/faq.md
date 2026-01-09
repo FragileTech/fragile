@@ -889,7 +889,7 @@ This section addresses objections concerning the framework's relationship to fou
 
 The apparent discontinuity dissolves in WFR geometry. The reaction term $R(\rho)$ in the continuity equation creates and destroys probability mass, enabling smooth paths between mixed and pure states. What appears as instantaneous collapse in the classical limit is actually a continuous topological transition—a geodesic in the space of measures that traverses regions of low but non-zero probability.
 
-1. **Formal statement.** Let $\rho_t$ evolve under WFR dynamics. A "measurement outcome" corresponds to concentration onto a delta measure $\delta_x$. The WFR distance $d_{\text{WFR}}(\rho_t, \delta_x) \to 0$ along a finite-length geodesic—there is no discontinuous jump (Section {numref}`sec-multi-agent-schrodinger-equation`).
+1. **Formal statement.** Let $\rho_t$ evolve under WFR dynamics. A "measurement outcome" corresponds to concentration onto a delta measure $\delta_x$. The WFR distance $d_{\text{WFR}}(\rho_t, \delta_x) \to 0$ along a finite-length geodesic—there is no discontinuous jump ({ref}`sec-multi-agent-schrodinger-equation`).
 
 2. **Classical limit.** The impression of instantaneous collapse arises from coarse-graining: observers with finite resolution cannot distinguish $\rho$ highly concentrated near $x$ from $\delta_x$ itself. The "collapse" is an artifact of the observer's limited precision, not a fundamental discontinuity in the dynamics.
 
@@ -910,7 +910,7 @@ Bell's theorem requires statistical independence between measurement settings an
 
 2. **Not superdeterminism.** This is not superdeterminism in the pejorative sense (fine-tuned conspiracy across cosmological scales). It is the natural consequence of modeling all subsystems—including observers—as arising from one closed dynamical system. The correlations required to violate Bell inequalities are built into the initial conditions of the shared $\rho$.
 
-3. **No signaling.** The apparent nonlocality of entanglement correlations reflects correlations in initial conditions, not faster-than-light causation. The relativistic constraints in Section {numref}`sec-the-relativistic-state-restoring-markovianity` ensure that no information propagates superluminally; the correlations are pre-established, not communicated.
+3. **No signaling.** The apparent nonlocality of entanglement correlations reflects correlations in initial conditions, not faster-than-light causation. The relativistic constraints in {ref}`sec-the-relativistic-state-restoring-markovianity` ensure that no information propagates superluminally; the correlations are pre-established, not communicated.
 
 
 
@@ -927,7 +927,7 @@ Yes. Saturation ($\rho = 1$) creates a metric singularity in Fisher-Rao geometry
 
 2. **Causal stasis.** The result is **causal stasis** (Theorem {prf:ref}`thm-causal-stasis`): no information can flow across the saturation boundary. This is the agent-theoretic analogue of a black hole event horizon—an absolute causal boundary beyond which external observers receive no signals.
 
-3. **Computational enforcement.** Node 62 (CausalityViolationCheck) enforces this constraint: any predicted transition that would violate the metric bound triggers a halt rather than an unphysical state. The singularity is not pathological; it is a prediction boundary that the framework respects (Section {numref}`sec-saturation-limit`).
+3. **Computational enforcement.** Node 62 (CausalityViolationCheck) enforces this constraint: any predicted transition that would violate the metric bound triggers a halt rather than an unphysical state. The singularity is not pathological; it is a prediction boundary that the framework respects ({ref}`sec-saturation-limit`).
 
 4. **Physical interpretation.** Just as a black hole's event horizon represents the boundary of causal influence in general relativity, the saturation boundary represents the limit of the agent's predictive reach. Beyond $\rho = 1$, no further probability mass can be concentrated—the belief has become certain, and no additional information can modify it.
 

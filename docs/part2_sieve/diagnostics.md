@@ -721,8 +721,8 @@ elif beta > min(beta_max, alpha):
 
 This is not ad-hoc tuning; it is a direct operationalization of the two-time-scale requirement already encoded as BarrierTypeII ({ref}`Section 4.1 <sec-barrier-implementation-details>`).
 
-:::{note} Neural Unification ({ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>`)
-:class: seealso
+:::{admonition} Neural Unification ({ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>`)
+:class: note seealso
 
 The three adaptive multiplier methods above (Primal–Dual, PID, Learned Precisions) are **special cases** of a more general neural meta-controller. {ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>` introduces the **Universal Governor** $\pi_{\mathfrak{G}}$, which learns a temporal policy over the diagnostic stream $s_t = [C_1(\theta_t), \ldots, C_K(\theta_t)]$ and outputs all hyperparameters $\Lambda_t = (\eta_t, \vec{\lambda}_t, T_{c,t})$ jointly:
 

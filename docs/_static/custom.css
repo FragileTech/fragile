@@ -1,0 +1,212 @@
+/* =============================================================================
+   Fragile Docs - Expert Mode Toggle Styles
+   =============================================================================
+   This stylesheet provides styling for the Feynman prose blocks and the
+   expert-mode toggle functionality.
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   Feynman Prose Blocks - Base Styles
+   ----------------------------------------------------------------------------- */
+
+.feynman-prose {
+    padding-left: 1.2em;
+    margin: 1.2em 0;
+}
+
+.feynman-prose p {
+    margin-bottom: 0.8em;
+}
+
+.feynman-prose p:last-child {
+    margin-bottom: 0;
+}
+
+/* -----------------------------------------------------------------------------
+   Light Mode (default)
+   ----------------------------------------------------------------------------- */
+
+html[data-theme="light"] .feynman-prose,
+html:not([data-theme]) .feynman-prose {
+    border-left: 2px solid rgba(120, 120, 120, 0.25);
+    color: #000 !important;
+    background: none;
+}
+
+html[data-theme="light"] .feynman-prose p,
+html[data-theme="light"] .feynman-prose span,
+html[data-theme="light"] .feynman-prose em,
+html[data-theme="light"] .feynman-prose strong,
+html:not([data-theme]) .feynman-prose p,
+html:not([data-theme]) .feynman-prose span,
+html:not([data-theme]) .feynman-prose em,
+html:not([data-theme]) .feynman-prose strong {
+    color: #000 !important;
+}
+
+/* -----------------------------------------------------------------------------
+   Dark Mode
+   ----------------------------------------------------------------------------- */
+
+html[data-theme="dark"] .feynman-prose {
+    border-left: 2px solid rgba(180, 180, 180, 0.3);
+    color: #e0e0e0 !important;
+    background: none;
+}
+
+html[data-theme="dark"] .feynman-prose p,
+html[data-theme="dark"] .feynman-prose span,
+html[data-theme="dark"] .feynman-prose em,
+html[data-theme="dark"] .feynman-prose strong {
+    color: #e0e0e0 !important;
+}
+
+/* Fallback for prefers-color-scheme (if theme attribute not set) */
+@media (prefers-color-scheme: dark) {
+    html:not([data-theme]) .feynman-prose {
+        border-left: 2px solid rgba(180, 180, 180, 0.3);
+        color: #e0e0e0 !important;
+        background: none;
+    }
+
+    html:not([data-theme]) .feynman-prose p,
+    html:not([data-theme]) .feynman-prose span,
+    html:not([data-theme]) .feynman-prose em,
+    html:not([data-theme]) .feynman-prose strong {
+        color: #e0e0e0 !important;
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   Expert Mode - Hide Feynman Prose and Agent-Added Content
+   ----------------------------------------------------------------------------- */
+
+html.expert-mode .feynman-prose,
+html.expert-mode .feynman-added {
+    display: none;
+}
+
+/* -----------------------------------------------------------------------------
+   Agent-Added Content Indicator (subtle marker for transparency)
+   ----------------------------------------------------------------------------- */
+
+.feynman-added {
+    position: relative;
+}
+
+.feynman-added::before {
+    content: "";
+    position: absolute;
+    left: -4px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg,
+        rgba(100, 150, 200, 0.3) 0%,
+        rgba(100, 150, 200, 0.1) 100%);
+    border-radius: 1px;
+}
+
+/* -----------------------------------------------------------------------------
+   Expert Mode Toggle Switch
+   ----------------------------------------------------------------------------- */
+
+/* Container for the whole toggle */
+.expert-mode-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-right: 1rem;
+    font-size: 0.8rem;
+}
+
+/* Labels on either side of switch */
+.expert-mode-label {
+    color: var(--pst-color-text-muted);
+    font-weight: 400;
+    transition: color 0.2s ease;
+    user-select: none;
+}
+
+.expert-mode-label.active {
+    color: var(--pst-color-text-base);
+    font-weight: 600;
+}
+
+/* The switch container */
+.expert-mode-switch {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+    cursor: pointer;
+}
+
+/* Hide default checkbox */
+.expert-mode-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* The slider track */
+.expert-mode-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    border-radius: 20px;
+    transition: background-color 0.2s ease;
+}
+
+/* The slider knob */
+.expert-mode-slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* Checked state - move knob right */
+.expert-mode-switch input:checked + .expert-mode-slider {
+    background-color: var(--pst-color-primary, #0969da);
+}
+
+.expert-mode-switch input:checked + .expert-mode-slider:before {
+    transform: translateX(16px);
+}
+
+/* Focus state for accessibility */
+.expert-mode-switch input:focus + .expert-mode-slider {
+    box-shadow: 0 0 0 2px rgba(9, 105, 218, 0.3);
+}
+
+/* Dark mode adjustments */
+html[data-theme="dark"] .expert-mode-slider {
+    background-color: #555;
+}
+
+html[data-theme="dark"] .expert-mode-switch input:checked + .expert-mode-slider {
+    background-color: #58a6ff;
+}
+
+/* Fallback fixed position if header insertion fails */
+.expert-mode-container-fixed {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    background: var(--pst-color-background, white);
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--pst-color-border, #ddd);
+}

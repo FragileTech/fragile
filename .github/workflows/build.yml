@@ -101,67 +101,52 @@ jobs:
   #         token: ${{ secrets.CODECOV_TOKEN }} # required
   #         verbose: true # optional (default = false)
 
-  build-test-package:
-    name: Build and test the package
-    # needs: style-check  # Disabled while style-check is commented out
-    runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'Bump version')"
-    permissions:
-      contents: write
-      id-token: write
-    steps:
-      - name: actions/checkout
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-          fetch-depth: 100
-      - name: Set Git user
-        run: |
-          git config --global user.name "${{ env.BOT_NAME }}"
-          git config --global user.email "${{ env.BOT_EMAIL }}"
-
-      - name: Setup Rye
-        id: setup-rye
-        uses: eifinger/setup-rye@v4
-        with:
-          enable-cache: true
-          cache-prefix: ubuntu-latest-rye-build-3.10-${{ hashFiles('pyproject.toml') }}
-#      - name: actions/cache
-#        uses: actions/cache@v4
-#        with:
-#          path: ${{ env.LOCAL_CACHE }}
-#          key: ubuntu-latest-system-build-3.10-${{ hashFiles('pyproject.toml') }}
-#          restore-keys: ubuntu-latest-system-test
-      - name: Install build dependencies
-        run: |
-          set -x
-          rye pin --relaxed cpython@3.10
-          rye install bump2version
-          rye install twine
-
-      - name: Create unique version for test.pypi
-        run: |
-          set -x
-          current_version=$(grep __version__ $VERSION_FILE | cut -d\" -f2)
-          ts=$(date +%s)
-          new_version="$current_version$ts"
-          bumpversion --current-version $current_version --new-version $new_version patch $VERSION_FILE
-
-      - name: Build package
-        run: |
-          set -x
-          rye build --clean
-          twine check dist/*
-
-#      - name: Publish 📦 to Test PyPI
-#        env:
-#          TEST_PYPI_PASS: ${{ secrets.TEST_PYPI_PASS }}
-#        if: "'$TEST_PYPI_PASS' != ''"
-#        uses: pypa/gh-action-pypi-publish@release/v1
-#        with:
-#          password: ${{ secrets.TEST_PYPI_PASS }}
-#          repository-url: https://test.pypi.org/legacy/
-#          skip-existing: true
+  # NOTE: build-test-package temporarily disabled while focusing on documentation
+  # build-test-package:
+  #   name: Build and test the package
+  #   # needs: style-check  # Disabled while style-check is commented out
+  #   runs-on: ubuntu-latest
+  #   if: "!contains(github.event.head_commit.message, 'Bump version')"
+  #   permissions:
+  #     contents: write
+  #     id-token: write
+  #   steps:
+  #     - name: actions/checkout
+  #       uses: actions/checkout@v4
+  #       with:
+  #         persist-credentials: false
+  #         fetch-depth: 100
+  #     - name: Set Git user
+  #       run: |
+  #         git config --global user.name "${{ env.BOT_NAME }}"
+  #         git config --global user.email "${{ env.BOT_EMAIL }}"
+  #
+  #     - name: Setup Rye
+  #       id: setup-rye
+  #       uses: eifinger/setup-rye@v4
+  #       with:
+  #         enable-cache: true
+  #         cache-prefix: ubuntu-latest-rye-build-3.10-${{ hashFiles('pyproject.toml') }}
+  #     - name: Install build dependencies
+  #       run: |
+  #         set -x
+  #         rye pin --relaxed cpython@3.10
+  #         rye install bump2version
+  #         rye install twine
+  #
+  #     - name: Create unique version for test.pypi
+  #       run: |
+  #         set -x
+  #         current_version=$(grep __version__ $VERSION_FILE | cut -d\" -f2)
+  #         ts=$(date +%s)
+  #         new_version="$current_version$ts"
+  #         bumpversion --current-version $current_version --new-version $new_version patch $VERSION_FILE
+  #
+  #     - name: Build package
+  #       run: |
+  #         set -x
+  #         rye build --clean
+  #         twine check dist/*
 
   bump-version:
     name: Bump package version
@@ -169,9 +154,9 @@ jobs:
       BOT_AUTH_TOKEN: ${{ secrets.BOT_AUTH_TOKEN }}
     if: "!contains(github.event.head_commit.message, 'Bump version') && github.ref == 'refs/heads/main' && '$BOT_AUTH_TOKEN' != ''"
     runs-on: ubuntu-latest
-    needs:
+    # needs:
       # - pytest-rye  # Disabled while tests are commented out
-      - build-test-package
+      # - build-test-package  # Disabled while build-test-package is commented out
     steps:
       - name: actions/checkout
         uses: actions/checkout@v4
