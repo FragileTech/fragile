@@ -1,5 +1,13 @@
 # Diagnostics: Stability Checks (Monitors)
 
+:::{div} feynman-prose
+Here is the central idea: instead of hoping your agent behaves well and debugging after it fails, you build in runtime contracts that catch problems as they happen. Think of a car dashboard. The engine does not just explode when oil pressure drops. A sensor notices, a light comes on, and you pull over before the damage is done.
+
+The Fragile Agent has 29 such warning lights for stability alone. Each watches for a specific pathology: Is the agent switching actions too fast? Has the representation drifted? Is the value function flat where it should not be? When any check fails, the system takes action---halting, reverting, or triggering remediation. It does not accumulate a penalty and hope for the best.
+
+This is a fundamentally different philosophy from standard RL, where safety constraints are soft. Here, the constraints are hard. The checks are mathematical contracts, not suggestions.
+:::
+
 Stability and data-quality are monitored via 29 distinct checks (Gate Nodes). Each corresponds to a specific, testable condition on the interaction between the agent and its environment.
 
 **Relation to prior work.** Many safe-RL formulations express safety as one (or a few) expected-cost constraints in a constrained MDP {cite}`altman1999constrained,achiam2017constrained`. The Fragile Agent keeps that spirit but broadens the constraint surface to include **representation and interface diagnostics** (grounding, mixing, saturation, switching, stiffness) that can be audited online, alongside Lyapunov-style stability constraints {cite}`chow2018lyapunov`.
@@ -49,6 +57,15 @@ This recovers **Constrained MDPs** (CMDPs) with penalty-based constraint satisfa
 
 (sec-the-stability-checks)=
 ## The 29 Stability Checks
+
+:::{div} feynman-prose
+This table might look intimidating, but there is a logic to it. Each row asks one question about the agent's behavior, and each has a regularization term that penalizes violations.
+
+Think of the checks in groups. *Stability*: Is the agent changing its mind too fast? Is the value function giving useful signals? *Capacity*: Is the representation using its symbols efficiently, or has it collapsed to just a few? *Grounding*: Is the agent paying attention to its sensors, or has it decoupled from reality?
+
+The "Compute" column tells you the cost. Checkmarks are cheap enough to run every step. Lightning bolts need cleverness---amortization or approximation. X marks are expensive, reserved for periodic or offline analysis.
+:::
+
 
 | Node    | Check                                             | Component                | Interpretation                  | Meaning                                     | Regularization Factor ($\mathcal{L}_{\text{check}}$)                                                                                       | Compute                         |
 |---------|---------------------------------------------------|--------------------------|---------------------------------|---------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------|
@@ -100,8 +117,28 @@ This recovers **Constrained MDPs** (CMDPs) with penalty-based constraint satisfa
 
 Each node corresponds to a verifiable geometric property. The Sieve acts as a **topological filter**: problems that fail these checks are rejected before gradient updates can corrupt the agent.
 
+:::{admonition} Example: Reading the Stability Table
+:class: feynman-added example
+
+Take Node 2, the ZenoCheck. The name comes from Zeno's paradox: infinitely many actions in finite time. The check asks: "Is the policy switching too fast?"
+
+The regularization factor $D_{\mathrm{KL}}(\pi_t \Vert \pi_{t-1})$ measures how much the policy changed step-to-step. Large values mean "chattering"---rapid oscillation between strategies. The check penalizes this.
+
+Compute cost $O(BA)$ scales with batch size times action dimension. The checkmark indicates it is cheap enough to run every step.
+
+When this check fails, you know something specific: the agent is thrashing, not settling. That points toward remedies---increase the Zeno weight, or check if the value function gives contradictory signals.
+:::
+
 (sec-theory-thin-interfaces)=
 ## Theory: Thin Interfaces
+
+:::{div} feynman-prose
+Here is a counterintuitive design philosophy. In most deep learning, we train everything end-to-end. Gradients flow from loss through every component, and the whole system optimizes together. Elegant, but when something breaks, you have no idea which part failed.
+
+The Fragile Agent takes a different approach. Instead of one entangled system, we have separate components---encoder, world model, critic, policy---connected by "thin interfaces." These are not arbitrary. They are mathematical contracts each component must satisfy.
+
+Think of a well-designed software system with clear APIs. Each module can be tested independently. When integration fails, you know exactly which contract was violated. The monolithic alternative might train faster in good conditions, but it gives you no diagnostic tools when things go wrong.
+:::
 
 In the Hypostructure framework, **Thin Interfaces** are defined as minimal couplings between components. Instead of monolithic end-to-end training, we enforce structural contracts (the checks) via **Defect Functionals** ($\mathcal{L}_{\text{check}}$).
 
@@ -110,6 +147,20 @@ In the Hypostructure framework, **Thin Interfaces** are defined as minimal coupl
 
 (sec-scaling-exponents-characterizing-the-agent)=
 ## Scaling Exponents: Characterizing the Agent
+
+:::{div} feynman-prose
+Here is something beautiful. Instead of staring at dozens of metrics, we summarize system health with just four numbers: the scaling exponents. They tell you whether components are changing at compatible rates.
+
+Why does this matter? Imagine a teacher (the critic) and a student (the policy). The teacher gives feedback; the student learns. But what if the student learns so fast that, by the time the teacher finishes a sentence, the student has moved on? The feedback becomes useless. What if the textbook (world model) keeps rewriting itself while both are trying to use it? Chaos.
+
+The four exponents capture these timescale relationships:
+- $\alpha$: How strongly does the critic signal? (Teacher's clarity)
+- $\beta$: How fast does the policy change? (Student's learning rate)
+- $\gamma$: How volatile is the world model? (Textbook stability)
+- $\delta$: How much does the representation drift? (Are we speaking the same language?)
+
+Stable training requires these in the right relationship. Representation should change slowest (stable language). World model should not drift faster than the critic can track. Policy should not update faster than it gets reliable feedback. This hierarchy is not arbitrary---it is the condition for coordination.
+:::
 
 We characterize the training dynamics of the Fragile Agent using four **scaling coefficients**. These are *diagnostic* summaries of state-space behavior, not optimizer statistics.
 
@@ -139,12 +190,32 @@ $$
 (sec-defect-functionals-implementing-regulation)=
 ## Defect Functionals: Implementing Regulation
 
+:::{div} feynman-prose
+We have talked about what to monitor. Now: how do we fix things when monitors detect a problem?
+
+The key idea is the "defect functional"---a loss term measuring how badly a component violates its contract. When everything is fine, the defect is zero. When something goes wrong, the defect grows, and the gradient pushes the system back toward compliance.
+
+But here is what makes this different from just adding loss terms: these are contracts, not suggestions. If a component persistently violates its contract, that is not a "tweak the weight" situation. That is a "something is architecturally wrong, stop and fix it" situation.
+
+The sections that follow show specific defect functionals for each component: the Shutter's anti-collapse terms, the world model's stability constraints, the critic's Lyapunov conditions, and the policy's anti-oscillation penalties.
+:::
+
 We regulate the Fragile Agent by augmenting the loss function with specific terms for each component. These terms are non-negotiable cybernetic contracts.
 
 (sec-gauge-invariant-regulation)=
 ### Gauge-Invariant Regulation (Symmetry Quotienting)
 
-The “Fragile” design is compatible with (and benefits from) an explicit **symmetry layer** ({ref}`Section 1.1.4 <sec-symmetries-and-gauge-freedoms>`): identify nuisance degrees of freedom as group actions and enforce invariance/equivariance so that capacity is spent on control-relevant structure.
+:::{div} feynman-prose
+Here is a deep idea from physics. "Gauge invariance" means some aspects of your description are arbitrary choices that do not affect the physics. Absolute voltage does not matter, only differences. Absolute phase of a quantum state does not matter, only relative phases.
+
+The same thing happens in machine learning. Your representation might contain information irrelevant for control. Object position matters; camera rotation by 3 degrees does not. State value matters; the units you measure it in do not.
+
+"Gauge-invariant regulation" means building a system that does not waste capacity on these arbitrary choices. If rotating the image should not change the decision, enforce that. If rescaling reward should not change the optimal policy, parameterize the critic so it cannot be fooled by magnitude drift.
+
+The table below gives a practical recipe: for each type of nuisance (arbitrary choice), a corresponding loss or constraint removes its influence.
+:::
+
+The "Fragile" design is compatible with (and benefits from) an explicit **symmetry layer** ({ref}`Section 1.1.4 <sec-symmetries-and-gauge-freedoms>`): identify nuisance degrees of freedom as group actions and enforce invariance/equivariance so that capacity is spent on control-relevant structure.
 
 The table below summarizes a minimal, implementable set of **gauge-invariant regulation** mechanisms. Each item is expressed as a concrete loss/monitor and mapped to an existing Fragile failure mode ({ref}`Section 5 <sec-failure-modes>`). The intent is not to import physics metaphors, but to use the standard mathematical language of symmetry and invariance (group actions, quotienting, equivariance).
 
@@ -161,6 +232,17 @@ The table below summarizes a minimal, implementable set of **gauge-invariant reg
 
 (sec-a-vq-vae-regulation)=
 ### A. VQ-VAE Regulation (The Shutter)
+
+:::{div} feynman-prose
+The "Shutter" is the agent's window to the world. It compresses raw sensory input into a discrete symbol $K$ from a finite codebook, plus auxiliary information for reconstruction. This bottleneck is critical, and several things can go wrong.
+
+The most dramatic failure is "codebook collapse": the encoder uses only a handful of symbols, wasting capacity. Imagine a vocabulary of 10,000 words where you only use 50. You lose the ability to make fine distinctions.
+
+The opposite problem is "symbol churn": symbol meanings keep changing during training, so downstream components can never build stable associations. Like learning a language while the dictionary rewrites itself daily.
+
+The loss terms below prevent both pathologies. The VQ codebook loss keeps the encoder aligned with its codes. The anti-collapse term encourages using all symbols. The orbit-invariance loss ensures irrelevant transformations (camera rotation) do not change symbol assignment.
+:::
+
 *   **Symbolic Bottleneck (Node 3 / 11):** the shutter is a split latent $(K,z_n,z_{\mathrm{tex}})$ with $K\in\mathcal{K}$ discrete ({ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`). A canonical objective is:
 
     $$
@@ -202,6 +284,17 @@ The table below summarizes a minimal, implementable set of **gauge-invariant reg
     \mathcal{L}_{\text{InfoNCE}} = -\log \frac{\exp(\text{sim}(z_t, z_{t+k}))}{\sum \exp(\text{sim}(z_t, z_{neg}))}
     $$
     *   *Effect:* Ensures the latent space captures long-term structural dependencies (slow features), not just pixel reconstruction.
+
+:::{div} feynman-prose
+Here is a subtle alternative to contrastive learning. InfoNCE pushes apart representations of different inputs (negative samples). But finding good negatives is tricky, and pairwise comparisons are expensive.
+
+VICReg takes a different approach. Instead of "be different from negatives," it says "satisfy geometric constraints":
+1. *Invariance*: Two views of the same input should have similar representations
+2. *Variance*: Do not collapse everything to a single point
+3. *Decorrelation*: Different dimensions should capture different information
+
+This replaces the combinatorial problem of sampling negatives with simple batch statistics. The variance constraint prevents collapse; the covariance constraint ensures the representation uses all its capacity.
+:::
 
 *   **VICReg: Variance-Invariance-Covariance Regularization (Alternative to InfoNCE):**
 
@@ -292,6 +385,17 @@ This recovers **Contrastive Predictive Coding (CPC)** {cite}`oord2018cpc` and **
 
 (sec-b-world-model-regulation)=
 ### B. World Model Regulation (Dynamics Model)
+
+:::{div} feynman-prose
+The world model is the agent's internal simulator. Given current state and action, it predicts what comes next. This prediction is used for planning, training the critic, and imagination-based exploration.
+
+What can go wrong? The most dangerous failure is unbounded sensitivity: a tiny state change causes a huge prediction change. The butterfly effect run amok. Planning becomes meaningless because small errors explode exponentially.
+
+The Lipschitz constraint addresses this directly: the world model's Jacobian (output change per input change) must be bounded. Smooth dynamics. No sudden cliffs.
+
+Another useful structure is the Hamiltonian or symplectic parameterization, appropriate when the environment obeys conservation laws. By building this in, the world model cannot violate conservation, giving stability guarantees for free.
+:::
+
 *   **Lipschitz Constraint (BarrierOmin / Node 9):**
 
     $$
@@ -335,6 +439,16 @@ This recovers **Contrastive Predictive Coding (CPC)** {cite}`oord2018cpc` and **
 
 (sec-c-critic-regulation)=
 ### C. Critic Regulation (Value / Lyapunov Function)
+
+:::{div} feynman-prose
+Here is a beautiful unification. In standard RL, the critic predicts cumulative reward. In the Fragile Agent, it has a deeper role: it is a Lyapunov function.
+
+What is a Lyapunov function? The mathematician's way of proving stability without solving dynamics explicitly. Find a function $V$ that always decreases along trajectories (like a ball rolling downhill). If $V$ decreases everywhere, the system converges---even without knowing exactly where.
+
+For the Fragile Agent, the critic should not just predict reward but guide the system toward good states in a provably stable way. The Lyapunov constraints say: value must decrease along trajectories. If it does not, something has failed---the critic is wrong, the policy is not following the gradient, or something else broke.
+
+The "Euclidean vs Riemannian" distinction below is important. Euclidean loss cares about accuracy: did we predict the return? Riemannian/Lyapunov loss cares about structure: does this value function guide the system stably? You can be accurate but unstable, or stable but inaccurate. We want both.
+:::
 
 The Critic does not just predict reward; it defines a **stability-oriented potential** over latent state. We impose Lyapunov-style constraints as *sufficient conditions* for local stability, enforced approximately via sampled penalties {cite}`chang2019neural,chow2018lyapunov,kolter2019safe`.
 
@@ -394,6 +508,16 @@ The Critic does not just predict reward; it defines a **stability-oriented poten
 (sec-d-policy-regulation)=
 ### D. Policy Regulation (Controller / Geometry-Aware Updates)
 
+:::{div} feynman-prose
+The policy decides what to do. Given current state, it outputs an action. In standard RL, you update by following the gradient of expected return. But that gradient lives in parameter space, ignoring the geometry.
+
+Here is an analogy. You are climbing a mountain, but your map has a coordinate system where the scale changes from place to place. Following the steepest direction on the map might lead you in circles---"steep on the map" is not "steep on the mountain."
+
+The natural gradient fixes this. It measures step sizes using local policy sensitivity (Fisher information). Where the policy is sensitive (small parameter change causes big behavior change), take small steps. Where insensitive, take bigger steps. This is coordinate-invariant: parameterization does not matter.
+
+The Zeno constraint is equally important. It prevents "chattering"---rapid oscillation between strategies. An agent that keeps changing its mind signals either noisy value estimates or updates too aggressive for the available information.
+:::
+
 The Policy is the controller. Its objective is to choose actions that reduce expected cost while respecting stability and information constraints. We replace purely Euclidean policy-gradient updates with a **natural-gradient / information-geometric** update that respects the local sensitivity metric $G$ ({ref}`Section 2.5 <sec-second-order-sensitivity-value-defines-a-local-metric>`).
 
 **Euclidean vs Riemannian Policy Losses:**
@@ -448,6 +572,17 @@ The Policy is the controller. Its objective is to choose actions that reduce exp
 
 (sec-e-cross-network-synchronization)=
 ### E. Cross-Network Synchronization (Alignment Terms)
+
+:::{div} feynman-prose
+We have regulated each component individually. But components must work together. This section is about "handshakes"---synchronization losses that keep them aligned.
+
+What happens if the encoder invents new symbols but the world model still uses the old dictionary? Predictions become meaningless. What if the policy learns a brilliant strategy but the critic evaluates it with an outdated value function? Bad feedback.
+
+These are not hypothetical. They happen constantly in modular systems. Synchronization losses explicitly measure and penalize alignment failures. When symbols do not match what the world model can predict, closure loss increases. When policy drifts from critic expectations, the advantage gap grows.
+
+The key insight: each synchronization loss has semantic interpretation. Large TD error means the critic is not tracking returns. Large closure defect means inconsistent ontology. These are not just numbers---they are diagnostics telling you which contract is violated.
+:::
+
 A key design choice in the Fragile Agent is to make inter-component alignment explicit via **synchronization losses**:
 
 1.  **Shutter $\leftrightarrow$ WM (Macro Closure / Predictability):**
@@ -476,6 +611,17 @@ A key design choice in the Fragile Agent is to make inter-component alignment ex
 
 (sec-f-exploration-and-coupling-regularizers)=
 ### F. Exploration and Coupling Regularizers (Path Entropy, KL-Control, Window)
+
+:::{div} feynman-prose
+One more family deserves attention: information constraints. These govern how much the agent is allowed to "think" (information-theoretically) and how tightly its state couples to sensors.
+
+The KL-control term is about effort. Every deviation from a reference policy (usually uniform) costs information---literally the bits needed to specify "do this, not that." When control effort is expensive, the agent prefers simpler policies that do not require precise action specification.
+
+The path entropy term is about exploration. An agent that always goes to the same place has low future flexibility. One that keeps options open has high path entropy. Maximizing this encourages exploration---not random, but in a way that preserves ability to reach diverse futures.
+
+The coupling window is the most subtle. The agent should not be too tightly coupled to sensors (overfitting to noise) nor too loosely (ignoring important signals). There is a Goldilocks zone of information transfer, and the window penalty keeps the agent in it.
+:::
+
 The synchronization and component losses above enforce internal consistency. The following regularizers make information/coupling constraints explicit in online-auditable form.
 
 *   **KL-Control (Relative-Entropy Control; Theorem {prf:ref}`thm-equivalence-of-entropy-regularized-control-forms-discrete-macro`).** Fix a reference actuator prior $\pi_0(a\mid k)$ with full support. Define control effort as KL deviation from this prior:
@@ -530,6 +676,17 @@ The synchronization and component losses above enforce internal consistency. The
 
 (sec-joint-optimization)=
 ## Joint Optimization
+
+:::{div} feynman-prose
+Now the moment of truth: putting it all together. How do you combine dozens of loss terms into a single objective?
+
+The naive answer: add them with weights. But how do you choose the weights? Lyapunov weight too low, the system becomes unstable. Too high, you strangle exploration. And the "right" weight is not constant---it changes as training progresses.
+
+This is why adaptive multipliers matter. Weights are not hand-tuned constants; they adjust dynamically based on which constraints are violated. Like a thermostat: room too cold, turn up heat. Constraint violated, increase its penalty. Satisfied, relax.
+
+The joint optimization is really constrained optimization dressed as unconstrained. The primary objective is task performance. The constraint terms are contracts. The adaptive multipliers are the Lagrange multipliers enforcing them.
+:::
+
 The total Fragile Agent training objective is the weighted sum of component and synchronization tasks:
 
 $$
@@ -540,6 +697,22 @@ This defines the coupled-system "stiffness". In practice, the coefficients $\lam
 (sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration)=
 ## Adaptive Multipliers: Learned Penalties, Setpoints, and Calibration
 
+:::{div} feynman-prose
+Here is why fixed loss weights are a bad idea.
+
+Suppose you have reconstruction loss (around 1.0) and prediction loss (around 0.001). You set weights to balance them. After training, reconstruction is 0.01 and prediction is 10.0. Your weights are now completely wrong; one term dominates.
+
+The solution: adaptive weights. Three approaches:
+
+1. **Primal-dual (Lagrange multipliers)**: Treat constraints as hard requirements. Violated? Increase weight. Satisfied? Decrease it. For non-negotiable constraints like safety budgets.
+
+2. **PID controllers**: For quantities that should stay in a range (entropy, KL-per-update), use feedback control. Too low? Increase weight. Too high? Decrease it.
+
+3. **Learned precisions**: For likelihood-style losses with unknown noise scales (reconstruction vs prediction), learn relative scales during training. Bayesian multi-task learning.
+
+Loss weights are not hyperparameters to tune once. They are dynamic quantities that should respond to training state.
+:::
+
 In the Fragile Agent, **static loss weights are a failure mode**: hard-coding numbers like $\lambda=0.1$ implicitly assumes a constant exchange rate between heterogeneous terms even though their typical magnitudes and gradients change across training, operating regimes, and distribution shift.
 
 We distinguish three classes of coefficients:
@@ -548,7 +721,17 @@ We distinguish three classes of coefficients:
 - **Learned precisions (multi-task scaling):** balance likelihood-style losses with unknown noise scales (reconstruction vs prediction vs auxiliary SSL).
 
 (sec-method-a-primal-dual-updates)=
-### Method A: Primal–Dual Updates (Projected Dual Ascent)
+### Method A: Primal-Dual Updates (Projected Dual Ascent)
+
+:::{div} feynman-prose
+Standard machinery from constrained optimization, applied to neural networks. You have constraints that must be satisfied. Instead of hoping weights are right, let constraints tell you what weights should be.
+
+Define a constraint like "Lyapunov defect below threshold $\epsilon$." Satisfied? Weight stays or decreases. Violated? Weight increases. This is "dual ascent": the dual variable (weight) ascends when the primal (constraint) is violated.
+
+This automatically handles scale. Badly violated constraint? Weight grows quickly to dominate. Barely violated? Weight grows slowly. Satisfied? Weight shrinks. No manual tuning.
+
+One implementation detail: clip weights to prevent explosion. If a constraint is truly unsatisfiable (architecture cannot reach the precision), the weight would grow forever. The clip prevents this and provides a diagnostic: weight consistently at maximum means that constraint is fundamentally problematic.
+:::
 
 Choose online-computable nonnegative constraint metrics $\mathcal{C}_i(\theta)$ and tolerances $\epsilon_i$ defining a feasible set
 
@@ -596,6 +779,16 @@ This is the same mathematical pattern used to tune entropy coefficients or KL co
 (sec-method-b-setpoint-controllers)=
 ### Method B: Setpoint Controllers (PI/PID Regulation)
 
+:::{div} feynman-prose
+Some quantities should not be driven to zero but maintained in a range. Entropy is the perfect example. Too much and the policy is noise. Too little and it has collapsed to one action. You want "just right."
+
+A PID controller is the classic solution. "P" (proportional) responds to current error: how far from target? "I" (integral) responds to accumulated error: consistently missing? "D" (derivative) responds to rate of change: getting better or worse?
+
+For neural network training, PI control (no derivative) often suffices---the derivative can be noisy and cause oscillations. The principle: entropy too low, increase the bonus. Too high, decrease it. The controller finds the right weight automatically.
+
+This is exactly how SAC (Soft Actor-Critic) handles its entropy coefficient. Not a hyperparameter but a controlled quantity that adapts to keep entropy in range.
+:::
+
 Some metrics should be regulated around a target value or rate. Typical examples:
 - **Policy KL per update** (trust region): keep $D_{\mathrm{KL}}(\pi_t\Vert\pi_{t-1})$ in a target band.
 - **Entropy / mixing:** keep $H(\pi(\cdot\mid K))$ within a target range.
@@ -625,6 +818,16 @@ This “multiplier as controller” viewpoint is used directly in PID Lagrangian
 (sec-method-c-learned-precisions)=
 ### Method C: Learned Precisions (Homoscedastic Uncertainty Weighting)
 
+:::{div} feynman-prose
+A Bayesian perspective on weighting. Each loss term is a negative log-likelihood under some noise model. Reconstruction assumes variance $\sigma^2_{\text{recon}}$. Prediction assumes $\sigma^2_{\text{pred}}$.
+
+If you knew these variances, you would weight by inverse variance (precision). High-noise terms get low weight (unreliable). Low-noise terms get high weight (informative).
+
+The trick: you do not know the variances, but you can learn them. "Homoscedastic uncertainty weighting" introduces learnable $s_i = \log \sigma^2_i$. The effective weight is $\exp(-s_i)$, with a regularization term $s_i$ that prevents all weights from collapsing to zero.
+
+This method is appropriate for balancing prediction tasks with unknown noise scales---not for hard safety constraints (use Method A). But for soft balancing of reconstruction, prediction, and auxiliary objectives, it is principled.
+:::
+
 When combining multiple likelihood-style losses with different natural scales (e.g., reconstruction vs dynamics prediction vs auxiliary self-supervision), it is often better to learn their relative weights as **inverse variances** (precisions) rather than choose them by hand.
 
 Assume each loss $\mathcal{L}_i$ is (or is proportional to) a negative log-likelihood with unknown homoscedastic noise variance $\sigma_i^2$. Learning $s_i:=\log\sigma_i^2$ yields the objective {cite}`kendall2018multi`:
@@ -651,7 +854,19 @@ This method is appropriate for **multi-task scaling**, not for nonnegotiable saf
 (sec-calibrating-tolerances)=
 ### Calibrating Tolerances $\epsilon_i$ (Feasibility and Units)
 
-Dual methods only work if constraints are **feasible**: setting $\epsilon_i$ below the system’s achievable resolution forces multipliers to diverge and produces brittle training.
+:::{div} feynman-prose
+A practical question that trips up implementations: how do you set tolerance thresholds $\epsilon_i$?
+
+This is not a small detail. Threshold too tight (tighter than achievable)? The dual multiplier grows forever chasing an impossible constraint. Too loose? The constraint becomes meaningless.
+
+The answer is empirical calibration. Before real training, run a baseline policy (random, scripted) and measure constraint metrics. What reconstruction loss does it achieve? Typical KL-per-update? Entropy of random policy?
+
+These measurements tell you what is achievable. Set tolerances relative to baseline. Want "better than baseline"? Threshold below median. Want "not much worse"? Set a bit above. Want "almost always satisfied"? Use a high quantile.
+
+Tolerances should be grounded in what is achievable, not abstract desires for "small" values.
+:::
+
+Dual methods only work if constraints are **feasible**: setting $\epsilon_i$ below the system's achievable resolution forces multipliers to diverge and produces brittle training.
 
 A practical, implementable calibration procedure is:
 1. **Collect a calibration buffer** $\mathcal{D}_{\text{cal}}$ by running a baseline policy for $N$ steps (random, scripted, or a known-safe controller), logging the metrics used in your Gate Nodes / Barriers.
@@ -695,6 +910,16 @@ A practical, implementable calibration procedure is:
 (sec-using-scaling-exponents-to-gate-updates-and-tune-step-sizes)=
 ### Using Scaling Exponents to Gate Updates and Tune Step Sizes
 
+:::{div} feynman-prose
+Remember the four scaling exponents? Here is where they become operational. Instead of just monitoring, we use them to control training itself.
+
+The rule is simple: do not update a component faster than its dependencies can track. Representation drifting (high $\delta$)? Freeze downstream until it stabilizes. World model volatile (high $\gamma$)? Do not trust it for policy learning. Policy changing faster than critic can evaluate (high $\beta$ vs $\alpha$)? Slow policy updates.
+
+This is not ad-hoc. It directly implements the timescale hierarchy needed for stability. The code below shows a simple version: check exponents, and if they violate hierarchy, adjust learning rates.
+
+The result: self-correcting training. Instead of manually tuning learning rates, the system slows when something is wrong and speeds up when healthy.
+:::
+
 The scaling exponents $(\alpha,\beta,\gamma,\delta)$ ({ref}`Section 3.2 <sec-scaling-exponents-characterizing-the-agent>`) become actionable when treated as **online diagnostics** driving a simple update scheduler {cite}`konda2000actor`:
 - If representation drift $\delta$ is high, freeze downstream learning (policy/critic/world) until the shutter stabilizes.
 - If world-model volatility $\gamma$ is high, avoid policy learning on shifting dynamics (freeze or reduce policy step size).
@@ -720,6 +945,18 @@ elif beta > min(beta_max, alpha):
 ```
 
 This is not ad-hoc tuning; it is a direct operationalization of the two-time-scale requirement already encoded as BarrierTypeII ({ref}`Section 4.1 <sec-barrier-implementation-details>`).
+
+:::{admonition} The Big Picture: Diagnostics as a Design Philosophy
+:class: feynman-added note
+
+Most RL systems are black boxes. Train them, evaluate performance, and when something breaks you have little insight into why. The Fragile Agent is different: 29 stability checks give real-time visibility into every component's health.
+
+This is not just debugging. It is a different approach to reliability. Instead of hoping things work and reacting to failures, you specify upfront what "working" means (contracts), measure continuously (diagnostics), and correct automatically (adaptive multipliers).
+
+The result: auditable (you can explain what went wrong), self-correcting (violations trigger responses), and robust (timescale hierarchy prevents cascading failures).
+
+If you take one thing from this chapter: visibility into your system is not a luxury. It is the foundation of reliability.
+:::
 
 :::{admonition} Neural Unification ({ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>`)
 :class: note seealso

@@ -6,10 +6,30 @@
 Many theoretical constraints are too expensive to compute directly. This section provides the RL-engineering replacements (surrogate losses, probes, and bounds) that preserve the same failure detection in practice.
 :::
 
+:::{div} feynman-prose
+Here is a situation that comes up constantly in physics and engineering: you derive a beautiful, exact criterion for detecting when something goes wrong, then realize that computing it would take longer than the age of the universe. What do you do?
+
+You find a cheaper test that catches the same failures. This is not cheating---it is the essence of good engineering. To know if my car engine is overheating, I do not need the temperature of every molecule. A single thermometer in the coolant tells me what I need.
+
+The theoretical framework gives us exact criteria for instability, bifurcations, and non-tame dynamics. These are mathematically elegant but computationally ruinous. So we ask: what simpler measurement triggers an alarm at the same moments? What is the "thermometer" for each kind of failure?
+
+For each expensive theoretical test, we find a cheap surrogate that rings the same warning bells.
+:::
+
 Several regularization terms from the theoretical framework are computationally infeasible for standard training. This section provides practical alternatives with full PyTorch implementations.
 
 (sec-barrierbode-temporal-gain-margin)=
 ## BarrierBode → Temporal Gain Margin
+
+:::{div} feynman-prose
+The Bode sensitivity integral from control theory says something remarkable: you cannot suppress disturbances at all frequencies simultaneously. Push down the response at one frequency, it pops up somewhere else. The integral of log-sensitivity over all frequencies is constant---like conservation of energy, but for control systems.
+
+Why care about this for neural policies? It detects instability. If your controller oscillates wildly, if errors amplify instead of shrink, the Bode integral catches it.
+
+The catch: computing that integral requires the transfer function $S(j\omega)$, which assumes a linear time-invariant system. Neural networks are neither. Even with FFT approximations, we would need long, stationary trajectories---but our agents are constantly exploring and changing.
+
+What are we really trying to detect? Errors getting bigger over time. Oscillations that grow instead of decay. We do not need Fourier analysis for that---we can watch the error magnitudes directly.
+:::
 
 **Original (Infeasible):**
 
@@ -23,6 +43,15 @@ $$
 $$
 \mathcal{L}_{\text{gain}} = \sum_{k=1}^{K} \max\left(0, \frac{\Vert e_{t+k} \Vert}{\Vert e_t \Vert + \epsilon} - G_{\max}\right)^2
 $$
+
+:::{div} feynman-prose
+The idea is simple: compare the error at time $t$ to the error at time $t+k$. If the ratio exceeds $G_{\max}$, errors are amplifying---bad news. Summing over horizons $k = 1, 2, \ldots, K$ catches both fast oscillations (small $k$) and slower instabilities (larger $k$).
+
+The squared penalty means small violations get a tap, big violations get hammered. Differentiable everywhere, and it focuses the optimizer on the worst cases.
+
+The default $G_{\max} = 2$ tolerates occasional error doubling (transient disturbances happen), but flags anything worse.
+:::
+
 This surrogate loss penalizes error amplification and oscillatory instability without requiring LTI assumptions.
 
 ```python
@@ -79,6 +108,16 @@ def compute_peak_gain_loss(
 (sec-bifurcatecheck-stochastic-jacobian-probing)=
 ## BifurcateCheck → Stochastic Jacobian Probing
 
+:::{div} feynman-prose
+At a bifurcation, the qualitative behavior of a system changes suddenly---a stable fixed point becomes unstable, splits in two, or starts oscillating. Like water turning to ice: cross a threshold and everything is different.
+
+For a world model $S_t$ predicting latent state evolution, bifurcations spell danger. The model sits on a knife-edge between behaviors, and small input changes send predictions wildly off course.
+
+The signature of bifurcation is in the Jacobian $J_{S_t} = \partial S_t(z) / \partial z$. When an eigenvalue crosses the unit circle (discrete time) or imaginary axis (continuous time), you have a bifurcation.
+
+But the full Jacobian costs $O(Z^2)$ to form and $O(Z^3)$ for eigenvalues. For latent dimension 256, that is millions of operations per sample, every training step, every batch element. Not practical.
+:::
+
 **Original (Infeasible):**
 
 $$
@@ -91,6 +130,17 @@ $$
 $$
 \mathcal{L}_{\text{bifurcate}} = \text{Var}_v\left[\Vert J_{S_t} v \Vert^2\right] \quad \text{where } v \sim \mathcal{N}(0, I)
 $$
+
+:::{div} feynman-prose
+The trick: we do not need all eigenvalues, just whether they are suspiciously spread out. If eigenvalues are similar, the Jacobian stretches all directions roughly equally. If some are huge and others tiny, different random directions get stretched by wildly different amounts.
+
+Instead of computing the full Jacobian, probe it with random vectors. Pick a random direction $v$, compute $Jv$ (just a gradient computation, cheap with autodiff), measure how much $v$ got stretched. Repeat a few times.
+
+If stretching amounts are similar, eigenvalues are clustered---probably safe. If they vary wildly, eigenvalue spread signals bifurcation sensitivity.
+
+This is the Hutchinson trace estimator from numerical linear algebra: peek at a matrix's spectral properties without ever forming it explicitly.
+:::
+
 High variance in the Jacobian-vector product norm indicates instability (eigenvalue spread).
 
 ```python
@@ -154,6 +204,14 @@ def compute_bifurcation_loss(
 (sec-tamecheck-lipschitz-gradient-proxy)=
 ## TameCheck → Lipschitz Gradient Proxy
 
+:::{div} feynman-prose
+What does "tame" mean for a function? No sharp corners or sudden kinks. The output changes smoothly through input space---not just in value, but in slope.
+
+The Hessian (second derivatives) captures this smoothness. Bounded Hessian norm means the gradient cannot change too fast---the function is tame. This matters for optimization: gradient descent on non-tame functions oscillates wildly or gets stuck in pathological regions.
+
+But the Hessian is even more expensive than the Jacobian: $O(Z^2 \times P)$ for a world model with $P$ parameters on $Z$-dimensional latent space. Completely impractical.
+:::
+
 **Original (Infeasible):**
 
 $$
@@ -166,6 +224,17 @@ $$
 $$
 \mathcal{L}_{\text{tame}} = \frac{\Vert \nabla_z S_t(z_1) - \nabla_z S_t(z_2) \Vert}{\Vert z_1 - z_2 \Vert + \epsilon}
 $$
+
+:::{div} feynman-prose
+Key insight: bounded Hessian means the gradient does not change too fast as you move through space. That is exactly a Lipschitz condition on the gradient.
+
+So check the Lipschitz constant directly. Take two nearby points $z_1$ and $z_2$. Compute the gradient at each. Measure how much the gradient changed relative to how much the input changed. Bounded ratio means bounded Hessian---that is literally what the Hessian measures.
+
+Computing $\nabla_z S_t(z)$ at one point is cheap (one backward pass). We need two gradients plus a tiny perturbation. The whole operation is $O(Z)$ instead of $O(Z^2)$.
+
+General pattern: when you cannot afford the whole matrix, probe its action on carefully chosen vectors.
+:::
+
 Bounded gradient Lipschitz constant implies bounded Hessian (by definition).
 
 ```python
@@ -229,6 +298,14 @@ def compute_tame_loss(
 (sec-topocheck-value-gradient-alignment)=
 ## TopoCheck → Value Gradient Alignment
 
+:::{div} feynman-prose
+Reachability is fundamental: can I get from here to there? From state $z$ to $z_{\text{goal}}$, does a path exist?
+
+The theoretical answer requires planning: simulate all trajectories, find which reach the goal. For horizon $H$, batch size $B$, and latent dimension $Z$, this costs $O(H \times B \times Z)$---and $H$ might need to be huge to guarantee finding a path.
+
+Why care about reachability? We need the value function to tell the truth. If $V(z)$ says "this state is valuable," there had better be an actual path to high-reward regions. If the latent space has holes or barriers, the value function might look smooth and encouraging while the goal is actually unreachable.
+:::
+
 **Original (Infeasible):**
 
 $$
@@ -241,6 +318,17 @@ $$
 $$
 \mathcal{L}_{\text{topo}} = -\left\langle \nabla_z V(z), \frac{z_{\text{goal}} - z}{\Vert z_{\text{goal}} - z \Vert} \right\rangle
 $$
+
+:::{div} feynman-prose
+A much cheaper test: does the value function's gradient point toward the goal? If $\nabla_z V(z)$ aligns with $(z_{\text{goal}} - z)$, following the gradient takes us goalward. If they point opposite, something is wrong---the value function says "go this way" while the goal lies the other way.
+
+The inner product $\langle \nabla_z V, \hat{d}_{\text{goal}} \rangle$ measures alignment: positive means aligned, negative means misaligned. We penalize positive values (since value is typically something we minimize, like negative reward or distance to goal).
+
+This is necessary but not sufficient for reachability. If you cannot start moving the right direction, you certainly cannot arrive. Obstacles might still block the path---but this catches the common failure where the value function points the wrong way entirely.
+
+Cost: one gradient computation. No multi-step simulation.
+:::
+
 When $\nabla_z V(z)$ aligns with the goal direction, gradient ascent on $V$ yields a path to $z_{\text{goal}}$.
 
 ```python
@@ -292,6 +380,14 @@ def compute_topo_loss(
 (sec-geomcheck-efficient-infonce)=
 ## GeomCheck → Efficient InfoNCE
 
+:::{div} feynman-prose
+Contrastive learning: related points should be close in latent space, unrelated points far apart. For temporal data, "related" means close in time---frame $t$ and frame $t+k$ should map to nearby codes.
+
+InfoNCE is the standard loss. The probability of correctly identifying which $z_{t+k}$ goes with $z_t$, among all batch elements, should be high. Mathematically, a softmax over all pairwise similarities.
+
+The problem: "all pairwise." Batch size $B$ means $B^2$ similarity computations. For $B = 1024$ and $Z = 256$, that is a quarter billion multiplications per batch.
+:::
+
 **Original (Expensive):**
 
 $$
@@ -304,6 +400,17 @@ $$
 $$
 \mathcal{L}_{\text{InfoNCE}}^{\text{eff}} = -\log \frac{\exp(\text{sim}(z_t, z_{t+k}))}{\exp(\text{sim}(z_t, z_{t+k})) + \sum_{j=1}^{K} \exp(\text{sim}(z_t, z_{\text{neg},j}))}
 $$
+
+:::{div} feynman-prose
+We do not need every sample as a negative---just enough to make the task challenging. If the encoder distinguishes the true positive from 128 random negatives, it has learned something useful. Whether it could beat 1024 does not matter.
+
+Sample $K$ negatives instead of all $B$. Cost drops from $O(B^2)$ to $O(KB)$. With $K = 128$ and $B = 1024$, that is 8x faster.
+
+Where do negatives come from? Two options: other batch samples (in-batch negatives), or a memory bank of codes from previous batches. The memory bank decouples negative count from batch size---small batches, many negatives.
+
+The projection head is optional but helps. Empirically, contrastive learning works better projecting to a different space before computing similarities. Use the original $z$ downstream; the projected versions are just for the loss.
+:::
+
 Use $K \ll B$ sampled negatives instead of full batch.
 
 ```python
@@ -403,6 +510,14 @@ def compute_geom_loss(
 (sec-summary-replacement-mapping)=
 ## Summary: Replacement Mapping
 
+:::{div} feynman-prose
+Five expensive theoretical tests, five cheap surrogates that detect the same failures. The speedups are not incremental---orders of magnitude.
+
+The key insight: you do not need to compute everything, just enough. Enough random probes for eigenvalue spread. Enough negatives for contrastive learning. Enough gradient samples to bound Lipschitz constants. Full computation gives more information, but not more *useful* information for the purpose at hand.
+
+This is a deep principle. In physics: "effective theories"---no need to simulate quarks to understand how a bridge stands. In computer science: "approximation algorithms"---good-enough answers suffice when they are much cheaper. Here: surrogate losses---cheap tests that catch the same failures as expensive exact criteria.
+:::
+
 | Original                  | Replacement        | Speedup  | Preserved Property              |
 |---------------------------|--------------------|----------|---------------------------------|
 | BarrierBode (FFT)         | Temporal Gain      | ~100×    | Detects oscillatory instability |
@@ -410,6 +525,11 @@ def compute_geom_loss(
 | TameCheck ($O(Z^2 P)$)    | Lipschitz Gradient | ~$ZP$    | Bounds Hessian norm             |
 | TopoCheck ($O(HBZ)$)      | Value Alignment    | ~$H$     | Ensures goal reachability       |
 | GeomCheck ($O(B^2 Z)$)    | Sampled NCE        | ~$B/K$   | Preserves slow features         |
+
+:::{note}
+:class: feynman-added
+A word of caution: these surrogates are not mathematically equivalent to the originals. They are designed to trigger on the same failure modes, but there may be edge cases where one catches something the other misses. In practice, this is rarely a problem---the surrogates are often more robust because they are less sensitive to numerical issues that plague the exact computations.
+:::
 
 
 
