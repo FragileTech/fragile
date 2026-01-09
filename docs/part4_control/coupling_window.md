@@ -1,8 +1,8 @@
-## 15. Implementation Note: Entropy-Regularized Optimal Transport Bridge
+# Implementation Note: Entropy-Regularized Optimal Transport Bridge
 
+(rb-kl-control-bridge)=
 :::{admonition} Researcher Bridge: KL Control as a Schrödinger Bridge
 :class: tip
-:name: rb-kl-control-bridge
 Entropy-regularized control can be read as an optimal transport problem on trajectories. This is the same math behind soft policy iteration, just framed as a path-measure bridge.
 :::
 
@@ -19,11 +19,11 @@ so each training update can be read as an entropic optimal transport step on bel
 
 
 (sec-theorem-the-information-stability-threshold)=
-## 16. Theorem: The Information–Stability Threshold (Coupling Window)
+## Theorem: The Information–Stability Threshold (Coupling Window)
 
+(rb-stable-learning-window)=
 :::{admonition} Researcher Bridge: The Stable Learning Window
 :class: warning
-:name: rb-stable-learning-window
 The coupling window is the stability region where representation and dynamics stay grounded. For RL readers, it plays the role of a learning-rate and discount range where updates contract rather than diverge.
 :::
 
@@ -74,7 +74,9 @@ Violations correspond to identifiable barrier modes:
 
 :::
 
-::::{note} Connection to RL #9: Conservative Q-Learning as Soft Coupling Window
+::::{admonition} Connection to RL #9: Conservative Q-Learning as Soft Coupling Window
+:class: note
+:name: conn-rl-9
 **The General Law (Fragile Agent):**
 The **Coupling Window** (Theorem {prf:ref}`thm-information-stability-window-operational`) imposes a **hard constraint** on information flow:
 
@@ -106,17 +108,17 @@ This softly penalizes overestimation on unseen actions but **does not prevent** 
 
 
 (sec-summary-unified-information-theoretic-control-view)=
-## 17. Summary: Unified Information-Theoretic Control View
+## Summary: Unified Information-Theoretic Control View
 
 | Level | Formalism | Law |
 | :--- | :--- | :--- |
 | Geometry | Riemannian $(\mathcal{Z},G)$ | Distance measured by a sensitivity metric (Fisher/Hessian) |
-| Boundary | Markov blanket $B_t$ | Environment = boundary law $P_{\partial}$ (Section 1.1) |
-| Exploration | Causal entropy / MaxEnt RL | Reachability pressure via path entropy on $\mathcal{K}$ (Section 10) |
-| Belief Dynamics | Filtering + projection | Predict → update → project (Section 11) |
-| Optimality | Soft Bellman / log-normalizer | Soft value = log-normalizer; exploration gradient from path entropy (Section 13) |
+| Boundary | Markov blanket $B_t$ ({prf:ref}`def-boundary-markov-blanket`) | Environment = boundary law $P_{\partial}$ ({ref}`Section 1.1 <sec-definitions-interaction-under-partial-observability>`) |
+| Exploration | Causal entropy / MaxEnt RL | Reachability pressure via path entropy on $\mathcal{K}$ ({ref}`Section 11 <sec-intrinsic-motivation-maximum-entropy-exploration>`) |
+| Belief Dynamics | Filtering + projection | Predict → update → project ({ref}`Section 11 <sec-intrinsic-motivation-maximum-entropy-exploration>`) |
+| Optimality | Soft Bellman / log-normalizer | Soft value = log-normalizer; exploration gradient from path entropy ({ref}`Section 13 <sec-correspondence-table-filtering-control-template>`) |
 
-**Fragile conclusion.** The agent is a controller with explicit information and stability constraints. Macro symbols remain meaningful only inside the coupling window (Theorem {prf:ref}`thm-information-stability-window-operational`); outside it, the system either exhibits ungrounded inference (under-coupling) or loses macro structure through excessive mixing/dispersion (over-coupling).
+**Fragile conclusion.** The agent is a Bounded-Rationality Controller ({prf:ref}`def-bounded-rationality-controller`) with explicit information and stability constraints. Macro symbols remain meaningful only inside the coupling window (Theorem {prf:ref}`thm-information-stability-window-operational`); outside it, the system either exhibits ungrounded inference (under-coupling) or loses macro structure through excessive mixing/dispersion (over-coupling).
 
 
 

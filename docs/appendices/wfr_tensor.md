@@ -1,12 +1,12 @@
 (sec-appendix-c-wfr-stress-energy-tensor)=
-## Appendix C: WFR Stress-Energy Tensor (Full Derivation)
+# {ref}`Appendix C <sec-appendix-c-wfr-stress-energy-tensor>`: WFR Stress-Energy Tensor (Full Derivation)
 
 This appendix provides the full derivation of Theorem {prf:ref}`thm-wfr-stress-energy-tensor-variational-form`.
 
 (sec-appendix-c-setup)=
-### C.1 Setup
+## C.1 Setup
 
-Recall the WFR action:
+Recall the {prf:ref}`def-the-wfr-action`:
 
 $$
 \mathcal{S}_{\mathrm{WFR}} = \frac12\int_0^T\int_{\mathcal{Z}} \rho\left(\|v\|_G^2+\lambda^2 r^2\right)\,d\mu_G\,ds,
@@ -24,7 +24,7 @@ $$
 We vary the metric $G^{ij}$ while holding $(\rho, v, r)$ fixed as fields.
 
 (sec-appendix-c-metric-variation)=
-### C.2 Metric variation
+## C.2 Metric variation
 
 Write the kinetic term using covariant components:
 
@@ -79,7 +79,7 @@ $$
 T_{ij}=\rho v_i v_j + \mathcal{L}_{\mathrm{WFR}} G_{ij}.
 $$
 (sec-appendix-c-perfect-fluid-form-and-pressure-split)=
-### C.3 Perfect-fluid form and pressure split
+## C.3 Perfect-fluid form and pressure split
 
 Let
 
@@ -100,7 +100,7 @@ $$
 and the transport contribution is $P_{\mathrm{trans}}=\tfrac12\rho\|v\|_G^2$.
 
 (sec-appendix-c-relation-to-the-metric-law)=
-### C.4 Relation to the metric law
+## C.4 Relation to the metric law
 
 Substituting this $T_{ij}$ into the capacity-constrained metric law (Theorem {prf:ref}`thm-capacity-constrained-metric-law`) yields
 

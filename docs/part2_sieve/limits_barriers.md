@@ -1,8 +1,9 @@
-## 4. Limits: Barriers (The Limits of Control)
+(sec-4-limits-barriers-the-limits-of-control)=
+# Limits: Barriers (The Limits of Control)
 
+(rb-barriers-trust-regions)=
 :::{admonition} Researcher Bridge: Barriers vs. Trust Regions
 :class: warning
-:name: rb-barriers-trust-regions
 Standard RL uses trust regions, clipping, or penalty terms to avoid instability. Barriers are the formal limit surfaces those heuristics approximate. When a barrier activates, the correct response is to halt, project, or reshape updates rather than incur a soft penalty.
 :::
 
@@ -20,7 +21,7 @@ Barriers represent the fundamental limits of the control loop.
 | **BarrierAction**  | Action Gap              | **Critic**        | **Cost Prohibitive**              | Correct move requires more cost budget ($V$) than affordable.                                 | $\Vert \nabla_\pi V(s, \pi) \Vert$ (Action Gradient)                                                               | $O(BAZ)$ ⚡     |
 | **BarrierOmin**    | O-Minimal               | **World Model**   | **Model Mismatch**                | World exhibits non-smooth or non-stationary structure outside the WM class.                   | $\Vert \nabla S_t \Vert$ for O-Minimality (Lipschitz)                                                              | $O(ZP_{WM})$ ⚡ |
 | **BarrierMix**     | Mixing                  | **Policy**        | **Exploration Trap**              | Policy converges to a local minimum with insufficient state coverage.                                                            | $-H(\pi)$ (Entropy Bonus)                                                                                          | $O(BA)$ ✓      |
-| **BarrierEpi**     | Epistemic               | **VQ-VAE/WM**     | **Information Overload**          | Environment complexity exceeds $\log\lvert\mathcal{K}\rvert$ and/or WM class; closure breaks. | $\mathcal{L}_{\text{recon}} + \mathcal{L}_{\text{Sync}_{K-W}}$ (Distortion + Closure)                              | $O(BD)$ ✓      |
+| **BarrierEpi**     | Epistemic               | **VQ-VAE/WM**     | **Information Overload**          | Environment ({prf:ref}`def-environment-as-generative-process`) complexity exceeds $\log\lvert\mathcal{K}\rvert$ and/or WM class; closure breaks. | $\mathcal{L}_{\text{recon}} + \mathcal{L}_{\text{Sync}_{K-W}}$ (Distortion + Closure)                              | $O(BD)$ ✓      |
 | **BarrierFreq**    | Frequency               | **World Model**   | **Loop Instability**              | Positive feedback causes oscillation amplification.                                           | $\Vert J_{WM} \Vert < 1$ (Jacobian Spectral Norm)                                                                  | $O(Z^2)$ ✗     |
 | **BarrierBode**    | Bode Sensitivity        | **Policy**        | **Waterbed Effect**               | Suppressing error in one domain increases it in another.                                      | $\int_{0}^{\infty} \log \lvert S(j\omega) \rvert d\omega = \text{const.}$ (Bode sensitivity integral)              | FFT ✗          |
 | **BarrierInput**   | Input Stability         | **All**           | **Resource Exhaustion**           | Agent runs out of battery/compute/tokens.                                                     | $\text{Cost}(s) > \text{Budget}$ (Resource Penalty)                                                                | $O(B)$ ✓       |
@@ -30,12 +31,12 @@ Barriers represent the fundamental limits of the control loop.
 **Compute Legend:** ✓ Low (typically online) | ⚡ Moderate (often amortized/approximated) | ✗ High (often offline or coarse approximations)
 
 (sec-barrier-implementation-details)=
-### 4.1 Barrier Implementation Details
+## Barrier Implementation Details
 
 Implementing these barriers requires rigorous cybernetic engineering. We divide them into **Single-Barrier Limits** and **Cross-Barrier Dilemmas**.
 
 (sec-a-single-barrier-enforcement)=
-#### A. Single-Barrier Enforcement (Hard Constraints)
+### A. Single-Barrier Enforcement (Hard Constraints)
 
 1.  **BarrierSat (Actuator Limit):**
     *   *Constraint:* $\lVert\pi(s)\rVert \le F_{\max}$.
@@ -61,7 +62,7 @@ Implementing these barriers requires rigorous cybernetic engineering. We divide 
         Gradient-norm penalties discourage vanishing gradients on sampled points and help avoid large flat regions; they do not provide a global guarantee without additional assumptions {cite}`gulrajani2017improved`.
 
 (sec-b-cross-barrier-regularization)=
-#### B. Cross-Barrier Regularization (Cybernetic Dilemmas)
+### B. Cross-Barrier Regularization (Cybernetic Dilemmas)
 
 The most dangerous failures occur when barriers conflict. We model these as **Trade-off Functionals**:
 

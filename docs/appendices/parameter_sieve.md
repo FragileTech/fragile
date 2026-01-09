@@ -1,5 +1,5 @@
 (sec-parameter-space-sieve)=
-## Section 35: The Parameter Space Sieve
+# {ref}`Section 35 <sec-parameter-space-sieve>`: The Parameter Space Sieve
 
 :::{note}
 **Placeholder:** This section is referenced throughout the document but content is pending.

@@ -1,10 +1,10 @@
-## 30. Ontological Expansion: Topological Fission and the Semantic Vacuum
+# Ontological Expansion: Topological Fission and the Semantic Vacuum
 
 This section formalizes the mechanism by which agents expand their ontology—creating new conceptual distinctions—when the existing chart structure proves insufficient. The central object is the **Semantic Vacuum** at the origin $z=0$, where the agent's representation is maximally uncertain. Under **Ontological Stress**, this vacuum becomes unstable and undergoes **Topological Fission**: a pitchfork bifurcation (Theorem {prf:ref}`thm-pitchfork-bifurcation-structure`) that spawns new chart queries.
 
+(rb-dynamic-architecture)=
 :::{admonition} Researcher Bridge: Dynamic Architecture vs. Fixed Capacity
 :class: tip
-:name: rb-dynamic-architecture
 Standard models have fixed tensor shapes chosen at initialization. If the environment's complexity exceeds the model's capacity, it fails. **Ontological Fission** is our version of "Dynamic Architecture Growth." When the agent detects "Ontological Stress" (unaccounted-for structure in the noise floor), it triggers a **pitchfork bifurcation** to spawn new latent charts (experts). The model grows to match the data, rather than trying to cram the world into a fixed bottleneck.
 :::
 
@@ -17,7 +17,7 @@ Standard models have fixed tensor shapes chosen at initialization. If the enviro
 
 
 (sec-the-semantic-vacuum-as-a-reference-measure)=
-### 30.1 The Semantic Vacuum as a Reference Measure
+## The Semantic Vacuum as a Reference Measure
 
 At the origin of the Poincare disk, the agent's belief state is maximally uncertain—all directions are equally probable. This is the **Semantic Vacuum**: the unique fiber over $z=0$ in the latent bundle.
 
@@ -78,7 +78,7 @@ $$
 
 
 (sec-ontological-stress)=
-### 30.2 Ontological Stress
+## Ontological Stress
 
 The existing chart structure may be insufficient to discriminate observations that differ in task-relevant ways. We quantify this **Ontological Stress** via the conditional mutual information between consecutive texture components.
 
@@ -118,18 +118,20 @@ In the Poincare disk geometry, the maximum-entropy state is the vacuum $z = 0$.
 
 *Interpretation.* When encountering observations outside the learned structure, the MaxEnt policy concentrates at the vacuum, correctly representing maximum uncertainty.
 
-*Remark (Capacity Tension).* If belief mass accumulates at the vacuum such that bulk information $I_{\mathrm{bulk}}$ approaches the boundary capacity $C_\partial$ (Theorem {prf:ref}`thm-capacity-constrained-metric-law`), the current chart structure is insufficient. This tension -- high information density at a single point -- indicates fission is required to distribute the representational load.
+*Remark (Capacity Tension).* If belief mass accumulates at the vacuum such that bulk information $I_{\mathrm{bulk}}$ approaches the boundary capacity $C_\partial$ (the Capacity-Constrained Metric Law, Theorem {prf:ref}`thm-capacity-constrained-metric-law`), the current chart structure is insufficient. This tension -- high information density at a single point -- indicates fission is required to distribute the representational load.
 
 :::
 
-:::{note} Connection to RL #11: RND as Degenerate Ontological Stress
+:::{admonition} Connection to RL #11: RND as Degenerate Ontological Stress
+:class: note
+:name: conn-rl-11
 **The General Law (Fragile Agent):**
 **Ontological Stress** measures predictability in the texture channel:
 
 $$
 \Xi := I(z_{\text{tex},t}; z_{\text{tex},t+1} \mid K_t, z_{n,t}, A_t)
 $$
-When $\Xi > \Xi_{\text{crit}}$, the system triggers **topological fission**: a pitchfork bifurcation that expands the chart structure (Section 30.4).
+When $\Xi > \Xi_{\text{crit}}$, the system triggers **topological fission**: a pitchfork bifurcation that expands the chart structure ({ref}`Section 30.4 <sec-symmetry-breaking-and-chart-birth>`).
 
 **The Degenerate Limit:**
 Set $\Xi_{\text{crit}} \to \infty$ (never fission). Instead, feed $\Xi$ directly into the reward function as an exploration bonus.
@@ -152,7 +154,7 @@ This recovers **Random Network Distillation (RND)**—prediction error as "curio
 
 
 (sec-the-fission-criterion)=
-### 30.3 The Fission Criterion
+## The Fission Criterion
 
 Not all ontological stress justifies expansion. Creating new charts incurs **complexity costs** (additional parameters, increased inference time). We formalize when expansion is warranted.
 
@@ -181,7 +183,9 @@ $$
 
 :::
 
-:::{note} Connection to RL #12: Fixed Architecture as Degenerate Fission
+:::{admonition} Connection to RL #12: Fixed Architecture as Degenerate Fission
+:class: note
+:name: conn-rl-12
 **The General Law (Fragile Agent):**
 When Ontological Stress $\Xi > \Xi_{\text{crit}}$, the system triggers a **pitchfork bifurcation** that spawns new chart queries:
 
@@ -205,13 +209,13 @@ This recovers **standard deep learning**—the agent can never learn a concept t
 **What the generalization offers:**
 - Dynamic capacity: network topology adapts to task requirements
 - Principled growth: fission occurs when complexity cost is justified by value gain
-- No catastrophic forgetting: new charts are topologically isolated (Section 30.7)
+- No catastrophic forgetting: new charts are topologically isolated ({ref}`Section 30.7 <sec-summary-the-lifecycle-of-an-ontology>`)
 :::
 
 
 
 (sec-symmetry-breaking-and-chart-birth)=
-### 30.4 Symmetry Breaking and Chart Birth
+## Symmetry Breaking and Chart Birth
 
 When the Fission Criterion is satisfied, the agent creates a new chart by splitting an existing query vector. This process is a **pitchfork bifurcation** in the space of chart queries, extending the structure established in Theorem {prf:ref}`thm-pitchfork-bifurcation-structure`.
 
@@ -266,7 +270,7 @@ $$
 $$
 which has the standard pitchfork form. For $\Xi > \Xi_{\text{crit}}$, the origin has $\Phi_{\text{fission}}''(0) = -(\Xi - \Xi_{\text{crit}}) < 0$, becoming unstable. Stable minima appear at $r = \pm r^*$. The cubic term arises from router saturation: as daughters separate, they compete for data, and the loss landscape penalizes excessive separation. This matches the normal form of Theorem {prf:ref}`thm-pitchfork-bifurcation-structure` with $\mu = \Xi - \Xi_{\text{crit}}$. $\square$
 
-*Critical Temperature Constraint.* From Theorem {prf:ref}`thm-pitchfork-bifurcation-structure`, the critical temperature $T_c^* = 1/16$ implies that thermal fluctuations can restore symmetry (collapse daughters) if cognitive temperature exceeds the barrier height. For stable fission, require:
+*Critical Temperature Constraint.* From Theorem {prf:ref}`thm-pitchfork-bifurcation-structure`, the critical temperature $T_c^* = 1/16$ implies that thermal fluctuations can restore symmetry (collapse daughters) if cognitive temperature ({prf:ref}`def-cognitive-temperature`) exceeds the barrier height. For stable fission, require:
 
 $$
 T_c < \frac{(\Xi - \Xi_{\text{crit}})^2}{4\alpha}.
@@ -276,7 +280,7 @@ $$
 
 
 (sec-metric-relaxation-ontological-ricci-flow)=
-### 30.5 Metric Relaxation: Ontological Ricci Flow
+## Metric Relaxation: Ontological Ricci Flow
 
 Following fission, the metric tensor $G$ must adapt to the new chart structure. We introduce a geometric flow that relaxes the metric toward consistency with the expanded ontology.
 
@@ -300,9 +304,9 @@ where:
 
 :::
 
+(pi-ricci-flow)=
 ::::{admonition} Physics Isomorphism: Ricci Flow
 :class: note
-:name: pi-ricci-flow
 
 **In Physics:** Hamilton's Ricci flow evolves a Riemannian metric toward constant curvature: $\partial_t g_{ij} = -2R_{ij}$. It was used by Perelman to prove the Poincare conjecture {cite}`hamilton1982ricci,perelman2002entropy`.
 
@@ -344,7 +348,7 @@ encouraging the learned metric to satisfy the capacity constraint while penalizi
 
 
 (sec-diagnostic-nodes-a)=
-### 30.6 Diagnostic Nodes 49–50
+## Diagnostic Nodes 49–50
 
 Following the diagnostic node convention ({ref}`Section 3.1 <sec-theory-thin-interfaces>`), we define two new monitors for ontological expansion.
 
@@ -396,7 +400,7 @@ where $p_\phi$ is a small MLP. If $\hat{\Xi} \approx 0$, texture is unpredictabl
 
 
 (sec-summary-the-lifecycle-of-an-ontology)=
-### 30.7 Summary: The Lifecycle of an Ontology
+## Summary: The Lifecycle of an Ontology
 
 **Table 30.7.1 (Ontological Expansion Summary).**
 
@@ -420,7 +424,9 @@ where $p_\phi$ is a small MLP. If $\hat{\Xi} \approx 0$, texture is unpredictabl
 
 **Conclusion.** Ontological expansion is a geometric response to representational insufficiency. The framework provides a principled criterion for when to expand chart structure (Theorem {prf:ref}`thm-fission-criterion`) and predicts the dynamics of chart separation via pitchfork bifurcation (Theorem {prf:ref}`thm-supercritical-pitchfork-bifurcation-for-charts`).
 
-:::{note} Connection to RL #13: EWC as Degenerate Atlas
+:::{admonition} Connection to RL #13: EWC as Degenerate Atlas
+:class: note
+:name: conn-rl-13
 **The General Law (Fragile Agent):**
 The agent maintains an **Atlas of Charts** $\{(\mathcal{U}_i, \phi_i)\}_{i=1}^{N_c}$:
 - New tasks trigger **Fission**: create new chart $\mathcal{U}_{N_c+1}$ via pitchfork bifurcation
@@ -448,22 +454,22 @@ This recovers **Elastic Weight Consolidation (EWC)** -- the Fisher information $
 
 
 (sec-ontological-fusion-concept-consolidation)=
-### 30.8 Ontological Fusion: Concept Consolidation
+## Ontological Fusion: Concept Consolidation
 
 *Abstract.* If Fission ({ref}`Section 30.4 <sec-symmetry-breaking-and-chart-birth>`) is the birth of a concept driven by ontological stress, **Fusion** is the death or merging of concepts driven by **metabolic efficiency**. Without Fusion, the agent suffers from **topological heat death**: unbounded chart fragmentation where every observation eventually gets its own private chart, destroying generalization. Fusion is triggered when the **Discrimination Gain** of keeping two charts separate falls below the **Metabolic Cost** of maintaining them.
 
+(rb-pruning-efficiency)=
 :::{admonition} Researcher Bridge: Pruning via Metabolic Efficiency
 :class: important
-:name: rb-pruning-efficiency
 Most MoE (Mixture of Experts) or multi-chart models suffer from "Expert Explosion," where they create a new index for every minor variation. **Ontological Fusion** provides a principled way to forget. It merges latent charts when the **Discrimination Gain** (the information provided by keeping them separate) falls below the **Metabolic Cost** of maintaining them. It is the geometric derivation of Occam's Razor.
 :::
 
-*Cross-references:* This section addresses Open Problem 1 from Section 30.7. It is the dual of Section 30.4 (Fission) and connects to the Universal Governor's metabolic monitoring ({ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>`) and the complexity cost functional ({ref}`Section 30.3 <sec-the-fission-criterion>`).
+*Cross-references:* This section addresses Open Problem 1 from {ref}`Section 30.7 <sec-summary-the-lifecycle-of-an-ontology>`. It is the dual of {ref}`Section 30.4 <sec-symmetry-breaking-and-chart-birth>` (Fission) and connects to the Universal Governor's metabolic monitoring ({ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>`) and the complexity cost functional ({ref}`Section 30.3 <sec-the-fission-criterion>`).
 
 
 
 (sec-ontological-redundancy)=
-#### 30.8.1 Ontological Redundancy
+### Ontological Redundancy
 
 We define a measure of functional similarity between charts that captures whether two charts are semantically interchangeable.
 
@@ -476,7 +482,7 @@ $$
 \Upsilon_{ij} := \exp\left(-\left[ d_{\text{WFR}}(\mu_i, \mu_j) + D_{\mathrm{KL}}(\bar{P}_i \| \bar{P}_j) + \|V_i - V_j\|_G^2 \right]\right)
 $$
 where:
-- $d_{\text{WFR}}(\mu_i, \mu_j)$ is the Wasserstein-Fisher-Rao distance between belief distributions (Definition {prf:ref}`def-the-wfr-action`),
+- $d_{\text{WFR}}(\mu_i, \mu_j)$ is the Wasserstein-Fisher-Rao distance ({prf:ref}`def-the-wfr-action`) between belief distributions,
 - $D_{\mathrm{KL}}(\bar{P}_i \| \bar{P}_j) := \mathbb{E}_{k \sim \mu_i}\left[ D_{\mathrm{KL}}(\bar{P}(\cdot|k, a) \| \bar{P}_j(\cdot|k, a)) \right]$ is the mean predictive divergence,
 - $\|V_i - V_j\|_G^2 := \mathbb{E}_{z \sim \mu_i}\left[ (V_i(z) - V_j(z))^2 \right]$ is the mean squared value divergence.
 
@@ -488,7 +494,7 @@ where:
 
 
 (sec-discrimination-gain)=
-#### 30.8.2 Discrimination Gain
+### Discrimination Gain
 
 Before destroying a chart, the agent must estimate the information loss.
 
@@ -523,7 +529,7 @@ When $\Upsilon_{ij} \to 1$, the bound tightens: $G_\Delta \to 0$.
 
 
 (sec-the-fusion-criterion)=
-### 30.9 The Fusion Criterion
+## The Fusion Criterion
 
 Fusion is the dual of Fission. Where Fission is triggered by high ontological stress ({prf:ref}`thm-fission-criterion`), Fusion is triggered by high redundancy and low discrimination gain.
 
@@ -565,14 +571,14 @@ The hysteresis term $\epsilon_{\text{hysteresis}}$ breaks the symmetry with Fiss
 
 
 (sec-topological-collapse-the-mechanism-of-fusion)=
-### 30.10 Topological Collapse: The Mechanism of Fusion
+## Topological Collapse: The Mechanism of Fusion
 
 Once the Fusion Criterion is met, the agent must physically merge the charts. This is not simple deletion—it is **topological surgery**.
 
 
 
 (sec-query-coalescence)=
-#### 30.10.1 Query Coalescence
+### Query Coalescence
 
 :::{prf:definition} Query Coalescence
 :label: def-query-coalescence
@@ -590,7 +596,7 @@ where $\bar{w}_k := \mathbb{E}[w_k(x)]$ is the historical routing weight from th
 
 
 (sec-fiber-reconciliation-via-jump-operators)=
-#### 30.10.2 Fiber Reconciliation via Jump Operators
+### Fiber Reconciliation via Jump Operators
 
 When merging chart $j$ into chart $i$, observations previously routed to $j$ must be re-embedded in $i$'s coordinate system.
 
@@ -610,7 +616,7 @@ where $B_j$ is the chart-to-global encoder and $A_i$ is the global-to-chart deco
 
 
 (sec-subcritical-bifurcation-dynamics)=
-#### 30.10.3 Subcritical Bifurcation Dynamics
+### Subcritical Bifurcation Dynamics
 
 Fusion is modeled as a **subcritical pitchfork bifurcation**—the dual of the supercritical bifurcation governing Fission.
 
@@ -647,7 +653,7 @@ When $\Upsilon_{ij} > \Upsilon_{\text{crit}}$:
 
 
 (sec-diagnostic-nodes-fusion-and-codebook-liveness)=
-### 30.11 Diagnostic Nodes 54–55: Fusion and Codebook Liveness
+## Diagnostic Nodes 54–55: Fusion and Codebook Liveness
 
 We introduce two new diagnostic nodes for the Sieve ({ref}`Section 3 <sec-diagnostics-stability-checks>`).
 
@@ -716,14 +722,14 @@ where $P(K = k)$ is the empirical usage frequency of code $k$ over a trailing wi
 
 
 (sec-symbolic-metabolism-intra-chart-fission-and-fusion)=
-### 30.12 Symbolic Metabolism: Intra-Chart Fission and Fusion
+## Symbolic Metabolism: Intra-Chart Fission and Fusion
 
 While Sections 30.1–30.11 address **chart-level** (macro) topology, the codebook symbols **within** each chart also require lifecycle management. This creates a two-level metabolic hierarchy.
 
 
 
 (sec-symbol-fission-cluster-splitting)=
-#### 30.12.1 Symbol Fission: Cluster Splitting
+### Symbol Fission: Cluster Splitting
 
 Symbol fission occurs when a single code index $k$ is **overloaded**—representing two or more geometrically distinct clusters.
 
@@ -761,7 +767,7 @@ where $z_e$ is the pre-quantized encoder output.
 
 
 (sec-symbol-fusion-synonym-merging)=
-#### 30.12.2 Symbol Fusion: Synonym Merging
+### Symbol Fusion: Synonym Merging
 
 Symbol fusion is the **generalization** step—merging symbols that are functionally indistinguishable.
 
@@ -793,7 +799,7 @@ If $\mathcal{D}_f(k_1, k_2) < \epsilon_{\text{indist}}$, the distinction provide
 
 
 (sec-the-lazarus-protocol-dead-code-reallocation)=
-#### 30.12.3 The Lazarus Protocol: Dead Code Reallocation
+### The Lazarus Protocol: Dead Code Reallocation
 
 In standard VQ-VAEs, **codebook collapse** is a major failure mode where most codes are never used. The Lazarus Protocol recycles dead codes to high-information-density regions.
 
@@ -822,7 +828,7 @@ In standard VQ-VAEs, **codebook collapse** is a major failure mode where most co
 
 
 (sec-measure-theoretic-formalization)=
-#### 30.12.4 Measure-Theoretic Formalization
+### Measure-Theoretic Formalization
 
 For maximum rigor, we treat the codebook not as a static list of vectors but as a **discrete measure** on the fiber. This enables a variational characterization of code allocation.
 
@@ -913,7 +919,7 @@ $$
 
 
 (sec-comparison-chart-vs-symbol-metabolism)=
-### 30.13 Comparison: Chart vs. Symbol Metabolism
+## Comparison: Chart vs. Symbol Metabolism
 
 The fission/fusion dynamics operate at two hierarchical levels with analogous but distinct forces.
 
@@ -936,7 +942,7 @@ The fission/fusion dynamics operate at two hierarchical levels with analogous bu
 
 
 (sec-summary-the-topological-heartbeat)=
-### 30.14 Summary: The Topological Heartbeat
+## Summary: The Topological Heartbeat
 
 The complete ontological lifecycle forms a **homeostatic cycle**:
 
@@ -971,7 +977,7 @@ where $U$ is the total utility functional (value minus complexity cost).
 
 
 (sec-thermodynamic-hysteresis-calibration)=
-### 30.15 Thermodynamic Calibration of Ontological Hysteresis
+## Thermodynamic Calibration of Ontological Hysteresis
 
 We derive the hysteresis constant $\epsilon_{\text{hysteresis}}$ appearing in the Fusion Criterion ({prf:ref}`thm-fusion-criterion`) as a thermodynamic necessity arising from the computational metabolism of the agent ({ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`).
 
@@ -1009,7 +1015,7 @@ Substituting the Landauer bound yields the stated inequality. $\square$
 
 
 (sec-hyperbolic-coalescence)=
-### 30.16 Intrinsic Coalescence on Hyperbolic Manifolds
+## Intrinsic Coalescence on Hyperbolic Manifolds
 
 The Query Coalescence operation ({prf:ref}`def-query-coalescence`) uses a Euclidean barycenter $\bar{q} = \frac{1}{N}\sum q_i$. In the Poincare disk $\mathbb{D}$, this induces geometric distortion since straight lines in $\mathbb{R}^n$ are not geodesics in $\mathbb{D}$. The rigorous fusion operator is the **Fréchet Mean**, following the pattern established in {prf:ref}`def-class-centroid-in-poincar-disk`.
 
@@ -1058,7 +1064,7 @@ For the Poincare disk, these have closed-form expressions via Möbius operations
 
 
 (sec-fission-inhibition-corollary)=
-### 30.17 The Fission Inhibition Corollary (Hierarchical Metabolism Resolution)
+## The Fission Inhibition Corollary (Hierarchical Metabolism Resolution)
 
 We prove that the Stacked TopoEncoder architecture ({ref}`Section 7.12 <sec-stacked-topoencoders-deep-renormalization-group-flow>`) enforces **top-down stability** via the properties of the residual variance in the Renormalization Group (RG) flow. A fission event at layer $\ell$ does not trigger cascading fission at higher layers.
 

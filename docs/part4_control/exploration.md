@@ -1,4 +1,4 @@
-## 11. Intrinsic Motivation: Maximum-Entropy Exploration
+# Intrinsic Motivation: Maximum-Entropy Exploration
 
 :::{admonition} Researcher Bridge: Max-Entropy Exploration in Macro Space
 :class: info
@@ -9,14 +9,14 @@ This is the MaxEnt RL idea applied to discrete macro trajectories. Instead of ad
 The previous layers define representation ($K,z_n,z_{\mathrm{tex}}$), predictive dynamics ($\bar{P}$), and stability/value constraints ($V,G$, Sieve checks). This layer formalizes an **intrinsic exploration pressure** on the discrete macro register: prefer policies that keep the set of reachable future macrostates diverse, which supports reachability/controllability and reduces brittle overcommitment to narrow paths.
 
 (sec-path-entropy-and-exploration-gradients)=
-### 11.1 Path Entropy and Exploration Gradients
+## Path Entropy and Exploration Gradients
 
 We work on the **macro model** (the discrete register). Assume a macro Markov kernel
 
 $$
 \bar{P}(k'\mid k,a),\qquad k,k'\in\mathcal{K},\ a\in\mathcal{A},
 $$
-which is the learned effective dynamics demanded by Causal Enclosure (Section 2.8).
+which is the learned effective dynamics demanded by Causal Enclosure ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`).
 
 :::{prf:definition} Macro Path Distribution
 :label: def-macro-path-distribution
@@ -52,25 +52,25 @@ This quantity is well-typed precisely because the macro register is discrete: th
 :::{prf:definition} Exploration Gradient, metric form
 :label: def-exploration-gradient-metric-form
 
-Let $z_{\text{macro}}=e_k\in\mathbb{R}^{d_m}$ denote the code embedding of $k$ (Section 2.2b), and let $G$ be the relevant metric on the macro chart (Section 2.5). Define the exploration gradient as the metric gradient of path entropy:
+Let $z_{\text{macro}}=e_k\in\mathbb{R}^{d_m}$ denote the code embedding of $k$ ({ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`), and let $G$ be the relevant metric on the macro chart ({ref}`Section 2.5 <sec-second-order-sensitivity-value-defines-a-local-metric>`). Define the exploration gradient as the metric gradient of path entropy:
 
 $$
 \mathbf{g}_{\text{expl}}(e_k) := T_c\ \nabla_G S_c(k,H;\pi),
 $$
-where $T_c>0$ is an entropy-regularization coefficient. Operationally, gradients are taken through the continuous pre-quantization coordinates (straight-through VQ estimator); in the strictly symbolic limit, the gradient becomes a discrete preference ordering induced by $S_c(k,H;\pi)$.
+where $T_c>0$ is the cognitive temperature ({prf:ref}`def-cognitive-temperature`). Operationally, gradients are taken through the continuous pre-quantization coordinates (straight-through VQ estimator); in the strictly symbolic limit, the gradient becomes a discrete preference ordering induced by $S_c(k,H;\pi)$.
 
 **Interpretation (Exploration / Reachability).** $S_c(k,H;\pi)$ measures how many future macro-trajectories remain plausible from $k$ under $\pi$ and $\bar{P}$. Increasing $S_c$ preserves **future reachability**: the agent stays inside regions with many reachable, non-absorbing macrostates.
 
 :::
 (sec-maxent-duality-utility-entropy-regularization)=
-### 11.2 MaxEnt Duality: Utility + Entropy Regularization
+## MaxEnt Duality: Utility + Entropy Regularization
 
 The same object appears from a variational principle.
 
 :::{prf:definition} MaxEnt RL objective on macrostates
 :label: def-maxent-rl-objective-on-macrostates
 
-Let $\mathcal{R}(k,a)$ be an instantaneous reward/cost-rate term (Section 1.1.2, Section 2.7) and let $\gamma\in(0,1)$ be the discount factor (dimensionless). The maximum-entropy objective is
+Let $\mathcal{R}(k,a)$ be an instantaneous reward/cost-rate term ({ref}`Section 1.1.2 <sec-re-typing-standard-rl-primitives-as-interface-signals>`, {ref}`Section 2.7 <sec-the-hjb-correspondence>`) and let $\gamma\in(0,1)$ be the discount factor (dimensionless). The maximum-entropy objective is
 
 $$
 J_{T_c}(\pi)
@@ -119,18 +119,18 @@ $$
 
 (sec-belief-dynamics-prediction-update-projection)=
 
-## 14. Duality of Exploration and Soft Optimality
+## Duality of Exploration and Soft Optimality
 
+(rb-soft-rl-duality)=
 :::{admonition} Researcher Bridge: Soft RL Equals Exploration Duality
 :class: info
-:name: rb-soft-rl-duality
 If you know SAC or KL control, this section formalizes why maximizing entropy and optimizing soft value are the same problem. The exploration gradient is just the covariant form of that duality.
 :::
 
-This section makes the exploration layer precise: the exploration gradient (Section 10.1.3) is dual to entropy-regularized (soft) optimal control once the macro channel is discrete.
+This section makes the exploration layer precise: the exploration gradient ({ref}`Section 11.1 <sec-path-entropy-and-exploration-gradients>`) is dual to entropy-regularized (soft) optimal control once the macro channel is discrete.
 
 (sec-formal-definitions)=
-### 14.1 Formal Definitions (Path Space, Causal Entropy, Exploration Gradient)
+## Formal Definitions (Path Space, Causal Entropy, Exploration Gradient)
 
 :::{prf:definition} Causal Path Space
 :label: def-causal-path-space
@@ -156,14 +156,14 @@ $S_c(k,H;\pi)$ is the Shannon entropy of $P_\pi(\cdot\mid k)$ (Definition 10.1.2
 :::{prf:definition} Exploration gradient, covariant form
 :label: def-exploration-gradient-covariant-form
 
-On a macro chart with metric $G$ (Section 2.5),
+On a macro chart with metric $G$ ({ref}`Section 2.5 <sec-second-order-sensitivity-value-defines-a-local-metric>`),
 
 $$
 \mathbf{g}_{\text{expl}}(e_k) := T_c\,\nabla_G S_c(k,H;\pi).
 $$
 :::
 (sec-the-equivalence-theorem)=
-### 14.2 The Equivalence Theorem (Duality of Causal Regulation)
+## The Equivalence Theorem (Duality of Causal Regulation)
 
 We state the equivalence in the setting where it is unambiguous.
 
@@ -210,7 +210,9 @@ and the optimizer is exactly the exponentially tilted law {math}`P^*`. In the sp
 
 :::
 
-::::{note} Connection to RL #22: KL-Regularized Policies as Degenerate Exploration Duality
+::::{admonition} Connection to RL #22: KL-Regularized Policies as Degenerate Exploration Duality
+:class: note
+:name: conn-rl-22
 **The General Law (Fragile Agent):**
 MaxEnt control is equivalent to an **Exponentially Tilted Trajectory Measure**:
 

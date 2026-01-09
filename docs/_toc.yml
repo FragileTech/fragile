@@ -53,6 +53,10 @@ parts:
     chapters:
     - file: part8_multiagent/gauge_theory
 
+  - caption: Part IX - Economics
+    chapters:
+    - file: part9_economics/pomw
+
   - caption: Conclusion
     chapters:
     - file: conclusions

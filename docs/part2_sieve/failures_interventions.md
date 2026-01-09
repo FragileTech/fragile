@@ -1,8 +1,8 @@
-## 5. Failure Modes (Observed Pathologies)
+# Failure Modes (Observed Pathologies)
 
+(rb-rl-pathologies)=
 :::{admonition} Researcher Bridge: RL Pathologies, Named and Localized
 :class: info
-:name: rb-rl-pathologies
 If you have seen mode collapse, oscillation, overfitting, or deadlock in RL, this table is the same landscape but made explicit. Each failure is tied to a component and a diagnostic signature, so it can be detected and corrected rather than discovered post hoc.
 :::
 
@@ -28,11 +28,11 @@ When Limits are breached or Interfaces fail, the agent exhibits specific patholo
 
 
 (sec-interventions)=
-## 6. Interventions (Mitigations)
+## Interventions (Mitigations)
 
+(rb-heuristic-fixes)=
 :::{admonition} Researcher Bridge: Heuristic Fixes as Typed Surgeries
 :class: tip
-:name: rb-heuristic-fixes
 These interventions correspond mathematically to common RL stabilizers: target networks, clipping, entropy tuning, replay, and resets. Each intervention is triggered by a specific diagnostic condition rather than manual hyperparameter tuning.
 :::
 

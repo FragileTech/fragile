@@ -1,7 +1,7 @@
 (sec-the-inter-subjective-metric-gauge-locking-and-the-emergence-of-objective-reality)=
-## 37. The Inter-Subjective Metric: Gauge Locking and the Emergence of Objective Reality
+# The Inter-Subjective Metric: Gauge Locking and the Emergence of Objective Reality
 
-*Abstract.* We introduce the **Locking Operator** $\mathfrak{L}_{\text{sync}}$, a functional derived from the gauge theory of Section 34 that couples the latent geometries of distinct agents ($G_A, G_B$). We prove that independent agents minimizing prediction error in a shared environment must undergo **Spontaneous Gauge Locking**, where their internal nuisance fibers align. This solves the "Solipsism Problem": objective reality is not a pre-existing container, but the stable fixed point of the inter-subjective locking dynamics. We derive **Language** as the gradient flow that minimizes the **Gromov-Hausdorff distance** between agents' internal manifolds, formalized as elements of the Lie algebra $\mathfrak{g}$ of the gauge group. The **Babel Limit** bounds achievable alignment by the Shannon capacity of the communication channel.
+*Abstract.* We introduce the **Locking Operator** $\mathfrak{L}_{\text{sync}}$, a functional derived from the gauge theory of {ref}`Section 34 <sec-standard-model-cognition>` that couples the latent geometries of distinct agents ($G_A, G_B$). We prove that independent agents minimizing prediction error in a shared environment must undergo **Spontaneous Gauge Locking**, where their internal nuisance fibers align. This solves the "Solipsism Problem": objective reality is not a pre-existing container, but the stable fixed point of the inter-subjective locking dynamics. We derive **Language** as the gradient flow that minimizes the **Gromov-Hausdorff distance** between agents' internal manifolds, formalized as elements of the Lie algebra $\mathfrak{g}$ of the gauge group. The **Babel Limit** bounds achievable alignment by the Shannon capacity of the communication channel.
 
 *Cross-references:* This section extends the Multi-Agent Field Theory ({ref}`Section 29 <sec-symplectic-multi-agent-field-theory>`) by providing the mechanism for metric convergence. It connects to the Nuisance Bundle ({ref}`Section 29.13 <sec-local-gauge-symmetry-nuisance-bundle>`), the Gauge-Theoretic Formulation ({ref}`Section 34 <sec-standard-model-cognition>`), and the Causal Information Bound ({ref}`Section 33 <sec-causal-information-bound>`). It provides the geometric foundation for the Game Tensor (Definition {prf:ref}`def-gauge-covariant-game-tensor`) to be well-defined.
 
@@ -10,7 +10,7 @@
 
 
 (sec-the-solipsism-problem-metric-friction)=
-### 37.1 The Solipsism Problem: Metric Friction
+## The Solipsism Problem: Metric Friction
 
 In the previous chapters, we assumed agents could interact via a "Ghost Interface" ({ref}`Section 29.4 <sec-the-ghost-interface>`). However, this assumes a shared coordinate system. In reality, Agent $A$ maps observations to manifold $\mathcal{Z}_A$ with metric $G_A$ (the Capacity-Constrained Metric of Theorem {prf:ref}`thm-capacity-constrained-metric-law`), while Agent $B$ uses $\mathcal{Z}_B$ and $G_B$.
 
@@ -51,11 +51,11 @@ where $V_{\text{max}}$ is the optimal cooperative value under perfect alignment 
 
 
 (sec-the-locking-operator)=
-### 37.2 The Locking Operator: Derivation from Gauge Theory
+## The Locking Operator: Derivation from Gauge Theory
 
 We derive the Locking Operator from first principles using the gauge-theoretic framework of {ref}`Section 34 <sec-standard-model-cognition>`. The key insight is that inter-agent communication is a **gauge-covariant coupling** between their nuisance bundles (Definition {prf:ref}`def-strategic-connection`).
 
-#### 37.2.1 The Inter-Agent Connection
+### The Inter-Agent Connection
 
 :::{prf:definition} The Inter-Agent Connection
 :label: def-inter-agent-connection
@@ -75,7 +75,7 @@ where:
 
 :::
 
-#### 37.2.2 The Locking Curvature
+### The Locking Curvature
 
 :::{prf:definition} The Locking Curvature
 :label: def-locking-curvature
@@ -96,7 +96,7 @@ $$
 
 :::
 
-#### 37.2.3 The Locking Operator as Yang-Mills Energy
+### The Locking Operator as Yang-Mills Energy
 
 :::{prf:theorem} Derivation of the Locking Operator
 :label: thm-locking-operator-derivation
@@ -151,11 +151,11 @@ $$
 
 
 (sec-spontaneous-gauge-locking)=
-### 37.3 Spontaneous Gauge Locking
+## Spontaneous Gauge Locking
 
 We prove that agents minimizing joint prediction error undergo a phase transition to aligned gauges. This mechanism parallels the Ontological Fission of Corollary {prf:ref}`cor-ontological-ssb`, but runs in reverse: where Fission breaks symmetry to create distinct concepts, Locking restores symmetry to create shared understanding.
 
-#### 37.3.1 The Locking Potential
+### The Locking Potential
 
 :::{prf:definition} The Gauge Alignment Order Parameter
 :label: def-gauge-alignment-order-parameter
@@ -179,7 +179,7 @@ where:
 
 :::
 
-#### 37.3.2 Full Proof of Spontaneous Gauge Locking
+### Full Proof of Spontaneous Gauge Locking
 
 :::{prf:theorem} Spontaneous Gauge Locking
 :label: thm-spontaneous-gauge-locking
@@ -301,11 +301,11 @@ where $\sigma$ is the Cognitive Action Scale (Definition {prf:ref}`def-cognitive
 
 
 (sec-language-as-geometric-alignment)=
-### 37.4 Language as Gauge-Covariant Transport
+## Language as Gauge-Covariant Transport
 
 We formalize "Language" as the mechanism for transmitting gauge information between agents.
 
-#### 37.4.1 Messages as Gauge Generators
+### Messages as Gauge Generators
 
 :::{prf:definition} Message as Lie Algebra Element
 :label: def-message-lie-algebra
@@ -337,7 +337,7 @@ where $\dim(\mathfrak{g}_{\mathcal{L}}) \ll \dim(\mathfrak{g})$. The channel sat
 
 :::
 
-#### 37.4.2 The Translation Operator
+### The Translation Operator
 
 :::{prf:definition} Gauge-Covariant Translation Operator
 :label: def-translation-operator
@@ -375,7 +375,7 @@ after Agent $B$ receives and processes message $m$.
 
 :::
 
-#### 37.4.3 Untranslatability as Curvature
+### Untranslatability as Curvature
 
 :::{prf:theorem} The Untranslatability Bound
 :label: thm-untranslatability-bound
@@ -428,11 +428,11 @@ Perfect translation ($\mathcal{U}_{AB} = 0$) is achievable for all messages if a
 
 
 (sec-the-babel-limit)=
-### 37.5 The Babel Limit: Communication Bandwidth Constraints
+## The Babel Limit: Communication Bandwidth Constraints
 
 We derive fundamental limits on achievable gauge alignment from the Causal Information Bound ({ref}`Section 33 <sec-causal-information-bound>`).
 
-#### 37.5.1 Shannon Capacity and Gauge Dimension
+### Shannon Capacity and Gauge Dimension
 
 :::{prf:theorem} The Babel Limit
 :label: thm-babel-limit
@@ -471,7 +471,7 @@ $\square$
 
 :::
 
-#### 37.5.2 Private Qualia as Unlocked Subspace
+### Private Qualia as Unlocked Subspace
 
 :::{prf:corollary} The Ineffability Theorem
 :label: cor-ineffability-theorem
@@ -491,7 +491,7 @@ This subspace corresponds to **Private Qualia**: aspects of Agent $A$'s experien
 
 
 (sec-spectral-analysis)=
-### 37.6 Spectral Analysis: Core Concepts vs Nuance
+## Spectral Analysis: Core Concepts vs Nuance
 
 We analyze which aspects of the metric lock first under bandwidth constraints.
 
@@ -529,11 +529,11 @@ $$
 
 
 (sec-echo-chamber-and-drift)=
-### 37.7 The Emergence of Objective Reality
+## The Emergence of Objective Reality
 
 What happens when locking completes?
 
-#### 37.7.1 The Consensus Singularity
+### The Consensus Singularity
 
 :::{prf:theorem} Emergence of Objective Reality
 :label: thm-emergence-objective-reality
@@ -570,7 +570,7 @@ $\square$
 
 :::
 
-#### 37.7.2 The Echo Chamber Effect
+### The Echo Chamber Effect
 
 :::{prf:remark} Echo Chamber Effect (Metric Drift)
 :label: rem-echo-chamber-effect
@@ -589,7 +589,7 @@ where $\mathcal{F}_{iE}$ measures the friction between agent $i$ and the environ
 
 :::
 
-#### 37.7.3 Critical Mass and Symmetry Breaking
+### Critical Mass and Symmetry Breaking
 
 :::{prf:corollary} Critical Mass for Consensus
 :label: cor-critical-mass-consensus
@@ -609,7 +609,7 @@ where $\langle \mathcal{F}_{ij} \rangle$ is the average pairwise friction.
 
 
 (sec-multi-agent-scaling)=
-### 37.8 Multi-Agent Scaling: The Institutional Manifold
+## Multi-Agent Scaling: The Institutional Manifold
 
 For $N \gg 2$, pairwise locking is $O(N^2)$—computationally prohibitive. We introduce institutional structures for efficient scaling, extending the Multi-Agent WFR framework of {ref}`Section 29 <sec-symplectic-multi-agent-field-theory>`.
 
@@ -644,7 +644,7 @@ This provides a normalized gauge that allows agents with disjoint utility functi
 
 
 (sec-physics-isomorphisms-language)=
-### 37.9 Physics Isomorphisms
+## Physics Isomorphisms
 
 ::::{admonition} Physics Isomorphism: Tidal Locking
 :class: note
@@ -701,7 +701,7 @@ $$
 
 
 (sec-implementation-metric-synchronizer)=
-### 37.10 Implementation: The Gauge-Covariant Metric Synchronizer
+## Implementation: The Gauge-Covariant Metric Synchronizer
 
 We provide a module implementing the locking dynamics. The implementation uses **Gromov-Wasserstein** distance as a proxy for gauge misalignment.
 
@@ -889,7 +889,7 @@ class GaugeCovariantMetricSynchronizer(nn.Module):
 
 
 (sec-diagnostic-nodes-consensus)=
-### 37.11 Diagnostic Nodes 69–70: Consensus
+## Diagnostic Nodes 69–70: Consensus
 
 (node-69)=
 **Node 69: MetricAlignmentCheck**
@@ -925,7 +925,7 @@ class GaugeCovariantMetricSynchronizer(nn.Module):
 
 
 (sec-summary-language)=
-### 37.12 Summary: Reality as a Fixed Point
+## Summary: Reality as a Fixed Point
 
 This chapter has derived the mechanism by which private subjective worlds become shared objective reality.
 

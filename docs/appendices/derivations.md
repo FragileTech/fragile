@@ -1,10 +1,10 @@
 (sec-appendix-a-full-derivations)=
-## Appendix A: Full Derivations (Capacity-Constrained Curvature Functional)
+# {ref}`Appendix A <sec-appendix-a-full-derivations>`: Full Derivations (Capacity-Constrained Curvature Functional)
 
 (sec-appendix-a-capacity-constrained-curvature-functional)=
-### A.1 Capacity-Constrained Curvature Functional (Variational Principle)
+## A.1 Capacity-Constrained Curvature Functional (Variational Principle)
 
-If the agent attempts to maintain internal structure such that $I_{\text{bulk}}(\mathcal{Z})>C_{\partial}(\partial\mathcal{Z})$, it has exceeded what can be grounded at the boundary; this is an enclosure violation and must be rejected by the Sieve (Section 3, Node 13).
+If the agent attempts to maintain internal structure such that $I_{\text{bulk}}(\mathcal{Z})>C_{\partial}(\partial\mathcal{Z})$, it has exceeded what can be grounded at the boundary; this is an enclosure violation and must be rejected by the Sieve ({ref}`Section 3 <sec-diagnostics-stability-checks>`, Node 13).
 
 In the optimal / sound regime the constraint is active (saturated):
 
@@ -36,7 +36,7 @@ $$
 \;-\;
 \underbrace{\oint_{\partial\mathcal{Z}}\omega_{\partial}}_{C_{\partial}},
 $$
-where $\rho_I(G,V)$ is an *information density* (nats per unit $d\mu_G$) compatible with the agent's representation scheme (Definition 17.1.2). This $\rho_I$ is distinct from the belief density $p$ used in Section 2.11. When $\rho_I$ is instantiated via the split shutter, the most conservative computable proxy is a global one, $I_{\text{bulk}}\approx \mathbb{E}[I(X;K)]$ (Node 13), and the window theorem (Theorem {prf:ref}`thm-information-stability-window-operational`) supplies the admissible operating range.
+where $\rho_I(G,V)$ is an *information density* (nats per unit $d\mu_G$) compatible with the agent's representation scheme (Definition 17.1.2). This $\rho_I$ is distinct from the belief density $p$ used in {ref}`Section 2.11 <sec-variance-value-duality-and-information-conservation>`. When $\rho_I$ is instantiated via the split shutter, the most conservative computable proxy is a global one, $I_{\text{bulk}}\approx \mathbb{E}[I(X;K)]$ (Node 13), and the window theorem (Theorem {prf:ref}`thm-information-stability-window-operational`) supplies the admissible operating range.
 
 :::
 :::{prf:definition} A.1.3 (Risk Lagrangian density)
@@ -68,7 +68,7 @@ with coupling $\kappa\in\mathbb{R}$. The last term is the explicit boundary capa
 
 :::
 (sec-appendix-a-first-variation)=
-### A.2 First Variation (Expanded Derivation)
+## A.2 First Variation (Expanded Derivation)
 
 We work in the standard calculus of variations on Riemannian manifolds with boundary. Assume:
 1) $G$ is $C^2$ and $V$ is $C^2$ (so curvature and gradients are well-defined),
@@ -77,7 +77,7 @@ We work in the standard calculus of variations on Riemannian manifolds with boun
 Under these hypotheses, the first variation of $\mathcal{S}$ is well-defined as a distribution; the standard identities below can be found in standard differential-geometry references (e.g. {cite}`lee2018riemannian`).
 
 (sec-appendix-a-variation-of-the-volume-form)=
-#### A.2.1 Variation of the volume form
+### A.2.1 Variation of the volume form
 
 Let $d\mu_G=\sqrt{|G|}\,dz^n$. The determinant identity gives
 
@@ -87,7 +87,7 @@ $$
 equivalently $\delta d\mu_G = -\tfrac12\,G_{ij}\,\delta G^{ij}\, d\mu_G$.
 
 (sec-appendix-a-variation-of-the-curvature-term)=
-#### A.2.2 Variation of the curvature term
+### A.2.2 Variation of the curvature term
 
 Write the curvature functional as $\mathcal{S}_{\text{geo}}[G]:=\int_{\mathcal{Z}}R(G)\,d\mu_G$. The variation splits as
 
@@ -124,7 +124,7 @@ $$
 where $\mathcal{B}_{\text{curv}}$ is an explicit boundary $(n\!-\!1)$-form built from $\delta\Gamma$ (equivalently from $\delta G$ and its first derivatives). For a well-posed Dirichlet variational problem one can add an appropriate boundary term to cancel $\mathcal{B}_{\text{curv}}$. In our setting the boundary is clamped, so we impose $\delta G\vert_{\partial\mathcal{Z}}=0$ and the boundary term vanishes.
 
 (sec-appendix-a-variation-of-the-risk-term)=
-#### A.2.3 Variation of the risk term
+### A.2.3 Variation of the risk term
 
 Let $\mathcal{S}_{\text{risk}}[G,V] := \int_{\mathcal{Z}}\mathcal{L}_{\text{risk}}(V;G)\,d\mu_G$. Define the (Riemannian-signature) risk tensor by
 
@@ -147,7 +147,7 @@ $$
 T_{ij} = \nabla_i V\,\nabla_j V - G_{ij}\left(\frac12\,G^{ab}\nabla_a V\nabla_b V + U(V)\right).
 $$
 (sec-appendix-a-capacity-term-and-the-emergence-of)=
-#### A.2.4 Capacity (boundary) term and the emergence of $\Lambda$
+### A.2.4 Capacity (boundary) term and the emergence of $\Lambda$
 
 The explicit boundary penalty $-\kappa\oint_{\partial\mathcal{Z}}\omega_{\partial}$ depends only on the induced boundary metric through $dA_G$. Under the clamped boundary condition $\delta G\vert_{\partial\mathcal{Z}}=0$, its first variation vanishes.
 
@@ -157,7 +157,7 @@ $$
 \delta\left(-2\Lambda\int_{\mathcal{Z}} d\mu_G\right) = \int_{\mathcal{Z}} \Lambda G_{ij}\,\delta G^{ij}\,d\mu_G.
 $$
 (sec-appendix-a-recovery-of-the-metric-stationarity-condition)=
-### A.3 Recovery of the Metric Stationarity Condition
+## A.3 Recovery of the Metric Stationarity Condition
 
 :::{prf:lemma} A.3.1 (Divergence-to-boundary conversion)
 :label: lem-a-divergence-to-boundary-conversion
@@ -189,11 +189,11 @@ Boundary terms vanish under the clamped boundary condition (or after adding an a
 
 *Interpretation.* The Ricci curvature governs local volume growth; enforcing a boundary-limited bulk information volume forces the metric to stretch/compress coordinates so that information-dense regions (large $\|\nabla V\|$ and/or large $U(V)$) do not generate bulk structure that cannot be grounded at the boundary.
 
-*Remark (regularizer).* The squared residual of this identity defines the capacity-consistency loss $\mathcal{L}_{\text{cap-metric}}$; see Appendix B.
+*Remark (regularizer).* The squared residual of this identity defines the capacity-consistency loss $\mathcal{L}_{\text{cap-metric}}$; see {ref}`Appendix B <sec-appendix-b-units-parameters-and-coefficients>`.
 
 :::
 (sec-appendix-a-pitchfork-bifurcation-at-the-origin)=
-### A.3 Pitchfork Bifurcation at the Origin (Proof of Theorem {prf:ref}`def-control-field-at-origin`)
+## A.3 Pitchfork Bifurcation at the Origin (Proof of Theorem {prf:ref}`def-control-field-at-origin`)
 
 This section provides the full proof of Theorem {prf:ref}`def-control-field-at-origin`.
 
@@ -290,7 +290,7 @@ The direction selected $\theta^*$ is uniformly distributed: $\theta^* \sim \math
 This completes the proof of Theorem {prf:ref}`def-control-field-at-origin`. $\square$
 
 (sec-appendix-a-overdamped-limit-via-singular-perturbation)=
-### A.4 Overdamped Limit via Singular Perturbation (Proof of Theorem {prf:ref}`thm-overdamped-limit`)
+## A.4 Overdamped Limit via Singular Perturbation (Proof of Theorem {prf:ref}`thm-overdamped-limit`)
 
 This section provides the full proof of Theorem {prf:ref}`thm-overdamped-limit` using singular perturbation theory.
 
@@ -368,7 +368,7 @@ The overdamped limit corresponds to:
 
 :::
 (sec-appendix-a-classification-as-relaxation)=
-### A.5 Classification as Relaxation (Proof of Theorem {prf:ref}`thm-classification-as-relaxation`)
+## A.5 Classification as Relaxation (Proof of Theorem {prf:ref}`thm-classification-as-relaxation`)
 
 :::{prf:theorem} Classification as Relaxation
 :label: thm-classification-as-relaxation-a
@@ -448,7 +448,7 @@ $$
 
 *Technical note (Piecewise Continuity).* The Lyapunov function $L(z) = V_y(z, K(z))$ has potential discontinuities at chart boundaries where $K(z)$ changes discretely. However, this does not invalidate the argument because:
 
-1. **Within-chart dynamics:** The SDE governs continuous motion within each chart; chart transitions occur via the jump process (Section 20.5, WFR reaction term)
+1. **Within-chart dynamics:** The SDE governs continuous motion within each chart; chart transitions occur via the jump process ({ref}`Section 20.5 <sec-connection-to-gksl-master-equation>`, WFR reaction term)
 2. **Jump consistency:** The class-modulated jump rates (Definition {prf:ref}`def-class-consistent-jump-rate`) ensure that jumps to charts in $\mathcal{A}_y$ are favored when starting from $\mathcal{B}_y$
 3. **Effective continuity:** For the soft router weights $w_k(x)$, the "effective chart" is a convex combination, and $\sum_k w_k(z) V_y(z, k)$ is continuous
 
@@ -479,7 +479,7 @@ The theorem provides a geometric interpretation of classification accuracy: a sa
 
 
 (sec-appendix-a-area-law)=
-### A.6 The Area Law Coefficient (Proof of Theorem {prf:ref}`thm-causal-information-bound`)
+## A.6 The Area Law Coefficient (Proof of Theorem {prf:ref}`thm-causal-information-bound`)
 
 This section provides the rigorous derivation of the Causal Information Bound, including the origin of the $1/4$ coefficient.
 
@@ -494,7 +494,7 @@ The first derivation establishes the bound from counting distinguishable states;
 
 
 (sec-appendix-a-foundational-axioms)=
-#### A.6.0 Foundational Axioms for Microstate Counting
+### A.6.0 Foundational Axioms for Microstate Counting
 
 This section establishes the information-theoretic foundations required for a non-circular derivation of the Area Law, analogous to Strominger-Vafa's microstate counting for black hole entropy {cite}`strominger1996microscopic`.
 
@@ -546,7 +546,7 @@ for some constant $c > 0$.
 
 **In Physics:** The Fisher Information Metric $\mathcal{F}_{ij}(\theta) = \mathbb{E}\left[\frac{\partial \log p}{\partial \theta^i}\frac{\partial \log p}{\partial \theta^j}\right]$ is the unique Riemannian metric on statistical manifolds invariant under sufficient statistics (Chentsov's Theorem) {cite}`chentsov1982statistical,amari1985differential`.
 
-**In Implementation:** The latent metric $G(z)$ combines value curvature with Fisher Information (Section 2.5):
+**In Implementation:** The latent metric $G(z)$ combines value curvature with Fisher Information ({ref}`Section 2.5 <sec-second-order-sensitivity-value-defines-a-local-metric>`):
 
 $$
 G_{ij}(z) = \nabla^2_{ij} V(z) + \lambda\,\mathcal{F}_{ij}(z)
@@ -584,7 +584,7 @@ Two microstates $\mu_1, \mu_2$ are **boundary-distinguishable** if an external o
 
 
 (sec-appendix-a-microstate-counting)=
-#### A.6.0d Microstate Counting: The Non-Circular Derivation
+### A.6.0d Microstate Counting: The Non-Circular Derivation
 
 We now derive the Area Law by counting boundary-distinguishable microstates, without invoking the Metric Law.
 
@@ -785,7 +785,7 @@ It does **not** invoke the Metric Law (Theorem {prf:ref}`thm-capacity-constraine
 
 
 (sec-appendix-a-holographic-reduction)=
-#### A.6.1 Step 1: Holographic Reduction via Divergence Theorem (Field-Theoretic Derivation)
+### A.6.1 Step 1: Holographic Reduction via Divergence Theorem (Field-Theoretic Derivation)
 
 :::{prf:lemma} A.6.1 (Bulk-to-Boundary Conversion)
 :label: lem-a-bulk-to-boundary-conversion
@@ -816,7 +816,7 @@ Combining with $R = \kappa T + 2\Lambda$ and noting that the $\Lambda$ term cont
 
 
 (sec-appendix-a-saturation-geometry)=
-#### A.6.2 Step 2: Saturation Geometry (Schwarzschild-like Solution)
+### A.6.2 Step 2: Saturation Geometry (Schwarzschild-like Solution)
 
 For an isotropic manifold with spherical symmetry, we use the ansatz:
 
@@ -854,7 +854,7 @@ The integration constant is determined by requiring $\lim_{r \to 0} A(r) = 1$. $
 
 
 (sec-appendix-a-horizon-condition)=
-#### A.6.3 Step 3: The Horizon Condition
+### A.6.3 Step 3: The Horizon Condition
 
 :::{prf:definition} A.6.3 (Information Horizon)
 :label: def-a-information-horizon
@@ -876,7 +876,7 @@ $$
 
 
 (sec-appendix-a-fisher-normalization)=
-#### A.6.4 Step 4: Fisher Normalization and the 1/4 Coefficient
+### A.6.4 Step 4: Fisher Normalization and the 1/4 Coefficient
 
 The coefficient $1/4$ in the field-theoretic derivation arises from the same geometric structure established in the microstate counting approach (Section A.6.0d).
 
@@ -921,7 +921,7 @@ $$
 
 
 (sec-appendix-a-assembly)=
-#### A.6.5 Step 5: Assembly of the Bound
+### A.6.5 Step 5: Assembly of the Bound
 
 :::{prf:theorem} A.6.6 (Complete Derivation of the Area Law)
 :label: thm-a-complete-derivation-area-law
@@ -1065,7 +1065,7 @@ Similarly, the microstate counting here is analogous to Strominger-Vafa, while t
 
 
 (sec-appendix-a-remark-bekenstein-hawking)=
-#### A.6.6 Remark: Connection to Bekenstein-Hawking
+### A.6.6 Remark: Connection to Bekenstein-Hawking
 
 The structural similarity to the Bekenstein-Hawking entropy bound $S = A/(4\ell_P^2)$ {cite}`bekenstein1973black,hawking1975particle` is not coincidental. Both bounds arise from:
 

@@ -1,11 +1,11 @@
 (sec-appendix-d-frequently-asked-questions)=
-## Appendix D: Frequently Asked Questions
+# {ref}`Appendix D <sec-appendix-d-frequently-asked-questions>`: Frequently Asked Questions
 
 This appendix addresses forty rigorous objections that a skeptical reviewer might raise. Each question is stated in its strongest form; the answers point to specific mechanisms and sections. If the responses are unconvincing, the framework deserves skepticism.
 
+(rb-fragile-lexicon)=
 :::{admonition} Researcher Bridge: The Fragile Agent Lexicon
 :class: important
-:name: rb-fragile-lexicon
 If you are coming from a standard RL/Deep Learning background, use this mapping to understand the functional roles of our geometric constructs:
 
 | Their Heuristic (Degenerate Case) | Our Geometric Law (General Theory)  |
@@ -20,23 +20,23 @@ If you are coming from a standard RL/Deep Learning background, use this mapping 
 :::
 
 (sec-appendix-d-computational-complexity-scalability)=
-### D.1 Computational Complexity & Scalability
+## D.1 Computational Complexity & Scalability
 
 (sec-appendix-d-the-metric-inversion-problem)=
-#### D.1.1 The $O(D^3)$ Metric Inversion Problem
+### D.1.1 The $O(D^3)$ Metric Inversion Problem
 
 **Objection:** *The Riemannian metric $G(z)$ requires inverting a dense mass matrix for natural gradient updates. With latent dimension $D \sim 10^3$, this $O(D^3)$ operation is prohibitive per step.*
 
 **Response:**
 
-1. **Manifold separation.** The metric $G$ operates on the **state manifold** $\mathcal{Z}$ (typically $D \approx 10^2$), not the parameter manifold $\Theta$ ($D \approx 10^9$). Inverting a $256 \times 256$ matrix on GPU costs microseconds—negligible compared to the forward pass. See {ref}`Section 2.5 <sec-second-order-sensitivity-value-defines-a-local-metric>` and {ref}`Section 2.6 <sec-the-metric-hierarchy-fixing-the-category-error>` for the distinction between state-space and parameter-space geometry.
+1. **Manifold separation.** The metric $G$ ({prf:ref}`def-mass-tensor`) operates on the **state manifold** $\mathcal{Z}$ (typically $D \approx 10^2$), not the parameter manifold $\Theta$ ($D \approx 10^9$). Inverting a $256 \times 256$ matrix on GPU costs microseconds—negligible compared to the forward pass. See {ref}`Section 2.5 <sec-second-order-sensitivity-value-defines-a-local-metric>` and {ref}`Section 2.6 <sec-the-metric-hierarchy-fixing-the-category-error>` for the distinction between state-space and parameter-space geometry.
 
 2. **Structured approximations.** For larger latent spaces ($D > 1024$), we use Kronecker-factorized (K-FAC) or block-diagonal curvature approximations, reducing complexity to $O(D)$ or $O(D^{1.5})$.
 
 3. **Amortized updates.** The metric is a slowly varying field. We update the curvature estimate on a slower timescale than the policy (analogous to target network updates in DQN), avoiding per-step recomputation. See {ref}`Section 9.10 <sec-differential-geometry-view-curvature-as-conditioning>` for the runtime trust-region regulator.
 
 (sec-appendix-d-the-pde-solver-overhead)=
-#### D.1.2 The PDE Solver Overhead
+### D.1.2 The PDE Solver Overhead
 
 **Objection:** *The Critic solves the Screened Poisson (Helmholtz) equation. Solving PDEs on high-dimensional manifolds is intractable. Are you running a finite-element solver inside the training loop?*
 
@@ -56,7 +56,7 @@ No. We use the **Physics-Informed Neural Network (PINN)** paradigm: the neural n
 3. **Implicit Green's function.** Training on temporal TD-error teaches the network the Green's function of the operator without explicitly inverting the Laplacian.
 
 (sec-appendix-d-real-time-latency)=
-#### D.1.3 Real-Time Latency (The 29 Checks)
+### D.1.3 Real-Time Latency (The 29 Checks)
 
 **Objection:** *Evaluating 29 diagnostic nodes per step—some involving Jacobian spectral norms or counterfactual rollouts—creates unacceptable latency for millisecond-scale robotics or trading.*
 
@@ -71,7 +71,7 @@ The Sieve uses an **asynchronous tiered architecture** ({ref}`Section 7.4 <sec-i
 3. **Circuit-breaker pattern.** If the asynchronous Monitor detects a Tier 4 violation, it sends an interrupt to the Policy. The system is **eventually consistent** with the Sieve, not synchronously blocked by it. See {ref}`Sections 3–6 <sec-diagnostics-stability-checks>` for the full node catalog.
 
 (sec-appendix-d-distributed-training-synchronization)=
-#### D.1.4 Distributed Training Synchronization
+### D.1.4 Distributed Training Synchronization
 
 **Objection:** *Standard data parallelism relies on gradient averaging. Your adaptive multipliers $\lambda_i$ and global metrics couple the batch, breaking efficient scaling.*
 
@@ -86,10 +86,10 @@ The **Universal Governor** ({ref}`Section 3.5 <sec-adaptive-multipliers-learned-
 3. **Local constraints.** Most checks (BarrierSat, BoundaryCheck) are trajectory-local. They enforce per-sample on each GPU without global synchronization, allowing near-linear scaling.
 
 (sec-appendix-d-optimization-dynamics-convergence)=
-### D.2 Optimization Dynamics & Convergence
+## D.2 Optimization Dynamics & Convergence
 
 (sec-appendix-d-multi-objective-gradient-fighting)=
-#### D.2.1 Multi-Objective Gradient Fighting
+### D.2.1 Multi-Objective Gradient Fighting
 
 **Objection:** *With dozens of loss terms (task, 29 constraints, entropy, consistency), gradient interference will produce Pareto-suboptimal deadlocks or oscillatory instability.*
 
@@ -104,7 +104,7 @@ Optimization is treated as a **Stackelberg game**, not scalar minimization.
 3. **Priority hierarchy.** Hard constraints (BarrierLock) clamp gradients; soft constraints (BarrierGap) apply forces; task loss applies only in the feasible region. This hierarchy prevents deadlock by construction.
 
 (sec-appendix-d-timescale-decoupling-instability)=
-#### D.2.2 Timescale Decoupling Instability
+### D.2.2 Timescale Decoupling Instability
 
 **Objection:** *The hierarchy $\delta \ll \gamma \ll \alpha$ is hard to enforce. If the World Model drifts faster than the Critic adapts, BarrierTypeII logic halts the policy, producing stop-and-go dynamics.*
 
@@ -119,7 +119,7 @@ We use **Two-Time-Scale Stochastic Approximation (TTSA)** theory.
 3. **Polyak averaging.** The Critic used for Policy updates is an EMA target, low-pass filtering high-frequency drift.
 
 (sec-appendix-d-the-moving-target-of-the-manifold)=
-#### D.2.3 The Moving Target of the Manifold
+### D.2.3 The Moving Target of the Manifold
 
 **Objection:** *The metric $G$ depends on $V$, but $V$ is being learned. The geometry is non-stationary. How can geodesic optimization converge if the ground keeps shifting?*
 
@@ -134,7 +134,7 @@ We model this as a **Self-Consistent Field (SCF)** problem.
 3. **Curvature-adaptive step size.** High-curvature regions (large $\|\nabla^2 V\|$) increase the effective mass, automatically reducing the step size where the metric changes most rapidly.
 
 (sec-appendix-d-discrete-bottleneck-collapse)=
-#### D.2.4 Discrete Bottleneck Collapse
+### D.2.4 Discrete Bottleneck Collapse
 
 **Objection:** *VQ-VAEs suffer codebook collapse: the model ignores the discrete latent and relies on the decoder. If $K$ collapses, Causal Enclosure breaks. Is the Anti-Collapse loss sufficient?*
 
@@ -149,10 +149,10 @@ We enforce **Information-Theoretic Liveness**, not just a loss term.
 3. **Geometric separation.** We apply **VICReg** regularization on embeddings *before* quantization, forcing the continuous space to span the full codebook. See {ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`.
 
 (sec-appendix-d-information-theory-representation)=
-### D.3 Information Theory & Representation
+## D.3 Information Theory & Representation
 
 (sec-appendix-d-the-definition-of-texture)=
-#### D.3.1 The Definition of "Texture"
+### D.3.1 The Definition of "Texture"
 
 **Objection:** *You define $z_{\mathrm{tex}}$ as non-causal residue. But in POMDPs, "noise" often contains signal (radio static warning of storms). Forcing $\partial \pi / \partial z_{\mathrm{tex}} = 0$ guarantees blindness.*
 
@@ -172,7 +172,7 @@ The split between texture and structure is **learned**, not manual.
 3. **Firewall as validity check.** The constraint $\partial \pi / \partial z_{\mathrm{tex}} = 0$ is a **safety assert**: "Do not hallucinate patterns in the residual." If the policy *needs* the residual, **Node 29 (TextureFirewallCheck)** fails, signaling that representation capacity must increase.
 
 (sec-appendix-d-symbolic-grounding-and-the-bit-rate-gap)=
-#### D.3.2 Symbolic Grounding and the Bit-Rate Gap
+### D.3.2 Symbolic Grounding and the Bit-Rate Gap
 
 **Objection:** *Continuous control requires infinite precision (contact forces). Can a discrete $K$ capture the nuance, or are you quantizing away control authority?*
 
@@ -187,7 +187,7 @@ The state is **hybrid** $(K, z_n)$, not purely symbolic.
 3. **Bits index geometry.** High-fidelity interaction relies on geometry ($z_n$, floating point). Logic relies on bits ($K$). We use bits to index geometry, not replace it.
 
 (sec-appendix-d-measure-concentration-in-high-dimensions)=
-#### D.3.3 Measure Concentration in High Dimensions
+### D.3.3 Measure Concentration in High Dimensions
 
 **Objection:** *In high-dimensional spaces, distances concentrate and curvature becomes unintuitive. Does the metric $G$ retain meaning in $\mathbb{R}^{512}$?*
 
@@ -197,15 +197,15 @@ We combat concentration via the **Manifold Hypothesis** and **Conformal Scaling*
 
 1. **Low intrinsic dimension.** Data lies on a manifold of intrinsic dimension $d \ll 512$. **Node 6 (Fractal Dimension Check)** monitors this. The metric $G$ operates on the tangent bundle of this manifold.
 
-2. **Anisotropic distance.** The Mahalanobis distance induced by $G(z)$ rescales directions by relevance (Value sensitivity). Irrelevant directions have low weight; relevant directions are stretched—a "soft dimensionality reduction." See {ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`.
+2. **Anisotropic distance.** The Mahalanobis distance induced by $G(z)$ rescales directions by relevance (Value sensitivity). Irrelevant directions have low weight; relevant directions are stretched—a "soft dimensionality reduction." See the WFR geometry ({prf:ref}`def-the-wfr-action`) in {ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`.
 
 3. **Risk-based units.** The conformal factor $\Omega = 1 + \alpha\|\nabla^2 V\|$ ({ref}`Section 24.4 <sec-geometric-back-reaction-the-conformal-coupling>`) measures distance in **risk units**. Risk does not concentrate uniformly—dangerous states remain far from safe ones in this metric.
 
 (sec-appendix-d-physics-geometry-isomorphisms)=
-### D.4 Physics & Geometry Isomorphisms
+## D.4 Physics & Geometry Isomorphisms
 
 (sec-appendix-d-the-validity-of-the-hjb-helmholtz-map)=
-#### D.4.1 The Validity of the HJB-Helmholtz Map
+### D.4.1 The Validity of the HJB-Helmholtz Map (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`)
 
 **Objection:** *The Bellman-to-Screened-Poisson map holds for diffusions. Does it break for jump-diffusions or non-Markovian dynamics?*
 
@@ -217,10 +217,10 @@ The map generalizes to any Markov generator.
 
 2. **Critic as resolvent.** The Critic approximates the resolvent operator $R_\alpha = (\alpha I - \mathcal{L})^{-1}$, well-defined for any Feller process. See {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>`.
 
-3. **WFR handles jumps.** In the Wasserstein-Fisher-Rao geometry ({ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`), jumps are "reaction" terms (teleportation) rather than "transport" terms, preserving geometric interpretation.
+3. **WFR handles jumps.** In the Wasserstein-Fisher-Rao geometry ({prf:ref}`def-the-wfr-action`, {ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`), jumps are "reaction" terms (teleportation) rather than "transport" terms, preserving geometric interpretation.
 
 (sec-appendix-d-thermodynamic-metaphors-vs-reality)=
-#### D.4.2 Thermodynamic Metaphors vs. Reality
+### D.4.2 Thermodynamic Metaphors vs. Reality
 
 **Objection:** *You invoke "Free Energy" and "Temperature." In physics, these have precise microphysical meaning. In AI, isn't this just poetic language for regularization?*
 
@@ -232,10 +232,10 @@ We claim a **structural isomorphism** via Large Deviation Theory, not microphysi
 
 2. **Gibbs measure.** The optimal policy under entropy regularization is exactly Boltzmann: $\pi(a|s) \propto \exp(Q(s,a)/\alpha)$. This is not metaphor—it is the unique solution to MaxEnt control. See {ref}`Section 21.2 <sec-policy-control-field>`.
 
-3. **Operational heat bath.** "Temperature" $T_c$ is the exploration noise level. The "heat bath" is the source of stochasticity (SGD noise, epsilon-greedy RNG). Thermodynamic quantities (heat capacity, entropy production) are rigorously derivable.
+3. **Operational heat bath.** The cognitive temperature $T_c$ ({prf:ref}`def-cognitive-temperature`) is the exploration noise level. The "heat bath" is the source of stochasticity (SGD noise, epsilon-greedy RNG). Thermodynamic quantities (heat capacity, entropy production) are rigorously derivable.
 
 (sec-appendix-d-gauge-invariance-in-neural-networks)=
-#### D.4.3 Gauge Invariance in Neural Networks
+### D.4.3 Gauge Invariance in Neural Networks
 
 **Objection:** *Neural networks learn to break symmetries to fit data. Enforcing strict invariance (e.g., $SE(3)$) reduces expressivity. Why prefer hard invariance over soft augmentation?*
 
@@ -250,7 +250,7 @@ We enforce invariance for **sample efficiency** and **safety**, not expressivity
 3. **Quotient manifolds.** Enforcing invariance trains on the quotient $\mathcal{X}/G$, which has lower dimension and simpler topology—an easier optimization problem.
 
 (sec-appendix-d-the-wfr-metric-justification)=
-#### D.4.4 The WFR Metric Justification
+### D.4.4 The WFR Metric Justification
 
 **Objection:** *Wasserstein-Fisher-Rao is mathematically obscure. Why not simpler Wasserstein-2 or pure Fisher-Rao?*
 
@@ -265,10 +265,10 @@ WFR is the **unique** metric handling the lifecycle of hypotheses: creation, mov
 3. **Hybrid necessity.** Agents must both track objects (transport) and switch hypotheses (reaction). WFR unifies these via the length scale $\lambda$. We use the **Cone Space approximation** for tractable computation. See {ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`.
 
 (sec-appendix-d-control-theory-system-safety)=
-### D.5 Control Theory & System Safety
+## D.5 Control Theory & System Safety
 
 (sec-appendix-d-the-constitution-vs-the-bitter-lesson)=
-#### D.5.1 The "Constitution" vs. The "Bitter Lesson"
+### D.5.1 The "Constitution" vs. The "Bitter Lesson"
 
 **Objection:** *Sutton's Bitter Lesson says general methods that scale beat hand-engineered priors. The Sieve is massive hand-engineering. Won't a raw Transformer eventually outperform it?*
 
@@ -283,7 +283,7 @@ The Bitter Lesson applies to search and learning, not specification and verifica
 3. **Alignment ceiling.** Scaling improves competence, not alignment. A superintelligent unconstrained agent is a more efficient maximizer of a flawed proxy. The Sieve provides **runtime alignment** via structural constraints that cannot be learned away.
 
 (sec-appendix-d-stability-proofs-for-learned-controllers)=
-#### D.5.2 Stability Proofs for Learned Controllers
+### D.5.2 Stability Proofs for Learned Controllers
 
 **Objection:** *You invoke Lyapunov stability, but $V$ is a neural network with approximation error. How can a learned certifier prove stability?*
 
@@ -298,7 +298,7 @@ We rely on **runtime monitoring** and **contraction metrics**, not static verifi
 3. **Correct-by-construction updates.** Updates are **Mirror Descent** in the dual space of constraints. Optimization theory guarantees projected gradient descent stays in the feasible (stable) region for sufficiently small step sizes (managed by the Governor).
 
 (sec-appendix-d-the-frame-problem-in-causal-sets)=
-#### D.5.3 The Frame Problem in Causal Sets
+### D.5.3 The Frame Problem in Causal Sets
 
 **Objection:** *If the agent builds spacetime via interaction, how is object permanence maintained? If the agent stops interacting with a region, does it cease to exist?*
 
@@ -313,7 +313,7 @@ We solve this via **Holographic Persistence** and the **Causal Memory Cone**.
 3. **Forgetfulness horizon.** Things *do* cease to exist if they cross the information horizon. If an object interacts with nothing for $T > T_{\text{Lyapunov}}$, its state becomes irretrievable. The model correctly treats this as dissolution—bounding required memory.
 
 (sec-appendix-d-adversarial-robustness-of-the-sieve)=
-#### D.5.4 Adversarial Robustness of the Sieve
+### D.5.4 Adversarial Robustness of the Sieve
 
 **Objection:** *The Governor minimizes Sieve violations. What stops it from gaming the metrics—forcing the agent to do nothing? A rock is perfectly safe.*
 
@@ -328,7 +328,7 @@ We enforce **Liveness** via ergodicity and thermodynamic cycles.
 3. **Task reward as drive.** The Governor optimizes a ratio of Task Reward to Safety Violation. The solution to "maximize velocity subject to speed limit" is not "stop"—it is "go at the speed limit."
 
 (sec-appendix-d-falsifiability)=
-#### D.5.5 Falsifiability
+### D.5.5 Falsifiability
 
 **Objection:** *This framework can model anything. If the agent fails, you can blame insufficient capacity, improper metric, or bad priors. What outcome would prove it wrong?*
 
@@ -343,10 +343,10 @@ The framework makes specific, counter-intuitive predictions.
 3. **Prediction 3: Screening-length decay.** Value propagation decays exponentially with geodesic distance at rate $\kappa = -\ln\gamma / \Delta t$ (Proposition {prf:ref}`prop-green-s-function-decay`, Corollary {prf:ref}`cor-discount-as-screening-length`). *Falsification:* Measure empirical value correlation as a function of latent distance. If decay does not match $\exp(-\kappa \cdot d_G(z, z'))$, the Helmholtz-Bellman correspondence is false.
 
 (sec-appendix-d-philosophical-naming-premise)=
-### D.6 The Philosophical and Naming Premise
+## D.6 The Philosophical and Naming Premise
 
 (sec-appendix-d-the-fragile-branding)=
-#### D.6.1 The "Fragile" Branding
+### D.6.1 The "Fragile" Branding
 
 **Objection:** *In engineering, "fragility" is usually a liability. Why frame the agent's name around a negative attribute rather than calling it the "Transparent" or "Accountable" agent?*
 
@@ -371,7 +371,7 @@ The name **Fragile** is an intentional portmanteau encoding the four pillars of 
 The name encodes a design philosophy: start with explicit fragility, instrument it completely, and build robustness through verified operation.
 
 (sec-appendix-d-the-degenerate-case-claim)=
-#### D.6.2 The "Degenerate Case" Claim
+### D.6.2 The "Degenerate Case" Claim
 
 **Objection:** *You claim standard RL is a "degenerate" special case of this framework. Isn't it more likely that this framework is an over-parameterized "epicycle" built on top of simple, effective principles?*
 
@@ -389,7 +389,7 @@ The claim is not rhetorical—it is a precise mathematical statement proven by e
 5. **Practical complexity of "simple" RL.** Despite theoretical simplicity, modern RL is rarely effective without a large stack of engineering heuristics, heavy tuning, and costly infrastructure, and outcomes are hard to predict or justify from first principles. This paper is famous in the RL community for demonstrating that the performance of Proximal Policy Optimization (PPO) is not primarily due to its "trust region" clipping objective (the theoretical innovation), but rather a collection of "code-level optimizations" or "knobs" that are often omitted or treated as minor details in original papers {cite}`huang2022ppo-implementation-details`. In real-world settings, core assumptions like IID sampling and stationarity routinely fail, further exposing the gap between the "simple" theory and its operational reality.
 
 (sec-appendix-d-the-agency-problem)=
-#### D.6.3 The Agency Problem
+### D.6.3 The Agency Problem
 
 **Objection:** *If the agent's actions are determined by a PDE solver propagating boundary charges, is there any room for genuine "agency," or is the agent just a sophisticated physical resistor?*
 
@@ -406,10 +406,10 @@ The framework does not eliminate agency—it *geometrizes* it.
 4. **Agency as constrained optimization.** A resistor dissipates energy passively. The Fragile Agent *minimizes* free energy subject to metabolic and safety constraints ({ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`). The constraints define *what kind* of agent it is; within those constraints, the agent maximizes expected utility. Agency is not the absence of constraint but optimization within constraint.
 
 (sec-appendix-d-implementation-complexity)=
-### D.7 Implementation and Complexity
+## D.7 Implementation and Complexity
 
 (sec-appendix-d-the-meta-tuning-paradox)=
-#### D.7.1 The Meta-Tuning Paradox
+### D.7.1 The Meta-Tuning Paradox
 
 **Objection:** *The Sieve contains 60 diagnostic nodes. Even with the Universal Governor, doesn't this just move the "hyperparameter hell" problem up one level? Who tunes the Governor's initial constraints?*
 
@@ -426,7 +426,7 @@ The Governor reduces hyperparameter count, not shifts it.
 4. **The alternative is worse.** Without the Sieve, the engineer implicitly tunes the same constraints—via reward shaping, early stopping, and ad-hoc regularization. The Sieve makes the constraints *explicit* and *auditable*; the Governor makes them *self-correcting*.
 
 (sec-appendix-d-cold-start-in-the-vacuum)=
-#### D.7.2 Cold Start in the Vacuum
+### D.7.2 Cold Start in the Vacuum
 
 **Objection:** *You initialize the agent at the Semantic Vacuum ($z=0$). How does an agent with no prior geometry avoid "wandering in the dark" for millions of steps before the first bifurcation?*
 
@@ -443,7 +443,7 @@ The Semantic Vacuum is not empty—it is maximally symmetric.
 4. **First bifurcation is cheap.** The ontological stress threshold $\Xi_{\text{crit}}$ ({ref}`Section 30.2 <sec-ontological-stress>`) is set low initially. The first chart fission occurs as soon as texture becomes predictable—typically within thousands, not millions, of steps. Subsequent fissions compound the representational capacity.
 
 (sec-appendix-d-numerical-drift-hyperbolic)=
-#### D.7.3 Numerical Drift on Hyperbolic Manifolds
+### D.7.3 Numerical Drift on Hyperbolic Manifolds
 
 **Objection:** *Standard neural networks use floating-point math optimized for Euclidean space. How do you prevent catastrophic rounding errors when calculating geodesics near the $|z| \to 1$ boundary?*
 
@@ -460,7 +460,7 @@ We use numerically stable hyperbolic primitives.
 4. **Mixed-precision with Kahan summation.** For high-precision curvature computations, we use Kahan summation to reduce floating-point error accumulation. The metric $G(z) = 4I/(1-|z|^2)^2$ is computed in float64 where necessary; the policy and encoder use float16/bfloat16.
 
 (sec-appendix-d-governors-blind-spot)=
-#### D.7.4 The Governor's Blind Spot
+### D.7.4 The Governor's Blind Spot
 
 **Objection:** *What happens if the World Model is wrong, but self-consistent? Can the Sieve be "fooled" by a hallucinated geometry into reporting that everything is stable?*
 
@@ -477,10 +477,10 @@ Self-consistency is necessary but not sufficient—the Sieve has external anchor
 4. **The Sieve is skeptical by design.** The framework assumes the World Model is *always* wrong to some degree (partial observability, model mismatch). The Sieve monitors the *rate* of being wrong. Stable wrongness is tolerable; accelerating wrongness triggers intervention.
 
 (sec-appendix-d-information-theory-ontology)=
-### D.8 Information Theory and Ontology
+## D.8 Information Theory and Ontology
 
 (sec-appendix-d-ontological-churn)=
-#### D.8.1 Ontological Churn
+### D.8.1 Ontological Churn
 
 **Objection:** *What prevents the agent from entering a "fission-fusion loop," where it creates a chart for a new distinction and immediately merges it back due to metabolic pressure?*
 
@@ -497,7 +497,7 @@ Hysteresis and metabolic accounting prevent churn.
 4. **Diagnostic Node 54 (FusionReadinessCheck).** This node monitors the redundancy metric $\Upsilon_{ij}$ and only permits fusion when redundancy is *sustained* over a window, not instantaneous.
 
 (sec-appendix-d-texture-trojan-horse)=
-#### D.8.2 Texture as a Trojan Horse
+### D.8.2 Texture as a Trojan Horse
 
 **Objection:** *If texture is reconstruction-only and firewall-protected, couldn't a malicious environment hide adversarial triggers in the texture that are "unobservable" to the Sieve but influence the decoder's output?*
 
@@ -514,7 +514,7 @@ The Firewall operates on gradients, not pixels—adversarial texture cannot infl
 4. **Adversarial robustness via information bottleneck.** The macro-state $K$ has $\log|\mathcal{K}|$ bits of capacity. High-frequency adversarial perturbations cannot fit through this bottleneck. Attacks that *do* alter $K$ are, by definition, semantically meaningful—and detectable by the Sieve.
 
 (sec-appendix-d-discrete-continuous-interface)=
-#### D.8.3 The Discrete/Continuous Interface
+### D.8.3 The Discrete/Continuous Interface
 
 **Objection:** *VQ-VAE codebooks are notoriously difficult to train with gradients. Does the straight-through estimator (STE) introduce enough noise to invalidate the "smooth manifold" assumptions of the WFR geometry?*
 
@@ -531,7 +531,7 @@ The WFR metric is designed precisely for discrete/continuous hybrids.
 4. **Empirical smoothness.** VQ-VAE gradients are noisy but *unbiased* under STE. The accumulated gradient over batches converges to the true gradient. The manifold structure emerges in expectation, not per-sample.
 
 (sec-appendix-d-semantic-compression-hallucination)=
-#### D.8.4 Semantic Compression vs. Hallucination
+### D.8.4 Semantic Compression vs. Hallucination
 
 **Objection:** *At the Causal Information Bound ($I_{\max}$), does the agent begin to hallucinate correlations to "fit" new data into a saturated interface?*
 
@@ -548,12 +548,12 @@ Near saturation, the agent slows down—it does not hallucinate.
 4. **Information-theoretic impossibility.** The Causal Information Bound (Theorem {prf:ref}`thm-causal-information-bound`) is a *hard limit* derived from the area law. It is impossible to encode $I > I_{\max}$ into boundary area $A$. The bound is geometric, not behavioral.
 
 (sec-appendix-d-scaling-multi-agent)=
-### D.9 Scaling and Multi-Agent Dynamics
+## D.9 Scaling and Multi-Agent Dynamics
 
 (sec-appendix-d-game-tensor-explosion)=
-#### D.9.1 The Game Tensor Explosion
+### D.9.1 The Game Tensor ({prf:ref}`def-the-game-tensor`) Explosion
 
-**Objection:** *In a system with 1,000 agents, the Game Tensor $\mathcal{G}_{ij}$ requires $O(N^2)$ cross-Hessians. Is this framework restricted to small-team dynamics, or is there a "Mean Field" Fragile Agent?*
+**Objection:** *In a system with 1,000 agents, the {prf:ref}`def-the-game-tensor` $\mathcal{G}_{ij}$ requires $O(N^2)$ cross-Hessians. Is this framework restricted to small-team dynamics, or is there a "Mean Field" Fragile Agent?*
 
 **Response:**
 
@@ -568,7 +568,7 @@ Sparse and mean-field approximations scale the Game Tensor.
 4. **The framework is exact for small $N$.** For $N \le 10$ (small teams, adversarial games), the full $O(N^2)$ computation is tractable. The approximations above extend the framework to large $N$ without abandoning the geometric structure.
 
 (sec-appendix-d-symplectic-leakage)=
-#### D.9.2 Symplectic Leakage
+### D.9.2 Symplectic Leakage
 
 **Objection:** *In real-world multi-agent systems (like traffic), the "Bridge Manifold" is noisy and lossy. Does the violation of Symplectic Conservation (Node 48) make the math of Strategic Inertia collapse?*
 
@@ -585,7 +585,7 @@ The framework is robust to symplectic leakage—it monitors and compensates.
 4. **Graceful degradation.** If Node 48 fails persistently, the Governor increases the "strategic uncertainty" parameter $\sigma_{\text{opp}}$, widening the agent's belief distribution over opponents. The agent becomes *more cautious*, not unstable.
 
 (sec-appendix-d-strategic-laziness)=
-#### D.9.3 Strategic Laziness
+### D.9.3 Strategic Laziness
 
 **Objection:** *If adversarial presence increases "Latent Inertia" (Mass), will Fragile Agents naturally become "lazy" and refuse to move in contested spaces to save metabolic energy?*
 
@@ -602,10 +602,10 @@ Inertia slows *reckless* movement, not *purposeful* movement.
 4. **Exploration bonus in contested regions.** The Curiosity Force (Theorem {prf:ref}`thm-augmented-drift-law`) adds $\beta_{\text{exp}} \mathbf{f}_{\text{exp}}$ to the drift. In high-uncertainty (contested) regions, this bonus *increases*, counteracting inertia. The agent explores *because* the region is contested, not despite it.
 
 (sec-appendix-d-human-alignment-deployment)=
-### D.10 Human Alignment and Deployment
+## D.10 Human Alignment and Deployment
 
 (sec-appendix-d-mapping-human-values-charges)=
-#### D.10.1 Mapping Human Values to Charges
+### D.10.1 Mapping Human Values to Charges
 
 **Objection:** *Rewards are treated as boundary scalar charges. How do we translate fuzzy human ethics into a precise point-source charge density without creating "singularities" of unintended behavior?*
 
@@ -622,7 +622,7 @@ The framework provides smoothing and decomposition mechanisms.
 4. **Conformal coupling increases deliberation.** High-curvature value regions increase the effective mass via conformal coupling ({ref}`Section 24.4 <sec-geometric-back-reaction-the-conformal-coupling>`). The agent slows down near regions of high value gradient, automatically allocating more computation to decisions with larger consequences.
 
 (sec-appendix-d-interventional-safety-gap)=
-#### D.10.2 The Interventional Safety Gap
+### D.10.2 The Interventional Safety Gap
 
 **Objection:** *Does performing a "topological surgery" ($do$-operation) for causal discovery pose an inherent risk to the agent's physical hardware during the "exploration" phase?*
 
@@ -639,7 +639,7 @@ Interventions are bounded by the Sieve; hardware safety is a separate layer.
 4. **Human-in-the-loop for irreversible actions.** For deployment scenarios with physical risk, the framework supports a **Gatekeeper** mode: interventions above a risk threshold require human approval. The Sieve provides the risk estimate; the human provides the authorization.
 
 (sec-appendix-d-explainability-non-physicists)=
-#### D.10.3 Explainability for Non-Physicists
+### D.10.3 Explainability for Non-Physicists
 
 **Objection:** *If an agent halts due to a "Helmholtz Residual Violation" or "Ontological Stress," how can a human operator understand what actually went wrong in plain English?*
 
@@ -659,10 +659,10 @@ The Sieve provides layered explanations from technical to intuitive.
 4. **Dashboard visualization.** The 60 diagnostic outputs can be rendered as a heatmap, gauge cluster, or time series. An operator trained on the dashboard can monitor agent health without understanding the underlying geometry.
 
 (sec-appendix-d-physical-metabolic-reality)=
-### D.11 Physical and Metabolic Reality
+## D.11 Physical and Metabolic Reality
 
 (sec-appendix-d-hardware-requirements)=
-#### D.11.1 Hardware Requirements
+### D.11.1 Hardware Requirements
 
 **Objection:** *Does the requirement for Hessian-aware optimization and PDE regularization necessitate specialized "Geometric Processing Units" (GPUs of a different kind), or is this viable on commodity hardware?*
 
@@ -683,7 +683,7 @@ The framework runs on commodity GPUs; specialized hardware helps but is not requ
 4. **Memory, not FLOPs, is the bottleneck.** Storing the atlas (charts, codebook, memory buffer) requires $O(|\mathcal{K}| \cdot D + B \cdot D)$ memory. For typical sizes ($|\mathcal{K}| = 1024$, $D = 256$, $B = 10^6$ buffer), this is ~1 GB—well within commodity GPU VRAM.
 
 (sec-appendix-d-metabolic-death)=
-#### D.11.2 Metabolic Death
+### D.11.2 Metabolic Death
 
 **Objection:** *Can an agent "starve" in a high-complexity environment if the metabolic cost of maintaining its internal charts exceeds the reward flux it can gather?*
 
@@ -697,10 +697,10 @@ Yes—this is an intended design property.
 
 3. **Graceful degradation.** A starving agent does not crash—it becomes *simpler*. The minimum viable agent has $|\mathcal{K}| = 1$ (single chart), $D = 1$ (scalar latent), $B = 0$ (no memory). At this floor, metabolic cost is minimal. The agent survives but loses capability.
 
-4. **Death as signal.** If even the minimal agent cannot sustain itself, the environment is *too hard* for bounded rationality. This is valuable information: the operator knows to provide auxiliary reward, simplify the task, or increase compute budget. "Metabolic death" is an honest failure mode.
+4. **Death as signal.** If even the minimal agent cannot sustain itself, the environment is *too hard* for a {prf:ref}`def-bounded-rationality-controller`. This is valuable information: the operator knows to provide auxiliary reward, simplify the task, or increase compute budget. "Metabolic death" is an honest failure mode.
 
 (sec-appendix-d-universality-quarter-coefficient)=
-#### D.11.3 The Universality of the 1/4 Coefficient
+### D.11.3 The Universality of the 1/4 Coefficient
 
 **Objection:** *In the Causal Information Bound, the $1/4$ coefficient is derived from Fisher normalization. Does this coefficient change if the agent uses a non-hyperbolic latent geometry?*
 
@@ -722,9 +722,9 @@ The coefficient is geometry-dependent; the *structure* of the bound is universal
 4. **Bekenstein-Hawking analogy.** In general relativity, the coefficient $1/4$ in $S = A / 4\ell_P^2$ arises from the Einstein-Hilbert action normalization. The structural parallel ({ref}`Remark A.6.6 <sec-appendix-a-remark-bekenstein-hawking>`) suggests that $1/4$ is a universal feature of holographic bounds in field theories with second-order curvature terms.
 
 (sec-appendix-d-circularity-of-area-law)=
-#### D.11.4 Circularity of the Area Law Derivation
+### D.11.4 Circularity of the Area Law Derivation
 
-**Objection:** *The derivation of the Area Law in Appendix A.6 is circular: the Levin Length is defined as "area-per-nat," so deriving $I = \text{Area}/(4\ell_L^2)$ just returns to the definition. The 1/4 coefficient is mathematical theater.*
+**Objection:** *The derivation of the Area Law in {ref}`Appendix A.6 <sec-appendix-a-full-derivations>` is circular: the Levin Length is defined as "area-per-nat," so deriving $I = \text{Area}/(4\ell_L^2)$ just returns to the definition. The 1/4 coefficient is mathematical theater.*
 
 **Response:**
 
@@ -761,7 +761,7 @@ This objection conflates two distinct issues. The derivation is **not circular**
 
 *Remark (What would be circular).* A truly circular derivation would be: "Define $\ell_L^2 := A/(4I)$, then observe $I = A/(4\ell_L^2)$." This is **not** what happens. The 1/4 emerges from the curvature normalization $K = -1$, which is a geometric fact independent of capacity constraints.
 
-### D.12 Foundational Rigor and the Hypostructure Formalism
+## D.12 Foundational Rigor and the Hypostructure Formalism
 
 :::{admonition} Theoretical Dependency Warning
 :class: warning
@@ -770,7 +770,7 @@ The answers in this section rely on the **Hypostructure formalism** developed in
 :::
 
 (sec-appendix-d-vq-wfr-disconnect)=
-#### D.12.1 Gap 1: VQ vs. WFR Measure-Theoretical Disconnect
+### D.12.1 Gap 1: VQ vs. WFR Measure-Theoretical Disconnect
 
 **Objection:** *The specification requires both Vector-Quantized (VQ) discrete tokens and Wasserstein-Fisher-Rao (WFR) continuous dynamics. These live on different mathematical spaces: discrete codebooks vs. probability measures on Riemannian manifolds. How can these be reconciled?*
 
@@ -785,7 +785,7 @@ The **Expansion Adjunction** (Theorem **Thm: Expansion Adjunction**) provides a 
 3. **Categorical preservation.** The lifting preserves all categorical structure: composition of morphisms, colimits (merging charts), and limits (refining charts). The VQ and WFR views are *the same object* seen at different resolutions.
 
 (sec-appendix-d-governor-stability)=
-#### D.12.2 Gap 2: Governor Stability ("Who Watches the Watchmen")
+### D.12.2 Gap 2: Governor Stability ("Who Watches the Watchmen")
 
 **Objection:** *If the Governor monitors the agent for safety violations, what monitors the Governor? Infinite regress threatens.*
 
@@ -800,7 +800,7 @@ The monitoring hierarchy terminates at a **Lawvere fixed point**, avoiding infin
 3. **Diagonal blocking.** Gödel-style diagonal arguments (the Governor lying about itself) are blocked by the categorical structure: the internal logic of the cohesive topos admits Boolean sub-topoi where self-reference is well-founded.
 
 (sec-appendix-d-strategic-omniscience)=
-#### D.12.3 Gap 3: Strategic Omniscience (Game Tensor)
+### D.12.3 Gap 3: Strategic Omniscience (Game Tensor)
 
 **Objection:** *The Game Tensor ({ref}`Section 29.4 <sec-the-game-tensor-deriving-adversarial-geometry>`) encodes strategic interactions, but requires knowing opponent policies—which may be uncomputable or strategically hidden.*
 
@@ -827,7 +827,7 @@ An agent commits to a **response function** $\sigma: \mathcal{O} \to \mathcal{A}
 3. **Opponents as boundary conditions.** Unknown opponents are modeled as boundary conditions on $\partial\mathcal{X}$, not as internal states. The agent optimizes against the *worst-case* boundary compatible with observations—a minimax strategy that requires no omniscience.
 
 (sec-appendix-d-hessian-texture-inverse)=
-#### D.12.4 Gap 4: Hessian-Texture Inverse Problem
+### D.12.4 Gap 4: Hessian-Texture Inverse Problem
 
 **Objection:** *Extracting ontological structure from Hessian texture ({ref}`Section 30.3 <sec-the-fission-criterion>`) requires inverting a potentially ill-posed operator. Noise or degeneracy could render the inversion unstable.*
 
@@ -842,7 +842,7 @@ The **O-minimal Tameness Theorem** (**MT: O-minimal Tame Smoothing**) guarantees
 3. **Stratified inverses.** The stratification theorem provides stable local inverses on each stratum. Degeneracies (where the fiber is larger) lie on lower-dimensional strata, which have measure zero under generic perturbations.
 
 (sec-appendix-d-dimensional-scaling-hypo)=
-#### D.12.5 Gap 5: Dimensional Scaling of 1/4 Coefficient
+### D.12.5 Gap 5: Dimensional Scaling of 1/4 Coefficient
 
 **Objection:** *The Area Law coefficient $\nu_D$ is dimension-dependent (see {ref}`D.11.3 <sec-appendix-d-universality-quarter-coefficient>`), but the holographic correspondence assumes a fixed coefficient.*
 
@@ -857,7 +857,7 @@ The **RCD Dissipation Link** (**Thm: RCD Dissipation Link**) provides dimension-
 3. **Explicit values.** Definition {prf:ref}`def-holographic-coefficient` provides the formula: $\nu_D = (D-1)\pi^{(D-2)/2} / (4\Gamma(D/2))$. For $D = 2$, this recovers $\nu_2 = 1/4$.
 
 (sec-appendix-d-reflective-dream-leakage)=
-#### D.12.6 Gap 6: Reflective Dream Leakage
+### D.12.6 Gap 6: Reflective Dream Leakage
 
 **Objection:** *Dreams (offline model consolidation) may produce beliefs that violate physical constraints. If these leak into online behavior, the agent may act on impossible world-models.*
 
@@ -874,14 +874,14 @@ Thermodynamic gating prevents dream leakage.
 
 
 (sec-appendix-d-quantum-foundations-and-physical-limits)=
-### D.13 Quantum Foundations and Physical Limits
+## D.13 Quantum Foundations and Physical Limits
 
 This section addresses objections concerning the framework's relationship to foundational issues in quantum mechanics and the physical interpretation of saturation boundaries.
 
 
 
 (sec-appendix-d-measurement-problem)=
-#### D.13.1 The Measurement Problem (Collapse vs. Jumps)
+### D.13.1 The Measurement Problem (Collapse vs. Jumps)
 
 **Objection:** *The framework claims continuous dynamics, yet quantum measurements exhibit discontinuous "collapse." How is this reconciled?*
 
@@ -898,7 +898,7 @@ The apparent discontinuity dissolves in WFR geometry. The reaction term $R(\rho)
 
 
 (sec-appendix-d-bell-theorem)=
-#### D.13.2 Bell's Theorem and the Loophole of Freedom
+### D.13.2 Bell's Theorem and the Loophole of Freedom
 
 **Objection:** *Bell's theorem proves that any deterministic, ontic theory must be nonlocal. The framework is deterministic and treats $\rho$ as ontic. Does this imply faster-than-light signaling?*
 
@@ -915,7 +915,7 @@ Bell's theorem requires statistical independence between measurement settings an
 
 
 (sec-appendix-d-singularity-causal-stasis)=
-#### D.13.3 The Singularity and Causal Stasis
+### D.13.3 The Singularity and Causal Stasis
 
 **Objection:** *What happens when $\rho \to 1$ (saturation)? Does the framework predict singularities analogous to black holes?*
 

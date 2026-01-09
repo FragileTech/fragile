@@ -1,22 +1,22 @@
-## 25. Supervised Topology: Semantic Potentials and Metric Segmentation
+# Supervised Topology: Semantic Potentials and Metric Segmentation
 
+(rb-metric-learning)=
 :::{admonition} Researcher Bridge: Metric Learning for Classification
 :class: info
-:name: rb-metric-learning
 This section recasts supervised labels as geometric constraints. It is the same idea as contrastive or metric learning, but expressed as class-conditioned potentials and separation in the latent manifold.
 :::
 
 We rigorously define the role of discrete class labels $\mathcal{Y}$ within the continuous latent geometry. Rather than treating classification as "predicting a target variable," we define classification via the **Manifold Hypothesis** {cite}`carlsson2009tda`: Class labels identify topologically coherent regions of the latent manifold, and classification is **equilibrium chart assignment under class-conditioned gradient flow**.
 
-This section **extends** the context-conditioned framework of Section 23.6, providing the topological constraints that make classification geometrically meaningful. The approach integrates ideas from topological data analysis {cite}`carlsson2009tda`, mixture-of-experts routing {cite}`shazeer2017moe`, hyperbolic embeddings {cite}`nickel2017poincare`, and Riemannian optimization {cite}`bonnabel2013rsgd`.
+This section **extends** the context-conditioned framework of {ref}`Section 23.6 <sec-relationship-to-the-context-conditioned-framework>`, providing the topological constraints that make classification geometrically meaningful. The approach integrates ideas from topological data analysis {cite}`carlsson2009tda`, mixture-of-experts routing {cite}`shazeer2017moe`, hyperbolic embeddings {cite}`nickel2017poincare`, and Riemannian optimization {cite}`bonnabel2013rsgd`.
 
 (sec-relationship-to-the-context-conditioned-framework)=
-### 25.1 Relationship to the Context-Conditioned Framework
+## Relationship to the Context-Conditioned Framework
 
 :::{prf:remark} Extension, Not Replacement
 :label: rem-extension-not-replacement
 
-Section 23.6 establishes classification as selecting a context $c \in \mathcal{Y}$ (the label space), with effective potential $\Phi_{\text{eff}} = -\log p(y|z)$ (Theorem {prf:ref}`thm-universal-context-structure`). This section specifies the **topological constraints** that enforce geometric coherence of this classification:
+{ref}`Section 23.6 <sec-relationship-to-the-context-conditioned-framework>` establishes classification as selecting a context $c \in \mathcal{Y}$ (the label space), with effective potential $\Phi_{\text{eff}} = -\log p(y|z)$ (Theorem {prf:ref}`thm-universal-context-structure`). This section specifies the **topological constraints** that enforce geometric coherence of this classification:
 
 1. Charts should be semantically pure (one class per chart, modulo transition regions)
 2. Different classes should be metrically separated (long geodesics between class regions)
@@ -47,11 +47,11 @@ The sub-atlases need not be disjoint. Charts in $\mathcal{A}_i \cap \mathcal{A}_
 
 *Remark (Geometric Interpretation).* Transition charts correspond to saddle regions of the semantic potential landscape—unstable fixed points between class regions of attraction.
 
-**Cross-references:** Section 23.6 (Context-Conditioned Policies), Definition 2.2.1 (Macro-State Register), Section 7.8 (Router Weights).
+**Cross-references:** {ref}`Section 23.6 <sec-relationship-to-the-context-conditioned-framework>` (Context-Conditioned Policies), Definition 2.2.1 (Macro-State Register), {ref}`Section 7.8 <sec-tier-the-attentive-atlas>` (Router Weights).
 
 :::
 (sec-the-semantic-potential)=
-### 25.2 The Semantic Potential
+## The Semantic Potential
 
 We embed class labels into the dynamics via a **class-conditioned potential** that shapes the energy landscape.
 
@@ -65,7 +65,7 @@ V_y(z, K) := -\beta_{\text{class}} \log P(Y=y \mid K) + V_{\text{base}}(z, K),
 $$
 where:
 - $P(Y=y \mid K) = \text{softmax}(\Theta_{K,:})_y$ with learnable parameters $\Theta \in \mathbb{R}^{N_c \times C}$
-- $V_{\text{base}}(z, K)$ is the unconditioned critic (Section 2.7)
+- $V_{\text{base}}(z, K)$ is the unconditioned critic ({ref}`Section 2.7 <sec-the-hjb-correspondence>`)
 - $\beta_{\text{class}} > 0$ is the **class temperature** (inverse of semantic diffusion)
 - Units: $[V_y] = \mathrm{nat}$
 
@@ -95,10 +95,10 @@ where $\phi_t$ denotes the flow of the gradient dynamical system $\dot{z} = -G^{
 :::{prf:theorem} Classification as Relaxation
 :label: thm-classification-as-relaxation
 
-Under the overdamped dynamics (Section 22.5) with potential $V_y$:
+Under the overdamped dynamics ({ref}`Section 22.5 <sec-the-overdamped-limit>`) with potential $V_y$:
 
 $$
-dz = -G^{-1}(z) \nabla V_y(z, K)\, ds + \sqrt{2T_c}\, G^{-1/2}(z)\, dW_s,
+dz = -G^{-1}(z) \nabla V_y(z, K)\, ds + \sqrt{2T_c}\, G^{-1/2}(z)\, dW_s, \quad T_c \text{ cognitive temperature } ({prf:ref}`def-cognitive-temperature`)
 $$
 the limiting chart assignment satisfies:
 
@@ -115,7 +115,7 @@ provided:
 $$
 \frac{dL}{ds} = \nabla V_y \cdot \dot{z} = -\|\nabla V_y\|_G^2 + \text{noise terms}.
 $$
-For small $T_c$, the deterministic term dominates, ensuring $L$ decreases until $z$ reaches a local minimum. The class-$y$ region is the global minimum of $V_y$ by construction. Full proof in Appendix A.5. $\square$
+For small $T_c$, the deterministic term dominates, ensuring $L$ decreases until $z$ reaches a local minimum. The class-$y$ region is the global minimum of $V_y$ by construction. Full proof in {ref}`Appendix A.5 <sec-appendix-a-full-derivations>`. $\square$
 
 :::
 :::{prf:corollary} Inference via Relaxation
@@ -126,13 +126,15 @@ Classification inference proceeds as:
 2. Relax under neutral potential $V_{\text{base}}$ (no class conditioning) to equilibrium $z^*$
 3. Read out: $\hat{y} = \arg\max_y P(Y=y \mid K(z^*))$
 
-*Remark (Fast Path).* In practice, we often skip the relaxation and use direct readout: $\hat{y} = \arg\max_y \sum_k w_k(x) \cdot P(Y=y \mid K=k)$, where $w_k(x)$ are the router weights (Section 7.8). The relaxation interpretation justifies this as the $T_c \to 0$, $s \to \infty$ limit.
+*Remark (Fast Path).* In practice, we often skip the relaxation and use direct readout: $\hat{y} = \arg\max_y \sum_k w_k(x) \cdot P(Y=y \mid K=k)$, where $w_k(x)$ are the router weights ({ref}`Section 7.8 <sec-tier-the-attentive-atlas>`). The relaxation interpretation justifies this as the $T_c \to 0$, $s \to \infty$ limit.
 
-**Cross-references:** Section 22.5 (Overdamped Limit), Definition {prf:ref}`def-effective-potential`, Section 2.7 (Critic).
+**Cross-references:** {ref}`Section 22.5 <sec-the-overdamped-limit>` (Overdamped Limit), Definition {prf:ref}`def-effective-potential`, {ref}`Section 2.7 <sec-the-hjb-correspondence>` (Critic).
 
 :::
 
-::::{note} Connection to RL #21: Imitation Learning as Degenerate Supervised Topology
+::::{admonition} Connection to RL #21: Imitation Learning as Degenerate Supervised Topology
+:class: note
+:name: conn-rl-21
 **The General Law (Fragile Agent):**
 Class labels define **Semantic Partitions** with **Class-Conditioned Potentials**:
 
@@ -159,9 +161,9 @@ This recovers **Behavioral Cloning** and **Imitation Learning** {cite}`pomerleau
 ::::
 
 (sec-metric-segmentation-via-jump-rate-modulation)=
-### 25.3 Metric Segmentation via Jump Rate Modulation
+## Metric Segmentation via Jump Rate Modulation
 
-To enforce separation between classes, we modulate the **jump rates** in the WFR dynamics {cite}`chizat2018wfr` (Section 20), which govern transitions between chart coordinate systems defined in Section 7.13.
+To enforce separation between classes, we modulate the **jump rates** in the WFR dynamics ({prf:ref}`def-the-wfr-action`, {cite}`chizat2018wfr`, {ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`), which govern transitions between chart coordinate systems defined in Section 7.13.
 
 :::{prf:definition} Class-Consistent Jump Rate
 :label: def-class-consistent-jump-rate
@@ -172,12 +174,12 @@ $$
 \lambda_{i \to j}^{\text{sup}} := \lambda_{i \to j}^{(0)} \cdot \exp\left(-\gamma_{\text{sep}} \cdot D_{\text{class}}(i, j)\right),
 $$
 where:
-- $\lambda^{(0)}_{i \to j}$ is the **base transition rate** from the GKSL master equation {cite}`lindblad1976gksl,gorini1976gksl` (Section 20.5), derived from the overlap consistency of jump operators (Section 7.13)
+- $\lambda^{(0)}_{i \to j}$ is the **base transition rate** from the GKSL master equation ({prf:ref}`def-gksl-generator`, {cite}`lindblad1976gksl,gorini1976gksl`, {ref}`Section 20.5 <sec-connection-to-gksl-master-equation>`), derived from the overlap consistency of jump operators (Section 7.13)
 - $\gamma_{\text{sep}} \geq 0$ is the **separation strength** (hyperparameter)
 - $D_{\text{class}}(i, j) = \mathbb{I}[\text{Class}(i) \neq \text{Class}(j)]$ is the class disagreement indicator
 - $\text{Class}(k) := \arg\max_y P(Y=y \mid K=k)$ is the dominant class of chart $k$
 
-*Remark (Rate vs Operator).* Section 7.13 defines the **transition function** $L_{i \to j}$ (the coordinate change map). The **transition rate** $\lambda_{i \to j}$ is a separate quantity from the GKSL/master equation framework (Section 20.5, Equation 20.5.2) that governs *how often* jumps occur, not *where* they go. The rate is typically derived from the overlap structure: $\lambda_{i \to j}^{(0)} \propto \mathbb{E}_{x}[w_i(x) w_j(x)]$, measuring how much probability mass lies in the overlap $U_i \cap U_j$.
+*Remark (Rate vs Operator).* {ref}`Section 7.13 <sec-factorized-jump-operators-efficient-chart-transitions>` defines the **transition function** $L_{i \to j}$ (the coordinate change map). The **transition rate** $\lambda_{i \to j}$ is a separate quantity from the GKSL/master equation framework ({ref}`Section 20.5 <sec-connection-to-gksl-master-equation>`, Equation 20.5.2) that governs *how often* jumps occur, not *where* they go. The rate is typically derived from the overlap structure: $\lambda_{i \to j}^{(0)} \propto \mathbb{E}_{x}[w_i(x) w_j(x)]$, measuring how much probability mass lies in the overlap $U_i \cap U_j$.
 
 *Interpretation:* Transitions between charts of the same class proceed at the base rate $\lambda^{(0)}$. Transitions between charts of different classes are exponentially suppressed by factor $e^{-\gamma_{\text{sep}}}$.
 
@@ -194,7 +196,7 @@ $$
 
 1. **Transport-only paths:** If $\mathcal{A}_{y_1}$ and $\mathcal{A}_{y_2}$ are not geometrically adjacent (no shared chart boundary), pure transport paths have infinite cost.
 
-2. **Jump paths:** Any path using cross-class jumps incurs reaction cost. In the GKSL interpretation (Section 20.5), the suppressed jump rate $\lambda^{\text{sup}} = \lambda^{(0)} e^{-\gamma_{\text{sep}}}$ means mass transfer between unlike-class charts requires longer dwell times, increasing the action.
+2. **Jump paths:** Any path using cross-class jumps incurs reaction cost. In the GKSL interpretation ({ref}`Section 20.5 <sec-connection-to-gksl-master-equation>`), the suppressed jump rate $\lambda^{\text{sup}} = \lambda^{(0)} e^{-\gamma_{\text{sep}}}$ means mass transfer between unlike-class charts requires longer dwell times, increasing the action.
 
 3. **Divergence:** As $\gamma_{\text{sep}} \to \infty$, cross-class jumps become arbitrarily rare. The optimal path cost diverges because: (a) pure transport is blocked by chart boundaries, and (b) the reaction term penalizes staying in transition states waiting for rare jumps.
 
@@ -245,16 +247,16 @@ def class_modulated_jump_rate(
     return lambda_sup
 ```
 
-**Cross-references:** Section 20.2 (WFR Metric), Definition {prf:ref}`def-factorized-jump-operator`, Section 20.5 (GKSL Connection).
+**Cross-references:** {ref}`Section 20.2 <sec-the-wfr-metric>` (WFR Metric), Definition {prf:ref}`def-factorized-jump-operator`, {ref}`Section 20.5 <sec-connection-to-gksl-master-equation>` (GKSL Connection).
 
 :::
 (sec-the-supervised-topology-loss)=
-### 25.4 The Supervised Topology Loss
+## The Supervised Topology Loss
 
 We define training losses that enforce the geometric structure described above.
 
 (sec-chart-purity-loss)=
-#### 25.4.1 Chart Purity Loss (Conditional Entropy)
+### Chart Purity Loss (Conditional Entropy)
 
 :::{prf:definition} Purity Loss
 :label: def-purity-loss
@@ -283,7 +285,7 @@ Since $H(Y)$ is fixed by the data, $\min \mathcal{L}_{\text{purity}} \Leftrighta
 
 :::
 (sec-load-balance-loss)=
-#### 25.4.2 Load Balance Loss (Uniform Coverage)
+### Load Balance Loss (Uniform Coverage)
 
 {cite}`shazeer2017moe`
 
@@ -301,7 +303,7 @@ where $\bar{w} = \mathbb{E}_{x \sim \mathcal{D}}[w(x)]$ is the average router we
 
 :::
 (sec-metric-contrastive-loss)=
-#### 25.4.3 Metric Contrastive Loss (Geometric Separation)
+### Metric Contrastive Loss (Geometric Separation)
 
 {cite}`schroff2015facenet,khosla2020supcon`
 
@@ -317,13 +319,13 @@ where:
 - $\mathcal{P}$ is the set of sample pairs in the batch
 - $w_i, w_j$ are router weight vectors
 - $m > 0$ is the margin (minimum desired separation)
-- $d_{\text{jump}}(z_i, z_j)$ is the minimum jump cost (Section 7.13)
+- $d_{\text{jump}}(z_i, z_j)$ is the minimum jump cost ({ref}`Section 7.13 <sec-factorized-jump-operators-efficient-chart-transitions>`)
 
 *Interpretation:* If two samples have different labels but high router overlap ($w_i^\top w_j$ large), they must be separated by at least margin $m$ in jump distance. Otherwise, the loss penalizes the configuration.
 
 :::
 (sec-route-alignment-loss)=
-#### 25.4.4 Route Alignment Loss (Prediction Consistency)
+### Route Alignment Loss (Prediction Consistency)
 
 :::{prf:definition} Route Alignment Loss
 :label: def-route-alignment-loss
@@ -339,7 +341,7 @@ where $\text{CE}$ denotes cross-entropy.
 
 :::
 (sec-combined-supervised-topology-loss)=
-#### 25.4.5 Combined Supervised Topology Loss
+### Combined Supervised Topology Loss
 
 :::{prf:definition} Total Loss
 :label: def-total-loss
@@ -366,7 +368,7 @@ class SupervisedTopologyLoss(nn.Module):
 
     Cross-ref:
         - Definition 25.4.6 (Total Loss)
-        - Section 7.8 (Router Weights)
+        - {ref}`Section 7.8 <sec-tier-the-attentive-atlas>` (Router Weights)
     """
 
     def __init__(
@@ -467,13 +469,13 @@ class SupervisedTopologyLoss(nn.Module):
         }
 ```
 
-**Cross-references:** Section 7.8 (Router Weights), Section 7.13 (Jump Operators), Section 3 (Diagnostic Nodes).
+**Cross-references:** {ref}`Section 7.8 <sec-tier-the-attentive-atlas>` (Router Weights), Section 7.13 (Jump Operators), {ref}`Section 3 <sec-diagnostics-stability-checks>` (Diagnostic Nodes).
 
 :::
 (sec-thermodynamics-conditioned-generation)=
-### 25.5 Thermodynamics: Conditioned Generation
+## Thermodynamics: Conditioned Generation
 
-This framework unifies classification with the generative law (Section 21).
+This framework unifies classification with the generative law ({ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>`).
 
 :::{prf:remark} Connection to Möbius Re-centering
 :label: rem-connection-to-m-bius-re-centering
@@ -520,16 +522,16 @@ c_y := \arg\min_{c \in \mathbb{D}} \sum_{x: Y(x)=y} d_{\mathbb{D}}(c, \text{Enc}
 $$
 This is well-defined since the Poincare disk has negative curvature (unique Fréchet means).
 
-**Cross-references:** Section 21.2 (Langevin Dynamics), Section 21.3 (Möbius Re-centering), Definition {prf:ref}`prop-so-d-symmetry-at-origin`.
+**Cross-references:** {ref}`Section 21.2 <sec-policy-control-field>` (Langevin Dynamics), {ref}`Section 21.3 <sec-the-retrieval-texture-firewall>` (Möbius Re-centering), Definition {prf:ref}`prop-so-d-symmetry-at-origin`.
 
 :::
 :::{prf:remark} Integration with TopologicalDecoder
 :label: rem-integration-with-topologicaldecoder
 
-The TopologicalDecoder (Section 7.10) receives the geometric content $z_{\text{geo}} = e_K + z_n$ and routes through chart-specific projectors. For class-conditioned generation:
+The TopologicalDecoder ({ref}`Section 7.10 <sec-decoder-architecture-overview-topological-decoder>`) receives the geometric content $z_{\text{geo}} = e_K + z_n$ and routes through chart-specific projectors. For class-conditioned generation:
 
 1. **Class determines charts:** The class label $y$ biases chart selection toward $\mathcal{A}_y$ via the semantic potential $V_y$
-2. **Decoder routing:** The TopologicalDecoder's inverse router (Section 7.10.1) can either:
+2. **Decoder routing:** The TopologicalDecoder's inverse router ({ref}`Section 7.10.1 <sec-topological-decoder-module>`) can either:
    - Accept an explicit chart index $K$ (from the generative flow)
    - Infer routing from $z_{\text{geo}}$ (autonomous mode)
 3. **Consistency constraint:** The decoder's inferred routing should agree with the encoder's class-conditioned routing:
@@ -543,9 +545,9 @@ This ensures that class-conditioned generation produces samples that the encoder
 
 :::
 (sec-hierarchical-classification-via-scale-decomposition)=
-### 25.6 Hierarchical Classification via Scale Decomposition
+## Hierarchical Classification via Scale Decomposition
 
-Real-world categories are hierarchical (e.g., Animal → Dog → Terrier). The **stacked TopoEncoder** (Section 7.12) naturally reflects this.
+Real-world categories are hierarchical (e.g., Animal → Dog → Terrier). The **stacked TopoEncoder** ({ref}`Section 7.12 <sec-stacked-topoencoders-deep-renormalization-group-flow>`) naturally reflects this.
 
 :::{prf:definition} Hierarchical Labels
 :label: def-hierarchical-labels
@@ -563,7 +565,7 @@ where $\twoheadrightarrow$ denotes a surjection (coarsening). $\mathcal{Y}_0$ ar
 :::{prf:proposition} Scale-Label Alignment
 :label: prop-scale-label-alignment
 
-In the stacked TopoEncoder (Section 7.12), enforce purity at each scale:
+In the stacked TopoEncoder ({ref}`Section 7.12 <sec-stacked-topoencoders-deep-renormalization-group-flow>`), enforce purity at each scale:
 
 - **Layer 0 (Bulk/Slow):** Charts at level 0 correspond to coarse classes. Enforce:
 
@@ -605,11 +607,11 @@ $$
 $$
 where $\alpha_\ell$ weights the contribution of each scale (typically $\alpha_\ell = 1$ or decaying with $\ell$).
 
-**Cross-references:** Section 7.12 (Stacked TopoEncoder), Definition {prf:ref}`def-the-peeling-step`, Section 7.12.3 (RG Interpretation).
+**Cross-references:** {ref}`Section 7.12 <sec-stacked-topoencoders-deep-renormalization-group-flow>` (Stacked TopoEncoder), Definition {prf:ref}`def-the-peeling-step`, {ref}`Section 7.12.3 <sec-rigorous-interpretation-renormalization-group-flow>` (RG Interpretation).
 
 :::
 (sec-summary-and-diagnostic-nodes)=
-### 25.7 Summary and Diagnostic Nodes
+## Summary and Diagnostic Nodes
 
 **Table 25.7.1 (Summary of Supervised Topology Laws).**
 
@@ -624,7 +626,7 @@ where $\alpha_\ell$ weights the contribution of each scale (typically $\alpha_\e
 (node-40)=
 **Node 40: PurityCheck (CapacitySaturationCheck)**
 
-Following the diagnostic node convention (Section 3.1), we define:
+Following the diagnostic node convention ({ref}`Section 3.1 <sec-theory-thin-interfaces>`), we define:
 
 | **#**  | **Name**        | **Component** | **Type**                | **Interpretation**     | **Proxy**     | **Cost** |
 |--------|-----------------|---------------|-------------------------|------------------------|---------------|----------|
@@ -645,7 +647,7 @@ Following the diagnostic node convention (Section 3.1), we define:
 - Low ClassSeparationCheck: Different classes are metrically close; cross-class transitions are too frequent.
 - Remedy: Increase separation strength $\gamma_{\text{sep}}$; add metric contrastive loss; check for class imbalance.
 
-**Cross-references:** Section 3 (Sieve Diagnostic Nodes), Section 24.7 (Scalar Field Diagnostics).
+**Cross-references:** {ref}`Section 3 <sec-diagnostics-stability-checks>` (Sieve Diagnostic Nodes), Section 24.7 (Scalar Field Diagnostics).
 
 
 

@@ -1,13 +1,13 @@
-## 27: Non-Local Memory as Self-Interaction Functional
+# 27: Non-Local Memory as Self-Interaction Functional
 
+(rb-experience-replay)=
 :::{admonition} Researcher Bridge: Experience Replay as a Potential Field
 :class: info
-:name: rb-experience-replay
 Standard Experience Replay buffers are just "bags of transitions" sampled at random. We reframe Memory as a **Self-Interaction Functional**. Past successes and failures act like physical magnets (attractive or repulsive charges) that generate a non-local force $\Psi_{\text{mem}}$. The agent does not just "sample" the past; it is literally **pulled** toward high-reward trajectories by the gradient of its own history.
 :::
 
 (sec-the-historical-manifold-and-memory-screen)=
-### 27.1 The Historical Manifold and Memory Screen
+## The Historical Manifold and Memory Screen
 
 **Motivation.** Sections 20–24 developed local dynamics: the geodesic SDE (Definition {prf:ref}`def-bulk-drift-continuous-flow`) evolves $z_t$ based on $\Phi_{\text{eff}}(z_t)$ and its gradient at the current position. This is a Markovian formulation—future evolution depends only on present state. However, intelligent agents demonstrably use *memory*: past experience influences current decisions through mechanisms beyond local gradients {cite}`lin1992experiencereplay,mnih2015dqn`. This section extends the geometric framework to include *non-local* contributions arising from the agent's trajectory history.
 
@@ -43,14 +43,14 @@ where:
 :::{prf:remark} Connection to Holographic Persistence
 :label: rem-connection-to-holographic-persistence
 
-The memory screen $\Xi_T$ provides the mathematical realization of holographic persistence (FAQ D.5.3). The measure $\Xi_T$ on $\mathcal{Z}$ acts as a "hologram" of the agent's history projected onto the latent space, from which non-local forces can be computed.
+The memory screen $\Xi_T$ provides the mathematical realization of holographic persistence ({ref}`FAQ D.5.3 <sec-appendix-d-control-theory-system-safety>`). The measure $\Xi_T$ on $\mathcal{Z}$ acts as a "hologram" of the agent's history projected onto the latent space, from which non-local forces can be computed.
 
 :::
 
 
 
 (sec-the-non-local-interaction-functional)=
-### 27.2 The Non-Local Interaction Functional
+## The Non-Local Interaction Functional
 
 **Motivation.** Given the memory screen $\Xi_T$, we construct a *potential* $\Psi_{\text{mem}}(z)$ that exerts influence at the current position $z$ based on the entire historical distribution. The key mathematical object is an integral kernel that smooths and propagates the memory measure.
 
@@ -94,9 +94,9 @@ The sign convention ensures that the drift $-G^{-1}\nabla \Psi_{\text{mem}}$ mov
 
 :::
 
+(pi-heat-kernel)=
 ::::{admonition} Physics Isomorphism: Heat Kernel
 :class: note
-:name: pi-heat-kernel
 
 **In Physics:** The heat kernel $H_t(x, y)$ is the fundamental solution of the heat equation $\partial_t u = \Delta u$, satisfying $H_t(x, \cdot) \to \delta_x$ as $t \to 0$. On a Riemannian manifold, it encodes diffusion and satisfies $H_t(x, y) \sim (4\pi t)^{-d/2}\exp(-d^2(x,y)/4t)$ for small $t$ {cite}`berline1992heat,grigoryan2009heat`.
 
@@ -116,7 +116,7 @@ where $H_\tau$ is the heat kernel on $(\mathcal{Z}, G)$.
 | Temperature evolution | Belief spread over time |
 | Short-time asymptotics | Geodesic distance dominance |
 
-**Connection:** The Matérn kernel $K_\nu \propto (-\Delta_G + \kappa^2)^{-\nu}$ generalizes the heat kernel; for $\nu = 1$, it recovers the screened Poisson Green's function (Section 24.2).
+**Connection:** The Matérn kernel $K_\nu \propto (-\Delta_G + \kappa^2)^{-\nu}$ generalizes the heat kernel; for $\nu = 1$, it recovers the screened Poisson Green's function ({ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>`).
 ::::
 
 :::{prf:proposition} Kernel Alternatives {cite}`rasmussen2006gp`
@@ -136,7 +136,7 @@ Alternative kernels may be used depending on application requirements:
    $$
    K_{\nu}(z, z') \propto (-\Delta_G + \kappa^2)^{-\nu}\delta(z - z'),
    $$
-   where $\nu > 0$ is the smoothness parameter and $\kappa > 0$ is the inverse correlation length. For $\nu = 1$, this recovers the Green's function $G_\kappa$ from Section 24.2. The Matérn kernel has polynomial (rather than exponential) tails, providing longer-range correlations. See {cite}`rasmussen2006gp` Chapter 4 for the Euclidean case.
+   where $\nu > 0$ is the smoothness parameter and $\kappa > 0$ is the inverse correlation length. For $\nu = 1$, this recovers the Green's function $G_\kappa$ from {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>`. The Matérn kernel has polynomial (rather than exponential) tails, providing longer-range correlations. See {cite}`rasmussen2006gp` Chapter 4 for the Euclidean case.
 
 *Cross-reference:* The Matérn kernel with $\nu = 1$ coincides with the screened Poisson Green's function (Definition {prf:ref}`prop-green-s-function-decay`), establishing a direct connection between memory effects and value propagation.
 
@@ -157,7 +157,7 @@ The force field $-\nabla_G \Psi_{\text{mem}}$ violates the Markov property.
 
 
 (sec-memory-augmented-equations-of-motion)=
-### 27.3 Memory-Augmented Equations of Motion
+## Memory-Augmented Equations of Motion
 
 **Motivation.** We now extend the geodesic SDE (Definition {prf:ref}`def-bulk-drift-continuous-flow`) to include the memory-induced force $-\nabla_G \Psi_{\text{mem}}$.
 
@@ -174,7 +174,7 @@ where:
 - $\Psi_{\text{mem}}$ is the memory potential (Definition {prf:ref}`def-memory-potential`),
 - $\Gamma^k_{ij}$ are the Christoffel symbols of $G$ (Definition 2.5.1),
 - $u_\pi^k$ is the policy control field (Definition {prf:ref}`def-the-control-field`),
-- $T_c$ is the cognitive temperature (Section 22.4),
+- $T_c$ is the cognitive temperature ({prf:ref}`def-cognitive-temperature`, {ref}`Section 22.4 <sec-the-geodesic-baoab-integrator>`),
 - $W^j_s$ is a standard Wiener process.
 
 *Cross-reference:* Definition {prf:ref}`def-bulk-drift-continuous-flow`.
@@ -211,13 +211,15 @@ $$
 $$
 For $d_G(z_t, z^*) \sim O(\sqrt{\tau})$, the gradient $\|\nabla_G H_\tau\|_G \sim O(\tau^{-(d+1)/2})$ can be made arbitrarily large by choosing small $\tau$. If $|\alpha(t^*)|$ is sufficiently large, this dominates $\|\nabla_G \Phi_{\text{eff}}\|_G$. $\square$
 
-*Cross-reference:* BarrierGap diagnostic (Section 4).
+*Cross-reference:* BarrierGap diagnostic ({ref}`Section 4 <sec-4-limits-barriers-the-limits-of-control>`).
 
 *Interpretation:* Strong memories can "pull" the agent across local energy barriers, providing a mechanism for experience-guided exploration that transcends gradient-based planning.
 
 :::
 
-::::{note} Connection to RL #20: Experience Replay as Degenerate Non-Local Memory
+::::{admonition} Connection to RL #20: Experience Replay as Degenerate Non-Local Memory
+:class: note
+:name: conn-rl-20
 **The General Law (Fragile Agent):**
 Trajectory history induces a **Memory Potential** via heat-kernel convolution:
 
@@ -246,9 +248,9 @@ This recovers **Experience Replay** {cite}`lin1992experience,mnih2015humanlevel`
 
 
 (sec-wfr-dynamics-with-memory-sources)=
-### 27.4 WFR Dynamics with Memory Sources
+## WFR Dynamics with Memory Sources
 
-**Motivation.** Lifting to measure space via the Wasserstein-Fisher-Rao framework (Section 20) {cite}`chizat2018wfr`, we obtain a reaction-diffusion PDE incorporating memory.
+**Motivation.** Lifting to measure space via the Wasserstein-Fisher-Rao framework ({prf:ref}`def-the-wfr-action`, {ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`) {cite}`chizat2018wfr`, we obtain a reaction-diffusion PDE incorporating memory.
 
 :::{prf:definition} Memory-Augmented Reaction-Diffusion
 :label: def-memory-augmented-reaction-diffusion
@@ -285,7 +287,7 @@ where $\bar{\Psi}_{\text{mem}} = \int_{\mathcal{Z}} \Psi_{\text{mem}} \rho \, d\
 
 
 (sec-stability-analysis-and-diagnostic)=
-### 27.5 Stability Analysis and Diagnostic
+## Stability Analysis and Diagnostic
 
 **Motivation.** Non-local memory introduces a potential source of instability: if memory forces dominate local dynamics, the agent may overfit to history and fail to adapt to environmental changes. Conversely, if memory is too weak, the agent exhibits catastrophic forgetting.
 
@@ -312,7 +314,7 @@ with empirically recommended bounds $\Omega_{\min} \approx 0.01$, $\Omega_{\max}
 - $\Omega_{\text{mem}} \to 0$: Pure Markovian dynamics; agent exhibits catastrophic forgetting.
 - $\Omega_{\text{mem}} \to \infty$: Pure memory-driven dynamics; agent overfits to historical experience and fails to respond to current environmental gradients.
 
-*Cross-reference:* The Governor (Section 26) can regulate $\Omega_{\text{mem}}$ by adjusting the memory smoothing scale $\tau$ or the reward flux weighting in $\alpha(t')$.
+*Cross-reference:* The Governor ({ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>`) can regulate $\Omega_{\text{mem}}$ by adjusting the memory smoothing scale $\tau$ or the reward flux weighting in $\alpha(t')$.
 
 (node-43)=
 **Node 43: MemoryBalanceCheck**
@@ -326,14 +328,14 @@ with empirically recommended bounds $\Omega_{\min} \approx 0.01$, $\Omega_{\max}
 - $\Omega_{\text{mem}} > \Omega_{\max}$: Memory dominates; increase $\tau$ to smooth memory influence or decay old experiences.
 - Persistent imbalance: Re-examine memory kernel choice or trajectory sampling strategy.
 
-**Cross-references:** Section 3 (Sieve Diagnostic Nodes), Section 26 (Governor regulation), Node 42 (GovernorStabilityCheck).
+**Cross-references:** {ref}`Section 3 <sec-diagnostics-stability-checks>` (Sieve Diagnostic Nodes), {ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>` (Governor regulation), Node 42 (GovernorStabilityCheck).
 
 :::
 
 
 
 (sec-summary-memory-as-non-local-interface)=
-### 27.6 Summary: Memory as Non-Local Interface
+## Summary: Memory as Non-Local Interface
 
 **Table 27.6.1 (Pillar Locality Comparison).**
 
@@ -361,22 +363,22 @@ with empirically recommended bounds $\Omega_{\min} \approx 0.01$, $\Omega_{\max}
 
 
 (sec-section-hyperbolic-active-retrieval-geodesic-search-and-semantic-pull-back)=
-## 28 · Hyperbolic Active Retrieval: Geodesic Search and Semantic Pull-Back
+## · Hyperbolic Active Retrieval: Geodesic Search and Semantic Pull-Back
 
+(rb-retrieval-augmented)=
 :::{admonition} Researcher Bridge: Retrieval-Augmented Control
 :class: info
-:name: rb-retrieval-augmented
 If you know episodic control or retrieval-augmented generation, this is the geometric version: retrieval is a geodesic search in a shared embedding space. The firewall ensures retrieved texture does not leak into policy decisions.
 :::
 
 *Cross-references:* {ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>` (Poincare metric), {ref}`Section 22 <sec-the-equations-of-motion-geodesic-jump-diffusion>` (Equations of Motion), {ref}`Section 27 <sec-section-non-local-memory-as-self-interaction-functional>` (Memory Potential), {ref}`Section 7.8 <sec-tier-the-attentive-atlas>` (Atlas architecture), {ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>` (macro closure).
 
-**Motivation.** While Section 27 treated memory as self-interaction—retrieval from the agent's own trajectory—this section addresses *external* retrieval from knowledge bases, embedding indices, and document stores. The central observation is that the Poincare disk geometry introduced in Section 21 applies equally to both internal latent representations and external knowledge embeddings. This isomorphism enables principled Retrieval-Augmented Generation (RAG) as geodesic search on a shared hyperbolic manifold.
+**Motivation.** While {ref}`Section 27 <sec-section-non-local-memory-as-self-interaction-functional>` treated memory as self-interaction—retrieval from the agent's own trajectory—this section addresses *external* retrieval from knowledge bases, embedding indices, and document stores. The central observation is that the Poincare disk geometry introduced in {ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>` applies equally to both internal latent representations and external knowledge embeddings. This isomorphism enables principled Retrieval-Augmented Generation (RAG) as geodesic search on a shared hyperbolic manifold.
 
 The key challenge is the **texture firewall problem**: external documents contain high-frequency texture ($z_{\text{tex}}$) that must be delivered to the decoder but excluded from the control loop to prevent Mode T.C (Labyrinthine Overfitting). We solve this by extending the existing TextureFirewallCheck (Node 29) to external retrieval, ensuring that only bulk coordinates $(K, z_n)$ influence policy gradients.
 
 (sec-the-isomorphism-of-semantic-manifolds)=
-### 28.1 The Isomorphism of Semantic Manifolds
+## The Isomorphism of Semantic Manifolds
 
 :::{prf:definition} External Knowledge Manifold
 :label: def-external-knowledge-manifold
@@ -390,7 +392,7 @@ where $\mathcal{K}$ is the macro-concept space, $\mathcal{Z}_n$ the nuisance coo
 
 *Units:* $[G_{\text{ext},ij}] = [z]^{-2}$ (matching the internal metric).
 
-*Cross-reference:* This decomposition mirrors Section 2.8's latent structure $(K, z_n, z_{\text{tex}})$ and Section 7.8's Atlas architecture.
+*Cross-reference:* This decomposition mirrors {ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`'s latent structure $(K, z_n, z_{\text{tex}})$ and {ref}`Section 7.8 <sec-tier-the-attentive-atlas>`'s Atlas architecture.
 
 :::
 :::{prf:axiom} Metric Isometry
@@ -417,11 +419,11 @@ A *knowledge atom* is a triple $\xi = (K, z_n, z_{\text{tex}}) \in \mathcal{Z}_{
 - $z_n \in \mathcal{Z}_n$: nuisance coordinates (style, formatting, source metadata)
 - $z_{\text{tex}} \in \mathcal{Z}_{\text{tex}}$: high-frequency texture (specific wording, surface form)
 
-*Cross-reference:* Compare Section 2.8's decomposition. The macro closure mechanism (Definition 2.8.1) applies equally to external atoms.
+*Cross-reference:* Compare {ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`'s decomposition. The macro closure mechanism (Definition 2.8.1) applies equally to external atoms.
 
 :::
 (sec-geodesic-search-in-hyperbolic-space)=
-### 28.2 Geodesic Search in Hyperbolic Space
+## Geodesic Search in Hyperbolic Space
 
 :::{prf:definition} Hyperbolic Geodesic Distance
 :label: def-hyperbolic-geodesic-distance
@@ -461,11 +463,11 @@ $$
 $$
 *Proof sketch:* The hyperbolic metric has constant negative curvature $\kappa = -1$. Standard volume comparison (Bishop-Gromov) yields exponential growth. $\square$
 
-*Interpretation:* As the agent descends toward the boundary (increasing semantic specificity), the number of accessible knowledge atoms grows exponentially. This captures the combinatorial explosion of specific facts relative to abstract concepts—compare TopoEncoder hierarchy (Section 25).
+*Interpretation:* As the agent descends toward the boundary (increasing semantic specificity), the number of accessible knowledge atoms grows exponentially. This captures the combinatorial explosion of specific facts relative to abstract concepts—compare TopoEncoder hierarchy ({ref}`Section 25 <sec-supervised-topology-semantic-potentials-and-metric-segmentation>`).
 
 :::
 (sec-the-retrieval-texture-firewall)=
-### 28.3 The Retrieval Texture Firewall
+## The Retrieval Texture Firewall
 
 :::{prf:definition} Bulk Projection Operator
 :label: def-bulk-projection-operator
@@ -477,7 +479,7 @@ $$
 $$
 *Interpretation:* This projection discards texture, retaining only control-relevant coordinates.
 
-*Cross-reference:* This extends the internal texture exclusion of Section 2.8 to external retrieval.
+*Cross-reference:* This extends the internal texture exclusion of {ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>` to external retrieval.
 
 :::
 :::{prf:definition} Bulk-Filtered Retrieval Potential
@@ -512,11 +514,11 @@ is smooth (Lipschitz in $z$) and independent of external texture coordinates $z_
 
 *Proof sketch:* The bulk projection $\Pi_{\text{bulk}}$ is a smooth submersion. Composition with the smooth geodesic exponential preserves smoothness. The firewall constraint ensures $\nabla_{z_{\text{tex,ext}}} \Psi_{\text{ret}} = 0$ by construction. $\square$
 
-*Cross-reference:* This theorem extends TextureFirewallCheck (Node 29) to external retrieval. See Section 8.2.5 for Mode T.C classification.
+*Cross-reference:* This theorem extends TextureFirewallCheck (Node 29) to external retrieval. See {ref}`Section 5 <sec-failure-modes>` for Mode T.C classification.
 
 **Heuristic 28.3.4 (Side-Channel Texture Delivery).**
 External texture $z_{\text{tex,ext}}$ is delivered to the decoder via a side channel:
-1. At stopping radius $R_{\text{cutoff}}$ (Section 21.3), retrieve the full atom $\xi = (K, z_n, z_{\text{tex}})$
+1. At stopping radius $R_{\text{cutoff}}$ ({ref}`Section 21.3 <sec-the-retrieval-texture-firewall>`), retrieve the full atom $\xi = (K, z_n, z_{\text{tex}})$
 2. Inject $z_{\text{tex}}$ directly to decoder attention, bypassing the EoM
 3. The control loop only sees $(K, z_n)$
 
@@ -524,7 +526,7 @@ External texture $z_{\text{tex,ext}}$ is delivered to the decoder via a side cha
 
 :::
 (sec-retrieval-augmented-equations-of-motion)=
-### 28.4 Retrieval-Augmented Equations of Motion
+## Retrieval-Augmented Equations of Motion
 
 :::{prf:definition} Retrieval-Augmented Geodesic SDE
 :label: def-retrieval-augmented-geodesic-sde
@@ -540,7 +542,7 @@ where:
 - $\Psi_{\text{ret}}$: retrieval potential (Definition {prf:ref}`def-bulk-filtered-retrieval-potential`)
 - $\Gamma^k_{ij}$: Christoffel symbols (Definition 2.5.1, Definition 22.2.1a)
 - $u_\pi^k$: policy control field (Definition {prf:ref}`def-the-control-field`)
-- $T_c$: cognitive temperature (Section 22.4)
+- $T_c$: cognitive temperature ({ref}`Section 22.4 <sec-the-geodesic-baoab-integrator>`)
 
 *Cross-reference:* This extends the memory-augmented SDE (Definition {prf:ref}`def-memory-augmented-geodesic-sde`) with the retrieval term $\Psi_{\text{ret}}$.
 
@@ -557,11 +559,11 @@ where:
 - Memory force $\mathbf{f}_{\text{mem}}$ integrates over the agent's past trajectory
 - Retrieval force $\mathbf{f}_{\text{ret}}$ integrates over the external archive
 
-*Interpretation:* The agent simultaneously experiences attraction to its own memory (Section 27) and to relevant external knowledge (this section).
+*Interpretation:* The agent simultaneously experiences attraction to its own memory ({ref}`Section 27 <sec-section-non-local-memory-as-self-interaction-functional>`) and to relevant external knowledge (this section).
 
 :::
 (sec-wfr-dynamics-retrieval-induced-mass-injection)=
-### 28.5 WFR Dynamics: Retrieval-Induced Mass Injection
+## WFR Dynamics: Retrieval-Induced Mass Injection
 
 :::{prf:definition} Retrieval Source Term
 :label: def-retrieval-source-term
@@ -582,7 +584,7 @@ $$
 $$
 with $[\sigma_{\text{ret}}] = \text{nat}/[z]^d/\text{step}$.
 
-*Cross-reference:* Compare Section 27.4's memory mass creation. Both mechanisms inject mass at non-local locations.
+*Cross-reference:* Compare {ref}`Section 27.4 <sec-wfr-dynamics-with-memory-sources>`'s memory mass creation. Both mechanisms inject mass at non-local locations.
 
 :::
 :::{prf:proposition} Non-Causal Transition via Retrieval
@@ -597,7 +599,7 @@ $$
 
 :::
 (sec-diagnostic-nodes-for-retrieval-integrity)=
-### 28.6 Diagnostic Nodes for Retrieval Integrity
+## Diagnostic Nodes for Retrieval Integrity
 
 We introduce two diagnostic nodes for monitoring retrieval health.
 
@@ -626,11 +628,11 @@ We introduce two diagnostic nodes for monitoring retrieval health.
 *Cross-reference:* Node 45 extends the internal TextureFirewallCheck (Node 29) to external retrieval.
 
 (sec-summary)=
-### 28.7 Summary
+## Summary
 
 **Table 28.7.1 (Memory vs Retrieval Comparison).**
 
-| Aspect         | Memory (Section 27)                                        | Retrieval (Section 28)                                                      |
+| Aspect         | Memory ({ref}`Section 27 <sec-section-non-local-memory-as-self-interaction-functional>`)                                        | Retrieval ({ref}`Section 28 <sec-section-hyperbolic-active-retrieval-geodesic-search-and-semantic-pull-back>`)                                                      |
 |----------------|------------------------------------------------------------|-----------------------------------------------------------------------------|
 | **Source**     | Internal trajectory $\gamma_{0:T}$                         | External archive $\mathcal{Z}_{\text{ext}}$                                 |
 | **Kernel**     | Heat kernel $H_\tau(z, z')$                                | Geodesic exponential $\exp(-\lambda d_{\mathbb{D}})$                        |
@@ -644,7 +646,7 @@ We introduce two diagnostic nodes for monitoring retrieval health.
 
 
 (sec-bilevel-nonlocal-regulation)=
-### 28.8 Bilevel Regulation of Non-Local Potentials (Joint Optimization Resolution)
+## Bilevel Regulation of Non-Local Potentials (Joint Optimization Resolution)
 
 The joint optimization of memory strength $\Lambda_{\text{mem}}$ and retrieval strength $\Lambda_{\text{ret}}$ is solved by the Universal Governor ({ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>`) acting on the diagnostic residuals of Nodes 43 and 53.
 
@@ -684,7 +686,7 @@ This closes the joint optimization problem by reducing it to a specific instanti
 
 
 (sec-safe-retrieval-bandwidth)=
-### 28.9 The Safe Retrieval Bandwidth Corollary (Instability Resolution)
+## The Safe Retrieval Bandwidth Corollary (Instability Resolution)
 
 Retrieval-induced instability is identified as the violation of the **Causal Information Bound** ({ref}`Section 33 <sec-causal-information-bound>`). Retrieval functions as a mass-injection source term; stability is preserved only if the total bulk information respects the interface area law.
 
@@ -701,7 +703,7 @@ where $C_{\partial} = \nu_D \cdot \text{Area}(\partial\mathcal{Z})/\ell_L^{D-1}$
 *Proof.*
 1. **Mass Augmentation:** Retrieval modifies the bulk information density: $\tilde{\rho}_I = \rho_I + \sigma_{\text{ret}}$.
 
-2. **Metric Response:** By the Capacity-Constrained Metric Law ({prf:ref}`thm-capacity-constrained-metric-law`), the radial metric component scales as $G_{rr} \propto (1 - \tilde{I}_{\text{bulk}}/C_{\partial})^{-1}$.
+2. **Metric Response:** By the Capacity-Constrained Metric Law (Theorem {prf:ref}`thm-capacity-constrained-metric-law`), the radial metric component scales as $G_{rr} \propto (1 - \tilde{I}_{\text{bulk}}/C_{\partial})^{-1}$.
 
 3. **Singularity:** If $\int \sigma_{\text{ret}} > C_{\partial} - I_{\text{bulk}}$, then $G_{rr} \to \infty$ at a radius $r < 1$ (the horizon moves inward).
 
@@ -713,7 +715,7 @@ where $C_{\partial} = \nu_D \cdot \text{Area}(\partial\mathcal{Z})/\ell_L^{D-1}$
 
 
 (sec-causal-isometry-theorem)=
-### 28.10 The Causal Isometry Theorem (Cross-Modal Retrieval Resolution)
+## The Causal Isometry Theorem (Cross-Modal Retrieval Resolution)
 
 We prove that if two modalities allow for the solution of the same causal control task, their capacity-constrained geometries must be isometric in the bulk.
 

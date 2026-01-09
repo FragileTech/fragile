@@ -1,17 +1,17 @@
-## 22. The Equations of Motion: Geodesic Jump-Diffusion
+# The Equations of Motion: Geodesic Jump-Diffusion
 
 {cite}`oksendal2003sde,risken1996fokkerplanck`
 
+(rb-continuous-actor-critic)=
 :::{admonition} Researcher Bridge: Continuous-Time Actor-Critic
 :class: info
-:name: rb-continuous-actor-critic
 The equations of motion are the continuous-time limit of policy updates with stochastic exploration noise. Think of it as a Langevinized actor-critic where the metric defines the preconditioner.
 :::
 
-We derive the rigorous equation of motion (EoM) for the agent. This equation unifies the WFR geometry (Section 20), the Metric Law (Section 18), and the Policy-driven Expansion (Section 21).
+We derive the rigorous equation of motion (EoM) for the agent. This equation unifies the WFR geometry ({ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`, {prf:ref}`def-the-wfr-action`), the Metric Law ({ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>`, Theorem {prf:ref}`thm-capacity-constrained-metric-law`), and the Policy-driven Expansion ({ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>`).
 
 (sec-the-stochastic-action-principle)=
-### 22.1 The Stochastic Action Principle (Mass = Metric)
+## The Stochastic Action Principle (Mass = Metric)
 
 The classical Lagrangian approach extends to stochastic systems via the **Onsager-Machlup functional**, which assigns a probability to paths based on their "action."
 
@@ -40,7 +40,7 @@ The metric-weighted step size decreases in high-curvature (high-risk) regions wi
 :::{prf:definition} Extended Onsager-Machlup Action
 :label: def-extended-onsager-machlup-action
 
-Let $(\mathcal{Z}, G)$ be the latent Riemannian manifold with the capacity-constrained metric (Section 18). For a path $z: [0, T] \to \mathcal{Z}$, the extended Onsager-Machlup action is:
+Let $(\mathcal{Z}, G)$ be the latent Riemannian manifold with the capacity-constrained metric ({ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>`). For a path $z: [0, T] \to \mathcal{Z}$, the extended Onsager-Machlup action is:
 
 $$
 S_{\mathrm{OM}}[z] = \int_0^T \left( \frac{1}{2}\mathbf{M}(z)\|\dot{z}\|^2 + \Phi_{\text{eff}}(z) + \frac{T_c}{12}\,R(z) + T_c \cdot H_{\pi}(z) \right) ds,
@@ -50,7 +50,7 @@ where:
 - $\Phi_{\text{eff}}(z)$ is the effective potential (Definition {prf:ref}`def-effective-potential`)
 - $R(z)$ is the scalar curvature of the metric $G$
 - $H_{\pi}(z) = -\mathbb{E}_{a \sim \pi}[\log \pi(a|z)]$ is the policy entropy
-- $T_c > 0$ is the cognitive temperature (cf. Section 21.2)
+- $T_c > 0$ is the {prf:ref}`def-cognitive-temperature` (cf. {ref}`Section 21.2 <sec-policy-control-field>`)
 
 Units: $[S_{\mathrm{OM}}] = \mathrm{nat}$.
 
@@ -58,9 +58,9 @@ Units: $[S_{\mathrm{OM}}] = \mathrm{nat}$.
 
 :::
 
+(pi-onsager-machlup)=
 ::::{admonition} Physics Isomorphism: Onsager-Machlup Action
 :class: note
-:name: pi-onsager-machlup
 
 **In Physics:** The Onsager-Machlup functional assigns probability to paths in stochastic thermodynamics: $P[\gamma] \propto \exp(-S_{OM}[\gamma]/k_B T)$ where $S_{OM}$ includes kinetic and potential terms plus a curvature correction {cite}`onsager1953fluctuations`.
 
@@ -103,15 +103,15 @@ dz^k = b^k(z)\,ds + \sqrt{2T_c}\,\sigma^{kj}(z)\,dW^j_s,
 $$
 where $\sigma \sigma^T = G^{-1}$, the most probable path connecting $z(0) = z_0$ and $z(T) = z_1$ minimizes the Onsager-Machlup action $S_{\mathrm{OM}}[z]$ subject to the boundary conditions.
 
-*Proof sketch.* This follows from the Girsanov theorem and the Cameron-Martin formula adapted to Riemannian manifolds. See {cite}`ikeda1989stochastic` Chapter V or Appendix A.4 for details. $\square$
+*Proof sketch.* This follows from the Girsanov theorem and the Cameron-Martin formula adapted to Riemannian manifolds. See {cite}`ikeda1989stochastic` Chapter V or {ref}`Appendix A.4 <sec-appendix-a-full-derivations>` for details. $\square$
 
 :::
 (sec-the-coupled-jump-diffusion-sde)=
-### 22.2 The Coupled Jump-Diffusion SDE
+## The Coupled Jump-Diffusion SDE
 
 The agent's state is not merely a point $z$ but a **particle with mass** $(z, m)$, where $m$ is the importance weight (belief probability). The dynamics couple continuous transport with discrete topological jumps.
 
-*Cross-reference (WFR Boundary Conditions).* The SDE below assumes **Waking mode** boundary conditions (Definition {prf:ref}`def-waking-boundary-clamping`): Dirichlet on sensors (clamping observed position), Neumann on motors (clamping output flux). In **Dreaming mode** (Definition {prf:ref}`def-dreaming-reflective-boundary`), both boundaries become reflective and the flow recirculates internally without external grounding. See Section 23.5 for the mode-switching table and the thermodynamic interpretation (Section 23.4).
+*Cross-reference (WFR Boundary Conditions).* The SDE below assumes **Waking mode** boundary conditions (Definition {prf:ref}`def-waking-boundary-clamping`): Dirichlet on sensors (clamping observed position), Neumann on motors (clamping output flux). In **Dreaming mode** (Definition {prf:ref}`def-dreaming-reflective-boundary`), both boundaries become reflective and the flow recirculates internally without external grounding. See {ref}`Section 23.5 <sec-wfr-boundary-conditions-waking-vs-dreaming>` for the mode-switching table and the thermodynamic interpretation ({ref}`Section 23.4 <sec-the-belief-evolution-cycle-perception-dreaming-action>`).
 
 :::{prf:definition} Bulk Drift - Continuous Flow (Lorentz-Langevin Equation)
 :label: def-bulk-drift-continuous-flow
@@ -126,7 +126,7 @@ where:
 - $\mathcal{F}_{ij} = \partial_i \mathcal{R}_j - \partial_j \mathcal{R}_i$ is the **Value Curl** tensor (Definition {prf:ref}`def-value-curl`)
 - $\beta_{\text{curl}} \ge 0$ is the **curl coupling strength** (dimensionless)
 - $u_\pi^k$ is the **control field** from the policy (Definition {prf:ref}`prop-so-d-symmetry-at-origin`)
-- $\Gamma^k_{ij}$ are the **Christoffel symbols** of the Levi-Civita connection (Section 2.5.1, Theorem {prf:ref}`thm-capacity-constrained-metric-law`)
+- $\Gamma^k_{ij}$ are the **Christoffel symbols** of the Levi-Civita connection ({ref}`Section 2.5.1 <sec-levi-civita-connection-and-parallel-transport>`, Theorem {prf:ref}`thm-capacity-constrained-metric-law`)
 - $G^{-1/2}$ is the matrix square root of the inverse metric
 - $W_s$ is a standard Wiener process
 
@@ -135,7 +135,7 @@ where:
 *Remark (Four-Force Decomposition).* The drift decomposes into:
 1. **Gradient force**: $-G^{-1}\nabla\Phi$ — force proportional to scalar potential gradient
 2. **Lorentz force**: $\beta_{\text{curl}} G^{-1}\mathcal{F}\dot{z}$ — velocity-dependent force from Value Curl
-3. **Control field**: $u_\pi$ — policy-induced drift (Section 21.2)
+3. **Control field**: $u_\pi$ — policy-induced drift ({ref}`Section 21.2 <sec-policy-control-field>`)
 4. **Geodesic correction**: $-\Gamma(\dot{z},\dot{z})$ — parallel transport on curved space
 
 **Conservative Limit:** When $\mathcal{F} = 0$ (Definition {prf:ref}`def-conservative-reward-field`), the Lorentz term vanishes and we recover the standard geodesic SDE.
@@ -172,7 +172,7 @@ $$
 dm = m \cdot r(z, a)\,ds + m \cdot (\eta - 1)\,dN_s,
 $$
 where:
-- $r(z, a)$ is the **reaction rate** from the WFR dynamics (Section 20.2)
+- $r(z, a)$ is the **reaction rate** from the WFR dynamics ({ref}`Section 20.2 <sec-the-wfr-metric>`)
 - $N_s$ is a Poisson process with intensity $\lambda_{\text{jump}}(z)$
 - $\eta$ is the multiplicative jump factor (typically $\eta > 1$ for jumps to higher-value charts)
 
@@ -194,15 +194,15 @@ where:
 - $L: \mathcal{Z}_{\text{source}} \to \mathcal{Z}_{\text{target}}$ is the chart transition operator
 - $c_{\text{transport}} \ge 0$ is the transport cost (WFR term)
 
-*Remark (SMC Interpretation).* The mass $m(s)$ is precisely the **importance weight** in Sequential Monte Carlo (SMC) / particle filtering. The agent is a single-particle realization of the WFR flow from Section 20. Multiple particles can be used for ensemble-based generation.
+*Remark (SMC Interpretation).* The mass $m(s)$ is precisely the **importance weight** in Sequential Monte Carlo (SMC) / particle filtering. The agent is a single-particle realization of the WFR flow from {ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`. Multiple particles can be used for ensemble-based generation.
 
-**Cross-references:** Section 20.2 (WFR action), Section 20.6 (WFR world model), Section 11 (Filtering and projection).
+**Cross-references:** {ref}`Section 20.2 <sec-the-wfr-metric>` ({prf:ref}`def-the-wfr-action`), {ref}`Section 20.6 <sec-the-unified-world-model>` (WFR world model), {ref}`Section 11 <sec-intrinsic-motivation-maximum-entropy-exploration>` (Filtering and projection).
 
 :::
 (sec-the-unified-effective-potential)=
-### 22.3 The Unified Effective Potential
+## The Unified Effective Potential
 
-The effective potential unifies three terms: the hyperbolic information potential $U$ from holographic generation (Section 21.1), the learned value function $V$ from control (Section 2.7), and the risk-stress contribution $\Psi_{risk}$ from the stress-energy tensor (Section 18).
+The effective potential unifies three terms: the hyperbolic information potential $U$ from holographic generation ({ref}`Section 21.1 <sec-hyperbolic-volume-and-entropic-drift>`), the learned value function $V$ from control ({ref}`Section 2.7 <sec-the-hjb-correspondence>`), and the risk-stress contribution $\Psi_{risk}$ from the stress-energy tensor ({ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>`).
 
 :::{prf:definition} Effective Potential
 :label: def-effective-potential
@@ -214,7 +214,7 @@ $$
 $$
 where:
 - $U(z) = -d_{\mathbb{D}}(0, z) = -2\operatorname{artanh}(|z|)$ is the **hyperbolic information potential** (Definition {prf:ref}`def-hyperbolic-volume-growth`)
-- $V_{\text{critic}}(z, K)$ is the **learned value/critic function** on chart $K$ (Section 2.7)
+- $V_{\text{critic}}(z, K)$ is the **learned value/critic function** on chart $K$ ({ref}`Section 2.7 <sec-the-hjb-correspondence>`)
 - $\Psi_{\text{risk}}(z) = \frac{1}{2}\operatorname{tr}(T_{ij} G^{ij})$ is the **risk-stress contribution** (Theorem {prf:ref}`thm-capacity-constrained-metric-law`)
 - $\alpha \in [0, 1]$ is the generation-vs-control hyperparameter
 - $\gamma_{risk} \ge 0$ is the risk aversion coefficient
@@ -229,7 +229,7 @@ The parameter $\alpha$ interpolates between pure generation and pure control:
 
 | Regime              | $\alpha$ Value      | Behavior                                                       |
 |---------------------|---------------------|----------------------------------------------------------------|
-| **Pure Generation** | $\alpha = 1$        | Flow follows $-\nabla_G U$ (holographic expansion, Section 21) |
+| **Pure Generation** | $\alpha = 1$        | Flow follows $-\nabla_G U$ (holographic expansion, {ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>`) |
 | **Pure Control**    | $\alpha = 0$        | Flow follows $-\nabla_G V_{\text{critic}}$ (policy gradient)   |
 | **Hybrid**          | $\alpha \in (0, 1)$ | Balanced generation and control                                |
 
@@ -249,9 +249,9 @@ For the Poincare disk model, the first term simplifies to:
 $$
 \nabla_G U = -\frac{(1-|z|^2)}{2}\, \hat{z}, \qquad \hat{z} = \frac{z}{|z|}.
 $$
-**Cross-references:** Definition {prf:ref}`def-hyperbolic-volume-growth`, Section 2.7 (Critic $V$), Section 14.2 (MaxEnt control), Theorem {prf:ref}`thm-capacity-constrained-metric-law`.
+**Cross-references:** Definition {prf:ref}`def-hyperbolic-volume-growth`, {ref}`Section 2.7 <sec-the-hjb-correspondence>` (Critic $V$), Section 14.2 (MaxEnt control), Theorem {prf:ref}`thm-capacity-constrained-metric-law`.
 
-*Forward reference (Scalar Field Interpretation).* Section 24 provides the complete field-theoretic interpretation of $V_{\text{critic}}$: the Critic solves the **Screened Poisson Equation** (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`) with rewards as boundary charges (Definition {prf:ref}`def-the-reward-flux`), the Value represents **Gibbs Free Energy** (Axiom {prf:ref}`ax-the-boltzmann-value-law`), and the Value Hessian induces a **Conformal Coupling** to the metric (Definition {prf:ref}`def-value-metric-conformal-coupling`).
+*Forward reference (Scalar Field Interpretation).* {ref}`Section 24 <sec-the-reward-field-value-forms-and-hodge-geometry>` provides the complete field-theoretic interpretation of $V_{\text{critic}}$: the Critic solves the **Screened Poisson Equation** (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`) with rewards as boundary charges (Definition {prf:ref}`def-the-reward-flux`), the Value represents **Gibbs Free Energy** (Axiom {prf:ref}`ax-the-boltzmann-value-law`), and the Value Hessian induces a **Conformal Coupling** to the metric (Definition {prf:ref}`def-value-metric-conformal-coupling`).
 
 :::
 
@@ -270,7 +270,7 @@ The **cognitive temperature** $T_c > 0$ is the exploration-exploitation tradeoff
 :::
 
 (sec-the-geodesic-baoab-integrator)=
-### 22.4 The Geodesic Boris-BAOAB Integrator
+## The Geodesic Boris-BAOAB Integrator
 
 We provide the numerical integrator for the controlled geodesic SDE (Definition {prf:ref}`def-bulk-drift-continuous-flow`). The **Boris-BAOAB** scheme extends the standard BAOAB {cite}`leimkuhler2016computation` to handle the velocity-dependent Lorentz force from non-conservative reward fields.
 
@@ -438,7 +438,7 @@ def geodesic_baoab_step(
     Cross-references:
         - Definition 22.2.1 (Bulk Drift SDE)
         - Definition 22.2.2 (Jump Process)
-        - Section 2.5.1 (Christoffel symbols)
+        - {ref}`Section 2.5.1 <sec-levi-civita-connection-and-parallel-transport>` (Christoffel symbols)
     """
     z, p, K, m = state.z, state.p, state.K, state.m
     B, d = z.shape
@@ -529,9 +529,9 @@ The BAOAB integrator preserves the Boltzmann distribution $\rho(z, p) \propto \e
 
 :::
 
+(pi-langevin-thermostat)=
 ::::{admonition} Physics Isomorphism: Langevin Thermostat
 :class: note
-:name: pi-langevin-thermostat
 
 **In Physics:** The Langevin equation $m\ddot{x} = -\nabla U - \gamma\dot{x} + \sqrt{2\gamma k_B T}\,\xi(t)$ describes Brownian motion in a potential with friction $\gamma$ and thermal noise. The Ornstein-Uhlenbeck thermostat samples the Maxwell-Boltzmann distribution $p \propto \exp(-mv^2/2k_BT)$ {cite}`leimkuhler2016computation`.
 
@@ -554,9 +554,9 @@ The BAOAB integrator preserves the Boltzmann distribution $\rho(z, p) \propto \e
 **Advantage:** BAOAB preserves the Boltzmann distribution to $O(h^2)$ (Proposition {prf:ref}`prop-baoab-preserves-boltzmann`), avoiding the $O(h)$ bias of Euler-Maruyama.
 ::::
 
+(pi-detailed-balance)=
 ::::{admonition} Physics Isomorphism: Detailed Balance
 :class: note
-:name: pi-detailed-balance
 
 **In Physics:** A stochastic process satisfies detailed balance if transition rates satisfy $\pi(x)W(x \to y) = \pi(y)W(y \to x)$ for all states $x, y$. This implies the stationary distribution $\pi$ and time-reversibility {cite}`vanKampen1992stochastic`.
 
@@ -580,7 +580,7 @@ where $\rho_* \propto \exp(-\Phi_{\text{eff}}/T_c)\sqrt{|G|}$ is the Boltzmann d
 ::::
 
 (sec-the-overdamped-limit)=
-### 22.5 The Overdamped Limit
+## The Overdamped Limit
 
 In many applications (diffusion models, biological control), the system operates in the **overdamped regime** where friction dominates inertia. We derive this limit rigorously.
 
@@ -597,13 +597,13 @@ where $m$ is the "inertial mass" and $\xi$ is white noise. In the limit $\gamma 
 $$
 dz^k = -G^{kj}(z)\,\partial_j\Phi_{\text{gen}}(z)\,ds + \sqrt{2T_c}\,\left(G^{-1/2}(z)\right)^{kj}\,dW^j_s.
 $$
-*Proof sketch.* In the high-friction limit, velocity equilibrates instantaneously to the force: $\gamma\,\dot{z} \approx -G^{-1}\nabla\Phi$. The geodesic term $\Gamma(\dot{z},\dot{z}) \sim O(|\dot{z}|^2) = O(\gamma^{-2})$ is negligible. What remains is the gradient flow with diffusion. See Appendix A.4 for the full singular perturbation analysis. $\square$
+*Proof sketch.* In the high-friction limit, velocity equilibrates instantaneously to the force: $\gamma\,\dot{z} \approx -G^{-1}\nabla\Phi$. The geodesic term $\Gamma(\dot{z},\dot{z}) \sim O(|\dot{z}|^2) = O(\gamma^{-2})$ is negligible. What remains is the gradient flow with diffusion. See {ref}`Appendix A.4 <sec-appendix-a-full-derivations>` for the full singular perturbation analysis. $\square$
 
 :::
 :::{prf:corollary} Recovery of Holographic Flow
 :label: cor-recovery-of-holographic-flow
 
-Setting $\alpha = 1$ (pure generation) and $T_c \to 0$ (deterministic limit) in the overdamped equation recovers the holographic gradient flow from Section 21.2:
+Setting $\alpha = 1$ (pure generation) and $T_c \to 0$ (deterministic limit) in the overdamped equation recovers the holographic gradient flow from {ref}`Section 21.2 <sec-policy-control-field>`:
 
 $$
 \dot{z} = -G^{-1}(z)\,\nabla U(z).
@@ -612,7 +612,7 @@ For the Poincare disk, this gives $\dot{z} = \frac{(1-|z|^2)}{2}\,z$, which inte
 
 *Proof.* Direct substitution of $\Phi_{\text{gen}} = U$ into the overdamped equation. The explicit solution for the radial coordinate $r(\tau) = |z(\tau)|$ satisfies $\dot{r} = \frac{1-r^2}{2}$, which integrates to $r(\tau) = \tanh(\tau/2 + \operatorname{artanh}(r_0))$. For $r_0 = 0$, we get $r(\tau) = \tanh(\tau/2)$. $\square$
 
-*Remark.* This proves that the "ad-hoc" holographic law from Section 21 is actually the **optimal control trajectory** for the geometry defined in Section 18, vindicating the intuition.
+*Remark.* This proves that the "ad-hoc" holographic law from {ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>` is actually the **optimal control trajectory** for the geometry defined in {ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>`, vindicating the intuition.
 
 :::
 :::{prf:corollary} Fokker-Planck Duality {cite}`risken1996fokkerplanck`
@@ -632,13 +632,13 @@ $$
 $$
 Setting $\partial_s p = 0$ and using detailed balance gives $p \propto e^{-\Phi/T_c} \sqrt{|G|}$. The $\sqrt{|G|}$ factor accounts for the Riemannian volume form. $\square$
 
-**Cross-references:** Section 21.2 (Langevin dynamics), Theorem {prf:ref}`thm-equivalence-of-entropy-regularized-control-forms-discrete-macro`, Section 2.11 (Belief density evolution).
+**Cross-references:** {ref}`Section 21.2 <sec-policy-control-field>` (Langevin dynamics), Theorem {prf:ref}`thm-equivalence-of-entropy-regularized-control-forms-discrete-macro`, {ref}`Section 2.11 <sec-variance-value-duality-and-information-conservation>` (Belief density evolution).
 
 :::
 
+(pi-fokker-planck)=
 ::::{admonition} Physics Isomorphism: Fokker-Planck Equation
 :class: note
-:name: pi-fokker-planck
 
 **In Physics:** The Fokker-Planck equation describes the time evolution of probability density under drift and diffusion: $\partial_t p = -\nabla \cdot (p\,\mathbf{F}) + D\nabla^2 p$. On a Riemannian manifold with metric $g$, the diffusion term becomes the Laplace-Beltrami operator {cite}`risken1996fokkerplanck`.
 
@@ -662,7 +662,7 @@ with stationary distribution $p_*(z) \propto \exp(-\Phi_{\text{eff}}(z)/T_c)\sqr
 ::::
 
 (sec-agent-lifecycle-summary)=
-### 22.6 Agent Lifecycle Summary
+## Agent Lifecycle Summary
 
 The complete agent lifecycle integrates the components from Sections 21-22 into a coherent execution flow.
 
@@ -758,7 +758,7 @@ The agent lifecycle corresponds to a thermodynamic phase transition:
 
 :::
 (sec-adaptive-thermodynamics)=
-### 22.7 Adaptive Thermodynamics (Fluctuation-Dissipation)
+## Adaptive Thermodynamics (Fluctuation-Dissipation)
 
 The temperature $T_c$ and friction $\gamma$ need not be constant—they can adapt to the local geometry to maintain the Einstein relation.
 
@@ -830,7 +830,7 @@ The agent becomes deterministic at the boundary, ensuring reproducible outputs.
 
 :::
 (sec-summary-tables-and-diagnostic-nodes)=
-### 22.8 Summary Tables and Diagnostic Nodes
+## Summary Tables and Diagnostic Nodes
 
 **Summary of Equations of Motion:**
 
@@ -855,7 +855,7 @@ where $\alpha \in [0,1]$ interpolates generation/control and $\gamma_{\text{risk
 $$
 c_1 = e^{-\gamma h}, \qquad c_2 = \sqrt{(1 - c_1^2)\,T_c}
 $$
-*Cross-reference:* The boundary-reached condition is monitored by **[Node 25 (HoloGenCheck)](#node-25)** defined in Section 21.4.
+*Cross-reference:* The boundary-reached condition is monitored by **[Node 25 (HoloGenCheck)](#node-25)** defined in {ref}`Section 21.4 <sec-summary-and-diagnostic-node>`.
 
 (node-26)=
 **Node 26: GeodesicCheck**

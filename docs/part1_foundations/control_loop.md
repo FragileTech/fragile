@@ -1,15 +1,15 @@
-## 2. The Control Loop: Representation and Control
+# The Control Loop: Representation and Control
 
+(rb-actor-critic)=
 :::{admonition} Researcher Bridge: Actor-Critic + World Model, Typed
 :class: info
-:name: rb-actor-critic
 The control loop is the familiar actor-critic with a learned world model, but the latent state is explicitly split into macro, nuisance, and texture. The macro register plays the role of the control state, the critic defines value, and the policy is regularized by geometry and constraints rather than ad-hoc penalties. Think "model-based RL with typed latents and audited constraints."
 :::
 
-We frame the agent as a **bounded controller** operating on an internal latent state space: it must learn a representation, learn/predict dynamics, and choose actions under uncertainty and capacity limits.
+We frame the agent as a **bounded controller** ({prf:ref}`def-bounded-rationality-controller`) operating on an internal latent state space: it must learn a representation, learn/predict dynamics, and choose actions under uncertainty and capacity limits.
 
 (sec-the-objective-optimal-control-under-information-constraints)=
-### 2.1 The Objective: Optimal Control Under Information Constraints
+## The Objective: Optimal Control Under Information Constraints
 
 We write the objective as a cumulative cost functional $\mathcal{S}$ (expected loss plus regularization) over time:
 
@@ -24,7 +24,7 @@ Operationally, {math}`\mathcal{L}_{\text{control}}` can be a KL control penalty 
 **Relation to prior work.** This objective family covers standard stochastic optimal control and entropy-/KL-regularized RL: KL-control and “soft” (entropy-regularized) Bellman objectives are special cases {cite}`todorov2009efficient,kappen2005path,haarnoja2018soft`.
 
 (sec-anatomy-the-fragile-agent)=
-### Anatomy: The Fragile Agent (Core Architecture)
+## Anatomy: The Fragile Agent (Core Architecture)
 The Fragile Agent architecture used throughout this document is the tuple $\mathbb{A}$:
 
 $$
@@ -47,7 +47,7 @@ This tuple directly instantiates the core objects of the Hypostructure $\mathbb{
 :::
 
 (sec-the-trinity-of-manifolds)=
-### 2.2a The Trinity of Manifolds (Dimensional Alignment)
+## The Trinity of Manifolds (Dimensional Alignment)
 
 To prevent category errors, we formally distinguish three manifolds with distinct geometric structures:
 
@@ -60,23 +60,23 @@ To prevent category errors, we formally distinguish three manifolds with distinc
 **Dimensional Verification:**
 
 - The shutter $E: \mathcal{X} \to \mathcal{K}\times \mathcal{Z}_n\times \mathcal{Z}_{\mathrm{tex}}$ is a **contraction** in structured continuous degrees of freedom ($d_n \ll D$) plus a **finite-rate quantization** in the macro channel ($\log|\mathcal{K}|$ bits); texture may remain high-rate but is firewall-restricted to reconstruction/likelihood.
-- The policy $\pi_\theta$ is typically a map on macrostates (or their code embeddings) $\pi_\theta:\mathcal{K}\to\mathcal{A}$. If a structured nuisance coordinate $z_n$ is required for actuation, treat it as an explicit typed input (policy on $(K,z_n)$) and keep enclosure/closure defined at the macro layer (Section 2.8). By contrast, dependence on **texture** $z_{\mathrm{tex}}$ is a causal leak for control and should be prohibited by architecture and monitored (texture is reconstruction-only).
+- The policy $\pi_\theta$ is typically a map on macrostates (or their code embeddings) $\pi_\theta:\mathcal{K}\to\mathcal{A}$. If a structured nuisance coordinate $z_n$ is required for actuation, treat it as an explicit typed input (policy on $(K,z_n)$) and keep enclosure/closure defined at the macro layer ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`). By contrast, dependence on **texture** $z_{\mathrm{tex}}$ is a causal leak for control and should be prohibited by architecture and monitored (texture is reconstruction-only).
 - The metric $G_{n}$ is defined on the **structured nuisance coordinates** $\mathcal{Z}_n$ (and/or the induced geometry of the codebook embedding), not on $\Theta$; texture is excluded from the control metric.
 
 **Anti-Mixing Principle:** Never conflate $\mathcal{F}(\theta)$ (parameter-space Fisher) with $G(z)$ (state-space metric). They live on different manifolds and measure different quantities:
 - $\mathcal{F}(\theta)$: How the policy changes with weights (used by TRPO/PPO)
 - $G_n(z_n;K)$: How the policy changes with structured nuisance coordinates (used by the Fragile Agent)
 
-*Remark (WFR Foundation).* The product metric $d_{\mathcal{K}} \oplus G_n$ is a first approximation treating discrete and continuous components separately. Section 20 provides the rigorous **Wasserstein-Fisher-Rao** metric that unifies these components variationally: transport (Wasserstein) handles continuous motion within charts, while reaction (Fisher-Rao) handles discrete jumps between charts.
+*Remark (WFR Foundation).* The product metric $d_{\mathcal{K}} \oplus G_n$ is a first approximation treating discrete and continuous components separately. {ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>` provides the rigorous **Wasserstein-Fisher-Rao** (WFR) metric that unifies these components variationally: transport (Wasserstein) handles continuous motion within charts, while reaction (Fisher-Rao) handles discrete jumps between charts.
 
 (sec-the-shutter-as-a-vq-vae)=
-### 2.2b The Shutter as a VQ-VAE (Discrete Macro, Continuous Micro)
+## The Shutter as a VQ-VAE (Discrete Macro, Continuous Micro)
 
 The information-theoretic/control interpretation benefits from an explicit **discrete latent register**: a countable set of macrostates on which we can apply Shannon/algorithmic statements without differential-entropy ambiguities. This is provided by a **VQ-VAE macro-encoder**.
 
+(rb-adversarial-immunity)=
 :::{admonition} Researcher Bridge: Adversarial Immunity via Firewalling
 :class: info
-:name: rb-adversarial-immunity
 Standard Autoencoders mix all information into a single vector, making them vulnerable to "texture" attacks (adversarial noise). We split the latent space into three channels: **Discrete Symbols ($K$)**, **Nuisance ($z_n$)**, and **Texture ($z_{tex}$)**.
 By architectural design, the **Policy is blind to the Texture channel**. This creates a mathematical firewall: the agent uses texture for reconstruction, but is architecturally constrained from making decisions based on non-causal pixel noise.
 :::
@@ -108,7 +108,9 @@ z_{\text{macro}}(x):=e_{K(x)}.
 $$
 We equip $\mathcal{K}$ with the induced finite metric $d_{\mathcal{K}}(k,k'):=\|e_k-e_{k'}\|_2$ (or its $G_\mu$-weighted variant), so $\mathcal{Z}$ is a bundle of continuous fibres over a discrete base.
 
-:::{note} Connection to RL #5: Tabular Q-Learning as Degenerate VQ-VAE
+:::{admonition} Connection to RL #5: Tabular Q-Learning as Degenerate VQ-VAE
+:class: note
+:name: conn-rl-5
 **The General Law (Fragile Agent):**
 The state is encoded via a learned VQ-VAE discretization:
 
@@ -176,7 +178,7 @@ z_q^{\text{st}} := v(x) + \operatorname{sg}[z_q(x)-v(x)],
 $$
 so reconstruction uses the discrete macro code plus structured nuisance.
 
-**Canonicalization and symmetry quotienting (optional).** Let $G_{\text{spatial}}$ be a nuisance group acting on observations (Section 1.1.4). A practical way to make the macro register invariant to pose/basis choices is to insert a **canonicalization map** $C_\psi:\mathcal{X}\to\mathcal{X}$ before quantization and to train it so that
+**Canonicalization and symmetry quotienting (optional).** Let $G_{\text{spatial}}$ be a nuisance group acting on observations ({ref}`Section 1.1.4 <sec-symmetries-and-gauge-freedoms>`). A practical way to make the macro register invariant to pose/basis choices is to insert a **canonicalization map** $C_\psi:\mathcal{X}\to\mathcal{X}$ before quantization and to train it so that
 
 $$
 C_\psi(g\cdot x)\approx C_\psi(x)\qquad (g\in G_{\text{spatial}}).
@@ -190,11 +192,13 @@ Operationally, we replace the quantizer input $x$ by $\tilde x:=C_\psi(x)$ and d
 - $z_{n,t}$ carries **structured nuisance** ("where/how", pose/basis/disturbance coordinates) that may be needed for *actuation* or for explaining boundary-induced deviations, but must remain disentangled from $K$.
 - $z_{\mathrm{tex},t}$ carries **texture/detail** needed for reconstruction/likelihood only and is treated as *measurement/emission residual*: it must not be required for macro closure or for control decisions.
 
-This separation is enforced by orbit-invariance and (macro ⟂ nuisance/texture) disentanglement losses in Section 3.3.A and monitored by SymmetryCheck/DisentanglementCheck (Section 3). The jump/residual machinery (Section 11.5.4) is attached to $z_n$ (structured disturbances), not to $z_{\mathrm{tex}}$.
+This separation is enforced by orbit-invariance and (macro ⟂ nuisance/texture) disentanglement losses in {ref}`Section 3.3 <sec-defect-functionals-implementing-regulation>`.A and monitored by SymmetryCheck/DisentanglementCheck ({ref}`Section 3 <sec-diagnostics-stability-checks>`). The jump/residual machinery ({ref}`Section 12.3 <sec-sieve-events-as-projections-reweightings>`) is attached to $z_n$ (structured disturbances), not to $z_{\mathrm{tex}}$.
 
-*Remark (Motor Texture Extension).* Section 23.3 extends this decomposition to the **motor/action** side: $a_t = (A_t, z_{n,\text{motor}}, z_{\text{tex,motor}})$. The motor texture $z_{\text{tex,motor}}$ (tremor, fine motor noise) is dual to visual texture via the symplectic form (Theorem {prf:ref}`ax-motor-texture-firewall`). Section 23.2 defines a **Dual Atlas Architecture** where $\mathcal{A}_{\text{vis}}$ (visual) and $\mathcal{A}_{\text{act}}$ (action) are related by Legendre transform.
+*Remark (Motor Texture Extension).* {ref}`Section 23.3 <sec-motor-texture-the-action-residual>` extends this decomposition to the **motor/action** side: $a_t = (A_t, z_{n,\text{motor}}, z_{\text{tex,motor}})$. The motor texture $z_{\text{tex,motor}}$ (tremor, fine motor noise) is dual to visual texture via the symplectic form (Theorem {prf:ref}`ax-motor-texture-firewall`). {ref}`Section 23.2 <sec-the-dual-atlas-architecture>` defines a **Dual Atlas Architecture** where $\mathcal{A}_{\text{vis}}$ (visual) and $\mathcal{A}_{\text{act}}$ (action) are related by Legendre transform.
 
-:::{note} Connection to RL #6: Options Framework as Read-Only Codebook
+:::{admonition} Connection to RL #6: Options Framework as Read-Only Codebook
+:class: note
+:name: conn-rl-6
 **The General Law (Fragile Agent):**
 The agent's state is a **Split VQ-VAE** with learned hierarchy:
 
@@ -231,7 +235,7 @@ where $o$ is a fixed option index and $\pi_o$ is a pre-specified intra-option po
 $$
 q_\phi(z_n\mid x)=\mathcal{N}(\mu_\phi(x),\operatorname{diag}(\sigma_\phi^2(x))),
 $$
-with a task-appropriate prior $p(z_n)$ (often standard normal as a conservative default). The key requirement is *typed*: nuisance may influence reconstruction and may be used to explain structured deviations, but macro prediction/closure must not require it beyond $(K_t,A_t)$ (Section 2.8).
+with a task-appropriate prior $p(z_n)$ (often standard normal as a conservative default). The key requirement is *typed*: nuisance may influence reconstruction and may be used to explain structured deviations, but macro prediction/closure must not require it beyond $(K_t,A_t)$ ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`).
 
 **Texture residual ($z_{\mathrm{tex}}$).** Texture is modeled as a separate continuous residual with posterior
 
@@ -260,7 +264,9 @@ $$
 For the hierarchical macro $(K_{\text{chart}},K_{\text{code}})$, this becomes $H(K)\le \log(N_c N_v)$.
 For deterministic nearest-neighbor quantization, $H(K\mid X)=0$ and hence $I(X;K)=H(K)$: the macro channel is a bounded-rate symbolic memory with capacity at most $\log|\mathcal{K}|$ bits.
 
-:::{note} Connection to RL #10: Soft Actor-Critic as Degenerate MaxEnt Control
+:::{admonition} Connection to RL #10: Soft Actor-Critic as Degenerate MaxEnt Control
+:class: note
+:name: conn-rl-10
 **The General Law (Fragile Agent):**
 The agent optimizes an entropy-regularized objective on the Riemannian manifold $(\mathcal{Z}, G)$:
 
@@ -314,7 +320,7 @@ where $z_n$ is **structured nuisance** (may be used for actuation/auditing) and 
 :::
 
 (sec-the-bridge-rl-as-lyapunov-constrained-control)=
-### 2.3 The Bridge: RL as Lyapunov-Constrained Control (Neural Lyapunov Geometry)
+## The Bridge: RL as Lyapunov-Constrained Control (Neural Lyapunov Geometry)
 
 Standard Reinforcement Learning maximizes expected return. Robust control enforces stability by requiring a Lyapunov-like decrease condition. We bridge these by treating the learned critic $V(z)$ as a **Control Lyapunov Function (CLF)** {cite}`chang2019neural` and shaping policy improvement to respect stability constraints.
 
@@ -326,7 +332,9 @@ Standard Reinforcement Learning maximizes expected return. Robust control enforc
 
 The key insight is that these perspectives align around the same mathematical objects: a scalar value/cost-to-go function and constraints on how fast it can improve without destabilizing the loop.
 
-:::{note} Connection to RL #18: Lyapunov Stability as Implicit Hope
+:::{admonition} Connection to RL #18: Lyapunov Stability as Implicit Hope
+:class: note
+:name: conn-rl-18
 **The General Law (Fragile Agent):**
 The Critic $V(z)$ serves as a **Control Lyapunov Function** with explicit stability constraint:
 
@@ -350,16 +358,18 @@ Standard policy gradient methods (PPO, SAC, etc.) optimize $\mathbb{E}[R]$ witho
 :::
 
 (sec-a-geometry-regularized-objective)=
-### 2.4 A Geometry-Regularized Objective (Natural-Gradient View)
+## A Geometry-Regularized Objective (Natural-Gradient View)
 
 We can write an update objective that combines (i) a geometry-aware smoothness/trust-region penalty and (ii) a value-improvement term:
 
 $$
 \mathcal{S} = \int \left( \underbrace{\frac{1}{2} \lVert\dot{\pi}\rVert^2_{G}}_{\text{Update smoothness / trust region}} - \underbrace{\frac{d V}{d t}}_{\text{Value improvement}} \right) dt
 $$
-Where $\lVert\cdot\rVert_G$ is the norm under a **state-space sensitivity metric** $G$ (Section 2.5). This biases updates toward paths that are conservative in sensitive regions and more aggressive where the value landscape is well-conditioned.
+Where $\lVert\cdot\rVert_G$ is the norm under a **state-space sensitivity metric** $G$ ({ref}`Section 2.5 <sec-second-order-sensitivity-value-defines-a-local-metric>`). This biases updates toward paths that are conservative in sensitive regions and more aggressive where the value landscape is well-conditioned.
 
-:::{note} Connection to RL #2: SGD as Degenerate Geodesic Flow
+:::{admonition} Connection to RL #2: SGD as Degenerate Geodesic Flow
+:class: note
+:name: conn-rl-2
 **The General Law (Fragile Agent):**
 Policy updates follow **geodesic flow** on the Riemannian manifold $(\mathcal{Z}, G)$:
 
@@ -397,13 +407,13 @@ This recovers **Euclidean SGD**—parameter updates as straight-line steps in fl
 | **Failure Mode**                 | BarrierBode (oscillation)    | Prevented by geometry          |
 
 (sec-second-order-sensitivity-value-defines-a-local-metric)=
-### 2.5 Second-Order Sensitivity: Value Defines a Local Metric
+## Second-Order Sensitivity: Value Defines a Local Metric
 
 In information geometry and second-order optimization, a local metric captures how sensitive the objective and the policy are to changes in state coordinates {cite}`amari1998natural`. For the Fragile Agent, we define a state-space sensitivity metric $G_{ij}$ using curvature of the critic/value function:
 
+(rb-beyond-adam)=
 :::{admonition} Researcher Bridge: Beyond Parameter-Space Adam
 :class: info
-:name: rb-beyond-adam
 Standard optimizers like Adam or K-FAC use the Fisher Information of the **Parameter Manifold ($\Theta$)** to scale updates. This ignores the geometry of the environment. The Fragile Agent introduces a metric $G$ on the **Latent State Manifold ($\mathcal{Z}$)**.
 **Why this matters:** It acts as a state-dependent preconditioner. In high-risk or high-sensitivity regions (sharp value gradients), the eigenvalues of $G$ increase, automatically forcing the agent to take smaller, more cautious steps. This transforms natural-gradient updates from a weight-update technique into a coordinate-invariant update rule.
 :::
@@ -426,7 +436,9 @@ Units: $[G_{ij}]=\mathrm{nat}\,[z]^{-2}$ if $z$ is measured in units $[z]$.
 | Euclidean gradient                                          | Natural gradient (Amari)                                           |
 | Ignores curvature                                           | Respects curvature                                                 |
 
-:::{note} Connection to RL #1: REINFORCE as Degenerate Natural Gradient
+:::{admonition} Connection to RL #1: REINFORCE as Degenerate Natural Gradient
+:class: note
+:name: conn-rl-1
 **The General Law (Fragile Agent):**
 Policy updates follow a flow on the Riemannian manifold $(\mathcal{Z}, G)$:
 
@@ -485,7 +497,7 @@ This is a **state-space preconditioning** effect: directions with large local se
 
 **A Practical Diagonal Sensitivity Metric:**
 
-We construct a diagonal state-space sensitivity metric using the **scaling coefficients** from Section 3.2:
+We construct a diagonal state-space sensitivity metric using the **scaling coefficients** from {ref}`Section 3.2 <sec-scaling-exponents-characterizing-the-agent>`:
 
 $$
 G = \text{diag}(\alpha, \beta, \gamma, \delta)
@@ -521,7 +533,7 @@ Units: the Fisher term has units $[z]^{-2}$; therefore $\lambda$ carries the sam
 - **Low $G_{ii}$**: weak sensitivity or ignored coordinate $i$ (flat direction / potential blind spot)
 
 (sec-levi-civita-connection-and-parallel-transport)=
-#### 2.5.1 Levi-Civita Connection and Parallel Transport (Optional)
+### Levi-Civita Connection and Parallel Transport (Optional)
 
 Because $G$ is a Riemannian metric on $\mathcal{Z}$, it induces a unique torsion-free, metric-compatible connection (the Levi-Civita connection). In local coordinates the Christoffel symbols are
 
@@ -533,15 +545,15 @@ The covariant derivative of a vector field $v$ is then
 $$
 (\nabla_i v)^k = \partial_i v^k + \Gamma^k_{ij}v^j.
 $$
-**Why this matters here.** Most of the document uses $G$ operationally via diagonal preconditioning $G^{-1}$ (which is computationally cheap). The connection becomes relevant when we ask whether updates are **path dependent** in state space: transporting a tangent vector (e.g., a value gradient direction) around a loop can return a different direction if curvature is present. Section 3 introduces an operational HolonomyCheck that detects loop drift without explicitly computing $\Gamma$.
+**Why this matters here.** Most of the document uses $G$ operationally via diagonal preconditioning $G^{-1}$ (which is computationally cheap). The connection becomes relevant when we ask whether updates are **path dependent** in state space: transporting a tangent vector (e.g., a value gradient direction) around a loop can return a different direction if curvature is present. {ref}`Section 3 <sec-diagnostics-stability-checks>` introduces an operational HolonomyCheck that detects loop drift without explicitly computing $\Gamma$.
 
+(pi-levi-civita)=
 ::::{admonition} Physics Isomorphism: Levi-Civita Connection
 :class: note
-:name: pi-levi-civita
 
 **In Physics:** The Levi-Civita connection is the unique torsion-free, metric-compatible connection on a Riemannian manifold. It defines parallel transport and geodesics. The Christoffel symbols $\Gamma^k_{ij} = \frac{1}{2}G^{kl}(\partial_i G_{jl} + \partial_j G_{il} - \partial_l G_{ij})$ encode how vectors rotate under infinitesimal displacement {cite}`docarmo1992riemannian`.
 
-**In Implementation:** The latent metric $G$ induces a Levi-Civita connection with Christoffel symbols (Section 2.5.1):
+**In Implementation:** The latent metric $G$ induces a Levi-Civita connection with Christoffel symbols ({ref}`Section 2.5.1 <sec-levi-civita-connection-and-parallel-transport>`):
 
 $$
 \Gamma^k_{ij}(z) = \frac{1}{2}G^{kl}(z)\left(\partial_i G_{jl} + \partial_j G_{il} - \partial_l G_{ij}\right)
@@ -561,7 +573,7 @@ appearing in the geodesic correction term of the dynamics (Definition {prf:ref}`
 ::::
 
 (sec-the-metric-hierarchy-fixing-the-category-error)=
-### 2.6 The Metric Hierarchy: Fixing the Category Error
+## The Metric Hierarchy: Fixing the Category Error
 
 A common mistake in geometric RL is conflating three distinct geometries:
 
@@ -589,7 +601,9 @@ This measures the **Information Bottleneck** between the Shutter (Split VQ-VAE) 
 
 The Covariant Regulator uses the **State-Space Fisher Information** to scale the Lie Derivative. While standard RL uses Fisher in **Parameter Space** (TRPO/PPO), the Fragile Agent uses Fisher in **State Space** to stabilize **Causal Induction**.
 
-:::{note} Connection to RL #3: TRPO/PPO as Degenerate State-Space Metric
+:::{admonition} Connection to RL #3: TRPO/PPO as Degenerate State-Space Metric
+:class: note
+:name: conn-rl-3
 **The General Law (Fragile Agent):**
 The trust region is defined by the **state-space sensitivity metric** $G(z)$:
 
@@ -616,7 +630,7 @@ $$
 :::
 
 (sec-the-hjb-correspondence)=
-### 2.7 The HJB Correspondence (Rewards as Value Updates)
+## The HJB Correspondence (Rewards as Value Updates)
 
 We replace the heuristic Bellman equation {cite}`bellman1957dynamic` with the rigorous **Hamilton-Jacobi-Bellman (HJB) Equation**:
 
@@ -656,14 +670,14 @@ All terms in the HJB equation have units of a **cost rate**. In discrete time th
 - $\mathfrak{D}(z,a)$ is an explicit control-effort / regularization term (e.g., KL control, action penalties).
 - At optimality, the relation enforces a local consistency between value change, immediate cost, and control effort.
 
-*Forward reference (Helmholtz Continuum Limit).* Section 24.2 shows that in the continuum limit on the manifold $(\mathcal{Z}, G)$, the Bellman/HJB equation becomes the **Screened Poisson (Helmholtz) Equation**: $-\Delta_G V + \kappa^2 V = \rho_r$, where $\kappa = -\ln\gamma$ is the screening mass derived from the discount factor. This reveals the Critic as a **Field Solver** computing the Green's function of the screened Laplacian.
+*Forward reference (Helmholtz Continuum Limit).* {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>` shows that in the continuum limit on the manifold $(\mathcal{Z}, G)$, the Bellman/HJB equation becomes the **Screened Poisson (Helmholtz) Equation**: $-\Delta_G V + \kappa^2 V = \rho_r$, where $\kappa = -\ln\gamma$ is the screening mass derived from the discount factor. This reveals the Critic as a **Field Solver** computing the Green's function of the screened Laplacian.
 
 (sec-conditional-independence-and-sufficiency)=
-### 2.8 Conditional Independence and Sufficiency (Causal Enclosure)
+## Conditional Independence and Sufficiency (Causal Enclosure)
 
-The transition from micro to macro is a **projection operator** $\Pi:\mathcal{Z}\to\mathcal{K}$. In the discrete macro instantiation, $\Pi$ is precisely the **VQ quantizer** $z_e\mapsto K$ from Section 2.2b.
+The transition from micro to macro is a **projection operator** $\Pi:\mathcal{Z}\to\mathcal{K}$. In the discrete macro instantiation, $\Pi$ is precisely the **VQ quantizer** $z_e\mapsto K$ from {ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`.
 
-**Causal Enclosure Condition (Markov sufficiency).** With the nuisance/texture split (Section 2.2b), let $(K_t, Z_{n,t}, Z_{\mathrm{tex},t}, A_t)$ be the internal state/action process and define the macrostate $K_t:=\Pi(Z_t)$ (projection to the discrete register). The macro-model requirement is the conditional independence
+**Causal Enclosure Condition (Markov sufficiency).** With the nuisance/texture split ({ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`), let $(K_t, Z_{n,t}, Z_{\mathrm{tex},t}, A_t)$ be the internal state/action process and define the macrostate $K_t:=\Pi(Z_t)$ (projection to the discrete register). The macro-model requirement is the conditional independence
 
 $$
 K_{t+1}\ \perp\!\!\!\perp\ (Z_{n,t}, Z_{\mathrm{tex},t})\ \big|\ (K_t,A_t),
@@ -698,7 +712,7 @@ Where:
 **Computational Meaning:** The macro-dynamics should be a homomorphism of the micro-dynamics. If $\delta_{\text{CE}} > 0$ (or equivalently $I(K_{t+1};Z_t\mid K_t,A_t)>0$), then the learned macro predictor is not sufficient: predicting $K_{t+1}$ still depends on nuisance microstate information.
 
 (sec-regularity-conditions)=
-### 2.9 Regularity Conditions
+## Regularity Conditions
 
 The formalism requires explicit assumptions:
 
@@ -716,7 +730,7 @@ The formalism requires explicit assumptions:
 > The approximation error is bounded by the spectral norm of the off-diagonal part of $G$.
 
 (sec-practical-approximations-for-the-state-space-metric)=
-#### 2.9.1 Practical Approximations for the State-Space Metric $G$ (Compute-Stable)
+### Practical Approximations for the State-Space Metric $G$ (Compute-Stable)
 
 In principle, $G(z)$ is a dense $(0,2)$-tensor. Forming and inverting the full matrix is typically infeasible online:
 - Memory: $O(d^2)$ for $d=\dim(\mathcal{Z})$.
@@ -757,7 +771,7 @@ and optionally clamp inverse entries to a bounded interval to avoid singular tru
 
 This is a low-pass filter on curvature/sensitivity: it reduces high-frequency estimator noise while preserving slow curvature drift (consistent with the timescale-separation ethos of BarrierTypeII).
 
-**B. Macro–nuisance block-diagonal split (enclosure-aligned).** Under causal enclosure (Section 2.8), macro dynamics and macro prediction should not require the *residual* channels, and in particular should not require texture. This motivates a block structure
+**B. Macro–nuisance block-diagonal split (enclosure-aligned).** Under causal enclosure ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`), macro dynamics and macro prediction should not require the *residual* channels, and in particular should not require texture. This motivates a block structure
 
 $$
 G
@@ -771,9 +785,9 @@ where:
 - $G_{\text{macro}}$ is a discrete/categorical sensitivity for the macro channel (e.g., the Fisher of $q(K\mid x)$ or curvature proxies derived from macro closure cross-entropy),
 - $G_{n}$ is the continuous sensitivity on $z_n$ (often diagonal); texture $z_{\mathrm{tex}}$ is excluded from the control metric (reconstruction-only).
 
-The off-diagonal block corresponds to macro–nuisance “cross-talk”. If it is empirically non-negligible (Node 19: DisentanglementCheck), that is not a “numerical nuisance”: it is an enclosure violation that should be penalized at the representation level (Section 3.3.A), not patched by a dense optimizer.
+The off-diagonal block corresponds to macro–nuisance “cross-talk”. If it is empirically non-negligible (Node 19: DisentanglementCheck), that is not a “numerical nuisance”: it is an enclosure violation that should be penalized at the representation level ({ref}`Section 3.3 <sec-defect-functionals-implementing-regulation>`.A), not patched by a dense optimizer.
 
-**C. Occasional stochastic probing (low-rank signals without full $G$).** When the diagonal approximation is insufficient (e.g., strong anisotropy or a few stiff directions dominate), one can occasionally probe curvature using Jacobian-vector products (Section 8.2). For example, random probes $v$ provide access to $Gv$ without forming $G$, allowing:
+**C. Occasional stochastic probing (low-rank signals without full $G$).** When the diagonal approximation is insufficient (e.g., strong anisotropy or a few stiff directions dominate), one can occasionally probe curvature using Jacobian-vector products ({ref}`Section 8.2 <sec-bifurcatecheck-stochastic-jacobian-probing>`). For example, random probes $v$ provide access to $Gv$ without forming $G$, allowing:
 - rank-$k$ corrections (diagonal + low-rank),
 - diagnostics of effective conditioning (eigenvalue spread proxies),
 - conservative step-size reductions in detected stiff regimes.
@@ -789,10 +803,10 @@ $$
 +
 c_\epsilon\,\widehat{\sigma}_t,
 $$
-where $\widehat{\sigma}_t$ can be any bounded “update unreliability” proxy consistent with the Sieve (e.g., SNRCheck, NEPCheck, residual-event statistics from Section 11.5.4). The design intent is monotone: noisier / less-grounded regimes should imply more damping, not larger steps.
+where $\widehat{\sigma}_t$ can be any bounded "update unreliability" proxy consistent with the Sieve (e.g., SNRCheck, NEPCheck, residual-event statistics from {ref}`Section 12.3 <sec-sieve-events-as-projections-reweightings>`). The design intent is monotone: noisier / less-grounded regimes should imply more damping, not larger steps.
 
 (sec-anti-mixing-rules)=
-### 2.10 Anti-Mixing Rules (Formal Prohibitions)
+## Anti-Mixing Rules (Formal Prohibitions)
 
 To maintain mathematical rigor, we strictly forbid the following operations:
 
@@ -806,12 +820,12 @@ To maintain mathematical rigor, we strictly forbid the following operations:
 **Consequence of Violation:** Mixing manifolds breaks coordinate invariance. The agent's behavior will depend on the arbitrary choice of coordinates for $z$, leading to inconsistent generalization.
 
 (sec-variance-value-duality-and-information-conservation)=
-### 2.11 Variance–Value Duality and Information Conservation
+## Variance–Value Duality and Information Conservation
 
 To connect geometry (sensitivity) with stochastic control, we relate the value/cost functional and entropy/variance regularization through a coupling (precision) coefficient.
 
 (sec-local-conditioning-scale-and-coupling)=
-#### 2.11.1 Local Conditioning Scale and β-Coupling
+### Local Conditioning Scale and β-Coupling
 
 :::{prf:definition} Local Conditioning Scale
 :label: def-local-conditioning-scale
@@ -846,18 +860,18 @@ $$
 :=
 \int_{\mathcal{Z}} p(z)\Big(V(z) - \tau\,H(\pi(\cdot\mid z))\Big)\,d\mu_G,
 $$
-where $H(\pi(\cdot\mid z)) := -\mathbb{E}_{a\sim \pi(\cdot\mid z)}[\log \pi(a\mid z)]$ is the per-state policy entropy (in nats). Because $V$ and $H$ are measured in nats (Section 1.2), $\tau$ is dimensionless.
+where $H(\pi(\cdot\mid z)) := -\mathbb{E}_{a\sim \pi(\cdot\mid z)}[\log \pi(a\mid z)]$ is the per-state policy entropy (in nats). Because $V$ and $H$ are measured in nats ({ref}`Section 1.2 <sec-units-and-dimensional-conventions>`), $\tau$ is dimensionless.
 
 :::
 (sec-the-continuity-equation-and-belief-conservation)=
-#### 2.11.2 The Continuity Equation and Belief Conservation
+### The Continuity Equation and Belief Conservation
 
-This subsection records a **continuous-time idealization in computation time $s$** that is useful for auditing “grounding”: belief mass in latent space should change only via (i) transport under internal dynamics, (ii) boundary-driven updates from observations, and (iii) explicit projection/reweighting events (Sections 3–6). The discrete-time implementation is given in Section 11; the PDEs below provide the corresponding limit intuition.
+This subsection records a **continuous-time idealization in computation time $s$** that is useful for auditing “grounding”: belief mass in latent space should change only via (i) transport under internal dynamics, (ii) boundary-driven updates from observations, and (iii) explicit projection/reweighting events (Sections 3–6). The discrete-time implementation is given in {ref}`Section 11 <sec-intrinsic-motivation-maximum-entropy-exploration>`; the PDEs below provide the corresponding limit intuition.
 
 :::{prf:definition} Belief Density
 :label: def-belief-density
 
-Let $p(z,s)\ge 0$ be a density with respect to $d\mu_G$ representing the agent’s belief (or belief-weight) over latent coordinates. In closed-system idealizations one may impose $\int_{\mathcal{Z}}p(z,s)\,d\mu_G=1$; in open-system implementations with explicit projections/reweightings we track the unnormalized mass and renormalize when needed (Section 11).
+Let $p(z,s)\ge 0$ be a density with respect to $d\mu_G$ representing the agent’s belief (or belief-weight) over latent coordinates. In closed-system idealizations one may impose $\int_{\mathcal{Z}}p(z,s)\,d\mu_G=1$; in open-system implementations with explicit projections/reweightings we track the unnormalized mass and renormalize when needed ({ref}`Section 11 <sec-intrinsic-motivation-maximum-entropy-exploration>`).
 
 :::
 :::{prf:definition} Transport Field
@@ -868,7 +882,7 @@ Let $v\in\Gamma(T\mathcal{Z})$ be a vector field describing the instantaneous tr
 $$
 v^i(z) := -G^{ij}(z)\frac{\partial V}{\partial z^j},
 $$
-so transport points in the direction of decreasing $V$ (Riemannian steepest descent). Units: if computation time is measured in solver units, then $[v]=[z]/\mathrm{solver\ time}$ (map to $\mathrm{step}$ using the $t \leftrightarrow s$ budget in Section 1.3).
+so transport points in the direction of decreasing $V$ (Riemannian steepest descent). Units: if computation time is measured in solver units, then $[v]=[z]/\mathrm{solver\ time}$ (map to $\mathrm{step}$ using the $t \leftrightarrow s$ budget in {ref}`Section 1.3 <sec-the-chronology-temporal-distinctions>`).
 
 :::
 :::{prf:lemma} Continuity Equation for Transport
@@ -923,7 +937,7 @@ assuming there is no net boundary contribution and no internal source term. In a
 
 :::
 (sec-geometric-summary-of-internal-consistency)=
-#### 2.11.3 Geometric Summary of Internal Consistency
+### Geometric Summary of Internal Consistency
 
 The dimensional and conceptual alignment is now fixed:
 
@@ -938,7 +952,7 @@ The dimensional and conceptual alignment is now fixed:
 These identities are **model checks**, not automatic certificates for deep, nonconvex training. In practice, large residuals (e.g. persistent boundary decoupling or unstable drift statistics) indicate the agent is operating outside the assumed regime and should trigger conservative updates or explicit interventions (Sections 3–6 and 15).
 
 (sec-the-interface-and-observation-inflow)=
-#### 2.11.4 The Interface and Observation Inflow
+### The Interface and Observation Inflow
 
 In the general case, the manifold $(\mathcal{Z}, G)$ is a compact Riemannian manifold with boundary $\partial \mathcal{Z}$. The boundary represents the agent’s **interface**—the site of interaction between internal belief/state and external observations $\mathcal{X}$.
 
@@ -989,7 +1003,7 @@ Sieve Nodes 13-16 (Boundary/Overload/Starve/Align) can be interpreted as monitor
 
 :::
 (sec-the-hjb-interface-coupling)=
-#### 2.11.5 The HJB–Interface Coupling
+### The HJB–Interface Coupling
 
 To maintain stability, the value/cost function $V$ must satisfy interface constraints dictated by the environment:
 
@@ -1001,7 +1015,7 @@ where $\gamma$ is an **instantaneous external cost/risk signal** of the external
 **Interpretation:** This anchors the internal value landscape to externally observed signals at the interface. If the internal $V$ near the boundary does not match external feedback, the agent enters **Mode B.C (Control Deficit)**—its internal model may be self-consistent but poorly aligned with the task-relevant data stream.
 
 (sec-summary-geometry-regularization-interface)=
-#### 2.11.6 Summary: Geometry–Regularization–Interface
+### Summary: Geometry–Regularization–Interface
 
 The Trinity of Manifolds is extended to the **Boundary Operator**:
 

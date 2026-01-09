@@ -1,17 +1,17 @@
-## 12. Belief Dynamics: Prediction, Update, Projection
+# Belief Dynamics: Prediction, Update, Projection
 
+(rb-bayes-filter)=
 :::{admonition} Researcher Bridge: Bayes Filter with Safety Projection
 :class: info
-:name: rb-bayes-filter
 The predict-update loop is standard HMM/POMDP filtering. The extra step is projection by the Sieve, which removes or downweights unsafe belief mass. Think "Bayes filter plus constraints."
 :::
 
 Sections 2–9 describe geometry, metrics, and effective macro dynamics. What they do *not* yet encode is the irreversibility of online learning: boundary observations and constraint enforcement are not invertible operations. This section states the belief-evolution template directly as **filtering + projection** on the discrete macro register.
 
-**Relation to prior work.** The predict–update recursion below is standard Bayesian filtering for discrete latent states (HMM/POMDP belief updates) {cite}`rabiner1989tutorial,kaelbling1998planning`. The additional ingredient emphasized here is the explicit **projection/reweighting layer** induced by safety and consistency checks (Section 3): belief updates are not just “Bayes + dynamics”, but “Bayes + dynamics + constraints”.
+**Relation to prior work.** The predict–update recursion below is standard Bayesian filtering for discrete latent states (HMM/POMDP belief updates) {cite}`rabiner1989tutorial,kaelbling1998planning`. The additional ingredient emphasized here is the explicit **projection/reweighting layer** induced by safety and consistency checks ({ref}`Section 3 <sec-diagnostics-stability-checks>`): belief updates are not just “Bayes + dynamics”, but “Bayes + dynamics + constraints”.
 
 (sec-why-purely-closed-simulators-are-insufficient)=
-### 12.1 Why Purely Closed Simulators Are Insufficient
+## Why Purely Closed Simulators Are Insufficient
 
 A purely closed internal simulator can roll forward hypotheses, but it cannot *incorporate new boundary information* without a non-invertible update. Two irreversibilities are unavoidable:
 1. **Assimilation:** boundary observations $x_{t+1}$ update the macro belief (Bayesian correction).
@@ -20,11 +20,11 @@ A purely closed internal simulator can roll forward hypotheses, but it cannot *i
 Both operations are information projections: they reduce uncertainty and/or discard parts of state-space mass in a way that cannot be undone from the post-update state alone.
 
 (sec-filtering-template-on-the-discrete-macro-register)=
-### 12.2 Filtering Template on the Discrete Macro Register
+## Filtering Template on the Discrete Macro Register
 
 Let $p_t\in\Delta^{|\mathcal{K}|-1}$ be the macro belief over $K_t$.
 
-**Prediction (model step).** Given the learned macro kernel $\bar{P}(k'\mid k,a_t)$ (Section 2.8), define the one-step predicted belief
+**Prediction (model step).** Given the learned macro kernel $\bar{P}(k'\mid k,a_t)$ ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`), define the one-step predicted belief
 
 $$
 \tilde p_{t+1}(k') := \sum_{k\in\mathcal{K}} p_t(k)\,\bar{P}(k'\mid k,a_t).
@@ -39,7 +39,7 @@ $$
 This is the standard Bayesian filtering recursion for a discrete latent state (HMM/POMDP belief update) {cite}`rabiner1989tutorial,kaelbling1998planning`. Units: probabilities are dimensionless; log-likelihoods and entropies are measured in nats.
 
 (sec-sieve-events-as-projections-reweightings)=
-### 12.3 Sieve Events as Projections / Reweightings
+## Sieve Events as Projections / Reweightings
 
 When a check triggers, we apply a *projection-like* operator to the belief state. Two common forms are:
 
@@ -60,7 +60,7 @@ When a check triggers, we apply a *projection-like* operator to the belief state
 These are classical constrained-inference moves (mirror descent / I-projection style), and they are the belief-space counterpart of the Gate Nodes.
 
 (sec-over-under-coupling-as-forgetting-vs-ungrounded-inference)=
-### 12.4 Over/Under Coupling as Forgetting vs Ungrounded Inference
+## Over/Under Coupling as Forgetting vs Ungrounded Inference
 
 The coupling window in Theorem {prf:ref}`thm-information-stability-window-operational` reflects a trade-off:
 - **Over-coupling:** noisy or overly aggressive updates drive mixing; the macro register loses stable structure (forgetting / symbol dispersion).
@@ -69,7 +69,7 @@ The coupling window in Theorem {prf:ref}`thm-information-stability-window-operat
 The Sieve (Sections 3–6) is the control layer that keeps the agent inside the regime where macrostates remain stable *and* grounded.
 
 (sec-optional-operator-valued-belief-updates)=
-### 12.5 Optional: Operator-Valued Belief Updates (GKSL / "Lindblad" Form)
+## Optional: Operator-Valued Belief Updates (GKSL / "Lindblad" Form)
 
 This subsection is optional. It provides a rigorous way to parameterize belief evolution so that **positivity** and **normalization** are structural (by construction), and so that “conservative prediction” and “dissipative grounding” are separated in the update law.
 
@@ -101,13 +101,13 @@ where {math}`H=H^\dagger` is Hermitian, {math}`\gamma_j\ge 0` are rates, and {ma
 
 This is a modeling choice, not a claim about literal quantum physics: it is used here purely as a convenient, well-posed parametrization of CPTP belief updates.
 
-*Note (WFR Embedding).* The GKSL generator embeds naturally into the Wasserstein-Fisher-Rao framework (Section 20.5): the commutator $-i[H, \varrho]$ corresponds to **transport** (continuous belief flow), while the dissipator $\sum_j \gamma_j(\cdot)$ corresponds to **reaction** (discrete mass creation/destruction). This provides a geometric foundation for the otherwise algebraic GKSL construction.
+*Note (WFR Embedding).* The GKSL generator embeds naturally into the Wasserstein-Fisher-Rao framework ({prf:ref}`def-the-wfr-action`, {ref}`Section 20.5 <sec-connection-to-gksl-master-equation>`): the commutator $-i[H, \varrho]$ corresponds to **transport** (continuous belief flow), while the dissipator $\sum_j \gamma_j(\cdot)$ corresponds to **reaction** (discrete mass creation/destruction). This provides a geometric foundation for the otherwise algebraic GKSL construction.
 
 :::
 
+(pi-lindblad)=
 ::::{admonition} Physics Isomorphism: Lindblad Master Equation
 :class: note
-:name: pi-lindblad
 
 **In Physics:** The GKSL (Gorini-Kossakowski-Sudarshan-Lindblad) equation describes the evolution of open quantum systems: $\dot{\varrho} = -i[H,\varrho] + \sum_k \gamma_k(L_k\varrho L_k^\dagger - \frac{1}{2}\{L_k^\dagger L_k, \varrho\})$. It is the most general Markovian, completely positive, trace-preserving (CPTP) evolution {cite}`lindblad1976generators,gorini1976completely`.
 
@@ -120,7 +120,7 @@ $$
 | Open Quantum Systems | Agent (Belief Dynamics) |
 |:---------------------|:------------------------|
 | Density matrix $\varrho$ | Belief distribution $\rho$ |
-| Hamiltonian $H$ | Effective potential $\Phi_{\text{eff}}$ |
+| Hamiltonian $H$ | Effective potential $\Phi_{\text{eff}}$ ({prf:ref}`def-effective-potential`) |
 | Lindblad operators $L_k$ | Jump operators (chart transitions) |
 | Decoherence rate $\gamma_k$ | Transition rates |
 | CPTP evolution | Probability-preserving dynamics |
@@ -129,7 +129,7 @@ $$
 ::::
 
 (sec-master-equation-consistency-defect)=
-#### 12.5.3 Master-Equation Consistency Defect (Node 22)
+### Master-Equation Consistency Defect (Node 22)
 
 If an implementation maintains an operator belief $\varrho_t$ and produces an empirical update $\varrho_{t+1}$ (e.g., after a boundary update + Sieve projection), then a **consistency defect** compares it to the GKSL-predicted infinitesimal update:
 
@@ -145,9 +145,9 @@ $$
 where $\mathcal{L}_{\text{GKSL}}(\cdot)$ denotes the right-hand side of Definition 11.5.2. This is the quantity monitored by MECCheck (Node 22).
 
 (sec-residual-event-codebook)=
-#### 12.5.4 Residual-Event ("Jump") Codebook (Links to Section 3.3.B)
+### Residual-Event ("Jump") Codebook (Links to {ref}`Section 3.3 <sec-defect-functionals-implementing-regulation>`.B)
 
-The GKSL form becomes implementable if we can parameterize a *finite* family of disturbance/update types. With the nuisance/texture split (Section 2.2b), the disturbance library should attach to the **structured nuisance** channel, not to texture. A practical route is a discrete codebook over one-step nuisance residuals:
+The GKSL form becomes implementable if we can parameterize a *finite* family of disturbance/update types. With the nuisance/texture split ({ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`), the disturbance library should attach to the **structured nuisance** channel, not to texture. A practical route is a discrete codebook over one-step nuisance residuals:
 1. Compute a one-step prediction $(k_{t+1}^{\text{pred}}, z_{n,t+1}^{\text{pred}}):=S(K_t,z_{n,t},a_t)$ from the world model (macro + nuisance only).
 2. Encode the next observation to obtain $(K_{t+1}, z_{n,t+1}, z_{\mathrm{tex},t+1})$ via the shutter.
 3. Form the **nuisance residual** $\Delta z_{n,t}:=z_{n,t+1}-z_{n,t+1}^{\text{pred}}$.
@@ -162,7 +162,7 @@ The index $J_t$ can be used in two ways:
 The core engineering benefit is identifiability: the agent exposes a discrete label for “what kind of unmodeled disturbance happened”, rather than forcing the macro register to absorb it.
 
 (sec-update-vs-evidence-check-and-metric-speed-limit)=
-#### 12.5.5 Update vs Evidence Check (Node 23) and Metric Speed Limit (Node 24)
+### Update vs Evidence Check (Node 23) and Metric Speed Limit (Node 24)
 
 Even without operator beliefs, the same “no free update” principle can be monitored in classical terms:
 - **Update vs evidence (NEPCheck).** Penalize belief updates that change faster than boundary information supports:
@@ -180,7 +180,9 @@ Even without operator beliefs, the same “no free update” principle can be mo
   $$
   which is a geometry-consistent generalization of KL-per-update constraints (ZenoCheck).
 
-::::{note} Connection to RL #19: POMDP Belief Updates as Degenerate Belief Dynamics
+::::{admonition} Connection to RL #19: POMDP Belief Updates as Degenerate Belief Dynamics
+:class: note
+:name: conn-rl-19
 **The General Law (Fragile Agent):**
 Belief evolution follows the **Filtering + Projection Template** on the discrete macro register:
 
@@ -200,16 +202,16 @@ $$
 This recovers standard **POMDP belief updates** {cite}`kaelbling1998planning` without safety constraints.
 
 **What the generalization offers:**
-- **Safety-aware beliefs**: Sieve projections (Section 12.3) remove probability mass from unsafe states *before* action selection
+- **Safety-aware beliefs**: Sieve projections ({ref}`Section 12.3 <sec-sieve-events-as-projections-reweightings>`) remove probability mass from unsafe states *before* action selection
 - **Discrete auditable symbols**: $H(K) \le \log|\mathcal{K}|$ provides hard capacity bound; standard POMDPs have unbounded continuous beliefs
 - **Constraint enforcement**: Gate Nodes trigger belief reweighting when diagnostics fail (NEPCheck, QSLCheck)
-- **Operator-valued updates**: Section 12.5 extends to GKSL/Lindblad form for quantum-like belief decoherence
+- **Operator-valued updates**: {ref}`Section 12.5 <sec-optional-operator-valued-belief-updates>` extends to GKSL/Lindblad form for quantum-like belief decoherence
 ::::
 
 
 
 (sec-correspondence-table-filtering-control-template)=
-## 13. Correspondence Table: Filtering / Control Template
+## Correspondence Table: Filtering / Control Template
 
 The table below is a dictionary from standard **filtering and constrained inference** to the Fragile Agent components. It is purely classical: belief evolution is “predict → update → project”.
 

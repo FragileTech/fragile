@@ -1,19 +1,19 @@
-## 9. The Disentangled Variational Architecture: Hierarchical Latent Separation
+# The Disentangled Variational Architecture: Hierarchical Latent Separation
 
+(rb-world-models)=
 :::{admonition} Researcher Bridge: World Models with Typed Latents
 :class: info
-:name: rb-world-models
 Extends world-model architectures (Dreamer, MuZero) with explicit separation between control-relevant symbols, structured nuisance, and texture. The objective is to prevent policies from depending on high-frequency detail while preserving reconstruction fidelity.
 :::
 
 This section provides a practical guide to implementing a **split-latent** architecture that separates a *predictive* macro register from two distinct residual channels: **structured nuisance** $z_n$ (pose/basis/disturbance coordinates that can be modeled and audited) and **texture** $z_{\mathrm{tex}}$ (reconstruction-only detail). This targets **BarrierEpi** (information overload) and **BarrierOmin** (model mismatch) by preventing the World Model and policy from silently depending on texture while still representing nuisance explicitly.
 
 (sec-the-core-concept-split-brain-architecture)=
-### 9.1 The Core Concept: Split-Brain Architecture
+## The Core Concept: Split-Brain Architecture
 
 **Standard Agent:** Encodes the state into a single vector $z$.
 
-**Disentangled Agent:** Encodes the state into a **discrete macro-symbol** plus two distinct continuous residual channels (Section 2.2b):
+**Disentangled Agent:** Encodes the state into a **discrete macro-symbol** plus two distinct continuous residual channels ({ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`):
 
 1. **$K_t \in \mathcal{K}$ (The Macro Symbol / Law Register):** Low-frequency, causal, predictable. This is the *quantized* macrostate (a code index). For downstream continuous networks we also use its embedding $z_{\text{macro}}:=e_{K_t}\in\mathbb{R}^{d_m}$, but the *information-carrying* object is the discrete symbol $K_t$.
 
@@ -28,10 +28,10 @@ P(K_{t+1}\mid K_t,a_t)\ \text{is sharply concentrated (ideally deterministic), a
 $$
 (Optionally, and in the strongest form, also $I(K_{t+1};Z_{n,t}\mid K_t,a_t)=0$: nuisance should not be needed to predict the next macro symbol once action is accounted for.)
 
-The macro symbol must be predictable **solely from its own history** (plus action). If the World Model needs micro-residuals to predict the next macro symbol, then $K_t$ is not a sufficient macro statistic (Section 2.8).
+The macro symbol must be predictable **solely from its own history** (plus action). If the World Model needs micro-residuals to predict the next macro symbol, then $K_t$ is not a sufficient macro statistic ({ref}`Section 2.8 <sec-conditional-independence-and-sufficiency>`).
 
 (sec-architecture-the-disentangled-vq-vae-rnn)=
-### 9.2 Architecture: The Disentangled VQ-VAE-RNN
+## Architecture: The Disentangled VQ-VAE-RNN
 
 ```python
 import torch
@@ -344,7 +344,7 @@ class DisentangledAgent(nn.Module):
 ```
 
 (sec-loss-function-enforcing-macro-micro-separation)=
-### 9.3 Loss Function: Enforcing Macro/Micro Separation
+## Loss Function: Enforcing Macro/Micro Separation
 
 The Disentangled Agent cannot be trained with a reconstruction loss alone. It requires a compound loss that enforces the **learnability threshold**: the macro channel must be predictive/closed, and the micro channel must be treated as nuisance rather than state.
 
@@ -444,7 +444,7 @@ class DisentangledLoss(nn.Module):
 ```
 
 (sec-the-complete-training-loop)=
-### 9.4 The Complete Training Loop
+## The Complete Training Loop
 
 ```python
 class DisentangledTrainer:
@@ -590,7 +590,7 @@ class DisentangledTrainer:
 ```
 
 (sec-runtime-diagnostics-the-closure-ratio)=
-### 9.5 Runtime Diagnostics: The Closure Ratio
+## Runtime Diagnostics: The Closure Ratio
 
 The key diagnostic for macro/micro separation is the **Closure Ratio**:
 
@@ -711,7 +711,7 @@ class ClosureMonitor:
 ```
 
 (sec-advanced-hierarchical-multi-scale-latents)=
-### 9.6 Advanced: Hierarchical Multi-Scale Latents
+## Advanced: Hierarchical Multi-Scale Latents
 
 For complex environments, a single macro/micro split may be insufficient. A macro hierarchy extends the split-latent idea to multiple discrete scales:
 
@@ -859,7 +859,7 @@ class HierarchicalDisentangled(nn.Module):
 ```
 
 (sec-literature-connections)=
-### 9.7 Literature Connections (Mapping + Differences)
+## Literature Connections (Mapping + Differences)
 
 This framework is largely a **recomposition** of known ideas. What differs is the insistence on (i) a *discrete* macro state used for prediction/control, and (ii) explicit, online-auditable contracts tying representation, dynamics, and safety.
 
@@ -880,7 +880,7 @@ This framework is largely a **recomposition** of known ideas. What differs is th
 - Information bottleneck perspective: {cite}`tishby2015deep`
 
 (sec-computational-costs)=
-### 9.8 Computational Costs
+## Computational Costs
 
 | Loss Component | Formula | Time Complexity | Notes |
 |----------------|---------|-----------------|-------|
@@ -903,7 +903,7 @@ Total cost depends on $|\mathcal{K}|$, whether closure is computed online or int
 | Compute-constrained                   | Standard may be preferable if codebook + closure diagnostics are not affordable |
 
 (sec-control-theory-translation-dictionary)=
-### 9.9 Control Theory Translation: Dictionary
+## Control Theory Translation: Dictionary
 
 To ensure rigorous connections to the established literature, we explicitly map Hypostructure components to their Control Theory and optimization equivalents.
 
@@ -924,7 +924,7 @@ To ensure rigorous connections to the established literature, we explicitly map 
 - {cite}`lasalle1960extent` — The Extent of Asymptotic Stability
 
 (sec-differential-geometry-view-curvature-as-conditioning)=
-### 9.10 Differential-Geometry View (No Physics): Curvature as Conditioning
+## Differential-Geometry View (No Physics): Curvature as Conditioning
 
 The Fragile Agent uses differential geometry as a **regulation tool**: the metric $G$ (from Hessian curvature and/or Fisher information) defines a local notion of distance/conditioning in latent space, and therefore how aggressively the controller should update.
 
@@ -953,7 +953,7 @@ $$
 Geometric Deep Learning uses geometry to design **architectures** (equivariant neural networks). The Fragile Agent uses geometry for **runtime regulation**: curvature is estimated from the critic/policy sensitivity and used to adapt update magnitudes online.
 
 (sec-the-entropy-regularized-objective-functional)=
-### 9.11 The Entropy-Regularized Objective Functional
+## The Entropy-Regularized Objective Functional
 
 We use a regularized objective (in nats) that trades off task cost, representation complexity, and control effort.
 
@@ -987,12 +987,12 @@ $$
 This is the standard structure behind information bottlenecks/MDL (representation) and KL-regularized control / MaxEnt RL (policy), stated without additional metaphors.
 
 (sec-atlas-manifold-dictionary-from-topology-to-neural-networks)=
-### 9.12 Atlas-Manifold Dictionary: From Topology to Neural Networks
+## Atlas-Manifold Dictionary: From Topology to Neural Networks
 
 This section provides a translation dictionary connecting **manifold theory** to the **neural network implementations** described in Sections 7.7–7.8 (Attentive Atlas routing assumed unless noted).
 
 (sec-core-correspondences)=
-#### Core Correspondences
+### Core Correspondences
 
 | Manifold Theory                     | Neural Implementation                                          | Role                     | Section Reference |
 |-------------------------------------|----------------------------------------------------------------|--------------------------|-------------------|
@@ -1006,7 +1006,7 @@ This section provides a translation dictionary connecting **manifold theory** to
 | **Chart separation**                | Separation loss                                                | Chart partitioning       | 7.7.4             |
 
 (sec-self-supervised-learning-correspondences)=
-#### Self-Supervised Learning Correspondences
+### Self-Supervised Learning Correspondences
 
 | SSL Concept                 | VICReg Term                | Geometric Interpretation | Failure Mode Prevented    |
 |-----------------------------|----------------------------|--------------------------|---------------------------|
@@ -1016,7 +1016,7 @@ This section provides a translation dictionary connecting **manifold theory** to
 | **Negative sampling**       | (Not needed in VICReg)     | Contrastive boundary     | —                         |
 
 (sec-mixture-of-experts-correspondences)=
-#### Mixture of Experts Correspondences
+### Mixture of Experts Correspondences
 
 | MoE Concept {cite}`jacobs1991adaptive` | Atlas Concept         | Implementation                                  |
 |----------------------------------------|-----------------------|-------------------------------------------------|
@@ -1027,9 +1027,9 @@ This section provides a translation dictionary connecting **manifold theory** to
 | **Expert capacity**                    | Chart dimension       | Latent dimension $d$                            |
 
 (sec-loss-function-decomposition)=
-#### Loss Function Decomposition
+### Loss Function Decomposition
 
-The **Universal Loss** (Section 7.7.4) decomposes into geometric objectives, using attentive router weights $w_i(x)$ from Section 7.8.1:
+The **Universal Loss** ({ref}`Section 7.7.4 <sec-the-universal-loss-functional>`) decomposes into geometric objectives, using attentive router weights $w_i(x)$ from {ref}`Section 7.8.1 <sec-theoretical-motivation-charts-as-query-vectors>`:
 
 | Loss Component                 | Geometric Objective | Manifold Property Enforced         |
 |--------------------------------|---------------------|------------------------------------|
@@ -1042,7 +1042,7 @@ The **Universal Loss** (Section 7.7.4) decomposes into geometric objectives, usi
 | $\mathcal{L}_{\text{orth}}$    | Isometric embedding | $\lVert Wx\rVert = \lVert x\rVert$ |
 
 (sec-when-to-use-atlas-architecture)=
-#### When to Use Atlas Architecture
+### When to Use Atlas Architecture
 
 | Data Topology            | Single Chart | Atlas Required | Why                   |
 |--------------------------|--------------|----------------|-----------------------|
@@ -1056,7 +1056,7 @@ The **Universal Loss** (Section 7.7.4) decomposes into geometric objectives, usi
 *Swiss Roll is topologically trivial but may benefit from multiple charts for geometric reasons (unrolling).
 
 (sec-key-citations)=
-#### Key Citations
+### Key Citations
 
 | Concept                  | Citation                          | Contribution                                 |
 |--------------------------|-----------------------------------|----------------------------------------------|

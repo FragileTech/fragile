@@ -1,5 +1,5 @@
 (sec-the-metabolic-transducer-autopoiesis-and-the-szilard-engine)=
-## 36. The Metabolic Transducer: Autopoiesis and the Szilard Engine
+# The Metabolic Transducer: Autopoiesis and the Szilard Engine
 
 *Abstract.* This chapter closes the thermodynamic loop opened in {ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`. We derive the **Metabolic Transducer** $\mathfrak{T}_{\text{harvest}}$ from the Szilard engine analysis, showing that reward signals encode extractable work. We prove the **Autopoietic Inequality**—the survival condition requiring harvest rate to exceed metabolic dissipation. We derive the **Fading Metric Law** from Fisher Information principles, showing that the latent geometry degrades as energy depletes. Finally, we introduce diagnostic nodes 67–70 to monitor autopoietic viability.
 
@@ -10,7 +10,7 @@
 
 
 (sec-thermodynamics-of-information-harvesting)=
-### 36.1 The Thermodynamics of Information Harvesting
+## The Thermodynamics of Information Harvesting
 
 In {ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`, we established that computation dissipates energy: the Generalized Landauer Bound (Theorem {prf:ref}`thm-generalized-landauer-bound`) states $\dot{\mathcal{M}} \geq T_c |dH/ds|$. Here we establish the converse: **correct prediction extracts work**. This is the Szilard engine operating in the forward direction.
 
@@ -147,7 +147,7 @@ where $r_t$ is measured in nats.
 
 
 (sec-internal-battery-autopoietic-dynamics)=
-### 36.2 The Internal Battery and Autopoietic Dynamics
+## The Internal Battery and Autopoietic Dynamics
 
 The agent maintains an **internal energy reservoir** that fuels computation. This reservoir is depleted by inference ({ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`) and replenished by harvesting. The dynamics of this reservoir determine the agent's survival.
 
@@ -231,9 +231,9 @@ Standard reward maximization $\max \mathbb{E}[\sum_t \gamma^t r_t]$ emerges as a
 
 :::
 
-:::{note} Connection to RL #34: Reward Maximization as Infinite-Battery Limit
-:name: connection-rl-34
-
+:::{admonition} Connection to RL #34: Reward Maximization as Infinite-Battery Limit
+:class: note
+:name: conn-rl-34
 **The General Law (Fragile Agent):** Survival objective $\mathcal{J}_{\text{survival}} = \mathbb{E}[\int (\mathfrak{T}(r) - \dot{\mathcal{M}}) \, dt]$
 
 **The Degenerate Limit:** $B \to \infty$ (inexhaustible battery), $\dot{\mathcal{M}} \to 0$ (free computation)
@@ -250,7 +250,7 @@ Standard reward maximization $\max \mathbb{E}[\sum_t \gamma^t r_t]$ emerges as a
 
 
 (sec-the-fading-metric-energy-dependent-geometry)=
-### 36.3 The Fading Metric: Energy-Dependent Geometry
+## The Fading Metric: Energy-Dependent Geometry
 
 The battery $B(t)$ is not merely a scalar reward modifier—it is a **constraint on the geometry itself**. Without energy, the agent cannot maintain the precise neural representations required for a high-resolution metric ({ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>`). We derive this from Fisher Information principles.
 
@@ -263,7 +263,7 @@ $$
 \dot{E}_{\text{maintain}} \geq \frac{1}{2} T_c \cdot I_F
 $$
 
-where $T_c$ is the cognitive temperature and $I_F$ is the Fisher Information of the belief distribution.
+where $T_c$ is the cognitive temperature ({prf:ref}`def-cognitive-temperature`) and $I_F$ is the Fisher Information of the belief distribution.
 
 *Proof sketch.*
 1. **Fisher Information definition:** For belief density $\rho(z)$ on $(\mathcal{Z}, G)$:
@@ -383,7 +383,7 @@ where $R$ is resistance and $T$ is temperature. The SNR of any electrical signal
 
 
 (sec-homeostatic-control-battery-potential)=
-### 36.4 Homeostatic Control: The Battery Potential
+## Homeostatic Control: The Battery Potential
 
 How does the agent "know" to seek energy when depleted? We introduce a **Homeostatic Potential** that modifies the value landscape based on battery state.
 
@@ -442,9 +442,9 @@ As $B \to 0$:
 
 :::
 
-:::{note} Connection to RL #35: Intrinsic Motivation as Battery-Independent Limit
-:name: connection-rl-35
-
+:::{admonition} Connection to RL #35: Intrinsic Motivation as Battery-Independent Limit
+:class: note
+:name: conn-rl-35
 **The General Law (Fragile Agent):** Battery-modulated homeostatic potential $\Phi_{\text{homeo}}(z, B) = \lambda_{\text{surv}}/(B + \epsilon)$
 
 **The Degenerate Limit:** $B \to \infty$ or $\lambda_{\text{surv}} \to 0$
@@ -461,7 +461,7 @@ As $B \to 0$:
 
 
 (sec-thermal-management-carnot-bound)=
-### 36.5 Thermal Management and the Carnot Bound
+## Thermal Management and the Carnot Bound
 
 The transduction efficiency $\eta$ is not a free parameter—it is bounded by thermodynamics. We derive this bound and its consequences.
 
@@ -538,7 +538,7 @@ The **Thermal Operating Envelope** is the region in $(T_c, \dot{\mathcal{M}}, \d
 
 
 (sec-implementation-metabolic-battery)=
-### 36.6 Implementation: The MetabolicBattery Module
+## Implementation: The MetabolicBattery Module
 
 We provide the reference implementation linking the Sieve, the Governor, and the Reward signal.
 
@@ -552,7 +552,7 @@ from typing import Tuple
 class MetabolismConfig:
     """Configuration for the Metabolic Transducer and Battery.
 
-    All parameters have physical units and interpretations from Section 36.
+    All parameters have physical units and interpretations from {ref}`Section 36 <sec-the-metabolic-transducer-autopoiesis-and-the-szilard-engine>`.
     """
     battery_capacity: float = 100.0      # B_max: Maximum stored energy (Joules)
     initial_battery: float = 50.0        # B_0: Initial endowment
@@ -620,7 +620,7 @@ class MetabolicBattery(nn.Module):
 
         Args:
             reward_nats: Reward signal r_t
-            metabolic_cost_joules: Metabolic cost M_dot from Section 31
+            metabolic_cost_joules: Metabolic cost M_dot from {ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`
 
         Returns:
             delta: Net energy change
@@ -728,7 +728,7 @@ class MetabolicBattery(nn.Module):
 
 
 (sec-diagnostic-nodes-autopoiesis)=
-### 36.7 Diagnostic Nodes 67–70: Autopoiesis
+## Diagnostic Nodes 67–70: Autopoiesis
 
 We add four diagnostic nodes to the Sieve monitoring autopoietic viability.
 
@@ -800,7 +800,7 @@ We add four diagnostic nodes to the Sieve monitoring autopoietic viability.
 
 
 (sec-summary-closed-thermodynamic-loop)=
-### 36.8 Summary: The Closed Thermodynamic Loop
+## Summary: The Closed Thermodynamic Loop
 
 With the Metabolic Transducer, the Fragile Agent becomes a thermodynamically closed system—an **autopoietic machine** whose existence depends on its own successful operation.
 
