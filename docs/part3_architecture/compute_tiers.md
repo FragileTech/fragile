@@ -9,7 +9,7 @@ This section is the compute budget view: which checks are cheap enough for onlin
 This section provides an order-of-growth and engineering-cost view of the regulation framework, enabling practitioners to choose an appropriate tier of coverage under compute and implementation constraints.
 
 (sec-interface-cost-summary)=
-### Interface Cost Summary
+## Interface Cost Summary
 
 | Tier          | Interfaces                                                                       | Relative Cost | Failure Modes Covered |
 |---------------|----------------------------------------------------------------------------------|---------------|-----------------------|
@@ -1293,7 +1293,7 @@ From this point onward, atlas references assume the Attentive Atlas (Tier 6) unl
 The diagram below summarizes the encoder-side hierarchy that constructs the latent state
 $Z_t = (K_{\text{chart}}, K_{\text{code}}, z_n, z_{\text{tex}})$ under the Attentive Atlas routing.
 
-```mermaid
+```{mermaid}
 %%{init: {"themeVariables": {"edgeLabelBackground":"#ffffff","textColor":"#1a1a1a","lineColor":"#666666"}}}%%
 flowchart TD
     subgraph ENC["Embedding block (encoder)"]
@@ -1360,7 +1360,7 @@ To preserve chart structure on the way back to observations, the decoder mirrors
 chart-specific projectors and a shared renderer. The decoder is **autonomous**: it can route itself
 from geometry alone during dreaming, or accept a discrete chart index during planning.
 
-```mermaid
+```{mermaid}
 %%{init: {"themeVariables": {"edgeLabelBackground":"#ffffff","textColor":"#1a1a1a","lineColor":"#666666"}}}%%
 flowchart TD
     subgraph DEC["Inverse atlas decoder (autonomous)"]

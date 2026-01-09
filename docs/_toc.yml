@@ -45,13 +45,14 @@ parts:
     - file: part7_cognition/ontology
     - file: part7_cognition/metabolism
     - file: part7_cognition/causality
-    - file: part7_cognition/standard_model
     - file: part7_cognition/metabolic_transducer
     - file: part7_cognition/intersubjective_metric
 
   - caption: Part VIII - Multi-Agent Gauge Theory
     chapters:
     - file: part8_multiagent/gauge_theory
+    - file: part8_multiagent/standard_model
+    - file: part8_multiagent/parameter_sieve
 
   - caption: Part IX - Economics
     chapters:
@@ -68,4 +69,3 @@ parts:
     - file: appendices/wfr_tensor
     - file: appendices/faq
     - file: appendices/proofs
-    - file: appendices/parameter_sieve

@@ -12,8 +12,8 @@ This appendix provides the rigorous mathematical foundations for the theorems an
 
 **Hypothesis:** Let $\mathcal{S}[N_c] = \inf_{\theta} \mathcal{S}_{\text{onto}}(\theta, N_c)$ be the value function of the ontological action for $N_c$ charts.
 
+(proof-thm-the-fission-trigger)=
 :::{prf:proof}
-:label: proof-thm-the-fission-trigger
 
 Consider the discrete variation $\Delta \mathcal{S} = \mathcal{S}[N_c + 1] - \mathcal{S}[N_c]$. By the definition of the Ontological Action ({ref}`Section 30.3 <sec-the-fission-criterion>`):
 
@@ -50,8 +50,8 @@ The condition $\Xi > \Xi_{\text{crit}}$ ensures that the second variation of the
 
 **Hypothesis:** The potential $\Phi_{\text{onto}}(r)$ is $SO(n)$-invariant near $r=0$, where $r = \|q_* - q_{\text{parent}}\|$ is the radial distance of the new query from the parent.
 
+(proof-thm-supercritical-pitchfork-bifurcation)=
 :::{prf:proof}
-:label: proof-thm-supercritical-pitchfork-bifurcation
 
 Let $f(\Xi) = \Xi - \Xi_{\text{crit}}$ be the control parameter. By $SO(n)$ symmetry, the Ontological Action can only depend on even powers of $r$ near the origin. We expand in a power series:
 
@@ -88,8 +88,8 @@ The bifurcation diagram: for $\Xi < \Xi_{\text{crit}}$, the system has a single 
 
 **Hypothesis:** Belief evolution follows the {prf:ref}`def-the-wfr-action` continuity equation $\partial_s \rho = \mathcal{L}_{\text{WFR}} \rho = \rho r - \nabla \cdot (\rho v)$.
 
+(proof-thm-generalized-landauer-bound)=
 :::{prf:proof}
-:label: proof-thm-generalized-landauer-bound
 
 The time derivative of the Shannon entropy is:
 
@@ -145,8 +145,8 @@ Adding both contributions yields the stated bound. $\square$
 
 **Hypothesis:** $S^*$ is an interior point of $[0, S_{\max}]$.
 
+(proof-thm-deliberation-optimality)=
 :::{prf:proof}
-:label: proof-thm-deliberation-optimality
 
 Define the deliberation functional:
 
@@ -198,8 +198,8 @@ This states that the optimal stopping time $S^*$ is reached when the power dissi
 
 **Hypothesis:** The agent's path minimizes $\mathcal{S} = \int L(z, \dot{z}) \, dt$ with Lagrangian $L = \frac{1}{2}\|\dot{z}\|_G^2 - (V + \beta_{\text{exp}}\Psi_{\text{causal}})$.
 
+(proof-thm-the-augmented-drift-law)=
 :::{prf:proof}
-:label: proof-thm-the-augmented-drift-law
 
 The Euler-Lagrange equations for the functional are:
 
@@ -254,8 +254,8 @@ The drift field $F_{\text{total}}$ is the first-order velocity approximation, pr
 
 **Hypothesis:** Let $\mathcal{M}$ be a Markov Blanket for $K$.
 
+(proof-thm-interventional-closure)=
 :::{prf:proof}
-:label: proof-thm-interventional-closure
 
 We compare the mutual information under the observational measure $P$ and the interventional measure $P_{do(A)}$.
 
@@ -407,8 +407,8 @@ Therefore, if an agent is localized in $\Omega_A$, there is strictly positive pr
 
 :::
 
+(proof-thm-e7-ground-state-positivity)=
 :::{prf:proof}
-:label: proof-thm-e7-ground-state-positivity
 
 **Step 1 (Elliptic Regularity).** Since $\mathbf{g}$ is smooth and positive-definite (Assumption 1), and $\mathcal{V}$ is smooth (Assumption 2), the operator $\hat{H}_\sigma$ is uniformly elliptic. By standard elliptic regularity theory {cite}`gilbarg1977elliptic`, any $L^2$ eigenfunction $\Psi$ satisfying $\hat{H}_\sigma \Psi = E \Psi$ is in $C^\infty(\mathcal{M})$.
 
@@ -488,8 +488,8 @@ where $d_{\text{Ag}}(\mathbf{z}, \Omega_A) := \inf_{\mathbf{y} \in \Omega_A} d_{
 
 :::
 
+(proof-thm-e7-agmon-decay-bound)=
 :::{prf:proof}
-:label: proof-thm-e7-agmon-decay-bound
 
 We follow the standard Agmon method {cite}`agmon1982lectures,simon1983semiclassical`.
 
@@ -575,8 +575,8 @@ P_{\text{tunnel}}^{\text{adv}} \lesssim \exp\left(-\frac{d_{\text{Ag}}^{\text{ad
 $$
 :::
 
+(proof-cor-e7-adversarial-suppression)=
 :::{prf:proof}
-:label: proof-cor-e7-adversarial-suppression
 
 **Step 1 (Metric Comparison).** Since $\mathcal{G}_{ij} \succeq 0$ (positive semi-definite), for any tangent vector $\mathbf{v} \in T_{\mathbf{z}}\mathcal{M}$:
 
@@ -640,8 +640,8 @@ where $\phi \in L^2(\mathcal{M})$ is any function with $\langle \Psi_0, \phi \ra
 
 :::
 
+(proof-thm-e7-feynman-kac)=
 :::{prf:proof}
-:label: proof-thm-e7-feynman-kac
 
 **Step 1 (Semigroup Representation).** By the Feynman-Kac-Itô formula for Schrödinger operators on manifolds {cite}`simon1979functional`:
 
@@ -755,8 +755,8 @@ This completes the rigorous foundation for the strategic tunneling mechanism. $\
 
 **Hypothesis:** Let $\pi(a|z) = \frac{1}{Z} \exp\left(\frac{Q(z,a)}{T_c}\right)$ be the policy, where $Z = \sum_a \exp(Q/T_c)$ is the partition function. Let $\beta = 1/T_c$ be the inverse {prf:ref}`def-cognitive-temperature`.
 
+(proof-cor-varentropy-stability)=
 :::{prf:proof}
-:label: proof-cor-varentropy-stability
 
 **Step 1: Express Entropy in terms of $\beta$.**
 The entropy of the policy is:
@@ -815,8 +815,8 @@ This proves that Varentropy equals the heat capacity and measures the sensitivit
 
 **Hypothesis:** Let $\pi$ be a mixture of two dominant modes with values $Q_1, Q_2$ and a background of $N-2$ negligible modes.
 
+(proof-cor-bimodal-instability)=
 :::{prf:proof}
-:label: proof-cor-bimodal-instability
 
 **Step 1: Variance of Surprisal Form.**
 
@@ -868,8 +868,8 @@ This proves that $V_H$ detects the topological feature (the valley) that disting
 
 **Hypothesis:** We require the probability distribution $\pi_t$ to remain close to the equilibrium Boltzmann distribution $\pi^*_{T_c(t)}$ during annealing. This is the **Adiabatic Condition**.
 
+(proof-cor-varentropy-brake)=
 :::{prf:proof}
-:label: proof-cor-varentropy-brake
 
 **Step 1: Thermodynamic Speed.**
 The rate of change of the policy distribution with respect to temperature is measured by the Fisher Information metric $g_{TT}$ on the statistical manifold parameterized by $T_c$:
@@ -928,8 +928,8 @@ $$
 
 **Hypothesis:** We define $\Psi_{\text{causal}}$ as the Expected Information Gain (EIG) about model parameters $\theta$ given a transition $(z, a) \to z'$.
 
+(proof-cor-epistemic-curiosity-filter)=
 :::{prf:proof}
-:label: proof-cor-epistemic-curiosity-filter
 
 **Step 1: Definition of EIG.**
 
@@ -973,8 +973,8 @@ $$
 \left(\frac{1}{c_{\text{info}}^2}\partial_t^2 - \Delta_G + \kappa^2\right)V^{(i)} = \rho_r^{(i)} + \sum_{j \neq i} \Phi_{ij}^{\text{ret}}
 $$
 
+(proof-hjb-klein-gordon)=
 :::{prf:proof}
-:label: proof-hjb-klein-gordon
 
 **Step 1: Bellman Recursion with Temporal Structure.**
 
@@ -1099,8 +1099,8 @@ All terms have consistent units. $\square$
 
 **Statement:** The belief wave-function $\psi = \sqrt{\rho} e^{iV/\sigma}$ satisfies the Inference Schrödinger Equation if and only if $(\rho, V)$ satisfy the WFR-HJB system.
 
+(proof-madelung-transform)=
 :::{prf:proof}
-:label: proof-madelung-transform
 
 **Step 1: Polar Decomposition.**
 
@@ -1278,8 +1278,8 @@ The Bohm potential $Q_B$ emerges naturally from the kinetic energy operator acti
 
 **Statement:** The augmented state $(z^{(N)}_t, \Xi_{<t})$ forms a Markov process even when the raw state $z^{(N)}_t$ does not.
 
+(proof-markov-restoration)=
 :::{prf:proof}
-:label: proof-markov-restoration
 
 **Step 1: Define the Information Content.**
 
@@ -1356,8 +1356,8 @@ for all $0 < r < s$, which characterizes Markov processes. $\square$
 
 **Statement:** A Nash equilibrium in the multi-agent Klein-Gordon system corresponds to a standing wave pattern with time-averaged zero flux.
 
+(proof-nash-standing-wave)=
 :::{prf:proof}
-:label: proof-nash-standing-wave
 
 **Step 1: Standing Wave Ansatz.**
 
@@ -1442,8 +1442,8 @@ Higher modes ($n > 1$) are metastable—small perturbations can cause transition
 
 **Statement:** The Game Tensor $\mathcal{G}_{ij}$ arises from the second-order response of agent $i$'s value to agent $j$'s position, mediated by the Strategic Jacobian.
 
+(proof-game-tensor-derivation)=
 :::{prf:proof}
-:label: proof-game-tensor-derivation
 
 **Step 1: Best-Response Correspondence.**
 
@@ -1534,8 +1534,8 @@ $$
 
 **Statement:** The field strength tensor satisfies $D_{[\mu}\mathcal{F}_{\nu\rho]} = 0$ (cyclic sum vanishes).
 
+(proof-bianchi-identity)=
 :::{prf:proof}
-:label: proof-bianchi-identity
 
 **Step 1: Jacobi Identity for Covariant Derivatives.**
 
@@ -1546,7 +1546,7 @@ $$
 
 **Step 2: Commutator in Terms of Field Strength.**
 
-From Theorem {prf:ref}`thm-curvature-from-commutator`:
+From Theorem {prf:ref}`thm-curvature-commutator`:
 $$
 [D_\mu, D_\nu] = -ig\mathcal{F}_{\mu\nu}
 $$
@@ -1628,8 +1628,8 @@ by the Jacobi identity for structure constants and antisymmetry of $\mathcal{F}$
 
 **Statement:** When $\mu^2 < 0$ in the Higgs potential, spontaneous symmetry breaking generates masses for gauge bosons and matter fields.
 
+(proof-higgs-mechanism)=
 :::{prf:proof}
-:label: proof-higgs-mechanism
 
 **Step 1: Higgs Potential Minimization.**
 
@@ -1750,8 +1750,8 @@ The number of massive gauge bosons equals $\dim(G) - \dim(H)$ (the number of bro
 
 **Statement:** In the semiclassical limit $\sigma \to 0$, the ground state wave-function concentrates on the Nash equilibrium.
 
+(proof-nash-ground-state)=
 :::{prf:proof}
-:label: proof-nash-ground-state
 
 **Step 1: WKB/Semiclassical Ansatz.**
 

@@ -1782,7 +1782,7 @@ The Klein-Gordon operator $(-\Box + \kappa^2)$ has spectrum bounded below by $\k
 :::{prf:theorem} Mass Gap by Constructive Necessity
 :label: thm-mass-gap-constructive
 
-**Assumptions:**
+**Prerequisites:**
 1. The system satisfies the Causal Information Bound (Theorem 33.3)
 2. The system is **non-trivial**: has non-zero update velocity $\|v\|_G > 0$ at some time
 3. The system is **interacting**: coupling constants $\Phi_{ij} \neq 0$ or $\mathcal{G}_{ij} \neq 0$
@@ -2238,9 +2238,9 @@ is essentially self-adjoint on $\mathcal{H} = L^2(\mathcal{Z}, d\mu_G)$ with dom
 
 :::
 
+(remark-line-bundle-formalism)=
 :::{admonition} Remark: Line Bundle Formalism for Topologically Non-Trivial Manifolds
 :class: dropdown
-:name: remark-line-bundle-formalism
 
 When the latent manifold has non-trivial topology (e.g., $\pi_1(\mathcal{Z}) \neq 0$), the phase $V/\sigma$ may be **multi-valued** around non-contractible loops. In this case, $\psi$ should be defined as a **section of a complex line bundle** $\mathcal{L} \to \mathcal{Z}$ with connection 1-form $A = dV/\sigma$.
 
@@ -2261,7 +2261,7 @@ For most applications where $\mathcal{Z}$ is simply connected (e.g., Poincare di
 
 **In Physics:** Holonomy measures the failure of parallel transport around a closed loop to return a vector to itself. The Berry phase $\gamma_n = i\oint \langle n|\nabla_R|n\rangle \cdot dR$ is the geometric phase acquired by a quantum state under adiabatic evolution around a parameter loop {cite}`berry1984quantal,nakahara2003geometry`.
 
-**In Implementation:** When $\mathcal{Z}$ has non-trivial topology, the value phase $V/\sigma$ may be multi-valued. The holonomy around a closed loop $\gamma$ is (Remark {ref}`remark-line-bundle-formalism`):
+**In Implementation:** When $\mathcal{Z}$ has non-trivial topology, the value phase $V/\sigma$ may be multi-valued. The holonomy around a closed loop $\gamma$ is (see {ref}`Line Bundle Formalism <remark-line-bundle-formalism>`):
 
 $$
 \exp\left(\frac{i}{\sigma} \oint_\gamma dV\right) = \exp\left(\frac{i}{\sigma} \Delta V_\gamma\right)

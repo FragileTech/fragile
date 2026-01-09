@@ -53,11 +53,11 @@ html:
   use_issues_button         : false  # Whether to add an "open an issue" button
   use_multitoc_numbering    : true   # Continuous numbering across parts/chapters
   extra_footer              : ""  # Will be displayed underneath the footer.
-  google_analytics_id       : ""  # A GA id that can be used to track book views.
   home_page_in_navbar       : true  # Whether to include your home page in the left Navigation Bar
   baseurl                   : ""  # The base URL where your book will be hosted. Used for creating image previews and social links. e.g.: https://mypage.com/mybook/
   analytics:
-    plausible_analytics_url: https://plausible.io/js/script.js
+    google_analytics_id     : ""  # A GA id that can be used to track book views.
+    plausible_analytics_url : https://plausible.io/js/script.js
 
   comments:
     hypothesis              : false
@@ -104,6 +104,7 @@ sphinx:
     # - autoapi.extension  # Disabled - requires src directory
     - sphinx_proof
     - sphinx_tippy  # Hover preview tooltips for cross-references
+    - sphinxcontrib.bibtex  # Bibliography and citation support
   local_extensions          :   # A list of local extensions to load by sphinx specified by "name: path" items
   recursive_update          : false # A boolean indicating whether to overwrite the Sphinx config (true) or recursively update (false)
   config                    : # key-value pairs to directly over-ride the Sphinx configuration
@@ -125,3 +126,12 @@ sphinx:
     tippy_enable_wikitips     : true   # Wikipedia link hover previews
     tippy_enable_doitips      : true   # DOI link hover previews
     tippy_enable_mathjax      : true   # Math rendering in tooltips
+    # sphinxcontrib-bibtex configuration
+    bibtex_bibfiles           : ['references.bib']
+    bibtex_default_style      : 'unsrt'
+    bibtex_reference_style    : 'author_year'
+    # autosectionlabel configuration - prefix with document name to avoid duplicate labels
+    autosectionlabel_prefix_document: true
+    # Expert mode toggle - load custom JavaScript
+    html_js_files:
+      - expert-mode.js

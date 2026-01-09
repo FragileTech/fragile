@@ -381,9 +381,9 @@ $$
 the limiting chart assignment satisfies $\lim_{s \to \infty} K(z(s)) \in \mathcal{A}_y$ almost surely, provided the initial condition lies in the basin $\mathcal{B}_y$ and $T_c$ is sufficiently small.
 
 :::
-:::{prf:proof}
-:label: proof-thm-classification-as-relaxation-a
 
+(proof-thm-classification-as-relaxation-a)=
+:::{prf:proof}
 
 **Step 1: Lyapunov Function Construction.**
 
