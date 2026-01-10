@@ -238,49 +238,38 @@ class AttentiveAtlasEncoder(nn.Module):
         v = self.val_proj(features)  # [B, latent_dim]
 
         # 4. Local VQ per chart
-        # For each chart, find nearest code
-        z_q_list = []
-        indices_list = []
-        vq_loss = torch.tensor(0.0, device=device)
+        codebook_weights = torch.stack(
+            [cb.weight for cb in self.codebooks], dim=0
+        )  # [N_c, codes_per_chart, latent_dim]
+        v_exp = v.unsqueeze(0).expand(self.num_charts, -1, -1)  # [N_c, B, D]
+        dists = torch.cdist(v_exp, codebook_weights)  # [N_c, B, codes_per_chart]
+        indices = torch.argmin(dists, dim=-1)  # [N_c, B]
+        indices_stack = indices.transpose(0, 1)  # [B, N_c]
 
-        for i in range(self.num_charts):
-            # Distance to codes in this chart
-            codebook_i = self.codebooks[i]
-            assert isinstance(codebook_i, nn.Embedding)
-            dists = torch.cdist(v, codebook_i.weight)  # [B, codes_per_chart]
-            inds = torch.argmin(dists, dim=1)  # [B]
-            z_q_local = codebook_i(inds)  # [B, latent_dim]
+        z_q_all = torch.gather(
+            codebook_weights,
+            1,
+            indices.unsqueeze(-1).expand(-1, -1, self.latent_dim),
+        ).transpose(0, 1)  # [B, N_c, D]
 
-            z_q_list.append(z_q_local)
-            indices_list.append(inds)
-
-            # Weighted VQ loss (only train active chart)
-            w = router_weights[:, i].unsqueeze(1).detach()  # [B, 1]
-            commitment = ((v - z_q_local.detach()) ** 2 * w).mean()
-            codebook = ((z_q_local - v.detach()) ** 2 * w).mean()
-            vq_loss = vq_loss + codebook + 0.25 * commitment
-
-        # Stack quantized codes
-        z_stack = torch.stack(z_q_list, dim=1)  # [B, N_c, latent_dim]
-        indices_stack = torch.stack(indices_list, dim=1)  # [B, N_c]
+        w = router_weights.unsqueeze(-1).detach()  # [B, N_c, 1]
+        v_bc = v.unsqueeze(1)  # [B, 1, D]
+        commitment = ((v_bc - z_q_all.detach()) ** 2 * w).mean(dim=(0, 2)).sum()
+        codebook = ((z_q_all - v_bc.detach()) ** 2 * w).mean(dim=(0, 2)).sum()
+        vq_loss = codebook + 0.25 * commitment
 
         # 5. Soft blending for differentiability
-        z_q_blended = (z_stack * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, D]
+        z_q_blended = (z_q_all * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, D]
 
         # Get hard K_code from selected chart
         K_code = indices_stack[torch.arange(B, device=device), K_chart]  # [B]
 
         # 6. Recursive Decomposition - compute z_n per chart for jump operator
         # This allows learning chart transitions on the nuisance coordinates
-        z_n_list = []
-        for i in range(self.num_charts):
-            # Residual from each chart's quantized code
-            delta_i = v - z_q_list[i].detach()  # Stop gradient for clean decomposition
-            # Structure filter extracts z_n for this chart
-            z_n_i = self.structure_filter(delta_i)  # [B, latent_dim]
-            z_n_list.append(z_n_i)
-
-        z_n_all_charts = torch.stack(z_n_list, dim=1)  # [B, N_c, latent_dim]
+        delta = v_bc - z_q_all.detach()
+        z_n_all_charts = self.structure_filter(
+            delta.reshape(B * self.num_charts, self.latent_dim)
+        ).view(B, self.num_charts, self.latent_dim)
 
         # Blend z_n weighted by router (for backward compatibility)
         z_n = (z_n_all_charts * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, latent_dim]
@@ -482,12 +471,15 @@ class TopologicalDecoder(nn.Module):
             logits = self.latent_router(z_geo)
             router_weights = F.softmax(logits, dim=-1)
 
-        # Project through each chart
-        projected = []
-        for proj in self.chart_projectors:
-            projected.append(proj(z_geo))
-
-        h_stack = torch.stack(projected, dim=1)  # [B, N_c, hidden_dim]
+        # Project through each chart using einsum for proper broadcasting
+        # weights[c] is [hidden_dim, latent_dim] for chart c
+        # We compute z_geo @ weights[c].T + biases[c] for each chart
+        weights = torch.stack([proj.weight for proj in self.chart_projectors], dim=0)
+        biases = torch.stack([proj.bias for proj in self.chart_projectors], dim=0)
+        # einsum: 'bl,clh->bch' means z_geo[b,l] @ weights[c,l,h] -> h_stack[b,c,h]
+        # But weights is [C, hidden, latent], so we need to transpose
+        h_stack = torch.einsum('bl,chl->bch', z_geo, weights)
+        h_stack = h_stack + biases.unsqueeze(0)  # [B, N_c, hidden_dim]
 
         # Blend using router weights
         h_global = (h_stack * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, hidden]
