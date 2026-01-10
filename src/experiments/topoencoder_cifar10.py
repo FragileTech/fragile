@@ -471,6 +471,7 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
             if config.orbit_weight > 0 or config.vicreg_inv_weight > 0:
                 x_aug = augment_cifar10(batch_X, config.augment_noise_std)
                 _, _, _, _, enc_w_aug, z_geo_aug, _, _, _ = model_atlas.encoder(x_aug)
+                del x_aug  # Free memory immediately
 
                 if config.orbit_weight > 0:
                     orbit_loss = compute_orbit_loss(enc_w, enc_w_aug)
@@ -588,6 +589,10 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
                 ami = compute_ami(labels_test, chart_assignments)
                 perplexity = model_atlas.compute_perplexity(K_chart_full)
 
+            # Clear GPU cache after heavy test inference
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+
             avg_loss = atlas_losses[-1]
             avg_recon = loss_components["recon"][-1]
             avg_vq = loss_components["vq"][-1]
@@ -620,6 +625,10 @@ def train_benchmark(config: TopoEncoderCIFAR10Config) -> dict:
                         p_y_x_test.argmax(dim=1) == labels_test_t
                     ).float().mean().item()
                     test_sup_route = sup_test["loss_route"].item()
+
+                # Clear GPU cache after supervised test inference
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
 
                 print(
                     f"  Sup: train_acc={avg_sup_acc:.4f} "

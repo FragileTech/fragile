@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import gc
 from typing import TYPE_CHECKING
 
 import os
@@ -49,6 +50,10 @@ def visualize_latent(
         indices_stack: [N, num_charts] code indices per chart (for code usage plot)
         jump_op: FactorizedJumpOperator for visualizing chart transitions
     """
+    # Clean up any lingering figures to prevent memory leaks
+    plt.close("all")
+    gc.collect()
+
     model.eval()
     device = X.device
     input_dim = X.shape[1]
@@ -202,7 +207,9 @@ def visualize_latent(
         left=0.05, right=0.95, top=0.93, bottom=0.05, wspace=0.3, hspace=0.25
     )
     plt.savefig(save_path, dpi=150, bbox_inches="tight")
-    plt.close()
+    plt.close(fig)
+    plt.close("all")  # Extra safety for nested GridSpec objects
+    gc.collect()
 
 
 def _plot_jump_transitions(
@@ -521,6 +528,10 @@ def visualize_results(results: dict, save_path: str = "benchmark_result.png") ->
     Row 1: Input (3D rainbow) | Chart Assignments | Loss Curves | AMI Comparison
     Row 2: VanillaAE Recon | Standard VQ Recon | TopoEncoder Recon | Error Histogram
     """
+    # Clean up any lingering figures to prevent memory leaks
+    plt.close("all")
+    gc.collect()
+
     X = results["X"].cpu().numpy()
     colors = results["colors"]
     chart_assignments = results["chart_assignments"]
@@ -736,7 +747,9 @@ def visualize_results(results: dict, save_path: str = "benchmark_result.png") ->
 
     plt.tight_layout(rect=(0, 0, 1, 0.96))
     plt.savefig(save_path, dpi=150, bbox_inches="tight")
-    plt.close()
+    plt.close(fig)
+    plt.close("all")  # Extra safety for nested GridSpec objects
+    gc.collect()
     print(f"\nFinal visualization saved to: {save_path}")
 
 
@@ -850,6 +863,10 @@ def visualize_latent_images(
         jump_op: FactorizedJumpOperator for chart transitions
         image_shape: Shape to reshape images (H, W, C)
     """
+    # Clean up any lingering figures to prevent memory leaks
+    plt.close("all")
+    gc.collect()
+
     model.eval()
     device = X.device
     num_classes = len(class_names)
@@ -973,7 +990,9 @@ def visualize_latent_images(
 
     plt.tight_layout()
     plt.savefig(save_path, dpi=150, bbox_inches="tight")
-    plt.close()
+    plt.close(fig)
+    plt.close("all")  # Extra safety for nested GridSpec objects
+    gc.collect()
     print(f"Saved: {save_path}")
 
 
@@ -995,6 +1014,10 @@ def visualize_results_images(
         save_path: Path to save visualization
         image_shape: Shape to reshape images (H, W, C)
     """
+    # Clean up any lingering figures to prevent memory leaks
+    plt.close("all")
+    gc.collect()
+
     X = results["X"]
     labels = results["labels"]
     chart_assignments = results["chart_assignments"]
@@ -1150,5 +1173,7 @@ def visualize_results_images(
 
     plt.tight_layout(rect=(0, 0, 1, 0.96))
     plt.savefig(save_path, dpi=150, bbox_inches="tight")
-    plt.close()
+    plt.close(fig)
+    plt.close("all")  # Extra safety for nested GridSpec objects
+    gc.collect()
     print(f"\nFinal visualization saved to: {save_path}")
