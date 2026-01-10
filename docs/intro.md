@@ -96,6 +96,21 @@ Standard RL appears as a degenerate limit of the Fragile Agent when geometry is 
 - **Standard Model of Cognition** and gauge-theoretic unification ({ref}`Section 34 <sec-standard-model-cognition>`)
 - **Parameter Space Sieve** deriving fundamental constants ({ref}`Section 35 <sec-parameter-space-sieve>`)
 - **Economic applications** via Partially Observable Markov Wealth ({ref}`Part IX <sec-pomw>`)
+- **Proof of Useful Work** consensus replacing hash mining with gradient computation ({ref}`Part IX <sec-proof-of-useful-work-cognitive-metabolism-as-consensus>`)
+
+**Proof of Useful Work (PoUW) — Key Security Properties:**
+The economic layer introduces a novel consensus mechanism where the cryptographic puzzle is replaced by neural network training. Security against bad actors is guaranteed by multiple geometric and thermodynamic mechanisms:
+
+| Attack Vector | Defense Mechanism | Guarantee |
+|:--------------|:------------------|:----------|
+| **Fake gradients** | Sieve constraints + spot-check verification | Detection probability $\geq 1 - (1-\epsilon)^k$ with $k$ samples |
+| **51% attack** | Spontaneous Fission (Theorem {prf:ref}`thm-51-attack-rejection`) | Attackers isolated on high-friction shards that die of neglect |
+| **Byzantine validators** | Minimum Friction BFT (Theorem {prf:ref}`thm-minimum-friction-bft`) | Tolerates $< 1/3$ adversarial validators |
+| **Gradient poisoning** | Adversarial Geometric Damping (Theorem {prf:ref}`thm-adversarial-geometric-damping`) | Adversaries geometrically isolated, not just outvoted |
+| **Flash loans / front-running** | Causal Theft Prevention (Theorem {prf:ref}`thm-causal-theft-prevention`) | CausalityViolationCheck rejects acausal transactions |
+| **Coordinated deception** | Babel Limit Attack (Theorem {prf:ref}`thm-babel-limit-attack`) | Information-theoretic bound on collusion effectiveness |
+
+*Core insight:* Adversaries are not defeated by voting—they are **geometrically damped**. Their updates carry infinite inertia (Causal Stasis) and cannot influence the consensus trajectory. Security comes from coherence, not coercion.
 
 **Quick Navigation:**
 - *Want the math?* → {ref}`Sections 20–24 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`
@@ -106,6 +121,7 @@ Standard RL appears as a degenerate limit of the Fragile Agent when geometry is 
 - *Want limits?* → {ref}`Section 33 <sec-causal-information-bound>`
 - *Want gauge theory?* → {ref}`Section 34 <sec-standard-model-cognition>`
 - *Want fundamental constants?* → {ref}`Section 35 <sec-parameter-space-sieve>`
+- *Want blockchain/economics?* → {ref}`Part IX <sec-pomw>`
 - *Want objections answered?* → {ref}`Appendix D <sec-appendix-d-frequently-asked-questions>`
 - *Want proofs?* → {ref}`Appendix A <sec-appendix-a-full-derivations>`
 
@@ -292,6 +308,7 @@ This framework introduces a unified nomenclature. While these terms may seem nov
 15. **Metabolic transducer architecture.** Energy-information coupling is made explicit through the metabolic transducer, which converts computational resources into information updates while respecting Landauer bounds. This provides principled "thinking fast vs slow" phase transitions ({ref}`Part VII <sec-metabolic-transducer>`).
 16. **Intersubjective metric for shared meaning.** Multi-agent communication is grounded in a shared metric space where meaning emerges from geometric alignment between agents' latent representations, enabling principled analysis of language grounding and semantic drift ({ref}`Part VII <sec-intersubjective-metric>`).
 17. **Economic unification via POMW.** Partially Observable Markov Wealth (POMW) extends the framework to economic agents, treating wealth as a conserved quantity under metabolic constraints and unifying game-theoretic equilibria with the geometric field theory ({ref}`Part IX <sec-pomw>`).
+18. **Proof of Useful Work consensus.** The framework enables a novel blockchain consensus mechanism where hash mining is replaced by gradient computation on a shared neural network. Security is guaranteed by the Landauer bound (thermodynamic hardness), the Sieve constraints (fake gradient detection), and geometric coherence (adversaries are damped, not outvoted). Key theorems: Cognitive Equivalency ({prf:ref}`thm-cognitive-equivalency`), Holographic Verification ({prf:ref}`thm-holographic-verification`), Verifier's Nash Equilibrium ({prf:ref}`thm-verifier-nash-equilibrium`), 51% Attack Rejection ({prf:ref}`thm-51-attack-rejection`), and Adversarial Geometric Damping ({prf:ref}`thm-adversarial-geometric-damping`). The result: energy expenditure produces intelligence instead of heat, and adversaries cannot buy consensus because they cannot buy geometric alignment ({ref}`Part IX <sec-proof-of-useful-work-cognitive-metabolism-as-consensus>`).
 
 (sec-what-is-novel-here-vs-what-is-repackaging)=
 ### What Is Novel Here vs What Is Repackaging
@@ -338,6 +355,7 @@ This framework introduces a unified nomenclature. While these terms may seem nov
 *Economic Extensions:*
 
 20. **Partially Observable Markov Wealth (POMW).** Economic agents are unified with the geometric field theory by treating wealth as a conserved quantity under metabolic constraints. Game-theoretic equilibria emerge as geometric fixed points; resource allocation follows from holographic interface capacity ({ref}`Part IX <sec-pomw>`).
+21. **Proof of Useful Work (PoUW) consensus.** A novel blockchain consensus mechanism where the cryptographic puzzle is replaced by gradient computation on a shared neural network. Novel contributions include: (a) Cognitive Equivalency Theorem proving gradients have the same thermodynamic hardness as hashes; (b) Holographic Verification reducing verification cost from $O(N)$ to $O(\sqrt{N})$; (c) Verifier's Nash Equilibrium proving honest computation is strictly dominant; (d) Minimum Friction BFT achieving Byzantine tolerance via geometric coherence; (e) 51% Attack Rejection via Spontaneous Fission; (f) Adversarial Geometric Damping isolating malicious actors through metric friction rather than voting ({ref}`Part IX <sec-proof-of-useful-work-cognitive-metabolism-as-consensus>`).
 
 **Repackaging (directly inherited ingredients, organized by domain):**
 
@@ -379,6 +397,7 @@ This framework introduces a unified nomenclature. While these terms may seem nov
 | **Gauge structure**                 | implicit or absent                           | explicit gauge group $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ with three derived gauge fields; covariant derivative ensures coordinate-invariant dynamics ({ref}`Section 34 <sec-standard-model-cognition>`)                                                                                                                                                                                                                                                                                                                                 |
 | **Hyperparameter tuning**           | grid search, Bayesian optimization           | Parameter Space Sieve derives operational constants from constraint satisfaction; feasible region defined by causal, holographic, metabolic, and stiffness bounds ({ref}`Section 35 <sec-parameter-space-sieve>`)                                                                                                                                                                                                                                                                                                                                                 |
 | **Economic agents**                 | separate game-theoretic models               | Partially Observable Markov Wealth (POMW) unifies economic dynamics with agent geometry; wealth as conserved quantity under metabolic constraints ({ref}`Part IX <sec-pomw>`)                                                                                                                                                                                                                                                                                                                                                                                     |
+| **Blockchain consensus**            | Proof of Work (useless hash mining)          | Proof of Useful Work: gradients replace hashes; energy produces intelligence not heat; adversaries geometrically damped via metric friction; 51% attacks trigger Spontaneous Fission ({ref}`Part IX <sec-proof-of-useful-work-cognitive-metabolism-as-consensus>`)                                                                                                                                                                                                                                                                                                |
 
 **Reading guide (connections by section).**
 - Representation + abstraction: {ref}`Sections 2.2b <sec-the-shutter-as-a-vq-vae>`, {ref}`2.8 <sec-conditional-independence-and-sufficiency>`, {ref}`9.7–9.9 <sec-literature-connections>`
@@ -524,10 +543,10 @@ where:
 2. **Infinite Capacity** ($|\mathcal{K}| \to \infty$): No information bottleneck, continuous state space without quantization
 3. **No Safety Constraints** ($\Xi_{\text{crit}} \to \infty$): The Sieve is disabled, all actions permitted
 
-*Proof.* Each of the 36 Connection boxes below demonstrates a specific reduction. The composite limit follows from the independence of the four degeneracy conditions. $\square$
+*Proof.* Each of the 37 Connection boxes below demonstrates a specific reduction. The composite limit follows from the independence of the five degeneracy conditions. $\square$
 :::
 
-**Table 0.6.1 (The 36 RL Reductions).** Each row shows a standard RL algorithm (degenerate case), the corresponding Fragile Agent construct (general law), and the mathematical limit that recovers the standard algorithm.
+**Table 0.6.1 (The 37 Reductions).** Each row shows a standard algorithm (degenerate case), the corresponding Fragile Agent construct (general law), and the mathematical limit that recovers the standard algorithm. Includes RL algorithms, economic models, and blockchain consensus.
 
 | #  | Standard RL (Degenerate)   | Fragile Agent (General Law)                                        | Limit                                                                   | Section                                                                                   |
 |----|----------------------------|--------------------------------------------------------------------|-------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|
@@ -567,8 +586,9 @@ where:
 | 34 | System 1/2 heuristics          | Metabolic Transducer (Landauer-bounded switching)                  | Remove energy accounting                                            | {ref}`Part VII <sec-metabolic-transducer>`                                                |
 | 35 | Multi-agent language alignment | Intersubjective Metric (geometric semantic grounding)              | Independent representations                                         | {ref}`Part VII <sec-intersubjective-metric>`                                              |
 | 36 | Economic game theory           | POMW (wealth as conserved geometric quantity)                      | Decouple economics from geometry                                    | {ref}`Part IX <sec-pomw>`                                                                 |
+| 37 | Bitcoin/Proof of Work          | Proof of Useful Work (gradient mining + geometric consensus)       | Remove Sieve, use useless hashes, vote-based BFT                    | {ref}`Part IX <sec-proof-of-useful-work-cognitive-metabolism-as-consensus>`               |
 
-**The Four Degeneracy Classes:**
+**The Five Degeneracy Classes:**
 
 1. **Geometric Degeneracy** (Rows 1–4, 18, 20, 24, 27, 30–31, 35–36): Setting $G \to I$ flattens the manifold. Natural gradients become vanilla gradients; the Helmholtz PDE becomes the Bellman recursion; diffusion policies lose hyperbolic structure; screening length reduces to a temporal discount parameter; mean-field limits reduce to finite-agent games; intersubjective metric loses geometric grounding; economic dynamics decouple from geometry.
 
@@ -577,6 +597,8 @@ where:
 3. **Safety Degeneracy** (Rows 8–9, 12, 19, 23): Setting $\Xi_{\text{crit}} \to \infty$ disables the Sieve. Hard topological constraints become soft penalties; POMDP belief updates lose Sieve projections; MAML ignores constraint structure.
 
 4. **Metabolic Degeneracy** (Rows 14, 34): Setting $T_c \to 0$ removes energy accounting. Pure return maximization ignores computational cost; System 1/2 switching becomes heuristic rather than thermodynamically derived.
+
+5. **Consensus Degeneracy** (Row 37): Replacing gradient computation with hash computation, disabling the Sieve, and using vote-based rather than geometric BFT yields standard Proof of Work. Security shifts from geometric coherence (adversaries damped by metric friction) to purely economic cost (energy expenditure on useless computation). The key insight: PoUW uses the *same* thermodynamic cost but produces *useful* information (model improvement) rather than waste heat.
 
 :::{admonition} Reading the Connection Boxes
 :class: note
@@ -588,7 +610,7 @@ Throughout this document, `:::{admonition} Connection to RL #N` admonition boxes
 - **What the generalization offers**: Why the general form is preferable
 :::
 
-**Conclusion.** Standard RL is recovered from the Fragile Agent under these degeneracy conditions: flat geometry, infinite capacity, disabled Sieve, and zero metabolic cost. The 36 reductions in Table 0.6.1 demonstrate that each standard RL algorithm corresponds to a specific limit of the unified framework. The generalizations are not optional decorations; they restore coordinate invariance, impose hard safety guarantees, provide principled answers to questions (like "when should I stop thinking?") that standard RL leaves to heuristics, and extend naturally to economic and multi-agent semantic settings.
+**Conclusion.** Standard RL and traditional blockchain consensus are recovered from the Fragile Agent under five degeneracy conditions: flat geometry, infinite capacity, disabled Sieve, zero metabolic cost, and useless consensus computation. The 37 reductions in Table 0.6.1 demonstrate that each standard RL algorithm—and even Bitcoin's Proof of Work—corresponds to a specific limit of the unified framework. The generalizations are not optional decorations; they restore coordinate invariance, impose hard safety guarantees, provide principled answers to questions (like "when should I stop thinking?" and "how do we achieve Byzantine fault tolerance?") that standard approaches leave to heuristics, and extend naturally to economic, multi-agent semantic, and distributed consensus settings where security comes from geometric coherence rather than wasted computation.
 
 
 

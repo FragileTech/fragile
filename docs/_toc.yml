@@ -53,6 +53,7 @@ parts:
     - file: part8_multiagent/gauge_theory
     - file: part8_multiagent/standard_model
     - file: part8_multiagent/parameter_sieve
+    - file: part8_multiagent/constants_check
 
   - caption: Part IX - Economics
     chapters:

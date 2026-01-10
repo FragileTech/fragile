@@ -286,13 +286,40 @@ Units: $[\kappa] = 1/\text{length}$, $[\Delta_G V] = \mathrm{nat}/\text{length}^
 
 :::
 
+:::{prf:remark} Dimensional Consistency of the Helmholtz Equation
+:label: rem-helmholtz-dimensions
+
+The screened Poisson equation $-\Delta_G V + \kappa^2 V = \rho_r$ requires careful dimensional analysis. The naive expression $\kappa = -\ln\gamma$ appears dimensionless, which would be inconsistent with $[\Delta_G] = [\text{length}]^{-2}$.
+
+The resolution lies in the proof derivation. The intermediate equation before normalization is:
+
+$$
+\kappa V = r + \nabla V \cdot b + T_c \Delta_G V
+$$
+
+where $T_c$ is the **cognitive temperature** (Definition {prf:ref}`def-cognitive-temperature`), which acts as a diffusion coefficient with units $[T_c] = [\text{length}]^2/[\text{time}]$.
+
+**In natural units** (used throughout this document): We set $T_c = 1$ and $\Delta t = 1$, making $\kappa = -\ln\gamma$ numerically equal to the screening mass. The stated units $[\kappa] = 1/\text{length}$ are correct in this convention.
+
+**In SI units**: The proper relationship is:
+
+$$
+\kappa_{\text{phys}} = \frac{-\ln\gamma}{\sqrt{T_c \cdot \Delta t}}, \qquad [\kappa_{\text{phys}}] = \frac{1}{\text{length}}
+$$
+
+The screening length $\ell_{\text{screen}} = 1/\kappa$ thus depends on both the temporal horizon ($\gamma$) and the diffusive spreading rate ($T_c$). This is physically sensible: slower diffusion (smaller $T_c$) increases the effective screening length because value information takes longer to propagate.
+
+**Consistency check**: In the proof, dividing $\kappa V = r + T_c \Delta_G V$ by $T_c$ yields $(\kappa/T_c) V = r/T_c + \Delta_G V$. Rearranging: $-\Delta_G V + (\kappa/T_c) V = -r/T_c$. The effective "mass squared" in the normalized equation is $\kappa^2_{\text{eff}} = \kappa/T_c$, which has the correct units $[\text{length}]^{-2}$ when $[\kappa] = [\text{time}]^{-1}$ and $[T_c] = [\text{length}]^2/[\text{time}]$.
+
+:::
+
 (pi-yukawa-potential)=
 ::::{admonition} Physics Isomorphism: Yukawa Potential
 :class: note
 
 **In Physics:** The Yukawa (screened Coulomb) potential satisfies $(-\nabla^2 + m^2)\phi = \rho$ where $m$ is the mediating boson mass. The screening length $\ell = 1/m$ determines the range of the force {cite}`yukawa1935interaction`.
 
-**In Implementation:** The value function satisfies $(-\Delta_G + \kappa^2)V = \rho_r$ where:
+**In Implementation:** The value function satisfies $(-\Delta_G + \kappa^2)V = \rho_r$ where (in natural units with $T_c = \Delta t = 1$):
 
 $$
 \kappa = -\ln\gamma, \quad \ell_\gamma = 1/\kappa
@@ -319,7 +346,7 @@ The Value Function $V(z)$ satisfies the **Screened Poisson (Helmholtz) Equation*
 $$
 (-\Delta_G + \kappa^2) V(z) = \rho_r(z)
 $$
-where $\Delta_G$ is the Laplace-Beltrami operator on the Riemannian manifold and $\kappa = -\ln\gamma$ is the screening mass.
+where $\Delta_G$ is the Laplace-Beltrami operator on the Riemannian manifold and $\kappa$ is the screening mass (see Remark {prf:ref}`rem-helmholtz-dimensions` for the precise dimensional relationship with the discount factor $\gamma$ and diffusivity $T_c$).
 
 **The Degenerate Limit:**
 Discretize space on a lattice. Replace $\Delta_G$ with the graph Laplacian $\mathcal{L}_{\text{graph}}$.
@@ -332,7 +359,7 @@ V(s) = \sum_{t=0}^\infty \gamma^t \mathbb{E}[r_t | s_0 = s] = (I - \gamma P)^{-1
 $$
 This recovers the **Bellman equation** $V = r + \gamma P V$.
 
-**Result:** The "screening mass" $\kappa$ is the physicist's name for $-\ln\gamma$. Standard RL is Field Theory on a discrete lattice with flat metric. The Fragile Agent solves the PDE on a learned Riemannian manifold.
+**Result:** The "screening mass" $\kappa$ encodes the discount factor $\gamma$ (in natural units where diffusivity $T_c = 1$; see Remark {prf:ref}`rem-helmholtz-dimensions`). Standard RL is Field Theory on a discrete lattice with flat metric. The Fragile Agent solves the PDE on a learned Riemannian manifold.
 
 **What the generalization offers:**
 - Geometric propagation: rewards propagate as sources in a scalar field, respecting manifold curvature
