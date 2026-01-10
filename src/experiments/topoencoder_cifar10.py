@@ -803,12 +803,78 @@ def main():
         help="Device"
     )
 
-    # Supervised topology
+    # Tier 3 losses (codebook health)
+    parser.add_argument(
+        "--per_chart_code_entropy_weight", type=float, default=0.1,
+        help="Per-chart code entropy weight (default: 0.1)"
+    )
+    parser.add_argument(
+        "--code_entropy_weight", type=float, default=0.0,
+        help="Global code entropy weight (default: 0.0)"
+    )
+
+    # Tier 4 losses (invariance)
+    parser.add_argument(
+        "--kl_prior_weight", type=float, default=0.01,
+        help="KL prior weight on z_n, z_tex (default: 0.01)"
+    )
+    parser.add_argument(
+        "--orbit_weight", type=float, default=0.0,
+        help="Orbit invariance weight (default: 0.0)"
+    )
+    parser.add_argument(
+        "--vicreg_inv_weight", type=float, default=0.0,
+        help="VICReg invariance weight (default: 0.0)"
+    )
+    parser.add_argument(
+        "--augment_noise_std", type=float, default=0.1,
+        help="Augmentation noise std (default: 0.1)"
+    )
+
+    # Tier 5: Jump Operator
+    parser.add_argument(
+        "--jump_weight", type=float, default=0.1,
+        help="Jump consistency weight after warmup (default: 0.1)"
+    )
+    parser.add_argument(
+        "--jump_warmup", type=int, default=50,
+        help="Epochs before jump loss starts (default: 50)"
+    )
+    parser.add_argument(
+        "--jump_ramp_end", type=int, default=100,
+        help="Epoch when jump weight reaches final value (default: 100)"
+    )
+    parser.add_argument(
+        "--jump_global_rank", type=int, default=0,
+        help="Rank of global tangent space (0 = use latent_dim, default: 0)"
+    )
+
+    # Supervised topology loss
     parser.add_argument(
         "--disable_supervised", action="store_true", help="Disable supervised losses"
     )
     parser.add_argument(
         "--sup_weight", type=float, default=1.0, help="Supervised loss weight"
+    )
+    parser.add_argument(
+        "--sup_purity_weight", type=float, default=0.1,
+        help="Supervised purity loss weight (default: 0.1)"
+    )
+    parser.add_argument(
+        "--sup_balance_weight", type=float, default=0.01,
+        help="Supervised balance loss weight (default: 0.01)"
+    )
+    parser.add_argument(
+        "--sup_metric_weight", type=float, default=0.01,
+        help="Supervised metric loss weight (default: 0.01)"
+    )
+    parser.add_argument(
+        "--sup_metric_margin", type=float, default=1.0,
+        help="Supervised metric loss margin (default: 1.0)"
+    )
+    parser.add_argument(
+        "--sup_temperature", type=float, default=1.0,
+        help="Temperature for chart-to-class mapping (default: 1.0)"
     )
 
     # Benchmark control
@@ -823,6 +889,10 @@ def main():
     parser.add_argument(
         "--use_scheduler", type=lambda x: x.lower() == "true", default=True,
         help="Use cosine annealing LR scheduler"
+    )
+    parser.add_argument(
+        "--min_lr", type=float, default=1e-5,
+        help="Minimum LR for scheduler (default: 1e-5)"
     )
     parser.add_argument(
         "--grad_clip", type=float, default=1.0, help="Gradient clipping max norm"
@@ -848,11 +918,33 @@ def main():
         save_every=args.save_every,
         output_dir=args.output_dir,
         device=args.device,
+        # Tier 3 losses
+        per_chart_code_entropy_weight=args.per_chart_code_entropy_weight,
+        code_entropy_weight=args.code_entropy_weight,
+        # Tier 4 losses
+        kl_prior_weight=args.kl_prior_weight,
+        orbit_weight=args.orbit_weight,
+        vicreg_inv_weight=args.vicreg_inv_weight,
+        augment_noise_std=args.augment_noise_std,
+        # Tier 5: Jump Operator
+        jump_weight=args.jump_weight,
+        jump_warmup=args.jump_warmup,
+        jump_ramp_end=args.jump_ramp_end,
+        jump_global_rank=args.jump_global_rank,
+        # Supervised topology loss
         enable_supervised=not args.disable_supervised,
         sup_weight=args.sup_weight,
+        sup_purity_weight=args.sup_purity_weight,
+        sup_balance_weight=args.sup_balance_weight,
+        sup_metric_weight=args.sup_metric_weight,
+        sup_metric_margin=args.sup_metric_margin,
+        sup_temperature=args.sup_temperature,
+        # Benchmark control
         disable_ae=args.disable_ae,
         disable_vq=args.disable_vq,
+        # Training dynamics
         use_scheduler=args.use_scheduler,
+        min_lr=args.min_lr,
         grad_clip=args.grad_clip,
     )
 
