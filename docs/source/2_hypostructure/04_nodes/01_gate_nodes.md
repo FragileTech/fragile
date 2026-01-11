@@ -3,6 +3,16 @@
 (sec-gate-node-specs)=
 ## Gate Node Specifications (Blue Nodes)
 
+:::{div} feynman-prose
+Now we come to the heart of the Sieve: the gate nodes. Think of them as a series of questions you ask about a dynamical system, and depending on the answers, you either proceed or get routed elsewhere. Each gate is like a checkpoint in an airport security line, but instead of checking for contraband, we are checking for mathematical pathologies that could lead to singular behavior.
+
+Here is the key idea: we do not try to prove global regularity directly. That is too hard. Instead, we decompose the problem into a sequence of simpler binary checks. Is the energy bounded? Are there infinitely many discrete events piling up? Does the geometry degenerate? Each question has a YES or NO answer, and each answer comes with a *certificate*, a piece of evidence that justifies the verdict.
+
+What makes this work is the certificate structure. A YES certificate is a witness that the good property holds. A NO certificate either provides a counterexample (something went wrong and here is proof) or records that we could not decide, which we call an inconclusive certificate. The system never silently fails. Every predicate evaluation produces a typed certificate.
+
+Let me walk you through these nodes one by one. You will see they form a natural progression from basic energy bounds through geometric and topological properties, culminating in the final "Lock" that either confirms global regularity or identifies exactly where the obstruction lies.
+:::
+
 Each gate node is specified by:
 - **Predicate** $P_i$: The property being tested
 - **YES certificate** $K_i^+$: Witnesses $P_i$ holds
@@ -48,7 +58,7 @@ $$P_1 \equiv \sup_{t \in [0, T)} \Phi(u(t)) < \infty$$
 :::
 
 :::{admonition} Physics Dictionary: First Law of Thermodynamics
-:class: seealso
+:class: feynman-added seealso
 
 **Physical Interpretation:** Node 1 enforces **energy conservation**. The predicate $\sup_t \Phi(u(t)) < \infty$ is the mathematical formulation of the **First Law of Thermodynamics**: energy cannot be created from nothing—only transformed or transferred.
 
@@ -106,7 +116,7 @@ $$P_3 \equiv \exists \text{ concentration profile as } t \to T_*$$
 :::
 
 :::{admonition} Physics Dictionary: Phase Transitions and Condensation
-:class: seealso
+:class: feynman-added seealso
 
 **Physical Interpretation:** Node 3 detects whether energy **concentrates** (condenses) or **disperses** (scatters). This corresponds to fundamental phase transition phenomena:
 
@@ -231,6 +241,20 @@ $$\text{Ent}(f^2 | \mathfrak{m}) \leq \frac{2}{K_{\text{LSI}}}\int_X |\nabla f|^
 ---
 
 ### Gromov δ-Hyperbolicity: Distinguishing Structure from Chaos
+
+:::{div} feynman-prose
+Here is a problem that comes up again and again: you have a system with exponential growth, meaning the number of reachable states grows like $k^r$ as you go out radius $r$ from some starting point. Exponential growth sounds scary. Is the system exploding out of control?
+
+Not necessarily. There are two very different kinds of exponential growth, and telling them apart is crucial.
+
+The first kind is *structured expansion*. Think of a decision tree or a logical proof tree. Every time you make a choice, you branch into two possibilities. After $r$ choices, you have $2^r$ leaf nodes. That is exponential! But the structure is tree-like. If you pick any two leaves and trace back to where their paths diverged, you find a common ancestor. The geometry is *hyperbolic*, like the Poincare disk model of non-Euclidean geometry.
+
+The second kind is *chaotic explosion*. Think of a cryptographic hash function or a random expander graph. States multiply exponentially, but there is no tree structure. Everything is connected to everything else in a tangled mess. There is no "common ancestor" for any pair of states, just a hairball of random connections.
+
+The Gromov hyperbolicity constant $\delta$ distinguishes these cases. Small $\delta$ means tree-like (good). Large $\delta$ means expander-like (bad, or at least requires special handling). The 4-point condition below is the precise test: it measures how far your space deviates from perfect tree structure.
+
+Why does this matter for the Sieve? Because a tree-like structure preserves the concentration of measure phenomenon we need for the Log-Sobolev inequality. Chaotic expanders do not. They scatter probability mass everywhere, violating the stiffness guarantees we need for convergence.
+:::
 
 :::{prf:definition} Gromov Hyperbolicity Constant
 :label: def-gromov-hyperbolicity
@@ -401,6 +425,18 @@ $$\rho(r) = \frac{|B_r|}{\text{Vol}_{\text{intrinsic}}(B_r)} = \frac{e^{\alpha r
 ---
 
 ### Node 7: LSI Permit via Thin Interfaces (Discrete-to-Continuum Lifting)
+
+:::{div} feynman-prose
+Let me tell you about a beautiful trick that saves us from an enormous amount of hard analysis.
+
+The Log-Sobolev Inequality (LSI) is what guarantees that a system converges exponentially fast to equilibrium. If you have LSI, entropy dissipates like $e^{-Ct}$, and you get all sorts of wonderful concentration properties. The problem is: proving LSI for an infinite-dimensional system, like a neural network's parameter space, is notoriously difficult. People write entire Ph.D. theses on these proofs.
+
+Here is the trick. We do not prove LSI directly on the continuous system. Instead, we discretize: take your neural network's training trajectory and turn it into a finite graph. On a finite graph, checking for a spectral gap is just linear algebra. You compute the graph Laplacian, find its second eigenvalue $\lambda_2$, and if $\lambda_2 > 0$, you have a discrete LSI.
+
+But wait, you say, the discrete system is not the continuous one. How does the certificate transfer? This is where the heavy machinery of RCD theory (Riemannian Curvature-Dimension theory) comes in. There is a beautiful theorem, due to Sturm and Lott-Villani, that says: if you have a sequence of discrete systems with uniform spectral gap, and they converge in the right sense (Gromov-Hausdorff), then the limit inherits a continuous LSI.
+
+So the protocol is: (1) discretize, (2) check spectral gap via matrix computation, (3) invoke the stability theorem to lift to the continuum. We have converted a "hard analysis proof" into a "finite linear algebra check." And there is even a third option: if you have telemetry showing entropy decay exponentially, that is empirical evidence of LSI without any proof at all.
+:::
 
 :::{prf:theorem} LSI Permit via Expansion Adjunction
 :label: thm-lsi-thin-permit
@@ -594,7 +630,7 @@ The system is admitted if the discrete Thin Kernel satisfies **BOTH**:
 ---
 
 :::{admonition} Physicist's Perspective: Why This Works
-:class: seealso
+:class: feynman-added seealso
 
 **The Intuition:** The Expansion Adjunction $\mathcal{F} \dashv U$ is not just a categorical formality—it's the **Discrete-to-Continuum Dictionary** that physicists have used implicitly for decades.
 
@@ -671,6 +707,18 @@ This ensures that any exponential growth in state volume corresponds to a **tree
 
 ---
 
+:::{div} feynman-prose
+There is one more case we need to handle, and it is the most subtle of all.
+
+Some systems have exponential growth, fail the hyperbolicity test, and cannot be encapsulated as black boxes. By all our previous criteria, they should be rejected as thermal noise. But wait. What about the Riemann zeta function? What about the distribution of prime numbers?
+
+The primes are chaotic in a local sense. The gaps between consecutive primes look random, following statistics that match random matrix theory (the Gaussian Unitary Ensemble, or GUE). Yet there is deep structure hidden beneath this apparent randomness. The Riemann Hypothesis, if true, says that the zeros of the zeta function lie on a very specific line. And the distribution of primes, while locally erratic, follows precise global laws encoded in the prime number theorem and its refinements.
+
+This is *arithmetic chaos*: systems that look random locally but have hidden long-range order. The key signature is *spectral rigidity*, meaning the eigenvalues (or zeros, or gaps) repel each other in a specific way. You can detect this by computing the structure factor, which is the Fourier transform of the pair correlation function. Thermal noise gives a flat spectrum (white noise). Arithmetic chaos gives sharp peaks at specific frequencies, like Bragg diffraction peaks from a quasicrystal.
+
+The Spectral Resonance Permit below captures this distinction. It is our final escape hatch before rejection: if the structure factor shows peaks, we are dealing with number-theoretic structure, not thermal garbage.
+:::
+
 :::{prf:definition} Arithmetic Chaos and Spectral Rigidity
 :label: def-arithmetic-chaos
 
@@ -734,6 +782,20 @@ This is a **trace formula**: it expresses a sum over primes (arithmetic object) 
 :::
 
 ---
+
+:::{div} feynman-prose
+Now let me tell you about cryptography and why it creates a problem for us.
+
+Cryptographic functions like AES or SHA-256 are *designed* to look like expander graphs. That is literally the point. When you feed in structured input, the output should be indistinguishable from random noise. Maximum confusion, maximum diffusion, all correlations destroyed. If our Sieve detects an expander and rejects it, we would reject every system that uses cryptography.
+
+But that is correct behavior in a certain sense. The Sieve is telling the agent: "You cannot learn the internals of this function by continuous geometric reasoning. It is designed to defeat exactly that kind of analysis."
+
+The fix is to treat the cryptographic module as a *black box*. We do not try to understand its internals. We just use it as a function: input goes in, output comes out. The key question becomes: does the *outside* of the black box, the way it connects to the rest of the system, have good geometric structure?
+
+This leads to the notion of *relative hyperbolicity*. A space can be hyperbolic relative to a collection of "bad" subspaces. We collapse each bad region to a single point and check if the quotient is hyperbolic. If it is, we accept the system with the understanding that those collapsed regions are opaque atomic tools, not things to be simulated or learned.
+
+The boundary-to-volume ratio tells us whether a region can legitimately be treated as a black box. A cryptographic function has tiny boundary (a few inputs and outputs) but enormous internal volume ($2^{128}$ states). That is the signature of a well-encapsulated module. A "hairball" with huge boundary relative to volume cannot be encapsulated, so it gets rejected as thermal noise.
+:::
 
 :::{prf:definition} Relative Hyperbolicity (Hyperbolic Modulo Black Boxes)
 :label: def-relative-hyperbolicity
@@ -897,7 +959,7 @@ If arithmetic chaos is detected:
 ---
 
 :::{admonition} Implementation: Monte Carlo δ-Hyperbolicity Estimation
-:class: dropdown
+:class: feynman-added dropdown
 
 **Algorithm:** Efficiently estimate $\delta_{\text{Gromov}}$ without $O(N^4)$ brute force.
 
@@ -1030,6 +1092,22 @@ elif volume_growth_rate > polynomial_threshold:
 ---
 
 ### Nodes 7a--7d: Stiffness Restoration Subtree
+
+:::{div} feynman-prose
+What happens when the stiffness check fails? The system might be sitting at an unstable equilibrium, like a ball balanced on top of a hill. Any small perturbation sends it rolling down, but which direction? This is where bifurcation theory comes in.
+
+Nodes 7a through 7d form a subtree that handles the delicate situation when the main stiffness guarantee breaks down. The logic goes like this:
+
+First, we check if the system is actually at a bifurcation point (Node 7a). Is there an unstable direction? If not, the failure is something else, and we route to a stiffness breakdown mode.
+
+If there is a bifurcation, we next ask: is there a symmetry involved (Node 7b)? Many bifurcations happen because a symmetric potential has degenerate minima. Imagine a ball in a Mexican hat potential: at the top, the symmetry is unbroken, but the ball will roll down to one of the equivalent minima around the brim. This is spontaneous symmetry breaking.
+
+If symmetry is present, Node 7c checks whether the symmetry-breaking transition is controlled. Do the parameters stay bounded? Can we track which minimum the system settles into? If yes, we execute the symmetry-breaking action and continue. If not, we are looking at a vacuum decay scenario, which requires surgery.
+
+If there is no symmetry (Node 7d), we are dealing with tunneling between metastable states. Think of a particle in a double-well potential that can quantum-mechanically tunnel through the barrier. Here we check if the tunneling action is finite. If it is, we can handle the transition. If not, the system is stuck in metastasis, and we route to that failure mode.
+
+The beautiful thing is that all of these cases, which seem so different physically, follow a unified logical structure: detect the instability type, check if it is controllable, either proceed or route to the appropriate recovery mechanism.
+:::
 
 :::{prf:definition} Node 7a: BifurcateCheck
 :label: def-node-bifurcate
@@ -1173,7 +1251,7 @@ $$P_{10} \equiv \tau_{\text{mix}} < \infty$$
 :::
 
 :::{admonition} Physics Dictionary: Thermalization and the H-Theorem
-:class: seealso
+:class: feynman-added seealso
 
 **Physical Interpretation:** Node 10 verifies **ergodicity**—whether the system explores its full phase space over time. This connects to fundamental statistical mechanics:
 
@@ -1240,6 +1318,24 @@ $$P_{11} \equiv K(x) \in \mathbb{N} \text{ (Kolmogorov complexity is decidable a
 ---
 
 ### Nodes 13--16: Boundary Checks
+
+:::{div} feynman-prose
+Up to now, we have been treating the system as if it exists in isolation. But real systems interact with their environment. They receive inputs and produce outputs. They have boundaries.
+
+Nodes 13 through 16 handle the boundary conditions. The questions are simple but essential:
+
+Node 13 asks: does the system have boundaries at all? Is it open (interacting with the outside) or closed (isolated)? A closed system is simpler to analyze since there are no external disturbances to worry about.
+
+If the system is open, we need to check three things:
+
+Node 14 (OverloadCheck): Are the inputs bounded? You cannot have infinite energy or information pouring in. This is the "do not blow a fuse" check. If inputs can grow without bound, we have an overload problem.
+
+Node 15 (StarveCheck): Are the inputs sufficient? The opposite of overload. Some systems require a minimum level of input to function. A starvation condition means the system cannot maintain itself because it is not getting enough resources.
+
+Node 16 (AlignCheck): Is the system doing what it is supposed to do? This is the alignment check. The proxy objective (what we measure and optimize) might diverge from the true objective (what we actually want). If the gap is too large, we have a misalignment problem. This is especially relevant for AI systems where Goodhart's Law lurks: any metric you optimize becomes a poor measure once you start optimizing it.
+
+These boundary checks ensure that the system's interface with the external world is well-behaved. Only after passing all of them do we proceed to the final Lock.
+:::
 
 :::{prf:definition} Node 13: BoundaryCheck
 :label: def-node-boundary
@@ -1318,6 +1414,22 @@ where $\mathcal{L}_{\text{proxy}}$ is the optimized/measured objective and $\mat
 
 ### Node 17: BarrierExclusion ($\mathrm{Cat}_{\mathrm{Hom}}$) --- The Lock
 
+:::{div} feynman-prose
+And now we come to the grand finale: the Lock.
+
+After passing through all the previous gates, we have accumulated a context $\Gamma$ full of certificates. Energy is bounded, events are finite, geometry is controlled, topology is tame, mixing happens, complexity is finite, boundaries are well-behaved. All the individual pieces are in place.
+
+But here is the crucial question: do all these certificates *together* exclude the possibility of singular behavior?
+
+The Lock answers this using a beautiful categorical idea. We have defined a universal "bad pattern" $\mathbb{H}_{\mathrm{bad}}$, a template that captures what singular behavior looks like structurally. The question is: can this bad pattern morphically embed into our system $\mathcal{H}$?
+
+If the Hom-set is empty, meaning there is no morphism from the bad pattern to our system, then singular behavior is *structurally impossible*. The certificates we have accumulated create an obstruction. This is analogous to the Pauli exclusion principle in physics: certain configurations are simply forbidden by the structure of the system.
+
+If a morphism exists, we have a problem. Either we find an explicit embedding of the bad pattern (fatal error), or we cannot decide one way or the other (inconclusive). The inconclusive case triggers a reconstruction procedure, but the key point is that we never silently accept an uncertain verdict.
+
+The Lock is where all the information from the entire Sieve comes together. It is the final judgment, the place where we either confirm global regularity or identify exactly where the obstruction lies. And there it is.
+:::
+
 :::{prf:definition} Barrier Specification: Morphism Exclusion (The Lock)
 :label: def-node-lock
 
@@ -1362,7 +1474,7 @@ where $\mathcal{L}_{\text{proxy}}$ is the optimized/measured objective and $\mat
 :::
 
 :::{admonition} Physics Dictionary: Pauli Exclusion and Information Conservation
-:class: seealso
+:class: feynman-added seealso
 
 **Physical Interpretation:** Node 17 (the Lock) enforces a **categorical exclusion principle**—analogous to fundamental physics principles:
 

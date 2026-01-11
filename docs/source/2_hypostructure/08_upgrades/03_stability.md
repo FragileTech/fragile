@@ -14,14 +14,31 @@ The **Stability and Composition Metatheorems** govern how Sieve verdicts extend 
 
 These metatheorems are **universal**: they apply to any valid Hypostructure because they operate on the Certificate algebra, not the underlying physics.
 
+:::{div} feynman-prose
+Here is something that worries every honest physicist: *What if my model is wrong?*
+
+Not catastrophically wrong---we would notice that. I mean subtly wrong. Your viscosity coefficient is off by 2%. Your boundary conditions are idealized. Your numerical simulation has round-off error. Does your entire proof collapse?
+
+The metatheorems in this section say: *No, it does not.* If your proof has enough margin---if you are not balanced on a knife-edge---then small errors do not matter. This is not hand-waving. It is a precise mathematical statement about the *topology* of the space of proofs.
+
+The key insight is this: the Sieve operates on certificates, not on the underlying physics directly. And certificates that pass with strict inequalities form an *open set*. Small perturbations preserve openness. This is the implicit function theorem doing its quiet, powerful work.
+:::
+
 ---
 
 (sec-openness-of-regularity)=
 ### Openness of Regularity
 
+:::{div} feynman-prose
+Let me tell you what "openness" really means here. Imagine you have certified a system as globally regular. You have your certificate $K_{\text{Lock}}^{\mathrm{blk}}$ in hand. Now someone comes along and says, "But your parameter $\theta_0$ is only known to 6 decimal places. What about $\theta_0 + 0.000001$?"
+
+The openness theorem says: *Relax.* If your barriers are strict---if Gap is not merely positive but *bounded away from zero*---then there exists a whole neighborhood of parameters where the proof still works. You do not need to redo anything. The certificate algebra is continuous.
+
+Think of it like a mountain pass. If you are at the very top of the saddle point, the slightest wind might blow you either way. But if you are safely past the pass, in the valley, a small breeze changes nothing essential about your descent.
+:::
+
 :::{prf:theorem} [KRNL-Openness] Openness of Regularity
 :label: mt-krnl-openness
-:class: metatheorem
 
 **Source:** Dynamical Systems (Morse-Smale Stability) / Geometric Analysis.
 
@@ -51,9 +68,20 @@ Strict inequalities define open sets. The Morse-Smale stability theorem (Palis a
 (sec-shadowing-metatheorem)=
 ### Shadowing Metatheorem
 
+:::{div} feynman-prose
+Now here is something that should give you great comfort if you ever run numerical simulations.
+
+Every computer makes errors. Your floating-point arithmetic rounds off. Your time-stepper introduces small drift. After a million steps, your computed trajectory $\{y_n\}$ has accumulated countless tiny mistakes. It is not the *true* orbit---it is what we call a "pseudo-orbit." At each step, you are almost solving the equation, but not quite.
+
+The question is: does this matter? Is your simulation telling you anything about the real dynamics?
+
+The Shadowing Theorem says: *Yes, if you have hyperbolicity.* When your system has a spectral gap $\lambda > 0$---meaning errors contract exponentially fast---then something remarkable happens. There exists a *genuine* trajectory of the true system that stays within distance $\delta$ of your computed pseudo-orbit. Your simulation may not be following the exact trajectory you think it is, but it *is* following some true trajectory. The error $\delta$ goes like $\varepsilon/\lambda$: small numerical error divided by contraction rate.
+
+This is how numerical analysis gets upgraded to rigorous existence proofs. You compute a solution, verify hyperbolicity, and the Shadowing Theorem hands you a mathematical guarantee that a real solution exists nearby.
+:::
+
 :::{prf:theorem} [KRNL-Shadowing] Shadowing Metatheorem
 :label: mt-krnl-shadowing
-:class: metatheorem
 
 **Source:** Hyperbolic Dynamics (Anosov Shadowing Lemma).
 
@@ -83,9 +111,22 @@ The Anosov shadowing lemma (1967) states that uniformly hyperbolic systems have 
 (sec-weak-strong-uniqueness)=
 ### Weak-Strong Uniqueness
 
+:::{div} feynman-prose
+Here is something that causes genuine anxiety in PDE theory: *non-uniqueness of weak solutions.*
+
+When you solve a differential equation by the "weak" method---using compactness arguments, extracting subsequences, passing to limits---you get a solution, but you have no guarantee it is the *only* solution. Maybe there are infinitely many weak solutions, and you just happened to grab one. Maybe the physics you are trying to model has fundamentally ambiguous predictions.
+
+The Weak-Strong Uniqueness principle resolves this anxiety. It says: *If a strong solution exists, it is unique, and all weak solutions must agree with it.*
+
+What makes a solution "strong"? Local stiffness---the $K_{\mathrm{LS}_\sigma}^+$ certificate. A strong solution has enough regularity that you can control its behavior precisely. It does not wobble or branch.
+
+The theorem says that weak solutions cannot escape from strong ones. If you start at the same initial data, and a strong solution exists even locally, then the weak solution you constructed by compactness methods must coincide with it. The weak solution may be hiding extra regularity you did not expect. It has no freedom to branch off in a different direction.
+
+This is profoundly reassuring. Your compactness construction did not introduce spurious solutions. The physics is unambiguous wherever regularity holds.
+:::
+
 :::{prf:theorem} [KRNL-WeakStrong] Weak-Strong Uniqueness
 :label: mt-krnl-weak-strong
-:class: metatheorem
 
 **Source:** PDE Theory (Serrin/Prodi-Serrin Criteria).
 
@@ -115,9 +156,28 @@ The weak-strong uniqueness principle uses energy estimates. If $v = u_w - u_s$, 
 (sec-product-regularity-metatheorem)=
 ### Product-Regularity Metatheorem
 
+:::{div} feynman-prose
+And now we come to what I think is the most practically important result in this section: *Can you build a safe system out of safe parts?*
+
+This matters enormously for engineering. Suppose you have verified that your neural network is well-behaved. And you have verified that your physics engine is stable. Now you couple them together---the neural net controls the physics simulation. Is the combined system safe?
+
+Without a theorem, you would have to verify the composite system from scratch. All your previous work would be useless. The modular verification dream would collapse.
+
+The Product-Regularity Metatheorem says: *Yes, you can compose.* If you have Lock certificates for both components, and the coupling is "weak enough" in a precise sense, then the product system inherits global regularity.
+
+What does "weak enough" mean? The theorem gives three alternative backends---three different ways to verify that your coupling is sufficiently tame:
+
+**Backend A** says the coupling should be *subcritical*: it should scale slower than either component's critical exponent. Think of it as: the interaction term is always dominated by the intrinsic dynamics.
+
+**Backend B** uses semigroup theory: if each component generates a nice evolution operator, and the coupling is a bounded (or relatively bounded) perturbation, the combined system is still nice.
+
+**Backend C** is energy-based: if the coupling cannot pump energy into the system faster than dissipation removes it, you are safe.
+
+Each backend accommodates different proof styles. Use whichever matches your problem best. The certificate algebra handles the logic; you just need to verify one of the three coupling conditions.
+:::
+
 :::{prf:theorem} [LOCK-Product] Product-Regularity
 :label: mt-lock-product
-:class: metatheorem
 
 **Sieve Signature:**
 - **Required Permits (Alternative Backends):**
@@ -262,9 +322,20 @@ Bounded uniformly in time.
 (sec-subsystem-inheritance)=
 ### Subsystem Inheritance
 
+:::{div} feynman-prose
+Here is the flip side of composition: *inheritance.*
+
+Product-Regularity asks whether combining systems preserves regularity. Subsystem Inheritance asks the reverse: if the big system is safe, are smaller pieces automatically safe?
+
+The answer is yes, and the reason is almost tautological once you see it. An invariant subsystem is a piece of state space that the dynamics never leave. If you start in the subsystem, you stay in the subsystem forever. It is like a room with no doors leading out.
+
+Now suppose the parent system $\mathcal{H}$ has the Lock certificate: no singularities can form anywhere in the full state space. The subsystem $\mathcal{S}$ is contained in that state space. A singularity in $\mathcal{S}$ would be a singularity in $\mathcal{H}$. But we just said there are no singularities in $\mathcal{H}$. Contradiction. Done.
+
+This is useful in practice. Sometimes the full system is easier to analyze than the restricted case. For example, general 3D fluid dynamics might be simpler to prove regular (if we could) than the special case of axisymmetric flow. Once you have the general result, all symmetric restrictions inherit it for free.
+:::
+
 :::{prf:theorem} [KRNL-Subsystem] Subsystem Inheritance
 :label: mt-krnl-subsystem
-:class: metatheorem
 
 **Source:** Invariant Manifold Theory.
 

@@ -75,6 +75,10 @@ parts:
   # BOOK 2: THE HYPOSTRUCTURE FORMALISM
   # ============================================
 
+  - caption: "Hypostructure - Introduction"
+    chapters:
+    - file: source/2_hypostructure/intro_hypostructure
+
   - caption: "Hypostructure I - Categorical Foundations"
     chapters:
     - file: source/2_hypostructure/01_foundations/01_categorical
@@ -129,7 +133,6 @@ parts:
   - caption: "Hypostructure X - Meta-Learning"
     chapters:
     - file: source/2_hypostructure/10_metalearning/01_metalearning
-    - file: source/2_hypostructure/10_metalearning/02_fractal_gas
 
   - caption: "Hypostructure XI - Appendices"
     chapters:
@@ -137,61 +140,9 @@ parts:
     - file: source/2_hypostructure/11_appendices/02_notation
 
   # ============================================
-  # BOOK 3: FRAGILE MARKETS (ECONOMICS)
+  # BOOK 3: FRACTAL GAS (SELECTED)
   # ============================================
 
-  - caption: "Fragile Markets I - Foundations"
+  - caption: "Fractal Gas"
     chapters:
-    - file: source/4_economics/01_foundations/01_fragile_market
-    - file: source/4_economics/01_foundations/02_market_controller
-    - file: source/4_economics/01_foundations/03_units
-    - file: source/4_economics/01_foundations/04_market_hypostructure
-    - file: source/4_economics/01_foundations/05_thermoeconomics
-
-  - caption: "Fragile Markets II - Core Pricing"
-    chapters:
-    - file: source/4_economics/02_core_pricing/01_information_constraints
-    - file: source/4_economics/02_core_pricing/02_asset_pricing_core
-    - file: source/4_economics/02_core_pricing/03_market_sieve
-    - file: source/4_economics/02_core_pricing/04_market_dynamics
-    - file: source/4_economics/02_core_pricing/05_risk_measures
-    - file: source/4_economics/02_core_pricing/06_asset_classes
-
-  - caption: "Fragile Markets III - Implementation"
-    chapters:
-    - file: source/4_economics/03_implementation/01_regime_dynamics
-    - file: source/4_economics/03_implementation/02_diagnostics
-    - file: source/4_economics/03_implementation/03_checklist
-    - file: source/4_economics/03_implementation/04_failure_modes
-    - file: source/4_economics/03_implementation/05_surgery_contracts
-    - file: source/4_economics/03_implementation/06_metatheorems
-    - file: source/4_economics/03_implementation/07_algorithmic_pricing
-    - file: source/4_economics/03_implementation/08_full_implementation
-
-  - caption: "Fragile Markets IV - Applications"
-    chapters:
-    - file: source/4_economics/04_applications/01_worked_examples
-    - file: source/4_economics/04_applications/02_cross_references
-    - file: source/4_economics/04_applications/03_calibration
-    - file: source/4_economics/04_applications/04_risk_attribution
-    - file: source/4_economics/04_applications/05_backtesting
-
-  - caption: "Fragile Markets V - Geometric Theory"
-    chapters:
-    - file: source/4_economics/05_geometric_theory/01_capital_capacity
-    - file: source/4_economics/05_geometric_theory/02_wfr_transport
-    - file: source/4_economics/05_geometric_theory/03_price_discovery
-    - file: source/4_economics/05_geometric_theory/04_equations_of_motion
-    - file: source/4_economics/05_geometric_theory/05_market_interface
-    - file: source/4_economics/05_geometric_theory/06_pricing_kernel
-    - file: source/4_economics/05_geometric_theory/07_sector_classification
-
-  - caption: "Fragile Markets VI - Standard Model"
-    chapters:
-    - file: source/4_economics/06_standard_model/01_standard_model
-    - file: source/4_economics/06_standard_model/02_economy_as_physical_system
-
-  - caption: "Fragile Markets - Appendices"
-    chapters:
-    - file: source/4_economics/reference
-    - file: source/4_economics/07_appendices/01_references
+    - file: source/3_fractal_gas/03_fractal_gas_latent

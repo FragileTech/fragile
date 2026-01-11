@@ -70,6 +70,9 @@ output/*/index.html
 # Sphinx
 docs/_build
 
+# Private/Draft content (not for public GitHub Pages)
+docs/source/4_economics/
+
 # Mypy Cache
 .mypy_cache/
 outputs/

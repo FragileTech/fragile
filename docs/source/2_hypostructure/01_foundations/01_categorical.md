@@ -1,7 +1,25 @@
 # Part I: Categorical Foundations
 
+:::{div} feynman-prose
+Now, here is something that trips people up when they first encounter this material. They see "category theory" and "infinity-toposes" and think we are doing abstract nonsense for its own sake. But that is exactly backwards. The reason we use these tools is *precision*, not abstraction.
+
+Think about it this way. When you have a physical system with symmetries, gauge redundancies, and configuration spaces that wrap around on themselves in interesting ways, you need a language that can talk about these structures without losing information. Set theory is like trying to describe a doughnut by listing all its points---you lose the essential fact that it has a hole. Category theory is the mathematics that remembers the hole.
+
+The key insight of this chapter is simple: *singularities are morphisms*. When something blows up in a dynamical system, it is not random---it is following a pattern. And patterns can be classified. The categorical machinery lets us build a universal catalog of "all possible ways things can go wrong" and then check whether our specific system can access any of them.
+
+If that catalog comes up empty for your system, you have proven global regularity. That is the punchline. Everything else is working out the details.
+:::
+
 (sec-ambient-substrate)=
 ## The Ambient Substrate
+
+:::{div} feynman-prose
+Before we can talk about singularities, we need to say precisely what kind of mathematical universe we are working in. It is like setting up a laboratory before doing an experiment---you need the right equipment.
+
+The equipment here is a *cohesive infinity-topos*. Do not let the jargon scare you. A topos is just a mathematical universe where you can do logic and geometry at the same time. "Cohesive" means it has enough structure to talk about continuous paths and homotopy. "Infinity" means it tracks not just whether two things are equal, but *how* they are equal, and how those equalities relate to each other, all the way up.
+
+Why do we need this? Because gauge symmetries are not just symmetries---they are equivalences with structure. A rotation by 360 degrees is equivalent to doing nothing, but it matters that you went around the full circle. The cohesive topos remembers this.
+:::
 
 To ensure robustness against deformation and gauge redundancies, we work within **Higher Topos Theory** and **Homotopy Type Theory (HoTT)**. This framework is strictly more expressive than ZFC set theory and naturally encodes the homotopical structure of configuration spaces.
 
@@ -19,8 +37,22 @@ The cohesion structure provides:
 Standard examples include the topos of smooth $\infty$-stacks $\mathbf{Sh}_\infty(\mathbf{CartSp})$ and differential cohesive types.
 :::
 
+:::{div} feynman-prose
+What does this actually mean in practice? The three modalities---Shape, Flat, and Sharp---let you move between different levels of resolution. Shape extracts the topology (just the connectivity, forgetting the geometry). Flat lets you bring in "constants"---things that do not vary. Sharp lets you pretend everything is contractible (paths exist between any two points).
+
+These are the zoom controls on your mathematical microscope. Sometimes you want to see the fine structure (the full topos), sometimes you just want the topology (apply Shape), and sometimes you need to compare with a baseline (Flat). The adjunctions ensure these operations play nicely together.
+:::
+
 (sec-hypostructure-object)=
 ## The Hypostructure Object
+
+:::{div} feynman-prose
+Now we come to the central character of this theory: the Hypostructure. This is the mathematical object that captures everything we need to know about a dynamical system to determine whether it can develop singularities.
+
+Think of it as a blueprint that includes not just the state space, but also the rules of motion, the energy landscape, the constraints that must be satisfied, and the interface with the outside world. Each piece plays a specific role in the singularity analysis.
+
+The key insight is that singularities do not happen in isolation. They involve the interplay of all these structures. A blow-up occurs when the dynamics push the system toward a configuration that violates the constraints. By packaging everything together, we can ask the categorical question: "Does this system contain the pattern that leads to blow-up?"
+:::
 
 A Hypostructure is not merely a set of equations, but a geometric object equipped with a connection and a filtration.
 
@@ -76,8 +108,26 @@ A **Hypostructure** is a tuple $\mathbb{H} = (\mathcal{X}, \nabla, \Phi_\bullet,
 When $\mathcal{E} = \mathbf{Set}$ (the trivial topos), the categorical definition reduces to classical structural flow data: $\mathcal{X}$ becomes a Polish space $X$, the connection $\nabla$ becomes a vector field generating a semiflow, the truncation functors become decidable propositions, and the boundary morphism $\partial_\bullet$ becomes the Sobolev trace operator $u \mapsto u|_{\partial\Omega}$ with flux $\mathcal{J} = \nabla u \cdot \nu$ (normal derivative).
 :::
 
+:::{div} feynman-prose
+Let me make sure you understand what this "Classical Recovery" remark is really telling you. It says that when you strip away all the fancy categorical language and work in the ordinary world of sets and functions, you get back the classical PDE setup that you know and love.
+
+This is important because it means the categorical framework is not changing the mathematics---it is *organizing* it. The Polish space, the vector field, the boundary trace operator: these are all sitting inside the categorical picture as special cases. We have not thrown out classical analysis; we have given it a home where it can talk to gauge theory and topology.
+
+The payoff comes when you have systems with gauge symmetry or non-trivial topology. Then the categorical structure starts doing real work, keeping track of equivalences that would otherwise slip through the cracks.
+:::
+
 (sec-fixed-point-principle)=
 ## The Fixed-Point Principle
+
+:::{div} feynman-prose
+Here is the beautiful thing about all those axioms in the Hypostructure definition. You might think they were chosen arbitrarily, that someone sat down and listed properties that seemed useful. But they were not. They all come from a single requirement: *the system must be self-consistent*.
+
+What do I mean by self-consistent? I mean that if you let the system evolve, it should not contradict itself. The states that persist indefinitely are exactly the fixed points---the places where the evolution brings you right back to where you started.
+
+This is not a metaphysical statement. It is a mathematical fact that follows from dissipation. If energy always decreases (except at equilibria), then the system must settle down. It cannot oscillate forever or drift to infinity with bounded energy. The only thing it can do is find a fixed point.
+
+And here is the key: singularities are places where this self-consistency breaks down. The evolution tries to produce a state that cannot exist. That is why detecting singularities is equivalent to checking the fixed-point structure.
+:::
 
 The hypostructure axioms are not independent postulates chosen for technical convenience. They are manifestations of a single organizing principle: **self-consistency under evolution**.
 
@@ -117,11 +167,22 @@ Let $\mathcal{S}$ be a structural flow datum with **strict dissipation** (i.e., 
 (sec-foundation-theorems)=
 ### Foundation Theorems
 
+:::{div} feynman-prose
+Now we come to the theorems that make the whole machinery work. I want to be clear about what these theorems actually do.
+
+The first one, KRNL-Exclusion, says: "If no bad pattern can map into your system, then your system is regular." This sounds almost tautological until you realize what it enables. It means we can prove regularity by proving the *absence* of something---that no morphism exists from the universal bad pattern to your system.
+
+The second one, KRNL-Trichotomy, classifies every finite-time breakdown into exactly three categories: the energy disperses and everything is fine, the energy concentrates but all constraints are satisfied, or there is a genuine singularity. There is no fourth option. This is the concentration-compactness dichotomy that underlies all modern PDE regularity theory, now stated in categorical language.
+
+The third piece, the Analytic-to-Categorical Bridge, connects the PDE analysis to the category theory. It says that when you do blow-up analysis and extract a limiting profile, that profile corresponds to a morphism in the categorical picture. This is the handshake between the two worlds.
+
+These theorems are not about any specific equation. They are metatheorems---theorems about the framework itself. Once you have them, you can apply the machinery to any system that fits the hypostructure mold.
+:::
+
 The following metatheorems establish the logical soundness of the Sieve before examining any specific node. They prove that the framework's categorical approach to singularity resolution is mathematically valid.
 
 ::::{prf:theorem} [KRNL-Exclusion] Principle of Structural Exclusion
 :label: mt-krnl-exclusion
-:class: metatheorem rigor-class-f
 
 **Rigor Class:** F (Framework-Original) — see {prf:ref}`def-rigor-classification`
 
@@ -144,12 +205,11 @@ then Interface Permit $\mathrm{Rep}_K(T, Z)$ holds, and hence the conjecture for
 
 :::{prf:theorem} Categorical Completeness of the Singularity Spectrum
 :label: thm-categorical-completeness
-:class: rigor-class-f
 
 **Statement:** For any problem type $T$, the category of singularity patterns admits a universal object $\mathbb{H}_{\mathrm{bad}}^{(T)}$ that is **categorically exhaustive**: every singularity in any $T$-system factors through $\mathbb{H}_{\mathrm{bad}}^{(T)}$.
 
 **Key Mechanism:**
-1. **Node 3 (Compactness)** converts analytic blow-up $\to$ categorical germ via concentration-compactness (Metatheorem KRNL-Trichotomy)
+1. **Node 3 (Compactness)** converts analytic blow-up $\to$ categorical germ via concentration-compactness ({prf:ref}`mt-krnl-trichotomy`)
 2. **Small Object Argument** proves the germ set $\mathcal{G}_T$ is small (a set, not a proper class)
 3. **Cofinality** proves every pattern factors through $\mathcal{G}_T$
 4. **Node 17 (Lock)** checks if the universal bad pattern embeds into $\mathbb{H}(Z)$
@@ -248,11 +308,20 @@ The empty Hom-set (N11) verifies the antecedent, yielding the consequent.
 :::
 ::::
 
+:::{div} feynman-prose
+Now let me tell you about one of the most powerful ideas in PDE analysis: concentration-compactness. The question is simple. You have a sequence of solutions with bounded energy. What can happen as you take a limit?
+
+There are really only two possibilities. Either the energy spreads out and disperses to infinity, becoming negligible everywhere---like smoke diffusing in a room---or it concentrates at one or more points. The first case is good: dispersed energy cannot cause blow-up. The second case is where the action is.
+
+When energy concentrates, you can zoom in on the concentration points and extract a "profile"---a limiting object that captures the essential structure of the concentration. This is the profile decomposition technique. It says that any bounded sequence can be written as a finite number of these profiles plus a remainder that disperses.
+
+The trichotomy theorem puts this into the categorical framework. Every breakdown is either dispersion (good), concentration that satisfies all constraints (good), or concentration that violates a constraint (bad---genuine singularity). The beautiful thing is that "violating a constraint" translates directly to "admitting a morphism from the bad pattern." This is how PDE analysis plugs into the categorical machinery.
+:::
+
 :::{prf:theorem} [KRNL-Trichotomy] Structural Resolution
 :label: mt-krnl-trichotomy
-:class: metatheorem
 
-**Sieve Target:** Node 3 (CompactCheck) — justifies the Concentration/Dispersion dichotomy
+**Sieve Target:** Node 3 (CompactCheck) --- justifies the Concentration/Dispersion dichotomy
 
 **Statement:** Let $\mathcal{S}$ be a structural flow datum satisfying minimal regularity (Reg) and dissipation ($D_E$) interface permits. Every trajectory $u(t) = S_t x$ with finite breakdown time $T_*(x) < \infty$ classifies into exactly one of three outcomes:
 
@@ -284,7 +353,6 @@ The empty Hom-set (N11) verifies the antecedent, yielding the consequent.
 
 :::{prf:lemma} Analytic-to-Categorical Bridge
 :label: lem-bridge
-:class: rigor-class-f
 
 **Statement:** Every **profile-extractable** analytic blow-up in a $T$-system induces a morphism from a singularity germ to the system's hypostructure.
 
@@ -292,7 +360,7 @@ The empty Hom-set (N11) verifies the antecedent, yielding the consequent.
 
 **Mechanism:**
 1. **Analytic Input:** Trajectory $u(t)$ with breakdown time $T_* < \infty$
-2. **Profile Extraction:** By KRNL-Trichotomy (Metatheorem KRNL-Trichotomy), concentration-compactness yields profile $v^*$ with finite energy $\|v^*\|_{\dot{H}^{s_c}} \leq \Lambda_T$
+2. **Profile Extraction:** By {prf:ref}`mt-krnl-trichotomy`, concentration-compactness yields profile $v^*$ with finite energy $\|v^*\|_{\dot{H}^{s_c}} \leq \Lambda_T$
 3. **Germ Construction:** Profile $v^*$ determines germ $[P, \pi] \in \mathcal{G}_T$ via the blow-up parametrization (scaling, centering, symmetry quotient)
 4. **Morphism Induction:** The singularity locus inclusion $\iota: \Sigma \hookrightarrow Z$ induces $\phi: \mathbb{H}_{[P,\pi]} \to \mathbb{H}(Z)$ by functoriality of the hypostructure assignment
 
@@ -308,7 +376,6 @@ The empty Hom-set (N11) verifies the antecedent, yielding the consequent.
 
 :::{prf:theorem} [KRNL-Equivariance] Equivariance Principle
 :label: mt-krnl-equivariance
-:class: metatheorem
 
 **Sieve Target:** Meta-Learning — guarantees learned parameters preserve symmetry group $G$
 
@@ -377,11 +444,22 @@ such that $L^+$ is undecidable (gas) and $L^-$ is decidable (crystal). The Halti
 **Thermodynamic Interpretation:** Under the correspondence of {prf:ref}`thm-sieve-thermo-correspondence`, this is a first-order phase transition in the decidability order parameter $\rho_R$ (Axiom R satisfaction).
 :::
 
+:::{div} feynman-prose
+Now I want to be completely honest with you about what this framework can and cannot do. This is important, because there is a tendency in theoretical work to oversell. We are not going to do that.
+
+The Horizon Limit theorem says: there are problems the Sieve cannot solve, and it knows it cannot solve them. When you hit such a problem, you get a HORIZON verdict---not "REGULAR" or "SINGULAR" but "I cannot tell." This is honesty, not failure.
+
+Think about why this must be true. The Sieve is a finite computational procedure. It has finite memory and runs for finite time. But some problems require infinite information to describe---these are the incompressible or algorithmically random problems. You cannot fit an infinite description into a finite memory. It is not a limitation of our particular approach; it is mathematics.
+
+The Halting Problem sits at a fascinating boundary. It has low descriptive complexity (you can write down the definition easily), but it is undecidable because the *decision procedure* would require infinite resources. The Sieve recognizes this: low complexity but Axiom R fails. That is the "liquid phase"---between the crystalline order of decidable problems and the gaseous chaos of random ones.
+
+What matters is that the Sieve never lies. It never says "REGULAR" for something that could be singular. When it cannot tell, it says so. That is the honest epistemics this framework is built on.
+:::
+
 :::{prf:theorem} [KRNL-HorizonLimit] The Horizon Limit (Framework Boundaries)
 :label: mt-krnl-horizon-limit
-:class: metatheorem rigor-class-f
 
-**Rigor Class:** F (Framework-Original) — Explicit statement of framework limitations
+**Rigor Class:** F (Framework-Original) --- Explicit statement of framework limitations
 
 **Sieve Target:** Honest Epistemics — establishes what the Sieve **cannot** do
 

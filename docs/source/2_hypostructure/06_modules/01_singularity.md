@@ -1,6 +1,20 @@
 # Part IX: Universal Singularity Modules
 
-**Design Philosophy:** These metatheorems act as **Factory Functions** that automatically implement the `ProfileExtractor` and `SurgeryOperator` interfaces. Users do not invent surgery procedures or profile classifiers—the Framework constructs them from the thin kernel objects.
+:::{div} feynman-prose feynman-added
+
+Now we come to what I think is the most beautiful part of this whole framework. You have been wading through definitions and theorems, building up machinery. Here is where it pays off.
+
+The question is: What happens when things go wrong? When your dynamical system develops a singularity---when energy concentrates, when gradients blow up, when the solution stops making sense---what do you *do*?
+
+The standard answer in mathematics is: you work very hard. You classify all possible ways the system can fail, you prove theorems about each type of failure, you develop surgery procedures to cut out the bad parts and glue in good ones. This is what Perelman did for Ricci flow, what Huisken did for mean curvature flow, what Kenig and Merle did for dispersive equations. Brilliant work, but each case requires its own heroic effort.
+
+Here is the key insight of this chapter: *we can automate all of that*. Not by being clever about each individual case, but by recognizing the pattern that underlies all of them. The singularity resolution problem has a universal structure, and once you see it, you can write theorems that work for *any* system that fits the pattern.
+
+The user provides the physics---what quantities are conserved, how symmetries act, what the energy looks like. The Framework handles the singularity theory. That is the division of labor we are establishing here.
+
+:::
+
+**Design Philosophy:** These metatheorems act as **Factory Functions** that automatically implement the `ProfileExtractor` and `SurgeryOperator` interfaces. Users do not invent surgery procedures or profile classifiers---the Framework constructs them from the thin kernel objects.
 
 :::{prf:remark} Factory Function Pattern
 :label: rem-factory-pattern
@@ -50,9 +64,27 @@ A Hypostructure $\mathcal{H}$ satisfies the **Automation Guarantee** if:
 (sec-profile-classification-trichotomy)=
 ## Profile Classification Trichotomy
 
+:::{div} feynman-prose feynman-added
+
+Here is the first key question: when something goes wrong, *what kind* of thing is going wrong?
+
+Think about it this way. You are watching a solution evolve, and it starts to develop a singularity---some quantity is blowing up at a point. You zoom in on that point, rescaling space and time to keep the interesting behavior at order one. What do you see?
+
+The remarkable fact---and this took decades of hard analysis to establish---is that you do not see just *anything*. The zoomed-in picture, the "profile," belongs to a surprisingly small catalog of possibilities. For Ricci flow, you get cylinders, spheres, or Bryant solitons. For mean curvature flow, you get shrinking spheres and cylinders. For the nonlinear Schrodinger equation, you get ground states and their relatives.
+
+Why should this be? Because the rescaled dynamics have to be *self-similar*---they have to look the same at every scale. That is a very restrictive condition. It forces the profile to be a special object, typically a stationary solution or a self-similar blowup of the underlying equation.
+
+The trichotomy in this theorem captures the three possibilities:
+1. Your profile is in the "canonical library"---a finite, pre-computed list of known profiles.
+2. Your profile is in a "tame family"---an infinite but well-behaved parametric family.
+3. Your profile is genuinely wild---chaotic, undecidable, beyond classification.
+
+Cases 1 and 2 are where we can make progress. Case 3 is where we honestly say "this is too hard" and route to a different mode.
+
+:::
+
 :::{prf:theorem} [RESOLVE-Profile] Profile Classification Trichotomy
 :label: mt-resolve-profile
-:class: metatheorem rigor-class-l
 
 **Rigor Class:** L (Literature-Anchored) — see {prf:ref}`def-rigor-classification`
 
@@ -168,7 +200,6 @@ The Framework implements `ProfileExtractor` as follows:
 
 :::{prf:theorem} [RESOLVE-AutoProfile] Automatic Profile Classification (Multi-Mechanism OR-Schema)
 :label: mt-resolve-auto-profile
-:class: metatheorem
 
 **Sieve Target:** ProfileExtractor / Profile Classification Trichotomy
 
@@ -383,9 +414,26 @@ Alternatively, if Lock blocks specific patterns but allows others, classify the 
 (sec-surgery-admissibility-trichotomy)=
 ## Surgery Admissibility Trichotomy
 
+:::{div} feynman-prose feynman-added
+
+Now, here is the second key question: once you know what kind of singularity you have, can you actually *fix* it?
+
+Not every singularity can be surgically repaired. Think about cutting out a tumor---you can only do it if the tumor is localized enough that removing it does not kill the patient. Same principle here.
+
+The admissibility check is asking three questions:
+
+First, is the profile in our catalog? If we know what kind of singularity this is---if it matches one of our canonical profiles---then we know exactly how to cap it off. If the profile is something wild and unclassifiable, we are stuck.
+
+Second, is the singular set small enough? The technical condition is "codimension at least 2," which means the singularity is thin---like a curve in 3D space rather than a surface. Thin singularities can be excised without global damage. Fat singularities cannot.
+
+Third, is the energy cost bounded? Surgery releases energy. If the surgery would cost an unbounded amount of energy, it violates conservation and we cannot do it. The capacity bound $\text{Cap}(\Sigma) \leq \varepsilon_{\text{adm}}$ ensures the energy cost is controlled.
+
+When all three conditions are met, we get an "admissible" certificate and can proceed. When they are not, we either find an equivalent admissible surgery (Case 2) or acknowledge that this singularity is beyond our ability to repair (Case 3).
+
+:::
+
 :::{prf:theorem} [RESOLVE-Admissibility] Surgery Admissibility Trichotomy
 :label: mt-resolve-admissibility
-:class: metatheorem
 
 Before invoking any surgery $S$ with mode $M$ and data $D_S$, the framework produces exactly one of three certificates:
 
@@ -517,9 +565,26 @@ using the measure $\mu$ from $\mathcal{X}^{\text{thin}}$ and the metric $d$.
 (sec-structural-surgery-principle)=
 ## Structural Surgery Principle
 
+:::{div} feynman-prose feynman-added
+
+Now we come to the surgery itself. This is where we actually cut and paste.
+
+The key idea is categorical: surgery is a *pushout*. You have your original space with a bad region. You excise the bad region, leaving a boundary. You take a pre-fabricated "cap" that matches the boundary asymptotically. You glue them together. The universal property of pushouts guarantees the gluing is well-defined and unique.
+
+What makes this work? Three things:
+
+First, the cap is determined by the profile. Once you know you have a cylindrical singularity, there is exactly one cap that matches---a spherical cap that smoothly interpolates to the cylinder at infinity. The canonical library stores these caps alongside the profiles.
+
+Second, the gluing respects energy. The surgery cannot create energy from nothing or lose track of energy. In fact, surgery *releases* energy---the singular region was holding excess energy, and removing it decreases the total. This is crucial for termination: if each surgery releases at least $\epsilon_T$ energy, and total energy is finite, there can only be finitely many surgeries.
+
+Third, the surgered solution is smoother than what we started with. The singularity was precisely the locus of bad behavior; removing it and capping with a smooth cap leaves us with a better-behaved solution. We can then restart the flow and continue until the next singularity, or until we reach global regularity.
+
+The beautiful thing is that none of this requires user input. The Framework computes the cap from the profile, constructs the pushout automatically, and verifies the energy and regularity bounds. The user specified the physics; the Framework handles the topology.
+
+:::
+
 :::{prf:theorem} [ACT-Surgery] Structural Surgery Principle (Certificate Form)
 :label: mt-act-surgery
-:class: metatheorem rigor-class-l
 
 **Rigor Class:** L (Literature-Anchored) — see {prf:ref}`def-rigor-classification`
 
@@ -585,6 +650,22 @@ where:
 - **FinSet** (finite sets): For algorithmic/combinatorial applications
 
 The transfer of structures ($\Phi', \mathfrak{D}'$) to $\mathcal{X}'$ uses the universal property: any structure on $\mathcal{X}$ that is constant on $\Sigma$ induces a unique structure on $\mathcal{X}'$.
+:::
+
+:::{div} feynman-prose feynman-added
+
+Here is the theorem that makes the whole program work. You might worry: what if surgery goes on forever? What if we keep finding singularities, keep cutting and pasting, in an infinite regress?
+
+The Conservation of Flow theorem says: *that cannot happen*. And here is why.
+
+Every admissible surgery releases at least $\epsilon_T$ worth of energy. Not "some positive amount"---a *fixed* positive amount that depends only on the type of system. This is the discrete progress constant. It comes from a lower bound on the volume of admissible singularities: you cannot have singularities that are arbitrarily small, because tiny singularities would have infinite capacity-to-volume ratio.
+
+Now count: you started with energy $\Phi(x_0)$. After $N$ surgeries, you have released at least $N \cdot \epsilon_T$ energy. But energy cannot go below $\Phi_{\min}$ (the ground state energy). So $N \leq (\Phi(x_0) - \Phi_{\min})/\epsilon_T$.
+
+That is a finite number. A number you can compute. Not "eventually finite" or "well-founded in some abstract sense"---an actual integer that you can write down before you even start.
+
+This is what distinguishes the framework from handwaving. We do not just say "the process terminates." We say exactly how many surgeries can possibly occur, and we prove it from the physics of the problem.
+
 :::
 
 :::{prf:theorem} [RESOLVE-Conservation] Conservation of Flow
@@ -719,4 +800,18 @@ The Sieve automatically:
 - Bounds all surgery counts
 
 **Consequence:** The "singularity problem" becomes a **typing problem**: specify the correct thin objects, and the Framework handles singularity resolution.
+:::
+
+:::{div} feynman-prose feynman-added
+
+And there it is.
+
+What Perelman did for Ricci flow in three dimensions, what Huisken did for mean curvature flow, what Kenig and Merle did for nonlinear dispersive equations---all of these monumental achievements in singularity resolution---the Framework does automatically, for any system that fits the pattern.
+
+The user provides four things: a metric space where the dynamics live, an energy functional that decreases along trajectories, a dissipation mechanism that measures how fast energy is lost, and a symmetry group under which the dynamics are equivariant. From these four ingredients, the Framework derives the entire singularity resolution pipeline.
+
+This is not a claim that singularity theory is easy. The theorems we invoke---Lions' concentration-compactness, Perelman's surgery algorithm, Kenig-Merle's rigidity---represent some of the deepest mathematics of the last half century. What we claim is that this deep mathematics has a *universal structure*, and that structure can be captured in abstract form and applied mechanically to new problems.
+
+The singularity problem becomes a typing problem. Get the types right, and the theorems follow.
+
 :::

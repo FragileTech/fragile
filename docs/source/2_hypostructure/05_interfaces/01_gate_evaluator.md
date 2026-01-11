@@ -5,6 +5,20 @@ title: "Universal Gate Evaluator Interface"
 (sec-gate-evaluator-interface)=
 ## The Universal Gate Evaluator Interface
 
+:::{div} feynman-prose
+
+Now here is where we get to the heart of the matter. We want to build a machine that can look at any dynamical system - a fluid, a neural network, a proof search algorithm, whatever - and decide whether it is going to behave nicely or blow up in our faces.
+
+The trouble is, these systems look completely different on the surface. A fluid has velocities and pressures, a graph has nodes and edges, a type theory has terms and judgments. How can we possibly have one framework that handles all of them?
+
+The answer is to ask: what do we actually need to check? Forget the specifics. Every system we care about has some notion of "state" (where it is now), some notion of "cost" or "energy" (how far from equilibrium it is), and some notion of "evolution" (how it changes over time). If we can measure these things, we can check whether the system is behaving.
+
+So what follows is a kind of universal checklist - a sequence of gates that any system must pass through. Each gate asks a specific yes-or-no question: Is the energy bounded? Do discrete events accumulate? Is the system converging somewhere sensible? And so on.
+
+The magic is that once you translate your particular system into this common language, the same verification machinery applies to all of them. That is what we mean by "universal."
+
+:::
+
 A Hypostructure $\mathbb{H}$ is an object in a cohesive $(\infty, 1)$-topos $\mathcal{E}$ equipped with a **Gate Evaluator Interface**. This interface maps abstract structural data to decidable types (Propositions) that the Sieve machine can verify.
 
 To support everything from **Navier-Stokes** to **Graph Theory** to **Homotopy Type Theory**, we define the interfaces using the language of **Higher Topos Theory** (specifically, internal logic of an $(\infty,1)$-topos). This allows "Space" to be a manifold, a graph, or a type; "Energy" to be a functional, a complexity measure, or a truth value.
@@ -12,6 +26,17 @@ To support everything from **Navier-Stokes** to **Graph Theory** to **Homotopy T
 ---
 
 ### Ambient Structure
+
+:::{div} feynman-prose
+
+Before we can ask questions about a system, we need to say what kind of mathematical universe it lives in. This is like asking "what is the stage on which our drama plays out?"
+
+The answer is a topos - specifically, a cohesive $(\infty,1)$-topos. Now that sounds terrifying, but the idea is simple: a topos is a mathematical universe where you can do logic. It has objects (the things), morphisms (the relationships), and a notion of truth. The "cohesive" part means it knows about topology - it can distinguish between "connected" and "disconnected," between "nearby" and "far away."
+
+Why do we need such generality? Because a fluid lives in the world of smooth manifolds, a graph lives in the world of discrete sets, and a type lives in the world of homotopy types. By working in a topos, we get a single language that speaks to all of them.
+
+:::
+
 
 :::{prf:definition} Ambient Topos (Formal)
 :label: def-ambient-topos-formal
@@ -45,6 +70,21 @@ A **Height Object** $\mathcal{H}$ in $\mathcal{E}$ is an object equipped with:
 | Tropical | $\mathbb{T}_\infty = ([0,\infty], \min, +)$ | Min-plus algebra |
 :::
 
+:::{div} feynman-prose
+
+Now here is the key abstraction. An "interface" is just a contract between the system and the verifier. It says: "If you can tell me these things about your system (the required structure), then I can compute a definite answer to this question (the evaluator), and I will give you a proof of my answer (the certificate)."
+
+Think of it like a type signature in programming. The interface does not care how you implement the internals - it just needs you to expose certain data in a certain form. Then it can do its job.
+
+The three possible answers are crucial:
+- **YES** means "I checked, and the property holds. Here is the proof."
+- **NO** with a witness means "I found a counterexample. Here is the offending object."
+- **INC** (inconclusive) means "I ran out of time or my method does not apply. I am not saying the property fails - I just cannot decide."
+
+This three-valued logic is honest about the limits of computation. We do not pretend to solve undecidable problems. We just route around them.
+
+:::
+
 :::{prf:definition} Interface Permit
 :label: def-interface-permit
 
@@ -74,6 +114,16 @@ This enables:
 ### $\mathcal{H}_0$ (Substrate Interface)
 *The Substrate Definition.*
 
+:::{div} feynman-prose
+
+This is Gate Zero - the most basic question we can ask: does the system even exist in a well-defined sense? Can you tell me what states it can be in, and how it evolves from one state to another?
+
+You might think this is trivial, but it is not. Some PDEs do not have solutions for all initial data. Some algorithms get stuck in infinite loops. Some type-theoretic constructions are not well-founded. This gate catches those problems at the door.
+
+The key insight is the "refinement filter" - a way of taking limits. This matters because many interesting systems are defined as limits of approximations (think of the Navier-Stokes equations as limits of regularized equations). The substrate interface says: "You must tell me how limits work in your system."
+
+:::
+
 :::{prf:definition} Interface $\mathcal{H}_0$
 :label: def-interface-h0
 
@@ -99,6 +149,18 @@ $$\vdash S_t \in \text{Hom}_{\mathcal{E}}(\mathcal{X}, \mathcal{X})$$
 
 ### $D_E$ (Energy Interface)
 *The Cost Interface. Enables Node 1: EnergyCheck*
+
+:::{div} feynman-prose
+
+If the substrate interface asks "does this thing exist?", the energy interface asks "is it going somewhere sensible?"
+
+Here is the intuition. Almost every well-behaved dynamical system has some quantity that decreases (or at least does not increase without bound) as time goes on. For fluids, it is kinetic energy. For optimization algorithms, it is the loss function. For theorem provers, it might be the complexity of the remaining goals.
+
+This interface asks: what is your "height function"? How do you measure progress? And crucially: can you guarantee that the system does not climb forever?
+
+The key inequality is $\Phi(S_t x) \leq \Phi(x) + \int \mathfrak{D}$. Read this as: "the energy at time $t$ is at most the initial energy plus whatever dissipation happened along the way." If dissipation is negative (the system is losing energy), this is a bound. If dissipation can be positive without limit, you have a potential blow-up.
+
+:::
 
 :::{prf:definition} Interface $D_E$
 :label: def-interface-de
@@ -548,6 +610,20 @@ $$\Delta(T(u), d) \leq \varepsilon_{\text{align}}$$
 
 ### $\mathrm{Cat}_{\mathrm{Hom}}$ (Categorical Interface)
 *Enables Node 17: The Lock (BarrierExclusion)*
+
+:::{div} feynman-prose
+
+And here we arrive at the Lock - the final gate, the moment of truth.
+
+All the previous interfaces were about checking specific properties: energy bounds, compactness, scaling, topology. But they do not directly answer the question we really care about: will the system blow up or not?
+
+The Lock approaches this differently. It asks: "I have a library of known bad patterns - the canonical ways that singularities can form in systems of your type. Can any of these bad patterns embed into your system?"
+
+This is a categorical question. A "morphism" from a bad pattern $B$ to your hypostructure $\mathcal{H}$ would mean that $B$ can be realized inside $\mathcal{H}$ - that your system contains the seeds of singularity. If no such morphism exists (the Hom-set is empty), then your system is structurally forbidden from developing that kind of singularity.
+
+The beautiful thing is that this reduces an analytic question (will something blow up?) to an algebraic question (do certain morphisms exist?). And algebraic questions are often much more tractable.
+
+:::
 
 :::{prf:definition} Interface $\mathrm{Cat}_{\mathrm{Hom}}$
 :label: def-interface-cathom
@@ -1001,13 +1077,30 @@ When CompactCheck (Node 3) returns NO with a concentration profile, the system e
 (sec-kernel-objects)=
 ### 19.A. The Kernel Objects: Interface Implementations
 
-A Hypostructure $\mathcal{H} = (\mathcal{X}, \Phi, \mathfrak{D}, G)$ consists of four **kernel objects**. Each kernel object implements a subset of the interfaces defined in Sections 19.1–19.15.
+:::{div} feynman-prose
+
+So far we have listed all the gates - all the questions the Sieve can ask. But where does the data come from to answer these questions?
+
+That is what the kernel objects provide. A Hypostructure has exactly four pieces of core data:
+
+1. **The State Object** $\mathcal{X}$ - Where can the system be? This is the arena.
+2. **The Height Object** $\Phi$ - How do we measure progress or cost? This is the potential.
+3. **The Dissipation Object** $\mathfrak{D}$ - How fast is energy being lost? This is the friction.
+4. **The Symmetry Object** $G$ - What transformations leave the physics unchanged? This is the invariance.
+
+Everything else is derived from these four. The interfaces are like projections - each one reaches into the kernel objects, extracts the data it needs, and computes its verdict.
+
+Think of it like a compiler: you write source code (the four kernel objects), and the compiler (the Sieve) generates machine code (the interface evaluators) automatically. You do not have to write the evaluators yourself.
+
+:::
+
+A Hypostructure $\mathcal{H} = (\mathcal{X}, \Phi, \mathfrak{D}, G)$ consists of four **kernel objects**. Each kernel object implements a subset of the interfaces defined in Sections 19.1-19.15.
 
 This section specifies each kernel object using a standardized template:
 1. **Component Table**: Maps each internal component to its mathematical type, the interface it satisfies, and its role in the Sieve
 2. **Formal Definition**: Tuple specification with implementation constraints and domain examples
 
-This serves as a "header file" for instantiation — users can read the table and know exactly what data structures to provide for their domain.
+This serves as a "header file" for instantiation - users can read the table and know exactly what data structures to provide for their domain.
 
 ---
 
@@ -1077,7 +1170,6 @@ This serves as a "header file" for instantiation — users can read the table an
 
 :::{prf:theorem} [FACT-ValidInst] Valid Instantiation
 :label: mt-fact-valid-inst
-:class: metatheorem
 
 **Statement:** To instantiate a Hypostructure for a system $S$ of type $T$ is to provide:
 1. An ambient $(\infty,1)$-topos $\mathcal{E}$ (or a 1-topos/category with sufficient structure)
@@ -1103,7 +1195,6 @@ where $\text{Result} \in \{\text{GlobalRegularity}, \text{Mode}_{1..15}, \text{F
 
 :::{prf:theorem} [FACT-MinInst] Minimal Instantiation
 :label: mt-fact-min-inst
-:class: metatheorem
 
 **Statement:** To instantiate a Hypostructure for system $S$ using the **thin object** formalism ({ref}`Section 19.C <sec-thin-kernel-objects>`), the user provides only:
 
@@ -1158,7 +1249,27 @@ where $\text{Result} \in \{\text{GlobalRegularity}, \text{Mode}_{1..15}, \text{F
 (sec-thin-kernel-objects)=
 ### 19.C Thin Kernel Objects
 
-**Design Principle:** The full Kernel Objects of {ref}`Section 19.A <sec-kernel-objects>` contain both *structural data* (user-provided) and *algorithmic machinery* (Framework-derived). This section extracts the **minimal user burden**—the "thin" objects that users must specify. Everything else is automatically constructed by the Sieve via the Universal Singularity Modules ({prf:ref}`mt-resolve-profile`, {prf:ref}`mt-resolve-admissibility`, {prf:ref}`mt-act-surgery`).
+:::{div} feynman-prose
+
+Now here is the punchline of this whole section.
+
+You might look at all those kernel objects with their dozens of components and think: "This is going to be a nightmare to instantiate. I have to provide all that structure myself?"
+
+No. You provide the essentials - just 10 pieces of data - and the framework derives everything else automatically.
+
+This is the thin-to-full expansion. You tell us:
+- What space your system lives in (and how to measure distance in it)
+- What quantity you are trying to minimize (and how it scales)
+- How fast energy dissipates (and how that scales)
+- What symmetries your system has
+
+From these primitives, the Sieve constructs the full apparatus: the bad sets, the profiles, the surgery operators, the topological sectors. You do not have to be an expert in concentration-compactness or o-minimal geometry. You just describe your system, and the machinery figures out how to analyze it.
+
+This is what makes the framework actually usable in practice.
+
+:::
+
+**Design Principle:** The full Kernel Objects of {ref}`Section 19.A <sec-kernel-objects>` contain both *structural data* (user-provided) and *algorithmic machinery* (Framework-derived). This section extracts the **minimal user burden** - the "thin" objects that users must specify. Everything else is automatically constructed by the Sieve via the Universal Singularity Modules ({prf:ref}`mt-resolve-profile`, {prf:ref}`mt-resolve-admissibility`, {prf:ref}`mt-act-surgery`).
 
 :::{prf:definition} User vs Framework Responsibility
 :label: def-user-framework-split
@@ -1336,6 +1447,22 @@ Given thin objects $(\mathcal{X}^{\text{thin}}, \Phi^{\text{thin}}, \mathfrak{D}
 (sec-soft-backend-compilation)=
 ### 19.19. Soft-to-Backend Compilation
 
+:::{div} feynman-prose
+
+Here is the final piece of the automation puzzle.
+
+Some of the permits we need are genuinely hard to verify. Well-posedness theory for PDEs. Profile decomposition theorems. Rigidity results for minimal counterexamples. These are deep theorems that took decades of research to establish.
+
+But here is the thing: for "good types" (systems that match known patterns), these theorems have already been proved. Semilinear parabolic equations have well-posedness in energy spaces. Critical dispersive equations have profile decomposition. And so on.
+
+So instead of asking the user to re-prove these theorems for their specific system, we build a compiler. The compiler looks at the soft interfaces the user provided, matches them against a database of known theorem templates, and automatically emits the backend permits.
+
+You give us energy bounds and scaling exponents. We give you well-posedness certificates. You give us symmetry groups and compactness properties. We give you profile decomposition and rigidity theorems.
+
+This is how the framework achieves practical automation: by standing on the shoulders of existing mathematical knowledge.
+
+:::
+
 This section defines the **compilation layer** that automatically derives backend permits from soft interfaces for good types. Users implement only soft interfaces; the framework derives WP, ProfDec, KM, Rigidity, etc.
 
 #### 19.19.1 Architecture
@@ -1362,9 +1489,8 @@ For **good types** (satisfying the Automation Guarantee), soft interface verific
 
 ---
 
-:::{prf:theorem} [FACT-SoftWP] Soft→WP Compilation
+:::{prf:theorem} [FACT-SoftWP] Soft-to-WP Compilation
 :label: mt-fact-soft-wp
-:class: metatheorem
 
 **Statement:** For good types $T$ satisfying the Automation Guarantee, critical well-posedness is derived from soft interfaces.
 
@@ -1396,7 +1522,6 @@ $K_{\mathrm{WP}_{s_c}}^+ = (\mathsf{template\_ID}, \mathsf{theorem\_citation}, s
 
 :::{prf:theorem} Soft-to-Backend Completeness
 :label: thm-soft-backend-complete
-:class: theorem
 
 **Statement:** For good types $T$ satisfying the Automation Guarantee, all backend permits are derived from soft interfaces.
 
@@ -1435,7 +1560,6 @@ The Sieve implements proof-producing evaluators for each derived permit. Every e
 
 :::{prf:theorem} [FACT-GermDensity] Germ Set Density
 :label: mt-fact-germ-density
-:class: metatheorem rigor-class-f
 
 **Rigor Class:** F (Framework-Original)
 

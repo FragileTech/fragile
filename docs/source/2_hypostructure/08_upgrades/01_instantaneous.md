@@ -13,14 +13,35 @@ The **Instantaneous Upgrade Metatheorems** formalize the logical principle that 
 
 The key insight is that certain "obstructions" are themselves *certificates of regularity* when viewed from the correct perspective.
 
+:::{div} feynman-prose
+Now here is something that might seem paradoxical at first, but once you see it, you will never forget it. The Sieve runs through its diagnostic nodes, and sometimes a node says "NO"---energy is infinite, events are piling up, something looks bad. You might think, well, that is the end of the story. The system fails the check.
+
+But wait. The barrier that stopped you---the very thing that said "you cannot pass this way"---sometimes contains exactly the information you need to prove everything is fine after all.
+
+Think of it like this. Suppose you are trying to prove a particle will not escape to infinity. Your first check says "energy is unbounded!" That sounds terrible. But then you look more carefully at what blocked you: the barrier certificate says the system has a drift condition pushing it back toward the center. And this drift condition is precisely what guarantees the particle keeps returning---it cannot escape. The obstruction was the proof all along.
+
+This is what the upgrade theorems capture: the logical judo of turning a "blocked" verdict into a "yes, but in a different sense" permit. The $K^{\sim}$ superscript means "yes, under a suitable reinterpretation"---renormalized measure, effective scaling, removable singularity, whatever the physics requires.
+
+The beautiful thing is that these upgrades happen instantly, within a single pass through the Sieve. You do not need to iterate or wait for more information. The barrier certificate already contains everything you need.
+:::
+
 ---
 
 (sec-saturation-promotion)=
 ### Saturation Promotion
 
+:::{div} feynman-prose
+Let me tell you what saturation really means. You have a system---say, a noisy oscillator---and you measure its energy. It looks infinite! The energy functional blows up. First instinct: panic. The system is unstable, unbounded, a disaster.
+
+But look at what the saturation barrier is telling you: yes, the energy is formally infinite, but there is a drift pushing the system back. The generator $\mathcal{L}$ applied to the height $\Phi$ is negative (up to a bounded correction). This is the Foster-Lyapunov condition, and it is a remarkable thing. It says: no matter how far out you go, the dynamics are always pulling you back toward the center.
+
+The key insight from Meyn and Tweedie is that this drift condition guarantees a unique invariant measure $\pi$ exists, and under this measure, the expected height is finite. So the "infinite energy" was an artifact of looking at the wrong reference frame. Change your measure to the equilibrium distribution, and suddenly everything is finite.
+
+This is the first example of the upgrade pattern: what looks like a failure is actually success in disguise. The barrier certificate *is* the proof of regularity---you just have to read it correctly.
+:::
+
 :::{prf:theorem} [UP-Saturation] Saturation Promotion (BarrierSat $\to$ YES$^\sim$)
 :label: mt-up-saturation
-:class: metatheorem rigor-class-l
 
 **Rigor Class:** L (Literature-Anchored) — see {prf:ref}`def-rigor-classification`
 
@@ -61,7 +82,6 @@ The drift condition implies geometric ergodicity by the Foster-Lyapunov criterio
 
 :::{prf:theorem} [UP-Censorship] Causal Censor Promotion (BarrierCausal $\to$ YES$^\sim$)
 :label: mt-up-censorship
-:class: metatheorem
 
 **Context:** Node 2 (ZenoCheck) fails ($N \to \infty$), but BarrierCausal is Blocked ($K_{\mathrm{Rec}_N}^{\mathrm{blk}}$).
 
@@ -91,9 +111,20 @@ By the weak cosmic censorship conjecture (Penrose, 1969), generic gravitational 
 (sec-scattering-promotion)=
 ### Scattering Promotion
 
+:::{div} feynman-prose
+Scattering is one of the most beautiful ideas in the analysis of nonlinear waves. Here is the picture to keep in your mind.
+
+You have a wave---maybe it is a solution to a nonlinear Schrodinger equation---and it is doing complicated things. Peaks form, interact, maybe they look like they are about to focus into a singularity. The CompactCheck says "no concentration"---the wave is spreading out rather than piling up at a point.
+
+Now, you might think this is bad news. No concentration means no nice compact profile to characterize. But here is the judo move: if the wave is not concentrating, it must be dispersing. And if it is dispersing with finite Morawetz quantity (a spacetime integral that measures interaction), then asymptotically it becomes a free wave. All the nonlinear complications wash away, and what remains is just the linear Schrodinger evolution plus a fixed scattering state.
+
+This is the VICTORY condition---the strongest possible outcome. Not merely "no singularity" but "the solution exists globally and approaches something simple as $t \to \pm\infty$." The Kenig-Merle methodology makes this rigorous: either the solution concentrates (and we analyze the profile), or it scatters (and we are done). The Morawetz estimate rules out the pathological in-between.
+
+What I want you to appreciate is how the "failure" of concentration---the NO from CompactCheck---directly implies scattering. The barrier said "no profile here," and that is precisely why the wave must disperse to infinity.
+:::
+
 :::{prf:theorem} [UP-Scattering] Scattering Promotion (BarrierScat $\to$ VICTORY)
 :label: mt-up-scattering
-:class: metatheorem rigor-class-l
 
 **Rigor Class:** L (Literature-Anchored) — see {prf:ref}`def-rigor-classification`
 
@@ -144,7 +175,6 @@ for admissible pairs $(q, r)$ satisfying $\frac{2}{q} + \frac{n}{r} = \frac{n}{2
 
 :::{prf:theorem} [UP-TypeII] Type II Suppression (BarrierTypeII $\to$ YES$^\sim$)
 :label: mt-up-type-ii
-:class: metatheorem
 
 **Context:** Node 4 (ScaleCheck) fails (Supercritical), but BarrierTypeII is Blocked ($K_{\mathrm{SC}_\lambda}^{\mathrm{blk}}$).
 
@@ -176,7 +206,6 @@ The monotonicity formula (Merle and Zaag, 1998) bounds the blow-up rate from bel
 
 :::{prf:theorem} [UP-Capacity] Capacity Promotion (BarrierCap $\to$ YES$^\sim$)
 :label: mt-up-capacity
-:class: metatheorem
 
 **Context:** Node 6 (GeomCheck) fails (Codim too small), but BarrierCap is Blocked ($K_{\mathrm{Cap}_H}^{\mathrm{blk}}$).
 
@@ -208,7 +237,6 @@ By Federer's theorem on removable singularities (1969, Section 4.7), sets of zer
 
 :::{prf:theorem} [UP-Spectral] Spectral Gap Promotion (BarrierGap $\to$ YES)
 :label: mt-up-spectral
-:class: metatheorem
 
 **Context:** Node 7 (StiffnessCheck) fails (Flat), but BarrierGap is Blocked ($K_{\text{gap}}^{\mathrm{blk}}$).
 
@@ -238,9 +266,20 @@ The Łojasiewicz-Simon inequality states $|\Phi(x) - \Phi(x^*)|^{1-\theta} \leq 
 (sec-o-minimal-promotion)=
 ### O-Minimal Promotion
 
+:::{div} feynman-prose
+O-minimality is one of those concepts that sounds technical but captures something deeply intuitive: tame sets cannot be pathologically complicated.
+
+What do I mean by "tame"? Consider the real numbers with the usual operations of addition and multiplication. Any set you can define using polynomial equations and inequalities is "semialgebraic." These sets are nice---they have finitely many connected components, no fractal boundaries, no wild oscillations. Tarski proved that the theory of real closed fields is decidable precisely because semialgebraic sets are so well-behaved.
+
+O-minimal structures extend this to include things like exponentials and analytic functions, while preserving the tameness. The key property is: every definable subset of $\mathbb{R}$ is a finite union of points and intervals. No Cantor sets, no pathological examples from real analysis.
+
+Why does this matter for singularities? If your dynamics and your singular set are both definable in an o-minimal structure, then the singular set cannot be fractal or have infinitely complicated topology. The cell decomposition theorem says it breaks into finitely many smooth pieces. The Kurdyka-Lojasiewicz inequality says gradient descent must converge in finite arc-length---no infinite spiraling.
+
+So when the TameCheck says "WILD" but we know the set is o-minimal, we have an immediate upgrade. The "wildness" was a failure of the generic check to recognize a structured special case. Once we invoke o-minimality, the cell decomposition theorem guarantees tameness.
+:::
+
 :::{prf:theorem} [UP-OMinimal] O-Minimal Promotion (BarrierOmin $\to$ YES$^\sim$)
 :label: mt-up-o-minimal
-:class: metatheorem
 
 **Context:** Node 9 (TameCheck) fails (Wild), but BarrierOmin is Blocked ($K_{\mathrm{TB}_O}^{\mathrm{blk}}$).
 
@@ -278,9 +317,22 @@ This guarantees gradient descent converges in finite arc-length, preventing infi
 (sec-surgery-promotion)=
 ### Surgery Promotion
 
+:::{div} feynman-prose
+Surgery is the nuclear option. Everything else has failed---the node said NO, the barrier could not block the singularity, and the flow is about to develop a genuine blowup. What do you do?
+
+You cut out the bad part and sew in something clean.
+
+This sounds drastic, and it is. But here is the remarkable thing that Hamilton discovered and Perelman made precise: if you know the geometry of the singularity, you know exactly how to cut. Near a high-curvature point, the manifold always looks like one of a small number of standard models---a shrinking sphere, a cylinder, or a Bryant soliton. This is the Canonical Neighborhood Theorem, and it is what makes surgery well-defined rather than arbitrary.
+
+Think of it like this. A surgeon removing a tumor does not cut randomly. They cut along anatomical boundaries, excising the pathological tissue while preserving the healthy structure. The canonical neighborhood theorem tells us exactly where those boundaries are in Ricci flow: the singularity has a standard local form, so the excision and capping procedure is essentially unique.
+
+The re-entry certificate $K^{\mathrm{re}}$ says: "I performed a valid surgery. The excised set had small capacity (I did not remove too much), the inserted cap matches the canonical geometry, and the height decreased (so we made progress)." With this certificate, the flow can continue on the modified manifold.
+
+What I find philosophically interesting is that surgery is an admission that smooth solutions do not exist---but it is a controlled admission. We get a generalized solution that is smooth except at finitely many surgery times, and this is often good enough to extract topological or physical conclusions.
+:::
+
 :::{prf:theorem} [UP-Surgery] Surgery Promotion (Surgery $\to$ YES$^\sim$)
 :label: mt-up-surgery
-:class: metatheorem
 
 **Context:** Any Node fails, Barrier breached, but Surgery $S$ executes and issues re-entry certificate ($K^{\mathrm{re}}$).
 
@@ -319,9 +371,20 @@ The surgery construction follows Hamilton (1997) for Ricci flow and Perelman (20
 (sec-lock-promotion)=
 ### Lock Promotion
 
+:::{div} feynman-prose
+The Lock is the final guardian. After all the nodes have run, after all the barriers have been tested, after all the local analyses are complete, the Lock asks one global question: can the universal bad pattern embed into this system at all?
+
+Let me explain what this means. Throughout mathematics, we have developed a library of what singularities look like---concentration profiles, blowup rates, scaling behaviors. The "universal bad pattern" $\mathcal{B}_{\text{univ}}$ is the categorical abstraction of all these possibilities. If a singularity of any type were to form, it would manifest as a morphism from this pattern into your system.
+
+Now, the Lock computes the Hom-set $\mathrm{Hom}(\mathcal{B}_{\text{univ}}, \mathcal{H})$. If this set is empty---if there is no way to map the bad pattern into your hypostructure---then no singularity can exist. Period. The proof is trivial once you set it up correctly: existence of a singularity would imply a morphism, but the Hom-set is empty, contradiction.
+
+This is what Grothendieck called the "yoga of morphisms": instead of proving something does not exist by checking all possible forms it might take, you prove no map can exist. It is a global obstruction that settles everything at once.
+
+When the Lock returns BLOCKED, it validates not just one permit but all permits retroactively. Every earlier ambiguity is resolved in the favorable direction. This is why the Lock is so powerful---it upgrades the entire certificate context in one move.
+:::
+
 :::{prf:theorem} [UP-Lock] Lock Promotion (BarrierExclusion $\to$ GLOBAL YES)
 :label: mt-up-lock
-:class: metatheorem
 
 **Context:** Node 17 (The Lock) is Blocked ($K_{\text{Lock}}^{\mathrm{blk}}$).
 
@@ -353,7 +416,6 @@ The proof uses the contrapositive: if a singularity existed, it would generate a
 
 ::::{prf:theorem} [UP-Absorbing] Absorbing Boundary Promotion (BoundaryCheck $\to$ EnergyCheck)
 :label: mt-up-absorbing
-:class: metatheorem
 
 **Context:** Node 1 (Energy) fails ($E \to \infty$), but Node 13 (Boundary) confirms an Open System with dissipative flux.
 
@@ -392,7 +454,6 @@ This is the energy method of Dafermos (2016, Chapter 5) applied to hyperbolic co
 
 :::{prf:theorem} [UP-Catastrophe] Catastrophe-Stability Promotion (BifurcateCheck $\to$ StiffnessCheck)
 :label: mt-up-catastrophe
-:class: metatheorem
 
 **Context:** Node 7 (Stiffness) fails (Flat/Zero Eigenvalue), but Node 7a (Bifurcation) identifies a **Canonical Catastrophe**.
 
@@ -422,11 +483,22 @@ The Łojasiewicz exponent at a degenerate critical point is $\theta = 1/k$ for t
 (sec-inconclusive-discharge-upgrades)=
 ### Inconclusive Discharge Upgrades
 
+:::{div} feynman-prose
+There is an important distinction between "no" and "I do not know yet."
+
+A blocked certificate says: "I checked, and this barrier is stopping the singularity." That is definite information. But an inconclusive certificate says something different: "I cannot decide because I am missing some prerequisite information."
+
+Think of it like a conditional proof in logic. You want to prove $P$, but you need lemma $Q$ first. Until you have $Q$, you cannot say whether $P$ is true or false---you can only say "if $Q$ then $P$." The inconclusive certificate records exactly this: the obligation (what you want to prove), the missing premises (what you need first), and a trace of why you got stuck.
+
+The upgrade rules handle two scenarios. First, the missing premises might become available later in the same Sieve pass---another node might produce exactly the certificate you need. Second, the premises might come from a completely different branch of the verification graph, filled in during closure.
+
+Either way, the moment all missing premises are satisfied, the inconclusive certificate upgrades to a full YES. The obligation is discharged. This is the logical analogue of conditional proof: once you have all the hypotheses, you get the conclusion.
+:::
+
 The following metatheorems formalize inc-upgrade rules. Blocked certificates indicate "cannot proceed"; inconclusive certificates indicate "cannot decide with current prerequisites."
 
 :::{prf:theorem} [UP-IncComplete] Inconclusive Discharge by Missing-Premise Completion
 :label: mt-up-inc-complete
-:class: metatheorem
 
 **Context:** A node returns $K_P^{\mathrm{inc}} = (\mathsf{obligation}, \mathsf{missing}, \mathsf{code}, \mathsf{trace})$ where $\mathsf{missing}$ specifies the certificate types that would enable decision.
 
@@ -452,7 +524,6 @@ The NO-inconclusive certificate records an epistemic gap, not a semantic refutat
 
 :::{prf:theorem} [UP-IncAposteriori] A-Posteriori Inconclusive Discharge
 :label: mt-up-inc-aposteriori
-:class: metatheorem
 
 **Context:** $K_P^{\mathrm{inc}}$ is produced at node $i$, and later nodes add certificates that satisfy its $\mathsf{missing}$ set.
 
