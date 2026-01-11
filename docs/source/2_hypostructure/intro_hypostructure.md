@@ -48,6 +48,29 @@ Every predicate evaluation produces a typed certificate:
 - **TM-4 (Certificate Composition):** Rules for combining certificates
 - **TM-5 (Upgrade Promotion):** Converts weak certificates to strong ones
 
+**Instantaneous Upgrade Metatheorems:**
+The framework provides metatheorems that promote "Blocked" barrier certificates and "Surgery" re-entry certificates to full YES permits under appropriate structural conditions:
+- **Saturation Promotion:** Infinite energy under drift condition → finite energy under renormalized measure
+- **Spectral Gap Promotion:** Zero Hessian eigenvalue + spectral gap → Łojasiewicz-Simon inequality with exponential convergence
+- **Scattering Promotion:** No concentration + finite Morawetz → global existence via dispersion
+- **Surgery Promotion:** Valid surgery with canonical neighborhood → generalized solution continuation
+- **Lock Promotion:** Empty Hom-set $\mathrm{Hom}(\mathcal{B}_{\text{univ}}, \mathcal{H}) = \emptyset$ → global regularity (retroactive validation)
+
+These upgrades allow recovery of Lyapunov functions, outputs, and other critical objects after validating Thin interfaces.
+
+**Algorithmic Completeness Theory:**
+The framework establishes that polynomial-time algorithms must factor through five fundamental cohesive modalities:
+- **Class I (Climbers):** Exploit metric/gradient structure ($\sharp$ modality)
+- **Class II (Propagators):** Exploit causal/DAG structure ($\int$ modality)
+- **Class III (Alchemists):** Exploit algebraic symmetry ($\flat$ modality)
+- **Class IV (Dividers):** Exploit self-similarity/recursion ($\ast$ modality)
+- **Class V (Interference):** Exploit holographic/boundary structure ($\partial$ modality)
+
+The **Algorithmic Representation Theorem (MT-AlgComplete)** proves these five classes are exhaustive—any polynomial-time algorithm must exploit at least one of these structural resources. Blocking all five modalities (via Tactic E13) establishes information-theoretic hardness.
+
+**P/NP Bridge to Classical Complexity:**
+Bidirectional bridge theorems establish $P_{\text{Fragile}} = P_{\text{DTM}}$ and $NP_{\text{Fragile}} = NP_{\text{DTM}}$, allowing internal complexity separations to export to classical ZFC statements about P and NP. The framework reduces the P vs NP question to concrete geometric/topological properties of energy landscapes.
+
 **Meta-Learning Extension:**
 The axioms themselves can be *learned* as the solution to a constrained optimization problem over defect functionals. See {doc}`source/2_hypostructure/10_metalearning/01_metalearning`.
 
@@ -90,6 +113,8 @@ A hypostructure is an object carrying *surgery-resolution data*—the informatio
 - *Want factory metatheorems?* → {doc}`source/2_hypostructure/07_factories/01_metatheorems`
 - *Want upgrade theorems?* → {doc}`source/2_hypostructure/08_upgrades/01_instantaneous`
 - *Want mathematical foundations?* → {doc}`source/2_hypostructure/09_mathematical/01_theorems`
+- *Want algorithmic completeness theory?* → {doc}`source/2_hypostructure/09_mathematical/05_algorithmic`
+- *Want P/NP complexity bridge?* → {doc}`source/2_hypostructure/09_mathematical/06_complexity_bridge`
 - *Want meta-learning?* → {doc}`source/2_hypostructure/10_metalearning/01_metalearning`
 - *Want ZFC translation?* → {doc}`source/2_hypostructure/11_appendices/01_zfc`
 :::
@@ -122,6 +147,9 @@ This formalism is designed to be **modular**. Each part is written to be as self
 | The axiom system                  | {doc}`Part II <source/2_hypostructure/02_axioms/01_axiom_system>` | Part I helpful but not required       |
 | Gate/barrier/surgery specs        | {doc}`Part IV <source/2_hypostructure/04_nodes/01_gate_nodes>`, {doc}`Part V <source/2_hypostructure/05_interfaces/01_gate_evaluator>` | Part III for certificate semantics    |
 | Factory metatheorems              | {doc}`Part VII <source/2_hypostructure/07_factories/01_metatheorems>` | Parts III-V for context               |
+| Upgrade theorems (Thin → Full)    | {doc}`Part VIII <source/2_hypostructure/08_upgrades/01_instantaneous>` | Parts III-IV for certificate types    |
+| Algorithmic completeness          | {doc}`Part XIX <source/2_hypostructure/09_mathematical/05_algorithmic>` | Part I for modalities                 |
+| P/NP complexity bridge            | {doc}`Part XX <source/2_hypostructure/09_mathematical/06_complexity_bridge>` | Part XIX for algorithm classes        |
 | Meta-learning axioms              | {doc}`Part X <source/2_hypostructure/10_metalearning/01_metalearning>` | Can standalone with Part II summary   |
 | ZFC translation                   | {doc}`Part XI <source/2_hypostructure/11_appendices/01_zfc>` | Can standalone                        |
 
@@ -184,7 +212,12 @@ A recommended approach for understanding this framework:
 - {doc}`source/2_hypostructure/09_mathematical/02_algebraic`
 - {doc}`source/2_hypostructure/09_mathematical/03_cross_reference`
 - {doc}`source/2_hypostructure/09_mathematical/04_taxonomy`
+
+**Part XIX: Algorithmic Completeness**
 - {doc}`source/2_hypostructure/09_mathematical/05_algorithmic`
+
+**Part XX: P/NP Bridge to Classical Complexity**
+- {doc}`source/2_hypostructure/09_mathematical/06_complexity_bridge`
 
 **Part X: Meta-Learning**
 - {doc}`source/2_hypostructure/10_metalearning/01_metalearning`
@@ -216,9 +249,15 @@ This formalism is a **categorical foundation for runtime safety verification**. 
 
 6. **Classical recovery.** When the ambient topos is $\mathbf{Set}$, the categorical machinery reduces to classical PDE analysis. The framework organizes classical results rather than replacing them ({prf:ref}`rem-classical-recovery`).
 
-7. **Meta-learning extension.** The axioms themselves can be learned as solutions to constrained optimization over defect functionals, enabling automatic discovery of regularity conditions ({doc}`source/2_hypostructure/10_metalearning/01_metalearning`).
+7. **Instantaneous upgrade metatheorems.** "Blocked" barriers and failed checks can be promoted to full YES permits under structural conditions—infinite energy under drift becomes finite energy under renormalized measure, zero Hessian eigenvalue with spectral gap gives exponential convergence, no concentration with finite Morawetz implies scattering. These upgrades allow recovery of Lyapunov functions and promote Thin interfaces to full objects ({doc}`source/2_hypostructure/08_upgrades/01_instantaneous`).
 
-8. **ZFC grounding.** Complete translation to set-theoretic foundations is provided for readers who prefer classical mathematics ({doc}`source/2_hypostructure/11_appendices/01_zfc`).
+8. **Algorithmic completeness.** The five algorithm classes (Climbers, Propagators, Alchemists, Dividers, Interference Engines) are proven exhaustive via cohesive topos theory—polynomial-time computation requires exploiting at least one of five fundamental modalities. Blocking all five establishes information-theoretic hardness ({doc}`source/2_hypostructure/09_mathematical/05_algorithmic`).
+
+9. **P/NP bridge to classical complexity.** Bidirectional bridge theorems establish $P_{\text{Fragile}} = P_{\text{DTM}}$ and $NP_{\text{Fragile}} = NP_{\text{DTM}}$, allowing internal separations to export to classical complexity theory ({doc}`source/2_hypostructure/09_mathematical/06_complexity_bridge`).
+
+10. **Meta-learning extension.** The axioms themselves can be learned as solutions to constrained optimization over defect functionals, enabling automatic discovery of regularity conditions ({doc}`source/2_hypostructure/10_metalearning/01_metalearning`).
+
+11. **ZFC grounding.** Complete translation to set-theoretic foundations is provided for readers who prefer classical mathematics ({doc}`source/2_hypostructure/11_appendices/01_zfc`).
 
 (sec-hypo-what-is-novel)=
 ### What Is Novel Here vs What Is Repackaging
@@ -234,7 +273,7 @@ This formalism is a **categorical foundation for runtime safety verification**. 
 *Proof Architecture:*
 5. **Certificate-typed execution.** Formal specification of YES/NO/INC certificates with witness types and verification functions ({prf:ref}`def-gate-permits`).
 6. **Factory Metatheorems.** Natural transformation soundness for correct-by-construction code generation ({prf:ref}`mt-fact-gate`, {prf:ref}`mt-fact-barrier`, {prf:ref}`mt-fact-surgery`).
-7. **Upgrade Theorems.** Systematic promotion of weak certificates to strong ones under additional hypotheses ({doc}`source/2_hypostructure/08_upgrades/01_instantaneous`).
+7. **Instantaneous Upgrade Metatheorems.** Systematic promotion of "Blocked" barrier certificates and "Surgery" re-entry certificates to full YES permits—allows recovery of Lyapunov functions under drift conditions, promotes zero eigenvalue + spectral gap to exponential convergence, upgrades no concentration + finite Morawetz to scattering. These validate Thin interfaces and promote them to full objects ({doc}`source/2_hypostructure/08_upgrades/01_instantaneous`).
 
 *Operational Specifications:*
 8. **17 Gate Nodes.** Complete formal specifications for all diagnostic checks with decidability analysis ({doc}`source/2_hypostructure/04_nodes/01_gate_nodes`).
@@ -242,8 +281,10 @@ This formalism is a **categorical foundation for runtime safety verification**. 
 10. **Exclusion Tactics E1-E12.** Obstruction-theoretic methods for proving non-existence of bad morphisms ({doc}`source/2_hypostructure/06_modules/03_lock`).
 
 *Meta-Theoretic:*
-11. **Meta-Learning Axioms.** Learning hypostructure constraints as optimization over defect functionals ({doc}`source/2_hypostructure/10_metalearning/01_metalearning`).
-12. **Fractal Gas Model.** Scale-free dynamics for axiom discovery ({doc}`source/3_fractal_gas/03_fractal_gas_latent`).
+11. **Algorithmic Completeness Theory.** The five algorithm classes (Climbers, Propagators, Alchemists, Dividers, Interference Engines) are proven exhaustive via Schreiber's structure theorem—polynomial-time algorithms must factor through cohesive modalities $\{\sharp, \int, \flat, \ast, \partial\}$. Tactic E13 (Algorithmic Completeness Lock) establishes hardness by blocking all five modalities ({doc}`source/2_hypostructure/09_mathematical/05_algorithmic`).
+12. **P/NP Bridge to Classical Complexity.** Bidirectional bridge theorems establish $P_{\text{Fragile}} = P_{\text{DTM}}$ and $NP_{\text{Fragile}} = NP_{\text{DTM}}$ via adequacy of the Fragile runtime. Internal complexity separations export to classical ZFC statements about P and NP ({doc}`source/2_hypostructure/09_mathematical/06_complexity_bridge`).
+13. **Meta-Learning Axioms.** Learning hypostructure constraints as optimization over defect functionals ({doc}`source/2_hypostructure/10_metalearning/01_metalearning`).
+14. **Fractal Gas Model.** Scale-free dynamics for axiom discovery ({doc}`source/3_fractal_gas/03_fractal_gas_latent`).
 
 **Repackaging (directly inherited ingredients):**
 
