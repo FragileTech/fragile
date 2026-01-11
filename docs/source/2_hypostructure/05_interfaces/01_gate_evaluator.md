@@ -136,6 +136,7 @@ The key insight is the "refinement filter" - a way of taking limits. This matter
 
 **Evaluator ($\mathcal{P}_{\mathcal{H}_0}$):**
 Is the morphism $S_t$ well-defined on the domain of interest?
+
 $$\vdash S_t \in \text{Hom}_{\mathcal{E}}(\mathcal{X}, \mathcal{X})$$
 
 **Certificates ($\mathcal{K}_{\mathcal{H}_0}$):**
@@ -174,6 +175,7 @@ The key inequality is $\Phi(S_t x) \leq \Phi(x) + \int \mathfrak{D}$. Read this 
 
 **Evaluator ($\mathcal{P}_1$ - EnergyCheck):**
 Does the evolution map states to lower (or bounded) height values?
+
 $$\Phi(S_t x) \leq \Phi(x) + \int \mathfrak{D}$$
 
 **Certificates ($\mathcal{K}_{D_E}$):**
@@ -200,6 +202,7 @@ $$\Phi(S_t x) \leq \Phi(x) + \int \mathfrak{D}$$
 
 **Evaluator ($\mathcal{P}_2$ - ZenoCheck):**
 Is the count of recovery events finite on finite intervals?
+
 $$\#\{t \mid S_t(x) \in \mathcal{B}\} < \infty$$
 
 **Certificates ($\mathcal{K}_{\mathrm{Rec}_N}$):**
@@ -226,6 +229,7 @@ $$\#\{t \mid S_t(x) \in \mathcal{B}\} < \infty$$
 
 **Evaluator ($\mathcal{P}_3$ - CompactCheck):**
 Does a bounded sequence have a limit object (Profile) in the quotient?
+
 $$\exists V \in \mathcal{X} // G : x_n \to V$$
 
 **Certificates ($\mathcal{K}_{C_\mu}$):**
@@ -251,7 +255,9 @@ $$\exists V \in \mathcal{X} // G : x_n \to V$$
 
 **Evaluator ($\mathcal{P}_4$ - ScaleCheck):**
 Are the exponents ordered correctly for stability?
+
 $$\alpha(V) > \beta(V)$$
+
 *(Does cost grow faster than time compression?)*
 
 **Certificates ($\mathcal{K}_{\mathrm{SC}_\lambda}$):**
@@ -279,6 +285,7 @@ $$\alpha(V) > \beta(V)$$
 
 **Evaluator ($\mathcal{P}_5$ - ParamCheck):**
 Are structural constants stable along the trajectory?
+
 $$\forall t.\, d(\theta(S_t x), \theta_0) \leq C$$
 
 **Certificates ($\mathcal{K}_{\mathrm{SC}_{\partial c}}$):**
@@ -305,6 +312,7 @@ $$\forall t.\, d(\theta(S_t x), \theta_0) \leq C$$
 
 **Evaluator ($\mathcal{P}_6$ - GeomCheck):**
 Is the capacity of the singular set below the threshold?
+
 $$\text{Cap}(\Sigma) < C_{\text{crit}}$$
 
 **Certificates ($\mathcal{K}_{\mathrm{Cap}_H}$):**
@@ -330,6 +338,7 @@ $$\text{Cap}(\Sigma) < C_{\text{crit}}$$
 
 **Evaluator ($\mathcal{P}_7$ - StiffnessCheck):**
 Does the Łojasiewicz-Simon inequality hold?
+
 $$\|\nabla \Phi(x)\| \geq C |\Phi(x) - \Phi(V)|^{1-\theta}$$
 
 **Certificates ($\mathcal{K}_{\mathrm{LS}_\sigma}$):**
@@ -356,7 +365,9 @@ $$\|\nabla \Phi(x)\| \geq C |\Phi(x) - \Phi(V)|^{1-\theta}$$
 
 **Evaluator ($\mathcal{P}_{\mathrm{Mon}}$ - MonotonicityCheck):**
 Does the monotonicity identity hold with definite sign for the declared functional?
+
 $$\frac{d^2}{dt^2} M_\phi(t) \geq c \cdot \|\nabla u\|^2 - C \cdot \|u\|^2$$
+
 (or $\leq$ depending on $\sigma$), where $M_\phi(t) = \int \phi(x) |u(t,x)|^2 dx$ or appropriate variant.
 
 **Certificates ($\mathcal{K}_{\mathrm{Mon}_\phi}$):**
@@ -394,6 +405,7 @@ $$\frac{d^2}{dt^2} M_\phi(t) \geq c \cdot \|\nabla u\|^2 - C \cdot \|u\|^2$$
 
 **Evaluator ($\mathcal{P}_8$ - TopoCheck):**
 Is the trajectory confined to a single sector?
+
 $$\tau(S_t x) = \tau(x)$$
 
 **Certificates ($\mathcal{K}_{\mathrm{TB}_\pi}$):**
@@ -419,6 +431,7 @@ $$\tau(S_t x) = \tau(x)$$
 
 **Evaluator ($\mathcal{P}_9$ - TameCheck):**
 Is the singular locus $\mathcal{O}$-definable?
+
 $$\Sigma \in \mathcal{O}\text{-definable}$$
 
 **Certificates ($\mathcal{K}_{\mathrm{TB}_O}$):**
@@ -445,6 +458,7 @@ $$\Sigma \in \mathcal{O}\text{-definable}$$
 
 **Evaluator ($\mathcal{P}_{10}$ - ErgoCheck):**
 Does the system mix with finite mixing time?
+
 $$\tau_{\text{mix}}(x) < \infty$$
 
 **Certificates ($\mathcal{K}_{\mathrm{TB}_\rho}$):**
@@ -472,6 +486,7 @@ $$\tau_{\text{mix}}(x) < \infty$$
 
 **Evaluator ($\mathcal{P}_{11}$ - ComplexCheck):**
 Is the state representable with finite complexity?
+
 $$K(D(x)) < \infty$$
 
 **Stochastic Extension:** For stochastic systems (e.g., post-S12), complexity refers to the Kolmogorov complexity of the probability law $K(\mu)$, defined as the shortest program that samples from the distribution. Formally: $K(\mu) := \min\{|p| : U(p, r) \sim \mu \text{ for random } r\}$. This ensures that SDEs with finite-description coefficients $(b, \sigma)$ satisfy the complexity check even though individual sample paths are algorithmically random.
@@ -500,10 +515,12 @@ $$K(D(x)) < \infty$$
 **Required Structure ($\mathcal{D}$):**
 - **Metric Tensor:** $g: T\mathcal{X} \otimes T\mathcal{X} \to \mathcal{H}$ (Inner product).
 - **Compatibility:** A relation between the flow vector field $v$ and the potential $\Phi$:
+
 $$v \stackrel{?}{=} -\nabla_g \Phi$$
 
 **Evaluator ($\mathcal{P}_{12}$ - OscillateCheck):**
 Does the system follow the gradient?
+
 $$\mathfrak{D}(x) = \|\nabla_g \Phi(x)\|^2$$
 
 **Certificates ($\mathcal{K}_{\mathrm{GC}_\nabla}$):**
@@ -535,6 +552,7 @@ The open system checks are split into four distinct interfaces, each handling a 
 
 **Evaluator ($\mathcal{P}_{13}$ - BoundaryCheck):**
 Is the system open? Does it have a non-trivial boundary?
+
 $$\partial\mathcal{X} \neq \emptyset$$
 
 **Certificates ($\mathcal{K}_{\mathrm{Bound}_\partial}$):**
@@ -556,6 +574,7 @@ $$\partial\mathcal{X} \neq \emptyset$$
 
 **Evaluator ($\mathcal{P}_{14}$ - OverloadCheck):**
 Is the input bounded in authority?
+
 $$\|Bu\|_{L^\infty} \leq M \quad \land \quad \int_0^T \|u(t)\|^2 dt < \infty$$
 
 **Certificates ($\mathcal{K}_{\mathrm{Bound}_B}$):**
@@ -577,6 +596,7 @@ $$\|Bu\|_{L^\infty} \leq M \quad \land \quad \int_0^T \|u(t)\|^2 dt < \infty$$
 
 **Evaluator ($\mathcal{P}_{15}$ - StarveCheck):**
 Is the integrated resource supply sufficient?
+
 $$\int_0^T r(t) \, dt \geq r_{\min}$$
 
 **Certificates ($\mathcal{K}_{\mathrm{Bound}_{\Sigma}}$):**
@@ -599,6 +619,7 @@ $$\int_0^T r(t) \, dt \geq r_{\min}$$
 
 **Evaluator ($\mathcal{P}_{16}$ - AlignCheck):**
 Is the control matched to the desired behavior?
+
 $$\Delta(T(u), d) \leq \varepsilon_{\text{align}}$$
 
 **Certificates ($\mathcal{K}_{\mathrm{GC}_T}$):**
@@ -639,6 +660,7 @@ The beautiful thing is that this reduces an analytic question (will something bl
 For each problem type $T$, we assume: *every singularity of type $T$ factors through some $B_i \in \mathcal{B}$.* This is a **problem-specific axiom** that must be verified for each instantiation (e.g., for Navier-Stokes, the library consists of known blow-up profiles; for Riemann Hypothesis, the library consists of zero-causing structures).
 
 **Evaluator ($\mathcal{P}_{17}$ - BarrierExclusion):**
+
 $$\forall i \in I: \text{Hom}_{\mathbf{Hypo}_T}(B_i, \mathcal{H}) = \emptyset$$
 
 The Lock evaluator checks whether any morphism exists from any bad pattern to the candidate hypostructure. If all Hom-sets are empty, no singularity-forming pattern can embed, and global regularity follows.
@@ -693,22 +715,29 @@ The following permits capture **backend-specific hypotheses** that are required 
 **Question:** Does the evolution problem $T$ admit local well-posedness in the critical phase space $X_c$ (typically $X_c = \dot{H}^{s_c}$), with a continuation criterion?
 
 **YES certificate**
+
 $$K_{\mathrm{WP}_{s_c}}^+ := \big(\mathsf{LWP},\ \mathsf{uniq},\ \mathsf{cont},\ \mathsf{crit\_blowup}\big)$$
+
 where the payload asserts all of:
 1. (**Local existence**) For every $u_0 \in X_c$ there exists $T(u_0) > 0$ and a solution $u \in C([0,T]; X_c)$.
 2. (**Uniqueness**) The solution is unique in the specified solution class.
 3. (**Continuous dependence**) The data-to-solution map is continuous (or Lipschitz) on bounded sets in $X_c$.
 4. (**Continuation criterion**) If $T_{\max} < \infty$ then a specified *critical control norm* blows up:
+
    $$\|u\|_{S([0, T_{\max}))} = \infty \quad (\text{for a declared control norm } S).$$
 
 **NO certificate** (sum type $K_{\mathrm{WP}_{s_c}}^- := K_{\mathrm{WP}_{s_c}}^{\mathrm{wit}} \sqcup K_{\mathrm{WP}_{s_c}}^{\mathrm{inc}}$)
 
 *NO-with-witness:*
+
 $$K_{\mathrm{WP}_{s_c}}^{\mathrm{wit}} := (\mathsf{counterexample}, \mathsf{mode})$$
+
 where $\mathsf{mode} \in \{\texttt{NORM\_INFLATION}, \texttt{NON\_UNIQUE}, \texttt{ILL\_POSED}, \texttt{NO\_CONTINUATION}\}$ identifies which of (1)–(4) fails, with an explicit counterexample (e.g., a sequence demonstrating norm inflation, or a pair of distinct solutions from identical data).
 
 *NO-inconclusive:*
+
 $$K_{\mathrm{WP}_{s_c}}^{\mathrm{inc}} := (\mathsf{obligation}, \mathsf{missing}, \mathsf{failure\_code}, \mathsf{trace})$$
+
 Typical $\mathsf{missing}$: "no matching WP template (parabolic/dispersive/hyperbolic)", "state space $X_c$ not recognized", "operator conditions not provided by soft layer".
 
 **Used by:** `mt-auto-profile` Mechanism A (CC+Rig), and any node that invokes "critical LWP + continuation".
@@ -722,23 +751,32 @@ Typical $\mathsf{missing}$: "no matching WP template (parabolic/dispersive/hyper
 **Question:** Does every bounded sequence in $X_c$ admit a Bahouri–Gérard/Lions type profile decomposition modulo the symmetry group $G$?
 
 **YES certificate**
+
 $$K_{\mathrm{ProfDec}_{s_c,G}}^+ := \big(\{\phi^j\}_{j \geq 1},\ \{g_n^j\}_{n,j},\ \{r_n^J\}_{n,J},\ \mathsf{orth},\ \mathsf{rem}\big)$$
+
 meaning: for every bounded $(u_n) \subset X_c$ there exist profiles $\phi^j \in X_c$ and symmetry parameters $g_n^j \in G$ such that for every $J$,
+
 $$u_n = \sum_{j=1}^J g_n^j \phi^j + r_n^J,$$
+
 with:
 1. (**Asymptotic orthogonality**) The parameters $(g_n^j)$ are pairwise orthogonal in the standard sense for $G$.
 2. (**Decoupling**) Conserved quantities/energies decouple across profiles up to $o_n(1)$ errors.
 3. (**Remainder smallness**) The remainder $r_n^J$ is small in the critical control norm:
+
    $$\lim_{J \to \infty}\ \limsup_{n \to \infty}\ \|r_n^J\|_S = 0.$$
 
 **NO certificate** (sum type $K_{\mathrm{ProfDec}}^- := K_{\mathrm{ProfDec}}^{\mathrm{wit}} \sqcup K_{\mathrm{ProfDec}}^{\mathrm{inc}}$)
 
 *NO-with-witness:*
+
 $$K_{\mathrm{ProfDec}}^{\mathrm{wit}} := (\mathsf{bounded\_seq}, \mathsf{failed\_property})$$
+
 where $\mathsf{failed\_property} \in \{\texttt{NO\_ORTH}, \texttt{NO\_DECOUPLE}, \texttt{NO\_REMAINDER\_SMALL}\}$ identifies which of (1)–(3) fails, with a concrete bounded sequence $(u_n)$ demonstrating the failure.
 
 *NO-inconclusive:*
+
 $$K_{\mathrm{ProfDec}}^{\mathrm{inc}} := (\mathsf{obligation}, \mathsf{missing}, \mathsf{failure\_code}, \mathsf{trace})$$
+
 Typical $\mathsf{missing}$: "symmetry group $G$ not recognized as standard decomposition group", "control norm $S$ not provided or checkable", "space not in supported class (Hilbert/Banach with required compactness structure)".
 
 **Used by:** `mt-auto-profile` Mechanism A (CC+Rig).
@@ -754,7 +792,9 @@ Typical $\mathsf{missing}$: "symmetry group $G$ not recognized as standard decom
 **Question:** Can failure of the target property (regularity/scattering/etc.) be reduced to a *minimal counterexample* that is almost periodic modulo symmetries, using concentration–compactness plus a perturbation/stability lemma?
 
 **YES certificate**
+
 $$K_{\mathrm{KM}_{\mathrm{CC+stab}}}^+ := \big(\mathsf{min\_obj},\ \mathsf{ap\_modG},\ \mathsf{stab},\ \mathsf{nl\_profiles}\big)$$
+
 where the payload asserts:
 1. (**Minimal counterexample extraction**) If the target property fails, there exists a solution $u^*$ minimal with respect to a declared size functional (energy/mass/critical norm threshold).
 2. (**Almost periodicity**) The orbit $\{u^*(t)\}$ is precompact in $X_c$ modulo $G$ ("almost periodic mod $G$").
@@ -764,11 +804,15 @@ where the payload asserts:
 **NO certificate** (sum type $K_{\mathrm{KM}}^- := K_{\mathrm{KM}}^{\mathrm{wit}} \sqcup K_{\mathrm{KM}}^{\mathrm{inc}}$)
 
 *NO-with-witness:*
+
 $$K_{\mathrm{KM}}^{\mathrm{wit}} := (\mathsf{failure\_obj}, \mathsf{step\_failed})$$
+
 where $\mathsf{step\_failed} \in \{\texttt{NO\_MIN\_EXTRACT}, \texttt{NO\_ALMOST\_PERIODIC}, \texttt{NO\_STABILITY}, \texttt{NO\_PROFILE\_CONTROL}\}$ identifies which of (1)–(4) fails, with a concrete object demonstrating the failure.
 
 *NO-inconclusive:*
+
 $$K_{\mathrm{KM}}^{\mathrm{inc}} := (\mathsf{obligation}, \mathsf{missing}, \mathsf{failure\_code}, \mathsf{trace})$$
+
 Typical $\mathsf{missing}$: "composition requires $K_{\mathrm{WP}}^+$ which was not derived", "profile decomposition not available", "stability lemma not computable for this equation class".
 
 **Used by:** `mt-auto-profile` Mechanism A (CC+Rig).
@@ -784,22 +828,29 @@ Typical $\mathsf{missing}$: "composition requires $K_{\mathrm{WP}}^+$ which was 
 **Question:** Does the semiflow $(S_t)_{t \geq 0}$ on a phase space $X$ admit a compact global attractor?
 
 **YES certificate**
+
 $$K_{\mathrm{Attr}}^+ := (\mathsf{semiflow},\ \mathsf{absorbing},\ \mathsf{asymp\_compact},\ \mathsf{attractor})$$
+
 asserting:
 1. (**Semiflow structure**) $S_{t+s} = S_t \circ S_s$, $S_0 = \mathrm{id}$, and $S_t$ is continuous on bounded sets.
 2. (**Dissipativity**) There exists a bounded absorbing set $B \subset X$.
 3. (**Asymptotic compactness**) For any bounded $B_0 \subset X$ and any $t_n \to \infty$, the set $S_{t_n}(B_0)$ has precompact closure.
 4. (**Attractor**) There exists a compact invariant set $\mathcal{A}$ attracting bounded sets:
+
    $$\mathrm{dist}(S_t(B_0), \mathcal{A}) \to 0 \quad (t \to \infty).$$
 
 **NO certificate** (sum type $K_{\mathrm{Attr}}^- := K_{\mathrm{Attr}}^{\mathrm{wit}} \sqcup K_{\mathrm{Attr}}^{\mathrm{inc}}$)
 
 *NO-with-witness:*
+
 $$K_{\mathrm{Attr}}^{\mathrm{wit}} := (\mathsf{obstruction}, \mathsf{type})$$
+
 where $\mathsf{type} \in \{\texttt{NO\_SEMIFLOW}, \texttt{NO\_ABSORBING\_SET}, \texttt{NO\_ASYMP\_COMPACT}, \texttt{NO\_ATTRACTOR}\}$ identifies which of (1)–(4) fails, with a concrete obstruction object.
 
 *NO-inconclusive:*
+
 $$K_{\mathrm{Attr}}^{\mathrm{inc}} := (\mathsf{obligation}, \mathsf{missing}, \mathsf{failure\_code}, \mathsf{trace})$$
+
 Typical $\mathsf{missing}$: "cannot verify asymptotic compactness from current soft interfaces", "Temam-Raugel template requires compactness lemma not provided", "insufficient bounds to certify absorbing set".
 
 **Used by:** `mt-auto-profile` Mechanism B (Attr+Morse) and any node invoking global attractor machinery.
@@ -815,22 +866,30 @@ Typical $\mathsf{missing}$: "cannot verify asymptotic compactness from current s
 **Question:** For the chosen "compression map" $\phi$ of (algebraic) degree $\leq m$, does the standard degree inequality for images apply in your setting?
 
 **YES certificate**
+
 $$K_{\mathrm{DegImage}_m}^+ := (\phi,\ \mathsf{model},\ \mathsf{basepointfree},\ \mathsf{deg\_ineq})$$
+
 asserting:
 1. (**Model choice fixed**) You specify whether $\phi$ is a morphism $W \to \mathbb{P}^N$, or a rational map represented via its graph / resolution of indeterminacy.
 2. (**Base-point-free representation**) After the chosen resolution/graph step, $\phi$ is induced by a base-point-free linear system of degree $\leq m$.
 3. (**Degree inequality**) For projective closures, the inequality holds:
+
    $$\deg(\overline{\phi(W)}) \leq m^{\dim W} \cdot \deg(W)$$
+
    (or your preferred standard variant with the same monotone dependence on $m$).
 
 **NO certificate** (sum type $K_{\mathrm{DegImage}_m}^- := K_{\mathrm{DegImage}_m}^{\mathrm{wit}} \sqcup K_{\mathrm{DegImage}_m}^{\mathrm{inc}}$)
 
 *NO-with-witness:*
+
 $$K_{\mathrm{DegImage}_m}^{\mathrm{wit}} := (\mathsf{map\_model}, \mathsf{violation})$$
+
 where $\mathsf{violation} \in \{\texttt{NOT\_BPF}, \texttt{DEGREE\_EXCEEDS}, \texttt{INDETERMINACY\_UNRESOLVABLE}\}$ specifies which hypothesis fails with a concrete witness (e.g., a base locus, or a degree computation exceeding the bound).
 
 *NO-inconclusive:*
+
 $$K_{\mathrm{DegImage}_m}^{\mathrm{inc}} := (\mathsf{obligation}, \mathsf{missing}, \mathsf{failure\_code}, \mathsf{trace})$$
+
 Typical $\mathsf{missing}$: "resolution of indeterminacy not computable", "degree of image not algorithmically determinable for this variety class", "base-point-free verification requires Bertini-type theorem not available".
 
 **Used by:** `def-e12` Backend C (morphism/compression).
@@ -846,10 +905,14 @@ Typical $\mathsf{missing}$: "resolution of indeterminacy not computable", "degre
 **Question:** Is the interaction term $\Phi_{\mathrm{int}}$ controlled strongly enough (in the norms used by $K_{\mathrm{Lock}}^A, K_{\mathrm{Lock}}^B$) to prevent the coupling from destroying the component bounds?
 
 **YES certificate**
+
 $$K_{\mathrm{CouplingSmall}}^+ := (\varepsilon,\ C_\varepsilon,\ \mathsf{bound\_form},\ \mathsf{closure})$$
+
 asserting the existence of an inequality of one of the following standard "closure" types (declare which one you use):
 - (**Energy absorbability**) For a product energy $E = E_A + E_B$,
+
   $$\left|\frac{d}{dt} E_{\mathrm{int}}(t)\right| \leq \varepsilon \, E(t) + C_\varepsilon,$$
+
   with $\varepsilon$ small enough to be absorbed by dissipation/Grönwall.
 - (**Relative boundedness**) $\Phi_{\mathrm{int}}$ is bounded or relatively bounded w.r.t. the product generator (for semigroup closure).
 - (**Local Lipschitz + small parameter**) $\|\Phi_{\mathrm{int}}(u_A, u_B)\| \leq \varepsilon \, F(\|u_A\|, \|u_B\|) + C$ with $\varepsilon$ in the regime required by the bootstrap.
@@ -857,11 +920,15 @@ asserting the existence of an inequality of one of the following standard "closu
 **NO certificate** (sum type $K_{\mathrm{CouplingSmall}}^- := K_{\mathrm{CouplingSmall}}^{\mathrm{wit}} \sqcup K_{\mathrm{CouplingSmall}}^{\mathrm{inc}}$)
 
 *NO-with-witness:*
+
 $$K_{\mathrm{CouplingSmall}}^{\mathrm{wit}} := (\mathsf{interaction}, \mathsf{unbounded\_mode})$$
+
 where $\mathsf{unbounded\_mode} \in \{\texttt{ENERGY\_SUPERLINEAR}, \texttt{NOT\_REL\_BOUNDED}, \texttt{LIPSCHITZ\_FAILS}\}$ specifies which closure-usable bound fails, with a concrete sequence/trajectory demonstrating growth.
 
 *NO-inconclusive:*
+
 $$K_{\mathrm{CouplingSmall}}^{\mathrm{inc}} := (\mathsf{obligation}, \mathsf{missing}, \mathsf{failure\_code}, \mathsf{trace})$$
+
 Typical $\mathsf{missing}$: "absorbability constant $\varepsilon$ not computable from current interfaces", "relative boundedness requires spectral information not provided", "Lipschitz constant estimation exceeds available bounds".
 
 **Used by:** `mt-product` Backend A (when "subcritical scaling" is intended to imply analytic absorbability), and as a general interface to justify persistence of Lock bounds under coupling.
@@ -875,22 +942,30 @@ Typical $\mathsf{missing}$: "absorbability constant $\varepsilon$ not computable
 **Question:** Can the dynamics be represented (equivalently, in the sense you require) as an abstract Cauchy problem on a Banach/Hilbert space?
 
 **YES certificate**
+
 $$K_{\mathrm{ACP}}^+ := (X,\ A,\ D(A),\ \mathsf{mild},\ \mathsf{equiv})$$
+
 asserting:
 1. (**State space**) A Banach/Hilbert space $X$ is fixed for the evolution state.
 2. (**Generator**) A (possibly nonlinear) operator $A$ with declared domain $D(A)$ is specified such that the evolution is
+
    $$u'(t) = A(u(t)) \quad (\text{or } u'(t) = Au(t) + F(u(t)) \text{ in the semilinear case}).$$
+
 3. (**Mild/strong solutions**) A mild formulation exists (e.g., Duhamel/variation of constants) in the class used by the Sieve.
 4. (**Equivalence**) Solutions in the analytic/PDE sense correspond to (mild/strong) solutions of the ACP in the time intervals under consideration.
 
 **NO certificate** (sum type $K_{\mathrm{ACP}}^- := K_{\mathrm{ACP}}^{\mathrm{wit}} \sqcup K_{\mathrm{ACP}}^{\mathrm{inc}}$)
 
 *NO-with-witness:*
+
 $$K_{\mathrm{ACP}}^{\mathrm{wit}} := (\mathsf{space\_candidate}, \mathsf{obstruction})$$
+
 where $\mathsf{obstruction} \in \{\texttt{NO\_GENERATOR}, \texttt{DOMAIN\_MISMATCH}, \texttt{MILD\_FAILS}, \texttt{EQUIV\_BREAKS}\}$ specifies which of (1)–(4) fails, with a concrete witness (e.g., a solution in the PDE sense not representable in the ACP framework).
 
 *NO-inconclusive:*
+
 $$K_{\mathrm{ACP}}^{\mathrm{inc}} := (\mathsf{obligation}, \mathsf{missing}, \mathsf{failure\_code}, \mathsf{trace})$$
+
 Typical $\mathsf{missing}$: "generator domain $D(A)$ not characterizable from soft interfaces", "mild solution formula requires semigroup estimates not provided", "equivalence of solution notions requires regularity theory beyond current scope".
 
 **Used by:** `mt-product` Backend B (semigroup/perturbation route), and anywhere you invoke generator/semigroup theorems.
@@ -914,7 +989,9 @@ Typical $\mathsf{missing}$: "generator domain $D(A)$ not characterizable from so
 - A declared target property $\mathcal P$ (e.g. scattering, global regularity) and a declared minimality functional (energy/mass/etc.).
 
 **YES certificate**
+
 $$K_{\mathrm{Rigidity}_T}^+ := \big(\mathsf{rigid\_statement},\ \mathsf{hypotheses},\ \mathsf{conclusion},\ \mathsf{proof\_ref}\big)$$
+
 where the payload contains:
 1. (**Rigidity statement**) A precise proposition of the form:
    > If $u$ is a maximal-lifespan solution of type $T$ which is almost periodic modulo $G$ and minimal among counterexamples to $\mathcal P$, then $u$ is impossible (contradiction), **or** $u$ lies in an explicitly listed finite family $\mathcal L_T$ (soliton, self-similar, traveling wave, etc.).
@@ -927,11 +1004,15 @@ where the payload contains:
 **NO certificate** (sum type $K_{\mathrm{Rigidity}_T}^- := K_{\mathrm{Rigidity}_T}^{\mathrm{wit}} \sqcup K_{\mathrm{Rigidity}_T}^{\mathrm{inc}}$)
 
 *NO-with-witness:*
+
 $$K_{\mathrm{Rigidity}_T}^{\mathrm{wit}} := (u^*, \mathsf{failure\_mode})$$
+
 where $u^*$ is an almost-periodic minimal counterexample that exists and is not eliminated/classified, and $\mathsf{failure\_mode} \in \{\texttt{NOT\_ELIMINATED}, \texttt{NOT\_IN\_LIBRARY}, \texttt{MONOTONICITY\_FAILS}, \texttt{LS\_CLOSURE\_FAILS}\}$ records which rigidity argument fails.
 
 *NO-inconclusive:*
+
 $$K_{\mathrm{Rigidity}_T}^{\mathrm{inc}} := (\mathsf{obligation}, \mathsf{missing}, \mathsf{failure\_code}, \mathsf{trace})$$
+
 Typical $\mathsf{missing}$: "$K_{\mathrm{Mon}_\phi}^+$ certificate insufficient to validate monotonicity inequality", "$K_{\mathrm{LS}_\sigma}^+$ constants/exponent missing", "no rigidity template (Morawetz/virial/channel-of-energy) matches type $T$".
 
 **Used by:** `mt-auto-profile` Mechanism A (CC+Rig), Step "Hybrid Rigidity".
@@ -952,7 +1033,9 @@ Typical $\mathsf{missing}$: "$K_{\mathrm{Mon}_\phi}^+$ certificate insufficient 
 - A global attractor existence certificate $K_{\mathrm{Attr}}^+$ (compact attractor $\mathcal A$ exists).
 
 **YES certificate**
+
 $$K_{\mathrm{MorseDecomp}}^+ := \big(\mathsf{structure\_type},\ \{\mathcal M_i\}_{i=1}^N,\ \mathsf{order},\ \mathsf{chain\_rec},\ \mathsf{classification}\big)$$
+
 where the payload asserts one of the following **declared structure types** (choose one and commit to it in the theorem that uses this permit):
 
 **(A) Gradient-like / Lyapunov structure backend:**
@@ -976,11 +1059,15 @@ where the payload asserts one of the following **declared structure types** (cho
 **NO certificate** (sum type $K_{\mathrm{MorseDecomp}}^- := K_{\mathrm{MorseDecomp}}^{\mathrm{wit}} \sqcup K_{\mathrm{MorseDecomp}}^{\mathrm{inc}}$)
 
 *NO-with-witness:*
+
 $$K_{\mathrm{MorseDecomp}}^{\mathrm{wit}} := (\mathsf{recurrence\_obj}, \mathsf{failure\_type})$$
+
 where $\mathsf{failure\_type} \in \{\texttt{STRANGE\_ATTRACTOR}, \texttt{UNCAPTURED\_CYCLE}, \texttt{INFINITE\_CHAIN\_REC}\}$ identifies recurrence in $\mathcal{A}$ not captured by any declared decomposition type, with a concrete witness object.
 
 *NO-inconclusive:*
+
 $$K_{\mathrm{MorseDecomp}}^{\mathrm{inc}} := (\mathsf{obligation}, \mathsf{missing}, \mathsf{failure\_code}, \mathsf{trace})$$
+
 Typical $\mathsf{missing}$: "Lyapunov function not verified to be strict", "$K_{D_E}^+$ provides weak inequality only", "Conley index computation not supported for this system class".
 
 **Used by:** `mt-auto-profile` Mechanism B (Attr+Morse), anywhere you claim "all bounded trajectories are equilibria/heteroclinic/periodic" or a finite Morse decomposition of $\mathcal A$.
@@ -1180,7 +1267,9 @@ This serves as a "header file" for instantiation - users can read the table and 
    - Certificate schemas $\mathcal{K}_I^+$, $\mathcal{K}_I^{\mathrm{wit}}$, and $\mathcal{K}_I^{\mathrm{inc}}$
 
 **Consequence:** Upon valid instantiation, the Sieve Algorithm becomes a well-defined computable function:
+
 $$\text{Sieve}: \text{Instance}(\mathcal{H}) \to \text{Result}$$
+
 where $\text{Result} \in \{\text{GlobalRegularity}, \text{Mode}_{1..15}, \text{FatalError}\}$. NO-inconclusive certificates route to reconstruction rather than terminating as a separate outcome.
 
 **Verification Checklist:**
@@ -1294,6 +1383,7 @@ This is what makes the framework actually usable in practice.
 :label: def-thin-state
 
 The **Thin State Object** is a tuple:
+
 $$\mathcal{X}^{\text{thin}} = (\mathcal{X}, d, \mu)$$
 
 | Component | Type | What User Provides |
@@ -1322,6 +1412,7 @@ $$\mathcal{X}^{\text{thin}} = (\mathcal{X}, d, \mu)$$
 :label: def-thin-height
 
 The **Thin Height Object** is a tuple:
+
 $$\Phi^{\text{thin}} = (F, \nabla, \alpha)$$
 
 | Component | Type | What User Provides |
@@ -1350,6 +1441,7 @@ $$\Phi^{\text{thin}} = (F, \nabla, \alpha)$$
 :label: def-thin-dissipation
 
 The **Thin Dissipation Object** is a tuple:
+
 $$\mathfrak{D}^{\text{thin}} = (R, \beta)$$
 
 | Component | Type | What User Provides |
@@ -1376,6 +1468,7 @@ $$\mathfrak{D}^{\text{thin}} = (R, \beta)$$
 :label: def-thin-symmetry
 
 The **Thin Symmetry Object** is a tuple:
+
 $$G^{\text{thin}} = (\text{Grp}, \rho, \mathcal{S})$$
 
 | Component | Type | What User Provides |
@@ -1411,6 +1504,7 @@ To instantiate a Hypostructure, the user provides exactly **10 primitive compone
 | $G^{\text{thin}}$ | Grp, $\rho, \mathcal{S}$ | "What symmetries does the system have?" |
 
 The **full Kernel Objects** of {ref}`Section 19.A <sec-kernel-objects>` are then constructed automatically:
+
 $$\mathcal{H}^{\text{full}} = \text{Expand}(\mathcal{X}^{\text{thin}}, \Phi^{\text{thin}}, \mathfrak{D}^{\text{thin}}, G^{\text{thin}})$$
 
 This expansion is performed by the **Universal Singularity Modules** ({prf:ref}`mt-resolve-profile`, {prf:ref}`mt-resolve-admissibility`, {prf:ref}`mt-act-surgery`), which implement the `ProfileExtractor` and `SurgeryOperator` interfaces as metatheorems rather than user-provided code.
@@ -1495,9 +1589,11 @@ For **good types** (satisfying the Automation Guarantee), soft interface verific
 **Statement:** For good types $T$ satisfying the Automation Guarantee, critical well-posedness is derived from soft interfaces.
 
 **Soft Hypotheses:**
+
 $$K_{\mathcal{H}_0}^+ \wedge K_{D_E}^+ \wedge K_{\mathrm{Bound}}^+ \wedge K_{\mathrm{SC}_\lambda}^+ \wedge K_{\mathrm{Rep}_K}^+$$
 
 **Produces:**
+
 $$K_{\mathrm{WP}_{s_c}}^+$$
 
 **Mechanism (Template Matching):**
@@ -1526,7 +1622,9 @@ $K_{\mathrm{WP}_{s_c}}^+ = (\mathsf{template\_ID}, \mathsf{theorem\_citation}, s
 **Statement:** For good types $T$ satisfying the Automation Guarantee, all backend permits are derived from soft interfaces.
 
 $$\underbrace{K_{D_E}^+ \wedge K_{C_\mu}^+ \wedge K_{\mathrm{SC}_\lambda}^+ \wedge K_{\mathrm{LS}_\sigma}^+ \wedge K_{\mathrm{Rep}_K}^+ \wedge K_{\mathrm{Mon}_\phi}^+}_{\text{Soft Layer (User Provides)}}$$
+
 $$\Downarrow \text{Compilation}$$
+
 $$\underbrace{K_{\mathrm{WP}}^+ \wedge K_{\mathrm{ProfDec}}^+ \wedge K_{\mathrm{KM}}^+ \wedge K_{\mathrm{Rigidity}}^+}_{\text{Backend Layer (Framework Derives)}}$$
 
 **Consequence:** The public signature of `mt-auto-profile` requires only soft interfaces. Backend permits appear only in the **internal compilation proof**, not in the user-facing hypotheses.
@@ -1568,6 +1666,7 @@ The Sieve implements proof-producing evaluators for each derived permit. Every e
 **Statement:** Let $\mathcal{G}_T$ be the small germ set for problem type $T$, and let $\mathcal{B} = \{B_i\}_{i \in I}$ be the finite Bad Pattern Library from Interface $\mathrm{Cat}_{\mathrm{Hom}}$. Then $\mathcal{B}$ is **dense** in $\mathbb{H}_{\mathrm{bad}}^{(T)}$ in the following sense:
 
 For any germ $[P, \pi] \in \mathcal{G}_T$, there exists $B_i \in \mathcal{B}$ and a factorization:
+
 $$\mathbb{H}_{[P,\pi]} \to B_i \to \mathbb{H}_{\mathrm{bad}}^{(T)}$$
 
 **Consequence:** If $\mathrm{Hom}(B_i, \mathbb{H}(Z)) = \emptyset$ for all $B_i \in \mathcal{B}$, then $\mathrm{Hom}(\mathbb{H}_{\mathrm{bad}}^{(T)}, \mathbb{H}(Z)) = \emptyset$.

@@ -55,7 +55,11 @@ All reconstruction, identifiability, and risk statements in this chapter treat b
 :label: def-parametric-defect-functional
 
 For each $\theta \in \Theta$ and each soft axiom label $A \in \mathcal{A} = \{\text{C}, \text{D}, \text{SC}, \text{Cap}, \text{LS}, \text{TB}, \text{Bound}\}$, define the defect functional:
-$$K_A^{(\theta)} : \mathcal{U} \to [0,\infty]$$
+
+$$
+K_A^{(\theta)} : \mathcal{U} \to [0,\infty]
+$$
+
 constructed from the hypostructure $\mathbb{H}_\theta$ and the local definition of axiom $A$.
 :::
 
@@ -63,7 +67,11 @@ constructed from the hypostructure $\mathbb{H}_\theta$ and the local definition 
 :label: lem-defect-characterization
 
 For all $\theta \in \Theta$ and $u \in \mathcal{U}$:
-$$K_A^{(\theta)}(u) = 0 \quad \Longleftrightarrow \quad \text{trajectory } u \text{ satisfies } A_\theta \text{ exactly.}$$
+
+$$
+K_A^{(\theta)}(u) = 0 \quad \Longleftrightarrow \quad \text{trajectory } u \text{ satisfies } A_\theta \text{ exactly.}
+$$
+
 Small values of $K_A^{(\theta)}(u)$ correspond to small violations of axiom $A_\theta$.
 :::
 
@@ -102,7 +110,11 @@ Let $\mu$ be a $\sigma$-finite measure on the trajectory space $\mathcal{U}$. Th
 :label: def-expected-defect
 
 For each axiom $A \in \mathcal{A}$ and parameter $\theta \in \Theta$, define the **expected defect**:
-$$\mathcal{R}_A(\theta) := \int_{\mathcal{U}} K_A^{(\theta)}(u) \, d\mu(u)$$
+
+$$
+\mathcal{R}_A(\theta) := \int_{\mathcal{U}} K_A^{(\theta)}(u) \, d\mu(u)
+$$
+
 whenever the integral is well-defined and finite.
 :::
 
@@ -110,14 +122,22 @@ whenever the integral is well-defined and finite.
 :label: def-worst-case-defect
 
 For an admissible class $\mathcal{U}_{\text{adm}} \subset \mathcal{U}$, define:
-$$\mathcal{K}_A(\theta) := \sup_{u \in \mathcal{U}_{\text{adm}}} K_A^{(\theta)}(u).$$
+
+$$
+\mathcal{K}_A(\theta) := \sup_{u \in \mathcal{U}_{\text{adm}}} K_A^{(\theta)}(u).
+$$
+
 :::
 
 :::{prf:definition} Joint defect risk
 :label: def-joint-defect-risk
 
 For a finite family of soft axioms $\mathcal{A}$ with nonnegative weights $(w_A)_{A \in \mathcal{A}}$, define the **joint defect risk**:
-$$\mathcal{R}(\theta) := \sum_{A \in \mathcal{A}} w_A \, \mathcal{R}_A(\theta).$$
+
+$$
+\mathcal{R}(\theta) := \sum_{A \in \mathcal{A}} w_A \, \mathcal{R}_A(\theta).
+$$
+
 :::
 
 :::{prf:lemma} Interpretation of defect risk
@@ -134,7 +154,11 @@ The quantity $\mathcal{R}_A(\theta)$ measures the global quality of axiom $A_\th
 By {prf:ref}`def-expected-defect`, $\mathcal{R}_A(\theta) = \int_{\mathcal{U}} K_A^{(\theta)}(u) \, d\mu(u)$. Since $K_A^{(\theta)}(u) \geq 0$ with equality precisely when trajectory $u$ satisfies axiom $A$ under parameter $\theta$ ({prf:ref}`def-parametric-defect-functional`), we have:
 
 1. **Small $\mathcal{R}_A(\theta)$:** For any $\varepsilon > 0$, Markov's inequality gives
-   $$\mu\big(\{u : K_A^{(\theta)}(u) > \varepsilon\}\big) \leq \frac{\mathcal{R}_A(\theta)}{\varepsilon}.$$
+
+   $$
+   \mu\big(\{u : K_A^{(\theta)}(u) > \varepsilon\}\big) \leq \frac{\mathcal{R}_A(\theta)}{\varepsilon}.
+   $$
+
    Thus small $\mathcal{R}_A(\theta)$ forces the set of trajectories with defect above $\varepsilon$ to have small $\mu$-measure, i.e., the axiom is nearly satisfied in average and in measure.
 
 2. **Large $\mathcal{R}_A(\theta)$:** If $K_A^{(\theta)}$ is bounded below by a positive constant on a set of positive $\mu$-measure (frequent or severe violations), then the integral is large. More generally, if violations are frequent or large in magnitude, the integral grows.
@@ -195,7 +219,11 @@ By {prf:ref}`mt-existence-of-defect-minimizers`, $\theta^*$ exists. If $\theta^*
 :label: def-global-defect-minimizer
 
 A point $\theta^* \in \Theta$ is a **global defect minimizer** if:
-$$\mathcal{R}(\theta^*) = \inf_{\theta \in \Theta} \mathcal{R}(\theta).$$
+
+$$
+\mathcal{R}(\theta^*) = \inf_{\theta \in \Theta} \mathcal{R}(\theta).
+$$
+
 :::
 
 :::{prf:metatheorem} Existence of Defect Minimizers
@@ -214,10 +242,16 @@ Then, for each $A \in \mathcal{A}$, the expected defect $\mathcal{R}_A(\theta)$ 
 **Step 1 (Setup).** Let $\theta_n \to \theta$ in $\Theta$. We must show $\mathcal{R}_A(\theta_n) \to \mathcal{R}_A(\theta)$.
 
 **Step 2 (Pointwise convergence).** By assumption (2), for each $u \in \mathcal{U}$:
-$$K_A^{(\theta_n)}(u) \to K_A^{(\theta)}(u).$$
+
+$$
+K_A^{(\theta_n)}(u) \to K_A^{(\theta)}(u).
+$$
 
 **Step 3 (Dominated convergence).** By assumption (3), $|K_A^{(\theta_n)}(u)| \leq M_A(u)$ with $M_A \in L^1(\mu)$. The dominated convergence theorem yields:
-$$\mathcal{R}_A(\theta_n) = \int_{\mathcal{U}} K_A^{(\theta_n)}(u) \, d\mu(u) \to \int_{\mathcal{U}} K_A^{(\theta)}(u) \, d\mu(u) = \mathcal{R}_A(\theta).$$
+
+$$
+\mathcal{R}_A(\theta_n) = \int_{\mathcal{U}} K_A^{(\theta_n)}(u) \, d\mu(u) \to \int_{\mathcal{U}} K_A^{(\theta)}(u) \, d\mu(u) = \mathcal{R}_A(\theta).
+$$
 
 **Step 4 (Continuity of joint risk).** Since $\mathcal{R}(\theta) = \sum_{A \in \mathcal{A}} w_A \mathcal{R}_A(\theta)$ is a finite sum of continuous functions, it is continuous.
 
@@ -247,19 +281,34 @@ Assume:
 2. There exists an integrable majorant $M_A \in L^1(\mu)$ such that $|\nabla_\theta K_A^{(\theta)}(u)| \leq M_A(u)$ for all $\theta \in \Theta$ and $\mu$-a.e. $u$.
 
 Then the gradient of $\mathcal{R}_A$ admits the integral representation:
-$$\nabla_\theta \mathcal{R}_A(\theta) = \int_{\mathcal{U}} \nabla_\theta K_A^{(\theta)}(u) \, d\mu(u).$$
+
+$$
+\nabla_\theta \mathcal{R}_A(\theta) = \int_{\mathcal{U}} \nabla_\theta K_A^{(\theta)}(u) \, d\mu(u).
+$$
+
 :::
 
 :::{prf:proof}
 **Step 1 (Difference quotient).** For $h \in \mathbb{R}^d$ with $|h|$ small:
-$$\frac{\mathcal{R}_A(\theta + h) - \mathcal{R}_A(\theta)}{|h|} = \int_{\mathcal{U}} \frac{K_A^{(\theta + h)}(u) - K_A^{(\theta)}(u)}{|h|} \, d\mu(u).$$
+
+$$
+\frac{\mathcal{R}_A(\theta + h) - \mathcal{R}_A(\theta)}{|h|} = \int_{\mathcal{U}} \frac{K_A^{(\theta + h)}(u) - K_A^{(\theta)}(u)}{|h|} \, d\mu(u).
+$$
 
 **Step 2 (Mean value theorem).** By differentiability, for each $u$:
-$$\frac{K_A^{(\theta + h)}(u) - K_A^{(\theta)}(u)}{|h|} \to \nabla_\theta K_A^{(\theta)}(u) \cdot \frac{h}{|h|}$$
+
+$$
+\frac{K_A^{(\theta + h)}(u) - K_A^{(\theta)}(u)}{|h|} \to \nabla_\theta K_A^{(\theta)}(u) \cdot \frac{h}{|h|}
+$$
+
 as $|h| \to 0$.
 
 **Step 3 (Dominated convergence).** The mean value theorem gives:
-$$\left|\frac{K_A^{(\theta + h)}(u) - K_A^{(\theta)}(u)}{|h|}\right| \leq \sup_{\xi \in [\theta, \theta+h]} |\nabla_\theta K_A^{(\xi)}(u)| \leq M_A(u).$$
+
+$$
+\left|\frac{K_A^{(\theta + h)}(u) - K_A^{(\theta)}(u)}{|h|}\right| \leq \sup_{\xi \in [\theta, \theta+h]} |\nabla_\theta K_A^{(\xi)}(u)| \leq M_A(u).
+$$
+
 By dominated convergence, differentiation passes through the integral.
 :::
 
@@ -267,14 +316,22 @@ By dominated convergence, differentiation passes through the integral.
 :label: cor-gradient-of-joint-risk
 
 Under the assumptions of {prf:ref}`lem-leibniz-rule-for-defect-risk`:
-$$\nabla_\theta \mathcal{R}(\theta) = \sum_{A \in \mathcal{A}} w_A \int_{\mathcal{U}} \nabla_\theta K_A^{(\theta)}(u) \, d\mu(u).$$
+
+$$
+\nabla_\theta \mathcal{R}(\theta) = \sum_{A \in \mathcal{A}} w_A \int_{\mathcal{U}} \nabla_\theta K_A^{(\theta)}(u) \, d\mu(u).
+$$
+
 :::
 
 :::{prf:corollary} Gradient descent convergence
 :label: cor-gradient-descent-convergence
 
 Consider the gradient descent iteration:
-$$\theta_{k+1} = \theta_k - \eta_k \nabla_\theta \mathcal{R}(\theta_k)$$
+
+$$
+\theta_{k+1} = \theta_k - \eta_k \nabla_\theta \mathcal{R}(\theta_k)
+$$
+
 with step sizes $\eta_k > 0$ satisfying $\sum_k \eta_k = \infty$ and $\sum_k \eta_k^2 < \infty$. Assume in addition that the iterates remain in a compact sublevel set of $\mathcal{R}$ (or, equivalently, that $\mathcal{R}$ has compact sublevel sets and $\mathcal{R}(\theta_k)$ is nonincreasing).
 :::
 
@@ -286,10 +343,17 @@ If additionally $\mathcal{R}$ is convex, every accumulation point is a global de
 We apply the Robbins-Monro theorem.
 
 **Step 1 (Descent property).** For $L$-Lipschitz continuous gradients:
-$$\mathcal{R}(\theta_{k+1}) \leq \mathcal{R}(\theta_k) - \eta_k \|\nabla \mathcal{R}(\theta_k)\|^2 + \frac{L\eta_k^2}{2}\|\nabla \mathcal{R}(\theta_k)\|^2.$$
+
+$$
+\mathcal{R}(\theta_{k+1}) \leq \mathcal{R}(\theta_k) - \eta_k \|\nabla \mathcal{R}(\theta_k)\|^2 + \frac{L\eta_k^2}{2}\|\nabla \mathcal{R}(\theta_k)\|^2.
+$$
 
 **Step 2 (Summability).** Summing over $k$ and using $\sum_k \eta_k^2 < \infty$:
-$$\sum_{k=0}^\infty \eta_k(1 - L\eta_k/2)\|\nabla \mathcal{R}(\theta_k)\|^2 \leq \mathcal{R}(\theta_0) - \inf \mathcal{R} < \infty.$$
+
+$$
+\sum_{k=0}^\infty \eta_k(1 - L\eta_k/2)\|\nabla \mathcal{R}(\theta_k)\|^2 \leq \mathcal{R}(\theta_0) - \inf \mathcal{R} < \infty.
+$$
+
 Since $\sum_k \eta_k = \infty$ and $\eta_k \to 0$, we have $\liminf_{k \to \infty} \|\nabla \mathcal{R}(\theta_k)\| = 0$.
 
 **Step 3 (Accumulation points).** By the compact sublevel-set assumption, $(\theta_k)$ is precompact and hence has accumulation points. Continuity of $\nabla \mathcal{R}$ implies any accumulation point $\theta^*$ satisfies $\nabla \mathcal{R}(\theta^*) = 0$ (stationary).
@@ -313,7 +377,11 @@ Consider:
 :label: def-joint-training-objective
 
 Define:
-$$\mathcal{L}(\theta, \vartheta) := \sum_{A \in \mathcal{A}} w_A \, \mathbb{E}[K_A^{(\theta)}(u_\vartheta)] + \sum_{B \in \mathcal{B}} v_B \, \mathbb{E}[F_B^{(\theta)}(u_\vartheta)]$$
+
+$$
+\mathcal{L}(\theta, \vartheta) := \sum_{A \in \mathcal{A}} w_A \, \mathbb{E}[K_A^{(\theta)}(u_\vartheta)] + \sum_{B \in \mathcal{B}} v_B \, \mathbb{E}[F_B^{(\theta)}(u_\vartheta)]
+$$
+
 where:
 
 - $\mathcal{A}$ indexes axioms whose defects are minimized
@@ -325,7 +393,11 @@ where:
 :label: mt-joint-training-dynamics
 
 Under differentiability assumptions analogous to {prf:ref}`lem-leibniz-rule-for-defect-risk` for both $\theta$ and $\vartheta$, the objective $\mathcal{L}$ is differentiable in $(\theta, \vartheta)$. The joint gradient descent:
-$$(\theta_{k+1}, \vartheta_{k+1}) = (\theta_k, \vartheta_k) - \eta_k \nabla_{(\theta, \vartheta)} \mathcal{L}(\theta_k, \vartheta_k)$$
+
+$$
+(\theta_{k+1}, \vartheta_{k+1}) = (\theta_k, \vartheta_k) - \eta_k \nabla_{(\theta, \vartheta)} \mathcal{L}(\theta_k, \vartheta_k)
+$$
+
 converges to stationary points under standard conditions.
 :::
 
@@ -357,10 +429,16 @@ The dissipation defect $K_D^{(\theta)}$ admits a rigorous thermodynamic interpre
 
 Let $(\mathcal{P}(X), W_2)$ be the Wasserstein space of probability measures on a metric-measure space $(X, d, \mathfrak{m})$. For a curve $\rho_t$ in $\mathcal{P}(X)$ with density $\rho_t(x) = \frac{d\mu_t}{d\mathfrak{m}}(x)$ relative to the reference measure $\mathfrak{m}$, the **Fisher Information** is:
 
-$$\text{Fisher}(\rho_t | \mathfrak{m}) := \int_X \left|\nabla \log \frac{\rho_t}{\mathfrak{m}}\right|^2 d\mu_t = \int_X \frac{|\nabla \rho_t|^2}{\rho_t} d\mathfrak{m}$$
+$$
+\text{Fisher}(\rho_t \,|\, \mathfrak{m}) := \int_X \left|\nabla \log \frac{\rho_t}{\mathfrak{m}}\right|^2 d\mu_t = \int_X \frac{|\nabla \rho_t|^2}{\rho_t} d\mathfrak{m}
+$$
 
 This defines a **Riemannian metric** on $\mathcal{P}(X)$ called the **Wasserstein metric** or **Otto metric**:
-$$g_{\rho}(v, w) = \int_X \langle v, w \rangle d\rho$$
+
+$$
+g_{\rho}(v, w) = \int_X \langle v, w \rangle d\rho
+$$
+
 for tangent vectors $v, w \in T_\rho \mathcal{P}(X)$.
 
 **Interpretation:** The Fisher Information measures the "kinetic energy" of probability flow in the Wasserstein manifold.
@@ -373,19 +451,27 @@ for tangent vectors $v, w \in T_\rho \mathcal{P}(X)$.
 
 Let $\Phi: \mathcal{P}(X) \to \mathbb{R}$ be a free energy functional (e.g., $\Phi[\rho] = \int \rho V d\mathfrak{m} + \int \rho \log \rho d\mathfrak{m}$ for potential $V$). The **Jordan-Kinderlehrer-Otto (JKO) scheme** defines the gradient flow via:
 
-$$\rho_{t+\tau} = \arg\min_{\rho \in \mathcal{P}(X)} \left\{\Phi[\rho] + \frac{1}{2\tau}W_2^2(\rho, \rho_t)\right\}$$
+$$
+\rho_{t+\tau} = \arg\min_{\rho \in \mathcal{P}(X)} \left\{\Phi[\rho] + \frac{1}{2\tau}W_2^2(\rho, \rho_t)\right\}
+$$
 
 where $W_2$ is the Wasserstein-2 distance.
 
 **Dissipation Identity:** The dissipation rate along the gradient flow satisfies:
-$$\frac{d}{dt}\Phi[\rho_t] = -\text{Fisher}(\rho_t | \mathfrak{m})$$
+
+$$
+\frac{d}{dt}\Phi[\rho_t] = -\text{Fisher}(\rho_t \,|\, \mathfrak{m})
+$$
 
 This provides the **rigorous link** between:
 - **Geometry:** Geodesic motion in $(\mathcal{P}(X), W_2)$
 - **Thermodynamics:** Entropy dissipation $\dot{S} = -\text{Fisher}$
 
 **Consequence for Meta-Learning:** The dissipation defect $K_D^{(\theta)}$ should be formulated as:
-$$K_D^{(\theta)}(u) = \left|\frac{d}{dt}\Phi_\theta[u(t)] + \text{Fisher}(u(t) | \mathfrak{m}_\theta)\right|$$
+
+$$
+K_D^{(\theta)}(u) = \left|\frac{d}{dt}\Phi_\theta[u(t)] + \text{Fisher}(u(t) \,|\, \mathfrak{m}_\theta)\right|
+$$
 
 This measures the deviation from the "natural" thermodynamic evolution.
 
@@ -398,19 +484,31 @@ This measures the deviation from the "natural" thermodynamic evolution.
 The user's critique identifies that current "Physicist" agents minimize $\|\Delta z\|^2$ (kinetic energy) without accounting for the **drift induced by measure concentration**. The corrected loss should be:
 
 **Current (Incomplete):**
-$$\mathcal{L}_{\text{old}} = \frac{1}{2\tau}\|\rho_{t+\tau} - \rho_t\|_{L^2}^2 + \text{KL}(\rho_{t+\tau} || \mathfrak{m})$$
+
+$$
+\mathcal{L}_{\text{old}} = \frac{1}{2\tau}\|\rho_{t+\tau} - \rho_t\|_{L^2}^2 + \text{KL}(\rho_{t+\tau} \,\|\, \mathfrak{m})
+$$
 
 **Upgraded (Metric-Measure Correct):**
-$$\mathcal{L}_{\text{new}} = \frac{1}{2\tau}W_2^2(\rho_{t+\tau}, \rho_t) + \Phi[\rho_{t+\tau}]$$
+
+$$
+\mathcal{L}_{\text{new}} = \frac{1}{2\tau}W_2^2(\rho_{t+\tau}, \rho_t) + \Phi[\rho_{t+\tau}]
+$$
 
 where the **Wasserstein distance** $W_2$ accounts for both metric geometry and measure concentration.
 
 **Explicit Gradient (Otto Calculus):**
 The gradient of $\Phi$ in the Wasserstein manifold is:
-$$\nabla_{W_2}\Phi[\rho] = -\nabla \cdot \left(\rho \nabla \frac{\delta \Phi}{\delta \rho}\right)$$
+
+$$
+\nabla_{W_2}\Phi[\rho] = -\nabla \cdot \left(\rho \nabla \frac{\delta \Phi}{\delta \rho}\right)
+$$
 
 For $\Phi[\rho] = \int \rho V + \int \rho \log \rho$, this gives:
-$$\nabla_{W_2}\Phi[\rho] = -\nabla \cdot (\rho \nabla (V + \log \rho))$$
+
+$$
+\nabla_{W_2}\Phi[\rho] = -\nabla \cdot (\rho \nabla (V + \log \rho))
+$$
 
 **Agent Implementation:** The "Physicist" state vector $z_{\text{macro}}$ must include:
 1. **Position:** $x \in X$
@@ -418,7 +516,10 @@ $$\nabla_{W_2}\Phi[\rho] = -\nabla \cdot (\rho \nabla (V + \log \rho))$$
 3. **Fisher Information:** $\text{Fisher} = \|\nabla S\|^2$
 
 The agent loss becomes:
-$$\mathcal{L}_{\text{Physicist}} = \frac{1}{2\tau}W_2^2(\rho_{t+\tau}, \rho_t) + \Phi[\rho_{t+\tau}] + \lambda_{\text{LSI}}(K_{\text{LSI}}^{-1} - \text{target variance})^2$$
+
+$$
+\mathcal{L}_{\text{Physicist}} = \frac{1}{2\tau}W_2^2(\rho_{t+\tau}, \rho_t) + \Phi[\rho_{t+\tau}] + \lambda_{\text{LSI}}(K_{\text{LSI}}^{-1} - \text{target variance})^2
+$$
 
 where the LSI penalty prevents "melting" (measure dispersion).
 :::
@@ -429,25 +530,41 @@ where the LSI penalty prevents "melting" (measure dispersion).
 Let $(X, d, \mathfrak{m})$ satisfy $\mathrm{RCD}(K, N)$ with $K > 0$. Let $\rho_t$ be the gradient flow of $\Phi[\rho] = \text{KL}(\rho || \mathfrak{m})$ under the JKO scheme.
 
 **Claim:** The relative entropy decays exponentially:
-$$\text{KL}(\rho_t || \mathfrak{m}) \leq e^{-2Kt}\text{KL}(\rho_0 || \mathfrak{m})$$
+
+$$
+\text{KL}(\rho_t \,\|\, \mathfrak{m}) \leq e^{-2Kt}\text{KL}(\rho_0 \,\|\, \mathfrak{m})
+$$
 
 :::{prf:proof}
 :label: proof-no-melt-sketch
 
 By the EVI (Evolution Variational Inequality, Theorem {prf:ref}`thm-rcd-dissipation-link`):
-$$\frac{d}{dt}\text{KL}(\rho_t || \mathfrak{m}) + K W_2^2(\rho_t, \mathfrak{m}) + \text{Fisher}(\rho_t | \mathfrak{m}) \leq 0$$
 
-Using the **Talagrand inequality** $W_2^2(\rho, \mathfrak{m}) \geq \frac{2}{K}\text{KL}(\rho || \mathfrak{m})$ (which holds under $\mathrm{RCD}(K, N)$):
-$$\frac{d}{dt}\text{KL}(\rho_t || \mathfrak{m}) + 2K \text{KL}(\rho_t || \mathfrak{m}) \leq 0$$
+$$
+\frac{d}{dt}\text{KL}(\rho_t \,\|\, \mathfrak{m}) + K W_2^2(\rho_t, \mathfrak{m}) + \text{Fisher}(\rho_t \,|\, \mathfrak{m}) \leq 0
+$$
+
+Using the **Talagrand inequality** $W_2^2(\rho, \mathfrak{m}) \geq \frac{2}{K}\text{KL}(\rho \,\|\, \mathfrak{m})$ (which holds under $\mathrm{RCD}(K, N)$):
+
+$$
+\frac{d}{dt}\text{KL}(\rho_t \,\|\, \mathfrak{m}) + 2K \,\text{KL}(\rho_t \,\|\, \mathfrak{m}) \leq 0
+$$
 
 This is a differential inequality with solution:
-$$\text{KL}(\rho_t || \mathfrak{m}) \leq e^{-2Kt}\text{KL}(\rho_0 || \mathfrak{m})$$
+
+$$
+\text{KL}(\rho_t \,\|\, \mathfrak{m}) \leq e^{-2Kt}\text{KL}(\rho_0 \,\|\, \mathfrak{m})
+$$
+
 :::
 
 **Consequence:** An agent satisfying the $\mathrm{RCD}(K, N)$ condition with $K > 0$ **cannot drift indefinitely**. The probability of delusional states (large Wasserstein distance from equilibrium) decays exponentially with compute time.
 
 **Landauer Efficiency:** The thermodynamic cost of maintaining this convergence is:
-$$\Delta S_{\text{min}} = k_B T \ln(2) \cdot K^{-1} \cdot \text{(bits erased)}$$
+
+$$
+\Delta S_{\text{min}} = k_B T \ln(2) \cdot K^{-1} \cdot \text{(bits erased)}
+$$
 
 This is the **Landauer bound** with constant $K^{-1}$: stronger curvature (larger $K$) enables more efficient computation.
 
@@ -464,7 +581,10 @@ This is the **Landauer bound** with constant $K^{-1}$: stronger curvature (large
 **The Coupling Law (Discrete-Time Metaregulator Update):**
 
 The meta-learning algorithm updates the metric according to the **Wasserstein gradient flow** of the relative entropy functional:
-$$g_{t+\tau} = \arg\min_{g} \left\{ \text{KL}(\rho_{g} || \mathfrak{m}) + \frac{1}{2\tau}W_2^2(g, g_t) + \lambda \int_\Theta \text{Ric}(g) \wedge \mathfrak{D}_t \right\}$$
+
+$$
+g_{t+\tau} = \arg\min_{g} \left\{ \text{KL}(\rho_{g} \,\|\, \mathfrak{m}) + \frac{1}{2\tau}W_2^2(g, g_t) + \lambda \int_\Theta \text{Ric}(g) \wedge \mathfrak{D}_t \right\}
+$$
 
 where:
 - $\text{KL}(\rho_g || \mathfrak{m})$ is the relative entropy of the induced measure under metric $g$
@@ -476,7 +596,10 @@ where:
 **Continuum Limit (Ricci Flow):**
 
 Taking $\tau \to 0$ and computing the Euler-Lagrange equation yields:
-$$\frac{\partial g}{\partial t} = -2 \text{Ric}(g) - \lambda \mathfrak{D}$$
+
+$$
+\frac{\partial g}{\partial t} = -2 \,\text{Ric}(g) - \lambda \mathfrak{D}
+$$
 
 This is the **Ricci Flow equation** with a **dissipation-driven forcing term**:
 - The first term $-2 \text{Ric}(g)$ is Hamilton's Ricci Flow, which smooths the metric toward constant curvature
@@ -491,7 +614,10 @@ This is the **Ricci Flow equation** with a **dissipation-driven forcing term**:
 **For Discrete Systems (Simplicial Complex):**
 
 On a simplicial complex $G = (V, E, F)$, the metric evolution becomes a **graph rewiring / edge weight update**:
-$$W_{ij}^{t+1} = W_{ij}^t - \tau \left( \frac{\partial \mathfrak{D}}{\partial W_{ij}} + \lambda \sum_{f \ni (i,j)} \kappa_f \right)$$
+
+$$
+W_{ij}^{t+1} = W_{ij}^t - \tau \left( \frac{\partial \mathfrak{D}}{\partial W_{ij}} + \lambda \sum_{f \ni (i,j)} \kappa_f \right)
+$$
 
 where:
 - $W_{ij}$ are edge weights (discrete metric)
@@ -604,7 +730,10 @@ Permits: $K_{\text{Geom}}$, $K_{\text{Spec}}$, $K_{\text{Horizon}}$ (Geometric S
 *Step 1 (Levin-Schnorr Foundation):* By the **Levin-Schnorr Theorem** ({cite}`Levin73`, {cite}`Schnorr71`), algorithmic incompressibility (Kolmogorov complexity $K(x) \approx |x|$) implies unpredictability (Martin-Löf randomness). Inputs in the Gas Phase have $Kt(\tau) \approx |\tau|$ — no effective theory shorter than themselves.
 
 *Step 2 (RG Flow Dynamics):* Define the renormalization operator $\mathcal{R}_\ell$ as coarse-graining by scale $\ell$:
-$$\mathcal{R}_\ell(\mathcal{I}) := \{\text{structural features visible at scale } \ell\}$$
+
+$$
+\mathcal{R}_\ell(\mathcal{I}) := \{\text{structural features visible at scale } \ell\}
+$$
 
 - **Solid**: $\mathcal{R}_\ell(\mathcal{I}) \to \mathcal{I}_{\text{simple}}$ (converges to finite representation)
 - **Liquid**: $\mathcal{R}_\ell(\mathcal{I})$ remains self-similar across scales (power-law decay, no characteristic scale)
@@ -645,9 +774,16 @@ $$\mathcal{R}_\ell(\mathcal{I}) := \{\text{structural features visible at scale 
 The preceding sections established that axiom defects can be minimized via gradient descent. This section proves the central metatheorem: under identifiability conditions, defect minimization provably recovers the true hypostructure and its structural predictions.
 
 **Setting.** Fix a dynamical system $S$ with state space $X$, semiflow $S_t$, and trajectory class $\mathcal{U}$. Suppose there exists a "true" hypostructure
-$$\mathcal{H}_{\Theta^*} = (X, S_t, \Phi_{\Theta^*}, \mathfrak{D}_{\Theta^*}, G_{\Theta^*}, \mathcal{B}_{\Theta^*}, \mathrm{Tr}_{\Theta^*}, \mathcal{J}_{\Theta^*}, \mathcal{R}_{\Theta^*})$$
+
+$$
+\mathcal{H}_{\Theta^*} = (X, S_t, \Phi_{\Theta^*}, \mathfrak{D}_{\Theta^*}, G_{\Theta^*}, \mathcal{B}_{\Theta^*}, \mathrm{Tr}_{\Theta^*}, \mathcal{J}_{\Theta^*}, \mathcal{R}_{\Theta^*})
+$$
+
 satisfying the axioms. Consider a parametric family $\{\mathcal{H}_\theta\}_{\theta \in \Theta_{\mathrm{adm}}}$ containing $\mathcal{H}_{\Theta^*}$, with joint defect risk:
-$$\mathcal{R}(\theta) := \sum_{A \in \mathcal{A}} w_A \, \mathcal{R}_A(\theta), \quad \mathcal{R}_A(\theta) := \int_{\mathcal{U}} K_A^{(\theta)}(u) \, d\mu(u).$$
+
+$$
+\mathcal{R}(\theta) := \sum_{A \in \mathcal{A}} w_A \, \mathcal{R}_A(\theta), \quad \mathcal{R}_A(\theta) := \int_{\mathcal{U}} K_A^{(\theta)}(u) \, d\mu(u).
+$$
 
 > **[Deps] Structural Dependencies**
 >
@@ -680,15 +816,22 @@ Let $S$ be a dynamical system with a hypostructure representation $\mathcal{H}_{
 4. **(Defect reconstruction.)** The Defect Reconstruction Theorem ({prf:ref}`mt-defect-reconstruction-2`) holds: from $\{K_A^{(\theta)}\}_{A \in \mathcal{A}}$ on $\mathcal{U}$, one reconstructs $(\Phi_\theta, \mathfrak{D}_\theta, S_t, \mathcal{B}_\theta, \mathrm{Tr}_\theta, \mathcal{J}_\theta, \mathcal{R}_\theta, \text{barriers}, M)$ up to Hypo-isomorphism.
 
 Consider gradient descent with step sizes $\eta_k > 0$ satisfying $\sum_k \eta_k = \infty$, $\sum_k \eta_k^2 < \infty$:
-$$\theta_{k+1} = \theta_k - \eta_k \nabla_\theta \mathcal{R}(\theta_k).$$
+
+$$
+\theta_{k+1} = \theta_k - \eta_k \nabla_\theta \mathcal{R}(\theta_k).
+$$
 
 Then:
 
 1. **(Correctness of global minimizer.)** $\Theta^*$ is a global minimizer of $\mathcal{R}$ with $\mathcal{R}(\Theta^*) = 0$. Conversely, any global minimizer $\hat{\theta}$ with $\mathcal{R}(\hat{\theta}) = 0$ satisfies $\mathcal{H}_{\hat{\theta}} \cong \mathcal{H}_{\Theta^*}$ (Hypo-isomorphic).
 
 2. **(Local quantitative identifiability.)** There exist $c, C, \varepsilon_0 > 0$ such that for $|\theta - \Theta^*| < \varepsilon_0$:
-$$c \, |\theta - \tilde{\Theta}|^2 \leq \mathcal{R}(\theta) \leq C \, |\theta - \tilde{\Theta}|^2$$
-where $\tilde{\Theta}$ is a representative of $[\Theta^*]$. In particular: $\mathcal{R}(\theta) \leq \varepsilon \Rightarrow |\theta - \tilde{\Theta}| \leq \sqrt{\varepsilon/c}$.
+
+   $$
+   c \, |\theta - \tilde{\Theta}|^2 \leq \mathcal{R}(\theta) \leq C \, |\theta - \tilde{\Theta}|^2
+   $$
+
+   where $\tilde{\Theta}$ is a representative of $[\Theta^*]$. In particular: $\mathcal{R}(\theta) \leq \varepsilon \Rightarrow |\theta - \tilde{\Theta}| \leq \sqrt{\varepsilon/c}$.
 
 3. **(Convergence to true hypostructure.)** Every accumulation point of $(\theta_k)$ is stationary. Under the local strong convexity of (2), any sequence initialized sufficiently close to $[\Theta^*]$ converges to some $\tilde{\Theta} \in [\Theta^*]$.
 
@@ -701,9 +844,16 @@ where $\tilde{\Theta}$ is a representative of $[\Theta^*]$. In particular: $\mat
 Conversely, if $\mathcal{R}(\hat{\theta}) = 0$, then $\mathcal{R}_A(\hat{\theta}) = 0$ for all $A$, so $K_A^{(\hat{\theta})}(u) = 0$ for $\mu$-a.e. $u$. By the Defect Reconstruction Theorem, both $\mathcal{H}_{\hat{\theta}}$ and $\mathcal{H}_{\Theta^*}$ reconstruct to the same structural data on the support of $\mu$. By structural identifiability ({prf:ref}`mt-sv-09-meta-identifiability`), $\mathcal{H}_{\hat{\theta}} \cong \mathcal{H}_{\Theta^*}$.
 
 **Step 2 (Local quadratic bounds).** By Defect Reconstruction and structural identifiability, the map $\theta \mapsto \mathsf{Sig}(\theta)$ is locally injective around $[\Theta^*]$ up to gauge. Since $\mathcal{R}(\Theta^*) = 0$ and $\nabla \mathcal{R}(\Theta^*) = 0$ (all defects vanish), Taylor expansion gives:
-$$\mathcal{R}(\theta) = \frac{1}{2}(\theta - \tilde{\Theta})^\top H (\theta - \tilde{\Theta}) + o(|\theta - \tilde{\Theta}|^2)$$
+
+$$
+\mathcal{R}(\theta) = \frac{1}{2}(\theta - \tilde{\Theta})^\top H (\theta - \tilde{\Theta}) + o(|\theta - \tilde{\Theta}|^2)
+$$
+
 where $H = \sum_A w_A H_A$ is the Hessian. Identifiability implies $H$ is positive definite on $\Theta_{\mathrm{adm}}/{\sim}$ (directions that leave all defects unchanged correspond to pure gauge). Thus for small $|\theta - \tilde{\Theta}|$:
-$$c \, |\theta - \tilde{\Theta}|^2 \leq \mathcal{R}(\theta) \leq C \, |\theta - \tilde{\Theta}|^2.$$
+
+$$
+c \, |\theta - \tilde{\Theta}|^2 \leq \mathcal{R}(\theta) \leq C \, |\theta - \tilde{\Theta}|^2.
+$$
 
 **Step 3 (Gradient descent convergence).** By {prf:ref}`cor-gradient-descent-convergence`, accumulation points are stationary. The local strong convexity from Step 2 implies: on $B(\tilde{\Theta}, \varepsilon_0)$, $\mathcal{R}$ is strongly convex (modulo gauge) with unique stationary point $\tilde{\Theta}$. Standard optimization theory for strongly convex functions with Robbins-Monro step sizes yields convergence of $(\theta_k)$ to $\tilde{\Theta}$ when initialized in this basin.
 

@@ -28,7 +28,11 @@ This framework expands the classification to include:
 :label: def-structural-dna
 
 The **Structural DNA** of a dynamical system $\mathbb{H}$ is the extended vector:
-$$\mathrm{DNA}(\mathbb{H}) := (K_1, K_2, \ldots, K_7, K_{7a}, K_{7b}, K_{7c}, K_{7d}, K_8, \ldots, K_{17}) \in \prod_{N \in \mathcal{N}} \Sigma_N$$
+
+$$
+\mathrm{DNA}(\mathbb{H}) := (K_1, K_2, \ldots, K_7, K_{7a}, K_{7b}, K_{7c}, K_{7d}, K_8, \ldots, K_{17}) \in \prod_{N \in \mathcal{N}} \Sigma_N
+$$
+
 where $\mathcal{N} = \{1, 2, 3, 4, 5, 6, 7, 7a, 7b, 7c, 7d, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17\}$ is the set of 21 strata, $K_N$ is the certificate emitted at Node $N$, and $\Sigma_N$ is the alphabet of Node $N$.
 
 The subsidiary nodes 7a-7d constitute the **Stiffness Restoration Subtree**—the detailed decomposition that distinguishes between systems that fail primary stiffness but admit resolution via fundamentally different mechanisms.
@@ -44,7 +48,11 @@ The key insight is the *subsidiary nodes* 7a through 7d. These are not just extr
 :label: def-certificate-signature
 
 Two dynamical systems $\mathbb{H}_A$ and $\mathbb{H}_B$ have **equivalent signatures** if their terminal certificate chains satisfy:
-$$\Gamma_A \sim \Gamma_B \iff \forall N \in \mathcal{N}: \mathrm{type}(K_N^A) = \mathrm{type}(K_N^B)$$
+
+$$
+\Gamma_A \sim \Gamma_B \iff \forall N \in \mathcal{N}: \mathrm{type}(K_N^A) = \mathrm{type}(K_N^B)
+$$
+
 where $\mathrm{type}(K) \in \{+, \circ, \sim, \mathrm{re}, \mathrm{ext}, \mathrm{blk}, \mathrm{morph}, \mathrm{inc}\}$ is the certificate class.
 :::
 
@@ -255,7 +263,10 @@ The rows of the Classification Matrix represent the **dominant certificate type*
 :label: def-family-stable
 
 A dynamical system $\mathbb{H}$ belongs to **Family I** if its certificate chain satisfies:
-$$\forall N \in \mathcal{N}: K_N \in \{K^+, K^{\mathrm{triv}}, \varnothing\}$$
+
+$$
+\forall N \in \mathcal{N}: K_N \in \{K^+, K^{\mathrm{triv}}, \varnothing\}
+$$
 
 These systems satisfy interface permits immediately at every stratum. Regularity is $C^0$ and $C^\infty$ follows by trivial bootstrap. Family I systems **bypass the Stiffness Restoration Subtree entirely**—nodes 7a-7d return $\varnothing$ (void) since no restoration is needed.
 
@@ -270,7 +281,10 @@ These systems satisfy interface permits immediately at every stratum. Regularity
 :label: def-family-relaxed
 
 A dynamical system $\mathbb{H}$ belongs to **Family II** if its certificate chain contains primarily neutral certificates:
-$$\exists N \in \{3, 4, 6\}: K_N = K^\circ \text{ or } K_N = K^{\mathrm{ben}}$$
+
+$$
+\exists N \in \{3, 4, 6\}: K_N = K^\circ \text{ or } K_N = K^{\mathrm{ben}}
+$$
 
 These systems sit on the boundary of the energy manifold—they do not concentrate; they scatter. They are defined by their interaction with infinity rather than finite-time behavior. The Stiffness Subtree provides mild restoration via Morse theory (7a), discrete symmetry (7b), phase transitions (7c), and WKB tunneling (7d).
 
@@ -285,7 +299,10 @@ These systems sit on the boundary of the energy manifold—they do not concentra
 :label: def-family-gauged
 
 A dynamical system $\mathbb{H}$ belongs to **Family III** if regularity can be established up to an equivalence or gauge transformation:
-$$\exists N: K_N = K^{\sim} \text{ with equivalence class } [\mathbb{H}] \in \mathbf{Hypo}_T / \sim$$
+
+$$
+\exists N: K_N = K^{\sim} \text{ with equivalence class } [\mathbb{H}] \in \mathbf{Hypo}_T / \sim
+$$
 
 The problem is not solved directly but is shown equivalent to a solved problem via gauge fixing, quotient construction, or dictionary translation. The answer is "YES, up to equivalence"—the obstruction is representational rather than structural.
 
@@ -300,7 +317,10 @@ The problem is not solved directly but is shown equivalent to a solved problem v
 :label: def-family-resurrected
 
 A dynamical system $\mathbb{H}$ belongs to **Family IV** if it admits singularities that are **Admissible** for structural surgery:
-$$\exists N: K_N = K^{\mathrm{re}} \text{ with associated cobordism } W: M_0 \rightsquigarrow M_1$$
+
+$$
+\exists N: K_N = K^{\mathrm{re}} \text{ with associated cobordism } W: M_0 \rightsquigarrow M_1
+$$
 
 These systems encounter singularities but are admissible for **Structural Surgery**. The proof object is a cobordism: a sequence of manifolds connected by pushout operators. The Stiffness Subtree is critical here: 7a (bifurcation detection), 7b (hidden symmetry), 7c (vacuum restoration), 7d (path integral continuation).
 
@@ -315,7 +335,10 @@ These systems encounter singularities but are admissible for **Structural Surger
 :label: def-family-synthetic
 
 A dynamical system $\mathbb{H}$ belongs to **Family V** if regularity requires **synthetic extension**—the introduction of auxiliary fields or structures not present in the original formulation:
-$$\exists N: K_N = K^{\mathrm{ext}} \text{ with extension } \iota: \mathbb{H} \hookrightarrow \tilde{\mathbb{H}}$$
+
+$$
+\exists N: K_N = K^{\mathrm{ext}} \text{ with extension } \iota: \mathbb{H} \hookrightarrow \tilde{\mathbb{H}}
+$$
 
 The problem cannot be solved in its original formulation; one must extend to a richer structure. This includes ghost fields in BRST cohomology, viscosity solutions, analytic continuation, and compactification.
 
@@ -330,7 +353,10 @@ The problem cannot be solved in its original formulation; one must extend to a r
 :label: def-family-forbidden
 
 A dynamical system $\mathbb{H}$ belongs to **Family VI** if analytic estimates fail entirely but the system is saved by a categorical barrier:
-$$\exists N: K_N = K^{\mathrm{blk}} \text{ with } \mathrm{Hom}(\mathbb{H}_{\mathrm{bad}}, S) = \emptyset$$
+
+$$
+\exists N: K_N = K^{\mathrm{blk}} \text{ with } \mathrm{Hom}(\mathbb{H}_{\mathrm{bad}}, S) = \emptyset
+$$
 
 Analytic estimates fail entirely ($K^-$ at multiple nodes). The system is only saved because a **Barrier** or the **Lock** proves that the Bad Pattern is categorically forbidden. The subtree provides: 7a (catastrophe exclusion), 7b (gauge anomaly cancellation), 7c (spontaneous symmetry breaking obstruction), 7d (infinite barrier tunneling suppression).
 
@@ -345,7 +371,10 @@ Analytic estimates fail entirely ($K^-$ at multiple nodes). The system is only s
 :label: def-family-singular
 
 A dynamical system $\mathbb{H}$ belongs to **Family VII** if the Bad Pattern definitively **embeds**:
-$$\exists N: K_N = K^{\mathrm{morph}} \text{ with embedding } \phi: \mathbb{H}_{\mathrm{bad}} \hookrightarrow S$$
+
+$$
+\exists N: K_N = K^{\mathrm{morph}} \text{ with embedding } \phi: \mathbb{H}_{\mathrm{bad}} \hookrightarrow S
+$$
 
 The answer is a definite **NO**: the conjecture of regularity is false. The singularity is real, the blow-up occurs, the obstruction embeds. This is not failure to prove—it is successful disproof.
 
@@ -360,7 +389,10 @@ The answer is a definite **NO**: the conjecture of regularity is false. The sing
 :label: def-family-horizon
 
 A dynamical system $\mathbb{H}$ belongs to **Family VIII** if it encounters the epistemic horizon:
-$$\exists N: K_N = K^{\mathrm{inc}} \text{ or } K_N = K^{\mathrm{hor}}$$
+
+$$
+\exists N: K_N = K^{\mathrm{inc}} \text{ or } K_N = K^{\mathrm{hor}}
+$$
 
 This family represents the **Epistemic Horizon**:
 - If $K^{\mathrm{inc}}$: The problem is currently undecidable within the chosen Language/Representation.
@@ -457,7 +489,11 @@ This is the **critical subtree** that distinguishes the expanded classification.
 :label: rem-subtree-traversal
 
 The Stiffness Restoration Subtree implements a **sequential cascade** of restoration attempts. The transitions:
-$$7 \to 7a \to 7b \to 7c \to 7d$$
+
+$$
+7 \to 7a \to 7b \to 7c \to 7d
+$$
+
 represent increasingly sophisticated restoration mechanisms. A system that clears 7d exits to Node 8 with restored stiffness; a system that fails all four nodes either enters Family VII (Singular) with definite failure or Family VIII (Horizon) with epistemic blockage.
 :::
 
@@ -505,7 +541,10 @@ A key consequence of the Classification Matrix is the **Structural Isomorphism P
 :label: thm-meta-identifiability
 
 Two problems $A$ and $B$, potentially arising from entirely different physical domains, are **Hypo-isomorphic** if and only if they share the same terminal certificate signature:
-$$\mathbb{H}_A \cong \mathbb{H}_B \iff \mathrm{DNA}(\mathbb{H}_A) \sim \mathrm{DNA}(\mathbb{H}_B)$$
+
+$$
+\mathbb{H}_A \cong \mathbb{H}_B \iff \mathrm{DNA}(\mathbb{H}_A) \sim \mathrm{DNA}(\mathbb{H}_B)
+$$
 
 where $\sim$ denotes equivalence of certificate types at each node.
 :::
@@ -529,7 +568,11 @@ where $\sim$ denotes equivalence of certificate types at each node.
 A system that is "Resurrected" at the **Geometry Locus (Node 6)** via a "Neck Surgery" is structurally identical to a discrete algorithm that is "Resurrected" via a "State Reset" if their capacity-to-dissipation ratios are identical.
 
 More precisely: if $\mathbb{H}_{\mathrm{flow}}$ (a geometric flow) and $\mathbb{H}_{\mathrm{algo}}$ (a discrete algorithm) satisfy:
-$$K_6^{\mathrm{flow}} = K_{\mathrm{Cap}_H}^{\mathrm{re}} \quad \text{and} \quad K_6^{\mathrm{algo}} = K_{\mathrm{Cap}_H}^{\mathrm{re}}$$
+
+$$
+K_6^{\mathrm{flow}} = K_{\mathrm{Cap}_H}^{\mathrm{re}} \quad \text{and} \quad K_6^{\mathrm{algo}} = K_{\mathrm{Cap}_H}^{\mathrm{re}}
+$$
+
 with identical surgery parameters, then the proof of regularity for one transfers directly to the other.
 :::
 
@@ -537,7 +580,10 @@ with identical surgery parameters, then the proof of regularity for one transfer
 :label: cor-subtree-equivalence
 
 Two systems $\mathbb{H}_A$ and $\mathbb{H}_B$ that enter the Stiffness Restoration Subtree (both having $K_7 \neq K^+$) are **subtree-equivalent** if their restriction to nodes 7a-7d is identical:
-$$(K_{7a}^A, K_{7b}^A, K_{7c}^A, K_{7d}^A) = (K_{7a}^B, K_{7b}^B, K_{7c}^B, K_{7d}^B)$$
+
+$$
+(K_{7a}^A, K_{7b}^A, K_{7c}^A, K_{7d}^A) = (K_{7a}^B, K_{7b}^B, K_{7c}^B, K_{7d}^B)
+$$
 
 Subtree-equivalent systems admit the **same restoration strategy**, regardless of their behavior at other strata. This enables transfer of restoration techniques between:
 - Yang-Mills instantons <-> Ricci flow singularities (both: $K_{7d}^{\mathrm{re}}$ Path Integral)
@@ -549,10 +595,16 @@ Subtree-equivalent systems admit the **same restoration strategy**, regardless o
 :label: cor-family-transitions
 
 The eight families form a **partial order** under resolution difficulty:
-$$K^+ \prec K^\circ \prec K^{\sim} \prec K^{\mathrm{re}} \prec K^{\mathrm{ext}} \prec K^{\mathrm{blk}} \prec K^{\mathrm{morph}} \prec K^{\mathrm{inc}}$$
+
+$$
+K^+ \prec K^\circ \prec K^{\sim} \prec K^{\mathrm{re}} \prec K^{\mathrm{ext}} \prec K^{\mathrm{blk}} \prec K^{\mathrm{morph}} \prec K^{\mathrm{inc}}
+$$
 
 A system's **family assignment** is determined by its maximal certificate type:
-$$\mathrm{Family}(\mathbb{H}) = \max_{N \in \mathcal{N}} \mathrm{type}(K_N)$$
+
+$$
+\mathrm{Family}(\mathbb{H}) = \max_{N \in \mathcal{N}} \mathrm{type}(K_N)
+$$
 
 The transitions are **irreversible within a proof attempt**: once a system enters Family IV (Resurrected), it cannot return to Family II (Relaxed) without restructuring the problem formulation.
 :::
@@ -595,7 +647,11 @@ The proof strategy for any dynamical system is determined by its location in the
    - **Node 17 (Lock):** Categorical failure -> the Lock
 
 3. **Subtree Navigation:** Systems entering the Stiffness Restoration Subtree (7a-7d) follow a cascade:
-   $$7 \xrightarrow{K^-} 7a \xrightarrow{?} 7b \xrightarrow{?} 7c \xrightarrow{?} 7d \xrightarrow{?} 8$$
+
+   $$
+   7 \xrightarrow{K^-} 7a \xrightarrow{?} 7b \xrightarrow{?} 7c \xrightarrow{?} 7d \xrightarrow{?} 8
+   $$
+
    The exit certificate from 7d determines whether stiffness is restored ($K^{\mathrm{re}}$) or the system proceeds to Families VI-VIII.
 
 4. **Metatheorem Selection:** The (Row, Column) pair in the 8x21 matrix uniquely determines which Factory Metatheorems (TM-1 through TM-5) are applicable.
@@ -625,7 +681,9 @@ The Periodic Law follows by noting that problems with equivalent DNA signatures 
 
 The complete **8x21 Periodic Table** contains exactly **168 structural slots**, each corresponding to a unique (Family, Stratum) pair. Every dynamical regularity problem maps to exactly one slot via the Structural DNA:
 
-$$\mathrm{Slot}(\mathbb{H}) = (\mathrm{Family}(\mathbb{H}), \mathrm{Stratum}(\mathbb{H})) \in \{I, \ldots, VIII\} \times \{1, \ldots, 17, 7a, 7b, 7c, 7d\}$$
+$$
+\mathrm{Slot}(\mathbb{H}) = (\mathrm{Family}(\mathbb{H}), \mathrm{Stratum}(\mathbb{H})) \in \{I, \ldots, VIII\} \times \{1, \ldots, 17, 7a, 7b, 7c, 7d\}
+$$
 
 where $\mathrm{Stratum}(\mathbb{H})$ is the **first stratum** at which the maximal certificate type is achieved.
 :::
@@ -666,7 +724,11 @@ This section establishes the formal AIT (Algorithmic Information Theory) framewo
 :label: def-kolmogorov-complexity
 
 For a string $x \in \{0,1\}^*$, define the **Kolmogorov complexity** (algorithmic energy) as:
-$$K(x) := \min\{|p| : U(p) = x\}$$
+
+$$
+K(x) := \min\{|p| : U(p) = x\}
+$$
+
 where $U$ is a fixed universal prefix-free Turing machine and $|p|$ denotes the length of program $p$ in bits.
 
 **Key Properties:**
@@ -693,7 +755,11 @@ This is the deep tragedy of AIT: the most important quantity—Kolmogorov comple
 :label: def-chaitin-omega
 
 The **Chaitin halting probability** (algorithmic partition function) is:
-$$\Omega_U := \sum_{p : U(p)\downarrow} 2^{-|p|}$$
+
+$$
+\Omega_U := \sum_{p : U(p)\downarrow} 2^{-|p|}
+$$
+
 where the sum is over all programs $p$ that halt on the universal machine $U$.
 
 **Key Properties:**
@@ -704,7 +770,11 @@ where the sum is over all programs $p$ that halt on the universal machine $U$.
 3. **Oracle Power:** $\Omega$ is $\emptyset'$-computable (equivalently, $\Delta^0_2$). Knowing the first $n$ bits $\Omega_n$ suffices to decide halting for all programs of length $\leq n$ {cite}`LiVitanyi19`.
 
 4. **Thermodynamic Form:** By the Coding Theorem, the algorithmic probability $m(x) := \sum_{p:U(p)=x} 2^{-|p|}$ satisfies $m(x) = \Theta(2^{-K(x)})$. Thus:
-   $$\Omega = \sum_{x} m(x) \asymp \sum_{x} 2^{-K(x)}$$
+
+   $$
+   \Omega = \sum_{x} m(x) \asymp \sum_{x} 2^{-K(x)}
+   $$
+
    exhibits Boltzmann partition function structure with $\beta = \ln 2$.
 :::
 
@@ -720,7 +790,10 @@ And $\Omega$ is *random* in the most rigorous sense: its bits are maximally inco
 :label: def-computational-depth
 
 Define **computational depth** $d_s(x)$ at significance level $s$ as the running time of the fastest program within $s$ bits of optimal:
-$$d_s(x) := \min\{t : \exists p,\, |p| \leq K(x) + s,\, U^t(p) = x\}$$
+
+$$
+d_s(x) := \min\{t : \exists p,\, |p| \leq K(x) + s,\, U^t(p) = x\}
+$$
 
 For fixed $s$, this measures the intrinsic computational "work" required to produce $x$.
 
@@ -752,10 +825,12 @@ The Structural Sieve implements a formal correspondence between AIT quantities a
 
 **Formal Statement:** Under the identification $E(x) = K(x)$, $Z = \Omega$, $\beta = \ln 2$, the Structural Sieve's verdict system is determined by Axiom R status, not complexity alone:
 
-$$\text{Verdict}(\mathcal{I}) = \begin{cases}
+$$
+\text{Verdict}(\mathcal{I}) = \begin{cases}
 \texttt{REGULAR} & \text{Axiom R holds (decidable)} & \text{(Crystal)} \\
 \texttt{HORIZON} & \text{Axiom R fails (c.e. or random)} & \text{(Liquid/Gas)}
-\end{cases}$$
+\end{cases}
+$$
 
 **Complexity vs. Decidability:** Low complexity ($K = O(\log n)$) is necessary but not sufficient for decidability. The Halting Set has low complexity but Axiom R fails, placing it in the **Liquid** (HORIZON) phase.
 :::
@@ -766,11 +841,19 @@ $$\text{Verdict}(\mathcal{I}) = \begin{cases}
 We establish the correspondence in four steps.
 
 **Step 1 (Coding Theorem):** By the Levin-Schnorr Theorem {cite}`Levin73b; Schnorr73`, the algorithmic probability $m(x) := \sum_{p: U(p)=x} 2^{-|p|}$ satisfies:
-$$-\log m(x) = K(x) + O(1)$$
+
+$$
+-\log m(x) = K(x) + O(1)
+$$
+
 This identifies $m(x) \approx 2^{-K(x)}$ as the Boltzmann weight with $\beta = \ln 2$.
 
 **Step 2 (Partition Function):** The normalization condition:
-$$\sum_x m(x) = \sum_{p: U(p)\downarrow} 2^{-|p|} = \Omega_U$$
+
+$$
+\sum_x m(x) = \sum_{p: U(p)\downarrow} 2^{-|p|} = \Omega_U
+$$
+
 identifies Chaitin's $\Omega$ as the partition function $Z$.
 
 **Step 3 (Depth Identification):** Bennett's logical depth $d_s(x)$ ({prf:ref}`def-computational-depth`) measures the computational "irreversibility"—the time required for near-optimal programs:
@@ -805,7 +888,10 @@ The **algorithmic phase** of a computational problem $\mathcal{I} \subseteq \mat
 :label: thm-algorithmic-rg
 
 The phase classification admits an informal **renormalization group** interpretation. Define a coarse-graining operator $\mathcal{R}_\ell$ at scale $\ell$ using Hamming distance $\rho$:
-$$\mathcal{R}_\ell(L) := \{x : \exists y \in L,\, \rho(x,y) \leq \ell\}$$
+
+$$
+\mathcal{R}_\ell(L) := \{x : \exists y \in L,\, \rho(x,y) \leq \ell\}
+$$
 
 **Heuristic Fixed Points:**
 1. **Crystal:** Sets with $K(L \cap [0,n]) = O(\log n)$ are "attracted" to finite representations under coarse-graining.

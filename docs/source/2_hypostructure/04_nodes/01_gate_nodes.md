@@ -45,7 +45,10 @@ graph LR
 **Interface ID:** $D_E$
 
 **Predicate** $P_1$: The height functional $\Phi$ is bounded on the analysis window $[0, T)$:
-$$P_1 \equiv \sup_{t \in [0, T)} \Phi(u(t)) < \infty$$
+
+$$
+P_1 \equiv \sup_{t \in [0, T)} \Phi(u(t)) < \infty
+$$
 
 **YES certificate** $K_{D_E}^+ = (E_{\max}, \text{bound proof})$ where $E_{\max} = \sup_t \Phi(u(t))$.
 
@@ -77,7 +80,10 @@ $$P_1 \equiv \sup_{t \in [0, T)} \Phi(u(t)) < \infty$$
 **Interface ID:** $\mathrm{Rec}_N$
 
 **Predicate** $P_2$: Discrete events (topology changes, surgery invocations, mode transitions) are finite on any bounded interval:
-$$P_2 \equiv \#\{\text{events in } [0, T)\} < \infty \quad \forall T < T_*$$
+
+$$
+P_2 \equiv \#\{\text{events in } [0, T)\} < \infty \quad \forall T < T_*
+$$
 
 **YES certificate** $K_{\mathrm{Rec}_N}^+ = (N_{\max}, \text{event bound proof})$.
 
@@ -99,7 +105,10 @@ $$P_2 \equiv \#\{\text{events in } [0, T)\} < \infty \quad \forall T < T_*$$
 **Interface ID:** $C_\mu$
 
 **Predicate** $P_3$: Energy concentrates (does not scatter):
-$$P_3 \equiv \exists \text{ concentration profile as } t \to T_*$$
+
+$$
+P_3 \equiv \exists \text{ concentration profile as } t \to T_*
+$$
 
 **Semantics**: This is a *dichotomy check*. YES means concentration occurs (proceed to profile extraction). NO means energy scatters (global existence via dispersion).
 
@@ -136,9 +145,16 @@ The dichotomy mirrors the **thermodynamic distinction** between ordered (low-ent
 **Interface ID:** $\mathrm{SC}_\lambda$
 
 **Predicate** $P_4$: The scaling structure is subcritical:
-$$P_4 \equiv \alpha > \beta$$
+
+$$
+P_4 \equiv \alpha > \beta
+$$
+
 where $\alpha, \beta$ are the scaling exponents satisfying:
-$$\Phi(\mathcal{S}_\lambda x) = \lambda^\alpha \Phi(x), \quad \mathfrak{D}(\mathcal{S}_\lambda x) = \lambda^\beta \mathfrak{D}(x)$$
+
+$$
+\Phi(\mathcal{S}_\lambda x) = \lambda^\alpha \Phi(x), \quad \mathfrak{D}(\mathcal{S}_\lambda x) = \lambda^\beta \mathfrak{D}(x)
+$$
 
 **YES certificate** $K_{\mathrm{SC}_\lambda}^+ = (\alpha, \beta, \alpha > \beta \text{ proof})$.
 
@@ -160,7 +176,10 @@ $$\Phi(\mathcal{S}_\lambda x) = \lambda^\alpha \Phi(x), \quad \mathfrak{D}(\math
 **Interface ID:** $\mathrm{SC}_{\partial c}$
 
 **Predicate** $P_5$: Structural constants (modulation parameters, coupling constants) are stable:
-$$P_5 \equiv \|\theta(t) - \theta_0\| \leq C \quad \forall t \in [0, T)$$
+
+$$
+P_5 \equiv \|\theta(t) - \theta_0\| \leq C \quad \forall t \in [0, T)
+$$
 
 **YES certificate** $K_{\mathrm{SC}_{\partial c}}^+ = (\theta_0, C, \text{stability proof})$.
 
@@ -180,7 +199,11 @@ $$P_5 \equiv \|\theta(t) - \theta_0\| \leq C \quad \forall t \in [0, T)$$
 **Interface ID:** $\mathrm{Cap}_H$
 
 **Predicate** $P_6$: The singular set has sufficiently small capacity (high codimension):
-$$P_6 \equiv \mathrm{codim}(\mathcal{Y}_{\text{sing}}) \geq d_{\text{crit}} \quad \text{equivalently} \quad \dim_H(\mathcal{Y}_{\text{sing}}) \leq d - d_{\text{crit}}$$
+
+$$
+P_6 \equiv \mathrm{codim}(\mathcal{Y}_{\text{sing}}) \geq d_{\text{crit}} \quad \text{equivalently} \quad \dim_H(\mathcal{Y}_{\text{sing}}) \leq d - d_{\text{crit}}
+$$
+
 where $d$ is the ambient dimension and $d_{\text{crit}}$ is the critical codimension threshold (typically $d_{\text{crit}} = 2$ for parabolic problems).
 
 **Interpretation**: YES means the singular set is geometrically negligible (small dimension, high codimension). NO means the singular set is too ``fat'' and could obstruct regularity.
@@ -205,7 +228,11 @@ where $d$ is the ambient dimension and $d_{\text{crit}}$ is the critical codimen
 **Interface ID:** $\mathrm{LS}_\sigma$
 
 **Predicate** $P_7$: Local stiffness (Łojasiewicz-Simon inequality) holds near critical points. The standard form is:
-$$P_7 \equiv \exists \theta \in (0, \tfrac{1}{2}], C_{\text{LS}} > 0, \delta > 0 : \|\nabla \Phi(x)\| \geq C_{\text{LS}} |\Phi(x) - \Phi_*|^{1-\theta}$$
+
+$$
+P_7 \equiv \exists \theta \in (0, \tfrac{1}{2}], C_{\text{LS}} > 0, \delta > 0 : \|\nabla \Phi(x)\| \geq C_{\text{LS}} |\Phi(x) - \Phi_*|^{1-\theta}
+$$
+
 for all $x$ with $d(x, M) < \delta$, where $M$ is the set of critical points and $\Phi_*$ is the critical value.
 
 **Consequence**: The LS inequality implies finite-length gradient flow convergence to $M$ with rate $O(t^{-\theta/(1-2\theta)})$.
@@ -218,7 +245,9 @@ for all $x$ with $d(x, M) < \delta$, where $M$ is the set of critical points and
 
 **Metric-Measure Upgrade (Log-Sobolev Gate):** When the Thin Kernel specifies a metric-measure space $(X, d, \mathfrak{m})$, stiffness can be strengthened to the **Logarithmic Sobolev Inequality** (LSI) ({prf:ref}`thm-log-sobolev-concentration`):
 
-$$\text{Ent}(f^2 | \mathfrak{m}) \leq \frac{2}{K_{\text{LSI}}}\int_X |\nabla f|^2 d\mathfrak{m}$$
+$$
+\text{Ent}(f^2 | \mathfrak{m}) \leq \frac{2}{K_{\text{LSI}}}\int_X |\nabla f|^2 \, d\mathfrak{m}
+$$
 
 **Enhanced Certificate:** $K_{\mathrm{LS}_\sigma}^{\text{LSI}} = (K_{\text{LSI}}, \text{LSI proof}, \text{spectral gap} \lambda_1)$ where:
 - $K_{\text{LSI}} > 0$ is the Log-Sobolev constant
@@ -266,15 +295,25 @@ Why does this matter for the Sieve? Because a tree-like structure preserves the 
 **The 4-Point Condition (Gromov's Thin Triangle):**
 
 For any four points $w, x, y, z \in X$, define the **Gromov product** with respect to base point $w$:
-$$(x \mid y)_w := \frac{1}{2}\left(d(x, w) + d(y, w) - d(x, y)\right)$$
+
+$$
+(x \mid y)_w := \frac{1}{2}\left(d(x, w) + d(y, w) - d(x, y)\right)
+$$
 
 **Physical Interpretation:** $(x \mid y)_w$ measures "how long $x$ and $y$ travel together from $w$ before separating."
 
 The space is **δ-hyperbolic** if there exists a constant $\delta \geq 0$ such that for all quadruples $(w, x, y, z)$:
-$$(x \mid z)_w \geq \min\{(x \mid y)_w, (y \mid z)_w\} - \delta$$
+
+$$
+(x \mid z)_w \geq \min\{(x \mid y)_w, (y \mid z)_w\} - \delta
+$$
 
 **Equivalently (4-Point Supremum):** Define
-$$\delta_{\text{Gromov}}(X) := \sup_{w,x,y,z \in X} \left[\min\{(x \mid y)_w, (y \mid z)_w\} - (x \mid z)_w\right]$$
+
+$$
+\delta_{\text{Gromov}}(X) := \sup_{w,x,y,z \in X} \left[\min\{(x \mid y)_w, (y \mid z)_w\} - (x \mid z)_w\right]
+$$
+
 Then $X$ is $\delta$-hyperbolic if $\delta_{\text{Gromov}}(X) < \infty$.
 
 **Geometric Classification:**
@@ -306,7 +345,10 @@ CAT(0) (non-positive curvature) admits hyperbolic and higher-rank lattices but *
 **Asymptotic Cone Classification:**
 
 For a metric space $(X, d)$ with basepoint $o$, the **asymptotic cone** $\text{Cone}_\omega(X)$ is the ultralimit:
-$$\text{Cone}_\omega(X) = \lim_{\omega} (X, \frac{1}{n}d, o)$$
+
+$$
+\text{Cone}_\omega(X) = \lim_{\omega} (X, \frac{1}{n}d, o)
+$$
 
 where $\omega$ is a non-principal ultrafilter. Intuitively: "The view from infinity after rescaling."
 
@@ -365,7 +407,10 @@ REJECT if $\dim(\text{Cone}_\omega(G)) = \infty$ (expander; no coarse geometric 
 **Sol Geometry (Solvable Lie Group):**
 
 Matrix representation:
-$$\text{Sol} = \left\{\begin{pmatrix} e^t & 0 & x \\ 0 & e^{-t} & y \\ 0 & 0 & 1 \end{pmatrix} : t, x, y \in \mathbb{R}\right\}$$
+
+$$
+\text{Sol} = \left\{\begin{pmatrix} e^t & 0 & x \\ 0 & e^{-t} & y \\ 0 & 0 & 1 \end{pmatrix} : t, x, y \in \mathbb{R}\right\}
+$$
 
 **Key properties:**
 - **Exponential growth:** $|B_r| \sim e^{\alpha r}$ (expanding in $t$ direction)
@@ -397,10 +442,16 @@ Exponential volume growth with finite-dimensional asymptotic cone does NOT viola
 For metric space $(X,d)$ with $|B_r| \sim e^{\alpha r}$ and $\dim(\text{Cone}_\omega(X)) = n < \infty$:
 
 **Intrinsic volume growth** matches asymptotic dimension:
-$$\text{Vol}_{\text{intrinsic}}(B_r) \sim e^{\beta r} \quad \text{where } \beta = \alpha \text{ (geometric constraint)}$$
+
+$$
+\text{Vol}_{\text{intrinsic}}(B_r) \sim e^{\beta r} \quad \text{where } \beta = \alpha \text{ (geometric constraint)}
+$$
 
 **Density ratio:**
-$$\rho(r) = \frac{|B_r|}{\text{Vol}_{\text{intrinsic}}(B_r)} = \frac{e^{\alpha r}}{e^{\beta r}} \approx \text{const.}$$
+
+$$
+\rho(r) = \frac{|B_r|}{\text{Vol}_{\text{intrinsic}}(B_r)} = \frac{e^{\alpha r}}{e^{\beta r}} \approx \text{const.}
+$$
 
 **LSI constant** (Bakry-Émery):
 - **Hyperbolic:** $K_{\text{LSI}} = |K|/(n-1)$
@@ -448,7 +499,11 @@ So the protocol is: (1) discretize, (2) check spectral gap via matrix computatio
 **Step 1: The Thin Definition (The "Easy" Check)**
 
 For discrete systems, refine the Thin State Object $\mathcal{X}^{\text{thin}} = (\mathcal{X}, d, \mu)$ to include a **Weighted Graph** structure:
-$$G = (V, E, W)$$
+
+$$
+G = (V, E, W)
+$$
+
 where:
 - $V$ is the vertex set (discrete states: mesh nodes, tokens, configurations)
 - $E$ is the edge set (transitions, adjacency)
@@ -486,7 +541,11 @@ where:
 **Runtime Measurement Without Math:** LSI is equivalent to **exponential entropy decay**. We can check this property at runtime without proving anything.
 
 **The Proxy (Entropy Dissipation Rate):**
-$$\frac{d}{dt} H(q_t) \leq -C \cdot H(q_t)$$
+
+$$
+\frac{d}{dt} H(q_t) \leq -C \cdot H(q_t)
+$$
+
 where:
 - $H(q_t)$ is the relative entropy (KL divergence) of the current state distribution $q_t$ from equilibrium
 - $C > 0$ is the LSI constant
@@ -517,7 +576,11 @@ where:
 The system is admitted if the discrete Thin Kernel satisfies **BOTH**:
 
 1. **Spectral Gap (Stiffness):**
-   $$\lambda_2(L) > \epsilon$$
+
+   $$
+   \lambda_2(L) > \epsilon
+   $$
+
    for some $\epsilon > 0$ independent of discretization level, where $L$ is the graph Laplacian.
 
 2. **Volume Growth & Geometry (The Gromov Gate - 3-Way Check):**
@@ -525,7 +588,11 @@ The system is admitted if the discrete Thin Kernel satisfies **BOTH**:
    The system performs a **cascading check** to distinguish **Structured Expansion** (hyperbolic reasoning) from **Unstructured Explosion** (expander noise):
 
    **Step 2a: Test Polynomial Growth (Euclidean/Flat Spaces)**
-   $$\text{Vol}(B_r(x)) \leq C r^D$$
+
+   $$
+   \text{Vol}(B_r(x)) \leq C r^D
+   $$
+
    for all balls of radius $r$ centered at $x \in V$, where $D < \infty$ is the effective dimension.
 
    **Discrete Formulation:** $|B_r(x)| \leq C r^D$ (vertex count).
@@ -553,7 +620,9 @@ The system is admitted if the discrete Thin Kernel satisfies **BOTH**:
 
    If both polynomial growth and finite asymptotic cone fail (expander detected: $\dim(\text{Cone}) = \infty$), check for small boundary:
 
-   $$\frac{|\partial R|}{\text{Vol}(R)} \leq \epsilon_{\text{boundary}}$$
+   $$
+   \frac{|\partial R|}{\text{Vol}(R)} \leq \epsilon_{\text{boundary}}
+   $$
 
    where $\partial R$ is the boundary (interface vertices) and $\text{Vol}(R)$ is the internal volume.
 
@@ -568,12 +637,17 @@ The system is admitted if the discrete Thin Kernel satisfies **BOTH**:
 
    If Step 2c fails (positive curvature + large boundary), test for **spectral rigidity** via structure factor (Permit $K_{\mathrm{Spec}}$, Definition {prf:ref}`permit-spectral-resonance`):
 
-   $$S(k) = \left|\sum_{n=1}^{N} e^{2\pi i k x_n}\right|^2$$
+   $$
+   S(k) = \left|\sum_{n=1}^{N} e^{2\pi i k x_n}\right|^2
+   $$
 
    where $\{x_n\}$ are rescaled point positions (Riemann zeros, eigenvalues, etc.).
 
    **Admission criterion:**
-   $$\max_k S(k) > \eta \cdot \overline{S} \qquad (\eta > 10)$$
+
+   $$
+   \max_k S(k) > \eta \cdot \overline{S} \qquad (\eta > 10)
+   $$
 
    Equivalently via **number variance**: $\Sigma^2(L) \sim \log L$ (GUE) vs $\Sigma^2(L) \sim L$ (Poisson).
 
@@ -656,7 +730,11 @@ When you discretize a PDE on a mesh, you replace:
 :label: thm-lsi-hyperbolic-density
 
 Let $(X,d)$ be $\delta$-hyperbolic and let $B_r$ denote metric balls. If both the state count and the intrinsic geometric volume grow exponentially at matched rates, then the density
-$$\rho(r) := \frac{|B_r|}{\mathrm{Vol}_{\mathbb{H}}(B_r)}$$
+
+$$
+\rho(r) := \frac{|B_r|}{\mathrm{Vol}_{\mathbb{H}}(B_r)}
+$$
+
 remains uniformly bounded in $r$, preventing spurious "mass inflation" artifacts in energy/entropy accounting.
 
 This is the geometric justification used in the hyperbolicity permit {prf:ref}`permit-gromov-hyperbolicity`.
@@ -672,7 +750,10 @@ This is the geometric justification used in the hyperbolicity permit {prf:ref}`p
 **Admission Condition:**
 
 A Thin Kernel object $\mathcal{T}$ with exponential volume growth $|B_r| \sim k^r$ (where $k > 1$) is admitted if its underlying metric space $(X, d)$ satisfies the **δ-thin triangle condition**:
-$$\delta_{\text{Gromov}}(X) < \epsilon \cdot \text{diam}(X)$$
+
+$$
+\delta_{\text{Gromov}}(X) < \epsilon \cdot \text{diam}(X)
+$$
 
 where:
 - $\delta_{\text{Gromov}}$ is defined by the 4-point supremum (Definition {prf:ref}`def-gromov-hyperbolicity`)
@@ -728,7 +809,9 @@ The Spectral Resonance Permit below captures this distinction. It is our final e
 
 For random $N \times N$ Hermitian matrices $H$ with probability measure $d\mu(H) \propto e^{-\frac{N}{2}\text{Tr}(H^2)} dH$, eigenvalues $\{\lambda_i\}$ exhibit **level repulsion**:
 
-$$P(\lambda_1, \ldots, \lambda_N) = \frac{1}{Z_N} \prod_{i<j} |\lambda_i - \lambda_j|^2 \cdot e^{-\frac{N}{2}\sum_i \lambda_i^2}$$
+$$
+P(\lambda_1, \ldots, \lambda_N) = \frac{1}{Z_N} \prod_{i<j} |\lambda_i - \lambda_j|^2 \cdot e^{-\frac{N}{2}\sum_i \lambda_i^2}
+$$
 
 **Key statistics:**
 - **Nearest-neighbor spacing:** $p(s) \sim s \cdot e^{-\frac{\pi}{4}s^2}$ (Wigner surmise; linear repulsion near $s=0$)
@@ -738,24 +821,33 @@ $$P(\lambda_1, \ldots, \lambda_N) = \frac{1}{Z_N} \prod_{i<j} |\lambda_i - \lamb
 
 Let $\rho = \frac{1}{2} + i\gamma$ denote nontrivial zeros of $\zeta(s)$, rescaled to unit mean spacing. Define the **pair correlation function**:
 
-$$R_2(r) = 1 - \left(\frac{\sin(\pi r)}{\pi r}\right)^2 + \delta(r)$$
+$$
+R_2(r) = 1 - \left(\frac{\sin(\pi r)}{\pi r}\right)^2 + \delta(r)
+$$
 
 This matches GUE eigenvalue statistics. Equivalently, normalized zero spacings $\{t_n = \gamma_n \cdot \frac{\log \gamma_n}{2\pi}\}$ satisfy:
 
-$$\lim_{T \to \infty} \frac{1}{N(T)} \sum_{\gamma_n < T} f(t_{n+1} - t_n) = \int_0^\infty f(s) \cdot p_{\text{GUE}}(s) \, ds$$
+$$
+\lim_{T \to \infty} \frac{1}{N(T)} \sum_{\gamma_n < T} f(t_{n+1} - t_n) = \int_0^\infty f(s) \cdot p_{\text{GUE}}(s) \, ds
+$$
 
 **Selberg Trace Formula:**
 
 For automorphic L-functions, the explicit formula relates primes $p^m$ to spectral data:
 
-$$\sum_{n} h(\gamma_n) = \frac{1}{2\pi} \int_{-\infty}^\infty h(r) \Phi(r) dr - \sum_{p^m} \frac{\log p}{p^{m/2}} g(m \log p) + \text{(boundary terms)}$$
+$$
+\sum_{n} h(\gamma_n) = \frac{1}{2\pi} \int_{-\infty}^\infty h(r) \Phi(r) \, dr - \sum_{p^m} \frac{\log p}{p^{m/2}} g(m \log p) + \text{(boundary terms)}
+$$
 
 where $\gamma_n$ are imaginary parts of zeros, $h$ is a test function, and $\Phi$ is the scattering phase. This is the **trace formula**: arithmetic spectrum (primes) ↔ spectral data (zeros).
 
 **The Distinguishing Feature: Spectral Rigidity**
 
 **Definition (Structure Factor):** For a point process $\{x_n\}$ (e.g., Riemann zeros, prime gaps), the **structure factor** is the Fourier transform of the pair correlation function:
-$$S(k) = \left|\sum_{n} e^{2\pi i k x_n}\right|^2$$
+
+$$
+S(k) = \left|\sum_{n} e^{2\pi i k x_n}\right|^2
+$$
 
 **Classification:**
 
@@ -771,7 +863,10 @@ $$S(k) = \left|\sum_{n} e^{2\pi i k x_n}\right|^2$$
 **The Selberg Trace Formula Connection:**
 
 For the Riemann zeta function, the **explicit formula** relates prime powers to Riemann zeros:
-$$\psi(x) = x - \sum_\rho \frac{x^\rho}{\rho} - \log(2\pi) - \frac{1}{2}\log(1 - x^{-2})$$
+
+$$
+\psi(x) = x - \sum_\rho \frac{x^\rho}{\rho} - \log(2\pi) - \frac{1}{2}\log(1 - x^{-2})
+$$
 
 This is a **trace formula**: it expresses a sum over primes (arithmetic object) as a sum over zeros (spectral object). The structure factor of the zeros encodes this duality.
 
@@ -816,7 +911,10 @@ Cryptographic functions (AES, SHA-256, RSA) are **intentionally designed as expa
 1. Each subspace $R_i \subset X$ may violate $\delta$-hyperbolicity (internal expander structure)
 2. The **quotient space** $X / \{R_1, \ldots, R_k\}$ (collapsing each $R_i$ to a single point) is $\delta$-hyperbolic
 3. Each $R_i$ has **small boundary** relative to its volume:
-   $$\frac{|\partial R_i|}{\text{Vol}(R_i)} \leq \epsilon_{\text{boundary}}$$
+
+   $$
+   \frac{|\partial R_i|}{\text{Vol}(R_i)} \leq \epsilon_{\text{boundary}}
+   $$
 
 **Geometric Interpretation:**
 
@@ -846,7 +944,9 @@ Cryptographic functions (AES, SHA-256, RSA) are **intentionally designed as expa
 
 Let $R \subset X$ be a subregion of the state space that violates $\delta$-hyperbolicity ($\delta_{\text{Gromov}}(R) > \epsilon \cdot \text{diam}(R)$, i.e., it's an expander). The region $R$ is admitted as a **black box** if:
 
-$$\frac{|\partial R|}{\text{Vol}(R)} \leq \epsilon_{\text{boundary}}$$
+$$
+\frac{|\partial R|}{\text{Vol}(R)} \leq \epsilon_{\text{boundary}}
+$$
 
 where:
 - $\partial R$ is the **boundary** (interface vertices: nodes with edges connecting $R$ to $X \setminus R$)
@@ -900,7 +1000,9 @@ If $R$ is admitted as a black box:
 
 A kernel with expander-like geometry (positive curvature, $\delta \to \infty$) that fails both CAT(0) and black box encapsulation is admitted as **arithmetic chaos** if its **structure factor** exhibits spectral rigidity:
 
-$$\exists \text{ sharp peaks: } \max_k S(k) > \eta \cdot \text{mean}(S(k))$$
+$$
+\exists \text{ sharp peaks: } \max_k S(k) > \eta \cdot \text{mean}(S(k))
+$$
 
 where:
 - $S(k) = |\sum_n e^{2\pi i k x_n}|^2$ is the structure factor (Fourier transform of pair correlation)
@@ -915,7 +1017,10 @@ The structure factor measures **long-range correlations**:
 - **Sharp peaks (Bragg):** Quasicrystalline order (hidden periodicity) → ACCEPT as arithmetic
 
 **Equivalently (Variance Test):** For GUE-like systems, check the **number variance**:
-$$\Sigma^2(L) = \langle (\text{\# zeros in interval of length } L)^2 \rangle - \langle \text{\# zeros} \rangle^2$$
+
+$$
+\Sigma^2(L) = \langle (\text{\# zeros in interval of length } L)^2 \rangle - \langle \text{\# zeros} \rangle^2
+$$
 
 - **Thermal/Poisson:** $\Sigma^2(L) \sim L$ (uncorrelated)
 - **Arithmetic/GUE:** $\Sigma^2(L) \sim \log L$ (spectral rigidity, level repulsion)
@@ -1149,7 +1254,11 @@ The beautiful thing is that all of these cases, which seem so different physical
 **Interface ID:** $\mathrm{SC}_{\partial c}$
 
 **Predicate** $P_{7c}$: Parameters remain stable under symmetry breaking:
-$$P_{7c} \equiv \|\theta_{\text{broken}} - \theta_0\| \leq C_{\text{SSB}}$$
+
+$$
+P_{7c} \equiv \|\theta_{\text{broken}} - \theta_0\| \leq C_{\text{SSB}}
+$$
+
 where $\theta_{\text{broken}}$ are the parameters in the broken-symmetry phase.
 
 **YES certificate** $K_{\mathrm{SC}_{\partial c}}^+ = (\theta_{\text{broken}}, C_{\text{SSB}}, \text{stability proof})$. Enables ActionSSB.
@@ -1168,7 +1277,11 @@ where $\theta_{\text{broken}}$ are the parameters in the broken-symmetry phase.
 **Interface ID:** $\mathrm{TB}_S$
 
 **Predicate** $P_{7d}$: Tunneling action cost is finite:
-$$P_{7d} \equiv \mathcal{A}_{\text{tunnel}} < \infty$$
+
+$$
+P_{7d} \equiv \mathcal{A}_{\text{tunnel}} < \infty
+$$
+
 where $\mathcal{A}_{\text{tunnel}}$ is the instanton action connecting the current metastable state to a lower-energy sector.
 
 **YES certificate** $K_{\mathrm{TB}_S}^+ = (\mathcal{A}_{\text{tunnel}}, \text{instanton path}, \text{finiteness proof})$. Enables ActionTunnel.
@@ -1191,7 +1304,11 @@ where $\mathcal{A}_{\text{tunnel}}$ is the instanton action connecting the curre
 **Interface ID:** $\mathrm{TB}_\pi$
 
 **Predicate** $P_8$: The topological sector is accessible (no obstruction):
-$$P_8 \equiv \tau(x) \in \mathcal{T}_{\text{accessible}}$$
+
+$$
+P_8 \equiv \tau(x) \in \mathcal{T}_{\text{accessible}}
+$$
+
 where $\tau: X \to \mathcal{T}$ is the sector label.
 
 **Semantics of NO**: "Protected" means the sector is *obstructed/inaccessible*, not "safe."
@@ -1214,7 +1331,10 @@ where $\tau: X \to \mathcal{T}$ is the sector label.
 **Interface ID:** $\mathrm{TB}_O$
 
 **Predicate** $P_9$: The topology is tame (definable in an o-minimal structure):
-$$P_9 \equiv \text{Singular locus is o-minimally definable}$$
+
+$$
+P_9 \equiv \text{Singular locus is o-minimally definable}
+$$
 
 **YES certificate** $K_{\mathrm{TB}_O}^+ = (\text{o-minimal structure}, \text{definability proof})$.
 
@@ -1236,7 +1356,10 @@ $$P_9 \equiv \text{Singular locus is o-minimally definable}$$
 **Interface ID:** $\mathrm{TB}_\rho$
 
 **Predicate** $P_{10}$: The dynamics mixes (ergodic/explores full state space):
-$$P_{10} \equiv \tau_{\text{mix}} < \infty$$
+
+$$
+P_{10} \equiv \tau_{\text{mix}} < \infty
+$$
 
 **Equivalence Note:** A positive spectral gap $\rho(\mu) > 0$ is a *sufficient* condition for finite mixing time: $\tau_{\text{mix}} \lesssim \rho^{-1} \log(1/\varepsilon)$.
 
@@ -1272,7 +1395,10 @@ The spectral gap $\rho > 0$ quantifies how fast the Second Law of Thermodynamics
 **Interface ID:** $\mathrm{Rep}_K$
 
 **Predicate** $P_{11}$: The system admits a computable finite description:
-$$P_{11} \equiv K(x) \in \mathbb{N} \text{ (Kolmogorov complexity is decidable and finite)}$$
+
+$$
+P_{11} \equiv K(x) \in \mathbb{N} \text{ (Kolmogorov complexity is decidable and finite)}
+$$
 
 **Semantic Clarification:**
 - **YES:** $K(x)$ is computable and finite → proceed to OscillateCheck
@@ -1343,7 +1469,10 @@ These boundary checks ensure that the system's interface with the external world
 **Interface ID:** $\mathrm{Bound}_\partial$
 
 **Predicate** $P_{13}$: The system has boundary interactions (is open):
-$$P_{13} \equiv \partial X \neq \varnothing \text{ or } \exists \text{ external input/output coupling}$$
+
+$$
+P_{13} \equiv \partial X \neq \varnothing \text{ or } \exists \text{ external input/output coupling}
+$$
 
 **YES certificate** $K_{\mathrm{Bound}_\partial}^+ = (\partial X, u_{\text{in}}, y_{\text{out}}, \text{coupling structure})$: Documents the boundary structure, input space, output space, and their interaction.
 
@@ -1361,7 +1490,10 @@ $$P_{13} \equiv \partial X \neq \varnothing \text{ or } \exists \text{ external 
 **Interface ID:** $\mathrm{Bound}_B$
 
 **Predicate** $P_{14}$: Input is bounded (no injection/overload):
-$$P_{14} \equiv \|u_{\text{in}}\|_{L^\infty} \leq U_{\max} \quad \text{and} \quad \int_0^T \|u_{\text{in}}(t)\|^2 dt < \infty$$
+
+$$
+P_{14} \equiv \|u_{\text{in}}\|_{L^\infty} \leq U_{\max} \quad \text{and} \quad \int_0^T \|u_{\text{in}}(t)\|^2 \, dt < \infty
+$$
 
 **YES certificate** $K_{\mathrm{Bound}_B}^+ = (U_{\max}, \text{input bound proof})$: Documents the maximum input magnitude and its boundedness proof.
 
@@ -1379,7 +1511,10 @@ $$P_{14} \equiv \|u_{\text{in}}\|_{L^\infty} \leq U_{\max} \quad \text{and} \qua
 **Interface ID:** $\mathrm{Bound}_{\Sigma}$
 
 **Predicate** $P_{15}$: Input is sufficient (no starvation):
-$$P_{15} \equiv \int_0^T \|u_{\text{in}}(t)\| dt \geq U_{\min}(T) \quad \text{for required supply threshold } U_{\min}$$
+
+$$
+P_{15} \equiv \int_0^T \|u_{\text{in}}(t)\| \, dt \geq U_{\min}(T) \quad \text{for required supply threshold } U_{\min}
+$$
 
 **YES certificate** $K_{\mathrm{Bound}_{\Sigma}}^+ = (U_{\min}, \int u_{\text{in}}, \text{supply sufficiency proof})$: Documents the required supply threshold and that actual supply meets or exceeds it.
 
@@ -1397,7 +1532,11 @@ $$P_{15} \equiv \int_0^T \|u_{\text{in}}(t)\| dt \geq U_{\min}(T) \quad \text{fo
 **Interface ID:** $\mathrm{GC}_T$
 
 **Predicate** $P_{16}$: System is aligned (proxy objective matches true objective):
-$$P_{16} \equiv d(\mathcal{L}_{\text{proxy}}, \mathcal{L}_{\text{true}}) \leq \varepsilon_{\text{align}}$$
+
+$$
+P_{16} \equiv d(\mathcal{L}_{\text{proxy}}, \mathcal{L}_{\text{true}}) \leq \varepsilon_{\text{align}}
+$$
+
 where $\mathcal{L}_{\text{proxy}}$ is the optimized/measured objective and $\mathcal{L}_{\text{true}}$ is the intended objective.
 
 **YES certificate** $K_{\mathrm{GC}_T}^+ = (\varepsilon_{\text{align}}, d(\mathcal{L}_{\text{proxy}}, \mathcal{L}_{\text{true}}), \text{alignment bound proof})$: Documents the alignment tolerance and that the proxy-true distance is within tolerance.
@@ -1442,7 +1581,10 @@ The Lock is where all the information from the entire Sieve comes together. It i
 **Sieve Signature:**
 - **Weakest Precondition:** Full $\Gamma$ (complete certificate chain from all prior nodes)
 - **Barrier Predicate (Blocked Condition):**
-  $$\mathrm{Hom}_{\mathbf{Hypo}}(\mathbb{H}_{\mathrm{bad}}, \mathcal{H}) = \varnothing$$
+
+  $$
+  \mathrm{Hom}_{\mathbf{Hypo}}(\mathbb{H}_{\mathrm{bad}}, \mathcal{H}) = \varnothing
+  $$
 
 **Natural Language Logic:**
 "Is there a categorical obstruction to the bad pattern?"
