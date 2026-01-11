@@ -137,7 +137,7 @@
 
     /**
      * Apply volume-header class to volume header captions in the sidebar
-     * Volume headers are identified by containing "Vol." in their text
+     * Volume headers are identified by containing "Vol." or "Supplementary" in their text
      */
     function applyVolumeHeaderStyles() {
         // Find all caption elements in the sidebar
@@ -145,8 +145,8 @@
 
         captions.forEach(function(caption) {
             const text = caption.textContent || '';
-            // Check if this is a volume header (contains "Vol." or starts with "━━")
-            if (text.includes('Vol.') || text.startsWith('━━')) {
+            // Check if this is a volume header (contains "Vol." or "Supplementary")
+            if (text.includes('Vol.') || text.startsWith('Supplementary')) {
                 caption.classList.add('volume-header');
                 // Also add class to parent for potential styling
                 const parent = caption.closest('.nav-item, li');

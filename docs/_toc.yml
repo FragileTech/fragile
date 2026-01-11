@@ -5,10 +5,7 @@ parts:
   # VOLUME 1: FRAGILE MECHANICS
   # ══════════════════════════════════════════════════════════════════════════════
 
-  - caption: "━━ Vol. 1: Fragile Mechanics ━━"
-    chapters: []
-
-  - caption: Part I - Foundations
+  - caption: "Vol. 1 · Part I - Foundations"
     chapters:
     - file: source/1_agent/01_foundations/01_definitions
     - file: source/1_agent/01_foundations/02_control_loop
@@ -82,10 +79,7 @@ parts:
   # VOLUME 2: THE HYPOSTRUCTURE FORMALISM
   # ══════════════════════════════════════════════════════════════════════════════
 
-  - caption: "━━ Vol. 2: Hypostructure ━━"
-    chapters: []
-
-  - caption: "Introduction"
+  - caption: "Vol. 2 · Introduction"
     chapters:
     - file: source/2_hypostructure/intro_hypostructure
 
@@ -153,9 +147,6 @@ parts:
   # SUPPLEMENTARY
   # ══════════════════════════════════════════════════════════════════════════════
 
-  - caption: "━━ Supplementary ━━"
-    chapters: []
-
-  - caption: "Fractal Gas"
+  - caption: "Supplementary · Fractal Gas"
     chapters:
     - file: source/3_fractal_gas/03_fractal_gas_latent
