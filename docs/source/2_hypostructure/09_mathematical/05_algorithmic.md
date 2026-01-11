@@ -39,7 +39,7 @@ satisfying the **cohesion axioms**:
 2. $\Pi$ preserves finite products
 3. **(Pieces have points)** The canonical comparison $\Pi \to \Gamma$ is an epimorphism
 
-**Literature:** {cite}`LawvereCohesion`, {cite}`SchreiberCohesive`
+**Literature:** {cite}`Lawvere69`; {cite}`SchreiberCohesive`
 :::
 
 :::{prf:definition} The Five Computational Modalities
@@ -106,7 +106,7 @@ where the coend is taken over modal factorizations.
 
 **Consequence for Algorithms:** Every algorithmic morphism $\mathcal{A}: \mathcal{X} \to \mathcal{X}$ achieving polynomial compression must factor through (at least) one of the five modalities. An algorithm that cannot factor through any modality has no structure to exploit and reduces to brute force search.
 
-**Literature:** {cite}`SchreiberCohesive` Section 3; {cite}`SchreiberShulman14`
+**Literature:** {cite}`SchreiberCohesive` Section 3; {cite}`Schreiber13`
 :::
 
 :::{prf:corollary} Exhaustive Modal Decomposition
@@ -462,7 +462,7 @@ $((\sharp\text{-status}, \int\text{-status}, \flat\text{-status}, \ast\text{-sta
 
 By the Sieve-Thermodynamic Correspondence ({prf:ref}`thm-sieve-thermo-correspondence`), polynomial-time convergence requires **Kolmogorov complexity reduction**: the algorithm must decrease $K(x_t)$ ({prf:ref}`def-kolmogorov-complexity`) from the initial instance complexity $K(\mathcal{X}) \sim N$ to $O(\log N)$ (solution encoding) in $\text{poly}(N)$ steps.
 
-By the **Levin-Schnorr Theorem** {cite}`Levin73b,Schnorr73`, uniform random search on an amorphous (structureless) space achieves expected complexity reduction:
+By the **Levin-Schnorr Theorem** {cite}`Levin73b; Schnorr73`, uniform random search on an amorphous (structureless) space achieves expected complexity reduction:
 $$\mathbb{E}[\Delta K] = O(1/|\mathcal{X}|) = O(2^{-N})$$
 
 Therefore, absent structural exploitation, hitting time scales as $\Omega(2^N)$. This establishes the drift requirement: any $\mathcal{A} \in P$ must achieve $K_{t+1} \leq K_t - \Omega(1)$ per step via a modal contraction.

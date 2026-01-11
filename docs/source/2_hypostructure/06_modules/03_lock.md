@@ -277,7 +277,7 @@ $$K_{\mathrm{Cap}_H}^+ \wedge K_{\mathrm{TB}_\pi}^+ \wedge (I_{\mathrm{bad}} > C
 
 **Automation**: Via mutual information estimation / channel capacity computation
 
-**Literature**: Data Processing Inequality {cite}`CoverThomas06`; Channel Capacity {cite}`Shannon48`.
+**Literature:** Data Processing Inequality {cite}`CoverThomas06`; Channel Capacity {cite}`Shannon48`.
 
 :::
 
@@ -456,7 +456,7 @@ $$K_{\mathrm{Rep}_K}^+ \wedge K_{\mathrm{SC}_\lambda}^+ \wedge \left(K_{\mathrm{
 
 **Certificate:** $K_{\mathrm{E12}}^{\text{hypersurf}} = (\delta, f, \text{irreducibility witness})$
 
-**Literature:** Irreducibility and defining equations {cite}`Hartshorne77`; Nullstellensatz {cite}`CoxLittleOShea15`
+**Literature:** Irreducibility and defining equations {cite}`Hartshorne77`; Nullstellensatz {cite}`CoxLittleOShea15`.
 
 ---
 
@@ -469,7 +469,7 @@ $$K_{\mathrm{Rep}_K}^+ \wedge K_{\mathrm{SC}_\lambda}^+ \wedge \left(K_{\mathrm{
 
 **Certificate:** $K_{\mathrm{E12}}^{\text{c.i.}} = (\deg(V), k, (d_1, \ldots, d_k))$
 
-**Literature:** Bézout's theorem {cite}`Fulton84`; complete intersections {cite}`EisenbudHarris16`
+**Literature:** Bézout's theorem {cite}`Fulton84`; complete intersections {cite}`EisenbudHarris16`.
 
 ---
 
@@ -482,7 +482,7 @@ $$K_{\mathrm{Rep}_K}^+ \wedge K_{\mathrm{SC}_\lambda}^+ \wedge \left(K_{\mathrm{
 
 **Certificate:** $K_{\mathrm{E12}}^{\text{morph}} = (\delta, d, m_{\min}, \text{Bézout witness})$
 
-**Literature:** Degrees of morphisms {cite}`Lazarsfeld04`; projection formulas {cite}`Fulton84`
+**Literature:** Degrees of morphisms {cite}`Lazarsfeld04`; projection formulas {cite}`Fulton84`.
 
 ---
 

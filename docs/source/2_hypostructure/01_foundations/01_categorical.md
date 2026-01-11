@@ -426,7 +426,7 @@ We establish the sharp phase boundary in four steps.
 $$K(L_n) \leq |M| + O(\log n) = O(\log n)$$
 The $O(\log n)$ term encodes $n$. Since $L$ is decidable, Axiom R holds (the decider serves as recovery operator). Sieve verdict: **REGULAR** with $K_{\text{Crystal}}^+$.
 
-**Step 2 (Gas Regime).** Let $L \subseteq \mathbb{N}$ be Martin-Löf random. By the Levin-Schnorr Theorem {cite}`Levin73b,Schnorr73`:
+**Step 2 (Gas Regime).** Let $L \subseteq \mathbb{N}$ be Martin-Löf random. By the Levin-Schnorr Theorem {cite}`Levin73b`; {cite}`Schnorr73`:
 $$K(L_n) \geq n - O(1)$$
 No computable predictor can anticipate the membership of $L$. Axiom R fails absolutely—no recovery operator exists. Sieve verdict: **HORIZON** with $K_{\text{Gas}}^{\text{blk}}$.
 
