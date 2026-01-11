@@ -686,5 +686,3 @@ The beauty of this design is that it leverages decades of mathematics: topology,
 
 This is not a heuristic. When the Lock produces a blocked certificate, you have a proof. The bad thing cannot happen because the mathematics forbids it.
 :::
-
----
