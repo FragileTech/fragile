@@ -7394,7 +7394,13 @@ where $f^{abc}$ are the structure constants of $SU(N_f)$, defined by $[\lambda^a
 
 - **Infrared Confinement:** At large distances (low RG scale, coarse representations), the effective coupling grows. Features cannot propagate independently; they form bound states (concepts $K$).
 
-*Remark:* The asymptotic freedom property holds for all $SU(N_f)$ gauge theories with $N_f \geq 2$. The confinement scale depends on $N_f$ but the qualitative behavior is universal.
+*Remark:* The sign of the beta function is not universal for all gauge theories; it depends on the matter
+content and representations coupled to the field. In the Fragile Mechanics binding sector postulated
+here, the gauge field couples to the cognitive spinor (fundamental "color" index) while the ontological
+scalar is color-neutral as written. With only $O(1)$ fundamental fermion species, the one-loop
+coefficient is in the asymptotically-free regime, so $\beta(g_s) < 0$ at weak coupling. Confinement/binding
+at coarse scales is then justified by the Area-Law/observability result (Theorem {prf:ref}`thm-fission-inhibition`
+/ Section 33), rather than asserted as a universal consequence of $SU(N_f)$ alone.
 
 **Step 4.** From Theorem {prf:ref}`thm-fission-inhibition`, the energy cost of separating features grows linearly with distance (Area Law, {ref}`Section 33 <sec-causal-information-bound>`). Attempting to isolate a feature instead triggers Ontological Fission (Definition {prf:ref}`def-query-fission`), creating new concept pairs.
 
