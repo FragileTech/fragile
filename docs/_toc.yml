@@ -79,7 +79,7 @@ parts:
   # VOLUME 2: THE HYPOSTRUCTURE FORMALISM
   # ══════════════════════════════════════════════════════════════════════════════
 
-  - caption: "Vol. 2 · Introduction"
+  - caption: "Vol. 2 · Hypostructure"
     chapters:
     - file: source/2_hypostructure/intro_hypostructure
 
