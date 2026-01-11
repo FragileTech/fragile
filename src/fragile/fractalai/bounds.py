@@ -42,13 +42,13 @@ class Bounds:
             return TorchBounds(high, low, *args, **kwargs)
         if isinstance(high, numpy.ndarray) or isinstance(low, numpy.ndarray):
             return NumpyBounds(high, low, *args, **kwargs)
-        if isinstance(high, torch.Tensor) or isinstance(low, torch.Tensor | int | float):
+        if isinstance(high, torch.Tensor) or isinstance(low, torch.Tensor):
             return TorchBounds(high, low, *args, **kwargs)
         msg = "Inputs must be either numpy arrays or torch tensors."
         raise TypeError(msg)
 
     @classmethod
-    def from_tuples(cls, bounds: Iterable[tuple]) -> "NumpyBounds | TorchBounds":
+    def from_tuples(cls, bounds: Iterable[tuple]) -> "Bounds":
         """Instantiate a :class:`Bounds` from a collection of tuples containing \
         the higher and lower bounds for every dimension as a tuple.
 
@@ -60,11 +60,11 @@ class Bounds:
                 :class:`Bounds` instance.
 
         Examples:
-            >>> intervals = ((-1., 1.), (-2., 1.), (2, 3))
+            >>> intervals = ((-1, 1), (-2, 1), (2, 3))
             >>> bounds = Bounds.from_tuples(intervals)
             >>> print(bounds)
-            TorchBounds shape torch.float32 dtype torch.Size([3]) \
-low tensor([-1., -2.,  2.]) high tensor([1., 1., 3.])
+            Bounds shape torch.float32 dtype torch.Size([3]) \
+            low tensor([-1., -2.,  2.]) high tensor([1., 1., 3.])
 
         """
         low, high = [], []
@@ -77,42 +77,6 @@ low tensor([-1., -2.,  2.]) high tensor([1., 1., 3.])
     def from_space(cls, space: "gym.spaces.box.Box") -> "Bounds":  # noqa: F821
         """Initialize a :class:`Bounds` from a :class:`Box` gym action space."""
         return Bounds(low=space.low, high=space.high, dtype=space.dtype)
-
-    @classmethod
-    def from_array(cls, x: Tensor | numpy.ndarray, scale: float = 1.0) -> "Bounds":
-        """Instantiate a bounds compatible for bounding the given array. It also allows to set a \
-        margin for the high and low values.
-
-        The value of the high and low will be proportional to the maximum and minimum values of \
-        the array. Scale defines the proportion to make the bounds bigger and smaller. For \
-        example, if scale is 1.1 the higher bound will be 10% higher, and the lower bounds 10% \
-        smaller. If scale is 0.9 the higher bound will be 10% lower, and the lower bound 10% \
-        higher. If scale is one, `high` and `low` will be equal to the maximum and minimum values \
-        of the array.
-
-        Args:
-            x: Numpy array used to initialize the bounds.
-            scale: Value representing the tolerance in percentage from the current maximum and \
-            minimum values of the array.
-
-        Returns:
-            :class:`Bounds` instance.
-
-        Examples:
-            >>> import torch
-            >>> x = torch.ones((3, 3))
-            >>> x[1:-1, 1:-1] = -5
-            >>> bounds = Bounds.from_array(x, scale=1.5)
-            >>> print(bounds)
-            TorchBounds shape torch.float32 dtype torch.Size([3]) \
-low tensor([ 0.5000, -7.5000,  0.5000]) high tensor([1.5000, 1.5000, 1.5000])
-
-        """
-        return (
-            NumpyBounds.from_array(x, scale=scale)
-            if isinstance(x, numpy.ndarray)
-            else TorchBounds.from_array(x, scale=scale)
-        )
 
 
 class TorchBounds:
@@ -156,16 +120,16 @@ class TorchBounds:
             >>> high, low = torch.ones(3, dtype=torch.float), -1 * torch.ones(3, dtype=torch.int)
             >>> bounds = Bounds(high=high, low=low)
             >>> print(bounds)
-            TorchBounds shape torch.float32 dtype torch.Size([3]) \
-low tensor([-1, -1, -1], dtype=torch.int32) high tensor([1., 1., 1.])
+            Bounds shape torch.float32 dtype torch.Size([3]) \
+            low tensor([-1, -1, -1], dtype=torch.int32) high tensor([1., 1., 1.])
 
             Initializing :class:`Bounds` using  typing_.Scalars:
 
             >>> high, low, shape = 4, 2.1, (5,)
             >>> bounds = Bounds(high=high, low=low, shape=shape)
             >>> print(bounds)
-            TorchBounds shape torch.float32 dtype torch.Size([5]) low \
-tensor([2.1000, 2.1000, 2.1000, 2.1000, 2.1000]) high tensor([4., 4., 4., 4., 4.])
+            Bounds shape torch.float32 dtype torch.Size([5]) low  \
+            tensor([2.1000, 2.1000, 2.1000, 2.1000, 2.1000]) high tensor([4., 4., 4., 4., 4.])
 
         """
         if dtype is not None:
@@ -183,10 +147,10 @@ tensor([2.1000, 2.1000, 2.1000, 2.1000, 2.1000]) high tensor([4., 4., 4., 4., 4.
             isinstance(high, torch.Tensor) and high.ndim == 0
         ):
             high = (
-                torch.tensor(high) if isinstance(high, _Iterable) else (torch.ones(shape) * high)
-            )
+                torch.tensor(high) if isinstance(high, _Iterable) else torch.ones(shape)
+            ) * high
         if not isinstance(low, torch.Tensor) or (isinstance(low, torch.Tensor) and low.ndim == 0):
-            low = torch.tensor(low) if isinstance(low, _Iterable) else (torch.ones(shape) * low)
+            low = torch.tensor(low) if isinstance(low, _Iterable) else torch.ones(shape) * low
         self.high = high.to(dtype=dtype, device=device)
         self.low = low.to(dtype=dtype, device=device)
         self._bounds_dist = self.high - self.low
@@ -235,11 +199,11 @@ tensor([2.1000, 2.1000, 2.1000, 2.1000, 2.1000]) high tensor([4., 4., 4., 4., 4.
                 :class:`Bounds` instance.
 
         Examples:
-            >>> intervals = ((-1., 1.), (-2., 1.), (2., 3.))
+            >>> intervals = ((-1, 1), (-2, 1), (2, 3))
             >>> bounds = Bounds.from_tuples(intervals)
             >>> print(bounds)
-            TorchBounds shape torch.float32 dtype torch.Size([3]) \
-low tensor([-1., -2.,  2.]) high tensor([1., 1., 3.])
+            Bounds shape torch.float32 dtype torch.Size([3]) \
+            low tensor([-1., -2.,  2.]) high tensor([1., 1., 3.])
 
         """
         low, high = [], []
@@ -318,8 +282,8 @@ low tensor([-1., -2.,  2.]) high tensor([1., 1., 3.])
             >>> x[1:-1, 1:-1] = -5
             >>> bounds = Bounds.from_array(x, scale=1.5)
             >>> print(bounds)
-            TorchBounds shape torch.float32 dtype torch.Size([3]) \
-low tensor([ 0.5000, -7.5000,  0.5000]) high tensor([1.5000, 1.5000, 1.5000])
+            Bounds shape torch.float32 dtype torch.Size([3]) \
+            low tensor([ 0.5000, -7.5000,  0.5000]) high tensor([1.5000, 1.5000, 1.5000])
 
         """
         xmin, xmax = torch.min(x, dim=0).values, torch.max(x, dim=0).values
@@ -339,51 +303,172 @@ low tensor([ 0.5000, -7.5000,  0.5000]) high tensor([1.5000, 1.5000, 1.5000])
         return torch.clamp(x, self.low.to(x), self.high.to(x))
 
     def pbc(self, x: Tensor) -> Tensor:
-        """Calculate periodic boundary conditions of the target array to fall inside \
-        the bounds (closed interval).
+        """Apply periodic boundary conditions to wrap coordinates into bounds.
+
+        Uses the mathematical modulo operation to map any position to its
+        equivalent position within [low, high] in each dimension. The formula is:
+
+            x_wrapped = low + ((x - low) mod period)
+
+        where period = high - low and mod is the mathematical modulo operation
+        (always returns value in [0, period)).
+
+        This correctly handles:
+        - Negative coordinates (x < low)
+        - Large excursions (x >> high or x << low)
+        - Arbitrary bounds (not just [0, period])
+        - Batch operations
 
         Args:
-            x: Tensor to apply the periodic boundary conditions.
+            x: Positions tensor of shape [N, d] or [d]
 
         Returns:
-            Periodic boundary condition so all the values are inside the defined bounds.
+            Tensor of same shape as x with all coordinates wrapped into [low, high].
+
+        Examples:
+            >>> import torch
+            >>> bounds = TorchBounds(
+            ...     low=torch.tensor([0.0, 0.0]), high=torch.tensor([1.0, 1.0])
+            ... )
+            >>> x = torch.tensor([[1.5, -0.3], [0.5, 0.5], [2.7, -1.2]])
+            >>> bounds.pbc(x)
+            tensor([[0.5000, 0.7000],
+                    [0.5000, 0.5000],
+                    [0.7000, 0.8000]])
+
+            >>> # Works with arbitrary bounds
+            >>> bounds2 = TorchBounds(
+            ...     low=torch.tensor([1.0, 1.0]), high=torch.tensor([5.0, 5.0])
+            ... )
+            >>> x2 = torch.tensor([[6.0, 0.0], [1.0, 5.0]])
+            >>> bounds2.pbc(x2)
+            tensor([[2.0000, 4.0000],
+                    [1.0000, 1.0000]])
 
         """
         x = x.to(self.low)
-        x = where(x < self.high, x, torch.fmod(x, self.high) + self.low)
-        return where(x > self.low, x, self.high - torch.fmod(x, self.low))
+        period = self._bounds_dist  # high - low
+        x_centered = x - self.low
+        # Use % operator (not torch.fmod) for mathematical modulo
+        x_wrapped = x_centered % period
+        return self.low + x_wrapped
 
     def pbc_distance(self, x: Tensor, y: Tensor) -> Tensor:
-        """Calculate periodic boundary conditions of the target array to fall inside \
-        the bounds (closed interval).
+        """Calculate distance between points accounting for periodic boundaries.
+
+        For each dimension, computes the minimum distance considering wrapping.
+        If the direct distance is greater than half the period, uses the wrapped
+        distance (going around the other way) instead.
+
+        Formula: distance = min(|x - y|, period - |x - y|)
 
         Args:
-            x: Tensor to apply the periodic boundary conditions.
-            y: Tensor containing the frontier of the periodic boundary condition.
+            x: First positions tensor of shape [N, d]
+            y: Second positions tensor of shape [N, d]
 
         Returns:
-            Periodic boundary condition so all the values are inside the defined bounds.
+            Per-coordinate distances of shape [N, d]. Each element is the minimum
+            distance in that dimension considering periodic wrapping.
+
+        Examples:
+            >>> import torch
+            >>> bounds = TorchBounds(
+            ...     low=torch.tensor([0.0, 0.0]), high=torch.tensor([1.0, 1.0])
+            ... )
+            >>> x = torch.tensor([[0.1, 0.5]])
+            >>> y = torch.tensor([[0.9, 0.5]])
+            >>> bounds.pbc_distance(x, y)
+            tensor([[0.2000, 0.0000]])  # Wraps around: min(0.8, 0.2) = 0.2
+
+            >>> x2 = torch.tensor([[0.0, 0.0]])
+            >>> y2 = torch.tensor([[0.6, 0.4]])
+            >>> bounds.pbc_distance(x2, y2)
+            tensor([[0.4000, 0.4000]])  # Direct: min(0.6, 0.4) and min(0.4, 0.6)
 
         """
         x, y = x.to(self.low), y.to(self.low)
         delta = torch.abs(x - y)
-        return where(x > 0.5 * self._bounds_dist, delta - self._bounds_dist, delta)
+        # If delta > period/2, use wrapped distance (period - delta)
+        return where(delta > 0.5 * self._bounds_dist, self._bounds_dist - delta, delta)
 
-    def contains(self, x: Tensor) -> Tensor | bool:
-        """Check if the rows of the target array have all their coordinates inside \
-        specified bounds.
+    def apply_pbc_to_out_of_bounds(self, x: Tensor) -> Tensor:
+        """Apply PBC only to particles that are currently out of bounds.
 
-        If the array is one dimensional it will return a boolean, otherwise a vector of booleans.
+        This is more efficient than always applying PBC if most particles
+        are already within bounds. Also useful for debugging and testing,
+        as it clearly identifies which particles needed correction.
 
         Args:
-            x: Array to be checked against the bounds.
+            x: Positions tensor of shape [N, d] or [d]
 
         Returns:
-            Numpy array of booleans indicating if a row lies inside the bounds.
+            Tensor of same shape with PBC applied only to out-of-bounds particles.
+            Particles already in bounds are unchanged.
+
+        Examples:
+            >>> import torch
+            >>> bounds = TorchBounds(
+            ...     low=torch.tensor([0.0, 0.0]), high=torch.tensor([1.0, 1.0])
+            ... )
+            >>> x = torch.tensor([[0.5, 0.5], [1.5, 0.5], [0.5, -0.1]])
+            >>> x_corrected = bounds.apply_pbc_to_out_of_bounds(x)
+            >>> print(x_corrected)
+            tensor([[0.5000, 0.5000],
+                    [0.5000, 0.5000],
+                    [0.5000, 0.9000]])
 
         """
-        match = self.clip(x) == x
-        return match.all(1).flatten() if len(match.shape) > 1 else match.all()
+        if x.ndim == 1:
+            # Single particle case
+            if self.is_out_of_bounds(x):
+                return self.pbc(x)
+            return x
+
+        # Batch case
+        out_mask = self.is_out_of_bounds(x)
+        # Handle edge case where is_out_of_bounds returns bool (shouldn't happen for ndim > 1)
+        if isinstance(out_mask, bool):
+            return self.pbc(x) if out_mask else x
+        # Standard case: out_mask is a tensor
+        if not out_mask.any():
+            return x  # All particles in bounds, no work needed
+
+        x_corrected = x.clone()
+        x_corrected[out_mask] = self.pbc(x[out_mask])
+        return x_corrected
+
+    def contains(self, x: Tensor) -> Tensor | bool:
+        """Check if particles have all their coordinates inside the bounds [low, high].
+
+        A particle is considered in bounds if ALL of its coordinates satisfy
+        low <= x <= high. This is the logical opposite of `is_out_of_bounds`.
+
+        More efficient than the previous implementation (uses direct comparison
+        instead of clipping).
+
+        Args:
+            x: Positions tensor of shape [N, d] or [d]
+
+        Returns:
+            Boolean tensor of shape [N] for batch inputs, or scalar bool for single particle.
+            True indicates all coordinates of the particle are within [low, high].
+
+        Examples:
+            >>> import torch
+            >>> bounds = TorchBounds(
+            ...     low=torch.tensor([0.0, 0.0]), high=torch.tensor([1.0, 1.0])
+            ... )
+            >>> x = torch.tensor([[0.5, 0.5], [1.5, 0.5], [0.5, 0.5]])
+            >>> bounds.contains(x)
+            tensor([ True, False,  True])
+
+            >>> x_single = torch.tensor([0.5, 0.5])
+            >>> bounds.contains(x_single)
+            tensor(True)
+
+        """
+        in_bounds = (x >= self.low) & (x <= self.high)
+        return in_bounds.all(dim=-1) if x.ndim > 1 else in_bounds.all()
 
     def safe_margin(
         self,
@@ -458,6 +543,36 @@ low tensor([ 0.5000, -7.5000,  0.5000]) high tensor([1.5000, 1.5000, 1.5000])
         match = self.clip(x) == x.to(self.low)
         return match.all(1).flatten() if len(match.shape) > 1 else match.all()
 
+    def is_out_of_bounds(self, x: Tensor) -> Tensor | bool:
+        """Check which particles have any coordinate outside the bounds [low, high].
+
+        A particle is considered out of bounds if ANY of its coordinates violates
+        the bounds in either direction (below low or above high).
+
+        Args:
+            x: Positions tensor of shape [N, d] or [d]
+
+        Returns:
+            Boolean tensor of shape [N] for batch inputs, or scalar bool for single particle.
+            True indicates the particle has at least one coordinate outside [low, high].
+
+        Examples:
+            >>> import torch
+            >>> bounds = TorchBounds(
+            ...     low=torch.tensor([0.0, 0.0]), high=torch.tensor([1.0, 1.0])
+            ... )
+            >>> x = torch.tensor([[0.5, 0.5], [1.5, 0.5], [0.5, -0.1]])
+            >>> bounds.is_out_of_bounds(x)
+            tensor([False,  True,  True])
+
+            >>> x_single = torch.tensor([0.5, 1.5])
+            >>> bounds.is_out_of_bounds(x_single)
+            tensor(True)
+
+        """
+        violations = (x < self.low) | (x > self.high)
+        return violations.any(dim=-1) if x.ndim > 1 else violations.any()
+
     def sample(self, num_samples: int = 1) -> Tensor:
         """Sample a batch of random values within the bounds.
 
@@ -508,17 +623,20 @@ class NumpyBounds:
         Examples:
             Initializing :class:`Bounds` using  numpy arrays:
 
-            >>> high, low = np.ones(3, dtype=np.float32), -1 * np.ones(3, dtype=np.int32)
+            >>> import torch
+            >>> high, low = torch.ones(3, dtype=torch.float), -1 * torch.ones(3, dtype=torch.int)
             >>> bounds = Bounds(high=high, low=low)
             >>> print(bounds)
-            NumpyBounds shape float32 dtype (3,) low [-1. -1. -1.] high [1. 1. 1.]
+            Bounds shape torch.float32 dtype torch.Size([3]) \
+            low tensor([-1, -1, -1], dtype=torch.int32) high tensor([1., 1., 1.])
 
             Initializing :class:`Bounds` using  typing_.Scalars:
 
             >>> high, low, shape = 4, 2.1, (5,)
-            >>> bounds = NumpyBounds(high=high, low=low, shape=shape)
+            >>> bounds = Bounds(high=high, low=low, shape=shape)
             >>> print(bounds)
-            NumpyBounds shape float64 dtype (5,) low [2.1 2.1 2.1 2.1 2.1] high [4. 4. 4. 4. 4.]
+            Bounds shape torch.float32 dtype torch.Size([5]) low  \
+            tensor([2.1000, 2.1000, 2.1000, 2.1000, 2.1000]) high tensor([4., 4., 4., 4., 4.])
 
         """
         # Infer shape if not specified
@@ -570,37 +688,37 @@ class NumpyBounds:
         return self.high.shape
 
     @classmethod
-    def from_tuples(cls, bounds: Iterable[tuple], dtype=numpy.float32) -> "NumpyBounds":
+    def from_tuples(cls, bounds: Iterable[tuple]) -> "Bounds":
         """Instantiate a :class:`Bounds` from a collection of tuples containing \
         the higher and lower bounds for every dimension as a tuple.
 
         Args:
             bounds: Iterable that returns tuples containing the higher and lower \
                     bound for every dimension of the target bounds.
-            dtype: Data type of the array that will be bounded. Default is numpy.float32.
 
         Returns:
                 :class:`Bounds` instance.
 
         Examples:
-            >>> intervals = ((-1., 1.), (-2., 1.), (2, 3))
-            >>> bounds = NumpyBounds.from_tuples(intervals)
+            >>> intervals = ((-1, 1), (-2, 1), (2, 3))
+            >>> bounds = Bounds.from_tuples(intervals)
             >>> print(bounds)
-            NumpyBounds shape float32 dtype (3,) low [-1. -2.  2.] high [1. 1. 3.]
+            Bounds shape torch.float32 dtype torch.Size([3]) \
+            low tensor([-1., -2.,  2.]) high tensor([1., 1., 3.])
 
         """
         low, high = [], []
         for lo, hi in bounds:
             low.append(lo)
             high.append(hi)
-        low = numpy.array(low, dtype=dtype)
-        high = numpy.array(high, dtype=dtype)
+        low, high = numpy.array(low, dtype=numpy.float32)
+        high = numpy.array(high, dtype=numpy.float32)
         return Bounds(low=low, high=high)
 
     @classmethod
-    def from_space(cls, space: "gym.spaces.box.Box") -> "NumpyBounds":  # noqa: F821
+    def from_space(cls, space: "gym.spaces.box.Box") -> "Bounds":  # noqa: F821
         """Initialize a :class:`Bounds` from a :class:`Box` gym action space."""
-        return NumpyBounds(low=space.low, high=space.high, dtype=space.dtype)
+        return Bounds(low=space.low, high=space.high, dtype=space.dtype)
 
     @staticmethod
     def get_scaled_intervals(
@@ -640,7 +758,7 @@ class NumpyBounds:
         return xmin_scaled, xmax_scaled
 
     @classmethod
-    def from_array(cls, x: Tensor | numpy.ndarray, scale: float = 1.0) -> "NumpyBounds":
+    def from_array(cls, x: Tensor, scale: float = 1.0) -> "Bounds":
         """Instantiate a bounds compatible for bounding the given array. It also allows to set a \
         margin for the high and low values.
 
@@ -660,15 +778,15 @@ class NumpyBounds:
             :class:`Bounds` instance.
 
         Examples:
-            >>> x = np.ones((3, 3))
+            >>> import torch
+            >>> x = torch.ones((3, 3))
             >>> x[1:-1, 1:-1] = -5
             >>> bounds = Bounds.from_array(x, scale=1.5)
             >>> print(bounds)
-            NumpyBounds shape float64 dtype (3,) low [ 0.5 -7.5  0.5] high [1.5 1.5 1.5]
+            Bounds shape torch.float32 dtype torch.Size([3]) \
+            low tensor([ 0.5000, -7.5000,  0.5000]) high tensor([1.5000, 1.5000, 1.5000])
 
         """
-        if isinstance(x, Tensor):
-            x = x.numpy(force=True)
         xmin, xmax = numpy.min(x, axis=0), numpy.max(x, axis=0)
         xmin_scaled, xmax_scaled = cls.get_scaled_intervals(xmin, xmax, scale)
         return Bounds(low=xmin_scaled, high=xmax_scaled)
@@ -701,20 +819,27 @@ class NumpyBounds:
         return numpy.where(x > self.low, x, self.high - numpy.mod(x, self.low))
 
     def pbc_distance(self, x: numpy.ndarray, y: numpy.ndarray) -> numpy.ndarray:
-        """Calculate periodic boundary conditions of the target array to fall inside \
-        the bounds (closed interval).
+        """Calculate distance between points accounting for periodic boundaries.
+
+        For each dimension, computes the minimum distance considering wrapping.
+        If the direct distance is greater than half the period, uses the wrapped
+        distance (going around the other way) instead.
+
+        Formula: distance = min(|x - y|, period - |x - y|)
 
         Args:
-            x: Tensor to apply the periodic boundary conditions.
-            y: Tensor containing the frontier of the periodic boundary condition.
+            x: First positions array of shape [N, d]
+            y: Second positions array of shape [N, d]
 
         Returns:
-            Periodic boundary condition so all the values are inside the defined bounds.
+            Per-coordinate distances of shape [N, d]. Each element is the minimum
+            distance in that dimension considering periodic wrapping.
 
         """
-        x, y = einops.asnumpy(x).astype(self.low), einops.asnumpy(y).astype(self.low)
+        x, y = einops.asnumpy(x).astype(self.low.dtype), einops.asnumpy(y).astype(self.low.dtype)
         delta = numpy.abs(x - y)
-        return numpy.where(x > 0.5 * self._bounds_dist, delta - self._bounds_dist, delta)
+        # If delta > period/2, use wrapped distance (period - delta)
+        return numpy.where(delta > 0.5 * self._bounds_dist, self._bounds_dist - delta, delta)
 
     def contains(self, x: numpy.ndarray) -> numpy.ndarray | bool:
         """Check if the rows of the target array have all their coordinates inside \
@@ -737,7 +862,7 @@ class NumpyBounds:
         low: numpy.ndarray | Scalar = None,
         high: numpy.ndarray | Scalar | None = None,
         scale: float = 1.0,
-    ) -> "NumpyBounds":
+    ) -> "Bounds":
         """Initialize a new :class:`Bounds` with its bounds increased o decreased \
         by a scale factor.
 
@@ -773,12 +898,11 @@ class NumpyBounds:
               (xn_low, xn_high))
 
         Examples
-            >>> array = np.array([1, 2, 5])
+            >>> import torch
+            >>> array = torch.tensor([1, 2, 5])
             >>> bounds = Bounds(high=array, low=-array)
             >>> print(bounds.to_tuples())
-            ((np.float64(-1.0), np.float64(1.0)), (np.float64(-2.0), np.float64(2.0)), \
-(np.float64(-5.0), np.float64(5.0)))
-
+            ((tensor(-1), tensor(1)), (tensor(-2), tensor(2)), (tensor(-5), tensor(5)))
 
         """
         return tuple(zip(self.low, self.high))
@@ -817,5 +941,5 @@ class NumpyBounds:
 
         """
         shape = (num_samples, *self.shape)
-        rand = numpy.random.rand(*shape).astype(self.dtype)  # noqa: NPY002
+        rand = numpy.random.rand(*shape).astype(self.dtype)
         return self.low + (self.high - self.low) * rand

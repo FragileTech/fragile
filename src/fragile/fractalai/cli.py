@@ -16,6 +16,8 @@ Why does this file exist, and why not put this in __main__?
 
 import click
 
+from .old_core import compute
+
 
 @click.command()
 @click.argument("names", nargs=-1)
@@ -29,4 +31,4 @@ def run(names):
         int: A return code.
 
     """
-    click.echo(names)
+    click.echo(compute(names))
