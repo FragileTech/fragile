@@ -210,3 +210,55 @@ html[data-theme="dark"] .expert-mode-switch input:checked + .expert-mode-slider 
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     border: 1px solid var(--pst-color-border, #ddd);
 }
+
+/* -----------------------------------------------------------------------------
+   Volume Headers - Multi-Book Navigation Styling
+   ----------------------------------------------------------------------------- */
+
+/* Volume header captions - make them visually distinct */
+.bd-sidebar-primary .caption-text.volume-header {
+    font-size: 0.9em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.75rem 0 0.5rem 0;
+    margin-top: 1.5rem;
+    border-top: 2px solid var(--pst-color-border, #e0e0e0);
+    color: var(--pst-color-primary, #0969da);
+}
+
+/* First volume header shouldn't have top margin */
+.bd-sidebar-primary .nav-item:first-child .caption-text.volume-header {
+    margin-top: 0;
+    border-top: none;
+}
+
+/* Light mode volume header colors */
+html[data-theme="light"] .bd-sidebar-primary .caption-text.volume-header,
+html:not([data-theme]) .bd-sidebar-primary .caption-text.volume-header {
+    color: #0550ae;
+    border-top-color: #d0d7de;
+}
+
+/* Dark mode volume header colors */
+html[data-theme="dark"] .bd-sidebar-primary .caption-text.volume-header {
+    color: #58a6ff;
+    border-top-color: #30363d;
+}
+
+/* Hide empty chapter lists under volume headers */
+.bd-sidebar-primary .volume-header-section > ul.nav:empty,
+.bd-sidebar-primary .volume-header-section > ul.nav:not(:has(li)) {
+    display: none;
+}
+
+/* Regular part captions - slightly smaller to differentiate */
+.bd-sidebar-primary .caption-text:not(.volume-header) {
+    font-size: 0.8em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.4rem 0;
+    margin-top: 0.75rem;
+    color: var(--pst-color-text-muted, #57606a);
+}

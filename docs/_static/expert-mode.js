@@ -135,15 +135,39 @@
         document.body.appendChild(toggle);
     }
 
+    /**
+     * Apply volume-header class to volume header captions in the sidebar
+     * Volume headers are identified by containing "Vol." in their text
+     */
+    function applyVolumeHeaderStyles() {
+        // Find all caption elements in the sidebar
+        const captions = document.querySelectorAll('.bd-sidebar-primary .caption-text');
+
+        captions.forEach(function(caption) {
+            const text = caption.textContent || '';
+            // Check if this is a volume header (contains "Vol." or starts with "━━")
+            if (text.includes('Vol.') || text.startsWith('━━')) {
+                caption.classList.add('volume-header');
+                // Also add class to parent for potential styling
+                const parent = caption.closest('.nav-item, li');
+                if (parent) {
+                    parent.classList.add('volume-header-section');
+                }
+            }
+        });
+    }
+
     // Initialize immediately (before DOM ready) to prevent flash
     const isExpert = initExpertMode();
 
-    // Add toggle when DOM is ready
+    // Add toggle and apply volume styles when DOM is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
             insertToggle(createToggleSwitch(isExpert));
+            applyVolumeHeaderStyles();
         });
     } else {
         insertToggle(createToggleSwitch(isExpert));
+        applyVolumeHeaderStyles();
     }
 })();

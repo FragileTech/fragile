@@ -132,6 +132,8 @@ sphinx:
     bibtex_reference_style    : 'author_year'
     # autosectionlabel configuration - prefix with document name to avoid duplicate labels
     autosectionlabel_prefix_document: true
-    # Expert mode toggle - load custom JavaScript
+    # Expert mode toggle - load custom JavaScript and CSS
     html_js_files:
       - expert-mode.js
+    html_css_files:
+      - custom.css
