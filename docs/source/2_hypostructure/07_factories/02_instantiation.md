@@ -93,7 +93,6 @@ For any system of type $T$ with user-supplied functionals, there exists a canoni
 :::
 
 :::{prf:proof}
-:label: proof-mt-fact-instantiation
 
 *Step 1 (Factory Composition).* Given type $T$ and user-supplied functionals $(\Phi, \mathfrak{D}, G, \ldots)$, apply factories TM-1 through TM-5 in sequence:
 - TM-1 instantiates gate evaluators $\{V_i^T\}_{i=1}^{17}$ from $(\Phi, \mathfrak{D})$

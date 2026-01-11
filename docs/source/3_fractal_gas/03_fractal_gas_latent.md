@@ -583,8 +583,6 @@ The Latent Fractal Gas is treated as an **open system**: the domain boundary ind
 
 ### 0.3 The Lock (Node 17)
 
----
-
 ## Part I: The Instantiation (Thin Object Definitions)
 
 ### 1. The Arena ($\mathcal{X}^{\text{thin}}$)
@@ -619,8 +617,6 @@ The Latent Fractal Gas is treated as an **open system**: the domain boundary ind
 ### Execution Protocol
 
 We run the full sieve using the instantiation assumptions A1-A6. The algorithmic factories (RESOLVE-AutoAdmit/AutoProfile) certify permits that reduce to compactness, analyticity, and finite precision. Each node below records an explicit witness.
-
----
 
 ### Level 1: Conservation
 
@@ -659,8 +655,6 @@ which is compact because $B$ is compact and we restrict to a compact velocity co
 **Certificate:**
 $$K_{C_\mu}^+ = (S_N, \Omega_{\mathrm{alive}}//S_N, \text{compactness witness}).$$
 
----
-
 ### Level 2: Duality & Symmetry
 
 #### Node 4: ScaleCheck ($\mathrm{SC}_\lambda$)
@@ -686,8 +680,6 @@ $$K_{\mathrm{TypeII}}^{\mathrm{blk}} = (\text{BarrierTypeII}, \text{compact aren
 **Certificate:**
 $$K_{\mathrm{SC}_{\partial c}}^+ = (\Theta, \theta_0, C=0).$$
 
----
-
 ### Level 3: Geometry & Stiffness
 
 #### Node 6: GeomCheck ($\mathrm{Cap}_H$)
@@ -710,8 +702,6 @@ $$K_{\mathrm{Cap}_H}^+ = (\Sigma=\{\text{NaN/Inf},\ \text{cemetery}\},\ \text{Ca
 **Certificate:**
 $$K_{\mathrm{LS}_\sigma}^+ = (\|\nabla\Phi_{\text{eff}}\|_G,\ \|\nabla G\|,\ \|\nabla\mathcal{R}\|\ \text{bounded on}\ B).$$
 
----
-
 ### Level 4: Topology
 
 #### Node 8: TopoCheck ($\mathrm{TB}_\pi$)
@@ -733,8 +723,6 @@ $$K_{\mathrm{TB}_\pi}^+ = (\tau \equiv \text{const}, \pi_0(\mathcal{X})=\{\ast\}
 
 **Certificate:**
 $$K_{\mathrm{TB}_O}^+ = (\mathbb{R}_{\mathrm{an},\exp},\ \Sigma\ \text{definable},\ \text{finite stratification}).$$
-
----
 
 ### Level 5: Mixing
 
@@ -768,11 +756,9 @@ m_\epsilon>0,\ (c_{\min},c_{\max})\ \text{certified},\ \exists\,C\Subset \Omega_
 \right).
 $$
 
----
+## Level 6: Complexity
 
-### Level 6: Complexity
-
-#### Node 11: ComplexCheck ($\mathrm{Rep}_K$)
+### Node 11: ComplexCheck ($\mathrm{Rep}_K$)
 
 **Question:** Does the system admit a finite description?
 
@@ -783,7 +769,7 @@ $$K_{\mathrm{Rep}_K}^+ = (\mathcal{L}_{\mathrm{fp}}, D_{\mathrm{fp}}, K(z) \le C
 
 ---
 
-#### Node 12: OscillateCheck ($\mathrm{GC}_\nabla$)
+### Node 12: OscillateCheck ($\mathrm{GC}_\nabla$)
 
 **Question:** Does the flow oscillate (NOT a gradient flow)?
 
@@ -795,11 +781,9 @@ $$K_{\mathrm{Rep}_K}^+ = (\mathcal{L}_{\mathrm{fp}}, D_{\mathrm{fp}}, K(z) \le C
 $$K_{\mathrm{GC}_\nabla}^+ = (\text{non-gradient stochastic flow}),$$
 $$K_{\mathrm{Freq}}^{\mathrm{blk}} = (\text{BarrierFreq}, \text{oscillation bounded on the alive core}, \{V_{\mathrm{core}}\}).$$
 
----
+## Level 7: Boundary (Open Systems)
 
-### Level 7: Boundary (Open Systems)
-
-#### Node 13: BoundaryCheck ($\mathrm{Bound}_\partial$)
+### Node 13: BoundaryCheck ($\mathrm{Bound}_\partial$)
 
 **Question:** Is the system open (has boundary interactions)?
 
@@ -813,7 +797,7 @@ $$K_{\mathrm{Bound}_\partial}^+ = (\partial\Omega=\mathcal{Z}\setminus B,\ \iota
 
 ---
 
-#### Node 14: OverloadCheck ($\mathrm{Bound}_B$)
+### Node 14: OverloadCheck ($\mathrm{Bound}_B$)
 
 **Question:** Is the input bounded (no injection overload)?
 
@@ -829,7 +813,7 @@ $$K_{\mathrm{Bode}}^{\mathrm{blk}} = (\text{thermostat + killing/recovery preven
 
 ---
 
-#### Node 15: StarveCheck ($\mathrm{Bound}_{\Sigma}$)
+### Node 15: StarveCheck ($\mathrm{Bound}_{\Sigma}$)
 
 **Question:** Is the input sufficient (no resource starvation)?
 
@@ -840,7 +824,7 @@ $$K_{\mathrm{Bound}_{\Sigma}}^{\mathrm{blk}} = (\text{QSD/conditioned dynamics e
 
 ---
 
-#### Node 16: AlignCheck ($\mathrm{GC}_T$)
+### Node 16: AlignCheck ($\mathrm{GC}_T$)
 
 **Question:** Is control matched to disturbance (requisite variety)?
 
@@ -853,11 +837,9 @@ equivalently $\mathbb{E}[\Phi^{\mathrm{sel}}-\Phi\mid V,c]\le 0$ for $\Phi:=V_{\
 **Certificate:**
 $$K_{\mathrm{GC}_T}^+ = (\mathbb{E}[\Phi^{\mathrm{sel}}-\Phi\mid V,c]\le 0\ \text{(selection-stage)},\ \text{fitness-aligned resampling}).$$
 
----
+## Level 8: The Lock
 
-### Level 8: The Lock
-
-#### Node 17: BarrierExclusion ($\mathrm{Cat}_{\mathrm{Hom}}$)
+### Node 17: BarrierExclusion ($\mathrm{Cat}_{\mathrm{Hom}}$)
 
 **Question:** Is $\mathrm{Hom}(\mathcal{H}_{\mathrm{bad}}, \mathcal{H}) = \emptyset$?
 

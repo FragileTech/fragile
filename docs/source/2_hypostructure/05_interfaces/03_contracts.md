@@ -58,7 +58,6 @@ A barrier invoked because $P_i$ failed cannot assume $P_i$ as a prerequisite.
 :::
 
 :::{prf:proof}
-:label: prf-barrier-noncircular
 
 Suppose toward contradiction that $P_i \in \mathrm{Pre}(B)$.
 

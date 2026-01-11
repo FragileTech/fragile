@@ -1,3 +1,5 @@
+# Barrier Nodes
+
 (sec-barrier-node-specs)=
 ## Barrier Node Specifications (Orange Nodes)
 

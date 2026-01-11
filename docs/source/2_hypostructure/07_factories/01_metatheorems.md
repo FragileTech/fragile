@@ -51,7 +51,6 @@ For undecidable predicates (e.g., Gate 17), the framework uses the tactic librar
 :::
 
 :::{prf:proof}
-:label: proof-mt-fact-gate
 
 *Proof (Following Categorical Proof Template — Natural Transformation Soundness).*
 
@@ -215,7 +214,6 @@ For any system of type $T$, there exist default barrier implementations with cor
 :::
 
 :::{prf:proof}
-:label: proof-mt-fact-barrier
 
 *Step 1 (Barrier Catalog).* For each gate NO outcome, identify the corresponding barrier type from literature:
 - EnergyCheck NO $\to$ Foster-Lyapunov barrier (drift $\mathcal{L}V \leq -\gamma V + C\mathbf{1}_K$)
@@ -286,7 +284,6 @@ For any type $T$ admitting surgery, there exist default surgery operators matchi
 :::
 
 :::{prf:proof}
-:label: proof-mt-fact-surgery
 
 *Step 1 (Profile-Surgery Correspondence).* For each canonical profile $\mathcal{P}_i \in \mathcal{L}_T$, identify the corresponding surgery operator from literature:
 - Concentration profile $\to$ bubble extraction (blow-up analysis + rescaling)
@@ -369,7 +366,6 @@ For any type $T$, there exists a library of admissible equivalence moves and tra
 :::
 
 :::{prf:proof}
-:label: proof-mt-fact-transport
 
 *Step 1 (Equivalence Instantiation).* For each abstract equivalence $\mathrm{Eq}_i$, instantiate using the type's structural assumptions:
 - {prf:ref}`def-equiv-symmetry` (Scaling): $u \sim_\lambda \lambda^{\alpha} u(\lambda^\beta \cdot)$ with exponents from $T$'s critical scaling
@@ -448,7 +444,6 @@ For any type $T$ with $\mathrm{Rep}_K$ available, there exist E1--E10 tactics fo
 :::
 
 :::{prf:proof}
-:label: proof-mt-fact-lock
 
 *Step 1 (Tactic Classification).* The Lock backend tactics E1--E5 are instantiated from the type's representation substrate $\mathrm{Rep}_K$:
 - E1 (Geometric): Direct geometric obstruction (Hausdorff dimension, capacity bounds)

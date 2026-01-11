@@ -181,8 +181,8 @@ The key insight: this is not just a flowchart. It is a *proof*. Every path throu
 
 :::
 
-:::{tip} Interactive Viewing Options
-:class: dropdown
+:::{dropdown} 💡 Interactive Viewing Options
+:open:
 
 This diagram is large. For better viewing:
 - **Zoom**: Use your browser's zoom (Ctrl/Cmd + scroll)

@@ -165,7 +165,7 @@ Let $\mathcal{S}$ be a structural flow datum with **strict dissipation** (i.e., 
 :::
 
 :::{prf:proof} Proof Sketch (for strict dissipation)
-:label: sketch-mt-krnl-consistency
+<!-- label: sketch-mt-krnl-consistency -->
 
 *Step 1 (1 ⇒ 2).* If $\mathcal{S}$ satisfies the axioms, then by the Dissipation axiom ($D_E$), energy is non-increasing: $\Phi(S_t x) \leq \Phi(x)$. Combined with the Compactness axiom, bounded orbits have convergent subsequences. Any limit point $x^*$ satisfies $S_t x^* = x^*$ by continuity.
 
@@ -229,13 +229,13 @@ then Interface Permit $\mathrm{Rep}_K(T, Z)$ holds, and hence the conjecture for
 :::
 
 :::{prf:proof}
-:label: proof-thm-categorical-completeness
+<!-- label: proof-thm-categorical-completeness -->
 
 See the Initiality Lemma (N9) and Cofinality argument below.
 :::
 
 :::{prf:proof} Initiality Lemma (Proof of N9)
-:label: proof-initiality-lemma
+<!-- label: proof-initiality-lemma -->
 
 The universal Rep-breaking pattern $\mathbb{H}_{\mathrm{bad}}^{(T)}$ exists and is initial in the category of singularity patterns.
 
@@ -286,7 +286,7 @@ $$(\forall [P,\pi] \in \mathcal{G}_T.\, \mathbb{H}_{[P,\pi]} \to \mathbb{H}) \Ri
 :::
 
 :::{prf:proof} Proof of KRNL-Exclusion (Categorical Proof Template)
-:label: proof-mt-krnl-exclusion
+<!-- label: proof-mt-krnl-exclusion -->
 
 *Step 1 (Ambient Setup).* Let $\mathcal{E}$ be the cohesive $(\infty,1)$-topos containing $\mathbf{Hypo}_T$ as a full subcategory. By {cite}`Lurie09` §6.1, $\mathcal{E}$ admits an **internal logic** given by its subobject classifier $\Omega$. Propositions in $\mathcal{E}$ correspond to morphisms $p: 1 \to \Omega$ where $1$ is the terminal object.
 
@@ -369,7 +369,7 @@ The trichotomy theorem puts this into the categorical framework. Every breakdown
 :::
 
 :::{prf:proof} Proof Sketch
-:label: sketch-mt-krnl-trichotomy
+<!-- label: sketch-mt-krnl-trichotomy -->
 
 *Step 1 (Energy Dichotomy).* By (D), $\Phi(u(t))$ is non-increasing. Either $\Phi(u(t)) \to 0$ (dispersion, Mode D.D), or $\Phi(u(t)) \to \Phi_* > 0$ (concentration). This is the **concentration-compactness dichotomy** of {cite}`Lions84` Lemma I.1: for bounded sequences in Sobolev spaces, either mass disperses to infinity or concentrates at finitely many points.
 
@@ -423,7 +423,7 @@ Then:
 :::
 
 :::{prf:proof} Proof Sketch
-:label: sketch-mt-krnl-equivariance
+<!-- label: sketch-mt-krnl-equivariance -->
 
 *Step 1 (Risk Invariance).* By hypothesis (1), if $S \sim \mathcal{S}$ then $g \cdot S \sim \mathcal{S}$. The risk functional $R(\Theta) = \mathbb{E}_{S \sim \mathcal{S}}[\mathcal{L}(\Theta, S)]$ satisfies $R(g \cdot \Theta) = R(\Theta)$ by change of variables.
 
@@ -445,7 +445,7 @@ This theorem formalizes the phase transition detected by {prf:ref}`mt-krnl-horiz
 :::
 
 :::{prf:proof}
-:label: proof-thm-halting-ait-sieve-thermo
+<!-- label: proof-thm-halting-ait-sieve-thermo -->
 
 We establish the sharp phase boundary in four steps.
 
@@ -545,7 +545,7 @@ See {prf:ref}`thm-halting-ait-sieve-thermo` for the phase transition witness the
 :::
 
 :::{prf:proof} Proof
-:label: proof-mt-krnl-horizon-limit
+<!-- label: proof-mt-krnl-horizon-limit -->
 
 **Step 1 (Information-Theoretic Lower Bound)**:
 To decide membership in $\mathcal{I}$, the sieve must store a representation of $\mathcal{I}$ requiring at least $K(\mathcal{I})$ bits (by definition of Kolmogorov complexity). Any shorter representation would contradict the minimality of $K(\mathcal{I})$.

@@ -2,6 +2,8 @@
 title: "Universal Gate Evaluator Interface"
 ---
 
+# Universal Gate Evaluator Interface
+
 (sec-gate-evaluator-interface)=
 ## The Universal Gate Evaluator Interface
 
