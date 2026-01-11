@@ -9,9 +9,10 @@ import numpy as np
 import pandas as pd
 import panel as pn
 import param
+from shaolin.utils import find_closest_point
 
 # import torch
-from shaolin.dimension_mapper import (
+from fragile.shaolin.dimension_mapper import (
     AlphaDim,
     ColorDim,
     Dimensions,
@@ -21,7 +22,6 @@ from shaolin.dimension_mapper import (
     SizeDim,
     widget_priority,
 )
-from shaolin.utils import find_closest_point
 
 
 Value = np.ndarray | list  # | torch.Tensor
@@ -298,6 +298,17 @@ class InteractiveGraph(param.Parameterized):
         )
 
     def view(self, **kwargs):
+        # Check if we're using categorical node coloring
+        node_color_dim = kwargs.get("node_color")
+        is_categorical_color = False
+        if isinstance(node_color_dim, hv.dim):
+            col_name = node_color_dim.dimension
+            if col_name in self.df_nodes.columns:
+                is_categorical_color = isinstance(
+                    self.df_nodes[col_name].dtype,
+                    pd.CategoricalDtype,
+                )
+
         return plot_graph(
             df_nodes=self.df_nodes,
             df_edges=self.df_edges,
@@ -308,7 +319,7 @@ class InteractiveGraph(param.Parameterized):
             height=self.height.value,
             title="",
             framewise=True,
-            colorbar=True,
+            colorbar=not is_categorical_color,
         )
 
     def layout(self):

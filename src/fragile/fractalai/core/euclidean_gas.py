@@ -1,0 +1,593 @@
+"""
+Euclidean Gas: A Fragile Gas Implementation
+
+This module implements the Euclidean Gas algorithm from clean_build/source/02_euclidean_gas.md
+and clean_build/source/03_cloning.md using PyTorch for vectorization and Pydantic for
+parameter management.
+
+All tensors are vectorized with the first dimension being the number of walkers N.
+"""
+
+from __future__ import annotations
+
+import panel as pn
+import param
+import torch
+from torch import Tensor
+
+from fragile.core.panel_model import INPUT_WIDTH, PanelModel
+
+
+class SwarmState:
+    """
+    Vectorized swarm state with positions and velocities.
+
+    All tensors have shape [N, d] where N is number of walkers, d is dimension.
+    """
+
+    def __init__(self, x: Tensor, v: Tensor):
+        """
+        Initialize swarm state.
+
+        Args:
+            x: Positions [N, d]
+            v: Velocities [N, d]
+        """
+        assert x.shape == v.shape, "Position and velocity must have same shape"
+        assert len(x.shape) == 2, "Expected shape [N, d]"
+        self.x = x
+        self.v = v
+
+    @property
+    def N(self) -> int:
+        """Number of walkers."""
+        return self.x.shape[0]
+
+    @property
+    def d(self) -> int:
+        """Spatial dimension."""
+        return self.x.shape[1]
+
+    @property
+    def device(self) -> torch.device:
+        """Device."""
+        return self.x.device
+
+    @property
+    def dtype(self) -> torch.dtype:
+        """Data type."""
+        return self.x.dtype
+
+    def clone(self) -> SwarmState:
+        """Create a copy of the state."""
+        return SwarmState(self.x.clone(), self.v.clone())
+
+    def copy_from(self, other: SwarmState, mask: Tensor) -> None:
+        """
+        Copy positions and velocities from another state for masked walkers.
+
+        Args:
+            other: Source swarm state
+            mask: Boolean tensor indicating walkers to copy
+        """
+        if not isinstance(other, SwarmState):
+            msg = f"Expected SwarmState, got {type(other)}"
+            raise TypeError(msg)
+        if mask.dtype != torch.bool:
+            msg = "Mask must be boolean tensor"
+            raise ValueError(msg)
+        if mask.shape[0] != self.N:
+            msg = "Mask size mismatch"
+            raise ValueError(msg)
+        if not mask.any():
+            return
+        indices = torch.where(mask)[0]
+        self.x[indices] = other.x[indices]
+        self.v[indices] = other.v[indices]
+
+
+class EuclideanGas(PanelModel):
+    """Complete parameter set for Euclidean Gas algorithm."""
+
+    _n_widget_columns = param.Integer(default=2, bounds=(1, None), doc="Number of widget columns")
+    _max_widget_width = param.Integer(default=800, bounds=(0, None), doc="Maximum widget width")
+
+    N = param.Integer(default=50, bounds=(1, None), softbounds=(50, 500), doc="Number of walkers")
+    d = param.Integer(default=2, bounds=(1, None), doc="Spatial dimension")
+    companion_selection = param.Parameter(
+        default=None, doc="Companion selection strategy for cloning"
+    )
+    potential = param.Parameter(
+        default=None,
+        doc=(
+            "Target potential function. Must be callable: U(x: [N, d]) -> [N]. "
+            "Can be an OptimBenchmark instance (which provides bounds) or any callable."
+        ),
+    )
+    kinetic_op = param.Parameter(default=None, doc="Langevin dynamics parameters")
+    cloning = param.Parameter(default=None, doc="Cloning operator")
+    fitness_op = param.Parameter(
+        default=None,
+        allow_None=True,
+        doc="Fitness operator (required if using adaptive kinetics features)",
+    )
+    bounds = param.Parameter(
+        default=None,
+        allow_None=True,
+        doc=(
+            "Position bounds (optional, TorchBounds only). "
+            "If None and potential has a 'bounds' attribute, bounds will be auto-extracted."
+        ),
+    )
+    device = param.Parameter(default=torch.device("cpu"), doc="PyTorch device (cpu/cuda)")
+    dtype = param.Selector(
+        default="float32", objects=["float32", "float64"], doc="PyTorch dtype (float32/float64)"
+    )
+    freeze_best = param.Boolean(
+        default=False,
+        doc="Keep the highest-fitness walker untouched during cloning and kinetic steps.",
+    )
+    enable_cloning = param.Boolean(
+        default=True,
+        doc="Enable cloning operator (fitness still computed for adaptive forces)",
+    )
+    enable_kinetic = param.Boolean(
+        default=True,
+        doc="Enable kinetic (Langevin dynamics) operator",
+    )
+    pbc = param.Boolean(
+        default=False,
+        doc=(
+            "Use periodic boundary conditions. When enabled, walkers that move outside "
+            "bounds are wrapped back instead of being marked as dead. Requires bounds to be set. "
+            "PBC is applied before computing fitness and after kinetic updates."
+        ),
+    )
+
+    @property
+    def widgets(self) -> dict[str, dict]:
+        """Widget configurations for Euclidean Gas parameters."""
+        return {
+            "N": {
+                "type": pn.widgets.EditableIntSlider,
+                "width": INPUT_WIDTH,
+                "name": "N (num walkers)",
+                "start": 2,
+                "end": 10000,
+                "step": 1,
+            },
+            "d": {
+                "type": pn.widgets.IntInput,
+                "width": INPUT_WIDTH,
+                "name": "d (dimension)",
+            },
+            "dtype": {
+                "type": pn.widgets.Select,
+                "width": INPUT_WIDTH,
+                "name": "Data type",
+            },
+            "freeze_best": {
+                "type": pn.widgets.Checkbox,
+                "width": INPUT_WIDTH,
+                "name": "Freeze best walker",
+            },
+            "enable_cloning": {
+                "type": pn.widgets.Checkbox,
+                "width": INPUT_WIDTH,
+                "name": "Enable cloning",
+            },
+            "enable_kinetic": {
+                "type": pn.widgets.Checkbox,
+                "width": INPUT_WIDTH,
+                "name": "Enable kinetic",
+            },
+            "pbc": {
+                "type": pn.widgets.Checkbox,
+                "width": INPUT_WIDTH,
+                "name": "Periodic BC",
+            },
+        }
+
+    @property
+    def widget_parameters(self) -> list[str]:
+        """Parameters to display in UI (excluding nested operators and internal objects)."""
+        return ["N", "d", "dtype", "freeze_best", "enable_cloning", "enable_kinetic", "pbc"]
+
+    def __init__(self, **params):
+        """Initialize Euclidean Gas with post-initialization validation."""
+        super().__init__(**params)
+
+        # Post-initialization: auto-extract bounds from potential if available
+        if (
+            self.bounds is None
+            and self.potential is not None
+            and hasattr(self.potential, "bounds")
+        ):
+            self.bounds = self.potential.bounds
+
+        # Validate PBC requirements
+        if self.pbc and self.bounds is None:
+            msg = "PBC mode requires bounds to be set"
+            raise ValueError(msg)
+
+        # Validate that potential is callable
+        if self.potential is not None and not callable(self.potential):
+            msg = f"potential must be callable, got {type(self.potential)}"
+            raise TypeError(msg)
+
+    @property
+    def torch_dtype(self) -> torch.dtype:
+        """Convert dtype string to torch dtype."""
+        return torch.float64 if self.dtype == "float64" else torch.float32
+
+    def initialize_state(
+        self, x_init: Tensor | None = None, v_init: Tensor | None = None
+    ) -> SwarmState:
+        """
+        Initialize swarm state.
+
+        Args:
+            x_init: Initial positions [N, d] (optional, defaults to N(0, I))
+            v_init: Initial velocities [N, d] (optional, defaults to N(0, I/β))
+
+        Returns:
+            Initial swarm state
+        """
+        N, d = self.N, self.d
+
+        if x_init is None:
+            x_init = torch.randn(N, d, device=self.device, dtype=self.torch_dtype)
+
+        if v_init is None:
+            # Initialize velocities from thermal distribution
+            v_std = 1.0 / torch.sqrt(torch.tensor(self.kinetic_op.beta, dtype=self.torch_dtype))
+            v_init = v_std * torch.randn(N, d, device=self.device, dtype=self.torch_dtype)
+
+        return SwarmState(
+            x_init.to(device=self.device, dtype=self.torch_dtype),
+            v_init.to(device=self.device, dtype=self.torch_dtype),
+        )
+
+    def _freeze_mask(self, state: SwarmState) -> Tensor | None:
+        """Compute mask for walkers that should be frozen (not updated).
+
+        Note: freeze_best feature is currently disabled, so this returns None.
+        """
+        return None
+
+    def step(
+        self, state: SwarmState, return_info: bool = False
+    ) -> tuple[SwarmState, SwarmState] | tuple[SwarmState, SwarmState, dict] | None:
+        """
+        Perform one full step: compute fitness, clone (optional), then kinetic (optional).
+
+        Uses cloning.py functions directly to compute:
+        1. Rewards from potential
+        2. Fitness using compute_fitness (always computed, even if cloning disabled)
+        3. Cloning using clone_walkers (if enable_cloning=True)
+        4. Kinetic update (if enable_kinetic=True)
+
+        Args:
+            state: Current swarm state
+            return_info: If True, return full cloning info dictionary
+
+        Returns:
+            Tuple of (state_after_cloning, state_after_kinetic), or
+            (state_after_cloning, state_after_kinetic, info) if return_info=True
+
+        Note:
+            - The info dict contains: fitness, distances, companions, rewards,
+              cloning_scores, cloning_probs, will_clone, num_cloned
+            - Fitness is always computed (needed for adaptive forces)
+            - If enable_cloning=False, cloning is skipped and state_after_cloning = state
+            - If enable_kinetic=False, kinetic is skipped and
+              state_after_kinetic = state_after_cloning
+        """
+        # Apply PBC at start if enabled (ensures positions valid before computing fitness)
+        if self.pbc and self.bounds is not None:
+            state.x = self.bounds.apply_pbc_to_out_of_bounds(state.x)
+
+        freeze_mask = self._freeze_mask(state)
+        reference_state = state.clone() if freeze_mask is not None else None
+
+        # Step 1: Compute rewards from potential
+        rewards = -self.potential(state.x)  # [N]
+
+        # Step 2: Determine alive status from bounds
+        if self.pbc:
+            # PBC mode: all walkers always alive (wrapped back into bounds)
+            alive_mask = torch.ones(state.N, dtype=torch.bool, device=self.device)
+        elif self.bounds is not None:
+            alive_mask = self.bounds.contains(state.x)
+        else:
+            alive_mask = torch.ones(state.N, dtype=torch.bool, device=self.device)
+
+        # SAFETY: If all walkers are dead, revive all within bounds (only in non-PBC mode)
+        if not self.pbc and alive_mask.sum().item() == 0:
+            msg = "All walkers are dead (out of bounds); cannot proceed with step."
+            raise ValueError(msg)
+
+        # Step 3: Select companions using the companion selection strategy
+        companions_distance = self.companion_selection(
+            x=state.x,
+            v=state.v,
+            alive_mask=alive_mask,
+            bounds=self.bounds,
+            pbc=self.pbc,
+        )
+
+        # Step 4: Compute fitness using core.fitness
+        # Always compute fitness even if cloning disabled (needed for adaptive forces)
+        fitness, fitness_info = self.fitness_op(
+            positions=state.x,
+            velocities=state.v,
+            rewards=rewards,
+            alive=alive_mask,
+            companions=companions_distance,
+            bounds=self.bounds,
+            pbc=self.pbc,
+        )
+
+        # Step 5: Execute cloning using cloning.py (if enabled)
+        if self.enable_cloning:
+            # Step 3: Select companions using the companion selection strategy
+            companions_clone = self.companion_selection(
+                x=state.x,
+                v=state.v,
+                alive_mask=alive_mask,
+                bounds=self.bounds,
+                pbc=self.pbc,
+            )
+            x_cloned, v_cloned, _other_cloned, clone_info = self.cloning(
+                positions=state.x,
+                velocities=state.v,
+                fitness=fitness,
+                companions=companions_clone,
+                alive=alive_mask,
+            )
+            state_cloned = SwarmState(x_cloned, v_cloned)
+        else:
+            # Skip cloning, use current state
+            state_cloned = state.clone()
+            clone_info = {
+                "cloning_scores": torch.zeros(state.N, device=self.device),
+                "cloning_probs": torch.ones(state.N, device=self.device),
+                "will_clone": torch.zeros(state.N, dtype=torch.bool, device=self.device),
+                "num_cloned": 0,
+                "companions": torch.zeros_like(companions_distance),
+            }
+
+        # # Apply freeze mask if needed
+        # if freeze_mask is not None and freeze_mask.any():
+        #     state_cloned.copy_from(reference_state, freeze_mask)
+
+        # Step 5: Compute fitness derivatives if needed for adaptive kinetics
+        grad_fitness = None
+        hess_fitness = None
+
+        if self.fitness_op is not None and self.enable_kinetic:
+            # Compute fitness gradient if needed for adaptive force
+            if self.kinetic_op.use_fitness_force:
+                grad_fitness = self.fitness_op.compute_gradient(
+                    state_cloned.x, state_cloned.v, rewards, alive_mask, companions_distance
+                )
+
+            # Compute fitness Hessian if needed for anisotropic diffusion
+            if self.kinetic_op.use_anisotropic_diffusion:
+                hess_fitness = self.fitness_op.compute_hessian(
+                    state_cloned.x,
+                    state_cloned.v,
+                    rewards,
+                    alive_mask,
+                    companions_distance,
+                    diagonal_only=self.kinetic_op.diagonal_diffusion,
+                )
+
+            # Step 6: Kinetic update with optional fitness derivatives (if enabled)
+            state_final = self.kinetic_op.apply(state_cloned, grad_fitness, hess_fitness)
+            if freeze_mask is not None and freeze_mask.any():
+                state_final.copy_from(reference_state, freeze_mask)
+        else:
+            # Skip kinetic update, use cloned state as final
+            state_final = state_cloned.clone()
+
+        # Apply PBC after kinetic update (wraps final positions back into bounds)
+        if self.pbc and self.bounds is not None:
+            state_final.x = self.bounds.apply_pbc_to_out_of_bounds(state_final.x)
+
+        if return_info:
+            # Combine all computed data into info dict
+            info = {
+                "fitness": fitness,
+                "rewards": rewards,
+                "companions_distance": companions_distance,
+                "companions_clone": clone_info["companions"],
+                "alive_mask": alive_mask,
+                **clone_info,  # Adds: cloning_scores, cloning_probs, will_clone, num_cloned
+                **fitness_info,
+            }
+            return state_cloned, state_final, info
+        return state_cloned, state_final
+
+    def run(
+        self,
+        n_steps: int,
+        x_init: Tensor | None = None,
+        v_init: Tensor | None = None,
+        record_every: int = 1,
+    ):
+        """
+        Run Euclidean Gas for multiple steps and return complete history.
+
+        Args:
+            n_steps: Number of steps to run
+            x_init: Initial positions (optional)
+            v_init: Initial velocities (optional)
+            record_every: Record every k-th step (1=all steps, 10=every 10th step).
+                         Step 0 (initial) and final step are always recorded.
+
+        Returns:
+            RunHistory object with complete execution trace including:
+                - States before cloning, after cloning, and after kinetic at each recorded step
+                - All fitness, cloning, companion, and alive data
+                - Adaptive kinetics data (gradients/Hessians) if computed
+                - Timing information
+
+        Note:
+            Run stops early if all walkers die (out of bounds).
+            Memory scales with n_steps/record_every, so use record_every > 1 for long runs.
+
+        Example:
+            >>> gas = EuclideanGas(N=50, d=2, ...)
+            >>> history = gas.run(n_steps=1000, record_every=10)  # Record every 10 steps
+            >>> print(history.summary())
+            >>> history.save("run_001.pt")
+        """
+        import time
+
+        # Initialize state with timing
+        init_start = time.time()
+        state = self.initialize_state(x_init, v_init)
+
+        # Apply PBC to initial state if enabled
+        if self.pbc and self.bounds is not None:
+            state.x = self.bounds.apply_pbc_to_out_of_bounds(state.x)
+
+        init_time = time.time() - init_start
+
+        N, d = state.N, state.d
+
+        # Calculate number of recorded timesteps
+        # Step 0 is always recorded, then every record_every steps,
+        # plus final step if not at interval
+        recorded_steps = list(range(0, n_steps + 1, record_every))
+        if n_steps not in recorded_steps:
+            recorded_steps.append(n_steps)
+        n_recorded = len(recorded_steps)
+
+        # Initialize vectorized history recorder with pre-allocated arrays
+        from fragile.core.vec_history import VectorizedHistoryRecorder
+
+        record_gradients = False
+        record_hessians_diag = False
+        record_hessians_full = False
+
+        if self.fitness_op is not None:
+            record_gradients = self.kinetic_op.use_fitness_force
+            if self.kinetic_op.use_anisotropic_diffusion:
+                record_hessians_diag = self.kinetic_op.diagonal_diffusion
+                record_hessians_full = not self.kinetic_op.diagonal_diffusion
+
+        recorder = VectorizedHistoryRecorder(
+            N=N,
+            d=d,
+            n_recorded=n_recorded,
+            device=self.device,
+            dtype=self.torch_dtype,
+            record_gradients=record_gradients,
+            record_hessians_diag=record_hessians_diag,
+            record_hessians_full=record_hessians_full,
+        )
+
+        # Check initial alive status
+        if self.pbc:
+            # PBC mode: all walkers always alive
+            alive_mask = torch.ones(N, dtype=torch.bool, device=self.device)
+            n_alive = N
+        elif self.bounds is not None:
+            alive_mask = self.bounds.contains(state.x)
+            n_alive = alive_mask.sum().item()
+        else:
+            alive_mask = torch.ones(N, dtype=torch.bool, device=self.device)
+            n_alive = N
+
+        # Record initial state (t=0)
+        recorder.record_initial_state(state, n_alive)
+
+        # Check if initially all dead
+        if n_alive == 0:
+            return recorder.build(
+                n_steps=0,
+                record_every=record_every,
+                terminated_early=True,
+                final_step=0,
+                total_time=0.0,
+                init_time=init_time,
+                bounds=self.bounds,
+            )
+
+        # Run steps with timing
+        terminated_early = False
+        final_step = n_steps
+        total_start = time.time()
+
+        for t in range(1, n_steps + 1):
+            step_start = time.time()
+
+            # Check if all walkers are currently dead BEFORE stepping (skip in PBC mode)
+            if not self.pbc and self.bounds is not None:
+                alive_mask = self.bounds.contains(state.x)
+                n_alive = alive_mask.sum().item()
+                if n_alive == 0:
+                    terminated_early = True
+                    final_step = t - 1
+                    break
+
+            # Execute step with return_info=True to get all data
+            state_cloned, state_final, info = self.step(state, return_info=True)
+
+            # Compute adaptive kinetics derivatives if enabled
+            grad_fitness = None
+            hess_fitness = None
+            is_diagonal_hessian = False
+            if self.fitness_op is not None:
+                if self.kinetic_op.use_fitness_force:
+                    grad_fitness = self.fitness_op.compute_gradient(
+                        positions=state_cloned.x,
+                        velocities=state_cloned.v,
+                        rewards=info["rewards"],
+                        alive=info["alive_mask"],
+                        companions=info["companions_distance"],
+                    )
+                if self.kinetic_op.use_anisotropic_diffusion:
+                    is_diagonal_hessian = self.kinetic_op.diagonal_diffusion
+                    hess_fitness = self.fitness_op.compute_hessian(
+                        positions=state_cloned.x,
+                        velocities=state_cloned.v,
+                        rewards=info["rewards"],
+                        alive=info["alive_mask"],
+                        companions=info["companions_distance"],
+                        diagonal_only=is_diagonal_hessian,
+                    )
+
+            # Determine if this step should be recorded
+            should_record = t in recorded_steps
+
+            if should_record:
+                # Record all data for this step using recorder
+                recorder.record_step(
+                    state_before=state,
+                    state_cloned=state_cloned,
+                    state_final=state_final,
+                    info=info,
+                    step_time=time.time() - step_start,
+                    grad_fitness=grad_fitness,
+                    hess_fitness=hess_fitness,
+                    is_diagonal_hessian=is_diagonal_hessian,
+                )
+
+            # Update state for next iteration
+            state = state_final
+
+        total_time = time.time() - total_start
+
+        # Build final RunHistory with automatic trimming to actual recorded size
+        return recorder.build(
+            n_steps=final_step,
+            record_every=record_every,
+            terminated_early=terminated_early,
+            final_step=final_step,
+            total_time=total_time,
+            init_time=init_time,
+            bounds=self.bounds,
+        )

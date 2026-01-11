@@ -1,0 +1,362 @@
+"""SU(2)_weak symmetry structure tests.
+
+This module implements tests for the SU(2) weak isospin gauge symmetry, comparing
+the current framework (distance-based phases) with the proposed framework (cloning
+score-based phases).
+
+**Framework References:**
+- old_docs/source/13_fractal_set_new/03_yang_mills_noether.md §1.2-1.3 - Current SU(2)
+- old_docs/source/13_fractal_set_new/04_symmetry_redefinition_viability_analysis.md §3.2 - Proposed SU(2)
+
+**Current SU(2) Structure:**
+- Phase: θ_ij^(SU(2)) = -d_alg²(i,j)/(2ε_c² ℏ_eff) (geometric distance)
+- Isospin doublet: (cloner, target) roles
+- Interaction state: |Ψ_ij⟩ = |↑⟩⊗|ψ_i⟩ + |↓⟩⊗|ψ_j⟩
+
+**Proposed SU(2) Structure:**
+- Phase: θ_ij = S_i(j) / ℏ_eff where S_i(j) = (V_j - V_i)/(V_i + ε)
+- Amplitude: Pairing probability P_pairing(i ↔ j)
+- Interaction state: SAME as current
+
+**Key Difference:**
+- Current: Phase from geometric distance (independent of fitness)
+- Proposed: Phase from fitness comparison (algorithm's "perception" of quality difference)
+"""
+
+from pydantic import BaseModel, Field
+import torch
+from torch import Tensor
+
+from fragile.core.companion_selection import (
+    compute_algorithmic_distance_matrix,
+)
+from fragile.experiments.gauge.observables import (
+    compute_cloning_score,
+    compute_collective_fields,
+    ObservablesConfig,
+)
+
+
+class SU2Config(BaseModel):
+    """Configuration for SU(2) symmetry tests.
+
+    Attributes:
+        h_eff: Effective Planck constant (ℏ_eff)
+        epsilon_c: Cloning companion selection range (ε_c)
+        epsilon_clone: Regularization for cloning score
+        lambda_alg: Velocity weight in algorithmic distance
+    """
+
+    h_eff: float = Field(default=1.0, gt=0, description="Effective Planck constant")
+    epsilon_c: float = Field(default=0.1, gt=0, description="Cloning companion range")
+    epsilon_clone: float = Field(default=1e-8, gt=0, description="Cloning score regularization")
+    lambda_alg: float = Field(default=0.0, ge=0, description="Velocity weight")
+
+
+def compute_su2_phase_current(
+    positions: Tensor,
+    velocities: Tensor,
+    clone_companions: Tensor,
+    alive: Tensor,
+    config: SU2Config | None = None,
+) -> Tensor:
+    """Compute current SU(2) phases: θ_ij = -d_alg²(i,j)/(2ε_c² ℏ_eff).
+
+    From §1.2 in:
+    old_docs/source/13_fractal_set_new/03_yang_mills_noether.md
+
+    Args:
+        positions: Walker positions [N, d]
+        velocities: Walker velocities [N, d]
+        clone_companions: Cloning companion indices [N]
+        alive: Boolean mask [N]
+        config: SU(2) configuration
+
+    Returns:
+        Phases [N] where phase[i] = θ_i(c_clone(i))
+
+    Example:
+        >>> positions = torch.randn(100, 2)
+        >>> velocities = torch.randn(100, 2) * 0.1
+        >>> clone_companions = torch.randint(0, 100, (100,))
+        >>> alive = torch.ones(100, dtype=torch.bool)
+        >>> phases = compute_su2_phase_current(
+        ...     positions, velocities, clone_companions, alive
+        ... )
+    """
+    if config is None:
+        config = SU2Config()
+
+    # Compute full distance matrix [N, N]
+    dist_sq = compute_algorithmic_distance_matrix(positions, velocities, config.lambda_alg)
+
+    # Extract distances to cloning companions [N]
+    N = positions.shape[0]
+    dist_sq_companion = dist_sq[torch.arange(N), clone_companions]
+
+    # Compute phases: θ_ij = -d_alg²(i,j) / (2ε_c² ℏ_eff)
+    phases = -dist_sq_companion / (2 * config.epsilon_c**2 * config.h_eff)
+
+    # Mask dead walkers
+    return torch.where(alive, phases, torch.zeros_like(phases))
+
+
+def compute_su2_phase_proposed(
+    positions: Tensor,
+    velocities: Tensor,
+    rewards: Tensor,
+    diversity_companions: Tensor,
+    clone_companions: Tensor,
+    alive: Tensor,
+    rho: float | None = None,
+    obs_config: ObservablesConfig | None = None,
+    su2_config: SU2Config | None = None,
+) -> Tensor:
+    """Compute proposed SU(2) phases: θ_ij = S_i(j) / ℏ_eff.
+
+    From §3.2.2 in:
+    old_docs/source/13_fractal_set_new/04_symmetry_redefinition_viability_analysis.md
+
+    S_i(j) = (V_fit,j - V_fit,i) / (V_fit,i + ε_clone)
+
+    Args:
+        positions: Walker positions [N, d]
+        velocities: Walker velocities [N, d]
+        rewards: Raw reward values [N]
+        diversity_companions: Diversity companion indices [N] (for fitness computation)
+        clone_companions: Cloning companion indices [N] (for cloning score)
+        alive: Boolean mask [N]
+        rho: Localization scale
+        obs_config: Observables configuration
+        su2_config: SU(2) configuration
+
+    Returns:
+        Phases [N] where phase[i] = θ_i(c_clone(i)) = S_i(c_clone(i)) / ℏ_eff
+
+    Example:
+        >>> # Compute phases in local regime
+        >>> phases = compute_su2_phase_proposed(
+        ...     positions,
+        ...     velocities,
+        ...     rewards,
+        ...     diversity_companions,
+        ...     clone_companions,
+        ...     alive,
+        ...     rho=0.05,
+        ... )
+    """
+    if obs_config is None:
+        obs_config = ObservablesConfig()
+    if su2_config is None:
+        su2_config = SU2Config()
+
+    # Compute collective fields and fitness
+    fields = compute_collective_fields(
+        positions, velocities, rewards, alive, diversity_companions, rho, obs_config
+    )
+    fitness = fields["fitness"]
+
+    # Compute cloning scores
+    scores = compute_cloning_score(fitness, alive, clone_companions, su2_config.epsilon_clone)
+
+    # Compute phases: θ_ij = S_i(j) / ℏ_eff
+    phases = scores / su2_config.h_eff
+
+    # Mask dead walkers (already done in compute_cloning_score, but ensure)
+    return torch.where(alive, phases, torch.zeros_like(phases))
+
+
+def compute_su2_pairing_probability(
+    positions: Tensor,
+    velocities: Tensor,
+    alive: Tensor,
+    config: SU2Config | None = None,
+) -> Tensor:
+    """Compute pairing probabilities for diversity pairing operator.
+
+    From {prf:ref}`def-diversity-pairing-recap` in:
+    old_docs/source/13_fractal_set_new/04_symmetry_redefinition_viability_analysis.md §2.2
+
+    This is used as the amplitude in the proposed SU(2) structure.
+
+    Args:
+        positions: Walker positions [N, d]
+        velocities: Walker velocities [N, d]
+        alive: Boolean mask [N]
+        config: SU(2) configuration
+
+    Returns:
+        Pairing probabilities [N, N] where P[i,j] = P(i ↔ j | pairing)
+
+    Note:
+        For diversity pairing, we use ε_c (cloning range) to determine pairing probabilities.
+    """
+    if config is None:
+        config = SU2Config()
+
+    N = positions.shape[0]
+
+    # Compute distance matrix
+    dist_sq = compute_algorithmic_distance_matrix(positions, velocities, config.lambda_alg)
+
+    # Compute softmax weights: exp(-d²/(2ε²))
+    weights = torch.exp(-dist_sq / (2 * config.epsilon_c**2))
+
+    # Mask dead walkers and self-pairing
+    alive_mask = alive.unsqueeze(1) & alive.unsqueeze(0)
+    self_mask = ~torch.eye(N, device=alive.device, dtype=torch.bool)
+    weights = weights * alive_mask.float() * self_mask.float()
+
+    # Normalize to probabilities
+    return weights / (weights.sum(dim=1, keepdim=True) + 1e-10)
+
+
+def compute_isospin_doublet_state(
+    phases: Tensor,
+    amplitudes: Tensor,
+    walker_i: int,
+    walker_j: int,
+    alive: Tensor,
+) -> tuple[Tensor, Tensor]:
+    """Compute weak isospin doublet state for interaction pair (i,j).
+
+    |Ψ_ij⟩ = |↑⟩⊗|ψ_i⟩ + |↓⟩⊗|ψ_j⟩ ∈ ℂ² ⊗ ℂ^(N-1)
+
+    From {prf:ref}`def-dressed-walker-state` in:
+    old_docs/source/13_fractal_set_new/03_yang_mills_noether.md §1.2
+
+    Args:
+        phases: Phases [N]
+        amplitudes: Companion probabilities [N, N]
+        walker_i: Cloner walker index
+        walker_j: Target walker index
+        alive: Boolean mask [N]
+
+    Returns:
+        Tuple of (up_component, down_component):
+            - up_component: |↑⟩⊗|ψ_i⟩ [N] (cloner component)
+            - down_component: |↓⟩⊗|ψ_j⟩ [N] (target component)
+
+    Note:
+        The full state is the sum: |Ψ_ij⟩ = up_component + down_component
+    """
+    # Get probabilities for both walkers
+    probs_i = amplitudes[walker_i]  # [N]
+    probs_j = amplitudes[walker_j]  # [N]
+
+    # Get phases
+    phase_i = phases[walker_i]
+    phase_j = phases[walker_j]
+
+    # Compute components: ψ = √P · e^(iθ)
+    up_component = torch.sqrt(probs_i) * torch.exp(1j * phase_i)
+    down_component = torch.sqrt(probs_j) * torch.exp(1j * phase_j)
+
+    # Mask dead companions
+    up_component = torch.where(alive, up_component, torch.zeros_like(up_component))
+    down_component = torch.where(alive, down_component, torch.zeros_like(down_component))
+
+    return up_component, down_component
+
+
+def compare_su2_phases(
+    positions: Tensor,
+    velocities: Tensor,
+    rewards: Tensor,
+    diversity_companions: Tensor,
+    clone_companions: Tensor,
+    alive: Tensor,
+    rho: float | None = None,
+    obs_config: ObservablesConfig | None = None,
+    su2_config: SU2Config | None = None,
+) -> dict[str, Tensor | float]:
+    """Compare current vs proposed SU(2) phase structures.
+
+    Args:
+        positions: Walker positions [N, d]
+        velocities: Walker velocities [N, d]
+        rewards: Raw reward values [N]
+        diversity_companions: Diversity companion indices [N]
+        clone_companions: Cloning companion indices [N]
+        alive: Boolean mask [N]
+        rho: Localization scale
+        obs_config: Observables configuration
+        su2_config: SU(2) configuration
+
+    Returns:
+        Dictionary with keys:
+            - "current": Current phases [N]
+            - "proposed": Proposed phases [N]
+            - "difference": |proposed - current| [N]
+            - "correlation": Correlation coefficient (scalar)
+            - "current_mean": Mean current phase (scalar)
+            - "current_std": Std current phase (scalar)
+            - "proposed_mean": Mean proposed phase (scalar)
+            - "proposed_std": Std proposed phase (scalar)
+
+    Example:
+        >>> comparison = compare_su2_phases(
+        ...     positions,
+        ...     velocities,
+        ...     rewards,
+        ...     diversity_companions,
+        ...     clone_companions,
+        ...     alive,
+        ...     rho=0.05,
+        ... )
+        >>> print(f"Correlation: {comparison['correlation']:.4f}")
+        >>> print(f"Mean difference: {comparison['difference'].mean():.4f}")
+    """
+    # Compute both phase structures
+    current = compute_su2_phase_current(positions, velocities, clone_companions, alive, su2_config)
+    proposed = compute_su2_phase_proposed(
+        positions,
+        velocities,
+        rewards,
+        diversity_companions,
+        clone_companions,
+        alive,
+        rho,
+        obs_config,
+        su2_config,
+    )
+
+    # Extract alive values
+    current_alive = current[alive]
+    proposed_alive = proposed[alive]
+
+    # Compute correlation
+    if len(current_alive) > 1:
+        correlation = torch.corrcoef(torch.stack([current_alive, proposed_alive]))[0, 1].item()
+    else:
+        correlation = 0.0
+
+    return {
+        "current": current,
+        "proposed": proposed,
+        "difference": torch.abs(proposed - current),
+        "correlation": correlation,
+        "current_mean": current_alive.mean().item(),
+        "current_std": current_alive.std().item(),
+        "proposed_mean": proposed_alive.mean().item(),
+        "proposed_std": proposed_alive.std().item(),
+    }
+
+
+def compute_su2_observable(
+    up_component: Tensor,
+    down_component: Tensor,
+) -> float:
+    """Compute gauge-invariant observable from isospin doublet state.
+
+    Physical observable: |⟨Ψ_ij|Ψ_ij⟩|²
+
+    Args:
+        up_component: |↑⟩⊗|ψ_i⟩ [N]
+        down_component: |↓⟩⊗|ψ_j⟩ [N]
+
+    Returns:
+        Norm squared of full interaction state
+    """
+    full_state = up_component + down_component
+    return torch.abs(torch.dot(full_state.conj(), full_state)).item()

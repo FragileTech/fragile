@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from typing import Any
 
 import einops
 import holoviews
@@ -26,6 +27,7 @@ class StreamingPlot:
         data=None,
         bokeh_opts: dict | None = None,
         mpl_opts: dict | None = None,
+        widgets_mapping: dict[str, Any] | None = None,
         **kwargs,
     ):
         """Initialize a :class:`StreamingPlot`.
@@ -46,6 +48,7 @@ class StreamingPlot:
         self.bokeh_opts = {**self.default_bokeh_opts, **bokeh_opts}
         self.mpl_opts = {**self.default_mpl_opts, **mpl_opts}
         self.common_kwargs = {**self.default_opts, **kwargs}
+        self.widgets_mapping = widgets_mapping
         self.init_stream(stream, data)
         self.init_plot(plot)
 
@@ -86,9 +89,15 @@ class StreamingPlot:
 
         """
 
-        def plot_func(data):
-            plot_ = plot(data)
-            return self.opts(plot=plot_)
+        def plot_func(data, **kwargs):
+            _plot = plot(data, **kwargs)
+            return self.opts(plot=_plot)
+
+        if self.widgets_mapping is not None:
+            streams = {k: v.param.value for k, v in self.widgets_mapping.items()}
+            streams["data"] = self.data_stream
+        else:
+            streams = {"data": self.data_stream}
 
         self.plot = holoviews.DynamicMap(plot_func, streams=[self.data_stream])
         self.opts()
@@ -733,6 +742,59 @@ class Scatter(StreamingPlot):
             self.plot = self.plot.opts(holoviews.opts.Scatter(**self.opts_kwargs))
             return None
         return plot.opts(holoviews.opts.Scatter(**self.opts_kwargs))
+
+
+class VectorField(StreamingPlot):
+    """Streaming plot for velocity vectors using Segments.
+
+    Displays velocity vectors as arrows/segments overlaid on positions.
+    """
+
+    default_bokeh_opts = {
+        "tools": ["hover"],
+        "line_color": "cyan",
+        "line_width": 2,
+        "alpha": 0.6,
+        "height": 350,
+        "width": 400,
+        "shared_axes": False,
+    }
+    default_mpl_opts = {"linewidth": 1, "alpha": 0.6}
+
+    def __init__(
+        self,
+        data=None,
+        plot=holoviews.Segments,
+        scale: float = 0.5,
+        **kwargs,
+    ):
+        """Initialize a :class:`VectorField`.
+
+        Args:
+            data: Initial data (DataFrame with x0, y0, x1, y1 columns).
+            plot: Holoviews plot class (default: Segments).
+            scale: Velocity scaling factor for visualization.
+            **kwargs: Passed to StreamingPlot.
+        """
+        self.scale = scale
+        super().__init__(
+            plot=plot,
+            data=data,
+            **kwargs,
+        )
+
+    def get_default_data(self):
+        return pd.DataFrame({"x0": [], "y0": [], "x1": [], "y1": []})
+
+    def opts(self, plot=None, **kwargs):
+        """Update the plot parameters. Same as `holoviews` `opts`."""
+        if self.plot is None:
+            return None
+        self.common_kwargs.update(kwargs)
+        if plot is None:
+            self.plot = self.plot.opts(holoviews.opts.Segments(**self.opts_kwargs))
+            return None
+        return plot.opts(holoviews.opts.Segments(**self.opts_kwargs))
 
 
 class Landscape2D(StreamingPlot):

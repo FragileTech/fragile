@@ -14,7 +14,7 @@ class TorchRandomState:
 
     @staticmethod
     def seed(seed: int = DEFAULT_SEED):
-        numpy.random.seed(seed)  # noqa: NPY002
+        numpy.random.seed(seed)
         torch.random.manual_seed(int(seed))
 
     @staticmethod

@@ -37,46 +37,7 @@ def numpy_dtype_to_torch_dtype(dtype):
         np.complex64: torch.complex64,
         np.complex128: torch.complex128,
     }
-    numpy_to_torch_dtype = {
-        np.dtypes.BoolDType: torch.bool,
-        np.dtypes.ByteDType: torch.uint8,
-        np.dtypes.BytesDType: None,  # No direct equivalent in PyTorch
-        np.dtypes.CLongDoubleDType: torch.complex128,  # Closest equivalent
-        np.dtypes.Complex128DType: torch.complex128,
-        np.dtypes.Complex64DType: torch.complex64,
-        np.dtypes.DateTime64DType: None,  # No equivalent in PyTorch
-        np.dtypes.Float16DType: torch.float16,
-        np.dtypes.Float32DType: torch.float32,
-        np.dtypes.Float64DType: torch.float64,
-        np.dtypes.Int16DType: torch.int16,
-        np.dtypes.Int32DType: torch.int32,
-        np.dtypes.Int64DType: torch.int64,
-        np.dtypes.Int8DType: torch.int8,
-        np.dtypes.IntDType: torch.int32,  # NumPy's int is usually int32, but platform-dependent
-        np.dtypes.LongDType: torch.int64,  # NumPy long maps to int64
-        np.dtypes.LongDoubleDType: torch.float64,  # Closest match
-        np.dtypes.LongLongDType: torch.int64,  # Closest match
-        np.dtypes.ObjectDType: None,  # No equivalent in PyTorch
-        np.dtypes.ShortDType: torch.int16,
-        np.dtypes.StrDType: None,  # No equivalent in PyTorch
-        np.dtypes.StringDType: None,  # No equivalent in PyTorch
-        np.dtypes.TimeDelta64DType: None,  # No equivalent in PyTorch
-        np.dtypes.UByteDType: torch.uint8,
-        np.dtypes.UInt16DType: None,  # PyTorch does not support unsigned integers
-        np.dtypes.UInt32DType: None,  # PyTorch does not support unsigned integers
-        np.dtypes.UInt64DType: None,  # PyTorch does not support unsigned integers
-        np.dtypes.UInt8DType: torch.uint8,  # Closest match
-        np.dtypes.UIntDType: None,  # No equivalent in PyTorch
-        np.dtypes.ULongDType: None,  # No equivalent in PyTorch
-        np.dtypes.ULongLongDType: None,  # No equivalent in PyTorch
-        np.dtypes.UShortDType: None,  # No equivalent in PyTorch
-        np.dtypes.VoidDType: None,  # No equivalent in PyTorch
-        **dtype_mapping,
-    }
-    torch_value = numpy_to_torch_dtype.get(dtype, None)
-    if torch_value is None:
-        torch_value = numpy_to_torch_dtype.get(type(dtype), None)
-    return torch_value
+    return dtype_mapping.get(dtype, None)
 
 
 def create_gif(data, filename=None, fps=10, optimize=False):
