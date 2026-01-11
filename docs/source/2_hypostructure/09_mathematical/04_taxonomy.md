@@ -732,7 +732,7 @@ $$
 where $U$ is a fixed universal prefix-free Turing machine and $|p|$ denotes the length of program $p$ in bits.
 
 **Key Properties:**
-1. **Invariance Theorem:** For any two universal prefix-free machines $U_1, U_2$, there exists a constant $c$ such that $|K_{U_1}(x) - K_{U_2}(x)| \leq c$ for all $x$ {cite}`Kolmogorov65; LiVitanyi08`.
+1. **Invariance Theorem:** For any two universal prefix-free machines $U_1, U_2$, there exists a constant $c$ such that $|K_{U_1}(x) - K_{U_2}(x)| \leq c$ for all $x$ {cite}`Kolmogorov65,LiVitanyi08`.
 
 2. **Incompressibility:** For each $n$, at least $2^n - 2^{n-c} + 1$ strings of length $n$ satisfy $K(x) \geq n - c$.
 
