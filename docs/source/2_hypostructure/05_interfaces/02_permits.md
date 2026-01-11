@@ -1032,5 +1032,3 @@ $$
 
 **Justification:** This replaces the "induced distribution over future outputs" semantics with a semantics tied to the current state's explicit content. The key insight is that what an algorithm "knows" at time $t$ is precisely what it can compute from its current configuration in $O(1)$ time.
 :::
-
----

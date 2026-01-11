@@ -78,7 +78,7 @@ This tuple directly instantiates the core objects of the Hypostructure $\mathbb{
 | **Critic**                     | **Value/Cost Functional ($\Phi$)**           | **Value Function:** assigns a scalar cost-to-go/value to points in $Z$, representing risk/undesirability.                                                                                                                                       | Defines the gradient signal $\nabla V$.                     |
 | **Policy**                     | **Control Regularization ($\mathfrak{D}$)**  | **Controller (Policy):** chooses actions that reduce expected future cost subject to constraints and regularization.                                                                                                                            | Implements the control law minimizing $\mathcal{S}$.        |
 
-:::{figure} ../svg_images/fragile_architecture.svg
+:::{figure} ../../../svg_images/fragile_architecture.svg
 :name: fig-fragile-architecture
 :width: 100%
 
@@ -469,7 +469,7 @@ Let me step back and explain why we've gone to all this trouble.
 In other words: by making part of our representation discrete, we've made the theory work. We can prove things. We can bound things. We can monitor things. That's the payoff for all this structure.
 :::
 
-:::{figure} ../svg_images/three_tier_shutter.svg
+:::{figure} ../../../svg_images/three_tier_shutter.svg
 :name: fig-three-tier-shutter
 :width: 100%
 
