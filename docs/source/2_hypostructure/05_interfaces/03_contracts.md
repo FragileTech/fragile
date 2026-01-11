@@ -189,5 +189,3 @@ There are two strategies, and you must pick one.
 The Zeno remark is worth understanding deeply. Zeno's paradox asks: how can Achilles catch the tortoise if he must first reach where the tortoise was, then where it moved to, and so on forever? The resolution is that infinitely many steps can happen in finite time if the steps get small enough fast enough. But for surgeries, we do not want that! Each surgery is a discrete computational step, and we cannot perform infinitely many of them. The $\epsilon_T$ constraint is our anti-Zeno shield.
 
 :::
-
----
